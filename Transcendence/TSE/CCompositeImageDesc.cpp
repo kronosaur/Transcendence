@@ -10,9 +10,17 @@
 //		{ordered list of entries}
 //	</Composite>
 //
+//	<Effect>
+//		{some effect tag}
+//	</Effect>
+//
 //	<FilterColorize color="...">
 //		{an entry}
 //	</FilterColorize>
+//
+//	<LocationCriteriaTable>
+//		<{entry} criteria="..." />
+//	</LocationCriteriaTable>
 //
 //	<Table>
 //		{set of entries}
@@ -39,14 +47,19 @@
 #include "PreComp.h"
 
 #define COMPOSITE_TAG							CONSTLIT("Composite")
+#define EFFECT_TAG								CONSTLIT("Effect")
 #define FILTER_COLORIZE_TAG						CONSTLIT("FilterColorize")
 #define IMAGE_TAG								CONSTLIT("Image")
 #define IMAGE_COMPOSITE_TAG						CONSTLIT("ImageComposite")
+#define IMAGE_EFFECT_TAG						CONSTLIT("ImageEffect")
 #define IMAGE_VARIANTS_TAG						CONSTLIT("ImageVariants")
+#define LOCATION_CRITERIA_TABLE_TAG				CONSTLIT("LocationCriteriaTable")
 #define TABLE_TAG								CONSTLIT("Table")
 
 #define CHANCE_ATTRIB							CONSTLIT("chance")
 #define COLOR_ATTRIB							CONSTLIT("color")
+#define CRITERIA_ATTRIB							CONSTLIT("criteria")
+#define EFFECT_ATTRIB							CONSTLIT("effect")
 #define HUE_ATTRIB								CONSTLIT("hue")
 #define SATURATION_ATTRIB						CONSTLIT("saturation")
 
@@ -61,8 +74,7 @@ class CCompositeEntry : public IImageEntry
 		virtual int GetMaxLifetime (void) const;
 		virtual int GetVariantCount (void) { return 1; }
 		virtual ALERROR InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGen, CXMLElement *pDesc);
-		virtual void InitSelector (CCompositeImageSelector *retSelector);
-		virtual void InitSelector (int iVariant, CCompositeImageSelector *retSelector);
+		virtual void InitSelector (SSelectorInitCtx &InitCtx, CCompositeImageSelector *retSelector);
 		virtual bool IsConstant (void);
 		virtual void MarkImage (void);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
@@ -72,6 +84,25 @@ class CCompositeEntry : public IImageEntry
 
 		CObjectImageArray m_Image;
 		CG16bitImage *m_pImageCache;
+	};
+
+class CEffectEntry : public IImageEntry
+	{
+	public:
+		CEffectEntry (void) { }
+		virtual ~CEffectEntry (void);
+
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed) { if (m_pEffect) m_pEffect->AddTypesUsed(retTypesUsed); }
+		virtual void GetImage (const CCompositeImageSelector &Selector, CObjectImageArray *retImage);
+		virtual int GetMaxLifetime (void) const;
+		virtual int GetVariantCount (void) { return 1; }
+		virtual ALERROR InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGen, CXMLElement *pDesc);
+		virtual bool IsConstant (void) { return true; }
+		virtual void MarkImage (void);
+		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
+
+	private:
+		CEffectCreatorRef m_pEffect;
 	};
 
 class CFilterColorizeEntry : public IImageEntry
@@ -85,8 +116,7 @@ class CFilterColorizeEntry : public IImageEntry
 		virtual int GetMaxLifetime (void) const;
 		virtual int GetVariantCount (void) { return 1; }
 		virtual ALERROR InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGen, CXMLElement *pDesc);
-		virtual void InitSelector (CCompositeImageSelector *retSelector);
-		virtual void InitSelector (int iVariant, CCompositeImageSelector *retSelector);
+		virtual void InitSelector (SSelectorInitCtx &InitCtx, CCompositeImageSelector *retSelector);
 		virtual bool IsConstant (void);
 		virtual void MarkImage (void);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
@@ -114,6 +144,32 @@ class CImageEntry : public IImageEntry
 		CObjectImageArray m_Image;
 	};
 
+class CLocationCriteriaTableEntry : public IImageEntry
+	{
+	public:
+		virtual ~CLocationCriteriaTableEntry (void);
+
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
+		virtual void GetImage (const CCompositeImageSelector &Selector, CObjectImageArray *retImage);
+		virtual int GetMaxLifetime (void) const;
+		virtual int GetVariantCount (void) { return m_Table.GetCount(); }
+		virtual ALERROR InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGen, CXMLElement *pDesc);
+		virtual void InitSelector (SSelectorInitCtx &InitCtx, CCompositeImageSelector *retSelector);
+		virtual bool IsConstant (void) { return (m_Table.GetCount() == 0 || ((m_Table.GetCount() == 1) && m_Table[0].pImage->IsConstant())); }
+		virtual void MarkImage (void);
+		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
+
+	private:
+		struct SEntry
+			{
+			IImageEntry *pImage;
+			CAttributeCriteria Criteria;
+			};
+
+		TArray<SEntry> m_Table;
+		int m_iDefault;
+	};
+
 class CTableEntry : public IImageEntry
 	{
 	public:
@@ -124,8 +180,7 @@ class CTableEntry : public IImageEntry
 		virtual int GetMaxLifetime (void) const;
 		virtual int GetVariantCount (void) { return m_Table.GetCount(); }
 		virtual ALERROR InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGen, CXMLElement *pDesc);
-		virtual void InitSelector (CCompositeImageSelector *retSelector);
-		virtual void InitSelector (int iVariant, CCompositeImageSelector *retSelector);
+		virtual void InitSelector (SSelectorInitCtx &InitCtx, CCompositeImageSelector *retSelector);
 		virtual bool IsConstant (void) { return (m_Table.GetCount() == 0 || ((m_Table.GetCount() == 1) && m_Table[0].pImage->IsConstant())); }
 		virtual void MarkImage (void);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
@@ -286,10 +341,14 @@ ALERROR CCompositeImageDesc::InitEntryFromXML (SDesignLoadCtx &Ctx, CXMLElement 
 		}
 	else if (strEquals(pDesc->GetTag(), IMAGE_COMPOSITE_TAG) || strEquals(pDesc->GetTag(), COMPOSITE_TAG))
 		pEntry = new CCompositeEntry;
+	else if (strEquals(pDesc->GetTag(), IMAGE_EFFECT_TAG) || strEquals(pDesc->GetTag(), EFFECT_TAG))
+		pEntry = new CEffectEntry;
 	else if (strEquals(pDesc->GetTag(), TABLE_TAG) || strEquals(pDesc->GetTag(), IMAGE_VARIANTS_TAG))
 		pEntry = new CTableEntry;
 	else if (strEquals(pDesc->GetTag(), FILTER_COLORIZE_TAG))
 		pEntry = new CFilterColorizeEntry;
+	else if (strEquals(pDesc->GetTag(), LOCATION_CRITERIA_TABLE_TAG))
+		pEntry = new CLocationCriteriaTableEntry;
 	else
 		{
 		Ctx.sError = strPatternSubst(CONSTLIT("Unknown image tag: %s"), pDesc->GetTag());
@@ -326,7 +385,7 @@ ALERROR CCompositeImageDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDes
 	return NOERROR;
 	}
 
-void CCompositeImageDesc::InitSelector (CCompositeImageSelector *retSelector)
+void CCompositeImageDesc::InitSelector (SSelectorInitCtx &InitCtx, CCompositeImageSelector *retSelector)
 
 //	InitSelector
 //
@@ -336,7 +395,7 @@ void CCompositeImageDesc::InitSelector (CCompositeImageSelector *retSelector)
 	if (m_pRoot == NULL)
 		return;
 
-	m_pRoot->InitSelector(retSelector);
+	m_pRoot->InitSelector(InitCtx, retSelector);
 	}
 
 void CCompositeImageDesc::MarkImage (void)
@@ -564,7 +623,7 @@ ALERROR CCompositeEntry::InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGen, CX
 	return NOERROR;
 	}
 
-void CCompositeEntry::InitSelector (CCompositeImageSelector *retSelector)
+void CCompositeEntry::InitSelector (SSelectorInitCtx &InitCtx, CCompositeImageSelector *retSelector)
 
 //	InitSelector
 //
@@ -574,20 +633,7 @@ void CCompositeEntry::InitSelector (CCompositeImageSelector *retSelector)
 	int i;
 
 	for (i = 0; i < m_Layers.GetCount(); i++)
-		m_Layers[i]->InitSelector(retSelector);
-	}
-
-void CCompositeEntry::InitSelector (int iVariant, CCompositeImageSelector *retSelector)
-
-//	InitSelector
-//
-//	For now we just initialize a single entry
-
-	{
-	int i;
-
-	for (i = 0; i < m_Layers.GetCount(); i++)
-		m_Layers[i]->InitSelector(0, retSelector);
+		m_Layers[i]->InitSelector(InitCtx, retSelector);
 	}
 
 bool CCompositeEntry::IsConstant (void)
@@ -634,6 +680,147 @@ ALERROR CCompositeEntry::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 		if (error = m_Layers[i]->OnDesignLoadComplete(Ctx))
 			return error;
 		}
+
+	return NOERROR;
+	}
+
+//	CEffectEntry ---------------------------------------------------------------
+
+CEffectEntry::~CEffectEntry (void)
+
+//	CFilterColorizeEntry destructor
+
+	{
+	}
+
+void CEffectEntry::GetImage (const CCompositeImageSelector &Selector, CObjectImageArray *retImage)
+
+//	GetImage
+//
+//	Fills in the image
+
+	{
+	//	Short circuit
+
+	if (m_pEffect.IsEmpty())
+		{
+		*retImage = EMPTY_IMAGE;
+		return;
+		}
+
+	//	Create a painter
+
+	CCreatePainterCtx Ctx;
+	IEffectPainter *pPainter = m_pEffect->CreatePainter(Ctx);
+	if (pPainter == NULL)
+		{
+		*retImage = EMPTY_IMAGE;
+		return;
+		}
+
+	//	Get the painter bounds
+
+	RECT rcBounds;
+	pPainter->GetBounds(&rcBounds);
+	int cxWidth = RectWidth(rcBounds);
+	int cyHeight = RectHeight(rcBounds);
+
+	//	Manual compositing
+
+	bool bCanComposite = pPainter->CanPaintComposite();
+
+	//	Create a resulting image
+
+	CG16bitImage *pDest = new CG16bitImage;
+	pDest->CreateBlank(cxWidth, cyHeight, true, 0x00, (bCanComposite ? 0x00 : 0xff));
+
+	//	Set up paint context
+
+	SViewportPaintCtx PaintCtx;
+
+	//	Since we don't have an object, we use the viewport center to indicate
+	//	the center of the object.
+
+	PaintCtx.xCenter = -rcBounds.left;
+	PaintCtx.yCenter = -rcBounds.top;
+
+	//	Paint
+
+	pPainter->PaintComposite(*pDest, (cxWidth / 2), (cyHeight / 2), PaintCtx);
+
+	//	Initialize an image
+
+	RECT rcFinalRect;
+	rcFinalRect.left = 0;
+	rcFinalRect.top = 0;
+	rcFinalRect.right = cxWidth;
+	rcFinalRect.bottom = cyHeight;
+
+	CObjectImageArray Comp;
+	Comp.Init(pDest, rcFinalRect, 0, 0, true);
+
+	//	Done
+
+	retImage->TakeHandoff(Comp);
+	pPainter->Delete();
+	}
+
+int CEffectEntry::GetMaxLifetime (void) const
+
+//	GetMaxLifetime
+//
+//	Returns the maximum lifetime
+
+	{
+	return 0;
+	}
+
+ALERROR CEffectEntry::InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGen, CXMLElement *pDesc)
+
+//	InitFromXML
+//
+//	Initialize from XML
+
+	{
+	ALERROR error;
+
+	m_dwID = IDGen.GetID();
+
+	//	Load
+
+	if (error = m_pEffect.LoadEffect(Ctx,
+			NULL_STR,
+			pDesc,
+			pDesc->GetAttribute(EFFECT_ATTRIB)))
+		return error;
+
+	//	Done
+
+	return NOERROR;
+	}
+
+void CEffectEntry::MarkImage (void)
+
+//	MarkImage
+//
+//	Mark all images
+
+	{
+	if (m_pEffect)
+		m_pEffect->MarkImages();
+	}
+
+ALERROR CEffectEntry::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
+
+//	OnDesignLoadComplete
+//
+//	Bind design
+
+	{
+	ALERROR error;
+
+	if (error = m_pEffect.Bind(Ctx))
+		return error;
 
 	return NOERROR;
 	}
@@ -765,7 +952,7 @@ ALERROR CFilterColorizeEntry::InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGe
 	return NOERROR;
 	}
 
-void CFilterColorizeEntry::InitSelector (CCompositeImageSelector *retSelector)
+void CFilterColorizeEntry::InitSelector (SSelectorInitCtx &InitCtx, CCompositeImageSelector *retSelector)
 
 //	InitSelector
 //
@@ -773,18 +960,7 @@ void CFilterColorizeEntry::InitSelector (CCompositeImageSelector *retSelector)
 
 	{
 	if (m_pSource)
-		m_pSource->InitSelector(retSelector);
-	}
-
-void CFilterColorizeEntry::InitSelector (int iVariant, CCompositeImageSelector *retSelector)
-
-//	InitSelector
-//
-//	For now we just initialize a single entry
-
-	{
-	if (m_pSource)
-		m_pSource->InitSelector(iVariant, retSelector);
+		m_pSource->InitSelector(InitCtx, retSelector);
 	}
 
 bool CFilterColorizeEntry::IsConstant (void)
@@ -846,6 +1022,187 @@ ALERROR CImageEntry::InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGen, CXMLEl
 
 	if (error = m_Image.InitFromXML(Ctx, pDesc))
 		return error;
+
+	return NOERROR;
+	}
+
+//	CLocationCriteriaTableEntry ------------------------------------------------
+
+CLocationCriteriaTableEntry::~CLocationCriteriaTableEntry (void)
+
+//	CTableEntry destructor
+
+	{
+	int i;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		delete m_Table[i].pImage;
+	}
+
+void CLocationCriteriaTableEntry::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Add types used by this entry
+
+	{
+	int i;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		m_Table[i].pImage->AddTypesUsed(retTypesUsed);
+	}
+
+void CLocationCriteriaTableEntry::GetImage (const CCompositeImageSelector &Selector, CObjectImageArray *retImage)
+
+//	GetImage
+//
+//	Returns the image
+
+	{
+	int iIndex = Selector.GetVariant(GetID());
+	if (iIndex < 0 || iIndex >= m_Table.GetCount())
+		{
+		*retImage = EMPTY_IMAGE;
+		return;
+		}
+
+	m_Table[iIndex].pImage->GetImage(Selector, retImage);
+	}
+
+int CLocationCriteriaTableEntry::GetMaxLifetime (void) const
+
+//	GetMaxLifetime
+//
+//	Returns the maximum lifetime
+
+	{
+	int i;
+	int iMaxLifetime = 0;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		{
+		int iLifetime = m_Table[i].pImage->GetMaxLifetime();
+		if (iLifetime > iMaxLifetime)
+			iMaxLifetime = iLifetime;
+		}
+
+	return iMaxLifetime;
+	}
+
+ALERROR CLocationCriteriaTableEntry::InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGen, CXMLElement *pDesc)
+
+//	InitFromXML
+//
+//	Initialize from XML
+
+	{
+	ALERROR error;
+	int i;
+
+	m_dwID = IDGen.GetID();
+	m_iDefault = -1;
+
+	//	Load each sub-entry in turn
+
+	int iCount = pDesc->GetContentElementCount();
+	if (iCount == 0)
+		return NOERROR;
+
+	m_Table.InsertEmpty(iCount);
+	for (i = 0; i < iCount; i++)
+		{
+		CXMLElement *pItem = pDesc->GetContentElement(i);
+
+		if (error = CCompositeImageDesc::InitEntryFromXML(Ctx, pItem, IDGen, &m_Table[i].pImage))
+			return error;
+
+		//	Load the criteria
+
+		CString sCriteria = pItem->GetAttribute(CRITERIA_ATTRIB);
+		if (error = m_Table[i].Criteria.Parse(sCriteria, 0, &Ctx.sError))
+			return error;
+
+		if (m_iDefault == -1 && m_Table[i].Criteria.MatchesDefault())
+			m_iDefault = i;
+		}
+
+	//	If we don't have a default, the pick the last item.
+
+	if (m_iDefault == -1 
+			&& m_Table.GetCount() > 0)
+		m_iDefault = m_Table.GetCount() - 1;
+
+	//	Done
+
+	return NOERROR;
+	}
+
+void CLocationCriteriaTableEntry::InitSelector (SSelectorInitCtx &InitCtx, CCompositeImageSelector *retSelector)
+
+//	InitSelector
+//
+//	Initializes the selector
+
+	{
+	int i;
+
+	//	Generate the table based on criteria and location
+
+	TProbabilityTable<int> ProbTable;
+	for (i = 0; i < m_Table.GetCount(); i++)
+		{
+		//	Compute the probability of this entry at the
+		//	given location.
+
+		int iChance = m_Table[i].Criteria.CalcLocationWeight(InitCtx.pSystem, InitCtx.sLocAttribs, InitCtx.vObjPos);
+		if (iChance > 0)
+			ProbTable.Insert(i, iChance);
+		}
+
+	//	If none match, then add the default element
+
+	if (ProbTable.GetCount() == 0 && m_iDefault != -1)
+		ProbTable.Insert(m_iDefault, 1000);
+
+	//	Roll
+
+	if (ProbTable.GetCount() > 0)
+		{
+		int iRoll = ProbTable.RollPos();
+		int iIndex = ProbTable[iRoll];
+		retSelector->AddVariant(GetID(), iIndex);
+		m_Table[iIndex].pImage->InitSelector(InitCtx, retSelector);
+		}
+	}
+
+void CLocationCriteriaTableEntry::MarkImage (void)
+
+//	MarkImage
+//
+//	Mark all images
+
+	{
+	int i;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		m_Table[i].pImage->MarkImage();
+	}
+
+ALERROR CLocationCriteriaTableEntry::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
+
+//	OnDesignLoadComplete
+//
+//	Bind design
+
+	{
+	ALERROR error;
+	int i;
+	
+	for (i = 0; i < m_Table.GetCount(); i++)
+		{
+		if (error = m_Table[i].pImage->OnDesignLoadComplete(Ctx))
+			return error;
+		}
 
 	return NOERROR;
 	}
@@ -951,7 +1308,7 @@ ALERROR CTableEntry::InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGen, CXMLEl
 	return NOERROR;
 	}
 
-void CTableEntry::InitSelector (CCompositeImageSelector *retSelector)
+void CTableEntry::InitSelector (SSelectorInitCtx &InitCtx, CCompositeImageSelector *retSelector)
 
 //	InitSelector
 //
@@ -967,21 +1324,11 @@ void CTableEntry::InitSelector (CCompositeImageSelector *retSelector)
 		if (iRoll <= m_Table[i].iChance)
 			{
 			retSelector->AddVariant(GetID(), i);
-			m_Table[i].pImage->InitSelector(retSelector);
+			m_Table[i].pImage->InitSelector(InitCtx, retSelector);
 			return;
 			}
 		else
 			iRoll -= m_Table[i].iChance;
-	}
-
-void CTableEntry::InitSelector (int iVariant, CCompositeImageSelector *retSelector)
-
-//	InitSelector
-//
-//	Initializes selector at the given variant
-
-	{
-	retSelector->AddVariant(GetID(), iVariant);
 	}
 
 void CTableEntry::MarkImage (void)

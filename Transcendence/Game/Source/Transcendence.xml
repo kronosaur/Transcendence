@@ -10,7 +10,8 @@
 	<!ENTITY ssEarthSpaceVolcanic		"0x00000006">
 	<!ENTITY ssEarthSpaceIceRing		"0x00000007">
 	<!ENTITY ssEarthSpaceBinary			"0x00000008">
-	<!ENTITY ssEarthSpaceAsteroids2		"0x00000009">
+	<!ENTITY ssEarthSpaceAsteroidArcs	"0x00000009">
+	<!ENTITY ssEarthSpaceAsteroids2		"0x00000009">	<!-- Needed for backwards compatibility -->
 	<!ENTITY ssEarthSpaceDesert2		"0x0000000A">
 	<!ENTITY tbBasicSystemParts			"0x0000000B">
 	<!ENTITY tbHumanSystemParts			"0x0000000C">
@@ -92,6 +93,7 @@
 	<!ENTITY snDefaultShieldsDownAlarm	"0x000000A5">
 	<!ENTITY snDefaultButtonClick		"0x000000A6">
 	<!ENTITY snDefaultSelect			"0x000000A7">
+	<!ENTITY snDefaultGravityAlarm		"0x000000A8">
 	
 	<!ENTITY svPlayer					"0x00001001">
 	<!ENTITY svCommonwealth				"0x00001002">
@@ -116,6 +118,7 @@
 	<!ENTITY svRingers					"0x00001015">
 	<!ENTITY svFerianMinersAngry		"0x00001016">
 	<!ENTITY ecCreditEconomy			"0x00001017">
+	<!ENTITY svUnknownEnemy				"0x00001018">
 
 	<!ENTITY stShipwreck				"0x00002001">
 	<!ENTITY stStargate					"0x00002002">
@@ -973,6 +976,20 @@
 	<!ENTITY rsAuxMountOverlay			"0x00010020">
 	<!ENTITY rsAuxMountOverlayHD		"0x00010021">
 	<!ENTITY dsRPGInstallDevice			"0x00010022">
+	<!ENTITY dsRPGManageArmor			"0x00010023">
+	<!ENTITY dsRPGUpgradeArmor			"0x00010024">
+	<!ENTITY dsRPGUpgradeDevice			"0x00010025">
+	<!ENTITY unidCDMMercenaryClass		"0x00010026">
+	<!ENTITY unidFreelancerClass		"0x00010027">
+	<!ENTITY unidCOMSOCAgentClass		"0x00010028">
+	<!ENTITY dsRPGDockServices			"0x00010029">
+	<!ENTITY dsRPGDockServicesCompatible	"0x0001002A">
+	<!ENTITY dsRPGCommoditiesExchange	"0x0001002B">
+	<!ENTITY dsRPGCommoditiesExchangeBuy	"0x0001002C">
+	<!ENTITY dsRPGDialog				"0x0001002D">
+	<!ENTITY dsRPGManageMiscDevices		"0x0001002E">
+	<!ENTITY dsRPGRemoveDevice			"0x0001002F">
+	<!ENTITY dsRPGManageWeapons			"0x00010030">
 	
 	<!-- CANONICAL UNIVERSE LIBRARY 0002 -->
 	
@@ -1062,6 +1079,34 @@
 	<!ENTITY tbMetallicPlanets			"0x00020061">
 	<!ENTITY tbRockyPlanets				"0x00020062">
 	<!ENTITY tbVolcanicPlanets			"0x00020063">
+	<!ENTITY rsRedGiantStar2			"0x00020064">
+	<!ENTITY rsRedDwarfStar2			"0x00020065">
+	<!ENTITY unidLocationAttribDef		"0x00020066">
+	<!ENTITY tbStars					"0x00020067">
+	<!ENTITY tbAsteroidOre				"0x00020068">
+	
+	<!ENTITY stStarClassM8				"0x00020070">
+	<!ENTITY stStarClassM5				"0x00020071">
+	<!ENTITY stStarClassM0				"0x00020072">
+	<!ENTITY stStarClassK5				"0x00020073">
+	<!ENTITY stStarClassK0				"0x00020074">
+	<!ENTITY stStarClassG5				"0x00020075">
+	<!ENTITY stStarClassG2				"0x00020076">
+	<!ENTITY stStarClassG0				"0x00020077">
+	<!ENTITY stStarClassF5				"0x00020078">
+	<!ENTITY stStarClassF0				"0x00020079">
+	<!ENTITY stStarClassA5				"0x0002007A">
+	<!ENTITY stStarClassA0				"0x0002007B">
+	
+	<!ENTITY rsOvoidAsteroids			"0x00020080">
+	<!ENTITY stOvoidAsteroidSizeA		"0x00020081">
+	<!ENTITY stOvoidAsteroidSizeB		"0x00020082">
+	<!ENTITY stOvoidAsteroidSizeC		"0x00020083">
+	<!ENTITY stOvoidAsteroidSizeD		"0x00020084">
+	<!ENTITY stOvoidPlanetoidSizeE		"0x00020085">
+	<!ENTITY stOvoidPlanetoidSizeF		"0x00020086">
+	<!ENTITY stOvoidPlanetoidSizeG		"0x00020087">
+	<!ENTITY tbOvoidTables				"0x00020088">
 	
 	<!-- RESERVED 0003 -->
 	<!-- RESERVED 0004 -->
@@ -1103,6 +1148,40 @@
 	<!ENTITY scKateMorgentalCruiser		"0x00100007">
 	<!ENTITY trStdLevelTreasure			"0x00100008">
 	<!ENTITY unidBenedict				"0x00100009">
+	<!ENTITY ssEarthSpacePrimordial		"0x0010000A">
+	<!ENTITY ssEarthSpaceMetallic		"0x0010000B">
+	<!ENTITY svPteravores				"0x0010000C">
+	<!ENTITY svLuminous					"0x0010000D">
+	<!ENTITY svRanxEmpire				"0x0010000E">
+	<!ENTITY svVentariSettlers			"0x0010000F">
+	<!ENTITY svXenophobes				"0x00100010">
+	<!ENTITY svPenitents				"0x00100011">
+	<!ENTITY svTeratons					"0x00100012">
+	<!ENTITY svDeathDrugsCartel			"0x00100013">
+	<!ENTITY svOutlawMiners				"0x00100014">
+	<!ENTITY svAbbasid					"0x00100015">
+	<!ENTITY svSapiens					"0x00100016">
+	<!ENTITY ssEarthSpaceIceAsteroids	"0x00100017">
+	<!ENTITY ssEarthSpaceVolcanicAsteroids	"0x00100018">
+	<!ENTITY trStdTreasureLevel1		"0x00100019">
+	<!ENTITY trStdTreasureLevel2		"0x0010001A">
+	<!ENTITY trStdTreasureLevel3		"0x0010001B">
+	<!ENTITY trStdTreasureLevel4		"0x0010001C">
+	<!ENTITY trStdTreasureLevel5		"0x0010001D">
+	<!ENTITY trStdTreasureLevel6		"0x0010001E">
+	<!ENTITY trStdTreasureLevel7		"0x0010001F">
+	<!ENTITY trStdTreasureLevel8		"0x00100020">
+	<!ENTITY trStdTreasureLevel9		"0x00100021">
+	<!ENTITY trStdTreasureLevel10		"0x00100022">
+	<!ENTITY rsItems2					"0x00100023">
+	<!ENTITY rsItems3					"0x00100024">
+	<!ENTITY rsItems4					"0x00100025">
+	<!ENTITY rsItems5					"0x00100026">
+	<!ENTITY rsItems6					"0x00100027">
+	<!ENTITY rsItems7					"0x00100028">
+	<!ENTITY rsItems8					"0x00100029">
+	<!ENTITY rsItems9					"0x0010002A">
+	<!ENTITY rsItems10					"0x0010002B">
 	
 	<!-- COMMONWEALTH 0010 -->
 	
@@ -1145,6 +1224,7 @@
 	<!ENTITY stDallSphere				"0x00102023">
 	<!ENTITY stCommonwealthNavSign		"0x00102024">
 	<!ENTITY ovNavSignText				"0x00102025">
+	<!ENTITY baCommonwealthStation		"0x00102026">
 
 	<!ENTITY scCenturion				"0x00103001">
 	<!ENTITY scScarabFreighter			"0x00103002">
@@ -1273,6 +1353,7 @@
 	<!ENTITY stManufacturingPlant		"0x00152012">
 	<!ENTITY stHelenaVolkov				"0x00152013">
 	<!ENTITY stMakayevFactory			"0x00152014">
+	<!ENTITY baCorporateStation			"0x00152015">
 
 	<!ENTITY scCorporateCruiser			"0x00153001">
 	<!ENTITY scAntaresI					"0x00153002">
@@ -1421,6 +1502,7 @@
 
 	<!-- COMMONWEALTH FLEET 001A -->
 
+	<!ENTITY unidCommonwealthFleet		"0x001A0000">
 	<!ENTITY ssPointJuno				"0x001A0001">
 	<!ENTITY ssDantalion				"0x001A0002">
 
@@ -1583,6 +1665,8 @@
 
 	<!-- RINGERS 001D -->
 
+	<!ENTITY baRingersStation			"0x001D0001">
+	
 	<!ENTITY stRingersCollective		"0x001D2001">
 	<!ENTITY stRingerShipyard			"0x001D2002">
 	<!ENTITY ecRinEconomy				"0x001D2003">
@@ -1917,7 +2001,7 @@
 	]>
 
 <TranscendenceUniverse
-		apiVersion=						"22"
+		apiVersion=						"23"
 		>
 
 <!-- TRANSCENDENCE ************************************************************
@@ -2120,9 +2204,13 @@
 		<Module filename="RPGAutons.xml"/>
 		<Module filename="RPGAuxDevices.xml"/>
 		<Module filename="RPGBehaviors.xml"/>
+		<Module filename="RPGCharacterClasses.xml"/>
 		<Module filename="RPGCharacters.xml"/>
 		<Module filename="RPGCode.xml"/>
 		<Module filename="RPGCompatibility.xml"/>
+		<Module filename="RPGArmorDockScreens.xml"/>
+		<Module filename="RPGDeviceDockScreens.xml"/>
+		<Module filename="RPGDialog.xml"/>
 		<Module filename="RPGDockScreens.xml"/>
 		<Module filename="RPGMissions.xml"/>
 		<Module filename="RPGPlayer.xml"/>
@@ -2143,10 +2231,12 @@
 		<Module filename="Ice.xml"/>
 		<Module filename="Metallic.xml"/>
 		<Module filename="Mining.xml"/>
+		<Module filename="Ovoids.xml"/>
 		<Module filename="Neurohack.xml"/>
 		<Module filename="Primordial.xml"/>
 		<Module filename="Rocky.xml"/>
 		<Module filename="Stargates.xml"/>
+		<Module filename="Stars.xml"/>
 		<Module filename="StarSystems.xml"/>
 		<Module filename="UniverseCompatibility.xml"/>
 		<Module filename="UniverseEffects.xml"/>

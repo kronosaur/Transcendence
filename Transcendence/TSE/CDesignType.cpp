@@ -5,6 +5,7 @@
 #include "PreComp.h"
 
 #define ADVENTURE_DESC_TAG						CONSTLIT("AdventureDesc")
+#define ATTRIBUTE_DESC_TAG						CONSTLIT("AttributeDesc")
 #define DISPLAY_ATTRIBUTES_TAG					CONSTLIT("DisplayAttributes")
 #define DOCK_SCREEN_TAG							CONSTLIT("DockScreen")
 #define DOCK_SCREENS_TAG						CONSTLIT("DockScreens")
@@ -74,6 +75,8 @@
 #define FIELD_NAME								CONSTLIT("name")
 #define FIELD_UNID								CONSTLIT("unid")
 #define FIELD_VERSION							CONSTLIT("version")
+
+#define FIELD_ATTRIB_PREFIX						CONSTLIT("attrib-")
 
 static char DESIGN_CHAR[designCount] =
 	{
@@ -149,6 +152,8 @@ CString ParseAchievementValue (ICCItem *pItem);
 
 CDesignType::CDesignType (void) : 
 		m_dwUNID(0), 
+		m_pExtension(NULL),
+		m_pXML(NULL),
 		m_pLocalScreens(NULL), 
 		m_dwInheritFrom(0), 
 		m_pInheritFrom(NULL),
@@ -260,7 +265,7 @@ void CDesignType::CreateClone (CDesignType **retpType)
 			break;
 
 		case designEnergyFieldType:
-			pClone = new CEnergyFieldType;
+			pClone = new COverlayType;
 			break;
 
 		case designSystemType:
@@ -399,11 +404,11 @@ ALERROR CDesignType::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 		else if (strEquals(pDesc->GetTag(), SHIP_CLASS_TAG))
 			pType = new CShipClass;
 		else if (strEquals(pDesc->GetTag(), SHIP_ENERGY_FIELD_TYPE_TAG))
-			pType = new CEnergyFieldType;
+			pType = new COverlayType;
 		else if (strEquals(pDesc->GetTag(), MISSION_TYPE_TAG))
 			pType = new CMissionType;
 		else if (strEquals(pDesc->GetTag(), OVERLAY_TYPE_TAG))
-			pType = new CEnergyFieldType;
+			pType = new COverlayType;
 		else if (strEquals(pDesc->GetTag(), SYSTEM_TYPE_TAG))
 			pType = new CSystemType;
 		else if (strEquals(pDesc->GetTag(), STATION_TYPE_TAG))
@@ -511,6 +516,8 @@ bool CDesignType::FindDataField (const CString &sField, CString *retsValue)
 //	to change all the instances.]
 
 	{
+	int i;
+
 	if (strEquals(sField, FIELD_EXTENSION_UNID))
 		*retsValue = strPatternSubst("0x%08x", (m_pExtension ? m_pExtension->GetUNID() : 0));
 	else if (strEquals(sField, FIELD_NAME))
@@ -526,6 +533,51 @@ bool CDesignType::FindDataField (const CString &sField, CString *retsValue)
 			*retsValue = strFromInt(m_dwVersion);
 		else
 			*retsValue = strPatternSubst("%d", ExtensionVersionToInteger(m_dwVersion));
+		}
+	else if (strStartsWith(sField, FIELD_ATTRIB_PREFIX))
+		{
+		CString sParam = strSubString(sField, FIELD_ATTRIB_PREFIX.GetLength());
+
+		//	Parse into a list of attributes
+
+		TArray<CString> Attribs;
+		char *pPos = sParam.GetASCIIZPointer();
+		char *pStart = pPos;
+		while (true)
+			{
+			if (*pPos == '\0' || *pPos == '-')
+				{
+				CString sAttrib = CString(pStart, (int)(pPos - pStart));
+				if (!sAttrib.IsBlank())
+					Attribs.Insert(sAttrib);
+
+				if (*pPos == '\0')
+					break;
+				else
+					pStart = pPos + 1;
+				}
+
+			pPos++;
+			}
+
+		//	See which attribute we have
+
+		CString sValue;
+		for (i = 0; i < Attribs.GetCount(); i++)
+			if (HasAttribute(Attribs[i]))
+				{
+				if (sValue.IsBlank())
+					sValue = Attribs[i];
+				else
+					sValue = strPatternSubst(CONSTLIT("%s, %s"), sValue, Attribs[i]);
+				}
+
+		//	If not found, return false
+
+		if (sValue.IsBlank())
+			return false;
+
+		*retsValue = sValue;
 		}
 	else
 		return false;
@@ -1301,6 +1353,23 @@ ICCItem *CDesignType::GetEventHandler (const CString &sEvent) const
 		return NULL;
 	}
 
+bool CDesignType::IsValidLoadXML (const CString &sTag)
+
+//	IsValidLoadXML
+//
+//	Returns TRUE if the given XML element tag is a valid tag for all design
+//	types.
+
+	{
+	return (strEquals(sTag, EVENTS_TAG)
+			|| strEquals(sTag, DOCK_SCREENS_TAG)
+			|| strEquals(sTag, GLOBAL_DATA_TAG)
+			|| strEquals(sTag, LANGUAGE_TAG)
+			|| strEquals(sTag, STATIC_DATA_TAG)
+			|| strEquals(sTag, DISPLAY_ATTRIBUTES_TAG)
+			|| strEquals(sTag, ATTRIBUTE_DESC_TAG));
+	}
+
 void CDesignType::AddUniqueHandlers (TSortMap<CString, SEventHandlerDesc> *retInheritedHandlers)
 
 //	AddUniqueHandlers
@@ -1500,6 +1569,10 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool 
 	ALERROR error;
 	int i;
 
+	//	Remember the type we're loading
+
+	Ctx.pType = this;
+
 	//	Load UNID
 
 	if (error = ::LoadUNID(Ctx, pDesc->GetAttribute(UNID_ATTRIB), &m_dwUNID))
@@ -1508,6 +1581,7 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool 
 	if (m_dwUNID == 0)
 		{
 		Ctx.sError = strPatternSubst(CONSTLIT("<%s> must have a valid UNID."), pDesc->GetTag());
+		Ctx.pType = NULL;
 		return ERR_FAIL;
 		}
 
@@ -1516,12 +1590,20 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool 
 	m_pExtension = Ctx.pExtension;
 	m_dwVersion = Ctx.GetAPIVersion();
 
+	//	Remember XML if necessary
+
+	if (Ctx.bKeepXML)
+		m_pXML = pDesc;
+
 	//	Inheritance
 
 	m_bIsModification = bIsOverride;
 
 	if (error = ::LoadUNID(Ctx, pDesc->GetAttribute(INHERIT_ATTRIB), &m_dwInheritFrom))
+		{
+		Ctx.pType = NULL;
 		return error;
+		}
 
 	m_pInheritFrom = NULL;
 
@@ -1543,14 +1625,18 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool 
 		if (strEquals(pItem->GetTag(), EVENTS_TAG))
 			{
 			if (error = m_Events.InitFromXML(Ctx, pItem))
+				{
+				Ctx.pType = NULL;
 				return ComposeLoadError(Ctx, Ctx.sError);
+				}
 
 			InitCachedEvents();
 			}
 		else if (strEquals(pItem->GetTag(), STATIC_DATA_TAG))
 			m_StaticData.SetFromXML(pItem);
 		else if (strEquals(pItem->GetTag(), GLOBAL_DATA_TAG)
-				|| (GetType() == designSovereign && strEquals(pItem->GetTag(), INITIAL_DATA_TAG)))
+				|| ((GetType() == designSovereign || GetType() == designGenericType)
+						&& strEquals(pItem->GetTag(), INITIAL_DATA_TAG)))
 			{
 			m_InitGlobalData.SetFromXML(pItem);
 			m_GlobalData = m_InitGlobalData;
@@ -1562,10 +1648,14 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool 
 			if (error = m_Language.InitFromXML(Ctx, pItem))
 				return ComposeLoadError(Ctx, Ctx.sError);
 			}
-		else if (strEquals(pItem->GetTag(), DISPLAY_ATTRIBUTES_TAG))
+		else if (strEquals(pItem->GetTag(), DISPLAY_ATTRIBUTES_TAG)
+				|| strEquals(pItem->GetTag(), ATTRIBUTE_DESC_TAG))
 			{
 			if (error = m_DisplayAttribs.InitFromXML(Ctx, pItem))
+				{
+				Ctx.pType = NULL;
 				return ComposeLoadError(Ctx, Ctx.sError);
+				}
 			}
 
 		//	Otherwise, it is some element that we don't understand.
@@ -1574,10 +1664,14 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool 
 	//	Load specific data
 
 	if (error = OnCreateFromXML(Ctx, pDesc))
+		{
+		Ctx.pType = NULL;
 		return error;
+		}
 
 	//	Done
 
+	Ctx.pType = NULL;
 	return NOERROR;
 	}
 
@@ -1626,8 +1720,11 @@ bool CDesignType::MatchesCriteria (const CDesignTypeCriteria &Criteria)
 
 	if (Criteria.ChecksLevel())
 		{
-		int iLevel = GetLevel();
-		if (iLevel == -1 || !Criteria.MatchesLevel(iLevel))
+		int iMinLevel;
+		int iMaxLevel;
+		GetLevel(&iMinLevel, &iMaxLevel);
+
+		if (iMinLevel == -1 || !Criteria.MatchesLevel(iMinLevel, iMaxLevel))
 			return false;
 		}
 
@@ -1795,7 +1892,7 @@ void CDesignType::ReportEventError (const CString &sEvent, ICCItem *pError)
 	kernelDebugLogMessage(sError);
 	}
 
-bool CDesignType::Translate (CSpaceObject *pObj, const CString &sID, ICCItem **retpResult)
+bool CDesignType::Translate (CSpaceObject *pObj, const CString &sID, ICCItem *pData, ICCItem **retpResult)
 
 //	Translate
 //
@@ -1804,7 +1901,7 @@ bool CDesignType::Translate (CSpaceObject *pObj, const CString &sID, ICCItem **r
 //	NOTE: Caller is responsible for discarding the result (if we return TRUE).
 	
 	{
-	if (m_Language.Translate(pObj, sID, retpResult))
+	if (m_Language.Translate(pObj, sID, pData, retpResult))
 		return true;
 
 	//	Backwards compatible translate
@@ -1812,14 +1909,14 @@ bool CDesignType::Translate (CSpaceObject *pObj, const CString &sID, ICCItem **r
 	return TranslateVersion2(pObj, sID, retpResult);
 	}
 
-bool CDesignType::TranslateText (CSpaceObject *pObj, const CString &sID, CString *retsText)
+bool CDesignType::TranslateText (CSpaceObject *pObj, const CString &sID, ICCItem *pData, CString *retsText)
 
 //	Translate
 //
 //	Translate from a <Language> block to text.
 
 	{
-	if (m_Language.Translate(pObj, sID, retsText))
+	if (m_Language.Translate(pObj, sID, pData, retsText))
 		return true;
 
 	//	Backwards compatible translate
@@ -2212,17 +2309,19 @@ void CEffectCreatorRef::Set (CEffectCreator *pEffect)
 
 //	CDesignTypeCriteria --------------------------------------------------------
 
-bool CDesignTypeCriteria::MatchesLevel (int iLevel) const
+bool CDesignTypeCriteria::MatchesLevel (int iMinLevel, int iMaxLevel) const
 
 //	MatchesLevel
 //
 //	Returns true if we match the level
 
 	{
-	if (m_iGreaterThanLevel != INVALID_COMPARE && iLevel <= m_iGreaterThanLevel)
+	if (m_iGreaterThanLevel != INVALID_COMPARE 
+			&& iMaxLevel <= m_iGreaterThanLevel)
 		return false;
 
-	if (m_iLessThanLevel != INVALID_COMPARE && iLevel >= m_iLessThanLevel)
+	if (m_iLessThanLevel != INVALID_COMPARE 
+			&& iMinLevel >= m_iLessThanLevel)
 		return false;
 
 	return true;

@@ -2,6 +2,11 @@
 
 <TranscendenceModule>
 
+	<Sovereign UNID="&svLuminous;"
+			name="Luminous"
+			alignment="destructive order"
+			/>
+
 	<Sovereign UNID="&svFriendlyLuminous;"
 			name="Luminous drone"
 			alignment="constructive chaos"
@@ -16,7 +21,7 @@
 
 	<ItemType UNID="&itLuminousIonBlaster;"
 			name=				"Luminous blaster"
-			attributes=			"energyWeapon, military, majorItem, notStandard"
+			attributes=			"energyWeapon, luminous, military, majorItem, notStandard"
 			  
 			level=				"8"
 			frequency=			"common"
@@ -73,7 +78,7 @@
 		</Armor>
 
 		<Devices>
-			<Device deviceID="&itIonBlaster;" posAngle="180" minFireArc="180" maxFireArc="180"/>
+			<Device deviceID="&itLuminousIonBlaster;" posAngle="180" minFireArc="180" maxFireArc="180"/>
 			<!--<Device deviceID="&itYoroiS500;"/>-->
 		</Devices>
 
@@ -187,7 +192,7 @@
 			sortName=			"Luminous armature, segment of"
 			>
 
-		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems5;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"100"
@@ -403,7 +408,7 @@
 
 	<StationType UNID="&stLuminousAssembler;"
 			name=				"Luminous Assembler"
-			sovereign=			"&svDestructiveOrder;"
+			sovereign=			"&svLuminous;"
 			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -417,7 +422,7 @@
 
 			attributes=			"ai, enemy, envWater, envAvoidsEarth, luminous, score"
 			levelFrequency=		"----- -ucur ----- ----- -----"
-			locationCriteria=	"+planetary,-void"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
 			>
 

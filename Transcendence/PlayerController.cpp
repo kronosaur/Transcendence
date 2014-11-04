@@ -140,6 +140,30 @@ bool CPlayerShipController::AreAllDevicesEnabled (void)
 	return true;
 	}
 
+bool CPlayerShipController::CanShowShipStatus (void)
+
+//	CanShowShowStatus
+//
+//	Returns TRUE if we're allowed to show ship's status screen.
+
+	{
+	//	If we're trying to dock, then we can't
+
+	if (DockingInProgress())
+		return false;
+
+	//	See if we have an overlay preventing us from bring it up
+
+	CEnergyFieldList::SImpactDesc Impact;
+	m_pShip->GetOverlayImpact(&Impact);
+	if (Impact.bShipScreenDisabled)
+		return false;
+
+	//	We're OK
+
+	return true;
+	}
+
 void CPlayerShipController::CancelAllOrders (void)
 
 //	CancelAllOrder
@@ -399,7 +423,7 @@ CSpaceObject *CPlayerShipController::FindDockTarget (void)
 		CSpaceObject *pObj = pSystem->GetObject(i);
 
 		if (pObj 
-				&& pObj->SupportsDocking()
+				&& pObj->SupportsDocking(true)
 				&& !pObj->IsInactive()
 				&& !pObj->IsDestroyed()
 				&& pObj != m_pShip)
@@ -746,7 +770,7 @@ void CPlayerShipController::InitTargetList (TargetTypes iTargetType, bool bUpdat
 					}
 				else
 					{
-					if (pObj->CanAttack() || pObj->SupportsDocking())
+					if (pObj->CanAttack() || pObj->SupportsDocking(true))
 						{
 						if (pObj->GetScale() == scaleShip || pObj->GetScale() == scaleStructure)
 							iMainKey = 0;
@@ -884,7 +908,7 @@ DWORD CPlayerShipController::OnCommunicate (CSpaceObject *pSender, MessageTypes 
 			if (pSender)
 				{
 				if (!sID.IsBlank())
-					bHandled = pSender->Translate(sID, &sMessage);
+					bHandled = pSender->Translate(sID, NULL, &sMessage);
 				else
 					bHandled = false;
 
@@ -961,20 +985,27 @@ void CPlayerShipController::OnDamaged (const CDamageSource &Cause, CInstalledArm
 
 	m_pTrans->Autopilot(false);
 
-	//	Heavy damage (>= 5%) causes screen flash
+	//	Heavy damage (>= 10%) causes screen flash
 
-	if (iDamage >= (iMaxArmorHP / 20) && Damage.CausesSRSFlash())
+	if (iDamage >= (iMaxArmorHP / 10) && Damage.CausesSRSFlash())
 		m_pTrans->DamageFlash();
 
 	//	If we're down to 25% armor, then warn the player
 
-	if (pArmor->GetHitPoints() < (iMaxArmorHP / 4))
+	if (pArmor->GetHitPoints() < (iMaxArmorHP / 4) && Damage.CausesSRSFlash())
 		{
 		m_pTrans->DisplayMessage(CONSTLIT("Hull breach imminent!"));
 		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_HULL_BREACH_ALARM));
 		}
 
+	//	Update display
+
 	m_pTrans->UpdateArmorDisplay();
+
+	//	Register stats
+
+	CItem ArmorItem(pArmor->GetClass()->GetItemType(), 1);
+	OnItemDamaged(ArmorItem, iDamage);
 	}
 
 bool CPlayerShipController::OnDestroyCheck (DestructionTypes iCause, const CDamageSource &Attacker)
@@ -1030,7 +1061,7 @@ void CPlayerShipController::OnDestroyed (SDestroyCtx &Ctx)
 	DEBUG_CATCH
 	}
 
-void CPlayerShipController::OnDeviceEnabledDisabled (int iDev, bool bEnable)
+void CPlayerShipController::OnDeviceEnabledDisabled (int iDev, bool bEnable, bool bSilent)
 
 //	OnDeviceEnabledDisabled
 //
@@ -1038,19 +1069,23 @@ void CPlayerShipController::OnDeviceEnabledDisabled (int iDev, bool bEnable)
 
 	{
 	CInstalledDevice *pDevice = m_pShip->GetDevice(iDev);
-	if (pDevice && !pDevice->IsEmpty())
+	if (pDevice 
+			&& !pDevice->IsEmpty())
 		{
 		if (!bEnable)
 			{
 			if (m_UIMsgs.IsEnabled(uimsgEnableDeviceHint))
 				m_pTrans->DisplayMessage(CONSTLIT("(press [B] to enable/disable devices)"));
-			m_pTrans->DisplayMessage(strCapitalize(strPatternSubst(CONSTLIT("%s disabled"),
-					pDevice->GetClass()->GetName())));
+
+			if (!bSilent)
+				m_pTrans->DisplayMessage(strCapitalize(strPatternSubst(CONSTLIT("%s disabled"),
+						pDevice->GetClass()->GetName())));
 			}
 		else
 			{
-			m_pTrans->DisplayMessage(strCapitalize(strPatternSubst(CONSTLIT("%s enabled"),
-					pDevice->GetClass()->GetName())));
+			if (!bSilent)
+				m_pTrans->DisplayMessage(strCapitalize(strPatternSubst(CONSTLIT("%s enabled"),
+						pDevice->GetClass()->GetName())));
 			}
 		}
 	}
@@ -1585,7 +1620,8 @@ void CPlayerShipController::OnObjDamaged (const SDamageCtx &Ctx)
 
 	if (Ctx.pObj 
 			&& !Ctx.pObj->IsDestroyed()
-			&& m_pShip->IsEnemy(Ctx.pObj)
+			&& (m_pShip->IsEnemy(Ctx.pObj)
+				|| Ctx.pObj->IsAngryAt(m_pShip))
 			&& (Ctx.pObj->GetCategory() == CSpaceObject::catStation
 				|| Ctx.pObj->IsMultiHull()))
 		{
@@ -1721,7 +1757,7 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 
 	else if (m_pTarget 
 			&& m_pTarget != m_pShip 
-			&& m_pTarget->SupportsDocking()
+			&& m_pTarget->SupportsDocking(true)
 			&& (!m_pShip->IsEnemy(m_pTarget) || m_pTarget->IsAbandoned())
 			&& (m_pTarget->GetPos() - m_pShip->GetPos()).Length2() < MAX_DOCK_DISTANCE2)
 		{
@@ -1776,6 +1812,19 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 			{
 			g_pHI->HICommand(CMD_PLAYER_COMBAT_STARTED);
 			m_bUnderAttack = true;
+			}
+		}
+
+	//	Gravity warning
+
+	if (Ctx.bGravityWarning)
+		{
+		int iTicks = g_pUniverse->GetTicks();
+
+		if ((iTicks % 150) == 0)
+			{
+			m_pTrans->DisplayMessage(CONSTLIT("Warning: Deep gravity zone"));
+			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_GRAVITY_ALARM));
 			}
 		}
 	}

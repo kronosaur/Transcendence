@@ -273,6 +273,8 @@
 	<StationType UNID="&stCommonwealthFortress;"
 			name=				"Commonwealth fortress"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -301,6 +303,17 @@
 			<Lookup table="&tbCommEliteDefenders;"/>
 		</Reinforcements>
 
+		<Trade currency="credit" max="50000" replenish="2500">
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="rNU L:1-7; -Illegal; -NotForSale;"	priceAdj="110"	inventoryAdj="100"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:3-8;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-8" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
+		</Trade>
+		
 		<Items>
 			<RandomItem count="2d4" 
 					criteria=		"w -Illegal; -Alien; -Specialty; -NotStandard; -NotForSale"
@@ -618,22 +631,6 @@
 					)
 			</NPCService>
 
-			<Rumors>
-				(
-					"A man with a prosthetic arm sits next to you: \"I've been flying for the militia for years, but I'd much rather be helping the Fleet. No one's seen them in a long time. They must be at the Ares Homeworld by now.\""
-					"A man and a woman sit next to you. The woman starts a conversation with you: \"We're students from St. Katharine's Star! It's so exciting to be here where all the action is! We're writing a doctoral thesis on the role of minority neo-humans on reductive militia policy. Wish us luck!\""
-					"An older pilot sits next to you: \"Don't underestimate the slavers! We've been fighting them for years and they just keep advancing their technology. There are rumors that they've developed a new archcannon powered by their longzhu spheres.\""
-					"A woman sits next to you: \"My husband is in the Commonwealth Fleet and I haven't seen him for years. Sometimes I get messages from him, but it's never good news.\""
-					"A young man wearing trendy clothes talks with you: \"I think that girl in the flight suit likes me. What do you think?\""
-					"A well-dressed woman sits next to you: \"You're heading to the galactic what? I don't know&#x97;sounds like brainwashing to me.\""
-					"A short-haired woman talks to you: \"My cousin's best friend says that the CSC Europa got blown up by the Ares. They should pull back the Fleet and have them fight the slavers! You know what I mean? What's the point?\""
-					"A short, round man sits next to you: \"You're going to the Core? Elegant! Maybe you'll get to meet the aliens.\""
-					"A dark-skinned woman talks with you: \"My best friend went to the Core; it was two years ago, I think. A year later they found her wreckage in the Sanctuary system; she left me a message, but I've never been able to read it.\""
-					"A tall woman talks to you: \"I'm doing research on the Iocrym. It is curious, don't you think, that they haven't returned? A lot of ignorant people think they are preparing to invade, which is ridiculous. They wouldn't travel thousands of light-years just to kill us. Why bother?\""
-					"A young woman sits next to you: \"Why does Domina compel you to go to the Core? I suppose you won't find out until you get there. Still, it's nice to have a purpose in life.\""
-					)
-			</Rumors>
-
 		</StaticData>
 
 		<Events>
@@ -705,10 +702,6 @@
 						)
 					)
 			</OnCreate>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 
 			<OnObjDestroyed>
 				(if (eq (objGetData gSource "MissionStatus") "inprogress")
@@ -988,7 +981,9 @@
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Officer's Club" key="O">
@@ -1195,62 +1190,6 @@
 						</Actions>
 					</TooManyFailures>
 
-					<DockServices
-							desc=	"Your ship is docked.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itHeliumAssembly; 100) (&itHelium3FuelRod; 100)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(block Nil
-									(setq gTechLevel 8)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
-							</Action>
-
-							<Action name="Install Device" key="D" >
-								(block Nil
-									(setq gTechLevel 7)
-									(setq gTechModifier Nil)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
-							</Action>
-
-							<Action name="Remove Device" key="V" >
-								(block Nil
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRemoveDevice;")
-									)
-							</Action>
-
-							<Action name="Upgrade Reactor" key="P" >
-								(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
-									{
-									itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-6;")
-									priceAdj: 100
-									checkMilitaryID: True
-									noItemsText: "The technology required to upgrade your reactor is not available at this station."
-									})
-							</Action>
-
-							<Action name="Done" cancel="1" key="N">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</DockServices>
-
 					<OfficersClub
 							desc=	"The Officer's Club is packed with pilots and other officers having a few drinks to pass away the off-duty hours.">
 
@@ -1295,7 +1234,11 @@
 											)
 
 									; If the player is a colonel, then another chance for a henchman
-									(and (eq rank 3) (leq (random 1 100) 80) (not (typGetGlobalData &scCenturionRama; "status")))
+									(and (eq rank 3) 
+											(leq (random 1 100) 80) 
+											(not (typGetGlobalData &scCenturionRama; "status"))
+											(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+											)
 										(block Nil
 											(scrSetDesc gScreen "You talk to Rama, a silver-haired pilot who seems to be wearing blaster armor under his flight-suit. You trade stories about flying and fighting, but when you mention your journey to the Core, he grows quiet and stares off into space.")
 											(setq gResult "rama")
@@ -1303,7 +1246,7 @@
 
 									; Otherwise, we get rumors
 									(block Nil
-										(scrSetDesc gScreen (random (objGetStaticData gSource "Rumors")))
+										(scrSetDesc gScreen (typTranslate &stCommonwealthFortress; 'Rumors))
 										(setq gResult "rumor")
 										)
 									)
@@ -1436,6 +1379,98 @@
 
 		</DockScreens>
 
+		<Language>
+			<Text id="Rumors">
+				(random (list
+					(cat
+						"A man with a prosthetic arm sits next to you: "
+						"\"I've been flying for the militia for years, but I'd much "
+						"rather be helping the Fleet. No one's seen them in a long time. "
+						"They must be at the Ares Homeworld by now.\""
+						)
+						
+					(cat
+						"A man and a woman sit next to you. The woman starts a conversation with you: "
+						"\"We're students from St. Katharine's Star! It's so exciting to be "
+						"here where all the action is! We're writing a doctoral thesis on "
+						"the role of minority neo-humans on reductive militia policy. Wish us luck!\""
+						)
+						
+					(cat
+						"An older pilot sits next to you: \"Don't underestimate the slavers! "
+						"We've been fighting them for years and they just keep advancing their "
+						"technology. There are rumors that they've developed a new archcannon "
+						"powered by their longzhu spheres.\""
+						)
+						
+					(cat
+						"A woman sits next to you: \"My husband is in the Commonwealth Fleet "
+						"and I haven't seen him for years. Sometimes I get messages from him, "
+						"but it's never good news.\""
+						)
+						
+					(cat
+						"A young man wearing trendy clothes talks with you: \"I think that "
+						"girl in the flight suit likes me. What do you think?\""
+						)
+						
+					(if (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+						(cat
+							"A well-dressed woman sits next to you: \"You're heading to the galactic "
+							"what? I don't know&#x97;sounds like brainwashing to me.\""
+							)
+						(cat
+							"A well-dressed woman sits next to you: \"You're doing what? "
+							"I don't know&#x97;sounds like a wasted life to me.\""
+							)
+						)
+						
+					(cat
+						"A short-haired woman talks to you: \"My cousin's best friend says that "
+						"the CSC Europa got blown up by the Ares. They should pull back the "
+						"Fleet and have them fight the slavers! You know what I mean? What's the point?\""
+						)
+						
+					(if (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+						(cat
+							"A short, round man sits next to you: \"You're going to the Core? "
+							"Elegant! Maybe you'll get to meet the aliens.\""
+							)
+						(cat
+							"A short, round man sits next to you: \"You're a merc? Elegant! "
+							"Have you been in many battles?\""
+							)
+						)
+						
+					(cat
+						"A dark-skinned woman talks with you: \"My best friend went to the "
+						"Core; it was two years ago, I think. A year later they found her "
+						"wreckage in the Sanctuary system; she left me a message, but "
+						"I've never been able to read it.\""
+						)
+						
+					(cat
+						"A tall woman talks to you: \"I'm doing research on the Iocrym. "
+						"It is curious, don't you think, that they haven't returned? A lot of "
+						"ignorant people think they are preparing to invade, which is ridiculous. "
+						"They wouldn't travel thousands of light-years just to kill us. Why bother?\""
+						)
+						
+					(if (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+						(cat
+							"A young woman sits next to you: \"Why does Domina compel you to go to "
+							"the Core? I suppose you won't find out until you get there. Still, "
+							"it's nice to have a purpose in life.\""
+							)
+						(cat
+							"A young woman sits next to you: \"Must be nice to travel so much. "
+							"I visited Rigel Aurelius with my parents when I was little, but "
+							"I don't remember anything.\""
+							)
+						)
+					))
+			</Text>
+		</Language>
 	</StationType>
 	
 <!-- DOCK SCREENS -->

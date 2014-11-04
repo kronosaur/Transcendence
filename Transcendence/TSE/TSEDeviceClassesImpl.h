@@ -289,10 +289,11 @@ class CShieldClass : public CDeviceClass
 		virtual void Deplete (CInstalledDevice *pDevice, CSpaceObject *pSource);
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
 		virtual ItemCategories GetCategory (void) const { return itemcatShields; }
+		virtual int GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon);
 		virtual int GetPowerRating (CItemCtx &Ctx);
 		virtual CString GetReference (CItemCtx &Ctx, int iVariant = -1, DWORD dwFlags = 0);
 		virtual bool GetReferenceDamageAdj (const CItem *pItem, CSpaceObject *pInstalled, int *retiHP, int *retArray) const;
-		virtual void GetStatus (CInstalledDevice *pDevice, CShip *pShip, int *retiStatus, int *retiMaxStatus);
+		virtual void GetStatus (CInstalledDevice *pDevice, CSpaceObject *pSource, int *retiStatus, int *retiMaxStatus);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
 		virtual CEffectCreator *OnFindEffectCreator (const CString &sUNID);
 		virtual void OnInstall (CInstalledDevice *pDevice, CSpaceObject *pSource, CItemListManipulator &ItemList);
@@ -395,8 +396,8 @@ class CWeaponClass : public CDeviceClass
 
 		inline bool FindEventHandlerWeaponClass (ECachedHandlers iEvent, SEventHandlerDesc *retEvent = NULL) const { if (retEvent) *retEvent = m_CachedEvents[iEvent]; return (m_CachedEvents[iEvent].pCode != NULL); }
 		CWeaponFireDesc *GetSelectedShotData (CItemCtx &Ctx);
-		inline int GetVariantCount (void) { return m_iShotVariants; }
-		inline CWeaponFireDesc *GetVariant (int iIndex) { return &m_pShotData[iIndex]; }
+		inline int GetVariantCount (void) { return m_ShotData.GetCount(); }
+		inline CWeaponFireDesc *GetVariant (int iIndex) const { return m_ShotData[iIndex].pDesc; }
 
 		static int GetStdDamage (int iLevel);
 		static bool IsStdDamageType (DamageTypes iDamageType, int iLevel);
@@ -477,6 +478,13 @@ class CWeaponClass : public CDeviceClass
 			Metric rPosRadius;		//	Origin of shot
 			};
 
+		struct SShotDesc
+			{
+			CItemTypeRef pAmmoType;	//	ItemType for ammo (may be NULL)
+			CWeaponFireDesc *pDesc;	//	Pointer to descriptor (may be external)
+			bool bOwned;			//	TRUE if we own the descriptor
+			};
+
 		enum EOnFireWeaponResults
 			{
 			resDefault,
@@ -540,8 +548,7 @@ class CWeaponClass : public CDeviceClass
 		int m_iMaxFireArc;						//	Max angle of fire arc (degrees)
 		DWORD m_dwLinkedFireOptions;			//	Linked fire options
 
-		int m_iShotVariants;					//	Number of shot variations
-		CWeaponFireDesc *m_pShotData;			//	Desc for each shot variation
+		TArray<SShotDesc> m_ShotData;			//	Desc for each shot variation
 
 		ConfigurationTypes m_Configuration;		//	Shot configuration;
 		int m_iConfigCount;						//	Number of shots for custom configurations

@@ -8,7 +8,7 @@
 
 	<ItemType UNID="&itAClassDefenseScreen;"
 			name=				"A-class defender"
-			attributes=			"MajorItem; PacificDefense"
+			attributes=			"commonwealth, majorItem, pacificDefense"
 			  
 			level=				"1"
 			frequency=			"rare"
@@ -37,7 +37,7 @@
 			value=				"500"
 			mass=				"1000"
 			frequency=			"uncommon"
-			attributes=			"EI; MajorItem"
+			attributes=			"commonwealth, EI, majorItem"
 			showReference=		"true"
 
 			description=		"The basic entry in Earth Industries' series of popular shield generators."
@@ -63,7 +63,7 @@
 			value=				"500"
 			mass=				"1000"
 			frequency=			"uncommon"
-			attributes=			"MajorItem; NAMI"
+			attributes=			"commonwealth, majorItem, NAMI"
 			showReference=		"true"
 
 			description=		"NAMI's Cyclotron deflectors absorb a lot of damage, but take more time to regenerate."
@@ -87,7 +87,7 @@
 			value=				"750"
 			mass=				"1200"
 			frequency=			"rare"
-			attributes=			"MajorItem; NAMI"
+			attributes=			"commonwealth, majorItem, NAMI"
 			showReference=		"true"
 
 			description=		"Better than a class I at deflecting laser energy; worse at deflecting anything else."
@@ -112,7 +112,7 @@
 			value=				"1000"
 			mass=				"1150"
 			frequency=			"uncommon"
-			attributes=			"EI; MajorItem"
+			attributes=			"commonwealth, EI, majorItem"
 			showReference=		"true"
 
 			description=		"Though not powerful enough for military-grade weapons, the class II provides adequate defense for freelancers and independent merchantships."
@@ -138,7 +138,7 @@
 			value=				"1500"
 			mass=				"1500"
 			frequency=			"uncommon"
-			attributes=			"MajorItem; NAMI"
+			attributes=			"commonwealth, majorItem, NAMI"
 			showReference=		"true"
 
 			description=		"This device ionizes a ship's hull, repelling kinetic and blast damage. The ionization field weakens as the ship's armor is damaged."
@@ -166,7 +166,7 @@
 			value=				"2000"
 			mass=				"1500"
 			frequency=			"uncommon"
-			attributes=			"MajorItem; NAMI"
+			attributes=			"commonwealth, majorItem, NAMI"
 
 			description=		"Stronger than a class III deflector using less than half the power."
 			>
@@ -189,7 +189,7 @@
 			value=				"2200"
 			mass=				"1600"
 			frequency=			"uncommon"
-			attributes=			"MajorItem; NAMI"
+			attributes=			"commonwealth, majorItem, NAMI"
 
 			description=		"A quantum magnetic field strongly deflects damage from kinetic and blast weapons. It is less effective against laser and particle beam attacks."
 			>
@@ -213,7 +213,7 @@
 			value=				"2500"
 			mass=				"1500"
 			frequency=			"rare"
-			attributes=			"MajorItem; Solon"
+			attributes=			"commonwealth, majorItem, solon"
 
 			description=		"Developed by the innovative Solon Industries, this shield absorbs most laser energy. A ship with Solon shields cannot fire any laser weapons."
 			>
@@ -238,7 +238,7 @@
 			value=				"5000"
 			mass=				"1900"
 			frequency=			"uncommon"
-			attributes=			"EI; MajorItem"
+			attributes=			"commonwealth, EI, majorItem"
 
 			description=		"This quasi-matter generator protects a starship against blast energy."
 
@@ -263,7 +263,7 @@
 			value=				"4000"
 			mass=				"1600"
 			frequency=			"uncommon"
-			attributes=			"EI; MajorItem"
+			attributes=			"commonwealth, EI, majorItem"
 
 			description=		"Though based on a very old design, this powerful deflector is still being manufactured by Earth Industries."
 
@@ -289,7 +289,7 @@
 			value=				"4000"
 			mass=				"1500"
 			frequency=			"uncommon"
-			attributes=			"MajorItem; NAMI"
+			attributes=			"commonwealth, majorItem, NAMI"
 
 			description=		"The most powerful shield generator in NAMI's Cyclotron series."
 			>
@@ -313,7 +313,7 @@
 			value=				"5000"
 			mass=				"3000"
 			frequency=			"uncommon"
-			attributes=			"MajorItem; PacificDefense"
+			attributes=			"commonwealth, majorItem, pacificDefense"
 
 			description=		"The R1 deflector was developed a few decades ago to protect Fleet ships against the powerful lightning cannons of the Ares Orthodoxy."
 
@@ -342,7 +342,7 @@
 			value=				"12000"
 			mass=				"3500"
 			frequency=			"uncommon"
-			attributes=			"Kabuto; MajorItem"
+			attributes=			"commonwealth, kabuto, majorItem"
 
 			description=		"Each model of the Nephren series is tuned for a different kind of damage. The P25 is designed to defend against particle and ion damage."
 			>
@@ -367,7 +367,7 @@
 			value=				"8000"
 			mass=				"1600"
 			frequency=			"rare"
-			attributes=			"Kartal; MajorItem; Specialty"
+			attributes=			"commonwealth, kartal, majorItem, specialty"
 
 			description=		"This generator uses an array of superconducting coils. Individual coils must be replaced to restore the field after damage is taken."
 			>
@@ -393,7 +393,7 @@
 			mass=				"100"
 			frequency=			"uncommon"
 			numberAppearing=	"1d6+1"
-			attributes=			"Consumable; Kartal"
+			attributes=			"commonwealth, consumable, kartal"
 
 			description=		"This is a special type of coil used to repair superconducting shield generators."
 			>
@@ -430,7 +430,7 @@
 			value=				"8000"
 			mass=				"3000"
 			frequency=			"common"
-			attributes=			"MajorItem; Specialty; Bushido"
+			attributes=			"bushido, commonwealth, majorItem, specialty"
 
 			description=		"This is the entry-level generator in Bushido Corporation's Yoroi line."
 
@@ -456,7 +456,7 @@
 			value=				"20000"
 			mass=				"2100"
 			frequency=			"uncommon"
-			attributes=			"EI; MajorItem"
+			attributes=			"commonwealth, EI, majorItem"
 
 			description=		"This is a larger and more powerful version of the quasi-matter deflector."
 
@@ -483,7 +483,7 @@
 			value=				"20000"
 			mass=				"6000"
 			frequency=			"rare"
-			attributes=			"MajorItem; Military; Onorad"
+			attributes=			"commonwealth, majorItem, military, onorad"
 
 			description=		"The Invincible-class deflector is extremely powerful. Its one flaw is that it disables all other ship systems when it collapses."
 			>
@@ -517,7 +517,7 @@
 			value=				"16000"
 			mass=				"3000"
 			frequency=			"uncommon"
-			attributes=			"MajorItem; Bushido"
+			attributes=			"bushido, commonwealth, majorItem"
 
 			description=		"Mammoth deflector shields can absorb immense amounts of damage, but their regeneration rate is lower than competitors."
 
@@ -543,7 +543,7 @@
 			value=				"25000"
 			mass=				"5000"
 			frequency=			"rare"
-			attributes=			"MajorItem; Specialty; Makayev; OmskDeflector; OmskDS"
+			attributes=			"commonwealth, majorItem, specialty, makayev, omskDeflector, omskDS"
 
 			description=		"When used in concert with Omsk armor segments, this deflector increases in strength up to 200 hit points."
 
@@ -585,7 +585,7 @@
 			value=				"20000"
 			mass=				"3500"
 			frequency=			"common"
-			attributes=			"MajorItem; Military; PacificDefense"
+			attributes=			"commonwealth, majorItem, military, pacificDefense"
 
 			description=		"This is an updated version of the R1 deflector, designed to resist the Ares Orthodoxy's lightning cannons."
 
@@ -612,7 +612,7 @@
 			value=				"16000"
 			mass=				"5000"
 			frequency=			"uncommon"
-			attributes=			"MajorItem; Specialty; Bushido"
+			attributes=			"bushido, commonwealth, majorItem, specialty"
 
 			description=		"The Yoroi S500 is the most powerful shield generator available for non-military customers of the Bushido Corporation."
 
@@ -640,7 +640,7 @@
 			value=				"32000"
 			mass=				"4000"
 			frequency=			"uncommon"
-			attributes=			"MajorItem; Military; Bushido"
+			attributes=			"bushido, commonwealth, majorItem, military"
 
 			description=		"The 50MW Mammoth deflector is designed for military ships. Like other Mammoth designs, it has high hit points and a low regeneration rate."
 
@@ -666,7 +666,7 @@
 			value=				"45000"
 			mass=				"3500"
 			frequency=			"uncommon"
-			attributes=			"Kabuto; MajorItem; Military"
+			attributes=			"commonwealth, kabuto, majorItem, military"
 
 			description=		"Each model of the Nephren series is tuned for a different kind of damage. The B700 is designed to defend against blast and thermonuclear damage."
 			>
@@ -691,7 +691,7 @@
 			value=				"40000"
 			mass=				"2300"
 			frequency=			"rare"
-			attributes=			"MajorItem; Onorad; Specialty"
+			attributes=			"commonwealth, majorItem, onorad, specialty"
 
 			description=		"Trenton shields regenerate much faster than others, but at the cost of allowing some damage to leak through."
 			>
@@ -716,7 +716,7 @@
 			value=				"32000"
 			mass=				"5000"
 			frequency=			"uncommon"
-			attributes=			"MajorItem; Military; Specialty; Bushido"
+			attributes=			"bushido, commonwealth, majorItem, military, specialty"
 
 			description=		"This is the military version of the S500 shield generator created by the Bushido Corporation."
 
@@ -743,7 +743,7 @@
 			value=				"90000"
 			mass=				"4000"
 			frequency=			"rare"
-			attributes=			"Kabuto; MajorItem; Military"
+			attributes=			"commonwealth, kabuto, majorItem, military"
 
 			description=		"This shield generator reflects all ion energy."
 			>
@@ -766,7 +766,7 @@
 			level=				"8"
 			value=				"65000"
 			mass=				"5000"
-			attributes=			"MajorItem; Military; Bushido"
+			attributes=			"bushido, commonwealth, majorItem, military"
 			frequency=			"uncommon"
 
 			description=		"This is the most powerful deflector in the Mammoth series."
@@ -793,7 +793,7 @@
 			value=				"90000"
 			mass=				"6000"
 			frequency=			"rare"
-			attributes=			"MajorItem; Makayev; Military; OmskDeflector; OmskDS; Specialty"
+			attributes=			"commonwealth, majorItem, makayev, military, omskDeflector, omskDS, specialty"
 
 			description=		"When used in concert with Omsk armor segments, this deflector increases in strength up to 400 hit points."
 
@@ -834,7 +834,7 @@
 			level=				"8"
 			value=				"65000"
 			mass=				"2000"
-			attributes=			"MajorItem; Military; PacificDefense"
+			attributes=			"commonwealth, majorItem, military, pacificDefense"
 			frequency=			"common"
 
 			description=		"Plasma shield generators are used on most military ships. Plasma shield generators cannot be used on civilian ships without a special military ID."
@@ -858,7 +858,7 @@
 			level=				"8"
 			value=				"100000"
 			mass=				"6000"
-			attributes=			"MajorItem; Military; PacificDefense"
+			attributes=			"commonwealth, majorItem, military, pacificDefense"
 			frequency=			"rare"
 
 			description=		"The most powerful version of the R-series deflectors is used on Commonwealth Fleet capital ships."
@@ -884,7 +884,7 @@
 			value=				"80000"
 			mass=				"4500"
 			frequency=			"uncommon"
-			attributes=			"MajorItem; Military; Taikon"
+			attributes=			"commonwealth, majorItem, military, taikon"
 
 			description=		"The Taikon-10 deflector is optimized to defend against thermonuclear attacks."
 			>
@@ -912,7 +912,7 @@
 			mass=				"5000"
 			frequency=			"rare"
 			unknownType=		"&itUnknownAlienDevice;"
-			attributes=			"Alien; MajorItem; Military"
+			attributes=			"alien, commonwealth, majorItem, military"
 
 			description=		"This alien shield generator has controls to adjust its strength."
 			>
@@ -954,7 +954,7 @@
 			value=				"190000"
 			mass=				"4500"
 			frequency=			"uncommon"
-			attributes=			"Kabuto; MajorItem; Military"
+			attributes=			"commonwealth, kabuto, majorItem, military"
 
 			description=		"The Nephren X1 is an experimental model that defends against ion and positron damage."
 			>
@@ -981,7 +981,7 @@
 			value=				"250000"
 			mass=				"2500"
 			frequency=			"rare"
-			attributes=			"Kabuto; MajorItem; Military"
+			attributes=			"commonwealth, kabuto, majorItem, military"
 
 			description=		"The Lazarus is an experimental shield generator. It has a phenomenal generation rate, but it consumes almost prohibitive amounts of power."
 			>
@@ -1006,7 +1006,7 @@
 			value=				"250000"
 			mass=				"5500"
 			frequency=			"rare"
-			attributes=			"MajorItem; Military; Taikon"
+			attributes=			"commonwealth, majorItem, military, taikon"
 
 			description=		"The Taikon-200 deflector is optimized to defend against thermonuclear attacks."
 			>

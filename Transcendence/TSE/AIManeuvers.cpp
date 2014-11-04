@@ -34,6 +34,14 @@ const Metric MIN_FLYBY_SPEED2 =			(MIN_FLYBY_SPEED * MIN_FLYBY_SPEED);
 const Metric MIN_STATION_TARGET_DIST2 =	(MIN_STATION_TARGET_DIST * MIN_STATION_TARGET_DIST);
 const Metric MIN_TARGET_DIST2 =			(MIN_TARGET_DIST * MIN_TARGET_DIST);
 
+const Metric MAX_FLOCK_DIST =			(600.0 * KLICKS_PER_PIXEL);
+const Metric MAX_FLOCK_DIST2 =			(MAX_FLOCK_DIST * MAX_FLOCK_DIST);
+const Metric FLOCK_SEPARATION_RANGE =	(100.0 * KLICKS_PER_PIXEL);
+const Metric FLOCK_SEPARATION_RANGE2 =	(FLOCK_SEPARATION_RANGE * FLOCK_SEPARATION_RANGE);
+const Metric FLOCK_COMBAT_RANGE =		(300.0 * KLICKS_PER_PIXEL);
+const Metric FLOCK_COMBAT_RANGE2 =		(FLOCK_COMBAT_RANGE * FLOCK_COMBAT_RANGE);
+
+
 #ifdef DEBUG_COMBAT
 #define DEBUG_COMBAT_OUTPUT(x)			{ if (g_pUniverse->GetPlayer()) g_pUniverse->GetPlayer()->SendMessage(pShip, strPatternSubst(CONSTLIT("%d: %s"), pShip->GetID(), CString(x))); }
 #else
@@ -41,6 +49,139 @@ const Metric MIN_TARGET_DIST2 =			(MIN_TARGET_DIST * MIN_TARGET_DIST);
 #endif
 
 extern int g_iDebugLine;
+
+bool CAIBehaviorCtx::CalcFlockingFormation (CShip *pShip,
+											CSpaceObject *pLeader,
+											Metric rFOVRange,
+											Metric rSeparationRange,
+											CVector *retvPos, 
+											CVector *retvVel, 
+											int *retiFacing)
+
+//	CalcFlockingFormation
+//
+//	Calculates the position that this ship should take relative to the rest of the flock. Returns FALSE
+//	if the current ship is a leader in the flock.
+
+	{
+	int i;
+	CVector vFlockPos;
+	CVector vFlockVel;
+	CVector vFlockHeading;
+	CVector vAvoid;
+	Metric rFOVRange2 = rFOVRange * rFOVRange;
+	Metric rSeparationRange2 = rSeparationRange * rSeparationRange;
+	Metric rFlockCount = 0.0;
+	Metric rAvoidCount = 0.0;
+
+	for (i = 0; i < pShip->GetSystem()->GetObjectCount(); i++)
+		{
+		CSpaceObject *pObj = pShip->GetSystem()->GetObject(i);
+
+		if (pObj 
+				&& pObj->GetSovereign() == pShip->GetSovereign()
+				&& pObj->GetCategory() == CSpaceObject::catShip
+				&& !pObj->IsInactive()
+				&& !pObj->IsVirtual()
+				&& pObj != pShip
+				&& pObj != pLeader)
+			{
+			CVector vTarget = pObj->GetPos() - pShip->GetPos();
+			Metric rTargetDist2 = vTarget.Dot(vTarget);
+
+			//	Only consider ships within a certain range
+
+			if (rTargetDist2 < rFOVRange2)
+				{
+				CVector vTargetRot = vTarget.Rotate(360 - pShip->GetRotation());
+
+				//	Only consider ships in front of us
+
+				if (vTargetRot.GetX() > 0.0)
+					{
+					//	Only ships of a certain destiny
+
+					if (pObj->GetDestiny() > pShip->GetDestiny())
+						{
+						vFlockPos = vFlockPos + vTarget;
+						vFlockVel = vFlockVel + (pObj->GetVel() - pShip->GetVel());
+						vFlockHeading = vFlockHeading + PolarToVector(pObj->GetRotation(), 1.0);
+						rFlockCount = rFlockCount + 1.0;
+						}
+
+					//	Avoid ships that are too close
+
+					if (rTargetDist2 < rSeparationRange2)
+						{
+						vAvoid = vAvoid + vTarget;
+						rAvoidCount = rAvoidCount + 1.0;
+						}
+					}
+				}
+			}
+		}
+
+	//	If we've got a leader, add separately
+
+	if (pLeader)
+		{
+		CVector vTarget = pLeader->GetPos() - pShip->GetPos();
+		Metric rTargetDist2 = vTarget.Dot(vTarget);
+
+		vFlockPos = vFlockPos + vTarget;
+		vFlockVel = vFlockVel + (pLeader->GetVel() - pShip->GetVel());
+		vFlockHeading = vFlockHeading + PolarToVector(pLeader->GetRotation(), 1.0);
+		rFlockCount = rFlockCount + 1.0;
+
+		//	Avoid ships that are too close
+
+		if (rTargetDist2 < rSeparationRange2)
+			{
+			vAvoid = vAvoid + vTarget;
+			rAvoidCount = rAvoidCount + 1.0;
+			}
+		}
+
+	//	Compute the averages
+
+	if (rFlockCount > 0.0)
+		{
+		CVector vAimPos = (vFlockPos / rFlockCount);
+		if (rAvoidCount > 0.0)
+			{
+			int iAimAngle = VectorToPolar(vAimPos);
+
+			CVector vAvoidAverage = (vAvoid / rAvoidCount);
+			CVector vAvoidRot = vAvoidAverage.Rotate(360 - iAimAngle);
+
+			CVector vAimPerp = vAimPos.Normal().Perpendicular();
+
+			Metric rAvoidAverage = vAvoidAverage.Length();
+			Metric rAvoidMag = 2.0 * (rSeparationRange - rAvoidAverage);
+
+			CVector vAvoidAdj;
+			if (rAvoidMag > 0.0)
+				{
+				if (vAvoidRot.GetY() > 0.0)
+					vAvoidAdj = -rAvoidMag * vAimPerp;
+				else
+					vAvoidAdj = rAvoidMag * vAimPerp;
+				}
+
+			vAimPos = vAimPos + vAvoidAdj;
+			}
+
+		*retvPos = pShip->GetPos() + vAimPos;
+		*retvVel = pShip->GetVel() + (vFlockVel / rFlockCount);
+		*retiFacing = VectorToPolar(vFlockHeading);
+
+		return true;
+		}
+	else
+		{
+		return false;
+		}
+	}
 
 CVector CAIBehaviorCtx::CalcManeuverCloseOnTarget (CShip *pShip,
 												   CSpaceObject *pTarget, 
@@ -250,7 +391,7 @@ void CAIBehaviorCtx::ImplementAttackNearestTarget (CShip *pShip, Metric rMaxRang
 	{
 	DEBUG_TRY
 
-	if (pShip->IsDestinyTime(19))
+	if (pShip->IsDestinyTime(19) && !m_AISettings.NoTargetsOfOpportunity())
 		(*iopTarget) = pShip->GetNearestVisibleEnemy(rMaxRange, false, pExcludeObj);
 
 	if (*iopTarget)
@@ -296,11 +437,24 @@ void CAIBehaviorCtx::ImplementAttackTarget (CShip *pShip, CSpaceObject *pTarget,
 	pShip->SetDebugVector(CVector());
 #endif
 
-	//	See if we need to alter course as part of combat.
-	//	(unless we're supposed to maintain our course)
+	CVector vFlockPos;
+	CVector vFlockVel;
+	int iFlockFacing;
+
+	//	If we're maintaining our course, then no need to maneuver.
 
 	if (bMaintainCourse || IsImmobile())
 		NULL;
+
+	//	If we're flocking, then implement flocking maneuverses
+
+	else if (m_AISettings.IsFlocker() 
+				&& rTargetDist2 > FLOCK_COMBAT_RANGE2
+				&& CalcFlockingFormation(pShip, NULL, MAX_FLOCK_DIST, FLOCK_SEPARATION_RANGE, &vFlockPos, &vFlockVel, &iFlockFacing))
+		ImplementFormationManeuver(pShip, vFlockPos, vFlockVel, pShip->AlignToRotationAngle(iFlockFacing));
+
+	//	Otherwise, implement maneuvers
+
 	else
 		{
 		//	If the ship has shields then figure out their state.
@@ -877,6 +1031,13 @@ void CAIBehaviorCtx::ImplementEscortManeuvers (CShip *pShip, CSpaceObject *pTarg
 //	Maneuvers to escort the given target
 
 	{
+	//	If we're flocking, use flocking algorithm (if a flock is available).
+
+	if (m_AISettings.IsFlocker()
+			&& ImplementFlockingManeuver(pShip, pTarget))
+		return;
+
+	//	Otherwise, we do a normal escort.
 	//	Pick escort position relative to our current position
 	//	at time = 0
 
@@ -970,7 +1131,8 @@ void CAIBehaviorCtx::ImplementFireOnTargetsOfOpportunity (CShip *pShip, CSpaceOb
 	//	(note that we don't turn this on normally because it is relatively
 	//	expensive)
 
-	if (HasSecondaryWeapons())
+	if (HasSecondaryWeapons() 
+			&& !m_AISettings.NoTargetsOfOpportunity())
 		{
 		for (i = 0; i < pShip->GetDeviceCount(); i++)
 			{
@@ -1206,6 +1368,25 @@ void CAIBehaviorCtx::ImplementFireWeaponOnTarget (CShip *pShip,
 
 	if (retiFireDir)
 		*retiFireDir = iFireDir;
+	}
+
+bool CAIBehaviorCtx::ImplementFlockingManeuver (CShip *pShip, CSpaceObject *pLeader)
+
+//	ImplementFlockingManeuver
+//
+//	Implements flocking. If there is no flock, or if we are the leader, then
+//	this function returns FALSE and callers should handle maneuvering.
+
+	{
+	CVector vFlockPos;
+	CVector vFlockVel;
+	int iFlockFacing;
+	if (!CalcFlockingFormation(pShip, pLeader, MAX_FLOCK_DIST, FLOCK_SEPARATION_RANGE, &vFlockPos, &vFlockVel, &iFlockFacing))
+		return false;
+
+	ImplementFormationManeuver(pShip, vFlockPos, vFlockVel, pShip->AlignToRotationAngle(iFlockFacing));
+
+	return true;
 	}
 
 void CAIBehaviorCtx::ImplementFollowNavPath (CShip *pShip, bool *retbAtDestination)

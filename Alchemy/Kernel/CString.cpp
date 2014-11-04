@@ -2311,7 +2311,7 @@ CString strToUpper (const CString &sString)
 	return sUpper;
 	}
 
-CString strToXMLText (const CString &sText)
+CString strToXMLText (const CString &sText, bool bInBody)
 
 //	strToXMLText
 //
@@ -2354,7 +2354,10 @@ CString strToXMLText (const CString &sText)
 				break;
 
 			default:
-				if (*pPos < ' ' || *pPos > '~')
+				if (bInBody
+						&& (*pPos == '\n' || *pPos == '\r' || *pPos == '\t'))
+					{ }
+				else if (*pPos < ' ' || *pPos > '~')
 					iExtra += 5;
 				break;
 			}
@@ -2421,6 +2424,9 @@ CString strToXMLText (const CString &sText)
 
 			default:
 				if (*pPos >= ' ' && *pPos <= '~')
+					*pDest++ = *pPos;
+				else if (bInBody
+						&& (*pPos == '\n' || *pPos == '\r' || *pPos == '\t'))
 					*pDest++ = *pPos;
 				else
 					{

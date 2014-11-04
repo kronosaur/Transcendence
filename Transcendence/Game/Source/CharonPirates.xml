@@ -2,6 +2,11 @@
 
 <TranscendenceModule>
 
+	<Sovereign UNID="&svPirates;"
+			name="Charon Pirates"
+			alignment="destructive order"
+			/>
+
 	<!-- Charon Pirate Map ROM -->
 
 	<ItemType UNID="&itCharonPirateMapROM;"
@@ -157,6 +162,7 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Drake"
 			type=				"missileship"
+			level=				"3"
 
 			attributes=			"capitalShip, charonPirates, genericClass"
 			   
@@ -173,7 +179,7 @@
 		
 		<Armor
 			armorID=			"&itAdvancedReactiveArmor;"
-			count=				"12"
+			count=				"8"
 			/>
 		
 		<Devices>
@@ -189,12 +195,12 @@
 
 		<Interior>
 			<Compartment name="interior"
-					hitPoints=	"60"
+					hitPoints=	"50"
 					/>
 			
 			<Compartment name="main drive"
 					type=		"mainDrive"
-					hitPoints=	"40"
+					hitPoints=	"30"
 
 					posX=		"-34"
 					posY=		"0"
@@ -1042,7 +1048,7 @@
 
 			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
 			levelFrequency=		"cuv-- ----- ----- ----- -----"
-			locationCriteria=	"-planet,-void"
+			locationCriteria=	"+asteroids"
 			>
 
 		<Image			imageID="&rsStations1;" imageX="0" imageY="512" imageWidth="156" imageHeight="156"/>
@@ -1096,7 +1102,7 @@
 
 			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
 			levelFrequency=		"-cuv- ----- ----- ----- -----"
-			locationCriteria=	"-planet,-void"
+			locationCriteria=	"+asteroids"
 			>
 
 		<Image			imageID="&rsStations1;" imageX="0" imageY="512" imageWidth="156" imageHeight="156"/>
@@ -1166,7 +1172,7 @@
 
 			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
 			levelFrequency=		"r---- ----- ----- ----- -----"
-			locationCriteria=	"-planet,-void"
+			locationCriteria=	"+asteroids"
 			>
 
 		<Image			imageID="&rsStations1;" imageX="0" imageY="512" imageWidth="156" imageHeight="156"/>
@@ -1231,7 +1237,7 @@
 
 			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, majorStation, pirates, populated"
 			levelFrequency=		"-rcr- ----- ----- ----- -----"
-			locationCriteria=	"-planet,-void"
+			locationCriteria=	"+asteroids"
 			>
 
 		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>

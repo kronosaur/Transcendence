@@ -1442,7 +1442,7 @@ CString strToFilename (const CString &sString);
 int strToInt (const CString &sString, int iFailResult, bool *retbFailed = NULL);
 CString strToLower (const CString &sString);
 CString strToUpper (const CString &sString);
-CString strToXMLText (const CString &sString);
+CString strToXMLText (const CString &sString, bool bInBody = false);
 CString strTrimWhitespace (const CString &sString);
 CString strWord (const CString &sString, int iWordPos);
 

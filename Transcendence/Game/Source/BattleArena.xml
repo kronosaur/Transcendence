@@ -113,6 +113,8 @@
 			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-6;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -710,7 +712,9 @@
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -732,45 +736,6 @@
 						</Actions>
 
 					</Chicken>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(scrShowScreen gScreen "&dsRPGRepairArmor;" {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Install Device" key="D" >
-								(block Nil
-									(setq gTechLevel 6)
-									(setq gTechModifier Nil)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
-							</Action>
-
-							<Action name="Remove Device" key="V" >
-								(block Nil
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRemoveDevice;")
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="n">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</DockServices>
 
 					<Melee>
 						<OnPaneInit>
@@ -2018,6 +1983,10 @@
 			<Device deviceID="&itSlamCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
 		</Devices>
 
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="92"/>
+		</Trade>
+		
 		<Items>
 			<Item	count="1d12"	item="&itTempusSyrette;" />
 			<Item	count="1d12"	item="&itMartianNori;" />
@@ -2096,10 +2065,7 @@
 
 						<Actions>
 							<Action name="Refuel" imageIndex="1" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itHeliumAssembly; 93) (&itHelium3FuelRod; 92)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
 							<Action name="Upgrade Cargo Hold" key="C">
@@ -2424,22 +2390,29 @@
 		name=				"(G class star)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
-		spaceColor=			"0x68, 0x63, 0x23"
+		spaceColor=			"#66664c"
 		maxLightRadius=		"300"
 
 		attributes=			"generic, star"
 		>
 
-		<Image>
-			<FilterColorize hue="57" saturation="50">
-				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
-			</FilterColorize>
-		</Image>
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"490"
+					intensity=		"25"
+					primaryColor=	"#ffffbf"
+					secondaryColor=	"#ffffbf"
+					/>
+		</ImageEffect>
 	</StationType>
 
 	<!-- Rigel Aurelius system -->
 
-	<SystemType UNID="&ssBattleArena;" noRandomEncounters="true">
+	<SystemType UNID="&ssBattleArena;" 
+				noRandomEncounters=	"true"
+				noExtraEncounters=	"true"
+				>
 
 		<Tables>
 			<ArmsQuarterStation>

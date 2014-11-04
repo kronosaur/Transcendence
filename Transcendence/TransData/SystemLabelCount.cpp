@@ -35,17 +35,27 @@ void GenerateSystemLabelCount (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Samples
 
-	int iSystemSample = pCmdLine->GetAttributeInteger(CONSTLIT("count"));
-	if (iSystemSample == 0)
-		iSystemSample = 1;
+	int iSystemSample = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("count"), 1, -1, 1);
 
-	//	Permutations
+	//	Options
 
 	bool bPermutations = pCmdLine->GetAttributeBool(CONSTLIT("permutations"));
 
 	//	Generate systems for multiple games
 
 	CSystemCreateStats Stats;
+	Stats.AddPermuteAttrib(CONSTLIT("asteroids"));
+	Stats.AddPermuteAttrib(CONSTLIT("planetary"));
+	Stats.AddPermuteAttrib(CONSTLIT("void"));
+	Stats.AddPermuteAttrib(CONSTLIT("innerSystem"));
+	Stats.AddPermuteAttrib(CONSTLIT("lifeZone"));
+	Stats.AddPermuteAttrib(CONSTLIT("outerSystem"));
+	Stats.AddPermuteAttrib(CONSTLIT("envAir"));
+	Stats.AddPermuteAttrib(CONSTLIT("envEarth"));
+	Stats.AddPermuteAttrib(CONSTLIT("envFire"));
+	Stats.AddPermuteAttrib(CONSTLIT("envWater"));
+	bPermutations = true;
+
 	for (i = 0; i < iSystemSample; i++)
 		{
 		printf("pass %d...\n", i+1);
@@ -63,6 +73,8 @@ void GenerateSystemLabelCount (CUniverse &Universe, CXMLElement *pCmdLine)
 		for (j = 0; j < Universe.GetTopologyNodeCount(); j++)
 			{
 			CTopologyNode *pNode = Universe.GetTopologyNode(j);
+			if (pNode->IsEndGame())
+				continue;
 
 			//	Different stats depending on type
 

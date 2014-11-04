@@ -50,7 +50,7 @@ class CMission : public CSpaceObject
 							   ICCItem *pCreateData,
 							   CMission **retpMission,
 							   CString *retsError);
-		void FireCustomEvent (const CString &sEvent);
+		void FireCustomEvent (const CString &sEvent, ICCItem *pData);
 		inline DWORD GetAcceptedOn (void) const { return m_dwAcceptedOn; }
 		inline bool IsActive (void) const { return (m_iStatus == statusAccepted || (!m_fDebriefed && (m_iStatus == statusPlayerSuccess || m_iStatus == statusPlayerFailure))); }
 		inline bool IsClosed (void) const { return (!IsActive() && IsCompleted()); }
@@ -64,7 +64,7 @@ class CMission : public CSpaceObject
 		inline bool IsUnavailable (void) const { return (m_iStatus == statusClosed || m_iStatus == statusSuccess || m_iStatus == statusPlayerSuccess); }
 		inline bool KeepsStats (void) const { return m_pType->KeepsStats(); }
 		bool MatchesCriteria (CSpaceObject *pSource, const SCriteria &Criteria);
-		void OnPlayerEnteredSystem (void);
+		void OnPlayerEnteredSystem (CSpaceObject *pPlayer);
 		bool Reward (ICCItem *pData, ICCItem **retpResult = NULL);
 		bool SetAccepted (void);
 		bool SetDeclined (ICCItem **retpResult = NULL);

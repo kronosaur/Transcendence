@@ -9,6 +9,7 @@ static CObjectClass<CObjectImageArray>g_Class(OBJID_COBJECTIMAGEARRAY, NULL);
 #define FLASH_TICKS_ATTRIB				CONSTLIT("flashTicks")
 #define ROTATE_OFFSET_ATTRIB			CONSTLIT("rotationOffset")
 #define BLENDING_ATTRIB					CONSTLIT("blend")
+#define ROTATION_COLUMNS_ATTRIB			CONSTLIT("rotationColumns")
 #define ROTATION_COUNT_ATTRIB			CONSTLIT("rotationCount")
 #define VIEWPORT_SIZE_ATTRIB			CONSTLIT("viewportSize")
 #define X_OFFSET_ATTRIB					CONSTLIT("xOffset")
@@ -116,26 +117,78 @@ void CObjectImageArray::CleanUp (void)
 		}
 	}
 
-int CObjectImageArray::ComputeSourceX (int iTick) const
+void CObjectImageArray::ComputeSourceXY (int iTick, int iRotation, int *retxSrc, int *retySrc) const
 
-//	ComputeSourceX
+//	ComputeSourceXY
 //
-//	Computes the x offset of the source based on the tick
+//	Computes the frame source position, based on tick and rotation.
 
 	{
+	//	If we're animating, then we expect a set of columns with one frame
+	//	per column.
+
 	if (m_iFrameCount > 0 && m_iTicksPerFrame > 0)
 		{
+		int iFrame;
+
+		//	Compute the frame number.
+
 		if (m_iFlashTicks > 0)
 			{
 			int iTotal = m_iFlashTicks + m_iTicksPerFrame;
-			int iFrame = (((iTick % iTotal) < m_iFlashTicks) ? 1 : 0);
-			return m_rcImage.left + iFrame * RectWidth(m_rcImage);
+			iFrame = (((iTick % iTotal) < m_iFlashTicks) ? 1 : 0);
 			}
 		else
-			return m_rcImage.left + ((iTick / m_iTicksPerFrame) % m_iFrameCount) * RectWidth(m_rcImage);
+			iFrame = ((iTick / m_iTicksPerFrame) % m_iFrameCount);
+
+		//	If we've got multi-column rotations, then we need to deal with that.
+
+		if (m_iRotationCount != m_iFramesPerColumn)
+			{
+			int iColsPerFrame = (m_iRotationCount + m_iFramesPerColumn - 1) / m_iFramesPerColumn;
+			int iRotationCol = (iRotation / m_iFramesPerColumn);
+			int iRotationRow = (iRotation % m_iFramesPerColumn);
+
+			*retxSrc = m_rcImage.left + (((iFrame * iColsPerFrame) + iRotationCol) * RectWidth(m_rcImage));
+			*retySrc = m_rcImage.top + (iRotationRow * RectHeight(m_rcImage));
+			}
+
+		//	Otherwise, we expect a single column per frame
+
+		else
+			{
+			*retxSrc = m_rcImage.left + (iFrame * RectWidth(m_rcImage));
+			*retySrc = m_rcImage.top + (iRotation * RectHeight(m_rcImage));
+			}
 		}
+
+	//	If we've got multi-column rotations but no animations, then we just
+	//	compute the proper column
+
+	else if (m_iRotationCount != m_iFramesPerColumn)
+		{
+		int iRotationCol = (iRotation / m_iFramesPerColumn);
+		int iRotationRow = (iRotation % m_iFramesPerColumn);
+
+		*retxSrc = m_rcImage.left + (iRotationCol * RectWidth(m_rcImage));
+		*retySrc = m_rcImage.top + (iRotationRow * RectHeight(m_rcImage));
+		}
+	
+	//	Otherwise, a single columne
+
+	else if (iRotation > 0)
+		{
+		*retxSrc = m_rcImage.left;
+		*retySrc = m_rcImage.top + (iRotation * RectWidth(m_rcImage));
+		}
+
+	//	Otherwise, it's simple
+
 	else
-		return m_rcImage.left;
+		{
+		*retxSrc = m_rcImage.left;
+		*retySrc = m_rcImage.top;
+		}
 	}
 
 void CObjectImageArray::ComputeRotationOffsets (void)
@@ -199,6 +252,7 @@ void CObjectImageArray::CopyFrom (const CObjectImageArray &Source)
 	m_rcImage = Source.m_rcImage;
 	m_iFrameCount = Source.m_iFrameCount;
 	m_iRotationCount = Source.m_iRotationCount;
+	m_iFramesPerColumn = Source.m_iFramesPerColumn;
 	m_iTicksPerFrame = Source.m_iTicksPerFrame;
 	m_iFlashTicks = Source.m_iFlashTicks;
 	m_iBlending = Source.m_iBlending;
@@ -230,8 +284,9 @@ void CObjectImageArray::CopyImage (CG16bitImage &Dest, int x, int y, int iFrame,
 		if (pSource == NULL)
 			return;
 
-		int xSrc = m_rcImage.left + (iFrame * RectWidth(m_rcImage));
-		int ySrc = m_rcImage.top + (iRotation * RectHeight(m_rcImage));
+		int xSrc;
+		int ySrc;
+		ComputeSourceXY(iFrame, iRotation, &xSrc, &ySrc);
 
 		Dest.Blt(xSrc,
 				ySrc,
@@ -296,8 +351,7 @@ void CObjectImageArray::GenerateGlowImage (int iRotation) const
 	//	Get the extent of the source image
 
 	RECT rcSrc;
-	rcSrc.left = ComputeSourceX(0);
-	rcSrc.top = m_rcImage.top + (iRotation * cySrcHeight);
+	ComputeSourceXY(0, iRotation, &rcSrc.left, &rcSrc.top);
 	rcSrc.right = rcSrc.left + cxSrcWidth;
 	rcSrc.bottom = rcSrc.top + cySrcHeight;
 
@@ -384,15 +438,14 @@ void CObjectImageArray::GenerateScaledImages (int iRotation, int cxWidth, int cy
 	int cxSrcWidth = RectWidth(m_rcImage);
 	int cySrcHeight = RectHeight(m_rcImage);
 
-	RECT rcSrc;
-	rcSrc.left = ComputeSourceX(0);
-	rcSrc.top = m_rcImage.top + (iRotation * cySrcHeight);
-	rcSrc.right = rcSrc.left + cxSrcWidth;
-	rcSrc.bottom = rcSrc.top + cySrcHeight;
-
 	CG16bitImage *pSource = m_pImage->GetImage(NULL_STR);
 	if (pSource == NULL || cxSrcWidth == 0 || cySrcHeight == 0)
 		return;
+
+	RECT rcSrc;
+	ComputeSourceXY(0, iRotation, &rcSrc.left, &rcSrc.top);
+	rcSrc.right = rcSrc.left + cxSrcWidth;
+	rcSrc.bottom = rcSrc.top + cySrcHeight;
 
 	//	Scale
 
@@ -419,6 +472,28 @@ CString CObjectImageArray::GetFilename (void) const
 	return m_pImage->GetImageFilename();
 	}
 
+bool CObjectImageArray::GetImageOffset (int iTick, int iRotation, int *retx, int *rety) const
+
+//	GetImageOffset
+//
+//	Returns the image offset. Also returns FALSE if there is no image offset.
+//	(But the return variables are always initialized.)
+
+	{
+	if (m_pRotationOffset)
+		{
+		*retx = m_pRotationOffset[iRotation % m_iRotationCount].x;
+		*rety = -m_pRotationOffset[iRotation % m_iRotationCount].y;
+		return true;
+		}
+	else
+		{
+		*retx = 0;
+		*rety = 0;
+		return false;
+		}
+	}
+
 RECT CObjectImageArray::GetImageRect (int iTick, int iRotation, int *retxCenter, int *retyCenter) const
 
 //	GetImageRect
@@ -428,9 +503,8 @@ RECT CObjectImageArray::GetImageRect (int iTick, int iRotation, int *retxCenter,
 	{
 	RECT rcRect;
 
-	rcRect.left = ComputeSourceX(iTick);
+	ComputeSourceXY(iTick, iRotation, &rcRect.left, &rcRect.top);
 	rcRect.right = rcRect.left + RectWidth(m_rcImage);
-	rcRect.top = m_rcImage.top + (iRotation * RectHeight(m_rcImage));
 	rcRect.bottom = rcRect.top + RectHeight(m_rcImage);
 
 	if (retxCenter)
@@ -487,8 +561,7 @@ bool CObjectImageArray::ImagesIntersect (int iTick, int iRotation, int x, int y,
 	RECT rcRect;
 	int cxWidth = RectWidth(m_rcImage);
 	int cyHeight = RectHeight(m_rcImage);
-	rcRect.left = ComputeSourceX(iTick);
-	rcRect.top = m_rcImage.top + (iRotation * cyHeight);
+	ComputeSourceXY(iTick, iRotation, &rcRect.left, &rcRect.top);
 	rcRect.right = rcRect.left + cxWidth;
 	rcRect.bottom = rcRect.top + cyHeight;
 
@@ -497,8 +570,7 @@ bool CObjectImageArray::ImagesIntersect (int iTick, int iRotation, int x, int y,
 	RECT rcRect2;
 	int cxWidth2 = RectWidth(Image2.m_rcImage);
 	int cyHeight2 = RectHeight(Image2.m_rcImage);
-	rcRect2.left = Image2.ComputeSourceX(iTick);
-	rcRect2.top = Image2.m_rcImage.top + (iRotation2 * cyHeight2);
+	Image2.ComputeSourceXY(iTick2, iRotation2, &rcRect2.left, &rcRect2.top);
 	rcRect2.right = rcRect2.left + cxWidth2;
 	rcRect2.bottom = rcRect2.top + cyHeight2;
 	
@@ -715,6 +787,7 @@ ALERROR CObjectImageArray::Init (CG16bitImage *pBitmap, const RECT &rcImage, int
 	m_rcImage = rcImage;
 	m_iFrameCount = iFrameCount;
 	m_iRotationCount = STD_ROTATION_COUNT;
+	m_iFramesPerColumn = m_iRotationCount;
 	m_iTicksPerFrame = iTicksPerFrame;
 	m_iFlashTicks = 0;
 	m_iRotationOffset = 0;
@@ -741,6 +814,7 @@ ALERROR CObjectImageArray::Init (DWORD dwBitmapUNID, const RECT &rcImage, int iF
 	m_rcImage = rcImage;
 	m_iFrameCount = iFrameCount;
 	m_iRotationCount = STD_ROTATION_COUNT;
+	m_iFramesPerColumn = m_iRotationCount;
 	m_iTicksPerFrame = iTicksPerFrame;
 	m_iFlashTicks = 0;
 	m_iRotationOffset = 0;
@@ -780,6 +854,13 @@ ALERROR CObjectImageArray::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc,
 	m_iRotationCount = pDesc->GetAttributeInteger(ROTATION_COUNT_ATTRIB);
 	if (m_iRotationCount <= 0)
 		m_iRotationCount = iDefaultRotationCount;
+
+	int iRotationCols = pDesc->GetAttributeIntegerBounded(ROTATION_COLUMNS_ATTRIB, 0, m_iRotationCount, 0);
+	if (iRotationCols > 0)
+		m_iFramesPerColumn = (m_iRotationCount + iRotationCols - 1) / iRotationCols;
+	else
+		m_iFramesPerColumn = m_iRotationCount;
+
 	m_iTicksPerFrame = pDesc->GetAttributeInteger(CONSTLIT(g_ImageTicksPerFrameAttrib));
 	if (m_iTicksPerFrame <= 0 && m_iFrameCount > 1)
 		m_iTicksPerFrame = 1;
@@ -865,7 +946,7 @@ ALERROR CObjectImageArray::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 	DEBUG_CATCH
 	}
 
-void CObjectImageArray::PaintImage (CG16bitImage &Dest, int x, int y, int iTick, int iRotation) const
+void CObjectImageArray::PaintImage (CG16bitImage &Dest, int x, int y, int iTick, int iRotation, bool bComposite) const
 
 //	PaintImage
 //
@@ -878,7 +959,9 @@ void CObjectImageArray::PaintImage (CG16bitImage &Dest, int x, int y, int iTick,
 		if (pSource == NULL)
 			return;
 
-		int xSrc = ComputeSourceX(iTick);
+		int xSrc;
+		int ySrc;
+		ComputeSourceXY(iTick, iRotation, &xSrc, &ySrc);
 
 		if (m_pRotationOffset)
 			{
@@ -886,10 +969,21 @@ void CObjectImageArray::PaintImage (CG16bitImage &Dest, int x, int y, int iTick,
 			y -= m_pRotationOffset[iRotation % m_iRotationCount].y;
 			}
 
-		if (m_iBlending == blendLighten)
+		if (bComposite)
+			{
+			Dest.CompositeTransBlt(xSrc,
+					ySrc,
+					RectWidth(m_rcImage),
+					RectHeight(m_rcImage),
+					255,
+					*pSource,
+					x - (RectWidth(m_rcImage) / 2),
+					y - (RectHeight(m_rcImage) / 2));
+			}
+		else if (m_iBlending == blendLighten)
 			{
 			Dest.BltLighten(xSrc,
-					m_rcImage.top + (iRotation * RectHeight(m_rcImage)),
+					ySrc,
 					RectWidth(m_rcImage),
 					RectHeight(m_rcImage),
 					255,
@@ -900,7 +994,7 @@ void CObjectImageArray::PaintImage (CG16bitImage &Dest, int x, int y, int iTick,
 		else
 			{
 			Dest.ColorTransBlt(xSrc,
-					m_rcImage.top + (iRotation * RectHeight(m_rcImage)),
+					ySrc,
 					RectWidth(m_rcImage),
 					RectHeight(m_rcImage),
 					255,
@@ -908,6 +1002,45 @@ void CObjectImageArray::PaintImage (CG16bitImage &Dest, int x, int y, int iTick,
 					x - (RectWidth(m_rcImage) / 2),
 					y - (RectHeight(m_rcImage) / 2));
 			}
+		}
+	}
+
+void CObjectImageArray::PaintImageShimmering (CG16bitImage &Dest, int x, int y, int iTick, int iRotation, DWORD byOpacity) const
+
+//	PaintImageShimmering
+//
+//	Paint a distorted/invisible image.
+//
+//	byOpacity = 0 means the image is invisible.
+//	byOpacity = 256 means the image is fully visible.
+
+	{
+	if (m_pImage)
+		{
+		CG16bitImage *pSource = m_pImage->GetImage(NULL_STR);
+		if (pSource == NULL)
+			return;
+
+		int xSrc;
+		int ySrc;
+		ComputeSourceXY(iTick, iRotation, &xSrc, &ySrc);
+
+		if (m_pRotationOffset)
+			{
+			x += m_pRotationOffset[iRotation % m_iRotationCount].x;
+			y -= m_pRotationOffset[iRotation % m_iRotationCount].y;
+			}
+
+		DrawBltShimmer(Dest,
+				x - (RectWidth(m_rcImage) / 2),
+				y - (RectHeight(m_rcImage) / 2),
+				RectWidth(m_rcImage),
+				RectHeight(m_rcImage),
+				*pSource,
+				xSrc,
+				ySrc,
+				byOpacity,
+				iTick);
 		}
 	}
 
@@ -924,7 +1057,9 @@ void CObjectImageArray::PaintImageGrayed (CG16bitImage &Dest, int x, int y, int 
 		if (pSource == NULL)
 			return;
 
-		int xSrc = ComputeSourceX(iTick);
+		int xSrc;
+		int ySrc;
+		ComputeSourceXY(iTick, iRotation, &xSrc, &ySrc);
 
 		if (m_pRotationOffset)
 			{
@@ -933,7 +1068,7 @@ void CObjectImageArray::PaintImageGrayed (CG16bitImage &Dest, int x, int y, int 
 			}
 
 		Dest.BltGray(xSrc,
-				m_rcImage.top + (iRotation * RectHeight(m_rcImage)),
+				ySrc,
 				RectWidth(m_rcImage),
 				RectHeight(m_rcImage),
 				128,
@@ -958,12 +1093,14 @@ void CObjectImageArray::PaintImageUL (CG16bitImage &Dest, int x, int y, int iTic
 		if (pSource == NULL)
 			return;
 
-		int xSrc = ComputeSourceX(iTick);
+		int xSrc;
+		int ySrc;
+		ComputeSourceXY(iTick, iRotation, &xSrc, &ySrc);
 
 		if (m_iBlending == blendLighten)
 			{
 			Dest.BltLighten(xSrc,
-					m_rcImage.top + (iRotation * RectHeight(m_rcImage)),
+					ySrc,
 					RectWidth(m_rcImage),
 					RectHeight(m_rcImage),
 					255,
@@ -974,7 +1111,7 @@ void CObjectImageArray::PaintImageUL (CG16bitImage &Dest, int x, int y, int iTic
 		else
 			{
 			Dest.ColorTransBlt(xSrc,
-					m_rcImage.top + (iRotation * RectHeight(m_rcImage)),
+					ySrc,
 					RectWidth(m_rcImage),
 					RectHeight(m_rcImage),
 					255,
@@ -1037,7 +1174,8 @@ void CObjectImageArray::PaintRotatedImage (CG16bitImage &Dest,
 										   int x,
 										   int y,
 										   int iTick,
-										   int iRotation) const
+										   int iRotation,
+										   bool bComposite) const
 
 //	PaintRotatedImage
 //
@@ -1051,7 +1189,9 @@ void CObjectImageArray::PaintRotatedImage (CG16bitImage &Dest,
 	if (pSource == NULL)
 		return;
 
-	int xSrc = ComputeSourceX(iTick);
+	int xSrc;
+	int ySrc;
+	ComputeSourceXY(iTick, 0, &xSrc, &ySrc);
 	int cxSrc = RectWidth(m_rcImage);
 	int cySrc = RectHeight(m_rcImage);
 
@@ -1077,7 +1217,7 @@ void CObjectImageArray::PaintRotatedImage (CG16bitImage &Dest,
 			iRotation,
 			*pSource,
 			xSrc,
-			m_rcImage.top,
+			ySrc,
 			cxSrc,
 			cySrc);
 	}
@@ -1088,7 +1228,8 @@ void CObjectImageArray::PaintScaledImage (CG16bitImage &Dest,
 										  int iTick,
 										  int iRotation,
 										  int cxWidth,
-										  int cyHeight) const
+										  int cyHeight,
+										  bool bComposite) const
 
 //	PaintScaledImage
 //
@@ -1129,7 +1270,9 @@ void CObjectImageArray::PaintSilhoutte (CG16bitImage &Dest,
 		if (pSource == NULL)
 			return;
 
-		int xSrc = ComputeSourceX(iTick);
+		int xSrc;
+		int ySrc;
+		ComputeSourceXY(iTick, iRotation, &xSrc, &ySrc);
 
 		if (m_pRotationOffset)
 			{
@@ -1138,7 +1281,7 @@ void CObjectImageArray::PaintSilhoutte (CG16bitImage &Dest,
 			}
 
 		Dest.FillMask(xSrc,
-				m_rcImage.top + (iRotation * RectHeight(m_rcImage)),
+				ySrc,
 				RectWidth(m_rcImage),
 				RectHeight(m_rcImage),
 				*pSource,
@@ -1166,8 +1309,9 @@ bool CObjectImageArray::PointInImage (int x, int y, int iTick, int iRotation) co
 
 		int cxWidth = RectWidth(m_rcImage);
 		int cyHeight = RectHeight(m_rcImage);
-		int xSrc = ComputeSourceX(iTick);
-		int ySrc = m_rcImage.top + (iRotation * cyHeight);
+		int xSrc;
+		int ySrc;
+		ComputeSourceXY(iTick, iRotation, &xSrc, &ySrc);
 
 		//	Adjust the point so that it is relative to the
 		//	frame origin (upper left)
@@ -1240,8 +1384,7 @@ void CObjectImageArray::PointInImageInit (SPointInObjectCtx &Ctx, int iTick, int
 
 		int cxWidth = RectWidth(m_rcImage);
 		int cyHeight = RectHeight(m_rcImage);
-		Ctx.rcImage.left = ComputeSourceX(iTick);
-		Ctx.rcImage.top = m_rcImage.top + (iRotation * cyHeight);
+		ComputeSourceXY(iTick, iRotation, &Ctx.rcImage.left, &Ctx.rcImage.top);
 		Ctx.rcImage.right = Ctx.rcImage.left + cxWidth;
 		Ctx.rcImage.bottom = Ctx.rcImage.top + cyHeight;
 
@@ -1283,6 +1426,11 @@ void CObjectImageArray::ReadFromStream (SLoadCtx &Ctx)
 	else
 		m_iRotationCount = STD_ROTATION_COUNT;
 
+	if (Ctx.dwVersion >= 104)
+		Ctx.pStream->Read((char *)&m_iFramesPerColumn, sizeof(DWORD));
+	else
+		m_iFramesPerColumn = m_iRotationCount;
+
 	if (Ctx.dwVersion >= 90)
 		Ctx.pStream->Read((char *)&m_iViewportSize, sizeof(DWORD));
 	else
@@ -1307,6 +1455,7 @@ void CObjectImageArray::SetRotationCount (int iRotationCount)
 	if (iRotationCount != m_iRotationCount)
 		{
 		m_iRotationCount = iRotationCount;
+		m_iFramesPerColumn = iRotationCount;
 
 		ComputeRotationOffsets();
 
@@ -1353,6 +1502,7 @@ void CObjectImageArray::TakeHandoff (CObjectImageArray &Source)
 	m_rcImage = Source.m_rcImage;
 	m_iFrameCount = Source.m_iFrameCount;
 	m_iRotationCount = Source.m_iRotationCount;
+	m_iFramesPerColumn = Source.m_iFramesPerColumn;
 	m_iTicksPerFrame = Source.m_iTicksPerFrame;
 	m_iFlashTicks = Source.m_iFlashTicks;
 	m_iBlending = Source.m_iBlending;
@@ -1373,6 +1523,7 @@ void CObjectImageArray::WriteToStream (IWriteStream *pStream) const
 //	DWORD		m_iFlashTicks
 //	DWORD		m_iBlending
 //	DWORD		m_iRotationCount
+//	DWORD		m_iFramesPerColumns
 //	DWORD		m_iViewportSize
 
 //	DWORD		No of rotation offsets
@@ -1388,6 +1539,7 @@ void CObjectImageArray::WriteToStream (IWriteStream *pStream) const
 	pStream->Write((char *)&m_iFlashTicks, sizeof(DWORD));
 	pStream->Write((char *)&m_iBlending, sizeof(DWORD));
 	pStream->Write((char *)&m_iRotationCount, sizeof(DWORD));
+	pStream->Write((char *)&m_iFramesPerColumn, sizeof(DWORD));
 	pStream->Write((char *)&m_iViewportSize, sizeof(DWORD));
 
 	if (m_pRotationOffset)

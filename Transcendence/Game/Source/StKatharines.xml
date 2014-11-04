@@ -219,9 +219,16 @@
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Sell	criteria="m +Commonwealth; -Military; -Illegal; -NotForSale;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="rNU L:1-5; -Illegal; -NotForSale;"	priceAdj="110"	inventoryAdj="100"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-7" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
 		
 		<StaticData>
@@ -840,6 +847,8 @@
 			name=				"First Contact Monument"
 			definiteArticle=	"true"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			defaultBackgroundID="&rsIocrymMonumentScreen;"
@@ -884,10 +893,16 @@
 						"\"We're idiots if we trust the Iocrym. I bet they're preparing for an invasion "
 						"right now! Why else would they be gone so long? We have to be ready!\""
 						)
-					(cat "You talk to a scientist from New Victoria:\n\n"
-						"\"So you're a pilgrim, huh? Well don't get too excited about getting to the Core. "
-						"I have a couple of friends in the Heretic system who say that the way is blocked. "
-						"Nobody knows why, but the Iocrym don't want us to leave.\""
+					(if (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+						(cat "You talk to a scientist from New Victoria:\n\n"
+							"\"So you're a pilgrim, huh? Well don't get too excited about getting to the Core. "
+							"I have a couple of friends in the Heretic system who say that the way is blocked. "
+							"Nobody knows why, but the Iocrym don't want us to leave.\""
+							)
+						(cat "You talk to a scientist from New Victoria:\n\n"
+							"\"I have a couple of friends in the Heretic system who say Human Space has been quarantined. "
+							"Nobody knows why, but the Iocrym don't want us to leave.\""
+							)
 						)
 					(cat "You sit next to a young man in a fancy corporate suit:\n\n"
 						"\"When the Iocrym return they will teach us how to live in peace. Why are humans "
@@ -897,12 +912,6 @@
 					)
 			</BarEncounter>
 		</StaticData>
-		
-		<Events>
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
-		</Events>
 		
 		<DockScreens>
 			<Main>
@@ -1127,7 +1136,9 @@
 					</Action>
 
 					<Action name="Dock Services" key="D">
-						<ShowPane pane="DockServices"/>
+						(rpgDockServices gPlayerShip {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Undock" cancel="1" key="n">
@@ -1135,64 +1146,6 @@
 					</Action>
 				</Actions>
 			</Default>
-			
-			<!-- Dock Services -->
-			
-			<DockServices
-					desc=	"Your ship is docked.">
-
-				<Actions>
-					<Action name="Refuel" key="R">
-						(block Nil
-							(intSetCompatibleFuelEx '((&itHeliumAssembly; 100) (&itHelium3FuelRod; 100)))
-							(scrShowScreen gScreen "&dsRefuel;")
-							)
-					</Action>
-
-					<Action name="Repair or Replace Armor" key="A" >
-						(block Nil
-							(setq gTechLevel 7)
-							(setq gArmorSegment 0)
-							(setq gCheckMilitaryID True)
-							(setq gMargin 100)
-							(scrShowScreen gScreen "&dsRepairArmor;")
-							)
-					</Action>
-
-					<Action name="Install Device" key="D" >
-						(block Nil
-							(setq gTechLevel 6)
-							(setq gTechModifier Nil)
-							(setq gCheckMilitaryID True)
-							(setq gMargin 100)
-							(scrShowScreen gScreen "&dsInstallDevice;")
-							)
-					</Action>
-
-					<Action name="Remove Device" key="V" >
-						(block Nil
-							(setq gMargin 100)
-							(scrShowScreen gScreen "&dsRemoveDevice;")
-							)
-					</Action>
-
-					<Action name="Upgrade Reactor" key="P" >
-						(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
-							{
-							itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-5;")
-							priceAdj: Nil
-							checkMilitaryID: True
-							noItemsText: "The technology required to upgrade your reactor is not available at this station."
-							})
-					</Action>
-
-					<Action name="Done" cancel="1" key="N">
-						<Navigate screen="&dsStKatsArcology;"/>
-					</Action>
-
-				</Actions>
-
-			</DockServices>
 		</Panes>
 	</DockScreen>
 	
@@ -1500,7 +1453,9 @@
 				
 				<Actions>
 					<Action name="Commodities Exchange" default="1" key="C">
-						<ShowPane pane="CommoditiesExchange"/>
+						(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+							checkMilitaryID: True
+							})
 					</Action>
 					
 					<Action name="Incandescent Exports" key="I">
@@ -1513,38 +1468,6 @@
 				</Actions>
 			</Default>
 			
-			<CommoditiesExchange>
-				<OnPaneInit>
-					(scrSetDesc gScreen (cat "Welcome to the " (objGetName gSource) " Commodities Exchange Market."))
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Buy Items" default="1" key="B">
-						(scrShowBuyScreen 
-							"* -Specialty;"
-							Nil						; obsolete
-							
-							'(	"d"					; install devices
-								6					; of level 6 (and below)
-								Nil					; no special tech modifiers
-								True				; check for military ID
-								0)					; install cost margin
-							)
-					</Action>
-
-					<Action name="Sell Items" key="S">
-						(scrShowSellScreen
-							"*"
-							)
-					</Action>
-
-					<Action name="Leave" cancel="1" key="L">
-						<ShowPane pane="Default"/>
-					</Action>
-
-				</Actions>
-			</CommoditiesExchange>
-
 			<IncandescentExports>
 				<OnPaneInit>
 					(scrSetDesc gScreen
@@ -1764,17 +1687,11 @@
 			
 			<ExploreIntro>
 				<OnPaneInit>
-					(block (desc)
-						(setq desc (plyComposeString gPlayer (cat
-							"You meet one of the faculty members of the Taikon School:\n\n"
-							"\"I'm Professor Dall. Who are you? Another pilgrim? Many pass through here, always searching but not finding. "
-							"But I can help you, if you help me in turn.\n\n"
-							"\"I need you to fetch something for me; something that's been lost for a long time but now I've found. "
-							"You may have to fight for it, of course, but I'm sure you're used to that. "
-							"And it'll be nothing compared to what you're going to have to face, am I right?\""
-							)))
-						
-						(scrSetDesc gScreen desc)
+					(switch
+						(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+							(scrSetDesc gScreen (typTranslate &dsStKatsArcologyUniversity; 'DallWelcomePilgrim))
+							
+						(scrSetDesc gScreen (typTranslate &dsStKatsArcologyUniversity; 'DallWelcome))
 						)
 				</OnPaneInit>
 				
@@ -2034,6 +1951,31 @@
 				</Actions>
 			</ExploreAftermath>
 		</Panes>
+		
+		<Language>
+			<Text id="DallWelcome">
+				(cat
+					"You meet one of the faculty members of the Taikon School:\n\n"
+					
+					"\"I'm Professor Dall. Who are you? An explorer? A mercenary? Well, it doesn't matter to me.\n\n"
+					
+					"\"I need you to fetch something for me; something that's been lost for a long time but now I've found. "
+					"You may have to fight for it, of course, but I'm sure you're used to that, right?\""
+					)				
+			</Text>
+			<Text id="DallWelcomePilgrim">
+				(cat
+					"You meet one of the faculty members of the Taikon School:\n\n"
+					
+					"\"I'm Professor Dall. Who are you? Another pilgrim? Many pass through here, always searching but not finding. "
+					"But I can help you, if you help me in turn.\n\n"
+					
+					"\"I need you to fetch something for me; something that's been lost for a long time but now I've found. "
+					"You may have to fight for it, of course, but I'm sure you're used to that. "
+					"And it'll be nothing compared to what you're going to have to face, am I right?\""
+					)				
+			</Text>
+		</Language>
 	</DockScreen>
 	
 	<!-- Arts Quarter -->
@@ -2337,7 +2279,10 @@
 
 <!-- St Katharine's Star System -->
 
-	<SystemType UNID="&ssStKatharine;" noRandomEncounters="true">
+	<SystemType UNID="&ssStKatharine;" 
+				noRandomEncounters=	"true"
+				noExtraEncounters=	"true"
+				>
 
 		<Tables>
 			<!-- Random Stations -->
@@ -2396,7 +2341,7 @@
 
 		<SystemGroup>
 
-			<Station type="&stA-TypeStar;" name="St. Katharine's Star"/>
+			<Station type="&stStarClassA0;" name="St. Katharine's Star"/>
 
 			<AddAttribute attributes="ATypeSystem"/>
 			<AddTerritory minRadius="0"		maxRadius="480"		attributes="innerSystem, metallicComp, moltenZone"/>

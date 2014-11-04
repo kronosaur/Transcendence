@@ -317,6 +317,25 @@
 //	100: 1.3
 //		m_iOrder in CPlayerShipController
 //
+//	101: 1.4
+//		Flags in CEnergyField
+//
+//	102: 1.4
+//		iHPDamaged in SItemTypeStats
+//
+//	103: 1.4
+//		m_iCounter in CEnergyField
+//		m_sMessage in CEnergyField
+//
+//	104: 1.4
+//		m_iFramesPerColumn in CObjectImageArray
+//
+//	105: 1.4
+//		m_pTrade in CShip
+//
+//	106: 1.4
+//		m_EncounterRecord in CStationType changed.
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"
@@ -331,6 +350,9 @@
 
 const Metric MAX_AUTO_TARGET_DISTANCE =			30.0 * LIGHT_SECOND;
 const Metric MAX_ENCOUNTER_DIST	=				30.0 * LIGHT_MINUTE;
+
+const Metric GRAVITY_WARNING_THRESHOLD =		40.0;	//	Acceleration value at which we start warning
+const Metric TIDAL_KILL_THRESHOLD =				7250.0;	//	Acceleration at which we get ripped apart
 
 #define ON_CREATE_EVENT					CONSTLIT("OnCreate")
 #define ON_OBJ_JUMP_POS_ADJ				CONSTLIT("OnObjJumpPosAdj")
@@ -395,6 +417,8 @@ const int GRID_SIZE =									128;
 #define CELL_BORDER										(128.0 * g_KlicksPerPixel)
 
 const Metric SAME_POS_THRESHOLD2 =						(g_KlicksPerPixel * g_KlicksPerPixel);
+
+const Metric MAP_GRID_SIZE =							3000.0 * LIGHT_SECOND;
 
 bool CalcOverlap (SLabelEntry *pEntries, int iCount);
 void SetLabelBelow (SLabelEntry &Entry, int cyChar);
@@ -637,7 +661,7 @@ int CSystem::CalcLocationWeight (CLocationDef *pLoc, const CAttributeCriteria &C
 //	Calculates the weight of the given location relative to the given
 //	criteria.
 //
-//	See: ComputeWeightAdjFromMatchStrength
+//	See: CAttributeCriteria::CalcWeightAdj
 //
 //	EXAMPLES:
 //
@@ -663,8 +687,8 @@ int CSystem::CalcLocationWeight (CLocationDef *pLoc, const CAttributeCriteria &C
 
 	for (i = 0; i < Criteria.GetCount(); i++)
 		{
-		int iMatchStrength;
-		const CString &sAttrib = Criteria.GetAttribAndWeight(i, &iMatchStrength);
+		DWORD dwMatchStrength;
+		const CString &sAttrib = Criteria.GetAttribAndWeight(i, &dwMatchStrength);
 
 		//	Do we have the attribute? Check the location and any attributes
 		//	inherited from territories and the system.
@@ -672,9 +696,13 @@ int CSystem::CalcLocationWeight (CLocationDef *pLoc, const CAttributeCriteria &C
 		bool bHasAttrib = (::HasModifier(sAttributes, sAttrib)
 				|| HasAttribute(vPos, sAttrib));
 
+		//	Compute the frequency of the given attribute
+
+		int iAttribFreq = g_pUniverse->GetAttributeDesc().GetLocationAttribFrequency(sAttrib);
+
 		//	Adjust probability based on the match strength
 
-		int iAdj = ComputeWeightAdjFromMatchStrength(bHasAttrib, iMatchStrength);
+		int iAdj = CAttributeCriteria::CalcWeightAdj(bHasAttrib, dwMatchStrength, iAttribFreq);
 		iWeight = iWeight * iAdj / 1000;
 
 		//	If weight is 0, then no need to continue
@@ -719,6 +747,7 @@ void CSystem::CalcViewportCtx (SViewportPaintCtx &Ctx, const RECT &rcView, CSpac
 
 	{
 	DEBUG_TRY
+	ASSERT(pCenter);
 
 	Ctx.pCenter = pCenter;
 	Ctx.vCenterPos = pCenter->GetPos();
@@ -727,6 +756,10 @@ void CSystem::CalcViewportCtx (SViewportPaintCtx &Ctx, const RECT &rcView, CSpac
 				g_KlicksPerPixel * (Metric)(RectHeight(rcView)) / 2);
 	Ctx.vUR = Ctx.vCenterPos + Ctx.vDiagonal;
 	Ctx.vLL = Ctx.vCenterPos - Ctx.vDiagonal;
+
+	//	Perception
+
+	Ctx.iPerception = pCenter->GetPerception();
 
 	//	Compute the transformation to map world coordinates to the viewport
 
@@ -1061,7 +1094,7 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 	CString sNodeID;
 	sNodeID.ReadFromStream(Ctx.pStream);
 	Ctx.pSystem->m_pTopology = pUniv->FindTopologyNode(sNodeID);
-	Ctx.pSystem->m_pType = pUniv->FindSystemType(Ctx.pSystem->m_pTopology->GetSystemDescUNID());
+	Ctx.pSystem->m_pType = pUniv->FindSystemType(Ctx.pSystem->m_pTopology->GetSystemTypeUNID());
 
 	//	More misc info
 
@@ -1343,7 +1376,8 @@ ALERROR CSystem::CreateShip (DWORD dwClassID,
 							 int iRotation,
 							 CSpaceObject *pExitGate,
 							 SShipGeneratorCtx *pCtx,
-							 CShip **retpShip)
+							 CShip **retpShip,
+							 CSpaceObjectList *retpShipList)
 
 //	CreateShip
 //
@@ -1372,6 +1406,8 @@ ALERROR CSystem::CreateShip (DWORD dwClassID,
 		CreateCtx.pOverride = pOverride;
 		CreateCtx.dwFlags = SShipCreateCtx::RETURN_RESULT;
 
+		//	Create
+
 		pTable->CreateShips(CreateCtx);
 
 		//	Return at least one of the ships created
@@ -1381,6 +1417,9 @@ ALERROR CSystem::CreateShip (DWORD dwClassID,
 
 		if (retpShip)
 			*retpShip = CreateCtx.Result.GetObj(0)->AsShip();
+
+		if (retpShipList)
+			*retpShipList = CreateCtx.Result;
 
 		return NOERROR;
 		}
@@ -1402,6 +1441,7 @@ ALERROR CSystem::CreateShip (DWORD dwClassID,
 
 	//	Create a new ship based on the class
 
+	CShip *pShip;
 	if (error = CShip::CreateFromClass(this, 
 			pClass, 
 			pController, 
@@ -1411,18 +1451,18 @@ ALERROR CSystem::CreateShip (DWORD dwClassID,
 			vVel, 
 			iRotation,
 			pCtx,
-			retpShip))
+			&pShip))
 		return error;
 
 	//	If we're coming out of a gate, set the timer
 
 	if (pExitGate)
-		PlaceInGate(*retpShip, pExitGate);
+		PlaceInGate(pShip, pExitGate);
 
 	//	Load images, if necessary
 
 	if (!IsCreationInProgress())
-		(*retpShip)->MarkImages();
+		pShip->MarkImages();
 
 	//	Create escorts, if necessary
 
@@ -1434,8 +1474,8 @@ ALERROR CSystem::CreateShip (DWORD dwClassID,
 		//	ship at create time to make the ship appear near the player.]
 
 		CSpaceObject *pEscortGate = pExitGate;
-		if (pExitGate == NULL || (pExitGate->GetPos() - (*retpShip)->GetPos()).Length2() > (LIGHT_SECOND * LIGHT_SECOND))
-			pEscortGate = *retpShip;
+		if (pExitGate == NULL || (pExitGate->GetPos() - pShip->GetPos()).Length2() > (LIGHT_SECOND * LIGHT_SECOND))
+			pEscortGate = pShip;
 		else
 			pEscortGate = pExitGate;
 
@@ -1444,11 +1484,20 @@ ALERROR CSystem::CreateShip (DWORD dwClassID,
 		SShipCreateCtx ECtx;
 		ECtx.pSystem = this;
 		ECtx.vPos = pEscortGate->GetPos();
-		ECtx.pBase = *retpShip;
+		ECtx.pBase = pShip;
 		ECtx.pTarget = NULL;
 		ECtx.pGate = pEscortGate;
 
 		pEscorts->CreateShips(ECtx);
+		}
+
+	if (retpShip)
+		*retpShip = pShip;
+
+	if (retpShipList)
+		{
+		retpShipList->RemoveAll();
+		retpShipList->Add(pShip);
 		}
 
 	return NOERROR;
@@ -1601,7 +1650,7 @@ ALERROR CSystem::CreateStargate (CStationType *pType,
 	//	Create the station
 
 	CSpaceObject *pObj;
-	if (error = CreateStation(pType, vPos, &pObj))
+	if (error = CreateStation(pType, NULL, vPos, &pObj))
 		return error;
 
 	pStation = pObj->AsStation();
@@ -1633,6 +1682,7 @@ ALERROR CSystem::CreateStargate (CStationType *pType,
 	}
 
 ALERROR CSystem::CreateStation (CStationType *pType,
+							    CDesignType *pEventHandler,
 								CVector &vPos,
 								CSpaceObject **retpStation)
 
@@ -1682,13 +1732,16 @@ ALERROR CSystem::CreateStation (CStationType *pType,
 
 	//	Create the station
 
+	SObjCreateCtx CreateCtx;
+	CreateCtx.vPos = vPos;
+	CreateCtx.pOrbit = &NewOrbit;
+	CreateCtx.bCreateSatellites = true;
+	CreateCtx.pEventHandler = pEventHandler;
+
 	CSpaceObject *pStation;
 	if (error = CreateStation(&Ctx,
 			pType,
-			vPos,
-			NewOrbit,
-			true,
-			NULL,
+			CreateCtx,
 			&pStation))
 		return error;
 
@@ -1991,9 +2044,9 @@ bool CSystem::DescendObject (DWORD dwObjID, const CVector &vPos, CSpaceObject **
 
 	//	Place the ship at the gate in the new system
 
-	pObj->Resume();
 	pObj->Place(vPos);
 	pObj->AddToSystem(this);
+	pObj->Resume();
 
 	//	Done
 
@@ -2166,7 +2219,8 @@ CString CSystem::GetAttribsAtPos (const CVector &vPos)
 //	Returns the attributes at the given position
 
 	{
-	return m_Territories.GetAttribsAtPos(vPos);
+	CString sAttribs = (m_pTopology ? m_pTopology->GetAttributes() : NULL_STR);
+	return ::AppendModifiers(sAttribs, m_Territories.GetAttribsAtPos(vPos));
 	}
 
 int CSystem::GetEmptyLocationCount (void)
@@ -2681,58 +2735,24 @@ void CSystem::PaintDestinationMarker (SViewportPaintCtx &Ctx, CG16bitImage &Dest
 	{
 	CVector vPos;
 
-	//	Figure out the bearing for the destination object
-	//	(We want the angle of the center with respect to the object because we
-	//	start at the edge of the screen and point inward).
+	//	Figure out the bearing for the destination object.
 
-	int iBearing = VectorToPolar(Ctx.pCenter->GetPos() - pObj->GetPos());
-
-	//	Generate a set of points for the directional indicator
-
-	SPoint Poly[5];
-
-	//	Start at the origin
-
-	Poly[0].x = 0;
-	Poly[0].y = 0;
-
-	//	Do one side first
-
-	vPos = PolarToVector(iBearing + 30, ENHANCED_SRS_BLOCK_SIZE);
-	Poly[1].x = (int)vPos.GetX();
-	Poly[1].y = -(int)vPos.GetY();
-
-	vPos = vPos + PolarToVector(iBearing, 3 * ENHANCED_SRS_BLOCK_SIZE);
-	Poly[2].x = (int)vPos.GetX();
-	Poly[2].y = -(int)vPos.GetY();
-
-	//	The other side
-
-	vPos = PolarToVector(iBearing + 330, ENHANCED_SRS_BLOCK_SIZE);
-	CVector vPos2 = vPos + PolarToVector(iBearing, 3 * ENHANCED_SRS_BLOCK_SIZE);
-
-	Poly[3].x = (int)vPos2.GetX();
-	Poly[3].y = -(int)vPos2.GetY();
-
-	Poly[4].x = (int)vPos.GetX();
-	Poly[4].y = -(int)vPos.GetY();
-
-	//	Paint the directional indicator
-
-	CG16bitBinaryRegion Region;
-	Region.CreateFromConvexPolygon(5, Poly);
+	int iBearing = VectorToPolar(pObj->GetPos() - Ctx.pCenter->GetPos());
 	WORD wColor = pObj->GetSymbolColor();
-	Region.Fill(Dest, x, y, wColor);
+
+	//	Paint the arrow
+
+	CPaintHelper::PaintArrow(Dest, x, y, iBearing, wColor);
 
 	//	Paint the text
 
 	const CG16bitFont &Font = g_pUniverse->GetNamedFont(CUniverse::fontSRSObjName);
 	vPos = PolarToVector(iBearing, 5 * ENHANCED_SRS_BLOCK_SIZE);
-	int xText = x + (int)vPos.GetX();
-	int yText = y - (int)vPos.GetY();
+	int xText = x - (int)vPos.GetX();
+	int yText = y + (int)vPos.GetY();
 
 	DWORD iAlign = alignCenter;
-	if (iBearing > 180)
+	if (iBearing <= 180)
 		yText += 2 * ENHANCED_SRS_BLOCK_SIZE;
 	else
 		{
@@ -2842,6 +2862,8 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 	{
 	int i;
 	int iLayer;
+
+	ASSERT(pCenter);
 
 	//	Initialize the viewport context
 
@@ -3384,6 +3406,17 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 
 	CMapViewportCtx Ctx(pCenter->GetPos(), rcView, rMapScale);
 
+	//	Make sure we've initialized the grid
+
+	if (m_GridPainter.IsEmpty())
+		{
+		for (i = 0; i < m_Stars.GetCount(); i++)
+			{
+			CSpaceObject *pStar = m_Stars.GetObj(i);
+			m_GridPainter.AddRegion(pStar->GetPos(), MAP_GRID_SIZE, MAP_GRID_SIZE);
+			}
+		}
+
 	//	Clear the rect
 
 	Dest.FillRGB(rcView.left, rcView.top, RectWidth(rcView), RectHeight(rcView), g_rgbSpaceColor);
@@ -3393,15 +3426,15 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 	if (m_pEnvironment)
 		m_pEnvironment->PaintMap(Ctx, Dest);
 
+	//	Paint grid
+
+	m_GridPainter.Paint(Dest, Ctx);
+
 	//	Paint the glow from all stars
 
 	for (i = 0; i < m_Stars.GetCount(); i++)
 		{
 		CSpaceObject *pStar = m_Stars.GetObj(i);
-
-		//	Paint a grid for the star
-
-		Ctx.PaintGrid(Dest, pStar->GetPos(), 30.0 * LIGHT_MINUTE, 100.0 * LIGHT_SECOND);
 
 		//	Paint glow
 
@@ -4323,18 +4356,27 @@ void CSystem::Update (SSystemUpdateCtx &SystemCtx)
 	DebugStartTimer();
 
 	m_BarrierObjects.SetAllocSize(GetObjectCount());
+	m_GravityObjects.SetAllocSize(GetObjectCount());
 
-	//	Make a list of all barrier objects
+	//	Make a list of all barrier and gravity objects
 
 	for (i = 0; i < GetObjectCount(); i++)
 		{
 		CSpaceObject *pObj = GetObject(i);
-		if (pObj)
+		if (pObj && !pObj->IsDestroyed())
 			{
-			if (pObj->IsBarrier() && !pObj->IsDestroyed())
+			if (pObj->IsBarrier())
 				m_BarrierObjects.FastAdd(pObj);
+
+			if (pObj->HasGravity())
+				m_GravityObjects.FastAdd(pObj);
 			}
 		}
+
+	//	Accelerate objects affected by gravity
+
+	for (i = 0; i < m_GravityObjects.GetCount(); i++)
+		UpdateGravity(Ctx, m_GravityObjects.GetObj(i));
 
 	//	Move all objects. Note: We always move last because we want to
 	//	paint right after a move. Otherwise, when a laser/missile hits
@@ -4431,6 +4473,91 @@ void CSystem::UpdateExtended (const CTimeSpan &ExtraTime)
 		}
 
 	SetProgramState(psUpdating);
+	}
+
+void CSystem::UpdateGravity (SUpdateCtx &Ctx, CSpaceObject *pGravityObj)
+
+//	UpdateGravity
+//
+//	Accelerates objects around high-gravity fields
+
+	{
+	int i;
+
+	//	Compute the acceleration due to gravity at the scale radius
+	//	(in kilometers per second-squared).
+
+	Metric rScaleRadius;
+	Metric r1EAccel = pGravityObj->GetGravity(&rScaleRadius);
+	if (r1EAccel <= 0.0)
+		return;
+
+	Metric rScaleRadius2 = rScaleRadius * rScaleRadius;
+
+	//	Compute the radius at which we get ripped apart
+
+	Metric rTidalKillDist2 = r1EAccel * rScaleRadius2 / TIDAL_KILL_THRESHOLD;
+
+	//	We don't care about accelerations less than 1 km/sec^2.
+
+	const Metric MIN_ACCEL = 1.0;
+
+	//	Compute the radius at which the acceleration is the minimum that we 
+	//	care about.
+	//
+	//	minA = A/r^2
+	//	r = sqrt(A/minA) * Earth-radius
+
+	Metric rMaxDist = sqrt(r1EAccel / MIN_ACCEL) * rScaleRadius;
+	Metric rMaxDist2 = rMaxDist * rMaxDist;
+
+	//	Loop over all objects inside the given distance and accelerate them.
+
+	CSpaceObjectList Objs;
+	GetObjectsInBox(pGravityObj->GetPos(), rMaxDist, Objs);
+
+	for (i = 0; i < Objs.GetCount(); i++)
+		{
+		//	Skip objects not affected by gravity
+
+		CSpaceObject *pObj = Objs.GetObj(i);
+		if (pObj == pGravityObj 
+				|| pObj->IsDestroyed()
+				|| !pObj->IsMobile()
+				|| pObj->GetDockedObj() != NULL)
+			continue;
+
+		//	Skip objects outside the maximum range
+
+		CVector vDist = (pGravityObj->GetPos() - pObj->GetPos());
+		Metric rDist2 = pGravityObj->GetDistance2(pObj);
+		if (rDist2 > rMaxDist2)
+			continue;
+
+		//	Inside the kill radius, we destroy the object
+
+		if (rDist2 < rTidalKillDist2)
+			{
+			if (pObj->OnDestroyCheck(killedByGravity, pGravityObj))
+				pObj->Destroy(killedByGravity, pGravityObj);
+
+			continue;
+			}
+
+		//	Compute acceleration
+
+		Metric rAccel = r1EAccel * rScaleRadius2 / rDist2;
+
+		//	Accelerate towards the center
+
+		pObj->DeltaV(g_SecondsPerUpdate * rAccel * vDist / sqrt(rDist2));
+		pObj->ClipSpeed(LIGHT_SPEED);
+
+		//	If this is the player, then gravity warning
+
+		if (pObj == Ctx.pPlayer && rAccel > GRAVITY_WARNING_THRESHOLD)
+			Ctx.bGravityWarning = true;
+		}
 	}
 
 void CSystem::UpdateRandomEncounters (void)

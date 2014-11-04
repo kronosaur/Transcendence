@@ -44,17 +44,21 @@
 			</GetGlobalDockScreen>
 		</Events>
 		
-		<DisplayAttributes>
+		<AttributeDesc>
 			<!-- Define item attributes so that the player can see which Corporation 
 				created the item. -->
 		
+			<ItemAttribute label="Assembler"		criteria="* +assemblerCorp;"/>
 			<ItemAttribute label="Bushido"			criteria="* +bushido;"/>
 			<ItemAttribute label="EI"				criteria="* +ei;"/>
+			<ItemAttribute label="Kabuto"			criteria="* +kabuto;"/>
 			<ItemAttribute label="Makayev"			criteria="* +makayev;"/>
 			<ItemAttribute label="NAMI"				criteria="* +nami;"/>
+			<ItemAttribute label="Pacific Defense"	criteria="* +pacificDefense;"/>
 			<ItemAttribute label="Rasiermesser"		criteria="* +rasiermesser;"/>
+			<ItemAttribute label="Solon"			criteria="* +solon;"/>
 			<ItemAttribute label="Taikon"			criteria="* +taikon;"/>
-		</DisplayAttributes>
+		</AttributeDesc>
 	</Sovereign>
 
 	<!-- CorporateCruiser -->
@@ -140,6 +144,8 @@
 	<StationType UNID="&stAdventurerOutfitters;"
 			name=				"Adventurer Outfitters"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -155,7 +161,7 @@
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"---ru cu--- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
 
 			noArticle=			"true"
@@ -234,10 +240,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -250,16 +252,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									Nil						; obsolete
-									
-									'(	"w"					; install devices
-										8					; of level 6 (and below)
-										Nil					; no special tech modifiers
-										True				; check for military ID
-										0)					; install cost margin
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -288,13 +283,9 @@
 							</Action>
 
 							<Action name="Install Weapon" key="W" >
-								(block Nil
-									(setq gTechLevel 8)
-									(setq gTechModifier Nil)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsInstallWeapon;")
-									)
+								(scrShowScreen gScreen &dsRPGInstallDevice; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Remove Weapon" key="V" >
@@ -332,6 +323,8 @@
 	<StationType UNID="&stArmorDealer;"
 			name=				"Corporate armor dealer"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -346,7 +339,7 @@
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"ccuv- ----- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			>
 
 		<Names noArticle="true">Armor United; Brentano Armor; Carbellium Armor Systems;
@@ -413,6 +406,10 @@
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Buy	criteria="asU -Illegal; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="asU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="s L:1-6" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -429,10 +426,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -443,16 +436,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									Nil						; obsolete
-									
-									'(	"d"					; install devices
-										6					; of level 6 (and below)
-										Nil					; no special tech modifiers
-										True				; check for military ID
-										-50)				; install cost margin
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -462,13 +448,9 @@
 							</Action>
 
 							<Action name="Repair or Replace Armor" key="A" >
-								(block Nil
-									(setq gTechLevel 7)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+								(scrShowScreen gScreen &dsRPGRepairArmor; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Upgrade Shield Generator" key="H">
@@ -507,6 +489,8 @@
 	<StationType UNID="&stArmsDealer;"
 			name=				"Corporate arms dealer"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -521,7 +505,7 @@
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"uccr- ----- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			>
 
 		<Names noArticle="true">Azure Protection Systems; Bixbie Arms; Chiba Arms Dealers; 
@@ -582,6 +566,7 @@
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Buy	criteria="mwU -Illegal; -NotForSale;"	priceAdj="60"/>
 			<Buy	criteria="mwU -Illegal; -ID;"				priceAdj="10"/>
+			<InstallDevice	criteria="w L:1-4;" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -608,10 +593,6 @@
 				; Pick a random upgrade
 				(objSetData gSource "WeaponUpgrade" (random 0 5))
 			</OnCreate>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -629,16 +610,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									Nil						; obsolete
-									
-									'(	"d"					; install devices
-										6					; of level 6 (and below)
-										Nil					; no special tech modifiers
-										True				; check for military ID
-										-50)				; install cost margin
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -686,6 +660,8 @@
 	<StationType UNID="&stArmsDealerMakayev;"
 			name=				"Makayev-Energia Space Systems"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"&dsArmsDealerSpecial;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -701,7 +677,7 @@
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"--rur v---- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 
 			noArticle=			"true"
 			>
@@ -753,6 +729,8 @@
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
 			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="100"/>
+			<InstallDevice	criteria="w L:1-8" priceAdj="100"/>
+			<RemoveDevice	criteria="w" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -765,10 +743,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockingPorts>
@@ -789,6 +763,8 @@
 	<StationType UNID="&stArmsDealerBushido;"
 			name=				"Bushido merchant"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"&dsArmsDealerSpecial;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -804,7 +780,7 @@
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"---ru rv--- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
 			>
 
@@ -861,17 +837,13 @@
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
+			<InstallDevice	criteria="w L:1-9" priceAdj="100"/>
+			<RemoveDevice	criteria="w" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
 			<LongName>"a Bushido arms dealer"</LongName>
 		</StaticData>
-
-		<Events>
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
-		</Events>
 
 		<DockingPorts>
 			<Port x="0"		y="70" />
@@ -891,6 +863,8 @@
 	<StationType UNID="&stAutonDealer;"
 			name=				"Corporate auton dealer"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -905,7 +879,7 @@
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"--rcu ur--- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
 			>
 
@@ -951,10 +925,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -965,9 +935,9 @@
 
 						<Actions>
 							<Action name="Buy Autons" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Sell Autons" key="S">
@@ -1081,6 +1051,8 @@
 	<StationType UNID="&stCorporateEnclave;"
 			name=				"Corporate enclave"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1117,10 +1089,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -1266,6 +1234,8 @@
 	<StationType UNID="&stFuelDepot;"
 			name=				"Corporate fuel depot"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1280,7 +1250,7 @@
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"cccuu rv--- ----- ----- -----"
-			locationCriteria=	"+planetary,-OuterSystem"
+			locationCriteria=	"-outerSystem, +planetary"
 			>
 
 		<Names noArticle="true">Antares Fuel; Bapco Fuel; Cerulean Energy;
@@ -1322,12 +1292,6 @@
 			<Refuel			criteria="f +BasicFuel; L:4-8;" priceAdj="90"/>
 		</Trade>
 
-		<Events>
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
-		</Events>
-
 		<DockScreens>
 			<Main>
 				<Panes>
@@ -1339,9 +1303,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Refuel" key="R">
@@ -1378,6 +1342,8 @@
 	<StationType UNID="&stMakayevFactory;"
 			name=				"Makayev manufacturing plant"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1394,7 +1360,7 @@
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, majorStation, Makayev, populated"
 			levelFrequency=		"----- rrur- ----- ----- -----"
 			unique=				"inSystem"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
 
 			definiteArticle=	"true"
@@ -1479,10 +1445,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -1495,16 +1457,9 @@
 
 						<Actions>
 							<Action name="Buy Items" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									Nil						; obsolete
-									
-									'(	"d"					; install devices
-										8					; of level 8 (and below)
-										Nil					; no special tech modifiers
-										True				; check for military ID
-										0)					; install cost margin
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Repair Items" key="R">
@@ -1515,7 +1470,9 @@
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -1524,43 +1481,6 @@
 						</Actions>
 
 					</Default>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(scrShowScreen gScreen "&dsRPGRepairArmor;" {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Install Device" key="d" >
-								(block Nil
-									(setq gTechLevel 9)
-									(setq gTechModifier Nil)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
-							</Action>
-
-							<Action name="Remove Device" key="V" >
-								(block Nil
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRemoveDevice;")
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="N">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</DockServices>
 				</Panes>
 			</Main>
 		</DockScreens>
@@ -1593,6 +1513,8 @@
 	<StationType UNID="&stManufacturingPlant;"
 			name=				"Corporate manufacturing plant"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1607,7 +1529,8 @@
 
 			attributes=			"corporate, corporateCustoms, friendly, independent, human, majorStation, populated"
 			levelFrequency=		"-uuuu r---- ----- ----- -----"
-			locationCriteria=	"*"
+			unique=				"inSystem"
+			locationCriteria=	"-planetary"
 			>
 			
 		<Names noArticle="true">Arcoter Industrials; Bosen-Haggen Manufacturing; Cloud9 Industrials;
@@ -1689,10 +1612,6 @@
 					)
 			</OnCreate>
 
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
-			
 			<OnManufacture>
 				(block (totalConsumed manufactureRun)
 					; Consume raw materials (and keep track of how much we are consuming)
@@ -1735,9 +1654,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 							
 							<Action name="Sell Items" default="1" key="S">
@@ -1775,6 +1694,8 @@
 	<StationType UNID="&stHotel;"
 			name=				"Corporate hotel"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -1787,7 +1708,7 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, majorStation, populated"
-			levelFrequency=		"ucurr v---- ----- ----- -----"
+			levelFrequency=		"uuurr v---- ----- ----- -----"
 			locationCriteria=	"*"
 			>
 
@@ -1818,10 +1739,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -2079,6 +1996,8 @@
 	<StationType UNID="&stIceFarm;"
 			name=				"Corporate ice farm"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -2093,7 +2012,7 @@
 
 			attributes=			"corporate, corporateCustoms, envAir, envAvoidsFire, friendly, independent, human, populated"
 			levelFrequency=		"rccuu rv--- ----- ----- -----"
-			locationCriteria=	"++frost; -innerSystem"
+			locationCriteria=	"++outerSystem"
 			>
 
 		<Image			imageID="&rsStations1;" imageX="512" imageY="384" imageWidth="128" imageHeight="128"/>
@@ -2126,10 +2045,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -2143,9 +2058,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -2191,6 +2106,8 @@
 	<StationType UNID="&stInsuranceCompany;"
 			name=				"Clavius Insurance Conglomerate"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -2206,7 +2123,7 @@
 			attributes=			"corporate, corporateCustoms, corporateInsurance, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"-rrru r---- ----- ----- -----"
 			unique=				"inSystem"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 
 			definiteArticle=	"true"
 			>
@@ -2266,11 +2183,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
-
 		</Events>
 
 		<DockScreens>
@@ -2442,6 +2354,8 @@
 	<StationType UNID="&stTaikonVentures;"
 			name=				"Taikon Ventures"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -2457,7 +2371,7 @@
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"----- -uur- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
 
 			noArticle=			"true"
@@ -2526,6 +2440,9 @@
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-11;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d +taikon" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-9" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -2534,10 +2451,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -2548,13 +2461,15 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Dock Services" default="1" key="D">
-								(scrShowPane gScreen "DockServices")
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -2563,44 +2478,6 @@
 
 						</Actions>
 					</Default>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A">
-								(scrShowScreen gScreen "&dsRPGRepairArmor;" {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Install Device" key="D">
-								(block Nil
-									(setq gTechLevel 9)
-									(setq gTechModifier "Taikon")
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
-							</Action>
-
-							<Action name="Remove Device" key="V">
-								(block Nil
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRemoveDevice;")
-									)
-							</Action>
-
-							<Action name="Done" key="N" cancel="1">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</DockServices>
-
 				</Panes>
 			</Main>
 
@@ -2624,6 +2501,8 @@
 	<StationType UNID="&stCorporateTradingPost;"
 			name=				"Corporate trading post"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -2638,7 +2517,7 @@
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"---rc uur-- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
 
 			noArticle=			"true"
@@ -2696,10 +2575,6 @@
 
 			<OnContractQuery>True</OnContractQuery>
 
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
-
 			<OnObjDestroyed>
 				(if (and (eq (objGetData gSource "MissionStatus") "intransit")
 						(eq aObjDestroyed (objGetObjRefData gSource "Transport")))
@@ -2729,9 +2604,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -3074,6 +2949,8 @@
 	<StationType UNID="&stWondrousDevices;"
 			name=				"Thor's Wondrous Devices"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -3088,7 +2965,7 @@
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"---ru ur--- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
 
 			noArticle=			"true"
@@ -3141,10 +3018,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -3155,9 +3028,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -3315,16 +3188,9 @@
 
 				<Actions>
 					<Action name="Buy Items" default="1" key="B">
-						(scrShowBuyScreen 
-							"*"						; items sold to player
-							Nil						; obsolete
-							
-							'(	"d"					; install devices
-								8					; of level 8 (and below)
-								Nil					; no special tech modifiers
-								True				; check for military ID
-								0)					; install cost margin
-							)
+						(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Dock Services" key="D">
@@ -3347,13 +3213,9 @@
 					</Action>
 
 					<Action name="Install Weapon" key="W" >
-						(block Nil
-							(setq gTechLevel 8)
-							(setq gTechModifier Nil)
-							(setq gCheckMilitaryID True)
-							(setq gMargin 100)
-							(scrShowScreen gScreen "&dsInstallWeapon;")
-							)
+						(scrShowScreen gScreen &dsRPGInstallDevice; {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Remove Weapon" key="V" >
@@ -3394,6 +3256,28 @@
 		</Panes>
 	</DockScreen>
 	
+<!-- BASE CLASSES -->
+	
+	<!-- Corporate Hierarchy Station Base Class
+	
+	USAGE: Corporate stations should inherit from this class. Derrived classes
+		should manually call OnCreate and OnDestroy in case they need to override
+		those events.
+	
+	-->
+	
+	<StationType unid="&baCorporateStation;"
+			name=			"(Corporate station base class)"
+			virtual=		"true"
+			>
+		
+		<Events>
+			<OnDestroy>
+				(intCorporateOnDestroy)
+			</OnDestroy>
+		</Events>
+	</StationType>
+
 <!-- TABLES -->
 
 	<ShipTable unid="&tbCorpDefenders;">

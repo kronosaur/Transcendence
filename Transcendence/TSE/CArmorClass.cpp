@@ -293,38 +293,50 @@ void CArmorClass::CalcAdjustedDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
 
 	int iDamageLevel = Ctx.Damage.GetArmorDamageLevel();
 	if (iDamageLevel > 0)
-		{
-		int iDiff = m_pItemType->GetLevel() - iDamageLevel;
-		int iAdj;
-
-		switch (iDiff)
-			{
-			case 0:
-				iAdj = 200;
-				break;
-
-			case 1:
-				iAdj = 150;
-				break;
-
-			case 2:
-				iAdj = 125;
-				break;
-
-			default:
-				if (iDiff < 0)
-					iAdj = 250;
-				else
-					iAdj = 100;
-			}
-
-		Ctx.iDamage = (iAdj * Ctx.iDamage + 50) / 100;
-		}
+		Ctx.iDamage = (CalcArmorDamageAdj(Ctx.Damage) * Ctx.iDamage + 50) / 100;
 
 	//	Adjust for damage type
 
 	int iDamageAdj = GetDamageAdj((pArmor ? pArmor->GetMods() : CItemEnhancement()), Ctx.Damage);
 	Ctx.iDamage = (iDamageAdj * Ctx.iDamage + 50) / 100;
+	}
+
+int CArmorClass::CalcArmorDamageAdj (const DamageDesc &Damage) const
+
+//	CalcArmorDamageAdj
+//
+//	Adjust for special armor damage:
+//
+//	<0	=	2.5x damage
+//	0	=	2x damage
+//	1	=	1.5x damage
+//	2	=	1.25x damage
+//	>2	=	1x damage
+
+	{
+	int iDamageLevel = Damage.GetArmorDamageLevel();
+	if (iDamageLevel <= 0)
+		return 100;
+
+	int iDiff = m_pItemType->GetLevel() - iDamageLevel;
+
+	switch (iDiff)
+		{
+		case 0:
+			return 200;
+
+		case 1:
+			return 150;
+
+		case 2:
+			return 125;
+
+		default:
+			if (iDiff < 0)
+				return 250;
+			else
+				return 100;
+		}
 	}
 
 int CArmorClass::CalcAverageRelativeDamageAdj (void)
@@ -993,6 +1005,44 @@ int CArmorClass::GetDamageAdjForWeaponLevel (int iLevel)
 		}
 
 	return iBestAdj;
+	}
+
+int CArmorClass::GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon)
+
+//	GetDamageEffectiveness
+//
+//	Returns the effectiveness of the given weapon against this shield.
+//
+//	< 0		The weapon is ineffective against us.
+//	0-99	The weapon is less effective than average.
+//	100		The weapon has average effectiveness
+//	> 100	The weapon is more effective than average.
+
+	{
+	const DamageDesc *pDamage = pWeapon->GetDamageDesc(CItemCtx(pAttacker, pWeapon));
+	if (pDamage == NULL)
+		return 100;
+
+	int iBonus = m_DamageAdj.GetHPBonus(pDamage->GetDamageType());
+	if (iBonus <= -100)
+		return -1;
+
+	//	Compute score based on bonus
+
+	int iScore;
+	if (iBonus <= 0)
+		iScore = 100 - iBonus;
+	else
+		iScore = 100 - Min(100, (iBonus / 2));
+
+	//	See if we do extra damage
+
+	if (pDamage->GetArmorDamageLevel())
+		iScore += (CalcArmorDamageAdj(*pDamage) / 2);
+
+	//	Done
+
+	return iScore;
 	}
 
 ICCItem *CArmorClass::GetItemProperty (CItemCtx &Ctx, const CString &sName)

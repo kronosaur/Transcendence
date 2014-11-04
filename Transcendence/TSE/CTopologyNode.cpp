@@ -193,12 +193,12 @@ int CTopologyNode::CalcMatchStrength (const CAttributeCriteria &Criteria)
 	int iStrength = 1000;
 	for (i = 0; i < Criteria.GetCount(); i++)
 		{
-		int iWeight;
+		DWORD dwMatchStrength;
 		bool bIsSpecial;
-		const CString &sAttrib = Criteria.GetAttribAndWeight(i, &iWeight, &bIsSpecial);
+		const CString &sAttrib = Criteria.GetAttribAndWeight(i, &dwMatchStrength, &bIsSpecial);
 
 		bool bHasAttrib = (bIsSpecial ? HasSpecialAttribute(sAttrib) : HasAttribute(sAttrib));
-		int iAdj = ::ComputeWeightAdjFromMatchStrength(bHasAttrib, iWeight);
+		int iAdj = CAttributeCriteria::CalcWeightAdj(bHasAttrib, dwMatchStrength);
 
 		iStrength = iStrength * iAdj / 1000;
 		}
@@ -477,24 +477,6 @@ ICCItem *CTopologyNode::GetProperty (const CString &sName)
 		return CC.CreateNil();
 	}
 
-int CTopologyNode::GetRequiredEncounter (CStationType *pType) const
-
-//	GetRequiredEncounter
-//
-//	Returns the required encounters of the given type.
-
-	{
-	int i;
-
-	for (i = 0; i < m_RequiredEncounters.GetCount(); i++)
-		{
-		if (m_RequiredEncounters[i].pType == pType)
-			return m_RequiredEncounters[i].iLeftToCreate;
-		}
-
-	return 0;
-	}
-
 CString CTopologyNode::GetStargate (int iIndex)
 
 //	GetStargate
@@ -554,35 +536,6 @@ bool CTopologyNode::HasVariantLabel (const CString &sVariant)
 	return false;
 	}
 
-void CTopologyNode::ChangeRequiredEncounter (CStationType *pType, int iChange)
-
-//	ChangeRequiredEncounter
-//
-//	Increment or decrement encounters left.
-
-	{
-	int i;
-
-	for (i = 0; i < m_RequiredEncounters.GetCount(); i++)
-		{
-		if (m_RequiredEncounters[i].pType == pType)
-			{
-			if (iChange > 0 || -iChange <= m_RequiredEncounters[i].iLeftToCreate)
-				m_RequiredEncounters[i].iLeftToCreate += iChange;
-			return;
-			}
-		}
-
-	//	If we get this far then we could not find the entry and need to add one.
-
-	if (iChange > 0)
-		{
-		SRequiredEncounterDesc *pEntry = m_RequiredEncounters.Insert();
-		pEntry->pType = pType;
-		pEntry->iLeftToCreate = iChange;
-		}
-	}
-
 ALERROR CTopologyNode::InitFromAdditionalXML (CXMLElement *pDesc, CString *retsError)
 
 //	InitFromAdditionalXML
@@ -622,7 +575,8 @@ ALERROR CTopologyNode::InitFromSystemXML (CXMLElement *pSystem, CString *retsErr
 
 //	InitFromSystemXML
 //
-//	Initializes the system information based on an XML element
+//	Initializes the system information based on an XML element.
+//	NOTE: We assume the universe is fully bound at this point.
 
 	{
 	ALERROR error;
@@ -670,6 +624,10 @@ ALERROR CTopologyNode::InitFromSystemXML (CXMLElement *pSystem, CString *retsErr
 	if (dwUNID != 0)
 		m_SystemUNID = dwUNID;
 
+	//	Get the system type
+
+	CSystemType *pSystemType = g_pUniverse->FindSystemType(m_SystemUNID);
+
 	//	Set the name of the system
 
 	CString sName;
@@ -710,6 +668,9 @@ ALERROR CTopologyNode::InitFromSystemXML (CXMLElement *pSystem, CString *retsErr
 
 	if (pSystemParent && pSystemParent->FindAttribute(ATTRIBUTES_ATTRIB, &sAttribs))
 		AddAttributes(sAttribs);
+
+	if (pSystemType && !pSystemType->GetAttributes().IsBlank())
+		AddAttributes(pSystemType->GetAttributes());
 
 	return NOERROR;
 	}

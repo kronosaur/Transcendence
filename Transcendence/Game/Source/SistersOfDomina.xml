@@ -72,7 +72,7 @@
 			attributes=			"envAir, envAvoidsFire, friendly, human, majorStation, populated, religious, sistersOfDomina"
 			levelFrequency=		"ruccc ur--- ----- ----- -----"
 			unique=				"inSystem"
-			locationCriteria=	"+planetary; -innerSystem"
+			locationCriteria=	"-innerSystem, +planetary"
 
 			definiteArticle=	"true"
 			>
@@ -263,6 +263,11 @@
 							;	Figure out what happened
 							
 							(switch
+							
+								;	If we're not a Pilgrim, we always get nothing
+								
+								(not (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;))
+									(scrShowPane gScreen "Nothing")
 							
 								;	10% of the time, Domina reveals stations in the system
 								
@@ -493,7 +498,12 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'Welcome))
+					(switch
+						(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+							(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'Welcome))
+							
+						(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'WelcomeNonPilgrim))
+						)
 				</OnPaneInit>
 
 				<Actions>
@@ -638,6 +648,12 @@
 					"\"Welcome, Pilgrim! Your journey to the Galactic Core "
 					"will be long and arduous but we are here to help those "
 					"of pure spirit and in true need.\""
+					)
+			</Text>
+			<Text id="WelcomeNonPilgrim">
+				(cat
+					"\"Welcome! Domina asks that we help those in need. Our powers in "
+					"the material world are at your service.\""
 					)
 			</Text>
 

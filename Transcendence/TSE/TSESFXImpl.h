@@ -344,11 +344,13 @@ class CImageEffectCreator : public CEffectCreator,
 		virtual void SetVariants (int iVariants);
 
 		//	IEffectPainter virtuals
+		virtual bool CanPaintComposite (void) { return true; }
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual bool GetParticlePaintDesc (SParticlePaintDesc *retDesc);
 		virtual void GetRect (RECT *retRect) const;
 		virtual int GetVariants (void) const { return m_iVariants; }
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+		virtual void PaintComposite (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0, int iRotation = 0) const;
 
 	protected:
@@ -478,6 +480,37 @@ class CNullEffectCreator : public CEffectCreator,
 		//	IEffectPainter virtuals
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx) { }
+	};
+
+class COrbEffectCreator : public CEffectCreator
+	{
+	public:
+		COrbEffectCreator (void);
+		~COrbEffectCreator (void);
+			
+		virtual CString GetTag (void) { return GetClassTag(); }
+
+		//	CEffectCreator virtuals
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
+		virtual int GetLifetime (void) { return 0; }
+
+		static CString GetClassTag (void) { return CONSTLIT("Orb"); }
+
+	protected:
+		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
+		virtual ALERROR OnEffectBindDesign (SDesignLoadCtx &Ctx);
+
+	private:
+		CEffectParamDesc m_Radius;			//	radius: Radius of orb (pixels)
+		CEffectParamDesc m_Style;			//	style: Style of ray
+		CEffectParamDesc m_Intensity;		//	intensity: Intensity of ray
+		CEffectParamDesc m_PrimaryColor;	//	primaryColor: Primary color
+		CEffectParamDesc m_SecondaryColor;	//	secondaryColor: Secondary color
+
+		CEffectParamDesc m_Animate;			//	animate: Animation styles
+		CEffectParamDesc m_Lifetime;		//	lifetime: Lifetime in ticks (optional)
+
+		IEffectPainter *m_pSingleton;
 	};
 
 class CParticleCloudEffectCreator : public CEffectCreator

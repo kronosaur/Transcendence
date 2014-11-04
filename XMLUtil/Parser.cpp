@@ -215,6 +215,57 @@ Fail:
 	return error;
 	}
 
+ALERROR CXMLElement::ParseSingleElement (IReadBlock *pStream, 
+										 IXMLParserController *pController,
+										 CXMLElement **retpElement, 
+										 CString *retsError)
+
+//	ParseElement
+//
+//	Parses a single element
+
+	{
+	ALERROR error;
+
+	//	Open the stream
+
+	if (error = pStream->Open())
+		{
+		*retsError = CONSTLIT("unable to open XML stream");
+		return error;
+		}
+
+	//	Initialize context
+
+	ParserCtx Ctx(pStream, pController);
+
+	//	Get the first token
+
+	if (ParseToken(&Ctx) != tkTagOpen)
+		{
+		error = ERR_FAIL;
+		Ctx.sError = LITERAL("Element expected");
+		goto Fail;
+		}
+
+	//	Parse the root element
+
+	if (error = ParseElement(&Ctx, retpElement))
+		goto Fail;
+
+	//	Done
+
+	pStream->Close();
+
+	return NOERROR;
+
+Fail:
+
+	pStream->Close();
+	*retsError = strPatternSubst(LITERAL("Line(%d): %s"), Ctx.iLine, Ctx.sError);
+	return error;
+	}
+
 ALERROR ParseDTD (ParserCtx *pCtx)
 
 //	ParseDTD

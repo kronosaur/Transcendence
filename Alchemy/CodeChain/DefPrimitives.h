@@ -37,7 +37,7 @@ static PRIMITIVEPROCDEF g_DefPrimitives[] =
 
 		{	"append",			fnAppend,		0,
 			"(append a b [...]) -> lists are concatenated",
-			"vv*",	0,	},
+			"*",	0,	},
 
 		{	"apply",			fnApply,		0,
 			"(apply exp arg1 arg2 ... argn list) -> Result",
@@ -223,6 +223,10 @@ static PRIMITIVEPROCDEF g_DefPrimitives[] =
 		{	"sort",				fnSort,			FN_SORT,
 			"(sort list ['ascending|'descending] [keyIndex]) -> sorted list",
 			"v*",	0,	},
+
+		{	"split",			fnSplit,		0,
+			"(split string [characters]) -> list",
+			"s*",	0,	},
 
 		{	"sqrt",				fnMath,			FN_MATH_SQRT,
 			"(sqrt x) -> z",

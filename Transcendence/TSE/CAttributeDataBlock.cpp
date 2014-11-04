@@ -5,6 +5,7 @@
 #include "PreComp.h"
 
 #define DATA_ATTRIB								CONSTLIT("data")
+#define ID_ATTRIB								CONSTLIT("id")
 
 CAttributeDataBlock::CAttributeDataBlock (void) :
 		m_pData(NULL),
@@ -471,7 +472,15 @@ void CAttributeDataBlock::SetFromXML (CXMLElement *pData)
 		for (int i = 0; i < pData->GetContentElementCount(); i++)
 			{
 			CXMLElement *pItem = pData->GetContentElement(i);
+			CString sID;
 			CString sData;
+
+			//	ID of data is either in id= attrib or element tag.
+
+			if (!pItem->FindAttribute(ID_ATTRIB, &sID))
+				sID = pItem->GetTag();
+
+			//	Dats is either in data= attrib or content text
 
 			sData = pItem->GetAttribute(DATA_ATTRIB);
 			if (sData.IsBlank())
@@ -485,7 +494,9 @@ void CAttributeDataBlock::SetFromXML (CXMLElement *pData)
 					sData = CCString::Print(sData);
 				}
 
-			SetData(pItem->GetTag(), sData);
+			//	Store
+
+			SetData(sID, sData);
 			}
 		}
 	}

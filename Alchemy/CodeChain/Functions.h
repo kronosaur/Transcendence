@@ -99,6 +99,7 @@ ICCItem *fnSet (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnShuffle (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnSort (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnSpecial (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
+ICCItem *fnSplit (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnStrCapitalize (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnStrFind (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnSubset (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);

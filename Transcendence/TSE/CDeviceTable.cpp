@@ -212,14 +212,14 @@ ALERROR IDeviceGenerator::InitDeviceDescFromXML (SDesignLoadCtx &Ctx, CXMLElemen
 	{
 	ALERROR error;
 
-	retDesc->iPosAngle = pDesc->GetAttributeInteger(POS_ANGLE_ATTRIB);
+	retDesc->iPosAngle = AngleMod(pDesc->GetAttributeInteger(POS_ANGLE_ATTRIB));
 	retDesc->iPosRadius = pDesc->GetAttributeInteger(POS_RADIUS_ATTRIB);
 	if (!(retDesc->b3DPosition = pDesc->FindAttributeInteger(POS_Z_ATTRIB, &retDesc->iPosZ)))
 		retDesc->iPosZ = 0;
 
 	retDesc->bOmnidirectional = pDesc->GetAttributeBool(OMNIDIRECTIONAL_ATTRIB);
-	retDesc->iMinFireArc = pDesc->GetAttributeInteger(MIN_FIRE_ARC_ATTRIB);
-	retDesc->iMaxFireArc = pDesc->GetAttributeInteger(MAX_FIRE_ARC_ATTRIB);
+	retDesc->iMinFireArc = AngleMod(pDesc->GetAttributeInteger(MIN_FIRE_ARC_ATTRIB));
+	retDesc->iMaxFireArc = AngleMod(pDesc->GetAttributeInteger(MAX_FIRE_ARC_ATTRIB));
 
 	if (error = CDeviceClass::ParseLinkedFireOptions(Ctx, pDesc->GetAttribute(LINKED_FIRE_ATTRIB), &retDesc->dwLinkedFireOptions))
 		return error;
@@ -398,13 +398,14 @@ ALERROR CSingleDevice::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	if (pDesc->FindAttributeInteger(POS_Z_ATTRIB, &m_iPosZ))
 		{
-		m_iPosAngle = pDesc->GetAttributeInteger(POS_ANGLE_ATTRIB);
+		m_iPosAngle = AngleMod(pDesc->GetAttributeInteger(POS_ANGLE_ATTRIB));
 		m_iPosRadius = pDesc->GetAttributeInteger(POS_RADIUS_ATTRIB);
 		m_b3DPosition = true;
 		m_bDefaultPos = false;
 		}
 	else if (pDesc->FindAttributeInteger(POS_ANGLE_ATTRIB, &m_iPosAngle))
 		{
+		m_iPosAngle = AngleMod(m_iPosAngle);
 		m_iPosRadius = pDesc->GetAttributeInteger(POS_RADIUS_ATTRIB);
 		m_iPosZ = 0;
 		m_b3DPosition = false;
@@ -424,7 +425,8 @@ ALERROR CSingleDevice::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	if (pDesc->FindAttributeInteger(MIN_FIRE_ARC_ATTRIB, &m_iMinFireArc))
 		{
 		m_bOmnidirectional = false;
-		m_iMaxFireArc = pDesc->GetAttributeInteger(MAX_FIRE_ARC_ATTRIB);
+		m_iMinFireArc = AngleMod(m_iMinFireArc);
+		m_iMaxFireArc = AngleMod(pDesc->GetAttributeInteger(MAX_FIRE_ARC_ATTRIB));
 		m_bDefaultFireArc = false;
 		}
 	else if (pDesc->FindAttributeBool(OMNIDIRECTIONAL_ATTRIB, &m_bOmnidirectional))

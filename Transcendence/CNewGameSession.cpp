@@ -957,16 +957,13 @@ void CNewGameSession::SetShipClassImage (CShipClass *pClass, int x, int y, int c
 		CG16bitImage *pNewImage = new CG16bitImage;
 		pNewImage->CreateBlank(SHIP_IMAGE_WIDTH, SHIP_IMAGE_HEIGHT, false);
 
-
 		ViewportTransform Trans;
 		pClass->Paint(*pNewImage, 
 				SHIP_IMAGE_WIDTH / 2, 
 				SHIP_IMAGE_HEIGHT / 2, 
 				Trans, 
 				0, 
-				0,
-				false,
-				false
+				0
 				);
 
 		pImageToUse = pNewImage;

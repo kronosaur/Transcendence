@@ -1111,22 +1111,24 @@
 									(setq gItem (scrGetItem gScreen))
 
 									; Install?
-									(if (and gInstallCriteria
-											(item
-												(intInstallDevicePrepEx
-													gItem								; item to install
-													0									; specify cost of 0 because we check later
-													Nil									; install cost margin
-													(objGetDefaultCurrency gSource)		; currency to use
-													gTechLevel							; max tech level
-													gInstallCriteria					; install criteria
-													gCheckMilitaryID					; check military ID
-													True								; item is in cargo
-													True)								; buy and install
-												0)
-											)
-										(scrShowPane gScreen "InstallItem")
-										
+									
+									(switch
+										(and gInstallCriteria
+												(item
+													(intInstallDevicePrepEx
+														gItem								; item to install
+														0									; specify cost of 0 because we check later
+														Nil									; install cost margin
+														(objGetDefaultCurrency gSource)		; currency to use
+														gTechLevel							; max tech level
+														gInstallCriteria					; install criteria
+														gCheckMilitaryID					; check military ID
+														True								; item is in cargo
+														True)								; buy and install
+													0)
+												)
+											(scrShowPane gScreen "InstallItem")
+											
 										; Otherwise...
 										
 										(block Nil

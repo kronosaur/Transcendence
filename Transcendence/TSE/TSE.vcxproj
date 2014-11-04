@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug in Program Files|Win32">
       <Configuration>Debug in Program Files</Configuration>
@@ -21,17 +21,17 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v110_xp</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v110_xp</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug in Program Files|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v110_xp</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -168,7 +168,10 @@
   <ItemGroup>
     <ClCompile Include="CAdventureRecord.cpp" />
     <ClCompile Include="CAISettings.cpp" />
+    <ClCompile Include="CApproachOrder.cpp" />
     <ClCompile Include="CAscendedObjectList.cpp" />
+    <ClCompile Include="CAttackOrder.cpp" />
+    <ClCompile Include="CAttackStationOrder.cpp" />
     <ClCompile Include="CCommunicationsHandler.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug in Program Files|Win32'">Disabled</Optimization>
@@ -182,6 +185,7 @@
     </ClCompile>
     <ClCompile Include="CCompositeImageModifiers.cpp" />
     <ClCompile Include="CCreatePainterCtx.cpp" />
+    <ClCompile Include="CCXMLWrapper.cpp" />
     <ClCompile Include="CDisplayAttributeDefinitions.cpp" />
     <ClCompile Include="CDockingPorts.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
@@ -197,6 +201,8 @@
     <ClCompile Include="CEffectParamDesc.cpp" />
     <ClCompile Include="CEnergyField.cpp" />
     <ClCompile Include="CEnergyFieldList.cpp" />
+    <ClCompile Include="CEscortOrder.cpp" />
+    <ClCompile Include="CFireEventOrder.cpp" />
     <ClCompile Include="CGameFile.cpp" />
     <ClCompile Include="CGameRecord.cpp" />
     <ClCompile Include="CGameStats.cpp" />
@@ -205,7 +211,9 @@
     <ClCompile Include="CInstalledDevice.cpp" />
     <ClCompile Include="CIntegralRotation.cpp" />
     <ClCompile Include="CIntegralRotationDesc.cpp" />
+    <ClCompile Include="CItemCtx.cpp" />
     <ClCompile Include="CItemEnhancementStack.cpp" />
+    <ClCompile Include="CMapGridPainter.cpp" />
     <ClCompile Include="CMapViewportCtx.cpp" />
     <ClCompile Include="CMissionList.cpp" />
     <ClCompile Include="CMoveCtx.cpp" />
@@ -231,6 +239,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="CSendMessageOrder.cpp" />
     <ClCompile Include="CShipInterior.cpp" />
     <ClCompile Include="CShipInteriorDesc.cpp" />
     <ClCompile Include="CShipTable.cpp" />
@@ -238,6 +247,7 @@
     <ClCompile Include="CEnvironmentGrid.cpp" />
     <ClCompile Include="CSoundType.cpp" />
     <ClCompile Include="CSpaceObjectAddressResolver.cpp" />
+    <ClCompile Include="CSpaceObjectTrade.cpp" />
     <ClCompile Include="CStationEncounterCtx.cpp" />
     <ClCompile Include="CStationEncounterDesc.cpp" />
     <ClCompile Include="CStationTableCache.cpp" />
@@ -258,6 +268,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="CUserProfile.cpp" />
+    <ClCompile Include="CWaitOrder.cpp" />
     <ClCompile Include="CWaveGenerator.cpp" />
     <ClCompile Include="Damage.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
@@ -282,6 +293,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="IListData.cpp" />
+    <ClCompile Include="SFXOrb.cpp" />
     <ClCompile Include="SFXParticleJet.cpp" />
     <ClCompile Include="SFXRay.cpp" />
     <ClCompile Include="XMLLoader.cpp">
@@ -455,7 +467,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="CShipEnergyFieldType.cpp">
+    <ClCompile Include="COverlayType.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug in Program Files|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

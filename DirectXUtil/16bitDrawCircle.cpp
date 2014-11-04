@@ -6,11 +6,795 @@
 #include <ddraw.h>
 #include "Alchemy.h"
 #include "DirectXUtil.h"
+
 #include <math.h>
 #include <stdio.h>
+#include "NoiseImpl.h"
 
 const DWORD RED_BLUE_COUNT =						(1 << 5);
 const DWORD GREEN_COUNT =							(1 << 6);
+
+BYTE STOCHASTIC_OPACITY[STOCHASTIC_SIZE][256];
+
+static bool g_bStochasticInit = false;
+
+//	Template Function ---------------------------------------------------------
+
+template <class PAINTER> void DrawFilledCircle (PAINTER &Painter)
+	{
+	int iRadius = Painter.GetRadius();
+
+	//	Deal with edge-conditions
+
+	if (iRadius <= 0)
+		return;
+
+	//	Initialize some stuff
+
+	int x = 0;
+	int y = iRadius;
+	int d = 1 - iRadius;
+	int deltaE = 3;
+	int deltaSE = -2 * iRadius + 5;
+
+	//	Draw central line
+
+	Painter.DrawLine(iRadius, 0);
+
+	//	Draw lines above and below the center
+
+	int iLastDraw = -1;
+	while (y > x)
+		{
+		if (d < 0)
+			{
+			d += deltaE;
+			deltaE += 2;
+			deltaSE += 2;
+			}
+		else
+			{
+			d += deltaSE;
+			deltaE += 2;
+			deltaSE += 4;
+
+			//	Draw lines
+
+			Painter.DrawLine(x, y);
+			iLastDraw = y;
+
+			//	Next
+
+			y--;
+			}
+
+		x++;
+
+		//	Draw lines
+
+		if (x != iLastDraw)
+			Painter.DrawLine(y, x);
+		}
+	}
+
+//	CompositeFilledCircleFromTable ---------------------------------------------
+
+class CCompositeFilledCircleFromTable
+	{
+	public:
+		CCompositeFilledCircleFromTable (CG16bitImage *pDest, int xDest, int yDest, int iRadius, WORD *pColorTable, BYTE *pOpacityTable);
+		~CCompositeFilledCircleFromTable (void);
+
+		void DrawLine (int x, int y);
+		inline int GetRadius (void) const { return m_iRadius; }
+
+	private:
+		CG16bitImage *m_pDest;
+		int m_xDest;
+		int m_yDest;
+		int m_iRadius;
+		WORD *m_pColorTable;
+		BYTE *m_pOpacityTable;
+
+		DWORD *m_pRed;
+		DWORD *m_pGreen;
+		DWORD *m_pBlue;
+	};
+
+class CCompositeFilledCircleFromTableStochastic
+	{
+	public:
+		CCompositeFilledCircleFromTableStochastic (CG16bitImage *pDest, int xDest, int yDest, int iRadius, WORD *pColorTable, BYTE *pOpacityTable);
+		~CCompositeFilledCircleFromTableStochastic (void);
+
+		void DrawLine (int x, int y);
+		inline int GetRadius (void) const { return m_iRadius; }
+
+	private:
+		CG16bitImage *m_pDest;
+		int m_xDest;
+		int m_yDest;
+		int m_iRadius;
+		WORD *m_pColorTable;
+		BYTE *m_pOpacityTable;
+
+		DWORD *m_pRed;
+		DWORD *m_pGreen;
+		DWORD *m_pBlue;
+	};
+
+void CompositeFilledCircle (CG16bitImage &Dest, 
+							int xDest, 
+							int yDest, 
+							int iRadius,
+							WORD *pColorTable,
+							BYTE *pOpacityTable,
+							bool bStochastic)
+	{
+	if (bStochastic)
+		{
+		CCompositeFilledCircleFromTableStochastic Painter(&Dest, xDest, yDest, iRadius, pColorTable, pOpacityTable);
+		InitStochasticTable();
+		DrawFilledCircle(Painter);
+		}
+	else
+		{
+		CCompositeFilledCircleFromTable Painter(&Dest, xDest, yDest, iRadius, pColorTable, pOpacityTable);
+		DrawFilledCircle(Painter);
+		}
+	}
+
+CCompositeFilledCircleFromTable::CCompositeFilledCircleFromTable (CG16bitImage *pDest, int xDest, int yDest, int iRadius, WORD *pColorTable, BYTE *pOpacityTable) :
+				m_pDest(pDest),
+				m_xDest(xDest),
+				m_yDest(yDest),
+				m_iRadius(iRadius),
+				m_pColorTable(pColorTable),
+				m_pOpacityTable(pOpacityTable),
+				m_pRed(NULL),
+				m_pGreen(NULL),
+				m_pBlue(NULL)
+	{
+	int i;
+
+	if (iRadius > 0)
+		{
+		m_pRed = new DWORD [iRadius];
+		m_pGreen = new DWORD [iRadius];
+		m_pBlue = new DWORD [iRadius];
+		for (i = 0; i < iRadius; i++)
+			{
+			WORD wColor = m_pColorTable[i];
+			m_pRed[i] = (wColor >> 11) & 0x1f;
+			m_pGreen[i] = (wColor >> 5) & 0x3f;
+			m_pBlue[i] = wColor & 0x1f;
+			}
+		}
+	}
+
+CCompositeFilledCircleFromTable::~CCompositeFilledCircleFromTable (void)
+	{
+	if (m_pRed)
+		delete [] m_pRed;
+
+	if (m_pGreen)
+		delete [] m_pGreen;
+
+	if (m_pBlue)
+		delete [] m_pBlue;
+	}
+
+void CCompositeFilledCircleFromTable::DrawLine (int x, int y)
+	{
+	int xStart = m_xDest - x;
+	int xEnd = m_xDest + x + 1;
+	const RECT &rcClip = m_pDest->GetClipRect();
+
+	if (xEnd <= rcClip.left || xStart >= rcClip.right)
+		return;
+
+	//	See which lines we need to paint
+
+	int yLine = m_yDest - y;
+	bool bPaintTop = (yLine >= rcClip.top && yLine < rcClip.bottom);
+	WORD *pCenterTop = m_pDest->GetRowStart(yLine) + m_xDest;
+	BYTE *pCenterTopAlpha = m_pDest->GetAlphaRow(yLine) + m_xDest;
+
+	yLine = m_yDest + y;
+	bool bPaintBottom = ((y > 0) && (yLine >= rcClip.top && yLine < rcClip.bottom));
+	WORD *pCenterBottom = m_pDest->GetRowStart(yLine) + m_xDest;
+	BYTE *pCenterBottomAlpha = m_pDest->GetAlphaRow(yLine) + m_xDest;
+
+	//	Compute radius increment
+
+	int iRadius = y;
+	int d = -y;
+	int deltaE = 3;
+	int deltaSE = -2 * y + 1;
+
+	//	Loop
+
+	int xPos = 0;
+
+	//	Paint the center point (this is a special case)
+
+	if (y == 0)
+		{
+		if (m_xDest < rcClip.right
+				&& m_xDest >= rcClip.left
+				&& bPaintTop
+				&& m_iRadius > 0)
+			{
+			WORD dwOpacity = m_pOpacityTable[0];
+			WORD wColor = m_pColorTable[0];
+
+			if (dwOpacity == 255)
+				{
+				*pCenterTop = wColor;
+				*pCenterTopAlpha = 255;
+				}
+			else
+				{
+				*pCenterTop = CG16bitImage::BlendPixel(*pCenterTop, wColor, dwOpacity);
+				*pCenterTopAlpha = CG16bitImage::BlendAlpha(*pCenterTopAlpha, (BYTE)dwOpacity);
+				}
+			}
+
+		//	Continue
+
+		xPos = 1;
+		d += deltaSE;
+		deltaE += 2;
+		iRadius++;
+		}
+
+	//	Blt the line 
+
+	while (xPos <= x)
+		{
+		//	Figure out the radius of the pixel at this location
+
+		if (d < 0)
+			{
+			d += deltaE;
+			deltaE += 2;
+			deltaSE += 2;
+			}
+		else
+			{
+			d += deltaSE;
+			deltaE += 2;
+			//  deltaSE += 0;
+			iRadius++;
+			}
+
+		//	Compute the transparency based on the radius
+
+		WORD dwOpacity;
+		if (iRadius >= m_iRadius
+				|| (dwOpacity = m_pOpacityTable[iRadius]) == 0)
+			{
+			//	Skip
+			}
+		else
+			{
+			if (dwOpacity == 255)
+				{
+				WORD wColor = m_pColorTable[iRadius];
+
+				if (m_xDest - xPos < rcClip.right && m_xDest - xPos >= rcClip.left)
+					{
+					if (bPaintTop)
+						{
+						*(pCenterTop - xPos) = wColor;
+						*(pCenterTopAlpha - xPos) = 255;
+						}
+
+					if (bPaintBottom)
+						{
+						*(pCenterBottom - xPos) = wColor;
+						*(pCenterBottomAlpha - xPos) = 255;
+						}
+					}
+
+				if (xPos > 0 && m_xDest + xPos < rcClip.right && m_xDest + xPos >= rcClip.left)
+					{
+					if (bPaintTop)
+						{
+						*(pCenterTop + xPos) = wColor;
+						*(pCenterTopAlpha + xPos) = 255;
+						}
+
+					if (bPaintBottom)
+						{
+						*(pCenterBottom + xPos) = wColor;
+						*(pCenterBottomAlpha + xPos) = 255;
+						}
+					}
+				}
+			else
+				{
+#define DRAW_PIXEL(pos, alphaPos)	\
+					{ \
+					WORD dwDest = *(pos);	\
+					WORD dwRedDest = (dwDest >> 11) & 0x1f;	\
+					WORD dwGreenDest = (dwDest >> 5) & 0x3f;	\
+					WORD dwBlueDest = dwDest & 0x1f;	\
+					\
+					*(pos) = (WORD)((dwOpacity * (m_pBlue[iRadius] - dwBlueDest) >> 8) + dwBlueDest |	\
+							((dwOpacity * (m_pGreen[iRadius] - dwGreenDest) >> 8) + dwGreenDest) << 5 |	\
+							((dwOpacity * (m_pRed[iRadius] - dwRedDest) >> 8) + dwRedDest) << 11);	\
+					\
+					*(alphaPos) = CG16bitImage::BlendAlpha(*(alphaPos), (BYTE)dwOpacity);	\
+					}
+
+				if (m_xDest - xPos < rcClip.right && m_xDest - xPos >= rcClip.left)
+					{
+					if (bPaintTop)
+						DRAW_PIXEL(pCenterTop - xPos, pCenterTopAlpha - xPos);
+
+					if (bPaintBottom)
+						DRAW_PIXEL(pCenterBottom - xPos, pCenterBottomAlpha - xPos);
+					}
+
+				if (xPos > 0 && m_xDest + xPos < rcClip.right && m_xDest + xPos >= rcClip.left)
+					{
+					if (bPaintTop)
+						DRAW_PIXEL(pCenterTop + xPos, pCenterTopAlpha + xPos);
+
+					if (bPaintBottom)
+						DRAW_PIXEL(pCenterBottom + xPos, pCenterBottomAlpha + xPos);
+					}
+#undef DRAW_PIXEL
+				}
+			}
+
+		xPos++;
+		}
+	}
+
+//	CompositeFilledCircleFromTableStochastic -----------------------------------
+
+CCompositeFilledCircleFromTableStochastic::CCompositeFilledCircleFromTableStochastic (CG16bitImage *pDest, int xDest, int yDest, int iRadius, WORD *pColorTable, BYTE *pOpacityTable) :
+				m_pDest(pDest),
+				m_xDest(xDest),
+				m_yDest(yDest),
+				m_iRadius(iRadius),
+				m_pColorTable(pColorTable),
+				m_pOpacityTable(pOpacityTable),
+				m_pRed(NULL),
+				m_pGreen(NULL),
+				m_pBlue(NULL)
+	{
+	int i;
+
+	if (iRadius > 0)
+		{
+		m_pRed = new DWORD [iRadius];
+		m_pGreen = new DWORD [iRadius];
+		m_pBlue = new DWORD [iRadius];
+		for (i = 0; i < iRadius; i++)
+			{
+			WORD wColor = m_pColorTable[i];
+			m_pRed[i] = (wColor >> 11) & 0x1f;
+			m_pGreen[i] = (wColor >> 5) & 0x3f;
+			m_pBlue[i] = wColor & 0x1f;
+			}
+		}
+	}
+
+CCompositeFilledCircleFromTableStochastic::~CCompositeFilledCircleFromTableStochastic (void)
+	{
+	if (m_pRed)
+		delete [] m_pRed;
+
+	if (m_pGreen)
+		delete [] m_pGreen;
+
+	if (m_pBlue)
+		delete [] m_pBlue;
+	}
+
+void CCompositeFilledCircleFromTableStochastic::DrawLine (int x, int y)
+	{
+	int xStart = m_xDest - x;
+	int xEnd = m_xDest + x + 1;
+	const RECT &rcClip = m_pDest->GetClipRect();
+
+	if (xEnd <= rcClip.left || xStart >= rcClip.right)
+		return;
+
+	//	See which lines we need to paint
+
+	int yLine = m_yDest - y;
+	bool bPaintTop = (yLine >= rcClip.top && yLine < rcClip.bottom);
+	WORD *pCenterTop = m_pDest->GetRowStart(yLine) + m_xDest;
+	BYTE *pCenterTopAlpha = m_pDest->GetAlphaRow(yLine) + m_xDest;
+
+	yLine = m_yDest + y;
+	bool bPaintBottom = ((y > 0) && (yLine >= rcClip.top && yLine < rcClip.bottom));
+	WORD *pCenterBottom = m_pDest->GetRowStart(yLine) + m_xDest;
+	BYTE *pCenterBottomAlpha = m_pDest->GetAlphaRow(yLine) + m_xDest;
+
+	//	Compute radius increment
+
+	int iRadius = y;
+	int d = -y;
+	int deltaE = 3;
+	int deltaSE = -2 * y + 1;
+
+	//	Loop
+
+	int xPos = 0;
+
+	//	Paint the center point (this is a special case)
+
+	if (y == 0)
+		{
+		if (m_xDest < rcClip.right
+				&& m_xDest >= rcClip.left
+				&& bPaintTop
+				&& m_iRadius > 0)
+			{
+			WORD dwOpacity = m_pOpacityTable[0];
+			WORD wColor = m_pColorTable[0];
+
+			if (dwOpacity == 255)
+				{
+				*pCenterTop = wColor;
+				*pCenterTopAlpha = 255;
+				}
+			else
+				{
+				*pCenterTop = CG16bitImage::BlendPixel(*pCenterTop, wColor, dwOpacity);
+				*pCenterTopAlpha = CG16bitImage::BlendAlpha(*pCenterTopAlpha, (BYTE)dwOpacity);
+				}
+			}
+
+		//	Continue
+
+		xPos = 1;
+		d += deltaSE;
+		deltaE += 2;
+		iRadius++;
+		}
+
+	int iBaseIndex = (y % STOCHASTIC_DIM) * STOCHASTIC_DIM;
+
+	//	Blt the line 
+
+	while (xPos <= x)
+		{
+		//	Figure out the radius of the pixel at this location
+
+		if (d < 0)
+			{
+			d += deltaE;
+			deltaE += 2;
+			deltaSE += 2;
+			}
+		else
+			{
+			d += deltaSE;
+			deltaE += 2;
+			//  deltaSE += 0;
+			iRadius++;
+			}
+
+		//	Compute the transparency based on the radius
+
+		if (iRadius >= m_iRadius)
+			{
+			//	Skip
+			}
+		else
+			{
+			//	Jitter opacity
+
+			WORD dwOpacity = m_pOpacityTable[iRadius];
+
+			//	Optimize full opacity
+
+			if (dwOpacity == 255)
+				{
+				WORD wColor = m_pColorTable[iRadius];
+
+				if (m_xDest - xPos < rcClip.right && m_xDest - xPos >= rcClip.left)
+					{
+					if (bPaintTop)
+						{
+						*(pCenterTop - xPos) = wColor;
+						*(pCenterTopAlpha - xPos) = 255;
+						}
+
+					if (bPaintBottom)
+						{
+						*(pCenterBottom - xPos) = wColor;
+						*(pCenterBottomAlpha - xPos) = 255;
+						}
+					}
+
+				if (xPos > 0 && m_xDest + xPos < rcClip.right && m_xDest + xPos >= rcClip.left)
+					{
+					if (bPaintTop)
+						{
+						*(pCenterTop + xPos) = wColor;
+						*(pCenterTopAlpha + xPos) = 255;
+						}
+
+					if (bPaintBottom)
+						{
+						*(pCenterBottom + xPos) = wColor;
+						*(pCenterBottomAlpha + xPos) = 255;
+						}
+					}
+				}
+			else
+				{
+				//	Jitter
+
+				dwOpacity = STOCHASTIC_OPACITY[iBaseIndex + (xPos % STOCHASTIC_DIM)][dwOpacity];
+
+#define DRAW_PIXEL(pos, alphaPos)	\
+					{ \
+					WORD dwDest = *(pos);	\
+					WORD dwRedDest = (dwDest >> 11) & 0x1f;	\
+					WORD dwGreenDest = (dwDest >> 5) & 0x3f;	\
+					WORD dwBlueDest = dwDest & 0x1f;	\
+					\
+					*(pos) = (WORD)((dwOpacity * (m_pBlue[iRadius] - dwBlueDest) >> 8) + dwBlueDest |	\
+							((dwOpacity * (m_pGreen[iRadius] - dwGreenDest) >> 8) + dwGreenDest) << 5 |	\
+							((dwOpacity * (m_pRed[iRadius] - dwRedDest) >> 8) + dwRedDest) << 11);	\
+					\
+					*(alphaPos) = CG16bitImage::BlendAlpha(*(alphaPos), (BYTE)dwOpacity);	\
+					}
+
+				if (m_xDest - xPos < rcClip.right && m_xDest - xPos >= rcClip.left)
+					{
+					if (bPaintTop)
+						DRAW_PIXEL(pCenterTop - xPos, pCenterTopAlpha - xPos);
+
+					if (bPaintBottom)
+						DRAW_PIXEL(pCenterBottom - xPos, pCenterBottomAlpha - xPos);
+					}
+
+				if (xPos > 0 && m_xDest + xPos < rcClip.right && m_xDest + xPos >= rcClip.left)
+					{
+					if (bPaintTop)
+						DRAW_PIXEL(pCenterTop + xPos, pCenterTopAlpha + xPos);
+
+					if (bPaintBottom)
+						DRAW_PIXEL(pCenterBottom + xPos, pCenterBottomAlpha + xPos);
+					}
+#undef DRAW_PIXEL
+				}
+			}
+
+		xPos++;
+		}
+	}
+
+//	DrawFilledCircleFromTable --------------------------------------------------
+
+class CFilledCircleFromTable
+	{
+	public:
+		CFilledCircleFromTable (CG16bitImage *pDest, int xDest, int yDest, int iRadius, WORD *pColorTable, BYTE *pOpacityTable);
+		~CFilledCircleFromTable (void);
+
+		void DrawLine (int x, int y);
+		inline int GetRadius (void) const { return m_iRadius; }
+
+	private:
+		CG16bitImage *m_pDest;
+		int m_xDest;
+		int m_yDest;
+		int m_iRadius;
+		WORD *m_pColorTable;
+		BYTE *m_pOpacityTable;
+
+		DWORD *m_pRed;
+		DWORD *m_pGreen;
+		DWORD *m_pBlue;
+	};
+
+void DrawFilledCircle (CG16bitImage &Dest, 
+					   int xDest, 
+					   int yDest, 
+					   int iRadius,
+					   WORD *pColorTable,
+					   BYTE *pOpacityTable)
+	{
+	CFilledCircleFromTable Painter(&Dest, xDest, yDest, iRadius, pColorTable, pOpacityTable);
+	DrawFilledCircle(Painter);
+	}
+
+CFilledCircleFromTable::CFilledCircleFromTable (CG16bitImage *pDest, int xDest, int yDest, int iRadius, WORD *pColorTable, BYTE *pOpacityTable) :
+				m_pDest(pDest),
+				m_xDest(xDest),
+				m_yDest(yDest),
+				m_iRadius(iRadius),
+				m_pColorTable(pColorTable),
+				m_pOpacityTable(pOpacityTable),
+				m_pRed(NULL),
+				m_pGreen(NULL),
+				m_pBlue(NULL)
+	{
+	int i;
+
+	if (iRadius > 0)
+		{
+		m_pRed = new DWORD [iRadius];
+		m_pGreen = new DWORD [iRadius];
+		m_pBlue = new DWORD [iRadius];
+		for (i = 0; i < iRadius; i++)
+			{
+			WORD wColor = m_pColorTable[i];
+			m_pRed[i] = (wColor >> 11) & 0x1f;
+			m_pGreen[i] = (wColor >> 5) & 0x3f;
+			m_pBlue[i] = wColor & 0x1f;
+			}
+		}
+	}
+
+CFilledCircleFromTable::~CFilledCircleFromTable (void)
+	{
+	if (m_pRed)
+		delete [] m_pRed;
+
+	if (m_pGreen)
+		delete [] m_pGreen;
+
+	if (m_pBlue)
+		delete [] m_pBlue;
+	}
+
+void CFilledCircleFromTable::DrawLine (int x, int y)
+	{
+	int xStart = m_xDest - x;
+	int xEnd = m_xDest + x + 1;
+	const RECT &rcClip = m_pDest->GetClipRect();
+
+	if (xEnd <= rcClip.left || xStart >= rcClip.right)
+		return;
+
+	//	See which lines we need to paint
+
+	int yLine = m_yDest - y;
+	bool bPaintTop = (yLine >= rcClip.top && yLine < rcClip.bottom);
+	WORD *pCenterTop = m_pDest->GetRowStart(yLine) + m_xDest;
+
+	yLine = m_yDest + y;
+	bool bPaintBottom = ((y > 0) && (yLine >= rcClip.top && yLine < rcClip.bottom));
+	WORD *pCenterBottom = m_pDest->GetRowStart(yLine) + m_xDest;
+
+	//	Compute radius increment
+
+	int iRadius = y;
+	int d = -y;
+	int deltaE = 3;
+	int deltaSE = -2 * y + 1;
+
+	//	Loop
+
+	int xPos = 0;
+
+	//	Paint the center point (this is a special case)
+
+	if (y == 0)
+		{
+		if (m_xDest < rcClip.right
+				&& m_xDest >= rcClip.left
+				&& bPaintTop
+				&& m_iRadius > 0)
+			{
+			WORD dwOpacity = m_pOpacityTable[0];
+			WORD wColor = m_pColorTable[0];
+
+			if (dwOpacity == 255)
+				*pCenterTop = wColor;
+			else
+				*pCenterTop = CG16bitImage::BlendPixel(*pCenterTop, wColor, dwOpacity);
+			}
+
+		//	Continue
+
+		xPos = 1;
+		d += deltaSE;
+		deltaE += 2;
+		iRadius++;
+		}
+
+	//	Blt the line 
+
+	while (xPos <= x)
+		{
+		//	Figure out the radius of the pixel at this location
+
+		if (d < 0)
+			{
+			d += deltaE;
+			deltaE += 2;
+			deltaSE += 2;
+			}
+		else
+			{
+			d += deltaSE;
+			deltaE += 2;
+			//  deltaSE += 0;
+			iRadius++;
+			}
+
+		//	Compute the transparency based on the radius
+
+		WORD dwOpacity;
+		if (iRadius >= m_iRadius
+				|| (dwOpacity = m_pOpacityTable[iRadius]) == 0)
+			{
+			//	Skip
+			}
+		else
+			{
+			if (dwOpacity == 255)
+				{
+				WORD wColor = m_pColorTable[iRadius];
+
+				if (m_xDest - xPos < rcClip.right && m_xDest - xPos >= rcClip.left)
+					{
+					if (bPaintTop)
+						*(pCenterTop - xPos) = wColor;
+
+					if (bPaintBottom)
+						*(pCenterBottom - xPos) = wColor;
+					}
+
+				if (xPos > 0 && m_xDest + xPos < rcClip.right && m_xDest + xPos >= rcClip.left)
+					{
+					if (bPaintTop)
+						*(pCenterTop + xPos) = wColor;
+
+					if (bPaintBottom)
+						*(pCenterBottom + xPos) = wColor;
+					}
+				}
+			else
+				{
+#define DRAW_PIXEL(pos)	\
+					{ \
+					WORD dwDest = *(pos);	\
+					WORD dwRedDest = (dwDest >> 11) & 0x1f;	\
+					WORD dwGreenDest = (dwDest >> 5) & 0x3f;	\
+					WORD dwBlueDest = dwDest & 0x1f;	\
+					\
+					*(pos) = (WORD)((dwOpacity * (m_pBlue[iRadius] - dwBlueDest) >> 8) + dwBlueDest |	\
+							((dwOpacity * (m_pGreen[iRadius] - dwGreenDest) >> 8) + dwGreenDest) << 5 |	\
+							((dwOpacity * (m_pRed[iRadius] - dwRedDest) >> 8) + dwRedDest) << 11);	\
+					}
+
+				if (m_xDest - xPos < rcClip.right && m_xDest - xPos >= rcClip.left)
+					{
+					if (bPaintTop)
+						DRAW_PIXEL(pCenterTop - xPos);
+
+					if (bPaintBottom)
+						DRAW_PIXEL(pCenterBottom - xPos);
+					}
+
+				if (xPos > 0 && m_xDest + xPos < rcClip.right && m_xDest + xPos >= rcClip.left)
+					{
+					if (bPaintTop)
+						DRAW_PIXEL(pCenterTop + xPos);
+
+					if (bPaintBottom)
+						DRAW_PIXEL(pCenterBottom + xPos);
+					}
+#undef DRAW_PIXEL
+				}
+			}
+
+		xPos++;
+		}
+	}
 
 //	DrawAlphaGradientCircle ---------------------------------------------------
 
@@ -18,15 +802,29 @@ struct SAlphaGradientCircleLineCtx
 	{
 	SAlphaGradientCircleLineCtx (void) :
 			pTrans(NULL),
+			pRed(NULL),
+			pGreen(NULL),
+			pBlue(NULL),
 			pRedByTrans(NULL),
 			pGreenByTrans(NULL),
-			pBlueByTrans(NULL)
+			pBlueByTrans(NULL),
+			pColorTable(NULL),
+			pOpacityTable(NULL)
 		{ }
 
 	~SAlphaGradientCircleLineCtx (void)
 		{
 		if (pTrans)
 			delete [] pTrans;
+
+		if (pRed)
+			delete [] pRed;
+
+		if (pGreen)
+			delete [] pGreen;
+
+		if (pBlue)
+			delete [] pBlue;
 
 		if (pRedByTrans)
 			delete [] pRedByTrans;
@@ -51,12 +849,20 @@ struct SAlphaGradientCircleLineCtx
 	DWORD dwBlue;
 
 	WORD *pTrans;
+	DWORD *pRed;
+	DWORD *pGreen;
+	DWORD *pBlue;
 
 	//	These are pre-computed if we are using a table
 
 	WORD *pRedByTrans;
 	WORD *pGreenByTrans;
 	WORD *pBlueByTrans;
+
+	//	These are initialized if we have a radius table
+
+	WORD *pColorTable;
+	BYTE *pOpacityTable;
 	};
 
 void DrawAlphaGradientCircleLine (const SAlphaGradientCircleLineCtx &Ctx, int x, int y)
@@ -1571,4 +2377,25 @@ void DrawGlowRing (CG16bitImage &Dest,
 	delete [] Ctx.dwRed;
 	delete [] Ctx.dwGreen;
 	delete [] Ctx.dwBlue;
+	}
+
+void InitStochasticTable (void)
+	{
+	int i;
+
+	if (!g_bStochasticInit)
+		{
+		for (i = 0; i < STOCHASTIC_SIZE; i++)
+			{
+			int iOpacity;
+			for (iOpacity = 0; iOpacity < 256; iOpacity++)
+				{
+				int iJitter = mathRandom(-7, 7);
+				BYTE byNewOpacity = Max(0, Min(iOpacity + iJitter, 255));
+				STOCHASTIC_OPACITY[i][iOpacity] = byNewOpacity;
+				}
+			}
+
+		g_bStochasticInit = true;
+		}
 	}

@@ -5,6 +5,26 @@
 <!-- TABLES -->
 
 	<SystemPartTable unid="&tbRockyPlanets;">
+		
+		<!-- ASTEROID FIELDS -->
+		
+		<AsteroidRockyBelt500>
+			<Lookup table="RegionDefinition">
+				<_Morphology>
+					<Variant variant="rocky">
+						<OrbitalDistribution count="2d125+375" radialWidth="130">
+							<Lookup table="VariantAsteroid"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="6-12"	radialWidth="130">
+							<Lookup table="VariantAsteroidBeltLabel"/>
+						</OrbitalDistribution>
+					</Variant>
+				</_Morphology>
+			</Lookup>
+		</AsteroidRockyBelt500>
+		
+		<!-- PLANETS AND PLANETOIDS -->
 
 		<RockyPrimary>
 			<LocationCriteriaTable>
@@ -66,7 +86,7 @@
 		<Items>
 			<Table>
 				<Null chance="90"/>
-				<Lookup chance="10" table="&tbStoneAsteroidOre;"/>
+				<Lookup chance="10" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -105,7 +125,7 @@
 		<Items>
 			<Table>
 				<Null chance="95"/>
-				<Lookup chance="5" table="&tbFrostAsteroidOre;"/>
+				<Lookup chance="5" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -145,7 +165,7 @@
 		<Items>
 			<Table>
 				<Null chance="90"/>
-				<Lookup chance="10" count="1d6" table="&tbStoneAsteroidOre;"/>
+				<Lookup chance="10" count="1d6" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -183,7 +203,7 @@
 		<Items>
 			<Table>
 				<Null chance="95"/>
-				<Lookup chance="5" count="1d6" table="&tbFrostAsteroidOre;"/>
+				<Lookup chance="5" count="1d6" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -217,7 +237,7 @@
 		<Items>
 			<Table>
 				<Null chance="90"/>
-				<Lookup chance="10" count="1d8" table="&tbStoneAsteroidOre;"/>
+				<Lookup chance="10" count="1d8" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -251,7 +271,7 @@
 		<Items>
 			<Table>
 				<Null chance="95"/>
-				<Lookup chance="5" count="1d8" table="&tbFrostAsteroidOre;"/>
+				<Lookup chance="5" count="1d8" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -284,7 +304,7 @@
 		<Items>
 			<Table>
 				<Null chance="90"/>
-				<Lookup chance="10" count="1d10" table="&tbStoneAsteroidOre;"/>
+				<Lookup chance="10" count="1d10" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -317,7 +337,7 @@
 		<Items>
 			<Table>
 				<Null chance="95"/>
-				<Lookup chance="5" count="1d10" table="&tbFrostAsteroidOre;"/>
+				<Lookup chance="5" count="1d10" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -383,40 +403,6 @@
 			<Image	imageID="&rsRockyAsteroids;" imageX="980" imageY="175" imageWidth="175" imageHeight="175"/>
 		</ImageVariants>
 	</StationType>
-
-<!-- TABLES -->
-
-	<ItemTable unid="&tbStoneAsteroidOre;">
-		<LevelTable>
-			<Item levelFrequency="ccccc ccccc ccccc ccccc ccccc" count="45-60"	item="&itTitaniumOre;"/>
-			<Item levelFrequency="uuuuu uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itUraniumOre;"/>
-			<Item levelFrequency="vvvvv vvvvv vvvvv vvvvv vvvvv" count="10-50"	item="&itUraniumOre;"/>
-			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPlasteelOre;"/>
-			<Item levelFrequency="ruuuu uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itHeliumRegolith;"/>
-			<Item levelFrequency="ruccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPalladiumOre;"/>
-			<Item levelFrequency="vruuu uuuuu uuuuu uuuuu uuuuu" count="1-6"	item="&itCobaltThoriumOre;"/>
-			<Item levelFrequency="-vruu uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itCeralloyOre;"/>
-			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itGoldOre;"/>
-			<Item levelFrequency="---vv vvvvv vvvvv vvvvv vvvvv" count="1-35"	item="&itGoldOre;"/>
-			<Item levelFrequency="---vr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itDuralloyOre;"/>
-			<Item levelFrequency="----v vvvvv vvvvv vvvvv vvvvv" count="5-15"	item="&itDuralloyOre;"/>
-		</LevelTable>
-	</ItemTable>
-
-	<ItemTable unid="&tbFrostAsteroidOre;">
-		<LevelTable>
-			<Item levelFrequency="uuuuu uuuuu uuuuu uuuuu uuuuu" count="1-5"	item="&itUraniumOre;"/>
-			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPlasteelOre;"/>
-			<Item levelFrequency="ruuuu uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itHeliumRegolith;"/>
-			<Item levelFrequency="ruccc ccccc ccccc ccccc ccccc" count="10-15"	item="&itPalladiumOre;"/>
-			<Item levelFrequency="vruuu uuuuu uuuuu uuuuu uuuuu" count="1-6"	item="&itCobaltThoriumOre;"/>
-			<Item levelFrequency="-rucc ccccc ccccc ccccc ccccc" count="10-15"	item="&itCeralloyOre;"/>
-			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itGoldOre;"/>
-			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itXenotiteOre;"/>
-			<Item levelFrequency="---vr rrrrr rrrrr rrrrr rrrrr" count="1-6"	item="&itDuralloyOre;"/>
-			<Item levelFrequency="----v rrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itOrthoSteelOre;"/>
-		</LevelTable>
-	</ItemTable>
 
 <!-- RESOURCES -->
 

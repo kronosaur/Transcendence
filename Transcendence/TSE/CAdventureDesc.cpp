@@ -208,7 +208,7 @@ CString CAdventureDesc::GetDesc (void)
 
 	{
 	CString sText;
-	if (TranslateText(NULL, LANGUAGE_DESCRIPTION, &sText))
+	if (TranslateText(NULL, LANGUAGE_DESCRIPTION, NULL, &sText))
 		return CTextBlock::LoadAsRichText(sText);
 	else
 		return CONSTLIT("{/rtf }");

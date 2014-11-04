@@ -44,6 +44,8 @@
 			name=				"Benedict Training"
 			attributes=			"benedictStoryArc"
 
+			level=				"1"
+				 
 			maxAppearing=		"1"
 			noDebrief=			"true"
 			>

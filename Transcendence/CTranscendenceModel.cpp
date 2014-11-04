@@ -184,7 +184,9 @@ CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 	CSpaceObject *pAttacker = Ctx.Attacker.GetObj();
 	if (pAttacker)
 		{
-		if (pAttacker->IsAngryAt(pShip) || pAttacker->GetSovereign() == NULL)
+		if (pAttacker->IsAngryAt(pShip) 
+				|| pAttacker->GetSovereign() == NULL
+				|| (pAttacker->GetScale() == scaleWorld || pAttacker->GetScale() == scaleStar))
 			sCause = strPatternSubst(CONSTLIT("by %s"), Ctx.Attacker.GetDamageCauseNounPhrase(nounArticle));
 		else
 			{
@@ -247,6 +249,10 @@ CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 
 		case killedByShatter:
 			sText = strPatternSubst(CONSTLIT("was shattered %s"), sCause);
+			break;
+
+		case killedByGravity:
+			sText = strPatternSubst(CONSTLIT("was ripped apart %s"), sCause);
 			break;
 
 		case killedByOther:
@@ -411,6 +417,25 @@ ALERROR CTranscendenceModel::CreateAllSystems (const CString &sStartNode, CSyste
 
 	if (error = m_Universe.CreateStarSystem(pStartingNode, retpStartingSystem, retsError))
 		return error;
+
+	//	Output some counts
+
+#ifdef DEBUG_ENCOUNTER_COUNTS
+	for (i = 0; i < m_Universe.GetStationTypeCount(); i++)
+		{
+		CStationType *pType = m_Universe.GetStationType(i);
+		if (!pType->GetLocationCriteria().IsBlank())
+			{
+			CStationEncounterCtx &EncounterRecord = pType->GetEncounterRecord();
+			if (EncounterRecord.GetTotalLimit() != -1 && EncounterRecord.GetTotalCount() > EncounterRecord.GetTotalLimit())
+				::kernelDebugLogMessage("%s (%08x): %d created. WARNING: Limit is %d", pType->GetName(), pType->GetUNID(), EncounterRecord.GetTotalCount(), EncounterRecord.GetTotalLimit());
+			else if (EncounterRecord.GetTotalMinimum() > 0 && EncounterRecord.GetTotalCount() < EncounterRecord.GetTotalMinimum())
+				::kernelDebugLogMessage("%s (%08x): %d created. WARNING: Minimum is %d", pType->GetName(), pType->GetUNID(), EncounterRecord.GetTotalCount(), EncounterRecord.GetTotalMinimum());
+			else
+				::kernelDebugLogMessage("%s (%08x): %d created.", pType->GetName(), pType->GetUNID(), EncounterRecord.GetTotalCount());
+			}
+		}
+#endif
 
 	//	Done
 
@@ -698,7 +723,7 @@ ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesig
 	//	Initialize the current screen object
 
 	CString sError;
-	if (error = ShowScreen(pRoot, sScreen, sPane, pData, &sError))
+	if (error = ShowScreen(pRoot, sScreen, sPane, pData, &sError, false, true))
 		{
 		//	Undo
 
@@ -1926,7 +1951,7 @@ ALERROR CTranscendenceModel::ShowPane (const CString &sPane)
 	return NOERROR;
 	}
 
-ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError, bool bReturn)
+ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError, bool bReturn, bool bFirstFrame)
 
 //	ShowScreen
 //
@@ -2012,7 +2037,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 
 	bool bNewFrame;
 	SDockFrame OldFrame;
-	if (bNewFrame = (!bReturn && pScreen->GetAttributeBool(NESTED_SCREEN_ATTRIB)))
+	if (bNewFrame = (!bReturn && !bFirstFrame && pScreen->GetAttributeBool(NESTED_SCREEN_ATTRIB)))
 		m_DockFrames.Push(NewFrame);
 	else if (!bReturn)
 		m_DockFrames.SetCurrent(NewFrame, &OldFrame);
@@ -2031,7 +2056,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 	m_Universe.SetLogImageLoad(false);
 	error = g_pTrans->m_CurrentDock.InitScreen(m_HI.GetHWND(),
 			g_pTrans->m_rcMainScreen,
-			NewFrame.pLocation,
+			NewFrame,
 			pExtension,
 			pScreen,
 			sPane,

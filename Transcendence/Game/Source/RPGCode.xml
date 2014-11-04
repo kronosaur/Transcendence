@@ -60,6 +60,25 @@
 					(typSetData &svPlayer; 'tutorialBought True)
 					)
 				))
+				
+			(setq rpgDockServices (lambda (targetObj options)
+				(block Nil
+				
+					;	For now we only support the player ship
+					
+					(if (not (eq targetObj gPlayerShip))
+						(error "rpgDockServices only support gPlayerShip.")
+						)
+						
+					;	Show the appropriate dock services screen based on the ship
+					;	class.
+					
+					(scrShowScreen gScreen
+						(objGetProperty targetObj 'dockServicesScreen)
+						options
+						)
+					)
+				))
 
 			(setq rpgGetReactorUpgradeList (lambda (theObj theShip theCriteria)
 				(block (minPower reactorList additionalList)
@@ -134,7 +153,8 @@
 				;	targetObj:				Object on which to install (if Nil, we assume player ship)
 				;	techCriteria:			If not Nil, the item must match this criteria
 				;	techCriteriaOverride:	If not Nil, and item matches this criteria, install even if above maxTechLevel
-				;	totalPrice:				The total price to install (may include purchase price)
+				;	totalPrice:				The total price to install (includes purchase price if buyAndInstall is True)
+				;	upgrade:				If True, we are buying an item as an upgrade
 				;
 				; We return a struct with the following elements:
 				;
@@ -149,7 +169,7 @@
 					(setq targetObj (if (@ data 'targetObj) (@ data 'targetObj) gPlayerShip))
 					(setq installerObj (if (@ data 'installerObj) (@ data 'installerObj) gSource))
 					(if (not currencyUsed) (setq currencyUsed (objGetDefaultCurrency targetObj)))
-					(setq itemName (itmGetName thisItem (if (@ data 'buyAndInstall) 0x40 0x04)))
+					(setq itemName (itmGetName thisItem (if (or (@ data 'upgrade) (@ data 'buyAndInstall)) 0x40 0x04)))
 					(setq canInstall Nil)
 					
 					;	If the target object is not the player's ship, then we need to modify
@@ -177,7 +197,17 @@
 						)
 						
 					(if thisItem
-						(block (cargoNeeded itemToReplace resultMessage resultCode returnValue)
+						(block (
+							(installDevicePrice (objGetItemProperty installerObj thisItem 'installDevicePrice))
+							(itemPrice 
+								(if (or (@ data 'upgrade) (@ data 'buyAndInstall)) 
+									(objGetSellPrice installerObj thisItem)
+									0
+									)
+								)
+							
+							cargoNeeded itemToReplace resultMessage resultCode returnValue stationCannotInstall
+							)
 						
 							;	Compute the cost to install
 							
@@ -188,7 +218,14 @@
 								(@ data 'installPriceAdj)
 									(setq totalCost (rpgAdjustInstallPrice Nil thisItem (@ data 'installPriceAdj) currencyUsed))
 
-								(setq totalCost (objGetItemProperty installerObj thisItem 'installDevicePrice))
+								(block Nil
+									
+									(if (not installDevicePrice)
+										(setq stationCannotInstall True)
+										
+										(setq totalCost	(add installDevicePrice itemPrice))
+										)
+									)
 								)
 								
 							;	Ask the object is we can install the item
@@ -199,6 +236,11 @@
 							(setq itemToReplace (@ returnValue 3))
 							
 							(switch
+								;	If not installable at this station, then ignore
+								
+								stationCannotInstall
+									(setq desc (cat (strCapitalize textWe) " cannot install " itemName " on " textYourShip "."))
+									
 								;	If we don't match the tech criteria then we don't have the
 								;	technology to install.
 								
@@ -321,7 +363,16 @@
 											(setq desc (cat desc " for " (fmtCurrency currencyUsed totalCost) ". Unfortunately, you cannot afford the cost."))
 											(setq canInstall Nil)
 											)
-										(setq desc (cat desc " for " (if (@ data 'buyAndInstall) "an additional " "") (fmtCurrency currencyUsed totalCost) "."))
+										(setq desc 
+											(cat 
+												desc " for " (if (@ data 'buyAndInstall) "an additional " "") 
+												(if (or (@ data 'upgrade) (@ data 'installPriceAdj))
+													(fmtCurrency currencyUsed totalCost)
+													(fmtCurrency currencyUsed (subtract totalCost itemPrice))
+													)
+												"."
+												)
+											)
 										)
 										
 									(if (not (eq installerObj gPlayerShip))
@@ -350,6 +401,62 @@
 						price: totalCost
 						desc: desc
 						}
+					)
+				))
+				
+			(setq rpgMissionAssignment (lambda (options)
+			
+				;	Options may contain the following fields
+				;
+				;		maxPerStation: Maximum number of missions that we give out at
+				;				this station.
+				;
+				;		missionCriteria: Criteria used to create new missions. [Required]
+				;
+				;		noMissionTextID: Language ID to display if there is no mission
+				;				available at this station. [Required]
+				
+				(block (
+					(noMissionTextID (@ options 'noMissionTextID))
+					theMission newMissions
+					)
+
+					;	Show proper screen
+
+					(switch
+						;	If we have an active mission from this station then we show it.
+
+						(setq theMission (@ (msnFind gSource "aS") 0))
+							(scrShowScreen gScreen &dsRPGMission; {	missionObj: theMission })
+
+						;	If we have an open mission available then display it.
+
+						(setq theMission (@ (msnFind gSource "oS") 0))
+							(scrShowScreen gScreen &dsRPGMission; {	missionObj: theMission })
+
+						;	Don't give out more than X mission per station
+								
+						(and (@ options 'maxPerStation) 
+								(geq (count (msnFind gSource "*S")) (@ options 'maxPerStation))
+								)
+							(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
+
+						;	Make a list of available missions. We filter out any missions
+						;	that are outside our system level. If we can't find anything, then we've got nothing.
+
+						(not (setq newMissions (typFind (@ options 'missionCriteria))))
+							(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
+
+						;	Create a random mission from the list. If we succeed, then show the mission
+						;	screen.
+
+						(setq theMission (msnCreate newMissions gSource))
+							(scrShowScreen gScreen &dsRPGMission; { missionObj: theMission })
+
+						; Otherwise, nothing
+
+						(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
+						)
 					)
 				))
 
@@ -387,6 +494,89 @@
 						)
 
 					pageDesc
+					)
+				))
+				
+			(setq rpgPagePaneInit (lambda (theScreen textDesc options)
+				(block (
+					(missionObj (scrGetData theScreen 'missionObj))
+					(pageCount (rpgPageCount textDesc))
+					(pageNo (if (scrGetData theScreen 'curPage) (scrGetData theScreen 'curPage) 0))
+					(pageDesc (rpgPageDesc textDesc pageNo))
+						
+					atLastPage
+					)
+					
+					; Show the appropriate page
+
+					(scrSetDesc theScreen (@ pageDesc 'desc))
+
+					; Next page
+
+					(setq pageNo (add pageNo 1))
+					(setq atLastPage (geq pageNo pageCount))
+
+					;	Initialize actions
+					
+					(switch
+						
+						;	If we're not at the last page, we always set the continue
+						;	action and hide the others.
+						
+						(not atLastPage)
+							(block Nil
+								(scrShowAction theScreen 'actionContinue True)
+								(if (@ pageDesc 'nextLabel)
+									(scrSetActionLabel theScreen 'actionContinue (@ pageDesc 'nextLabel) (@ pageDesc 'nextKey))
+									)
+									
+								(if (@ options 'acceptDecline)
+									(block Nil
+										(scrShowAction theScreen 'actionAccept Nil)
+										(scrShowAction theScreen 'actionDecline Nil)
+										)
+										
+									(scrShowAction theScreen 'actionDone Nil)
+									)
+								)
+								
+						;	If we've got accept/decline buttons, show them
+						
+						(@ options 'acceptDecline)
+							(block (
+								(acceptLabel (if (@ pageDesc 'acceptLabel)
+									(@ pageDesc 'acceptLabel)
+									(msnTranslate missionObj 'AcceptLabel (typTranslate &dsRPGMission; 'actionAccept))
+									))
+								(declineLabel (if (@ pageDesc 'declineLabel)
+									(@ pageDesc 'declineLabel)
+									(msnTranslate missionObj 'DeclineLabel (typTranslate &dsRPGMission; 'actionDecline))
+									))
+								)
+								
+								(scrShowAction theScreen 'actionContinue Nil)
+								
+								(scrShowAction theScreen 'actionAccept True)
+								(scrSetActionLabel theScreen 'actionAccept acceptLabel)
+								
+								(scrShowAction theScreen 'actionDecline atLastPage)
+								(scrSetActionLabel theScreen 'actionDecline declineLabel)
+								)
+								
+						;	Otherwise, enable the done button
+						
+						(block Nil
+							(scrShowAction theScreen 'actionContinue Nil)
+							(scrShowAction theScreen 'actionDone True)
+							(if (@ pageDesc 'nextLabel)
+								(scrSetActionLabel theScreen 'actionDone (@ pageDesc 'nextLabel) (@ pageDesc 'nextKey))
+								)
+							)
+						)
+					
+					; Remember page
+
+					(scrSetData theScreen 'curPage (if atLastPage Nil pageNo))
 					)
 				))
 

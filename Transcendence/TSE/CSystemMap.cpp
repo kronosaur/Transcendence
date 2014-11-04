@@ -156,7 +156,7 @@ ALERROR CSystemMap::AddFixedTopology (CTopology &Topology, CString *retsError)
 	//	Make sure every node added has a system UNID
 
 	for (i = 0; i < NodesAdded.GetCount(); i++)
-		if (NodesAdded[i]->GetSystemDescUNID() == 0)
+		if (NodesAdded[i]->GetSystemTypeUNID() == 0)
 			{
 			*retsError = strPatternSubst(CONSTLIT("SystemMap (%x): NodeID %s: No system specified"), GetUNID(), NodesAdded[i]->GetID());
 			return ERR_FAIL;

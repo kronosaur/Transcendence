@@ -71,6 +71,10 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_DATA					16
 #define FN_SCR_REFRESH_SCREEN		17
 #define FN_SCR_LIST_CURSOR			18
+#define FN_SCR_CONTROL_VALUE		19
+#define FN_SCR_TRANSLATE			20
+#define FN_SCR_DESC_TRANSLATE		21
+#define FN_SCR_REMOVE_ACTION		22
 
 ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -178,12 +182,20 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(scrRefreshScreen screen)",
 			"i",	PPFLAG_SIDEEFFECTS, },
 
+		{	"scrRemoveAction",				fnScrSet,		FN_SCR_REMOVE_ACTION,
+			"(scrRemoveAction screen actionID)",
+			"is",	PPFLAG_SIDEEFFECTS, },
+
 		{	"scrRemoveItem",				fnScrItem,		FN_SCR_REMOVE_ITEM,	"",		NULL,	PPFLAG_SIDEEFFECTS, },
 		//	(scrRemoveItem screen count) => item
 
 		{	"scrSetActionLabel",			fnScrSet,		FN_SCR_ACTION_LABEL,
 			"(scrSetActionLabel screen actionID label [key] [special])",
 			"ivs*",		PPFLAG_SIDEEFFECTS, },
+
+		{	"scrSetControlValue",			fnScrSet,		FN_SCR_CONTROL_VALUE,
+			"(scrSetControlValue screen controlID value) -> True/Nil",
+			"isv",		PPFLAG_SIDEEFFECTS, },
 
 		{	"scrSetCounter",				fnScrSetOld,		FN_SCR_COUNTER,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(scrSetCounter screen counter)
@@ -195,6 +207,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"scrSetDesc",					fnScrSet,		FN_SCR_DESC,
 			"(scrSetDesc screen text [text...])",
 			"i*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"scrSetDescTranslate",			fnScrSet,		FN_SCR_DESC_TRANSLATE,
+			"(scrSetDescTranslate screen textID [data]) -> True/Nil",
+			"is*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrSetDisplayText",			fnScrSet,			FN_SCR_SET_DISPLAY_TEXT,
 			"(scrSetDisplayText screen ID text [text...])",
@@ -220,6 +236,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"scrShowScreen",				fnScrShowScreen,	0,
 			"(scrShowScreen screenGlobal screen [pane] [data])",
 			"vv*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"scrTranslate",					fnScrGet,		FN_SCR_TRANSLATE,
+			"(scrTranslate screen textID [data]) -> text or Nil",
+			"is*",	0,	},
 
 		//	Player functions
 		//	----------------
@@ -284,8 +304,18 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"i",	0,	},
 
 		{	"plyGetItemStat",					fnPlyGet,			FN_PLY_GET_ITEM_STAT,
-			"(plyGetItemStat player stat criteria) -> value",
-			"iss",	0,	},
+			"(plyGetItemStat player stat criteria|type) -> value\n\n"
+			
+			"stat:\n\n"
+			
+			"   'itemsBoughtCount\n"
+			"   'itemsBoughtValue\n"
+			"   'itemsDamagedHP\n"
+			"   'itemsFiredCount\n"
+			"   'itemsSoldCount\n"
+			"   'itemsSoldValue\n",
+
+			"isv",	0,	},
 
 		{	"plyGetKeyEventStat",				fnPlyGet,			FN_PLY_GET_KEY_EVENT_STAT,
 			"(plyGetKeyEventStat player stat nodeID typeCriteria) -> value\n\n"
@@ -622,7 +652,7 @@ ICCItem *fnGameSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				return pCC->CreateError(CONSTLIT("Invalid option"), pArgs->GetElement(0));
 
 			CString sError;
-			if (!g_pTrans->GetModel().SaveGame(dwFlags, &sError))
+			if (g_pTrans->GetModel().SaveGame(dwFlags, &sError) != NOERROR)
 				{
 				::kernelDebugLogMessage("Unable to save game: %s", sError);
 				return pCC->CreateNil();
@@ -775,9 +805,7 @@ ICCItem *fnPlyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_PLY_GET_ITEM_STAT:
 			{
-			CItemCriteria Crit;
-			CItem::ParseCriteria(pArgs->GetElement(2)->GetStringValue(), &Crit);
-			CString sResult = pPlayer->GetItemStat(pArgs->GetElement(1)->GetStringValue(), Crit);
+			CString sResult = pPlayer->GetItemStat(pArgs->GetElement(1)->GetStringValue(), pArgs->GetElement(2));
 			if (!sResult.IsBlank())
 				pResult = pCC->Link(sResult, 0, NULL);
 			else
@@ -1206,6 +1234,21 @@ ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateString(sDesc);
 			}
 
+		case FN_SCR_TRANSLATE:
+			{
+			CString sText = pArgs->GetElement(1)->GetStringValue();
+
+			ICCItem *pData = NULL;
+			if (pArgs->GetCount() > 2)
+				pData = pArgs->GetElement(2);
+
+			ICCItem *pResult;
+			if (!pScreen->Translate(sText, pData, &pResult))
+				return pCC->CreateNil();
+
+			return pResult;
+			}
+
 		default:
 			ASSERT(false);
 			return pCC->CreateNil();
@@ -1391,6 +1434,13 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateTrue();
 			}
 
+		case FN_SCR_CONTROL_VALUE:
+			{
+			CString sID = pArgs->GetElement(1)->GetStringValue();
+			ICCItem *pValue = pArgs->GetElement(2);
+			return pCC->CreateBool(pScreen->SetControlValue(sID, pValue));
+			}
+
 		case FN_SCR_DATA:
 			{
 			if (!g_pTrans->GetModel().InScreenSession())
@@ -1426,6 +1476,36 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				pScreen->SetDescription(g_pTrans->ComposePlayerNameString(pArgs->GetElement(1)->GetStringValue()));
 
 			//	Done
+
+			return pCC->CreateTrue();
+			}
+
+		case FN_SCR_DESC_TRANSLATE:
+			{
+			//	Only if valid
+
+			if (!pScreen->IsValid())
+				return pCC->CreateNil();
+
+			//	Translate
+
+			CString sText = pArgs->GetElement(1)->GetStringValue();
+
+			ICCItem *pData = NULL;
+			if (pArgs->GetCount() > 2)
+				pData = pArgs->GetElement(2);
+
+			ICCItem *pResult;
+			if (!pScreen->Translate(sText, pData, &pResult))
+				{
+				pScreen->SetDescription(strPatternSubst(CONSTLIT("Unknown Language ID: %s"), sText));
+				return pCC->CreateNil();
+				}
+
+			//	Set the screen descriptor
+
+			pScreen->SetDescription(g_pTrans->ComposePlayerNameString(pResult->GetStringValue()));
+			pResult->Discard(pCC);
 
 			return pCC->CreateTrue();
 			}
@@ -1473,6 +1553,24 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				return pCC->CreateNil();
 
 			g_pTrans->GetModel().RefreshScreenSession();
+			return pCC->CreateTrue();
+			}
+
+		case FN_SCR_REMOVE_ACTION:
+			{
+			//	Only if valid
+
+			if (!pScreen->IsValid())
+				return pCC->CreateNil();
+
+			//	Parameters
+
+			int iAction;
+			CDockScreenActions &Actions = pScreen->GetActions();
+			if (!Actions.FindByID(pArgs->GetElement(1), &iAction))
+				return pCC->CreateError(CONSTLIT("Invalid action ID"), pArgs->GetElement(1));
+
+			Actions.RemoveAction(iAction);
 			return pCC->CreateTrue();
 			}
 

@@ -13,7 +13,6 @@
 #include "TSUI\TSUI.h"
 #endif
 
-class CDockScreen;
 class CGameSession;
 class CGameSettings;
 class CIntroSession;
@@ -85,6 +84,9 @@ struct SFontTable
 	WORD wItemDesc;					//	Item description color
 	WORD wItemDescSelected;			//	Item description when selected
 	};
+
+#include "CGAreas.h"
+#include "DockScreen.h"
 
 //	Intro
 
@@ -188,7 +190,7 @@ class CPlayerGameStats
 		void GenerateGameStats (CGameStats &Stats, CSpaceObject *pPlayer, bool bGameOver) const;
 		int GetBestEnemyShipsDestroyed (DWORD *retdwUNID = NULL) const;
 		CTimeSpan GetGameTime (void) const { return (!m_GameTime.IsBlank() ? m_GameTime : g_pUniverse->GetElapsedGameTime()); }
-		CString GetItemStat (const CString &sStat, const CItemCriteria &Crit) const;
+		CString GetItemStat (const CString &sStat, ICCItem *pItemCriteria) const;
 		CString GetKeyEventStat (const CString &sStat, const CString &sNodeID, const CDesignTypeCriteria &Crit) const;
 		CTimeSpan GetPlayTime (void) const { return (!m_PlayTime.IsBlank() ? m_PlayTime : g_pUniverse->StopGameTime()); }
 		CString GetStat (const CString &sStat) const;
@@ -196,6 +198,7 @@ class CPlayerGameStats
 		int IncStat (const CString &sStat, int iInc = 1);
 		void OnGameEnd (CSpaceObject *pPlayer);
 		void OnItemBought (const CItem &Item, CurrencyValue iTotalPrice);
+		void OnItemDamaged (const CItem &Item, int iHP);
 		void OnItemFired (const CItem &Item);
 		void OnItemInstalled (const CItem &Item);
 		void OnItemSold (const CItem &Item, CurrencyValue iTotalPrice);
@@ -224,6 +227,7 @@ class CPlayerGameStats
 			DWORD dwTotalInstalledTime;			//	Total time installed
 
 			int iCountFired;					//	Number of times item (weapon) has been fired by player
+			int iHPDamaged;						//	HP absorbed by this item type when installed on player
 			};
 
 		struct SKeyEventStats
@@ -263,6 +267,7 @@ class CPlayerGameStats
 			};
 
 		bool AddMatchingKeyEvents (const CString &sNodeID, const CDesignTypeCriteria &Crit, TArray<SKeyEventStats> *pEventList, TArray<SKeyEventStatsResult> *retList) const;
+		bool FindItemStats (DWORD dwUNID, SItemTypeStats **retpStats) const;
 		CString GenerateKeyEventStat (TArray<SKeyEventStatsResult> &List) const;
 		SItemTypeStats *GetItemStats (DWORD dwUNID);
 		bool GetMatchingKeyEvents (const CString &sNodeID, const CDesignTypeCriteria &Crit, TArray<SKeyEventStatsResult> *retList) const;
@@ -335,6 +340,7 @@ class CPlayerShipController : public CObject, public IShipController
 		void Cargo (void);
 		inline CurrencyValue Charge (DWORD dwEconUNID, CurrencyValue iCredits) { return m_Credits.IncCredits(dwEconUNID, -iCredits); }
 
+		bool CanShowShipStatus (void);
 		void Communications (CSpaceObject *pObj, MessageTypes iMsg, DWORD dwData = 0, DWORD *iodwFormationPlace = NULL);
 		void Dock (void);
 		inline bool DockingInProgress (void) { return m_pStation != NULL; }
@@ -346,7 +352,7 @@ class CPlayerShipController : public CObject, public IShipController
 		inline int GetCargoSpace (void) { return (int)(m_pShip->GetCargoSpaceLeft() + 0.5); }
 		inline int GetEndGameScore (void) { return m_Stats.CalcEndGameScore(); }
 		inline int GetEnemiesDestroyed (void) { return ::strToInt(m_Stats.GetStat(CONSTLIT("enemyShipsDestroyed")), 0); }
-		inline CString GetItemStat (const CString &sStat, const CItemCriteria &Crit) const { return m_Stats.GetItemStat(sStat, Crit); }
+		inline CString GetItemStat (const CString &sStat, ICCItem *pItemCriteria) const { return m_Stats.GetItemStat(sStat, pItemCriteria); }
 		inline CString GetKeyEventStat (const CString &sStat, const CString &sNodeID, const CDesignTypeCriteria &Crit) const { return m_Stats.GetKeyEventStat(sStat, sNodeID, Crit); }
 		inline int GetResurrectCount (void) const { return ::strToInt(m_Stats.GetStat(CONSTLIT("resurrectCount")), 0); }
 		inline int GetScore (void) { return ::strToInt(m_Stats.GetStat(CONSTLIT("score")), 0); }
@@ -436,12 +442,13 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual void OnDamaged (const CDamageSource &Cause, CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage);
 		virtual bool OnDestroyCheck (DestructionTypes iCause, const CDamageSource &Attacker);
 		virtual void OnDestroyed (SDestroyCtx &Ctx);
-		virtual void OnDeviceEnabledDisabled (int iDev, bool bEnable);
+		virtual void OnDeviceEnabledDisabled (int iDev, bool bEnable, bool bSilent = false);
 		virtual void OnDeviceStatus (CInstalledDevice *pDev, int iEvent);
 		virtual void OnDocked (CSpaceObject *pObj);
 		virtual void OnDockedObjChanged (CSpaceObject *pLocation);
 		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend);
 		virtual void OnFuelLowWarning (int iSeq);
+		virtual void OnItemDamaged (const CItem &Item, int iHP) { m_Stats.OnItemDamaged(Item, iHP); }
 		virtual void OnItemFired (const CItem &Item) { m_Stats.OnItemFired(Item); }
 		virtual void OnItemInstalled (const CItem &Item) { m_Stats.OnItemInstalled(Item); }
 		virtual void OnItemUninstalled (const CItem &Item) { m_Stats.OnItemUninstalled(Item); }
@@ -577,451 +584,6 @@ class CMessageDisplay : public CObject
 		SMessage m_Messages[MESSAGE_QUEUE_SIZE];
 
 		int m_cySmoothScroll;
-	};
-
-class CButtonDisplay : public CObject
-	{
-	public:
-		CButtonDisplay (void);
-
-		void LButtonDown (int x, int y);
-		void LButtonUp (int x, int y);
-		void MouseMove (int x, int y);
-		void Paint (CG16bitImage &Dest);
-
-	private:
-		CDockScreen *m_pController;
-		RECT m_rcRect;
-
-		CString m_sLabel;
-		DWORD m_dwTag;
-	};
-
-#define ITEM_LIST_AREA_PAGE_UP_ACTION			(0xffff0001)
-#define ITEM_LIST_AREA_PAGE_DOWN_ACTION			(0xffff0002)
-
-class CGItemListArea : public AGArea
-	{
-	public:
-		CGItemListArea (void);
-		~CGItemListArea (void);
-
-		void CleanUp (void);
-		inline void DeleteAtCursor (int iCount) { if (m_pListData) m_pListData->DeleteAtCursor(iCount); InitRowDesc(); Invalidate(); }
-		inline int GetCursor (void) { return (m_pListData ? m_pListData->GetCursor() : -1); }
-		ICCItem *GetEntryAtCursor (void);
-		inline const CItem &GetItemAtCursor (void) { return (m_pListData ? m_pListData->GetItemAtCursor() : g_DummyItem); }
-		inline CItemListManipulator &GetItemListManipulator (void) { return (m_pListData ? m_pListData->GetItemListManipulator() : g_DummyItemListManipulator); }
-		inline IListData *GetList (void) const { return m_pListData; }
-		inline CSpaceObject *GetSource (void) { return (m_pListData ? m_pListData->GetSource() : NULL); }
-		inline bool IsCursorValid (void) { return (m_pListData ? m_pListData->IsCursorValid() : false); }
-		bool MoveCursorBack (void);
-		bool MoveCursorForward (void);
-		inline void ResetCursor (void) { if (m_pListData) m_pListData->ResetCursor(); Invalidate(); }
-		inline void SetCursor (int iIndex) { if (m_pListData) m_pListData->SetCursor(iIndex); Invalidate(); }
-		inline void SetFilter (const CItemCriteria &Filter) { if (m_pListData) m_pListData->SetFilter(Filter); InitRowDesc(); Invalidate(); }
-		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
-		void SetList (CCodeChain &CC, ICCItem *pList);
-		void SetList (CSpaceObject *pSource);
-		void SetList (CItemList &ItemList);
-		inline void SetRowHeight (int cyHeight) { m_cyRow = Max(1, cyHeight); }
-		inline void SetUIRes (const CUIResources *pUIRes) { m_pUIRes = pUIRes; }
-		inline void SyncCursor (void) { if (m_pListData) m_pListData->SyncCursor(); Invalidate(); }
-
-		//	AGArea virtuals
-		virtual bool LButtonDown (int x, int y);
-		virtual void Paint (CG16bitImage &Dest, const RECT &rcRect);
-		virtual void Update (void);
-
-	private:
-		enum ListTypes
-			{
-			listNone,
-			listItem,
-			listCustom,
-			};
-
-		struct SRowDesc
-			{
-			int yPos;							//	Position of the row (sum of height of previous rows)
-			int cyHeight;						//	Height of this row
-			};
-
-		int CalcRowHeight (int iRow);
-		void InitRowDesc (void);
-		int FindRow (int y);
-		void FormatDisplayAttributes (TArray<SDisplayAttribute> &Attribs, const RECT &rcRect, int *retcyHeight);
-		void PaintCustom (CG16bitImage &Dest, const RECT &rcRect, bool bSelected);
-		void PaintDisplayAttributes (CG16bitImage &Dest, TArray<SDisplayAttribute> &Attribs);
-		void PaintItem (CG16bitImage &Dest, const CItem &Item, const RECT &rcRect, bool bSelected);
-
-		IListData *m_pListData;
-		ListTypes m_iType;
-
-		const CUIResources *m_pUIRes;
-		const SFontTable *m_pFonts;
-		int m_iOldCursor;						//	Cursor pos
-		int m_yOffset;							//	Painting offset for smooth scroll
-		int m_yFirst;							//	coord of first row relative to list rect
-		int m_cyRow;							//	Row height
-
-		int m_cyTotalHeight;					//	Total heigh of all rows
-		TArray<SRowDesc> m_Rows;
-	};
-
-class CGDrawArea : public AGArea
-	{
-	public:
-		CGDrawArea (void);
-
-		inline CG16bitImage &GetCanvas (void) { CreateImage(); return m_Image; }
-
-		//	AGArea virtuals
-		virtual void Paint (CG16bitImage &Dest, const RECT &rcRect);
-
-	private:
-		void CreateImage (void);
-
-		CG16bitImage m_Image;
-
-		WORD m_wBackColor;
-		bool m_bTransBackground;
-	};
-
-class CGNeurohackArea : public AGArea
-	{
-	public:
-		CGNeurohackArea (void);
-		~CGNeurohackArea (void);
-
-		void CleanUp (void);
-		void SetData (int iWillpower, int iDamage);
-		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
-
-		//	AGArea virtuals
-		virtual void Paint (CG16bitImage &Dest, const RECT &rcRect);
-		virtual void Update (void);
-
-	private:
-		struct SNode
-			{
-			int x;
-			int y;
-			int iWidth;
-			int iSphereSize;
-			int iRootDist;
-			int iDamageLevel;
-
-			SNode *pParent;
-			SNode *pNext;
-			SNode *pPrev;
-			SNode *pFirstChild;
-			};
-
-		void CreateBranch (SNode *pParent, int iDirection, int iGeneration, int iWidth, const RECT &rcRect);
-		void CreateNetwork (const RECT &rcRect);
-		SNode *CreateNode (SNode *pParent, int x, int y);
-		void PaintBranch (CG16bitImage &Dest, SNode *pNode, SNode *pNext = NULL);
-		void PaintSphere (CG16bitImage &Dest, int x, int y, int iRadius, WORD wGlowColor);
-
-		const SFontTable *m_pFonts;
-
-		SNode *m_pNetwork;
-		int m_iNodeCount;
-		int m_iNodeAlloc;
-
-		SNode **m_pRootNodes;
-		int m_iRootCount;
-		int m_iRootAlloc;
-
-		SNode **m_pTerminalNodes;
-		int m_iTerminalCount;
-		int m_iTerminalAlloc;
-
-		SNode **m_pActiveNodes;
-		int m_iActiveCount;
-		int m_iActiveAlloc;
-
-		int m_iWillpower;
-		int m_iDamage;
-	};
-
-class CDockScreenActions
-	{
-	public:
-		enum SpecialAttribs
-			{
-			specialAll,
-
-			specialDefault,
-			specialCancel,
-			specialNextKey,
-			specialPrevKey,
-			};
-
-		CDockScreenActions (void) : m_pData(NULL) { }
-		~CDockScreenActions (void);
-
-		ALERROR AddAction (const CString &sID, int iPos, const CString &sLabel, CExtension *pExtension, ICCItem *pCode, int *retiAction);
-		void CleanUp (void);
-		void CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot, DWORD dwFirstTag, const RECT &rcFrame);
-		void Execute (int iAction, CDockScreen *pScreen);
-		void ExecuteExitScreen (bool bForceUndock = false);
-		void ExecuteShowPane (const CString &sPane);
-		bool FindByID (const CString &sID, int *retiAction = NULL);
-		bool FindByID (ICCItem *pItem, int *retiAction = NULL);
-		bool FindByKey (const CString &sKey, int *retiAction);
-		bool FindSpecial (SpecialAttribs iSpecial, int *retiAction);
-		inline CGButtonArea *GetButton (int iAction) const { return m_Actions[iAction].pButton; }
-		inline int GetCount (void) const { return m_Actions.GetCount(); }
-		inline const CString &GetKey (int iAction) const { return m_Actions[iAction].sKey; }
-		inline const CString &GetLabel (int iAction) const { return m_Actions[iAction].sLabel; }
-		int GetVisibleCount (void) const;
-		ALERROR InitFromXML (CExtension *pExtension, CXMLElement *pActions, ICCItem *pData, CString *retsError);
-		inline bool IsEnabled (int iAction) const { return m_Actions[iAction].bEnabled; }
-		bool IsSpecial (int iAction, SpecialAttribs iSpecial);
-		inline bool IsVisible (int iAction) const { return m_Actions[iAction].bVisible; }
-		inline void SetButton (int iAction, CGButtonArea *pButton) { m_Actions[iAction].pButton = pButton; }
-		void SetEnabled (int iAction, bool bEnabled = true);
-		void SetLabel (int iAction, const CString &sLabelDesc, const CString &sKey);
-		void SetSpecial (int iAction, SpecialAttribs iSpecial, bool bEnabled = true);
-		bool SetSpecial (CCodeChain &CC, int iAction, ICCItem *pSpecial, ICCItem **retpError);
-		void SetVisible (int iAction, bool bVisible = true);
-
-	private:
-		struct SActionDesc
-			{
-			CString sID;
-			CString sLabel;			//	Label for the action
-			CString sKey;			//	Accelerator key
-			CGButtonArea *pButton;	//	Pointer to button area
-
-			CExtension *pExtension;	//	Source of the code
-
-			CXMLElement *pCmd;		//	Special commands (e.g., <Exit/>
-			CString sCode;			//	Code
-			ICCItem *pCode;			//	Code (owned by us)
-
-			bool bVisible;			//	Action is visible
-			bool bEnabled;			//	Action is enabled
-
-			bool bDefault;			//	This is the default action [Enter]
-			bool bCancel;			//	This is the cancel action [Esc]
-			bool bPrev;				//	This is the prev action [<-]
-			bool bNext;				//	This is the next action [->]
-			};
-
-		void ExecuteCode (CDockScreen *pScreen, const CString &sID, CExtension *pExtension, ICCItem *pCode);
-		void ParseLabelDesc (const CString &sLabelDesc, CString *retsLabel, CString *retsKey = NULL, TArray<SpecialAttribs> *retSpecial = NULL);
-		void SetLabelDesc (SActionDesc *pAction, const CString &sLabelDesc, bool bOverrideSpecial = true);
-		void SetSpecial (SActionDesc *pAction, SpecialAttribs iSpecial, bool bEnabled);
-
-		TArray<SActionDesc> m_Actions;
-		ICCItem *m_pData;			//	Data passed in to scrShowScreen (may be NULL)
-	};
-
-class CDockScreen : public CObject,
-					public IScreenController
-	{
-	public:
-		CDockScreen (void);
-		virtual ~CDockScreen (void);
-
-		void CleanUpScreen (void);
-		void ExecuteCancelAction (void);
-		inline CDockScreenActions &GetActions (void) { return m_CurrentActions; }
-		inline CSpaceObject *GetLocation (void) { return m_pLocation; }
-		void HandleChar (char chChar);
-		void HandleKeyDown (int iVirtKey);
-		ALERROR InitScreen (HWND hWnd, 
-							RECT &rcRect, 
-							CSpaceObject *pLocation, 
-							CExtension *pExtension,
-							CXMLElement *pDesc, 
-							const CString &sPane,
-							ICCItem *pData,
-							CString *retsPane,
-							AGScreen **retpScreen);
-		inline bool InOnInit (void) { return m_bInOnInit; }
-		inline bool IsFirstOnInit (void) { return m_bFirstOnInit; }
-		inline bool IsValid (void) { return (m_pScreen != NULL); }
-		inline void ResetFirstOnInit (void) { m_bFirstOnInit = true; }
-		void ResetList (CSpaceObject *pLocation);
-		void SetListFilter (const CItemCriteria &Filter);
-		void Update (int iTick);
-
-		//	Methods used by script code
-		void DeleteCurrentItem (int iCount);
-		int GetCounter (void);
-		const CItem &GetCurrentItem (void);
-		ICCItem *GetCurrentListEntry (void);
-		const CString &GetDescription (void);
-		CG16bitImage *GetDisplayCanvas (const CString &sID);
-		inline CItemListManipulator &GetItemListManipulator (void) { return m_pItemListControl->GetItemListManipulator(); }
-		inline int GetListCursor (void) { return (m_pItemListControl ? m_pItemListControl->GetCursor() : -1); }
-		inline IListData *GetListData (void) { return (m_pItemListControl ? m_pItemListControl->GetList() : NULL); }
-		CString GetTextInput (void);
-		bool IsCurrentItemValid (void);
-		void SelectNextItem (bool *retbMore = NULL);
-		void SelectPrevItem (bool *retbMore = NULL);
-		void SetDescription (const CString &sDesc);
-		ALERROR SetDisplayText (const CString &sID, const CString &sText);
-		void SetCounter (int iCount);
-		void SetListCursor (int iCursor);
-		void SetTextInput (const CString &sText);
-		void ShowPane (const CString &sName);
-		bool ShowScreen (const CString &sName, const CString &sPane);
-		//inline void Undock (void) { m_pPlayer->Undock(); }
-
-		//	IScreenController virtuals
-		virtual void Action (DWORD dwTag, DWORD dwData = 0);
-
-	private:
-		enum EControlTypes
-			{
-			ctrlText =						1,
-			ctrlImage =						2,
-			ctrlCanvas =					3,
-			ctrlNeurohack =					100,
-			};
-
-		struct SDisplayControl
-			{
-			SDisplayControl (void) : pArea(NULL), pCode(NULL), bAnimate(false)
-				{
-				}
-
-			~SDisplayControl (void)
-				{
-				CCodeChain &CC = g_pUniverse->GetCC();
-				if (pCode)
-					pCode->Discard(&CC);
-				}
-
-			EControlTypes iType;
-			CString sID;
-			AGArea *pArea;
-			ICCItem *pCode;
-
-			bool bAnimate;
-			};
-
-		ALERROR CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRect, int xOffset);
-		ALERROR CreateItemPickerControl (CXMLElement *pDesc, AGScreen *pScreen, const RECT &rcRect);
-		ALERROR CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pScreen, const RECT &rcRect, const RECT &rcInner);
-		bool EvalBool (const CString &sString);
-		CString EvalInitialPane (void);
-		CString EvalInitialPane (CSpaceObject *pSource, ICCItem *pData);
-		CSpaceObject *EvalListSource (const CString &sString);
-		CString EvalString (const CString &sString, ICCItem *pData = NULL, bool bPlain = false, ECodeChainEvents iEvent = eventNone, bool *retbError = NULL);
-		SDisplayControl *FindDisplayControl (const CString &sID);
-		ALERROR FireOnScreenInit (CSpaceObject *pSource, ICCItem *pData, CString *retsError);
-		ALERROR InitCodeChain (CTranscendenceWnd *pTrans, CSpaceObject *pStation);
-		ALERROR InitCustomItemList (ICCItem *pData);
-		ALERROR InitCustomList (ICCItem *pData);
-		ALERROR InitDisplay (CXMLElement *pDisplayDesc, AGScreen *pScreen, const RECT &rcScreen);
-		ALERROR InitFonts (void);
-		ALERROR InitItemList (ICCItem *pData);
-		void ShowDisplay (bool bAnimateOnly = false);
-		void ShowItem (void);
-		void UpdateCredits (void);
-
-		void AddDisplayControl (CXMLElement *pDesc, 
-								AGScreen *pScreen, 
-								SDisplayControl *pParent, 
-								const RECT &rcFrame, 
-								SDisplayControl **retpDControl = NULL);
-		void InitDisplayControlRect (CXMLElement *pDesc, const RECT &rcFrame, RECT *retrcRect);
-
-		CTranscendenceWnd *m_pTrans;
-		const SFontTable *m_pFonts;
-		CUniverse *m_pUniv;
-		CPlayerShipController *m_pPlayer;
-		CSpaceObject *m_pLocation;
-		ICCItem *m_pData;
-		CExtension *m_pExtension;
-		CXMLElement *m_pDesc;
-		AGScreen *m_pScreen;
-		bool m_bFirstOnInit;
-		bool m_bInOnInit;
-
-		//	Title and header
-		CG16bitImage *m_pBackgroundImage;
-		CGTextArea *m_pCredits;
-		CGTextArea *m_pCargoSpace;
-		bool m_bFreeBackgroundImage;
-
-		//	Item list variables
-		CGItemListArea *m_pItemListControl;
-		CItemCriteria m_ItemCriteria;
-		CItemList m_CustomItems;
-
-		//	Display controls
-		TArray<SDisplayControl> m_Controls;
-		CXMLElement *m_pDisplayInitialize;
-		bool m_bDisplayAnimate;
-
-		//	Counter variables;
-		CGTextArea *m_pCounter;
-		bool m_bReplaceCounter;
-
-		//	Text input variables
-		CGTextArea *m_pTextInput;
-
-		//	Panes
-		CXMLElement *m_pPanes;
-		CXMLElement *m_pCurrentPane;
-		CDockScreenActions m_CurrentActions;
-		RECT m_rcPane;
-		CGFrameArea *m_pCurrentFrame;
-		CGTextArea *m_pFrameDesc;
-		CString m_sDesc;
-		bool m_bInShowPane;
-		bool m_bNoListNavigation;
-
-		//	Events
-		ICCItem *m_pOnScreenUpdate;
-	};
-
-struct SDockFrame
-	{
-	SDockFrame (void) :
-			pLocation(NULL),
-			pRoot(NULL),
-			pInitialData(NULL),
-			pStoredData(NULL),
-			pResolvedRoot(NULL)
-		{ }
-
-	CSpaceObject *pLocation;				//	Current location
-	CDesignType *pRoot;						//	Either a screen or a type with screens
-	CString sScreen;						//	Screen name (UNID or name)
-	CString sPane;							//	Current pane
-	ICCItem *pInitialData;					//	Data for the screen
-	ICCItem *pStoredData;					//	Read-write data
-
-	CDesignType *pResolvedRoot;
-	CString sResolvedScreen;
-	};
-
-class CDockScreenStack
-	{
-	public:
-		void DeleteAll (void);
-		void DiscardOldFrame (SDockFrame &OldFrame);
-		ICCItem *GetData (const CString &sAttrib);
-		inline int GetCount (void) const { return m_Stack.GetCount(); }
-		const SDockFrame &GetCurrent (void) const;
-		inline bool IsEmpty (void) const { return (m_Stack.GetCount() == 0); }
-		void Push (const SDockFrame &Frame);
-		void Pop (void);
-		void ResolveCurrent (const SDockFrame &ResolvedFrame);
-		void SetCurrent (const SDockFrame &NewFrame, SDockFrame *retPrevFrame = NULL);
-		void SetCurrentPane (const CString &sPane);
-		void SetData (const CString &sAttrib, ICCItem *pData);
-
-	private:
-		TArray<SDockFrame> m_Stack;
 	};
 
 class CArmorDisplay
@@ -1522,10 +1084,6 @@ class CUIResources
 		void CreateTitleAnimation (int x, int y, int iDuration, IAnimatron **retpAni);
 		void CreateLargeCredit (const CString &sCredit, const CString &sName, int x, int y, int iDuration, IAnimatron **retpAni);
 		void CreateMediumCredit (const CString &sCredit, TArray<CString> &Names, int x, int y, int iDuration, IAnimatron **retpAni);
-
-		void DrawReferenceDamageType (CG16bitImage &Dest, int x, int y, int iDamageType, const CString &sRef) const;
-		void DrawReferenceDamageAdj (CG16bitImage &Dest, int x, int y, int iLevel, int iHP, const int *iDamageAdj) const;
-		void GetDamageTypeIconRect (RECT *retRect) const;
 
 	private:
 		SFontTable *m_pFonts;						//	Font table
@@ -2050,6 +1608,7 @@ class CGameSettings
 			playerName,						//	Default player name
 			playerGenome,					//	Default player genome ("humanMale" or "humanFemale")
 			playerShipClass,				//	Default player ship class
+			lastAdventure,					//	Last adventure created
 
 			dockPortIndicator,				//	Options for dock port indicator
 			allowInvokeLetterHotKeys,		//	Allow invoke entries to have letter hot keys
@@ -2089,7 +1648,7 @@ class CGameSettings
 			debugSoundtrack,				//	Soundtrack debugging UI
 
 			//	Constants
-			OPTIONS_COUNT = 31,
+			OPTIONS_COUNT = 32,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }
@@ -2183,7 +1742,7 @@ class CTranscendenceModel
 		void RefreshScreenSession (void);
 		inline void SetScreenData (const CString &sAttrib, ICCItem *pData) { m_DockFrames.SetData(sAttrib, pData); }
 		ALERROR ShowPane (const CString &sPane);
-		ALERROR ShowScreen (CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError, bool bReturn = false);
+		ALERROR ShowScreen (CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError, bool bReturn = false, bool bFirstFrame = false);
 		void ShowShipScreen (void);
 		bool ShowShipScreen (CDesignType *pDefaultScreensRoot, CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError);
 		void UseItem (CItem &Item);

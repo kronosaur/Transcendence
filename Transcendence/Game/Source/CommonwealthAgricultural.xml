@@ -30,7 +30,7 @@
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, human, populated, primary"
 			levelFrequency=		"rrr-- ----- ----- ----- -----"
-			locationCriteria=	"+LifeZone,-OuterSystem,-asteroids"
+			locationCriteria=	"-asteroids, +lifeZone"
 			>
 
 		<Names noArticle="true">Archer Colony; Buran Station; Chekov Colony; Dante Station;
@@ -71,6 +71,10 @@
 			<Buy	criteria="*NU" item="&itMedicalSupplies;"	priceAdj="150"/>
 			<Buy	criteria="*NU" item="&itHyperfiberRoll;"	priceAdj="150"/>
 			<Buy	criteria="*NU" item="&itBiofactorPaste;"	priceAdj="150"/>
+		
+			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="94"/>
+			<RepairArmor	criteria="a L:1-5;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
 		</Trade>
 
 		<InitialData>
@@ -233,11 +237,15 @@
 							</Action>
 
 							<Action name="Commodities Exchange" key="C">
-								<ShowPane pane="CommoditiesExchange"/>
+								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -428,63 +436,6 @@
 						</Actions>
 
 					</MissionStatus>
-
-					<CommoditiesExchange>
-
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat "Welcome to the " (objGetName gSource) " Commodities Exchange Market."))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
-							</Action>
-
-							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</CommoditiesExchange>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itHeliumAssembly; 93) (&itHelium3FuelRod; 92)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(block Nil
-									(setq gTechLevel 5)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</DockServices>
-
 				</Panes>
 
 			</Main>

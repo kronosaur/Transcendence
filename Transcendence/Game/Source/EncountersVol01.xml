@@ -29,6 +29,11 @@
 
 <!-- Abbasid Survivalists ================================================= -->
 
+	<Sovereign UNID="&svAbbasid;"
+			name="Abbasid Survivalists"
+			alignment="destructive order"
+			/>
+
 	<!-- Abbasid Thanogram -->
 
 	<ItemType UNID="&itAbbasidThanogram;"
@@ -50,7 +55,7 @@
 
 	<StationType UNID="&stAbbasidOutpost;"
 			name=				"Abbasid outpost"
-			sovereign=			"&svSettlers;"
+			sovereign=			"&svAbbasid;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -65,7 +70,7 @@
 
 			attributes=			"enemy, envFire, envAvoidsWater, human, populated"
 			levelFrequency=		"ccur- ----- ----- ----- -----"
-			locationCriteria=	"+void; -planetary; -innerSystem; -lifeZone"
+			locationCriteria=	"+outerSystem, -planetary"
 			enemyExclusionRadius="100"
 			>
 
@@ -97,6 +102,106 @@
 	</StationType>
 
 <!-- Bennin Xenophobes ==================================================== -->
+
+	<Sovereign UNID="&svXenophobes;"
+			name="Bennin Xenophobes"
+			alignment="destructive chaos"
+			/>
+	
+	<!-- Segment of light meteorsteel -->
+
+	<ItemType UNID="&itLightMeteorsteel;"
+			name=				"[segment(s) of ]light meteorsteel"
+			attributes=			"benninXenophobes, minorItem, notStandard, specialty"
+			  
+			level=				"4"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			value=				"600"
+			mass=				"2500"
+			  
+			description=		"A rare alloy invented by the Bennin Xenophobes, meteorsteel interferes with most shield generators."
+			>
+
+		<Image imageID="&rsItems4;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"100"
+				hpBonus=	" +50, +50,+100,+100"
+
+				repairTech=	"5"
+
+				shieldInterference=	"true"
+				blindingDamageAdj=	"0"
+				radiationImmune=	"true"
+				deviceDamageAdj=	"50"
+				EMPDamageAdj=		"50"
+				/>
+
+	</ItemType>
+
+	<!-- Segment of heavy meteorsteel -->
+
+	<ItemType UNID="&itHeavyMeteorsteel;"
+			name=				"[segment(s) of ]heavy meteorsteel"
+			attributes=			"benninXenophobes, minorItem, notStandard, specialty"
+			  
+			level=				"5"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			value=				"1300"
+			mass=				"5000"
+			  
+			description=		"A rare alloy invented by the Bennin Xenophobes, meteorsteel interferes with most shield generators."
+			>
+
+		<Image imageID="&rsItems4;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"150"
+				hpBonus=	" ***, ***,+200,+200"
+
+				shieldInterference=	"true"
+				blindingDamageAdj=	"0"
+				radiationImmune=	"true"
+				EMPDamageAdj=		"0"
+				deviceDamageAdj=	"0"
+				/>
+
+	</ItemType>
+
+	<!-- Worldship Armor Plate -->
+
+	<ItemType UNID="&itWorldshipArmorPlate;"
+			name=				"worldship armor plate"
+			attributes=			"benninXenophobes, military, minorItem, notForSale, notStandard"
+			  
+			level=				"8"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			value=				"8000"
+			mass=				"15000"
+			  
+			description=		"Like other meteorsteel armors, this plate interferes with shield generators."
+			>
+
+		<Image imageID="&rsItems4;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"250"
+				hpBonus=	" ***, ***, ***, ***,+400,+400,+100,+100"
+
+				shieldInterference=	"true"
+				blindingDamageAdj=	"0"
+				radiationImmune=	"true"
+				deviceDamageAdj=	"0"
+				EMPDamageAdj=		"0"
+				/>
+
+	</ItemType>
 
 	<!-- Xenophobe Fighter -->
 
@@ -526,7 +631,7 @@
 			name=				"(Xenophobe fleet)"
 			scale=				"world"
 			sovereign=			"&svIndependent;"
-			controllingSovereign="&svDestructiveChaos;"
+			controllingSovereign="&svXenophobes;"
 
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
@@ -548,7 +653,7 @@
 		</ImageVariants>
 
 		<Ships>
-			<Ship	count="1"	class="&scXenophobeDefender;" orders="wander" sovereign="&svDestructiveChaos;" >
+			<Ship	count="1"	class="&scXenophobeDefender;" orders="wander" sovereign="&svXenophobes;" >
 				<Escorts>
 					<Ship		count="1d4+1"	class="&scXenophobeFighter;"	orders="escort"/>
 				</Escorts>
@@ -568,7 +673,7 @@
 	<StationType UNID="&stXenophobeWorldship;"
 			name=				"(Xenophobe worldship)"
 			sovereign=			"&svCommonwealth;"
-			controllingSovereign="&svDestructiveChaos;"
+			controllingSovereign="&svXenophobes;"
 			abandonedScreen=	"Main"
 
 			multiHull=			"true"
@@ -597,7 +702,7 @@
 		<Image			imageID="&rsStations1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
 
 		<Ships>
-			<Ship	count="1"	class="&scXenophobeWorldship;" orders="wander" sovereign="&svDestructiveChaos;" >
+			<Ship	count="1"	class="&scXenophobeWorldship;" orders="wander" sovereign="&svXenophobes;" >
 				<Escorts>
 					<Ship		count="1d3+1"	class="&scXenophobeDefender;"	orders="escort">
 						<Escorts>
@@ -733,6 +838,11 @@
 
 <!-- Death Drugs Cartel =================================================== -->
 
+	<Sovereign UNID="&svDeathDrugsCartel;"
+			name="Death Drugs Cartel"
+			alignment="destructive order"
+			/>
+
 	<!-- Meth Enforcer -->
 
 	<ShipClass UNID="&scMethEnforcer;"
@@ -790,7 +900,7 @@
 
 	<StationType UNID="&stDrugCartelOutpost;"
 			name=				"Death Drug Cartel outpost"
-			sovereign=			"&svOutlaw;"
+			sovereign=			"&svDeathDrugsCartel;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -804,7 +914,7 @@
 
 			attributes=			"drugcartel, enemy, envWater, envAvoidsEarth, human, outlaws, populated"
 			levelFrequency=		"--ucu r---- ----- ----- -----"
-			locationCriteria=	"+planetary; -innerSystem"
+			locationCriteria=	"-innerSystem, +planetary"
 			>
 
 		<Image			imageID="&rsStations4;" imageX="0" imageY="320" imageWidth="96" imageHeight="96"/>
@@ -967,13 +1077,7 @@
 			/>
 
 		<Items>
-			<Item count="1d6" item="&itHeliumAssembly;"/>
-			<Table>
-				<Null chance="20"/>
-				<Item chance="35" count="1d4" item="&itXenotiteOre;"/>
-				<Item chance="25" count="1d4" item="&itPteracniumOre;"/>
-				<Item chance="20" count="1d4" item="&itChronimiumGas;"/>
-			</Table>
+			<Item count="1d6" item="&itXenotiteFuelRod;"/>
 		</Items>
 
 		<Image imageID="&rsMediumShips2;" imageX="704" imageY="0" imageWidth="64" imageHeight="64"/>
@@ -983,6 +1087,18 @@
 		</Effects>
 		
 		<Events>
+			<OnCreate>
+				(if (geq (random 1 100) 20)
+					(sysAddRandomOreByValue gSource
+						(@ 
+							(list 0 
+								20 50 100 200 500 1000 2000 5000 10000 20000)
+							(sysGetLevel)
+							)
+						)
+					)
+			</OnCreate>
+			
 			<OnDestroy>
 				(if (eq (shpGetOrder gSource) 'mine)
 					(objFireEvent (shpGetOrderTarget gSource) "OnMinerDestroyed")
@@ -1089,7 +1205,7 @@
 
 			attributes=			"enemy, envEarth, envAvoidsAir, ferian, neoHuman, miners, populated, zoanthrope"
 			levelFrequency=		"---ru ccr-- ----- ----- -----"
-			locationCriteria=	"++asteroids,-planet"
+			locationCriteria=	"++asteroids"
 			>
 
 		<Image			imageID="&rsStations5;" imageX="0" imageY="384" imageWidth="128" imageHeight="128"/>
@@ -1098,8 +1214,7 @@
 		</Devices>
 
 		<Items>
-			<Item count="8d12"	item="&itXenotiteOre;" />
-			<Item count="5d12"	item="&itPteracniumOre;" />
+			<Lookup count="4d8"	table="&tbAsteroidOre;"/>
 			<Item count="4d12"	item="&itChronimiumGas;" />
 		</Items>
 
@@ -1429,7 +1544,7 @@
 
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, human, populated"
 			levelFrequency=		"cuv-- ----- ----- ----- -----"
-			locationCriteria=	"+asteroids,-asteroidbelt"
+			locationCriteria=	"+asteroids"
 			>
 
 		<ImageVariants>
@@ -1491,7 +1606,7 @@
 
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, human, populated"
 			levelFrequency=		"rcuv- ----- ----- ----- -----"
-			locationCriteria=	"+asteroids,-asteroidbelt"
+			locationCriteria=	"+asteroids"
 			enemyExclusionRadius="50"
 			>
 
@@ -1626,7 +1741,7 @@
 
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, human, populated"
 			levelFrequency=		"-rcuv ----- ----- ----- -----"
-			locationCriteria=	"+asteroids,-asteroidbelt"
+			locationCriteria=	"+asteroids"
 			>
 
 		<Image		imageID="&rsAnarchistStations;" imageX="0"   imageY="244" imageWidth="260" imageHeight="260"/>
@@ -1722,6 +1837,11 @@
 	<Image UNID="&rsAnarchistStations;"				bitmap="Resources\AnarchistStations.jpg"		bitmask="Resources\AnarchistStationsMask.bmp"  loadOnUse="true"/>
 	
 <!-- Gaian Terraformers =================================================== -->
+
+	<Sovereign UNID="&svGaianTerraformers;"
+			name="Gaian Terraformers"
+			alignment="destructive order"
+			/>
 
 	<!-- Gaian Demolition Cannon -->
 
@@ -1847,6 +1967,7 @@
 	<StationType UNID="&stGaianProcessorEncounter;"
 			name=				"(Gaian processor)"
 			sovereign=			"&svIndependentTrader;"
+			controllingSovereign="&svGaianTerraformers;"
 			dockScreen=			"&dsAbandonedShip;"
 
 			scale=				"ship"
@@ -1857,7 +1978,7 @@
 
 			attributes=			"enemy, envEarth, envAvoidsAir, shipwreck"
 			levelFrequency=		"----- --vuu r----- ----- -----"
-			locationCriteria=	"+asteroids,-planetary"
+			locationCriteria=	"+asteroids"
 			>
 		<Image shipwreckID="&scTundra;, &scCenturion;, &scSandstorm;"/>
 
@@ -2195,7 +2316,7 @@
 
 			attributes=			"enemy, envFire, envAvoidsWater, human, populated"
 			levelFrequency=		"---cu r---- ----- ----- -----"
-			locationCriteria=	"+innerSystem; -frost; -nebulae; -void"
+			locationCriteria=	"+innerSystem, -void"
 			enemyExclusionRadius="50"
 			>
 
@@ -2250,7 +2371,7 @@
 
 			attributes=			"enemy, envFire, envAvoidsWater, human, populated"
 			levelFrequency=		"--cuv ----- ----- ----- -----"
-			locationCriteria=	"+innerSystem; -frost; -nebulae; -void"
+			locationCriteria=	"+innerSystem, -void"
 			>
 
 		<Image			imageID="&rsStations3;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
@@ -2386,7 +2507,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, populated"
 			levelFrequency=		"curv- ----- ----- ----- -----"
-			locationCriteria=	"+frost,+OuterSystem,-planetary"
+			locationCriteria=	"+outerSystem, -planetary"
 			>
 
 		<Image			imageID="&rsStations1;" imageX="384" imageY="256" imageWidth="96" imageHeight="128"/>
@@ -2534,7 +2655,7 @@
 
 			attributes=			"enemy, envWater, envAvoidsEarth, huari, human, majorStation, populated"
 			levelFrequency=		"---vu ur--- ----- ----- -----"
-			locationCriteria=	"-LifeZone,+planetary"
+			locationCriteria=	"-lifeZone, +planetary"
 			enemyExclusionRadius="100"
 			>
 
@@ -2767,7 +2888,7 @@
 
 			attributes=			"enemy, envWater, envAvoidsEarth, human, kobol, populated, warlords"
 			levelFrequency=		"----- -cur- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
 			>
 
@@ -3075,7 +3196,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, lombardMarauders, pirates, populated"
 			levelFrequency=		"--uu- ----- ----- ----- -----"
-			locationCriteria=	"+asteroids,-planetary"
+			locationCriteria=	"+asteroids"
 			enemyExclusionRadius="100"
 			>
 
@@ -3122,7 +3243,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, lombardMarauders, marauderCompound, pirates, populated"
 			levelFrequency=		"--vcr ----- ----- ----- -----"
-			locationCriteria=	"+asteroids,-planetary"
+			locationCriteria=	"+asteroids"
 			enemyExclusionRadius="100"
 			>
 
@@ -3190,7 +3311,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, lombardMarauders, marauderStronghold, pirates,populated"
 			levelFrequency=		"---ru v---- ----- ----- -----"
-			locationCriteria=	"+LifeZone,-planetary"
+			locationCriteria=	"+lifeZone, -planetary"
 			enemyExclusionRadius="100"
 			>
 
@@ -3281,6 +3402,11 @@
 	</ShipTable>
 
 <!-- Order of Penitence =================================================== -->
+
+	<Sovereign UNID="&svPenitents;"
+			name="Order of Penitence"
+			alignment="destructive order"
+			/>
 
 	<!-- Absolution cannon -->
 
@@ -3477,7 +3603,7 @@
 
 	<StationType UNID="&stPenitentShrine;"
 			name=				"Penitent shrine"
-			sovereign=			"&svCult;"
+			sovereign=			"&svPenitents;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -3491,7 +3617,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, penitents, populated, religious"
 			levelFrequency=		"---rc urv-- ----- ----- -----"
-			locationCriteria=	"+nebulae,-planet,-void"
+			locationCriteria=	"+nebulae"
 			>
 
 		<Image			imageID="&rsStations5;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
@@ -3527,7 +3653,7 @@
 
 	<StationType UNID="&stPenitentSanctum;"
 			name=				"Penitent sanctum"
-			sovereign=			"&svCult;"
+			sovereign=			"&svPenitents;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -3542,7 +3668,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, penitents, populated, religious"
 			levelFrequency=		"----v curv- ----- ----- -----"
-			locationCriteria=	"+nebulae,-planet,-void"
+			locationCriteria=	"+nebulae"
 			>
 
 		<Image			imageID="&rsStations5;" imageX="128" imageY="256" imageWidth="128" imageHeight="128"/>
@@ -3944,7 +4070,7 @@
 
 			attributes=			"debris, envAir, envAvoidsFire, friendly, outlaw"
 			levelFrequency=		"uuurv ----- ----- ----- -----"
-			locationCriteria=	"--planetary,-void"
+			locationCriteria=	"--planetary"
 			>
 
 		<Names>abandoned cargo container</Names>
@@ -4014,7 +4140,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, outlaws, populated"
 			levelFrequency=		"ucv-- ----- ----- ----- -----"
-			locationCriteria=	"+planetary; --innerSystem; -void"
+			locationCriteria=	"--innerSystem, +planetary"
 			>
 
 		<ImageVariants>
@@ -4068,7 +4194,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, outlaws, populated"
 			levelFrequency=		"vcr-- ----- ----- ----- -----"
-			locationCriteria=	"+planetary; --innerSystem"
+			locationCriteria=	"--innerSystem, +planetary"
 			>
 
 		<ImageVariants>
@@ -4130,7 +4256,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, outlawHaven, outlaws, populated"
 			levelFrequency=		"-vcr- ----- ----- ----- -----"
-			locationCriteria=	"+planetary; --innerSystem; -lifeZone"
+			locationCriteria=	"+outerSystem, +planetary"
 			enemyExclusionRadius="100"
 			>
 
@@ -4295,11 +4421,16 @@
 	
 <!-- Pteravores =========================================================== -->
 
+	<Sovereign UNID="&svPteravores;"
+			name="pteravores"
+			alignment="destructive chaos"
+			/>
+
 	<!-- Pteravore Lair -->
 
 	<StationType UNID="&stPteravoreLair;"
 			name=				"pteravore lair"
-			sovereign=			"&svDestructiveChaos;"
+			sovereign=			"&svPteravores;"
 			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -4308,12 +4439,13 @@
 			armorID=			"&itAdvancedPlasteelPlate;"
 			hitPoints=			"200"
 			stealth=			"15" 
+			fireRateAdj=		"80"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
 			attributes=			"chitometallicEco, enemy, envFire, envAvoidsWater, galacticCreature, pteravore, score"
 			levelFrequency=		"----- ----r cur-- ----- -----"
-			locationCriteria=	"++asteroids; +++chitometallicEco; -planet"
+			locationCriteria=	"++asteroids, +++chitometallicEco"
 			>
 
 		<ImageVariants>
@@ -4575,6 +4707,10 @@
 				(objRemoveOverlay gSource aOverlayID)
 			</OnInsuranceClaim>
 
+			<OnRemoveAtDockServices>
+				(objRemoveOverlay gSource aOverlayID)
+			</OnRemoveAtDockServices>
+			
 			<OnUpdate>
 				(block Nil
 
@@ -4675,7 +4811,12 @@
 	<Image UNID="&rsPteravoreClawOverlay;"		bitmap="Resources\PteravoreClawOverlay.jpg"	bitmask="Resources\PteravoreClawOverlayMask.bmp"	loadOnUse="true"/>
 	<Image UNID="&rsPteravoreDebris;"			bitmap="Resources\PteravoreDebris.jpg"	bitmask="Resources\PteravoreDebrisMask.bmp"	loadOnUse="true"/>
 
-<!-- Ranx Warlords ======================================================== -->
+<!-- Ranx Empire =========================================================== -->
+
+	<Sovereign UNID="&svRanxEmpire;"
+			name="Ranx Empire"
+			alignment="destructive order"
+			/>
 
 	<!-- Segment of Depleted Uranium Armor -->
 
@@ -4686,12 +4827,12 @@
 			frequency=			"rare"
 			numberAppearing=	"1d4"
 			mass=				"5000"
-			attributes=			"MinorItem; NotForSale"
+			attributes=			"minorItem, notForSale, ranx"
 
 			description=		"Though dense and extremely strong, depleted uranium is difficult to repair."
 			>
 
-		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems4;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"75"
@@ -4700,6 +4841,109 @@
 				repairTech=	"6"
 				installCostAdj="150"
 				/>
+	</ItemType>
+
+	<!-- Kiloton Cannon -->
+
+	<ItemType UNID="&itKilotonCannon;"
+			name=				"kiloton cannon"
+			attributes=			"majorItem, military, ranx, specialty"
+			  
+			level=				"7"
+			frequency=			"uncommon"
+
+			value=				"45000"
+			mass=				"4000"
+			  
+			description=		"This heavy nuclear cannon requires kiloton cannon shells."
+			>
+
+		<Image imageID="&rsItemsEI3;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				fireRate=			"20"
+				powerUse=			"100"
+				>
+
+			<Missiles>
+				<Missile ammoID="&itKilotonCannonShell;"
+						type=			"missile"
+
+						damage=			"thermo:1d8+1; WMD4"
+						missileSpeed=	"50"
+						lifetime=		"120"
+						hitPoints=		"15"
+
+						failsafe=		"10"
+
+						sound=			"&snMissileLauncher;"
+						>
+
+					<Effect>
+						<ParticleJet
+								emitRate=			"20"
+								emitSpeed=			"40-50"
+								particleLifetime=	"10-30"
+								spreadAngle=		"2"
+								>
+							<ParticleEffect>
+								<Particle
+										style=			"plain"
+										minWidth=		"1"
+										maxWidth=		"3"
+										primaryColor=	"#effeff"
+										secondaryColor=	"#5b777a"
+										/>
+							</ParticleEffect>
+						</ParticleJet>
+						
+						<Image imageID="&rsMissiles;" imageX="0" imageY="48" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
+					</Effect>
+
+					<HitEffect
+							sound="&snArmorHit1;"
+							>
+						<Flare
+								style=			"fadingBlast"
+								radius=			"150"
+								primaryColor=	"0xff, 0xff, 0xf0"
+								lifetime=		"8"
+								/>
+					</HitEffect>
+
+					<Fragment 
+							count=				"48"
+							type=				"missile"
+
+							damage=				"thermo:1d8+2; WMD4"
+							missileSpeed=		"70-90"
+							lifetime=			"5"
+							
+							effect=				"&efThermoShellDefault;"
+							>
+					</Fragment>
+				</Missile>
+			</Missiles>
+		</Weapon>
+	</ItemType>
+
+	<!-- Kiloton Cannon Shell -->
+
+	<ItemType UNID="&itKilotonCannonShell;"
+			name=				"kiloton cannon shell"
+			attributes=			"consumable, missile, ranx"
+			  
+			level=				"6"
+			frequency=			"common"
+			numberAppearing=	"1d20"
+
+			value=				"50"
+			mass=				"150"
+			  
+			description=		"This shell cartridge is used by the kiloton cannon."
+			>
+
+		<Image imageID="&rsItemsEI3;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
 	<!-- Ranx Gunship -->
@@ -4859,7 +5103,7 @@
 
 	<StationType UNID="&stRanxOutpost;"
 			name=				"Ranx outpost"
-			sovereign=			"&svDestructiveOrder;"
+			sovereign=			"&svRanxEmpire;"
 			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -4873,7 +5117,7 @@
 
 			attributes=			"enemy, envEarth, envAvoidsAir, human, populated, ranx"
 			levelFrequency=		"----- ucur- ----- ----- -----"
-			locationCriteria=	"+planetary,-OuterSystem"
+			locationCriteria=	"-outerSystem, +planetary|+50"
 			enemyExclusionRadius="60"
 			>
 
@@ -4910,7 +5154,7 @@
 
 	<StationType UNID="&stRanxFortress;"
 			name=				"Ranx fortress"
-			sovereign=			"&svDestructiveOrder;"
+			sovereign=			"&svRanxEmpire;"
 			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -4924,7 +5168,7 @@
 
 			attributes=			"enemy, envEarth, envAvoidsAir, human, majorStation, populated, ranx"
 			levelFrequency=		"----- -rcr- ----- ----- -----"
-			locationCriteria=	"+planetary,-OuterSystem"
+			locationCriteria=	"-outerSystem, +planetary|+50"
 			enemyExclusionRadius="100"
 			>
 
@@ -5150,6 +5394,49 @@
 
 <!-- Sapiens ============================================================== -->
 
+	<Sovereign UNID="&svSapiens;"
+			name="Sapiens Preservation Society"
+			alignment="destructive chaos"
+			/>
+
+	<!-- Actinide Waste Cannon -->
+
+	<ItemType UNID="&itWasteCannon;"
+			name=				"actinide waste cannon"
+			attributes=			"illegal, majorItem, sapiens, notStandard;"
+			  
+			level=				"4"
+			frequency=			"rare"
+
+			value=				"3500"
+			mass=				"6000"
+			  
+			description=		"The actinide waste cannon is a dirty weapon that shoots out a cloud of radioactive debris."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				fireRate=			"30"
+
+				type=				"missile"
+				repeating=			"3"
+
+				hitPoints=			"5"
+				lifetime=			"60"
+				damage=				"blast:1d8; radiation1; WMD1"
+				powerUse=			"60"
+
+				missileSpeed=		"20"
+				sound=				"&snLaserCannon;"
+				>
+
+			<Effect>
+				<Image imageID="&rsMediumExplosions;" imageX="0" imageY="128" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
+			</Effect>
+		</Weapon>
+	</ItemType>
+
 	<!-- Plague Gunship -->
 
 	<ShipClass UNID="&scPlague;"
@@ -5261,7 +5548,7 @@
 
 	<StationType UNID="&stTerroristCamp;"
 			name=				"Sapiens camp"
-			sovereign=			"&svAnarchists;"
+			sovereign=			"&svSapiens;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -5275,7 +5562,7 @@
 
 			attributes=			"enemy, envFire, envAvoidsWater, human, populated, sapiens, sapiensCamp"
 			levelFrequency=		"-vcuv ----- ----- ----- -----"
-			locationCriteria=	"+lifeZone; -innerSystem; -void"
+			locationCriteria=	"+lifeZone"
 			>
 
 		<ImageVariants>
@@ -5317,7 +5604,7 @@
 
 	<StationType UNID="&stTerroristCompound;"
 			name=				"Sapiens compound"
-			sovereign=			"&svAnarchists;"
+			sovereign=			"&svSapiens;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -5332,7 +5619,7 @@
 
 			attributes=			"enemy, envFire, envAvoidsWater, human, populated, sapiens, sapiensCompound"
 			levelFrequency=		"--vcu v---- ----- ----- -----"
-			locationCriteria=	"+lifeZone; -innerSystem; -void"
+			locationCriteria=	"+lifeZone"
 			enemyExclusionRadius="50"
 			>
 
@@ -5446,7 +5733,7 @@
 
 			attributes=			"debris,friendly"
 			levelFrequency=		"ucccu rrvv- ----- ----- -----"
-			locationCriteria=	"+asteroids,-planetary"
+			locationCriteria=	"+asteroids"
 			>
 
 		<ImageVariants>
@@ -5674,6 +5961,11 @@
 
 <!-- Ventari Settlers ===================================================== -->
 
+	<Sovereign UNID="&svVentariSettlers;"
+			name="Ventari Settlers"
+			alignment="destructive order"
+			/>
+
 	<!-- Ventari Cruiser -->
 
 	<ShipClass UNID="&scVentariCruiser;"
@@ -5760,7 +6052,7 @@
 
 	<StationType UNID="&stVentariColony;"
 			name=				"Ventari colony"
-			sovereign=			"&svDestructiveOrder;"
+			sovereign=			"&svVentariSettlers;"
 			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -5775,7 +6067,7 @@
 
 			attributes=			"enemy, envFire, envAvoidsWater, human, majorStation, populated"
 			levelFrequency=		"----- ucur- ----- ----- -----"
-			locationCriteria=	"+OuterSystem,-planetary"
+			locationCriteria=	"+outerSystem, -planetary"
 			enemyExclusionRadius="100"
 			>
 

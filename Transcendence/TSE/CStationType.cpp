@@ -13,6 +13,7 @@
 #define ENCOUNTERS_TAG							CONSTLIT("Encounters")
 #define EVENTS_TAG								CONSTLIT("Events")
 #define IMAGE_TAG								CONSTLIT("Image")
+#define IMAGE_EFFECT_TAG						CONSTLIT("ImageEffect")
 #define IMAGE_VARIANTS_TAG						CONSTLIT("ImageVariants")
 #define ITEMS_TAG								CONSTLIT("Items")
 #define NAMES_TAG								CONSTLIT("Names")
@@ -50,6 +51,7 @@
 #define FIRE_RATE_ADJ_ATTRIB					CONSTLIT("fireRateAdj")
 #define FREQUENCY_ATTRIB						CONSTLIT("frequency")
 #define GATE_EFFECT_ATTRIB						CONSTLIT("gateEffect")
+#define GRAVITY_RADIUS_ATTRIB					CONSTLIT("gravityRadius")
 #define HIT_POINTS_ATTRIB						CONSTLIT("hitPoints")
 #define IMMUTABLE_ATTRIB						CONSTLIT("immutable")
 #define INACTIVE_ATTRIB							CONSTLIT("inactive")
@@ -71,16 +73,19 @@
 #define NO_MAP_ICON_ATTRIB						CONSTLIT("noMapIcon")
 #define RADIOACTIVE_ATTRIB						CONSTLIT("radioactive")
 #define RANDOM_ENCOUNTERS_ATTRIB				CONSTLIT("randomEncounters")
+#define REGEN_ATTRIB							CONSTLIT("regen")
 #define REPAIR_RATE_ATTRIB						CONSTLIT("repairRate")
 #define REVERSE_ARTICLE_ATTRIB					CONSTLIT("reverseArticle")
 #define SCALE_ATTRIB							CONSTLIT("scale")
 #define SHIP_ENCOUNTER_ATTRIB					CONSTLIT("shipEncounter")
+#define SHIP_REGEN_ATTRIB						CONSTLIT("shipRegen")
 #define SHIP_REPAIR_RATE_ATTRIB					CONSTLIT("shipRepairRate")
 #define SHIPWRECK_UNID_ATTRIB					CONSTLIT("shipwreckID")
 #define SIGN_ATTRIB								CONSTLIT("sign")
 #define SIZE_ATTRIB								CONSTLIT("size")
 #define SOVEREIGN_ATTRIB						CONSTLIT("sovereign")
 #define SPACE_COLOR_ATTRIB						CONSTLIT("spaceColor")
+#define STANDING_COUNT_ATTRIB					CONSTLIT("standingCount")
 #define STEALTH_ATTRIB							CONSTLIT("stealth")
 #define STRUCTURAL_HIT_POINTS_ATTRIB			CONSTLIT("structuralHitPoints")
 #define TIME_STOP_IMMUNE_ATTRIB					CONSTLIT("timeStopImmune")
@@ -123,8 +128,10 @@
 #define FIELD_EXPLOSION_TYPE					CONSTLIT("explosionType")
 #define FIELD_FIRE_RATE_ADJ						CONSTLIT("fireRateAdj")
 #define FIELD_HITS_TO_DESTROY					CONSTLIT("hitsToDestroy")			//	# of hits by std level weapon to destroy station
+#define FIELD_INSTALL_DEVICE_MAX_LEVEL			CONSTLIT("installDeviceMaxLevel")
 #define FIELD_HP								CONSTLIT("hp")
 #define FIELD_LEVEL								CONSTLIT("level")
+#define FIELD_LOCATION_CRITERIA					CONSTLIT("locationCriteria")
 #define FIELD_MAX_LIGHT_RADIUS					CONSTLIT("maxLightRadius")
 #define FIELD_NAME								CONSTLIT("name")
 #define FIELD_REGEN								CONSTLIT("regen")					//	hp repaired per 180 ticks
@@ -364,8 +371,8 @@ int CStationType::CalcHitsToDestroy (int iLevel)
 		//	Adjust weapon damage for station repairs. The standard fire rate is
 		//	once per 8 ticks, and the repair rate is per 30 ticks.
 
-		if (m_iRepairRate > 0)
-			rWeaponDamage = Max(0.0, rWeaponDamage - (8.0 * m_iRepairRate / STATION_REPAIR_FREQUENCY));
+		if (!m_Regen.IsEmpty())
+			rWeaponDamage = Max(0.0, rWeaponDamage - (8.0 * m_Regen.GetHPPer180(STATION_REPAIR_FREQUENCY) / 180.0));
 		}
 	else
 		iTotalHP = m_iMaxStructuralHP;
@@ -716,6 +723,8 @@ bool CStationType::FindDataField (const CString &sField, CString *retsValue)
 		*retsValue = m_pFirstDockScreen.GetStringUNID(this);
 	else if (strEquals(sField, FIELD_LEVEL))
 		*retsValue = strFromInt(GetLevel());
+	else if (strEquals(sField, FIELD_LOCATION_CRITERIA))
+		*retsValue = GetLocationCriteria();
 	else if (strEquals(sField, FIELD_NAME))
 		*retsValue = GetName();
 	else if (strEquals(sField, FIELD_ARMOR_CLASS))
@@ -738,6 +747,12 @@ bool CStationType::FindDataField (const CString &sField, CString *retsValue)
 		*retsValue = strFromInt(10000 / m_iFireRateAdj);
 	else if (strEquals(sField, FIELD_HITS_TO_DESTROY))
 		*retsValue = strFromInt(CalcHitsToDestroy(GetLevel()));
+	else if (strEquals(sField, FIELD_INSTALL_DEVICE_MAX_LEVEL))
+		{
+		int iMaxLevel = (m_pTrade ? m_pTrade->GetMaxLevelMatched(serviceInstallDevice) : -1);
+		*retsValue = (iMaxLevel != -1 ? strFromInt(iMaxLevel) : NULL_STR);
+		}
+
 	else if (strEquals(sField, FIELD_CAN_ATTACK))
 		*retsValue = (CanAttack() ? VALUE_TRUE : VALUE_FALSE);
 	else if (strEquals(sField, FIELD_EXPLOSION_TYPE))
@@ -758,7 +773,7 @@ bool CStationType::FindDataField (const CString &sField, CString *retsValue)
 	else if (strEquals(sField, FIELD_MAX_LIGHT_RADIUS))
 		*retsValue = strFromInt(m_iMaxLightDistance);
 	else if (strEquals(sField, FIELD_REGEN))
-		*retsValue = strFromInt(m_iRepairRate * 180 / STATION_REPAIR_FREQUENCY);
+		*retsValue = strFromInt((int)(m_Regen.GetHPPer180(STATION_REPAIR_FREQUENCY) + 0.5));
 	else if (strEquals(sField, FIELD_SATELLITE_STRENGTH))
 		*retsValue = strFromInt((m_pSatellitesDesc ? (int)(100.0 * CalcSatelliteStrength(m_pSatellitesDesc, GetLevel())) : 0));
 	else if (strEquals(sField, FIELD_SIZE))
@@ -806,20 +821,31 @@ CSovereign *CStationType::GetControllingSovereign (void)
 		return m_pSovereign;
 	}
 
-int CStationType::GetLevel (void) const
+int CStationType::GetLevel (int *retiMinLevel, int *retiMaxLevel) const
 
 //	GetLevel
 //
 //	Returns the average level of the station.
+//
+//	NOTE: We don't return a level range yet because we're not sure of the 
+//	backwards compatibility issues.
 
 	{
 	int i;
 	int iLevel;
 
 	if (m_iLevel)
+		{
+		if (retiMinLevel) *retiMinLevel = m_iLevel;
+		if (retiMaxLevel) *retiMaxLevel = m_iLevel;
 		return m_iLevel;
+		}
 	else if (iLevel = m_RandomPlacement.CalcLevelFromFrequency())
+		{
+		if (retiMinLevel) *retiMinLevel = iLevel;
+		if (retiMaxLevel) *retiMaxLevel = iLevel;
 		return iLevel;
+		}
 	else
 		{
 		//	Take the highest level of armor or devices
@@ -837,6 +863,8 @@ int CStationType::GetLevel (void) const
 
 		//	Done
 
+		if (retiMinLevel) *retiMinLevel = iLevel;
+		if (retiMaxLevel) *retiMaxLevel = iLevel;
 		return iLevel;
 		}
 	}
@@ -887,6 +915,30 @@ CString CStationType::GetNounPhrase (DWORD dwFlags)
 	DWORD dwNameFlags;
 	CString sName = GetName(&dwNameFlags);
 	return ::ComposeNounPhrase(sName, 1, NULL_STR, dwNameFlags, dwFlags);
+	}
+
+IShipGenerator *CStationType::GetReinforcementsTable (void)
+
+//	GetReinforcementsTable
+//
+//	Return the reinforcements table.
+	
+	{
+	//	If we have a ship count structure, then we always use the main ship 
+	//	table.
+
+	if (!m_ShipsCount.IsEmpty())
+		return m_pInitialShips;
+
+	//	Otherwise, if we have an explicit reinforcements table, use that.
+
+	else if (m_pReinforcements)
+		return m_pReinforcements;
+
+	//	Otherwise, we use the main table.
+
+	else
+		return m_pInitialShips;
 	}
 
 bool CStationType::IsSizeClass (ESizeClass iClass) const
@@ -1165,7 +1217,6 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		return error;
 
 	m_fVirtual = pDesc->GetAttributeBool(VIRTUAL_ATTRIB);
-	m_iRepairRate = pDesc->GetAttributeInteger(REPAIR_RATE_ATTRIB);
 	m_fMobile = pDesc->GetAttributeBool(MOBILE_ATTRIB);
 	m_fWall = pDesc->GetAttributeBool(WALL_ATTRIB);
 	m_fNoFriendlyFire = pDesc->GetAttributeBool(NO_FRIENDLY_FIRE_ATTRIB);
@@ -1184,14 +1235,37 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_fShipEncounter = pDesc->GetAttributeBool(SHIP_ENCOUNTER_ATTRIB);
 	m_fImmutable = pDesc->GetAttributeBool(IMMUTABLE_ATTRIB);
 	m_fNoBlacklist = pDesc->GetAttributeBool(NO_BLACKLIST_ATTRIB);
-	m_iShipRepairRate = pDesc->GetAttributeInteger(SHIP_REPAIR_RATE_ATTRIB);
-	m_rgbSpaceColor = LoadCOLORREF(pDesc->GetAttribute(SPACE_COLOR_ATTRIB));
-	m_iMaxLightDistance = pDesc->GetAttributeIntegerBounded(MAX_LIGHT_DISTANCE, 1, -1, 500);
 	m_iAlertWhenAttacked = pDesc->GetAttributeInteger(ALERT_WHEN_ATTACKED_ATTRIB);
 	m_iAlertWhenDestroyed = pDesc->GetAttributeInteger(ALERT_WHEN_DESTROYED_ATTRIB);
-	m_iFireRateAdj = strToInt(pDesc->GetAttribute(FIRE_RATE_ADJ_ATTRIB), 80);
 	m_rMaxAttackDistance = MAX_ATTACK_DISTANCE;
 	m_iStealth = pDesc->GetAttributeIntegerBounded(STEALTH_ATTRIB, CSpaceObject::stealthMin, CSpaceObject::stealthMax, CSpaceObject::stealthNormal);
+
+	//	Repair rate
+
+	CString sRegen;
+	int iRepairRate;
+	if (pDesc->FindAttribute(REGEN_ATTRIB, &sRegen))
+		{
+		if (error = m_Regen.InitFromRegenString(Ctx, sRegen, STATION_REPAIR_FREQUENCY))
+			return error;
+		}
+	else if (pDesc->FindAttributeInteger(REPAIR_RATE_ATTRIB, &iRepairRate) && iRepairRate > 0)
+		m_Regen.InitFromRegen(6.0 * iRepairRate, STATION_REPAIR_FREQUENCY);
+
+	//	Ship repair rate
+
+	if (pDesc->FindAttribute(SHIP_REGEN_ATTRIB, &sRegen))
+		{
+		if (error = m_ShipRegen.InitFromRegenString(Ctx, sRegen, STATION_REPAIR_FREQUENCY))
+			return error;
+		}
+	else if (pDesc->FindAttributeInteger(SHIP_REPAIR_RATE_ATTRIB, &iRepairRate) && iRepairRate > 0)
+		m_ShipRegen.InitFromRegen(6.0 * iRepairRate, STATION_REPAIR_FREQUENCY);
+
+	//	Starting in API 23 we change the default to 40 instead of 80
+
+	int iDefaultFireRateAdj = (GetAPIVersion() >= 23 ? 40 : 80);
+	m_iFireRateAdj = strToInt(pDesc->GetAttribute(FIRE_RATE_ADJ_ATTRIB), iDefaultFireRateAdj);
 
 	//	Load names
 
@@ -1272,7 +1346,14 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	//	Mass & Size
 	
 	m_iSize = pDesc->GetAttributeIntegerBounded(SIZE_ATTRIB, 1, -1, 0);
-	m_rMass = pDesc->GetAttributeIntegerBounded(MASS_ATTRIB, 1, -1, 1000000);
+
+	if (!pDesc->FindAttributeDouble(MASS_ATTRIB, &m_rMass))
+		{
+		if (m_iScale == scaleWorld || m_iScale == scaleStar)
+			m_rMass = 1.0;	//	1 Earth mass or 1 solar mass.
+		else
+			m_rMass = 1000000.0;
+		}
 
 	//	Load devices
 
@@ -1332,6 +1413,8 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		pImage = pDesc->GetContentElementByTag(IMAGE_VARIANTS_TAG);
 	if (pImage == NULL)
 		pImage = pDesc->GetContentElementByTag(COMPOSITE_TAG);
+	if (pImage == NULL)
+		pImage = pDesc->GetContentElementByTag(IMAGE_EFFECT_TAG);
 
 	//	Load the image
 
@@ -1417,6 +1500,24 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 			Ctx.sError = ComposeLoadError(strPatternSubst(CONSTLIT("<Ships>: %s"), Ctx.sError));
 			return error;
 			}
+
+		//	If defined, we use this count to create initial ships AND reinforcements.
+
+		CString sCount;
+		if (pShips->FindAttribute(STANDING_COUNT_ATTRIB, &sCount))
+			{
+			if (error = m_ShipsCount.LoadFromXML(sCount))
+				{
+				Ctx.sError = ComposeLoadError(CONSTLIT("Invalid count attribute in <Ships>"));
+				return error;
+				}
+			}
+
+		//	Otherwise, see if we define minShips, in which case we use that value for
+		//	reinforcements only.
+
+		else
+			m_iMinShips = pShips->GetAttributeInteger(MIN_SHIPS_ATTRIB);
 		}
 
 	//	Load reinforcements
@@ -1497,15 +1598,28 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	else
 		m_iEjectaAdj = 0;
 
-	//	Miscellaneous
+	//	Stellar objects
 
-	if (error = m_pBarrierEffect.LoadUNID(Ctx, pDesc->GetAttribute(BARRIER_EFFECT_ATTRIB)))
-		return error;
+	m_rgbSpaceColor = LoadCOLORREF(pDesc->GetAttribute(SPACE_COLOR_ATTRIB));
+	m_iMaxLightDistance = pDesc->GetAttributeIntegerBounded(MAX_LIGHT_DISTANCE, 1, -1, 500);
+
+	int iGravity;
+	if (pDesc->FindAttributeInteger(GRAVITY_RADIUS_ATTRIB, &iGravity))
+		m_rGravityRadius = iGravity * LIGHT_SECOND;
+	else
+		m_rGravityRadius = 0.0;
+
+	//	Stargates
 
 	m_sStargateDestNode = pDesc->GetAttribute(DEST_NODE_ATTRIB);
 	m_sStargateDestEntryPoint = pDesc->GetAttribute(DEST_ENTRY_POINT_ATTRIB);
 
 	if (error = m_pGateEffect.LoadUNID(Ctx, pDesc->GetAttribute(GATE_EFFECT_ATTRIB)))
+		return error;
+
+	//	Miscellaneous
+
+	if (error = m_pBarrierEffect.LoadUNID(Ctx, pDesc->GetAttribute(BARRIER_EFFECT_ATTRIB)))
 		return error;
 
 	//	Done
@@ -1565,8 +1679,9 @@ void CStationType::OnMarkImages (void)
 	//	Since we are generally loading images for this type, we need to create
 	//	a default image selector
 
+	SSelectorInitCtx InitCtx;
 	CCompositeImageSelector Selector;
-	SetImageSelector(&Selector);
+	SetImageSelector(InitCtx, &Selector);
 
 	//	Mark
 
@@ -1599,7 +1714,7 @@ void CStationType::OnReadFromStream (SUniverseLoadCtx &Ctx)
 	else
 		{
 		if (bEncountered)
-			m_EncounterRecord.AddEncounter(0);
+			m_EncounterRecord.AddEncounter(NULL);
 		}
 
 	//	Load opaque data
@@ -1668,6 +1783,48 @@ void CStationType::PaintAnimations (CG16bitImage &Dest, int x, int y, int iTick)
 		}
 	}
 
+void CStationType::PaintDockPortPositions (CG16bitImage &Dest, int x, int y)
+
+//	PaintDockPortPositions
+//
+//	Paints the position of all the docking ports for this type.
+
+	{
+	int i;
+
+	//	We need to initialize a docking ports structure
+
+	CDockingPorts Ports;
+	Ports.InitPortsFromXML(NULL, m_pDesc);
+
+	//	Paint all ports
+
+	for (i = 0; i < Ports.GetPortCount(NULL); i++)
+		{
+		int iRotation;
+		bool bInFront;
+		CVector vPos = Ports.GetPortPos(NULL, i, NULL, &bInFront, &iRotation);
+
+		//	Colors
+
+		WORD wArrowColor = (bInFront ? CG16bitImage::RGBValue(0x00, 0x40, 0x80) : CG16bitImage::RGBValue(0x80, 0x40, 0x00));
+		WORD wCenterColor = (bInFront ? CG16bitImage::RGBValue(0x00, 0x7f, 0xff) : CG16bitImage::RGBValue(0xff, 0x7f, 0x00));
+
+		//	Get the position
+
+		int xPos = x + (int)(vPos.GetX() / g_KlicksPerPixel);
+		int yPos = y - (int)(vPos.GetY() / g_KlicksPerPixel);
+
+		//	Paint arrow
+
+		CPaintHelper::PaintArrow(Dest, xPos, yPos, iRotation, wArrowColor);
+
+		//	Paint center crosshairs
+
+		Dest.DrawDot(xPos, yPos, wCenterColor, CG16bitImage::markerMediumCross);
+		}
+	}
+
 ScaleTypes CStationType::ParseScale (const CString sValue)
 
 //	ParseScale
@@ -1715,7 +1872,7 @@ void CStationType::Reinit (void)
 	{
 	}
 
-void CStationType::SetImageSelector (CCompositeImageSelector *retSelector)
+void CStationType::SetImageSelector (SSelectorInitCtx &InitCtx, CCompositeImageSelector *retSelector)
 
 //	SetImageSelector
 //
@@ -1733,7 +1890,7 @@ void CStationType::SetImageSelector (CCompositeImageSelector *retSelector)
 		}
 	else
 		{
-		m_Image.InitSelector(retSelector);
+		m_Image.InitSelector(InitCtx, retSelector);
 
 #if 0
 		int iVariantCount = GetImageVariants();

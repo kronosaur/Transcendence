@@ -15,8 +15,17 @@
 
 #define LIFETIME_ATTRIB							CONSTLIT("lifetime")
 
+#define PROPERTY_COUNTER						CONSTLIT("counter")
+#define PROPERTY_COUNTER_LABEL					CONSTLIT("counterLabel")
+#define PROPERTY_POS							CONSTLIT("pos")
+#define PROPERTY_ROTATION						CONSTLIT("rotation")
+#define PROPERTY_TYPE							CONSTLIT("type")
+
+const int ANNOTATION_INNER_SPACING_Y =			2;
+
 CEnergyField::CEnergyField (void) : 
 		m_pType(NULL),
+		m_iCounter(0),
 		m_pPainter(NULL),
 		m_pHitPainter(NULL),
 		m_fDestroyed(false),
@@ -121,6 +130,29 @@ bool CEnergyField::AbsorbDamage (CSpaceObject *pSource, SDamageCtx &Ctx)
 		}
 	}
 
+void CEnergyField::AccumulateBounds (CSpaceObject *pSource, RECT *ioBounds)
+
+//	AccumulateBounds
+//
+//	Set bounds
+
+	{
+	switch (m_pType->GetCounterStyle())
+		{
+		case COverlayType::counterRadius:
+			{
+			if (m_iCounter > 0)
+				{
+				ioBounds->left = Min(-m_iCounter, (int)ioBounds->left);
+				ioBounds->top = Min(-m_iCounter, (int)ioBounds->top);
+				ioBounds->right = Max(m_iCounter, (int)ioBounds->right);
+				ioBounds->bottom = Max(m_iCounter, (int)ioBounds->bottom);
+				}
+			break;
+			}
+		}
+	}
+
 void CEnergyField::CreateHitEffect (CSpaceObject *pSource, SDamageCtx &Ctx)
 
 //	CreateHitEffect
@@ -163,7 +195,7 @@ void CEnergyField::CreateHitEffect (CSpaceObject *pSource, SDamageCtx &Ctx)
 		}
 	}
 
-void CEnergyField::CreateFromType (CEnergyFieldType *pType, 
+void CEnergyField::CreateFromType (COverlayType *pType, 
 								   int iPosAngle,
 								   int iPosRadius,
 								   int iRotation,
@@ -222,7 +254,7 @@ void CEnergyField::Destroy (CSpaceObject *pSource)
 		}
 	}
 
-void CEnergyField::FireCustomEvent (CSpaceObject *pSource, const CString &sEvent, ICCItem **retpResult)
+void CEnergyField::FireCustomEvent (CSpaceObject *pSource, const CString &sEvent, ICCItem *pData, ICCItem **retpResult)
 
 //	FireCustomEvent
 //
@@ -237,6 +269,7 @@ void CEnergyField::FireCustomEvent (CSpaceObject *pSource, const CString &sEvent
 		//	Setup 
 
 		Ctx.SaveAndDefineSourceVar(pSource);
+		Ctx.SaveAndDefineDataVar(pData);
 		Ctx.DefineInteger(CONSTLIT("aOverlayID"), m_dwID);
 
 		//	Execute
@@ -448,6 +481,34 @@ CVector CEnergyField::GetPos (CSpaceObject *pSource)
 		return pSource->GetPos();
 	}
 
+ICCItem *CEnergyField::GetProperty (CCodeChainCtx *pCCCtx, CSpaceObject *pSource, const CString &sName)
+
+//	GetProperty
+//
+//	Returns a property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_COUNTER))
+		return CC.CreateInteger(m_iCounter);
+
+	else if (strEquals(sName, PROPERTY_COUNTER_LABEL))
+		return CC.CreateString(!m_sMessage.IsBlank() ? m_sMessage : m_pType->GetCounterLabel());
+
+	else if (strEquals(sName, PROPERTY_POS))
+		return CreateListFromVector(CC, GetPos(pSource));
+
+	else if (strEquals(sName, PROPERTY_ROTATION))
+		return CC.CreateInteger(GetRotation());
+
+	else if (strEquals(sName, PROPERTY_TYPE))
+		return CC.CreateInteger(GetType()->GetUNID());
+
+	else
+		return CC.CreateNil();
+	}
+
 void CEnergyField::Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewportPaintCtx &Ctx)
 
 //	Paint
@@ -496,6 +557,76 @@ void CEnergyField::Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewpor
 	Ctx.iRotation = iSavedRotation;
 	}
 
+void CEnergyField::PaintAnnotations (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	PaintAnnotations
+//
+//	Paint field annotations.
+
+	{
+	switch (m_pType->GetCounterStyle())
+		{
+		case COverlayType::counterProgress:
+			{
+			int cyHeight;
+
+			WORD wColor = m_pType->GetCounterColor();
+			if (wColor == 0 && Ctx.pObj)
+				wColor = Ctx.pObj->GetSymbolColor();
+
+			CPaintHelper::PaintStatusBar(Dest,
+					x,
+					Ctx.yAnnotations,
+					g_pUniverse->GetPaintTick(),
+					wColor,
+					(!m_sMessage.IsBlank() ? m_sMessage : m_pType->GetCounterLabel()),
+					Min(Max(0, m_iCounter), m_pType->GetCounterMax()),
+					m_pType->GetCounterMax(),
+					&cyHeight);
+
+			Ctx.yAnnotations += cyHeight + ANNOTATION_INNER_SPACING_Y;
+			break;
+			}
+		}
+	}
+
+void CEnergyField::PaintBackground (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	PaintBackground
+//
+//	Paints overlay background
+
+	{
+	switch (m_pType->GetCounterStyle())
+		{
+		case COverlayType::counterRadius:
+			{
+			WORD wColor = m_pType->GetCounterColor();
+			if (wColor == 0 && Ctx.pObj)
+				wColor = Ctx.pObj->GetSymbolColor();
+
+			if (m_iCounter > 0)
+				DrawFilledCircleTrans(Dest, x, y, m_iCounter, wColor, 64);
+
+			//	Paint the label
+
+			if (!m_sMessage.IsBlank())
+				{
+				const CG16bitFont *pTextFont = g_pUniverse->GetFont(CONSTLIT("SubTitle"));
+				WORD wTextColor = CG16bitImage::BlendPixel(wColor, CG16bitImage::RGBValue(255, 255, 255), 128);
+
+				int yText = y + (m_iCounter / 2) - pTextFont->GetHeight();
+				if (yText + pTextFont->GetHeight() > Ctx.rcView.bottom)
+					yText = y - (m_iCounter / 2);
+
+				Dest.DrawText(x, yText, *pTextFont, wTextColor, m_sMessage, CG16bitFont::AlignCenter);
+				}
+
+			break;
+			}
+		}
+	}
+
 void CEnergyField::ReadFromStream (SLoadCtx &Ctx)
 
 //	ReadFromStream
@@ -508,8 +639,11 @@ void CEnergyField::ReadFromStream (SLoadCtx &Ctx)
 //	DWORD	m_iDevice
 //	DWORD	Life left
 //	CAttributeDataBlock m_Data
+//	DWORD	m_iCounter
+//	CString	m_sMessage
 //	IPainter	m_pPaint
 //	IPainter	m_pHitPainter
+//	DWORD	Flags
 
 	{
 	DWORD dwLoad;
@@ -547,10 +681,31 @@ void CEnergyField::ReadFromStream (SLoadCtx &Ctx)
 	if (Ctx.dwVersion >= 39)
 		m_Data.ReadFromStream(Ctx);
 
+	if (Ctx.dwVersion >= 103)
+		{
+		Ctx.pStream->Read((char *)&m_iCounter, sizeof(DWORD));
+		m_sMessage.ReadFromStream(Ctx.pStream);
+		}
+
 	m_pPainter = CEffectCreator::CreatePainterFromStreamAndCreator(Ctx, m_pType->GetEffectCreator());
 	m_pHitPainter = CEffectCreator::CreatePainterFromStreamAndCreator(Ctx, m_pType->GetHitEffectCreator());
 
 	m_iPaintHit = 0;
+
+	//	Flags
+
+	DWORD dwFlags = 0;
+	if (Ctx.dwVersion >= 101)
+		Ctx.pStream->Read((char *)&dwFlags, sizeof(DWORD));
+
+	//	NOTE: We need to saved the destroyed flag because we defer removal of
+	//	overlays. There are cases where we set the flag, save the game, and then
+	//	remove the overlay on the first update after load.
+	//
+	//	We have to saved destroyed overlays because we need to run some code
+	//	when removing an overlay (e.g., see CShip::CalcOverlayImpact).
+
+	m_fDestroyed = ((dwFlags & 0x00000001) ? true : false);
 	}
 
 bool CEnergyField::SetEffectProperty (const CString &sProperty, ICCItem *pValue)
@@ -578,6 +733,53 @@ void CEnergyField::SetPos (CSpaceObject *pSource, const CVector &vPos)
 	int iRotationOrigin = (m_pType->RotatesWithShip() ? pSource->GetRotation() : 0);
 	m_iPosAngle = (iDirection + 360 - iRotationOrigin) % 360;
 	m_iPosRadius = (int)(rRadius / g_KlicksPerPixel);
+	}
+
+bool CEnergyField::SetProperty (CSpaceObject *pSource, const CString &sName, ICCItem *pValue)
+
+//	SetProperty
+//
+//	Sets the property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_COUNTER))
+		{
+		//	If we're a radius counter, then do unit conversion.
+
+		if (m_pType->GetCounterStyle() == COverlayType::counterRadius)
+			{
+			Metric rRadius = ParseDistance(pValue->GetStringValue(), LIGHT_SECOND);
+			m_iCounter = (int)((rRadius / g_KlicksPerPixel) + 0.5);
+			}
+
+		//	Otherwise, take the integer value
+
+		else
+			m_iCounter = pValue->GetIntegerValue();
+		}
+
+	else if (strEquals(sName, PROPERTY_COUNTER_LABEL))
+		m_sMessage = pValue->GetStringValue();
+
+	else if (strEquals(sName, PROPERTY_POS))
+		{
+		CVector vPos = CreateVectorFromList(CC, pValue);
+		SetPos(pSource, vPos);
+		}
+
+	else if (strEquals(sName, PROPERTY_ROTATION))
+		SetRotation(pValue->GetIntegerValue());
+
+	//	If nothing else, ask the painter
+
+	else if (m_pPainter)
+		return m_pPainter->SetProperty(sName, pValue);
+	else
+		return false;
+
+	return true;
 	}
 
 void CEnergyField::Update (CSpaceObject *pSource)
@@ -651,8 +853,11 @@ void CEnergyField::WriteToStream (IWriteStream *pStream)
 //	DWORD	m_iDevice
 //	DWORD	Life left
 //	CAttributeDataBlock m_Data
+//	DWORD	m_iCounter
+//	CString	m_sMessage
 //	IPainter	m_pPaint
 //	IPainter	m_pHitPainter
+//	DWORD	Flags
 
 	{
 	DWORD dwSave = m_pType->GetUNID();
@@ -666,7 +871,14 @@ void CEnergyField::WriteToStream (IWriteStream *pStream)
 
 	m_Data.WriteToStream(pStream);
 
+	pStream->Write((char *)&m_iCounter, sizeof(DWORD));
+	m_sMessage.WriteToStream(pStream);
+
 	CEffectCreator::WritePainterToStream(pStream, m_pPainter);
 	CEffectCreator::WritePainterToStream(pStream, m_pHitPainter);
+
+	DWORD dwFlags = 0;
+	dwFlags |= (m_fDestroyed ? 0x00000001 : 0);
+	pStream->Write((char *)&dwFlags, sizeof(DWORD));
 	}
 

@@ -110,7 +110,7 @@ void GenerateTopology (CUniverse &Universe, CXMLElement *pCmdLine)
 			SNodeInfo *pNewNode = NodeData.Insert(pNode->GetID());
 			pNewNode->sID = pNode->GetID();
 			pNewNode->sName = pNode->GetSystemName();
-			pNewNode->dwSystemUNID = pNode->GetSystemDescUNID();
+			pNewNode->dwSystemUNID = pNode->GetSystemTypeUNID();
 			pNewNode->sAttribs = pNode->GetAttributes();
 
 			//	Add the attributes in this node to the list of 

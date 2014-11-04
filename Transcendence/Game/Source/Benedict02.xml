@@ -17,6 +17,8 @@
 			name=				"Benedict and Fiona"
 			attributes=			"benedictStoryArc"
 
+			level=				"1"
+
 			maxAppearing=		"1"
 			debriefAfterOutOfSystem="true"
 			failureAfterOutOfSystem="5400"
@@ -186,7 +188,7 @@
 
 					(enum enemies enemyDesc
 						(block (enemyObj)
-							(setq enemyObj (sysCreateShip (@ enemyDesc 'class) stargateObj &svCult;))
+							(setq enemyObj (sysCreateShip (@ enemyDesc 'class) stargateObj &svPenitents;))
 							(shpOrder enemyObj 'attack freighterObj)
 							(objSetData enemyObj 'mission (msnGetProperty gSource 'id))
 							(msnRegisterForEvents gSource enemyObj)

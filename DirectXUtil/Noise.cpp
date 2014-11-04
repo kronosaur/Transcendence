@@ -4,37 +4,19 @@
 
 #include <windows.h>
 #include <ddraw.h>
-#include <math.h>
 #include "Alchemy.h"
 #include "DirectXUtil.h"
 
-const int TABLE_SIZE =					256;	//	Must be power of 2
-const int TABLE_MASK =					(TABLE_SIZE - 1);
+#include <math.h>
+#include <stdio.h>
+#include "NoiseImpl.h"
 
 const int RAND_MASK =					0x7fffffff;
 const float PI =						3.1415926535f;
 
 static bool g_bInit = false;
-static BYTE g_perm[TABLE_SIZE];
-static float g_gradient[TABLE_SIZE * 3];		//	Random 3D vectors
-
-inline float RANDF (void) { return (float)::rand() / (float)RAND_MAX; }
-inline float LERP (float t, float x0, float x1) { return (x0 + t * (x1 - x0)); }
-inline float SMOOTHSTEP (float x) { return x * x * (3.0f - 2.0f * x); }
-
-inline BYTE PERM (int x) { return g_perm[x & TABLE_MASK]; }
-inline BYTE INDEX2D (int x, int y) { return PERM(x + PERM(y)); }
-inline BYTE INDEX3D (int x, int y, int z) { return PERM(x + PERM(y + PERM(z))); }
-inline float RANDVECTOR2D (int x, int y, float fx, float fy)
-	{
-	float *pVec = &g_gradient[INDEX2D(x, y) * 3];
-	return pVec[0] * fx + pVec[1] * fy;
-	}
-inline float RANDVECTOR3D (int x, int y, int z, float fx, float fy, float fz)
-	{
-	float *pVec = &g_gradient[INDEX3D(x, y, z) * 3];
-	return pVec[0] * fx + pVec[1] * fy + pVec[2] * fz;
-	}
+BYTE g_perm[PERM_TABLE_SIZE];
+float g_gradient[PERM_TABLE_SIZE * 3];		//	Random 3D vectors
 
 float Noise2D (int x, float fx0, float fx1, float wx, int y, float fy0, float fy1, float wy)
 
@@ -114,12 +96,12 @@ void NoiseInit (DWORD dwSeed)
 
 		//	Initialize permutation table
 
-		for (i = 0; i < TABLE_SIZE; i++)
+		for (i = 0; i < PERM_TABLE_SIZE; i++)
 			g_perm[i] = i;
 
 		//	Fisher-Yates shuffle algorithm
 
-		i = TABLE_SIZE - 1;
+		i = PERM_TABLE_SIZE - 1;
 		while (i > 0)
 			{
 			int x = mathRandom(0, i);
@@ -134,7 +116,7 @@ void NoiseInit (DWORD dwSeed)
 		//	Now initialize the gradient vector table
 
 		float *pPos = g_gradient;
-		float *pPosEnd = g_gradient + (TABLE_SIZE * 3);
+		float *pPosEnd = g_gradient + (PERM_TABLE_SIZE * 3);
 		while (pPos < pPosEnd)
 			{
 			float z = 1.0f - 2.0f * RANDF();

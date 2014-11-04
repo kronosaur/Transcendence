@@ -64,6 +64,7 @@ class CChooseAdventureSession : public IHISession
 		void CmdPrevAdventure (void);
 		void CmdSelectExtensions (bool bSelect);
 		void CreateAdventureDesc (CExtension *pAdventure);
+		bool FindAdventurePos (DWORD dwUNID, int *retiPos);
 		void SetBackgroundImage (CExtension *pAdventure);
 		void SetAdventureDesc (CExtension *pAdventure);
 		void SetAdventureStatus (CExtension *pAdventure, int yPos);
@@ -452,10 +453,11 @@ class CStatsSession : public IHISession
 			SHOW_TASK_PROGRESS = 0x00000001,
 			};
 
-		CStatsSession (CHumanInterface &HI, CGameStats &Stats, DWORD dwFlags = 0) : IHISession(HI), m_dwFlags(dwFlags) { m_Stats.TakeHandoff(Stats); }
+		CStatsSession (CHumanInterface &HI, CCloudService &Service, CGameStats &Stats, DWORD dwFlags = 0) : IHISession(HI), m_Service(Service), m_dwFlags(dwFlags) { m_Stats.TakeHandoff(Stats); }
 
 		//	IHISession virtuals
 		virtual void OnCleanUp (void);
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags);
@@ -468,6 +470,7 @@ class CStatsSession : public IHISession
 		CString GetTaskProgressText (void);
 		void SetSelection (int iPos);
 
+		CCloudService &m_Service;
 		CGameStats m_Stats;
 		DWORD m_dwFlags;
 		CG16bitImage m_BackgroundImage;
@@ -479,6 +482,7 @@ class CTextCrawlSession : public IHISession
 	{
 	public:
 		CTextCrawlSession (CHumanInterface &HI,
+						   CCloudService &Service,
 						   const CG16bitImage *pImage,
 						   const CString &sText,
 						   const CString &sCmdDone);
@@ -496,6 +500,7 @@ class CTextCrawlSession : public IHISession
 	private:
 		void CreateCrawlAnimation (const CString &sText, const RECT &rcRect, IAnimatron **retpAni);
 
+		CCloudService &m_Service;
 		const CG16bitImage *m_pImage;
 		CString m_sText;
 		CString m_sCmdDone;

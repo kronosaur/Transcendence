@@ -186,7 +186,7 @@ EResults RunEncounter (CUniverse &Universe, CSimViewer &Viewer, CStationType *pD
 	//	Create a station in the center of the system
 
 	CSpaceObject *pStation;
-	if (pSystem->CreateStation(pDefenderType, CVector(), &pStation) != NOERROR)
+	if (pSystem->CreateStation(pDefenderType, NULL, CVector(), &pStation) != NOERROR)
 		{
 		printf("ERROR: Unable to create station.\n");
 		return resultError;

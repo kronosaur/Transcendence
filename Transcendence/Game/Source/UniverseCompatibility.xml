@@ -1291,6 +1291,504 @@
 		<Image imageID="&rsWorlds1;" imageX="0" imageY="768" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
 	</StationType>
 
+	<!-- Primordial Star -->
+
+	<StationType UNID="&stPrimordialStar;"
+		name=				"(primordial star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"0x4d, 0x41, 0x0f"
+		maxLightRadius=		"400"
+
+		attributes=			"generic, primordial, star"
+		>
+
+		<Image>
+			<FilterColorize hue="49" saturation="60">
+				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
+			</FilterColorize>
+		</Image>
+	</StationType>
+
+	<!-- O-Type Star -->
+
+	<StationType UNID="&stO-TypeStar;"
+		name=				"(star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"star"
+		>
+	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
+	</StationType>
+
+	<!-- A-Type Star -->
+
+	<StationType UNID="&stA-TypeStar;"
+		name=				"(A class star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"0x12, 0x50, 0x79"
+		maxLightRadius=		"800"
+
+		attributes=			"generic, star"
+		>
+
+		<Image>
+			<FilterColorize hue="203" saturation="75">
+				<Image imageID="&rsAStar;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
+			</FilterColorize>
+		</Image>
+	</StationType>
+
+	<!-- G-Type Star -->
+
+	<StationType UNID="&stG-TypeStar;"
+		name=				"(G class star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"#656551"
+		maxLightRadius=		"620"
+
+		attributes=			"generic, star"
+		>
+
+		<Image>
+			<FilterColorize hue="57" saturation="50">
+				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
+			</FilterColorize>
+		</Image>
+	</StationType>
+
+	<!-- K-Type Star -->
+
+	<StationType UNID="&stK-TypeStar;"
+		name=				"(K class star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"0x70, 0x44, 0x1a"
+		maxLightRadius=		"620"
+
+		attributes=			"generic, star"
+		>
+
+		<Image>
+			<FilterColorize hue="30" saturation="63">
+				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
+			</FilterColorize>
+		</Image>
+	</StationType>
+
+	<!-- M-Type Star -->
+
+	<StationType UNID="&stM-TypeStar;"
+		name=				"(star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"star"
+		>
+	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
+	</StationType>
+
+	<!-- Red Dwarf Star -->
+
+	<StationType UNID="&stRedDwarfStar;"
+		name=				"(red dwarf star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"0x59, 0x0e, 0x00"
+		maxLightRadius=		"320"
+
+		attributes=			"generic, star"
+		>
+	<Image imageID="&rsRedDwarfStar;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" imageFrameCount="0" imageTicksPerFrame="0"/>
+	</StationType>
+
+	<!-- Blue Giant Star -->
+
+	<StationType UNID="&stBlueGiantStar;"
+		name=				"(star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"star"
+		>
+	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
+	</StationType>
+
+<!-- MINING COMPATIBILITY -->
+	
+	<!-- Small Asteroid with Ore -->
+
+	<StationType UNID="&stOreSmallAsteroid;"
+			name=				"(small ore asteroid)"
+			scale=				"world"
+			sovereign=			"&svIndependent;"
+
+			attributes=			"asteroid, stoneAsteroid, tinyAsteroid"
+
+			ejectaType=			"&vtStoneAsteroidEjecta;"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="768" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="800" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="832" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="864" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="896" imageWidth="32" imageHeight="32"/>
+
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="928" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="960" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="992" imageWidth="32" imageHeight="32"/>
+		</ImageVariants>
+
+		<Items>
+			<Lookup table="&tbStoneAsteroidOre;"/>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 100)
+			</OnMining>
+		</Events>
+
+	</StationType>
+	
+	<!-- Medium Asteroid with Ore -->
+
+	<StationType UNID="&stOreMediumAsteroid;"
+		name=				"(medium ore asteroid)"
+		scale=				"world"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, mediumAsteroid, stoneAsteroid"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+
+		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
+
+		<ImageVariants>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="0"   imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="64"  imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="128" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="192" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="256" imageWidth="64" imageHeight="64"/>
+
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="320" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="384" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="448" imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+
+		<Items>
+			<Lookup count="1d6" table="&tbStoneAsteroidOre;"/>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 100)
+			</OnMining>
+		</Events>
+
+	</StationType>
+
+	<!-- Small Frost Asteroid with Ore -->
+
+	<StationType UNID="&stOreSmallFrostAsteroid;"
+		name=				"(small frost ore asteroid)"
+		scale=				"world"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, frostAsteroid, tinyAsteroid"
+
+		ejectaType=			"&vtIceAsteroidEjecta;"
+		>
+
+		<ImageVariants>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="768" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="800" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="832" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="864" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="896" imageWidth="32" imageHeight="32"/>
+
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="928" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="960" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="992" imageWidth="32" imageHeight="32"/>
+		</ImageVariants>
+
+		<Items>
+			<Lookup table="&tbFrostAsteroidOre;"/>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 50)
+			</OnMining>
+		</Events>
+
+	</StationType>
+
+	<!-- Medium Frost Asteroid with Ore -->
+
+	<StationType UNID="&stOreMediumFrostAsteroid;"
+		name=				"(medium frost ore asteroid)"
+		scale=				"world"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, frostAsteroid, mediumAsteroid"
+
+		ejectaType=			"&vtIceAsteroidEjecta;"
+		>
+
+		<ImageVariants>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="0"   imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="64"  imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="128" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="192" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="256" imageWidth="64" imageHeight="64"/>
+
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="320" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="384" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="448" imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+
+		<Items>
+			<Lookup count="1d6" table="&tbFrostAsteroidOre;"/>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 50)
+			</OnMining>
+		</Events>
+
+	</StationType>
+
+	<!-- Small Metallic Asteroid with Ore -->
+
+	<StationType UNID="&stOreSmallMetallicAsteroid;"
+		name=				"(asteroid)"
+		scale=				"world"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, metallicAsteroid, tinyAsteroid"
+
+		ejectaType=			"&vtMetallicAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="32"  imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="96"  imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="128"	imageWidth="32" imageHeight="32"/>
+
+			<Image	imageID="&rsMetallicAsteroids;" imageX="160"   imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="192"   imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="224"   imageY="128"	imageWidth="32" imageHeight="32"/>
+		</ImageVariants>
+
+		<Items>
+			<Lookup table="&tbMetallicAsteroidOre;"/>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 30)
+			</OnMining>
+		</Events>
+
+	</StationType>
+
+	<!-- Medium Metallic Asteroid with Ore -->
+
+	<StationType UNID="&stOreMediumMetallicAsteroid;"
+		name=				"(asteroid)"
+		scale=				"world"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, mediumAsteroid, metallicAsteroid"
+
+		ejectaType=			"&vtMetallicAsteroidEjecta;"
+		>
+
+		<ImageVariants>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="0"		imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="0"		imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="0"		imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="192" imageY="0"		imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="64"	imageWidth="64" imageHeight="64"/>
+
+			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="64"	imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="64"	imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="192" imageY="64"	imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+
+		<Items>
+			<Lookup count="1d6" table="&tbMetallicAsteroidOre;"/>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 30)
+			</OnMining>
+		</Events>
+
+	</StationType>
+
+	<!-- Small Volcanic Asteroid with Ore -->
+
+	<StationType UNID="&stOreSmallVolcanicAsteroid;"
+		name=				"(small volcanic ore asteroid)"
+		scale=				"world"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, tinyAsteroid, volcanicAsteroid"
+
+		ejectaType=			"&vtVolcanicAsteroidEjecta;"
+		>
+
+		<ImageVariants>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="768" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="800" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="832" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="864" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="896" imageWidth="32" imageHeight="32"/>
+
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="928" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="960" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="992" imageWidth="32" imageHeight="32"/>
+		</ImageVariants>
+
+		<Items>
+			<Lookup table="&tbVolcanicAsteroidOre;"/>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 20)
+			</OnMining>
+		</Events>
+
+	</StationType>
+
+	<!-- Medium Volcanic Asteroid with Ore -->
+
+	<StationType UNID="&stOreMediumVolcanicAsteroid;"
+		name=				"(medium volcanic ore asteroid)"
+		scale=				"world"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, mediumAsteroid, volcanicAsteroid"
+
+		ejectaType=			"&vtVolcanicAsteroidEjecta;"
+		>
+
+		<ImageVariants>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="512" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="576" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="640" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="704" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="768" imageWidth="64" imageHeight="64"/>
+
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="832" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="896" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="960" imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+
+		<Items>
+			<Lookup count="1d6" table="&tbVolcanicAsteroidOre;"/>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 20)
+			</OnMining>
+		</Events>
+
+	</StationType>
+
+<!-- TABLES -->
+
+	<ItemTable unid="&tbPrimordialAsteroidOre;">
+		<LevelTable>
+			<Item levelFrequency="ccccc ccccc ccccc ccccc ccccc" count="45-60"	item="&itTitaniumOre;"/>
+			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPlasteelOre;"/>
+			<Item levelFrequency="ruccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPalladiumOre;"/>
+			<Item levelFrequency="-vruu uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itCeralloyOre;"/>
+			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itPlatinumOre;"/>
+			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itGoldOre;"/>
+			<Item levelFrequency="---vv vvvvv vvvvv vvvvv vvvvv" count="1-35"	item="&itGoldOre;"/>
+			<Item levelFrequency="---vr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itDuralloyOre;"/>
+			<Item levelFrequency="----v vvvvv vvvvv vvvvv vvvvv" count="5-15"	item="&itDuralloyOre;"/>
+			<Item levelFrequency="----v rrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itOrthoSteelOre;"/>
+			<Item levelFrequency="----v ruuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itIthaliumOre;"/>
+		</LevelTable>
+	</ItemTable>
+
+	<ItemTable unid="&tbMetallicAsteroidOre;">
+		<LevelTable>
+			<Item levelFrequency="uuuuu uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itUraniumOre;"/>
+			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-35"	item="&itPlasteelOre;"/>
+			<Item levelFrequency="-rucc ccccc ccccc ccccc ccccc" count="10-15"	item="&itCeralloyOre;"/>
+			<Item levelFrequency="-vruu uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itGoldOre;"/>
+			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itXenotiteOre;"/>
+			<Item levelFrequency="--ruc ccccc ccccc ccccc ccccc" count="5-10"	item="&itDuralloyOre;"/>
+			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itPlatinumOre;"/>
+			<Item levelFrequency="---vr uuuuu uuuuu uuuuu uuuuu" count="5-15"	item="&itOrthoSteelOre;"/>
+			<Item levelFrequency="----- vrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itIthaliumOre;"/>
+		</LevelTable>
+	</ItemTable>
+	
+	<ItemTable unid="&tbStoneAsteroidOre;">
+		<LevelTable>
+			<Item levelFrequency="ccccc ccccc ccccc ccccc ccccc" count="45-60"	item="&itTitaniumOre;"/>
+			<Item levelFrequency="uuuuu uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itUraniumOre;"/>
+			<Item levelFrequency="vvvvv vvvvv vvvvv vvvvv vvvvv" count="10-50"	item="&itUraniumOre;"/>
+			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPlasteelOre;"/>
+			<Item levelFrequency="ruuuu uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itHeliumRegolith;"/>
+			<Item levelFrequency="ruccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPalladiumOre;"/>
+			<Item levelFrequency="vruuu uuuuu uuuuu uuuuu uuuuu" count="1-6"	item="&itCobaltThoriumOre;"/>
+			<Item levelFrequency="-vruu uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itCeralloyOre;"/>
+			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itGoldOre;"/>
+			<Item levelFrequency="---vv vvvvv vvvvv vvvvv vvvvv" count="1-35"	item="&itGoldOre;"/>
+			<Item levelFrequency="---vr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itDuralloyOre;"/>
+			<Item levelFrequency="----v vvvvv vvvvv vvvvv vvvvv" count="5-15"	item="&itDuralloyOre;"/>
+		</LevelTable>
+	</ItemTable>
+
+	<ItemTable unid="&tbFrostAsteroidOre;">
+		<LevelTable>
+			<Item levelFrequency="uuuuu uuuuu uuuuu uuuuu uuuuu" count="1-5"	item="&itUraniumOre;"/>
+			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPlasteelOre;"/>
+			<Item levelFrequency="ruuuu uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itHeliumRegolith;"/>
+			<Item levelFrequency="ruccc ccccc ccccc ccccc ccccc" count="10-15"	item="&itPalladiumOre;"/>
+			<Item levelFrequency="vruuu uuuuu uuuuu uuuuu uuuuu" count="1-6"	item="&itCobaltThoriumOre;"/>
+			<Item levelFrequency="-rucc ccccc ccccc ccccc ccccc" count="10-15"	item="&itCeralloyOre;"/>
+			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itGoldOre;"/>
+			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itXenotiteOre;"/>
+			<Item levelFrequency="---vr rrrrr rrrrr rrrrr rrrrr" count="1-6"	item="&itDuralloyOre;"/>
+			<Item levelFrequency="----v rrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itOrthoSteelOre;"/>
+		</LevelTable>
+	</ItemTable>
+
+	<ItemTable unid="&tbVolcanicAsteroidOre;">
+		<LevelTable>
+			<Item levelFrequency="vrucc ccccc ccccc ccccc ccccc" count="5-10"	item="&itGoldOre;"/>
+			<Item levelFrequency="vrucc ccccc ccccc ccccc ccccc" count="1-35"	item="&itXenotiteOre;"/>
+			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itDuralloyOre;"/>
+			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itPlatinumOre;"/>
+			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="5-25"	item="&itPteracniumOre;"/>
+			<Item levelFrequency="---ru ccccc ccccc ccccc ccccc" count="10-45"	item="&itOrthoSteelOre;"/>
+			<Item levelFrequency="----v ruuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itIthaliumOre;"/>
+			<Item levelFrequency="----- -vvvv vvvvv vvvvv vvvvv" count="10-35"	item="&itIthaliumOre;"/>
+			<Item levelFrequency="----- --vrr rrrrr rrrrr rrrrr" count="1-4"	item="&itNeutroniumOre;"/>
+			<Item levelFrequency="----- --vrr rrrrr rrrrr rrrrr" count="1-6"	item="&itTetramiteOre;"/>
+			<Item levelFrequency="----- ---vr rrrrr rrrrr rrrrr" count="1-2"	item="&itHyperonicOre;"/>
+			<Item levelFrequency="----- ---vr rrrrr rrrrr rrrrr" count="1"		item="&itEtheriumOre;"/>
+		</LevelTable>
+	</ItemTable>
+	
 <!-- RESOURCES -->
 
 	<Image UNID="&rsWorlds1;"		bitmap="Resources\Worlds1.jpg"		bitmask="Resources\Worlds1Mask.bmp"  />
@@ -1304,5 +1802,10 @@
 	<Image UNID="&rsWorldsRingedGiant6;"	bitmap="Resources\WorldsRingedGiant6.jpg"	bitmask="Resources\WorldsRingedGiant6Mask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsWorldsRingedGiant7;"	bitmap="Resources\WorldsRingedGiant7.jpg"	bitmask="Resources\WorldsRingedGiant7Mask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsWorldsRingedGiant8;"	bitmap="Resources\WorldsRingedGiant8.jpg"	bitmask="Resources\WorldsRingedGiant8Mask.bmp"  loadOnUse="true"/>
+
+	<Image UNID="&rsAStar;"					bitmap="Resources\AStar.jpg"				bitmask="Resources\Star1Mask.bmp"   loadOnUse="true"/>
+	<Image UNID="&rsStar1;"					bitmap="Resources\Star1.jpg"				bitmask="Resources\Star1Mask.bmp"   loadOnUse="true"/>
+	<Image UNID="&rsRedDwarfStar;"			bitmap="Resources\RedDwarfStar.jpg"			bitmask="Resources\RedDwarfStarMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsRedGiantStar;"			bitmap="Resources\RedGiantStar.jpg"			bitmask="Resources\RedGiantStarMask.bmp"  loadOnUse="true"/>
 
 </TranscendenceModule>

@@ -200,9 +200,4 @@
 
 	<Image UNID="&rsMethaneGasGiant01;"			bitmap="Resources\MethaneGiant01.jpg"				bitmask="Resources\MethaneGiant01Mask.bmp"  />
 
-	<Image UNID="&rsAStar;"					bitmap="Resources\AStar.jpg"				bitmask="Resources\Star1Mask.bmp"   loadOnUse="true"/>
-	<Image UNID="&rsStar1;"					bitmap="Resources\Star1.jpg"				bitmask="Resources\Star1Mask.bmp"   loadOnUse="true"/>
-	<Image UNID="&rsRedDwarfStar;"			bitmap="Resources\RedDwarfStar.jpg"			bitmask="Resources\RedDwarfStarMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsRedGiantStar;"			bitmap="Resources\RedGiantStar.jpg"			bitmask="Resources\RedGiantStarMask.bmp"  loadOnUse="true"/>
-
 </TranscendenceModule>

@@ -1066,7 +1066,7 @@
 
 			attributes=			"enemy, envWater, envAvoidsEarth, huari, human, majorStation, populated"
 			levelFrequency=		"---vu ur--- ----- ----- -----"
-			locationCriteria=	"-LifeZone,+planetary"
+			locationCriteria=	"-lifeZone, +planetary|+50"
 			enemyExclusionRadius="100"
 			>
 
@@ -2308,7 +2308,8 @@
 	</SystemMap>
 
 	<SystemType UNID="&ssHuaramarca;"
-			noRandomEncounters=		"true"
+			noRandomEncounters=	"true"
+			noExtraEncounters=	"true"
 			>
 
 		<Tables>

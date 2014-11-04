@@ -9,6 +9,7 @@ class CDesignType;
 class CEconomyType;
 class CItemCtx;
 class CExtension;
+class CLocationDef;
 class COrbit;
 struct CItemCriteria;
 struct SDesignLoadCtx;
@@ -161,10 +162,10 @@ inline void DebugStopTimer (char *szTiming) { }
 #define UPGRADE_ENTRY_UNID								CONSTLIT("Engine:Transcendence.next")
 #endif
 
-const DWORD API_VERSION =								22;		//	See: LoadExtensionVersion in Utilities.cpp
+const DWORD API_VERSION =								23;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
 const DWORD UNIVERSE_SAVE_VERSION =						25;
-const DWORD SYSTEM_SAVE_VERSION =						100;	//	See: CSystem.cpp
+const DWORD SYSTEM_SAVE_VERSION =						106;	//	See: CSystem.cpp
 
 struct SUniverseLoadCtx
 	{
@@ -249,7 +250,8 @@ struct SUpdateCtx
 			pTargetObj(NULL),
 			rTargetDist2(g_InfiniteDistance * g_InfiniteDistance),
 			iMinFireArc(0),
-			iMaxFireArc(0)
+			iMaxFireArc(0),
+			bGravityWarning(false)
 		{ }
 
 	CSystem *pSystem;					//	Current system
@@ -271,6 +273,8 @@ struct SUpdateCtx
 	Metric rTargetDist2;				//	Distance from player to target
 	int iMinFireArc;					//	Fire arc of primary weapon
 	int iMaxFireArc;
+
+	bool bGravityWarning;				//	Player in a dangerous gravity field
 	};
 
 //	Utility classes
@@ -288,35 +292,67 @@ class CIDCounter
 class CAttributeCriteria
 	{
 	public:
-		enum Weights
+		enum EMatchStrength
 			{
-			critRequired =	4,
-			critExcluded =	-4,
-
-			critSeek1 = 1,
-			critSeek2 = 2,
-			critSeek3 = 3,
-
-			critAvoid1 = -1,
-			critAvoid2 = -2,
-			critAvoid3 = -3,
-
-			critNeutral = 0,
+			matchRequired =					0x00010000,
+			matchExcluded =					0x00020000,
 			};
 
+		enum EFlags
+			{
+			flagDefault =					0x00000001,
+			};
+
+		CAttributeCriteria (void) :
+				m_dwFlags(0)
+			{ }
+
+		int AdjLocationWeight (CSystem *pSystem, CLocationDef *pLoc, int iOriginalWeight = 1000) const;
+		int AdjStationWeight (CStationType *pType, int iOriginalWeight = 1000) const;
+		int CalcLocationWeight (CSystem *pSystem, const CString &sLocationAttribs, const CVector &vPos) const;
 		inline int GetCount (void) const { return m_Attribs.GetCount(); }
 		const CString &GetAttribAndRequired (int iIndex, bool *retbRequired) const;
-		const CString &GetAttribAndWeight (int iIndex, int *retiWeight, bool *retbIsSpecial = NULL) const;
+		const CString &GetAttribAndWeight (int iIndex, DWORD *retdwMatchStrength, bool *retbIsSpecial = NULL) const;
 		inline bool MatchesAll (void) const { return (GetCount() == 0); }
+		inline bool MatchesDefault (void) const { return (m_dwFlags & flagDefault); }
 		ALERROR Parse (const CString &sCriteria, DWORD dwFlags = 0, CString *retsError = NULL);
 
+		static int CalcLocationWeight (CSystem *pSystem, const CString &sLocationAttribs, const CVector &vPos, const CString &sAttrib, DWORD dwMatchStrength);
+		static int CalcWeightAdj (bool bHasAttrib, DWORD dwMatchStrength, int iAttribFreq = -1);
+
 	private:
+		enum MatchStrengthEncoding
+			{
+			CODE_MASK =						0xFFFF0000,
+			VALUE_MASK =					0x0000FFFF,
+
+			CODE_REQUIRED =					0x00010000,
+			CODE_EXCLUDED =					0x00020000,
+			CODE_SEEK =						0x00030000,		//	Value = 1-3
+			CODE_AVOID =					0x00040000,		//	Value = 1-3
+			CODE_INCREASE_IF =				0x00050000,		//	Value = % to increase
+			CODE_INCREASE_UNLESS =			0x00060000,		//	Value = % to increase
+			CODE_DECREASE_IF =				0x00070000,		//	Value = % to decrease
+			CODE_DECREASE_UNLESS =			0x00080000,		//	Value = % to decrease
+
+			matchSeek1 =					0x00030001,
+			matchSeek2 =					0x00030002,
+			matchSeek3 =					0x00030003,
+
+			matchAvoid1 =					0x00040001,
+			matchAvoid2 =					0x00040002,
+			matchAvoid3 =					0x00040003,
+			};
+
 		struct SEntry
 			{
 			CString sAttrib;
-			int iWeight;
+			DWORD dwMatchStrength;
 			bool bIsSpecial;
 			};
+
+		static int CalcWeightAdjCustom (bool bHasAttrib, DWORD dwMatchStrength);
+		static int CalcWeightAdjWithAttribFreq (bool bHasAttrib, DWORD dwMatchStrength, int iAttribFreq);
 
 		TArray<SEntry> m_Attribs;
 		DWORD m_dwFlags;
@@ -338,6 +374,7 @@ class DiceRange
 		inline bool IsConstant (void) const { return (m_iFaces * m_iCount) == 0; }
 		inline bool IsEmpty (void) const { return (m_iFaces == 0 && m_iCount == 0 && m_iBonus == 0); }
 		int Roll (void) const;
+		int RollSeeded (int iSeed) const;
 		ALERROR LoadFromXML (const CString &sAttrib, int iDefault, CString *retsSuffix = NULL);
 		inline ALERROR LoadFromXML (const CString &sAttrib, CString *retsSuffix = NULL) { return LoadFromXML(sAttrib, 0, retsSuffix); }
 		void ReadFromStream (SLoadCtx &Ctx);
@@ -485,9 +522,9 @@ class CLanguageDataBlock
 		void DeleteAll (void);
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		void MergeFrom (const CLanguageDataBlock &Source);
-		bool Translate (CSpaceObject *pObj, const CString &sID, ICCItem **retpResult) const;
-		bool Translate (CSpaceObject *pObj, const CString &sID, TArray<CString> *retText) const;
-		bool Translate (CSpaceObject *pObj, const CString &sID, CString *retsText) const;
+		bool Translate (CSpaceObject *pObj, const CString &sID, ICCItem *pData, ICCItem **retpResult) const;
+		bool Translate (CSpaceObject *pObj, const CString &sID, ICCItem *pData, TArray<CString> *retText) const;
+		bool Translate (CSpaceObject *pObj, const CString &sID, ICCItem *pData, CString *retsText) const;
 
 	private:
 		enum ETranslateResult
@@ -507,7 +544,7 @@ class CLanguageDataBlock
 			};
 
 		ICCItem *ComposeCCItem (CCodeChain &CC, ICCItem *pValue, const CString &sPlayerName, GenomeTypes iPlayerGenome) const;
-		ETranslateResult Translate (CSpaceObject *pObj, const CString &sID, TArray<CString> *retText, CString *retsText, ICCItem **retpResult = NULL) const;
+		ETranslateResult Translate (CSpaceObject *pObj, const CString &sID, ICCItem *pData, TArray<CString> *retText, CString *retsText, ICCItem **retpResult = NULL) const;
 
 		TSortMap<CString, SEntry> m_Data;
 	};
@@ -528,9 +565,10 @@ enum DestructionTypes
 	killedByPlayerCreatedExplosion	= 10,	//	Killed by explosion created by the player
 	enteredStargate					= 11,	//	Entered a stargate
 	killedByOther					= 12,	//	Custom death
+	killedByGravity					= 13,	//	Killed by white dwarf/neutron star/black hole
 
 	killedNone						= -1,
-	killedCount						= 12
+	killedCount						= 14
 	};
 
 class CDamageSource
@@ -1096,7 +1134,7 @@ class CRegenDesc
 		double GetHPPer180 (int iTicksPerCycle = 1) const;
 		int GetHPPerEra (void) const;
 		CString GetReferenceRate (const CString &sUnits, int iTicksPerCycle = 1) const;
-		int GetRegen (int iTick, int iTicksPerCycle = 1);
+		int GetRegen (int iTick, int iTicksPerCycle = 1) const;
 		void Init (int iHPPerEra, int iCyclesPerBurst = 1);
 		void InitFromRegen (double rRegen, int iTicksPerCycle = 1);
 		ALERROR InitFromRegenString (SDesignLoadCtx &Ctx, const CString &sRegen, int iTicksPerCycle = 1);
@@ -1372,7 +1410,6 @@ class IListData
 
 CString AppendModifiers (const CString &sModifierList1, const CString &sModifierList2);
 CString ComposePlayerNameString (const CString &sString, const CString &sPlayerName, int iGenome, ICCItem *pArgs = NULL);
-int ComputeWeightAdjFromMatchStrength (bool bHasAttrib, int iMatchStrength);
 CString GetLoadStateString (ELoadStates iState);
 Metric GetScale (CXMLElement *pObj);
 bool HasModifier (const CString &sModifierList, const CString &sModifier);

@@ -112,7 +112,7 @@ void CMission::CompleteMission (ECompletedReasons iReason)
 			if (pPlayer)
 				{
 				CString sMessage;
-				if (!Translate(CONSTLIT("FailureMsg"), &sMessage))
+				if (!Translate(CONSTLIT("FailureMsg"), NULL, &sMessage))
 					sMessage = CONSTLIT("Mission failed!");
 
 				pPlayer->SendMessage(NULL, sMessage);
@@ -140,7 +140,7 @@ void CMission::CompleteMission (ECompletedReasons iReason)
 			if (pPlayer)
 				{
 				CString sMessage;
-				if (!Translate(CONSTLIT("SuccessMsg"), &sMessage))
+				if (!Translate(CONSTLIT("SuccessMsg"), NULL, &sMessage))
 					sMessage = CONSTLIT("Mission complete!");
 
 				pPlayer->SendMessage(NULL, sMessage);
@@ -153,7 +153,8 @@ void CMission::CompleteMission (ECompletedReasons iReason)
 
 			//	Let the player record the mission success
 
-			pPlayer->OnMissionCompleted(this, true);
+			if (pPlayer)
+				pPlayer->OnMissionCompleted(this, true);
 			}
 
 		//	If there is no debrief, then we close the mission
@@ -273,7 +274,7 @@ ALERROR CMission::Create (CMissionType *pType,
 	return NOERROR;
 	}
 
-void CMission::FireCustomEvent (const CString &sEvent)
+void CMission::FireCustomEvent (const CString &sEvent, ICCItem *pData)
 
 //	FireCustomEvent
 //
@@ -288,6 +289,7 @@ void CMission::FireCustomEvent (const CString &sEvent)
 
 		Ctx.SetEvent(eventDoEvent);
 		Ctx.SaveAndDefineSourceVar(this);
+		Ctx.SaveAndDefineDataVar(pData);
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
@@ -792,13 +794,17 @@ void CMission::OnObjDestroyedNotify (SDestroyCtx &Ctx)
 		}
 	}
 
-void CMission::OnPlayerEnteredSystem (void)
+void CMission::OnPlayerEnteredSystem (CSpaceObject *pPlayer)
 
 //	OnPlayerEnteredSystem
 //
 //	Player has entered the system
 
 	{
+	//	Fire event
+
+	FireOnPlayerEnteredSystem(pPlayer);
+
 	//	For active missions, fire event to reset player targets.
 
 	FireOnSetPlayerTarget(REASON_NEW_SYSTEM);
@@ -1147,10 +1153,10 @@ bool CMission::SetAccepted (void)
 	//	Get the mission title and description (we remember these because we may
 	//	need to access them outside of the system).
 
-	if (!Translate(CONSTLIT("Name"), &m_sTitle))
+	if (!Translate(CONSTLIT("Name"), NULL, &m_sTitle))
 		m_sTitle = m_pType->GetName();
 
-	if (!Translate(CONSTLIT("Summary"), &m_sInstructions))
+	if (!Translate(CONSTLIT("Summary"), NULL, &m_sInstructions))
 		m_sInstructions = NULL_STR;
 
 	return true;

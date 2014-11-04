@@ -40,6 +40,11 @@ ICCItem *fnAppend (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 	int i, j;
 	CCodeChain *pCC = pCtx->pCC;
 
+	//	Handle some edge-conditions
+
+	if (pArgs->GetCount() == 0)
+		return pCC->CreateNil();
+
 	//	Create a new list to store the result in
 
 	ICCItem *pResult = pCC->CreateLinkedList();
@@ -1472,25 +1477,7 @@ ICCItem *fnItem (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_ITEM_TYPE:
 			{
 			ICCItem *pItem = pArgs->GetElement(0);
-
-			if (pItem->IsError())
-				return pCC->CreateString(CONSTLIT("error"));
-			else if (pItem->IsNil())
-				return pCC->CreateString(CONSTLIT("nil"));
-			else if (pItem->IsInteger())
-				return pCC->CreateString(CONSTLIT("int32"));
-			else if (pItem->IsPrimitive())
-				return pCC->CreateString(CONSTLIT("primitive"));
-			else if (pItem->IsLambdaFunction())
-				return pCC->CreateString(CONSTLIT("function"));
-			else if (pItem->IsIdentifier())
-				return pCC->CreateString(CONSTLIT("string"));
-			else if (pItem->IsSymbolTable())
-				return pCC->CreateString(CONSTLIT("struct"));
-			else if (pItem->IsList())
-				return pCC->CreateString(CONSTLIT("list"));
-			else
-				return pCC->CreateString(CONSTLIT("true"));
+			return pCC->CreateString(pItem->GetTypeOf());
 			}
 
 		case FN_SET_ITEM:
@@ -3289,6 +3276,100 @@ ICCItem *fnSpecial (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 			ASSERT(false);
 			return pCC->CreateNil();
 		}
+	}
+
+ICCItem *fnSplit (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
+
+//	fnSplit
+//
+//	(split string [characters])
+
+	{
+	CCodeChain *pCC = pCtx->pCC;
+	CString sString = pArgs->GetElement(0)->GetStringValue();
+
+	if (sString.IsBlank())
+		return pCC->CreateNil();
+
+	//	Get the list of characters, if available.
+
+	CString sDelimeters;
+	if (pArgs->GetCount() >= 2)
+		sDelimeters = pArgs->GetElement(1)->GetStringValue();
+	
+	//	By default, we do whitespace separation
+
+	if (sDelimeters.IsBlank())
+		sDelimeters = CONSTLIT(" \t\r\n");
+
+	//	Create a new list
+
+	ICCItem *pResult = pCC->CreateLinkedList();
+	if (pResult->IsError())
+		return pResult;
+
+	CCLinkedList *pList = (CCLinkedList *)pResult;
+
+	//	Parse the string
+
+	char *pPos = sString.GetASCIIZPointer();
+	char *pStart = pPos;
+	bool bInWord = false;
+
+	while (*pPos != '\0')
+		{
+		//	Is this a delimeter?
+
+		bool bIsDelimeter = false;
+		char *pDelim = sDelimeters.GetASCIIZPointer();
+		while (*pDelim != '\0')
+			{
+			if (*pPos == *pDelim)
+				{
+				bIsDelimeter = true;
+				break;
+				}
+			pDelim++;
+			}
+
+		//	Handle it based on our current state.
+
+		if (bInWord)
+			{
+			if (bIsDelimeter)
+				{
+				pList->AppendStringValue(pCC, CString(pStart, (int)(pPos - pStart)));
+				bInWord = false;
+				}
+			}
+		else
+			{
+			if (!bIsDelimeter)
+				{
+				pStart = pPos;
+				bInWord = true;
+				}
+			}
+
+		//	Next
+		
+		pPos++;
+		}
+
+	//	Last word
+
+	if (bInWord)
+		pList->AppendStringValue(pCC, CString(pStart, (int)(pPos - pStart)));
+
+	//	Done
+
+	if (pList->GetCount() == 0)
+		{
+		pList->Discard(pCC);
+		return pCC->CreateNil();
+		}
+	else
+		return pList;
 	}
 
 ICCItem *fnStrCapitalize (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)

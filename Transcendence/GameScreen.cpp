@@ -263,7 +263,10 @@ void CTranscendenceWnd::DoInvocation (CPower *pPower)
 		CString sError;
 		pPower->InvokeByPlayer(GetPlayer()->GetShip(), GetPlayer()->GetTarget(CItemCtx()), &sError);
 		if (!sError.IsBlank())
+			{
 			DisplayMessage(sError);
+			kernelDebugLogMessage(sError);
+			}
 		}
 
 	m_CurrentMenu = menuNone;
@@ -1007,6 +1010,13 @@ void CTranscendenceWnd::ShowInvokeMenu (void)
 					{
 					char chLetter = *sKey.GetASCIIZPointer();
 					int iOrdinal = chLetter - 'A';
+
+					//	A double letter means that we really want a letter, so we
+					//	offset to increment past the numbers.
+
+					if (sKey.GetLength() == 2)
+						iOrdinal += 9;
+
 					sKey = CMenuDisplay::GetHotKeyFromOrdinal(&iOrdinal, KeyMap);
 					}
 

@@ -18,6 +18,8 @@ const int HIGHLIGHT_TIMER =						200;
 const int HIGHLIGHT_BLINK =						110;
 const int HIGHLIGHT_FADE =						30;
 
+const int ANNOTATION_INNER_SPACING_Y =			2;
+
 const int DAMAGE_BAR_WIDTH =					100;
 const int DAMAGE_BAR_HEIGHT =					12;
 
@@ -74,14 +76,18 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT);
 
 #define PROPERTY_CATEGORY						CONSTLIT("category")
 #define PROPERTY_COMMS_KEY						CONSTLIT("commsKey")
+#define PROPERTY_CYBER_DEFENSE_LEVEL			CONSTLIT("cyberDefenseLevel")
 #define PROPERTY_DAMAGED						CONSTLIT("damaged")
 #define PROPERTY_ENABLED						CONSTLIT("enabled")
 #define PROPERTY_HAS_DOCKING_PORTS				CONSTLIT("hasDockingPorts")
 #define PROPERTY_HP								CONSTLIT("hp")
 #define PROPERTY_ID								CONSTLIT("id")
+#define PROPERTY_INSTALL_DEVICE_MAX_LEVEL		CONSTLIT("installDeviceMaxLevel")
 #define PROPERTY_INSTALL_DEVICE_PRICE			CONSTLIT("installDevicePrice")
 #define PROPERTY_KNOWN							CONSTLIT("known")
+#define PROPERTY_LEVEL							CONSTLIT("level")
 #define PROPERTY_PLAYER_MISSIONS_GIVEN			CONSTLIT("playerMissionsGiven")
+#define PROPERTY_REPAIR_ARMOR_MAX_LEVEL			CONSTLIT("repairArmorMaxLevel")
 #define PROPERTY_UNDER_ATTACK					CONSTLIT("underAttack")
 
 #define SPECIAL_DATA							CONSTLIT("data:")
@@ -91,10 +97,11 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT);
 
 #define SPECIAL_VALUE_TRUE						CONSTLIT("true")
 
+#define CATEGORY_BEAM							CONSTLIT("beam")
+#define CATEGORY_EFFECT							CONSTLIT("effect")
+#define CATEGORY_MISSILE						CONSTLIT("missile")
 #define CATEGORY_SHIP							CONSTLIT("ship")
 #define CATEGORY_STATION						CONSTLIT("station")
-#define CATEGORY_MISSILE						CONSTLIT("missile")
-#define CATEGORY_EFFECT							CONSTLIT("effect")
 
 static Metric g_rMaxPerceptionRange[CSpaceObject::perceptMax+1] =
 	{
@@ -210,7 +217,9 @@ CSpaceObject::CSpaceObject (IObjectClass *pClass) : CObject(pClass),
 		m_fAutoClearDestinationOnDock(false),
 		m_fAutoClearDestinationOnDestroy(false),
 		m_fShowHighlight(false),
-		m_fShowDamageBar(false)
+		m_fShowDamageBar(false),
+		m_fHasGravity(false),
+		m_fInsideBarrier(false)
 
 //	CSpaceObject constructor
 
@@ -443,7 +452,7 @@ EnhanceItemStatus CSpaceObject::AddItemEnhancement (CItemListManipulator &ItemLi
 	return iResult;
 	}
 
-void CSpaceObject::AddOverlay (CEnergyFieldType *pType, const CVector &vPos, int iRotation, int iLifetime, DWORD *retdwID)
+void CSpaceObject::AddOverlay (COverlayType *pType, const CVector &vPos, int iRotation, int iLifetime, DWORD *retdwID)
 
 //	AddOverlay
 //
@@ -521,7 +530,53 @@ void CSpaceObject::Ascend (void)
 	SetAscended(true);
 	}
 
-void CSpaceObject::CalcOverlayPos (CEnergyFieldType *pOverlayType, const CVector &vPos, int *retiPosAngle, int *retiPosRadius)
+void CSpaceObject::CalcInsideBarrier (void)
+
+//	CalcInsideBarrier
+//
+//	Figures out if we are currently inside a barrier. If so, we set the 
+//	m_fInsideBarrier flag.
+
+	{
+	int i;
+
+	if (!m_fCanBounce)
+		return;
+
+	//	Compute the bounding rect for this object
+
+	CVector vUR, vLL;
+	GetBoundingRect(&vUR, &vLL);
+
+	//	Loop over all other objects and see if we are inside a barrier
+
+	CSystem *pSystem = GetSystem();
+	for (i = 0; i < pSystem->GetObjectCount(); i++)
+		{
+		CSpaceObject *pObj = pSystem->GetObject(i);
+		if (pObj == NULL
+				|| pObj == this
+				|| pObj->IsDestroyed()
+				|| !pObj->CanBlock(this))
+			continue;
+
+		//	Compute the bounding rect for the barrier.
+
+		CVector vBarrierUR, vBarrierLL;
+		pObj->GetBoundingRect(&vBarrierUR, &vBarrierLL);
+
+		//	If we intersect then we're inside at least one object
+
+		if (IntersectRect(vUR, vLL, vBarrierUR, vBarrierLL)
+				&& pObj->ObjectInObject(pObj->GetPos(), this, GetPos()))
+			{
+			m_fInsideBarrier = true;
+			break;
+			}
+		}
+	}
+
+void CSpaceObject::CalcOverlayPos (COverlayType *pOverlayType, const CVector &vPos, int *retiPosAngle, int *retiPosRadius)
 
 //	CalcOverlayPos
 //
@@ -882,6 +937,8 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 	pObj->m_fShowHighlight =			((dwLoad & 0x04000000) ? true : false);
 	pObj->m_fAutoClearDestinationOnDestroy = ((dwLoad & 0x08000000) ? true : false);
 	pObj->m_fShowDamageBar =			((dwLoad & 0x10000000) ? true : false);
+	pObj->m_fHasGravity =				((dwLoad & 0x20000000) ? true : false);
+	pObj->m_fInsideBarrier =			((dwLoad & 0x40000000) ? true : false);
 
 	//	No need to save the following
 
@@ -947,18 +1004,23 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 	Ctx.iLoadState = iOldLoadState;
 	}
 
-ALERROR CSpaceObject::CreateRandomItems (IItemGenerator *pItems, int iLevel)
+ALERROR CSpaceObject::CreateRandomItems (IItemGenerator *pItems, CSystem *pSystem)
 
 //	CreateRandomItems
 //
 //	Creates items based on item table
+//
+//	NOTE: We cannot call GetSystem() because it is not yet set up at the time
+//	that we call this (on create). Thus we rely on pSystem being passed in.
 
 	{
 	if (pItems)
 		{
 		CItemListManipulator ItemList(GetItemList());
 		SItemAddCtx Ctx(ItemList);
-		Ctx.iLevel = iLevel;
+		Ctx.pSystem = pSystem;
+		Ctx.vPos = GetPos();
+		Ctx.iLevel = (Ctx.pSystem ? Ctx.pSystem->GetLevel() : 1);
 
 		pItems->AddItems(Ctx);
 
@@ -970,7 +1032,7 @@ ALERROR CSpaceObject::CreateRandomItems (IItemGenerator *pItems, int iLevel)
 	return NOERROR;
 	}
 
-ALERROR CSpaceObject::CreateRandomItems (CXMLElement *pItems, int iLevel)
+ALERROR CSpaceObject::CreateRandomItems (CXMLElement *pItems, CSystem *pSystem)
 
 //	CreateRandomItems
 //
@@ -1000,7 +1062,9 @@ ALERROR CSpaceObject::CreateRandomItems (CXMLElement *pItems, int iLevel)
 
 	CItemListManipulator ItemList(GetItemList());
 	SItemAddCtx ItemCtx(ItemList);
-	ItemCtx.iLevel = iLevel;
+	ItemCtx.pSystem = pSystem;
+	ItemCtx.vPos = GetPos();
+	ItemCtx.iLevel = (ItemCtx.pSystem ? ItemCtx.pSystem->GetLevel() : 1);
 
 	pGenerator->AddItems(ItemCtx);
 
@@ -1595,7 +1659,7 @@ bool CSpaceObject::FireCanRemoveItem (const CItem &Item, int iSlot, CString *ret
 		return true;
 	}
 
-void CSpaceObject::FireCustomEvent (const CString &sEvent, ECodeChainEvents iEvent, ICCItem **retpResult)
+void CSpaceObject::FireCustomEvent (const CString &sEvent, ECodeChainEvents iEvent, ICCItem *pData, ICCItem **retpResult)
 
 //	FireCustomEvent
 //
@@ -1609,6 +1673,7 @@ void CSpaceObject::FireCustomEvent (const CString &sEvent, ECodeChainEvents iEve
 		{
 		Ctx.SetEvent(iEvent);
 		Ctx.SaveAndDefineSourceVar(this);
+		Ctx.SaveAndDefineDataVar(pData);
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
@@ -1666,7 +1731,7 @@ void CSpaceObject::FireCustomItemEvent (const CString &sEvent, const CItem &Item
 		}
 	}
 
-void CSpaceObject::FireCustomOverlayEvent (const CString &sEvent, DWORD dwOverlayID, ICCItem **retpResult)
+void CSpaceObject::FireCustomOverlayEvent (const CString &sEvent, DWORD dwOverlayID, ICCItem *pData, ICCItem **retpResult)
 
 //	FireCustomOverlayEvent
 //
@@ -1687,7 +1752,7 @@ void CSpaceObject::FireCustomOverlayEvent (const CString &sEvent, DWORD dwOverla
 
 	//	Fire event
 
-	pOverlay->FireCustomEvent(this, sEvent, retpResult);
+	pOverlay->FireCustomEvent(this, sEvent, pData, retpResult);
 	}
 
 void CSpaceObject::FireCustomShipOrderEvent (const CString &sEvent, CSpaceObject *pShip, ICCItem **retpResult)
@@ -1723,7 +1788,7 @@ void CSpaceObject::FireCustomShipOrderEvent (const CString &sEvent, CSpaceObject
 		}
 	}
 
-bool CSpaceObject::FireGetDockScreen (CString *retsScreen, int *retiPriority)
+bool CSpaceObject::FireGetDockScreen (CString *retsScreen, int *retiPriority, ICCItem **retpData)
 
 //	FireGetDockScreen
 //
@@ -1754,12 +1819,14 @@ bool CSpaceObject::FireGetDockScreen (CString *retsScreen, int *retiPriority)
 			{
 			*retsScreen = pResult->GetElement(0)->GetStringValue();
 			*retiPriority = pResult->GetElement(1)->GetIntegerValue();
+			*retpData = (pResult->GetCount() >= 3 ? pResult->GetElement(2)->Reference() : NULL);
 			bResult = true;
 			}
 		else if (pResult->GetCount() >= 1)
 			{
 			*retsScreen = pResult->GetElement(0)->GetStringValue();
 			*retiPriority = 0;
+			*retpData = NULL;
 			bResult = true;
 			}
 		else
@@ -2768,32 +2835,6 @@ bool CSpaceObject::FireOnTranslateMessage (const CString &sMessage, CString *ret
 	return bHandled;
 	}
 
-bool CSpaceObject::GetArmorInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice)
-
-//	GetArmorInstallPrice
-//
-//	Default price for objects that do not implement <Trade>
-
-	{
-	if (retiPrice)
-		*retiPrice = CTradingDesc::CalcPriceForService(serviceReplaceArmor, this, Item, 1, dwFlags);
-
-	return true;
-	}
-
-bool CSpaceObject::GetArmorRepairPrice (const CItem &Item, int iHPToRepair, DWORD dwFlags, int *retiPrice)
-
-//	GetArmorRepairPrice
-//
-//	Default price for objects that do not implement <Trade>
-
-	{
-	if (retiPrice)
-		*retiPrice = CTradingDesc::CalcPriceForService(serviceRepairArmor, this, Item, iHPToRepair, dwFlags);
-
-	return true;
-	}
-
 void CSpaceObject::GetBoundingRect (CVector *retvUR, CVector *retvLL)
 
 //	GetBoundingRect
@@ -2856,16 +2897,6 @@ int CSpaceObject::GetDataInteger (const CString &sAttrib) const
 	return iResult;
 	}
 
-CEconomyType *CSpaceObject::GetDefaultEconomy (void)
-
-//	GetDefaultEconomy
-//
-//	Returns the default economy
-	
-	{
-	return CEconomyType::AsType(g_pUniverse->FindDesignType(GetDefaultEconomyUNID()));
-	}
-
 CString CSpaceObject::GetDesiredCommsKey (void) const
 
 //	GetDesiredCommsKey
@@ -2919,15 +2950,9 @@ int CSpaceObject::GetDetectionRangeIndex (int iPerception) const
 	if (iResult <= 0)
 		return 0;
 
-	//	If we are not cloaked, then we are at least visible at SRS range
-
-	else if (iStealth != stealthMax)
-		return Min(iResult, VISUAL_RANGE_INDEX);
-
 	//	Otherwise, we could be invisible
 
-	else
-		return Min(iResult, RANGE_INDEX_COUNT - 1);
+	return Min(iResult, RANGE_INDEX_COUNT - 1);
 	}
 
 CSovereign::Disposition CSpaceObject::GetDispositionTowards (CSpaceObject *pObj)
@@ -2968,16 +2993,22 @@ CDesignType *CSpaceObject::GetFirstDockScreen (CString *retsScreen, ICCItem **re
 
 	CString sCustomScreen;
 	int iCustomPriority;
-	if (FireGetDockScreen(&sCustomScreen, &iCustomPriority)
-			&& iCustomPriority > iPriority)
+	ICCItem *pCustomData;
+	if (FireGetDockScreen(&sCustomScreen, &iCustomPriority, &pCustomData))
 		{
-		sScreen = sCustomScreen;
-		iPriority = iCustomPriority;
-
-		if (pData)
+		if (iCustomPriority > iPriority)
 			{
-			pData->Discard(&CC);
-			pData = NULL;
+			sScreen = sCustomScreen;
+			iPriority = iCustomPriority;
+
+			if (pData)
+				pData->Discard(&CC);
+
+			pData = pCustomData;
+			}
+		else
+			{
+			pCustomData->Discard(&CC);
 			}
 		}
 
@@ -3529,6 +3560,17 @@ CSpaceObject *CSpaceObject::GetOrderGiver (DestructionTypes iCause)
 		return OnGetOrderGiver();
 	}
 
+ICCItem *CSpaceObject::GetOverlayProperty (CCodeChainCtx *pCCCtx, DWORD dwID, const CString &sName)
+
+//	GetOverlayProperty
+//
+//	Returns a property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+	return CC.CreateNil();
+	}
+
 ICCItem *CSpaceObject::GetProperty (const CString &sName)
 
 //	GetProperty
@@ -3550,6 +3592,8 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 				return CC.CreateString(CATEGORY_STATION);
 
 			case catBeam:
+				return CC.CreateString(CATEGORY_BEAM);
+
 			case catMissile:
 				return CC.CreateString(CATEGORY_MISSILE);
 
@@ -3572,14 +3616,48 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 		else
 			return CC.CreateNil();
 		}
+	else if (strEquals(sName, PROPERTY_CYBER_DEFENSE_LEVEL))
+		return CC.CreateInteger(GetCyberDefenseLevel());
+
 	else if (strEquals(sName, PROPERTY_HAS_DOCKING_PORTS))
 		return CC.CreateBool(SupportsDocking());
 
 	else if (strEquals(sName, PROPERTY_ID))
 		return CC.CreateInteger(GetID());
 
+	else if (strEquals(sName, PROPERTY_INSTALL_DEVICE_MAX_LEVEL))
+		{
+		int iMaxLevel = -1;
+
+		//	See if we have an override
+
+		CTradingDesc *pTradeOverride = GetTradeDescOverride();
+		if (pTradeOverride)
+			{
+			int iLevel = pTradeOverride->GetMaxLevelMatched(serviceInstallDevice);
+			if (iLevel > iMaxLevel)
+				iMaxLevel = iLevel;
+			}
+
+		//	Ask base type
+
+		CDesignType *pType = GetType();
+		CTradingDesc *pTrade = (pType ? pType->GetTradingDesc() : NULL);
+		if (pTrade)
+			{
+			int iLevel = pTrade->GetMaxLevelMatched(serviceInstallDevice);
+			if (iLevel > iMaxLevel)
+				iMaxLevel = iLevel;
+			}
+
+		return (iMaxLevel != -1 ? CC.CreateInteger(iMaxLevel) : CC.CreateNil());
+		}
+
 	else if (strEquals(sName, PROPERTY_KNOWN))
 		return CC.CreateBool(IsKnown());
+
+	else if (strEquals(sName, PROPERTY_LEVEL))
+		return CC.CreateInteger(GetLevel());
 
 	else if (strEquals(sName, PROPERTY_PLAYER_MISSIONS_GIVEN))
 		{
@@ -3589,6 +3667,35 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 		else
 			return CC.CreateNil();
 		}
+
+	else if (strEquals(sName, PROPERTY_REPAIR_ARMOR_MAX_LEVEL))
+		{
+		int iMaxLevel = -1;
+
+		//	See if we have an override
+
+		CTradingDesc *pTradeOverride = GetTradeDescOverride();
+		if (pTradeOverride)
+			{
+			int iLevel = pTradeOverride->GetMaxLevelMatched(serviceRepairArmor);
+			if (iLevel > iMaxLevel)
+				iMaxLevel = iLevel;
+			}
+
+		//	Ask base type
+
+		CDesignType *pType = GetType();
+		CTradingDesc *pTrade = (pType ? pType->GetTradingDesc() : NULL);
+		if (pTrade)
+			{
+			int iLevel = pTrade->GetMaxLevelMatched(serviceRepairArmor);
+			if (iLevel > iMaxLevel)
+				iMaxLevel = iLevel;
+			}
+
+		return (iMaxLevel != -1 ? CC.CreateInteger(iMaxLevel) : CC.CreateNil());
+		}
+
 	else if (strEquals(sName, PROPERTY_UNDER_ATTACK))
 		return CC.CreateBool(IsUnderAttack());
 
@@ -3597,67 +3704,6 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 
 	else
 		return CC.CreateNil();
-	}
-
-bool CSpaceObject::GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice)
-
-//	GetRefuelItemAndPrice
-//
-//	Classes with a <Trade> element should override this.
-
-	{
-	int i;
-
-	//	Get the ship
-
-	CShip *pShipToRefuel = pObjToRefuel->AsShip();
-	if (pShipToRefuel == NULL)
-		return false;
-
-	//	Find the highest-level item that can be used by the ship
-
-	int iBestLevel = 0;
-	int iBestPrice = 0;
-	CItemType *pBestItem = NULL;
-
-	for (i = 0; i < g_pUniverse->GetItemTypeCount(); i++)
-		{
-		CItemType *pType = g_pUniverse->GetItemType(i);
-		CItem Item(pType, 1);
-
-		if (pShipToRefuel->IsFuelCompatible(Item))
-			{
-			if (pBestItem == NULL || pType->GetLevel() > iBestPrice)
-				{
-				//	Compute the price, because if we don't sell it, then we
-				//	skip it.
-				//
-				//	NOTE: Unlike selling, we allow 0 prices because some 
-				//	stations give fuel for free.
-
-				int iPrice = CTradingDesc::CalcPriceForService(serviceRefuel, this, Item, 1, 0);
-				if (iPrice >= 0)
-					{
-					pBestItem = pType;
-					iBestLevel = pType->GetLevel();
-					iBestPrice = iPrice;
-					}
-				}
-			}
-		}
-
-	if (pBestItem == NULL)
-		return false;
-
-	//	Done
-
-	if (retpItemType)
-		*retpItemType = pBestItem;
-
-	if (retiPrice)
-		*retiPrice = iBestPrice;
-
-	return true;
 	}
 
 CXMLElement *CSpaceObject::GetScreen (const CString &sName)
@@ -3671,16 +3717,6 @@ CXMLElement *CSpaceObject::GetScreen (const CString &sName)
 	Screen.LoadUNID(sName);
 	Screen.Bind(NULL);
 	return Screen.GetDesc();
-	}
-
-int CSpaceObject::GetSellPrice (const CItem &Item, DWORD dwFlags)
-
-//	GetSellPrice
-//
-//	Default sell price computation for objects without a <Trade> desc.
-
-	{
-	return CTradingDesc::CalcPriceForService(serviceSell, this, Item, 1, dwFlags);
 	}
 
 CSovereign *CSpaceObject::GetSovereignToDefend (void) const
@@ -4748,6 +4784,11 @@ bool CSpaceObject::MatchesCriteria (SCriteriaMatchCtx &Ctx, const Criteria &Crit
 			&& (!Crit.pSource->IsEnemy(this) || IsEscortingFriendOf(Crit.pSource) || Crit.pSource->IsEscortingFriendOf(this)))
 		return false;
 
+	if (Crit.bAngryObjectsOnly 
+			&& Crit.pSource
+			&& (!IsAngryAt(Crit.pSource) || IsEscortingFriendOf(Crit.pSource) || Crit.pSource->IsEscortingFriendOf(this)))
+		return false;
+
 	if (!Crit.sStargateID.IsBlank() && !strEquals(Crit.sStargateID, GetStargateID()))
 		return false;
 
@@ -5011,94 +5052,116 @@ void CSpaceObject::Move (const CSpaceObjectList &Barriers, Metric rSeconds)
 			for (i = 0; i < iBarrierCount; i++)
 				{
 				CSpaceObject *pBarrier = Barriers.GetObj(i);
-				if (pBarrier != this 
-						&& pBarrier->CanBlock(this))
+
+				//	If this barrier doesn't block us, then nothing to do
+
+				if (pBarrier == this 
+						|| !pBarrier->CanBlock(this))
+					continue;
+
+				//	Compute the bounding rect for the barrier.
+
+				CVector vBarrierUR, vBarrierLL;
+				pBarrier->GetBoundingRect(&vBarrierUR, &vBarrierLL);
+
+				//	If we don't intersect then, nothing
+
+				if (!IntersectRect(vUR, vLL, vBarrierUR, vBarrierLL)
+						|| !pBarrier->ObjectInObject(pBarrier->GetPos(), this, GetPos()))
+					continue;
+
+				//	Otherwise, we're blocked
+				//	
+				//	If we're started out inside a barrier, we continue 
+				//	moving until we're out.
+
+				if (m_fInsideBarrier)
+					bBlocked = true;
+
+				//	Otherwise, we bounce
+
+				else
 					{
-					//	Compute the bounding rect for the barrier.
+					//	Compute the resulting velocities depending
+					//	on whether the barrier moves or not
 
-					CVector vBarrierUR, vBarrierLL;
-					pBarrier->GetBoundingRect(&vBarrierUR, &vBarrierLL);
-
-					//	If we intersect then block
-
-					if (IntersectRect(vUR, vLL, vBarrierUR, vBarrierLL)
-							&& pBarrier->ObjectInObject(pBarrier->GetPos(), this, GetPos()))
+					if (pBarrier->CanMove())
 						{
-						//	Compute the resulting velocities depending
-						//	on whether the barrier moves or not
-
-						if (pBarrier->CanMove())
-							{
-							//	For a head-on elastic collision where
-							//	the second object has velocity 0, the equations are:
-							//
-							//		  (m1 - m2)
-							//	v1' = --------- v1
-							//		  (m1 + m2)
-							//
-							//		    2m1
-							//	v2' = --------- v1
-							//		  (m1 + m2)
+						//	For a head-on elastic collision where
+						//	the second object has velocity 0, the equations are:
+						//
+						//		  (m1 - m2)
+						//	v1' = --------- v1
+						//		  (m1 + m2)
+						//
+						//		    2m1
+						//	v2' = --------- v1
+						//		  (m1 + m2)
 							
-							Metric rInvM1plusM2 = g_BounceCoefficient / (GetMass() + pBarrier->GetMass());
-							Metric rM1minusM2 = GetMass() - pBarrier->GetMass();
-							Metric r2M1 = 2.0 * GetMass();
-							CVector vVel = GetVel();
+						Metric rInvM1plusM2 = g_BounceCoefficient / (GetMass() + pBarrier->GetMass());
+						Metric rM1minusM2 = GetMass() - pBarrier->GetMass();
+						Metric r2M1 = 2.0 * GetMass();
+						CVector vVel = GetVel();
+
+						m_vPos = m_vOldPos;
+
+						SetVel(rM1minusM2 * rInvM1plusM2 * vVel);
+						pBarrier->SetVel(r2M1 * rInvM1plusM2 * vVel);
+						}
+					else
+						{
+						//	If we've already been blocked, then make sure that we are not inside
+						//	the second barrier. If we are, then revert the position
+
+						if (bBlocked)
+							{
+							if (pBarrier->PointInObject(pBarrier->GetPos(), m_vPos))
+								m_vPos = m_vOldPos;
+							}
+
+						//	Otherwise, deal with the first barrier
+
+						else
+							{
+							//	Revert the position to before the move
 
 							m_vPos = m_vOldPos;
 
-							SetVel(rM1minusM2 * rInvM1plusM2 * vVel);
-							pBarrier->SetVel(r2M1 * rInvM1plusM2 * vVel);
-							}
-						else
-							{
-							//	If we've already been blocked, then make sure that we are not inside
-							//	the second barrier. If we are, then revert the position
+							//	If the old position is not blocked, then bounce and carry on
 
-							if (bBlocked)
-								{
-								if (pBarrier->PointInObject(pBarrier->GetPos(), m_vPos))
-									m_vPos = m_vOldPos;
-								}
+							if (!pBarrier->ObjectInObject(pBarrier->GetPos(), this, GetPos()))
+								SetVel(-g_BounceCoefficient * GetVel());
 
-							//	Otherwise, deal with the first barrier
+							//	Otherwise, move slowly towards the new position, but make sure that we never
+							//	move the center of the object inside the barrier.
 
 							else
 								{
-								//	Revert the position to before the move
+								CVector vNewPos = m_vPos + (g_KlicksPerPixel * m_vVel.Normal());
+								if (!pBarrier->PointInObject(pBarrier->GetPos(), vNewPos))
+									m_vPos = vNewPos;
 
-								m_vPos = m_vOldPos;
-
-								//	If the old position is not blocked, then bounce and carry on
-
-								if (!pBarrier->ObjectInObject(pBarrier->GetPos(), this, GetPos()))
-									SetVel(-g_BounceCoefficient * GetVel());
-
-								//	Otherwise, move slowly towards the new position, but make sure that we never
-								//	move the center of the object inside the barrier.
-
-								else
-									{
-									CVector vNewPos = m_vPos + (g_KlicksPerPixel * m_vVel.Normal());
-									if (!pBarrier->PointInObject(pBarrier->GetPos(), vNewPos))
-										m_vPos = vNewPos;
-
-									ClipSpeed(0.01 * LIGHT_SPEED);
-									}
+								ClipSpeed(0.01 * LIGHT_SPEED);
 								}
 							}
-
-						//	Tell the barrier and object
-
-						OnBounce(pBarrier, m_vPos);
-						pBarrier->OnObjBounce(this, m_vPos);
-
-						//	Remember that we already dealt with one barrier
-
-						bBlocked = true;
 						}
+
+					//	Tell the barrier and object
+
+					OnBounce(pBarrier, m_vPos);
+					pBarrier->OnObjBounce(this, m_vPos);
+
+					//	Remember that we already dealt with one barrier
+
+					bBlocked = true;
 					}
 				}
+
+			//	If we started out inside a barrier and now we're outside, then
+			//	we can clear our flag
+
+			if (m_fInsideBarrier && !bBlocked)
+				m_fInsideBarrier = false;
 			}
 		}
 
@@ -5161,48 +5224,69 @@ void CSpaceObject::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &C
 //	Paint the object
 
 	{
+	if (IsInactive())
+		{
+		SetPainted();
+		ClearPaintNeeded();
+		return;
+		}
+
+	//	Initialize the object bounds
+
+	Ctx.rcObjBounds = GetImage().GetImageRectAtPoint(x, y);
+	Ctx.yAnnotations = Ctx.rcObjBounds.bottom + ANNOTATION_INNER_SPACING_Y + 1;
+
+	//	Paint annotations under the object
+
 	PaintDebugVector(Dest, x, y, Ctx);
 
 	if (m_fShowHighlight && !Ctx.fNoSelection && !m_fShowDamageBar)
 		PaintTargetHighlight(Dest, x, y, Ctx);
 
+	//	Paint the object
+
 	OnPaint(Dest, x, y, Ctx);
 
-	if (m_fShowDamageBar)
-		PaintDamageBar(Dest, x, y, Ctx);
+	//	Paint effects (e.g., muzzle flash)
+
+	if (m_pFirstEffect)
+		PaintEffects(Dest, x, y, Ctx);
+
+	//	Paint annotations about the object (damage bar, etc.)
+
+	if (!Ctx.fNoSelection)
+		{
+		if (IsHighlighted())
+			PaintHighlight(Dest, x, y, Ctx);
+
+		//	Paint damage bar
+
+		if (m_fShowDamageBar)
+			{
+			int cyHeight;
+
+			CPaintHelper::PaintStatusBar(Dest,
+					x,
+					Ctx.yAnnotations,
+					g_pUniverse->GetPaintTick(),
+					GetSymbolColor(),
+					NULL_STR,
+					100 - GetVisibleDamage(),
+					100,
+					&cyHeight);
+
+			Ctx.yAnnotations += cyHeight + ANNOTATION_INNER_SPACING_Y;
+			}
+
+		//	Let the object paint additional annotations
+
+		OnPaintAnnotations(Dest, x, y, Ctx);
+		}
+
+	//	Done
 
 	SetPainted();
 	ClearPaintNeeded();
-	}
-
-void CSpaceObject::PaintDamageBar (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
-
-//	PaintDamageBar
-//
-//	Paints a damage bar for the object
-
-	{
-	int iHP = 100 - GetVisibleDamage();
-	WORD wColor = GetSymbolColor();
-	DWORD dwOpacity = 160;
-
-	const RECT &rcImage = GetImage().GetImageRect();
-	int cxWidth = RectWidth(rcImage);
-	int cyHeight = RectHeight(rcImage);
-
-	int xStart = x - (DAMAGE_BAR_WIDTH / 2);
-	int yStart = y + (cyHeight / 2);
-
-	int iFill = Max(1, iHP * DAMAGE_BAR_WIDTH / 100);
-
-	//	Draw
-
-	Dest.FillTrans(xStart, yStart, iFill, DAMAGE_BAR_HEIGHT, wColor, dwOpacity);
-
-	Dest.FillLineTrans(xStart + iFill, yStart, DAMAGE_BAR_WIDTH - iFill, wColor, dwOpacity);
-	Dest.FillLineTrans(xStart + iFill, yStart + DAMAGE_BAR_HEIGHT - 1, DAMAGE_BAR_WIDTH - iFill, wColor, dwOpacity);
-
-	Dest.FillColumnTrans(xStart + DAMAGE_BAR_WIDTH - 1, yStart + 1, DAMAGE_BAR_HEIGHT - 2, wColor, dwOpacity);
 	}
 
 void CSpaceObject::PaintEffects (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
@@ -5229,7 +5313,7 @@ void CSpaceObject::PaintEffects (CG16bitImage &Dest, int x, int y, SViewportPain
 		}
 	}
 
-void CSpaceObject::PaintHighlight (CG16bitImage &Dest, const RECT &rcRect, SViewportPaintCtx &Ctx)
+void CSpaceObject::PaintHighlight (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 
 //	PaintHighlight
 //
@@ -5242,51 +5326,57 @@ void CSpaceObject::PaintHighlight (CG16bitImage &Dest, const RECT &rcRect, SView
 
 	//	Paint the corners
 
-	Dest.DrawLine(rcRect.left, rcRect.top,
-			rcRect.left + HIGHLIGHT_CORNER_WIDTH, rcRect.top,
+	Dest.DrawLine(Ctx.rcObjBounds.left, Ctx.rcObjBounds.top,
+			Ctx.rcObjBounds.left + HIGHLIGHT_CORNER_WIDTH, Ctx.rcObjBounds.top,
 			1, wColor);
 
-	Dest.DrawLine(rcRect.left, rcRect.top,
-			rcRect.left, rcRect.top + HIGHLIGHT_CORNER_HEIGHT,
+	Dest.DrawLine(Ctx.rcObjBounds.left, Ctx.rcObjBounds.top,
+			Ctx.rcObjBounds.left, Ctx.rcObjBounds.top + HIGHLIGHT_CORNER_HEIGHT,
 			1, wColor);
 
-	Dest.DrawLine(rcRect.right, rcRect.top,
-			rcRect.right - HIGHLIGHT_CORNER_WIDTH, rcRect.top,
+	Dest.DrawLine(Ctx.rcObjBounds.right, Ctx.rcObjBounds.top,
+			Ctx.rcObjBounds.right - HIGHLIGHT_CORNER_WIDTH, Ctx.rcObjBounds.top,
 			1, wColor);
 
-	Dest.DrawLine(rcRect.right, rcRect.top,
-			rcRect.right, rcRect.top + HIGHLIGHT_CORNER_HEIGHT,
+	Dest.DrawLine(Ctx.rcObjBounds.right, Ctx.rcObjBounds.top,
+			Ctx.rcObjBounds.right, Ctx.rcObjBounds.top + HIGHLIGHT_CORNER_HEIGHT,
 			1, wColor);
 
-	Dest.DrawLine(rcRect.left, rcRect.bottom,
-			rcRect.left, rcRect.bottom - HIGHLIGHT_CORNER_HEIGHT,
+	Dest.DrawLine(Ctx.rcObjBounds.left, Ctx.rcObjBounds.bottom,
+			Ctx.rcObjBounds.left, Ctx.rcObjBounds.bottom - HIGHLIGHT_CORNER_HEIGHT,
 			1, wColor);
 
-	Dest.DrawLine(rcRect.left, rcRect.bottom,
-			rcRect.left + HIGHLIGHT_CORNER_WIDTH, rcRect.bottom,
+	Dest.DrawLine(Ctx.rcObjBounds.left, Ctx.rcObjBounds.bottom,
+			Ctx.rcObjBounds.left + HIGHLIGHT_CORNER_WIDTH, Ctx.rcObjBounds.bottom,
 			1, wColor);
 
-	Dest.DrawLine(rcRect.right, rcRect.bottom,
-			rcRect.right - HIGHLIGHT_CORNER_WIDTH, rcRect.bottom,
+	Dest.DrawLine(Ctx.rcObjBounds.right, Ctx.rcObjBounds.bottom,
+			Ctx.rcObjBounds.right - HIGHLIGHT_CORNER_WIDTH, Ctx.rcObjBounds.bottom,
 			1, wColor);
 
-	Dest.DrawLine(rcRect.right, rcRect.bottom,
-			rcRect.right, rcRect.bottom - HIGHLIGHT_CORNER_HEIGHT,
+	Dest.DrawLine(Ctx.rcObjBounds.right, Ctx.rcObjBounds.bottom,
+			Ctx.rcObjBounds.right, Ctx.rcObjBounds.bottom - HIGHLIGHT_CORNER_HEIGHT,
 			1, wColor);
 
 	//	Paint message, if we have one
 
 	if (!m_sHighlightText.IsBlank() || m_iHighlightChar)
-		PaintHighlightText(Dest, rcRect.left + RectWidth(rcRect) / 2, rcRect.bottom + 2, Ctx, alignCenter, wColor);
+		{
+		int cyHeight;
+		PaintHighlightText(Dest, x, Ctx.yAnnotations, Ctx, alignCenter, wColor, &cyHeight);
+		Ctx.yAnnotations += cyHeight + ANNOTATION_INNER_SPACING_Y;
+		}
 	}
 
-void CSpaceObject::PaintHighlightText (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx, AlignmentStyles iAlign, WORD wColor)
+void CSpaceObject::PaintHighlightText (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx, AlignmentStyles iAlign, WORD wColor, int *retcyHeight)
 
 //	PaintHighlightText
 //
 //	Paint highlight text
 
 	{
+	int yOriginal = y;
+
 	const int KEY_BOX_SIZE = 18;
 	const CG16bitFont &NameFont = g_pUniverse->GetNamedFont(CUniverse::fontSRSObjName);
 	const CG16bitFont &MessageFont = g_pUniverse->GetNamedFont(CUniverse::fontSRSMessage);
@@ -5369,7 +5459,7 @@ void CSpaceObject::PaintHighlightText (CG16bitImage &Dest, int x, int y, SViewpo
 		char chChar = (char)m_iHighlightChar;
 		CString sKey = CString(&chChar, 1);
 
-		y += 2;
+		y += ANNOTATION_INNER_SPACING_Y;
 
 		Dest.Fill(x - KEY_BOX_SIZE / 2, y, KEY_BOX_SIZE, KEY_BOX_SIZE, wColor);
 
@@ -5381,7 +5471,14 @@ void CSpaceObject::PaintHighlightText (CG16bitImage &Dest, int x, int y, SViewpo
 				yText,
 				0,
 				sKey);
+
+		y += KEY_BOX_SIZE;
 		}
+
+	//	Done
+
+	if (retcyHeight)
+		*retcyHeight = y - yOriginal;
 	}
 
 void CSpaceObject::PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans)
@@ -5474,7 +5571,7 @@ void CSpaceObject::ParseCriteria (CSpaceObject *pSource, const CString &sCriteri
 //		V			Include virtual objects
 //		W			(unused)
 //		X			Only objects whose target is the source
-//		Y			(unused)
+//		Y			Enemy/angry objects only
 //		Z			Exclude the player
 //
 //		+xyz;		Include objects with the given attribute
@@ -5495,6 +5592,7 @@ void CSpaceObject::ParseCriteria (CSpaceObject *pSource, const CString &sCriteri
 	retCriteria->bKilledObjectsOnly = false;
 	retCriteria->bFriendlyObjectsOnly = false;
 	retCriteria->bEnemyObjectsOnly = false;
+	retCriteria->bAngryObjectsOnly = false;
 	retCriteria->bManufacturedObjectsOnly = false;
 	retCriteria->bStructureScaleOnly = false;
 	retCriteria->bStargatesOnly = false;
@@ -5718,6 +5816,10 @@ void CSpaceObject::ParseCriteria (CSpaceObject *pSource, const CString &sCriteri
 
 			case 'X':
 				retCriteria->bTargetIsSource = true;
+				break;
+
+			case 'Y':
+				retCriteria->bAngryObjectsOnly = true;
 				break;
 
 			case 'z':
@@ -6170,7 +6272,47 @@ bool CSpaceObject::SetItemProperty (const CItem &Item, const CString &sName, ICC
 			return false;
 			}
 
-		pShip->EnableDevice(ItemList.GetItemAtCursor().GetInstalled(), (pValue == NULL || !pValue->IsNil()));
+		//	Parse the parameter
+
+		bool bEnabled;
+		bool bSilent;
+		if (pValue == NULL)
+			{
+			bEnabled = true;
+			bSilent = false;
+			}
+		else if (pValue->IsIdentifier())
+			{
+			if (strEquals(pValue->GetStringValue(), CONSTLIT("silentDisabled")))
+				{
+				bEnabled = false;
+				bSilent = true;
+				}
+			else if (strEquals(pValue->GetStringValue(), CONSTLIT("silentEnabled")))
+				{
+				bEnabled = true;
+				bSilent = true;
+				}
+			else if (strEquals(pValue->GetStringValue(), CONSTLIT("disabled")))
+				{
+				bEnabled = false;
+				bSilent = false;
+				}
+			else
+				{
+				bEnabled = true;
+				bSilent = false;
+				}
+			}
+		else
+			{
+			bEnabled = !pValue->IsNil();
+			bSilent = false;
+			}
+
+		//	Do it.
+
+		pShip->EnableDevice(ItemList.GetItemAtCursor().GetInstalled(), bEnabled, bSilent);
 		}
 
 	else if (strEquals(sName, PROPERTY_HP))
@@ -6253,7 +6395,7 @@ void CSpaceObject::SetOverride (CDesignType *pOverride)
 
 //	SetOverride
 //
-//	Sets the override
+//	Sets the override.
 	
 	{
 	m_pOverride = pOverride;
@@ -6300,7 +6442,7 @@ bool CSpaceObject::SetProperty (const CString &sName, ICCItem *pValue, CString *
 		return false;
 	}
 
-bool CSpaceObject::Translate (const CString &sID, ICCItem **retpResult)
+bool CSpaceObject::Translate (const CString &sID, ICCItem *pData, ICCItem **retpResult)
 
 //	Translate
 //
@@ -6308,16 +6450,21 @@ bool CSpaceObject::Translate (const CString &sID, ICCItem **retpResult)
 //	result.
 
 	{
-	//	First we ask the type
+	//	First we ask the override
+
+	if (m_pOverride && m_pOverride->Translate(this, sID, pData, retpResult))
+		return true;
+
+	//	Ask the type
 
 	CDesignType *pType = GetType();
-	if (pType && pType->Translate(this, sID, retpResult))
+	if (pType && pType->Translate(this, sID, pData, retpResult))
 		return true;
 
 	//	Otherwise, see if the sovereign has it
 
 	CSovereign *pSovereign = GetSovereign();
-	if (pSovereign && pSovereign->Translate(this, sID, retpResult))
+	if (pSovereign && pSovereign->Translate(this, sID, pData, retpResult))
 		return true;
 
 	//	Otherwise, we can't find it.
@@ -6325,7 +6472,7 @@ bool CSpaceObject::Translate (const CString &sID, ICCItem **retpResult)
 	return false;
 	}
 
-bool CSpaceObject::Translate (const CString &sID, CString *retsText)
+bool CSpaceObject::Translate (const CString &sID, ICCItem *pData, CString *retsText)
 
 //	Translate
 //
@@ -6335,13 +6482,13 @@ bool CSpaceObject::Translate (const CString &sID, CString *retsText)
 	//	First we ask the type
 
 	CDesignType *pType = GetType();
-	if (pType && pType->TranslateText(this, sID, retsText))
+	if (pType && pType->TranslateText(this, sID, pData, retsText))
 		return true;
 
 	//	Otherwise, see if the sovereign has it
 
 	CSovereign *pSovereign = GetSovereign();
-	if (pSovereign && pSovereign->TranslateText(this, sID, retsText))
+	if (pSovereign && pSovereign->TranslateText(this, sID, pData, retsText))
 		return true;
 
 	//	Otherwise, we can't find it.
@@ -6451,6 +6598,20 @@ void CSpaceObject::Update (SUpdateCtx &Ctx)
 	OnUpdate(Ctx, g_SecondsPerUpdate);
 
 	ClearInUpdateCode();
+	}
+
+void CSpaceObject::UpdateExtended (const CTimeSpan &ExtraTime)
+
+//	UpdateExtended
+//
+//	Update the object after a long time.
+	
+	{
+	UpdateTradeExtended(ExtraTime);
+
+	//	Let subclasses update
+
+	OnUpdateExtended(ExtraTime);
 	}
 
 void CSpaceObject::UseItem (CItem &Item, CString *retsError)
@@ -6625,6 +6786,8 @@ void CSpaceObject::WriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fShowHighlight				? 0x04000000 : 0);
 	dwSave |= (m_fAutoClearDestinationOnDestroy ? 0x08000000 : 0);
 	dwSave |= (m_fShowDamageBar				? 0x10000000 : 0);
+	dwSave |= (m_fHasGravity				? 0x20000000 : 0);
+	dwSave |= (m_fInsideBarrier				? 0x40000000 : 0);
 	//	No need to save m_fHasName because it is set by CSystem on load.
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 

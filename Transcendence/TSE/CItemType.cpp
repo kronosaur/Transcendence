@@ -17,6 +17,7 @@
 #define COCKPIT_USE_TAG							CONSTLIT("Invoke")
 #define LANGUAGE_TAG							CONSTLIT("Language")
 #define MISCELLANEOUS_CLASS_TAG					CONSTLIT("MiscellaneousDevice")
+#define MISSILE_TAG								CONSTLIT("Missile")
 #define NAMES_TAG								CONSTLIT("Names")
 #define REACTOR_CLASS_TAG						CONSTLIT("ReactorDevice")
 #define REPAIRER_CLASS_TAG						CONSTLIT("RepairerDevice")
@@ -93,6 +94,8 @@
 
 #define SPECIAL_CAN_BE_DAMAGED					CONSTLIT("canBeDamaged:")
 #define SPECIAL_DAMAGE_TYPE						CONSTLIT("damageType:")
+#define SPECIAL_IS_LAUNCHER						CONSTLIT("isLauncher:")
+#define SPECIAL_LAUNCHED_BY						CONSTLIT("launchedBy:")
 
 #define SPECIAL_TRUE							CONSTLIT("true")
 
@@ -120,7 +123,8 @@ CItemType::CItemType (void) :
 		m_dwSpare(0),
 		m_pUseCode(NULL),
 		m_pArmor(NULL),
-		m_pDevice(NULL)
+		m_pDevice(NULL),
+		m_pMissile(NULL)
 
 //	CItemType constructor
 
@@ -140,6 +144,9 @@ CItemType::~CItemType (void)
 
 	if (m_pDevice)
 		delete m_pDevice;
+
+	if (m_pMissile)
+		delete m_pMissile;
 	}
 
 bool CItemType::IsAmmunition (void) const
@@ -170,12 +177,14 @@ void CItemType::CreateEmptyFlotsam (CSystem *pSystem,
 //	Creates an empty flotsam station
 
 	{
+	SObjCreateCtx CreateCtx;
+	CreateCtx.vPos = vPos;
+	CreateCtx.vVel = vVel;
+
 	CStation *pFlotsam;
 	CStation::CreateFromType(pSystem,
 			GetFlotsamStationType(),
-			vPos,
-			vVel,
-			NULL,
+			CreateCtx,
 			&pFlotsam);
 
 	//	Set properties
@@ -868,6 +877,9 @@ bool CItemType::IsMissile (void) const
 //	Returns TRUE if this is a missile
 
 	{
+	if (m_pMissile)
+		return true;
+
 	return HasLiteralAttribute(STR_MISSILE);
 	}
 
@@ -887,6 +899,9 @@ void CItemType::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
 
 	if (m_pDevice)
 		m_pDevice->AddTypesUsed(retTypesUsed);
+
+	if (m_pMissile)
+		m_pMissile->AddTypesUsed(retTypesUsed);
 	}
 
 ALERROR CItemType::OnBindDesign (SDesignLoadCtx &Ctx)
@@ -930,6 +945,10 @@ ALERROR CItemType::OnBindDesign (SDesignLoadCtx &Ctx)
 
 	if (m_pArmor)
 		if (error = m_pArmor->OnBindDesign(Ctx))
+			return error;
+
+	if (m_pMissile)
+		if (error = m_pMissile->OnDesignLoadComplete(Ctx))
 			return error;
 
 	return NOERROR;
@@ -1052,23 +1071,6 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 				m_fUseUninstalled = bValue;
 			}
 
-		//	Process events (skip processing here since we processed above)
-
-		else if (strEquals(pSubDesc->GetTag(), EVENTS_TAG))
-			;
-
-		else if (strEquals(pSubDesc->GetTag(), DOCK_SCREENS_TAG))
-			;
-
-		else if (strEquals(pSubDesc->GetTag(), GLOBAL_DATA_TAG))
-			;
-
-		else if (strEquals(pSubDesc->GetTag(), LANGUAGE_TAG))
-			;
-
-		else if (strEquals(pSubDesc->GetTag(), STATIC_DATA_TAG))
-			;
-
 		//	Process on refuel code
 
 		else if (strEquals(pSubDesc->GetTag(), ON_REFUEL_TAG))
@@ -1142,6 +1144,27 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 			if (error = CReactorClass::CreateFromXML(Ctx, pSubDesc, this, &m_pDevice))
 				return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unable to load %s: %s"), pSubDesc->GetTag(), Ctx.sError));
 			}
+
+		//	Missiles
+
+		else if (strEquals(pSubDesc->GetTag(), MISSILE_TAG))
+			{
+			m_pMissile = new CWeaponFireDesc;
+			if (error = m_pMissile->InitFromXML(Ctx, pSubDesc, strPatternSubst(CONSTLIT("%d"), GetUNID())))
+				return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unable to load %s: %s"), pSubDesc->GetTag(), Ctx.sError));
+
+			//	Make sure we point to us
+
+			m_pMissile->m_pAmmoType = this;
+			}
+
+		//	Other elements
+
+		else if (IsValidLoadXML(pSubDesc->GetTag()))
+			;
+
+		//	Otherwise, error
+
 		else
 			kernelDebugLogMessage("Unknown sub-element for ItemType: %s", pSubDesc->GetTag());
 		}
@@ -1160,6 +1183,8 @@ CEffectCreator *CItemType::OnFindEffectCreator (const CString &sUNID)
 	{
 	if (m_pDevice)
 		return m_pDevice->FindEffectCreator(sUNID);
+	else if (m_pMissile)
+		return m_pMissile->FindEffectCreator(sUNID);
 	else
 		return NULL;
 	}
@@ -1205,6 +1230,23 @@ bool CItemType::OnHasSpecialAttribute (const CString &sAttrib) const
 			return (true == bValue);
 		else
 			return (false == bValue);
+		}
+	else if (strStartsWith(sAttrib, SPECIAL_IS_LAUNCHER))
+		{
+		bool bValue = strEquals(strSubString(sAttrib, SPECIAL_IS_LAUNCHER.GetLength(), -1), SPECIAL_TRUE);
+		return ((GetCategory() == itemcatLauncher) == bValue);
+		}
+	else if (strStartsWith(sAttrib, SPECIAL_LAUNCHED_BY))
+		{
+		DWORD dwLauncher = strToInt(strSubString(sAttrib, SPECIAL_LAUNCHED_BY.GetLength(), -1), 0);
+		if (dwLauncher == 0 || !IsMissile())
+			return false;
+
+		CDeviceClass *pDevice = GetAmmoLauncher();
+		if (pDevice == NULL)
+			return false;
+
+		return (pDevice->GetUNID() == dwLauncher);
 		}
 	else
 		return false;
@@ -1321,219 +1363,5 @@ bool CItemType::ParseItemCategory (const CString &sCategory, ItemCategories *ret
 		*retCategory = iCat;
 
 	return true;
-	}
-
-//	CItemCtx -------------------------------------------------------------------
-
-ICCItem *CItemCtx::CreateItemVariable (CCodeChain &CC)
-
-//	CreateItemVariable
-//
-//	Creates a variable for the item (or Nil)
-
-	{
-	const CItem *pItem = GetItemPointer();
-	if (pItem == NULL)
-		return CC.CreateNil();
-
-	return CreateListFromItem(CC, *pItem);
-	}
-
-CInstalledArmor *CItemCtx::GetArmor (void)
-
-//	GetArmor
-//
-//	Returns the installed armor struct
-
-	{
-	//	If we've got it, done
-
-	if (m_pArmor)
-		return m_pArmor;
-
-	//	Otherwise, try to get it from the item and source
-
-	CShip *pShip;
-	if (m_pSource && m_pItem && m_pItem->IsInstalled() && (pShip = m_pSource->AsShip()))
-		{
-		//	Cache it in case someone asks later
-		m_pArmor = pShip->GetArmorSection(m_pItem->GetInstalled());
-		return m_pArmor;
-		}
-
-	//	Couldn't get it
-
-	return NULL;
-	}
-
-CArmorClass *CItemCtx::GetArmorClass (void)
-
-//	GetArmorClass
-//
-//	Returns the armor class
-
-	{
-	//	Get it from the installed device
-
-	if (m_pArmor)
-		return m_pArmor->GetClass();
-
-	//	Otherwise, get it from the item
-
-	if (m_pItem)
-		{
-		CItemType *pType = m_pItem->GetType();
-		if (pType)
-			return pType->GetArmorClass();
-		}
-
-	//	Couldn't get it
-
-	return NULL;
-	}
-
-CInstalledDevice *CItemCtx::GetDevice (void)
-
-//	GetDevice
-//
-//	Returns the installed device struct
-
-	{
-	//	If we've got it, done
-
-	if (m_pDevice)
-		return m_pDevice;
-
-	//	Otherwise, try to get it from the item and source
-
-	if (m_pSource && m_pItem && m_pItem->IsInstalled())
-		{
-		//	Cache it in case someone asks later
-		m_pDevice = m_pSource->FindDevice(*m_pItem);
-		return m_pDevice;
-		}
-
-	//	Couldn't get it
-
-	return NULL;
-	}
-
-CDeviceClass *CItemCtx::GetDeviceClass (void)
-
-//	GetDeviceClass
-//
-//	Returns the device class
-
-	{
-	//	Get it from the installed device
-
-	if (m_pDevice)
-		return m_pDevice->GetClass();
-
-	//	Otherwise, get it from the item
-
-	if (m_pItem)
-		{
-		CItemType *pType = m_pItem->GetType();
-		if (pType)
-			return pType->GetDeviceClass();
-		}
-
-	//	Couldn't get it
-
-	return NULL;
-	}
-
-const CItem &CItemCtx::GetItem (void)
-
-//	GetItem
-//
-//	Returns the item struct
-
-	{
-	//	If we've got an item, then return a reference to it
-	//	Whoever set this is responsible to guaranteeing its lifespan
-
-	if (m_pItem)
-		return *m_pItem;
-
-	//	Otherwise, we need to cons one up
-
-	const CItem *pItem = GetItemPointer();
-	if (pItem == NULL)
-		return CItem::GetNullItem();
-
-	//	We cache it for later
-
-	m_Item = *pItem;
-	m_pItem = &m_Item;
-
-	//	Done
-
-	return *m_pItem;
-	}
-
-const CItem *CItemCtx::GetItemPointer (void)
-
-//	GetItemPointer
-//
-//	Returns a pointer to an item or NULL.
-//	Note: We can't guarantee that the pointer will be valid across calls
-//	to script (because an ItemTable might be moved around) so this
-//	pointer should never be returned to callers.
-
-	{
-	//	If we've got it, done
-
-	if (m_pItem)
-		return m_pItem;
-
-	//	If we have a source and device, find the item
-
-	if (m_pDevice && m_pSource)
-		return m_pDevice->GetItem();
-
-	//	If we have a source and armor, find the item
-
-	if (m_pArmor && m_pSource)
-		{
-		CItemListManipulator ItemList(m_pSource->GetItemList());
-		m_pSource->SetCursorAtArmor(ItemList, m_pArmor);
-		if (!ItemList.IsCursorValid())
-			return NULL;
-
-		return &ItemList.GetItemAtCursor();
-		}
-
-	//	Couldn't get it
-
-	return NULL;
-	}
-
-const CItemEnhancement &CItemCtx::GetMods (void)
-
-//	GetMods
-//
-//	Returns mods for the item
-
-	{
-	//	If we've got an item, get mods from there
-
-	if (m_pItem)
-		return m_pItem->GetMods();
-
-	//	If we've got a device structure, then get mods from that
-
-	if (m_pDevice)
-		return m_pDevice->GetMods();
-
-	//	If we've got an armor structure, then that also has mods
-
-	if (m_pArmor)
-		return m_pArmor->GetMods();
-
-	//	Else, we have to get an item
-
-	return GetItem().GetMods();
 	}
 

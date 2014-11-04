@@ -5,6 +5,74 @@
 <!-- TABLES -->
 
 	<SystemPartTable unid="&tbIcePlanets;">
+		
+		<!-- ASTEROID FIELDS -->
+		
+		<AsteroidIceArc50>
+			<Lookup table="RegionDefinition">
+				<_Morphology>
+					<Variant variant="ice">
+						<OrbitalDistribution count="2d14+35" arcLength="500" radialWidth="42">
+							<Lookup table="VariantAsteroid"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="2-4" arcLength="620" radialWidth="42">
+							<Lookup table="VariantAsteroidBeltLabel"/>
+						</OrbitalDistribution>
+					</Variant>
+				</_Morphology>
+			</Lookup>
+		</AsteroidIceArc50>
+
+		<AsteroidIceArc100>
+			<Lookup table="RegionDefinition">
+				<_Morphology>
+					<Variant variant="ice">
+						<OrbitalDistribution count="2d25+75" arcLength="500" radialWidth="60">
+							<Lookup table="VariantAsteroid"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="3-5" arcLength="620"	radialWidth="30">
+							<Lookup table="VariantAsteroidBeltLabel"/>
+						</OrbitalDistribution>
+					</Variant>
+				</_Morphology>
+			</Lookup>
+		</AsteroidIceArc100>
+
+		<AsteroidIceArc200>
+			<Lookup table="RegionDefinition">
+				<_Morphology>
+					<Variant variant="ice">
+						<OrbitalDistribution count="2d50+150" arcLength="400" radialWidth="84">
+							<Lookup table="VariantAsteroid"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="4-8" arcLength="500"	radialWidth="84">
+							<Lookup table="VariantAsteroidBeltLabel"/>
+						</OrbitalDistribution>
+					</Variant>
+				</_Morphology>
+			</Lookup>
+		</AsteroidIceArc200>
+		
+		<AsteroidIceBelt100>
+			<Lookup table="RegionDefinition">
+				<_Morphology>
+					<Variant variant="ice">
+						<OrbitalDistribution count="2d25+75" radialWidth="60">
+							<Lookup table="VariantAsteroid"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="3-5"	radialWidth="30">
+							<Lookup table="VariantAsteroidBeltLabel"/>
+						</OrbitalDistribution>
+					</Variant>
+				</_Morphology>
+			</Lookup>
+		</AsteroidIceBelt100>
+		
+		<!-- PLANETS AND PLANETOIDS -->
 
 		<IcePrimary>
 			<LocationCriteriaTable>
@@ -82,7 +150,7 @@
 		<Items>
 			<Table>
 				<Null chance="95"/>
-				<Lookup chance="5" table="&tbFrostAsteroidOre;"/>
+				<Lookup chance="5" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -117,7 +185,7 @@
 		<Items>
 			<Table>
 				<Null chance="95"/>
-				<Lookup chance="5" count="1d6" table="&tbFrostAsteroidOre;"/>
+				<Lookup chance="5" count="1d6" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -155,7 +223,7 @@
 		<Items>
 			<Table>
 				<Null chance="95"/>
-				<Lookup chance="5" count="1d8" table="&tbFrostAsteroidOre;"/>
+				<Lookup chance="5" count="1d8" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -190,7 +258,7 @@
 		<Items>
 			<Table>
 				<Null chance="95"/>
-				<Lookup chance="5" count="1d10" table="&tbFrostAsteroidOre;"/>
+				<Lookup chance="5" count="1d10" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 

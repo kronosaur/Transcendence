@@ -2,15 +2,6 @@
 
 <TranscendenceModule>
 	
-	<!-- PILGRIM CHARACTER CLASS
-
-	-->
-	
-	<Type UNID="&unidPilgrimClass;">
-		<Events>
-		</Events>
-	</Type>
-		 
 	<Sovereign UNID="&svDomina;"
 			name="Domina"
 			alignment="constructive chaos"
@@ -790,6 +781,10 @@
 			(setq domShowPower (lambda (levelReq)
 				(block (lastInvokeTime)
 					(switch
+						; Must be a pilgrim
+						(not (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;))
+							Nil
+						
 						; Always show level 1 power (sustain)
 						(eq levelReq 1)
 							True

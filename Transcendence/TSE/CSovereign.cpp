@@ -166,6 +166,7 @@ static SAlignData ALIGN_DATA[CSovereign::alignCount] =
 
 		{	CONSTDEF("unorganized"),	alignNeutral,				0 },
 		{	CONSTDEF("subsapient"),		alignNeutral,				0 },
+		{	CONSTDEF("predator"),		alignDestructiveChaos,		0 },
 	};
 
 CSovereign::CSovereign (void) : 
@@ -303,7 +304,7 @@ CString CSovereign::GetText (MessageTypes iMsg)
 	//	Look up the message in our data table
 
 	CString sString;
-	if (TranslateText(NULL, strFromInt(iMsg), &sString))
+	if (TranslateText(NULL, strFromInt(iMsg), NULL, &sString))
 		return sString;
 
 	//	If we don't already have it, load the default string array

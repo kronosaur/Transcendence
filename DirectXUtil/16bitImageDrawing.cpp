@@ -155,13 +155,13 @@ void CG16bitImage::BresenhamLineAA (int x1, int y1,
 
 			//	Draw the solid part of the line
 
-			if (x >= 0 && x < m_cxWidth)
+			if (x >= m_rcClip.left && x < m_rcClip.right)
 				{
 				WORD *pPos = GetPixel(GetRowStart(yTop), x);
 
 				for (i = yTop; i < yTop + cyCount; i++)
 					{
-					if (i >= 0 && i < m_cyHeight)
+					if (i >= m_rcClip.top && i < m_rcClip.bottom)
 						*pPos = wColor;
 
 					pPos = NextRow(pPos);
@@ -227,12 +227,12 @@ void CG16bitImage::BresenhamLineAA (int x1, int y1,
 
 			//	Draw the solid part of the line
 
-			if (y >= 0 && y < m_cyHeight)
+			if (y >= m_rcClip.top && y < m_rcClip.bottom)
 				{
 				WORD *pPos = GetPixel(GetRowStart(y), xTop);
 
 				for (i = xTop; i < xTop + cxCount; i++)
-					if (i >= 0 && i < m_cxWidth)
+					if (i >= m_rcClip.left && i < m_rcClip.right)
 						*pPos++ = wColor;
 					else
 						pPos++;
@@ -346,13 +346,13 @@ void CG16bitImage::BresenhamLineAAFade (int x1, int y1,
 
 			//	Draw the solid part of the line
 
-			if (x >= 0 && x < m_cxWidth)
+			if (x >= m_rcClip.left && x < m_rcClip.right)
 				{
 				WORD *pPos = GetPixel(GetRowStart(yTop), x);
 
 				for (i = yTop; i < yTop + cyCount; i++)
 					{
-					if (i >= 0 && i < m_cyHeight)
+					if (i >= m_rcClip.top && i < m_rcClip.bottom)
 						*pPos = wColor;
 
 					pPos = NextRow(pPos);
@@ -423,12 +423,12 @@ void CG16bitImage::BresenhamLineAAFade (int x1, int y1,
 
 			//	Draw the solid part of the line
 
-			if (y >= 0 && y < m_cyHeight)
+			if (y >= m_rcClip.top && y < m_rcClip.bottom)
 				{
 				WORD *pPos = GetPixel(GetRowStart(y), xTop);
 
 				for (i = xTop; i < xTop + cxCount; i++)
-					if (i >= 0 && i < m_cxWidth)
+					if (i >= m_rcClip.left && i < m_rcClip.right)
 						*pPos++ = wColor;
 					else
 						pPos++;
@@ -453,6 +453,288 @@ void CG16bitImage::BresenhamLineAAFade (int x1, int y1,
 			rDistLeft -= rSlope * sy;
 			rDistRight += rSlope * sy;
 			}
+		}
+	}
+
+void CG16bitImage::BresenhamLineAATrans (int x1, int y1, 
+										 int x2, int y2,
+										 int iWidth,
+										 WORD wColor,
+										 DWORD dwOpacity)
+
+//	BresenhamLineAATrans
+//
+//	Anti-aliased version of Bresenham's algorithm
+
+	{
+	double rOpacity = dwOpacity;
+
+	//	Calculate the slope
+
+	int dx = x2 - x1;
+	int ax = Absolute(dx) * 2;
+	int sx = (dx > 0 ? 1 : -1);
+
+	int dy = y2 - y1;
+	int ay = Absolute(dy) * 2;
+	int sy = (dy > 0 ? 1 : -1);
+
+	//	Handle special cases
+
+	if (dx == 0 && dy == 0)
+		{
+		DrawPixelTrans(x1, y1, wColor, (BYTE)dwOpacity);
+		return;
+		}
+
+	//	Do it
+
+	int i, x, y;
+
+	if (ax > ay)		//	x-axis dominant
+		{
+		//	Compute the distance from the mid-point of the line to
+		//	the top edge along the y-axis.
+
+		double rHalfHeight = (double)iWidth * sqrt((double)(dx*dx + dy*dy)) / (double)(2 * abs(dx));
+		int cyHalfCount = (int)(((2 * rHalfHeight) - 1) / 2);
+		int cyCount = 2 * cyHalfCount + 1;
+
+		int d = ay - ax / 2;
+
+		//	Compute information for anti-aliasing. rDist is the distance
+		//	from the top solid point to the edge of the line. We update
+		//	the value as we proceed along the x-axis and use it for
+		//	anti-aliasing the edge of the line. A negative value means
+		//	that the top point is outside the edge.
+
+		double rSlope = (double)dy / (double)dx;
+		double rDistTop = rHalfHeight - (double)cyHalfCount - 0.25;
+		double rDistBottom = rDistTop;
+
+		double rDistTopInc = sy;
+		double rDistTopDec = rSlope * sx;
+		double rDistBottomInc = rSlope * sx;
+		double rDistBottomDec = sy;
+
+		//	Draw!
+
+		for (x = x1, y = y1; x != x2; x += sx)
+			{
+			int yTop = y - cyHalfCount;
+
+			//	Draw anti-aliasing above the line
+
+			if (rDistTop > 0)
+				DrawPixelTrans(x, yTop - 1, wColor, (BYTE)(rOpacity * (rDistTop > 1.0 ? 1.0 : rDistTop)));
+
+			//	Draw the solid part of the line
+
+			if (x >= m_rcClip.left && x < m_rcClip.right)
+				{
+				WORD *pPos = GetPixel(GetRowStart(yTop), x);
+
+				for (i = yTop; i < yTop + cyCount; i++)
+					{
+					if (i >= m_rcClip.top && i < m_rcClip.bottom)
+						*pPos = CG16bitImage::BlendPixel(*pPos, wColor, dwOpacity);
+
+					pPos = NextRow(pPos);
+					}
+				}
+
+			//	Draw anti-aliasing below the line
+
+			if (rDistBottom > 0)
+				DrawPixelTrans(x, yTop + cyCount, wColor, (BYTE)(rOpacity * (rDistBottom > 1.0 ? 1.0 : rDistBottom)));
+
+			//	Next point
+
+			if (d >= 0)
+				{
+				y = y + sy;
+				d = d - ax;
+				rDistTop += rDistTopInc;
+				rDistBottom -= rDistBottomDec;
+				}
+
+			d = d + ay;
+			rDistTop -= rDistTopDec;
+			rDistBottom += rDistBottomInc;
+			}
+		}
+	else				//	y-axis dominant
+		{
+		//	Compute the distance from the mid-point of the line to
+		//	the left-edge of the x-axis
+
+		double rHalfWidth = (double)iWidth * sqrt((double)(dx*dx + dy*dy)) / (double)(2 * abs(dy));
+		int cxHalfCount = (int)(((2 * rHalfWidth) - 1) / 2);
+		int cxCount = 2 * cxHalfCount + 1;
+
+		int d = ax - ay / 2;
+
+		//	Compute information for anti-aliasing. rDist is the distance
+		//	from the top solid point to the edge of the line. We update
+		//	the value as we proceed along the x-axis and use it for
+		//	anti-aliasing the edge of the line. A negative value means
+		//	that the top point is outside the edge.
+
+		double rSlope = (double)dx / (double)dy;
+		double rDistLeft = rHalfWidth - (double)cxHalfCount - 0.25;
+		double rDistRight = rDistLeft;
+
+		double rDistLeftInc = sx;
+		double rDistRightDec = sx;
+		double rDistLeftDec = rSlope * sy;
+		double rDistRightInc = rSlope * sy;
+
+		//	Draw!
+
+		for (y = y1, x = x1; y != y2; y += sy)
+			{
+			int xTop = x - cxHalfCount;
+
+			//	Draw anti-aliasing to the left
+
+			if (rDistLeft > 0)
+				DrawPixelTrans(xTop - 1, y, wColor, (BYTE)(rOpacity * (rDistLeft > 1.0 ? 1.0 : rDistLeft)));
+
+			//	Draw the solid part of the line
+
+			if (y >= m_rcClip.top && y < m_rcClip.bottom)
+				{
+				WORD *pPos = GetPixel(GetRowStart(y), xTop);
+
+				for (i = xTop; i < xTop + cxCount; i++)
+					if (i >= m_rcClip.left && i < m_rcClip.right)
+						*pPos = CG16bitImage::BlendPixel(*pPos, wColor, dwOpacity);
+					else
+						pPos++;
+				}
+
+			//	Draw anti-aliasing to the right of the line
+
+			if (rDistRight > 0)
+				DrawPixelTrans(xTop + cxCount, y, wColor, (BYTE)(rOpacity * (rDistRight > 1.0 ? 1.0 : rDistRight)));
+
+			//	Next point
+
+			if (d >= 0)
+				{
+				x = x + sx;
+				d = d - ay;
+				rDistLeft += rDistLeftInc;
+				rDistRight -= rDistRightDec;
+				}
+
+			d = d + ax;
+			rDistLeft -= rDistLeftDec;
+			rDistRight += rDistRightInc;
+			}
+		}
+	}
+
+void DrawArc (CG16bitImage &Dest, int xCenter, int yCenter, int iRadius, int iStartAngle, int iEndAngle, int iLineWidth, WORD wColor)
+
+//	DrawArc
+//
+//	Draws axis-aligned arcs
+
+	{
+	//	Temporaries
+
+	int iHalfWidth = iLineWidth / 2;
+	Metric rOuterRadius = iRadius + iHalfWidth;
+	Metric rInnerRadius = rOuterRadius - iLineWidth;
+	Metric rOuterRadius2 = rOuterRadius * rOuterRadius;
+	Metric rInnerRadius2 = rInnerRadius * rInnerRadius;
+
+	//	Figure out which quadrants we paint
+
+	bool bUpperRight;
+	bool bUpperLeft;
+	bool bLowerLeft;
+	bool bLowerRight;
+	if (iStartAngle <= iEndAngle)
+		{
+		bUpperRight = (iStartAngle < 90);
+		bUpperLeft = (iStartAngle < 180) && (iEndAngle > 90);
+		bLowerLeft = (iStartAngle < 270) && (iEndAngle > 180);
+		bLowerRight = (iStartAngle < 360) && (iEndAngle > 270);
+		}
+	else
+		{
+		bUpperRight = (iEndAngle > 0);
+		bUpperLeft = (iEndAngle > 90) || (iStartAngle < 180);
+		bLowerLeft = (iEndAngle > 180) || (iStartAngle < 270);
+		bLowerRight = (iEndAngle > 270) || (iStartAngle < 360);
+		}
+
+	//	Iterate from the center up (and use symmetry for the four quadrants)
+
+	int iRow = 0;
+	Metric rRow = 0.5;
+	Metric rRowEnd = rOuterRadius;
+	while (rRow < rRowEnd)
+		{
+		Metric rRow2 = rRow * rRow;
+
+		Metric rOuterLen = sqrt(rOuterRadius2 - rRow2);
+		Metric rInnerLen = (rRow < rInnerRadius ? sqrt(rInnerRadius2 - rRow2) : 0.0);
+		Metric rWidth = rOuterLen - rInnerLen;
+
+		int iSolidOuter = (int)rOuterLen;
+		Metric rOuterFraction = rOuterLen - (Metric)iSolidOuter;
+		int iSolidWidth = (int)(rWidth - rOuterFraction);
+		Metric rInnerFraction = (rWidth - rOuterFraction) - (Metric)iSolidWidth;
+
+		//	If we have a solid width, then paint the solid part of the edge
+
+		if (iSolidWidth > 0)
+			{
+			if (bUpperRight)
+				Dest.FillLine(xCenter + iSolidOuter - iSolidWidth, yCenter - 1 - iRow, iSolidWidth, wColor);
+			if (bLowerRight)
+				Dest.FillLine(xCenter + iSolidOuter - iSolidWidth, yCenter + iRow, iSolidWidth, wColor);
+			if (bUpperLeft)
+				Dest.FillLine(xCenter - iSolidOuter, yCenter - 1 - iRow, iSolidWidth, wColor);
+			if (bLowerLeft)
+				Dest.FillLine(xCenter - iSolidOuter, yCenter + iRow, iSolidWidth, wColor);
+			}
+
+		//	Paint the edges
+
+		DWORD byOuterEdge = (DWORD)(255 * rOuterFraction);
+		if (byOuterEdge)
+			{
+			if (bUpperRight)
+				Dest.SetPixelTrans(xCenter + iSolidOuter, yCenter - 1 - iRow, wColor, byOuterEdge);
+			if (bLowerRight)
+				Dest.SetPixelTrans(xCenter + iSolidOuter, yCenter + iRow, wColor, byOuterEdge);
+			if (bUpperLeft)
+				Dest.SetPixelTrans(xCenter - iSolidOuter - 1, yCenter - 1 - iRow, wColor, byOuterEdge);
+			if (bLowerLeft)
+				Dest.SetPixelTrans(xCenter - iSolidOuter - 1, yCenter + iRow, wColor, byOuterEdge);
+			}
+
+		DWORD byInnerEdge = (DWORD)(255 * rInnerFraction);
+		if (byInnerEdge)
+			{
+			if (bUpperRight)
+				Dest.SetPixelTrans(xCenter + iSolidOuter - iSolidWidth - 1, yCenter - 1 - iRow, wColor, byInnerEdge);
+			if (bLowerRight)
+				Dest.SetPixelTrans(xCenter + iSolidOuter - iSolidWidth - 1, yCenter + iRow, wColor, byInnerEdge);
+			if (bUpperLeft)
+				Dest.SetPixelTrans(xCenter - iSolidOuter + iSolidWidth, yCenter - 1 - iRow, wColor, byInnerEdge);
+			if (bLowerLeft)
+				Dest.SetPixelTrans(xCenter - iSolidOuter + iSolidWidth, yCenter + iRow, wColor, byInnerEdge);
+			}
+
+		//	Next
+
+		iRow++;
+		rRow = (Metric)iRow + 0.5;
 		}
 	}
 
@@ -916,10 +1198,10 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 			x = x - 1;
 			y = y - 1;
 
-			xStart = max(0, x);
-			xEnd = min(m_cxWidth, x + 3);
-			yStart = max(0, y);
-			yEnd = min(m_cyHeight, y + 3);
+			xStart = max(m_rcClip.left, x);
+			xEnd = min(m_rcClip.right, x + 3);
+			yStart = max(m_rcClip.top, y);
+			yEnd = min(m_rcClip.bottom, y + 3);
 
 			for (int yPos = yStart; yPos < yEnd; yPos++)
 				{
@@ -954,11 +1236,11 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 
 			//	Draw the horizontal line
 
-			if (y >= 0 && y < m_cyHeight)
+			if (y >= m_rcClip.top && y < m_rcClip.bottom)
 				{
 				WORD *pRowStart = GetRowStart(y);
-				WORD *pPos = pRowStart + max(0, xLeft);
-				WORD *pPosEnd = pRowStart + min(xRight+1, m_cxWidth);
+				WORD *pPos = pRowStart + max(m_rcClip.left, xLeft);
+				WORD *pPosEnd = pRowStart + min(xRight+1, m_rcClip.right);
 
 				while (pPos < pPosEnd)
 					*pPos++ = wColor;
@@ -966,10 +1248,10 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 
 			//	Draw the vertical line
 
-			if (x >= 0 && x < m_cxWidth)
+			if (x >= m_rcClip.left && x < m_rcClip.right)
 				{
-				WORD *pPos = GetRowStart(max(yTop+1, 0)) + x;
-				WORD *pPosEnd = GetRowStart(min(yBottom, m_cyHeight)) + x;
+				WORD *pPos = GetRowStart(max(yTop+1, m_rcClip.top)) + x;
+				WORD *pPosEnd = GetRowStart(min(yBottom, m_rcClip.bottom)) + x;
 
 				while (pPos < pPosEnd)
 					{
@@ -990,11 +1272,11 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 
 			//	Draw the horizontal line
 
-			if (y >= 0 && y < m_cyHeight)
+			if (y >= m_rcClip.top && y < m_rcClip.bottom)
 				{
 				WORD *pRowStart = GetRowStart(y);
-				WORD *pPos = pRowStart + max(0, xLeft);
-				WORD *pPosEnd = pRowStart + min(xRight+1, m_cxWidth);
+				WORD *pPos = pRowStart + max(m_rcClip.left, xLeft);
+				WORD *pPosEnd = pRowStart + min(xRight+1, m_rcClip.right);
 
 				while (pPos < pPosEnd)
 					*pPos++ = wColor;
@@ -1002,10 +1284,10 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 
 			//	Draw the vertical line
 
-			if (x >= 0 && x < m_cxWidth)
+			if (x >= m_rcClip.left && x < m_rcClip.right)
 				{
-				WORD *pPos = GetRowStart(max(yTop, 0)) + x;
-				WORD *pPosEnd = GetRowStart(min(yBottom+1, m_cyHeight)) + x;
+				WORD *pPos = GetRowStart(max(yTop, m_rcClip.top)) + x;
+				WORD *pPosEnd = GetRowStart(min(yBottom+1, m_rcClip.bottom)) + x;
 
 				while (pPos < pPosEnd)
 					{
@@ -1077,11 +1359,11 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 
 			//	Draw the top line
 
-			if (yTop >= 0 && yTop < m_cyHeight)
+			if (yTop >= m_rcClip.top && yTop < m_rcClip.bottom)
 				{
 				WORD *pRowStart = GetRowStart(yTop);
-				WORD *pPos = pRowStart + max(0, xLeft);
-				WORD *pPosEnd = pRowStart + min(xRight+1, m_cxWidth);
+				WORD *pPos = pRowStart + max(m_rcClip.left, xLeft);
+				WORD *pPosEnd = pRowStart + min(xRight+1, m_rcClip.right);
 
 				while (pPos < pPosEnd)
 					*pPos++ = wColor;
@@ -1089,11 +1371,11 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 
 			//	Draw the bottom line
 
-			if (yBottom >= 0 && yBottom < m_cyHeight)
+			if (yBottom >= m_rcClip.top && yBottom < m_rcClip.bottom)
 				{
 				WORD *pRowStart = GetRowStart(yBottom);
-				WORD *pPos = pRowStart + max(0, xLeft);
-				WORD *pPosEnd = pRowStart + min(xRight+1, m_cxWidth);
+				WORD *pPos = pRowStart + max(m_rcClip.left, xLeft);
+				WORD *pPosEnd = pRowStart + min(xRight+1, m_rcClip.right);
 
 				while (pPos < pPosEnd)
 					*pPos++ = wColor;
@@ -1101,10 +1383,10 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 
 			//	Draw the left line
 
-			if (xLeft >= 0 && xLeft < m_cxWidth)
+			if (xLeft >= m_rcClip.left && xLeft < m_rcClip.right)
 				{
-				WORD *pPos = GetRowStart(max(yTop+1, 0)) + xLeft;
-				WORD *pPosEnd = GetRowStart(min(yBottom, m_cyHeight)) + xLeft;
+				WORD *pPos = GetRowStart(max(yTop+1, m_rcClip.top)) + xLeft;
+				WORD *pPosEnd = GetRowStart(min(yBottom, m_rcClip.bottom)) + xLeft;
 
 				while (pPos < pPosEnd)
 					{
@@ -1115,10 +1397,10 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 
 			//	Draw the right line
 
-			if (xRight >= 0 && xRight < m_cxWidth)
+			if (xRight >= m_rcClip.left && xRight < m_rcClip.right)
 				{
-				WORD *pPos = GetRowStart(max(yTop+1, 0)) + xRight;
-				WORD *pPosEnd = GetRowStart(min(yBottom, m_cyHeight)) + xRight;
+				WORD *pPos = GetRowStart(max(yTop+1, m_rcClip.top)) + xRight;
+				WORD *pPosEnd = GetRowStart(min(yBottom, m_rcClip.bottom)) + xRight;
 
 				while (pPos < pPosEnd)
 					{
@@ -1255,4 +1537,99 @@ void DrawRoundedRect (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeigh
 
 	delete [] pSolid;
 	delete [] pEdge;
+	}
+
+void DrawRoundedRectTrans (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, int iRadius, WORD wColor, DWORD byOpacity)
+
+//	DrawRoundedRectTrans
+//
+//	Draws a filled rect with rounded corners.
+
+	{
+	int i;
+
+	if (byOpacity == 255)
+		{
+		DrawRoundedRect(Dest, x, y, cxWidth, cyHeight, iRadius, wColor);
+		return;
+		}
+
+	if (iRadius <= 0)
+		{
+		Dest.FillTrans(x, y, cxWidth, cyHeight, wColor, byOpacity);
+		return;
+		}
+
+	//	Generate a set of raster lines for the corner
+
+	int *pSolid = new int [iRadius];
+	BYTE *pEdge = new BYTE [iRadius];
+	RasterizeQuarterCircle8bit(iRadius, pSolid, pEdge, byOpacity);
+
+	//	Fill in each corner
+
+	for (i = 0; i < iRadius; i++)
+		{
+		int xOffset = iRadius - pSolid[i];
+		int cxLine = cxWidth - (iRadius * 2) + (pSolid[i] * 2);
+
+		//	Top edge
+
+		Dest.FillTrans(x + xOffset, y + i, cxLine, 1, wColor, byOpacity);
+		Dest.SetPixelTrans(x + xOffset - 1, y + i, wColor, pEdge[i]);
+		Dest.SetPixelTrans(x + cxWidth - xOffset, y + i, wColor, pEdge[i]);
+
+		//	Bottom edge
+
+		Dest.FillTrans(x + xOffset, y + cyHeight - i - 1, cxLine, 1, wColor, byOpacity);
+		Dest.SetPixelTrans(x + xOffset - 1, y + cyHeight - i - 1, wColor, pEdge[i]);
+		Dest.SetPixelTrans(x + cxWidth - xOffset, y + cyHeight - i - 1, wColor, pEdge[i]);
+		}
+
+	//	Fill the center
+
+	Dest.FillTrans(x, y + iRadius, cxWidth, (cyHeight - 2 * iRadius), wColor, byOpacity);
+
+	//	Done
+
+	delete [] pSolid;
+	delete [] pEdge;
+	}
+
+void DrawRoundedRectOutline (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, int iRadius, int iLineWidth, WORD wColor)
+
+//	DrawRoundedRectOutline
+//
+//	Draws the outline of a rounded rectangle.
+
+	{
+	//	Range checking
+
+	if (iLineWidth <= 0)
+		return;
+
+	iRadius = Min(Min(Max(0, iRadius), cxWidth / 2), cyHeight / 2);
+
+	//	Intermediates
+
+	int iHalfWidth = iLineWidth / 2;
+
+	//	Paint the straight edges first.
+
+	Dest.Fill(x + iRadius, y - iHalfWidth, cxWidth - (2 * iRadius), iLineWidth, wColor);
+	Dest.Fill(x + iRadius, y + cyHeight - iHalfWidth, cxWidth - (2 * iRadius), iLineWidth, wColor);
+	Dest.Fill(x - iHalfWidth, y + iRadius, iLineWidth, cyHeight - (2 * iRadius), wColor);
+	Dest.Fill(x + cxWidth - iHalfWidth, y + iRadius, iLineWidth, cyHeight - (2 * iRadius), wColor);
+
+	//	If no radius, then we're done
+
+	if (iRadius == 0)
+		return;
+
+	//	Paint the corners
+
+	DrawArc(Dest, x + iRadius, y + iRadius, iRadius, 90, 180, iLineWidth, wColor);
+	DrawArc(Dest, x + cxWidth - iRadius, y + iRadius, iRadius, 0, 90, iLineWidth, wColor);
+	DrawArc(Dest, x + iRadius, y + cyHeight - iRadius, iRadius, 180, 270, iLineWidth, wColor);
+	DrawArc(Dest, x + cxWidth - iRadius, y + cyHeight - iRadius, iRadius, 270, 360, iLineWidth, wColor);
 	}

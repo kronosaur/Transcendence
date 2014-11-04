@@ -26,12 +26,26 @@ class IAniCommand
 		virtual void OnAniCommand (const CString &sID, const CString &sEvent, const CString &sCmd, DWORD dwData) { }
 	};
 
+struct SAniEvent
+	{
+	CString sEvent;							//	Event to fire
+
+	IAniCommand *pListener;					//	Event listener
+	CString sCmd;
+	DWORD dwData;
+	};
+
 //	Property classes -----------------------------------------------------------
 
 enum EDurationConstants
 	{
 	durationInfinite = -1,
 	durationUndefined = -2,
+	};
+
+struct SAniUpdateCtx
+	{
+	TArray<SAniEvent> EventsToFire;
 	};
 
 class CAniProperty
@@ -101,8 +115,17 @@ class IPropertyAnimator
 	public:
 		virtual ~IPropertyAnimator (void) { }
 
+		void AddListener (const CString &sEvent, IAniCommand *pListener, const CString &sCmd = NULL_STR, DWORD dwData = 0);
 		virtual int GetDuration (void) { return durationUndefined; }
+		virtual void OnDoneAnimating (SAniUpdateCtx &Ctx);
+		void RemoveListener (IAniCommand *pListener, const CString &sEvent = NULL_STR);
 		virtual void SetProperty (int iFrame, CAniProperty &Property) { }
+
+	protected:
+		void RaiseEvent (const CString &sID, const CString &sEvent);
+
+	private:
+		TArray<SAniEvent> m_Listeners;
 	};
 
 class CAniPropertySet
@@ -126,7 +149,7 @@ class CAniPropertySet
 		CString GetString (const CString &sName) const;
 		CVector GetVector (const CString &sName) const;
 		void GoToFrame (int iFrame);
-		void GoToNextFrame (int iFrame);
+		void GoToNextFrame (SAniUpdateCtx &Ctx, int iFrame);
 		void GoToStart (void);
 		void Set (const CString &sName, const CAniProperty &Value, int *retiIndex = NULL);
 		void SetBool (const CString &sName, bool bValue, int *retiIndex = NULL);
@@ -266,7 +289,7 @@ class IAnimatron
 		inline int GetSpacingHeight (void) { RECT rcRect; GetSpacingRect(&rcRect); return RectHeight(rcRect); }
 		virtual void GetSpacingRect (RECT *retrcRect) { retrcRect->left = 0; retrcRect->top = 0; retrcRect->right = 0; retrcRect->bottom = 0; }
 		virtual void GoToFrame (int iFrame) { m_Properties.GoToFrame(iFrame); }
-		virtual void GoToNextFrame (int iFrame) { m_Properties.GoToNextFrame(iFrame); }
+		virtual void GoToNextFrame (SAniUpdateCtx &Ctx, int iFrame) { m_Properties.GoToNextFrame(Ctx, iFrame); }
 		virtual void GoToStart (void) { m_Properties.GoToStart(); }
 		virtual bool HandleChar (char chChar, DWORD dwKeyData) { return false; }
 		virtual bool HandleKeyDown (int iVirtKey, DWORD dwKeyData) { return false; }
@@ -428,7 +451,7 @@ class CAniSequencer : public IAnimatron
 		virtual void GetFocusElements (TArray<IAnimatron *> *retList);
 		virtual void GetSpacingRect (RECT *retrcRect);
 		virtual void GoToFrame (int iFrame);
-		virtual void GoToNextFrame (int iFrame);
+		virtual void GoToNextFrame (SAniUpdateCtx &Ctx, int iFrame);
 		virtual void GoToStart (void);
 		virtual IAnimatron *HitTest (const CXForm &ToDest, int x, int y);
 		virtual void Paint (SAniPaintCtx &Ctx);
@@ -467,7 +490,7 @@ class CAniVScroller : public IAnimatron
 		virtual void GetFocusElements (TArray<IAnimatron *> *retList);
 		virtual void GetSpacingRect (RECT *retrcRect);
 		virtual void GoToFrame (int iFrame);
-		virtual void GoToNextFrame (int iFrame);
+		virtual void GoToNextFrame (SAniUpdateCtx &Ctx, int iFrame);
 		virtual void GoToStart (void);
 		virtual IAnimatron *HitTest (const CXForm &ToDest, int x, int y);
 		virtual void Paint (SAniPaintCtx &Ctx);
@@ -734,7 +757,7 @@ class CAniListBox : public CAniControl
 		virtual void GetFocusElements (TArray<IAnimatron *> *retList);
 		virtual void GetSpacingRect (RECT *retrcRect) { return m_pScroller->GetSpacingRect(retrcRect); }
 		virtual void GoToFrame (int iFrame) { return m_pScroller->GoToFrame(iFrame); }
-		virtual void GoToNextFrame (int iFrame) { return m_pScroller->GoToNextFrame(iFrame); }
+		virtual void GoToNextFrame (SAniUpdateCtx &Ctx, int iFrame) { return m_pScroller->GoToNextFrame(Ctx, iFrame); }
 		virtual void GoToStart (void) { return m_pScroller->GoToStart(); }
 		virtual bool HandleChar (char chChar, DWORD dwKeyData);
 		virtual bool HandleKeyDown (int iVirtKey, DWORD dwKeyData);

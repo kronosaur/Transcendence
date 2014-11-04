@@ -42,7 +42,7 @@
 										(shpCancelOrders gSource)
 										
 										(setq gateObj (sysFindObject gSource "GN -uncharted;"))
-										(setq shelterObj (sysFindObject gSource "TFAN +populated;"))
+										(setq shelterObj (sysFindObject gSource "TJAN +populated; "))
 										
 										; If there's shelter nearby, go to it
 										(if (and shelterObj

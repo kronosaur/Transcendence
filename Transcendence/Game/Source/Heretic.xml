@@ -1349,6 +1349,8 @@
 	<StationType UNID="&stHereticStation;"
 			name=				"Heretic Station"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1400,6 +1402,10 @@
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -1441,10 +1447,6 @@
 		</StaticData>
 
 		<Events>
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
-			
 			<OnObjDocked>
 				(if (and (eq aObjDocked gPlayerShip) 
 						(eq aDockTarget (objGetObjRefData gSource "Target")))
@@ -1478,11 +1480,15 @@
 							</Action>
 
 							<Action name="Commodities Exchange" key="C">
-								<ShowPane pane="CommoditiesExchange"/>
+								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -1598,60 +1604,6 @@
 							</Action>
 						</Actions>
 					</PointToStation>
-
-					<CommoditiesExchange>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat "Welcome to the " (objGetName gSource 0x00) " Commodities Exchange Market."))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
-							</Action>
-
-							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</CommoditiesExchange>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itPteracniumFuelRod; 94) (&itXenotiteFuelRod; 94) (&itHeliumAssembly; 94)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(block Nil
-									(setq gTechLevel 7)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-					</DockServices>
 				</Panes>
 			</Main>
 
@@ -1736,6 +1688,14 @@
 			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true"/>
 		</Devices>
 
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-10;" priceAdj="120"/>
+			<ReplaceArmor	criteria="a" priceAdj="120"/>
+			<InstallDevice	criteria="d L:1-10" priceAdj="120"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
+		</Trade>
+		
 		<Items>
 			<Item count="4d12"	item="&itXenotiteFuelRod;" />
 			<Item count="4d12"	item="&itPteracniumFuelRod;" />
@@ -1825,7 +1785,9 @@
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -2101,51 +2063,6 @@
 							</Action>
 						</Actions>
 					</DifferentMission>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itPteracniumFuelRod; 94) (&itXenotiteFuelRod; 94) (&itHeliumAssembly; 94)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(block Nil
-									(setq gTechLevel 10)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 120)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
-							</Action>
-
-							<Action name="Install Device" key="D" >
-								(block Nil
-									(setq gTechLevel 10)
-									(setq gTechModifier Nil)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 120)
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
-							</Action>
-
-							<Action name="Remove Device" key="V" >
-								(block Nil
-									(setq gMargin 120)
-									(scrShowScreen gScreen "&dsRemoveDevice;")
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="n">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-					</DockServices>
 				</Panes>
 			</Main>
 
@@ -2681,9 +2598,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -3201,6 +3118,9 @@
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-11;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d +taikon;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-9" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -3269,7 +3189,9 @@
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								(scrShowPane gScreen "DockServices")
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -3353,7 +3275,7 @@
 									(setq theTarget
 										(sysCreateShip &scXenophobeArk;
 											(sysVectorRandom Nil orbitRadius 150 "TA")
-											&svDestructiveChaos;
+											&svXenophobes;
 											))
 									(shpOrder theTarget 'orbit (sysFindObject Nil "tN +star") orbitRadius)
 
@@ -3366,12 +3288,12 @@
 									(setq angleInc (divide 360 escortCount))
 									(for i 1 escortCount
 										(block (theEscort)
-											(setq theEscort (sysCreateShip &scXenophobeDefender; (objGetPos theTarget) &svDestructiveChaos;))
+											(setq theEscort (sysCreateShip &scXenophobeDefender; (objGetPos theTarget) &svXenophobes;))
 											(shpOrder theEscort 'escort theTarget theAngle 150)
 											(setq theAngle (add theAngle angleInc))
 											(for j 1 20
 												(block (theFighter)
-													(setq theFighter (sysCreateShip &scXenophobeFighter; (objGetPos theTarget) &svDestructiveChaos;))
+													(setq theFighter (sysCreateShip &scXenophobeFighter; (objGetPos theTarget) &svXenophobes;))
 													(shpOrder theFighter 'patrol theEscort 15)
 													)
 												)
@@ -3547,44 +3469,6 @@
 							</Action>
 						</Actions>
 					</DifferentMission>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A">
-								(scrShowScreen gScreen "&dsRepairArmor;" {
-									checkMilitaryID: Nil
-									})
-							</Action>
-
-							<Action name="Install Device" key="D">
-								(block Nil
-									(setq gTechLevel 9)
-									(setq gTechModifier "Taikon")
-									(setq gCheckMilitaryID Nil)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
-							</Action>
-
-							<Action name="Remove Device" key="V">
-								(block Nil
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRemoveDevice;")
-									)
-							</Action>
-
-							<Action name="Done" key="N" cancel="1">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</DockServices>
-
 				</Panes>
 			</Main>
 
@@ -5555,7 +5439,15 @@
 			attributes=			"star"
 			>
 		
-		<Image imageID="&rsAStar;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"490"
+					intensity=		"25"
+					primaryColor=	"#ffffbf"
+					secondaryColor=	"#ffffbf"
+					/>
+		</ImageEffect>
 		
 		<Events>
 			<OnCreate>
@@ -5620,7 +5512,8 @@
 	<!-- Heretic System -->
 
 	<SystemType UNID="&ssHeretic;" 
-			noRandomEncounters="true"
+			noRandomEncounters=	"true"
+			noExtraEncounters=	"true"
 			>
 
 		<Tables>
@@ -5679,9 +5572,14 @@
 		<SystemGroup>
 
 			<!-- Star -->
-
+			
 			<Station type="&stHereticSun;" name="1766 Zhang"/>
 
+			<AddAttribute attributes="GTypeSystem"/>
+			<AddTerritory minRadius="0"		maxRadius="370"		attributes="innerSystem, rockyComp, cinderZone"/>
+			<AddTerritory minRadius="370"	maxRadius="620"		attributes="lifeZone, rockyComp, desertZone"/>
+			<AddTerritory minRadius="620"	maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
+			
 			<!-- Control Center -->
 
 			<Orbitals distance="90" angle="90">
@@ -5708,7 +5606,7 @@
 							</Table>
 
 							<Siblings arcInc="-60-60" radiusInc="8-16">
-								<Label attributes="archipelago"/>
+								<Label attributes="archipelago, asteroids"/>
 							</Siblings>
 						</Group>
 					</Siblings>
@@ -5761,7 +5659,7 @@
 
 						encountersCount="1d4+2"
 						>
-					<Label attributes="innerNebula"/>
+					<Label attributes="brightNebulae, innerNebula, nebulae, void"/>
 				</SpaceEnvironment>
 			</Orbitals>
 
@@ -5778,7 +5676,7 @@
 
 						encountersCount="1d4+2"
 						>
-					<Label attributes="outerNebula"/>
+					<Label attributes="brightNebulae, outerNebula, nebulae, void"/>
 				</SpaceEnvironment>
 			</Orbitals>
 

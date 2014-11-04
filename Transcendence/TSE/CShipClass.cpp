@@ -30,6 +30,7 @@
 #define REACTOR_TEXT_TAG						CONSTLIT("ReactorText")
 #define REMOVE_TAG								CONSTLIT("Remove")
 #define SHIELD_DISPLAY_TAG						CONSTLIT("ShieldDisplay")
+#define TRADE_TAG								CONSTLIT("Trade")
 #define WRECK_IMAGE_TAG							CONSTLIT("WreckImage")
 
 #define AUTOPILOT_ATTRIB						CONSTLIT("autopilot")
@@ -104,6 +105,7 @@
 #define FIELD_DEVICE_SLOTS_NON_WEAPONS			CONSTLIT("deviceSlotsNonWeapons")
 #define FIELD_DEVICE_SLOTS_WEAPONS				CONSTLIT("deviceSlotsWeapons")
 #define FIELD_DEVICE_ITEMS						CONSTLIT("deviceItems")
+#define FIELD_DOCK_SERVICES_SCREEN				CONSTLIT("dockServicesScreen")
 #define FIELD_DODGE_RATE						CONSTLIT("dodgeRate")
 #define FIELD_DRIVE_IMAGE						CONSTLIT("driveImage")
 #define FIELD_EXPLOSION_TYPE					CONSTLIT("explosionType")
@@ -113,6 +115,7 @@
 #define FIELD_GENERIC_NAME						CONSTLIT("genericName")
 #define FIELD_HP								CONSTLIT("hp")
 #define FIELD_HULL_MASS							CONSTLIT("hullMass")
+#define FIELD_INSTALL_DEVICE_MAX_LEVEL			CONSTLIT("installDeviceMaxLevel")
 #define FIELD_LAUNCHER							CONSTLIT("launcher")
 #define FIELD_LAUNCHER_UNID						CONSTLIT("launcherUNID")
 #define FIELD_LEVEL								CONSTLIT("level")
@@ -141,6 +144,7 @@
 #define FIELD_THRUST_TO_WEIGHT					CONSTLIT("thrustToWeight")
 #define FIELD_THRUSTER_POWER					CONSTLIT("thrusterPower")
 #define FIELD_TREASURE_VALUE					CONSTLIT("treasureValue")
+#define FIELD_WRECK_CHANCE						CONSTLIT("wreckChance")
 
 #define ERR_OUT_OF_MEMORY						CONSTLIT("out of memory")
 #define ERR_BAD_IMAGE							CONSTLIT("invalid ship image")
@@ -186,6 +190,8 @@ static char g_FireRateAttrib[] = "fireRate";
 
 static CG16bitImage *g_pDamageBitmap = NULL;
 static CStationType *g_pWreckDesc = NULL;
+
+const int DOCK_OFFSET_STD_SIZE =				64;
 
 DWORD ParseNonCritical (const CString &sList);
 
@@ -240,9 +246,11 @@ CShipClass::CShipClass (void) :
 		m_pPlayerSettings(NULL),
 		m_pItems(NULL),
 		m_pEscorts(NULL),
+		m_pTrade(NULL),
 		m_fInheritedDevices(false),
 		m_fInheritedItems(false),
-		m_fInheritedEscorts(false)
+		m_fInheritedEscorts(false),
+		m_fInheritedTrade(false)
 
 //	CShipClass constructor
 
@@ -265,6 +273,9 @@ CShipClass::~CShipClass (void)
 
 	if (m_pEscorts && !m_fInheritedEscorts)
 		delete m_pEscorts;
+
+	if (m_pTrade && !m_fInheritedTrade)
+		delete m_pTrade;
 	}
 
 CShipClass::EBalanceTypes CShipClass::CalcBalanceType (CString *retsDesc) const
@@ -1240,14 +1251,16 @@ void CShipClass::CreateEmptyWreck (CSystem *pSystem,
 //	Create an empty wreck of the given ship class
 
 	{
+	SObjCreateCtx CreateCtx;
+	CreateCtx.vPos = vPos;
+	CreateCtx.vVel = vVel;
+
 	//	Create the wreck
 
 	CStation *pWreck;
 	CStation::CreateFromType(pSystem,
 			GetWreckDesc(),
-			vPos,
-			vVel,
-			NULL,
+			CreateCtx,
 			&pWreck);
 
 	//	Set properties of the wreck
@@ -1645,8 +1658,22 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 		*retsValue = strFromInt((int)(CalcDamageRate() + 0.5));
 	else if (strEquals(sField, FIELD_DEFENSE_RATE))
 		*retsValue = strFromInt((int)(CalcDefenseRate() + 0.5));
+	else if (strEquals(sField, FIELD_DOCK_SERVICES_SCREEN))
+		{
+		const CPlayerSettings *pPlayer = GetPlayerSettings();
+		if (pPlayer)
+			*retsValue = pPlayer->GetDockServicesScreen().GetStringUNID(this);
+		else
+			*retsValue = CONSTLIT("none");
+		}
 	else if (strEquals(sField, FIELD_DODGE_RATE))
 		*retsValue = strFromInt((int)(100.0 * CalcDodgeRate()));
+
+	else if (strEquals(sField, FIELD_INSTALL_DEVICE_MAX_LEVEL))
+		{
+		int iMaxLevel = (m_pTrade ? m_pTrade->GetMaxLevelMatched(serviceInstallDevice) : -1);
+		*retsValue = (iMaxLevel != -1 ? strFromInt(iMaxLevel) : NULL_STR);
+		}
 	else if (strEquals(sField, FIELD_MANUFACTURER))
 		*retsValue = m_sManufacturer;
 	else if (strEquals(sField, FIELD_MASS))
@@ -1797,6 +1824,10 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 		}
 	else if (strEquals(sField, FIELD_TREASURE_VALUE))
 		*retsValue = strFromInt(m_pItems ? (int)m_pItems->GetAverageValue(GetLevel()) : 0);
+
+	else if (strEquals(sField, FIELD_WRECK_CHANCE))
+		*retsValue = strFromInt(m_iLeavesWreck);
+
 	else if (strEquals(sField, FIELD_PRIMARY_WEAPON_RANGE))
 		{
 		int iRange = 0;
@@ -2020,6 +2051,26 @@ CCommunicationsHandler *CShipClass::GetCommsHandler (void)
 		}
 	else
 		return (m_OriginalCommsHandler.GetCount() ? &m_OriginalCommsHandler : NULL);
+	}
+
+CVector CShipClass::GetDockingPortOffset (int iRotation)
+
+//	GetDockingPortOffset
+//
+//	Returns an offset to the ship center from the desired position of the docking
+//	port when the ship is docked.
+//
+//	[In other words, the resulting vector points from the station's docking port
+//	to the ship center.]
+
+	{
+	//	For small ships we just go with the ship center.
+
+	int iImageSize = m_Image.GetImageViewportSize();
+	if (iImageSize <= DOCK_OFFSET_STD_SIZE)
+		return NullVector;
+
+	return PolarToVector(iRotation + 180, (0.8 * g_KlicksPerPixel * ((iImageSize - DOCK_OFFSET_STD_SIZE) / 2)));
 	}
 
 void CShipClass::GetDriveDesc (DriveDesc *retDriveDesc) const
@@ -2567,6 +2618,10 @@ ALERROR CShipClass::OnBindDesign (SDesignLoadCtx &Ctx)
 	if (error = m_pDefaultScreen.Bind(Ctx, GetLocalScreens()))
 		goto Fail;
 
+	if (m_pTrade)
+		if (error = m_pTrade->OnDesignLoadComplete(Ctx))
+			goto Fail;
+
 	//	Load player settings
 
 	CPlayerSettings *pBasePlayerSettings;
@@ -2658,6 +2713,9 @@ ALERROR CShipClass::OnFinishBindDesign (SDesignLoadCtx &Ctx)
 	if (!m_fLevelOverride)
 		m_iLevel = CalcLevel();
 
+	if (!m_fCyberDefenseOverride)
+		m_iCyberDefenseLevel = m_iLevel;
+
 	//	Done
 
 	return NOERROR;
@@ -2700,6 +2758,7 @@ void CShipClass::OnInitFromClone (CDesignType *pSource)
 	m_DriveDesc = pClass->m_DriveDesc;
 	m_ReactorDesc = pClass->m_ReactorDesc;
 	m_iCyberDefenseLevel = pClass->m_iCyberDefenseLevel;
+	m_fCyberDefenseOverride = pClass->m_fCyberDefenseOverride;
 
 	m_iMaxArmorMass = pClass->m_iMaxArmorMass;
 	m_iMaxCargoSpace = pClass->m_iMaxCargoSpace;
@@ -2751,6 +2810,12 @@ void CShipClass::OnInitFromClone (CDesignType *pSource)
 	m_pDefaultScreen = pClass->m_pDefaultScreen;
 	m_dwDefaultBkgnd = pClass->m_dwDefaultBkgnd;
 	m_fHasDockingPorts = pClass->m_fHasDockingPorts;
+
+	if (pClass->m_pTrade)
+		{
+		m_pTrade = pClass->m_pTrade;
+		m_fInheritedTrade = true;
+		}
 
 	m_OriginalCommsHandler = pClass->m_OriginalCommsHandler;
 	m_CommsHandler = pClass->m_CommsHandler;
@@ -2865,7 +2930,10 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	if (error = CReactorClass::InitReactorDesc(Ctx, pDesc, &m_ReactorDesc, true))
 		return error;
 
-	m_iCyberDefenseLevel = Max(1, pDesc->GetAttributeInteger(CYBER_DEFENSE_LEVEL_ATTRIB));
+	if ((m_fCyberDefenseOverride = pDesc->FindAttributeInteger(CYBER_DEFENSE_LEVEL_ATTRIB, &m_iCyberDefenseLevel)))
+		m_iCyberDefenseLevel = Max(1, m_iCyberDefenseLevel);
+	else
+		m_iCyberDefenseLevel = 0;
 
 	m_fTimeStopImmune = pDesc->GetAttributeBool(TIME_STOP_IMMUNE_ATTRIB);
 
@@ -3067,7 +3135,7 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	if (m_DockingPorts.GetCount() > 0)
 		{
 		for (i = 0; i < m_DockingPorts.GetCount(); i++)
-			m_DockingPorts[i] = DockingPorts.GetPortPos(NULL, i);
+			m_DockingPorts[i] = DockingPorts.GetPortPos(NULL, i, NULL);
 
 		//	Load the default screen
 
@@ -3088,6 +3156,17 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		m_fHasDockingPorts = false;
 		}
 
+	//	Load trade
+
+	CXMLElement *pTrade = pDesc->GetContentElementByTag(TRADE_TAG);
+	if (pTrade)
+		{
+		if (error = CTradingDesc::CreateFromXML(Ctx, pTrade, &m_pTrade))
+			return error;
+		}
+	else
+		m_pTrade = NULL;
+
 	//	Load communications
 
 	CXMLElement *pComms = pDesc->GetContentElementByTag(COMMUNICATIONS_TAG);
@@ -3099,7 +3178,17 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	//	Miscellaneous
 
-	m_iLeavesWreck = pDesc->GetAttributeInteger(LEAVES_WRECK_ATTRIB);
+	if (pDesc->FindAttributeInteger(LEAVES_WRECK_ATTRIB, &m_iLeavesWreck))
+		m_iLeavesWreck = Max(0, m_iLeavesWreck);
+	else
+		{
+		//	Chance of wreck is a function of mass:
+		//
+		//	prob = 5 * MASS^0.45
+
+		m_iLeavesWreck = Max(0, Min((int)(5.0 * pow((Metric)m_iMass, 0.45)), 100));
+		}
+
 	if (error = m_pWreckType.LoadUNID(Ctx, pDesc->GetAttribute(WRECK_TYPE_ATTRIB)))
 		return error;
 
@@ -3347,7 +3436,8 @@ void CShipClass::Paint (CG16bitImage &Dest,
 						int iDirection, 
 						int iTick,
 						bool bThrusting,
-						bool bRadioactive)
+						bool bRadioactive,
+						DWORD byInvisible)
 
 //	Paint
 //
@@ -3361,7 +3451,9 @@ void CShipClass::Paint (CG16bitImage &Dest,
 
 	//	Paint the body of the ship
 
-	if (bRadioactive)
+	if (byInvisible)
+		m_Image.PaintImageShimmering(Dest, x, y, iTick, iDirection, byInvisible);
+	else if (bRadioactive)
 		m_Image.PaintImageWithGlow(Dest, x, y, iTick, iDirection, RGB(0, 255, 0));
 	else
 		m_Image.PaintImage(Dest, x, y, iTick, iDirection);

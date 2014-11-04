@@ -37,9 +37,6 @@ bool CStationTableCache::FindTable (const CString &sDesc, TArray<SEntry> **retpT
 		return true;
 		}
 
-	*retpTable = new TArray<SEntry>;
-	m_Cache.Insert(sDesc, *retpTable);
-
 	m_iCacheMisses++;
 	return false;
 	}

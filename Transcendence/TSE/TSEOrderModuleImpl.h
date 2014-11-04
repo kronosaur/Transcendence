@@ -5,6 +5,39 @@
 #ifndef INCL_TSE_ORDER_MODULES
 #define INCL_TSE_ORDER_MODULES
 
+class CApproachOrder : public IOrderModule
+	{
+	public:
+		CApproachOrder (void) : IOrderModule(objCount)
+			{ }
+
+	protected:
+		//	IOrderModule virtuals
+		virtual void OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx);
+		virtual void OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, const IShipController::SData &Data);
+		virtual IShipController::OrderTypes OnGetOrder (void) { return IShipController::orderApproach; }
+		virtual void OnReadFromStream (SLoadCtx &Ctx);
+		virtual void OnWriteToStream (CSystem *pSystem, IWriteStream *pStream);
+
+	private:
+		enum Objs
+			{
+			objDest =		0,
+			objTarget =		1,
+
+			objCount =		2,
+			};
+
+		enum States
+			{
+			stateOnCourseViaNavPath,
+			stateApproaching,
+			};
+
+		States m_iState;						//	Current behavior state
+		Metric m_rMinDist2;						//	Minimum distance to target
+	};
+
 class CAttackOrder : public IOrderModule
 	{
 	public:
@@ -36,8 +69,9 @@ class CAttackOrder : public IOrderModule
 
 		enum States
 			{
-			stateAttackingTargetAndAvoiding,
-			stateAvoidingEnemyStation,
+			stateAttackingTargetAndAvoiding =		0,
+			stateAvoidingEnemyStation =				1,
+			stateAttackingTargetAndHolding =		2,
 			};
 
 		CSpaceObject *GetBestTarget (CShip *pShip);
@@ -51,8 +85,8 @@ class CAttackOrder : public IOrderModule
 
 		DWORD m_fNearestTarget:1;				//	If TRUE, continue attacking other targets
 		DWORD m_fInRangeOfObject:1;				//	If TRUE, new target must be in range of order object
+		DWORD m_fHold:1;						//	If TRUE, hold position
 
-		DWORD m_fSpare3:1;
 		DWORD m_fSpare4:1;
 		DWORD m_fSpare5:1;
 		DWORD m_fSpare6:1;
@@ -126,6 +160,7 @@ class CEscortOrder : public IOrderModule
 		virtual void OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx);
 		virtual void OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, const IShipController::SData &Data);
 		virtual DWORD OnCommunicate (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
+		virtual CSpaceObject *OnGetBase (void);
 		virtual IShipController::OrderTypes OnGetOrder (void) { return IShipController::orderEscort; }
 		virtual void OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iObj, bool *retbCancelOrder);
 		virtual void OnReadFromStream (SLoadCtx &Ctx);

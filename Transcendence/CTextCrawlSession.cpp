@@ -1,13 +1,19 @@
 //	CTextCrawlSession.cpp
 //
 //	CTextCrawlSession class
+//	Copyright (c) 2014 by Kronosaur Productions, LLC. All Rights Reserved.
 
 #include "PreComp.h"
 #include "Transcendence.h"
 
+#define EVENT_ON_ANIMATION_DONE				CONSTLIT("onAnimationDone")
+
 #define ID_CTRL_WAIT						CONSTLIT("ctrlWait")
 #define ID_TEXT_CRAWL_PERFORMANCE			CONSTLIT("textCrawl")
+#define ID_CTRL_TITLE						CONSTLIT("title")
 
+#define CMD_OK_SESSION						CONSTLIT("cmdOKSession")
+#define CMD_SHOW_OK_BUTTON					CONSTLIT("cmdShowOKButton")
 #define CMD_SHOW_WAIT_ANIMATION				CONSTLIT("cmdShowWaitAnimation")
 
 const int TEXT_CRAWL_X =					512;
@@ -26,9 +32,11 @@ const Metric CRAWL_SPEED =					1.0;
 #define PROP_FADE_EDGE_HEIGHT				CONSTLIT("fadeEdgeHeight")
 
 CTextCrawlSession::CTextCrawlSession (CHumanInterface &HI,
+									  CCloudService &Service,
 									  const CG16bitImage *pImage,
 									  const CString &sText,
 									  const CString &sCmdDone) : IHISession(HI),
+		m_Service(Service),
 		m_pImage(pImage),
 		m_sText(sText),
 		m_sCmdDone(sCmdDone),
@@ -88,6 +96,7 @@ void CTextCrawlSession::CreateCrawlAnimation (const CString &sText, const RECT &
 
 	CLinearMetric *pScroller = new CLinearMetric;
 	pScroller->SetParams(-cyHeight, yPos, CRAWL_SPEED);
+	pScroller->AddListener(EVENT_ON_ANIMATION_DONE, this, CMD_SHOW_OK_BUTTON);
 	pAni->AnimateProperty(PROP_SCROLL_POS, pScroller, 0);
 
 	//	After the scrolling is done, fade-out
@@ -117,7 +126,25 @@ ALERROR CTextCrawlSession::OnCommand (const CString &sCmd, void *pData)
 //	Handle a command
 
 	{
-	if (strEquals(sCmd, CMD_SHOW_WAIT_ANIMATION))
+	if (strEquals(sCmd, CMD_OK_SESSION))
+		{
+		m_HI.HICommand(m_sCmdDone);
+		}
+	else if (strEquals(sCmd, CMD_SHOW_OK_BUTTON))
+		{
+		CUIHelper Helper(m_HI);
+		IAnimatron *pTitle;
+		Helper.CreateSessionTitle(this, 
+				m_Service, 
+				NULL_STR, 
+				NULL, 
+				CUIHelper::OPTION_SESSION_NO_HEADER 
+					| CUIHelper::OPTION_SESSION_NO_CANCEL_BUTTON
+					| CUIHelper::OPTION_SESSION_OK_BUTTON, 
+				&pTitle);
+		StartPerformance(pTitle, ID_CTRL_TITLE, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+		}
+	else if (strEquals(sCmd, CMD_SHOW_WAIT_ANIMATION))
 		{
 		if (!m_bWaitAnimation)
 			{

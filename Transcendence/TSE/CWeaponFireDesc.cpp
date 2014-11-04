@@ -450,29 +450,43 @@ CWeaponFireDesc *CWeaponFireDesc::FindWeaponFireDescFromFullUNID (const CString 
 		CItemType *pItemType = CItemType::AsType(pType);
 		ASSERT(pItemType);
 
-		CDeviceClass *pDevice = pItemType->GetDeviceClass();
-		if (pDevice == NULL)
+		CWeaponFireDesc *pMissileDesc;
+		CDeviceClass *pDevice;
+		
+		//	If this is a device, then parse as weapon
+
+		if (pDevice = pItemType->GetDeviceClass())
+			{
+			CWeaponClass *pClass = pDevice->AsWeaponClass();
+			if (pClass == NULL)
+				return NULL;
+
+			//	Get the ordinal
+
+			ASSERT(*pPos == '/');
+			pPos++;
+			int iOrdinal = strParseInt(pPos, 0, &pPos);
+
+			//	Get the weapon fire desc of the ordinal
+
+			CWeaponFireDesc *pDesc = pClass->GetVariant(iOrdinal);
+			if (pDesc == NULL)
+				return NULL;
+
+			//	Continue parsing
+
+			return pDesc->FindWeaponFireDesc(CString(pPos));
+			}
+
+		//	Otherwise, see if this is a missile
+
+		else if (pMissileDesc = pItemType->GetMissileDesc())
+			return pMissileDesc;
+
+		//	Nothing
+
+		else
 			return NULL;
-
-		CWeaponClass *pClass = pDevice->AsWeaponClass();
-		if (pClass == NULL)
-			return NULL;
-
-		//	Get the ordinal
-
-		ASSERT(*pPos == '/');
-		pPos++;
-		int iOrdinal = strParseInt(pPos, 0, &pPos);
-
-		//	Get the weapon fire desc of the ordinal
-
-		CWeaponFireDesc *pDesc = pClass->GetVariant(iOrdinal);
-		if (pDesc == NULL)
-			return NULL;
-
-		//	Continue parsing
-
-		return pDesc->FindWeaponFireDesc(CString(pPos));
 		}
 
 	//	If this is an effect, then get it from that
@@ -836,44 +850,75 @@ CItemType *CWeaponFireDesc::GetWeaponType (CItemType **retpLauncher) const
 	//	Get the weapon UNID and the ordinal
 
 	DWORD dwUNID = (DWORD)strParseInt(pPos, 0, &pPos);
-	ASSERT(*pPos == '/');
-	pPos++;
-	int iOrdinal = strParseInt(pPos, 0, &pPos);
 
-	//	Get the weapon descriptor
+	//	Get the type
 
-	CWeaponClass *pClass = (CWeaponClass *)g_pUniverse->FindDeviceClass(dwUNID);
-	if (pClass == NULL)
+	CItemType *pItemType = g_pUniverse->FindItemType(dwUNID);
+	if (pItemType == NULL)
 		return NULL;
 
-	//	Return the device/launcher
+	//	If this is a device, we expect it to be a weapon
 
-	if (retpLauncher)
-		*retpLauncher = pClass->GetItemType();
+	CWeaponFireDesc *pMissileDesc;
+	CWeaponClass *pClass;
 
-	//	For launchers, figure out which missile this is
-
-	if (pClass->GetCategory() == itemcatLauncher)
+	if (pClass = (CWeaponClass *)pItemType->GetDeviceClass())
 		{
-		CWeaponFireDesc *pMissileDesc = pClass->GetVariant(iOrdinal);
-		if (pMissileDesc == NULL)
-			return NULL;
+		ASSERT(*pPos == '/');
+		pPos++;
+		int iOrdinal = strParseInt(pPos, 0, &pPos);
 
-		//	If we have ammo, then return the ammo type
+		//	Return the device/launcher
 
-		CItemType *pAmmoType = pMissileDesc->GetAmmoType();
-		if (pAmmoType)
-			return pAmmoType;
+		if (retpLauncher)
+			*retpLauncher = pItemType;
 
-		//	Otherwise return the launcher (e.g., DM600)
+		//	For launchers, figure out which missile this is
 
-		return pClass->GetItemType();
+		if (pClass->GetCategory() == itemcatLauncher)
+			{
+			CWeaponFireDesc *pMissileDesc = pClass->GetVariant(iOrdinal);
+			if (pMissileDesc == NULL)
+				return NULL;
+
+			//	If we have ammo, then return the ammo type
+
+			CItemType *pAmmoType = pMissileDesc->GetAmmoType();
+			if (pAmmoType)
+				return pAmmoType;
+
+			//	Otherwise return the launcher (e.g., DM600)
+
+			return pItemType;
+			}
+
+		//	Otherwise, return the weapon
+
+		else
+			return pItemType;
 		}
 
-	//	Otherwise, return the weapon
+	//	Otherwise, we expect this to be a missile
+
+	else if (pMissileDesc = pItemType->GetMissileDesc())
+		{
+		if (retpLauncher)
+			{
+			CDeviceClass *pLauncher = pItemType->GetAmmoLauncher();
+			if (pLauncher)
+				*retpLauncher = pLauncher->GetItemType();
+			else
+				//	Launcher not found
+				*retpLauncher = NULL;
+			}
+
+		return pItemType;
+		}
+
+	//	Otherwise, nothing
 
 	else
-		return pClass->GetItemType();
+		return NULL;
 	}
 
 void CWeaponFireDesc::InitFromDamage (DamageDesc &Damage)
@@ -883,6 +928,8 @@ void CWeaponFireDesc::InitFromDamage (DamageDesc &Damage)
 //	Conses up a new CWeaponFireDesc from just a damage structure.
 
 	{
+	int i;
+
 	m_bFragment = false;
 
 	//	Load basic attributes
@@ -975,6 +1022,14 @@ void CWeaponFireDesc::InitFromDamage (DamageDesc &Damage)
 	//	Enhanced
 
 	m_pEnhanced = NULL;
+
+	//	Cached events
+
+	for (i = 0; i < evtCount; i++)
+		{
+		m_CachedEvents[i].pExtension = NULL;
+		m_CachedEvents[i].pCode = NULL;
+		}
 	}
 
 ALERROR CWeaponFireDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID, bool bDamageOnly)

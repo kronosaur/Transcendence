@@ -119,6 +119,7 @@ static char *FONT_TABLE[CUniverse::fontCount] =
 	"SmallBold",			//	Signs: Tahoma 11 bold
 	"SmallBold",			//	SRS object name: Tahoma 11 bold
 	"Header",				//	SRS object message
+	"Small",				//	SRS object counter: 10 pixels
 	};
 
 CUniverse::CUniverse (void) : CObject(&g_Class),
@@ -442,11 +443,11 @@ ALERROR CUniverse::CreateStarSystem (CTopologyNode *pTopology, CSystem **retpSys
 
 	//	Get the description
 
-	CSystemType *pSystemType = FindSystemType(pTopology->GetSystemDescUNID());
+	CSystemType *pSystemType = FindSystemType(pTopology->GetSystemTypeUNID());
 	if (pSystemType == NULL)
 		{
 		if (retsError)
-			*retsError = strPatternSubst(CONSTLIT("Cannot create system %s: Undefined system type %x"), pTopology->GetID(), pTopology->GetSystemDescUNID());
+			*retsError = strPatternSubst(CONSTLIT("Cannot create system %s: Undefined system type %x"), pTopology->GetID(), pTopology->GetSystemTypeUNID());
 		return ERR_FAIL;
 		}
 
@@ -1398,9 +1399,13 @@ ALERROR CUniverse::InitRequiredEncounters (CString *retsError)
 		for (j = 0; j < m_Topology.GetTopologyNodeCount(); j++)
 			{
 			CTopologyNode *pNode = m_Topology.GetTopologyNode(j);
+			CSystemType *pSystemType = FindSystemType(pNode->GetSystemTypeUNID());
+			if (pSystemType == NULL)
+				continue;
 
 			int iFreq = pType->GetFrequencyForNode(pNode);
-			if (iFreq > 0)
+			if (iFreq > 0
+					&& pSystemType->HasExtraEncounters())
 				Table.Insert(pNode, iFreq);
 			}
 
@@ -1415,7 +1420,7 @@ ALERROR CUniverse::InitRequiredEncounters (CString *retsError)
 		//	If this station is unique per system then we need at least the 
 		//	required number of systems. If not, we adjust the count.
 
-		if (pType->IsUniqueInSystem() && iCount < Table.GetCount())
+		if (pType->IsUniqueInSystem() && iCount > Table.GetCount())
 			{
 			iCount = Table.GetCount();
 			kernelDebugLogMessage("Warning: Decreasing number appearing of %s [%08x] to %d due to lack of appropriate systems.", pType->GetNounPhrase(nounPlural), pType->GetUNID(), iCount);
@@ -1430,7 +1435,8 @@ ALERROR CUniverse::InitRequiredEncounters (CString *retsError)
 			//	If the station is unique in the system and we've already got a 
 			//	station in this system, then try again.
 
-			if (pType->IsUniqueInSystem() && pNode->GetRequiredEncounter(pType) != 0)
+			if (pType->IsUniqueInSystem() 
+					&& pType->GetEncounterMinimum(pNode) > 0)
 				{
 				j--;
 				continue;
@@ -1438,7 +1444,7 @@ ALERROR CUniverse::InitRequiredEncounters (CString *retsError)
 
 			//	Add it to this node
 
-			pNode->ChangeRequiredEncounter(pType, 1);
+			pType->IncEncounterMinimum(pNode, 1);
 			}
 		}
 
@@ -2052,7 +2058,7 @@ void CUniverse::PutPlayerInSystem (CShip *pPlayerShip, const CVector &vPos, CTim
 		{
 		CMission *pMission = m_AllMissions.GetMission(i);
 		if (pMission->IsActive())
-			pMission->OnPlayerEnteredSystem();
+			pMission->OnPlayerEnteredSystem(pPlayerShip);
 		}
 	}
 

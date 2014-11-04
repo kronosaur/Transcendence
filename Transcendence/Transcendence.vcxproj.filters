@@ -231,6 +231,33 @@
     <ClCompile Include="CGameSession.cpp">
       <Filter>Source Files\Game Session</Filter>
     </ClCompile>
+    <ClCompile Include="CDockScreenList.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="CDockScreenCustomItemList.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="CDockScreenItemList.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="CDockScreenCustomList.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="IDockScreenDisplay.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="CDockScreenSelector.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="CGSelectorArea.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="CDockPane.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="CGItemDisplayArea.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundTasks.h">
@@ -249,6 +276,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DockScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CGAreas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DockScreenDisplayImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -675,6 +711,24 @@
     </None>
     <None Include="Game\Source\Benedict01.xml">
       <Filter>XML Files\Part I</Filter>
+    </None>
+    <None Include="Game\Source\Stars.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </None>
+    <None Include="Game\Source\RPGArmorDockScreens.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\Source\RPGCharacterClasses.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\Source\RPGDeviceDockScreens.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\Source\Ovoids.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </None>
+    <None Include="Game\Source\RPGDialog.xml">
+      <Filter>XML Files\RPG Library</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

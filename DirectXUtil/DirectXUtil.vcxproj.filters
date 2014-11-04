@@ -27,6 +27,9 @@
     <ClInclude Include="..\Includes\TextFormat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NoiseImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="16bitBlt.cpp">
@@ -190,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="CG16bitLinePainter.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IPropertyAnimator.cpp">
+      <Filter>Source Files\Reanimator</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

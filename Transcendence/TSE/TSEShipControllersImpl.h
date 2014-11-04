@@ -19,7 +19,7 @@ class CAIShipControls
 		CAIShipControls (void);
 
 		inline EManeuverTypes GetManeuver (void) const { return m_iManeuver; }
-		inline bool GetThrust (CShip *pShip) const { return (m_iThrustDir == constAlwaysThrust || pShip->IsPointingTo(m_iThrustDir)); }
+		inline bool GetThrust (CShip *pShip) const;
 		inline int GetThrustDir (void) const { return m_iThrustDir; }
 		void ReadFromStream (SLoadCtx &Ctx);
 		inline void SetManeuver (EManeuverTypes iManeuver) { m_iManeuver = iManeuver; }
@@ -119,6 +119,7 @@ class CAIBehaviorCtx
 		void ImplementFireOnTargetsOfOpportunity (CShip *pShip, CSpaceObject *pTarget = NULL, CSpaceObject *pExcludeObj = NULL);
 		void ImplementFireWeapon (CShip *pShip, DeviceNames iDev = devNone);
 		void ImplementFireWeaponOnTarget (CShip *pShip, int iWeapon, int iWeaponVariant, CSpaceObject *pTarget, const CVector &vTarget, Metric rTargetDist2, int *retiFireDir = NULL, bool bDoNotShoot = false);
+		bool ImplementFlockingManeuver (CShip *pShip, CSpaceObject *pLeader);
 		void ImplementFollowNavPath (CShip *pShip, bool *retbAtDestination = NULL);
 		void ImplementFormationManeuver (CShip *pShip, const CVector vDest, const CVector vDestVel, int iDestFacing, bool *retbInFormation = NULL);
 		void ImplementGating (CShip *pShip, CSpaceObject *pTarget);
@@ -133,6 +134,7 @@ class CAIBehaviorCtx
 		//	Helpers
 		void CalcAvoidPotential (CShip *pShip, CSpaceObject *pTarget);
 		void CalcBestWeapon (CShip *pShip, CSpaceObject *pTarget, Metric rTargetDist2);
+		bool CalcFlockingFormation (CShip *pShip, CSpaceObject *pLeader, Metric rFOVRange, Metric rSeparationRange, CVector *retvPos, CVector *retvVel, int *retiFacing);
 		void CalcInvariants (CShip *pShip);
 		bool CalcIsBetterTarget (CShip *pShip, CSpaceObject *pCurTarget, CSpaceObject *pNewTarget) const;
 		bool CalcNavPath (CShip *pShip, CSpaceObject *pTo);
@@ -190,7 +192,16 @@ class CAIBehaviorCtx
 		DWORD m_fHasSecondaryWeapons:1;			//	TRUE if ship has secondary weapons
 		DWORD m_fHasEscorts:1;					//	TRUE if ship has escorts
 
-		DWORD m_dwSpare:24;
+		DWORD m_fHasMultiplePrimaries:1;		//	TRUE if ship has multiple primary weapons (non-launchers)
+		DWORD m_fSpare2:1;
+		DWORD m_fSpare3:1;
+		DWORD m_fSpare4:1;
+		DWORD m_fSpare5:1;
+		DWORD m_fSpare6:1;
+		DWORD m_fSpare7:1;
+		DWORD m_fSpare8:1;
+
+		DWORD m_dwSpare:16;
 	};
 
 const int MAX_OBJS =	4;
@@ -342,12 +353,6 @@ class CBaseShipAI : public CObject, public IShipController
 
 	protected:
 		CSpaceObject *CalcEnemyShipInRange (CSpaceObject *pCenter, Metric rRange, CSpaceObject *pExcludeObj = NULL);
-		bool CalcFlockingFormation (CSpaceObject *pLeader,
-									Metric rFOVRange,
-									Metric rSeparationRange,
-									CVector *retvPos, 
-									CVector *retvVel, 
-									int *retiFacing);
 		Metric CalcShipIntercept (const CVector &vRelPos, const CVector &vAbsVel, Metric rMaxSpeed);
 		int CalcWeaponScore (CSpaceObject *pTarget, CInstalledDevice *pWeapon, Metric rTargetDist2);
 		void CancelDocking (CSpaceObject *pTarget);
@@ -887,5 +892,22 @@ class CZoanthropeAI : public CBaseShipAI
 	};
 
 IShipController *CreateShipController (const CString &sAI);
+
+//	Inlines --------------------------------------------------------------------
+
+inline bool CAIShipControls::GetThrust (CShip *pShip) const 
+	{
+	switch (m_iThrustDir)
+		{
+		case constNeverThrust:
+			return false;
+
+		case constAlwaysThrust:
+			return true;
+
+		default:
+			return pShip->IsPointingTo(m_iThrustDir);
+		}
+	}
 
 #endif

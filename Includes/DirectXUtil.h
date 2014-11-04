@@ -27,6 +27,8 @@
 #include "Euclid.h"
 #endif
 
+#define BLT_RANGE_CHECK
+
 #define ALPHA_BITS				8
 #define ALPHA_LEVELS			256
 
@@ -216,7 +218,7 @@ class CG16bitImage : public CObject
 		int AdjustTextX (const CG16bitFont &Font, const CString &sText, AlignmentStyles iAlign, int x);
 		void AssociateSurface (LPDIRECTDRAW7 pDD);
 		void ConvertToSprite (void);
-		ALERROR CreateBlank (int cxWidth, int cyHeight, bool bAlphaMask, WORD wInitColor = 0);
+		ALERROR CreateBlank (int cxWidth, int cyHeight, bool bAlphaMask, WORD wInitColor = 0, BYTE byInitAlpha = 0xff);
 		ALERROR CreateBlankAlpha (int cxWidth, int cyHeight);
 		ALERROR CreateBlankAlpha (int cxWidth, int cyHeight, BYTE byOpacity);
 		ALERROR CreateFromBitmap (HBITMAP hBitmap, HBITMAP hBitmask = NULL, DWORD dwFlags = 0);
@@ -243,18 +245,20 @@ class CG16bitImage : public CObject
 		void BltToSurface (LPDIRECTDRAWSURFACE7 pSurface, SurfaceTypes iType, const RECT &rcDest);
 		void BltWithMask (int xSrc, int ySrc, int cxWidth, int cyHeight, const CG16bitImage &Mask, const CG16bitImage &Source, int xDest, int yDest);
 		void ColorTransBlt (int xSrc, int ySrc, int cxWidth, int cyHeight, DWORD dwOpacity, const CG16bitImage &Source, int xDest, int yDest);
+		void CompositeTransBlt (int xSrc, int ySrc, int cxWidth, int cyHeight, DWORD dwOpacity, const CG16bitImage &Source, int xDest, int yDest);
 		void CopyAlpha (int xSrc, int ySrc, int cxWidth, int cyHeight, const CG16bitImage &Soruce, int xDest, int yDest);
 		ALERROR CopyToClipboard (void);
 		void ClearMaskBlt (int xSrc, int ySrc, int cxWidth, int cyHeight, const CG16bitImage &Source, int xDest, int yDest, WORD wColor = DEFAULT_TRANSPARENT_COLOR);
 		void DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker);
 		inline void DrawLine (int x1, int y1, int x2, int y2, int iWidth, WORD wColor) { BresenhamLineAA(x1, y1, x2, y2, iWidth, wColor); }
+		inline void DrawLineTrans (int x1, int y1, int x2, int y2, int iWidth, WORD wColor, DWORD dwOpacity) { BresenhamLineAATrans(x1, y1, x2, y2, iWidth, wColor, dwOpacity); }
 		void DrawLineProc (SDrawLineCtx *pCtx, DRAWLINEPROC pfProc);
 		void DrawLineProcInit (int x1, int y1, int x2, int y2, SDrawLineCtx *pCtx);
 		inline void DrawBiColorLine (int x1, int y1, int x2, int y2, int iWidth, WORD wColor1, WORD wColor2) { BresenhamLineAAFade(x1, y1, x2, y2, iWidth, wColor1, wColor2); }
-		inline void DrawPixel (int x, int y, WORD wColor) { if (x >=0 && y >= 0 && x < m_cxWidth && y < m_cyHeight) *GetPixel(GetRowStart(y), x) = wColor; }
+		inline void DrawPixel (int x, int y, WORD wColor) { if (x >= m_rcClip.left && y >= m_rcClip.top && x < m_rcClip.right && y < m_rcClip.bottom) *GetPixel(GetRowStart(y), x) = wColor; }
 		inline void DrawPixelTrans (int x, int y, WORD wColor, BYTE byTrans)
 				{
-				if (x >=0 && y >= 0 && x < m_cxWidth && y < m_cyHeight) 
+				if (x >= m_rcClip.left && y >= m_rcClip.top && x < m_rcClip.right && y < m_rcClip.bottom) 
 					{
 					WORD *pPos = GetPixel(GetRowStart(y), x);
 					*pPos = BlendPixel(*pPos, wColor, byTrans);
@@ -308,11 +312,13 @@ class CG16bitImage : public CObject
 		void WriteToStream (IWriteStream *pStream);
 		void WriteToWindowsBMP (IWriteStream *pStream);
 
+		static inline BYTE BlendAlpha (BYTE dwOpacity1, BYTE dwOpacity2) { return (BYTE)255 - (BYTE)(((DWORD)(255 - dwOpacity1) * (DWORD)(255 - dwOpacity2)) / 255); }
 		static WORD BlendPixel (WORD pxDest, WORD pxSource, DWORD byOpacity);
 		static WORD BlendPixelGray (WORD pxDest, WORD pxSource, DWORD byOpacity);
 		static WORD BlendPixelPM (DWORD pxDest, DWORD pxSource, DWORD byOpacity);
 		static WORD FadeColor (WORD wStart, WORD wEnd, int iFade);
 		static inline WORD DarkenPixel (DWORD pxSource, DWORD byOpacity) { return BlendPixel(RGBValue(0,0,0), (WORD)pxSource, byOpacity); }
+		static inline WORD DesaturateValue (WORD wColor) { return ((GreenValue(wColor) * 59) + (RedValue(wColor) * 30) + (BlueValue(wColor) * 11)) / 255; }
 		static inline WORD LightenPixel (DWORD pxSource, DWORD byOpacity) { return BlendPixel(RGBValue(255,255,255), (WORD)pxSource, byOpacity); }
 		static inline bool IsGrayscaleValue (WORD wColor) { return ((BlueValue(wColor) == GreenValue(wColor)) && (GreenValue(wColor) == RedValue(wColor))); }
 		static inline WORD GrayscaleValue (WORD wValue) { return ((wValue << 8) & 0xf800) | ((wValue << 3) & 0x7c0) | (wValue >> 3); }
@@ -343,6 +349,11 @@ class CG16bitImage : public CObject
 								  int iWidth,
 								  WORD wColor1,
 								  WORD wColor2);
+		void BresenhamLineAATrans (int x1, int y1, 
+							  int x2, int y2,
+							  int iWidth,
+							  WORD wColor,
+							  DWORD dwOpacity);
 		void WuLine (int x0, int y0, 
 				     int x1, int y1,
 				     int iWidth,
@@ -413,6 +424,7 @@ bool CalcBltTransform (Metric rX,
 					   CXForm *retSrcToDest, 
 					   CXForm *retDestToSrc, 
 					   RECT *retrcDest);
+void CompositeFilledCircle (CG16bitImage &Dest, int xDest, int yDest, int iRadius, WORD *pColorTable, BYTE *pOpacityTable, bool bStochastic = false);
 void CopyBltColorize (CG16bitImage &Dest,
 					  int xDest,
 					  int yDest,
@@ -436,6 +448,7 @@ void DrawAlphaGradientCircle (CG16bitImage &Dest,
 		int yDest, 
 		int iRadius,
 		WORD wColor);
+void DrawArc (CG16bitImage &Dest, int xCenter, int yCenter, int iRadius, int iStartAngle, int iEndAngle, int iLineWidth, WORD wColor);
 void DrawBltCircle (CG16bitImage &Dest, 
 		int xDest, 
 		int yDest, 
@@ -465,7 +478,28 @@ void DrawBltScaledFast (CG16bitImage &Dest,
 						int ySrc,
 						int cxSrc,
 						int cySrc);
+void DrawBltShimmer (CG16bitImage &Dest,
+					 int xDest,
+					 int yDest,
+					 int cxDest,
+					 int cyDest,
+					 const CG16bitImage &Src,
+					 int xSrc,
+					 int ySrc,
+					 DWORD byIntensity,
+					 DWORD dwSeed = 0);
 void DrawBltTransformed (CG16bitImage &Dest, 
+						 Metric rX, 
+						 Metric rY, 
+						 Metric rScaleX, 
+						 Metric rScaleY, 
+						 Metric rRotation, 
+						 const CG16bitImage &Src, 
+						 int xSrc, 
+						 int ySrc, 
+						 int cxSrc, 
+						 int cySrc);
+void DrawBltTransformedGray (CG16bitImage &Dest, 
 						 Metric rX, 
 						 Metric rY, 
 						 Metric rScaleX, 
@@ -479,6 +513,7 @@ void DrawBltTransformed (CG16bitImage &Dest,
 void DrawBrokenLine (CG16bitImage &Dest, int xSrc, int ySrc, int xDest, int yDest, int xyBreak, WORD wColor);
 void DrawDottedLine (CG16bitImage &Dest, int x1, int y1, int x2, int y2, WORD wColor);
 void DrawFilledCircle (CG16bitImage &Dest, int xDest, int yDest, int iRadius, WORD wColor);
+void DrawFilledCircle (CG16bitImage &Dest, int xDest, int yDest, int iRadius, WORD *pColorTable, BYTE *pOpacityTable);
 void DrawFilledCircleGray (CG16bitImage &Dest, int xDest, int yDest, int iRadius, WORD wColor, DWORD byOpacity);
 void DrawFilledCircleTrans (CG16bitImage &Dest, int xDest, int yDest, int iRadius, WORD wColor, DWORD byOpacity);
 void DrawGlowRing (CG16bitImage &Dest,
@@ -506,6 +541,8 @@ void DrawGradientRectHorz (CG16bitImage &Dest,
 		DWORD dwEndOpacity);
 void DrawRectDotted (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, WORD wColor);
 void DrawRoundedRect (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, int iRadius, WORD wColor);
+void DrawRoundedRectOutline (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, int iRadius, int iLineWidth, WORD wColor);
+void DrawRoundedRectTrans (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, int iRadius, WORD wColor, DWORD byOpacity);
 
 enum EffectTypes
 	{
@@ -841,7 +878,7 @@ void DrawGradientCircle8bit (CG16bitImage &Dest,
 							 BYTE byEdge);
 void DrawNebulosity8bit (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, int iScale, BYTE byMin, BYTE byMax);
 void DrawNoise8bit (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, int iScale, BYTE byMin, BYTE byMax);
-void RasterizeQuarterCircle8bit (int iRadius, int *retSolid, BYTE *retEdge);
+void RasterizeQuarterCircle8bit (int iRadius, int *retSolid, BYTE *retEdge, DWORD byOpacity = 255);
 
 //	Noise Functions ------------------------------------------------------------
 
@@ -909,6 +946,7 @@ class AGArea : public CObject
 		void AddShadowEffect (void);
 		inline IAreaContainer *GetParent (void) { return m_pParent; }
 		inline RECT &GetRect (void) { return m_rcRect; }
+		inline const RECT &GetRect (void) const { return m_rcRect; }
 		inline AGScreen *GetScreen (void) { return m_pScreen; }
 		inline DWORD GetTag (void) { return m_dwTag; }
 		inline void Hide (void) { ShowHide(false); }
@@ -963,10 +1001,10 @@ class AGScreen : public CObject, public IAreaContainer
 		AGScreen (HWND hWnd, const RECT &rcRect);
 		virtual ~AGScreen (void);
 
-		ALERROR AddArea (AGArea *pArea, const RECT &rcRect, DWORD dwTag);
+		ALERROR AddArea (AGArea *pArea, const RECT &rcRect, DWORD dwTag, bool bSendToBack = false);
 		void DestroyArea (AGArea *pArea);
 		AGArea *FindArea (DWORD dwTag);
-		inline AGArea *GetArea (int iIndex) { return (AGArea *)m_Areas.GetObject(iIndex); }
+		inline AGArea *GetArea (int iIndex) { return m_Areas[iIndex]; }
 		inline int GetAreaCount (void) { return m_Areas.GetCount(); }
 		inline const RECT &GetRect (void) { return m_rcRect; }
 		inline IScreenController *GetController (void) { return m_pController; }
@@ -989,7 +1027,7 @@ class AGScreen : public CObject, public IAreaContainer
 	private:
 		AGScreen (void);
 		void FireMouseMove (const POINT &pt);
-		inline int GetAreaIndex (AGArea *pArea) { return m_Areas.FindObject(pArea); }
+		inline int GetAreaIndex (AGArea *pArea) { int iIndex; if (m_Areas.Find(pArea, &iIndex)) return iIndex; else return -1; }
 		AGArea *HitTest (const POINT &pt);
 		void SetMouseOver (AGArea *pArea);
 
@@ -998,7 +1036,7 @@ class AGScreen : public CObject, public IAreaContainer
 		RECT m_rcInvalid;						//	Invalid rect relative to m_rcRect
 		IScreenController *m_pController;		//	Screen controller
 
-		CObjectArray m_Areas;
+		TArray<AGArea *> m_Areas;
 
 		AGArea *m_pMouseCapture;				//	Area that has captured the mouse
 		AGArea *m_pMouseOver;					//	Area that the mouse is currently over

@@ -17,7 +17,7 @@
 			sortName=			"Dvalin armor"
 			>
 
-		<Image imageID="&rsItemsRasiermesser4;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems7;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"200"
@@ -76,6 +76,8 @@
 	<StationType UNID="&stArmsDealerRasiermesser;"
 			name=				"Rasiermesser Arms &amp; Armor"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"&dsArmsDealerSpecial;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -85,12 +87,13 @@
 			armorID=			"&itGusokuArmor;"
 			hitPoints=			"250"
 			repairRate=			"3"
+			fireRateAdj=		"80"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, human, independent, populated"
 			levelFrequency=		"-rurv ----- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 
 			noArticle=			"true"
 			>
@@ -134,6 +137,8 @@
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
 			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="100"/>
+			<InstallDevice	criteria="w L:1-7" priceAdj="100"/>
+			<RemoveDevice	criteria="w" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -142,10 +147,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<StaticData>
@@ -184,6 +185,8 @@
 	<StationType UNID="&stRasiermesserFactory;"
 			name=				"Rasiermesser manufacturing plant"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			defaultBackgroundID="&rsRasiermesserFactoryBkgnd;"
@@ -194,13 +197,14 @@
 			armorID=			"&itGusokuArmor;"
 			hitPoints=			"700"
 			repairRate=			"3"
+			fireRateAdj=		"80"
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, human, independent, majorStation, populated"
 			levelFrequency=		"----- rur-- ----- ----- -----"
 			unique=				"inSystem"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
 
 			definiteArticle=	"true"
@@ -263,6 +267,9 @@
 			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d +rasiermesser;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-8;" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -288,10 +295,6 @@
 						)
 					)
 			</OnCreate>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -320,16 +323,9 @@
 							</Action>
 
 							<Action name="Buy Items" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									Nil						; obsolete
-									
-									'(	"w"					; install weapons
-										8					; of level 8 (and below)
-										Nil					; no special tech modifiers
-										True				; check for military ID
-										0)					; install cost margin
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Repair Items" key="R">
@@ -365,13 +361,9 @@
 							</Action>
 
 							<Action name="Install Weapon" key="W" >
-								(block Nil
-									(setq gTechLevel 8)
-									(setq gTechModifier Nil)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsInstallWeapon;")
-									)
+								(scrShowScreen gScreen &dsRPGInstallDevice; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Remove Weapon" key="V" >

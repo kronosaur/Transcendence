@@ -26,9 +26,6 @@
 
 #define DEVICE_LABEL_COLOR					(CG16bitImage::RGBValue(255,255,255))
 #define DEVICE_LABEL_FAINT_COLOR			(CG16bitImage::RGBValue(0,0,0))
-#define DEVICE_BONUS_COLOR					(CG16bitImage::RGBValue(150,255,180))
-#define DEVICE_POSITIVE_BONUS_BACKGROUND	(CG16bitImage::RGBValue(0,23,167))
-#define DEVICE_NEGATIVE_BONUS_BACKGROUND	(CG16bitImage::RGBValue(220,0,0))
 #define DISABLED_LABEL_COLOR				CG16bitImage::RGBValue(128,0,0)
 
 #define STR_UNKNOWN_HOSTILE					CONSTLIT("Unknown Hostile")
@@ -115,6 +112,7 @@ void CTargetDisplay::PaintDeviceStatus (CShip *pShip, DeviceNames iDev, int x, i
 //	Paints the status and ammo for a device
 
 	{
+	const CVisualPalette &VI = g_pHI->GetVisuals();
 	CInstalledDevice *pDevice = pShip->GetNamedDevice(iDev);
 	if (pDevice)
 		{
@@ -144,17 +142,18 @@ void CTargetDisplay::PaintDeviceStatus (CShip *pShip, DeviceNames iDev, int x, i
 			rcRect.bottom = rcRect.top + cyHeight;
 
 			bool bDisadvantage = (*(sBonus.GetASCIIZPointer()) == '-');
-			if (!bDisadvantage)
-				m_Buffer.Fill(rcRect.left - 2, rcRect.top + 1, cxBonus + 4, cyHeight - 2, DEVICE_POSITIVE_BONUS_BACKGROUND);
-			else
-				m_Buffer.Fill(rcRect.left - 2, rcRect.top + 1, cxBonus + 4, cyHeight - 2, DEVICE_NEGATIVE_BONUS_BACKGROUND);
+			m_Buffer.Fill(rcRect.left - 2, 
+					rcRect.top + 1, 
+					cxBonus + 4, 
+					cyHeight - 2, 
+					(bDisadvantage ? VI.GetColor(colorAreaDisadvantage) : VI.GetColor(colorAreaAdvantage)));
 
 			//	Bonus text
 
 			m_pFonts->Small.DrawText(m_Buffer,
 					rcRect.left,
 					rcRect.top,
-					DEVICE_BONUS_COLOR,
+					(bDisadvantage ? VI.GetColor(colorTextDisadvantage) : VI.GetColor(colorTextAdvantage)),
 					sBonus);
 
 			cxBonus += 4;

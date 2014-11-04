@@ -108,7 +108,8 @@ bool CShieldClass::AbsorbDamage (CInstalledDevice *pDevice, CSpaceObject *pShip,
 
 //	AbsorbDamage
 //
-//	Absorbs damage
+//	Absorbs damage.
+//	NOTE: We always set Ctx.iAbsorb properly, regardless of the return value.
 
 	{
 	DEBUG_TRY
@@ -117,7 +118,10 @@ bool CShieldClass::AbsorbDamage (CInstalledDevice *pDevice, CSpaceObject *pShip,
 
 	Ctx.iHPLeft = GetHPLeft(pDevice, pShip);
 	if (Ctx.iHPLeft == 0)
+		{
+		Ctx.iAbsorb = 0;
 		return false;
+		}
 
 	//	Calculate how much we will absorb
 
@@ -849,6 +853,47 @@ int CShieldClass::GetDamageAdj (CItemEnhancement Mods, const DamageDesc &Damage)
 	return iAdj;
 	}
 
+int CShieldClass::GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon)
+
+//	GetDamageEffectiveness
+//
+//	Returns the effectiveness of the given weapon against this shield.
+//
+//	< 0		The weapon is ineffective against us.
+//	0-99	The weapon is less effective than average.
+//	100		The weapon has average effectiveness
+//	> 100	The weapon is more effective than average.
+
+	{
+	const DamageDesc *pDamage = pWeapon->GetDamageDesc(CItemCtx(pAttacker, pWeapon));
+	if (pDamage == NULL)
+		return 100;
+
+	int iBonus = m_DamageAdj.GetHPBonus(pDamage->GetDamageType());
+	if (iBonus <= -100)
+		return -1;
+
+	//	Compute score based on bonus
+
+	int iScore;
+	if (iBonus <= 0)
+		iScore = 100 - iBonus;
+	else
+		iScore = 100 - Min(100, (iBonus / 2));
+
+	//	See if the weapon does extra damage to shields
+
+	if (pDamage->GetShieldDamageLevel())
+		{
+		int iAdj = 100 * Max(100, 300 + (50 * (pDamage->GetShieldDamageLevel() - GetLevel()))) / 100;
+		iScore += (iAdj / 2);
+		}
+
+	//	Done
+
+	return iScore;
+	}
+
 int CShieldClass::GetHPLeft (CInstalledDevice *pDevice, CSpaceObject *pSource)
 
 //	GetHPLeft
@@ -1003,15 +1048,15 @@ bool CShieldClass::GetReferenceDamageAdj (const CItem *pItem, CSpaceObject *pIns
 	return true;
 	}
 
-void CShieldClass::GetStatus (CInstalledDevice *pDevice, CShip *pShip, int *retiStatus, int *retiMaxStatus)
+void CShieldClass::GetStatus (CInstalledDevice *pDevice, CSpaceObject *pSource, int *retiStatus, int *retiMaxStatus)
 
 //	GetStatus
 //
 //	Returns the status of the shields
 
 	{
-	*retiStatus = GetHPLeft(pDevice, pShip);
-	*retiMaxStatus = GetMaxHP(pDevice, pShip);
+	*retiStatus = GetHPLeft(pDevice, pSource);
+	*retiMaxStatus = GetMaxHP(pDevice, pSource);
 	}
 
 int CShieldClass::GetStdCost (int iLevel)

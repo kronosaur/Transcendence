@@ -7,6 +7,7 @@
 static Metric g_rViewAngle =					0.4636448f;		//	26.56 degrees (z=12 x=6)
 static Metric g_rK1 =							sin(g_rViewAngle);
 static Metric g_rK2 =							cos(g_rViewAngle);
+static Metric g_MinZg =							0.1;
 
 #define BRING_TO_FRONT_ATTRIB					CONSTLIT("bringToFront")
 #define POS_ANGLE_ATTRIB						CONSTLIT("posAngle")
@@ -38,7 +39,7 @@ void C3DConversion::CalcCoord (int iScale, int iAngle, int iRadius, int iZ, int 
 	Metric rYg = rY * g_rK2 - rZ * g_rK1;
 	Metric rZg = rY * g_rK1 + rZ * g_rK2;
 
-	rZg += 2.0f;
+	rZg = Max(g_MinZg, rZg + 2.0f);
 
 	Metric rD = rScale * 2.0f;
 
@@ -75,7 +76,7 @@ void C3DConversion::CalcCoord (int iScale, int iAngle, int iRadius, int iZ, CVec
 	Metric rYg = rY * g_rK2 - rZ * g_rK1;
 	Metric rZg = rY * g_rK1 + rZ * g_rK2;
 
-	rZg += 2.0f;
+	rZg = Max(g_MinZg, rZg + 2.0f);
 
 	Metric rD = rScale * 2.0f;
 
@@ -109,7 +110,7 @@ void C3DConversion::CalcCoord (Metric rScale, const CVector &vPos, Metric rPosZ,
 	Metric rYg = rY * g_rK2 - rZ * g_rK1;
 	Metric rZg = rY * g_rK1 + rZ * g_rK2;
 
-	rZg += 2.0f;
+	rZg = Max(g_MinZg, rZg + 2.0f);
 
 	Metric rD = rScale * 2.0f;
 

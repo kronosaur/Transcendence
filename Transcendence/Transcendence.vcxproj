@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug in Program Files|Win32">
       <Configuration>Debug in Program Files</Configuration>
@@ -22,17 +22,17 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v110_xp</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug in Program Files|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v110_xp</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v110_xp</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -218,9 +218,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CChooseAdventureSession.cpp" />
+    <ClCompile Include="CDockPane.cpp" />
+    <ClCompile Include="CDockScreenCustomItemList.cpp" />
+    <ClCompile Include="CDockScreenCustomList.cpp" />
+    <ClCompile Include="CDockScreenItemList.cpp" />
+    <ClCompile Include="CDockScreenList.cpp" />
+    <ClCompile Include="CDockScreenSelector.cpp" />
     <ClCompile Include="CDockScreenStack.cpp" />
     <ClCompile Include="CExtensionListMap.cpp" />
     <ClCompile Include="CGameSession.cpp" />
+    <ClCompile Include="CGItemDisplayArea.cpp" />
+    <ClCompile Include="CGSelectorArea.cpp" />
     <ClCompile Include="CIntroSession.cpp" />
     <ClCompile Include="CIntroShipController.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
@@ -258,6 +266,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="IDockScreenDisplay.cpp" />
     <ClCompile Include="Main.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug in Program Files|Win32'">Disabled</Optimization>
@@ -479,7 +488,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundTasks.h" />
+    <ClInclude Include="CGAreas.h" />
     <ClInclude Include="Credits.h" />
+    <ClInclude Include="DockScreen.h" />
+    <ClInclude Include="DockScreenDisplayImpl.h" />
     <ClInclude Include="PreComp.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sessions.h" />
@@ -606,7 +618,9 @@
     <None Include="Game\Source\Commonwealth.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\CommonwealthAgricultural.xml" />
+    <None Include="Game\Source\CommonwealthAgricultural.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\CommonwealthFleet.xml">
       <SubType>Designer</SubType>
     </None>
@@ -638,12 +652,18 @@
     <None Include="Game\Source\DwargRaiders.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\Elysium.xml" />
+    <None Include="Game\Source\Elysium.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\EncountersVol01.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\Environments.xml" />
-    <None Include="Game\Source\Eridani.xml" />
+    <None Include="Game\Source\Environments.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Source\Eridani.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Groups.xml" />
     <None Include="Game\Source\Heretic.xml">
       <SubType>Designer</SubType>
@@ -679,19 +699,29 @@
     <None Include="Game\Source\PlayerShips.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\PointJuno.xml" />
+    <None Include="Game\Source\PointJuno.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Primordial.xml" />
-    <None Include="Game\Source\Rasiermesser.xml" />
-    <None Include="Game\Source\Ringers.xml" />
+    <None Include="Game\Source\Rasiermesser.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Source\Ringers.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Rocky.xml" />
-    <None Include="Game\Source\RogueFleet.xml" />
+    <None Include="Game\Source\RogueFleet.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\RPGAnalyzers.xml" />
     <None Include="Game\Source\RPGAutons.xml">
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Source\RPGAuxDevices.xml" />
     <None Include="Game\Source\RPGBehaviors.xml" />
-    <None Include="Game\Source\RPGCharacters.xml" />
+    <None Include="Game\Source\RPGCharacters.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\RPGCode.xml">
       <SubType>Designer</SubType>
     </None>
@@ -710,11 +740,19 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Source\Stargates.xml" />
-    <None Include="Game\Source\StarsOfThePilgrim.xml" />
-    <None Include="Game\Source\StarSystems.xml" />
+    <None Include="Game\Source\StarsOfThePilgrim.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Source\StarSystems.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\StdArmor.xml" />
-    <None Include="Game\Source\StdAutons.xml" />
-    <None Include="Game\Source\StdDevices.xml" />
+    <None Include="Game\Source\StdAutons.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Source\StdDevices.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\StdDockScreens.xml">
       <SubType>Designer</SubType>
     </None>
@@ -724,10 +762,14 @@
     <None Include="Game\Source\StdPlayerShips.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\StdShields.xml" />
+    <None Include="Game\Source\StdShields.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\StdSovereigns.xml" />
     <None Include="Game\Source\StdSystems.xml" />
-    <None Include="Game\Source\StdTypes.xml" />
+    <None Include="Game\Source\StdTypes.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\StdUnknownItems.xml" />
     <None Include="Game\Source\StdWeapons.xml">
       <SubType>Designer</SubType>
@@ -738,7 +780,9 @@
     <None Include="Game\Source\SungSlavers.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\Teratons.xml" />
+    <None Include="Game\Source\Teratons.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Tinkers.xml">
       <SubType>Designer</SubType>
     </None>
@@ -747,7 +791,9 @@
     </None>
     <None Include="Game\Source\UniverseCompatibility.xml" />
     <None Include="Game\Source\UniverseEffects.xml" />
-    <None Include="Game\Source\UrakWarlords.xml" />
+    <None Include="Game\Source\UrakWarlords.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\UsefulItems.xml">
       <SubType>Designer</SubType>
     </None>
@@ -772,13 +818,27 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Game\Source\Benedict03.xml" />
+    <None Include="Game\Source\Benedict03.xml">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Game\Source\Benedict01.xml" />
+    <None Include="Game\Source\Benedict01.xml">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Game\Source\Benedict.xml" />
+    <None Include="Game\Source\Stars.xml" />
+    <None Include="Game\Source\RPGArmorDockScreens.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Source\RPGDeviceDockScreens.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Source\RPGCharacterClasses.xml" />
+    <None Include="Game\Source\Ovoids.xml" />
+    <None Include="Game\Source\RPGDialog.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

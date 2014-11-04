@@ -245,7 +245,7 @@ void DrawGradientCircle8bit (CG16bitImage &Dest,
 		}
 	}
 
-void RasterizeQuarterCircle8bit (int iRadius, int *retSolid, BYTE *retEdge)
+void RasterizeQuarterCircle8bit (int iRadius, int *retSolid, BYTE *retEdge, DWORD byOpacity)
 
 //	RasterizeQuarterCircle8bit
 //
@@ -282,5 +282,13 @@ void RasterizeQuarterCircle8bit (int iRadius, int *retSolid, BYTE *retEdge)
 			}
 
 		rRow -= 1.0;
+		}
+
+	//	Adjust for opacity
+
+	if (byOpacity != 255)
+		{
+		for (i = 0; i < iRadius; i++)
+			retEdge[i] = (BYTE)(retEdge[i] * byOpacity / 255);
 		}
 	}

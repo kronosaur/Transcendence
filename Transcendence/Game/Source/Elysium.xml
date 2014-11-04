@@ -8,13 +8,16 @@
 	
 	<!-- Elysium -->
 
-	<SystemType UNID="&ssElysium;" noRandomEncounters="true">
+	<SystemType UNID="&ssElysium;" 
+				noRandomEncounters=	"true"
+				noExtraEncounters=	"true"
+				>
 
 		<SystemGroup>
 
 			<!-- Star -->
 
-			<Station type="&stA-TypeStar;" name="Elysium"/>
+			<Station type="&stStarClassA0;" name="Elysium"/>
 
 			<!-- Stargates -->
 

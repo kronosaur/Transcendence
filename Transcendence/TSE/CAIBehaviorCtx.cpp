@@ -8,7 +8,7 @@
 const Metric MIN_STATION_TARGET_DIST =	(10.0 * LIGHT_SECOND);
 const Metric MIN_TARGET_DIST =			(5.0 * LIGHT_SECOND);
 const int MULTI_HIT_WINDOW =			20;
-const Metric WALL_RANGE =				(KLICKS_PER_PIXEL * 300.0);
+const Metric WALL_RANGE =				(KLICKS_PER_PIXEL * 700.0);
 
 const Metric MIN_STATION_TARGET_DIST2 =	(MIN_STATION_TARGET_DIST * MIN_STATION_TARGET_DIST);
 const Metric MIN_TARGET_DIST2 =			(MIN_TARGET_DIST * MIN_TARGET_DIST);
@@ -32,6 +32,7 @@ CAIBehaviorCtx::CAIBehaviorCtx (void) :
 		m_fSuperconductingShields(false),
 		m_fHasMultipleWeapons(false),
 		m_fHasSecondaryWeapons(false),
+		m_fHasMultiplePrimaries(false),
 		m_fRecalcBestWeapon(true),
 		m_fHasEscorts(false)
 
@@ -67,6 +68,20 @@ void CAIBehaviorCtx::CalcAvoidPotential (CShip *pShip, CSpaceObject *pTarget)
 
 			if (pObj == NULL || pObj == pShip || pObj == pTarget || pObj->IsDestroyed())
 				NULL;
+			else if (pObj->HasGravity())
+				{
+				CVector vTarget = pObj->GetPos() - pShip->GetPos();
+				Metric rTargetDist2 = vTarget.Dot(vTarget);
+
+				//	There is a sharp potential away from gravity wells
+
+				if (rTargetDist2 < WALL_RANGE2)
+					{
+					CVector vTargetN = vTarget.Normal(&rDist);
+					if (rDist > 0.0)
+						vPotential = vPotential - (vTargetN * 500.0 * g_KlicksPerPixel * (WALL_RANGE / rDist));
+					}
+				}
 			else if (pObj->Blocks(pShip))
 				{
 				CVector vTarget = pObj->GetPos() - pShip->GetPos();
@@ -78,7 +93,7 @@ void CAIBehaviorCtx::CalcAvoidPotential (CShip *pShip, CSpaceObject *pTarget)
 					{
 					CVector vTargetN = vTarget.Normal(&rDist);
 					if (rDist > 0.0)
-						vPotential = vPotential - (vTargetN * 100.0 * g_KlicksPerPixel * (WALL_RANGE / rDist));
+						vPotential = vPotential - (vTargetN * 50.0 * g_KlicksPerPixel * (WALL_RANGE / rDist));
 					}
 				}
 			else if (pObj->GetCategory() == CSpaceObject::catShip)
@@ -326,6 +341,8 @@ void CAIBehaviorCtx::CalcInvariants (CShip *pShip)
 	m_iBestNonLauncherWeaponLevel = 0;
 	m_fHasSecondaryWeapons = false;
 
+	int iPrimaryCount = 0;
+
 	for (i = 0; i < pShip->GetDeviceCount(); i++)
 		{
 		CInstalledDevice *pDevice = pShip->GetDevice(i);
@@ -351,6 +368,8 @@ void CAIBehaviorCtx::CalcInvariants (CShip *pShip)
 
 				if (pDevice->IsSecondaryWeapon())
 					m_fHasSecondaryWeapons = true;
+				else if (pDevice->GetCategory() == itemcatWeapon)
+					iPrimaryCount++;
 
 				break;
 				}
@@ -365,6 +384,7 @@ void CAIBehaviorCtx::CalcInvariants (CShip *pShip)
 
 	//	Flags
 
+	m_fHasMultiplePrimaries = (iPrimaryCount > 1);
 	m_fThrustThroughTurn = ((pShip->GetDestiny() % 100) < 50);
 	m_fAvoidExplodingStations = (rAimRange > MIN_STATION_TARGET_DIST);
 
@@ -682,6 +702,18 @@ int CAIBehaviorCtx::CalcWeaponScore (CShip *pShip, CSpaceObject *pTarget, CInsta
 	//	Adjust score based on effectiveness
 
 	iScore += iEffectiveness;
+
+	//	If we have multiple primaries, then include damage type effectiveness against
+	//	the target.
+
+	if (pTarget && m_fHasMultiplePrimaries)
+		{
+		int iDamageEffect = pTarget->GetDamageEffectiveness(pShip, pWeapon);
+		if (iDamageEffect < 0)
+			return 0;
+		else
+			iScore += (iDamageEffect / 10);
+		}
 
 	//	If this weapon has a fire arc and the target is in the arc, then prefer this weapon
 

@@ -1625,6 +1625,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 
 					case CGameKeys::keyEnableDevice:
 						if (!GetPlayer()->DockingInProgress() 
+								&& !GetPlayer()->GetShip()->IsParalyzed()
 								&& !GetPlayer()->GetShip()->IsOutOfFuel()
 								&& !GetPlayer()->GetShip()->IsTimeStopped())
 							{
@@ -1649,6 +1650,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 
 					case CGameKeys::keyDock:
 						if (!GetPlayer()->GetShip()->IsOutOfFuel()
+								&& !GetPlayer()->GetShip()->IsParalyzed()
 								&& !GetPlayer()->GetShip()->IsTimeStopped()
 								&& !bKeyRepeat)
 							{
@@ -1674,6 +1676,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 
 					case CGameKeys::keyEnterGate:
 						if (!GetPlayer()->DockingInProgress()
+								&& !GetPlayer()->GetShip()->IsParalyzed()
 								&& !GetPlayer()->GetShip()->IsOutOfFuel()
 								&& !GetPlayer()->GetShip()->IsTimeStopped())
 							{
@@ -1746,7 +1749,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						break;
 
 					case CGameKeys::keyShipStatus:
-						if (!GetPlayer()->DockingInProgress())
+						if (GetPlayer()->CanShowShipStatus())
 							{
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							GetModel().ShowShipScreen();
@@ -1914,7 +1917,9 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						}
 
 					case CGameKeys::keyEnableAllDevices:
-						if (!GetPlayer()->GetShip()->IsTimeStopped())
+						if (!GetPlayer()->GetShip()->IsTimeStopped()
+								&& !GetPlayer()->GetShip()->IsParalyzed()
+								&& !GetPlayer()->GetShip()->IsOutOfFuel())
 							{
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							GetPlayer()->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
@@ -1923,7 +1928,9 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						break;
 
 					case CGameKeys::keyDisableAllDevices:
-						if (!GetPlayer()->GetShip()->IsTimeStopped())
+						if (!GetPlayer()->GetShip()->IsTimeStopped()
+								&& !GetPlayer()->GetShip()->IsParalyzed()
+								&& !GetPlayer()->GetShip()->IsOutOfFuel())
 							{
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							GetPlayer()->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
@@ -1932,7 +1939,9 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						break;
 
 					case CGameKeys::keyEnableAllDevicesToggle:
-						if (!GetPlayer()->GetShip()->IsTimeStopped())
+						if (!GetPlayer()->GetShip()->IsTimeStopped()
+								&& !GetPlayer()->GetShip()->IsParalyzed()
+								&& !GetPlayer()->GetShip()->IsOutOfFuel())
 							{
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							GetPlayer()->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
@@ -1945,7 +1954,9 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						if (iCommand >= CGameKeys::keyEnableDeviceToggle00 
 								&& iCommand <= CGameKeys::keyEnableDeviceToggle31)
 							{
-							if (!GetPlayer()->GetShip()->IsTimeStopped())
+							if (!GetPlayer()->GetShip()->IsTimeStopped()
+									&& !GetPlayer()->GetShip()->IsParalyzed()
+									&& !GetPlayer()->GetShip()->IsOutOfFuel())
 								{
 								int iDevice = (iCommand - CGameKeys::keyEnableDeviceToggle00);
 

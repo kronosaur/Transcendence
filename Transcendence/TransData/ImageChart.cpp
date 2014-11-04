@@ -37,14 +37,41 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 		orderSmallest = 1,
 		orderLargest = 2,
 		orderName = 3,
+		orderLevel = 4,
 		};
+
+	//	Item criteria
+
+	bool bHasItemCriteria;
+	CString sCriteria;
+	CItemCriteria ItemCriteria;
+	if (bHasItemCriteria = pCmdLine->FindAttribute(CONSTLIT("itemCriteria"), &sCriteria))
+		CItem::ParseCriteria(sCriteria, &ItemCriteria);
+	else
+		CItem::InitCriteriaAll(&ItemCriteria);
 
 	//	Get the criteria from the command line.
 
 	CDesignTypeCriteria Criteria;
-	if (CDesignTypeCriteria::ParseCriteria(pCmdLine->GetAttribute(CONSTLIT("criteria")), &Criteria) != NOERROR)
+	if (pCmdLine->FindAttribute(CONSTLIT("criteria"), &sCriteria))
 		{
-		printf("ERROR: Unable to parse criteria.\n");
+		if (CDesignTypeCriteria::ParseCriteria(sCriteria, &Criteria) != NOERROR)
+			{
+			printf("ERROR: Unable to parse criteria.\n");
+			return;
+			}
+		}
+	else if (bHasItemCriteria)
+		{
+		if (CDesignTypeCriteria::ParseCriteria(CONSTLIT("i"), &Criteria) != NOERROR)
+			{
+			printf("ERROR: Unable to parse criteria.\n");
+			return;
+			}
+		}
+	else
+		{
+		printf("ERROR: Expected criteria.\n");
 		return;
 		}
 
@@ -63,8 +90,13 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 		iOrder = orderSmallest;
 	else if (strEquals(sOrder, CONSTLIT("largest")))
 		iOrder = orderLargest;
+	else if (strEquals(sOrder, CONSTLIT("level")))
+		iOrder = orderLevel;
 	else
 		iOrder = orderName;
+
+	bool bDockingPorts = pCmdLine->GetAttributeBool(CONSTLIT("portPos"));
+	bool bDevicePos = pCmdLine->GetAttributeBool(CONSTLIT("devicePos"));
 
 	//	Image size
 
@@ -132,6 +164,12 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 			case designItemType:
 				{
 				CItemType *pItemType = CItemType::AsType(pType);
+				CItem Item(pItemType, 1);
+
+				//	Skip if not in item criteria
+
+				if (!Item.MatchesCriteria(ItemCriteria))
+					continue;
 
 				//	Skip virtual classes
 
@@ -178,14 +216,15 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 				//	Skip generic classes
 
-				if (!bAll && pStationType->HasLiteralAttribute(CONSTLIT("generic")))
+				if (!bAll && !pStationType->HasLiteralAttribute(CONSTLIT("generic")))
 					continue;
 
 				NewEntry.pType = pType;
 				NewEntry.sName = pStationType->GetNounPhrase(0);
 				NewEntry.iSize = pStationType->GetSize();
 
-				pStationType->SetImageSelector(&NewEntry.Selector);
+				SSelectorInitCtx InitCtx;
+				pStationType->SetImageSelector(InitCtx, &NewEntry.Selector);
 				NewEntry.pImage = &pStationType->GetImage(NewEntry.Selector, CCompositeImageModifiers());
 				break;
 				}
@@ -209,6 +248,13 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 			case orderLargest:
 				wsprintf(szBuffer, "%09d%s%x",
 						1000000 - NewEntry.iSize,
+						NewEntry.sName.GetASCIIZPointer(),
+						pType->GetUNID());
+				break;
+
+			case orderLevel:
+				wsprintf(szBuffer, "%09d%s%x",
+						pType->GetLevel(),
 						NewEntry.sName.GetASCIIZPointer(),
 						pType->GetUNID());
 				break;
@@ -278,8 +324,20 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		int x = Arranger.GetX(i);
 		int y = Arranger.GetY(i);
+
+		//	Paint
+
 		if (x != -1)
 			{
+			int xCenter = x + (Arranger.GetWidth(i) / 2);
+			int yCenter = y + (Arranger.GetHeight(i) / 2);
+
+			int xOffset;
+			int yOffset;
+			Entry.pImage->GetImageOffset(0, Entry.iRotation, &xOffset, &yOffset);
+
+			//	Paint image
+
 			if (!bTextBoxesOnly && Entry.pImage)
 				{
 				Entry.pImage->PaintImageUL(Output,
@@ -287,6 +345,19 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 						y,
 						0,
 						Entry.iRotation);
+				}
+
+			//	Paint type specific stuff
+
+			switch (Entry.pType->GetType())
+				{
+				case designStationType:
+					{
+					CStationType *pStationType = CStationType::AsType(Entry.pType);
+					if (bDockingPorts)
+						pStationType->PaintDockPortPositions(Output, xCenter - xOffset, yCenter - yOffset);
+					break;
+					}
 				}
 
 			//	Paint name
@@ -300,7 +371,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 				if (!bTextBoxesOnly)
 					{
-					Output.FillColumn(x + (Arranger.GetWidth(i) / 2),
+					Output.FillColumn(xCenter,
 							y + Arranger.GetHeight(i),
 							yText - (y + Arranger.GetHeight(i)),
 							wNameColor);

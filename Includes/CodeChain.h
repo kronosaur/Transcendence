@@ -137,6 +137,7 @@ class ICCItem : public CObject
 		virtual int GetIntegerValue (void) { return 0; }
 		virtual CString GetStringValue (void) { return LITERAL(""); }
 		virtual ValueTypes GetValueType (void) = 0;
+		virtual CString GetTypeOf (void);
 		virtual BOOL IsAtom (void) = 0;
 		virtual BOOL IsAtomTable (void) { return FALSE; }
 		virtual bool IsExpression (void) { return false; }
@@ -156,6 +157,8 @@ class ICCItem : public CObject
 
 		bool IsLambdaExpression (void);
 		BOOL IsLambdaSymbol (void);
+		inline bool IsReadOnly (void) { return m_bReadOnly; }
+		inline void SetReadOnly (bool bReadOnly = true) { m_bReadOnly = bReadOnly; }
 		void ResetItem (void);
 
 		//	Symbol/Atom table functions
@@ -198,6 +201,7 @@ class ICCItem : public CObject
 		DWORD m_bError:1;						//	TRUE if it represents a runtime error
 		DWORD m_bModified:1;					//	TRUE if this item was modified
 		DWORD m_bNoRefCount:1;					//	TRUE if we don't care about ref count
+		DWORD m_bReadOnly:1;					//	TRUE if we should do a copy-on-write
 	};
 
 //	An atom is a single value
@@ -569,6 +573,7 @@ class CCSymbolTable : public ICCList
 		inline CString GetKey (int iIndex) { return m_Symbols.GetKey(iIndex); }
 		void SetIntegerValue (CCodeChain &CC, const CString &sKey, int iValue);
 		void SetStringValue (CCodeChain &CC, const CString &sKey, const CString &sValue);
+		void SetValue (CCodeChain &CC, const CString &sKey, ICCItem *pValue);
 
 		//	ICCItem virtuals
 

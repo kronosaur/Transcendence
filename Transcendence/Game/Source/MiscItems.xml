@@ -203,7 +203,7 @@
 			mass=				"1000"
 			frequency=			"uncommon"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Ore; Res; Armor;"
+			attributes=			"Consumable; Ore; organicComp, Res; Armor;"
 
 			description=		"Cerallox ore is a crystalline blend of carbon and metals; it is the primary component of ceralloy, a heat-resistant alloy."
 
@@ -275,7 +275,7 @@
 			mass=				"1000"
 			frequency=			"rare"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Nuclear; Ore; Res;"
+			attributes=			"Consumable; Nuclear; Ore; Res; rockyComp"
 
 			description=		"This exotic fissionable material is used as a catalyst in high-energy fusion reactors."
 
@@ -349,7 +349,7 @@
 			mass=				"1000"
 			frequency=			"uncommon"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Ore; Res; Armor;"
+			attributes=			"Consumable; metallicComp, Ore; Res; Armor;"
 
 			description=		"Duranium ore is a mixture of titanium, hexanium, and other exotic metals. Duranium is the primary component of Duralloy steel."
 
@@ -387,7 +387,7 @@
 			mass=				"1000"
 			frequency=			"rare"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Ore; Res"
+			attributes=			"Consumable; Ore; Res, waterComp"
 
 			description=		"Etherium is a rare ore with still mysterious properties. Etherium is eagerly sought by Ringers and Teratons."
 
@@ -465,7 +465,7 @@
 			mass=				"1000"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Ore; Res;"
+			attributes=			"Consumable; Ore; Res; rockyComp"
 
 			description=		"Beyond the demand for jewelry, gold is used as a conductor in many electronic devices."
 
@@ -524,7 +524,7 @@
 			mass=				"1000"
 			frequency=			"rare"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Res; Ore; ZeroPoint"
+			attributes=			"Consumable; Res; Ore; rockyComp, ZeroPoint"
 
 			description=		"This rare resource was originally created in the Big Bang and cannot be replenished. It is used today as a fuel for zero-point energy generators."
 
@@ -598,7 +598,7 @@
 			mass=				"1000"
 			frequency=			"rare"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Nuclear; Ore; Res;"
+			attributes=			"Consumable; Nuclear; Ore; Res; rockyComp"
 
 			description=		"Rocks containing helium&#xb3; are the main raw material for the fuel rods used by starships."
 
@@ -732,7 +732,7 @@
 			mass=				"1000"
 			frequency=			"uncommon"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Ore; Res; ZeroPoint"
+			attributes=			"Consumable; Ore; organicComp, Res; ZeroPoint"
 
 			description=		"Hyperonic ore has a very high concentration of hyperons and consequently can be used in zero-point energy generators."
 
@@ -791,7 +791,7 @@
 			mass=				"1000"
 			frequency=			"uncommon"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Ore; Res; Armor;"
+			attributes=			"Consumable; metallicComp, Ore; Res; Armor;"
 
 			description=		"Ithalium is a rare and powerful alloy found mostly on volcanic worlds."
 
@@ -1104,7 +1104,7 @@
 			mass=				"1000"
 			frequency=			"common"
 			numberAppearing=	"1d2"
-			attributes=			"Consumable; Ore; Res; Armor;"
+			attributes=			"Consumable; metallicComp, Ore; Res; Armor;"
 
 			description=		"The densest substance known, a ton of neutronium could fit in the palm of your hand. The secret of its manufacture is known only to the ancient races."
 			sortName=			"neutronium ore, ton of"
@@ -1179,7 +1179,7 @@
 			mass=				"1000"
 			frequency=			"uncommon"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Ore; Res; Armor;"
+			attributes=			"Consumable; metallicComp, Ore; Res; Armor;"
 
 			description=		"Orthosteel is used for military armors."
 
@@ -1238,7 +1238,7 @@
 			mass=				"1000"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Ore; Res;"
+			attributes=			"Consumable; Ore; Res; rockyComp"
 
 			description=		"Platinum is a key component in many industrial processes."
 
@@ -1293,7 +1293,7 @@
 			mass=				"1000"
 			frequency=			"rare"
 			numberAppearing=	"1d8"
-			attributes=			"AntiMatter; Consumable; Ore; Res;"
+			attributes=			"AntiMatter; Consumable; Ore; Res; rockyComp"
 
 			description=		"Pteracnium is one of the only transuranic elements that is stable under normal conditions. When bombarded with high-energy particles, pteracnium releases a cascade of anti-protons that can sustain a starship engine."
 
@@ -1503,7 +1503,7 @@
 			mass=				"1000"
 			frequency=			"common"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Ore; Res"
+			attributes=			"Consumable; Ore; Res, rockyComp"
 
 			description=		"Tetramite is a rare mineral used by Ringers and Teratons for many of their advanced industries."
 
@@ -1524,7 +1524,7 @@
 			mass=				"1000"
 			frequency=			"rare"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Nuclear; Ore; Res;"
+			attributes=			"Consumable; Nuclear; Ore; Res; rockyComp"
 
 			description=		"Uranium is the most common fissionable material. Uranium ore can be processed into nuclear fuel for low-tech industries."
 
@@ -1635,7 +1635,7 @@
 			mass=				"1000"
 			frequency=			"rare"
 			numberAppearing=	"1d8"
-			attributes=			"AntiMatter; Consumable; Ore; Res;"
+			attributes=			"AntiMatter; Consumable; Ore; Res; waterComp"
 
 			description=		"Xenotite was one of the first minerals to be discovered in another star system. Xenotite can be refined to produce a fuel for antimatter reactors."
 
@@ -1808,7 +1808,7 @@
 			mass=				"1000"
 			frequency=			"common"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Res; Ore; Armor;"
+			attributes=			"Consumable; Res; metallicComp, Ore; Armor;"
 
 			description=		"Titanium ore is used commercially for space-rated structures and components."
 
@@ -1979,7 +1979,7 @@
 			mass=				"1000"
 			frequency=			"uncommon"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Res; Ore; Armor;"
+			attributes=			"Consumable; Res; metallicComp, Ore; Armor;"
 
 			description=		"Plasteel is a stronger and lighter alloy of titanium."
 
@@ -2148,7 +2148,7 @@
 			mass=				"1000"
 			frequency=			"common"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Ore; Res;"
+			attributes=			"Consumable; Ore; Res; waterComp"
 
 			description=		"Palladium is a critical element as a catalyst in various industrial processes."
 
@@ -2175,4 +2175,16 @@
 		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
+<!-- RESOURCES -->
+
+	<Image UNID="&rsItems2;"	bitmap="Resources\Items2.jpg"	bitmask="Resources\Items2Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsItems3;"	bitmap="Resources\Items3.jpg"	bitmask="Resources\Items3Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsItems4;"	bitmap="Resources\Items4.jpg"	bitmask="Resources\Items4Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsItems5;"	bitmap="Resources\Items5.jpg"	bitmask="Resources\Items5Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsItems6;"	bitmap="Resources\Items6.jpg"	bitmask="Resources\Items6Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsItems7;"	bitmap="Resources\Items7.jpg"	bitmask="Resources\Items7Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsItems8;"	bitmap="Resources\Items8.jpg"	bitmask="Resources\Items8Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsItems9;"	bitmap="Resources\Items9.jpg"	bitmask="Resources\Items9Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsItems10;"	bitmap="Resources\Items10.jpg"	bitmask="Resources\Items10Mask.bmp"  loadOnUse="true"/>
+	
 </TranscendenceModule>

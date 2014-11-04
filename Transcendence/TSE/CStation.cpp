@@ -24,15 +24,18 @@
 #define NAME_ATTRIB								CONSTLIT("name")
 
 #define PROPERTY_ABANDONED						CONSTLIT("abandoned")
+#define PROPERTY_DOCKING_PORT_COUNT				CONSTLIT("dockingPortCount")
 #define PROPERTY_HP								CONSTLIT("hp")
+#define PROPERTY_IGNORE_FRIENDLY_FIRE			CONSTLIT("ignoreFriendlyFire")
 #define PROPERTY_IMMUTABLE						CONSTLIT("immutable")
-#define PROPERTY_INSTALL_DEVICE_MAX_LEVEL		CONSTLIT("installDeviceMaxLevel")
 #define PROPERTY_MAX_HP							CONSTLIT("maxHP")
 #define PROPERTY_MAX_STRUCTURAL_HP				CONSTLIT("maxStructuralHP")
+#define PROPERTY_OPEN_DOCKING_PORT_COUNT		CONSTLIT("openDockingPortCount")
 #define PROPERTY_ORBIT							CONSTLIT("orbit")
 #define PROPERTY_PARALLAX						CONSTLIT("parallax")
 #define PROPERTY_PLAYER_BACKLISTED				CONSTLIT("playerBlacklisted")
-#define PROPERTY_REPAIR_ARMOR_MAX_LEVEL			CONSTLIT("repairArmorMaxLevel")
+#define PROPERTY_SHIP_CONSTRUCTION_ENABLED		CONSTLIT("shipConstructionEnabled")
+#define PROPERTY_SHIP_REINFORCEMENT_ENABLED		CONSTLIT("shipReinforcementEnabled")
 #define PROPERTY_STRUCTURAL_HP					CONSTLIT("structuralHP")
 
 #define STR_TRUE								CONSTLIT("true")
@@ -120,18 +123,7 @@ CStation::~CStation (void)
 		delete m_pTrade;
 	}
 
-void CStation::AddBuyOrder (CItemType *pType, const CString &sCriteria, int iPriceAdj)
-
-//	AddBuyOrder
-//
-//	Adds an override buy order
-
-	{
-	AllocTradeOverride();
-	m_pTrade->AddBuyOrder(pType, sCriteria, iPriceAdj);
-	}
-
-void CStation::AddOverlay (CEnergyFieldType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifeLeft, DWORD *retdwID)
+void CStation::AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifeLeft, DWORD *retdwID)
 
 //	AddOverlay
 //
@@ -140,25 +132,10 @@ void CStation::AddOverlay (CEnergyFieldType *pType, int iPosAngle, int iPosRadiu
 	{
 	m_Overlays.AddField(this, pType, iPosAngle, iPosRadius, iRotation, iLifeLeft, retdwID);
 
-#if 0
 	//	Recalc bonuses, etc.
 
-	CalcArmorBonus();
-	CalcDeviceBonus();
-	m_pController->OnWeaponStatusChanged();
-	m_pController->OnArmorRepaired(-1);
-#endif
-	}
-
-void CStation::AddSellOrder (CItemType *pType, const CString &sCriteria, int iPriceAdj)
-
-//	AddSellOrder
-//
-//	Adds an override sell order
-
-	{
-	AllocTradeOverride();
-	m_pTrade->AddSellOrder(pType, sCriteria, iPriceAdj);
+	CalcBounds();
+	CalcOverlayImpact();
 	}
 
 void CStation::AddSubordinate (CSpaceObject *pSubordinate)
@@ -177,9 +154,9 @@ void CStation::AddSubordinate (CSpaceObject *pSubordinate)
 		pSatellite->SetBase(this);
 	}
 
-void CStation::AllocTradeOverride (void)
+CTradingDesc *CStation::AllocTradeDescOverride (void)
 
-//	AllocTradeOverride
+//	AllocTradeDescOverride
 //
 //	Makes sure that we have the m_pTrade structure allocated.
 //	This is an override of the trade desc in the type
@@ -199,6 +176,8 @@ void CStation::AllocTradeOverride (void)
 			m_pTrade->SetReplenishCurrency(pBaseTrade->GetReplenishCurrency());
 			}
 		}
+
+	return m_pTrade;
 	}
 
 void CStation::Blacklist (CSpaceObject *pObj)
@@ -213,7 +192,7 @@ void CStation::Blacklist (CSpaceObject *pObj)
 
 	//	No need if we don't support blacklist
 
-	if (!m_pType->IsBlacklistEnabled())
+	if (!m_pType->IsBlacklistEnabled() || m_fNoBlacklist)
 		return;
 
 	//	Remember if we need to send out an event
@@ -246,6 +225,25 @@ void CStation::Blacklist (CSpaceObject *pObj)
 		}
 	}
 
+void CStation::CalcBounds (void)
+
+//	CalcBounds
+//
+//	Calculates and sets station bounds
+
+	{
+	const CObjectImageArray &Image = GetImage(false, NULL, NULL);
+	RECT rcBounds = Image.GetImageRect();
+
+	//	Add overlays
+
+	m_Overlays.AccumulateBounds(this, &rcBounds);
+
+	//	Set it
+
+	SetBounds(rcBounds, GetParallaxDist());
+	}
+
 int CStation::CalcNumberOfShips (void)
 
 //	CalcNumberOfShips
@@ -274,6 +272,23 @@ int CStation::CalcNumberOfShips (void)
 	return iCount;
 
 	DEBUG_CATCH
+	}
+
+void CStation::CalcOverlayImpact (void)
+
+//	CalcOverlayImpact
+//
+//	Calculates the impact of overlays on the station. This should be called 
+//	whenever the set of overlays changes.
+
+	{
+	CEnergyFieldList::SImpactDesc Impact;
+	m_Overlays.GetImpact(this, &Impact);
+
+	//	Update our cache
+
+	m_fDisarmedByOverlay = Impact.bDisarm;
+	m_fParalyzedByOverlay = Impact.bParalyze;
 	}
 
 bool CStation::CanAttack (void) const
@@ -549,9 +564,7 @@ void CStation::CreateEjectaFromDamage (int iDamage, const CVector &vHitPos, int 
 
 ALERROR CStation::CreateFromType (CSystem *pSystem,
 								  CStationType *pType,
-								  const CVector &vPos,
-								  const CVector &vVel,
-								  CXMLElement *pExtraData,
+								  SObjCreateCtx &CreateCtx,
 								  CStation **retpStation,
 								  CString *retsError)
 
@@ -585,7 +598,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	//	Initialize
 
 	pStation->m_pType = pType;
-	pStation->Place(vPos, vVel);
+	pStation->Place(CreateCtx.vPos, CreateCtx.vVel);
 	pStation->m_pMapOrbit = NULL;
 	pStation->m_pTrade = NULL;
 	pStation->m_iDestroyedAnimation = 0;
@@ -596,11 +609,16 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	pStation->m_fNoMapLabel = false;
 	pStation->m_fActive = pType->IsActive();
 	pStation->m_fNoReinforcements = false;
+	pStation->m_fNoConstruction = false;
 	pStation->m_fRadioactive = false;
 	pStation->m_xMapLabel = 10;
 	pStation->m_yMapLabel = -6;
 	pStation->m_rMass = pType->GetMass();
 	pStation->m_dwWreckUNID = 0;
+	pStation->m_fDisarmedByOverlay = false;
+	pStation->m_fParalyzedByOverlay = false;
+	pStation->m_fNoBlacklist = false;
+	pStation->SetHasGravity(pType->HasGravity());
 
 	//	We generally don't move
 
@@ -625,10 +643,6 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 
 	if (!pType->CanBeHitByFriends())
 		pStation->SetNoFriendlyTarget();
-
-	//	Other
-
-	pStation->SetEventFlags();
 
 	//	Name
 
@@ -664,18 +678,18 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	pStation->m_iStructuralHP = pType->GetStructuralHitPoints();
 
 	//	Pick an appropriate image. This call will set the shipwreck image, if
-	//	necessary or the variant (if appropriate). HACK: In the case of a shipwreck,
-	//	this call also sets the name and other properties (such as structuralHP)
-	//
-	//	This call also sets the bounds (since setting the image sets the bounds)
+	//	necessary or the variant (if appropriate).
 
-	pType->SetImageSelector(&pStation->m_ImageSelector);
+	SSelectorInitCtx InitCtx;
+	InitCtx.pSystem = pSystem;
+	InitCtx.vObjPos = CreateCtx.vPos;
+	InitCtx.sLocAttribs = (CreateCtx.pLoc ? CreateCtx.pLoc->GetAttributes() : NULL_STR);
+
+	pType->SetImageSelector(InitCtx, &pStation->m_ImageSelector);
 
 	//	Now that we have an image, set the bound
 
-	const CObjectImageArray &Image = pStation->GetImage(false, NULL, NULL);
-	const RECT &rcImage = Image.GetImageRect();
-	pStation->SetBounds(rcImage, pStation->GetParallaxDist());
+	pStation->CalcBounds();
 
 	//	If we are a wreck, set the wreck parameters (mass, etc.)
 
@@ -687,7 +701,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 
 	//	Create any items on the station
 
-	if (error = pStation->CreateRandomItems(pType->GetRandomItemTable(), pSystem->GetLevel()))
+	if (error = pStation->CreateRandomItems(pType->GetRandomItemTable(), pSystem))
 		{
 		if (retsError)
 			*retsError = CONSTLIT("Unable to create random items");
@@ -783,14 +797,15 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	if (pInitialData)
 		pStation->SetDataFromXML(pInitialData);
 
-	if (pExtraData)
-		pStation->SetDataFromXML(pExtraData);
+	if (CreateCtx.pExtraData)
+		pStation->SetDataFromXML(CreateCtx.pExtraData);
 
 	//	Create any ships registered to this station
 
-	IShipGenerator *pShipGenerator = pType->GetInitialShips();
+	int iShipCount;
+	IShipGenerator *pShipGenerator = pType->GetInitialShips(pStation->GetDestiny(), &iShipCount);
 	if (pShipGenerator)
-		pStation->CreateRandomDockedShips(pShipGenerator);
+		pStation->CreateRandomDockedShips(pShipGenerator, iShipCount);
 
 	//	If we have a trade descriptor, create appropriate items
 
@@ -804,7 +819,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 
 	//	This type has now been encountered
 
-	pType->SetEncountered(pSystem ? pSystem->GetLevel() : 0);
+	pType->SetEncountered(pSystem);
 
 	//	Fire events on devices
 
@@ -815,11 +830,21 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 				pStation->m_pDevices[i].FinishInstall(pStation);
 		}
 
+	//	Set override, just before creation.
+	//	
+	//	NOTE: We need to call SetOverride even if we have NULL for a handler 
+	//	because it also sets event flags (SetEventFlags).
+
+	pStation->SetOverride(CreateCtx.pEventHandler);
+
 	//	If we're not in the middle of creating the system, call OnCreate
 	//	(otherwise we will call OnCreate in OnSystemCreated)
 
 	if (!pSystem->IsCreationInProgress())
+		{
 		pStation->FinishCreation();
+		pStation->CalcInsideBarrier();
+		}
 	else
 		{
 		//	Make sure we get an OnSystemCreated (and that we get it after
@@ -883,13 +908,15 @@ ALERROR CStation::CreateMapImage (void)
 	return NOERROR;
 	}
 
-void CStation::CreateRandomDockedShips (IShipGenerator *pShipGenerator)
+void CStation::CreateRandomDockedShips (IShipGenerator *pShipGenerator, int iCount)
 
 //	CreateRandomDockedShips
 //
 //	Creates all the ships that are registered at this station
 
 	{
+	int i;
+
 	SShipCreateCtx Ctx;
 
 	Ctx.pSystem = GetSystem();
@@ -901,7 +928,8 @@ void CStation::CreateRandomDockedShips (IShipGenerator *pShipGenerator)
 
 	//	Create the ships
 
-	pShipGenerator->CreateShips(Ctx);
+	for (i = 0; i < iCount; i++)
+		pShipGenerator->CreateShips(Ctx);
 	}
 
 void CStation::CreateStructuralDestructionEffect (SDestroyCtx &Ctx)
@@ -1089,7 +1117,7 @@ void CStation::FriendlyFire (CSpaceObject *pAttacker)
 
 	//	No need if we don't support blacklist
 
-	if (!m_pType->IsBlacklistEnabled())
+	if (!m_pType->IsBlacklistEnabled() || m_fNoBlacklist)
 		return;
 
 	//	See if we need to blacklist
@@ -1099,52 +1127,6 @@ void CStation::FriendlyFire (CSpaceObject *pAttacker)
 		Blacklist(pAttacker);
 		SetAngry();
 		}
-	}
-
-bool CStation::GetArmorInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice)
-
-//	GetArmorInstallPrice
-//
-//	Returns the price to install the given armor
-
-	{
-	//	See if we have an override
-
-	if (m_pTrade && m_pTrade->GetArmorInstallPrice(this, Item, dwFlags, retiPrice))
-		return true;
-
-	//	Otherwise, ask our design type
-
-	CTradingDesc *pTrade = m_pType->GetTradingDesc();
-	if (pTrade && pTrade->GetArmorInstallPrice(this, Item, dwFlags, retiPrice))
-		return true;
-
-	//	Otherwise, we do not repair
-
-	return false;
-	}
-
-bool CStation::GetArmorRepairPrice (const CItem &Item, int iHPToRepair, DWORD dwFlags, int *retiPrice)
-
-//	GetArmorRepairPrice
-//
-//	Returns the price to repair the given number of HP for the given armor item.
-
-	{
-	//	See if we have an override
-
-	if (m_pTrade && m_pTrade->GetArmorRepairPrice(this, Item, iHPToRepair, dwFlags, retiPrice))
-		return true;
-
-	//	Otherwise, ask our design type
-
-	CTradingDesc *pTrade = m_pType->GetTradingDesc();
-	if (pTrade && pTrade->GetArmorRepairPrice(this, Item, iHPToRepair, dwFlags, retiPrice))
-		return true;
-
-	//	Otherwise, we do not repair
-
-	return false;
 	}
 
 Metric CStation::GetAttackDistance (void) const
@@ -1176,44 +1158,27 @@ CurrencyValue CStation::GetBalance (DWORD dwEconomyUNID)
 		return 0;
 	}
 
-int CStation::GetBuyPrice (const CItem &Item, DWORD dwFlags, int *retiMaxCount)
+int CStation::GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon)
 
-//	GetBuyPrice
+//	GetDamageEffectiveness
 //
-//	Returns the price at which the station will buy the given
-//	item. Also returns the max number of items that the station
-//	will buy at that price.
+//	Returns the effectiveness of the given weapon against this station.
 //
-//	Returns -1 if the station will not buy the item.
+//	< 0		The weapon is ineffective against us.
+//	0-99	The weapon is less effective than average.
+//	100		The weapon has average effectiveness
+//	> 100	The weapon is more effective than average.
 
 	{
-	int iPrice;
+	//	First ask the shields, if we have them, and if they are up.
 
-	//	First see if we have an override
-
-	if (m_pTrade)
-		{
-		if (m_pTrade->Buys(this, Item, dwFlags, &iPrice, retiMaxCount))
-			return iPrice;
-		}
-
-	//	See if our type has a price
-
-	CTradingDesc *pTrade = m_pType->GetTradingDesc();
-	if (pTrade)
-		{
-		if (pTrade->Buys(this, Item, dwFlags, &iPrice, retiMaxCount))
-			{
-			if (m_pTrade)
-				return (int)m_pTrade->GetEconomyType()->Exchange(pTrade->GetEconomyType(), iPrice);
-			else
-				return iPrice;
-			}
-		}
-
-	//	Otherwise, we will not buy the item
-
-	return -1;
+	CInstalledDevice *pShields = GetNamedDevice(devShields);
+	if (pShields && GetShieldLevel() > 0)
+		return pShields->GetDamageEffectiveness(pAttacker, pWeapon);
+	else if (m_pArmorClass)
+		return m_pArmorClass->GetDamageEffectiveness(pAttacker, pWeapon);
+	else
+		return 100;
 	}
 
 CDesignType *CStation::GetDefaultDockScreen (CString *retsName)
@@ -1229,55 +1194,39 @@ CDesignType *CStation::GetDefaultDockScreen (CString *retsName)
 		return m_pType->GetFirstDockScreen(retsName);
 	}
 
-CEconomyType *CStation::GetDefaultEconomy (void)
+Metric CStation::GetGravity (Metric *retrRadius) const
 
-//	GetDefaultEconomy
+//	GetGravity
 //
-//	Returns the default economy
+//	Returns the force of gravity.
 
 	{
-	CTradingDesc *pTrade = GetDefaultTradingDesc();
-	if (pTrade)
-		return pTrade->GetEconomyType();
+	const Metric EARTH_RADIUS = 6371.0;	//	Kilometers
 
-	return CEconomyType::AsType(g_pUniverse->FindDesignType(DEFAULT_ECONOMY_UNID));
-	}
+	//	Compute the acceleration due to gravity at 1 Earth radius
+	//	(in kilometers per second-squared).
+	//
+	//	Accel = 0.0098 * 330,000 * StellarMass
+	//
+	//	1 StellarMass = 330,000 Earth masses
+	//	Gravity at Earth's radius and Mass = 0.0098 Km/sec^2
+	//
+	//	Accel constant = 0.0098 * 330,000 = 3234
 
-DWORD CStation::GetDefaultEconomyUNID (void)
+	Metric r1EAccel = 3234.0 * GetStellarMass();
+	if (r1EAccel <= 0.0)
+		return 0.0;
 
-//	GetDefaultEconomyUNID
-//
-//	Returns the default economy
+	//	Normally this is the radius at which the force of gravity is equal to
+	//	1EAccel. Normally, this would always be 1 Earth radius, but that's way
+	//	too small for the game scale, so we allow the object to set it.
+	//
+	//	10 light-seconds is usually a good value.
 
-	{
-	CTradingDesc *pTrade = GetDefaultTradingDesc();
-	if (pTrade)
-		return pTrade->GetEconomyType()->GetUNID();
+	if (retrRadius)
+		*retrRadius = m_pType->GetGravityRadius();
 
-	return DEFAULT_ECONOMY_UNID;
-	}
-
-bool CStation::GetDeviceInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice)
-
-//	GetDeviceInstallPrice
-//
-//	Returns the price to install the given device
-
-	{
-	//	See if we have an override
-
-	if (m_pTrade && m_pTrade->GetDeviceInstallPrice(this, Item, dwFlags, retiPrice))
-		return true;
-
-	//	Otherwise, ask our design type
-
-	CTradingDesc *pTrade = m_pType->GetTradingDesc();
-	if (pTrade && pTrade->GetDeviceInstallPrice(this, Item, dwFlags, retiPrice))
-		return true;
-
-	//	Otherwise, we do not install
-
-	return false;
+	return r1EAccel;
 	}
 
 const CObjectImageArray &CStation::GetImage (bool bFade, int *retiTick, int *retiRotation)
@@ -1351,7 +1300,7 @@ int CStation::GetNearestDockPort (CSpaceObject *pRequestingObj, CVector *retvPor
 	int iPort = m_DockingPorts.FindNearestEmptyPort(this, pRequestingObj);
 
 	if (retvPort)
-		*retvPort = m_DockingPorts.GetPortPos(this, iPort);
+		*retvPort = m_DockingPorts.GetPortPos(this, iPort, pRequestingObj);
 
 	return iPort;
 	}
@@ -1393,38 +1342,26 @@ ICCItem *CStation::GetProperty (const CString &sName)
 	if (strEquals(sName, PROPERTY_ABANDONED))
 		return CC.CreateBool(IsAbandoned());
 
+	else if (strEquals(sName, PROPERTY_DOCKING_PORT_COUNT))
+		return CC.CreateInteger(m_DockingPorts.GetPortCount(this));
+
+	else if (strEquals(sName, PROPERTY_IGNORE_FRIENDLY_FIRE))
+		return CC.CreateBool(m_pType->IsBlacklistEnabled() && !m_fNoBlacklist);
+
 	else if (strEquals(sName, PROPERTY_HP))
 		return CC.CreateInteger(m_iHitPoints);
 
 	else if (strEquals(sName, PROPERTY_IMMUTABLE))
 		return CC.CreateBool(IsImmutable());
 
-	else if (strEquals(sName, PROPERTY_INSTALL_DEVICE_MAX_LEVEL))
-		{
-		int iMaxLevel = -1;
-		if (m_pTrade)
-			{
-			int iLevel = m_pTrade->GetMaxLevelMatched(serviceInstallDevice);
-			if (iLevel > iMaxLevel)
-				iMaxLevel = iLevel;
-			}
-
-		CTradingDesc *pTrade = m_pType->GetTradingDesc();
-		if (pTrade)
-			{
-			int iLevel = pTrade->GetMaxLevelMatched(serviceInstallDevice);
-			if (iLevel > iMaxLevel)
-				iMaxLevel = iLevel;
-			}
-
-		return (iMaxLevel != -1 ? CC.CreateInteger(iMaxLevel) : CC.CreateNil());
-		}
-
 	else if (strEquals(sName, PROPERTY_MAX_HP))
 		return CC.CreateInteger(m_iMaxHitPoints);
 
 	else if (strEquals(sName, PROPERTY_MAX_STRUCTURAL_HP))
 		return CC.CreateInteger(m_iMaxStructuralHP);
+
+	else if (strEquals(sName, PROPERTY_OPEN_DOCKING_PORT_COUNT))
+		return CC.CreateInteger(GetOpenDockingPortCount());
 
 	else if (strEquals(sName, PROPERTY_ORBIT))
 		return (m_pMapOrbit ? CreateListFromOrbit(CC, *m_pMapOrbit) : CC.CreateNil());
@@ -1435,26 +1372,11 @@ ICCItem *CStation::GetProperty (const CString &sName)
 	else if (strEquals(sName, PROPERTY_PLAYER_BACKLISTED))
 		return CC.CreateBool(IsBlacklisted(NULL));
 
-	else if (strEquals(sName, PROPERTY_REPAIR_ARMOR_MAX_LEVEL))
-		{
-		int iMaxLevel = -1;
-		if (m_pTrade)
-			{
-			int iLevel = m_pTrade->GetMaxLevelMatched(serviceRepairArmor);
-			if (iLevel > iMaxLevel)
-				iMaxLevel = iLevel;
-			}
+	else if (strEquals(sName, PROPERTY_SHIP_CONSTRUCTION_ENABLED))
+		return CC.CreateBool(m_fNoConstruction);
 
-		CTradingDesc *pTrade = m_pType->GetTradingDesc();
-		if (pTrade)
-			{
-			int iLevel = pTrade->GetMaxLevelMatched(serviceRepairArmor);
-			if (iLevel > iMaxLevel)
-				iMaxLevel = iLevel;
-			}
-
-		return (iMaxLevel != -1 ? CC.CreateInteger(iMaxLevel) : CC.CreateNil());
-		}
+	else if (strEquals(sName, PROPERTY_SHIP_REINFORCEMENT_ENABLED))
+		return CC.CreateBool(m_fNoReinforcements);
 
 	else if (strEquals(sName, PROPERTY_STRUCTURAL_HP))
 		return CC.CreateInteger(m_iStructuralHP);
@@ -1476,93 +1398,6 @@ IShipGenerator *CStation::GetRandomEncounterTable (int *retiFrequency) const
 	if (retiFrequency)
 		*retiFrequency = m_pType->GetEncounterFrequency();
 	return m_pType->GetEncountersTable();
-	}
-
-bool CStation::GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice)
-
-//	GetRefuelItemAndPrice
-//
-//	Returns the appropriate item to use for refueling (based on the trading
-//	directives).
-
-	{
-	//	See if we have an override
-
-	if (m_pTrade && m_pTrade->GetRefuelItemAndPrice(this, pObjToRefuel, 0, retpItemType, retiPrice))
-		return true;
-
-	//	Otherwise, ask our design type
-
-	CTradingDesc *pTrade = m_pType->GetTradingDesc();
-	if (pTrade && pTrade->GetRefuelItemAndPrice(this, pObjToRefuel, 0, retpItemType, retiPrice))
-		return true;
-
-	//	Otherwise, we do not refuel
-
-	return false;
-	}
-
-int CStation::GetSellPrice (const CItem &Item, DWORD dwFlags)
-
-//	GetSellPrice
-//
-//	Returns the price at which the station will sell the given
-//	item. Returns 0 if the station cannot or will not sell the
-//	item.
-
-	{
-	bool bHasTradeDirective = false;
-	int iPrice = -1;
-
-	//	See if we have an override price
-
-	if (m_pTrade)
-		{
-		m_pTrade->Sells(this, Item, dwFlags, &iPrice);
-		bHasTradeDirective = true;
-		}
-
-	//	See if our type has a price
-
-	if (iPrice == -1)
-		{
-		CTradingDesc *pTrade = m_pType->GetTradingDesc();
-		if (pTrade)
-			{
-			pTrade->Sells(this, Item, dwFlags, &iPrice);
-
-			if (m_pTrade && iPrice != -1)
-				iPrice = (int)m_pTrade->GetEconomyType()->Exchange(pTrade->GetEconomyType(), iPrice);
-
-			bHasTradeDirective = true;
-			}
-		}
-
-	//	If we have Trade directives and they specify no price, then we can't
-	//	sell any.
-
-	if (iPrice == -1)
-		{
-		if (bHasTradeDirective)
-			return 0;
-
-		//	Otherwise, get the price from the item itself
-
-		iPrice = (int)GetDefaultEconomy()->Exchange(Item.GetCurrencyType(), Item.GetTradePrice(this));
-		}
-
-	//	If we don't have any of the item, then we don't sell any
-
-	if (!(dwFlags & CTradingDesc::FLAG_NO_INVENTORY_CHECK))
-		{
-		CItemListManipulator ItemList(GetItemList());
-		if (!ItemList.SetCursorAtItem(Item))
-			return 0;
-		}
-
-	//	Return the price
-
-	return iPrice;
 	}
 
 CString CStation::GetStargateID (void) const
@@ -2058,8 +1893,6 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 
 		//	Tell all objects that we've been destroyed
 
-		NotifyOnObjDestroyed(DestroyCtx);
-
 		for (int i = 0; i < GetSystem()->GetObjectCount(); i++)
 			{
 			CSpaceObject *pObj = GetSystem()->GetObject(i);
@@ -2067,6 +1900,13 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 			if (pObj && pObj != this)
 				pObj->OnStationDestroyed(DestroyCtx);
 			}
+
+		//	NOTE: We fire <OnObjDestroyed> AFTER OnStationDestroyed
+		//	so that script inside <OnObjDestroyed> can add orders
+		//	about the station (without getting clobbered in 
+		//	OnStationDestroyed).
+
+		NotifyOnObjDestroyed(DestroyCtx);
 
 		GetSystem()->FireOnSystemObjDestroyed(DestroyCtx);
 		g_pUniverse->FireOnGlobalObjDestroyed(DestroyCtx);
@@ -2320,6 +2160,8 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 
 	{
 	int i;
+	RECT rcOldObjBounds;
+	int yOldAnnotions;
 
 	//	Known
 
@@ -2335,27 +2177,39 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 		m_fReconned = true;
 		}
 
+	//	Paints overlay background
+
+	m_Overlays.PaintBackground(Dest, x, y, Ctx);
+
 	//	First paint any object that are docked behind us
 
 	if (!Ctx.fNoDockedShips)
 		{
+		//	If we need to paint docked ships, then preserve the object-specific
+		//	context.
+
+		rcOldObjBounds = Ctx.rcObjBounds;
+		yOldAnnotions = Ctx.yAnnotations;
+
+		//	Paint docked ships
+
 		for (i = 0; i < m_DockingPorts.GetPortCount(this); i++)
 			{
 			CSpaceObject *pObj = m_DockingPorts.GetPortObj(this, i);
-			if (pObj && pObj->IsPaintNeeded() && !pObj->IsPlayer())
+			if (pObj 
+					&& pObj->IsPaintNeeded() 
+					&& !pObj->IsPlayer()
+					&& !m_DockingPorts.DoesPortPaintInFront(this, i))
 				{
 				int xObj, yObj;
 				Ctx.XForm.Transform(pObj->GetPos(), &xObj, &yObj);
 
-				if (yObj < y)
-					{
-					CSpaceObject *pOldObj = Ctx.pObj;
-					Ctx.pObj = pObj;
+				CSpaceObject *pOldObj = Ctx.pObj;
+				Ctx.pObj = pObj;
 
-					pObj->Paint(Dest, xObj, yObj, Ctx);
+				pObj->Paint(Dest, xObj, yObj, Ctx);
 
-					Ctx.pObj = pOldObj;
-					}
+				Ctx.pObj = pOldObj;
 				}
 			}
 		}
@@ -2403,28 +2257,27 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 		for (i = 0; i < m_DockingPorts.GetPortCount(this); i++)
 			{
 			CSpaceObject *pObj = m_DockingPorts.GetPortObj(this, i);
-			if (pObj && !pObj->IsPlayer())
+			if (pObj 
+					&& !pObj->IsPlayer()
+					&& m_DockingPorts.DoesPortPaintInFront(this, i))
 				{
 				int xObj, yObj;
 				Ctx.XForm.Transform(pObj->GetPos(), &xObj, &yObj);
 
-				if (yObj >= y)
-					{
-					CSpaceObject *pOldObj = Ctx.pObj;
-					Ctx.pObj = pObj;
+				CSpaceObject *pOldObj = Ctx.pObj;
+				Ctx.pObj = pObj;
 
-					pObj->Paint(Dest, xObj, yObj, Ctx);
+				pObj->Paint(Dest, xObj, yObj, Ctx);
 
-					Ctx.pObj = pOldObj;
-					}
+				Ctx.pObj = pOldObj;
 				}
 			}
+
+		//	Restore context
+
+		Ctx.rcObjBounds = rcOldObjBounds;
+		Ctx.yAnnotations = yOldAnnotions;
 		}
-
-	//	Highlight
-
-	if (IsHighlighted() && !Ctx.fNoSelection)
-		PaintHighlight(Dest, Image.GetImageRectAtPoint(x, y), Ctx);
 
 #ifdef DEBUG_BOUNDING_RECT
 	{
@@ -2448,10 +2301,20 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 	for (int i = 0; i < m_DockingPorts.GetPortCount(this); i++)
 		{
 		int x, y;
-		Ctx.XForm.Transform(m_DockingPorts.GetPortPos(this, i), &x, &y);
+		Ctx.XForm.Transform(m_DockingPorts.GetPortPos(this, i, NULL), &x, &y);
 		Dest.Fill(x - 2, y - 2, 4, 4, CG16bitImage::RGBValue(0, 255, 0));
 		}
 #endif
+	}
+
+void CStation::OnPaintAnnotations (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	OnPaintAnnotations
+//
+//	Paint additional annotations
+
+	{
+	m_Overlays.PaintAnnotations(Dest, x, y, Ctx);
 	}
 
 void CStation::OnObjBounce (CSpaceObject *pObj, const CVector &vPos)
@@ -2911,18 +2774,22 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 	//	Flags
 
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-	m_fArmed =			((dwLoad & 0x00000001) ? true : false);
-	m_fKnown =			((dwLoad & 0x00000002) ? true : false);
-	m_fNoMapLabel =		((dwLoad & 0x00000004) ? true : false);
-	m_fRadioactive =	((dwLoad & 0x00000008) ? true : false);
+	m_fArmed =				((dwLoad & 0x00000001) ? true : false);
+	m_fKnown =				((dwLoad & 0x00000002) ? true : false);
+	m_fNoMapLabel =			((dwLoad & 0x00000004) ? true : false);
+	m_fRadioactive =		((dwLoad & 0x00000008) ? true : false);
 	//	0x00000010 UNUSED m_fCustomImage
-	m_fActive =			((dwLoad & 0x00000020) ? true : false);
-	m_fNoReinforcements =((dwLoad & 0x00000040) ? true : false);
-	m_fReconned =		((dwLoad & 0x00000080) ? true : false);
-	m_fFireReconEvent =	((dwLoad & 0x00000100) ? true : false);
-	bool fNoArticle =	((dwLoad & 0x00000200) ? true : false);
-	m_fImmutable =		((dwLoad & 0x00000400) ? true : false);
-	m_fExplored =		((dwLoad & 0x00000800) ? true : false);
+	m_fActive =				((dwLoad & 0x00000020) ? true : false);
+	m_fNoReinforcements =	((dwLoad & 0x00000040) ? true : false);
+	m_fReconned =			((dwLoad & 0x00000080) ? true : false);
+	m_fFireReconEvent =		((dwLoad & 0x00000100) ? true : false);
+	bool fNoArticle =		((dwLoad & 0x00000200) ? true : false);
+	m_fImmutable =			((dwLoad & 0x00000400) ? true : false);
+	m_fExplored =			((dwLoad & 0x00000800) ? true : false);
+	m_fDisarmedByOverlay =	((dwLoad & 0x00001000) ? true : false);
+	m_fParalyzedByOverlay =	((dwLoad & 0x00002000) ? true : false);
+	m_fNoBlacklist =		((dwLoad & 0x00004000) ? true : false);
+	m_fNoConstruction =		((dwLoad & 0x00008000) ? true : false);
 
 	//	Init name flags
 
@@ -3004,35 +2871,7 @@ void CStation::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 	if ((iTick % TRADE_UPDATE_FREQUENCY) == 0
 			 && !IsAbandoned())
-		{
-		if (m_pTrade)
-			{
-			m_pTrade->OnUpdate(this);
-
-			if (!IsPlayerDocked())
-				m_pTrade->RefreshInventory(this, INVENTORY_REFRESHED_PER_UPDATE);
-			}
-
-		CTradingDesc *pTrade = m_pType->GetTradingDesc();
-		if (pTrade)
-			{
-			//	If we have a trade desc override, then don't update. [Otherwise
-			//	we will replenish currency at double the rate.]
-
-			if (m_pTrade == NULL)
-				pTrade->OnUpdate(this);
-
-			//	But we still need to refresh inventory, since the base 
-			//	may contain items not in the override.
-			//
-			//	LATER: Note that this doesn't handle the case where we try
-			//	to override a specific item. The fix is to add the concept
-			//	of overriding directly into the class.
-
-			if (!IsPlayerDocked())
-				pTrade->RefreshInventory(this, INVENTORY_REFRESHED_PER_UPDATE);
-			}
-		}
+		UpdateTrade(Ctx, INVENTORY_REFRESHED_PER_UPDATE);
 
 	//	Update each device
 
@@ -3096,13 +2935,7 @@ void CStation::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 		if (CSpaceObject::IsDestroyedInUpdate())
 			return;
 		else if (bModified)
-			{
-#if 0
-			bWeaponStatusChanged = true;
-			bArmorStatusChanged = true;
-			bCalcDeviceBonus = true;
-#endif
-			}
+			CalcOverlayImpact();
 		}
 	}
 
@@ -3113,27 +2946,6 @@ void CStation::OnUpdateExtended (const CTimeSpan &ExtraTime)
 //	Update after an extended period of time
 
 	{
-	//	Refresh inventory, if necessary
-
-	CTradingDesc *pTrade = m_pType->GetTradingDesc();
-	if ((pTrade || m_pTrade) && ExtraTime.Days() > 0 && !IsAbandoned())
-		{
-		//	Compute the percent of the inventory that need to refresh
-
-		int iRefreshPercent;
-		if (ExtraTime.Days() >= DAYS_TO_REFRESH_INVENTORY)
-			iRefreshPercent = 100;
-		else
-			iRefreshPercent = 100 * ExtraTime.Days() / DAYS_TO_REFRESH_INVENTORY;
-
-		//	Do it
-
-		if (m_pTrade)
-			m_pTrade->RefreshInventory(this, iRefreshPercent);
-
-		if (pTrade)
-			pTrade->RefreshInventory(this, iRefreshPercent);
-		}
 	}
 
 void CStation::OnWriteToStream (IWriteStream *pStream)
@@ -3305,6 +3117,10 @@ void CStation::OnWriteToStream (IWriteStream *pStream)
 	//	0x00000200 retired
 	dwSave |= (m_fImmutable ?			0x00000400 : 0);
 	dwSave |= (m_fExplored ?			0x00000800 : 0);
+	dwSave |= (m_fDisarmedByOverlay ?	0x00001000 : 0);
+	dwSave |= (m_fParalyzedByOverlay ?	0x00002000 : 0);
+	dwSave |= (m_fNoBlacklist ?			0x00004000 : 0);
+	dwSave |= (m_fNoConstruction ?		0x00008000 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}
 
@@ -3461,6 +3277,21 @@ void CStation::RaiseAlert (CSpaceObject *pTarget)
 		}
 	}
 
+void CStation::RemoveOverlay (DWORD dwID)
+
+//	RemoveOverlay
+//
+//	Removes the given overlay
+	
+	{
+	m_Overlays.RemoveField(this, dwID); 
+
+	//	Recalc bonuses, etc.
+
+	CalcBounds();
+	CalcOverlayImpact();
+	}
+
 bool CStation::RemoveSubordinate (CSpaceObject *pSubordinate)
 
 //	RemoveSubordinate
@@ -3501,7 +3332,7 @@ bool CStation::RequestDock (CSpaceObject *pObj, int iPort)
 	//	If we don't have any docking screens then do not let the
 	//	object dock.
 
-	if (!SupportsDocking())
+	if (!SupportsDocking(pObj->IsPlayer()))
 		{
 		pObj->SendMessage(this, CONSTLIT("No docking services available"));
 		return false;
@@ -3569,12 +3400,7 @@ void CStation::SetFlotsamImage (CItemType *pItemType)
 
 	//	Set bounds
 
-	//	We don't care about iTick or iRotation because 
-	//	the image rect dimensions won't change
-	const CObjectImageArray &Image = GetImage(false, NULL, NULL);
-
-	const RECT &rcImage = Image.GetImageRect();
-	SetBounds(rcImage, GetParallaxDist());
+	CalcBounds();
 	}
 
 int CStation::GetImageVariant (void)
@@ -3604,12 +3430,7 @@ void CStation::SetImageVariant (int iVariant)
 
 	//	Set bounds
 
-	//	We don't care about iTick or iRotation because 
-	//	the image rect dimensions won't change
-	const CObjectImageArray &Image = GetImage(false, NULL, NULL);
-
-	const RECT &rcImage = Image.GetImageRect();
-	SetBounds(rcImage, GetParallaxDist());
+	CalcBounds();
 	}
 
 void CStation::SetMapOrbit (const COrbit &oOrbit)
@@ -3647,23 +3468,6 @@ void CStation::SetStargate (const CString &sDestNode, const CString &sDestEntryP
 	m_sStargateDestEntryPoint = sDestEntryPoint;
 	}
 
-void CStation::SetTradeDesc (CEconomyType *pCurrency, int iMaxCurrency, int iReplenishCurrency)
-
-//	SetTradeDesc
-//
-//	Overrides trade desc
-
-	{
-	AllocTradeOverride();
-	m_pTrade->SetEconomyType(pCurrency);
-	m_pTrade->SetMaxCurrency(iMaxCurrency);
-	m_pTrade->SetReplenishCurrency(iReplenishCurrency);
-
-	//	This call will set up the currency.
-
-	m_pTrade->OnCreate(this);
-	}
-
 void CStation::SetWreckImage (CShipClass *pWreckClass)
 
 //	SetImage
@@ -3676,12 +3480,7 @@ void CStation::SetWreckImage (CShipClass *pWreckClass)
 
 	//	Set bounds
 
-	//	We don't care about iTick or iRotation because 
-	//	the image rect dimensions won't change
-	const CObjectImageArray &Image = GetImage(false, NULL, NULL);
-
-	const RECT &rcImage = Image.GetImageRect();
-	SetBounds(rcImage, GetParallaxDist());
+	CalcBounds();
 	}
 
 void CStation::SetWreckParams (CShipClass *pWreckClass, CShip *pShip)
@@ -3751,7 +3550,12 @@ bool CStation::SetProperty (const CString &sName, ICCItem *pValue, CString *rets
 	{
 	CCodeChain &CC = g_pUniverse->GetCC();
 
-	if (strEquals(sName, PROPERTY_HP))
+	if (strEquals(sName, PROPERTY_IGNORE_FRIENDLY_FIRE))
+		{
+		m_fNoBlacklist = !pValue->IsNil();
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_HP))
 		{
 		//	Nil means that we don't want to make a change
 
@@ -3782,12 +3586,10 @@ bool CStation::SetProperty (const CString &sName, ICCItem *pValue, CString *rets
 				return false;
 				}
 
-			const CObjectImageArray &Image = GetImage(false, NULL, NULL);
-			const RECT &rcImage = Image.GetImageRect();
-			SetBounds(rcImage, rParallaxDist);
-
 			m_rParallaxDist = rParallaxDist;
 			SetOutOfPlaneObj(m_rParallaxDist != 1.0);
+
+			CalcBounds();
 			}
 
 		return true;
@@ -3814,6 +3616,31 @@ bool CStation::SetProperty (const CString &sName, ICCItem *pValue, CString *rets
 		m_iStructuralHP = Min(m_iStructuralHP, m_iMaxStructuralHP);
 		return true;
 		}
+	else if (strEquals(sName, PROPERTY_ORBIT))
+		{
+		if (pValue->IsNil())
+			{
+			if (m_pMapOrbit)
+				{
+				delete m_pMapOrbit;
+				m_pMapOrbit = NULL;
+				}
+
+			return true;
+			}
+		else
+			{
+			COrbit OrbitDesc;
+			if (!CreateOrbitFromList(CC, pValue, &OrbitDesc))
+				{
+				*retsError = CONSTLIT("Invalid orbit.");
+				return false;
+				}
+
+			SetMapOrbit(OrbitDesc);
+			return true;
+			}
+		}
 	else if (strEquals(sName, PROPERTY_PLAYER_BACKLISTED))
 		{
 		CSpaceObject *pPlayer = g_pUniverse->GetPlayer();
@@ -3823,6 +3650,16 @@ bool CStation::SetProperty (const CString &sName, ICCItem *pValue, CString *rets
 		else
 			Blacklist(pPlayer);
 
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_SHIP_CONSTRUCTION_ENABLED))
+		{
+		m_fNoConstruction = pValue->IsNil();
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_SHIP_REINFORCEMENT_ENABLED))
+		{
+		m_fNoReinforcements = pValue->IsNil();
 		return true;
 		}
 	else if (strEquals(sName, PROPERTY_STRUCTURAL_HP))
@@ -3941,7 +3778,10 @@ void CStation::UpdateAttacking (SUpdateCtx &Ctx, int iTick)
 
 	//	Fire with all weapons (if we've got a target)
 
-	if (m_pTarget && m_pDevices)
+	if (m_pTarget 
+			&& m_pDevices
+			&& !IsParalyzed()
+			&& !IsDisarmed())
 		{
 		bool bSourceDestroyed = false;
 
@@ -3990,17 +3830,19 @@ void CStation::UpdateReinforcements (int iTick)
 		{
 		//	Repair damage to station
 
-		if (m_pType->GetRepairRate() > 0 && m_iHitPoints < m_iMaxHitPoints)
-			m_iHitPoints = Min(m_iMaxHitPoints, m_iHitPoints + m_pType->GetRepairRate());
+		if (!m_pType->GetRegenDesc().IsEmpty() && m_iHitPoints < m_iMaxHitPoints)
+			m_iHitPoints = Min(m_iMaxHitPoints, m_iHitPoints + m_pType->GetRegenDesc().GetRegen(iTick, STATION_REPAIR_FREQUENCY));
 
 		//	Repair damage to ships
 
-		m_DockingPorts.RepairAll(this, m_pType->GetShipRepairRate());
+		if (!m_pType->GetShipRegenDesc().IsEmpty())
+			m_DockingPorts.RepairAll(this, m_pType->GetShipRegenDesc().GetRegen(iTick, STATION_REPAIR_FREQUENCY));
 		}
 
 	//	Construction
 
 	if (m_pType->GetShipConstructionRate()
+			&& !m_fNoConstruction
 			&& (iTick % m_pType->GetShipConstructionRate()) == 0)
 		{
 		//	Iterate over all ships and count the number that are
@@ -4022,9 +3864,10 @@ void CStation::UpdateReinforcements (int iTick)
 
 	//	Get reinforcements
 
+	int iMinShips;
 	if ((iTick % STATION_REINFORCEMENT_FREQUENCY) == 0
-			&& m_pType->GetMinShips() > 0
-			&& !m_fNoReinforcements)
+			&& !m_fNoReinforcements
+			&& (iMinShips = m_pType->GetMinShips(GetDestiny())) > 0)
 		{
 		//	Iterate over all ships and count the number that are
 		//	associated with the station.
@@ -4034,7 +3877,7 @@ void CStation::UpdateReinforcements (int iTick)
 		//	If we don't have the minimum number of ships at the
 		//	station then send reinforcements.
 
-		if (iCount < m_pType->GetMinShips())
+		if (iCount < iMinShips)
 			{
 			//	If we've requested several rounds of reinforcements but have
 			//	never received any, then it's likely that they are being

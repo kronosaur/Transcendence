@@ -113,7 +113,7 @@
 			sortName=			"Sung armor.10"
 			>
 
-		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"250"
@@ -275,7 +275,7 @@
 			sortName=			"Sung armor.20"
 			>
 
-		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"180"
@@ -376,7 +376,7 @@
 			sortName=			"Sung armor.30"
 			>
 
-		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"70"
@@ -425,7 +425,7 @@
 			sortName=			"Sung armor.40"
 			>
 
-		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"25"
@@ -1050,11 +1050,12 @@
 			multiHull=			"true"
 			armorID=			"&itSungArmor;"
 			hitPoints=			"125"
+			fireRateAdj=		"80"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, populated, sungSlaveCamp, sungSlavers"
 			levelFrequency=		"--vcu r---- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="60"
 			>
 
@@ -1136,7 +1137,7 @@
 
 			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, majorStation, populated, sungSlavers"
 			levelFrequency=		"---vc uu--- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="100"
 			>
 
@@ -1203,7 +1204,7 @@
 
 			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, majorStation, populated, sungSlavers"
 			levelFrequency=		"----r ur--- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="100"
 			>
 

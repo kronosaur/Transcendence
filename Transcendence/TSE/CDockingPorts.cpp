@@ -15,11 +15,13 @@
 
 #define DOCKING_PORTS_TAG						CONSTLIT("DockingPorts")
 
+#define BRING_TO_FRONT_ATTRIB					CONSTLIT("bringToFront")
 #define DOCKING_PORTS_ATTRIB					CONSTLIT("dockingPorts")
 #define MAX_DIST_ATTRIB							CONSTLIT("maxDist")
 #define PORT_COUNT_ATTRIB						CONSTLIT("portCount")
 #define PORT_RADIUS_ATTRIB						CONSTLIT("portRadius")
 #define ROTATION_ATTRIB							CONSTLIT("rotation")
+#define SEND_TO_BACK_ATTRIB						CONSTLIT("sendToBack")
 #define X_ATTRIB								CONSTLIT("x")
 #define Y_ATTRIB								CONSTLIT("y")
 
@@ -77,7 +79,7 @@ void CDockingPorts::DockAtRandomPort (CSpaceObject *pOwner, CSpaceObject *pObj)
 		{
 		m_pPort[iDockingPort].pObj = pObj;
 		m_pPort[iDockingPort].iStatus = psInUse;
-		pObj->Place(GetPortPos(pOwner, m_pPort[iDockingPort]));
+		pObj->Place(GetPortPos(pOwner, m_pPort[iDockingPort], pObj));
 		pObj->OnDocked(pOwner);
 
 		//	Set the ship's rotation. We do this because this is only called
@@ -119,7 +121,7 @@ int CDockingPorts::FindNearestEmptyPort (CSpaceObject *pOwner, CSpaceObject *pRe
 	for (i = 0; i < m_iPortCount; i++)
 		if (m_pPort[i].iStatus == psEmpty)
 			{
-			CVector vPortPos = GetPortPos(pOwner, m_pPort[i]);
+			CVector vPortPos = GetPortPos(pOwner, m_pPort[i], pRequestingObj);
 			CVector vDistance = vPos - vPortPos;
 			Metric rDistance2 = vDistance.Length2();
 
@@ -169,7 +171,40 @@ int CDockingPorts::FindNearestEmptyPort (CSpaceObject *pOwner, CSpaceObject *pRe
 		}
 	}
 
-CVector CDockingPorts::GetPortPos (CSpaceObject *pOwner, const SDockingPort &Port) const
+bool CDockingPorts::DoesPortPaintInFront (CSpaceObject *pOwner, int iPort) const
+
+//	DoesPortPaintInFront
+//
+//	Retuns TRUE if we paint this port in front of the owning object.
+
+	{
+	const SDockingPort &Port = m_pPort[iPort];
+
+	if (pOwner == NULL)
+		return (Port.iLayer != plSendToBack);
+
+	else if (pOwner->GetRotation() == 0)
+		{
+		switch (Port.iLayer)
+			{
+			case plBringToFront:
+				return true;
+
+			case plSendToBack:
+				return false;
+
+			default:
+				return (Port.vPos.GetY() < 0.0);
+			}
+		}
+	else
+		{
+		CVector vPortPos = Port.vPos.Rotate(pOwner->GetRotation());
+		return (vPortPos.GetY() < 0.0);
+		}
+	}
+
+CVector CDockingPorts::GetPortPos (CSpaceObject *pOwner, const SDockingPort &Port, CSpaceObject *pShip, bool *retbPaintInFront, int *retiRotation) const
 
 //	GetPortPos
 //
@@ -177,11 +212,54 @@ CVector CDockingPorts::GetPortPos (CSpaceObject *pOwner, const SDockingPort &Por
 
 	{
 	if (pOwner == NULL)
+		{
+		if (retbPaintInFront)
+			*retbPaintInFront = (Port.iLayer != plSendToBack);
+
+		if (retiRotation)
+			*retiRotation = Port.iRotation;
+
 		return Port.vPos;
+		}
 	else if (pOwner->GetRotation() == 0)
-		return (pOwner->GetPos() + Port.vPos);
+		{
+		const CVector &vOwnerPos = pOwner->GetPos();
+		if (retbPaintInFront)
+			{
+			switch (Port.iLayer)
+				{
+				case plBringToFront:
+					*retbPaintInFront = true;
+					break;
+
+				case plSendToBack:
+					*retbPaintInFront = false;
+					break;
+
+				default:
+					*retbPaintInFront = (Port.vPos.GetY() < 0.0);
+				}
+			}
+
+		if (retiRotation)
+			*retiRotation = Port.iRotation;
+
+		return (vOwnerPos + Port.vPos + (pShip ? pShip->GetDockingPortOffset(Port.iRotation) : NullVector));
+		}
 	else
-		return (pOwner->GetPos() + Port.vPos.Rotate(pOwner->GetRotation()));
+		{
+		const CVector &vOwnerPos = pOwner->GetPos();
+		CVector vPortPos = Port.vPos.Rotate(pOwner->GetRotation());
+		int iNewRotation = AngleMod(Port.iRotation + pOwner->GetRotation());
+
+		if (retbPaintInFront)
+			*retbPaintInFront = (vPortPos.GetY() < 0.0);
+
+		if (retiRotation)
+			*retiRotation = iNewRotation;
+
+		return (vOwnerPos + vPortPos + (pShip ? pShip->GetDockingPortOffset(iNewRotation) : NullVector));
+		}
 	}
 
 int CDockingPorts::GetPortsInUseCount (CSpaceObject *pOwner)
@@ -217,8 +295,6 @@ void CDockingPorts::InitPorts (CSpaceObject *pOwner, int iCount, Metric rRadius)
 		int iAngle = 360 / iCount;
 		for (int i = 0; i < iCount; i++)
 			{
-			m_pPort[i].iStatus = psEmpty;
-			m_pPort[i].pObj = NULL;
 			m_pPort[i].vPos = PolarToVector(i * iAngle, rRadius);
 			m_pPort[i].iRotation = ((i * iAngle) + 180) % 360;
 			}
@@ -243,8 +319,6 @@ void CDockingPorts::InitPorts (CSpaceObject *pOwner, const TArray<CVector> &Desc
 
 		for (int i = 0; i < m_iPortCount; i++)
 			{
-			m_pPort[i].iStatus = psEmpty;
-			m_pPort[i].pObj = NULL;
 			m_pPort[i].vPos = Desc[i];
 			m_pPort[i].iRotation = (VectorToPolar(Desc[i]) + 180) % 360;
 			}
@@ -269,8 +343,6 @@ void CDockingPorts::InitPorts (CSpaceObject *pOwner, int iCount, CVector *pPos)
 
 		for (int i = 0; i < iCount; i++)
 			{
-			m_pPort[i].iStatus = psEmpty;
-			m_pPort[i].pObj = NULL;
 			m_pPort[i].vPos = pPos[i];
 			m_pPort[i].iRotation = (VectorToPolar(pPos[i]) + 180) % 360;
 			}
@@ -300,6 +372,7 @@ void CDockingPorts::InitPortsFromXML (CSpaceObject *pOwner, CXMLElement *pElemen
 		int iDefaultDist = Max(DEFAULT_DOCK_DISTANCE_LS, (pOwner ? 8 + (int)((pOwner->GetBoundsRadius() / LIGHT_SECOND) + 0.5) : 0));
 		m_iMaxDist = pDockingPorts->GetAttributeIntegerBounded(MAX_DIST_ATTRIB, 1, -1, iDefaultDist);
 
+
 		//	If we have sub-elements then these are port definitions.
 
 		m_iPortCount = pDockingPorts->GetContentElementCount();
@@ -313,14 +386,17 @@ void CDockingPorts::InitPortsFromXML (CSpaceObject *pOwner, CXMLElement *pElemen
 				CVector vDockPos((pPort->GetAttributeInteger(X_ATTRIB) * g_KlicksPerPixel),
 						(pPort->GetAttributeInteger(Y_ATTRIB) * g_KlicksPerPixel));
 
-				m_pPort[i].iStatus = psEmpty;
-				m_pPort[i].pObj = NULL;
 				m_pPort[i].vPos = vDockPos;
 
 				if (pPort->FindAttributeInteger(ROTATION_ATTRIB, &m_pPort[i].iRotation))
 					m_pPort[i].iRotation = (m_pPort[i].iRotation % 360);
 				else
 					m_pPort[i].iRotation = (VectorToPolar(vDockPos) + 180) % 360;
+
+				if (pPort->GetAttributeBool(BRING_TO_FRONT_ATTRIB))
+					m_pPort[i].iLayer = plBringToFront;
+				else if (pPort->GetAttributeBool(SEND_TO_BACK_ATTRIB))
+					m_pPort[i].iLayer = plSendToBack;
 				}
 			}
 
@@ -328,17 +404,19 @@ void CDockingPorts::InitPortsFromXML (CSpaceObject *pOwner, CXMLElement *pElemen
 
 		else if ((m_iPortCount = pDockingPorts->GetAttributeIntegerBounded(PORT_COUNT_ATTRIB, 0, -1, 0)) > 0)
 			{
-			m_pPort = new SDockingPort[m_iPortCount];
-			
 			int iRadius = pDockingPorts->GetAttributeIntegerBounded(PORT_RADIUS_ATTRIB, 0, -1, DEFAULT_PORT_POS_RADIUS);
-			Metric rRadius = g_KlicksPerPixel * iRadius;
-
 			int iAngle = 360 / m_iPortCount;
+
+			//	We need the image scale to adjust coordinates
+
+			int iScale = (pOwner ? pOwner->GetImage().GetImageViewportSize() : 512);
+
+			//	Initialize ports
+
+			m_pPort = new SDockingPort[m_iPortCount];
 			for (i = 0; i < m_iPortCount; i++)
 				{
-				m_pPort[i].iStatus = psEmpty;
-				m_pPort[i].pObj = NULL;
-				m_pPort[i].vPos = PolarToVector(i * iAngle, rRadius);
+				C3DConversion::CalcCoord(iScale, i * iAngle, iRadius, 0, &m_pPort[i].vPos);
 				m_pPort[i].iRotation = ((i * iAngle) + 180) % 360;
 				}
 			}
@@ -402,7 +480,7 @@ void CDockingPorts::MoveAll (CSpaceObject *pOwner)
 	for (int i = 0; i < m_iPortCount; i++)
 		if (m_pPort[i].iStatus == psInUse)
 			{
-			m_pPort[i].pObj->SetPos(GetPortPos(pOwner, m_pPort[i]));
+			m_pPort[i].pObj->SetPos(GetPortPos(pOwner, m_pPort[i], m_pPort[i].pObj));
 			m_pPort[i].pObj->SetVel(vVel);
 			}
 	}
@@ -451,13 +529,18 @@ void CDockingPorts::ReadFromStream (CSpaceObject *pOwner, SLoadCtx &Ctx)
 //	ReadFromStream 
 
 	{
+	DWORD dwLoad;
+
 	Ctx.pStream->Read((char *)&m_iPortCount, sizeof(DWORD));
 	if (m_iPortCount > 0)
 		{
 		m_pPort = new SDockingPort[m_iPortCount];
 		for (int i = 0; i < m_iPortCount; i++)
 			{
-			Ctx.pStream->Read((char *)&m_pPort[i].iStatus, sizeof(DWORD));
+			Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
+			m_pPort[i].iStatus = (DockingPortStatus)LOWORD(dwLoad);
+			m_pPort[i].iLayer = (DockingPortLayer)HIWORD(dwLoad);
+
 			CSystem::ReadObjRefFromStream(Ctx, &m_pPort[i].pObj);
 			Ctx.pStream->Read((char *)&m_pPort[i].vPos, sizeof(CVector));
 			if (Ctx.dwVersion >= 24)
@@ -651,9 +734,9 @@ void CDockingPorts::UpdateAll (SUpdateCtx &Ctx, CSpaceObject *pOwner)
 	if (pPlayer && pOwner->IsStargate() && rDist2 < GATE_DIST2)
 		pPlayer = NULL;
 
-	//	Don't bother if the docking is disabled
+	//	Don't bother if the docking is disabled (for the player)
 
-	if (pPlayer && !pOwner->SupportsDocking())
+	if (pPlayer && !pOwner->SupportsDocking(true))
 		pPlayer = NULL;
 
 	//	Loop over all ports
@@ -675,7 +758,7 @@ void CDockingPorts::UpdateAll (SUpdateCtx &Ctx, CSpaceObject *pOwner)
 				{
 				//	Compute the distance from the player to the port
 
-				CVector vPortPos = GetPortPos(pOwner, m_pPort[i]);
+				CVector vPortPos = GetPortPos(pOwner, m_pPort[i], pPlayer);
 				Metric rDist2 = (vPortPos - pPlayer->GetPos()).Length2();
 
 				//	If this is a better port, then replace the existing 
@@ -711,7 +794,7 @@ void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, SDockingPort &
 	if (pShip == NULL)
 		return;
 
-	CVector vDest = GetPortPos(pOwner, Port);
+	CVector vDest = GetPortPos(pOwner, Port, pShip);
 	CVector vDestVel = pOwner->GetVel();
 
 	//	Figure out how far we are from where we want to be
@@ -829,10 +912,14 @@ void CDockingPorts::WriteToStream (CSpaceObject *pOwner, IWriteStream *pStream)
 //	WriteToStream 
 
 	{
+	DWORD dwSave;
+
 	pStream->Write((char *)&m_iPortCount, sizeof(DWORD));
 	for (int i = 0; i < m_iPortCount; i++)
 		{
-		pStream->Write((char *)&m_pPort[i].iStatus, sizeof(DWORD));
+		dwSave = MAKELONG((WORD)m_pPort[i].iStatus, (WORD)m_pPort[i].iLayer);
+		pStream->Write((char *)&dwSave, sizeof(DWORD));
+
 		pOwner->WriteObjRefToStream(m_pPort[i].pObj, pStream);
 		pStream->Write((char *)&m_pPort[i].vPos, sizeof(CVector));
 		pStream->Write((char *)&m_pPort[i].iRotation, sizeof(DWORD));

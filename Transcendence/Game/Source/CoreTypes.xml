@@ -19,11 +19,11 @@
 			alignment="constructive chaos"
 			/>
 
-	<Sovereign UNID="&svPirates;"
-			name="Charon Pirates"
+	<Sovereign UNID="&svUnknownEnemy;"
+			name="Unknown Enemy"
 			alignment="destructive order"
 			/>
-
+	
 <!-- SHIP CLASSES ==============================================================
 
 	We need some default classes just for the intro. [In case an adventure 

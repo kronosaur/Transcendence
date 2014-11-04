@@ -211,6 +211,8 @@ ICCItem *fnObjAddRandomItems (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD
 #define FN_OBJ_GET_PLAYER_PRICE_ADJ	114
 #define FN_OBJ_CAN_INSTALL_ITEM		115
 #define FN_OBJ_ADD_ITEM				116
+#define FN_OBJ_GET_OVERLAY_PROPERTY	117
+#define FN_OBJ_SET_OVERLAY_PROPERTY	118
 
 #define NAMED_ITEM_SELECTED_WEAPON		CONSTLIT("selectedWeapon")
 #define NAMED_ITEM_SELECTED_LAUNCHER	CONSTLIT("selectedLauncher")
@@ -343,6 +345,8 @@ ICCItem *fnStationType (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_SYS_PLAY_SOUND				4
 #define FN_SYS_CREATE_FLOTSAM			5
 #define FN_SYS_CREATE_ENVIRONMENT		6
+#define FN_SYS_CREATE_TERRITORY			7
+#define FN_SYS_CREATE_LOOKUP			8
 
 ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 
@@ -450,6 +454,8 @@ ICCItem *fnTopologyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_DESIGN_TRANSLATE				11
 #define FN_DESIGN_MATCHES				12
 #define FN_DESIGN_FIRE_TYPE_EVENT		13
+#define FN_DESIGN_HAS_EVENT				14
+#define FN_DESIGN_GET_XML				15
 
 ICCItem *fnDesignCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnDesignGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
@@ -495,6 +501,23 @@ ICCItem *fnSystemVectorMath (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwDat
 #define DISP_FRIEND						CONSTLIT("friend")
 
 ICCItem *fnSovereignSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
+
+#define FN_XML_GET_TAG					0
+#define FN_XML_GET_ATTRIB				1
+#define FN_XML_SET_ATTRIB				2
+
+#define FN_XML_GET_ATTRIB_LIST			3
+#define FN_XML_GET_SUB_ELEMENT			4
+#define FN_XML_GET_SUB_ELEMENT_COUNT	5
+#define FN_XML_GET_SUB_ELEMENT_LIST		6
+#define FN_XML_GET_TEXT					7
+#define FN_XML_APPEND_SUB_ELEMENT		8
+#define FN_XML_DELETE_SUB_ELEMENT		9
+#define FN_XML_APPEND_TEXT				10
+#define FN_XML_SET_TEXT					11
+
+ICCItem *fnXMLCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
+ICCItem *fnXMLGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
 #define FIELD_ANGLE_OFFSET				CONSTLIT("angleOffset")
 #define FIELD_ARC_OFFSET				CONSTLIT("arcOffset")
@@ -657,6 +680,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"property\n\n"
 			
 			"   'blindingImmune\n"
+			"   'canBeDisabled\n"
 			"   'category\n"
 			"   'charges\n"
 			"   'damaged\n"
@@ -987,13 +1011,21 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"\n"
 			"   'aggressor (True/Nil)\n"
 			"   'ascendOnGate (True/Nil)\n"
+			"   'flockFormation (True/Nil)\n"
 			"   'ignoreShieldsDown (True/Nil)\n"
 			"   'noAttackOnThreat (True/Nil)\n"
 			"   'noDogfights (True/Nil)\n"
 			"   'noFriendlyFire (True/Nil)\n"
 			"   'noFriendlyFireCheck (True/Nil)\n"
 			"   'noNavPaths (True/Nil)\n"
-			"   'noOrderGiver (True/Nil)\n",
+			"   'noOrderGiver (True/Nil)\n"
+			"   'noTargetsOfOpportunity (True/Nil)\n"
+			"\n"
+			"   'combatSeparation {pixels}\n"
+			"   'fireAccuracy {percent}\n"
+			"   'fireRangeAdj {percent}\n"
+			"   'fireRateAdj {value; 10 = normal; 20 = twice as slow}\n"
+			"   'perception {value}\n",
 
 			"isv",	0,	},
 
@@ -1109,7 +1141,16 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"i",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objCommunicate",				fnObjComms,		0,
-			"(objCommunicate obj senderObj msg [obj] [data])",
+			"(objCommunicate obj senderObj msg [obj] [data]) -> result\n\n"
+			
+			"msg\n\n"
+			
+			"   'AbortAttack\n"
+			"   'AttackTarget\n"
+			"   'FormUp\n"
+			"   'QueryAttackStatus\n"
+			"   'Wait",
+
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objCredit",					fnObjSet,		FN_OBJ_CREDIT,	
@@ -1133,16 +1174,16 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objFireEvent",					fnObjSet,		FN_OBJ_FIRE_EVENT,
-			"(objFireEvent obj event) -> result of event",
-			"is",	PPFLAG_SIDEEFFECTS,	},
+			"(objFireEvent obj event [data]) -> result of event",
+			"is*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objFireItemEvent",				fnObjSet,		FN_OBJ_FIRE_ITEM_EVENT,
 			"(objFireItemEvent obj item event [data]) -> result of event",
 			"ivs*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objFireOverlayEvent",			fnObjSet,		FN_OBJ_FIRE_OVERLAY_EVENT,
-			"(objFireOverlayEvent obj overlayID event) -> result of event",
-			"iis",	PPFLAG_SIDEEFFECTS,	},
+			"(objFireOverlayEvent obj overlayID event [data]) -> result of event",
+			"iis*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objFixParalysis",				fnObjSet,		FN_OBJ_FIX_PARALYSIS,
 			"(objFixParalysis obj)",
@@ -1315,6 +1356,19 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(objGetOverlayPos obj overlayID) -> vector",
 			"ii",	0,	},
 
+		{	"objGetOverlayProperty",			fnObjGet,		FN_OBJ_GET_OVERLAY_PROPERTY,
+			"(objSetOverlayProperty obj overlayID property) -> value\n\n"
+			
+			"property\n\n"
+			
+			"   'counter\n"
+			"   'counterLabel\n"
+			"   'pos\n"
+			"   'rotation\n"
+			"   'type\n"
+			,
+			"iis",	0,	},
+
 		{	"objGetOverlayRotation",	fnObjGet,		FN_OBJ_GET_OVERLAY_ROTATION,
 			"(objGetOverlayRotation obj overlayID) -> rotation",
 			"ii",	0,	},
@@ -1341,6 +1395,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"property (all)\n\n"
 
 			"   'category\n"
+			"   'cyberDefenseLevel\n"
 			"   'hasDockingPorts\n"
 			"   'id\n"
 			"   'known\n"
@@ -1349,6 +1404,8 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"\n"
 			"property (ships)\n\n"
 			
+			"   'availableNonWeaponSlots\n"
+			"   'availableWeaponSlots\n"
 			"   'blindingImmune\n"
 			"   'character\n"
 			"   'characterClass\n"
@@ -1359,6 +1416,8 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'dockedAtID\n"
 			"   'dockingEnabled\n"
 			"   'EMPImmune\n"
+			"   'interiorHP\n"
+			"   'maxInteriorHP\n"
 			"   'playerWingman\n"
 			"   'radiationImmune\n"
 			"   'rotation\n"
@@ -1370,15 +1429,20 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"property (stations)\n\n"
 
 			"   'abandoned\n"
+			"   'dockingPortCount\n"
 			"   'hp\n"
+			"   'ignoreFriendlyFire\n"
 			"   'immutable\n"
 			"   'installDeviceMaxLevel\n"
 			"   'maxHP\n"
 			"   'maxStructuralHP\n"
+			"   'openDockingPortCount\n"
 			"   'orbit\n"
 			"   'parallax\n"
 			"   'playerBlacklisted\n"
 			"   'repairArmorMaxLevel\n"
+			"   'shipConstructionEnabled\n"
+			"   'shipReinforcementEnabled\n"
 			"   'structuralHP\n"
 			"\n"
 			"NOTE: All data fields (accessed via objGetDataField) are also valid properties.\n",
@@ -1554,7 +1618,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'charges charges\n"
 			"   'damaged [True|Nil]\n"
 			"   'disrupted [True|Nil|ticks]\n"
-			"   'enabled [True|Nil]\n"
+			"   'enabled [True|Nil|'silentDisabled|'silentEnabled]\n"
 			"   'fireArc Nil|(min max)|'omnidirectional\n"
 			"   'hp hitPoints\n"
 			"   'incCharges charges\n"
@@ -1569,7 +1633,19 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objSetName",					fnObjSetOld,		FN_OBJ_NAME,
-			"(objSetName obj name [flags])",
+			"(objSetName obj name [flags])\n\n"
+			
+			"flags\n\n"
+			
+			"   0x0001 Definite article\n"
+			"   0x0002 Pluralize first word\n"
+			"   0x0004 Add 'es' to pluralize\n"
+			"   0x0008 Custom plural after semicolon\n"
+			"   0x0010 Pluralize second word\n"
+			"   0x0020 Reverse 'a' vs 'an'\n"
+			"   0x0040 No article\n"
+			"   0x0080 Personal name\n",
+
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objSetObjRefData",				fnObjData,		FN_OBJ_SET_OBJREF_DATA,
@@ -1587,6 +1663,18 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"objSetOverlayPos",			fnObjGet,		FN_OBJ_SET_OVERLAY_POSITION,
 			"(objSetOverlayPos obj overlayID pos)",
 			"iiv",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"objSetOverlayProperty",			fnObjGet,		FN_OBJ_SET_OVERLAY_PROPERTY,
+			"(objSetOverlayPos obj overlayID property value)\n\n"
+			
+			"property:\n\n"
+			
+			"   'counter\n"
+			"   'counterLabel\n"
+			"   'pos position\n"
+			"   'rotation angle\n",
+
+			"iisv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objSetOverlayRotation",		fnObjGet,		FN_OBJ_SET_OVERLAY_ROTATION,
 			"(objSetOverlayRotation obj overlayID rotation)",
@@ -1611,13 +1699,17 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"\n"
 			"property (stations)\n\n"
 
+			"   'ignoreFriendlyFire True|Nil\n"
 			"   'hp hitPoints\n"
 			"   'immutable True|Nil\n"
 			"   'known True|Nil\n"
 			"   'maxHP hitPoints\n"
 			"   'maxStructuralHP hitPoints\n"
+			"   'orbit orbit|Nil\n"
 			"   'parallax factor\n"
 			"   'playerBlacklisted True|Nil\n"
+			"   'shipConstructionEnabled True|Nil\n"
+			"   'shipReinforcementEnabled True|Nil\n"
 			"   'structuralHP hitPoints\n",
 
 			"isv",	PPFLAG_SIDEEFFECTS,	},
@@ -1656,7 +1748,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"i",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objTranslate",					fnObjGet,		FN_OBJ_TRANSLATE,
-			"(objTranslate obj textID [default]) -> text (or Nil)",
+			"(objTranslate obj textID [data] [default]) -> text (or Nil)",
 			"iv*",	0,	},
 
 		{	"objUnregisterForEvents",		fnObjSetOld,		FN_OBJ_UNREGISTER_EVENTS,
@@ -1722,12 +1814,17 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"i",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"msnAddTimerEvent",				fnMissionSet,		FN_MISSION_ADD_TIMER,
-			"(msnAddTimerEvent missionObj delay event)",
+			"(msnAddTimerEvent missionObj delay event)\n\n"
+			
+			"delay in ticks\n",
+
 			"iis",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"msnAddRecurringTimerEvent",	fnMissionSet,		FN_MISSION_ADD_RECURRING_TIMER,	
-			"(msnAddRecurringTimerEvent missionObj interval event)",
-		//		interval in ticks
+			"(msnAddRecurringTimerEvent missionObj interval event)\n\n"
+			
+			"interval in ticks\n",
+
 			"iis",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"msnCancelTimerEvent",				fnMissionSet,	FN_MISSION_CANCEL_TIMER,
@@ -1759,7 +1856,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   *                  Include all missions states\n"
 			"   a                  Include active player missions\n"
 			"   o                  Include open missions\n"
-			"   r                  Include already debriefed missions\n"
+			"   r                  Include already debriefed (recorded) missions\n"
 			"   u                  Include unavailable missions\n"
 			"   S                  Only missions owned by source\n"
 			"   +/-{attrib}        Require/exclude missions with given attribute\n"
@@ -1768,8 +1865,8 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"*s",	0,	},
 
 		{	"msnFireEvent",					fnObjSet,		FN_OBJ_FIRE_EVENT,
-			"(msnFireEvent missionObj event) -> result of event",
-			"is",	PPFLAG_SIDEEFFECTS,	},
+			"(msnFireEvent missionObj event [data]) -> result of event",
+			"is*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"msnGetData",					fnObjData,		FN_OBJ_GETDATA,
 			"(msnGetData missionObj attrib) -> data",
@@ -1856,7 +1953,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"i*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"msnTranslate",					fnObjGet,		FN_OBJ_TRANSLATE,
-			"(msnTranslate missionObj textID [default]) -> text (or Nil)",
+			"(msnTranslate missionObj textID [data] [default]) -> text (or Nil)",
 			"iv*",	0,	},
 
 		//	System functions
@@ -1931,12 +2028,16 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		//		pos is either a position vector or a gate object
 			"vvi",	PPFLAG_SIDEEFFECTS,	},
 
+		{	"sysCreateLookup",				fnSystemCreate,	FN_SYS_CREATE_LOOKUP,
+			"(sysCreateLookup tableName orbit) -> True/Nil",
+			"sv",	PPFLAG_SIDEEFFECTS,	},
+
 		{	"sysCreateMarker",				fnSystemCreateMarker,	0,
 			"(sysCreateMarker name pos sovereignID) -> marker",
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"sysCreateShip",				fnSystemCreateShip,	0,
-			"(sysCreateShip unid pos sovereignID [controller]) -> ship",
+			"(sysCreateShip unid pos sovereignID [eventHandler]) -> ship",
 		//		pos is either a position vector or a gate object
 		//		controller 
 		//			""					= standard
@@ -1957,8 +2058,12 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"ivs*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"sysCreateStation",				fnSystemCreateStation,	FN_SYS_CREATE_STATION,
-			"(sysCreateStation unid pos) -> obj",
-			"iv",	PPFLAG_SIDEEFFECTS,	},
+			"(sysCreateStation unid pos [eventHandler]) -> obj",
+			"iv*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"sysCreateTerritory",			fnSystemCreate,			FN_SYS_CREATE_TERRITORY,
+			"(sysCreateTerritory orbit minRadius maxRadius attributes [criteria]) -> True/Nil",
+			"viiv*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"sysCreateWeaponFire",			fnSystemCreate,			FN_SYS_CREATE_WEAPON_FIRE,
 			"(sysCreateWeaponFire weaponID objSource pos dir speed objTarget [detonateNow] [bonus%]) -> obj",
@@ -1969,51 +2074,55 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"iv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"sysFindObject",				fnSystemFind,	0,	
-			"(sysFindObject source filter) -> list of objects",
-			//		b			Include beams
-			//		m			Include missiles
-			//		s			Include ships
-			//		t			Include stations (including planets)
-			//		z			Include the player
-			//
-			//		A			Active objects only (i.e., objects that can attack)
-			//		B:xyz;		Only objects with attribute 'xyz'
-			//		C			(unused)
-			//		D:xyz;		Only objects with data 'xyz'
-			//		E			Enemy objects only
-			//		F			Friendly objects only
-			//		G			Stargates only
-			//		G:xyz;		Stargate with ID 'xyz'
-			//		H			Only objects whose base = source
-			//		I:angle		Only objects that intersect line from source
-			//		J			Same sovereign as source
-			//		J:unid;		Sovereign unid = unid
-			//		K			Killed objects only (i.e., objects that cannot attack)
-			//		L:x-y;		Objects of level x to y.
-			//		M			Manufactured objects only (i.e., no planets or asteroids)
-			//		N			Return only the nearest object to the source
-			//		N:nn;		Return only objects within nn light-seconds
-			//		O:docked;	Ships that are currently docked at source
-			//		O:escort;	Ships ordered to escort source
-			//		O:guard;	Ships ordered to guard source
-			//		P			Only objects that can be detected (perceived) by source
-			//		Q			(unused)
-			//		R			Return only the farthest object to the source
-			//		R:nn;		Return only objects greater than nn light-seconds away
-			//		S:sort		Sort order ('d' = distance ascending; 'D' = distance descending
-			//		T			Include structure-scale stations
-			//		T:xyz;		Include stations with attribute 'xyz'
-			//		U			(unused)
-			//		V			Include virtual objects
-			//		W			(unused)
-			//		X			Only objects whose target is the source
-			//		Y			(unused)
-			//		Z			Exclude the player
-			//
-			//		+xyz;		Include objects with the given attribute
-			//		-xyz;		Exclude objects with the given attribute
-			//
-			//		=n			Level comparisons
+			"(sysFindObject source filter) -> list of objects\n\n"
+			
+			"filter\n\n"
+			
+			"   b           Include beams\n"
+			"   m           Include missiles\n"
+			"   s           Include ships\n"
+			"   t           Include stations (including planets)\n"
+			"   z           Include the player\n"
+			"\n"
+			"   A           Active objects only (i.e., objects that can attack)\n"
+			//"   B:xyz;      Only objects with attribute 'xyz'\n"
+			//"   C           (unused)\n"
+			"   D:xyz;      Only objects with data 'xyz'\n"
+			"   E           Enemy objects only\n"
+			"   F           Friendly objects only\n"
+			"   G           Stargates only\n"
+			"   G:xyz;      Stargate with ID 'xyz'\n"
+			"   H           Only objects whose base = source\n"
+			"   I:angle     Only objects that intersect line from source\n"
+			"   J           Same sovereign as source\n"
+			"   J:unid;     Sovereign unid = unid\n"
+			"   K           Killed objects only (i.e., objects that cannot attack)\n"
+			"   L:x-y;      Objects of level x to y.\n"
+			"   M           Manufactured objects only (i.e., no planets or asteroids)\n"
+			"   N           Return only the nearest object to the source\n"
+			"   N:nn;       Return only objects within nn light-seconds\n"
+			"   O:docked;   Ships that are currently docked at source\n"
+			"   O:escort;   Ships ordered to escort source\n"
+			"   O:guard;    Ships ordered to guard source\n"
+			"   P           Only objects that can be detected (perceived) by source\n"
+			//"   Q           (unused)\n"
+			"   R           Return only the farthest object to the source\n"
+			"   R:nn;       Return only objects greater than nn light-seconds away\n"
+			"   S:sort      Sort order ('d' = distance ascending; 'D' = distance descending\n"
+			"   T           Include structure-scale stations\n"
+			"   T:xyz;      Include stations with attribute 'xyz'\n"
+			//"   U           (unused)\n"
+			"   V           Include virtual objects\n"
+			//"   W           (unused)\n"
+			"   X           Only objects whose target is the source\n"
+			"   Y           Only objects angry at the player (or enemies)\n"
+			"   Z           Exclude the player\n"
+			"\n"
+			"   +xyz;       Exclude objects without the given attribute\n"
+			"   -xyz;       Exclude objects with the given attribute\n"
+			"\n"
+			"   =n          Level comparisons\n",
+
 			"is",	0,	},
 
 		{	"sysGetData",					fnSystemGet,	FN_SYS_GET_DATA,
@@ -2228,7 +2337,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		{	"typCreate",					fnDesignCreate,		FN_DESIGN_CREATE,
 			"(typCreate unid XML) -> True/Nil",
-			"is",	PPFLAG_SIDEEFFECTS,	},
+			"iv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"typDynamicUNID",				fnDesignCreate,		FN_DESIGN_DYNAMIC_UNID,
 			"(typDynamicUNID uniqueName) -> UNID",
@@ -2282,8 +2391,16 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(typGetStaticData unid attrib) -> data",
 			"is",	0,	},
 
+		{	"typGetXML",				fnDesignGet,		FN_DESIGN_GET_XML,
+			"(typGetXML unid) -> xmlElement",
+			"i",	0,	},
+
 		{	"typHasAttribute",				fnDesignGet,		FN_DESIGN_HAS_ATTRIBUTE,
 			"(typHasAttribute unid attrib) -> True/Nil",
+			"is",	0,	},
+
+		{	"typHasEvent",				fnDesignGet,		FN_DESIGN_HAS_EVENT,
+			"(typHasEvent unid event) -> True/Nil",
 			"is",	0,	},
 
 		{	"typIncData",				fnDesignGet,		FN_DESIGN_INC_GLOBAL_DATA,
@@ -2303,7 +2420,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"isv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"typTranslate",				fnDesignGet,		FN_DESIGN_TRANSLATE,
-			"(typTranslate unid textID [default]) -> text (or Nil)",
+			"(typTranslate unid textID [data] [default]) -> text (or Nil)",
 			"iv*",	0,	},
 
 		//	Economy function
@@ -2395,6 +2512,61 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"unvUNID",						fnUniverseGet,	FN_UNIVERSE_UNID,
 			"(unvUNID string) -> (unid 'itemtype name) or (unid 'shipclass name)",
 			"s",	0,	},
+
+		//	XML functions
+		//	-------------
+
+		{	"xmlAppendSubElement",			fnXMLGet,		FN_XML_APPEND_SUB_ELEMENT,
+			"(xmlAppendSubElement xml xmlToAdd [index]) -> True/Nil",
+			"vv*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"xmlAppendText",				fnXMLGet,		FN_XML_APPEND_TEXT,
+			"(xmlAppendText xml text [index]) -> True/Nil",
+			"vs*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"xmlCreate",					fnXMLCreate,	0,
+			"(xmlCreate xml) -> xml",
+			"v",	0,	},
+
+		{	"xmlDeleteSubElement",			fnXMLGet,		FN_XML_DELETE_SUB_ELEMENT,
+			"(xmlDeleteSubElement xml index) -> True/Nil",
+			"vi",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"xmlGetAttrib",					fnXMLGet,		FN_XML_GET_ATTRIB,
+			"(xmlGetAttrib xml attrib) -> value",
+			"vs",	0,	},
+
+		{	"xmlGetAttribList",					fnXMLGet,		FN_XML_GET_ATTRIB_LIST,
+			"(xmlGetAttribList xml) -> list of attribs",
+			"v",	0,	},
+
+		{	"xmlGetSubElement",				fnXMLGet,		FN_XML_GET_SUB_ELEMENT,
+			"(xmlGetSubElement xml tag|index) -> xml",
+			"vv",	0,	},
+
+		{	"xmlGetSubElementCount",				fnXMLGet,		FN_XML_GET_SUB_ELEMENT_COUNT,
+			"(xmlGetSubElementCount xml) -> number of sub-elements",
+			"v",	0,	},
+
+		{	"xmlGetSubElementList",				fnXMLGet,		FN_XML_GET_SUB_ELEMENT_LIST,
+			"(xmlGetSubElementList xml [tag]) -> list of xml",
+			"v*",	0,	},
+
+		{	"xmlGetText",					fnXMLGet,		FN_XML_GET_TEXT,
+			"(xmlGetText xml [index]) -> text",
+			"v*",	0,	},
+
+		{	"xmlGetTag",					fnXMLGet,		FN_XML_GET_TAG,
+			"(xmlGetTag xml) -> tag",
+			"v",	0,	},
+
+		{	"xmlSetAttrib",					fnXMLGet,		FN_XML_SET_ATTRIB,
+			"(xmlSetAttrib xml attrib value) -> value",
+			"vsv",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"xmlSetText",					fnXMLGet,		FN_XML_SET_TEXT,
+			"(xmlSetText xml text [index]) -> True/Nil",
+			"vs*",	PPFLAG_SIDEEFFECTS,	},
 
 		//	DEPRECATED FUNCTIONS
 		//	--------------------
@@ -2966,7 +3138,7 @@ ICCItem *fnDesignCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			CString sError;
 			if (g_pUniverse->AddDynamicType(pCtx->GetExtension(), 
 					dwUNID, 
-					pArgs->GetElement(1)->GetStringValue(), 
+					pArgs->GetElement(1),
 					pCtx->InEvent(eventOnGlobalTypesInit),
 					&sError) != NOERROR)
 				return pCC->CreateError(sError);
@@ -3052,8 +3224,20 @@ ICCItem *fnDesignGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->Link(sData, 0, NULL);
 			}
 
+		case FN_DESIGN_GET_XML:
+			{
+			CXMLElement *pXML = pType->GetXMLElement();
+			if (pXML == NULL)
+				return pCC->CreateNil();
+
+			return new CCXMLWrapper(pXML);
+			}
+
 		case FN_DESIGN_HAS_ATTRIBUTE:
 			return pCC->CreateBool(pType->HasAttribute(pArgs->GetElement(1)->GetStringValue()));
+
+		case FN_DESIGN_HAS_EVENT:
+			return pCC->CreateBool(pType->FindEventHandler(pArgs->GetElement(1)->GetStringValue()));
 
 		case FN_DESIGN_INC_GLOBAL_DATA:
 			{
@@ -3110,11 +3294,29 @@ ICCItem *fnDesignGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_DESIGN_TRANSLATE:
 			{
-			ICCItem *pResult;
-			if (!pType->Translate(NULL, pArgs->GetElement(1)->GetStringValue(), &pResult) || pResult->IsNil())
+			//	Get parameters
+
+			int iArg = 1;
+			CString sText = pArgs->GetElement(iArg++)->GetStringValue();
+
+			ICCItem *pData = NULL;
+			if (pArgs->GetCount() > iArg)
 				{
-				if (pArgs->GetCount() > 2)
-					return pArgs->GetElement(2)->Reference();
+				if (pArgs->GetElement(iArg)->IsSymbolTable())
+					pData = pArgs->GetElement(iArg++);
+				}
+
+			ICCItem *pDefault = NULL;
+			if (pArgs->GetCount() > iArg)
+				pDefault = pArgs->GetElement(iArg++);
+
+			//	Translate
+
+			ICCItem *pResult;
+			if (!pType->Translate(NULL, sText, pData, &pResult) || pResult->IsNil())
+				{
+				if (pDefault)
+					return pDefault->Reference();
 				else
 					return pCC->CreateNil();
 				}
@@ -5065,6 +5267,13 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return CreateListFromVector(*pCC, pObj->GetOverlayPos(dwID));
 			}
 
+		case FN_OBJ_GET_OVERLAY_PROPERTY:
+			{
+			DWORD dwID = (DWORD)pArgs->GetElement(1)->GetIntegerValue();
+			CString sProperty = pArgs->GetElement(2)->GetStringValue();
+			return pObj->GetOverlayProperty(pCtx, dwID, sProperty);
+			}
+
 		case FN_OBJ_GET_OVERLAY_ROTATION:
 			{
 			DWORD dwID = (DWORD)pArgs->GetElement(1)->GetIntegerValue();
@@ -5099,7 +5308,7 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_OBJ_GET_OVERLAY_TYPE:
 			{
 			DWORD dwID = (DWORD)pArgs->GetElement(1)->GetIntegerValue();
-			CEnergyFieldType *pType = pObj->GetOverlayType(dwID);
+			COverlayType *pType = pObj->GetOverlayType(dwID);
 			if (pType)
 				return pCC->CreateInteger(pType->GetUNID());
 			else
@@ -5329,6 +5538,22 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateTrue();
 			}
 
+		case FN_OBJ_SET_OVERLAY_PROPERTY:
+			{
+			DWORD dwID = (DWORD)pArgs->GetElement(1)->GetIntegerValue();
+
+			CString sError;
+			if (!pObj->SetOverlayProperty(dwID, pArgs->GetElement(2)->GetStringValue(), pArgs->GetElement(3), &sError))
+				{
+				if (sError.IsBlank())
+					return pCC->CreateError(CONSTLIT("Invalid property"), pArgs->GetElement(2));
+				else
+					return pCC->CreateError(sError);
+				}
+
+			return pCC->CreateTrue();
+			}
+
 		case FN_OBJ_SET_OVERLAY_ROTATION:
 			{
 			DWORD dwID = (DWORD)pArgs->GetElement(1)->GetIntegerValue();
@@ -5348,11 +5573,29 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_OBJ_TRANSLATE:
 			{
-			ICCItem *pResult;
-			if (!pObj->Translate(pArgs->GetElement(1)->GetStringValue(), &pResult) || pResult->IsNil())
+			//	Get parameters
+
+			int iArg = 1;
+			CString sText = pArgs->GetElement(iArg++)->GetStringValue();
+
+			ICCItem *pData = NULL;
+			if (pArgs->GetCount() > iArg)
 				{
-				if (pArgs->GetCount() > 2)
-					return pArgs->GetElement(2)->Reference();
+				if (pArgs->GetElement(iArg)->IsSymbolTable())
+					pData = pArgs->GetElement(iArg++);
+				}
+
+			ICCItem *pDefault = NULL;
+			if (pArgs->GetCount() > iArg)
+				pDefault = pArgs->GetElement(iArg++);
+
+			//	Translate
+
+			ICCItem *pResult;
+			if (!pObj->Translate(sText, pData, &pResult) || pResult->IsNil())
+				{
+				if (pDefault)
+					return pDefault->Reference();
 				else
 					return pCC->CreateNil();
 				}
@@ -5717,7 +5960,7 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Find the overlay type
 
 			DWORD dwUNID = (DWORD)pArgs->GetElement(1)->GetIntegerValue();
-			CEnergyFieldType *pField = g_pUniverse->FindShipEnergyFieldType(dwUNID);
+			COverlayType *pField = g_pUniverse->FindShipEnergyFieldType(dwUNID);
 			if (pField == NULL)
 				return pCC->CreateError(CONSTLIT("Unknown overlay type"), NULL);
 
@@ -5952,7 +6195,8 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_OBJ_FIRE_EVENT:
 			{
 			ICCItem *pResult;
-			pObj->FireCustomEvent(pArgs->GetElement(1)->GetStringValue(), eventObjFireEvent, &pResult);
+			ICCItem *pData = (pArgs->GetCount() > 2 ? pArgs->GetElement(2) : NULL);
+			pObj->FireCustomEvent(pArgs->GetElement(1)->GetStringValue(), eventObjFireEvent, pData, &pResult);
 			return pResult;
 			}
 
@@ -5970,7 +6214,8 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			{
 			ICCItem *pResult;
 			DWORD dwOverlayID = pArgs->GetElement(1)->GetIntegerValue();
-			pObj->FireCustomOverlayEvent(pArgs->GetElement(2)->GetStringValue(), dwOverlayID, &pResult);
+			ICCItem *pData = (pArgs->GetCount() > 3 ? pArgs->GetElement(3) : NULL);
+			pObj->FireCustomOverlayEvent(pArgs->GetElement(2)->GetStringValue(), dwOverlayID, pData, &pResult);
 			return pResult;
 			}
 
@@ -7790,7 +8035,7 @@ ICCItem *fnShipSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData
 			int iLifetime = pArgs->GetElement(2)->GetIntegerValue();
 			pArgs->Discard(pCC);
 
-			CEnergyFieldType *pField = g_pUniverse->FindShipEnergyFieldType(dwUNID);
+			COverlayType *pField = g_pUniverse->FindShipEnergyFieldType(dwUNID);
 			if (pField == NULL)
 				return pCC->CreateError(CONSTLIT("Unknown ship energy field"), NULL);
 
@@ -8883,6 +9128,7 @@ ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 	{
 	ALERROR error;
 	CCodeChain *pCC = pEvalCtx->pCC;
+	int i;
 
 	switch (dwData)
 		{
@@ -9008,6 +9254,31 @@ ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateInteger((int)pFlotsam);
 			}
 
+		case FN_SYS_CREATE_LOOKUP:
+			{
+			CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
+			SSystemCreateCtx *pSysCreateCtx = pCtx->GetSystemCreateCtx();
+			if (pSysCreateCtx == NULL)
+				return pCC->CreateError(CONSTLIT("sysCreateLookup only valid inside <SystemType> definition."));
+
+			CString sTableName = pArgs->GetElement(0)->GetStringValue();
+
+			//	Get the orbit
+
+			COrbit OrbitDesc;
+			if (!CreateOrbitFromList(*pCC, pArgs->GetElement(1), &OrbitDesc))
+				return pCC->CreateError(CONSTLIT("Invalid orbit object"), pArgs->GetElement(0));
+
+			//	Create
+
+			if (pSysCreateCtx->pSystem->CreateLookup(pSysCreateCtx, sTableName, OrbitDesc, NULL) != NOERROR)
+				return pCC->CreateError(pSysCreateCtx->sError);
+
+			//	Done
+
+			return pCC->CreateTrue();
+			}
+
 		case FN_SYS_CREATE_SHIPWRECK:
 			{
 			CSystem *pSystem = g_pUniverse->GetCurrentSystem();
@@ -9036,6 +9307,67 @@ ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Done
 
 			return pCC->CreateInteger((int)pWreck);
+			}
+
+		case FN_SYS_CREATE_TERRITORY:
+			{
+			CSystem *pSystem = g_pUniverse->GetCurrentSystem();
+			if (pSystem == NULL)
+				return StdErrorNoSystem(*pCC);
+
+			//	Get the orbit
+
+			COrbit OrbitDesc;
+			if (!CreateOrbitFromList(*pCC, pArgs->GetElement(0), &OrbitDesc))
+				return pCC->CreateError(CONSTLIT("Invalid orbit object"), pArgs->GetElement(0));
+
+			//	Get the radii
+
+			int iMinRadius = pArgs->GetElement(1)->GetIntegerValue();
+			int iMaxRadius = pArgs->GetElement(2)->GetIntegerValue();
+			if (iMinRadius < 0 || iMaxRadius < 0 || (iMaxRadius != 0 && iMaxRadius < iMinRadius))
+				return pCC->CreateError(CONSTLIT("Invalid radius"));
+
+			Metric rMinRadius = iMinRadius * LIGHT_SECOND;
+			Metric rMaxRadius = iMaxRadius * LIGHT_SECOND;
+
+			//	Get the attributes
+
+			CString sAttribs;
+			ICCItem *pAttribs = pArgs->GetElement(3);
+			if (pAttribs->IsList() && pAttribs->GetCount() > 0)
+				{
+				sAttribs = pAttribs->GetElement(0)->GetStringValue();
+				for (i = 1; i < pAttribs->GetCount(); i++)
+					sAttribs.Append(strPatternSubst(CONSTLIT(", %s"), pAttribs->GetElement(i)->GetStringValue()));
+				}
+			else
+				sAttribs = pAttribs->GetStringValue();
+
+			//	Criteria
+
+			CString sCriteria;
+			if (pArgs->GetCount() > 4
+					&& !pArgs->GetElement(4)->IsNil())
+				sCriteria = pArgs->GetElement(4)->GetStringValue();
+
+			//	Create the territory
+
+			CTerritoryDef *pTerritory = new CTerritoryDef;
+			pTerritory->AddRegion(OrbitDesc, rMinRadius, rMaxRadius);
+			pTerritory->AddAttributes(sAttribs);
+			if (!sCriteria.IsBlank())
+				pTerritory->SetCriteria(sCriteria);
+
+			//	Add it 
+
+			if (pSystem->AddTerritory(pTerritory) != NOERROR)
+				{
+				delete pTerritory;
+				return pCC->CreateNil();
+				}
+
+			return pCC->CreateTrue();
 			}
 
 		case FN_SYS_CREATE_WEAPON_FIRE:
@@ -9256,6 +9588,7 @@ ICCItem *fnSystemCreateShip (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD 
 	{
 	CCodeChain *pCC = pEvalCtx->pCC;
 	ICCItem *pArgs;
+	int i;
 
 	//	Evaluate the arguments and validate them
 
@@ -9284,7 +9617,7 @@ ICCItem *fnSystemCreateShip (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD 
 		if (pArgs->GetElement(3)->IsIdentifier())
 			pController = CreateShipController(pArgs->GetElement(3)->GetStringValue());
 		else
-			pOverride = g_pUniverse->FindShipClass(pArgs->GetElement(3)->GetIntegerValue());
+			pOverride = g_pUniverse->FindDesignType(pArgs->GetElement(3)->GetIntegerValue());
 		}
 
 	//	Validate
@@ -9309,7 +9642,7 @@ ICCItem *fnSystemCreateShip (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD 
 	if (pSystem == NULL)
 		return StdErrorNoSystem(*pCC);
 
-	CShip *pShip;
+	CSpaceObjectList ShipsCreated;
 	ALERROR error;
 	if (error = pSystem->CreateShip(dwClassID,
 				pController,
@@ -9320,7 +9653,8 @@ ICCItem *fnSystemCreateShip (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD 
 				mathRandom(0, 359),
 				pGate,
 				NULL,
-				&pShip))
+				NULL,
+				&ShipsCreated))
 		{
 		//	ERR_NOTFOUND is not an error--it means that a ship table did not
 		//	create any ships.
@@ -9333,10 +9667,23 @@ ICCItem *fnSystemCreateShip (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD 
 
 	//	Done
 
-	if (pShip == NULL)
+	if (ShipsCreated.GetCount() == 0)
 		return pCC->CreateNil();
+	else if (ShipsCreated.GetCount() == 1)
+		return pCC->CreateInteger((int)ShipsCreated.GetObj(0));
 	else
-		return pCC->CreateInteger((int)pShip);
+		{
+		ICCItem *pResult = pCC->CreateLinkedList();
+		if (pResult->IsError())
+			return pResult;
+
+		CCLinkedList *pList = (CCLinkedList *)pResult;
+
+		for (i = 0; i < ShipsCreated.GetCount(); i++)
+			pList->AppendIntegerValue(pCC, (int)ShipsCreated.GetObj(i));
+
+		return pResult;
+		}
 	}
 
 ICCItem *fnSystemCreateStation (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
@@ -9370,6 +9717,7 @@ ICCItem *fnSystemCreateStation (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dw
 
 	//	If we're creating a stargate, get some extra information
 
+	CDesignType *pEventHandler = NULL;
 	CString sStargateName;
 	CTopologyNode *pDestNode = NULL;
 	CString sDestNode;
@@ -9403,6 +9751,15 @@ ICCItem *fnSystemCreateStation (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dw
 		else
 			sDestNode = pDestNode->GetID();
 		}
+	else
+		{
+		if (pArgs->GetCount() >= 3)
+			{
+			pEventHandler = g_pUniverse->FindDesignType(pArgs->GetElement(2)->GetIntegerValue());
+			if (pEventHandler == NULL)
+				return pCC->CreateError(CONSTLIT("Invalid event handler"), pArgs->GetElement(2));
+			}
+		}
 
 	//	Make sure we can encounter the station
 
@@ -9417,12 +9774,16 @@ ICCItem *fnSystemCreateStation (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dw
 		{
 		CLocationDef *pLoc = pSystem->GetLocation(iLocID);
 
+		SObjCreateCtx CreateCtx;
+		CreateCtx.vPos = vPos;
+		CreateCtx.pLoc = pLoc;
+		CreateCtx.pOrbit = &pLoc->GetOrbit();
+		CreateCtx.bCreateSatellites = true;
+		CreateCtx.pEventHandler = pEventHandler;
+
 		if (pSystem->CreateStation(pSysCreateCtx,
 				pType,
-				vPos,
-				pLoc->GetOrbit(),
-				true,
-				NULL,
+				CreateCtx,
 				&pStation) != NOERROR)
 			return pCC->CreateError(CONSTLIT("Unable to create station"), NULL);
 		}
@@ -9431,7 +9792,7 @@ ICCItem *fnSystemCreateStation (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dw
 
 	else
 		{
-		if (pSystem->CreateStation(pType, vPos, &pStation) != NOERROR)
+		if (pSystem->CreateStation(pType, pEventHandler, vPos, &pStation) != NOERROR)
 			return pCC->CreateError(CONSTLIT("Unable to create station"), NULL);
 		}
 
@@ -9998,7 +10359,7 @@ ICCItem *fnSystemGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			if (pNode == NULL)
 				return pCC->CreateError(CONSTLIT("Invalid nodeID"), pArgs->GetElement(0));
 
-			return pCC->CreateInteger(pNode->GetSystemDescUNID());
+			return pCC->CreateInteger(pNode->GetSystemTypeUNID());
 			}
 
 		case FN_SYS_STARGATES:
@@ -10955,4 +11316,253 @@ ICCItem *fnUniverseGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		}
 
 	return pResult;
+	}
+
+ICCItem *fnXMLCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
+	{
+	CCodeChain *pCC = pEvalCtx->pCC;
+	ICCItem *pValue = pArgs->GetElement(0);
+
+	//	If we have an XML element, then we create a clone of it.
+
+	if (strEquals(pValue->GetTypeOf(), CONSTLIT("xmlElement")))
+		{
+		CCXMLWrapper *pWrapper = CreateXMLElementFromItem(*pCC, pValue);
+		if (pWrapper == NULL)
+			return pCC->CreateError(CONSTLIT("Invalid XML element"), pArgs->GetElement(0));
+
+		return new CCXMLWrapper(pWrapper->GetXMLElement());
+		}
+
+	//	Otherwise, we expect XML text
+
+	else if (pValue->IsIdentifier())
+		{
+		CString sValue = pValue->GetStringValue();
+		char *pPos = sValue.GetASCIIZPointer();
+		if (*pPos != '<')
+			return pCC->CreateError(CONSTLIT("Invalid XML"), pValue);
+
+		//	Parse it
+
+		CString sError;
+		CBufferReadBlock Stream(sValue);
+		CXMLElement *pElement;
+		if (CXMLElement::ParseSingleElement(&Stream, NULL, &pElement, &sError) != NOERROR)
+			return pCC->CreateError(sError, pValue);
+
+		ICCItem *pResult = new CCXMLWrapper(pElement);
+		delete pElement;
+		return pResult;
+		}
+
+	//	Otherwise, we don't know what
+
+	else
+		return pCC->CreateError(CONSTLIT("Invalid XML"), pValue);
+	}
+
+ICCItem *fnXMLGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
+	{
+	CCodeChain *pCC = pEvalCtx->pCC;
+	int i;
+
+	//	Get the XML element
+
+	CCXMLWrapper *pWrapper = CreateXMLElementFromItem(*pCC, pArgs->GetElement(0));
+	if (pWrapper == NULL)
+		return pCC->CreateError(CONSTLIT("Invalid XML element"), pArgs->GetElement(0));
+
+	CXMLElement *pXML = pWrapper->GetXMLElement();
+
+	//	Function
+
+	switch (dwData)
+		{
+		case FN_XML_APPEND_SUB_ELEMENT:
+			{
+			CCXMLWrapper *pWrapper = CreateXMLElementFromItem(*pCC, pArgs->GetElement(1));
+			if (pWrapper == NULL)
+				return pCC->CreateError(CONSTLIT("Invalid XML element"), pArgs->GetElement(1));
+
+			CXMLElement *pSubElement = pWrapper->GetXMLElement()->OrphanCopy();
+			int iIndex = (pArgs->GetCount() >= 3 ? pArgs->GetElement(2)->GetIntegerValue() : -1);
+
+			//	Sanity check the index
+
+			if (iIndex < 0 || iIndex > pXML->GetContentElementCount())
+				iIndex = -1;
+
+			//	Append
+
+			if (pXML->AppendSubElement(pSubElement, iIndex) != NOERROR)
+				{
+				delete pSubElement;
+				return pCC->CreateError(CONSTLIT("Invalid index"), pArgs->GetElement(2));
+				}
+
+			return pCC->CreateTrue();
+			}
+
+		case FN_XML_APPEND_TEXT:
+			{
+			CString sText = pArgs->GetElement(1)->GetStringValue();
+			int iIndex = (pArgs->GetCount() >= 3 ? pArgs->GetElement(2)->GetIntegerValue() : -1);
+
+			if (pXML->AppendContent(sText, iIndex) != NOERROR)
+				return pCC->CreateError(CONSTLIT("Invalid index"), pArgs->GetElement(2));
+
+			return pCC->CreateTrue();
+			}
+
+		case FN_XML_DELETE_SUB_ELEMENT:
+			{
+			int iIndex = pArgs->GetElement(1)->GetIntegerValue();
+			if (iIndex < 0 || iIndex >= pXML->GetContentElementCount())
+				return pCC->CreateNil();
+
+			pXML->DeleteSubElement(iIndex);
+			return pCC->CreateTrue();
+			}
+
+		case FN_XML_GET_ATTRIB:
+			{
+			CString sValue;
+			if (!pXML->FindAttribute(pArgs->GetElement(1)->GetStringValue(), &sValue))
+				return pCC->CreateNil();
+
+			return pCC->CreateString(sValue);
+			}
+
+		case FN_XML_GET_ATTRIB_LIST:
+			{
+			if (pXML->GetAttributeCount() == 0)
+				return pCC->CreateNil();
+
+			ICCItem *pResult = pCC->CreateLinkedList();
+			if (pResult->IsError())
+				return pResult;
+
+			CCLinkedList *pList = (CCLinkedList *)pResult;
+			for (i = 0; i < pXML->GetAttributeCount(); i++)
+				pList->AppendStringValue(pCC, pXML->GetAttributeName(i));
+
+			return pResult;
+			}
+
+		case FN_XML_GET_SUB_ELEMENT:
+			{
+			ICCItem *pIndex = pArgs->GetElement(1);
+
+			//	If the index is an integer, then we get the nth sub element
+
+			if (pIndex->IsInteger())
+				{
+				int iIndex = pIndex->GetIntegerValue();
+				if (iIndex < 0 || iIndex >= pXML->GetContentElementCount())
+					return pCC->CreateNil();
+
+				return new CCXMLWrapper(pXML->GetContentElement(iIndex), pWrapper);
+				}
+
+			//	Otherwise we expect a tag
+
+			else
+				{
+				CXMLElement *pSub = pXML->GetContentElementByTag(pIndex->GetStringValue());
+				if (pSub == NULL)
+					return pCC->CreateNil();
+
+				return new CCXMLWrapper(pSub, pWrapper);
+				}
+			}
+
+		case FN_XML_GET_SUB_ELEMENT_COUNT:
+			return pCC->CreateInteger(pXML->GetContentElementCount());
+
+		case FN_XML_GET_SUB_ELEMENT_LIST:
+			{
+			ICCItem *pResult = pCC->CreateLinkedList();
+			if (pResult->IsError())
+				return pResult;
+
+			CCLinkedList *pList = (CCLinkedList *)pResult;
+
+			//	If we have a tag, we only return elements with the given tag
+
+			if (pArgs->GetCount() >= 2)
+				{
+				CString sTag = pArgs->GetElement(1)->GetStringValue();
+
+				for (i = 0; i < pXML->GetContentElementCount(); i++)
+					{
+					CXMLElement *pSub = pXML->GetContentElement(i);
+					if (strEquals(pSub->GetTag(), sTag))
+						{
+						CCXMLWrapper *pNewItem = new CCXMLWrapper(pSub, pWrapper);
+						pList->Append(pCC, pNewItem);
+						pNewItem->Discard(pCC);
+						}
+					}
+				}
+
+			//	Otherwise, we return all elements
+
+			else
+				{
+				for (i = 0; i < pXML->GetContentElementCount(); i++)
+					{
+					CXMLElement *pSub = pXML->GetContentElement(i);
+					CCXMLWrapper *pNewItem = new CCXMLWrapper(pSub, pWrapper);
+					pList->Append(pCC, pNewItem);
+					pNewItem->Discard(pCC);
+					}
+				}
+
+			//	Optimize case with no items
+
+			if (pList->GetCount() == 0)
+				{
+				pResult->Discard(pCC);
+				return pCC->CreateNil();
+				}
+
+			//	Done
+
+			return pResult;
+			}
+			
+		case FN_XML_GET_TEXT:
+			{
+			int iIndex = pArgs->GetElement(1)->GetIntegerValue();
+			return pCC->CreateString(pXML->GetContentText(iIndex));
+			}
+
+		case FN_XML_GET_TAG:
+			return pCC->CreateString(pXML->GetTag());
+
+		case FN_XML_SET_ATTRIB:
+			{
+			CString sAttrib = pArgs->GetElement(1)->GetStringValue();
+			CString sValue = pArgs->GetElement(2)->GetStringValue();
+			pXML->SetAttribute(sAttrib, sValue);
+			return pCC->CreateString(sValue);
+			}
+
+		case FN_XML_SET_TEXT:
+			{
+			CString sText = pArgs->GetElement(1)->GetStringValue();
+			int iIndex = (pArgs->GetCount() >= 3 ? pArgs->GetElement(2)->GetIntegerValue() : -1);
+
+			if (pXML->SetContentText(sText, iIndex) != NOERROR)
+				return pCC->CreateError(CONSTLIT("Invalid index"), pArgs->GetElement(2));
+
+			return pCC->CreateTrue();
+			}
+
+		default:
+			ASSERT(false);
+		}
+
+	return pCC->CreateNil();
 	}

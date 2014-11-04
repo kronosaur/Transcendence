@@ -55,6 +55,8 @@
 			name=				"Reach Galactic Core"
 			attributes=			""
 
+			level=				"10"
+				 
 			noDebrief=			"true"
 			noStats=			"true"
 			>

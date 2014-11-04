@@ -61,7 +61,7 @@ CDesignCollection::~CDesignCollection (void)
 	CleanUp();
 	}
 
-ALERROR CDesignCollection::AddDynamicType (CExtension *pExtension, DWORD dwUNID, const CString &sSource, bool bNewGame, CString *retsError)
+ALERROR CDesignCollection::AddDynamicType (CExtension *pExtension, DWORD dwUNID, ICCItem *pSource, bool bNewGame, CString *retsError)
 
 //	AddDynamicType
 //
@@ -82,7 +82,7 @@ ALERROR CDesignCollection::AddDynamicType (CExtension *pExtension, DWORD dwUNID,
 	//	Add it to the dynamics table
 
 	CDesignType *pType;
-	if (error = m_DynamicTypes.DefineType(pExtension, dwUNID, sSource, &pType, retsError))
+	if (error = m_DynamicTypes.DefineType(pExtension, dwUNID, pSource, &pType, retsError))
 		return error;
 
 	//	Make sure that the type can be created at this point.
@@ -536,7 +536,6 @@ ALERROR CDesignCollection::CreateTemplateTypes (SDesignLoadCtx &Ctx)
 
 		//	Get the function to generate the type source
 
-		CString sSource;
 		SEventHandlerDesc Event;
 		if (pTemplate->FindEventHandler(GET_TYPE_SOURCE_EVENT, &Event))
 			{
@@ -546,20 +545,13 @@ ALERROR CDesignCollection::CreateTemplateTypes (SDesignLoadCtx &Ctx)
 				Ctx.sError = strPatternSubst(CONSTLIT("GetTypeSource (%x): %s"), pTemplate->GetUNID(), pResult->GetStringValue());
 				return ERR_FAIL;
 				}
-			else if (pResult->IsNil())
-				sSource = NULL_STR;
-			else
-				sSource = pResult->GetStringValue();
+			else if (!pResult->IsNil())
+				{
+				if (error = AddDynamicType(pTemplate->GetExtension(), pTemplate->GetUNID(), pResult, true, &Ctx.sError))
+					return error;
+				}
 
 			CCCtx.Discard(pResult);
-			}
-
-		//	Define the type
-
-		if (!sSource.IsBlank())
-			{
-			if (error = AddDynamicType(pTemplate->GetExtension(), pTemplate->GetUNID(), sSource, true, &Ctx.sError))
-				return error;
 			}
 		}
 

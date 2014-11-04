@@ -127,7 +127,7 @@ void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot,
 				&& !pAction->sID.IsBlank())
 			{
 			CString sLabelDesc;
-			if (pRoot->TranslateText(NULL, pAction->sID, &sLabelDesc))
+			if (pRoot->TranslateText(NULL, pAction->sID, NULL, &sLabelDesc))
 				{
 				CString sLabel;
 				CString sKey;
@@ -583,6 +583,25 @@ void CDockScreenActions::ParseLabelDesc (const CString &sLabelDesc, CString *ret
 
 	if (retsKey)
 		*retsKey = sKey;
+	}
+
+ALERROR CDockScreenActions::RemoveAction (int iAction)
+
+//	RemoveAction
+//
+//	Removes the given action
+
+	{
+	SActionDesc *pAction = &m_Actions[iAction];
+	if (pAction->pCode)
+		{
+		pAction->pCode->Discard(&g_pUniverse->GetCC());
+		pAction->pCode = NULL;
+		}
+
+	m_Actions.Delete(iAction);
+
+	return NOERROR;
 	}
 
 void CDockScreenActions::SetEnabled (int iAction, bool bEnabled)

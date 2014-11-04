@@ -12,9 +12,7 @@
 #define ENHANCEMENT_ATTRIB						CONSTLIT("enhancement")
 #define EXTERNAL_ATTRIB							CONSTLIT("external")
 #define ITEM_ID_ATTRIB							CONSTLIT("itemID")
-#define MAX_FIRE_ARC_ATTRIB						CONSTLIT("maxFireArc")
 #define MAX_HP_BONUS_ATTRIB						CONSTLIT("maxHPBonus")
-#define MIN_FIRE_ARC_ATTRIB						CONSTLIT("minFireArc")
 #define OMNIDIRECTIONAL_ATTRIB					CONSTLIT("omnidirectional")
 #define OVERLAY_TYPE_ATTRIB						CONSTLIT("overlayType")
 #define POS_ANGLE_ATTRIB						CONSTLIT("posAngle")
@@ -30,6 +28,7 @@
 #define LINKED_FIRE_ENEMY						CONSTLIT("whenInFireArc")
 #define LINKED_FIRE_TARGET						CONSTLIT("targetInRange")
 
+#define PROPERTY_CAN_BE_DISABLED				CONSTLIT("canBeDisabled")
 #define PROPERTY_ENABLED						CONSTLIT("enabled")
 #define PROPERTY_FIRE_ARC						CONSTLIT("fireArc")
 #define PROPERTY_LINKED_FIRE_OPTIONS			CONSTLIT("linkedFireOptions")
@@ -132,7 +131,7 @@ ALERROR CDeviceClass::Bind (SDesignLoadCtx &Ctx)
 	DEBUG_CATCH
 	}
 
-CEnergyFieldType *CDeviceClass::FireGetOverlayType (CItemCtx &ItemCtx) const
+COverlayType *CDeviceClass::FireGetOverlayType (CItemCtx &ItemCtx) const
 
 //	FireGetOverlayType
 //
@@ -160,7 +159,7 @@ CEnergyFieldType *CDeviceClass::FireGetOverlayType (CItemCtx &ItemCtx) const
 
 		//	Done
 
-		return CEnergyFieldType::AsType(g_pUniverse->FindDesignType(dwUNID));
+		return COverlayType::AsType(g_pUniverse->FindDesignType(dwUNID));
 		}
 	else
 		return GetOverlayType();
@@ -400,7 +399,10 @@ ICCItem *CDeviceClass::GetItemProperty (CItemCtx &Ctx, const CString &sName)
 
 	//	Get the property
 
-	if (strEquals(sName, PROPERTY_ENABLED))
+	if (strEquals(sName, PROPERTY_CAN_BE_DISABLED))
+		return (pDevice ? CC.CreateBool(pDevice->CanBeDisabled(Ctx)) : CC.CreateBool(CanBeDisabled(Ctx)));
+
+	else if (strEquals(sName, PROPERTY_ENABLED))
 		return (pDevice ? CC.CreateBool(pDevice->IsEnabled()) : CC.CreateNil());
 
 	else if (strEquals(sName, PROPERTY_POS))

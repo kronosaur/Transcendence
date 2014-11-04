@@ -534,6 +534,18 @@ void CCSymbolTable::SetStringValue (CCodeChain &CC, const CString &sKey, const C
 	pValue->Discard(&CC);
 	}
 
+void CCSymbolTable::SetValue (CCodeChain &CC, const CString &sKey, ICCItem *pValue)
+
+//	SetValue
+//
+//	Sets a value.
+
+	{
+	ICCItem *pKey = CC.CreateString(sKey);
+	AddEntry(&CC, pKey, pValue);
+	pKey->Discard(&CC);
+	}
+
 ICCItem *CCSymbolTable::SimpleLookup (CCodeChain *pCC, ICCItem *pKey, BOOL *retbFound, int *retiOffset)
 
 //	SimpleLookup

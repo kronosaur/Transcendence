@@ -25,18 +25,11 @@
 #define SHIELD_HP_DISPLAY_Y				(DISPLAY_HEIGHT - 16)
 #define SHIELD_HP_DISPLAY_WIDTH			26
 #define SHIELD_HP_DISPLAY_HEIGHT		14
-#define SHIELD_HP_DISPLAY_BACK_COLOR	CG16bitImage::RGBValue(0,117,16)
-#define SHIELD_HP_DISPLAY_TEXT_COLOR	CG16bitImage::RGBValue(150,255,180)
-#define SHIELD_HP_DISPLAY_LINE_COLOR	CG16bitImage::RGBValue(0,117,16)
 #define DISABLED_TEXT_COLOR				CG16bitImage::RGBValue(128,0,0)
 
 #define ARMOR_NAME_COLOR				CG16bitImage::RGBValue(150,180,255)
 #define ARMOR_LINE_COLOR				CG16bitImage::RGBValue(0,23,167)
 #define ARMOR_ENHANCE_X					224
-#define ARMOR_ENHANCE_BACK_COLOR		CG16bitImage::RGBValue(0,23,167)
-#define ARMOR_ENHANCE_TEXT_COLOR		CG16bitImage::RGBValue(150,180,255)
-#define ARMOR_DAMAGED_BACK_COLOR		CG16bitImage::RGBValue(167,23,0)
-#define ARMOR_DAMAGED_TEXT_COLOR		CG16bitImage::RGBValue(150,180,255)
 
 #define RGB_NAME_BACKGROUND				CG16bitImage::RGBValue(16,16,16)
 
@@ -161,6 +154,8 @@ void CArmorDisplay::Update (void)
 	if (m_pPlayer == NULL)
 		return;
 
+	const CVisualPalette &VI = g_pHI->GetVisuals();
+
 	CShip *pShip = m_pPlayer->GetShip();
 	const CPlayerSettings *pSettings = pShip->GetClass()->GetPlayerSettings();
 	CItemListManipulator ItemList(pShip->GetItemList());
@@ -234,14 +229,14 @@ void CArmorDisplay::Update (void)
 				SHIELD_HP_DISPLAY_Y, 
 				SHIELD_HP_DISPLAY_WIDTH, 
 				SHIELD_HP_DISPLAY_HEIGHT,
-				SHIELD_HP_DISPLAY_BACK_COLOR);
+				VI.GetColor(colorAreaShields));
 		
 		CString sHP = strFromInt(iHP);
 		int cxWidth = m_pFonts->Medium.MeasureText(sHP, NULL);
 		m_pFonts->Medium.DrawText(m_Buffer,
 				SHIELD_HP_DISPLAY_X + (SHIELD_HP_DISPLAY_WIDTH - cxWidth) / 2,
 				SHIELD_HP_DISPLAY_Y - 1,
-				CG16bitImage::LightenPixel(m_pFonts->wAltGreenColor, 60),
+				VI.GetColor(colorTextShields),
 				sHP);
 
 		DrawBrokenLine(m_Buffer,
@@ -250,11 +245,11 @@ void CArmorDisplay::Update (void)
 				SHIELD_HP_DISPLAY_X,
 				SHIELD_HP_DISPLAY_Y,
 				0,
-				SHIELD_HP_DISPLAY_LINE_COLOR);
+				VI.GetColor(colorAreaShields));
 
 		WORD wColor;
 		if (pShield->IsEnabled() && !pShield->IsDamaged() && !pShield->IsDisrupted())
-			wColor = m_pFonts->wAltGreenColor;
+			wColor = VI.GetColor(colorTextShields);
 		else
 			wColor = DISABLED_TEXT_COLOR;
 
@@ -286,12 +281,12 @@ void CArmorDisplay::Update (void)
 						SHIELD_HP_DISPLAY_Y,
 						cx + 8,
 						SHIELD_HP_DISPLAY_HEIGHT,
-						(bDisadvantage ? ARMOR_DAMAGED_BACK_COLOR : ARMOR_ENHANCE_BACK_COLOR));
+						(bDisadvantage ? VI.GetColor(colorAreaDisadvantage) : VI.GetColor(colorAreaAdvantage)));
 
 				SmallFont.DrawText(m_Buffer,
 						SHIELD_HP_DISPLAY_X - cx - 4,
 						SHIELD_HP_DISPLAY_Y + (SHIELD_HP_DISPLAY_HEIGHT - SmallFont.GetHeight()) / 2,
-						(bDisadvantage ? ARMOR_DAMAGED_TEXT_COLOR : ARMOR_ENHANCE_TEXT_COLOR),
+						(bDisadvantage ? VI.GetColor(colorTextDisadvantage) : VI.GetColor(colorTextAdvantage)),
 						sMods);
 				}
 			}
@@ -419,17 +414,19 @@ void CArmorDisplay::Update (void)
 			CString sMods = ItemList.GetItemAtCursor().GetEnhancedDesc(pShip);
 			if (!sMods.IsBlank())
 				{
+				bool bDisadvantage = (*(sMods.GetASCIIZPointer()) == '-');
+
 				int cx = SmallFont.MeasureText(sMods);
 				m_Buffer.Fill(ARMOR_ENHANCE_X - cx - 4,
 						pImage->yName + m_pFonts->Medium.GetHeight() - HP_DISPLAY_HEIGHT,
 						cx + 8,
 						HP_DISPLAY_HEIGHT,
-						ARMOR_ENHANCE_BACK_COLOR);
+						(bDisadvantage ? VI.GetColor(colorAreaDisadvantage) : VI.GetColor(colorAreaAdvantage)));
 
 				SmallFont.DrawText(m_Buffer,
 						ARMOR_ENHANCE_X - cx,
 						pImage->yName + 3,
-						ARMOR_ENHANCE_TEXT_COLOR,
+						(bDisadvantage ? VI.GetColor(colorTextDisadvantage) : VI.GetColor(colorTextAdvantage)),
 						sMods);
 				}
 			}

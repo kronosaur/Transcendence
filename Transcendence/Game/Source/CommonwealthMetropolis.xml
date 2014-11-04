@@ -7,6 +7,8 @@
 	<StationType UNID="&stCommonwealthStation;"
 			name=				"Commonwealth station"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"&dsCommonwealthStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -61,12 +63,16 @@
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; L:1-5;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="rNU L:1-4; -Illegal; -NotForSale;"	priceAdj="110"	inventoryAdj="100"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
-			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -87,10 +93,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-			
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 			
 			<OnTrafficControl>
 				(comTrafficControl gSource 20)
@@ -125,6 +127,8 @@
 	<StationType UNID="&stCommonwealthStationArmored;"
 			name=				"armed Commonwealth station"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"&dsCommonwealthStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -192,12 +196,16 @@
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Sell	criteria="m +Commonwealth; -PremiumAmmo; -Illegal; -NotForSale;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="rNU L:4-7; -Illegal; -NotForSale;"	priceAdj="110"	inventoryAdj="100"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
-			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
-			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-8;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-8" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -210,10 +218,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 
 			<OnTrafficControl>
 				(comTrafficControl gSource 20)
@@ -562,11 +566,15 @@
 
 				<Actions>
 					<Action name="Commodities Exchange" default="1" key="C">
-						<ShowPane pane="CommoditiesExchange"/>
+						(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Dock Services" key="D">
-						<ShowPane pane="DockServices"/>
+						(rpgDockServices gPlayerShip {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Central Plaza" key="P">
@@ -590,11 +598,15 @@
 					</Action>
 
 					<Action name="Commodities Exchange" default="1" key="C">
-						<ShowPane pane="CommoditiesExchange"/>
+						(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Dock Services" key="D">
-						<ShowPane pane="DockServices"/>
+						(rpgDockServices gPlayerShip {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Central Plaza" key="P">
@@ -608,87 +620,6 @@
 				</Actions>
 
 			</DefaultWithInfo>
-
-			<CommoditiesExchange>
-
-				<OnPaneInit>
-					(scrSetDesc gScreen (cat "Welcome to the " (objGetName gSource) " Commodities Exchange Market."))
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Buy Items" default="1" key="B">
-						(scrShowBuyScreen 
-							"* -Illegal"			; items sold to player
-							Nil						; obsolete
-							
-							'(	"d"					; install devices
-								6					; of level 6 (and below)
-								Nil					; no special tech modifiers
-								True				; check for military ID
-								0)					; install cost margin
-							)
-					</Action>
-
-					<Action name="Sell Items" key="S">
-						(scrShowSellScreen
-							"*"						; items bought from player
-							)
-					</Action>
-
-					<Action name="Done" cancel="1" key="D">
-						<Navigate screen="&dsCommonwealthStation;"/>
-					</Action>
-
-				</Actions>
-
-			</CommoditiesExchange>
-
-			<DockServices
-					desc=	"Your ship is docked.">
-
-				<Actions>
-					<Action name="Refuel" key="R">
-						(block Nil
-							(intSetCompatibleFuelEx '((&itHeliumAssembly; 100) (&itHelium3FuelRod; 100)))
-							(scrShowScreen gScreen &dsRefuel;)
-							)
-					</Action>
-
-					<Action name="Repair or Replace Armor" key="A" >
-						(scrShowScreen gScreen "&dsRPGRepairArmor;" {
-							checkMilitaryID: True
-							})
-					</Action>
-
-					<Action name="Install Device" key="D" >
-						(scrShowScreen gScreen &dsRPGInstallDevice; {
-							checkMilitaryID: True
-							})
-					</Action>
-
-					<Action name="Remove Device" key="V" >
-						(block Nil
-							(setq gMargin 100)
-							(scrShowScreen gScreen &dsRemoveDevice;)
-							)
-					</Action>
-
-					<Action name="Upgrade Reactor" key="P" >
-						(scrShowScreen gScreen &dsRPGInstallDeviceFromList; {
-							itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-4;")
-							priceAdj: Nil
-							checkMilitaryID: True
-							noItemsText: "The technology required to upgrade your reactor is not available at this station."
-							})
-					</Action>
-
-					<Action name="Done" cancel="1" key="N">
-						<Navigate screen="&dsCommonwealthStation;"/>
-					</Action>
-
-				</Actions>
-
-			</DockServices>
 
 			<CentralPlaza
 					desc=	"You are in the central hub of this station, a busy area where trendy shops mix with high-end residences.">

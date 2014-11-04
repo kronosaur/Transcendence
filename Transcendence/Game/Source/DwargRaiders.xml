@@ -229,7 +229,7 @@
 			sortName=			"Dwarg.2.30"
 			>
 
-		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems3;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"30"
@@ -292,7 +292,7 @@
 			sortName=			"Dwarg.2.20"
 			>
 
-		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems3;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"75"
@@ -438,7 +438,7 @@
 			sortName=			"Dwarg.2.10"
 			>
 
-		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems3;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"200"
@@ -467,7 +467,7 @@
 
 			attributes=			"dwargColony, dwargRaiders, enemy, envWater, envAvoidsEarth, neoHuman, populated, zoanthrope"
 			levelFrequency=		"---cu v---- ----- ----- -----"
-			locationCriteria=	"+planetary,-void"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
 			>
 
@@ -522,7 +522,7 @@
 
 			attributes=			"dwargColony, dwargRaiders, enemy, envWater, envAvoidsEarth, neoHuman, populated, zoanthrope"
 			levelFrequency=		"----c uv--- ----- ----- -----"
-			locationCriteria=	"+planetary,-void,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="100"
 			>
 
@@ -672,7 +672,7 @@
 
 			attributes=			"dwargRaiders, enemy, envWater, envAvoidsEarth, majorStation, neoHuman, populated, zoanthrope"
 			levelFrequency=		"----- cr--- ----- ----- -----"
-			locationCriteria=	"+planetary,-void"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="100"
 			>
 

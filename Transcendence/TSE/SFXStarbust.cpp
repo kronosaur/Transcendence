@@ -24,10 +24,12 @@ void CStarburstEffectCreator::GetRect (RECT *retRect) const
 //	Returns the RECT for the effect
 
 	{
-	retRect->left = -2;
-	retRect->top = -2;
-	retRect->right = 2;
-	retRect->bottom = 2;
+	int iSpikeLength = m_SpikeLength.GetMaxValue();
+
+	retRect->left = -iSpikeLength;
+	retRect->top = -iSpikeLength;
+	retRect->right = iSpikeLength;
+	retRect->bottom = iSpikeLength;
 	}
 
 void CStarburstEffectCreator::CreateDiamondSpike (int iAngle, int iLength, int iWidthAngle, SPoint *Poly)

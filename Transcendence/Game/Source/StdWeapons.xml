@@ -8,12 +8,14 @@
 
 	<ItemType UNID="&itDisposableLauncher;"
 			name=				"DM600 disposable missile rack"
+			attributes=			"commonwealth, disposable, majorItem, NAMI"
+			  
 			level=				"1"
+			frequency=			"uncommon"
+
 			value=				"40"
 			mass=				"200"
-			frequency=			"uncommon"
-			attributes=			"Disposable; MajorItem; NAMI"
-
+			  
 			charges=			"16"
 			massBonusPerCharge=	"50" 
 			valueBonusPerCharge="20"
@@ -62,13 +64,14 @@
 
 	<ItemType UNID="&itLaserCannon;"
 			name=				"laser cannon"
+			attributes=			"commonwealth, EI, energyWeapon, majorItem"
+			  
 			level=				"1"
+			frequency=			"common"
+
 			value=				"250"
 			mass=				"1000"
-			frequency=			"common"
-			attributes=			"EI; EnergyWeapon; MajorItem"
-			showReference=		"true"
-
+			  
 			description=		"A popular weapon for light freighters and fast gunships. This weapon is manufactured by the Earth Industries Conglomerate."
 			>
 
@@ -92,13 +95,14 @@
 
 	<ItemType UNID="&itRecoillessCannon;"
 			name=				"recoilless cannon"
+			attributes=			"commonwealth, majorItem, NAMI"
+			  
 			level=				"1"
+			frequency=			"uncommon"
+
 			value=				"300"
 			mass=				"2500"
-			frequency=			"uncommon"
-			attributes=			"MajorItem; NAMI"
-			showReference=		"true"
-
+			  
 			description=		"Recoilless cannons are slower than the ubiquitous laser cannon but pack a bigger punch."
 			>
 
@@ -124,16 +128,15 @@
 
 	<ItemType UNID="&itLightRecoillessCannon;"
 			name=				"light recoilless cannon"
+			attributes=			"commonwealth, majorItem, NAMI, notForSale"
+			  
 			level=				"1"
+			frequency=			"rare"
+
 			value=				"250"
 			mass=				"2000"
-			frequency=			"rare"
-			attributes=			"MajorItem; NAMI; NotForSale;"
-			showReference=		"true"
-
+			  
 			description=		"This specialized version of the recoilless cannon shoots lighter projectiles but has a higher fire rate."
-
-			sortName=			"recoilless cannon, light"
 			>
 
 		<Image imageID="&rsItemsNAMI1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -160,16 +163,16 @@
 
 	<ItemType UNID="&itBlaster;"
 			name=				"Bolide laser blaster"
+			attributes=			"commonwealth, EI, energyWeapon, majorItem, notForSale;"
+			  
 			level=				"2"
-			value=				"500"
-			mass=				"1500"
-			attributes=			"EI; EnergyWeapon; MajorItem; NotForSale;"
 			frequency=			"common"
 			showReference=		"true"
 
+			value=				"500"
+			mass=				"1500"
+			  
 			description=		"Soon after release, the Bolide was obsoleted by EI's turbolaser cannon, though some insist the Bolide is a better weapon for the price."
-
-			sortName=			"laser cannon, Bolide"
 			>
 
 		<Image imageID="&rsItemsEI1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -192,12 +195,14 @@
 
 	<ItemType UNID="&itDM1500MissileRack;"
 			name=				"DM1500 disposable missile rack"
+			attributes=			"commonwealth, disposable, majorItem, NAMI"
+			  
 			level=				"2"
+			frequency=			"rare"
+
 			value=				"40"
 			mass=				"200"
-			frequency=			"rare"
-			attributes=			"Disposable; MajorItem; NAMI"
-
+			  
 			charges=			"16"
 			massBonusPerCharge=	"60" 
 			valueBonusPerCharge="60"
@@ -247,16 +252,15 @@
 
 	<ItemType UNID="&itDualLaserCannon;"
 			name=				"dual laser cannon"
+			attributes=			"commonwealth, EI, energyWeapon, majorItem"
+			  
 			level=				"2"
+			frequency=			"uncommon"
+
 			value=				"750"
 			mass=				"2000"
-			frequency=			"uncommon"
-			attributes=			"EI; EnergyWeapon; MajorItem"
-			showReference=		"true"
-
+			  
 			description=		"Twin laser cannons manufactured by Earth Industries."
-
-			sortName=			"laser cannon, dual"
 			>
 
 		<Image imageID="&rsItemsEI1;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -280,16 +284,15 @@
 
 	<ItemType UNID="&itFastFireLaserCannon;"
 			name=				"fast-fire laser cannon"
+			attributes=			"commonwealth, EI, energyWeapon, majorItem"
+			  
 			level=				"2"
+			frequency=			"uncommon"
+
 			value=				"550"
 			mass=				"1250"
-			frequency=			"uncommon"
-			attributes=			"EI; EnergyWeapon; MajorItem"
-			showReference=		"true"
-
+			  
 			description=		"The fast-fire laser cannon uses enhanced capacitors and can reach a fire rate double that of the ubiquitous laser."
-
-			sortName=			"laser cannon, fast-fire"
 			>
 
 		<Image imageID="&rsItemsEI1;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -312,16 +315,15 @@
 
 	<ItemType UNID="&itHeavyRecoillessCannon;"
 			name=				"heavy recoilless cannon"
+			attributes=			"commonwealth, majorItem, NAMI"
+			  
 			level=				"2"
+			frequency=			"common"
+
 			value=				"550"
 			mass=				"3000"
-			frequency=			"common"
-			attributes=			"MajorItem; NAMI"
-			showReference=		"true"
-
+			  
 			description=		"This is a heavier version of the common recoilless cannon."
-
-			sortName=			"recoilless cannon, heavy"
 			>
 
 		<Image imageID="&rsItemsNAMI1;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -347,13 +349,14 @@
 
 	<ItemType UNID="&itMiningLaser;"
 			name=				"mining laser"
+			attributes=			"commonwealth, energyWeapon, majorItem, specialty"
+			  
 			level=				"2"
+			frequency=			"rare"
+
 			value=				"550"
 			mass=				"2000"
-			frequency=			"rare"
-			attributes=			"EnergyWeapon; MajorItem; Specialty"
-			showReference=		"true"
-
+			  
 			description=		"This powerful laser is generally used for asteroid mining."
 			>
 
@@ -386,13 +389,14 @@
 
 	<ItemType UNID="&itTridentCannon;"
 			name=				"TK10 Trident cannon"
+			attributes=			"commonwealth, majorItem, NAMI"
+			  
 			level=				"2"
+			frequency=			"uncommon"
+
 			value=				"650"
 			mass=				"3500"
-			frequency=			"uncommon"
-			attributes=			"MajorItem; NAMI"
-			showReference=		"true"
-
+			  
 			description=		"The TK10 Trident cannon is another in the popular series of NAMI kinetic weapons. The TK10 fires three small high-velocity projectiles."
 			>
 
@@ -426,12 +430,14 @@
 
 	<ItemType UNID="&itArbalestCannon;"
 			name=				"DK10 Arbalest cannon"
+			attributes=			"commonwealth, majorItem, NAMI"
+			  
 			level=				"3"
+			frequency=			"common"
+
 			value=				"1250"
 			mass=				"2000"
-			frequency=			"common"
-			attributes=			"MajorItem; NAMI"
-
+			  
 			description=		"The Arbalest cannon is an automatic minigun that fires in bursts of four shells."
 			>
 
@@ -458,12 +464,14 @@
 
 	<ItemType UNID="&itLaserArray;"
 			name=				"laser cannon array"
+			attributes=			"commonwealth, EI, energyWeapon, majorItem"
+			  
 			level=				"3"
+			frequency=			"rare"
+
 			value=				"1400"
 			mass=				"3000"
-			frequency=			"rare"
-			attributes=			"EI; EnergyWeapon; MajorItem"
-
+			  
 			description=		"The laser cannon array consists of three laser cannons joined in a forward spread pattern."
 			>
 
@@ -488,12 +496,14 @@
 
 	<ItemType UNID="&itMoskvaLightTurret;"
 			name=				"Moskva 11 light turret"
+			attributes=			"commonwealth, majorItem, makayev"
+			  
 			level=				"3"
+			frequency=			"rare"
+
 			value=				"1600"
 			mass=				"3000"
-			frequency=			"rare"
-			attributes=			"MajorItem; Makayev"
-
+			  
 			description=		"This omnidirectional turret fires powerful high-explosive shells, but its range is very limited."
 			>
 
@@ -521,15 +531,15 @@
 
 	<ItemType UNID="&itOmniLaserCannon;"
 			name=				"omnidirectional laser cannon"
+			attributes=			"commonwealth, EI, energyWeapon, majorItem"
+			  
 			level=				"3"
+			frequency=			"rare"
+
 			value=				"1700"
 			mass=				"1000"
-			frequency=			"rare"
-			attributes=			"EI; EnergyWeapon; MajorItem"
-
+			  
 			description=		"A single laser cannon with an automated targeting system."
-
-			sortName=			"laser cannon, omnidirectional"
 			>
 
 		<Image imageID="&rsItemsEI1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
@@ -553,12 +563,14 @@
 
 	<ItemType UNID="&itNAMIMissileLauncher;"
 			name=				"NAMI missile launcher"
+			attributes=			"commonwealth, majorItem, NAMI"
+			  
 			level=				"3"
+			frequency=			"common"
+
 			value=				"1000"
 			mass=				"1000"
-			frequency=			"common"
-			attributes=			"MajorItem; NAMI"
-
+			  
 			description=		"This launcher is compatible with a full range of popular missiles including the KM100 Longbows and the XM900 Lucifers."
 			>
 
@@ -571,242 +583,29 @@
 				>
 
 			<Missiles>
-				<Missile ammoID="&itFragmentationMissile;"
-						type=			"missile"
-						lifetime=		"120"
-						damage=			"blast:2d6+2; momentum2; WMD1"
-						missileSpeed=	"45"
-						hitPoints=		"10"
-
-						effect=			"&efMissileNAMI;"
-						sound=			"&snMissileLauncher;"
-						>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosionsAG48;"
-								imageX="0"
-								imageY="0"
-								imageWidth="48"
-								imageHeight="48"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
-
-					<Fragment
-							count=			"5d6"
-							type=			"missile"
-							lifetime=		"5"
-							damage=			"kinetic:1d6+2; WMD1"
-							missileSpeed=	"32-48"
-							>
-
-						<Effect>
-							<ImageAndTail 
-									imageID=			"&rsMissiles4;" 
-									imageX=				"0" 
-									imageY=				"0" 
-									imageWidth=			"16" 
-									imageHeight=		"16"
-									imageFrameCount=	"4"
-									imageTicksPerFrame=	"1"
-
-									length=				"32"
-									width=				"1"
-									primaryColor=		"0xff, 0xff, 0xff"
-									secondaryColor=		"0xc0, 0xc2, 0x85"
-									/>
-						</Effect>
-					</Fragment>
-				</Missile>
-
-				<Missile ammoID="&itKM100Missile;"
-						type=			"missile"
-						lifetime=		"120"
-						damage=			"blast:4d6; momentum4; WMD5"
-						missileSpeed=	"45"
-						hitPoints=		"10"
-						 
-						effect=			"&efMissileNAMI;"
-						sound=			"&snMissileLauncher;"
-						>
-						
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosionsAG48;"
-								imageX="0"
-								imageY="0"
-								imageWidth="48"
-								imageHeight="48"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
-				</Missile>
-
-				<Missile ammoID="&itKM120Missile;"
-						type=			"missile"
-						lifetime=		"120"
-						damage=			"blast:10d6; momentum4; WMD6"
-						missileSpeed=	"45"
-						hitPoints=		"15"
-						 
-						effect=			"&efMissileNAMI;"
-						sound=			"&snMissileLauncher;"
-						>
-						
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsMediumExplosions;" 
-								imageX="0" 
-								imageY="0" 
-								imageWidth="64" 
-								imageHeight="64"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
-				</Missile>
-
-				<Missile ammoID="&itKM500Missile;"
-						type=			"missile"
-						lifetime=		"120"
-						damage=			"blast:4d6; momentum4; WMD5"
-						missileSpeed=	"40"
-						hitPoints=		"10"
-						maneuverability="2"
-						 
-						effect=			"&efMissileNAMI;"
-						sound=			"&snMissileLauncher;"
-						>
-						
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosionsAG48;"
-								imageX="0"
-								imageY="0"
-								imageWidth="48"
-								imageHeight="48"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
-				</Missile>
-
-				<Missile ammoID="&itKM550Missile;"
-						type=			"missile"
-						lifetime=		"120"
-						damage=			"blast:10d6; momentum4; WMD6"
-						missileSpeed=	"40"
-						hitPoints=		"15"
-						maneuverability="2"
-						 
-						sound=			"&snMissileLauncher;"
-						effect=			"&efMissileNAMI;"
-						>
-						
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsMediumExplosions;" 
-								imageX="0" 
-								imageY="0" 
-								imageWidth="64" 
-								imageHeight="64"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
-				</Missile>
-
-				<Missile ammoID="&itXM300Missile;"
-						type=			"missile"
-						lifetime=		"120"
-						damage=			"blast:5d6; radiation1; momentum4; WMD4"
-						missileSpeed=	"45"
-						hitPoints=		"10"
-						 
-						effect=			"&efMissileNAMI;"
-						sound=			"&snMissileLauncher;"
-						>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosion2AG128;"
-								imageX="0"
-								imageY="0"
-								imageWidth="128"
-								imageHeight="128"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
-				</Missile>
-
-				<Missile ammoID="&itXM900Missile;"
-						type=			"missile"
-
-						damage=			"thermo:6d24; momentum6; WMD7"
-						missileSpeed=	"40"
-						hitPoints=		"20"
-						lifetime=		"120"
-
-						maneuverability="2"
-
-						effect=			"&efMissileNAMI;"
-						sound=			"&snMissileLauncher;"
-						>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosionsAG128;"
-								imageX="0"
-								imageY="0"
-								imageWidth="128"
-								imageHeight="128"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
-
-					<Fragment 
-							count=			"1"
-							type=			"radius"
-
-							damage=			"thermo:6d24; momentum6; WMD7"
-							minRadius=		"1"
-							maxRadius=		"4"
-							missileSpeed=	"0"
-							>
-
-						<Effect>
-							<Flare
-									style=			"fadingBlast"
-									radius=			"170"
-									primaryColor=	"0xff, 0xff, 0xf0"
-									lifetime=		"8"
-									/>
-						</Effect>
-					</Fragment>
-
-				</Missile>
-
+				<Missile ammoID="&itFragmentationMissile;"/>
+				<Missile ammoID="&itKM100Missile;"/>
+				<Missile ammoID="&itKM120Missile;"/>
+				<Missile ammoID="&itKM500Missile;"/>
+				<Missile ammoID="&itKM550Missile;"/>
+				<Missile ammoID="&itXM300Missile;"/>
+				<Missile ammoID="&itXM900Missile;"/>
 			</Missiles>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Partisan Cannon -->
 
 	<ItemType UNID="&itPartisanCannon;"
 			name=				"AK15 Partisan cannon"
+			attributes=			"commonwealth, majorItem, NAMI"
+			  
 			level=				"3"
+			frequency=			"uncommon"
+
 			value=				"1500"
 			mass=				"3000"
-			frequency=			"uncommon"
-			attributes=			"MajorItem; NAMI"
-
+			  
 			description=		"This recoilless kinetic cannon, manufactured by NAMI, is more powerful than the heavy recoilless cannon."
 			>
 
@@ -832,12 +631,14 @@
 
 	<ItemType UNID="&itSmartCannon;"
 			name=				"Rasiermesser SmartCannon"
+			attributes=			"commonwealth, majorItem, specialty, rasiermesser"
+			  
 			level=				"3"
-			value=				"1300"
-			mass=				"3000"
-			attributes=			"MajorItem; Specialty; Rasiermesser"
 			frequency=			"uncommon"
 
+			value=				"1300"
+			mass=				"3000"
+			  
 			description=		"Rasiermesser brought the SmartCannon to market despite opposition from law enforcement. The weapon requires SmartCannon rounds."
 			>
 
@@ -910,15 +711,15 @@
 
 	<ItemType UNID="&itDualRecoillessCannon;"
 			name=				"dual recoilless cannon"
+			attributes=			"commonwealth, majorItem, NAMI"
+			  
 			level=				"3"
+			frequency=			"uncommon"
+
 			value=				"1500"
 			mass=				"5000"
-			frequency=			"uncommon"
-			attributes=			"MajorItem; NAMI"
-			showReference=		"true"
-
+			  
 			description=		"Twin recoilless cannons manufactured by NAMI."
-			sortName=			"recoilless cannon, dual"
 			>
 
 		<Image imageID="&rsItemsNAMI1;" imageX="192" imageY="192" imageWidth="96" imageHeight="96"/>
@@ -944,12 +745,14 @@
 
 	<ItemType UNID="&itTurbolaserCannon;"
 			name=				"turbolaser cannon"
+			attributes=			"commonwealth, EI, energyWeapon, majorItem"
+			  
 			level=				"3"
+			frequency=			"common"
+
 			value=				"1500"
 			mass=				"1500"
-			frequency=			"common"
-			attributes=			"EI; EnergyWeapon; MajorItem"
-
+			  
 			description=		"One of the most popular designs by the Earth Industries Conglomerate, the turbolaser cannon is a cheap, powerful, and reliable weapon."
 			>
 
@@ -972,55 +775,18 @@
 
 <!-- LEVEL IV -->
 
-	<!-- Actinide Waste Cannon -->
-
-	<ItemType UNID="&itWasteCannon;"
-			name=				"actinide waste cannon"
-			level=				"4"
-			value=				"3500"
-			mass=				"6000"
-			frequency=			"rare"
-			numberAppearing=	"1"
-			attributes=			"Illegal; MajorItem; Sapiens; NotStandard;"
-
-			description=		"The actinide waste cannon is a dirty weapon that shoots out a cloud of radioactive debris."
-			>
-
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
-
-		<Weapon
-				fireRate=			"30"
-
-				type=				"missile"
-				repeating=			"3"
-
-				hitPoints=			"5"
-				lifetime=			"60"
-				damage=				"blast:1d8; radiation1; WMD1"
-				powerUse=			"60"
-
-				missileSpeed=		"20"
-				sound=				"&snLaserCannon;"
-				>
-
-			<Effect>
-				<Image imageID="&rsMediumExplosions;" imageX="0" imageY="128" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
-			</Effect>
-
-		</Weapon>
-
-	</ItemType>
-
 	<!-- Ballista Cannon -->
 
 	<ItemType UNID="&itBallistaCannon;"
 			name=				"AK505 Ballista cannon"
+			attributes=			"commonwealth, majorItem, NAMI"
+			  
 			level=				"4"
+			frequency=			"rare"
+
 			value=				"3500"
 			mass=				"6000"
-			frequency=			"rare"
-			attributes=			"MajorItem; NAMI"
-
+			  
 			description=		"The largest kinetic mass driver created by NAMI, the Ballista cannon can pummel a medium-sized station."
 			>
 
@@ -1047,12 +813,14 @@
 
 	<ItemType UNID="&itFlenserCannon;"
 			name=				"Flenser relativistic cannon"
+			attributes=			"commonwealth, majorItem, rasiermesser"
+			  
 			level=				"4"
+			frequency=			"rare"
+
 			value=				"3500"
 			mass=				"3000"
-			frequency=			"rare"
-			attributes=			"MajorItem; Rasiermesser"
-
+			  
 			description=		"The Flenser relativistic cannon fires small masses at nearly the speed of light."
 			>
 
@@ -1078,12 +846,14 @@
 
 	<ItemType UNID="&itMAGLauncher;"
 			name=				"MAG launcher"
+			attributes=			"commonwealth, majorItem, rasiermesser"
+			  
 			level=				"4"
+			frequency=			"uncommon"
+
 			value=				"2750"
 			mass=				"1000"
-			frequency=			"uncommon"
-			attributes=			"MajorItem; Rasiermesser"
-
+			  
 			description=		"The MAG launcher is a flexible and sophisticated grenade launcher that is compatible with a large range of MAG munitions."
 			>
 
@@ -1096,275 +866,13 @@
 				>
 
 			<Missiles>
-				<Missile ammoID="&it400HexageneMAG;"
-						type=			"missile"
-						damage=			"blast:6d6; WMD5"
-						
-						lifetime=		"80"
-						missileSpeed=	"30"
-						
-						hitPoints=		"20"
-						 
-						effect=			"&efMissileMAG;"
-						sound=			"&snMissileLauncher;"
-						>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosionsAG48;"
-								imageX="0"
-								imageY="0"
-								imageWidth="48"
-								imageHeight="48"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
-				</Missile>
-
-				<Missile ammoID="&it600HexageneMAG;"
-						type=			"missile"
-						damage=			"blast:9d6; WMD5"
-						
-						lifetime=		"80"
-						missileSpeed=	"30"
-						
-						hitPoints=		"20"
-						 
-						effect=			"&efMissileMAG;"
-						sound=			"&snMissileLauncher;"
-						>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsMediumExplosions;" 
-								imageX="0" 
-								imageY="0" 
-								imageWidth="64" 
-								imageHeight="64"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
-				</Missile>
-
-				<Missile ammoID="&it800HexageneMAG;"
-						type=			"missile"
-						damage=			"blast:12d6; WMD5"
-						
-						lifetime=		"80"
-						missileSpeed=	"30"
-						
-						hitPoints=		"20"
-						failsafe=		"6"
-						 
-						effect=			"&efMissileMAG;"
-						sound=			"&snMissileLauncher;"
-						>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosionsAG48;"
-								imageX="0"
-								imageY="0"
-								imageWidth="48"
-								imageHeight="48"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
-
-					<Fragment
-							count=			"5d6"
-							type=			"missile"
-							lifetime=		"12"
-							damage=			"kinetic:1d6+2; WMD1"
-							missileSpeed=	"40-60"
-							>
-						<Effect>
-							<ImageAndTail 
-									imageID=			"&rsMissiles4;" 
-									imageX=				"0" 
-									imageY=				"0" 
-									imageWidth=			"16" 
-									imageHeight=		"16"
-									imageFrameCount=	"4"
-									imageTicksPerFrame=	"1"
-
-									length=				"32"
-									width=				"1"
-									primaryColor=		"0xff, 0xff, 0xff"
-									secondaryColor=		"0xc0, 0xc2, 0x85"
-									/>
-						</Effect>
-					</Fragment>
-
-				</Missile>
-
-				<Missile ammoID="&itJB2ShieldBusterMAG;"
-						type=			"missile"
-						damage=			"blast:6d6; shield5"
-						
-						lifetime=		"80"
-						missileSpeed=	"30"
-						
-						hitPoints=		"20"
-						 
-						effect=			"&efMissileMAG;"
-						sound=			"&snMissileLauncher;"
-						>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosionsAG48;"
-								imageX="0"
-								imageY="0"
-								imageWidth="48"
-								imageHeight="48"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
-				</Missile>
-
-				<Missile ammoID="&itZG24ClusterMAG;"
-						type=			"missile"
-						damage=			"blast:12d6; WMD3"
-						
-						lifetime=		"80"
-						missileSpeed=	"30"
-						
-						hitPoints=		"20"
-						failsafe=		"6"
-						 
-						effect=			"&efMissileMAG;"
-						sound=			"&snMissileLauncher;"
-						>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosionsAG48;"
-								imageX="0"
-								imageY="0"
-								imageWidth="48"
-								imageHeight="48"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
-
-					<Fragment
-							count=			"20-28"
-							type=			"missile"
-							lifetime=		"40"
-							damage=			"blast:4d6; WMD3"
-							missileSpeed=	"40-60"
-							>
-						<Effect>
- 							<Image imageID="&rsMissiles3;" imageX="0" imageY="0" imageWidth="16" imageHeight="16" rotationCount="20"/>
-
-							<SmokeTrail
-									spread=			"4-6"
-									particleLifetime="16"
-									emitDuration=	"80"
-									emitRate=		"8-10"
-									emitSpeed=		"15-18"
-									>
-								<ParticleEffect>
-									<Particle
-											style=			"flame"
-											maxWidth=		"2-5"
-											/>
-								</ParticleEffect>
-							</SmokeTrail>
-						</Effect>
-
-						<HitEffect
-								sound="&snArmorHit1;"
-								>
-							<Image imageID="&rsExplosionsAG48;"
-									imageX="0"
-									imageY="0"
-									imageWidth="48"
-									imageHeight="48"
-									imageFrameCount="16"
-									imageTicksPerFrame="2"/>
-						</HitEffect>
-					</Fragment>
-
-				</Missile>
-
-				<Missile ammoID="&it3KSiegeMAG;"
-						type=			"missile"
-						damage=			"blast:20d6; WMD7"
-						
-						lifetime=		"160"
-						missileSpeed=	"15"
-						
-						hitPoints=		"30"
-						 
-						effect=			"&efMissileMAG;"
-						sound=			"&snMissileLauncher;"
-						>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosionsAG96;" 
-								imageX="0" 
-								imageY="0" 
-								imageWidth="96" 
-								imageHeight="96"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
-				</Missile>
-
-				<Missile ammoID="&itHighFluxMAG;"
-						type=			"missile"
-						damage=			"thermo:8d24; WMD7"
-						
-						lifetime=		"120"
-						missileSpeed=	"20"
-						
-						hitPoints=		"30"
-						 
-						effect=			"&efMissileMAG;"
-						sound=			"&snMissileLauncher;"
-						>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosionsAG128;"
-								imageX="0"
-								imageY="0"
-								imageWidth="128"
-								imageHeight="128"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
-
-					<Fragment 
-							count=			"1"
-							type=			"radius"
-
-							damage=			"thermo:8d24; WMD7"
-							minRadius=		"1"
-							maxRadius=		"4"
-							missileSpeed=	"0"
-							>
-
-						<Effect>
-							<Flare
-									style=			"fadingBlast"
-									radius=			"190"
-									primaryColor=	"0xff, 0xff, 0xf0"
-									lifetime=		"8"
-									/>
-						</Effect>
-					</Fragment>
-				</Missile>
+				<Missile ammoID="&it400HexageneMAG;"/>
+				<Missile ammoID="&it600HexageneMAG;"/>
+				<Missile ammoID="&it800HexageneMAG;"/>
+				<Missile ammoID="&itJB2ShieldBusterMAG;"/>
+				<Missile ammoID="&itZG24ClusterMAG;"/>
+				<Missile ammoID="&it3KSiegeMAG;"/>
+				<Missile ammoID="&itHighFluxMAG;"/>
 			</Missiles>
 		</Weapon>
 	</ItemType>
@@ -1373,12 +881,14 @@
 
 	<ItemType UNID="&itParticleBeamWeapon;"
 			name=				"particle beam weapon"
+			attributes=			"commonwealth, EI, energyWeapon, majorItem"
+			  
 			level=				"4"
+			frequency=			"common"
+
 			value=				"3200"
 			mass=				"1500"
-			frequency=			"common"
-			attributes=			"EI; EnergyWeapon; MajorItem"
-
+			  
 			description=		"A modified linear accelerator fires energetic particles at its target."
 			>
 
@@ -1402,12 +912,14 @@
 
 	<ItemType UNID="&itMorningStarCannon;"
 			name=				"PK25 Morning Star cannon"
+			attributes=			"commonwealth, majorItem, NAMI"
+			  
 			level=				"4"
+			frequency=			"uncommon"
+
 			value=				"3400"
 			mass=				"4000"
-			frequency=			"uncommon"
-			attributes=			"MajorItem; NAMI"
-
+			  
 			description=		"NAMI's Morning Star cannon shoots a high-velocity cloud of dense particles that can severely damage light to medium armor."
 			>
 
@@ -1438,12 +950,14 @@
 
 	<ItemType UNID="&itMoskvaDualCannon;"
 			name=				"Moskva 21 dual cannon"
+			attributes=			"commonwealth, majorItem, Makayev; Specialty"
+			  
 			level=				"4"
+			frequency=			"rare"
+
 			value=				"3000"
 			mass=				"4000"
-			frequency=			"rare"
-			attributes=			"MajorItem; Makayev; Specialty"
-
+			  
 			description=		"This dual cannon shoots high-explosive shells in a scattered pattern."
 			>
 
@@ -1476,12 +990,14 @@
 
 	<ItemType UNID="&itOmniPartisanCannon;"
 			name=				"RK15 Partisan turret"
+			attributes=			"commonwealth, majorItem, NAMI"
+			  
 			level=				"4"
+			frequency=			"rare"
+
 			value=				"5000"
 			mass=				"4000"
-			frequency=			"rare"
-			attributes=			"MajorItem; NAMI"
-
+			  
 			description=		"An omnidirectional version of the Partisan cannon."
 			>
 
@@ -1508,13 +1024,14 @@
 
 	<ItemType UNID="&itSlamCannon;"
 			name=				"slam cannon"
+			attributes=			"commonwealth, majorItem, makayev"
+			  
 			level=				"4"
+			frequency=			"common"
+
 			value=				"3200"
 			mass=				"3000"
-			frequency=			"common"
-			numberAppearing=	"1"
-			attributes=			"MajorItem; Makayev"
-
+			  
 			description=		"The slam cannon fires high-explosive shells."
 			>
 
@@ -1542,15 +1059,15 @@
 
 	<ItemType UNID="&itDualTurbolaserCannon;"
 			name=				"dual turbolaser cannon"
+			attributes=			"commonwealth, EI, energyWeapon, majorItem"
+			  
 			level=				"4"
+			frequency=			"uncommon"
+
 			value=				"3500"
 			mass=				"3000"
-			frequency=			"uncommon"
-			attributes=			"EI; EnergyWeapon; MajorItem"
-
+			  
 			description=		"Turbolasers in a twin configuration have became popular with pirates and marauders."
-
-			sortName=			"turbolaser cannon, dual"
 			>
 
 		<Image imageID="&rsItemsEI2;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -1575,15 +1092,15 @@
 
 	<ItemType UNID="&itOmniTurbolaserCannon;"
 			name=				"omnidirectional turbolaser cannon"
+			attributes=			"commonwealth, EI, energyWeapon, majorItem"
+			  
 			level=				"4"
+			frequency=			"uncommon"
+
 			value=				"3500"
 			mass=				"2000"
-			frequency=			"uncommon"
-			attributes=			"EI; EnergyWeapon; MajorItem"
-
+			  
 			description=		"A single turbolaser mounted on an automated turret."
-
-			sortName=			"turbolaser cannon, omnidirectional"
 			>
 
 		<Image imageID="&rsItemsEI2;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -1610,12 +1127,14 @@
 
 	<ItemType UNID="&itAkan30Cannon;"
 			name=				"Akan 30 cannon"
+			attributes=			"commonwealth, majorItem, specialty, rasiermesser"
+			  
 			level=				"5"
+			frequency=			"common"
+
 			value=				"7000"
 			mass=				"3000"
-			frequency=			"common"
-			attributes=			"MajorItem; Specialty; Rasiermesser"
-
+			  
 			description=		"The Akan 30 is a powerful cannon designed by the Rasiermesser Corporation. This weapon requires Akan 30 cannon shells."
 			>
 
@@ -1648,15 +1167,15 @@
 
 	<ItemType UNID="&itDualFlenserCannon;"
 			name=				"dual Flenser cannon"
+			attributes=			"commonwealth, majorItem, rasiermesser"
+			  
 			level=				"5"
+			frequency=			"rare"
+
 			value=				"7500"
 			mass=				"6000"
-			frequency=			"rare"
-			attributes=			"MajorItem; Rasiermesser"
-
+			  
 			description=		"The ultimate kinetic weapon, 60% more powerful than the AK505 Ballista."
-
-			sortName=			"Flenser relativistic cannon, dual"
 			>
 
 		<Image imageID="&rsItemsRasiermesser3;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -1682,12 +1201,14 @@
 
 	<ItemType UNID="&itIonCannon;"
 			name=				"EMP cannon"
+			attributes=			"commonwealth, EI, energyWeapon, majorItem"
+			  
 			level=				"5"
+			frequency=			"rare"
+
 			value=				"6000"
 			mass=				"2000"
-			frequency=			"rare"
-			attributes=			"EI; EnergyWeapon; MajorItem"
-
+			  
 			description=		"This cannon shoots out a stream of ionized particles that disrupts the control systems on most starships."
 			>
 
@@ -1719,13 +1240,14 @@
 
 	<ItemType UNID="&itLancerCannon;"
 			name=				"lancer cannon"
+			attributes=			"commonwealth, EI, energyWeapon, majorItem"
+			  
 			level=				"5"
+			frequency=			"uncommon"
+
 			value=				"7000"
 			mass=				"3000"
-			frequency=			"uncommon"
-			numberAppearing=	"1"
-			attributes=			"EI; EnergyWeapon; MajorItem"
-
+			  
 			description=		"The lancer cannon is a high-powered beam weapon."
 			>
 
@@ -1750,12 +1272,14 @@
 
 	<ItemType UNID="&itMakayevLauncher;"
 			name=				"Makayev launcher"
+			attributes=			"commonwealth, majorItem, makayev"
+			  
 			level=				"5"
+			frequency=			"common"
+
 			value=				"5000"
 			mass=				"1000"
-			frequency=			"common"
-			attributes=			"MajorItem; Makayev"
-
+			  
 			description=		"The Makayev consists of fast launch tubes compatible with the Strelka series of light missiles."
 			>
 
@@ -1769,109 +1293,10 @@
 				>
 
 			<Missiles>
-				<Missile ammoID="&itStrelkaWhite;"
-						type=			"missile"
-						lifetime=		"60"
-						damage=			"blast:3d6; momentum2; WMD3"
-						missileSpeed=	"60"
-						hitPoints=		"5"
-
-						effect=			"&efMissileStrelka;"
-						sound=			"&snRecoillessCannon;"
-						>
-				</Missile>
-
-				<Missile ammoID="&itStrelkaGreen;"
-						type=			"missile"
-						lifetime=		"60"
-						damage=			"blast:4d6+1; momentum2; WMD3"
-						missileSpeed=	"60"
-						hitPoints=		"5"
-
-						effect=			"&efMissileStrelka;"
-						sound=			"&snRecoillessCannon;"
-						>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosionsAG48;"
-								imageX="0"
-								imageY="0"
-								imageWidth="48"
-								imageHeight="48"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
-				</Missile>
-
-				<Missile ammoID="&itStrelkaRed;"
-						type=			"missile"
-						lifetime=		"60"
-						damage=			"thermo:3d12; momentum3; WMD5"
-						missileSpeed=	"60"
-						hitPoints=		"5"
-
-						effect=			"&efMissileStrelka;"
-						sound=			"&snRecoillessCannon;"
-						>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosionsAG48;"
-								imageX="0"
-								imageY="0"
-								imageWidth="48"
-								imageHeight="48"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-						<Flare
-								style=			"fadingBlast"
-								radius=			"65"
-								primaryColor=	"0xff, 0xff, 0xf0"
-								lifetime=		"8"
-								/>
-					</HitEffect>
-				</Missile>
-
-				<Missile ammoID="&itStrelkaBlack;"
-						type=			"missile"
-						lifetime=		"60"
-						damage=			"thermo:1d12; momentum1; WMD3"
-						missileSpeed=	"60"
-						hitPoints=		"5"
-
-						effect=			"&efMissileStrelka;"
-						sound=			"&snRecoillessCannon;"
-						>
-
-					<Fragment 
-							count=			"1d4+12"
-							type=			"missile"
-							lifetime=		"8"
-							damage=			"thermo:1d12; momentum1; WMD3"
-							missileSpeed=	"40-60"
-
-							effect=			"&efThermoShellDefault;"
-							>
-						<HitEffect>
-							<Image imageID="&rsExplosionsAG48;"
-									imageX="0"
-									imageY="0"
-									imageWidth="48"
-									imageHeight="48"
-									imageFrameCount="16"
-									imageTicksPerFrame="2"/>
-							<Flare
-									style=			"fadingBlast"
-									radius=			"40"
-									primaryColor=	"0xff, 0xff, 0xf0"
-									lifetime=		"8"
-									/>
-						</HitEffect>
-					</Fragment>
-				</Missile>
+				<Missile ammoID="&itStrelkaWhite;"/>
+				<Missile ammoID="&itStrelkaGreen;"/>
+				<Missile ammoID="&itStrelkaRed;"/>
+				<Missile ammoID="&itStrelkaBlack;"/>
 			</Missiles>
 		</Weapon>
 	</ItemType>
@@ -1880,15 +1305,15 @@
 
 	<ItemType UNID="&itMarkIHowitzer;"
 			name=				"mark I howitzer"
+			attributes=			"commonwealth, howitzer, majorItem, makayev"
+			  
 			level=				"5"
+			frequency=			"uncommon"
+
 			value=				"6500"
 			mass=				"4500"
-			frequency=			"uncommon"
-			numberAppearing=	"1"
-			attributes=			"Howitzer; MajorItem; Makayev"
-
+			  
 			description=		"The mark I howitzer fires heavy, high-explosive shells."
-			sortName=			"howitzer, mark 1"
 			>
 
 		<Image imageID="&rsItemsMakayev1;" imageX="288" imageY="192" imageWidth="96" imageHeight="96"/>
@@ -1927,15 +1352,15 @@
 
 	<ItemType UNID="&itDualParticleBeamWeapon;"
 			name=				"dual particle beam weapon"
+			attributes=			"commonwealth, EI, energyWeapon, majorItem"
+			  
 			level=				"5"
+			frequency=			"common"
+
 			value=				"7000"
 			mass=				"3500"
-			frequency=			"common"
-			attributes=			"EI; EnergyWeapon; MajorItem"
-
+			  
 			description=		"A modified linear accelerator fires energetic particles at its target."
-
-			sortName=			"particle beam weapon, dual"
 			>
 
 		<Image imageID="&rsItemsEI2;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -1959,15 +1384,15 @@
 
 	<ItemType UNID="&itOmniParticleCannon;"
 			name=				"omnidirectional particle cannon"
+			attributes=			"bushido, commonwealth, energyWeapon, majorItem"
+			  
 			level=				"5"
+			frequency=			"rare"
+
 			value=				"10000"
 			mass=				"2000"
-			frequency=			"rare"
-			attributes=			"EnergyWeapon; MajorItem; Bushido"
-
+			  
 			description=		"A single particle beam weapon with an automated targeting system."
-
-			sortName=			"particle beam weapon, omnidirectional"
 			>
 
 		<Image imageID="&rsItemsBushido1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -1991,13 +1416,14 @@
 
 	<ItemType UNID="&itNeutronBlaster;"
 			name=				"Shuriken neutron blaster"
+			attributes=			"bushido, commonwealth, energyWeapon, majorItem, specialty"
+			  
 			level=				"5"
+			frequency=			"common"
+
 			value=				"8000"
 			mass=				"2000"
-			frequency=			"common"
-			numberAppearing=	"1"
-			attributes=			"EnergyWeapon; MajorItem; Specialty; Bushido"
-
+			  
 			description=		"The fastest weapon in its price range, this Bushido Corp design uses a double chamber to fire high-energy neutrons."
 			>
 
@@ -2022,12 +1448,14 @@
 
 	<ItemType UNID="&itShtormRepeater;"
 			name=				"Moskva 33 repeater"
+			attributes=			"commonwealth, majorItem, makayev, specialty"
+			  
 			level=				"5"
+			frequency=			"uncommon"
+
 			value=				"8000"
 			mass=				"4000"
-			frequency=			"uncommon"
-			attributes=			"MajorItem; Makayev; Specialty"
-
+			  
 			description=		"One of the most successful Makayev designs, the Moskva repeater fires a cluster of high-explosive shells."
 			>
 
@@ -2059,15 +1487,15 @@
 
 	<ItemType UNID="&itHeavySlamCannon;"
 			name=				"heavy slam cannon"
+			attributes=			"commonwealth, majorItem, makayev"
+			  
 			level=				"5"
+			frequency=			"uncommon"
+
 			value=				"8000"
 			mass=				"4500"
-			frequency=			"uncommon"
-			numberAppearing=	"1"
-			attributes=			"MajorItem; Makayev"
-
+			  
 			description=		"This is a heavier and more powerful version of the slam cannon."
-			sortName=			"slam cannon, heavy"
 			>
 
 		<Image imageID="&rsItemsMakayev1;" imageX="192" imageY="192" imageWidth="96" imageHeight="96"/>
@@ -2105,15 +1533,15 @@
 
 	<ItemType UNID="&itXRayLaserCannon;"
 			name=				"x-ray laser cannon"
+			attributes=			"bushido, commonwealth, energyWeapon, majorItem, specialty"
+			  
 			level=				"5"
+			frequency=			"rare"
+
 			value=				"8000"
 			mass=				"1500"
-			frequency=			"rare"
-			attributes=			"EnergyWeapon; MajorItem; Specialty; Bushido"
-
+			  
 			description=		"A nuclear-powered laser source is the core of this weapon system."
-
-			sortName=			"laser cannon, x-ray"
 			reverseArticle=		"true"
 			>
 
@@ -2141,12 +1569,14 @@
 
 	<ItemType UNID="&itAkan600Turret;"
 			name=				"Akan 600 turret"
+			attributes=			"commonwealth, majorItem, military, specialty, rasiermesser"
+			  
 			level=				"6"
+			frequency=			"uncommon"
+
 			value=				"19000"
 			mass=				"5000"
-			frequency=			"uncommon"
-			attributes=			"MajorItem; Military; Specialty; Rasiermesser"
-
+			  
 			description=		"This weapons places an Akan 30 cannon on a computer-controlled, omnidirectional turret. This weapon requires Akan 30 cannon shells."
 			>
 
@@ -2181,13 +1611,14 @@
 
 	<ItemType UNID="&itDragonflyMissileSystem;"
 			name=				"Dragonfly missile system"
+			attributes=			"commonwealth, EI, majorItem, military, specialty"
+			  
 			level=				"6"
+			frequency=			"uncommon"
+
 			value=				"15000"
 			mass=				"1200"
-			frequency=			"uncommon"
-			numberAppearing=	"1"
-			attributes=			"EI; MajorItem; Military; Specialty"
-
+			  
 			description=		"This cheap cartridge missile launcher fires three micro-missiles at a ten-degree spread. The weapon requires Dragonfly missile cartridges."
 			>
 
@@ -2232,15 +1663,15 @@
 
 	<ItemType UNID="&itMarkIIIHowitzer;"
 			name=				"mark III howitzer"
+			attributes=			"commonwealth, howitzer, majorItem, makayev"
+			  
 			level=				"6"
+			frequency=			"common"
+
 			value=				"15000"
 			mass=				"5000"
-			frequency=			"common"
-			numberAppearing=	"1"
-			attributes=			"Howitzer; MajorItem; Makayev"
-
+			  
 			description=		"This is an improved version of the mark I howitzer."
-			sortName=			"howitzer, mark 3"
 			>
 
 		<Image imageID="&rsItemsMakayev3;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -2279,12 +1710,14 @@
 
 	<ItemType UNID="&itPlasmaTorch;"
 			name=				"plasma torch(es)"
+			attributes=			"commonwealth, majorItem"
+			  
 			level=				"6"
+			frequency=			"rare"
+
 			value=				"18000"
 			mass=				"4000"
-			frequency=			"rare"
-			attributes=			"MajorItem"
-
+			  
 			description=		"Plasma torches are used for large-scale asteroid mining."
 			>
 
@@ -2320,15 +1753,15 @@
 
 	<ItemType UNID="&itTeV9Blaster;"
 			name=				"TeV 9 blaster"
+			attributes=			"commonwealth, EI, energyWeapon, majorItem, military"
+			  
 			level=				"6"
+			frequency=			"common"
+
 			value=				"14000"
 			mass=				"4000"
-			frequency=			"common"
-			attributes=			"EI; EnergyWeapon; MajorItem; Military"
-
+			  
 			description=		"This versatile weapon, developed by Earth Industries, has been adopted by the Commonwealth Fleet."
-
-			sortName=			"TeV 9 blaster"
 			>
 
 		<Image imageID="&rsItemsEI2;" imageX="0" imageY="288" imageWidth="96" imageHeight="96"/>
@@ -2353,12 +1786,13 @@
 
 	<ItemType UNID="&itHanzoBlaster;"
 			name=				"Hanzo blaster"
+			attributes=			"bushido, commonwealth, energyWeapon, majorItem, military, specialty"
+			  
 			level=				"7"
+			frequency=			"rare"
+			  
 			value=				"60000"
 			mass=				"4000"
-			frequency=			"rare"
-			numberAppearing=	"1"
-			attributes=			"EnergyWeapon; MajorItem; Military; Specialty; Bushido"
 
 			description=		"The top-of-the-line weapon manufactured by the Bushido corporation. This weapon consists of dual particle weapons linked by a high-speed control system."
 			>
@@ -2384,12 +1818,14 @@
 
 	<ItemType UNID="&itIonDisruptor;"
 			name=				"ion disruptor"
+			attributes=			"commonwealth, EI, energyWeapon, military, majorItem, specialty"
+			  
 			level=				"7"
+			frequency=			"rare"
+
 			value=				"40000"
 			mass=				"3000"
-			frequency=			"rare"
-			attributes=			"EI; EnergyWeapon; Military; MajorItem; Specialty"
-
+			  
 			description=		"The ion disruptor's beam can penetrate a ship's hull and ionize the delicate mechanisms of weapons and other devices."
 			>
 
@@ -2421,7 +1857,7 @@
 
 	<ItemType UNID="&itLightIonBlaster;"
 			name=				"light ion blaster"
-			attributes=			"EI, energyWeapon, military, majorItem"
+			attributes=			"commonwealth, EI, energyWeapon, military, majorItem"
 			  
 			level=				"7"
 			frequency=			"common"
@@ -2453,12 +1889,14 @@
 
 	<ItemType UNID="&itStarCannon;"
 			name=				"Katana star cannon"
+			attributes=			"bushido, commonwealth, energyWeapon, majorItem, military, specialty"
+			  
 			level=				"7"
+			frequency=			"common"
+
 			value=				"50000"
 			mass=				"5000"
-			frequency=			"common"
-			attributes=			"EnergyWeapon; MajorItem; Military; Specialty; Bushido"
-
+			  
 			description=		"The star cannon fires a stream of high-energy ions. Star cannons are military weapons that cannot be used on civilian ships without a special ID."
 			>
 
@@ -2485,101 +1923,19 @@
 		</Weapon>
 	</ItemType>
 
-	<!-- Kiloton Cannon -->
-
-	<ItemType UNID="&itKilotonCannon;"
-			name=				"kiloton cannon"
-			level=				"7"
-			value=				"45000"
-			mass=				"4000"
-			frequency=			"uncommon"
-			attributes=			"EI; MajorItem; Military; Specialty"
-
-			description=		"This heavy nuclear cannon requires kiloton cannon shells."
-			>
-
-		<Image imageID="&rsItemsEI3;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
-
-		<Weapon
-				fireRate=			"20"
-				powerUse=			"100"
-				>
-
-			<Missiles>
-				<Missile ammoID="&itKilotonCannonShell;"
-						type=			"missile"
-
-						damage=			"thermo:1d8+1; WMD4"
-						missileSpeed=	"50"
-						lifetime=		"120"
-						hitPoints=		"15"
-
-						failsafe=		"10"
-
-						sound=			"&snMissileLauncher;"
-						>
-
-					<Effect>
-						<ParticleJet
-								emitRate=			"20"
-								emitSpeed=			"40-50"
-								particleLifetime=	"10-30"
-								spreadAngle=		"2"
-								>
-							<ParticleEffect>
-								<Particle
-										style=			"plain"
-										minWidth=		"1"
-										maxWidth=		"3"
-										primaryColor=	"#effeff"
-										secondaryColor=	"#5b777a"
-										/>
-							</ParticleEffect>
-						</ParticleJet>
-						
-						<Image imageID="&rsMissiles;" imageX="0" imageY="48" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
-					</Effect>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Flare
-								style=			"fadingBlast"
-								radius=			"150"
-								primaryColor=	"0xff, 0xff, 0xf0"
-								lifetime=		"8"
-								/>
-					</HitEffect>
-
-					<Fragment 
-							count=				"48"
-							type=				"missile"
-
-							damage=				"thermo:1d8+2; WMD4"
-							missileSpeed=		"70-90"
-							lifetime=			"5"
-							
-							effect=				"&efThermoShellDefault;"
-							>
-					</Fragment>
-				</Missile>
-			</Missiles>
-		</Weapon>
-	</ItemType>
-
 	<!-- Mark V Howitzer -->
 
 	<ItemType UNID="&itMarkVHowitzer;"
 			name=				"mark V howitzer"
+			attributes=			"commonwealth, howitzer, majorItem, makayev, military"
+			  
 			level=				"7"
+			frequency=			"uncommon"
+
 			value=				"50000"
 			mass=				"6000"
-			frequency=			"uncommon"
-			numberAppearing=	"1"
-			attributes=			"Howitzer; MajorItem; Makayev; Military"
-
+			  
 			description=		"The mark V howitzer fires a light thermonuclear shell."
-			sortName=			"howitzer, mark 5"
 			>
 
 		<Image imageID="&rsItemsMakayev3;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -2625,12 +1981,14 @@
 
 	<ItemType UNID="&itNAMIMineLauncher;"
 			name=				"NAMI mine launcher"
+			attributes=			"commonwealth, majorItem, military, NAMI"
+			  
 			level=				"7"
+			frequency=			"uncommon"
+
 			value=				"30000"
 			mass=				"2000"
-			frequency=			"uncommon"
-			attributes=			"MajorItem; Military; NAMI"
-
+			  
 			description=		"The NAMI mine launcher is used by the Commonwealth Fleet to defend colonies in Ares space."
 			>
 
@@ -2643,129 +2001,25 @@
 				>
 
 			<Missiles>
-				<Missile ammoID="&itStaticMine;"
-						type=			"missile"
-
-						damage=			"thermo:3d12; WMD6"
-						missileSpeed=	"10"
-						accelerationFactor="60"
-						lifetime=		"4800"
-						hitPoints=		"20"
-						stealth=		"7"
-
-						failSafe=		"10"
-
-						sound=			"&snMissileLauncher;"
-						>
-
-					<Effect>
-						<Image imageID="&rsMissiles6;" imageX="0" imageY="0" imageWidth="24" imageHeight="24" imageFrameCount="12" imageTicksPerFrame="5"/>
-					</Effect>
-
-					<Fragment 
-							count=			"6d12"
-							type=			"missile"
-							canHitSource=	"true"
-
-							damage=			"thermo:2d12; WMD6"
-							missileSpeed=	"40-60"
-							lifetime=		"8"
-
-							effect=			"&efThermoShellDefault;"
-							>
-							
-						<HitEffect
-								sound="&snArmorHit1;"
-								>
-							<Image imageID="&rsExplosionsAG48;"
-									imageX="0"
-									imageY="0"
-									imageWidth="48"
-									imageHeight="48"
-									imageFrameCount="16"
-									imageTicksPerFrame="2"/>
-							<Flare
-									style=			"fadingBlast"
-									radius=			"220"
-									primaryColor=	"0xff, 0xff, 0xf0"
-									lifetime=		"8"
-									/>
-						</HitEffect>
-					</Fragment>
-
-				</Missile>
-
-				<Missile ammoID="&itTrackingMine;"
-						type=			"missile"
-
-						damage=			"thermo:3d12; WMD6"
-						missileSpeed=	"10"
-						maneuverability="2"
-						lifetime=		"2400"
-						hitPoints=		"20"
-						stealth=		"6"
-
-						failSafe=		"10"
-
-						sound=			"&snMissileLauncher;"
-						>
-
-					<Effect>
-						<Image imageID="&rsMissiles6;" imageX="0" imageY="0" imageWidth="24" imageHeight="24" imageFrameCount="12" imageTicksPerFrame="5"/>
-					</Effect>
-
-					<Fragment 
-							count=			"6d12"
-							type=			"missile"
-							canHitSource=	"true"
-
-							damage=			"thermo:2d12; WMD6"
-							missileSpeed=	"40-60"
-							lifetime=		"8"
-
-							effect=			"&efThermoShellDefault;"
-							>
-							
-						<HitEffect
-								sound="&snArmorHit1;"
-								>
-							<Image imageID="&rsExplosionsAG48;"
-									imageX="0"
-									imageY="0"
-									imageWidth="48"
-									imageHeight="48"
-									imageFrameCount="16"
-									imageTicksPerFrame="2"/>
-							<Flare
-									style=			"fadingBlast"
-									radius=			"220"
-									primaryColor=	"0xff, 0xff, 0xf0"
-									lifetime=		"8"
-									/>
-						</HitEffect>
-					</Fragment>
-
-				</Missile>
-
+				<Missile ammoID="&itStaticMine;"/>
+				<Missile ammoID="&itTrackingMine;"/>
 			</Missiles>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Dual TeV 9 Blaster -->
 
 	<ItemType UNID="&itDualTeV9Blaster;"
 			name=				"dual TeV 9 blaster"
+			attributes=			"commonwealth, EI, energyWeapon, majorItem, military"
+			  
 			level=				"7"
+			frequency=			"uncommon"
+
 			value=				"30000"
 			mass=				"9000"
-			frequency=			"uncommon"
-			attributes=			"EI; EnergyWeapon; MajorItem; Military"
-
+			  
 			description=		"Two TeV 9 blasters linked by a common fire control."
-
-			sortName=			"TeV 9 blaster, dual"
 			>
 
 		<Image imageID="&rsItemsEI3;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -2789,15 +2043,15 @@
 
 	<ItemType UNID="&itOmniTeV9Blaster;"
 			name=				"omnidirectional TeV 9 blaster"
+			attributes=			"commonwealth, EI, energyWeapon, military, majorItem"
+			  
 			level=				"7"
+			frequency=			"rare"
+
 			value=				"60000"
 			mass=				"5000"
-			frequency=			"rare"
-			attributes=			"EI; EnergyWeapon; Military; MajorItem"
-
+			  
 			description=		"A single TeV 9 blaster mounted on an automated turret."
-
-			sortName=			"TeV9 blaster, omnidirectional"
 			>
 
 		<Image imageID="&rsItemsEI3;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -2821,12 +2075,14 @@
 
 	<ItemType UNID="&itThermoCannon;"
 			name=				"thermo cannon"
+			attributes=			"bushido, commonwealth, majorItem, military, specialty"
+			  
 			level=				"7"
+			frequency=			"common"
+
 			value=				"40000"
 			mass=				"5000"
-			frequency=			"common"
-			attributes=			"MajorItem; Military; Bushido; Specialty"
-
+			  
 			description=		"Produced in great numbers in the Syrtis War, the cannon is now common throughout the Outer Realm. The cannon requires thermo cannon shells."
 			>
 
@@ -2879,13 +2135,14 @@
 
 	<ItemType UNID="&itTritiumCannon;"
 			name=				"tritium cannon"
+			attributes=			"commonwealth, majorItem, military, NAMI"
+			  
 			level=				"7"
+			frequency=			"common"
+
 			value=				"45000"
 			mass=				"5000"
-			frequency=			"common"
-			numberAppearing=	"1"
-			attributes=			"MajorItem; Military; NAMI"
-
+			  
 			description=		"The tritium shells fired by this cannon detonate on contact in a thermonuclear explosion."
 			>
 
@@ -2933,13 +2190,14 @@
 
 	<ItemType UNID="&itFusionfireHowitzer;"
 			name=				"Fusionfire howitzer"
+			attributes=			"commonwealth, howitzer, majorItem, military, NAMI"
+			  
 			level=				"8"
+			frequency=			"common"
+
 			value=				"85000"
 			mass=				"6000"
-			frequency=			"common"
-			numberAppearing=	"1"
-			attributes=			"Howitzer; MajorItem; Military; NAMI"
-
+			  
 			description=		"This venerable weapon design is still common at the edge of Human Space."
 			>
 
@@ -2985,7 +2243,7 @@
 
 	<ItemType UNID="&itIonBlaster;"
 			name=				"ion blaster"
-			attributes=			"EI, energyWeapon, military, majorItem"
+			attributes=			"commonwealth, EI, energyWeapon, military, majorItem"
 			  
 			level=				"8"
 			frequency=			"common"
@@ -3017,12 +2275,14 @@
 
 	<ItemType UNID="&itIonFlameCannon;"
 			name=				"ion flame cannon"
+			attributes=			"bushido, commonwealth, energyWeapon, majorItem, military"
+			  
 			level=				"8"
+			frequency=			"uncommon"
+
 			value=				"110000"
 			mass=				"3000"
-			frequency=			"uncommon"
-			attributes=			"EnergyWeapon; MajorItem; Military; Bushido"
-
+			  
 			description=		"The ion flame cannon fires multiple ion blasts in an arc in front of the ship."
 			>
 
@@ -3056,12 +2316,14 @@
 
 	<ItemType UNID="&itRasiermesserLauncher;"
 			name=				"Rasiermesser launcher"
+			attributes=			"commonwealth, majorItem, military, rasiermesser"
+			  
 			level=				"8"
+			frequency=			"uncommon"
+
 			value=				"70000"
 			mass=				"3000"
-			frequency=			"uncommon"
-			attributes=			"MajorItem; Military; Rasiermesser"
-
+			  
 			description=		"After the success of the SmartCannon, the Rasiermesser corporation developed a line of missiles for the military."
 			>
 
@@ -3074,64 +2336,8 @@
 				>
 
 			<Missiles>
-				<Missile ammoID="&itGotha10Missile;"
-						type=			"missile"
-						lifetime=		"120"
-						damage=			"thermo:8d24; momentum3; WMD7"
-						missileSpeed=	"70"
-						hitPoints=		"20"
-
-						effect=			"&efMissileRasiermesser;"
-						sound=			"&snMissileLauncher;"
-						>
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsMediumExplosions;" 
-								imageX="0" 
-								imageY="0" 
-								imageWidth="64" 
-								imageHeight="64"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-						<Flare
-								style=			"fadingBlast"
-								radius=			"100"
-								primaryColor=	"0xff, 0xff, 0xf0"
-								lifetime=		"8"
-								/>
-					</HitEffect>
-				</Missile>
-
-				<Missile ammoID="&itGotha400Seeker;"
-						type=			"missile"
-						lifetime=		"120"
-						damage=			"thermo:6d24; momentum3; WMD7"
-						missileSpeed=	"65"
-						hitPoints=		"20"
-						maneuverability="2"
-						 
-						effect=			"&efMissileRasiermesser;"
-						sound=			"&snMissileLauncher;"
-						>
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsMediumExplosions;" 
-								imageX="0" 
-								imageY="0" 
-								imageWidth="64" 
-								imageHeight="64"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-						<Flare
-								style=			"fadingBlast"
-								radius=			"95"
-								primaryColor=	"0xff, 0xff, 0xf0"
-								lifetime=		"8"
-								/>
-					</HitEffect>
-				</Missile>
+				<Missile ammoID="&itGotha10Missile;"/>
+				<Missile ammoID="&itGotha400Seeker;"/>
 			</Missiles>
 		</Weapon>
 	</ItemType>
@@ -3140,12 +2346,14 @@
 
 	<ItemType UNID="&itOmniThermoCannon;"
 			name=				"omnidirectional thermo cannon"
+			attributes=			"bushido, commonwealth, majorItem, military, specialty"
+			  
 			level=				"8"
+			frequency=			"uncommon"
+
 			value=				"130000"
 			mass=				"6000"
-			frequency=			"uncommon"
-			attributes=			"MajorItem; Military; Bushido; Specialty"
-
+			  
 			description=		"This is a modified thermo cannon mounted on an automated turret. It requires thermo cannon shells."
 			>
 
@@ -3200,12 +2408,14 @@
 
 	<ItemType UNID="&itTM7Cannon;"
 			name=				"TM7 multitarget cannon"
+			attributes=			"commonwealth, majorItem, military, taikon"
+			  
 			level=				"8"
+			frequency=			"uncommon"
+
 			value=				"120000"
 			mass=				"2000"
-			frequency=			"uncommon"
-			attributes=			"MajorItem; Military; Taikon"
-
+			  
 			description=		"Taikon's TM7 cannon launches warheads that split into three independent missiles. The cannon requires TM7 warheads."
 			>
 
@@ -3325,7 +2535,7 @@
 
 	<ItemType UNID="&itHeavyIonBlaster;"
 			name=				"heavy ion blaster"
-			attributes=			"EI, energyWeapon, military, majorItem"
+			attributes=			"commonwealth, EI, energyWeapon, military, majorItem"
 			  
 			level=				"9"
 			frequency=			"common"
@@ -3357,12 +2567,14 @@
 
 	<ItemType UNID="&itNAMIHeavyLauncher;"
 			name=				"NAMI heavy launcher"
+			attributes=			"commonwealth, majorItem, military, NAMI"
+			  
 			level=				"9"
+			frequency=			"uncommon"
+
 			value=				"140000"
 			mass=				"8000"
-			frequency=			"uncommon"
-			attributes=			"MajorItem; Military; NAMI"
-
+			  
 			description=		"The NAMI heavy launcher is designed for the capital ships of the Commonwealth Fleet."
 			>
 
@@ -3375,219 +2587,9 @@
 				>
 
 			<Missiles>
-				<Missile ammoID="&itS3Missile;"
-						type=			"missile"
-
-						damage=			"thermo:4d12; momentum6; WMD1"
-						missileSpeed=	"30"
-						lifetime=		"20"
-						hitPoints=		"40"
-
-						failsafe=		"5"
-
-						effect=			"&efMissileNAMIHeavy;"
-						sound=			"&snMissileLauncher;"
-						>
-
-					<HitEffect 
-							sound=	"&snArmorHit1;"
-							>
-						<ParticleExplosion
-								particleCount=		"2d4"
-								particleSpeed=		"25"
-								particleLifetime=	"20"
-								>
-							<Image imageID="&rsDebris1;" imageX="0" imageY="0" imageWidth="4" imageHeight="4" imageFrameCount="8" imageTicksPerFrame="3"/>
-						</ParticleExplosion>
-					</HitEffect>
-
-					<Fragment
-							count=				"12"
-							type=				"missile"
-
-							damage=				"thermo:3d12; momentum3; WMD1"
-							missileSpeed=		"40"
-							lifetime=			"120"
-
-							multiTarget=		"true"
-							autoAcquireTarget=	"true"
-							maneuverability=	"2"
-							>
-
-						<Effect>
-							<Image imageID="&rsMissileNAMI;" imageX="0" imageY="0" imageWidth="24" imageHeight="24" rotationCount="40"/>
-							
-							<Group angleOffset="180" radiusOffset="10">
-								<ParticleJet
-										fixedPos=			"true"
-										emitRate=			"30"
-										tangentSpeed=		"3d2-3"
-										particleLifetime=	"15-45"
-										XformTime=			"20"
-										>
-									<ParticleEffect>
-										<Particle
-												style=			"plain"
-												minWidth=		"1"
-												maxWidth=		"4"
-												primaryColor=	"#ffffc0"
-												secondaryColor=	"#7e7e74"
-												/>
-									</ParticleEffect>
-								</ParticleJet>
-				
-								<Ray
-										style=			"smooth"
-										shape=			"tapered"
-										length=			"50"
-										width=			"20"
-										intensity=		"40"
-										primaryColor=	"#ffffc0"
-										secondaryColor=	"#7e7e74"
-										/>
-							</Group>
-						</Effect>
-
-						<HitEffect
-								sound="&snArmorHit1;"
-								>
-							<Image imageID="&rsExplosionsAG48;"
-									imageX="0"
-									imageY="0"
-									imageWidth="48"
-									imageHeight="48"
-									imageFrameCount="16"
-									imageTicksPerFrame="2"/>
-							<Flare
-									style=			"fadingBlast"
-									radius=			"65"
-									primaryColor=	"0xff, 0xff, 0xf0"
-									lifetime=		"8"
-									/>
-						</HitEffect>
-					</Fragment>
-				</Missile>
-
-				<Missile ammoID="&itM2Missile;"
-						type=			"missile"
-						lifetime=		"120"
-						damage=			"thermo:1d12; momentum3; WMD7"
-						missileSpeed=	"55"
-						hitPoints=		"40"
-
-						effect=			"&efMissileNAMIHeavy;"
-						hitEffect=		"&efFusionExplosion1;"
-						sound=			"&snMissileLauncher;"
-						>
-
-					<Fragment 
-							count=			"1"
-							type=			"radius"
-
-							damage=			"thermo:10d24; momentum3; WMD7"
-							minRadius=		"2"
-							maxRadius=		"6"
-							missileSpeed=	"0"
-							>
-
-						<Effect>
-							<Flare
-									style=			"fadingBlast"
-									radius=			"300"
-									primaryColor=	"0xff, 0xff, 0xf0"
-									lifetime=		"8"
-									/>
-						</Effect>
-					</Fragment>
-
-					<Fragment
-							count=			"5d20"
-							type=			"missile"
-
-							lifetime=		"1d12+12"
-							damage=			"blast:2d6; WMD1"
-							missileSpeed=	"25-55"
-							>
-
-						<Effect>
-							<ImageAndTail 
-									imageID=			"&rsMissiles4;" 
-									imageX=				"0" 
-									imageY=				"0" 
-									imageWidth=			"16" 
-									imageHeight=		"16"
-									imageFrameCount=	"4"
-									imageTicksPerFrame=	"1"
-
-									length=				"32"
-									width=				"1"
-									primaryColor=		"0xff, 0xff, 0xff"
-									secondaryColor=		"0xc0, 0xc2, 0x85"
-									/>
-						</Effect>
-					</Fragment>
-
-				</Missile>
-
-				<Missile ammoID="&itM5Missile;"
-						type=			"missile"
-						lifetime=		"120"
-						damage=			"thermo:1d12; momentum3; WMD7"
-						missileSpeed=	"55"
-						hitPoints=		"40"
-
-						effect=			"&efMissileNAMIHeavy;"
-						hitEffect=		"&efFusionExplosion1;"
-						sound=			"&snMissileLauncher;"
-						>
-
-					<Fragment 
-							count=			"1"
-							type=			"radius"
-
-							damage=			"thermo:15d24; momentum3; WMD7"
-							minRadius=		"3"
-							maxRadius=		"8"
-							missileSpeed=	"0"
-							>
-
-						<Effect>
-							<Flare
-									style=			"fadingBlast"
-									radius=			"450"
-									primaryColor=	"0xff, 0xff, 0xf0"
-									lifetime=		"8"
-									/>
-						</Effect>
-					</Fragment>
-
-					<Fragment
-							count=			"8d20"
-							type=			"missile"
-
-							lifetime=		"1d12+12"
-							damage=			"blast:2d6; WMD1"
-							missileSpeed=	"25-55"
-							>
-
-						<Effect>
-							<ImageAndTail 
-									imageID=			"&rsMissiles4;" 
-									imageX=				"0" 
-									imageY=				"0" 
-									imageWidth=			"16" 
-									imageHeight=		"16"
-									imageFrameCount=	"4"
-									imageTicksPerFrame=	"1"
-
-									length=				"32"
-									width=				"1"
-									primaryColor=		"0xff, 0xff, 0xff"
-									secondaryColor=		"0xc0, 0xc2, 0x85"
-									/>
-						</Effect>
-					</Fragment>
-				</Missile>
+				<Missile ammoID="&itS3Missile;"/>
+				<Missile ammoID="&itM2Missile;"/>
+				<Missile ammoID="&itM5Missile;"/>
 			</Missiles>
 		</Weapon>
 	</ItemType>
@@ -3596,15 +2598,15 @@
 
 	<ItemType UNID="&itOmniIonBlaster;"
 			name=				"omnidirectional ion blaster"
+			attributes=			"commonwealth, EI, energyWeapon, military, majorItem"
+			  
 			level=				"9"
+			frequency=			"rare"
+
 			value=				"230000"
 			mass=				"5000"
-			frequency=			"rare"
-			attributes=			"EI; EnergyWeapon; Military; MajorItem"
-
+			  
 			description=		"Similar in design to the ion blaster, but mounted on an automated turret."
-
-			sortName=			"ion blaster, omnidirectional"
 			>
 
 		<Image imageID="&rsItemsEI3;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -3629,16 +2631,15 @@
 
 	<ItemType UNID="&itAdvancedTritiumCannon;"
 			name=				"advanced tritium cannon"
+			attributes=			"commonwealth, majorItem, military, NAMI"
+			  
 			level=				"9"
+			frequency=			"uncommon"
+
 			value=				"220000"
 			mass=				"5000"
-			frequency=			"uncommon"
-			numberAppearing=	"1"
-			attributes=			"MajorItem; Military; NAMI"
-
+			  
 			description=		"This improved version can fire at quadruple the rate of the tritium cannon. Unfortunately, the cannon overheats quickly if fired continuously."
-
-			sortName=			"tritium cannon, advanced"
 			>
 
 		<Image imageID="&rsItemsNAMI3;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -3690,12 +2691,14 @@
 
 	<ItemType UNID="&itIM90Blaster;"
 			name=				"IM90 multitarget blaster"
+			attributes=			"commonwealth, energyWeapon, majorItem, military, taikon"
+			  
 			level=				"10"
+			frequency=			"rare"
+
 			value=				"750000"
 			mass=				"16000"
-			frequency=			"rare"
-			attributes=			"EnergyWeapon; MajorItem; Military; Taikon"
-
+			  
 			description=		"Taikon's IM90 blaster mounts three independently targeted gun barrels, each firing a blast of ion energy."
 			>
 
@@ -3722,12 +2725,14 @@
 
 	<ItemType UNID="&itPlasmaCannon;"
 			name=				"plasma cannon"
+			attributes=			"commonwealth, EI, majorItem, military"
+			  
 			level=				"10"
+			frequency=			"rare"
+
 			value=				"400000"
 			mass=				"2000"
-			frequency=			"rare"
-			attributes=			"EI; MajorItem; Military"
-
+			  
 			description=		"This weapon emits a powerful plasma burst that can incinerate an unprotected ship."
 			>
 
@@ -3779,136 +2784,355 @@
 
 	<ItemType UNID="&itKM100Missile;"
 			name=				"KM100 Longbow missile"
+			attributes=			"basicAmmo, commonwealth, consumable, missile, NAMI, NAMILauncher"
+			  
 			level=				"2"
-			value=				"15"
-			mass=				"50"
 			frequency=			"common"
 			numberAppearing=	"2d12"
-			attributes=			"BasicAmmo; Commonwealth; Consumable; Missile; NAMI; NAMILauncher"
-			showReference=		"true"
 
+			value=				"15"
+			mass=				"50"
+			  
 			description=		"This is a standard hexagene high-explosive missile; cheap and light, they are the weapon of choice for modern patrol fleets."
-
-			sortName=			"NAMI.40"
 			>
 
 		<Image imageID="&rsItemsNAMI2;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Missile
+				type=			"missile"
+				lifetime=		"120"
+				damage=			"blast:4d6; momentum4; WMD5"
+				missileSpeed=	"45"
+				hitPoints=		"10"
+						 
+				effect=			"&efMissileNAMI;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsExplosionsAG48;"
+						imageX="0"
+						imageY="0"
+						imageWidth="48"
+						imageHeight="48"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Missile>
 	</ItemType>
 
 	<!-- Fragmentation Missile -->
 
 	<ItemType UNID="&itFragmentationMissile;"
 			name=				"KM110 Starburst missile"
+			attributes=			"basicAmmo, commonwealth, consumable, missile, NAMI, NAMILauncher"
+			  
 			level=				"3"
-			value=				"30"
-			mass=				"50"
 			frequency=			"common"
 			numberAppearing=	"2d8"
-			attributes=			"BasicAmmo; Commonwealth; Consumable; Missile; NAMI; NAMILauncher"
 
+			value=				"30"
+			mass=				"50"
+			  
 			description=		"The warhead of this NAMI-compatible missile explodes into more than a dozen high-velocity shards."
-
-			sortName=			"NAMI.35"
 			>
 
 		<Image imageID="&rsItemsNAMI2;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Missile
+				type=			"missile"
+				lifetime=		"120"
+				damage=			"blast:2d6+2; momentum2; WMD1"
+				missileSpeed=	"45"
+				hitPoints=		"10"
+
+				effect=			"&efMissileNAMI;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsExplosionsAG48;"
+						imageX="0"
+						imageY="0"
+						imageWidth="48"
+						imageHeight="48"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+
+			<Fragment
+					count=			"5d6"
+					type=			"missile"
+					lifetime=		"5"
+					damage=			"kinetic:1d6+2; WMD1"
+					missileSpeed=	"32-48"
+							>
+
+				<Effect>
+					<ImageAndTail
+							imageID=			"&rsMissiles4;"
+							imageX=				"0"
+							imageY=				"0"
+							imageWidth=			"16"
+							imageHeight=		"16"
+							imageFrameCount=	"4"
+							imageTicksPerFrame=	"1"
+
+							length=				"32"
+							width=				"1"
+							primaryColor=		"0xff, 0xff, 0xff"
+							secondaryColor=		"0xc0, 0xc2, 0x85"
+									/>
+				</Effect>
+			</Fragment>
+		</Missile>
 	</ItemType>
 
 	<!-- KM120 Brute Missile -->
 
 	<ItemType UNID="&itKM120Missile;"
 			name=				"KM120 Brute missile"
+			attributes=			"commonwealth, consumable, missile, NAMI, NAMILauncher"
+			  
 			level=				"3"
-			value=				"60"
-			mass=				"150"
 			frequency=			"uncommon"
 			numberAppearing=	"1d6"
-			attributes=			"Commonwealth; Consumable; Missile; NAMI; NAMILauncher"
 
+			value=				"60"
+			mass=				"150"
+			  
 			description=		"This is a heavier and more powerful version of the KM100."
-
-			sortName=			"NAMI.32"
 			>
 
 		<Image imageID="&rsItemsNAMI2;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Missile
+			type=			"missile"
+			lifetime=		"120"
+			damage=			"blast:10d6; momentum4; WMD6"
+			missileSpeed=	"45"
+			hitPoints=		"15"
+						 
+			effect=			"&efMissileNAMI;"
+			sound=			"&snMissileLauncher;"
+			>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsMediumExplosions;"
+						imageX="0"
+						imageY="0"
+						imageWidth="64"
+						imageHeight="64"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Missile>
 	</ItemType>
 
 	<!-- KM500 Stiletto Missile -->
 
 	<ItemType UNID="&itKM500Missile;"
 			name=				"KM500 Stiletto missile"
+			attributes=			"basicAmmo, commonwealth, consumable, missile, NAMI, NAMILauncher"
+			  
 			level=				"4"
-			value=				"50"
-			mass=				"60"
 			frequency=			"common"
 			numberAppearing=	"2d12"
-			attributes=			"BasicAmmo; Commonwealth; Consumable; Missile; NAMI; NAMILauncher"
 
+			value=				"50"
+			mass=				"60"
+			  
 			description=		"A powerful optical and infrared tracking module allows this missile to home in on its target."
-
-			sortName=			"NAMI.25"
 			>
 
 		<Image imageID="&rsItemsNAMI2;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				lifetime=		"120"
+				damage=			"blast:4d6; momentum4; WMD5"
+				missileSpeed=	"40"
+				hitPoints=		"10"
+				maneuverability="2"
+						 
+				effect=			"&efMissileNAMI;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsExplosionsAG48;"
+						imageX="0"
+						imageY="0"
+						imageWidth="48"
+						imageHeight="48"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Missile>
 	</ItemType>
 
 	<!-- XM300 Reaper Missile -->
 
 	<ItemType UNID="&itXM300Missile;"
 			name=				"XM300 Reaper missile"
+			attributes=			"commonwealth, consumable, military, missile, NAMI, NAMILauncher, premiumAmmo"
+			  
 			level=				"4"
-			value=				"100"
-			mass=				"50"
-			attributes=			"Commonwealth; Consumable; Military; Missile; NAMI; NAMILauncher; PremiumAmmo"
 			frequency=			"rare"
 			numberAppearing=	"2d4"
 
+			value=				"100"
+			mass=				"50"
+			  
 			description=		"The XM300 warhead is jacketed with small amounts of plutonium. Though not enough for fission, the radioactive materials contaminate the target."
-
-			sortName=			"NAMI.15"
 			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItemsNAMI2;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Missile
+				type=			"missile"
+				lifetime=		"120"
+				damage=			"blast:5d6; radiation1; momentum4; WMD4"
+				missileSpeed=	"45"
+				hitPoints=		"10"
+						 
+				effect=			"&efMissileNAMI;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsExplosion2AG128;"
+						imageX="0"
+						imageY="0"
+						imageWidth="128"
+						imageHeight="128"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Missile>
 	</ItemType>
 
 	<!-- KM550 Broadsword Missile -->
 
 	<ItemType UNID="&itKM550Missile;"
 			name=				"KM550 Broadsword missile"
+			attributes=			"commonwealth, consumable, military, missile, NAMI, NAMILauncher"
+			  
 			level=				"5"
-			value=				"150"
-			mass=				"180"
 			frequency=			"uncommon"
 			numberAppearing=	"1d6"
-			attributes=			"Commonwealth; Consumable; Military; Missile; NAMI; NAMILauncher"
 
+			value=				"150"
+			mass=				"180"
+			  
 			description=		"The Broadsword missile is a heavier version of the tracking KM500 series."
-
-			sortName=			"NAMI.10"
 			>
 
 		<Image imageID="&rsItemsNAMI2;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				lifetime=		"120"
+				damage=			"blast:10d6; momentum4; WMD6"
+				missileSpeed=	"40"
+				hitPoints=		"15"
+				maneuverability="2"
+						 
+				sound=			"&snMissileLauncher;"
+				effect=			"&efMissileNAMI;"
+				>
+						
+			<HitEffect
+					sound="&snArmorHit1;"
+					>
+				<Image imageID="&rsMediumExplosions;" 
+						imageX="0" 
+						imageY="0" 
+						imageWidth="64" 
+						imageHeight="64"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Missile>
 	</ItemType>
 
 	<!-- XM900 Lucifer Missile -->
 
 	<ItemType UNID="&itXM900Missile;"
 			name=				"XM900 Lucifer missile"
+			attributes=			"commonwealth, commonwealthFleet, consumable, military, missile, NAMI, NAMILauncher, premiumAmmo"
+			  
 			level=				"7"
-			value=				"150"
-			mass=				"100"
-			attributes=			"Commonwealth; CommonwealthFleet; Consumable; Military; Missile; NAMI; NAMILauncher; PremiumAmmo"
 			frequency=			"uncommon"
 			numberAppearing=	"2d12"
 
+			value=				"150"
+			mass=				"100"
+			  
 			description=		"An optical tracking missile carrying a 100-kiloton thermonuclear warhead. The XM900 is tightly controlled; only military vessels may carry them."
-
-			sortName=			"NAMI.05"
 			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItemsNAMI2;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<Missile
+				type=			"missile"
+
+				damage=			"thermo:6d24; momentum6; WMD7"
+				missileSpeed=	"40"
+				hitPoints=		"20"
+				lifetime=		"120"
+
+				maneuverability="2"
+
+				effect=			"&efMissileNAMI;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsExplosionsAG128;"
+						imageX="0"
+						imageY="0"
+						imageWidth="128"
+						imageHeight="128"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+
+			<Fragment
+					count=			"1"
+					type=			"radius"
+
+					damage=			"thermo:6d24; momentum6; WMD7"
+					minRadius=		"1"
+					maxRadius=		"4"
+					missileSpeed=	"0"
+							>
+
+				<Effect>
+					<Flare
+							style=			"fadingBlast"
+							radius=			"170"
+							primaryColor=	"0xff, 0xff, 0xf0"
+							lifetime=		"8"
+									/>
+				</Effect>
+			</Fragment>
+
+		</Missile>
 	</ItemType>
 
 	<!-- Missiles for MAG Launcher -->
@@ -3917,135 +3141,404 @@
 
 	<ItemType UNID="&it400HexageneMAG;"
 			name=				"400 hexagene MAG"
+			attributes=			"basicAmmo, commonwealth, consumable, MAGLauncher, missile, rasiermesser"
+			  
 			level=				"3"
-			value=				"20"
-			mass=				"25"
 			frequency=			"common"
 			numberAppearing=	"10d20"
-			attributes=			"BasicAmmo; Commonwealth; Consumable; MAGLauncher; Missile; Rasiermesser"
 
+			value=				"20"
+			mass=				"25"
+			  
 			description=		"This is a standard hexagene high-explosive grenade compatible with the MAG launcher."
-
-			sortName=			"MAG.50"
 			>
 
 		<Image imageID="&rsItemsRasiermesser2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Missile
+				type=			"missile"
+				damage=			"blast:6d6; WMD5"
+						
+				lifetime=		"80"
+				missileSpeed=	"30"
+						
+				hitPoints=		"20"
+						 
+				effect=			"&efMissileMAG;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsExplosionsAG48;"
+						imageX="0"
+						imageY="0"
+						imageWidth="48"
+						imageHeight="48"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Missile>
 	</ItemType>
 
 	<!-- 600 Hexagene MAG -->
 
 	<ItemType UNID="&it600HexageneMAG;"
 			name=				"600 hexagene MAG"
+			attributes=			"commonwealth, consumable, MAGLauncher, missile, rasiermesser"
+			  
 			level=				"4"
-			value=				"30"
-			mass=				"30"
 			frequency=			"common"
 			numberAppearing=	"10d20"
-			attributes=			"Commonwealth; Consumable; MAGLauncher; Missile; Rasiermesser"
 
+			value=				"30"
+			mass=				"30"
+			  
 			description=		"This is a larger version of the 400 MAG grenade. It is compatible with the MAG launcher."
-
-			sortName=			"MAG.40"
 			>
 
 		<Image imageID="&rsItemsRasiermesser2;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				damage=			"blast:9d6; WMD5"
+						
+				lifetime=		"80"
+				missileSpeed=	"30"
+						
+				hitPoints=		"20"
+						 
+				effect=			"&efMissileMAG;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsMediumExplosions;"
+						imageX="0"
+						imageY="0"
+						imageWidth="64"
+						imageHeight="64"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Missile>
 	</ItemType>
 
 	<!-- 800 Hexagene MAG -->
 
 	<ItemType UNID="&it800HexageneMAG;"
 			name=				"800F hexagene MAG"
+			attributes=			"commonwealth, consumable, MAGLauncher, missile, rasiermesser"
+			  
 			level=				"5"
-			value=				"50"
-			mass=				"30"
 			frequency=			"common"
 			numberAppearing=	"10d20"
-			attributes=			"Commonwealth; Consumable; MAGLauncher; Missile; Rasiermesser"
 
+			value=				"50"
+			mass=				"30"
+			  
 			description=		"The largest MAG in common use, the 800 series packs twice as much hexagene as the 400 MAG and surrounds it with a fragmentation jacket."
-
 			reverseArticle=		"true"
-
-			sortName=			"MAG.30"
 			>
 
 		<Image imageID="&rsItemsRasiermesser2;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				damage=			"blast:12d6; WMD5"
+						
+				lifetime=		"80"
+				missileSpeed=	"30"
+						
+				hitPoints=		"20"
+				failsafe=		"6"
+						 
+				effect=			"&efMissileMAG;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsExplosionsAG48;"
+						imageX="0"
+						imageY="0"
+						imageWidth="48"
+						imageHeight="48"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+
+			<Fragment
+					count=			"5d6"
+					type=			"missile"
+					lifetime=		"12"
+					damage=			"kinetic:1d6+2; WMD1"
+					missileSpeed=	"40-60"
+							>
+				<Effect>
+					<ImageAndTail
+							imageID=			"&rsMissiles4;"
+							imageX=				"0"
+							imageY=				"0"
+							imageWidth=			"16"
+							imageHeight=		"16"
+							imageFrameCount=	"4"
+							imageTicksPerFrame=	"1"
+
+							length=				"32"
+							width=				"1"
+							primaryColor=		"0xff, 0xff, 0xff"
+							secondaryColor=		"0xc0, 0xc2, 0x85"
+									/>
+				</Effect>
+			</Fragment>
+
+		</Missile>
 	</ItemType>
 
 	<!-- JB2 Shield Buster MAG -->
 
 	<ItemType UNID="&itJB2ShieldBusterMAG;"
 			name=				"JB2 shield buster MAG"
+			attributes=			"commonwealth, consumable, MAGLauncher, missile, rasiermesser"
+			  
 			level=				"6"
-			value=				"100"
-			mass=				"60"
 			frequency=			"uncommon"
 			numberAppearing=	"2d20"
-			attributes=			"Commonwealth; Consumable; MAGLauncher; Missile; Rasiermesser"
 
+			value=				"100"
+			mass=				"60"
+			  
 			description=		"This specialized MAG is designed to inflict enhanced damage to energy fields."
-
-			sortName=			"MAG.25"
 			>
 
 		<Image imageID="&rsItemsRasiermesser2;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				damage=			"blast:6d6; shield5"
+						
+				lifetime=		"80"
+				missileSpeed=	"30"
+						
+				hitPoints=		"20"
+						 
+				effect=			"&efMissileMAG;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsExplosionsAG48;"
+						imageX="0"
+						imageY="0"
+						imageWidth="48"
+						imageHeight="48"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Missile>
 	</ItemType>
 
 	<!-- ZG24 Cluster MAG -->
 
 	<ItemType UNID="&itZG24ClusterMAG;"
 			name=				"ZG24 cluster MAG"
+			attributes=			"commonwealth, consumable, MAGLauncher, missile, rasiermesser"
+			  
 			level=				"6"
-			value=				"100"
-			mass=				"60"
 			frequency=			"uncommon"
 			numberAppearing=	"4d20"
-			attributes=			"Commonwealth; Consumable; MAGLauncher; Missile; Rasiermesser"
 
+			value=				"100"
+			mass=				"60"
+			  
 			description=		"The ZG24 cluster MAG is a cluster grenade that explodes into dozens of smaller hexagene explosives."
-
-			sortName=			"MAG.20"
 			>
 
 		<Image imageID="&rsItemsRasiermesser2;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				damage=			"blast:12d6; WMD3"
+						
+				lifetime=		"80"
+				missileSpeed=	"30"
+						
+				hitPoints=		"20"
+				failsafe=		"6"
+						 
+				effect=			"&efMissileMAG;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsExplosionsAG48;"
+						imageX="0"
+						imageY="0"
+						imageWidth="48"
+						imageHeight="48"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+
+			<Fragment
+					count=			"20-28"
+					type=			"missile"
+					lifetime=		"40"
+					damage=			"blast:4d6; WMD3"
+					missileSpeed=	"40-60"
+							>
+				<Effect>
+					<Image imageID="&rsMissiles3;" imageX="0" imageY="0" imageWidth="16" imageHeight="16" rotationCount="20"/>
+
+					<SmokeTrail
+							spread=			"4-6"
+							particleLifetime="16"
+							emitDuration=	"80"
+							emitRate=		"8-10"
+							emitSpeed=		"15-18"
+									>
+						<ParticleEffect>
+							<Particle
+									style=			"flame"
+									maxWidth=		"2-5"
+											/>
+						</ParticleEffect>
+					</SmokeTrail>
+				</Effect>
+
+				<HitEffect
+						sound="&snArmorHit1;"
+								>
+					<Image imageID="&rsExplosionsAG48;"
+							imageX="0"
+							imageY="0"
+							imageWidth="48"
+							imageHeight="48"
+							imageFrameCount="16"
+							imageTicksPerFrame="2"/>
+				</HitEffect>
+			</Fragment>
+
+		</Missile>
 	</ItemType>
 
 	<!-- 3K Siege MAG -->
 
 	<ItemType UNID="&it3KSiegeMAG;"
 			name=				"3K siege MAG"
+			attributes=			"commonwealth, consumable, MAGLauncher, missile, rasiermesser"
+			  
 			level=				"7"
-			value=				"250"
-			mass=				"120"
 			frequency=			"uncommon"
 			numberAppearing=	"1d12"
-			attributes=			"Commonwealth; Consumable; MAGLauncher; Missile; Rasiermesser"
 
+			value=				"250"
+			mass=				"120"
+			  
 			description=		"This heavy MAG grenade packs 100kg of hexagene\x97enough to blast through the heavy armor of fortresses and military installations."
-
-			sortName=			"MAG.10"
 			>
 
 		<Image imageID="&rsItemsRasiermesser2;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				damage=			"blast:20d6; WMD7"
+						
+				lifetime=		"160"
+				missileSpeed=	"15"
+						
+				hitPoints=		"30"
+						 
+				effect=			"&efMissileMAG;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsExplosionsAG96;"
+						imageX="0"
+						imageY="0"
+						imageWidth="96"
+						imageHeight="96"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Missile>
 	</ItemType>
 
 	<!-- High-Flux MAG -->
 
 	<ItemType UNID="&itHighFluxMAG;"
 			name=				"98R high-flux MAG"
+			attributes=			"commonwealth, consumable, MAGLauncher, military, missile, premiumAmmo, rasiermesser"
+			  
 			level=				"8"
-			value=				"200"
-			mass=				"60"
 			frequency=			"uncommon"
 			numberAppearing=	"1d12"
-			attributes=			"Commonwealth; Consumable; MAGLauncher; Military; Missile; PremiumAmmo; Rasiermesser"
 
+			value=				"200"
+			mass=				"60"
+			  
 			description=		"The only military variant of the popular MAG series is this thermonuclear and radiological variant."
-
-			sortName=			"MAG.05"
 			>
 
 		<Image imageID="&rsItemsRasiermesser2;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				damage=			"thermo:8d24; WMD7"
+						
+				lifetime=		"120"
+				missileSpeed=	"20"
+						
+				hitPoints=		"30"
+						 
+				effect=			"&efMissileMAG;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsExplosionsAG128;"
+						imageX="0"
+						imageY="0"
+						imageWidth="128"
+						imageHeight="128"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+
+			<Fragment
+					count=			"1"
+					type=			"radius"
+
+					damage=			"thermo:8d24; WMD7"
+					minRadius=		"1"
+					maxRadius=		"4"
+					missileSpeed=	"0"
+							>
+
+				<Effect>
+					<Flare
+							style=			"fadingBlast"
+							radius=			"190"
+							primaryColor=	"0xff, 0xff, 0xf0"
+							lifetime=		"8"
+									/>
+				</Effect>
+			</Fragment>
+		</Missile>
 	</ItemType>
 
 	<!-- Missiles for Makayev Launcher -->
@@ -4054,76 +3547,180 @@
 
 	<ItemType UNID="&itStrelkaWhite;"
 			name=				"White Strelka missile"
+			attributes=			"basicAmmo, commonwealth, consumable, missile, makayev, makayevLauncher"
+			  
 			level=				"5"
-			value=				"20"
-			mass=				"25"
 			frequency=			"common"
 			numberAppearing=	"8d20"
-			attributes=			"BasicAmmo; Commonwealth; Consumable; Missile; Makayev; MakayevLauncher"
 
+			value=				"20"
+			mass=				"25"
+			  
 			description=		"The Strelka series of light missiles is compatible with the Makayev launcher. The White Strelka is the cheapest and least powerful of the series."
-
-			sortName=			"Strelka.40"
 			>
 
 		<Image imageID="&rsItemsMakayev2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				lifetime=		"60"
+				damage=			"blast:3d6; momentum2; WMD3"
+				missileSpeed=	"60"
+				hitPoints=		"5"
+
+				effect=			"&efMissileStrelka;"
+				sound=			"&snRecoillessCannon;"
+				>
+		</Missile>
 	</ItemType>
 
 	<!-- Green Strelka missile -->
 
 	<ItemType UNID="&itStrelkaGreen;"
 			name=				"Green Strelka missile"
+			attributes=			"commonwealth, consumable, missile, makayev, makayevLauncher"
+			  
 			level=				"6"
-			value=				"35"
-			mass=				"25"
 			frequency=			"common"
 			numberAppearing=	"8d20"
-			attributes=			"Commonwealth; Consumable; Missile; Makayev; MakayevLauncher"
 
+			value=				"35"
+			mass=				"25"
+			  
 			description=		"The Strelka series of light missiles is compatible with the Makayev launcher. The Green Strelka packs more punch than the White version."
-
-			sortName=			"Strelka.30"
 			>
 
 		<Image imageID="&rsItemsMakayev2;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				lifetime=		"60"
+				damage=			"blast:4d6+1; momentum2; WMD3"
+				missileSpeed=	"60"
+				hitPoints=		"5"
+
+				effect=			"&efMissileStrelka;"
+				sound=			"&snRecoillessCannon;"
+				>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsExplosionsAG48;"
+						imageX="0"
+						imageY="0"
+						imageWidth="48"
+						imageHeight="48"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Missile>
 	</ItemType>
 
 	<!-- Red Strelka missile -->
 
 	<ItemType UNID="&itStrelkaRed;"
 			name=				"Red Strelka missile"
+			attributes=			"commonwealth, consumable, military, missile, makayev, makayevLauncher"
+			  
 			level=				"7"
-			value=				"50"
-			mass=				"30"
 			frequency=			"uncommon"
 			numberAppearing=	"8d20"
-			attributes=			"Commonwealth; Consumable; Military; Missile; Makayev; MakayevLauncher"
 
+			value=				"50"
+			mass=				"30"
+			  
 			description=		"The Red Strelka is a thermonuclear version of the Makayev-compatible missile series."
-
-			sortName=			"Strelka.20"
 			>
 
 		<Image imageID="&rsItemsMakayev2;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				lifetime=		"60"
+				damage=			"thermo:3d12; momentum3; WMD5"
+				missileSpeed=	"60"
+				hitPoints=		"5"
+
+				effect=			"&efMissileStrelka;"
+				sound=			"&snRecoillessCannon;"
+				>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsExplosionsAG48;"
+						imageX="0"
+						imageY="0"
+						imageWidth="48"
+						imageHeight="48"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+				<Flare
+						style=			"fadingBlast"
+						radius=			"65"
+						primaryColor=	"0xff, 0xff, 0xf0"
+						lifetime=		"8"
+								/>
+			</HitEffect>
+		</Missile>
 	</ItemType>
 
 	<!-- Black Strelka missile -->
 
 	<ItemType UNID="&itStrelkaBlack;"
 			name=				"Black Strelka missile"
+			attributes=			"commonwealth, consumable, military, missile, makayev, makayevLauncher, premiumAmmo"
+			  
 			level=				"9"
-			value=				"150"
-			mass=				"35"
 			frequency=			"rare"
 			numberAppearing=	"8d20"
-			attributes=			"Commonwealth; Consumable; Military; Missile; Makayev; MakayevLauncher; PremiumAmmo"
 
+			value=				"150"
+			mass=				"35"
+			  
 			description=		"The rare and powerful Black Strelka releases a dozen thermonuclear submunitions. It is compatible with the Makayev launcher."
-
-			sortName=			"Strelka.10"
 			>
 
 		<Image imageID="&rsItemsMakayev2;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Missile
+				type=			"missile"
+				lifetime=		"60"
+				damage=			"thermo:1d12; momentum1; WMD3"
+				missileSpeed=	"60"
+				hitPoints=		"5"
+
+				effect=			"&efMissileStrelka;"
+				sound=			"&snRecoillessCannon;"
+				>
+
+			<Fragment
+					count=			"1d4+12"
+					type=			"missile"
+					lifetime=		"8"
+					damage=			"thermo:1d12; momentum1; WMD3"
+					missileSpeed=	"40-60"
+
+					effect=			"&efThermoShellDefault;"
+							>
+				<HitEffect>
+					<Image imageID="&rsExplosionsAG48;"
+							imageX="0"
+							imageY="0"
+							imageWidth="48"
+							imageHeight="48"
+							imageFrameCount="16"
+							imageTicksPerFrame="2"/>
+					<Flare
+							style=			"fadingBlast"
+							radius=			"40"
+							primaryColor=	"0xff, 0xff, 0xf0"
+							lifetime=		"8"
+									/>
+				</HitEffect>
+			</Fragment>
+		</Missile>
 	</ItemType>
 
 	<!-- Missiles for NAMI Mine Launcher -->
@@ -4132,38 +3729,141 @@
 
 	<ItemType UNID="&itStaticMine;"
 			name=				"CRM100 Fatboy mine"
+			attributes=			"commonwealth, commonwealthFleet, consumable, military, missile, NAMI, NAMIMineLauncher"
+			  
 			level=				"7"
-			value=				"250"
-			mass=				"150"
 			frequency=			"common"
 			numberAppearing=	"2d20"
-			attributes=			"Commonwealth; CommonwealthFleet; Consumable; Military; Missile; NAMI; NAMIMineLauncher"
 
+			value=				"250"
+			mass=				"150"
+			  
 			description=		"The CRM100 is a thermonuclear static mine deployed by the NAMI mine launcher."
-
-			sortName=			"NAMIMine.40"
 			>
 
 		<Image imageID="&rsItemsNAMI4;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+
+				damage=			"thermo:3d12; WMD6"
+				missileSpeed=	"10"
+				accelerationFactor="60"
+				lifetime=		"4800"
+				hitPoints=		"20"
+				stealth=		"7"
+
+				failSafe=		"10"
+
+				sound=			"&snMissileLauncher;"
+				>
+
+			<Effect>
+				<Image imageID="&rsMissiles6;" imageX="0" imageY="0" imageWidth="24" imageHeight="24" imageFrameCount="12" imageTicksPerFrame="5"/>
+			</Effect>
+
+			<Fragment
+					count=			"6d12"
+					type=			"missile"
+					canHitSource=	"true"
+
+					damage=			"thermo:2d12; WMD6"
+					missileSpeed=	"40-60"
+					lifetime=		"8"
+
+					effect=			"&efThermoShellDefault;"
+							>
+
+				<HitEffect
+						sound="&snArmorHit1;"
+								>
+					<Image imageID="&rsExplosionsAG48;"
+							imageX="0"
+							imageY="0"
+							imageWidth="48"
+							imageHeight="48"
+							imageFrameCount="16"
+							imageTicksPerFrame="2"/>
+					<Flare
+							style=			"fadingBlast"
+							radius=			"220"
+							primaryColor=	"0xff, 0xff, 0xf0"
+							lifetime=		"8"
+									/>
+				</HitEffect>
+			</Fragment>
+		</Missile>
 	</ItemType>
 
 	<!-- Tracking Mine -->
 
 	<ItemType UNID="&itTrackingMine;"
 			name=				"CRM500 Running Man mine"
+			attributes=			"commonwealth, commonwealthFleet, consumable, military, missile, NAMI, NAMIMineLauncher"
+			  
 			level=				"8"
-			value=				"500"
-			mass=				"150"
 			frequency=			"uncommon"
 			numberAppearing=	"2d20"
-			attributes=			"Commonwealth; CommonwealthFleet; Consumable; Military; Missile; NAMI; NAMIMineLauncher"
 
+			value=				"500"
+			mass=				"150"
+			  
 			description=		"The CRM500 is a tracking thermonuclear mine deployed by the NAMI mine launcher."
-
-			sortName=			"NAMIMine.30"
 			>
 
 		<Image imageID="&rsItemsNAMI4;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Missile
+				type=			"missile"
+
+				damage=			"thermo:3d12; WMD6"
+				missileSpeed=	"10"
+				maneuverability="2"
+				lifetime=		"2400"
+				hitPoints=		"20"
+				stealth=		"6"
+
+				failSafe=		"10"
+
+				sound=			"&snMissileLauncher;"
+				>
+
+			<Effect>
+				<Image imageID="&rsMissiles6;" imageX="0" imageY="0" imageWidth="24" imageHeight="24" imageFrameCount="12" imageTicksPerFrame="5"/>
+			</Effect>
+
+			<Fragment
+					count=			"6d12"
+					type=			"missile"
+					canHitSource=	"true"
+
+					damage=			"thermo:2d12; WMD6"
+					missileSpeed=	"40-60"
+					lifetime=		"8"
+
+					effect=			"&efThermoShellDefault;"
+							>
+
+				<HitEffect
+						sound="&snArmorHit1;"
+								>
+					<Image imageID="&rsExplosionsAG48;"
+							imageX="0"
+							imageY="0"
+							imageWidth="48"
+							imageHeight="48"
+							imageFrameCount="16"
+							imageTicksPerFrame="2"/>
+					<Flare
+							style=			"fadingBlast"
+							radius=			"220"
+							primaryColor=	"0xff, 0xff, 0xf0"
+							lifetime=		"8"
+									/>
+				</HitEffect>
+			</Fragment>
+
+		</Missile>
 	</ItemType>
 
 	<!-- Missiles for Rasiermesser Launcher -->
@@ -4172,38 +3872,97 @@
 
 	<ItemType UNID="&itGotha10Missile;"
 			name=				"Gotha-10 missile"
+			attributes=			"commonwealth, consumable, military, missile, rasiermesser, rasiermesserLauncher"
+			  
 			level=				"8"
-			value=				"50"
-			mass=				"50"
 			frequency=			"common"
 			numberAppearing=	"4d12"
-			attributes=			"Commonwealth; Consumable; Military; Missile; Rasiermesser; RasiermesserLauncher"
 
+			value=				"50"
+			mass=				"50"
+			  
 			description=		"This hypervelocity missile is compatible with the Rasiermesser launcher."
-
-			sortName=			"Rasiermesser.30"
 			>
 
 		<Image imageID="&rsItemsRasiermesser4;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				lifetime=		"120"
+				damage=			"thermo:8d24; momentum3; WMD7"
+				missileSpeed=	"70"
+				hitPoints=		"20"
+
+				effect=			"&efMissileRasiermesser;"
+				sound=			"&snMissileLauncher;"
+				>
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsMediumExplosions;"
+						imageX="0"
+						imageY="0"
+						imageWidth="64"
+						imageHeight="64"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+				<Flare
+						style=			"fadingBlast"
+						radius=			"100"
+						primaryColor=	"0xff, 0xff, 0xf0"
+						lifetime=		"8"
+								/>
+			</HitEffect>
+		</Missile>
 	</ItemType>
 
 	<!-- Gotha-400 Seeker -->
 
 	<ItemType UNID="&itGotha400Seeker;"
 			name=				"Gotha-400 seeker"
+			attributes=			"commonwealth, consumable, military, missile, rasiermesser, rasiermesserLauncher"
+			  
 			level=				"9"
-			value=				"100"
-			mass=				"50"
 			frequency=			"common"
 			numberAppearing=	"4d12"
-			attributes=			"Commonwealth; Consumable; Military; Missile; Rasiermesser; RasiermesserLauncher"
 
+			value=				"100"
+			mass=				"50"
+			  
 			description=		"This is a tracking missile with a kiloton-yield warhead. It is compatible with the Rasiermesser launcher."
-
-			sortName=			"Rasiermesser.20"
 			>
 
 		<Image imageID="&rsItemsRasiermesser4;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				lifetime=		"120"
+				damage=			"thermo:6d24; momentum3; WMD7"
+				missileSpeed=	"65"
+				hitPoints=		"20"
+				maneuverability="2"
+						 
+				effect=			"&efMissileRasiermesser;"
+				sound=			"&snMissileLauncher;"
+				>
+			<HitEffect
+					sound="&snArmorHit1;"
+							>
+				<Image imageID="&rsMediumExplosions;"
+						imageX="0"
+						imageY="0"
+						imageWidth="64"
+						imageHeight="64"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+				<Flare
+						style=			"fadingBlast"
+						radius=			"95"
+						primaryColor=	"0xff, 0xff, 0xf0"
+						lifetime=		"8"
+								/>
+			</HitEffect>
+		</Missile>
 	</ItemType>
 
 	<!-- Missiles for NAMI Heavy Launcher -->
@@ -4212,60 +3971,273 @@
 
 	<ItemType UNID="&itM2Missile;"
 			name=				"M2 Vulcan missile"
+			attributes=			"commonwealth, commonwealthFleet, consumable, military, missile, NAMI, NAMIHeavyLauncher, premiumAmmo"
+			  
 			level=				"9"
-			value=				"250"
-			mass=				"350"
-			attributes=			"Commonwealth; CommonwealthFleet; Consumable; Military; Missile; NAMI; NAMIHeavyLauncher; PremiumAmmo"
 			frequency=			"rare"
 			numberAppearing=	"1d6"
 
+			value=				"250"
+			mass=				"350"
+			  
 			description=		"The M2 is a heavy siege weapon launched by the NAMI heavy launcher. It is designed to attack capital ships and stations."
-
-			sortName=			"NAMIHeavy.30"
 			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItemsNAMI4;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				lifetime=		"120"
+				damage=			"thermo:1d12; momentum3; WMD7"
+				missileSpeed=	"55"
+				hitPoints=		"40"
+
+				effect=			"&efMissileNAMIHeavy;"
+				hitEffect=		"&efFusionExplosion1;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<Fragment
+					count=			"1"
+					type=			"radius"
+
+					damage=			"thermo:10d24; momentum3; WMD7"
+					minRadius=		"2"
+					maxRadius=		"6"
+					missileSpeed=	"0"
+							>
+
+				<Effect>
+					<Flare
+							style=			"fadingBlast"
+							radius=			"300"
+							primaryColor=	"0xff, 0xff, 0xf0"
+							lifetime=		"8"
+									/>
+				</Effect>
+			</Fragment>
+
+			<Fragment
+					count=			"5d20"
+					type=			"missile"
+
+					lifetime=		"1d12+12"
+					damage=			"blast:2d6; WMD1"
+					missileSpeed=	"25-55"
+							>
+
+				<Effect>
+					<ImageAndTail
+							imageID=			"&rsMissiles4;"
+							imageX=				"0"
+							imageY=				"0"
+							imageWidth=			"16"
+							imageHeight=		"16"
+							imageFrameCount=	"4"
+							imageTicksPerFrame=	"1"
+
+							length=				"32"
+							width=				"1"
+							primaryColor=		"0xff, 0xff, 0xff"
+							secondaryColor=		"0xc0, 0xc2, 0x85"
+									/>
+				</Effect>
+			</Fragment>
+		</Missile>
 	</ItemType>
 
 	<!-- S3 Medusa missile -->
 
 	<ItemType UNID="&itS3Missile;"
 			name=				"S3 Medusa missile"
+			attributes=			"commonwealth, commonwealthFleet, consumable, military, missile, NAMI, NAMIHeavyLauncher, premiumAmmo"
+			  
 			level=				"9"
-			value=				"250"
-			mass=				"300"
-			attributes=			"Commonwealth; CommonwealthFleet; Consumable; Military; Missile; NAMI; NAMIHeavyLauncher; PremiumAmmo"
 			frequency=			"uncommon"
 			numberAppearing=	"2d8"
 
+			value=				"250"
+			mass=				"300"
+			  
 			description=		"Soon after launch, the S3 Medusa explodes to reveal a dozen independently-tracking thermonuclear missiles. The S3 requires the NAMI heavy launcher."
-
-			sortName=			"NAMIHeavy.40"
 			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItemsNAMI4;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+
+				damage=			"thermo:4d12; momentum6; WMD1"
+				missileSpeed=	"30"
+				lifetime=		"20"
+				hitPoints=		"40"
+
+				failsafe=		"5"
+
+				effect=			"&efMissileNAMIHeavy;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<HitEffect
+					sound=	"&snArmorHit1;"
+							>
+				<ParticleExplosion
+						particleCount=		"2d4"
+						particleSpeed=		"25"
+						particleLifetime=	"20"
+								>
+					<Image imageID="&rsDebris1;" imageX="0" imageY="0" imageWidth="4" imageHeight="4" imageFrameCount="8" imageTicksPerFrame="3"/>
+				</ParticleExplosion>
+			</HitEffect>
+
+			<Fragment
+					count=				"12"
+					type=				"missile"
+
+					damage=				"thermo:3d12; momentum3; WMD1"
+					missileSpeed=		"40"
+					lifetime=			"120"
+
+					multiTarget=		"true"
+					autoAcquireTarget=	"true"
+					maneuverability=	"2"
+							>
+
+				<Effect>
+					<Image imageID="&rsMissileNAMI;" imageX="0" imageY="0" imageWidth="24" imageHeight="24" rotationCount="40"/>
+
+					<Group angleOffset="180" radiusOffset="10">
+						<ParticleJet
+								fixedPos=			"true"
+								emitRate=			"30"
+								tangentSpeed=		"3d2-3"
+								particleLifetime=	"15-45"
+								XformTime=			"20"
+										>
+							<ParticleEffect>
+								<Particle
+										style=			"plain"
+										minWidth=		"1"
+										maxWidth=		"4"
+										primaryColor=	"#ffffc0"
+										secondaryColor=	"#7e7e74"
+												/>
+							</ParticleEffect>
+						</ParticleJet>
+
+						<Ray
+								style=			"smooth"
+								shape=			"tapered"
+								length=			"50"
+								width=			"20"
+								intensity=		"40"
+								primaryColor=	"#ffffc0"
+								secondaryColor=	"#7e7e74"
+										/>
+					</Group>
+				</Effect>
+
+				<HitEffect
+						sound="&snArmorHit1;"
+								>
+					<Image imageID="&rsExplosionsAG48;"
+							imageX="0"
+							imageY="0"
+							imageWidth="48"
+							imageHeight="48"
+							imageFrameCount="16"
+							imageTicksPerFrame="2"/>
+					<Flare
+							style=			"fadingBlast"
+							radius=			"65"
+							primaryColor=	"0xff, 0xff, 0xf0"
+							lifetime=		"8"
+									/>
+				</HitEffect>
+			</Fragment>
+		</Missile>
 	</ItemType>
 
 	<!-- M5 Nemesis missile -->
 
 	<ItemType UNID="&itM5Missile;"
 			name=				"M5 Nemesis missile"
+			attributes=			"commonwealth, commonwealthFleet, consumable, military, missile, NAMI, NAMIHeavyLauncher, premiumAmmo"
+			  
 			level=				"10"
-			value=				"1000"
-			mass=				"500"
-			attributes=			"Commonwealth; CommonwealthFleet; Consumable; Military; Missile; NAMI; NAMIHeavyLauncher; PremiumAmmo"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
 
+			value=				"1000"
+			mass=				"500"
+			  
 			description=		"The M5 Nemesis missile is an upgraded version of the M2. It requires the NAMI heavy launcher."
-
-			sortName=			"NAMIHeavy.20"
 			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItemsNAMI4;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				lifetime=		"120"
+				damage=			"thermo:1d12; momentum3; WMD7"
+				missileSpeed=	"55"
+				hitPoints=		"40"
+
+				effect=			"&efMissileNAMIHeavy;"
+				hitEffect=		"&efFusionExplosion1;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<Fragment
+					count=			"1"
+					type=			"radius"
+
+					damage=			"thermo:15d24; momentum3; WMD7"
+					minRadius=		"3"
+					maxRadius=		"8"
+					missileSpeed=	"0"
+							>
+
+				<Effect>
+					<Flare
+							style=			"fadingBlast"
+							radius=			"450"
+							primaryColor=	"0xff, 0xff, 0xf0"
+							lifetime=		"8"
+									/>
+				</Effect>
+			</Fragment>
+
+			<Fragment
+					count=			"8d20"
+					type=			"missile"
+
+					lifetime=		"1d12+12"
+					damage=			"blast:2d6; WMD1"
+					missileSpeed=	"25-55"
+							>
+
+				<Effect>
+					<ImageAndTail
+							imageID=			"&rsMissiles4;"
+							imageX=				"0"
+							imageY=				"0"
+							imageWidth=			"16"
+							imageHeight=		"16"
+							imageFrameCount=	"4"
+							imageTicksPerFrame=	"1"
+
+							length=				"32"
+							width=				"1"
+							primaryColor=		"0xff, 0xff, 0xff"
+							secondaryColor=		"0xc0, 0xc2, 0x85"
+									/>
+				</Effect>
+			</Fragment>
+		</Missile>
 	</ItemType>
 
 	<!-- Other Missiles and Ammunition -->
@@ -4274,16 +4246,16 @@
 
 	<ItemType UNID="&itSmartCannonShell;"
 			name=				"SmartCannon round"
+			attributes=			"basicAmmo, commonwealth, consumable, missile, rasiermesser"
+			  
 			level=				"2"
-			value=				"1"
-			mass=				"10"
-			attributes=			"BasicAmmo; Commonwealth; Consumable; Missile; Rasiermesser"
 			frequency=			"uncommon"
 			numberAppearing=	"12d40"
 
+			value=				"1"
+			mass=				"10"
+			  
 			description=		"SmartCannons are recoilless weapons modified to shoot special tracking shells. A SmartCannon round can adjust its path to strike a designated target."
-
-			sortName=			"~.SmartCannon round"
 			>
 
 		<Image imageID="&rsItemsRasiermesser1;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -4293,16 +4265,16 @@
 
 	<ItemType UNID="&itAkan30CannonShell;"
 			name=				"Akan 30 cannon shell cartridge"
+			attributes=			"commonwealth, consumable, missile, rasiermesser"
+			  
 			level=				"4"
-			value=				"6"
-			mass=				"20"
 			frequency=			"common"
 			numberAppearing=	"10d40"
-			attributes=			"Commonwealth; Consumable; Missile; Rasiermesser"
 
+			value=				"6"
+			mass=				"20"
+			  
 			description=		"This shell cartridge is used by the Akan 30 cannon."
-
-			sortName=			"~.Akan 30 round"
 			>
 
 		<Image imageID="&rsItemsRasiermesser3;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -4312,54 +4284,35 @@
 
 	<ItemType UNID="&itDragonflyCartridge;"
 			name=				"Dragonfly missile cartridge"
+			attributes=			"commonwealth, consumable, EI, missile"
+			  
 			level=				"4"
-			value=				"15"
-			mass=				"50"
 			frequency=			"common"
 			numberAppearing=	"10d20"
-			attributes=			"Commonwealth; Consumable; EI; Missile"
 
+			value=				"15"
+			mass=				"50"
+			  
 			description=		"This is a cartridge for the Dragonfly missile system. Each cartridge contains three micro-missiles."
-
-			sortName=			"~.Dragonfly"
 			>
 
 		<Image imageID="&rsItemsEI2;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
-	</ItemType>
-
-	<!-- Kiloton Cannon Shell -->
-
-	<ItemType UNID="&itKilotonCannonShell;"
-			name=				"kiloton cannon shell"
-			level=				"6"
-			value=				"50"
-			mass=				"150"
-			frequency=			"common"
-			numberAppearing=	"1d20"
-			attributes=			"Commonwealth; Consumable; EI; Missile"
-
-			description=		"This shell cartridge is used by the kiloton cannon."
-
-			sortName=			"~.kiloton cannon shell"
-			>
-
-		<Image imageID="&rsItemsEI3;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
 	<!-- Thermo Cannon Shell -->
 
 	<ItemType UNID="&itThermoCannonShell;"
 			name=				"thermo cannon shell cartridge"
+			attributes=			"bushido, commonwealth, consumable, missile, military"
+			  
 			level=				"7"
-			value=				"35"
-			mass=				"25"
-			attributes=			"Commonwealth; Consumable; Missile; Bushido; Military"
 			frequency=			"uncommon"
 			numberAppearing=	"12d40"
 
+			value=				"35"
+			mass=				"25"
+			  
 			description=		"Fired by thermo cannons, these rounds pack the yield of a nuclear device in a small, mass-produced shell."
-
-			sortName=			"~.thermo round"
 			>
 
 		<Image imageID="&rsItemsBushido2;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -4369,16 +4322,16 @@
 
 	<ItemType UNID="&itTM7Warhead;"
 			name=				"TM7 warhead"
+			attributes=			"commonwealth, consumable, military, missile, taikon"
+			  
 			level=				"8"
-			value=				"100"
-			mass=				"60"
-			attributes=			"Commonwealth; Consumable; Military; Missile; Taikon"
 			frequency=			"uncommon"
 			numberAppearing=	"8d12"
 
+			value=				"100"
+			mass=				"60"
+			  
 			description=		"These warheads are launched by Taikon's TM7 multitarget cannon."
-
-			sortName=			"~.TM7"
 			>
 
 		<Image imageID="&rsItemsTaikon1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>

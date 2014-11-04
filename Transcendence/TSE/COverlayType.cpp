@@ -1,9 +1,10 @@
-//	CEnergyFieldType.cpp
+//	COverlayType.cpp
 //
-//	CEnergyFieldType class
+//	COverlayType class
 
 #include "PreComp.h"
 
+#define COUNTER_TAG								CONSTLIT("Counter")
 #define EFFECT_WHEN_HIT_TAG						CONSTLIT("EffectWhenHit")
 #define EFFECT_TAG								CONSTLIT("Effect")
 #define HIT_EFFECT_TAG							CONSTLIT("HitEffect")
@@ -11,11 +12,23 @@
 
 #define ABSORB_ADJ_ATTRIB						CONSTLIT("absorbAdj")
 #define ALT_EFFECT_ATTRIB						CONSTLIT("altEffect")
+#define COLOR_ATTRIB							CONSTLIT("color")
+#define DISABLE_SHIP_SCREEN_ATTRIB				CONSTLIT("disableShipScreen")
+#define DISARM_ATTRIB							CONSTLIT("disarm")
+#define DRAG_ATTRIB								CONSTLIT("drag")
 #define IGNORE_SHIP_ROTATION_ATTRIB				CONSTLIT("ignoreSourceRotation")
+#define LABEL_ATTRIB							CONSTLIT("label")
+#define MAX_ATTRIB								CONSTLIT("max")
+#define PARALYZE_ATTRIB							CONSTLIT("paralyze")
 #define SHIELD_OVERLAY_ATTRIB					CONSTLIT("shieldOverlay")
+#define SPIN_ATTRIB								CONSTLIT("spin")
+#define STYLE_ATTRIB							CONSTLIT("style")
 #define UNID_ATTRIB								CONSTLIT("UNID")
 #define BONUS_ADJ_ATTRIB						CONSTLIT("weaponBonusAdj")
 #define WEAPON_SUPPRESS_ATTRIB					CONSTLIT("weaponSuppress")
+
+#define COUNTER_PROGRESS						CONSTLIT("progress")
+#define COUNTER_RADIUS							CONSTLIT("radius")
 
 #define FIELD_WEAPON_SUPPRESS					CONSTLIT("weaponSuppress")
 
@@ -23,18 +36,18 @@
 
 #define SUPPRESS_ALL							CONSTLIT("*")
 
-CEnergyFieldType::CEnergyFieldType (void) : 
+COverlayType::COverlayType (void) :
 		m_pEffect(NULL),
 		m_pHitEffect(NULL)
 
-//	CEnergyFieldType constructor
+//	COverlayType constructor
 
 	{
 	}
 
-CEnergyFieldType::~CEnergyFieldType (void)
+COverlayType::~COverlayType (void)
 
-//	CEnergyFieldType destructor
+//	COverlayType destructor
 
 	{
 	if (m_pEffect)
@@ -44,7 +57,7 @@ CEnergyFieldType::~CEnergyFieldType (void)
 		delete m_pHitEffect;
 	}
 
-bool CEnergyFieldType::AbsorbsWeaponFire (CInstalledDevice *pWeapon)
+bool COverlayType::AbsorbsWeaponFire (CInstalledDevice *pWeapon)
 
 //	AbsorbsWeaponFire
 //
@@ -58,7 +71,7 @@ bool CEnergyFieldType::AbsorbsWeaponFire (CInstalledDevice *pWeapon)
 		return false;
 	}
 
-bool CEnergyFieldType::FindDataField (const CString &sField, CString *retsValue)
+bool COverlayType::FindDataField (const CString &sField, CString *retsValue)
 
 //	FindDataField
 //
@@ -95,7 +108,7 @@ bool CEnergyFieldType::FindDataField (const CString &sField, CString *retsValue)
 	return true;
 	}
 
-int CEnergyFieldType::GetDamageAbsorbed (CSpaceObject *pSource, SDamageCtx &Ctx)
+int COverlayType::GetDamageAbsorbed (CSpaceObject *pSource, SDamageCtx &Ctx)
 
 //	GetDamageAbsorbed
 //
@@ -119,7 +132,7 @@ int CEnergyFieldType::GetDamageAbsorbed (CSpaceObject *pSource, SDamageCtx &Ctx)
 	return (Ctx.iDamage * m_iAbsorbAdj[Ctx.Damage.GetDamageType()]) / 100;
 	}
 
-int CEnergyFieldType::GetWeaponBonus (CInstalledDevice *pDevice, CSpaceObject *pSource)
+int COverlayType::GetWeaponBonus (CInstalledDevice *pDevice, CSpaceObject *pSource)
 
 //	GetWeaponBonus
 //
@@ -133,7 +146,7 @@ int CEnergyFieldType::GetWeaponBonus (CInstalledDevice *pDevice, CSpaceObject *p
 	return m_iBonusAdj[iType];
 	}
 
-void CEnergyFieldType::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+void COverlayType::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
 
 //	OnAddTypesUsed
 //
@@ -144,7 +157,7 @@ void CEnergyFieldType::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
 	//	them to be an design type.
 	}
 
-ALERROR CEnergyFieldType::OnBindDesign (SDesignLoadCtx &Ctx)
+ALERROR COverlayType::OnBindDesign (SDesignLoadCtx &Ctx)
 
 //	OnBindDesign
 //
@@ -164,7 +177,7 @@ ALERROR CEnergyFieldType::OnBindDesign (SDesignLoadCtx &Ctx)
 	return NOERROR;
 	}
 
-ALERROR CEnergyFieldType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR COverlayType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 //	OnCreateFromXML
 //
@@ -209,16 +222,16 @@ ALERROR CEnergyFieldType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDe
 
 		bool bAltEffect;
 		if (pEffect->FindAttributeBool(ALT_EFFECT_ATTRIB, &bAltEffect))
-			m_bAltHitEffect = bAltEffect;
+			m_fAltHitEffect = bAltEffect;
 		else
-			m_bAltHitEffect = strEquals(pDesc->GetTag(), SHIP_ENERGY_FIELD_TYPE_TAG);
+			m_fAltHitEffect = strEquals(pDesc->GetTag(), SHIP_ENERGY_FIELD_TYPE_TAG);
 		}
 	else
-		m_bAltHitEffect = false;
+		m_fAltHitEffect = false;
 
 	//	Rotation
 
-	m_bRotateWithShip = !pDesc->GetAttributeBool(IGNORE_SHIP_ROTATION_ATTRIB);
+	m_fRotateWithShip = !pDesc->GetAttributeBool(IGNORE_SHIP_ROTATION_ATTRIB);
 
 	//	Damage adjustment
 
@@ -239,20 +252,63 @@ ALERROR CEnergyFieldType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDe
 
 	//	Keep track of the events that we have
 
-	m_bHasOnUpdateEvent = FindEventHandler(ON_UPDATE_EVENT);
+	m_fHasOnUpdateEvent = FindEventHandler(ON_UPDATE_EVENT);
 
 	//	Are we a field/shield overlay (or part of hull)?
 	//	By default, we are a shield overlay if we absorb damage.
 
-	if (!pDesc->FindAttributeBool(SHIELD_OVERLAY_ATTRIB, &m_bShieldOverlay))
-		m_bShieldOverlay = (iAbsorbCount > 0);
+	bool bValue;
+	if (pDesc->FindAttributeBool(SHIELD_OVERLAY_ATTRIB, &bValue))
+		m_fShieldOverlay = bValue;
+	else
+		m_fShieldOverlay = (iAbsorbCount > 0);
+
+	//	Counter
+
+	CXMLElement *pCounter = pDesc->GetContentElementByTag(COUNTER_TAG);
+	if (pCounter)
+		{
+		CString sStyle = pCounter->GetAttribute(STYLE_ATTRIB);
+		if (strEquals(sStyle, COUNTER_PROGRESS))
+			m_iCounterType = counterProgress;
+		else if (strEquals(sStyle, COUNTER_RADIUS))
+			m_iCounterType = counterRadius;
+		else
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Unknown counter style: %s"), sStyle);
+			return ERR_FAIL;
+			}
+
+		m_sCounterLabel = pCounter->GetAttribute(LABEL_ATTRIB);
+		m_iCounterMax = pCounter->GetAttributeIntegerBounded(MAX_ATTRIB, 0, -1, 100);
+		m_wCounterColor = ::LoadRGBColor(pCounter->GetAttribute(COLOR_ATTRIB));
+		}
+	else
+		{
+		m_iCounterType = counterNone;
+		m_iCounterMax = 0;
+		m_wCounterColor = 0;
+		}
+
+	//	Options
+
+	m_fDisarmShip = pDesc->GetAttributeBool(DISARM_ATTRIB);
+	m_fParalyzeShip = pDesc->GetAttributeBool(PARALYZE_ATTRIB);
+	m_fDisableShipScreen = pDesc->GetAttributeBool(DISABLE_SHIP_SCREEN_ATTRIB);
+	m_fSpinShip = pDesc->GetAttributeBool(SPIN_ATTRIB);
+
+	int iDrag;
+	if (pDesc->FindAttributeInteger(DRAG_ATTRIB, &iDrag))
+		m_rDrag = Min(Max(0, iDrag), 100) / 100.0;
+	else
+		m_rDrag = 1.0;
 
 	//	Done
 
 	return NOERROR;
 	}
 
-CEffectCreator *CEnergyFieldType::OnFindEffectCreator (const CString &sUNID)
+CEffectCreator *COverlayType::OnFindEffectCreator (const CString &sUNID)
 
 //	OnFindEffectCreator
 //

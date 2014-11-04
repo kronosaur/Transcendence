@@ -52,6 +52,7 @@
 #define CMD_NULL								CONSTLIT("null")
 
 #define CMD_POST_CRASH_REPORT					CONSTLIT("cmdPostCrashReport")
+#define CMD_SHOW_OK_BUTTON						CONSTLIT("cmdShowOKButton")
 #define CMD_SHOW_WAIT_ANIMATION					CONSTLIT("cmdShowWaitAnimation")
 #define CMD_SOUNDTRACK_DONE						CONSTLIT("cmdSoundtrackDone")
 #define CMD_SOUNDTRACK_NEXT						CONSTLIT("cmdSoundtrackNext")
@@ -749,6 +750,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		m_Settings.SetString(CGameSettings::playerGenome, GetGenomeID(pNewGame->iPlayerGenome));
 		m_Settings.SetInteger(CGameSettings::playerShipClass, (int)pNewGame->dwPlayerShip);
+		m_Settings.SetInteger(CGameSettings::lastAdventure, (int)g_pUniverse->GetCurrentAdventureDesc()->GetExtensionUNID());
 
 		//	Report creation
 
@@ -764,7 +766,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		CG16bitImage *pCrawlImage = m_Model.GetCrawlImage();
 		const CString &sCrawlText = m_Model.GetCrawlText();
 
-		m_HI.ShowSession(new CTextCrawlSession(m_HI, pCrawlImage, sCrawlText, CMD_SESSION_PROLOGUE_DONE));
+		m_HI.ShowSession(new CTextCrawlSession(m_HI, m_Service, pCrawlImage, sCrawlText, CMD_SESSION_PROLOGUE_DONE));
 		m_iState = statePrologue;
 		m_Soundtrack.SetGameState(CSoundtrackManager::stateGamePrologue, m_Model.GetCrawlSoundtrack());
 		}
@@ -773,8 +775,6 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SESSION_PROLOGUE_DONE))
 		{
-		m_iState = statePrologueDone;
-
 		//	If we're done create the new game then we can continue
 
 		if (g_pTrans->IsGameCreated())
@@ -782,8 +782,10 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Otherwise start wait animation
 
-		else
+		else if (m_iState != statePrologueDone)
 			m_HI.GetSession()->HICommand(CMD_SHOW_WAIT_ANIMATION);
+
+		m_iState = statePrologueDone;
 		}
 
 	//	Background creation of game is done
@@ -808,6 +810,14 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (m_iState == statePrologueDone)
 			HICommand(CMD_UI_START_GAME);
+
+#ifdef BUTTON_ON_CREATE_DONE
+		//	Otherwise, if we're still in the prologue session, tell the session
+		//	to show an OK button.
+
+		else if (m_iState == statePrologue)
+			m_HI.GetSession()->HICommand(CMD_SHOW_OK_BUTTON);
+#endif
 		}
 
 	//	Start the game
@@ -1011,7 +1021,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Otherwise, start epilog session
 
-		m_HI.ShowSession(new CTextCrawlSession(m_HI, pCrawlImage, sCrawlText, CMD_SESSION_EPILOGUE_DONE));
+		m_HI.ShowSession(new CTextCrawlSession(m_HI, m_Service, pCrawlImage, sCrawlText, CMD_SESSION_EPILOGUE_DONE));
 		m_iState = stateEpilogue;
 		m_Soundtrack.SetGameState(CSoundtrackManager::stateGameEpitaph, m_Model.GetCrawlSoundtrack());
 		}
@@ -1042,7 +1052,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		if (Stats.GetCount() > 0)
 			{
 			//	The session takes handoff of the stats
-			m_HI.ShowSession(new CStatsSession(m_HI, Stats, dwFlags));
+			m_HI.ShowSession(new CStatsSession(m_HI, m_Service, Stats, dwFlags));
 			m_iState = stateEndGameStats;
 			}
 		else
@@ -1112,7 +1122,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			return NOERROR;
 
 		//	The session takes handoff of the stats
-		CStatsSession *pSession = new CStatsSession(m_HI, Stats);
+		CStatsSession *pSession = new CStatsSession(m_HI, m_Service, Stats);
 		if (error = m_HI.OpenPopupSession(pSession))
 			return error;
 		}

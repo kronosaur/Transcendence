@@ -8,13 +8,15 @@
 
 	<ItemType UNID="&itLaserEnhancer;"
 			name=				"laser collimator"
+			attributes=			"commonwealth, majorItem, weaponEnhancer"
+			  
 			level=				"1"
-			value=				"500"
-			mass=				"500"
 			frequency=			"uncommon"
 			unknownType=		"&itUnknownEnhancer2;"
-			attributes=			"MajorItem; WeaponEnhancer"
 
+			value=				"500"
+			mass=				"500"
+			  
 			description=		"A laser collimator is an after-market device that sharpens the focus of your laser cannons thereby increasing their damage."
 			>
 
@@ -38,13 +40,15 @@
 
 	<ItemType UNID="&itKineticEnhancer;"
 			name=				"cannon accelerator"
+			attributes=			"commonwealth, majorItem, weaponEnhancer"
+			  
 			level=				"2"
-			value=				"1100"
-			mass=				"500"
 			frequency=			"uncommon"
 			unknownType=		"&itUnknownEnhancer2;"
-			attributes=			"MajorItem; WeaponEnhancer"
 
+			value=				"1100"
+			mass=				"500"
+			  
 			description=		"This device increases the velocity of mass drivers and recoilless cannons. When installed, a ship's kinetic weapons will inflict 50% more damage."
 			>
 
@@ -66,13 +70,15 @@
 
 	<ItemType UNID="&itCargoHoldExpansion;"
 			name=				"cargo hold expansion"
+			attributes=			"commonwealth, majorItem"
+			  
 			level=				"2"
-			value=				"1000"
-			mass=				"1000"
 			frequency=			"uncommon"
 			numberAppearing=	"1"
-			attributes=			"MajorItem"
 
+			value=				"1000"
+			mass=				"1000"
+			  
 			description=		"This is a pressurized hold that can be attached to a ship to increase the amount of cargo it can carry."
 			>
 
@@ -89,16 +95,15 @@
 
 	<ItemType UNID="&itMinersCargoHold;"
 			name=				"miners's cargo hold"
+			attributes=			"commonwealth, majorItem, minersHold"
+			  
 			level=				"3"
+			frequency=			"rare"
+
 			value=				"1500"
 			mass=				"1250"
-			frequency=			"rare"
-			numberAppearing=	"1"
-			attributes=			"MajorItem; MinersHold"
-
+			  
 			description=		"Designed for mining ships, this cargo hold has grapples to bring ore on board."
-
-			sortName=			"cargo hold, miners"
 			>
 
 		<Image imageID="&rsItems1;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
@@ -113,11 +118,13 @@
 
 	<ItemType UNID="&it25MWReactor;"
 			name=				"Nova-25 reactor"
+			attributes=			"commonwealth, MajorItem"
+			  
 			level=				"3"
-			value=				"3000"
 			frequency=			"uncommon"
+			  
+			value=				"3000"
 			mass=				"3000"
-			attributes=			"MajorItem"
 
 			description=		"The Nova-25 reactor is a popular upgrade for those ships that need to support advanced weaponry. The reactor has a peak power output of 25MW."
 			>
@@ -137,12 +144,14 @@
 
 	<ItemType UNID="&itSolarPanelArray;"
 			name=				"solar panel array"
+			attributes=			"commonwealth, majorItem"
+			  
 			level=				"3"
+			frequency=			"rare"
+
 			value=				"650"
 			mass=				"1000"
-			frequency=			"rare"
-			attributes=			"MajorItem"
-
+			  
 			description=		"A solar panel array converts sunlight into energy usable by a ship's reactor."
 			>
 
@@ -158,12 +167,14 @@
 
 	<ItemType UNID="&itTritiumPropulsionUpgrade;"
 			name=				"tritium propulsion upgrade"
+			attributes=			"commonwealth, majorItem"
+			  
 			level=				"3"
+			frequency=			"uncommon"
+
 			value=				"900"
 			mass=				"2000"
-			frequency=			"uncommon"
-			attributes=			"MajorItem"
-
+			  
 			description=		"Most small and medium sized ships use a fusion drive for propulsion. This device upgrade mixes-in a powerful tritium plasma to increase the thrust of the engines."
 			>
 
@@ -182,13 +193,15 @@
 
 	<ItemType UNID="&itParticleEnhancer;"
 			name=				"particle accelerator"
+			attributes=			"commonwealth, majorItem, weaponEnhancer"
+			  
 			level=				"4"
-			value=				"5000"
-			mass=				"1500"
 			frequency=			"uncommon"
 			unknownType=		"&itUnknownEnhancer5;"
-			attributes=			"MajorItem; WeaponEnhancer"
 
+			value=				"5000"
+			mass=				"1500"
+			  
 			description=		"This compact particle accelerator boosts the damage of any installed particle energy weapon."
 			>
 
@@ -210,16 +223,15 @@
 
 	<ItemType UNID="&itSmugglersCargoHold;"
 			name=				"smuggler's cargo hold"
+			attributes=			"commonwealth, illegal, majorItem, smugglersHold"
+			  
 			level=				"4"
+			frequency=			"uncommon"
+
 			value=				"2100"
 			mass=				"1000"
-			frequency=			"uncommon"
-			numberAppearing=	"1"
-			attributes=			"Illegal; MajorItem; SmugglersHold"
-
+			  
 			description=		"This is a scan-shielded secret cargo hold. The customs inspections of most stations will not detect illegal items when this cargo hold is installed on your ship."
-
-			sortName=			"cargo hold, smuggler's"
 			>
 
 		<Image imageID="&rsItems1;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
@@ -233,12 +245,14 @@
 
 	<ItemType UNID="&itMissileDefense;"
 			name=				"ICX missile defense turret"
+			attributes=			"commonwealth, majorItem"
+			  
 			level=				"4"
+			frequency=			"uncommon"
+
 			value=				"5000"
 			mass=				"1000"
-			frequency=			"uncommon"
-			attributes=			"MajorItem"
-
+			  
 			description=		"This device combines a fast-doppler sensor with a targeting computer. Hostile missiles in its range are blasted into dust by a laser cannon."
 			>
 
@@ -277,11 +291,13 @@
 
 	<ItemType UNID="&it50MWReactor;"
 			name=				"Nova-50 reactor"
+			attributes=			"commonwealth, majorItem"
+			  
 			level=				"4"
-			value=				"5500"
 			frequency=			"uncommon"
+			  
+			value=				"5500"
 			mass=				"3500"
-			attributes=			"MajorItem"
 
 			description=		"This reactor has a peak power output of 50MW."
 			>
@@ -301,12 +317,14 @@
 
 	<ItemType UNID="&itArmorRepairDevice;"
 			name=				"patcher arm"
+			attributes=			"commonwealth, honokuTomashi, majorItem"
+			  
 			level=				"4"
+			frequency=			"rare"
+
 			value=				"3500"
 			mass=				"2000"
-			frequency=			"rare"
-			attributes=			"HonokuTomashi, MajorItem"
-
+			  
 			description=		"The patcher arm, manufactured by Honoku-Tomashi, is a robotic arm that attaches to a ship's hull and performs basic repairs on its armor."
 			>
 
@@ -325,12 +343,14 @@
 
 	<ItemType UNID="&itMnemonicProcessor;"
 			name=				"Heisenmachines quantum CPU"
+			attributes=			"commonwealth, majorItem, quantumCPU"
+			  
 			level=				"5"
+			frequency=			"uncommon"
+
 			value=				"7500"
 			mass=				"1000"
-			frequency=			"uncommon"
-			attributes=			"MajorItem; QuantumCPU"
-
+			  
 			description=		"The Heisenmachines Corporation was the first commercial producer of quantum CPUs. Quantum CPUs are necessary for processing the instructions in a mnemonic memory cube."
 			>
 
@@ -346,13 +366,15 @@
 
 	<ItemType UNID="&itMakayevBlastEnhancer;"
 			name=				"Makayev weapon enhancer"
+			attributes=			"commonwealth, majorItem, makayev, weaponEnhancer"
+			  
 			level=				"5"
-			value=				"9000"
-			mass=				"2000"
 			frequency=			"rare"
 			unknownType=		"&itUnknownEnhancer5;"
-			attributes=			"MajorItem; Makayev; WeaponEnhancer"
 
+			value=				"9000"
+			mass=				"2000"
+			  
 			description=		"This enhancer increases the damage potential of installed Makayev blast weapons."
 			>
 
@@ -374,12 +396,14 @@
 
 	<ItemType UNID="&it100MWReactor;"
 			name=				"Nova-100 reactor"
+			attributes=			"commonwealth, majorItem"
+			  
 			level=				"5"
-			value=				"10000"
 			frequency=			"rare"
-			mass=				"4000"
-			attributes=			"MajorItem"
 
+			value=				"10000"
+			mass=				"4000"
+			  
 			description=		"With 100MW peak power output, this reactor can power all except the most advanced military weapons and devices."
 			>
 
@@ -400,13 +424,15 @@
 
 	<ItemType UNID="&itHowitzerHighSpeedLoader;"
 			name=				"high-speed howitzer loader"
+			attributes=			"commonwealth, majorItem, weaponEnhancer"
+			  
 			level=				"6"
-			value=				"18000"
-			mass=				"2000"
 			frequency=			"rare"
 			unknownType=		"&itUnknownEnhancer5;"
-			attributes=			"MajorItem; WeaponEnhancer"
 
+			value=				"18000"
+			mass=				"2000"
+			  
 			description=		"This high-speed shell loader increases the fire rate of any installed howitzer."
 			>
 
@@ -428,12 +454,14 @@
 
 	<ItemType UNID="&itPatchSpider;"
 			name=				"patch spider"
+			attributes=			"commonwealth, majorItem"
+			  
 			level=				"6"
+			frequency=			"rare"
+
 			value=				"7000"
 			mass=				"2000"
-			frequency=			"rare"
-			attributes=			"MajorItem"
-
+			  
 			description=		"This robotic spider crawls along the ship's hull and repairs armor of up to technology level XII. It does not require a device slot."
 			>
 
@@ -456,13 +484,15 @@
 
 	<ItemType UNID="&itRasiermesserEnhancer;"
 			name=				"Rasiermesser weapon enhancer"
+			attributes=			"commonwealth, majorItem, rasiermesser, weaponEnhancer"
+			  
 			level=				"6"
-			value=				"20000"
-			mass=				"1500"
 			frequency=			"rare"
 			unknownType=		"&itUnknownEnhancer5;"
-			attributes=			"MajorItem; Rasiermesser; WeaponEnhancer"
 
+			value=				"20000"
+			mass=				"1500"
+			  
 			description=		"This enhancer increases the damage potential of installed Rasiermesser kinetic and blast weapons."
 			>
 
@@ -484,11 +514,13 @@
 
 	<ItemType UNID="&it150MWReactor;"
 			name=				"150NX reactor"
+			attributes=			"commonwealth, majorItem"
+			  
 			level=				"6"
-			value=				"20000"
 			frequency=			"rare"
+			  
+			value=				"20000"
 			mass=				"5000"
-			attributes=			"MajorItem"
 
 			description=		"Though older than the Nova series, the 150NX remains popular in the Commonwealth. It has peak power output of 150MW."
 			>
@@ -508,11 +540,13 @@
 
 	<ItemType UNID="&itTitanFusionDrive;"
 			name=				"Titan 440 fusion drive"
+			attributes=			"commonwealth, majorItem"
+			  
 			level=				"6"
-			value=				"4250"
 			frequency=			"uncommon"
+			  
+			value=				"4250"
 			mass=				"5000"
-			attributes=			"MajorItem"
 
 			description=		"The Titan 440 fusion drive is the top-of-the-line commercial starship engine. Its thrust far exceeds that of any other non-military engine."
 			>
@@ -533,13 +567,15 @@
 
 	<ItemType UNID="&itBushidoEnhancer;"
 			name=				"Bushido weapon enhancer"
+			attributes=			"bushido, commonwealth, majorItem, weaponEnhancer"
+			  
 			level=				"7"
-			value=				"40000"
-			mass=				"2500"
 			frequency=			"rare"
 			unknownType=		"&itUnknownEnhancer8;"
-			attributes=			"Bushido; MajorItem; WeaponEnhancer"
 
+			value=				"40000"
+			mass=				"2500"
+			  
 			description=		"This enhancer increases the damage potential of installed Bushido energy weapons."
 			>
 
@@ -561,13 +597,15 @@
 
 	<ItemType UNID="&itInertialessDrive;"
 			name=				"inertialess drive"
+			attributes=			"alien, commonwealth, majorItem"
+			  
 			level=				"7"
-			value=				"35000"
-			mass=				"5000"
 			frequency=			"rare"
 			unknownType=		"&itUnknownAlienDevice;"
-			attributes=			"Alien; MajorItem"
 
+			value=				"35000"
+			mass=				"5000"
+			  
 			description=		"This alien stardrive can instantaneously accelerate a ship without regard for mass."
 			>
 
@@ -586,12 +624,14 @@
 
 	<ItemType UNID="&itLongreachIAutocannon;"
 			name=				"Longreach I autocannon"
+			attributes=			"commonwealth, majorItem"
+			  
 			level=				"7"
+			frequency=			"rare"
+
 			value=				"30000"
 			mass=				"1000"
-			frequency=			"rare"
-			attributes=			"MajorItem"
-
+			  
 			description=		"The Longreach is a missile-defense autocannon that fires high-velocity rounds."
 			>
 
@@ -633,11 +673,13 @@
 
 	<ItemType UNID="&it250MWReactor;"
 			name=				"SN2500 reactor"
+			attributes=			"commonwealth, majorItem; military"
+			  
 			level=				"7"
-			value=				"60000"
 			frequency=			"rare"
+			  
+			value=				"60000"
 			mass=				"5000"
-			attributes=			"MajorItem; Military"
 
 			description=		"The SN2500 is a military reactor designed for the advanced Centurion/X heavy gunship. At 250MW peak power, it is the most powerful reactor of its size."
 			reverseArticle=		"true"
@@ -658,13 +700,15 @@
 
 	<ItemType UNID="&itTranspaceJumpdrive;"
 			name=				"transpace jumpdrive"
+			attributes=			"alien, commonwealth, majorItem"
+			  
 			level=				"7"
-			value=				"40000"
-			mass=				"5000"
 			frequency=			"rare"
 			unknownType=		"&itUnknownAlienDevice;"
-			attributes=			"Alien; MajorItem"
 
+			value=				"40000"
+			mass=				"5000"
+			  
 			description=		"This arcane alien device can open a portal through transpace to teleport a ship to another location, much as stargates do."
 			>
 
@@ -755,11 +799,13 @@
 
 	<ItemType UNID="&it500MWReactor;"
 			name=				"Koshiba-500 reactor"
+			attributes=			"commonwealth, majorItem, military"
+			  
 			level=				"8"
-			value=				"100000"
 			frequency=			"rare"
+			  
+			value=				"100000"
 			mass=				"7000"
-			attributes=			"MajorItem; Military"
 
 			description=		"The 500MW Koshiba reactor is the most powerful fusion reactor in existence."
 			>
@@ -781,11 +827,13 @@
 
 	<ItemType UNID="&it1GWReactor;"
 			name=				"Hyperion reactor"
+			attributes=			"commonwealth, majorItem, military"
+			  
 			level=				"9"
-			value=				"200000"
 			frequency=			"veryrare"
+			  
+			value=				"200000"
 			mass=				"7000"
-			attributes=			"MajorItem; Military"
 
 			description=		"Based on a Ringer design, this is an exotic vacuum reactor rated at 1GW peak power output."
 			>
@@ -805,12 +853,14 @@
 
 	<ItemType UNID="&itPteracniumMegadrive;"
 			name=				"pteracnium megadrive"
+			attributes=			"commonwealth, majorItem, military"
+			  
 			level=				"9"
+			frequency=			"uncommon"
+
 			value=				"35000"
 			mass=				"10000"
-			frequency=			"uncommon"
-			attributes=			"MajorItem; Military"
-
+			  
 			description=		"The pteracnium megadrive is a recently developed military starship engine based on Library Link schematics. Like most other military technology, megadrives cannot be used by civilian ships."
 			>
 

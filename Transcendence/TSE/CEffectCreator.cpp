@@ -127,6 +127,8 @@ ALERROR CEffectCreator::CreateFromTag (const CString &sTag, CEffectCreator **ret
 		pCreator = new CRayEffectCreator;
 	else if (strEquals(sTag, CParticleJetEffectCreator::GetClassTag()))
 		pCreator = new CParticleJetEffectCreator;
+	else if (strEquals(sTag, COrbEffectCreator::GetClassTag()))
+		pCreator = new COrbEffectCreator;
 	else if (strEquals(sTag, CPolyflashEffectCreator::GetClassTag()))
 		pCreator = new CPolyflashEffectCreator;
 	else if (strEquals(sTag, CShockwaveEffectCreator::GetClassTag()))

@@ -150,6 +150,29 @@ void CImageEffectCreator::Paint (CG16bitImage &Dest, int x, int y, SViewportPain
 		}
 	}
 
+void CImageEffectCreator::PaintComposite (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	Paint
+//
+//	Paint the effect
+
+	{
+	CObjectImageArray &Image = m_Image.GetImage(CCompositeImageSelector());
+
+	int iTick = Ctx.iTick;
+	if (m_bRandomStartFrame)
+		iTick += Ctx.iDestiny;
+
+	if (m_bRotateImage)
+		Image.PaintRotatedImage(Dest, x, y, iTick, Ctx.iRotation, true);
+	else
+		{
+		int iFrame = (m_bDirectional ? Angle2Direction(Ctx.iRotation, m_iVariants) : (Ctx.iVariant % m_iVariants));
+
+		Image.PaintImage(Dest, x, y, iTick, iFrame, true);
+		}
+	}
+
 bool CImageEffectCreator::PointInImage (int x, int y, int iTick, int iVariant, int iRotation) const
 
 //	PointInImage
@@ -185,7 +208,9 @@ CImagePainter::CImagePainter (CImageEffectCreator *pCreator) : m_pCreator(pCreat
 //	CImagePainter constructor
 	
 	{
-	m_pCreator->GetImage().InitSelector(&m_Sel);
+	SSelectorInitCtx InitCtx;
+
+	m_pCreator->GetImage().InitSelector(InitCtx, &m_Sel);
 	}
 
 bool CImagePainter::GetParticlePaintDesc (SParticlePaintDesc *retDesc)

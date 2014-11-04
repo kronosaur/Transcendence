@@ -150,11 +150,12 @@ static const SOrderTypeData g_OrderTypes[] =
 		{	"sendMessage",				"o",	"s",	0 },
 
 		{	"attackArea",				"o",	"2",	ORDER_FLAG_NOTIFY_ON_STATION_DESTROYED },
+		{	"holdAndAttack",			"o",	"i",	ORDER_FLAG_NOTIFY_ON_STATION_DESTROYED | ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
 	};
 
 #define ORDER_TYPES_COUNT		(sizeof(g_OrderTypes) / sizeof(g_OrderTypes[0]))
 
-static char *g_pszDestructionCauses[] =
+static char *g_pszDestructionCauses[killedCount] =
 	{
 	"",
 
@@ -172,6 +173,7 @@ static char *g_pszDestructionCauses[] =
 
 	"enteredStargate",
 	"custom",
+	"gravity",
 	};
 
 #define DESTRUCTION_CAUSES_COUNT	(sizeof(g_pszDestructionCauses) / sizeof(g_pszDestructionCauses[0]))
@@ -414,6 +416,21 @@ int DiceRange::Roll (void) const
 
 	for (int i = 0; i < m_iCount; i++)
 		iRoll += mathRandom(1, m_iFaces);
+
+	return iRoll + m_iBonus;
+	}
+
+int DiceRange::RollSeeded (int iSeed) const
+
+//	RollSeeded
+//
+//	Generate a random number
+
+	{
+	int iRoll = 0;
+
+	for (int i = 0; i < m_iCount; i++)
+		iRoll += mathSeededRandom(iSeed, 1, m_iFaces);
 
 	return iRoll + m_iBonus;
 	}
@@ -1210,61 +1227,6 @@ CVector ConvertObjectPos2Pos (int iAngle, Metric rRadius, Metric rHeight, Metric
 	return vPos * (g_KlicksPerPixel * rImageSize / CAMERA_FIELD);
 	}
 #endif
-
-int ComputeWeightAdjFromMatchStrength (bool bHasAttrib, int iMatchStrength)
-
-//	ComputeWeightAdjFromMatchStrength
-//
-//	If iMatchStrength is positive, then it means we want a certain
-//	attribute. If we have the attribute, then we increase our probability
-//	but if we don't have the attribute, our probability is normal.
-//
-//	If iMatchStrength is negative, then it means we DO NOT want a
-//	certain attribute. If we have the attribute, then decrease our
-//	probability. Otherwise, our probability is normal.
-//
-//	OPTION	CODE		HAVE ATTRIB			DON'T HAVE ATTRIB
-//	---------------------------------------------------------
-//	!		-4			x 0					x 1
-//	---		-3			x 1/20				x 1
-//	--		-2			x 1/5				x 1
-//	-		-1			x 1/2				x 1
-//	+		+1			x 2					x 1
-//	++		+2			x 5					x 1
-//	+++		+3			x 5					x 1/2
-//	*		+4			x 5					x 0
-
-	{
-	switch (iMatchStrength)
-		{
-		case -4:
-			return (bHasAttrib ? 0 : 1000);
-
-		case -3:
-			return (bHasAttrib ? 50 : 1000);
-
-		case -2:
-			return (bHasAttrib ? 200 : 1000);
-
-		case -1:
-			return (bHasAttrib ? 500 : 1000);
-
-		case 1:
-			return (bHasAttrib ? 2000 : 1000);
-
-		case 2:
-			return (bHasAttrib ? 5000 : 1000);
-
-		case 3:
-			return (bHasAttrib ? 5000 : 500);
-
-		case 4:
-			return (bHasAttrib ? 5000 : 0);
-
-		default:
-			return 1000;
-		}
-	}
 
 IShipController *CreateShipController (const CString &sAI)
 
@@ -2303,9 +2265,14 @@ WORD LoadRGBColor (const CString &sString)
 	{
 	char *pPos = sString.GetASCIIZPointer();
 
+	//	Null
+
+	if (*pPos == '\0')
+		return 0;
+
 	//	If it starts with a # we expect an RGB DWORD
 
-	if (*pPos == '#')
+	else if (*pPos == '#')
 		{
 		pPos++;
 		DWORD dwColor = strParseIntOfBase(pPos, 16, 0);
@@ -2332,11 +2299,26 @@ COLORREF LoadCOLORREF (const CString &sString)
 
 	{
 	char *pPos = sString.GetASCIIZPointer();
-	int iRed = strParseInt(pPos, 0, &pPos, NULL); if (*pPos) pPos++;
-	int iGreen = strParseInt(pPos, 0, &pPos, NULL); if (*pPos) pPos++;
-	int iBlue = strParseInt(pPos, 0, &pPos, NULL);
 
-	return RGB(iRed, iGreen, iBlue);
+	//	If it starts with a # we expect an RGB DWORD
+
+	if (*pPos == '#')
+		{
+		pPos++;
+		DWORD dwColor = strParseIntOfBase(pPos, 16, 0);
+		return RGB((dwColor >> 16) & 0xFF, (dwColor >> 8) & 0xFF, dwColor & 0xFF);
+		}
+
+	//	Otherwise, we expect three comma-separated values
+
+	else
+		{
+		int iRed = strParseInt(pPos, 0, &pPos, NULL); if (*pPos) pPos++;
+		int iGreen = strParseInt(pPos, 0, &pPos, NULL); if (*pPos) pPos++;
+		int iBlue = strParseInt(pPos, 0, &pPos, NULL);
+
+		return RGB(iRed, iGreen, iBlue);
+		}
 	}
 
 ALERROR LoadUNID (SDesignLoadCtx &Ctx, const CString &sString, DWORD *retdwUNID)
@@ -2707,6 +2689,55 @@ ALERROR ParseDamageTypeList (const CString &sList, TArray<CString> *retList)
 		}
 
 	return NOERROR;
+	}
+
+Metric ParseDistance (const CString &sValue, Metric rDefaultScale)
+
+//	ParseDistance
+//
+//	Parses a number with optional units:
+//
+//	"123"	-> Multiplied by default scale
+//	"123 px" -> 123 pixels converted to klicks
+//	"123 ls" -> 123 light-seconds
+//	"123 lm" -> 123 light-minutes
+//	"123 au" -> 123 AUs
+
+	{
+	//	First parse the number
+
+	char *pPos = sValue.GetASCIIZPointer();
+	int iValue = strParseInt(pPos, 0, &pPos);
+	if (iValue <= 0)
+		return 0.0;
+
+	//	See if we have units
+
+	while (strIsWhitespace(pPos))
+		pPos++;
+
+	if (*pPos == '\0')
+		return iValue * rDefaultScale;
+
+	char *pStart = pPos;
+	while (*pPos != '\0' && !strIsWhitespace(pPos))
+		pPos++;
+
+	CString sUnits(pStart, (int)(pPos - pStart));
+	if (strEquals(sUnits, CONSTLIT("px")))
+		return iValue * g_KlicksPerPixel;
+	else if (strEquals(sUnits, CONSTLIT("ls"))
+			|| strEquals(sUnits, CONSTLIT("light-second"))
+			|| strEquals(sUnits, CONSTLIT("light-seconds")))
+		return iValue * LIGHT_SECOND;
+	else if (strEquals(sUnits, CONSTLIT("lm"))
+			|| strEquals(sUnits, CONSTLIT("light-minute"))
+			|| strEquals(sUnits, CONSTLIT("light-minutes")))
+		return iValue * LIGHT_MINUTE;
+	else if (strEquals(sUnits, CONSTLIT("au")))
+		return iValue * g_AU;
+	else
+		return 0.0;
 	}
 
 GenomeTypes ParseGenomeID (const CString &sText)

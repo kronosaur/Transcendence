@@ -77,6 +77,23 @@ bool CEnergyFieldList::AbsorbsWeaponFire (CInstalledDevice *pDevice)
 	return false;
 	}
 
+void CEnergyFieldList::AccumulateBounds (CSpaceObject *pSource, RECT *ioBounds)
+
+//	AccumulateBounds
+//
+//	Adds to bounds
+
+	{
+	CEnergyField *pField = m_pFirst;
+	while (pField)
+		{
+		if (!pField->IsDestroyed())
+			pField->AccumulateBounds(pSource, ioBounds);
+
+		pField = pField->GetNext();
+		}
+	}
+
 bool CEnergyFieldList::Damage (CSpaceObject *pSource, SDamageCtx &Ctx)
 
 //	Damage
@@ -106,7 +123,7 @@ bool CEnergyFieldList::Damage (CSpaceObject *pSource, SDamageCtx &Ctx)
 	DEBUG_CATCH
 	}
 
-int CEnergyFieldList::GetCountOfType (CEnergyFieldType *pType)
+int CEnergyFieldList::GetCountOfType (COverlayType *pType)
 
 //	GetCountOfType
 //
@@ -126,8 +143,50 @@ int CEnergyFieldList::GetCountOfType (CEnergyFieldType *pType)
 	return iCount;
 	}
 
+void CEnergyFieldList::GetImpact (CSpaceObject *pSource, SImpactDesc *retImpact) const
+
+//	GetImpact
+//
+//	Returns the impact of this set of overlays on the source.
+
+	{
+	CEnergyField *pField = m_pFirst;
+	while (pField)
+		{
+		//	Do we disarm the source?
+
+		if (pField->Disarms(pSource))
+			retImpact->bDisarm = true;
+
+		//	Do we paralyze the source?
+
+		if (pField->Paralyzes(pSource))
+			retImpact->bParalyze = true;
+
+		//	Can't bring up ship status
+
+		if (pField->IsShipScreenDisabled())
+			retImpact->bShipScreenDisabled = true;
+
+		//	Do we spin the source ?
+
+		if (pField->Spins(pSource))
+			retImpact->bSpin = true;
+
+		//	Get appy drag
+
+		Metric rDrag;
+		if ((rDrag = pField->GetDrag(pSource)) < 1.0)
+			retImpact->rDrag *= rDrag;
+
+		//	Next
+
+		pField = pField->GetNext();
+		}
+	}
+
 void CEnergyFieldList::AddField (CSpaceObject *pSource, 
-								 CEnergyFieldType *pType, 
+								 COverlayType *pType,
 								 int iPosAngle,
 								 int iPosRadius,
 								 int iRotation,
@@ -276,6 +335,26 @@ CVector CEnergyFieldList::GetPos (CSpaceObject *pSource, DWORD dwID)
 	return CVector();
 	}
 
+ICCItem *CEnergyFieldList::GetProperty (CCodeChainCtx *pCCCtx, CSpaceObject *pSource, DWORD dwID, const CString &sName)
+
+//	GetProperty
+//
+//	Returns the property
+
+	{
+	CEnergyField *pField = m_pFirst;
+	while (pField)
+		{
+
+		if (pField->GetID() == dwID && !pField->IsDestroyed())
+			return pField->GetProperty(pCCCtx, pSource, sName);
+
+		pField = pField->GetNext();
+		}
+
+	return g_pUniverse->GetCC().CreateNil();
+	}
+
 int CEnergyFieldList::GetRotation (DWORD dwID)
 
 //	GetRotation
@@ -295,7 +374,7 @@ int CEnergyFieldList::GetRotation (DWORD dwID)
 	return -1;
 	}
 
-CEnergyFieldType *CEnergyFieldList::GetType (DWORD dwID)
+COverlayType *CEnergyFieldList::GetType (DWORD dwID)
 
 //	GetType
 //
@@ -347,6 +426,40 @@ void CEnergyFieldList::Paint (CG16bitImage &Dest, int iScale, int x, int y, SVie
 		{
 		if (!pField->IsDestroyed())
 			pField->Paint(Dest, iScale, x, y, Ctx);
+
+		pField = pField->GetNext();
+		}
+	}
+
+void CEnergyFieldList::PaintAnnotations (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	PaintAnnotations
+//
+//	Paints all field annotations
+
+	{
+	CEnergyField *pField = m_pFirst;
+	while (pField)
+		{
+		if (!pField->IsDestroyed())
+			pField->PaintAnnotations(Dest, x, y, Ctx);
+
+		pField = pField->GetNext();
+		}
+	}
+
+void CEnergyFieldList::PaintBackground (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	PaintBackground
+//
+//	Paints all field backgrounds
+
+	{
+	CEnergyField *pField = m_pFirst;
+	while (pField)
+		{
+		if (!pField->IsDestroyed())
+			pField->PaintBackground(Dest, x, y, Ctx);
 
 		pField = pField->GetNext();
 		}
@@ -474,6 +587,25 @@ void CEnergyFieldList::SetPos (CSpaceObject *pSource, DWORD dwID, const CVector 
 		}
 	}
 
+bool CEnergyFieldList::SetProperty (CSpaceObject *pSource, DWORD dwID, const CString &sName, ICCItem *pValue)
+
+//	SetProperty
+//
+//	Sets a property.
+
+	{
+	CEnergyField *pField = m_pFirst;
+	while (pField)
+		{
+		if (pField->GetID() == dwID && !pField->IsDestroyed())
+			return pField->SetProperty(pSource, sName, pValue);
+
+		pField = pField->GetNext();
+		}
+
+	return false;
+	}
+
 void CEnergyFieldList::SetRotation (DWORD dwID, int iRotation)
 
 //	SetRotation
@@ -560,6 +692,9 @@ void CEnergyFieldList::WriteToStream (IWriteStream *pStream)
 //	CEnergyField array
 
 	{
+	//	NOTE: We have to saved destroyed overlays because we need to run some 
+	//	code when removing an overlay (e.g., see CShip::CalcOverlayImpact).
+
 	DWORD dwSave = 0;
 	CEnergyField *pField = m_pFirst;
 	while (pField)

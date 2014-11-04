@@ -419,7 +419,7 @@ void CStandardShipAI::OnBehavior (void)
 			ASSERT(m_pTarget);
 			bool bInPlace;
 			m_AICtx.ImplementHold(m_pShip, &bInPlace);
-			if (bInPlace)
+			if (bInPlace && !m_AICtx.NoAttackOnThreat())
 				m_AICtx.ImplementAttackTarget(m_pShip, m_pTarget, true);
 			m_AICtx.ImplementFireOnTargetsOfOpportunity(m_pShip, m_pTarget);
 
@@ -428,6 +428,16 @@ void CStandardShipAI::OnBehavior (void)
 			if (m_pShip->IsDestinyTime(20)
 					&& (m_pShip->GetSystem()->GetTick() - m_AICtx.GetLastAttack()) > 3 * ATTACK_TIME_THRESHOLD)
 				SetState(stateNone);
+
+			//	See if we're done holding
+
+			if (m_iCountdown != -1 && m_iCountdown-- == 0)
+				{
+				if (GetCurrentOrder() == IShipController::orderHold)
+					CancelCurrentOrder();
+
+				SetState(stateNone);
+				}
 
 			break;
 			}
@@ -522,7 +532,8 @@ void CStandardShipAI::OnBehavior (void)
 
 			//	Check to see if there are enemy ships that we need to attack
 
-			if (m_pShip->IsDestinyTime(30))
+			if (m_pShip->IsDestinyTime(30)
+					&& !m_AICtx.NoAttackOnThreat())
 				{
 				CSpaceObject *pTarget = CalcEnemyShipInRange(m_pShip, PATROL_SENSOR_RANGE);
 				if (pTarget)
@@ -1771,6 +1782,14 @@ void CStandardShipAI::OnAttackedNotify (CSpaceObject *pAttacker, const DamageDes
 					m_pDest = pDest;
 					m_pTarget = pAttacker;
 					ASSERT(m_pTarget->DebugIsValid() && m_pTarget->NotifyOthersWhenDestroyed());
+					break;
+					}
+
+				case stateOnCourseForPointViaNavPath:
+				case stateOnCourseForStargate:
+					{
+					if (m_pTarget == NULL)
+						m_pTarget = pAttacker;
 					break;
 					}
 

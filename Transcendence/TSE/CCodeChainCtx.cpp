@@ -339,6 +339,46 @@ ICCItem *CCodeChainCtx::RunLambda (ICCItem *pCode)
 	DEBUG_CATCH
 	}
 
+bool CCodeChainCtx::RunEvalString (const CString &sString, bool bPlain, CString *retsResult)
+
+//	RunString
+//
+//	If sString starts with '=' or if bPlain is TRUE, then we evaluate sString as an
+//	expression. If success (no error) we return TRUE. Otherwise, we return FALSE and
+//	the error is in retsResult.
+
+	{
+	char *pPos = sString.GetPointer();
+
+	if (bPlain || *pPos == '=')
+		{
+		ICCItem *pExp = Link(sString, (bPlain ? 0 : 1), NULL);
+
+		ICCItem *pResult = Run(pExp);	//	LATER:Event
+		Discard(pExp);
+
+		if (pResult->IsError())
+			{
+			*retsResult = pResult->GetStringValue();
+			Discard(pResult);
+			return false;
+			}
+
+		//	Note: We use GetStringValue instead of Unlink because we don't
+		//	want to preserve CC semantics (e.g., we don't need strings to
+		//	be quoted).
+
+		*retsResult = pResult->GetStringValue();
+		Discard(pResult);
+		return true;
+		}
+	else
+		{
+		*retsResult = strCEscapeCodes(sString);
+		return true;
+		}
+	}
+
 void CCodeChainCtx::SaveAndDefineDataVar (ICCItem *pData)
 
 //	SaveAndDefineDataVar

@@ -304,9 +304,6 @@
     <ClCompile Include="CPower.cpp">
       <Filter>Source Files\DesignTypes</Filter>
     </ClCompile>
-    <ClCompile Include="CShipEnergyFieldType.cpp">
-      <Filter>Source Files\DesignTypes</Filter>
-    </ClCompile>
     <ClCompile Include="CSovereign.cpp">
       <Filter>Source Files\DesignTypes</Filter>
     </ClCompile>
@@ -771,6 +768,45 @@
     </ClCompile>
     <ClCompile Include="CPaintHelper.cpp">
       <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="SFXOrb.cpp">
+      <Filter>Source Files\SFX</Filter>
+    </ClCompile>
+    <ClCompile Include="CItemCtx.cpp">
+      <Filter>Source Files\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="COverlayType.cpp">
+      <Filter>Source Files\DesignTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="CAttackOrder.cpp">
+      <Filter>Source Files\ShipAI</Filter>
+    </ClCompile>
+    <ClCompile Include="CAttackStationOrder.cpp">
+      <Filter>Source Files\ShipAI</Filter>
+    </ClCompile>
+    <ClCompile Include="CEscortOrder.cpp">
+      <Filter>Source Files\ShipAI</Filter>
+    </ClCompile>
+    <ClCompile Include="CFireEventOrder.cpp">
+      <Filter>Source Files\ShipAI</Filter>
+    </ClCompile>
+    <ClCompile Include="CSendMessageOrder.cpp">
+      <Filter>Source Files\ShipAI</Filter>
+    </ClCompile>
+    <ClCompile Include="CWaitOrder.cpp">
+      <Filter>Source Files\ShipAI</Filter>
+    </ClCompile>
+    <ClCompile Include="CApproachOrder.cpp">
+      <Filter>Source Files\ShipAI</Filter>
+    </ClCompile>
+    <ClCompile Include="CMapGridPainter.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="CCXMLWrapper.cpp">
+      <Filter>Source Files\TransLISP</Filter>
+    </ClCompile>
+    <ClCompile Include="CSpaceObjectTrade.cpp">
+      <Filter>Source Files\SpaceObjects</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

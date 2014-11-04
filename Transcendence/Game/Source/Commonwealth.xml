@@ -86,6 +86,7 @@
 			class=				"light IAV"
 			type=				""
 
+			size=				"27"
 			mass=				"25"
 			cargoSpace=			"5"
 			thrustRatio=		"6"
@@ -139,6 +140,7 @@
 			class=				"medium IAV"
 			type=				""
 
+			size=				"42"
 			mass=				"50"
 			cargoSpace=			"10"
 			thrustRatio=		"6.5"
@@ -191,6 +193,7 @@
 			class=				"heavy IAV"
 			type=				""
 
+			size=				"37"
 			mass=				"100"
 			cargoSpace=			"10"
 			thrustRatio=		"5"
@@ -736,6 +739,8 @@
 	<StationType UNID="&stCommonwealthColony;"
 			name=				"Commonwealth colony"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -746,12 +751,13 @@
 			hitPoints=			"100"
 			repairRate=			"1"
 			shipRepairRate=		"1"
+			fireRateAdj=		"80"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, primary, populated"
 			levelFrequency=		"cuc-- ----- ----- ----- -----"
-			locationCriteria=	"+planetary,-OuterSystem"
+			locationCriteria=	"-outerSystem, +planetary"
 			enemyExclusionRadius="50"
 			>
 
@@ -798,6 +804,10 @@
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="93"/>
+			<RepairArmor	criteria="a L:1-5;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -831,10 +841,6 @@
 
 			<OnContractQuery>True</OnContractQuery>
 
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
-
 			<OnTrafficControl>
 				(comTrafficControl gSource 10)
 			</OnTrafficControl>
@@ -848,11 +854,15 @@
 
 						<Actions>
 							<Action name="Commodities Exchange" default="1" key="C">
-								<ShowPane pane="CommoditiesExchange"/>
+								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -862,62 +872,6 @@
 						</Actions>
 
 					</Default>
-
-					<CommoditiesExchange>
-
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat "Welcome to the " (objGetName gSource) " Commodities Exchange Market."))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
-							</Action>
-
-							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</CommoditiesExchange>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itHeliumAssembly; 93) (&itHelium3FuelRod; 92)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(block Nil
-									(setq gTechLevel 5)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-					</DockServices>
-
 				</Panes>
 			</Main>
 
@@ -999,6 +953,8 @@
 	<StationType UNID="&stCommonwealthColonyArmed;"
 			name=				"armed Commonwealth colony"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1060,6 +1016,10 @@
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="93"/>
+			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -1111,10 +1071,6 @@
 
 			<OnContractQuery>True</OnContractQuery>
 
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
-
 			<OnTrafficControl>
 				(comTrafficControl gSource 10)
 			</OnTrafficControl>
@@ -1128,11 +1084,15 @@
 
 						<Actions>
 							<Action name="Commodities Exchange" default="1" key="C">
-								<ShowPane pane="CommoditiesExchange"/>
+								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -1142,63 +1102,6 @@
 						</Actions>
 
 					</Default>
-
-					<CommoditiesExchange>
-
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat "Welcome to the " (objGetName gSource) " Commodities Exchange Market."))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
-							</Action>
-
-							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</CommoditiesExchange>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itXenotiteFuelRod; 94) (&itHeliumAssembly; 93) (&itHelium3FuelRod; 92)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(block Nil
-									(setq gTechLevel 7)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</DockServices>
-
 				</Panes>
 			</Main>
 
@@ -1223,6 +1126,8 @@
 	<StationType UNID="&stCommonwealthDryDock;"
 			name=				"Commonwealth dry dock"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"&dsDryDock;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -1237,7 +1142,7 @@
 
 			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, human, majorStation, populated"
 			levelFrequency=		"uucuu r---- ----- ----- -----"
-			locationCriteria=	"-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
 			>
 
@@ -1245,6 +1150,13 @@
 
 		<Trade currency="credit" max="50000" replenish="2500">
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="rNU L:1-5; -Illegal; -NotForSale;"	priceAdj="110"	inventoryAdj="100"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="95"/>
+			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-7" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -1273,10 +1185,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockingPorts>
@@ -1300,6 +1208,8 @@
 	<StationType UNID="&stMedicalSuburb;"
 			name=				"Commonwealth medical colony"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1310,12 +1220,13 @@
 			hitPoints=			"100"
 			repairRate=			"1"
 			shipRepairRate=		"1"
+			fireRateAdj=		"80"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, human, populated"
 			levelFrequency=		"uuurr ----- ----- ----- -----"
-			locationCriteria=	"+planetary,-OuterSystem"
+			locationCriteria=	"-outerSystem, +planetary"
 			>
 
 		<Names noArticle="true">Asclepius Station; Barnard Station; Station Charity; 
@@ -1372,10 +1283,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -1390,7 +1297,9 @@
 
 						<Actions>
 							<Action name="Commodities Exchange" default="1" key="C">
-								<ShowPane pane="CommoditiesExchange"/>
+								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -1400,34 +1309,6 @@
 						</Actions>
 
 					</Default>
-
-					<CommoditiesExchange>
-
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat "Welcome to the " (objGetName gSource) " Commodities Exchange Market."))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
-							</Action>
-
-							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</CommoditiesExchange>
-
 				</Panes>
 			</Main>
 
@@ -1452,6 +1333,8 @@
 	<StationType UNID="&stCommonwealthResidentials;"
 			name=				"Commonwealth residentials"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1481,10 +1364,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 		</Events>			
 
 		<DockScreens>
@@ -1531,9 +1410,11 @@
 	
 	<MissionType UNID="&msDestroyThreatToSlums;"
 			name=				"Destroy Threat to Commonwealth Habitat"
+			attributes=			"commonwealth, commonwealthHabitat"
+
+			level=				"1-4"
 			scope=				"system"
 
-			attributes=			"commonwealth, commonwealthHabitat"
 			>
 		<Events>
 			<OnCreate>
@@ -1777,6 +1658,8 @@
 	<StationType UNID="&stCommonwealthSlums;"
 			name=				"Commonwealth habitat"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -1900,10 +1783,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 
 			<OnMissionAccepted>
 				(typIncGlobalData &stCommonwealthSlums; 'totalMissionCount)
@@ -2046,6 +1925,8 @@
 	<StationType UNID="&stContainerHabitat;"
 			name=				"container habitat"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -2130,10 +2011,6 @@
 
 			<OnContractQuery>True</OnContractQuery>
 
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
-
 			<OnObjDestroyed>
 				(if (eq aObjDestroyed (objGetObjRefData gSource "target"))
 					(block Nil
@@ -2194,12 +2071,12 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"You are docked at a habitat made out of shipping containers. Children bounce off the bulkheads in zero-G while "
-								"maintenance workers repair leaky seals and balky machinery. The station master approaches you:\n\n"
-								"\"We don't get many pilgrims visiting around here. Why don't you give us some of your worldly possessions; "
-								"they won't do you much good at the Core, or wherever you're trying to get.\""
-								))
+							(switch
+								(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+									(scrSetDesc gScreen (typTranslate &stContainerHabitat; 'WelcomePilgrim))
+									
+								(scrSetDesc gScreen (typTranslate &stContainerHabitat; 'Welcome))
+								)
 						</OnPaneInit>
 
 						<Actions>
@@ -2232,6 +2109,26 @@
 			
 			<Port x="-61"	y="35" />
 		</DockingPorts>
+		
+		<Language>
+			<Text id="Welcome">
+				(cat
+					"You are docked at a habitat made out of shipping containers. Children bounce off the bulkheads in zero-G while "
+					"maintenance workers repair leaky seals and balky machinery. The station master approaches you:\n\n"
+					
+					"\"Traveling the universe, yeah? Why don't you spare some items for us!\""
+					)
+			</Text>
+			<Text id="WelcomePilgrim">
+				(cat
+					"You are docked at a habitat made out of shipping containers. Children bounce off the bulkheads in zero-G while "
+					"maintenance workers repair leaky seals and balky machinery. The station master approaches you:\n\n"
+					
+					"\"We don't get many pilgrims visiting around here. Why don't you give us some of your worldly possessions; "
+					"they won't do you much good at the Core, or wherever you're trying to get.\""
+					)
+			</Text>
+		</Language>
 
 	</StationType>
 
@@ -2240,6 +2137,8 @@
 	<StationType UNID="&stCommonwealthSettlement;"
 			name=				"Commonwealth settlement"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -2250,6 +2149,7 @@
 			hitPoints=			"450"
 			repairRate=			"1"
 			shipRepairRate=		"1"
+			fireRateAdj=		"40"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -2293,6 +2193,10 @@
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-8;" priceAdj="94"/>
+			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -2339,10 +2243,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -2353,11 +2253,15 @@
 
 						<Actions>
 							<Action name="Commodities Exchange" default="1" key="C">
-								<ShowPane pane="CommoditiesExchange"/>
+								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -2367,63 +2271,6 @@
 						</Actions>
 
 					</Default>
-
-					<CommoditiesExchange>
-
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat "Welcome to the " (objGetName gSource) " Commodities Exchange Market."))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
-							</Action>
-
-							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</CommoditiesExchange>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itXenotiteFuelRod; 94) (&itHeliumAssembly; 93) (&itHelium3FuelRod; 92)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(block Nil
-									(setq gTechLevel 8)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</DockServices>
-
 				</Panes>
 			</Main>
 
@@ -3550,68 +3397,32 @@
 	<!-- Dry dock screen -->
 
 	<DockScreen UNID="&dsDryDock;"
-			desc=				"Your ship is in dry dock"
-			type=				"dryDock"
+			inherit=			"&dsDockScreenBase;"
 			>
-
+		
 		<Panes>
-			<Default
-					desc=	"Your ship is in dry dock.">
+			<Default>
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descWelcome)
+				</OnPaneInit>
 
 				<Actions>
-					<Action name="Refuel" key="R">
-						(block Nil
-							(intSetCompatibleFuelEx '((&itXenotiteFuelRod; 94) (&itHeliumAssembly; 93) (&itHelium3FuelRod; 92)))
-							(scrShowScreen gScreen "&dsRefuel;")
-							)
-					</Action>
-
-					<Action name="Repair or Replace Armor" key="A" >
-						(block Nil
-							(setq gTechLevel 8)
-							(setq gArmorSegment 0)
-							(setq gCheckMilitaryID True)
-							(setq gMargin 100)
-							(scrShowScreen gScreen "&dsRepairArmor;")
-							)
-					</Action>
-
-					<Action name="Install Device" key="D" >
-						(block Nil
-							(setq gTechLevel 7)
-							(setq gTechModifier Nil)
-							(setq gCheckMilitaryID True)
-							(setq gMargin 100)
-							(scrShowScreen gScreen "&dsInstallDevice;")
-							)
-					</Action>
-
-					<Action name="Remove Device" key="V" >
-						(block Nil
-							(setq gMargin 100)
-							(scrShowScreen gScreen "&dsRemoveDevice;")
-							)
-					</Action>
-
-					<Action name="Upgrade Reactor" key="P" >
-						(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
-							{
-							itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-5;")
-							priceAdj: Nil
+					<Action id="actionDockServices" default="1">
+						(rpgDockServices gPlayerShip {
 							checkMilitaryID: True
-							noItemsText: "The technology required to upgrade your reactor is not available at this station."
 							})
 					</Action>
-
-					<Action name="Undock" cancel="1" key="U">
+					
+					<Action id="actionUndock" cancel="1">
 						<Exit/>
 					</Action>
-
 				</Actions>
-
 			</Default>
 		</Panes>
-
+		
+		<Language>
+			<Text id="descWelcome">"Your ship is in dry dock."</Text>
+		</Language>
 	</DockScreen>
 	
 <!-- BASIC COMMONWEALTH RULES -->
@@ -3827,6 +3638,28 @@
 		</Events>
 	</ShipClass>
 	
+<!-- BASE CLASSES -->
+	
+	<!-- Commonwealth Station Base Class
+	
+	USAGE: Commonwealth stations should inherit from this class. Derrived classes
+		should manually call OnCreate and OnDestroy in case they need to override
+		those events.
+	
+	-->
+	
+	<StationType unid="&baCommonwealthStation;"
+			name=			"(Commonwealth station base class)"
+			virtual=		"true"
+			>
+		
+		<Events>
+			<OnDestroy>
+				(intCommonwealthOnDestroy)
+			</OnDestroy>
+		</Events>
+	</StationType>
+
 <!-- TABLES -->
 
 	<!-- Commonwealth defenders for normal stations -->

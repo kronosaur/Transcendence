@@ -55,8 +55,16 @@ static SColorInitTable COLOR_TABLE[] =
 		{	"TextDockAction",			CG16bitImage::RGBValue(218, 235, 255) },
 		{	"TextDockActionHotKey",		CG16bitImage::RGBValue(218, 235, 255) },
 
-		{	"TextDockText",				CG16bitImage::RGBValue(0xAF, 0xB7, 0xBF) },	//	H:210 S:8 B:75
-		{	"TextDockTitle",			CG16bitImage::RGBValue(0xE7, 0xF3, 0xFF) },	//	H:210 S:9 B:100
+		{	"TextDockText",				CG16bitImage::RGBValue(0xAF, 0xB7, 0xBF) },	//	H:210 S:8   B:75
+		{	"TextDockTitle",			CG16bitImage::RGBValue(0xE7, 0xF3, 0xFF) },	//	H:210 S:9   B:100
+		{	"TextDockTextWarning",		CG16bitImage::RGBValue(0xFF, 0x33, 0x33) },	//	H:0   S:80  B:100
+		{	"AreaAdvantage",			CG16bitImage::RGBValue(0x00, 0x53, 0xA6) },
+		{	"AreaDisadvantage",			CG16bitImage::RGBValue(0xA6, 0x21, 0x21) },
+
+		{	"AreaShields",				CG16bitImage::RGBValue(0x45, 0x73, 0x17) },
+		{	"TextAdvantage",			CG16bitImage::RGBValue(0xCC, 0xE5, 0xFF) },
+		{	"TextDisadvantage",			CG16bitImage::RGBValue(0xFF, 0xCC, 0xCC) },
+		{	"TextShields",				CG16bitImage::RGBValue(0xE5, 0xFF, 0xCC) },
 	};
 
 struct SFontInitTable

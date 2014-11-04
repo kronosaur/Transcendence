@@ -7,6 +7,8 @@
 	<StationType UNID="&stStartonEridani;"
 			name=				"Starton Eridani"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"&dsCommonwealthStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -61,12 +63,16 @@
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; L:1-3;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="rNU L:1-4; -Illegal; -NotForSale;"	priceAdj="110"	inventoryAdj="100"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
-			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -79,10 +85,6 @@
 			<OnCreate>
 				(sysAddObjRecurringTimerEvent 150 gSource "OnTrafficControl")
 			</OnCreate>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 
 			<OnTrafficControl>
 				(comTrafficControl gSource 20)
@@ -605,6 +607,8 @@
 	<StationType UNID="&stBeringStation;"
 			name=				"Commonwealth residentials"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -633,10 +637,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 		</Events>			
 
 		<DockScreens>
@@ -670,7 +670,9 @@
 
 	<!-- Eridani System -->
 
-	<SystemType UNID="&ssStartonEridani;">
+	<SystemType UNID="&ssStartonEridani;"
+				attributes="envWater"
+				>
 
 		<Tables>
 			<!-- Planets and Asteroids -->
@@ -776,15 +778,14 @@
 
 		<SystemGroup>
 
-			<!-- Epsilon Eridani
-				This is a G-type star much like the Sun. -->
+			<!-- Epsilon Eridani -->
 
-			<Station type="&stG-TypeStar;" name="Epsilon Eridani"/>
+			<Station type="&stStarClassK0;" name="Epsilon Eridani"/>
 
-			<AddAttribute attributes="GTypeSystem"/>
-			<AddTerritory minRadius="0"		maxRadius="370"		attributes="innerSystem, rockyComp, cinderZone"/>
-			<AddTerritory minRadius="370"	maxRadius="620"		attributes="lifeZone, rockyComp, desertZone"/>
-			<AddTerritory minRadius="620"	maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
+			<AddAttribute attributes="KTypeSystem"/>
+			<AddTerritory minRadius="0"		maxRadius="350"		attributes="innerSystem, rockyComp, cinderZone"/>
+			<AddTerritory minRadius="350"	maxRadius="590"		attributes="lifeZone, rockyComp, desertZone"/>
+			<AddTerritory minRadius="590"	maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
 
 			<Orbitals angle="incrementing:30-330">
 

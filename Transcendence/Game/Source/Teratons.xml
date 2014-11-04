@@ -2,6 +2,11 @@
 
 <TranscendenceModule>
 
+	<Sovereign UNID="&svTeratons;"
+			name="Teratons"
+			alignment="neutral"
+			/>
+
 	<!-- Kytryn Blaster -->
 
 	<ItemType UNID="&itKytrynBlaster;"
@@ -60,37 +65,7 @@
 				>
 
 			<Missiles>
-				<Missile ammoID="&itKytrynPlasmaSeed;"
-						type=			"missile"
-						lifetime=		"480"
-						damage=			"plasma:3d12; WMD5"
-						missileSpeed=	"30"
-						hitPoints=		"20"
-
-						failsafe=		"6"
-
-						hitEffect=		"&efFragmentationExplosion;"
-						sound=			"&snMissileLauncher;"
-						>
-
-					<Effect>
-						<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
-					</Effect>
-
-					<Fragment 
-							count=			"36"
-							type=			"missile"
-
-							damage=			"plasma:3d12; WMD5"
-							missileSpeed=	"20"
-							lifetime=		"30"
-							>
-
-						<Effect>
-							<Image imageID="&rsMediumExplosions;" imageX="0" imageY="64" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
-						</Effect>
-					</Fragment>
-				</Missile>
+				<Missile ammoID="&itKytrynPlasmaSeed;"/>
 			</Missiles>
 		</Weapon>
 	</ItemType>
@@ -112,6 +87,38 @@
 			>
 
 		<Image imageID="&rsItems1;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				lifetime=		"480"
+				damage=			"plasma:3d12; WMD5"
+				missileSpeed=	"30"
+				hitPoints=		"20"
+
+				failsafe=		"6"
+
+				hitEffect=		"&efFragmentationExplosion;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<Effect>
+				<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
+			</Effect>
+
+			<Fragment
+					count=			"36"
+					type=			"missile"
+
+					damage=			"plasma:3d12; WMD5"
+					missileSpeed=	"20"
+					lifetime=		"30"
+							>
+
+				<Effect>
+					<Image imageID="&rsMediumExplosions;" imageX="0" imageY="64" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
+				</Effect>
+			</Fragment>
+		</Missile>
 	</ItemType>
 
 	<!-- Teraton Nest Base
@@ -202,7 +209,7 @@
 
 	<StationType UNID="&stTeratonChrysalis;"
 			name=				"Teraton chrysalis"
-			sovereign=			"&svIndependentTrader;"
+			sovereign=			"&svTeratons;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"4"
@@ -295,7 +302,7 @@
 
 	<StationType UNID="&stTeratonDefender;"
 			name=				"Teraton Defender"
-			sovereign=			"&svIndependentTrader;"
+			sovereign=			"&svTeratons;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"4"
 			noMapLabel=			"true"
@@ -332,7 +339,7 @@
 
 	<StationType UNID="&stTeratonFactory;"
 			name=				"Teraton fabricator"
-			sovereign=			"&svIndependentTrader;"
+			sovereign=			"&svTeratons;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -347,7 +354,7 @@
 
 			attributes=			"envAir, envAvoidsFire, independent, friendly, majorStation, populated, neoHuman, teraton, teratonFactory"
 			levelFrequency=		"----- --ruv ----- ----- -----"
-			locationCriteria=	"+OuterSystem,-void"
+			locationCriteria=	"+outerSystem, -void"
 			enemyExclusionRadius="50"
 
 			inherit=			"&baTeratonNestBase;"
@@ -490,9 +497,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -782,7 +789,7 @@
 
 	<StationType UNID="&stTeratonResearch;"
 			name=				"Teraton research center"
-			sovereign=			"&svIndependentTrader;"
+			sovereign=			"&svTeratons;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -797,7 +804,7 @@
 
 			attributes=			"envAir, envAvoidsFire, independent, friendly, majorStation, populated, neoHuman, teraton, teratonResearch"
 			levelFrequency=		"----- --rr- ----- ----- -----"
-			locationCriteria=	"+OuterSystem,-void"
+			locationCriteria=	"+outerSystem, -void"
 			enemyExclusionRadius="50"
 
 			inherit=			"&baTeratonNestBase;"
@@ -1164,9 +1171,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -1204,7 +1211,7 @@
 
 	<StationType UNID="&stTeratonTradingPost;"
 			name=				"Teraton trading post"
-			sovereign=			"&svIndependentTrader;"
+			sovereign=			"&svTeratons;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -1219,7 +1226,7 @@
 
 			attributes=			"envAir, envAvoidsFire, independent, friendly, majorStation, populated, neoHuman, teraton, teratonTrading"
 			levelFrequency=		"----- -vcuv ----- ----- -----"
-			locationCriteria=	"+OuterSystem,-void"
+			locationCriteria=	"+outerSystem, -void"
 			enemyExclusionRadius="50"
 
 			inherit=			"&baTeratonNestBase;"
@@ -1286,9 +1293,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">

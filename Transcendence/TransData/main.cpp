@@ -23,6 +23,8 @@
 #define DEBUG_SWITCH						CONSTLIT("debug")
 #define DECOMPILE_SWITCH					CONSTLIT("decompile")
 #define EFFECT_IMAGE_SWITCH					CONSTLIT("effectImage")
+#define ENCOUNTER_COUNT_SWITCH				CONSTLIT("encountercount")
+#define ENCOUNTER_FREQ_SWITCH				CONSTLIT("encounterfreq")
 #define ENCOUNTER_SIM_SWITCH				CONSTLIT("encountersim")
 #define ENCOUNTER_TABLE_SWITCH				CONSTLIT("encountertable")
 #define ENTITIES_SWITCH						CONSTLIT("entitiesReference")
@@ -48,6 +50,8 @@
 #define STATS_SWITCH						CONSTLIT("stats")
 #define STD_ARMOR_SWITCH					CONSTLIT("stdarmor")
 #define STD_SHIELD_SWITCH					CONSTLIT("stdshield")
+#define SYSTEM_COUNT_SWITCH					CONSTLIT("systemcount")
+#define SYSTEM_IMAGES_SWITCH				CONSTLIT("systemImages")
 #define SYSTEM_LABELS_SWITCH				CONSTLIT("systemlabels")
 #define SYSTEM_TEST_SWITCH					CONSTLIT("systemtest")
 #define TOPOLOGY_SWITCH						CONSTLIT("topology")
@@ -302,6 +306,10 @@ void AlchemyMain (CXMLElement *pCmdLine)
 
 	if (pCmdLine->GetAttributeBool(ARMOR_TABLE_SWITCH))
 		GenerateArmorTable(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(ENCOUNTER_COUNT_SWITCH))
+		GenerateEncounterCount(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(ENCOUNTER_FREQ_SWITCH))
+		GenerateEncounterFrequency(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_TABLE_SWITCH))
 		{
 		CIDTable EntityTable(TRUE, TRUE);
@@ -356,6 +364,10 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		GenerateStdArmorTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(STD_SHIELD_SWITCH))
 		GenerateStdShieldTable(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(SYSTEM_COUNT_SWITCH))
+		GenerateSystemCount(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(SYSTEM_IMAGES_SWITCH))
+		GenerateSystemImages(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SYSTEM_LABELS_SWITCH))
 		GenerateSystemLabelCount(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SYSTEM_TEST_SWITCH))

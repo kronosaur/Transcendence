@@ -358,7 +358,10 @@
 									(setq xp (typGetGlobalData &stKorolovShipping; "xp"))
 									(if (leq xp 0)
 										(scrShowPane gScreen "CantUseDockServices")
-										(scrShowPane gScreen "DockServices")
+										
+										(rpgDockServices gPlayerShip {
+											checkMilitaryID: True
+											})
 										)
 									)
 							</Action>
@@ -370,43 +373,6 @@
 						</Actions>
 
 					</Default>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(scrShowScreen gScreen &dsRPGRepairArmor; {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Install Device" key="D" >
-								(block Nil
-									(setq gTechLevel (objGetProperty gSource 'installDeviceMaxLevel))
-									(setq gTechModifier Nil)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
-							</Action>
-
-							<Action name="Remove Device" key="V" >
-								(block Nil
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRemoveDevice;")
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="N">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</DockServices>
 
 					<CantUseCommandCenter
 							desc=	"Sorry, only experienced pilots are allowed to escort freighters.">
@@ -763,18 +729,20 @@
 
 	<!-- Charon Pirate Fortress System -->
 
-	<SystemType UNID="&ssCharonPirateFortress;">
+	<SystemType UNID="&ssCharonPirateFortress;"
+				attributes="envAir"
+				>
 
 		<SystemGroup>
 
 			<!-- Star -->
 
-			<Station type="&stRedDwarfStar;" name="Cardel Orionis"/>
+			<Station type="&stStarClassM8;" name="Cardel Orionis"/>
 
 			<AddAttribute attributes="redDwarfSystem"/>
-			<AddTerritory minRadius="0"		maxRadius="190"		attributes="innerSystem, rockyComp, cinderZone"/>
-			<AddTerritory minRadius="190"	maxRadius="320"		attributes="lifeZone, rockyComp, desertZone"/>
-			<AddTerritory minRadius="320"	maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
+			<AddTerritory minRadius="0"		maxRadius="200"		attributes="innerSystem, rockyComp, cinderZone"/>
+			<AddTerritory minRadius="200"	maxRadius="350"		attributes="lifeZone, rockyComp, desertZone"/>
+			<AddTerritory minRadius="350"	maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
 
 			<!-- Lesser Anterock -->
 
@@ -860,7 +828,7 @@
 
 			<!-- Random Debris -->
 
-			<RandomLocation probability="50" locationCriteria="++OuterSystem,++asteroids">
+			<RandomLocation probability="50" locationCriteria="++outerSystem, ++asteroids">
 				<Orbitals count="1d6" distance="1d8+6" angle="random">
 					<RandomStation stationCriteria="*debris"/>
 				</Orbitals>

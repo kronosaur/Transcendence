@@ -7,6 +7,8 @@
 	<StationType UNID="&stRingersCollective;"
 			name=				"Ringers collective"
 			sovereign=			"&svRingers;"
+			inherit=			"&baRingersStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -21,7 +23,7 @@
 
 			attributes=			"envEarth, envAvoidsAir, friendly, independent, majorStation, neoHuman, populated, ringers"
 			levelFrequency=		"----- rcurv ----- ----- -----"
-			locationCriteria=	"+ringedGiant; -innerSystem; -void"
+			locationCriteria=	"+outerSystem, +ringedGiant|+100"
 			enemyExclusionRadius="50"
 			>
 
@@ -103,12 +105,6 @@
 			</Table>
 		</Reinforcements>
 
-		<Events>
-			<OnDestroy>
-				(intRingerOnDestroy)
-			</OnDestroy>
-		</Events>
-
 		<DockScreens>
 			<Main>
 				<Panes>
@@ -136,9 +132,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -188,6 +184,8 @@
 	<StationType UNID="&stRingerShipyard;"
 			name=				"Ringer shipyard"
 			sovereign=			"&svRingers;"
+			inherit=			"&baRingersStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -202,7 +200,7 @@
 
 			attributes=			"envEarth, envAvoidsAir, friendly, independent, majorStation, neoHuman, populated, ringers"
 			levelFrequency=		"----- -ruur ----- ----- -----"
-			locationCriteria=	"+ringedGiant; -innerSystem; -void"
+			locationCriteria=	"+outerSystem, +ringedGiant|+100"
 			enemyExclusionRadius="100"
 			>
 
@@ -251,8 +249,16 @@
 		<Trade currency="rin" max="100000" replenish="5000">
 			<Sell	criteria="*NU +RingerValuable;"		priceAdj="550"/>
 			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
+			<Sell	criteria="rNU L:1-9; -NotForSale;"	priceAdj="100"	inventoryAdj="100"/>
 			<Buy	criteria="*NU +RingerValuable;"		priceAdj="500"/>
 			<Buy	criteria="*NU +Res; &gt;=4;"		priceAdj="65"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="85"/>
+			<RepairArmor	criteria="a L:1-12;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="w L:1-10" priceAdj="200"/>
+			<InstallDevice	criteria="d~w L:1-10" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
 
 		<Reinforcements minShips="3">
@@ -262,12 +268,6 @@
 				<Ship   chance="20"	class="&scFerianMiner;" orders="gateOnThreat"/>
 			</Table>
 		</Reinforcements>
-
-		<Events>
-			<OnDestroy>
-				(intRingerOnDestroy)
-			</OnDestroy>
-		</Events>
 
 		<DockScreens>
 			<Main>
@@ -285,7 +285,9 @@
 
 							<Action name="Dock Services" default="1" key="D">
 								(if (gr (objGetBalance gPlayerShip 'rin) 0)
-									(scrShowPane gScreen "DockServices")
+									(rpgDockServices gPlayerShip {
+										checkMilitaryID: Nil
+										})
 									(scrShowPane gScreen "DockServicesGreeter")
 									)
 							</Action>
@@ -302,9 +304,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -319,69 +321,6 @@
 
 						</Actions>
 					</Exchange>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itPteracniumFuelRod; 85) (&itXenotiteFuelRod; 95) (&itHeliumAssembly; 100)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A">
-								(block Nil
-									(setq gTechLevel 12)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID Nil)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
-							</Action>
-
-							<Action name="Install Device" key="D">
-								(block Nil
-									(setq gTechLevel 10)
-									(setq gTechModifier Nil)
-									(setq gCheckMilitaryID Nil)
-									(setq gMargin (lambda (theItem)
-										(switch
-											; Weapons cost 200% to install
-											(itmMatches theItem "w")
-												(multiply 2 (itmGetInstallCost theItem 'rin))
-											
-											; All others at 100% of cost
-											(itmGetInstallCost theItem 'rin)
-											)
-										))
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
-							</Action>
-
-							<Action name="Remove Device" key="V">
-								(block Nil
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRemoveDevice;")
-									)
-							</Action>
-
-							<Action name="Upgrade Reactor" key="P">
-								(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
-									{
-									itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-9;")
-									priceAdj: Nil
-									checkMilitaryID: Nil
-									noItemsText: "The technology required to upgrade your reactor is not available at this station."
-									})
-							</Action>
-
-							<Action name="Done" key="N" cancel="1">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</DockServices>
 
 					<ExchangeIntro
 							desc=	"As you enter the main Exchange, a greeter scans you and says,\n\n&quot;Earthican, welcome. Your account balance is 0 rin. Collective does not seek Commonwealth credits. Collective seeks rare and powerful ores and substances. Bring here.&quot;">
@@ -399,7 +338,13 @@
 
 						<Actions>
 							<Action name="Continue" cancel="1" default="1" key="C">
-								(scrShowPane gScreen "DockServices")
+								(block Nil
+									(scrShowPane gScreen "Default")
+									
+									(rpgDockServices gPlayerShip {
+										checkMilitaryID: Nil
+										})
+									)
 							</Action>
 
 						</Actions>
@@ -556,6 +501,28 @@
 		</Panes>
 	</DockScreen>
 	
+<!-- BASE CLASSES -->
+	
+	<!-- Ringers Station Base Class
+	
+	USAGE: Ringers stations should inherit from this class. Derrived classes
+		should manually call OnCreate and OnDestroy in case they need to override
+		those events.
+	
+	-->
+	
+	<StationType unid="&baRingersStation;"
+			name=			"(Ringers station base class)"
+			virtual=		"true"
+			>
+		
+		<Events>
+			<OnDestroy>
+				(intRingerOnDestroy)
+			</OnDestroy>
+		</Events>
+	</StationType>
+
 <!-- RINGERS -->
 
 	<Sovereign UNID="&svRingers;"

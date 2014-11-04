@@ -14,6 +14,8 @@
 #define CLEAR_REGISTERED_SWITCH				CONSTLIT("clearRegistered")
 #define DECOMPILE_SWITCH					CONSTLIT("decompile")
 #define DEBUG_SWITCH						CONSTLIT("debug")
+#define ENCOUNTER_COUNT_SWITCH				CONSTLIT("encountercount")
+#define ENCOUNTER_FREQ_SWITCH				CONSTLIT("encounterfreq")
 #define ENCOUNTER_SIM_SWITCH				CONSTLIT("encountersim")
 #define ENCOUNTER_TABLE_SWITCH				CONSTLIT("encountertable")
 #define ENTITIES_SWITCH						CONSTLIT("entities")
@@ -50,7 +52,14 @@ void ShowHelp (CXMLElement *pCmdLine)
 	{
 	bool bDebug = pCmdLine->GetAttributeBool(DEBUG_SWITCH);
 
-	if (pCmdLine->GetAttributeBool(ENCOUNTER_SIM_SWITCH))
+	if (pCmdLine->GetAttributeBool(ENCOUNTER_COUNT_SWITCH))
+		{
+		printf("  /encountercount       Counts of encounters for a whole game.\n");
+		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/all]                include non-random stations.\n");
+		printf("      [/count]              Number of games to create.\n");
+		}
+	else if (pCmdLine->GetAttributeBool(ENCOUNTER_SIM_SWITCH))
 		{
 		printf("  /encountersim         Simulate an attack on the station.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
@@ -69,6 +78,13 @@ void ShowHelp (CXMLElement *pCmdLine)
 		{
 		printf("  /decompile            Extracts resources from .tdb (overwrites existing).\n");
 		printf("       /dataFile:filename   TDB file to decompile.\n");
+		}
+	else if (pCmdLine->GetAttributeBool(ENCOUNTER_FREQ_SWITCH))
+		{
+		printf("  /encounterFreq        Outputs encounter tables.\n");
+		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/count]              Number of games to create.\n");
+		printf("      [/fillLocations]      Output tables from <FillLocations> directives.\n");
 		}
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_TABLE_SWITCH))
 		{
@@ -107,9 +123,12 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      /criteria:n           Type criteria of images to show.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
 		printf("      [/font:s]             Use given font for labels.\n");
+		printf("      [/itemCriteria:n]     Item criteria of images to show.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
+		printf("      [/portPos]            Show docking port positions.\n");
 		printf("      [/sort:xxx]           Sort worlds in given order.\n");
 		printf("         largest               Larger objects first.\n");
+		printf("         level                 By level (ascending).\n");
 		printf("         name                  By name.\n");
 		printf("         smallest              Smaller objects first.\n");
 		printf("      [/textBoxesOnly]      Output textboxes only.\n");
@@ -276,7 +295,6 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("       /count:n             n iterations.\n");
 		printf("      [/nodes]              Show node attribute counts instead.\n");
 		printf("      [/nodeDebug]          Output sample nodes with attributes instead.\n");
-		printf("      [/permutations]       Include attribute permutations.\n");
 		}
 	else if (pCmdLine->GetAttributeBool(SYSTEM_TEST_SWITCH))
 		{
@@ -352,6 +370,8 @@ void ShowHelp (CXMLElement *pCmdLine)
 		if (bDebug)
 			printf("  /itemsim              Simulation of items encountered.\n");
 		printf("  /itemtable            Item table.\n");
+		printf("  /encountercount       Counts encounters in a game.\n");
+		printf("  /encounterFreq        Outputs encounter tables.\n");
 		printf("  /encountersim         Simulate an attack on the station.\n");
 		printf("  /encountertable       Encounter table.\n");
 		if (bDebug)
@@ -366,12 +386,13 @@ void ShowHelp (CXMLElement *pCmdLine)
 		if (bDebug)
 			printf("  /smoketest            Tests the game.\n");
 		printf("  /snapshot             Generates a snapshot of the given object.\n");
-		printf("  /stationfrequency     Table of station types by level.\n");
 		if (bDebug)
 			printf("  /stationSeparationSim Generate enemy station separation statistics.\n");
 		printf("  /stats                Shows a list of basic stats.\n");
 		printf("  /stdarmor             Shows stats about standard armors.\n");
 		printf("  /stdshield            Shows stats about standard shields.\n");
+		printf("  /systemcount          Counts systems in a game.\n");
+		printf("  /systemimages         Generate snapshots of system maps.\n");
 		printf("  /systemlabels         Generate counts for all labels.\n");
 		if (bDebug)
 			printf("  /systemtest           Generates sample of all systems.\n");
@@ -385,7 +406,6 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /weaponimages         Generates images of weapon effects.\n");
 		if (bDebug)
 			printf("  /wordlist             Lists all unique words.\n");
-		printf("  /worldimages          Generates images of worlds.\n");
 		}
 
 	printf("\n");

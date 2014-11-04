@@ -45,6 +45,8 @@ const DWORD MAX_DISRUPT_TIME_BEFORE_DAMAGE =	(60 * g_TicksPerSecond);
 #define FIELD_SHIELD_UNID						CONSTLIT("shieldsUNID")
 #define FIELD_THRUST_TO_WEIGHT					CONSTLIT("thrustToWeight")
 
+#define PROPERTY_AVAILABLE_NON_WEAPON_SLOTS		CONSTLIT("availableNonWeaponSlots")
+#define PROPERTY_AVAILABLE_WEAPON_SLOTS			CONSTLIT("availableWeaponSlots")
 #define PROPERTY_BLINDING_IMMUNE				CONSTLIT("blindingImmune")
 #define PROPERTY_CHARACTER						CONSTLIT("character")
 #define PROPERTY_CHARACTER_CLASS				CONSTLIT("characterClass")
@@ -53,7 +55,11 @@ const DWORD MAX_DISRUPT_TIME_BEFORE_DAMAGE =	(60 * g_TicksPerSecond);
 #define PROPERTY_DISINTEGRATION_IMMUNE			CONSTLIT("disintegrationImmune")
 #define PROPERTY_DOCKED_AT_ID					CONSTLIT("dockedAtID")
 #define PROPERTY_DOCKING_ENABLED				CONSTLIT("dockingEnabled")
+#define PROPERTY_DOCKING_PORT_COUNT				CONSTLIT("dockingPortCount")
 #define PROPERTY_EMP_IMMUNE						CONSTLIT("EMPImmune")
+#define PROPERTY_INTERIOR_HP					CONSTLIT("interiorHP")
+#define PROPERTY_MAX_INTERIOR_HP				CONSTLIT("maxInteriorHP")
+#define PROPERTY_OPEN_DOCKING_PORT_COUNT		CONSTLIT("openDockingPortCount")
 #define PROPERTY_PLAYER_WINGMAN					CONSTLIT("playerWingman")
 #define PROPERTY_RADIATION_IMMUNE				CONSTLIT("radiationImmune")
 #define PROPERTY_ROTATION						CONSTLIT("rotation")
@@ -71,6 +77,9 @@ const int MAX_DRIVE_DAMAGE_OVERLAY_COUNT =		3;
 
 const int ATTACK_THRESHOLD =					90;
 
+const int TRADE_UPDATE_FREQUENCY =				1801;		//	Interval for checking trade
+const int INVENTORY_REFRESHED_PER_UPDATE =		20;			//	% of inventory refreshed on each update frequency
+
 CShip::CShip (void) : CSpaceObject(&g_Class),
 		m_pDocked(NULL),
 		m_pDriveDesc(NULL),
@@ -81,6 +90,7 @@ CShip::CShip (void) : CSpaceObject(&g_Class),
 		m_iDeviceCount(0),
 		m_Devices(NULL),
 		m_pEncounterInfo(NULL),
+		m_pTrade(NULL),
 		m_dwNameFlags(0),
 		m_pExitGate(NULL),
 		m_pDeferredOrders(NULL)
@@ -103,6 +113,9 @@ CShip::~CShip (void)
 
 	if (m_pIrradiatedBy)
 		delete m_pIrradiatedBy;
+
+	if (m_pTrade)
+		delete m_pTrade;
 	}
 
 bool CShip::AbsorbWeaponFire (CInstalledDevice *pWeapon)
@@ -129,7 +142,7 @@ bool CShip::AbsorbWeaponFire (CInstalledDevice *pWeapon)
 		return false;
 	}
 
-void CShip::AddOverlay (CEnergyFieldType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifeLeft, DWORD *retdwID)
+void CShip::AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifeLeft, DWORD *retdwID)
 
 //	AddOverlay
 //
@@ -140,10 +153,38 @@ void CShip::AddOverlay (CEnergyFieldType *pType, int iPosAngle, int iPosRadius, 
 
 	//	Recalc bonuses, etc.
 
+	CalcBounds();
+	CalcOverlayImpact();
 	CalcArmorBonus();
 	CalcDeviceBonus();
 	m_pController->OnWeaponStatusChanged();
 	m_pController->OnArmorRepaired(-1);
+	}
+
+CTradingDesc *CShip::AllocTradeDescOverride (void)
+
+//	AllocTradeDescOverride
+//
+//	Makes sure that we have the m_pTrade structure allocated.
+//	This is an override of the trade desc in the type
+
+	{
+	if (m_pTrade == NULL)
+		{
+		m_pTrade = new CTradingDesc;
+
+		//	Set the same economy type
+
+		CTradingDesc *pBaseTrade = m_pClass->GetTradingDesc();
+		if (pBaseTrade)
+			{
+			m_pTrade->SetEconomyType(pBaseTrade->GetEconomyType());
+			m_pTrade->SetMaxCurrency(pBaseTrade->GetMaxCurrency());
+			m_pTrade->SetReplenishCurrency(pBaseTrade->GetReplenishCurrency());
+			}
+		}
+
+	return m_pTrade;
 	}
 
 void CShip::Behavior (SUpdateCtx &Ctx)
@@ -241,6 +282,10 @@ void CShip::CalcBounds (void)
 	//	Add the effect bounds
 
 	m_Effects.AccumulateBounds(this, m_pClass->GetEffectsDesc(), GetRotation(), &rcBounds);
+
+	//	Overlay bounds
+
+	m_EnergyFields.AccumulateBounds(this, &rcBounds);
 
 	//	Set bounds
 
@@ -344,6 +389,45 @@ void CShip::CalcDeviceBonus (void)
 
 	if (IsCreated())
 		m_pController->OnStatsChanged();
+	}
+
+int CShip::CalcDeviceSlotsInUse (int *retiWeaponSlots, int *retiNonWeapon) const
+
+//	CalcDeviceSlotsInUse
+//
+//	Returns the number of device slots being used
+
+	{
+	int i;
+	int iAll = 0;
+	int iWeapons = 0;
+	int iNonWeapons = 0;
+
+	//	Count the number of slots being used up currently
+
+	for (i = 0; i < GetDeviceCount(); i++)
+		{
+		CInstalledDevice *pDevice = GetDevice(i);
+		if (!pDevice->IsEmpty())
+			{
+			int iSlots = pDevice->GetClass()->GetSlotsRequired();
+			iAll += iSlots;
+
+			if (pDevice->GetSlotCategory() == itemcatWeapon 
+					|| pDevice->GetSlotCategory() == itemcatLauncher)
+				iWeapons += iSlots;
+			else
+				iNonWeapons += iSlots;
+			}
+		}
+
+	if (retiWeaponSlots)
+		*retiWeaponSlots = iWeapons;
+
+	if (retiNonWeapon)
+		*retiNonWeapon = iNonWeapons;
+
+	return iAll;
 	}
 
 bool CShip::CalcDeviceTarget (STargetingCtx &Ctx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution)
@@ -476,27 +560,12 @@ CSpaceObject::InstallItemResults CShip::CalcDeviceToReplace (const CItem &Item, 
 
 	bool bIsWeapon = (iSlotCategory == itemcatWeapon || iSlotCategory == itemcatLauncher);
 	bool bIsMisc = (iSlotCategory == itemcatMiscDevice);
-	int iAll = 0;
-	int iWeapons = 0;
-	int iNonWeapons = 0;
 
 	//	Count the number of slots being used up currently
 
-	for (i = 0; i < GetDeviceCount(); i++)
-		{
-		CInstalledDevice *pDevice = GetDevice(i);
-		if (!pDevice->IsEmpty())
-			{
-			int iSlots = pDevice->GetClass()->GetSlotsRequired();
-			iAll += iSlots;
-
-			if (pDevice->GetSlotCategory() == itemcatWeapon 
-					|| pDevice->GetSlotCategory() == itemcatLauncher)
-				iWeapons += iSlots;
-			else
-				iNonWeapons += iSlots;
-			}
-		}
+	int iWeapons;
+	int iNonWeapons;
+	int iAll = CalcDeviceSlotsInUse(&iWeapons, &iNonWeapons);
 
 	//	See how many slots we would need to free in order to install this 
 	//	device.
@@ -634,6 +703,25 @@ int CShip::CalcMaxCargoSpace (void) const
 	//	with extra devices)
 
 	return Min(iCargoSpace, m_pClass->GetMaxCargoSpace());
+	}
+
+void CShip::CalcOverlayImpact (void)
+
+//	CalcOverlayImpact
+//
+//	Calculates the impact of overlays on the ship. This should be called 
+//	whenever the set of overlays changes.
+
+	{
+	CEnergyFieldList::SImpactDesc Impact;
+	m_EnergyFields.GetImpact(this, &Impact);
+
+	//	Update our cache
+
+	m_fDisarmedByOverlay = Impact.bDisarm;
+	m_fParalyzedByOverlay = Impact.bParalyze;
+	m_fSpinningByOverlay = Impact.bSpin;
+	m_fDragByOverlay = (Impact.rDrag < 1.0);
 	}
 
 void CShip::CalcReactorStats (void)
@@ -1015,6 +1103,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 	pShip->m_rCargoMass = 0.0;
 	pShip->SetDriveDesc(NULL);
 	pShip->m_pReactorDesc = pClass->GetReactorDesc();
+	pShip->m_pTrade = NULL;
 
 	pShip->m_fOutOfFuel = false;
 	pShip->m_fTrackFuel = false;
@@ -1035,6 +1124,10 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 	pShip->m_fRecalcRotationAccel = true;
 	pShip->m_fDockingDisabled = false;
 	pShip->m_fControllerDisabled = false;
+	pShip->m_fParalyzedByOverlay = false;
+	pShip->m_fDisarmedByOverlay = false;
+	pShip->m_fSpinningByOverlay = false;
+	pShip->m_fDragByOverlay = false;
 	pShip->m_dwSpare = 0;
 
 	//	Shouldn't be able to hit a virtual ship
@@ -1054,7 +1147,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 
 	//	Create items
 
-	if (error = pShip->CreateRandomItems(pClass->GetRandomItemTable(), pSystem->GetLevel()))
+	if (error = pShip->CreateRandomItems(pClass->GetRandomItemTable(), pSystem))
 		return error;
 
 	//	Devices
@@ -1238,12 +1331,12 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 			}
 		}
 
-	//	Set override
+	//	Set override, just before creation.
+	//	
+	//	NOTE: We need to call SetOverride even if we have NULL for a handler 
+	//	because it also sets event flags (SetEventFlags).
 
-	if (pOverride)
-		pShip->SetOverride(pOverride);
-	else
-		pShip->SetEventFlags();
+	pShip->SetOverride(pOverride);
 
 	//	Ship interior
 
@@ -1260,7 +1353,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 
 		if (pCtx->pItems)
 			{
-			if (pShip->CreateRandomItems(pCtx->pItems, pSystem->GetLevel()) != NOERROR)
+			if (pShip->CreateRandomItems(pCtx->pItems, pSystem) != NOERROR)
 				kernelDebugLogMessage("Unable to create items for ship: %x", pClass->GetUNID());
 			}
 
@@ -1333,7 +1426,7 @@ void CShip::DamageCargo (SDamageCtx &Ctx)
 	//	Create an overlay to spew smoke
 
 	DWORD dwDamageUNID = (mathRandom(1, 100) <= 20 ? UNID_DAMAGED_SITE_SMALL : UNID_DEPREZ_SITE_SMALL);
-	CEnergyFieldType *pOverlayType = g_pUniverse->FindOverlayType(dwDamageUNID);
+	COverlayType *pOverlayType = g_pUniverse->FindOverlayType(dwDamageUNID);
 	if (pOverlayType
 			&& m_EnergyFields.GetCountOfType(pOverlayType) < MAX_DAMAGE_OVERLAY_COUNT)
 		{
@@ -1363,7 +1456,7 @@ void CShip::DamageDevice (CInstalledDevice *pDevice, SDamageCtx &Ctx)
 
 	//	Create an overlay to spew smoke
 
-	CEnergyFieldType *pOverlayType = g_pUniverse->FindOverlayType(UNID_DAMAGED_SITE_SMALL);
+	COverlayType *pOverlayType = g_pUniverse->FindOverlayType(UNID_DAMAGED_SITE_SMALL);
 	if (pOverlayType)
 		CSpaceObject::AddOverlay(pOverlayType, Ctx.vHitPos, 180, 9000);
 	}
@@ -1397,7 +1490,7 @@ void CShip::DamageDrive (SDamageCtx &Ctx)
 
 		//	Create an overlay to spew smoke
 
-		CEnergyFieldType *pOverlayType = g_pUniverse->FindOverlayType(UNID_DAMAGED_SITE_MEDIUM);
+		COverlayType *pOverlayType = g_pUniverse->FindOverlayType(UNID_DAMAGED_SITE_MEDIUM);
 		if (pOverlayType
 				&& m_EnergyFields.GetCountOfType(pOverlayType) < MAX_DRIVE_DAMAGE_OVERLAY_COUNT)
 			CSpaceObject::AddOverlay(pOverlayType, Ctx.vHitPos, 180, iDamageTime);
@@ -1613,7 +1706,7 @@ void CShip::DisableDevice (CInstalledDevice *pDevice)
 		EnableDevice(iDev, false);
 	}
 
-void CShip::EnableDevice (int iDev, bool bEnable)
+void CShip::EnableDevice (int iDev, bool bEnable, bool bSilent)
 
 //	EnableDevice
 //
@@ -1631,7 +1724,7 @@ void CShip::EnableDevice (int iDev, bool bEnable)
 	CalcDeviceBonus();
 	m_pController->OnWeaponStatusChanged();
 	m_pController->OnArmorRepaired(-1);
-	m_pController->OnDeviceEnabledDisabled(iDev, bEnable);
+	m_pController->OnDeviceEnabledDisabled(iDev, bEnable, bSilent);
 
 	//	Fire event
 
@@ -2217,6 +2310,29 @@ int CShip::GetCombatPower (void)
 	return m_pController->GetCombatPower();
 	}
 
+int CShip::GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon)
+
+//	GetDamageEffectiveness
+//
+//	Returns the effectiveness of the given weapon against this ship.
+//
+//	< 0		The weapon is ineffective against us.
+//	0-99	The weapon is less effective than average.
+//	100		The weapon has average effectiveness
+//	> 100	The weapon is more effective than average.
+
+	{
+	//	First ask the shields, if we have them, and if they are up.
+
+	CInstalledDevice *pShields = GetNamedDevice(devShields);
+	if (pShields && GetShieldLevel() > 0)
+		return pShields->GetDamageEffectiveness(pAttacker, pWeapon);
+	else if (m_Armor.GetCount() > 0)
+		return m_Armor[0].GetDamageEffectiveness(pAttacker, pWeapon);
+	else
+		return 100;
+	}
+
 DamageTypes CShip::GetDamageType (void)
 
 //	GetDamageType
@@ -2512,7 +2628,7 @@ int CShip::GetNearestDockPort (CSpaceObject *pRequestingObj, CVector *retvPort)
 	int iPort = m_DockingPorts.FindNearestEmptyPort(this, pRequestingObj);
 
 	if (retvPort)
-		*retvPort = m_DockingPorts.GetPortPos(this, iPort);
+		*retvPort = m_DockingPorts.GetPortPos(this, iPort, pRequestingObj);
 
 	return iPort;
 	}
@@ -2560,7 +2676,21 @@ ICCItem *CShip::GetProperty (const CString &sName)
 	int i;
 	CCodeChain &CC = g_pUniverse->GetCC();
 
-	if (strEquals(sName, PROPERTY_BLINDING_IMMUNE))
+	if (strEquals(sName, PROPERTY_AVAILABLE_NON_WEAPON_SLOTS))
+		{
+		int iNonWeapon;
+		int iAll = CalcDeviceSlotsInUse(NULL, &iNonWeapon);
+
+		return CC.CreateInteger(Max(0, Min(m_pClass->GetMaxNonWeapons() - iNonWeapon, m_pClass->GetMaxDevices() - iAll)));
+		}
+	else if (strEquals(sName, PROPERTY_AVAILABLE_WEAPON_SLOTS))
+		{
+		int iWeapon;
+		int iAll = CalcDeviceSlotsInUse(&iWeapon);
+
+		return CC.CreateInteger(Max(0, Min(m_pClass->GetMaxWeapons() - iWeapon, m_pClass->GetMaxDevices() - iAll)));
+		}
+	else if (strEquals(sName, PROPERTY_BLINDING_IMMUNE))
 		{
 		for (i = 0; i < GetArmorSectionCount(); i++)
 			{
@@ -2616,7 +2746,10 @@ ICCItem *CShip::GetProperty (const CString &sName)
 		return (m_pDocked ? CC.CreateInteger(m_pDocked->GetID()) : CC.CreateNil());
 
 	else if (strEquals(sName, PROPERTY_DOCKING_ENABLED))
-		return CC.CreateBool(SupportsDocking());
+		return CC.CreateBool(SupportsDocking(true));
+
+	else if (strEquals(sName, PROPERTY_DOCKING_PORT_COUNT))
+		return CC.CreateInteger(m_DockingPorts.GetPortCount(this));
 
 	else if (strEquals(sName, PROPERTY_EMP_IMMUNE))
 		{
@@ -2629,6 +2762,25 @@ ICCItem *CShip::GetProperty (const CString &sName)
 
 		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
 		}
+
+	else if (strEquals(sName, PROPERTY_INTERIOR_HP))
+		{
+		int iHP;
+		m_Interior.GetHitPoints(this, m_pClass->GetInteriorDesc(), &iHP);
+		return CC.CreateInteger(iHP);
+		}
+
+	else if (strEquals(sName, PROPERTY_MAX_INTERIOR_HP))
+		{
+		int iHP;
+		int iMaxHP;
+		m_Interior.GetHitPoints(this, m_pClass->GetInteriorDesc(), &iHP, &iMaxHP);
+		return CC.CreateInteger(iMaxHP);
+		}
+
+	else if (strEquals(sName, PROPERTY_OPEN_DOCKING_PORT_COUNT))
+		return CC.CreateInteger(GetOpenDockingPortCount());
+
 	else if (strEquals(sName, PROPERTY_PLAYER_WINGMAN))
 		{
 		return CC.CreateBool(m_pController->IsPlayerWingman());
@@ -3590,6 +3742,8 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 	if (Ctx.iDamage == 0)
 		return damageNoDamage;
 
+	bool bIsPlayer = IsPlayer();
+
 	//	We're hit
 
 	m_iLastHitTime = g_pUniverse->GetTicks();
@@ -3642,10 +3796,22 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 
 	//	Let our shield generators take a crack at it
 
-	int iOriginalDamage = Ctx.iDamage;
 	for (i = 0; i < GetDeviceCount(); i++)
 		{
 		bool bAbsorbed = m_Devices[i].AbsorbDamage(this, Ctx);
+
+		//	If this is the player, report stats
+
+		if (bIsPlayer
+				&& Ctx.iAbsorb > 0)
+			{
+			CItem *pItem = m_Devices[i].GetItem();
+			if (pItem)
+				GetController()->OnItemDamaged(*pItem, Ctx.iAbsorb);
+			}
+
+		//	If destroyed or completely absorbed, we're done
+
 		if (IsDestroyed())
 			return damageDestroyed;
 		else if (bAbsorbed)
@@ -3680,9 +3846,16 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 
 	//	Let the armor handle it
 
-	EDamageResults iResult = (pArmor ? pArmor->AbsorbDamage(this, Ctx) : damageArmorHit);
-	if (iResult != damageArmorHit)
-		return iResult;
+	int iDamageSustained = Ctx.iDamage;
+	if (pArmor)
+		{
+		EDamageResults iResult = pArmor->AbsorbDamage(this, Ctx);
+
+		//	If special result, we're done.
+
+		if (iResult != damageArmorHit)
+			return iResult;
+		}
 
 	//	Tell our attacker that we got hit
 
@@ -3696,7 +3869,7 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 		{
 		//	Tell the controller that we were damaged
 
-		m_pController->OnDamaged(Ctx.Attacker, pArmor, Ctx.Damage, Ctx.iDamage);
+		m_pController->OnDamaged(Ctx.Attacker, pArmor, Ctx.Damage, iDamageSustained);
 		return damageArmorHit;
 		}
 
@@ -3814,6 +3987,7 @@ void CShip::OnDestroyed (SDestroyCtx &Ctx)
 			&& (Ctx.iCause != enteredStargate)
 			&& (Ctx.iCause != killedByDisintegration)
 			&& (Ctx.iCause != killedByShatter)
+			&& (Ctx.iCause != killedByGravity)
 			&& (Ctx.bResurrectPending
 				|| Ctx.iCause == killedByRadiationPoisoning
 				|| Ctx.iCause == killedByRunningOutOfFuel
@@ -3880,6 +4054,7 @@ void CShip::OnDestroyed (SDestroyCtx &Ctx)
 					NULL);
 			break;
 
+		case killedByGravity:
 		case killedByShatter:
 			{
 			int iTick = GetSystem()->GetTick();
@@ -3889,6 +4064,8 @@ void CShip::OnDestroyed (SDestroyCtx &Ctx)
 			const CObjectImageArray &Image = GetImage();
 			if (Image.IsLoaded())
 				{
+				CFractureEffect *pEffect;
+
 				CFractureEffect::Create(GetSystem(),
 						GetPos(),
 						GetVel(),
@@ -3896,7 +4073,10 @@ void CShip::OnDestroyed (SDestroyCtx &Ctx)
 						iTick,
 						m_Rotation.GetFrameIndex(),
 						CFractureEffect::styleExplosion,
-						NULL);
+						&pEffect);
+
+				if (Ctx.iCause == killedByGravity && Ctx.Attacker.GetObj())
+					pEffect->SetAttractor(Ctx.Attacker.GetObj());
 				}
 
 			g_pUniverse->PlaySound(this, g_pUniverse->FindSound(g_ShipExplosionSoundUNID));
@@ -4135,9 +4315,6 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 	{
 	int i;
 
-	if (IsInactive())
-		return;
-
 	//	Figure out which effects we need to paint
 
 	DWORD dwEffects = CalcEffectsMask();
@@ -4153,10 +4330,38 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 	const CObjectImageArray *pImage;
 	pImage = &m_pClass->GetImage();
 
+	//	See if we're invisible in SRS
+
+	DWORD byInvisible;
+	int iRangeIndex = GetDetectionRangeIndex(Ctx.iPerception);
+	if (iRangeIndex >= 6 
+			&& Ctx.pCenter
+			&& Ctx.pCenter != this)
+		{
+		Metric rRange = RangeIndex2Range(iRangeIndex);
+		Metric rDist = Ctx.pCenter->GetDistance(this);
+		if (rDist <= rRange)
+			byInvisible = 0;
+		else
+			{
+			byInvisible = 255 - Min(254, (int)((rDist - rRange) / g_KlicksPerPixel) * 2);
+			bPaintThrust = false;
+			}
+		}
+	else
+		byInvisible = 0;
+
+	//	Paints overlay background
+
+	m_EnergyFields.PaintBackground(Dest, x, y, Ctx);
+
 	//	Paint all effects behind the ship
 
-	Ctx.bInFront = false;
-	m_Effects.Paint(Ctx, m_pClass->GetEffectsDesc(), dwEffects, Dest, x, y);
+	if (!byInvisible)
+		{
+		Ctx.bInFront = false;
+		m_Effects.Paint(Ctx, m_pClass->GetEffectsDesc(), dwEffects, Dest, x, y);
+		}
 
 	//	Paint the ship
 
@@ -4167,25 +4372,25 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 			m_Rotation.GetFrameIndex(), 
 			Ctx.iTick,
 			bPaintThrust,
-			IsRadioactive()
+			IsRadioactive(),
+			byInvisible
 			);
 
 	//	Paint effects in front of the ship.
 
-	Ctx.bInFront = true;
-	m_Effects.Paint(Ctx, m_pClass->GetEffectsDesc(), dwEffects, Dest, x, y);
+	if (!byInvisible)
+		{
+		Ctx.bInFront = true;
+		m_Effects.Paint(Ctx, m_pClass->GetEffectsDesc(), dwEffects, Dest, x, y);
+		}
 
 	//	Paint energy fields
 
 	m_EnergyFields.Paint(Dest, pImage->GetImageViewportSize(), x, y, Ctx);
 
-	//	Paint effects
-
-	PaintEffects(Dest, x, y, Ctx);
-
 	//	If paralyzed, draw energy arcs
 
-	if (IsParalyzed() || m_iDisarmedTimer > 0 || m_fDeviceDisrupted)
+	if (ShowParalyzedEffect())
 		{
 		Metric rSize = (Metric)RectWidth(m_pClass->GetImage().GetImageRect()) / 2;
 		for (i = 0; i < PARALYSIS_ARC_COUNT; i++)
@@ -4214,11 +4419,6 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 					0.4);
 			}
 		}
-
-	//	Paint the selection
-
-	if (IsHighlighted() && !Ctx.fNoSelection)
-		PaintHighlight(Dest, pImage->GetImageRectAtPoint(x, y), Ctx);
 
 	//	Known
 
@@ -4250,6 +4450,16 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 			}
 		}
 #endif
+	}
+
+void CShip::OnPaintAnnotations (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	OnPaintAnnotations
+//
+//	Paint additional annotations.
+
+	{
+	m_EnergyFields.PaintAnnotations(Dest, x, y, Ctx);
 	}
 
 void CShip::OnPaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y)
@@ -4377,6 +4587,7 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 //
 //	CShipInterior
 //	CDockingPorts
+//	CTradeDesc	m_pTrade
 //
 //	DWORD		No of registered objects
 //	DWORD		registered object (CSpaceObject ref)
@@ -4499,6 +4710,10 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 	m_fGalacticMap =			((dwLoad & 0x00010000) ? true : false);
 	m_fDockingDisabled =		((dwLoad & 0x00020000) ? true : false);
 	m_fControllerDisabled =		((dwLoad & 0x00040000) ? true : false);
+	m_fParalyzedByOverlay =		((dwLoad & 0x00080000) ? true : false);
+	m_fDisarmedByOverlay =		((dwLoad & 0x00100000) ? true : false);
+	m_fSpinningByOverlay =		((dwLoad & 0x00200000) ? true : false);
+	m_fDragByOverlay =			((dwLoad & 0x00400000) ? true : false);
 
 	//	OK to recompute
 	m_fRecalcRotationAccel = true;
@@ -4585,6 +4800,22 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 		m_DockingPorts.InitPorts(this, m_pClass->GetDockingPortPositions());
 		}
 #endif
+
+	//	Trade desc
+
+	if (Ctx.dwVersion >= 105)
+		{
+		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
+		if (dwLoad != 0xffffffff)
+			{
+			m_pTrade = new CTradingDesc;
+			m_pTrade->ReadFromStream(Ctx);
+			}
+		else
+			m_pTrade = NULL;
+		}
+	else
+		m_pTrade = NULL;
 
 	//	Registered objects / subscriptions
 
@@ -4694,10 +4925,12 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 	{
 	int i;
+	bool bOverlaysChanged = false;
 	bool bWeaponStatusChanged = false;
 	bool bArmorStatusChanged = false;
 	bool bCalcDeviceBonus = false;
 	bool bCargoChanged = false;
+	bool bBoundsChanged = false;
 
 	//	If we passed through a gate, then destroy ourselves
 
@@ -4774,6 +5007,11 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 	int iTick = GetSystem()->GetTick() + GetDestiny();
 
+	//	Trade
+
+	if ((iTick % TRADE_UPDATE_FREQUENCY) == 0)
+		UpdateTrade(Ctx, INVENTORY_REFRESHED_PER_UPDATE);
+
 	//	Calc rotation acceleration (for player ships we adjust this 
 	//	acceleration based on mass, etc.).
 
@@ -4793,7 +5031,7 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 		//	See if we're firing. Note that we fire before we rotate so that the
 		//	fire behavior code can know which way we're aiming.
 
-		if (m_iDisarmedTimer == 0)
+		if (!IsDisarmed())
 			{
 			STargetingCtx TargetingCtx;
 
@@ -4851,7 +5089,10 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 				}
 			}
 		else
-			m_iDisarmedTimer--;
+			{
+			if (m_iDisarmedTimer > 0)
+				m_iDisarmedTimer--;
+			}
 
 		//	Update rotation
 
@@ -4893,7 +5134,7 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 	//	If we're paralyzed, rotate in one direction
 
-	else
+	else if (ShowParalyzedEffect())
 		{
 		//	Rotate wildly
 
@@ -4904,8 +5145,35 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 		SetVel(CVector(GetVel().GetX() * g_SpaceDragFactor, GetVel().GetY() * g_SpaceDragFactor));
 
-		if (m_iParalysisTimer != -1)
+		if (m_iParalysisTimer > 0)
 			m_iParalysisTimer--;
+		}
+	
+	//	Otherwise, we're paralyzed (by an overlay most-likely)
+
+	else
+		{
+		//	Spin wildly
+
+		if (m_pDocked == NULL && m_fSpinningByOverlay)
+			m_Rotation.Update(m_pClass->GetRotationDesc(), ((GetDestiny() % 2) ? RotateLeft : RotateRight));
+		}
+
+	//	Slow down if an overlay is imposing drag
+
+	if (m_fDragByOverlay
+			&& !ShowParalyzedEffect())
+		{
+		//	We're too lazy to store the drag coefficient, so we recalculate it here.
+		//
+		//	(Since it's rare to have this, it shouldn't been too much of a performance
+		//	penalty. But if necessary we have add a special function to just get the
+		//	drag coefficient from the overlay list.)
+
+		CEnergyFieldList::SImpactDesc Impact;
+		m_EnergyFields.GetImpact(this, &Impact);
+
+		SetVel(CVector(GetVel().GetX() * Impact.rDrag, GetVel().GetY() * Impact.rDrag));
 		}
 
 	//	Drive damage timer
@@ -5084,9 +5352,11 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 			return;
 		else if (bModified)
 			{
+			bOverlaysChanged = true;
 			bWeaponStatusChanged = true;
 			bArmorStatusChanged = true;
 			bCalcDeviceBonus = true;
+			bBoundsChanged = true;
 			}
 		}
 
@@ -5136,6 +5406,12 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 		m_Effects.Update(this, m_pClass->GetEffectsDesc(), GetRotation(), CalcEffectsMask());
 
 	//	Invalidate
+
+	if (bBoundsChanged)
+		CalcBounds();
+
+	if (bOverlaysChanged)
+		CalcOverlayImpact();
 
 	if (bCalcDeviceBonus)
 		CalcDeviceBonus();
@@ -5272,6 +5548,10 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fGalacticMap ?			0x00010000 : 0);
 	dwSave |= (m_fDockingDisabled ?		0x00020000 : 0);
 	dwSave |= (m_fControllerDisabled ?	0x00040000 : 0);
+	dwSave |= (m_fParalyzedByOverlay ?	0x00080000 : 0);
+	dwSave |= (m_fDisarmedByOverlay ?	0x00100000 : 0);
+	dwSave |= (m_fSpinningByOverlay ?	0x00200000 : 0);
+	dwSave |= (m_fDragByOverlay ?		0x00400000 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	//	Armor
@@ -5318,6 +5598,21 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 	//	Docking ports
 
 	m_DockingPorts.WriteToStream(this, pStream);
+
+	//	Trade desc
+
+	if (m_pTrade)
+		{
+		dwSave = 1;
+		pStream->Write((char *)&dwSave, sizeof(DWORD));
+
+		m_pTrade->WriteToStream(pStream);
+		}
+	else
+		{
+		dwSave = 0xffffffff;
+		pStream->Write((char *)&dwSave, sizeof(DWORD));
+		}
 
 	//	Encounter info
 
@@ -5784,6 +6079,19 @@ ALERROR CShip::RemoveItemAsDevice (CItemListManipulator &ItemList)
 	InvalidateItemListState();
 
 	return NOERROR;
+	}
+
+void CShip::RemoveOverlay (DWORD dwID)
+
+//	RemoveOverlay
+//
+//	Removes an overlay from the ship
+	
+	{
+	m_EnergyFields.RemoveField(this, dwID);
+
+	//	NOTE: No need to recalc bonuses or overlap impact because the overlay
+	//	is not actually removed until Update (at which point we recalc).
 	}
 
 void CShip::RepairAllArmor (void)
@@ -6372,6 +6680,11 @@ bool CShip::SetProperty (const CString &sName, ICCItem *pValue, CString *retsErr
 	if (strEquals(sName, PROPERTY_DOCKING_ENABLED))
 		{
 		m_fDockingDisabled = pValue->IsNil();
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_INTERIOR_HP))
+		{
+		m_Interior.SetHitPoints(this, m_pClass->GetInteriorDesc(), pValue->GetIntegerValue());
 		return true;
 		}
 	else if (strEquals(sName, PROPERTY_PLAYER_WINGMAN))

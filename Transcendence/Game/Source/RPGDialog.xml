@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+<!-- DIALOG SCREEN =============================================================
+
+	This screen is used to show simple dialog.
+
+	gData is a list of paneDesc. Each screenDesc has the following fields:
+	
+		desc: The description to show for the pane. [This should be literal text
+				after translation.]
+				
+		actions: This is a list of actionDesc structures representing the set
+				of actions for this pane.
+		
+		nextLabel: This field indicates that we should have a single action to
+				advance to the next pane. This is the label for the action.
+				[Valid only if actions is Nil.]
+				
+		nextCode: This is a lambda function to execute when we advance to the
+				next pane.
+				[Valid only if acitons is Nil.]
+				
+		id: An optional identifier for the pane.
+				
+	An actionDesc structure has the following fields:
+	
+		label: The label for the action. This is required.
+		
+		nextPane: The next pane to advance to, by ID. If this value is Nil, then
+				we exit the screen. If this is the special value 'forceUndock
+				then we exit and undock.
+		
+		code: An optional lambda function to execute when this action is
+				selected.
+
+-->
+
+	<DockScreen UNID="&dsRPGDialog;"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			>
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(pageCount (count gData))
+						(pageNo (if (scrGetData gScreen 'curPage) (scrGetData gScreen 'curPage) 0))
+						(pageDesc (@ gData pageNo))
+						
+						(nextActionID 0)
+						)
+						
+						;	Set the page text
+						
+						(scrSetDesc gScreen (@ pageDesc 'desc))
+						
+						;	Add all the appropriate actions
+						
+						(switch
+							
+							;	If we have a list of actions, then create them
+							
+							(@ pageDesc 'actions)
+								(enum (@ pageDesc 'actions) actionDesc
+									(block Nil
+										(scrAddAction 
+											gScreen 
+											(cat "action" nextActionID)
+											Nil
+											(@ actionDesc 'label)
+											Nil
+											(switch
+												(eq (count (@ pageDesc 'actions)) 1)
+													(list "default" "cancel")
+												(eq nextActionID 0)
+													"default"
+												(eq nextActionID (subtract (count (@ pageDesc 'actions)) 1))
+													"cancel"
+												Nil
+												)
+											(lambda ()
+												(block Nil
+													(if (@ actionDesc 'code)
+														((@ actionDesc 'code))
+														)
+													
+													(switch
+														(not (@ actionDesc 'nextPane))
+															(scrExitScreen gScreen)
+														
+														(eq (@ actionDesc 'nextPane) 'exitScreen)
+															(scrExitScreen gScreen)
+														
+														(eq (@ actionDesc 'nextPane) 'forceUndock)
+															(scrExitScreen gScreen 'forceUndock)
+														
+														(block Nil
+															(scrSetData gScreen 'curPage (rpgFindIndexByID gData (@ actionDesc 'nextPane)))
+															(scrShowPane gScreen "Default")
+															)
+														)
+													)
+												)
+											)
+											
+										(setq nextActionID (add nextActionID 1))
+										)
+									)
+									
+							;	Otherwise we create a single "Continue" action
+							
+							(scrAddAction
+								gScreen
+								(if (ls pageNo pageCount)
+									"actionContinue"
+									"actionDone"
+									)
+								Nil
+								(if (@ pageDesc 'nextLabel) (@ pageDesc 'nextLabel) "")
+								Nil
+								(list "default" "cancel")
+								(lambda ()
+									(block (
+										(pageNo (if (scrGetData gScreen 'curPage) (scrGetData gScreen 'curPage) 0))
+										)
+										(if (@ pageDesc 'nextCode)
+											((@ pageDesc 'nextCode))
+											)
+										
+										(switch
+											(eq (@ pageDesc 'nextPane) 'exitScreen)
+												(scrExitScreen gScreen)
+												
+											(eq (@ pageDesc 'nextPane) 'forceUndock)
+												(scrExitScreen gScreen 'forceUndock)
+												
+											(@ pageDesc 'nextPane)
+												(block Nil
+													(scrSetData gScreen 'curPage (rpgFindIndexByID gData (@ pageDesc 'nextPane)))
+													(scrShowPane gScreen "Default")
+													)
+											
+											(block Nil
+												(setq pageNo (add pageNo 1))
+												(if (ls pageNo pageCount)
+													(block Nil
+														(scrSetData gScreen 'curPage pageNo)
+														(scrShowPane gScreen "Default")
+														)
+													(scrExitScreen gScreen)
+													)
+												)
+											)
+										)
+									)
+								)
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
+	
+<!-- GLOBALS -->
+	
+	<Globals>
+		(block Nil
+			(setq rpgFindIndexByID (lambda (dialogDesc id)
+				(block (
+					(i 0)
+					(pageFound Nil)
+					)
+					
+					(enumwhile dialogDesc (not pageFound) pageDesc
+						(block Nil
+							(if (eq (@ pageDesc 'id) id)
+								(setq pageFound i)
+								)
+								
+							(setq i (add i 1))
+							)
+						)
+						
+					pageFound
+					)
+				))
+			)
+	</Globals>
+
+</TranscendenceModule>

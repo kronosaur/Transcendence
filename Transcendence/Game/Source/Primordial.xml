@@ -93,7 +93,7 @@
 		<Items>
 			<Table>
 				<Null chance="92"/>
-				<Lookup chance="8" table="&tbPrimordialAsteroidOre;"/>
+				<Lookup chance="8" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -134,7 +134,7 @@
 		<Items>
 			<Table>
 				<Null chance="92"/>
-				<Lookup chance="8" count="1d6" table="&tbPrimordialAsteroidOre;"/>
+				<Lookup chance="8" count="1d6" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -168,7 +168,7 @@
 		<Items>
 			<Table>
 				<Null chance="92"/>
-				<Lookup chance="8" count="1d8" table="&tbStoneAsteroidOre;"/>
+				<Lookup chance="8" count="1d8" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -201,7 +201,7 @@
 		<Items>
 			<Table>
 				<Null chance="92"/>
-				<Lookup chance="8" count="1d10" table="&tbStoneAsteroidOre;"/>
+				<Lookup chance="8" count="1d10" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -377,24 +377,6 @@
 				imageWidth="2048" 
 				imageHeight="2048"/>
 	</SpaceEnvironmentType>
-
-<!-- TABLES -->
-
-	<ItemTable unid="&tbPrimordialAsteroidOre;">
-		<LevelTable>
-			<Item levelFrequency="ccccc ccccc ccccc ccccc ccccc" count="45-60"	item="&itTitaniumOre;"/>
-			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPlasteelOre;"/>
-			<Item levelFrequency="ruccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPalladiumOre;"/>
-			<Item levelFrequency="-vruu uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itCeralloyOre;"/>
-			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itPlatinumOre;"/>
-			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itGoldOre;"/>
-			<Item levelFrequency="---vv vvvvv vvvvv vvvvv vvvvv" count="1-35"	item="&itGoldOre;"/>
-			<Item levelFrequency="---vr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itDuralloyOre;"/>
-			<Item levelFrequency="----v vvvvv vvvvv vvvvv vvvvv" count="5-15"	item="&itDuralloyOre;"/>
-			<Item levelFrequency="----v rrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itOrthoSteelOre;"/>
-			<Item levelFrequency="----v ruuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itIthaliumOre;"/>
-		</LevelTable>
-	</ItemTable>
 
 <!-- RESOURCES -->
 

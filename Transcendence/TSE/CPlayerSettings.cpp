@@ -26,6 +26,7 @@
 #define DESC_ATTRIB								CONSTLIT("desc")
 #define DEST_X_ATTRIB							CONSTLIT("destX")
 #define DEST_Y_ATTRIB							CONSTLIT("destY")
+#define DOCK_SERVICES_SCREEN_ATTRIB				CONSTLIT("dockServicesScreen")
 #define HEIGHT_ATTRIB							CONSTLIT("height")
 #define HP_X_ATTRIB								CONSTLIT("hpX")
 #define HP_Y_ATTRIB								CONSTLIT("hpY")
@@ -82,6 +83,7 @@ CPlayerSettings &CPlayerSettings::operator= (const CPlayerSettings &Source)
 	m_sStartNode = Source.m_sStartNode;						//	Starting node (may be blank)
 	m_sStartPos = Source.m_sStartPos;						//	Label of starting position (may be blank)
 	m_pShipScreen = Source.m_pShipScreen;			//	Ship screen
+	m_pDockServicesScreen = Source.m_pDockServicesScreen;
 
 	//	Armor
 
@@ -123,6 +125,7 @@ void CPlayerSettings::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
 	{
 	retTypesUsed->SetAt(m_dwLargeImage, true);
 	retTypesUsed->SetAt(strToInt(m_pShipScreen.GetUNID(), 0), true);
+	retTypesUsed->SetAt(strToInt(m_pDockServicesScreen.GetUNID(), 0), true);
 
 	//	LATER: Add armor images, etc.
 	}
@@ -142,6 +145,9 @@ ALERROR CPlayerSettings::Bind (SDesignLoadCtx &Ctx, CShipClass *pClass)
 	//	Bind basic stuff
 
 	if (error = m_pShipScreen.Bind(Ctx, pClass->GetLocalScreens()))
+		return error;
+
+	if (error = m_pDockServicesScreen.Bind(Ctx, pClass->GetLocalScreens()))
 		return error;
 
 	if (error = m_StartingCredits.Bind(Ctx))
@@ -351,6 +357,21 @@ ALERROR CPlayerSettings::InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, C
 	if (sShipScreenUNID.IsBlank())
 		sShipScreenUNID = strFromInt(DEFAULT_SHIP_SCREEN_UNID, false);
 	m_pShipScreen.LoadUNID(Ctx, sShipScreenUNID);
+
+	//	Load dock services screen
+
+	CString sUNID;
+	if (pDesc->FindAttribute(DOCK_SERVICES_SCREEN_ATTRIB, &sUNID))
+		m_pDockServicesScreen.LoadUNID(Ctx, sUNID);
+	else
+		{
+		if (pClass->GetAPIVersion() >= 23)
+			sUNID = strFromInt(DEFAULT_DOCK_SERVICES_SCREEN, false);
+		else
+			sUNID = strFromInt(COMPATIBLE_DOCK_SERVICES_SCREEN, false);
+
+		m_pDockServicesScreen.LoadUNID(Ctx, sUNID);
+		}
 
 	//	Load the armor display data
 

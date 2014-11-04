@@ -51,6 +51,7 @@
 #define PRIVATE_ATTRIB							CONSTLIT("private")
 #define RELEASE_ATTRIB							CONSTLIT("release")
 #define UNID_ATTRIB								CONSTLIT("UNID")
+#define USES_XML_ATTRIB							CONSTLIT("usesXML")
 #define VERSION_ATTRIB							CONSTLIT("version")
 
 #define FILESPEC_TDB_EXTENSION					CONSTLIT("tdb")
@@ -70,12 +71,14 @@ CExtension::CExtension (void) :
 		m_dwRelease(0),
 		m_pCoverImage(NULL),
 		m_pAdventureDesc(NULL),
+		m_pRootXML(NULL),
 		m_bMarked(false),
 		m_bDebugOnly(false),
 		m_bRegistered(false),
 		m_bVerified(false),
 		m_bDisabled(false),
-		m_bDeleted(false)
+		m_bDeleted(false),
+		m_bUsesXML(false)
 
 //	CExtension constructor
 
@@ -142,10 +145,43 @@ void CExtension::CleanUp (void)
 
 	m_Globals.DeleteAll();
 
+	//	Delete XML representation
+
+	CleanUpXML();
+
 	//	Delete other stuff
 
 	m_Topology.CleanUp();
 	SweepImages();
+	}
+
+void CExtension::CleanUpXML (void)
+
+//	CleanUpXML
+//
+//	Deletes XML representation.
+
+	{
+	int i;
+
+	if (m_pRootXML)
+		{
+		delete m_pRootXML;
+		m_pRootXML = NULL;
+		}
+
+	for (i = 0; i < m_ModuleXML.GetCount(); i++)
+		delete m_ModuleXML[i];
+
+	m_ModuleXML.DeleteAll();
+
+	//	Remove references to XML
+
+	for (i = 0; i < m_DesignTypes.GetCount(); i++)
+		{
+		CDesignType *pType = m_DesignTypes.GetEntry(i);
+		pType->SetXMLElement(NULL);
+		}
 	}
 
 ALERROR CExtension::ComposeLoadError (SDesignLoadCtx &Ctx, CString *retsError)
@@ -189,6 +225,7 @@ ALERROR CExtension::CreateBaseFile (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CEx
 	pExtension->m_bRegistered = true;
 	pExtension->m_bPrivate = true;
 	pExtension->m_bAutoInclude = true;
+	pExtension->m_bUsesXML = false;
 
 	//	Load the apiVersion
 
@@ -257,6 +294,7 @@ ALERROR CExtension::CreateBaseFile (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CEx
 			AdvCtx.sResDb = Ctx.sResDb;
 			AdvCtx.pResDb = Ctx.pResDb;
 			AdvCtx.bNoResources = Ctx.bNoResources;
+			AdvCtx.bKeepXML = Ctx.bKeepXML;
 			AdvCtx.bNoVersionCheck = true;	//	Obsolete now
 			AdvCtx.dwInheritAPIVersion = pExtension->GetAPIVersion();
 			//	No need to set bBindAsNewGame because it is only useful during Bind.
@@ -419,6 +457,7 @@ ALERROR CExtension::CreateExtensionFromRoot (const CString &sFilespec, CXMLEleme
 	pExtension->m_bRegistered = IsRegisteredUNID(pExtension->m_dwUNID);
 	pExtension->m_bPrivate = pDesc->GetAttributeBool(PRIVATE_ATTRIB);
 	pExtension->m_bAutoInclude = pDesc->GetAttributeBool(AUTO_INCLUDE_ATTRIB);
+	pExtension->m_bUsesXML = pDesc->GetAttributeBool(USES_XML_ATTRIB);
 
 	//	API version
 
@@ -762,7 +801,7 @@ CG16bitImage *CExtension::GetCoverImage (void) const
 	return m_pCoverImage;
 	}
 
-ALERROR CExtension::Load (ELoadStates iDesiredState, IXMLParserController *pResolver, bool bNoResources, CString *retsError)
+ALERROR CExtension::Load (ELoadStates iDesiredState, IXMLParserController *pResolver, bool bNoResources, bool bKeepXML, CString *retsError)
 
 //	Load
 //
@@ -801,6 +840,7 @@ ALERROR CExtension::Load (ELoadStates iDesiredState, IXMLParserController *pReso
 			Ctx.pResDb = &ExtDb;
 			Ctx.bNoVersionCheck = true;	//	Obsolete now
 			Ctx.bNoResources = bNoResources;
+			Ctx.bKeepXML = bKeepXML;
 			Ctx.bLoadAdventureDesc = (iDesiredState == loadAdventureDesc && m_iType == extAdventure);
 			Ctx.sErrorFilespec = m_sFilespec;
 
@@ -819,10 +859,14 @@ ALERROR CExtension::Load (ELoadStates iDesiredState, IXMLParserController *pReso
 					}
 				}
 
+			//	If we've already loaded a root element, then we need to clean up
+
+			if (m_pRootXML)
+				CleanUpXML();
+
 			//	Parse the XML file into a structure
 
-			CXMLElement *pRoot;
-			if (error = ExtDb.LoadGameFile(&pRoot, pResolver, retsError))
+			if (error = ExtDb.LoadGameFile(&m_pRootXML, pResolver, retsError))
 				{
 				//	If we're in debug mode then this is a real error.
 
@@ -849,13 +893,17 @@ ALERROR CExtension::Load (ELoadStates iDesiredState, IXMLParserController *pReso
 
 			//	Load all the design elements
 
-			for (i = 0; i < pRoot->GetContentElementCount(); i++)
+			for (i = 0; i < m_pRootXML->GetContentElementCount(); i++)
 				{
-				CXMLElement *pItem = pRoot->GetContentElement(i);
+				CXMLElement *pItem = m_pRootXML->GetContentElement(i);
 
 				if (error = LoadDesignElement(Ctx, pItem))
 					{
-					delete pRoot;
+					if (!bKeepXML)
+						{
+						delete m_pRootXML;
+						m_pRootXML = NULL;
+						}
 
 					if (g_pUniverse->InDebugMode()
 							&& !ExtDb.IsTDB())
@@ -873,7 +921,11 @@ ALERROR CExtension::Load (ELoadStates iDesiredState, IXMLParserController *pReso
 			//	Done
 
 			m_iLoadState = (m_iType == extAdventure ? iDesiredState : loadComplete);
-			delete pRoot;
+			if (!bKeepXML)
+				{
+				delete m_pRootXML;
+				m_pRootXML = NULL;
+				}
 
 			//	If we get this far and we have no libraries, then include the 
 			//	compatibility library.
@@ -1242,7 +1294,13 @@ ALERROR CExtension::LoadModuleElement (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	Ctx.sErrorFilespec = sOldErrorFilespec;
 	Ctx.bLoadModule = bOldLoadModule;
-	delete pModuleXML;
+
+	//	If we're keeping the XML, then add it to our table
+
+	if (Ctx.bKeepXML && !m_ModuleXML.Find(sFilename))
+		m_ModuleXML.Insert(sFilename, pModuleXML);
+	else
+		delete pModuleXML;
 
 	return NOERROR;
 	}

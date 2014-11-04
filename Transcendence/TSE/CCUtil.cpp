@@ -265,6 +265,9 @@ ICCItem *CreateListFromItem (CCodeChain &CC, const CItem &Item)
 //	Creates a code chain list from an item
 
 	{
+	if (Item.GetType() == NULL)
+		return CC.CreateNil();
+
 	return Item.WriteToCCItem(CC);
 	}
 
@@ -314,17 +317,28 @@ bool CreateOrbitFromList (CCodeChain &CC, ICCItem *pList, COrbit *retOrbitDesc)
 //	Creates an orbit from a list.
 
 	{
+	//	Nil means default orbit
+
+	if (pList->IsNil())
+		{
+		*retOrbitDesc = COrbit();
+		return true;
+		}
+
 	//	Must be a list
 
-	if (!pList->IsList())
+	else if (!pList->IsList())
 		return false;
 
 	//	Load binary from list and check the class
 
-	if (!CreateBinaryFromList(CC, CLASS_CORBIT, pList, retOrbitDesc))
-		return false;
+	else
+		{
+		if (!CreateBinaryFromList(CC, CLASS_CORBIT, pList, retOrbitDesc))
+			return false;
 
-	return true;
+		return true;
+		}
 	}
 
 ICCItem *CreateResultFromDataField (CCodeChain &CC, const CString &sValue)
@@ -399,6 +413,18 @@ CVector CreateVectorFromList (CCodeChain &CC, ICCItem *pList)
 		}
 
 	return vVec;
+	}
+
+CCXMLWrapper *CreateXMLElementFromItem (CCodeChain &CC, ICCItem *pItem)
+	{
+	if (!strEquals(pItem->GetTypeOf(), CONSTLIT("xmlElement")))
+		return NULL;
+
+	CCXMLWrapper *pWrapper = dynamic_cast<CCXMLWrapper *>(pItem);
+	if (pItem == NULL)
+		return NULL;
+
+	return pWrapper;
 	}
 
 ICCItem *CreateDisposition (CCodeChain &CC, CSovereign::Disposition iDisp)
@@ -486,6 +512,15 @@ CDamageSource GetDamageSourceArg (CCodeChain &CC, ICCItem *pArg)
 	else if (pArg->IsIdentifier())
 		{
 		CString sCause = pArg->GetElement(0)->GetStringValue();
+
+		//	If the cause happens to be a destruction cause ID, then use that.
+
+		DestructionTypes iCause = ::GetDestructionCause(sCause);
+		if (iCause != killedNone)
+			return CDamageSource(NULL, iCause, NULL, NULL_STR, 0);
+
+		//	Otherwise, this is a custom death
+
 		return CDamageSource(NULL, killedByOther, NULL, sCause, 0);
 		}
 

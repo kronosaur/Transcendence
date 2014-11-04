@@ -508,9 +508,10 @@ bool CReanimator::PaintFrame (CG16bitImage &Dest)
 	int i, j;
 	bool bPainted = false;
 
-	//	Initialize paint context
+	//	Initialize context
 
 	SAniPaintCtx Ctx(Dest, m_ToDest, 255, 0);
+	SAniUpdateCtx UpdateCtx;
 
 	//	Loop over all performances
 
@@ -535,7 +536,7 @@ bool CReanimator::PaintFrame (CG16bitImage &Dest)
 				for (j = 0; j < m_iPlaySpeed && (pPerf->iDuration < 0 || pPerf->iFrame < pPerf->iDuration); j++)
 					{
 					pPerf->iFrame++;
-					pPerf->pAni->GoToNextFrame(pPerf->iFrame);
+					pPerf->pAni->GoToNextFrame(UpdateCtx, pPerf->iFrame);
 					}
 
 				//	Done?
@@ -568,6 +569,14 @@ bool CReanimator::PaintFrame (CG16bitImage &Dest)
 		{
 		m_iPlaySpeed = 1;
 		m_iFastPlayCounter = -1;
+		}
+
+	//	Fire all events
+
+	for (i = 0; i < UpdateCtx.EventsToFire.GetCount(); i++)
+		{
+		const SAniEvent &Event = UpdateCtx.EventsToFire[i];
+		Event.pListener->AniCommand(NULL_STR, Event.sEvent, Event.sCmd, Event.dwData);
 		}
 
 	//	Done

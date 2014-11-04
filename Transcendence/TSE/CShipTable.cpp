@@ -660,6 +660,25 @@ void CSingleShip::CreateShip (SShipCreateCtx &Ctx,
 	GeneratorCtx.pBase = Ctx.pBase;
 	GeneratorCtx.pTarget = Ctx.pTarget;
 
+	//	For orders that need a base, if we don't have a base, then use the exit
+	//	gate instead. This is to handle case where we come here from sysCreateShip
+	//	and we don't get a chance to set Ctx.pBase.
+
+	if (Ctx.pBase == NULL && Ctx.pGate != NULL)
+		{
+		switch (m_iOrder)
+			{
+			case IShipController::orderGuard:
+			case IShipController::orderMine:
+			case IShipController::orderGateOnThreat:
+			case IShipController::orderPatrol:
+			case IShipController::orderEscort:
+			case IShipController::orderFollow:
+				GeneratorCtx.pBase = Ctx.pGate;
+				break;
+			}
+		}
+
 	//	Get the controller
 
 	IShipController *pController = ::CreateShipController(m_sController);
@@ -892,6 +911,21 @@ ALERROR CSingleShip::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		Ctx.sError = strPatternSubst("Invalid order: %s", pDesc->GetAttribute(ORDERS_ATTRIB));
 		return ERR_FAIL;
 		}
+
+	//	If we have no orders, warn
+
+#ifdef DEBUG
+	if (g_pUniverse->InDebugMode()
+			&& m_iOrder == IShipController::orderNone
+			&& Ctx.pType
+			&& Ctx.pType->GetType() != designShipTable
+			&& m_pOverride.GetUNID() == 0
+			&& m_pOnCreate == NULL
+			&& m_sController.IsBlank())
+		{
+		::kernelDebugLogMessage("%s (%08x): Warning: Ship in table has no orders.", Ctx.pType->GetTypeName(), Ctx.pType->GetUNID());
+		}
+#endif
 
 	//	For backwards compatibility, handle patrol distance
 

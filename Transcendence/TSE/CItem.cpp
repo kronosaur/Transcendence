@@ -27,12 +27,6 @@
 #define PROPERTY_INC_CHARGES					CONSTLIT("incCharges")
 #define PROPERTY_INSTALLED						CONSTLIT("installed")
 
-#define SPECIAL_CAN_BE_DAMAGED					CONSTLIT("canBeDamaged:")
-#define SPECIAL_DAMAGE_TYPE						CONSTLIT("damageType:")
-#define SPECIAL_UNID							CONSTLIT("unid:")
-
-#define SPECIAL_TRUE							CONSTLIT("true")
-
 CItemEnhancement CItem::m_NullMod;
 CItem CItem::m_NullItem;
 
@@ -569,7 +563,7 @@ bool CItem::GetDisplayAttributes (CSpaceObject *pSource, TArray<SDisplayAttribut
 	//	Add additional custom attributes
 
 	if (m_pItemType->IsKnown())
-		g_pUniverse->GetDisplayAttributes().AccumulateAttributes(*this, retList);
+		g_pUniverse->GetAttributeDesc().AccumulateAttributes(*this, retList);
 
 	//	Military and Illegal attributes
 
@@ -1048,6 +1042,9 @@ bool CItem::MatchesCriteria (const CItemCriteria &Criteria) const
 
 	{
 	int i;
+
+	if (m_pItemType == NULL)
+		return false;
 
 	//	If we've got a filter, then use that
 
@@ -2397,14 +2394,29 @@ int CItemCriteria::GetMaxLevelMatched (void) const
 //	GetMaxLevelMatches
 //
 //	Returns the maximum item level that this criteria matches. If there is no
-//	explicit level match, then we return the maximum item level.
+//	explicit level match, then we laboriously check for every single
+//	item type that matches and return the max level.
 
 	{
+	int i;
+
 	if (iEqualToLevel != -1)
 		return iEqualToLevel;
 
 	if (iLessThanLevel != -1)
 		return iLessThanLevel - 1;
 
-	return MAX_ITEM_LEVEL;
+	//	Look at every single item that might match
+
+	int iMaxLevel = -1;
+	for (i = 0; i < g_pUniverse->GetItemTypeCount(); i++)
+		{
+		CItemType *pType = g_pUniverse->GetItemType(i);
+		CItem Item(pType, 1);
+
+		if (Item.MatchesCriteria(*this))
+			iMaxLevel = Max(iMaxLevel, pType->GetLevel());
+		}
+
+	return iMaxLevel;
 	}

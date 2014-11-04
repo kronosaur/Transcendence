@@ -85,6 +85,7 @@ const int FUEL_UNITS_PER_STD_ROD =		2500;		//	Fuel units in a standard fuel rod 
 const DWORD INFINITE_TICK =					0xffffffff;	//	Highest tick
 
 const int MAX_TECH_LEVEL =				25;
+const int MAX_SYSTEM_LEVEL =			25;
 
 //	Event Timers
 
@@ -126,10 +127,11 @@ const DWORD UNID_DEFAULT_REACTOR_OVERLOAD_ALARM =	0x000000A4;
 const DWORD UNID_DEFAULT_SHIELDS_DOWN_ALRAM =	0x000000A5;
 const DWORD UNID_DEFAULT_BUTTON_CLICK =		0x000000A6;
 const DWORD UNID_DEFAULT_SELECT =			0x000000A7;
+const DWORD UNID_DEFAULT_GRAVITY_ALARM =	0x000000A8;
 
 const DWORD g_PlayerSovereignUNID =			0x00001001;	//	svPlayer
-const DWORD g_PirateSovereignUNID =			0x00001005;	//	svPirates
 const DWORD DEFAULT_ECONOMY_UNID =			0x00001017;	//	ecCreditEconomy
+const DWORD UNID_UNKNOWN_ENEMY =			0x00001018;	//	svUnknownEnemy
 
 const DWORD g_ShipWreckUNID =				0x00002001;	//	stShipwreck
 const DWORD FLOTSAM_UNID =					0x0000200E;	//	stFlotsam
@@ -165,6 +167,9 @@ const DWORD DEFAULT_DOCK_SCREEN_MASK_UNID =	0x0000F014;	//	Default dock screen m
 const DWORD g_ShipExplosionParticlesUNID =	0x0000F114;	//	rsDebris1
 const DWORD g_ShipExplosionSoundUNID =		0x0000F204;	//	snShipExplosion1
 const DWORD g_StationExplosionSoundUNID =	0x0000F205;	//	snStationExplosion1
+
+const DWORD DEFAULT_DOCK_SERVICES_SCREEN =	0x00010029;
+const DWORD COMPATIBLE_DOCK_SERVICES_SCREEN = 0x0001002A;
 
 #ifdef DEBUG_HENCHMAN
 const DWORD g_DebugHenchmenShipUNID =		0x00103001;	//	scCenturion
