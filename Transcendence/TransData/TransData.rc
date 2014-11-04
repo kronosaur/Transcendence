@@ -50,8 +50,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3,1,400,0
- PRODUCTVERSION 3,1,400,0
+ FILEVERSION 3,2,400,0
+ PRODUCTVERSION 3,2,400,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -68,12 +68,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Kronosaur Productions, LLC"
             VALUE "FileDescription", "TransData"
-            VALUE "FileVersion", "3.1.400.0"
+            VALUE "FileVersion", "3.2.400.0"
             VALUE "InternalName", "TransData"
             VALUE "LegalCopyright", "Copyright (c) 2001-2014 by Kronosaur Productions, LLC. All Rights Reserved."
             VALUE "OriginalFilename", "TransData"
             VALUE "ProductName", "TransData"
-            VALUE "ProductVersion", "3.1.0"
+            VALUE "ProductVersion", "3.2.0"
         END
     END
     BLOCK "VarFileInfo"

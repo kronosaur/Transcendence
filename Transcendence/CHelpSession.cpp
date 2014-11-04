@@ -33,7 +33,7 @@ static SHelpLine g_szHelp[] =
 		{ "[T]",		"Select next target (if targeting installed)",	NULL },
 		{ "[F]",		"Select next friend (if targeting installed)",	NULL },
 		{ "[R]",		"Clear target (if targeting installed)",		NULL },
-		{ "[I]",		"Invoke the powers of Domina",					NULL },
+		{ "[I]",		"Invoke special powers",						NULL },
 		{ "[Q]",		"Squadron orders (if leading a squadron)",		NULL },
 		{ "[C]",		"Communications",								NULL },
 		{ "[B]",		"Enable/disable devices",						NULL },

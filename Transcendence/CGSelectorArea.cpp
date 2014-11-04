@@ -1088,16 +1088,6 @@ void CGSelectorArea::SetRegionsFromMiscDevices (CSpaceObject *pSource)
 		if (pDevice->IsEmpty())
 			continue;
 
-		//	If this is a non-slot device, make sure we have room.
-
-		if (pDevice->GetClass()->GetSlotsRequired() == 0)
-			{
-			if (iNonSlotDeviceSlotsAvail == 0)
-				continue;
-
-			iNonSlotDevices--;
-			}
-
 		//	Figure out the layout descriptor
 
 		const SLayoutDesc *pLayout = NULL;
@@ -1115,7 +1105,21 @@ void CGSelectorArea::SetRegionsFromMiscDevices (CSpaceObject *pSource)
 
 			case itemcatMiscDevice:
 				if (iNextUnamedSlot < MISC_DEVICES_LAYOUT_COUNT)
-					pLayout = &g_MiscDevicesLayout[iNextUnamedSlot++];
+					{
+					//	If this miscellaneous device does not need slots, then 
+					//	make sure we have room for it.
+
+					if (pDevice->GetClass()->GetSlotsRequired() == 0)
+						{
+						if (iNonSlotDeviceSlotsAvail > 0)
+							{
+							iNonSlotDeviceSlotsAvail--;
+							pLayout = &g_MiscDevicesLayout[iNextUnamedSlot++];
+							}
+						}
+					else
+						pLayout = &g_MiscDevicesLayout[iNextUnamedSlot++];
+					}
 				break;
 
 			case itemcatReactor:

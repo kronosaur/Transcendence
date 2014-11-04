@@ -279,8 +279,7 @@
 
 				<Actions>
 					<Action name="Loot this Item" key="L" default="1" >
-						<![CDATA[
-						(if (> gMaxCount 1)
+						(if (gr gMaxCount 1)
 							(scrShowPane gScreen "LootQuantity")
 							(if (eq gMaxCount 1)
 								(block (itemsToLoot)
@@ -291,7 +290,6 @@
 									)
 								)
 							)
-							]]>
 					</Action>
 
 					<Action name="Done" cancel="1" key="D">
@@ -314,10 +312,9 @@
 
 				<Actions>
 					<Action name="Loot" default="1" key="L">
-						<![CDATA[
 						(block (count)
 							(setq count (scrGetCounter gScreen))
-							(if (> count gMaxCount)
+							(if (gr count gMaxCount)
 								(scrSetCounter gScreen gMaxCount)
 								(block (itemsToLoot)
 									(setq itemsToLoot (scrRemoveItem gScreen count))
@@ -327,7 +324,6 @@
 									)
 								)
 							)
-							]]>
 					</Action>
 
 					<Action name="Cancel" cancel="1" key="C">

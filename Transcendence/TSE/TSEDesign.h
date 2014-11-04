@@ -5111,7 +5111,7 @@ class CStationType : public CDesignType
 		inline bool HasGravity (void) const { return (m_rGravityRadius > 0.0); }
 		inline bool HasRandomNames (void) const { return !m_sRandomNames.IsBlank(); }
 		inline bool HasWreckImage (void) const { return (!IsImmutable() && m_iMaxHitPoints > 0); }
-		inline bool IncEncounterMinimum (CTopologyNode *pNode, int iInc = 1) { m_EncounterRecord.IncMinimumForNode(pNode, m_RandomPlacement, iInc); }
+		inline void IncEncounterMinimum (CTopologyNode *pNode, int iInc = 1) { m_EncounterRecord.IncMinimumForNode(pNode, m_RandomPlacement, iInc); }
 		inline bool IsActive (void) { return (m_fInactive ? false : true); }
 		inline bool IsOutOfPlaneObject (void) { return (m_fOutOfPlane ? true : false); }
 		inline bool IsBeacon (void) { return (m_fBeacon ? true : false); }
