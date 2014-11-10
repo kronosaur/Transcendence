@@ -692,6 +692,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'EMPImmune\n"
 			"   'hp\n"
 			"   'installed\n"
+			"   'omnidirectional\n"
 			"   'radiationImmune\n"
 			"   'shatterImmune\n",
 

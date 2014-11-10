@@ -96,6 +96,7 @@
 #define SPECIAL_DAMAGE_TYPE						CONSTLIT("damageType:")
 #define SPECIAL_IS_LAUNCHER						CONSTLIT("isLauncher:")
 #define SPECIAL_LAUNCHED_BY						CONSTLIT("launchedBy:")
+#define SPECIAL_PROPERTY						CONSTLIT("property:")
 
 #define SPECIAL_TRUE							CONSTLIT("true")
 
@@ -1247,6 +1248,19 @@ bool CItemType::OnHasSpecialAttribute (const CString &sAttrib) const
 			return false;
 
 		return (pDevice->GetUNID() == dwLauncher);
+		}
+	else if (strStartsWith(sAttrib, SPECIAL_PROPERTY))
+		{
+		CString sProperty = strSubString(sAttrib, SPECIAL_PROPERTY.GetLength());
+		CItem Item((CItemType *)this, 1);
+		CItemCtx ItemCtx(Item);
+		CCodeChainCtx Ctx;
+
+		ICCItem *pValue = Item.GetProperty(&Ctx, ItemCtx, sProperty);
+		bool bResult = !pValue->IsNil();
+		pValue->Discard(&g_pUniverse->GetCC());
+
+		return bResult;
 		}
 	else
 		return false;

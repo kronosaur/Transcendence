@@ -1949,6 +1949,12 @@ ICCItem *CWeaponClass::GetItemProperty (CItemCtx &Ctx, const CString &sName)
 		return pResult;
 		}
 
+	else if (strEquals(sName, PROPERTY_OMNIDIRECTIONAL))
+		{
+		CInstalledDevice *pDevice = Ctx.GetDevice();	//	May be NULL
+		return CC.CreateBool(IsOmniDirectional(pDevice));
+		}
+
 	//	Otherwise, just get the property from the base class
 
 	else
