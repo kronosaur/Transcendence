@@ -4151,13 +4151,22 @@ ALERROR CreateStationFromElement (SSystemCreateCtx *pCtx, CXMLElement *pDesc, co
 	if (x != 0 || y != 0)
 		vPos = vPos + CVector(x * g_KlicksPerPixel, y * g_KlicksPerPixel);
 
-	//	Create the station
+
+	//	Set up parameters for station creation
 
 	SObjCreateCtx CreateCtx;
 	CreateCtx.vPos = vPos;
 	CreateCtx.pOrbit = &OrbitDesc;
 	CreateCtx.bCreateSatellites = !pDesc->GetAttributeBool(NO_SATELLITES_ATTRIB);
 	CreateCtx.pExtraData = pDesc->GetContentElementByTag(INITIAL_DATA_TAG);
+
+	//	Sovereign override
+
+	DWORD dwSovereign;
+	if (pDesc->FindAttributeInteger(SOVEREIGN_ATTRIB, (int *)&dwSovereign))
+		CreateCtx.pSovereign = g_pUniverse->FindSovereign(dwSovereign);
+
+	//	Create the station
 
 	CStation *pStation = NULL;
 	CSpaceObject *pObj;

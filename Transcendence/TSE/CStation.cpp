@@ -769,7 +769,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 
 	//	Figure out the sovereign
 
-	pStation->m_pSovereign = pType->GetSovereign();
+	pStation->m_pSovereign = (CreateCtx.pSovereign ? CreateCtx.pSovereign : pType->GetSovereign());
 
 	//	Initialize docking ports structure
 

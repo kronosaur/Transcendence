@@ -1063,6 +1063,7 @@ struct SObjCreateCtx
 			pOrbit(NULL),
 			pExtraData(NULL),
 			pEventHandler(NULL),
+			pSovereign(NULL),
 			bCreateSatellites(false)
 		{ }
 
@@ -1075,6 +1076,7 @@ struct SObjCreateCtx
 	const COrbit *pOrbit;					//	Optional orbit (may be NULL)
 	CXMLElement *pExtraData;				//	Extra data for object (may be NULL)
 	CDesignType *pEventHandler;				//	Event handler for object
+	CSovereign *pSovereign;					//	Optional sovereign (may be NULL)
 
 	bool bCreateSatellites;					//	If TRUE, create satellites
 	};
