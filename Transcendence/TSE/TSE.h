@@ -1064,7 +1064,8 @@ struct SObjCreateCtx
 			pExtraData(NULL),
 			pEventHandler(NULL),
 			pSovereign(NULL),
-			bCreateSatellites(false)
+			bCreateSatellites(false),
+			bIgnoreLimits(false)
 		{ }
 
 	CVector vPos;							//	Create at this position. This should
@@ -1079,6 +1080,7 @@ struct SObjCreateCtx
 	CSovereign *pSovereign;					//	Optional sovereign (may be NULL)
 
 	bool bCreateSatellites;					//	If TRUE, create satellites
+	bool bIgnoreLimits;						//	If TRUE, create even if we exceed limits
 	};
 
 class CSystem : public CObject
