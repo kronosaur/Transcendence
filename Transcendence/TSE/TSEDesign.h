@@ -3111,7 +3111,7 @@ class IShipController
 
 			orderNavPath,				//	dwData = nav path ID to follow
 			orderGoTo,					//	Go to the given object (generally a marker)
-			orderWaitForTarget,			//	Hold until pTarget is in LRS range (or dwData timer expires)
+			orderWaitForTarget,			//	Hold until pTarget is in range; dwData1 = radius (0 = LRS range); dwData2 = timer
 			orderWaitForEnemy,			//	Hold until any enemy is in LRS range (or dwData timer expires)
 			orderBombard,				//	Hold and attack target from here; pTarget = target; dwData = time
 
