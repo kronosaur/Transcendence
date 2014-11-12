@@ -297,6 +297,88 @@ bool CGSelectorArea::FindLayoutForPos (const CVector &vPos, const TArray<bool> &
 	return true;
 	}
 
+bool CGSelectorArea::FindNearestRegion (int xCur, int yCur, EDirections iDir, bool bDiagOnly, int *retiIndex) const
+
+//	FindNearestRegion
+//
+//	Finds the nearest region to the given position in the given direction.
+
+	{
+	int i;
+
+	int iBest = -1;
+	int xBestDist;
+	int yBestDist;
+	for (i = 0; i < m_Regions.GetCount(); i++)
+		if (i != m_iCursor)
+			{
+			const SEntry &Entry = m_Regions[i];
+			int xDist = Absolute(Entry.rcRect.left + (RectWidth(Entry.rcRect) / 2) - xCur);
+			int yDist = Absolute(Entry.rcRect.top + (RectHeight(Entry.rcRect) / 2) - yCur);
+			bool bCloser = false;
+
+			//	See if this entry is better than the best so far
+
+			switch (iDir)
+				{
+				case moveDown:
+					bCloser = (Entry.rcRect.top > yCur
+							&& (!bDiagOnly || (yDist >= xDist))
+							&& yDist > 0
+							&& (iBest == -1 
+								|| yDist < yBestDist 
+								|| (yDist == yBestDist && xDist < xBestDist)));
+					break;
+
+				case moveLeft:
+					bCloser = (Entry.rcRect.left < xCur
+							&& (!bDiagOnly || (xDist > yDist))
+							&& xDist > 0
+							&& (iBest == -1
+								|| xDist < xBestDist
+								|| (xDist == xBestDist && yDist < yBestDist)));
+					break;
+
+				case moveRight:
+					bCloser = (Entry.rcRect.left > xCur
+							&& (!bDiagOnly || (xDist > yDist))
+							&& xDist > 0
+							&& (iBest == -1
+								|| xDist < xBestDist
+								|| (xDist == xBestDist && yDist < yBestDist)));
+					break;
+
+				case moveUp:
+					bCloser = (Entry.rcRect.top < yCur
+							&& (!bDiagOnly || (yDist >= xDist))
+							&& yDist > 0
+							&& (iBest == -1 
+								|| yDist < yBestDist 
+								|| (yDist == yBestDist && xDist < xBestDist)));
+					break;
+
+				default:
+					ASSERT(false);
+					return false;
+				}
+
+			if (bCloser)
+				{
+				iBest = i;
+				xBestDist = xDist;
+				yBestDist = yDist;
+				}
+			}
+
+	if (iBest == -1)
+		return false;
+
+	if (retiIndex)
+		*retiIndex = iBest;
+
+	return true;
+	}
+
 bool CGSelectorArea::FindRegionInDirection (EDirections iDir, int *retiIndex) const
 
 //	FindRegionInDirection
@@ -307,8 +389,6 @@ bool CGSelectorArea::FindRegionInDirection (EDirections iDir, int *retiIndex) co
 //	Returns TRUE if the region is found.
 
 	{
-	int i;
-
 	//	Get the current position of the selected region. If we have no selection,
 	//	then we take an arbitrary point at the edge of the area.
 
@@ -351,78 +431,14 @@ bool CGSelectorArea::FindRegionInDirection (EDirections iDir, int *retiIndex) co
 			}
 		}
 
-	//	Loop over all regions and find the one the is closest to the
-	//	given region.
+	//	Look for a region in the given direction, restricting to diagonal.
 
-	int iBest = -1;
-	int xBestDist;
-	int yBestDist;
-	for (i = 0; i < m_Regions.GetCount(); i++)
-		if (i != m_iCursor)
-			{
-			const SEntry &Entry = m_Regions[i];
-			int xDist = Absolute(Entry.rcRect.left + (RectWidth(Entry.rcRect) / 2) - xCur);
-			int yDist = Absolute(Entry.rcRect.top + (RectHeight(Entry.rcRect) / 2) - yCur);
-			bool bCloser = false;
+	if (FindNearestRegion(xCur, yCur, iDir, true, retiIndex))
+		return true;
 
-			//	See if this entry is better than the best so far
+	//	If not found, then don't restrict.
 
-			switch (iDir)
-				{
-				case moveDown:
-					bCloser = (Entry.rcRect.top > yCur
-							&& (yDist >= xDist)
-							&& (iBest == -1 
-								|| yDist < yBestDist 
-								|| (yDist == yBestDist && xDist < xBestDist)));
-					break;
-
-				case moveLeft:
-					bCloser = (Entry.rcRect.left < xCur
-							&& (xDist >= yDist)
-							&& (iBest == -1
-								|| xDist < xBestDist
-								|| (xDist == xBestDist && yDist < yBestDist)));
-					break;
-
-				case moveRight:
-					bCloser = (Entry.rcRect.left > xCur
-							&& (xDist >= yDist)
-							&& (iBest == -1
-								|| xDist < xBestDist
-								|| (xDist == xBestDist && yDist < yBestDist)));
-					break;
-
-				case moveUp:
-					bCloser = (Entry.rcRect.top < yCur
-							&& (yDist >= xDist)
-							&& (iBest == -1 
-								|| yDist < yBestDist 
-								|| (yDist == yBestDist && xDist < xBestDist)));
-					break;
-
-				default:
-					ASSERT(false);
-					return false;
-				}
-
-			if (bCloser)
-				{
-				iBest = i;
-				xBestDist = xDist;
-				yBestDist = yDist;
-				}
-			}
-
-	//	Found?
-
-	if (iBest == -1)
-		return false;
-
-	if (retiIndex)
-		*retiIndex = iBest;
-
-	return true;
+	return FindNearestRegion(xCur, yCur, iDir, false, retiIndex);
 	}
 
 ICCItem *CGSelectorArea::GetEntryAtCursor (void)

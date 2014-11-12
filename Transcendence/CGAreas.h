@@ -246,6 +246,7 @@ class CGSelectorArea : public AGArea
 		void CalcRegionRect (const SEntry &Entry, int xCenter, int yCenter, RECT *retrcRect);
 		void CleanUp (void);
 		bool FindLayoutForPos (const CVector &vPos, const TArray<bool> &SlotStatus, int *retiIndex = NULL);
+		bool FindNearestRegion (int xCur, int yCur, EDirections iDir, bool bDiagOnly, int *retiIndex) const;
 		bool FindRegionInDirection (EDirections iDir, int *retiIndex = NULL) const;
 		void PaintEmptySlot (CG16bitImage &Dest, const RECT &rcRect, const SEntry &Entry);
 		void PaintInstalledItem (CG16bitImage &Dest, const RECT &rcRect, const SEntry &Entry);
