@@ -11,6 +11,8 @@
 	gData uses the following fields:
 
 	'checkMilitaryID: If True, we should check for a military ID.
+	
+	'noUpgrade: If True, do not offer to see upgrades.
 
 -->
 
@@ -82,10 +84,12 @@
 									;	Does this station have any shields that we can purchase?
 								
 									(setq canUpgrade
-										(filter (objGetItems gSource "sUN") theItemToBuy
-											(and (objGetSellPrice gSource theItemToBuy)
-													(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
-													)
+										(and (not (@ gData 'noUpgrade))
+											(filter (objGetItems gSource "sUN") theItemToBuy
+												(and (objGetSellPrice gSource theItemToBuy)
+														(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
+														)
+												)
 											)
 										)
 								
@@ -142,12 +146,14 @@
 									;	Does this station have any shields that we can purchase?
 								
 									(setq canUpgrade
-										(filter (objGetItems gSource "sUN") theItemToBuy
-											(and (objGetSellPrice gSource theItemToBuy)
-													(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
-													(not (itmIsEqual theItemToBuy theItem 'ignoreInstalled))
-													(geq (itmGetLevel theItemToBuy) (itmGetLevel theItem))
-													)
+										(and (not (@ gData 'noUpgrade))
+											(filter (objGetItems gSource "sUN") theItemToBuy
+												(and (objGetSellPrice gSource theItemToBuy)
+														(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
+														(not (itmIsEqual theItemToBuy theItem 'ignoreInstalled))
+														(geq (itmGetLevel theItemToBuy) (itmGetLevel theItem))
+														)
+												)
 											)
 										)
 								
@@ -240,12 +246,14 @@
 								;	Does this station have any armor segments that we can purchase?
 								
 								(setq canUpgrade
-									(filter (objGetItems gSource "aU") theItemToBuy
-										(and (objGetSellPrice gSource theItemToBuy)
-												(objGetArmorReplacePrice gSource theItemToBuy)
-												(not (itmIsEqual theItemToBuy theItem 'ignoreInstalled))
-												(geq (itmGetLevel theItemToBuy) (itmGetLevel theItem))
-												)
+									(and (not (@ gData 'noUpgrade))
+										(filter (objGetItems gSource "aU") theItemToBuy
+											(and (objGetSellPrice gSource theItemToBuy)
+													(objGetArmorReplacePrice gSource theItemToBuy)
+													(not (itmIsEqual theItemToBuy theItem 'ignoreInstalled))
+													(geq (itmGetLevel theItemToBuy) (itmGetLevel theItem))
+													)
+											)
 										)
 									)
 									
@@ -478,6 +486,7 @@
 								
 									(setq canUpgrade
 										(and
+											(not (@ gData 'noUpgrade))
 											(not (eq category 'device))
 											(filter (objGetItems gSource (@ categoryDesc 'criteria)) theItemToBuy
 												(and (objGetSellPrice gSource theItemToBuy)
@@ -544,10 +553,12 @@
 								;	Does this station have any items that we can purchase?
 								
 								(setq canUpgrade
-									(filter (objGetItems gSource (@ categoryDesc 'criteria)) theItemToBuy
-										(and (objGetSellPrice gSource theItemToBuy)
-												(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
-												)
+									(and (not (@ gData 'noUpgrade))
+										(filter (objGetItems gSource (@ categoryDesc 'criteria)) theItemToBuy
+											(and (objGetSellPrice gSource theItemToBuy)
+													(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
+													)
+											)
 										)
 									)
 								)
@@ -772,6 +783,7 @@
 									(setq canUpgrade
 										(and
 											(not (eq category 'device))
+											(not (@ gData 'noUpgrade))
 											(filter (objGetItems gSource (@ categoryDesc 'criteria)) theItemToBuy
 												(and (objGetSellPrice gSource theItemToBuy)
 														(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
@@ -835,10 +847,12 @@
 								;	Does this station have any items that we can purchase?
 								
 								(setq canUpgrade
-									(filter (objGetItems gSource (@ categoryDesc 'criteria)) theItemToBuy
-										(and (objGetSellPrice gSource theItemToBuy)
-												(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
-												)
+									(and (not (@ gData 'noUpgrade))
+										(filter (objGetItems gSource (@ categoryDesc 'criteria)) theItemToBuy
+											(and (objGetSellPrice gSource theItemToBuy)
+													(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
+													)
+											)
 										)
 									)
 								)

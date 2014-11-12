@@ -508,18 +508,21 @@
 					<Action id="actionRepairArmor">
 						(scrShowScreen gScreen &dsRPGManageArmor; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
+							noUpgrade: (@ gData 'noUpgrade)
 							})
 					</Action>
 					
 					<Action id="actionWeapons">
 						(scrShowScreen gScreen &dsRPGManageWeapons; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
+							noUpgrade: (@ gData 'noUpgrade)
 							})
 					</Action>
 
 					<Action id="actionMiscDevices">
 						(scrShowScreen gScreen &dsRPGManageMiscDevices; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
+							noUpgrade: (@ gData 'noUpgrade)
 							})
 					</Action>
 					

@@ -710,13 +710,21 @@ bool CDesignCollection::FireGetGlobalPlayerPriceAdj (ETradeServiceTypes iService
 
 		int iSinglePriceAdj;
 		if (pType->FireGetGlobalPlayerPriceAdj(Event, iService, pProvider, Item, pData, &iSinglePriceAdj))
-			iPriceAdj = iPriceAdj * iSinglePriceAdj / 100;
+			{
+			if (iSinglePriceAdj < 0)
+				{
+				iPriceAdj = -1;
+				break;
+				}
+			else
+				iPriceAdj = iPriceAdj * iSinglePriceAdj / 100;
+			}
 		}
 
 	//	Done
 
 	if (retiPriceAdj)
-		*retiPriceAdj = iPriceAdj;
+		*retiPriceAdj = (iPriceAdj < 0 ? -1 : iPriceAdj);
 
 	return (iPriceAdj != 100);
 	}
