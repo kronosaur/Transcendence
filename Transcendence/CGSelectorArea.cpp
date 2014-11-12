@@ -531,7 +531,13 @@ const CItem &CGSelectorArea::GetItemAtCursor (void)
 	switch (Entry.iType)
 		{
 		case typeInstalledItem:
+			{
+			//	Clear the cache so we get the latest item from the source
+			//	(so that we get updated damage flags, for example).
+
+			Entry.pItemCtx->ClearItemCache();
 			return Entry.pItemCtx->GetItem();
+			}
 
 		default:
 			return CItem::NullItem();

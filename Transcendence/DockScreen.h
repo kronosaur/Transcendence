@@ -44,6 +44,7 @@ class IDockScreenDisplay
 		inline CItemListManipulator &GetItemListManipulator (void) { return OnGetItemListManipulator(); }
 		inline int GetListCursor (void) { return OnGetListCursor(); }
 		inline IListData *GetListData (void) { return OnGetListData(); }
+		inline CSpaceObject *GetSource (void) { return OnGetSource(); }
 		inline EResults HandleAction (DWORD dwTag, DWORD dwData) { return OnHandleAction(dwTag, dwData); }
 		inline EResults HandleKeyDown (int iVirtKey) { return OnHandleKeyDown(iVirtKey); }
 		ALERROR Init (SInitCtx &Ctx, CString *retsError);
@@ -64,6 +65,7 @@ class IDockScreenDisplay
 		virtual CItemListManipulator &OnGetItemListManipulator (void) { return g_DummyItemListManipulator; }
 		virtual int OnGetListCursor (void) { return -1; }
 		virtual IListData *OnGetListData (void) { return NULL; }
+		virtual CSpaceObject *OnGetSource (void) { return NULL; }
 		virtual EResults OnHandleAction (DWORD dwTag, DWORD dwData) { return resultNone; }
 		virtual EResults OnHandleKeyDown (int iVirtKey) { return resultNone; }
 		virtual ALERROR OnInit (SInitCtx &Ctx, CString *retsError) { return NOERROR; }

@@ -20,6 +20,7 @@ class CDockScreenList : public IDockScreenDisplay
 		virtual CItemListManipulator &OnGetItemListManipulator (void) { return m_pItemListControl->GetItemListManipulator(); }
 		virtual int OnGetListCursor (void) { return m_pItemListControl->GetCursor(); }
 		virtual IListData *OnGetListData (void) { return m_pItemListControl->GetList(); }
+		virtual CSpaceObject *OnGetSource (void) { return m_pItemListControl->GetSource(); }
 		virtual EResults OnHandleAction (DWORD dwTag, DWORD dwData);
 		virtual EResults OnHandleKeyDown (int iVirtKey);
 		virtual ALERROR OnInit (SInitCtx &Ctx, CString *retsError);
@@ -96,6 +97,7 @@ class CDockScreenSelector : public IDockScreenDisplay
 		virtual bool OnGetDefaultBackgroundObj (CSpaceObject **retpObj);
 		virtual int OnGetListCursor (void) { return m_pControl->GetCursor(); }
 		virtual IListData *OnGetListData (void) { return m_pControl->GetList(); }
+		virtual CSpaceObject *OnGetSource (void) { return m_pControl->GetSource(); }
 		virtual EResults OnHandleAction (DWORD dwTag, DWORD dwData);
 		virtual EResults OnHandleKeyDown (int iVirtKey);
 		virtual ALERROR OnInit (SInitCtx &Ctx, CString *retsError);

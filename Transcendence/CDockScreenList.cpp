@@ -292,12 +292,6 @@ void CDockScreenList::OnShowPane (bool bNoListNavigation)
 //	Handle case where the pane is shown
 
 	{
-	//	Update armor items to match the current state (the damaged flag)
-
-	CSpaceObject *pLocation = m_pItemListControl->GetSource();
-	if (pLocation)
-		pLocation->UpdateArmorItems();
-
 	//	Update the item list
 
 	ShowItem();
