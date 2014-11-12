@@ -185,6 +185,7 @@
 						
 						(if (@ installResult 'canInstall)
 							(scrSetData gScreen 'installResult installResult)
+							(scrSetData gScreen 'installResult Nil)
 							)
 						
 						;	Enable/disable actions
