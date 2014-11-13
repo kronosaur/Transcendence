@@ -1815,11 +1815,18 @@ bool CSpaceObject::FireGetDockScreen (CString *retsScreen, int *retiPriority, IC
 			}
 		else if (pResult->IsNil())
 			bResult = false;
+		else if (pResult->GetCount() >= 3)
+			{
+			*retsScreen = pResult->GetElement(0)->GetStringValue();
+			*retpData = pResult->GetElement(1)->Reference();
+			*retiPriority = pResult->GetElement(2)->GetIntegerValue();
+			bResult = true;
+			}
 		else if (pResult->GetCount() >= 2)
 			{
 			*retsScreen = pResult->GetElement(0)->GetStringValue();
 			*retiPriority = pResult->GetElement(1)->GetIntegerValue();
-			*retpData = (pResult->GetCount() >= 3 ? pResult->GetElement(2)->Reference() : NULL);
+			*retpData = NULL;
 			bResult = true;
 			}
 		else if (pResult->GetCount() >= 1)
