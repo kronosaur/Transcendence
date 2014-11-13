@@ -988,6 +988,11 @@ void CTranscendenceWnd::ShowInvokeMenu (void)
 
 				if (bUseLetters)
 					{
+					//	Make sure key is one character long (we use a double-
+					//	letter syntax below).
+
+					sKey.Truncate(1);
+
 					//	If the key conflicts, then pick another key (the next 
 					//	key in the sequence).
 
