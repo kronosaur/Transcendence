@@ -4093,6 +4093,7 @@ class CItemType : public CDesignType
 		bool IsMissile (void) const;
 		inline bool IsUsable (void) const { return ((m_pUseCode != NULL) || (m_pUseScreen != NULL)); }
 		inline bool IsUsableInCockpit (void) const { return (m_pUseCode != NULL); }
+		inline bool IsUsableOnlyIfEnabled (void) const { return (m_fUseEnabled ? true : false); }
 		inline bool IsUsableOnlyIfInstalled (void) const { return (m_fUseInstalled ? true : false); }
 		inline bool IsUsableOnlyIfUninstalled (void) const { return (m_fUseUninstalled ? true : false); }
 		inline void SetKnown (void) { m_fKnown = true; }
@@ -4177,7 +4178,7 @@ class CItemType : public CDesignType
 		DWORD m_fValueCharges:1;				//	TRUE if value should be adjusted based on charges
 
 		DWORD m_fUseUninstalled:1;				//	If TRUE, item can only be used when uninstalled
-		DWORD m_fSpare2:1;
+		DWORD m_fUseEnabled:1;					//	If TRUE, item can only be used when enabled
 		DWORD m_fSpare3:1;
 		DWORD m_fSpare4:1;
 		DWORD m_fSpare5:1;

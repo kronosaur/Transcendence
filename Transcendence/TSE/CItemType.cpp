@@ -30,6 +30,7 @@
 #define DATA_ATTRIB								CONSTLIT("data")
 #define ENHANCEMENT_ATTRIB						CONSTLIT("enhancement")
 #define FREQUENCY_ATTRIB						CONSTLIT("frequency")
+#define ENABLED_ONLY_ATTRIB						CONSTLIT("enabledOnly")
 #define INSTALLED_ONLY_ATTRIB					CONSTLIT("installedOnly")
 #define KEY_ATTRIB								CONSTLIT("key")
 #define LEVEL_ATTRIB							CONSTLIT("level")
@@ -43,6 +44,7 @@
 #define UNID_ATTRIB								CONSTLIT("UNID")
 #define UNINSTALLED_ONLY_ATTRIB					CONSTLIT("uninstalledOnly")
 #define UNKNOWN_TYPE_ATTRIB						CONSTLIT("unknownType")
+#define USE_ENABLED_ONLY_ATTRIB					CONSTLIT("useEnabledOnly")
 #define USE_INSTALLED_ONLY_ATTRIB				CONSTLIT("useInstalledOnly")
 #define USE_KEY_ATTRIB							CONSTLIT("useKey")
 #define USE_SCREEN_ATTRIB						CONSTLIT("useScreen")
@@ -1034,6 +1036,7 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_sUseKey = pDesc->GetAttribute(USE_KEY_ATTRIB);
 	m_fUseInstalled = pDesc->GetAttributeBool(USE_INSTALLED_ONLY_ATTRIB);
 	m_fUseUninstalled = pDesc->GetAttributeBool(USE_UNINSTALLED_ONLY_ATTRIB);
+	m_fUseEnabled = pDesc->GetAttributeBool(USE_ENABLED_ONLY_ATTRIB);
 
 	//	Process sub-elements
 
@@ -1070,6 +1073,9 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 			if (pSubDesc->FindAttributeBool(UNINSTALLED_ONLY_ATTRIB, &bValue))
 				m_fUseUninstalled = bValue;
+
+			if (pSubDesc->FindAttributeBool(ENABLED_ONLY_ATTRIB, &bValue))
+				m_fUseEnabled = bValue;
 			}
 
 		//	Process on refuel code
