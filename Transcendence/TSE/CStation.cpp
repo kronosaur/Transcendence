@@ -235,6 +235,14 @@ void CStation::CalcBounds (void)
 	const CObjectImageArray &Image = GetImage(false, NULL, NULL);
 	RECT rcBounds = Image.GetImageRect();
 
+	int xOffset;
+	int yOffset;
+	if (Image.GetImageOffset(0, 0, &xOffset, &yOffset))
+		{
+		rcBounds.right += 2 * Absolute(xOffset);
+		rcBounds.bottom += 2 * Absolute(yOffset);
+		}
+
 	//	Add overlays
 
 	m_Overlays.AccumulateBounds(this, &rcBounds);
