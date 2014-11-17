@@ -135,7 +135,7 @@ int CUIHelper::CalcItemEntryHeight (CSpaceObject *pSource, const CItem &Item, co
 	//	Attributes
 
 	TArray<SDisplayAttribute> Attribs;
-	if (Item.GetDisplayAttributes(pSource, &Attribs))
+	if (Item.GetDisplayAttributes(Ctx, &Attribs))
 		{
 		int cyAttribs;
 		FormatDisplayAttributes(Attribs, rcDrawRect, &cyAttribs);
@@ -748,7 +748,7 @@ void CUIHelper::PaintItemEntry (CG16bitImage &Dest, CSpaceObject *pSource, const
 	//	Paint the display attributes
 
 	TArray<SDisplayAttribute> Attribs;
-	if (Item.GetDisplayAttributes(pSource, &Attribs))
+	if (Item.GetDisplayAttributes(Ctx, &Attribs))
 		{
 		FormatDisplayAttributes(Attribs, rcDrawRect, &cyHeight);
 		PaintDisplayAttributes(Dest, Attribs);

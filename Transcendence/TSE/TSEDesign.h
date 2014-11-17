@@ -1765,7 +1765,7 @@ class CItem
 		inline CEconomyType *GetCurrencyType (void) const;
 		inline CString GetData (const CString &sAttrib) const { return (m_pExtra ? m_pExtra->m_Data.GetData(sAttrib) : NULL_STR); }
 		CString GetDesc (void) const;
-		bool GetDisplayAttributes (CSpaceObject *pSource, TArray<SDisplayAttribute> *retList) const;
+		bool GetDisplayAttributes (CItemCtx &Ctx, TArray<SDisplayAttribute> *retList) const;
 		DWORD GetDisruptedDuration (void) const;
 		CString GetEnhancedDesc (CSpaceObject *pInstalled = NULL) const;
 		inline int GetInstalled (void) const { return (int)(char)m_dwInstalled; }
@@ -2377,6 +2377,7 @@ struct SDeviceDesc
 			iPosRadius(0),
 			iPosZ(0),
 			b3DPosition(false),
+			bExternal(false),
 			bOmnidirectional(false),
 			iMinFireArc(0),
 			iMaxFireArc(0),
@@ -2391,6 +2392,7 @@ struct SDeviceDesc
 	int iPosRadius;
 	int iPosZ;
 	bool b3DPosition;
+	bool bExternal;
 
 	bool bOmnidirectional;
 	int iMinFireArc;

@@ -22,6 +22,7 @@
 #define DEVICE_ID_ATTRIB						CONSTLIT("deviceID")
 #define ENHANCED_ATTRIB							CONSTLIT("enhanced")
 #define ENHANCEMENT_ATTRIB						CONSTLIT("enhancement")
+#define EXTERNAL_ATTRIB							CONSTLIT("external")
 #define HP_BONUS_ATTRIB							CONSTLIT("hpBonus")
 #define ITEM_ATTRIB								CONSTLIT("item")
 #define LEVEL_ATTRIB							CONSTLIT("level")
@@ -65,6 +66,7 @@ class CSingleDevice : public IDeviceGenerator
 		int m_iPosZ;
 		bool m_b3DPosition;
 		bool m_bDefaultPos;
+		bool m_bExternal;
 
 		bool m_bOmnidirectional;
 		int m_iMinFireArc;
@@ -217,6 +219,7 @@ ALERROR IDeviceGenerator::InitDeviceDescFromXML (SDesignLoadCtx &Ctx, CXMLElemen
 	if (!(retDesc->b3DPosition = pDesc->FindAttributeInteger(POS_Z_ATTRIB, &retDesc->iPosZ)))
 		retDesc->iPosZ = 0;
 
+	retDesc->bExternal = pDesc->GetAttributeBool(EXTERNAL_ATTRIB);
 	retDesc->bOmnidirectional = pDesc->GetAttributeBool(OMNIDIRECTIONAL_ATTRIB);
 	retDesc->iMinFireArc = AngleMod(pDesc->GetAttributeInteger(MIN_FIRE_ARC_ATTRIB));
 	retDesc->iMaxFireArc = AngleMod(pDesc->GetAttributeInteger(MAX_FIRE_ARC_ATTRIB));
@@ -288,6 +291,13 @@ void CSingleDevice::AddDevices (SDeviceGenerateCtx &Ctx)
 			Desc.iPosZ = SlotDesc.iPosZ;
 			Desc.b3DPosition = SlotDesc.b3DPosition;
 			}
+
+		//	External
+
+		if (bUseSlotDesc)
+			Desc.bExternal = SlotDesc.bExternal;
+		else
+			Desc.bExternal = m_bExternal;
 
 		//	Set the device fire arc appropriately.
 
@@ -442,6 +452,8 @@ ALERROR CSingleDevice::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		m_iMaxFireArc = 0;
 		m_bDefaultFireArc = true;
 		}
+
+	m_bExternal = pDesc->GetAttributeBool(EXTERNAL_ATTRIB);
 
 	//	Linked fire options
 

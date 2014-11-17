@@ -278,6 +278,7 @@ void CInstalledDevice::InitFromDesc (const SDeviceDesc &Desc)
 	m_iPosRadius = Desc.iPosRadius;
 	m_f3DPosition = Desc.b3DPosition;
 	m_iPosZ = Desc.iPosZ;
+	m_fExternal = Desc.bExternal;
 
 	SetLinkedFireOptions(Desc.dwLinkedFireOptions);
 
@@ -323,7 +324,6 @@ void CInstalledDevice::Install (CSpaceObject *pObj, CItemListManipulator &ItemLi
 	m_pOverlay = NULL;
 	m_dwData = 0;
 	m_iTemperature = 0;
-	m_fExternal = m_pClass->IsExternal();
 	m_fWaiting = false;
 	m_fEnabled = true;
 	m_fTriggered = false;
@@ -370,6 +370,8 @@ void CInstalledDevice::Install (CSpaceObject *pObj, CItemListManipulator &ItemLi
 		m_iPosRadius = Desc.iPosRadius;
 		m_iPosZ = Desc.iPosZ;
 		m_f3DPosition = Desc.b3DPosition;
+
+		m_fExternal = (Desc.bExternal || m_pClass->IsExternal());
 
 		m_fOmniDirectional = Desc.bOmnidirectional;
 		m_iMinFireArc = Desc.iMinFireArc;
@@ -554,8 +556,12 @@ void CInstalledDevice::ReadFromStream (CSpaceObject *pSource, SLoadCtx &Ctx)
 	m_fLinkedFireAlways =	((dwLoad & 0x00001000) ? true : false);
 	m_fLinkedFireTarget =	((dwLoad & 0x00002000) ? true : false);
 	m_fLinkedFireEnemy =	((dwLoad & 0x00004000) ? true : false);
+	m_fExternal =			((dwLoad & 0x00008000) ? true : false);
 
-	m_fExternal = m_pClass->IsExternal();
+	//	Previous versions did not save this flag
+
+	if (Ctx.dwVersion < 107)
+		m_fExternal = m_pClass->IsExternal();
 
 	//	Fix up the item pointer (but only if it is installed)
 
@@ -806,6 +812,7 @@ void CInstalledDevice::WriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fLinkedFireAlways ?	0x00001000 : 0);
 	dwSave |= (m_fLinkedFireTarget ?	0x00002000 : 0);
 	dwSave |= (m_fLinkedFireEnemy ?		0x00004000 : 0);
+	dwSave |= (m_fExternal ?			0x00008000 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	CItemEnhancementStack::WriteToStream(m_pEnhancements, pStream);

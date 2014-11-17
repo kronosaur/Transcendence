@@ -543,7 +543,7 @@ CString CItem::GetDesc (void) const
 		return m_pItemType->GetDesc(); 
 	}
 
-bool CItem::GetDisplayAttributes (CSpaceObject *pSource, TArray<SDisplayAttribute> *retList) const
+bool CItem::GetDisplayAttributes (CItemCtx &Ctx, TArray<SDisplayAttribute> *retList) const
 
 //	GetDisplayAttributes
 //
@@ -565,6 +565,19 @@ bool CItem::GetDisplayAttributes (CSpaceObject *pSource, TArray<SDisplayAttribut
 	if (m_pItemType->IsKnown())
 		g_pUniverse->GetAttributeDesc().AccumulateAttributes(*this, retList);
 
+	//	Add some device-specific attributes
+
+	CDeviceClass *pDeviceClass = m_pItemType->GetDeviceClass();
+	if (pDeviceClass)
+		{
+		CInstalledDevice *pDevice = Ctx.GetDevice();
+
+		//	External devices
+
+		if (pDeviceClass->IsExternal() || (pDevice && pDevice->IsExternal()))
+			retList->Insert(SDisplayAttribute(attribNeutral, CONSTLIT("external")));
+		}
+
 	//	Military and Illegal attributes
 
 	if (m_pItemType->IsKnown()
@@ -585,7 +598,7 @@ bool CItem::GetDisplayAttributes (CSpaceObject *pSource, TArray<SDisplayAttribut
 
 	//	Add any enhancements as a display attribute
 
-	CString sEnhanced = GetEnhancedDesc(pSource);
+	CString sEnhanced = GetEnhancedDesc(Ctx.GetSource());
 	if (!sEnhanced.IsBlank())
 		{
 		bool bDisadvantage = (*(sEnhanced.GetASCIIZPointer()) == '-');
