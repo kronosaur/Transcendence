@@ -1391,7 +1391,7 @@ class CStation : public CSpaceObject
 		virtual void SetExplored (bool bExplored = true) { m_fExplored = bExplored; }
 		virtual void SetGlobalData (const CString &sAttribute, const CString &sData) { m_pType->SetGlobalData(sAttribute, sData); }
 		virtual void SetIdentified (bool bIdentified = true) { m_fKnown = bIdentified; }
-		virtual void SetKnown (bool bKnown = true) { m_fKnown = bKnown; }
+		virtual void SetKnown (bool bKnown = true);
 		virtual void SetMapLabelPos (int x, int y) { m_xMapLabel = x; m_yMapLabel = y; }
 		virtual void SetName (const CString &sName, DWORD dwFlags = 0);
 		virtual void SetOverlayData (DWORD dwID, const CString &sAttribute, const CString &sData) { m_Overlays.SetData(dwID, sAttribute, sData); }
