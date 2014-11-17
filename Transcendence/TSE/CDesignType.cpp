@@ -71,6 +71,8 @@
 #define SPECIAL_EXTENSION						CONSTLIT("extension:")
 #define SPECIAL_UNID							CONSTLIT("unid:")
 
+#define PROPERTY_CLASS							CONSTLIT("class")
+
 #define FIELD_EXTENSION_UNID					CONSTLIT("extensionUNID")
 #define FIELD_NAME								CONSTLIT("name")
 #define FIELD_UNID								CONSTLIT("unid")
@@ -1351,6 +1353,32 @@ ICCItem *CDesignType::GetEventHandler (const CString &sEvent) const
 		return Event.pCode;
 	else
 		return NULL;
+	}
+
+ICCItem *CDesignType::GetProperty (CCodeChainCtx &Ctx, const CString &sProperty)
+
+//	GetProperty
+//
+//	Returns the value of the given property. We return an allocated CC item (which 
+//	must be discarded by the caller). If the property is not found, we return
+//	Nil.
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+	ICCItem *pResult;
+
+	if (strEquals(sProperty, PROPERTY_CLASS))
+		return CC.CreateString(GetTypeClassName());
+
+	//	See if our subclass will handle it.
+
+	else if (pResult = OnGetProperty(Ctx, sProperty))
+		return pResult;
+
+	//	Otherwise, we see if there is a data field
+
+	else
+		return CreateResultFromDataField(CC, GetDataField(sProperty));
 	}
 
 bool CDesignType::IsValidLoadXML (const CString &sTag)

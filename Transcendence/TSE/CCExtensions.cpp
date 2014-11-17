@@ -456,6 +456,7 @@ ICCItem *fnTopologyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_DESIGN_FIRE_TYPE_EVENT		13
 #define FN_DESIGN_HAS_EVENT				14
 #define FN_DESIGN_GET_XML				15
+#define FN_DESIGN_GET_PROPERTY			16
 
 ICCItem *fnDesignCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnDesignGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
@@ -2388,6 +2389,15 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(typGetDataField unid field) -> data",
 			"is",	0,	},
 
+		{	"typGetProperty",				fnDesignGet,		FN_DESIGN_GET_PROPERTY,
+			"(typGetProperty unid property) -> value\n\n"
+			
+			"property:\n\n"
+			
+			"   'class\n",
+
+			"is",	0,	},
+
 		{	"typGetStaticData",				fnDesignGet,		FN_DESIGN_GET_STATIC_DATA,
 			"(typGetStaticData unid attrib) -> data",
 			"is",	0,	},
@@ -3173,13 +3183,15 @@ ICCItem *fnDesignGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	{
 	CCodeChain *pCC = pEvalCtx->pCC;
+	CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
 
 	//	The first argument is an UNID
 
 	CDesignType *pType = g_pUniverse->FindDesignType(pArgs->GetElement(0)->GetIntegerValue());
 	if (pType == NULL)
 		{
-		if (pArgs->GetElement(0)->GetIntegerValue() == 0)
+		if (dwData == FN_DESIGN_GET_PROPERTY 
+				|| pArgs->GetElement(0)->GetIntegerValue() == 0)
 			return pCC->CreateNil();
 		else
 			return pCC->CreateError(CONSTLIT("Unknown type"), pArgs->GetElement(0));
@@ -3218,6 +3230,9 @@ ICCItem *fnDesignGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			CString sData = pType->GetGlobalData(pArgs->GetElement(1)->GetStringValue());
 			return pCC->Link(sData, 0, NULL);
 			}
+
+		case FN_DESIGN_GET_PROPERTY:
+			return pType->GetProperty(*pCtx, pArgs->GetElement(1)->GetStringValue());
 
 		case FN_DESIGN_GET_STATIC_DATA:
 			{
