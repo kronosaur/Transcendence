@@ -2394,7 +2394,9 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			
 			"property:\n\n"
 			
-			"   'class\n",
+			"   'apiVersion\n"
+			"   'class\n"
+			"   'extension\n",
 
 			"is",	0,	},
 
