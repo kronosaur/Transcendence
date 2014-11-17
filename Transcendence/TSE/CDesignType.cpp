@@ -71,7 +71,9 @@
 #define SPECIAL_EXTENSION						CONSTLIT("extension:")
 #define SPECIAL_UNID							CONSTLIT("unid:")
 
+#define PROPERTY_API_VERSION					CONSTLIT("apiVersion")
 #define PROPERTY_CLASS							CONSTLIT("class")
+#define PROPERTY_EXTENSION						CONSTLIT("extension")
 
 #define FIELD_EXTENSION_UNID					CONSTLIT("extensionUNID")
 #define FIELD_NAME								CONSTLIT("name")
@@ -1367,8 +1369,19 @@ ICCItem *CDesignType::GetProperty (CCodeChainCtx &Ctx, const CString &sProperty)
 	CCodeChain &CC = g_pUniverse->GetCC();
 	ICCItem *pResult;
 
-	if (strEquals(sProperty, PROPERTY_CLASS))
+	if (strEquals(sProperty, PROPERTY_API_VERSION))
+		return CC.CreateInteger(GetAPIVersion());
+
+	else if (strEquals(sProperty, PROPERTY_CLASS))
 		return CC.CreateString(GetTypeClassName());
+
+	else if (strEquals(sProperty, PROPERTY_EXTENSION))
+		{
+		if (m_pExtension)
+			return CC.CreateInteger(m_pExtension->GetUNID());
+		else
+			return CC.CreateNil();
+		}
 
 	//	See if our subclass will handle it.
 
