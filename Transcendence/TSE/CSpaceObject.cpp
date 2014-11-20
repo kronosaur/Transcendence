@@ -3061,7 +3061,7 @@ CDesignType *CSpaceObject::GetFirstDockScreen (CString *retsScreen, ICCItem **re
 	return GetDefaultDockScreen(retsScreen);
 	}
 
-Metric CSpaceObject::GetHitSize (void)
+Metric CSpaceObject::GetHitSize (void) const
 
 //	GetHitSize
 //
@@ -3079,7 +3079,7 @@ Metric CSpaceObject::GetHitSize (void)
 	return Max(RectWidth(rcRect), RectHeight(rcRect)) * g_KlicksPerPixel;
 	}
 
-const CObjectImageArray &CSpaceObject::GetImage (void)
+const CObjectImageArray &CSpaceObject::GetImage (void) const
 
 //	GetImage
 //
@@ -4662,7 +4662,7 @@ bool CSpaceObject::IsLineOfFireClear (CInstalledDevice *pWeapon,
 			if (bAreaWeapon)
 				iHalfAngularSize = 45;
 			else
-				iHalfAngularSize = pObj->GetBoundsHalfAngle(rDist);
+				iHalfAngularSize = pObj->GetHitSizeHalfAngle(rDist);
 
 			//	See if it is in our line of fire
 
@@ -4929,7 +4929,7 @@ bool CSpaceObject::MatchesCriteria (SCriteriaMatchCtx &Ctx, const Criteria &Crit
 		{
 		//	Figure out how large the object is at this distance
 
-		int iHalfAngularSize = GetBoundsHalfAngle(rObjDist);
+		int iHalfAngularSize = GetHitSizeHalfAngle(rObjDist);
 		
 		//	If we do not intersect the line then we're done
 

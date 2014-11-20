@@ -2301,7 +2301,6 @@ class CSpaceObject : public CObject
 		inline DWORD GetAPIVersion (void) const { CDesignType *pType = GetType(); return (pType ? pType->GetAPIVersion() : API_VERSION); }
 		void GetBoundingRect (CVector *retvUR, CVector *retvLL);
 		inline CVector GetBoundsDiag (void) { return CVector(m_rBoundsX, m_rBoundsY); }
-		inline int GetBoundsHalfAngle (Metric rDist) const { return Max((int)(180.0 * atan(GetBoundsRadius() / rDist) / g_Pi), 1); }
 		inline Metric GetBoundsRadius (void) const { return Max(m_rBoundsX, m_rBoundsY); }
 		CCommunicationsHandler *GetCommsHandler (void);
 		int GetCommsMessageCount (void);
@@ -2317,7 +2316,8 @@ class CSpaceObject : public CObject
 		Metric GetDistance (CSpaceObject *pObj) const { return (pObj->GetPos() - GetPos()).Length(); }
 		Metric GetDistance2 (CSpaceObject *pObj) const { return (pObj->GetPos() - GetPos()).Length2(); }
 		CDesignType *GetFirstDockScreen (CString *retsScreen, ICCItem **retpData);
-		Metric GetHitSize (void);
+		Metric GetHitSize (void) const;
+		inline int GetHitSizeHalfAngle (Metric rDist) const { return Max((int)(180.0 * atan(0.5 * GetHitSize() / rDist) / g_Pi), 1); }
 		inline DWORD GetID (void) const { return m_dwID; }
 		inline int GetIndex (void) const { return m_iIndex; }
 		CSpaceObject *GetNearestEnemy (Metric rMaxRange = g_InfiniteDistance, bool bIncludeStations = false);
@@ -2569,7 +2569,7 @@ class CSpaceObject : public CObject
 		virtual DWORD GetClassUNID (void) { return 0; }
 		virtual const CString &GetGlobalData (const CString &sAttribute) { return NULL_STR; }
 		virtual Metric GetGravity (Metric *retrRadius) const { return 0.0; }
-		virtual const CObjectImageArray &GetImage (void);
+		virtual const CObjectImageArray &GetImage (void) const;
 		virtual int GetInteraction (void) { return 100; }
 		virtual const COrbit *GetMapOrbit (void) const { return NULL; }
 		virtual Metric GetMass (void) { return 0.0; }

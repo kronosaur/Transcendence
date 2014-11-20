@@ -351,7 +351,7 @@ void CRadiusDamage::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 						{
 						//	Find the point where we hit the object
 
-						Metric rObjRadius = pObj->GetBoundsRadius();
+						Metric rObjRadius = 0.5 * pObj->GetHitSize();
 						CVector vHitPos = pObj->GetPos() - PolarToVector(iAngle, rObjRadius);
 						CVector vInc = PolarToVector(iAngle, 2.0 * g_KlicksPerPixel);
 						int iMax = (int)((2.0 * rObjRadius / (2.0 * g_KlicksPerPixel)) + 0.5);
