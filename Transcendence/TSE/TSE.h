@@ -2543,6 +2543,7 @@ class CSpaceObject : public CObject
 		CEconomyType *GetDefaultEconomy (void);
 		DWORD GetDefaultEconomyUNID (void);
 		bool GetDeviceInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice);
+		bool GetDeviceRemovePrice (const CItem &Item, DWORD dwFlags, int *retiPrice);
 		bool GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice);
 		int GetSellPrice (const CItem &Item, DWORD dwFlags);
 		void SetTradeDesc (CEconomyType *pCurrency, int iMaxCurrency, int iReplenishCurrency);

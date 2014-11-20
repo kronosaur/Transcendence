@@ -1299,6 +1299,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'installDevicePrice\n"
 			"   'linkedFireOptions\n"
 			"   'pos\n"
+			"   'removeDevicePrice\n"
 			"   'secondary\n"
 			"\n"
 			"All properties for itmGetProperty are also valid.\n",

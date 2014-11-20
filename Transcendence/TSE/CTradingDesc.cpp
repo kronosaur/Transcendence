@@ -179,6 +179,12 @@ int CTradingDesc::ComputePrice (CSpaceObject *pObj, CEconomyType *pCurrency, con
 			break;
 			}
 
+		case serviceRemoveDevice:
+			{
+			iItemPrice = iCount * Item.GetType()->GetInstallCost() / 2;
+			break;
+			}
+
 		default:
 			iItemPrice = iCount * Item.GetTradePrice(pObj, bActual);
 			break;
@@ -476,6 +482,38 @@ bool CTradingDesc::GetDeviceInstallPrice (CSpaceObject *pObj, const CItem &Item,
 
 	for (i = 0; i < m_List.GetCount(); i++)
 		if (m_List[i].iService == serviceInstallDevice
+				&& Matches(Item, m_List[i]))
+			{
+			//	Compute price
+
+			int iPrice = ComputePrice(pObj, Item, 1, m_List[i], dwFlags);
+			if (iPrice < 0)
+				return false;
+
+			//	Done
+
+			if (retiPrice)
+				*retiPrice = iPrice;
+
+			return true;
+			}
+
+	return false;
+	}
+
+bool CTradingDesc::GetDeviceRemovePrice (CSpaceObject *pObj, const CItem &Item, DWORD dwFlags, int *retiPrice) const
+
+//	GetDeviceRemovePrice
+//
+//	Returns the price to remove the given device
+
+	{
+	int i;
+
+	//	Loop over the commodity list and find the first entry that matches
+
+	for (i = 0; i < m_List.GetCount(); i++)
+		if (m_List[i].iService == serviceRemoveDevice
 				&& Matches(Item, m_List[i]))
 			{
 			//	Compute price

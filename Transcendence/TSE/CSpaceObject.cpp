@@ -87,6 +87,7 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT);
 #define PROPERTY_KNOWN							CONSTLIT("known")
 #define PROPERTY_LEVEL							CONSTLIT("level")
 #define PROPERTY_PLAYER_MISSIONS_GIVEN			CONSTLIT("playerMissionsGiven")
+#define PROPERTY_REMOVE_DEVICE_PRICE			CONSTLIT("removeDevicePrice")
 #define PROPERTY_REPAIR_ARMOR_MAX_LEVEL			CONSTLIT("repairArmorMaxLevel")
 #define PROPERTY_UNDER_ATTACK					CONSTLIT("underAttack")
 
@@ -3116,6 +3117,14 @@ ICCItem *CSpaceObject::GetItemProperty (CCodeChainCtx *pCCCtx, const CItem &Item
 		{
 		int iPrice;
 		if (!GetDeviceInstallPrice(Item, 0, &iPrice))
+			return CC.CreateNil();
+
+		return CC.CreateInteger(iPrice);
+		}
+	else if (strEquals(sName, PROPERTY_REMOVE_DEVICE_PRICE))
+		{
+		int iPrice;
+		if (!GetDeviceRemovePrice(Item, 0, &iPrice))
 			return CC.CreateNil();
 
 		return CC.CreateInteger(iPrice);

@@ -160,7 +160,7 @@
 									;	Can we remove the shields?
 								
 									(setq canRemove
-										(objGetItemProperty gSource theItem 'installDevicePrice)
+										(objGetItemProperty gSource theItem 'removeDevicePrice)
 										)
 									
 									;	Enable/disable various actions
@@ -500,7 +500,7 @@
 										
 									;	Can we remove the item?
 								
-									(setq canRemove	(objGetItemProperty gSource theItem 'installDevicePrice))
+									(setq canRemove	(objGetItemProperty gSource theItem 'removeDevicePrice))
 									
 									;	Do we have any devices in cargo hold that we can use
 									;	to replace this device?
@@ -796,7 +796,7 @@
 										
 									;	Can we remove the item?
 								
-									(setq canRemove	(objGetItemProperty gSource theItem 'installDevicePrice))
+									(setq canRemove	(objGetItemProperty gSource theItem 'removeDevicePrice))
 									
 									;	Do we have any devices in cargo hold that we can use
 									;	to replace this device?
@@ -985,7 +985,7 @@
 						(theDock (@ gData 'dockObj))
 						
 						(currencyUsed (objGetDefaultCurrency theDock))
-						(costToRemove (divide (objGetItemProperty theDock theItem 'installDevicePrice) 2))
+						(costToRemove (objGetItemProperty theDock theItem 'removeDevicePrice))
 						
 						(result (shpCanRemoveDevice theShip theItem))
 						

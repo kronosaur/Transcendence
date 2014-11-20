@@ -4940,6 +4940,7 @@ class CTradingDesc
 		bool GetArmorInstallPrice (CSpaceObject *pObj, const CItem &Item, DWORD dwFlags, int *retiPrice) const;
 		bool GetArmorRepairPrice (CSpaceObject *pObj, const CItem &Item, int iHPToRepair, DWORD dwFlags, int *retiPrice) const;
 		bool GetDeviceInstallPrice (CSpaceObject *pObj, const CItem &Item, DWORD dwFlags, int *retiPrice) const;
+		bool GetDeviceRemovePrice (CSpaceObject *pObj, const CItem &Item, DWORD dwFlags, int *retiPrice) const;
 		inline CEconomyType *GetEconomyType (void) { return m_pCurrency; }
 		inline int GetMaxCurrency (void) { return m_iMaxCurrency; }
 		int GetMaxLevelMatched (ETradeServiceTypes iService) const;
