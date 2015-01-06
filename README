@@ -14,7 +14,7 @@ This project depends on two other repos, which must be placed at the same level:
 https://github.com/kronosaur/Alchemy
 https://github.com/kronosaur/Mammoth
 
-Use Microsoft Visual Studio 2005 or later. You may need to install the DirectX
+Use Microsoft Visual Studio 2010 or later. You may need to install the DirectX
 SDK (although the latest versions of MVS include it).
 
 Select the Transcendence project as the StartUp project and build. The
