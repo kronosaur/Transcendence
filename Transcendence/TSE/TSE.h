@@ -49,7 +49,7 @@
 
 //	Uncomment out the following define when building a stable release
 
-//#define TRANSCENDENCE_STABLE_RELEASE
+#define TRANSCENDENCE_STABLE_RELEASE
 
 //	Define some debugging symbols
 
@@ -1063,7 +1063,9 @@ struct SObjCreateCtx
 			pOrbit(NULL),
 			pExtraData(NULL),
 			pEventHandler(NULL),
-			bCreateSatellites(false)
+			pSovereign(NULL),
+			bCreateSatellites(false),
+			bIgnoreLimits(false)
 		{ }
 
 	CVector vPos;							//	Create at this position. This should
@@ -1075,8 +1077,10 @@ struct SObjCreateCtx
 	const COrbit *pOrbit;					//	Optional orbit (may be NULL)
 	CXMLElement *pExtraData;				//	Extra data for object (may be NULL)
 	CDesignType *pEventHandler;				//	Event handler for object
+	CSovereign *pSovereign;					//	Optional sovereign (may be NULL)
 
 	bool bCreateSatellites;					//	If TRUE, create satellites
+	bool bIgnoreLimits;						//	If TRUE, create even if we exceed limits
 	};
 
 class CSystem : public CObject
@@ -2297,7 +2301,6 @@ class CSpaceObject : public CObject
 		inline DWORD GetAPIVersion (void) const { CDesignType *pType = GetType(); return (pType ? pType->GetAPIVersion() : API_VERSION); }
 		void GetBoundingRect (CVector *retvUR, CVector *retvLL);
 		inline CVector GetBoundsDiag (void) { return CVector(m_rBoundsX, m_rBoundsY); }
-		inline int GetBoundsHalfAngle (Metric rDist) const { return Max((int)(180.0 * atan(GetBoundsRadius() / rDist) / g_Pi), 1); }
 		inline Metric GetBoundsRadius (void) const { return Max(m_rBoundsX, m_rBoundsY); }
 		CCommunicationsHandler *GetCommsHandler (void);
 		int GetCommsMessageCount (void);
@@ -2313,7 +2316,8 @@ class CSpaceObject : public CObject
 		Metric GetDistance (CSpaceObject *pObj) const { return (pObj->GetPos() - GetPos()).Length(); }
 		Metric GetDistance2 (CSpaceObject *pObj) const { return (pObj->GetPos() - GetPos()).Length2(); }
 		CDesignType *GetFirstDockScreen (CString *retsScreen, ICCItem **retpData);
-		Metric GetHitSize (void);
+		Metric GetHitSize (void) const;
+		inline int GetHitSizeHalfAngle (Metric rDist) const { return Max((int)(180.0 * atan(0.5 * GetHitSize() / rDist) / g_Pi), 1); }
 		inline DWORD GetID (void) const { return m_dwID; }
 		inline int GetIndex (void) const { return m_iIndex; }
 		CSpaceObject *GetNearestEnemy (Metric rMaxRange = g_InfiniteDistance, bool bIncludeStations = false);
@@ -2539,6 +2543,7 @@ class CSpaceObject : public CObject
 		CEconomyType *GetDefaultEconomy (void);
 		DWORD GetDefaultEconomyUNID (void);
 		bool GetDeviceInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice);
+		bool GetDeviceRemovePrice (const CItem &Item, DWORD dwFlags, int *retiPrice);
 		bool GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice);
 		int GetSellPrice (const CItem &Item, DWORD dwFlags);
 		void SetTradeDesc (CEconomyType *pCurrency, int iMaxCurrency, int iReplenishCurrency);
@@ -2564,7 +2569,7 @@ class CSpaceObject : public CObject
 		virtual DWORD GetClassUNID (void) { return 0; }
 		virtual const CString &GetGlobalData (const CString &sAttribute) { return NULL_STR; }
 		virtual Metric GetGravity (Metric *retrRadius) const { return 0.0; }
-		virtual const CObjectImageArray &GetImage (void);
+		virtual const CObjectImageArray &GetImage (void) const;
 		virtual int GetInteraction (void) { return 100; }
 		virtual const COrbit *GetMapOrbit (void) const { return NULL; }
 		virtual Metric GetMass (void) { return 0.0; }

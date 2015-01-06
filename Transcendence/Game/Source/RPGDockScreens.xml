@@ -185,6 +185,7 @@
 						
 						(if (@ installResult 'canInstall)
 							(scrSetData gScreen 'installResult installResult)
+							(scrSetData gScreen 'installResult Nil)
 							)
 						
 						;	Enable/disable actions
@@ -426,6 +427,65 @@
 			<Text id="errorNoItemsToBuy">"There are no items available for sale."</Text>
 		</Language>
 	</DockScreen>
+	
+<!-- DECONTAMINATION ===========================================================
+
+	This screen allows a station to decontaminate the player's ship.
+	
+	gData uses the following fields:
+	
+		currency: The currency used (if Nil, we default to credits)
+		cost: The cost to decontaminate (defaults to 250)
+		descDeconID: ID of language for decon (default to descDecon).
+		descDeconCantAffordID: ID of language for "can't afford" message (defaults to descDeconCantAfford).
+		
+-->
+	
+	<DockScreen UNID="&dsRPGDecontamination;"
+			inherit=			"&dsDockScreenBase;"
+			nestedScreen=		"true"
+			>
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(currency (if (@ gData 'currency) (@ gData 'currency) 'credit))
+						(cost (if (@ gData 'cost) (@ gData 'cost) 250))
+						(deconID (if (@ gData 'descDeconID) (@ gData 'descDeconID) 'descDecon))
+						(deconCantAffordID (if (@ gData 'descDeconCantAffordID) (@ gData 'descDeconCantAffordID) 'descDeconCantAfford))
+						)
+						
+						(if (geq (plyGetCredits gPlayer currency) cost)
+							(scrSetDescTranslate gScreen deconID { currency:currency cost:cost })
+							(scrSetDescTranslate gScreen deconCantAffordID { currency:currency cost:cost })
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(block (
+							(currency (if (@ gData 'currency) (@ gData 'currency) 'credit))
+							(cost (if (@ gData 'cost) (@ gData 'cost) 250))
+							)
+							
+							(if (geq (plyGetCredits gPlayer currency) cost)
+								(block Nil
+									(plyCharge gPlayer currency cost)
+									(shpDecontaminate gPlayerShip)
+									)
+								)
+								
+							;	If the ship is still radioactive, force undock.
+							;	Otherwise, we just exit the screen and go back to the default screen
+						
+							(scrExitScreen gScreen (shpIsRadioactive gPlayerShip))
+							)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
 
 <!-- DOCK SERVICES =============================================================
 
@@ -507,18 +567,21 @@
 					<Action id="actionRepairArmor">
 						(scrShowScreen gScreen &dsRPGManageArmor; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
+							noUpgrade: (@ gData 'noUpgrade)
 							})
 					</Action>
 					
 					<Action id="actionWeapons">
 						(scrShowScreen gScreen &dsRPGManageWeapons; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
+							noUpgrade: (@ gData 'noUpgrade)
 							})
 					</Action>
 
 					<Action id="actionMiscDevices">
 						(scrShowScreen gScreen &dsRPGManageMiscDevices; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
+							noUpgrade: (@ gData 'noUpgrade)
 							})
 					</Action>
 					

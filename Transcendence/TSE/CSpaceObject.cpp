@@ -87,6 +87,7 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT);
 #define PROPERTY_KNOWN							CONSTLIT("known")
 #define PROPERTY_LEVEL							CONSTLIT("level")
 #define PROPERTY_PLAYER_MISSIONS_GIVEN			CONSTLIT("playerMissionsGiven")
+#define PROPERTY_REMOVE_DEVICE_PRICE			CONSTLIT("removeDevicePrice")
 #define PROPERTY_REPAIR_ARMOR_MAX_LEVEL			CONSTLIT("repairArmorMaxLevel")
 #define PROPERTY_UNDER_ATTACK					CONSTLIT("underAttack")
 
@@ -1815,11 +1816,18 @@ bool CSpaceObject::FireGetDockScreen (CString *retsScreen, int *retiPriority, IC
 			}
 		else if (pResult->IsNil())
 			bResult = false;
+		else if (pResult->GetCount() >= 3)
+			{
+			*retsScreen = pResult->GetElement(0)->GetStringValue();
+			*retpData = pResult->GetElement(1)->Reference();
+			*retiPriority = pResult->GetElement(2)->GetIntegerValue();
+			bResult = true;
+			}
 		else if (pResult->GetCount() >= 2)
 			{
 			*retsScreen = pResult->GetElement(0)->GetStringValue();
 			*retiPriority = pResult->GetElement(1)->GetIntegerValue();
-			*retpData = (pResult->GetCount() >= 3 ? pResult->GetElement(2)->Reference() : NULL);
+			*retpData = NULL;
 			bResult = true;
 			}
 		else if (pResult->GetCount() >= 1)
@@ -3053,7 +3061,7 @@ CDesignType *CSpaceObject::GetFirstDockScreen (CString *retsScreen, ICCItem **re
 	return GetDefaultDockScreen(retsScreen);
 	}
 
-Metric CSpaceObject::GetHitSize (void)
+Metric CSpaceObject::GetHitSize (void) const
 
 //	GetHitSize
 //
@@ -3071,7 +3079,7 @@ Metric CSpaceObject::GetHitSize (void)
 	return Max(RectWidth(rcRect), RectHeight(rcRect)) * g_KlicksPerPixel;
 	}
 
-const CObjectImageArray &CSpaceObject::GetImage (void)
+const CObjectImageArray &CSpaceObject::GetImage (void) const
 
 //	GetImage
 //
@@ -3109,6 +3117,14 @@ ICCItem *CSpaceObject::GetItemProperty (CCodeChainCtx *pCCCtx, const CItem &Item
 		{
 		int iPrice;
 		if (!GetDeviceInstallPrice(Item, 0, &iPrice))
+			return CC.CreateNil();
+
+		return CC.CreateInteger(iPrice);
+		}
+	else if (strEquals(sName, PROPERTY_REMOVE_DEVICE_PRICE))
+		{
+		int iPrice;
+		if (!GetDeviceRemovePrice(Item, 0, &iPrice))
 			return CC.CreateNil();
 
 		return CC.CreateInteger(iPrice);
@@ -4646,7 +4662,7 @@ bool CSpaceObject::IsLineOfFireClear (CInstalledDevice *pWeapon,
 			if (bAreaWeapon)
 				iHalfAngularSize = 45;
 			else
-				iHalfAngularSize = pObj->GetBoundsHalfAngle(rDist);
+				iHalfAngularSize = pObj->GetHitSizeHalfAngle(rDist);
 
 			//	See if it is in our line of fire
 
@@ -4913,7 +4929,7 @@ bool CSpaceObject::MatchesCriteria (SCriteriaMatchCtx &Ctx, const Criteria &Crit
 		{
 		//	Figure out how large the object is at this distance
 
-		int iHalfAngularSize = GetBoundsHalfAngle(rObjDist);
+		int iHalfAngularSize = GetHitSizeHalfAngle(rObjDist);
 		
 		//	If we do not intersect the line then we're done
 

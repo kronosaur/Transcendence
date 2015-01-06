@@ -1626,6 +1626,12 @@ void CDockScreen::ShowPane (const CString &sName)
 		return;
 		}
 
+	//	Update the source list before we initialize
+
+	CSpaceObject *pLocation = m_pDisplay->GetSource();
+	if (pLocation)
+		pLocation->UpdateArmorItems();
+
 	//	Initialize the pane based on the pane descriptor
 
 	m_CurrentPane.InitPane(this, pNewPane, m_rcPane);

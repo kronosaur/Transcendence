@@ -572,7 +572,8 @@ void CDockingPorts::RepairAll (CSpaceObject *pOwner, int iRepairRate)
 		{
 		for (int i = 0; i < m_iPortCount; i++)
 			if (m_pPort[i].iStatus == psInUse
-					&& m_pPort[i].pObj->GetSovereign() == pOwner->GetSovereign())
+					&& !m_pPort[i].pObj->IsPlayer()
+					&& !pOwner->IsEnemy(m_pPort[i].pObj))
 				{
 				m_pPort[i].pObj->RepairDamage(iRepairRate);
 				m_pPort[i].pObj->Decontaminate();

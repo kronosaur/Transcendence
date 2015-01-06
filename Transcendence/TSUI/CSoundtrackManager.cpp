@@ -105,7 +105,8 @@ CSoundType *CSoundtrackManager::CalcGameTrackToPlay (CTopologyNode *pNode, const
 
 		//	Adjust probability based on when we last played this tack.
 
-		switch (GetLastPlayedRank(pTrack->GetUNID()))
+		int iLastPlayedRank = GetLastPlayedRank(pTrack->GetUNID());
+		switch (iLastPlayedRank)
 			{
 			case 0:
 				iChance = 0;
@@ -140,9 +141,16 @@ CSoundType *CSoundtrackManager::CalcGameTrackToPlay (CTopologyNode *pNode, const
 		if (iChance == 0)
 			continue;
 
+		//	If we've played this track recently, then set its priority
+		//	to the lowest.
+
+		int iPriority = pTrack->GetPriority();
+		if (iLastPlayedRank != -1 && iLastPlayedRank <= 10)
+			iPriority = 0;
+
 		//	Add to the probability table
 
-		TProbabilityTable<CSoundType *> *pEntry = Table.SetAt(pTrack->GetPriority());
+		TProbabilityTable<CSoundType *> *pEntry = Table.SetAt(iPriority);
 		pEntry->Insert(pTrack, iChance);
 		}
 

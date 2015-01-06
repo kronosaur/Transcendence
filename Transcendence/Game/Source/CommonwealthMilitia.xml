@@ -287,7 +287,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, commonMilitary, fleetDelivery, friendly, human, majorStation, primary, populated"
+			attributes=			"commonwealth, commonwealthArmory, commonwealthCustoms, commonMilitary, fleetDelivery, friendly, human, majorStation, primary, populated"
 			levelFrequency=		"---cc ur--- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
@@ -662,6 +662,49 @@
 					theList
 					)
 			</GetGlobalAchievements>
+			
+			<GetGlobalPlayerPriceAdj>
+				(block (rank)
+					(setq rank (objGetData gPlayerShip "militiaRank"))
+
+					(switch
+						;	Only at Armory
+
+						(not (objHasAttribute aProviderObj 'commonwealthArmory))
+							Nil
+							
+						;	Must have rank, or nothing available
+						
+						(leq rank 0)
+							-1
+							
+						;	Some items only available to majors
+						
+						(or (eq (itmGetType gItem) &itXM900Missile;)
+								(eq (itmGetType gItem) &itStarCannon;)
+								)
+							(if (gr rank 1)
+								Nil		;	No adjustment
+								-1		;	Unavailable
+								)
+								
+						;	Other items are available at a discount depending on level
+						
+						(eq rank 1)
+							90
+							
+						(eq rank 2)
+							75
+							
+						(eq rank 3)
+							55
+							
+						;	No adjustment
+						
+						Nil
+						)
+					)
+			</GetGlobalPlayerPriceAdj>
 
 			<OnCreate>
 				(block (gate gateList count)
@@ -1039,42 +1082,9 @@
 					<Armory desc="You are in the station's armory shop. You may buy weapons and armor to equip your ship.">
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									(lambda (thisItem)
-										(block (rank)
-											(setq rank (objGetData gPlayerShip "militiaRank"))
-											(switch
-												(or (itmIsDamaged thisItem) (itmIsInstalled thisItem))
-													Nil
-
-												(itmHasModifier thisItem 'Illegal)
-													Nil
-
-												; Some items only available to Majors
-												(or (eq (itmGetType thisItem) &itXM900Missile;)
-														(eq (itmGetType thisItem) &itStarCannon;)
-														)
-													(if (gr rank 1)
-														(itmGetPrice thisItem 'credit)
-														Nil
-														)
-
-												; Other items are available at a discount depending on level
-												(eq rank 1)
-													(divide (multiply (itmGetPrice thisItem 'credit) 90) 100)
-
-												(eq rank 2)
-													(divide (multiply (itmGetPrice thisItem 'credit) 75) 100)
-
-												(eq rank 3)
-													(divide (multiply (itmGetPrice thisItem 'credit) 55) 100)
-
-												; item not available
-												Nil
-												)
-											)
-										)
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Leave" cancel="1" key="L">

@@ -988,6 +988,11 @@ void CTranscendenceWnd::ShowInvokeMenu (void)
 
 				if (bUseLetters)
 					{
+					//	Make sure key is one character long (we use a double-
+					//	letter syntax below).
+
+					sKey.Truncate(1);
+
 					//	If the key conflicts, then pick another key (the next 
 					//	key in the sequence).
 
@@ -1209,13 +1214,14 @@ void CTranscendenceWnd::ShowUsePicker (void)
 
 	if (GetPlayer())
 		{
+		CShip *pShip = GetPlayer()->GetShip();
 		char chUseKey = m_pTC->GetKeyMap().GetKeyIfChar(CGameKeys::keyUseItem);
 
 		//	Fill the menu with all usable items
 
 		m_MenuData.RemoveAll();
 
-		CItemList &List = GetPlayer()->GetShip()->GetItemList();
+		CItemList &List = pShip->GetItemList();
 		List.SortItems();
 
 		//	Generate a sorted list of items
@@ -1224,27 +1230,42 @@ void CTranscendenceWnd::ShowUsePicker (void)
 		for (i = 0; i < List.GetCount(); i++)
 			{
 			CItem &Item = List.GetItem(i);
-
 			CItemType *pType = Item.GetType();
-			if ((pType->IsUsableInCockpit() || pType->GetUseScreen())
-					&& (!pType->IsUsableOnlyIfInstalled() || Item.IsInstalled())
-					&& (!pType->IsUsableOnlyIfUninstalled() || !Item.IsInstalled()))
+
+			//	Make sure we should show this entry
+
+			if (!pType->IsUsableInCockpit() && pType->GetUseScreen() == NULL)
+				continue;
+
+			if (pType->IsUsableOnlyIfInstalled() && !Item.IsInstalled())
+				continue;
+
+			if (pType->IsUsableOnlyIfUninstalled() && Item.IsInstalled())
+				continue;
+
+			if (pType->IsUsableOnlyIfEnabled())
 				{
-				bool bHasUseKey = (pType->IsKnown() && !pType->GetUseKey().IsBlank() && (*pType->GetUseKey().GetASCIIZPointer() != chUseKey));
-
-				//	Any items without use keys sort first (so that they are easier
-				//	to access).
-				//
-				//	Then we sort by level (higher-level first)
-				//
-				//	Then we sort by natural order
-
-				SortedList.Insert(strPatternSubst(CONSTLIT("%d%s%04d"),
-							(bHasUseKey ? 1 : 0),
-							(bHasUseKey ? strPatternSubst(CONSTLIT("%s0"), pType->GetUseKey()) : strPatternSubst(CONSTLIT("%02d"), MAX_ITEM_LEVEL - pType->GetLevel())),
-							i),
-						i);
+				CInstalledDevice *pDevice = pShip->FindDevice(Item);
+				if (pDevice == NULL || !pDevice->IsEnabled())
+					continue;
 				}
+
+			//	Add to the list
+
+			bool bHasUseKey = (pType->IsKnown() && !pType->GetUseKey().IsBlank() && (*pType->GetUseKey().GetASCIIZPointer() != chUseKey));
+
+			//	Any items without use keys sort first (so that they are easier
+			//	to access).
+			//
+			//	Then we sort by level (higher-level first)
+			//
+			//	Then we sort by natural order
+
+			SortedList.Insert(strPatternSubst(CONSTLIT("%d%s%04d"),
+						(bHasUseKey ? 1 : 0),
+						(bHasUseKey ? strPatternSubst(CONSTLIT("%s0"), pType->GetUseKey()) : strPatternSubst(CONSTLIT("%02d"), MAX_ITEM_LEVEL - pType->GetLevel())),
+						i),
+					i);
 			}
 
 		//	Now add all the items to the menu

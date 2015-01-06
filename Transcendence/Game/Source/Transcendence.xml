@@ -990,6 +990,7 @@
 	<!ENTITY dsRPGManageMiscDevices		"0x0001002E">
 	<!ENTITY dsRPGRemoveDevice			"0x0001002F">
 	<!ENTITY dsRPGManageWeapons			"0x00010030">
+	<!ENTITY dsRPGDecontamination		"0x00010031">
 	
 	<!-- CANONICAL UNIVERSE LIBRARY 0002 -->
 	
@@ -2001,7 +2002,7 @@
 	]>
 
 <TranscendenceUniverse
-		apiVersion=						"23"
+		apiVersion=						"25"
 		>
 
 <!-- TRANSCENDENCE ************************************************************

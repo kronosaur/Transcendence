@@ -4130,16 +4130,6 @@ ALERROR CreateStationFromElement (SSystemCreateCtx *pCtx, CXMLElement *pDesc, co
 
 	PushDebugStack(pCtx, strPatternSubst(CONSTLIT("Station unid=%x"), pStationType->GetUNID()));
 
-	//	If this is a unique station that we've already encountered, then bail out (this is not
-	//	an error because sometimes we explicitly place a station even though there is a chance
-	//	that it might have been encountered previously).
-
-	if (!pStationType->CanBeEncountered(pCtx->pSystem))
-		{
-		PopDebugStack(pCtx);
-		return NOERROR;
-		}
-
 	//	Get offsets
 
 	int x = pDesc->GetAttributeInteger(X_OFFSET_ATTRIB);
@@ -4151,13 +4141,26 @@ ALERROR CreateStationFromElement (SSystemCreateCtx *pCtx, CXMLElement *pDesc, co
 	if (x != 0 || y != 0)
 		vPos = vPos + CVector(x * g_KlicksPerPixel, y * g_KlicksPerPixel);
 
-	//	Create the station
+
+	//	Set up parameters for station creation
 
 	SObjCreateCtx CreateCtx;
 	CreateCtx.vPos = vPos;
 	CreateCtx.pOrbit = &OrbitDesc;
 	CreateCtx.bCreateSatellites = !pDesc->GetAttributeBool(NO_SATELLITES_ATTRIB);
 	CreateCtx.pExtraData = pDesc->GetContentElementByTag(INITIAL_DATA_TAG);
+
+	//	Since this is an explicit creation of a station, ignore limits
+
+	CreateCtx.bIgnoreLimits = true;
+
+	//	Sovereign override
+
+	DWORD dwSovereign;
+	if (pDesc->FindAttributeInteger(SOVEREIGN_ATTRIB, (int *)&dwSovereign))
+		CreateCtx.pSovereign = g_pUniverse->FindSovereign(dwSovereign);
+
+	//	Create the station
 
 	CStation *pStation = NULL;
 	CSpaceObject *pObj;

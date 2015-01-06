@@ -5,6 +5,18 @@
 
 #include "PreComp.h"
 
+void CItemCtx::ClearItemCache (void)
+
+//	ClearItemCache
+//
+//	Clear m_pItem, forcing us to get it from the source again.
+
+	{
+	if (m_pSource
+			&& (m_pDevice || m_pArmor))
+		m_pItem = NULL;
+	}
+
 ICCItem *CItemCtx::CreateItemVariable(CCodeChain &CC)
 
 //	CreateItemVariable

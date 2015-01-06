@@ -1033,6 +1033,9 @@ void CStandardShipAI::OnBehavior (void)
 			if (m_pShip->IsDestinyTime(17))
 				{
 				Metric rDetectRange = m_pDest->GetDetectionRange(m_pShip->GetPerception());
+				if (m_rDistance > 0.0)
+					rDetectRange = Min(m_rDistance, rDetectRange);
+
 				Metric rDetectRange2 = rDetectRange * rDetectRange;
 
 				Metric rRange2 = (m_pDest->GetPos() - m_pShip->GetPos()).Length2();
@@ -1591,12 +1594,20 @@ void CStandardShipAI::BehaviorStart (void)
 		case IShipController::orderWaitForTarget:
 			{
 			CSpaceObject *pTarget = GetCurrentOrderTarget();
+			SData Data;
+			GetCurrentOrderEx(&pTarget, &Data);
 			ASSERT(pTarget);
+
+			//	If we have a pair of numbers, then the first is the range at 
+			//	which to react (which must be less than detection range).
+
+			m_rDistance = LIGHT_SECOND * Data.AsInteger();
+			DWORD dwTimer = Data.AsInteger2();
 
 			SetState(stateWaitingForTarget);
 			m_pDest = pTarget;
-			if (GetCurrentOrderData())
-				m_iCountdown = 1 + (g_TicksPerSecond * GetCurrentOrderData());
+			if (dwTimer)
+				m_iCountdown = 1 + (g_TicksPerSecond * dwTimer);
 			else
 				m_iCountdown = -1;
 			break;
@@ -2367,6 +2378,12 @@ void CStandardShipAI::OnReadFromStream (SLoadCtx &Ctx)
 		}
 
 	Ctx.pStream->Read((char *)&m_rDistance, sizeof(Metric));
+
+	//	In previous versions we didn't used to initialize m_rDistance 
+	//	for this state.
+
+	if (Ctx.dwVersion < 106 && m_State == stateWaitingForTarget)
+		m_rDistance = 0.0;
 
 	//	Read code
 

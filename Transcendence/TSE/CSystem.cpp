@@ -336,6 +336,9 @@
 //	106: 1.4
 //		m_EncounterRecord in CStationType changed.
 //
+//	107: 1.5
+//		m_fExtrenal flag in CInstalledDevice
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"

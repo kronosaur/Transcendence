@@ -133,7 +133,7 @@ static const SOrderTypeData g_OrderTypes[] =
 
 		{	"navPath",					"-",	"i",	0	},
 		{	"goto",						"o",	"-",	0 },
-		{	"waitForTarget",			"o",	"i",	ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
+		{	"waitForTarget",			"o",	"2",	ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
 		{	"waitForEnemy",				"-",	"i",	0 },
 		{	"bombard",					"o",	"i",	ORDER_FLAG_DELETE_ON_STATION_DESTROYED },
 

@@ -383,6 +383,7 @@ class CDesignType
 		inline const CString &GetGlobalData (const CString &sAttrib) { return m_GlobalData.GetData(sAttrib); }
 		inline CDesignType *GetInheritFrom (void) const { return m_pInheritFrom; }
 		inline CXMLElement *GetLocalScreens (void) const { return m_pLocalScreens; }
+		ICCItem *GetProperty (CCodeChainCtx &Ctx, const CString &sProperty);
 		CXMLElement *GetScreen (const CString &sUNID);
 		const CString &GetStaticData (const CString &sAttrib) const;
 		CString GetTypeClassName (void) const;
@@ -428,6 +429,7 @@ class CDesignType
 		virtual CEffectCreator *OnFindEffectCreator (const CString &sUNID) { return NULL; }
 		virtual bool OnFindEventHandler (const CString &sEvent, SEventHandlerDesc *retEvent = NULL) const { return false; }
 		virtual ALERROR OnFinishBindDesign (SDesignLoadCtx &Ctx) { return NOERROR; }
+		virtual ICCItem *OnGetProperty (CCodeChainCtx &Ctx, const CString &sProperty) { return NULL; }
 		virtual bool OnHasSpecialAttribute (const CString &sAttrib) const { return sAttrib.IsBlank(); }
 		virtual void OnInitFromClone (CDesignType *pSource) { ASSERT(false); }
 		virtual void OnMarkImages (void) { }
@@ -1765,7 +1767,7 @@ class CItem
 		inline CEconomyType *GetCurrencyType (void) const;
 		inline CString GetData (const CString &sAttrib) const { return (m_pExtra ? m_pExtra->m_Data.GetData(sAttrib) : NULL_STR); }
 		CString GetDesc (void) const;
-		bool GetDisplayAttributes (CSpaceObject *pSource, TArray<SDisplayAttribute> *retList) const;
+		bool GetDisplayAttributes (CItemCtx &Ctx, TArray<SDisplayAttribute> *retList) const;
 		DWORD GetDisruptedDuration (void) const;
 		CString GetEnhancedDesc (CSpaceObject *pInstalled = NULL) const;
 		inline int GetInstalled (void) const { return (int)(char)m_dwInstalled; }
@@ -2377,6 +2379,7 @@ struct SDeviceDesc
 			iPosRadius(0),
 			iPosZ(0),
 			b3DPosition(false),
+			bExternal(false),
 			bOmnidirectional(false),
 			iMinFireArc(0),
 			iMaxFireArc(0),
@@ -2391,6 +2394,7 @@ struct SDeviceDesc
 	int iPosRadius;
 	int iPosZ;
 	bool b3DPosition;
+	bool bExternal;
 
 	bool bOmnidirectional;
 	int iMinFireArc;
@@ -3111,7 +3115,7 @@ class IShipController
 
 			orderNavPath,				//	dwData = nav path ID to follow
 			orderGoTo,					//	Go to the given object (generally a marker)
-			orderWaitForTarget,			//	Hold until pTarget is in LRS range (or dwData timer expires)
+			orderWaitForTarget,			//	Hold until pTarget is in range; dwData1 = radius (0 = LRS range); dwData2 = timer
 			orderWaitForEnemy,			//	Hold until any enemy is in LRS range (or dwData timer expires)
 			orderBombard,				//	Hold and attack target from here; pTarget = target; dwData = time
 
@@ -3996,6 +4000,7 @@ class CItemCtx
 		CItemCtx (CSpaceObject *pSource, CInstalledArmor *pArmor) : m_pItem(NULL), m_pSource(pSource), m_pArmor(pArmor), m_pDevice(NULL) { }
 		CItemCtx (CSpaceObject *pSource, CInstalledDevice *pDevice) : m_pItem(NULL), m_pSource(pSource), m_pArmor(NULL), m_pDevice(pDevice) { }
 
+		void ClearItemCache (void);
 		ICCItem *CreateItemVariable (CCodeChain &CC);
 		CInstalledArmor *GetArmor (void);
 		CArmorClass *GetArmorClass (void);
@@ -4092,6 +4097,7 @@ class CItemType : public CDesignType
 		bool IsMissile (void) const;
 		inline bool IsUsable (void) const { return ((m_pUseCode != NULL) || (m_pUseScreen != NULL)); }
 		inline bool IsUsableInCockpit (void) const { return (m_pUseCode != NULL); }
+		inline bool IsUsableOnlyIfEnabled (void) const { return (m_fUseEnabled ? true : false); }
 		inline bool IsUsableOnlyIfInstalled (void) const { return (m_fUseInstalled ? true : false); }
 		inline bool IsUsableOnlyIfUninstalled (void) const { return (m_fUseUninstalled ? true : false); }
 		inline void SetKnown (void) { m_fKnown = true; }
@@ -4176,7 +4182,7 @@ class CItemType : public CDesignType
 		DWORD m_fValueCharges:1;				//	TRUE if value should be adjusted based on charges
 
 		DWORD m_fUseUninstalled:1;				//	If TRUE, item can only be used when uninstalled
-		DWORD m_fSpare2:1;
+		DWORD m_fUseEnabled:1;					//	If TRUE, item can only be used when enabled
 		DWORD m_fSpare3:1;
 		DWORD m_fSpare4:1;
 		DWORD m_fSpare5:1;
@@ -4934,6 +4940,7 @@ class CTradingDesc
 		bool GetArmorInstallPrice (CSpaceObject *pObj, const CItem &Item, DWORD dwFlags, int *retiPrice) const;
 		bool GetArmorRepairPrice (CSpaceObject *pObj, const CItem &Item, int iHPToRepair, DWORD dwFlags, int *retiPrice) const;
 		bool GetDeviceInstallPrice (CSpaceObject *pObj, const CItem &Item, DWORD dwFlags, int *retiPrice) const;
+		bool GetDeviceRemovePrice (CSpaceObject *pObj, const CItem &Item, DWORD dwFlags, int *retiPrice) const;
 		inline CEconomyType *GetEconomyType (void) { return m_pCurrency; }
 		inline int GetMaxCurrency (void) { return m_iMaxCurrency; }
 		int GetMaxLevelMatched (ETradeServiceTypes iService) const;

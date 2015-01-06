@@ -4,7 +4,6 @@
 
 #include "PreComp.h"
 
-
 #define POWER_USE_ATTRIB						(CONSTLIT("powerUse"))
 #define POWER_TO_ACTIVATE_ATTRIB				(CONSTLIT("powerToActivate"))
 #define CAPACITOR_POWER_USE_ATTRIB				(CONSTLIT("capacitorPowerUse"))

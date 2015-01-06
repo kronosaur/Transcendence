@@ -808,5 +808,8 @@
     <ClCompile Include="CSpaceObjectTrade.cpp">
       <Filter>Source Files\SpaceObjects</Filter>
     </ClCompile>
+    <ClCompile Include="SFXLightningStorm.cpp">
+      <Filter>Source Files\SFX</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

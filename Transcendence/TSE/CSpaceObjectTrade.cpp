@@ -209,6 +209,34 @@ bool CSpaceObject::GetDeviceInstallPrice (const CItem &Item, DWORD dwFlags, int 
 	return false;
 	}
 
+bool CSpaceObject::GetDeviceRemovePrice (const CItem &Item, DWORD dwFlags, int *retiPrice)
+
+//	GetDeviceRemovePrice
+//
+//	Returns the price to install the given device
+
+	{
+	//	See if we have an override
+
+	CTradingDesc *pTradeOverride = GetTradeDescOverride();
+	if (pTradeOverride && pTradeOverride->GetDeviceRemovePrice(this, Item, dwFlags, retiPrice))
+		return true;
+
+	//	Otherwise, ask our design type
+
+	CDesignType *pType = GetType();
+	if (pType == NULL)
+		return false;
+
+	CTradingDesc *pTrade = pType->GetTradingDesc();
+	if (pTrade && pTrade->GetDeviceRemovePrice(this, Item, dwFlags, retiPrice))
+		return true;
+
+	//	Otherwise, we do not remove
+
+	return false;
+	}
+
 bool CSpaceObject::GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice)
 
 //	GetRefuelItemAndPrice

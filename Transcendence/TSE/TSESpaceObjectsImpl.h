@@ -971,7 +971,7 @@ class CShip : public CSpaceObject
 		virtual CStationType *GetEncounterInfo (void) { return m_pEncounterInfo; }
 		virtual CSpaceObject *GetEscortPrincipal (void) const;
 		virtual const CString &GetGlobalData (const CString &sAttribute) { return m_pClass->GetGlobalData(sAttribute); }
-		virtual const CObjectImageArray &GetImage (void) { return m_pClass->GetImage(); }
+		virtual const CObjectImageArray &GetImage (void) const { return m_pClass->GetImage(); }
 		virtual CString GetInstallationPhrase (const CItem &Item) const;
 		virtual int GetLastFireTime (void) const { return m_iLastFireTime; }
 		virtual int GetLastHitTime (void) const { return m_iLastHitTime; }
@@ -1315,7 +1315,7 @@ class CStation : public CSpaceObject
 		virtual CStationType *GetEncounterInfo (void) { return m_pType; }
 		virtual const CString &GetGlobalData (const CString &sAttribute) { return m_pType->GetGlobalData(sAttribute); }
 		virtual Metric GetGravity (Metric *retrRadius) const;
-		virtual const CObjectImageArray &GetImage (void) { return m_pType->GetImage(m_ImageSelector, CCompositeImageModifiers()); }
+		virtual const CObjectImageArray &GetImage (void) const { return m_pType->GetImage(m_ImageSelector, CCompositeImageModifiers()); }
 		virtual int GetLevel (void) const { return m_pType->GetLevel(); }
 		virtual const COrbit *GetMapOrbit (void) const { return m_pMapOrbit; }
 		virtual Metric GetMass (void) { return m_rMass; }
@@ -1391,7 +1391,7 @@ class CStation : public CSpaceObject
 		virtual void SetExplored (bool bExplored = true) { m_fExplored = bExplored; }
 		virtual void SetGlobalData (const CString &sAttribute, const CString &sData) { m_pType->SetGlobalData(sAttribute, sData); }
 		virtual void SetIdentified (bool bIdentified = true) { m_fKnown = bIdentified; }
-		virtual void SetKnown (bool bKnown = true) { m_fKnown = bKnown; }
+		virtual void SetKnown (bool bKnown = true);
 		virtual void SetMapLabelPos (int x, int y) { m_xMapLabel = x; m_yMapLabel = y; }
 		virtual void SetName (const CString &sName, DWORD dwFlags = 0);
 		virtual void SetOverlayData (DWORD dwID, const CString &sAttribute, const CString &sData) { m_Overlays.SetData(dwID, sAttribute, sData); }

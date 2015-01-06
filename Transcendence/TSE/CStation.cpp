@@ -235,6 +235,14 @@ void CStation::CalcBounds (void)
 	const CObjectImageArray &Image = GetImage(false, NULL, NULL);
 	RECT rcBounds = Image.GetImageRect();
 
+	int xOffset;
+	int yOffset;
+	if (Image.GetImageOffset(0, 0, &xOffset, &yOffset))
+		{
+		rcBounds.right += 2 * Absolute(xOffset);
+		rcBounds.bottom += 2 * Absolute(yOffset);
+		}
+
 	//	Add overlays
 
 	m_Overlays.AccumulateBounds(this, &rcBounds);
@@ -578,7 +586,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	CXMLElement *pDesc = pType->GetDesc();
 	int i;
 
-	if (!pType->CanBeEncountered())
+	if (!CreateCtx.bIgnoreLimits && !pType->CanBeEncountered())
 		{
 		if (retsError)
 			*retsError = CONSTLIT("Cannot be encountered");
@@ -769,7 +777,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 
 	//	Figure out the sovereign
 
-	pStation->m_pSovereign = pType->GetSovereign();
+	pStation->m_pSovereign = (CreateCtx.pSovereign ? CreateCtx.pSovereign : pType->GetSovereign());
 
 	//	Initialize docking ports structure
 
@@ -2165,7 +2173,7 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 
 	//	Known
 
-	m_fKnown = true;
+	SetKnown();
 	if (!m_fReconned && !Ctx.fNoRecon)
 		{
 		if (m_fFireReconEvent)
@@ -3136,7 +3144,7 @@ void CStation::PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransfo
 
 	//	Object is known if we can scan it.
 
-	m_fKnown = true;
+	SetKnown();
 
 	//	Paint worlds and stars fully
 
@@ -3401,6 +3409,29 @@ void CStation::SetFlotsamImage (CItemType *pItemType)
 	//	Set bounds
 
 	CalcBounds();
+	}
+
+void CStation::SetKnown (bool bKnown)
+
+//	SetKnown
+//
+//	Makes station known to the player.
+	
+	{
+	if (m_fKnown != bKnown)
+		{
+		//	If this is a stargate, we reveal the destination node.
+
+		CTopologyNode *pDestNode;
+		if (bKnown
+				&& IsStargate()
+				&& (pDestNode = g_pUniverse->FindTopologyNode(m_sStargateDestNode)))
+			pDestNode->SetKnown();
+
+		//	Done
+
+		m_fKnown = bKnown;
+		}
 	}
 
 int CStation::GetImageVariant (void)

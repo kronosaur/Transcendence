@@ -430,6 +430,35 @@ class CImageFractureEffectCreator : public CEffectCreator
 		CObjectImageArray m_Image;						//	Images
 	};
 
+class CLightningStormEffectCreator : public CEffectCreator
+	{
+	public:
+		CLightningStormEffectCreator (void);
+		~CLightningStormEffectCreator (void);
+			
+		virtual CString GetTag (void) { return GetClassTag(); }
+
+		//	CEffectCreator virtuals
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
+		virtual int GetLifetime (void) { return 0; }
+
+		static CString GetClassTag (void) { return CONSTLIT("LightningStorm"); }
+
+	protected:
+		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
+		virtual ALERROR OnEffectBindDesign (SDesignLoadCtx &Ctx);
+
+	private:
+		CEffectParamDesc m_Style;			//	style: Style of storm
+		CEffectParamDesc m_Intensity;		//	intensity: Intensity of storm 100 = max; 50 = default
+		CEffectParamDesc m_PrimaryColor;	//	primaryColor: Primary color
+		CEffectParamDesc m_SecondaryColor;	//	secondaryColor: Secondary color
+
+		CEffectParamDesc m_Lifetime;		//	lifetime: Lifetime in ticks (optional)
+
+		IEffectPainter *m_pSingleton;
+	};
+
 class CMoltenBoltEffectCreator : public CEffectCreator,
 		public IEffectPainter
 	{

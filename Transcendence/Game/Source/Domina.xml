@@ -590,7 +590,9 @@
 							))
 						)
 						
-					(if (not (typGetGlobalData &stDomina; "invokeCount"))
+					(if (and (gr level 0) 
+							(not (typGetGlobalData &stDomina; "invokeCount"))
+							)
 						(setq theList (append theList (list
 							(list "Never invoked powers of Domina" Nil "conducts")
 							)))
