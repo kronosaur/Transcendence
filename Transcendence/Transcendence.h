@@ -6,11 +6,11 @@
 #define INCL_TRANSCENDENCE
 
 #ifndef INCL_TSE
-#include "TSE\TSE.h"
+#include "TSE.h"
 #endif
 
 #ifndef INCL_TSUI
-#include "TSUI\TSUI.h"
+#include "TSUI.h"
 #endif
 
 class CGameSession;

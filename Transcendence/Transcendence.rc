@@ -51,7 +51,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-APPICON                 ICON                    "Transcendence.ico"
+APPICON                 ICON                    "Resources\\Transcendence.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -98,37 +98,37 @@ END
 // JPEG
 //
 
-IDR_TITLE_IMAGE         JPEG                    "Game\\Resources\\Title.jpg"
-IDR_STARGATE_IMAGE      JPEG                    "Game\\Resources\\Stargate.JPG"
-IDR_GAME_BUTTONS_IMAGE  JPEG                    "Game\\Resources\\GameButtonIcons.jpg"
-IDR_ICON_DISPLAY_IMAGE  JPEG                    "Game\\Resources\\IconDisplay.jpg"
-IDR_HELP_BACKGROUND     JPEG                    "Game\\Resources\\Help Screen.jpg"
-IDR_SELECT_SHIP_IMAGE   JPEG                    "Game\\Resources\\SelectShipIcons.jpg"
-IDR_GAME_STATS_SCREEN   JPEG                    "Game\\Resources\\Game Stats Screen.jpg"
-JPEG_DAMAGE_TYPE_ICONS  JPEG                    "Game\\Resources\\DamageTypes.jpg"
-JPEG_UI_ICONS           JPEG                    "Game\\Resources\\UIIcons.jpg"
+IDR_TITLE_IMAGE         JPEG                    "Resources\\Title.jpg"
+IDR_STARGATE_IMAGE      JPEG                    "Resources\\Stargate.JPG"
+IDR_GAME_BUTTONS_IMAGE  JPEG                    "Resources\\GameButtonIcons.jpg"
+IDR_ICON_DISPLAY_IMAGE  JPEG                    "Resources\\IconDisplay.jpg"
+IDR_HELP_BACKGROUND     JPEG                    "Resources\\Help Screen.jpg"
+IDR_SELECT_SHIP_IMAGE   JPEG                    "Resources\\SelectShipIcons.jpg"
+IDR_GAME_STATS_SCREEN   JPEG                    "Resources\\Game Stats Screen.jpg"
+JPEG_DAMAGE_TYPE_ICONS  JPEG                    "Resources\\DamageTypes.jpg"
+JPEG_UI_ICONS           JPEG                    "Resources\\UIIcons.jpg"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
-IDR_STARGATE_MASK       BITMAP                  "Game\\Resources\\StargateMask.BMP"
-BMP_DAMAGE_TYPE_ICONS_MASK BITMAP                  "Game\\Resources\\DamageTypesMask.bmp"
-BMP_UI_ICONS_MASK       BITMAP                  "Game\\Resources\\UIIconsMask.bmp"
+IDR_STARGATE_MASK       BITMAP                  "Resources\\StargateMask.BMP"
+BMP_DAMAGE_TYPE_ICONS_MASK BITMAP                  "Resources\\DamageTypesMask.bmp"
+BMP_UI_ICONS_MASK       BITMAP                  "Resources\\UIIconsMask.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // DXFN
 //
 
-DXFN_HEADER             DXFN                    "Game\\Resources\\Header.dxfn"
-DXFN_HEADER_BOLD        DXFN                    "Game\\Resources\\HeaderBold.dxfn"
-DXFN_SUBTITLE           DXFN                    "Game\\Resources\\SubTitle.dxfn"
-DXFN_SUBTITLE_BOLD      DXFN                    "Game\\Resources\\SubTitleBold.dxfn"
-DXFN_SUBTITLE_HEAVY_BOLD DXFN                    "Game\\Resources\\SubTitleHeavyBold.dxfn"
-DXFN_TITLE              DXFN                    "Game\\Resources\\Title.dxfn"
-DXFN_LOGO_TITLE         DXFN                    "Game\\Resources\\LogoTitle.dxfn"
+DXFN_HEADER             DXFN                    "Resources\\Header.dxfn"
+DXFN_HEADER_BOLD        DXFN                    "Resources\\HeaderBold.dxfn"
+DXFN_SUBTITLE           DXFN                    "Resources\\SubTitle.dxfn"
+DXFN_SUBTITLE_BOLD      DXFN                    "Resources\\SubTitleBold.dxfn"
+DXFN_SUBTITLE_HEAVY_BOLD DXFN                    "Resources\\SubTitleHeavyBold.dxfn"
+DXFN_TITLE              DXFN                    "Resources\\Title.dxfn"
+DXFN_LOGO_TITLE         DXFN                    "Resources\\LogoTitle.dxfn"
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
