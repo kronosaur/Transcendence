@@ -52,11 +52,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Game\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\Game\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Game\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug in Program Files|Win32'">Game\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\Game\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug in Program Files|Win32'">..\Game\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug in Program Files|Win32'">.\Debug\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
@@ -89,7 +89,7 @@
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Mammoth\Include;..\..\Alchemy\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -114,7 +114,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>winhttp.lib; dxguid.lib;version.lib;vfw32.lib;winmm.lib;dsound.lib;ddraw.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Game/Transcendence.exe</OutputFile>
+      <OutputFile>..\Game\Transcendence.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Release/Transcendence.pdb</ProgramDatabaseFile>
@@ -138,7 +138,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Mammoth\Include;..\..\Alchemy\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -160,7 +160,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>winhttp.lib; dxguid.lib;version.lib;vfw32.lib;winmm.lib;dsound.lib;ddraw.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Game/Transcendence.exe</OutputFile>
+      <OutputFile>..\Game\Transcendence.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Debug/Transcendence.pdb</ProgramDatabaseFile>
@@ -183,7 +183,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\Includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Mammoth\Include;..\..\Alchemy\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -205,7 +205,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>winhttp.lib; dxguid.lib;version.lib;vfw32.lib;winmm.lib;dsound.lib;ddraw.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Game/Transcendence.exe</OutputFile>
+      <OutputFile>..\Game\Transcendence.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Debug/Transcendence.pdb</ProgramDatabaseFile>
@@ -498,347 +498,77 @@
     <ClInclude Include="Transcendence.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Game\Readme.htm">
+    <None Include="..\Game\Readme.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="Game\Resources\DamageTypes.jpg" />
-    <None Include="Game\Resources\DamageTypesMask.bmp" />
-    <None Include="Game\Resources\FontRes.xml" />
-    <None Include="Game\Resources\Game Stats Screen.jpg" />
-    <None Include="Game\Resources\GameButtonIcons.jpg" />
-    <None Include="Game\Resources\GameOver.jpg" />
-    <None Include="Game\Resources\GameOverEscape.jpg" />
-    <None Include="Game\Resources\Header.dxfn" />
-    <None Include="Game\Resources\HeaderBold.dxfn" />
-    <None Include="Game\Resources\Help Screen.jpg" />
-    <None Include="Game\Resources\IconDisplay.jpg" />
-    <None Include="Game\Resources\LogoTitle.dxfn" />
-    <None Include="Game\Resources\SelectShipIcons.jpg" />
-    <None Include="Game\Resources\Stargate.JPG" />
-    <None Include="Game\Resources\StargateMask.BMP" />
-    <None Include="Game\Resources\SubTitle.dxfn" />
-    <None Include="Game\Resources\SubTitleBold.dxfn" />
-    <None Include="Game\Resources\SubTitleHeavyBold.dxfn" />
-    <None Include="Game\Resources\Title.dxfn" />
-    <None Include="Game\Resources\Title.jpg" />
-    <None Include="Transcendence.ico" />
-    <None Include="Game\Resources\UIIcons.jpg" />
-    <None Include="Game\Resources\UIIconsMask.bmp" />
-    <None Include="Game\ErebienNames.dat" />
+    <None Include="..\Game\ReadmeSource.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\Game\ReadmeStub.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="..\.gitignore" />
-    <None Include="Documents\Brainstorming.txt" />
-    <None Include="Documents\Bugs.txt" />
-    <None Include="Checklist.txt" />
-    <None Include="Documents\Features.txt" />
-    <None Include="FunctionReference.txt" />
     <None Include="..\LICENSE" />
-    <None Include="Documents\MediaNotes.txt" />
     <None Include="..\README" />
-    <None Include="Documents\Schedule.txt" />
-    <None Include="Documents\Stations.txt" />
-    <None Include="Worklist (Completed).txt" />
-    <None Include="Worklist.txt" />
+    <None Include="Resources\Header.dxfn" />
+    <None Include="Resources\HeaderBold.dxfn" />
+    <None Include="Resources\LogoTitle.dxfn" />
+    <None Include="Resources\SubTitle.dxfn" />
+    <None Include="Resources\SubTitleBold.dxfn" />
+    <None Include="Resources\SubTitleHeavyBold.dxfn" />
+    <None Include="Resources\Title.dxfn" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Transcendence.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Alchemy\CodeChain\CodeChain.vcxproj">
+    <ProjectReference Include="..\..\Alchemy\CodeChain\CodeChain.vcxproj">
       <Project>{39983ccd-095b-4b41-854f-4967a254a07c}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\Alchemy\Graphics\Graphics.vcxproj">
-      <Project>{d52d8a0e-fd89-44d9-903d-624aad7e7155}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\Alchemy\Kernel\Kernel.vcxproj">
-      <Project>{86ce5721-1967-49b7-9eed-3a014171daf1}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\DirectXUtil\DirectXUtil.vcxproj">
+    <ProjectReference Include="..\..\Alchemy\DirectXUtil\DirectXUtil.vcxproj">
       <Project>{696afbf6-ca1a-4302-b9ef-01bdbc483280}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\IntelJPEGUtil\IntelJPEGUtil.vcxproj">
+    <ProjectReference Include="..\..\Alchemy\Graphics\Graphics.vcxproj">
+      <Project>{d52d8a0e-fd89-44d9-903d-624aad7e7155}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Alchemy\IntelJPEGUtil\IntelJPEGUtil.vcxproj">
       <Project>{ecac7e19-acbc-4c3c-b89a-7bc7049b6f2e}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\XMLUtil\XMLUtil.vcxproj">
+    <ProjectReference Include="..\..\Alchemy\Kernel\Kernel.vcxproj">
+      <Project>{86ce5721-1967-49b7-9eed-3a014171daf1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Alchemy\XMLUtil\XMLUtil.vcxproj">
       <Project>{482b1658-7f28-4e62-94b6-ed71259c5f44}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="TSE\TSE.vcxproj">
+    <ProjectReference Include="..\..\Mammoth\TSE\TSE.vcxproj">
       <Project>{797712ea-a2b5-4e30-a2f9-5998e90afecc}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="TSUI\TSUI.vcxproj">
+    <ProjectReference Include="..\..\Mammoth\TSUI\TSUI.vcxproj">
       <Project>{54a735d5-a8ea-4d72-a4b5-593f79080882}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Game\Extensions\Debug\AdventureSample.xml" />
-    <None Include="Game\Extensions\Debug\DebugCode.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Debug\DebugShips.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Debug\HighLevelTest.xml" />
-    <None Include="Game\Extensions\Debug\PerformanceTest.xml" />
-    <None Include="Game\Extensions\Debug\RandomnessTest.xml" />
-    <None Include="Game\Extensions\Debug\ShipChangeSample.xml" />
-    <None Include="Game\Source\Antarctica.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\AresOrthodoxy.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\BattleArena.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\BattleArenaGladiators.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\BlackMarket.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\CentauriWarlords.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\CharonFortress.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\CharonPirates.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Code.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Commonwealth.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\CommonwealthAgricultural.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\CommonwealthFleet.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\CommonwealthMetropolis.xml" />
-    <None Include="Game\Source\CommonwealthMilitia.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\CommonwealthMining.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Compatibility10.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\CoreCode.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\CoreEffects.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\CoreTypes.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\CorporateHierarchy.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Domina.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\DwargRaiders.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Elysium.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\EncountersVol01.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Environments.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Eridani.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Groups.xml" />
-    <None Include="Game\Source\Heretic.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\HSCompatibility.xml" />
-    <None Include="Game\Source\Huari.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\HUD.xml" />
-    <None Include="Game\Source\HumanSpaceMap.xml" />
-    <None Include="Game\Source\Ice.xml" />
-    <None Include="Game\Source\Iocrym.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\KateMorgental.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\KorolovShipping.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Luminous.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Metallic.xml" />
-    <None Include="Game\Source\Mining.xml" />
-    <None Include="Game\Source\MiscItems.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Neurohack.xml" />
-    <None Include="Game\Source\OutlawMiners.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\PlayerShips.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\PointJuno.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Primordial.xml" />
-    <None Include="Game\Source\Rasiermesser.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Ringers.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Rocky.xml" />
-    <None Include="Game\Source\RogueFleet.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\RPGAnalyzers.xml" />
-    <None Include="Game\Source\RPGAutons.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\RPGAuxDevices.xml" />
-    <None Include="Game\Source\RPGBehaviors.xml" />
-    <None Include="Game\Source\RPGCharacters.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\RPGCode.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\RPGCompatibility.xml" />
-    <None Include="Game\Source\RPGDockScreens.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\RPGMissions.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\RPGPlayer.xml" />
-    <None Include="Game\Source\RPGShipScreens.xml" />
-    <None Include="Game\Source\RPGTypes.xml" />
-    <None Include="Game\Source\RPGWingmen.xml" />
-    <None Include="Game\Source\SistersOfDomina.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Stargates.xml" />
-    <None Include="Game\Source\StarsOfThePilgrim.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\StarSystems.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\StdArmor.xml" />
-    <None Include="Game\Source\StdAutons.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\StdDevices.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\StdDockScreens.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\StdEffects.xml" />
-    <None Include="Game\Source\StdExplosions.xml" />
-    <None Include="Game\Source\StdFuel.xml" />
-    <None Include="Game\Source\StdPlayerShips.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\StdShields.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\StdSovereigns.xml" />
-    <None Include="Game\Source\StdSystems.xml" />
-    <None Include="Game\Source\StdTypes.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\StdUnknownItems.xml" />
-    <None Include="Game\Source\StdWeapons.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\StKatharines.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\SungSlavers.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Teratons.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Tinkers.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Transcendence.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\UniverseCompatibility.xml" />
-    <None Include="Game\Source\UniverseEffects.xml" />
-    <None Include="Game\Source\UrakWarlords.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\UsefulItems.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\Volcanic.xml" />
-    <None Include="Game\Source\Worlds.xml">
-      <SubType>Designer</SubType>
-    </None>
+    <Text Include="..\Docs\Checklist.txt" />
+    <Text Include="..\Docs\FeaturesByLevel.txt" />
+    <Text Include="..\Docs\FunctionReference.txt" />
+    <Text Include="..\Docs\ItemSuggestions.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Game\Source\BenedictStoryArc.xml">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Game\Source\Benedict00.xml">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Game\Source\Benedict02.xml">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Game\Source\Benedict03.xml">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Game\Source\Benedict01.xml">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="Game\Source\Benedict.xml" />
-    <None Include="Game\Source\Stars.xml" />
-    <None Include="Game\Source\RPGArmorDockScreens.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\RPGDeviceDockScreens.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Source\RPGCharacterClasses.xml" />
-    <None Include="Game\Source\Ovoids.xml" />
-    <None Include="Game\Source\RPGDialog.xml" />
+    <Image Include="Resources\DamageTypes.jpg" />
+    <Image Include="Resources\DamageTypesMask.bmp" />
+    <Image Include="Resources\Game Stats Screen.jpg" />
+    <Image Include="Resources\GameButtonIcons.jpg" />
+    <Image Include="Resources\GameButtonIconsMask.bmp" />
+    <Image Include="Resources\Help Screen.jpg" />
+    <Image Include="Resources\IconDisplay.JPG" />
+    <Image Include="Resources\SelectShipIcons.jpg" />
+    <Image Include="Resources\SelectShipIconsMask.bmp" />
+    <Image Include="Resources\Stargate.JPG" />
+    <Image Include="Resources\StargateMask.BMP" />
+    <Image Include="Resources\Title.JPG" />
+    <Image Include="Resources\Transcendence.ico" />
+    <Image Include="Resources\UIIcons.jpg" />
+    <Image Include="Resources\UIIconsMask.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
