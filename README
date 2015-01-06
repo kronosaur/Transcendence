@@ -9,6 +9,11 @@ which is used to run any Transcendence adventure, including "Domina & Oracus".
 
 BUILD INSTRUCTIONS
 
+This project depends on two other repos, which must be placed at the same level:
+
+https://github.com/kronosaur/Alchemy
+https://github.com/kronosaur/Mammoth
+
 Use Microsoft Visual Studio 2005 or later. You may need to install the DirectX
 SDK (although the latest versions of MVS include it).
 
