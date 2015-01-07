@@ -59,9 +59,6 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MainWndProc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CAdventureIntroSession.cpp">
       <Filter>Source Files\Sessions</Filter>
     </ClCompile>

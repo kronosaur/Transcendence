@@ -94,7 +94,7 @@ ALERROR CStatsSession::OnInit (CString *retsError)
 	//	Load a JPEG of the background image
 
 	HBITMAP hDIB;
-	if (error = JPEGLoadFromResource(g_hInst,
+	if (error = JPEGLoadFromResource(NULL,
 			MAKEINTRESOURCE(IDR_GAME_STATS_SCREEN),
 			JPEG_LFR_DIB, 
 			NULL,

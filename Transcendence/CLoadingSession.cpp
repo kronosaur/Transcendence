@@ -24,7 +24,7 @@ ALERROR CLoadingSession::OnInit (CString *retsError)
 	//	Load a JPEG of the background image
 
 	HBITMAP hDIB;
-	if (error = JPEGLoadFromResource(g_hInst,
+	if (error = JPEGLoadFromResource(NULL,
 			MAKEINTRESOURCE(IDR_TITLE_IMAGE),
 			JPEG_LFR_DIB, 
 			NULL,
@@ -38,7 +38,7 @@ ALERROR CLoadingSession::OnInit (CString *retsError)
 
 	//	Load stargate image
 
-	if (error = JPEGLoadFromResource(g_hInst,
+	if (error = JPEGLoadFromResource(NULL,
 			MAKEINTRESOURCE(IDR_STARGATE_IMAGE),
 			JPEG_LFR_DIB, 
 			NULL, 
@@ -46,7 +46,7 @@ ALERROR CLoadingSession::OnInit (CString *retsError)
 		return error;
 
 	HBITMAP hBitmask;
-	if (error = dibLoadFromResource(g_hInst,
+	if (error = dibLoadFromResource(NULL,
 			MAKEINTRESOURCE(IDR_STARGATE_MASK),
 			&hBitmask))
 		return error;

@@ -83,7 +83,7 @@ ALERROR CHelpSession::OnInit (CString *retsError)
 	//	Load a JPEG of the background image
 
 	HBITMAP hDIB;
-	if (error = JPEGLoadFromResource(g_hInst,
+	if (error = JPEGLoadFromResource(NULL,
 			MAKEINTRESOURCE(IDR_HELP_BACKGROUND),
 			JPEG_LFR_DIB, 
 			NULL, 

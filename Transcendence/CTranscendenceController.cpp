@@ -154,6 +154,8 @@
 
 const DWORD SERVICE_HOUSEKEEPING_INTERVAL =		1000 * 60;
 
+CTranscendenceWnd *g_pTrans = NULL;
+
 void CTranscendenceController::CleanUpUpgrade (void)
 
 //	CleanUpUpgrade
@@ -401,7 +403,7 @@ bool CTranscendenceController::IsUpgradeReady (void)
 	return pathExists(pathAddComponent(m_Settings.GetAppDataFolder(), FILESPEC_UPGRADE_FILE));
 	}
 
-ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions &Options)
+ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions *retOptions)
 
 //	OnBoot
 //
@@ -410,9 +412,15 @@ ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions &Opti
 	{
 	ALERROR error;
 
+	//	Set our basic application settings
+
+	retOptions->sAppName = CONSTLIT("Transcendence");
+	retOptions->sClassName = CONSTLIT("transcendence_class");
+	retOptions->hIcon = ::LoadIcon(NULL, "AppIcon");
+
 	//	Set our default directory
 
-	CString sCurDir = pathGetExecutablePath(g_hInst);
+	CString sCurDir = pathGetExecutablePath(NULL);
 	::SetCurrentDirectory(sCurDir.GetASCIIZPointer());
 
 	//	Load the settings from a file
@@ -455,20 +463,20 @@ ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions &Opti
 
 	//	If we're windowed, figure out the size that we want.
 
-	Options.m_bWindowedMode = m_Settings.GetBoolean(CGameSettings::windowedMode);
-	if (Options.m_bWindowedMode)
+	retOptions->m_bWindowedMode = m_Settings.GetBoolean(CGameSettings::windowedMode);
+	if (retOptions->m_bWindowedMode)
 		{
 		//	If we're forcing 1024, then we know the size
 
 		if (m_Settings.GetBoolean(CGameSettings::force1024Res))
 			{
-			Options.m_cxScreenDesired = 1024;
-			Options.m_cyScreenDesired = 768;
+			retOptions->m_cxScreenDesired = 1024;
+			retOptions->m_cyScreenDesired = 768;
 			}
 		else if (m_Settings.GetBoolean(CGameSettings::force600Res))
 			{
-			Options.m_cxScreenDesired = 1024;
-			Options.m_cyScreenDesired = 600;
+			retOptions->m_cxScreenDesired = 1024;
+			retOptions->m_cyScreenDesired = 600;
 			}
 
 		//	Otherwise compute the window size based on the screen
@@ -496,28 +504,28 @@ ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions &Opti
 
 			if (cyAvail - cyExtra >= 1024)
 				{
-				Options.m_cxScreenDesired = 1280;
-				Options.m_cyScreenDesired = 1024;
+				retOptions->m_cxScreenDesired = 1280;
+				retOptions->m_cyScreenDesired = 1024;
 				}
 			else
 				{
-				Options.m_cyScreenDesired = Max(768, cyAvail - cyExtra);
-				Options.m_cxScreenDesired = Options.m_cyScreenDesired * 1024 / 768;
+				retOptions->m_cyScreenDesired = Max(768, cyAvail - cyExtra);
+				retOptions->m_cxScreenDesired = retOptions->m_cyScreenDesired * 1024 / 768;
 				}
 			}
 		}
 
 	//	Now set other options for HI
 
-	Options.m_iColorDepthDesired = 16;
-	Options.m_bForceDX = (m_Settings.GetBoolean(CGameSettings::forceDirectX) || m_Settings.GetBoolean(CGameSettings::forceExclusive) || m_Settings.GetBoolean(CGameSettings::force1024Res));
-	Options.m_bForceNonDX = (m_Settings.GetBoolean(CGameSettings::forceNonDirectX) && !Options.m_bForceDX);
-	Options.m_bForceExclusiveMode = (m_Settings.GetBoolean(CGameSettings::forceExclusive) || m_Settings.GetBoolean(CGameSettings::force1024Res));
-	Options.m_bForceNonExclusiveMode = (m_Settings.GetBoolean(CGameSettings::forceNonExclusive) && !Options.m_bForceExclusiveMode);
-	Options.m_bForceScreenSize = m_Settings.GetBoolean(CGameSettings::force1024Res);
-	Options.m_iSoundVolume = m_Settings.GetInteger(CGameSettings::soundVolume);
-	Options.m_sMusicFolder = m_Settings.GetString(CGameSettings::musicPath);
-	Options.m_bDebugVideo = m_Settings.GetBoolean(CGameSettings::debugVideo);
+	retOptions->m_iColorDepthDesired = 16;
+	retOptions->m_bForceDX = (m_Settings.GetBoolean(CGameSettings::forceDirectX) || m_Settings.GetBoolean(CGameSettings::forceExclusive) || m_Settings.GetBoolean(CGameSettings::force1024Res));
+	retOptions->m_bForceNonDX = (m_Settings.GetBoolean(CGameSettings::forceNonDirectX) && !retOptions->m_bForceDX);
+	retOptions->m_bForceExclusiveMode = (m_Settings.GetBoolean(CGameSettings::forceExclusive) || m_Settings.GetBoolean(CGameSettings::force1024Res));
+	retOptions->m_bForceNonExclusiveMode = (m_Settings.GetBoolean(CGameSettings::forceNonExclusive) && !retOptions->m_bForceExclusiveMode);
+	retOptions->m_bForceScreenSize = m_Settings.GetBoolean(CGameSettings::force1024Res);
+	retOptions->m_iSoundVolume = m_Settings.GetInteger(CGameSettings::soundVolume);
+	retOptions->m_sMusicFolder = m_Settings.GetString(CGameSettings::musicPath);
+	retOptions->m_bDebugVideo = m_Settings.GetBoolean(CGameSettings::debugVideo);
 
 	return NOERROR;
 	}
@@ -535,6 +543,46 @@ void CTranscendenceController::OnCleanUp (void)
 
 	m_Model.CleanUp();
 	kernelClearDebugLog();
+
+	//	Clean up legacy window
+
+	if (g_pTrans)
+		{
+		g_pTrans->WMDestroy();
+		delete g_pTrans;
+		g_pTrans = NULL;
+		}
+	}
+
+bool CTranscendenceController::OnClose (void)
+
+//	OnClose
+//
+//	User wants to close the app.
+
+	{
+	//	Do not allow the user to close if we're entering or leaving
+	//	a stargate (because we are too lazy to handle saving a game in the
+	//	middle of a gate).
+
+	if (g_pTrans->m_State == CTranscendenceWnd::gsEnteringStargate || g_pTrans->m_State == CTranscendenceWnd::gsLeavingStargate)
+		return false;
+
+	//	If we have a loading error, display it now
+
+	if (!g_pTrans->m_sBackgroundError.IsBlank())
+		{
+		g_pHI->GetScreenMgr().StopDX();
+
+		::MessageBox(m_HI.GetHWND(), 
+				g_pTrans->m_sBackgroundError.GetASCIIZPointer(), 
+				"Transcendence", 
+				MB_OK | MB_ICONSTOP);
+		}
+
+	//	OK to close
+
+	return true;
 	}
 
 ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
@@ -1645,6 +1693,10 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 	{
 	ALERROR error;
 
+	//	Initialize our legacy window
+
+	g_pTrans = new CTranscendenceWnd(m_HI.GetHWND(), this);
+
 	//	Initialize the model
 
 	if (error = m_Model.Init())
@@ -1725,6 +1777,15 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 	m_Soundtrack.SetMusicEnabled(!GetOptionBoolean(CGameSettings::noMusic));
 	m_Soundtrack.SetVolume(GetOptionInteger(CGameSettings::musicVolume));
 	m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramLoad);
+
+	//	Initialize legacy window
+
+	if (g_pTrans->WMCreate(retsError) != 0)
+		{
+		delete g_pTrans;
+		g_pTrans = NULL;
+		return ERR_FAIL;
+		}
 
 	return NOERROR;
 	}

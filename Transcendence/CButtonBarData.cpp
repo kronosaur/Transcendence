@@ -122,7 +122,7 @@ ALERROR CButtonBarData::Init (void)
 	//	Load images
 
 	HBITMAP hDIB;
-	if (error = JPEGLoadFromResource(g_hInst,
+	if (error = JPEGLoadFromResource(NULL,
 			MAKEINTRESOURCE(IDR_GAME_BUTTONS_IMAGE),
 			JPEG_LFR_DIB, 
 			NULL, 

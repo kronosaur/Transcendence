@@ -30,7 +30,6 @@ const int FRAME_RATE_COUNT =				51;		//	number of statistics to keep (for debugg
 
 #define OBJID_CPLAYERSHIPCONTROLLER	MakeOBJCLASSID(100)
 
-extern HINSTANCE g_hInst;
 extern CTranscendenceWnd *g_pTrans;
 
 #define TICKS_BEFORE_GATE					34
@@ -1853,10 +1852,10 @@ class CTranscendenceModel
 class CTranscendenceController : public IHIController, public IExtraSettingsHandler
 	{
 	public:
-		CTranscendenceController (CHumanInterface &HI) : IHIController(HI),
+		CTranscendenceController (void) : 
 				m_iState(stateNone),
 				m_iBackgroundState(stateIdle),
-				m_Model(HI),
+				m_Model(m_HI),
 				m_bUpgradeDownloaded(false)
 			{ }
 
@@ -1872,8 +1871,9 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 		void SetOptionInteger (int iOption, int iValue);
 
 		//	IHICommand virtuals
-		virtual ALERROR OnBoot (char *pszCommandLine, SHIOptions &Options);
+		virtual ALERROR OnBoot (char *pszCommandLine, SHIOptions *retOptions);
 		virtual void OnCleanUp (void);
+		virtual bool OnClose (void);
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnShutdown (EHIShutdownReasons iShutdownCode);
@@ -1937,7 +1937,6 @@ void CopyGalacticMapToClipboard (HWND hWnd, CGalacticMapPainter *pPainter);
 void CopyGameStatsToClipboard (HWND hWnd, const CGameStats &GameStats);
 const CG16bitFont &GetFontByName (const SFontTable &Fonts, const CString &sFontName);
 ALERROR InitCodeChainExtensions (CCodeChain &CC);
-LONG APIENTRY MainWndProc (HWND hWnd, UINT message, UINT wParam, LONG lParam);
 CString TransPath (const CString &sPath);
 
 //	Animation functions

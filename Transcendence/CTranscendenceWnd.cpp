@@ -1348,13 +1348,13 @@ LONG CTranscendenceWnd::WMCreate (CString *retsError)
 	m_Fonts.Large.Create(STR_MEDIUM_TYPEFACE, -16);
 	m_Fonts.LargeBold.Create(STR_MEDIUM_TYPEFACE, -16, true);
 
-	m_Fonts.Header.CreateFromResource(g_hInst, "DXFN_HEADER");
-	m_Fonts.HeaderBold.CreateFromResource(g_hInst, "DXFN_HEADER_BOLD");
-	m_Fonts.SubTitle.CreateFromResource(g_hInst, "DXFN_SUBTITLE");
-	m_Fonts.SubTitleBold.CreateFromResource(g_hInst, "DXFN_SUBTITLE_BOLD");
-	m_Fonts.SubTitleHeavyBold.CreateFromResource(g_hInst, "DXFN_SUBTITLE_HEAVY_BOLD");
-	m_Fonts.Title.CreateFromResource(g_hInst, "DXFN_TITLE");
-	m_Fonts.LogoTitle.CreateFromResource(g_hInst, "DXFN_LOGO_TITLE");
+	m_Fonts.Header.CreateFromResource(NULL, "DXFN_HEADER");
+	m_Fonts.HeaderBold.CreateFromResource(NULL, "DXFN_HEADER_BOLD");
+	m_Fonts.SubTitle.CreateFromResource(NULL, "DXFN_SUBTITLE");
+	m_Fonts.SubTitleBold.CreateFromResource(NULL, "DXFN_SUBTITLE_BOLD");
+	m_Fonts.SubTitleHeavyBold.CreateFromResource(NULL, "DXFN_SUBTITLE_HEAVY_BOLD");
+	m_Fonts.Title.CreateFromResource(NULL, "DXFN_TITLE");
+	m_Fonts.LogoTitle.CreateFromResource(NULL, "DXFN_LOGO_TITLE");
 	m_Fonts.Console.Create(STR_FIXED_TYPEFACE, -14);
 
 	//	Output the typeface that we got
