@@ -80,9 +80,6 @@
     <ClCompile Include="CLoginSession.cpp">
       <Filter>Source Files\Sessions</Filter>
     </ClCompile>
-    <ClCompile Include="CMessageSession.cpp">
-      <Filter>Source Files\Sessions</Filter>
-    </ClCompile>
     <ClCompile Include="CModExchangeSession.cpp">
       <Filter>Source Files\Sessions</Filter>
     </ClCompile>
@@ -190,9 +187,6 @@
     </ClCompile>
     <ClCompile Include="CChooseAdventureSession.cpp">
       <Filter>Source Files\Sessions</Filter>
-    </ClCompile>
-    <ClCompile Include="CExtensionListMap.cpp">
-      <Filter>Source Files\Utilities</Filter>
     </ClCompile>
     <ClCompile Include="CIntroSession.cpp">
       <Filter>Source Files\Sessions</Filter>

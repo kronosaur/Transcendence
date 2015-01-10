@@ -403,7 +403,7 @@ bool CTranscendenceController::IsUpgradeReady (void)
 	return pathExists(pathAddComponent(m_Settings.GetAppDataFolder(), FILESPEC_UPGRADE_FILE));
 	}
 
-ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions *retOptions)
+ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions *retOptions, CString *retsError)
 
 //	OnBoot
 //
@@ -416,6 +416,7 @@ ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions *retO
 
 	retOptions->sAppName = CONSTLIT("Transcendence");
 	retOptions->sClassName = CONSTLIT("transcendence_class");
+	retOptions->sAppData = CONSTLIT("Kronosaur\\Transcendence");
 	retOptions->hIcon = ::LoadIcon(NULL, "AppIcon");
 
 	//	Set our default directory
@@ -444,13 +445,19 @@ ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions *retO
 	//	Allow the command line to override some options
 
 	if (error = m_Settings.ParseCommandLine(pszCommandLine))
+		{
+		if (retsError) *retsError = CONSTLIT("Unable to parse command line.");
 		return error;
+		}
 
 	//	Set the debug log
 
 	if (!bLogFileOpened && !m_Settings.GetBoolean(CGameSettings::noDebugLog))
 		if (error = kernelSetDebugLog(pathAddComponent(m_Settings.GetAppDataFolder(), DEBUG_LOG_FILENAME)))
+			{
+			if (retsError) *retsError = CONSTLIT("Unable to set debug log file.");
 			return error;
+			}
 
 	//	If we're running a new copy, do it now
 
@@ -1659,10 +1666,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 	//	Exit
 
 	else if (strEquals(sCmd, CMD_UI_EXIT))
-		{
-		//	LATER: This should be an m_HI method
-		::SendMessage(m_HI.GetHWND(), WM_CLOSE, 0, 0);
-		}
+		m_HI.Exit();
 
 	//	Crash report
 

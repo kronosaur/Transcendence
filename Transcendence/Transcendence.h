@@ -1567,28 +1567,6 @@ class CGameKeys
 		Keys m_iMap[256];
 	};
 
-//	Extension List Options ----------------------------------------------------
-
-class CExtensionListMap
-	{
-	public:
-		void GetList (DWORD dwAdventure, bool bDebugMode, TArray<DWORD> *retList);
-		void SetList (DWORD dwAdventure, bool bDebugMode, const TArray<DWORD> &List);
-		ALERROR ReadFromXML (CXMLElement *pDesc);
-		ALERROR WriteAsXML (IWriteStream *pOutput);
-
-	private:
-		struct SEntry
-			{
-			TArray<DWORD> List;
-			TArray<DWORD> DebugList;
-			};
-
-		ALERROR WriteList (IWriteStream *pOutput, DWORD dwAdventure, bool bDebugMode, const TArray<DWORD> &List);
-
-		TSortMap<DWORD, SEntry> m_Map;
-	};
-
 //	Game settings class -------------------------------------------------------
 
 class IExtraSettingsHandler
@@ -1871,7 +1849,7 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 		void SetOptionInteger (int iOption, int iValue);
 
 		//	IHICommand virtuals
-		virtual ALERROR OnBoot (char *pszCommandLine, SHIOptions *retOptions);
+		virtual ALERROR OnBoot (char *pszCommandLine, SHIOptions *retOptions, CString *retsError);
 		virtual void OnCleanUp (void);
 		virtual bool OnClose (void);
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);

@@ -225,7 +225,6 @@
     <ClCompile Include="CDockScreenList.cpp" />
     <ClCompile Include="CDockScreenSelector.cpp" />
     <ClCompile Include="CDockScreenStack.cpp" />
-    <ClCompile Include="CExtensionListMap.cpp" />
     <ClCompile Include="CGameSession.cpp" />
     <ClCompile Include="CGItemDisplayArea.cpp" />
     <ClCompile Include="CGSelectorArea.cpp" />
@@ -288,7 +287,6 @@
     <ClCompile Include="CLoadGameSession.cpp" />
     <ClCompile Include="CLoadingSession.cpp" />
     <ClCompile Include="CLoginSession.cpp" />
-    <ClCompile Include="CMessageSession.cpp" />
     <ClCompile Include="CModExchangeSession.cpp" />
     <ClCompile Include="CNewGameSession.cpp" />
     <ClCompile Include="CProfileSession.cpp" />
