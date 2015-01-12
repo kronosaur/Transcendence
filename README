@@ -10,7 +10,7 @@ which is used to run any Transcendence adventure, including "Domina & Oracus".
 BUILD INSTRUCTIONS
 
 This project depends on two other repos, which must be placed at the same level,
-under a folder hereby referred to as <root repo dir>:
+under a folder hereby referred to as <root dir>:
 
 https://github.com/kronosaur/Alchemy
 https://github.com/kronosaur/Mammoth
@@ -41,11 +41,11 @@ Use Microsoft Visual Studio 2010 or later. Load Transcendence/Transcendence.sln,
 which is the Transcendence solution file. The following warnings, if shown under
 Output from Solution, may be safely ignored:
 
-    <root repo dir>\Alchemy\zlib-1.2.7\contrib\vstudio\vc10\zlibstat.vcxproj : 
+    <root dir>\Alchemy\zlib-1.2.7\contrib\vstudio\vc10\zlibstat.vcxproj : 
     warning  : Platform 'Itanium' referenced in the project file 'zlibstat' 
     cannot be found.
 
-    <root repo dir>\TransCore\TransCore.vcxproj : error  : Project 
+    <root dir>\TransCore\TransCore.vcxproj : error  : Project 
     "...\TransCore\TransCore.vcxproj" could not be found.
 
 Select the Transcendence project as the StartUp project. Ensure that the correct 
@@ -69,7 +69,7 @@ In Visual Studio, find the CHexarcServiceStub.cpp file in the TSUI project under
 the \Source Files\CloudInterface Files folder. Bring up the Properties page for 
 the file and under General properties set "Exclude from Build" to "No".
 
-Alternatively, under the <root repo dir>\Mammoth\TSUI folder, copy 
+Alternatively, under the <root dir>\Mammoth\TSUI folder, copy 
 CHexarcServiceStub.cpp as CHexarcService.cpp.
 
 LICENSE
