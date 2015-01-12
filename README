@@ -9,24 +9,68 @@ which is used to run any Transcendence adventure, including "Domina & Oracus".
 
 BUILD INSTRUCTIONS
 
-This project depends on two other repos, which must be placed at the same level:
+This project depends on two other repos, which must be placed at the same level,
+under a folder hereby referred to as <root repo dir>:
 
 https://github.com/kronosaur/Alchemy
 https://github.com/kronosaur/Mammoth
 
-Use Microsoft Visual Studio 2010 or later. You may need to install the DirectX
-SDK (although the latest versions of MVS include it).
+If you are downloading the repos in order to submit future pull requests, it is 
+worthwhile to keep repositories synced with kronosaur:
 
-Select the Transcendence project as the StartUp project and build. The
-executables will be placed in the Transcendence/Game directory.
+https://help.github.com/articles/syncing-a-fork/
+
+General help on using git is available through official sources:
+
+https://help.github.com
+
+You will need to install the February 2010 DirectX SDK release, as later versions 
+do not include necessary libraries. The correct DirectX SDK can be downloaded 
+here: 
+
+http://www.microsoft.com/en-us/download/details.aspx?id=10084
+
+Note the DirectX SDK's install location on your computer.
+
+It may be necessary to uninstall certain Microsoft Visual C++ Redistributables 
+when installing DirectX SDKs:
+
+http://support.microsoft.com/kb/2728613
+
+Use Microsoft Visual Studio 2010 or later. Load Transcendence/Transcendence.sln, 
+which is the Transcendence solution file. The following warnings, if shown under
+Output from Solution, may be safely ignored:
+
+    <root repo dir>\Alchemy\zlib-1.2.7\contrib\vstudio\vc10\zlibstat.vcxproj : 
+    warning  : Platform 'Itanium' referenced in the project file 'zlibstat' 
+    cannot be found.
+
+    <root repo dir>\TransCore\TransCore.vcxproj : error  : Project 
+    "...\TransCore\TransCore.vcxproj" could not be found.
+
+Select the Transcendence project as the StartUp project. Ensure that the correct 
+locations of the DirectX SDK Include and Lib folders are specified for the 
+Transcendence project (under the Transcendence solution) by bringing up the 
+project's Properties page, and checking the following property sets:
+
+    Configuration Properties > VC++ Directories > General > Include Directories
+    Configuration Properties > VC++ Directories > General > Library Directories
+    
+Always point the Library Directories variable to the \Lib\x86 folder of the SDK.
+
+Build the solution. Executables will be placed in the Transcendence/Game 
+directory.
 
 For security reasons the source code does not include certain files to 
 communicate with the Hexarc arcology (the cloud service). The code will compile
 without it, however, as long as you add CHexarcServiceStub.cpp to the build.
 
-In Visual Studio, find the CHexarcServiceStub.cpp file in the TSUI project under
-the CloudInterface folder. Bring up the Properties page for the file and under
-General properties set "Exclude from Build" to "No".
+In Visual Studio, find the CHexarcServiceStub.cpp file in the TSUI project under 
+the \Source Files\CloudInterface Files folder. Bring up the Properties page for 
+the file and under General properties set "Exclude from Build" to "No".
+
+Alternatively, under the <root repo dir>\Mammoth\TSUI folder, copy 
+CHexarcServiceStub.cpp as CHexarcService.cpp.
 
 LICENSE
 
