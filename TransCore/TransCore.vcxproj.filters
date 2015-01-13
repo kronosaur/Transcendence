@@ -142,9 +142,6 @@
     <None Include="StdEffects.xml">
       <Filter>Human Space Library</Filter>
     </None>
-    <None Include="StdExplosions.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
     <None Include="StdFuel.xml">
       <Filter>Human Space Library</Filter>
     </None>
@@ -321,6 +318,9 @@
     </None>
     <None Include="Worlds.xml">
       <Filter>Universe Library</Filter>
+    </None>
+    <None Include="CoreExplosions.xml">
+      <Filter>Core Types</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -193,7 +193,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="StdEffects.xml" />
-    <None Include="StdExplosions.xml" />
+    <None Include="CoreExplosions.xml" />
     <None Include="StdFuel.xml" />
     <None Include="StdPlayerShips.xml">
       <SubType>Designer</SubType>

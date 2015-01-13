@@ -2189,6 +2189,7 @@
 
 	<Module filename="CoreCode.xml"/>
 	<Module filename="CoreEffects.xml"/>
+	<Module filename="CoreExplosions.xml"/>
 	<Module filename="CoreTypes.xml"/>
 	
 <!-- CORE LIBRARIES ======================================================== -->
@@ -2308,7 +2309,6 @@
 		<Module filename="StdAutons.xml"/>
 		<Module filename="StdDevices.xml"/>
 		<Module filename="StdEffects.xml"/>
-		<Module filename="StdExplosions.xml"/>
 		<Module filename="StdFuel.xml"/>
 		<Module filename="StdPlayerShips.xml"/>
 		<Module filename="StdShields.xml"/>
