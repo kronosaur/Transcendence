@@ -26,7 +26,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TransCompiler", "TransCompi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Transcendence", "Transcendence\Transcendence.vcxproj", "{EB0AFA5B-DC60-4B46-9BD7-3371612AE9C9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TransCore", "..\TransCore\TransCore.vcxproj", "{32A1A9FA-BBFD-44E6-8BBC-F6F531FDE66E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TransCore", "TransCore\TransCore.vcxproj", "{32A1A9FA-BBFD-44E6-8BBC-F6F531FDE66E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

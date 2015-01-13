@@ -1,0 +1,347 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{32A1A9FA-BBFD-44E6-8BBC-F6F531FDE66E}</ProjectGuid>
+    <RootNamespace>TransCore</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="..\Transcendence\TransCore\Code.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Transcendence\TransCore\Compatibility10.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Transcendence\TransCore\CoreCode.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Transcendence\TransCore\CoreEffects.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Transcendence\TransCore\CoreTypes.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Transcendence\TransCore\Transcendence.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Transcendence\Transcendence\Game\Extensions\Debug\AdventureSample.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Transcendence\Transcendence\Game\Extensions\Debug\DebugCode.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Transcendence\Transcendence\Game\Extensions\Debug\DebugShips.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Transcendence\Transcendence\Game\Extensions\Debug\HighLevelTest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Transcendence\Transcendence\Game\Extensions\Debug\PerformanceTest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Transcendence\Transcendence\Game\Extensions\Debug\RandomnessTest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Transcendence\Transcendence\Game\Extensions\Debug\ShipChangeSample.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Transcendence\TransCore\AresOrthodoxy.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\BattleArena.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\BattleArenaGladiators.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Antarctica.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <Xml Include="..\Transcendence\TransCore\Benedict.xml" />
+    <None Include="..\Transcendence\TransCore\BlackMarket.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\CentauriWarlords.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\CharonFortress.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\CharonPirates.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Commonwealth.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\CommonwealthAgricultural.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\CommonwealthFleet.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\CommonwealthMetropolis.xml" />
+    <None Include="..\Transcendence\TransCore\CommonwealthMilitia.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\CommonwealthMining.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\CorporateHierarchy.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Domina.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\DwargRaiders.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\EncountersVol01.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Eridani.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\HSCompatibility.xml" />
+    <None Include="..\Transcendence\TransCore\HumanSpaceMap.xml" />
+    <None Include="..\Transcendence\TransCore\Iocrym.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\KateMorgental.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\KorolovShipping.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Luminous.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\MiscItems.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\OutlawMiners.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Rasiermesser.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Ringers.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\RogueFleet.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\SistersOfDomina.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\StdArmor.xml" />
+    <None Include="..\Transcendence\TransCore\StdAutons.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\StdDevices.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\StdDockScreens.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\StdEffects.xml" />
+    <None Include="..\Transcendence\TransCore\StdExplosions.xml" />
+    <None Include="..\Transcendence\TransCore\StdFuel.xml" />
+    <None Include="..\Transcendence\TransCore\StdPlayerShips.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\StdShields.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\StdSovereigns.xml" />
+    <None Include="..\Transcendence\TransCore\StdSystems.xml" />
+    <None Include="..\Transcendence\TransCore\StdTypes.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\StdUnknownItems.xml" />
+    <None Include="..\Transcendence\TransCore\StdWeapons.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\StKatharines.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\SungSlavers.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Teratons.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Tinkers.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\UrakWarlords.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\UsefulItems.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Elysium.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Heretic.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Huari.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\PlayerShips.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\PointJuno.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\StarsOfThePilgrim.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\BenedictStoryArc.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Benedict00.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Benedict02.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Benedict03.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Benedict01.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\HUD.xml" />
+    <None Include="..\Transcendence\TransCore\RPGAnalyzers.xml" />
+    <None Include="..\Transcendence\TransCore\RPGAutons.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\RPGAuxDevices.xml" />
+    <None Include="..\Transcendence\TransCore\RPGBehaviors.xml" />
+    <None Include="..\Transcendence\TransCore\RPGCharacters.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\RPGCode.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\RPGCompatibility.xml" />
+    <None Include="..\Transcendence\TransCore\RPGDockScreens.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\RPGMissions.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\RPGPlayer.xml" />
+    <None Include="..\Transcendence\TransCore\RPGShipScreens.xml" />
+    <None Include="..\Transcendence\TransCore\RPGTypes.xml" />
+    <None Include="..\Transcendence\TransCore\RPGWingmen.xml" />
+    <None Include="..\Transcendence\TransCore\RPGArmorDockScreens.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\RPGDeviceDockScreens.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\RPGCharacterClasses.xml" />
+    <None Include="..\Transcendence\TransCore\RPGDialog.xml" />
+    <None Include="..\Transcendence\TransCore\Environments.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Groups.xml" />
+    <None Include="..\Transcendence\TransCore\Ice.xml" />
+    <None Include="..\Transcendence\TransCore\Metallic.xml" />
+    <None Include="..\Transcendence\TransCore\Mining.xml" />
+    <None Include="..\Transcendence\TransCore\Neurohack.xml" />
+    <None Include="..\Transcendence\TransCore\Primordial.xml" />
+    <None Include="..\Transcendence\TransCore\Rocky.xml" />
+    <None Include="..\Transcendence\TransCore\Stargates.xml" />
+    <None Include="..\Transcendence\TransCore\StarSystems.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\UniverseCompatibility.xml" />
+    <None Include="..\Transcendence\TransCore\UniverseEffects.xml" />
+    <None Include="..\Transcendence\TransCore\Volcanic.xml" />
+    <None Include="..\Transcendence\TransCore\Worlds.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\Transcendence\TransCore\Stars.xml" />
+    <None Include="..\Transcendence\TransCore\Ovoids.xml" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
