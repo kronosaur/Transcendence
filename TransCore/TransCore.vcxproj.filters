@@ -31,21 +31,6 @@
     <None Include="BattleArenaGladiators.xml">
       <Filter>Human Space Library</Filter>
     </None>
-    <None Include="Benedict00.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Benedict01.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Benedict02.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Benedict03.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="BenedictStoryArc.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
     <None Include="BlackMarket.xml">
       <Filter>Human Space Library</Filter>
     </None>
@@ -82,15 +67,6 @@
     <None Include="Compatibility10.xml">
       <Filter>Human Space Library</Filter>
     </None>
-    <None Include="CoreCode.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="CoreEffects.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="CoreTypes.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
     <None Include="CorporateHierarchy.xml">
       <Filter>Human Space Library</Filter>
     </None>
@@ -100,19 +76,10 @@
     <None Include="DwargRaiders.xml">
       <Filter>Human Space Library</Filter>
     </None>
-    <None Include="Elysium.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
     <None Include="EncountersVol01.xml">
       <Filter>Human Space Library</Filter>
     </None>
-    <None Include="Environments.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
     <None Include="Eridani.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Groups.xml">
       <Filter>Human Space Library</Filter>
     </None>
     <None Include="Heretic.xml">
@@ -121,16 +88,7 @@
     <None Include="HSCompatibility.xml">
       <Filter>Human Space Library</Filter>
     </None>
-    <None Include="Huari.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="HUD.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
     <None Include="HumanSpaceMap.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Ice.xml">
       <Filter>Human Space Library</Filter>
     </None>
     <None Include="Iocrym.xml">
@@ -145,31 +103,13 @@
     <None Include="Luminous.xml">
       <Filter>Human Space Library</Filter>
     </None>
-    <None Include="Metallic.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Mining.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
     <None Include="MiscItems.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Neurohack.xml">
       <Filter>Human Space Library</Filter>
     </None>
     <None Include="OutlawMiners.xml">
       <Filter>Human Space Library</Filter>
     </None>
-    <None Include="Ovoids.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="PlayerShips.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
     <None Include="PointJuno.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Primordial.xml">
       <Filter>Human Space Library</Filter>
     </None>
     <None Include="Rasiermesser.xml">
@@ -178,76 +118,13 @@
     <None Include="Ringers.xml">
       <Filter>Human Space Library</Filter>
     </None>
-    <None Include="Rocky.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
     <None Include="RogueFleet.xml">
       <Filter>Human Space Library</Filter>
     </None>
     <None Include="RPGAnalyzers.xml">
       <Filter>Human Space Library</Filter>
     </None>
-    <None Include="RPGArmorDockScreens.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="RPGAutons.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="RPGAuxDevices.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="RPGBehaviors.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="RPGCharacterClasses.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="RPGCharacters.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="RPGCode.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="RPGCompatibility.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="RPGDeviceDockScreens.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="RPGDialog.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="RPGDockScreens.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="RPGMissions.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="RPGPlayer.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="RPGShipScreens.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="RPGTypes.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="RPGWingmen.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
     <None Include="SistersOfDomina.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Stargates.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Stars.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="StarsOfThePilgrim.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="StarSystems.xml">
       <Filter>Human Space Library</Filter>
     </None>
     <None Include="StdArmor.xml">
@@ -304,28 +181,151 @@
     <None Include="Tinkers.xml">
       <Filter>Human Space Library</Filter>
     </None>
-    <None Include="UniverseCompatibility.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="UniverseEffects.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
     <None Include="UrakWarlords.xml">
       <Filter>Human Space Library</Filter>
     </None>
     <None Include="UsefulItems.xml">
       <Filter>Human Space Library</Filter>
     </None>
+    <None Include="CoreCode.xml">
+      <Filter>Core Types</Filter>
+    </None>
+    <None Include="CoreEffects.xml">
+      <Filter>Core Types</Filter>
+    </None>
+    <None Include="CoreTypes.xml">
+      <Filter>Core Types</Filter>
+    </None>
+    <None Include="RPGArmorDockScreens.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="RPGAutons.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="RPGAuxDevices.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="RPGBehaviors.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="RPGCharacterClasses.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="RPGCharacters.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="RPGCode.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="RPGCompatibility.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="RPGDeviceDockScreens.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="RPGDialog.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="RPGDockScreens.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="RPGMissions.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="RPGPlayer.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="RPGShipScreens.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="RPGTypes.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="RPGWingmen.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="HUD.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="Benedict00.xml">
+      <Filter>Part I</Filter>
+    </None>
+    <None Include="Benedict01.xml">
+      <Filter>Part I</Filter>
+    </None>
+    <None Include="Benedict02.xml">
+      <Filter>Part I</Filter>
+    </None>
+    <None Include="Benedict03.xml">
+      <Filter>Part I</Filter>
+    </None>
+    <None Include="BenedictStoryArc.xml">
+      <Filter>Part I</Filter>
+    </None>
+    <None Include="Elysium.xml">
+      <Filter>Part I</Filter>
+    </None>
+    <None Include="Huari.xml">
+      <Filter>Part I</Filter>
+    </None>
+    <None Include="PlayerShips.xml">
+      <Filter>Part I</Filter>
+    </None>
+    <None Include="StarsOfThePilgrim.xml">
+      <Filter>Part I</Filter>
+    </None>
+    <None Include="Environments.xml">
+      <Filter>Universe Library</Filter>
+    </None>
+    <None Include="Groups.xml">
+      <Filter>Universe Library</Filter>
+    </None>
+    <None Include="Ice.xml">
+      <Filter>Universe Library</Filter>
+    </None>
+    <None Include="Metallic.xml">
+      <Filter>Universe Library</Filter>
+    </None>
+    <None Include="Mining.xml">
+      <Filter>Universe Library</Filter>
+    </None>
+    <None Include="Ovoids.xml">
+      <Filter>Universe Library</Filter>
+    </None>
+    <None Include="Neurohack.xml">
+      <Filter>Universe Library</Filter>
+    </None>
+    <None Include="Primordial.xml">
+      <Filter>Universe Library</Filter>
+    </None>
+    <None Include="Rocky.xml">
+      <Filter>Universe Library</Filter>
+    </None>
+    <None Include="Stargates.xml">
+      <Filter>Universe Library</Filter>
+    </None>
+    <None Include="Stars.xml">
+      <Filter>Universe Library</Filter>
+    </None>
+    <None Include="StarSystems.xml">
+      <Filter>Universe Library</Filter>
+    </None>
+    <None Include="UniverseCompatibility.xml">
+      <Filter>Universe Library</Filter>
+    </None>
+    <None Include="UniverseEffects.xml">
+      <Filter>Universe Library</Filter>
+    </None>
     <None Include="Volcanic.xml">
-      <Filter>Human Space Library</Filter>
+      <Filter>Universe Library</Filter>
     </None>
     <None Include="Worlds.xml">
-      <Filter>Human Space Library</Filter>
+      <Filter>Universe Library</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Benedict.xml">
-      <Filter>Human Space Library</Filter>
+      <Filter>Part I</Filter>
     </Xml>
   </ItemGroup>
 </Project>
