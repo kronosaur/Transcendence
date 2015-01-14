@@ -66,12 +66,73 @@ struct SResourceEntry
 struct SCompilerCtx
 	{
 	SCompilerCtx (void) :
+			pCoreEntities(NULL),
 			iErrorCount(0) 
 		{ }
+
+	~SCompilerCtx (void)
+		{
+		for (int i = 0; i < CoreEntities.GetCount(); i++)
+			delete CoreEntities[i];
+		}
+
+	void AddCoreEntitiesTable (CExternalEntityTable *pTable)
+		{
+		//	Keep the table in a list (we take ownership).
+
+		CoreEntities.Insert(pTable);
+
+		//	Link to previous tables
+
+		if (pCoreEntities == NULL)
+			pCoreEntities = pTable;
+		else
+			{
+			pTable->SetParent(pCoreEntities);
+			pCoreEntities = pTable;
+			}
+		}
 
 	CString sRootPath;
 	TSortMap<CString, SResourceEntry> ResourceMap;
 	int iErrorCount;
+	CExternalEntityTable *pCoreEntities;
+	TArray<CExternalEntityTable *> CoreEntities;
+	};
+
+class CSaveEntitiesTable
+	{
+	public:
+		CSaveEntitiesTable (SCompilerCtx &Ctx, CExternalEntityTable *pNewTable, bool bFreeTable = true) :
+				 m_Ctx(Ctx),
+				 m_pSavedTable(NULL),
+				 m_bFreeTable(bFreeTable)
+			{
+			if (pNewTable)
+				{
+				m_pSavedTable = m_Ctx.pCoreEntities;
+				if (m_Ctx.pCoreEntities)
+					pNewTable->SetParent(m_Ctx.pCoreEntities);
+
+				m_Ctx.pCoreEntities = pNewTable;
+				}
+			}
+
+		~CSaveEntitiesTable (void)
+			{
+			if (m_pSavedTable)
+				{
+				if (m_bFreeTable)
+					delete m_Ctx.pCoreEntities;
+
+				m_Ctx.pCoreEntities = m_pSavedTable;
+				}
+			}
+
+	private:
+		SCompilerCtx &m_Ctx;
+		CExternalEntityTable *m_pSavedTable;
+		bool m_bFreeTable;
 	};
 
 void DumpTDB (const CString &sFilespec);
@@ -82,16 +143,15 @@ ALERROR WriteHeader (SCompilerCtx &Ctx, int iGameFile, CDataFile &Out);
 ALERROR WriteModule (SCompilerCtx &Ctx,
 					 const CString &sFilename, 
 					 const CString &sFolder, 
-					 CExternalEntityTable *pEntityTable,
 					 CDataFile &Out, 
-					 int *retiModuleEntry);
+					 int *retiModuleEntry = NULL,
+					 bool bCore = false);
 ALERROR WriteModuleImages (SCompilerCtx &Ctx, CXMLElement *pModule, const CString &sFolder, CDataFile &Out);
 ALERROR WriteModuleSounds (SCompilerCtx &Ctx, CXMLElement *pModule, const CString &sFolder, CDataFile &Out);
 ALERROR WriteResource (SCompilerCtx &Ctx, const CString &sFilename, const CString &sFolder, bool bCompress, CDataFile &Out);
 ALERROR WriteSubModules (SCompilerCtx &Ctx, 
 						 CXMLElement *pModule,
 						 const CString &sFolder, 
-						 CExternalEntityTable *pEntityTable,
 						 CDataFile &Out);
 
 void TransCompiler (CXMLElement *pCmdLine)
@@ -164,9 +224,12 @@ void TransCompiler (CXMLElement *pCmdLine)
 
 	else
 		{
-		//	Add all entities
+		//	Prepare a context block
 
-		CExternalEntityTable *pEntities = NULL;
+		SCompilerCtx Ctx;
+
+		//	Add all entities from external libraries
+
 		for (i = 0; i < EntityFilespecs.GetCount(); i++)
 			{
 			CExternalEntityTable *pNewEntities;
@@ -176,13 +239,7 @@ void TransCompiler (CXMLElement *pCmdLine)
 				return;
 				}
 
-			if (pEntities == NULL)
-				pEntities = pNewEntities;
-			else
-				{
-				pNewEntities->SetParent(pEntities);
-				pEntities = pNewEntities;
-				}
+			Ctx.AddCoreEntitiesTable(pNewEntities);
 			}
 
 		//	Create the output file
@@ -200,10 +257,6 @@ void TransCompiler (CXMLElement *pCmdLine)
 			return;
 			}
 
-		//	Prepare a symbol table to hold all the resource files
-
-		SCompilerCtx Ctx;
-
 		//	Get the path of the input
 
 		Ctx.sRootPath = pathGetPath(sInputFilespec);
@@ -212,7 +265,7 @@ void TransCompiler (CXMLElement *pCmdLine)
 		//	Write out the main module and recurse
 
 		int iGameFile;
-		if (error = WriteModule(Ctx, sInputFilespec, NULL_STR, pEntities, Out, &iGameFile))
+		if (error = WriteModule(Ctx, sInputFilespec, NULL_STR, Out, &iGameFile))
 			goto Done;
 
 		//	Write out the header
@@ -455,9 +508,9 @@ ALERROR WriteHeader (SCompilerCtx &Ctx, int iGameFile, CDataFile &Out)
 ALERROR WriteModule (SCompilerCtx &Ctx, 
 					 const CString &sFilename, 
 					 const CString &sFolder, 
-					 CExternalEntityTable *pEntityTable,
 					 CDataFile &Out, 
-					 int *retiModuleEntry)
+					 int *retiModuleEntry,
+					 bool bCore)
 	{
 	ALERROR error;
 	int i;
@@ -465,24 +518,32 @@ ALERROR WriteModule (SCompilerCtx &Ctx,
 	//	Parse the file
 
 	CXMLElement *pModule;
-	CExternalEntityTable EntityTable;
+	CExternalEntityTable *pEntityTable = new CExternalEntityTable;
 	CFileReadBlock DataFile(pathAddComponent(Ctx.sRootPath, sFilename));
 	CString sError;
 
 	printf("Parsing %s...", sFilename.GetASCIIZPointer());
-	if (error = CXMLElement::ParseXML(&DataFile, pEntityTable, &pModule, &sError, &EntityTable))
+	if (error = CXMLElement::ParseXML(&DataFile, Ctx.pCoreEntities, &pModule, &sError, pEntityTable))
 		{
 		printf("\nerror : %s\n", sError.GetASCIIZPointer());
 		Ctx.iErrorCount++;
 		return error;
 		}
 
+	//	If this is a core module (embedded in the root XML) then we add these
+	//	entities to the core. [Ctx takes ownership.]
+
+	if (bCore)
+		Ctx.AddCoreEntitiesTable(pEntityTable);
+
 	//	Chain entity tables (so that any modules that we load get the benefit).
+	//	This will chain Ctx.pCoreEntities (and restore it in the destructor).
+	//
+	//	NOTE: If this is a core module, then we don't do this, since we've
+	//	already added the entities to the context block.
 
-	if (pEntityTable)
-		EntityTable.SetParent(pEntityTable);
+	CSaveEntitiesTable SavedEntities(Ctx, (!bCore ? pEntityTable : NULL));
 
-	pEntityTable = &EntityTable;
 	printf("done.\n");
 
 	//	Compress if this is NOT the main file. We can't compress the
@@ -519,7 +580,7 @@ ALERROR WriteModule (SCompilerCtx &Ctx,
 
 	//	Store all modules
 
-	if (error = WriteSubModules(Ctx, pModule, sFolder, pEntityTable, Out))
+	if (error = WriteSubModules(Ctx, pModule, sFolder, Out))
 		return error;
 
 	//	The root module may have a TranscendenceAdventure tag with modules in it
@@ -530,6 +591,22 @@ ALERROR WriteModule (SCompilerCtx &Ctx,
 
 		if (strEquals(pItem->GetTag(), TAG_TRANSCENDENCE_ADVENTURE) || strEquals(pItem->GetTag(), TAG_TRANSCENDENCE_LIBRARY))
 			{
+			//	If we have a filename, then we need to save the target as a
+			//	module.
+
+			CString sFilename;
+			if (pItem->FindAttribute(ATTRIB_FILENAME, &sFilename))
+				{
+				//	Write out the module, making sure to set the core flag.
+
+				if (error = WriteModule(Ctx, sFilename, sFolder, Out, NULL, true))
+					return error;
+
+				//	We ignore any other elements.
+
+				continue;
+				}
+
 			//	Store all the image resources
 
 			if (error = WriteModuleImages(Ctx, pItem, sFolder, Out))
@@ -542,7 +619,7 @@ ALERROR WriteModule (SCompilerCtx &Ctx,
 
 			//	Modules
 
-			if (error = WriteSubModules(Ctx, pItem, sFolder, pEntityTable, Out))
+			if (error = WriteSubModules(Ctx, pItem, sFolder, Out))
 				return error;
 			}
 		}
@@ -558,7 +635,6 @@ ALERROR WriteModule (SCompilerCtx &Ctx,
 ALERROR WriteSubModules (SCompilerCtx &Ctx, 
 						 CXMLElement *pModule,
 						 const CString &sFolder, 
-						 CExternalEntityTable *pEntityTable,
 						 CDataFile &Out)
 	{
 	int i, j;
@@ -574,14 +650,14 @@ ALERROR WriteSubModules (SCompilerCtx &Ctx,
 				CXMLElement *pDesc = pItem->GetContentElement(j);
 
 				CString sFilename = pDesc->GetAttribute(ATTRIB_FILENAME);
-				if (WriteModule(Ctx, sFilename, sFolder, pEntityTable, Out, NULL) != NOERROR)
+				if (WriteModule(Ctx, sFilename, sFolder, Out) != NOERROR)
 					continue;
 				}
 			}
 		else if (strEquals(pItem->GetTag(), TAG_MODULE))
 			{
 			CString sFilename = pItem->GetAttribute(ATTRIB_FILENAME);
-			if (WriteModule(Ctx, sFilename, sFolder, pEntityTable, Out, NULL) != NOERROR)
+			if (WriteModule(Ctx, sFilename, sFolder, Out) != NOERROR)
 				continue;
 			}
 		}
