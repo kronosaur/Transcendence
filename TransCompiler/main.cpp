@@ -169,8 +169,8 @@ void TransCompiler (CXMLElement *pCmdLine)
 	ALERROR error;
 	int i;
 
-	printf("TransCompiler v2.0\n");
-	printf("Copyright (c) 2003-2013 by Kronosaur Productions, LLC. All Rights Reserved.\n\n");
+	printf("TransCompiler v2.1\n");
+	printf("Copyright (c) 2003-2015 by Kronosaur Productions, LLC. All Rights Reserved.\n\n");
 
 	if (pCmdLine->GetAttributeBool(NOARGS) || pCmdLine->GetAttributeBool(SWITCH_HELP))
 		{
