@@ -5901,8 +5901,6 @@
 	<Image UNID="&rsCorporateExplorer;"	bitmap="Resources\CorporateExplorer.jpg" bitmask="Resources\CorporateExplorerMask.bmp" loadOnUse="true"/>
 
 	<Image UNID="&rsMRADConsole;"		bitmap="Resources\MRADConsole.jpg" bitmask="Resources\MRADConsoleMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsNeurohackFrame;"	bitmap="Resources\NeurohackFrame.jpg" bitmask="Resources\NeurohackFrameMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsNeurohackControls;"	bitmap="Resources\NeurohackControls.jpg" bitmask="Resources\NeurohackControlsMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsHereticItems;"		bitmap="Resources\HereticItems.jpg" bitmask="Resources\HereticItemsMask.bmp" />
 
 </TranscendenceModule>

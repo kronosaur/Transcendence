@@ -10,10 +10,53 @@
 							API
 	OLD TYPE				VERSION		NEW TYPE
 
+	stCargoCrate			26			stGenericCargoCrate
 	stNavSign				19			stCommonwealthNavSign
 	dsFleetDockServices		23			Use rpgDockServices function and <Trade>
 
 	-->
+
+	<!-- Cargo Crate -->
+
+	<StationType UNID="&stCargoCrate;"
+			name=				"abandoned cargo crate"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"&dsAbandonedCrate;"
+
+			structuralHitPoints="10"
+			ejectaType=			"&vtWreckEjecta;"
+
+			scale=				"ship"
+			mobile=				"true"
+			mass=				"50"
+			destroyWhenEmpty=	"true"
+			noMapIcon=			"true"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="480" imageY="256" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="288" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="320" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="352" imageWidth="32" imageHeight="32" />
+		</ImageVariants>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
+
+	</StationType>
 
 	<StationType UNID="&stNavSign;"
 			name=				"(navigational beacon)"

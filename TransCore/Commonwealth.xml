@@ -3425,7 +3425,19 @@
 		</Language>
 	</DockScreen>
 	
-<!-- BASIC COMMONWEALTH RULES -->
+<!-- BASIC COMMONWEALTH RULES
+
+	PLAYER DATA
+	
+	commonCrime:	Description of the player's crime (e.g., "slave-trading")
+	commonCrimeSeverity: The severity of the crime
+						0 = No crime
+						1 = Misdemeanor (drug possession)
+						2 = Felony (piracy)
+						3 = Crimes against Humanity (slave-trading, genocide, mass-destruction)
+	commonCrimeRecord: Number of times player has been caught and released for a felony
+	
+-->
 
 	<Sovereign UNID="&svCommonwealth;"
 			name="Commonwealth"

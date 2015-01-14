@@ -2,6 +2,18 @@
 
 <TranscendenceModule>
 	
+<!--
+
+PLAYER DATA
+
+	fleetLevel:		Fleet level (1-6)
+	fleetMission:	Object that has assigned mission to player (Nil if none)
+	fleetXP:		Fleet experience points
+	fleetTFSuccess:	Number of successful Task Force missions
+	fleetTFFailure: Number of failed Task Force missions
+
+-->
+	
 	<Type unid="&unidCommonwealthFleet;">
 		<Events>
 			<GetGlobalPlayerPriceAdj>

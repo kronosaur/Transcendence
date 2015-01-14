@@ -16,6 +16,76 @@
 		</Language>
 	</DockScreen>
 	
+<!-- ABANDONED STATION =========================================================
+
+	Language IDs:
+	
+	descAbandonedStation: If the station has the given language ID, then we use
+			that as the description. Otherwise we come up with a default.
+	
+	
+-->
+
+	<DockScreen unid="&dsRPGAbandonedStation;"
+			inherit=			"&dsDockScreenBase;"
+			>
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (desc)
+						(switch
+							;	If we have a description in the object, then use that.
+						
+							(setq desc (objTranslate gSource 'descAbandonedStation))
+								(scrSetDesc gScreen desc)
+								
+							;	If populated, then use a default.
+							
+							(objHasAttribute gSource 'populated)
+								(scrSetDescTranslate gScreen 'descAbandonedStationPopulated)
+								
+							;	Otherwise, generic default
+							
+							(scrSetDescTranslate gScreen 'descAbandoendStationDefault)
+							)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionLoot" default="1" >
+						(scrShowScreen gScreen &dsRPGLoot;)
+					</Action>
+
+					<Action id="actionJettison">
+						(scrShowScreen gScreen &dsRPGJettison;)
+					</Action>
+
+					<Action id="actionUndock" cancel="1">
+						<Exit/>
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+		
+		<Language>
+			<Text id="actionJettison">"[J]ettison"</Text>
+			<Text id="actionLoot">"[L]oot"</Text>
+			
+			<Text id="descAbandonedStationDefault">
+				(cat
+					"You are docked at a destroyed structure. "
+					"Leaking fluids and venting gases obscure the ruined machinery inside."
+					)
+			</Text>
+			<Text id="descAbandoendStationPopulated">
+				(cat 
+					"You are docked at the lifeless ruins of a destroyed station. "
+					"Wrecked machinery and smoldering bodies litter the silent, cavernous bay."
+					)
+			</Text>
+		</Language>
+	</DockScreen>
+
 <!-- COMMODITIES EXCHANGE ======================================================
 
 	This screen allows the player to buy and sell items according to the 

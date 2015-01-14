@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE TranscendenceLibrary
+	[
+	<!ENTITY tbBasicSystemParts			"0x0000000B">
+	
+	<!ENTITY stStargate					"0x00002002">
+	<!ENTITY stStargateBeacon			"0x0000200A">
+	<!ENTITY stMinedOre					"0x0000200B">
+	
+	<!ENTITY stO-TypeStar				"0x00002100">
+	<!ENTITY stA-TypeStar				"0x00002101">
+	<!ENTITY stG-TypeStar				"0x00002102">
+	<!ENTITY stM-TypeStar				"0x00002103">
+	<!ENTITY stWhiteDwarfStar			"0x00002104">
+	<!ENTITY stRedDwarfStar				"0x00002105">
+	<!ENTITY stBlueGiantStar			"0x00002106">
+	<!ENTITY stRedGiantStar				"0x00002107">
+	<!ENTITY stNebulaStar				"0x00002108">
+	<!ENTITY stK-TypeStar				"0x00002109">
+	
+	<!ENTITY stSmallAsteroid			"0x00002200">
+	<!ENTITY stMediumAsteroid			"0x00002201">
+	<!ENTITY stLargeAsteroid			"0x00002202">
+	<!ENTITY stSmallIceAsteroid			"0x00002203">
+	<!ENTITY stLargeIceAsteroid			"0x00002204">
+	<!ENTITY stPlanetoid				"0x00002205">
+	<!ENTITY stCrateredPlanet			"0x00002206">
+	<!ENTITY stIcePlanet				"0x00002207">
+	<!ENTITY stGreenhousePlanet			"0x00002208">
+	<!ENTITY stBiospherePlanet			"0x00002209">
+	<!ENTITY stDesertPlanet				"0x0000220A">
+	<!ENTITY stHydrogenGasGiant			"0x0000220B">
+	<!ENTITY stRingedGasGiant			"0x0000220C">
+	<!ENTITY stMethaneGasGiant			"0x0000220D">
+	<!ENTITY stSmallVolcanicAsteroid	"0x0000220E">
+	<!ENTITY stMediumVolcanicAsteroid	"0x0000220F">
+	<!ENTITY stVolcanicPlanet			"0x00002210">
+	<!ENTITY stSmallFrostAsteroid		"0x00002211">
+	<!ENTITY stMediumFrostAsteroid		"0x00002212">
+	<!ENTITY stSmallMetallicAsteroid	"0x00002213">
+	<!ENTITY stMediumMetallicAsteroid	"0x00002214">
+	
+	<!ENTITY stOreSmallAsteroid			"0x00002300">
+	<!ENTITY stOreSmallFrostAsteroid	"0x00002301">
+	<!ENTITY stOreSmallVolcanicAsteroid	"0x00002302">
+	<!ENTITY stOreMediumAsteroid		"0x00002303">
+	<!ENTITY stOreMediumFrostAsteroid	"0x00002304">
+	<!ENTITY stOreMediumVolcanicAsteroid	"0x00002305">
+	<!ENTITY stOreSmallMetallicAsteroid	"0x00002306">
+	<!ENTITY stOreMediumMetallicAsteroid	"0x00002307">
+	
+	<!ENTITY itTitaniumOre				"0x00004024">
+	<!ENTITY itPlasteelOre				"0x00004028">
+	<!ENTITY itDuralloyOre				"0x0000402A">
+	<!ENTITY itPteracniumOre			"0x0000402C">
+	<!ENTITY itGoldOre					"0x00004030">
+	<!ENTITY itPlatinumOre				"0x00004031">
+	<!ENTITY itNeutroniumOre			"0x00004034">
+	<!ENTITY itPalladiumOre				"0x00004095">
+	<!ENTITY itUraniumOre				"0x000040FD">
+	<!ENTITY itHeliumRegolith			"0x000040FE">
+	<!ENTITY itCobaltThoriumOre			"0x000040FF">
+	<!ENTITY itHadronArcheolith			"0x00004104">
+	<!ENTITY itCeralloyOre				"0x0000413F">
+	<!ENTITY itOrthoSteelOre			"0x00004140">
+	<!ENTITY itIthaliumOre				"0x00004141">
+	<!ENTITY itXenotiteOre				"0x00004100">
+	<!ENTITY itTetramiteOre				"0x00004167">
+	<!ENTITY itHyperonicOre				"0x0000416E">
+	<!ENTITY itEtheriumOre				"0x0000416F">
+	
+	<!ENTITY vtStoneAsteroidEjecta		"0x00005001">
+	<!ENTITY vtIceAsteroidEjecta		"0x00005002">
+	<!ENTITY vtVolcanicAsteroidEjecta	"0x00005003">
+	<!ENTITY vtUnknownAmmoBox			"0x00005005">
+	<!ENTITY vtUnknownFieldCrystal		"0x00005006">
+	<!ENTITY vtMetallicAsteroidEjecta	"0x00005019">
+	
+	<!ENTITY tbStoneAsteroidOre			"0x00008107">
+	<!ENTITY tbFrostAsteroidOre			"0x00008108">
+	<!ENTITY tbMetallicAsteroidOre		"0x00008109">
+	<!ENTITY tbVolcanicAsteroidOre		"0x0000810A">
+	
+	<!ENTITY efStargateIn				"0x00009005">
+	<!ENTITY efStargateOut				"0x00009006">
+	<!ENTITY efNebula					"0x0000900B">
+	<!ENTITY seNebula					"0x00009201">
+	
+	<!ENTITY dsMinedOre					"0x0000A01E">
+	<!ENTITY dsNeurohack				"0x0000A020">
+	<!ENTITY dsNeurohackHelp			"0x0000A021">
+	
+	<!ENTITY rsMinedOreBkgnd			"0x0000F012">
+	<!ENTITY rsWorlds1					"0x0000F102">
+	<!ENTITY rsStar1					"0x0000F109">
+	<!ENTITY rsRedDwarfStar				"0x0000F119">
+	<!ENTITY rsAStar					"0x0000F11A">
+	<!ENTITY rsWorlds2					"0x0000F11E">
+	<!ENTITY rsNebulaEnv				"0x0000F122">
+	<!ENTITY rsNebula					"0x0000F123">
+	<!ENTITY rsRedGiantStar				"0x0000F125">
+	<!ENTITY rsWorldsRingedGiant1		"0x0000F12F">
+	<!ENTITY rsWorldsRingedGiant2		"0x0000F130">
+	<!ENTITY rsWorldsRingedGiant3		"0x0000F131">
+	<!ENTITY rsWorldsRingedGiant4		"0x0000F132">
+	<!ENTITY rsWorldsRingedGiant5		"0x0000F133">
+	<!ENTITY rsWorldsRingedGiant6		"0x0000F134">
+	<!ENTITY rsWorldsRingedGiant7		"0x0000F135">
+	<!ENTITY rsWorldsRingedGiant8		"0x0000F136">
+	<!ENTITY rsWorldsIcePlanet1			"0x0000F139">
+	<!ENTITY rsWorldsIcePlanet2			"0x0000F13A">
+	<!ENTITY rsWorldsIcePlanet3			"0x0000F13B">
+	<!ENTITY rsWorldsIcePlanet4			"0x0000F13C">
+	<!ENTITY rsMetallicAsteroids		"0x0000F14A">
+	
+	<!ENTITY snStargate					"0x0000F208">
+	
+	<!ENTITY rsNeurohackFrame			"0x001CF003">
+	<!ENTITY rsNeurohackControls		"0x001CF004">
+	
+	<!-- 0002 0000-FFFF UNIVERSE LIBRARY -->
+	
+	<!ENTITY unidUniverseLibrary		"0x00020000">
+	
+	<!ENTITY rsOreSmall					"0x00020010">
+	<!ENTITY rsStdStargate				"0x00020011">
+	<!ENTITY rsStargateEffects			"0x00020012">
+	<!ENTITY rsLightNebula				"0x00020013">
+	<!ENTITY stPrimordialStar			"0x00020014">
+	<!ENTITY seLightNebula				"0x00020015">
+	<!ENTITY rsPrimordialMist			"0x00020016">
+	<!ENTITY sePrimordialMist			"0x00020017">
+	<!ENTITY rsPrimordialNebula			"0x00020018">
+	<!ENTITY sePrimordialNebula			"0x00020019">
+	<!ENTITY rsPrimordialAsteroids		"0x0002001A">
+	<!ENTITY rsPrimordialWorlds			"0x0002001B">
+	<!ENTITY stPrimordialAsteroidSizeA	"0x0002001C">
+	<!ENTITY stPrimordialAsteroidSizeB	"0x0002001D">
+	<!ENTITY stPrimordialPlanetoidSizeF	"0x0002001E">
+	<!ENTITY stPrimordialPlanetoidSizeF2	"0x0002001F">
+	<!ENTITY stPrimordialTerrestrialSizeH	"0x00020020">
+	<!ENTITY stPrimordialTerrestrialSizeH2	"0x00020021">
+	<!ENTITY stPrimordialTerrestrialSizeJ	"0x00020022">
+	<!ENTITY stPrimordialGasGiantSizeK	"0x00020023">
+	<!ENTITY tbSystemMorphologies		"0x00020024">
+	<!ENTITY tbPrimordialAsteroidOre	"0x00020025">
+	<!ENTITY tbAsteroidMorphologies		"0x00020026">
+	<!ENTITY tbPlanetaryMorphologies	"0x00020027">
+	<!ENTITY stRockyAsteroidSizeA		"0x00020028">
+	<!ENTITY stRockyOuterAsteroidSizeA	"0x00020029">
+	<!ENTITY stRockyAsteroidSizeB		"0x0002002A">
+	<!ENTITY stRockyOuterAsteroidSizeB	"0x0002002B">
+	<!ENTITY stRockyAsteroidSizeC		"0x0002002C">
+	<!ENTITY stRockyOuterAsteroidSizeC	"0x0002002D">
+	<!ENTITY stRockyAsteroidSizeD		"0x0002002E">
+	<!ENTITY stRockyOuterAsteroidSizeD	"0x0002002F">
+	<!ENTITY stRockyPlanetoidSizeE		"0x00020030">
+	<!ENTITY stRockyPlanetoidSizeF		"0x00020031">
+	<!ENTITY stRockyPlanetoidSizeG		"0x00020032">
+	<!ENTITY stIceAsteroidSizeA			"0x00020033">
+	<!ENTITY stIceAsteroidSizeB			"0x00020034">
+	<!ENTITY stIceAsteroidSizeC			"0x00020035">
+	<!ENTITY stIceAsteroidSizeD			"0x00020036">
+	<!ENTITY stIcePlanetoidSizeE		"0x00020037">
+	<!ENTITY stIcePlanetoidSizeF		"0x00020038">
+	<!ENTITY stIcePlanetoidSizeG		"0x00020039">
+	<!ENTITY stMetallicAsteroidSizeA	"0x0002003A">
+	<!ENTITY stMetallicAsteroidSizeB	"0x0002003B">
+	<!ENTITY stMetallicAsteroidSizeC	"0x0002003C">
+	<!ENTITY stMetallicAsteroidSizeD	"0x0002003D">
+	<!ENTITY stMetallicPlanetoidSizeE	"0x0002003E">
+	<!ENTITY stMetallicPlanetoidSizeF	"0x0002003F">
+	<!ENTITY stMetallicPlanetoidSizeG	"0x00020040">
+	<!ENTITY stPrimordialAsteroidSizeC	"0x00020041">
+	<!ENTITY stPrimordialAsteroidSizeD	"0x00020042">
+	<!ENTITY stPrimordialPlanetoidSizeE	"0x00020043">
+	<!ENTITY stPrimordialPlanetoidSizeG	"0x00020044">
+	<!ENTITY stVolcanicAsteroidSizeA	"0x00020045">
+	<!ENTITY stVolcanicAsteroidSizeB	"0x00020046">
+	<!ENTITY stVolcanicAsteroidSizeC	"0x00020047">
+	<!ENTITY stVolcanicAsteroidSizeD	"0x00020048">
+	<!ENTITY stVolcanicPlanetoidSizeE	"0x00020049">
+	<!ENTITY stVolcanicPlanetoidSizeF	"0x0002004A">
+	<!ENTITY stVolcanicPlanetoidSizeG	"0x0002004B">
+	<!ENTITY stVolcanicTerrestrialSizeH	"0x0002004C">
+	<!ENTITY rsIceAsteroids				"0x0002004D">
+	<!ENTITY rsMetallicAsteroids2		"0x0002004E">
+	<!ENTITY rsRockyAsteroids			"0x0002004F">
+	<!ENTITY rsVolcanicAsteroids		"0x00020050">
+	<!ENTITY rsVolcanicTerrestrials		"0x00020051">
+	<!ENTITY rsBiosphereTerrestrials	"0x00020052">
+	<!ENTITY stBiosphereTerrestrialSizeI	"0x00020053">
+	<!ENTITY rsDesertTerrestrials		"0x00020054">
+	<!ENTITY stDesertTerrestrialSizeH	"0x00020055">
+	<!ENTITY rsGreenhouseTerrestrials	"0x00020056">
+	<!ENTITY stGreenhouseTerrestrialSizeI	"0x00020057">
+	<!ENTITY rsHydrogenGasGiant01		"0x00020058">
+	<!ENTITY stHydrogenGasGiantSizeM	"0x00020059">
+	<!ENTITY rsHydrogenGasGiant02		"0x0002005A">
+	<!ENTITY rsHydrogenGasGiant03		"0x0002005B">
+	<!ENTITY rsMethaneGasGiant01		"0x0002005C">
+	<!ENTITY stMethaneGasGiantSizeK		"0x0002005D">
+	<!ENTITY tbPrimordialPlanets		"0x0002005E">
+	<!ENTITY tbStandardPlanets			"0x0002005F">
+	<!ENTITY tbIcePlanets				"0x00020060">
+	<!ENTITY tbMetallicPlanets			"0x00020061">
+	<!ENTITY tbRockyPlanets				"0x00020062">
+	<!ENTITY tbVolcanicPlanets			"0x00020063">
+	<!ENTITY rsRedGiantStar2			"0x00020064">
+	<!ENTITY rsRedDwarfStar2			"0x00020065">
+	<!ENTITY unidLocationAttribDef		"0x00020066">
+	<!ENTITY tbStars					"0x00020067">
+	<!ENTITY tbAsteroidOre				"0x00020068">
+	
+	<!ENTITY stStarClassM8				"0x00020070">
+	<!ENTITY stStarClassM5				"0x00020071">
+	<!ENTITY stStarClassM0				"0x00020072">
+	<!ENTITY stStarClassK5				"0x00020073">
+	<!ENTITY stStarClassK0				"0x00020074">
+	<!ENTITY stStarClassG5				"0x00020075">
+	<!ENTITY stStarClassG2				"0x00020076">
+	<!ENTITY stStarClassG0				"0x00020077">
+	<!ENTITY stStarClassF5				"0x00020078">
+	<!ENTITY stStarClassF0				"0x00020079">
+	<!ENTITY stStarClassA5				"0x0002007A">
+	<!ENTITY stStarClassA0				"0x0002007B">
+	
+	<!ENTITY rsOvoidAsteroids			"0x00020080">
+	<!ENTITY stOvoidAsteroidSizeA		"0x00020081">
+	<!ENTITY stOvoidAsteroidSizeB		"0x00020082">
+	<!ENTITY stOvoidAsteroidSizeC		"0x00020083">
+	<!ENTITY stOvoidAsteroidSizeD		"0x00020084">
+	<!ENTITY stOvoidPlanetoidSizeE		"0x00020085">
+	<!ENTITY stOvoidPlanetoidSizeF		"0x00020086">
+	<!ENTITY stOvoidPlanetoidSizeG		"0x00020087">
+	<!ENTITY tbOvoidTables				"0x00020088">
+	]>
+	
+<TranscendenceLibrary
+		UNID=				"&unidUniverseLibrary;"
+		name=				"Transcendence Universe"
+		release=			"1"
+		private=			"true"
+		>
+
+	<Library unid="&unidCoreTypesLibrary;"/>
+	<Library unid="&unidRPGLibrary;"/>
+	
+	<Module filename="Environments.xml"/>
+	<Module filename="Groups.xml"/>
+	<Module filename="Ice.xml"/>
+	<Module filename="Metallic.xml"/>
+	<Module filename="Mining.xml"/>
+	<Module filename="Ore.xml"/>
+	<Module filename="Ovoids.xml"/>
+	<Module filename="Neurohack.xml"/>
+	<Module filename="Primordial.xml"/>
+	<Module filename="Rocky.xml"/>
+	<Module filename="Stargates.xml"/>
+	<Module filename="Stars.xml"/>
+	<Module filename="StarSystems.xml"/>
+	<Module filename="UniverseCompatibility.xml"/>
+	<Module filename="UniverseEffects.xml"/>
+	<Module filename="Volcanic.xml"/>
+	<Module filename="Worlds.xml"/>
+
+</TranscendenceLibrary>

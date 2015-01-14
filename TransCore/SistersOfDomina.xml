@@ -1537,7 +1537,18 @@
 		</Panes>
 	</DockScreen>
 
-<!-- SISTERS OF DOMINA -->
+<!-- SISTERS OF DOMINA
+
+	PLAYER DATA
+	
+	sistersAttitude: Abstract measure of the sisters' attitude towards the player
+	sistersLastDonation:	Time at which the player donated last (Nil if never)
+	sistersStory:	State of story-telling
+	slaveReward:	Number of slaves for which player has already been rewarded
+	slaveSales:		Proceeds from slave sales
+	slavesFreed:	Number of slaves freed to commonwealth authorities
+	
+-->
 
 	<Sovereign UNID="&svSistersOfDomina;"
 			name="Sisters of Domina"

@@ -1,5 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <TranscendenceModule>
+	
+	<!-- Cargo Crate -->
 
+	<StationType UNID="&stGenericCargoCrate;"
+			name=				"abandoned cargo crate"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"&dsRPGAbandonedStation;"
+
+			structuralHitPoints="10"
+			ejectaType=			"&vtWreckEjecta;"
+
+			scale=				"ship"
+			mobile=				"true"
+			mass=				"50"
+			destroyWhenEmpty=	"true"
+			noMapIcon=			"true"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsGenericCargoCrate;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsGenericCargoCrate;" imageX="0" imageY="32" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsGenericCargoCrate;" imageX="0" imageY="64" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsGenericCargoCrate;" imageX="0" imageY="96" imageWidth="32" imageHeight="32" />
+		</ImageVariants>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
+
+		<Language>
+			<Text id="descAbandonedStation">
+				"You are docked with an abandoned cargo crate."
+			</Text>
+		</Language>
+	</StationType>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsGenericCargoCrate;"	bitmap="Resources\CargoCrate.jpg"		bitmask="Resources\CargoCrateMask.bmp"		loadOnUse="true" />
+	
 </TranscendenceModule>

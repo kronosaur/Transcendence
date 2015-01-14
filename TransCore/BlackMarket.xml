@@ -1,6 +1,21 @@
 <?xml version="1.0" ?>
 
 <TranscendenceModule>
+	
+<!--
+
+PLAYER DATA
+
+	blackMarketCrime: Description of player's offense against the Sindikat
+	blackMarketCrimeCost: Price that the player has to pay to stop bounty hunters
+	blackMarketLevel: Black market level (1-6)
+	blackMarketMission: Current black market mission
+						StK = deliver container to St. Katharine's
+	blackMarketShields: Level at which player got free shields
+	blackMarketWeapon: Level at which player got free weapon
+	blackMarketXP:	Black Market experience points
+	
+-->
 
 <!-- SHIP CLASSES -->
 

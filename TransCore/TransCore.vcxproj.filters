@@ -16,6 +16,9 @@
     <Filter Include="Universe Library">
       <UniqueIdentifier>{f0df8dab-f35b-432f-8f48-d857cf0f924e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Compatibility">
+      <UniqueIdentifier>{8f3618c8-6142-4e3d-b310-1fa17883042d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Transcendence.xml" />
@@ -62,9 +65,6 @@
       <Filter>Human Space Library</Filter>
     </None>
     <None Include="CommonwealthMining.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Compatibility10.xml">
       <Filter>Human Space Library</Filter>
     </None>
     <None Include="CorporateHierarchy.xml">
@@ -188,9 +188,6 @@
       <Filter>Core Types</Filter>
     </None>
     <None Include="CoreEffects.xml">
-      <Filter>Core Types</Filter>
-    </None>
-    <None Include="CoreTypes.xml">
       <Filter>Core Types</Filter>
     </None>
     <None Include="RPGArmorDockScreens.xml">
@@ -322,10 +319,34 @@
     <None Include="CoreExplosions.xml">
       <Filter>Core Types</Filter>
     </None>
+    <None Include="CoreTypesLibrary.xml">
+      <Filter>Core Types</Filter>
+    </None>
+    <None Include="Compatibility10.xml">
+      <Filter>Compatibility</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Benedict.xml">
       <Filter>Part I</Filter>
+    </Xml>
+    <Xml Include="CorePlaceholders.xml">
+      <Filter>Core Types</Filter>
+    </Xml>
+    <Xml Include="RPGLibrary.xml">
+      <Filter>RPG Library</Filter>
+    </Xml>
+    <Xml Include="UniverseLibrary.xml">
+      <Filter>Universe Library</Filter>
+    </Xml>
+    <Xml Include="HumanSpaceVol01.xml">
+      <Filter>Human Space Library</Filter>
+    </Xml>
+    <Xml Include="CompatibilityLibrary.xml">
+      <Filter>Compatibility</Filter>
+    </Xml>
+    <Xml Include="Ore.xml">
+      <Filter>Universe Library</Filter>
     </Xml>
   </ItemGroup>
 </Project>

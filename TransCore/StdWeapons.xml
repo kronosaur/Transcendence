@@ -4895,15 +4895,12 @@
 	<Image UNID="&rsMissileNAMI;"			bitmap="Resources\MissileNAMI.jpg" bitmask="Resources\MissileNAMIMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsMissileStrelka;"		bitmap="Resources\MissileStrelka.jpg" bitmask="Resources\MissileStrelkaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsMissiles2;"				bitmap="Resources\Missiles2.jpg" bitmask="Resources\Missiles2Mask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsMissiles3;"				bitmap="Resources\Missiles3.jpg" bitmask="Resources\Missiles3Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsMissiles4;"				bitmap="Resources\Missiles4.jpg" bitmask="Resources\Missiles4Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsMissiles6;"				bitmap="Resources\Missiles6.jpg" bitmask="Resources\Missiles6Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsStdMissile1;"			bitmap="Resources\StdMissile1.jpg" bitmask="Resources\StdMissile1Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsWeapons8DB32;"			bitmap="Resources\Weapons-8-DB32.jpg" bitmask="Resources\Weapons-8-DB32Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsWeapons9DB32;"		bitmap="Resources\Weapons-9-DB32.jpg"		bitmask="Resources\Weapons-9-DB32Mask.bmp"	/>
 
-	<Image UNID="&rsExplosionsAG128;"		bitmap="Resources\Explosions-AG128.jpg"	bitmask="Resources\Explosions-AG128Mask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsExplosion2AG128;"		bitmap="Resources\Explosion-2-AG128.jpg" bitmask="Resources\Explosion-2-AG128Mask.bmp" loadOnUse="true"/>
 	
 	<Image UNID="&rsDebris1;"				bitmap="Resources\Debris1.bmp" />
 	

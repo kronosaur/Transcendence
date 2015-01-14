@@ -306,5 +306,10 @@
 			</Default>
 		</Panes>
 	</DockScreen>
+	
+<!-- RESOURCES -->
 
+	<Image UNID="&rsNeurohackFrame;"	bitmap="Resources\NeurohackFrame.jpg" bitmask="Resources\NeurohackFrameMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsNeurohackControls;"	bitmap="Resources\NeurohackControls.jpg" bitmask="Resources\NeurohackControlsMask.bmp" loadOnUse="true"/>
+	
 </TranscendenceModule>

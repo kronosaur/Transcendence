@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <TranscendenceModule>
-
+	
 	<!-- Ringers Collective -->
 
 	<StationType UNID="&stRingersCollective;"
@@ -523,7 +523,17 @@
 		</Events>
 	</StationType>
 
-<!-- RINGERS -->
+<!-- RINGERS
+
+	PLAYER DATA
+
+	ringerCrime:	Description of the player's crime (e.g., "destruction of xyz")
+	ringerCrimeSeverity: The severity of the crime
+						0 = No crime
+						1 = Social violation
+						2 = Dangerous deviance
+						3 = Existential threat
+-->
 
 	<Sovereign UNID="&svRingers;"
 			name="Ringers"

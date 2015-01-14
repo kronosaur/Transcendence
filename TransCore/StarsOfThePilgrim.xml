@@ -1,7 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<TranscendenceModule>
+<!DOCTYPE TranscendenceAdventure
+	[
+	<!-- 0020 0000-FFFF THE STARS OF THE PILGRIM -->
+	
+	<!ENTITY unidStarsOfThePilgrim		"0x00200000">
+	]>
+	
+<TranscendenceAdventure
+		UNID=				"&unidStarsOfThePilgrim;"
+		name=				"Domina &amp; Oracus I: The Stars of the Pilgrim"
+		release=			"1" 
+		>
+	
+	<Library unid="&unidCoreTypesLibrary;"/>
+	<Library unid="&unidRPGLibrary;"/>
+	<Library unid="&unidUniverseLibrary;"/>
+	<Library unid="&unidHumanSpaceLibrary;"/>
 
+	<AdventureDesc
+			unid=			"&adPart1Desc;"
+			backgroundID=	"&rsPart1Cover;"
+				
+			startingShipCriteria=	"* +00200000_PlayerShip;"
+			include10StartingShips=	"true" 
+			startingSystem=			"SE"
+			startingPos=			"Start"
+			>
+
+		<Language>
+			<Text id="description">
+				(cat
+					"{/rtf Called by Domina to journey to the Galactic Core, you leave the safe environs "
+					"of your home system and explore the farthest reaches of Human Space./n/n"
+
+					"But dangers stalk your passage and even Domina's protection is no guarantee, for none "
+					"who have been called have yet returned./n/n"
+
+					"Will your pilgrimage be more successful?}"
+					)
+			</Text>
+		</Language>
+
+		<Events>
+			<OnGameStart>
+				(block Nil
+					(gamSetCrawlImage &rsProlog1;)
+					(gamSetCrawlSoundtrack &muDominaMainTheme;)
+					(gamSetCrawlText (cat
+						"When the dream came, you knew Domina had chosen you. "
+						"You would sacrifice everything for the chance She offered: "
+						"to join Her at the Galactic Core, the eternal temple of the gods.\n\n"
+						"Leaving your former life behind, you begin the long journey. "
+						"No matter what obstacles lie in your path "
+						"you will not fail Domina. You will reach the Galactic Core."
+						))
+					)
+			</OnGameStart>
+
+			<OnGameEnd>
+				(block Nil
+					(gamSetCrawlImage
+						(if (eq aEndGameReason 'leftHumanSpace)
+							&rsEndGameEscaped;
+							&rsEndGameDestroyed;
+							)
+						)
+
+					(gamSetCrawlSoundtrack &muDominaEndTitles01;)
+
+					(gamSetCrawlText 
+						(plyComposeString gPlayer
+							(cat
+								"%name% " aEpitaph ". "
+								"%name% visited "
+								(if (eq aSystemsVisited 1)
+									"a single star system "
+									(cat aSystemsVisited " star systems ")
+									)
+								"and destroyed "
+								(switch
+									(or (eq aEnemiesDestroyed 0) (not aBestEnemyClass))
+										"no enemy ships"
+
+									(eq aEnemiesDestroyed aBestEnemiesDestroyed)
+										(if (eq aEnemiesDestroyed 1)
+											(shpGetClassName aBestEnemyClass 0x04)
+											(cat aEnemiesDestroyed " " (shpGetClassName aBestEnemyClass 0x02))
+											)
+
+									(eq aBestEnemiesDestroyed 1)
+										(cat aEnemiesDestroyed " enemy ships, including " (shpGetClassName aBestEnemyClass 0x04))
+
+									(cat aEnemiesDestroyed " enemy ships, including " aBestEnemiesDestroyed " " (shpGetClassName aBestEnemyClass 0x02))
+									)
+								". "
+								(if (eq aEndGameReason 'leftHumanSpace)
+									"\n\nTo be continued..."
+									"%He% never reached the Galactic Core."
+									)
+								)
+							)
+						)
+					)
+			</OnGameEnd>
+
+			<GetGlobalAchievements>
+				(intGetGlobalAchievements)
+			</GetGlobalAchievements>
+				
+			<OnGlobalUniverseCreated>
+				(block (theMission)
+
+					; Give the "Reach the Galactic Core" mission to the player
+
+					(setq theMission (msnCreate &msReachGalacticCore; Nil))
+					(if theMission
+						(msnAccept theMission)
+						)
+					)
+			</OnGlobalUniverseCreated>
+		</Events>
+
+		<StaticData>
+			<!--
+				This is needed by trnCreateAllStargates (which is used by all 
+				standard systems) to figure out which node is closest to the
+				Galactic Core. This allows us to create inbound vs. outbound
+				stargates.
+				-->
+			<defaultCorewardNode>"G2"</defaultCorewardNode>
+		</StaticData>
+	</AdventureDesc>
+		
+	<Module filename="Benedict00.xml"/>
+	<Module filename="Benedict01.xml"/>
+	<Module filename="Benedict02.xml"/>
+	<Module filename="Benedict03.xml"/>
+	<Module filename="BenedictStoryArc.xml"/>
+	<Module filename="Elysium.xml"/>
+	<Module filename="Huari.xml"/>
+	<Module filename="PlayerShips.xml"/>
+		
 <!-- ADVENTURE MAP -->
 
 	<SystemMap UNID="&unidPartISystemMap;"
@@ -82,6 +222,7 @@
 
 <!-- RESOURCES -->
 
+	<Image UNID="&rsPart1Cover;"		bitmap="Resources\Part1Cover.jpg"			loadOnUse="true" />
 	<Image UNID="&rsProlog1;"			bitmap="Resources\Prolog1.jpg"				loadOnUse="true" />
 
-</TranscendenceModule>
+</TranscendenceAdventure>

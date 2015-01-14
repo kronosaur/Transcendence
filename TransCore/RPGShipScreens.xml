@@ -145,7 +145,7 @@
 								(block (itemsToJettison)
 									; Create cargo crate
 									(if (not gDest)
-										(setq gDest (sysCreateStation &stCargoCrate; (sysVectorPolarOffset gPlayerShip 0 0)))
+										(setq gDest (sysCreateStation &stGenericCargoCrate; (sysVectorPolarOffset gPlayerShip 0 0)))
 										)
 
 									; Dump items
@@ -183,7 +183,7 @@
 								(block (itemsToJettison)
 									; Create cargo crate
 									(if (not gDest)
-										(setq gDest (sysCreateStation &stCargoCrate; (sysVectorPolarOffset gPlayerShip 0 0)))
+										(setq gDest (sysCreateStation &stGenericCargoCrate; (sysVectorPolarOffset gPlayerShip 0 0)))
 										)
 
 									; Dump items
@@ -472,5 +472,9 @@
 			</Default>
 		</Panes>
 	</DockScreen>
+	
+<!-- RESOURCES -->
 
+	<Image UNID="&rsItemListScreen;"	bitmap="Resources\ItemListScreen.jpg"		bitmask="Resources\ItemListScreenMask.bmp"		loadOnUse="true" />
+	
 </TranscendenceModule>
