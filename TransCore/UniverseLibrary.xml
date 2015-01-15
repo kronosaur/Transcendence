@@ -119,6 +119,11 @@
 	<!ENTITY rsNeurohackFrame			"0x001CF003">
 	<!ENTITY rsNeurohackControls		"0x001CF004">
 	
+	<!-- LIBRARIES -->
+	
+	<!ENTITY unidCoreTypesLibrary		"0x00030000">
+	<!ENTITY unidRPGLibrary				"0x00010000">
+	
 	<!-- 0002 0000-FFFF UNIVERSE LIBRARY -->
 	
 	<!ENTITY unidUniverseLibrary		"0x00020000">
@@ -213,6 +218,8 @@
 	<!ENTITY tbStars					"0x00020067">
 	<!ENTITY tbAsteroidOre				"0x00020068">
 	
+	<!-- 0070-007F STARS -->
+	
 	<!ENTITY stStarClassM8				"0x00020070">
 	<!ENTITY stStarClassM5				"0x00020071">
 	<!ENTITY stStarClassM0				"0x00020072">
@@ -225,6 +232,8 @@
 	<!ENTITY stStarClassF0				"0x00020079">
 	<!ENTITY stStarClassA5				"0x0002007A">
 	<!ENTITY stStarClassA0				"0x0002007B">
+	
+	<!-- 0080-008F OVOID ASTEROIDS -->
 	
 	<!ENTITY rsOvoidAsteroids			"0x00020080">
 	<!ENTITY stOvoidAsteroidSizeA		"0x00020081">

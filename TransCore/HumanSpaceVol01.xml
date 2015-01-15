@@ -1507,6 +1507,12 @@
 	<!ENTITY itGaianDemolitionCannon	"0x08040142">
 	<!ENTITY svGaianTerraformers		"0x08040143">
 	
+	<!-- LIBRARIES -->
+	
+	<!ENTITY unidCoreTypesLibrary		"0x00030000">
+	<!ENTITY unidRPGLibrary				"0x00010000">
+	<!ENTITY unidUniverseLibrary		"0x00020000">
+	
 	<!-- 0010 0000-FFFF HUMAN SPACE VOL 01 -->
 	
 	<!ENTITY unidHumanSpaceLibrary		"0x00100000">

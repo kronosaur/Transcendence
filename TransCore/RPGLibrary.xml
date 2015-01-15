@@ -29,6 +29,10 @@
 	
 	<!ENTITY unidPilgrimClass			"0x00201002">
 	
+	<!-- LIBRARIES -->
+	
+	<!ENTITY unidCoreTypesLibrary		"0x00030000">
+	
 	<!-- 0001 0000-FFFF RPG LIBRARY -->
 	
 	<!ENTITY unidRPGLibrary				"0x00010000">
