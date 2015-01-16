@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!DOCTYPE TranscendenceLibrary
+<!DOCTYPE CoreLibrary
 	[
 	<!ENTITY ssEarthSpaceStandard		"0x00000001">
 	<!ENTITY ssEarthSpaceRedDwarf		"0x00000002">
@@ -1564,7 +1564,7 @@
 	<!-- 1000-FFFF RESERVED -->
 	]>
 	
-<TranscendenceLibrary
+<CoreLibrary
 		UNID=				"&unidHumanSpaceLibrary;"
 		name=				"Human Space Vol 1"
 		release=			"1"
@@ -1646,4 +1646,4 @@
 	<Module filename="StdDockScreens.xml"/>
 	<Module filename="StdTypes.xml"/>
 
-</TranscendenceLibrary>
+</CoreLibrary>
