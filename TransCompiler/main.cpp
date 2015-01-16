@@ -29,6 +29,7 @@
 
 #define EXTENSION_TDB							CONSTLIT("tdb")
 
+#define TAG_CORE_LIBRARY						CONSTLIT("CoreLibrary")
 #define TAG_IMAGES								CONSTLIT("Images")
 #define TAG_SOUNDS								CONSTLIT("Sounds")
 #define TAG_MODULE								CONSTLIT("Module")
@@ -402,7 +403,9 @@ ALERROR WriteModule (CTDBCompiler &Ctx,
 		{
 		CXMLElement *pItem = pModule->GetContentElement(i);
 
-		if (strEquals(pItem->GetTag(), TAG_TRANSCENDENCE_ADVENTURE) || strEquals(pItem->GetTag(), TAG_TRANSCENDENCE_LIBRARY))
+		if (strEquals(pItem->GetTag(), TAG_CORE_LIBRARY)
+				|| strEquals(pItem->GetTag(), TAG_TRANSCENDENCE_ADVENTURE) 
+				|| strEquals(pItem->GetTag(), TAG_TRANSCENDENCE_LIBRARY))
 			{
 			//	If we have a filename, then we need to save the target as a
 			//	module.

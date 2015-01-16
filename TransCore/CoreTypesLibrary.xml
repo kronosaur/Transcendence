@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!DOCTYPE TranscendenceLibrary
+<!DOCTYPE CoreLibrary
 	[
 	<!ENTITY efLaserHitDefault			"0x00000010">
 	<!ENTITY efKineticHitDefault		"0x00000011">
@@ -124,7 +124,7 @@
 	<!ENTITY unidCoreTypesLibrary		"0x00030000">
 	]>
 	
-<TranscendenceLibrary
+<CoreLibrary
 		UNID=				"&unidCoreTypesLibrary;"
 		name=				"Transcendence Core Types"
 		release=			"1"
@@ -136,4 +136,4 @@
 	<Module filename="CoreExplosions.xml"/>
 	<Module filename="CorePlaceholders.xml"/>
 
-</TranscendenceLibrary>
+</CoreLibrary>

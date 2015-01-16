@@ -15,7 +15,7 @@
 	
 	<Library unid="&unidCoreTypesLibrary;"/>
 	<Library unid="&unidRPGLibrary;"/>
-	<Library unid="&unidUniverseLibrary;"/>
+	<Library unid="&unidGalaxyLibrary;"/>
 	<Library unid="&unidHumanSpaceLibrary;"/>
 
 	<AdventureDesc

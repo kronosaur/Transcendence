@@ -13,11 +13,11 @@
     <Filter Include="RPG Library">
       <UniqueIdentifier>{c3f4cfa7-ec01-4091-a0b9-bbbaf23c8c54}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Universe Library">
-      <UniqueIdentifier>{f0df8dab-f35b-432f-8f48-d857cf0f924e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Compatibility">
       <UniqueIdentifier>{8f3618c8-6142-4e3d-b310-1fa17883042d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Transcendence Galaxy Library">
+      <UniqueIdentifier>{f0df8dab-f35b-432f-8f48-d857cf0f924e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -269,52 +269,46 @@
       <Filter>Part I</Filter>
     </None>
     <None Include="Environments.xml">
-      <Filter>Universe Library</Filter>
+      <Filter>Transcendence Galaxy Library</Filter>
     </None>
     <None Include="Groups.xml">
-      <Filter>Universe Library</Filter>
+      <Filter>Transcendence Galaxy Library</Filter>
     </None>
     <None Include="Ice.xml">
-      <Filter>Universe Library</Filter>
+      <Filter>Transcendence Galaxy Library</Filter>
     </None>
     <None Include="Metallic.xml">
-      <Filter>Universe Library</Filter>
+      <Filter>Transcendence Galaxy Library</Filter>
     </None>
     <None Include="Mining.xml">
-      <Filter>Universe Library</Filter>
+      <Filter>Transcendence Galaxy Library</Filter>
     </None>
     <None Include="Ovoids.xml">
-      <Filter>Universe Library</Filter>
+      <Filter>Transcendence Galaxy Library</Filter>
     </None>
     <None Include="Neurohack.xml">
-      <Filter>Universe Library</Filter>
+      <Filter>Transcendence Galaxy Library</Filter>
     </None>
     <None Include="Primordial.xml">
-      <Filter>Universe Library</Filter>
+      <Filter>Transcendence Galaxy Library</Filter>
     </None>
     <None Include="Rocky.xml">
-      <Filter>Universe Library</Filter>
+      <Filter>Transcendence Galaxy Library</Filter>
     </None>
     <None Include="Stargates.xml">
-      <Filter>Universe Library</Filter>
+      <Filter>Transcendence Galaxy Library</Filter>
     </None>
     <None Include="Stars.xml">
-      <Filter>Universe Library</Filter>
+      <Filter>Transcendence Galaxy Library</Filter>
     </None>
     <None Include="StarSystems.xml">
-      <Filter>Universe Library</Filter>
-    </None>
-    <None Include="UniverseCompatibility.xml">
-      <Filter>Universe Library</Filter>
-    </None>
-    <None Include="UniverseEffects.xml">
-      <Filter>Universe Library</Filter>
+      <Filter>Transcendence Galaxy Library</Filter>
     </None>
     <None Include="Volcanic.xml">
-      <Filter>Universe Library</Filter>
+      <Filter>Transcendence Galaxy Library</Filter>
     </None>
     <None Include="Worlds.xml">
-      <Filter>Universe Library</Filter>
+      <Filter>Transcendence Galaxy Library</Filter>
     </None>
     <None Include="CoreExplosions.xml">
       <Filter>Core Types</Filter>
@@ -324,6 +318,12 @@
     </None>
     <None Include="Compatibility10.xml">
       <Filter>Compatibility</Filter>
+    </None>
+    <None Include="GalaxyCompatibility.xml">
+      <Filter>Transcendence Galaxy Library</Filter>
+    </None>
+    <None Include="GalaxyEffects.xml">
+      <Filter>Transcendence Galaxy Library</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -336,9 +336,6 @@
     <Xml Include="RPGLibrary.xml">
       <Filter>RPG Library</Filter>
     </Xml>
-    <Xml Include="UniverseLibrary.xml">
-      <Filter>Universe Library</Filter>
-    </Xml>
     <Xml Include="HumanSpaceVol01.xml">
       <Filter>Human Space Library</Filter>
     </Xml>
@@ -346,7 +343,10 @@
       <Filter>Compatibility</Filter>
     </Xml>
     <Xml Include="Ore.xml">
-      <Filter>Universe Library</Filter>
+      <Filter>Transcendence Galaxy Library</Filter>
+    </Xml>
+    <Xml Include="GalaxyLibrary.xml">
+      <Filter>Transcendence Galaxy Library</Filter>
     </Xml>
   </ItemGroup>
 </Project>

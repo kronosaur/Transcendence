@@ -1511,7 +1511,7 @@
 	
 	<!ENTITY unidCoreTypesLibrary		"0x00030000">
 	<!ENTITY unidRPGLibrary				"0x00010000">
-	<!ENTITY unidUniverseLibrary		"0x00020000">
+	<!ENTITY unidGalaxyLibrary			"0x00020000">
 	
 	<!-- 0010 0000-FFFF HUMAN SPACE VOL 01 -->
 	
@@ -1573,7 +1573,7 @@
 
 	<Library unid="&unidCoreTypesLibrary;"/>
 	<Library unid="&unidRPGLibrary;"/>
-	<Library unid="&unidUniverseLibrary;"/>
+	<Library unid="&unidGalaxyLibrary;"/>
 	
 	<Module filename="Domina.xml"/>
 	<Module filename="HSCompatibility.xml"/>

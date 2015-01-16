@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!DOCTYPE TranscendenceLibrary
+<!DOCTYPE CoreLibrary
 	[
 	<!ENTITY efShieldHUDDefault			"0x00000020">
 	<!ENTITY rsShieldHUDDefault			"0x00000021">
@@ -82,7 +82,7 @@
 	<!ENTITY rsGenericCargoCrate		"0x00010041">
 	]>
 	
-<TranscendenceLibrary
+<CoreLibrary
 		UNID=				"&unidRPGLibrary;"
 		name=				"Transcendence RPG"
 		release=			"1"
@@ -110,4 +110,4 @@
 	<Module filename="RPGTypes.xml"/>
 	<Module filename="RPGWingmen.xml"/>
 
-</TranscendenceLibrary>
+</CoreLibrary>

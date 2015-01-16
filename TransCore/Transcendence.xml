@@ -58,7 +58,8 @@
 
 	<!-- CANONICAL UNIVERSE LIBRARY 0002 -->
 	
-	<!ENTITY unidUniverseLibrary		"0x00020000">
+	<!ENTITY unidGalaxyLibrary			"0x00020000">
+	<!ENTITY unidUniverseLibrary		"0x00020000">	<!-- For backward compatibility -->
 
 	<!-- CORE TYPE LIBRARY 0003 -->
 	
@@ -152,11 +153,11 @@
 
 <!-- CORE LIBRARIES ======================================================== -->
 	
-	<TranscendenceLibrary filename="CoreTypesLibrary.xml"/>
-	<TranscendenceLibrary filename="RPGLibrary.xml"/>
-	<TranscendenceLibrary filename="UniverseLibrary.xml"/>
-	<TranscendenceLibrary filename="HumanSpaceVol01.xml"/>
-	<TranscendenceLibrary filename="CompatibilityLibrary.xml"/>
+	<CoreLibrary filename="CoreTypesLibrary.xml"/>
+	<CoreLibrary filename="RPGLibrary.xml"/>
+	<CoreLibrary filename="GalaxyLibrary.xml"/>
+	<CoreLibrary filename="HumanSpaceVol01.xml"/>
+	<CoreLibrary filename="CompatibilityLibrary.xml"/>
 
 <!-- CORE ADVENTURE ======================================================== -->
 

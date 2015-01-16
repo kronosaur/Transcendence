@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!DOCTYPE TranscendenceLibrary
+<!DOCTYPE CoreLibrary
 	[
 	<!ENTITY tbBasicSystemParts			"0x0000000B">
 	
@@ -126,7 +126,7 @@
 	
 	<!-- 0002 0000-FFFF UNIVERSE LIBRARY -->
 	
-	<!ENTITY unidUniverseLibrary		"0x00020000">
+	<!ENTITY unidGalaxyLibrary			"0x00020000">
 	
 	<!ENTITY rsOreSmall					"0x00020010">
 	<!ENTITY rsStdStargate				"0x00020011">
@@ -246,9 +246,9 @@
 	<!ENTITY tbOvoidTables				"0x00020088">
 	]>
 	
-<TranscendenceLibrary
-		UNID=				"&unidUniverseLibrary;"
-		name=				"Transcendence Universe"
+<CoreLibrary
+		UNID=				"&unidGalaxyLibrary;"
+		name=				"Transcendence Galaxy"
 		release=			"1"
 		private=			"true"
 		>
@@ -257,6 +257,8 @@
 	<Library unid="&unidRPGLibrary;"/>
 	
 	<Module filename="Environments.xml"/>
+	<Module filename="GalaxyCompatibility.xml"/>
+	<Module filename="GalaxyEffects.xml"/>
 	<Module filename="Groups.xml"/>
 	<Module filename="Ice.xml"/>
 	<Module filename="Metallic.xml"/>
@@ -269,9 +271,7 @@
 	<Module filename="Stargates.xml"/>
 	<Module filename="Stars.xml"/>
 	<Module filename="StarSystems.xml"/>
-	<Module filename="UniverseCompatibility.xml"/>
-	<Module filename="UniverseEffects.xml"/>
 	<Module filename="Volcanic.xml"/>
 	<Module filename="Worlds.xml"/>
 
-</TranscendenceLibrary>
+</CoreLibrary>

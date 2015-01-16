@@ -17,6 +17,7 @@
 #define TAG_AMERICA_CAMPAIGN					CONSTLIT("AmericaCampaign")
 #define TAG_AMERICA_LIBRARY						CONSTLIT("AmericaLibrary")
 #define TAG_AMERICA_EXTENSION					CONSTLIT("AmericaExtension")
+#define TAG_CORE_LIBRARY						CONSTLIT("CoreLibrary")
 #define TAG_TRANSCENDENCE_ADVENTURE				CONSTLIT("TranscendenceAdventure")
 #define TAG_TRANSCENDENCE_EXTENSION				CONSTLIT("TranscendenceExtension")
 #define TAG_TRANSCENDENCE_LIBRARY				CONSTLIT("TranscendenceLibrary")
@@ -62,7 +63,7 @@ bool CTDBCompiler::AddCoreEntityTables (const CString &sCoreTDB, CString *retsEr
 		{
 		CXMLElement *pItem = pRootXML->GetContentElement(i);
 		CString sFilename;
-		if (strEquals(pItem->GetTag(), TAG_TRANSCENDENCE_LIBRARY)
+		if (strEquals(pItem->GetTag(), TAG_CORE_LIBRARY)
 				&& pItem->FindAttribute(ATTRIB_FILENAME, &sFilename))
 			{
 			//	Load this
