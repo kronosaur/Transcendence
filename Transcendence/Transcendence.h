@@ -13,6 +13,7 @@
 #include "TSUI.h"
 #endif
 
+
 class CGameSession;
 class CGameSettings;
 class CIntroSession;
@@ -353,6 +354,8 @@ class CPlayerShipController : public CObject, public IShipController
 		inline int GetEnemiesDestroyed (void) { return ::strToInt(m_Stats.GetStat(CONSTLIT("enemyShipsDestroyed")), 0); }
 		inline CString GetItemStat (const CString &sStat, ICCItem *pItemCriteria) const { return m_Stats.GetItemStat(sStat, pItemCriteria); }
 		inline CString GetKeyEventStat (const CString &sStat, const CString &sNodeID, const CDesignTypeCriteria &Crit) const { return m_Stats.GetKeyEventStat(sStat, sNodeID, Crit); }
+		inline GenomeTypes GetPlayerGenome (void) const { return m_iGenome; }
+		inline CString GetPlayerName (void) const { return m_sName; }
 		inline int GetResurrectCount (void) const { return ::strToInt(m_Stats.GetStat(CONSTLIT("resurrectCount")), 0); }
 		inline int GetScore (void) { return ::strToInt(m_Stats.GetStat(CONSTLIT("score")), 0); }
 		inline CSpaceObject *GetSelectedTarget (void) { return m_pTarget; }
@@ -417,8 +420,6 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual OrderTypes GetCurrentOrderEx (CSpaceObject **retpTarget = NULL, IShipController::SData *retData = NULL);
 		virtual CSpaceObject *GetDestination (void) const { return m_pDestination; }
 		virtual EManeuverTypes GetManeuver (void);
-		virtual GenomeTypes GetPlayerGenome (void) { return m_iGenome; }
-		virtual CString GetPlayerName (void) { return m_sName; }
 		virtual bool GetThrust (void);
 		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const;
 		virtual bool GetReverseThrust (void);
@@ -1157,6 +1158,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 
 		//	CUniverse::IHost
 		virtual void ConsoleOutput (const CString &sLine);
+		virtual IPlayerController *CreatePlayerController (void);
 		virtual void DebugOutput (const CString &sLine);
 		virtual void GameOutput (const CString &sLine);
 		virtual const CG16bitFont *GetFont (const CString &sFont);
@@ -1681,6 +1683,23 @@ class CGameSettings
 	};
 
 //	Transcendence data model class --------------------------------------------
+
+class CTranscendencePlayer : public IPlayerController
+	{
+	public:
+		CTranscendencePlayer (void);
+
+		inline void SetPlayer (CPlayerShipController *pPlayer) { m_pPlayer = pPlayer; }
+
+		//	IPlayerController interface
+
+		virtual ICCItem *CreateGlobalRef (CCodeChain &CC) { return CC.CreateInteger((int)m_pPlayer); }
+		virtual GenomeTypes GetGenome (void) const;
+		virtual CString GetName (void) const;
+
+	private:
+		CPlayerShipController *m_pPlayer;
+	};
 
 class CTranscendenceModel
 	{

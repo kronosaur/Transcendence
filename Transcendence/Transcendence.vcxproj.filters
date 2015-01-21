@@ -224,6 +224,9 @@
     <ClCompile Include="CGItemDisplayArea.cpp">
       <Filter>Source Files\Displays</Filter>
     </ClCompile>
+    <ClCompile Include="CTranscendencePlayer.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundTasks.h">

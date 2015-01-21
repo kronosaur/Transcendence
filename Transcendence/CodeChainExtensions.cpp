@@ -984,7 +984,7 @@ ICCItem *fnPlySet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			//	Can't pick player ship
 
-			if (pNewShip == g_pUniverse->GetPlayer())
+			if (pNewShip == g_pUniverse->GetPlayerShip())
 				return pCC->CreateError(CONSTLIT("Ship is already player's ship"), pArgs->GetElement(1));
 
 			//	Change ships

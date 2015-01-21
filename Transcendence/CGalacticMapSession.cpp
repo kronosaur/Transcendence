@@ -229,7 +229,7 @@ void CGalacticMapSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 
 		//	Paint the ship
 
-		CSpaceObject *pPlayer = g_pUniverse->GetPlayer();
+		CSpaceObject *pPlayer = g_pUniverse->GetPlayerShip();
 		if (pPlayer)
 			{
 			int xPos, yPos;

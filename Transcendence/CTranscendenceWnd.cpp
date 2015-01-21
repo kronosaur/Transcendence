@@ -16,10 +16,6 @@
 #define DEBUG_CONSOLE_WIDTH					512
 #define DEBUG_CONSOLE_HEIGHT				600
 
-#define STR_G_TRANS							CONSTLIT("gTrans")
-#define STR_G_PLAYER						CONSTLIT("gPlayer")
-#define STR_G_PLAYER_SHIP					CONSTLIT("gPlayerShip")
-
 int g_cxScreen = 0;
 int g_cyScreen = 0;
 
@@ -527,6 +523,14 @@ void CTranscendenceWnd::ComputeScreenSize (void)
 		g_cxScreen = 1024;
 		g_cyScreen = 768;
 		}
+	}
+
+IPlayerController *CTranscendenceWnd::CreatePlayerController (void)
+
+//	CreatePlayerController
+	
+	{
+	return new CTranscendencePlayer; 
 	}
 
 void CTranscendenceWnd::DebugConsoleOutput (const CString &sOutput)

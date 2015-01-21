@@ -2345,11 +2345,11 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip)
 	pOldShip->TrackFuel(false);
 
 	//	Now set this controller to drive the new ship. gPlayer and gPlayerShip
-	//	will be set inside of SetPlayer.
+	//	will be set inside of SetPlayerShip.
 
 	pNewShip->SetController(this);
 	m_pShip = pNewShip;
-	g_pUniverse->SetPlayer(pNewShip);
+	g_pUniverse->SetPlayerShip(pNewShip);
 	g_pUniverse->SetPOV(pNewShip);
 	pNewShip->SetSovereign(g_pUniverse->FindSovereign(g_PlayerSovereignUNID));
 
