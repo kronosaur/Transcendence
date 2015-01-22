@@ -66,6 +66,7 @@
 	
 	<!ENTITY svPlayer					"0x00001001">
 	<!ENTITY svIndependent				"0x00001003">
+	<!ENTITY ecCreditEconomy			"0x00001017">
 	<!ENTITY svUnknownEnemy				"0x00001018">
 	
 	<!ENTITY stShipwreck				"0x00002001">

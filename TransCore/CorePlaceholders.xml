@@ -235,6 +235,16 @@
 
 	</ItemType>
 
+<!-- MISCELLANEOUS =============================================================
+
+-->
+	
+	<EconomyType UNID="&ecCreditEconomy;"
+			id=				"credit" 
+			currency=		"credit(s)"
+			conversion=		"100"
+			/>
+	
 <!-- RESOURCES =================================================================
 
 	These resources are used by these types.
