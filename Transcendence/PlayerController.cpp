@@ -1565,19 +1565,6 @@ void CPlayerShipController::OnDockedObjChanged (CSpaceObject *pLocation)
 	g_pTrans->GetModel().OnDockedObjChanged(pLocation);
 	}
 
-void CPlayerShipController::OnMessage (CSpaceObject *pSender, const CString &sMsg)
-
-//	OnMessage
-//
-//	Receive a message from some other object
-
-	{
-	if (pSender && !pSender->IsVirtual() && !pSender->IsMission())
-		pSender->Highlight(sMsg);
-	else
-		m_pTrans->DisplayMessage(sMsg);
-	}
-
 void CPlayerShipController::OnMissionCompleted (CMission *pMission, bool bSuccess)
 
 //	OnMissionCompleted

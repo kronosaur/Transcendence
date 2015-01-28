@@ -32,3 +32,16 @@ CString CTranscendencePlayer::GetName (void) const
 	{
 	return m_pPlayer->GetPlayerName();
 	}
+
+void CTranscendencePlayer::OnMessageFromObj (CSpaceObject *pSender, const CString &sMessage)
+
+//	OnMessageFromObj
+//
+//	Receive a message.
+
+	{
+	if (pSender && !pSender->IsVirtual() && !pSender->IsMission())
+		pSender->Highlight(sMessage);
+	else
+		g_pTrans->DisplayMessage(sMessage);
+	}

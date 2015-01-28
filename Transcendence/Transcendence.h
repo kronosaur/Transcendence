@@ -130,7 +130,6 @@ class CIntroShipController : public CObject, public IShipController
 		virtual void OnDockedObjChanged (CSpaceObject *pLocation) { m_pDelegate->OnDockedObjChanged(pLocation); }
 		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend) { m_pDelegate->OnEnterGate(pDestNode, sDestEntryPoint, pStargate, bAscend); }
 		virtual void OnFuelLowWarning (int iSeq) { m_pDelegate->OnFuelLowWarning(iSeq); }
-		virtual void OnMessage (CSpaceObject *pSender, const CString &sMsg) { m_pDelegate->OnMessage(pSender, sMsg); }
 		virtual void OnObjDestroyed (const SDestroyCtx &Ctx) { m_pDelegate->OnObjDestroyed(Ctx); }
 		virtual void OnWeaponStatusChanged (void) { m_pDelegate->OnWeaponStatusChanged(); }
 
@@ -453,7 +452,6 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual void OnItemInstalled (const CItem &Item) { m_Stats.OnItemInstalled(Item); }
 		virtual void OnItemUninstalled (const CItem &Item) { m_Stats.OnItemUninstalled(Item); }
 		virtual void OnLifeSupportWarning (int iSecondsLeft);
-		virtual void OnMessage (CSpaceObject *pSender, const CString &sMsg);
 		virtual void OnMissionCompleted (CMission *pMission, bool bSuccess);
 		virtual void OnNewSystem (CSystem *pSystem);
 		virtual void OnObjDamaged (const SDamageCtx &Ctx);
@@ -1696,6 +1694,7 @@ class CTranscendencePlayer : public IPlayerController
 		virtual ICCItem *CreateGlobalRef (CCodeChain &CC) { return CC.CreateInteger((int)m_pPlayer); }
 		virtual GenomeTypes GetGenome (void) const;
 		virtual CString GetName (void) const;
+		virtual void OnMessageFromObj (CSpaceObject *pSender, const CString &sMessage);
 
 	private:
 		CPlayerShipController *m_pPlayer;
