@@ -563,7 +563,8 @@ void CTranscendenceWnd::PaintLRS (void)
 			rcView.right = g_LRSWidth;
 			rcView.bottom = g_LRSHeight;
 
-			g_pUniverse->PaintPOVLRS(m_LRS, rcView, &bNewEnemies);
+			Metric rKlicksPerPixel = g_LRSRange * 2 / RectWidth(rcView);
+			g_pUniverse->PaintPOVLRS(m_LRS, rcView, rKlicksPerPixel, 0, &bNewEnemies);
 
 			//	Notify player of enemies
 
