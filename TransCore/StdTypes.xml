@@ -125,11 +125,6 @@
 
 	<Image UNID="&rsShockwave1;"	bitmap="Resources\Shockwave1.jpg"		bitmask="Resources\Shockwave1Mask.bmp" loadOnUse="true"/>
 
-	<Sound UNID="&snShipExplosion1;"		filename="Resources\ShipExplosion1.wav"/>
-	<Sound UNID="&snStationExplosion1;"		filename="Resources\StationExplosion1.wav"/>
-	<Sound UNID="&snShieldHit1;"			filename="Resources\ShieldHit1.wav"/>
-	<Sound UNID="&snMissileLauncher;"		filename="Resources\MissileLaunch1.wav"/>
-
 <!-- ITEM TABLES ==============================================================
 
 	Item Table Attributes

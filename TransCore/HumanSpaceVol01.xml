@@ -727,11 +727,6 @@
 	<!ENTITY rsWolfenGunshipHD			"0x0000F163">
 	<!ENTITY rsExplorerAuton			"0x0000F164">
 	
-	<!ENTITY snShipExplosion1			"0x0000F204">
-	<!ENTITY snStationExplosion1		"0x0000F205">
-	<!ENTITY snShieldHit1				"0x0000F206">
-	<!ENTITY snMissileLauncher			"0x0000F207">
-	
 	<!ENTITY stShipwreck1				"0x000F0000">
 	<!ENTITY stShipwreck2				"0x000F0001">
 	<!ENTITY stShipwreck3				"0x000F0002">

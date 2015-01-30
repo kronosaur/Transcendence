@@ -1361,7 +1361,11 @@
 	<Sound UNID="&snLaserCannon;"		filename="Resources\LaserFire1.wav"/>
 	<Sound UNID="&snRecoillessCannon;"	filename="Resources\CannonFire1.wav"/>
 	<Sound UNID="&snArmorHit1;"			filename="Resources\ArmorHit1.wav"/>
-	
+	<Sound UNID="&snShipExplosion1;"		filename="Resources\ShipExplosion1.wav"/>
+	<Sound UNID="&snStationExplosion1;"		filename="Resources\StationExplosion1.wav"/>
+	<Sound UNID="&snShieldHit1;"			filename="Resources\ShieldHit1.wav"/>
+	<Sound UNID="&snMissileLauncher;"		filename="Resources\MissileLaunch1.wav"/>
+
 <!-- RESOURCES =================================================================
 
 	These resources are used by these effects.
