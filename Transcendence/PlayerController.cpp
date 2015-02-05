@@ -14,8 +14,6 @@
 #define STR_NO_TARGET_FOR_FLEET					CONSTLIT("No target selected")
 #define STR_NO_TARGETING_COMPUTER				CONSTLIT("No targeting computer installed")
 
-static CObjectClass<CPlayerShipController>g_Class(OBJID_CPLAYERSHIPCONTROLLER);
-
 const Metric MAX_IN_COMBAT_RANGE =				LIGHT_SECOND * 30.0;
 const int UPDATE_HELP_TIME =					31;
 const Metric MAX_AUTO_TARGET_DISTANCE =			LIGHT_SECOND * 30.0;
@@ -35,7 +33,7 @@ const DWORD DAMAGE_BAR_TIMER =					30 * 5;
 #define SETTING_ENABLED							CONSTLIT("enabled")
 #define SETTING_TRUE							CONSTLIT("true")
 
-CPlayerShipController::CPlayerShipController (void) : CObject(&g_Class),
+CPlayerShipController::CPlayerShipController (void) : 
 		m_pTrans(NULL),
 		m_iManeuver(NoRotation),
 		m_bThrust(false),
@@ -2609,8 +2607,7 @@ void CPlayerShipController::WriteToStream (IWriteStream *pStream)
 	{
 	DWORD dwSave;
 
-	dwSave = (DWORD)GetClass()->GetObjID();
-	pStream->Write((char *)&dwSave, sizeof(DWORD));
+	GetClass().WriteToStream(pStream);
 
 	pStream->Write((char *)&m_iGenome, sizeof(DWORD));
 	pStream->Write((char *)&m_dwStartingShipClass, sizeof(DWORD));

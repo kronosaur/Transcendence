@@ -90,7 +90,7 @@ struct SFontTable
 
 //	Intro
 
-class CIntroShipController : public CObject, public IShipController
+class CIntroShipController : public IShipController
 	{
 	public:
 		CIntroShipController (void);
@@ -330,7 +330,7 @@ class CUIMessageController
 		bool m_bMsgEnabled[uimsgCount];
 	};
 
-class CPlayerShipController : public CObject, public IShipController
+class CPlayerShipController : public IShipController
 	{
 	public:
 		CPlayerShipController (void);
@@ -414,6 +414,7 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual void CancelCurrentOrder (void);
 		virtual void CancelDocking (void);
 		virtual CString DebugCrashInfo (void);
+		virtual CString GetClass (void) { return CONSTLIT("player"); }
 		virtual int GetCombatPower (void);
 		virtual CCurrencyBlock *GetCurrencyBlock (void) { return &m_Credits; }
 		virtual OrderTypes GetCurrentOrderEx (CSpaceObject **retpTarget = NULL, IShipController::SData *retData = NULL);
@@ -1157,6 +1158,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		//	CUniverse::IHost
 		virtual void ConsoleOutput (const CString &sLine);
 		virtual IPlayerController *CreatePlayerController (void);
+		virtual IShipController *CreateShipController (const CString &sController);
 		virtual void DebugOutput (const CString &sLine);
 		virtual void GameOutput (const CString &sLine);
 		virtual const CG16bitFont *GetFont (const CString &sFont);

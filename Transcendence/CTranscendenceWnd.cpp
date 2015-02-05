@@ -19,6 +19,8 @@
 int g_cxScreen = 0;
 int g_cyScreen = 0;
 
+#define CONTROLLER_PLAYER					CONSTLIT("player")
+
 #define STR_SMALL_TYPEFACE					CONSTLIT("Tahoma")
 #define STR_MEDIUM_TYPEFACE					CONSTLIT("Tahoma")
 #define STR_LARGE_TYPEFACE					CONSTLIT("Trebuchet MS")
@@ -531,6 +533,19 @@ IPlayerController *CTranscendenceWnd::CreatePlayerController (void)
 	
 	{
 	return new CTranscendencePlayer; 
+	}
+
+IShipController *CTranscendenceWnd::CreateShipController (const CString &sController)
+
+//	CreateShipController
+//
+//	Creates custom ship controllers.
+
+	{
+	if (strEquals(sController, CONTROLLER_PLAYER))
+		return new CPlayerShipController;
+	else
+		return NULL;
 	}
 
 void CTranscendenceWnd::DebugConsoleOutput (const CString &sOutput)

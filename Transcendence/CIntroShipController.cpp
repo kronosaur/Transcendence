@@ -5,7 +5,7 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-CIntroShipController::CIntroShipController (void) : CObject(NULL)
+CIntroShipController::CIntroShipController (void)
 
 //	CIntroShipController constructor
 
@@ -21,7 +21,7 @@ CIntroShipController::~CIntroShipController (void)
 		delete dynamic_cast<CObject *>(m_pDelegate);
 	}
 
-CIntroShipController::CIntroShipController (CTranscendenceWnd *pTrans, IShipController *pDelegate) : CObject(NULL),
+CIntroShipController::CIntroShipController (CTranscendenceWnd *pTrans, IShipController *pDelegate) : 
 		m_pTrans(pTrans),
 		m_pDelegate(pDelegate)
 
