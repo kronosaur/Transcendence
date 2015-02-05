@@ -90,6 +90,7 @@ struct SArrangeDesc
 	int cxDesiredWidth;
 	int cxSpacing;
 	int cxExtraMargin;
+	bool bNoLabel;
 	CG16bitFont *pHeader;
 	};
 
@@ -122,6 +123,7 @@ void GenerateShipImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	bool bAllClasses = pCmdLine->GetAttributeBool(CONSTLIT("all"));
 	bool bTextBoxesOnly = pCmdLine->GetAttributeBool(CONSTLIT("textBoxesOnly"));
+	bool bNoLabel = pCmdLine->GetAttributeBool(CONSTLIT("noLabel"));
 
 	//	Figure out what order we want
 
@@ -241,6 +243,7 @@ void GenerateShipImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 	Desc.cxDesiredWidth = Max(512, cxDesiredWidth - (2 * (cxSpacing + cxExtraMargin)));
 	Desc.cxSpacing = cxSpacing;
 	Desc.cxExtraMargin = cxExtraMargin;
+	Desc.bNoLabel = bNoLabel;
 	Desc.pHeader = &NameFont;
 
 	ArrangeByRow(Table, Desc, Map);
@@ -273,26 +276,29 @@ void GenerateShipImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			//	Paint name
 
-			int xText = Map.GetTextX(i);
-			int yText = Map.GetTextY(i);
-			if (xText != -1)
+			if (!bNoLabel)
 				{
-				if (bTextBoxesOnly)
-					Output.Fill(xText, yText, Map.GetTextWidth(i), Map.GetTextHeight(i), 0xffff);
-
-				if (!bTextBoxesOnly)
+				int xText = Map.GetTextX(i);
+				int yText = Map.GetTextY(i);
+				if (xText != -1)
 					{
-					Output.FillColumn(x + (Map.GetWidth(i) / 2),
-							y + Map.GetHeight(i),
-							yText - (y + Map.GetHeight(i)),
-							wNameColor);
+					if (bTextBoxesOnly)
+						Output.Fill(xText, yText, Map.GetTextWidth(i), Map.GetTextHeight(i), 0xffff);
 
-					NameFont.DrawText(Output,
-							xText,
-							yText,
-							wNameColor,
-							255,
-							pClass->GetNounPhrase(0));
+					if (!bTextBoxesOnly)
+						{
+						Output.FillColumn(x + (Map.GetWidth(i) / 2),
+								y + Map.GetHeight(i),
+								yText - (y + Map.GetHeight(i)),
+								wNameColor);
+
+						NameFont.DrawText(Output,
+								xText,
+								yText,
+								wNameColor,
+								255,
+								pClass->GetNounPhrase(0));
+						}
 					}
 				}
 			}
@@ -493,28 +499,31 @@ void ArrangeByRow (CSymbolTable &Table, SArrangeDesc &Desc, CPaintMap &Map)
 		//	If so, we increase y a little bit
 
 		int x = Desc.cxSpacing + Desc.cxExtraMargin;
-		for (i = iStart; i < iNext; i++)
+		if (!Desc.bNoLabel)
 			{
-			CShipClass *pClass = (CShipClass *)Table.GetValue(i);
-			int cxSize = RectWidth(pClass->GetImage().GetImageRect());
-			int yOffset = (cyRowHeight - cxSize) / 2;
-
-			int xPoint = x + xOffset + cxSize / 2;
-			int yPoint = y + yOffset;
-
-			for (int j = 0; j < iStart; j++)
+			for (i = iStart; i < iNext; i++)
 				{
-				int xText = Map.GetTextX(j);
-				int yText = Map.GetTextY(j);
-				int cxText = Map.GetTextWidth(j);
-				int cyText = Map.GetTextHeight(j) + cyInternalSpacing;
+				CShipClass *pClass = (CShipClass *)Table.GetValue(i);
+				int cxSize = RectWidth(pClass->GetImage().GetImageRect());
+				int yOffset = (cyRowHeight - cxSize) / 2;
 
-				if (xPoint >= xText && xPoint < xText + cxText && yPoint < yText + cyText)
-					y = yText + cyText + cyInternalSpacing;
+				int xPoint = x + xOffset + cxSize / 2;
+				int yPoint = y + yOffset;
+
+				for (int j = 0; j < iStart; j++)
+					{
+					int xText = Map.GetTextX(j);
+					int yText = Map.GetTextY(j);
+					int cxText = Map.GetTextWidth(j);
+					int cyText = Map.GetTextHeight(j) + cyInternalSpacing;
+
+					if (xPoint >= xText && xPoint < xText + cxText && yPoint < yText + cyText)
+						y = yText + cyText + cyInternalSpacing;
+					}
+
+				int cxCell = Max(cxSize + cxInternalSpacing, Desc.cxSpacing);
+				x += cxCell;
 				}
-
-			int cxCell = Max(cxSize + cxInternalSpacing, Desc.cxSpacing);
-			x += cxCell;
 			}
 
 		//	Place the ships
