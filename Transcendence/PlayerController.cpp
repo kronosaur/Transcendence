@@ -2322,7 +2322,7 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip)
 	//	Set a new controller for the old ship (but do not free
 	//	the previous controller, which is us)
 
-	pOldShip->SetController(new CStandardShipAI, false);
+	pOldShip->SetController(g_pUniverse->CreateShipController(NULL_STR), false);
 	pOldShip->GetController()->AddOrder(IShipController::orderWait, NULL, IShipController::SData());
 
 	//	Old ship stops tracking fuel (otherwise, it would run out)
