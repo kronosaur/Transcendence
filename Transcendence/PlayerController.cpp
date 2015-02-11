@@ -152,7 +152,7 @@ bool CPlayerShipController::CanShowShipStatus (void)
 
 	//	See if we have an overlay preventing us from bring it up
 
-	CEnergyFieldList::SImpactDesc Impact;
+	COverlayList::SImpactDesc Impact;
 	m_pShip->GetOverlayImpact(&Impact);
 	if (Impact.bShipScreenDisabled)
 		return false;
