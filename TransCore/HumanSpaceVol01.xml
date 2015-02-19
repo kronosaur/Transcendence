@@ -586,15 +586,12 @@
 	<!ENTITY efMediumExplosion1			"0x00009001">
 	<!ENTITY efLargeExplosion1			"0x00009002">
 	<!ENTITY efSmallExplosion1			"0x00009003">
-	<!ENTITY efShieldHit1				"0x00009004">
 	<!ENTITY efFragmentationExplosion	"0x00009007">
 	<!ENTITY efBattleArenaWallHit		"0x00009008">
 	<!ENTITY efStationExplosion			"0x00009009">
 	<!ENTITY efMediumCannonFlash		"0x0000900A">
 	<!ENTITY efFusionExplosion1			"0x0000900C">
 	<!ENTITY efGemOfSacrifice			"0x0000900D">
-	<!ENTITY efLargeStationDamage		"0x0000900E">
-	<!ENTITY efMediumStationDamage		"0x0000900F">
 	<!ENTITY efGreenLaserHitEffect		"0x00009010">
 	<!ENTITY efXRayLaserHitEffect		"0x00009011">
 
@@ -636,7 +633,6 @@
 	<!ENTITY pwShatter					"0x0000B009">
 	<!ENTITY pwPrescience				"0x0000B00A">
 	
-	<!ENTITY rsMediumDamage				"0x0000F001">
 	<!ENTITY rsShipInterior				"0x0000F002">
 	<!ENTITY rsZubrinShields			"0x0000F004">
 	<!ENTITY rsZubrinArmor				"0x0000F005">
@@ -662,7 +658,6 @@
 	<!ENTITY rsStations1				"0x0000F103">
 	<!ENTITY rsSmallShips1				"0x0000F104">
 	<!ENTITY rsMediumShips3				"0x0000F105">
-	<!ENTITY rsShieldHit				"0x0000F107">
 	<!ENTITY rsStargate					"0x0000F108">
 	<!ENTITY rsNavBeacon				"0x0000F10A">
 	<!ENTITY rsMissiles2				"0x0000F10B">
@@ -671,7 +666,6 @@
 	<!ENTITY rsMediumShips2				"0x0000F10E">
 	<!ENTITY rsLargeExplosions			"0x0000F10F">
 	<!ENTITY rsMediumShips4				"0x0000F112">
-	<!ENTITY rsLargeDamage				"0x0000F113">
 	<!ENTITY rsDebris1					"0x0000F114">
 	<!ENTITY rsDominaEffects1			"0x0000F115">
 	<!ENTITY rsMissiles4				"0x0000F116">

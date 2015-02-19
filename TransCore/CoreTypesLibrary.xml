@@ -100,10 +100,17 @@
 	<!ENTITY vtRadioactiveExplosion1	"0x00005017">
 	<!ENTITY vtRadioactiveExplosion2	"0x00005018">
 	
+	<!ENTITY efShieldHit1				"0x00009004">
+	<!ENTITY efLargeStationDamage		"0x0000900E">
+	<!ENTITY efMediumStationDamage		"0x0000900F">
+	
+	<!ENTITY rsMediumDamage				"0x0000F001">
 	<!ENTITY rsMissiles					"0x0000F101">
 	<!ENTITY rsMediumHit				"0x0000F106">
+	<!ENTITY rsShieldHit				"0x0000F107">
 	<!ENTITY rsMediumExplosions			"0x0000F110">
 	<!ENTITY rsMissiles3				"0x0000F111">
+	<!ENTITY rsLargeDamage				"0x0000F113">
 	<!ENTITY rsItems1					"0x0000F11D">
 	<!ENTITY rsExplosionsAG128			"0x0000F13F">
 	<!ENTITY rsExplosionsA20G192		"0x0000F140">

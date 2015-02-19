@@ -1344,6 +1344,41 @@
 		</Effect>
 	</OverlayType>
 	
+<!-- COMMON SHIELD EFFECTS =====================================================
+
+-->
+	
+	<Effect UNID="&efShieldHit1;"
+			sound="&snShieldHit1;"
+			>
+		<Image imageID="&rsShieldHit;" 
+				imageX="0" 
+				imageY="0" 
+				imageWidth="32" 
+				imageHeight="32"
+				imageFrameCount="12"
+				imageTicksPerFrame="1"/>
+	</Effect>
+
+	
+<!-- STATION DAMAGE PAINTERS ===================================================
+
+-->
+	
+	<Effect UNID="&efLargeStationDamage;">
+		<Image imageID="&rsLargeDamage;"
+				imageWidth="64"
+				imageHeight="64"
+				imageFrameCount="5"/>
+	</Effect>
+
+	<Effect UNID="&efMediumStationDamage;">
+		<Image imageID="&rsMediumDamage;"
+				imageWidth="24"
+				imageHeight="24"
+				imageFrameCount="10"/>
+	</Effect>
+	
 <!-- DEFAULT SOUND EFFECTS =====================================================
 
 -->
@@ -1375,6 +1410,9 @@
 	<Image UNID="&rsExplosionsAG48;"	bitmap="Resources\Explosions-AG48.jpg"	bitmask="Resources\Explosions-AG48Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsExplosionsAG96;"	bitmap="Resources\Explosions-AG96.jpg"	bitmask="Resources\Explosions-AG96Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsMediumExplosions;" bitmap="Resources\MediumExplosions.jpg" bitmask="Resources\MediumExplosionsMask.bmp"/>
+	<Image UNID="&rsMediumDamage;"	bitmap="Resources\MediumDamage.jpg"	bitmask="Resources\MediumDamageMask.bmp"/>
 	<Image UNID="&rsMediumHit;"		bitmap="Resources\MediumHit.jpg"		bitmask="Resources\MediumHitMask.bmp"/>
+	<Image UNID="&rsLargeDamage;"	bitmap="Resources\LargeDamage.jpg"	bitmask="Resources\LargeDamageMask.bmp"/>
+	<Image UNID="&rsShieldHit;"		bitmap="Resources\ShieldHit.jpg" bitmask="Resources\ShieldHitMask.bmp" loadOnUse="true"/>
 	
 </TranscendenceModule>

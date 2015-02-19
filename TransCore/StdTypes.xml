@@ -105,8 +105,6 @@
 	<Image UNID="&rsEI100Image;"		bitmap="Resources\EI100.jpg" bitmask="Resources\EI100Mask.bmp" loadOnUse="true"/>
 
 	<Image UNID="&rsLargeExplosions;" bitmap="Resources\LargeExplosions.jpg" bitmask="Resources\LargeExplosionsMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsMediumDamage;"	bitmap="Resources\MediumDamage.jpg"	bitmask="Resources\MediumDamageMask.bmp"/>
-	<Image UNID="&rsLargeDamage;"	bitmap="Resources\LargeDamage.jpg"	bitmask="Resources\LargeDamageMask.bmp"/>
 
 	<Image UNID="&rsStations1;"		bitmap="Resources\Stations1.jpg"		bitmask="Resources\Stations1Mask.bmp"  />
 	<Image UNID="&rsStations2;"		bitmap="Resources\Stations2.jpg"		bitmask="Resources\Stations2Mask.bmp"  />
@@ -1412,20 +1410,6 @@
 	+planetary				station twice as likely to appear near a planet
 
 -->
-
-	<Effect UNID="&efLargeStationDamage;">
-		<Image imageID="&rsLargeDamage;"
-				imageWidth="64"
-				imageHeight="64"
-				imageFrameCount="5"/>
-	</Effect>
-
-	<Effect UNID="&efMediumStationDamage;">
-		<Image imageID="&rsMediumDamage;"
-				imageWidth="24"
-				imageHeight="24"
-				imageFrameCount="10"/>
-	</Effect>
 
 	<!-- Barricade -->
 
