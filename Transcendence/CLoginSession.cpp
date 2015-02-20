@@ -666,7 +666,7 @@ void CLoginSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		}
 	}
 
-void CLoginSession::OnLButtonDown (int x, int y, DWORD dwFlags)
+void CLoginSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture)
 
 //	OnLButtonDown
 //

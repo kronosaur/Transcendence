@@ -166,7 +166,7 @@ void CProfileSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		}
 	}
 
-void CProfileSession::OnLButtonDown (int x, int y, DWORD dwFlags)
+void CProfileSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture)
 
 //	OnLButtonDown
 //

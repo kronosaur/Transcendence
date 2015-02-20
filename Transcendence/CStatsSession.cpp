@@ -206,7 +206,7 @@ void CStatsSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		}
 	}
 
-void CStatsSession::OnLButtonDown (int x, int y, DWORD dwFlags)
+void CStatsSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture)
 
 //	OnLButtonDown
 

@@ -193,7 +193,7 @@ void CGalacticMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		}
 	}
 
-void CGalacticMapSession::OnLButtonDown (int x, int y, DWORD dwFlags)
+void CGalacticMapSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture)
 
 //	OnLButtonDown
 //

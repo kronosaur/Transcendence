@@ -114,7 +114,7 @@ void CHelpSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 	m_HI.ClosePopupSession();
 	}
 
-void CHelpSession::OnLButtonDown (int x, int y, DWORD dwFlags)
+void CHelpSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture)
 
 //	OnLButtonDown
 //

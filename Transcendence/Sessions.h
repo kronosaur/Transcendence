@@ -95,7 +95,7 @@ class CGalacticMapSession : public IHISession
 		virtual void OnCleanUp (void);
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags);
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 		virtual void OnUpdate (bool bTopMost);
@@ -131,7 +131,7 @@ class CHelpSession : public IHISession
 		virtual void OnCleanUp (void);
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags);
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 		virtual void OnUpdate (bool bTopMost);
@@ -161,7 +161,7 @@ class CGameSession : public IHISession
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyDown(iVirtKey, dwKeyData); }
 		virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyUp(iVirtKey, dwKeyData); }
 		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonDown(x, y, dwFlags); }
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) { g_pTrans->WMLButtonDown(x, y, dwFlags); }
 		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonUp(x, y, dwFlags); }
 		virtual void OnMouseMove (int x, int y, DWORD dwFlags) { g_pTrans->WMMouseMove(x, y, dwFlags); }
 		virtual void OnMove (int x, int y) { g_pTrans->WMMove(x, y); }
@@ -195,7 +195,7 @@ class CIntroSession : public IHISession
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyDown(iVirtKey, dwKeyData); }
 		virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyUp(iVirtKey, dwKeyData); }
 		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonDown(x, y, dwFlags); }
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) { g_pTrans->WMLButtonDown(x, y, dwFlags); }
 		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonUp(x, y, dwFlags); }
 		virtual void OnMouseMove (int x, int y, DWORD dwFlags) { g_pTrans->WMMouseMove(x, y, dwFlags); }
 		virtual void OnMove (int x, int y) { g_pTrans->WMMove(x, y); }
@@ -246,7 +246,7 @@ class CLoginSession : public IHISession
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags);
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 		virtual void OnUpdate (bool bTopMost);
@@ -338,7 +338,7 @@ class CNewGameSession : public IHISession
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags);
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 		virtual void OnUpdate (bool bTopMost);
@@ -399,7 +399,7 @@ class CProfileSession : public IHISession
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags);
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 		virtual void OnUpdate (bool bTopMost);
@@ -438,7 +438,7 @@ class CStatsSession : public IHISession
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags);
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 		virtual void OnUpdate (bool bTopMost);
@@ -470,7 +470,7 @@ class CTextCrawlSession : public IHISession
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags);
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 		virtual void OnUpdate (bool bTopMost);

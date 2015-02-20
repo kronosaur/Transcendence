@@ -627,7 +627,7 @@ void CNewGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		}
 	}
 
-void CNewGameSession::OnLButtonDown (int x, int y, DWORD dwFlags)
+void CNewGameSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture)
 
 //	OnLButtonDown
 //

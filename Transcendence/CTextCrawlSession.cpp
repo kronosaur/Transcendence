@@ -208,7 +208,7 @@ void CTextCrawlSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		}
 	}
 
-void CTextCrawlSession::OnLButtonDown (int x, int y, DWORD dwFlags)
+void CTextCrawlSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture)
 
 //	OnLButtonDown
 //
