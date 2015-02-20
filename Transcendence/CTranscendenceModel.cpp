@@ -1169,6 +1169,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 		if (error = m_GameFile.LoadUniverse(m_Universe, &dwSystemID, &dwPlayerID, retsError))
 			{
 			m_GameFile.Close();
+			m_Universe.Reinit();
 			return error;
 			}
 
@@ -1183,6 +1184,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 				&pPlayerObj))
 			{
 			m_GameFile.Close();
+			m_Universe.Reinit();
 			return error;
 			}
 
@@ -1191,6 +1193,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 			{
 			*retsError = CONSTLIT("Save file corruption: Player ship is invalid.");
 			m_GameFile.Close();
+			m_Universe.Reinit();
 			return ERR_FAIL;
 			}
 
@@ -1202,6 +1205,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 			{
 			*retsError = CONSTLIT("Save file corruption: Player ship is invalid.");
 			m_GameFile.Close();
+			m_Universe.Reinit();
 			return ERR_FAIL;
 			}
 
@@ -1226,6 +1230,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 			*retsError = strPatternSubst(CONSTLIT("Unable to set resurrect flag"));
 			m_pPlayer = NULL;
 			m_GameFile.Close();
+			m_Universe.Reinit();
 			return error;
 			}
 
@@ -1240,6 +1245,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 			{
 			*retsError = CONSTLIT("Save file corruption: No player controller found.");
 			m_GameFile.Close();
+			m_Universe.Reinit();
 			return ERR_FAIL;
 			}
 
