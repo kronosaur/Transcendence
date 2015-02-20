@@ -1374,5 +1374,9 @@
 				))
 			)
 	</Globals>
-
+	
+<!-- RESOURCES -->
+	
+	<Image UNID="&rsDeepSpace;"		bitmap="Resources\DeepSpaceBackground.jpg"	loadOnUse="true"/>
+	
 </TranscendenceModule>

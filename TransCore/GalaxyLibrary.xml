@@ -124,7 +124,7 @@
 	<!ENTITY unidCoreTypesLibrary		"0x00030000">
 	<!ENTITY unidRPGLibrary				"0x00010000">
 	
-	<!-- 0002 0000-FFFF UNIVERSE LIBRARY -->
+	<!-- 0002 0000-FFFF GALAXY LIBRARY -->
 	
 	<!ENTITY unidGalaxyLibrary			"0x00020000">
 	
@@ -244,6 +244,10 @@
 	<!ENTITY stOvoidPlanetoidSizeF		"0x00020086">
 	<!ENTITY stOvoidPlanetoidSizeG		"0x00020087">
 	<!ENTITY tbOvoidTables				"0x00020088">
+	
+	<!-- 0090-00AF SYSTEM BACKGROUNDS -->
+	
+	<!ENTITY rsDeepSpace				"0x00020090">
 	]>
 	
 <CoreLibrary
