@@ -18,20 +18,20 @@
 #define HP_DISPLAY_WIDTH				26
 #define HP_DISPLAY_HEIGHT				14
 
-#define HP_DISPLAY_BACK_COLOR			CG16bitImage::RGBValue(0,23,167)
-#define HP_DISPLAY_TEXT_COLOR			CG16bitImage::RGBValue(150,180,255)
+#define HP_DISPLAY_BACK_COLOR			CG32bitPixel(0,23,167)
+#define HP_DISPLAY_TEXT_COLOR			CG32bitPixel(150,180,255)
 
 #define SHIELD_HP_DISPLAY_X				DESCRIPTION_WIDTH
 #define SHIELD_HP_DISPLAY_Y				(DISPLAY_HEIGHT - 16)
 #define SHIELD_HP_DISPLAY_WIDTH			26
 #define SHIELD_HP_DISPLAY_HEIGHT		14
-#define DISABLED_TEXT_COLOR				CG16bitImage::RGBValue(128,0,0)
+#define DISABLED_TEXT_COLOR				CG32bitPixel(128,0,0)
 
-#define ARMOR_NAME_COLOR				CG16bitImage::RGBValue(150,180,255)
-#define ARMOR_LINE_COLOR				CG16bitImage::RGBValue(0,23,167)
+#define ARMOR_NAME_COLOR				CG32bitPixel(150,180,255)
+#define ARMOR_LINE_COLOR				CG32bitPixel(0,23,167)
 #define ARMOR_ENHANCE_X					224
 
-#define RGB_NAME_BACKGROUND				CG16bitImage::RGBValue(16,16,16)
+#define RGB_NAME_BACKGROUND				CG32bitPixel(16,16,16)
 
 CArmorDisplay::CArmorDisplay (void) : m_pUniverse(NULL),
 		m_pPlayer(NULL),
@@ -75,8 +75,6 @@ ALERROR CArmorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect)
 //	Initialize
 
 	{
-	ALERROR error;
-
 	CleanUp();
 
 	m_pUniverse = pPlayer->GetShip()->GetUniverse();
@@ -85,15 +83,13 @@ ALERROR CArmorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect)
 
 	//	Create the off-screen buffer
 
-	if (error = m_Buffer.CreateBlank(DISPLAY_WIDTH, DISPLAY_HEIGHT, false, DEFAULT_TRANSPARENT_COLOR))
-		return error;
-
-	m_Buffer.SetTransparentColor();
+	if (!m_Buffer.Create(DISPLAY_WIDTH, DISPLAY_HEIGHT, CG32bitImage::alpha8))
+		return ERR_FAIL;
 
 	return NOERROR;
 	}
 
-void CArmorDisplay::Paint (CG16bitImage &Dest)
+void CArmorDisplay::Paint (CG32bitImage &Dest)
 
 //	Paint
 //
@@ -104,7 +100,7 @@ void CArmorDisplay::Paint (CG16bitImage &Dest)
 
 	int i;
 
-	Dest.ColorTransBlt(0,
+	Dest.Blt(0,
 			0,
 			RectWidth(m_rcRect),
 			RectHeight(m_rcRect),
@@ -121,7 +117,7 @@ void CArmorDisplay::Paint (CG16bitImage &Dest)
 		pPaint->pFont->DrawText(Dest,
 				m_rcRect.left + pPaint->x,
 				m_rcRect.top + pPaint->y,
-				pPaint->wColor,
+				pPaint->rgbColor,
 				pPaint->sText);
 		}
 
@@ -194,7 +190,7 @@ void CArmorDisplay::Update (void)
 		{
 		const RECT &rcShip = ArmorDesc.ShipImage.GetImageRect();
 
-		m_Buffer.ColorTransBlt(rcShip.left, 
+		m_Buffer.Blt(rcShip.left, 
 				rcShip.top, 
 				RectWidth(rcShip), 
 				RectHeight(rcShip), 
@@ -213,7 +209,7 @@ void CArmorDisplay::Update (void)
 		int iIndex = (100 - iWhole) / 20;
 
 		const RECT &rcShield = ShieldDesc.Image.GetImageRect();
-		m_Buffer.ColorTransBlt(rcShield.left, 
+		m_Buffer.Blt(rcShield.left, 
 				rcShield.top + (RectHeight(rcShield) * iIndex), 
 				RectWidth(rcShield), 
 				RectHeight(rcShield), 
@@ -239,7 +235,7 @@ void CArmorDisplay::Update (void)
 				VI.GetColor(colorTextShields),
 				sHP);
 
-		DrawBrokenLine(m_Buffer,
+		CGDraw::LineBroken(m_Buffer,
 				0,
 				SHIELD_HP_DISPLAY_Y,
 				SHIELD_HP_DISPLAY_X,
@@ -247,11 +243,11 @@ void CArmorDisplay::Update (void)
 				0,
 				VI.GetColor(colorAreaShields));
 
-		WORD wColor;
+		CG32bitPixel rgbColor;
 		if (pShield->IsEnabled() && !pShield->IsDamaged() && !pShield->IsDisrupted())
-			wColor = VI.GetColor(colorTextShields);
+			rgbColor = VI.GetColor(colorTextShields);
 		else
-			wColor = DISABLED_TEXT_COLOR;
+			rgbColor = DISABLED_TEXT_COLOR;
 
 		CString sShieldName = pShield->GetClass()->GetName();
 		int cyHeight;
@@ -264,7 +260,7 @@ void CArmorDisplay::Update (void)
 		pPaint->x = 0;
 		pPaint->y = SHIELD_HP_DISPLAY_Y;
 		pPaint->pFont = &m_pFonts->Medium;
-		pPaint->wColor = wColor;
+		pPaint->rgbColor = rgbColor;
 
 		//	Paint the modifiers
 
@@ -308,7 +304,7 @@ void CArmorDisplay::Update (void)
 		if (iIndex < 5)
 			{
 			const RECT &rcImage = pImage->Image.GetImageRect();
-			m_Buffer.ColorTransBlt(rcImage.left,
+			m_Buffer.Blt(rcImage.left,
 					rcImage.top + iIndex * RectHeight(rcImage),
 					RectWidth(rcImage),
 					RectHeight(rcImage),
@@ -356,7 +352,7 @@ void CArmorDisplay::Update (void)
 					pImage->yHP - 1, 
 					HP_DISPLAY_WIDTH + 2, 
 					HP_DISPLAY_HEIGHT + 2,
-					CG16bitImage::DarkenPixel(m_pFonts->wSelectBackground, 128));
+					CG32bitPixel::Darken(m_pFonts->rgbSelectBackground, 128));
 			}
 		else
 			{
@@ -372,18 +368,18 @@ void CArmorDisplay::Update (void)
 		m_pFonts->Medium.DrawText(m_Buffer,
 				DESCRIPTION_WIDTH + pImage->xHP + (HP_DISPLAY_WIDTH - cxWidth) / 2,
 				pImage->yHP - 1,
-				m_pFonts->wTitleColor,
+				m_pFonts->rgbTitleColor,
 				sHP);
 
 		//	Paint the armor name line
 
-		DrawBrokenLine(m_Buffer,
+		CGDraw::LineBroken(m_Buffer,
 				0,
 				pImage->yName + m_pFonts->Medium.GetHeight(),
 				DESCRIPTION_WIDTH + pImage->xHP + pImage->xNameDestOffset,
 				pImage->yHP + pImage->yNameDestOffset,
 				pImage->cxNameBreak,
-				(i == m_iSelection ? CG16bitImage::DarkenPixel(m_pFonts->wSelectBackground, 128) : ARMOR_LINE_COLOR));
+				(i == m_iSelection ? CG32bitPixel::Darken(m_pFonts->rgbSelectBackground, 128) : ARMOR_LINE_COLOR));
 
 		//	Paint the armor names
 
@@ -396,7 +392,7 @@ void CArmorDisplay::Update (void)
 					pImage->yName, 
 					cx, 
 					cy,
-					CG16bitImage::DarkenPixel(m_pFonts->wSelectBackground, 128));
+					CG32bitPixel::Darken(m_pFonts->rgbSelectBackground, 128));
 			}
 
 		STextPaint *pPaint = m_Text.Insert();
@@ -404,7 +400,7 @@ void CArmorDisplay::Update (void)
 		pPaint->x = 2;
 		pPaint->y = pImage->yName;
 		pPaint->pFont = &m_pFonts->Medium;
-		pPaint->wColor = m_pFonts->wTitleColor;
+		pPaint->rgbColor = m_pFonts->rgbTitleColor;
 
 		//	Paint the modifiers
 

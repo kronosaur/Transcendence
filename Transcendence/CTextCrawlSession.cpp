@@ -33,7 +33,7 @@ const Metric CRAWL_SPEED =					1.0;
 
 CTextCrawlSession::CTextCrawlSession (CHumanInterface &HI,
 									  CCloudService &Service,
-									  const CG16bitImage *pImage,
+									  const CG32bitImage *pImage,
 									  const CString &sText,
 									  const CString &sCmdDone) : IHISession(HI),
 		m_Service(Service),
@@ -58,7 +58,7 @@ void CTextCrawlSession::CreateCrawlAnimation (const CString &sText, const RECT &
 
 	const CVisualPalette &VI = m_HI.GetVisuals();
 	const CG16bitFont &SubTitleFont = VI.GetFont(fontSubTitle);
-	WORD wColor = VI.GetColor(colorTextAltHighlight);
+	CG32bitPixel rgbColor = VI.GetColor(colorTextAltHighlight);
 
 	//	Adjust because scroller does not clip at the bottom
 
@@ -84,7 +84,7 @@ void CTextCrawlSession::CreateCrawlAnimation (const CString &sText, const RECT &
 				CVector(0.0, pAni->GetHeight()),
 				&SubTitleFont,
 				0,
-				wColor,
+				rgbColor,
 				&pText);
 		pAni->AddLine(pText);
 		}
@@ -220,7 +220,7 @@ void CTextCrawlSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCa
 	m_HI.HICommand(m_sCmdDone);
 	}
 
-void CTextCrawlSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
+void CTextCrawlSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 //	OnPaint
 //

@@ -54,7 +54,7 @@ ALERROR CTextCrawlDisplay::Init (const RECT &rcRect, const CString &sText)
 	return NOERROR;
 	}
 
-void CTextCrawlDisplay::Paint (CG16bitImage &Dest)
+void CTextCrawlDisplay::Paint (CG32bitImage &Dest)
 
 //	Paint
 //
@@ -71,13 +71,13 @@ void CTextCrawlDisplay::Paint (CG16bitImage &Dest)
 		m_pFont->DrawText(Dest,
 				m_rcText.left + 1,
 				y + 1,
-				CG16bitImage::RGBValue(64, 64, 64),
+				CG32bitPixel(64, 64, 64),
 				m_EpilogLines[i]);
 
 		m_pFont->DrawText(Dest,
 				m_rcText.left,
 				y,
-				CG16bitImage::RGBValue(255, 255, 200),
+				CG32bitPixel(255, 255, 200),
 				m_EpilogLines[i]);
 
 		y += m_pFont->GetHeight();

@@ -116,7 +116,7 @@ void CDockPane::CreateControl (EControlTypes iType, const CString &sID)
 			pTextArea->SetEditable();
 			pTextArea->SetText(CONSTLIT("0"));
 			pTextArea->SetFont(&VI.GetFont(fontSubTitleHeavyBold));
-			pTextArea->SetColor(CG16bitImage::RGBValue(255,255,255));
+			pTextArea->SetColor(CG32bitPixel(255,255,255));
 			pTextArea->SetStyles(alignCenter);
 
 			RECT rcInput;
@@ -182,7 +182,7 @@ void CDockPane::CreateControl (EControlTypes iType, const CString &sID)
 			CGTextArea *pTextArea = new CGTextArea;
 			pTextArea->SetEditable();
 			pTextArea->SetFont(&VI.GetFont(fontSubTitleHeavyBold));
-			pTextArea->SetColor(CG16bitImage::RGBValue(255,255,255));
+			pTextArea->SetColor(CG32bitPixel(255,255,255));
 			pTextArea->SetCursor(0, 0);
 
 			RECT rcInput;

@@ -62,27 +62,27 @@ struct SFontTable
 
 	CG16bitFont Console;			//	Fixed-width font
 
-	WORD wTitleColor;				//	Large text color
-	WORD wLightTitleColor;			//	A lighter text color
-	WORD wTextColor;				//	Color for large blocks
-	WORD wHelpColor;				//	Faded help text
-	WORD wBackground;				//	Almost black background
-	WORD wSectionBackground;		//	Ligher section background
-	WORD wSelectBackground;			//	Selection background
+	CG32bitPixel rgbTitleColor;			//	Large text color
+	CG32bitPixel rgbLightTitleColor;	//	A lighter text color
+	CG32bitPixel rgbTextColor;			//	Color for large blocks
+	CG32bitPixel rgbHelpColor;			//	Faded help text
+	CG32bitPixel rgbBackground;			//	Almost black background
+	CG32bitPixel rgbSectionBackground;	//	Ligher section background
+	CG32bitPixel rgbSelectBackground;	//	Selection background
 
-	WORD wAltRedColor;				//	Complementary alternate color
-	WORD wAltRedBackground;			//	Complementary background
-	WORD wAltGreenColor;			//	Complementary alternate color
-	WORD wAltGreenBackground;		//	Complementary background
-	WORD wAltYellowColor;			//	Complementary alternate color
-	WORD wAltYellowBackground;		//	Complementary background
-	WORD wAltBlueColor;				//	Complementary alternate color
-	WORD wAltBlueBackground;		//	Complementary background
+	CG32bitPixel rgbAltRedColor;		//	Complementary alternate color
+	CG32bitPixel rgbAltRedBackground;	//	Complementary background
+	CG32bitPixel rgbAltGreenColor;		//	Complementary alternate color
+	CG32bitPixel rgbAltGreenBackground;	//	Complementary background
+	CG32bitPixel rgbAltYellowColor;		//	Complementary alternate color
+	CG32bitPixel rgbAltYellowBackground;//	Complementary background
+	CG32bitPixel rgbAltBlueColor;		//	Complementary alternate color
+	CG32bitPixel rgbAltBlueBackground;	//	Complementary background
 
-	WORD wItemTitle;				//	Item title color
-	WORD wItemRef;					//	Item reference text color
-	WORD wItemDesc;					//	Item description color
-	WORD wItemDescSelected;			//	Item description when selected
+	CG32bitPixel rgbItemTitle;			//	Item title color
+	CG32bitPixel rgbItemRef;			//	Item reference text color
+	CG32bitPixel rgbItemDesc;			//	Item description color
+	CG32bitPixel rgbItemDescSelected;	//	Item description when selected
 	};
 
 #include "CGAreas.h"
@@ -457,7 +457,7 @@ class CPlayerShipController : public IShipController
 		virtual void OnNewSystem (CSystem *pSystem);
 		virtual void OnObjDamaged (const SDamageCtx &Ctx);
 		virtual void OnObjDestroyed (const SDestroyCtx &Ctx);
-		virtual void OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx);
+		virtual void OnPaintSRSEnhancements (CG32bitImage &Dest, SViewportPaintCtx &Ctx);
 		virtual void OnProgramDamage (CSpaceObject *pHacker, const ProgramDesc &Program);
 		virtual void OnRadiationWarning (int iTicksLeft);
 		virtual void OnRadiationCleared (void);
@@ -474,7 +474,7 @@ class CPlayerShipController : public IShipController
 		CSpaceObject *FindDockTarget (void);
 		bool HasCommsTarget (void);
 		void InitTargetList (TargetTypes iTargetType, bool bUpdate = false);
-		void PaintTargetingReticle (SViewportPaintCtx &Ctx, CG16bitImage &Dest, CSpaceObject *pTarget);
+		void PaintTargetingReticle (SViewportPaintCtx &Ctx, CG32bitImage &Dest, CSpaceObject *pTarget);
 		void Reset (void);
 		void UpdateHelp (int iTick);
 
@@ -534,8 +534,8 @@ class CMessageDisplay : public CObject
 		CMessageDisplay (void);
 
 		void ClearAll (void);
-		void DisplayMessage (CString sMessage, WORD wColor);
-		void Paint (CG16bitImage &Dest);
+		void DisplayMessage (CString sMessage, CG32bitPixel rgbColor);
+		void Paint (CG32bitImage &Dest);
 		void Update (void);
 
 		inline void SetBlinkTime (int iTime) { m_iBlinkTime = iTime; }
@@ -565,7 +565,7 @@ class CMessageDisplay : public CObject
 			int x;							//	Location of message
 			State iState;					//	current state (blinking, etc)
 			int iTick;						//	Tick count for this message
-			WORD wColor;					//	Color to paint
+			CG32bitPixel rgbColor;					//	Color to paint
 			};
 
 		inline int Next (int iPos) { return ((iPos + 1) % MESSAGE_QUEUE_SIZE); }
@@ -594,7 +594,7 @@ class CArmorDisplay
 		void CleanUp (void);
 		inline const RECT &GetRect (void) { return m_rcRect; }
 		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect);
-		void Paint (CG16bitImage &Dest);
+		void Paint (CG32bitImage &Dest);
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 		void SetSelection (int iSelection);
 		void Update (void);
@@ -606,7 +606,7 @@ class CArmorDisplay
 			int x;
 			int y;
 			const CG16bitFont *pFont;
-			WORD wColor;
+			CG32bitPixel rgbColor;
 			};
 
 
@@ -614,7 +614,7 @@ class CArmorDisplay
 		CPlayerShipController *m_pPlayer;
 
 		RECT m_rcRect;
-		CG16bitImage m_Buffer;
+		CG32bitImage m_Buffer;
 		const SFontTable *m_pFonts;
 		int m_iSelection;
 		TArray<STextPaint> m_Text;
@@ -653,7 +653,7 @@ class CTextCrawlDisplay
 		void CleanUp (void);
 		inline const RECT &GetRect (void) { return m_rcRect; }
 		ALERROR Init (const RECT &rcRect, const CString &sText);
-		void Paint (CG16bitImage &Dest);
+		void Paint (CG32bitImage &Dest);
 		inline void SetFont (const CG16bitFont *pFont) { m_pFont = pFont; }
 		void Update (void);
 
@@ -733,7 +733,7 @@ class CMenuDisplay
 		inline const RECT &GetRect (void) { return m_rcRect; }
 		ALERROR Init (CMenuData *pMenu, const RECT &rcRect);
 		inline void Invalidate (void) { m_bInvalid = true; }
-		void Paint (CG16bitImage &Dest);
+		void Paint (CG32bitImage &Dest);
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 
 		static CString GetHotKeyFromOrdinal (int *ioOrdinal, const TSortMap<CString, bool> &Exclude);
@@ -745,7 +745,7 @@ class CMenuDisplay
 		CMenuData *m_pMenu;	
 
 		RECT m_rcRect;
-		CG16bitImage m_Buffer;
+		CG32bitImage m_Buffer;
 		const SFontTable *m_pFonts;
 		bool m_bInvalid;
 	};
@@ -761,7 +761,7 @@ class CPickerDisplay
 		int GetSelection (void);
 		ALERROR Init (CMenuData *pMenu, const RECT &rcRect);
 		inline void Invalidate (void) { m_bInvalid = true; }
-		void Paint (CG16bitImage &Dest);
+		void Paint (CG32bitImage &Dest);
 		inline void ResetSelection (void) { m_iSelection = 0; }
 		void SelectNext (void);
 		void SelectPrev (void);
@@ -769,13 +769,13 @@ class CPickerDisplay
 		inline void SetHelpText (const CString &sText) { m_sHelpText = sText; }
 
 	private:
-		void PaintSelection (CG16bitImage &Dest, int x, int y);
+		void PaintSelection (CG32bitImage &Dest, int x, int y);
 		void Update (void);
 
 		CMenuData *m_pMenu;
 
 		RECT m_rcRect;
-		CG16bitImage m_Buffer;
+		CG32bitImage m_Buffer;
 		const SFontTable *m_pFonts;
 		int m_iSelection;
 		bool m_bInvalid;
@@ -817,7 +817,7 @@ class CButtonBarData
 		inline DWORD GetCmdID (int iIndex) { return m_Buttons[iIndex].dwCmdID; }
 		inline int GetCount (void) { return m_iCount; }
 		inline const CString &GetDescription (int iIndex) { return m_Buttons[iIndex].sDescription; }
-		inline const CG16bitImage &GetImage (void) { return m_Images; }
+		inline const CG32bitImage &GetImage (void) { return m_Images; }
 		void GetImageSize (int iIndex, RECT *retrcRect);
 		inline int GetImageIndex (int iIndex) { return m_Buttons[iIndex].iImageIndex; }
 		inline const CString &GetKey (int iIndex) { return m_Buttons[iIndex].sKey; }
@@ -854,7 +854,7 @@ class CButtonBarData
 
 		int m_iCount;
 		Entry m_Buttons[MAX_BUTTONS];
-		CG16bitImage m_Images;
+		CG32bitImage m_Images;
 	};
 
 class CButtonBarDisplay
@@ -874,7 +874,7 @@ class CButtonBarDisplay
 		bool OnLButtonDoubleClick (int x, int y);
 		bool OnLButtonDown (int x, int y);
 		void OnMouseMove (int x, int y);
-		void Paint (CG16bitImage &Dest);
+		void Paint (CG32bitImage &Dest);
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 		void Update (void);
 
@@ -904,7 +904,7 @@ class CDeviceCounterDisplay
 		inline const RECT &GetRect (void) { return m_rcRect; }
 		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect);
 		inline void Invalidate (void) { m_bInvalid = true; }
-		void Paint (CG16bitImage &Dest);
+		void Paint (CG32bitImage &Dest);
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 		void Update (void);
 
@@ -915,7 +915,7 @@ class CDeviceCounterDisplay
 
 		RECT m_rcRect;
 		RECT m_rcBuffer;
-		CG16bitImage m_Buffer;
+		CG32bitImage m_Buffer;
 		const SFontTable *m_pFonts;
 		bool m_bInvalid;
 		bool m_bEmpty;
@@ -936,7 +936,7 @@ class CPlayerDisplay
 		bool OnLButtonDown (int x, int y);
 		void OnMouseMove (int x, int y);
 		bool OnKeyDown (int iVirtKey);
-		void Paint (CG16bitImage &Dest);
+		void Paint (CG32bitImage &Dest);
 		void Update (void);
 
 	private:
@@ -967,8 +967,8 @@ class CPlayerDisplay
 		RECT m_rcGenderOption;
 		RECT m_rcMusicOption;
 		RECT m_rcDebugModeOption;
-		CG16bitImage m_IconImage;
-		CG16bitImage m_Buffer;
+		CG32bitImage m_IconImage;
+		CG32bitImage m_Buffer;
 		const SFontTable *m_pFonts;
 	};
 
@@ -981,7 +981,7 @@ class CReactorDisplay
 		void CleanUp (void);
 		inline const RECT &GetRect (void) { return m_rcRect; }
 		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect);
-		void Paint (CG16bitImage &Dest);
+		void Paint (CG32bitImage &Dest);
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 		void Update (void);
 
@@ -989,7 +989,7 @@ class CReactorDisplay
 		CPlayerShipController *m_pPlayer;
 
 		RECT m_rcRect;
-		CG16bitImage m_Buffer;
+		CG32bitImage m_Buffer;
 		const SFontTable *m_pFonts;
 		int m_iTickCount;
 		int m_iOverloading;
@@ -1012,8 +1012,8 @@ class CCommandLineDisplay
 		void InputEnter (void);
 		void InputLastLine (void);
 		void OnKeyDown (int iVirtKey, DWORD dwKeyState);
-		void Output (const CString &sOutput, WORD wColor = 0);
-		void Paint (CG16bitImage &Dest);
+		void Output (const CString &sOutput, CG32bitPixel rgbColor = 0);
+		void Paint (CG32bitImage &Dest);
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 
 	private:
@@ -1022,9 +1022,9 @@ class CCommandLineDisplay
 			MAX_LINES = 80,
 			};
 
-		void AppendOutput (const CString &sLine, WORD wColor);
+		void AppendOutput (const CString &sLine, CG32bitPixel rgbColor);
 		const CString &GetOutput (int iLine);
-		WORD GetOutputColor (int iLine);
+		CG32bitPixel GetOutputColor (int iLine);
 		int GetOutputCount (void);
 		void Update (void);
 
@@ -1033,13 +1033,13 @@ class CCommandLineDisplay
 		RECT m_rcRect;
 
 		CString m_Output[MAX_LINES + 1];
-		WORD m_OutputColor[MAX_LINES + 1];
+		CG32bitPixel m_OutputColor[MAX_LINES + 1];
 		int m_iOutputStart;
 		int m_iOutputEnd;
 		CString m_sInput;
 		CString m_sLastLine;
 
-		CG16bitImage m_Buffer;
+		CG32bitImage m_Buffer;
 		bool m_bInvalid;
 		int m_iCounter;
 		RECT m_rcCursor;
@@ -1055,7 +1055,7 @@ class CTargetDisplay
 		inline const RECT &GetRect (void) { return m_rcRect; }
 		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect);
 		inline void Invalidate (void) { m_bInvalid = true; }
-		void Paint (CG16bitImage &Dest);
+		void Paint (CG32bitImage &Dest);
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 
 	private:
@@ -1065,8 +1065,8 @@ class CTargetDisplay
 		CPlayerShipController *m_pPlayer;
 
 		RECT m_rcRect;
-		CG16bitImage m_Buffer;
-		CG16bitImage *m_pBackground;
+		CG32bitImage m_Buffer;
+		CG32bitImage *m_pBackground;
 		const SFontTable *m_pFonts;
 		bool m_bInvalid;
 	};
@@ -1110,7 +1110,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 	public:
 		CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC);
 
-		void Animate (CG16bitImage &TheScreen, CGameSession *pSession, bool bTopMost);
+		void Animate (CG32bitImage &TheScreen, CGameSession *pSession, bool bTopMost);
 
 		void Autopilot (bool bTurnOn);
 		void CleanUpPlayerShip (void);
@@ -1275,7 +1275,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void PaintLRS (void);
 		void PaintMainScreenBorder (void);
 		void PaintMap (void);
-		void PaintSnow (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight);
+		void PaintSnow (CG32bitImage &Dest, int x, int y, int cxWidth, int cyHeight);
 		void PaintSRSSnow (void);
 		void PaintWeaponStatus (void);
 		void ReportCrash (void);
@@ -1390,7 +1390,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		//	Help screen
 		bool m_bHelpInvalid;
 		int m_iHelpPage;
-		CG16bitImage m_HelpImage;
+		CG32bitImage m_HelpImage;
 		GameState m_OldState;
 
 		//	Performance options
@@ -1410,11 +1410,11 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		RECT m_rcWindow;					//	Rect of main window in screen coordinates
 		RECT m_rcWindowScreen;				//	Rect of screen within window
 
-		CG16bitImage m_LRS;					//	Long-range scan
+		CG32bitImage m_LRS;					//	Long-range scan
 		RECT m_rcLRS;						//	Rect on screen where LRS goes
-		CG16bitImage *m_pLargeHUD;			//	Background LRS image
-		CG16bitImage *m_pSRSSnow;			//	SRS snow image
-		CG16bitImage *m_pLRSBorder;			//	LRS border
+		CG32bitImage *m_pLargeHUD;			//	Background LRS image
+		CG32bitImage *m_pSRSSnow;			//	SRS snow image
+		CG32bitImage *m_pLRSBorder;			//	LRS border
 
 		CArmorDisplay m_ArmorDisplay;		//	Armor display object
 		CDeviceCounterDisplay m_DeviceDisplay;	//	Device counter display
@@ -1748,7 +1748,7 @@ class CTranscendenceModel
 		int AddHighScore (const CGameRecord &Score);
 		void CleanUp (void);
 		inline const CString &GetCopyright (void) { return m_Version.sCopyright; }
-		inline CG16bitImage *GetCrawlImage (void) const { return m_pCrawlImage; }
+		inline CG32bitImage *GetCrawlImage (void) const { return m_pCrawlImage; }
 		inline CSoundType *GetCrawlSoundtrack (void) const { return m_pCrawlSoundtrack; }
 		inline const CString &GetCrawlText (void) const { return m_sCrawlText; }
 		inline bool GetDebugMode (void) const { return m_bDebugMode; }
@@ -1829,7 +1829,7 @@ class CTranscendenceModel
 		//	Temporaries
 		CDesignType *m_pResurrectType;				//	DesignType that will handle resurrect (or NULL)
 		CString m_sEpitaph;							//	Epitaph
-		CG16bitImage *m_pCrawlImage;				//	For epilogue/prologue
+		CG32bitImage *m_pCrawlImage;				//	For epilogue/prologue
 		CSoundType *m_pCrawlSoundtrack;				//	For epilogue/prologue
 		CString m_sCrawlText;						//	For epilogue/prologue
 

@@ -420,7 +420,7 @@ inline CDockScreen *GetDockScreenArg (ICCItem *pArg) { return (CDockScreen *)pAr
 inline CArmorClass *GetArmorClassArg (ICCItem *pArg) { return (CArmorClass *)pArg->GetIntegerValue(); }
 inline CPlayerShipController *GetPlayerArg (ICCItem *pArg) { return (CPlayerShipController *)pArg->GetIntegerValue(); }
 
-CG16bitImage *GetCanvasArg (CEvalContext *pEvalCtx, ICCItem *pArgs, int iArg)
+CG32bitImage *GetCanvasArg (CEvalContext *pEvalCtx, ICCItem *pArgs, int iArg)
 
 //	GetCanvasArg
 //
@@ -447,7 +447,7 @@ CG16bitImage *GetCanvasArg (CEvalContext *pEvalCtx, ICCItem *pArgs, int iArg)
 		}
 	}
 
-WORD GetColorArg (ICCItem *pArg)
+CG32bitPixel GetColorArg (ICCItem *pArg)
 
 //	GetColorArg
 //
@@ -455,13 +455,13 @@ WORD GetColorArg (ICCItem *pArg)
 
 	{
 	if (pArg->IsInteger())
-		return (WORD)(DWORD)pArg->GetIntegerValue();
+		return CG32bitPixel::FromDWORD((DWORD)pArg->GetIntegerValue());
 	else if (pArg->GetCount() == 3)
-		return CG16bitImage::RGBValue(pArg->GetElement(0)->GetIntegerValue(),
+		return CG32bitPixel(pArg->GetElement(0)->GetIntegerValue(),
 				pArg->GetElement(1)->GetIntegerValue(),
 				pArg->GetElement(2)->GetIntegerValue());
 	else
-		return 0;
+		return CG32bitPixel::Null();
 	}
 
 ALERROR InitCodeChainExtensions (CCodeChain &CC)
@@ -496,16 +496,16 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			{
 			int x = pArgs->GetElement(0)->GetIntegerValue();
 			int y = pArgs->GetElement(1)->GetIntegerValue();
-			CG16bitImage *pImage;
+			CG32bitImage *pImage;
 			RECT rcImage;
 			GetImageDescFromList(*pCC, pArgs->GetElement(2), &pImage, &rcImage);
 			if (pImage == NULL)
 				return pCC->CreateNil();
-			CG16bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, 3);
+			CG32bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, 3);
 			if (pCanvas == NULL)
 				return pCC->CreateNil();
 
-			pCanvas->ColorTransBlt(rcImage.left,
+			pCanvas->Blt(rcImage.left,
 					rcImage.top,
 					RectWidth(rcImage),
 					RectHeight(rcImage),
@@ -524,17 +524,15 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			int xTo = pArgs->GetElement(2)->GetIntegerValue();
 			int yTo = pArgs->GetElement(3)->GetIntegerValue();
 			int iWidth = pArgs->GetElement(4)->GetIntegerValue();
-			WORD wColor = GetColorArg(pArgs->GetElement(5));
-			CG16bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, 6);
+			CG32bitPixel rgbColor = GetColorArg(pArgs->GetElement(5));
+			CG32bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, 6);
 			if (pCanvas == NULL)
 				return pCC->CreateNil();
 
 			if (iWidth <= 0)
 				return pCC->CreateNil();
 
-			CG16bitLinePainter LinePainter;
-			LinePainter.PaintSolid(*pCanvas, xFrom, yFrom, xTo, yTo, iWidth, wColor);
-
+			CGDraw::LineHD(*pCanvas, xFrom, yFrom, xTo, yTo, iWidth, rgbColor);
 			return pCC->CreateTrue();
 			}
 
@@ -544,12 +542,12 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			int y = pArgs->GetElement(1)->GetIntegerValue();
 			int cxWidth = pArgs->GetElement(2)->GetIntegerValue();
 			int cyHeight = pArgs->GetElement(3)->GetIntegerValue();
-			WORD wColor = GetColorArg(pArgs->GetElement(4));
-			CG16bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, 5);
+			CG32bitPixel rgbColor = GetColorArg(pArgs->GetElement(4));
+			CG32bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, 5);
 			if (pCanvas == NULL)
 				return pCC->CreateNil();
 
-			pCanvas->Fill(x, y, cxWidth, cyHeight, wColor);
+			pCanvas->Fill(x, y, cxWidth, cyHeight, rgbColor);
 
 			return pCC->CreateTrue();
 			}
@@ -568,10 +566,10 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			int cxWidth = (pArgs->GetElement(iArg)->IsInteger() ? pArgs->GetElement(iArg++)->GetIntegerValue() : -1);
 			CString sText = g_pTrans->ComposePlayerNameString(pArgs->GetElement(iArg++)->GetStringValue());
 			const CG16bitFont *pControlFont = &GetFontByName(g_pTrans->GetFonts(), pArgs->GetElement(iArg++)->GetStringValue());
-			WORD wColor = GetColorArg(pArgs->GetElement(iArg++));
+			CG32bitPixel rgbColor = GetColorArg(pArgs->GetElement(iArg++));
 			CString sAlign = pArgs->GetElement(iArg++)->GetStringValue();
 
-			CG16bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, iArg);
+			CG32bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, iArg);
 			if (pCanvas == NULL)
 				return pCC->CreateNil();
 
@@ -616,7 +614,7 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			//	Paint
 
-			pControlFont->DrawText(*pCanvas, rcRect, wColor, sText, 0, dwFlags);
+			pControlFont->DrawText(*pCanvas, rcRect, rgbColor, sText, 0, dwFlags);
 
 			//	Done
 

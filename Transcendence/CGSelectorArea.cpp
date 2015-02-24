@@ -624,7 +624,7 @@ bool CGSelectorArea::MoveCursor (EDirections iDir)
 		}
 	}
 
-void CGSelectorArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
+void CGSelectorArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 //	Paint
 //
@@ -656,17 +656,15 @@ void CGSelectorArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
 
 		//	Paint the background of the entry
 
-		WORD wBackColor = (m_iCursor == i ? m_VI.GetColor(colorAreaDialogInputFocus) : m_VI.GetColor(colorAreaDialog));
-		DWORD dwBackOpacity = (m_iCursor == i ? 255 : 220);
+		CG32bitPixel rgbBackColor = (m_iCursor == i ? m_VI.GetColor(colorAreaDialogInputFocus) : CG32bitPixel(m_VI.GetColor(colorAreaDialog), (BYTE)220));
 
-		::DrawRoundedRectTrans(Dest, 
+		CGDraw::RoundedRect(Dest, 
 				rcRegion.left - xBackMargin, 
 				rcRegion.top - yBackMargin, 
 				RectWidth(rcRegion) + 2 * xBackMargin,
 				RectHeight(rcRegion) + 2 * yBackMargin,
 				iCornerRadius + xBackMargin, 
-				wBackColor,
-				dwBackOpacity);
+				rgbBackColor);
 
 		//	Paint the actual region
 
@@ -685,7 +683,7 @@ void CGSelectorArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
 
 		if (m_iCursor == i)
 			{
-			::DrawRoundedRectOutline(Dest,
+			CGDraw::RoundedRectOutline(Dest,
 					rcRegion.left,
 					rcRegion.top,
 					RectWidth(rcRegion),
@@ -697,7 +695,7 @@ void CGSelectorArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
 		}
 	}
 
-void CGSelectorArea::PaintEmptySlot (CG16bitImage &Dest, const RECT &rcRect, const SEntry &Entry)
+void CGSelectorArea::PaintEmptySlot (CG32bitImage &Dest, const RECT &rcRect, const SEntry &Entry)
 
 //	PaintEmptySlot
 //
@@ -706,10 +704,10 @@ void CGSelectorArea::PaintEmptySlot (CG16bitImage &Dest, const RECT &rcRect, con
 	{
 	//	Paint the slot icon
 
-	const CG16bitImage &SlotImage = m_VI.GetImage(imageSlotIcon);
+	const CG32bitImage &SlotImage = m_VI.GetImage(imageSlotIcon);
 	int xIcon = rcRect.left + (RectWidth(rcRect) - ITEM_ICON_WIDTH) / 2;
 	int yIcon = rcRect.top + ITEM_ENTRY_PADDING_TOP;
-	DrawBltTransformed(Dest,
+	CGDraw::BltTransformed(Dest,
 			xIcon + (ITEM_ICON_WIDTH / 2),
 			yIcon + (ITEM_ICON_HEIGHT / 2),
 			(Metric)ITEM_ICON_WIDTH / (Metric)SlotImage.GetWidth(),
@@ -768,7 +766,7 @@ void CGSelectorArea::PaintEmptySlot (CG16bitImage &Dest, const RECT &rcRect, con
 			CG16bitFont::AlignCenter);
 	}
 
-void CGSelectorArea::PaintInstalledItem (CG16bitImage &Dest, const RECT &rcRect, const SEntry &Entry)
+void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect, const SEntry &Entry)
 
 //	PaintInstalledItem
 //
@@ -848,10 +846,10 @@ void CGSelectorArea::PaintInstalledItem (CG16bitImage &Dest, const RECT &rcRect,
 			if (!sMods.IsBlank())
 				{
 				bool bIsDisadvantage = *sMods.GetASCIIZPointer() == '-';
-				WORD wBackColor = (bIsDisadvantage ? m_VI.GetColor(colorAreaDisadvantage) : m_VI.GetColor(colorAreaAdvantage));
-				WORD wTextColor = (bIsDisadvantage ? m_VI.GetColor(colorTextDisadvantage) : m_VI.GetColor(colorTextAdvantage));
+				CG32bitPixel rgbBackColor = (bIsDisadvantage ? m_VI.GetColor(colorAreaDisadvantage) : m_VI.GetColor(colorAreaAdvantage));
+				CG32bitPixel rgbTextColor = (bIsDisadvantage ? m_VI.GetColor(colorTextDisadvantage) : m_VI.GetColor(colorTextAdvantage));
 
-				PaintModifier(Dest, x, y, sMods, wTextColor, wBackColor, &y);
+				PaintModifier(Dest, x, y, sMods, rgbTextColor, rgbBackColor, &y);
 				}
 			}
 		}
@@ -918,16 +916,16 @@ void CGSelectorArea::PaintInstalledItem (CG16bitImage &Dest, const RECT &rcRect,
 			if (!sMods.IsBlank())
 				{
 				bool bIsDisadvantage = *sMods.GetASCIIZPointer() == '-';
-				WORD wBackColor = (bIsDisadvantage ? m_VI.GetColor(colorAreaDisadvantage) : m_VI.GetColor(colorAreaAdvantage));
-				WORD wTextColor = (bIsDisadvantage ? m_VI.GetColor(colorTextDisadvantage) : m_VI.GetColor(colorTextAdvantage));
+				CG32bitPixel rgbBackColor = (bIsDisadvantage ? m_VI.GetColor(colorAreaDisadvantage) : m_VI.GetColor(colorAreaAdvantage));
+				CG32bitPixel rgbTextColor = (bIsDisadvantage ? m_VI.GetColor(colorTextDisadvantage) : m_VI.GetColor(colorTextAdvantage));
 
-				PaintModifier(Dest, x, y, sMods, wTextColor, wBackColor, &y);
+				PaintModifier(Dest, x, y, sMods, rgbTextColor, rgbBackColor, &y);
 				}
 			}
 		}
 	}
 
-void CGSelectorArea::PaintModifier (CG16bitImage &Dest, int x, int y, const CString &sText, WORD wColor, WORD wBackColor, int *rety)
+void CGSelectorArea::PaintModifier (CG32bitImage &Dest, int x, int y, const CString &sText, CG32bitPixel rgbColor, CG32bitPixel rgbBackColor, int *rety)
 
 //	PaintModifier
 //
@@ -935,17 +933,17 @@ void CGSelectorArea::PaintModifier (CG16bitImage &Dest, int x, int y, const CStr
 
 	{
 	int cx = m_VI.GetFont(fontSmall).MeasureText(sText);
-	if (wBackColor != DEFAULT_TRANSPARENT_COLOR)
+	if (!rgbBackColor.IsEmpty())
 		Dest.Fill(x - cx - 8,
 				y,
 				cx + 8,
 				m_VI.GetFont(fontSmall).GetHeight(),
-				wBackColor);
+				rgbBackColor);
 
 	m_VI.GetFont(fontSmall).DrawText(Dest,
 			x - cx - 4,
 			y,
-			wColor,
+			rgbColor,
 			sText);
 
 	if (rety)

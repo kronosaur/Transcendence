@@ -62,7 +62,7 @@ void CButtonBarData::CleanUp (void)
 //	Clean up the data
 
 	{
-	m_Images.Destroy();
+	m_Images.CleanUp();
 	m_iCount = 0;
 	}
 
@@ -129,10 +129,10 @@ ALERROR CButtonBarData::Init (void)
 			&hDIB))
 		return error;
 
-	error = m_Images.CreateFromBitmap(hDIB);
+	bool bSuccess = m_Images.CreateFromBitmap(hDIB);
 	::DeleteObject(hDIB);
-	if (error)
-		return error;
+	if (!bSuccess)
+		return ERR_FAIL;
 
 	return NOERROR;
 	}

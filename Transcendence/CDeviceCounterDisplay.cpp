@@ -10,7 +10,7 @@
 #define BAR_HEIGHT								14
 #define SPACING_X								8
 
-#define RGB_TITLE								(CG16bitImage::RGBValue(150,255,180))
+#define RGB_TITLE								(CG32bitPixel(150,255,180))
 
 CDeviceCounterDisplay::CDeviceCounterDisplay (void) : m_pPlayer(NULL),
 		m_bInvalid(true),
@@ -57,7 +57,7 @@ ALERROR CDeviceCounterDisplay::Init (CPlayerShipController *pPlayer, const RECT 
 	return NOERROR;
 	}
 
-void CDeviceCounterDisplay::Paint (CG16bitImage &Dest)
+void CDeviceCounterDisplay::Paint (CG32bitImage &Dest)
 
 //	Paint
 //
@@ -70,7 +70,7 @@ void CDeviceCounterDisplay::Paint (CG16bitImage &Dest)
 	if (m_bEmpty)
 		return;
 
-	Dest.ColorTransBlt(0,
+	Dest.Blt(0,
 			0,
 			RectWidth(m_rcBuffer),
 			RectHeight(m_rcBuffer),
@@ -102,8 +102,8 @@ void CDeviceCounterDisplay::PaintDevice (CInstalledDevice *pDevice, int x)
 	int iLevel = pDevice->GetCounter(pShip, &iType);
 
 	CString sTitle;
-    WORD wLevelColor;
-	WORD wBackColor;
+    CG32bitPixel rgbLevelColor;
+	CG32bitPixel rgbBackColor;
 
 	switch (iType)
 		{
@@ -112,13 +112,13 @@ void CDeviceCounterDisplay::PaintDevice (CInstalledDevice *pDevice, int x)
 			sTitle = CONSTLIT("Temperature");
 			if (iLevel > 80)
 				{
-				wLevelColor = CG16bitImage::RGBValue(255, 0, 0);
-				wBackColor = CG16bitImage::RGBValue(64, 0, 0);
+				rgbLevelColor = CG32bitPixel(255, 0, 0);
+				rgbBackColor = CG32bitPixel(64, 0, 0);
 				}
 			else
 				{
-				wLevelColor = CG16bitImage::RGBValue(255, 255, 0);
-				wBackColor = CG16bitImage::RGBValue(64, 64, 64);
+				rgbLevelColor = CG32bitPixel(255, 255, 0);
+				rgbBackColor = CG32bitPixel(64, 64, 64);
 				}
 			break;
 			}
@@ -128,20 +128,20 @@ void CDeviceCounterDisplay::PaintDevice (CInstalledDevice *pDevice, int x)
 			sTitle = CONSTLIT("Charging");
 			if (iLevel < 20)
 				{
-				wLevelColor = CG16bitImage::RGBValue(255, 0, 0);
-				wBackColor = CG16bitImage::RGBValue(64, 0, 0);
+				rgbLevelColor = CG32bitPixel(255, 0, 0);
+				rgbBackColor = CG32bitPixel(64, 0, 0);
 				}
 			else
 				{
-				wLevelColor = CG16bitImage::RGBValue(0, 255, 0);
-				wBackColor = CG16bitImage::RGBValue(64, 64, 64);
+				rgbLevelColor = CG32bitPixel(0, 255, 0);
+				rgbBackColor = CG32bitPixel(64, 64, 64);
 				}
 			break;
 			}
 
 		default:
-			wLevelColor = CG16bitImage::RGBValue(255, 255, 0);
-			wBackColor = CG16bitImage::RGBValue(64, 64, 64);
+			rgbLevelColor = CG32bitPixel(255, 255, 0);
+			rgbBackColor = CG32bitPixel(64, 64, 64);
 		}
 
 	//	Paint title
@@ -159,8 +159,8 @@ void CDeviceCounterDisplay::PaintDevice (CInstalledDevice *pDevice, int x)
 	int cxBackWidth = ICON_WIDTH - cxLevelWidth;
 	int y = m_pFonts->Medium.GetHeight() + ICON_HEIGHT;
 
-	m_Buffer.Fill(x, y, cxLevelWidth, BAR_HEIGHT, wLevelColor);
-	m_Buffer.Fill(x + cxLevelWidth, y, cxBackWidth, BAR_HEIGHT, wBackColor);
+	m_Buffer.Fill(x, y, cxLevelWidth, BAR_HEIGHT, rgbLevelColor);
+	m_Buffer.Fill(x + cxLevelWidth, y, cxBackWidth, BAR_HEIGHT, rgbBackColor);
 	}
 
 void CDeviceCounterDisplay::Update (void)
@@ -207,14 +207,14 @@ void CDeviceCounterDisplay::Update (void)
 
 	if (cxWidth != m_Buffer.GetWidth())
 		{
-		if (m_Buffer.CreateBlank(cxWidth, cyHeight, false) != NOERROR)
+		if (m_Buffer.Create(cxWidth, cyHeight) != NOERROR)
 			{
 			m_bInvalid = false;
 			m_bEmpty = true;
 			return;
 			}
 
-		m_Buffer.SetBlending(200);
+		//m_Buffer.SetBlending(200);
 
 		m_rcBuffer.left = 0;
 		m_rcBuffer.right = cxWidth;
@@ -222,7 +222,7 @@ void CDeviceCounterDisplay::Update (void)
 		m_rcBuffer.bottom = cyHeight;
 		}
 
-	m_Buffer.Fill(0, 0, cxWidth, cyHeight, CG16bitImage::RGBValue(0, 0, 0));
+	m_Buffer.Fill(0, 0, cxWidth, cyHeight, CG32bitPixel(0, 0, 0));
 
 	//	Paint all device counters
 

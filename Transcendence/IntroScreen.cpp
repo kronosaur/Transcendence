@@ -16,9 +16,9 @@
 #define HIGHSCORE_DISPLAY_WIDTH					500
 #define HIGHSCORE_DISPLAY_HEIGHT				250
 
-#define RGB_VERSION_COLOR						CG16bitImage::RGBValue(128,128,128)
-#define RGB_COPYRIGHT_COLOR						CG16bitImage::RGBValue(80,80,80)
-#define RGB_FRAME								CG16bitImage::RGBValue(80,80,80)
+#define RGB_VERSION_COLOR						CG32bitPixel(128,128,128)
+#define RGB_COPYRIGHT_COLOR						CG32bitPixel(80,80,80)
+#define RGB_FRAME								CG32bitPixel(80,80,80)
 
 #define MAX_TIME_WITH_ONE_SHIP					(g_TicksPerSecond * 90)
 #define MAX_INTRO_SHIPS							500
@@ -29,12 +29,12 @@
 #define DIALOG_SPACING_Y						8
 #define DIALOG_BUTTON_HEIGHT					25
 #define DIALOG_BUTTON_WIDTH						100
-#define RGB_DIALOG_BACKGROUND					CG16bitImage::RGBValue(48,48,64)
-#define RGB_DIALOG_TEXT							CG16bitImage::RGBValue(144,144,192)
-#define RGB_DIALOG_BUTTON_BACKGROUND			CG16bitImage::RGBValue(144,144,192)
-#define RGB_DIALOG_BUTTON_TEXT					CG16bitImage::RGBValue(0, 0, 0)
+#define RGB_DIALOG_BACKGROUND					CG32bitPixel(48,48,64)
+#define RGB_DIALOG_TEXT							CG32bitPixel(144,144,192)
+#define RGB_DIALOG_BUTTON_BACKGROUND			CG32bitPixel(144,144,192)
+#define RGB_DIALOG_BUTTON_TEXT					CG32bitPixel(0, 0, 0)
 
-#define RGB_NEWS_PANE_BACKGROUND				CG16bitImage::RGBValue(128, 213, 255)
+#define RGB_NEWS_PANE_BACKGROUND				CG32bitPixel(128, 213, 255)
 
 #define STR_OVERWRITE							CONSTLIT("Overwrite")
 #define STR_CANCEL								CONSTLIT("Cancel")
@@ -142,9 +142,9 @@ void CTranscendenceWnd::AnimateIntro (bool bTopMost)
 //	Paint intro screen
 
 	{
-	CG16bitImage &TheScreen = g_pHI->GetScreen();
+	CG32bitImage &TheScreen = g_pHI->GetScreen();
 	const CVisualPalette &VI = g_pHI->GetVisuals();
-	WORD wBackgroundColor = VI.GetColor(colorAreaDeep);
+	CG32bitPixel rgbBackgroundColor = VI.GetColor(colorAreaDeep);
 
 	DWORD dwStartTimer;
 	if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
@@ -163,7 +163,7 @@ void CTranscendenceWnd::AnimateIntro (bool bTopMost)
 
 	TheScreen.FillLine(m_rcIntroMain.left, m_rcIntroMain.top - 1, RectWidth(m_rcIntroMain), RGB_FRAME);
 	TheScreen.FillLine(m_rcIntroMain.left, m_rcIntroMain.bottom, RectWidth(m_rcIntroMain), RGB_FRAME);
-	TheScreen.Fill(0, 0, RectWidth(m_rcIntroMain), m_rcIntroMain.top - 1, wBackgroundColor);
+	TheScreen.Fill(0, 0, RectWidth(m_rcIntroMain), m_rcIntroMain.top - 1, rgbBackgroundColor);
 
 	//	Paint reanimator
 
@@ -186,18 +186,18 @@ void CTranscendenceWnd::AnimateIntro (bool bTopMost)
 			int cyHeight;
 			int cxWidth = Max(300, m_Fonts.SubTitle.MeasureText(m_sCommand, &cyHeight));
 
-			WORD wBorderColor = CG16bitImage::BlendPixel(CG16bitImage::RGBValue(0, 0, 0), m_Fonts.wTitleColor, 128);
-			DrawRectDotted(TheScreen, 
+			CG32bitPixel rgbBorderColor = CG32bitPixel::Blend(CG32bitPixel(0, 0, 0), m_Fonts.rgbTitleColor, (BYTE)128);
+			CGDraw::RectOutlineDotted(TheScreen, 
 					xMidCenter - cxWidth / 2 - 2, 
 					yMidCenter - 2, 
 					cxWidth + 4, 
 					cyHeight + 4, 
-					wBorderColor);
+					rgbBorderColor);
 
 			m_Fonts.SubTitle.DrawText(TheScreen,
 					xMidCenter,
 					yMidCenter,
-					m_Fonts.wTitleColor,
+					m_Fonts.rgbTitleColor,
 					m_sCommand,
 					CG16bitFont::AlignCenter);
 			break;
@@ -483,7 +483,7 @@ void CTranscendenceWnd::CreateHighScoresAnimation (IAnimatron **retpAnimatron)
 	//	We add it first because it paints behind everything
 
 	IAnimatron *pRect;
-	CAniRect::Create(CVector(0.0, 0.0), CVector(100.0, 10.0), m_Fonts.wLightTitleColor, 0, &pRect);
+	CAniRect::Create(CVector(0.0, 0.0), CVector(100.0, 10.0), m_Fonts.rgbLightTitleColor, 0, &pRect);
 	pRect->SetID(ID_HIGH_SCORES_SELECT_RECT);
 	pAni->AddLine(pRect);
 
@@ -505,7 +505,7 @@ void CTranscendenceWnd::CreateHighScoresAnimation (IAnimatron **retpAnimatron)
 				CVector((Metric)-m_Fonts.SubTitle.GetAverageWidth(), yPos),
 				&m_Fonts.SubTitle,
 				CG16bitFont::AlignRight,
-				m_Fonts.wTitleColor,
+				m_Fonts.rgbTitleColor,
 				&pText);
 		pAni->AddLine(pText);
 
@@ -515,7 +515,7 @@ void CTranscendenceWnd::CreateHighScoresAnimation (IAnimatron **retpAnimatron)
 				CVector(0.0, yPos),
 				&m_Fonts.SubTitle,
 				0,
-				m_Fonts.wTitleColor,
+				m_Fonts.rgbTitleColor,
 				&pText);
 		pAni->AddLine(pText);
 
@@ -529,7 +529,7 @@ void CTranscendenceWnd::CreateHighScoresAnimation (IAnimatron **retpAnimatron)
 				CVector(0.0, pAni->GetHeight()),
 				&m_Fonts.Medium,
 				0,
-				m_Fonts.wLightTitleColor,
+				m_Fonts.rgbLightTitleColor,
 				&pText);
 		pAni->AddLine(pText);
 
@@ -546,7 +546,7 @@ void CTranscendenceWnd::CreateHighScoresAnimation (IAnimatron **retpAnimatron)
 					CVector(0.0, pAni->GetHeight()),
 					&m_Fonts.Medium,
 					0,
-					m_Fonts.wLightTitleColor,
+					m_Fonts.rgbLightTitleColor,
 					&pText);
 			pAni->AddLine(pText);
 			}
@@ -690,34 +690,34 @@ void CTranscendenceWnd::CreateLongCreditsAnimation (int x, int y, int cyHeight, 
 
 	//	Inspiration, Ideas, and Testing
 
-	pAni->AddTextLine(CONSTLIT("ideas & testing"), &m_Fonts.SubTitle, m_Fonts.wLightTitleColor, CG16bitFont::AlignCenter);
+	pAni->AddTextLine(CONSTLIT("ideas & testing"), &m_Fonts.SubTitle, m_Fonts.rgbLightTitleColor, CG16bitFont::AlignCenter);
 
 	//	Add names
 
 	for (i = 0; i < FEEDBACK_COUNT; i++)
 		pAni->AddTextLine(CString(FEEDBACK[i]), 
 				&m_Fonts.Header, 
-				m_Fonts.wTitleColor, 
+				m_Fonts.rgbTitleColor, 
 				CG16bitFont::AlignCenter,
 				(i == 0 ? m_Fonts.Header.GetHeight() : 0));
 
 	//	Software
 
-	pAni->AddTextLine(CONSTLIT("created using"), &m_Fonts.SubTitle, m_Fonts.wLightTitleColor, CG16bitFont::AlignCenter, m_Fonts.Title.GetHeight());
+	pAni->AddTextLine(CONSTLIT("created using"), &m_Fonts.SubTitle, m_Fonts.rgbLightTitleColor, CG16bitFont::AlignCenter, m_Fonts.Title.GetHeight());
 	for (i = 0; i < SOFTWARE_COUNT; i++)
 		pAni->AddTextLine(CString(SOFTWARE[i]), 
 				&m_Fonts.Header, 
-				m_Fonts.wTitleColor, 
+				m_Fonts.rgbTitleColor, 
 				CG16bitFont::AlignCenter,
 				(i == 0 ? m_Fonts.Header.GetHeight() : 0));
 
 	//	Inspiration
 
-	pAni->AddTextLine(CONSTLIT("with inspiration from"), &m_Fonts.SubTitle, m_Fonts.wLightTitleColor, CG16bitFont::AlignCenter, m_Fonts.Title.GetHeight());
+	pAni->AddTextLine(CONSTLIT("with inspiration from"), &m_Fonts.SubTitle, m_Fonts.rgbLightTitleColor, CG16bitFont::AlignCenter, m_Fonts.Title.GetHeight());
 	for (i = 0; i < INSPIRATION_COUNT; i++)
 		pAni->AddTextLine(CString(INSPIRATION[i]), 
 				&m_Fonts.Header, 
-				m_Fonts.wTitleColor, 
+				m_Fonts.rgbTitleColor, 
 				CG16bitFont::AlignCenter,
 				(i == 0 ? m_Fonts.Header.GetHeight() : 0));
 
@@ -801,7 +801,7 @@ void CTranscendenceWnd::CreateLongCreditsAnimation (int x, int y, int cyHeight, 
 
 				pAni->AddTextLine(sCredit,
 						&m_Fonts.SubTitle, 
-						m_Fonts.wLightTitleColor, 
+						m_Fonts.rgbLightTitleColor, 
 						CG16bitFont::AlignCenter,
 						(j == 0 ? m_Fonts.Title.GetHeight() : 0));
 				}
@@ -809,7 +809,7 @@ void CTranscendenceWnd::CreateLongCreditsAnimation (int x, int y, int cyHeight, 
 				{
 				pAni->AddTextLine(strPatternSubst(CONSTLIT("%s,"), pExt->Extensions[j]),
 						&m_Fonts.SubTitle, 
-						m_Fonts.wLightTitleColor, 
+						m_Fonts.rgbLightTitleColor, 
 						CG16bitFont::AlignCenter,
 						(j == 0 ? m_Fonts.Title.GetHeight() : 0));
 				}
@@ -819,17 +819,17 @@ void CTranscendenceWnd::CreateLongCreditsAnimation (int x, int y, int cyHeight, 
 		for (j = 0; j < pExt->Credits.GetCount(); j++)
 			pAni->AddTextLine(pExt->Credits[j], 
 					&m_Fonts.Header, 
-					m_Fonts.wTitleColor, 
+					m_Fonts.rgbTitleColor, 
 					CG16bitFont::AlignCenter,
 					(j == 0 ? m_Fonts.Header.GetHeight() : 0));
 		}
 
 	//	Copyright
 
-	pAni->AddTextLine(m_sVersion, &m_Fonts.SubTitle, m_Fonts.wTitleColor, CG16bitFont::AlignCenter, m_Fonts.Title.GetHeight());
-	pAni->AddTextLine(m_sCopyright, &m_Fonts.Medium, m_Fonts.wTextColor, CG16bitFont::AlignCenter);
-	pAni->AddTextLine(CONSTLIT("Transcendence is a registered trademark"), &m_Fonts.Medium, m_Fonts.wTextColor, CG16bitFont::AlignCenter);
-	pAni->AddTextLine(CONSTLIT("http://transcendence-game.com"), &m_Fonts.Medium, m_Fonts.wTextColor, CG16bitFont::AlignCenter);
+	pAni->AddTextLine(m_sVersion, &m_Fonts.SubTitle, m_Fonts.rgbTitleColor, CG16bitFont::AlignCenter, m_Fonts.Title.GetHeight());
+	pAni->AddTextLine(m_sCopyright, &m_Fonts.Medium, m_Fonts.rgbTextColor, CG16bitFont::AlignCenter);
+	pAni->AddTextLine(CONSTLIT("Transcendence is a registered trademark"), &m_Fonts.Medium, m_Fonts.rgbTextColor, CG16bitFont::AlignCenter);
+	pAni->AddTextLine(CONSTLIT("http://transcendence-game.com"), &m_Fonts.Medium, m_Fonts.rgbTextColor, CG16bitFont::AlignCenter);
 
 	//	Animate
 
@@ -855,7 +855,7 @@ void CTranscendenceWnd::CreateNewsAnimation (CMultiverseNewsEntry *pEntry, IAnim
 
 	int cxInnerPane = NEWS_PANE_WIDTH - (2 * NEWS_PANE_PADDING_X);
 
-	CG16bitImage *pImage = pEntry->LoadImageHandoff();
+	CG32bitImage *pImage = pEntry->LoadImageHandoff();
 	int cyImage = (pImage ? pImage->GetHeight() : 0);
 
 	TArray<CString> TitleLines;
@@ -935,8 +935,8 @@ void CTranscendenceWnd::CreateNewsAnimation (CMultiverseNewsEntry *pEntry, IAnim
 			//	Create a mask the size of the pane and apply it to the image
 			//	(We own the image so we can modify it).
 
-			CG16bitImage PaneMask;
-			CreateRoundedRectAlpha(NEWS_PANE_WIDTH, cyPane, NEWS_PANE_CORNER_RADIUS, &PaneMask);
+			CG8bitImage PaneMask;
+			PaneMask.CreateRoundedRect(NEWS_PANE_WIDTH, cyPane, NEWS_PANE_CORNER_RADIUS);
 			pImage->IntersectMask(0, 
 					0, 
 					PaneMask.GetWidth(), 
@@ -966,7 +966,7 @@ void CTranscendenceWnd::CreateNewsAnimation (CMultiverseNewsEntry *pEntry, IAnim
 			CVector(xInnerLeft, yPos),
 			&m_Fonts.SubTitle,
 			CG16bitFont::AlignCenter,
-			m_Fonts.wTitleColor,
+			m_Fonts.rgbTitleColor,
 			&pText);
 	pText->SetPropertyVector(PROP_SCALE, CVector(cxInnerPane, cyPane));
 	pText->AnimateLinearFade(iDuration, iInitialFade, iEndFade);
@@ -980,7 +980,7 @@ void CTranscendenceWnd::CreateNewsAnimation (CMultiverseNewsEntry *pEntry, IAnim
 			CVector(xInnerLeft, yPos),
 			&m_Fonts.Medium,
 			CG16bitFont::AlignCenter,
-			m_Fonts.wTitleColor,
+			m_Fonts.rgbTitleColor,
 			&pText);
 	pText->SetPropertyVector(PROP_SCALE, CVector(cxInnerPane, cyPane));
 	pText->AnimateLinearFade(iDuration, iInitialFade, iEndFade);
@@ -994,7 +994,7 @@ void CTranscendenceWnd::CreateNewsAnimation (CMultiverseNewsEntry *pEntry, IAnim
 			CVector(xInnerLeft, yPos),
 			&m_Fonts.MediumHeavyBold,
 			CG16bitFont::AlignCenter,
-			m_Fonts.wTitleColor,
+			m_Fonts.rgbTitleColor,
 			&pText);
 	pText->SetPropertyVector(PROP_SCALE, CVector(cxInnerPane, cyPane));
 	pText->AnimateLinearFade(iDuration, iInitialFade, iEndFade);
@@ -1180,7 +1180,7 @@ void CTranscendenceWnd::CreateScoreAnimation (const CGameRecord &Stats, IAnimatr
 
 	CAniText *pCredit = new CAniText;
 	pCredit->SetPropertyVector(CONSTLIT("position"), CVector((Metric)x, (Metric)y));
-	pCredit->SetPropertyColor(CONSTLIT("color"), m_Fonts.wTitleColor);
+	pCredit->SetPropertyColor(CONSTLIT("color"), m_Fonts.rgbTitleColor);
 	pCredit->SetPropertyString(CONSTLIT("text"), strFromInt(Stats.GetScore()));
 
 	pCredit->SetPropertyFont(CONSTLIT("font"), &m_Fonts.Title);
@@ -1195,7 +1195,7 @@ void CTranscendenceWnd::CreateScoreAnimation (const CGameRecord &Stats, IAnimatr
 
 	CAniText *pName = new CAniText;
 	pName->SetPropertyVector(CONSTLIT("position"), CVector((Metric)x, (Metric)y));
-	pName->SetPropertyColor(CONSTLIT("color"), m_Fonts.wTextColor);
+	pName->SetPropertyColor(CONSTLIT("color"), m_Fonts.rgbTextColor);
 	pName->SetPropertyString(CONSTLIT("text"), Stats.GetPlayerName());
 
 	pName->SetPropertyFont(CONSTLIT("font"), &m_Fonts.SubTitle);
@@ -1215,7 +1215,7 @@ void CTranscendenceWnd::CreateScoreAnimation (const CGameRecord &Stats, IAnimatr
 		{
 		CAniText *pLine = new CAniText;
 		pLine->SetPropertyVector(CONSTLIT("position"), CVector((Metric)x, (Metric)y));
-		pLine->SetPropertyColor(CONSTLIT("color"), m_Fonts.wTextColor);
+		pLine->SetPropertyColor(CONSTLIT("color"), m_Fonts.rgbTextColor);
 		pLine->SetPropertyString(CONSTLIT("text"), EpitaphLines[i]);
 
 		pLine->SetPropertyFont(CONSTLIT("font"), &m_Fonts.Header);
@@ -1262,7 +1262,7 @@ void CTranscendenceWnd::CreateShipDescAnimation (CShip *pShip, IAnimatron **retp
 			CVector((Metric)x, (Metric)y),
 			&m_Fonts.SubTitle,
 			CG16bitFont::AlignCenter,
-			m_Fonts.wTitleColor,
+			m_Fonts.rgbTitleColor,
 			&pText);
 	pText->AnimateLinearFade(iDuration, 0, 30);
 	pSeq->AddTrack(pText, 0);
@@ -1276,7 +1276,7 @@ void CTranscendenceWnd::CreateShipDescAnimation (CShip *pShip, IAnimatron **retp
 			CVector((Metric)x - cyClassName / 4, (Metric)(y + m_Fonts.Medium.GetAscent() - m_Fonts.Small.GetAscent())),
 			&m_Fonts.Small,
 			CG16bitFont::AlignRight,
-			m_Fonts.wLightTitleColor,
+			m_Fonts.rgbLightTitleColor,
 			&pText);
 	pText->AnimateLinearFade(iDuration - iDelay, 15, 30);
 	pSeq->AddTrack(pText, iDelay);
@@ -1330,7 +1330,7 @@ void CTranscendenceWnd::CreateShipDescAnimation (CShip *pShip, IAnimatron **retp
 				CVector((Metric)x + cyClassName / 4, (Metric)y),
 				&m_Fonts.Medium,
 				0,
-				m_Fonts.wTitleColor,
+				m_Fonts.rgbTitleColor,
 				&pText);
 		pText->AnimateLinearFade(iDuration - iDelay, 15, 30);
 		pSeq->AddTrack(pText, iDelay);
@@ -1347,7 +1347,7 @@ void CTranscendenceWnd::CreateShipDescAnimation (CShip *pShip, IAnimatron **retp
 					CVector((Metric)x + cyClassName / 4, (Metric)y),
 					&m_Fonts.Medium,
 					0,
-					m_Fonts.wTitleColor,
+					m_Fonts.rgbTitleColor,
 					&pText);
 			pText->AnimateLinearFade(iDuration - iDelay, 15, 30);
 			pSeq->AddTrack(pText, iDelay);
@@ -1365,7 +1365,7 @@ void CTranscendenceWnd::CreateShipDescAnimation (CShip *pShip, IAnimatron **retp
 			CVector((Metric)x - cyClassName / 4, (Metric)(y + m_Fonts.Medium.GetAscent() - m_Fonts.Small.GetAscent())),
 			&m_Fonts.Small,
 			CG16bitFont::AlignRight,
-			m_Fonts.wLightTitleColor,
+			m_Fonts.rgbLightTitleColor,
 			&pText);
 	pText->AnimateLinearFade(iDuration - iDelay, 15, 30);
 	pSeq->AddTrack(pText, iDelay);
@@ -1376,7 +1376,7 @@ void CTranscendenceWnd::CreateShipDescAnimation (CShip *pShip, IAnimatron **retp
 			CVector((Metric)x + cyClassName / 4, (Metric)y),
 			&m_Fonts.Medium,
 			0,
-			m_Fonts.wTitleColor,
+			m_Fonts.rgbTitleColor,
 			&pText);
 	pText->AnimateLinearFade(iDuration - iDelay, 15, 30);
 	pSeq->AddTrack(pText, iDelay);
@@ -1392,7 +1392,7 @@ void CTranscendenceWnd::CreateShipDescAnimation (CShip *pShip, IAnimatron **retp
 			CVector((Metric)x - cyClassName / 4, (Metric)(y + m_Fonts.Medium.GetAscent() - m_Fonts.Small.GetAscent())),
 			&m_Fonts.Small,
 			CG16bitFont::AlignRight,
-			m_Fonts.wLightTitleColor,
+			m_Fonts.rgbLightTitleColor,
 			&pText);
 	pText->AnimateLinearFade(iDuration - iDelay, 15, 30);
 	pSeq->AddTrack(pText, iDelay);
@@ -1405,7 +1405,7 @@ void CTranscendenceWnd::CreateShipDescAnimation (CShip *pShip, IAnimatron **retp
 			CVector((Metric)x + cyClassName / 4, (Metric)y),
 			&m_Fonts.Medium,
 			0,
-			m_Fonts.wTitleColor,
+			m_Fonts.rgbTitleColor,
 			&pText);
 	pText->AnimateLinearFade(iDuration - iDelay, 15, 30);
 	pSeq->AddTrack(pText, iDelay);
@@ -2072,7 +2072,7 @@ void CTranscendenceWnd::PaintDlgButton (const RECT &rcRect, const CString &sText
 //	Paint button
 
 	{
-	CG16bitImage &TheScreen = g_pHI->GetScreen();
+	CG32bitImage &TheScreen = g_pHI->GetScreen();
 
 	TheScreen.Fill(rcRect.left, 
 			rcRect.top,
@@ -2097,11 +2097,11 @@ void CTranscendenceWnd::PaintOverwriteGameDlg (void)
 //	Paint dialog box
 
 	{
-	CG16bitImage &TheScreen = g_pHI->GetScreen();
+	CG32bitImage &TheScreen = g_pHI->GetScreen();
 
 	//	Fade the background
 
-	TheScreen.FillTrans(0, 0, TheScreen.GetWidth(), TheScreen.GetHeight(), 0, 128);
+	TheScreen.Fill(0, 0, TheScreen.GetWidth(), TheScreen.GetHeight(), CG32bitPixel(0, 0, 0, 128));
 
 	//	Paint the dialog box frame
 
@@ -2157,30 +2157,30 @@ void CTranscendenceWnd::SetAccountControls (const CMultiverseModel &Multiverse)
 	CMultiverseModel::EOnlineStates iState = Multiverse.GetOnlineState(&sUsername);
 
 	CString sStatus;
-	WORD wUsernameColor;
+	CG32bitPixel rgbUsernameColor;
 	switch (iState)
 		{
 		case CMultiverseModel::stateDisabled:
 			sUsername = CONSTLIT("Offline");
 			sStatus = CONSTLIT("Multiverse disabled");
-			wUsernameColor = VI.GetColor(colorTextDialogLabel);
+			rgbUsernameColor = VI.GetColor(colorTextDialogLabel);
 			break;
 
 		case CMultiverseModel::stateNoUser:
 			sUsername = CONSTLIT("Offline");
 			sStatus = CONSTLIT("Click to register a new account");
-			wUsernameColor = VI.GetColor(colorTextDialogLabel);
+			rgbUsernameColor = VI.GetColor(colorTextDialogLabel);
 			break;
 
 		case CMultiverseModel::stateOffline:
 			sUsername = CONSTLIT("Offline");
 			sStatus = CONSTLIT("Click to sign in");
-			wUsernameColor = VI.GetColor(colorTextDialogLabel);
+			rgbUsernameColor = VI.GetColor(colorTextDialogLabel);
 			break;
 
 		case CMultiverseModel::stateOnline:
 			sStatus = CONSTLIT("Signed in to the Multiverse");
-			wUsernameColor = VI.GetColor(colorTextDialogInput);
+			rgbUsernameColor = VI.GetColor(colorTextDialogInput);
 			break;
 
 		default:
@@ -2212,7 +2212,7 @@ void CTranscendenceWnd::SetAccountControls (const CMultiverseModel &Multiverse)
 	CAniRoundedRect *pIcon = new CAniRoundedRect;
 	pIcon->SetPropertyVector(PROP_POSITION, CVector(0, (TITLE_BAR_HEIGHT - ICON_HEIGHT) / 2));
 	pIcon->SetPropertyVector(PROP_SCALE, CVector(ICON_HEIGHT, ICON_WIDTH));
-	pIcon->SetPropertyColor(PROP_COLOR, CG16bitImage::RGBValue(128, 128, 128));
+	pIcon->SetPropertyColor(PROP_COLOR, CG32bitPixel(128, 128, 128));
 	pIcon->SetPropertyOpacity(PROP_OPACITY, 255);
 	pIcon->SetPropertyInteger(PROP_UL_RADIUS, ICON_CORNER_RADIUS);
 	pIcon->SetPropertyInteger(PROP_UR_RADIUS, ICON_CORNER_RADIUS);
@@ -2246,7 +2246,7 @@ void CTranscendenceWnd::SetAccountControls (const CMultiverseModel &Multiverse)
 	IAnimatron *pName = new CAniText;
 	pName->SetPropertyVector(PROP_POSITION, CVector(ICON_WIDTH + PADDING_LEFT, y));
 	pName->SetPropertyVector(PROP_SCALE, CVector(RectWidth(rcRect), RectHeight(rcRect)));
-	pName->SetPropertyColor(PROP_COLOR, wUsernameColor);
+	pName->SetPropertyColor(PROP_COLOR, rgbUsernameColor);
 	pName->SetPropertyFont(PROP_FONT, &SubTitleFont);
 	pName->SetPropertyString(PROP_TEXT, sUsername);
 

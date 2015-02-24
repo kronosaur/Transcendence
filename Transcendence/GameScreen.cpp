@@ -47,7 +47,7 @@
 #define STR_INSTALLED						CONSTLIT(" (installed)")
 #define STR_DISABLED						CONSTLIT(" (disabled)")
 
-#define BAR_COLOR							CG16bitImage::RGBValue(0, 2, 10)
+#define BAR_COLOR							CG32bitPixel(0, 2, 10)
 
 #define STR_MAP_HELP						CONSTLIT("[+] and [-] to zoom map")
 #define STR_MAP_HELP2						CONSTLIT("[H] to toggle HUD on/off")
@@ -131,7 +131,7 @@ void CTranscendenceWnd::DisplayMessage (CString sMessage)
 	if (m_bRedirectDisplayMessage)
 		m_sRedirectMessage.Append(sMessage);
 	else
-		m_MessageDisplay.DisplayMessage(sMessage, m_Fonts.wTitleColor);
+		m_MessageDisplay.DisplayMessage(sMessage, m_Fonts.rgbTitleColor);
 	}
 
 void CTranscendenceWnd::DoCommsMenu (int iIndex)
@@ -418,7 +418,6 @@ ALERROR CTranscendenceWnd::InitDisplays (void)
 //	Initializes display structures
 
 	{
-	ALERROR error;
 	RECT rcRect;
 
 	//	Set up some options
@@ -427,13 +426,8 @@ ALERROR CTranscendenceWnd::InitDisplays (void)
 
 	//	Create a bitmap for the LRS
 
-	if (error = m_LRS.CreateBlank(g_LRSWidth, g_LRSHeight, false, DEFAULT_TRANSPARENT_COLOR))
-		return error;
-
-	m_LRS.SetTransparentColor(DEFAULT_TRANSPARENT_COLOR);
-
-	if (m_bTransparencyEffects)
-		m_LRS.SetBlending(200);
+	if (!m_LRS.Create(g_LRSWidth, g_LRSHeight, CG32bitImage::alpha8))
+		return ERR_FAIL;
 
 	//m_rcLRS.left = m_rcScreen.left;
 	m_rcLRS.left = m_rcScreen.right - g_LRSWidth;
@@ -584,7 +578,7 @@ void CTranscendenceWnd::PaintLRS (void)
 				m_LRS.Fill(0, mathRandom(0, g_LRSHeight),
 						g_LRSWidth,
 						mathRandom(1, 20),
-						CG16bitImage::RGBValue(108, 252, 128));
+						CG32bitPixel(108, 252, 128));
 				}
 			}
 
@@ -602,7 +596,7 @@ void CTranscendenceWnd::PaintLRS (void)
 
 	//	Blt the LRS
 
-	g_pHI->GetScreen().ColorTransBlt(0,
+	g_pHI->GetScreen().Blt(0,
 			0,
 			RectWidth(m_rcLRS),
 			RectHeight(m_rcLRS),
@@ -620,7 +614,7 @@ void CTranscendenceWnd::PaintMainScreenBorder (void)
 //	than the main screen (larger than 1024x768)
 
 	{
-	CG16bitImage &TheScreen = g_pHI->GetScreen();
+	CG32bitImage &TheScreen = g_pHI->GetScreen();
 
 	if (m_rcMainScreen.left != m_rcScreen.left)
 		{
@@ -641,7 +635,7 @@ void CTranscendenceWnd::PaintMap (void)
 //	Paints the system map
 
 	{
-	CG16bitImage &TheScreen = g_pHI->GetScreen();
+	CG32bitImage &TheScreen = g_pHI->GetScreen();
 
 	//	Paint the map
 
@@ -677,7 +671,7 @@ void CTranscendenceWnd::PaintMap (void)
 		TheScreen.DrawText(x,
 				y,
 				m_Fonts.Header,
-				m_Fonts.wTitleColor,
+				m_Fonts.rgbTitleColor,
 				strPatternSubst("%s System", pPOV->GetSystem()->GetName()));
 		y += m_Fonts.Header.GetHeight();
 
@@ -686,19 +680,19 @@ void CTranscendenceWnd::PaintMap (void)
 		TheScreen.DrawText(x,
 				y,
 				m_Fonts.Medium,
-				m_Fonts.wHelpColor,
+				m_Fonts.rgbHelpColor,
 				STR_MAP_HELP);
 		y += m_Fonts.Medium.GetHeight();
 
 		TheScreen.DrawText(x,
 				y,
 				m_Fonts.Medium,
-				m_Fonts.wHelpColor,
+				m_Fonts.rgbHelpColor,
 				STR_MAP_HELP2);
 		}
 	}
 
-void CTranscendenceWnd::PaintSnow (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight)
+void CTranscendenceWnd::PaintSnow (CG32bitImage &Dest, int x, int y, int cxWidth, int cyHeight)
 
 //	PaintSnow
 //
@@ -734,7 +728,7 @@ void CTranscendenceWnd::PaintSRSSnow (void)
 //	Fills the screen with snow
 
 	{
-	CG16bitImage &TheScreen = g_pHI->GetScreen();
+	CG32bitImage &TheScreen = g_pHI->GetScreen();
 
 	PaintSnow(TheScreen, 0, 0, g_cxScreen, g_cyScreen);
 

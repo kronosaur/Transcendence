@@ -14,8 +14,8 @@
 #define FUEL_MARKER_WIDTH			12
 #define FUEL_MARKER_GAP				1
 
-#define TEXT_COLOR					CG16bitImage::RGBValue(150,180,255)
-#define DAMAGED_TEXT_COLOR			CG16bitImage::RGBValue(128,0,0)
+#define TEXT_COLOR					CG32bitPixel(150,180,255)
+#define DAMAGED_TEXT_COLOR			CG32bitPixel(128,0,0)
 
 CReactorDisplay::CReactorDisplay (void) : m_pPlayer(NULL),
 		m_iTickCount(0),
@@ -52,8 +52,6 @@ ALERROR CReactorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRec
 //	Initialize
 
 	{
-	ALERROR error;
-
 	CleanUp();
 
 	m_pPlayer = pPlayer;
@@ -61,22 +59,22 @@ ALERROR CReactorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRec
 
 	//	Create the off-screen buffer
 
-	if (error = m_Buffer.CreateBlank(RectWidth(rcRect), RectHeight(rcRect), false, DEFAULT_TRANSPARENT_COLOR))
-		return error;
+	if (!m_Buffer.Create(RectWidth(rcRect), RectHeight(rcRect)))
+		return ERR_FAIL;
 
-	m_Buffer.SetTransparentColor();
+	//m_Buffer.SetTransparentColor();
 
 	return NOERROR;
 	}
 
-void CReactorDisplay::Paint (CG16bitImage &Dest)
+void CReactorDisplay::Paint (CG32bitImage &Dest)
 
 //	Paint
 //
 //	Paints the display
 
 	{
-	Dest.ColorTransBlt(0,
+	Dest.Blt(0,
 			0,
 			RectWidth(m_rcRect),
 			RectHeight(m_rcRect),
@@ -114,7 +112,7 @@ void CReactorDisplay::Update (void)
 
 	//	Paint the fuel level
 
-	CG16bitImage *pFuelImage = NULL;
+	CG32bitImage *pFuelImage = NULL;
 	RECT rcSrcRect;
 	bool bBlink;
 	if (iFuelLevel < 15)
@@ -133,7 +131,7 @@ void CReactorDisplay::Update (void)
 	if (!bBlink || ((m_iTickCount % 2) == 0))
 		{
 		int cxFuelLevel = RectWidth(rcSrcRect) * iFuelLevel / 100;
-		m_Buffer.ColorTransBlt(rcSrcRect.left,
+		m_Buffer.Blt(rcSrcRect.left,
 				rcSrcRect.top,
 				cxFuelLevel,
 				RectHeight(rcSrcRect),
@@ -156,7 +154,7 @@ void CReactorDisplay::Update (void)
 	m_pFonts->Small.DrawText(m_Buffer,
 			ReactorDesc.rcFuelLevelText.left,
 			yOffset + ReactorDesc.rcFuelLevelText.top,
-			m_pFonts->wHelpColor,
+			m_pFonts->rgbHelpColor,
 			sFuelLevel,
 			0);
 
@@ -181,10 +179,10 @@ void CReactorDisplay::Update (void)
 
 	if (!bBlink || ((m_iOverloading % 2) == 1))
 		{
-		CG16bitImage *pPowerImage = &ReactorDesc.PowerLevelImage.GetImage(NULL_STR);
+		CG32bitImage *pPowerImage = &ReactorDesc.PowerLevelImage.GetImage(NULL_STR);
 		rcSrcRect = ReactorDesc.PowerLevelImage.GetImageRect();
 		int cxPowerLevel = RectWidth(rcSrcRect) * iPowerLevel / 120;
-		m_Buffer.ColorTransBlt(rcSrcRect.left,
+		m_Buffer.Blt(rcSrcRect.left,
 				rcSrcRect.top,
 				cxPowerLevel,
 				RectHeight(rcSrcRect),
@@ -208,17 +206,17 @@ void CReactorDisplay::Update (void)
 	m_pFonts->Small.DrawText(m_Buffer,
 			ReactorDesc.rcPowerLevelText.left,
 			yOffset + ReactorDesc.rcPowerLevelText.bottom - cyHeight,
-			m_pFonts->wHelpColor,
+			m_pFonts->rgbHelpColor,
 			sPowerLevel,
 			0);
 
 	//	Paint the reactor name (we paint on top of the levels)
 
-	WORD wColor;
+	CG32bitPixel rgbColor;
 	if (pShip->GetReactorDesc()->fDamaged)
-		wColor = DAMAGED_TEXT_COLOR;
+		rgbColor = DAMAGED_TEXT_COLOR;
 	else
-		wColor = m_pFonts->wTitleColor;
+		rgbColor = m_pFonts->rgbTitleColor;
 
 	CString sReactorName = strPatternSubst(CONSTLIT("%s (%s)"), 
 			pShip->GetReactorName(),
@@ -227,7 +225,7 @@ void CReactorDisplay::Update (void)
 	m_pFonts->Medium.DrawText(m_Buffer,
 			ReactorDesc.rcReactorText.left,
 			yOffset + ReactorDesc.rcReactorText.top,
-			wColor,
+			rgbColor,
 			sReactorName,
 			0);
 

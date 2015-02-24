@@ -286,7 +286,7 @@ class CDockScreen : public IScreenController
 		inline const CItem &GetCurrentItem (void) { return m_pDisplay->GetCurrentItem(); }
 		ICCItem *GetCurrentListEntry (void);
 		inline const CString &GetDescription (void) { return m_CurrentPane.GetDescriptionString(); }
-		CG16bitImage *GetDisplayCanvas (const CString &sID);
+		CG32bitImage *GetDisplayCanvas (const CString &sID);
 		inline CItemListManipulator &GetItemListManipulator (void) { return m_pDisplay->GetItemListManipulator(); }
 		inline int GetListCursor (void) { return m_pDisplay->GetListCursor(); }
 		inline IListData *GetListData (void) { return m_pDisplay->GetListData(); }
@@ -373,7 +373,7 @@ class CDockScreen : public IScreenController
 		bool m_bInOnInit;
 
 		//	Title and header
-		CG16bitImage *m_pBackgroundImage;
+		CG32bitImage *m_pBackgroundImage;
 		CGTextArea *m_pCredits;
 		CGTextArea *m_pCargoSpace;
 		bool m_bFreeBackgroundImage;
