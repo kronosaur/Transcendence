@@ -1012,7 +1012,7 @@ class CCommandLineDisplay
 		void InputEnter (void);
 		void InputLastLine (void);
 		void OnKeyDown (int iVirtKey, DWORD dwKeyState);
-		void Output (const CString &sOutput, CG32bitPixel rgbColor = 0);
+		void Output (const CString &sOutput, CG32bitPixel rgbColor = CG32bitPixel::Null());
 		void Paint (CG32bitImage &Dest);
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 

@@ -207,7 +207,7 @@ void CDeviceCounterDisplay::Update (void)
 
 	if (cxWidth != m_Buffer.GetWidth())
 		{
-		if (m_Buffer.Create(cxWidth, cyHeight) != NOERROR)
+		if (!m_Buffer.Create(cxWidth, cyHeight, CG32bitImage::alpha8))
 			{
 			m_bInvalid = false;
 			m_bEmpty = true;

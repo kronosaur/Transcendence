@@ -933,7 +933,7 @@ void CGSelectorArea::PaintModifier (CG32bitImage &Dest, int x, int y, const CStr
 
 	{
 	int cx = m_VI.GetFont(fontSmall).MeasureText(sText);
-	if (!rgbBackColor.IsEmpty())
+	if (!rgbBackColor.IsNull())
 		Dest.Fill(x - cx - 8,
 				y,
 				cx + 8,

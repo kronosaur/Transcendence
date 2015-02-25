@@ -220,7 +220,7 @@ void CCommandLineDisplay::Output (const CString &sOutput, CG32bitPixel rgbColor)
 	if (m_pFonts == NULL || m_pFonts->Console.GetAverageWidth() == 0)
 		return;
 
-	if (rgbColor.IsEmpty())
+	if (rgbColor.IsNull())
 		rgbColor = TEXT_COLOR;
 
 	if (sOutput.IsBlank())
