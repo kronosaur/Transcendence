@@ -1377,6 +1377,6 @@
 	
 <!-- RESOURCES -->
 	
-	<Image UNID="&rsDeepSpace;"		bitmap="Resources\DeepSpaceBackground.jpg"	loadOnUse="true"/>
+	<Image UNID="&rsDeepSpace2;"		bitmap="Resources\DeepSpaceBackground.jpg"	loadOnUse="true"/>
 	
 </TranscendenceModule>

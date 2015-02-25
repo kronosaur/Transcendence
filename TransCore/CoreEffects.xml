@@ -1415,4 +1415,6 @@
 	<Image UNID="&rsLargeDamage;"	bitmap="Resources\LargeDamage.jpg"	bitmask="Resources\LargeDamageMask.bmp"/>
 	<Image UNID="&rsShieldHit;"		bitmap="Resources\ShieldHit.jpg" bitmask="Resources\ShieldHitMask.bmp" loadOnUse="true"/>
 	
+	<Image UNID="&rsDeepSpace;"		bitmap="Resources\DeepSpaceBackground.jpg"	loadOnUse="true"/>
+	
 </TranscendenceModule>

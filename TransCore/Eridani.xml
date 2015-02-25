@@ -672,7 +672,6 @@
 
 	<SystemType UNID="&ssStartonEridani;"
 				attributes=		"envWater"
-				backgroundID=	"&rsDeepSpace;"
 				>
 
 		<Tables>

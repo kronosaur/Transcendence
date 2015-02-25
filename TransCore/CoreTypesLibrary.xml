@@ -134,6 +134,7 @@
 	<!-- 0003 0000-FFFF CORE TYPES LIBRARY -->
 	
 	<!ENTITY unidCoreTypesLibrary		"0x00030000">
+	<!ENTITY rsDeepSpace				"0x00030001">
 	]>
 	
 <CoreLibrary
