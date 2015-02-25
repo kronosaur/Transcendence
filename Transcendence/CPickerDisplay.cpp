@@ -71,7 +71,7 @@ ALERROR CPickerDisplay::Init (CMenuData *pMenu, const RECT &rcRect)
 
 	//	Create the off-screen buffer
 
-	if (!m_Buffer.Create(RectWidth(m_rcRect), RectHeight(m_rcRect)))
+	if (!m_Buffer.Create(RectWidth(m_rcRect), RectHeight(m_rcRect), CG32bitImage::alpha8))
 		return ERR_FAIL;
 
 	//m_Buffer.SetBlending(240);
@@ -96,7 +96,7 @@ void CPickerDisplay::Paint (CG32bitImage &Dest)
 			0,
 			RectWidth(m_rcRect),
 			RectHeight(m_rcRect),
-			255,
+			240,
 			m_Buffer,
 			m_rcRect.left,
 			m_rcRect.top);
@@ -190,7 +190,7 @@ void CPickerDisplay::Update (void)
 
 	//	Clear the area
 
-	m_Buffer.Fill(0, 0, m_Buffer.GetWidth(), m_Buffer.GetHeight(), CG32bitPixel(0, 0, 0));
+	m_Buffer.Set(CG32bitPixel::Null());
 
 	//	Figure out how many items we could show
 

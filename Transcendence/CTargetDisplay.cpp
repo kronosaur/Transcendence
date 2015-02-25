@@ -74,7 +74,7 @@ ALERROR CTargetDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect
 
 	//	Create the off-screen buffer
 
-	if (!m_Buffer.Create(DISPLAY_WIDTH, DISPLAY_HEIGHT))
+	if (!m_Buffer.Create(DISPLAY_WIDTH, DISPLAY_HEIGHT, CG32bitImage::alpha8))
 		return ERR_FAIL;
 
 	//m_Buffer.SetBlending(200);
@@ -97,7 +97,7 @@ void CTargetDisplay::Paint (CG32bitImage &Dest)
 			0,
 			RectWidth(m_rcRect),
 			RectHeight(m_rcRect),
-			255,
+			200,
 			m_Buffer,
 			m_rcRect.left,
 			m_rcRect.top);
@@ -213,7 +213,7 @@ void CTargetDisplay::Update (void)
 
 	//	Erase
 
-	m_Buffer.Fill(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, DEFAULT_TRANSPARENT_COLOR);
+	m_Buffer.Set(CG32bitPixel::Null());
 
 	//	Paint the buffer with the appropriate background bitmap
 

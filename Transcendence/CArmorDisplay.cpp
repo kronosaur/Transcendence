@@ -173,7 +173,7 @@ void CArmorDisplay::Update (void)
 
 	//	Erase everything
 
-	m_Buffer.Fill(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, DEFAULT_TRANSPARENT_COLOR);
+	m_Buffer.Set(CG32bitPixel::Null());
 
 	//	Figure out the status of the shields
 
@@ -190,14 +190,18 @@ void CArmorDisplay::Update (void)
 		{
 		const RECT &rcShip = ArmorDesc.ShipImage.GetImageRect();
 
-		m_Buffer.Blt(rcShip.left, 
+		//	For backwards compatibility, we blt with black as a back color if
+		//	we don't have a mask.
+
+		CGDraw::BltWithBackColor(m_Buffer,
+				 DESCRIPTION_WIDTH + ((SHIELD_IMAGE_WIDTH - RectWidth(rcShip)) / 2),
+				(SHIELD_IMAGE_HEIGHT - RectHeight(rcShip)) / 2,
+				ArmorDesc.ShipImage.GetImage(NULL_STR),
+				rcShip.left, 
 				rcShip.top, 
 				RectWidth(rcShip), 
-				RectHeight(rcShip), 
-				255,
-				ArmorDesc.ShipImage.GetImage(NULL_STR), 
-				DESCRIPTION_WIDTH + ((SHIELD_IMAGE_WIDTH - RectWidth(rcShip)) / 2),
-				(SHIELD_IMAGE_HEIGHT - RectHeight(rcShip)) / 2);
+				RectHeight(rcShip),
+				CG32bitPixel(0, 0, 0));
 		}
 
 	//	Draw the old-style shields
@@ -304,14 +308,16 @@ void CArmorDisplay::Update (void)
 		if (iIndex < 5)
 			{
 			const RECT &rcImage = pImage->Image.GetImageRect();
-			m_Buffer.Blt(rcImage.left,
+
+			CGDraw::BltWithBackColor(m_Buffer,
+					DESCRIPTION_WIDTH + pImage->xDest,
+					pImage->yDest,
+					pImage->Image.GetImage(NULL_STR),
+					rcImage.left,
 					rcImage.top + iIndex * RectHeight(rcImage),
 					RectWidth(rcImage),
 					RectHeight(rcImage),
-					255,
-					pImage->Image.GetImage(NULL_STR),
-					DESCRIPTION_WIDTH + pImage->xDest,
-					pImage->yDest);
+					CG32bitPixel(0, 0, 0));
 			}
 		}
 

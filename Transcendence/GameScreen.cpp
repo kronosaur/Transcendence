@@ -584,12 +584,12 @@ void CTranscendenceWnd::PaintLRS (void)
 
 		//	Mask out the border
 
-		m_LRS.FillMask(0,
+		m_LRS.SetMask(0,
 				0,
 				g_LRSWidth,
 				g_LRSHeight,
 				*m_pLRSBorder,
-				DEFAULT_TRANSPARENT_COLOR,
+				CG32bitPixel::Null(),
 				0,
 				0);
 		}
@@ -600,7 +600,7 @@ void CTranscendenceWnd::PaintLRS (void)
 			0,
 			RectWidth(m_rcLRS),
 			RectHeight(m_rcLRS),
-			255,
+			200,
 			m_LRS,
 			m_rcLRS.left,
 			m_rcLRS.top);

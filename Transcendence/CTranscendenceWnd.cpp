@@ -117,7 +117,7 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 
 				if (m_iDamageFlash > 0 && (m_iDamageFlash % 2) == 0)
 					{
-					TheScreen.Fill(0, 0, g_cxScreen, g_cyScreen, CG32bitPixel(128,0,0));
+					TheScreen.Set(CG32bitPixel(128,0,0));
 					if (pShip && pShip->GetSystem())
 						{
 						if (m_bShowingMap)

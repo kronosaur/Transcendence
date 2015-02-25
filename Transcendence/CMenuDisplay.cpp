@@ -98,7 +98,7 @@ ALERROR CMenuDisplay::Init (CMenuData *pMenu, const RECT &rcRect)
 
 	//	Create the off-screen buffer
 
-	if (!m_Buffer.Create(RectWidth(rcRect), RectHeight(rcRect)))
+	if (!m_Buffer.Create(RectWidth(rcRect), RectHeight(rcRect), CG32bitImage::alpha8))
 		return ERR_FAIL;
 
 	//m_Buffer.SetBlending(200);
@@ -127,7 +127,7 @@ void CMenuDisplay::Paint (CG32bitImage &Dest)
 				0,
 				RectWidth(m_rcRect),
 				RectHeight(m_rcRect),
-				255,
+				200,
 				m_Buffer,
 				m_rcRect.left,
 				m_rcRect.top);
@@ -159,7 +159,7 @@ void CMenuDisplay::Update (void)
 
 	//	Clear
 
-	m_Buffer.Fill(0, 0, RectWidth(m_rcRect), RectHeight(m_rcRect), CG32bitPixel(0, 0, 0));
+	m_Buffer.Set(CG32bitPixel::Null());
 	m_Buffer.Fill(rcMenu.left, rcMenu.top, RectWidth(rcMenu), RectHeight(rcMenu), m_pFonts->rgbBackground);
 
 	//	Outline the box

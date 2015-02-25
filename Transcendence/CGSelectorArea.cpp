@@ -901,7 +901,7 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 				}
 			}
 		else
-			PaintModifier(Dest, x, y, CONSTLIT("disabled"), m_VI.GetColor(colorTextNormal), DEFAULT_TRANSPARENT_COLOR, &y);
+			PaintModifier(Dest, x, y, CONSTLIT("disabled"), m_VI.GetColor(colorTextNormal), CG32bitPixel::Null(), &y);
 
 		//	Damaged
 

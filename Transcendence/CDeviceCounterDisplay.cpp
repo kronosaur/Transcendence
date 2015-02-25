@@ -74,7 +74,7 @@ void CDeviceCounterDisplay::Paint (CG32bitImage &Dest)
 			0,
 			RectWidth(m_rcBuffer),
 			RectHeight(m_rcBuffer),
-			255,
+			200,
 			m_Buffer,
 			m_rcRect.left + (RectWidth(m_rcRect) - RectWidth(m_rcBuffer)) / 2,
 			m_rcRect.bottom - RectHeight(m_rcBuffer));
@@ -222,7 +222,7 @@ void CDeviceCounterDisplay::Update (void)
 		m_rcBuffer.bottom = cyHeight;
 		}
 
-	m_Buffer.Fill(0, 0, cxWidth, cyHeight, CG32bitPixel(0, 0, 0));
+	m_Buffer.Set(CG32bitPixel::Null());
 
 	//	Paint all device counters
 

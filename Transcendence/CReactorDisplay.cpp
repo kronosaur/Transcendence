@@ -59,7 +59,7 @@ ALERROR CReactorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRec
 
 	//	Create the off-screen buffer
 
-	if (!m_Buffer.Create(RectWidth(rcRect), RectHeight(rcRect)))
+	if (!m_Buffer.Create(RectWidth(rcRect), RectHeight(rcRect), CG32bitImage::alpha8))
 		return ERR_FAIL;
 
 	//m_Buffer.SetTransparentColor();
@@ -91,6 +91,8 @@ void CReactorDisplay::Update (void)
 //	Updates the buffer from data
 
 	{
+	m_Buffer.Set(CG32bitPixel::Null());
+
 	if (m_pPlayer == NULL)
 		return;
 
@@ -143,11 +145,11 @@ void CReactorDisplay::Update (void)
 
 	//	Paint fuel level text
 
-	m_Buffer.Fill(ReactorDesc.rcFuelLevelText.left,
+	m_Buffer.Set(ReactorDesc.rcFuelLevelText.left,
 			yOffset + ReactorDesc.rcFuelLevelText.top,
 			RectWidth(ReactorDesc.rcFuelLevelText),
 			RectHeight(ReactorDesc.rcFuelLevelText),
-			DEFAULT_TRANSPARENT_COLOR);
+			CG32bitPixel::Null());
 
 	CString sFuelLevel = strPatternSubst(CONSTLIT("fuel"));
 	int cxWidth = m_pFonts->Small.MeasureText(sFuelLevel);
@@ -194,11 +196,11 @@ void CReactorDisplay::Update (void)
 
 	//	Paint power level text
 
-	m_Buffer.Fill(ReactorDesc.rcPowerLevelText.left,
+	m_Buffer.Set(ReactorDesc.rcPowerLevelText.left,
 			yOffset + ReactorDesc.rcPowerLevelText.top,
 			RectWidth(ReactorDesc.rcPowerLevelText),
 			RectHeight(ReactorDesc.rcPowerLevelText),
-			DEFAULT_TRANSPARENT_COLOR);
+			CG32bitPixel::Null());
 
 	CString sPowerLevel = strPatternSubst(CONSTLIT("power usage"));
 	int cyHeight;

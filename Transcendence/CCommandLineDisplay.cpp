@@ -268,7 +268,7 @@ void CCommandLineDisplay::Paint (CG32bitImage &Dest)
 			0,
 			RectWidth(m_rcRect),
 			RectHeight(m_rcRect),
-			255,
+			200,
 			m_Buffer,
 			m_rcRect.left,
 			m_rcRect.top);
@@ -301,7 +301,7 @@ void CCommandLineDisplay::Update (void)
 
 	int cxWidth = RectWidth(m_rcRect);
 	int cyHeight = RectHeight(m_rcRect);
-	m_Buffer.Fill(0, 0, cxWidth, cyHeight, BACK_COLOR);
+	m_Buffer.Set(BACK_COLOR);
 
 	CG32bitPixel rgbColor = CG32bitPixel(0, 160, 221);
 	CG32bitPixel rgbFadeColor = CG32bitPixel(0, 80, 110);
