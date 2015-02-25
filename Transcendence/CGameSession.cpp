@@ -6,7 +6,7 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-void CGameSession::PaintInfoText (CG16bitImage &Dest, const CString &sTitle, const TArray<CString> &Body, bool bAboveTargeting)
+void CGameSession::PaintInfoText (CG32bitImage &Dest, const CString &sTitle, const TArray<CString> &Body, bool bAboveTargeting)
 
 //	PaintInfoText
 //
@@ -44,7 +44,7 @@ void CGameSession::PaintInfoText (CG16bitImage &Dest, const CString &sTitle, con
 		}
 	}
 
-void CGameSession::PaintSoundtrackTitles (CG16bitImage &Dest)
+void CGameSession::PaintSoundtrackTitles (CG32bitImage &Dest)
 
 //	PaintSoundtrackTitles
 //

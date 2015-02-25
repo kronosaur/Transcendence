@@ -219,7 +219,7 @@ void CModExchangeSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		}
 	}
 
-void CModExchangeSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
+void CModExchangeSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 //	OnPaint
 //
@@ -229,7 +229,7 @@ void CModExchangeSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 	const CVisualPalette &VI = m_HI.GetVisuals();
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, CG16bitImage(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
+	VI.DrawSessionBackground(Screen, CG32bitImage(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
 	}
 
 void CModExchangeSession::OnReportHardCrash (CString *retsMessage)

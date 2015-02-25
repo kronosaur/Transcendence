@@ -1215,7 +1215,7 @@ void CPlayerShipController::OnLifeSupportWarning (int iSecondsLeft)
 		m_pTrans->DisplayMessage(CONSTLIT("Life support failure in 1 second"));
 	}
 
-void CPlayerShipController::OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx)
+void CPlayerShipController::OnPaintSRSEnhancements (CG32bitImage &Dest, SViewportPaintCtx &Ctx)
 
 //	OnPaintSRSEnhancements
 //
@@ -1242,23 +1242,24 @@ void CPlayerShipController::OnPaintSRSEnhancements (CG16bitImage &Dest, SViewpor
 		int iSpeed = 3;
 		int iRange = 10;
 		int iMin = 3;
-		WORD wColor = m_pAutoDock->GetSymbolColor();
 
 		int iPos = (iRange - 1) - ((g_pUniverse->GetPaintTick() / iSpeed) % iRange);
 		int iSize = iMin + iPos;
 		DWORD dwOpacity = 255 - (iPos * 20);
 
+		CG32bitPixel rgbColor = CG32bitPixel(m_pAutoDock->GetSymbolColor(), (BYTE)dwOpacity);
+
 		//	Draw animating brackets
 
-		Dest.FillColumnTrans(x - iSize, y - iSize, iPos + 1, wColor, dwOpacity);
-		Dest.FillColumnTrans(x + iSize - 1, y - iSize, iPos + 1, wColor, dwOpacity);
-		Dest.FillColumnTrans(x - iSize, y + iMin - 1, iPos + 1, wColor, dwOpacity);
-		Dest.FillColumnTrans(x + iSize - 1, y + iMin - 1, iPos + 1, wColor, dwOpacity);
+		Dest.FillColumn(x - iSize, y - iSize, iPos + 1, rgbColor);
+		Dest.FillColumn(x + iSize - 1, y - iSize, iPos + 1, rgbColor);
+		Dest.FillColumn(x - iSize, y + iMin - 1, iPos + 1, rgbColor);
+		Dest.FillColumn(x + iSize - 1, y + iMin - 1, iPos + 1, rgbColor);
 
-		Dest.FillLineTrans(x - iSize + 1, y - iSize, iPos, wColor, dwOpacity);
-		Dest.FillLineTrans(x - iSize + 1, y + iSize - 1, iPos, wColor, dwOpacity);
-		Dest.FillLineTrans(x + 2, y - iSize, iPos, wColor, dwOpacity);
-		Dest.FillLineTrans(x + 2, y + iSize - 1, iPos, wColor, dwOpacity);
+		Dest.FillLine(x - iSize + 1, y - iSize, iPos, rgbColor);
+		Dest.FillLine(x - iSize + 1, y + iSize - 1, iPos, rgbColor);
+		Dest.FillLine(x + 2, y - iSize, iPos, rgbColor);
+		Dest.FillLine(x + 2, y + iSize - 1, iPos, rgbColor);
 		}
 
 	//	If we have a target, then paint a target reticle.
@@ -1421,7 +1422,7 @@ void CPlayerShipController::OnWreckCreated (CSpaceObject *pWreck)
 	m_dwWreckObjID = pWreck->GetID();
 	}
 
-void CPlayerShipController::PaintTargetingReticle (SViewportPaintCtx &Ctx, CG16bitImage &Dest, CSpaceObject *pTarget)
+void CPlayerShipController::PaintTargetingReticle (SViewportPaintCtx &Ctx, CG32bitImage &Dest, CSpaceObject *pTarget)
 
 //	PaintTargetingReticle
 //
@@ -1431,9 +1432,8 @@ void CPlayerShipController::PaintTargetingReticle (SViewportPaintCtx &Ctx, CG16b
 	int x, y;
 	Ctx.XForm.Transform(pTarget->GetPos(), &x, &y);
 
-	WORD wColor = pTarget->GetSymbolColor();
+	CG32bitPixel rgbColor = pTarget->GetSymbolColor();
 	int iSize = 8;
-	DWORD dwOpacity = 255;
 	int iIndent = iSize / 4;
 
 	const RECT &rcImage = pTarget->GetImage().GetImageRect();
@@ -1445,11 +1445,11 @@ void CPlayerShipController::PaintTargetingReticle (SViewportPaintCtx &Ctx, CG16b
 
 	//	Draw
 
-	Dest.FillColumnTrans(x, y - cyVert - iSize, iSize, wColor, dwOpacity);
-	Dest.FillColumnTrans(x, y + cyVert, iSize, wColor, dwOpacity);
+	Dest.FillColumn(x, y - cyVert - iSize, iSize, rgbColor);
+	Dest.FillColumn(x, y + cyVert, iSize, rgbColor);
 
-	Dest.FillLineTrans(x + cxHorz, y, iSize, wColor, dwOpacity);
-	Dest.FillLineTrans(x - cxHorz - iSize, y, iSize, wColor, dwOpacity);
+	Dest.FillLine(x + cxHorz, y, iSize, rgbColor);
+	Dest.FillLine(x - cxHorz - iSize, y, iSize, rgbColor);
 	}
 
 bool CPlayerShipController::ToggleEnableDevice (int iDeviceIndex)

@@ -110,7 +110,7 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		//	Paint the center
 
-		Output.GetImage().DrawDot(x, y, CG16bitImage::RGBValue(0, 255, 255), CG16bitImage::markerMediumCross);
+		Output.GetImage().DrawDot(x, y, CG32bitPixel(0, 255, 255), markerMediumCross);
 
 		//	Paint weapon positions
 
@@ -138,7 +138,7 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 						else
 							C3DConversion::CalcCoordCompatible(iRotation + Desc.iPosAngle, Desc.iPosRadius, &xPos, &yPos);
 
-						Output.GetImage().DrawDot(x + xPos, y + yPos, CG16bitImage::RGBValue(255, 255, 0), CG16bitImage::markerMediumCross);
+						Output.GetImage().DrawDot(x + xPos, y + yPos, CG32bitPixel(255, 255, 0), markerMediumCross);
 						break;
 						}
 					}
@@ -168,7 +168,7 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 					int yPos;
 					C3DConversion::CalcCoord(iScale, iAngle, iRadius, 0, &xPos, &yPos);
 
-					Output.GetImage().DrawLine(x + xLastPos, y + yLastPos, x + xPos, y + yPos, 1, CG16bitImage::RGBValue(255, 255, 0));
+					Output.GetImage().DrawLine(x + xLastPos, y + yLastPos, x + xPos, y + yPos, 1, CG32bitPixel(255, 255, 0));
 
 					xLastPos = xPos;
 					yLastPos = yPos;
@@ -181,7 +181,7 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 				int yPos;
 				C3DConversion::CalcCoord(iScale, iAngle, iMaxRadius, 0, &xPos, &yPos);
 
-				Output.GetImage().DrawLine(x, y, x + xPos, y + yPos, 1, CG16bitImage::RGBValue(255, 255, 0));
+				Output.GetImage().DrawLine(x, y, x + xPos, y + yPos, 1, CG32bitPixel(255, 255, 0));
 				}
 			}
 		}

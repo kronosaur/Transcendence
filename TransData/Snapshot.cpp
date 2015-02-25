@@ -147,8 +147,8 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			//	Paint
 
-			CG16bitImage Output;
-			Output.CreateBlank(cxWidth, cyHeight, false);
+			CG32bitImage Output;
+			Output.Create(cxWidth, cyHeight);
 			RECT rcViewport;
 			rcViewport.left = 0;
 			rcViewport.top = 0;

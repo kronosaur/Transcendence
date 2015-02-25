@@ -5,9 +5,9 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-#define BACK_COLOR					(CG16bitImage::RGBValue(20, 20, 20))
-#define TEXT_COLOR					(CG16bitImage::RGBValue(200, 200, 200))
-#define INPUT_COLOR					(CG16bitImage::RGBValue(255, 255, 200))
+#define BACK_COLOR					(CG32bitPixel(20, 20, 20))
+#define TEXT_COLOR					(CG32bitPixel(200, 200, 200))
+#define INPUT_COLOR					(CG32bitPixel(255, 255, 200))
 
 const int LEFT_SPACING =			2;
 const int RIGHT_SPACING =			2;
@@ -33,7 +33,7 @@ CCommandLineDisplay::~CCommandLineDisplay (void)
 	CleanUp();
 	}
 
-void CCommandLineDisplay::AppendOutput (const CString &sLine, WORD wColor)
+void CCommandLineDisplay::AppendOutput (const CString &sLine, CG32bitPixel rgbColor)
 
 //	AppendOutput
 //
@@ -45,7 +45,7 @@ void CCommandLineDisplay::AppendOutput (const CString &sLine, WORD wColor)
 		m_iOutputEnd = (m_iOutputEnd + (MAX_LINES + 1) - 1) % (MAX_LINES + 1);
 
 	m_Output[m_iOutputStart] = sLine;
-	m_OutputColor[m_iOutputStart] = wColor;
+	m_OutputColor[m_iOutputStart] = rgbColor;
 
 	m_bInvalid = true;
 	}
@@ -57,7 +57,7 @@ void CCommandLineDisplay::CleanUp (void)
 //	Free all resource
 
 	{
-	m_Buffer.Destroy();
+	m_Buffer.CleanUp();
 	m_bInvalid = true;
 	}
 
@@ -71,7 +71,7 @@ const CString &CCommandLineDisplay::GetOutput (int iLine)
 	return m_Output[(m_iOutputStart + iLine) % (MAX_LINES + 1)];
 	}
 
-WORD CCommandLineDisplay::GetOutputColor (int iLine)
+CG32bitPixel CCommandLineDisplay::GetOutputColor (int iLine)
 
 //	GetOutputColor
 //
@@ -208,7 +208,7 @@ void CCommandLineDisplay::OnKeyDown (int iVirtKey, DWORD dwKeyState)
 		}
 	}
 
-void CCommandLineDisplay::Output (const CString &sOutput, WORD wColor)
+void CCommandLineDisplay::Output (const CString &sOutput, CG32bitPixel rgbColor)
 
 //	Output
 //
@@ -220,12 +220,12 @@ void CCommandLineDisplay::Output (const CString &sOutput, WORD wColor)
 	if (m_pFonts == NULL || m_pFonts->Console.GetAverageWidth() == 0)
 		return;
 
-	if (wColor == 0)
-		wColor = TEXT_COLOR;
+	if (rgbColor.IsNull())
+		rgbColor = TEXT_COLOR;
 
 	if (sOutput.IsBlank())
 		{
-		AppendOutput(NULL_STR, wColor);
+		AppendOutput(NULL_STR, rgbColor);
 		return;
 		}
 
@@ -242,10 +242,10 @@ void CCommandLineDisplay::Output (const CString &sOutput, WORD wColor)
 	//	Split the string into parts
 
 	for (i = 0; i < Lines.GetCount(); i++)
-		AppendOutput(Lines[i], wColor);
+		AppendOutput(Lines[i], rgbColor);
 	}
 
-void CCommandLineDisplay::Paint (CG16bitImage &Dest)
+void CCommandLineDisplay::Paint (CG32bitImage &Dest)
 
 //	Paint
 //
@@ -264,11 +264,11 @@ void CCommandLineDisplay::Paint (CG16bitImage &Dest)
 
 	//	Blt
 
-	Dest.ColorTransBlt(0,
+	Dest.Blt(0,
 			0,
 			RectWidth(m_rcRect),
 			RectHeight(m_rcRect),
-			255,
+			200,
 			m_Buffer,
 			m_rcRect.left,
 			m_rcRect.top);
@@ -293,25 +293,25 @@ void CCommandLineDisplay::Update (void)
 
 	if (m_Buffer.IsEmpty())
 		{
-		m_Buffer.CreateBlank(RectWidth(m_rcRect), RectHeight(m_rcRect), false);
-		m_Buffer.SetBlending(220);
+		m_Buffer.Create(RectWidth(m_rcRect), RectHeight(m_rcRect));
+		//m_Buffer.SetBlending(220);
 		}
 
 	//	Clear
 
 	int cxWidth = RectWidth(m_rcRect);
 	int cyHeight = RectHeight(m_rcRect);
-	m_Buffer.Fill(0, 0, cxWidth, cyHeight, BACK_COLOR);
+	m_Buffer.Set(BACK_COLOR);
 
-	WORD wColor = CG16bitImage::RGBValue(0, 160, 221);
-	WORD wFadeColor = CG16bitImage::RGBValue(0, 80, 110);
+	CG32bitPixel rgbColor = CG32bitPixel(0, 160, 221);
+	CG32bitPixel rgbFadeColor = CG32bitPixel(0, 80, 110);
 
 	//	Outline the box
 
-	m_Buffer.DrawLine(0, 0, cxWidth - 1, 0, 1, wColor);
-	m_Buffer.DrawBiColorLine(0, 0, 0, cyHeight - 1, 1, wColor, wFadeColor);
-	m_Buffer.DrawBiColorLine(cxWidth - 1, 0, cxWidth - 1, cyHeight - 1, 1, wColor, wFadeColor);
-	m_Buffer.DrawLine(0, cyHeight - 1, cxWidth, cyHeight - 1, 1, wFadeColor);
+	m_Buffer.DrawLine(0, 0, cxWidth - 1, 0, 1, rgbColor);
+	CGDraw::LineGradient(m_Buffer, 0, 0, 0, cyHeight - 1, 1, rgbColor, rgbFadeColor);
+	CGDraw::LineGradient(m_Buffer, cxWidth - 1, 0, cxWidth - 1, cyHeight - 1, 1, rgbColor, rgbFadeColor);
+	m_Buffer.DrawLine(0, cyHeight - 1, cxWidth, cyHeight - 1, 1, rgbFadeColor);
 
 	//	Figure out how many lines and columns we can display
 

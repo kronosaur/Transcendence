@@ -5,9 +5,9 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-const WORD RGB_BACKGROUND =					CG16bitImage::RGBValue(0,0,0);
-const WORD RGB_LINE =						CG16bitImage::RGBValue(255,255,255);
-const WORD RGB_LIGHTNING =					CG16bitImage::RGBValue(192,192,255);
+const CG32bitPixel RGB_BACKGROUND =					CG32bitPixel(0,0,0);
+const CG32bitPixel RGB_LINE =						CG32bitPixel(255,255,255);
+const CG32bitPixel RGB_LIGHTNING =					CG32bitPixel(192,192,255);
 
 CGNeurohackArea::CGNeurohackArea (void) :
 		m_pFonts(NULL),
@@ -241,7 +241,7 @@ CGNeurohackArea::SNode *CGNeurohackArea::CreateNode (SNode *pParent, int x, int 
 	return pNode;
 	}
 
-void CGNeurohackArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
+void CGNeurohackArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 //	Paint
 //
@@ -282,11 +282,11 @@ void CGNeurohackArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
 
 	int xCenter = rcRect.left + RectWidth(rcRect) / 2;
 	int yCenter = rcRect.top + RectHeight(rcRect) / 2;
-	WORD wColor = (m_iWillpower > 0 ? CG16bitImage::RGBValue(255,255,255) : CG16bitImage::RGBValue(128,255,128));
-	PaintSphere(Dest, xCenter, yCenter, 40, wColor);
+	CG32bitPixel rgbColor = (m_iWillpower > 0 ? CG32bitPixel(255,255,255) : CG32bitPixel(128,255,128));
+	PaintSphere(Dest, xCenter, yCenter, 40, rgbColor);
 	}
 
-void CGNeurohackArea::PaintBranch (CG16bitImage &Dest, SNode *pNode, SNode *pNext)
+void CGNeurohackArea::PaintBranch (CG32bitImage &Dest, SNode *pNode, SNode *pNext)
 
 //	PaintBranch
 //
@@ -298,10 +298,10 @@ void CGNeurohackArea::PaintBranch (CG16bitImage &Dest, SNode *pNode, SNode *pNex
 
 	while (pEnd && (pEnd->pNext == NULL || pEnd == pNext))
 		{
-		WORD wLevel = (pEnd->iWidth >= 10 ? 255 : (WORD)(255 * pEnd->iWidth / 10));
-		WORD wColor = (m_iDamage > pEnd->iDamageLevel ? CG16bitImage::RGBValue(wLevel, 0, 0) : CG16bitImage::RGBValue(wLevel, wLevel, wLevel));
+		BYTE byLevel = (BYTE)(pEnd->iWidth >= 10 ? 255 : (WORD)(255 * pEnd->iWidth / 10));
+		CG32bitPixel rgbColor = (m_iDamage > pEnd->iDamageLevel ? CG32bitPixel(byLevel, 0, 0) : CG32bitPixel(byLevel, byLevel, byLevel));
 
-		Dest.DrawLine(pStart->x, pStart->y, pEnd->x, pEnd->y, pEnd->iWidth / 10, wColor);
+		Dest.DrawLine(pStart->x, pStart->y, pEnd->x, pEnd->y, pEnd->iWidth / 10, rgbColor);
 
 		pStart = pEnd;
 		pEnd = pEnd->pFirstChild;
@@ -318,27 +318,29 @@ void CGNeurohackArea::PaintBranch (CG16bitImage &Dest, SNode *pNode, SNode *pNex
 
 	if (pEnd && pStart->iSphereSize)
 		{
-		WORD wColor = (m_iWillpower > pStart->iRootDist ? CG16bitImage::RGBValue(255,255,255) : CG16bitImage::RGBValue(128,255,128));
-		PaintSphere(Dest, pStart->x, pStart->y, pStart->iSphereSize, wColor);
+		CG32bitPixel rgbColor = (m_iWillpower > pStart->iRootDist ? CG32bitPixel(255,255,255) : CG32bitPixel(128,255,128));
+		PaintSphere(Dest, pStart->x, pStart->y, pStart->iSphereSize, rgbColor);
 		}
 	}
 
-void CGNeurohackArea::PaintSphere (CG16bitImage &Dest, int x, int y, int iRadius, WORD wGlowColor)
+void CGNeurohackArea::PaintSphere (CG32bitImage &Dest, int x, int y, int iRadius, CG32bitPixel rgbGlowColor)
 
 //	PaintSphere
 //
 //	Paints the sphere
 
 	{
-	WORD wFadeColor = CG16bitImage::BlendPixel(0, wGlowColor, 192);
-	DrawGlowRing(Dest, x, y, iRadius + (iRadius / 6), iRadius / 4, wFadeColor);
-	DrawFilledCircle(Dest, x, y, iRadius, CG16bitImage::RGBValue(25,25,25));
-	DrawAlphaGradientCircle(Dest, x + (iRadius / 3), y - (iRadius / 3), iRadius / 2, wFadeColor);
-	DrawAlphaGradientCircle(Dest, x + (iRadius / 3), y - (iRadius / 3), iRadius / 4, wGlowColor);
+	CG32bitPixel rgbFadeColor = CG32bitPixel::Blend(0, rgbGlowColor, (BYTE)192);
+	CGDraw::RingGlowing(Dest, x, y, iRadius + (iRadius / 6), iRadius / 4, rgbFadeColor);
+	CGDraw::Circle(Dest, x, y, iRadius, CG32bitPixel(25,25,25));
+	CGDraw::CircleGradient(Dest, x + (iRadius / 3), y - (iRadius / 3), iRadius / 2, rgbFadeColor);
+	CGDraw::CircleGradient(Dest, x + (iRadius / 3), y - (iRadius / 3), iRadius / 4, rgbGlowColor);
+
 	if (x % 2)
-		DrawAlphaGradientCircle(Dest, x - (iRadius / 2), y - (iRadius / 2), iRadius / 8, wGlowColor);
+		CGDraw::CircleGradient(Dest, x - (iRadius / 2), y - (iRadius / 2), iRadius / 8, rgbGlowColor);
+
 	if ((y % 2) == 0)
-		DrawAlphaGradientCircle(Dest, x - (iRadius / 2) - (iRadius / 4), y + (iRadius / 5), iRadius / 6, wFadeColor);
+		CGDraw::CircleGradient(Dest, x - (iRadius / 2) - (iRadius / 4), y + (iRadius / 5), iRadius / 6, rgbFadeColor);
 	}
 
 void CGNeurohackArea::SetData (int iWillpower, int iDamage)

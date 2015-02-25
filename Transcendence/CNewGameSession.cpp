@@ -636,7 +636,7 @@ void CNewGameSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapt
 	{
 	}
 
-void CNewGameSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
+void CNewGameSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 //	OnPaint
 //
@@ -646,7 +646,7 @@ void CNewGameSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 	const CVisualPalette &VI = m_HI.GetVisuals();
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, CG16bitImage(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
+	VI.DrawSessionBackground(Screen, CG32bitImage(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
 	}
 
 void CNewGameSession::OnReportHardCrash (CString *retsMessage)
@@ -701,7 +701,7 @@ void CNewGameSession::SetPlayerGenome (GenomeTypes iGenome, int x, int y, int cx
 	IAnimatron *pButton;
 	if (m_pRoot->FindElement(CMD_CHANGE_GENOME, &pButton))
 		{
-		const CG16bitImage *pImage;
+		const CG32bitImage *pImage;
 
 		if (iGenome == genomeHumanMale)
 			pImage = &VI.GetImage(imageSmallHumanMale);
@@ -911,7 +911,7 @@ void CNewGameSession::SetShipClassImage (CShipClass *pClass, int x, int y, int c
 
 	{
 	const CPlayerSettings *pPlayerSettings = pClass->GetPlayerSettings();
-	const CG16bitImage *pImage = g_pUniverse->GetLibraryBitmap(pPlayerSettings->GetLargeImage());
+	const CG32bitImage *pImage = g_pUniverse->GetLibraryBitmap(pPlayerSettings->GetLargeImage());
 
 	//	Delete the previous one
 
@@ -919,7 +919,7 @@ void CNewGameSession::SetShipClassImage (CShipClass *pClass, int x, int y, int c
 
 	//	Add the new one, if we've got one.
 
-	const CG16bitImage *pImageToUse = NULL;
+	const CG32bitImage *pImageToUse = NULL;
 	bool bFree = false;
 
 	if (pImage && !pImage->IsEmpty())
@@ -937,7 +937,7 @@ void CNewGameSession::SetShipClassImage (CShipClass *pClass, int x, int y, int c
 				cxNewWidth = cyNewHeight * pImage->GetWidth() / pImage->GetHeight();
 				}
 
-			CG16bitImage *pNewImage = new CG16bitImage;
+			CG32bitImage *pNewImage = new CG32bitImage;
 			pNewImage->CreateFromImageTransformed(*pImage, 0, 0, pImage->GetWidth(), pImage->GetHeight(), (Metric)cxNewWidth / pImage->GetWidth(), (Metric)cyNewHeight / pImage->GetHeight(), 0.0);
 
 			pImageToUse = pNewImage;
@@ -954,8 +954,8 @@ void CNewGameSession::SetShipClassImage (CShipClass *pClass, int x, int y, int c
 
 	else
 		{
-		CG16bitImage *pNewImage = new CG16bitImage;
-		pNewImage->CreateBlank(SHIP_IMAGE_WIDTH, SHIP_IMAGE_HEIGHT, false);
+		CG32bitImage *pNewImage = new CG32bitImage;
+		pNewImage->Create(SHIP_IMAGE_WIDTH, SHIP_IMAGE_HEIGHT);
 
 		ViewportTransform Trans;
 		pClass->Paint(*pNewImage, 

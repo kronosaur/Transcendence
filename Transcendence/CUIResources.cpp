@@ -20,7 +20,7 @@ void CUIResources::CreateTitleAnimation (int x, int y, int iDuration, IAnimatron
 	{
 	CAniText *pText = new CAniText;
 	pText->SetPropertyVector(CONSTLIT("position"), CVector((Metric)x, (Metric)y));
-	pText->SetPropertyColor(CONSTLIT("color"), m_pFonts->wTitleColor);
+	pText->SetPropertyColor(CONSTLIT("color"), m_pFonts->rgbTitleColor);
 	pText->SetPropertyString(CONSTLIT("text"), CONSTLIT("TRANSCENDENCE"));
 
 	pText->SetPropertyFont(CONSTLIT("font"), &m_pFonts->LogoTitle);
@@ -42,7 +42,7 @@ void CUIResources::CreateLargeCredit (const CString &sCredit, const CString &sNa
 	{
 	CAniText *pCredit = new CAniText;
 	pCredit->SetPropertyVector(CONSTLIT("position"), CVector((Metric)x, (Metric)y));
-	pCredit->SetPropertyColor(CONSTLIT("color"), m_pFonts->wTitleColor);
+	pCredit->SetPropertyColor(CONSTLIT("color"), m_pFonts->rgbTitleColor);
 	pCredit->SetPropertyString(CONSTLIT("text"), sCredit);
 
 	pCredit->SetPropertyFont(CONSTLIT("font"), &m_pFonts->Header);
@@ -52,7 +52,7 @@ void CUIResources::CreateLargeCredit (const CString &sCredit, const CString &sNa
 
 	CAniText *pName = new CAniText;
 	pName->SetPropertyVector(CONSTLIT("position"), CVector((Metric)x, (Metric)(y + m_pFonts->Header.GetHeight())));
-	pName->SetPropertyColor(CONSTLIT("color"), m_pFonts->wTitleColor);
+	pName->SetPropertyColor(CONSTLIT("color"), m_pFonts->rgbTitleColor);
 	pName->SetPropertyString(CONSTLIT("text"), sName);
 
 	pName->SetPropertyFont(CONSTLIT("font"), &m_pFonts->Title);
@@ -86,7 +86,7 @@ void CUIResources::CreateMediumCredit (const CString &sCredit, TArray<CString> &
 
 	CAniText *pCredit = new CAniText;
 	pCredit->SetPropertyVector(CONSTLIT("position"), CVector((Metric)x, (Metric)y));
-	pCredit->SetPropertyColor(CONSTLIT("color"), m_pFonts->wLightTitleColor);
+	pCredit->SetPropertyColor(CONSTLIT("color"), m_pFonts->rgbLightTitleColor);
 	pCredit->SetPropertyString(CONSTLIT("text"), sCredit);
 
 	pCredit->SetPropertyFont(CONSTLIT("font"), &m_pFonts->Header);
@@ -103,7 +103,7 @@ void CUIResources::CreateMediumCredit (const CString &sCredit, TArray<CString> &
 		{
 		CAniText *pName = new CAniText;
 		pName->SetPropertyVector(CONSTLIT("position"), CVector((Metric)x, (Metric)(y + m_pFonts->SubTitle.GetHeight())));
-		pName->SetPropertyColor(CONSTLIT("color"), m_pFonts->wTitleColor);
+		pName->SetPropertyColor(CONSTLIT("color"), m_pFonts->rgbTitleColor);
 		pName->SetPropertyString(CONSTLIT("text"), Names[i]);
 
 		pName->SetPropertyFont(CONSTLIT("font"), &m_pFonts->SubTitle);

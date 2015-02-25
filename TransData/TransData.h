@@ -76,7 +76,7 @@ void ComputeUNID2EntityTable (const CString &sDataFile, CIDTable &EntityTable);
 char *FrequencyChar (int iFreq);
 void ShowHelp (CXMLElement *pCmdLine);
 void MarkItemsKnown (CUniverse &Universe);
-bool OutputImage (CG16bitImage &Image, const CString &sFilespec);
+bool OutputImage (CG32bitImage &Image, const CString &sFilespec);
 ALERROR LoadDesignTypeStats (CDesignTypeStats *retStats);
 
 void Decompile (const CString &sDataFile, CXMLElement *pCmdLine);

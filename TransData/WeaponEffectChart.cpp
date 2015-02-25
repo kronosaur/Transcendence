@@ -22,7 +22,7 @@ const DWORD REACTOR_UNID =					0x0000410A;
 const DWORD TARGET_UNID =					0x00020032;
 const DWORD WEAPON_PLATFORM_UNID =			0x00003008;
 
-void PaintWeaponFrames (CG16bitImage &Image, CItemType *pType, CShip *pPlatform, int iFrames, int x, int y, int cxCell, int cyCell);
+void PaintWeaponFrames (CG32bitImage &Image, CItemType *pType, CShip *pPlatform, int iFrames, int x, int y, int cxCell, int cyCell);
 
 void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
@@ -68,7 +68,7 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 	//	Initialize fonts
 
 	Output.SetStyleFont(STYLE_TITLE, pCmdLine->GetAttribute(CONSTLIT("font")));
-	Output.SetStyleColor(STYLE_TITLE, CG16bitImage::RGBValue(0xFF, 0xFF, 0xFF));
+	Output.SetStyleColor(STYLE_TITLE, CG32bitPixel(0xFF, 0xFF, 0xFF));
 
 	//	Prepare the universe
 
@@ -149,9 +149,9 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	int xOrigin;
 	int yOrigin;
-	CG16bitImage &Image = Output.GetOutputImage(&xOrigin, &yOrigin);
+	CG32bitImage &Image = Output.GetOutputImage(&xOrigin, &yOrigin);
 	const CG16bitFont &TitleFont = Output.GetStyleFont(STYLE_TITLE);
-	WORD wTitleColor = Output.GetStyleColor(STYLE_TITLE);
+	CG32bitPixel rgbTitleColor = Output.GetStyleColor(STYLE_TITLE);
 
 	for (i = 0; i < Selection.GetCount(); i++)
 		{
@@ -164,8 +164,8 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		//	Paint the weapon title
 
-		Image.Fill(xRow, yRow, cxRow, cyRow, CG16bitImage::RGBValue(0x40, 0x40, 0x40));
-		TitleFont.DrawText(Image, xRow + 8, yRow, wTitleColor, 0xFF, pType->GetNounPhrase());
+		Image.Fill(xRow, yRow, cxRow, cyRow, CG32bitPixel(0x40, 0x40, 0x40));
+		TitleFont.DrawText(Image, xRow + 8, yRow, rgbTitleColor, pType->GetNounPhrase());
 
 		//	Paint the frames
 
@@ -181,7 +181,7 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 	Output.Output();
 	}
 
-void PaintWeaponFrames (CG16bitImage &Image, CItemType *pType, CShip *pPlatform, int iFrames, int x, int y, int cxCell, int cyCell)
+void PaintWeaponFrames (CG32bitImage &Image, CItemType *pType, CShip *pPlatform, int iFrames, int x, int y, int cxCell, int cyCell)
 	{
 	int i, j;
 

@@ -101,10 +101,10 @@ ALERROR CStatsSession::OnInit (CString *retsError)
 			&hDIB))
 		return error;
 
-	error = m_BackgroundImage.CreateFromBitmap(hDIB);
+	bool bSuccess = m_BackgroundImage.CreateFromBitmap(hDIB);
 	::DeleteObject(hDIB);
-	if (error)
-		return error;
+	if (!bSuccess)
+		return ERR_FAIL;
 
 	//	Figure out where the stats will go
 
@@ -216,7 +216,7 @@ void CStatsSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCaptur
 	m_HI.HICommand(CMD_SESSION_STATS_DONE);
 	}
 
-void CStatsSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
+void CStatsSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 //	OnPaint
 

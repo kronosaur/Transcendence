@@ -69,7 +69,7 @@ void CSimViewer::Create (void)
 
 	//	Create the buffer
 
-	m_Buffer.CreateBlank(1024, 768, false);
+	m_Buffer.Create(1024, 768);
 
 	m_dwLastUpdate = 0;
 	}

@@ -12,7 +12,7 @@ class CAdventureIntroSession : public IHISession
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 
 	private:
@@ -31,7 +31,7 @@ class CChangePasswordSession : public IHISession
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 
 	private:
@@ -54,7 +54,7 @@ class CChooseAdventureSession : public IHISession
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
 		virtual void OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags);
-		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 
 	private:
@@ -78,7 +78,7 @@ class CChooseAdventureSession : public IHISession
 		int m_iSelection;
 
 		CAniVScroller *m_pRoot;
-		CG16bitImage *m_pBackground;
+		CG32bitImage *m_pBackground;
 
 		RECT m_rcFull;
 		RECT m_rcPane;
@@ -96,7 +96,7 @@ class CGalacticMapSession : public IHISession
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
-		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 		virtual void OnUpdate (bool bTopMost);
 
@@ -132,12 +132,12 @@ class CHelpSession : public IHISession
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
-		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 		virtual void OnUpdate (bool bTopMost);
 
 	private:
-		CG16bitImage m_HelpImage;
+		CG32bitImage m_HelpImage;
 		int m_iHelpPage;
 	};
 
@@ -154,7 +154,7 @@ class CGameSession : public IHISession
 		//	IHISession virtuals
 
 		virtual CReanimator &GetReanimator (void) { return g_pTrans->GetReanimator(); }
-		virtual void OnAnimate (CG16bitImage &Screen, bool bTopMost) { g_pTrans->Animate(Screen, this, bTopMost); }
+		virtual void OnAnimate (CG32bitImage &Screen, bool bTopMost) { g_pTrans->Animate(Screen, this, bTopMost); }
 		virtual void OnChar (char chChar, DWORD dwKeyData) { g_pTrans->WMChar(chChar, dwKeyData); }
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) { return NOERROR; }
 		virtual ALERROR OnInit (CString *retsError) { m_rcScreen = g_pTrans->m_rcScreen; SetNoCursor(true); return NOERROR; }
@@ -170,8 +170,8 @@ class CGameSession : public IHISession
 
 		//	Helpers
 
-		void PaintInfoText (CG16bitImage &Dest, const CString &sTitle, const TArray<CString> &Body, bool bAboveTargeting = true);
-		void PaintSoundtrackTitles (CG16bitImage &Dest);
+		void PaintInfoText (CG32bitImage &Dest, const CString &sTitle, const TArray<CString> &Body, bool bAboveTargeting = true);
+		void PaintSoundtrackTitles (CG32bitImage &Dest);
 
 	private:
 		CGameSettings &m_Settings;
@@ -188,7 +188,7 @@ class CIntroSession : public IHISession
 
 		//	IHISession virtuals
 		virtual CReanimator &GetReanimator (void) { return g_pTrans->GetReanimator(); }
-		virtual void OnAnimate (CG16bitImage &Screen, bool bTopMost);
+		virtual void OnAnimate (CG32bitImage &Screen, bool bTopMost);
 		virtual void OnChar (char chChar, DWORD dwKeyData) { g_pTrans->WMChar(chChar, dwKeyData); }
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
 		virtual ALERROR OnInit (CString *retsError);
@@ -223,13 +223,13 @@ class CLoadingSession : public IHISession
 
 		//	IHISession virtuals
 		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 		virtual void OnUpdate (bool bTopMost);
 
 	private:
-		CG16bitImage m_TitleImage;
-		CG16bitImage m_StargateImage;
+		CG32bitImage m_TitleImage;
+		CG32bitImage m_StargateImage;
 		CString m_sCopyright;
 		int m_iTick;
 		RECT m_rcStargate;
@@ -247,7 +247,7 @@ class CLoginSession : public IHISession
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
-		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 		virtual void OnUpdate (bool bTopMost);
 
@@ -290,7 +290,7 @@ class CLoadGameSession : public IHISession
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 
 	private:
@@ -312,7 +312,7 @@ class CModExchangeSession : public IHISession
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 
 	private:
@@ -339,7 +339,7 @@ class CNewGameSession : public IHISession
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
-		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 		virtual void OnUpdate (bool bTopMost);
 
@@ -400,7 +400,7 @@ class CProfileSession : public IHISession
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
-		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 		virtual void OnUpdate (bool bTopMost);
 
@@ -439,7 +439,7 @@ class CStatsSession : public IHISession
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
-		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 		virtual void OnUpdate (bool bTopMost);
 
@@ -451,7 +451,7 @@ class CStatsSession : public IHISession
 		CCloudService &m_Service;
 		CGameStats m_Stats;
 		DWORD m_dwFlags;
-		CG16bitImage m_BackgroundImage;
+		CG32bitImage m_BackgroundImage;
 		RECT m_rcStats;
 		RECT m_rcTaskProgress;
 	};
@@ -461,7 +461,7 @@ class CTextCrawlSession : public IHISession
 	public:
 		CTextCrawlSession (CHumanInterface &HI,
 						   CCloudService &Service,
-						   const CG16bitImage *pImage,
+						   const CG32bitImage *pImage,
 						   const CString &sText,
 						   const CString &sCmdDone);
 
@@ -471,7 +471,7 @@ class CTextCrawlSession : public IHISession
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
-		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 		virtual void OnUpdate (bool bTopMost);
 
@@ -479,7 +479,7 @@ class CTextCrawlSession : public IHISession
 		void CreateCrawlAnimation (const CString &sText, const RECT &rcRect, IAnimatron **retpAni);
 
 		CCloudService &m_Service;
-		const CG16bitImage *m_pImage;
+		const CG32bitImage *m_pImage;
 		CString m_sText;
 		CString m_sCmdDone;
 		bool m_bWaitAnimation;
@@ -494,7 +494,7 @@ class CWaitSession : public IHISession
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 
 	private:

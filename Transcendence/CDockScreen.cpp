@@ -97,7 +97,7 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 #define ALIGN_TOP					CONSTLIT("top")
 #define ALIGN_MIDDLE				CONSTLIT("middle")
 
-#define BAR_COLOR							CG16bitImage::RGBValue(0, 2, 10)
+#define BAR_COLOR							CG32bitPixel(0, 2, 10)
 
 CDockScreen::CDockScreen (void) : 
 		m_pFonts(NULL),
@@ -199,12 +199,12 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 	if (pDesc->FindAttribute(FONT_ATTRIB, &sFontName))
 		pControlFont = &GetFontByName(*m_pFonts, sFontName);
 
-	WORD wControlColor;
+	CG32bitPixel rgbControlColor;
 	CString sColorName;
 	if (pDesc->FindAttribute(COLOR_ATTRIB, &sColorName))
-		wControlColor = ::LoadRGBColor(sColorName);
+		rgbControlColor = ::LoadRGBColor(sColorName);
 	else
-		wControlColor = CG16bitImage::RGBValue(255, 255, 255);
+		rgbControlColor = CG32bitPixel(255, 255, 255);
 
 	//	Create the control based on the type
 
@@ -214,7 +214,7 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 
 		CGTextArea *pControl = new CGTextArea;
 		pControl->SetFont(pControlFont);
-		pControl->SetColor(wControlColor);
+		pControl->SetColor(rgbControlColor);
 
 		CString sAlign = pDesc->GetAttribute(ALIGN_ATTRIB);
 		if (strEquals(sAlign, ALIGN_CENTER))
@@ -442,7 +442,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 
 	//	Load the image
 
-	CG16bitImage *pImage = NULL;
+	CG32bitImage *pImage = NULL;
 	if (dwBackgroundID)
 		pImage = g_pUniverse->GetLibraryBitmap(dwBackgroundID);
 
@@ -454,9 +454,9 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 
 	//	Create a new image for the background
 
-	m_pBackgroundImage = new CG16bitImage;
+	m_pBackgroundImage = new CG32bitImage;
 	m_bFreeBackgroundImage = true;
-	m_pBackgroundImage->CreateBlank(cxBackground, cyBackground + cyExtra, false);
+	m_pBackgroundImage->Create(cxBackground, cyBackground + cyExtra);
 
 	if (cyExtra)
 		m_pBackgroundImage->Fill(0, cyBackground, cxBackground, cyExtra, 0);
@@ -465,7 +465,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 
 	DWORD dwScreenUNID = DEFAULT_DOCK_SCREEN_IMAGE_UNID;
 	DWORD dwScreenMaskUNID = DEFAULT_DOCK_SCREEN_MASK_UNID;
-	CG16bitImage *pScreenImage = g_pUniverse->GetLibraryBitmap(dwScreenUNID);
+	CG32bitImage *pScreenImage = g_pUniverse->GetLibraryBitmap(dwScreenUNID);
 
 	//	Blt to background
 
@@ -490,13 +490,13 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 		CShip *pShip = pBackgroundObj->AsShip();
 		CShipClass *pClass = (pShip ? pShip->GetClass() : NULL);
 		const CPlayerSettings *pPlayer = (pClass ? pClass->GetPlayerSettings() : NULL);
-		const CG16bitImage *pLargeImage = (pPlayer ? g_pUniverse->GetLibraryBitmap(pPlayer->GetLargeImage()) : NULL);
+		const CG32bitImage *pLargeImage = (pPlayer ? g_pUniverse->GetLibraryBitmap(pPlayer->GetLargeImage()) : NULL);
 
 		if (pLargeImage && !pLargeImage->IsEmpty())
 			{
 			if (pLargeImage->GetHeight() < cyBackground)
 				{
-				m_pBackgroundImage->ColorTransBlt(0,
+				m_pBackgroundImage->Blt(0,
 						0,
 						pLargeImage->GetWidth(),
 						pLargeImage->GetHeight(),
@@ -508,7 +508,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 			else
 				{
 				Metric rScale = (Metric)cyBackground / pLargeImage->GetHeight();
-				CG16bitImage *pNewImage = new CG16bitImage;
+				CG32bitImage *pNewImage = new CG32bitImage;
 				pNewImage->CreateFromImageTransformed(*pLargeImage,
 						0,
 						0,
@@ -518,7 +518,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 						rScale,
 						0.0);
 
-				m_pBackgroundImage->ColorTransBlt(0,
+				m_pBackgroundImage->Blt(0,
 						0,
 						pNewImage->GetWidth(),
 						pNewImage->GetHeight(),
@@ -547,8 +547,8 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 
 	//	If we have an image with a mask, just blt the masked image
 
-	else if (pImage && pImage->HasMask())
-		m_pBackgroundImage->ColorTransBlt(0, 0, pImage->GetWidth(), pImage->GetHeight(), 255, *pImage, xOffset, 0);
+	else if (pImage && pImage->GetAlphaType() != CG32bitImage::alphaNone)
+		m_pBackgroundImage->Blt(0, 0, pImage->GetWidth(), pImage->GetHeight(), 255, *pImage, xOffset, 0);
 
 	//	If we have an image with no mask, then we need to create our own mask.
 	//	If the image is larger than the space, then it is flush right with 
@@ -562,7 +562,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 		int cxAvail = (RectWidth(rcRect) / 2) + EXTRA_BACKGROUND_IMAGE;
 		int xImage = -Max(0, pImage->GetWidth() - cxAvail);
 
-		CG16bitImage *pScreenMask = g_pUniverse->GetLibraryBitmap(dwScreenMaskUNID);
+		CG32bitImage *pScreenMask = g_pUniverse->GetLibraryBitmap(dwScreenMaskUNID);
 		if (pScreenMask)
 			{
 			//	Center the mask and align it with the position of the background.
@@ -578,15 +578,15 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 			//	Generate a new bitmap containing the mask at the exact position of
 			//	the image we want to blt.
 
-			CG16bitImage Mask;
+			CG32bitImage Mask;
 			if (xAlpha != 0)
 				{
-				Mask.CreateBlankAlpha(pImage->GetWidth(), pImage->GetHeight());
-				Mask.CopyAlpha(xAlpha, 0, pImage->GetWidth(), pImage->GetHeight(), *pScreenMask, 0, 0);
+				Mask.Create(pImage->GetWidth(), pImage->GetHeight(), CG32bitImage::alpha8);
+				Mask.CopyChannel(channelAlpha, xAlpha, 0, pImage->GetWidth(), pImage->GetHeight(), *pScreenMask, 0, 0);
 				pScreenMask = &Mask;
 				}
 
-			m_pBackgroundImage->BltWithMask(0, 0, pImage->GetWidth(), pImage->GetHeight(), *pScreenMask, *pImage, xImage, 0);
+			m_pBackgroundImage->BltMask(0, 0, pImage->GetWidth(), pImage->GetHeight(), *pScreenMask, *pImage, xImage, 0);
 			}
 		else
 			m_pBackgroundImage->Blt(xImage, 0, pImage->GetWidth(), pImage->GetHeight(), *pImage, 0, 0);
@@ -618,7 +618,7 @@ ALERROR CDockScreen::CreateTitleArea (CXMLElement *pDesc, AGScreen *pScreen, con
 	pScreen->AddArea(pImage, rcArea, 0);
 
 	pImage = new CGImageArea;
-	pImage->SetBackColor(CG16bitImage::DarkenPixel(VI.GetColor(colorAreaDockTitle), 200));
+	pImage->SetBackColor(CG32bitPixel::Darken(VI.GetColor(colorAreaDockTitle), 200));
 	rcArea.left = rcRect.left;
 	rcArea.top = yTop - STATUS_BAR_HEIGHT;
 	rcArea.right = rcRect.right;
@@ -708,7 +708,7 @@ ICCItem *CDockScreen::GetCurrentListEntry (void)
 	return pResult;
 	}
 
-CG16bitImage *CDockScreen::GetDisplayCanvas (const CString &sID)
+CG32bitImage *CDockScreen::GetDisplayCanvas (const CString &sID)
 
 //	GetDisplayCanvas
 //
@@ -1412,7 +1412,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 
 					//	The result is the image descriptor
 
-					CG16bitImage *pImage;
+					CG32bitImage *pImage;
 					RECT rcImage;
 					GetImageDescFromList(CC, pResult, &pImage, &rcImage);
 					if (pImage)
@@ -1436,7 +1436,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 					Ctx.SetScreen(this);
 					Ctx.SaveAndDefineSourceVar(m_pLocation);
 					Ctx.SaveAndDefineDataVar(m_pData);
-					CG16bitImage *pCanvas = &pControl->GetCanvas();
+					CG32bitImage *pCanvas = &pControl->GetCanvas();
 					Ctx.SetCanvas(pCanvas);
 
 					pCanvas->Fill(0, 0, pCanvas->GetWidth(), pCanvas->GetHeight(), 0);

@@ -15,10 +15,10 @@ const int ITEM_TEXT_MARGIN_BOTTOM =			10;
 
 const int MODIFIER_SPACING_X =				4;
 
-const WORD RGB_DISABLED_TEXT =				CG16bitImage::RGBValue(128,128,128);
+const CG32bitPixel RGB_DISABLED_TEXT =					CG32bitPixel(128,128,128);
 
-const WORD RGB_MODIFIER_NORMAL_BACKGROUND =			CG16bitImage::RGBValue(101,101,101);	//	H:0   S:0   B:40
-const WORD RGB_MODIFIER_NORMAL_TEXT =				CG16bitImage::RGBValue(220,220,220);	//	H:0   S:0   B:86
+const CG32bitPixel RGB_MODIFIER_NORMAL_BACKGROUND =		CG32bitPixel(101,101,101);	//	H:0   S:0   B:40
+const CG32bitPixel RGB_MODIFIER_NORMAL_TEXT =			CG32bitPixel(220,220,220);	//	H:0   S:0   B:86
 
 const int DAMAGE_ADJ_ICON_WIDTH =			16;
 const int DAMAGE_ADJ_ICON_HEIGHT =			16;
@@ -236,7 +236,7 @@ bool CGItemListArea::MoveCursorForward (void)
 	return bOK;
 	}
 
-void CGItemListArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
+void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 //	Paint
 //
@@ -345,7 +345,7 @@ void CGItemListArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
 						rcItem.bottom - 1,
 						RectWidth(rcItem),
 						1,
-						CG16bitImage::RGBValue(80,80,80));
+						CG32bitPixel(80,80,80));
 				}
 			else
 				bPaintSeparator = true;
@@ -370,12 +370,11 @@ void CGItemListArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
 
 				if (bPaintCursor)
 					{
-					Dest.FillTrans(rcItem.left,
+					Dest.Fill(rcItem.left,
 							rcItem.top,
 							RectWidth(rcItem),
 							RectHeight(rcItem),
-							m_pFonts->wSelectBackground,
-							128);
+							CG32bitPixel(m_pFonts->rgbSelectBackground, (BYTE)128));
 
 					bPaintSeparator = false;
 					}
@@ -406,7 +405,7 @@ void CGItemListArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
 		}
 	}
 
-void CGItemListArea::PaintCustom (CG16bitImage &Dest, const RECT &rcRect, bool bSelected)
+void CGItemListArea::PaintCustom (CG32bitImage &Dest, const RECT &rcRect, bool bSelected)
 
 //	PaintCustom
 //
@@ -428,7 +427,7 @@ void CGItemListArea::PaintCustom (CG16bitImage &Dest, const RECT &rcRect, bool b
 	RECT rcTitle = rcDrawRect;
 	m_pFonts->LargeBold.DrawText(Dest,
 			rcTitle,
-			m_pFonts->wItemTitle,
+			m_pFonts->rgbItemTitle,
 			m_pListData->GetTitleAtCursor(),
 			0,
 			CG16bitFont::SmartQuotes | CG16bitFont::TruncateLine,
@@ -440,7 +439,7 @@ void CGItemListArea::PaintCustom (CG16bitImage &Dest, const RECT &rcRect, bool b
 
 	m_pFonts->Medium.DrawText(Dest, 
 			rcDrawRect,
-			(bSelected ? m_pFonts->wItemDescSelected : m_pFonts->wItemDesc),
+			(bSelected ? m_pFonts->rgbItemDescSelected : m_pFonts->rgbItemDesc),
 			m_pListData->GetDescAtCursor(),
 			0,
 			CG16bitFont::SmartQuotes,
@@ -449,7 +448,7 @@ void CGItemListArea::PaintCustom (CG16bitImage &Dest, const RECT &rcRect, bool b
 	rcDrawRect.top += cyHeight;
 	}
 
-void CGItemListArea::PaintItem (CG16bitImage &Dest, const CItem &Item, const RECT &rcRect, bool bSelected)
+void CGItemListArea::PaintItem (CG32bitImage &Dest, const CItem &Item, const RECT &rcRect, bool bSelected)
 
 //	PaintItem
 //

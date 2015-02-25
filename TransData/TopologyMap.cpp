@@ -13,10 +13,10 @@
 #define STYLE_NAME							CONSTLIT("name")
 
 const int STARGATE_LINE_WIDTH =				3;
-const WORD STARGATE_LINE_COLOR =			CG16bitImage::RGBValue(160, 255, 128);
+const CG32bitPixel STARGATE_LINE_COLOR =	CG32bitPixel(160, 255, 128);
 
 const int NODE_RADIUS =						6;
-const WORD NODE_COLOR =						CG16bitImage::RGBValue(255, 200, 128);
+const CG32bitPixel NODE_COLOR =				CG32bitPixel(255, 200, 128);
 const int MIN_NODE_MARGIN =					64;
 
 struct STopologyMapCtx
@@ -49,7 +49,7 @@ void GenerateTopologyMap (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	COutputChart Output;
 	Output.SetStyleFont(STYLE_NAME, pCmdLine->GetAttribute(CONSTLIT("font")));
-	Output.SetStyleColor(STYLE_NAME, CG16bitImage::RGBValue(0xFF, 0xFF, 0xFF));
+	Output.SetStyleColor(STYLE_NAME, CG32bitPixel(0xFF, 0xFF, 0xFF));
 
 	Output.SetOutputFilespec(pCmdLine->GetAttribute(CONSTLIT("output")));
 
@@ -73,12 +73,12 @@ void GenerateTopologyMap (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Create a background image
 
-	CG16bitImage *pImage = Ctx.pMap->CreateBackgroundImage();
+	CG32bitImage *pImage = Ctx.pMap->CreateBackgroundImage();
 
 	//	Create the output
 
 	Output.SetContentSize((pImage ? pImage->GetWidth() : 1024), (pImage ? pImage->GetHeight() : 1024));
-	CG16bitImage &Dest = Output.GetOutputImage();
+	CG32bitImage &Dest = Output.GetOutputImage();
 
 	//	Blt
 
@@ -160,18 +160,17 @@ void DrawNode (STopologyMapCtx &Ctx, COutputChart &Output, CTopologyNode *pNode,
 //	Draws a topology node
 
 	{
-	CG16bitImage &Dest = Output.GetOutputImage();
+	CG32bitImage &Dest = Output.GetOutputImage();
 	const CG16bitFont &NameFont = Output.GetStyleFont(STYLE_NAME);
-	WORD wNameColor = Output.GetStyleColor(STYLE_NAME);
+	CG32bitPixel rgbNameColor = Output.GetStyleColor(STYLE_NAME);
 
-	DrawAlphaGradientCircle(Dest, x + 2, y + 2, NODE_RADIUS + 1, 0);
-	DrawFilledCircle(Dest, x, y, NODE_RADIUS, NODE_COLOR);
-	DrawAlphaGradientCircle(Dest, x - 2, y - 2, NODE_RADIUS - 3, CG16bitImage::RGBValue(255, 255, 255));
+	CGDraw::CircleGradient(Dest, x + 2, y + 2, NODE_RADIUS + 1, 0);
+	CGDraw::Circle(Dest, x, y, NODE_RADIUS, NODE_COLOR);
+	CGDraw::CircleGradient(Dest, x - 2, y - 2, NODE_RADIUS, CG32bitPixel(0xff, 0xff, 0xff));
 
 	NameFont.DrawText(Dest,
 			x, y + NODE_RADIUS + 2,
-			wNameColor,
-			255,
+			rgbNameColor,
 			pNode->GetSystemName(),
 			CG16bitFont::AlignCenter);
 	}

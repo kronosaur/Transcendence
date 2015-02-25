@@ -36,7 +36,7 @@ void CMessageDisplay::ClearAll (void)
 	m_cySmoothScroll = 0;
 	}
 
-void CMessageDisplay::DisplayMessage (CString sMessage, WORD wColor)
+void CMessageDisplay::DisplayMessage (CString sMessage, CG32bitPixel rgbColor)
 
 //	DisplayMessage
 //
@@ -78,7 +78,7 @@ void CMessageDisplay::DisplayMessage (CString sMessage, WORD wColor)
 	//	Remember the message
 
 	m_Messages[m_iNextMessage].sMessage = sMessage;
-	m_Messages[m_iNextMessage].wColor = wColor;
+	m_Messages[m_iNextMessage].rgbColor = rgbColor;
 	m_Messages[m_iNextMessage].x = -1;
 
 	//	Start at the appropriate state
@@ -109,7 +109,7 @@ void CMessageDisplay::DisplayMessage (CString sMessage, WORD wColor)
 	m_iNextMessage = Next(m_iNextMessage);
 	}
 
-void CMessageDisplay::Paint (CG16bitImage &Dest)
+void CMessageDisplay::Paint (CG32bitImage &Dest)
 
 //	Paint
 //
@@ -137,33 +137,33 @@ void CMessageDisplay::Paint (CG16bitImage &Dest)
 			{
 			//	Figure out what color to use
 
-			WORD wColor;
+			CG32bitPixel rgbColor;
 			switch (m_Messages[iMsg].iState)
 				{
 				case stateNormal:
 				case stateSteady:
-					wColor = CG16bitImage::RGBValue(
-							(iAge + AGE_FADE_OFFSET) * CG16bitImage::RedValue(m_Messages[iMsg].wColor) / AGE_FADE_TOTAL,
-							(iAge + AGE_FADE_OFFSET) * CG16bitImage::GreenValue(m_Messages[iMsg].wColor) / AGE_FADE_TOTAL,
-							(iAge + AGE_FADE_OFFSET) * CG16bitImage::BlueValue(m_Messages[iMsg].wColor) / AGE_FADE_TOTAL);
+					rgbColor = CG32bitPixel(
+							(iAge + AGE_FADE_OFFSET) * m_Messages[iMsg].rgbColor.GetRed() / AGE_FADE_TOTAL,
+							(iAge + AGE_FADE_OFFSET) * m_Messages[iMsg].rgbColor.GetGreen() / AGE_FADE_TOTAL,
+							(iAge + AGE_FADE_OFFSET) * m_Messages[iMsg].rgbColor.GetBlue() / AGE_FADE_TOTAL);
 					break;
 
 				case stateBlinking:
 					{
 					if ((m_Messages[iMsg].iTick % 2) == 0)
-						wColor = CG16bitImage::RGBValue(255,255,255);
+						rgbColor = CG32bitPixel(255,255,255);
 					else
-						wColor = CG16bitImage::RGBValue(0,0,0);
+						rgbColor = CG32bitPixel(0,0,0);
 					break;
 					}
 
 				case stateFading:
 					{
 					int iFade = (iAge + AGE_FADE_OFFSET) * 1000 * m_Messages[iMsg].iTick / (m_iFadeTime * AGE_FADE_TOTAL);
-					wColor = CG16bitImage::RGBValue(
-							iFade * CG16bitImage::RedValue(m_Messages[iMsg].wColor) / 1000,
-							iFade * CG16bitImage::GreenValue(m_Messages[iMsg].wColor) / 1000,
-							iFade * CG16bitImage::BlueValue(m_Messages[iMsg].wColor) / 1000);
+					rgbColor = CG32bitPixel(
+							iFade * m_Messages[iMsg].rgbColor.GetRed() / 1000,
+							iFade * m_Messages[iMsg].rgbColor.GetGreen() / 1000,
+							iFade * m_Messages[iMsg].rgbColor.GetBlue() / 1000);
 					break;
 					}
 				}
@@ -187,7 +187,7 @@ void CMessageDisplay::Paint (CG16bitImage &Dest)
 				Dest.DrawText(m_Messages[iMsg].x,
 						y + m_cySmoothScroll, 
 						*m_pFont, 
-						wColor, 
+						rgbColor, 
 						m_Messages[iMsg].sMessage);
 
 				if (m_cySmoothScroll != 0)
