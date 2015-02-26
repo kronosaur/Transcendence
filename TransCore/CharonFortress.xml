@@ -730,7 +730,8 @@
 	<!-- Charon Pirate Fortress System -->
 
 	<SystemType UNID="&ssCharonPirateFortress;"
-				attributes="envAir"
+				attributes=			"envAir"
+				backgroundID=		"&rsRedDwarfSpace;"
 				>
 
 		<SystemGroup>

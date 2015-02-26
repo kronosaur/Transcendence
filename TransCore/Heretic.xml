@@ -5512,6 +5512,7 @@
 	<!-- Heretic System -->
 
 	<SystemType UNID="&ssHeretic;" 
+			backgroundID=		"&rsLightNebulaSpace;"
 			noRandomEncounters=	"true"
 			noExtraEncounters=	"true"
 			>

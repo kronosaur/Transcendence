@@ -101,7 +101,8 @@
 	<!-- EarthSpace (Asteroids) -->
 
 	<SystemType UNID="&ssEarthSpaceAsteroids;"
-				attributes="envEarth"
+				attributes=			"envEarth"
+				backgroundID=		"&rsRockyAsteroidSpace;"
 				>
 		<SystemGroup>
 			<Lookup table="AsteroidBeltSystem"/>
@@ -153,7 +154,8 @@
 	<!-- EarthSpace (Asteroid Arcs) -->
 
 	<SystemType UNID="&ssEarthSpaceAsteroidArcs;"
-				attributes="envEarth"
+				attributes=			"envEarth"
+				backgroundID=		"&rsRockyAsteroidSpace;"
 				>
 		<SystemGroup>
 			<Lookup table="AsteroidArcBeltSystem"/>
@@ -259,7 +261,8 @@
 	<!-- EarthSpace (Desert) -->
 
 	<SystemType UNID="&ssEarthSpaceDesert;"
-				attributes="envFire"
+				attributes=			"envFire"
+				backgroundID=		"&rsBrightStarSpace;"
 				>
 		<SystemGroup>
 			<Lookup table="DesertSystem"/>
@@ -311,7 +314,8 @@
 	<!-- EarthSpace (Ice Asteroids) -->
 
 	<SystemType UNID="&ssEarthSpaceIceAsteroids;"
-				attributes="envAir"
+				attributes=			"envAir"
+				backgroundID=		"&rsRedDwarfSpace;"
 				>
 		<SystemGroup>
 			<Lookup table="IceAsteroidSystem"/>
@@ -363,7 +367,8 @@
 	<!-- EarthSpace (Metallic) -->
 
 	<SystemType UNID="&ssEarthSpaceMetallic;"
-				attributes="envEarth"
+				attributes=			"envEarth"
+				backgroundID=		"&rsRockyAsteroidSpace;"
 				>
 		<SystemGroup>
 			<Lookup table="MetallicSystem"/>
@@ -415,7 +420,8 @@
 	<!-- EarthSpace (Nebulae) -->
 
 	<SystemType UNID="&ssEarthSpaceNebulae;"
-				attributes="envAir"
+				attributes=			"envAir"
+				backgroundID=		"&rsLightNebulaSpace;"
 				>
 		<SystemGroup>
 			<Lookup table="LightNebulaSystem"/>
@@ -467,7 +473,8 @@
 	<!-- EarthSpace (Primordial) -->
 
 	<SystemType UNID="&ssEarthSpacePrimordial;"
-				attributes="envWater"
+				attributes=			"envWater"
+				backgroundID=		"&rsPrimordialNebulaSpace;"
 				>
 		<SystemGroup>
 			<Lookup table="PrimordialSystem"/>
@@ -519,7 +526,8 @@
 	<!-- EarthSpace (Red Dwarf) -->
 
 	<SystemType UNID="&ssEarthSpaceRedDwarf;"
-				attributes="envAir"
+				attributes=			"envAir"
+				backgroundID=		"&rsRedDwarfSpace;"
 				>
 		<SystemGroup>
 			<Lookup table="RedDwarfSystem"/>
@@ -571,7 +579,8 @@
 	<!-- EarthSpace (Volcanic) -->
 
 	<SystemType UNID="&ssEarthSpaceVolcanic;"
-				attributes="envFire"
+				attributes=			"envFire"
+				backgroundID=		"&rsRedGiantSpace;"
 				>
 		<SystemGroup>
 			<Lookup table="VolcanicSystem"/>
@@ -623,7 +632,8 @@
 	<!-- EarthSpace (Volcanic Asteroids) -->
 
 	<SystemType UNID="&ssEarthSpaceVolcanicAsteroids;"
-				attributes="envFire"
+				attributes=			"envFire"
+				backgroundID=		"&rsRedGiantSpace;"
 				>
 		<SystemGroup>
 			<Lookup table="VolcanicAsteroidSystem"/>

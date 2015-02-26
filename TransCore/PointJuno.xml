@@ -1346,6 +1346,7 @@
 	<!-- Point Juno System -->
 
 	<SystemType UNID="&ssPointJuno;" 
+				backgroundID=		"&rsLightNebulaSpace;"
 				noRandomEncounters=	"true"
 				noExtraEncounters=	"true"
 				>

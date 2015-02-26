@@ -2,7 +2,8 @@
 
 <TranscendenceHighScores>
 
-	<Score name="GPM"	shipClass="Sapphire-class yacht 5 (debug V)"	genome="2"	score="3640"	epitaph="destroyed by an Ares sentry in the Point Juno System"	time="D:0x0 M:0x1d29a1"	resurrectCount="1"	adventureUNID="30d40"	debug="1"/>
-	<Score name="GPM"	shipClass="Sapphire-class yacht (9)"	genome="2"	score="52"	epitaph="self-destructed in the Eridani System"	time="D:0x0 M:0xf66d0"	resurrectCount="1"	adventureUNID="200000"	debug="1"/>
+	<Score name="GPM"	shipClass="Sapphire-class yacht (8)"	genome="2"	score="5226"	epitaph="destroyed by a Ventari destroyer in the Enkidu System"	time="D:0x0 M:0x7d32d"	resurrectCount="0"	adventureUNID="200000"	debug="1"/>
+	<Score name="GPM"	shipClass="Sapphire-class yacht 5 (debug V)"	genome="2"	score="3640"	epitaph="destroyed by an Ares sentry in the Point Juno System"	time="D:0x0 M:0x1d29a1"	resurrectCount="1"	adventureUNID="1e"	debug="1"/>
+	<Score name="GPM"	shipClass="Sapphire-class yacht (9)"	genome="2"	score="52"	epitaph="self-destructed in the Eridani System"	time="D:0x0 M:0xf66d0"	resurrectCount="1"	adventureUNID="30d40"	debug="1"/>
 
 </TranscendenceHighScores>

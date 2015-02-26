@@ -247,7 +247,12 @@
 	
 	<!-- 0090-00AF SYSTEM BACKGROUNDS -->
 	
-	<!ENTITY rsDeepSpace2				"0x00020090">
+	<!ENTITY rsLightNebulaSpace			"0x00020090">
+	<!ENTITY rsPrimordialNebulaSpace	"0x00020091">
+	<!ENTITY rsRedDwarfSpace			"0x00020092">
+	<!ENTITY rsRockyAsteroidSpace		"0x00020093">
+	<!ENTITY rsBrightStarSpace			"0x00020094">
+	<!ENTITY rsRedGiantSpace			"0x00020095">
 	]>
 	
 <CoreLibrary

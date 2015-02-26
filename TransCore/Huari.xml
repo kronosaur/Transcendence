@@ -2310,6 +2310,7 @@
 	<SystemType UNID="&ssHuaramarca;"
 			noRandomEncounters=	"true"
 			noExtraEncounters=	"true"
+			backgroundID=		"&rsRedGiantSpace;"
 			>
 
 		<Tables>

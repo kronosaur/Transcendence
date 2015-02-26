@@ -2282,6 +2282,7 @@
 	<SystemType UNID="&ssStKatharine;" 
 				noRandomEncounters=	"true"
 				noExtraEncounters=	"true"
+				backgroundID=		"&rsBrightStarSpace;"
 				>
 
 		<Tables>
