@@ -656,7 +656,7 @@ void CGSelectorArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 		//	Paint the background of the entry
 
-		CG32bitPixel rgbBackColor = (m_iCursor == i ? m_VI.GetColor(colorAreaDialogInputFocus) : CG32bitPixel(m_VI.GetColor(colorAreaDialog), (BYTE)220));
+		CG32bitPixel rgbBackColor = (m_iCursor == i ? m_VI.GetColor(colorAreaDialogInputFocus) : CG32bitPixel(m_VI.GetColor(colorAreaDialog), 220));
 
 		CGDraw::RoundedRect(Dest, 
 				rcRegion.left - xBackMargin, 

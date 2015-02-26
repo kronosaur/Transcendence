@@ -22,7 +22,7 @@ void CGDrawArea::CreateImage (void)
 
 	{
 	if (m_Image.IsEmpty())
-		m_Image.Create(RectWidth(GetRect()), RectHeight(GetRect()));
+		m_Image.Create(RectWidth(GetRect()), RectHeight(GetRect()), CG32bitImage::alpha8);
 	}
 
 void CGDrawArea::Paint (CG32bitImage &Dest, const RECT &rcRect)

@@ -1439,7 +1439,11 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 					CG32bitImage *pCanvas = &pControl->GetCanvas();
 					Ctx.SetCanvas(pCanvas);
 
-					pCanvas->Fill(0, 0, pCanvas->GetWidth(), pCanvas->GetHeight(), 0);
+					//	Erase to full transparency
+
+					pCanvas->Set(CG32bitPixel::Null());
+
+					//	Run the code to paint on the canvas
 
 					ICCItem *pResult = Ctx.Run(m_Controls[i].pCode);	//	LATER:Event
 

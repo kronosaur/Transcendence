@@ -374,7 +374,7 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 							rcItem.top,
 							RectWidth(rcItem),
 							RectHeight(rcItem),
-							CG32bitPixel(m_pFonts->rgbSelectBackground, (BYTE)128));
+							CG32bitPixel(m_pFonts->rgbSelectBackground, 128));
 
 					bPaintSeparator = false;
 					}

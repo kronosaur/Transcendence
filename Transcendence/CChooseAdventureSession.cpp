@@ -753,7 +753,7 @@ void CChooseAdventureSession::SetBackgroundImage (CExtension *pAdventure)
 				0,
 				(xRightEdge - xCenterAdj),
 				m_pBackground->GetHeight(),
-				CG32bitPixel(VI.GetColor(colorAreaDialog), (BYTE)0),
+				CG32bitPixel(VI.GetColor(colorAreaDialog), 0),
 				VI.GetColor(colorAreaDialog),
 				gradientHorizontal);
 		}
