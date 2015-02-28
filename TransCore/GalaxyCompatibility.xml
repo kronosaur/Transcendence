@@ -1794,14 +1794,14 @@
 	<Image UNID="&rsWorlds1;"		bitmap="Resources\Worlds1.jpg"		bitmask="Resources\Worlds1Mask.bmp"  />
 	<Image UNID="&rsWorlds2;"		bitmap="Resources\Worlds2.jpg"		bitmask="Resources\Worlds2Mask.bmp"  />
 
-	<Image UNID="&rsWorldsRingedGiant1;"	bitmap="Resources\WorldsRingedGiant1.jpg"	bitmask="Resources\WorldsRingedGiant1Mask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant2;"	bitmap="Resources\WorldsRingedGiant2.jpg"	bitmask="Resources\WorldsRingedGiant2Mask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant3;"	bitmap="Resources\WorldsRingedGiant3.jpg"	bitmask="Resources\WorldsRingedGiant3Mask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant4;"	bitmap="Resources\WorldsRingedGiant4.jpg"	bitmask="Resources\WorldsRingedGiant4Mask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant5;"	bitmap="Resources\WorldsRingedGiant5.jpg"	bitmask="Resources\WorldsRingedGiant5Mask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant6;"	bitmap="Resources\WorldsRingedGiant6.jpg"	bitmask="Resources\WorldsRingedGiant6Mask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant7;"	bitmap="Resources\WorldsRingedGiant7.jpg"	bitmask="Resources\WorldsRingedGiant7Mask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant8;"	bitmap="Resources\WorldsRingedGiant8.jpg"	bitmask="Resources\WorldsRingedGiant8Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsWorldsRingedGiant1;"	bitmap="Resources\WorldsRingedGiant1.jpg"	bitmask="Resources\WorldsRingedGiant1Mask.bmp"	shadowMask="Resources\WorldsRingedGiant1ShadowMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsWorldsRingedGiant2;"	bitmap="Resources\WorldsRingedGiant2.jpg"	bitmask="Resources\WorldsRingedGiant2Mask.bmp"	shadowMask="Resources\WorldsRingedGiant2ShadowMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsWorldsRingedGiant3;"	bitmap="Resources\WorldsRingedGiant3.jpg"	bitmask="Resources\WorldsRingedGiant3Mask.bmp"	shadowMask="Resources\WorldsRingedGiant3ShadowMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsWorldsRingedGiant4;"	bitmap="Resources\WorldsRingedGiant4.jpg"	bitmask="Resources\WorldsRingedGiant4Mask.bmp"	shadowMask="Resources\WorldsRingedGiant4ShadowMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsWorldsRingedGiant5;"	bitmap="Resources\WorldsRingedGiant5.jpg"	bitmask="Resources\WorldsRingedGiant5Mask.bmp"	shadowMask="Resources\WorldsRingedGiant5ShadowMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsWorldsRingedGiant6;"	bitmap="Resources\WorldsRingedGiant6.jpg"	bitmask="Resources\WorldsRingedGiant6Mask.bmp"	shadowMask="Resources\WorldsRingedGiant6ShadowMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsWorldsRingedGiant7;"	bitmap="Resources\WorldsRingedGiant7.jpg"	bitmask="Resources\WorldsRingedGiant7Mask.bmp"	shadowMask="Resources\WorldsRingedGiant7ShadowMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsWorldsRingedGiant8;"	bitmap="Resources\WorldsRingedGiant8.jpg"	bitmask="Resources\WorldsRingedGiant8Mask.bmp"	shadowMask="Resources\WorldsRingedGiant8ShadowMask.bmp"  loadOnUse="true"/>
 
 	<Image UNID="&rsAStar;"					bitmap="Resources\AStar.jpg"				bitmask="Resources\Star1Mask.bmp"   loadOnUse="true"/>
 	<Image UNID="&rsStar1;"					bitmap="Resources\Star1.jpg"				bitmask="Resources\Star1Mask.bmp"   loadOnUse="true"/>
