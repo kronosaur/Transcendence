@@ -48,7 +48,7 @@ class CGItemDisplayArea : public AGArea
 class CGItemListArea : public AGArea
 	{
 	public:
-		CGItemListArea (void);
+		CGItemListArea (const CVisualPalette &VI);
 		~CGItemListArea (void);
 
 		void CleanUp (void);
@@ -101,6 +101,7 @@ class CGItemListArea : public AGArea
 		IListData *m_pListData;
 		ListTypes m_iType;
 
+		const CVisualPalette &m_VI;
 		const CUIResources *m_pUIRes;
 		const SFontTable *m_pFonts;
 		int m_iOldCursor;						//	Cursor pos

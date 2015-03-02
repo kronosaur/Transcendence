@@ -1394,8 +1394,7 @@ LONG CTranscendenceWnd::WMCreate (CString *retsError)
 	m_Fonts.rgbHelpColor = CG32bitPixel(103,114,128);
 	m_Fonts.rgbBackground = CG32bitPixel(15,17,18);
 	m_Fonts.rgbSectionBackground = CG32bitPixel(86,82,73);
-	m_Fonts.rgbSelectBackground = CG32bitPixel(115,230,115);
-	//m_Fonts.rgbSelectBackground = CG32bitPixel(255,225,103);
+	m_Fonts.rgbSelectBackground = CG32bitPixel(237, 137, 36);
 
 	m_Fonts.rgbAltGreenColor = CG32bitPixel(5,211,5);
 	m_Fonts.rgbAltGreenBackground = CG32bitPixel(23,77,23);

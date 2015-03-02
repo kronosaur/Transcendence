@@ -6,12 +6,6 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-#define LIST_OPTIONS_TAG			CONSTLIT("ListOptions")
-
-#define DATA_FROM_ATTRIB			CONSTLIT("dataFrom")
-#define INITIAL_ITEM_ATTRIB			CONSTLIT("initialItem")
-#define LIST_ATTRIB					CONSTLIT("list")
-
 void CDockScreenSelector::OnDeleteCurrentItem (int iCount)
 
 //	OnDeleteCurrentItem
@@ -41,9 +35,9 @@ ICCItem *CDockScreenSelector::OnGetCurrentListEntry (void) const
 	return m_pControl->GetEntryAtCursor();
 	}
 
-bool CDockScreenSelector::OnGetDefaultBackgroundObj (CSpaceObject **retpObj)
+bool CDockScreenSelector::OnGetDefaultBackground (SBackgroundDesc *retDesc)
 
-//	OnGetDefaultBackgroundObj
+//	OnGetDefaultBackground
 //
 //	Returns the object that we should use as a background.
 
@@ -52,7 +46,9 @@ bool CDockScreenSelector::OnGetDefaultBackgroundObj (CSpaceObject **retpObj)
 	if (pSource == NULL)
 		return false;
 
-	*retpObj = pSource;
+	retDesc->iType = backgroundObj;
+	retDesc->pObj = pSource;
+
 	return true;
 	}
 
@@ -136,7 +132,7 @@ IDockScreenDisplay::EResults CDockScreenSelector::OnHandleKeyDown (int iVirtKey)
 		}
 	}
 
-ALERROR CDockScreenSelector::OnInit (SInitCtx &Ctx, CString *retsError)
+ALERROR CDockScreenSelector::OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError)
 
 //	OnInit
 //
@@ -145,19 +141,10 @@ ALERROR CDockScreenSelector::OnInit (SInitCtx &Ctx, CString *retsError)
 	{
 	m_dwID = Ctx.dwFirstID;
 
-	//	Get the list options element
-
-	CXMLElement *pOptions = Ctx.pDesc->GetContentElementByTag(LIST_OPTIONS_TAG);
-	if (pOptions == NULL)
-		{
-		*retsError = CONSTLIT("<ListOptions> expected.");
-		return ERR_FAIL;
-		}
-
 	//	Figure out where to get the data from: either the station
 	//	or the player's ship.
 
-	CSpaceObject *pListSource = EvalListSource(pOptions->GetAttribute(DATA_FROM_ATTRIB), retsError);
+	CSpaceObject *pListSource = EvalListSource(Options.sDataFrom, retsError);
 	if (pListSource == NULL)
 		return ERR_FAIL;
 
@@ -186,14 +173,13 @@ ALERROR CDockScreenSelector::OnInit (SInitCtx &Ctx, CString *retsError)
 	//	Give the screen a chance to start at a different item (other
 	//	than the first)
 
-	CString sInitialItemFunc = pOptions->GetAttribute(INITIAL_ITEM_ATTRIB);
-	if (!sInitialItemFunc.IsBlank())
+	if (!Options.sInitialItemCode.IsBlank())
 		{
 		bool bMore = IsCurrentItemValid();
 		while (bMore)
 			{
 			bool bResult;
-			if (!EvalBool(sInitialItemFunc, &bResult, retsError))
+			if (!EvalBool(Options.sInitialItemCode, &bResult, retsError))
 				return ERR_FAIL;
 
 			if (bResult)

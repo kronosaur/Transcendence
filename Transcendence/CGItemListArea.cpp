@@ -12,6 +12,8 @@ const int ICON_HEIGHT =						96;
 const int ITEM_TEXT_MARGIN_Y =				4;
 const int ITEM_TEXT_MARGIN_X =				4;
 const int ITEM_TEXT_MARGIN_BOTTOM =			10;
+const int BORDER_RADIUS =					4;
+const int SELECTION_WIDTH =					2;
 
 const int MODIFIER_SPACING_X =				4;
 
@@ -33,7 +35,8 @@ const int ATTRIB_SPACING_Y =				2;
 
 #define STR_NO_ITEMS						CONSTLIT("There are no items here")
 
-CGItemListArea::CGItemListArea (void) :
+CGItemListArea::CGItemListArea (const CVisualPalette &VI) :
+		m_VI(VI),
 		m_pListData(NULL),
 		m_iType(listNone),
 		m_pUIRes(NULL),
@@ -248,6 +251,19 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 	if (m_pFonts == NULL)
 		return;
 
+	bool bPaintCursor = false;
+	RECT rcCursor;
+
+	//	Paint Background
+
+	CGDraw::RoundedRect(Dest,
+			rcRect.left,
+			rcRect.top,
+			RectWidth(rcRect),
+			RectHeight(rcRect),
+			BORDER_RADIUS + 1,
+			CG32bitPixel(m_VI.GetColor(colorAreaDialog), 220));
+
 	//	If there are no items here, then say so
 
 	if (m_pListData == NULL || !m_pListData->IsCursorValid())
@@ -341,11 +357,11 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 			if (bPaintSeparator)
 				{
-				Dest.Fill(rcItem.left,
+				Dest.Fill(rcItem.left + BORDER_RADIUS,
 						rcItem.bottom - 1,
-						RectWidth(rcItem),
+						RectWidth(rcItem) - (BORDER_RADIUS * 2),
 						1,
-						CG32bitPixel(80,80,80));
+						CG32bitPixel(50,50,50));
 				}
 			else
 				bPaintSeparator = true;
@@ -364,19 +380,23 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 				//	See if we need to paint the cursor
 
-				bool bPaintCursor = (iPos == iCursor);
+				bool bIsCursor = (iPos == iCursor);
 
 				//	Paint selection background (if selected)
 
-				if (bPaintCursor)
+				if (bIsCursor)
 					{
-					Dest.Fill(rcItem.left,
-							rcItem.top,
-							RectWidth(rcItem),
-							RectHeight(rcItem),
-							CG32bitPixel(m_pFonts->rgbSelectBackground, 128));
-
+					bPaintCursor = true;
 					bPaintSeparator = false;
+					rcCursor = rcItem;
+
+					CGDraw::RoundedRect(Dest, 
+							rcCursor.left,
+							rcCursor.top,
+							RectWidth(rcCursor),
+							RectHeight(rcCursor),
+							BORDER_RADIUS,
+							m_VI.GetColor(colorAreaDialogInputFocus));
 					}
 
 				//	Paint item
@@ -384,11 +404,11 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 				switch (m_iType)
 					{
 					case listCustom:
-						PaintCustom(Dest, rcItem, bPaintCursor);
+						PaintCustom(Dest, rcItem, bIsCursor);
 						break;
 
 					case listItem:
-						PaintItem(Dest, m_pListData->GetItemAtCursor(), rcItem, bPaintCursor);
+						PaintItem(Dest, m_pListData->GetItemAtCursor(), rcItem, bIsCursor);
 						break;
 					}
 				}
@@ -402,6 +422,29 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 		//	Done
 
 		m_pListData->SetCursor(iCursor);
+		}
+
+	//	Paint a frame
+
+	CGDraw::RoundedRectOutline(Dest,
+			rcRect.left,
+			rcRect.top,
+			RectWidth(rcRect) - 1,
+			RectHeight(rcRect) - 1,
+			BORDER_RADIUS + 1,
+			1,
+			CG32bitPixel(80,80,80));
+
+	if (bPaintCursor)
+		{
+		CGDraw::RoundedRectOutline(Dest,
+				rcCursor.left + 1,
+				rcCursor.top + 1,
+				RectWidth(rcCursor) - 2,
+				RectHeight(rcCursor) - 2,
+				BORDER_RADIUS,
+				SELECTION_WIDTH,
+				m_VI.GetColor(colorAreaDialogHighlight));
 		}
 	}
 

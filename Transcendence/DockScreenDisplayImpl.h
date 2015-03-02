@@ -17,13 +17,14 @@ class CDockScreenList : public IDockScreenDisplay
 		virtual void OnDeleteCurrentItem (int iCount);
 		virtual const CItem &OnGetCurrentItem (void) const;
 		virtual ICCItem *OnGetCurrentListEntry (void) const;
+		virtual bool OnGetDefaultBackground (SBackgroundDesc *retDesc) { retDesc->iType = backgroundNone; return true; }
 		virtual CItemListManipulator &OnGetItemListManipulator (void) { return m_pItemListControl->GetItemListManipulator(); }
 		virtual int OnGetListCursor (void) { return m_pItemListControl->GetCursor(); }
 		virtual IListData *OnGetListData (void) { return m_pItemListControl->GetList(); }
 		virtual CSpaceObject *OnGetSource (void) { return m_pItemListControl->GetSource(); }
 		virtual EResults OnHandleAction (DWORD dwTag, DWORD dwData);
 		virtual EResults OnHandleKeyDown (int iVirtKey);
-		virtual ALERROR OnInit (SInitCtx &Ctx, CString *retsError);
+		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError);
 		virtual bool OnIsCurrentItemValid (void) const;
 		virtual EResults OnResetList (CSpaceObject *pLocation);
 		virtual EResults OnSetListCursor (int iCursor);
@@ -35,7 +36,11 @@ class CDockScreenList : public IDockScreenDisplay
 
 		//	CDockScreenList
 
-		virtual ALERROR OnInitList (SInitCtx &Ctx, CString *retsError) { return NOERROR; }
+		virtual ALERROR OnInitList (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) { return NOERROR; }
+
+		//	Helpers
+
+
 
 		CGItemListArea *m_pItemListControl;
 		DWORD m_dwID;
@@ -48,7 +53,7 @@ class CDockScreenCustomItemList : public CDockScreenList
 
 		//	CDockScreenList
 
-		virtual ALERROR OnInitList (SInitCtx &Ctx, CString *retsError);
+		virtual ALERROR OnInitList (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError);
 
 	private:
 		CItemList m_CustomItems;
@@ -60,7 +65,7 @@ class CDockScreenCustomList : public CDockScreenList
 
 		//	CDockScreenList
 
-		virtual ALERROR OnInitList (SInitCtx &Ctx, CString *retsError);
+		virtual ALERROR OnInitList (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError);
 	};
 
 class CDockScreenItemList : public CDockScreenList
@@ -69,7 +74,7 @@ class CDockScreenItemList : public CDockScreenList
 
 		//	CDockScreenList
 
-		virtual ALERROR OnInitList (SInitCtx &Ctx, CString *retsError);
+		virtual ALERROR OnInitList (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError);
 
 	private:
 		CItemCriteria m_ItemCriteria;
@@ -94,13 +99,13 @@ class CDockScreenSelector : public IDockScreenDisplay
 		virtual void OnDeleteCurrentItem (int iCount);
 		virtual const CItem &OnGetCurrentItem (void) const;
 		virtual ICCItem *OnGetCurrentListEntry (void) const;
-		virtual bool OnGetDefaultBackgroundObj (CSpaceObject **retpObj);
+		virtual bool OnGetDefaultBackground (SBackgroundDesc *retDesc);
 		virtual int OnGetListCursor (void) { return m_pControl->GetCursor(); }
 		virtual IListData *OnGetListData (void) { return m_pControl->GetList(); }
 		virtual CSpaceObject *OnGetSource (void) { return m_pControl->GetSource(); }
 		virtual EResults OnHandleAction (DWORD dwTag, DWORD dwData);
 		virtual EResults OnHandleKeyDown (int iVirtKey);
-		virtual ALERROR OnInit (SInitCtx &Ctx, CString *retsError);
+		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError);
 		virtual bool OnIsCurrentItemValid (void) const;
 		virtual EResults OnResetList (CSpaceObject *pLocation);
 		virtual EResults OnSetListCursor (int iCursor);

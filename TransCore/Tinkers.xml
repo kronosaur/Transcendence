@@ -398,7 +398,6 @@
 	
 	<DockScreen UNID="&dsTinkerCustomWork;"
 			type=           "customItemPicker"
-			backgroundID=   "&rsItemListScreen;"
 			nestedScreen=   "true"
 			>
 		<List>

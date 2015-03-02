@@ -47,7 +47,6 @@
 			name=				"Ship's Configuration"
 			desc=				"Ship Configuration"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -95,7 +94,6 @@
 			name=				"Ship's Cargo Hold"
 			desc=				"Interior of Ship"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -211,7 +209,6 @@
 	<DockScreen UNID="&dsManualRefuel;"
 			name=				"Ship's Cargo Hold"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -408,7 +405,6 @@
 
 	<DockScreen UNID="&dsRPGMissionJournal;"
 			type=				"customPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 

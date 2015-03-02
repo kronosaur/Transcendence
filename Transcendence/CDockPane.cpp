@@ -31,6 +31,8 @@ const int ACTION_REGION_HEIGHT =	(ACTION_BUTTON_HEIGHT * MAX_ACTIONS) + (ACTION_
 const int FIRST_ACTION_ID =			100;
 const int LAST_ACTION_ID =			199;
 
+const int CONTROL_BORDER_RADIUS =	4;
+const int CONTROL_INNER_PADDING =	8;
 const int CONTROL_PADDING_BOTTOM =	24;
 
 const int COUNTER_ID =				204;
@@ -146,6 +148,9 @@ void CDockPane::CreateControl (EControlTypes iType, const CString &sID)
 			CGTextArea *pTextArea = new CGTextArea;
 			pTextArea->SetFont(&VI.GetFont(fontLarge));
 			pTextArea->SetColor(VI.GetColor(colorTextDockText));
+			pTextArea->SetPadding(CONTROL_INNER_PADDING);
+			pTextArea->SetBorderRadius(CONTROL_BORDER_RADIUS);
+			pTextArea->SetBackColor(VI.GetColor(colorAreaDialogInputFocus));
 			pTextArea->SetLineSpacing(6);
 			pTextArea->SetFontTable(&VI);
 

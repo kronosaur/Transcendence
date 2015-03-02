@@ -434,7 +434,6 @@
 
 			<OfferItem
 				type=				"itemPicker"
-				backgroundID=		"&rsItemListScreen;"
 				>
 
 				<ListOptions

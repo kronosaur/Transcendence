@@ -1240,8 +1240,8 @@
 
 			<DonateFuel
 					type=				"itemPicker"
-					backgroundID=		"&rsItemListScreen;"
 					>
+				
 				<ListOptions
 					dataFrom=	"player"
 					list=		"f"
@@ -4561,7 +4561,6 @@
 			<PickItem
 					name=				"Heretic Gate"
 					type=				"itemPicker"
-					backgroundID=		"&rsItemListScreen;"
 					>
 
 				<ListOptions

@@ -213,7 +213,6 @@
 
 	<DockScreen UNID="&dsRepairArmor;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -301,7 +300,6 @@
 
 	<DockScreen UNID="&dsReplaceArmor;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -429,7 +427,6 @@
 
 	<DockScreen UNID="&dsInstallDevice;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -579,7 +576,6 @@
 
 	<DockScreen UNID="&dsInstallWeapon;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -645,7 +641,6 @@
 
 	<DockScreen UNID="&dsRemoveDevice;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -745,7 +740,6 @@
 
 	<DockScreen UNID="&dsRemoveWeapon;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -1006,7 +1000,6 @@
 
 	<DockScreen UNID="&dsExchangeBuy;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -1320,7 +1313,6 @@
 	<DockScreen UNID="&dsExchangeSell;"
 			name=				"=(if gTitle gTitle (objGetName gSource 0x400))"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 

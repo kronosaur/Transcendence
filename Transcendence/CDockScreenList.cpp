@@ -142,7 +142,7 @@ IDockScreenDisplay::EResults CDockScreenList::OnHandleKeyDown (int iVirtKey)
 		}
 	}
 
-ALERROR CDockScreenList::OnInit (SInitCtx &Ctx, CString *retsError)
+ALERROR CDockScreenList::OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError)
 
 //	OnInit
 //
@@ -156,14 +156,14 @@ ALERROR CDockScreenList::OnInit (SInitCtx &Ctx, CString *retsError)
 	//	Calculate some basic metrics
 
 	RECT rcList = Ctx.rcRect;
-	rcList.left += 12;
-	rcList.right -= 44;
-	rcList.top += 12;
-	rcList.bottom = rcList.top + (PICKER_ROW_COUNT * PICKER_ROW_HEIGHT);
+	rcList.left += Options.rcControl.left;
+	rcList.right = rcList.left + RectWidth(Options.rcControl);
+	rcList.top += Options.rcControl.top;
+	rcList.bottom = rcList.top + RectHeight(Options.rcControl);
 
 	//	Create the picker control
 
-	m_pItemListControl = new CGItemListArea;
+	m_pItemListControl = new CGItemListArea(g_pHI->GetVisuals());
 	if (m_pItemListControl == NULL)
 		{
 		*retsError = CONSTLIT("Out of memory.");
@@ -180,7 +180,7 @@ ALERROR CDockScreenList::OnInit (SInitCtx &Ctx, CString *retsError)
 
 	//	Let our subclass initialize
 
-	if (error = OnInitList(Ctx, retsError))
+	if (error = OnInitList(Ctx, Options, retsError))
 		return error;
 
 	return NOERROR;

@@ -28,7 +28,6 @@
 	<DockScreen UNID="&dsRPGInstallDevice;"
 			type=				"itemPicker"
 			inherit=			"&dsDockScreenBase;"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -145,7 +144,6 @@
 
 	<DockScreen UNID="&dsRPGInstallDeviceFromList;"
 			type=           "customItemPicker"
-			backgroundID=   "&rsItemListScreen;"
 			nestedScreen=   "true"
 			>
 
@@ -245,7 +243,6 @@
 	<DockScreen UNID="&dsRPGUpgradeDevice;"
 			type=				"itemPicker"
 			inherit=			"&dsDockScreenBase;"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 

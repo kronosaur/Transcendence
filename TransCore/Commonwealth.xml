@@ -2822,7 +2822,6 @@
 
 	<DockScreen UNID="&dsContainerHabitatDonateItem;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions

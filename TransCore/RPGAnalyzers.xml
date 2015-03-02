@@ -20,7 +20,6 @@
 
 	<DockScreen UNID="&dsRPGAnalyzeItem;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions

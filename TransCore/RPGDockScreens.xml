@@ -154,7 +154,6 @@
 	
 	<DockScreen unid="&dsRPGCommoditiesExchangeBuy;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			inherit=			"&dsDockScreenBase;"
 			nestedScreen=		"true"
 			>
@@ -799,7 +798,6 @@
 	<DockScreen UNID="&dsRPGJettison;"
 			name=				"Ship's Cargo Hold"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -921,7 +919,6 @@
 
 	<DockScreen UNID="&dsRPGLoot;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -1208,7 +1205,6 @@
 
 	<DockScreen UNID="&dsRPGRepairArmor;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -1333,7 +1329,6 @@
 
 	<DockScreen UNID="&dsRPGReplaceArmor;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -1473,7 +1468,6 @@
 -->
 	<DockScreen UNID="&dsRPGRepairItem;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
