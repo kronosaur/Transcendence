@@ -2661,7 +2661,6 @@
 			sovereign=			"&svCommonwealth;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			defaultBackgroundID="&rsSistersShrineBkgnd;"
 			canAttack=			"true"
 			noBlacklist=		"true"
 
@@ -2677,6 +2676,7 @@
 			>
 
 		<Image			imageID="&rsStations1;" imageX="384" imageY="512" imageWidth="128" imageHeight="128"/>
+		<HeroImage		imageID="&rsSistersShrineHero;" imageWidth="324" imageHeight="528"/>
 
 		<Ships>
 			<Lookup count="1d2" table="&tbCommDefenders;"/>

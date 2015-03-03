@@ -189,7 +189,6 @@
 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			defaultBackgroundID="&rsRasiermesserFactoryBkgnd;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -211,6 +210,7 @@
 			>
 
 		<Image imageID="&rsRasiermesserFactory;" imageX="0" imageY="0" imageWidth="192" imageHeight="256"/>
+		<HeroImage imageID="&rsRasiermesserFactoryHero;" imageWidth="600" imageHeight="528"/>
 
 		<Ships>
 			<Lookup count="2" table="&tbCorpDefenders;"/>
@@ -683,5 +683,6 @@
 
 	<Image UNID="&rsRasiermesserFactory;" bitmap="Resources\RasiermesserFactory.jpg" bitmask="Resources\RasiermesserFactoryMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsRasiermesserFactoryBkgnd;" bitmap="Resources\RasiermesserFactoryScreen.jpg" loadOnUse="true" />
+	<Image UNID="&rsRasiermesserFactoryHero;" bitmap="Resources\RasiermesserFactoryHero.jpg" bitmask="Resources\RasiermesserFactoryHeroMask.bmp" loadOnUse="true" />
 
 </TranscendenceModule>

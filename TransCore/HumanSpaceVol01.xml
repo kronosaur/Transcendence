@@ -1550,6 +1550,23 @@
 	<!ENTITY rsItems9					"0x0010002A">
 	<!ENTITY rsItems10					"0x0010002B">
 	
+	<!-- 0030-003F SISTERS OF DOMINA -->
+	
+	<!ENTITY rsSistersShrineHero		"0x00100030">
+	
+	<!-- 0040-005F CORPORATE HIERARCHY -->
+	
+	<!ENTITY rsRasiermesserFactoryHero	"0x00100040">
+	
+	<!-- 0060-007F COMMONWEALTH FLEET -->
+	
+	<!ENTITY rsPointJunoHero			"0x00100060">
+	<!ENTITY rsFleetEmblems				"0x00100061">
+	
+	<!-- 0080-009F COMMONWEALTH -->
+	
+	<!ENTITY rsStKatsArcologyHero		"0x00100080">
+	
 	<!-- 1000-FFFF RESERVED -->
 	]>
 	

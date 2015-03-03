@@ -305,6 +305,49 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 		*retpDControl = pDControl;
 	}
 
+void CDockScreen::BltToBackgroundImage (const RECT &rcRect, CG32bitImage *pImage, int xSrc, int ySrc, int cxSrc, int cySrc)
+
+//	BltToBackgroundImage
+//
+//	Blts the image to m_pBackgroundImage
+
+	{
+	//	EXTRA_BACKGROUND_IMAGE is the amount of image to show to the
+	//	right of the center-line.
+
+	int cxAvail = (RectWidth(rcRect) / 2) + EXTRA_BACKGROUND_IMAGE;
+	int xImage = -Max(0, cxSrc - cxAvail);
+
+	CG32bitImage *pScreenMask = g_pUniverse->GetLibraryBitmap(DEFAULT_DOCK_SCREEN_MASK_UNID);
+	if (pScreenMask)
+		{
+		//	Center the mask and align it with the position of the background.
+
+		int xAlpha = Max(0, (pScreenMask->GetWidth() - m_pBackgroundImage->GetWidth()) / 2);
+
+		//	If the image is too small, then slide the mask over to the right
+		//	so that the fade-out part aligns with the right edge of the image.
+
+		if (pImage->GetWidth() < cxAvail)
+			xAlpha += (cxAvail - pImage->GetWidth());
+
+		//	Generate a new bitmap containing the mask at the exact position of
+		//	the image we want to blt.
+
+		CG32bitImage Mask;
+		if (xAlpha != 0)
+			{
+			Mask.Create(pImage->GetWidth(), pImage->GetHeight(), CG32bitImage::alpha8);
+			Mask.CopyChannel(channelAlpha, xAlpha, 0, pImage->GetWidth(), pImage->GetHeight(), *pScreenMask, 0, 0);
+			pScreenMask = &Mask;
+			}
+
+		m_pBackgroundImage->BltMask(xSrc, ySrc, cxSrc, cySrc, *pScreenMask, *pImage, xImage, 0);
+		}
+	else
+		m_pBackgroundImage->Blt(xImage, 0, cxSrc, cySrc, *pImage, xSrc, ySrc);
+	}
+
 void CDockScreen::CleanUpScreen (void)
 
 //	CleanUpScreen
@@ -442,6 +485,8 @@ ALERROR CDockScreen::CreateBackgroundImage (IDockScreenDisplay::SBackgroundDesc 
 
 	else if (Desc.iType == IDockScreenDisplay::backgroundObj)
 		{
+		const CObjectImageArray *pHeroImage;
+
 		//	If this is the player ship then we draw a large image
 
 		CShip *pShip = Desc.pObj->AsShip();
@@ -488,13 +533,36 @@ ALERROR CDockScreen::CreateBackgroundImage (IDockScreenDisplay::SBackgroundDesc 
 				}
 			}
 
+		//	If we have a hero image, then use that
+
+		else if ((pHeroImage = &Desc.pObj->GetHeroImage()) && !pHeroImage->IsEmpty())
+			{
+			//	Blt the system background
+
+			CSystem *pSystem = Desc.pObj->GetSystem();
+			CSystemType *pSystemType = pSystem->GetType();
+			DWORD dwSpaceID = pSystemType->GetBackgroundUNID();
+			CG32bitImage *pSpaceImage;
+			if (dwSpaceID
+					&& (pSpaceImage = g_pUniverse->GetLibraryBitmap(dwSpaceID)))
+				BltToBackgroundImage(rcRect, pSpaceImage, 0, 0, RectWidth(rcRect), RectHeight(rcRect));
+
+			//	Paint the hero image on top
+
+			pHeroImage->PaintImage(*m_pBackgroundImage,
+					xOffset + BACKGROUND_FOCUS_X,
+					BACKGROUND_FOCUS_Y,
+					0,
+					0);
+			}
+
 		//	Otherwise we draw the object
 
 		else
 			{
 			SViewportPaintCtx Ctx;
 			Ctx.fNoSelection = true;
-			Ctx.pObj = m_pLocation;
+			Ctx.pObj = Desc.pObj;
 			Desc.pObj->Paint(*m_pBackgroundImage,
 					xOffset + BACKGROUND_FOCUS_X,
 					BACKGROUND_FOCUS_Y,
@@ -512,42 +580,7 @@ ALERROR CDockScreen::CreateBackgroundImage (IDockScreenDisplay::SBackgroundDesc 
 	//	the center line. Otherwise, it is flush left.
 
 	else if (pImage)
-		{
-		//	EXTRA_BACKGROUND_IMAGE is the amount of image to show to the
-		//	right of the center-line.
-
-		int cxAvail = (RectWidth(rcRect) / 2) + EXTRA_BACKGROUND_IMAGE;
-		int xImage = -Max(0, pImage->GetWidth() - cxAvail);
-
-		CG32bitImage *pScreenMask = g_pUniverse->GetLibraryBitmap(dwScreenMaskUNID);
-		if (pScreenMask)
-			{
-			//	Center the mask and align it with the position of the background.
-
-			int xAlpha = Max(0, (pScreenMask->GetWidth() - m_pBackgroundImage->GetWidth()) / 2);
-
-			//	If the image is too small, then slide the mask over to the right
-			//	so that the fade-out part aligns with the right edge of the image.
-
-			if (pImage->GetWidth() < cxAvail)
-				xAlpha += (cxAvail - pImage->GetWidth());
-
-			//	Generate a new bitmap containing the mask at the exact position of
-			//	the image we want to blt.
-
-			CG32bitImage Mask;
-			if (xAlpha != 0)
-				{
-				Mask.Create(pImage->GetWidth(), pImage->GetHeight(), CG32bitImage::alpha8);
-				Mask.CopyChannel(channelAlpha, xAlpha, 0, pImage->GetWidth(), pImage->GetHeight(), *pScreenMask, 0, 0);
-				pScreenMask = &Mask;
-				}
-
-			m_pBackgroundImage->BltMask(0, 0, pImage->GetWidth(), pImage->GetHeight(), *pScreenMask, *pImage, xImage, 0);
-			}
-		else
-			m_pBackgroundImage->Blt(xImage, 0, pImage->GetWidth(), pImage->GetHeight(), *pImage, 0, 0);
-		}
+		BltToBackgroundImage(rcRect, pImage, 0, 0, pImage->GetWidth(), pImage->GetHeight());
 
 	return NOERROR;
 	}

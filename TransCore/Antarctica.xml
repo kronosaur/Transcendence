@@ -312,7 +312,13 @@
 		</Events>
 
 		<DockScreens>
-			<Main>
+			<Main backgroundID="none">
+				<Display>
+					<Image left="140" top="144" width="320" height="240" transparent="true">
+						(resCreateImageDesc &rsFleetEmblems; 640 0 320 240)
+					</Image>
+				</Display>
+				
 				<OnScreenInit>
 					(block Nil
 						(setq gPrevScreen "Main")
@@ -377,8 +383,14 @@
 
 			</Main>
 
-			<Introduction>
+			<Introduction backgroundID="none">
 
+				<Display>
+					<Image left="140" top="144" width="320" height="240" transparent="true">
+						(resCreateImageDesc &rsFleetEmblems; 640 0 320 240)
+					</Image>
+				</Display>
+				
 				<Panes>
 					<Default>
 						<OnPaneInit>
@@ -601,7 +613,13 @@
 
 			</Introduction>
 
-			<Celebrate>
+			<Celebrate backgroundID="none">
+				<Display>
+					<Image left="140" top="144" width="320" height="240" transparent="true">
+						(resCreateImageDesc &rsFleetEmblems; 640 0 320 240)
+					</Image>
+				</Display>
+				
 				<Panes>
 					<Default>
 						<OnPaneInit>
@@ -647,8 +665,15 @@
 
 			<Bridge
 				name=			"Bridge"
+				backgroundID=	"none"
 				>
 
+				<Display>
+					<Image left="140" top="144" width="320" height="240" transparent="true">
+						(resCreateImageDesc &rsFleetEmblems; 640 0 320 240)
+					</Image>
+				</Display>
+				
 				<Panes>
 					<Default>
 						<OnPaneInit>
@@ -674,8 +699,14 @@
 
 			</Bridge>
 
-			<Refuse>
+			<Refuse backgroundID="none">
 
+				<Display>
+					<Image left="140" top="144" width="320" height="240" transparent="true">
+						(resCreateImageDesc &rsFleetEmblems; 640 0 320 240)
+					</Image>
+				</Display>
+				
 				<Panes>
 					<Default
 						desc=	"As you exit the docking ramp, troopers train their weapons on you: &quot;The captain wants you off her ship.&quot;">
@@ -689,7 +720,13 @@
 				</Panes>
 			</Refuse>
 			
-			<ShipMoving>
+			<ShipMoving backgroundID="none">
+				
+				<Display>
+					<Image left="140" top="144" width="320" height="240" transparent="true">
+						(resCreateImageDesc &rsFleetEmblems; 640 0 320 240)
+					</Image>
+				</Display>
 				
 				<Panes>
 					<Default>
@@ -781,7 +818,6 @@
 			leavesWreck=		"100"
 
 			dockScreen=			"Main"
-			defaultBackgroundID="&rsCSCBkgnd;"
 			>
 
 		<!-- Configuration -->
@@ -864,7 +900,13 @@
 		</Trade>
 
 		<DockScreens>
-			<Main>
+			<Main backgroundID="none">
+				<Display>
+					<Image left="140" top="144" width="320" height="240" transparent="true">
+						(resCreateImageDesc &rsFleetEmblems; 960 480 320 240)
+					</Image>
+				</Display>
+				
 				<Panes>
 					<Default>
 						<OnPaneInit>

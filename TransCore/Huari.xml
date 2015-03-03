@@ -2201,7 +2201,6 @@
 
 	<DockScreen UNID="&dsUseTualiComaDrug;"
 			name=				"Ship's Interior"
-			backgroundID=		"&rsShipInterior;"
 			>
 
 		<Panes>

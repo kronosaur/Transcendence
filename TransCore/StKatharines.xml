@@ -188,7 +188,6 @@
 			name=				"Arcology of New Victoria"
 			sovereign=			"&svCommonwealth;"
 			dockScreen=			"&dsStKatsArcology;"
-			defaultBackgroundID="&rsStKatsArcologyScreen;"
 
 			virtual=			"true"
 			definiteArticle=	"true"
@@ -230,6 +229,8 @@
 			<InstallDevice	criteria="d L:1-7" priceAdj="100"/>
 			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
+		
+		<HeroImage imageID="&rsStKatsArcologyHero;" imageWidth="800" imageHeight="528"/>
 		
 		<StaticData>
 			<ParliamentDebate>
@@ -2877,6 +2878,7 @@
 	<Image UNID="&rsStKatsArcology;"	bitmap="Resources\StKatsArcology.jpg" bitmask="Resources\StKatsArcologyMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsIocrymMonument;"	bitmap="Resources\FirstContactMonument.jpg" bitmask="Resources\FirstContactMonumentMask.bmp"  loadOnUse="true"/>
 	
+	<Image UNID="&rsStKatsArcologyHero;"		bitmap="Resources\StKatsArcologyHero.jpg" bitmask="Resources\StKatsArcologyHeroMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsStKatsArcologyScreen;"		bitmap="Resources\StKatsArcologyScreen.jpg" loadOnUse="true"/>
 	<Image UNID="&rsStKatsArcologySchematic;"	bitmap="Resources\StKatsArcologySchematic.jpg" bitmask="Resources\StKatsArcologySchematicMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsIocrymMonumentScreen;"		bitmap="Resources\FirstContactMonumentScreen.jpg" loadOnUse="true"/>
