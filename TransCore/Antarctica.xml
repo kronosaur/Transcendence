@@ -145,9 +145,9 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="90"/>
 			<RepairArmor	criteria="a L:1-10;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-9" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-10;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-9;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -894,9 +894,9 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="90"/>
 			<RepairArmor	criteria="a L:1-10;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-9" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-10;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-9;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
 		</Trade>
 
 		<DockScreens>
@@ -1566,7 +1566,7 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="94"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
 		</Trade>
 
 		<Ships>

@@ -160,7 +160,17 @@ PLAYER DATA
 		</Devices>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="92"/>
+			<Sell	criteria="cNU +Illegal; -ID; -NotForSale; L:1-6;"	priceAdj="100"	inventoryAdj="100"/>
+			<Sell	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="*NU -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="85"/>
+			<Buy	criteria="*NU +military; -ID -NotForSale;"		priceAdj="90"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="92"/>
+			<RepairArmor	criteria="a L:1-6;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-6;" priceAdj="100"/>
+			<InstallDevice	criteria="c +Illegal; L:1-6" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
 		</Trade>
 		
 		<Items>
@@ -211,60 +221,28 @@ PLAYER DATA
 							</Action>
 
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									intBlackMarketBuyPrice	; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
-									intBlackMarketSellPrice	; items bought from player
-									Nil						; obsolete
-									
-									'(
-										Nil					; title
-										100000				; max price per item
-										)
+									"*"
 									)
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" imageIndex="1" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Upgrade Cargo Hold" key="C">
-								(block Nil
-									(setq gCost 2200)
-									(setq gItem (itmCreate &itSmugglersCargoHold; 1))
-									(setq gCheckMilitaryID Nil)
-									(scrShowScreen gScreen "&dsInstallSpecificDevice;")
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</DockServices>
-
 				</Panes>
 			</Main>
 
@@ -568,11 +546,18 @@ PLAYER DATA
 		</Devices>
 
 		<Trade currency="credit" max="100000" replenish="5000">
+			<Sell	criteria="cNU +Illegal; -ID; -NotForSale; L:1-9;"	priceAdj="100"	inventoryAdj="100"/>
+			<Sell	criteria="rNU L:1-7; -NotForSale;"	priceAdj="100"	inventoryAdj="100"/>
+			<Sell	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="*NU -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="85"/>
+			<Buy	criteria="*NU +military; -ID -NotForSale;"		priceAdj="90"/>
+			
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="94"/>
 			<RepairArmor	criteria="a L:1-9;" priceAdj="110"/>
-			<ReplaceArmor	criteria="a" priceAdj="110"/>
-			<InstallDevice	criteria="d L:1-9" priceAdj="120"/>
-			<RemoveDevice	criteria="d" priceAdj="120"/>
+			<ReplaceArmor	criteria="a L:1-9;" priceAdj="110"/>
+			<InstallDevice	criteria="d L:1-9;" priceAdj="120"/>
+			<RemoveDevice	criteria="d L:1-9;" priceAdj="120"/>
 		</Trade>
 			
 		<Items>
@@ -620,32 +605,21 @@ PLAYER DATA
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									intBlackMarketBuyPrice	; items sold to player
-									Nil						; obsolete
-									
-									'(	"d"					; install devices
-										9					; of level 9 (and below)
-										Nil					; no special tech modifiers
-										Nil					; check for military ID
-										20)					; install cost margin
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
-									intBlackMarketSellPrice	; items bought from player
-									Nil						; obsolete
-									
-									'(
-										Nil					; title
-										100000				; max price per item
-										)
+									"*"
 									)
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -654,59 +628,6 @@ PLAYER DATA
 
 						</Actions>
 					</Default>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(scrShowScreen gScreen "&dsRPGRepairArmor;" {
-									checkMilitaryID: Nil
-									})
-							</Action>
-
-							<Action name="Install Device" key="D" >
-								(scrShowScreen gScreen &dsRPGInstallDevice; {
-									checkMilitaryID: Nil
-									})
-							</Action>
-
-							<Action name="Remove Device" key="V" >
-								(block Nil
-									(setq gMargin 120)
-									(scrShowScreen gScreen "&dsRemoveDevice;")
-									)
-							</Action>
-
-							<Action name="Upgrade Cargo Hold" key="C">
-								(block Nil
-									(setq gCost 2200)
-									(setq gItem (itmCreate &itSmugglersCargoHold; 1))
-									(setq gCheckMilitaryID Nil)
-									(scrShowScreen gScreen "&dsInstallSpecificDevice;")
-									)
-							</Action>
-
-							<Action name="Upgrade Reactor" key="P" >
-								(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
-									{
-									itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-7;")
-									priceAdj: 100
-									checkMilitaryID: Nil
-									noItemsText: "The technology required to upgrade your reactor is not available at this station."
-									})
-							</Action>
-
-							<Action name="Done" cancel="1" key="N">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-
-					</DockServices>
 				</Panes>
 			</Main>
 
@@ -792,9 +713,9 @@ PLAYER DATA
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -1148,6 +1069,34 @@ PLAYER DATA
 					Nil
 					)
 			</GetGlobalDockScreen>
+			
+			<GetGlobalPlayerPriceAdj>
+				(block (
+					(rank (objGetData gPlayerShip "blackMarketLevel"))
+					)
+
+					(switch
+						;	Only at Black Market stations
+
+						(not (objHasAttribute aProviderObj 'blackMarket))
+							Nil
+							
+						;	Military items prices depend on rank
+						
+						(and (eq aService 'priceForPlayerToBuy)
+								(itmMatches gItem "* +military")
+								)
+							(switch
+								(ls rank 4)
+									200
+								125
+								)
+								
+						;	No adjustment
+						Nil
+						)
+					)
+			</GetGlobalPlayerPriceAdj>
 
 			<OnGlobalUniverseCreated>
 				(block Nil

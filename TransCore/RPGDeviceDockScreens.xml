@@ -21,7 +21,7 @@
 
 	noItemsText:		Text to show if itemList is empty
 	
-	replaceItem: The installed device to replace (may be Nil).
+	replaceItem:		The installed device to replace (may be Nil).
 
 -->
 

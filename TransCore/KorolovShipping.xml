@@ -1128,9 +1128,9 @@
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="90"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-6;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
 		</Trade>
 
 		<Ships>

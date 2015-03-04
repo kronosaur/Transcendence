@@ -95,7 +95,7 @@
 
 	<ItemType UNID="&itMinersCargoHold;"
 			name=				"miners's cargo hold"
-			attributes=			"commonwealth, majorItem, minersHold"
+			attributes=			"commonwealth, majorItem, minersHold, miningEquipment"
 			  
 			level=				"3"
 			frequency=			"rare"

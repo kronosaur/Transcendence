@@ -225,9 +225,9 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-7" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 		</Trade>
 		
 		<HeroImage imageID="&rsStKatsArcologyHero;" imageWidth="800" imageHeight="528"/>
@@ -1479,10 +1479,10 @@
 
 				<Actions>
 					<Action name="Buy Items" default="1" key="B">
-						; Buy screen
-						(scrShowBuyScreen 
-							"* +Food; +Specialty;"	; items sold to player
-							)
+						(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+							criteria: "* +food; +specialty;"
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Leave" cancel="1" key="L">

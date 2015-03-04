@@ -149,7 +149,12 @@
 	
 		checkMilitaryID: If True, we check military ID before installing an 
 				item.
+				
+		criteria: If non-nil, we restrict sales to items matching this 
+				criteria.
 
+		listFilter: If non-nil, this is a function to use as a filter of items
+				for the player to buy.
 -->
 	
 	<DockScreen unid="&dsRPGCommoditiesExchangeBuy;"
@@ -162,7 +167,37 @@
 				dataFrom=	"station"
 				list=		"*"
 				>
-			(scrSetListFilter gScreen intComputeSellPrice)
+			(block (
+				(itemCriteria (@ gData 'criteria))
+				)
+				
+				(switch
+					;	If we specify an item criteria, then create a function
+					;	that will filter.
+					
+					(and itemCriteria
+							(not (eq itemCriteria "*"))
+							)
+						(scrSetListFilter gScreen (lambda (theItem)
+							(switch
+								(not (itmMatches theItem itemCriteria))
+									Nil
+											
+								(intComputeSellPrice theItem)
+								)
+							))
+							
+					;	If we specify a function, use that
+					
+					(@ gData 'listFilter)
+						(scrSetListFilter gScreen (@ gData 'listFilter))
+					
+					;	Otherwise, we sell everything listed in our Trade
+					;	directives.
+					
+					(scrSetListFilter gScreen intComputeSellPrice)
+					)
+				)
 		</ListOptions>
 		
 		<Panes>
@@ -612,15 +647,43 @@
 				<OnPaneInit>
 					(block (
 						(canRepairArmor (objGetProperty gSource 'repairArmorMaxLevel))
-						(canInstallDevices (objGetProperty gSource 'installDeviceMaxLevel))
+						(canInstallWeapons (and
+							(objGetProperty gSource 'installDeviceMaxLevel)
+							(or
+								(filter (objGetItems gPlayerShip "w") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+								(filter (objGetItems gSource "w") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+								)
+							))
+						(canInstallMiscDevices (and
+							(objGetProperty gSource 'installDeviceMaxLevel)
+							(or
+								(filter (objGetItems gPlayerShip "d~ws") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+								(filter (objGetItems gSource "d~ws") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+								)
+							))
+						
+						(ammoWeapons (filter (objGetItems gPlayerShip "wI") theItem
+							(itmGetProperty theItem 'ammoType)
+							))
+						(ammoForSale (filter (objGetItems gSource "m") theItem (objGetSellPrice gSource theItem)))
+						(canBuyAmmo (and ammoWeapons
+							(filter ammoForSale theItem
+								(filter ammoWeapons theWeapon
+									(itmMatches theItem (cat "m +launchedBy:" (itmGetType theWeapon) ";"))
+									)
+								)
+							))
 						)
 					
 						;	Show/hide actions based on the services available
 						;	at this station.
 
 						(scrShowAction gScreen 'actionRepairArmor canRepairArmor)
-						(scrShowAction gScreen 'actionWeapons canInstallDevices)
-						(scrShowAction gScreen 'actionMiscDevices canInstallDevices)
+						(scrShowAction gScreen 'actionWeapons canInstallWeapons)
+						(scrShowAction gScreen 'actionMiscDevices canInstallMiscDevices)
+						
+						(scrShowAction gScreen 'actionBuyAmmoAndMissiles (and ammoForSale (not canInstallWeapons)))
+						(scrEnableAction gScreen 'actionBuyAmmoAndMissiles canBuyAmmo)
 						
 						;	Descriptor
 						
@@ -638,6 +701,29 @@
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							noUpgrade: (@ gData 'noUpgrade)
 							})
+					</Action>
+					
+					<Action id="actionBuyAmmoAndMissiles">
+						(block (
+							(ammoWeapons (filter (objGetItems gPlayerShip "wI") theItem
+								(itmGetProperty theItem 'ammoType)
+								))
+							)
+							
+							(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								listFilter: (lambda (theItem)
+									(switch
+										(not (filter ammoWeapons theWeapon
+												(itmMatches theItem (cat "m +launchedBy:" (itmGetType theWeapon) ";"))
+												))
+											Nil
+											
+										(intComputeSellPrice theItem)
+										)
+									)
+								})
+							)
 					</Action>
 					
 					<Action id="actionWeapons">
@@ -739,6 +825,7 @@
 		</Panes>
 		
 		<Language>
+			<Text id="actionBuyAmmoAndMissiles">"[B]uy Ammo and Missiles"</Text>
 			<Text id="actionDone">"Do[n]e"</Text>
 			<Text id="actionInstallDevice">"Install [D]evice"</Text>
 			<Text id="actionMiscDevices">"[M]iscellaneous Devices"</Text>

@@ -349,7 +349,7 @@
 
 	<ItemType UNID="&itMiningLaser;"
 			name=				"mining laser"
-			attributes=			"commonwealth, energyWeapon, majorItem, specialty"
+			attributes=			"commonwealth, energyWeapon, majorItem, miningEquipment, specialty"
 			  
 			level=				"2"
 			frequency=			"rare"
@@ -1710,7 +1710,7 @@
 
 	<ItemType UNID="&itPlasmaTorch;"
 			name=				"plasma torch(es)"
-			attributes=			"commonwealth, majorItem"
+			attributes=			"commonwealth, majorItem, miningEquipment"
 			  
 			level=				"6"
 			frequency=			"rare"
