@@ -487,6 +487,7 @@ class CPlayerShipController : public IShipController
 		CSpaceObjectTable m_TargetList;
 
 		CSpaceObject *m_pStation;				//	Station that player is docked with
+		bool m_bSignalDock;						//	Tell the model to switch to dock screen
 
 		DWORD m_dwWreckObjID;					//	WreckObjID (temp while we resurrect)
 

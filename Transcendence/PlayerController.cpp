@@ -40,6 +40,7 @@ CPlayerShipController::CPlayerShipController (void) :
 		m_bActivate(false),
 		m_bStopThrust(false),
 		m_pStation(NULL),
+		m_bSignalDock(false),
 		m_iOrder(orderNone),
 		m_pTarget(NULL),
 		m_pDestination(NULL),
@@ -1555,7 +1556,12 @@ CSpaceObject *CPlayerShipController::GetTarget (CItemCtx &ItemCtx, bool bNoAutoT
 
 void CPlayerShipController::OnDocked (CSpaceObject *pObj)
 	{
-	g_pTrans->GetModel().OnPlayerDocked(pObj);
+	ASSERT(pObj == m_pStation);
+
+	//	Set a flag because we don't want to transition to dock screen from
+	//	inside this event.
+
+	m_bSignalDock = true;
 	}
 
 void CPlayerShipController::OnDockedObjChanged (CSpaceObject *pLocation)
@@ -1812,6 +1818,16 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_GRAVITY_ALARM));
 			}
 		}
+
+	//	If we've succeeded in docking, then tell the model
+
+	if (m_bSignalDock)
+		{
+		if (m_pStation && !m_pStation->IsDestroyed())
+			g_pTrans->GetModel().OnPlayerDocked(m_pStation);
+
+		m_bSignalDock = false;
+		}
 	}
 
 void CPlayerShipController::OnWeaponStatusChanged (void)
@@ -2060,6 +2076,7 @@ void CPlayerShipController::Reset (void)
 
 	m_pAutoDock = NULL;
 	m_pAutoTarget = NULL;
+	m_bSignalDock = false;
 
 	DEBUG_CATCH
 	}
