@@ -772,7 +772,8 @@
 			type=				"freighter"
 			score=				"340"
 
-			mass=				"200"
+			size=				"54"
+			mass=				"500"
 			cargoSpace=			"500"
 			thrustRatio=		"1.8"
 			maxSpeed=			"16"
@@ -807,7 +808,7 @@
 			rotationAccel=		"0.5"
 			/>
 
-		<Image imageID="&rsEI200Image;" imageX="0" imageY="0" imageWidth="90" imageHeight="90"/>
+		<Image imageID="&rsEI200HD;" imageWidth="90" imageHeight="90"	rotationCount="120" rotationColumns="12"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="158"	posRadius="42"	posZ="0"	rotation="180"/>

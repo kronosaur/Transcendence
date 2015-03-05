@@ -71,7 +71,7 @@
 			attributes=			"capitalShip, corporate, genericClass, majorShip"
 			   
 			size=				"275"
-			mass=				"8000"
+			mass=				"25000"
 			thrustRatio=		"2"
 			maxSpeed=			"20"
 			cargoSpace=			"1000"
@@ -123,7 +123,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsCorporateCruiser;" imageX="0" imageY="0" imageWidth="230" imageHeight="230"/>
+		<Image imageID="&rsCorporateCruiserHD;" imageWidth="230" imageHeight="230"	rotationCount="120"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="0"	posZ="-10"	rotation="180"	sendToBack="*"/>
@@ -3217,6 +3217,7 @@
 <!-- RESOURCES -->
 
 	<Image UNID="&rsCorporateCruiser;"		bitmap="Resources\CorporateCruiser.jpg" bitmask="Resources\CorporateCruiserMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsCorporateCruiserHD;"	bitmap="Resources\CorporateCruiserHD.jpg" bitmask="Resources\CorporateCruiserHDMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsMakayevFactory;"		bitmap="Resources\MakayevFactory.jpg" bitmask="Resources\MakayevFactoryMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsManufacturingPlant;"	bitmap="Resources\ManufacturingPlant.jpg" bitmask="Resources\ManufacturingPlantMask.bmp" loadOnUse="true"/>
 	

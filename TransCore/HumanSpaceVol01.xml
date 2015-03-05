@@ -1557,6 +1557,7 @@
 	<!-- 0040-005F CORPORATE HIERARCHY -->
 	
 	<!ENTITY rsRasiermesserFactoryHero	"0x00100040">
+	<!ENTITY rsCorporateCruiserHD		"0x00100041">
 	
 	<!-- 0060-007F COMMONWEALTH FLEET -->
 	
@@ -1566,6 +1567,18 @@
 	<!-- 0080-009F COMMONWEALTH -->
 	
 	<!ENTITY rsStKatsArcologyHero		"0x00100080">
+	<!ENTITY rsAntaresIHD				"0x00100081">
+	<!ENTITY rsAntaresIIHD				"0x00100082">
+	<!ENTITY rsAntaresVHD				"0x00100083">
+	<!ENTITY rsEI200HD					"0x00100084">
+	
+	<!-- 00A0-00BF ARES ORTHODOXY -->
+	
+	<!ENTITY rsPhobosHD					"0x001000A0">
+	
+	<!-- 00C0-00CF SALVAGERS -->
+	
+	<!ENTITY rsSalvagerNomad			"0x001000C0">
 	
 	<!-- 1000-FFFF RESERVED -->
 	]>
