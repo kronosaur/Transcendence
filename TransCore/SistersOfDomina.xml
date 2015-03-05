@@ -907,7 +907,9 @@
 
 								; Calculate the increase in relationship
 								
-								(if (eq (item entry 2) 0)
+								(if (or (eq (item entry 2) 0)
+										(not (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;))
+										)
 									(setq incRel 0)
 									(setq incRel (multiply (itmGetCount gItem) (item entry 2)))
 									)
@@ -949,7 +951,9 @@
 								; Increase attitude and relationship
 
 								(objIncData gPlayerShip "sistersAttitude" incAtt)
-								(domGainXP incRel)
+								(if (gr incRel 0)
+									(domGainXP incRel)
+									)
 								
 								; Record stats
 								

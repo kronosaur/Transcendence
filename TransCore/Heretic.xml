@@ -2785,24 +2785,16 @@
 									)
 							</Action>
 							
-							<Action name="Tithe" key="T">
-								(block Nil
-									(setq gPrevScreen "Main")
-									(setq gPrevPane "Default")
-									(scrShowScreen gScreen "&dsDominaTithe;")
-									)
-							</Action>
-
 							<Action name="Sanctum" key="S">
-								(scrShowPane gScreen "Sanctum")
+								(scrShowScreen gScreen &dsSistersSanctum;)
 							</Action>
 
 							<Action name="Pilgrim's Aid" key="P">
-								(block Nil
-									(setq gPrevScreen "Main")
-									(setq gPrevPane "Default")
-									(scrShowScreen gScreen "&dsSistersDockServices;")
-									)
+								(scrShowScreen gScreen &dsSistersDockServices;)
+							</Action>
+							
+							<Action name="Donate" key="D">
+								(scrShowScreen gScreen &dsSistersDonate;)
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -2993,52 +2985,6 @@
 							</Action>
 						</Actions>
 					</DifferentMission>
-
-					<Sanctum
-							desc="You are in the sanctum of the Sisters of Domina. The plasteel walls that surround you are micro-engraved with the revelation of Domina. You see before you a holographic display of indescribable beauty and you feel immersed in the energies of a vast cosmic fountain.">
-
-						<Actions>
-							<Action name="Offer Item" key="O">
-								(block Nil
-									(setq gPrevScreen "Main")
-									(setq gPrevPane "Default")
-									(scrShowScreen gScreen "&dsDominaDonateItem;")
-									)
-							</Action>
-
-							<Action name="Contemplate" default="1" key="C">
-								(if (and (leq (objGetData gPlayerShip "sistersAttitude") 0)
-										(not (objGetData gSource "freeSanctum"))
-										)
-									(scrShowPane gScreen "SanctumBlocked")
-
-									(block Nil
-										(setq gPrevScreen "Main")
-										(setq gPrevPane "Default")
-										(setq gBonus 0)
-										(scrShowScreen gScreen "&dsContemplateDomina;")
-										)
-									)
-							</Action>
-
-							<Action name="Leave" cancel="1" key="L">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-
-					</Sanctum>
-
-					<SanctumBlocked
-							desc="&quot;You are not yet ready to commune with Domina. The burden of the material world weighs heavily on you.&quot;">
-
-						<Actions>
-							<Action name="Continue" default="1" key="C" cancel="1">
-								<ShowPane pane="Sanctum"/>
-							</Action>
-						</Actions>
-
-					</SanctumBlocked>
-
 				</Panes>
 			</Main>
 
