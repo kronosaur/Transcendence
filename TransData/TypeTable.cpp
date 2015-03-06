@@ -12,11 +12,10 @@
 
 #define CRITERIA_ATTRIB						CONSTLIT("criteria")
 
-#define FIELD_ENTITY						CONSTLIT("entity")
 #define FIELD_LEVEL							CONSTLIT("level")
 #define FIELD_NAME							CONSTLIT("name")
 
-void GenerateTypeTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable)
+void GenerateTypeTable (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
 	int i, j;
 
@@ -117,17 +116,7 @@ void GenerateTypeTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &En
 
 				//	Get the value
 
-				CString sValue;
-				if (strEquals(sField, FIELD_ENTITY))
-					{
-					CString *pValue;
-					if (EntityTable.Lookup(pType->GetUNID(), (CObject **)&pValue) == NOERROR)
-						sValue = *pValue;
-					else
-						sValue = CONSTLIT("?");
-					}
-				else
-					sValue = pType->GetDataField(sField);
+				CString sValue = pType->GetDataField(sField);
 
 				//	Format and output
 

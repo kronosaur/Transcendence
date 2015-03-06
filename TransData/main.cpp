@@ -311,21 +311,13 @@ void AlchemyMain (CXMLElement *pCmdLine)
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_FREQ_SWITCH))
 		GenerateEncounterFrequency(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_TABLE_SWITCH))
-		{
-		CIDTable EntityTable(TRUE, TRUE);
-		ComputeUNID2EntityTable(sDataFile, EntityTable);
-		GenerateEncounterTable(Universe, pCmdLine, EntityTable);
-		}
+		GenerateEncounterTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(IMAGES_SWITCH))
 		GenerateImageChart(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ITEM_FREQUENCY_SWITCH))
 		GenerateItemFrequencyTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ITEM_TABLE_SWITCH))
-		{
-		CIDTable EntityTable(TRUE, TRUE);
-		ComputeUNID2EntityTable(sDataFile, EntityTable);
-		GenerateItemTable(Universe, pCmdLine, EntityTable);
-		}
+		GenerateItemTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(LOOT_SIM_SWITCH))
 		GenerateLootSim(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(RANDOM_ITEMS_SWITCH))
@@ -343,11 +335,7 @@ void AlchemyMain (CXMLElement *pCmdLine)
 	else if (pCmdLine->GetAttributeBool(SHIP_IMAGES_SWITCH))
 		GenerateShipImageChart(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SHIP_TABLE_SWITCH))
-		{
-		CIDTable EntityTable(TRUE, TRUE);
-		ComputeUNID2EntityTable(sDataFile, EntityTable);
-		GenerateShipTable(Universe, pCmdLine, EntityTable);
-		}
+		GenerateShipTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SIM_TABLES_SWITCH))
 		GenerateSimTables(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SMOKE_TEST_SWITCH))
@@ -385,11 +373,7 @@ void AlchemyMain (CXMLElement *pCmdLine)
 	else if (pCmdLine->GetAttributeBool(TYPE_DEPENDENCIES_SWITCH))
 		GenerateTypeDependencies(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(TYPE_TABLE_SWITCH))
-		{
-		CIDTable EntityTable(TRUE, TRUE);
-		ComputeUNID2EntityTable(sDataFile, EntityTable);
-		GenerateTypeTable(Universe, pCmdLine, EntityTable);
-		}
+		GenerateTypeTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(TYPE_ISLANDS_SWITCH))
 		GenerateTypeIslands(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(HEXARC_TEST_SWITCH))
@@ -406,42 +390,6 @@ void AlchemyMain (CXMLElement *pCmdLine)
 	//	Done
 
 	::kernelSetDebugLog(NULL);
-	}
-
-void ComputeUNID2EntityTable (const CString &sDataFile, CIDTable &EntityTable)
-	{
-	ALERROR error;
-	int i;
-	CString sError;
-
-	//	Open the XML file
-
-	CResourceDb Resources(sDataFile);
-	if (error = Resources.Open(0, &sError))
-		{
-		printf("%s\n", (LPSTR)sError);
-		return;
-		}
-
-	CExternalEntityTable *pEntities;
-	if (error = Resources.LoadEntities(&sError, &pEntities))
-		{
-		printf("%s\n", sError.GetASCIIZPointer());
-		return;
-		}
-
-	//	Add the entities to an index of UNID to entity name
-
-	for (i = 0; i < pEntities->GetCount(); i++)
-		{
-		CString sEntity, sValue;
-		pEntities->GetEntity(i, &sEntity, &sValue);
-
-		//	Add to the list
-
-		DWORD dwUNID = strToInt(sValue, 0);
-		EntityTable.AddEntry(dwUNID, new CString(sEntity));
-		}
 	}
 
 ALERROR CreateXMLElementFromDataFile (const CString &sFilespec, CXMLElement **retpDataFile, CString *retsError)

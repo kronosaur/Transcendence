@@ -18,7 +18,6 @@
 #define FIELD_CAN_ATTACK					CONSTLIT("canAttack")
 #define FIELD_CATEGORY						CONSTLIT("category")
 #define FIELD_COUNT_DISTRIBUTION			CONSTLIT("countDistribution")
-#define FIELD_ENTITY						CONSTLIT("entity")
 #define FIELD_EXPLOSION_TYPE				CONSTLIT("explosionType")
 #define FIELD_FIRE_RATE_ADJ					CONSTLIT("fireRateAdj")
 #define FIELD_HP							CONSTLIT("hp")
@@ -28,7 +27,7 @@
 
 #define TOTAL_COUNT_FILENAME				CONSTLIT("TransData_EncounterCount.txt")
 
-void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable)
+void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
 	ALERROR error;
 	int i, j;
@@ -171,17 +170,7 @@ void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTabl
 
 				//	Get the value
 
-				CString sValue;
-				if (strEquals(sField, FIELD_ENTITY))
-					{
-					CString *pValue;
-					if (EntityTable.Lookup(pType->GetUNID(), (CObject **)&pValue) == NOERROR)
-						sValue = *pValue;
-					else
-						sValue = CONSTLIT("?");
-					}
-				else
-					sValue = pType->GetDataField(sField);
+				CString sValue = pType->GetDataField(sField);
 
 				//	Format and output
 
