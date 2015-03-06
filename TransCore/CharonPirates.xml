@@ -165,14 +165,14 @@
 			level=				"3"
 
 			attributes=			"capitalShip, charonPirates, genericClass"
-			   
-			mass=				"1000"
+			
+			size=				"120"
+			mass=				"6000"
 			thrustRatio=		"1"
 			maxSpeed=			"12"
 			cargoSpace=			"5"
 
 			explosionType=		"&vtKineticExplosion3;"
-			leavesWreck=		"85"
 			>
 
 		<!-- Configuration -->
