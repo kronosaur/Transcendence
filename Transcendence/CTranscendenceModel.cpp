@@ -2606,7 +2606,7 @@ void CTranscendenceModel::TransferGateFollowers (CSystem *pOldSystem, CSystem *p
 	//	OnNewSystem may refer to objects in the old system.
 
 	for (i = 0; i < GateFollowerObjs.GetCount(); i++)
-		GateFollowerObjs[i]->OnNewSystem(pSystem);
+		GateFollowerObjs[i]->NotifyOnNewSystem(pSystem);
 
 	//	Done
 
