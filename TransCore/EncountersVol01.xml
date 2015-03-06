@@ -3828,13 +3828,11 @@
 
 			attributes=			"freighter, genericClass, outlaws"
 			   
-			size=				"48"
-			mass=				"300"
+			size=				"60"
+			mass=				"500"
 			thrustRatio=		"1.5"
 			maxSpeed=			"16"
 			cargoSpace=			"2000"
-
-			leavesWreck=		"75"
 			>
 
 		<!-- Configuration -->
@@ -3891,13 +3889,11 @@
 
 			attributes=			"freighter, genericClass, outlaws"
 			   
-			size=				"65"
-			mass=				"500"
+			size=				"90"
+			mass=				"820"
 			thrustRatio=		"1.1"
 			maxSpeed=			"16"
 			cargoSpace=			"5000"
-
-			leavesWreck=		"90"
 			>
 
 		<Armor>

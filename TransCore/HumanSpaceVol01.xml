@@ -1580,6 +1580,10 @@
 	
 	<!ENTITY rsSalvagerNomad			"0x001000C0">
 	
+	<!-- 00D0-00DF URAK WARLORDS -->
+	
+	<!ENTITY rsUrakDestroyer			"0x001000D0">
+	
 	<!-- 1000-FFFF RESERVED -->
 	]>
 	

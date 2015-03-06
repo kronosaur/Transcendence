@@ -1092,7 +1092,8 @@
 			type=				"armed transport"
 			score=				"320"
 
-			mass=				"150"
+			size=				"60"
+			mass=				"500"
 			cargoSpace=			"50"
 			thrustRatio=		"1.0"
 			maxSpeed=			"16"
