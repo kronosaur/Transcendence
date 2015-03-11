@@ -19,6 +19,7 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	int iInitialUpdateTime = 10;
 	int iUpdateTime = pCmdLine->GetAttributeInteger(CONSTLIT("wait"));
+	bool bObjOnly = pCmdLine->GetAttributeBool(CONSTLIT("objOnly"));
 
 	//	Criteria
 
@@ -149,13 +150,52 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			CG32bitImage Output;
 			Output.Create(cxWidth, cyHeight);
-			RECT rcViewport;
-			rcViewport.left = 0;
-			rcViewport.top = 0;
-			rcViewport.right = cxWidth;
-			rcViewport.bottom = cyHeight;
+
+			if (bObjOnly)
+				{
+				SViewportPaintCtx Ctx;
+				Ctx.pObj = pTarget;
+				Ctx.XForm = ViewportTransform(pTarget->GetPos(), 
+						g_KlicksPerPixel, 
+						cxWidth / 2, 
+						cyHeight / 2);
+				Ctx.XFormRel = Ctx.XForm;
+				Ctx.fNoRecon = true;
+				Ctx.fNoDockedShips = true;
+				Ctx.fNoSelection = true;
+				Ctx.fNoStarfield = true;
+
+				CSpaceObject *pPOV = pSystem->GetObject(0);
+				CSpaceObject::Criteria Criteria;
+				CSpaceObject::ParseCriteria(pPOV, sCriteria, &Criteria);
+
+				//	Paint all objects that match the criteria
+
+				CSpaceObject::SCriteriaMatchCtx CriteriaCtx(Criteria);
+				for (i = 0; i < pSystem->GetObjectCount(); i++)
+					{
+					CSpaceObject *pObj = pSystem->GetObject(i);
+					if (pObj && pObj->MatchesCriteria(CriteriaCtx, Criteria))
+						{
+						Ctx.pObj = pObj;
+						int xObj;
+						int yObj;
+						Ctx.XForm.Transform(pObj->GetPos(), &xObj, &yObj);
+
+						pObj->Paint(Output, xObj, yObj, Ctx);
+						}
+					}
+				}
+			else
+				{
+				RECT rcViewport;
+				rcViewport.left = 0;
+				rcViewport.top = 0;
+				rcViewport.right = cxWidth;
+				rcViewport.bottom = cyHeight;
 			
-			pSystem->PaintViewport(Output, rcViewport, pTarget, dwPaintFlags);
+				pSystem->PaintViewport(Output, rcViewport, pTarget, dwPaintFlags);
+				}
 
 			//	Write to file
 
