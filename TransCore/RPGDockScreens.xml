@@ -16,6 +16,76 @@
 		</Language>
 	</DockScreen>
 	
+<!-- ABANDONED STATION =========================================================
+
+	Language IDs:
+	
+	descAbandonedStation: If the station has the given language ID, then we use
+			that as the description. Otherwise we come up with a default.
+	
+	
+-->
+
+	<DockScreen unid="&dsRPGAbandonedStation;"
+			inherit=			"&dsDockScreenBase;"
+			>
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (desc)
+						(switch
+							;	If we have a description in the object, then use that.
+						
+							(setq desc (objTranslate gSource 'descAbandonedStation))
+								(scrSetDesc gScreen desc)
+								
+							;	If populated, then use a default.
+							
+							(objHasAttribute gSource 'populated)
+								(scrSetDescTranslate gScreen 'descAbandonedStationPopulated)
+								
+							;	Otherwise, generic default
+							
+							(scrSetDescTranslate gScreen 'descAbandoendStationDefault)
+							)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionLoot" default="1" >
+						(scrShowScreen gScreen &dsRPGLoot;)
+					</Action>
+
+					<Action id="actionJettison">
+						(scrShowScreen gScreen &dsRPGJettison;)
+					</Action>
+
+					<Action id="actionUndock" cancel="1">
+						<Exit/>
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+		
+		<Language>
+			<Text id="actionJettison">"[J]ettison"</Text>
+			<Text id="actionLoot">"[L]oot"</Text>
+			
+			<Text id="descAbandonedStationDefault">
+				(cat
+					"You are docked at a destroyed structure. "
+					"Leaking fluids and venting gases obscure the ruined machinery inside."
+					)
+			</Text>
+			<Text id="descAbandoendStationPopulated">
+				(cat 
+					"You are docked at the lifeless ruins of a destroyed station. "
+					"Wrecked machinery and smoldering bodies litter the silent, cavernous bay."
+					)
+			</Text>
+		</Language>
+	</DockScreen>
+
 <!-- COMMODITIES EXCHANGE ======================================================
 
 	This screen allows the player to buy and sell items according to the 
@@ -79,12 +149,16 @@
 	
 		checkMilitaryID: If True, we check military ID before installing an 
 				item.
+				
+		criteria: If non-nil, we restrict sales to items matching this 
+				criteria.
 
+		listFilter: If non-nil, this is a function to use as a filter of items
+				for the player to buy.
 -->
 	
 	<DockScreen unid="&dsRPGCommoditiesExchangeBuy;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			inherit=			"&dsDockScreenBase;"
 			nestedScreen=		"true"
 			>
@@ -93,7 +167,37 @@
 				dataFrom=	"station"
 				list=		"*"
 				>
-			(scrSetListFilter gScreen intComputeSellPrice)
+			(block (
+				(itemCriteria (@ gData 'criteria))
+				)
+				
+				(switch
+					;	If we specify an item criteria, then create a function
+					;	that will filter.
+					
+					(and itemCriteria
+							(not (eq itemCriteria "*"))
+							)
+						(scrSetListFilter gScreen (lambda (theItem)
+							(switch
+								(not (itmMatches theItem itemCriteria))
+									Nil
+											
+								(intComputeSellPrice theItem)
+								)
+							))
+							
+					;	If we specify a function, use that
+					
+					(@ gData 'listFilter)
+						(scrSetListFilter gScreen (@ gData 'listFilter))
+					
+					;	Otherwise, we sell everything listed in our Trade
+					;	directives.
+					
+					(scrSetListFilter gScreen intComputeSellPrice)
+					)
+				)
 		</ListOptions>
 		
 		<Panes>
@@ -543,15 +647,43 @@
 				<OnPaneInit>
 					(block (
 						(canRepairArmor (objGetProperty gSource 'repairArmorMaxLevel))
-						(canInstallDevices (objGetProperty gSource 'installDeviceMaxLevel))
+						(canInstallWeapons (and
+							(objGetProperty gSource 'installDeviceMaxLevel)
+							(or
+								(filter (objGetItems gPlayerShip "w") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+								(filter (objGetItems gSource "w") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+								)
+							))
+						(canInstallMiscDevices (and
+							(objGetProperty gSource 'installDeviceMaxLevel)
+							(or
+								(filter (objGetItems gPlayerShip "d~ws") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+								(filter (objGetItems gSource "d~ws") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+								)
+							))
+						
+						(ammoWeapons (filter (objGetItems gPlayerShip "wI") theItem
+							(itmGetProperty theItem 'ammoType)
+							))
+						(ammoForSale (filter (objGetItems gSource "m") theItem (objGetSellPrice gSource theItem)))
+						(canBuyAmmo (and ammoWeapons
+							(filter ammoForSale theItem
+								(filter ammoWeapons theWeapon
+									(itmMatches theItem (cat "m +launchedBy:" (itmGetType theWeapon) ";"))
+									)
+								)
+							))
 						)
 					
 						;	Show/hide actions based on the services available
 						;	at this station.
 
 						(scrShowAction gScreen 'actionRepairArmor canRepairArmor)
-						(scrShowAction gScreen 'actionWeapons canInstallDevices)
-						(scrShowAction gScreen 'actionMiscDevices canInstallDevices)
+						(scrShowAction gScreen 'actionWeapons canInstallWeapons)
+						(scrShowAction gScreen 'actionMiscDevices canInstallMiscDevices)
+						
+						(scrShowAction gScreen 'actionBuyAmmoAndMissiles (and ammoForSale (not canInstallWeapons)))
+						(scrEnableAction gScreen 'actionBuyAmmoAndMissiles canBuyAmmo)
 						
 						;	Descriptor
 						
@@ -569,6 +701,29 @@
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							noUpgrade: (@ gData 'noUpgrade)
 							})
+					</Action>
+					
+					<Action id="actionBuyAmmoAndMissiles">
+						(block (
+							(ammoWeapons (filter (objGetItems gPlayerShip "wI") theItem
+								(itmGetProperty theItem 'ammoType)
+								))
+							)
+							
+							(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								listFilter: (lambda (theItem)
+									(switch
+										(not (filter ammoWeapons theWeapon
+												(itmMatches theItem (cat "m +launchedBy:" (itmGetType theWeapon) ";"))
+												))
+											Nil
+											
+										(intComputeSellPrice theItem)
+										)
+									)
+								})
+							)
 					</Action>
 					
 					<Action id="actionWeapons">
@@ -670,6 +825,7 @@
 		</Panes>
 		
 		<Language>
+			<Text id="actionBuyAmmoAndMissiles">"[B]uy Ammo and Missiles"</Text>
 			<Text id="actionDone">"Do[n]e"</Text>
 			<Text id="actionInstallDevice">"Install [D]evice"</Text>
 			<Text id="actionMiscDevices">"[M]iscellaneous Devices"</Text>
@@ -729,7 +885,6 @@
 	<DockScreen UNID="&dsRPGJettison;"
 			name=				"Ship's Cargo Hold"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -851,7 +1006,6 @@
 
 	<DockScreen UNID="&dsRPGLoot;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -1138,7 +1292,6 @@
 
 	<DockScreen UNID="&dsRPGRepairArmor;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -1263,7 +1416,6 @@
 
 	<DockScreen UNID="&dsRPGReplaceArmor;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -1403,7 +1555,6 @@
 -->
 	<DockScreen UNID="&dsRPGRepairItem;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 

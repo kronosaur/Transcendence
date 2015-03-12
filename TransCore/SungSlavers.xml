@@ -1630,7 +1630,6 @@
 	<DockScreen UNID="&dsUseLongzhuSphere;"
 			name=				"Ship's Cargo Hold"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions

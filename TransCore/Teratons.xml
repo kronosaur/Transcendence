@@ -613,7 +613,6 @@
 
 			<DropItem
 				type=			"itemPicker"
-				backgroundID=	"&rsItemListScreen;"
 				>
 
 				<ListOptions

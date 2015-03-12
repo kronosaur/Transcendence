@@ -2,6 +2,18 @@
 
 <TranscendenceModule>
 	
+<!--
+
+PLAYER DATA
+
+	fleetLevel:		Fleet level (1-6)
+	fleetMission:	Object that has assigned mission to player (Nil if none)
+	fleetXP:		Fleet experience points
+	fleetTFSuccess:	Number of successful Task Force missions
+	fleetTFFailure: Number of failed Task Force missions
+
+-->
+	
 	<Type unid="&unidCommonwealthFleet;">
 		<Events>
 			<GetGlobalPlayerPriceAdj>
@@ -694,7 +706,6 @@
 			leavesWreck=		"100"
 
 			dockScreen=			"Main"
-			defaultBackgroundID="&rsCSCBkgnd;"
 			>
 
 		<!-- Configuration -->
@@ -773,9 +784,9 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="90"/>
 			<RepairArmor	criteria="a L:1-10;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-9" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-10;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-9;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -2965,10 +2976,24 @@
 						)
 					)
 			</OnTimerFreighterAppears2B>
+			
+			<OnLoad>
+				(block (
+					(dataEntry (@ (typGetStaticData &stCSCTaskForceEncounter; 'CSCData) (objGetData gSource 'CSC)))
+					)
+					(objSetData gSource 'CSCData (eval dataEntry))
+					)
+			</OnLoad>
 		</Events>
 
 		<DockScreens>
-			<Main>
+			<Main backgroundID="none">
+				<Display>
+					<Image left="140" top="144" width="320" height="240" transparent="true">
+						(@ (objGetData gSource 'CSCData) 'emblem)
+					</Image>
+				</Display>
+				
 				<InitialPane>
 					(block (missionID missionStatus)
 						(setq missionID (objGetData gSource "MissionID"))
@@ -3112,8 +3137,15 @@
 
 			<Bridge
 				name=			"Bridge"
+				backgroundID=	"none"
 				>
 
+				<Display>
+					<Image left="140" top="144" width="320" height="240" transparent="true">
+						(@ (objGetData gSource 'CSCData) 'emblem)
+					</Image>
+				</Display>
+				
 				<Panes>
 					<Default>
 						<OnPaneInit>
@@ -3149,8 +3181,15 @@
 
 			<FlightDeck
 				name=			"Flight Deck"
+				backgroundID=	"none"
 				>
 
+				<Display>
+					<Image left="140" top="144" width="320" height="240" transparent="true">
+						(@ (objGetData gSource 'CSCData) 'emblem)
+					</Image>
+				</Display>
+				
 				<Panes>
 					<Default>
 						<OnPaneInit>
@@ -3276,7 +3315,6 @@
 			leavesWreck=		"100"
 
 			dockScreen=			"Main"
-			defaultBackgroundID="&rsCSCBkgnd;"
 			>
 
 		<!-- Configuration -->
@@ -3349,10 +3387,28 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="90"/>
 			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-8" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-9;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-8;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
 		</Trade>
+		
+		<Events>
+			<OnLoad>
+				(switch
+					(eq (objGetData gSource 'CSC) 'arctica)
+						(objSetData gSource 'CSCData {
+							name: "CSC Arctica"
+							emblem: (resCreateImageDesc &rsFleetEmblems; 960 0 320 240)
+							})
+							
+					(eq (objGetData gSource 'CSC) 'sahara)
+						(objSetData gSource 'CSCData {
+							name: "CSC Sahara"
+							emblem: (resCreateImageDesc &rsFleetEmblems; 640 480 320 240)
+							})
+					)
+			</OnLoad>
+		</Events>
 
 		<StaticData>
 			<arcticaCaptainWelcome>
@@ -3389,7 +3445,13 @@
 		</StaticData>
 
 		<DockScreens>
-			<Main>
+			<Main backgroundID="none">
+				<Display>
+					<Image left="140" top="144" width="320" height="240" transparent="true">
+						(@ (objGetData gSource 'CSCData) 'emblem)
+					</Image>
+				</Display>
+				
 				<Panes>
 					<Default>
 						<OnPaneInit>
@@ -3434,8 +3496,15 @@
 
 			<Bridge
 				name=			"Bridge"
+				backgroundID=	"none"
 				>
 
+				<Display>
+					<Image left="140" top="144" width="320" height="240" transparent="true">
+						(@ (objGetData gSource 'CSCData) 'emblem)
+					</Image>
+				</Display>
+				
 				<Panes>
 					<Default>
 						<OnPaneInit>
@@ -3454,8 +3523,15 @@
 
 			<Infirmary
 				name=			"Infirmary"
+				backgroundID=	"none"
 				>
 
+				<Display>
+					<Image left="140" top="144" width="320" height="240" transparent="true">
+						(@ (objGetData gSource 'CSCData) 'emblem)
+					</Image>
+				</Display>
+				
 				<Panes>
 					<Default
 							desc=	"You are in the main infirmary of a Commonwealth Star Carrier. Sleep-deprived technicians attend hundreds of patients in their rejuv tanks, mostly oblivious to the insistent medical alarms. The smell of blood, wounds, and antiseptics smother you.">
@@ -4227,11 +4303,30 @@
 		<StaticData>
 			<CSCData>
 				{
-					america:	{ name: "CSC America" }
-					atlantica:	{ name: "CSC Atlantica" }
-					asia:		{ name: "CSC Asia" }
-					india:		{ name: "CSC India" }
-					pacifica:	{ name: "CSC Pacifica" }
+					america:
+						{	name: "CSC America" 
+							emblem: (resCreateImageDesc &rsFleetEmblems; 320 0 320 240)
+							}
+							
+					atlantica:
+						{	name: "CSC Atlantica" 
+							emblem: (resCreateImageDesc &rsFleetEmblems; 320 240 320 240)
+							}
+							
+					asia:
+						{	name: "CSC Asia" 
+							emblem: (resCreateImageDesc &rsFleetEmblems; 0 240 320 240)
+							}
+							
+					india:
+						{	name: "CSC India" 
+							emblem: (resCreateImageDesc &rsFleetEmblems; 0 480 320 240)
+							}
+							
+					pacifica:	
+						{	name: "CSC Pacifica" 
+							emblem: (resCreateImageDesc &rsFleetEmblems; 320 480 320 240)
+							}
 					}
 			</CSCData>
 		</StaticData>
@@ -4263,6 +4358,7 @@
 
 						(objSetName gSource (@ dataEntry 'name) 0x01)
 						(objSetData gSource 'CSC shipToCreate)
+						(objSetData gSource 'CSCData (eval dataEntry))
 						)
 				</OnCreate>
 
@@ -4364,12 +4460,16 @@
 
 		<Ships>
 			<Ship	count="1"	class="&scCSCHospital;" orders="hold">
-
-				<Names definiteArticle="true">CSC Arctica</Names>
-
-				<InitialData>
-					<CSC>"arctica"</CSC>
-				</InitialData>
+				<OnCreate>
+					(block Nil
+						(objSetName gSource "CSC Arctica" 0x01)
+						(objSetData gSource 'CSC 'arctica)
+						(objSetData gSource 'CSCData {
+							name: "CSC Arctica"
+							emblem: (resCreateImageDesc &rsFleetEmblems; 960 0 320 240)
+							})
+						)
+				</OnCreate>
 
 				<Escorts>
 					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
@@ -4480,12 +4580,16 @@
 
 		<Ships>
 			<Ship	count="1"	class="&scCSCHospital;" orders="hold">
-
-				<Names definiteArticle="true">CSC Sahara</Names>
-
-				<InitialData>
-					<CSC>"sahara"</CSC>
-				</InitialData>
+				<OnCreate>
+					(block Nil
+						(objSetName gSource "CSC Sahara" 0x01)
+						(objSetData gSource 'CSC 'sahara)
+						(objSetData gSource 'CSCData {
+							name: "CSC Sahara"
+							emblem: (resCreateImageDesc &rsFleetEmblems; 640 480 320 240)
+							})
+						)
+				</OnCreate>
 
 				<Escorts>
 					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
@@ -5177,6 +5281,7 @@
 <!-- RESOURCES -->
 
 	<Image UNID="&rsBritannia;"		bitmap="Resources\Britannia.jpg" bitmask="Resources\BritanniaMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsCSCBkgnd;" bitmap="Resources\CSC.jpg" loadOnUse="true" />
+	<Image UNID="&rsCSCBkgnd;"		bitmap="Resources\CSC.jpg" loadOnUse="true" />
+	<Image UNID="&rsFleetEmblems;"	bitmap="Resources\FleetEmblems.jpg" bitmask="Resources\FleetEmblemsMask.bmp" loadOnUse="true" />
 
 </TranscendenceModule>

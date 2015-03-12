@@ -25,6 +25,15 @@
 			<Image			imageID="&rsOreSmall;" imageX="48" imageY="48" imageWidth="24" imageHeight="24" />
 			<Image			imageID="&rsOreSmall;" imageX="48" imageY="72" imageWidth="24" imageHeight="24" />
 		</ImageVariants>
+		
+		<HeroImage>
+			<ImageVariants>
+				<Image			imageID="&rsMinedOreHero;" imageWidth="600" imageHeight="528" />
+				<Image			imageID="&rsMinedOreHero;" imageWidth="600" imageHeight="528" />
+				<Image			imageID="&rsMinedOreHero;" imageWidth="600" imageHeight="528" />
+				<Image			imageID="&rsMinedOreHero;" imageWidth="600" imageHeight="528" />
+			</ImageVariants>
+		</HeroImage>
 
 		<DockingPorts
 				portCount=		"2"
@@ -122,7 +131,6 @@
 	<!-- Mined Ore Dock Screen -->
 
 	<DockScreen UNID="&dsMinedOre;"
-			backgroundID=	"&rsMinedOreBkgnd;"
 			>
 
 		<InitialPane>
@@ -207,5 +215,6 @@
 
 	<Image UNID="&rsOreSmall;" bitmap="Resources\OreSmall.jpg" bitmask="Resources\OreSmallMask.bmp" loadOnUse="true" />
 	<Image UNID="&rsMinedOreBkgnd;" bitmap="Resources\MinedOreScreen.jpg" loadOnUse="true" />
+	<Image UNID="&rsMinedOreHero;" bitmap="Resources\MinedOreHero.jpg" bitmask="Resources\MinedOreHeroMask.bmp" loadOnUse="true" />
 
 </TranscendenceModule>

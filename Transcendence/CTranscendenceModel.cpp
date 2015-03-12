@@ -109,7 +109,6 @@
 
 #define HIGH_SCORES_FILENAME					CONSTLIT("HighScores.xml")
 
-#define STR_G_PLAYER							CONSTLIT("gPlayer")
 #define STR_G_PLAYER_SHIP						CONSTLIT("gPlayerShip")
 
 #define NESTED_SCREEN_ATTRIB					CONSTLIT("nestedScreen")
@@ -934,10 +933,10 @@ void CTranscendenceModel::GenerateGameStats (CGameStats *retStats, bool bGameOve
 	//	so that the calls inside of GenerateGameStats can work properly
 
 	bool bCleanUp = false;
-	if (m_Universe.GetPlayer() == NULL)
+	if (m_Universe.GetPlayerShip() == NULL)
 		{
 		ASSERT(pPlayerShip);
-		m_Universe.SetPlayer(pPlayerShip);
+		m_Universe.SetPlayerShip(pPlayerShip);
 		bCleanUp = true;
 		}
 
@@ -978,7 +977,7 @@ void CTranscendenceModel::GenerateGameStats (CGameStats *retStats, bool bGameOve
 	//	Clean up
 
 	if (bCleanUp)
-		m_Universe.SetPlayer(NULL);
+		m_Universe.SetPlayerShip(NULL);
 	}
 
 ALERROR CTranscendenceModel::GetGameStats (CGameStats *retStats)
@@ -1170,6 +1169,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 		if (error = m_GameFile.LoadUniverse(m_Universe, &dwSystemID, &dwPlayerID, retsError))
 			{
 			m_GameFile.Close();
+			m_Universe.Reinit();
 			return error;
 			}
 
@@ -1184,6 +1184,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 				&pPlayerObj))
 			{
 			m_GameFile.Close();
+			m_Universe.Reinit();
 			return error;
 			}
 
@@ -1192,6 +1193,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 			{
 			*retsError = CONSTLIT("Save file corruption: Player ship is invalid.");
 			m_GameFile.Close();
+			m_Universe.Reinit();
 			return ERR_FAIL;
 			}
 
@@ -1203,6 +1205,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 			{
 			*retsError = CONSTLIT("Save file corruption: Player ship is invalid.");
 			m_GameFile.Close();
+			m_Universe.Reinit();
 			return ERR_FAIL;
 			}
 
@@ -1227,12 +1230,26 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 			*retsError = strPatternSubst(CONSTLIT("Unable to set resurrect flag"));
 			m_pPlayer = NULL;
 			m_GameFile.Close();
+			m_Universe.Reinit();
 			return error;
 			}
 
 		//	Set the resurrect count
 
 		m_pPlayer->SetResurrectCount(m_GameFile.GetResurrectCount());
+
+		//	Connect the player ship controller to the controller
+
+		CTranscendencePlayer *pPlayerController = dynamic_cast<CTranscendencePlayer *>(m_Universe.GetPlayer());
+		if (pPlayerController == NULL)
+			{
+			*retsError = CONSTLIT("Save file corruption: No player controller found.");
+			m_GameFile.Close();
+			m_Universe.Reinit();
+			return ERR_FAIL;
+			}
+
+		pPlayerController->SetPlayer(m_pPlayer);
 
 		//	Set debug mode appropriately
 
@@ -2194,7 +2211,7 @@ ALERROR CTranscendenceModel::StartGame (bool bNewGame)
 	{
 	//	Tell the universe to focus on the ship
 
-	m_Universe.SetPlayer(m_pPlayer->GetShip());
+	m_Universe.SetPlayerShip(m_pPlayer->GetShip());
 	m_Universe.SetPOV(m_pPlayer->GetShip());
 
 	//	Set sound
@@ -2272,29 +2289,22 @@ ALERROR CTranscendenceModel::StartNewGame (const CString &sUsername, const SNewG
 	m_pPlayer->SetGenome(NewGame.iPlayerGenome);
 	m_pPlayer->SetStartingShipClass(NewGame.dwPlayerShip);
 
-	//	Define globals for OnGameStart (only gPlayer is defined)
-	//	We need this because script may want to reference gPlayer
-	//	to get genome information.
-	//
-	//	The rest of the variables will be set in m_Universe.SetPlayer
-
-	CCodeChain &CC = m_Universe.GetCC();
-	CC.DefineGlobal(CONSTLIT("gPlayer"), CC.CreateInteger((int)m_pPlayer));
-
-	//	Invoke Adventure OnGameStart
-	//	NOTE: The proper adventure is set by a call to InitAdventure,
-	//	when the adventure is chosen.
-
-	CAdventureDesc *pAdventure = m_Universe.GetCurrentAdventureDesc();
-	ASSERT(pAdventure);
+	//	Inside of InitAdventure we may get called back to set the crawl image
+	//	and text.
 
 	m_pCrawlImage = NULL;
 	m_pCrawlSoundtrack = NULL;
 	m_sCrawlText = NULL_STR;
 
-	m_Universe.SetLogImageLoad(false);
-	pAdventure->FireOnGameStart();
-	m_Universe.SetLogImageLoad(true);
+	//	Create the player controller
+
+	CTranscendencePlayer *pPlayerController = new CTranscendencePlayer;
+	pPlayerController->SetPlayer(m_pPlayer);
+
+	//	Initialize the adventure and hand it the player controller.
+
+	if (m_Universe.InitAdventure(pPlayerController, retsError) != NOERROR)
+		return ERR_FAIL;
 
 	//	The remainder of new game start happens in the background thread
 	//	in StartNewGamebackground
@@ -2596,7 +2606,7 @@ void CTranscendenceModel::TransferGateFollowers (CSystem *pOldSystem, CSystem *p
 	//	OnNewSystem may refer to objects in the old system.
 
 	for (i = 0; i < GateFollowerObjs.GetCount(); i++)
-		GateFollowerObjs[i]->OnNewSystem(pSystem);
+		GateFollowerObjs[i]->NotifyOnNewSystem(pSystem);
 
 	//	Done
 

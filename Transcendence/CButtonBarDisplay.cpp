@@ -5,7 +5,7 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-const WORD BAR_COLOR =						CG16bitImage::RGBValue(0, 2, 10);
+const CG32bitPixel BAR_COLOR =				CG32bitPixel(0, 2, 10);
 const int BUTTON_WIDTH =					128;
 const int BUTTON_HEIGHT =					80;
 
@@ -288,7 +288,7 @@ void CButtonBarDisplay::OnMouseMove (int x, int y)
 	m_iSelected = FindButtonAtPoint(pt);
 	}
 
-void CButtonBarDisplay::Paint (CG16bitImage &Dest)
+void CButtonBarDisplay::Paint (CG32bitImage &Dest)
 
 //	Paint
 //
@@ -307,7 +307,7 @@ void CButtonBarDisplay::Paint (CG16bitImage &Dest)
 
 	//	Get the images
 
-	const CG16bitImage &Images = m_pButtons->GetImage();
+	const CG32bitImage &Images = m_pButtons->GetImage();
 
 	//	Paint each button
 
@@ -339,7 +339,7 @@ void CButtonBarDisplay::Paint (CG16bitImage &Dest)
 		m_pFonts->SubTitle.DrawText(Dest,
 				rcRect.left + (RectWidth(rcRect) - cxWidth) / 2,
 				rcRect.top + BUTTON_LABEL_Y,
-				CG16bitImage::RGBValue(128,128,128),
+				CG32bitPixel(128,128,128),
 				m_pButtons->GetLabel(i));
 
 		//	Paint the description
@@ -348,7 +348,7 @@ void CButtonBarDisplay::Paint (CG16bitImage &Dest)
 		m_pFonts->Medium.DrawText(Dest,
 				rcRect.left + (RectWidth(rcRect) - cxWidth) / 2,
 				rcRect.top + BUTTON_DESCRIPTION_Y,
-				CG16bitImage::RGBValue(255,255,255),
+				CG32bitPixel(255,255,255),
 				m_pButtons->GetDescription(i));
 		}
 	}

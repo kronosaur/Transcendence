@@ -18,7 +18,6 @@
 
 	<DockScreen UNID="&dsRepairItem;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -108,7 +107,6 @@
 	<DockScreen UNID="&dsJettison;"
 			name=				"Ship's Cargo Hold"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -228,7 +226,6 @@
 
 	<DockScreen UNID="&dsLoot;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions

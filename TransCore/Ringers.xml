@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <TranscendenceModule>
-
+	
 	<!-- Ringers Collective -->
 
 	<StationType UNID="&stRingersCollective;"
@@ -255,10 +255,10 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="85"/>
 			<RepairArmor	criteria="a L:1-12;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-12;" priceAdj="100"/>
 			<InstallDevice	criteria="w L:1-10" priceAdj="200"/>
-			<InstallDevice	criteria="d~w L:1-10" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<InstallDevice	criteria="d~w L:1-10;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-10;" priceAdj="100"/>
 		</Trade>
 
 		<Reinforcements minShips="3">
@@ -523,7 +523,17 @@
 		</Events>
 	</StationType>
 
-<!-- RINGERS -->
+<!-- RINGERS
+
+	PLAYER DATA
+
+	ringerCrime:	Description of the player's crime (e.g., "destruction of xyz")
+	ringerCrimeSeverity: The severity of the crime
+						0 = No crime
+						1 = Social violation
+						2 = Dangerous deviance
+						3 = Existential threat
+-->
 
 	<Sovereign UNID="&svRingers;"
 			name="Ringers"

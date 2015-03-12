@@ -1374,5 +1374,14 @@
 				))
 			)
 	</Globals>
-
+	
+<!-- RESOURCES -->
+	
+	<Image UNID="&rsLightNebulaSpace;"			bitmap="Resources\LightNebulaSpace.jpg"	loadOnUse="true"/>
+	<Image UNID="&rsPrimordialNebulaSpace;"		bitmap="Resources\PrimordialNebulaSpace.jpg"	loadOnUse="true"/>
+	<Image UNID="&rsRedDwarfSpace;"				bitmap="Resources\RedDwarfSpace.jpg"	loadOnUse="true"/>
+	<Image UNID="&rsRockyAsteroidSpace;"		bitmap="Resources\RockyAsteroidSpace.jpg"	loadOnUse="true"/>
+	<Image UNID="&rsBrightStarSpace;"			bitmap="Resources\BrightStarSpace.jpg"	loadOnUse="true"/>
+	<Image UNID="&rsRedGiantSpace;"				bitmap="Resources\RedGiantSpace.jpg"	loadOnUse="true"/>
+	
 </TranscendenceModule>

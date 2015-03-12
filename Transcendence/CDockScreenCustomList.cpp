@@ -6,31 +6,19 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-#define LIST_TAG					CONSTLIT("List")
-
-#define INITIAL_ITEM_ATTRIB			CONSTLIT("initialItem")
-#define ROW_HEIGHT_ATTRIB			CONSTLIT("rowHeight")
-
-ALERROR CDockScreenCustomList::OnInitList (SInitCtx &Ctx, CString *retsError)
+ALERROR CDockScreenCustomList::OnInitList (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError)
 
 //	OnInitList
 //
 //	Initialize list
 
 	{
-	//	Get the list element
-
-	CXMLElement *pListData = Ctx.pDesc->GetContentElementByTag(LIST_TAG);
-	if (pListData == NULL)
-		return ERR_FAIL;
-
 	//	See if we define a custom row height
 
-	CString sRowHeight;
-	if (pListData->FindAttribute(ROW_HEIGHT_ATTRIB, &sRowHeight))
+	if (!Options.sRowHeightCode.IsBlank())
 		{
 		CString sResult;
-		if (!EvalString(sRowHeight, false, eventNone, &sResult))
+		if (!EvalString(Options.sRowHeightCode, false, eventNone, &sResult))
 			{
 			*retsError = sResult;
 			return ERR_FAIL;
@@ -44,7 +32,7 @@ ALERROR CDockScreenCustomList::OnInitList (SInitCtx &Ctx, CString *retsError)
 	//	Get the list to show
 
 	CCodeChain &CC = g_pUniverse->GetCC();
-	ICCItem *pExp = CC.Link(pListData->GetContentText(0), 0, NULL);
+	ICCItem *pExp = CC.Link(Options.sCode, 0, NULL);
 
 	//	Evaluate the function
 
@@ -74,14 +62,13 @@ ALERROR CDockScreenCustomList::OnInitList (SInitCtx &Ctx, CString *retsError)
 	//	Give the screen a chance to start at a different item (other
 	//	than the first)
 
-	CString sInitialItemFunc = pListData->GetAttribute(INITIAL_ITEM_ATTRIB);
-	if (!sInitialItemFunc.IsBlank())
+	if (!Options.sInitialItemCode.IsBlank())
 		{
 		bool bMore = IsCurrentItemValid();
 		while (bMore)
 			{
 			bool bResult;
-			if (!EvalBool(sInitialItemFunc, &bResult, retsError))
+			if (!EvalBool(Options.sInitialItemCode, &bResult, retsError))
 				return ERR_FAIL;
 
 			if (bResult)

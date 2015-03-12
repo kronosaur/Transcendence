@@ -1240,8 +1240,8 @@
 
 			<DonateFuel
 					type=				"itemPicker"
-					backgroundID=		"&rsItemListScreen;"
 					>
+				
 				<ListOptions
 					dataFrom=	"player"
 					list=		"f"
@@ -1405,7 +1405,7 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -1691,9 +1691,9 @@
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-10;" priceAdj="120"/>
-			<ReplaceArmor	criteria="a" priceAdj="120"/>
-			<InstallDevice	criteria="d L:1-10" priceAdj="120"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-10;" priceAdj="120"/>
+			<InstallDevice	criteria="d L:1-10;" priceAdj="120"/>
+			<RemoveDevice	criteria="d L:1-10;" priceAdj="100"/>
 		</Trade>
 		
 		<Items>
@@ -2661,7 +2661,6 @@
 			sovereign=			"&svCommonwealth;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			defaultBackgroundID="&rsSistersShrineBkgnd;"
 			canAttack=			"true"
 			noBlacklist=		"true"
 
@@ -2677,6 +2676,7 @@
 			>
 
 		<Image			imageID="&rsStations1;" imageX="384" imageY="512" imageWidth="128" imageHeight="128"/>
+		<HeroImage		imageID="&rsSistersShrineHero;" imageWidth="324" imageHeight="528"/>
 
 		<Ships>
 			<Lookup count="1d2" table="&tbCommDefenders;"/>
@@ -2785,24 +2785,16 @@
 									)
 							</Action>
 							
-							<Action name="Tithe" key="T">
-								(block Nil
-									(setq gPrevScreen "Main")
-									(setq gPrevPane "Default")
-									(scrShowScreen gScreen "&dsDominaTithe;")
-									)
-							</Action>
-
 							<Action name="Sanctum" key="S">
-								(scrShowPane gScreen "Sanctum")
+								(scrShowScreen gScreen &dsSistersSanctum;)
 							</Action>
 
 							<Action name="Pilgrim's Aid" key="P">
-								(block Nil
-									(setq gPrevScreen "Main")
-									(setq gPrevPane "Default")
-									(scrShowScreen gScreen "&dsSistersDockServices;")
-									)
+								(scrShowScreen gScreen &dsSistersDockServices;)
+							</Action>
+							
+							<Action name="Donate" key="D">
+								(scrShowScreen gScreen &dsSistersDonate;)
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -2993,52 +2985,6 @@
 							</Action>
 						</Actions>
 					</DifferentMission>
-
-					<Sanctum
-							desc="You are in the sanctum of the Sisters of Domina. The plasteel walls that surround you are micro-engraved with the revelation of Domina. You see before you a holographic display of indescribable beauty and you feel immersed in the energies of a vast cosmic fountain.">
-
-						<Actions>
-							<Action name="Offer Item" key="O">
-								(block Nil
-									(setq gPrevScreen "Main")
-									(setq gPrevPane "Default")
-									(scrShowScreen gScreen "&dsDominaDonateItem;")
-									)
-							</Action>
-
-							<Action name="Contemplate" default="1" key="C">
-								(if (and (leq (objGetData gPlayerShip "sistersAttitude") 0)
-										(not (objGetData gSource "freeSanctum"))
-										)
-									(scrShowPane gScreen "SanctumBlocked")
-
-									(block Nil
-										(setq gPrevScreen "Main")
-										(setq gPrevPane "Default")
-										(setq gBonus 0)
-										(scrShowScreen gScreen "&dsContemplateDomina;")
-										)
-									)
-							</Action>
-
-							<Action name="Leave" cancel="1" key="L">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-
-					</Sanctum>
-
-					<SanctumBlocked
-							desc="&quot;You are not yet ready to commune with Domina. The burden of the material world weighs heavily on you.&quot;">
-
-						<Actions>
-							<Action name="Continue" default="1" key="C" cancel="1">
-								<ShowPane pane="Sanctum"/>
-							</Action>
-						</Actions>
-
-					</SanctumBlocked>
-
 				</Panes>
 			</Main>
 
@@ -3117,10 +3063,11 @@
 			<Refuel			criteria="f +unid:&itPteracniumFuelRod;;" priceAdj="95"/>
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-11;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-11;" priceAdj="100"/>
 			<InstallDevice	criteria="d +taikon;" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-9" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<RemoveDevice	criteria="d +taikon;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-9;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -4561,7 +4508,6 @@
 			<PickItem
 					name=				"Heretic Gate"
 					type=				"itemPicker"
-					backgroundID=		"&rsItemListScreen;"
 					>
 
 				<ListOptions
@@ -5512,6 +5458,7 @@
 	<!-- Heretic System -->
 
 	<SystemType UNID="&ssHeretic;" 
+			backgroundID=		"&rsLightNebulaSpace;"
 			noRandomEncounters=	"true"
 			noExtraEncounters=	"true"
 			>
@@ -5901,8 +5848,6 @@
 	<Image UNID="&rsCorporateExplorer;"	bitmap="Resources\CorporateExplorer.jpg" bitmask="Resources\CorporateExplorerMask.bmp" loadOnUse="true"/>
 
 	<Image UNID="&rsMRADConsole;"		bitmap="Resources\MRADConsole.jpg" bitmask="Resources\MRADConsoleMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsNeurohackFrame;"	bitmap="Resources\NeurohackFrame.jpg" bitmask="Resources\NeurohackFrameMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsNeurohackControls;"	bitmap="Resources\NeurohackControls.jpg" bitmask="Resources\NeurohackControlsMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsHereticItems;"		bitmap="Resources\HereticItems.jpg" bitmask="Resources\HereticItemsMask.bmp" />
 
 </TranscendenceModule>

@@ -71,7 +71,7 @@ void GenerateWorldImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	CG16bitFont NameFont;
 	NameFont.Create(sTypeface, -PointsToPixels(iSize), bBold, bItalic);
-	WORD wNameColor = CG16bitImage::RGBValue(255, 255, 255);
+	CG32bitPixel rgbNameColor = CG32bitPixel(255, 255, 255);
 
 	//	Output file
 
@@ -159,10 +159,10 @@ void GenerateWorldImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Create a large image
 
-	CG16bitImage Output;
+	CG32bitImage Output;
 	int cxWidth = Max(cxDesiredWidth, Arranger.GetWidth());
 	int cyHeight = Arranger.GetHeight();
-	Output.CreateBlank(cxWidth, cyHeight, false);
+	Output.Create(cxWidth, cyHeight);
 	printf("Creating %dx%d image.\n", cxWidth, cyHeight);
 
 	//	Paint the images
@@ -199,13 +199,12 @@ void GenerateWorldImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 					Output.FillColumn(x + (Arranger.GetWidth(i) / 2),
 							y + Arranger.GetHeight(i),
 							yText - (y + Arranger.GetHeight(i)),
-							wNameColor);
+							rgbNameColor);
 
 					NameFont.DrawText(Output,
 							xText,
 							yText,
-							wNameColor,
-							255,
+							rgbNameColor,
 							pType->GetNounPhrase(0));
 					}
 				}

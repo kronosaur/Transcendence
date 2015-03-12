@@ -18,7 +18,6 @@
 
 #define FIELD_AVERAGE_DAMAGE				CONSTLIT("averageDamage")
 #define FIELD_TYPE							CONSTLIT("category")
-#define FIELD_ENTITY						CONSTLIT("entity")
 #define FIELD_FREQUENCY						CONSTLIT("frequency")
 #define FIELD_LEVEL							CONSTLIT("level")
 #define FIELD_NAME							CONSTLIT("shortName")
@@ -50,13 +49,11 @@ struct SItemTableCtx
 	{
 	SItemTableCtx (void) :
 			pUniverse(NULL),
-			pCmdLine(NULL),
-			pEntityTable(NULL)
+			pCmdLine(NULL)
 		{ }
 
 	CUniverse *pUniverse;
 	CXMLElement *pCmdLine;
-	CIDTable *pEntityTable;
 
 	TArray<CString> Cols;
 	CDesignTypeStats TotalCount;
@@ -90,14 +87,13 @@ void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList);
 void SelectByCriteria (SItemTableCtx &Ctx, const CString &sCriteria, TArray<CItemType *> *retList);
 void SortTable (SItemTableCtx &Ctx, const TArray<CItemType *> &List, SItemTypeList *retSorted);
 
-void GenerateItemTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable)
+void GenerateItemTable (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
 	//	Create the context
 
 	SItemTableCtx Ctx;
 	Ctx.pUniverse = &Universe;
 	Ctx.pCmdLine = pCmdLine;
-	Ctx.pEntityTable = &EntityTable;
 
 	//	Compute the criteria
 
@@ -434,29 +430,18 @@ void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
 			//	Get the field value
 
 			CString sValue;
-			if (strEquals(sField, FIELD_ENTITY))
-				{
-				CString *pValue;
-				if (Ctx.pEntityTable->Lookup(pType->GetUNID(), (CObject **)&pValue) == NOERROR)
-					sValue = *pValue;
-				else
-					sValue = CONSTLIT("?");
-				}
+			CItem Item(pType, 1);
+			CItemCtx ItemCtx(Item);
+			CCodeChainCtx CCCtx;
+
+			ICCItem *pResult = Item.GetProperty(&CCCtx, ItemCtx, sField);
+
+			if (pResult->IsNil())
+				sValue = NULL_STR;
 			else
-				{
-				CItem Item(pType, 1);
-				CItemCtx ItemCtx(Item);
-				CCodeChainCtx CCCtx;
+				sValue = pResult->Print(&g_pUniverse->GetCC(), PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
 
-				ICCItem *pResult = Item.GetProperty(&CCCtx, ItemCtx, sField);
-
-				if (pResult->IsNil())
-					sValue = NULL_STR;
-				else
-					sValue = pResult->Print(&g_pUniverse->GetCC(), PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
-
-				pResult->Discard(&g_pUniverse->GetCC());
-				}
+			pResult->Discard(&g_pUniverse->GetCC());
 
 			//	Format the value
 

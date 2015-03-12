@@ -18,15 +18,15 @@
 
 #define TARGET_NAME_X						122
 #define TARGET_NAME_Y						27
-#define TARGET_NAME_COLOR					(CG16bitImage::RGBValue(0,128,0))
+#define TARGET_NAME_COLOR					(CG32bitPixel(0,128,0))
 
-#define TARGET_INFO_COLOR					(CG16bitImage::RGBValue(0,255,0))
+#define TARGET_INFO_COLOR					(CG32bitPixel(0,255,0))
 
 #define DEVICE_STATUS_HEIGHT				20
 
-#define DEVICE_LABEL_COLOR					(CG16bitImage::RGBValue(255,255,255))
-#define DEVICE_LABEL_FAINT_COLOR			(CG16bitImage::RGBValue(0,0,0))
-#define DISABLED_LABEL_COLOR				CG16bitImage::RGBValue(128,0,0)
+#define DEVICE_LABEL_COLOR					(CG32bitPixel(255,255,255))
+#define DEVICE_LABEL_FAINT_COLOR			(CG32bitPixel(0,0,0))
+#define DISABLED_LABEL_COLOR				CG32bitPixel(128,0,0)
 
 #define STR_UNKNOWN_HOSTILE					CONSTLIT("Unknown Hostile")
 #define STR_UNKNOWN_FRIENDLY				CONSTLIT("Unknown Friendly")
@@ -65,8 +65,6 @@ ALERROR CTargetDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect
 //	Initializes display
 
 	{
-	ALERROR error;
-
 	CleanUp();
 
 	m_pPlayer = pPlayer;
@@ -76,16 +74,16 @@ ALERROR CTargetDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect
 
 	//	Create the off-screen buffer
 
-	if (error = m_Buffer.CreateBlank(DISPLAY_WIDTH, DISPLAY_HEIGHT, false))
-		return error;
+	if (!m_Buffer.Create(DISPLAY_WIDTH, DISPLAY_HEIGHT, CG32bitImage::alpha8))
+		return ERR_FAIL;
 
-	m_Buffer.SetBlending(200);
-	m_Buffer.SetTransparentColor();
+	//m_Buffer.SetBlending(200);
+	//m_Buffer.SetTransparentColor();
 
 	return NOERROR;
 	}
 
-void CTargetDisplay::Paint (CG16bitImage &Dest)
+void CTargetDisplay::Paint (CG32bitImage &Dest)
 
 //	Paint
 //
@@ -95,11 +93,11 @@ void CTargetDisplay::Paint (CG16bitImage &Dest)
 	if (m_bInvalid)
 		Update();
 
-	Dest.ColorTransBlt(0,
+	Dest.Blt(0,
 			0,
 			RectWidth(m_rcRect),
 			RectHeight(m_rcRect),
-			255,
+			200,
 			m_Buffer,
 			m_rcRect.left,
 			m_rcRect.top);
@@ -161,11 +159,11 @@ void CTargetDisplay::PaintDeviceStatus (CShip *pShip, DeviceNames iDev, int x, i
 
 		//	Figure out what color to use
 
-		WORD wColor;
+		CG32bitPixel rgbColor;
 		if (pDevice->IsEnabled() && !pDevice->IsDamaged() && !pDevice->IsDisrupted())
-			wColor = m_pFonts->wTitleColor;
+			rgbColor = m_pFonts->rgbTitleColor;
 		else
-			wColor = DISABLED_LABEL_COLOR;
+			rgbColor = DISABLED_LABEL_COLOR;
 
 		//	Paint the name
 
@@ -178,7 +176,7 @@ void CTargetDisplay::PaintDeviceStatus (CShip *pShip, DeviceNames iDev, int x, i
 		m_pFonts->Medium.DrawText(m_Buffer,
 				x - cxWidth - 8 - cxBonus,
 				y + (DEVICE_STATUS_HEIGHT - cyHeight) / 2,
-				wColor,
+				rgbColor,
 				sVariant);
 
 		//	Paint the ammo counter
@@ -189,7 +187,7 @@ void CTargetDisplay::PaintDeviceStatus (CShip *pShip, DeviceNames iDev, int x, i
 			m_pFonts->LargeBold.DrawText(m_Buffer,
 					x,
 					y,
-					m_pFonts->wTitleColor,
+					m_pFonts->rgbTitleColor,
 					sAmmo);
 			}
 		}
@@ -215,7 +213,7 @@ void CTargetDisplay::Update (void)
 
 	//	Erase
 
-	m_Buffer.Fill(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, DEFAULT_TRANSPARENT_COLOR);
+	m_Buffer.Set(CG32bitPixel::Null());
 
 	//	Paint the buffer with the appropriate background bitmap
 
@@ -223,7 +221,7 @@ void CTargetDisplay::Update (void)
 		{
 		const RECT &rcImage = pDisplayDesc->Image.GetImageRect();
 
-		m_Buffer.ColorTransBlt(rcImage.left, 
+		m_Buffer.Blt(rcImage.left, 
 				rcImage.top, 
 				RectWidth(rcImage), 
 				RectHeight(rcImage), 
@@ -273,6 +271,7 @@ void CTargetDisplay::Update (void)
 
 			//	Erase the area outside the target pane
 
+#if 0
 			if (pDisplayDesc)
 				{
 				const RECT &rcImage = pDisplayDesc->Image.GetImageRect();
@@ -297,6 +296,7 @@ void CTargetDisplay::Update (void)
 						0,
 						DEFAULT_TRANSPARENT_COLOR);
 				}
+#endif
 			}
 
 		//	Paint the name of the target
@@ -315,7 +315,7 @@ void CTargetDisplay::Update (void)
 		m_pFonts->MediumHeavyBold.DrawText(m_Buffer,
 				x,
 				y,
-				CG16bitImage::DarkenPixel(m_pFonts->wAltGreenColor, 180),
+				CG32bitPixel::Darken(m_pFonts->rgbAltGreenColor, 180),
 				sName);
 		y += m_pFonts->MediumHeavyBold.GetHeight();
 
@@ -327,7 +327,7 @@ void CTargetDisplay::Update (void)
 		m_pFonts->Medium.DrawText(m_Buffer,
 				x,
 				y,
-				m_pFonts->wAltGreenColor,
+				m_pFonts->rgbAltGreenColor,
 				sStatus);
 		y += m_pFonts->Medium.GetHeight();
 
@@ -351,7 +351,7 @@ void CTargetDisplay::Update (void)
 				m_pFonts->Medium.DrawText(m_Buffer,
 						x,
 						y,
-						m_pFonts->wAltGreenColor,
+						m_pFonts->rgbAltGreenColor,
 						sDamage);
 				}
 			}

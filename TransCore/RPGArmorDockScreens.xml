@@ -139,7 +139,10 @@
 								
 									(setq canReplace
 										(filter (objGetItems theShip "sUN") theItemInCargo
-											(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
+											(and
+												(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
+												(objGetItemProperty gSource theItemInCargo 'installDevicePrice)
+												)
 											)
 										)
 									
@@ -508,10 +511,10 @@
 									(setq canReplace
 										(filter (objGetItems theShip (@ categoryDesc 'criteria)) theItemInCargo
 											(and
-												(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
+												(objGetItemProperty gSource theItemInCargo 'installDevicePrice)
 												(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
 												(or (eq category 'device)
-													(geq (itmGetLevel theItemToBuy) (itmGetLevel theItem))
+													(geq (itmGetLevel theItemInCargo) (itmGetLevel theItem))
 													)
 												)
 											)
@@ -735,7 +738,9 @@
 					(block (
 						(theItem (scrGetItem gScreen))
 						(theShip gPlayerShip)
-						
+
+						(requiresAmmo Nil)
+						(canBuyAmmo Nil)
 						(canDisable Nil)
 						(canEnable Nil)
 						(canInstall Nil)
@@ -746,10 +751,12 @@
 						(deviceTable {
 							weapon: {
 								criteria: "pUN"
+								ammoLabel: "actionBuyAmmo"
 								}
 								
 							launcher: {
 								criteria: "lUN"
+								ammoLabel: "actionBuyMissiles"
 								}
 							})
 							
@@ -777,6 +784,18 @@
 									;	Remember selection
 									
 									(scrSetData gScreen 'deviceSelected (itmGetInstallPos theItem))
+									
+									;	Does this weapon require ammo? Does this station have
+									;	ammo to sell?
+									
+									(setq requiresAmmo (itmGetProperty theItem 'ammoType))
+									(setq canBuyAmmo 
+										(and requiresAmmo 
+											(filter (objGetItems gSource (cat "m +launchedBy:" (itmGetType theItem) ";")) theItemToBuy
+												(objGetSellPrice gSource theItemToBuy)
+												)
+											)
+										)
 										
 									;	Does this station have any items that we can purchase?
 								
@@ -806,7 +825,7 @@
 											(and
 												(objGetItemProperty gSource theItemInCargo 'installDevicePrice)
 												(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
-												(geq (itmGetLevel theItemToBuy) (itmGetLevel theItem))
+												(geq (itmGetLevel theItemInCargo) (itmGetLevel theItem))
 												)
 											)
 										)
@@ -860,6 +879,10 @@
 							
 						;	Enable/disable various actions
 								
+						(scrShowAction gScreen 'actionBuyAmmo requiresAmmo)
+						(scrEnableAction gScreen 'actionBuyAmmo canBuyAmmo)
+						(scrSetActionLabel gScreen 'actionBuyAmmo (scrTranslate gScreen (@ categoryDesc 'ammoLabel)))
+						
 						(scrShowAction gScreen 'actionReplace canReplace)
 						(scrShowAction gScreen 'actionInstall canInstall)
 						(scrShowAction gScreen 'actionUpgrade canUpgrade)
@@ -875,6 +898,13 @@
 				</Controls>
 
 				<Actions>
+					<Action id="actionBuyAmmo">
+						(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+							checkMilitaryID: (@ gData 'checkMilitaryID)
+							criteria: (cat "m +launchedBy:" (itmGetType (scrGetItem gScreen)) ";")
+							})
+					</Action>
+					
 					<Action id="actionInstall">
 						(scrShowScreen gScreen &dsRPGInstallDevice; {
 							criteria: (scrGetData gScreen 'categoryCriteria)
@@ -928,6 +958,8 @@
 		</Panes>
 		
 		<Language>
+			<Text id="actionBuyAmmo">"Buy [A]mmo"</Text>
+			<Text id="actionBuyMissiles">"Buy [M]issiles"</Text>
 			<Text id="actionDisable">"Disa[b]le"</Text>
 			<Text id="actionEnable">"Ena[b]le"</Text>
 			<Text id="actionInstall">"[I]nstall"</Text>
@@ -1079,7 +1111,6 @@
 	<DockScreen UNID="&dsRPGUpgradeArmor;"
 			type=				"itemPicker"
 			inherit=			"&dsDockScreenBase;"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 

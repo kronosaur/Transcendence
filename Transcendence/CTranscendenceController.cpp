@@ -818,7 +818,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Start the prologue
 
-		CG16bitImage *pCrawlImage = m_Model.GetCrawlImage();
+		CG32bitImage *pCrawlImage = m_Model.GetCrawlImage();
 		const CString &sCrawlText = m_Model.GetCrawlText();
 
 		m_HI.ShowSession(new CTextCrawlSession(m_HI, m_Service, pCrawlImage, sCrawlText, CMD_SESSION_PROLOGUE_DONE));
@@ -1066,7 +1066,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		{
 		//	If we have no crawl image, then go straight to intro
 
-		CG16bitImage *pCrawlImage = m_Model.GetCrawlImage();
+		CG32bitImage *pCrawlImage = m_Model.GetCrawlImage();
 		const CString &sCrawlText = m_Model.GetCrawlText();
 		if (pCrawlImage == NULL)
 			{

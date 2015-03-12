@@ -71,7 +71,7 @@
 			attributes=			"capitalShip, corporate, genericClass, majorShip"
 			   
 			size=				"275"
-			mass=				"8000"
+			mass=				"25000"
 			thrustRatio=		"2"
 			maxSpeed=			"20"
 			cargoSpace=			"1000"
@@ -123,7 +123,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsCorporateCruiser;" imageX="0" imageY="0" imageWidth="230" imageHeight="230"/>
+		<Image imageID="&rsCorporateCruiserHD;" imageWidth="230" imageHeight="230"	rotationCount="120"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="0"	posZ="-10"	rotation="180"	sendToBack="*"/>
@@ -229,9 +229,11 @@
 			<Buy	criteria="adumfNU -Illegal; -ID; -NotForSale;"	priceAdj="50"/>
 			<Buy	criteria="adumfNU -Illegal; -ID;"				priceAdj="10"/>
 
-			<Refuel			criteria="f +BasicFuel; L:1-8;" priceAdj="100"/>
-			<InstallDevice	criteria="w L:1-8" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-9;" priceAdj="100"/>
+			<InstallDevice	criteria="w L:1-8;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -251,55 +253,23 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+							<Action name="Dock Services" key="D" default="1">
+								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
-							</Action>
-
-							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+							<Action name="Commodities Exchange" key="C">
+								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
 								<Exit/>
 							</Action>
 						</Actions>
-
 					</Default>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Install Weapon" key="W" >
-								(scrShowScreen gScreen &dsRPGInstallDevice; {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Remove Weapon" key="V" >
-								(scrShowScreen gScreen "&dsRemoveWeapon;")
-							</Action>
-
-							<Action name="Done" cancel="1" key="N">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</DockServices>
-
 				</Panes>
 			</Main>
 
@@ -408,8 +378,9 @@
 			<Buy	criteria="asU -Illegal; -ID;"				priceAdj="10"/>
 			
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="s L:1-6" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<InstallDevice	criteria="s L:1-6;" priceAdj="100"/>
+			<RemoveDevice	criteria="s L:1-6;" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -435,31 +406,16 @@
 							desc=	"You are docked at an armor dealer station.">
 
 						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+							<Action name="Armor and Shields" key="A" default="1">
+								(scrShowScreen gScreen &dsRPGManageArmor; {
 									checkMilitaryID: True
 									})
 							</Action>
-
-							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(scrShowScreen gScreen &dsRPGRepairArmor; {
+							
+							<Action name="Commodities Exchange" key="C">
+								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
 									checkMilitaryID: True
 									})
-							</Action>
-
-							<Action name="Upgrade Shield Generator" key="H">
-								(block Nil
-									(setq gItem (itmCreate &itMonopoleDeflector; 1))
-									(setq gCost (add (itmGetPrice gItem) (divide (itmGetInstallCost gItem) 2)))
-									(setq gCheckMilitaryID True)
-									(scrShowScreen gScreen "&dsInstallSpecificDevice;")
-									)
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -566,21 +522,10 @@
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Buy	criteria="mwU -Illegal; -NotForSale;"	priceAdj="60"/>
 			<Buy	criteria="mwU -Illegal; -ID;"				priceAdj="10"/>
+			
 			<InstallDevice	criteria="w L:1-4;" priceAdj="100"/>
+			<RemoveDevice	criteria="w L:1-4;" priceAdj="100"/>
 		</Trade>
-
-		<StaticData>
-			<WeaponUpgradeList>
-				(
-					&itNAMIMissileLauncher;
-					&itOmniLaserCannon;
-					&itTurbolaserCannon;
-					&itArbalestCannon;
-					&itSlamCannon;
-					&itParticleBeamWeapon;
-				)
-			</WeaponUpgradeList>
-		</StaticData>
 
 		<Events>
 			<OnContractGenerate>
@@ -599,35 +544,21 @@
 			<Main>
 				<Panes>
 					<Default>
-
 						<OnPaneInit>
-							(block Nil
-								(scrSetDesc gScreen "You are docked at an arms dealer station.")
-								(setq gItem (itmCreate (item (objGetStaticData gSource "WeaponUpgradeList") (objGetData gSource "WeaponUpgrade")) 1))
-								(scrSetActionLabel gScreen 2 (cat "Install " (itmGetName gItem 0)))
-								)
+							(scrSetDesc gScreen "You are docked at an arms dealer station.")
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+							<Action name="[W]eapons" default="1">
+								(scrShowScreen gScreen &dsRPGManageWeapons; {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
-							</Action>
-
-							<Action name="Install New Weapon" key="I">
-								(block Nil
-									(setq gItem (itmCreate (item (objGetStaticData gSource "WeaponUpgradeList") (objGetData gSource "WeaponUpgrade")) 1))
-									(setq gCost (add (itmGetPrice gItem) (divide (itmGetInstallCost gItem) 2)))
-									(setq gCheckMilitaryID True)
-									(scrShowScreen gScreen "&dsInstallSpecificDevice;")
-									)
+							<Action name="Commodities Exchange" key="C">
+								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -728,9 +659,10 @@
 			<Sell	criteria="m +Makayev; -Military; -Illegal; -NotForSale;" priceAdj="120" inventoryAdj="500"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
-			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="100"/>
-			<InstallDevice	criteria="w L:1-8" priceAdj="100"/>
-			<RemoveDevice	criteria="w" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<InstallDevice	criteria="d +makayev; L:1-8;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -836,9 +768,10 @@
 			<Sell	criteria="m +Bushido; -Illegal; -NotForSale;" priceAdj="120" inventoryAdj="300"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
-			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
-			<InstallDevice	criteria="w L:1-9" priceAdj="100"/>
-			<RemoveDevice	criteria="w" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-9;" priceAdj="100"/>
+			<InstallDevice	criteria="d +bushido; L:1-9;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -1308,14 +1241,14 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy Items" default="1" key="B">
+							<Action name="Refuel" key="R" default="1">
+								(scrShowScreen gScreen "&dsRPGRefuel;")
+							</Action>
+
+							<Action name="Buy Items" key="B">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: True
 									})
-							</Action>
-
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -1433,8 +1366,9 @@
 
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-9" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-9;" priceAdj="100"/>
+			<InstallDevice	criteria="d +makayev; L:1-9;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -1462,6 +1396,12 @@
 						</OnPaneInit>
 
 						<Actions>
+							<Action name="Dock Services" key="D" default="1">
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
+							</Action>
+
 							<Action name="Buy Items" key="B">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: True
@@ -1472,12 +1412,6 @@
 								(scrShowScreen gScreen "&dsRPGRepairItem;" {
 									criteria: "*~aD +Makayev;"
 									priceAdj: 65
-									})
-							</Action>
-
-							<Action name="Dock Services" key="D">
-								(rpgDockServices gPlayerShip {
-									checkMilitaryID: True
 									})
 							</Action>
 
@@ -1665,7 +1599,7 @@
 									})
 							</Action>
 							
-							<Action name="Sell Items" default="1" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -2445,10 +2379,11 @@
 			<Refuel			criteria="f +unid:&itPteracniumFuelRod;;" priceAdj="85"/>
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-11;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-11;" priceAdj="100"/>
 			<InstallDevice	criteria="d +taikon" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-9" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<RemoveDevice	criteria="d +taikon;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-9;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -2466,14 +2401,14 @@
 							desc=	"You are docked at a Taikon Ventures station.">
 
 						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+							<Action name="Dock Services" default="1" key="D">
+								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Dock Services" default="1" key="D">
-								(rpgDockServices gPlayerShip {
+							<Action name="Buy Items" key="B">
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: True
 									})
 							</Action>
@@ -2609,19 +2544,7 @@
 							desc=	"You are docked at a Corporate Trading Post.">
 
 						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
-							</Action>
-
-							<Action name="Order Items" key="O">
+							<Action name="Order Items" key="O" default="1">
 								(switch
 									(eq (objGetData gSource "MissionStatus") "intransit")
 										(scrShowScreen gScreen "OrderInTransit")
@@ -2638,6 +2561,18 @@
 
 									; Show order screen	
 									(scrShowScreen gScreen "OrderItem")
+									)
+							</Action>
+
+							<Action name="Buy Items" key="B">
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
+							</Action>
+
+							<Action name="Sell Items" key="S">
+								(scrShowSellScreen
+									"*"						; items bought from player
 									)
 							</Action>
 
@@ -3016,6 +2951,12 @@
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Buy	criteria="admuNU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="admuNU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-8;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -3033,16 +2974,16 @@
 							desc=	"You are docked at a franchise of Thor's Wondrous Devices.">
 
 						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+							<Action name="Dock Services" key="D" default="1">
+								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+							<Action name="Commodities Exchange" key="C">
+								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -3193,14 +3134,16 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Buy Items" default="1" key="B">
-						(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+					<Action name="Dock Services" key="D" default="1">
+						(rpgDockServices gPlayerShip {
 							checkMilitaryID: True
 							})
 					</Action>
 
-					<Action name="Dock Services" key="D">
-						<ShowPane pane="DockServices"/>
+					<Action name="Buy Items" key="B">
+						(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Undock" cancel="1" key="U">
@@ -3209,33 +3152,6 @@
 				</Actions>
 
 			</Default>
-
-			<DockServices
-					desc=	"You are at the docking services terminal.">
-
-				<Actions>
-					<Action name="Refuel" key="R">
-						(scrShowScreen gScreen "&dsRPGRefuel;")
-					</Action>
-
-					<Action name="Install Weapon" key="W" >
-						(scrShowScreen gScreen &dsRPGInstallDevice; {
-							checkMilitaryID: True
-							})
-					</Action>
-
-					<Action name="Remove Weapon" key="V" >
-						(scrShowScreen gScreen "&dsRemoveWeapon;")
-					</Action>
-
-					<Action name="Done" cancel="1" key="N">
-						<ShowPane pane="Default"/>
-					</Action>
-
-				</Actions>
-
-			</DockServices>
-
 		</Panes>
 	</DockScreen>
 
@@ -3301,6 +3217,7 @@
 <!-- RESOURCES -->
 
 	<Image UNID="&rsCorporateCruiser;"		bitmap="Resources\CorporateCruiser.jpg" bitmask="Resources\CorporateCruiserMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsCorporateCruiserHD;"	bitmap="Resources\CorporateCruiserHD.jpg" bitmask="Resources\CorporateCruiserHDMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsMakayevFactory;"		bitmap="Resources\MakayevFactory.jpg" bitmask="Resources\MakayevFactoryMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsManufacturingPlant;"	bitmap="Resources\ManufacturingPlant.jpg" bitmask="Resources\ManufacturingPlantMask.bmp" loadOnUse="true"/>
 	

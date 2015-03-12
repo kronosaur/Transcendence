@@ -95,7 +95,7 @@
 
 	<ItemType UNID="&itMinersCargoHold;"
 			name=				"miners's cargo hold"
-			attributes=			"commonwealth, majorItem, minersHold"
+			attributes=			"commonwealth, majorItem, minersHold, miningEquipment"
 			  
 			level=				"3"
 			frequency=			"rare"
@@ -737,7 +737,7 @@
 								(block Nil
 									; Make a crate
 									(if (not theCrate)
-										(setq theCrate (sysCreateStation &stCargoCrate; (sysVectorPolarOffset newPos (random 0 359) (random 1 75))))
+										(setq theCrate (sysCreateStation &stGenericCargoCrate; (sysVectorPolarOffset newPos (random 0 359) (random 1 75))))
 										)
 								
 									; Remove from cargo hold
@@ -751,7 +751,7 @@
 												(objAddItem theCrate theItem 1)
 												
 												(if (leq (random 1 100) 15)
-													(setq theCrate (sysCreateStation &stCargoCrate; (sysVectorPolarOffset gPlayerShip (random 0 359) (random 1 75))))
+													(setq theCrate (sysCreateStation &stGenericCargoCrate; (sysVectorPolarOffset gPlayerShip (random 0 359) (random 1 75))))
 													)
 												)
 											)
@@ -761,7 +761,7 @@
 											(objAddItem theCrate theItem)
 											
 											(if (leq (random 1 100) 15)
-												(setq theCrate (sysCreateStation &stCargoCrate; (sysVectorPolarOffset gPlayerShip (random 0 359) (random 1 75))))
+												(setq theCrate (sysCreateStation &stGenericCargoCrate; (sysVectorPolarOffset gPlayerShip (random 0 359) (random 1 75))))
 												)
 											)
 										)

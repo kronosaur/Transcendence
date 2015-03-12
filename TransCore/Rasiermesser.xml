@@ -136,9 +136,10 @@
 			<Sell	criteria="m +Rasiermesser; -Military; -Illegal; -NotForSale;" priceAdj="120" inventoryAdj="800"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
-			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="100"/>
-			<InstallDevice	criteria="w L:1-7" priceAdj="100"/>
-			<RemoveDevice	criteria="w" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<InstallDevice	criteria="d +rasiermesser; L:1-7;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -189,7 +190,6 @@
 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			defaultBackgroundID="&rsRasiermesserFactoryBkgnd;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -211,6 +211,7 @@
 			>
 
 		<Image imageID="&rsRasiermesserFactory;" imageX="0" imageY="0" imageWidth="192" imageHeight="256"/>
+		<HeroImage imageID="&rsRasiermesserFactoryHero;" imageWidth="600" imageHeight="528"/>
 
 		<Ships>
 			<Lookup count="2" table="&tbCorpDefenders;"/>
@@ -266,10 +267,10 @@
 
 			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-9;" priceAdj="100"/>
 			<InstallDevice	criteria="d +rasiermesser;" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-8;" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<RemoveDevice	criteria="d +rasiermesser;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -336,7 +337,9 @@
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -345,39 +348,6 @@
 						</Actions>
 
 					</Default>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(scrShowScreen gScreen "&dsRPGRepairArmor;" {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Install Weapon" key="W" >
-								(scrShowScreen gScreen &dsRPGInstallDevice; {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Remove Weapon" key="V" >
-								(scrShowScreen gScreen "&dsRemoveWeapon;")
-							</Action>
-
-							<Action name="Done" cancel="1" key="N">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</DockServices>
-
 				</Panes>
 			</Main>
 
@@ -434,7 +404,6 @@
 
 			<OfferItem
 				type=				"itemPicker"
-				backgroundID=		"&rsItemListScreen;"
 				>
 
 				<ListOptions
@@ -684,5 +653,6 @@
 
 	<Image UNID="&rsRasiermesserFactory;" bitmap="Resources\RasiermesserFactory.jpg" bitmask="Resources\RasiermesserFactoryMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsRasiermesserFactoryBkgnd;" bitmap="Resources\RasiermesserFactoryScreen.jpg" loadOnUse="true" />
+	<Image UNID="&rsRasiermesserFactoryHero;" bitmap="Resources\RasiermesserFactoryHero.jpg" bitmask="Resources\RasiermesserFactoryHeroMask.bmp" loadOnUse="true" />
 
 </TranscendenceModule>

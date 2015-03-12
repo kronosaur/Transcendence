@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE TranscendenceLibrary
+	[
+	<!-- 0070 0000-FFFF RPG LIBRARY -->
+	
+	<!ENTITY unidCompatibilityLibrary	"0x00700000">
+	]>
+	
+<TranscendenceLibrary
+		UNID=				"&unidCompatibilityLibrary;"
+		name=				"Transcendence Compatibility Library" 
+		release=			"1"
+		>
+
+	<Library unid="&unidCoreTypesLibrary;"/>
+	<Library unid="&unidRPGLibrary;"/>
+	<Library unid="&unidHumanSpaceLibrary;"/>
+		
+	<Module filename="Compatibility10.xml"/>
+	<Module filename="PlayerShips.xml"/>
+
+</TranscendenceLibrary>

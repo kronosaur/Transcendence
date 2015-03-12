@@ -807,7 +807,7 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="93"/>
 			<RepairArmor	criteria="a L:1-5;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-5;" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -1019,7 +1019,7 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="93"/>
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -1154,9 +1154,9 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="95"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-7" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -2196,7 +2196,7 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-8;" priceAdj="94"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -2822,7 +2822,6 @@
 
 	<DockScreen UNID="&dsContainerHabitatDonateItem;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -3425,7 +3424,19 @@
 		</Language>
 	</DockScreen>
 	
-<!-- BASIC COMMONWEALTH RULES -->
+<!-- BASIC COMMONWEALTH RULES
+
+	PLAYER DATA
+	
+	commonCrime:	Description of the player's crime (e.g., "slave-trading")
+	commonCrimeSeverity: The severity of the crime
+						0 = No crime
+						1 = Misdemeanor (drug possession)
+						2 = Felony (piracy)
+						3 = Crimes against Humanity (slave-trading, genocide, mass-destruction)
+	commonCrimeRecord: Number of times player has been caught and released for a felony
+	
+-->
 
 	<Sovereign UNID="&svCommonwealth;"
 			name="Commonwealth"

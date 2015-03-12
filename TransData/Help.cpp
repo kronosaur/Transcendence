@@ -278,6 +278,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/criteria:xxx]       Object must match criteria.\n");
 		printf("      [/node:ID]            Look for object in given node.\n");
 		printf("      [/noStars]            Do not paint starfield.\n");
+		printf("      [/objOnly]            Paint the object only.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
 		printf("      [/size:n]             Size of snapshot in pixels.\n");
 		printf("      [/wait:n]             Wait this many ticks before snapshot.\n");

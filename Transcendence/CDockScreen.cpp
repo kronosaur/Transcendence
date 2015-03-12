@@ -5,42 +5,46 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-const int g_cyDockScreen = 528;
-const int g_cxBackground = 1024;
-const int g_cyBackground = 528;
-const int DESC_PANE_X =			600;
-const int BACKGROUND_FOCUS_X =	(DESC_PANE_X / 2);
-const int BACKGROUND_FOCUS_Y =	(g_cyBackground / 2);
-const int MAX_SCREEN_WIDTH =	1024;
+const int g_cyDockScreen =			528;
+const int g_cxBackground =			1024;
+const int g_cyBackground =			528;
+
+const int SCREEN_PADDING_LEFT =		8;
+const int SCREEN_PADDING_RIGHT =	8;
+const int MAX_SCREEN_WIDTH =		1024 + SCREEN_PADDING_LEFT + SCREEN_PADDING_RIGHT;
+
+const int DESC_PANE_X =				600;
+const int BACKGROUND_FOCUS_X =		(DESC_PANE_X / 2);
+const int BACKGROUND_FOCUS_Y =		(g_cyBackground / 2);
 const int MAX_BACKGROUND_WIDTH =	1280;
-const int EXTRA_BACKGROUND_IMAGE = 128;
+const int EXTRA_BACKGROUND_IMAGE =	128;
 
-const int STATUS_BAR_HEIGHT	=	20;
-const int g_cyTitle =			72;
-const int g_cxActionsRegion =	400;
+const int STATUS_BAR_HEIGHT	=		20;
+const int g_cyTitle =				72;
+const int g_cxActionsRegion =		400;
 
-const int g_cyItemTitle =		32;
-const int g_cxItemMargin =		132;
-const int g_cxItemImage =		96;
-const int g_cyItemImage =		96;
+const int g_cyItemTitle =			32;
+const int g_cxItemMargin =			132;
+const int g_cxItemImage =			96;
+const int g_cyItemImage =			96;
 
-const int g_cxStats =			400;
-const int g_cyStats =			30;
-const int g_cxCargoStats =		200;
-const int g_cxCargoStatsLabel =	100;
+const int g_cxStats =				400;
+const int g_cyStats =				30;
+const int g_cxCargoStats =			200;
+const int g_cxCargoStatsLabel =		100;
 
-const int g_FirstActionID =		100;
-const int g_LastActionID =		199;
+const int g_FirstActionID =			100;
+const int g_LastActionID =			199;
 
-const int g_PrevActionID =		200;
-const int g_NextActionID =		201;
-const int g_ItemTitleID =		202;
-const int g_ItemDescID =		203;
-const int g_CounterID =			204;
-const int g_ItemImageID =		205;
-const int TEXT_INPUT_ID =		207;
-const int IMAGE_AREA_ID =		208;
-const int DISPLAY_ID =			209;
+const int g_PrevActionID =			200;
+const int g_NextActionID =			201;
+const int g_ItemTitleID =			202;
+const int g_ItemDescID =			203;
+const int g_CounterID =				204;
+const int g_ItemImageID =			205;
+const int TEXT_INPUT_ID =			207;
+const int IMAGE_AREA_ID =			208;
+const int DISPLAY_ID =				209;
 
 const int ACTION_CUSTOM_NEXT_ID =	300;
 const int ACTION_CUSTOM_PREV_ID =	301;
@@ -97,7 +101,7 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 #define ALIGN_TOP					CONSTLIT("top")
 #define ALIGN_MIDDLE				CONSTLIT("middle")
 
-#define BAR_COLOR							CG16bitImage::RGBValue(0, 2, 10)
+#define BAR_COLOR							CG32bitPixel(0, 2, 10)
 
 CDockScreen::CDockScreen (void) : 
 		m_pFonts(NULL),
@@ -199,12 +203,12 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 	if (pDesc->FindAttribute(FONT_ATTRIB, &sFontName))
 		pControlFont = &GetFontByName(*m_pFonts, sFontName);
 
-	WORD wControlColor;
+	CG32bitPixel rgbControlColor;
 	CString sColorName;
 	if (pDesc->FindAttribute(COLOR_ATTRIB, &sColorName))
-		wControlColor = ::LoadRGBColor(sColorName);
+		rgbControlColor = ::LoadRGBColor(sColorName);
 	else
-		wControlColor = CG16bitImage::RGBValue(255, 255, 255);
+		rgbControlColor = CG32bitPixel(255, 255, 255);
 
 	//	Create the control based on the type
 
@@ -214,7 +218,7 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 
 		CGTextArea *pControl = new CGTextArea;
 		pControl->SetFont(pControlFont);
-		pControl->SetColor(wControlColor);
+		pControl->SetColor(rgbControlColor);
 
 		CString sAlign = pDesc->GetAttribute(ALIGN_ATTRIB);
 		if (strEquals(sAlign, ALIGN_CENTER))
@@ -301,6 +305,49 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 		*retpDControl = pDControl;
 	}
 
+void CDockScreen::BltToBackgroundImage (const RECT &rcRect, CG32bitImage *pImage, int xSrc, int ySrc, int cxSrc, int cySrc)
+
+//	BltToBackgroundImage
+//
+//	Blts the image to m_pBackgroundImage
+
+	{
+	//	EXTRA_BACKGROUND_IMAGE is the amount of image to show to the
+	//	right of the center-line.
+
+	int cxAvail = (RectWidth(rcRect) / 2) + EXTRA_BACKGROUND_IMAGE;
+	int xImage = -Max(0, cxSrc - cxAvail);
+
+	CG32bitImage *pScreenMask = g_pUniverse->GetLibraryBitmap(DEFAULT_DOCK_SCREEN_MASK_UNID);
+	if (pScreenMask)
+		{
+		//	Center the mask and align it with the position of the background.
+
+		int xAlpha = Max(0, (pScreenMask->GetWidth() - m_pBackgroundImage->GetWidth()) / 2);
+
+		//	If the image is too small, then slide the mask over to the right
+		//	so that the fade-out part aligns with the right edge of the image.
+
+		if (pImage->GetWidth() < cxAvail)
+			xAlpha += (cxAvail - pImage->GetWidth());
+
+		//	Generate a new bitmap containing the mask at the exact position of
+		//	the image we want to blt.
+
+		CG32bitImage Mask;
+		if (xAlpha != 0)
+			{
+			Mask.Create(pImage->GetWidth(), pImage->GetHeight(), CG32bitImage::alpha8);
+			Mask.CopyChannel(channelAlpha, xAlpha, 0, pImage->GetWidth(), pImage->GetHeight(), *pScreenMask, 0, 0);
+			pScreenMask = &Mask;
+			}
+
+		m_pBackgroundImage->BltMask(xSrc, ySrc, cxSrc, cySrc, *pScreenMask, *pImage, xImage, 0);
+		}
+	else
+		m_pBackgroundImage->Blt(xImage, 0, cxSrc, cySrc, *pImage, xSrc, ySrc);
+	}
+
 void CDockScreen::CleanUpScreen (void)
 
 //	CleanUpScreen
@@ -341,7 +388,7 @@ void CDockScreen::CleanUpScreen (void)
 		}
 	}
 
-ALERROR CDockScreen::CreateBackgroundArea (CXMLElement *pDesc, AGScreen *pScreen, const RECT &rcRect, const RECT &rcInner)
+ALERROR CDockScreen::CreateBackgroundArea (IDockScreenDisplay::SBackgroundDesc &Desc, AGScreen *pScreen, const RECT &rcRect, const RECT &rcInner)
 
 //	CreateBackgroundArea
 //
@@ -350,7 +397,7 @@ ALERROR CDockScreen::CreateBackgroundArea (CXMLElement *pDesc, AGScreen *pScreen
 	{
 	//	Generate a background image
 
-	CreateBackgroundImage(pDesc, rcRect, rcInner.left - rcRect.left);
+	CreateBackgroundImage(Desc, rcRect, rcInner.left - rcRect.left);
 
 	//	Create the area
 
@@ -382,7 +429,7 @@ ALERROR CDockScreen::CreateBackgroundArea (CXMLElement *pDesc, AGScreen *pScreen
 	return NOERROR;
 	}
 
-ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRect, int xOffset)
+ALERROR CDockScreen::CreateBackgroundImage (IDockScreenDisplay::SBackgroundDesc &Desc, const RECT &rcRect, int xOffset)
 
 //	CreateBackgroundImage
 //
@@ -390,61 +437,14 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 //	m_pBackgroundImage and m_bFreeBackgroundImage
 
 	{
-	enum BackgroundTypes { backgroundNone, backgroundImage, backgroundObj };
-
-	ASSERT(m_pLocation);
-	ASSERT(m_pBackgroundImage == NULL);
-
-	BackgroundTypes iType = backgroundNone;
-	DWORD dwBackgroundID = 0;
-	CSpaceObject *pBackgroundObj = m_pLocation;
 	int cxBackground = RectWidth(rcRect);
 	int cyBackground = g_cyBackground;
 
-	//	Figure out which background to use
-
-	CString sBackgroundID;
-	if (pDesc->FindAttribute(BACKGROUND_ID_ATTRIB, &sBackgroundID))
-		{
-		//	If the attribute exists, but is empty (or equals "none") then
-		//	we don't have a background
-
-		if (sBackgroundID.IsBlank() || strEquals(sBackgroundID, CONSTLIT("none")))
-			iType = backgroundNone;
-
-		//	If the ID is "object" then we should ask the object
-
-		else if (strEquals(sBackgroundID, CONSTLIT("object")))
-			iType = backgroundObj;
-
-		//	Otherwise, we expect an integer
-
-		else
-			{
-			iType = backgroundImage;
-			dwBackgroundID = strToInt(sBackgroundID, 0);
-			}
-		}
-
-	//	If no attribute specified, ask the display
-
-	else
-		{
-		if (m_pDisplay->GetDefaultBackgroundObj(&pBackgroundObj))
-			iType = backgroundObj;
-		else
-			{
-			pBackgroundObj = m_pLocation;
-			dwBackgroundID = pBackgroundObj->GetDefaultBkgnd();
-			iType = (dwBackgroundID ? backgroundImage : backgroundObj);
-			}
-		}
-
 	//	Load the image
 
-	CG16bitImage *pImage = NULL;
-	if (dwBackgroundID)
-		pImage = g_pUniverse->GetLibraryBitmap(dwBackgroundID);
+	CG32bitImage *pImage = NULL;
+	if (Desc.iType == IDockScreenDisplay::backgroundImage && Desc.dwImageID)
+		pImage = g_pUniverse->GetLibraryBitmap(Desc.dwImageID);
 
 	//	Sometimes (like in the case of item lists) the image is larger than normal
 
@@ -454,9 +454,9 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 
 	//	Create a new image for the background
 
-	m_pBackgroundImage = new CG16bitImage;
+	m_pBackgroundImage = new CG32bitImage;
 	m_bFreeBackgroundImage = true;
-	m_pBackgroundImage->CreateBlank(cxBackground, cyBackground + cyExtra, false);
+	m_pBackgroundImage->Create(cxBackground, cyBackground + cyExtra);
 
 	if (cyExtra)
 		m_pBackgroundImage->Fill(0, cyBackground, cxBackground, cyExtra, 0);
@@ -465,7 +465,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 
 	DWORD dwScreenUNID = DEFAULT_DOCK_SCREEN_IMAGE_UNID;
 	DWORD dwScreenMaskUNID = DEFAULT_DOCK_SCREEN_MASK_UNID;
-	CG16bitImage *pScreenImage = g_pUniverse->GetLibraryBitmap(dwScreenUNID);
+	CG32bitImage *pScreenImage = g_pUniverse->GetLibraryBitmap(dwScreenUNID);
 
 	//	Blt to background
 
@@ -478,25 +478,27 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 
 	//	If not image, then we're done
 
-	if (iType == backgroundNone)
+	if (Desc.iType == IDockScreenDisplay::backgroundNone)
 		;
 
 	//	Paint the object as the background
 
-	else if (iType == backgroundObj)
+	else if (Desc.iType == IDockScreenDisplay::backgroundObj)
 		{
+		const CObjectImageArray *pHeroImage;
+
 		//	If this is the player ship then we draw a large image
 
-		CShip *pShip = pBackgroundObj->AsShip();
+		CShip *pShip = Desc.pObj->AsShip();
 		CShipClass *pClass = (pShip ? pShip->GetClass() : NULL);
 		const CPlayerSettings *pPlayer = (pClass ? pClass->GetPlayerSettings() : NULL);
-		const CG16bitImage *pLargeImage = (pPlayer ? g_pUniverse->GetLibraryBitmap(pPlayer->GetLargeImage()) : NULL);
+		const CG32bitImage *pLargeImage = (pPlayer ? g_pUniverse->GetLibraryBitmap(pPlayer->GetLargeImage()) : NULL);
 
 		if (pLargeImage && !pLargeImage->IsEmpty())
 			{
 			if (pLargeImage->GetHeight() < cyBackground)
 				{
-				m_pBackgroundImage->ColorTransBlt(0,
+				m_pBackgroundImage->Blt(0,
 						0,
 						pLargeImage->GetWidth(),
 						pLargeImage->GetHeight(),
@@ -508,7 +510,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 			else
 				{
 				Metric rScale = (Metric)cyBackground / pLargeImage->GetHeight();
-				CG16bitImage *pNewImage = new CG16bitImage;
+				CG32bitImage *pNewImage = new CG32bitImage;
 				pNewImage->CreateFromImageTransformed(*pLargeImage,
 						0,
 						0,
@@ -518,7 +520,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 						rScale,
 						0.0);
 
-				m_pBackgroundImage->ColorTransBlt(0,
+				m_pBackgroundImage->Blt(0,
 						0,
 						pNewImage->GetWidth(),
 						pNewImage->GetHeight(),
@@ -531,14 +533,37 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 				}
 			}
 
+		//	If we have a hero image, then use that
+
+		else if ((pHeroImage = &Desc.pObj->GetHeroImage()) && !pHeroImage->IsEmpty())
+			{
+			//	Blt the system background
+
+			CSystem *pSystem = Desc.pObj->GetSystem();
+			CSystemType *pSystemType = pSystem->GetType();
+			DWORD dwSpaceID = pSystemType->GetBackgroundUNID();
+			CG32bitImage *pSpaceImage;
+			if (dwSpaceID
+					&& (pSpaceImage = g_pUniverse->GetLibraryBitmap(dwSpaceID)))
+				BltToBackgroundImage(rcRect, pSpaceImage, 0, 0, RectWidth(rcRect), RectHeight(rcRect));
+
+			//	Paint the hero image on top
+
+			pHeroImage->PaintImage(*m_pBackgroundImage,
+					xOffset + BACKGROUND_FOCUS_X,
+					BACKGROUND_FOCUS_Y,
+					0,
+					0);
+			}
+
 		//	Otherwise we draw the object
 
 		else
 			{
 			SViewportPaintCtx Ctx;
 			Ctx.fNoSelection = true;
-			Ctx.pObj = m_pLocation;
-			pBackgroundObj->Paint(*m_pBackgroundImage,
+			Ctx.pObj = Desc.pObj;
+			Desc.pObj->Paint(*m_pBackgroundImage,
 					xOffset + BACKGROUND_FOCUS_X,
 					BACKGROUND_FOCUS_Y,
 					Ctx);
@@ -547,50 +572,15 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 
 	//	If we have an image with a mask, just blt the masked image
 
-	else if (pImage && pImage->HasMask())
-		m_pBackgroundImage->ColorTransBlt(0, 0, pImage->GetWidth(), pImage->GetHeight(), 255, *pImage, xOffset, 0);
+	else if (pImage && pImage->GetAlphaType() != CG32bitImage::alphaNone)
+		m_pBackgroundImage->Blt(0, 0, pImage->GetWidth(), pImage->GetHeight(), 255, *pImage, xOffset, 0);
 
 	//	If we have an image with no mask, then we need to create our own mask.
 	//	If the image is larger than the space, then it is flush right with 
 	//	the center line. Otherwise, it is flush left.
 
 	else if (pImage)
-		{
-		//	EXTRA_BACKGROUND_IMAGE is the amount of image to show to the
-		//	right of the center-line.
-
-		int cxAvail = (RectWidth(rcRect) / 2) + EXTRA_BACKGROUND_IMAGE;
-		int xImage = -Max(0, pImage->GetWidth() - cxAvail);
-
-		CG16bitImage *pScreenMask = g_pUniverse->GetLibraryBitmap(dwScreenMaskUNID);
-		if (pScreenMask)
-			{
-			//	Center the mask and align it with the position of the background.
-
-			int xAlpha = Max(0, (pScreenMask->GetWidth() - m_pBackgroundImage->GetWidth()) / 2);
-
-			//	If the image is too small, then slide the mask over to the right
-			//	so that the fade-out part aligns with the right edge of the image.
-
-			if (pImage->GetWidth() < cxAvail)
-				xAlpha += (cxAvail - pImage->GetWidth());
-
-			//	Generate a new bitmap containing the mask at the exact position of
-			//	the image we want to blt.
-
-			CG16bitImage Mask;
-			if (xAlpha != 0)
-				{
-				Mask.CreateBlankAlpha(pImage->GetWidth(), pImage->GetHeight());
-				Mask.CopyAlpha(xAlpha, 0, pImage->GetWidth(), pImage->GetHeight(), *pScreenMask, 0, 0);
-				pScreenMask = &Mask;
-				}
-
-			m_pBackgroundImage->BltWithMask(0, 0, pImage->GetWidth(), pImage->GetHeight(), *pScreenMask, *pImage, xImage, 0);
-			}
-		else
-			m_pBackgroundImage->Blt(xImage, 0, pImage->GetWidth(), pImage->GetHeight(), *pImage, 0, 0);
-		}
+		BltToBackgroundImage(rcRect, pImage, 0, 0, pImage->GetWidth(), pImage->GetHeight());
 
 	return NOERROR;
 	}
@@ -618,7 +608,7 @@ ALERROR CDockScreen::CreateTitleArea (CXMLElement *pDesc, AGScreen *pScreen, con
 	pScreen->AddArea(pImage, rcArea, 0);
 
 	pImage = new CGImageArea;
-	pImage->SetBackColor(CG16bitImage::DarkenPixel(VI.GetColor(colorAreaDockTitle), 200));
+	pImage->SetBackColor(CG32bitPixel::Darken(VI.GetColor(colorAreaDockTitle), 200));
 	rcArea.left = rcRect.left;
 	rcArea.top = yTop - STATUS_BAR_HEIGHT;
 	rcArea.right = rcRect.right;
@@ -708,7 +698,7 @@ ICCItem *CDockScreen::GetCurrentListEntry (void)
 	return pResult;
 	}
 
-CG16bitImage *CDockScreen::GetDisplayCanvas (const CString &sID)
+CG32bitImage *CDockScreen::GetDisplayCanvas (const CString &sID)
 
 //	GetDisplayCanvas
 //
@@ -1199,6 +1189,35 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	rcScreen.right = rcScreen.left + cxScreen;
 	rcScreen.bottom = rcScreen.top + cyScreen;
 
+	//	Prepare a display context
+
+	IDockScreenDisplay::SInitCtx DisplayCtx;
+	DisplayCtx.pPlayer = m_pPlayer;
+	DisplayCtx.dwFirstID = DISPLAY_ID;
+	DisplayCtx.pData = pData;
+	DisplayCtx.pDesc = m_pDesc;
+	DisplayCtx.pDockScreen = this;
+	DisplayCtx.pRoot = m_pRoot;
+	DisplayCtx.pVI = &g_pHI->GetVisuals();
+	DisplayCtx.pFontTable = m_pFonts;
+	DisplayCtx.pLocation = m_pLocation;
+	DisplayCtx.pScreen = m_pScreen;
+
+	DisplayCtx.rcRect.left = rcScreen.left + SCREEN_PADDING_LEFT;
+	DisplayCtx.rcRect.top = (RectHeight(rcScreen) - g_cyDockScreen) / 2;
+	DisplayCtx.rcRect.right = DisplayCtx.rcRect.left + DESC_PANE_X;
+	DisplayCtx.rcRect.bottom = DisplayCtx.rcRect.top + g_cyDockScreen;
+
+	//	Get any display options (we need to do this first because it may specify
+	//	a background image.
+
+	IDockScreenDisplay::SDisplayOptions DisplayOptions;
+	if (!IDockScreenDisplay::GetDisplayOptions(DisplayCtx, &DisplayOptions, &sError))
+		{
+		::kernelDebugLogMessage(sError);
+		return ERR_FAIL;
+		}
+
 	//	Creates the title area
 
 	if (error = CreateTitleArea(m_pDesc, m_pScreen, rcBackground, rcScreen))
@@ -1235,23 +1254,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 	//	Initialize
 
-	IDockScreenDisplay::SInitCtx DisplayCtx;
-	DisplayCtx.pPlayer = m_pPlayer;
-	DisplayCtx.dwFirstID = DISPLAY_ID;
-	DisplayCtx.pData = pData;
-	DisplayCtx.pDesc = m_pDesc;
-	DisplayCtx.pDockScreen = this;
-	DisplayCtx.pVI = &g_pHI->GetVisuals();
-	DisplayCtx.pFontTable = m_pFonts;
-	DisplayCtx.pLocation = m_pLocation;
-	DisplayCtx.pScreen = m_pScreen;
-
-	DisplayCtx.rcRect = rcScreen;
-	DisplayCtx.rcRect.top = (RectHeight(rcScreen) - g_cyDockScreen) / 2;
-	DisplayCtx.rcRect.right = DisplayCtx.rcRect.left + DESC_PANE_X;
-	DisplayCtx.rcRect.bottom = DisplayCtx.rcRect.top + g_cyDockScreen;
-
-	if (error = m_pDisplay->Init(DisplayCtx, &sError))
+	if (error = m_pDisplay->Init(DisplayCtx, DisplayOptions, &sError))
 		{
 		SetDescription(sError);
 		kernelDebugLogMessage(sError);
@@ -1268,10 +1271,28 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 			return error;
 		}
 
+	//	If the screen did not define a background image, then ask the display
+	//	to do so.
+
+	IDockScreenDisplay::SBackgroundDesc BackgroundDesc = DisplayOptions.BackgroundDesc;
+	if (BackgroundDesc.iType == IDockScreenDisplay::backgroundDefault)
+		{
+		if (!m_pDisplay->GetDefaultBackground(&BackgroundDesc))
+			{
+			if (BackgroundDesc.dwImageID = m_pLocation->GetDefaultBkgnd())
+				BackgroundDesc.iType = IDockScreenDisplay::backgroundImage;
+			else
+				{
+				BackgroundDesc.iType = IDockScreenDisplay::backgroundObj;
+				BackgroundDesc.pObj = m_pLocation;
+				}
+			}
+		}
+
 	//	Create the background area. We do this after the display init because we
 	//	may need to refer to it to come up with a suitable background.
 
-	if (error = CreateBackgroundArea(m_pDesc, m_pScreen, rcBackground, rcScreen))
+	if (error = CreateBackgroundArea(BackgroundDesc, m_pScreen, rcBackground, rcScreen))
 		return error;
 
 	//	Cache the screen's OnUpdate
@@ -1293,7 +1314,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 	m_rcPane.left = rcScreen.right - g_cxActionsRegion;
 	m_rcPane.top = (RectHeight(rcScreen) - g_cyDockScreen) / 2;
-	m_rcPane.right = rcScreen.right - 8;
+	m_rcPane.right = rcScreen.right - SCREEN_PADDING_RIGHT;
 	m_rcPane.bottom = m_rcPane.top + g_cyBackground;
 
 	if (!sPane.IsBlank())
@@ -1412,7 +1433,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 
 					//	The result is the image descriptor
 
-					CG16bitImage *pImage;
+					CG32bitImage *pImage;
 					RECT rcImage;
 					GetImageDescFromList(CC, pResult, &pImage, &rcImage);
 					if (pImage)
@@ -1436,10 +1457,14 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 					Ctx.SetScreen(this);
 					Ctx.SaveAndDefineSourceVar(m_pLocation);
 					Ctx.SaveAndDefineDataVar(m_pData);
-					CG16bitImage *pCanvas = &pControl->GetCanvas();
+					CG32bitImage *pCanvas = &pControl->GetCanvas();
 					Ctx.SetCanvas(pCanvas);
 
-					pCanvas->Fill(0, 0, pCanvas->GetWidth(), pCanvas->GetHeight(), 0);
+					//	Erase to full transparency
+
+					pCanvas->Set(CG32bitPixel::Null());
+
+					//	Run the code to paint on the canvas
 
 					ICCItem *pResult = Ctx.Run(m_Controls[i].pCode);	//	LATER:Event
 

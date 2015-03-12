@@ -15,7 +15,6 @@
 
 	<DockScreen UNID="&dsRingerBuy;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -176,7 +175,6 @@
 
 	<DockScreen UNID="&dsRingerInstallDevice;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -383,7 +381,6 @@
 
 	<DockScreen UNID="&dsRingerRemoveDevice;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -494,7 +491,6 @@
 
 	<DockScreen UNID="&dsRingerRepairArmor;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -583,7 +579,6 @@
 
 	<DockScreen UNID="&dsRingerReplaceArmor;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -699,7 +694,6 @@
 
 	<DockScreen UNID="&dsRingerSell;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions

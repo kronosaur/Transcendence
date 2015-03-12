@@ -188,7 +188,6 @@
 			name=				"Arcology of New Victoria"
 			sovereign=			"&svCommonwealth;"
 			dockScreen=			"&dsStKatsArcology;"
-			defaultBackgroundID="&rsStKatsArcologyScreen;"
 
 			virtual=			"true"
 			definiteArticle=	"true"
@@ -226,10 +225,12 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-7" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 		</Trade>
+		
+		<HeroImage imageID="&rsStKatsArcologyHero;" imageWidth="800" imageHeight="528"/>
 		
 		<StaticData>
 			<ParliamentDebate>
@@ -1478,10 +1479,10 @@
 
 				<Actions>
 					<Action name="Buy Items" default="1" key="B">
-						; Buy screen
-						(scrShowBuyScreen 
-							"* +Food; +Specialty;"	; items sold to player
-							)
+						(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+							criteria: "* +food; +specialty;"
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Leave" cancel="1" key="L">
@@ -2282,6 +2283,7 @@
 	<SystemType UNID="&ssStKatharine;" 
 				noRandomEncounters=	"true"
 				noExtraEncounters=	"true"
+				backgroundID=		"&rsBrightStarSpace;"
 				>
 
 		<Tables>
@@ -2876,6 +2878,7 @@
 	<Image UNID="&rsStKatsArcology;"	bitmap="Resources\StKatsArcology.jpg" bitmask="Resources\StKatsArcologyMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsIocrymMonument;"	bitmap="Resources\FirstContactMonument.jpg" bitmask="Resources\FirstContactMonumentMask.bmp"  loadOnUse="true"/>
 	
+	<Image UNID="&rsStKatsArcologyHero;"		bitmap="Resources\StKatsArcologyHero.jpg" bitmask="Resources\StKatsArcologyHeroMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsStKatsArcologyScreen;"		bitmap="Resources\StKatsArcologyScreen.jpg" loadOnUse="true"/>
 	<Image UNID="&rsStKatsArcologySchematic;"	bitmap="Resources\StKatsArcologySchematic.jpg" bitmask="Resources\StKatsArcologySchematicMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsIocrymMonumentScreen;"		bitmap="Resources\FirstContactMonumentScreen.jpg" loadOnUse="true"/>

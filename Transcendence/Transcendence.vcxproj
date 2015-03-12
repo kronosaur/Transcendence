@@ -254,6 +254,7 @@
     </ClCompile>
     <ClCompile Include="CTranscendenceController.cpp" />
     <ClCompile Include="CTranscendenceModel.cpp" />
+    <ClCompile Include="CTranscendencePlayer.cpp" />
     <ClCompile Include="CTranscendenceWnd.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug in Program Files|Win32'">Disabled</Optimization>

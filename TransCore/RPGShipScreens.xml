@@ -47,7 +47,6 @@
 			name=				"Ship's Configuration"
 			desc=				"Ship Configuration"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -95,7 +94,6 @@
 			name=				"Ship's Cargo Hold"
 			desc=				"Interior of Ship"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -145,7 +143,7 @@
 								(block (itemsToJettison)
 									; Create cargo crate
 									(if (not gDest)
-										(setq gDest (sysCreateStation &stCargoCrate; (sysVectorPolarOffset gPlayerShip 0 0)))
+										(setq gDest (sysCreateStation &stGenericCargoCrate; (sysVectorPolarOffset gPlayerShip 0 0)))
 										)
 
 									; Dump items
@@ -183,7 +181,7 @@
 								(block (itemsToJettison)
 									; Create cargo crate
 									(if (not gDest)
-										(setq gDest (sysCreateStation &stCargoCrate; (sysVectorPolarOffset gPlayerShip 0 0)))
+										(setq gDest (sysCreateStation &stGenericCargoCrate; (sysVectorPolarOffset gPlayerShip 0 0)))
 										)
 
 									; Dump items
@@ -211,7 +209,6 @@
 	<DockScreen UNID="&dsManualRefuel;"
 			name=				"Ship's Cargo Hold"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -408,7 +405,6 @@
 
 	<DockScreen UNID="&dsRPGMissionJournal;"
 			type=				"customPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -472,5 +468,9 @@
 			</Default>
 		</Panes>
 	</DockScreen>
+	
+<!-- RESOURCES -->
 
+	<Image UNID="&rsItemListScreen;"	bitmap="Resources\ItemListScreen.jpg"		bitmask="Resources\ItemListScreenMask.bmp"		loadOnUse="true" />
+	
 </TranscendenceModule>

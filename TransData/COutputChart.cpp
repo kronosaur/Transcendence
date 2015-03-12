@@ -13,7 +13,7 @@
 
 static CG16bitFont NULL_FONT;
 
-CG16bitImage &COutputChart::GetOutputImage (int *retxOrigin, int *retyOrigin)
+CG32bitImage &COutputChart::GetOutputImage (int *retxOrigin, int *retyOrigin)
 
 //	GetOutputImage
 //
@@ -29,7 +29,7 @@ CG16bitImage &COutputChart::GetOutputImage (int *retxOrigin, int *retyOrigin)
 	return m_Image;
 	}
 
-WORD COutputChart::GetStyleColor (const CString &sStyle)
+CG32bitPixel COutputChart::GetStyleColor (const CString &sStyle)
 
 //	GetStyleColor
 //
@@ -40,7 +40,7 @@ WORD COutputChart::GetStyleColor (const CString &sStyle)
 	if (pStyle == NULL)
 		return 0;
 
-	return pStyle->wColor;
+	return pStyle->rgbColor;
 	}
 
 const CG16bitFont &COutputChart::GetStyleFont (const CString &sStyle)
@@ -101,7 +101,7 @@ void COutputChart::SetContentSize (int cxWidth, int cyHeight)
 //	is lost.
 
 	{
-	m_Image.CreateBlank(cxWidth, cyHeight, false);
+	m_Image.Create(cxWidth, cyHeight);
 	}
 
 void COutputChart::SetOutputFilespec (const CString &sFilespec)
@@ -146,7 +146,7 @@ void COutputChart::SetStyleFont (const CString &sStyle, const CString &sFontDesc
 	pStyle->Font.Create(sTypeface, -PointsToPixels(iSize), bBold, bItalic);
 	}
 
-void COutputChart::SetStyleColor (const CString &sStyle, WORD wColor)
+void COutputChart::SetStyleColor (const CString &sStyle, CG32bitPixel rgbColor)
 
 //	SetStyleColor
 //
@@ -154,5 +154,5 @@ void COutputChart::SetStyleColor (const CString &sStyle, WORD wColor)
 
 	{
 	SStyleDesc *pStyle = m_Styles.SetAt(sStyle);
-	pStyle->wColor = wColor;
+	pStyle->rgbColor = rgbColor;
 	}
