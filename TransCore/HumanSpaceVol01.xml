@@ -1584,6 +1584,12 @@
 	
 	<!ENTITY rsUrakDestroyer			"0x001000D0">
 	
+	<!-- 00E0-00EF BATTLE ARENA MAXIMUS -->
+	
+	<!ENTITY rsBattleArenaSegments		"0x001000E0">
+	<!ENTITY baBattleArenaSegment		"0x001000E1">
+	<!ENTITY stBattleArenaStatic		"0x001000E2">
+	
 	<!-- 1000-FFFF RESERVED -->
 	]>
 	

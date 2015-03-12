@@ -152,4 +152,57 @@
 		</Panes>
 	</DockScreen>
 
+	<!-- Battle Arena Wall -->
+
+	<StationType UNID="&stBattleArenaWall;"
+			name=				"(arena wall segment)"
+			sovereign=			"&svCommonwealth;"
+			attributes=			"battleArenaSegment"
+
+			barrier=			"true"
+			barrierEffect=		"&efBattleArenaWallHit;"
+			multiHull=			"true"
+			immutable=			"true"
+
+			mass=				"500"
+			noMapLabel=			"true"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="0"    imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="128"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="256"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="384"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="512"  imageWidth="128" imageHeight="128"/>
+
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="640"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="768"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="896"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1024" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1152" imageWidth="128" imageHeight="128"/>
+
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1280" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1408" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1536" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1664" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1792" imageWidth="128" imageHeight="128"/>
+
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1920" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="2048" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="2176" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="2304" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="2432" imageWidth="128" imageHeight="128"/>
+			
+			<Image			imageID="&rsBattleArenaExtra;" imageX="0" imageY="0"	imageWidth="164" imageHeight="164"/>
+			<Image			imageID="&rsBattleArenaExtra;" imageX="0" imageY="164"	imageWidth="164" imageHeight="164"/>
+			<Image			imageID="&rsBattleArenaExtra;" imageX="18" imageY="18"	imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArenaExtra;" imageX="18" imageY="182"	imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArenaExtra;" imageX="0" imageY="0"	imageWidth="0"	 imageHeight="0"/>
+		</ImageVariants>
+
+	</StationType>
+
+	<Image UNID="&rsBattleArena;"	bitmap="Resources\BattleArena.jpg"	bitmask="Resources\BattleArenaMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsBattleArenaExtra;"	bitmap="Resources\BattleArenaExtra.jpg" bitmask="Resources\BattleArenaExtraMask.bmp" loadOnUse="true"/>
+	
 </TranscendenceModule>

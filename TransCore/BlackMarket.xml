@@ -959,7 +959,7 @@ PLAYER DATA
 			<Killed>
 				<OnPaneInit>
 					(scrSetDesc gScreen 
-						"Lord Mikho is waiting in his study, standing by a large portrait of mustached man in uniform.\n\n"
+						"Lord Mikho is waiting in his study, standing by a large portrait of a mustached man in uniform.\n\n"
 						"\"You are responsible for " (objGetData gPlayerShip "blackMarketCrime") "? "
 						"I suppose I expected someone smarter. Still, I respect you enough to kill you myself.\"\n\n"
 						"Two men hold you as Lord Mikho approaches with an old pistol..."
