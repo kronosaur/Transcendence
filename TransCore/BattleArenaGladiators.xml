@@ -808,7 +808,7 @@
 			rotationAccel=		"0.5"
 			/>
 
-		<Image imageID="&rsEI200HD;" imageWidth="90" imageHeight="90"	rotationCount="120" rotationColumns="12"/>
+		<Image imageID="&rsEI200Image;" imageWidth="90" imageHeight="90"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="158"	posRadius="42"	posZ="0"	rotation="180"/>

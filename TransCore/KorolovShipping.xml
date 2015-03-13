@@ -117,7 +117,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsAntaresIHD;" imageWidth="128" imageHeight="128"	rotationCount="120"/>
+		<Image imageID="&rsAntaresIImage;" imageWidth="128" imageHeight="128"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="176"	posRadius="61"	posZ="-3"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -234,7 +234,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsAntaresIIHD;" imageWidth="128" imageHeight="128"	rotationCount="120"/>
+		<Image imageID="&rsAntaresIIImage;" imageWidth="128" imageHeight="128"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="176"	posRadius="61"	posZ="-3"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -356,7 +356,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsAntaresVHD;" imageWidth="180" imageHeight="180"	rotationCount="120"/>
+		<Image imageID="&rsAntaresVImage;" imageWidth="180" imageHeight="180"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="177"	posRadius="84"	posZ="-3"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -558,7 +558,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsEI200HD;" imageWidth="90" imageHeight="90"	rotationCount="120" rotationColumns="12"/>
+		<Image imageID="&rsEI200Image;" imageWidth="90" imageHeight="90"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="158"	posRadius="42"	posZ="0"	rotation="180"/>
@@ -848,7 +848,7 @@
 			rotationAccel=		"0.5"
 			/>
 
-		<Image imageID="&rsEI200HD;" imageWidth="90" imageHeight="90"	rotationCount="120" rotationColumns="12"/>
+		<Image imageID="&rsEI200Image;" imageWidth="90" imageHeight="90"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="158"	posRadius="42"	posZ="0"	rotation="180"/>
@@ -3485,13 +3485,9 @@
 	<!-- Resources -->
 
 	<Image UNID="&rsAntaresIImage;"		bitmap="Resources\AntaresI.jpg" bitmask="Resources\AntaresIMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsAntaresIHD;"		bitmap="Resources\AntaresIHD.jpg" bitmask="Resources\AntaresIHDMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsAntaresIIImage;"	bitmap="Resources\AntaresII.jpg" bitmask="Resources\AntaresIIMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsAntaresIIHD;"		bitmap="Resources\AntaresIIHD.jpg" bitmask="Resources\AntaresIIHDMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsAntaresVImage;"		bitmap="Resources\AntaresV.jpg" bitmask="Resources\AntaresVMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsAntaresVHD;"		bitmap="Resources\AntaresVHD.jpg" bitmask="Resources\AntaresVHDMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsEI200Image;"		bitmap="Resources\EI200.jpg" bitmask="Resources\EI200Mask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsEI200HD;"			bitmap="Resources\EI200HD.jpg" bitmask="Resources\EI200HDMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsEI7000Image;"		bitmap="Resources\EI7000.jpg" bitmask="Resources\EI7000Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsKorolovInsignia;"	bitmap="Resources\KorolovInsignia.jpg" bitmask="Resources\KorolovInsigniaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsKorolovLogo;"		bitmap="Resources\KorolovLogo.jpg" bitmask="Resources\KorolovLogoMask.bmp" loadOnUse="true"/>

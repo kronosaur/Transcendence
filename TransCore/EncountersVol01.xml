@@ -5305,7 +5305,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsSalvagerNomad;" imageWidth="184" imageHeight="184"	viewportSize="230" rotationCount="120" rotationColumns="12"/>
+		<Image imageID="&rsSalvagerNomad;" imageWidth="184" imageHeight="184"	viewportSize="230"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="140"	posRadius="70"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>

@@ -1240,7 +1240,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsPhobosHD;" imageWidth="256" imageHeight="256"	rotationCount="120"/>
+		<Image imageID="&rsLargeShips2;" imageX="256" imageY="0" imageWidth="256" imageHeight="256"/>
 		
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="118"	posZ="-30"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -1530,9 +1530,5 @@
 			</Ship>
 		</LevelTable>
 	</ShipTable>
-	
-<!-- RESOURCES -->
-	
-	<Image UNID="&rsPhobosHD;"				bitmap="Resources\PhobosHD.jpg" bitmask="Resources\PhobosHDMask.bmp"  loadOnUse="true"/>
 	
 </TranscendenceModule>

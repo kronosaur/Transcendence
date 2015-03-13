@@ -121,7 +121,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsUrakDestroyer;" imageWidth="180" imageHeight="180"	rotationCount="120" rotationColumns="12"/>
+		<Image imageID="&rsUrakDestroyer;" imageWidth="180" imageHeight="180"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="155"	posRadius="28"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>

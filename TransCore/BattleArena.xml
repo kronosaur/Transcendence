@@ -2302,7 +2302,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsCorporateCruiserHD;" imageWidth="230" imageHeight="230"	rotationCount="120"/>
+		<Image imageID="&rsCorporateCruiser;" imageWidth="230" imageHeight="230"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="0"	posZ="-10"	rotation="180"	sendToBack="*"/>
