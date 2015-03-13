@@ -27,8 +27,8 @@
 		<HumanSpaceStargates>
 			<Code>
 				(trnCreateAllStargates {
-					corewardLocationCriteria: "++innerSystem; -asteroids; -gasGiant"
-					edgewardLocationCriteria: "++outerSystem; -asteroids; -gasGiant"
+					corewardLocationCriteria: "++innerSystem; -asteroids; -gasGiant; -void;"
+					edgewardLocationCriteria: "++outerSystem; -asteroids; -gasGiant; -void;"
 					})
 			</Code>
 		</HumanSpaceStargates>
