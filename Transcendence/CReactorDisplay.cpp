@@ -5,10 +5,6 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-#define NORMAL_COLOR				RGB(0, 128, 0)
-#define WARNING_COLOR				RGB(255, 255, 0)
-#define CRITICAL_COLOR				RGB(255, 0, 0)
-
 #define FUEL_MARKER_COUNT			20
 #define FUEL_MARKER_HEIGHT			5
 #define FUEL_MARKER_WIDTH			12
