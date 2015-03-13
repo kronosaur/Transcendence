@@ -438,6 +438,12 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 					}
 				break;
 				}
+
+			case gsEndGame:
+				{
+				g_pHI->HICommand(CONSTLIT("gameEndGame"));
+				break;
+				}
 			}
 
 		//	Flip
@@ -745,6 +751,16 @@ void CTranscendenceWnd::PlayerDestroyed (const CString &sText, bool bResurrectio
 		}
 
 	DEBUG_CATCH
+	}
+
+void CTranscendenceWnd::PlayerEndGame (void)
+
+//	PlayerEndGame
+//
+//	End the game (we assume we've called the model already).
+
+	{
+	m_State = gsEndGame;
 	}
 
 void CTranscendenceWnd::PlayerEnteredGate (CSystem *pSystem, 

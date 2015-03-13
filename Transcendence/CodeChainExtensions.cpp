@@ -16,6 +16,7 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_GAME_SET_CRAWL_IMAGE		2
 #define FN_GAME_SET_CRAWL_SOUNDTRACK	3
 #define FN_GAME_SAVE				4
+#define FN_GAME_END					5
 
 ICCItem *fnGameSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
@@ -97,6 +98,11 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 	{
 		//	Game function
 		//	-------------
+
+		{	"gamEnd",						fnGameSet,		FN_GAME_END,
+			"(gamEnd endGameReason epitaph [scoreBonus]) -> True/Nil",
+
+			"ss*",	PPFLAG_SIDEEFFECTS, },
 
 		{	"gamSave",						fnGameSet,		FN_GAME_SAVE,
 			"(gamSave [options]) -> True/Nil\n\n"
@@ -273,8 +279,9 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(plyCredit player [currency] credit) -> credits left",
 			"iv*",	PPFLAG_SIDEEFFECTS,	},
 
-		{	"plyDestroyed",					fnPlySetOld,		FN_PLY_DESTROYED, "",	NULL,	PPFLAG_SIDEEFFECTS, },
-		//	(plyDestroyed player destroyed-text)
+		{	"plyDestroyed",					fnPlySetOld,		FN_PLY_DESTROYED, 
+			"(plyDestroyed player epitaph)",
+			NULL,	PPFLAG_SIDEEFFECTS, },
 
 		{	"plyIsMessageEnabled",			fnPlyGet,			FN_PLY_IS_MESSAGE_ENABLED,
 			"(plyIsMessageEnabled player messageID) -> True/Nil\n\n"
@@ -638,6 +645,22 @@ ICCItem *fnGameSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	switch (dwData)
 		{
+		case FN_GAME_END:
+			{
+			CString sReason = pArgs->GetElement(0)->GetStringValue();
+			CString sEpitaph = pArgs->GetElement(1)->GetStringValue();
+			int iScoreBonus = (pArgs->GetCount() >= 3 ? pArgs->GetElement(2)->GetIntegerValue() : 0);
+
+			if (g_pTrans->GetModel().EndGame(sReason, sEpitaph, iScoreBonus) != NOERROR)
+				{
+				::kernelDebugLogMessage("Unable to end game.");
+				return pCC->CreateNil();
+				}
+
+			g_pTrans->PlayerEndGame();
+			return pCC->CreateTrue();
+			}
+
 		case FN_GAME_SAVE:
 			{
 			CString sOption = (pArgs->GetCount() > 0 ? pArgs->GetElement(0)->GetStringValue() : NULL_STR);

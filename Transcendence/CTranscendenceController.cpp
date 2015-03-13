@@ -65,6 +65,7 @@
 #define CMD_GAME_ADVENTURE						CONSTLIT("gameAdventure")
 #define CMD_GAME_CREATE							CONSTLIT("gameCreate")
 #define CMD_GAME_END_DESTROYED					CONSTLIT("gameEndDestroyed")
+#define CMD_GAME_END_GAME						CONSTLIT("gameEndGame")
 #define CMD_GAME_END_SAVE						CONSTLIT("gameEndSave")
 #define CMD_GAME_ENTER_FINAL_STARGATE			CONSTLIT("gameEnterFinalStargate")
 #define CMD_GAME_ENTER_STARGATE					CONSTLIT("gameEnterStargate")
@@ -923,17 +924,62 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Check for error
 
-		if (pTask->GetResult(&sError))
+		if (error = pTask->GetResult(&sError))
 			{
-			kernelDebugLogMessage(sError);
-			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_LOAD_GAME, sError, CMD_UI_BACK_TO_INTRO));
-			return NOERROR;
+			//	On ERR_CANCEL it means that the game has ended and cannot be 
+			//	continued, but that we loaded game stats.
+
+			if (error == ERR_CANCEL)
+				{
+				CGameStats Stats;
+
+				//	Get the stats
+
+				if ((error = m_Model.GetGameStats(&Stats))
+						|| Stats.GetCount() == 0)
+					//	If we get an error (or stats come back blank, ignore)
+					{
+					m_HI.HICommand(CMD_UI_BACK_TO_INTRO);
+					return NOERROR;
+					}
+
+				//	The session takes handoff of the stats
+
+				m_HI.OpenPopupSession(new CStatsSession(m_HI, m_Service, Stats));
+				m_iState = stateEndGameStats;
+				return NOERROR;
+				}
+
+			//	Otherwise, this is a real error
+
+			else
+				{
+				kernelDebugLogMessage(sError);
+				m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_LOAD_GAME, sError, CMD_UI_BACK_TO_INTRO));
+				return NOERROR;
+				}
 			}
 
 		//	Start game (this does some stuff and then calls cmdGameStart)
 
 		m_HI.ShowSession(new CGameSession(m_HI, m_Settings, m_Soundtrack));
 		g_pTrans->StartGame();
+		}
+
+	//	The game has ended with the player still alive. We assume that we've
+	//	already called m_Model.EndGame with the proper epitaph, etc.
+
+	else if (strEquals(sCmd, CMD_GAME_END_GAME))
+		{
+		m_Model.EndGame();
+
+		//	Clean up game state
+
+		g_pTrans->CleanUpDisplays();
+
+		//	Epilogue
+
+		HICommand(CMD_UI_START_EPILOGUE);
 		}
 
 	//	End destroyed state. We either go to the epilog or we

@@ -1142,6 +1142,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void OnIntroPOVSet (CSpaceObject *pObj);
 		void OnObjDestroyed (const SDestroyCtx &Ctx);
 		void PlayerDestroyed (const CString &sText, bool bResurrectionPending);
+		void PlayerEndGame (void);
 		void PlayerEnteredGate (CSystem *pSystem, 
 							    CTopologyNode *pDestNode,
 							    const CString &sDestEntryPoint);
@@ -1177,6 +1178,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 			gsEnteringStargate,
 			gsLeavingStargate,
 			gsDestroyed,
+			gsEndGame,
 			};
 
 		enum IntroState
@@ -1724,6 +1726,8 @@ class CTranscendenceModel
 		void OnPlayerExitedGate (void);
 		void OnPlayerTraveledThroughGate (void);
 		inline ICCItem *GetScreenData (const CString &sAttrib) { return m_DockFrames.GetData(sAttrib); }
+		ALERROR EndGame (void);
+		ALERROR EndGame (const CString &sReason, const CString &sEpitaph, int iScoreChange = 0);
 		ALERROR EndGameClose (CString *retsError = NULL);
 		ALERROR EndGameDestroyed (bool *retbResurrected = NULL);
 		ALERROR EndGameSave (CString *retsError = NULL);
@@ -1787,6 +1791,7 @@ class CTranscendenceModel
 			statePlayerInResurrect,					//	Player removed from the system, but about to be resurrected
 			statePlayerDestroyed,					//	Player ship is no longer in universe,
 													//		but we're still running
+			statePlayerInEndGame,					//	Player hit end game condition
 			stateGameOver,							//	GameFile closed
 			};
 
@@ -1799,7 +1804,7 @@ class CTranscendenceModel
 		ALERROR LoadHighScoreList (CString *retsError = NULL);
 		ALERROR LoadUniverse (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, CString *retsError = NULL);
 		void MarkGateFollowers (CSystem *pSystem);
-		ALERROR SaveGameStats (const CGameStats &Stats, bool bGameOver = false);
+		ALERROR SaveGameStats (const CGameStats &Stats, bool bGameOver = false, bool bEndGame = false);
 		void TransferGateFollowers (CSystem *pOldSystem, CSystem *pSystem, CSpaceObject *pStargate);
 
 		CHumanInterface &m_HI;
@@ -1829,7 +1834,9 @@ class CTranscendenceModel
 
 		//	Temporaries
 		CDesignType *m_pResurrectType;				//	DesignType that will handle resurrect (or NULL)
+		CString m_sEndGameReason;					//	Reason for end game
 		CString m_sEpitaph;							//	Epitaph
+		int m_iScoreBonus;							//	Score bonus for completing the game
 		CG32bitImage *m_pCrawlImage;				//	For epilogue/prologue
 		CSoundType *m_pCrawlSoundtrack;				//	For epilogue/prologue
 		CString m_sCrawlText;						//	For epilogue/prologue

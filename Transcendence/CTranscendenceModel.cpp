@@ -441,6 +441,74 @@ ALERROR CTranscendenceModel::CreateAllSystems (const CString &sStartNode, CSyste
 	return NOERROR;
 	}
 
+ALERROR CTranscendenceModel::EndGame (void)
+
+//	EndGame
+//
+//	Ends the game. We've stored all the state in our temporaries.
+
+	{
+	ALERROR error;
+
+	ASSERT(m_iState == statePlayerInEndGame);
+
+	//	Bonus for escaping Human Space
+
+	m_pPlayer->IncScore(m_iScoreBonus);
+
+	//	Game over (compile stats)
+
+	m_pPlayer->OnGameEnd();
+
+	//	Record final score
+
+	RecordFinalScore(m_sEpitaph, m_sEndGameReason, false);
+
+	//	We need to define gPlayerShip so that game stats 
+	//	are generated properly. (It gets cleared out in CTranscendenceWnd::PlayerEnteredGate)
+
+	CCodeChain &CC = m_Universe.GetCC();
+	CC.DefineGlobal(CONSTLIT("gPlayerShip"), CC.CreateInteger((int)m_pPlayer->GetShip()));
+
+	//	Generate stats and save to file
+
+	GenerateGameStats(&m_GameStats, true);
+	if (error = SaveGameStats(m_GameStats, true, true))
+		return error;
+
+	//	Clean up
+
+	m_pPlayer = NULL;
+
+	//	Close the game file
+
+	m_GameFile.Close();
+	m_Universe.Reinit();
+
+	//	Done
+
+	m_iState = stateGameOver;
+
+	return NOERROR;
+	}
+
+ALERROR CTranscendenceModel::EndGame (const CString &sReason, const CString &sEpitaph, int iScoreChange)
+
+//	EndGame
+//
+//	Sets the end game condition.
+
+	{
+	m_iScoreBonus = iScoreChange;
+	m_sEndGameReason = sReason;
+	m_sEpitaph = sEpitaph;
+	m_iState = statePlayerInEndGame;
+
+	//	We wait to get called at EndGame to complete the end game.
+
+	return NOERROR;
+	}
+
 ALERROR CTranscendenceModel::EndGameClose (CString *retsError)
 
 //	EndGameClose
@@ -628,50 +696,11 @@ ALERROR CTranscendenceModel::EndGameStargate (void)
 //	Ends game when player enters final stargate
 
 	{
-	ALERROR error;
-
-	//	Bonus for escaping Human Space
-
-	m_pPlayer->IncScore(10000);
-
-	//	Game over (compile stats)
-
-	m_pPlayer->OnGameEnd();
-
-	//	Remember the epitaph
-
+	m_iScoreBonus = 10000;
+	m_sEndGameReason = m_pDestNode->GetEndGameReason();
 	m_sEpitaph = m_pDestNode->GetEpitaph();
-
-	//	Record final score
-
-	RecordFinalScore(m_sEpitaph, m_pDestNode->GetEndGameReason(), false);
-
-	//	We need to define gPlayerShip so that game stats 
-	//	are generated properly. (It gets cleared out in CTranscendenceWnd::PlayerEnteredGate)
-
-	CCodeChain &CC = m_Universe.GetCC();
-	CC.DefineGlobal(CONSTLIT("gPlayerShip"), CC.CreateInteger((int)m_pPlayer->GetShip()));
-
-	//	Generate stats and save to file
-
-	GenerateGameStats(&m_GameStats, true);
-	if (error = SaveGameStats(m_GameStats, true))
-		return error;
-
-	//	Clean up
-
-	m_pPlayer = NULL;
-
-	//	Close the game file
-
-	m_GameFile.Close();
-	m_Universe.Reinit();
-
-	//	Done
-
-	m_iState = stateGameOver;
-
-	return NOERROR;
+	m_iState = statePlayerInEndGame;
+	return EndGame();
 	}
 
 ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData)
@@ -1161,6 +1190,21 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 			*retsError = strPatternSubst(CONSTLIT("Save file %s may only be opened by %s."), sFilespec, m_GameFile.GetUsername());
 			m_GameFile.Close();
 			return ERR_FAIL;
+			}
+
+		//	If this game is in end game state then we just load the stats.
+
+		if (m_GameFile.IsEndGame())
+			{
+			error = m_GameFile.LoadGameStats(&m_GameStats);
+			m_GameFile.Close();
+			if (error)
+				{
+				*retsError = strPatternSubst(CONSTLIT("Unable to load stats from save file: %s"), sFilespec);
+				return error;
+				}
+
+			return ERR_CANCEL;
 			}
 
 		//	Load the universe
@@ -1832,16 +1876,23 @@ ALERROR CTranscendenceModel::SaveGame (DWORD dwFlags, CString *retsError)
 	{
 	ALERROR error;
 
-	ASSERT(m_GameFile.IsOpen());
+	//	If this is a mission check point and we've already quit the game, then
+	//	we can stop. This can happen if we end the game inside of <OnAcceptedUndock>
+
+	if ((dwFlags & CGameFile::FLAG_ACCEPT_MISSION) 
+			&& m_iState == statePlayerInEndGame)
+		return NOERROR;
 
 	//	If we're saving a mission, check the option and exit if we're not 
 	//	supposed to save on mission accept.
 
-	if ((dwFlags & CGameFile::FLAG_ACCEPT_MISSION) && m_bNoMissionCheckpoint)
+	if ((dwFlags & CGameFile::FLAG_ACCEPT_MISSION) 
+			&& m_bNoMissionCheckpoint)
 		return NOERROR;
 
 	//	Fire and event to give global types a chance to save any volatiles
 
+	ASSERT(m_GameFile.IsOpen());
 	m_Universe.FireOnGlobalUniverseSave();
 
 	//	Generate and save game stats
@@ -1911,7 +1962,7 @@ void CTranscendenceModel::SetDebugMode (bool bDebugMode)
 	m_Universe.SetDebugMode(bDebugMode);
 	}
 
-ALERROR CTranscendenceModel::SaveGameStats (const CGameStats &Stats, bool bGameOver)
+ALERROR CTranscendenceModel::SaveGameStats (const CGameStats &Stats, bool bGameOver, bool bEndGame)
 
 //	SaveGameStats
 //
@@ -1938,7 +1989,7 @@ ALERROR CTranscendenceModel::SaveGameStats (const CGameStats &Stats, bool bGameO
 		sEpitaph = NULL_STR;
 		}
 
-	if (error = m_GameFile.SetGameStatus(iScore, sEpitaph))
+	if (error = m_GameFile.SetGameStatus(iScore, sEpitaph, bEndGame))
 		return error;
 
 	//	Done
