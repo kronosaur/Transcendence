@@ -945,7 +945,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 				//	The session takes handoff of the stats
 
-				m_HI.OpenPopupSession(new CStatsSession(m_HI, m_Service, Stats));
+				m_HI.ShowSession(new CStatsSession(m_HI, m_Service, Stats));
 				m_iState = stateEndGameStats;
 				return NOERROR;
 				}

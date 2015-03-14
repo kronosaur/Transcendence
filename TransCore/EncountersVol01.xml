@@ -3001,7 +3001,8 @@
 			class=				""
 			type=				"raid platform"
 
-			mass=				"5000"
+			size=				"90"
+			mass=				"4000"
 			cargoSpace=			"500"
 			thrustRatio=		"0.4"
 			maxSpeed=			"6"

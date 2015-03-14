@@ -166,7 +166,7 @@
 
 			attributes=			"capitalShip, charonPirates, genericClass"
 			
-			size=				"120"
+			size=				"70"
 			mass=				"6000"
 			thrustRatio=		"1"
 			maxSpeed=			"12"
@@ -222,8 +222,8 @@
 		<Image imageID="&rsMediumShips3;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="171"	posRadius="43"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-171"	posRadius="43"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="171"	posRadius="42"	posZ="6"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-171"	posRadius="42"	posZ="6"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
@@ -418,7 +418,8 @@
 
 			attributes=			"capitalShip, charonPirates, charonFrigate, genericClass"
 			   
-			mass=				"1000"
+			size=				"120"
+			mass=				"7500"
 			cargoSpace=			"1000"
 			thrustRatio=		"2"
 			maxSpeed=			"18"
@@ -448,10 +449,10 @@
 		
 		<Devices>
 			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="170" posAngle="43" posRadius="24"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="0" posAngle="320" posRadius="27"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="5" maxFireArc="175" posAngle="118" posRadius="20"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="185" maxFireArc="355" posAngle="238" posRadius="20"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="170" posAngle="43" posRadius="29" posZ="0"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="0" posAngle="320" posRadius="32" posZ="0"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="5" maxFireArc="175" posAngle="118" posRadius="25" posZ="0"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="185" maxFireArc="355" posAngle="238" posRadius="25" posZ="0"/>
 		</Devices>
 
 		<Maneuver
@@ -485,12 +486,12 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsCharonFrigateImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+		<Image imageID="&rsCharonFrigateImage;" imageWidth="140" imageHeight="140"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="170"	posRadius="55"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="53"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-170"	posRadius="55"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="171"	posRadius="67"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="66"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-171"	posRadius="67"	posZ="0"	rotation="180"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
@@ -894,7 +895,8 @@
 			   
 			attributes=			"capitalShip, charonPirates, charonFrigate, majorShip"
 
-			mass=				"1000"
+			size=				"120"
+			mass=				"7500"
 			cargoSpace=			"1000"
 			thrustRatio=		"2"
 			maxSpeed=			"18"
@@ -914,10 +916,10 @@
 		
 		<Devices>
 			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="170" posAngle="43" posRadius="24"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="0" posAngle="320" posRadius="27"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="5" maxFireArc="175" posAngle="118" posRadius="20"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="185" maxFireArc="355" posAngle="238" posRadius="20"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="170" posAngle="43" posRadius="29" posZ="0"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="0" posAngle="320" posRadius="32" posZ="0"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="5" maxFireArc="175" posAngle="118" posRadius="25" posZ="0"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="185" maxFireArc="355" posAngle="238" posRadius="25" posZ="0"/>
 		</Devices>
 
 		<Maneuver
@@ -948,12 +950,12 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsCharonFrigateImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+		<Image imageID="&rsCharonFrigateImage;" imageWidth="140" imageHeight="140"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="170"	posRadius="55"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="53"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-170"	posRadius="55"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="171"	posRadius="67"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="66"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-171"	posRadius="67"	posZ="0"	rotation="180"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->

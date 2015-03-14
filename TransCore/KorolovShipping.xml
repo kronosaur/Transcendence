@@ -620,7 +620,7 @@
 			attributes=			"commonwealth,freighter,genericClass"
 			
 			size=				"75"
-			mass=				"850"
+			mass=				"2100"
 			thrustRatio=		"2"
 			maxSpeed=			"12"
 			cargoSpace=			"2000"
