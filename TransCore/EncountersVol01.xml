@@ -1050,7 +1050,8 @@
 			class=				"Ferian miner"
 			type=				""
 
-			mass=				"150"
+			size=				"130"
+			mass=				"5000"
 			cargoSpace=			"200"
 			thrustRatio=		"4"
 			maxSpeed=			"17"
@@ -3096,7 +3097,8 @@
 
 			attributes=			"capitalShip, genericClass, marauders"
 			   
-			mass=				"5000"
+			size=				"140"
+			mass=				"14000"
 			thrustRatio=		"1"
 			maxSpeed=			"12"
 			cargoSpace=			"500"
@@ -3116,10 +3118,10 @@
 		
 		<Devices>
 			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true"								 posAngle="0"   posRadius="0"   posZ="0"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="160" posAngle="17"  posRadius="55"  posZ="5"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="200" maxFireArc="20"	 posAngle="343" posRadius="55"  posZ="5"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="350" maxFireArc="170" posAngle="60"  posRadius="30"  posZ="10"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="10"  posAngle="300" posRadius="30"  posZ="10"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="160" posAngle="17"  posRadius="66"  posZ="5"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="200" maxFireArc="20"	 posAngle="343" posRadius="66"  posZ="5"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="350" maxFireArc="170" posAngle="60"  posRadius="36"  posZ="10"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="10"  posAngle="300" posRadius="36"  posZ="10"/>
 			<Device deviceID="&itClass3Deflector;"/>
 			<Device deviceID="&it100MWReactor;"/>
 		</Devices>
@@ -3161,13 +3163,13 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips4;" imageX="256" imageY="0" imageWidth="128" imageHeight="128"/>
+		<Image imageID="&rsTripoli;" imageWidth="156" imageHeight="156"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="167"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-167"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="175"	posRadius="58"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-175"	posRadius="58"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="167"	posRadius="72"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-167"	posRadius="72"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="175"	posRadius="70"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-175"	posRadius="70"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
@@ -3407,6 +3409,10 @@
 		</LevelTable>
 	</ShipTable>
 
+	<!-- Resources -->
+
+	<Image UNID="&rsTripoli;"			bitmap="Resources\Tripoli.jpg"		bitmask="Resources\TripoliMask.bmp"  loadOnUse="true"/>
+	
 <!-- Order of Penitence =================================================== -->
 
 	<Sovereign UNID="&svPenitents;"

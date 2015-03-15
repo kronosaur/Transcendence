@@ -1588,6 +1588,10 @@
 	
 	<!ENTITY rsHeliotropeFrigate		"0x001000F0">
 	
+	<!-- 0100-010F CHARON PIRATES AND MARAUDERS -->
+	
+	<!ENTITY rsTripoli					"0x00100100">
+	
 	<!-- 1000-FFFF RESERVED -->
 	]>
 	

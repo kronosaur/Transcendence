@@ -81,7 +81,8 @@
 			class=				"Dwarg master"
 			type=				""
 
-			mass=				"100"
+			size=				"77"
+			mass=				"1900"
 			cargoSpace=			"25"
 			thrustRatio=		"5"
 			maxSpeed=			"22"
@@ -136,7 +137,8 @@
 			class=				"Zoanthrope behemoth"
 			type=				""
 
-			mass=				"12500"
+			size=				"90"
+			mass=				"10000"
 			cargoSpace=			"100"
 			thrustRatio=		"0.2"
 			maxSpeed=			"12"
