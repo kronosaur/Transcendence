@@ -1288,7 +1288,8 @@
 	<!ENTITY stHeliotropeOutpost		"0x08010040">
 	<!ENTITY stHeliotropeColony			"0x08010041">
 	<!ENTITY scHeliotropeGunship		"0x08010042">
-	<!ENTITY scHeliotropeDestroyer		"0x08010043">
+	<!ENTITY scHeliotropeDestroyer		"0x08010043">	<!-- For compatibility -->
+	<!ENTITY scHeliotropeFrigate		"0x08010043">	<!-- Reclassified -->
 	<!ENTITY itHeliotropeFuel			"0x08010044">
 	<!ENTITY svHeliotropes				"0x08010045">
 	<!ENTITY tbHeliotropeEncounters		"0x08010046">
@@ -1582,6 +1583,10 @@
 	<!ENTITY rsBattleArenaSegments		"0x001000E0">
 	<!ENTITY baBattleArenaSegment		"0x001000E1">
 	<!ENTITY stBattleArenaStatic		"0x001000E2">
+	
+	<!-- 00F0-00FF HELIOTROPES -->
+	
+	<!ENTITY rsHeliotropeFrigate		"0x001000F0">
 	
 	<!-- 1000-FFFF RESERVED -->
 	]>

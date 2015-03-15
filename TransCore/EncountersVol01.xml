@@ -2167,16 +2167,17 @@
 
 	</ItemType>
 
-	<!-- Heliotrope Destroyer -->
+	<!-- Heliotrope Frigate -->
 
-	<ShipClass UNID="&scHeliotropeDestroyer;"
+	<ShipClass UNID="&scHeliotropeFrigate;"
 			manufacturer=		"Heliotrope"
 			class=				""
-			type=				"destroyer"
+			type=				"frigate"
 
 			attributes=			"genericClass, heliotropes"
-			   
-			mass=				"1000"
+
+			size=				"100"
+			mass=				"5000"
 			thrustRatio=		"2"
 			maxSpeed=			"15"
 			cargoSpace=			"50"
@@ -2224,15 +2225,15 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips3;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsHeliotropeFrigate;" imageWidth="120" imageHeight="120"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="42"	posZ="-22"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="160"	posRadius="46"	posZ="-10"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-160"	posRadius="46"	posZ="-10"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="160"	posRadius="46"	posZ="10"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-160"	posRadius="46"	posZ="10"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="42"	posZ="22"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="48"	posZ="-25"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="54"	posZ="-12"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="54"	posZ="-12"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="54"	posZ="12"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="54"	posZ="12"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="48"	posZ="25"	rotation="180"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
@@ -2331,9 +2332,9 @@
 				<Ship  chance="25"	count="2d6"	class="&scHeliotropeGunship;"	orders="patrol:5"/>
 				<Group chance="60">
 					<Ship			count="2d4"	class="&scHeliotropeGunship;"	orders="guard"/>
-					<Ship			count="1"	class="&scHeliotropeDestroyer;"	orders="patrol:5"/>
+					<Ship			count="1"	class="&scHeliotropeFrigate;"	orders="patrol:5"/>
 				</Group>
-				<Ship  chance="15"	count="1d4"	class="&scHeliotropeDestroyer;"	orders="patrol:5"/>
+				<Ship  chance="15"	count="1d4"	class="&scHeliotropeFrigate;"	orders="patrol:5"/>
 			</Table>
 		</Ships>
 
@@ -2416,22 +2417,26 @@
 				</Escorts>
 			</Ship>
 			
-			<Ship levelFrequency="--ruu uurr-" count="1"	class="&scHeliotropeDestroyer;" eventHandler="&evStdZoneEncounterBehavior;"/>
+			<Ship levelFrequency="--ruu uurr-" count="1"	class="&scHeliotropeFrigate;" eventHandler="&evStdZoneEncounterBehavior;"/>
 			
-			<Ship levelFrequency="--vuc cuurr" count="1"	class="&scHeliotropeDestroyer;" eventHandler="&evStdZoneEncounterBehavior;">
+			<Ship levelFrequency="--vuc cuurr" count="1"	class="&scHeliotropeFrigate;" eventHandler="&evStdZoneEncounterBehavior;">
 				<Escorts>
 					<Ship					   count="1d4"	class="&scHeliotropeGunship;" orders="escort"/>
 				</Escorts>
 			</Ship>
 			
-			<Ship levelFrequency="---rr rrrrr" count="1"	class="&scHeliotropeDestroyer;" eventHandler="&evStdZoneEncounterBehavior;">
+			<Ship levelFrequency="---rr rrrrr" count="1"	class="&scHeliotropeFrigate;" eventHandler="&evStdZoneEncounterBehavior;">
 				<Escorts>
-					<Ship					   count="1d2"	class="&scHeliotropeDestroyer;" orders="escort"/>
+					<Ship					   count="1d2"	class="&scHeliotropeFrigate;" orders="escort"/>
 				</Escorts>
 			</Ship>
 		</LevelTable>
 	</ShipTable>
 
+	<!-- Resources -->
+
+	<Image UNID="&rsHeliotropeFrigate;"				bitmap="Resources\HeliotropeFrigate.jpg"		bitmask="Resources\HeliotropeFrigateMask.bmp"  loadOnUse="true"/>
+	
 <!-- Himal Separatists ==================================================== -->
 
 	<Sovereign UNID="&svHimalSeparatists;"
