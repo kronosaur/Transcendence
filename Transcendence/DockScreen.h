@@ -383,6 +383,7 @@ class CDockScreen : public IScreenController
 			bool bAnimate;
 			};
 
+		void BltSystemBackground (CSystem *pSystem, const RECT &rcRect);
 		void BltToBackgroundImage (const RECT &rcRect, CG32bitImage *pImage, int xSrc, int ySrc, int cxSrc, int cySrc);
 		ALERROR CreateBackgroundArea (IDockScreenDisplay::SBackgroundDesc &Desc, AGScreen *pScreen, const RECT &rcRect, const RECT &rcInner);
 		ALERROR CreateBackgroundImage (IDockScreenDisplay::SBackgroundDesc &Desc, const RECT &rcRect, int xOffset);

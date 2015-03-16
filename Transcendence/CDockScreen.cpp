@@ -305,6 +305,22 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 		*retpDControl = pDControl;
 	}
 
+void CDockScreen::BltSystemBackground (CSystem *pSystem, const RECT &rcRect)
+
+//	BltSystemBackground
+//
+//	Blts the system space background on the docks screen background image
+//	(If we have one.)
+
+	{
+	CSystemType *pSystemType = pSystem->GetType();
+	DWORD dwSpaceID = pSystemType->GetBackgroundUNID();
+	CG32bitImage *pSpaceImage;
+	if (dwSpaceID
+			&& (pSpaceImage = g_pUniverse->GetLibraryBitmap(dwSpaceID)))
+		BltToBackgroundImage(rcRect, pSpaceImage, 0, 0, RectWidth(rcRect), RectHeight(rcRect));
+	}
+
 void CDockScreen::BltToBackgroundImage (const RECT &rcRect, CG32bitImage *pImage, int xSrc, int ySrc, int cxSrc, int cySrc)
 
 //	BltToBackgroundImage
@@ -537,18 +553,9 @@ ALERROR CDockScreen::CreateBackgroundImage (IDockScreenDisplay::SBackgroundDesc 
 
 		else if ((pHeroImage = &Desc.pObj->GetHeroImage()) && !pHeroImage->IsEmpty())
 			{
-			//	Blt the system background
+			//	Paint the hero image on top of the system space background.
 
-			CSystem *pSystem = Desc.pObj->GetSystem();
-			CSystemType *pSystemType = pSystem->GetType();
-			DWORD dwSpaceID = pSystemType->GetBackgroundUNID();
-			CG32bitImage *pSpaceImage;
-			if (dwSpaceID
-					&& (pSpaceImage = g_pUniverse->GetLibraryBitmap(dwSpaceID)))
-				BltToBackgroundImage(rcRect, pSpaceImage, 0, 0, RectWidth(rcRect), RectHeight(rcRect));
-
-			//	Paint the hero image on top
-
+			BltSystemBackground(Desc.pObj->GetSystem(), rcRect);
 			pHeroImage->PaintImage(*m_pBackgroundImage,
 					xOffset + BACKGROUND_FOCUS_X,
 					BACKGROUND_FOCUS_Y,
@@ -560,6 +567,10 @@ ALERROR CDockScreen::CreateBackgroundImage (IDockScreenDisplay::SBackgroundDesc 
 
 		else
 			{
+			//	Paint the object on top of the system space background
+
+			BltSystemBackground(Desc.pObj->GetSystem(), rcRect);
+
 			SViewportPaintCtx Ctx;
 			Ctx.fNoSelection = true;
 			Ctx.pObj = Desc.pObj;
