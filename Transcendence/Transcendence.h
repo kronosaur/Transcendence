@@ -1613,6 +1613,7 @@ class CGameSettings
 			force1024Res,					//	Force 1024x768 resolution
 			force600Res,					//	Force 1024x600 resolution
 			graphicsQuality,				//	SFX vs performance
+			no3DSystemMap,					//	3D system map projection
 
 			//	Sounds options
 			noSound,						//	No sound (either music or sound effects)
@@ -1631,19 +1632,19 @@ class CGameSettings
 			debugSoundtrack,				//	Soundtrack debugging UI
 
 			//	Constants
-			OPTIONS_COUNT = 33,
+			OPTIONS_COUNT = 34,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }
 
 		inline const CString &GetAppDataFolder (void) const { return m_sAppData; }
-		inline bool GetBoolean (int iOption) { return m_Options[iOption].bValue; }
-		inline void GetDefaultExtensions (DWORD dwAdventure, bool bDebugMode, TArray<DWORD> *retList) { m_Extensions.GetList(dwAdventure, bDebugMode, retList); }
+		inline bool GetBoolean (int iOption) const { return m_Options[iOption].bValue; }
+		inline void GetDefaultExtensions (DWORD dwAdventure, bool bDebugMode, TArray<DWORD> *retList) const { m_Extensions.GetList(dwAdventure, bDebugMode, retList); }
 		inline const TArray<CString> &GetExtensionFolders (void) const { return m_ExtensionFolders; }
 		inline const CString &GetInitialSaveFile (void) const { return m_sSaveFile; }
-		inline int GetInteger (int iOption) { return m_Options[iOption].iValue; }
+		inline int GetInteger (int iOption) const { return m_Options[iOption].iValue; }
 		inline const CGameKeys &GetKeyMap (void) const { return m_KeyMap; }
-		inline const CString &GetString (int iOption) { return m_Options[iOption].sValue; }
+		inline const CString &GetString (int iOption) const { return m_Options[iOption].sValue; }
 		ALERROR Load (const CString &sFilespec, CString *retsError = NULL);
 		ALERROR ParseCommandLine (char *pszCmdLine);
 		ALERROR Save (const CString &sFilespec);
@@ -1764,21 +1765,17 @@ class CTranscendenceModel
 		inline CPlayerShipController *GetPlayer (void) { return m_pPlayer; }
 		inline const CString &GetProductName (void) { return m_Version.sProductName; }
 		inline const TArray<CString> &GetSaveFileFolders (void) const { return m_SaveFileFolders; }
+		inline CSFXOptions &GetSFXOptions (void) { return m_Universe.GetSFXOptions(); }
 		inline CUniverse &GetUniverse (void) { return m_Universe; }
 		inline const CString &GetVersion (void) { return m_Version.sProductVersion; }
-		ALERROR Init (void);
-		ALERROR InitBackground (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, CString *retsError = NULL);
+		ALERROR Init (const CGameSettings &Settings);
+		ALERROR InitBackground (const CGameSettings &Settings, const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, CString *retsError = NULL);
 		ALERROR LoadGame (const CString &sSignedInUsername, const CString &sFilespec, CString *retsError);
 		inline void ResetPlayer (void) { m_pPlayer = NULL; }
 		inline void SetCrawlImage (DWORD dwImage) { m_pCrawlImage = g_pUniverse->GetLibraryBitmap(dwImage); }
 		inline void SetCrawlSoundtrack (DWORD dwTrack) { m_pCrawlSoundtrack = g_pUniverse->FindSoundType(dwTrack); }
 		inline void SetCrawlText (const CString &sText) { m_sCrawlText = sText; }
 		void SetDebugMode (bool bDebugMode = true);
-		inline void SetForceTDB (bool bForceTDB = true) { m_bForceTDB = bForceTDB; }
-		inline void SetNoMissionCheckpoint (bool bValue = true) { m_bNoMissionCheckpoint = bValue; }
-		inline void SetNoSound (bool bNoSound = true) { m_bNoSound = bNoSound; }
-		inline void SetSFXQuality (CUniverse::ESFXQuality iQuality) { m_Universe.SetSFXQuality(iQuality); }
-		inline void SetSFXQualityAuto (void) { m_bSFXQualityAuto = true; }
 		ALERROR SaveHighScoreList (CString *retsError = NULL);
 		ALERROR SaveGame (DWORD dwFlags, CString *retsError = NULL);
 
@@ -1819,7 +1816,6 @@ class CTranscendenceModel
 		bool m_bForceTDB;							//	Use TDB even if XML files exist
 		bool m_bNoSound;							//	No sound
 		bool m_bNoMissionCheckpoint;				//	Do not save game on mission accept
-		bool m_bSFXQualityAuto;						//	Test performance to set SFX quality
 
 		CGameFile m_GameFile;
 		CUniverse m_Universe;

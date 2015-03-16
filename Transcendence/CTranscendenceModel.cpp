@@ -107,6 +107,13 @@
 #define CMD_GAME_ENTER_STARGATE					CONSTLIT("gameEnterStargate")
 #define CMD_PLAYER_UNDOCKED						CONSTLIT("playerUndocked")
 
+#define FOLDER_SAVE_FILES						CONSTLIT("Games")
+
+#define GRAPHICS_AUTO							CONSTLIT("auto")
+#define GRAPHICS_MINIMUM						CONSTLIT("minimum")
+#define GRAPHICS_STANDARD						CONSTLIT("standard")
+#define GRAPHICS_MAXIMUM						CONSTLIT("maximum")
+
 #define HIGH_SCORES_FILENAME					CONSTLIT("HighScores.xml")
 
 #define STR_G_PLAYER_SHIP						CONSTLIT("gPlayerShip")
@@ -122,7 +129,6 @@ CTranscendenceModel::CTranscendenceModel (CHumanInterface &HI) :
 		m_bForceTDB(false),
 		m_bNoSound(false),
 		m_bNoMissionCheckpoint(false),
-		m_bSFXQualityAuto(false),
 		m_pPlayer(NULL),
 		m_pResurrectType(NULL),
 		m_pCrawlImage(NULL),
@@ -1041,7 +1047,7 @@ void CTranscendenceModel::GetScreenSession (SDockFrame *retFrame)
 	*retFrame = m_DockFrames.GetCurrent();
 	}
 
-ALERROR CTranscendenceModel::Init (void)
+ALERROR CTranscendenceModel::Init (const CGameSettings &Settings)
 
 //	Init
 //
@@ -1050,10 +1056,18 @@ ALERROR CTranscendenceModel::Init (void)
 	{
 	::fileGetVersionInfo(NULL_STR, &m_Version);
 
+	//	Set some options
+
+	AddSaveFileFolder(pathAddComponent(Settings.GetAppDataFolder(), FOLDER_SAVE_FILES));
+	SetDebugMode(Settings.GetBoolean(CGameSettings::debugGame));
+	m_bForceTDB = Settings.GetBoolean(CGameSettings::useTDB);
+	m_bNoMissionCheckpoint = Settings.GetBoolean(CGameSettings::noMissionCheckpoint);
+	m_bNoSound = Settings.GetBoolean(CGameSettings::noSound);
+
 	return NOERROR;
 	}
 
-ALERROR CTranscendenceModel::InitBackground (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, CString *retsError)
+ALERROR CTranscendenceModel::InitBackground (const CGameSettings &Settings, const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, CString *retsError)
 
 //	InitBackground
 //
@@ -1062,6 +1076,32 @@ ALERROR CTranscendenceModel::InitBackground (const CString &sCollectionFolder, c
 
 	{
 	ALERROR error;
+
+	//	Set the graphics quality
+
+	CString sGraphics = Settings.GetString(CGameSettings::graphicsQuality);
+	if (sGraphics.IsBlank() || strEquals(sGraphics, GRAPHICS_AUTO))
+		m_Universe.GetSFXOptions().SetSFXQualityAuto();
+	else if (strEquals(sGraphics, GRAPHICS_MINIMUM))
+		m_Universe.GetSFXOptions().SetSFXQuality(CSFXOptions::sfxMinimum);
+	else if (strEquals(sGraphics, GRAPHICS_STANDARD))
+		m_Universe.GetSFXOptions().SetSFXQuality(CSFXOptions::sfxStandard);
+	else if (strEquals(sGraphics, GRAPHICS_MAXIMUM))
+		m_Universe.GetSFXOptions().SetSFXQuality(CSFXOptions::sfxMaximum);
+	else
+		{
+		m_Universe.GetSFXOptions().SetSFXQualityAuto();
+		::kernelDebugLogMessage("Unknown graphics quality: %s.", sGraphics);
+		}
+
+	//	Now set some additional options that may override the default graphics
+	//	quality settings.
+
+	if (Settings.GetBoolean(CGameSettings::showManeuverEffects))
+		m_Universe.GetSFXOptions().SetManeuveringEffectEnabled();
+
+	if (Settings.GetBoolean(CGameSettings::no3DSystemMap))
+		m_Universe.GetSFXOptions().Set3DSystemMapEnabled(false);
 
 	//	Load the universe
 
@@ -1352,11 +1392,6 @@ ALERROR CTranscendenceModel::LoadUniverse (const CString &sCollectionFolder, con
 	try
 		{
 		ALERROR error;
-
-		//	If we need to test the graphics quality, do it now
-
-		if (m_bSFXQualityAuto)
-			m_Universe.SetSFXQualityAuto();
 
 		//	Make sure the universe know about our various managers
 

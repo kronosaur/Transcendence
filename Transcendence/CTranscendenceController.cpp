@@ -136,12 +136,6 @@
 #define SETTINGS_FILENAME						CONSTLIT("Settings.xml")
 #define FOLDER_COLLECTION						CONSTLIT("Collection")
 #define FOLDER_EXTENSIONS						CONSTLIT("Extensions")
-#define FOLDER_SAVE_FILES						CONSTLIT("Games")
-
-#define GRAPHICS_AUTO							CONSTLIT("auto")
-#define GRAPHICS_MINIMUM						CONSTLIT("minimum")
-#define GRAPHICS_STANDARD						CONSTLIT("standard")
-#define GRAPHICS_MAXIMUM						CONSTLIT("maximum")
 
 #define PROP_COLOR								CONSTLIT("color")
 #define PROP_FONT								CONSTLIT("font")
@@ -1754,33 +1748,8 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 
 	//	Initialize the model
 
-	if (error = m_Model.Init())
+	if (error = m_Model.Init(m_Settings))
 		return error;
-
-	//	Set some options
-
-	m_Model.AddSaveFileFolder(pathAddComponent(m_Settings.GetAppDataFolder(), FOLDER_SAVE_FILES));
-	m_Model.SetDebugMode(m_Settings.GetBoolean(CGameSettings::debugGame));
-	m_Model.SetForceTDB(m_Settings.GetBoolean(CGameSettings::useTDB));
-	m_Model.SetNoMissionCheckpoint(m_Settings.GetBoolean(CGameSettings::noMissionCheckpoint));
-	m_Model.SetNoSound(m_Settings.GetBoolean(CGameSettings::noSound));
-
-	//	Set the graphics quality
-
-	CString sGraphics = m_Settings.GetString(CGameSettings::graphicsQuality);
-	if (sGraphics.IsBlank() || strEquals(sGraphics, GRAPHICS_AUTO))
-		m_Model.SetSFXQualityAuto();
-	else if (strEquals(sGraphics, GRAPHICS_MINIMUM))
-		m_Model.SetSFXQuality(CUniverse::sfxMinimum);
-	else if (strEquals(sGraphics, GRAPHICS_STANDARD))
-		m_Model.SetSFXQuality(CUniverse::sfxStandard);
-	else if (strEquals(sGraphics, GRAPHICS_MAXIMUM))
-		m_Model.SetSFXQuality(CUniverse::sfxMaximum);
-	else
-		{
-		m_Model.SetSFXQualityAuto();
-		::kernelDebugLogMessage("Unknown graphics quality: %s.", sGraphics);
-		}
 
 	//	Figure out where the Collection folder is and where the Extension
 	//	folders are.
@@ -1808,7 +1777,7 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 	//	Kick off a background initialization of the model
 	//	(this will load the universe)
 
-	m_HI.AddBackgroundTask(new CInitModelTask(m_HI, m_Model, sCollectionFolder, ExtensionFolders), 0, this, CMD_MODEL_INIT_DONE);
+	m_HI.AddBackgroundTask(new CInitModelTask(m_HI, m_Model, m_Settings, sCollectionFolder, ExtensionFolders), 0, this, CMD_MODEL_INIT_DONE);
 
 	//	If the clouds services have not been initialized yet (because there was no
 	//	<Services> tag in the settings file) then initialize to defaults here.

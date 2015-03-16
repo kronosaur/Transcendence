@@ -99,11 +99,6 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 						dwViewportFlags |= CSystem::VWP_ENHANCED_DISPLAY;
 					}
 
-				//	More options
-
-				if (m_pTC->GetOptionBoolean(CGameSettings::showManeuverEffects))
-					dwViewportFlags |= CSystem::VWP_SHOW_MANEUVER_EFFECTS;
-
 				//	Update some displays
 
 				if ((m_iTick % 7) == 0)

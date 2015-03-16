@@ -35,19 +35,22 @@ class CInitModelTask : public IHITask
 	{
 	public:
 		CInitModelTask (CHumanInterface &HI, 
-						CTranscendenceModel &Model, 
+						CTranscendenceModel &Model,
+						const CGameSettings &Settings,
 						const CString &sCollectionFolder, 
 						const TArray<CString> &ExtensionFolders) : IHITask(HI), 
 				m_Model(Model),
+				m_Settings(Settings),
 				m_sCollectionFolder(sCollectionFolder),
 				m_ExtensionFolders(ExtensionFolders)
 			{ }
 
 		//	IHITask virtuals
-		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Model.InitBackground(m_sCollectionFolder, m_ExtensionFolders, retsResult); }
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Model.InitBackground(m_Settings, m_sCollectionFolder, m_ExtensionFolders, retsResult); }
 
 	private:
 		CTranscendenceModel &m_Model;
+		const CGameSettings &m_Settings;
 		CString m_sCollectionFolder;
 		TArray<CString> m_ExtensionFolders;
 	};

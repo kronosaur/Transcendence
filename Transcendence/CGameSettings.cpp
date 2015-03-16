@@ -76,6 +76,7 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"force1024",				optionBoolean,	"false",	0	},
 		{	"force600",					optionBoolean,	"false",	0	},
 		{	"graphicsQuality",			optionString,	"auto",		0	},
+		{	"no3DSystemMap",			optionBoolean,	"false",	0	},
 
 		//	Sounds options
 		{	"noSound",					optionBoolean,	"false",	0	},
@@ -367,15 +368,23 @@ ALERROR CGameSettings::Save (const CString &sFilespec)
 			return error;
 		}
 
+	//	Sort the options
+
+	TSortMap<CString, int> Sorted;
+	for (i = 0; i < OPTIONS_COUNT; i++)
+		Sorted.Insert(CString(g_OptionData[i].pszName, -1, true), i);
+
 	//	Loop over options
 
-	for (i = 0; i < OPTIONS_COUNT; i++)
+	for (i = 0; i < Sorted.GetCount(); i++)
 		{
+		int iOption = Sorted[i];
+
 		//	Compose option element and write
 
 		sData = strPatternSubst(CONSTLIT("\t<Option name=\"%s\"\tvalue=\"%s\"/>\r\n"),
-				CString(g_OptionData[i].pszName, -1, true),
-				strToXMLText(m_Options[i].sSettingsValue));
+				Sorted.GetKey(i),
+				strToXMLText(m_Options[iOption].sSettingsValue));
 
 		if (error = DataFile.Write(sData.GetPointer(), sData.GetLength(), NULL))
 			return error;
