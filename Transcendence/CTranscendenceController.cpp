@@ -138,6 +138,11 @@
 #define FOLDER_EXTENSIONS						CONSTLIT("Extensions")
 #define FOLDER_SAVE_FILES						CONSTLIT("Games")
 
+#define GRAPHICS_AUTO							CONSTLIT("auto")
+#define GRAPHICS_MINIMUM						CONSTLIT("minimum")
+#define GRAPHICS_STANDARD						CONSTLIT("standard")
+#define GRAPHICS_MAXIMUM						CONSTLIT("maximum")
+
 #define PROP_COLOR								CONSTLIT("color")
 #define PROP_FONT								CONSTLIT("font")
 #define PROP_OPACITY							CONSTLIT("opacity")
@@ -1759,6 +1764,23 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 	m_Model.SetForceTDB(m_Settings.GetBoolean(CGameSettings::useTDB));
 	m_Model.SetNoMissionCheckpoint(m_Settings.GetBoolean(CGameSettings::noMissionCheckpoint));
 	m_Model.SetNoSound(m_Settings.GetBoolean(CGameSettings::noSound));
+
+	//	Set the graphics quality
+
+	CString sGraphics = m_Settings.GetString(CGameSettings::graphicsQuality);
+	if (sGraphics.IsBlank() || strEquals(sGraphics, GRAPHICS_AUTO))
+		m_Model.SetSFXQualityAuto();
+	else if (strEquals(sGraphics, GRAPHICS_MINIMUM))
+		m_Model.SetSFXQuality(CUniverse::sfxMinimum);
+	else if (strEquals(sGraphics, GRAPHICS_STANDARD))
+		m_Model.SetSFXQuality(CUniverse::sfxStandard);
+	else if (strEquals(sGraphics, GRAPHICS_MAXIMUM))
+		m_Model.SetSFXQuality(CUniverse::sfxMaximum);
+	else
+		{
+		m_Model.SetSFXQualityAuto();
+		::kernelDebugLogMessage("Unknown graphics quality: %s.", sGraphics);
+		}
 
 	//	Figure out where the Collection folder is and where the Extension
 	//	folders are.

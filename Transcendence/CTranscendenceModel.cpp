@@ -122,6 +122,7 @@ CTranscendenceModel::CTranscendenceModel (CHumanInterface &HI) :
 		m_bForceTDB(false),
 		m_bNoSound(false),
 		m_bNoMissionCheckpoint(false),
+		m_bSFXQualityAuto(false),
 		m_pPlayer(NULL),
 		m_pResurrectType(NULL),
 		m_pCrawlImage(NULL),
@@ -1351,6 +1352,11 @@ ALERROR CTranscendenceModel::LoadUniverse (const CString &sCollectionFolder, con
 	try
 		{
 		ALERROR error;
+
+		//	If we need to test the graphics quality, do it now
+
+		if (m_bSFXQualityAuto)
+			m_Universe.SetSFXQualityAuto();
 
 		//	Make sure the universe know about our various managers
 

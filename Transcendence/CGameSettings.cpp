@@ -75,6 +75,7 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"useBackgroundBlt",			optionBoolean,	"true",		0	},
 		{	"force1024",				optionBoolean,	"false",	0	},
 		{	"force600",					optionBoolean,	"false",	0	},
+		{	"graphicsQuality",			optionString,	"auto",		0	},
 
 		//	Sounds options
 		{	"noSound",					optionBoolean,	"false",	0	},
@@ -183,6 +184,12 @@ ALERROR CGameSettings::Load (const CString &sFilespec, CString *retsError)
 			}
 		}
 
+	//	Keep track of which settings we've seen
+
+	bool bLoaded[OPTIONS_COUNT];
+	for (i = 0; i < OPTIONS_COUNT; i++)
+		bLoaded[i] = false;
+
 	//	Initialize to unmodified (as we load settings we might change this)
 
 	m_bModified = false;
@@ -203,6 +210,7 @@ ALERROR CGameSettings::Load (const CString &sFilespec, CString *retsError)
 				}
 
 			SetValue(iOption, pItem->GetAttribute(VALUE_ATTRIB), true);
+			bLoaded[iOption] = true;
 			}
 		else if (strEquals(pItem->GetTag(), KEY_MAP_TAG))
 			{
@@ -230,6 +238,16 @@ ALERROR CGameSettings::Load (const CString &sFilespec, CString *retsError)
 				m_bModified = true;
 			}
 		}
+
+	//	If we didn't load all options, then mark as modified so that we can save
+	//	out all current options. This happens when a new build adds an option.
+
+	for (i = 0; i < OPTIONS_COUNT; i++)
+		if (!bLoaded[i])
+			{
+			m_bModified = true;
+			break;
+			}
 
 	//	Done
 

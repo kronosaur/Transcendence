@@ -1612,6 +1612,7 @@ class CGameSettings
 			useBackgroundBlt,				//	Blt in the background
 			force1024Res,					//	Force 1024x768 resolution
 			force600Res,					//	Force 1024x600 resolution
+			graphicsQuality,				//	SFX vs performance
 
 			//	Sounds options
 			noSound,						//	No sound (either music or sound effects)
@@ -1630,7 +1631,7 @@ class CGameSettings
 			debugSoundtrack,				//	Soundtrack debugging UI
 
 			//	Constants
-			OPTIONS_COUNT = 32,
+			OPTIONS_COUNT = 33,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }
@@ -1776,6 +1777,8 @@ class CTranscendenceModel
 		inline void SetForceTDB (bool bForceTDB = true) { m_bForceTDB = bForceTDB; }
 		inline void SetNoMissionCheckpoint (bool bValue = true) { m_bNoMissionCheckpoint = bValue; }
 		inline void SetNoSound (bool bNoSound = true) { m_bNoSound = bNoSound; }
+		inline void SetSFXQuality (CUniverse::ESFXQuality iQuality) { m_Universe.SetSFXQuality(iQuality); }
+		inline void SetSFXQualityAuto (void) { m_bSFXQualityAuto = true; }
 		ALERROR SaveHighScoreList (CString *retsError = NULL);
 		ALERROR SaveGame (DWORD dwFlags, CString *retsError = NULL);
 
@@ -1816,6 +1819,7 @@ class CTranscendenceModel
 		bool m_bForceTDB;							//	Use TDB even if XML files exist
 		bool m_bNoSound;							//	No sound
 		bool m_bNoMissionCheckpoint;				//	Do not save game on mission accept
+		bool m_bSFXQualityAuto;						//	Test performance to set SFX quality
 
 		CGameFile m_GameFile;
 		CUniverse m_Universe;
