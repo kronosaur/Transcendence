@@ -581,7 +581,8 @@
 
 			attributes=			"capitalShip, genericClass, sungSlavers"
 			   
-			mass=				"9500"
+			size=				"110"
+			mass=				"11000"
 			thrustRatio=		"1"
 			maxSpeed=			"12"
 			cargoSpace=			"500"
@@ -602,8 +603,8 @@
 		<Devices>
 			<Device deviceID="&itParticleBoltCannon;"/>
 			<Device deviceID="&itCyberDeckLowerShields;"/>
-			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="350" maxFireArc="190" posAngle="100" posRadius="50" posZ="0"/>
-			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="260" posRadius="50" posZ="0"/>
+			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="350" maxFireArc="190" posAngle="102" posRadius="54" posZ="0"/>
+			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="-102" posRadius="54" posZ="0"/>
 			<Device deviceID="&itYoroiS100;"/>
 		</Devices>
 
@@ -643,10 +644,10 @@
 		<Image imageID="&rsMediumShips4;" imageX="384" imageY="0" imageWidth="128" imageHeight="128"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="46"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
-			<Effect type="thrustMain"		posAngle="159"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-159"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="46"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="48"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="159"	posRadius="52"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-159"	posRadius="52"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="48"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 
 		<!-- AI and Behavior -->
@@ -678,7 +679,8 @@
 
 			attributes=			"capitalShip, sungSlavers"
 			   
-			mass=				"9500"
+			size=				"110"
+			mass=				"11000"
 			thrustRatio=		"1"
 			maxSpeed=			"12"
 			cargoSpace=			"500"
@@ -699,8 +701,8 @@
 		<Devices>
 			<Device deviceID="&itParticleBoltCannon;"/>
 			<Device deviceID="&itCyberDeckLowerShields;"/>
-			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="350" maxFireArc="190" posAngle="100" posRadius="50" posZ="0"/>
-			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="260" posRadius="50" posZ="0"/>
+			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="350" maxFireArc="190" posAngle="102" posRadius="54" posZ="0"/>
+			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="-102" posRadius="54" posZ="0"/>
 			<Device deviceID="&itYoroiS100;"/>
 		</Devices>
 
@@ -740,10 +742,10 @@
 		<Image imageID="&rsMediumShips4;" imageX="384" imageY="0" imageWidth="128" imageHeight="128"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="46"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
-			<Effect type="thrustMain"		posAngle="159"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-159"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="46"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="48"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="159"	posRadius="52"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-159"	posRadius="52"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="48"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 
 		<!-- AI and Behavior -->
