@@ -1588,9 +1588,13 @@
 	
 	<!ENTITY rsHeliotropeFrigate		"0x001000F0">
 	
-	<!-- 0100-010F CHARON PIRATES AND MARAUDERS -->
+	<!-- 0100-011F CHARON PIRATES AND MARAUDERS -->
 	
 	<!ENTITY rsTripoli					"0x00100100">
+	
+	<!-- 0120-013F SUNG SLAVERS -->
+	
+	<!ENTITY rsSungTransport			"0x00100120">
 	
 	<!-- 1000-FFFF RESERVED -->
 	]>

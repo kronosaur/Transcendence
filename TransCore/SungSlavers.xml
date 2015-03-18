@@ -965,8 +965,9 @@
 			class=				"Sung transport"
 			type=				""
 
-			mass=				"8000"
-			cargoSpace=			"5000"
+			size=				"240"
+			mass=				"10000"
+			cargoSpace=			"7000"
 			thrustRatio=		"0.3"
 			maxSpeed=			"6"
 
@@ -1020,11 +1021,11 @@
 					/>
 		</Interior>
 
-		<Image imageID="&rsLargeShips1;" imageX="1152" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsSungTransport;" imageWidth="216" imageHeight="216"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="176"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
-			<Effect type="thrustMain"		posAngle="-176"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="176"	posRadius="80"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="-176"	posRadius="80"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
 		</Effects>
 
 		<AISettings
@@ -1866,5 +1867,6 @@
 <!-- RESOURCES -->
 
 	<Image UNID="&rsDragonSlaverImage;"	bitmap="Resources\DragonSlaver.jpg"	bitmask="Resources\DragonSlaverMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsSungTransport;"		bitmap="Resources\SungTransport.jpg"	bitmask="Resources\SungTransportMask.bmp"  loadOnUse="true"/>
 
 </TranscendenceModule>
