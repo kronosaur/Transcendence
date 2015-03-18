@@ -377,7 +377,8 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /encountertable       Encounter table.\n");
 		if (bDebug)
 			printf("  /perftest             Performance test.\n");
-		printf("  /run                  Run a TransLisp command.\n");
+		printf("  /run                  Shows a TransLisp interpreter or runs a command.\n");
+		printf("  /runFile:filespec     Runs a TransLisp file.\n");
 		if (bDebug)
 			printf("  /shieldtest           Outputs capabilities of shield against weapons.\n");
 		printf("  /shipimage            Generates image of a specific ship class.\n");

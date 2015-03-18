@@ -38,6 +38,7 @@
 #define RANDOM_ITEMS_SWITCH					CONSTLIT("randomitems")
 #define RANDOM_NUMBER_TEST					CONSTLIT("randomnumbertest")
 #define RUN_SWITCH							CONSTLIT("run")
+#define RUN_FILE_SWITCH						CONSTLIT("runFile")
 #define SHIELD_TEST_SWITCH					CONSTLIT("shieldtest")
 #define SHIP_IMAGE_SWITCH					CONSTLIT("shipimage")
 #define SHIP_IMAGES_SWITCH					CONSTLIT("shipimages")
@@ -196,7 +197,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 			return;
 			}
 
-		if (pCmdLine->FindAttribute(RUN_SWITCH))
+		if (pCmdLine->FindAttribute(RUN_SWITCH)
+				|| pCmdLine->FindAttribute(RUN_FILE_SWITCH))
 			{
 			printf("TLisp Shell %s\n", (LPSTR)VersionInfo.sProductVersion);
 			printf("%s\n\n", (LPSTR)VersionInfo.sCopyright);
@@ -324,7 +326,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		GenerateRandomItemTables(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(RANDOM_NUMBER_TEST))
 		DoRandomNumberTest();
-	else if (pCmdLine->FindAttribute(RUN_SWITCH))
+	else if (pCmdLine->FindAttribute(RUN_SWITCH)
+				|| pCmdLine->FindAttribute(RUN_FILE_SWITCH))
 		Run(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SHIELD_TEST_SWITCH))
 		GenerateShieldStats(Universe, pCmdLine);
@@ -590,10 +593,63 @@ void Run (CUniverse &Universe, CXMLElement *pCmdLine)
 	g_pUniverse->UpdateExtended();
 	g_pUniverse->GarbageCollectLibraryBitmaps();
 
+	CString sCommand = pCmdLine->GetAttribute(RUN_SWITCH);
+	CString sRunFile = pCmdLine->GetAttribute(RUN_FILE_SWITCH);
+
+	//	If this is a run file, then we parse it and run it
+
+	if (!sRunFile.IsBlank() && !strEquals(sRunFile, CONSTLIT("true")))
+		{
+		CCodeChainCtx Ctx;
+
+		//	Open the file
+
+		CFileReadBlock InputFile(sRunFile);
+		if (error = InputFile.Open())
+			{
+			printf("error : Unable to open file '%s'.\n", sRunFile.GetASCIIZPointer());
+			return;
+			}
+
+		if (!bNoLogo)
+			printf("%s\n", sRunFile.GetASCIIZPointer());
+
+		//	Parse
+
+		CString sInputFile(InputFile.GetPointer(0), InputFile.GetLength(), TRUE);
+		ICCItem *pCode = Ctx.Link(sInputFile, 0, NULL);
+		if (pCode->IsError())
+			{
+			printf("error : %s\n", pCode->GetStringValue().GetASCIIZPointer());
+			Ctx.Discard(pCode);
+			return;
+			}
+
+		//	Execute
+
+		ICCItem *pResult = Ctx.Run(pCode);
+
+		//	Compose output
+
+		CString sOutput;
+		if (pResult->IsIdentifier())
+			sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
+		else
+			sOutput = CC.Unlink(pResult);
+
+		//	Free
+
+		Ctx.Discard(pResult);
+		Ctx.Discard(pCode);
+
+		//	Output result
+
+		printf("%s\n", sOutput.GetASCIIZPointer());
+		}
+
 	//	If we have a command, invoke it
 
-	CString sCommand = pCmdLine->GetAttribute(RUN_SWITCH);
-	if (!sCommand.IsBlank() && !strEquals(sCommand, CONSTLIT("True")))
+	else if (!sCommand.IsBlank() && !strEquals(sCommand, CONSTLIT("True")))
 		{
 		CCodeChainCtx Ctx;
 		ICCItem *pCode = Ctx.Link(sCommand, 0, NULL);
