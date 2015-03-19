@@ -1048,7 +1048,7 @@
 			explosionType=		"&vtKineticExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
+			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, generic, human, pirates, populated"
 			levelFrequency=		"cuv-- ----- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			>
@@ -1102,7 +1102,7 @@
 			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
+			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, generic, human, pirates, populated"
 			levelFrequency=		"-cuv- ----- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			>
@@ -1237,7 +1237,7 @@
 
 			alertWhenDestroyed=	"30"
 
-			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, majorStation, pirates, populated"
+			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, generic, human, majorStation, pirates, populated"
 			levelFrequency=		"-rcr- ----- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			>

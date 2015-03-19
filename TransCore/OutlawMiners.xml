@@ -286,7 +286,7 @@
 			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, outlaws, populated, settlers"
+			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
 			levelFrequency=		"ucr-- ----- ----- ----- -----"
 			locationCriteria=	"++asteroids"
 			>
@@ -364,7 +364,7 @@
 			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, outlaws, populated, settlers"
+			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
 			levelFrequency=		"-ucr- ----- ----- ----- -----"
 			locationCriteria=	"++asteroids"
 			>
@@ -439,7 +439,7 @@
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, outlaws, populated, settlers"
+			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
 			levelFrequency=		"--uur ----- ----- ----- -----"
 			locationCriteria=	"++asteroids"
 			>
@@ -510,7 +510,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, outlaws, populated, settlers"
+			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
 			levelFrequency=		"---uc r---- ----- ----- -----"
 			locationCriteria=	"++asteroids"
 			enemyExclusionRadius="40"
@@ -594,7 +594,7 @@
 			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, outlaws, populated, settlers"
+			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
 			levelFrequency=		"----u ur--- ----- ----- -----"
 			locationCriteria=	"++asteroids"
 			enemyExclusionRadius="40"

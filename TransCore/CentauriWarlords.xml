@@ -799,7 +799,7 @@
 			explosionType=		"&vtKineticExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, human, populated, warlords"
+			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, generic, human, populated, warlords"
 			levelFrequency=		"crv-- ----- ----- ----- -----"
 			locationCriteria=	"+outerSystem, +planetary"
 			>
@@ -850,7 +850,7 @@
 			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, human, populated, warlords"
+			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, generic, human, populated, warlords"
 			levelFrequency=		"rurv- ----- ----- ----- -----"
 			locationCriteria=	"+outerSystem, +planetary"
 			>

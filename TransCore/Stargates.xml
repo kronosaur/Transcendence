@@ -13,7 +13,7 @@
 			multiHull=			"true"
 			immutable=			"true"
 
-			attributes=			"stargate"
+			attributes=			"generic, stargate"
 			
 			gateEffect=			"&efStargateOut;"
 			definiteArticle=	"true"

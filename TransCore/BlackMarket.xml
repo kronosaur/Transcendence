@@ -135,7 +135,7 @@ PLAYER DATA
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"blackMarket, friendly, envEarth, envAvoidsAir, human, majorStation, outlaws, populated"
+			attributes=			"blackMarket, friendly, envEarth, envAvoidsAir, generic, human, majorStation, outlaws, populated"
 			levelFrequency=		"-uccu v---- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			>
@@ -520,7 +520,7 @@ PLAYER DATA
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"blackMarket, envEarth, majorStation, envAvoidsAir, friendly, human, outlaws, populated"
+			attributes=			"blackMarket, envEarth, majorStation, envAvoidsAir, friendly, generic, human, outlaws, populated"
 			levelFrequency=		"---uc crr-- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
@@ -667,7 +667,7 @@ PLAYER DATA
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"blackMarket, friendly, envAir, envAvoidsFire, human, outlaws, populated"
+			attributes=			"blackMarket, friendly, envAir, envAvoidsFire, generic, human, outlaws, populated"
 			levelFrequency=		"rcuuu r---- ----- ----- -----"
 			locationCriteria=	"--planetary"
 			>

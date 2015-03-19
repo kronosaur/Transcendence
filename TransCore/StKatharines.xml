@@ -860,7 +860,7 @@
 			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, monument, populated"
+			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, majorStation, monument, populated"
 			>
 
 		<Image imageID="&rsIocrymMonument;" imageWidth="160" imageHeight="236"/>

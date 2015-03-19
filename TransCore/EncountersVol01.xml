@@ -68,7 +68,7 @@
 			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envFire, envAvoidsWater, human, populated"
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated"
 			levelFrequency=		"ccur- ----- ----- ----- -----"
 			locationCriteria=	"+outerSystem, -planetary"
 			enemyExclusionRadius="100"
@@ -912,7 +912,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"drugcartel, enemy, envWater, envAvoidsEarth, human, outlaws, populated"
+			attributes=			"drugcartel, enemy, envWater, envAvoidsEarth, generic, human, outlaws, populated"
 			levelFrequency=		"--ucu r---- ----- ----- -----"
 			locationCriteria=	"-innerSystem, +planetary"
 			>
@@ -1204,7 +1204,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, ferian, neoHuman, miners, populated, zoanthrope"
+			attributes=			"enemy, envEarth, envAvoidsAir, ferian, generic, neoHuman, miners, populated, zoanthrope"
 			levelFrequency=		"---ru ccr-- ----- ----- -----"
 			locationCriteria=	"++asteroids"
 			>
@@ -1543,7 +1543,7 @@
 			fireRateAdj=		"40"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, human, populated"
+			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, generic, human, populated"
 			levelFrequency=		"cuv-- ----- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			>
@@ -1605,7 +1605,7 @@
 			fireRateAdj=		"40"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, human, populated"
+			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, generic, human, populated"
 			levelFrequency=		"rcuv- ----- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			enemyExclusionRadius="50"
@@ -1740,7 +1740,7 @@
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, human, populated"
+			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, generic, human, populated"
 			levelFrequency=		"-rcuv ----- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			>
@@ -2316,7 +2316,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envFire, envAvoidsWater, human, populated"
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated"
 			levelFrequency=		"---cu r---- ----- ----- -----"
 			locationCriteria=	"+innerSystem, -void"
 			enemyExclusionRadius="50"
@@ -2371,7 +2371,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envFire, envAvoidsWater, human, populated"
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated"
 			levelFrequency=		"--cuv ----- ----- ----- -----"
 			locationCriteria=	"+innerSystem, -void"
 			>
@@ -2511,7 +2511,7 @@
 			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtIceAsteroidEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, populated"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated"
 			levelFrequency=		"curv- ----- ----- ----- -----"
 			locationCriteria=	"+outerSystem, -planetary"
 			>
@@ -2659,7 +2659,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envWater, envAvoidsEarth, huari, human, majorStation, populated"
+			attributes=			"enemy, envWater, envAvoidsEarth, generic, huari, human, majorStation, populated"
 			levelFrequency=		"---vu ur--- ----- ----- -----"
 			locationCriteria=	"-lifeZone, +planetary"
 			enemyExclusionRadius="100"
@@ -2892,7 +2892,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envWater, envAvoidsEarth, human, kobol, populated, warlords"
+			attributes=			"enemy, envWater, envAvoidsEarth, generic, human, kobol, populated, warlords"
 			levelFrequency=		"----- -cur- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
@@ -3202,7 +3202,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, lombardMarauders, pirates, populated"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, pirates, populated"
 			levelFrequency=		"--uu- ----- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			enemyExclusionRadius="100"
@@ -3249,7 +3249,7 @@
 			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, lombardMarauders, marauderCompound, pirates, populated"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, marauderCompound, pirates, populated"
 			levelFrequency=		"--vcr ----- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			enemyExclusionRadius="100"
@@ -3317,7 +3317,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, lombardMarauders, marauderStronghold, pirates,populated"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, marauderStronghold, pirates,populated"
 			levelFrequency=		"---ru v---- ----- ----- -----"
 			locationCriteria=	"+lifeZone, -planetary"
 			enemyExclusionRadius="100"
@@ -3627,7 +3627,7 @@
 			ejectaType=			"&vtWreckEjecta;"
 			noFriendlyFire=		"true"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, penitents, populated, religious"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, penitents, populated, religious"
 			levelFrequency=		"---rc urv-- ----- ----- -----"
 			locationCriteria=	"+nebulae"
 			>
@@ -3678,7 +3678,7 @@
 			ejectaType=			"&vtWreckEjecta;"
 			noFriendlyFire=		"true"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, penitents, populated, religious"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, penitents, populated, religious"
 			levelFrequency=		"----v curv- ----- ----- -----"
 			locationCriteria=	"+nebulae"
 			>
@@ -4146,7 +4146,7 @@
 			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, outlaws, populated"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, outlaws, populated"
 			levelFrequency=		"ucv-- ----- ----- ----- -----"
 			locationCriteria=	"--innerSystem, +planetary"
 			>
@@ -4200,7 +4200,7 @@
 			explosionType=		"&vtKineticExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, outlaws, populated"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, outlaws, populated"
 			levelFrequency=		"vcr-- ----- ----- ----- -----"
 			locationCriteria=	"--innerSystem, +planetary"
 			>
@@ -4262,7 +4262,7 @@
 			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, outlawHaven, outlaws, populated"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, outlawHaven, outlaws, populated"
 			levelFrequency=		"-vcr- ----- ----- ----- -----"
 			locationCriteria=	"+outerSystem, +planetary"
 			enemyExclusionRadius="100"
@@ -4451,7 +4451,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"chitometallicEco, enemy, envFire, envAvoidsWater, galacticCreature, pteravore, score"
+			attributes=			"chitometallicEco, enemy, envFire, envAvoidsWater, galacticCreature, generic, pteravore, score"
 			levelFrequency=		"----- ----r cur-- ----- -----"
 			locationCriteria=	"++asteroids, +++chitometallicEco"
 			>
@@ -5123,7 +5123,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, human, populated, ranx"
+			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, populated, ranx"
 			levelFrequency=		"----- ucur- ----- ----- -----"
 			locationCriteria=	"-outerSystem, +planetary|+50"
 			enemyExclusionRadius="60"
@@ -5174,7 +5174,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, human, majorStation, populated, ranx"
+			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, majorStation, populated, ranx"
 			levelFrequency=		"----- -rcr- ----- ----- -----"
 			locationCriteria=	"-outerSystem, +planetary|+50"
 			enemyExclusionRadius="100"
@@ -5573,7 +5573,7 @@
 			explosionType=		"&vtRadioactiveExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envFire, envAvoidsWater, human, populated, sapiens, sapiensCamp"
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated, sapiens, sapiensCamp"
 			levelFrequency=		"-vcuv ----- ----- ----- -----"
 			locationCriteria=	"+lifeZone"
 			>
@@ -5630,7 +5630,7 @@
 			explosionType=		"&vtRadioactiveExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envFire, envAvoidsWater, human, populated, sapiens, sapiensCompound"
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated, sapiens, sapiensCompound"
 			levelFrequency=		"--vcu v---- ----- ----- -----"
 			locationCriteria=	"+lifeZone"
 			enemyExclusionRadius="50"
@@ -6078,7 +6078,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envFire, envAvoidsWater, human, majorStation, populated"
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, majorStation, populated"
 			levelFrequency=		"----- ucur- ----- ----- -----"
 			locationCriteria=	"+outerSystem, -planetary"
 			enemyExclusionRadius="100"

@@ -48,7 +48,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthFleet, commonwealthMilitary, fleetDelivery, fleetLaw, friendly, human, majorStation, pointJuno, populated"
+			attributes=			"commonwealth, commonwealthFleet, commonwealthMilitary, fleetDelivery, fleetLaw, friendly, generic, human, majorStation, pointJuno, populated"
 			level=				"8"
 
 			noArticle=			"true"
@@ -1073,7 +1073,7 @@
 			structuralHitPoints="1300"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"CSCEuropa, locked, shipwreck, uncharted"
+			attributes=			"CSCEuropa, generic, locked, shipwreck, uncharted"
 
 			definiteArticle=	"true"
 			>

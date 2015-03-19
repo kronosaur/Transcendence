@@ -27,7 +27,7 @@
 			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"charonFortress, charonPirates, enemy, human, majorStation, pirates, populated"
+			attributes=			"charonFortress, charonPirates, enemy, generic, human, majorStation, pirates, populated"
 			level=				"3"
 			alertWhenAttacked=	"100"
 

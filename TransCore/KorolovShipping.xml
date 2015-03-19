@@ -1115,7 +1115,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateCustoms, corporateDecon, envAir, envEarth, envFire, envWater, friendly, human, majorStation, korolovShipping, populated"
+			attributes=			"corporate, corporateCustoms, corporateDecon, envAir, envEarth, envFire, envWater, friendly, generic, human, majorStation, korolovShipping, populated"
 			levelFrequency=		"ccc-- ----- ----- ----- -----"
 			unique=				"inSystem"
 			locationCriteria=	"+planetary"

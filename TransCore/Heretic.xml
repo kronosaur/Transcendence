@@ -4612,7 +4612,7 @@
 			multiHull=			"true"
 			immutable=			"true"
 
-			attributes=			"hereticControlPoint, iocrym, uncharted"
+			attributes=			"hereticControlPoint, generic, iocrym, uncharted"
 
 			definiteArticle=	"true"
 			>
@@ -5287,6 +5287,8 @@
 			sovereign=			"&svIndependent;"
 			dockScreen=			"Main"
 			dockingPorts=		"4"
+				 
+			attributes=			"alien, generic, iocrym"
 
 			multiHull=			"true"
 			immutable=			"true"

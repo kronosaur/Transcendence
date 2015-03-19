@@ -135,7 +135,7 @@
 			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, populated, rogue"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated, rogue"
 			levelFrequency=		"----- vcu-- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			>
@@ -188,7 +188,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, populated, rogue"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated, rogue"
 			levelFrequency=		"----- -rcr- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			>

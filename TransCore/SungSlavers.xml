@@ -1056,7 +1056,7 @@
 			fireRateAdj=		"80"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, populated, sungSlaveCamp, sungSlavers"
+			attributes=			"enemy, envAir, envEarth, envFire, envWater, generic, human, populated, sungSlaveCamp, sungSlavers"
 			levelFrequency=		"--vcu r---- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="60"
@@ -1138,7 +1138,7 @@
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, majorStation, populated, sungSlavers"
+			attributes=			"enemy, envAir, envEarth, envFire, envWater, generic, human, majorStation, populated, sungSlavers"
 			levelFrequency=		"---vc uu--- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="100"
@@ -1205,7 +1205,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, majorStation, populated, sungSlavers"
+			attributes=			"enemy, envAir, envEarth, envFire, envWater, generic, human, majorStation, populated, sungSlavers"
 			levelFrequency=		"----r ur--- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="100"

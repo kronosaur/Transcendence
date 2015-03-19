@@ -755,7 +755,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, primary, populated"
+			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, majorStation, primary, populated"
 			levelFrequency=		"cuc-- ----- ----- ----- -----"
 			locationCriteria=	"-outerSystem, +planetary"
 			enemyExclusionRadius="50"
@@ -969,7 +969,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, human, majorStation, primary, populated"
+			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, majorStation, primary, populated"
 			levelFrequency=		"---uu cu--- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="60"
@@ -1140,7 +1140,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, human, majorStation, populated"
+			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, majorStation, populated"
 			levelFrequency=		"uucuu r---- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
@@ -1224,7 +1224,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, friendly, human, populated"
+			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated"
 			levelFrequency=		"uuurr ----- ----- ----- -----"
 			locationCriteria=	"-outerSystem, +planetary"
 			>
@@ -1346,7 +1346,7 @@
 			repairRate=			"1"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, friendly, human, populated"
+			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated"
 
 			noArticle=			"true"
 			>
@@ -1670,7 +1670,7 @@
 			repairRate=			"1"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, friendly, human, populated"
+			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated"
 			level=				"1"
 			>
 
@@ -1940,7 +1940,7 @@
 			repairRate=			"1"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, friendly, human, populated"
+			attributes=			"commonwealth, friendly, generic, human, populated"
 			levelFrequency=		"uur-- ----- ----- ----- -----"
 			locationCriteria=	"-planetary"
 			>
@@ -2156,7 +2156,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, human, populated"
+			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, populated"
 			levelFrequency=		"----- -ucr- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"

@@ -317,7 +317,7 @@
 			fireRateAdj=		"20"
 			ejectaType=			"&vtWreckEjecta;"
 			
-			attributes=			"teraton, teratonDefender"
+			attributes=			"generic, teraton, teratonDefender"
 			>
 
 		<Image	imageID="&rsTeratonDefender;" imageWidth="64" imageHeight="64" imageFrameCount="12" imageTicksPerFrame="2"/>
@@ -352,7 +352,7 @@
 			explosionType=		"&vtPlasmaExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"envAir, envAvoidsFire, independent, friendly, majorStation, populated, neoHuman, teraton, teratonFactory"
+			attributes=			"envAir, envAvoidsFire, independent, friendly, generic, majorStation, populated, neoHuman, teraton, teratonFactory"
 			levelFrequency=		"----- --ruv ----- ----- -----"
 			locationCriteria=	"+outerSystem, -void"
 			enemyExclusionRadius="50"
@@ -801,7 +801,7 @@
 			explosionType=		"&vtPlasmaExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"envAir, envAvoidsFire, independent, friendly, majorStation, populated, neoHuman, teraton, teratonResearch"
+			attributes=			"envAir, envAvoidsFire, generic, independent, friendly, majorStation, populated, neoHuman, teraton, teratonResearch"
 			levelFrequency=		"----- --rr- ----- ----- -----"
 			locationCriteria=	"+outerSystem, -void"
 			enemyExclusionRadius="50"
@@ -1223,7 +1223,7 @@
 			explosionType=		"&vtPlasmaExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"envAir, envAvoidsFire, independent, friendly, majorStation, populated, neoHuman, teraton, teratonTrading"
+			attributes=			"envAir, envAvoidsFire, generic, independent, friendly, majorStation, populated, neoHuman, teraton, teratonTrading"
 			levelFrequency=		"----- -vcuv ----- ----- -----"
 			locationCriteria=	"+outerSystem, -void"
 			enemyExclusionRadius="50"

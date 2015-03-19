@@ -1844,7 +1844,7 @@
 
 			multiHull=			"true"
 			immutable=			"true"
-			attributes=			"majellen, stargate"
+			attributes=			"generic, majellen, stargate"
 
 			gateEffect=			"&efStargateOut;"
 

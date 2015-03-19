@@ -68,7 +68,7 @@
 			repairRate=			"3"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"envAir, envAvoidsFire, friendly, human, majorStation, populated, religious, sistersOfDomina"
+			attributes=			"envAir, envAvoidsFire, friendly, generic, human, majorStation, populated, religious, sistersOfDomina"
 			levelFrequency=		"ruccc ur--- ----- ----- -----"
 			unique=				"inSystem"
 			locationCriteria=	"-innerSystem, +planetary"

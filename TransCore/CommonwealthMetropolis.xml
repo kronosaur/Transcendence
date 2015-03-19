@@ -22,7 +22,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, primary, populated"
+			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, majorStation, primary, populated"
 			levelFrequency=		"rurrv ----- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="100"
@@ -143,7 +143,7 @@
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, human, majorStation, primary, populated"
+			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, majorStation, primary, populated"
 			levelFrequency=		"---ru urv-- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="100"

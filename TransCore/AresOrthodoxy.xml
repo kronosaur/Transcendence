@@ -1281,7 +1281,7 @@
 			ejectaType=			"&vtWreckEjecta;"
 			randomEncounters=	"common"
 
-			attributes=			"ares, enemy, envAir, envEarth, envFire, envWater, neoHuman, populated"
+			attributes=			"ares, enemy, envAir, envEarth, envFire, envWater, generic, neoHuman, populated"
 			levelFrequency=		"----- rcur- ----- ----- -----"
 			locationCriteria=	"-asteroids"
 			>
@@ -1332,7 +1332,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"ares, aresMajor, enemy, envAir, envEarth, envFire, envWater, majorStation, neoHuman, populated"
+			attributes=			"ares, aresMajor, enemy, envAir, envEarth, envFire, envWater, generic, majorStation, neoHuman, populated"
 			levelFrequency=		"----- -vuur ----- ----- -----"
 			locationCriteria=	"-asteroids"
 			enemyExclusionRadius="60"
@@ -1390,7 +1390,7 @@
 			explosionType=		"&vtThermoExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"ares, aresMajor, enemy, envAir, envEarth, envFire, envWater, majorStation, neoHuman, populated"
+			attributes=			"ares, aresMajor, enemy, envAir, envEarth, envFire, envWater, generic, majorStation, neoHuman, populated"
 			levelFrequency=		"----- --vuu ----- ----- -----"
 			locationCriteria=	"-asteroids"
 			enemyExclusionRadius="100"

@@ -197,7 +197,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, envEarth, envAvoidsAir, friendly, human, mining, populated"
+			attributes=			"commonwealth, commonwealthCustoms, envEarth, envAvoidsAir, friendly, generic, human, mining, populated"
 			levelFrequency=		"ccur- ----- ----- ----- -----"
 			locationCriteria=	"+asteroids, -outerSystem"
 

@@ -91,7 +91,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, human, independent, populated"
+			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, generic, human, independent, populated"
 			levelFrequency=		"-rurv ----- ----- ----- -----"
 			locationCriteria=	"+planetary"
 
@@ -201,7 +201,7 @@
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, human, independent, majorStation, populated"
+			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, generic, human, independent, majorStation, populated"
 			levelFrequency=		"----- rur-- ----- ----- -----"
 			unique=				"inSystem"
 			locationCriteria=	"+planetary"

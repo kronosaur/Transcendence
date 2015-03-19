@@ -159,7 +159,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
+			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
 			levelFrequency=		"---ru cu--- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
@@ -307,7 +307,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
+			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
 			levelFrequency=		"ccuv- ----- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			>
@@ -459,7 +459,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
+			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
 			levelFrequency=		"uccr- ----- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			>
@@ -606,7 +606,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
+			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
 			levelFrequency=		"--rur v---- ----- ----- -----"
 			locationCriteria=	"+planetary"
 
@@ -710,7 +710,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
+			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
 			levelFrequency=		"---ru rv--- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
@@ -810,7 +810,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
+			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
 			levelFrequency=		"--rcu ur--- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
@@ -998,7 +998,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateCustoms, friendly, independent, human, majorStation, populated"
+			attributes=			"corporate, corporateCustoms, friendly, independent, generic, human, majorStation, populated"
 			levelFrequency=		"ruuur ----- ----- ----- -----"
 			locationCriteria=	"-asteroids"
 			>
@@ -1181,7 +1181,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
+			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
 			levelFrequency=		"cccuu rv--- ----- ----- -----"
 			locationCriteria=	"-outerSystem, +planetary"
 			>
@@ -1296,7 +1296,7 @@
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, majorStation, Makayev, populated"
+			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, majorStation, Makayev, populated"
 			levelFrequency=		"----- rrur- ----- ----- -----"
 			unique=				"inSystem"
 			locationCriteria=	"+planetary"
@@ -1467,7 +1467,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateCustoms, friendly, independent, human, majorStation, populated"
+			attributes=			"corporate, corporateCustoms, friendly, independent, generic, human, majorStation, populated"
 			levelFrequency=		"-uuuu r---- ----- ----- -----"
 			unique=				"inSystem"
 			locationCriteria=	"-planetary"
@@ -1647,7 +1647,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, majorStation, populated"
+			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, majorStation, populated"
 			levelFrequency=		"uuurr v---- ----- ----- -----"
 			locationCriteria=	"*"
 			>
@@ -1950,7 +1950,7 @@
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtIceAsteroidEjecta;"
 
-			attributes=			"corporate, corporateCustoms, envAir, envAvoidsFire, friendly, independent, human, populated"
+			attributes=			"corporate, corporateCustoms, envAir, envAvoidsFire, friendly, independent, generic, human, populated"
 			levelFrequency=		"rccuu rv--- ----- ----- -----"
 			locationCriteria=	"++outerSystem"
 			>
@@ -2060,7 +2060,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateCustoms, corporateInsurance, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
+			attributes=			"corporate, corporateCustoms, corporateInsurance, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
 			levelFrequency=		"-rrru r---- ----- ----- -----"
 			unique=				"inSystem"
 			locationCriteria=	"+planetary"
@@ -2309,7 +2309,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
+			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
 			levelFrequency=		"----- -uur- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
@@ -2456,7 +2456,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
+			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
 			levelFrequency=		"---rc uur-- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
@@ -2904,7 +2904,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
+			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
 			levelFrequency=		"---ru ur--- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"

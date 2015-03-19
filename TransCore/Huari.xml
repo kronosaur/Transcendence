@@ -143,7 +143,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envWater, envAvoidsEarth, huari, huariTemple, human, majorStation, populated"
+			attributes=			"enemy, envWater, envAvoidsEarth, generic, huari, huariTemple, human, majorStation, populated"
 			level=				"6"
 			>
 
@@ -1064,7 +1064,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envWater, envAvoidsEarth, huari, human, majorStation, populated"
+			attributes=			"enemy, envWater, envAvoidsEarth, generic, huari, human, majorStation, populated"
 			levelFrequency=		"---vu ur--- ----- ----- -----"
 			locationCriteria=	"-lifeZone, +planetary|+50"
 			enemyExclusionRadius="100"
@@ -1965,7 +1965,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envWater, envAvoidsEarth, huari, human, populated"
+			attributes=			"enemy, envWater, envAvoidsEarth, generic, huari, human, populated"
 			level=				"5"
 			>
 

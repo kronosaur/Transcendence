@@ -28,7 +28,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, friendly, human, populated, primary"
+			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated, primary"
 			levelFrequency=		"rrr-- ----- ----- ----- -----"
 			locationCriteria=	"-asteroids, +lifeZone"
 			>
