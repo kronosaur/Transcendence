@@ -1113,6 +1113,8 @@
 									)
 								)
 							)
+							
+						(objSetProperty theObj 'interiorHP (random 1 10))
 
 						(sysCreateEffect &efGemOfSacrifice; theObj (objGetPos theObj))
 						)
