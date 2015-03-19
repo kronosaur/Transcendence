@@ -1694,7 +1694,10 @@
 					"\"You got a pretty nice ship there. Did your mom and dad buy it for you?\""
 					"\"Truth is, you gotta approach life philosophically, you know what I mean? You gotta believe that it's all going to work out in the end, or else what's the point?\""
 					"\"Nobody cares. Station needs a carbon scrubber? Get on the waiting list! After the corporate suits get their grilled Icelandic salmon, then they might pay attention to you. Nobody cares.\""
-					"\"I don't know what you're doing in this backwater system. You wanna get to the Core? Go! What's stopping you? Kids today: they dream big, but they'd rather watch the 3DVs.\""
+					(if (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+						"\"I don't know what you're doing in this backwater system. You wanna get to the Core? Go! What's stopping you? Kids today: they dream big, but they'd rather watch the 3DVs.\""
+						"\"I don't know what you're doing in this backwater system. You wanna see the galaxy? Go! What's stopping you? Kids today: they dream big, but they'd rather watch the 3DVs.\""
+						)
 					"\"A station is not like a starship. If you get into trouble you can always run away. All we can do is sit tight and repair the damage. Takes a special kind of man to live like that.\""
 					(cat "\"How do you like your " (objGetName gPlayerShip 0x00) "? "
 						(switch 
