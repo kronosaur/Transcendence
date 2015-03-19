@@ -430,6 +430,7 @@ class CDockScreen : public IScreenController
 		CXMLElement *m_pDisplayInitialize;
 		bool m_bDisplayAnimate;
 
+		int m_yDisplay;
 		IDockScreenDisplay *m_pDisplay;
 
 		//	Panes

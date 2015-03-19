@@ -288,17 +288,33 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 				m_pCurrentScreen->Paint(TheScreen);
 				m_pCurrentScreen->Update();
 				PaintMainScreenBorder();
-				m_ArmorDisplay.Paint(TheScreen);
-				m_TargetDisplay.Paint(TheScreen);
+
+				//	If we have room, paint armor display and target display
+
+				if (g_cyScreen >= 768)
+					{
+					SetProgramState(psPaintingArmorDisplay);
+					m_ArmorDisplay.Paint(TheScreen);
+
+					SetProgramState(psPaintingTargetDisplay);
+					m_TargetDisplay.Paint(TheScreen);
+					}
+
+				//	If we have even more room, paint the LRS and reactor display
+
+				if (g_cyScreen >= 960)
+					{
+					SetProgramState(psPaintingLRS);
+					PaintLRS();
+
+					SetProgramState(psPaintingReactorDisplay);
+					m_ReactorDisplay.Paint(TheScreen);
+					}
 
 				//	Debug console
 
 				if (m_bDebugConsole)
 					m_DebugConsole.Paint(TheScreen);
-
-				//	We don't paint the LRS because the player doesn't need it and
-				//	because it overwrites the credits/cargo space display
-				//PaintLRS();
 
 				//	Update the screen
 

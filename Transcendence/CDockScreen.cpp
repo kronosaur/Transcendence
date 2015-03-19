@@ -432,7 +432,7 @@ ALERROR CDockScreen::CreateBackgroundArea (IDockScreenDisplay::SBackgroundDesc &
 		pImage->SetImage(m_pBackgroundImage, rcImage);
 
 		rcBackArea.left = rcRect.left;
-		rcBackArea.top = (RectHeight(rcRect) - g_cyDockScreen) / 2;
+		rcBackArea.top = m_yDisplay;
 		rcBackArea.right = rcBackArea.left + RectWidth(rcRect);
 		rcBackArea.bottom = rcBackArea.top + m_pBackgroundImage->GetHeight();
 
@@ -605,7 +605,7 @@ ALERROR CDockScreen::CreateTitleArea (CXMLElement *pDesc, AGScreen *pScreen, con
 	{
 	const CVisualPalette &VI = g_pHI->GetVisuals();
 
-	int yTop = (RectHeight(rcRect) - g_cyDockScreen) / 2;
+	int yTop = m_yDisplay;
 
 	//	Add a background bar to the title part
 
@@ -1200,6 +1200,11 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	rcScreen.right = rcScreen.left + cxScreen;
 	rcScreen.bottom = rcScreen.top + cyScreen;
 
+	//	The main display is centered on the screen, but we make sure that we have
+	//	enought room for the title bar (which goes above the display).
+
+	m_yDisplay = Max(g_cyTitle, (RectHeight(rcScreen) - g_cyDockScreen) / 2);
+
 	//	Prepare a display context
 
 	IDockScreenDisplay::SInitCtx DisplayCtx;
@@ -1215,7 +1220,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	DisplayCtx.pScreen = m_pScreen;
 
 	DisplayCtx.rcRect.left = rcScreen.left + SCREEN_PADDING_LEFT;
-	DisplayCtx.rcRect.top = (RectHeight(rcScreen) - g_cyDockScreen) / 2;
+	DisplayCtx.rcRect.top = m_yDisplay;
 	DisplayCtx.rcRect.right = DisplayCtx.rcRect.left + DESC_PANE_X;
 	DisplayCtx.rcRect.bottom = DisplayCtx.rcRect.top + g_cyDockScreen;
 
@@ -1324,9 +1329,9 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	//	Show the pane
 
 	m_rcPane.left = rcScreen.right - g_cxActionsRegion;
-	m_rcPane.top = (RectHeight(rcScreen) - g_cyDockScreen) / 2;
+	m_rcPane.top = m_yDisplay;
 	m_rcPane.right = rcScreen.right - SCREEN_PADDING_RIGHT;
-	m_rcPane.bottom = m_rcPane.top + g_cyBackground;
+	m_rcPane.bottom = m_rcPane.top + g_cyDockScreen;
 
 	if (!sPane.IsBlank())
 		{
