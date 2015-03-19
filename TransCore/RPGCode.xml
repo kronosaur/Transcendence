@@ -198,7 +198,7 @@
 						
 					(if thisItem
 						(block (
-							(installDevicePrice (objGetItemProperty installerObj thisItem 'installDevicePrice))
+							(status (objGetItemProperty installerObj thisItem 'installDeviceStatus))
 							(itemPrice 
 								(if (or (@ data 'upgrade) (@ data 'buyAndInstall)) 
 									(objGetSellPrice installerObj thisItem)
@@ -217,14 +217,15 @@
 
 								(@ data 'installPriceAdj)
 									(setq totalCost (rpgAdjustInstallPrice Nil thisItem (@ data 'installPriceAdj) currencyUsed))
+									
+								(@ status 'canInstall)
+									(setq totalCost	(add (@ status 'price) itemPrice))
+									
+								;	If we get this far, then we cannot install
 
 								(block Nil
-									
-									(if (not installDevicePrice)
-										(setq stationCannotInstall True)
-										
-										(setq totalCost	(add installDevicePrice itemPrice))
-										)
+									(setq totalCost 0)
+									(setq stationCannotInstall True)
 									)
 								)
 								
@@ -239,7 +240,10 @@
 								;	If not installable at this station, then ignore
 								
 								stationCannotInstall
-									(setq desc (cat (strCapitalize textWe) " cannot install " itemName " on " textYourShip "."))
+									(if (@ status 'descID)
+										(setq desc (objTranslate installerObj (@ status 'descID) { item:thisItem targetObj:targetObj }))
+										(setq desc (cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip "."))
+										)
 									
 								;	If we don't match the tech criteria then we don't have the
 								;	technology to install.

@@ -631,7 +631,7 @@
 
 									(not gCost)
 										(block Nil
-											(setq desc "This armor segment cannot be installed at this station.")
+											(setq desc (cat "We do not have the technology to install " (itmGetName thisItem 0x80) "."))
 											(setq canInstall Nil)
 											)
 
