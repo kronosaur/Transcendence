@@ -98,7 +98,7 @@
 			sovereign=			"&svCorporate;"
 			level=				"2"
 				 
-			attributes=			"battleArena, battleArenaMaximus, battleArenaSegment, corporate, corporateCustoms, corporateDecon, friendly, human, majorStation, populated"
+			attributes=			"battleArena, battleArenaMaximus, battleArenaSegment, corporate, corporateCustoms, corporateDecon, friendly, generic, human, majorStation, populated"
 				 
 			dockScreen=			"Main"
 			defaultBackgroundID="&rsBattleArenaBkgnd;"
@@ -123,37 +123,37 @@
 		<!-- Satellites -->
 
 		<Satellites>
-			<Station type="&stBattleArenaStatic;"	xOffset="-345"	yOffset="5"		imageVariant="3"/>
-			<Station type="&stBattleArenaStatic;"	xOffset="345"	yOffset="5"		imageVariant="4"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="-345"	yOffset="5"		imageVariant="3"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="345"	yOffset="5"		imageVariant="4"	segment="true"/>
 			
-			<Station type="&stBattleArenaStatic;"	xOffset="-655"	yOffset="-20"	imageVariant="2"/>
-			<Station type="&stBattleArenaStatic;"	xOffset="655"	yOffset="-20"	imageVariant="5"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="-655"	yOffset="-20"	imageVariant="2"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="655"	yOffset="-20"	imageVariant="5"	segment="true"/>
 			
-			<Station type="&stBattleArenaStatic;"	xOffset="-915"	yOffset="-135"	imageVariant="1"/>
-			<Station type="&stBattleArenaStatic;"	xOffset="915"	yOffset="-135"	imageVariant="6"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="-915"	yOffset="-135"	imageVariant="1"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="915"	yOffset="-135"	imageVariant="6"	segment="true"/>
 			
-			<Station type="&stBattleArenaStatic;"	xOffset="-1185"	yOffset="-275"	imageVariant="11"/>
-			<Station type="&stBattleArenaStatic;"	xOffset="1185"	yOffset="-275"	imageVariant="12"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="-1185"	yOffset="-275"	imageVariant="11"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="1185"	yOffset="-275"	imageVariant="12"	segment="true"/>
 			
-			<Station type="&stBattleArenaStatic;"	xOffset="-1225"	yOffset="-520"	imageVariant="0"	paintLayer="overhang"/>
-			<Station type="&stBattleArenaStatic;"	xOffset="1225"	yOffset="-520"	imageVariant="17"	paintLayer="overhang"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="-1225"	yOffset="-520"	imageVariant="0"	paintLayer="overhang"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="1225"	yOffset="-520"	imageVariant="17"	paintLayer="overhang"	segment="true"/>
 			
-			<Station type="&stBattleArenaStatic;"	xOffset="-1265"	yOffset="-765"	imageVariant="7"/>
-			<Station type="&stBattleArenaStatic;"	xOffset="1265"	yOffset="-765"	imageVariant="18"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="-1265"	yOffset="-765"	imageVariant="7"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="1265"	yOffset="-765"	imageVariant="18"	segment="true"/>
 			
-			<Station type="&stBattleArenaStatic;"	xOffset="-1155"	yOffset="-1035"	imageVariant="8"	paintLayer="overhang"/>
-			<Station type="&stBattleArenaStatic;"	xOffset="1155"	yOffset="-1035"	imageVariant="19"	paintLayer="overhang"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="-1155"	yOffset="-1035"	imageVariant="8"	paintLayer="overhang"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="1155"	yOffset="-1035"	imageVariant="19"	paintLayer="overhang"	segment="true"/>
 			
-			<Station type="&stBattleArenaStatic;"	xOffset="-885"	yOffset="-1163"	imageVariant="9"	paintLayer="overhang"/>
-			<Station type="&stBattleArenaStatic;"	xOffset="885"	yOffset="-1163"	imageVariant="14"	paintLayer="overhang"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="-885"	yOffset="-1163"	imageVariant="9"	paintLayer="overhang"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="885"	yOffset="-1163"	imageVariant="14"	paintLayer="overhang"	segment="true"/>
 			
-			<Station type="&stBattleArenaStatic;"	xOffset="-615"	yOffset="-1283"	imageVariant="10"	paintLayer="overhang"/>
-			<Station type="&stBattleArenaStatic;"	xOffset="615"	yOffset="-1283"	imageVariant="13"	paintLayer="overhang"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="-615"	yOffset="-1283"	imageVariant="10"	paintLayer="overhang"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="615"	yOffset="-1283"	imageVariant="13"	paintLayer="overhang"	segment="true"/>
 			
-			<Station type="&stBattleArenaStatic;"	xOffset="-360"	yOffset="-1318"	imageVariant="15"	paintLayer="overhang"/>
-			<Station type="&stBattleArenaStatic;"	xOffset="360"	yOffset="-1318"	imageVariant="16"	paintLayer="overhang"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="-360"	yOffset="-1318"	imageVariant="15"	paintLayer="overhang"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="360"	yOffset="-1318"	imageVariant="16"	paintLayer="overhang"	segment="true"/>
 			
-			<Station type="&stBattleArenaStatic;"	xOffset="0"		yOffset="-1390"	imageVariant="21"	objName="arenaDoor"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="0"		yOffset="-1390"	imageVariant="21"	objName="arenaDoor"	segment="true"/>
 		</Satellites>
 		
 		<!-- Image and Effects -->

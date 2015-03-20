@@ -1185,10 +1185,10 @@
 		</Encounters>
 
 		<Satellites>
-			<Station type="&stSungNEWall;" xOffset="64" yOffset="64"/>
-			<Station type="&stSungNWWall;" xOffset="-64" yOffset="64"/>
-			<Station type="&stSungSWWall;" xOffset="-64" yOffset="-64"/>
-			<Station type="&stSungSEWall;" xOffset="64" yOffset="-64"/>
+			<Station type="&stSungNEWall;" xOffset="64" yOffset="64"	segment="true"/>
+			<Station type="&stSungNWWall;" xOffset="-64" yOffset="64"	segment="true"/>
+			<Station type="&stSungSWWall;" xOffset="-64" yOffset="-64"	segment="true"/>
+			<Station type="&stSungSEWall;" xOffset="64" yOffset="-64"	segment="true"/>
 		</Satellites>
 
 	</StationType>

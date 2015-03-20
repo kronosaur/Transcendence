@@ -11,23 +11,82 @@
 #include "XMLUtil.h"
 #include "TransData.h"
 
+#define STATION_TAG						CONSTLIT("Station")
+
+#define IMAGE_VARIANT_ATTRIB			CONSTLIT("imageVariant")
+#define SEGMENT_ATTRIB					CONSTLIT("segment")
+#define TYPE_ATTRIB						CONSTLIT("type")
+#define X_OFFSET_ATTRIB					CONSTLIT("xOffset")
+#define Y_OFFSET_ATTRIB					CONSTLIT("yOffset")
+
 struct SEntryDesc
 	{
 	SEntryDesc (void) : pType(NULL),
 			iSize(0),
 			pImage(NULL),
-			iRotation(0)
+			iRotation(0),
+			pCompositeImageArray(NULL)
 		{ }
+
+	SEntryDesc (const SEntryDesc &Src) : pType(Src.pType),
+			sName(Src.sName),
+			sSovereignName(Src.sSovereignName),
+			iSize(Src.iSize),
+			sCategorize(Src.sCategorize),
+			pImage(Src.pImage),
+			iRotation(Src.iRotation),
+			Selector(Src.Selector)
+		{
+		if (Src.pCompositeImageArray)
+			{
+			pCompositeImageArray = new CObjectImageArray(*Src.pCompositeImageArray);
+			pImage = pCompositeImageArray;
+			}
+		}
+
+	~SEntryDesc (void)
+		{
+		if (pCompositeImageArray)
+			delete pCompositeImageArray;
+		}
+
+	SEntryDesc &operator= (const SEntryDesc &Src)
+		{
+		if (pCompositeImageArray)
+			delete pCompositeImageArray;
+
+		pType = Src.pType;
+		sName = Src.sName;
+		sSovereignName = Src.sSovereignName;
+		iSize = Src.iSize;
+		sCategorize = Src.sCategorize;
+		pImage = Src.pImage;
+		iRotation = Src.iRotation;
+		Selector = Src.Selector;
+
+		if (Src.pCompositeImageArray)
+			{
+			pCompositeImageArray = new CObjectImageArray(*Src.pCompositeImageArray);
+			pImage = pCompositeImageArray;
+			}
+
+		return *this;
+		}
 
 	CDesignType *pType;						//	The type
 	CString sName;							//	Name
 	CString sSovereignName;					//	Name of sovereign
 	int iSize;								//	Size (units depend on design type)
+	CString sCategorize;
+
 	const CObjectImageArray *pImage;		//	Image
 	int iRotation;							//	Used by ships (0 for others)
 
 	CCompositeImageSelector Selector;		//	Used by station types
+	CObjectImageArray *pCompositeImageArray;
 	};
+
+void InitStationTypeImage (SEntryDesc &Entry, CStationType *pStationType);
 
 void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
@@ -114,6 +173,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	int cxSpacing = pCmdLine->GetAttributeInteger(CONSTLIT("xSpacing"));
 	int cxExtraMargin = pCmdLine->GetAttributeInteger(CONSTLIT("xMargin"));
+	int cxImageMargin = 2 * pCmdLine->GetAttributeInteger(CONSTLIT("xImageMargin"));
 
 	//	Font for text
 
@@ -228,9 +288,8 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 				NewEntry.iSize = pStationType->GetSize();
 				NewEntry.sSovereignName = (pStationType->GetSovereign() ? pStationType->GetSovereign()->GetTypeName() : NULL_STR);
 
-				SSelectorInitCtx InitCtx;
-				pStationType->SetImageSelector(InitCtx, &NewEntry.Selector);
-				NewEntry.pImage = &pStationType->GetImage(NewEntry.Selector, CCompositeImageModifiers());
+				InitStationTypeImage(NewEntry, pStationType);
+
 				break;
 				}
 
@@ -273,6 +332,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			case orderSovereign:
 				wsprintf(szBuffer, "%s|%s|%x", NewEntry.sSovereignName.GetASCIIZPointer(), NewEntry.sName.GetASCIIZPointer(), pType->GetUNID());
+				NewEntry.sCategorize = NewEntry.sSovereignName;
 				break;
 
 			default:
@@ -302,15 +362,22 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 	TArray<CCompositeImageSelector> Selectors;
 	Selectors.InsertEmpty(Table.GetCount());
 
+	CString sLastCategory;
 	TArray<CImageArranger::SCellDesc> Cells;
 	for (i = 0; i < Table.GetCount(); i++)
 		{
 		SEntryDesc &Entry = Table[i];
 
 		CImageArranger::SCellDesc *pNewCell = Cells.Insert();
-		pNewCell->cxWidth = (Entry.pImage ? RectWidth(Entry.pImage->GetImageRect()) : 0);
-		pNewCell->cyHeight = (Entry.pImage ? RectHeight(Entry.pImage->GetImageRect()) : 0);
+		pNewCell->cxWidth = (Entry.pImage ? RectWidth(Entry.pImage->GetImageRect()) : 0) + cxImageMargin;
+		pNewCell->cyHeight = (Entry.pImage ? RectHeight(Entry.pImage->GetImageRect()) : 0) + cxImageMargin;
 		pNewCell->sText = Entry.sName;
+
+		if (!strEquals(sLastCategory, Entry.sCategorize))
+			{
+			sLastCategory = Entry.sCategorize;
+			pNewCell->bStartNewRow = true;
+			}
 		}
 
 	//	Arrange
@@ -344,14 +411,16 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 			int xOffset;
 			int yOffset;
 			Entry.pImage->GetImageOffset(0, Entry.iRotation, &xOffset, &yOffset);
+			int cxImage = RectWidth(Entry.pImage->GetImageRect());
+			int cyImage = RectHeight(Entry.pImage->GetImageRect());
 
 			//	Paint image
 
 			if (!bTextBoxesOnly && Entry.pImage)
 				{
 				Entry.pImage->PaintImageUL(Output,
-						x,
-						y,
+						x + (Arranger.GetWidth(i) - cxImage) / 2,
+						y + (Arranger.GetHeight(i) - cyImage) / 2,
 						0,
 						Entry.iRotation);
 				}
@@ -400,3 +469,134 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 	OutputImage(Output, sFilespec);
 	}
 
+void InitStationTypeImage (SEntryDesc &Entry, CStationType *pStationType)
+	{
+	struct SSatImageDesc
+		{
+		const CObjectImageArray *pImage;
+		CCompositeImageSelector Selector;
+		int xOffset;
+		int yOffset;
+		};
+
+	int i;
+
+	SSelectorInitCtx InitCtx;
+	pStationType->SetImageSelector(InitCtx, &Entry.Selector);
+	const CObjectImageArray *pMainImage = &pStationType->GetImage(Entry.Selector, CCompositeImageModifiers());
+
+	//	If we have no satellites, then we can just return the single station 
+	//	image.
+
+	CXMLElement *pSatellites = pStationType->GetSatellitesDesc();
+	if (pSatellites == NULL)
+		{
+		Entry.pImage = pMainImage;
+		return;
+		}
+
+	//	Figure out the extents of the image
+
+	RECT rcMainImage = pMainImage->GetImageRect();
+	RECT rcBounds;
+	rcBounds.left = -(RectWidth(rcMainImage) / 2);
+	rcBounds.top = -(RectHeight(rcMainImage) / 2);
+	rcBounds.right = rcBounds.left + RectWidth(rcMainImage);
+	rcBounds.bottom = rcBounds.top + RectHeight(rcMainImage);
+
+	//	Loop over all satellites and get metrics
+
+	TArray<SSatImageDesc> SatImages;
+	for (i = 0; i < pSatellites->GetContentElementCount(); i++)
+		{
+		CXMLElement *pSatDesc = pSatellites->GetContentElement(i);
+		if (!pSatDesc->FindAttribute(SEGMENT_ATTRIB)
+				|| !strEquals(STATION_TAG, pSatDesc->GetTag()))
+			continue;
+
+		//	Get the type of the satellite
+
+		CStationType *pSatType = g_pUniverse->FindStationType(pSatDesc->GetAttributeInteger(TYPE_ATTRIB));
+		if (pSatType == NULL)
+			continue;
+
+		//	Prepare the image for the satellite
+
+		SSatImageDesc *pSatImage = SatImages.Insert();
+		pSatType->SetImageSelector(InitCtx, &pSatImage->Selector);
+
+		//	If we have an image variant, then set it
+
+		int iVariant;
+		if (pSatDesc->FindAttributeInteger(IMAGE_VARIANT_ATTRIB, &iVariant))
+			{
+			IImageEntry *pRoot = pSatType->GetImageRoot();
+			DWORD dwID = (pRoot ? pRoot->GetID() : DEFAULT_SELECTOR_ID);
+
+			pSatImage->Selector.DeleteAll();
+			pSatImage->Selector.AddVariant(dwID, iVariant);
+			}
+
+		pSatImage->pImage = &pSatType->GetImage(pSatImage->Selector, CCompositeImageModifiers());
+
+		//	Now get the offset
+
+		pSatImage->xOffset = pSatDesc->GetAttributeInteger(X_OFFSET_ATTRIB);
+		pSatImage->yOffset = pSatDesc->GetAttributeInteger(Y_OFFSET_ATTRIB);
+
+		//	Compute the satellite rect
+
+		RECT rcSatImage = pSatImage->pImage->GetImageRect();
+		RECT rcSatBounds;
+		rcSatBounds.left = pSatImage->xOffset - (RectWidth(rcSatImage) / 2);
+		rcSatBounds.top = -pSatImage->yOffset - (RectHeight(rcSatImage) / 2);
+		rcSatBounds.right = rcSatBounds.left + RectWidth(rcSatImage);
+		rcSatBounds.bottom = rcSatBounds.top + RectHeight(rcSatImage);
+
+		//	Increase the size of the bounds
+
+		rcBounds.left = Min(rcBounds.left, rcSatBounds.left);
+		rcBounds.right = Max(rcBounds.right, rcSatBounds.right);
+		rcBounds.top = Min(rcBounds.top, rcSatBounds.top);
+		rcBounds.bottom = Max(rcBounds.bottom, rcSatBounds.bottom);
+		}
+
+	//	If no segments, then we just return the basic image
+
+	if (SatImages.GetCount() == 0)
+		{
+		Entry.pImage = pMainImage;
+		return;
+		}
+
+	//	Create an image that will hold the composite
+
+	CG32bitImage *pCompositeImage = new CG32bitImage;
+	pCompositeImage->Create(RectWidth(rcBounds), RectHeight(rcBounds), CG32bitImage::alpha8, CG32bitPixel::Null());
+	int xCenter = -rcBounds.left;
+	int yCenter = -rcBounds.top;
+
+	//	Paint the main image
+
+	pMainImage->PaintImage(*pCompositeImage, xCenter, yCenter, 0, Entry.iRotation, true);
+
+	//	Paint all the satellites
+
+	for (i = 0; i < SatImages.GetCount(); i++)
+		SatImages[i].pImage->PaintImage(*pCompositeImage, xCenter + SatImages[i].xOffset, yCenter - SatImages[i].yOffset, 0, 0, true);
+
+	//	Now create the proper image array
+
+	RECT rcResult;
+	rcResult.left = 0;
+	rcResult.top = 0;
+	rcResult.right = RectWidth(rcBounds);
+	rcResult.bottom = RectHeight(rcBounds);
+
+	Entry.pCompositeImageArray = new CObjectImageArray;
+	Entry.pCompositeImageArray->Init(pCompositeImage, rcResult, 0, 0, true);
+
+	//	Done
+
+	Entry.pImage = Entry.pCompositeImageArray;
+	}

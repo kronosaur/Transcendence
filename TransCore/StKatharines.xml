@@ -192,7 +192,7 @@
 			virtual=			"true"
 			definiteArticle=	"true"
 			
-			attributes=			"commonwealthCustoms, dockObj, human, majorStation, stKatsArcology"
+			attributes=			"commonwealthCustoms, dockObj, generic, human, majorStation, stKatsArcology"
 			>
 
 		<Items>
@@ -229,6 +229,23 @@
 			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 		</Trade>
+		
+		<!-- Satellites -->
+
+		<Satellites>
+			<Station type="&stStKatsArcology15;"	xOffset="355"	 yOffset="88"	segment="true"/>
+			<Station type="&stStKatsArcology45;"	xOffset="260"	 yOffset="237"	segment="true"/>
+			<Station type="&stStKatsArcology75;"	xOffset="95"	 yOffset="320"	segment="true"/>
+			<Station type="&stStKatsArcology105;"	xOffset="-95"	 yOffset="320"	segment="true"/>
+			<Station type="&stStKatsArcology135;"	xOffset="-260"	 yOffset="237"	segment="true"/>
+			<Station type="&stStKatsArcology165;"	xOffset="-355"	 yOffset="88"	segment="true"/>
+			<Station type="&stStKatsArcology195;"	xOffset="-355"	 yOffset="-90"	segment="true"/>
+			<Station type="&stStKatsArcology225;"	xOffset="-260"	 yOffset="-252"	segment="true"/>
+			<Station type="&stStKatsArcology255;"	xOffset="-95"	 yOffset="-323"	segment="true"/>
+			<Station type="&stStKatsArcology285;"	xOffset="95"	 yOffset="-323"	segment="true"/>
+			<Station type="&stStKatsArcology315;"	xOffset="260"	 yOffset="-252"	segment="true"/>
+			<Station type="&stStKatsArcology345;"	xOffset="355"	 yOffset="-90"	segment="true"/>
+		</Satellites>
 		
 		<HeroImage imageID="&rsStKatsArcologyHero;" imageWidth="800" imageHeight="528"/>
 		
@@ -2404,19 +2421,6 @@
 						<Station type="&stBiosphereTerrestrialSizeI;" name="Incandescent" showOrbit="true"/>
 						
 						<Station type="&stStKatsArcology;"/>
-						
-						<Station type="&stStKatsArcology15;"	xOffset="355"	 yOffset="88"/>
-						<Station type="&stStKatsArcology45;"	xOffset="260"	 yOffset="237"/>
-						<Station type="&stStKatsArcology75;"	xOffset="95"	 yOffset="320"/>
-						<Station type="&stStKatsArcology105;"	xOffset="-95"	 yOffset="320"/>
-						<Station type="&stStKatsArcology135;"	xOffset="-260"	 yOffset="237"/>
-						<Station type="&stStKatsArcology165;"	xOffset="-355"	 yOffset="88"/>
-						<Station type="&stStKatsArcology195;"	xOffset="-355"	 yOffset="-90"/>
-						<Station type="&stStKatsArcology225;"	xOffset="-260"	 yOffset="-252"/>
-						<Station type="&stStKatsArcology255;"	xOffset="-95"	 yOffset="-323"/>
-						<Station type="&stStKatsArcology285;"	xOffset="95"	 yOffset="-323"/>
-						<Station type="&stStKatsArcology315;"	xOffset="260"	 yOffset="-252"/>
-						<Station type="&stStKatsArcology345;"	xOffset="355"	 yOffset="-90"/>
 					</Primary>
 					
 					<Orbitals count="9" distance="36" angle="equidistant">
