@@ -25,6 +25,7 @@ PLAYER DATA
 			manufacturer=		"Makayev-Energia"
 			class=				"Molotok bounty hunter"
 			type=				""
+			defaultSovereign=	"&svBlackMarket;"
 
 			size=				"27"
 			mass=				"144"

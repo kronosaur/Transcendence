@@ -373,6 +373,7 @@ PLAYER DATA
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Aquila"
 			type=				"cruiser"
+			defaultSovereign=	"&svCommonwealthFleet;"
 
 			mass=				"10000"
 			cargoSpace=			"1000"
@@ -692,6 +693,7 @@ PLAYER DATA
 			manufacturer=		"Earth Industries"
 			class=				"Commonwealth Star Carrier"
 			type=				""
+			defaultSovereign=	"&svCommonwealthFleet;"
 
 			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, genericClass, fleetLaw, majorShip"
 			inherit=			"&baCSCBase;"
@@ -3761,6 +3763,7 @@ PLAYER DATA
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Aurochs"
 			type=				"transport"
+			defaultSovereign=	"&svCommonwealthFleet;"
 
 			mass=				"8000"
 			cargoSpace=			"5600"
@@ -4095,6 +4098,7 @@ PLAYER DATA
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Britannia"
 			type=				"heavy gunship"
+			defaultSovereign=	"&svCommonwealthFleet;"
 
 			mass=				"120"
 			cargoSpace=			"50"
@@ -4166,6 +4170,7 @@ PLAYER DATA
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Centurion"
 			type=				"heavy gunship"
+			defaultSovereign=	"&svCommonwealthFleet;"
 
 			mass=				"90"
 			cargoSpace=			"50"
@@ -4225,6 +4230,7 @@ PLAYER DATA
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Centurion/X"
 			type=				"heavy gunship"
+			defaultSovereign=	"&svCommonwealthFleet;"
 
 			mass=				"90"
 			cargoSpace=			"50"

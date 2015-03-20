@@ -10,6 +10,7 @@
 			manufacturer=		"OmniDefense Systems"
 			class=				"AutoSentinel&#xae;"
 			type=				""
+			defaultSovereign=	"&svCommonwealth;"
 
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
@@ -68,6 +69,7 @@
 			manufacturer=		"OmniDefense Systems"
 			class=				"200A defender auton"
 			type=				""
+			defaultSovereign=	"&svCommonwealth;"
 
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
@@ -153,6 +155,7 @@
 			manufacturer=		"OmniDefense Systems"
 			class=				"300D defender auton"
 			type=				""
+			defaultSovereign=	"&svCommonwealth;"
 
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
@@ -228,6 +231,7 @@
 			manufacturer=		"OmniDefense Systems"
 			class=				"310A aegis auton"
 			type=				""
+			defaultSovereign=	"&svCommonwealth;"
 
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
@@ -289,6 +293,7 @@
 			manufacturer=		"OmniDefense Systems"
 			class=				"330M mule auton"
 			type=				""
+			defaultSovereign=	"&svCommonwealth;"
 
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
@@ -387,6 +392,7 @@
 			manufacturer=		"OmniDefense Systems"
 			class=				"1M battle auton"
 			type=				""
+			defaultSovereign=	"&svCommonwealth;"
 
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
@@ -473,6 +479,7 @@
 			manufacturer=		"OmniDefense Systems"
 			class=				"1M/i battle auton"
 			type=				""
+			defaultSovereign=	"&svCommonwealth;"
 
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
@@ -533,6 +540,7 @@
 			manufacturer=		"Taikon"
 			class=				"TX3 explorer auton"
 			type=				""
+			defaultSovereign=	"&svCommonwealth;"
 
 			attributes=			"auton, genericClass, taikon"
 			inherit=			"&baStdAutonBase;"

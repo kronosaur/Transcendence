@@ -634,6 +634,7 @@
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Ares sentry"
 			type=				""
+			defaultSovereign=	"&svAres;"
 
 			attributes=			"ares, genericClass"
 			   
@@ -683,6 +684,7 @@
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Chasm"
 			type=				"heavy gunship"
+			defaultSovereign=	"&svAres;"
 
 			attributes=			"ares,genericClass"
 			   
@@ -743,6 +745,7 @@
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Cometfall"
 			type=				"missileship"
+			defaultSovereign=	"&svAres;"
 
 			attributes=			"ares, capitalShip, genericClass"
 			   
@@ -825,6 +828,7 @@
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Deimos"
 			type=				"destroyer"
+			defaultSovereign=	"&svAres;"
 
 			attributes=			"ares, capitalShip, genericClass"
 			   
@@ -903,6 +907,7 @@
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Polar"
 			type=				"freighter"
+			defaultSovereign=	"&svAres;"
 
 			mass=				"8000"
 			cargoSpace=			"5000"
@@ -1060,6 +1065,7 @@
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Sandstorm"
 			type=				"gunship"
+			defaultSovereign=	"&svAres;"
 
 			attributes=			"ares,genericClass"
 			   
@@ -1122,6 +1128,7 @@
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Tundra"
 			type=				"heavy gunship"
+			defaultSovereign=	"&svAres;"
 
 			attributes=			"ares,genericClass"
 			   
@@ -1184,6 +1191,7 @@
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Phobos"
 			type=				"dreadnought"
+			defaultSovereign=	"&svAres;"
 
 			attributes=			"ares, capitalShip, genericClass, majorShip"
 

@@ -13,6 +13,7 @@
 			manufacturer=		"Urak"
 			class=				""
 			type=				"sentinel"
+			defaultSovereign=	"&svUrakWarlords;"
 
 			mass=				"100"
 			cargoSpace=			"5"
@@ -59,6 +60,7 @@
 			manufacturer=		"Urak"
 			class=				""
 			type=				"destroyer"
+			defaultSovereign=	"&svUrakWarlords;"
 
 			attributes=			"capitalShip, genericClass, urak"
 

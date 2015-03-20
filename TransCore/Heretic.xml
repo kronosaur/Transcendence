@@ -629,6 +629,7 @@
 			manufacturer=		"Ringers"
 			class=				"Huygens"
 			type=				"explorer"
+			defaultSovereign=	"&svRingers;"
 
 			mass=				"5000"
 			cargoSpace=			"1500"
@@ -638,7 +639,7 @@
 			explosionType=		"&vtThermoExplosion2;"
 			leavesWreck=		"100"
 
-			attributes=			"capitalShip, huygensExplorer, majorShip, ringers"
+			attributes=			"capitalShip, genericClass, huygensExplorer, majorShip, ringers"
 
 			dockingPorts=		"4"
 			dockScreen=			"Main"
@@ -779,6 +780,7 @@
 			manufacturer=		"Corporate"
 			class=				""
 			type=				"explorer"
+			defaultSovereign=	"&svCorporate;"
 
 			mass=				"8000"
 			cargoSpace=			"1000"
@@ -791,7 +793,7 @@
 			leavesWreck=		"100"
 			wreckType=			"&stSvalbardWreck;"
 
-			attributes=			"capitalShip, corporate, majorShip, svalbardExplorer, uncharted"
+			attributes=			"capitalShip, corporate, genericClass, majorShip, svalbardExplorer, uncharted"
 
 			dockingPorts=		"4"
 			dockScreen=			"Main"
@@ -4612,7 +4614,7 @@
 			multiHull=			"true"
 			immutable=			"true"
 
-			attributes=			"hereticControlPoint, generic, iocrym, uncharted"
+			attributes=			"hereticControlPoint, iocrym, uncharted"
 
 			definiteArticle=	"true"
 			>
@@ -5288,7 +5290,7 @@
 			dockScreen=			"Main"
 			dockingPorts=		"4"
 				 
-			attributes=			"alien, generic, iocrym"
+			attributes=			"alien, iocrym"
 
 			multiHull=			"true"
 			immutable=			"true"

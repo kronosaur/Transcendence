@@ -209,6 +209,7 @@
 			manufacturer=		"Xenophobe"
 			class=				""
 			type=				"fighter"
+			defaultSovereign=	"&svXenophobes;"
 
 			attributes=			"benninXenophobes, genericClass"
 			   
@@ -261,6 +262,7 @@
 			manufacturer=		"Xenophobe"
 			class=				""
 			type=				"defender"
+			defaultSovereign=	"&svXenophobes;"
 
 			attributes=			"benninXenophobes, capitalShip, genericClass"
 			   
@@ -346,6 +348,7 @@
 			manufacturer=		"Xenophobe"
 			class=				""
 			type=				"worldship"
+			defaultSovereign=	"&svXenophobes;"
 
 			attributes=			"benninXenophobes, capitalShip, genericClass, majorShip"
 			   
@@ -456,6 +459,7 @@
 			manufacturer=		"Xenophobe"
 			class=				""
 			type=				"ark"
+			defaultSovereign=	"&svXenophobes;"
 
 			attributes=			"benninXenophobes, capitalShip, genericClass, majorShip"
 			
@@ -849,6 +853,7 @@
 			manufacturer=		"Meth"
 			class=				""
 			type=				"enforcer"
+			defaultSovereign=	"&svDeathDrugsCartel;"
 
 			mass=				"70"
 			cargoSpace=			"10"
@@ -1049,6 +1054,7 @@
 			manufacturer=		""
 			class=				"Ferian miner"
 			type=				""
+			defaultSovereign=	"&svFerianMiners;"
 
 			size=				"130"
 			mass=				"5000"
@@ -1121,6 +1127,7 @@
 			manufacturer=		""
 			class=				"Ferian warrior"
 			type=				""
+			defaultSovereign=	"&svFerianMiners;"
 
 			mass=				"1200"
 			thrustRatio=		"15"
@@ -1429,6 +1436,7 @@
 			manufacturer=		"Revolution Designs"
 			class=				"Earthzone"
 			type=				"armed shuttle"
+			defaultSovereign=	"&svAnarchists;"
 
 			attributes=			"anarchists, genericClass"
 			   
@@ -1490,6 +1498,7 @@
 			manufacturer=		"Earth Industries"
 			class=				"Hornet"
 			type=				"battlepod"
+			defaultSovereign=	"&svAnarchists;"
 
 			mass=				"5"
 			cargoSpace=			"0"
@@ -1905,6 +1914,7 @@
 			manufacturer=		"Gaian"
 			class=				""
 			type=				"processor"
+			defaultSovereign=	"&svGaianTerraformers;"
 
 			mass=				"50000"
 			cargoSpace=			"25000"
@@ -2174,6 +2184,7 @@
 			manufacturer=		"Heliotrope"
 			class=				""
 			type=				"frigate"
+			defaultSovereign=	"&svHeliotropes;"
 
 			attributes=			"genericClass, heliotropes"
 
@@ -2254,6 +2265,7 @@
 			manufacturer=		"Heliotrope"
 			class=				""
 			type=				"gunship"
+			defaultSovereign=	"&svHeliotropes;"
 
 			mass=				"25"
 			cargoSpace=			"5"
@@ -2451,6 +2463,7 @@
 			manufacturer=		"Himal"
 			class=				""
 			type=				"interceptor"
+			defaultSovereign=	"&svHimalSeparatists;"
 
 			mass=				"20"
 			cargoSpace=			"5"
@@ -2566,6 +2579,7 @@
 			manufacturer=		"Huari"
 			class=				"Hurin"
 			type=				"destroyer"
+			defaultSovereign=	"&svHuariEmpire;"
 
 			attributes=			"capitalShip, genericClass, huari"
 			   
@@ -2720,6 +2734,7 @@
 			manufacturer=		""
 			class=				"Kobol gunship"
 			type=				""
+			defaultSovereign=	"&svKobolWarlords;"
 
 			mass=				"90"
 			cargoSpace=			"100"
@@ -2772,6 +2787,7 @@
 			manufacturer=		""
 			class=				"Kobol gunship"
 			type=				""
+			defaultSovereign=	"&svKobolWarlords;"
 
 			mass=				"90"
 			cargoSpace=			"100"
@@ -2825,6 +2841,7 @@
 			manufacturer=		""
 			class=				"Kobol gunship"
 			type=				""
+			defaultSovereign=	"&svKobolWarlords;"
 
 			mass=				"90"
 			cargoSpace=			"100"
@@ -2945,6 +2962,7 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Barbary"
 			type=				"gunship"
+			defaultSovereign=	"&svMarauders;"
 
 			attributes=			"charonPirates, genericClass"
 			   
@@ -3006,6 +3024,7 @@
 			manufacturer=		"Marauder"
 			class=				""
 			type=				"raid platform"
+			defaultSovereign=	"&svMarauders;"
 
 			size=				"90"
 			mass=				"4000"
@@ -3094,6 +3113,7 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Tripoli"
 			type=				"destroyer"
+			defaultSovereign=	"&svMarauders;"
 
 			attributes=			"capitalShip, genericClass, marauders"
 			   
@@ -3502,6 +3522,7 @@
 			manufacturer=		"United African States"
 			class=				"Atonement"
 			type=				"heavy gunship"
+			defaultSovereign=	"&svPenitents;"
 
 			mass=				"100"
 			cargoSpace=			"25"
@@ -3559,6 +3580,7 @@
 			manufacturer=		"United African States"
 			class=				"Repentant"
 			type=				"gunship"
+			defaultSovereign=	"&svPenitents;"
 
 			mass=				"50"
 			cargoSpace=			"25"
@@ -3721,6 +3743,7 @@
 			manufacturer=		"United African States"
 			class=				"Oromo"
 			type=				"gunship"
+			defaultSovereign=	"&svOutlaw;"
 
 			attributes=			"genericClass, outlaws"
 			   
@@ -3779,6 +3802,7 @@
 			manufacturer=		"United African States"
 			class=				"Sotho"
 			type=				"heavy gunship"
+			defaultSovereign=	"&svOutlaw;"
 
 			attributes=			"genericClass, outlaws"
 			   
@@ -3837,6 +3861,7 @@
 			manufacturer=		"United African States"
 			class=				"T31"
 			type=				"armed transport"
+			defaultSovereign=	"&svOutlaw;"
 
 			attributes=			"freighter, genericClass, outlaws"
 			   
@@ -3898,6 +3923,7 @@
 			manufacturer=		"United African States"
 			class=				"T55"
 			type=				"armed transport"
+			defaultSovereign=	"&svOutlaw;"
 
 			attributes=			"freighter, genericClass, outlaws"
 			   
@@ -3955,6 +3981,7 @@
 			manufacturer=		"United African States"
 			class=				"Zulu"
 			type=				"gunship"
+			defaultSovereign=	"&svOutlaw;"
 
 			attributes=			"genericClass, outlaws"
 			   
@@ -4011,6 +4038,7 @@
 			manufacturer=		"United African States"
 			class=				"Zulu II"
 			type=				"gunship"
+			defaultSovereign=	"&svOutlaw;"
 
 			attributes=			"genericClass, outlaws"
 			   
@@ -4960,6 +4988,7 @@
 			manufacturer=		"Ranx"
 			class=				""
 			type=				"gunship"
+			defaultSovereign=	"&svRanxEmpire;"
 
 			mass=				"60"
 			cargoSpace=			"10"
@@ -5021,6 +5050,7 @@
 			manufacturer=		"Ranx"
 			class=				""
 			type=				"dreadnought"
+			defaultSovereign=	"&svRanxEmpire;"
 
 			attributes=			"capitalShip, genericClass, majorShip, ranx"
 			   
@@ -5257,6 +5287,7 @@
 			manufacturer=		"Salvager"
 			class=				""
 			type=				"Nomad"
+			defaultSovereign=	"&svIndependentTrader;"
 
 			attributes=			"capitalShip, genericClass, salvagers"
 			   
@@ -5456,6 +5487,7 @@
 			manufacturer=		"Revolution Designs"
 			class=				"Plague"
 			type=				"gunship"
+			defaultSovereign=	"&svSapiens;"
 
 			mass=				"50"
 			cargoSpace=			"50"
@@ -5505,6 +5537,7 @@
 			manufacturer=		"Revolution Designs"
 			class=				"Revelations"
 			type=				"missileship"
+			defaultSovereign=	"&svSapiens;"
 
 			mass=				"150"
 			cargoSpace=			"150"
@@ -5985,6 +6018,7 @@
 			manufacturer=		"Ventari"
 			class=				""
 			type=				"destroyer"
+			defaultSovereign=	"&svVentariSettlers;"
 
 			attributes=			"capitalShip, genericClass, ventari"
 

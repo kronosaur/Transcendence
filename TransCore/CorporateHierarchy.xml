@@ -67,6 +67,7 @@
 			manufacturer=		"Rasiermesser"
 			class=				"Corporate cruiser"
 			type=				""
+			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"capitalShip, corporate, genericClass, majorShip"
 			   

@@ -53,6 +53,7 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Corsair"
 			type=				"gunship"
+			defaultSovereign=	"&svPirates;"
 
 			mass=				"25"
 			cargoSpace=			"5"
@@ -100,6 +101,7 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Corsair II"
 			type=				"gunship"
+			defaultSovereign=	"&svPirates;"
 			level=				"3"
 
 			attributes=			"charonPirates, genericClass"
@@ -162,6 +164,7 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Drake"
 			type=				"missileship"
+			defaultSovereign=	"&svPirates;"
 			level=				"3"
 
 			attributes=			"capitalShip, charonPirates, genericClass"
@@ -245,6 +248,7 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Viking"
 			type=				"gunship"
+			defaultSovereign=	"&svPirates;"
 			level=				"2"
 
 			attributes=			"charonPirates, genericClass"
@@ -305,6 +309,7 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Viking II"
 			type=				"gunship"
+			defaultSovereign=	"&svPirates;"
 
 			attributes=			"charonPirates, genericClass"
 			   
@@ -415,6 +420,7 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Charon frigate"
 			type=				""
+			defaultSovereign=	"&svPirates;"
 
 			attributes=			"capitalShip, charonPirates, charonFrigate, genericClass"
 			   

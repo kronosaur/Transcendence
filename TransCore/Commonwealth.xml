@@ -10,6 +10,7 @@
 			manufacturer=		"Earth Industries"
 			class=				"EI500"
 			type=				"freighter"
+			defaultSovereign=	"&svCommonwealth;"
 
 			attributes=			"genericClass"
 			 
@@ -85,6 +86,7 @@
 			manufacturer=		""
 			class=				"light IAV"
 			type=				""
+			defaultSovereign=	"&svCommonwealth;"
 
 			size=				"27"
 			mass=				"25"
@@ -139,6 +141,7 @@
 			manufacturer=		""
 			class=				"medium IAV"
 			type=				""
+			defaultSovereign=	"&svCommonwealth;"
 
 			size=				"42"
 			mass=				"50"
@@ -192,6 +195,7 @@
 			manufacturer=		""
 			class=				"heavy IAV"
 			type=				""
+			defaultSovereign=	"&svCommonwealth;"
 
 			size=				"37"
 			mass=				"100"
@@ -247,6 +251,7 @@
 			manufacturer=		"Makayev-Energia"
 			class=				"Manticore"
 			type=				"heavy gunship"
+			defaultSovereign=	"&svCommonwealth;"
 
 			mass=				"90"
 			cargoSpace=			"50"
@@ -347,6 +352,7 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Ronin/A"
 			type=				"gunship"
+			defaultSovereign=	"&svCommonwealth;"
 
 			mass=				"60"
 			cargoSpace=			"50"
@@ -395,6 +401,7 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Ronin/B"
 			type=				"gunship"
+			defaultSovereign=	"&svCommonwealth;"
 
 			mass=				"60"
 			cargoSpace=			"50"
@@ -452,6 +459,7 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Ronin/C"
 			type=				"gunship"
+			defaultSovereign=	"&svCommonwealth;"
 
 			mass=				"60"
 			cargoSpace=			"50"
@@ -509,6 +517,7 @@
 			manufacturer=		"Zubrin Systems"
 			class=				"Sapphire"
 			type=				"yacht"
+			defaultSovereign=	"&svCommonwealth;"
 
 			mass=				"30"
 			cargoSpace=			"50"
@@ -569,6 +578,7 @@
 			class=				"Scarab"
 			type=				"superfreighter"
 			level=				"6"
+			defaultSovereign=	"&svCommonwealth;"
 			   
 			attributes=			"commonwealth,freighter,genericClass"
 
@@ -676,6 +686,7 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Wolfen"
 			type=				"gunship"
+			defaultSovereign=	"&svCommonwealth;"
 
 			mass=				"20"
 			cargoSpace=			"35"

@@ -460,6 +460,7 @@
 			manufacturer=		"Sung Slavers"
 			class=				"Wind slaver"
 			type=				""
+			defaultSovereign=	"&svSung;"
 
 			attributes=			"genericClass, sungSlavers"
 			   
@@ -515,6 +516,7 @@
 			manufacturer=		"Sung Slavers"
 			class=				"Steel slaver"
 			type=				""
+			defaultSovereign=	"&svSung;"
 
 			attributes=			"genericClass, sungSlavers"
 			   
@@ -578,6 +580,7 @@
 			manufacturer=		"Sung Slavers"
 			class=				"Earth Slaver"
 			type=				""
+			defaultSovereign=	"&svSung;"
 
 			attributes=			"capitalShip, genericClass, sungSlavers"
 			   
@@ -879,6 +882,7 @@
 			manufacturer=		"Sung Slavers"
 			class=				"Dragon Slaver"
 			type=				""
+			defaultSovereign=	"&svSung;"
 
 			mass=				"4000"
 			cargoSpace=			"200"
@@ -964,6 +968,7 @@
 			manufacturer=		"Sung Slavers"
 			class=				"Sung transport"
 			type=				""
+			defaultSovereign=	"&svSung;"
 
 			size=				"240"
 			mass=				"10000"

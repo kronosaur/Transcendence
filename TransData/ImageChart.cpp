@@ -21,6 +21,7 @@ struct SEntryDesc
 
 	CDesignType *pType;						//	The type
 	CString sName;							//	Name
+	CString sSovereignName;					//	Name of sovereign
 	int iSize;								//	Size (units depend on design type)
 	const CObjectImageArray *pImage;		//	Image
 	int iRotation;							//	Used by ships (0 for others)
@@ -38,6 +39,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 		orderLargest = 2,
 		orderName = 3,
 		orderLevel = 4,
+		orderSovereign = 5,
 		};
 
 	//	Item criteria
@@ -92,6 +94,8 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 		iOrder = orderLargest;
 	else if (strEquals(sOrder, CONSTLIT("level")))
 		iOrder = orderLevel;
+	else if (strEquals(sOrder, CONSTLIT("sovereign")))
+		iOrder = orderSovereign;
 	else
 		iOrder = orderName;
 
@@ -206,7 +210,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 				NewEntry.iSize = RectWidth(pClass->GetImage().GetImageRect());
 				NewEntry.pImage = &pClass->GetImage();
 				NewEntry.iRotation = pClass->Angle2Direction(iRotation);
-
+				NewEntry.sSovereignName = (pClass->GetDefaultSovereign() ? pClass->GetDefaultSovereign()->GetTypeName() : NULL_STR);
 				break;
 				}
 
@@ -222,6 +226,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 				NewEntry.pType = pType;
 				NewEntry.sName = pStationType->GetNounPhrase(0);
 				NewEntry.iSize = pStationType->GetSize();
+				NewEntry.sSovereignName = (pStationType->GetSovereign() ? pStationType->GetSovereign()->GetTypeName() : NULL_STR);
 
 				SSelectorInitCtx InitCtx;
 				pStationType->SetImageSelector(InitCtx, &NewEntry.Selector);
@@ -264,6 +269,10 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 						NewEntry.iSize,
 						NewEntry.sName.GetASCIIZPointer(),
 						pType->GetUNID());
+				break;
+
+			case orderSovereign:
+				wsprintf(szBuffer, "%s|%s|%x", NewEntry.sSovereignName.GetASCIIZPointer(), NewEntry.sName.GetASCIIZPointer(), pType->GetUNID());
 				break;
 
 			default:

@@ -512,6 +512,7 @@
 			manufacturer=		"Centauri"
 			class=				""
 			type=				"heavy raider"
+			defaultSovereign=	"&svCentauriWarlords;"
 
 			mass=				"60"
 			cargoSpace=			"10"
@@ -561,6 +562,7 @@
 			manufacturer=		"Centauri"
 			class=				""
 			type=				"raider"
+			defaultSovereign=	"&svCentauriWarlords;"
 
 			mass=				"25"
 			cargoSpace=			"5"

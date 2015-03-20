@@ -56,6 +56,7 @@
 			manufacturer=		"Makayev-Energia"
 			class=				"Antares I"
 			type=				"freighter"
+			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"commonwealth,freighter,genericClass"
 			   
@@ -172,6 +173,7 @@
 			manufacturer=		"Makayev-Energia"
 			class=				"Antares II"
 			type=				"freighter"
+			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"commonwealth,freighter,genericClass"
 			   
@@ -293,6 +295,7 @@
 			class=				"Antares V"
 			type=				"freighter"
 			level=				"4"
+			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"commonwealth,freighter,genericClass"
 
@@ -415,6 +418,7 @@
 			class=				"EI100"
 			type=				"freighter"
 			level=				"2"
+			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"commonwealth,freighter,genericClass"
 			   
@@ -515,6 +519,7 @@
 			class=				"EI200"
 			type=				"freighter"
 			level=				"3"
+			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"commonwealth,freighter,genericClass"
 			   
@@ -616,6 +621,7 @@
 			class=				"EI7000"
 			type=				"freighter"
 			level=				"5"
+			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"commonwealth,freighter,genericClass"
 			

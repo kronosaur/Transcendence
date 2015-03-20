@@ -23,6 +23,7 @@
 			manufacturer=		""
 			class=				"Zoanthrope raider"
 			type=				""
+			defaultSovereign=	"&svDwargRaiders;"
 
 			mass=				"25"
 			cargoSpace=			"5"
@@ -80,6 +81,7 @@
 			manufacturer=		""
 			class=				"Dwarg master"
 			type=				""
+			defaultSovereign=	"&svDwargRaiders;"
 
 			size=				"77"
 			mass=				"1900"
@@ -136,6 +138,7 @@
 			manufacturer=		""
 			class=				"Zoanthrope behemoth"
 			type=				""
+			defaultSovereign=	"&svDwargRaiders;"
 
 			size=				"90"
 			mass=				"10000"

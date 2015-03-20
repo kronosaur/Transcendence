@@ -1335,6 +1335,7 @@
 			manufacturer=		"Tenhove Defense Systems"
 			class=				"TA3"
 			type=				"sentinel"
+			defaultSovereign=	"&svCommonwealth;"
 
 			attributes=			"auton, genericClass"
 
