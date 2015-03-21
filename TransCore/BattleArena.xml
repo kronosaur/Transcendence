@@ -2561,7 +2561,7 @@
 						<Group>
 							<Lookup table="StargateInbound"/>
 
-							<Orbitals count="2" distance="12" angle="equidistant">
+							<Orbitals count="2" distance="18" angle="equidistant">
 								<Station type="&stCommonwealthDryDock;" name="Rigel Dry Dock" noArticle="true"/>
 
 								<Station type="&stCommonwealthNavSign;">

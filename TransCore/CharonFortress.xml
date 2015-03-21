@@ -754,7 +754,7 @@
 							showOrbit="true"
 							/>
 
-					<Orbitals distance="12" angle="random">
+					<Orbitals distance="18" angle="random">
 						<Group>
 							<Siblings angleInc="0">
 								<Lookup table="StargateInbound"/>

@@ -1231,10 +1231,10 @@
 								; The position of the beacons depends on whether the gate leads
 								; to the core or not.
 								
-								(setq beacon1Pos (sysVectorPolarOffset gateObj 270 6))
+								(setq beacon1Pos (sysVectorPolarOffset gateObj 270 12))
 								(if (eq theGate corewardGate)
-									(setq beacon2Pos (sysVectorPolarOffset gateObj 90 6))
-									(setq beacon2Pos (sysVectorPolarOffset gateObj 0 6))
+									(setq beacon2Pos (sysVectorPolarOffset gateObj 90 12))
+									(setq beacon2Pos (sysVectorPolarOffset gateObj 0 12))
 									)
 									
 								; Create beacons

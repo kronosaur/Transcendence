@@ -27,7 +27,7 @@ const DWORD HIT_THRESHOLD =						90;
 
 const DWORD DAMAGE_BAR_TIMER =					30 * 5;
 
-#define MAX_GATE_DISTANCE						(g_KlicksPerPixel * 64.0)
+#define MAX_GATE_DISTANCE						(g_KlicksPerPixel * 150.0)
 #define MAX_STARGATE_HELP_RANGE					(g_KlicksPerPixel * 256.0)
 
 #define SETTING_ENABLED							CONSTLIT("enabled")
@@ -465,8 +465,10 @@ void CPlayerShipController::Gate (void)
 	//	Find the stargate closest to the ship
 
 	int i;
-	Metric rBestDist = MAX_GATE_DISTANCE * MAX_GATE_DISTANCE;
+	Metric rBestDist2 = MAX_GATE_DISTANCE * MAX_GATE_DISTANCE;
+	Metric rNearbyDist2 = 4.0 * MAX_STARGATE_HELP_RANGE * MAX_STARGATE_HELP_RANGE;
 	CSpaceObject *pStation = NULL;
+	bool bGateNearby = false;
 	for (i = 0; i < pSystem->GetObjectCount(); i++)
 		{
 		CSpaceObject *pObj = pSystem->GetObject(i);
@@ -478,13 +480,15 @@ void CPlayerShipController::Gate (void)
 				&& pObj != m_pShip)
 			{
 			CVector vDist = pObj->GetPos() - m_pShip->GetPos();
-			Metric rDist = vDist.Length2();
+			Metric rDist2 = vDist.Length2();
 
-			if (rDist < rBestDist)
+			if (rDist2 < rBestDist2)
 				{
-				rBestDist = rDist;
+				rBestDist2 = rDist2;
 				pStation = pObj;
 				}
+			else if (rDist2 < rNearbyDist2)
+				bGateNearby = true;
 			}
 		}
 
@@ -492,7 +496,10 @@ void CPlayerShipController::Gate (void)
 
 	if (pStation == NULL)
 		{
-		m_pTrans->DisplayMessage(CONSTLIT("No stargates in range"));
+		if (bGateNearby)
+			m_pTrans->DisplayMessage(CONSTLIT("Too far from stargate"));
+		else
+			m_pTrans->DisplayMessage(CONSTLIT("No stargates in range"));
 		return;
 		}
 

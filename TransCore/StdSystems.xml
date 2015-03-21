@@ -9,8 +9,8 @@
 		<StargateInbound>
 			<Stargate objName="Inbound" type="&stStargate;">
 				<Satellites>
-					<Station type="&stStargateBeacon;" xOffset="130" yOffset="0" />
-					<Station type="&stStargateBeacon;" xOffset="0" yOffset="-130" />
+					<Station type="&stStargateBeacon;" xOffset="288" yOffset="0" />
+					<Station type="&stStargateBeacon;" xOffset="0" yOffset="-288" />
 				</Satellites>
 			</Stargate>
 		</StargateInbound>
@@ -18,8 +18,8 @@
 		<StargateOutbound>
 			<Stargate objName="Outbound" type="&stStargate;">
 				<Satellites>
-					<Station type="&stStargateBeacon;" xOffset="0" yOffset="130" />
-					<Station type="&stStargateBeacon;" xOffset="0" yOffset="-130" />
+					<Station type="&stStargateBeacon;" xOffset="0" yOffset="288" />
+					<Station type="&stStargateBeacon;" xOffset="0" yOffset="-288" />
 				</Satellites>
 			</Stargate>
 		</StargateOutbound>

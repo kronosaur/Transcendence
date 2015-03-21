@@ -4451,9 +4451,7 @@
 			name=				"Heretic Gate"
 			sovereign=			"&svIndependent;"
 			dockScreen=			"Main"
-			dockingPorts=		"4"
 
-			multiHull=			"true"
 			immutable=			"true"
 			inactive=			"true"
 
@@ -4462,8 +4460,14 @@
 			gateEffect=			"&efStargateOut;"
 			definiteArticle=	"true"
 			>
-		<Image imageID="&rsStargate;" imageX="0" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="12" imageTicksPerFrame="3"/>
+		<Image imageID="&rsDaazhenStargate;" imageWidth="350" imageHeight="350" imageFrameCount="48" imageTicksPerFrame="1" animationColumns="6"/>
 
+		<DockingPorts
+				portCount=		"4"
+				portRadius=		"190"
+				>
+		</DockingPorts>
+		
 		<DockScreens>
 			<Main
 				name=			"Heretic Gate"
@@ -5381,12 +5385,14 @@
 	<!-- Heretic Sun -->
 
 	<StationType UNID="&stHereticSun;"
-			name=				"(star)"
+			name=				"Heretic"
 			scale=				"star"
 			sovereign=			"&svIndependent;"
-			spaceColor=			"0x15, 0x56, 0x7a"
 
 			attributes=			"star"
+				 
+			spaceColor=			"#495167"
+			maxLightRadius=		"610"
 			>
 		
 		<ImageEffect>
@@ -5394,8 +5400,8 @@
 					style=			"smooth"
 					radius=			"490"
 					intensity=		"25"
-					primaryColor=	"#ffffbf"
-					secondaryColor=	"#ffffbf"
+					primaryColor=	"#a6beff"
+					secondaryColor=	"#a6beff"
 					/>
 		</ImageEffect>
 		
@@ -5569,7 +5575,7 @@
 			<RandomLocation locationCriteria="*archipelago">
 				<Group>
 					<Lookup table="StargateInbound"/>
-					<Orbitals distance="16-20" angle="random">
+					<Orbitals distance="18-24" angle="random">
 						<Station type="&stHereticStation;"/>
 					</Orbitals>
 				</Group>

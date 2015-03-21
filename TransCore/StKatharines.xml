@@ -2375,11 +2375,11 @@
 						<Station type="&stVolcanicPlanetoidSizeG;" name="Redglow" showOrbit="true" />
 					</Primary>
 
-					<Orbitals distance="18" angle="equidistant">
+					<Orbitals distance="24" angle="equidistant">
 						<Group>
 							<Lookup table="StargateOutbound"/>
 							
-							<Siblings radiusInc="8">
+							<Siblings radiusInc="18">
 								<Station type="&stCommonwealthNavSign;">
 									<InitialData>
 										<Sign>"Travel\nWarning!"</Sign>
@@ -2545,7 +2545,7 @@
 						<Group>
 							<Lookup table="StargateInbound"/>
 							
-							<Siblings radiusInc="8">
+							<Siblings radiusInc="18">
 								<Station type="&stCommonwealthNavSign;">
 									<InitialData>
 										<Sign>"Welcome!"</Sign>

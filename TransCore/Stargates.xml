@@ -8,9 +8,7 @@
 			name=				"(stargate)"
 			sovereign=			"&svIndependent;"
 			dockScreen=			"Main"
-			dockingPorts=		"4"
 
-			multiHull=			"true"
 			immutable=			"true"
 
 			attributes=			"generic, stargate"
@@ -18,8 +16,71 @@
 			gateEffect=			"&efStargateOut;"
 			definiteArticle=	"true"
 			>
-		<Image imageID="&rsStdStargate;" imageX="0" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="12" imageTicksPerFrame="3"/>
+		<Image imageID="&rsDaazhenStargate;" imageWidth="350" imageHeight="350" imageFrameCount="48" imageTicksPerFrame="1" animationColumns="6"/>
 
+		<DockingPorts
+				portCount=		"4"
+				portRadius=		"190"
+				>
+		</DockingPorts>
+		
+		<DockScreens>
+
+			<Main>
+
+				<Panes>
+					<Default
+							desc=	"You are docked at an alien stargate. These giant structures are used by the Ancient Races to move their starships across the Galaxy. Stargates are the best mode of faster-than-light travel and they are the only method known to humans.">
+
+						<Actions>
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+
+		</DockScreens>
+	</StationType>
+
+	<!-- Stargate beacon -->
+
+	<StationType UNID="&stStargateBeacon;"
+			name=				"(stargate beacon)"
+			sovereign=			"&svIndependent;"
+			noMapLabel=			"true"
+			immutable=			"true"
+			mass=				"5000"
+			>
+
+		<Image imageID="&rsStdStargate;" imageX="0" imageY="128" imageWidth="28" imageHeight="28"/>
+
+	</StationType>
+	
+	<!-- Majellen Stargate -->
+
+	<StationType UNID="&stMajellenStargate;"
+			name=				"(stargate)"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"Main"
+
+			immutable=			"true"
+			attributes=			"generic, majellen, stargate"
+
+			gateEffect=			"&efStargateOut;"
+
+			definiteArticle=	"true"
+			>
+		<Image imageID="&rsMajellenStargate;" imageWidth="400" imageHeight="400" imageFrameCount="48" imageTicksPerFrame="1" animationColumns="6"/>
+
+		<DockingPorts
+				portCount=		"4"
+				portRadius=		"150"
+				>
+		</DockingPorts>
+		
 		<DockScreens>
 
 			<Main>
@@ -43,48 +104,83 @@
 
 	</StationType>
 
-	<!-- Stargate beacon -->
-
-	<StationType UNID="&stStargateBeacon;"
-			name=				"(stargate beacon)"
+	<StationType UNID="&stUnchartedMajellenStargate;"
+			name=				"(stargate)"
 			sovereign=			"&svIndependent;"
-			noMapLabel=			"true"
-			immutable=			"true"
-			mass=				"5000"
-			>
+			dockScreen=			"Main"
 
-		<Image imageID="&rsStdStargate;" imageX="0" imageY="128" imageWidth="28" imageHeight="28"/>
+			immutable=			"true"
+			attributes=			"majellen, stargate, uncharted"
+
+			gateEffect=			"&efStargateOut;"
+
+			definiteArticle=	"true"
+			>
+		<Image imageID="&rsMajellenStargate;" imageWidth="400" imageHeight="400" imageFrameCount="48" imageTicksPerFrame="1" animationColumns="6"/>
+
+		<DockingPorts
+				portCount=		"4"
+				portRadius=		"150"
+				>
+		</DockingPorts>
+		
+		<DockScreens>
+
+			<Main>
+
+				<Panes>
+					<Default
+							desc=	"You are docked at an alien stargate. These giant structures are used by the Ancient Races to move their starships across the Galaxy. Stargates are the best mode of faster-than-light travel and they are the only method known to humans.">
+
+						<Actions>
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+				</Panes>
+			</Main>
+
+		</DockScreens>
 
 	</StationType>
-	
+
 <!-- STARGATE EFFECTS -->
 
 	<Effect UNID="&efStargateIn;"
 			sound="&snStargate;"
 			>
-		<Image imageID="&rsStargateEffects;" 
+		<Image imageID="&rsDaazhenStargateEffect;"
 				imageX="0" 
 				imageY="0" 
-				imageWidth="128" 
-				imageHeight="128"
-				imageFrameCount="16"
-				imageTicksPerFrame="2"/>
+				imageWidth="400" 
+				imageHeight="400"
+				imageFrameCount="32"
+				imageTicksPerFrame="1"
+			    animationColumns="8"/>
 	</Effect>
 
 	<Effect UNID="&efStargateOut;"
 			sound="&snStargate;"
 			>
-		<Image imageID="&rsStargateEffects;" 
+		<Image imageID="&rsDaazhenStargateEffect;"
 				imageX="0" 
 				imageY="0" 
-				imageWidth="128" 
-				imageHeight="128"
-				imageFrameCount="16"
-				imageTicksPerFrame="2"/>
+				imageWidth="400" 
+				imageHeight="400"
+				imageFrameCount="32"
+				imageTicksPerFrame="1"
+			    animationColumns="8"/>
 	</Effect>
 
 <!-- RESOURCES -->
 
+	<Image UNID="&rsDaazhenStargate;"		bitmap="Resources\DaazhenStargate.jpg"		bitmask="Resources\DaazhenStargateMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsDaazhenStargateEffect;"	bitmap="Resources\DaazhenStargateEffect.jpg"		bitmask="Resources\DaazhenStargateEffectMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsMajellenStargate;"		bitmap="Resources\MajellenStargate.jpg"		bitmask="Resources\MajellenStargateMask.bmp" loadOnUse="true"/>
+	
 	<Image UNID="&rsStdStargate;"		bitmap="Resources\StdStargate.jpg"		bitmask="Resources\StdStargateMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsStargateEffects;"	bitmap="Resources\StargateEffects.jpg" bitmask="Resources\StargateEffectsMask.bmp" loadOnUse="true"/>
 

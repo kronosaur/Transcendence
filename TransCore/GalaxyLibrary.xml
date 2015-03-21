@@ -119,6 +119,9 @@
 	<!ENTITY rsNeurohackFrame			"0x001CF003">
 	<!ENTITY rsNeurohackControls		"0x001CF004">
 	
+	<!ENTITY stMajellenStargate			"0x001E2001">
+	<!ENTITY stUnchartedMajellenStargate	"0x001E2003">
+	
 	<!-- LIBRARIES -->
 	
 	<!ENTITY unidCoreTypesLibrary		"0x00030000">
@@ -254,6 +257,12 @@
 	<!ENTITY rsRockyAsteroidSpace		"0x00020093">
 	<!ENTITY rsBrightStarSpace			"0x00020094">
 	<!ENTITY rsRedGiantSpace			"0x00020095">
+	
+	<!-- 00B0-00BF STARGATES -->
+	
+	<!ENTITY rsDaazhenStargate			"0x000200B0">
+	<!ENTITY rsDaazhenStargateEffect	"0x000200B1">
+	<!ENTITY rsMajellenStargate			"0x000200B2">
 	]>
 	
 <CoreLibrary

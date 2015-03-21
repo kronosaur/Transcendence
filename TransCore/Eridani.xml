@@ -805,7 +805,7 @@
 						<Group>
 							<Lookup table="StargateOutbound"/>
 
-							<Orbitals distance="8" angle="0">
+							<Orbitals distance="18" angle="0">
 								<Station type="&stCommonwealthNavSign;">
 									<InitialData>
 										<Sign>"Travel\nAdvisory"</Sign>
