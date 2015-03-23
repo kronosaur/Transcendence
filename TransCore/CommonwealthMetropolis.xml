@@ -2,33 +2,58 @@
 
 <TranscendenceModule>
 
-	<!-- Commonwealth Station -->
+	<!-- Commonwealth Metropolis -->
 
 	<StationType UNID="&stCommonwealthStation;"
-			name=				"Commonwealth station"
+			name=				"(Commonwealth metropolis)"
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
+			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, majorStation, primary, populated"
+
 			dockScreen=			"&dsCommonwealthStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
 
-			multiHull=			"true"
+			size=				"670"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"500"
-			repairRate=			"3"
-			shipRepairRate=		"2"
+			multiHull=			"true"
+			regen=				"4"
+			shipRegen=			"4"
+			
+			canAttack=			"true"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, majorStation, primary, populated"
-			levelFrequency=		"rurrv ----- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="100"
 			>
 
-		<Image			imageID="&rsStations1;" imageX="0" imageY="0" imageWidth="256" imageHeight="256"/>
+		<!-- Encounter Info -->
+
+		<Encounter
+				levelFrequency=		"rurrv ----- ----- ----- -----"
+				locationCriteria=	"+planetary"
+				enemyExclusionRadius="100"
+				/>
+		
+		<Names noArticle="true">
+			Starton %s
+		</Names>
+		
+		<!-- Trade and Items -->
+		
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; L:1-5;" priceAdj="115" inventoryAdj="200"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="rNU L:1-4; -Illegal; -NotForSale;"	priceAdj="110"	inventoryAdj="100"/>
+			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
+			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-6;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
+		</Trade>
 
 		<Items>
 			<RandomItem count="20" 
@@ -48,6 +73,23 @@
 					/>
 		</Items>
 
+		<!-- Configuration -->
+		
+
+		<!-- Satellites -->
+		
+		<Satellites>
+			<Orbitals distance="15" angle="90">
+				<Station type="&stNavBeacon;" imageVariant="1"/>
+			</Orbitals>
+
+			<Orbitals distance="15" angle="270">
+				<Station type="&stNavBeacon;" imageVariant="1"/>
+			</Orbitals>
+		</Satellites>
+		
+		<!-- Ships and Defenses -->
+		
 		<Ships>
 			<Lookup count="3" table="&tbCommEliteDefenders;"/>
 			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
@@ -60,20 +102,17 @@
 			</Table>
 		</Reinforcements>
 
-		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; L:1-5;" priceAdj="115" inventoryAdj="200"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Sell	criteria="rNU L:1-4; -Illegal; -NotForSale;"	priceAdj="110"	inventoryAdj="100"/>
-			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
-			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
-			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
-			
-			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="100"/>
-			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-6;" priceAdj="100"/>
-			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
-		</Trade>
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsCommonwealthMetropolis;" imageWidth="480" imageHeight="480"/>
+		
+		<DockingPorts
+				portCount=		"10"
+				portRadius=		"245"
+				>
+		</DockingPorts>
+		
+		<!-- Events and Behavior -->
 
 		<StaticData>
 			<NPCService>
@@ -82,7 +121,7 @@
 					)
 			</NPCService>
 		</StaticData>
-
+		
 		<Events>
 			<OnCreate>
 				(sysAddObjRecurringTimerEvent 150 gSource "OnTrafficControl")
@@ -98,71 +137,61 @@
 				(comTrafficControl gSource 20)
 			</OnTrafficControl>
 		</Events>
-
-		<Satellites>
-			<Orbitals distance="8" angle="90">
-				<Station type="&stNavBeacon;" imageVariant="1"/>
-			</Orbitals>
-
-			<Orbitals distance="8" angle="270">
-				<Station type="&stNavBeacon;" imageVariant="1"/>
-			</Orbitals>
-		</Satellites>
-
-		<DockingPorts>
-			<Port x="0"		y="150" />
-			<Port x="0"		y="-150" />
-			<Port x="100"	y="100" />
-			<Port x="100"	y="-100" />
-			<Port x="150"	y="0" />
-			<Port x="-150"	y="0" />
-			<Port x="-100"	y="100" />
-			<Port x="-100"	y="-100" />
-		</DockingPorts>
-
 	</StationType>
 
 	<!-- Commonwealth Station, Armored -->
 
 	<StationType UNID="&stCommonwealthStationArmored;"
-			name=				"armed Commonwealth station"
+			name=				"(Commonwealth metropolis, armored)"
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
+			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, majorStation, primary, populated"
+				 
 			dockScreen=			"&dsCommonwealthStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
 
-			multiHull=			"true"
+			size=				"670"
 			armorID=			"&itP120HexphaseArmor;"
 			hitPoints=			"1000"
-			repairRate=			"5"
-			shipRepairRate=		"2"
-			fireRateAdj=		"40"
+			multiHull=			"true"
+			regen=				"6"
+			shipRegen=			"4"
+
+			canAttack=			"true"
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, majorStation, primary, populated"
-			levelFrequency=		"---ru urv-- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="100"
 			>
 
-		<Names>Commonwealth Station</Names>
+		<!-- Encounter Info -->
 
-		<Image			imageID="&rsStations5;" imageX="0" imageY="640" imageWidth="256" imageHeight="256"/>
+		<Encounter
+				levelFrequency=		"---ru urv-- ----- ----- -----"
+				locationCriteria=	"+planetary"
+				enemyExclusionRadius="100"
+				/>
+		
+		<Names noArticle="true">
+			Starton %s
+		</Names>
 
-		<Devices>
-			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="59"  posRadius="121"/>
-			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="14"  posRadius="124"/>
-			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="325" posRadius="109"/>
-			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="258" posRadius="96"/>
-			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="196" posRadius="117"/>
-			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="150" posRadius="125"/>
-			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="105" posRadius="122"/>
-		</Devices>
-
+		<!-- Trade and Items -->
+		
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Sell	criteria="m +Commonwealth; -PremiumAmmo; -Illegal; -NotForSale;" priceAdj="115" inventoryAdj="200"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="rNU L:4-7; -Illegal; -NotForSale;"	priceAdj="110"	inventoryAdj="100"/>
+			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
+			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-8;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-9;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-8;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
+		</Trade>
+		
 		<Items>
 			<RandomItem count="20" 
 					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
@@ -180,6 +209,32 @@
 					levelCurve=		"2"
 					/>
 		</Items>
+		
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="39"  posRadius="215"	posZ="0"/>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="90"  posRadius="215"	posZ="0"/>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="141" posRadius="215"	posZ="0"/>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="193" posRadius="215"	posZ="0"/>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="244" posRadius="215"	posZ="0"/>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="296" posRadius="215"	posZ="0"/>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="347" posRadius="215"	posZ="0"/>
+		</Devices>
+
+		<!-- Satellites -->
+		
+		<Satellites>
+			<Orbitals distance="15" angle="90">
+				<Station type="&stNavBeacon;" imageVariant="1"/>
+			</Orbitals>
+
+			<Orbitals distance="15" angle="270">
+				<Station type="&stNavBeacon;" imageVariant="1"/>
+			</Orbitals>
+		</Satellites>
+
+		<!-- Ships and Defenses -->
 
 		<Ships>
 			<Lookup count="3" table="&tbCommEliteDefenders;"/>
@@ -193,20 +248,17 @@
 			</Table>
 		</Reinforcements>
 
-		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Commonwealth; -PremiumAmmo; -Illegal; -NotForSale;" priceAdj="115" inventoryAdj="200"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Sell	criteria="rNU L:4-7; -Illegal; -NotForSale;"	priceAdj="110"	inventoryAdj="100"/>
-			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
-			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
-			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
-			
-			<Refuel			criteria="f +BasicFuel; L:1-8;" priceAdj="100"/>
-			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-9;" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-8;" priceAdj="100"/>
-			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
-		</Trade>
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsCommonwealthMetropolisArmored;" imageWidth="480" imageHeight="480"/>
+		
+		<DockingPorts
+				portCount=		"10"
+				portRadius=		"245"
+				>
+		</DockingPorts>
+		
+		<!-- Events and Behavior -->
 
 		<Events>
 			<OnCreate>
@@ -223,28 +275,6 @@
 				(comTrafficControl gSource 20)
 			</OnTrafficControl>
 		</Events>
-
-		<Satellites>
-			<Orbitals distance="8" angle="90">
-				<Station type="&stNavBeacon;" imageVariant="1"/>
-			</Orbitals>
-
-			<Orbitals distance="8" angle="270">
-				<Station type="&stNavBeacon;" imageVariant="1"/>
-			</Orbitals>
-		</Satellites>
-
-		<DockingPorts>
-			<Port x="0"		y="150" />
-			<Port x="0"		y="-150" />
-			<Port x="100"	y="100" />
-			<Port x="100"	y="-100" />
-			<Port x="150"	y="0" />
-			<Port x="-150"	y="0" />
-			<Port x="-100"	y="100" />
-			<Port x="-100"	y="-100" />
-		</DockingPorts>
-
 	</StationType>
 
 	<!-- Commonwealth Pub
@@ -735,4 +765,9 @@
 
 	</DockScreen>
 
+<!-- RESOURCES -->
+
+	<Image UNID="&rsCommonwealthMetropolis;"	bitmap="Resources\CommonwealthMetropolis.jpg" bitmask="Resources\CommonwealthMetropolisMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsCommonwealthMetropolisArmored;"	bitmap="Resources\CommonwealthMetropolisArmored.jpg" bitmask="Resources\CommonwealthMetropolisArmoredMask.bmp"  loadOnUse="true"/>
+	
 </TranscendenceModule>

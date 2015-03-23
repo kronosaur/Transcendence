@@ -122,6 +122,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /typeImages           Generates chart of images.\n");
 		printf("      /criteria:n           Type criteria of images to show.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/devicePos]		    Shows device positions on stations.\n");
 		printf("      [/font:s]             Use given font for labels.\n");
 		printf("      [/itemCriteria:n]     Item criteria of images to show.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");

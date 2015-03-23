@@ -1565,6 +1565,8 @@
 	<!-- 0080-009F COMMONWEALTH -->
 	
 	<!ENTITY rsStKatsArcologyHero		"0x00100080">
+	<!ENTITY rsCommonwealthMetropolis	"0x00100081">
+	<!ENTITY rsCommonwealthMetropolisArmored	"0x00100082">
 	
 	<!-- 00A0-00BF ARES ORTHODOXY -->
 	

@@ -434,6 +434,9 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 					CStationType *pStationType = CStationType::AsType(Entry.pType);
 					if (bDockingPorts)
 						pStationType->PaintDockPortPositions(Output, xCenter - xOffset, yCenter - yOffset);
+
+					if (bDevicePos)
+						pStationType->PaintDevicePositions(Output, xCenter - xOffset, yCenter -yOffset);
 					break;
 					}
 				}
