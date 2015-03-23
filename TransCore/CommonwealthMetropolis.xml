@@ -107,7 +107,7 @@
 		<Image			imageID="&rsCommonwealthMetropolis;" imageWidth="480" imageHeight="480"/>
 		
 		<DockingPorts
-				portCount=		"10"
+				portCount=		"14"
 				portRadius=		"245"
 				>
 		</DockingPorts>
@@ -253,7 +253,7 @@
 		<Image			imageID="&rsCommonwealthMetropolisArmored;" imageWidth="480" imageHeight="480"/>
 		
 		<DockingPorts
-				portCount=		"10"
+				portCount=		"14"
 				portRadius=		"245"
 				>
 		</DockingPorts>
