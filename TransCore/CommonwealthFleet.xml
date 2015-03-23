@@ -651,6 +651,7 @@ PLAYER DATA
 					(switch
 						(eq behavior 'moving)
 							(block Nil
+								(objSetProperty gSource 'dockingEnabled True)
 								(shpOrder gSource 'hold)
 								(objSetData gSource "behavior" Nil)
 								)
@@ -4743,6 +4744,7 @@ PLAYER DATA
 								)
 
 							(objSetData theCSC "behavior" 'moving)
+							(objSetProperty theCSC 'dockingEnabled Nil)
 							True
 							)
 						Nil
