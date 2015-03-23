@@ -348,7 +348,7 @@
 
 	<SpaceEnvironmentType UNID="&sePrimordialMist;"
 			lrsJammer=			"true"
-			attributes=			"primordial"
+			attributes=			"nebula, primordial"
 
 			mapColor=			"0x8c, 0x71, 0x19"
 			autoEdges=			"true"
@@ -365,7 +365,7 @@
 
 	<SpaceEnvironmentType UNID="&sePrimordialNebula;"
 			lrsJammer=			"true"
-			attributes=			"primordial"
+			attributes=			"nebula, primordial"
 
 			mapColor=			"0x8c, 0x71, 0x19"
 			autoEdges=			"true"
