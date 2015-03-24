@@ -5542,7 +5542,7 @@
 			mass=				"150"
 			cargoSpace=			"150"
 			thrustRatio=		"2.5"
-			maxSpeed=			"18"
+			maxSpeed=			"16"
 
 			leavesWreck=		"55"
 			radioactiveWreck=	"true"
@@ -5551,19 +5551,19 @@
 			>
 
 		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itHardenedReactiveArmor;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itHardenedReactiveArmor;" areaSet="3,4" />
-			<ArmorSection start="135" span="90" armorID="&itHardenedReactiveArmor;" areaSet="1,6" />
-			<ArmorSection start="45"  span="90" armorID="&itHardenedReactiveArmor;" areaSet="7,13" />
+			<ArmorSection start="315" span="90" armorID="&itHardenedPlasteelPlate;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itHardenedPlasteelPlate;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itHardenedPlasteelPlate;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itHardenedPlasteelPlate;" areaSet="7,13" />
 		</Armor>
 
 		<Devices>
 			<Device deviceID="&itNAMIMissileLauncher;" minFireArc="300" maxFireArc="60" posAngle="0" posRadius="16"/>
-			<Device deviceID="&itLaserCannon;" secondaryWeapon="true" />
+			<Device deviceID="&itFlenserCannon;" secondaryWeapon="true" omnidirectional="true"/>
 		</Devices>
 
 		<Maneuver
-			maxRotationRate=	"5.0"
+			maxRotationRate=	"3.0"
 			rotationAccel=		"0.5"
 			/>
 
