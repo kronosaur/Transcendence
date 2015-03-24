@@ -1082,7 +1082,7 @@ void CGSelectorArea::SetRegionsFromMiscDevices (CSpaceObject *pSource)
 	for (i = 0; i < pShip->GetDeviceCount(); i++)
 		{
 		CInstalledDevice *pDevice = pShip->GetDevice(i);
-		if (pDevice->IsEmpty() || pDevice->GetSlotCategory() != itemcatMiscDevice)
+		if (pDevice->IsEmpty() || pDevice->GetCategory() != itemcatMiscDevice)
 			continue;
 
 		if (pDevice->GetClass()->GetSlotsRequired() > 0)
@@ -1111,7 +1111,7 @@ void CGSelectorArea::SetRegionsFromMiscDevices (CSpaceObject *pSource)
 		//	Figure out the layout descriptor
 
 		const SLayoutDesc *pLayout = NULL;
-		switch (pDevice->GetSlotCategory())
+		switch (pDevice->GetCategory())
 			{
 			case itemcatCargoHold:
 				pLayout = &g_MiscDevicesLayout[CARGO_SLOT_INDEX];
@@ -1258,8 +1258,8 @@ void CGSelectorArea::SetRegionsFromWeapons (CSpaceObject *pSource)
 		{
 		CInstalledDevice *pDevice = pShip->GetDevice(i);
 		if (pDevice->IsEmpty() 
-				|| (pDevice->GetSlotCategory() != itemcatWeapon 
-					&& pDevice->GetSlotCategory() != itemcatLauncher))
+				|| (pDevice->GetCategory() != itemcatWeapon 
+					&& pDevice->GetCategory() != itemcatLauncher))
 			continue;
 
 		if (pDevice->GetCategory() == itemcatLauncher)

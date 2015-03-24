@@ -209,7 +209,7 @@ void CArmorDisplay::Update (void)
 	const SShieldImageDesc &ShieldDesc = pSettings->GetShieldDesc();
 	if (!ShieldDesc.pShieldEffect)
 		{
-		int iWhole = (iMaxHP > 0 ? (iHP * 100) / iMaxHP : 100);
+		int iWhole = (iMaxHP > 0 ? (iHP * 100) / iMaxHP : 0);
 		int iIndex = (100 - iWhole) / 20;
 
 		const RECT &rcShield = ShieldDesc.Image.GetImageRect();
@@ -225,19 +225,24 @@ void CArmorDisplay::Update (void)
 
 	if (pShield)
 		{
-		m_Buffer.Fill(SHIELD_HP_DISPLAY_X,
-				SHIELD_HP_DISPLAY_Y, 
-				SHIELD_HP_DISPLAY_WIDTH, 
-				SHIELD_HP_DISPLAY_HEIGHT,
-				VI.GetColor(colorAreaShields));
+		int cxWidth;
+
+		if (iMaxHP > 0)
+			{
+			m_Buffer.Fill(SHIELD_HP_DISPLAY_X,
+					SHIELD_HP_DISPLAY_Y, 
+					SHIELD_HP_DISPLAY_WIDTH, 
+					SHIELD_HP_DISPLAY_HEIGHT,
+					VI.GetColor(colorAreaShields));
 		
-		CString sHP = strFromInt(iHP);
-		int cxWidth = m_pFonts->Medium.MeasureText(sHP, NULL);
-		m_pFonts->Medium.DrawText(m_Buffer,
-				SHIELD_HP_DISPLAY_X + (SHIELD_HP_DISPLAY_WIDTH - cxWidth) / 2,
-				SHIELD_HP_DISPLAY_Y - 1,
-				VI.GetColor(colorTextShields),
-				sHP);
+			CString sHP = strFromInt(iHP);
+			int cxWidth = m_pFonts->Medium.MeasureText(sHP, NULL);
+			m_pFonts->Medium.DrawText(m_Buffer,
+					SHIELD_HP_DISPLAY_X + (SHIELD_HP_DISPLAY_WIDTH - cxWidth) / 2,
+					SHIELD_HP_DISPLAY_Y - 1,
+					VI.GetColor(colorTextShields),
+					sHP);
+			}
 
 		CGDraw::LineBroken(m_Buffer,
 				0,

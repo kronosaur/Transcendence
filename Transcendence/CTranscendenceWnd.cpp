@@ -304,6 +304,12 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 
 				if (g_cyScreen >= 960)
 					{
+					if ((m_iTick % 7) == 0)
+						{
+						SetProgramState(psUpdatingReactorDisplay);
+						m_ReactorDisplay.Update();
+						}
+
 					SetProgramState(psPaintingLRS);
 					PaintLRS();
 
