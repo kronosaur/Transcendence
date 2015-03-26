@@ -341,6 +341,10 @@
 							(screenOptions nil)
 							)
 							
+							;	Debrief complete
+							
+							(msnFireEvent missionObj "OnDebriefed")
+							
 							;	Ask the mission if it wants a different screen
 							
 							(setq aScreenType 'SuccessFollowUp)
@@ -413,7 +417,11 @@
 							)
 
 							(msnSetProperty missionObj 'isDebriefed True)
-
+							
+							;	Debrief complete
+							
+							(msnFireEvent missionObj "OnDebriefed")
+							
 							;	Ask the mission if it wants a different screen
 							
 							(setq aScreenType 'FailureFollowUp)
