@@ -155,6 +155,9 @@
 
 		listFilter: If non-nil, this is a function to use as a filter of items
 				for the player to buy.
+				
+		showInstallables: If non-nil, then we show weapons, armor, etc. in the
+				screen.
 -->
 	
 	<DockScreen unid="&dsRPGCommoditiesExchangeBuy;"
@@ -191,6 +194,24 @@
 					
 					(@ gData 'listFilter)
 						(scrSetListFilter gScreen (@ gData 'listFilter))
+						
+					;	If we want to hide installables, then we need to filter
+					
+					(not (@ gData 'showInstallables))
+						(block Nil
+							(scrSetData gScreen 'installablesOption True)
+							(if (typGetData &dsRPGCommoditiesExchangeBuy; 'showInstallables)
+								(scrSetListFilter gScreen intComputeSellPrice)
+								(scrSetListFilter gScreen (lambda (theItem)
+									(switch
+										(itmMatches theItem "adm")
+											Nil
+									
+										(intComputeSellPrice theItem)
+										)
+									))
+								)
+							)
 					
 					;	Otherwise, we sell everything listed in our Trade
 					;	directives.
@@ -291,10 +312,12 @@
 							(scrSetData gScreen 'installResult installResult)
 							(scrSetData gScreen 'installResult Nil)
 							)
-						
+							
 						;	Enable/disable actions
 						
 						(scrEnableAction gScreen 'actionBuy (gr maxCount 0))
+						(scrShowAction gScreen 'actionShowInstallables (and (scrGetData gScreen 'installablesOption) (not (typGetData &dsRPGCommoditiesExchangeBuy; 'showInstallables))))
+						(scrShowAction gScreen 'actionHideInstallables (and (scrGetData gScreen 'installablesOption) (typGetData &dsRPGCommoditiesExchangeBuy; 'showInstallables)))
 						)
 				</OnPaneInit>
 				
@@ -325,6 +348,20 @@
 									(scrShowPane gScreen "Default")
 									)
 								)
+							)
+					</Action>
+					
+					<Action id="actionShowInstallables" minor="true">
+						(block Nil
+							(typSetData &dsRPGCommoditiesExchangeBuy; 'showInstallables True)
+							(scrRefreshScreen gScreen)
+							)
+					</Action>
+					
+					<Action id="actionHideInstallables" minor="true">
+						(block Nil
+							(typSetData &dsRPGCommoditiesExchangeBuy; 'showInstallables Nil)
+							(scrRefreshScreen gScreen)
 							)
 					</Action>
 					
@@ -467,6 +504,8 @@
 			<Text id="actionBuy">"[B]uy"</Text>
 			<Text id="actionBuyAndInstall">"Buy &amp; [I]nstall"</Text>
 			<Text id="actionBuyOnly">"[B]uy Only"</Text>
+			<Text id="actionShowInstallables">"[S]how Dock Service Items"</Text>
+			<Text id="actionHideInstallables">"[H]ide Dock Service Items"</Text>
 			
 			<Text id="descItemStats">
 				(if (@ gData 'max)

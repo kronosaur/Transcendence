@@ -13,6 +13,7 @@
 #define DEFAULT_ATTRIB				CONSTLIT("default")
 #define ID_ATTRIB					CONSTLIT("id")
 #define KEY_ATTRIB					CONSTLIT("key")
+#define MINOR_ATTRIB				CONSTLIT("minor")
 #define NAME_ATTRIB					CONSTLIT("name")
 #define NEXT_KEY_ATTRIB				CONSTLIT("nextKey")
 #define PANE_ATTRIB					CONSTLIT("pane")
@@ -26,6 +27,8 @@
 
 const int ACTION_BUTTON_HEIGHT =	22;
 const int ACTION_BUTTON_SPACING =	4;
+
+const int BOTTOM_MARGIN_Y =			46;
 
 CDockScreenActions::~CDockScreenActions (void)
 
@@ -59,6 +62,7 @@ ALERROR CDockScreenActions::AddAction (const CString &sID, int iPos, const CStri
 
 	pAction->bVisible = true;
 	pAction->bEnabled = true;
+	pAction->bMinor = false;
 
 	//	Set the label, etc.
 
@@ -105,9 +109,28 @@ void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot,
 	{
 	int i;
 
-	int y = rcFrame.top;
 	const CVisualPalette &VI = g_pHI->GetVisuals();
-	const CG16bitFont &LabelFont = VI.GetFont(fontMediumHeavyBold);
+	const CG16bitFont &MajorLabelFont = VI.GetFont(fontMediumHeavyBold);
+	const CG16bitFont &MinorLabelFont = VI.GetFont(fontMedium);
+
+	//	We create buttons in one of two areas. Major buttons are at the top of
+	//	the frame. Minor buttons are at the bottom. We start by counting the 
+	//	number of minor buttons.
+
+	int iMinorButtonCount = 0;
+	for (i = 0; i < GetCount(); i++)
+		{
+		SActionDesc *pAction = &m_Actions[i];
+		if (pAction->bVisible && pAction->bMinor)
+			iMinorButtonCount++;
+		}
+
+	//	Compute the top of the two areas.
+
+	int yMajor = rcFrame.top;
+	int yMinor = rcFrame.bottom - BOTTOM_MARGIN_Y - (iMinorButtonCount * ACTION_BUTTON_HEIGHT) - ((iMinorButtonCount - 1) * ACTION_BUTTON_SPACING);
+
+	//	Create all buttons
 
 	for (i = 0; i < GetCount(); i++)
 		{
@@ -153,20 +176,37 @@ void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot,
 
 		pButton->SetLabelAccelerator(pAction->sKey);
 
-		//	Set font, etc.
-
-		pButton->SetLabelFont(&LabelFont);
 		if (!pAction->bEnabled)
 			pButton->SetDisabled();
 
-		RECT rcArea;
-		rcArea.left = rcFrame.left;
-		rcArea.top = y;
-		rcArea.right = rcFrame.right;
-		rcArea.bottom = y + ACTION_BUTTON_HEIGHT;
-		pFrame->AddArea(pButton, rcArea, dwFirstTag + i);
+		//	These properties of the button depend on the type (major or minor)
 
-		y += ACTION_BUTTON_HEIGHT + ACTION_BUTTON_SPACING;
+		if (pAction->bMinor)
+			{
+			pButton->SetLabelFont(&MinorLabelFont);
+
+			RECT rcArea;
+			rcArea.left = rcFrame.left;
+			rcArea.top = yMinor;
+			rcArea.right = rcFrame.right;
+			rcArea.bottom = yMinor + ACTION_BUTTON_HEIGHT;
+			pFrame->AddArea(pButton, rcArea, dwFirstTag + i);
+
+			yMinor += ACTION_BUTTON_HEIGHT + ACTION_BUTTON_SPACING;
+			}
+		else
+			{
+			pButton->SetLabelFont(&MajorLabelFont);
+
+			RECT rcArea;
+			rcArea.left = rcFrame.left;
+			rcArea.top = yMajor;
+			rcArea.right = rcFrame.right;
+			rcArea.bottom = yMajor + ACTION_BUTTON_HEIGHT;
+			pFrame->AddArea(pButton, rcArea, dwFirstTag + i);
+
+			yMajor += ACTION_BUTTON_HEIGHT + ACTION_BUTTON_SPACING;
+			}
 		}
 	}
 
@@ -462,6 +502,7 @@ ALERROR CDockScreenActions::InitFromXML (CExtension *pExtension, CXMLElement *pA
 		pAction->pButton = NULL;
 		pAction->bVisible = true;
 		pAction->bEnabled = true;
+		pAction->bMinor = pActionDesc->GetAttributeBool(MINOR_ATTRIB);
 		}
 
 	return NOERROR;

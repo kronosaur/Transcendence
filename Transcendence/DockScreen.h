@@ -199,6 +199,7 @@ class CDockScreenActions
 			bool bCancel;			//	This is the cancel action [Esc]
 			bool bPrev;				//	This is the prev action [<-]
 			bool bNext;				//	This is the next action [->]
+			bool bMinor;			//	This is a minor/option button
 			};
 
 		void ExecuteCode (CDockScreen *pScreen, const CString &sID, CExtension *pExtension, ICCItem *pCode);
