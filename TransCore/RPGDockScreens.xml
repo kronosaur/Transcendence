@@ -95,6 +95,8 @@
 	
 		checkMilitaryID: If True, we check military ID before installing an 
 				item.
+				
+		showInstallables: If True, we always show all devices, etc.
 	
 -->
 	
@@ -112,6 +114,7 @@
 					<Action id="actionBuyItems" default="1">
 						(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
+							showInstallables: (@ gData 'showInstallables)
 							})
 					</Action>
 
@@ -197,7 +200,9 @@
 						
 					;	If we want to hide installables, then we need to filter
 					
-					(not (@ gData 'showInstallables))
+					(and (not (@ gData 'showInstallables))
+							(objGetItems gSource "Uadm")
+							)
 						(block Nil
 							(scrSetData gScreen 'installablesOption True)
 							(if (typGetData &dsRPGCommoditiesExchangeBuy; 'showInstallables)

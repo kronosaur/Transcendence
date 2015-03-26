@@ -413,18 +413,42 @@
 			dataFrom=	"player"
 			list=		"d~wsI"
 			initialItem="=(block (
-				(desiredDevice (scrGetData gScreen 'deviceSelected))
-				(device
-					(switch
-						(not (scrGetItem gScreen))
-							(@ (scrGetListEntry gScreen) 'category)
-							
-						(itmGetInstallPos (scrGetItem gScreen))
-						)
-					)
+			
+				;	deviceSelected is a struct with one of the following fields:
+				;		slotCategory: This means we should select a slot of 
+				;			this category.
+				;		installPos: This means we should select a device in this
+				;			install position.
+				;		installCategory: This means we should select a device 
+				;			with this category (or an empty slot with this
+				;			category).
+				;		oldSlots: This means that we select the item that was
+				;			most recently installed (and thus is NOT on this list
+				;			of old devices).
+				
+				(deviceSelected (scrGetData gScreen 'deviceSelected))
 				)
-
-				(or (not desiredDevice) (eq device desiredDevice))
+				
+				(switch
+					(not deviceSelected)
+						True
+						
+					(@ deviceSelected 'slotCategory)
+						(eq (@ deviceSelected 'slotCategory) (if (not (scrGetItem gScreen)) (@ (scrGetListEntry gScreen) 'category)))
+						
+					(@ deviceSelected 'installPos)
+						(eq (@ deviceSelected 'installPos) (if (scrGetItem gScreen) (itmGetInstallPos (scrGetItem gScreen))))
+						
+					(@ deviceSelected 'installCategory)
+						(eq (@ deviceSelected 'installCategory) (if (scrGetItem gScreen) (itmGetProperty (scrGetItem gScreen) 'category) (@ (scrGetListEntry gScreen) 'category)))
+						
+					(@ deviceSelected 'oldSlots)
+						(and (scrGetItem gScreen) 
+							(not (find (@ deviceSelected 'oldSlots) (itmGetInstallPos (scrGetItem gScreen))))
+							)
+						
+					True
+					)
 				)"
 			/>
 
@@ -483,7 +507,7 @@
 										
 									;	Remember selection
 									
-									(scrSetData gScreen 'deviceSelected (itmGetInstallPos theItem))
+									(scrSetData gScreen 'deviceSelected { installPos:(itmGetInstallPos theItem) })
 										
 									;	Does this station have any items that we can purchase?
 								
@@ -547,7 +571,7 @@
 									
 								;	Remember selection
 									
-								(scrSetData gScreen 'deviceSelected category)
+								(scrSetData gScreen 'deviceSelected { slotCategory:category })
 								
 								;	Do we have any devices to install from cargo hold?
 
@@ -585,10 +609,16 @@
 
 				<Actions>
 					<Action id="actionInstall">
-						(scrShowScreen gScreen &dsRPGInstallDevice; {
-							criteria: (scrGetData gScreen 'categoryCriteria)
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							})
+						(block Nil
+							;	On return, select either the newly installed item 
+							;	or the original slot.
+							(scrSetData gScreen 'deviceSelected { oldSlots:(map (objGetItems gPlayerShip "Id") theItem (itmGetInstallPos theItem)) })
+						
+							(scrShowScreen gScreen &dsRPGInstallDevice; {
+								criteria: (scrGetData gScreen 'categoryCriteria)
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								})
+							)
 					</Action>
 					
 					<Action id="actionReplace">
@@ -600,11 +630,17 @@
 					</Action>
 					
 					<Action id="actionUpgrade">
-						(scrShowScreen gScreen &dsRPGUpgradeDevice; {
-							criteria: (scrGetData gScreen 'categoryCriteria)
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							replaceItem: (scrGetItem gScreen)
-							})
+						(block Nil
+							(if (not (scrGetItem gScreen))
+								(scrSetData gScreen 'deviceSelected { oldSlots:(map (objGetItems gPlayerShip "Id") theItem (itmGetInstallPos theItem)) })
+								)
+								
+							(scrShowScreen gScreen &dsRPGUpgradeDevice; {
+								criteria: (scrGetData gScreen 'categoryCriteria)
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								replaceItem: (scrGetItem gScreen)
+								})
+							)
 					</Action>
 					
 					<Action id="actionEnable">
@@ -717,18 +753,42 @@
 			dataFrom=	"player"
 			list=		"wI"
 			initialItem="=(block (
-				(desiredDevice (scrGetData gScreen 'deviceSelected))
-				(device
-					(switch
-						(not (scrGetItem gScreen))
-							(@ (scrGetListEntry gScreen) 'category)
-							
-						(itmGetInstallPos (scrGetItem gScreen))
-						)
-					)
+			
+				;	deviceSelected is a struct with one of the following fields:
+				;		slotCategory: This means we should select a slot of 
+				;			this category.
+				;		installPos: This means we should select a device in this
+				;			install position.
+				;		installCategory: This means we should select a device 
+				;			with this category (or an empty slot with this
+				;			category).
+				;		oldSlots: This means that we select the item that was
+				;			most recently installed (and thus is NOT on this list
+				;			of old devices).
+				
+				(deviceSelected (scrGetData gScreen 'deviceSelected))
 				)
-
-				(or (not desiredDevice) (eq device desiredDevice))
+				
+				(switch
+					(not deviceSelected)
+						True
+						
+					(@ deviceSelected 'slotCategory)
+						(eq (@ deviceSelected 'slotCategory) (if (not (scrGetItem gScreen)) (@ (scrGetListEntry gScreen) 'category)))
+						
+					(@ deviceSelected 'installPos)
+						(eq (@ deviceSelected 'installPos) (if (scrGetItem gScreen) (itmGetInstallPos (scrGetItem gScreen))))
+						
+					(@ deviceSelected 'installCategory)
+						(eq (@ deviceSelected 'installCategory) (if (scrGetItem gScreen) (itmGetProperty (scrGetItem gScreen) 'category) (@ (scrGetListEntry gScreen) 'category)))
+						
+					(@ deviceSelected 'oldSlots)
+						(and (scrGetItem gScreen) 
+							(not (find (@ deviceSelected 'oldSlots) (itmGetInstallPos (scrGetItem gScreen))))
+							)
+						
+					True
+					)
 				)"
 			/>
 
@@ -783,7 +843,7 @@
 										
 									;	Remember selection
 									
-									(scrSetData gScreen 'deviceSelected (itmGetInstallPos theItem))
+									(scrSetData gScreen 'deviceSelected { installPos:(itmGetInstallPos theItem) })
 									
 									;	Does this weapon require ammo? Does this station have
 									;	ammo to sell?
@@ -857,7 +917,7 @@
 									
 								;	Remember selection
 									
-								(scrSetData gScreen 'deviceSelected category)
+								(scrSetData gScreen 'deviceSelected { slotCategory:category })
 								
 								;	Do we have any devices to install from cargo hold?
 
@@ -906,10 +966,16 @@
 					</Action>
 					
 					<Action id="actionInstall">
-						(scrShowScreen gScreen &dsRPGInstallDevice; {
-							criteria: (scrGetData gScreen 'categoryCriteria)
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							})
+						(block Nil
+							;	On return, select either the newly installed item 
+							;	or the original slot.
+							(scrSetData gScreen 'deviceSelected { oldSlots:(map (objGetItems gPlayerShip "Id") theItem (itmGetInstallPos theItem)) })
+						
+							(scrShowScreen gScreen &dsRPGInstallDevice; {
+								criteria: (scrGetData gScreen 'categoryCriteria)
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								})
+							)
 					</Action>
 					
 					<Action id="actionReplace">
@@ -921,11 +987,17 @@
 					</Action>
 					
 					<Action id="actionUpgrade">
-						(scrShowScreen gScreen &dsRPGUpgradeDevice; {
-							criteria: (scrGetData gScreen 'categoryCriteria)
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							replaceItem: (scrGetItem gScreen)
-							})
+						(block Nil
+							(if (not (scrGetItem gScreen))
+								(scrSetData gScreen 'deviceSelected { oldSlots:(map (objGetItems gPlayerShip "Id") theItem (itmGetInstallPos theItem)) })
+								)
+								
+							(scrShowScreen gScreen &dsRPGUpgradeDevice; {
+								criteria: (scrGetData gScreen 'categoryCriteria)
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								replaceItem: (scrGetItem gScreen)
+								})
+							)
 					</Action>
 					
 					<Action id="actionEnable">

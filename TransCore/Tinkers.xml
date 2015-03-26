@@ -166,6 +166,7 @@
 							<Action name="Buy Scrap" default="1" key="B">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: True
+									showInstallables: True
 									})
 							</Action>
 

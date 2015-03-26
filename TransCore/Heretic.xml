@@ -2602,6 +2602,7 @@
 							<Action name="Buy Items" default="1" key="B">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: Nil
+									showInstallables: True
 									})
 							</Action>
 
