@@ -26,6 +26,8 @@ int g_cyScreen = 0;
 #define STR_LARGE_TYPEFACE					CONSTLIT("Trebuchet MS")
 #define STR_FIXED_TYPEFACE					CONSTLIT("Lucida Console")
 
+#define BAR_COLOR							CG32bitPixel(0, 2, 10)
+
 CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) : m_hWnd(hWnd),
 		m_pTC(pTC),
 		m_State(gsNone),
@@ -413,11 +415,18 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 
 			case gsWaitingForSystem:
 				{
-				if (m_pStargateEffect == NULL)
-					m_pStargateEffect = new CStargateEffectPainter;
+				if (g_pUniverse->GetSFXOptions().IsStargateTravelEffectEnabled())
+					{
+					if (m_pStargateEffect == NULL)
+						m_pStargateEffect = new CStargateEffectPainter;
 
-				m_pStargateEffect->Paint(TheScreen, m_rcScreen);
-				m_pStargateEffect->Update();
+					m_pStargateEffect->Paint(TheScreen, m_rcScreen);
+					m_pStargateEffect->Update();
+					}
+				else
+					{
+					TheScreen.Fill(m_rcScreen.left, m_rcScreen.top, RectWidth(m_rcScreen), RectHeight(m_rcScreen), BAR_COLOR);
+					}
 
 				if (bTopMost)
 					g_pHI->GetScreenMgr().Blt();

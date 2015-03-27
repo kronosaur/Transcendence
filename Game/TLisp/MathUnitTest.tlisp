@@ -1,0 +1,54 @@
+;	MathUnitTest.tlisp
+;
+;	Regression tests for math operations
+;	Copyright (c) 2015 by Kronosaur Productions, LLC. All Rights Reserved
+
+(setq TEST_SUITE (list
+	{	code: '(add 2 2)		result: 4	}
+	{	code: '(subtract 2 2)	result: 0	}
+	))
+
+(block (
+	(testNum 0)
+	(successTests 0)
+	(failedTests 0)
+	)
+	(print "Math Unit Test")
+
+	(enum TEST_SUITE theTest
+		(errblock (errorResult result)
+			(setq testNum (add testNum 1))
+			(setq result (eval (@ theTest 'code)))
+			(switch
+				(eq result (@ theTest 'result))
+					(block ()
+						(print "[" testNum "] PASS: " (@ theTest 'code) " -> " (@ theTest 'result))
+						(setq successTests (add successTests 1))
+						)
+
+				(block ()
+					(print "[" testNum "] FAIL: " result " (expected " (@ theTest 'result) ")")
+					(setq failedTests (add failedTests 1))
+					)
+				)
+
+			;	Error
+
+			(block ()
+				(print "[" testNum "] ERROR: " errorResult)
+				(setq failedTests (add failedTests 1))
+				)
+			)
+		)
+
+	;	Print final results
+
+	(if (eq testNum successTests)
+		(print "COMPLETED " testNum " " (if (eq testNum 1) "test" "tests") " successfully.")
+		(print "FAILED " failedTests " " (if (eq failedTests 1) "test" "tests") " out of " testNum ".")
+		)
+
+	;	Return empty string
+
+	""
+	)

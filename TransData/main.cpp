@@ -602,6 +602,12 @@ void Run (CUniverse &Universe, CXMLElement *pCmdLine)
 		{
 		CCodeChainCtx Ctx;
 
+		//	Verify the file
+
+		if (!strEndsWith(sRunFile, CONSTLIT("."))
+				&& pathGetExtension(sRunFile).IsBlank())
+			sRunFile.Append(CONSTLIT(".tlisp"));
+
 		//	Open the file
 
 		CFileReadBlock InputFile(sRunFile);
@@ -617,30 +623,40 @@ void Run (CUniverse &Universe, CXMLElement *pCmdLine)
 		//	Parse
 
 		CString sInputFile(InputFile.GetPointer(0), InputFile.GetLength(), TRUE);
-		ICCItem *pCode = Ctx.Link(sInputFile, 0, NULL);
-		if (pCode->IsError())
-			{
-			printf("error : %s\n", pCode->GetStringValue().GetASCIIZPointer());
-			Ctx.Discard(pCode);
-			return;
-			}
-
-		//	Execute
-
-		ICCItem *pResult = Ctx.Run(pCode);
-
-		//	Compose output
-
 		CString sOutput;
-		if (pResult->IsIdentifier())
-			sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
-		else
-			sOutput = CC.Unlink(pResult);
+		int iOffset = 0;
 
-		//	Free
+		while (true)
+			{
+			int iCharCount;
+			ICCItem *pCode = Ctx.Link(sInputFile, iOffset, &iCharCount);
+			if (pCode->IsNil())
+				break;
+			else if (pCode->IsError())
+				{
+				printf("error : %s\n", pCode->GetStringValue().GetASCIIZPointer());
+				Ctx.Discard(pCode);
+				return;
+				}
 
-		Ctx.Discard(pResult);
-		Ctx.Discard(pCode);
+			iOffset += iCharCount;
+
+			//	Execute
+
+			ICCItem *pResult = Ctx.Run(pCode);
+
+			//	Compose output
+
+			if (pResult->IsIdentifier())
+				sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
+			else
+				sOutput = CC.Unlink(pResult);
+
+			//	Free
+
+			Ctx.Discard(pResult);
+			Ctx.Discard(pCode);
+			}
 
 		//	Output result
 
