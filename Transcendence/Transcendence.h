@@ -1265,7 +1265,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void StopAnimations (void);
 		void StopIntro (void);
 
-		ALERROR StartGame (bool bNewGame = false);
+		ALERROR StartGame (void);
 
 		void OnKeyDownHelp (int iVirtKey, DWORD dwKeyData);
 		void PaintHelpScreen (void);

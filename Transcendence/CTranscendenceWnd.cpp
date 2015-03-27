@@ -1073,7 +1073,7 @@ void CTranscendenceWnd::ShowErrorMessage (const CString &sError)
 			MB_OK | MB_ICONSTOP);
 	}
 
-ALERROR CTranscendenceWnd::StartGame (bool bNewGame)
+ALERROR CTranscendenceWnd::StartGame (void)
 
 //	StartGame
 //
@@ -1116,13 +1116,6 @@ ALERROR CTranscendenceWnd::StartGame (bool bNewGame)
 	m_CurrentPicker = pickNone;
 	m_CurrentMenu = menuNone;
 	m_iTick = 0;
-
-	//	Start the game. This ends up calling CTranscendenceModel::StartGame
-
-	if (bNewGame)
-		g_pHI->HICommand(CONSTLIT("gameStartNew"));
-	else
-		g_pHI->HICommand(CONSTLIT("gameStartExisting"));
 
 	return NOERROR;
 	}

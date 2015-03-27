@@ -74,11 +74,10 @@
 #define CMD_GAME_LOAD							CONSTLIT("gameLoad")
 #define CMD_GAME_LOAD_DONE						CONSTLIT("gameLoadDone")
 #define CMD_GAME_PAUSE							CONSTLIT("gamePause")
+#define CMD_GAME_READY							CONSTLIT("gameReady")
 #define CMD_GAME_SELECT_ADVENTURE				CONSTLIT("gameSelectAdventure")
 #define CMD_GAME_SELECT_SAVE_FILE				CONSTLIT("gameSelectSaveFile")
 #define CMD_GAME_STARGATE_SYSTEM_READY			CONSTLIT("gameStargateSystemReady")
-#define CMD_GAME_START_EXISTING					CONSTLIT("gameStartExisting")
-#define CMD_GAME_START_NEW						CONSTLIT("gameStartNew")
 #define CMD_GAME_UNPAUSE						CONSTLIT("gameUnpause")
 
 #define CMD_MODEL_ADVENTURE_INIT_DONE			CONSTLIT("modelAdventureInitDone")
@@ -831,15 +830,24 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SESSION_PROLOGUE_DONE))
 		{
+		//	If we're already done, then ignore this message
+
+		if (m_iState == statePrologueDone)
+			NULL;
+
 		//	If we're done create the new game then we can continue
 
-		if (g_pTrans->IsGameCreated())
+		else if (g_pTrans->IsGameCreated())
 			HICommand(CMD_UI_START_GAME);
 
 		//	Otherwise start wait animation
 
-		else if (m_iState != statePrologueDone)
+		else
 			m_HI.GetSession()->HICommand(CMD_SHOW_WAIT_ANIMATION);
+
+		//	We set state so we don't repeat any of the actions above. [This 
+		//	could happen if the client sends us this message twice, e.g.,
+		//	if the player clicks the button multiple times.]
 
 		m_iState = statePrologueDone;
 		}
@@ -862,26 +870,19 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		g_pTrans->SetGameCreated();
 
-		//	If the prologue is done, then we can start the game
+		//	If the prologue is done, then we can start the game (otherwise we
+		//	wait for the player to dismiss the prologue).
 
 		if (m_iState == statePrologueDone)
 			HICommand(CMD_UI_START_GAME);
-
-#ifdef BUTTON_ON_CREATE_DONE
-		//	Otherwise, if we're still in the prologue session, tell the session
-		//	to show an OK button.
-
-		else if (m_iState == statePrologue)
-			m_HI.GetSession()->HICommand(CMD_SHOW_OK_BUTTON);
-#endif
 		}
 
 	//	Start the game
 
 	else if (strEquals(sCmd, CMD_UI_START_GAME))
 		{
-		m_HI.ShowSession(new CGameSession(m_HI, m_Settings, m_Soundtrack));
-		g_pTrans->StartGame(true);
+		g_pTrans->StartGame();
+		m_HI.AddBackgroundTask(new CStartGameTask(m_HI, m_Model, true), 0, this, CMD_GAME_READY);
 		}
 
 	//	Choose a save file to load
@@ -962,8 +963,8 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Start game (this does some stuff and then calls cmdGameStart)
 
-		m_HI.ShowSession(new CGameSession(m_HI, m_Settings, m_Soundtrack));
 		g_pTrans->StartGame();
+		m_HI.AddBackgroundTask(new CStartGameTask(m_HI, m_Model, false), 0, this, CMD_GAME_READY);
 		}
 
 	//	The game has ended with the player still alive. We assume that we've
@@ -1025,6 +1026,20 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	//	Start the game
 
+	else if (strEquals(sCmd, CMD_GAME_READY))
+		{
+		m_HI.ShowSession(new CGameSession(m_HI, m_Settings, m_Soundtrack));
+		m_iState = stateInGame;
+
+		//	NOTE: It's OK to leave the default param (firstTime = true) for
+		//	NotifyEnterSystem. We want the soundtrack to change to the system
+		//	track.
+
+		m_Soundtrack.NotifyGameStart();
+		m_Soundtrack.NotifyEnterSystem();
+		}
+
+#if 0
 	else if (strEquals(sCmd, CMD_GAME_START_EXISTING))
 		{
 		m_Model.StartGame(false);
@@ -1045,6 +1060,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		m_Soundtrack.NotifyGameStart();
 		m_Soundtrack.NotifyEnterSystem();
 		}
+#endif
 
 	//	Player notifications
 

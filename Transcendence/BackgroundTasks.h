@@ -249,6 +249,19 @@ class CSignOutUserTask : public IHITask
 		CCloudService &m_Service;
 	};
 
+class CStartGameTask : public IHITask
+	{
+	public:
+		CStartGameTask (CHumanInterface &HI, CTranscendenceModel &Model, bool bNewGame) : IHITask(HI), m_Model(Model), m_bNewGame(bNewGame) { }
+
+		//	IHITask virtuals
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { m_Model.StartGame(m_bNewGame); return NOERROR; }
+
+	private:
+		CTranscendenceModel &m_Model;
+		bool m_bNewGame;
+	};
+
 class CStartNewGameTask : public IHITask
 	{
 	public:

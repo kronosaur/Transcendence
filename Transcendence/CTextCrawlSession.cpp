@@ -128,6 +128,7 @@ ALERROR CTextCrawlSession::OnCommand (const CString &sCmd, void *pData)
 	{
 	if (strEquals(sCmd, CMD_OK_SESSION))
 		{
+		OnCommand(CMD_SHOW_WAIT_ANIMATION);
 		m_HI.HICommand(m_sCmdDone);
 		}
 	else if (strEquals(sCmd, CMD_SHOW_OK_BUTTON))
@@ -203,7 +204,7 @@ void CTextCrawlSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 			break;
 
 		default:
-			m_HI.HICommand(m_sCmdDone);
+			OnCommand(CMD_OK_SESSION);
 			break;
 		}
 	}
@@ -217,7 +218,7 @@ void CTextCrawlSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCa
 	{
 	//	Done
 
-	m_HI.HICommand(m_sCmdDone);
+	OnCommand(CMD_OK_SESSION);
 	}
 
 void CTextCrawlSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
