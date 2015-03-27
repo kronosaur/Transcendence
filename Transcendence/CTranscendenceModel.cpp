@@ -105,6 +105,7 @@
 
 #define CMD_GAME_ENTER_FINAL_STARGATE			CONSTLIT("gameEnterFinalStargate")
 #define CMD_GAME_ENTER_STARGATE					CONSTLIT("gameEnterStargate")
+#define CMD_GAME_STARGATE_SYSTEM_READY			CONSTLIT("gameStargateSystemReady")
 #define CMD_PLAYER_UNDOCKED						CONSTLIT("playerUndocked")
 
 #define FOLDER_SAVE_FILES						CONSTLIT("Games")
@@ -1679,6 +1680,9 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 //	This is called to switch systems as the player travels through the
 //	gate. We assume that OnPlayerEnteredGate has already been called and
 //	that OnPlayerExitedGate will be called later.
+//
+//	The function is designed to be called in the background and it will either
+//	fire gameEnterFinalStargate or gameStargateSystemReady
 
 	{
 	ASSERT(m_iState == statePlayerInGateOldSystem);
@@ -1699,7 +1703,7 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 		//	Done
 
 		m_iState = stateInGame;
-		m_HI.HICommand(CMD_GAME_ENTER_FINAL_STARGATE);
+		m_HI.HIPostCommand(CMD_GAME_ENTER_FINAL_STARGATE);
 		return;
 		}
 
@@ -1812,9 +1816,14 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 
 	SetProgramState(psStargateEnterDone);
 
+	//	Stargate effect
+
+	pStart->OnObjLeaveGate(pShip);
+
 	//	Done
 
 	m_iState = statePlayerInGateNewSystem;
+	m_HI.HIPostCommand(CMD_GAME_STARGATE_SYSTEM_READY);
 	}
 
 void CTranscendenceModel::RecordFinalScore (const CString &sEpitaph, const CString &sEndGameReason, bool bEscaped)

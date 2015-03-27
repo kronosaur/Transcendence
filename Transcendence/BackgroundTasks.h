@@ -262,6 +262,18 @@ class CStartNewGameTask : public IHITask
 		SNewGameSettings m_NewGame;
 	};
 
+class CTravelThroughStargate : public IHITask
+	{
+	public:
+		CTravelThroughStargate (CHumanInterface &HI, CTranscendenceModel &Model) : IHITask(HI), m_Model(Model) { }
+
+		//	IHITask virtuals
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { m_Model.OnPlayerTraveledThroughGate(); return NOERROR; }
+
+	private:
+		CTranscendenceModel &m_Model;
+	};
+
 class CUpgradeProgram : public IHITask
 	{
 	public:

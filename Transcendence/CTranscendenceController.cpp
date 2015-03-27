@@ -76,6 +76,7 @@
 #define CMD_GAME_PAUSE							CONSTLIT("gamePause")
 #define CMD_GAME_SELECT_ADVENTURE				CONSTLIT("gameSelectAdventure")
 #define CMD_GAME_SELECT_SAVE_FILE				CONSTLIT("gameSelectSaveFile")
+#define CMD_GAME_STARGATE_SYSTEM_READY			CONSTLIT("gameStargateSystemReady")
 #define CMD_GAME_START_EXISTING					CONSTLIT("gameStartExisting")
 #define CMD_GAME_START_NEW						CONSTLIT("gameStartNew")
 #define CMD_GAME_UNPAUSE						CONSTLIT("gameUnpause")
@@ -1080,7 +1081,14 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_GAME_INSIDE_STARGATE))
 		{
-		m_Model.OnPlayerTraveledThroughGate();
+		m_HI.AddBackgroundTask(new CTravelThroughStargate(m_HI, m_Model), 0);
+		}
+
+	//	The new system is ready
+
+	else if (strEquals(sCmd, CMD_GAME_STARGATE_SYSTEM_READY))
+		{
+		g_pTrans->OnStargateSystemReady();
 		}
 
 	//	Leave a stargate into a new system

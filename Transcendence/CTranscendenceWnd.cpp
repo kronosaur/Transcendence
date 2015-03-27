@@ -39,6 +39,7 @@ CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) 
 		m_CurrentMenu(menuNone),
 		m_CurrentPicker(pickNone),
 		m_pIntroSystem(NULL),
+		m_pStargateEffect(NULL),
 		m_pMenuObj(NULL),
 		m_bRedirectDisplayMessage(false),
 		m_chKeyDown('\0'),
@@ -404,10 +405,22 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 				if (--m_iCountdown == 0)
 					{
 					g_pHI->HICommand(CONSTLIT("gameInsideStargate"));
-					m_State = gsLeavingStargate;
-					m_iCountdown = TICKS_AFTER_GATE;
+					m_State = gsWaitingForSystem;
 					}
 
+				break;
+				}
+
+			case gsWaitingForSystem:
+				{
+				if (m_pStargateEffect == NULL)
+					m_pStargateEffect = new CStargateEffectPainter;
+
+				m_pStargateEffect->Paint(TheScreen, m_rcScreen);
+				m_pStargateEffect->Update();
+
+				if (bTopMost)
+					g_pHI->GetScreenMgr().Blt();
 				break;
 				}
 
@@ -627,6 +640,24 @@ void CTranscendenceWnd::OnAniCommand (const CString &sID, const CString &sEvent,
 		case gsIntro:
 			OnCommandIntro(sCmd, NULL);
 			break;
+		}
+	}
+
+void CTranscendenceWnd::OnStargateSystemReady (void)
+
+//	OnStargateSystemReady
+//
+//	The new system is ready
+
+	{
+	ASSERT(m_State == gsWaitingForSystem);
+	m_State = gsLeavingStargate;
+	m_iCountdown = TICKS_AFTER_GATE;
+
+	if (m_pStargateEffect)
+		{
+		delete m_pStargateEffect;
+		m_pStargateEffect = NULL;
 		}
 	}
 

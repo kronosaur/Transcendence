@@ -1141,6 +1141,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		inline bool InMenu (void) { return (m_CurrentMenu != menuNone || m_CurrentPicker != pickNone); }
 		void OnIntroPOVSet (CSpaceObject *pObj);
 		void OnObjDestroyed (const SDestroyCtx &Ctx);
+		void OnStargateSystemReady (void);
 		void PlayerDestroyed (const CString &sText, bool bResurrectionPending);
 		void PlayerEndGame (void);
 		void PlayerEnteredGate (CSystem *pSystem, 
@@ -1176,6 +1177,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 			gsInGame,
 			gsDocked,
 			gsEnteringStargate,
+			gsWaitingForSystem,
 			gsLeavingStargate,
 			gsDestroyed,
 			gsEndGame,
@@ -1395,6 +1397,9 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		int m_iHelpPage;
 		CG32bitImage m_HelpImage;
 		GameState m_OldState;
+
+		//	Stargate effect
+		CStargateEffectPainter *m_pStargateEffect;
 
 		//	Performance options
 		bool m_bTransparencyEffects;
