@@ -1093,7 +1093,7 @@
 			score=				"320"
 
 			size=				"60"
-			mass=				"500"
+			mass=				"1000"
 			cargoSpace=			"50"
 			thrustRatio=		"1.0"
 			maxSpeed=			"16"
