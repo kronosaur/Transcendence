@@ -85,7 +85,7 @@ class CHost : public CUniverse::IHost
 
 void AlchemyMain (CXMLElement *pCmdLine);
 ALERROR CreateXMLElementFromDataFile (const CString &sFilespec, CXMLElement **retpDataFile, CString *retsError);
-ALERROR InitUniverse (CUniverse &Universe, CHost &Host, CXMLElement *pCmdLine, CString *retsError);
+ALERROR InitUniverse (CUniverse &Universe, CHost &Host, const CString &sFilespec, CXMLElement *pCmdLine, CString *retsError);
 
 int main (int argc, char *argv[ ], char *envp[ ])
 
@@ -228,9 +228,13 @@ void AlchemyMain (CXMLElement *pCmdLine)
 
 	//	Figure out the data file that we're working on
 
+	bool bDefaultDataFile = false;
 	CString sDataFile = pCmdLine->GetAttribute(CONSTLIT("dataFile"));
 	if (sDataFile.IsBlank())
+		{
+		bDefaultDataFile = true;
 		sDataFile = CONSTLIT("Transcendence");
+		}
 
 	//	See if we are doing a command that does not require parsing
 
@@ -282,6 +286,17 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		return;
 		}
 
+	//	Set to data file directory
+
+#if 0
+	if (!sDataFile.IsBlank())
+		{
+		CString sFolder = pathGetPath(sDataFile);
+		if (!sFolder.IsBlank())
+			::SetCurrentDirectory(sFolder.GetASCIIZPointer());
+		}
+#endif
+
 	//	Initialize the Universe
 
 	CHost Host;
@@ -291,7 +306,7 @@ void AlchemyMain (CXMLElement *pCmdLine)
 	if (bLogo)
 		printf("Loading...");
 
-	if (error = InitUniverse(Universe, Host, pCmdLine, &sError))
+	if (error = InitUniverse(Universe, Host, (bDefaultDataFile ? NULL_STR : sDataFile), pCmdLine, &sError))
 		{
 		if (bLogo)
 			printf("\n");
@@ -460,11 +475,12 @@ ALERROR CreateXMLElementFromDataFile (const CString &sFilespec, CXMLElement **re
 	return NOERROR;
 	}
 
-ALERROR InitUniverse (CUniverse &Universe, CHost &Host, CXMLElement *pCmdLine, CString *retsError)
+ALERROR InitUniverse (CUniverse &Universe, CHost &Host, const CString &sFilespec, CXMLElement *pCmdLine, CString *retsError)
 	{
 	ALERROR error;
 
 	CUniverse::SInitDesc Ctx;
+	Ctx.sFilespec = sFilespec;
 	Ctx.pHost = &Host;
 	Ctx.bDebugMode = pCmdLine->GetAttributeBool(DEBUG_SWITCH);
 
