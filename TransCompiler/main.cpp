@@ -43,6 +43,8 @@
 #define ATTRIB_BITMAP							CONSTLIT("bitmap")
 #define ATTRIB_BITMASK							CONSTLIT("bitmask")
 #define ATTRIB_FILENAME							CONSTLIT("filename")
+#define ATTRIB_HIT_MASK							CONSTLIT("hitMask")
+#define ATTRIB_SHADOW_MASK						CONSTLIT("shadowMask")
 
 class CSaveEntitiesTable
 	{
@@ -97,7 +99,7 @@ void TransCompiler (CXMLElement *pCmdLine)
 //		/>
 
 	{
-	printf("TransCompiler v2.1\n");
+	printf("TransCompiler v2.2\n");
 	printf("Copyright (c) 2003-2015 by Kronosaur Productions, LLC. All Rights Reserved.\n\n");
 
 	if (pCmdLine->GetAttributeBool(NOARGS) || pCmdLine->GetAttributeBool(SWITCH_HELP))
@@ -507,6 +509,22 @@ ALERROR WriteModuleImages (CTDBCompiler &Ctx, CXMLElement *pModule, const CStrin
 				}
 
 			sFilename = pItem->GetAttribute(ATTRIB_BITMASK);
+			if (!sFilename.IsBlank())
+				{
+				bool bCompress = strEquals(strToLower(pathGetExtension(sFilename)), CONSTLIT("bmp"));
+				if (error = WriteResource(Ctx, sFilename, sFolder, bCompress, Out))
+					continue;
+				}
+
+			sFilename = pItem->GetAttribute(ATTRIB_SHADOW_MASK);
+			if (!sFilename.IsBlank())
+				{
+				bool bCompress = strEquals(strToLower(pathGetExtension(sFilename)), CONSTLIT("bmp"));
+				if (error = WriteResource(Ctx, sFilename, sFolder, bCompress, Out))
+					continue;
+				}
+
+			sFilename = pItem->GetAttribute(ATTRIB_HIT_MASK);
 			if (!sFilename.IsBlank())
 				{
 				bool bCompress = strEquals(strToLower(pathGetExtension(sFilename)), CONSTLIT("bmp"));

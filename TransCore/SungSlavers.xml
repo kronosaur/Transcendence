@@ -884,7 +884,8 @@
 			type=				""
 			defaultSovereign=	"&svSung;"
 
-			mass=				"4000"
+			size=				"100"
+			mass=				"6000"
 			cargoSpace=			"200"
 			thrustRatio=		"2.5"
 			maxSpeed=			"18"

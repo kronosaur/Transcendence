@@ -265,8 +265,9 @@
 			defaultSovereign=	"&svXenophobes;"
 
 			attributes=			"benninXenophobes, capitalShip, genericClass"
-			   
-			mass=				"4500"
+
+			size=				"165"
+			mass=				"15000"
 			cargoSpace=			"500"
 			thrustRatio=		"1"
 			maxSpeed=			"12"
@@ -286,9 +287,9 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itMarkIIIHowitzer;" omnidirectional="true" posAngle="0" posRadius="0" posZ="3"/>
-			<Device deviceID="&itLancerCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="180" posAngle="130" posRadius="26" posZ="3"/>
-			<Device deviceID="&itLancerCannon;" secondaryWeapon="true" minFireArc="180" maxFireArc="20" posAngle="230" posRadius="26" posZ="3"/>
+			<Device deviceID="&itMarkIIIHowitzer;" omnidirectional="true" posAngle="180" posRadius="6" posZ="7"/>
+			<Device deviceID="&itLancerCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="180" posAngle="130" posRadius="36" posZ="7"/>
+			<Device deviceID="&itLancerCannon;" secondaryWeapon="true" minFireArc="180" maxFireArc="20" posAngle="230" posRadius="36" posZ="7"/>
 		</Devices>
 
 		<Maneuver
@@ -323,12 +324,12 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips4;" imageX="512" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsXenophobeDefender;" imageWidth="180" imageHeight="180"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="168"	posRadius="52"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-168"	posRadius="52"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="168"	posRadius="75"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="74"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-168"	posRadius="75"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
@@ -352,7 +353,8 @@
 
 			attributes=			"benninXenophobes, capitalShip, genericClass, majorShip"
 			   
-			mass=				"50000"
+			size=				"300"
+			mass=				"70000"
 			cargoSpace=			"25000"
 			thrustRatio=		"0.5"
 			maxSpeed=			"6"
@@ -464,7 +466,7 @@
 			attributes=			"benninXenophobes, capitalShip, genericClass, majorShip"
 			
 			size=				"200"
-			mass=				"420000"
+			mass=				"150000"
 			thrustRatio=		"0.5"
 			maxSpeed=			"6"
 			cargoSpace=			"50000"
@@ -838,6 +840,7 @@
 	<!-- Resources -->
 
 	<Image UNID="&rsXenophobeArk;"				bitmap="Resources\XenophobeArk.jpg"		bitmask="Resources\XenophobeArkMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsXenophobeDefender;"			bitmap="Resources\XenophobeDefender.jpg"		bitmask="Resources\XenophobeDefenderMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsXenophobeWorldship;"		bitmap="Resources\XenophobeWorldship.jpg"		bitmask="Resources\XenophobeWorldshipMask.bmp"  loadOnUse="true"/>
 
 <!-- Death Drugs Cartel =================================================== -->
@@ -3899,8 +3902,8 @@
 		<Image imageID="&rsT31ArmedTransport;" imageX="0" imageY="0" imageWidth="90" imageHeight="90"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="164"	posRadius="41"	posZ="0"	rotation="180"	bringToFront="*"/>
-			<Effect type="thrustMain"		posAngle="-164"	posRadius="41"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="164"	posRadius="41"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-164"	posRadius="41"	posZ="0"	rotation="180"/>
 			<Effect type="rotateRight"		posAngle="27"	posRadius="33"	posZ="0"	rotation="90"/>
 			<Effect type="rotateRight"		posAngle="-140"	posRadius="26"	posZ="0"	rotation="270"/>
 			<Effect type="rotateLeft"		posAngle="-27"	posRadius="33"	posZ="0"	rotation="270"/>
@@ -3927,8 +3930,8 @@
 
 			attributes=			"freighter, genericClass, outlaws"
 			   
-			size=				"90"
-			mass=				"1000"
+			size=				"95"
+			mass=				"1500"
 			thrustRatio=		"1.1"
 			maxSpeed=			"16"
 			cargoSpace=			"5000"

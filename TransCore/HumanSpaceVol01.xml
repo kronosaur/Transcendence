@@ -1596,6 +1596,10 @@
 	
 	<!ENTITY rsSungTransport			"0x00100120">
 	
+	<!-- 0140-014F XENOPHOBES -->
+	
+	<!ENTITY rsXenophobeDefender		"0x00100140">
+	
 	<!-- 1000-FFFF RESERVED -->
 	]>
 	
