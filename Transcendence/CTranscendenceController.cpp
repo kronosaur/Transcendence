@@ -65,6 +65,7 @@
 #define CMD_GAME_ADVENTURE						CONSTLIT("gameAdventure")
 #define CMD_GAME_CREATE							CONSTLIT("gameCreate")
 #define CMD_GAME_END_DESTROYED					CONSTLIT("gameEndDestroyed")
+#define CMD_GAME_END_GAME						CONSTLIT("gameEndGame")
 #define CMD_GAME_END_SAVE						CONSTLIT("gameEndSave")
 #define CMD_GAME_ENTER_FINAL_STARGATE			CONSTLIT("gameEnterFinalStargate")
 #define CMD_GAME_ENTER_STARGATE					CONSTLIT("gameEnterStargate")
@@ -73,10 +74,10 @@
 #define CMD_GAME_LOAD							CONSTLIT("gameLoad")
 #define CMD_GAME_LOAD_DONE						CONSTLIT("gameLoadDone")
 #define CMD_GAME_PAUSE							CONSTLIT("gamePause")
+#define CMD_GAME_READY							CONSTLIT("gameReady")
 #define CMD_GAME_SELECT_ADVENTURE				CONSTLIT("gameSelectAdventure")
 #define CMD_GAME_SELECT_SAVE_FILE				CONSTLIT("gameSelectSaveFile")
-#define CMD_GAME_START_EXISTING					CONSTLIT("gameStartExisting")
-#define CMD_GAME_START_NEW						CONSTLIT("gameStartNew")
+#define CMD_GAME_STARGATE_SYSTEM_READY			CONSTLIT("gameStargateSystemReady")
 #define CMD_GAME_UNPAUSE						CONSTLIT("gameUnpause")
 
 #define CMD_MODEL_ADVENTURE_INIT_DONE			CONSTLIT("modelAdventureInitDone")
@@ -135,7 +136,6 @@
 #define SETTINGS_FILENAME						CONSTLIT("Settings.xml")
 #define FOLDER_COLLECTION						CONSTLIT("Collection")
 #define FOLDER_EXTENSIONS						CONSTLIT("Extensions")
-#define FOLDER_SAVE_FILES						CONSTLIT("Games")
 
 #define PROP_COLOR								CONSTLIT("color")
 #define PROP_FONT								CONSTLIT("font")
@@ -818,7 +818,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Start the prologue
 
-		CG16bitImage *pCrawlImage = m_Model.GetCrawlImage();
+		CG32bitImage *pCrawlImage = m_Model.GetCrawlImage();
 		const CString &sCrawlText = m_Model.GetCrawlText();
 
 		m_HI.ShowSession(new CTextCrawlSession(m_HI, m_Service, pCrawlImage, sCrawlText, CMD_SESSION_PROLOGUE_DONE));
@@ -830,15 +830,24 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SESSION_PROLOGUE_DONE))
 		{
+		//	If we're already done, then ignore this message
+
+		if (m_iState == statePrologueDone)
+			NULL;
+
 		//	If we're done create the new game then we can continue
 
-		if (g_pTrans->IsGameCreated())
+		else if (g_pTrans->IsGameCreated())
 			HICommand(CMD_UI_START_GAME);
 
 		//	Otherwise start wait animation
 
-		else if (m_iState != statePrologueDone)
+		else
 			m_HI.GetSession()->HICommand(CMD_SHOW_WAIT_ANIMATION);
+
+		//	We set state so we don't repeat any of the actions above. [This 
+		//	could happen if the client sends us this message twice, e.g.,
+		//	if the player clicks the button multiple times.]
 
 		m_iState = statePrologueDone;
 		}
@@ -861,26 +870,19 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		g_pTrans->SetGameCreated();
 
-		//	If the prologue is done, then we can start the game
+		//	If the prologue is done, then we can start the game (otherwise we
+		//	wait for the player to dismiss the prologue).
 
 		if (m_iState == statePrologueDone)
 			HICommand(CMD_UI_START_GAME);
-
-#ifdef BUTTON_ON_CREATE_DONE
-		//	Otherwise, if we're still in the prologue session, tell the session
-		//	to show an OK button.
-
-		else if (m_iState == statePrologue)
-			m_HI.GetSession()->HICommand(CMD_SHOW_OK_BUTTON);
-#endif
 		}
 
 	//	Start the game
 
 	else if (strEquals(sCmd, CMD_UI_START_GAME))
 		{
-		m_HI.ShowSession(new CGameSession(m_HI, m_Settings, m_Soundtrack));
-		g_pTrans->StartGame(true);
+		g_pTrans->StartGame();
+		m_HI.AddBackgroundTask(new CStartGameTask(m_HI, m_Model, true), 0, this, CMD_GAME_READY);
 		}
 
 	//	Choose a save file to load
@@ -923,17 +925,62 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Check for error
 
-		if (pTask->GetResult(&sError))
+		if (error = pTask->GetResult(&sError))
 			{
-			kernelDebugLogMessage(sError);
-			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_LOAD_GAME, sError, CMD_UI_BACK_TO_INTRO));
-			return NOERROR;
+			//	On ERR_CANCEL it means that the game has ended and cannot be 
+			//	continued, but that we loaded game stats.
+
+			if (error == ERR_CANCEL)
+				{
+				CGameStats Stats;
+
+				//	Get the stats
+
+				if ((error = m_Model.GetGameStats(&Stats))
+						|| Stats.GetCount() == 0)
+					//	If we get an error (or stats come back blank, ignore)
+					{
+					m_HI.HICommand(CMD_UI_BACK_TO_INTRO);
+					return NOERROR;
+					}
+
+				//	The session takes handoff of the stats
+
+				m_HI.ShowSession(new CStatsSession(m_HI, m_Service, Stats));
+				m_iState = stateEndGameStats;
+				return NOERROR;
+				}
+
+			//	Otherwise, this is a real error
+
+			else
+				{
+				kernelDebugLogMessage(sError);
+				m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_LOAD_GAME, sError, CMD_UI_BACK_TO_INTRO));
+				return NOERROR;
+				}
 			}
 
 		//	Start game (this does some stuff and then calls cmdGameStart)
 
-		m_HI.ShowSession(new CGameSession(m_HI, m_Settings, m_Soundtrack));
 		g_pTrans->StartGame();
+		m_HI.AddBackgroundTask(new CStartGameTask(m_HI, m_Model, false), 0, this, CMD_GAME_READY);
+		}
+
+	//	The game has ended with the player still alive. We assume that we've
+	//	already called m_Model.EndGame with the proper epitaph, etc.
+
+	else if (strEquals(sCmd, CMD_GAME_END_GAME))
+		{
+		m_Model.EndGame();
+
+		//	Clean up game state
+
+		g_pTrans->CleanUpDisplays();
+
+		//	Epilogue
+
+		HICommand(CMD_UI_START_EPILOGUE);
 		}
 
 	//	End destroyed state. We either go to the epilog or we
@@ -979,6 +1026,20 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	//	Start the game
 
+	else if (strEquals(sCmd, CMD_GAME_READY))
+		{
+		m_HI.ShowSession(new CGameSession(m_HI, m_Settings, m_Soundtrack));
+		m_iState = stateInGame;
+
+		//	NOTE: It's OK to leave the default param (firstTime = true) for
+		//	NotifyEnterSystem. We want the soundtrack to change to the system
+		//	track.
+
+		m_Soundtrack.NotifyGameStart();
+		m_Soundtrack.NotifyEnterSystem();
+		}
+
+#if 0
 	else if (strEquals(sCmd, CMD_GAME_START_EXISTING))
 		{
 		m_Model.StartGame(false);
@@ -999,6 +1060,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		m_Soundtrack.NotifyGameStart();
 		m_Soundtrack.NotifyEnterSystem();
 		}
+#endif
 
 	//	Player notifications
 
@@ -1035,7 +1097,14 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_GAME_INSIDE_STARGATE))
 		{
-		m_Model.OnPlayerTraveledThroughGate();
+		m_HI.AddBackgroundTask(new CTravelThroughStargate(m_HI, m_Model), 0);
+		}
+
+	//	The new system is ready
+
+	else if (strEquals(sCmd, CMD_GAME_STARGATE_SYSTEM_READY))
+		{
+		g_pTrans->OnStargateSystemReady();
 		}
 
 	//	Leave a stargate into a new system
@@ -1066,7 +1135,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		{
 		//	If we have no crawl image, then go straight to intro
 
-		CG16bitImage *pCrawlImage = m_Model.GetCrawlImage();
+		CG32bitImage *pCrawlImage = m_Model.GetCrawlImage();
 		const CString &sCrawlText = m_Model.GetCrawlText();
 		if (pCrawlImage == NULL)
 			{
@@ -1703,16 +1772,8 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 
 	//	Initialize the model
 
-	if (error = m_Model.Init())
+	if (error = m_Model.Init(m_Settings))
 		return error;
-
-	//	Set some options
-
-	m_Model.AddSaveFileFolder(pathAddComponent(m_Settings.GetAppDataFolder(), FOLDER_SAVE_FILES));
-	m_Model.SetDebugMode(m_Settings.GetBoolean(CGameSettings::debugGame));
-	m_Model.SetForceTDB(m_Settings.GetBoolean(CGameSettings::useTDB));
-	m_Model.SetNoMissionCheckpoint(m_Settings.GetBoolean(CGameSettings::noMissionCheckpoint));
-	m_Model.SetNoSound(m_Settings.GetBoolean(CGameSettings::noSound));
 
 	//	Figure out where the Collection folder is and where the Extension
 	//	folders are.
@@ -1740,7 +1801,7 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 	//	Kick off a background initialization of the model
 	//	(this will load the universe)
 
-	m_HI.AddBackgroundTask(new CInitModelTask(m_HI, m_Model, sCollectionFolder, ExtensionFolders), 0, this, CMD_MODEL_INIT_DONE);
+	m_HI.AddBackgroundTask(new CInitModelTask(m_HI, m_Model, m_Settings, sCollectionFolder, ExtensionFolders), 0, this, CMD_MODEL_INIT_DONE);
 
 	//	If the clouds services have not been initialized yet (because there was no
 	//	<Services> tag in the settings file) then initialize to defaults here.

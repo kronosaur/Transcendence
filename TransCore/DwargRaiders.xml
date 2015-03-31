@@ -23,6 +23,7 @@
 			manufacturer=		""
 			class=				"Zoanthrope raider"
 			type=				""
+			defaultSovereign=	"&svDwargRaiders;"
 
 			mass=				"25"
 			cargoSpace=			"5"
@@ -80,8 +81,10 @@
 			manufacturer=		""
 			class=				"Dwarg master"
 			type=				""
+			defaultSovereign=	"&svDwargRaiders;"
 
-			mass=				"100"
+			size=				"77"
+			mass=				"1900"
 			cargoSpace=			"25"
 			thrustRatio=		"5"
 			maxSpeed=			"22"
@@ -135,8 +138,10 @@
 			manufacturer=		""
 			class=				"Zoanthrope behemoth"
 			type=				""
+			defaultSovereign=	"&svDwargRaiders;"
 
-			mass=				"12500"
+			size=				"90"
+			mass=				"10000"
 			cargoSpace=			"100"
 			thrustRatio=		"0.2"
 			maxSpeed=			"12"
@@ -465,7 +470,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"dwargColony, dwargRaiders, enemy, envWater, envAvoidsEarth, neoHuman, populated, zoanthrope"
+			attributes=			"dwargColony, dwargRaiders, enemy, envWater, envAvoidsEarth, generic, neoHuman, populated, zoanthrope"
 			levelFrequency=		"---cu v---- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
@@ -520,7 +525,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"dwargColony, dwargRaiders, enemy, envWater, envAvoidsEarth, neoHuman, populated, zoanthrope"
+			attributes=			"dwargColony, dwargRaiders, enemy, envWater, envAvoidsEarth, generic, neoHuman, populated, zoanthrope"
 			levelFrequency=		"----c uv--- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="100"
@@ -670,7 +675,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"dwargRaiders, enemy, envWater, envAvoidsEarth, majorStation, neoHuman, populated, zoanthrope"
+			attributes=			"dwargRaiders, enemy, envWater, envAvoidsEarth, generic, majorStation, neoHuman, populated, zoanthrope"
 			levelFrequency=		"----- cr--- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="100"

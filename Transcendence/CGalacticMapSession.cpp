@@ -193,7 +193,7 @@ void CGalacticMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		}
 	}
 
-void CGalacticMapSession::OnLButtonDown (int x, int y, DWORD dwFlags)
+void CGalacticMapSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture)
 
 //	OnLButtonDown
 //
@@ -205,7 +205,7 @@ void CGalacticMapSession::OnLButtonDown (int x, int y, DWORD dwFlags)
 	m_HI.ClosePopupSession();
 	}
 
-void CGalacticMapSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
+void CGalacticMapSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 //	OnPaint
 //
@@ -216,8 +216,8 @@ void CGalacticMapSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 	int cyScreen = Screen.GetHeight();
 
 	const CVisualPalette &VI = m_HI.GetVisuals();
-	WORD wBackgroundColor = VI.GetColor(colorAreaDeep);
-	WORD wLineColor = VI.GetColor(colorLineFrame);
+	CG32bitPixel rgbBackgroundColor = VI.GetColor(colorAreaDeep);
+	CG32bitPixel rgbLineColor = VI.GetColor(colorLineFrame);
 	const CG16bitFont &HeaderFont = VI.GetFont(fontHeader);
 	const CG16bitFont &MediumFont = VI.GetFont(fontMedium);
 
@@ -229,7 +229,7 @@ void CGalacticMapSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 
 		//	Paint the ship
 
-		CSpaceObject *pPlayer = g_pUniverse->GetPlayer();
+		CSpaceObject *pPlayer = g_pUniverse->GetPlayerShip();
 		if (pPlayer)
 			{
 			int xPos, yPos;
@@ -244,10 +244,10 @@ void CGalacticMapSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 
 	//	Paint frame
 
-	Screen.Fill(0, 0, cxScreen, m_rcView.top, wBackgroundColor);
-	Screen.Fill(0, m_rcView.bottom, cxScreen, cyScreen - m_rcView.bottom, wBackgroundColor);
-	Screen.FillLine(0, m_rcView.top, cxScreen, wLineColor);
-	Screen.FillLine(0, m_rcView.bottom, cxScreen, wLineColor);
+	Screen.Fill(0, 0, cxScreen, m_rcView.top, rgbBackgroundColor);
+	Screen.Fill(0, m_rcView.bottom, cxScreen, cyScreen - m_rcView.bottom, rgbBackgroundColor);
+	Screen.FillLine(0, m_rcView.top, cxScreen, rgbLineColor);
+	Screen.FillLine(0, m_rcView.bottom, cxScreen, rgbLineColor);
 
 	//	Paint some help text
 
@@ -313,8 +313,8 @@ void CopyGalacticMapToClipboard (HWND hWnd, CGalacticMapPainter *pPainter)
 
 	//	Create a bitmap of the appropriate size
 
-	CG16bitImage FullMap;
-	FullMap.CreateBlank(RectWidth(rcView), RectHeight(rcView), false);
+	CG32bitImage FullMap;
+	FullMap.Create(RectWidth(rcView), RectHeight(rcView));
 
 	//	Paint
 

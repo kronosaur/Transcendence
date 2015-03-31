@@ -122,6 +122,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /typeImages           Generates chart of images.\n");
 		printf("      /criteria:n           Type criteria of images to show.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/devicePos]		    Shows device positions on stations.\n");
 		printf("      [/font:s]             Use given font for labels.\n");
 		printf("      [/itemCriteria:n]     Item criteria of images to show.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
@@ -278,6 +279,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/criteria:xxx]       Object must match criteria.\n");
 		printf("      [/node:ID]            Look for object in given node.\n");
 		printf("      [/noStars]            Do not paint starfield.\n");
+		printf("      [/objOnly]            Paint the object only.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
 		printf("      [/size:n]             Size of snapshot in pixels.\n");
 		printf("      [/wait:n]             Wait this many ticks before snapshot.\n");
@@ -376,7 +378,8 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /encountertable       Encounter table.\n");
 		if (bDebug)
 			printf("  /perftest             Performance test.\n");
-		printf("  /run                  Run a TransLisp command.\n");
+		printf("  /run                  Shows a TransLisp interpreter or runs a command.\n");
+		printf("  /runFile:filespec     Runs a TransLisp file.\n");
 		if (bDebug)
 			printf("  /shieldtest           Outputs capabilities of shield against weapons.\n");
 		printf("  /shipimage            Generates image of a specific ship class.\n");

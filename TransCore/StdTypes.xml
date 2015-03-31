@@ -94,7 +94,6 @@
 	<Image UNID="&rsEndGameDestroyed;"	bitmap="Resources\GameOver.jpg"				loadOnUse="true" />
 
 	<Image UNID="&rsShipInterior;"		bitmap="Resources\ShipInterior.jpg"			loadOnUse="true" />
-	<Image UNID="&rsItemListScreen;"	bitmap="Resources\ItemListScreen.jpg"		bitmask="Resources\ItemListScreenMask.bmp"		loadOnUse="true" />
 
 	<Image UNID="&rsSmallShips1;"	bitmap="Resources\SmallShips1.jpg"	bitmask="Resources\SmallShips1Mask.bmp" />
 	<Image UNID="&rsMediumShips1;"	bitmap="Resources\MediumShips1.jpg"	bitmask="Resources\MediumShips1Mask.bmp" />
@@ -105,13 +104,7 @@
 	<Image UNID="&rsLargeShips2;"	bitmap="Resources\LargeShips2.jpg"	bitmask="Resources\LargeShips2Mask.bmp" />
 	<Image UNID="&rsEI100Image;"		bitmap="Resources\EI100.jpg" bitmask="Resources\EI100Mask.bmp" loadOnUse="true"/>
 
-	<Image UNID="&rsExplosion3AG128;"	bitmap="Resources\Explosion-3-AG128.jpg"	bitmask="Resources\Explosion-3-AG128Mask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsExplosionsA20G192;"	bitmap="Resources\Explosions-A20G192.jpg"	bitmask="Resources\Explosions-A20G192Mask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsExplosion2A20G192;"	bitmap="Resources\Explosion-2-A20G192.jpg"	bitmask="Resources\Explosion-2-A20G192Mask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsExplosionsA20G256;"	bitmap="Resources\Explosions-A20G256.jpg"	bitmask="Resources\Explosions-A20G256Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsLargeExplosions;" bitmap="Resources\LargeExplosions.jpg" bitmask="Resources\LargeExplosionsMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsMediumDamage;"	bitmap="Resources\MediumDamage.jpg"	bitmask="Resources\MediumDamageMask.bmp"/>
-	<Image UNID="&rsLargeDamage;"	bitmap="Resources\LargeDamage.jpg"	bitmask="Resources\LargeDamageMask.bmp"/>
 
 	<Image UNID="&rsStations1;"		bitmap="Resources\Stations1.jpg"		bitmask="Resources\Stations1Mask.bmp"  />
 	<Image UNID="&rsStations2;"		bitmap="Resources\Stations2.jpg"		bitmask="Resources\Stations2Mask.bmp"  />
@@ -129,13 +122,6 @@
 	<Image UNID="&rsLogBuoy;"		bitmap="Resources\LogBuoy.jpg"		bitmask="Resources\LogBuoyMask.bmp"  loadOnUse="true"/>
 
 	<Image UNID="&rsShockwave1;"	bitmap="Resources\Shockwave1.jpg"		bitmask="Resources\Shockwave1Mask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsShockwave2;"	bitmap="Resources\Shockwave2.jpg"		bitmask="Resources\Shockwave2Mask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsShockwave3;"	bitmap="Resources\Shockwave3.jpg"		bitmask="Resources\Shockwave3Mask.bmp" loadOnUse="true"/>
-
-	<Sound UNID="&snShipExplosion1;"		filename="Resources\ShipExplosion1.wav"/>
-	<Sound UNID="&snStationExplosion1;"		filename="Resources\StationExplosion1.wav"/>
-	<Sound UNID="&snShieldHit1;"			filename="Resources\ShieldHit1.wav"/>
-	<Sound UNID="&snMissileLauncher;"		filename="Resources\MissileLaunch1.wav"/>
 
 <!-- ITEM TABLES ==============================================================
 
@@ -1349,6 +1335,7 @@
 			manufacturer=		"Tenhove Defense Systems"
 			class=				"TA3"
 			type=				"sentinel"
+			defaultSovereign=	"&svCommonwealth;"
 
 			attributes=			"auton, genericClass"
 
@@ -1424,20 +1411,6 @@
 	+planetary				station twice as likely to appear near a planet
 
 -->
-
-	<Effect UNID="&efLargeStationDamage;">
-		<Image imageID="&rsLargeDamage;"
-				imageWidth="64"
-				imageHeight="64"
-				imageFrameCount="5"/>
-	</Effect>
-
-	<Effect UNID="&efMediumStationDamage;">
-		<Image imageID="&rsMediumDamage;"
-				imageWidth="24"
-				imageHeight="24"
-				imageFrameCount="10"/>
-	</Effect>
 
 	<!-- Barricade -->
 
@@ -1520,48 +1493,6 @@
 		<DockingPorts
 				portCount=		"2"
 				portRadius=		"32"
-				maxDist=		"3"
-				/>
-
-	</StationType>
-
-	<!-- Cargo Crate -->
-
-	<StationType UNID="&stCargoCrate;"
-			name=				"abandoned cargo crate"
-			sovereign=			"&svIndependent;"
-			dockScreen=			"&dsAbandonedCrate;"
-
-			structuralHitPoints="10"
-			ejectaType=			"&vtWreckEjecta;"
-
-			scale=				"ship"
-			mobile=				"true"
-			mass=				"50"
-			destroyWhenEmpty=	"true"
-			noMapIcon=			"true"
-			>
-
-		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="480" imageY="256" imageWidth="32" imageHeight="32" />
-			<Image			imageID="&rsStations1;" imageX="480" imageY="288" imageWidth="32" imageHeight="32" />
-			<Image			imageID="&rsStations1;" imageX="480" imageY="320" imageWidth="32" imageHeight="32" />
-			<Image			imageID="&rsStations1;" imageX="480" imageY="352" imageWidth="32" imageHeight="32" />
-		</ImageVariants>
-
-		<Events>
-			<GetExplosionType>
-				(intContainerGetExplosionType gSource)
-			</GetExplosionType>
-
-			<OnDamage>
-				(intContainerOnDamage gSource aDamageHP)
-			</OnDamage>
-		</Events>
-
-		<DockingPorts
-				portCount=		"2"
-				portRadius=		"24"
 				maxDist=		"3"
 				/>
 
@@ -1903,86 +1834,6 @@
 	</StationType>
 
 	<!-- SPECIAL STATIONS -->
-
-	<!-- Majellen Stargate -->
-
-	<StationType UNID="&stMajellenStargate;"
-			name=				"(stargate)"
-			sovereign=			"&svIndependent;"
-			dockScreen=			"Main"
-			dockingPorts=		"4"
-
-			multiHull=			"true"
-			immutable=			"true"
-			attributes=			"majellen, stargate"
-
-			gateEffect=			"&efStargateOut;"
-
-			definiteArticle=	"true"
-			>
-		<Image imageID="&rsStargate;" imageX="0" imageY="128" imageWidth="192" imageHeight="192" imageFrameCount="12" imageTicksPerFrame="3"/>
-
-		<DockScreens>
-
-			<Main>
-
-				<Panes>
-					<Default
-							desc=	"You are docked at an alien stargate. These giant structures are used by the Ancient Races to move their starships across the Galaxy. Stargates are the best mode of faster-than-light travel and they are the only method known to humans.">
-
-						<Actions>
-							<Action name="Undock" cancel="1" key="U">
-								<Exit/>
-							</Action>
-
-						</Actions>
-
-					</Default>
-				</Panes>
-			</Main>
-
-		</DockScreens>
-
-	</StationType>
-
-	<StationType UNID="&stUnchartedMajellenStargate;"
-			name=				"(stargate)"
-			sovereign=			"&svIndependent;"
-			dockScreen=			"Main"
-			dockingPorts=		"4"
-
-			multiHull=			"true"
-			immutable=			"true"
-			attributes=			"majellen, stargate, uncharted"
-
-			gateEffect=			"&efStargateOut;"
-
-			definiteArticle=	"true"
-			>
-		<Image imageID="&rsStargate;" imageX="0" imageY="128" imageWidth="192" imageHeight="192" imageFrameCount="12" imageTicksPerFrame="3"/>
-
-		<DockScreens>
-
-			<Main>
-
-				<Panes>
-					<Default
-							desc=	"You are docked at an alien stargate. These giant structures are used by the Ancient Races to move their starships across the Galaxy. Stargates are the best mode of faster-than-light travel and they are the only method known to humans.">
-
-						<Actions>
-							<Action name="Undock" cancel="1" key="U">
-								<Exit/>
-							</Action>
-
-						</Actions>
-
-					</Default>
-				</Panes>
-			</Main>
-
-		</DockScreens>
-
-	</StationType>
 
 	<!-- NavBeacon -->
 

@@ -96,26 +96,75 @@
 	<StationType UNID="&stBattleArena;"
 			name=				"Battle Arena Maximus"
 			sovereign=			"&svCorporate;"
+			level=				"2"
+				 
+			attributes=			"battleArena, battleArenaMaximus, battleArenaSegment, corporate, corporateCustoms, corporateDecon, friendly, generic, human, majorStation, populated"
+				 
 			dockScreen=			"Main"
 			defaultBackgroundID="&rsBattleArenaBkgnd;"
-			dockingPorts=		"1"
+				 
+			barrier=			"true"
+			barrierEffect=		"&efBattleArenaWallHit;"
 			canAttack=			"true"
-			multiHull=			"true"
 			immutable=			"true"
-
-			attributes=			"battleArena, corporate, corporateCustoms, corporateDecon, friendly, human, majorStation, populated"
-			level=				"2"
+			paintLayer=			"overhang"
 			>
 
-		<Image			imageID="&rsBattleArena;" imageX="0" imageY="2560" imageWidth="128" imageHeight="256"/>
-
+		<!-- Trade and Items -->
+		
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-6;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-6;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-6;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
 		</Trade>
+		
+		<!-- Satellites -->
+
+		<Satellites>
+			<Station type="&stBattleArenaStatic;"	xOffset="-345"	yOffset="5"		imageVariant="3"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="345"	yOffset="5"		imageVariant="4"	segment="true"/>
+			
+			<Station type="&stBattleArenaStatic;"	xOffset="-655"	yOffset="-20"	imageVariant="2"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="655"	yOffset="-20"	imageVariant="5"	segment="true"/>
+			
+			<Station type="&stBattleArenaStatic;"	xOffset="-915"	yOffset="-135"	imageVariant="1"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="915"	yOffset="-135"	imageVariant="6"	segment="true"/>
+			
+			<Station type="&stBattleArenaStatic;"	xOffset="-1185"	yOffset="-275"	imageVariant="11"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="1185"	yOffset="-275"	imageVariant="12"	segment="true"/>
+			
+			<Station type="&stBattleArenaStatic;"	xOffset="-1225"	yOffset="-520"	imageVariant="0"	paintLayer="overhang"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="1225"	yOffset="-520"	imageVariant="17"	paintLayer="overhang"	segment="true"/>
+			
+			<Station type="&stBattleArenaStatic;"	xOffset="-1265"	yOffset="-765"	imageVariant="7"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="1265"	yOffset="-765"	imageVariant="18"	segment="true"/>
+			
+			<Station type="&stBattleArenaStatic;"	xOffset="-1155"	yOffset="-1035"	imageVariant="8"	paintLayer="overhang"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="1155"	yOffset="-1035"	imageVariant="19"	paintLayer="overhang"	segment="true"/>
+			
+			<Station type="&stBattleArenaStatic;"	xOffset="-885"	yOffset="-1163"	imageVariant="9"	paintLayer="overhang"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="885"	yOffset="-1163"	imageVariant="14"	paintLayer="overhang"	segment="true"/>
+			
+			<Station type="&stBattleArenaStatic;"	xOffset="-615"	yOffset="-1283"	imageVariant="10"	paintLayer="overhang"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="615"	yOffset="-1283"	imageVariant="13"	paintLayer="overhang"	segment="true"/>
+			
+			<Station type="&stBattleArenaStatic;"	xOffset="-360"	yOffset="-1318"	imageVariant="15"	paintLayer="overhang"	segment="true"/>
+			<Station type="&stBattleArenaStatic;"	xOffset="360"	yOffset="-1318"	imageVariant="16"	paintLayer="overhang"	segment="true"/>
+			
+			<Station type="&stBattleArenaStatic;"	xOffset="0"		yOffset="-1390"	imageVariant="21"	objName="arenaDoor"	segment="true"/>
+		</Satellites>
+		
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsBattleArenaSegments;" imageX="1240" imageY="0"    imageWidth="320" imageHeight="280"/>
+		
+		<DockingPorts>
+			<Port x="0"		y="-140" />
+		</DockingPorts>
+		
+		<!-- Events -->
 
 		<Events>
 			<GetGlobalAchievements>
@@ -186,6 +235,10 @@
 
 					; Remember the list of gladiators
 					(objSetData gSource "gladiatorList" (shuffle gladiatorList))
+					
+					; Make sure doors are open (we need to do this to set the barrier flag
+					; property).
+					(bamDoorsOpen)
 					)
 			</OnCreate>
 
@@ -517,7 +570,7 @@
 									)
 
 							(block Nil
-								(objMoveTo aObjDocked (sysVectorPolarOffset gSource 270 300))
+								(objMoveTo aObjDocked (sysVectorPolarOffset gSource 270 80))
 								(objUnregisterForEvents gSource aObjDocked)
 								(shpCancelOrders aObjDocked)
 								(shpOrderGate aObjDocked)
@@ -544,7 +597,7 @@
 								(setq ship (objGetObjRefData gSource (cat "Opponent" i)))
 								(if ship
 									(block Nil
-										(objMoveTo ship (sysVectorPolarOffset gSource 270 300))
+										(objMoveTo ship (sysVectorPolarOffset gSource 270 80))
 										(objUnregisterForEvents gSource ship)
 										(shpCancelOrders ship)
 										(shpOrderGate ship)
@@ -1082,7 +1135,7 @@
 									(setq theShip (objGetObjRefData gSource "Opponent1"))
 
 									; Position the opponent at the right spot
-									(objMoveTo theShip (sysVectorPolarOffset gSource (random 11 42) 77))
+									(objMoveTo theShip (sysVectorPolarOffset gSource (random 204 336) 45))
 									(objResume theShip)
 
 									; Orders
@@ -1334,12 +1387,12 @@
 								(if (typGetGlobalData &svCorporate; "statusKateM")
 									(cat
 										"You see Kate Morgental in his office looking through his files. She turns to you:\n\n"
-										"%name%, Mr. Katami is gone! He's been taken by the Black Market. I found a message that says that "
+										"\"%name%, Mr. Katami is gone! He's been taken by the Black Market. I found a message that says that "
 										"they will kill him if you go ahead with the fight with The Slicer!\""
 										)
 									(cat
 										"A woman in an expensive suit is looking through Katami's files. She turns to you:\n\n"
-										"You must be %name%; I'm glad you're here. "
+										"\"You must be %name%; I'm glad you're here. "
 										"I'm Kate Morgental. I received a message from the Black Market: They have captured Katami and "
 										"they're threatening to kill him if you fight The Slicer!\""
 										)
@@ -1406,7 +1459,7 @@
 									(objSetIdentified bmStation)
 
 									; Create a marker for the cruiser
-									(setq theAnchorObj (sysCreateMarker "Morgental cruiser anchor" (sysVectorPolarOffset gSource 180 20) &svCorporate;))
+									(setq theAnchorObj (sysCreateMarker "Morgental cruiser anchor" (sysVectorPolarOffset gSource 270 20) &svCorporate;))
 
 									; Create Morgental's cruiser
 									(setq cruiserObj (sysCreateShip 
@@ -1508,7 +1561,7 @@
 									(setq theShip (sysCreateShip &scTheSlicerManticore; (objGetPos gSource) &svGladiator;))
 
 									; Position the opponent at the right spot
-									(objMoveTo theShip (sysVectorPolarOffset gSource (random 11 42) 77))
+									(objMoveTo theShip (sysVectorPolarOffset gSource (random 204 336) 45))
 
 									; Orders
 									(shpOrder theShip 'attack gPlayerShip)
@@ -1878,57 +1931,52 @@
 			</ChooseOpponent>
 
 		</DockScreens>
-
-		<DockingPorts>
-			<Port x="90"	y="0" />
-		</DockingPorts>
 	</StationType>
 
-	<!-- Battle Arena Wall -->
+	<!-- Battle Arena Static Wall -->
 
-	<StationType UNID="&stBattleArenaWall;"
+	<StationType UNID="&stBattleArenaStatic;"
 			name=				"(arena wall segment)"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baBattleArenaSegment;"
+				 
+			attributes=			"battleArenaSegment"
 
 			barrier=			"true"
 			barrierEffect=		"&efBattleArenaWallHit;"
-			multiHull=			"true"
 			immutable=			"true"
 
-			mass=				"500"
 			noMapLabel=			"true"
 			>
 
 		<ImageVariants>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="0"    imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="128"  imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="256"  imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="384"  imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="512"  imageWidth="128" imageHeight="128"/>
-
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="640"  imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="768"  imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="896"  imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1024" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1152" imageWidth="128" imageHeight="128"/>
-
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1280" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1408" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1536" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1664" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1792" imageWidth="128" imageHeight="128"/>
-
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1920" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="2048" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="2176" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="2304" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArena;" imageX="0" imageY="2432" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArenaSegments;" imageX="0"    imageY="0"    imageWidth="350" imageHeight="220"/>	<!-- 0 -->
+			<Image			imageID="&rsBattleArenaSegments;" imageX="350"  imageY="0"    imageWidth="270" imageHeight="270"/>	<!-- 1 -->
+			<Image			imageID="&rsBattleArenaSegments;" imageX="620"  imageY="0"    imageWidth="250" imageHeight="240"/>	<!-- 2 -->
+			<Image			imageID="&rsBattleArenaSegments;" imageX="870"  imageY="0"    imageWidth="370" imageHeight="270"/>	<!-- 3 -->
+			<Image			imageID="&rsBattleArenaSegments;" imageX="1560" imageY="0"    imageWidth="370" imageHeight="270"/>	<!-- 4 -->
+			<Image			imageID="&rsBattleArenaSegments;" imageX="1930" imageY="0"    imageWidth="250" imageHeight="240"/>	<!-- 5 -->
+			<Image			imageID="&rsBattleArenaSegments;" imageX="2180" imageY="0"    imageWidth="270" imageHeight="270"/>	<!-- 6 -->
 			
-			<Image			imageID="&rsBattleArenaExtra;" imageX="0" imageY="0"	imageWidth="164" imageHeight="164"/>
-			<Image			imageID="&rsBattleArenaExtra;" imageX="0" imageY="164"	imageWidth="164" imageHeight="164"/>
-			<Image			imageID="&rsBattleArenaExtra;" imageX="18" imageY="18"	imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArenaExtra;" imageX="18" imageY="182"	imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsBattleArenaExtra;" imageX="0" imageY="0"	imageWidth="0"	 imageHeight="0"/>
+			<Image			imageID="&rsBattleArenaSegments;" imageX="0"    imageY="280"  imageWidth="270" imageHeight="270"/>	<!-- 7 -->
+			<Image			imageID="&rsBattleArenaSegments;" imageX="270"  imageY="280"  imageWidth="270" imageHeight="270"/>	<!-- 8 -->
+			<Image			imageID="&rsBattleArenaSegments;" imageX="540"  imageY="280"  imageWidth="270" imageHeight="270"/>	<!-- 9 -->
+			<Image			imageID="&rsBattleArenaSegments;" imageX="810"  imageY="280"  imageWidth="270" imageHeight="270"/>	<!-- 10 -->
+			<Image			imageID="&rsBattleArenaSegments;" imageX="1080" imageY="280"  imageWidth="270" imageHeight="270"/>	<!-- 11 -->
+			
+			<Image			imageID="&rsBattleArenaSegments;" imageX="1450" imageY="280"  imageWidth="270" imageHeight="270"/>	<!-- 12 -->
+			<Image			imageID="&rsBattleArenaSegments;" imageX="1720" imageY="280"  imageWidth="270" imageHeight="270"/>	<!-- 13 -->
+			<Image			imageID="&rsBattleArenaSegments;" imageX="1990" imageY="280"  imageWidth="270" imageHeight="270"/>	<!-- 14 -->
+			
+			<Image			imageID="&rsBattleArenaSegments;" imageX="0"    imageY="550"  imageWidth="240" imageHeight="200"/>	<!-- 15 -->
+			<Image			imageID="&rsBattleArenaSegments;" imageX="240"  imageY="550"  imageWidth="240" imageHeight="200"/>	<!-- 16 -->
+			
+			<Image			imageID="&rsBattleArenaSegments;" imageX="1450" imageY="550"  imageWidth="350" imageHeight="220"/>	<!-- 17 -->
+			<Image			imageID="&rsBattleArenaSegments;" imageX="1800" imageY="550"  imageWidth="270" imageHeight="270"/>	<!-- 18 -->
+			<Image			imageID="&rsBattleArenaSegments;" imageX="2070" imageY="550"  imageWidth="270" imageHeight="270"/>	<!-- 19 -->
+			
+			<Image			imageID="&rsBattleArenaSegments;" imageX="480"  imageY="550"  imageWidth="480" imageHeight="440"/>	<!-- 20: Closed Door -->
+			<Image			imageID="&rsBattleArenaSegments;" imageX="960"  imageY="550"  imageWidth="480" imageHeight="440"/>	<!-- 21: Open Door -->
 		</ImageVariants>
 
 	</StationType>
@@ -1984,7 +2032,17 @@
 		</Devices>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="92"/>
+			<Sell	criteria="cNU +Illegal; -ID; -NotForSale; L:1-6;"	priceAdj="100"	inventoryAdj="100"/>
+			<Sell	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="*NU -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="85"/>
+			<Buy	criteria="*NU +military; -ID -NotForSale;"		priceAdj="90"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="92"/>
+			<RepairArmor	criteria="a L:1-6;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-6;" priceAdj="100"/>
+			<InstallDevice	criteria="c +Illegal; L:1-6" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
 		</Trade>
 		
 		<Items>
@@ -2031,25 +2089,21 @@
 							</Action>
 
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									intBlackMarketBuyPrice	; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
-									intBlackMarketSellPrice	; items bought from player
-									Nil						; obsolete
-									
-									'(
-										Nil					; title
-										100000				; max price per item
-										)
+									"*"
 									)
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -2057,34 +2111,7 @@
 							</Action>
 
 						</Actions>
-
 					</Default>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" imageIndex="1" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Upgrade Cargo Hold" key="C">
-								(block Nil
-									(setq gCost 2200)
-									(setq gItem (itmCreate &itSmugglersCargoHold; 1))
-									(setq gCheckMilitaryID Nil)
-									(scrShowScreen gScreen "&dsInstallSpecificDevice;")
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</DockServices>
-
 				</Panes>
 			</Main>
 
@@ -2221,7 +2248,7 @@
 			attributes=			"capitalShip, corporate, kateMorgental, majorShip"
 			   
 			size=				"275"
-			mass=				"8000"
+			mass=				"25000"
 			thrustRatio=		"2"
 			maxSpeed=			"20"
 			cargoSpace=			"1000"
@@ -2275,7 +2302,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsCorporateCruiser;" imageX="0" imageY="0" imageWidth="230" imageHeight="230"/>
+		<Image imageID="&rsCorporateCruiser;" imageWidth="230" imageHeight="230"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="0"	posZ="-10"	rotation="180"	sendToBack="*"/>
@@ -2337,6 +2364,7 @@
 								(block Nil
 									(shpCancelOrders gSource)
 									(shpOrder gSource 'goto (objGetObjRefData gSource "anchorObj"))
+									(shpOrder gSource 'wait 5)
 									(shpOrder gSource 'gate)
 
 									(sysCancelTimerEvent gSource "OnBehavior")
@@ -2364,13 +2392,18 @@
 			</OnDestroy>
 
 			<OrderKatamiRescue>
-				(block (targetObj)
+				(block (
+					(theArena (sysFindObject gSource "TN +battleArena;"))
+					targetObj
+					)
+					
 					; Find the black market station
 					(setq targetObj (sysFindObject gSource "TN +katamiRescue"))
 					(objSetObjRefData gSource "target" targetObj)
 
 					; Orbit the black market station waiting for the player
 					(shpCancelOrders gSource)
+					(shpOrder gSource 'approach targetObj 180)
 					(shpOrder gSource 'orbit targetObj 180)
 
 					; State
@@ -2417,7 +2450,7 @@
 		<Tables>
 			<ArmsQuarterStation>
 				<Table>
-					<Station chance="35" type="&stArmorDealer;" noMapLabel="true">
+					<Station chance="15" type="&stArmorDealer;" noMapLabel="true">
 						<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 130)</OnCreate>
 					</Station>
 
@@ -2426,6 +2459,10 @@
 					</Station>
 
 					<Station chance="25" type="&stArmsDealerMakayev;" noMapLabel="true">
+						<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 140)</OnCreate>
+					</Station>
+					
+					<Station chance="20" type="&stArmsDealerRasiermesser;" noMapLabel="true">
 						<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 140)</OnCreate>
 					</Station>
 				</Table>
@@ -2524,7 +2561,7 @@
 						<Group>
 							<Lookup table="StargateInbound"/>
 
-							<Orbitals count="2" distance="12" angle="equidistant">
+							<Orbitals count="2" distance="18" angle="equidistant">
 								<Station type="&stCommonwealthDryDock;" name="Rigel Dry Dock" noArticle="true"/>
 
 								<Station type="&stCommonwealthNavSign;">
@@ -2624,279 +2661,144 @@
 					<!-- Battle Arena -->
 
 					<Trojan>
-						<Station type="&stBattleArena;" yOffset="-320"   xOffset="-1024" />
-
-						<Station type="&stCommonwealthNavSign;"			yOffset="-320"	   xOffset="-1280" name="Welcome, Gladiator!">
-							<InitialData>
-								<Sign>"Welcome,\nGladiator!"</Sign>
-								<Info>
-									"Welcome to Battle Arena Maximus! Please enter through the gates and dock at the main station for registration information."
-								</Info>
-							</InitialData>
-						</Station>
-
-						<Station type="&stNavBeacon;"		yOffset="0"		 xOffset="-1024"  imageVariant="0"/>
-						<Station type="&stNavBeacon;"		yOffset="64"	 xOffset="-1088"  imageVariant="0"/>
-						<Station type="&stNavBeacon;"		yOffset="128"	 xOffset="-1154"  imageVariant="0"/>
-
-						<!-- ROW 1 -->
-						<Station type="&stBattleArenaWall;" yOffset="1152" xOffset="256"  imageVariant="11"/>
-						<Station type="&stBattleArenaWall;" yOffset="1152" xOffset="384"  imageVariant="14"/>
-						<Station type="&stBattleArenaWall;" yOffset="1152" xOffset="512"  imageVariant="2"/>
-						<Station type="&stBattleArenaWall;" yOffset="1152" xOffset="640"  imageVariant="14"/>
-						<Station type="&stBattleArenaWall;" yOffset="1152" xOffset="768"  imageVariant="4"/>
-
-						<!-- ROW 2 -->
-						<Station type="&stBattleArenaWall;" yOffset="1024" xOffset="128"  imageVariant="20"/>
-						<Station type="&stBattleArenaWall;" yOffset="1024" xOffset="896"  imageVariant="21"/>
-
-						<!-- ROW 3 -->
-						<Station type="&stBattleArenaWall;" yOffset="896"  xOffset="0"	  imageVariant="20"/>
-						<Station type="&stBattleArenaWall;" yOffset="896"  xOffset="1024" imageVariant="3"/>
-
-						<!-- ROW 4 -->
-						<Station type="&stBattleArenaWall;" yOffset="768"  xOffset="-128" imageVariant="1"/>
-						<Station type="&stBattleArenaWall;" yOffset="768"  xOffset="1152" imageVariant="21"/>
-
-						<!-- ROW 5 -->
-						<Station type="&stBattleArenaWall;" yOffset="640"  xOffset="-256" imageVariant="20"/>
-						<Station type="&stBattleArenaWall;" yOffset="640"  xOffset="1280" imageVariant="5"/>
-
-						<!-- ROW 6 -->
-						<Station type="&stBattleArenaWall;" yOffset="512"  xOffset="-384" imageVariant="1"/>
-						<Station type="&stBattleArenaWall;" yOffset="512"  xOffset="1280" imageVariant="12"/>
-
-						<!-- ROW 7 -->
-						<Station type="&stBattleArenaWall;" yOffset="384"  xOffset="-512" imageVariant="20"/>
-						<Station type="&stBattleArenaWall;" yOffset="384"  xOffset="1280" imageVariant="0"/>
-
-						<!-- ROW 8 -->
-						<Station type="&stBattleArenaWall;" yOffset="256"  xOffset="-640" imageVariant="1"/>
-						<Station type="&stBattleArenaWall;" yOffset="256"  xOffset="1280" imageVariant="12"/>
-
-						<!-- ROW 9 -->
-						<Station type="&stBattleArenaWall;" yOffset="64"  xOffset="1216" imageVariant="22"/>
-						
-						<Station type="&stBattleArenaWall;" yOffset="128"  xOffset="-768" imageVariant="20"/>
-						<Station type="&stBattleArenaWall;" yOffset="128"  xOffset="1280" imageVariant="6"/>
-
-						<!-- ROW 10 -->
-						<Station type="&stBattleArenaWall;" yOffset="-64"		xOffset="-960" imageVariant="24" objName="arenaDoor1c"/>
-						<Station type="&stBattleArenaWall;" yOffset="-64"		xOffset="1088" imageVariant="24" objName="arenaDoor2c"/>
-						
-						<Station type="&stBattleArenaWall;" yOffset="0"		xOffset="-896" imageVariant="16" objName="arenaDoor1a"/>
-						<Station type="&stBattleArenaWall;" yOffset="0"		xOffset="1152" imageVariant="16" objName="arenaDoor2a"/>
-						
-						<!-- ROW 11 -->
-						<Station type="&stBattleArenaWall;" yOffset="-128"   xOffset="-1024" imageVariant="17" objName="arenaDoor1b"/>
-						<Station type="&stBattleArenaWall;" yOffset="-128"   xOffset="1024" imageVariant="17" objName="arenaDoor2b"/>
-						
-						<!-- ROW 12 -->
-						<Station type="&stBattleArenaWall;" yOffset="-256"   xOffset="-1152" imageVariant="18"/>
-						<Station type="&stBattleArenaWall;" yOffset="-256"   xOffset="896"  imageVariant="20"/>
-
-						<!-- ROW 13 -->
-						<Station type="&stBattleArenaWall;" yOffset="-384"   xOffset="-1152" imageVariant="19"/>
-						<Station type="&stBattleArenaWall;" yOffset="-384"   xOffset="768"  imageVariant="1"/>
-
-						<!-- ROW 14 -->
-						<Station type="&stBattleArenaWall;" yOffset="-512"   xOffset="-1152" imageVariant="0"/>
-						<Station type="&stBattleArenaWall;" yOffset="-512"   xOffset="640"  imageVariant="20"/>
-
-						<!-- ROW 15 -->
-						<Station type="&stBattleArenaWall;" yOffset="-640"   xOffset="-1152" imageVariant="12"/>
-						<Station type="&stBattleArenaWall;" yOffset="-640"   xOffset="512"  imageVariant="1"/>
-
-						<!-- ROW 16 -->
-						<Station type="&stBattleArenaWall;" yOffset="-768"   xOffset="-1152" imageVariant="9"/>
-						<Station type="&stBattleArenaWall;" yOffset="-768"   xOffset="384"  imageVariant="20"/>
-
-						<!-- ROW 17 -->
-						<Station type="&stBattleArenaWall;" yOffset="-896"   xOffset="-1024" imageVariant="21"/>
-						<Station type="&stBattleArenaWall;" yOffset="-896"   xOffset="256"  imageVariant="1"/>
-
-						<!-- ROW 18 -->
-						<Station type="&stBattleArenaWall;" yOffset="-1024"  xOffset="-896" imageVariant="3"/>
-						<Station type="&stBattleArenaWall;" yOffset="-1024"  xOffset="128"  imageVariant="20"/>
-
-						<!-- ROW 19 -->
-						<Station type="&stBattleArenaWall;" yOffset="-1152"  xOffset="-768" imageVariant="21"/>
-						<Station type="&stBattleArenaWall;" yOffset="-1152"  xOffset="0"    imageVariant="20"/>
-
-						<!-- ROW 20 -->
-						<Station type="&stBattleArenaWall;" yOffset="-1280"  xOffset="-640" imageVariant="8"/>
-						<Station type="&stBattleArenaWall;" yOffset="-1280"  xOffset="-512" imageVariant="14"/>
-						<Station type="&stBattleArenaWall;" yOffset="-1280"  xOffset="-384" imageVariant="2"/>
-						<Station type="&stBattleArenaWall;" yOffset="-1280"  xOffset="-256" imageVariant="14"/>
-						<Station type="&stBattleArenaWall;" yOffset="-1280"  xOffset="-128" imageVariant="7"/>
-
-						<!-- Nav Beacons -->
-						<Station type="&stNavBeacon;"		yOffset="1408"	 xOffset="512"  imageVariant="0"/>
-						<Station type="&stNavBeacon;"		yOffset="384"	 xOffset="1536" imageVariant="0"/>
-						<Station type="&stNavBeacon;"		yOffset="-512"	 xOffset="-1408" imageVariant="1"/>
-						<Station type="&stNavBeacon;"		yOffset="-1536"	 xOffset="-384" imageVariant="1"/>
-
-						<!-- Corporate Quarter -->
-
-						<Offset scale="pixel"				yOffset="-1152"		 xOffset="-1408">
-							<Station type="&stCorporateEnclave;" noMapLabel="true"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="-1536"		 xOffset="-1792">
-							<Station type="&stCommonwealthDryDock;" noMapLabel="true"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="-1536"		 xOffset="-1024">
-							<Station type="&stInsuranceCompany;" noMapLabel="true"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="-1920"		 xOffset="-1408">
-							<Station type="&stHotel;" noMapLabel="true"/>
-						</Offset>
-
-						<!-- Arms Quarter -->
-						<Offset scale="pixel"				yOffset="0"		 xOffset="-1280">
-							<Station type="&stArmorDealer;" noMapLabel="true">
-								<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 130)</OnCreate>
+						<Offset scale="pixel" yOffset="-320" xOffset="-1024">
+							<Station type="&stBattleArena;"/>
+							
+							<Station type="&stNavBeacon;" imageVariant="1"  xOffset="-328"     yOffset="-1515"/>
+							<Station type="&stNavBeacon;" imageVariant="1"  xOffset="1670"     yOffset="-350"/>
+							<Station type="&stNavBeacon;" imageVariant="1"  xOffset="-1670"    yOffset="-350"/>
+							<Station type="&stNavBeacon;" imageVariant="1"  xOffset="0"		   yOffset="400"/>
+							
+							<Station type="&stCommonwealthNavSign;"			xOffset="328"	   yOffset="-1515" name="Welcome, Gladiator!">
+								<InitialData>
+									<Sign>"Welcome,\nGladiator!"</Sign>
+									<Info>
+										"Welcome to Battle Arena Maximus! Please enter through the gates and dock at the main station for registration information."
+									</Info>
+								</InitialData>
 							</Station>
-						</Offset>
 
-						<Offset scale="pixel"				yOffset="256"	 xOffset="-1024">
-							<Lookup table="ArmsQuarterStation"/>
-						</Offset>
+							<!-- Arms Quarter -->
+						
+							<Offset scale="pixel"				xOffset="500"	 yOffset="-1695">
+								<Station type="&stArmorDealer;" noMapLabel="true">
+									<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 130)</OnCreate>
+								</Station>
+							</Offset>
 
-						<Offset scale="pixel"				yOffset="256"	 xOffset="-1536">
-							<Lookup table="ArmsQuarterStation"/>
-						</Offset>
+							<Offset scale="pixel"				xOffset="730"	 yOffset="-1650">
+								<Lookup table="ArmsQuarterStation"/>
+							</Offset>
 
-						<Offset scale="pixel"				yOffset="512"	 xOffset="-1280">
-							<Station type="&stArmsDealer;" noMapLabel="true">
-								<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 130)</OnCreate>
-							</Station>
-						</Offset>
+							<Offset scale="pixel"				xOffset="545"	 yOffset="-1970">
+								<Lookup table="ArmsQuarterStation"/>
+							</Offset>
 
-						<!-- Middle Quarter -->
-						<Offset scale="pixel"				yOffset="-1152"	 xOffset="348">
-							<Lookup table="MiddleQuarterStation"/>
-						</Offset>
+							<Offset scale="pixel"				xOffset="800"	 yOffset="-1920">
+								<Station type="&stArmsDealer;" noMapLabel="true">
+									<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 130)</OnCreate>
+								</Station>
+							</Offset>
 
-						<Offset scale="pixel"				yOffset="-1408"	 xOffset="128">
-							<Lookup table="MiddleQuarterStation"/>
-						</Offset>
+							<Offset scale="pixel"				xOffset="300"	 yOffset="-2010">
+								<Lookup table="ArmsQuarterStation"/>
+							</Offset>
+							
+							<!-- Corporate Quarter -->
 
-						<Offset scale="pixel"				yOffset="-1408"	 xOffset="640">
-							<Lookup table="MiddleQuarterStation"/>
-						</Offset>
+							<Offset scale="pixel"				xOffset="1140"		 yOffset="-1485">
+								<Station type="&stCorporateEnclave;" noMapLabel="true"/>
+							</Offset>
 
-						<Offset scale="pixel"				yOffset="-1664"	 xOffset="384">
-							<Lookup table="MiddleQuarterStation"/>
-						</Offset>
+							<Offset scale="pixel"				xOffset="1360"		 yOffset="-1350">
+								<Station type="&stCommonwealthDryDock;" noMapLabel="true"/>
+							</Offset>
 
-						<Table>
-							<Group chance="50">
-								<Offset scale="pixel"				yOffset="1536"	 xOffset="-256">
-									<Lookup table="MiddleQuarterStation"/>
-								</Offset>
+							<Offset scale="pixel"				xOffset="1290"		 yOffset="-1750">
+								<Station type="&stInsuranceCompany;" noMapLabel="true"/>
+							</Offset>
 
-								<Offset scale="pixel"				yOffset="1280"	 xOffset="-512">
-									<Lookup table="MiddleQuarterStation"/>
-								</Offset>
+							<Offset scale="pixel"				xOffset="1520"		 yOffset="-1605">
+								<Station type="&stHotel;" noMapLabel="true"/>
+							</Offset>
 
-								<Offset scale="pixel"				yOffset="1280"	 xOffset="0">
-									<Lookup table="MiddleQuarterStation"/>
-								</Offset>
+							<!-- Left Quarter -->
+							
+							<Offset scale="pixel"				xOffset="-500"	 yOffset="-1695">
+								<Lookup table="MiddleQuarterStation"/>
+							</Offset>
 
-								<Offset scale="pixel"				yOffset="1024"	 xOffset="-256">
-									<Lookup table="MiddleQuarterStation"/>
-								</Offset>
-							</Group>
+							<Offset scale="pixel"				xOffset="-730"	 yOffset="-1650">
+								<Lookup table="LowerQuarterStation"/>
+							</Offset>
 
-							<Group chance="50">
-								<Offset scale="pixel"				yOffset="-128"	 xOffset="1408">
-									<Lookup table="MiddleQuarterStation"/>
-								</Offset>
+							<Offset scale="pixel"				xOffset="-545"	 yOffset="-1970">
+								<Lookup table="MiddleQuarterStation"/>
+							</Offset>
 
-								<Offset scale="pixel"				yOffset="-384"	 xOffset="1152">
-									<Lookup table="MiddleQuarterStation"/>
-								</Offset>
+							<Offset scale="pixel"				xOffset="-800"	 yOffset="-1920">
+								<Lookup table="LowerQuarterStation"/>
+							</Offset>
 
-								<Offset scale="pixel"				yOffset="-384"	 xOffset="1664">
-									<Lookup table="MiddleQuarterStation"/>
-								</Offset>
+							<Offset scale="pixel"				xOffset="-300"	 yOffset="-2010">
+								<Lookup table="MiddleQuarterStation"/>
+							</Offset>
+							
+							<!-- Middle Quarter -->
+							
+							<Offset scale="pixel"				xOffset="-1140"		 yOffset="-1485">
+								<Lookup table="MiddleQuarterStation"/>
+							</Offset>
 
-								<Offset scale="pixel"				yOffset="-640"	 xOffset="1408">
-									<Lookup table="MiddleQuarterStation"/>
-								</Offset>
-							</Group>
-						</Table>
+							<Offset scale="pixel"				xOffset="-1360"		 yOffset="-1350">
+								<Lookup table="MiddleQuarterStation"/>
+							</Offset>
 
-						<!-- Lower Quarter -->
-						<Offset scale="pixel"				yOffset="1920"	 xOffset="1024">
-							<Lookup table="LowerQuarterStation"/>
-						</Offset>
+							<Offset scale="pixel"				xOffset="-1290"		 yOffset="-1750">
+								<Lookup table="MiddleQuarterStation"/>
+							</Offset>
 
-						<Offset scale="pixel"				yOffset="1920"	 xOffset="1280">
-							<Lookup table="LowerQuarterStation"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="1664"	 xOffset="1024">
-							<Lookup table="LowerQuarterStation"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="1664"	 xOffset="1280">
-							<Lookup table="LowerQuarterStation"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="1664"	 xOffset="1536">
-							<Lookup table="LowerQuarterStation"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="1664"	 xOffset="1792">
-							<Lookup table="LowerQuarterStation"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="1408"	 xOffset="1024">
-							<Lookup table="LowerQuarterStation"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="1408"	 xOffset="1280">
-							<Lookup table="LowerQuarterStation"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="1408"	 xOffset="1536">
-							<Lookup table="LowerQuarterStation"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="1408"	 xOffset="1792">
-							<Lookup table="LowerQuarterStation"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="1152"	 xOffset="1280">
-							<Lookup table="LowerQuarterStation"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="1152"	 xOffset="1536">
-							<Lookup table="LowerQuarterStation"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="1152"	 xOffset="1792">
-							<Lookup table="LowerQuarterStation"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="1152"	 xOffset="2048">
-							<Lookup table="LowerQuarterStation"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="896"	 xOffset="1536">
-							<Lookup table="LowerQuarterStation"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="896"	 xOffset="1792">
-							<Lookup table="LowerQuarterStation"/>
-						</Offset>
-
-						<Offset scale="pixel"				yOffset="896"	 xOffset="2048">
-							<Lookup table="LowerQuarterStation"/>
+							<Offset scale="pixel"				xOffset="-1520"		 yOffset="-1605">
+								<Lookup table="MiddleQuarterStation"/>
+							</Offset>
+							
+							<!-- Lower Quarter -->
+							
+							<Offset scale="pixel"				xOffset="1750"	 yOffset="-610">
+								<Lookup table="LowerQuarterStation"/>
+							</Offset>
+							
+							<Offset scale="pixel"				xOffset="1960"	 yOffset="-610">
+								<Lookup table="LowerQuarterStation"/>
+							</Offset>
+							
+							<Offset scale="pixel"				xOffset="2170"	 yOffset="-610">
+								<Lookup table="LowerQuarterStation"/>
+							</Offset>
+							
+							<Offset scale="pixel"				xOffset="1730"	 yOffset="-835">
+								<Lookup table="LowerQuarterStation"/>
+							</Offset>
+							
+							<Offset scale="pixel"				xOffset="1935"	 yOffset="-885">
+								<Lookup table="LowerQuarterStation"/>
+							</Offset>
+							
+							<Offset scale="pixel"				xOffset="2135"	 yOffset="-930">
+								<Lookup table="LowerQuarterStation"/>
+							</Offset>
+							
+							<Offset scale="pixel"				xOffset="1650"	 yOffset="-1035">
+								<Lookup table="LowerQuarterStation"/>
+							</Offset>
+							
+							<Offset scale="pixel"				xOffset="1825"	 yOffset="-1130">
+								<Lookup table="LowerQuarterStation"/>
+							</Offset>
+							
+							<Offset scale="pixel"				xOffset="2030"	 yOffset="-1215">
+								<Lookup table="LowerQuarterStation"/>
+							</Offset>
 						</Offset>
 					</Trojan>
 
@@ -3226,7 +3128,7 @@
 							(setq thisShip
 								(sysCreateShip 
 									shipClass
-									(sysVectorPolarOffset sourceObj (random 11 42) (add 65 (multiply (modulo offset 12) 2)))
+									(sysVectorPolarOffset sourceObj (random 204 336) (add 15 (multiply (modulo offset 12) 2)))
 									&svGladiator;
 									)
 								)
@@ -3282,33 +3184,40 @@
 				))
 
 			(setq bamDoorsClose (lambda (arenaObj)
-				(block Nil
-					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor1a") 1)
-					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor1b") 1)
-					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor1c") 22)
-					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor2a") 1)
-					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor2b") 1)
-					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor2c") 22)
+				(block (
+					(doorObj (sysGetObjectByName arenaObj "arenaDoor"))
+					)
+					
+					(staSetImageVariant doorObj 20)
+					(objSetProperty doorObj 'barrier True)
+					(objSetProperty doorObj 'paintLayer 'overhang)
 					)
 				))
 
 			(setq bamDoorsOpen (lambda (arenaObj)
-				(block Nil
-					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor1a") 16)
-					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor1b") 17)
-					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor1c") 24)
-					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor2a") 16)
-					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor2b") 17)
-					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor2c") 24)
+				(block (
+					(doorObj (sysGetObjectByName arenaObj "arenaDoor"))
+					)
+					
+					(staSetImageVariant doorObj 21)
+					(objSetProperty doorObj 'barrier Nil)
+					(objSetProperty doorObj 'paintLayer Nil)
 					)
 				))
 			)
 	</Globals>
 
-	<!-- Resources -->
+<!-- BASE CLASSES -->
+	
+	<StationType unid="&baBattleArenaSegment;"
+			name=			"(Battle Arena segment)"
+			virtual=		"true"
+			>
+	</StationType>
 
-	<Image UNID="&rsBattleArena;"	bitmap="Resources\BattleArena.jpg"	bitmask="Resources\BattleArenaMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsBattleArenaExtra;"	bitmap="Resources\BattleArenaExtra.jpg" bitmask="Resources\BattleArenaExtraMask.bmp" loadOnUse="true"/>
+<!-- RESOURCES -->
+
 	<Image UNID="&rsBattleArenaBkgnd;" bitmap="Resources\BattleArenaScreen.jpg" loadOnUse="true" />
+	<Image UNID="&rsBattleArenaSegments;" bitmap="Resources\BattleArenaSegments.jpg" bitmask="Resources\BattleArenaSegmentsMask.bmp" hitMask="Resources\BattleArenaSegmentsHitMask.bmp" loadOnUse="true" />
 
 </TranscendenceModule>

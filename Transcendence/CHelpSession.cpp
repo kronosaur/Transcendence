@@ -44,23 +44,23 @@ static SHelpLine g_szHelp[] =
 		{ "[Esc]",		"Game menu (save, self-destruct)",				NULL }
 	};
 
-#define RGB_FRAME						CG16bitImage::RGBValue(80,80,80)
-#define RGB_HELP_TEXT					CG16bitImage::RGBValue(231,255,227)
-#define RGB_BAR_COLOR					CG16bitImage::RGBValue(0, 2, 10)
-#define HELP_LINE_COUNT					(sizeof(g_szHelp) / sizeof(g_szHelp[0]))
-const WORD RGB_SUBTITLE_TEXT =			CG16bitImage::RGBValue(128,128,128);
-const WORD RGB_MORE_HELP_TEXT =			CG16bitImage::RGBValue(160,160,160);
+#define RGB_FRAME							CG32bitPixel(80,80,80)
+#define RGB_HELP_TEXT						CG32bitPixel(231,255,227)
+#define RGB_BAR_COLOR						CG32bitPixel(0, 2, 10)
+#define HELP_LINE_COUNT						(sizeof(g_szHelp) / sizeof(g_szHelp[0]))
+const CG32bitPixel RGB_SUBTITLE_TEXT =		CG32bitPixel(128,128,128);
+const CG32bitPixel RGB_MORE_HELP_TEXT =		CG32bitPixel(160,160,160);
 
-const int SECTION_SPACING_Y =			16;
+const int SECTION_SPACING_Y =				16;
 
-const int KEY_INDENT =					70;
-const int KEY_DESC_COLUMN_WIDTH =		200;
-const int KEY_COLUMN_SPACING_X =		10;
-const int KEY_DESC_SPACING_Y =			5;
-const int KEY_DESC_SPACING_X =			12;
+const int KEY_INDENT =						70;
+const int KEY_DESC_COLUMN_WIDTH =			200;
+const int KEY_COLUMN_SPACING_X =			10;
+const int KEY_DESC_SPACING_Y =				5;
+const int KEY_DESC_SPACING_X =				12;
 
-const int DAMAGE_TYPE_INDENT =			24;
-const int DAMAGE_TYPE_SPACING_Y =		4;
+const int DAMAGE_TYPE_INDENT =				24;
+const int DAMAGE_TYPE_SPACING_Y =			4;
 
 void CHelpSession::OnCleanUp (void)
 
@@ -90,10 +90,10 @@ ALERROR CHelpSession::OnInit (CString *retsError)
 			&hDIB))
 		return error;
 
-	error = m_HelpImage.CreateFromBitmap(hDIB);
+	bool bSuccess = m_HelpImage.CreateFromBitmap(hDIB);
 	::DeleteObject(hDIB);
-	if (error)
-		return error;
+	if (!bSuccess)
+		return ERR_FAIL;
 
 	//	Done
 
@@ -114,7 +114,7 @@ void CHelpSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 	m_HI.ClosePopupSession();
 	}
 
-void CHelpSession::OnLButtonDown (int x, int y, DWORD dwFlags)
+void CHelpSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture)
 
 //	OnLButtonDown
 //
@@ -126,7 +126,7 @@ void CHelpSession::OnLButtonDown (int x, int y, DWORD dwFlags)
 	m_HI.ClosePopupSession();
 	}
 
-void CHelpSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
+void CHelpSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 //	OnPaint
 //

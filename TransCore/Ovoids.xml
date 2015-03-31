@@ -17,7 +17,7 @@
 						</OrbitalDistribution>
 
 						<OrbitalDistribution count="1"	radialWidth="18">
-							<Lookup table="VariantAsteroidBeltLabel"/>
+							<Lookup table="VariantAsteroidBeltVoidLabel"/>
 						</OrbitalDistribution>
 					</Variant>
 				</_Morphology>
@@ -33,7 +33,7 @@
 						</OrbitalDistribution>
 
 						<OrbitalDistribution count="2"	radialWidth="30">
-							<Lookup table="VariantAsteroidBeltLabel"/>
+							<Lookup table="VariantAsteroidBeltVoidLabel"/>
 						</OrbitalDistribution>
 					</Variant>
 				</_Morphology>
@@ -49,7 +49,7 @@
 						</OrbitalDistribution>
 
 						<OrbitalDistribution count="1-3"	radialWidth="42">
-							<Lookup table="VariantAsteroidBeltLabel"/>
+							<Lookup table="VariantAsteroidBeltVoidLabel"/>
 						</OrbitalDistribution>
 					</Variant>
 				</_Morphology>

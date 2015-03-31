@@ -255,14 +255,14 @@ void CChangePasswordSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		}
 	}
 
-void CChangePasswordSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
+void CChangePasswordSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 //	OnPaint
 //
 //	Paint
 
 	{
-	Screen.FillTrans(0, 0, Screen.GetWidth(), Screen.GetHeight(), 0, 128);
+	Screen.Fill(0, 0, Screen.GetWidth(), Screen.GetHeight(), CG32bitPixel(0, 0, 0, 128));
 	}
 
 void CChangePasswordSession::OnReportHardCrash (CString *retsMessage)

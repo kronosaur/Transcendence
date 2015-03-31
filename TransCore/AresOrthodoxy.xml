@@ -634,6 +634,7 @@
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Ares sentry"
 			type=				""
+			defaultSovereign=	"&svAres;"
 
 			attributes=			"ares, genericClass"
 			   
@@ -683,6 +684,7 @@
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Chasm"
 			type=				"heavy gunship"
+			defaultSovereign=	"&svAres;"
 
 			attributes=			"ares,genericClass"
 			   
@@ -743,6 +745,7 @@
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Cometfall"
 			type=				"missileship"
+			defaultSovereign=	"&svAres;"
 
 			attributes=			"ares, capitalShip, genericClass"
 			   
@@ -825,6 +828,7 @@
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Deimos"
 			type=				"destroyer"
+			defaultSovereign=	"&svAres;"
 
 			attributes=			"ares, capitalShip, genericClass"
 			   
@@ -903,6 +907,7 @@
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Polar"
 			type=				"freighter"
+			defaultSovereign=	"&svAres;"
 
 			mass=				"8000"
 			cargoSpace=			"5000"
@@ -1060,6 +1065,7 @@
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Sandstorm"
 			type=				"gunship"
+			defaultSovereign=	"&svAres;"
 
 			attributes=			"ares,genericClass"
 			   
@@ -1122,6 +1128,7 @@
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Tundra"
 			type=				"heavy gunship"
+			defaultSovereign=	"&svAres;"
 
 			attributes=			"ares,genericClass"
 			   
@@ -1184,10 +1191,12 @@
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Phobos"
 			type=				"dreadnought"
+			defaultSovereign=	"&svAres;"
 
 			attributes=			"ares, capitalShip, genericClass, majorShip"
-			   
-			mass=				"15000"
+
+			size=				"290"
+			mass=				"61000"
 			thrustRatio=		"1"
 			maxSpeed=			"16"
 			cargoSpace=			"5000"
@@ -1280,7 +1289,7 @@
 			ejectaType=			"&vtWreckEjecta;"
 			randomEncounters=	"common"
 
-			attributes=			"ares, enemy, envAir, envEarth, envFire, envWater, neoHuman, populated"
+			attributes=			"ares, enemy, envAir, envEarth, envFire, envWater, generic, neoHuman, populated"
 			levelFrequency=		"----- rcur- ----- ----- -----"
 			locationCriteria=	"-asteroids"
 			>
@@ -1331,7 +1340,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"ares, aresMajor, enemy, envAir, envEarth, envFire, envWater, majorStation, neoHuman, populated"
+			attributes=			"ares, aresMajor, enemy, envAir, envEarth, envFire, envWater, generic, majorStation, neoHuman, populated"
 			levelFrequency=		"----- -vuur ----- ----- -----"
 			locationCriteria=	"-asteroids"
 			enemyExclusionRadius="60"
@@ -1389,7 +1398,7 @@
 			explosionType=		"&vtThermoExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"ares, aresMajor, enemy, envAir, envEarth, envFire, envWater, majorStation, neoHuman, populated"
+			attributes=			"ares, aresMajor, enemy, envAir, envEarth, envFire, envWater, generic, majorStation, neoHuman, populated"
 			levelFrequency=		"----- --vuu ----- ----- -----"
 			locationCriteria=	"-asteroids"
 			enemyExclusionRadius="100"

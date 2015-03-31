@@ -166,7 +166,7 @@ void CProfileSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		}
 	}
 
-void CProfileSession::OnLButtonDown (int x, int y, DWORD dwFlags)
+void CProfileSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture)
 
 //	OnLButtonDown
 //
@@ -178,7 +178,7 @@ void CProfileSession::OnLButtonDown (int x, int y, DWORD dwFlags)
 //	m_HI.ClosePopupSession();
 	}
 
-void CProfileSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
+void CProfileSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 //	OnPaint
 //
@@ -188,7 +188,7 @@ void CProfileSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 	const CVisualPalette &VI = m_HI.GetVisuals();
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, CG16bitImage(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
+	VI.DrawSessionBackground(Screen, CG32bitImage(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
 	}
 
 void CProfileSession::OnReportHardCrash (CString *retsMessage)

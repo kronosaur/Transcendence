@@ -15,12 +15,12 @@
 
 #define MAX_ITEMS_VISIBLE							3
 
-#define RGB_SELECTION								(CG16bitImage::RGBValue(150,255,180))
-#define RGB_TEXT									(CG16bitImage::RGBValue(150,255,180))
-#define RGB_EXTRA									(CG16bitImage::RGBValue(255,255,255))
-#define RGB_HELP									(CG16bitImage::RGBValue(96,96,96))
-#define RGB_HOTKEY_BACKGROUND						(CG16bitImage::RGBValue(150,255,180))
-#define RGB_BACKGROUND								(CG16bitImage::RGBValue(0,0,16))
+#define RGB_SELECTION								(CG32bitPixel(150,255,180))
+#define RGB_TEXT									(CG32bitPixel(150,255,180))
+#define RGB_EXTRA									(CG32bitPixel(255,255,255))
+#define RGB_HELP									(CG32bitPixel(96,96,96))
+#define RGB_HOTKEY_BACKGROUND						(CG32bitPixel(150,255,180))
+#define RGB_BACKGROUND								(CG32bitPixel(0,0,16))
 
 CPickerDisplay::CPickerDisplay (void)
 
@@ -63,8 +63,6 @@ ALERROR CPickerDisplay::Init (CMenuData *pMenu, const RECT &rcRect)
 //	Initializes picker
 
 	{
-	ALERROR error;
-
 	CleanUp();
 
 	m_pMenu = pMenu;
@@ -73,10 +71,10 @@ ALERROR CPickerDisplay::Init (CMenuData *pMenu, const RECT &rcRect)
 
 	//	Create the off-screen buffer
 
-	if (error = m_Buffer.CreateBlank(RectWidth(m_rcRect), RectHeight(m_rcRect), false))
-		return error;
+	if (!m_Buffer.Create(RectWidth(m_rcRect), RectHeight(m_rcRect), CG32bitImage::alpha8))
+		return ERR_FAIL;
 
-	m_Buffer.SetBlending(240);
+	//m_Buffer.SetBlending(240);
 
 	//	Initialize
 
@@ -85,7 +83,7 @@ ALERROR CPickerDisplay::Init (CMenuData *pMenu, const RECT &rcRect)
 	return NOERROR;
 	}
 
-void CPickerDisplay::Paint (CG16bitImage &Dest)
+void CPickerDisplay::Paint (CG32bitImage &Dest)
 
 //	Paint
 //
@@ -94,60 +92,60 @@ void CPickerDisplay::Paint (CG16bitImage &Dest)
 	{
 	Update();
 
-	Dest.ColorTransBlt(0,
+	Dest.Blt(0,
 			0,
 			RectWidth(m_rcRect),
 			RectHeight(m_rcRect),
-			255,
+			240,
 			m_Buffer,
 			m_rcRect.left,
 			m_rcRect.top);
 	}
 
-void CPickerDisplay::PaintSelection (CG16bitImage &Dest, int x, int y)
+void CPickerDisplay::PaintSelection (CG32bitImage &Dest, int x, int y)
 
 //	PaintSelection
 //
 //	Paints the selection at the coordinate
 
 	{
-	WORD wSelectColor = CG16bitImage::DarkenPixel(m_pFonts->wSelectBackground, 192);
+	CG32bitPixel rgbSelectColor = CG32bitPixel::Darken(m_pFonts->rgbSelectBackground, 192);
 
 	Dest.Fill(x - TILE_SPACING_X, 
 			y - TILE_SPACING_Y,
 			TILE_SPACING_X,
 			TILE_HEIGHT + 2 * TILE_SPACING_Y,
-			wSelectColor);
+			rgbSelectColor);
 
 	Dest.Fill(x,
 			y - TILE_SPACING_Y,
 			TILE_SPACING_X,
 			TILE_SPACING_Y,
-			wSelectColor);
+			rgbSelectColor);
 
 	Dest.Fill(x,
 			y + TILE_HEIGHT,
 			TILE_SPACING_X,
 			TILE_SPACING_Y,
-			wSelectColor);
+			rgbSelectColor);
 
 	Dest.Fill(x + TILE_WIDTH,
 			y - TILE_SPACING_Y,
 			TILE_SPACING_X,
 			TILE_HEIGHT + 2 * TILE_SPACING_Y,
-			wSelectColor);
+			rgbSelectColor);
 
 	Dest.Fill(x + TILE_WIDTH - TILE_SPACING_X,
 			y - TILE_SPACING_Y,
 			TILE_SPACING_X,
 			TILE_SPACING_Y,
-			wSelectColor);
+			rgbSelectColor);
 
 	Dest.Fill(x + TILE_WIDTH - TILE_SPACING_X,
 			y + TILE_HEIGHT,
 			TILE_SPACING_X,
 			TILE_SPACING_Y,
-			wSelectColor);
+			rgbSelectColor);
 	}
 
 void CPickerDisplay::SelectNext (void)
@@ -192,7 +190,7 @@ void CPickerDisplay::Update (void)
 
 	//	Clear the area
 
-	m_Buffer.Fill(0, 0, m_Buffer.GetWidth(), m_Buffer.GetHeight(), CG16bitImage::RGBValue(0, 0, 0));
+	m_Buffer.Set(CG32bitPixel::Null());
 
 	//	Figure out how many items we could show
 
@@ -238,7 +236,7 @@ void CPickerDisplay::Update (void)
 			rcView.top - (TILE_SPACING_Y), 
 			RectWidth(rcView) + (2 * TILE_SPACING_X),
 			RectHeight(rcView) + (2 * TILE_SPACING_Y),
-			m_pFonts->wBackground);
+			m_pFonts->rgbBackground);
 
 	//	Paint the items
 
@@ -283,12 +281,12 @@ void CPickerDisplay::Update (void)
 
 			int xKey = x + TILE_SPACING_X;
 			int yKey = rcView.top + TILE_SPACING_Y;
-			m_Buffer.Fill(xKey, yKey, cxKey + 4, cyKey, m_pFonts->wTitleColor);
+			m_Buffer.Fill(xKey, yKey, cxKey + 4, cyKey, m_pFonts->rgbTitleColor);
 
 			m_pFonts->LargeBold.DrawText(m_Buffer,
 					xKey + 2,
 					yKey,
-					m_pFonts->wBackground,
+					m_pFonts->rgbBackground,
 					sKey);
 			}
 
@@ -309,12 +307,12 @@ void CPickerDisplay::Update (void)
 			rcView.bottom + TILE_SPACING_Y,
 			cxText,
 			m_Buffer.GetHeight() - (rcView.bottom + TILE_SPACING_Y),
-			CG16bitImage::RGBValue(0, 0, 16));
+			CG32bitPixel(0, 0, 16));
 
 	m_pFonts->Header.DrawText(m_Buffer,
 			(m_Buffer.GetWidth() - cxText) / 2,
 			rcView.bottom + TILE_SPACING_Y,
-			m_pFonts->wTitleColor,
+			m_pFonts->rgbTitleColor,
 			sText);
 
 	//	Paint help text (if help text is blank, then use menu extra
@@ -328,7 +326,7 @@ void CPickerDisplay::Update (void)
 	m_pFonts->Medium.DrawText(m_Buffer,
 			(m_Buffer.GetWidth() - cxText) / 2,
 			rcView.bottom + TILE_SPACING_Y + m_pFonts->Header.GetHeight(),
-			m_pFonts->wHelpColor,
+			m_pFonts->rgbHelpColor,
 			sText);
 
 	m_bInvalid = false;

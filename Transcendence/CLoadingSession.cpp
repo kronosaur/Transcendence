@@ -31,10 +31,10 @@ ALERROR CLoadingSession::OnInit (CString *retsError)
 			&hDIB))
 		return error;
 
-	error = m_TitleImage.CreateFromBitmap(hDIB);
+	bool bSuccess = m_TitleImage.CreateFromBitmap(hDIB);
 	::DeleteObject(hDIB);
-	if (error)
-		return error;
+	if (!bSuccess)
+		return ERR_FAIL;
 
 	//	Load stargate image
 
@@ -51,11 +51,11 @@ ALERROR CLoadingSession::OnInit (CString *retsError)
 			&hBitmask))
 		return error;
 
-	error = m_StargateImage.CreateFromBitmap(hDIB, hBitmask);
+	bSuccess = m_StargateImage.CreateFromBitmap(hDIB, hBitmask);
 	::DeleteObject(hDIB);
 	::DeleteObject(hBitmask);
-	if (error)
-		return error;
+	if (!bSuccess)
+		return ERR_FAIL;
 
 	//	Figure out position of copyright text.
 
@@ -83,7 +83,7 @@ ALERROR CLoadingSession::OnInit (CString *retsError)
 	return NOERROR;
 	}
 
-void CLoadingSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
+void CLoadingSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 //	OnPaint
 
@@ -116,7 +116,7 @@ void CLoadingSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 
 	//	Paint the stargate
 
-	Screen.ColorTransBlt(STARGATE_WIDTH * ((m_iTick / 2) % 12),
+	Screen.Blt(STARGATE_WIDTH * ((m_iTick / 2) % 12),
 			0,
 			STARGATE_WIDTH,
 			STARGATE_HEIGHT,

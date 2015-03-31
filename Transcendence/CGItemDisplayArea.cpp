@@ -70,7 +70,7 @@ int CGItemDisplayArea::Justify (const RECT &rcRect)
 		}
 	}
 
-void CGItemDisplayArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
+void CGItemDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 //	Paint
 //
@@ -79,7 +79,7 @@ void CGItemDisplayArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
 	{
 	const CVisualPalette &VI = g_pHI->GetVisuals();
 
-	::DrawRoundedRect(Dest,
+	CGDraw::RoundedRect(Dest,
 			rcRect.left,
 			rcRect.top,
 			RectWidth(rcRect),
@@ -107,8 +107,8 @@ void CGItemDisplayArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
 		{
 		const CG16bitFont &LargeBold = VI.GetFont(fontLargeBold);
 		const CG16bitFont &Medium = VI.GetFont(fontMedium);
-		WORD wColorTitle = VI.GetColor(colorTextHighlight);
-		WORD wColorDesc = CG16bitImage::RGBValue(128,128,128);
+		CG32bitPixel rgbColorTitle = VI.GetColor(colorTextHighlight);
+		CG32bitPixel rgbColorDesc = CG32bitPixel(128,128,128);
 
 		RECT rcDrawRect = rcInner;
 		rcDrawRect.left += ITEM_TEXT_MARGIN_X;
@@ -118,7 +118,7 @@ void CGItemDisplayArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
 		int cyHeight = 0;
 		LargeBold.DrawText(Dest,
 				rcDrawRect,
-				wColorTitle,
+				rgbColorTitle,
 				m_sTitle,
 				0,
 				CG16bitFont::SmartQuotes | CG16bitFont::TruncateLine,
@@ -128,7 +128,7 @@ void CGItemDisplayArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
 
 		Medium.DrawText(Dest,
 				rcDrawRect,
-				wColorDesc,
+				rgbColorDesc,
 				m_sDesc,
 				0,
 				CG16bitFont::SmartQuotes,

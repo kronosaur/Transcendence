@@ -38,6 +38,7 @@
 #define RANDOM_ITEMS_SWITCH					CONSTLIT("randomitems")
 #define RANDOM_NUMBER_TEST					CONSTLIT("randomnumbertest")
 #define RUN_SWITCH							CONSTLIT("run")
+#define RUN_FILE_SWITCH						CONSTLIT("runFile")
 #define SHIELD_TEST_SWITCH					CONSTLIT("shieldtest")
 #define SHIP_IMAGE_SWITCH					CONSTLIT("shipimage")
 #define SHIP_IMAGES_SWITCH					CONSTLIT("shipimages")
@@ -84,7 +85,7 @@ class CHost : public CUniverse::IHost
 
 void AlchemyMain (CXMLElement *pCmdLine);
 ALERROR CreateXMLElementFromDataFile (const CString &sFilespec, CXMLElement **retpDataFile, CString *retsError);
-ALERROR InitUniverse (CUniverse &Universe, CHost &Host, CXMLElement *pCmdLine, CString *retsError);
+ALERROR InitUniverse (CUniverse &Universe, CHost &Host, const CString &sFilespec, CXMLElement *pCmdLine, CString *retsError);
 
 int main (int argc, char *argv[ ], char *envp[ ])
 
@@ -196,7 +197,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 			return;
 			}
 
-		if (pCmdLine->FindAttribute(RUN_SWITCH))
+		if (pCmdLine->FindAttribute(RUN_SWITCH)
+				|| pCmdLine->FindAttribute(RUN_FILE_SWITCH))
 			{
 			printf("TLisp Shell %s\n", (LPSTR)VersionInfo.sProductVersion);
 			printf("%s\n\n", (LPSTR)VersionInfo.sCopyright);
@@ -226,9 +228,13 @@ void AlchemyMain (CXMLElement *pCmdLine)
 
 	//	Figure out the data file that we're working on
 
+	bool bDefaultDataFile = false;
 	CString sDataFile = pCmdLine->GetAttribute(CONSTLIT("dataFile"));
 	if (sDataFile.IsBlank())
+		{
+		bDefaultDataFile = true;
 		sDataFile = CONSTLIT("Transcendence");
+		}
 
 	//	See if we are doing a command that does not require parsing
 
@@ -280,6 +286,17 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		return;
 		}
 
+	//	Set to data file directory
+
+#if 0
+	if (!sDataFile.IsBlank())
+		{
+		CString sFolder = pathGetPath(sDataFile);
+		if (!sFolder.IsBlank())
+			::SetCurrentDirectory(sFolder.GetASCIIZPointer());
+		}
+#endif
+
 	//	Initialize the Universe
 
 	CHost Host;
@@ -289,7 +306,7 @@ void AlchemyMain (CXMLElement *pCmdLine)
 	if (bLogo)
 		printf("Loading...");
 
-	if (error = InitUniverse(Universe, Host, pCmdLine, &sError))
+	if (error = InitUniverse(Universe, Host, (bDefaultDataFile ? NULL_STR : sDataFile), pCmdLine, &sError))
 		{
 		if (bLogo)
 			printf("\n");
@@ -311,28 +328,21 @@ void AlchemyMain (CXMLElement *pCmdLine)
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_FREQ_SWITCH))
 		GenerateEncounterFrequency(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_TABLE_SWITCH))
-		{
-		CIDTable EntityTable(TRUE, TRUE);
-		ComputeUNID2EntityTable(sDataFile, EntityTable);
-		GenerateEncounterTable(Universe, pCmdLine, EntityTable);
-		}
+		GenerateEncounterTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(IMAGES_SWITCH))
 		GenerateImageChart(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ITEM_FREQUENCY_SWITCH))
 		GenerateItemFrequencyTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ITEM_TABLE_SWITCH))
-		{
-		CIDTable EntityTable(TRUE, TRUE);
-		ComputeUNID2EntityTable(sDataFile, EntityTable);
-		GenerateItemTable(Universe, pCmdLine, EntityTable);
-		}
+		GenerateItemTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(LOOT_SIM_SWITCH))
 		GenerateLootSim(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(RANDOM_ITEMS_SWITCH))
 		GenerateRandomItemTables(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(RANDOM_NUMBER_TEST))
 		DoRandomNumberTest();
-	else if (pCmdLine->FindAttribute(RUN_SWITCH))
+	else if (pCmdLine->FindAttribute(RUN_SWITCH)
+				|| pCmdLine->FindAttribute(RUN_FILE_SWITCH))
 		Run(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SHIELD_TEST_SWITCH))
 		GenerateShieldStats(Universe, pCmdLine);
@@ -343,11 +353,7 @@ void AlchemyMain (CXMLElement *pCmdLine)
 	else if (pCmdLine->GetAttributeBool(SHIP_IMAGES_SWITCH))
 		GenerateShipImageChart(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SHIP_TABLE_SWITCH))
-		{
-		CIDTable EntityTable(TRUE, TRUE);
-		ComputeUNID2EntityTable(sDataFile, EntityTable);
-		GenerateShipTable(Universe, pCmdLine, EntityTable);
-		}
+		GenerateShipTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SIM_TABLES_SWITCH))
 		GenerateSimTables(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SMOKE_TEST_SWITCH))
@@ -385,11 +391,7 @@ void AlchemyMain (CXMLElement *pCmdLine)
 	else if (pCmdLine->GetAttributeBool(TYPE_DEPENDENCIES_SWITCH))
 		GenerateTypeDependencies(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(TYPE_TABLE_SWITCH))
-		{
-		CIDTable EntityTable(TRUE, TRUE);
-		ComputeUNID2EntityTable(sDataFile, EntityTable);
-		GenerateTypeTable(Universe, pCmdLine, EntityTable);
-		}
+		GenerateTypeTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(TYPE_ISLANDS_SWITCH))
 		GenerateTypeIslands(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(HEXARC_TEST_SWITCH))
@@ -406,42 +408,6 @@ void AlchemyMain (CXMLElement *pCmdLine)
 	//	Done
 
 	::kernelSetDebugLog(NULL);
-	}
-
-void ComputeUNID2EntityTable (const CString &sDataFile, CIDTable &EntityTable)
-	{
-	ALERROR error;
-	int i;
-	CString sError;
-
-	//	Open the XML file
-
-	CResourceDb Resources(sDataFile);
-	if (error = Resources.Open(0, &sError))
-		{
-		printf("%s\n", (LPSTR)sError);
-		return;
-		}
-
-	CExternalEntityTable *pEntities;
-	if (error = Resources.LoadEntities(&sError, &pEntities))
-		{
-		printf("%s\n", sError.GetASCIIZPointer());
-		return;
-		}
-
-	//	Add the entities to an index of UNID to entity name
-
-	for (i = 0; i < pEntities->GetCount(); i++)
-		{
-		CString sEntity, sValue;
-		pEntities->GetEntity(i, &sEntity, &sValue);
-
-		//	Add to the list
-
-		DWORD dwUNID = strToInt(sValue, 0);
-		EntityTable.AddEntry(dwUNID, new CString(sEntity));
-		}
 	}
 
 ALERROR CreateXMLElementFromDataFile (const CString &sFilespec, CXMLElement **retpDataFile, CString *retsError)
@@ -509,11 +475,12 @@ ALERROR CreateXMLElementFromDataFile (const CString &sFilespec, CXMLElement **re
 	return NOERROR;
 	}
 
-ALERROR InitUniverse (CUniverse &Universe, CHost &Host, CXMLElement *pCmdLine, CString *retsError)
+ALERROR InitUniverse (CUniverse &Universe, CHost &Host, const CString &sFilespec, CXMLElement *pCmdLine, CString *retsError)
 	{
 	ALERROR error;
 
 	CUniverse::SInitDesc Ctx;
+	Ctx.sFilespec = sFilespec;
 	Ctx.pHost = &Host;
 	Ctx.bDebugMode = pCmdLine->GetAttributeBool(DEBUG_SWITCH);
 
@@ -642,10 +609,79 @@ void Run (CUniverse &Universe, CXMLElement *pCmdLine)
 	g_pUniverse->UpdateExtended();
 	g_pUniverse->GarbageCollectLibraryBitmaps();
 
+	CString sCommand = pCmdLine->GetAttribute(RUN_SWITCH);
+	CString sRunFile = pCmdLine->GetAttribute(RUN_FILE_SWITCH);
+
+	//	If this is a run file, then we parse it and run it
+
+	if (!sRunFile.IsBlank() && !strEquals(sRunFile, CONSTLIT("true")))
+		{
+		CCodeChainCtx Ctx;
+
+		//	Verify the file
+
+		if (!strEndsWith(sRunFile, CONSTLIT("."))
+				&& pathGetExtension(sRunFile).IsBlank())
+			sRunFile.Append(CONSTLIT(".tlisp"));
+
+		//	Open the file
+
+		CFileReadBlock InputFile(sRunFile);
+		if (error = InputFile.Open())
+			{
+			printf("error : Unable to open file '%s'.\n", sRunFile.GetASCIIZPointer());
+			return;
+			}
+
+		if (!bNoLogo)
+			printf("%s\n", sRunFile.GetASCIIZPointer());
+
+		//	Parse
+
+		CString sInputFile(InputFile.GetPointer(0), InputFile.GetLength(), TRUE);
+		CString sOutput;
+		int iOffset = 0;
+
+		while (true)
+			{
+			int iCharCount;
+			ICCItem *pCode = Ctx.Link(sInputFile, iOffset, &iCharCount);
+			if (pCode->IsNil())
+				break;
+			else if (pCode->IsError())
+				{
+				printf("error : %s\n", pCode->GetStringValue().GetASCIIZPointer());
+				Ctx.Discard(pCode);
+				return;
+				}
+
+			iOffset += iCharCount;
+
+			//	Execute
+
+			ICCItem *pResult = Ctx.Run(pCode);
+
+			//	Compose output
+
+			if (pResult->IsIdentifier())
+				sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
+			else
+				sOutput = CC.Unlink(pResult);
+
+			//	Free
+
+			Ctx.Discard(pResult);
+			Ctx.Discard(pCode);
+			}
+
+		//	Output result
+
+		printf("%s\n", sOutput.GetASCIIZPointer());
+		}
+
 	//	If we have a command, invoke it
 
-	CString sCommand = pCmdLine->GetAttribute(RUN_SWITCH);
-	if (!sCommand.IsBlank() && !strEquals(sCommand, CONSTLIT("True")))
+	else if (!sCommand.IsBlank() && !strEquals(sCommand, CONSTLIT("True")))
 		{
 		CCodeChainCtx Ctx;
 		ICCItem *pCode = Ctx.Link(sCommand, 0, NULL);

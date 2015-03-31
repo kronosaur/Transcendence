@@ -188,12 +188,11 @@
 			name=				"Arcology of New Victoria"
 			sovereign=			"&svCommonwealth;"
 			dockScreen=			"&dsStKatsArcology;"
-			defaultBackgroundID="&rsStKatsArcologyScreen;"
 
 			virtual=			"true"
 			definiteArticle=	"true"
 			
-			attributes=			"commonwealthCustoms, dockObj, human, majorStation, stKatsArcology"
+			attributes=			"commonwealthCustoms, dockObj, generic, human, majorStation, stKatsArcology"
 			>
 
 		<Items>
@@ -226,10 +225,29 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-7" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 		</Trade>
+		
+		<!-- Satellites -->
+
+		<Satellites>
+			<Station type="&stStKatsArcology15;"	xOffset="355"	 yOffset="88"	segment="true"/>
+			<Station type="&stStKatsArcology45;"	xOffset="260"	 yOffset="237"	segment="true"/>
+			<Station type="&stStKatsArcology75;"	xOffset="95"	 yOffset="320"	segment="true"/>
+			<Station type="&stStKatsArcology105;"	xOffset="-95"	 yOffset="320"	segment="true"/>
+			<Station type="&stStKatsArcology135;"	xOffset="-260"	 yOffset="237"	segment="true"/>
+			<Station type="&stStKatsArcology165;"	xOffset="-355"	 yOffset="88"	segment="true"/>
+			<Station type="&stStKatsArcology195;"	xOffset="-355"	 yOffset="-90"	segment="true"/>
+			<Station type="&stStKatsArcology225;"	xOffset="-260"	 yOffset="-252"	segment="true"/>
+			<Station type="&stStKatsArcology255;"	xOffset="-95"	 yOffset="-323"	segment="true"/>
+			<Station type="&stStKatsArcology285;"	xOffset="95"	 yOffset="-323"	segment="true"/>
+			<Station type="&stStKatsArcology315;"	xOffset="260"	 yOffset="-252"	segment="true"/>
+			<Station type="&stStKatsArcology345;"	xOffset="355"	 yOffset="-90"	segment="true"/>
+		</Satellites>
+		
+		<HeroImage imageID="&rsStKatsArcologyHero;" imageWidth="800" imageHeight="528"/>
 		
 		<StaticData>
 			<ParliamentDebate>
@@ -859,7 +877,7 @@
 			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, monument, populated"
+			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, majorStation, monument, populated"
 			>
 
 		<Image imageID="&rsIocrymMonument;" imageWidth="160" imageHeight="236"/>
@@ -1478,10 +1496,10 @@
 
 				<Actions>
 					<Action name="Buy Items" default="1" key="B">
-						; Buy screen
-						(scrShowBuyScreen 
-							"* +Food; +Specialty;"	; items sold to player
-							)
+						(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+							criteria: "* +food; +specialty;"
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Leave" cancel="1" key="L">
@@ -2282,6 +2300,7 @@
 	<SystemType UNID="&ssStKatharine;" 
 				noRandomEncounters=	"true"
 				noExtraEncounters=	"true"
+				backgroundID=		"&rsBrightStarSpace;"
 				>
 
 		<Tables>
@@ -2356,11 +2375,11 @@
 						<Station type="&stVolcanicPlanetoidSizeG;" name="Redglow" showOrbit="true" />
 					</Primary>
 
-					<Orbitals distance="18" angle="equidistant">
+					<Orbitals distance="24" angle="equidistant">
 						<Group>
 							<Lookup table="StargateOutbound"/>
 							
-							<Siblings radiusInc="8">
+							<Siblings radiusInc="18">
 								<Station type="&stCommonwealthNavSign;">
 									<InitialData>
 										<Sign>"Travel\nWarning!"</Sign>
@@ -2402,19 +2421,6 @@
 						<Station type="&stBiosphereTerrestrialSizeI;" name="Incandescent" showOrbit="true"/>
 						
 						<Station type="&stStKatsArcology;"/>
-						
-						<Station type="&stStKatsArcology15;"	xOffset="355"	 yOffset="88"/>
-						<Station type="&stStKatsArcology45;"	xOffset="260"	 yOffset="237"/>
-						<Station type="&stStKatsArcology75;"	xOffset="95"	 yOffset="320"/>
-						<Station type="&stStKatsArcology105;"	xOffset="-95"	 yOffset="320"/>
-						<Station type="&stStKatsArcology135;"	xOffset="-260"	 yOffset="237"/>
-						<Station type="&stStKatsArcology165;"	xOffset="-355"	 yOffset="88"/>
-						<Station type="&stStKatsArcology195;"	xOffset="-355"	 yOffset="-90"/>
-						<Station type="&stStKatsArcology225;"	xOffset="-260"	 yOffset="-252"/>
-						<Station type="&stStKatsArcology255;"	xOffset="-95"	 yOffset="-323"/>
-						<Station type="&stStKatsArcology285;"	xOffset="95"	 yOffset="-323"/>
-						<Station type="&stStKatsArcology315;"	xOffset="260"	 yOffset="-252"/>
-						<Station type="&stStKatsArcology345;"	xOffset="355"	 yOffset="-90"/>
 					</Primary>
 					
 					<Orbitals count="9" distance="36" angle="equidistant">
@@ -2539,7 +2545,7 @@
 						<Group>
 							<Lookup table="StargateInbound"/>
 							
-							<Siblings radiusInc="8">
+							<Siblings radiusInc="18">
 								<Station type="&stCommonwealthNavSign;">
 									<InitialData>
 										<Sign>"Welcome!"</Sign>
@@ -2876,6 +2882,7 @@
 	<Image UNID="&rsStKatsArcology;"	bitmap="Resources\StKatsArcology.jpg" bitmask="Resources\StKatsArcologyMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsIocrymMonument;"	bitmap="Resources\FirstContactMonument.jpg" bitmask="Resources\FirstContactMonumentMask.bmp"  loadOnUse="true"/>
 	
+	<Image UNID="&rsStKatsArcologyHero;"		bitmap="Resources\StKatsArcologyHero.jpg" bitmask="Resources\StKatsArcologyHeroMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsStKatsArcologyScreen;"		bitmap="Resources\StKatsArcologyScreen.jpg" loadOnUse="true"/>
 	<Image UNID="&rsStKatsArcologySchematic;"	bitmap="Resources\StKatsArcologySchematic.jpg" bitmask="Resources\StKatsArcologySchematicMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsIocrymMonumentScreen;"		bitmap="Resources\FirstContactMonumentScreen.jpg" loadOnUse="true"/>

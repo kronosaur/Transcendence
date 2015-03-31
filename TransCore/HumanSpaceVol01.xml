@@ -1,0 +1,1688 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE CoreLibrary
+	[
+	<!ENTITY ssEarthSpaceStandard		"0x00000001">
+	<!ENTITY ssEarthSpaceRedDwarf		"0x00000002">
+	<!ENTITY ssEarthSpaceAsteroids		"0x00000003">
+	<!ENTITY ssEarthSpaceDesert			"0x00000004">
+	<!ENTITY ssEarthSpaceNebulae		"0x00000005">
+	<!ENTITY ssEarthSpaceVolcanic		"0x00000006">
+	<!ENTITY ssEarthSpaceIceRing		"0x00000007">
+	<!ENTITY ssEarthSpaceBinary			"0x00000008">
+	<!ENTITY ssEarthSpaceAsteroidArcs	"0x00000009">
+	<!ENTITY ssEarthSpaceAsteroids2		"0x00000009">	<!-- Needed for backwards compatibility -->
+	<!ENTITY ssEarthSpaceDesert2		"0x0000000A">
+	<!ENTITY tbHumanSystemParts			"0x0000000C">
+	
+	<!ENTITY efEIBlasterBeam			"0x00000060">
+	<!ENTITY efEIBlasterHit				"0x00000061">
+	<!ENTITY efSlamCannonShell			"0x00000062">
+	<!ENTITY efAkanCannonShell			"0x00000063">
+	<!ENTITY efThermoCannonShell		"0x00000064">
+	
+	<!ENTITY rsMissileNAMI				"0x00000080">
+	<!ENTITY efMissileNAMI				"0x00000081">
+	<!ENTITY rsMissileStrelka			"0x00000082">
+	<!ENTITY efMissileStrelka			"0x00000083">
+	<!ENTITY efMissileRasiermesser		"0x00000084">
+	<!ENTITY efMissileNAMIHeavy			"0x00000085">
+	<!ENTITY efMissileMAG				"0x00000086">
+	
+	<!ENTITY svPlayer					"0x00001001">
+	<!ENTITY svCommonwealth				"0x00001002">
+	<!ENTITY svIndependent				"0x00001003">
+	<!ENTITY svIndependentTrader		"0x00001004">
+	<!ENTITY svPirates					"0x00001005">
+	<!ENTITY svOutlaw					"0x00001006">
+	<!ENTITY svAres						"0x00001007">
+	<!ENTITY svAnarchists				"0x00001008">
+	<!ENTITY svSettlers					"0x00001009">
+	<!ENTITY svCult						"0x0000100A">
+	<!ENTITY svRogueFleet				"0x0000100B">
+	<!ENTITY svSung						"0x0000100C">
+	<!ENTITY svSungSlaves				"0x0000100D">
+	<!ENTITY svDestructiveChaos			"0x0000100E">
+	<!ENTITY svDestructiveOrder			"0x00001010">
+	<!ENTITY svCorporate				"0x00001011">
+	<!ENTITY svBlackMarket				"0x00001012">
+	<!ENTITY svDefectiveAuton			"0x00001013">
+	<!ENTITY svFerianMiners				"0x00001014">
+	<!ENTITY svRingers					"0x00001015">
+	<!ENTITY svFerianMinersAngry		"0x00001016">
+	<!ENTITY ecCreditEconomy			"0x00001017">
+	<!ENTITY svUnknownEnemy				"0x00001018">
+	
+	<!ENTITY stShipwreck				"0x00002001">
+	<!ENTITY stCargoCrate				"0x00002003">
+	<!ENTITY stNavBeacon				"0x00002004">
+	<!ENTITY stNavSign					"0x00002005">
+	<!ENTITY stDebugDepot				"0x00002006">
+	<!ENTITY stBarricade1				"0x00002007">
+	<!ENTITY stBarricade2				"0x00002008">
+	<!ENTITY stBarricade3				"0x00002009">
+	<!ENTITY stLogBuoy					"0x0000200C">
+	<!ENTITY stFlotsam					"0x0000200E">
+	
+	<!ENTITY scEI100					"0x00003001">
+	<!ENTITY scRoninA					"0x00003002">
+	<!ENTITY scRoninB					"0x00003003">
+	<!ENTITY scRoninC					"0x00003004">
+	<!ENTITY scTenhoveSentinel			"0x00003005">
+	<!ENTITY scEI100M					"0x00003006">
+	<!ENTITY scMikeno					"0x00003007">
+	<!ENTITY scSapphireYacht			"0x00003008">
+	<!ENTITY scT31ArmedTransport		"0x00003009">
+	<!ENTITY scAutoSentinel				"0x0000300A">
+	<!ENTITY scMuleAuton				"0x0000300B">
+	<!ENTITY sc300DDefenderAuton		"0x0000300C">
+	<!ENTITY sc1MBattleAuton			"0x0000300D">
+	<!ENTITY sc1MiBattleAuton			"0x0000300E">
+	<!ENTITY sc310AAegisAuton			"0x0000300F">
+	<!ENTITY scEI500					"0x00003010">
+	<!ENTITY scWolfen					"0x00003011">
+	<!ENTITY sc200ADefenderAuton		"0x00003017">
+	<!ENTITY scExplorerAuton			"0x00003018">
+	
+	<!ENTITY scSapphirePlayer			"0x00003801">
+	<!ENTITY scEI100XPlayer				"0x00003802">
+	<!ENTITY scWolfenPlayer				"0x00003803">
+	
+	<!ENTITY itLightTitaniumPlate		"0x00004001">
+	<!ENTITY itHeavyReactiveArmor		"0x00004002">
+	<!ENTITY itReactiveArmor			"0x00004003">
+	<!ENTITY itDuralloyArmor			"0x00004004">
+	<!ENTITY itPlasteelPlate			"0x00004005">
+	<!ENTITY itStealthPlate				"0x00004006">
+	<!ENTITY itCarbideCarapace			"0x00004007">
+	<!ENTITY itHeavyPlasteelPlate		"0x00004008">
+	<!ENTITY itTransuranicPlate			"0x00004009">
+	<!ENTITY itNeutroniumPlate			"0x0000400A">
+	<!ENTITY itDarkMatterPlate			"0x0000400B">
+	<!ENTITY itHierosteelPlate			"0x0000400C">
+	<!ENTITY itLaserCannon				"0x0000400D">
+	<!ENTITY itRecoillessCannon			"0x0000400E">
+	<!ENTITY itParticleBeamWeapon		"0x0000400F">
+	<!ENTITY itNAMIMissileLauncher		"0x00004010">
+	<!ENTITY itKM100Missile				"0x00004011">
+	<!ENTITY itDualLaserCannon			"0x00004012">
+	<!ENTITY itDualRecoillessCannon		"0x00004013">
+	<!ENTITY itXM300Missile				"0x00004014">
+	<!ENTITY itKM500Missile				"0x00004015">
+	<!ENTITY itXRayLaserCannon			"0x00004016">
+	<!ENTITY itPlasmaCannon				"0x00004017">
+	<!ENTITY itMuleAuton				"0x00004018">
+	<!ENTITY itXM900Missile				"0x00004019">
+	<!ENTITY itCalligraphyScroll		"0x0000401A">
+	<!ENTITY itPromethiumCrystal		"0x0000401B">
+	<!ENTITY it310AAegisAuton			"0x0000401C">
+	<!ENTITY itHeavyCeramicPlate		"0x0000401D">
+	<!ENTITY itKilotonCannonShell		"0x0000401E">
+	<!ENTITY itPatchSpider				"0x0000401F">
+	<!ENTITY itKilotonCannon			"0x00004020">
+	<!ENTITY itAbsolutionCannon			"0x00004021">
+	<!ENTITY itScrambleAlgorithm		"0x00004022">
+	<!ENTITY itMnemonicProcessor		"0x00004023">
+	<!ENTITY itHydrocarbons				"0x00004025">
+	<!ENTITY itWaterIce					"0x00004026">
+	<!ENTITY itFrozenSupplies			"0x00004027">
+	<!ENTITY itCarbonSpool				"0x00004029">
+	<!ENTITY itMedicalSupplies			"0x0000402B">
+	<!ENTITY itUraniumRods				"0x0000402D">
+	<!ENTITY itBiofactorPaste			"0x0000402E">
+	<!ENTITY itHyperfiberRoll			"0x0000402F">
+	<!ENTITY itHumanOrgans				"0x00004032">
+	<!ENTITY itMicrosaur				"0x00004033">
+	<!ENTITY itOmniLaserCannon			"0x00004035">
+	<!ENTITY itClass1Deflector			"0x00004036">
+	<!ENTITY itClass2Deflector			"0x00004037">
+	<!ENTITY itClass3Deflector			"0x00004038">
+	<!ENTITY itPlasmaShieldGenerator	"0x00004039">
+	<!ENTITY itTrentonFieldGenerator	"0x0000403A">
+	<!ENTITY itLazarusShieldGenerator	"0x0000403B">
+	<!ENTITY itHelium3FuelRod			"0x0000403C">
+	<!ENTITY itMiningLaser				"0x0000403D">
+	<!ENTITY itAblativeArmorCoating		"0x0000403E">
+	<!ENTITY itCarbonWeaverNanos		"0x0000403F">
+	<!ENTITY itDegeneratingNanos		"0x00004040">
+	<!ENTITY itOrganicAcid				"0x00004041">
+	<!ENTITY itReactiveArmorCoating		"0x00004042">
+	<!ENTITY itReflectiveArmorCoating	"0x00004043">
+	<!ENTITY itRegeneratingNanos		"0x00004044">
+	<!ENTITY itRepairingNanos			"0x00004045">
+	<!ENTITY itSiliconArmorPatch		"0x00004046">
+	<!ENTITY itSRSDamageROM				"0x00004047">
+	<!ENTITY itEnhanceShieldsROM		"0x00004048">
+	<!ENTITY itAutopilotROM				"0x00004049">
+	<!ENTITY itSystemMapROM				"0x0000404A">
+	<!ENTITY itTritiumPropulsionUpgrade	"0x0000404B">
+	<!ENTITY itTitanFusionDrive			"0x0000404C">
+	<!ENTITY itPteracniumMegadrive		"0x0000404D">
+	<!ENTITY itPhotorepairArmor			"0x0000404E">
+	<!ENTITY itCeramicPlate				"0x0000404F">
+	<!ENTITY itDiamondLatticeArmor		"0x00004050">
+	<!ENTITY itPolymeshArmor			"0x00004051">
+	<!ENTITY itTempusSyrette			"0x00004052">
+	<!ENTITY itBootleg3DV				"0x00004053">
+	<!ENTITY itMartianNori				"0x00004054">
+	<!ENTITY itLaudanumAmpule			"0x00004055">
+	<!ENTITY itBlackMarketID			"0x00004056">
+	<!ENTITY itTitaniumPlate			"0x00004057">
+	<!ENTITY itFragmentationMissile		"0x00004058">
+	<!ENTITY itTargetingComputerROM		"0x00004059">
+	<!ENTITY itLightPlasteelPlate		"0x0000405A">
+	<!ENTITY itSmartCannon				"0x0000405B">
+	<!ENTITY itSmartCannonShell			"0x0000405C">
+	<!ENTITY itBlaster					"0x0000405D">
+	<!ENTITY itArbalestCannon			"0x0000405E">
+	<!ENTITY itKineticEnhancer			"0x0000405F">
+	<!ENTITY itUnknownBarrel			"0x00004060">
+	<!ENTITY itUnknownROM				"0x00004061">
+	<!ENTITY itHeavyTitaniumPlate		"0x00004062">
+	<!ENTITY itTurbolaserCannon			"0x00004063">
+	<!ENTITY itDualParticleBeamWeapon	"0x00004064">
+	<!ENTITY itDragonflyMissileSystem	"0x00004065">
+	<!ENTITY itDragonflyCartridge		"0x00004066">
+	<!ENTITY itXMHArmor					"0x00004067">
+	<!ENTITY itSolonShieldGenerator		"0x00004068">
+	<!ENTITY itFlenserCannon			"0x00004069">
+	<!ENTITY itPolyceramicPlate			"0x0000406A">
+	<!ENTITY itTevlarCompositeArmor		"0x0000406B">
+	<!ENTITY itSmallArmorPatch			"0x0000406C">
+	<!ENTITY itLargeArmorPatch			"0x0000406D">
+	<!ENTITY itMAGLauncher				"0x0000406E">
+	<!ENTITY it400HexageneMAG			"0x0000406F">
+	<!ENTITY it600HexageneMAG			"0x00004070">
+	<!ENTITY it800HexageneMAG			"0x00004071">
+	<!ENTITY itZG24ClusterMAG			"0x00004072">
+	<!ENTITY it3KSiegeMAG				"0x00004073">
+	<!ENTITY itHighFluxMAG				"0x00004074">
+	<!ENTITY itDualTurbolaserCannon		"0x00004075">
+	<!ENTITY itDualFlenserCannon		"0x00004076">
+	<!ENTITY itIonCannon				"0x00004077">
+	<!ENTITY itWasteCannon				"0x00004078">
+	<!ENTITY itCargoHoldExpansion		"0x00004079">
+	<!ENTITY itAdvancedReactiveArmor	"0x0000407A">
+	<!ENTITY itHardenedPlasteelPlate	"0x0000407B">
+	<!ENTITY itSolarArmor				"0x0000407C">
+	<!ENTITY itSuperconductingShields	"0x0000407D">
+	<!ENTITY itSuperconductingCoil		"0x0000407E">
+	<!ENTITY itSolarPanelArray			"0x0000407F">
+	<!ENTITY itSmugglersCargoHold		"0x00004080">
+	<!ENTITY itHeavyRecoillessCannon	"0x00004081">
+	<!ENTITY itReinforcedTitanium2		"0x00004082">
+	<!ENTITY itGradeBGrains				"0x00004083">
+	<!ENTITY itWhiteRice				"0x00004084">
+	<!ENTITY itStimuzine				"0x00004085">
+	<!ENTITY itVenusianRum				"0x00004086">
+	<!ENTITY itBeefCylinders			"0x00004087">
+	<!ENTITY itSalmonite				"0x00004088">
+	<!ENTITY itCharlesRiverWater		"0x00004089">
+	<!ENTITY itGradeAGrains				"0x0000408A">
+	<!ENTITY itNeolinen					"0x0000408B">
+	<!ENTITY itMartianMerlot			"0x0000408C">
+	<!ENTITY itSyntheticChicken			"0x0000408D">
+	<!ENTITY itRedNebulaBeer			"0x0000408E">
+	<!ENTITY itEridaniWater				"0x0000408F">
+	<!ENTITY itPhotocotton				"0x00004090">
+	<!ENTITY itAustralianChardonay		"0x00004091">
+	<!ENTITY itEuropanIceVodka			"0x00004092">
+	<!ENTITY itMegathereMeat			"0x00004093">
+	<!ENTITY itNeolinenSuit				"0x00004094">
+	<!ENTITY itSegway					"0x00004096">
+	<!ENTITY itCentauriRice				"0x00004097">
+	<!ENTITY itKobeWater				"0x00004098">
+	<!ENTITY itSilk						"0x00004099">
+	<!ENTITY itBombaySapphireGin		"0x0000409A">
+	<!ENTITY itCaliforniaCabernet		"0x0000409B">
+	<!ENTITY itTerranEggs				"0x0000409C">
+	<!ENTITY itHogeiSalmon				"0x0000409D">
+	<!ENTITY itEuropanIceMoss			"0x0000409E">
+	<!ENTITY itSilkSuit					"0x0000409F">
+	<!ENTITY itMisatoSake				"0x000040A0">
+	<!ENTITY itExileStarportChampagne	"0x000040A1">
+	<!ENTITY itHennessyCognac			"0x000040A2">
+	<!ENTITY itNaturalHam				"0x000040A3">
+	<!ENTITY itHeartAndLungsProsthesis	"0x000040A4">
+	<!ENTITY itNaturalPeriweed			"0x000040A5">
+	<!ENTITY itLeatherBoots				"0x000040A6">
+	<!ENTITY itRowenaVol1				"0x000040A7">
+	<!ENTITY itRowenaVol2				"0x000040A8">
+	<!ENTITY itRowenaVol3				"0x000040A9">
+	<!ENTITY itRowenaVol4				"0x000040AA">
+	<!ENTITY itRowenaVol5				"0x000040AB">
+	<!ENTITY itReinforcedTitanium1		"0x000040AC">
+	<!ENTITY itReinforcedTitanium3		"0x000040AD">
+	<!ENTITY itHeliumAssembly			"0x000040AE">
+	<!ENTITY itPteracniumFuelRod		"0x000040AF">
+	<!ENTITY itLaserAmplifier			"0x000040B0">
+	<!ENTITY itStarCannon				"0x000040B1">
+	<!ENTITY itTridentCannon			"0x000040B2">
+	<!ENTITY itHullPlateIonizer			"0x000040B3">
+	<!ENTITY itFastFireLaserCannon		"0x000040B4">
+	<!ENTITY itPartisanCannon			"0x000040B5">
+	<!ENTITY itLaserArray				"0x000040B6">
+	<!ENTITY itSlamCannon				"0x000040B7">
+	<!ENTITY itArmorRepairDevice		"0x000040B8">
+	<!ENTITY itUnknownID				"0x000040B9">
+	<!ENTITY itUnknownHyperglyph		"0x000040BA">
+	<!ENTITY itHeavyWater				"0x000040BB">
+	<!ENTITY itEnhanceSRSROM			"0x000040BC">
+	<!ENTITY itDeconGel					"0x000040BD">
+	<!ENTITY itRadioactiveWaste			"0x000040BE">
+	<!ENTITY itStargateControlRod		"0x000040BF">
+	<!ENTITY itBlastPlate				"0x000040C0">
+	<!ENTITY itAkan30Cannon				"0x000040C1">
+	<!ENTITY itAkan30CannonShell		"0x000040C2">
+	<!ENTITY itHardenedReactiveArmor	"0x000040C3">
+	<!ENTITY itDisposableLauncher		"0x000040C4">
+	<!ENTITY itLightRecoillessCannon	"0x000040C5">
+	<!ENTITY itFusionTrigger			"0x000040C6">
+	<!ENTITY itMilitaryID				"0x000040C7">
+	<!ENTITY itMedalOfDistinction		"0x000040C8">
+	<!ENTITY itMedalOfHonor				"0x000040C9">
+	<!ENTITY itLancerCannon				"0x000040CA">
+	<!ENTITY itMarkIHowitzer			"0x000040CB">
+	<!ENTITY itLaserEnhancer			"0x000040CC">
+	<!ENTITY itYoroiS100				"0x000040CD">
+	<!ENTITY itYoroiS500				"0x000040CE">
+	<!ENTITY itYoroiMX					"0x000040CF">
+	<!ENTITY itGusokuArmor				"0x000040D0">
+	<!ENTITY itSunflareCannon			"0x000040D1">
+	<!ENTITY itBlinderCannon			"0x000040D2">
+	<!ENTITY itMonopoleDeflector		"0x000040D3">
+	<!ENTITY itNeutronBlaster			"0x000040D4">
+	<!ENTITY itUnknownHaloGem			"0x000040D5">
+	<!ENTITY itUnknownAlienDevice		"0x000040D6">
+	<!ENTITY itParticleBoltCannon		"0x000040D7">
+	<!ENTITY itParticleBoltCartridge	"0x000040D8">
+	<!ENTITY itAkan600Turret			"0x000040D9">
+	<!ENTITY itHanzoBlaster				"0x000040DA">
+	<!ENTITY itMarkIIIHowitzer			"0x000040DB">
+	<!ENTITY itTeV9Blaster				"0x000040DC">
+	<!ENTITY itUnknownAuton				"0x000040DD">
+	<!ENTITY itUnknownMnemonicCube		"0x000040DE">
+	<!ENTITY itLightMeteorsteel			"0x000040DF">
+	<!ENTITY itHeavyMeteorsteel			"0x000040E0">
+	<!ENTITY itMissileDefense			"0x000040E1">
+	<!ENTITY itWorldshipArmorPlate		"0x000040E2">
+	<!ENTITY itGemOfContrition			"0x000040E3">
+	<!ENTITY itRasiermesserLauncher		"0x000040E4">
+	<!ENTITY itGotha10Missile			"0x000040E5">
+	<!ENTITY itGotha400Seeker			"0x000040E6">
+	<!ENTITY itP120HexphaseArmor		"0x000040E7">
+	<!ENTITY itP210HexphaseArmor		"0x000040E8">
+	<!ENTITY itP1000HexphaseArmor		"0x000040E9">
+	<!ENTITY it1MiBattleAuton			"0x000040EA">
+	<!ENTITY itTranspaceJumpdrive		"0x000040EB">
+	<!ENTITY itOmniParticleCannon		"0x000040EC">
+	<!ENTITY itAutoSentinel				"0x000040ED">
+	<!ENTITY it300DDefenderAuton		"0x000040EE">
+	<!ENTITY it1MBattleAuton			"0x000040EF">
+	<!ENTITY itCashCardBlue				"0x000040F0">
+	<!ENTITY itCashCardGold				"0x000040F1">
+	<!ENTITY itCashCardPlatinum			"0x000040F2">
+	<!ENTITY itDefectiveAuton			"0x000040F3">
+	<!ENTITY itHypermycin				"0x000040F4">
+	<!ENTITY itArtificialPlasma			"0x000040F5">
+	<!ENTITY itRejuvTankFluid			"0x000040F6">
+	<!ENTITY itGemOfDespair				"0x000040F7">
+	<!ENTITY itOpticalKnowledgeArray	"0x000040F8">
+	<!ENTITY itPlasmaTorch				"0x000040F9">
+	<!ENTITY itR1Deflector				"0x000040FA">
+	<!ENTITY itR5Deflector				"0x000040FB">
+	<!ENTITY itMorningStarCannon		"0x000040FC">
+	<!ENTITY itChronimiumGas			"0x00004101">
+	<!ENTITY itBosonCondensate			"0x00004102">
+	<!ENTITY itQuantumVacuum			"0x00004103">
+	<!ENTITY itBooster					"0x00004105">
+	<!ENTITY itDeathDrugs				"0x00004106">
+	<!ENTITY it25MWReactor				"0x00004107">
+	<!ENTITY it100MWReactor				"0x00004108">
+	<!ENTITY it250MWReactor				"0x00004109">
+	<!ENTITY it1GWReactor				"0x0000410A">
+	<!ENTITY itInertialessDrive			"0x0000410B">
+	<!ENTITY itDualTeV9Blaster			"0x0000410C">
+	<!ENTITY itDamageWeaponROM			"0x0000410D">
+	<!ENTITY itIonDisruptor				"0x0000410E">
+	<!ENTITY itDeathCube				"0x0000410F">
+	<!ENTITY itThermoCannon				"0x00004110">
+	<!ENTITY itThermoCannonShell		"0x00004111">
+	<!ENTITY itOmniTurbolaserCannon		"0x00004112">
+	<!ENTITY itOmniTeV9Blaster			"0x00004113">
+	<!ENTITY itOmniThermoCannon			"0x00004114">
+	<!ENTITY itOmniIonBlaster			"0x00004115">
+	<!ENTITY itHeavySlamCannon			"0x00004116">
+	<!ENTITY itMakayevLauncher			"0x00004117">
+	<!ENTITY itStrelkaWhite				"0x00004118">
+	<!ENTITY itStrelkaGreen				"0x00004119">
+	<!ENTITY itStrelkaRed				"0x0000411A">
+	<!ENTITY itStrelkaBlack				"0x0000411B">
+	<!ENTITY itAmmoBoxAkan30			"0x0000411C">
+	<!ENTITY itAmmoBoxStrelka1			"0x0000411D">
+	<!ENTITY itAmmoBoxMAG				"0x0000411E">
+	<!ENTITY itAmmoBoxThermo			"0x0000411F">
+	<!ENTITY itAmmoBoxStrelka2			"0x00004120">
+	<!ENTITY itAmmoBoxRadioactive		"0x00004121">
+	<!ENTITY itAmmoBoxContraband		"0x00004122">
+	<!ENTITY itAmmoBoxParalysis			"0x00004123">
+	<!ENTITY it500MWReactor				"0x00004124">
+	<!ENTITY itKytrynLauncher			"0x00004125">
+	<!ENTITY itKytrynPlasmaSeed			"0x00004126">
+	<!ENTITY itUnknownAlienDevice10		"0x00004127">
+	<!ENTITY itIonFlameCannon			"0x00004128">
+	<!ENTITY itHeavyIonBlaster			"0x00004129">
+	<!ENTITY itTritiumCannon			"0x0000412A">
+	<!ENTITY itAdvancedTritiumCannon	"0x0000412B">
+	<!ENTITY itFusionfireHowitzer		"0x0000412C">
+	<!ENTITY itNAMIMineLauncher			"0x0000412D">
+	<!ENTITY itStaticMine				"0x0000412E">
+	<!ENTITY itTrackingMine				"0x0000412F">
+	<!ENTITY itAdvancedPlasteelPlate	"0x00004130">
+	<!ENTITY itLightOrthoSteel			"0x00004131">
+	<!ENTITY itOrthoSteel				"0x00004132">
+	<!ENTITY itHeavyOrthoSteel			"0x00004133">
+	<!ENTITY itCeralloyArmor			"0x00004134">
+	<!ENTITY itHeavyCeralloyArmor		"0x00004135">
+	<!ENTITY itAdvancedCeralloyArmor	"0x00004136">
+	<!ENTITY itQuadroCarbideArmor		"0x00004137">
+	<!ENTITY itHexaCarbideArmor			"0x00004138">
+	<!ENTITY itOctoCarbideArmor			"0x00004139">
+	<!ENTITY itLightBlastPlate			"0x0000413A">
+	<!ENTITY itHeavyBlastPlate			"0x0000413B">
+	<!ENTITY itLightIthaliumArmor		"0x0000413C">
+	<!ENTITY itIthaliumArmor			"0x0000413D">
+	<!ENTITY itHeavyIthaliumArmor		"0x0000413E">
+	<!ENTITY itNephrenP25				"0x00004142">
+	<!ENTITY itNephrenB700				"0x00004143">
+	<!ENTITY itNephrenX1				"0x00004144">
+	<!ENTITY itInvincibleDeflector		"0x00004145">
+	<!ENTITY itIonReflector				"0x00004146">
+	<!ENTITY itTaikon10Deflector		"0x00004147">
+	<!ENTITY itTaikon200Deflector		"0x00004148">
+	<!ENTITY itJotunDeflector			"0x00004149">
+	<!ENTITY itGreenEtheriumCrystal		"0x0000414A">
+	<!ENTITY itBlueEtheriumCrystal		"0x0000414B">
+	<!ENTITY itYellowEtheriumCrystal	"0x0000414C">
+	<!ENTITY itDecayedEtheriumCrystal	"0x0000414D">
+	<!ENTITY itMolbidiumCrystal			"0x0000414E">
+	<!ENTITY itDiamondCrystal			"0x0000414F">
+	<!ENTITY itShieldOptimizer			"0x00004150">
+	<!ENTITY itDefectiveShieldOptimizer	"0x00004151">
+	<!ENTITY itShieldPowerSaver			"0x00004152">
+	<!ENTITY itParticleResistCoating	"0x00004153">
+	<!ENTITY itRadiationImmuneCoating	"0x00004154">
+	<!ENTITY itEMPImmuneCoating			"0x00004155">
+	<!ENTITY itIonResistCoating			"0x00004156">
+	<!ENTITY itShieldInterfereCoating	"0x00004157">
+	<!ENTITY itIonEffectImmuneCoating	"0x00004158">
+	<!ENTITY itThermoResistCoating		"0x00004159">
+	<!ENTITY itCarbonWeaver2Coating		"0x0000415A">
+	<!ENTITY itUnknownBarrel5			"0x0000415B">
+	<!ENTITY itJinnKahn					"0x0000415C">
+	<!ENTITY itIcelandicSalmon			"0x0000415D">
+	<!ENTITY itCyanavir					"0x0000415E">
+	<!ENTITY itHumanCadaver				"0x0000415F">
+	<!ENTITY itCDMArchive				"0x00004160">
+	<!ENTITY itNeurosPMP				"0x00004161">
+	<!ENTITY itRingerSpice				"0x00004162">
+	<!ENTITY itPrimeBeef				"0x00004163">
+	<!ENTITY itDigitalWristComputer		"0x00004164">
+	<!ENTITY itPortableAutodoc			"0x00004165">
+	<!ENTITY itBarianiOliveOil			"0x00004166">
+	<!ENTITY itNewCoke					"0x00004168">
+	<!ENTITY itCrystallineUranium		"0x00004169">
+	<!ENTITY itIthaliumWatch			"0x0000416A">
+	<!ENTITY itJasminePearlTea			"0x0000416B">
+	<!ENTITY itMalachiteCrystal			"0x0000416C">
+	<!ENTITY itRingerAmbrosia			"0x0000416D">
+	<!ENTITY itImperialCaviar			"0x00004170">
+	<!ENTITY itCerusiteCrystal			"0x00004171">
+	<!ENTITY itNeuranase				"0x00004172">
+	<!ENTITY itKytrynBlaster			"0x00004173">
+	<!ENTITY itTM7Cannon				"0x00004174">
+	<!ENTITY itTM7Warhead				"0x00004175">
+	<!ENTITY itIM90Blaster				"0x00004176">
+	<!ENTITY itMarkVHowitzer			"0x00004177">
+	<!ENTITY it50MWReactor				"0x00004178">
+	<!ENTITY itIocrymRepeller			"0x00004179">
+	<!ENTITY it150MWReactor				"0x0000417A">
+	<!ENTITY itXenotiteFuelRod			"0x0000417B">
+	<!ENTITY itHadronVacuumFuelCell		"0x0000417C">
+	<!ENTITY itMammoth25Deflector		"0x0000417D">
+	<!ENTITY itMammoth50Deflector		"0x0000417E">
+	<!ENTITY itMammoth100Deflector		"0x0000417F">
+	<!ENTITY itMilitaryMapROM			"0x00004180">
+	<!ENTITY itShtormRepeater			"0x00004181">
+	<!ENTITY itV10PoweredArmor			"0x00004182">
+	<!ENTITY itV300PoweredArmor			"0x00004183">
+	<!ENTITY itR9Deflector				"0x00004184">
+	<!ENTITY itNAMIHeavyLauncher		"0x00004185">
+	<!ENTITY itM2Missile				"0x00004186">
+	<!ENTITY itM5Missile				"0x00004187">
+	<!ENTITY itS3Missile				"0x00004188">
+	<!ENTITY itGemOfSacrifice			"0x00004189">
+	<!ENTITY itKineticUpgrade			"0x0000418A">
+	<!ENTITY itParticleUpgrade			"0x0000418B">
+	<!ENTITY itBlastUpgrade				"0x0000418C">
+	<!ENTITY itIonUpgrade				"0x0000418D">
+	<!ENTITY itThermoUpgrade			"0x0000418E">
+	<!ENTITY itWeaponSpeedROM			"0x0000418F">
+	<!ENTITY itMinersCargoHold			"0x00004190">
+	<!ENTITY itDM1500MissileRack		"0x00004191">
+	<!ENTITY itDataROM					"0x00004192">
+	<!ENTITY itOmniPartisanCannon		"0x00004193">
+	<!ENTITY itHydrogenGas				"0x00004194">
+	<!ENTITY itLiquidOxygen				"0x00004195">
+	<!ENTITY itKM120Missile				"0x00004196">
+	<!ENTITY itKM550Missile				"0x00004197">
+	<!ENTITY itJB2ShieldBusterMAG		"0x00004198">
+	<!ENTITY itMoskvaLightTurret		"0x00004199">
+	<!ENTITY itCyclotronDeflectorI		"0x0000419A">
+	<!ENTITY itCyclotronDeflectorIII	"0x0000419B">
+	<!ENTITY itCyclotronDeflectorIV		"0x0000419C">
+	<!ENTITY itCeratopsQuasiArmor1		"0x0000419D">
+	<!ENTITY itCeratopsQuasiArmor2		"0x0000419E">
+	<!ENTITY itLaserDeflector			"0x0000419F">
+	<!ENTITY itHiroShieldOptimizer		"0x000041A0">
+	<!ENTITY itMoskvaDualCannon			"0x000041A1">
+	<!ENTITY itBallistaCannon			"0x000041A2">
+	<!ENTITY itLongreachIAutocannon		"0x000041A3">
+	<!ENTITY itNeurohackROM				"0x000041A4">
+	<!ENTITY itUnknownEnhancer2			"0x000041A5">
+	<!ENTITY itUnknownEnhancer5			"0x000041A6">
+	<!ENTITY itUnknownEnhancer8			"0x000041A7">
+	<!ENTITY itParticleEnhancer			"0x000041A8">
+	<!ENTITY itMakayevBlastEnhancer		"0x000041A9">
+	<!ENTITY itHowitzerHighSpeedLoader	"0x000041AA">
+	<!ENTITY itRasiermesserEnhancer		"0x000041AB">
+	<!ENTITY itBushidoEnhancer			"0x000041AC">
+	<!ENTITY itLightArmorRepair			"0x000041AD">
+	<!ENTITY itMediumArmorRepair		"0x000041AE">
+	<!ENTITY itHeavyArmorRepair			"0x000041AF">
+	<!ENTITY itUltraLightTitaniumPlate	"0x000041B0">
+	<!ENTITY itLightCeramicPlate		"0x000041B1">
+	<!ENTITY itLightReactiveArmor		"0x000041B2">
+	<!ENTITY itLightOmskArmor			"0x000041B3">
+	<!ENTITY itMediumOmskArmor			"0x000041B4">
+	<!ENTITY itHeavyOmskArmor			"0x000041B5">
+	<!ENTITY itOmskDeflectorI			"0x000041B6">
+	<!ENTITY itOmskDeflectorII			"0x000041B7">
+	<!ENTITY itDepletedUraniumArmor		"0x000041B8">
+	<!ENTITY vtLongreachI				"0x000041B9">
+	<!ENTITY vtICXLaserCannon			"0x000041BA">
+	<!ENTITY itPortableAnalyzer			"0x000041BB">
+	<!ENTITY itEngineeringAnalyzer		"0x000041BC">
+	<!ENTITY itAdvancedAnalyzer			"0x000041BD">
+	<!ENTITY itAClassDefenseScreen		"0x000041BE">
+	<!ENTITY itLightIonBlaster			"0x000041BF">
+	<!ENTITY itLanthanumGlass			"0x000041C0">
+	<!ENTITY itCeriumElectrode			"0x000041C1">
+	<!ENTITY itNeodymiumMagnet			"0x000041C2">
+	<!ENTITY itErbiumRod				"0x000041C3">
+	<!ENTITY itHolmiumFiber				"0x000041C4">
+	<!ENTITY itDualMarkIIIHowitzer		"0x000041C5">
+	<!ENTITY itOmniXRayLaserCannon		"0x000041C6">
+	<!ENTITY itExplorerAuton			"0x000041C7">
+
+	<!ENTITY trMiscItems1				"0x00008004">
+	<!ENTITY trMiscItems2				"0x00008005">
+	<!ENTITY trMiscItems3				"0x00008006">
+	<!ENTITY trMiscItems4				"0x00008007">
+	<!ENTITY trMiscItems5				"0x00008008">
+	<!ENTITY trCargoContainer			"0x00008009">
+	<!ENTITY trUsefulItems1				"0x0000800A">
+	<!ENTITY trUsefulItems2				"0x0000800B">
+	<!ENTITY trIllegalItems1			"0x0000800C">
+	<!ENTITY trIllegalItems2			"0x0000800D">
+	<!ENTITY trIllegalItems3			"0x0000800E">
+	<!ENTITY trStationSupplies			"0x0000800F">
+	<!ENTITY trConsumables1				"0x00008010">
+	<!ENTITY trConsumables2				"0x00008011">
+	<!ENTITY trConsumables3				"0x00008012">
+	<!ENTITY trConsumables4				"0x00008013">
+	<!ENTITY trConsumables5				"0x00008014">
+	<!ENTITY trMajorItem1				"0x00008015">
+	<!ENTITY trMajorItem2				"0x00008016">
+	<!ENTITY trMajorItem3				"0x00008017">
+	<!ENTITY trMajorItem4				"0x00008018">
+	<!ENTITY trMajorItem5				"0x00008019">
+	<!ENTITY trMinorItem1				"0x0000801A">
+	<!ENTITY trMinorItem2				"0x0000801B">
+	<!ENTITY trMinorItem3				"0x0000801C">
+	<!ENTITY trMinorItem4				"0x0000801D">
+	<!ENTITY trMinorItem5				"0x0000801E">
+	<!ENTITY trConsumables6				"0x0000801F">
+	<!ENTITY trConsumables7				"0x00008020">
+	<!ENTITY trConsumables8				"0x00008021">
+	<!ENTITY trConsumables9				"0x00008022">
+	<!ENTITY trConsumables10			"0x00008023">
+	<!ENTITY trMajorItem6				"0x00008024">
+	<!ENTITY trMajorItem7				"0x00008025">
+	<!ENTITY trMajorItem8				"0x00008026">
+	<!ENTITY trMajorItem9				"0x00008027">
+	<!ENTITY trMajorItem10				"0x00008028">
+	<!ENTITY trMinorItem6				"0x00008029">
+	<!ENTITY trMinorItem7				"0x0000802A">
+	<!ENTITY trMinorItem8				"0x0000802B">
+	<!ENTITY trMinorItem9				"0x0000802C">
+	<!ENTITY trMinorItem10				"0x0000802D">
+	<!ENTITY trMilitaryItem4			"0x0000802E">
+	<!ENTITY trMilitaryItem5			"0x0000802F">
+	<!ENTITY trMilitaryItem6			"0x00008030">
+	<!ENTITY trMilitaryItem7			"0x00008031">
+	<!ENTITY trMilitaryItem8			"0x00008032">
+	<!ENTITY trMilitaryItem9			"0x00008033">
+	<!ENTITY trMilitaryItem10			"0x00008034">
+	<!ENTITY trMedicalItem				"0x00008035">
+	<!ENTITY etPirateAmbush1			"0x00008101">
+	<!ENTITY etPirateAmbush2			"0x00008102">
+	<!ENTITY etPirateAmbush3			"0x00008103">
+	<!ENTITY etPirateAmbush4			"0x00008104">
+	<!ENTITY etMarauderAmbush1			"0x00008105">
+	<!ENTITY etMarauderAmbush2			"0x00008106">
+	<!ENTITY ovUraniumWasteCheck		"0x0000810B">
+
+	<!ENTITY efMediumExplosion1			"0x00009001">
+	<!ENTITY efLargeExplosion1			"0x00009002">
+	<!ENTITY efSmallExplosion1			"0x00009003">
+	<!ENTITY efFragmentationExplosion	"0x00009007">
+	<!ENTITY efBattleArenaWallHit		"0x00009008">
+	<!ENTITY efStationExplosion			"0x00009009">
+	<!ENTITY efMediumCannonFlash		"0x0000900A">
+	<!ENTITY efFusionExplosion1			"0x0000900C">
+	<!ENTITY efGemOfSacrifice			"0x0000900D">
+	<!ENTITY efGreenLaserHitEffect		"0x00009010">
+	<!ENTITY efXRayLaserHitEffect		"0x00009011">
+
+	<!ENTITY sfSustain					"0x00009101">
+	<!ENTITY sfStrengthen				"0x00009102">
+	<!ENTITY adPart1Desc				"0x00009301">
+
+	<!ENTITY dsAbandonedStation			"0x0000A003">
+	<!ENTITY dsDryDock					"0x0000A004">
+	<!ENTITY dsInstallDevice			"0x0000A005">
+	<!ENTITY dsRepairArmor				"0x0000A006">
+	<!ENTITY dsReplaceArmor				"0x0000A007">
+	<!ENTITY dsExchangeBuy				"0x0000A008">
+	<!ENTITY dsExchangeSell				"0x0000A009">
+	<!ENTITY dsInstallWeapon			"0x0000A00C">
+	<!ENTITY dsUseArmorCoating			"0x0000A00D">
+	<!ENTITY dsInstallSpecificDevice	"0x0000A00E">
+	<!ENTITY dsNavBeacon				"0x0000A00F">
+	<!ENTITY dsRemoveWeapon				"0x0000A010">
+	<!ENTITY dsRefuel					"0x0000A011">
+	<!ENTITY dsUseArmorPatch			"0x0000A012">
+	<!ENTITY dsMission					"0x0000A014">
+	<!ENTITY dsRefuseContamination		"0x0000A015">
+	<!ENTITY dsAbandonedShip			"0x0000A017">
+	<!ENTITY dsAbandonedCrate			"0x0000A018">
+	<!ENTITY dsNavSign					"0x0000A019">
+	<!ENTITY dsAbandonedNavSign			"0x0000A01A">
+	<!ENTITY dsBarricade				"0x0000A01C">
+	<!ENTITY dsUseDataROM				"0x0000A01F">
+	
+	<!ENTITY pwSustain					"0x0000B001">
+	<!ENTITY pwHeal						"0x0000B002">
+	<!ENTITY pwStrengthen				"0x0000B003">
+	<!ENTITY pwDefend					"0x0000B004">
+	<!ENTITY pwNebularSight				"0x0000B005">
+	<!ENTITY pwCircleOfWrath			"0x0000B006">
+	<!ENTITY pwIngenuity				"0x0000B007">
+	<!ENTITY pwDesperateEscape			"0x0000B008">
+	<!ENTITY pwShatter					"0x0000B009">
+	<!ENTITY pwPrescience				"0x0000B00A">
+	
+	<!ENTITY rsShipInterior				"0x0000F002">
+	<!ENTITY rsZubrinShields			"0x0000F004">
+	<!ENTITY rsZubrinArmor				"0x0000F005">
+	<!ENTITY rsZubrinLRS				"0x0000F006">
+	<!ENTITY rsZubrinTargeting			"0x0000F007">
+	<!ENTITY rsSRSSnow					"0x0000F008">
+	<!ENTITY rsZubrinLRSBorder			"0x0000F009">
+	<!ENTITY rsEI100XShields			"0x0000F00A">
+	<!ENTITY rsEI100XArmor				"0x0000F00B">
+	<!ENTITY rsZubrinReactor			"0x0000F00C">
+	<!ENTITY rsWolfenShields			"0x0000F00D">
+	<!ENTITY rsWolfenArmor				"0x0000F00E">
+	<!ENTITY rsZubrinLarge				"0x0000F00F">
+	<!ENTITY rsWolfenLarge				"0x0000F010">
+	<!ENTITY rsEI100XLarge				"0x0000F011">
+	<!ENTITY rsZubrinDockScreenBkgnd	"0x0000F013">
+	<!ENTITY rsZubrinDockScreenMask		"0x0000F014">
+	<!ENTITY rsArmorHUDShip_EI500		"0x0000F015">
+	<!ENTITY rsArmorHUDShip_Sapphire	"0x0000F016">
+	<!ENTITY rsArmorHUDShip_Wolfen		"0x0000F017">
+	
+	<!ENTITY rsMediumShips1				"0x0000F100">
+	<!ENTITY rsStations1				"0x0000F103">
+	<!ENTITY rsSmallShips1				"0x0000F104">
+	<!ENTITY rsMediumShips3				"0x0000F105">
+	<!ENTITY rsStargate					"0x0000F108">
+	<!ENTITY rsNavBeacon				"0x0000F10A">
+	<!ENTITY rsMissiles2				"0x0000F10B">
+	<!ENTITY rsDriveExhaust				"0x0000F10C">
+	<!ENTITY rsLargeShips1				"0x0000F10D">
+	<!ENTITY rsMediumShips2				"0x0000F10E">
+	<!ENTITY rsLargeExplosions			"0x0000F10F">
+	<!ENTITY rsMediumShips4				"0x0000F112">
+	<!ENTITY rsDebris1					"0x0000F114">
+	<!ENTITY rsDominaEffects1			"0x0000F115">
+	<!ENTITY rsMissiles4				"0x0000F116">
+	<!ENTITY rsBattleArena				"0x0000F117">
+	<!ENTITY rsStations2				"0x0000F118">
+	<!ENTITY rsStations3				"0x0000F11B">
+	<!ENTITY rsStations4				"0x0000F11C">
+	<!ENTITY rsShockwave1				"0x0000F11F">
+	
+	<!ENTITY rsStations5				"0x0000F120">
+	<!ENTITY rsStations6				"0x0000F121">
+	<!ENTITY rsLargeShips2				"0x0000F124">
+	<!ENTITY rsStations7				"0x0000F126">
+	<!ENTITY rsStations8				"0x0000F127">
+	<!ENTITY rsMissiles6				"0x0000F128">
+	<!ENTITY rsBarricades				"0x0000F129">
+	<!ENTITY rsStations9				"0x0000F12A">
+	<!ENTITY rsTeratonDefender			"0x0000F12B">
+	<!ENTITY rsWeapons8DB32				"0x0000F12C">
+	<!ENTITY rsExplosionsAG256			"0x0000F12D">
+	<!ENTITY rsWeapons9DB32				"0x0000F12E">
+	<!ENTITY rsSapphireYacht			"0x0000F137">
+	<!ENTITY rsDriveExhaust2			"0x0000F138">
+	<!ENTITY rsEI500Freighter			"0x0000F13D">
+	<!ENTITY rsWolfenGunship			"0x0000F13E">
+
+	<!ENTITY rsPart1Cover				"0x0000F146">
+	<!ENTITY rsProlog1					"0x0000F147">
+	<!ENTITY rsEndGameEscaped			"0x0000F148">
+	<!ENTITY rsEndGameDestroyed			"0x0000F149">
+	
+	<!ENTITY rsLogBuoy					"0x0000F14E">
+	<!ENTITY rsStdMissile1				"0x0000F14F">
+	<!ENTITY rsItemsEI1					"0x0000F150">
+	<!ENTITY rsItemsEI2					"0x0000F151">
+	<!ENTITY rsItemsEI3					"0x0000F152">
+	<!ENTITY rsItemsBushido1			"0x0000F153">
+	<!ENTITY rsItemsBushido2			"0x0000F154">
+	<!ENTITY rsItemsMakayev1			"0x0000F155">
+	<!ENTITY rsItemsMakayev2			"0x0000F156">
+	<!ENTITY rsItemsMakayev3			"0x0000F157">
+	<!ENTITY rsItemsNAMI1				"0x0000F158">
+	<!ENTITY rsItemsNAMI2				"0x0000F159">
+	<!ENTITY rsItemsNAMI3				"0x0000F15A">
+	<!ENTITY rsItemsNAMI4				"0x0000F15B">
+	<!ENTITY rsItemsRasiermesser1		"0x0000F15C">
+	<!ENTITY rsItemsRasiermesser2		"0x0000F15D">
+	<!ENTITY rsItemsRasiermesser3		"0x0000F15E">
+	<!ENTITY rsItemsRasiermesser4		"0x0000F15F">
+	<!ENTITY rsItemsTaikon1				"0x0000F160">
+	<!ENTITY rsSapphireYachtHD			"0x0000F161">
+	<!ENTITY rsEI500FreighterHD			"0x0000F162">
+	<!ENTITY rsWolfenGunshipHD			"0x0000F163">
+	<!ENTITY rsExplorerAuton			"0x0000F164">
+	
+	<!ENTITY stShipwreck1				"0x000F0000">
+	<!ENTITY stShipwreck2				"0x000F0001">
+	<!ENTITY stShipwreck3				"0x000F0002">
+	<!ENTITY stShipwreck4				"0x000F0003">
+	<!ENTITY stSealedCargoContainer		"0x000F0004">
+	<!ENTITY stWeaponsCache				"0x000F0005">
+	<!ENTITY stWeaponsCrate				"0x000F0006">
+	<!ENTITY stRadioactiveShipwreck		"0x000F0007">
+	
+	<!ENTITY stSalvagerEncounter		"0x000F1000">
+	<!ENTITY scSalvagerNomad			"0x000F1001">
+	
+	<!-- COMMONWEALTH 0010 -->
+	
+	<!ENTITY msDestroyThreatToSlums		"0x00101000">
+	
+	<!ENTITY stStartonEridani			"0x00102001">
+	<!ENTITY stCommonwealthSettlement	"0x00102002">
+	<!ENTITY stMiningColony				"0x00102003">
+	<!ENTITY stCommonwealthFortress		"0x00102004">
+	<!ENTITY stAgriculturalStation		"0x00102005">
+	<!ENTITY stCommonwealthColony		"0x00102006">
+	<!ENTITY stKorolovShipping			"0x00102007">
+	<!ENTITY stCommonwealthStationArmored "0x00102008">
+	<!ENTITY stCommonwealthTurret		"0x00102009">
+	<!ENTITY stCommonwealthColonyArmed	"0x0010200A">
+	<!ENTITY stCommonwealthStation		"0x0010200B">
+	<!ENTITY stCommonwealthResidentials	"0x0010200C">
+	<!ENTITY stCommonwealthDryDock		"0x0010200D">
+	<!ENTITY stCommonwealthSlums		"0x0010200E">
+	<!ENTITY stContainerHabitat			"0x0010200F">
+	<!ENTITY stMedicalSuburb			"0x00102010">
+	<!ENTITY stRaisuStation				"0x00102011">
+	<!ENTITY stBeringStation			"0x00102012">
+	<!ENTITY stStKatsArcology15			"0x00102013">
+	<!ENTITY stStKatsArcology45			"0x00102014">
+	<!ENTITY stStKatsArcology75			"0x00102015">
+	<!ENTITY stStKatsArcology105		"0x00102016">
+	<!ENTITY stStKatsArcology135		"0x00102017">
+	<!ENTITY stStKatsArcology165		"0x00102018">
+	<!ENTITY stStKatsArcology195		"0x00102019">
+	<!ENTITY stStKatsArcology225		"0x0010201A">
+	<!ENTITY stStKatsArcology255		"0x0010201B">
+	<!ENTITY stStKatsArcology285		"0x0010201C">
+	<!ENTITY stStKatsArcology315		"0x0010201D">
+	<!ENTITY stStKatsArcology345		"0x0010201E">
+	<!ENTITY stStKatsArcology			"0x0010201F">
+	<!ENTITY stIocrymMonument			"0x00102020">
+	<!ENTITY baStKatsArcologyBase		"0x00102021">
+	<!ENTITY stDallMissionWreck			"0x00102022">
+	<!ENTITY stDallSphere				"0x00102023">
+	<!ENTITY stCommonwealthNavSign		"0x00102024">
+	<!ENTITY ovNavSignText				"0x00102025">
+	<!ENTITY baCommonwealthStation		"0x00102026">
+
+	<!ENTITY scCenturion				"0x00103001">
+	<!ENTITY scScarabFreighter			"0x00103002">
+	<!ENTITY scCenturionRama			"0x00103003">
+	<!ENTITY scCenturionX				"0x00103004">
+	<!ENTITY scAurochs					"0x00103005">
+	<!ENTITY scBorerCaptured			"0x00103006">
+	<!ENTITY scRoninJenna				"0x00103007">
+	<!ENTITY scIAVLight					"0x00103008">
+	<!ENTITY scIAVMedium				"0x00103009">
+	<!ENTITY scIAVHeavy					"0x0010300A">
+	<!ENTITY scManticore				"0x0010300B">
+	<!ENTITY evCommTrafficBehavior		"0x0010300C">
+	<!ENTITY evStKatsTrafficBehavior	"0x0010300D">
+	
+	<!ENTITY itIncandescentStrawberries	"0x00104001">
+	<!ENTITY itIncandescentPeaches		"0x00104002">
+	<!ENTITY itIncandescentBellFruit	"0x00104003">
+	<!ENTITY itIncandescentLucuma		"0x00104004">
+	<!ENTITY itIncandescentCoffee		"0x00104005">
+	<!ENTITY itDallSphere				"0x00104006">
+	
+	<!ENTITY tbCommDefenders			"0x00108001">
+	<!ENTITY tbCommEliteDefenders		"0x00108002">
+	<!ENTITY tbCommPrivateCrafts		"0x00108003">
+	<!ENTITY tbCommTraffic				"0x00108004">
+	<!ENTITY tbStKatsTraffic			"0x00108005">
+
+	<!ENTITY dsCommonwealthStation		"0x0010A001">
+	<!ENTITY dsCommonwealthDecon		"0x0010A002">
+	<!ENTITY dsCommonwealthConfiscate	"0x0010A003">
+	<!ENTITY dsCommonwealthFreeSlaves	"0x0010A004">
+	<!ENTITY dsCommonwealthImprison		"0x0010A005">
+	<!ENTITY dsCommonwealthPub			"0x0010A006">
+	<!ENTITY dsCommonwealthNightclub	"0x0010A007">
+	<!ENTITY dsContainerHabitatDonateItem "0x0010A008">
+	<!ENTITY dsContainerHabitatReward	"0x0010A009">
+	<!ENTITY dsStKatsArcology			"0x0010A00A">
+	<!ENTITY dsMilitiaPromotion			"0x0010A00B">
+	<!ENTITY dsStKatsArcologyParliament	"0x0010A00C">
+	<!ENTITY dsStKatsArcologyCommerce	"0x0010A00D">
+	<!ENTITY dsStKatsArcologyUniversity	"0x0010A00E">
+	<!ENTITY dsStKatsArcologyArts		"0x0010A00F">
+
+	<!ENTITY rsCommonwealthSlumsImage	"0x0010F001">
+	<!ENTITY rsIAVLight					"0x0010F002">
+	<!ENTITY rsIAVMedium				"0x0010F003">
+	<!ENTITY rsIAVHeavy					"0x0010F004">
+	<!ENTITY rsStKatsArcology			"0x0010F005">
+	<!ENTITY rsStKatsArcologyScreen		"0x0010F006">
+	<!ENTITY rsStKatsArcologySchematic	"0x0010F007">
+	<!ENTITY rsManticore				"0x0010F008">
+	<!ENTITY rsIocrymMonument			"0x0010F009">
+	<!ENTITY rsIocrymMonumentScreen		"0x0010F00A">
+	<!ENTITY rsDallSphere				"0x0010F00B">
+
+	<!-- RESERVED 0011 -->
+	<!-- RESERVED 0012 -->
+	<!-- RESERVED 0013 -->
+	
+	<!-- BATTLE ARENA 0014 -->
+
+	<!ENTITY ssBattleArena				"0x00140001">
+
+	<!ENTITY svGladiator				"0x00141001">
+
+	<!ENTITY stBattleArena				"0x00142001">
+	<!ENTITY stBattleArenaWall			"0x00142002">
+	<!ENTITY stBlackMarketRigelAurelius	"0x00142003">
+	<!ENTITY stRigelAureliusStar		"0x00142004">
+
+	<!ENTITY scIAVLightG1				"0x00143001">
+	<!ENTITY scBorerG1					"0x00143002">
+	<!ENTITY scIAVMediumG2				"0x00143003">
+	<!ENTITY scRoninG1					"0x00143004">
+	<!ENTITY scRoninG2					"0x00143005">
+	<!ENTITY scRoninG3					"0x00143006">
+	<!ENTITY scRoninG4					"0x00143007">
+	<!ENTITY scEarthzoneG2				"0x00143008">
+	<!ENTITY scEI100G1					"0x00143009">
+	<!ENTITY scEI100G2					"0x0014300A">
+	<!ENTITY scIAVHeavyG2				"0x0014300B">
+	<!ENTITY scIAVHeavyG3				"0x0014300C">
+	<!ENTITY scT31G3					"0x0014300D">
+	<!ENTITY scSapphireG2				"0x0014300E">
+	<!ENTITY scSapphireG3				"0x0014300F">
+	<!ENTITY scSapphireG4				"0x00143010">
+	<!ENTITY scEI200G3					"0x00143011">
+	<!ENTITY scEI500G2					"0x00143012">
+	<!ENTITY scEI500G4					"0x00143013">
+	<!ENTITY scEI500G5					"0x00143014">
+	<!ENTITY scManticoreG4				"0x00143015">
+	<!ENTITY scManticoreG5				"0x00143016">
+	<!ENTITY scManticoreG6				"0x00143017">
+	<!ENTITY scWolfenG4					"0x00143018">
+	<!ENTITY scWolfenG5					"0x00143019">
+	<!ENTITY scWolfenG6					"0x0014301A">
+	<!ENTITY scCenturionG5				"0x0014301B">
+	<!ENTITY scCenturionG6				"0x0014301C">
+	<!ENTITY scTheSlicerManticore		"0x0014301D">
+
+	<!ENTITY itSlicerCannon				"0x00144001">
+
+	<!ENTITY rsBattleArenaBkgnd			"0x0014F001">
+	<!ENTITY rsBattleArenaExtra			"0x0014F002">
+
+	<!-- CORPORATE HIERARCHY 0015 -->
+
+	<!ENTITY stAutonDealer				"0x00152001">
+	<!ENTITY stArmsDealerRasiermesser	"0x00152002">
+	<!ENTITY stArmsDealerMakayev		"0x00152003">
+	<!ENTITY stArmsDealerBushido		"0x00152004">
+	<!ENTITY stWondrousDevices			"0x00152005">
+	<!ENTITY stInsuranceCompany			"0x00152006">
+	<!ENTITY stIceFarm					"0x00152007">
+	<!ENTITY stHotel					"0x00152008">
+	<!ENTITY stArmorDealer				"0x00152009">
+	<!ENTITY stFuelDepot				"0x0015200A">
+	<!ENTITY stArmsDealer				"0x0015200B">
+	<!ENTITY stCorporateEnclave			"0x0015200C">
+	<!ENTITY stTaikonVentures			"0x0015200D">
+	<!ENTITY stCorporateTradingPost		"0x0015200E">
+	<!ENTITY stRasiermesserFactory		"0x0015200F">
+	<!ENTITY stAdventurerOutfitters		"0x00152010">
+	<!-- UNUSED							"0x00152011" -->
+	<!ENTITY stManufacturingPlant		"0x00152012">
+	<!ENTITY stHelenaVolkov				"0x00152013">
+	<!ENTITY stMakayevFactory			"0x00152014">
+	<!ENTITY baCorporateStation			"0x00152015">
+
+	<!ENTITY scCorporateCruiser			"0x00153001">
+	<!ENTITY scAntaresI					"0x00153002">
+	<!ENTITY scAntaresII				"0x00153003">
+	<!ENTITY scAntaresV					"0x00153004">
+	<!ENTITY scEI200					"0x00153005">
+	<!ENTITY scEI7000					"0x00153006">
+	<!ENTITY scOrion					"0x00153007">
+	<!ENTITY scEmpress					"0x00153008">
+	<!ENTITY scWolfenVolkov				"0x00153009">
+	<!ENTITY scRoninCharonBuster		"0x0015300A">
+	<!ENTITY scKateMorgentalCruiserArena	"0x0015300B">
+	<!ENTITY baCharonBuster				"0x0015300C">
+	<!ENTITY scEI200CharonBuster		"0x0015300D">
+
+	<!ENTITY itDvalinIon9Cannon			"0x00154001">
+	<!ENTITY itDvalinArmor				"0x00154002">
+	<!ENTITY itKorolovShippingContainer	"0x00154003">
+	<!ENTITY itClass5Deflector			"0x00154004">
+	
+	<!ENTITY tbCorpDefenders			"0x00158001">
+
+	<!ENTITY dsArmsDealerSpecial		"0x0015A001">
+	<!ENTITY dsCorporateImprison		"0x0015A002">
+	<!ENTITY dsContractDeliveryStub		"0x0015A003">
+
+	<!ENTITY rsTradingPostAnimation		"0x0015F001">
+	<!ENTITY rsContractBoardBkgnd		"0x0015F002">
+	<!ENTITY rsRasiermesserFactoryBkgnd	"0x0015F003">
+	<!ENTITY rsKorolovInsignia			"0x0015F004">
+	<!ENTITY rsKorolovLogo				"0x0015F005">
+	<!ENTITY rsAntaresIImage			"0x0015F006">
+	<!ENTITY rsEI7000Image				"0x0015F007">
+	<!ENTITY rsEI200Image				"0x0015F008">
+	<!ENTITY rsAntaresIIImage			"0x0015F009">
+	<!ENTITY rsAntaresVImage			"0x0015F00A">
+	<!ENTITY rsEI100Image				"0x0015F00B">
+	<!ENTITY rsManufacturingPlant		"0x0015F00C">
+	<!ENTITY rsRasiermesserFactory		"0x0015F00D">
+	<!ENTITY rsMakayevFactory			"0x0015F00E">
+	<!ENTITY rsCorporateCruiser			"0x0015F00F">
+
+	<!-- CHARON PIRATES 0016 -->
+
+	<!ENTITY ssCharonPirateFortress		"0x00160001">
+
+	<!ENTITY stCharonPirateOutpost		"0x00162001">
+	<!ENTITY stCharonPirateOutpost2		"0x00162002">
+	<!ENTITY stCharonPirateOutpost2a	"0x00162003">
+	<!ENTITY stCharonPirateOutpost3		"0x00162004">
+	<!ENTITY stCharonPirateFortress		"0x00162005">
+	<!ENTITY stKorolovAtCharon			"0x00162006">
+	<!ENTITY stKorolovAtCharonCons		"0x00162007">
+	<!ENTITY stCharonPrimaryStronghold1	"0x00162008">
+	<!ENTITY stCharonPrimaryStronghold2 "0x00162009">
+	<!ENTITY stCharonPrimaryStronghold3 "0x0016200A">
+
+	<!ENTITY scCorsair					"0x00163001">
+	<!ENTITY scViking					"0x00163002">
+	<!ENTITY scCorsair-II				"0x00163003">
+	<!ENTITY scCharonFrigateRaider		"0x00163004">
+	<!ENTITY scCharonFrigateKronosaurus	"0x00163005">
+
+	<!ENTITY itCharonPirateMapROM		"0x00164001">
+
+	<!ENTITY rsCharonFrigateImage		"0x0016F001">
+
+	<!-- BLACK MARKET 0017 -->
+
+	<!ENTITY stBlackMarketStation		"0x00172001">
+	<!ENTITY stTempusLab				"0x00172002">
+	<!ENTITY stBlackMarketShipyard		"0x00172003">
+
+	<!ENTITY scMolotok					"0x00173001">
+
+	<!ENTITY itBlackMarketContainer		"0x00174001">
+	
+	<!ENTITY tbBlackMarketShips			"0x00178001">
+
+	<!ENTITY dsBlackMarketPayDebt		"0x0017A001">
+	<!ENTITY dsBlackMarketRefuseDock	"0x0017A002">
+	<!ENTITY dsBlackMarketPromotion		"0x0017A003">
+
+	<!ENTITY rsMolotok					"0x0017F001">
+
+	<!-- SISTERS OF DOMINA 0018 -->
+
+	<!ENTITY svSistersOfDomina			"0x00181001">
+	<!ENTITY stSistersOfDomina			"0x00182001">
+
+	<!ENTITY itCarvedPrayerStone		"0x00184001">
+	<!ENTITY itJewelOfContemplation		"0x00184002">
+	<!ENTITY itHierolithCrystal			"0x00184003">
+	<!ENTITY itHierolithGeode			"0x00184004">
+	<!ENTITY itHierolithObelisk			"0x00184005">
+
+	<!ENTITY dsContemplateDomina		"0x0018A001">
+	<!ENTITY dsDominaDonateItem			"0x0018A002">
+	<!ENTITY dsDominaTithe				"0x0018A003">
+	<!ENTITY dsSistersDockServices		"0x0018A004">
+	<!ENTITY dsSistersIntro				"0x0018A005">
+	<!ENTITY dsSistersDecon				"0x0018A006">
+	<!ENTITY dsSistersSanctum			"0x0018A007">
+	<!ENTITY dsSistersDonate			"0x0018A008">
+
+	<!ENTITY rsSistersShrineBkgnd		"0x0018F001">
+
+	<!-- SUNG SLAVERS 0019 -->
+
+	<!ENTITY stSungFortress				"0x00192001">
+	<!ENTITY stSungNWWall				"0x00192002">
+	<!ENTITY stSungNEWall				"0x00192003">
+	<!ENTITY stSungSEWall				"0x00192004">
+	<!ENTITY stSungSWWall				"0x00192005">
+	<!ENTITY stSungCitadel				"0x00192006">
+	<!ENTITY stSungSlaveCamp			"0x00192007">
+	<!ENTITY stSungSlaveQuarters1		"0x00192008">
+	<!ENTITY stSungSlaveQuarters2		"0x00192009">
+	<!ENTITY stSungDefenseSat1			"0x0019200A">
+	<!ENTITY stSungFortressInHuaramarca	"0x0019200B">
+
+	<!ENTITY scSungTransport			"0x00193001">
+	<!ENTITY scWindSlaver				"0x00193002">
+	<!ENTITY scSteelSlaver				"0x00193003">
+	<!ENTITY scEarthSlaver				"0x00193004">
+	<!ENTITY scDragonSlaver				"0x00193005">
+	<!ENTITY scCarrierEarthSlaver		"0x00193006">
+
+	<!ENTITY itLongzhuSphere			"0x00194001">
+	<!ENTITY itQianlongArchcannon		"0x00194002">
+	<!ENTITY itCyberDeckLowerShields	"0x00194003">
+	<!ENTITY itCyberDeckDisarm			"0x00194004">
+	<!ENTITY itSlaveCoffin				"0x00194005">
+	<!ENTITY itSungArmor				"0x00194006">
+	<!ENTITY itHeavySungArmor			"0x00194007">
+	<!ENTITY itDragonShields			"0x00194008">
+	<!ENTITY itDragonArmor				"0x00194009">
+	<!ENTITY itLightSungArmor			"0x0019400A">
+	
+	<!ENTITY tbSungEncounters			"0x00198001">
+
+	<!ENTITY dsUseLongzhuSphere			"0x0019A001">
+	<!ENTITY dsSungSlaveQuarters		"0x0019A002">
+
+	<!ENTITY rsDragonSlaverImage		"0x0019F001">
+
+	<!-- COMMONWEALTH FLEET 001A -->
+
+	<!ENTITY unidCommonwealthFleet		"0x001A0000">
+	<!ENTITY ssPointJuno				"0x001A0001">
+	<!ENTITY ssDantalion				"0x001A0002">
+
+	<!ENTITY svCSCAntarctica			"0x001A1001">
+	<!ENTITY svFleetAssassins			"0x001A1002">
+	<!ENTITY svCommonwealthFleet		"0x001A1003">
+
+	<!ENTITY stCSCAmericaEncounter		"0x001A2001">
+	<!ENTITY stCSCArcticaEncounter		"0x001A2002">
+	<!ENTITY stCSCAsiaEncounter			"0x001A2003">
+	<!ENTITY stCSCAtlanticaEncounter	"0x001A2004">
+	<!ENTITY stCSCIndiaEncounter		"0x001A2005">
+	<!ENTITY stCSCPacificaEncounter		"0x001A2006">
+	<!ENTITY stCSCSaharaEncounter		"0x001A2007">
+	<!ENTITY stPointJuno				"0x001A2008">
+	<!ENTITY stCSCTerraEncounter		"0x001A2009">
+	<!ENTITY stCSCAntarcticaEncounter	"0x001A200A">
+	<!ENTITY stRogueBaseRescue			"0x001A200B">
+	<!ENTITY stCSCEuropaWreck			"0x001A200C">
+	<!ENTITY stCenturionWreck			"0x001A200D">
+	<!ENTITY stSandstormWreck			"0x001A200E">
+	<!ENTITY stDantalionSettlement		"0x001A200F">
+	<!ENTITY stCSCTaskForceEncounter	"0x001A2010">
+
+	<!ENTITY scCSCHospital				"0x001A3001">
+	<!ENTITY scCSCTaskForce				"0x001A3002">
+	<!ENTITY scAquilaCruiser			"0x001A3003">
+	<!ENTITY scCSCTerra					"0x001A3004">
+	<!ENTITY scCSCAntarctica			"0x001A3005">
+	<!ENTITY scEI500JuanCarlos			"0x001A3006">
+	<!ENTITY scBritannia				"0x001A3007">
+	<!ENTITY baCSCBase					"0x001A3008">
+
+	<!ENTITY itAresCampaignRibbon		"0x001A4001">
+	<!ENTITY itLamplighterPrototype		"0x001A4002">
+	<!ENTITY itUnknownLamplighterPrototype "0x001A4003">
+	<!ENTITY itLamplighter				"0x001A4004">
+	<!ENTITY itLamplighterDataROM		"0x001A4005">
+	<!ENTITY itR5BDeflector				"0x001A4006">
+	<!ENTITY itNM900MissilePod			"0x001A4007">
+	<!ENTITY vtDamageControlParty		"0x001A4008">
+
+	<!ENTITY etRogueAmbush1				"0x001A8001">
+	<!ENTITY etKobolAmbush1				"0x001A8002">
+	<!ENTITY etRogueAmbush2				"0x001A8003">
+
+	<!ENTITY dsFleetRefuseDock			"0x001AA001">
+	<!ENTITY dsFleetPromotion			"0x001AA002">
+	<!ENTITY dsFleetDockServices		"0x001AA003">
+	<!ENTITY dsFleetDelivery			"0x001AA004">
+	<!ENTITY dsFleetImprison			"0x001AA005">
+	<!ENTITY dsFleetDecon				"0x001AA006">
+	<!ENTITY dsFleetDischarge			"0x001AA007">
+	<!ENTITY dsFleetCrimeWarning		"0x001AA008">
+
+	<!ENTITY rsPointJunoBkgnd			"0x001AF001">
+	<!ENTITY rsCSCBkgnd					"0x001AF002">
+	<!ENTITY rsStationsPointJuno		"0x001AF003">
+	<!ENTITY rsBritannia				"0x001AF004">
+
+	<!-- ARES ORTHODOXY 001B -->
+
+	<!ENTITY stAresCommune				"0x001B2001">
+	<!ENTITY stAresRedoubt				"0x001B2002">
+	<!ENTITY stAresOutpost				"0x001B2003">
+	<!ENTITY stAresShipyard				"0x001B2004">
+
+	<!ENTITY scSandstorm				"0x001B3001">
+	<!ENTITY scAresCannon				"0x001B3002">
+	<!ENTITY scPolar					"0x001B3003">
+	<!ENTITY scTundra					"0x001B3004">
+	<!ENTITY scCometfall				"0x001B3005">
+	<!ENTITY scChasm					"0x001B3006">
+	<!ENTITY scDeimos					"0x001B3007">
+	<!ENTITY scPhobos					"0x001B3008">
+	<!ENTITY scPolar2					"0x001B3009">
+
+	<!ENTITY itLightningCannon			"0x001B4001">
+	<!ENTITY itLightTharsisPlate		"0x001B4002">
+	<!ENTITY itTharsisPlate				"0x001B4003">
+	<!ENTITY itMicronukeCannon			"0x001B4004">
+	<!ENTITY itMicronuke				"0x001B4005">
+	<!ENTITY itAresArchcannon			"0x001B4006">
+	<!ENTITY itCydonianShields			"0x001B4007">
+	<!ENTITY itAresLauncher				"0x001B4008">
+	<!ENTITY itWarhammerNuke			"0x001B4009">
+	<!ENTITY itLightningTurret			"0x001B400A">
+	<!ENTITY itCydonianHeavyShields		"0x001B400B">
+	<!ENTITY itHeavyTharsisPlate		"0x001B400C">
+	<!ENTITY itHecatesCannon			"0x001B400D">
+	<!ENTITY itMassiveTharsisPlate		"0x001B400E">
+	<!ENTITY itKaidunShields			"0x001B400F">
+	<!ENTITY itAresPlasmaCannon			"0x001B4010">
+
+	<!ENTITY etAresAmbush1				"0x001B8001">
+	<!ENTITY etAresAmbush2				"0x001B8002">
+	<!ENTITY etAresAmbush3				"0x001B8003">
+	<!ENTITY etAresAmbush4				"0x001B8004">
+	<!ENTITY tbAresEncounters			"0x001B8005">
+
+	<!-- IOCRYM AND HERETIC 001C -->
+
+	<!ENTITY ssHeretic					"0x001C0001">
+
+	<!ENTITY svIocrym					"0x001C1001">
+	<!ENTITY svAresHeretic				"0x001C1002">
+	<!ENTITY svSentinelAI				"0x001C1003">
+
+	<!ENTITY stHereticGate				"0x001C2001">
+	<!ENTITY stHereticControlCenter		"0x001C2002">
+	<!ENTITY stIocrymManipulator		"0x001C2003">
+	<!ENTITY stCommonwealthResearchHeretic	"0x001C2004">
+	<!ENTITY stRingersResearchHeretic	"0x001C2005">
+	<!ENTITY stSistersResearchHeretic	"0x001C2006">
+	<!ENTITY stTVX1Outpost				"0x001C2007">
+	<!ENTITY stIocrymOutpost			"0x001C2008">
+	<!ENTITY stAresResearchHeretic		"0x001C2009">
+	<!ENTITY stSvalbardEncounter		"0x001C200A">
+	<!ENTITY stMRADSensor				"0x001C200B">
+	<!ENTITY stSvalbardWreck			"0x001C200C">
+	<!ENTITY stMaryamsArchive			"0x001C200D">
+	<!ENTITY stHereticStation			"0x001C200E">
+	<!ENTITY stHereticSun				"0x001C200F">
+
+	<!ENTITY scIocrymCommandShip		"0x001C3001">
+	<!ENTITY scSvalbardExplorer		"0x001C3002">
+	<!ENTITY scIocrymWarningBuoy		"0x001C3003">
+	<!ENTITY scIocrymSentinel			"0x001C3004">
+	<!ENTITY scHuygensExplorer			"0x001C3005">
+
+	<!ENTITY itIocrymPlate				"0x001C4001">
+	<!ENTITY itPlasmaThrower			"0x001C4002">
+	<!ENTITY itQuantumsphereDisintegrator "0x001C4003">
+	<!ENTITY itQuantumsphereShell		"0x001C4004">
+	<!ENTITY itIocrymCocoon				"0x001C4005">
+	<!ENTITY itIocrymHealer				"0x001C4006">
+	<!ENTITY itIocrymVeil				"0x001C4007">
+	<!ENTITY itHereticResearchROM		"0x001C4008">
+	<!ENTITY itLightIocrymPlate			"0x001C4009">
+	<!ENTITY itIocrymFractureCannon		"0x001C400A">
+	<!ENTITY itMRADExperiment			"0x001C400B">
+	<!ENTITY itIocrymCyberneticTower	"0x001C400C">
+	<!ENTITY itIocrymSentinelVirus		"0x001C400D">
+	<!ENTITY itIocrymSentinelData		"0x001C400E">
+	<!ENTITY itIocrymManipulator		"0x001C400F">
+
+	<!ENTITY seSpacetimeQuarantine		"0x001C9001">
+	<!ENTITY efIocrymManipulatorWaves	"0x001C9002">
+
+	<!ENTITY rsIocrymSentinel			"0x001CF001">
+	<!ENTITY rsMRADConsole				"0x001CF002">
+	<!ENTITY rsCorporateExplorer		"0x001CF005">
+	<!ENTITY rsIocrymOutpost			"0x001CF006">
+	<!ENTITY rsIocrymCommandShip		"0x001CF007">
+	<!ENTITY rsIocrymManipulator		"0x001CF008">
+	<!ENTITY rsHereticItems				"0x001CF009">
+	<!ENTITY rsMRADProbe				"0x001CF00A">
+
+	<!-- RINGERS 001D -->
+
+	<!ENTITY baRingersStation			"0x001D0001">
+	
+	<!ENTITY stRingersCollective		"0x001D2001">
+	<!ENTITY stRingerShipyard			"0x001D2002">
+	<!ENTITY ecRinEconomy				"0x001D2003">
+	
+	<!ENTITY itPositronLancer			"0x001D4001">
+
+	<!ENTITY dsRingerRefuel				"0x001DA001">
+	<!ENTITY dsRingerRepairArmor		"0x001DA002">
+	<!ENTITY dsRingerReplaceArmor		"0x001DA003">
+	<!ENTITY dsRingerInstallDevice		"0x001DA004">
+	<!ENTITY dsRingerRemoveDevice		"0x001DA005">
+	<!ENTITY dsRingerInstallSpecificDevice "0x001DA006">
+	<!ENTITY dsRingerImprison			"0x001DA007">
+	<!ENTITY dsRingerBuy				"0x001DA008">
+	<!ENTITY dsRingerSell				"0x001DA009">
+
+	<!-- ELYSIUM 001E -->
+
+	<!ENTITY ssElysium					"0x001E0001">
+
+	<!ENTITY stTanRuDorem				"0x001E2002">
+
+	<!-- TERATONS 001F -->
+
+	<!ENTITY stTeratonTradingPost		"0x001F2001">
+	<!ENTITY stTeratonDefender			"0x001F2002">
+	<!ENTITY stTeratonResearch			"0x001F2003">
+	<!ENTITY stTeratonFactory			"0x001F2004">
+	<!ENTITY stTeratonChrysalis			"0x001F2005">
+	<!ENTITY baTeratonNestBase			"0x001F2006">
+	
+	<!ENTITY efTeratonChrysalisOpen		"0x001F9001">
+
+	<!ENTITY dsTeratonMugging			"0x001FA001">
+	
+	<!ENTITY rsTeratonChrysalis			"0x001FF001">
+
+	<!-- DOMINA 0020 1xxx -->
+	
+	<!ENTITY svDomina					"0x00201001">
+	<!ENTITY unidPilgrimClass			"0x00201002">
+	<!ENTITY dsPilgrimBeringStation		"0x00201003">
+	
+	<!-- 0020 2xxx -->
+	
+	<!ENTITY stDomina					"0x00202001">
+
+	<!-- DOMINA POWERS 0020 4xxx -->
+	
+	<!ENTITY itCircleOfWrathPower		"0x00204001">
+	<!ENTITY itShatterPower				"0x00204002">
+	
+	<!-- 0020 9xxx -->
+
+	<!ENTITY sfDefend					"0x00209001">
+	
+	<!-- 0020 Fxxx -->
+
+	<!ENTITY rsShatterShockwave			"0x0020F001">
+	
+	<!-- MISCELLANEOUS FIRE ENCOUNTERS 0801 -->
+	
+	<!ENTITY stTerroristCamp			"0x08010000">
+	<!ENTITY stTerroristCompound		"0x08010001">
+	<!ENTITY scPlague					"0x08010002">
+	<!ENTITY scRevelations				"0x08010003">
+	<!ENTITY tbSapiensEncounters		"0x08010004">
+
+	<!ENTITY stHeliotropeOutpost		"0x08010040">
+	<!ENTITY stHeliotropeColony			"0x08010041">
+	<!ENTITY scHeliotropeGunship		"0x08010042">
+	<!ENTITY scHeliotropeDestroyer		"0x08010043">	<!-- For compatibility -->
+	<!ENTITY scHeliotropeFrigate		"0x08010043">	<!-- Reclassified -->
+	<!ENTITY itHeliotropeFuel			"0x08010044">
+	<!ENTITY svHeliotropes				"0x08010045">
+	<!ENTITY tbHeliotropeEncounters		"0x08010046">
+	<!ENTITY efSunflareCannonEffect		"0x08010047">
+
+	<!ENTITY stXenophobeFleet			"0x08010080">
+	<!ENTITY stXenophobeWorldship		"0x08010081">
+	<!ENTITY scXenophobeFighter			"0x08010082">
+	<!ENTITY scXenophobeDefender		"0x08010083">
+	<!ENTITY scXenophobeWorldship		"0x08010084">
+	<!ENTITY scXenophobeArk				"0x08010085">
+	<!ENTITY rsXenophobeArk				"0x08010086">
+	<!ENTITY itXenophobeLancer			"0x08010087">
+	<!ENTITY rsXenophobeWorldship		"0x08010088">
+
+	<!ENTITY stVentariColony			"0x080100C0">
+	<!ENTITY scVentariCruiser			"0x080100C1">
+
+	<!ENTITY stAbbasidOutpost			"0x08010100">
+	<!ENTITY itAbbasidThanogram			"0x08010101">
+
+	<!ENTITY stPteravoreLair			"0x08010140">
+	<!ENTITY ovPteravoreFuelDrain		"0x08010141">
+	<!ENTITY vtPteravoreSporeLauncher	"0x08010142">
+	<!ENTITY rsPteravoreClaw			"0x08010143">
+	<!ENTITY rsPteravoreClawOverlay		"0x08010144">
+	<!ENTITY rsPteravoreDebris			"0x08010145">
+	<!ENTITY vtPteravoreBite			"0x08010146">
+	<!ENTITY rsPteravoreLair			"0x08010147">
+	<!ENTITY rsPteravoreClawOverlayHD	"0x08010148">
+
+	<!-- MISCELLANEOUS WATER ENCOUNTERS 0802 -->
+
+	<!ENTITY stDrugCartelOutpost		"0x08020000">
+	<!ENTITY scMethEnforcer				"0x08020001">
+
+	<!ENTITY stCentauriStronghold		"0x08020040">
+	<!ENTITY stCentauriOccupation		"0x08020041">
+	<!ENTITY scCentauriRaider			"0x08020042">
+	<!ENTITY scCentauriCommandShip		"0x08020043">
+	<!ENTITY rsCentauriRaiderImage		"0x08020044">
+	<!ENTITY itCentauriRecoilless		"0x08020045">
+	<!ENTITY scCentauriHeavyRaider		"0x08020046">
+	<!ENTITY rsCentauriHeavyRaiderImage	"0x08020047">
+	<!ENTITY itCentauriCLAW				"0x08020048">
+	<!ENTITY rsCentauriStationsImage	"0x08020049">
+	<!ENTITY stCentauriCamp				"0x0802004A">
+	<!ENTITY scArcoVaughnHeavyRaider	"0x0802004B">
+	<!ENTITY stArcoVaughnHabitat		"0x0802004C">
+	<!ENTITY itCentauriNanos			"0x0802004D">
+	<!ENTITY itCentauriHeavyCLAW		"0x0802004E">
+	<!ENTITY tbCentauriEncounters		"0x0802004F">
+	<!ENTITY svCentauriWarlords			"0x08020050">
+
+	<!ENTITY stKobolWarlordCamp			"0x08020080">
+	<!ENTITY scKobolGunshipDualTeV9		"0x08020081">
+	<!ENTITY scKobolGunshipOmniTeV9		"0x08020082">
+	<!ENTITY scKobolGunshipMissiles		"0x08020083">
+	<!ENTITY svKobolWarlords			"0x08020084">
+
+	<!ENTITY stLuminousAssembler		"0x080200C0">
+	<!ENTITY scLuminousDrone			"0x080200C1">
+	<!ENTITY itLuminousCortex			"0x080200C2">
+	<!ENTITY itLuminousTameProgram		"0x080200C3">
+	<!ENTITY itLuminousScareProgram		"0x080200C4">
+	<!ENTITY itLuminousArmature			"0x080200C5">
+	<!ENTITY itIonBlaster				"0x080200C6">
+	<!ENTITY itLuminousParticleShields	"0x080200C7">
+	<!ENTITY itLuminousBlastShields		"0x080200C8">
+	<!ENTITY itLuminousIonShields		"0x080200C9">
+	<!ENTITY itLuminousThermoShields	"0x080200CA">
+	<!ENTITY svFriendlyLuminous			"0x080200CB">
+	<!ENTITY itLuminousIonBlaster		"0x080200CC">
+
+	<!ENTITY stHuariFortress			"0x08020100">
+	<!ENTITY scHurinDestroyer			"0x08020101">
+	<!ENTITY svHuariEmpire				"0x08020102">
+	<!ENTITY ssHuaramarca				"0x08020103">
+	<!ENTITY stHuaramarcaGateway		"0x08020104">
+	<!ENTITY itTualiComaDrug			"0x08020105">
+	<!ENTITY dsUseTualiComaDrug			"0x08020106">
+	<!ENTITY stHuariTemple				"0x08020107">
+	<!ENTITY stHuariHabitat				"0x08020108">
+	<!ENTITY rsHuariStationsImage		"0x08020109">
+
+	<!ENTITY svDwargRaiders				"0x08020140">
+	<!ENTITY stDwargColony				"0x08020141">
+	<!ENTITY stDwargFortress			"0x08020142">
+	<!ENTITY scDwargRaider				"0x08020143">
+	<!ENTITY scDwargMaster				"0x08020144">
+	<!ENTITY scDwargBehemoth			"0x08020145">
+	<!ENTITY itDwargChitonArmor			"0x08020146">
+	<!ENTITY itDwargCatoptricArmor		"0x08020147">
+	<!ENTITY itDwargHolochroalArmor		"0x08020148">
+	<!ENTITY itDwargXiphonCannon		"0x08020149">
+	<!ENTITY itDwargBehemothCannon		"0x0802014A">
+	<!ENTITY stDwargGathering			"0x0802014B">
+	<!ENTITY stDwargGatheringSat		"0x0802014C">
+	<!ENTITY svFriendlyZoanthrope		"0x0802014D">
+	<!ENTITY itDwargCnidocystCannon		"0x0802014E">
+	<!ENTITY itDwargCnidocystNodule		"0x0802014F">
+
+	<!-- MISCELLANEOUS AIR ENCOUNTERS 0803 -->
+
+	<!ENTITY stOutlawConvoyEncounter	"0x08030000">
+	<!ENTITY stOutlawHaven				"0x08030001">
+	<!ENTITY stOutlawBase				"0x08030002">
+	<!ENTITY stOutlawBase2				"0x08030003">
+	<!ENTITY scZulu						"0x08030004">
+	<!ENTITY scSotho					"0x08030005">
+	<!ENTITY scOromo					"0x08030006">
+	<!ENTITY scZulu-II					"0x08030007">
+	<!ENTITY scT55ArmedTransport		"0x08030008">
+	<!ENTITY tbOutlawEncounters			"0x08030009">
+	<!ENTITY rsZulu						"0x0803000A">
+	<!ENTITY rsT31ArmedTransport		"0x0803000B">
+	<!ENTITY rsT55ArmedTransport		"0x0803000C">
+	<!ENTITY rsOromo					"0x0803000D">
+	<!ENTITY rsSotho					"0x0803000E">
+
+	<!ENTITY stMarauderOutpost			"0x08030040">
+	<!ENTITY stMarauderCompound			"0x08030041">
+	<!ENTITY stMarauderStronghold		"0x08030042">
+	<!ENTITY scTripoli					"0x08030043">
+	<!ENTITY scDrake					"0x08030044">
+	<!ENTITY scViking-II				"0x08030045">
+	<!ENTITY scMarauderRaidPlatform		"0x08030046">
+	<!ENTITY scBarbary					"0x08030047">
+	<!ENTITY tbMarauderEncounters		"0x08030048">
+	<!ENTITY svMarauders				"0x08030049">
+
+	<!ENTITY stPenitentShrine			"0x08030080">
+	<!ENTITY stPenitentSanctum			"0x08030081">
+	<!ENTITY scRepentant				"0x08030082">
+	<!ENTITY scAtonement				"0x08030083">
+	<!ENTITY itOracusHarassPower		"0x08030084">
+	<!ENTITY trHaloGems					"0x08030085">
+
+	<!ENTITY stRogueFleetCache			"0x080300C0">
+	<!ENTITY stRogueFleetSettlement		"0x080300C1">
+	<!ENTITY scRogueMineLayer			"0x080300C2">
+
+	<!ENTITY stHimalRefuge				"0x08030100">
+	<!ENTITY scHimalInterceptor			"0x08030101">
+	<!ENTITY svHimalSeparatists			"0x08030102">
+
+	<!ENTITY svUrakWarlords				"0x08030140">
+	<!ENTITY stUrakOutpost				"0x08030141">
+	<!ENTITY stUrakMine					"0x08030142">
+	<!ENTITY stUrakFortress				"0x08030143">
+	<!ENTITY scUrakSentinel				"0x08030144">
+	<!ENTITY scUrakDestroyer			"0x08030145">
+	<!ENTITY itUrakArmorLight			"0x08030146">
+	<!ENTITY itUrakArmorHeavy			"0x08030147">
+	<!ENTITY itUrakMassDriver			"0x08030148">
+	<!ENTITY itUrakHowitzer				"0x08030149">
+	<!ENTITY itUrakMassDriverAdvanced	"0x0803014A">
+
+	<!-- MISCELLANEOUS EARTH ENCOUNTERS 0804 -->
+
+	<!ENTITY stAsteroidMineTitanium		"0x08040000">
+	<!ENTITY stAsteroidMineDuralloy		"0x08040001">
+	<!ENTITY stAsteroidMinePteracnium	"0x08040002">
+	<!ENTITY scBorer					"0x08040003">
+	<!ENTITY scBorer-II					"0x08040004">
+	<!ENTITY scHammerhead				"0x08040005">
+	<!ENTITY scHammerhead-II			"0x08040006">
+	<!ENTITY stAsteroidMinePalladium	"0x08040007">
+	<!ENTITY stAsteroidMineCeralloy		"0x08040008">
+	<!ENTITY stOutlawTurret				"0x08040009">
+	<!ENTITY evOutlawMinerBehavior		"0x0804000A">
+	<!ENTITY tbOutlawMinerEncounters	"0x0804000B">
+	<!ENTITY rsBorer					"0x0804000C">
+
+	<!ENTITY stAnarchistGathering		"0x08040040">
+	<!ENTITY stAnarchistGatheringSat	"0x08040041">
+	<!ENTITY stAnarchistCell			"0x08040042">
+	<!ENTITY stAnarchistSettlement		"0x08040043">
+	<!ENTITY scEarthzone				"0x08040044">
+	<!ENTITY scHornet					"0x08040045">
+	<!ENTITY tbAnarchistEncounters		"0x08040046">
+	<!ENTITY rsAnarchistStations		"0x08040047">
+
+	<!ENTITY stTinkerGathering			"0x08040080">
+	<!ENTITY rsTinkerStations			"0x08040081">
+	<!ENTITY dsTinkerCustomWork			"0x08040082">
+	<!ENTITY svTinkers					"0x08040083">
+	<!ENTITY msTinkerReminder			"0x08040084">
+
+	<!ENTITY stRanxOutpost				"0x080400C0">
+	<!ENTITY stRanxFortress				"0x080400C1">
+	<!ENTITY scRanxGunship				"0x080400C2">
+	<!ENTITY scRanxDreadnought			"0x080400C3">
+	<!ENTITY tbRanxEncounters			"0x080400C4">
+	<!ENTITY rsRanxDreadnought			"0x080400C5">
+
+	<!ENTITY stFerianColony				"0x08040100">
+	<!ENTITY scFerianMiner				"0x08040101">
+	<!ENTITY scFerianWarrior			"0x08040102">
+	<!ENTITY rsFerianWarrior			"0x08040103">
+	<!ENTITY itFerianCannon				"0x08040104">
+
+	<!ENTITY stGaianProcessorEncounter	"0x08040140">
+	<!ENTITY scGaianProcessor			"0x08040141">
+	<!ENTITY itGaianDemolitionCannon	"0x08040142">
+	<!ENTITY svGaianTerraformers		"0x08040143">
+	
+	<!-- LIBRARIES -->
+	
+	<!ENTITY unidCoreTypesLibrary		"0x00030000">
+	<!ENTITY unidRPGLibrary				"0x00010000">
+	<!ENTITY unidGalaxyLibrary			"0x00020000">
+	
+	<!-- 0010 0000-FFFF HUMAN SPACE VOL 01 -->
+	
+	<!ENTITY unidHumanSpaceLibrary		"0x00100000">
+	
+	<!ENTITY ssStartonEridani			"0x00100001">
+	<!ENTITY ssStKatharine				"0x00100002">
+	<!ENTITY scPlayerSapphireBase		"0x00100003">
+	<!ENTITY scPlayerEI500Base			"0x00100004">
+	<!ENTITY scPlayerWolfenBase			"0x00100005">
+	<!ENTITY unidKateMorgental			"0x00100006">
+	<!ENTITY scKateMorgentalCruiser		"0x00100007">
+	<!ENTITY trStdLevelTreasure			"0x00100008">
+	<!ENTITY unidBenedict				"0x00100009">
+	<!ENTITY ssEarthSpacePrimordial		"0x0010000A">
+	<!ENTITY ssEarthSpaceMetallic		"0x0010000B">
+	<!ENTITY svPteravores				"0x0010000C">
+	<!ENTITY svLuminous					"0x0010000D">
+	<!ENTITY svRanxEmpire				"0x0010000E">
+	<!ENTITY svVentariSettlers			"0x0010000F">
+	<!ENTITY svXenophobes				"0x00100010">
+	<!ENTITY svPenitents				"0x00100011">
+	<!ENTITY svTeratons					"0x00100012">
+	<!ENTITY svDeathDrugsCartel			"0x00100013">
+	<!ENTITY svOutlawMiners				"0x00100014">
+	<!ENTITY svAbbasid					"0x00100015">
+	<!ENTITY svSapiens					"0x00100016">
+	<!ENTITY ssEarthSpaceIceAsteroids	"0x00100017">
+	<!ENTITY ssEarthSpaceVolcanicAsteroids	"0x00100018">
+	<!ENTITY trStdTreasureLevel1		"0x00100019">
+	<!ENTITY trStdTreasureLevel2		"0x0010001A">
+	<!ENTITY trStdTreasureLevel3		"0x0010001B">
+	<!ENTITY trStdTreasureLevel4		"0x0010001C">
+	<!ENTITY trStdTreasureLevel5		"0x0010001D">
+	<!ENTITY trStdTreasureLevel6		"0x0010001E">
+	<!ENTITY trStdTreasureLevel7		"0x0010001F">
+	<!ENTITY trStdTreasureLevel8		"0x00100020">
+	<!ENTITY trStdTreasureLevel9		"0x00100021">
+	<!ENTITY trStdTreasureLevel10		"0x00100022">
+	<!ENTITY rsItems2					"0x00100023">
+	<!ENTITY rsItems3					"0x00100024">
+	<!ENTITY rsItems4					"0x00100025">
+	<!ENTITY rsItems5					"0x00100026">
+	<!ENTITY rsItems6					"0x00100027">
+	<!ENTITY rsItems7					"0x00100028">
+	<!ENTITY rsItems8					"0x00100029">
+	<!ENTITY rsItems9					"0x0010002A">
+	<!ENTITY rsItems10					"0x0010002B">
+	
+	<!-- 0030-003F SISTERS OF DOMINA -->
+	
+	<!ENTITY rsSistersShrineHero		"0x00100030">
+	
+	<!-- 0040-005F CORPORATE HIERARCHY -->
+	
+	<!ENTITY rsRasiermesserFactoryHero	"0x00100040">
+	
+	<!-- 0060-007F COMMONWEALTH FLEET -->
+	
+	<!ENTITY rsPointJunoHero			"0x00100060">
+	<!ENTITY rsFleetEmblems				"0x00100061">
+	
+	<!-- 0080-009F COMMONWEALTH -->
+	
+	<!ENTITY rsStKatsArcologyHero		"0x00100080">
+	<!ENTITY rsCommonwealthMetropolis	"0x00100081">
+	<!ENTITY rsCommonwealthMetropolisArmored	"0x00100082">
+	
+	<!-- 00A0-00BF ARES ORTHODOXY -->
+	
+	<!-- 00C0-00CF SALVAGERS -->
+	
+	<!ENTITY rsSalvagerNomad			"0x001000C0">
+	
+	<!-- 00D0-00DF URAK WARLORDS -->
+	
+	<!ENTITY rsUrakDestroyer			"0x001000D0">
+	
+	<!-- 00E0-00EF BATTLE ARENA MAXIMUS -->
+	
+	<!ENTITY rsBattleArenaSegments		"0x001000E0">
+	<!ENTITY baBattleArenaSegment		"0x001000E1">
+	<!ENTITY stBattleArenaStatic		"0x001000E2">
+	
+	<!-- 00F0-00FF HELIOTROPES -->
+	
+	<!ENTITY rsHeliotropeFrigate		"0x001000F0">
+	
+	<!-- 0100-011F CHARON PIRATES AND MARAUDERS -->
+	
+	<!ENTITY rsTripoli					"0x00100100">
+	
+	<!-- 0120-013F SUNG SLAVERS -->
+	
+	<!ENTITY rsSungTransport			"0x00100120">
+	
+	<!-- 0140-014F XENOPHOBES -->
+	
+	<!ENTITY rsXenophobeDefender		"0x00100140">
+	
+	<!-- 1000-FFFF RESERVED -->
+	]>
+	
+<CoreLibrary
+		UNID=				"&unidHumanSpaceLibrary;"
+		name=				"Human Space Vol 1"
+		release=			"1"
+		private=			"true"
+		>
+
+	<Library unid="&unidCoreTypesLibrary;"/>
+	<Library unid="&unidRPGLibrary;"/>
+	<Library unid="&unidGalaxyLibrary;"/>
+	
+	<Module filename="Domina.xml"/>
+	<Module filename="HSCompatibility.xml"/>
+	<Module filename="HumanSpaceMap.xml"/>
+		
+	<!-- These modules implement specific system. We need to make these more
+		generic and move the adventure-specific behavior to Part I -->
+		
+	<Module filename="Antarctica.xml"/>
+	<Module filename="BattleArena.xml"/>
+	<Module filename="BattleArenaGladiators.xml"/>
+	<Module filename="CharonFortress.xml"/>
+	<Module filename="Eridani.xml"/>
+	<Module filename="Heretic.xml"/>
+	<Module filename="PointJuno.xml"/>
+	<Module filename="StKatharines.xml"/>
+		
+	<!-- These modules implement encounters. They should be clean, for the
+		most part. -->
+		
+	<Module filename="AresOrthodoxy.xml"/>
+	<Module filename="Benedict.xml"/>
+	<Module filename="BlackMarket.xml"/>
+	<Module filename="CentauriWarlords.xml"/>
+	<Module filename="CharonPirates.xml"/>
+	<Module filename="Commonwealth.xml"/>
+	<Module filename="CommonwealthAgricultural.xml"/>
+	<Module filename="CommonwealthFleet.xml"/>
+	<Module filename="CommonwealthMetropolis.xml"/>
+	<Module filename="CommonwealthMilitia.xml"/>
+	<Module filename="CommonwealthMining.xml"/>
+	<Module filename="CorporateHierarchy.xml"/>
+	<Module filename="DwargRaiders.xml"/>
+	<Module filename="EncountersVol01.xml"/>
+	<Module filename="Iocrym.xml"/>
+	<Module filename="KateMorgental.xml"/>
+	<Module filename="KorolovShipping.xml"/>
+	<Module filename="Luminous.xml"/>
+	<Module filename="OutlawMiners.xml"/>
+	<Module filename="Rasiermesser.xml"/>
+	<Module filename="Ringers.xml"/>
+	<Module filename="RogueFleet.xml"/>
+	<Module filename="SistersOfDomina.xml"/>
+	<Module filename="SungSlavers.xml"/>
+	<Module filename="Teratons.xml"/>
+	<Module filename="Tinkers.xml"/>
+	<Module filename="UrakWarlords.xml"/>
+		
+	<!-- These modules implement items. They should be clean, for the most
+		part. -->
+
+	<Module filename="MiscItems.xml"/>
+	<Module filename="StdArmor.xml"/>
+	<Module filename="StdAutons.xml"/>
+	<Module filename="StdDevices.xml"/>
+	<Module filename="StdEffects.xml"/>
+	<Module filename="StdFuel.xml"/>
+	<Module filename="StdPlayerShips.xml"/>
+	<Module filename="StdShields.xml"/>
+	<Module filename="StdSovereigns.xml"/>
+	<Module filename="StdSystems.xml"/>
+	<Module filename="StdUnknownItems.xml"/>
+	<Module filename="StdWeapons.xml"/>
+	<Module filename="UsefulItems.xml"/>
+		
+	<!-- These modules have a combination of types. Some should be in the
+		adventure; others should be core types. -->
+		
+	<Module filename="Code.xml"/>
+	<Module filename="StdDockScreens.xml"/>
+	<Module filename="StdTypes.xml"/>
+
+</CoreLibrary>

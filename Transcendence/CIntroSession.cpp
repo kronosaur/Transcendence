@@ -107,7 +107,7 @@ void CIntroSession::CreateSoundtrackTitleAnimation (CSoundType *pTrack, IAnimatr
 	*retpAni = pSeq;
 	}
 
-void CIntroSession::OnAnimate (CG16bitImage &Screen, bool bTopMost)
+void CIntroSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 
 //	OnAnimate
 //

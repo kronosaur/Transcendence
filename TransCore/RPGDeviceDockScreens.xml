@@ -21,14 +21,13 @@
 
 	noItemsText:		Text to show if itemList is empty
 	
-	replaceItem: The installed device to replace (may be Nil).
+	replaceItem:		The installed device to replace (may be Nil).
 
 -->
 
 	<DockScreen UNID="&dsRPGInstallDevice;"
 			type=				"itemPicker"
 			inherit=			"&dsDockScreenBase;"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -145,7 +144,6 @@
 
 	<DockScreen UNID="&dsRPGInstallDeviceFromList;"
 			type=           "customItemPicker"
-			backgroundID=   "&rsItemListScreen;"
 			nestedScreen=   "true"
 			>
 
@@ -245,7 +243,6 @@
 	<DockScreen UNID="&dsRPGUpgradeDevice;"
 			type=				"itemPicker"
 			inherit=			"&dsDockScreenBase;"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 

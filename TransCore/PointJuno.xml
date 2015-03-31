@@ -37,7 +37,6 @@
 			sovereign=			"&svCommonwealthFleet;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			defaultBackgroundID="&rsPointJunoBkgnd;"
 			canAttack=			"true"
 			noBlacklist=		"true"
 
@@ -49,7 +48,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthFleet, commonwealthMilitary, fleetDelivery, fleetLaw, friendly, human, majorStation, pointJuno, populated"
+			attributes=			"commonwealth, commonwealthFleet, commonwealthMilitary, fleetDelivery, fleetLaw, friendly, generic, human, majorStation, pointJuno, populated"
 			level=				"8"
 
 			noArticle=			"true"
@@ -64,9 +63,9 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="90"/>
 			<RepairArmor	criteria="a L:1-10;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-9" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-10;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-9;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
 		</Trade>
 
 		<Items>
@@ -81,6 +80,7 @@
 		</Items>
 		
 		<Image			imageID="&rsStationsPointJuno;" imageX="0" imageY="0" imageWidth="208" imageHeight="256"/>
+		<HeroImage		imageID="&rsPointJunoHero;" imageWidth="712" imageHeight="528"/>
 
 		<Ships>
 			<Ship					count="1"	class="&scBritannia;"	orders="guard" controller="fleetcommand">
@@ -1073,7 +1073,7 @@
 			structuralHitPoints="1300"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"CSCEuropa, locked, shipwreck, uncharted"
+			attributes=			"CSCEuropa, generic, locked, shipwreck, uncharted"
 
 			definiteArticle=	"true"
 			>
@@ -1346,6 +1346,7 @@
 	<!-- Point Juno System -->
 
 	<SystemType UNID="&ssPointJuno;" 
+				backgroundID=		"&rsLightNebulaSpace;"
 				noRandomEncounters=	"true"
 				noExtraEncounters=	"true"
 				>
@@ -1549,5 +1550,6 @@
 
 	<Image UNID="&rsStationsPointJuno;"	bitmap="Resources\StationsPointJuno.jpg" bitmask="Resources\StationsPointJunoMask.bmp" />
 	<Image UNID="&rsPointJunoBkgnd;"	bitmap="Resources\PointJuno.jpg" loadOnUse="true" />
+	<Image UNID="&rsPointJunoHero;"		bitmap="Resources\PointJunoHero.jpg" bitmask="Resources\PointJunoHeroMask.bmp" loadOnUse="true" />
 
 </TranscendenceModule>

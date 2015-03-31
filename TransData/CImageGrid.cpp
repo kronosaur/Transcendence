@@ -36,7 +36,7 @@ void CImageGrid::Create (int iCount, int cxCellWidth, int cyCellHeight)
 	int cxWidth = m_iCellColumns * cxCellWidth;
 	int cyHeight = m_iCellRows * cyCellHeight;
 
-	m_Image.CreateBlank(cxWidth, cyHeight, false);
+	m_Image.Create(cxWidth, cyHeight);
 	}
 
 void CImageGrid::GetCellCenter (int iIndex, int *retx, int *rety)

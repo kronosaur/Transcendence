@@ -6,9 +6,7 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-#define LIST_TAG					CONSTLIT("List")
-
-ALERROR CDockScreenCustomItemList::OnInitList (SInitCtx &Ctx, CString *retsError)
+ALERROR CDockScreenCustomItemList::OnInitList (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError)
 
 //	OnInitList
 //
@@ -17,16 +15,10 @@ ALERROR CDockScreenCustomItemList::OnInitList (SInitCtx &Ctx, CString *retsError
 	{
 	int i;
 
-	//	Get the list element
-
-	CXMLElement *pListData = Ctx.pDesc->GetContentElementByTag(LIST_TAG);
-	if (pListData == NULL)
-		return ERR_FAIL;
-
 	//	Get the list to show
 
 	CCodeChain &CC = g_pUniverse->GetCC();
-	ICCItem *pExp = CC.Link(pListData->GetContentText(0), 0, NULL);
+	ICCItem *pExp = CC.Link(Options.sCode, 0, NULL);
 
 	//	Evaluate the function
 

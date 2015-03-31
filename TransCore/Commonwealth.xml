@@ -10,6 +10,7 @@
 			manufacturer=		"Earth Industries"
 			class=				"EI500"
 			type=				"freighter"
+			defaultSovereign=	"&svCommonwealth;"
 
 			attributes=			"genericClass"
 			 
@@ -85,6 +86,7 @@
 			manufacturer=		""
 			class=				"light IAV"
 			type=				""
+			defaultSovereign=	"&svCommonwealth;"
 
 			size=				"27"
 			mass=				"25"
@@ -139,6 +141,7 @@
 			manufacturer=		""
 			class=				"medium IAV"
 			type=				""
+			defaultSovereign=	"&svCommonwealth;"
 
 			size=				"42"
 			mass=				"50"
@@ -192,6 +195,7 @@
 			manufacturer=		""
 			class=				"heavy IAV"
 			type=				""
+			defaultSovereign=	"&svCommonwealth;"
 
 			size=				"37"
 			mass=				"100"
@@ -247,6 +251,7 @@
 			manufacturer=		"Makayev-Energia"
 			class=				"Manticore"
 			type=				"heavy gunship"
+			defaultSovereign=	"&svCommonwealth;"
 
 			mass=				"90"
 			cargoSpace=			"50"
@@ -347,6 +352,7 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Ronin/A"
 			type=				"gunship"
+			defaultSovereign=	"&svCommonwealth;"
 
 			mass=				"60"
 			cargoSpace=			"50"
@@ -395,6 +401,7 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Ronin/B"
 			type=				"gunship"
+			defaultSovereign=	"&svCommonwealth;"
 
 			mass=				"60"
 			cargoSpace=			"50"
@@ -452,6 +459,7 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Ronin/C"
 			type=				"gunship"
+			defaultSovereign=	"&svCommonwealth;"
 
 			mass=				"60"
 			cargoSpace=			"50"
@@ -509,6 +517,7 @@
 			manufacturer=		"Zubrin Systems"
 			class=				"Sapphire"
 			type=				"yacht"
+			defaultSovereign=	"&svCommonwealth;"
 
 			mass=				"30"
 			cargoSpace=			"50"
@@ -569,6 +578,7 @@
 			class=				"Scarab"
 			type=				"superfreighter"
 			level=				"6"
+			defaultSovereign=	"&svCommonwealth;"
 			   
 			attributes=			"commonwealth,freighter,genericClass"
 
@@ -646,11 +656,11 @@
 		<Image imageID="&rsLargeShips1;" imageX="1344" imageY="0" imageWidth="192" imageHeight="192"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="177"	posRadius="78"	posZ="-3"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-177"	posRadius="78"	posZ="-3"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="175"	posRadius="78"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-175"	posRadius="78"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="78"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="174"	posRadius="78"	posZ="-3"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-174"	posRadius="78"	posZ="-3"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="174"	posRadius="78"	posZ="3"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-174"	posRadius="78"	posZ="3"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="80"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 
 		<AISettings
@@ -676,6 +686,7 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Wolfen"
 			type=				"gunship"
+			defaultSovereign=	"&svCommonwealth;"
 
 			mass=				"20"
 			cargoSpace=			"35"
@@ -755,7 +766,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, primary, populated"
+			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, majorStation, primary, populated"
 			levelFrequency=		"cuc-- ----- ----- ----- -----"
 			locationCriteria=	"-outerSystem, +planetary"
 			enemyExclusionRadius="50"
@@ -807,7 +818,7 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="93"/>
 			<RepairArmor	criteria="a L:1-5;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-5;" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -969,7 +980,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, human, majorStation, primary, populated"
+			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, majorStation, primary, populated"
 			levelFrequency=		"---uu cu--- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="60"
@@ -1019,7 +1030,7 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="93"/>
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -1140,7 +1151,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, human, majorStation, populated"
+			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, majorStation, populated"
 			levelFrequency=		"uucuu r---- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
@@ -1154,9 +1165,9 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="95"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-7" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -1224,7 +1235,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, friendly, human, populated"
+			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated"
 			levelFrequency=		"uuurr ----- ----- ----- -----"
 			locationCriteria=	"-outerSystem, +planetary"
 			>
@@ -1346,7 +1357,7 @@
 			repairRate=			"1"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, friendly, human, populated"
+			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated"
 
 			noArticle=			"true"
 			>
@@ -1670,7 +1681,7 @@
 			repairRate=			"1"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, friendly, human, populated"
+			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated"
 			level=				"1"
 			>
 
@@ -1694,7 +1705,10 @@
 					"\"You got a pretty nice ship there. Did your mom and dad buy it for you?\""
 					"\"Truth is, you gotta approach life philosophically, you know what I mean? You gotta believe that it's all going to work out in the end, or else what's the point?\""
 					"\"Nobody cares. Station needs a carbon scrubber? Get on the waiting list! After the corporate suits get their grilled Icelandic salmon, then they might pay attention to you. Nobody cares.\""
-					"\"I don't know what you're doing in this backwater system. You wanna get to the Core? Go! What's stopping you? Kids today: they dream big, but they'd rather watch the 3DVs.\""
+					(if (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+						"\"I don't know what you're doing in this backwater system. You wanna get to the Core? Go! What's stopping you? Kids today: they dream big, but they'd rather watch the 3DVs.\""
+						"\"I don't know what you're doing in this backwater system. You wanna see the galaxy? Go! What's stopping you? Kids today: they dream big, but they'd rather watch the 3DVs.\""
+						)
 					"\"A station is not like a starship. If you get into trouble you can always run away. All we can do is sit tight and repair the damage. Takes a special kind of man to live like that.\""
 					(cat "\"How do you like your " (objGetName gPlayerShip 0x00) "? "
 						(switch 
@@ -1937,7 +1951,7 @@
 			repairRate=			"1"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, friendly, human, populated"
+			attributes=			"commonwealth, friendly, generic, human, populated"
 			levelFrequency=		"uur-- ----- ----- ----- -----"
 			locationCriteria=	"-planetary"
 			>
@@ -2153,7 +2167,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, human, populated"
+			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, populated"
 			levelFrequency=		"----- -ucr- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
@@ -2196,7 +2210,7 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-8;" priceAdj="94"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -2822,7 +2836,6 @@
 
 	<DockScreen UNID="&dsContainerHabitatDonateItem;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -3425,7 +3438,19 @@
 		</Language>
 	</DockScreen>
 	
-<!-- BASIC COMMONWEALTH RULES -->
+<!-- BASIC COMMONWEALTH RULES
+
+	PLAYER DATA
+	
+	commonCrime:	Description of the player's crime (e.g., "slave-trading")
+	commonCrimeSeverity: The severity of the crime
+						0 = No crime
+						1 = Misdemeanor (drug possession)
+						2 = Felony (piracy)
+						3 = Crimes against Humanity (slave-trading, genocide, mass-destruction)
+	commonCrimeRecord: Number of times player has been caught and released for a felony
+	
+-->
 
 	<Sovereign UNID="&svCommonwealth;"
 			name="Commonwealth"

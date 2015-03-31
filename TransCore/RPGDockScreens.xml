@@ -16,6 +16,76 @@
 		</Language>
 	</DockScreen>
 	
+<!-- ABANDONED STATION =========================================================
+
+	Language IDs:
+	
+	descAbandonedStation: If the station has the given language ID, then we use
+			that as the description. Otherwise we come up with a default.
+	
+	
+-->
+
+	<DockScreen unid="&dsRPGAbandonedStation;"
+			inherit=			"&dsDockScreenBase;"
+			>
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (desc)
+						(switch
+							;	If we have a description in the object, then use that.
+						
+							(setq desc (objTranslate gSource 'descAbandonedStation))
+								(scrSetDesc gScreen desc)
+								
+							;	If populated, then use a default.
+							
+							(objHasAttribute gSource 'populated)
+								(scrSetDescTranslate gScreen 'descAbandonedStationPopulated)
+								
+							;	Otherwise, generic default
+							
+							(scrSetDescTranslate gScreen 'descAbandoendStationDefault)
+							)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionLoot" default="1" >
+						(scrShowScreen gScreen &dsRPGLoot;)
+					</Action>
+
+					<Action id="actionJettison">
+						(scrShowScreen gScreen &dsRPGJettison;)
+					</Action>
+
+					<Action id="actionUndock" cancel="1">
+						<Exit/>
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+		
+		<Language>
+			<Text id="actionJettison">"[J]ettison"</Text>
+			<Text id="actionLoot">"[L]oot"</Text>
+			
+			<Text id="descAbandonedStationDefault">
+				(cat
+					"You are docked at a destroyed structure. "
+					"Leaking fluids and venting gases obscure the ruined machinery inside."
+					)
+			</Text>
+			<Text id="descAbandoendStationPopulated">
+				(cat 
+					"You are docked at the lifeless ruins of a destroyed station. "
+					"Wrecked machinery and smoldering bodies litter the silent, cavernous bay."
+					)
+			</Text>
+		</Language>
+	</DockScreen>
+
 <!-- COMMODITIES EXCHANGE ======================================================
 
 	This screen allows the player to buy and sell items according to the 
@@ -25,6 +95,8 @@
 	
 		checkMilitaryID: If True, we check military ID before installing an 
 				item.
+				
+		showInstallables: If True, we always show all devices, etc.
 	
 -->
 	
@@ -42,6 +114,7 @@
 					<Action id="actionBuyItems" default="1">
 						(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
+							showInstallables: (@ gData 'showInstallables)
 							})
 					</Action>
 
@@ -79,12 +152,19 @@
 	
 		checkMilitaryID: If True, we check military ID before installing an 
 				item.
+				
+		criteria: If non-nil, we restrict sales to items matching this 
+				criteria.
 
+		listFilter: If non-nil, this is a function to use as a filter of items
+				for the player to buy.
+				
+		showInstallables: If non-nil, then we show weapons, armor, etc. in the
+				screen.
 -->
 	
 	<DockScreen unid="&dsRPGCommoditiesExchangeBuy;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			inherit=			"&dsDockScreenBase;"
 			nestedScreen=		"true"
 			>
@@ -93,7 +173,57 @@
 				dataFrom=	"station"
 				list=		"*"
 				>
-			(scrSetListFilter gScreen intComputeSellPrice)
+			(block (
+				(itemCriteria (@ gData 'criteria))
+				)
+				
+				(switch
+					;	If we specify an item criteria, then create a function
+					;	that will filter.
+					
+					(and itemCriteria
+							(not (eq itemCriteria "*"))
+							)
+						(scrSetListFilter gScreen (lambda (theItem)
+							(switch
+								(not (itmMatches theItem itemCriteria))
+									Nil
+											
+								(intComputeSellPrice theItem)
+								)
+							))
+							
+					;	If we specify a function, use that
+					
+					(@ gData 'listFilter)
+						(scrSetListFilter gScreen (@ gData 'listFilter))
+						
+					;	If we want to hide installables, then we need to filter
+					
+					(and (not (@ gData 'showInstallables))
+							(objGetItems gSource "Uadm")
+							)
+						(block Nil
+							(scrSetData gScreen 'installablesOption True)
+							(if (typGetData &dsRPGCommoditiesExchangeBuy; 'showInstallables)
+								(scrSetListFilter gScreen intComputeSellPrice)
+								(scrSetListFilter gScreen (lambda (theItem)
+									(switch
+										(itmMatches theItem "adm")
+											Nil
+									
+										(intComputeSellPrice theItem)
+										)
+									))
+								)
+							)
+					
+					;	Otherwise, we sell everything listed in our Trade
+					;	directives.
+					
+					(scrSetListFilter gScreen intComputeSellPrice)
+					)
+				)
 		</ListOptions>
 		
 		<Panes>
@@ -187,10 +317,12 @@
 							(scrSetData gScreen 'installResult installResult)
 							(scrSetData gScreen 'installResult Nil)
 							)
-						
+							
 						;	Enable/disable actions
 						
 						(scrEnableAction gScreen 'actionBuy (gr maxCount 0))
+						(scrShowAction gScreen 'actionShowInstallables (and (scrGetData gScreen 'installablesOption) (not (typGetData &dsRPGCommoditiesExchangeBuy; 'showInstallables))))
+						(scrShowAction gScreen 'actionHideInstallables (and (scrGetData gScreen 'installablesOption) (typGetData &dsRPGCommoditiesExchangeBuy; 'showInstallables)))
 						)
 				</OnPaneInit>
 				
@@ -221,6 +353,20 @@
 									(scrShowPane gScreen "Default")
 									)
 								)
+							)
+					</Action>
+					
+					<Action id="actionShowInstallables" minor="true">
+						(block Nil
+							(typSetData &dsRPGCommoditiesExchangeBuy; 'showInstallables True)
+							(scrRefreshScreen gScreen)
+							)
+					</Action>
+					
+					<Action id="actionHideInstallables" minor="true">
+						(block Nil
+							(typSetData &dsRPGCommoditiesExchangeBuy; 'showInstallables Nil)
+							(scrRefreshScreen gScreen)
 							)
 					</Action>
 					
@@ -363,6 +509,8 @@
 			<Text id="actionBuy">"[B]uy"</Text>
 			<Text id="actionBuyAndInstall">"Buy &amp; [I]nstall"</Text>
 			<Text id="actionBuyOnly">"[B]uy Only"</Text>
+			<Text id="actionShowInstallables">"[S]how Dock Service Items"</Text>
+			<Text id="actionHideInstallables">"[H]ide Dock Service Items"</Text>
 			
 			<Text id="descItemStats">
 				(if (@ gData 'max)
@@ -543,15 +691,43 @@
 				<OnPaneInit>
 					(block (
 						(canRepairArmor (objGetProperty gSource 'repairArmorMaxLevel))
-						(canInstallDevices (objGetProperty gSource 'installDeviceMaxLevel))
+						(canInstallWeapons (and
+							(objGetProperty gSource 'installDeviceMaxLevel)
+							(or
+								(filter (objGetItems gPlayerShip "w") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+								(filter (objGetItems gSource "w") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+								)
+							))
+						(canInstallMiscDevices (and
+							(objGetProperty gSource 'installDeviceMaxLevel)
+							(or
+								(filter (objGetItems gPlayerShip "d~ws") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+								(filter (objGetItems gSource "d~ws") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+								)
+							))
+						
+						(ammoWeapons (filter (objGetItems gPlayerShip "wI") theItem
+							(itmGetProperty theItem 'ammoType)
+							))
+						(ammoForSale (filter (objGetItems gSource "m") theItem (objGetSellPrice gSource theItem)))
+						(canBuyAmmo (and ammoWeapons
+							(filter ammoForSale theItem
+								(filter ammoWeapons theWeapon
+									(itmMatches theItem (cat "m +launchedBy:" (itmGetType theWeapon) ";"))
+									)
+								)
+							))
 						)
 					
 						;	Show/hide actions based on the services available
 						;	at this station.
 
 						(scrShowAction gScreen 'actionRepairArmor canRepairArmor)
-						(scrShowAction gScreen 'actionWeapons canInstallDevices)
-						(scrShowAction gScreen 'actionMiscDevices canInstallDevices)
+						(scrShowAction gScreen 'actionWeapons canInstallWeapons)
+						(scrShowAction gScreen 'actionMiscDevices canInstallMiscDevices)
+						
+						(scrShowAction gScreen 'actionBuyAmmoAndMissiles (and ammoForSale (not canInstallWeapons)))
+						(scrEnableAction gScreen 'actionBuyAmmoAndMissiles canBuyAmmo)
 						
 						;	Descriptor
 						
@@ -569,6 +745,29 @@
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							noUpgrade: (@ gData 'noUpgrade)
 							})
+					</Action>
+					
+					<Action id="actionBuyAmmoAndMissiles">
+						(block (
+							(ammoWeapons (filter (objGetItems gPlayerShip "wI") theItem
+								(itmGetProperty theItem 'ammoType)
+								))
+							)
+							
+							(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								listFilter: (lambda (theItem)
+									(switch
+										(not (filter ammoWeapons theWeapon
+												(itmMatches theItem (cat "m +launchedBy:" (itmGetType theWeapon) ";"))
+												))
+											Nil
+											
+										(intComputeSellPrice theItem)
+										)
+									)
+								})
+							)
 					</Action>
 					
 					<Action id="actionWeapons">
@@ -670,6 +869,7 @@
 		</Panes>
 		
 		<Language>
+			<Text id="actionBuyAmmoAndMissiles">"[B]uy Ammo and Missiles"</Text>
 			<Text id="actionDone">"Do[n]e"</Text>
 			<Text id="actionInstallDevice">"Install [D]evice"</Text>
 			<Text id="actionMiscDevices">"[M]iscellaneous Devices"</Text>
@@ -729,7 +929,6 @@
 	<DockScreen UNID="&dsRPGJettison;"
 			name=				"Ship's Cargo Hold"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -851,7 +1050,6 @@
 
 	<DockScreen UNID="&dsRPGLoot;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 
@@ -1125,268 +1323,6 @@
 		</Panes>
 	</DockScreen>
 
-<!-- REPAIR ARMOR SCREEN =======================================================
-
-	This screen allows the player to repair armor at a station. It requires the
-	station to use the <RepairArmor> directive in its <Trade> section.
-
-	gData uses the following fields:
-
-	'checkMilitaryID: If True, we should check for a military ID.
-
--->
-
-	<DockScreen UNID="&dsRPGRepairArmor;"
-			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
-			nestedScreen=		"true"
-			>
-
-		<ListOptions
-			dataFrom=	"player"
-			list=		"aI"
-
-			initialItem="=(block (
-				(desiredSeg (scrGetData gScreen 'armorSeg))
-				(seg (itmGetArmorInstalledLocation (scrGetItem gScreen)))
-				)
-
-				(or (not desiredSeg) (eq seg desiredSeg))
-				)"
-			/>
-
-		<Panes>
-			<Default>
-				<OnPaneInit>
-					(block (currencyUsed damage desc theArmor canRepair)
-						(setq theArmor (scrGetItem gScreen))
-						(setq damage (objGetArmorDamage gPlayerShip theArmor))
-						(setq maxHP (shpGetArmorMaxHitPoints gPlayerShip theArmor))
-
-						; Remember the armor segment so that we can come back to 
-						; this same selection (e.g., when we go to replace armor)
-
-						(scrSetData gScreen 'armorSeg (itmGetArmorInstalledLocation theArmor))
-
-						; Ask the station to compute the cost of repairing the given hit points
-
-						(setq currencyUsed (objGetDefaultCurrency gSource))
-						(setq gCost (objGetArmorRepairPrice gSource theArmor damage))
-
-						; Compose repair message for this segment
-
-						(setq desc (cat "The ship's " (objGetArmorName gPlayerShip theArmor) " " (itmGetName theArmor 0)))
-						(setq canRepair True)
-
-						(switch
-							(eq damage 0)
-								(block Nil
-									(setq desc (cat desc " is not damaged."))
-									(setq canRepair Nil)
-									)
-
-							(and (not gCost)
-									(gr (itmGetLevel theArmor) (objGetProperty gSource 'repairArmorMaxLevel)))
-								(block Nil
-									(setq desc (cat desc " cannot be repaired. The technology required is not available at this station."))
-									(setq canRepair Nil)
-									)
-
-							(not gCost)
-								(block Nil
-									(setq desc (cat desc " cannot be repaired at this station."))
-									(setq canRepair Nil)
-									)
-
-							(ls (subtract maxHP damage) (divide maxHP 4))
-								(block Nil
-									(setq desc (cat desc " is heavily damaged and cannot be repaired."))
-									(setq canRepair Nil)
-									)
-
-							(ls (objGetBalance gPlayerShip currencyUsed) gCost)
-								(block Nil
-									(setq desc (cat desc " can be repaired for " (fmtCurrency currencyUsed gCost) ", which, unfortunately, is more than you can afford."))
-									(setq canRepair Nil)
-									)
-
-							(eq gCost 0)
-								(setq desc (cat desc " is damaged and can be repaired free of charge."))
-
-							(setq desc (cat desc " is damaged and will cost " (fmtCurrency currencyUsed gCost) " to repair."))
-							)
-
-						; Initialize the pane
-
-						(scrSetDesc gScreen desc)
-						(scrEnableAction gScreen 0 canRepair)
-						)
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Repair" key="R" >
-						(block Nil
-							(objRepairArmor gPlayerShip (scrGetItem gScreen))
-							(objCharge gPlayerShip (objGetDefaultCurrency gSource) gCost)
-							(typSetData &svPlayer; 'tutorialRepaired True)
-							(scrShowPane gScreen "Default")
-							)
-					</Action>
-
-					<Action name="Replace" key="P" >
-						(scrShowScreen gScreen &dsRPGReplaceArmor; {
-							armorSeg: (scrGetData gScreen 'armorSeg)
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							})
-					</Action>
-
-					<Action name="Done" cancel="1" key="D">
-						(scrExitScreen gScreen)
-					</Action>
-				</Actions>
-			</Default>
-		</Panes>
-	</DockScreen>
-
-<!-- REPLACE ARMOR SCREEN ======================================================
-
-	This screen allows the player to refuel from a station. It requires the
-	station to use the <Refuel> directive in its <Trade> section.
-
-	gData uses the following fields:
-
-	'armorSeg: The armor segment to replace on the player
-	'checkMilitaryID: If True, we should check for a military ID before 
-			installing Military armor. We also refuse to install Illegal armor.
-
--->
-
-	<DockScreen UNID="&dsRPGReplaceArmor;"
-			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
-			nestedScreen=		"true"
-			>
-
-		<ListOptions
-			dataFrom=	"player"
-			list=		"aU"
-			/>
-
-		<Panes>
-			<Default
-					desc=	"Pick an armor segment to install.">
-
-				<OnPaneInit>
-					(block (thisItem canInstall currencyUsed armorSeg)
-						(setq armorSeg (@ gData 'armorSeg))
-						(setq thisItem (scrGetItem gScreen))
-						(setq canInstall True)
-						(setq currencyUsed (objGetDefaultCurrency gSource))
-						
-						(if thisItem
-							(block (desc cargoNeeded)
-								(setq gResult (shpCanInstallArmor gPlayerShip thisItem armorSeg))
-								(setq gCost (objGetArmorReplacePrice gSource thisItem))
-								(setq cargoNeeded (subtract (itmGetMass (shpGetArmor gPlayerShip armorSeg)) (itmGetMass thisItem)))
-
-								(switch
-									(eq gResult 1)
-										(block Nil
-											(setq desc (cat (itmGetName thisItem 3) " are too heavy for your ship's hull."))
-											(setq canInstall Nil)
-											)
-
-									(and (@ gData 'checkMilitaryID) 
-											(itmHasModifier thisItem "Military")
-											(not (objGetItems gPlayerShip "*+MilitaryID"))
-											)
-										(block Nil
-											(setq desc (cat "You must have a military ID to install " (itmGetName thisItem 0x80) "."))
-											(setq canInstall Nil)
-											)
-											
-									(and (@ gData 'checkMilitaryID) 
-											(itmHasModifier thisItem "Illegal")
-											)
-										(block Nil
-											(setq desc "We do not install illegal armor segments.")
-											(setq canInstall Nil)
-											)
-											
-									(not (isint gResult))
-										(block Nil
-											(setq desc gResult)
-											(setq canInstall Nil)
-											)
-
-									(not (eq gResult 0))
-										(block Nil
-											(setq desc "This armor segment cannot be installed.")
-											(setq canInstall Nil)
-											)
-
-									(not gCost)
-										(block Nil
-											(setq desc "This armor segment cannot be installed at this station.")
-											(setq canInstall Nil)
-											)
-
-									(gr cargoNeeded (objGetCargoSpaceLeft gPlayerShip))
-										(block Nil
-											(setq desc "There is no room in your cargo hold to store the old armor segment.")
-											(setq canInstall Nil)
-											)
-
-									(gr gCost (objGetBalance gPlayerShip currencyUsed))
-										(block Nil
-											(setq desc (cat "This armor segment can be installed for " (fmtCurrency currencyUsed gCost) ". Unfortunately, you cannot afford this cost."))
-											(setq canInstall Nil)
-											)
-
-									(eq gCost 0)
-										(setq desc "This armor segment can be installed free of charge.")
-
-									(setq desc (cat "This armor segment can be installed for " (fmtCurrency currencyUsed gCost) "."))
-									)
-
-								(scrSetDesc gScreen desc)
-								)
-
-							(block Nil
-								(scrSetDesc gScreen "You do not have any armor segments in your cargo hold.")
-								(setq canInstall Nil)
-								)
-							)
-
-						(scrEnableAction gScreen 0 canInstall)
-						)
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Install this Armor" default="1" key="I" >
-						(block (thisItem currencyUsed)
-							(setq thisItem (scrGetItem gScreen))
-							(setq currencyUsed (objGetDefaultCurrency gSource))
-
-							(if (and thisItem (geq (objGetBalance gPlayerShip currencyUsed) gCost))
-								(block Nil
-									(shpInstallArmor gPlayerShip thisItem (@ gData 'armorSeg))
-									(objCharge gPlayerShip currencyUsed gCost)
-									
-									(scrExitScreen gScreen)
-									)
-								)
-							)
-					</Action>
-
-					<Action name="Cancel" cancel="1" key="C">
-						(scrExitScreen gScreen)
-					</Action>
-				</Actions>
-			</Default>
-		</Panes>
-	</DockScreen>
-
 <!-- REPAIR ITEM SCREEN ========================================================
 
 	This screen allows the player to repair an item.
@@ -1403,7 +1339,6 @@
 -->
 	<DockScreen UNID="&dsRPGRepairItem;"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
 

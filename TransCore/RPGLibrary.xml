@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE CoreLibrary
+	[
+	<!ENTITY efShieldHUDDefault			"0x00000020">
+	<!ENTITY rsShieldHUDDefault			"0x00000021">
+	
+	<!ENTITY svFriendlyAuton			"0x0000100F">
+	
+	<!ENTITY baStdWingmanBase			"0x00003012">
+	<!ENTITY baStdAutonBase				"0x00003013">
+	<!ENTITY evStdPatrolEncounterBehavior	"0x00003014">
+	<!ENTITY evStdConvoyEncounterBehavior	"0x00003015">
+	<!ENTITY evStdZoneEncounterBehavior	"0x00003016">
+	
+	<!ENTITY itAutoSentinel				"0x000040ED">	<!-- Used only as a default -->
+	
+	<!ENTITY dsCargoHold				"0x0000A002">
+	<!ENTITY dsShipInterior				"0x0000A001">
+	<!ENTITY dsManualRefuel				"0x0000A00A">
+	<!ENTITY dsRemoveDevice				"0x0000A00B">
+	<!ENTITY dsLoot						"0x0000A013">
+	<!ENTITY dsJettison					"0x0000A016">
+	<!ENTITY dsShipConfig				"0x0000A01B">
+	<!ENTITY dsRepairItem				"0x0000A01D">
+	<!ENTITY dsDockScreenBase			"0x0000A022">
+	
+	<!ENTITY rsItemListScreen			"0x0000F003">
+	
+	<!ENTITY unidPilgrimClass			"0x00201002">
+	
+	<!-- LIBRARIES -->
+	
+	<!ENTITY unidCoreTypesLibrary		"0x00030000">
+	
+	<!-- 0001 0000-FFFF RPG LIBRARY -->
+	
+	<!ENTITY unidRPGLibrary				"0x00010000">
+	
+	<!ENTITY dsRPGMission				"0x00010010">
+	<!ENTITY dsRPGInstallDeviceFromList	"0x00010011">
+	<!ENTITY dsRPGLoot					"0x00010012">
+	<!ENTITY dsRPGJettison				"0x00010013">
+	<!ENTITY dsRPGRepairItem			"0x00010014">
+	<!ENTITY dsRPGRefuel				"0x00010015">
+	<!ENTITY dsRPGDeliveryMission		"0x00010016">
+	<!ENTITY dsRPGMissionJournal		"0x00010017">
+	<!ENTITY dsRPGRepairArmor			"0x00010018">
+	<!ENTITY dsRPGReplaceArmor			"0x00010019">
+	<!ENTITY dsRPGMessage				"0x0001001A">
+	<!ENTITY dsRPGCharacterDefault		"0x0001001B">
+	<!ENTITY dsRPGAnalyzeItem			"0x0001001C">
+	<!ENTITY baStdAuxMountDeviceBase	"0x0001001D">
+	<!ENTITY ovAuxForwardLeftMount		"0x0001001E">
+	<!ENTITY ovAuxForwardRightMount		"0x0001001F">
+	<!ENTITY rsAuxMountOverlay			"0x00010020">
+	<!ENTITY rsAuxMountOverlayHD		"0x00010021">
+	<!ENTITY dsRPGInstallDevice			"0x00010022">
+	<!ENTITY dsRPGManageArmor			"0x00010023">
+	<!ENTITY dsRPGUpgradeArmor			"0x00010024">
+	<!ENTITY dsRPGUpgradeDevice			"0x00010025">
+	<!ENTITY unidCDMMercenaryClass		"0x00010026">
+	<!ENTITY unidFreelancerClass		"0x00010027">
+	<!ENTITY unidCOMSOCAgentClass		"0x00010028">
+	<!ENTITY dsRPGDockServices			"0x00010029">
+	<!ENTITY dsRPGDockServicesCompatible	"0x0001002A">
+	<!ENTITY dsRPGCommoditiesExchange	"0x0001002B">
+	<!ENTITY dsRPGCommoditiesExchangeBuy	"0x0001002C">
+	<!ENTITY dsRPGDialog				"0x0001002D">
+	<!ENTITY dsRPGManageMiscDevices		"0x0001002E">
+	<!ENTITY dsRPGRemoveDevice			"0x0001002F">
+	
+	<!-- 0030-003F MISC DOCK SCREENS -->
+	
+	<!ENTITY dsRPGManageWeapons			"0x00010030">
+	<!ENTITY dsRPGDecontamination		"0x00010031">
+	<!ENTITY dsRPGAbandonedStation		"0x00010032">
+	
+	<!-- 0040-004F CARGO CRATE -->
+	
+	<!ENTITY stGenericCargoCrate		"0x00010040">
+	<!ENTITY rsGenericCargoCrate		"0x00010041">
+	]>
+	
+<CoreLibrary
+		UNID=				"&unidRPGLibrary;"
+		name=				"Transcendence RPG"
+		release=			"1"
+		private=			"true"
+		>
+
+	<Library unid="&unidCoreTypesLibrary;"/>
+	
+	<Module filename="HUD.xml"/>
+	<Module filename="RPGAnalyzers.xml"/>
+	<Module filename="RPGAutons.xml"/>
+	<Module filename="RPGAuxDevices.xml"/>
+	<Module filename="RPGBehaviors.xml"/>
+	<Module filename="RPGCharacterClasses.xml"/>
+	<Module filename="RPGCharacters.xml"/>
+	<Module filename="RPGCode.xml"/>
+	<Module filename="RPGCompatibility.xml"/>
+	<Module filename="RPGArmorDockScreens.xml"/>
+	<Module filename="RPGDeviceDockScreens.xml"/>
+	<Module filename="RPGDialog.xml"/>
+	<Module filename="RPGDockScreens.xml"/>
+	<Module filename="RPGMissions.xml"/>
+	<Module filename="RPGPlayer.xml"/>
+	<Module filename="RPGShipScreens.xml"/>
+	<Module filename="RPGTypes.xml"/>
+	<Module filename="RPGWingmen.xml"/>
+
+</CoreLibrary>

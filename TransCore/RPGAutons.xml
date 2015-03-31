@@ -445,6 +445,11 @@
 				(objSendMessage gSender gSource "\"Unable to comply\"")
 			</OrderAttackSelf>
 		</Events>
+		
+		<Language>
+			<Text id="WatchYourTargets">""</Text>
+			<Text id="NiceShooting">""</Text>
+		</Language>
 	</ShipClass>
 
 <!-- GLOBAL FUNCTIONS ==========================================================

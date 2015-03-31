@@ -61,8 +61,8 @@ void CreateGameStatsAnimation (const CGameStats &GameStats,
 	//	Get some resources
 
 	const CVisualPalette &VI = g_pHI->GetVisuals();
-	WORD wTextHighlightColor = VI.GetColor(colorTextHighlight);
-	WORD wTextFadeColor = VI.GetColor(colorTextFade);
+	CG32bitPixel rgbTextHighlightColor = VI.GetColor(colorTextHighlight);
+	CG32bitPixel rgbTextFadeColor = VI.GetColor(colorTextFade);
 	const CG16bitFont &SubTitleFont = VI.GetFont(fontSubTitle);
 	const CG16bitFont &HeaderFont = VI.GetFont(fontHeader);
 	const CG16bitFont &LargeFont = VI.GetFont(fontLarge);
@@ -96,7 +96,7 @@ void CreateGameStatsAnimation (const CGameStats &GameStats,
 	//	We add it first because it paints behind everything
 
 	IAnimatron *pRect;
-	CAniRect::Create(CVector(0.0, 0.0), CVector(0.0, 0.0), wTextFadeColor, 0, &pRect);
+	CAniRect::Create(CVector(0.0, 0.0), CVector(0.0, 0.0), rgbTextFadeColor, 0, &pRect);
 	pRect->SetID(ID_GAME_STAT_SELECT_RECT);
 	pAni->AddLine(pRect);
 
@@ -139,7 +139,7 @@ void CreateGameStatsAnimation (const CGameStats &GameStats,
 					CVector(0.0, yLine),
 					&SubTitleFont,
 					CG16bitFont::AlignCenter,
-					(sSection.IsBlank() ? wTextHighlightColor : wTextFadeColor),
+					(sSection.IsBlank() ? rgbTextHighlightColor : rgbTextFadeColor),
 					&pText);
 			pAni->AddLine(pText);
 
@@ -162,7 +162,7 @@ void CreateGameStatsAnimation (const CGameStats &GameStats,
 				CVector(xName, yLine + yNameOffset),
 				&LargeFont,
 				0,
-				wTextHighlightColor,
+				rgbTextHighlightColor,
 				&pText);
 		pAni->AddLine(pText);
 
@@ -179,7 +179,7 @@ void CreateGameStatsAnimation (const CGameStats &GameStats,
 						CVector(xSpacing, yLine + j * HeaderFont.GetHeight()),
 						&HeaderFont,
 						0,
-						wTextFadeColor,
+						rgbTextFadeColor,
 						&pText);
 
 				pAni->AddLine(pText);

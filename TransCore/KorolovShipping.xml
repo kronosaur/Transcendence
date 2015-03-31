@@ -56,6 +56,7 @@
 			manufacturer=		"Makayev-Energia"
 			class=				"Antares I"
 			type=				"freighter"
+			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"commonwealth,freighter,genericClass"
 			   
@@ -117,7 +118,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsAntaresIImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+		<Image imageID="&rsAntaresIImage;" imageWidth="128" imageHeight="128"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="176"	posRadius="61"	posZ="-3"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -172,6 +173,7 @@
 			manufacturer=		"Makayev-Energia"
 			class=				"Antares II"
 			type=				"freighter"
+			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"commonwealth,freighter,genericClass"
 			   
@@ -234,7 +236,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsAntaresIIImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+		<Image imageID="&rsAntaresIIImage;" imageWidth="128" imageHeight="128"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="176"	posRadius="61"	posZ="-3"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -293,6 +295,7 @@
 			class=				"Antares V"
 			type=				"freighter"
 			level=				"4"
+			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"commonwealth,freighter,genericClass"
 
@@ -356,7 +359,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsAntaresVImage;" imageX="0" imageY="0" imageWidth="180" imageHeight="180"/>
+		<Image imageID="&rsAntaresVImage;" imageWidth="180" imageHeight="180"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="177"	posRadius="84"	posZ="-3"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -415,6 +418,7 @@
 			class=				"EI100"
 			type=				"freighter"
 			level=				"2"
+			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"commonwealth,freighter,genericClass"
 			   
@@ -515,11 +519,12 @@
 			class=				"EI200"
 			type=				"freighter"
 			level=				"3"
+			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"commonwealth,freighter,genericClass"
 			   
 			size=				"54"
-			mass=				"200"
+			mass=				"500"
 			thrustRatio=		"1.8"
 			maxSpeed=			"16"
 			cargoSpace=			"500"
@@ -558,7 +563,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsEI200Image;" imageX="0" imageY="0" imageWidth="90" imageHeight="90"/>
+		<Image imageID="&rsEI200Image;" imageWidth="90" imageHeight="90"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="158"	posRadius="42"	posZ="0"	rotation="180"/>
@@ -616,11 +621,12 @@
 			class=				"EI7000"
 			type=				"freighter"
 			level=				"5"
+			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"commonwealth,freighter,genericClass"
 			
 			size=				"75"
-			mass=				"850"
+			mass=				"2100"
 			thrustRatio=		"2"
 			maxSpeed=			"12"
 			cargoSpace=			"2000"
@@ -816,7 +822,8 @@
 			class=				"EI200"
 			type=				"freighter"
 
-			mass=				"200"
+			size=				"54"
+			mass=				"500"
 			cargoSpace=			"500"
 			thrustRatio=		"1.8"
 			maxSpeed=			"16"
@@ -847,7 +854,7 @@
 			rotationAccel=		"0.5"
 			/>
 
-		<Image imageID="&rsEI200Image;" imageX="0" imageY="0" imageWidth="90" imageHeight="90"/>
+		<Image imageID="&rsEI200Image;" imageWidth="90" imageHeight="90"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="158"	posRadius="42"	posZ="0"	rotation="180"/>
@@ -1114,7 +1121,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateCustoms, corporateDecon, envAir, envEarth, envFire, envWater, friendly, human, majorStation, korolovShipping, populated"
+			attributes=			"corporate, corporateCustoms, corporateDecon, envAir, envEarth, envFire, envWater, friendly, generic, human, majorStation, korolovShipping, populated"
 			levelFrequency=		"ccc-- ----- ----- ----- -----"
 			unique=				"inSystem"
 			locationCriteria=	"+planetary"
@@ -1128,9 +1135,9 @@
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="90"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-6;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
 		</Trade>
 
 		<Ships>

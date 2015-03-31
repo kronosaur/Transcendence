@@ -16,6 +16,9 @@
     <Filter Include="XML Files">
       <UniqueIdentifier>{907de3ae-7d49-4088-afb7-f3daa875d329}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TLisp Files">
+      <UniqueIdentifier>{44ee7372-84e8-4e57-879b-9be2fbbf64a4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Armor.cpp">
@@ -162,5 +165,10 @@
     <Xml Include="..\Game\TransData.xml">
       <Filter>XML Files</Filter>
     </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Game\TLisp\MathUnitTest.tlisp">
+      <Filter>TLisp Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

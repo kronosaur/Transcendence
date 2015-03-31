@@ -10,10 +10,10 @@ class CImageGrid
 	public:
 		void Create (int iCount, int cxCellWidth, int cyCellHeight);
 		void GetCellCenter (int iIndex, int *retx, int *rety);
-		inline CG16bitImage &GetImage (void) { return m_Image; }
+		inline CG32bitImage &GetImage (void) { return m_Image; }
 
 	private:
-		CG16bitImage m_Image;
+		CG32bitImage m_Image;
 		int m_iCount;
 		int m_iCellColumns;
 		int m_iCellRows;
@@ -42,27 +42,27 @@ class CItemTypeTable
 class COutputChart
 	{
 	public:
-		CG16bitImage &GetOutputImage (int *retxOrigin = NULL, int *retyOrigin = NULL);
-		WORD GetStyleColor (const CString &sStyle);
+		CG32bitImage &GetOutputImage (int *retxOrigin = NULL, int *retyOrigin = NULL);
+		CG32bitPixel GetStyleColor (const CString &sStyle);
 		const CG16bitFont &GetStyleFont (const CString &sStyle);
 		bool Output (void);
 		void SetContentSize (int cxWidth, int cyHeight);
 		void SetOutputFilespec (const CString &sFilespec);
 		void SetStyleFont (const CString &sStyle, const CString &sFontDesc);
-		void SetStyleColor (const CString &sStyle, WORD wColor);
+		void SetStyleColor (const CString &sStyle, CG32bitPixel rgbColor);
 
 	private:
 		struct SStyleDesc
 			{
 			SStyleDesc (void) :
-					wColor(0)
+					rgbColor(0)
 				{ }
 
 			CG16bitFont Font;
-			WORD wColor;
+			CG32bitPixel rgbColor;
 			};
 
-		CG16bitImage m_Image;
+		CG32bitImage m_Image;
 		TSortMap<CString, SStyleDesc> m_Styles;
 		CString m_sFilespec;
 	};
@@ -85,7 +85,7 @@ class CSimViewer
 		static LONG APIENTRY WndProc (HWND hWnd, UINT message, UINT wParam, LONG lParam);
 
 		HWND m_hWnd;
-		CG16bitImage m_Buffer;
+		CG32bitImage m_Buffer;
 		DWORD m_dwLastUpdate;
 	};
 

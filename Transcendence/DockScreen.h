@@ -20,10 +20,20 @@ class IDockScreenDisplay
 			resultShowPane,
 			};
 
+		enum EBackgroundTypes
+			{
+			backgroundDefault,				//	Use the default specified by the display
+
+			backgroundNone,					//	No background image
+			backgroundImage,				//	Use an image (by UNID)
+			backgroundObj,					//	Use the object's image
+			};
+
 		struct SInitCtx
 			{
 			CPlayerShipController *pPlayer;
 			CDockScreen *pDockScreen;
+			CDesignType *pRoot;
 			CXMLElement *pDesc;
 			AGScreen *pScreen;
 			RECT rcRect;
@@ -35,19 +45,52 @@ class IDockScreenDisplay
 			ICCItem *pData;
 			};
 
+		struct SBackgroundDesc
+			{
+			SBackgroundDesc (void) :
+					iType(backgroundDefault)
+				{ }
+
+			EBackgroundTypes iType;			//	Type of image defined
+			DWORD dwImageID;				//	UNID to use (if iType == backgroundImage)
+			CSpaceObject *pObj;				//	Object to query (if iType == backgroundObj)
+			};
+
+		struct SDisplayOptions
+			{
+			SDisplayOptions (void)
+				{
+				rcControl.left = 0;
+				rcControl.top = 0;
+				rcControl.right = 0;
+				rcControl.bottom = 0;
+				}
+
+			SBackgroundDesc BackgroundDesc;	//	Background specified by screen
+
+			RECT rcControl;					//	Position of main control
+
+			CString sDataFrom;				//	Source of display data (may be a function)
+			CString sItemCriteria;			//	Criteria of items to show in list (may be a function)
+			CString sCode;					//	Code to generate list
+			CString sInitialItemCode;		//	Code to select initial item in list
+
+			CString sRowHeightCode;			//	For custom lists
+			};
+
 		virtual ~IDockScreenDisplay (void) { }
 
 		inline void DeleteCurrentItem (int iCount) { OnDeleteCurrentItem(iCount); }
 		inline const CItem &GetCurrentItem (void) const { return OnGetCurrentItem(); }
 		inline ICCItem *GetCurrentListEntry (void) const { return OnGetCurrentListEntry(); }
-		inline bool GetDefaultBackgroundObj (CSpaceObject **retpObj) { return OnGetDefaultBackgroundObj(retpObj); }
+		inline bool GetDefaultBackground (SBackgroundDesc *retDesc) { return OnGetDefaultBackground(retDesc); }
 		inline CItemListManipulator &GetItemListManipulator (void) { return OnGetItemListManipulator(); }
 		inline int GetListCursor (void) { return OnGetListCursor(); }
 		inline IListData *GetListData (void) { return OnGetListData(); }
 		inline CSpaceObject *GetSource (void) { return OnGetSource(); }
 		inline EResults HandleAction (DWORD dwTag, DWORD dwData) { return OnHandleAction(dwTag, dwData); }
 		inline EResults HandleKeyDown (int iVirtKey) { return OnHandleKeyDown(iVirtKey); }
-		ALERROR Init (SInitCtx &Ctx, CString *retsError);
+		ALERROR Init (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError);
 		inline bool IsCurrentItemValid (void) const { return OnIsCurrentItemValid(); }
 		inline EResults ResetList (CSpaceObject *pLocation) { return OnResetList(pLocation); }
 		inline EResults SetListCursor (int iCursor) { return OnSetListCursor(iCursor); }
@@ -57,18 +100,20 @@ class IDockScreenDisplay
 		inline void ShowItem (void) { OnShowItem(); }
 		inline void ShowPane (bool bNoListNavigation) { OnShowPane(bNoListNavigation); }
 
+		static bool GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retOptions, CString *retsError);
+
 	protected:
 		virtual void OnDeleteCurrentItem (int iCount) { }
 		virtual const CItem &OnGetCurrentItem (void) const { return CItem::NullItem(); }
 		virtual ICCItem *OnGetCurrentListEntry (void) const { return NULL; }
-		virtual bool OnGetDefaultBackgroundObj (CSpaceObject **retpObj) { return false; }
+		virtual bool OnGetDefaultBackground (SBackgroundDesc *retDesc) { return false; }
 		virtual CItemListManipulator &OnGetItemListManipulator (void) { return g_DummyItemListManipulator; }
 		virtual int OnGetListCursor (void) { return -1; }
 		virtual IListData *OnGetListData (void) { return NULL; }
 		virtual CSpaceObject *OnGetSource (void) { return NULL; }
 		virtual EResults OnHandleAction (DWORD dwTag, DWORD dwData) { return resultNone; }
 		virtual EResults OnHandleKeyDown (int iVirtKey) { return resultNone; }
-		virtual ALERROR OnInit (SInitCtx &Ctx, CString *retsError) { return NOERROR; }
+		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) { return NOERROR; }
 		virtual bool OnIsCurrentItemValid (void) const { return false; }
 		virtual EResults OnResetList (CSpaceObject *pLocation) { return resultNone; }
 		virtual EResults OnSetListCursor (int iCursor) { return resultNone; }
@@ -154,6 +199,7 @@ class CDockScreenActions
 			bool bCancel;			//	This is the cancel action [Esc]
 			bool bPrev;				//	This is the prev action [<-]
 			bool bNext;				//	This is the next action [->]
+			bool bMinor;			//	This is a minor/option button
 			};
 
 		void ExecuteCode (CDockScreen *pScreen, const CString &sID, CExtension *pExtension, ICCItem *pCode);
@@ -286,7 +332,7 @@ class CDockScreen : public IScreenController
 		inline const CItem &GetCurrentItem (void) { return m_pDisplay->GetCurrentItem(); }
 		ICCItem *GetCurrentListEntry (void);
 		inline const CString &GetDescription (void) { return m_CurrentPane.GetDescriptionString(); }
-		CG16bitImage *GetDisplayCanvas (const CString &sID);
+		CG32bitImage *GetDisplayCanvas (const CString &sID);
 		inline CItemListManipulator &GetItemListManipulator (void) { return m_pDisplay->GetItemListManipulator(); }
 		inline int GetListCursor (void) { return m_pDisplay->GetListCursor(); }
 		inline IListData *GetListData (void) { return m_pDisplay->GetListData(); }
@@ -338,8 +384,10 @@ class CDockScreen : public IScreenController
 			bool bAnimate;
 			};
 
-		ALERROR CreateBackgroundArea (CXMLElement *pDesc, AGScreen *pScreen, const RECT &rcRect, const RECT &rcInner);
-		ALERROR CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRect, int xOffset);
+		void BltSystemBackground (CSystem *pSystem, const RECT &rcRect);
+		void BltToBackgroundImage (const RECT &rcRect, CG32bitImage *pImage, int xSrc, int ySrc, int cxSrc, int cySrc);
+		ALERROR CreateBackgroundArea (IDockScreenDisplay::SBackgroundDesc &Desc, AGScreen *pScreen, const RECT &rcRect, const RECT &rcInner);
+		ALERROR CreateBackgroundImage (IDockScreenDisplay::SBackgroundDesc &Desc, const RECT &rcRect, int xOffset);
 		ALERROR CreateTitleArea (CXMLElement *pDesc, AGScreen *pScreen, const RECT &rcRect, const RECT &rcInner);
 		bool EvalBool (const CString &sString);
 		CString EvalInitialPane (void);
@@ -373,7 +421,7 @@ class CDockScreen : public IScreenController
 		bool m_bInOnInit;
 
 		//	Title and header
-		CG16bitImage *m_pBackgroundImage;
+		CG32bitImage *m_pBackgroundImage;
 		CGTextArea *m_pCredits;
 		CGTextArea *m_pCargoSpace;
 		bool m_bFreeBackgroundImage;
@@ -383,6 +431,7 @@ class CDockScreen : public IScreenController
 		CXMLElement *m_pDisplayInitialize;
 		bool m_bDisplayAnimate;
 
+		int m_yDisplay;
 		IDockScreenDisplay *m_pDisplay;
 
 		//	Panes

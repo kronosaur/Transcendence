@@ -1180,9 +1180,9 @@
 					; Get all options
 
 					(setq beaconType (if (@ options 'beaconType) (@ options 'beaconType) &stStargateBeacon;))
-					(setq corewardLocationCriteria (if (@ options 'corewardLocationCriteria) (@ options 'corewardLocationCriteria) "++innerSystem; -asteroids; -gasGiant"))
+					(setq corewardLocationCriteria (if (@ options 'corewardLocationCriteria) (@ options 'corewardLocationCriteria) "++innerSystem; -asteroids; -gasGiant; -void;"))
 					(setq corewardNode (if (@ options 'corewardNode) (@ options 'corewardNode) (typGetStaticData (@ (typFind "a") 0) 'defaultCorewardNode)))
-					(setq edgewardLocationCriteria (if (@ options 'edgewardLocationCriteria) (@ options 'edgewardLocationCriteria) "++outerSystem; -asteroids; -gasGiant"))
+					(setq edgewardLocationCriteria (if (@ options 'edgewardLocationCriteria) (@ options 'edgewardLocationCriteria) "++outerSystem; -asteroids; -gasGiant; -void;"))
 					(setq stargateType (if (@ options 'stargateType) (@ options 'stargateType) &stStargate;))
 
 					; Find the gate that has the shortest path to the Core
@@ -1231,10 +1231,10 @@
 								; The position of the beacons depends on whether the gate leads
 								; to the core or not.
 								
-								(setq beacon1Pos (sysVectorPolarOffset gateObj 270 6))
+								(setq beacon1Pos (sysVectorPolarOffset gateObj 270 12))
 								(if (eq theGate corewardGate)
-									(setq beacon2Pos (sysVectorPolarOffset gateObj 90 6))
-									(setq beacon2Pos (sysVectorPolarOffset gateObj 0 6))
+									(setq beacon2Pos (sysVectorPolarOffset gateObj 90 12))
+									(setq beacon2Pos (sysVectorPolarOffset gateObj 0 12))
 									)
 									
 								; Create beacons
@@ -1374,5 +1374,14 @@
 				))
 			)
 	</Globals>
-
+	
+<!-- RESOURCES -->
+	
+	<Image UNID="&rsLightNebulaSpace;"			bitmap="Resources\LightNebulaSpace.jpg"	loadOnUse="true"/>
+	<Image UNID="&rsPrimordialNebulaSpace;"		bitmap="Resources\PrimordialNebulaSpace.jpg"	loadOnUse="true"/>
+	<Image UNID="&rsRedDwarfSpace;"				bitmap="Resources\RedDwarfSpace.jpg"	loadOnUse="true"/>
+	<Image UNID="&rsRockyAsteroidSpace;"		bitmap="Resources\RockyAsteroidSpace.jpg"	loadOnUse="true"/>
+	<Image UNID="&rsBrightStarSpace;"			bitmap="Resources\BrightStarSpace.jpg"	loadOnUse="true"/>
+	<Image UNID="&rsRedGiantSpace;"				bitmap="Resources\RedGiantSpace.jpg"	loadOnUse="true"/>
+	
 </TranscendenceModule>

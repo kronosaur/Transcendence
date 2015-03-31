@@ -1113,6 +1113,8 @@
 									)
 								)
 							)
+							
+						(objSetProperty theObj 'interiorHP (random 1 10))
 
 						(sysCreateEffect &efGemOfSacrifice; theObj (objGetPos theObj))
 						)
@@ -2273,7 +2275,6 @@
 	<DockScreen UNID="&dsUseArmorPatch;"
 			name=				"Ship's Interior"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -2450,7 +2451,6 @@
 	<DockScreen UNID="&dsUseArmorCoating;"
 			name=				"Ship's Interior"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions

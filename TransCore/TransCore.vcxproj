@@ -84,7 +84,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="CoreTypes.xml">
+    <None Include="CoreTypesLibrary.xml">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
@@ -307,14 +307,20 @@
     <None Include="StarSystems.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="UniverseCompatibility.xml" />
-    <None Include="UniverseEffects.xml" />
+    <None Include="GalaxyCompatibility.xml" />
+    <None Include="GalaxyEffects.xml" />
     <None Include="Volcanic.xml" />
     <None Include="Worlds.xml">
       <SubType>Designer</SubType>
     </None>
     <None Include="Stars.xml" />
     <None Include="Ovoids.xml" />
+    <Xml Include="CompatibilityLibrary.xml" />
+    <Xml Include="CorePlaceholders.xml" />
+    <Xml Include="HumanSpaceVol01.xml" />
+    <Xml Include="Ore.xml" />
+    <Xml Include="RPGLibrary.xml" />
+    <Xml Include="GalaxyLibrary.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

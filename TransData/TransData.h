@@ -72,11 +72,10 @@ typedef TSortMap<DWORD, SDesignTypeInfo> CDesignTypeStats;
 
 //	Functions
 
-void ComputeUNID2EntityTable (const CString &sDataFile, CIDTable &EntityTable);
 char *FrequencyChar (int iFreq);
 void ShowHelp (CXMLElement *pCmdLine);
 void MarkItemsKnown (CUniverse &Universe);
-bool OutputImage (CG16bitImage &Image, const CString &sFilespec);
+bool OutputImage (CG32bitImage &Image, const CString &sFilespec);
 ALERROR LoadDesignTypeStats (CDesignTypeStats *retStats);
 
 void Decompile (const CString &sDataFile, CXMLElement *pCmdLine);
@@ -88,17 +87,17 @@ void GenerateAttributeList (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateEffectImage (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateEncounterCount (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateEncounterFrequency (CUniverse &Universe, CXMLElement *pCmdLine);
-void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable);
+void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateEntitiesTable (const CString &sDataFile, CXMLElement *pCmdLine);
 void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateItemFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine);
-void GenerateItemTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable);
+void GenerateItemTable (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateRandomItemTables (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateShieldStats (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateShipImageChart (CUniverse &Universe, CXMLElement *pCmdLine);
-void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable);
+void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateSimTables (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateStationFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine);
@@ -114,7 +113,7 @@ void GenerateTopology (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateTopologyMap (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateTypeDependencies (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateTypeIslands (CUniverse &Universe, CXMLElement *pCmdLine);
-void GenerateTypeTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable);
+void GenerateTypeTable (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateWordList (const CString &sDataFile, CXMLElement *pCmdLine);
 void GenerateWorldImageChart (CUniverse &Universe, CXMLElement *pCmdLine);

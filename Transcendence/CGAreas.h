@@ -11,17 +11,17 @@ class CGDrawArea : public AGArea
 	public:
 		CGDrawArea (void);
 
-		inline CG16bitImage &GetCanvas (void) { CreateImage(); return m_Image; }
+		inline CG32bitImage &GetCanvas (void) { CreateImage(); return m_Image; }
 
 		//	AGArea virtuals
-		virtual void Paint (CG16bitImage &Dest, const RECT &rcRect);
+		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect);
 
 	private:
 		void CreateImage (void);
 
-		CG16bitImage m_Image;
+		CG32bitImage m_Image;
 
-		WORD m_wBackColor;
+		CG32bitPixel m_rgbBackColor;
 		bool m_bTransBackground;
 	};
 
@@ -35,7 +35,7 @@ class CGItemDisplayArea : public AGArea
 
 		//	AGArea virtuals
 		virtual int Justify (const RECT &rcRect);
-		virtual void Paint (CG16bitImage &Dest, const RECT &rcRect);
+		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect);
 
 	private:
 		CSpaceObject *m_pSource;
@@ -48,7 +48,7 @@ class CGItemDisplayArea : public AGArea
 class CGItemListArea : public AGArea
 	{
 	public:
-		CGItemListArea (void);
+		CGItemListArea (const CVisualPalette &VI);
 		~CGItemListArea (void);
 
 		void CleanUp (void);
@@ -75,7 +75,7 @@ class CGItemListArea : public AGArea
 
 		//	AGArea virtuals
 		virtual bool LButtonDown (int x, int y);
-		virtual void Paint (CG16bitImage &Dest, const RECT &rcRect);
+		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect);
 		virtual void Update (void);
 
 	private:
@@ -95,12 +95,13 @@ class CGItemListArea : public AGArea
 		int CalcRowHeight (int iRow);
 		void InitRowDesc (void);
 		int FindRow (int y);
-		void PaintCustom (CG16bitImage &Dest, const RECT &rcRect, bool bSelected);
-		void PaintItem (CG16bitImage &Dest, const CItem &Item, const RECT &rcRect, bool bSelected);
+		void PaintCustom (CG32bitImage &Dest, const RECT &rcRect, bool bSelected);
+		void PaintItem (CG32bitImage &Dest, const CItem &Item, const RECT &rcRect, bool bSelected);
 
 		IListData *m_pListData;
 		ListTypes m_iType;
 
+		const CVisualPalette &m_VI;
 		const CUIResources *m_pUIRes;
 		const SFontTable *m_pFonts;
 		int m_iOldCursor;						//	Cursor pos
@@ -123,7 +124,7 @@ class CGNeurohackArea : public AGArea
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 
 		//	AGArea virtuals
-		virtual void Paint (CG16bitImage &Dest, const RECT &rcRect);
+		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect);
 		virtual void Update (void);
 
 	private:
@@ -145,8 +146,8 @@ class CGNeurohackArea : public AGArea
 		void CreateBranch (SNode *pParent, int iDirection, int iGeneration, int iWidth, const RECT &rcRect);
 		void CreateNetwork (const RECT &rcRect);
 		SNode *CreateNode (SNode *pParent, int x, int y);
-		void PaintBranch (CG16bitImage &Dest, SNode *pNode, SNode *pNext = NULL);
-		void PaintSphere (CG16bitImage &Dest, int x, int y, int iRadius, WORD wGlowColor);
+		void PaintBranch (CG32bitImage &Dest, SNode *pNode, SNode *pNext = NULL);
+		void PaintSphere (CG32bitImage &Dest, int x, int y, int iRadius, CG32bitPixel rgbGlowColor);
 
 		const SFontTable *m_pFonts;
 
@@ -209,7 +210,7 @@ class CGSelectorArea : public AGArea
 		//	AGArea virtuals
 
 		virtual bool LButtonDown (int x, int y);
-		virtual void Paint (CG16bitImage &Dest, const RECT &rcRect);
+		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect);
 		virtual void Update (void);
 
 	private:
@@ -248,9 +249,9 @@ class CGSelectorArea : public AGArea
 		bool FindLayoutForPos (const CVector &vPos, const TArray<bool> &SlotStatus, int *retiIndex = NULL);
 		bool FindNearestRegion (int xCur, int yCur, EDirections iDir, bool bDiagOnly, int *retiIndex) const;
 		bool FindRegionInDirection (EDirections iDir, int *retiIndex = NULL) const;
-		void PaintEmptySlot (CG16bitImage &Dest, const RECT &rcRect, const SEntry &Entry);
-		void PaintInstalledItem (CG16bitImage &Dest, const RECT &rcRect, const SEntry &Entry);
-		void PaintModifier (CG16bitImage &Dest, int x, int y, const CString &sText, WORD wColor, WORD wBackColor, int *rety);
+		void PaintEmptySlot (CG32bitImage &Dest, const RECT &rcRect, const SEntry &Entry);
+		void PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect, const SEntry &Entry);
+		void PaintModifier (CG32bitImage &Dest, int x, int y, const CString &sText, CG32bitPixel rgbColor, CG32bitPixel rgbBackColor, int *rety);
 		void SetRegionsFromArmor (CSpaceObject *pSource);
 		void SetRegionsFromMiscDevices (CSpaceObject *pSource);
 		void SetRegionsFromWeapons (CSpaceObject *pSource);

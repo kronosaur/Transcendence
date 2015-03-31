@@ -41,7 +41,7 @@
 					</OrbitalDistribution>
 
 					<OrbitalDistribution count="1"	arcLength="250" radialWidth="18">
-						<Lookup table="VariantAsteroidBeltLabel"/>
+						<Lookup table="VariantAsteroidBeltVoidLabel"/>
 					</OrbitalDistribution>
 				</_Morphology>
 			</Lookup>
@@ -55,7 +55,7 @@
 					</OrbitalDistribution>
 
 					<OrbitalDistribution count="2"	arcLength="430" radialWidth="30">
-						<Lookup table="VariantAsteroidBeltLabel"/>
+						<Lookup table="VariantAsteroidBeltVoidLabel"/>
 					</OrbitalDistribution>
 				</_Morphology>
 			</Lookup>
@@ -69,7 +69,7 @@
 					</OrbitalDistribution>
 
 					<OrbitalDistribution count="2-4" arcLength="620" radialWidth="42">
-						<Lookup table="VariantAsteroidBeltLabel"/>
+						<Lookup table="VariantAsteroidBeltVoidLabel"/>
 					</OrbitalDistribution>
 				</_Morphology>
 			</Lookup>
@@ -152,7 +152,7 @@
 					</OrbitalDistribution>
 
 					<OrbitalDistribution count="1"	radialWidth="18">
-						<Lookup table="VariantAsteroidBeltLabel"/>
+						<Lookup table="VariantAsteroidBeltVoidLabel"/>
 					</OrbitalDistribution>
 				</_Morphology>
 			</Lookup>
@@ -166,7 +166,7 @@
 					</OrbitalDistribution>
 
 					<OrbitalDistribution count="2"	radialWidth="30">
-						<Lookup table="VariantAsteroidBeltLabel"/>
+						<Lookup table="VariantAsteroidBeltVoidLabel"/>
 					</OrbitalDistribution>
 				</_Morphology>
 			</Lookup>
@@ -180,7 +180,7 @@
 					</OrbitalDistribution>
 
 					<OrbitalDistribution count="1-3"	radialWidth="42">
-						<Lookup table="VariantAsteroidBeltLabel"/>
+						<Lookup table="VariantAsteroidBeltVoidLabel"/>
 					</OrbitalDistribution>
 				</_Morphology>
 			</Lookup>
@@ -798,14 +798,14 @@
 				<Lookup chance="80"		table="VariantSizeA"/>
 				<Lookup chance="14"		table="VariantSizeB"/>
 				<Group  chance="5">
-					<Lookup chance="5"	table="VariantSizeC"/>
+					<Lookup				table="VariantSizeC"/>
 					
 					<Orbitals distance="2d4+4" angle="random">
 						<Lookup table="VariantAsteroidBeltLabel"/>
 					</Orbitals>
 				</Group>
 				<Group  chance="1">
-					<Lookup chance="1"	table="VariantSizeD"/>
+					<Lookup				table="VariantSizeD"/>
 					
 					<Orbitals distance="2d4+8" angle="random">
 						<Lookup table="VariantAsteroidBeltLabel"/>
@@ -824,6 +824,17 @@
 				<Label variant="volcanic"	attributes="asteroids, asteroidBelt, volcanic"/>
 			</VariantTable>
 		</VariantAsteroidBeltLabel>
+
+		<VariantAsteroidBeltVoidLabel>
+			<VariantTable>
+				<Label variant="ice"		attributes="asteroidBelt, ice, void"/>
+				<Label variant="metallic"	attributes="asteroidBelt, metallic, void"/>
+				<Label variant="ovoid"		attributes="asteroidBelt, ovoid, void"/>
+				<Label variant="primordial"	attributes="asteroidBelt, primordial, void"/>
+				<Label variant="rocky"		attributes="asteroidBelt, rocky, void"/>
+				<Label variant="volcanic"	attributes="asteroidBelt, void, volcanic"/>
+			</VariantTable>
+		</VariantAsteroidBeltVoidLabel>
 
 		<VariantSizeA>
 			<VariantTable>

@@ -13,7 +13,6 @@
 #define MAX_LEVEL			25
 
 #define FIELD_BALANCE							CONSTLIT("balance")
-#define FIELD_ENTITY							CONSTLIT("entity")
 #define FIELD_LEVEL								CONSTLIT("level")
 #define FIELD_MANEUVER							CONSTLIT("maneuver")
 #define FIELD_NAME								CONSTLIT("name")
@@ -21,7 +20,7 @@
 #define FIELD_SCORE_CALC						CONSTLIT("scoreCalc")
 #define FIELD_THRUST_TO_WEIGHT					CONSTLIT("thrustToWeight")
 
-void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable)
+void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
 	int i, j;
 
@@ -124,18 +123,7 @@ void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &En
 				printf("\t");
 
 			const CString &sField = Cols[j];
-			CString sValue;
-
-			if (strEquals(sField, FIELD_ENTITY))
-				{
-				CString *pValue;
-				if (EntityTable.Lookup(pClass->GetUNID(), (CObject **)&pValue) == NOERROR)
-					sValue = *pValue;
-				else
-					sValue = CONSTLIT("?");
-				}
-			else
-				sValue = pClass->GetDataField(sField);
+			CString sValue = pClass->GetDataField(sField);
 
 			if (strEquals(sField, FIELD_MANEUVER) 
 					|| strEquals(sField, FIELD_THRUST_TO_WEIGHT))

@@ -10,10 +10,53 @@
 							API
 	OLD TYPE				VERSION		NEW TYPE
 
+	stCargoCrate			26			stGenericCargoCrate
 	stNavSign				19			stCommonwealthNavSign
 	dsFleetDockServices		23			Use rpgDockServices function and <Trade>
 
 	-->
+
+	<!-- Cargo Crate -->
+
+	<StationType UNID="&stCargoCrate;"
+			name=				"abandoned cargo crate"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"&dsAbandonedCrate;"
+
+			structuralHitPoints="10"
+			ejectaType=			"&vtWreckEjecta;"
+
+			scale=				"ship"
+			mobile=				"true"
+			mass=				"50"
+			destroyWhenEmpty=	"true"
+			noMapIcon=			"true"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="480" imageY="256" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="288" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="320" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="352" imageWidth="32" imageHeight="32" />
+		</ImageVariants>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
+
+	</StationType>
 
 	<StationType UNID="&stNavSign;"
 			name=				"(navigational beacon)"
@@ -109,4 +152,57 @@
 		</Panes>
 	</DockScreen>
 
+	<!-- Battle Arena Wall -->
+
+	<StationType UNID="&stBattleArenaWall;"
+			name=				"(arena wall segment)"
+			sovereign=			"&svCommonwealth;"
+			attributes=			"battleArenaSegment"
+
+			barrier=			"true"
+			barrierEffect=		"&efBattleArenaWallHit;"
+			multiHull=			"true"
+			immutable=			"true"
+
+			mass=				"500"
+			noMapLabel=			"true"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="0"    imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="128"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="256"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="384"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="512"  imageWidth="128" imageHeight="128"/>
+
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="640"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="768"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="896"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1024" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1152" imageWidth="128" imageHeight="128"/>
+
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1280" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1408" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1536" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1664" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1792" imageWidth="128" imageHeight="128"/>
+
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1920" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="2048" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="2176" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="2304" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="2432" imageWidth="128" imageHeight="128"/>
+			
+			<Image			imageID="&rsBattleArenaExtra;" imageX="0" imageY="0"	imageWidth="164" imageHeight="164"/>
+			<Image			imageID="&rsBattleArenaExtra;" imageX="0" imageY="164"	imageWidth="164" imageHeight="164"/>
+			<Image			imageID="&rsBattleArenaExtra;" imageX="18" imageY="18"	imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArenaExtra;" imageX="18" imageY="182"	imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArenaExtra;" imageX="0" imageY="0"	imageWidth="0"	 imageHeight="0"/>
+		</ImageVariants>
+
+	</StationType>
+
+	<Image UNID="&rsBattleArena;"	bitmap="Resources\BattleArena.jpg"	bitmask="Resources\BattleArenaMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsBattleArenaExtra;"	bitmap="Resources\BattleArenaExtra.jpg" bitmask="Resources\BattleArenaExtraMask.bmp" loadOnUse="true"/>
+	
 </TranscendenceModule>

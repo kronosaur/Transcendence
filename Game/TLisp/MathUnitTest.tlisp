@@ -1,0 +1,76 @@
+;	MathUnitTest.tlisp
+;
+;	Regression tests for math operations
+;	Copyright (c) 2015 by Kronosaur Productions, LLC. All Rights Reserved
+
+(setq TEST_SUITE (list
+
+	;	Equality
+
+	{	code: '(eq 2 2)			result: True	}
+	{	code: '(eq 3 2)			result: Nil		}
+	{	code: '(= 3 2)			result: Nil		}
+	{	code: '(= 2 2)			result: True	}
+	{	code: '(= 2.2 2)		result: Nil		}
+	{	code: '(= 2.2 2.2)		result: True	}
+	{	code: '(= 2.0 2)		result: True	}
+
+	;	Original Integer Math
+
+	{	code: '(add 2 2)		result: 4	}
+	{	code: '(subtract 2 2)	result: 0	}
+	{	code: '(multiply 2 2)	result: 4	}
+	{	code: '(divide 4 2)		result: 2	}
+	{	code: '(divide 5 2)		result: 2	}
+
+	;	New Math
+
+	{	code: '(+ 2 2)			result: 4	}
+	{	code: '(+ 2.5 2)		result: 4.5	}
+	{	code: '(+ 2.5 2.5)		result: 5.0	}
+	))
+
+(block (
+	(testNum 0)
+	(successTests 0)
+	(failedTests 0)
+	)
+	(print "Math Unit Test")
+
+	(enum TEST_SUITE theTest
+		(errblock (errorResult result)
+			(setq testNum (add testNum 1))
+			(setq result (eval (@ theTest 'code)))
+			(switch
+				(eq result (@ theTest 'result))
+					(block ()
+						(print "[" testNum "] PASS: " (@ theTest 'code) " -> " (@ theTest 'result))
+						(setq successTests (add successTests 1))
+						)
+
+				(block ()
+					(print "[" testNum "] FAIL: " (@ theTest 'code) " -> " result " (expected " (@ theTest 'result) ")")
+					(setq failedTests (add failedTests 1))
+					)
+				)
+
+			;	Error
+
+			(block ()
+				(print "[" testNum "] ERROR: " errorResult)
+				(setq failedTests (add failedTests 1))
+				)
+			)
+		)
+
+	;	Print final results
+
+	(if (eq testNum successTests)
+		(print "COMPLETED " testNum " " (if (eq testNum 1) "test" "tests") " successfully.")
+		(print "FAILED " failedTests " " (if (eq failedTests 1) "test" "tests") " out of " testNum ".")
+		)
+
+	;	Return empty string
+
+	""
+	)

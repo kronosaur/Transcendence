@@ -16,17 +16,17 @@
 #define DEBUG_CONSOLE_WIDTH					512
 #define DEBUG_CONSOLE_HEIGHT				600
 
-#define STR_G_TRANS							CONSTLIT("gTrans")
-#define STR_G_PLAYER						CONSTLIT("gPlayer")
-#define STR_G_PLAYER_SHIP					CONSTLIT("gPlayerShip")
-
 int g_cxScreen = 0;
 int g_cyScreen = 0;
+
+#define CONTROLLER_PLAYER					CONSTLIT("player")
 
 #define STR_SMALL_TYPEFACE					CONSTLIT("Tahoma")
 #define STR_MEDIUM_TYPEFACE					CONSTLIT("Tahoma")
 #define STR_LARGE_TYPEFACE					CONSTLIT("Trebuchet MS")
 #define STR_FIXED_TYPEFACE					CONSTLIT("Lucida Console")
+
+#define BAR_COLOR							CG32bitPixel(0, 2, 10)
 
 CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) : m_hWnd(hWnd),
 		m_pTC(pTC),
@@ -41,6 +41,7 @@ CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) 
 		m_CurrentMenu(menuNone),
 		m_CurrentPicker(pickNone),
 		m_pIntroSystem(NULL),
+		m_pStargateEffect(NULL),
 		m_pMenuObj(NULL),
 		m_bRedirectDisplayMessage(false),
 		m_chKeyDown('\0'),
@@ -57,7 +58,7 @@ CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) 
 	ClearDebugLines();
 	}
 
-void CTranscendenceWnd::Animate (CG16bitImage &TheScreen, CGameSession *pSession, bool bTopMost)
+void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession, bool bTopMost)
 
 //	Animate
 //
@@ -101,11 +102,6 @@ void CTranscendenceWnd::Animate (CG16bitImage &TheScreen, CGameSession *pSession
 						dwViewportFlags |= CSystem::VWP_ENHANCED_DISPLAY;
 					}
 
-				//	More options
-
-				if (m_pTC->GetOptionBoolean(CGameSettings::showManeuverEffects))
-					dwViewportFlags |= CSystem::VWP_SHOW_MANEUVER_EFFECTS;
-
 				//	Update some displays
 
 				if ((m_iTick % 7) == 0)
@@ -119,7 +115,7 @@ void CTranscendenceWnd::Animate (CG16bitImage &TheScreen, CGameSession *pSession
 
 				if (m_iDamageFlash > 0 && (m_iDamageFlash % 2) == 0)
 					{
-					TheScreen.Fill(0, 0, g_cxScreen, g_cyScreen, CG16bitImage::RGBValue(128,0,0));
+					TheScreen.Set(CG32bitPixel(128,0,0));
 					if (pShip && pShip->GetSystem())
 						{
 						if (m_bShowingMap)
@@ -295,17 +291,39 @@ void CTranscendenceWnd::Animate (CG16bitImage &TheScreen, CGameSession *pSession
 				m_pCurrentScreen->Paint(TheScreen);
 				m_pCurrentScreen->Update();
 				PaintMainScreenBorder();
-				m_ArmorDisplay.Paint(TheScreen);
-				m_TargetDisplay.Paint(TheScreen);
+
+				//	If we have room, paint armor display and target display
+
+				if (g_cyScreen >= 768)
+					{
+					SetProgramState(psPaintingArmorDisplay);
+					m_ArmorDisplay.Paint(TheScreen);
+
+					SetProgramState(psPaintingTargetDisplay);
+					m_TargetDisplay.Paint(TheScreen);
+					}
+
+				//	If we have even more room, paint the LRS and reactor display
+
+				if (g_cyScreen >= 960)
+					{
+					if ((m_iTick % 7) == 0)
+						{
+						SetProgramState(psUpdatingReactorDisplay);
+						m_ReactorDisplay.Update();
+						}
+
+					SetProgramState(psPaintingLRS);
+					PaintLRS();
+
+					SetProgramState(psPaintingReactorDisplay);
+					m_ReactorDisplay.Paint(TheScreen);
+					}
 
 				//	Debug console
 
 				if (m_bDebugConsole)
 					m_DebugConsole.Paint(TheScreen);
-
-				//	We don't paint the LRS because the player doesn't need it and
-				//	because it overwrites the credits/cargo space display
-				//PaintLRS();
 
 				//	Update the screen
 
@@ -389,10 +407,29 @@ void CTranscendenceWnd::Animate (CG16bitImage &TheScreen, CGameSession *pSession
 				if (--m_iCountdown == 0)
 					{
 					g_pHI->HICommand(CONSTLIT("gameInsideStargate"));
-					m_State = gsLeavingStargate;
-					m_iCountdown = TICKS_AFTER_GATE;
+					m_State = gsWaitingForSystem;
 					}
 
+				break;
+				}
+
+			case gsWaitingForSystem:
+				{
+				if (g_pUniverse->GetSFXOptions().IsStargateTravelEffectEnabled())
+					{
+					if (m_pStargateEffect == NULL)
+						m_pStargateEffect = new CStargateEffectPainter;
+
+					m_pStargateEffect->Paint(TheScreen, m_rcScreen);
+					m_pStargateEffect->Update();
+					}
+				else
+					{
+					TheScreen.Fill(m_rcScreen.left, m_rcScreen.top, RectWidth(m_rcScreen), RectHeight(m_rcScreen), BAR_COLOR);
+					}
+
+				if (bTopMost)
+					g_pHI->GetScreenMgr().Blt();
 				break;
 				}
 
@@ -438,6 +475,12 @@ void CTranscendenceWnd::Animate (CG16bitImage &TheScreen, CGameSession *pSession
 					g_pHI->HICommand(CONSTLIT("gameLeaveStargate"));
 					m_State = gsInGame;
 					}
+				break;
+				}
+
+			case gsEndGame:
+				{
+				g_pHI->HICommand(CONSTLIT("gameEndGame"));
 				break;
 				}
 			}
@@ -529,6 +572,27 @@ void CTranscendenceWnd::ComputeScreenSize (void)
 		}
 	}
 
+IPlayerController *CTranscendenceWnd::CreatePlayerController (void)
+
+//	CreatePlayerController
+	
+	{
+	return new CTranscendencePlayer; 
+	}
+
+IShipController *CTranscendenceWnd::CreateShipController (const CString &sController)
+
+//	CreateShipController
+//
+//	Creates custom ship controllers.
+
+	{
+	if (strEquals(sController, CONTROLLER_PLAYER))
+		return new CPlayerShipController;
+	else
+		return NULL;
+	}
+
 void CTranscendenceWnd::DebugConsoleOutput (const CString &sOutput)
 
 //	DebugConsoleOutput
@@ -588,6 +652,24 @@ void CTranscendenceWnd::OnAniCommand (const CString &sID, const CString &sEvent,
 		}
 	}
 
+void CTranscendenceWnd::OnStargateSystemReady (void)
+
+//	OnStargateSystemReady
+//
+//	The new system is ready
+
+	{
+	ASSERT(m_State == gsWaitingForSystem);
+	m_State = gsLeavingStargate;
+	m_iCountdown = TICKS_AFTER_GATE;
+
+	if (m_pStargateEffect)
+		{
+		delete m_pStargateEffect;
+		m_pStargateEffect = NULL;
+		}
+	}
+
 void CTranscendenceWnd::PaintDebugLines (void)
 
 //	PaintDebugLines
@@ -595,7 +677,7 @@ void CTranscendenceWnd::PaintDebugLines (void)
 //	Paint debug output
 
 	{
-	CG16bitImage &TheScreen = g_pHI->GetScreen();
+	CG32bitImage &TheScreen = g_pHI->GetScreen();
 
 #ifdef DEBUG
 	int iLine = m_iDebugLinesStart;
@@ -605,7 +687,7 @@ void CTranscendenceWnd::PaintDebugLines (void)
 		TheScreen.DrawText(0,
 				iPos++ * 12,
 				m_Fonts.Medium,
-				CG16bitImage::RGBValue(128,0,0),
+				CG32bitPixel(128,0,0),
 				m_DebugLines[iLine]);
 
 		iLine = (iLine + 1) % DEBUG_LINES_COUNT;
@@ -621,7 +703,7 @@ void CTranscendenceWnd::PaintFrameRate (void)
 
 	{
 	int i;
-	CG16bitImage &TheScreen = g_pHI->GetScreen();
+	CG32bitImage &TheScreen = g_pHI->GetScreen();
 
 	if (m_iStartAnimation == 0)
 		m_iStartAnimation = GetTickCount();
@@ -659,7 +741,7 @@ void CTranscendenceWnd::PaintFrameRate (void)
 				iTotalBltTime / FRAME_RATE_COUNT,
 				iTotalUpdateTime / FRAME_RATE_COUNT);
 
-		TheScreen.DrawText(300, 0, m_Fonts.Header, CG16bitImage::RGBValue(80,80,80), CString(szBuffer, iLen));
+		TheScreen.DrawText(300, 0, m_Fonts.Header, CG32bitPixel(80,80,80), CString(szBuffer, iLen));
 
 		//	Every once in a while, output to log file
 
@@ -726,6 +808,16 @@ void CTranscendenceWnd::PlayerDestroyed (const CString &sText, bool bResurrectio
 		}
 
 	DEBUG_CATCH
+	}
+
+void CTranscendenceWnd::PlayerEndGame (void)
+
+//	PlayerEndGame
+//
+//	End the game (we assume we've called the model already).
+
+	{
+	m_State = gsEndGame;
 	}
 
 void CTranscendenceWnd::PlayerEnteredGate (CSystem *pSystem, 
@@ -990,7 +1082,7 @@ void CTranscendenceWnd::ShowErrorMessage (const CString &sError)
 			MB_OK | MB_ICONSTOP);
 	}
 
-ALERROR CTranscendenceWnd::StartGame (bool bNewGame)
+ALERROR CTranscendenceWnd::StartGame (void)
 
 //	StartGame
 //
@@ -1010,7 +1102,7 @@ ALERROR CTranscendenceWnd::StartGame (bool bNewGame)
 	m_MessageDisplay.ClearAll();
 	const CString &sWelcome = g_pUniverse->GetCurrentAdventureDesc()->GetWelcomeMessage();
 	if (!sWelcome.IsBlank())
-		m_MessageDisplay.DisplayMessage(sWelcome, m_Fonts.wTitleColor);
+		m_MessageDisplay.DisplayMessage(sWelcome, m_Fonts.rgbTitleColor);
 
 	//	Set map state
 
@@ -1033,13 +1125,6 @@ ALERROR CTranscendenceWnd::StartGame (bool bNewGame)
 	m_CurrentPicker = pickNone;
 	m_CurrentMenu = menuNone;
 	m_iTick = 0;
-
-	//	Start the game. This ends up calling CTranscendenceModel::StartGame
-
-	if (bNewGame)
-		g_pHI->HICommand(CONSTLIT("gameStartNew"));
-	else
-		g_pHI->HICommand(CONSTLIT("gameStartExisting"));
 
 	return NOERROR;
 	}
@@ -1369,28 +1454,27 @@ LONG CTranscendenceWnd::WMCreate (CString *retsError)
 
 	//	Set colors
 
-	m_Fonts.wTextColor = CG16bitImage::RGBValue(191,196,201);
-	m_Fonts.wTitleColor = CG16bitImage::RGBValue(218,235,255);
-	m_Fonts.wLightTitleColor = CG16bitImage::RGBValue(120,129,140);
-	m_Fonts.wHelpColor = CG16bitImage::RGBValue(103,114,128);
-	m_Fonts.wBackground = CG16bitImage::RGBValue(15,17,18);
-	m_Fonts.wSectionBackground = CG16bitImage::RGBValue(86,82,73);
-	m_Fonts.wSelectBackground = CG16bitImage::RGBValue(115,230,115);
-	//m_Fonts.wSelectBackground = CG16bitImage::RGBValue(255,225,103);
+	m_Fonts.rgbTextColor = CG32bitPixel(191,196,201);
+	m_Fonts.rgbTitleColor = CG32bitPixel(218,235,255);
+	m_Fonts.rgbLightTitleColor = CG32bitPixel(120,129,140);
+	m_Fonts.rgbHelpColor = CG32bitPixel(103,114,128);
+	m_Fonts.rgbBackground = CG32bitPixel(15,17,18);
+	m_Fonts.rgbSectionBackground = CG32bitPixel(86,82,73);
+	m_Fonts.rgbSelectBackground = CG32bitPixel(237, 137, 36);
 
-	m_Fonts.wAltGreenColor = CG16bitImage::RGBValue(5,211,5);
-	m_Fonts.wAltGreenBackground = CG16bitImage::RGBValue(23,77,23);
-	m_Fonts.wAltYellowColor = CG16bitImage::RGBValue(255,225,103);
-	m_Fonts.wAltYellowBackground = CG16bitImage::RGBValue(65,57,24);
-	m_Fonts.wAltRedColor = CG16bitImage::RGBValue(4,179,4);
-	m_Fonts.wAltRedBackground = CG16bitImage::RGBValue(76,0,0);
-	m_Fonts.wAltBlueColor = CG16bitImage::RGBValue(87,111,205);
-	m_Fonts.wAltBlueBackground = CG16bitImage::RGBValue(52,57,64);
+	m_Fonts.rgbAltGreenColor = CG32bitPixel(5,211,5);
+	m_Fonts.rgbAltGreenBackground = CG32bitPixel(23,77,23);
+	m_Fonts.rgbAltYellowColor = CG32bitPixel(255,225,103);
+	m_Fonts.rgbAltYellowBackground = CG32bitPixel(65,57,24);
+	m_Fonts.rgbAltRedColor = CG32bitPixel(4,179,4);
+	m_Fonts.rgbAltRedBackground = CG32bitPixel(76,0,0);
+	m_Fonts.rgbAltBlueColor = CG32bitPixel(87,111,205);
+	m_Fonts.rgbAltBlueBackground = CG32bitPixel(52,57,64);
 
-	m_Fonts.wItemTitle = CG16bitImage::RGBValue(255,255,255);
-	m_Fonts.wItemRef = CG16bitImage::RGBValue(255,255,255);
-	m_Fonts.wItemDesc = CG16bitImage::RGBValue(128,128,128);
-	m_Fonts.wItemDescSelected = CG16bitImage::RGBValue(200,200,200);
+	m_Fonts.rgbItemTitle = CG32bitPixel(255,255,255);
+	m_Fonts.rgbItemRef = CG32bitPixel(255,255,255);
+	m_Fonts.rgbItemDesc = CG32bitPixel(128,128,128);
+	m_Fonts.rgbItemDescSelected = CG32bitPixel(200,200,200);
 
 	//	Initialize UI resources
 

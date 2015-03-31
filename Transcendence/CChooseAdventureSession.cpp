@@ -407,7 +407,7 @@ void CChooseAdventureSession::OnMouseWheel (int iDelta, int x, int y, DWORD dwFl
 	HandlePageScrollMouseWheel(ID_ROOT, iDelta);
 	}
 
-void CChooseAdventureSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
+void CChooseAdventureSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 //	OnPaint
 //
@@ -417,7 +417,7 @@ void CChooseAdventureSession::OnPaint (CG16bitImage &Screen, const RECT &rcInval
 	const CVisualPalette &VI = m_HI.GetVisuals();
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, CG16bitImage(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
+	VI.DrawSessionBackground(Screen, CG32bitImage(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
 
 	//	Paint the background image
 
@@ -679,7 +679,7 @@ void CChooseAdventureSession::SetBackgroundImage (CExtension *pAdventure)
 	//	Get the cover image from the adventure. If no cover image then we have
 	//	nothing to do.
 
-	CG16bitImage *pCover = pAdventure->GetCoverImage();
+	CG32bitImage *pCover = pAdventure->GetCoverImage();
 	if (pCover == NULL)
 		return;
 
@@ -732,7 +732,7 @@ void CChooseAdventureSession::SetBackgroundImage (CExtension *pAdventure)
 
 	//	Create a new image
 
-	m_pBackground = new CG16bitImage;
+	m_pBackground = new CG32bitImage;
 	m_pBackground->CreateFromImageTransformed(*pCover,
 			0,
 			yCrop,
@@ -748,15 +748,14 @@ void CChooseAdventureSession::SetBackgroundImage (CExtension *pAdventure)
 		{
 		int xCenterAdj = xCenter + 120;
 		int xStart = m_pBackground->GetWidth() - (m_rcBackground.right - xCenterAdj);
-		DrawGradientRectHorz(*m_pBackground,
+		CGDraw::RectGradient(*m_pBackground,
 				xStart,
 				0,
 				(xRightEdge - xCenterAdj),
 				m_pBackground->GetHeight(),
+				CG32bitPixel(VI.GetColor(colorAreaDialog), 0),
 				VI.GetColor(colorAreaDialog),
-				VI.GetColor(colorAreaDialog),
-				0,
-				255);
+				gradientHorizontal);
 		}
 	}
 

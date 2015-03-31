@@ -90,8 +90,6 @@ ALERROR CMenuDisplay::Init (CMenuData *pMenu, const RECT &rcRect)
 //	Initializes display
 
 	{
-	ALERROR error;
-
 	CleanUp();
 
 	m_pMenu = pMenu;
@@ -100,15 +98,15 @@ ALERROR CMenuDisplay::Init (CMenuData *pMenu, const RECT &rcRect)
 
 	//	Create the off-screen buffer
 
-	if (error = m_Buffer.CreateBlank(RectWidth(rcRect), RectHeight(rcRect), false))
-		return error;
+	if (!m_Buffer.Create(RectWidth(rcRect), RectHeight(rcRect), CG32bitImage::alpha8))
+		return ERR_FAIL;
 
-	m_Buffer.SetBlending(200);
+	//m_Buffer.SetBlending(200);
 
 	return NOERROR;
 	}
 
-void CMenuDisplay::Paint (CG16bitImage &Dest)
+void CMenuDisplay::Paint (CG32bitImage &Dest)
 
 //	Paint
 //
@@ -125,11 +123,11 @@ void CMenuDisplay::Paint (CG16bitImage &Dest)
 
 		//	Blt
 
-		Dest.ColorTransBlt(0,
+		Dest.Blt(0,
 				0,
 				RectWidth(m_rcRect),
 				RectHeight(m_rcRect),
-				255,
+				200,
 				m_Buffer,
 				m_rcRect.left,
 				m_rcRect.top);
@@ -153,30 +151,30 @@ void CMenuDisplay::Update (void)
 
 	//	Color for menu
 
-	WORD wColor;
-	WORD wFadeColor;
+	CG32bitPixel rgbColor;
+	CG32bitPixel rgbFadeColor;
 
-	wColor = m_pFonts->wTitleColor;
-	wFadeColor = m_pFonts->wTitleColor;
+	rgbColor = m_pFonts->rgbTitleColor;
+	rgbFadeColor = m_pFonts->rgbTitleColor;
 
 	//	Clear
 
-	m_Buffer.Fill(0, 0, RectWidth(m_rcRect), RectHeight(m_rcRect), CG16bitImage::RGBValue(0, 0, 0));
-	m_Buffer.Fill(rcMenu.left, rcMenu.top, RectWidth(rcMenu), RectHeight(rcMenu), m_pFonts->wBackground);
+	m_Buffer.Set(CG32bitPixel::Null());
+	m_Buffer.Fill(rcMenu.left, rcMenu.top, RectWidth(rcMenu), RectHeight(rcMenu), m_pFonts->rgbBackground);
 
 	//	Outline the box
 
-	m_Buffer.DrawLine(rcMenu.left, rcMenu.top, rcMenu.right, rcMenu.top, 1, wColor);
-	m_Buffer.DrawBiColorLine(rcMenu.left, rcMenu.top, rcMenu.left, rcMenu.bottom, 1, wColor, wFadeColor);
-	m_Buffer.DrawBiColorLine(rcMenu.right - 1, rcMenu.top, rcMenu.right - 1, rcMenu.bottom, 1, wColor, wFadeColor);
-	m_Buffer.DrawLine(rcMenu.left, rcMenu.bottom - 1, rcMenu.right, rcMenu.bottom - 1, 1, wFadeColor);
+	m_Buffer.DrawLine(rcMenu.left, rcMenu.top, rcMenu.right, rcMenu.top, 1, rgbColor);
+	CGDraw::LineGradient(m_Buffer, rcMenu.left, rcMenu.top, rcMenu.left, rcMenu.bottom, 1, rgbColor, rgbFadeColor);
+	CGDraw::LineGradient(m_Buffer, rcMenu.right - 1, rcMenu.top, rcMenu.right - 1, rcMenu.bottom, 1, rgbColor, rgbFadeColor);
+	m_Buffer.DrawLine(rcMenu.left, rcMenu.bottom - 1, rcMenu.right, rcMenu.bottom - 1, 1, rgbFadeColor);
 
 	//	Paint the menu title
 
 	m_pFonts->MediumHeavyBold.DrawText(m_Buffer,
 			rcMenu.left + 4,
 			rcMenu.top + 4,
-			m_pFonts->wTitleColor,
+			m_pFonts->rgbTitleColor,
 			m_pMenu->GetTitle());
 
 	//	Paint each menu item
@@ -188,14 +186,14 @@ void CMenuDisplay::Update (void)
 		{
 		//	Draw the box and the character
 
-		m_Buffer.Fill(x, y, BLOCK_WIDTH, BLOCK_HEIGHT, m_pFonts->wTitleColor);
+		m_Buffer.Fill(x, y, BLOCK_WIDTH, BLOCK_HEIGHT, m_pFonts->rgbTitleColor);
 
 		int cyHeight;
 		int cxWidth = m_pFonts->Medium.MeasureText(m_pMenu->GetItemKey(i), &cyHeight);
 		m_pFonts->Medium.DrawText(m_Buffer,
 				x + (BLOCK_WIDTH - cxWidth) / 2,
 				y + 1,
-				m_pFonts->wBackground,
+				m_pFonts->rgbBackground,
 				m_pMenu->GetItemKey(i));
 
 		//	Draw the name
@@ -203,7 +201,7 @@ void CMenuDisplay::Update (void)
 		m_pFonts->Medium.DrawText(m_Buffer,
 				x + BLOCK_WIDTH + 4,
 				y + 1,
-				m_pFonts->wTitleColor,
+				m_pFonts->rgbTitleColor,
 				m_pMenu->GetItemLabel(i));
 
 		//	Next

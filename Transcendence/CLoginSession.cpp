@@ -666,7 +666,7 @@ void CLoginSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		}
 	}
 
-void CLoginSession::OnLButtonDown (int x, int y, DWORD dwFlags)
+void CLoginSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture)
 
 //	OnLButtonDown
 //
@@ -675,14 +675,14 @@ void CLoginSession::OnLButtonDown (int x, int y, DWORD dwFlags)
 	{
 	}
 
-void CLoginSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
+void CLoginSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 //	OnPaint
 //
 //	Paint
 
 	{
-	Screen.FillTrans(0, 0, Screen.GetWidth(), Screen.GetHeight(), 0, 128);
+	Screen.Fill(0, 0, Screen.GetWidth(), Screen.GetHeight(), CG32bitPixel(0, 0, 0, 128));
 	}
 
 void CLoginSession::OnReportHardCrash (CString *retsMessage)

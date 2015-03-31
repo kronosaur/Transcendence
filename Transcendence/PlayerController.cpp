@@ -14,8 +14,6 @@
 #define STR_NO_TARGET_FOR_FLEET					CONSTLIT("No target selected")
 #define STR_NO_TARGETING_COMPUTER				CONSTLIT("No targeting computer installed")
 
-static CObjectClass<CPlayerShipController>g_Class(OBJID_CPLAYERSHIPCONTROLLER);
-
 const Metric MAX_IN_COMBAT_RANGE =				LIGHT_SECOND * 30.0;
 const int UPDATE_HELP_TIME =					31;
 const Metric MAX_AUTO_TARGET_DISTANCE =			LIGHT_SECOND * 30.0;
@@ -29,19 +27,20 @@ const DWORD HIT_THRESHOLD =						90;
 
 const DWORD DAMAGE_BAR_TIMER =					30 * 5;
 
-#define MAX_GATE_DISTANCE						(g_KlicksPerPixel * 64.0)
+#define MAX_GATE_DISTANCE						(g_KlicksPerPixel * 150.0)
 #define MAX_STARGATE_HELP_RANGE					(g_KlicksPerPixel * 256.0)
 
 #define SETTING_ENABLED							CONSTLIT("enabled")
 #define SETTING_TRUE							CONSTLIT("true")
 
-CPlayerShipController::CPlayerShipController (void) : CObject(&g_Class),
+CPlayerShipController::CPlayerShipController (void) : 
 		m_pTrans(NULL),
 		m_iManeuver(NoRotation),
 		m_bThrust(false),
 		m_bActivate(false),
 		m_bStopThrust(false),
 		m_pStation(NULL),
+		m_bSignalDock(false),
 		m_iOrder(orderNone),
 		m_pTarget(NULL),
 		m_pDestination(NULL),
@@ -154,7 +153,7 @@ bool CPlayerShipController::CanShowShipStatus (void)
 
 	//	See if we have an overlay preventing us from bring it up
 
-	CEnergyFieldList::SImpactDesc Impact;
+	COverlayList::SImpactDesc Impact;
 	m_pShip->GetOverlayImpact(&Impact);
 	if (Impact.bShipScreenDisabled)
 		return false;
@@ -466,8 +465,10 @@ void CPlayerShipController::Gate (void)
 	//	Find the stargate closest to the ship
 
 	int i;
-	Metric rBestDist = MAX_GATE_DISTANCE * MAX_GATE_DISTANCE;
+	Metric rBestDist2 = MAX_GATE_DISTANCE * MAX_GATE_DISTANCE;
+	Metric rNearbyDist2 = 4.0 * MAX_STARGATE_HELP_RANGE * MAX_STARGATE_HELP_RANGE;
 	CSpaceObject *pStation = NULL;
+	bool bGateNearby = false;
 	for (i = 0; i < pSystem->GetObjectCount(); i++)
 		{
 		CSpaceObject *pObj = pSystem->GetObject(i);
@@ -479,13 +480,15 @@ void CPlayerShipController::Gate (void)
 				&& pObj != m_pShip)
 			{
 			CVector vDist = pObj->GetPos() - m_pShip->GetPos();
-			Metric rDist = vDist.Length2();
+			Metric rDist2 = vDist.Length2();
 
-			if (rDist < rBestDist)
+			if (rDist2 < rBestDist2)
 				{
-				rBestDist = rDist;
+				rBestDist2 = rDist2;
 				pStation = pObj;
 				}
+			else if (rDist2 < rNearbyDist2)
+				bGateNearby = true;
 			}
 		}
 
@@ -493,7 +496,10 @@ void CPlayerShipController::Gate (void)
 
 	if (pStation == NULL)
 		{
-		m_pTrans->DisplayMessage(CONSTLIT("No stargates in range"));
+		if (bGateNearby)
+			m_pTrans->DisplayMessage(CONSTLIT("Too far from stargate"));
+		else
+			m_pTrans->DisplayMessage(CONSTLIT("No stargates in range"));
 		return;
 		}
 
@@ -1217,7 +1223,7 @@ void CPlayerShipController::OnLifeSupportWarning (int iSecondsLeft)
 		m_pTrans->DisplayMessage(CONSTLIT("Life support failure in 1 second"));
 	}
 
-void CPlayerShipController::OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx)
+void CPlayerShipController::OnPaintSRSEnhancements (CG32bitImage &Dest, SViewportPaintCtx &Ctx)
 
 //	OnPaintSRSEnhancements
 //
@@ -1244,23 +1250,24 @@ void CPlayerShipController::OnPaintSRSEnhancements (CG16bitImage &Dest, SViewpor
 		int iSpeed = 3;
 		int iRange = 10;
 		int iMin = 3;
-		WORD wColor = m_pAutoDock->GetSymbolColor();
 
 		int iPos = (iRange - 1) - ((g_pUniverse->GetPaintTick() / iSpeed) % iRange);
 		int iSize = iMin + iPos;
 		DWORD dwOpacity = 255 - (iPos * 20);
 
+		CG32bitPixel rgbColor = CG32bitPixel(m_pAutoDock->GetSymbolColor(), (BYTE)dwOpacity);
+
 		//	Draw animating brackets
 
-		Dest.FillColumnTrans(x - iSize, y - iSize, iPos + 1, wColor, dwOpacity);
-		Dest.FillColumnTrans(x + iSize - 1, y - iSize, iPos + 1, wColor, dwOpacity);
-		Dest.FillColumnTrans(x - iSize, y + iMin - 1, iPos + 1, wColor, dwOpacity);
-		Dest.FillColumnTrans(x + iSize - 1, y + iMin - 1, iPos + 1, wColor, dwOpacity);
+		Dest.FillColumn(x - iSize, y - iSize, iPos + 1, rgbColor);
+		Dest.FillColumn(x + iSize - 1, y - iSize, iPos + 1, rgbColor);
+		Dest.FillColumn(x - iSize, y + iMin - 1, iPos + 1, rgbColor);
+		Dest.FillColumn(x + iSize - 1, y + iMin - 1, iPos + 1, rgbColor);
 
-		Dest.FillLineTrans(x - iSize + 1, y - iSize, iPos, wColor, dwOpacity);
-		Dest.FillLineTrans(x - iSize + 1, y + iSize - 1, iPos, wColor, dwOpacity);
-		Dest.FillLineTrans(x + 2, y - iSize, iPos, wColor, dwOpacity);
-		Dest.FillLineTrans(x + 2, y + iSize - 1, iPos, wColor, dwOpacity);
+		Dest.FillLine(x - iSize + 1, y - iSize, iPos, rgbColor);
+		Dest.FillLine(x - iSize + 1, y + iSize - 1, iPos, rgbColor);
+		Dest.FillLine(x + 2, y - iSize, iPos, rgbColor);
+		Dest.FillLine(x + 2, y + iSize - 1, iPos, rgbColor);
 		}
 
 	//	If we have a target, then paint a target reticle.
@@ -1423,7 +1430,7 @@ void CPlayerShipController::OnWreckCreated (CSpaceObject *pWreck)
 	m_dwWreckObjID = pWreck->GetID();
 	}
 
-void CPlayerShipController::PaintTargetingReticle (SViewportPaintCtx &Ctx, CG16bitImage &Dest, CSpaceObject *pTarget)
+void CPlayerShipController::PaintTargetingReticle (SViewportPaintCtx &Ctx, CG32bitImage &Dest, CSpaceObject *pTarget)
 
 //	PaintTargetingReticle
 //
@@ -1433,9 +1440,8 @@ void CPlayerShipController::PaintTargetingReticle (SViewportPaintCtx &Ctx, CG16b
 	int x, y;
 	Ctx.XForm.Transform(pTarget->GetPos(), &x, &y);
 
-	WORD wColor = pTarget->GetSymbolColor();
+	CG32bitPixel rgbColor = pTarget->GetSymbolColor();
 	int iSize = 8;
-	DWORD dwOpacity = 255;
 	int iIndent = iSize / 4;
 
 	const RECT &rcImage = pTarget->GetImage().GetImageRect();
@@ -1447,11 +1453,11 @@ void CPlayerShipController::PaintTargetingReticle (SViewportPaintCtx &Ctx, CG16b
 
 	//	Draw
 
-	Dest.FillColumnTrans(x, y - cyVert - iSize, iSize, wColor, dwOpacity);
-	Dest.FillColumnTrans(x, y + cyVert, iSize, wColor, dwOpacity);
+	Dest.FillColumn(x, y - cyVert - iSize, iSize, rgbColor);
+	Dest.FillColumn(x, y + cyVert, iSize, rgbColor);
 
-	Dest.FillLineTrans(x + cxHorz, y, iSize, wColor, dwOpacity);
-	Dest.FillLineTrans(x - cxHorz - iSize, y, iSize, wColor, dwOpacity);
+	Dest.FillLine(x + cxHorz, y, iSize, rgbColor);
+	Dest.FillLine(x - cxHorz - iSize, y, iSize, rgbColor);
 	}
 
 bool CPlayerShipController::ToggleEnableDevice (int iDeviceIndex)
@@ -1557,25 +1563,17 @@ CSpaceObject *CPlayerShipController::GetTarget (CItemCtx &ItemCtx, bool bNoAutoT
 
 void CPlayerShipController::OnDocked (CSpaceObject *pObj)
 	{
-	g_pTrans->GetModel().OnPlayerDocked(pObj);
+	ASSERT(pObj == m_pStation);
+
+	//	Set a flag because we don't want to transition to dock screen from
+	//	inside this event.
+
+	m_bSignalDock = true;
 	}
 
 void CPlayerShipController::OnDockedObjChanged (CSpaceObject *pLocation)
 	{
 	g_pTrans->GetModel().OnDockedObjChanged(pLocation);
-	}
-
-void CPlayerShipController::OnMessage (CSpaceObject *pSender, const CString &sMsg)
-
-//	OnMessage
-//
-//	Receive a message from some other object
-
-	{
-	if (pSender && !pSender->IsVirtual() && !pSender->IsMission())
-		pSender->Highlight(sMsg);
-	else
-		m_pTrans->DisplayMessage(sMsg);
 	}
 
 void CPlayerShipController::OnMissionCompleted (CMission *pMission, bool bSuccess)
@@ -1827,6 +1825,16 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_GRAVITY_ALARM));
 			}
 		}
+
+	//	If we've succeeded in docking, then tell the model
+
+	if (m_bSignalDock)
+		{
+		if (m_pStation && !m_pStation->IsDestroyed())
+			g_pTrans->GetModel().OnPlayerDocked(m_pStation);
+
+		m_bSignalDock = false;
+		}
 	}
 
 void CPlayerShipController::OnWeaponStatusChanged (void)
@@ -2075,6 +2083,7 @@ void CPlayerShipController::Reset (void)
 
 	m_pAutoDock = NULL;
 	m_pAutoTarget = NULL;
+	m_bSignalDock = false;
 
 	DEBUG_CATCH
 	}
@@ -2337,7 +2346,7 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip)
 	//	Set a new controller for the old ship (but do not free
 	//	the previous controller, which is us)
 
-	pOldShip->SetController(new CStandardShipAI, false);
+	pOldShip->SetController(g_pUniverse->CreateShipController(NULL_STR), false);
 	pOldShip->GetController()->AddOrder(IShipController::orderWait, NULL, IShipController::SData());
 
 	//	Old ship stops tracking fuel (otherwise, it would run out)
@@ -2345,11 +2354,11 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip)
 	pOldShip->TrackFuel(false);
 
 	//	Now set this controller to drive the new ship. gPlayer and gPlayerShip
-	//	will be set inside of SetPlayer.
+	//	will be set inside of SetPlayerShip.
 
 	pNewShip->SetController(this);
 	m_pShip = pNewShip;
-	g_pUniverse->SetPlayer(pNewShip);
+	g_pUniverse->SetPlayerShip(pNewShip);
 	g_pUniverse->SetPOV(pNewShip);
 	pNewShip->SetSovereign(g_pUniverse->FindSovereign(g_PlayerSovereignUNID));
 
@@ -2622,8 +2631,7 @@ void CPlayerShipController::WriteToStream (IWriteStream *pStream)
 	{
 	DWORD dwSave;
 
-	dwSave = (DWORD)GetClass()->GetObjID();
-	pStream->Write((char *)&dwSave, sizeof(DWORD));
+	GetClass().WriteToStream(pStream);
 
 	pStream->Write((char *)&m_iGenome, sizeof(DWORD));
 	pStream->Write((char *)&m_dwStartingShipClass, sizeof(DWORD));

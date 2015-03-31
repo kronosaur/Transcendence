@@ -9,26 +9,44 @@
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
+			level=				"1"
+			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, populated, startonEridani"
+				 
 			dockScreen=			"&dsCommonwealthStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
 
-			multiHull=			"true"
+			size=				"670"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"500"
-			repairRate=			"3"
-			shipRepairRate=		"2"
+			multiHull=			"true"
+			regen=				"4"
+			shipRegen=			"4"
+				 
+			canAttack=			"true"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, populated, startonEridani"
-			level=				"1"
-
-			noArticle=			"true"
 			>
 
-		<Image			imageID="&rsStations1;" imageX="0" imageY="0" imageWidth="256" imageHeight="256"/>
+		<Names noArticle="true">
+			Starton Eridani
+		</Names>
+		
+		<!-- Trade and Items -->
+		
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; L:1-3;" priceAdj="115" inventoryAdj="200"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="rNU L:1-4; -Illegal; -NotForSale;"	priceAdj="110"	inventoryAdj="100"/>
+			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
+			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-6;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
+		</Trade>
 
 		<Items>
 			<RandomItem count="20" 
@@ -48,6 +66,8 @@
 					/>
 		</Items>
 
+		<!-- Ships and Defenses -->
+		
 		<Ships>
 			<Lookup count="3" table="&tbCommEliteDefenders;"/>
 			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
@@ -60,21 +80,18 @@
 			</Table>
 		</Reinforcements>
 
-		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; L:1-3;" priceAdj="115" inventoryAdj="200"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Sell	criteria="rNU L:1-4; -Illegal; -NotForSale;"	priceAdj="110"	inventoryAdj="100"/>
-			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
-			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
-			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
-			
-			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="100"/>
-			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
-		</Trade>
+		<!-- Image and Effects -->
 
+		<Image			imageID="&rsCommonwealthMetropolis;" imageWidth="480" imageHeight="480"/>
+
+		<DockingPorts
+				portCount=		"14"
+				portRadius=		"245"
+				>
+		</DockingPorts>
+		
+		<!-- Events and Behavior -->
+		
 		<Events>
 			<OnContractGenerate>
 				(intGenerateStandardRequestContract1)
@@ -124,18 +141,6 @@
 				)
 			</FunFacts>
 		</StaticData>
-
-		<DockingPorts>
-			<Port x="0"		y="150" />
-			<Port x="0"		y="-150" />
-			<Port x="100"	y="100" />
-			<Port x="100"	y="-100" />
-			<Port x="150"	y="0" />
-			<Port x="-150"	y="0" />
-			<Port x="-100"	y="100" />
-			<Port x="-100"	y="-100" />
-		</DockingPorts>
-
 	</StationType>
 
 	<!-- Raisu Station
@@ -671,7 +676,7 @@
 	<!-- Eridani System -->
 
 	<SystemType UNID="&ssStartonEridani;"
-				attributes="envWater"
+				attributes=		"envWater"
 				>
 
 		<Tables>
@@ -805,7 +810,7 @@
 						<Group>
 							<Lookup table="StargateOutbound"/>
 
-							<Orbitals distance="8" angle="0">
+							<Orbitals distance="18" angle="0">
 								<Station type="&stCommonwealthNavSign;">
 									<InitialData>
 										<Sign>"Travel\nAdvisory"</Sign>
@@ -1053,54 +1058,54 @@
 									</Primary>
 
 									<!-- Industrial Center -->
-									<Siblings arcInc="+15">
+									<Siblings arcInc="+20">
 										<Station type="&stCorporateEnclave;" name="Greenwich Industries" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Dry Dock -->
-									<Siblings arcInc="-15">
+									<Siblings arcInc="-20">
 										<Station type="&stCommonwealthDryDock;" name="Starton Dry Dock" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Metropolis Station -->
-									<Siblings radiusInc="+15">
+									<Siblings radiusInc="+20">
 										<Lookup table="MetropolisStation"/>
 									</Siblings>
 
 									<!-- Metropolis Station -->
-									<Siblings radiusInc="-15">
+									<Siblings radiusInc="-20">
 										<Lookup table="MetropolisStation"/>
 									</Siblings>
 
 									<!-- Central Nav beacons -->
-									<Siblings arcInc="+7" radiusInc="+7">
+									<Siblings arcInc="+12" radiusInc="+12">
 										<Station type="&stNavBeacon;" imageVariant="0"/>
 									</Siblings>
 
-									<Siblings arcInc="-7" radiusInc="-7">
+									<Siblings arcInc="-12" radiusInc="-12">
 										<Station type="&stNavBeacon;" imageVariant="1"/>
 									</Siblings>
 
 									<!-- Metropolis Stations -->
 									<Table>
 										<Group chance="50">
-											<Siblings arcInc="+30">
+											<Siblings arcInc="+35">
 												<Station type="&stBeringStation;" noMapLabel="true"/>
 											</Siblings>
 
 											<!-- Metropolis Station -->
-											<Siblings arcInc="-30">
+											<Siblings arcInc="-35">
 												<Lookup table="MetropolisStation"/>
 											</Siblings>
 										</Group>
 
 										<Group chance="50">
-											<Siblings arcInc="+30">
+											<Siblings arcInc="+35">
 												<Lookup table="MetropolisStation"/>
 											</Siblings>
 
 											<!-- Metropolis Station -->
-											<Siblings arcInc="-30">
+											<Siblings arcInc="-35">
 												<Station type="&stBeringStation;" noMapLabel="true"/>
 											</Siblings>
 										</Group>

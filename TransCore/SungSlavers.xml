@@ -460,6 +460,7 @@
 			manufacturer=		"Sung Slavers"
 			class=				"Wind slaver"
 			type=				""
+			defaultSovereign=	"&svSung;"
 
 			attributes=			"genericClass, sungSlavers"
 			   
@@ -515,6 +516,7 @@
 			manufacturer=		"Sung Slavers"
 			class=				"Steel slaver"
 			type=				""
+			defaultSovereign=	"&svSung;"
 
 			attributes=			"genericClass, sungSlavers"
 			   
@@ -578,10 +580,12 @@
 			manufacturer=		"Sung Slavers"
 			class=				"Earth Slaver"
 			type=				""
+			defaultSovereign=	"&svSung;"
 
 			attributes=			"capitalShip, genericClass, sungSlavers"
 			   
-			mass=				"9500"
+			size=				"110"
+			mass=				"11000"
 			thrustRatio=		"1"
 			maxSpeed=			"12"
 			cargoSpace=			"500"
@@ -602,8 +606,8 @@
 		<Devices>
 			<Device deviceID="&itParticleBoltCannon;"/>
 			<Device deviceID="&itCyberDeckLowerShields;"/>
-			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="350" maxFireArc="190" posAngle="100" posRadius="50" posZ="0"/>
-			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="260" posRadius="50" posZ="0"/>
+			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="350" maxFireArc="190" posAngle="102" posRadius="54" posZ="0"/>
+			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="-102" posRadius="54" posZ="0"/>
 			<Device deviceID="&itYoroiS100;"/>
 		</Devices>
 
@@ -643,10 +647,10 @@
 		<Image imageID="&rsMediumShips4;" imageX="384" imageY="0" imageWidth="128" imageHeight="128"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="46"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
-			<Effect type="thrustMain"		posAngle="159"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-159"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="46"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="48"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="159"	posRadius="52"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-159"	posRadius="52"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="48"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 
 		<!-- AI and Behavior -->
@@ -678,7 +682,8 @@
 
 			attributes=			"capitalShip, sungSlavers"
 			   
-			mass=				"9500"
+			size=				"110"
+			mass=				"11000"
 			thrustRatio=		"1"
 			maxSpeed=			"12"
 			cargoSpace=			"500"
@@ -699,8 +704,8 @@
 		<Devices>
 			<Device deviceID="&itParticleBoltCannon;"/>
 			<Device deviceID="&itCyberDeckLowerShields;"/>
-			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="350" maxFireArc="190" posAngle="100" posRadius="50" posZ="0"/>
-			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="260" posRadius="50" posZ="0"/>
+			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="350" maxFireArc="190" posAngle="102" posRadius="54" posZ="0"/>
+			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="-102" posRadius="54" posZ="0"/>
 			<Device deviceID="&itYoroiS100;"/>
 		</Devices>
 
@@ -740,10 +745,10 @@
 		<Image imageID="&rsMediumShips4;" imageX="384" imageY="0" imageWidth="128" imageHeight="128"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="46"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
-			<Effect type="thrustMain"		posAngle="159"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-159"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="46"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="48"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="159"	posRadius="52"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-159"	posRadius="52"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="48"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 
 		<!-- AI and Behavior -->
@@ -877,8 +882,10 @@
 			manufacturer=		"Sung Slavers"
 			class=				"Dragon Slaver"
 			type=				""
+			defaultSovereign=	"&svSung;"
 
-			mass=				"4000"
+			size=				"100"
+			mass=				"6000"
 			cargoSpace=			"200"
 			thrustRatio=		"2.5"
 			maxSpeed=			"18"
@@ -962,9 +969,11 @@
 			manufacturer=		"Sung Slavers"
 			class=				"Sung transport"
 			type=				""
+			defaultSovereign=	"&svSung;"
 
-			mass=				"8000"
-			cargoSpace=			"5000"
+			size=				"240"
+			mass=				"10000"
+			cargoSpace=			"7000"
 			thrustRatio=		"0.3"
 			maxSpeed=			"6"
 
@@ -1018,11 +1027,11 @@
 					/>
 		</Interior>
 
-		<Image imageID="&rsLargeShips1;" imageX="1152" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsSungTransport;" imageWidth="216" imageHeight="216"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="176"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
-			<Effect type="thrustMain"		posAngle="-176"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="176"	posRadius="80"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="-176"	posRadius="80"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
 		</Effects>
 
 		<AISettings
@@ -1053,7 +1062,7 @@
 			fireRateAdj=		"80"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, populated, sungSlaveCamp, sungSlavers"
+			attributes=			"enemy, envAir, envEarth, envFire, envWater, generic, human, populated, sungSlaveCamp, sungSlavers"
 			levelFrequency=		"--vcu r---- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="60"
@@ -1135,7 +1144,7 @@
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, majorStation, populated, sungSlavers"
+			attributes=			"enemy, envAir, envEarth, envFire, envWater, generic, human, majorStation, populated, sungSlavers"
 			levelFrequency=		"---vc uu--- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="100"
@@ -1177,10 +1186,10 @@
 		</Encounters>
 
 		<Satellites>
-			<Station type="&stSungNEWall;" xOffset="64" yOffset="64"/>
-			<Station type="&stSungNWWall;" xOffset="-64" yOffset="64"/>
-			<Station type="&stSungSWWall;" xOffset="-64" yOffset="-64"/>
-			<Station type="&stSungSEWall;" xOffset="64" yOffset="-64"/>
+			<Station type="&stSungNEWall;" xOffset="64" yOffset="64"	segment="true"/>
+			<Station type="&stSungNWWall;" xOffset="-64" yOffset="64"	segment="true"/>
+			<Station type="&stSungSWWall;" xOffset="-64" yOffset="-64"	segment="true"/>
+			<Station type="&stSungSEWall;" xOffset="64" yOffset="-64"	segment="true"/>
 		</Satellites>
 
 	</StationType>
@@ -1202,7 +1211,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, majorStation, populated, sungSlavers"
+			attributes=			"enemy, envAir, envEarth, envFire, envWater, generic, human, majorStation, populated, sungSlavers"
 			levelFrequency=		"----r ur--- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="100"
@@ -1630,7 +1639,6 @@
 	<DockScreen UNID="&dsUseLongzhuSphere;"
 			name=				"Ship's Cargo Hold"
 			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -1865,5 +1873,6 @@
 <!-- RESOURCES -->
 
 	<Image UNID="&rsDragonSlaverImage;"	bitmap="Resources\DragonSlaver.jpg"	bitmask="Resources\DragonSlaverMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsSungTransport;"		bitmap="Resources\SungTransport.jpg"	bitmask="Resources\SungTransportMask.bmp"  loadOnUse="true"/>
 
 </TranscendenceModule>

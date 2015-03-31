@@ -35,19 +35,22 @@ class CInitModelTask : public IHITask
 	{
 	public:
 		CInitModelTask (CHumanInterface &HI, 
-						CTranscendenceModel &Model, 
+						CTranscendenceModel &Model,
+						const CGameSettings &Settings,
 						const CString &sCollectionFolder, 
 						const TArray<CString> &ExtensionFolders) : IHITask(HI), 
 				m_Model(Model),
+				m_Settings(Settings),
 				m_sCollectionFolder(sCollectionFolder),
 				m_ExtensionFolders(ExtensionFolders)
 			{ }
 
 		//	IHITask virtuals
-		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Model.InitBackground(m_sCollectionFolder, m_ExtensionFolders, retsResult); }
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Model.InitBackground(m_Settings, m_sCollectionFolder, m_ExtensionFolders, retsResult); }
 
 	private:
 		CTranscendenceModel &m_Model;
+		const CGameSettings &m_Settings;
 		CString m_sCollectionFolder;
 		TArray<CString> m_ExtensionFolders;
 	};
@@ -246,6 +249,19 @@ class CSignOutUserTask : public IHITask
 		CCloudService &m_Service;
 	};
 
+class CStartGameTask : public IHITask
+	{
+	public:
+		CStartGameTask (CHumanInterface &HI, CTranscendenceModel &Model, bool bNewGame) : IHITask(HI), m_Model(Model), m_bNewGame(bNewGame) { }
+
+		//	IHITask virtuals
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { m_Model.StartGame(m_bNewGame); return NOERROR; }
+
+	private:
+		CTranscendenceModel &m_Model;
+		bool m_bNewGame;
+	};
+
 class CStartNewGameTask : public IHITask
 	{
 	public:
@@ -257,6 +273,18 @@ class CStartNewGameTask : public IHITask
 	private:
 		CTranscendenceModel &m_Model;
 		SNewGameSettings m_NewGame;
+	};
+
+class CTravelThroughStargate : public IHITask
+	{
+	public:
+		CTravelThroughStargate (CHumanInterface &HI, CTranscendenceModel &Model) : IHITask(HI), m_Model(Model) { }
+
+		//	IHITask virtuals
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { m_Model.OnPlayerTraveledThroughGate(); return NOERROR; }
+
+	private:
+		CTranscendenceModel &m_Model;
 	};
 
 class CUpgradeProgram : public IHITask

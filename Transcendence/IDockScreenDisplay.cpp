@@ -5,9 +5,104 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
+#define LIST_TAG					CONSTLIT("List")
+#define LIST_OPTIONS_TAG			CONSTLIT("ListOptions")
+
+#define BACKGROUND_ID_ATTRIB		CONSTLIT("backgroundID")
+#define DATA_FROM_ATTRIB			CONSTLIT("dataFrom")
+#define HEIGHT_ATTRIB				CONSTLIT("height")
+#define INITIAL_ITEM_ATTRIB			CONSTLIT("initialItem")
+#define LIST_ATTRIB					CONSTLIT("list")
+#define POS_X_ATTRIB				CONSTLIT("posX")
+#define POS_Y_ATTRIB				CONSTLIT("posY")
+#define ROW_HEIGHT_ATTRIB			CONSTLIT("rowHeight")
+#define WIDTH_ATTRIB				CONSTLIT("width")
+
 #define DATA_FROM_PLAYER			CONSTLIT("player")
 #define DATA_FROM_SOURCE			CONSTLIT("source")
 #define DATA_FROM_STATION			CONSTLIT("station")
+
+bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retOptions, CString *retsError)
+
+//	GetDisplayOptions
+//
+//	Initializes the display options structure, which is used by list and 
+//	selector displays.
+
+	{
+	//	Initialize background image options
+
+	CString sBackgroundID;
+	if (Ctx.pDesc->FindAttribute(BACKGROUND_ID_ATTRIB, &sBackgroundID))
+		{
+		//	If the attribute exists, but is empty (or equals "none") then
+		//	we don't have a background
+
+		if (sBackgroundID.IsBlank() || strEquals(sBackgroundID, CONSTLIT("none")))
+			retOptions->BackgroundDesc.iType = backgroundNone;
+
+		//	If the ID is "object" then we should ask the object
+
+		else if (strEquals(sBackgroundID, CONSTLIT("object")))
+			{
+			retOptions->BackgroundDesc.iType = backgroundObj;
+			retOptions->BackgroundDesc.pObj = Ctx.pLocation;
+			}
+
+		//	Otherwise, we expect an integer
+
+		else
+			{
+			retOptions->BackgroundDesc.iType = backgroundImage;
+			retOptions->BackgroundDesc.dwImageID = strToInt(sBackgroundID, 0);
+			}
+		}
+
+	//	Initialize control rect. If we have a background, then initialize to
+	//	backwards compatible position. Otherwise, we take up the full range.
+
+	if (retOptions->BackgroundDesc.iType != backgroundDefault)
+		{
+		retOptions->rcControl.left = 4;
+		retOptions->rcControl.top = 12;
+		retOptions->rcControl.right = 548;
+		retOptions->rcControl.bottom = 396;
+		}
+	else
+		{
+		retOptions->rcControl.left = 0;
+		retOptions->rcControl.top = 23;
+		retOptions->rcControl.right = 600;
+		retOptions->rcControl.bottom = 482;
+		}
+
+	//	There are a couple of different ways to get options (for backwards
+	//	compatibility).
+
+	CXMLElement *pOptions;
+	if ((pOptions = Ctx.pDesc->GetContentElementByTag(LIST_OPTIONS_TAG)) == NULL
+			&& (pOptions = Ctx.pDesc->GetContentElementByTag(LIST_TAG)) == NULL)
+		return true;
+
+	//	Read from the element
+
+	retOptions->sDataFrom = pOptions->GetAttribute(DATA_FROM_ATTRIB);
+	retOptions->sItemCriteria = pOptions->GetAttribute(LIST_ATTRIB);
+	retOptions->sCode = pOptions->GetContentText(0);
+	retOptions->sInitialItemCode = pOptions->GetAttribute(INITIAL_ITEM_ATTRIB);
+	retOptions->sRowHeightCode = pOptions->GetAttribute(ROW_HEIGHT_ATTRIB);
+
+	//	See if we have control position
+
+	if (pOptions->FindAttributeInteger(POS_X_ATTRIB, (int *)&retOptions->rcControl.left))
+		{
+		retOptions->rcControl.top = pOptions->GetAttributeIntegerBounded(POS_Y_ATTRIB, 0, -1);
+		retOptions->rcControl.right = retOptions->rcControl.left + pOptions->GetAttributeIntegerBounded(WIDTH_ATTRIB, 0, -1);
+		retOptions->rcControl.bottom = retOptions->rcControl.top + pOptions->GetAttributeIntegerBounded(HEIGHT_ATTRIB, 0, -1);
+		}
+
+	return true;
+	}
 
 bool IDockScreenDisplay::EvalBool (const CString &sCode, bool *retbResult, CString *retsError)
 
@@ -109,7 +204,7 @@ bool IDockScreenDisplay::EvalString (const CString &sString, bool bPlain, ECodeC
 	return Ctx.RunEvalString(sString, bPlain, retsResult);
 	}
 
-ALERROR IDockScreenDisplay::Init (SInitCtx &Ctx, CString *retsError)
+ALERROR IDockScreenDisplay::Init (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError)
 
 //	Init
 //
@@ -121,7 +216,7 @@ ALERROR IDockScreenDisplay::Init (SInitCtx &Ctx, CString *retsError)
 	m_pLocation = Ctx.pLocation;
 	m_pData = Ctx.pData;
 
-	return OnInit(Ctx, retsError); 
+	return OnInit(Ctx, Options, retsError); 
 	}
 
 void IDockScreenDisplay::OnShowPane (bool bNoListNavigation) 

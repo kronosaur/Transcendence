@@ -287,7 +287,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"commonwealth, commonwealthArmory, commonwealthCustoms, commonMilitary, fleetDelivery, friendly, human, majorStation, primary, populated"
+			attributes=			"commonwealth, commonwealthArmory, commonwealthCustoms, commonMilitary, fleetDelivery, friendly, generic, human, majorStation, primary, populated"
 			levelFrequency=		"---cc ur--- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
@@ -304,14 +304,15 @@
 		</Reinforcements>
 
 		<Trade currency="credit" max="50000" replenish="2500">
+			<Sell	criteria="m +Commonwealth; -Illegal; -NotForSale; L:1-3;" priceAdj="115" inventoryAdj="100"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Sell	criteria="rNU L:1-7; -Illegal; -NotForSale;"	priceAdj="110"	inventoryAdj="100"/>
 			
 			<Refuel			criteria="f +BasicFuel; L:3-8;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-8" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-8;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
 		</Trade>
 		
 		<Items>
@@ -668,7 +669,7 @@
 					(setq rank (objGetData gPlayerShip "militiaRank"))
 
 					(switch
-						;	Only at Armory
+						;	Only at armory
 
 						(not (objHasAttribute aProviderObj 'commonwealthArmory))
 							Nil
@@ -1016,10 +1017,10 @@
 									)
 							</Action>
 
-							<Action name="Armory" key="A">
+							<Action name="Officer's Club" key="O">
 								(if (gr (objGetData gPlayerShip "militiaRank") 0)
-									(scrShowPane gScreen "Armory")
-									(scrShowPane gScreen "AccessDenied2")
+									(scrShowPane gScreen "OfficersClub")
+									(scrShowPane gScreen "AccessDenied3")
 									)
 							</Action>
 
@@ -1027,13 +1028,6 @@
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									})
-							</Action>
-
-							<Action name="Officer's Club" key="O">
-								(if (gr (objGetData gPlayerShip "militiaRank") 0)
-									(scrShowPane gScreen "OfficersClub")
-									(scrShowPane gScreen "AccessDenied3")
-									)
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -1055,18 +1049,6 @@
 						</Actions>
 					</AccessDenied>
 
-					<AccessDenied2>
-						<OnPaneInit>
-							(scrSetDesc gScreen "Two guards flank the door to the Armory. One of them checks your ID against a computer list: \"Sorry, %sir%, only officers are allowed in the armory.\"")
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</AccessDenied2>
-
 					<AccessDenied3>
 						<OnPaneInit>
 							(scrSetDesc gScreen "Two guards flank the door to the Officer's Club. One of them checks your ID against a computer list: \"Sorry, %sir%, only officers are allowed in the club.\"")
@@ -1078,22 +1060,6 @@
 							</Action>
 						</Actions>
 					</AccessDenied3>
-
-					<Armory desc="You are in the station's armory shop. You may buy weapons and armor to equip your ship.">
-						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Leave" cancel="1" key="L">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</Armory>
 
 					<CommandCenter
 							desc="You are in the command center surrounded by wall maps and scanner displays. The commanding officer of the fortress looks up from his charts and asks, &quot;Are you looking for a mission, captain?&quot;">

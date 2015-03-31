@@ -57,7 +57,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"envEarth, envAvoidsAir, friendly, human, independent, majorStation, populated, tinkers"
+			attributes=			"envEarth, envAvoidsAir, friendly, generic, human, independent, majorStation, populated, tinkers"
 			levelFrequency=		"uccuu r---- ----- ----- -----"
 			locationCriteria=	"+asteroids, -asteroidbelt"
 			>
@@ -101,7 +101,7 @@
 			<Buy	criteria="*DU -Illegal; -ID;"				priceAdj="50"/>
 			
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
 		</Trade>
 
 		<Devices>
@@ -166,6 +166,7 @@
 							<Action name="Buy Scrap" default="1" key="B">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: True
+									showInstallables: True
 									})
 							</Action>
 
@@ -175,17 +176,17 @@
 									)
 							</Action>
 
-							<Action name="Repair or Replace Armor" key="A">
-								(scrShowScreen gScreen &dsRPGRepairArmor; {
-									checkMilitaryID: True
-									})
-							</Action>
-
 							<Action name="Custom Work" key="C">
 								(if (objGetData gSource 'customIntroDone)
 									(scrShowScreen gScreen &dsTinkerCustomWork;)
 									(scrShowPane gScreen "CustomWorkIntro")
 									)
+							</Action>
+
+							<Action name="Armor and Shields" key="A">
+								(scrShowScreen gScreen &dsRPGManageArmor; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -398,7 +399,6 @@
 	
 	<DockScreen UNID="&dsTinkerCustomWork;"
 			type=           "customItemPicker"
-			backgroundID=   "&rsItemListScreen;"
 			nestedScreen=   "true"
 			>
 		<List>

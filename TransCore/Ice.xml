@@ -17,7 +17,7 @@
 						</OrbitalDistribution>
 
 						<OrbitalDistribution count="2-4" arcLength="620" radialWidth="42">
-							<Lookup table="VariantAsteroidBeltLabel"/>
+							<Lookup table="VariantAsteroidBeltVoidLabel"/>
 						</OrbitalDistribution>
 					</Variant>
 				</_Morphology>

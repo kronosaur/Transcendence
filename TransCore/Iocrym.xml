@@ -411,6 +411,7 @@
 			manufacturer=		"Iocrym"
 			class=				""
 			type=				"command ship"
+			defaultSovereign=	"&svIocrym;"
 
 			attributes=			"capitalShip, genericClass, iocrym, iocrymCommandShip, majorShip"
 			   
@@ -532,6 +533,7 @@
 			manufacturer=		"Iocrym"
 			class=				""
 			type=				"sentinel"
+			defaultSovereign=	"&svIocrym;"
 
 			mass=				"5000"
 			cargoSpace=			"1000"
@@ -594,7 +596,7 @@
 			explosionType=		"&vtPlasmaExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, iocrym, iocrymOutpost"
+			attributes=			"enemy, generic, iocrym, iocrymOutpost"
 			>
 
 		<Image imageID="&rsIocrymOutpost;" imageWidth="162" imageHeight="218"/>

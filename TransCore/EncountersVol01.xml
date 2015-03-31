@@ -68,7 +68,7 @@
 			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envFire, envAvoidsWater, human, populated"
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated"
 			levelFrequency=		"ccur- ----- ----- ----- -----"
 			locationCriteria=	"+outerSystem, -planetary"
 			enemyExclusionRadius="100"
@@ -209,6 +209,7 @@
 			manufacturer=		"Xenophobe"
 			class=				""
 			type=				"fighter"
+			defaultSovereign=	"&svXenophobes;"
 
 			attributes=			"benninXenophobes, genericClass"
 			   
@@ -261,10 +262,12 @@
 			manufacturer=		"Xenophobe"
 			class=				""
 			type=				"defender"
+			defaultSovereign=	"&svXenophobes;"
 
 			attributes=			"benninXenophobes, capitalShip, genericClass"
-			   
-			mass=				"4500"
+
+			size=				"165"
+			mass=				"15000"
 			cargoSpace=			"500"
 			thrustRatio=		"1"
 			maxSpeed=			"12"
@@ -284,9 +287,9 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itMarkIIIHowitzer;" omnidirectional="true" posAngle="0" posRadius="0" posZ="3"/>
-			<Device deviceID="&itLancerCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="180" posAngle="130" posRadius="26" posZ="3"/>
-			<Device deviceID="&itLancerCannon;" secondaryWeapon="true" minFireArc="180" maxFireArc="20" posAngle="230" posRadius="26" posZ="3"/>
+			<Device deviceID="&itMarkIIIHowitzer;" omnidirectional="true" posAngle="180" posRadius="6" posZ="7"/>
+			<Device deviceID="&itLancerCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="180" posAngle="130" posRadius="36" posZ="7"/>
+			<Device deviceID="&itLancerCannon;" secondaryWeapon="true" minFireArc="180" maxFireArc="20" posAngle="230" posRadius="36" posZ="7"/>
 		</Devices>
 
 		<Maneuver
@@ -321,12 +324,12 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips4;" imageX="512" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsXenophobeDefender;" imageWidth="180" imageHeight="180"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="168"	posRadius="52"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-168"	posRadius="52"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="168"	posRadius="75"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="74"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-168"	posRadius="75"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
@@ -346,10 +349,12 @@
 			manufacturer=		"Xenophobe"
 			class=				""
 			type=				"worldship"
+			defaultSovereign=	"&svXenophobes;"
 
 			attributes=			"benninXenophobes, capitalShip, genericClass, majorShip"
 			   
-			mass=				"50000"
+			size=				"300"
+			mass=				"70000"
 			cargoSpace=			"25000"
 			thrustRatio=		"0.5"
 			maxSpeed=			"6"
@@ -456,11 +461,12 @@
 			manufacturer=		"Xenophobe"
 			class=				""
 			type=				"ark"
+			defaultSovereign=	"&svXenophobes;"
 
 			attributes=			"benninXenophobes, capitalShip, genericClass, majorShip"
 			
 			size=				"200"
-			mass=				"420000"
+			mass=				"150000"
 			thrustRatio=		"0.5"
 			maxSpeed=			"6"
 			cargoSpace=			"50000"
@@ -834,6 +840,7 @@
 	<!-- Resources -->
 
 	<Image UNID="&rsXenophobeArk;"				bitmap="Resources\XenophobeArk.jpg"		bitmask="Resources\XenophobeArkMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsXenophobeDefender;"			bitmap="Resources\XenophobeDefender.jpg"		bitmask="Resources\XenophobeDefenderMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsXenophobeWorldship;"		bitmap="Resources\XenophobeWorldship.jpg"		bitmask="Resources\XenophobeWorldshipMask.bmp"  loadOnUse="true"/>
 
 <!-- Death Drugs Cartel =================================================== -->
@@ -849,6 +856,7 @@
 			manufacturer=		"Meth"
 			class=				""
 			type=				"enforcer"
+			defaultSovereign=	"&svDeathDrugsCartel;"
 
 			mass=				"70"
 			cargoSpace=			"10"
@@ -912,7 +920,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"drugcartel, enemy, envWater, envAvoidsEarth, human, outlaws, populated"
+			attributes=			"drugcartel, enemy, envWater, envAvoidsEarth, generic, human, outlaws, populated"
 			levelFrequency=		"--ucu r---- ----- ----- -----"
 			locationCriteria=	"-innerSystem, +planetary"
 			>
@@ -1049,8 +1057,10 @@
 			manufacturer=		""
 			class=				"Ferian miner"
 			type=				""
+			defaultSovereign=	"&svFerianMiners;"
 
-			mass=				"150"
+			size=				"130"
+			mass=				"5000"
 			cargoSpace=			"200"
 			thrustRatio=		"4"
 			maxSpeed=			"17"
@@ -1120,6 +1130,7 @@
 			manufacturer=		""
 			class=				"Ferian warrior"
 			type=				""
+			defaultSovereign=	"&svFerianMiners;"
 
 			mass=				"1200"
 			thrustRatio=		"15"
@@ -1203,7 +1214,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, ferian, neoHuman, miners, populated, zoanthrope"
+			attributes=			"enemy, envEarth, envAvoidsAir, ferian, generic, neoHuman, miners, populated, zoanthrope"
 			levelFrequency=		"---ru ccr-- ----- ----- -----"
 			locationCriteria=	"++asteroids"
 			>
@@ -1428,6 +1439,7 @@
 			manufacturer=		"Revolution Designs"
 			class=				"Earthzone"
 			type=				"armed shuttle"
+			defaultSovereign=	"&svAnarchists;"
 
 			attributes=			"anarchists, genericClass"
 			   
@@ -1489,6 +1501,7 @@
 			manufacturer=		"Earth Industries"
 			class=				"Hornet"
 			type=				"battlepod"
+			defaultSovereign=	"&svAnarchists;"
 
 			mass=				"5"
 			cargoSpace=			"0"
@@ -1542,7 +1555,7 @@
 			fireRateAdj=		"40"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, human, populated"
+			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, generic, human, populated"
 			levelFrequency=		"cuv-- ----- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			>
@@ -1604,7 +1617,7 @@
 			fireRateAdj=		"40"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, human, populated"
+			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, generic, human, populated"
 			levelFrequency=		"rcuv- ----- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			enemyExclusionRadius="50"
@@ -1739,7 +1752,7 @@
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, human, populated"
+			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, generic, human, populated"
 			levelFrequency=		"-rcuv ----- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			>
@@ -1904,6 +1917,7 @@
 			manufacturer=		"Gaian"
 			class=				""
 			type=				"processor"
+			defaultSovereign=	"&svGaianTerraformers;"
 
 			mass=				"50000"
 			cargoSpace=			"25000"
@@ -2167,16 +2181,18 @@
 
 	</ItemType>
 
-	<!-- Heliotrope Destroyer -->
+	<!-- Heliotrope Frigate -->
 
-	<ShipClass UNID="&scHeliotropeDestroyer;"
+	<ShipClass UNID="&scHeliotropeFrigate;"
 			manufacturer=		"Heliotrope"
 			class=				""
-			type=				"destroyer"
+			type=				"frigate"
+			defaultSovereign=	"&svHeliotropes;"
 
 			attributes=			"genericClass, heliotropes"
-			   
-			mass=				"1000"
+
+			size=				"100"
+			mass=				"5000"
 			thrustRatio=		"2"
 			maxSpeed=			"15"
 			cargoSpace=			"50"
@@ -2224,15 +2240,15 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips3;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsHeliotropeFrigate;" imageWidth="120" imageHeight="120"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="42"	posZ="-22"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="160"	posRadius="46"	posZ="-10"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-160"	posRadius="46"	posZ="-10"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="160"	posRadius="46"	posZ="10"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-160"	posRadius="46"	posZ="10"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="42"	posZ="22"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="48"	posZ="-25"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="54"	posZ="-12"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="54"	posZ="-12"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="54"	posZ="12"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="54"	posZ="12"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="48"	posZ="25"	rotation="180"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
@@ -2252,6 +2268,7 @@
 			manufacturer=		"Heliotrope"
 			class=				""
 			type=				"gunship"
+			defaultSovereign=	"&svHeliotropes;"
 
 			mass=				"25"
 			cargoSpace=			"5"
@@ -2314,7 +2331,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envFire, envAvoidsWater, human, populated"
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated"
 			levelFrequency=		"---cu r---- ----- ----- -----"
 			locationCriteria=	"+innerSystem, -void"
 			enemyExclusionRadius="50"
@@ -2331,9 +2348,9 @@
 				<Ship  chance="25"	count="2d6"	class="&scHeliotropeGunship;"	orders="patrol:5"/>
 				<Group chance="60">
 					<Ship			count="2d4"	class="&scHeliotropeGunship;"	orders="guard"/>
-					<Ship			count="1"	class="&scHeliotropeDestroyer;"	orders="patrol:5"/>
+					<Ship			count="1"	class="&scHeliotropeFrigate;"	orders="patrol:5"/>
 				</Group>
-				<Ship  chance="15"	count="1d4"	class="&scHeliotropeDestroyer;"	orders="patrol:5"/>
+				<Ship  chance="15"	count="1d4"	class="&scHeliotropeFrigate;"	orders="patrol:5"/>
 			</Table>
 		</Ships>
 
@@ -2369,7 +2386,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envFire, envAvoidsWater, human, populated"
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated"
 			levelFrequency=		"--cuv ----- ----- ----- -----"
 			locationCriteria=	"+innerSystem, -void"
 			>
@@ -2416,22 +2433,26 @@
 				</Escorts>
 			</Ship>
 			
-			<Ship levelFrequency="--ruu uurr-" count="1"	class="&scHeliotropeDestroyer;" eventHandler="&evStdZoneEncounterBehavior;"/>
+			<Ship levelFrequency="--ruu uurr-" count="1"	class="&scHeliotropeFrigate;" eventHandler="&evStdZoneEncounterBehavior;"/>
 			
-			<Ship levelFrequency="--vuc cuurr" count="1"	class="&scHeliotropeDestroyer;" eventHandler="&evStdZoneEncounterBehavior;">
+			<Ship levelFrequency="--vuc cuurr" count="1"	class="&scHeliotropeFrigate;" eventHandler="&evStdZoneEncounterBehavior;">
 				<Escorts>
 					<Ship					   count="1d4"	class="&scHeliotropeGunship;" orders="escort"/>
 				</Escorts>
 			</Ship>
 			
-			<Ship levelFrequency="---rr rrrrr" count="1"	class="&scHeliotropeDestroyer;" eventHandler="&evStdZoneEncounterBehavior;">
+			<Ship levelFrequency="---rr rrrrr" count="1"	class="&scHeliotropeFrigate;" eventHandler="&evStdZoneEncounterBehavior;">
 				<Escorts>
-					<Ship					   count="1d2"	class="&scHeliotropeDestroyer;" orders="escort"/>
+					<Ship					   count="1d2"	class="&scHeliotropeFrigate;" orders="escort"/>
 				</Escorts>
 			</Ship>
 		</LevelTable>
 	</ShipTable>
 
+	<!-- Resources -->
+
+	<Image UNID="&rsHeliotropeFrigate;"				bitmap="Resources\HeliotropeFrigate.jpg"		bitmask="Resources\HeliotropeFrigateMask.bmp"  loadOnUse="true"/>
+	
 <!-- Himal Separatists ==================================================== -->
 
 	<Sovereign UNID="&svHimalSeparatists;"
@@ -2445,6 +2466,7 @@
 			manufacturer=		"Himal"
 			class=				""
 			type=				"interceptor"
+			defaultSovereign=	"&svHimalSeparatists;"
 
 			mass=				"20"
 			cargoSpace=			"5"
@@ -2505,7 +2527,7 @@
 			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtIceAsteroidEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, populated"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated"
 			levelFrequency=		"curv- ----- ----- ----- -----"
 			locationCriteria=	"+outerSystem, -planetary"
 			>
@@ -2560,6 +2582,7 @@
 			manufacturer=		"Huari"
 			class=				"Hurin"
 			type=				"destroyer"
+			defaultSovereign=	"&svHuariEmpire;"
 
 			attributes=			"capitalShip, genericClass, huari"
 			   
@@ -2653,7 +2676,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envWater, envAvoidsEarth, huari, human, majorStation, populated"
+			attributes=			"enemy, envWater, envAvoidsEarth, generic, huari, human, majorStation, populated"
 			levelFrequency=		"---vu ur--- ----- ----- -----"
 			locationCriteria=	"-lifeZone, +planetary"
 			enemyExclusionRadius="100"
@@ -2714,6 +2737,7 @@
 			manufacturer=		""
 			class=				"Kobol gunship"
 			type=				""
+			defaultSovereign=	"&svKobolWarlords;"
 
 			mass=				"90"
 			cargoSpace=			"100"
@@ -2766,6 +2790,7 @@
 			manufacturer=		""
 			class=				"Kobol gunship"
 			type=				""
+			defaultSovereign=	"&svKobolWarlords;"
 
 			mass=				"90"
 			cargoSpace=			"100"
@@ -2819,6 +2844,7 @@
 			manufacturer=		""
 			class=				"Kobol gunship"
 			type=				""
+			defaultSovereign=	"&svKobolWarlords;"
 
 			mass=				"90"
 			cargoSpace=			"100"
@@ -2886,7 +2912,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envWater, envAvoidsEarth, human, kobol, populated, warlords"
+			attributes=			"enemy, envWater, envAvoidsEarth, generic, human, kobol, populated, warlords"
 			levelFrequency=		"----- -cur- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
@@ -2939,6 +2965,7 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Barbary"
 			type=				"gunship"
+			defaultSovereign=	"&svMarauders;"
 
 			attributes=			"charonPirates, genericClass"
 			   
@@ -3000,8 +3027,10 @@
 			manufacturer=		"Marauder"
 			class=				""
 			type=				"raid platform"
+			defaultSovereign=	"&svMarauders;"
 
-			mass=				"5000"
+			size=				"90"
+			mass=				"4000"
 			cargoSpace=			"500"
 			thrustRatio=		"0.4"
 			maxSpeed=			"6"
@@ -3087,10 +3116,12 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Tripoli"
 			type=				"destroyer"
+			defaultSovereign=	"&svMarauders;"
 
 			attributes=			"capitalShip, genericClass, marauders"
 			   
-			mass=				"5000"
+			size=				"140"
+			mass=				"14000"
 			thrustRatio=		"1"
 			maxSpeed=			"12"
 			cargoSpace=			"500"
@@ -3110,10 +3141,10 @@
 		
 		<Devices>
 			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true"								 posAngle="0"   posRadius="0"   posZ="0"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="160" posAngle="17"  posRadius="55"  posZ="5"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="200" maxFireArc="20"	 posAngle="343" posRadius="55"  posZ="5"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="350" maxFireArc="170" posAngle="60"  posRadius="30"  posZ="10"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="10"  posAngle="300" posRadius="30"  posZ="10"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="160" posAngle="17"  posRadius="66"  posZ="5"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="200" maxFireArc="20"	 posAngle="343" posRadius="66"  posZ="5"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="350" maxFireArc="170" posAngle="60"  posRadius="36"  posZ="10"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="10"  posAngle="300" posRadius="36"  posZ="10"/>
 			<Device deviceID="&itClass3Deflector;"/>
 			<Device deviceID="&it100MWReactor;"/>
 		</Devices>
@@ -3155,13 +3186,13 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips4;" imageX="256" imageY="0" imageWidth="128" imageHeight="128"/>
+		<Image imageID="&rsTripoli;" imageWidth="156" imageHeight="156"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="167"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-167"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="175"	posRadius="58"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-175"	posRadius="58"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="167"	posRadius="72"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-167"	posRadius="72"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="175"	posRadius="70"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-175"	posRadius="70"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
@@ -3194,7 +3225,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, lombardMarauders, pirates, populated"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, pirates, populated"
 			levelFrequency=		"--uu- ----- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			enemyExclusionRadius="100"
@@ -3241,7 +3272,7 @@
 			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, lombardMarauders, marauderCompound, pirates, populated"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, marauderCompound, pirates, populated"
 			levelFrequency=		"--vcr ----- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			enemyExclusionRadius="100"
@@ -3309,7 +3340,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, lombardMarauders, marauderStronghold, pirates,populated"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, marauderStronghold, pirates,populated"
 			levelFrequency=		"---ru v---- ----- ----- -----"
 			locationCriteria=	"+lifeZone, -planetary"
 			enemyExclusionRadius="100"
@@ -3401,6 +3432,10 @@
 		</LevelTable>
 	</ShipTable>
 
+	<!-- Resources -->
+
+	<Image UNID="&rsTripoli;"			bitmap="Resources\Tripoli.jpg"		bitmask="Resources\TripoliMask.bmp"  loadOnUse="true"/>
+	
 <!-- Order of Penitence =================================================== -->
 
 	<Sovereign UNID="&svPenitents;"
@@ -3490,6 +3525,7 @@
 			manufacturer=		"United African States"
 			class=				"Atonement"
 			type=				"heavy gunship"
+			defaultSovereign=	"&svPenitents;"
 
 			mass=				"100"
 			cargoSpace=			"25"
@@ -3547,6 +3583,7 @@
 			manufacturer=		"United African States"
 			class=				"Repentant"
 			type=				"gunship"
+			defaultSovereign=	"&svPenitents;"
 
 			mass=				"50"
 			cargoSpace=			"25"
@@ -3615,7 +3652,7 @@
 			ejectaType=			"&vtWreckEjecta;"
 			noFriendlyFire=		"true"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, penitents, populated, religious"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, penitents, populated, religious"
 			levelFrequency=		"---rc urv-- ----- ----- -----"
 			locationCriteria=	"+nebulae"
 			>
@@ -3666,7 +3703,7 @@
 			ejectaType=			"&vtWreckEjecta;"
 			noFriendlyFire=		"true"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, penitents, populated, religious"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, penitents, populated, religious"
 			levelFrequency=		"----v curv- ----- ----- -----"
 			locationCriteria=	"+nebulae"
 			>
@@ -3709,6 +3746,7 @@
 			manufacturer=		"United African States"
 			class=				"Oromo"
 			type=				"gunship"
+			defaultSovereign=	"&svOutlaw;"
 
 			attributes=			"genericClass, outlaws"
 			   
@@ -3767,6 +3805,7 @@
 			manufacturer=		"United African States"
 			class=				"Sotho"
 			type=				"heavy gunship"
+			defaultSovereign=	"&svOutlaw;"
 
 			attributes=			"genericClass, outlaws"
 			   
@@ -3825,16 +3864,15 @@
 			manufacturer=		"United African States"
 			class=				"T31"
 			type=				"armed transport"
+			defaultSovereign=	"&svOutlaw;"
 
 			attributes=			"freighter, genericClass, outlaws"
 			   
-			size=				"48"
-			mass=				"300"
+			size=				"60"
+			mass=				"1000"
 			thrustRatio=		"1.5"
 			maxSpeed=			"16"
 			cargoSpace=			"2000"
-
-			leavesWreck=		"75"
 			>
 
 		<!-- Configuration -->
@@ -3864,8 +3902,8 @@
 		<Image imageID="&rsT31ArmedTransport;" imageX="0" imageY="0" imageWidth="90" imageHeight="90"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="164"	posRadius="41"	posZ="0"	rotation="180"	bringToFront="*"/>
-			<Effect type="thrustMain"		posAngle="-164"	posRadius="41"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="164"	posRadius="41"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-164"	posRadius="41"	posZ="0"	rotation="180"/>
 			<Effect type="rotateRight"		posAngle="27"	posRadius="33"	posZ="0"	rotation="90"/>
 			<Effect type="rotateRight"		posAngle="-140"	posRadius="26"	posZ="0"	rotation="270"/>
 			<Effect type="rotateLeft"		posAngle="-27"	posRadius="33"	posZ="0"	rotation="270"/>
@@ -3888,16 +3926,15 @@
 			manufacturer=		"United African States"
 			class=				"T55"
 			type=				"armed transport"
+			defaultSovereign=	"&svOutlaw;"
 
 			attributes=			"freighter, genericClass, outlaws"
 			   
-			size=				"65"
-			mass=				"500"
+			size=				"95"
+			mass=				"1500"
 			thrustRatio=		"1.1"
 			maxSpeed=			"16"
 			cargoSpace=			"5000"
-
-			leavesWreck=		"90"
 			>
 
 		<Armor>
@@ -3947,6 +3984,7 @@
 			manufacturer=		"United African States"
 			class=				"Zulu"
 			type=				"gunship"
+			defaultSovereign=	"&svOutlaw;"
 
 			attributes=			"genericClass, outlaws"
 			   
@@ -4003,6 +4041,7 @@
 			manufacturer=		"United African States"
 			class=				"Zulu II"
 			type=				"gunship"
+			defaultSovereign=	"&svOutlaw;"
 
 			attributes=			"genericClass, outlaws"
 			   
@@ -4138,7 +4177,7 @@
 			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, outlaws, populated"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, outlaws, populated"
 			levelFrequency=		"ucv-- ----- ----- ----- -----"
 			locationCriteria=	"--innerSystem, +planetary"
 			>
@@ -4192,7 +4231,7 @@
 			explosionType=		"&vtKineticExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, outlaws, populated"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, outlaws, populated"
 			levelFrequency=		"vcr-- ----- ----- ----- -----"
 			locationCriteria=	"--innerSystem, +planetary"
 			>
@@ -4254,7 +4293,7 @@
 			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, human, outlawHaven, outlaws, populated"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, outlawHaven, outlaws, populated"
 			levelFrequency=		"-vcr- ----- ----- ----- -----"
 			locationCriteria=	"+outerSystem, +planetary"
 			enemyExclusionRadius="100"
@@ -4443,7 +4482,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"chitometallicEco, enemy, envFire, envAvoidsWater, galacticCreature, pteravore, score"
+			attributes=			"chitometallicEco, enemy, envFire, envAvoidsWater, galacticCreature, generic, pteravore, score"
 			levelFrequency=		"----- ----r cur-- ----- -----"
 			locationCriteria=	"++asteroids, +++chitometallicEco"
 			>
@@ -4952,6 +4991,7 @@
 			manufacturer=		"Ranx"
 			class=				""
 			type=				"gunship"
+			defaultSovereign=	"&svRanxEmpire;"
 
 			mass=				"60"
 			cargoSpace=			"10"
@@ -5013,6 +5053,7 @@
 			manufacturer=		"Ranx"
 			class=				""
 			type=				"dreadnought"
+			defaultSovereign=	"&svRanxEmpire;"
 
 			attributes=			"capitalShip, genericClass, majorShip, ranx"
 			   
@@ -5115,7 +5156,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, human, populated, ranx"
+			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, populated, ranx"
 			levelFrequency=		"----- ucur- ----- ----- -----"
 			locationCriteria=	"-outerSystem, +planetary|+50"
 			enemyExclusionRadius="60"
@@ -5166,7 +5207,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, human, majorStation, populated, ranx"
+			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, majorStation, populated, ranx"
 			levelFrequency=		"----- -rcr- ----- ----- -----"
 			locationCriteria=	"-outerSystem, +planetary|+50"
 			enemyExclusionRadius="100"
@@ -5249,10 +5290,12 @@
 			manufacturer=		"Salvager"
 			class=				""
 			type=				"Nomad"
+			defaultSovereign=	"&svIndependentTrader;"
 
 			attributes=			"capitalShip, genericClass, salvagers"
 			   
-			mass=				"5000"
+			size=				"100"
+			mass=				"16000"
 			reactorPower=		"5000"
 			thrustRatio=		"0.5"
 			maxSpeed=			"6"
@@ -5308,28 +5351,28 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips4;" imageX="128" imageY="0" imageWidth="128" imageHeight="128"/>
+		<Image imageID="&rsSalvagerNomad;" imageWidth="184" imageHeight="184"	viewportSize="230"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="132"	posRadius="52"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="128"	posRadius="57"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-132"	posRadius="52"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-128"	posRadius="57"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="140"	posRadius="70"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="134"	posRadius="76"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-140"	posRadius="70"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-134"	posRadius="76"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
 			
-			<Effect type="thrustMain"		posAngle="132"	posRadius="52"	posZ="-12"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="128"	posRadius="57"	posZ="-12"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-132"	posRadius="52"	posZ="-12"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-128"	posRadius="57"	posZ="-12"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="140"	posRadius="70"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="134"	posRadius="76"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-140"	posRadius="70"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-134"	posRadius="76"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"/>
 			
-			<Effect type="thrustMain"		posAngle="132"	posRadius="52"	posZ="12"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="128"	posRadius="57"	posZ="12"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-132"	posRadius="52"	posZ="12"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-128"	posRadius="57"	posZ="12"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="132"	posRadius="66"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="128"	posRadius="74"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-132"	posRadius="66"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-128"	posRadius="74"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
 			
-			<Effect type="thrustMain"		posAngle="132"	posRadius="52"	posZ="20"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="128"	posRadius="57"	posZ="20"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-132"	posRadius="52"	posZ="20"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-128"	posRadius="57"	posZ="20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="132"	posRadius="66"	posZ="20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="128"	posRadius="74"	posZ="20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-132"	posRadius="66"	posZ="20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-128"	posRadius="74"	posZ="20"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
@@ -5392,6 +5435,10 @@
 				/>
 	</StationType>
 
+	<!-- Resources -->
+
+	<Image UNID="&rsSalvagerNomad;"				bitmap="Resources\SalvagerNomad.jpg"		bitmask="Resources\SalvagerNomadMask.bmp"  loadOnUse="true"/>
+	
 <!-- Sapiens ============================================================== -->
 
 	<Sovereign UNID="&svSapiens;"
@@ -5443,6 +5490,7 @@
 			manufacturer=		"Revolution Designs"
 			class=				"Plague"
 			type=				"gunship"
+			defaultSovereign=	"&svSapiens;"
 
 			mass=				"50"
 			cargoSpace=			"50"
@@ -5492,11 +5540,12 @@
 			manufacturer=		"Revolution Designs"
 			class=				"Revelations"
 			type=				"missileship"
+			defaultSovereign=	"&svSapiens;"
 
 			mass=				"150"
 			cargoSpace=			"150"
 			thrustRatio=		"2.5"
-			maxSpeed=			"18"
+			maxSpeed=			"16"
 
 			leavesWreck=		"55"
 			radioactiveWreck=	"true"
@@ -5505,19 +5554,19 @@
 			>
 
 		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itHardenedReactiveArmor;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itHardenedReactiveArmor;" areaSet="3,4" />
-			<ArmorSection start="135" span="90" armorID="&itHardenedReactiveArmor;" areaSet="1,6" />
-			<ArmorSection start="45"  span="90" armorID="&itHardenedReactiveArmor;" areaSet="7,13" />
+			<ArmorSection start="315" span="90" armorID="&itHardenedPlasteelPlate;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itHardenedPlasteelPlate;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itHardenedPlasteelPlate;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itHardenedPlasteelPlate;" areaSet="7,13" />
 		</Armor>
 
 		<Devices>
 			<Device deviceID="&itNAMIMissileLauncher;" minFireArc="300" maxFireArc="60" posAngle="0" posRadius="16"/>
-			<Device deviceID="&itLaserCannon;" secondaryWeapon="true" />
+			<Device deviceID="&itFlenserCannon;" secondaryWeapon="true" omnidirectional="true"/>
 		</Devices>
 
 		<Maneuver
-			maxRotationRate=	"5.0"
+			maxRotationRate=	"3.0"
 			rotationAccel=		"0.5"
 			/>
 
@@ -5560,7 +5609,7 @@
 			explosionType=		"&vtRadioactiveExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envFire, envAvoidsWater, human, populated, sapiens, sapiensCamp"
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated, sapiens, sapiensCamp"
 			levelFrequency=		"-vcuv ----- ----- ----- -----"
 			locationCriteria=	"+lifeZone"
 			>
@@ -5617,7 +5666,7 @@
 			explosionType=		"&vtRadioactiveExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envFire, envAvoidsWater, human, populated, sapiens, sapiensCompound"
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated, sapiens, sapiensCompound"
 			levelFrequency=		"--vcu v---- ----- ----- -----"
 			locationCriteria=	"+lifeZone"
 			enemyExclusionRadius="50"
@@ -5972,6 +6021,7 @@
 			manufacturer=		"Ventari"
 			class=				""
 			type=				"destroyer"
+			defaultSovereign=	"&svVentariSettlers;"
 
 			attributes=			"capitalShip, genericClass, ventari"
 
@@ -6065,7 +6115,7 @@
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envFire, envAvoidsWater, human, majorStation, populated"
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, majorStation, populated"
 			levelFrequency=		"----- ucur- ----- ----- -----"
 			locationCriteria=	"+outerSystem, -planetary"
 			enemyExclusionRadius="100"

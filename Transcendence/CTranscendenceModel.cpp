@@ -105,11 +105,18 @@
 
 #define CMD_GAME_ENTER_FINAL_STARGATE			CONSTLIT("gameEnterFinalStargate")
 #define CMD_GAME_ENTER_STARGATE					CONSTLIT("gameEnterStargate")
+#define CMD_GAME_STARGATE_SYSTEM_READY			CONSTLIT("gameStargateSystemReady")
 #define CMD_PLAYER_UNDOCKED						CONSTLIT("playerUndocked")
+
+#define FOLDER_SAVE_FILES						CONSTLIT("Games")
+
+#define GRAPHICS_AUTO							CONSTLIT("auto")
+#define GRAPHICS_MINIMUM						CONSTLIT("minimum")
+#define GRAPHICS_STANDARD						CONSTLIT("standard")
+#define GRAPHICS_MAXIMUM						CONSTLIT("maximum")
 
 #define HIGH_SCORES_FILENAME					CONSTLIT("HighScores.xml")
 
-#define STR_G_PLAYER							CONSTLIT("gPlayer")
 #define STR_G_PLAYER_SHIP						CONSTLIT("gPlayerShip")
 
 #define NESTED_SCREEN_ATTRIB					CONSTLIT("nestedScreen")
@@ -442,6 +449,74 @@ ALERROR CTranscendenceModel::CreateAllSystems (const CString &sStartNode, CSyste
 	return NOERROR;
 	}
 
+ALERROR CTranscendenceModel::EndGame (void)
+
+//	EndGame
+//
+//	Ends the game. We've stored all the state in our temporaries.
+
+	{
+	ALERROR error;
+
+	ASSERT(m_iState == statePlayerInEndGame);
+
+	//	Bonus for escaping Human Space
+
+	m_pPlayer->IncScore(m_iScoreBonus);
+
+	//	Game over (compile stats)
+
+	m_pPlayer->OnGameEnd();
+
+	//	Record final score
+
+	RecordFinalScore(m_sEpitaph, m_sEndGameReason, false);
+
+	//	We need to define gPlayerShip so that game stats 
+	//	are generated properly. (It gets cleared out in CTranscendenceWnd::PlayerEnteredGate)
+
+	CCodeChain &CC = m_Universe.GetCC();
+	CC.DefineGlobal(CONSTLIT("gPlayerShip"), CC.CreateInteger((int)m_pPlayer->GetShip()));
+
+	//	Generate stats and save to file
+
+	GenerateGameStats(&m_GameStats, true);
+	if (error = SaveGameStats(m_GameStats, true, true))
+		return error;
+
+	//	Clean up
+
+	m_pPlayer = NULL;
+
+	//	Close the game file
+
+	m_GameFile.Close();
+	m_Universe.Reinit();
+
+	//	Done
+
+	m_iState = stateGameOver;
+
+	return NOERROR;
+	}
+
+ALERROR CTranscendenceModel::EndGame (const CString &sReason, const CString &sEpitaph, int iScoreChange)
+
+//	EndGame
+//
+//	Sets the end game condition.
+
+	{
+	m_iScoreBonus = iScoreChange;
+	m_sEndGameReason = sReason;
+	m_sEpitaph = sEpitaph;
+	m_iState = statePlayerInEndGame;
+
+	//	We wait to get called at EndGame to complete the end game.
+
+	return NOERROR;
+	}
+
 ALERROR CTranscendenceModel::EndGameClose (CString *retsError)
 
 //	EndGameClose
@@ -629,50 +704,11 @@ ALERROR CTranscendenceModel::EndGameStargate (void)
 //	Ends game when player enters final stargate
 
 	{
-	ALERROR error;
-
-	//	Bonus for escaping Human Space
-
-	m_pPlayer->IncScore(10000);
-
-	//	Game over (compile stats)
-
-	m_pPlayer->OnGameEnd();
-
-	//	Remember the epitaph
-
+	m_iScoreBonus = 10000;
+	m_sEndGameReason = m_pDestNode->GetEndGameReason();
 	m_sEpitaph = m_pDestNode->GetEpitaph();
-
-	//	Record final score
-
-	RecordFinalScore(m_sEpitaph, m_pDestNode->GetEndGameReason(), false);
-
-	//	We need to define gPlayerShip so that game stats 
-	//	are generated properly. (It gets cleared out in CTranscendenceWnd::PlayerEnteredGate)
-
-	CCodeChain &CC = m_Universe.GetCC();
-	CC.DefineGlobal(CONSTLIT("gPlayerShip"), CC.CreateInteger((int)m_pPlayer->GetShip()));
-
-	//	Generate stats and save to file
-
-	GenerateGameStats(&m_GameStats, true);
-	if (error = SaveGameStats(m_GameStats, true))
-		return error;
-
-	//	Clean up
-
-	m_pPlayer = NULL;
-
-	//	Close the game file
-
-	m_GameFile.Close();
-	m_Universe.Reinit();
-
-	//	Done
-
-	m_iState = stateGameOver;
-
-	return NOERROR;
+	m_iState = statePlayerInEndGame;
+	return EndGame();
 	}
 
 ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData)
@@ -934,10 +970,10 @@ void CTranscendenceModel::GenerateGameStats (CGameStats *retStats, bool bGameOve
 	//	so that the calls inside of GenerateGameStats can work properly
 
 	bool bCleanUp = false;
-	if (m_Universe.GetPlayer() == NULL)
+	if (m_Universe.GetPlayerShip() == NULL)
 		{
 		ASSERT(pPlayerShip);
-		m_Universe.SetPlayer(pPlayerShip);
+		m_Universe.SetPlayerShip(pPlayerShip);
 		bCleanUp = true;
 		}
 
@@ -978,7 +1014,7 @@ void CTranscendenceModel::GenerateGameStats (CGameStats *retStats, bool bGameOve
 	//	Clean up
 
 	if (bCleanUp)
-		m_Universe.SetPlayer(NULL);
+		m_Universe.SetPlayerShip(NULL);
 	}
 
 ALERROR CTranscendenceModel::GetGameStats (CGameStats *retStats)
@@ -1012,7 +1048,7 @@ void CTranscendenceModel::GetScreenSession (SDockFrame *retFrame)
 	*retFrame = m_DockFrames.GetCurrent();
 	}
 
-ALERROR CTranscendenceModel::Init (void)
+ALERROR CTranscendenceModel::Init (const CGameSettings &Settings)
 
 //	Init
 //
@@ -1021,10 +1057,18 @@ ALERROR CTranscendenceModel::Init (void)
 	{
 	::fileGetVersionInfo(NULL_STR, &m_Version);
 
+	//	Set some options
+
+	AddSaveFileFolder(pathAddComponent(Settings.GetAppDataFolder(), FOLDER_SAVE_FILES));
+	SetDebugMode(Settings.GetBoolean(CGameSettings::debugGame));
+	m_bForceTDB = Settings.GetBoolean(CGameSettings::useTDB);
+	m_bNoMissionCheckpoint = Settings.GetBoolean(CGameSettings::noMissionCheckpoint);
+	m_bNoSound = Settings.GetBoolean(CGameSettings::noSound);
+
 	return NOERROR;
 	}
 
-ALERROR CTranscendenceModel::InitBackground (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, CString *retsError)
+ALERROR CTranscendenceModel::InitBackground (const CGameSettings &Settings, const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, CString *retsError)
 
 //	InitBackground
 //
@@ -1033,6 +1077,32 @@ ALERROR CTranscendenceModel::InitBackground (const CString &sCollectionFolder, c
 
 	{
 	ALERROR error;
+
+	//	Set the graphics quality
+
+	CString sGraphics = Settings.GetString(CGameSettings::graphicsQuality);
+	if (sGraphics.IsBlank() || strEquals(sGraphics, GRAPHICS_AUTO))
+		m_Universe.GetSFXOptions().SetSFXQualityAuto();
+	else if (strEquals(sGraphics, GRAPHICS_MINIMUM))
+		m_Universe.GetSFXOptions().SetSFXQuality(CSFXOptions::sfxMinimum);
+	else if (strEquals(sGraphics, GRAPHICS_STANDARD))
+		m_Universe.GetSFXOptions().SetSFXQuality(CSFXOptions::sfxStandard);
+	else if (strEquals(sGraphics, GRAPHICS_MAXIMUM))
+		m_Universe.GetSFXOptions().SetSFXQuality(CSFXOptions::sfxMaximum);
+	else
+		{
+		m_Universe.GetSFXOptions().SetSFXQualityAuto();
+		::kernelDebugLogMessage("Unknown graphics quality: %s.", sGraphics);
+		}
+
+	//	Now set some additional options that may override the default graphics
+	//	quality settings.
+
+	if (Settings.GetBoolean(CGameSettings::showManeuverEffects))
+		m_Universe.GetSFXOptions().SetManeuveringEffectEnabled();
+
+	if (Settings.GetBoolean(CGameSettings::no3DSystemMap))
+		m_Universe.GetSFXOptions().Set3DSystemMapEnabled(false);
 
 	//	Load the universe
 
@@ -1164,12 +1234,28 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 			return ERR_FAIL;
 			}
 
+		//	If this game is in end game state then we just load the stats.
+
+		if (m_GameFile.IsEndGame())
+			{
+			error = m_GameFile.LoadGameStats(&m_GameStats);
+			m_GameFile.Close();
+			if (error)
+				{
+				*retsError = strPatternSubst(CONSTLIT("Unable to load stats from save file: %s"), sFilespec);
+				return error;
+				}
+
+			return ERR_CANCEL;
+			}
+
 		//	Load the universe
 
 		DWORD dwSystemID, dwPlayerID;
 		if (error = m_GameFile.LoadUniverse(m_Universe, &dwSystemID, &dwPlayerID, retsError))
 			{
 			m_GameFile.Close();
+			m_Universe.Reinit();
 			return error;
 			}
 
@@ -1184,6 +1270,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 				&pPlayerObj))
 			{
 			m_GameFile.Close();
+			m_Universe.Reinit();
 			return error;
 			}
 
@@ -1192,6 +1279,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 			{
 			*retsError = CONSTLIT("Save file corruption: Player ship is invalid.");
 			m_GameFile.Close();
+			m_Universe.Reinit();
 			return ERR_FAIL;
 			}
 
@@ -1203,6 +1291,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 			{
 			*retsError = CONSTLIT("Save file corruption: Player ship is invalid.");
 			m_GameFile.Close();
+			m_Universe.Reinit();
 			return ERR_FAIL;
 			}
 
@@ -1227,12 +1316,26 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 			*retsError = strPatternSubst(CONSTLIT("Unable to set resurrect flag"));
 			m_pPlayer = NULL;
 			m_GameFile.Close();
+			m_Universe.Reinit();
 			return error;
 			}
 
 		//	Set the resurrect count
 
 		m_pPlayer->SetResurrectCount(m_GameFile.GetResurrectCount());
+
+		//	Connect the player ship controller to the controller
+
+		CTranscendencePlayer *pPlayerController = dynamic_cast<CTranscendencePlayer *>(m_Universe.GetPlayer());
+		if (pPlayerController == NULL)
+			{
+			*retsError = CONSTLIT("Save file corruption: No player controller found.");
+			m_GameFile.Close();
+			m_Universe.Reinit();
+			return ERR_FAIL;
+			}
+
+		pPlayerController->SetPlayer(m_pPlayer);
 
 		//	Set debug mode appropriately
 
@@ -1577,6 +1680,9 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 //	This is called to switch systems as the player travels through the
 //	gate. We assume that OnPlayerEnteredGate has already been called and
 //	that OnPlayerExitedGate will be called later.
+//
+//	The function is designed to be called in the background and it will either
+//	fire gameEnterFinalStargate or gameStargateSystemReady
 
 	{
 	ASSERT(m_iState == statePlayerInGateOldSystem);
@@ -1597,7 +1703,7 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 		//	Done
 
 		m_iState = stateInGame;
-		m_HI.HICommand(CMD_GAME_ENTER_FINAL_STARGATE);
+		m_HI.HIPostCommand(CMD_GAME_ENTER_FINAL_STARGATE);
 		return;
 		}
 
@@ -1710,9 +1816,14 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 
 	SetProgramState(psStargateEnterDone);
 
+	//	Stargate effect
+
+	pStart->OnObjLeaveGate(pShip);
+
 	//	Done
 
 	m_iState = statePlayerInGateNewSystem;
+	m_HI.HIPostCommand(CMD_GAME_STARGATE_SYSTEM_READY);
 	}
 
 void CTranscendenceModel::RecordFinalScore (const CString &sEpitaph, const CString &sEndGameReason, bool bEscaped)
@@ -1815,16 +1926,23 @@ ALERROR CTranscendenceModel::SaveGame (DWORD dwFlags, CString *retsError)
 	{
 	ALERROR error;
 
-	ASSERT(m_GameFile.IsOpen());
+	//	If this is a mission check point and we've already quit the game, then
+	//	we can stop. This can happen if we end the game inside of <OnAcceptedUndock>
+
+	if ((dwFlags & CGameFile::FLAG_ACCEPT_MISSION) 
+			&& m_iState == statePlayerInEndGame)
+		return NOERROR;
 
 	//	If we're saving a mission, check the option and exit if we're not 
 	//	supposed to save on mission accept.
 
-	if ((dwFlags & CGameFile::FLAG_ACCEPT_MISSION) && m_bNoMissionCheckpoint)
+	if ((dwFlags & CGameFile::FLAG_ACCEPT_MISSION) 
+			&& m_bNoMissionCheckpoint)
 		return NOERROR;
 
 	//	Fire and event to give global types a chance to save any volatiles
 
+	ASSERT(m_GameFile.IsOpen());
 	m_Universe.FireOnGlobalUniverseSave();
 
 	//	Generate and save game stats
@@ -1894,7 +2012,7 @@ void CTranscendenceModel::SetDebugMode (bool bDebugMode)
 	m_Universe.SetDebugMode(bDebugMode);
 	}
 
-ALERROR CTranscendenceModel::SaveGameStats (const CGameStats &Stats, bool bGameOver)
+ALERROR CTranscendenceModel::SaveGameStats (const CGameStats &Stats, bool bGameOver, bool bEndGame)
 
 //	SaveGameStats
 //
@@ -1921,7 +2039,7 @@ ALERROR CTranscendenceModel::SaveGameStats (const CGameStats &Stats, bool bGameO
 		sEpitaph = NULL_STR;
 		}
 
-	if (error = m_GameFile.SetGameStatus(iScore, sEpitaph))
+	if (error = m_GameFile.SetGameStatus(iScore, sEpitaph, bEndGame))
 		return error;
 
 	//	Done
@@ -2194,7 +2312,7 @@ ALERROR CTranscendenceModel::StartGame (bool bNewGame)
 	{
 	//	Tell the universe to focus on the ship
 
-	m_Universe.SetPlayer(m_pPlayer->GetShip());
+	m_Universe.SetPlayerShip(m_pPlayer->GetShip());
 	m_Universe.SetPOV(m_pPlayer->GetShip());
 
 	//	Set sound
@@ -2272,29 +2390,22 @@ ALERROR CTranscendenceModel::StartNewGame (const CString &sUsername, const SNewG
 	m_pPlayer->SetGenome(NewGame.iPlayerGenome);
 	m_pPlayer->SetStartingShipClass(NewGame.dwPlayerShip);
 
-	//	Define globals for OnGameStart (only gPlayer is defined)
-	//	We need this because script may want to reference gPlayer
-	//	to get genome information.
-	//
-	//	The rest of the variables will be set in m_Universe.SetPlayer
-
-	CCodeChain &CC = m_Universe.GetCC();
-	CC.DefineGlobal(CONSTLIT("gPlayer"), CC.CreateInteger((int)m_pPlayer));
-
-	//	Invoke Adventure OnGameStart
-	//	NOTE: The proper adventure is set by a call to InitAdventure,
-	//	when the adventure is chosen.
-
-	CAdventureDesc *pAdventure = m_Universe.GetCurrentAdventureDesc();
-	ASSERT(pAdventure);
+	//	Inside of InitAdventure we may get called back to set the crawl image
+	//	and text.
 
 	m_pCrawlImage = NULL;
 	m_pCrawlSoundtrack = NULL;
 	m_sCrawlText = NULL_STR;
 
-	m_Universe.SetLogImageLoad(false);
-	pAdventure->FireOnGameStart();
-	m_Universe.SetLogImageLoad(true);
+	//	Create the player controller
+
+	CTranscendencePlayer *pPlayerController = new CTranscendencePlayer;
+	pPlayerController->SetPlayer(m_pPlayer);
+
+	//	Initialize the adventure and hand it the player controller.
+
+	if (m_Universe.InitAdventure(pPlayerController, retsError) != NOERROR)
+		return ERR_FAIL;
 
 	//	The remainder of new game start happens in the background thread
 	//	in StartNewGamebackground
@@ -2596,7 +2707,7 @@ void CTranscendenceModel::TransferGateFollowers (CSystem *pOldSystem, CSystem *p
 	//	OnNewSystem may refer to objects in the old system.
 
 	for (i = 0; i < GateFollowerObjs.GetCount(); i++)
-		GateFollowerObjs[i]->OnNewSystem(pSystem);
+		GateFollowerObjs[i]->NotifyOnNewSystem(pSystem);
 
 	//	Done
 

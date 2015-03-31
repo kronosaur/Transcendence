@@ -60,7 +60,6 @@
 			sovereign=			"&svCommonwealth;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			defaultBackgroundID="&rsSistersShrineBkgnd;"
 			canAttack=			"true"
 
 			multiHull=			"true"
@@ -69,7 +68,7 @@
 			repairRate=			"3"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"envAir, envAvoidsFire, friendly, human, majorStation, populated, religious, sistersOfDomina"
+			attributes=			"envAir, envAvoidsFire, friendly, generic, human, majorStation, populated, religious, sistersOfDomina"
 			levelFrequency=		"ruccc ur--- ----- ----- -----"
 			unique=				"inSystem"
 			locationCriteria=	"-innerSystem, +planetary"
@@ -78,7 +77,8 @@
 			>
 
 		<Image			imageID="&rsStations1;" imageX="384" imageY="512" imageWidth="128" imageHeight="128"/>
-
+		<HeroImage		imageID="&rsSistersShrineHero;" imageWidth="324" imageHeight="528"/>
+		
 		<Ships>
 			<Lookup count="1d2" table="&tbCommDefenders;"/>
 			<Lookup count="1d3" table="&tbCommPrivateCrafts;"/>
@@ -766,7 +766,6 @@
 			type=				"itemPicker"
 			nestedScreen=		"true"
 			inherit=			"&dsDockScreenBase;"
-			backgroundID=		"&rsItemListScreen;"
 			>
 
 		<ListOptions
@@ -908,7 +907,9 @@
 
 								; Calculate the increase in relationship
 								
-								(if (eq (item entry 2) 0)
+								(if (or (eq (item entry 2) 0)
+										(not (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;))
+										)
 									(setq incRel 0)
 									(setq incRel (multiply (itmGetCount gItem) (item entry 2)))
 									)
@@ -950,7 +951,9 @@
 								; Increase attitude and relationship
 
 								(objIncData gPlayerShip "sistersAttitude" incAtt)
-								(domGainXP incRel)
+								(if (gr incRel 0)
+									(domGainXP incRel)
+									)
 								
 								; Record stats
 								
@@ -1537,7 +1540,18 @@
 		</Panes>
 	</DockScreen>
 
-<!-- SISTERS OF DOMINA -->
+<!-- SISTERS OF DOMINA
+
+	PLAYER DATA
+	
+	sistersAttitude: Abstract measure of the sisters' attitude towards the player
+	sistersLastDonation:	Time at which the player donated last (Nil if never)
+	sistersStory:	State of story-telling
+	slaveReward:	Number of slaves for which player has already been rewarded
+	slaveSales:		Proceeds from slave sales
+	slavesFreed:	Number of slaves freed to commonwealth authorities
+	
+-->
 
 	<Sovereign UNID="&svSistersOfDomina;"
 			name="Sisters of Domina"
@@ -1609,5 +1623,6 @@
 <!-- RESOURCES -->
 
 	<Image UNID="&rsSistersShrineBkgnd;" bitmap="Resources\SistersShrine.jpg" loadOnUse="true" />
+	<Image UNID="&rsSistersShrineHero;" bitmap="Resources\SistersShrineHero.jpg" bitmask="Resources\SistersShrineHeroMask.bmp" loadOnUse="true" />
 
 </TranscendenceModule>

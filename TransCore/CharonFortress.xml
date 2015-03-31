@@ -27,7 +27,7 @@
 			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"charonFortress, charonPirates, enemy, human, majorStation, pirates, populated"
+			attributes=			"charonFortress, charonPirates, enemy, generic, human, majorStation, pirates, populated"
 			level=				"3"
 			alertWhenAttacked=	"100"
 
@@ -189,9 +189,9 @@
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="90"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
-			<RemoveDevice	criteria="d" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -730,7 +730,8 @@
 	<!-- Charon Pirate Fortress System -->
 
 	<SystemType UNID="&ssCharonPirateFortress;"
-				attributes="envAir"
+				attributes=			"envAir"
+				backgroundID=		"&rsRedDwarfSpace;"
 				>
 
 		<SystemGroup>
@@ -753,7 +754,7 @@
 							showOrbit="true"
 							/>
 
-					<Orbitals distance="12" angle="random">
+					<Orbitals distance="18" angle="random">
 						<Group>
 							<Siblings angleInc="0">
 								<Lookup table="StargateInbound"/>

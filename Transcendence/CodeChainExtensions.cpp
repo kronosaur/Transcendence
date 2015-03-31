@@ -16,6 +16,7 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_GAME_SET_CRAWL_IMAGE		2
 #define FN_GAME_SET_CRAWL_SOUNDTRACK	3
 #define FN_GAME_SAVE				4
+#define FN_GAME_END					5
 
 ICCItem *fnGameSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
@@ -97,6 +98,11 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 	{
 		//	Game function
 		//	-------------
+
+		{	"gamEnd",						fnGameSet,		FN_GAME_END,
+			"(gamEnd endGameReason epitaph [scoreBonus]) -> True/Nil",
+
+			"ss*",	PPFLAG_SIDEEFFECTS, },
 
 		{	"gamSave",						fnGameSet,		FN_GAME_SAVE,
 			"(gamSave [options]) -> True/Nil\n\n"
@@ -273,8 +279,9 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(plyCredit player [currency] credit) -> credits left",
 			"iv*",	PPFLAG_SIDEEFFECTS,	},
 
-		{	"plyDestroyed",					fnPlySetOld,		FN_PLY_DESTROYED, "",	NULL,	PPFLAG_SIDEEFFECTS, },
-		//	(plyDestroyed player destroyed-text)
+		{	"plyDestroyed",					fnPlySetOld,		FN_PLY_DESTROYED, 
+			"(plyDestroyed player epitaph)",
+			NULL,	PPFLAG_SIDEEFFECTS, },
 
 		{	"plyIsMessageEnabled",			fnPlyGet,			FN_PLY_IS_MESSAGE_ENABLED,
 			"(plyIsMessageEnabled player messageID) -> True/Nil\n\n"
@@ -420,7 +427,7 @@ inline CDockScreen *GetDockScreenArg (ICCItem *pArg) { return (CDockScreen *)pAr
 inline CArmorClass *GetArmorClassArg (ICCItem *pArg) { return (CArmorClass *)pArg->GetIntegerValue(); }
 inline CPlayerShipController *GetPlayerArg (ICCItem *pArg) { return (CPlayerShipController *)pArg->GetIntegerValue(); }
 
-CG16bitImage *GetCanvasArg (CEvalContext *pEvalCtx, ICCItem *pArgs, int iArg)
+CG32bitImage *GetCanvasArg (CEvalContext *pEvalCtx, ICCItem *pArgs, int iArg)
 
 //	GetCanvasArg
 //
@@ -447,7 +454,7 @@ CG16bitImage *GetCanvasArg (CEvalContext *pEvalCtx, ICCItem *pArgs, int iArg)
 		}
 	}
 
-WORD GetColorArg (ICCItem *pArg)
+CG32bitPixel GetColorArg (ICCItem *pArg)
 
 //	GetColorArg
 //
@@ -455,13 +462,13 @@ WORD GetColorArg (ICCItem *pArg)
 
 	{
 	if (pArg->IsInteger())
-		return (WORD)(DWORD)pArg->GetIntegerValue();
+		return CG32bitPixel::FromDWORD((DWORD)pArg->GetIntegerValue());
 	else if (pArg->GetCount() == 3)
-		return CG16bitImage::RGBValue(pArg->GetElement(0)->GetIntegerValue(),
+		return CG32bitPixel(pArg->GetElement(0)->GetIntegerValue(),
 				pArg->GetElement(1)->GetIntegerValue(),
 				pArg->GetElement(2)->GetIntegerValue());
 	else
-		return 0;
+		return CG32bitPixel::Null();
 	}
 
 ALERROR InitCodeChainExtensions (CCodeChain &CC)
@@ -496,16 +503,16 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			{
 			int x = pArgs->GetElement(0)->GetIntegerValue();
 			int y = pArgs->GetElement(1)->GetIntegerValue();
-			CG16bitImage *pImage;
+			CG32bitImage *pImage;
 			RECT rcImage;
 			GetImageDescFromList(*pCC, pArgs->GetElement(2), &pImage, &rcImage);
 			if (pImage == NULL)
 				return pCC->CreateNil();
-			CG16bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, 3);
+			CG32bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, 3);
 			if (pCanvas == NULL)
 				return pCC->CreateNil();
 
-			pCanvas->ColorTransBlt(rcImage.left,
+			pCanvas->Blt(rcImage.left,
 					rcImage.top,
 					RectWidth(rcImage),
 					RectHeight(rcImage),
@@ -524,17 +531,15 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			int xTo = pArgs->GetElement(2)->GetIntegerValue();
 			int yTo = pArgs->GetElement(3)->GetIntegerValue();
 			int iWidth = pArgs->GetElement(4)->GetIntegerValue();
-			WORD wColor = GetColorArg(pArgs->GetElement(5));
-			CG16bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, 6);
+			CG32bitPixel rgbColor = GetColorArg(pArgs->GetElement(5));
+			CG32bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, 6);
 			if (pCanvas == NULL)
 				return pCC->CreateNil();
 
 			if (iWidth <= 0)
 				return pCC->CreateNil();
 
-			CG16bitLinePainter LinePainter;
-			LinePainter.PaintSolid(*pCanvas, xFrom, yFrom, xTo, yTo, iWidth, wColor);
-
+			CGDraw::LineHD(*pCanvas, xFrom, yFrom, xTo, yTo, iWidth, rgbColor);
 			return pCC->CreateTrue();
 			}
 
@@ -544,12 +549,12 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			int y = pArgs->GetElement(1)->GetIntegerValue();
 			int cxWidth = pArgs->GetElement(2)->GetIntegerValue();
 			int cyHeight = pArgs->GetElement(3)->GetIntegerValue();
-			WORD wColor = GetColorArg(pArgs->GetElement(4));
-			CG16bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, 5);
+			CG32bitPixel rgbColor = GetColorArg(pArgs->GetElement(4));
+			CG32bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, 5);
 			if (pCanvas == NULL)
 				return pCC->CreateNil();
 
-			pCanvas->Fill(x, y, cxWidth, cyHeight, wColor);
+			pCanvas->Fill(x, y, cxWidth, cyHeight, rgbColor);
 
 			return pCC->CreateTrue();
 			}
@@ -568,10 +573,10 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			int cxWidth = (pArgs->GetElement(iArg)->IsInteger() ? pArgs->GetElement(iArg++)->GetIntegerValue() : -1);
 			CString sText = g_pTrans->ComposePlayerNameString(pArgs->GetElement(iArg++)->GetStringValue());
 			const CG16bitFont *pControlFont = &GetFontByName(g_pTrans->GetFonts(), pArgs->GetElement(iArg++)->GetStringValue());
-			WORD wColor = GetColorArg(pArgs->GetElement(iArg++));
+			CG32bitPixel rgbColor = GetColorArg(pArgs->GetElement(iArg++));
 			CString sAlign = pArgs->GetElement(iArg++)->GetStringValue();
 
-			CG16bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, iArg);
+			CG32bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, iArg);
 			if (pCanvas == NULL)
 				return pCC->CreateNil();
 
@@ -616,7 +621,7 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			//	Paint
 
-			pControlFont->DrawText(*pCanvas, rcRect, wColor, sText, 0, dwFlags);
+			pControlFont->DrawText(*pCanvas, rcRect, rgbColor, sText, 0, dwFlags);
 
 			//	Done
 
@@ -640,6 +645,22 @@ ICCItem *fnGameSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	switch (dwData)
 		{
+		case FN_GAME_END:
+			{
+			CString sReason = pArgs->GetElement(0)->GetStringValue();
+			CString sEpitaph = pArgs->GetElement(1)->GetStringValue();
+			int iScoreBonus = (pArgs->GetCount() >= 3 ? pArgs->GetElement(2)->GetIntegerValue() : 0);
+
+			if (g_pTrans->GetModel().EndGame(sReason, sEpitaph, iScoreBonus) != NOERROR)
+				{
+				::kernelDebugLogMessage("Unable to end game.");
+				return pCC->CreateNil();
+				}
+
+			g_pTrans->PlayerEndGame();
+			return pCC->CreateTrue();
+			}
+
 		case FN_GAME_SAVE:
 			{
 			CString sOption = (pArgs->GetCount() > 0 ? pArgs->GetElement(0)->GetStringValue() : NULL_STR);
@@ -984,7 +1005,7 @@ ICCItem *fnPlySet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			//	Can't pick player ship
 
-			if (pNewShip == g_pUniverse->GetPlayer())
+			if (pNewShip == g_pUniverse->GetPlayerShip())
 				return pCC->CreateError(CONSTLIT("Ship is already player's ship"), pArgs->GetElement(1));
 
 			//	Change ships
