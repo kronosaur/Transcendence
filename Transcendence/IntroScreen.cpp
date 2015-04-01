@@ -672,6 +672,12 @@ void CTranscendenceWnd::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereig
 		OnIntroPOVSet(g_pUniverse->GetPOV());
 		}
 
+	//	Mark and sweep, so we don't run out of memory
+
+	g_pUniverse->ClearLibraryBitmapMarks();
+	g_pUniverse->MarkLibraryBitmaps();
+	g_pUniverse->SweepLibraryBitmaps();
+
 	m_iLastShipCreated = m_iTick;
 	}
 
@@ -2769,6 +2775,10 @@ ALERROR CTranscendenceWnd::StartIntro (CIntroSession *pThis, IntroState iState)
 	g_pUniverse->SetPOV(pShip1);
 	m_iTick = 0;
 	m_iLastShipCreated = m_iTick;
+
+	//	Initialize the system
+
+	g_pUniverse->MarkLibraryBitmaps();
 
 	//	Create the credits performance
 
