@@ -407,18 +407,20 @@ void CTranscendenceWnd::CreateCreditsAnimation (IAnimatron **retpAnimatron)
 	pSeq->AddTrack(pAnimation, iTime);
 	iTime += 150;
 
-	//	Linux port
+	//	More programming
 
 	Names.DeleteAll();
-	Names.Insert(CONSTLIT("Benn Bollay"));
-	m_UIRes.CreateMediumCredit(CONSTLIT("linux port by"),
+	for (i = 0; i < ADDITIONAL_PROGRAMMING_COUNT; i++)
+		Names.Insert(CString(ADDITIONAL_PROGRAMMING[i]));
+
+	m_UIRes.CreateMediumCredit(CONSTLIT("additional programming by"),
 			Names,
 			xMidCenter,
 			yMidCenter,
 			150,
 			&pAnimation);
 	pSeq->AddTrack(pAnimation, iTime);
-	iTime += 150;
+	iTime += ADDITIONAL_PROGRAMMING_COUNT * 150;
 
 	//	Special thanks
 
