@@ -223,7 +223,7 @@
 											)
 										(setq targetObj (@
 											(filter (sysFindObject gPlayerShip "TAF +populated; S:d") theObj
-												(geq (objGetProperty theObj 'installDeviceMaxLevel) (itmGetLevel foundItem))
+												(objGetItemProperty theObj foundItem 'installDevicePrice)
 												)
 											0
 											))
@@ -321,7 +321,7 @@
 								(and (setq foundItem (@ (objGetItems gPlayerShip "wU +unid:&itSmartCannon;;") 0))
 										(setq targetObj (@
 											(filter (sysFindObject gPlayerShip "TAF +populated; S:d") theObj
-												(geq (objGetProperty theObj 'installDeviceMaxLevel) (itmGetLevel foundItem))
+												(objGetItemProperty theObj foundItem 'installDevicePrice)
 												)
 											0
 											))
