@@ -9,6 +9,7 @@ Game/TransData/
 Game/Debug.log
 Game/HighScores.xml
 Game/Settings.xml
+Game/Snapshots/
 Game/TransData.xml
 Game/*.exe
 Game/*.exe.manifest

@@ -132,6 +132,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("         level                 By level (ascending).\n");
 		printf("         name                  By name.\n");
 		printf("         smallest              Smaller objects first.\n");
+		printf("         sovereign             Categorize by sovereign.\n");
 		printf("      [/textBoxesOnly]      Output textboxes only.\n");
 		printf("      [/width:n]            Width of image in pixels.\n");
 		printf("      [/xMargin:n]          Margin around images.\n");
@@ -276,6 +277,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		{
 		printf("  /snapshot             Generates a snapshot of an object.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/count:n]            Number of snapshots to generate.\n");
 		printf("      [/criteria:xxx]       Object must match criteria.\n");
 		printf("      [/node:ID]            Look for object in given node.\n");
 		printf("      [/noStars]            Do not paint starfield.\n");
