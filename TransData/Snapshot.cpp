@@ -17,7 +17,7 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Get some parameters
 
-	int iInitialUpdateTime = 10;
+	int iInitialUpdateTime = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("initialUpdate"), 0, -1, 10);
 	int iUpdateTime = pCmdLine->GetAttributeInteger(CONSTLIT("wait"));
 	bool bObjOnly = pCmdLine->GetAttributeBool(CONSTLIT("objOnly"));
 
@@ -56,11 +56,22 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 	if (!sFilespec.IsBlank())
 		sFilespec = pathStripExtension(sFilespec);
 
+	//	Output image
+
+	CG32bitImage Output;
+	Output.Create(cxWidth, cyHeight);
+
 	//	Update context
 
 	SSystemUpdateCtx Ctx;
 	Ctx.bForceEventFiring = true;
 	Ctx.bForcePainted = true;
+
+	RECT rcViewport;
+	rcViewport.left = 0;
+	rcViewport.top = 0;
+	rcViewport.right = cxWidth;
+	rcViewport.bottom = cyHeight;
 
 	//	Loop over all systems until we find what we're looking for
 
@@ -100,7 +111,10 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 			//	Update for a while
 
 			for (i = 0; i < iInitialUpdateTime; i++)
+				{
 				Universe.Update(Ctx);
+				Universe.PaintPOV(Output, rcViewport, 0);
+				}
 
 			//	Compose the criteria
 
@@ -134,7 +148,14 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		if (pTarget)
 			{
+			Universe.SetPOV(pTarget);
+
 			//	Wait a bit
+			//
+			//	NOTE: After we update, pTarget could be invalid (i.e., destroyed)
+			//	so we can't use it again.
+
+			CString sTargetName = pTarget->GetNounPhrase(0);
 
 			for (i = 0; i < iUpdateTime; i++)
 				{
@@ -142,6 +163,7 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 					printf(".");
 
 				Universe.Update(Ctx);
+				Universe.PaintPOV(Output, rcViewport, 0);
 				}
 
 			if (iUpdateTime >= 99)
@@ -149,14 +171,11 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			//	Paint
 
-			CG32bitImage Output;
-			Output.Create(cxWidth, cyHeight);
-
 			if (bObjOnly)
 				{
 				SViewportPaintCtx Ctx;
-				Ctx.pObj = pTarget;
-				Ctx.XForm = ViewportTransform(pTarget->GetPos(), 
+				Ctx.pObj = Universe.GetPOV();
+				Ctx.XForm = ViewportTransform(Universe.GetPOV()->GetPos(), 
 						g_KlicksPerPixel, 
 						cxWidth / 2, 
 						cyHeight / 2);
@@ -189,13 +208,8 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 				}
 			else
 				{
-				RECT rcViewport;
-				rcViewport.left = 0;
-				rcViewport.top = 0;
-				rcViewport.right = cxWidth;
-				rcViewport.bottom = cyHeight;
 			
-				pSystem->PaintViewport(Output, rcViewport, pTarget, dwPaintFlags);
+				Universe.PaintPOV(Output, rcViewport, 0);
 				}
 
 			//	Write to file
@@ -219,7 +233,7 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 
 				Output.WriteToWindowsBMP(&OutputFile);
 				OutputFile.Close();
-				printf("Found %s: Saved to %s\n", pTarget->GetNounPhrase(0).GetASCIIZPointer(), sBmpFilespec.GetASCIIZPointer());
+				printf("Found %s: Saved to %s\n", sTargetName.GetASCIIZPointer(), sBmpFilespec.GetASCIIZPointer());
 				}
 
 			//	Otherwise, clipboard
@@ -232,7 +246,7 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 					return;
 					}
 
-				printf("Found %s: Copied to clipboard.\n", pTarget->GetNounPhrase(0).GetASCIIZPointer());
+				printf("Found %s: Copied to clipboard.\n", sTargetName.GetASCIIZPointer());
 				}
 
 			//	Reset maximum loops
