@@ -17,7 +17,7 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Get some parameters
 
-	int iInitialUpdateTime = 10;
+	int iInitialUpdateTime = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("initialUpdate"), 0, -1, 10);
 	int iUpdateTime = pCmdLine->GetAttributeInteger(CONSTLIT("wait"));
 	bool bObjOnly = pCmdLine->GetAttributeBool(CONSTLIT("objOnly"));
 
@@ -25,6 +25,10 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	CString sNode = pCmdLine->GetAttribute(CONSTLIT("node"));
 	CString sCriteria = pCmdLine->GetAttribute(CONSTLIT("criteria"));
+
+	//	Number of snapshots
+
+	int iTotalCount = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("count"), 1, -1, 1);
 
 	//	Output
 
@@ -50,7 +54,12 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	CString sFilespec = pCmdLine->GetAttribute(CONSTLIT("output"));
 	if (!sFilespec.IsBlank())
-		sFilespec = pathAddExtensionIfNecessary(sFilespec, CONSTLIT(".bmp"));
+		sFilespec = pathStripExtension(sFilespec);
+
+	//	Output image
+
+	CG32bitImage Output;
+	Output.Create(cxWidth, cyHeight);
 
 	//	Update context
 
@@ -58,10 +67,17 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 	Ctx.bForceEventFiring = true;
 	Ctx.bForcePainted = true;
 
+	RECT rcViewport;
+	rcViewport.left = 0;
+	rcViewport.top = 0;
+	rcViewport.right = cxWidth;
+	rcViewport.bottom = cyHeight;
+
 	//	Loop over all systems until we find what we're looking for
 
 	int iLoops = 20;
 	int iNodeIndex = 0;
+	int iSnapshotIndex = 0;
 	CTopologyNode *pNode = Universe.GetTopologyNode(iNodeIndex);
 	while (true)
 		{
@@ -95,7 +111,10 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 			//	Update for a while
 
 			for (i = 0; i < iInitialUpdateTime; i++)
+				{
 				Universe.Update(Ctx);
+				Universe.PaintPOV(Output, rcViewport, 0);
+				}
 
 			//	Compose the criteria
 
@@ -129,11 +148,14 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		if (pTarget)
 			{
-			//	If we found the target, take a snapshot
-
-			printf("Found %s.\n", pTarget->GetNounPhrase(0).GetASCIIZPointer());
+			Universe.SetPOV(pTarget);
 
 			//	Wait a bit
+			//
+			//	NOTE: After we update, pTarget could be invalid (i.e., destroyed)
+			//	so we can't use it again.
+
+			CString sTargetName = pTarget->GetNounPhrase(0);
 
 			for (i = 0; i < iUpdateTime; i++)
 				{
@@ -141,6 +163,7 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 					printf(".");
 
 				Universe.Update(Ctx);
+				Universe.PaintPOV(Output, rcViewport, 0);
 				}
 
 			if (iUpdateTime >= 99)
@@ -148,14 +171,11 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			//	Paint
 
-			CG32bitImage Output;
-			Output.Create(cxWidth, cyHeight);
-
 			if (bObjOnly)
 				{
 				SViewportPaintCtx Ctx;
-				Ctx.pObj = pTarget;
-				Ctx.XForm = ViewportTransform(pTarget->GetPos(), 
+				Ctx.pObj = Universe.GetPOV();
+				Ctx.XForm = ViewportTransform(Universe.GetPOV()->GetPos(), 
 						g_KlicksPerPixel, 
 						cxWidth / 2, 
 						cyHeight / 2);
@@ -188,29 +208,32 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 				}
 			else
 				{
-				RECT rcViewport;
-				rcViewport.left = 0;
-				rcViewport.top = 0;
-				rcViewport.right = cxWidth;
-				rcViewport.bottom = cyHeight;
 			
-				pSystem->PaintViewport(Output, rcViewport, pTarget, dwPaintFlags);
+				Universe.PaintPOV(Output, rcViewport, 0);
 				}
 
 			//	Write to file
 
 			if (!sFilespec.IsBlank())
 				{
-				CFileWriteStream OutputFile(sFilespec);
+				CString sBmpFilespec;
+				if (iTotalCount > 100)
+					sBmpFilespec = pathAddExtensionIfNecessary(strPatternSubst(CONSTLIT("%s%03d"), sFilespec, iSnapshotIndex + 1), CONSTLIT(".bmp"));
+				else if (iTotalCount > 1)
+					sBmpFilespec = pathAddExtensionIfNecessary(strPatternSubst(CONSTLIT("%s%02d"), sFilespec, iSnapshotIndex + 1), CONSTLIT(".bmp"));
+				else
+					sBmpFilespec = pathAddExtensionIfNecessary(sFilespec, CONSTLIT(".bmp"));
+
+				CFileWriteStream OutputFile(sBmpFilespec);
 				if (OutputFile.Create() != NOERROR)
 					{
-					printf("ERROR: Unable to create '%s'\n", sFilespec.GetASCIIZPointer());
+					printf("ERROR: Unable to create '%s'\n", sBmpFilespec.GetASCIIZPointer());
 					return;
 					}
 
 				Output.WriteToWindowsBMP(&OutputFile);
 				OutputFile.Close();
-				printf("%s\n", sFilespec.GetASCIIZPointer());
+				printf("Found %s: Saved to %s\n", sTargetName.GetASCIIZPointer(), sBmpFilespec.GetASCIIZPointer());
 				}
 
 			//	Otherwise, clipboard
@@ -223,12 +246,18 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 					return;
 					}
 
-				printf("Image copied to clipboard.\n");
+				printf("Found %s: Copied to clipboard.\n", sTargetName.GetASCIIZPointer());
 				}
+
+			//	Reset maximum loops
+
+			iLoops = 20;
 
 			//	Done
 
-			break;
+			iSnapshotIndex++;
+			if (iSnapshotIndex >= iTotalCount)
+				break;
 			}
 
 		//	Done with old system
@@ -250,7 +279,15 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 			{
 			if (--iLoops > 0)
 				{
+				//	Reinitialize
+
 				Universe.Reinit();
+				CString sError;
+				if (Universe.InitGame(0, &sError) != NOERROR)
+					{
+					printf("ERROR: %s\n", sError.GetASCIIZPointer());
+					return;
+					}
 
 				iNodeIndex = 0;
 				pNode = Universe.GetTopologyNode(iNodeIndex);

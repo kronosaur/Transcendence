@@ -1188,7 +1188,7 @@
 			<!-- A label in orbit around the planet (also an input, in case the
 				caller wants to define some special attributes. -->
 
-			<Orbitals count="2d2" distance="2d6+12" angle="equidistant">
+			<Orbitals count="2d2" distance="2d6+20" angle="equidistant">
 				<Lookup table="_PlanetLabel"/>
 			</Orbitals>
 
@@ -1199,19 +1199,19 @@
 				<Null		chance="10"/>
 
 				<!-- One large moon -->
-				<Orbitals	chance="30" distance="2d8+24" angle="random">
+				<Orbitals	chance="30" distance="2d8+32" angle="random">
 					<Lookup table="PlanetoidCompanion"/>
 				</Orbitals>
 
 				<!-- Two moons -->
 				<Group		chance="40">
-					<Orbitals	distance="2d8+24" angle="random">
+					<Orbitals	distance="2d8+32" angle="random">
 						<Table>
 							<Lookup chance="75" table="AsteroidCompanion"/>
 							<Lookup chance="25" table="PlanetoidCompanion"/>
 						</Table>
 					</Orbitals>
-					<Orbitals	distance="2d8+64" angle="random">
+					<Orbitals	distance="2d8+72" angle="random">
 						<Table>
 							<Lookup chance="40" table="AsteroidCompanion"/>
 							<Lookup chance="60" table="PlanetoidCompanion"/>
@@ -1221,19 +1221,19 @@
 
 				<!-- Three moons -->
 				<Group		chance="20">
-					<Orbitals	distance="2d8+24" angle="random">
+					<Orbitals	distance="2d8+32" angle="random">
 						<Table>
 							<Lookup chance="80" table="AsteroidCompanion"/>
 							<Lookup chance="20" table="PlanetoidCompanion"/>
 						</Table>
 					</Orbitals>
-					<Orbitals	distance="2d8+64" angle="random">
+					<Orbitals	distance="2d8+72" angle="random">
 						<Table>
 							<Lookup chance="40" table="AsteroidCompanion"/>
 							<Lookup chance="60" table="PlanetoidCompanion"/>
 						</Table>
 					</Orbitals>
-					<Orbitals	distance="2d8+104" angle="random">
+					<Orbitals	distance="2d8+112" angle="random">
 						<Table>
 							<Lookup chance="80" table="AsteroidCompanion"/>
 							<Lookup chance="20" table="PlanetoidCompanion"/>
@@ -1290,7 +1290,7 @@
 			<!-- A label in orbit around the planet (also an input, in case the
 				caller wants to define some special attributes. -->
 
-			<Orbitals count="1-2" distance="2d6+12" angle="equidistant">
+			<Orbitals count="1-2" distance="2d6+18" angle="equidistant">
 				<Lookup table="_PlanetLabel"/>
 			</Orbitals>
 
@@ -1301,7 +1301,7 @@
 				<Null		chance="20"/>
 
 				<!-- One moon -->
-				<Orbitals	chance="60" distance="2d8+24" angle="random">
+				<Orbitals	chance="60" distance="2d8+30" angle="random">
 					<Table>
 						<Lookup chance="20" table="AsteroidCompanion"/>
 						<Lookup chance="80" table="PlanetoidCompanion"/>
@@ -1310,13 +1310,13 @@
 
 				<!-- Two moons -->
 				<Group		chance="20">
-					<Orbitals	distance="2d8+24" angle="random">
+					<Orbitals	distance="2d8+30" angle="random">
 						<Table>
 							<Lookup chance="80" table="AsteroidCompanion"/>
 							<Lookup chance="20" table="PlanetoidCompanion"/>
 						</Table>
 					</Orbitals>
-					<Orbitals	distance="2d8+64" angle="random">
+					<Orbitals	distance="2d8+70" angle="random">
 						<Table>
 							<Lookup chance="50" table="AsteroidCompanion"/>
 							<Lookup chance="50" table="PlanetoidCompanion"/>

@@ -2,6 +2,13 @@
 //
 //	Included by IntroScreen.cpp
 
+static char *ADDITIONAL_PROGRAMMING[] =
+	{
+	"Brian Merchant • Benn Bollay"
+	};
+
+const int ADDITIONAL_PROGRAMMING_COUNT = (sizeof(ADDITIONAL_PROGRAMMING) / sizeof(ADDITIONAL_PROGRAMMING[0]));
+
 static char *SPECIAL_THANKS[] =
 	{
 	"Betelgeuse • Nathan Brown (Atarlost) • Michael Curran (Burzmali)",

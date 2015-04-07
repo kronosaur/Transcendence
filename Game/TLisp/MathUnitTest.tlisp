@@ -7,13 +7,18 @@
 
 	;	Equality
 
-	{	code: '(eq 2 2)			result: True	}
-	{	code: '(eq 3 2)			result: Nil		}
 	{	code: '(= 3 2)			result: Nil		}
 	{	code: '(= 2 2)			result: True	}
 	{	code: '(= 2.2 2)		result: Nil		}
 	{	code: '(= 2.2 2.2)		result: True	}
 	{	code: '(= 2.0 2)		result: True	}
+	{	code: '(= 2.1 2)		result: Nil		}
+	{	code: '(= "2" 2)		result: True	}
+
+	{	code: '(eq "2" 2)		result: Nil		}
+
+	{	code: '(!= 2.1 2)		result: True	}
+	{	code: '(!= 2.0 2)		result: Nil		}
 
 	;	Original Integer Math
 
@@ -28,6 +33,41 @@
 	{	code: '(+ 2 2)			result: 4	}
 	{	code: '(+ 2.5 2)		result: 4.5	}
 	{	code: '(+ 2.5 2.5)		result: 5.0	}
+	{	code: '(- 2.5 2.5)		result: 0	}
+	{	code: '(- 2.5 2.0)		result: 0.5	}
+	{	code: '(* 25 5 0.2)		result: 25.0	}
+	{	code: '(/ 25 5)			result: 5.0	}
+	{	code: '(/ 5 2)			result: 2.5	}
+
+	;	Functions
+
+	{	code: '(abs 5)			result: 5 }
+	{	code: '(abs -5)			result: 5 }
+	{	code: '(abs 5.5)		result: 5.5 }
+	{	code: '(abs -5.5)		result: 5.5 }
+
+	{	code: '(find (list 1 2 2.5 3) 2.5)		result: 2 }
+	{	code: '(find (list 1 2 2.5 3) 2.4)		result: Nil }
+	{	code: '(find (list 1 2 2.5 3) 1.0)		result: 0 }
+
+	{	code: '(min 1 2 4)			result: 1 }
+	{	code: '(min 1 20.5 -4.5)	result: -4.5 }
+	{	code: '(max 1 2 4)			result: 4 }
+	{	code: '(max 1 20.5 4)		result: 20.5 }
+
+	{	code: '(mod 4 4)		result: 0 }
+	{	code: '(mod 6 5)		result: 1 }
+	{	code: '(mod 6.0 5.0)	result: 1.0 }
+
+	{	code: '(pow 2 2)		result: 4 }
+
+	{	code: '(sqrt 4)			result: 2 }
+	{	code: '(sqrtn 4)		result: 2 }
+	{	code: '(sqrtn 0.25)		result: 0.5 }
+
+	;	Types
+
+	{	code: '(typeof 1.5)		result: 'real }
 	))
 
 (block (
@@ -44,7 +84,7 @@
 			(switch
 				(eq result (@ theTest 'result))
 					(block ()
-						(print "[" testNum "] PASS: " (@ theTest 'code) " -> " (@ theTest 'result))
+						(print "[" testNum "] PASS")
 						(setq successTests (add successTests 1))
 						)
 

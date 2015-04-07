@@ -407,18 +407,20 @@ void CTranscendenceWnd::CreateCreditsAnimation (IAnimatron **retpAnimatron)
 	pSeq->AddTrack(pAnimation, iTime);
 	iTime += 150;
 
-	//	Linux port
+	//	More programming
 
 	Names.DeleteAll();
-	Names.Insert(CONSTLIT("Benn Bollay"));
-	m_UIRes.CreateMediumCredit(CONSTLIT("linux port by"),
+	for (i = 0; i < ADDITIONAL_PROGRAMMING_COUNT; i++)
+		Names.Insert(CString(ADDITIONAL_PROGRAMMING[i]));
+
+	m_UIRes.CreateMediumCredit(CONSTLIT("additional programming by"),
 			Names,
 			xMidCenter,
 			yMidCenter,
 			150,
 			&pAnimation);
 	pSeq->AddTrack(pAnimation, iTime);
-	iTime += 150;
+	iTime += ADDITIONAL_PROGRAMMING_COUNT * 150;
 
 	//	Special thanks
 
@@ -671,6 +673,12 @@ void CTranscendenceWnd::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereig
 #endif
 		OnIntroPOVSet(g_pUniverse->GetPOV());
 		}
+
+	//	Mark and sweep, so we don't run out of memory
+
+	g_pUniverse->ClearLibraryBitmapMarks();
+	g_pUniverse->MarkLibraryBitmaps();
+	g_pUniverse->SweepLibraryBitmaps();
 
 	m_iLastShipCreated = m_iTick;
 	}
@@ -2769,6 +2777,10 @@ ALERROR CTranscendenceWnd::StartIntro (CIntroSession *pThis, IntroState iState)
 	g_pUniverse->SetPOV(pShip1);
 	m_iTick = 0;
 	m_iLastShipCreated = m_iTick;
+
+	//	Initialize the system
+
+	g_pUniverse->MarkLibraryBitmaps();
 
 	//	Create the credits performance
 
