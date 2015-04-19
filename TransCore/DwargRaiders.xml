@@ -30,8 +30,6 @@
 			thrustRatio=		"6.5"
 			maxSpeed=			"19"
 
-			leavesWreck=		"20"
-
 			attributes=			"dwarg, genericClass, zoanthrope"
 			>
 
@@ -89,8 +87,6 @@
 			thrustRatio=		"5"
 			maxSpeed=			"22"
 
-			leavesWreck=		"50"
-
 			attributes=			"dwarg,genericClass"
 			>
 
@@ -147,7 +143,6 @@
 			maxSpeed=			"12"
 
 			explosionType=		"&vtBlastExplosion4;"
-			leavesWreck=		"100"
 
 			attributes=			"dwarg, genericClass, zoanthrope"
 			>

@@ -475,8 +475,6 @@
 			thrust=				"200"
 			maxSpeed=			"10"
 
-			leavesWreck=		"50"
-
 			attributes=			"centauriWarlords"
 			>
 
@@ -518,8 +516,6 @@
 			cargoSpace=			"10"
 			thrustRatio=		"1.8"
 			maxSpeed=			"13"
-
-			leavesWreck=		"50"
 
 			attributes=			"centauriWarlords,genericClass"
 			>
@@ -568,8 +564,6 @@
 			cargoSpace=			"5"
 			thrustRatio=		"4.0"
 			maxSpeed=			"13"
-
-			leavesWreck=		"20"
 
 			attributes=			"centauriWarlords,genericClass"
 			>

@@ -33,8 +33,6 @@ PLAYER DATA
 			thrustRatio=		"12.5"
 			maxSpeed=			"22"
 
-			leavesWreck=		"50"
-
 			attributes=			"blackMarket, genericClass, outlaws"
 			>
 

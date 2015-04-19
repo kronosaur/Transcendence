@@ -424,7 +424,6 @@
 			timeStopImmune=		"true"
 
 			explosionType=		"&vtPlasmaExplosion1;"
-			leavesWreck=		"100"
 			structuralHitPoints="50000"
 			>
 
@@ -541,7 +540,6 @@
 			maxSpeed=			"12"
 
 			explosionType=		"&vtPlasmaExplosion1;"
-			leavesWreck=		"60"
 
 			attributes=			"genericClass,iocrym,iocrymSentinel"
 			>

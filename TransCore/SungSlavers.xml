@@ -470,8 +470,6 @@
 			cargoSpace=			"10"
 
 			cyberDefenseLevel=	"4"
-
-			leavesWreck=		"35"
 			>
 
 		<!-- Configuration -->
@@ -526,8 +524,6 @@
 			cargoSpace=			"10"
 
 			cyberDefenseLevel=	"6"
-
-			leavesWreck=		"65"
 			>
 
 		<!-- Configuration -->
@@ -593,7 +589,6 @@
 			cyberDefenseLevel=	"6"
 
 			explosionType=		"&vtBlastExplosion2;"
-			leavesWreck=		"100"
 			>
 
 		<!-- Configuration -->
@@ -893,7 +888,6 @@
 			cyberDefenseLevel=	"8"
 
 			explosionType=		"&vtBlastExplosion2;"
-			leavesWreck=		"100"
 
 			attributes=			"capitalShip, genericClass, majorShip, sungSlavers"
 			>
@@ -978,7 +972,6 @@
 			maxSpeed=			"6"
 
 			explosionType=		"&vtBlastExplosion3;"
-			leavesWreck=		"100"
 
 			attributes=			"freighter, genericClass, sungSlavers"
 			>

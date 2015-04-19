@@ -26,8 +26,6 @@
 			maxArmor=			"6000"
 			maxCargoSpace=		"150"
 			maxDevices=			"8"
-
-			leavesWreck=		"30"
 			>
 
 		<!-- Configuration -->
@@ -100,8 +98,6 @@
 			maxCargoSpace=		"200"
 			maxDevices=			"9"
 			maxWeapons=			"2"
-
-			leavesWreck=		"75"
 			>
 
 		<!-- Configuration -->
@@ -188,8 +184,6 @@
 			maxCargoSpace=		"100"
 			maxDevices=			"8"
 			maxNonWeapons=		"4"
-
-			leavesWreck=		"20"
 			>
 
 		<!-- Configuration -->

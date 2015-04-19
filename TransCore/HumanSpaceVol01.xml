@@ -1600,6 +1600,10 @@
 	
 	<!ENTITY rsXenophobeDefender		"0x00100140">
 	
+	<!-- 0150-015F HUARI EMPIRE -->
+	
+	<!ENTITY rsHurin					"0x00100150">
+	
 	<!-- 1000-FFFF RESERVED -->
 	]>
 	

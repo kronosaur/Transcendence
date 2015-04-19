@@ -642,8 +642,6 @@
 			thrustRatio=		"0"
 			maxSpeed=			"0"
 			cargoSpace=			"0"
-
-			leavesWreck=		"50"
 			>
 
 		<!-- Configuration -->
@@ -692,8 +690,6 @@
 			thrustRatio=		"5"
 			maxSpeed=			"20"
 			cargoSpace=			"50"
-
-			leavesWreck=		"65"
 			>
 
 		<!-- Configuration -->
@@ -755,7 +751,6 @@
 			cargoSpace=			"1000"
 
 			explosionType=		"&vtBlastExplosion2;"
-			leavesWreck=		"80"
 			>
 
 		<!-- Configuration -->
@@ -838,7 +833,6 @@
 			cargoSpace=			"1000"
 
 			explosionType=		"&vtThermoExplosion1;"
-			leavesWreck=		"90"
 			>
 
 		<!-- Configuration -->
@@ -915,7 +909,6 @@
 			maxSpeed=			"8"
 
 			explosionType=		"&vtBlastExplosion4;"
-			leavesWreck=		"100"
 
 			attributes=			"ares, freighter, genericClass"
 			>
@@ -993,7 +986,6 @@
 			maxSpeed=			"8"
 
 			explosionType=		"&vtBlastExplosion4;"
-			leavesWreck=		"100"
 
 			attributes=			"ares, freighter"
 			>
@@ -1073,8 +1065,6 @@
 			thrustRatio=		"8"
 			maxSpeed=			"20"
 			cargoSpace=			"25"
-
-			leavesWreck=		"25"
 			>
 
 		<!-- Configuration -->
@@ -1136,8 +1126,6 @@
 			thrustRatio=		"6"
 			maxSpeed=			"20"
 			cargoSpace=			"50"
-
-			leavesWreck=		"45"
 			>
 
 		<!-- Configuration -->
@@ -1204,7 +1192,6 @@
 			cyberDefenseLevel=	"8"
 			   
 			explosionType=		"&vtThermoExplosion3;"
-			leavesWreck=		"100"
 			>
 
 		<!-- Configuration -->

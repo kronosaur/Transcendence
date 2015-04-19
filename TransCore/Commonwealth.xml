@@ -19,8 +19,6 @@
 			thrustRatio=		"2.0"
 			maxSpeed=			"18"
 			cargoSpace=			"200"
-
-			leavesWreck=		"75"
 			>
 
 		<Names definiteArticle="true">
@@ -94,8 +92,6 @@
 			thrustRatio=		"6"
 			maxSpeed=			"13"
 
-			leavesWreck=		"10"
-
 			attributes=			"commonwealth, genericClass"
 			>
 
@@ -149,8 +145,6 @@
 			thrustRatio=		"6.5"
 			maxSpeed=			"16"
 
-			leavesWreck=		"30"
-
 			attributes=			"commonwealth, genericClass"
 			>
 
@@ -202,8 +196,6 @@
 			cargoSpace=			"10"
 			thrustRatio=		"5"
 			maxSpeed=			"16"
-
-			leavesWreck=		"40"
 
 			attributes=			"commonwealth, genericClass"
 			>
@@ -257,8 +249,6 @@
 			cargoSpace=			"50"
 			thrustRatio=		"2.0"
 			maxSpeed=			"18"
-
-			leavesWreck=		"50"
 
 			attributes=			"commonwealth, genericClass"
 			>
@@ -359,8 +349,6 @@
 			thrustRatio=		"5.5"
 			maxSpeed=			"20"
 
-			leavesWreck=		"35"
-
 			attributes=			"commonwealth,genericClass"
 			>
 
@@ -407,8 +395,6 @@
 			cargoSpace=			"50"
 			thrustRatio=		"5.5"
 			maxSpeed=			"20"
-
-			leavesWreck=		"50"
 
 			attributes=			"commonwealth,genericClass"
 			>
@@ -466,8 +452,6 @@
 			thrustRatio=		"5.5"
 			maxSpeed=			"20"
 
-			leavesWreck=		"50"
-
 			attributes=			"commonwealth,genericClass"
 			>
 
@@ -523,8 +507,6 @@
 			cargoSpace=			"50"
 			thrust=				"150"
 			maxSpeed=			"20"
-
-			leavesWreck=		"30"
 
 			attributes=			"commonwealth,genericClass"
 			>
@@ -589,7 +571,6 @@
 			cargoSpace=			"120000"
 
 			explosionType=		"&vtBlastExplosion4;"
-			leavesWreck=		"100"
 			>
 
 		<Names definiteArticle="true">
@@ -692,8 +673,6 @@
 			cargoSpace=			"35"
 			thrust=				"200"
 			maxSpeed=			"25"
-
-			leavesWreck=		"20"
 
 			attributes=			"commonwealth,genericClass"
 			>

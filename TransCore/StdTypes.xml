@@ -1289,8 +1289,6 @@
 			thrust=				"200"
 			maxSpeed=			"12"
 
-			leavesWreck=		"75"
-
 			attributes=			""
 			>
 
@@ -1344,8 +1342,6 @@
 			thrustRatio=		"3"
 			maxSpeed=			"5"
 			cargoSpace=			"0"
-
-			leavesWreck=		"10"
 			>
 
 		<!-- Configuration -->

@@ -2256,7 +2256,6 @@
 			cyberDefenseLevel=	"8"
 
 			explosionType=		"&vtThermoExplosion2;"
-			leavesWreck=		"100"
 			>
 
 		<Names noArticle="true" personalName="true">Kate Morgental</Names>

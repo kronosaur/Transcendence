@@ -53,8 +53,6 @@
 			thrustRatio=		"4"
 			maxSpeed=			"10"
 			cargoSpace=			"25"
-
-			leavesWreck=		"50"
 			>
 
 		<!-- Configuration -->
@@ -117,8 +115,6 @@
 			cargoSpace=			"250"
 			thrustRatio=		"2.2"
 			maxSpeed=			"12"
-
-			leavesWreck=		"75"
 
 			attributes=			"battleArena, melee1"
 			>
@@ -188,8 +184,6 @@
 			thrustRatio=		"6"
 			maxSpeed=			"13"
 
-			leavesWreck=		"10"
-
 			attributes=			"battleArena, melee1"
 			>
 
@@ -247,8 +241,6 @@
 			cargoSpace=			"50"
 			thrustRatio=		"5.5"
 			maxSpeed=			"20"
-
-			leavesWreck=		"35"
 
 			attributes=			"battleArena, melee1"
 			>
@@ -312,8 +304,6 @@
 			cargoSpace=			"50"
 			thrustRatio=		"4"
 			maxSpeed=			"20"
-
-			leavesWreck=		"35"
 
 			attributes=			"battleArena, melee2"
 			>
@@ -384,8 +374,6 @@
 			thrustRatio=		"2.2"
 			maxSpeed=			"12"
 
-			leavesWreck=		"75"
-
 			attributes=			"battleArena, melee2"
 			>
 
@@ -454,8 +442,6 @@
 			thrustRatio=		"1.5"
 			maxSpeed=			"18"
 
-			leavesWreck=		"75"
-
 			attributes=			"battleArena, melee2"
 			>
 
@@ -520,8 +506,6 @@
 			thrustRatio=		"6.5"
 			maxSpeed=			"16"
 
-			leavesWreck=		"30"
-
 			attributes=			"battleArena, melee2"
 			>
 
@@ -576,8 +560,6 @@
 			cargoSpace=			"10"
 			thrustRatio=		"5"
 			maxSpeed=			"16"
-
-			leavesWreck=		"40"
 
 			attributes=			"battleArena, melee2"
 			>
@@ -635,8 +617,6 @@
 			cargoSpace=			"50"
 			thrustRatio=		"5.5"
 			maxSpeed=			"20"
-
-			leavesWreck=		"35"
 
 			attributes=			"battleArena, melee2"
 			>
@@ -697,8 +677,6 @@
 			cargoSpace=			"50"
 			thrustRatio=		"6.6"
 			maxSpeed=			"20"
-
-			leavesWreck=		"30"
 
 			attributes=			"battleArena, melee2"
 			>
@@ -778,8 +756,6 @@
 			thrustRatio=		"1.8"
 			maxSpeed=			"16"
 
-			leavesWreck=		"75"
-
 			attributes=			"battleArena, gladiator"
 			>
 
@@ -846,8 +822,6 @@
 			thrustRatio=		"5"
 			maxSpeed=			"16"
 
-			leavesWreck=		"40"
-
 			attributes=			"battleArena, gladiator"
 			>
 
@@ -909,8 +883,6 @@
 			cargoSpace=			"50"
 			thrustRatio=		"5.5"
 			maxSpeed=			"20"
-
-			leavesWreck=		"50"
 
 			attributes=			"battleArena, gladiator"
 			>
@@ -983,8 +955,6 @@
 			cargoSpace=			"50"
 			thrustRatio=		"6.6"
 			maxSpeed=			"20"
-
-			leavesWreck=		"30"
 
 			attributes=			"battleArena, gladiator"
 			>
@@ -1098,8 +1068,6 @@
 			thrustRatio=		"1.0"
 			maxSpeed=			"16"
 
-			leavesWreck=		"75"
-
 			attributes=			"battleArena, gladiator"
 			>
 
@@ -1185,8 +1153,6 @@
 			thrustRatio=		"1.5"
 			maxSpeed=			"18"
 
-			leavesWreck=		"75"
-
 			attributes=			"battleArena, gladiator"
 			>
 
@@ -1267,8 +1233,6 @@
 			cargoSpace=			"50"
 			thrustRatio=		"2.0"
 			maxSpeed=			"18"
-
-			leavesWreck=		"50"
 
 			attributes=			"battleArena, gladiator"
 			>
@@ -1362,8 +1326,6 @@
 			thrustRatio=		"5.5"
 			maxSpeed=			"20"
 
-			leavesWreck=		"50"
-
 			attributes=			"battleArena, gladiator"
 			>
 
@@ -1438,8 +1400,6 @@
 			cargoSpace=			"50"
 			thrustRatio=		"6.6"
 			maxSpeed=			"20"
-
-			leavesWreck=		"30"
 
 			attributes=			"battleArena, gladiator"
 			>
@@ -1530,8 +1490,6 @@
 			thrustRatio=		"13"
 			maxSpeed=			"25"
 
-			leavesWreck=		"20"
-
 			attributes=			"battleArena, gladiator"
 			>
 
@@ -1606,8 +1564,6 @@
 			cargoSpace=			"50"
 			thrustRatio=		"9.0"
 			maxSpeed=			"22"
-
-			leavesWreck=		"50"
 
 			attributes=			"battleArena, gladiator"
 			>
@@ -1690,8 +1646,6 @@
 			thrustRatio=		"1.5"
 			maxSpeed=			"18"
 
-			leavesWreck=		"75"
-
 			attributes=			"battleArena, gladiator"
 			>
 
@@ -1769,8 +1723,6 @@
 			cargoSpace=			"50"
 			thrustRatio=		"2.0"
 			maxSpeed=			"18"
-
-			leavesWreck=		"50"
 
 			attributes=			"battleArena, gladiator"
 			>
@@ -1864,8 +1816,6 @@
 			thrustRatio=		"13"
 			maxSpeed=			"25"
 
-			leavesWreck=		"20"
-
 			attributes=			"battleArena, gladiator"
 			>
 
@@ -1939,8 +1889,6 @@
 			cargoSpace=			"50"
 			thrustRatio=		"9.0"
 			maxSpeed=			"22"
-
-			leavesWreck=		"50"
 
 			attributes=			"battleArena, gladiator"
 			>
@@ -2024,8 +1972,6 @@
 			cargoSpace=			"50"
 			thrustRatio=		"2.0"
 			maxSpeed=			"18"
-
-			leavesWreck=		"50"
 
 			attributes=			"battleArena, gladiator"
 			>
@@ -2134,8 +2080,6 @@
 			thrustRatio=		"13"
 			maxSpeed=			"25"
 
-			leavesWreck=		"20"
-
 			attributes=			"battleArena, gladiator"
 			>
 
@@ -2214,8 +2158,6 @@
 			cargoSpace=			"50"
 			thrustRatio=		"4.0"
 			maxSpeed=			"22"
-
-			leavesWreck=		"50"
 
 			attributes=			"battleArena, theSlicer"
 			>

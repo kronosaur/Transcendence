@@ -382,7 +382,6 @@ PLAYER DATA
 
 			cyberDefenseLevel=	"8"
 			explosionType=		"&vtThermoExplosion2;"
-			leavesWreck=		"100"
 
 			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, genericClass"
 			>
@@ -706,7 +705,6 @@ PLAYER DATA
 			cyberDefenseLevel=	"8"
 			   
 			explosionType=		"&vtThermoExplosion4;"
-			leavesWreck=		"100"
 
 			dockScreen=			"Main"
 			>
@@ -3315,7 +3313,6 @@ PLAYER DATA
 			cyberDefenseLevel=	"6"
 			   
 			explosionType=		"&vtThermoExplosion4;"
-			leavesWreck=		"100"
 
 			dockScreen=			"Main"
 			>
@@ -3772,7 +3769,6 @@ PLAYER DATA
 			maxSpeed=			"15"
 
 			explosionType=		"&vtBlastExplosion4;"
-			leavesWreck=		"80"
 
 			attributes=			"freighter, genericClass"
 			>
@@ -4106,8 +4102,6 @@ PLAYER DATA
 			thrustRatio=		"9.0"
 			maxSpeed=			"22"
 
-			leavesWreck=		"40"
-
 			attributes=			"commonwealth,commonMilitary,genericClass"
 			>
 
@@ -4178,8 +4172,6 @@ PLAYER DATA
 			thrustRatio=		"9.0"
 			maxSpeed=			"20"
 
-			leavesWreck=		"50"
-
 			attributes=			"commonwealth,commonMilitary,genericClass"
 			>
 
@@ -4237,8 +4229,6 @@ PLAYER DATA
 			cargoSpace=			"50"
 			thrustRatio=		"12.0"
 			maxSpeed=			"22"
-
-			leavesWreck=		"50"
 
 			attributes=			"commonwealth,commonMilitary,genericClass"
 			>

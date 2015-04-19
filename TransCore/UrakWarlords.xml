@@ -20,8 +20,6 @@
 			thrustRatio=		"4"
 			maxSpeed=			"16"
 
-			leavesWreck=		"15"
-
 			attributes=			"auton, genericClass, urak"
 			>
 
@@ -73,7 +71,6 @@
 			cyberDefenseLevel=	"4"
 
 			explosionType=		"&vtKineticExplosion4;"
-			leavesWreck=		"100"
 			>
 
 		<!-- Configuration -->

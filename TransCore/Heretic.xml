@@ -637,7 +637,6 @@
 			maxSpeed=			"12"
 
 			explosionType=		"&vtThermoExplosion2;"
-			leavesWreck=		"100"
 
 			attributes=			"capitalShip, genericClass, huygensExplorer, majorShip, ringers"
 
@@ -790,7 +789,6 @@
 			cyberDefenseLevel=	"8"
 
 			explosionType=		"&vtThermoExplosion2;"
-			leavesWreck=		"100"
 			wreckType=			"&stSvalbardWreck;"
 
 			attributes=			"capitalShip, corporate, genericClass, majorShip, svalbardExplorer, uncharted"

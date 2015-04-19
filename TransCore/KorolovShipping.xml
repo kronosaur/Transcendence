@@ -65,8 +65,6 @@
 			thrustRatio=		"1"
 			maxSpeed=			"8"
 			cargoSpace=			"30000"
-
-			leavesWreck=		"100"
 			>
 
 		<Names noArticle="true">Antares Heavy 1%0%0</Names>
@@ -182,8 +180,6 @@
 			thrustRatio=		"1.5"
 			maxSpeed=			"12"
 			cargoSpace=			"30000"
-
-			leavesWreck=		"100"
 			>
 
 		<Names noArticle="true">Antares Heavy 2%0%0</Names>
@@ -304,8 +300,6 @@
 			thrustRatio=		"1"
 			maxSpeed=			"8"
 			cargoSpace=			"50000"
-
-			leavesWreck=		"100"
 			>
 
 		<Names noArticle="true">Antares Heavy 5%0%0</Names>
@@ -427,8 +421,6 @@
 			thrustRatio=		"2.2"
 			maxSpeed=			"12"
 			cargoSpace=			"250"
-
-			leavesWreck=		"75"
 			>
 
 		<Names definiteArticle="true">
@@ -528,8 +520,6 @@
 			thrustRatio=		"1.8"
 			maxSpeed=			"16"
 			cargoSpace=			"500"
-
-			leavesWreck=		"75"
 			>
 
 		<Names definiteArticle="true">
@@ -630,8 +620,6 @@
 			thrustRatio=		"2"
 			maxSpeed=			"12"
 			cargoSpace=			"2000"
-
-			leavesWreck=		"100"
 			>
 
 		<Names definiteArticle="true">
@@ -755,8 +743,6 @@
 			thrustRatio=		"5.5"
 			maxSpeed=			"20"
 
-			leavesWreck=		"50"
-			
 			inherit=			"&baCharonBuster;"
 			>
 
@@ -827,8 +813,6 @@
 			cargoSpace=			"500"
 			thrustRatio=		"1.8"
 			maxSpeed=			"16"
-
-			leavesWreck=		"75"
 
 			attributes=			"commonwealth"
 			

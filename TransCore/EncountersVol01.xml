@@ -217,8 +217,6 @@
 			thrustRatio=		"14"
 			maxSpeed=			"25"
 			cargoSpace=			"0"
-
-			leavesWreck=		"25"
 			>
 
 		<!-- Configuration -->
@@ -275,7 +273,6 @@
 			cyberDefenseLevel=	"5"
 
 			explosionType=		"&vtBlastExplosion2;"
-			leavesWreck=		"100"
 
 			>
 
@@ -362,7 +359,6 @@
 			cyberDefenseLevel=	"8"
 
 			explosionType=		"&vtThermoExplosion2;"
-			leavesWreck=		"100"
 			>
 
 		<!-- Configuration -->
@@ -474,7 +470,6 @@
 			cyberDefenseLevel=	"8"
 
 			explosionType=		"&vtThermoExplosion2;"
-			leavesWreck=		"100"
 			>
 
 		<Names definiteArticle="true">Ark of Bennin; Ark of Certitude; Ark of Justice &amp; Retribution; Ark of Purity;
@@ -863,8 +858,6 @@
 			thrustRatio=		"7"
 			maxSpeed=			"20"
 
-			leavesWreck=		"35"
-
 			attributes=			"deathDrugsCartel,genericClass"
 			>
 
@@ -1065,8 +1058,6 @@
 			thrustRatio=		"4"
 			maxSpeed=			"17"
 
-			leavesWreck=		"40"
-
 			attributes=			"ferian, ferianMiner, genericClass, zoanthrope"
 			>
 
@@ -1136,8 +1127,6 @@
 			thrustRatio=		"15"
 			maxSpeed=			"22"
 			cargoSpace=			"20"
-
-			leavesWreck=		"60"
 
 			attributes=			"ferian, ferianWarrior, genericClass, zoanthrope"
 			>
@@ -1448,8 +1437,6 @@
 			thrustRatio=		"4"
 			maxSpeed=			"20"
 			cargoSpace=			"50"
-
-			leavesWreck=		"35"
 			>
 
 		<!-- Configuration -->
@@ -1507,8 +1494,6 @@
 			cargoSpace=			"0"
 			thrustRatio=		"16"
 			maxSpeed=			"35"
-
-			leavesWreck=		"0"
 
 			attributes=			"anarchists,genericClass"
 			>
@@ -1927,7 +1912,6 @@
 			cyberDefenseLevel=	"8"
 
 			explosionType=		"&vtThermoExplosion3;"
-			leavesWreck=		"100"
 
 			attributes=			"capitalShip, gaianTerraformers, genericClass"
 			>
@@ -2196,8 +2180,6 @@
 			thrustRatio=		"2"
 			maxSpeed=			"15"
 			cargoSpace=			"50"
-
-			leavesWreck=		"60"
 			>
 
 		<!-- Configuration -->
@@ -2274,8 +2256,6 @@
 			cargoSpace=			"5"
 			thrustRatio=		"14"
 			maxSpeed=			"20"
-
-			leavesWreck=		"20"
 
 			attributes=			"genericClass,heliotropes"
 			>
@@ -2473,8 +2453,6 @@
 			thrustRatio=		"11"
 			maxSpeed=			"30"
 
-			leavesWreck=		"20"
-
 			attributes=			"genericClass,himalSettlers"
 			>
 
@@ -2586,13 +2564,13 @@
 
 			attributes=			"capitalShip, genericClass, huari"
 			   
-			mass=				"5000"
+			size=				"150"
+			mass=				"15000"
 			thrustRatio=		"1.5"
 			maxSpeed=			"8"
 			cargoSpace=			"1000"
 
 			explosionType=		"&vtBlastExplosion1;"
-			leavesWreck=		"95"
 			>
 
 		<!-- Configuration -->
@@ -2603,13 +2581,13 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="200"   posAngle="67"  posRadius="37" posZ="0"/>
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="170"   posAngle="35"  posRadius="51" posZ="0"/>
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="300" maxFireArc="170" posAngle="25"  posRadius="58" posZ="0"/>
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="200"   posAngle="67"  posRadius="53" posZ="0"/>
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="170"   posAngle="35"  posRadius="71" posZ="0"/>
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="300" maxFireArc="170" posAngle="25"  posRadius="80" posZ="0"/>
 
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="160" maxFireArc="0"   posAngle="293" posRadius="37" posZ="0"/>
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="0"   posAngle="325" posRadius="51" posZ="0"/>
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="60"  posAngle="335" posRadius="58" posZ="0"/>
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="160" maxFireArc="0"   posAngle="293" posRadius="53" posZ="0"/>
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="0"   posAngle="325" posRadius="71" posZ="0"/>
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="60"  posAngle="335" posRadius="80" posZ="0"/>
 
 			<Device deviceID="&itSuperconductingShields;"/>
 			<Device deviceID="&it250MWReactor;"/>
@@ -2643,12 +2621,12 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips4;" imageX="640" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsHurin;" imageWidth="164" imageHeight="164" imageFrameCount="0" imageTicksPerFrame="0"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="165"	posRadius="57"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="55"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-165"	posRadius="57"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="165"	posRadius="76"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="74"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-165"	posRadius="76"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 
 		<!-- AI and Behavior -->
@@ -2726,6 +2704,10 @@
 
 	</StationType>
 
+	<!-- Resources -->
+
+	<Image UNID="&rsHurin;"			bitmap="Resources\Hurin.jpg"		bitmask="Resources\HurinMask.bmp"  loadOnUse="true"/>
+	
 <!-- Kobol Syndicate ======================================================= -->
 
 	<Sovereign UNID="&svKobolWarlords;"
@@ -2743,8 +2725,6 @@
 			cargoSpace=			"100"
 			thrustRatio=		"9"
 			maxSpeed=			"20"
-
-			leavesWreck=		"50"
 
 			attributes=			"genericClass,kobolWarlords"
 			>
@@ -2797,8 +2777,6 @@
 			thrustRatio=		"9"
 			maxSpeed=			"20"
 
-			leavesWreck=		"50"
-
 			attributes=			"genericClass,kobolWarlords"
 			>
 
@@ -2850,8 +2828,6 @@
 			cargoSpace=			"100"
 			thrustRatio=		"9"
 			maxSpeed=			"20"
-
-			leavesWreck=		"50"
 
 			attributes=			"genericClass,kobolWarlords"
 			>
@@ -2973,8 +2949,6 @@
 			thrustRatio=		"8"
 			maxSpeed=			"25"
 			cargoSpace=			"5"
-
-			leavesWreck=		"20"
 			>
 
 		<!-- Configuration -->
@@ -3036,7 +3010,6 @@
 			maxSpeed=			"6"
 
 			explosionType=		"&vtBlastExplosion1;"
-			leavesWreck=		"100"
 
 			attributes=			"genericClass, marauders"
 			>
@@ -3129,7 +3102,6 @@
 			cyberDefenseLevel=	"4"
 
 			explosionType=		"&vtBlastExplosion1;"
-			leavesWreck=		"100"
 			>
 
 		<!-- Configuration -->
@@ -3532,8 +3504,6 @@
 			thrustRatio=		"7"
 			maxSpeed=			"20"
 
-			leavesWreck=		"50"
-
 			attributes=			"genericClass,penitent"
 			>
 
@@ -3589,8 +3559,6 @@
 			cargoSpace=			"25"
 			thrustRatio=		"7"
 			maxSpeed=			"25"
-
-			leavesWreck=		"35"
 
 			attributes=			"genericClass,penitent"
 			>
@@ -3755,8 +3723,6 @@
 			thrustRatio=		"4"
 			maxSpeed=			"20"
 			cargoSpace=			"25"
-
-			leavesWreck=		"30"
 			>
 
 		<!-- Configuration -->
@@ -3813,8 +3779,6 @@
 			thrustRatio=		"4"
 			maxSpeed=			"18"
 			cargoSpace=			"25"
-
-			leavesWreck=		"50"
 			>
 
 		<!-- Configuration -->
@@ -3993,8 +3957,6 @@
 			thrustRatio=		"8"
 			maxSpeed=			"20"
 			cargoSpace=			"5"
-
-			leavesWreck=		"20"
 			>
 
 		<!-- Configuration -->
@@ -4050,8 +4012,6 @@
 			thrustRatio=		"8"
 			maxSpeed=			"20"
 			cargoSpace=			"5"
-
-			leavesWreck=		"20"
 			>
 
 		<!-- Configuration -->
@@ -4998,8 +4958,6 @@
 			thrustRatio=		"12"
 			maxSpeed=			"18"
 
-			leavesWreck=		"30"
-
 			attributes=			"genericClass,ranx"
 			>
 
@@ -5066,7 +5024,6 @@
 			cyberDefenseLevel=	"6"
 
 			explosionType=		"&vtThermoExplosion2;"
-			leavesWreck=		"100"
 			>
 
 		<!-- Configuration -->
@@ -5304,7 +5261,6 @@
 			cyberDefenseLevel=	"4"
 
 			explosionType=		"&vtKineticExplosion2;"
-			leavesWreck=		"100"
 			>
 
 		<!-- Configuration -->
@@ -5497,7 +5453,6 @@
 			thrustRatio=		"4"
 			maxSpeed=			"18"
 
-			leavesWreck=		"35"
 			radioactiveWreck=	"true"
 
 			attributes=			"genericClass,sapiens"
@@ -5547,7 +5502,6 @@
 			thrustRatio=		"2.5"
 			maxSpeed=			"16"
 
-			leavesWreck=		"55"
 			radioactiveWreck=	"true"
 
 			attributes=			"genericClass,sapiens"
@@ -6031,7 +5985,6 @@
 			cargoSpace=			"1000"
 
 			explosionType=		"&vtBlastExplosion1;"
-			leavesWreck=		"95"
 			>
 
 		<!-- Configuration -->

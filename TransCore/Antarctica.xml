@@ -65,7 +65,6 @@
 			cyberDefenseLevel=	"6"
 			   
 			explosionType=		"&vtThermoExplosion4;"
-			leavesWreck=		"100"
 
 			dockScreen=			"Main"
 			defaultBackgroundID="&rsCSCBkgnd;"
@@ -815,7 +814,6 @@
 			cyberDefenseLevel=	"6"
 			   
 			explosionType=		"&vtThermoExplosion4;"
-			leavesWreck=		"100"
 
 			dockScreen=			"Main"
 			>

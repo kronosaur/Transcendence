@@ -23,8 +23,6 @@
 			reactorPower=		"30"
 			maxArmor=			"2500"
 			maxDevices=			"1"
-
-			leavesWreck=		"0"
 			>
 
 		<!-- Configuration -->
@@ -83,8 +81,6 @@
 			maxArmor=			"3000"
 			maxDevices=			"2"
 			maxWeapons=			"1"
-			   
-			leavesWreck=		"0"
 			>
 
 		<!-- Configuration -->
@@ -169,8 +165,6 @@
 			maxArmor=			"3000"
 			maxDevices=			"2"
 			maxWeapons=			"1"
-			   
-			leavesWreck=		"0"
 			>
 
 		<!-- Configuration -->
@@ -245,8 +239,6 @@
 			maxArmor=			"3000"
 			maxDevices=			"3"
 			maxWeapons=			"1"
-			   
-			leavesWreck=		"0"
 			>
 
 		<!-- Configuration -->
@@ -309,8 +301,6 @@
 			maxWeapons=			"1"
 			   
 			dockScreen=			"Main"
-
-			leavesWreck=		"95"
 			>
 
 		<!-- Configuration -->
@@ -406,8 +396,6 @@
 			maxArmor=			"4000"
 			maxDevices=			"2"
 			maxWeapons=			"1"
-			   
-			leavesWreck=		"0"
 			>
 
 		<!-- Configuration -->
@@ -493,8 +481,6 @@
 			maxArmor=			"4000"
 			maxDevices=			"2"
 			maxWeapons=			"1"
-			   
-			leavesWreck=		"0"
 			>
 
 		<!-- Configuration -->
@@ -554,8 +540,6 @@
 			maxArmor=			"3000"
 			maxDevices=			"2"
 			maxWeapons=			"1"
-			   
-			leavesWreck=		"0"
 			>
 
 		<!-- Configuration -->
