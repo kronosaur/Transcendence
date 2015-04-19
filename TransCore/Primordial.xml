@@ -350,7 +350,7 @@
 			lrsJammer=			"true"
 			attributes=			"nebula, primordial"
 
-			mapColor=			"0x8c, 0x71, 0x19"
+			mapColor=			"#bf9b22"
 			autoEdges=			"true"
 			>
 
@@ -367,7 +367,7 @@
 			lrsJammer=			"true"
 			attributes=			"nebula, primordial"
 
-			mapColor=			"0x8c, 0x71, 0x19"
+			mapColor=			"#bf9b22"
 			autoEdges=			"true"
 			>
 
