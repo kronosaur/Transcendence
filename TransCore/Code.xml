@@ -152,7 +152,7 @@
 
 								; 70% of other items are destroyed
 								(block Nil
-									(setq undamagedItemCount (divide (multiply 70 (itmGetCount theItem)) 100))
+									(setq undamagedItemCount (divide (multiply 30 (itmGetCount theItem)) 100))
 									)
 								)
 

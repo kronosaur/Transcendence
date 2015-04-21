@@ -572,6 +572,7 @@ ALERROR CDockScreen::CreateBackgroundImage (IDockScreenDisplay::SBackgroundDesc 
 			BltSystemBackground(Desc.pObj->GetSystem(), rcRect);
 
 			SViewportPaintCtx Ctx;
+			Ctx.pCenter = g_pUniverse->GetPlayerShip();
 			Ctx.fNoSelection = true;
 			Ctx.pObj = Desc.pObj;
 			Desc.pObj->Paint(*m_pBackgroundImage,
