@@ -70,7 +70,7 @@
 	{	code: '(typeof 1.5)		result: 'real }
 	
 	;	Vectors: testing vector equality and construction
-	
+	
 	{	code: '(v= (vector (list 1 2)) (vector (list 1 2)))		result: True}
 	{	code: '(v= (vector (list 1 2)) (vector (list 1 2 3)))		result: Nil}
 	{	code: '(v= (vector (list 1 2.0)) (vector (list 1 2)))		result: True}
