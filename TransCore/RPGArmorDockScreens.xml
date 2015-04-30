@@ -210,8 +210,7 @@
 									(eq damage 0)
 										(setq desc (typTranslate &dsRPGManageArmor; 'descArmorNotDamaged { armorNoun:armorNoun }))
 
-									(and (not costToRepair)
-											(gr (itmGetLevel theItem) (objGetProperty gSource 'repairArmorMaxLevel)))
+									(gr (itmGetProperty theItem 'repairLevel) (objGetProperty gSource 'repairArmorMaxLevel))
 										(setq desc (typTranslate &dsRPGManageArmor; 'descArmorNoTech { armorNoun:armorNoun }))
 										
 									(not costToRepair)
