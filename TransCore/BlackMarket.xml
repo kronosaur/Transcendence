@@ -164,6 +164,8 @@ PLAYER DATA
 			<Sell	criteria="*NU -ID; -NotForSale;"	priceAdj="100"/>
 			<Buy	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="85"/>
 			<Buy	criteria="*NU +military; -ID -NotForSale;"		priceAdj="90"/>
+			<Buy	criteria="*NU +Illegal; -ID;"				priceAdj="10"/>
+			<Buy	criteria="*NU +military; -ID;"				priceAdj="10"/>
 			
 			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="92"/>
 			<RepairArmor	criteria="a L:1-6;" priceAdj="100"/>
@@ -551,6 +553,8 @@ PLAYER DATA
 			<Sell	criteria="*NU -ID; -NotForSale;"	priceAdj="100"/>
 			<Buy	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="85"/>
 			<Buy	criteria="*NU +military; -ID -NotForSale;"		priceAdj="90"/>
+			<Buy	criteria="*NU +Illegal; -ID;"				priceAdj="10"/>
+			<Buy	criteria="*NU +military; -ID;"				priceAdj="10"/>
 			
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="94"/>
 			<RepairArmor	criteria="a L:1-9;" priceAdj="110"/>

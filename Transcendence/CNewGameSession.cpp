@@ -636,6 +636,16 @@ void CNewGameSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapt
 	{
 	}
 
+void CNewGameSession::OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
+
+//	OnMouseWheel
+//
+//	Handle mouse wheel
+
+	{
+	HandlePageScrollMouseWheel(ID_SETTINGS, iDelta);
+	}
+
 void CNewGameSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 //	OnPaint

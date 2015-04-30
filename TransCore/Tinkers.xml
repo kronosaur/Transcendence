@@ -374,7 +374,7 @@
 			mass=				"2500"
 			frequency=			"notRandom"
 
-			description=		"The Tinkers Guild designed this a nuclear-powered laser mounted on an omnidirectional turret."
+			description=		"The Tinkers Guild designed this nuclear-powered laser mounted on an omnidirectional turret."
 			>
 
 		<Image imageID="&rsItemsBushido1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>

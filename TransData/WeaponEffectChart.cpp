@@ -64,6 +64,7 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	COutputChart Output;
 	Output.SetContentSize(cxImage, cyImage);
+	Output.SetOutputFilespec(pCmdLine->GetAttribute(CONSTLIT("output")));
 
 	//	Initialize fonts
 
@@ -291,8 +292,9 @@ void PaintWeaponFrames (CG32bitImage &Image, CItemType *pType, CShip *pPlatform,
 
 	//	Uninstall weapon
 
-	ItemList.ResetCursor();
-	while (ItemList.MoveCursorForward() && ItemList.GetItemAtCursor().GetType() == pWeapon->GetItemType())
+	ItemList.Refresh(CItem::NullItem());
+	while (ItemList.MoveCursorForward() 
+			&& ItemList.GetItemAtCursor().GetType() != pWeapon->GetItemType())
 		;
 
 	pPlatform->RemoveItemAsDevice(ItemList);

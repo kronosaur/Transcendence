@@ -136,21 +136,36 @@
 				<OnPaneInit>
 					(block (
 						(nextActionPos 0)
+						(desc "")
+						(meetBenedict 
+							(and (typGetData &dsBenedictIntro; 'q1)
+								(typGetData &dsBenedictIntro; 'q2)
+								(typGetData &dsBenedictIntro; 'q3)
+								)
+							)
 						)
 						
 						;	Set the description
 						
 						(switch
 							(not (typGetData &unidBenedictStoryArc; 'firstDockedAtSisters))
-								(scrSetDesc gScreen (typTranslate &dsBenedictIntro; 'IntroFirst))
+								(setq desc (typTranslate &dsBenedictIntro; 'IntroFirst))
 							
 							(not (scrGetData gScreen 'answerQ))
-								(scrSetDesc gScreen (typTranslate &dsBenedictIntro; 'IntroReturning))
+								(setq desc (typTranslate &dsBenedictIntro; 'IntroReturning))
 								
-							(scrSetDesc gScreen
+							(setq desc
 								(typTranslate &dsBenedictIntro; (cat (scrGetData gScreen 'answerQ) ":Answer"))
 								)
 							)
+							
+						;	Add Benedict information, if necessary
+						
+						(if meetBenedict
+							(setq desc (cat desc (typTranslate &dsBenedictIntro; 'BenedictMeeting)))
+							)
+							
+						(scrSetDesc gScreen desc)
 						
 						;	Add unanswered questions as actions:
 						
@@ -182,15 +197,17 @@
 								)
 							)
 							
-						;	Last question always goes to Benedict, but we set the label
-						;	based on whether we've talked to him before
-							
-						(scrSetActionLabel gScreen 'actionBenedict 
-							(typTranslate &dsBenedictIntro; 
-								(if (typGetData &dsBenedictIntro; 'q3)
-									"q3:LabelAgain"
-									"q3:Label"
+						(if (not (typGetData &dsBenedictIntro; 'q3))
+							(block Nil
+								(scrAddAction gScreen 'q3 nextActionPos
+									(typTranslate &dsBenedictIntro; "q3:Label")
+									(block Nil
+										(scrSetData gScreen 'answerQ 'q3)
+										(typSetData &dsBenedictIntro; 'q3 True)
+										(scrRefreshScreen gScreen)
+										)
 									)
+								(setq nextActionPos (add nextActionPos 1))
 								)
 							)
 							
@@ -199,34 +216,16 @@
 						(if (not (typGetData &unidBenedictStoryArc; 'firstDockedAtSisters))
 							(typSetData &unidBenedictStoryArc; 'firstDockedAtSisters (unvGetTick))
 							)
+							
+						;	If this is the last answer, then we continue with Benedict.
+						
+						(scrShowAction gScreen 'actionBenedict meetBenedict)
+						(scrShowAction gScreen 'actionDone (not meetBenedict))
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action id="actionBenedict">
-						(block Nil
-						
-							;	Remember that we've already talked to Benedict
-							(typSetData &dsBenedictIntro; 'q3 True)
-							
-							;	Continue
-							(scrShowPane gScreen "BenedictIntro")
-							)
-					</Action>
-					
-					<Action id="actionDone" cancel="1">
-						(scrShowPane gScreen "IntroSkip")
-					</Action>
-				</Actions>
-			</Default>
-			
-			<BenedictIntro>
-				<OnPaneInit>
-					(scrSetDesc gScreen (typTranslate &dsBenedictIntro; "q3:Answer"))
-				</OnPaneInit>
-				
-				<Actions>
-					<Action id="actionContinue" default="1" cancel="1">
+					<Action id="actionBenedict" default="true" cancel="true">
 						(block (theMission)
 						
 							;	If we listened this far, we get to use the sanctum
@@ -249,8 +248,12 @@
 								)
 							)
 					</Action>
+					
+					<Action id="actionDone" cancel="1">
+						(scrShowPane gScreen "IntroSkip")
+					</Action>
 				</Actions>
-			</BenedictIntro>
+			</Default>
 			
 			<IntroSkip>
 				<OnPaneInit>
@@ -282,6 +285,7 @@
 		</Panes>
 		
 		<Language>
+			<Text id="actionBenedict">"[C]ontinue"</Text>
 			<Text id="actionDone">"Do[n]e"</Text>
 			
 			<Text id="IntroFirst">
@@ -354,7 +358,13 @@
 				(cat
 					"\"Star travel is dangerous, even in the Commonwealth. "
 					"You'll face pirates, outlaws and worse before you reach the Core. "
-					"But we can prepare you.\"\n\n"
+					"But we can prepare you.\""
+					)
+			</Text>
+			
+			<Text id="BenedictMeeting">
+				(cat
+					"\n\n"
 					
 					"The abbess signals an unseen companion and a stout man emerges from "
 					"the shadows. He marches to the abbess's side, looking past you at "
@@ -364,8 +374,6 @@
 					"He will help you.\""
 					)
 			</Text>
-			
-			<Text id="q3:LabelAgain">"\"I'd like [B]enedict to help\""</Text>
 		</Language>
 	</DockScreen>
 

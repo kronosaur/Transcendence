@@ -339,6 +339,7 @@ class CNewGameSession : public IHISession
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
+		virtual void OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags);
 		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
 		virtual void OnUpdate (bool bTopMost);
