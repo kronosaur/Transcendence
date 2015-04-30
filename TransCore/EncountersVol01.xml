@@ -769,7 +769,7 @@
 			description=		"The Xenophobes developed this powerful ion weapon for their Worldships."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems7;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"missile"
@@ -1017,7 +1017,7 @@
 			description=		"Ferians have adapted their plasma torches for combat."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems9;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"particles"
@@ -1857,7 +1857,7 @@
 			charges=			"8"
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems9;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"beam"
@@ -2074,7 +2074,7 @@
 			description=		"Heliotropes developed this heavy ion particle cannon. Its blast is almost as destructive as a solar eruption."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems5;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"beam"
@@ -2141,7 +2141,7 @@
 			description=		"A blinder cannon shoots out a thin stream of ionized particles that disrupts a ship's sensors."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems3;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"beam"
@@ -5417,7 +5417,7 @@
 			description=		"The actinide waste cannon is a dirty weapon that shoots out a cloud of radioactive debris."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems4;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				fireRate=			"30"

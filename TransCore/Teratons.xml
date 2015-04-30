@@ -21,7 +21,7 @@
 			description=		"Kytryn blasters were created by the Teratons based on research on Iocrym technology."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems9;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				fireRate=			"15"

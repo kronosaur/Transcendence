@@ -360,7 +360,7 @@
 			description=		"This powerful laser is generally used for asteroid mining."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems2;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"beam"
@@ -1721,7 +1721,7 @@
 			description=		"Plasma torches are used for large-scale asteroid mining."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems6;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"particles"
@@ -1868,7 +1868,7 @@
 			description=		"EI consistently denies rumors that it used stolen Ares schematics to develop this line of ion weapons."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems7;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"beam"

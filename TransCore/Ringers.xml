@@ -384,7 +384,7 @@
 			description=		"This Ringer weapon fires a steady stream of high-energy positrons."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems10;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"missile"
