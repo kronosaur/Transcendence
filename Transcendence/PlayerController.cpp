@@ -78,6 +78,13 @@ void CPlayerShipController::AddOrder (OrderTypes Order, CSpaceObject *pTarget, c
 //	We get an order
 
 	{
+	//	If we've got no system then we ignore this. This can happen if we try to set
+	//	an order in the middle of gating. For example, if we fail a mission due
+	//	to gating away.
+
+	if (m_pShip->GetSystem() == NULL)
+		return;
+
 	//	For now, we only deal with one order at a time
 
 	switch (Order)
