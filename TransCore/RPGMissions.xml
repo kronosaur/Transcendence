@@ -597,7 +597,7 @@
 								(scrSetDesc gScreen (@ result 'desc))
 
 								(if (@ result 'forceUndock)
-									(scrSetActionLabel gScreen 0 "Undock" "U")
+									(scrSetActionLabel gScreen 'actionContinue "Undock" "U")
 									)
 								)
 
