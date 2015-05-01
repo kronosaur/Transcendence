@@ -65,6 +65,7 @@
 							installerObj: gSource
 							installPriceAdj: (@ gData 'installPriceAdj)
 							itemInCargo: True
+							replaceItem: (@ gData 'replaceItem)
 							}))
 
 						(setq gCanInstall (@ theResult 'canInstall))
@@ -81,8 +82,18 @@
 				<Actions>
 					<Action id="actionInstall" default="1">
 						(if gCanInstall
-							(block Nil
-								(shpInstallDevice gPlayerShip (scrGetItem gScreen))
+							(block (
+								(recommendedSlot 
+									(if (and (@ gData 'replaceItem)
+											(itmGetInstallPos (@ gData 'replaceItem))
+											)
+										(itmGetInstallPos (@ gData 'replaceItem))
+										-1
+										)
+									)
+								)
+								
+								(shpInstallDevice gPlayerShip (scrGetItem gScreen) recommendedSlot)
 								(objCharge gPlayerShip (objGetDefaultCurrency gSource) gCost)
 								(typSetData &svPlayer; 'tutorialInstalled True)
 								
@@ -282,6 +293,7 @@
 							checkTotalPower: True
 							currencyUsed: (objGetDefaultCurrency gSource)
 							installerObj: gSource
+							replaceItem: (@ gData 'replaceItem)
 							}))
 
 						(scrSetData gScreen 'result theResult)
@@ -299,10 +311,18 @@
 					<Action id="actionBuyAndInstall" default="1">
 						(block (
 							(theItem (itmSetCount (scrGetItem gScreen) 1))
+							(recommendedSlot 
+								(if (and (@ gData 'replaceItem)
+										(itmGetInstallPos (@ gData 'replaceItem))
+										)
+									(itmGetInstallPos (@ gData 'replaceItem))
+									-1
+									)
+								)
 							)
 							
 							(rpgBuyItem gSource theItem (scrGetData gScreen 'cost) (objGetDefaultCurrency gSource))
-							(shpInstallDevice gPlayerShip theItem)
+							(shpInstallDevice gPlayerShip theItem recommendedSlot)
 							(typSetData &svPlayer; 'tutorialInstalled True)
 							(objRemoveItem gSource theItem)
 							

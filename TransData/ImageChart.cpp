@@ -533,7 +533,7 @@ void InitStationTypeImage (SEntryDesc &Entry, CStationType *pStationType)
 		int iVariant;
 		if (pSatDesc->FindAttributeInteger(IMAGE_VARIANT_ATTRIB, &iVariant))
 			{
-			IImageEntry *pRoot = pSatType->GetImageRoot();
+			IImageEntry *pRoot = pSatType->GetImage().GetRoot();
 			DWORD dwID = (pRoot ? pRoot->GetID() : DEFAULT_SELECTOR_ID);
 
 			pSatImage->Selector.DeleteAll();

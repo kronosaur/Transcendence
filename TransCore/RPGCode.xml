@@ -150,6 +150,7 @@
 				;	itemInCargo:			If True, item is in player's cargo hold
 				;	maxTechLevel:			The maximum tech level we will install (unless we match techCriteriaOverride)
 				;	noCargoCheck:			If True, then we don't check to see if the old device fits in cargo
+				;	replaceItem:			If not Nil, we try to replace this device.
 				;	targetObj:				Object on which to install (if Nil, we assume player ship)
 				;	techCriteria:			If not Nil, the item must match this criteria
 				;	techCriteriaOverride:	If not Nil, and item matches this criteria, install even if above maxTechLevel
@@ -205,8 +206,19 @@
 									0
 									)
 								)
+							(recommendedSlot
+								(switch
+									(not (@ data 'replaceItem))
+										-1
+										
+									(not (itmGetInstallPos (@ data 'replaceItem)))
+										-1
+										
+									(itmGetInstallPos (@ data 'replaceItem))
+									)
+								)
 							
-							cargoNeeded itemToReplace resultMessage resultCode returnValue stationCannotInstall
+							cargoNeeded itemToReplace resultMessage resultCode returnValue stationCannotInstall removeStatus
 							)
 						
 							;	Compute the cost to install
@@ -231,7 +243,7 @@
 								
 							;	Ask the object is we can install the item
 
-							(setq returnValue (objCanInstallItem targetObj thisItem))
+							(setq returnValue (objCanInstallItem targetObj thisItem recommendedSlot))
 							(setq resultCode (@ returnValue 1))
 							(setq resultMessage (@ returnValue 2))
 							(setq itemToReplace (@ returnValue 3))
@@ -330,10 +342,7 @@
 								(block Nil
 									(if (not (@ data 'totalPrice))
 										(setq totalCost 
-											(add totalCost 
-												; Remove cost is 1/2 of install cost
-												(divide (multiply gMargin (itmGetInstallCost itemToReplace currencyUsed)) 200)
-												)
+											(add totalCost (objGetItemProperty installerObj itemToReplace 'removeDevicePrice))
 											)
 										)
 
@@ -343,6 +352,17 @@
 									(if (@ data 'itemInCargo)
 										(setq cargoNeeded (subtract cargoNeeded (itmGetMass thisItem)))
 										)
+									)
+								)
+								
+							; See if we are allowed to remove the device
+							
+							(if (and canInstall itemToReplace
+									(neq (setq removeStatus (shpCanRemoveDevice targetObj itemToReplace)) 0)
+									)
+								(block Nil
+									(setq desc (cat desc ". " (if (isint removeStatus) "Unfortunately, you cannot remove the device." removeStatus)))
+									(setq canInstall Nil)
 									)
 								)
 
