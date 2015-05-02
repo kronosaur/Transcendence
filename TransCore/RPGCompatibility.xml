@@ -590,7 +590,8 @@
 						(if thisItem
 							(block (desc cargoNeeded)
 								(setq gResult (shpCanInstallArmor gPlayerShip thisItem armorSeg))
-								(setq gCost (objGetArmorReplacePrice gSource thisItem))
+								(setq gInstallStatus (objGetItemProperty gSource thisItem 'installItemStatus))
+								(setq gCost (@ gInstallStatus 'price))
 								(setq cargoNeeded (subtract (itmGetMass (shpGetArmor gPlayerShip armorSeg)) (itmGetMass thisItem)))
 
 								(switch
@@ -629,9 +630,12 @@
 											(setq canInstall Nil)
 											)
 
-									(not gCost)
+									(not (@ gInstallStatus 'canInstall))
 										(block Nil
-											(setq desc (cat "We do not have the technology to install " (itmGetName thisItem 0x80) "."))
+											(if (@ gInstallStatus 'descID)
+												(setq desc (objTranslate gSource (@ gInstallStatus 'descID) { item:thisItem targetObj:gPlayerShip }))
+												(setq desc (cat "We do not have the technology to install " (itmGetName thisItem 0x80) "."))
+												)
 											(setq canInstall Nil)
 											)
 

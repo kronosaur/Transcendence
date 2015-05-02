@@ -1132,6 +1132,7 @@
 
 			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, majorStation, populated"
 			levelFrequency=		"uucuu r---- ----- ----- -----"
+			unique=				"inSystem"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
 			>

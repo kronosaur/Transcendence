@@ -649,7 +649,10 @@
 		reactorUpgrade: If non-Nil, this must be a list generate with
 				rpgGetReactorUpgradeList. Otherwise, we do not offer a reactor
 				upgrade at this station.
-
+				
+		'upgradeInstallOnly: If True, we only offer device installation services if
+				the player buys an upgrade.
+	
 -->
 	
 	<DockScreen unid="&dsRPGDockServices;"
@@ -744,6 +747,7 @@
 						(scrShowScreen gScreen &dsRPGManageArmor; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							noUpgrade: (@ gData 'noUpgrade)
+							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
 							})
 					</Action>
 					
@@ -774,6 +778,7 @@
 						(scrShowScreen gScreen &dsRPGManageWeapons; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							noUpgrade: (@ gData 'noUpgrade)
+							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
 							})
 					</Action>
 
@@ -781,6 +786,7 @@
 						(scrShowScreen gScreen &dsRPGManageMiscDevices; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							noUpgrade: (@ gData 'noUpgrade)
+							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
 							})
 					</Action>
 					

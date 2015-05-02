@@ -199,7 +199,7 @@
 						
 					(if thisItem
 						(block (
-							(status (objGetItemProperty installerObj thisItem 'installDeviceStatus))
+							(status (objGetItemProperty installerObj thisItem 'installItemStatus))
 							(itemPrice 
 								(if (or (@ data 'upgrade) (@ data 'buyAndInstall)) 
 									(objGetSellPrice installerObj thisItem)

@@ -137,9 +137,12 @@
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a +rasiermesser; L:1-7;" priceAdj="100"/>
 			<InstallDevice	criteria="d +rasiermesser; L:1-7;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
+			
+			<ReplaceArmor	criteria="a L:1-7;" priceAdj="unavailable"	messageID="descNoInstall"/>
+			<InstallDevice	criteria="d L:1-7;" priceAdj="unavailable"	messageID="descNoInstall"/>
 		</Trade>
 
 		<Events>
@@ -164,6 +167,15 @@
 			<Port x="-50"	y="50" />
 			<Port x="-50"	y="-50" />
 		</DockingPorts>
+
+		<Language>
+			<Text id="descNoInstall">
+				(cat
+					"We only install Rasiermesser items. "
+					"We cannot install " (itmGetName (@ gData 'item) 0x04) " on your ship."
+					)
+			</Text>
+		</Language>
 
 	</StationType>
 
@@ -267,10 +279,12 @@
 
 			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-9;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a +rasiermesser;" priceAdj="100"/>
 			<InstallDevice	criteria="d +rasiermesser;" priceAdj="100"/>
-			<RemoveDevice	criteria="d +rasiermesser;" priceAdj="100"/>
-			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-10;" priceAdj="100"/>
+			
+			<ReplaceArmor	criteria="a L:1-10;" priceAdj="unavailable"	messageID="descNoInstall"/>
+			<InstallDevice	criteria="d L:1-10;" priceAdj="unavailable"	messageID="descNoInstall"/>
 		</Trade>
 
 		<StaticData>
@@ -634,6 +648,15 @@
 			<Port x="-105"	y="-21" />
 			<Port x="-111"	y="21" />
 		</DockingPorts>
+
+		<Language>
+			<Text id="descNoInstall">
+				(cat
+					"We only install Rasiermesser items. "
+					"We cannot install " (itmGetName (@ gData 'item) 0x04) " on your ship."
+					)
+			</Text>
+		</Language>
 
 	</StationType>
 

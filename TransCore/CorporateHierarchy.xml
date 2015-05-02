@@ -188,33 +188,33 @@
 		<Items>
 			<RandomItem count="1d12" 
 					criteria=		"w -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"---ru cur"
+					levelFrequency=	"---ru cur--"
 					enhanced=		"5"
 					enhancement=	"=(intHPEnhancement1)"
 					/>
 
 			<RandomItem count="1d12" 
 					criteria=		"d~w -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"---ru cur"
+					levelFrequency=	"---ru cur--"
 					enhanced=		"5"
 					enhancement=	"=(intCorporateGenerateEnhancement gItem)"
 					/>
 
 			<RandomItem count="1d12" 
 					criteria=		"a -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"---ru cur"
+					levelFrequency=	"---ru cur--"
 					enhanced=		"5"
 					enhancement=	"=(intHPEnhancement1)"
 					/>
 
 			<RandomItem count="1d12" 
 					criteria=		"u -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"---ru cur"
+					levelFrequency=	"---ru cur--"
 					/>
 
 			<RandomItem count="2d12" 
 					criteria=		"m -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"---ru cur"
+					levelFrequency=	"---ru cur--"
 					/>
 
 			<RandomItem count="1d6" 
@@ -231,9 +231,9 @@
 
 			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-9;" priceAdj="100"/>
-			<InstallDevice	criteria="w L:1-8;" priceAdj="100"/>
-			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-10;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-10;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-10;" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -256,6 +256,7 @@
 							<Action name="Dock Services" key="D" default="1">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
+									upgradeInstallOnly: True
 									})
 							</Action>
 
@@ -379,8 +380,8 @@
 			
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
-			<InstallDevice	criteria="s L:1-6;" priceAdj="100"/>
-			<RemoveDevice	criteria="s L:1-6;" priceAdj="100"/>
+			<InstallDevice	criteria="s L:1-7;" priceAdj="100"/>
+			<RemoveDevice	criteria="s L:1-7;" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -409,6 +410,7 @@
 							<Action name="Armor and Shields" key="A" default="1">
 								(scrShowScreen gScreen &dsRPGManageArmor; {
 									checkMilitaryID: True
+									upgradeInstallOnly: True
 									})
 							</Action>
 							
@@ -523,8 +525,8 @@
 			<Buy	criteria="mwU -Illegal; -NotForSale;"	priceAdj="60"/>
 			<Buy	criteria="mwU -Illegal; -ID;"				priceAdj="10"/>
 			
-			<InstallDevice	criteria="w L:1-4;" priceAdj="100"/>
-			<RemoveDevice	criteria="w L:1-4;" priceAdj="100"/>
+			<InstallDevice	criteria="w L:1-5;" priceAdj="100"/>
+			<RemoveDevice	criteria="w L:1-5;" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -552,6 +554,7 @@
 							<Action name="[W]eapons" default="1">
 								(scrShowScreen gScreen &dsRPGManageWeapons; {
 									checkMilitaryID: True
+									upgradeInstallOnly: True
 									})
 							</Action>
 
@@ -660,9 +663,12 @@
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
-			<InstallDevice	criteria="d +makayev; L:1-8;" priceAdj="100"/>
-			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a +makayev; L:1-7;" priceAdj="100"/>
+			<InstallDevice	criteria="d +makayev; L:1-7;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
+			
+			<ReplaceArmor	criteria="a L:1-7;" priceAdj="unavailable"	messageID="descNoInstall"/>
+			<InstallDevice	criteria="d L:1-7;" priceAdj="unavailable"	messageID="descNoInstall"/>
 		</Trade>
 
 		<StaticData>
@@ -687,6 +693,15 @@
 			<Port x="-50"	y="50" />
 			<Port x="-50"	y="-50" />
 		</DockingPorts>
+		
+		<Language>
+			<Text id="descNoInstall">
+				(cat
+					"We only install Makayev items. "
+					"We cannot install " (itmGetName (@ gData 'item) 0x04) " on your ship."
+					)
+			</Text>
+		</Language>
 
 	</StationType>
 
@@ -769,9 +784,12 @@
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
 			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-9;" priceAdj="100"/>
-			<InstallDevice	criteria="d +bushido; L:1-9;" priceAdj="100"/>
-			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a +bushido; L:1-10;" priceAdj="100"/>
+			<InstallDevice	criteria="d +bushido; L:1-10;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-10;" priceAdj="100"/>
+			
+			<ReplaceArmor	criteria="a L:1-10;" priceAdj="unavailable"	messageID="descNoInstall"/>
+			<InstallDevice	criteria="d L:1-10;" priceAdj="unavailable"	messageID="descNoInstall"/>
 		</Trade>
 
 		<StaticData>
@@ -788,6 +806,15 @@
 			<Port x="-50"	y="50" />
 			<Port x="-50"	y="-50" />
 		</DockingPorts>
+
+		<Language>
+			<Text id="descNoInstall">
+				(cat
+					"We only install Bushido items. "
+					"We cannot install " (itmGetName (@ gData 'item) 0x04) " on your ship."
+					)
+			</Text>
+		</Language>
 
 	</StationType>
 
@@ -1366,9 +1393,12 @@
 
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-9;" priceAdj="100"/>
-			<InstallDevice	criteria="d +makayev; L:1-9;" priceAdj="100"/>
-			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a +makayev;" priceAdj="100"/>
+			<InstallDevice	criteria="d +makayev;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-10;" priceAdj="100"/>
+			
+			<ReplaceArmor	criteria="a L:1-10;" priceAdj="unavailable"	messageID="descNoInstall"/>
+			<InstallDevice	criteria="d L:1-10;" priceAdj="unavailable"	messageID="descNoInstall"/>
 		</Trade>
 
 		<StaticData>
@@ -1436,6 +1466,15 @@
 			<Port x="-56"	y="35" />
 			<Port x="-22"	y="86" />
 		</DockingPorts>
+
+		<Language>
+			<Text id="descNoInstall">
+				(cat
+					"We only install Makayev items. "
+					"We cannot install " (itmGetName (@ gData 'item) 0x04) " on your ship."
+					)
+			</Text>
+		</Language>
 
 	</StationType>
 
@@ -2381,10 +2420,8 @@
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-11;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-11;" priceAdj="100"/>
-			<InstallDevice	criteria="d +taikon" priceAdj="100"/>
-			<RemoveDevice	criteria="d +taikon;" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-9;" priceAdj="100"/>
-			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-11;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-11;" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -2931,19 +2968,19 @@
 		<Items>
 			<RandomItem count="10" 
 					criteria=		"admu -Illegal; -Military; -NotStandard; -NotForSale;"
-					levelFrequency=	"----c"
+					levelFrequency=	"----c -----"
 					enhanced=		"5"
 					enhancement=	"=(intCorporateGenerateEnhancement gItem)"
 					/>
 			<RandomItem count="15" 
 					criteria=		"admu -Illegal; -Military; -NotStandard; -NotForSale;"
-					levelFrequency=	"----u cu"
+					levelFrequency=	"----u cu---"
 					enhanced=		"5"
 					enhancement=	"=(intCorporateGenerateEnhancement gItem)"
 					/>
 			<RandomItem count="8" 
 					criteria=		"admu -Illegal; -Military; -NotStandard; -NotForSale;"
-					levelFrequency=	"----r ucur"
+					levelFrequency=	"----r ucur-"
 					enhanced=		"1"
 					enhancement=	"=(intCorporateGenerateEnhancement gItem)"
 					/>
@@ -2956,9 +2993,9 @@
 			
 			<Refuel			criteria="f +BasicFuel; L:1-8;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
-			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-9;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-9;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -2979,6 +3016,7 @@
 							<Action name="Dock Services" key="D" default="1">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
+									upgradeInstallOnly: True
 									})
 							</Action>
 
