@@ -698,7 +698,8 @@ PLAYER DATA
 			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, genericClass, fleetLaw, majorShip"
 			inherit=			"&baCSCBase;"
 			   
-			mass=				"50000"
+			size=				"400"
+			mass=				"200000"
 			thrustRatio=		"0.5"
 			maxSpeed=			"2"
 			cargoSpace=			"5000"
@@ -717,10 +718,10 @@ PLAYER DATA
 			/>
 		
 		<Devices>
-			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="64"/>
-			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="64"/>
-			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="90" posRadius="44"/>
-			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="270" posRadius="44"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="90" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="270" posRadius="98" posZ="-5"/>
 			
 			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
 			<Device deviceID="&vtDamageControlParty;"/>
@@ -762,12 +763,12 @@ PLAYER DATA
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsLargeShips2;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" />
+		<Image imageID="&rsCSC;" imageX="0" imageY="0" imageWidth="370" imageHeight="370" />
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="170"	posRadius="75"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="74"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-170"	posRadius="75"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="166"	posRadius="116"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="114"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-166"	posRadius="116"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 			
 		<!-- AI and Behavior -->
@@ -3306,7 +3307,8 @@ PLAYER DATA
 			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, fleetLaw, majorShip"
 			inherit=			"&baCSCBase;"
 			   
-			mass=				"50000"
+			size=				"400"
+			mass=				"200000"
 			cargoSpace=			"5000"
 			thrustRatio=		"0.5"
 			maxSpeed=			"2"
@@ -3325,10 +3327,10 @@ PLAYER DATA
 			/>
 		
 		<Devices>
-			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="64"/>
-			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="64"/>
-			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="90" posRadius="44"/>
-			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="270" posRadius="44"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="90" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="270" posRadius="98" posZ="-5"/>
 			
 			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
 			<Device deviceID="&vtDamageControlParty;"/>
@@ -3366,12 +3368,12 @@ PLAYER DATA
 			<Item count="1d4"	item="&itR1Deflector;"/>
 		</Items>
 
-		<Image imageID="&rsLargeShips2;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" />
+		<Image imageID="&rsCSC;" imageX="0" imageY="0" imageWidth="370" imageHeight="370" />
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="170"	posRadius="75"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="74"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-170"	posRadius="75"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="166"	posRadius="116"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="114"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-166"	posRadius="116"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 			
 		<AISettings
@@ -5279,7 +5281,9 @@ PLAYER DATA
 <!-- RESOURCES -->
 
 	<Image UNID="&rsBritannia;"		bitmap="Resources\Britannia.jpg" bitmask="Resources\BritanniaMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsCSCBkgnd;"		bitmap="Resources\CSC.jpg" loadOnUse="true" />
+	<Image UNID="&rsCSC;"			bitmap="Resources\CSC.jpg" bitmask="Resources\CSCMask.bmp" loadOnUse="true" />
+	
+	<Image UNID="&rsCSCBkgnd;"		bitmap="Resources\CSCScreen.jpg" loadOnUse="true" />
 	<Image UNID="&rsFleetEmblems;"	bitmap="Resources\FleetEmblems.jpg" bitmask="Resources\FleetEmblemsMask.bmp" loadOnUse="true" />
 
 </TranscendenceModule>

@@ -58,7 +58,8 @@
 
 			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, cscAntarctica, majorShip, uncharted"
 			   
-			mass=				"50000"
+			size=				"400"
+			mass=				"200000"
 			cargoSpace=			"5000"
 			thrustRatio=		"0.5"
 			maxSpeed=			"2"
@@ -78,10 +79,10 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="64"/>
-			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="64"/>
-			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="90" posRadius="44"/>
-			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="270" posRadius="44"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="90" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="270" posRadius="98" posZ="-5"/>
 			<Device deviceID="&itNAMIHeavyLauncher;" omnidirectional="true"/>
 			
 			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
@@ -123,12 +124,12 @@
 			<Item count="1d4"	item="&itR5BDeflector;"/>
 		</Items>
 
-		<Image imageID="&rsLargeShips2;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" />
+		<Image imageID="&rsCSC;" imageX="0" imageY="0" imageWidth="370" imageHeight="370" />
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="170"	posRadius="75"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="74"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-170"	posRadius="75"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="166"	posRadius="116"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="114"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-166"	posRadius="116"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 			
 		<AISettings
@@ -807,7 +808,8 @@
 			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, fleetLaw, majorShip"
 			inherit=			"&baCSCBase;"
 			   
-			mass=				"50000"
+			size=				"400"
+			mass=				"200000"
 			cargoSpace=			"5000"
 			thrust=				"0.5"
 			maxSpeed=			"2"
@@ -826,10 +828,10 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="64"/>
-			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="64"/>
-			<Device deviceID="&itStarCannon;" secondaryWeapon="true" omnidirectional="true" posAngle="90" posRadius="44"/>
-			<Device deviceID="&itStarCannon;" secondaryWeapon="true" omnidirectional="true" posAngle="270" posRadius="44"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" omnidirectional="true" posAngle="90" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" omnidirectional="true" posAngle="270" posRadius="98" posZ="-5"/>
 			<Device deviceID="&itNAMIHeavyLauncher;" omnidirectional="true"/>
 
 			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
@@ -871,12 +873,12 @@
 			<Item count="1d4"	item="&itR5BDeflector;"/>
 		</Items>
 
-		<Image imageID="&rsLargeShips2;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" />
+		<Image imageID="&rsCSC;" imageX="0" imageY="0" imageWidth="370" imageHeight="370" />
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="170"	posRadius="75"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="74"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-170"	posRadius="75"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="166"	posRadius="116"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="114"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-166"	posRadius="116"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 			
 		<AISettings

@@ -1078,7 +1078,7 @@
 			definiteArticle=	"true"
 			>
 
-		<Image			imageID="&rsStationsPointJuno;" imageX="0" imageY="256" imageWidth="232" imageHeight="200"/>
+		<Image			imageID="&rsCSCWreckage;" imageX="0" imageY="0" imageWidth="350" imageHeight="322"/>
 
 		<Ships>
 			<Table>
@@ -1236,14 +1236,14 @@
 		</DockScreens>
 
 		<DockingPorts>
-			<Port x="0"		y="90" />
-			<Port x="0"		y="-90" />
-			<Port x="60"	y="60" />
-			<Port x="60"	y="-60" />
-			<Port x="90"	y="0" />
-			<Port x="-90"	y="0" />
-			<Port x="-60"	y="60" />
-			<Port x="-60"	y="-60" />
+			<Port x="0"		y="120" />
+			<Port x="0"		y="-120" />
+			<Port x="80"	y="80" />
+			<Port x="80"	y="-80" />
+			<Port x="120"	y="0" />
+			<Port x="-120"	y="0" />
+			<Port x="-80"	y="80" />
+			<Port x="-80"	y="-80" />
 		</DockingPorts>
 
 	</StationType>
@@ -1551,5 +1551,6 @@
 	<Image UNID="&rsStationsPointJuno;"	bitmap="Resources\StationsPointJuno.jpg" bitmask="Resources\StationsPointJunoMask.bmp" />
 	<Image UNID="&rsPointJunoBkgnd;"	bitmap="Resources\PointJuno.jpg" loadOnUse="true" />
 	<Image UNID="&rsPointJunoHero;"		bitmap="Resources\PointJunoHero.jpg" bitmask="Resources\PointJunoHeroMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsCSCWreckage;"		bitmap="Resources\CSCWreckage.jpg" bitmask="Resources\CSCWreckageMask.bmp" loadOnUse="true" />
 
 </TranscendenceModule>

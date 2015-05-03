@@ -1561,6 +1561,8 @@
 	
 	<!ENTITY rsPointJunoHero			"0x00100060">
 	<!ENTITY rsFleetEmblems				"0x00100061">
+	<!ENTITY rsCSC						"0x00100062">
+	<!ENTITY rsCSCWreckage				"0x00100063">
 	
 	<!-- 0080-009F COMMONWEALTH -->
 	
