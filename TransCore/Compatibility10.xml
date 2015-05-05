@@ -4,7 +4,7 @@
 
 	<!-- Ringer Buy
 	
-		OBSOLETE: This screen is deprecated. Use the scrShowBuyScreen function with an
+		OBSOLETE: This screen is deprecated. Use the &dsRPGCommoditiesExchangeBuy; with an
 		appropriate <Trade> element that uses rin.
 
 		gPrevScreen, gPrevPane: Must be set to the name/UNID of the screen/pane
