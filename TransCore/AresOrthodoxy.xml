@@ -745,7 +745,8 @@
 
 			attributes=			"ares, capitalShip, genericClass"
 			   
-			mass=				"4000"
+			size=				"110"
+			mass=				"6000"
 			thrustRatio=		"2"
 			maxSpeed=			"10"
 			cargoSpace=			"1000"
@@ -761,7 +762,7 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itLightningCannon;" omnidirectional="true"/>
+			<Device deviceID="&itLightningCannon;" omnidirectional="true" posAngle="0" posRadius="12" posZ="20" />
 			<Device deviceID="&itAresLauncher;"/>
 			<Device deviceID="&itCydonianShields;"/>
 		</Devices>
@@ -795,13 +796,14 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips3;" imageX="576" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsCometfall;" imageWidth="130" imageHeight="130"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="40"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="172"	posRadius="43"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-172"	posRadius="43"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="40"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="156"	posRadius="48"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-156"	posRadius="48"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			
+			<Effect type="thrustMain"		posAngle="123"	posRadius="31"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"	bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="-123"	posRadius="31"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"	bringToFront="*"/>
 		</Effects>
 		 
 		<!-- AI and Behavior -->
@@ -827,7 +829,8 @@
 
 			attributes=			"ares, capitalShip, genericClass"
 			   
-			mass=				"8000"
+			size=				"140"
+			mass=				"12000"
 			thrustRatio=		"2"
 			maxSpeed=			"16"
 			cargoSpace=			"1000"
@@ -843,7 +846,7 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itHecatesCannon;" posAngle="0" posRadius="50" minFireArc="345" maxFireArc="15" />
+			<Device deviceID="&itHecatesCannon;" posAngle="0" posRadius="48" posZ="0" minFireArc="345" maxFireArc="15" />
 			<Device deviceID="&itLightningTurret;" secondaryWeapon="true"/>
 			<Device deviceID="&itCydonianHeavyShields;"/>
 			<Device deviceID="&it250MWReactor;"/>
@@ -876,11 +879,11 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips4;" imageX="1024" imageY="0" imageWidth="128" imageHeight="128"/>
+		<Image imageID="&rsDeimos;" imageWidth="170" imageHeight="170" rotationOffset="-30"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="45"	posRadius="38"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-45"	posRadius="38"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="95"	posRadius="36"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-95"	posRadius="36"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
@@ -1525,5 +1528,10 @@
 			</Ship>
 		</LevelTable>
 	</ShipTable>
+	
+<!-- RESOURCES -->
+	
+	<Image UNID="&rsCometfall;" bitmap="Resources\Cometfall.jpg" bitmask="Resources\CometfallMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsDeimos;" bitmap="Resources\Deimos.jpg" bitmask="Resources\DeimosMask.bmp" loadOnUse="true" />
 	
 </TranscendenceModule>

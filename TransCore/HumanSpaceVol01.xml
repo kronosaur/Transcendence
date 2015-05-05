@@ -1572,6 +1572,9 @@
 	
 	<!-- 00A0-00BF ARES ORTHODOXY -->
 	
+	<!ENTITY rsCometfall				"0x001000A0">
+	<!ENTITY rsDeimos					"0x001000A1">
+	
 	<!-- 00C0-00CF SALVAGERS -->
 	
 	<!ENTITY rsSalvagerNomad			"0x001000C0">
