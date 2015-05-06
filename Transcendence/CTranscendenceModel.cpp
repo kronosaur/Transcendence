@@ -2138,9 +2138,28 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 			}
 		}
 
-	//	Compose the new frame
-
 	const SDockFrame &CurFrame = m_DockFrames.GetCurrent();
+
+	//	See if we need to nest this screen. Sometimes we rely on the fact that 
+	//	a redirected screen (via <GetGlobalDockScreen>) is nested so that when
+	//	we're done we can go back to the station's original screen.
+	//
+	//	But other times, if we bring up a nested screen directly via a command
+	//	(e.g., from invoking or something) then we want to ignore the nesting
+	//	directive (otherwise we just return to the same screen).
+	//
+	//	This code figures out whether we're about to nest on ourselves.
+
+	bool bNestedScreen = pScreen->GetAttributeBool(NESTED_SCREEN_ATTRIB);
+	if (bNestedScreen 
+			&& bFirstFrame
+			&& CurFrame.sScreen == sScreenActual
+			&& CurFrame.sPane == sPane)
+		{
+		bNestedScreen = false;
+		}
+
+	//	Compose the new frame
 
 	SDockFrame NewFrame;
 	NewFrame.pLocation = CurFrame.pLocation;
@@ -2155,7 +2174,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 
 	bool bNewFrame;
 	SDockFrame OldFrame;
-	if (bNewFrame = (!bReturn && !bFirstFrame && pScreen->GetAttributeBool(NESTED_SCREEN_ATTRIB)))
+	if (bNewFrame = (!bReturn && bNestedScreen))
 		m_DockFrames.Push(NewFrame);
 	else if (!bReturn)
 		m_DockFrames.SetCurrent(NewFrame, &OldFrame);
