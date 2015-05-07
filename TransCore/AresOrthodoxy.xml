@@ -762,8 +762,8 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itLightningCannon;" omnidirectional="true" posAngle="0" posRadius="12" posZ="20" />
 			<Device deviceID="&itAresLauncher;"/>
+			<Device deviceID="&itLightningCannon;" secondaryWeapon="true" omnidirectional="true" posAngle="0" posRadius="12" posZ="20" />
 			<Device deviceID="&itCydonianShields;"/>
 		</Devices>
 
