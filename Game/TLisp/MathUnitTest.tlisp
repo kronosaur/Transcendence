@@ -92,6 +92,9 @@
 	{	code: '(v= (vector (list 0.25 9)) (v^ (vector (list 0.5 3)) (vector (list 0.5 3))))		result: True}
 	{	code: '(v= (vector (list (list (- 0 1) (- 0 2)) (list (- 0 3) (- 0 4)))) (v* (- 0 1) (vector (list (list 1 2) (list 3 4)))))	result: True}
 	
+	;	Bug Regression Tests
+
+	{	code: '(/ 5 (* 1 10))			result: 0.5	}
 	))
 
 (block (
