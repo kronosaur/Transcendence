@@ -1574,6 +1574,7 @@
 	
 	<!ENTITY rsCometfall				"0x001000A0">
 	<!ENTITY rsDeimos					"0x001000A1">
+	<!ENTITY rsPolarFreighter			"0x001000A2">
 	
 	<!-- 00C0-00CF SALVAGERS -->
 	
