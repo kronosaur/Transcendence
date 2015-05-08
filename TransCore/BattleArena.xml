@@ -1588,6 +1588,10 @@
 									; Register for system events (so we can tell when ships fire)
 									(objRegisterForSystemEvents gSource 150)
 									(sysAddObjRecurringTimerEvent 10 gSource "OnFightCheck")
+									
+									; Make sure Kate is gone
+									(setq kateObj (sysFindObject gPlayerShip "sN +kateMorgental;"))
+									(objFireEvent kateObj "OrderClearArena")
 
 									; Done
 									(bamDoorsClose gSource)
@@ -2412,6 +2416,22 @@
 					(sysAddObjRecurringTimerEvent 10 gSource "OnBehavior")
 					)
 			</OrderKatamiRescue>
+			
+			<OrderClearArena>
+				(block (
+					(arenaObj (sysFindObject gSource "TN +battleArenaMaximus;"))
+					)
+					
+					(if (ls (objGetDistance gSource arenaObj) 80)
+						(block Nil
+							(objSetPos gSource (sysVectorPolarOffset arenaObj 270 80))
+							
+							(shpCancelOrders gSource)
+							(shpOrder gSource 'gate)
+							)
+						)
+					)
+			</OrderClearArena>
 		</Events>
 
 	</ShipClass>
