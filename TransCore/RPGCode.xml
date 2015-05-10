@@ -199,7 +199,10 @@
 						
 					(if thisItem
 						(block (
-							(status (objGetItemProperty installerObj thisItem 'installItemStatus))
+							;	We use installDeviceStatus instead of installItemStatus because we
+							;	don't want to install armor objects.
+							
+							(status (objGetItemProperty installerObj thisItem 'installDeviceStatus))
 							(itemPrice 
 								(if (or (@ data 'upgrade) (@ data 'buyAndInstall)) 
 									(objGetSellPrice installerObj thisItem)
