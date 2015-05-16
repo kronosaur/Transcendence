@@ -471,21 +471,15 @@ CG32bitPixel GetColorArg (ICCItem *pArg)
 		return CG32bitPixel::Null();
 	}
 
-ALERROR InitCodeChainExtensions (CCodeChain &CC)
+void GetCodeChainExtensions (SPrimitiveDefTable *retpTable)
 
-//	InitCodeChainExtensions
+//	GetCodeChainExtensions
 //
 //	Registers extensions
 
 	{
-	ALERROR error;
-	int i;
-
-	for (i = 0; i < EXTENSIONS_COUNT; i++)
-		if (error = CC.RegisterPrimitive(&g_Extensions[i]))
-			return error;
-
-	return NOERROR;
+	retpTable->pTable = g_Extensions;
+	retpTable->iCount = EXTENSIONS_COUNT;
 	}
 
 ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)

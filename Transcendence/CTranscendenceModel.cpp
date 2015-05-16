@@ -1410,17 +1410,17 @@ ALERROR CTranscendenceModel::LoadUniverse (const CString &sCollectionFolder, con
 		Ctx.bDefaultExtensions = true;
 		Ctx.bForceTDB = m_bForceTDB;
 
+		//	Add additional CodeChain primitives
+
+		SPrimitiveDefTable *pNewTable = Ctx.CCPrimitives.Insert();
+		m_HI.GetCodeChainPrimitives(pNewTable);
+
+		pNewTable = Ctx.CCPrimitives.Insert();
+		GetCodeChainExtensions(pNewTable);
+
+		//	Initialize the universe
+
 		if (error = m_Universe.Init(Ctx, retsError))
-			return error;
-
-		//	Initialize TSUI CodeChain primitives
-
-		if (error = m_HI.InitCodeChainPrimitives(m_Universe.GetCC()))
-			return error;
-
-		//	Initialize Transcendence application primitives
-
-		if (error = InitCodeChainExtensions(m_Universe.GetCC()))
 			return error;
 
 		return NOERROR;
