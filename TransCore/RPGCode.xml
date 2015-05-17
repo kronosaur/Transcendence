@@ -301,7 +301,10 @@
 									(setq desc resultMessage)
 
 								(eq resultCode 'noDeviceSlotsLeft)
-									(setq desc (cat (strCapitalize textYourShip) " cannot support any more devices."))
+									(if (gr (itmGetProperty thisItem 'deviceSlots) 1)
+										(setq desc (cat (strCapitalize textYourShip) " does not have enough open device slots to install this device."))
+										(setq desc (cat (strCapitalize textYourShip) " does not have an open device slot for this device."))
+										)
 
 								(eq resultCode 'reactorTooWeak)
 									(setq desc (cat (strCapitalize textYourShip) "'s reactor is not powerful enough for this device."))
@@ -310,10 +313,16 @@
 									(setq desc (cat "The power output of " itemName " is too high for " textYourShip "."))
 
 								(eq resultCode 'noWeaponSlotsLeft)
-									(setq desc (cat (strCapitalize textYourShip) " cannot support any more weapons."))
-
+									(if (gr (itmGetProperty thisItem 'deviceSlots) 1)
+										(setq desc (cat (strCapitalize textYourShip) " does not have enough open weapon slots to install this device."))
+										(setq desc (cat (strCapitalize textYourShip) " does not have an open weapon slot for this device."))
+										)
+								
 								(eq resultCode 'noNonWeaponSlotsLeft)
-									(setq desc (cat (strCapitalize textYourShip) " cannot support any more non-weapon devices."))
+									(if (gr (itmGetProperty thisItem 'deviceSlots) 1)
+										(setq desc (cat (strCapitalize textYourShip) " does not have enough open non-weapon slots to install this device."))
+										(setq desc (cat (strCapitalize textYourShip) " does not have an open non-weapon slot for this device."))
+										)
 									
 								(and (eq resultCode 'replacementRequired)
 										(eq (itmGetType thisItem) (itmGetType itemToReplace))
