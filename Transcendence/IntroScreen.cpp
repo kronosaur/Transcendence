@@ -570,6 +570,8 @@ void CTranscendenceWnd::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereig
 //	Makes sure that there are enough ships and that everyone has a target
 
 	{
+	DEBUG_TRY
+
 	int i;
 	CSystem *pSystem = g_pUniverse->GetCurrentSystem();
 
@@ -681,6 +683,8 @@ void CTranscendenceWnd::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereig
 	g_pUniverse->SweepLibraryBitmaps();
 
 	m_iLastShipCreated = m_iTick;
+
+	DEBUG_CATCH
 	}
 
 void CTranscendenceWnd::CreateLongCreditsAnimation (int x, int y, int cyHeight, IAnimatron **retpAnimatron)
@@ -1088,6 +1092,8 @@ ALERROR CTranscendenceWnd::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CS
 //	Creates a random ship
 
 	{
+	DEBUG_TRY
+
 	ALERROR error;
 	int i;
 
@@ -1166,6 +1172,8 @@ ALERROR CTranscendenceWnd::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CS
 	g_pUniverse->SetLogImageLoad(true);
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 void CTranscendenceWnd::CreateScoreAnimation (const CGameRecord &Stats, IAnimatron **retpAnimatron)
