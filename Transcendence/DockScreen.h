@@ -270,11 +270,20 @@ class CDockPane
 			bool bReplaceInput;				//	Keeps track of counter state
 			};
 
-		void CreateControl (EControlTypes iType, const CString &sID);
+		struct SControlStyle
+			{
+			CG32bitPixel BackColor;
+
+			const CG16bitFont *pTextFont;
+			CG32bitPixel TextColor;
+			};
+
+		void CreateControl (EControlTypes iType, const CString &sID, const CString &sStyle);
 		ALERROR CreateControls (CString *retsError);
 		bool FindControl (const CString &sID, SControl **retpControl = NULL) const;
 		CGTextArea *GetTextControlByType (EControlTypes iType) const;
 		SControl *GetControlByType (EControlTypes iType) const;
+		void GetControlStyle (const CString &sStyle, SControlStyle *retStyle) const;
 		void RenderControls (void);
 		ALERROR ReportError (const CString &sError);
 

@@ -37,7 +37,6 @@
 				>
 			(block (
 				(criteria (if (@ gData 'criteria) (@ gData 'criteria) "dUN"))
-				(minLevel (if (@ gData 'replaceItem) (itmGetLevel (@ gData 'replaceItem)) 1))
 				)
 				
 				(scrSetListFilter gScreen (lambda (theItem)
@@ -47,7 +46,6 @@
 							(not (@ gData 'replaceItem))
 							(not (itmIsEqual theItem (@ gData 'replaceItem) 'ignoreInstalled))
 							)
-						(geq (itmGetLevel theItem) minLevel)
 						)
 					))
 				)
@@ -73,11 +71,19 @@
 
 						; Set the description
 						(scrSetDesc gScreen (@ theResult 'desc))
+						(if (@ theResult 'descWarning)
+							(scrSetControlValue gScreen 'descWarning (@ theResult 'descWarning))
+							)
 
 						; Disable actions
 						(scrEnableAction gScreen 'actionInstall gCanInstall)
 						)
 				</OnPaneInit>
+
+				<Controls>
+					<Text id="desc"/>
+					<Text id="descWarning" style="warning"/>
+				</Controls>
 
 				<Actions>
 					<Action id="actionInstall" default="1">

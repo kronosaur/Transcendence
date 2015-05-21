@@ -163,7 +163,7 @@
 				;	price:					Total installation cost
 				;	desc:					Description of installation attempt
 
-				(block (thisItem totalCost canInstall desc itemName currencyUsed targetObj installerObj textYourShip textWe textYour)
+				(block (thisItem totalCost canInstall desc descWarning itemName currencyUsed targetObj installerObj textYourShip textWe textYour)
 				
 					(setq thisItem (@ data 'item))
 					(setq currencyUsed (@ data 'currencyUsed))
@@ -423,8 +423,11 @@
 							(if (and canInstall
 									itemToReplace
 									(ls (itmGetLevel thisItem) (itmGetLevel itemToReplace))
+									(= (itmGetProperty thisItem 'category) (itmGetProperty itemToReplace 'category))
+									(!= (itmGetProperty thisItem 'category) 'device)
+									(!= (itmGetProperty thisItem 'category) 'cargoHold)
 									)
-								(setq desc (cat desc "  (However, the " (itmGetName itemToReplace 0x00) " is higher level.)"))
+								(setq descWarning (cat "Note: Your currently installed " (itmGetName itemToReplace 0x00) " is higher level."))
 								)
 							)
 							
@@ -436,6 +439,7 @@
 						canInstall: canInstall
 						price: totalCost
 						desc: desc
+						descWarning: descWarning
 						}
 					)
 				))

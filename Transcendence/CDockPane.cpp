@@ -19,10 +19,14 @@
 #define ID_ATTRIB					CONSTLIT("id")
 #define SHOW_COUNTER_ATTRIB			CONSTLIT("showCounter")
 #define SHOW_TEXT_INPUT_ATTRIB		CONSTLIT("showTextInput")
+#define STYLE_ATTRIB				CONSTLIT("style")
 
 #define DEFAULT_DESC_ID				CONSTLIT("desc")
 #define DEFAULT_COUNTER_ID			CONSTLIT("counter")
 #define DEFAULT_TEXT_INPUT_ID		CONSTLIT("textInput")
+
+#define STYLE_DEFAULT				CONSTLIT("default")
+#define STYLE_WARNING				CONSTLIT("warning")
 
 const int ACTION_BUTTON_HEIGHT =	22;
 const int ACTION_BUTTON_SPACING =	4;
@@ -94,7 +98,7 @@ void CDockPane::CleanUp (AGScreen *pScreen)
 	m_bInShowPane = false;
 	}
 
-void CDockPane::CreateControl (EControlTypes iType, const CString &sID)
+void CDockPane::CreateControl (EControlTypes iType, const CString &sID, const CString &sStyle)
 
 //	CreateControl
 //
@@ -145,12 +149,17 @@ void CDockPane::CreateControl (EControlTypes iType, const CString &sID)
 			pControl->cyMinHeight = 0;
 			pControl->cyMaxHeight = 0;
 
+			//	Choose font and colors based on style
+
+			SControlStyle Style;
+			GetControlStyle(sStyle, &Style);
+
 			CGTextArea *pTextArea = new CGTextArea;
-			pTextArea->SetFont(&VI.GetFont(fontLarge));
-			pTextArea->SetColor(VI.GetColor(colorTextDockText));
+			pTextArea->SetFont(Style.pTextFont);
+			pTextArea->SetColor(Style.TextColor);
 			pTextArea->SetPadding(CONTROL_INNER_PADDING);
 			pTextArea->SetBorderRadius(CONTROL_BORDER_RADIUS);
-			pTextArea->SetBackColor(VI.GetColor(colorAreaDialogInputFocus));
+			pTextArea->SetBackColor(Style.BackColor);
 			pTextArea->SetLineSpacing(6);
 			pTextArea->SetFontTable(&VI);
 
@@ -252,9 +261,13 @@ ALERROR CDockPane::CreateControls (CString *retsError)
 				return ERR_FAIL;
 				}
 
+			CString sStyle;
+			if (!pControlDef->FindAttribute(STYLE_ATTRIB, &sStyle))
+				sStyle = STYLE_DEFAULT;
+
 			//	Create the control
 
-			CreateControl(iType, sID);
+			CreateControl(iType, sID, sStyle);
 			}
 		}
 
@@ -264,14 +277,14 @@ ALERROR CDockPane::CreateControls (CString *retsError)
 		{
 		//	Create the text description control
 
-		CreateControl(controlDesc, DEFAULT_DESC_ID);
+		CreateControl(controlDesc, DEFAULT_DESC_ID, STYLE_DEFAULT);
 
 		//	Create counter or input fields
 
 		if (m_pPaneDesc->GetAttributeBool(SHOW_COUNTER_ATTRIB))
-			CreateControl(controlCounter, DEFAULT_COUNTER_ID);
+			CreateControl(controlCounter, DEFAULT_COUNTER_ID, STYLE_DEFAULT);
 		else if (m_pPaneDesc->GetAttributeBool(SHOW_TEXT_INPUT_ATTRIB))
-			CreateControl(controlTextInput, DEFAULT_TEXT_INPUT_ID);
+			CreateControl(controlTextInput, DEFAULT_TEXT_INPUT_ID, STYLE_DEFAULT);
 		}
 
 	return NOERROR;
@@ -361,6 +374,29 @@ const CString &CDockPane::GetDescriptionString (void) const
 		return NULL_STR;
 
 	return m_sDesc;
+	}
+
+void CDockPane::GetControlStyle (const CString &sStyle, SControlStyle *retStyle) const
+
+//	GetControlStyle
+//
+//	Returns the style
+
+	{
+	const CVisualPalette &VI = g_pHI->GetVisuals();
+
+	if (strEquals(sStyle, STYLE_WARNING))
+		{
+		retStyle->pTextFont = &VI.GetFont(fontLarge);
+		retStyle->TextColor = VI.GetColor(colorTextWarningMsg);
+		retStyle->BackColor = VI.GetColor(colorAreaWarningMsg);
+		}
+	else
+		{
+		retStyle->pTextFont = &VI.GetFont(fontLarge);
+		retStyle->TextColor = VI.GetColor(colorTextDockText);
+		retStyle->BackColor = VI.GetColor(colorAreaDialogInputFocus);
+		}
 	}
 
 CGTextArea *CDockPane::GetTextControlByType (EControlTypes iType) const
@@ -737,13 +773,25 @@ void CDockPane::RenderControls (void)
 	for (i = 0; i < m_Controls.GetCount(); i++)
 		{
 		SControl &Control = m_Controls[i];
-		RECT rcControl = Control.pArea->GetRect();
 
-		rcControl.top = y;
-		rcControl.bottom = rcControl.top + Control.cyHeight;
-		Control.pArea->SetRect(rcControl);
+		//	If this control is 0 height, then hide it
 
-		y += Control.cyHeight + CONTROL_PADDING_BOTTOM;
+		if (Control.cyHeight == 0)
+			Control.pArea->Hide();
+
+		//	Otherwise, resize it appropriately
+
+		else
+			{
+			RECT rcControl = Control.pArea->GetRect();
+
+			rcControl.top = y;
+			rcControl.bottom = rcControl.top + Control.cyHeight;
+			Control.pArea->Show();
+			Control.pArea->SetRect(rcControl);
+
+			y += Control.cyHeight + CONTROL_PADDING_BOTTOM;
+			}
 		}
 
 	//	Create the action buttons (deals with extra space above and show/hide)
@@ -767,7 +815,7 @@ ALERROR CDockPane::ReportError (const CString &sError)
 	//	Make sure we have a description control
 
 	if (GetTextControlByType(controlDesc) == NULL)
-		CreateControl(controlDesc, DEFAULT_DESC_ID);
+		CreateControl(controlDesc, DEFAULT_DESC_ID, STYLE_WARNING);
 
 	//	Report the error through the screen. This will add screen information and
 	//	eventually call us back at SetDescription.
@@ -803,11 +851,23 @@ bool CDockPane::SetControlValue (const CString &sID, ICCItem *pValue)
 		case controlDesc:
 			{
 			CGTextArea *pTextArea = pControl->AsTextArea();
-			CUIHelper UIHelper(*g_pHI);
-			CString sRTF;
-			UIHelper.GenerateDockScreenRTF(pValue->GetStringValue(), &sRTF);
 
-			pTextArea->SetRichText(sRTF);
+			//	Setting the descriptor to Nil or blank collapses it.
+
+			if (pValue->IsNil() || pValue->GetStringValue().IsBlank())
+				pTextArea->SetRichText(NULL_STR);
+
+			//	Otherwise, format for RTF
+
+			else
+				{
+				CUIHelper UIHelper(*g_pHI);
+				CString sRTF;
+				UIHelper.GenerateDockScreenRTF(pValue->GetStringValue(), &sRTF);
+
+				pTextArea->SetRichText(sRTF);
+				}
+
 			return true;
 			}
 

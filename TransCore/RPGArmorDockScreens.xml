@@ -553,9 +553,6 @@
 												(and
 													(objGetItemProperty gSource theItemInCargo 'installDevicePrice)
 													(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
-													(or (eq category 'device)
-														(geq (itmGetLevel theItemInCargo) (itmGetLevel theItem))
-														)
 													)
 												)
 											)
@@ -914,7 +911,6 @@
 												(and
 													(objGetItemProperty gSource theItemInCargo 'installDevicePrice)
 													(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
-													(geq (itmGetLevel theItemInCargo) (itmGetLevel theItem))
 													)
 												)
 											)

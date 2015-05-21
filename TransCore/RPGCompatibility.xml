@@ -656,6 +656,21 @@
 
 									(setq desc (cat "This armor segment can be installed for " (fmtCurrency currencyUsed gCost) "."))
 									)
+									
+								;	If the new segment is of a lower level than the current
+								;	segment, then warn the player
+								
+								(if canInstall
+									(switch
+										(gr (itmGetLevel (shpGetArmor gPlayerShip armorSeg)) (itmGetLevel thisItem))
+											(scrSetControlValue gScreen 'descWarning
+												(cat
+													"Note: Your currently installed " (itmGetName (shpGetArmor gPlayerShip armorSeg) 0x80)
+													" is higher level."
+													)
+												)
+										)
+									)
 
 								(scrSetDesc gScreen desc)
 								)
@@ -669,6 +684,11 @@
 						(scrEnableAction gScreen 0 canInstall)
 						)
 				</OnPaneInit>
+
+				<Controls>
+					<Text id="desc"/>
+					<Text id="descWarning" style="warning"/>
+				</Controls>
 
 				<Actions>
 					<Action name="Install this Armor" default="1" key="I" >
