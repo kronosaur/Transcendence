@@ -471,6 +471,10 @@ void CChooseAdventureSession::SetAdventureDesc (CExtension *pAdventure)
 	bool bDisable = (m_ExtensionList.GetCount() == 0);
 	SetPropertyBool(CMD_SELECT_ALL, PROP_ENABLED, !bDisable);
 	SetPropertyBool(CMD_DESELECT_ALL, PROP_ENABLED, !bDisable);
+
+	//	If this adventure is disabled, then disable the OK button
+
+	SetPropertyBool(CMD_OK_SESSION, PROP_ENABLED, !pAdventure->IsDisabled());
 	}
 
 void CChooseAdventureSession::SetAdventureStatus (CExtension *pAdventure, int yPos)
@@ -637,7 +641,13 @@ void CChooseAdventureSession::SetAdventureTitle (CExtension *pAdventure, int *re
 	pText->SetPropertyColor(PROP_COLOR, VI.GetColor(colorTextDialogInput));
 	pText->SetPropertyFont(PROP_FONT, &MediumFont);
 	pText->SetPropertyString(PROP_TEXT_ALIGN_HORZ, ALIGN_CENTER);
-	pText->SetPropertyString(PROP_TEXT, pAdventure->GetDesc());
+
+	//	If the adventure is disabled, for some reason, we show that reason.
+
+	if (pAdventure->IsDisabled())
+		pText->SetPropertyString(PROP_TEXT, strPatternSubst(CONSTLIT("{/rtf %s }"), pAdventure->GetDisabledReason()));
+	else
+		pText->SetPropertyString(PROP_TEXT, pAdventure->GetDesc());
 
 	pRoot->AddTrack(pText, 0);
 
