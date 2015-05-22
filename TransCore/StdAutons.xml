@@ -683,7 +683,7 @@
 								(if exploredObj
 									(block Nil
 										(objSetKnown exploredObj)
-										(objSendMessage gSender gSource (objTranslate gSource 'ObjectExplored))
+										(objSendMessage gPlayerShip gSource (objTranslate gSource 'ObjectExplored))
 										
 										(objClearShowAsDestination exploredObj)
 										)
@@ -700,7 +700,7 @@
 											(objClearShowAsDestination gSource)
 								
 											(objSetData gSource 'behavior 'escorting)
-											(objSendMessage gSender gSource (objTranslate gSource 'ExplorationDone))
+											(objSendMessage gPlayerShip gSource (objTranslate gSource 'ExplorationDone))
 											)
 											
 									;	Otherwise, go to new object
