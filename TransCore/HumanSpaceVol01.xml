@@ -1563,6 +1563,7 @@
 	<!ENTITY rsFleetEmblems				"0x00100061">
 	<!ENTITY rsCSC						"0x00100062">
 	<!ENTITY rsCSCWreckage				"0x00100063">
+	<!ENTITY rsAquila					"0x00100064">
 	
 	<!-- 0080-009F COMMONWEALTH -->
 	

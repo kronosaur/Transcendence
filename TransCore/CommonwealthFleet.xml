@@ -375,7 +375,8 @@ PLAYER DATA
 			type=				"cruiser"
 			defaultSovereign=	"&svCommonwealthFleet;"
 
-			mass=				"10000"
+			size=				"220"
+			mass=				"26000"
 			cargoSpace=			"1000"
 			thrustRatio=		"1"
 			maxSpeed=			"16"
@@ -394,8 +395,8 @@ PLAYER DATA
 			/>
 		
 		<Devices>
-			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="355" maxFireArc="175" posAngle="99" posRadius="22"/>
-			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="160" maxFireArc="5" posAngle="261" posRadius="22"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="355" maxFireArc="175" posAngle="90" posRadius="24" posZ="8"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="160" maxFireArc="5" posAngle="-90" posRadius="24" posZ="8"/>
 			<Device deviceID="&itNAMIHeavyLauncher;" omnidirectional="true"/>
 			<Device deviceID="&itR9Deflector;"/>
 		</Devices>
@@ -421,12 +422,12 @@ PLAYER DATA
 					/>
 		</Interior>
 
-		<Image imageID="&rsLargeShips1;" imageX="1728" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsAquila;" imageWidth="210" imageHeight="210"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="168"	posRadius="82"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-168"	posRadius="82"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="82"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="168"	posRadius="94"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-168"	posRadius="94"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="94"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 
 		<Items>
@@ -5280,6 +5281,7 @@ PLAYER DATA
 
 <!-- RESOURCES -->
 
+	<Image UNID="&rsAquila;"		bitmap="Resources\Aquila.jpg" bitmask="Resources\AquilaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsBritannia;"		bitmap="Resources\Britannia.jpg" bitmask="Resources\BritanniaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsCSC;"			bitmap="Resources\CSC.jpg" bitmask="Resources\CSCMask.bmp" loadOnUse="true" />
 	
