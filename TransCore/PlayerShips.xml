@@ -198,7 +198,7 @@
 			
 			<Device deviceID="&itDualLaserCannon;"/>
 			<Device deviceID="&itNAMIMissileLauncher;"/>
-			<Device deviceID="&itHullPlateIonizer;"/>
+			<Device deviceID="&itClass2Deflector;"/>
 		</Devices>
 
 		<Maneuver
