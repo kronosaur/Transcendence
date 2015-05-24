@@ -610,6 +610,7 @@
 							shape=			"circular" 
 							width=			"120"
 							widthVariation=	"100"
+							erode=			"50"
 
 							patchType=		"&efNebula;"
 							patchFrequency=	"50"
@@ -627,6 +628,7 @@
 							width=			"100"
 							widthVariation=	"100"
 							span=			"1d40+50"
+							erode=			"50"
 
 							patchType=		"&efNebula;"
 							patchFrequency=	"50"

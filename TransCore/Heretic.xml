@@ -5443,8 +5443,8 @@
 		<Image imageID="&rsLightNebula;" 
 				imageX="0" 
 				imageY="0" 
-				imageWidth="1024" 
-				imageHeight="1024"/>
+				imageWidth="2048" 
+				imageHeight="2048"/>
 
 		<Events>
 			<OnObjUpdate>
@@ -5466,6 +5466,7 @@
 
 	<SystemType UNID="&ssHeretic;" 
 			backgroundID=		"&rsLightNebulaSpace;"
+			spaceEnvironmentTileSize=	"large"
 			noRandomEncounters=	"true"
 			noExtraEncounters=	"true"
 			>
@@ -5607,6 +5608,7 @@
 						width=			"60"
 						widthVariation=	"100"
 						span=			"1d40+50"
+						erode=			"50"
 
 						patchType=		"&efNebula;"
 						patchFrequency=	"50"
@@ -5624,6 +5626,7 @@
 						width=			"60"
 						widthVariation=	"100"
 						span=			"1d40+50"
+						erode=			"50"
 
 						patchType=		"&efNebula;"
 						patchFrequency=	"50"

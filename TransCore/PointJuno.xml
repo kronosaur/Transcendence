@@ -1347,6 +1347,7 @@
 
 	<SystemType UNID="&ssPointJuno;" 
 				backgroundID=		"&rsLightNebulaSpace;"
+				spaceEnvironmentTileSize=	"large"
 				noRandomEncounters=	"true"
 				noExtraEncounters=	"true"
 				>
@@ -1414,6 +1415,7 @@
 								width=			"120"
 								widthVariation=	"60"
 								span=			"90-120"
+								erode=			"50"
 
 								patchType=		"&efNebula;"
 								patchFrequency=	"50"
@@ -1490,6 +1492,7 @@
 								width=			"200"
 								widthVariation=	"100"
 								span=			"120-160"
+								erode=			"50"
 
 								patchType=		"&efNebula;"
 								patchFrequency=	"50"
@@ -1506,6 +1509,7 @@
 								width=			"200"
 								widthVariation=	"100"
 								span=			"120-160"
+								erode=			"50"
 
 								patchType=		"&efNebula;"
 								patchFrequency=	"50"

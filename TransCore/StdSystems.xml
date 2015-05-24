@@ -422,6 +422,7 @@
 	<SystemType UNID="&ssEarthSpaceNebulae;"
 				attributes=			"envAir"
 				backgroundID=		"&rsLightNebulaSpace;"
+				spaceEnvironmentTileSize=	"large"
 				>
 		<SystemGroup>
 			<Lookup table="LightNebulaSystem"/>
