@@ -1570,6 +1570,8 @@
 	<!ENTITY rsStKatsArcologyHero		"0x00100080">
 	<!ENTITY rsCommonwealthMetropolis	"0x00100081">
 	<!ENTITY rsCommonwealthMetropolisArmored	"0x00100082">
+	<!ENTITY it10MWReactor				"0x00100083">
+	<!ENTITY it15MWReactor				"0x00100084">
 	
 	<!-- 00A0-00BF ARES ORTHODOXY -->
 	

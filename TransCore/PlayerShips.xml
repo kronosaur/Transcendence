@@ -40,6 +40,7 @@
 			
 			<Device deviceID="&itRecoillessCannon;"/>
 			<Device deviceID="&itClass1Deflector;"/>
+			<Device deviceID="&it15MWReactor;"/>
 		</Devices>
 		
 		<Maneuver
@@ -112,6 +113,7 @@
 			
 			<Device deviceID="&itOmniLaserCannon;"/>
 			<Device deviceID="&itClass1Deflector;"/>
+			<Device deviceID="&it25MWReactor;"/>
 		</Devices>
 
 		<Maneuver
@@ -199,6 +201,7 @@
 			<Device deviceID="&itDualLaserCannon;"/>
 			<Device deviceID="&itNAMIMissileLauncher;"/>
 			<Device deviceID="&itClass2Deflector;"/>
+			<Device deviceID="&it10MWReactor;"/>
 		</Devices>
 
 		<Maneuver

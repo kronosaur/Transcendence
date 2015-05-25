@@ -540,6 +540,7 @@
 								
 									(setq canRemove	
 										(and (not (@ gData 'upgradeInstallOnly))
+											(not (eq category 'reactor))
 											(objGetItemProperty gSource theItem 'removeDevicePrice)
 											)
 										)

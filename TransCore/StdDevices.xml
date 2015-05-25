@@ -34,6 +34,32 @@
 		</MiscellaneousDevice>
 	</ItemType>
 
+	<!-- Nova-10 reactor -->
+
+	<ItemType UNID="&it10MWReactor;"
+			name=				"Nova-10 reactor"
+			attributes=			"commonwealth, majorItem"
+			  
+			level=				"1"
+			frequency=			"notRandom"
+			  
+			value=				"750"
+			mass=				"1000"
+
+			description=		"This reactor has a peak power output of 10MW."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<ReactorDevice
+				maxPower=		"100"
+				fuelEfficiency=	"15"
+				maxFuel=		"25000"
+				fuelCriteria=	"f L:1-4;" 
+				/>
+
+	</ItemType>
+
 <!-- LEVEL II -->
 
 	<!-- Cannon Accelerator -->
@@ -87,6 +113,32 @@
 		<CargoHoldDevice
 				cargoSpace=		"100"
 				/>
+	</ItemType>
+
+	<!-- Nova-15 reactor -->
+
+	<ItemType UNID="&it15MWReactor;"
+			name=				"Nova-15 reactor"
+			attributes=			"commonwealth, majorItem"
+			  
+			level=				"2"
+			frequency=			"notRandom"
+			  
+			value=				"1000"
+			mass=				"1000"
+
+			description=		"This reactor has a peak power output of 15MW."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<ReactorDevice
+				maxPower=		"150"
+				fuelEfficiency=	"15"
+				maxFuel=		"37500"
+				fuelCriteria=	"f L:1-4;" 
+				/>
+
 	</ItemType>
 
 <!-- LEVEL III -->
@@ -640,6 +692,7 @@
 		<AutoDefenseDevice
 				target=			"missiles"
 				weapon=			"&vtLongreachI;"
+				interceptRange=	"15"
 				fireRate=		"15"
 				/>
 
