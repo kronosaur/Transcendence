@@ -79,6 +79,25 @@
 						)
 					)
 				))
+				
+			;	rpgGetInstallerList
+			;
+			;	Returns a list of objects that are able to install the given item
+			;	on the given ship. The objects are returned in a list sorted
+			;	by distance to the ship.
+			
+			(setq rpgGetInstallerList (lambda (theShip theItem)
+				(filter (sysFindObject theShip "TAF +populated; S:d") theObj
+					(block (
+						(installStatus (objGetItemProperty theObj theItem 'installDeviceStatus))
+						)
+													
+						(and (@ installStatus 'canInstall)
+							(not (@ installStatus 'upgradeInstallOnly))
+							)
+						)
+					)
+				))
 
 			(setq rpgGetReactorUpgradeList (lambda (theObj theShip theCriteria)
 				(block (minPower reactorList additionalList)
@@ -285,6 +304,15 @@
 
 								(not totalCost)
 									(setq desc (cat (strCapitalize textWe) " cannot install " itemName " on " textYourShip "."))
+									
+								;	Some stations only install an item if you purchase it from them.
+								
+								(and (@ status 'upgradeInstallOnly)
+										(not (@ data 'upgrade))
+										)
+									(setq desc (cat "Sorry, installation services are only available for purchased upgrades."))
+									
+								;	Check military ID
 
 								(and (@ data 'checkMilitaryID)
 										(itmHasModifier thisItem "Military")

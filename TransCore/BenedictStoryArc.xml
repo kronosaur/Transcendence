@@ -37,6 +37,7 @@
 					;	then show the intro screen
 						
 					(and (eq (objGetType gSource) &stSistersOfDomina;)
+							(not (objGetProperty gSource 'abandoned))
 							(eq (sysGetNode) (objGetProperty gPlayerShip 'startingSystem))
 							(not (typGetData &unidBenedictStoryArc; 'firstDockedAtSisters))
 							)
@@ -47,6 +48,7 @@
 					;	show our home.
 				
 					(and (eq (objGetType gSource) &stBeringStation;)
+							(not (objGetProperty gSource 'abandoned))
 							(eq (sysGetNode) (objGetProperty gPlayerShip 'startingSystem))
 							)
 						(list &dsPilgrimBeringStation; Nil 6)

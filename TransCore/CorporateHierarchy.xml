@@ -232,8 +232,8 @@
 			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-10;" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-10;" priceAdj="100"/>
-			<RemoveDevice	criteria="d L:1-10;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-10;" priceAdj="100"	upgradeInstallOnly="true"/>
+			<RemoveDevice	criteria="d L:1-10;" priceAdj="100"	upgradeInstallOnly="true"/>
 		</Trade>
 
 		<Events>
@@ -380,8 +380,8 @@
 			
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
-			<InstallDevice	criteria="s L:1-7;" priceAdj="100"/>
-			<RemoveDevice	criteria="s L:1-7;" priceAdj="100"/>
+			<InstallDevice	criteria="s L:1-7;" priceAdj="100"	upgradeInstallOnly="true"/>
+			<RemoveDevice	criteria="s L:1-7;" priceAdj="100"	upgradeInstallOnly="true"/>
 		</Trade>
 
 		<StaticData>
@@ -525,8 +525,8 @@
 			<Buy	criteria="mwU -Illegal; -NotForSale;"	priceAdj="60"/>
 			<Buy	criteria="mwU -Illegal; -ID;"				priceAdj="10"/>
 			
-			<InstallDevice	criteria="w L:1-5;" priceAdj="100"/>
-			<RemoveDevice	criteria="w L:1-5;" priceAdj="100"/>
+			<InstallDevice	criteria="w L:1-5;" priceAdj="100"	upgradeInstallOnly="true"/>
+			<RemoveDevice	criteria="w L:1-5;" priceAdj="100"	upgradeInstallOnly="true"/>
 		</Trade>
 
 		<Events>
@@ -2994,8 +2994,8 @@
 			<Refuel			criteria="f +BasicFuel; L:1-8;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-9;" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-9;" priceAdj="100"/>
-			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-9;" priceAdj="100"	upgradeInstallOnly="true"/>
+			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"	upgradeInstallOnly="true"/>
 		</Trade>
 
 		<Events>

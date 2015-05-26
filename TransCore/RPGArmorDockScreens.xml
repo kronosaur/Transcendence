@@ -82,7 +82,6 @@
 								
 									(setq canInstall
 										(and (objGetItems theShip "sUN")
-											(not (@ gData 'upgradeInstallOnly))
 											)
 										)
 									
@@ -143,12 +142,10 @@
 									;	to replace this generator?
 								
 									(setq canReplace
-										(and (not (@ gData 'upgradeInstallOnly))
-											(filter (objGetItems theShip "sUN") theItemInCargo
-												(and
-													(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
-													(objGetItemProperty gSource theItemInCargo 'installDevicePrice)
-													)
+										(filter (objGetItems theShip "sUN") theItemInCargo
+											(and
+												(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
+												(objGetItemProperty gSource theItemInCargo 'installDevicePrice)
 												)
 											)
 										)
@@ -305,6 +302,26 @@
 							)
 					</Action>
 					
+					<Action id="actionUpgrade">
+						(switch
+							;	If this is an armor item, then offer to sell an upgrade
+							
+							(itmMatches (scrGetItem gScreen) "a")
+								(scrShowScreen gScreen &dsRPGUpgradeArmor; {
+									armorSeg: (scrGetData gScreen 'armorSeg)
+									checkMilitaryID: (@ gData 'checkMilitaryID)
+									})
+									
+							;	Otherwise, assume shields
+							
+							(scrShowScreen gScreen &dsRPGUpgradeDevice; {
+								criteria: "sUN"
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								replaceItem: (scrGetItem gScreen)
+								})
+							)
+					</Action>
+					
 					<Action id="actionInstall">
 						(scrShowScreen gScreen &dsRPGInstallDevice; {
 							criteria: "sUN"
@@ -329,26 +346,6 @@
 									criteria: "sUN"
 									checkMilitaryID: (@ gData 'checkMilitaryID)
 									})
-							)
-					</Action>
-					
-					<Action id="actionUpgrade">
-						(switch
-							;	If this is an armor item, then offer to sell an upgrade
-							
-							(itmMatches (scrGetItem gScreen) "a")
-								(scrShowScreen gScreen &dsRPGUpgradeArmor; {
-									armorSeg: (scrGetData gScreen 'armorSeg)
-									checkMilitaryID: (@ gData 'checkMilitaryID)
-									})
-									
-							;	Otherwise, assume shields
-							
-							(scrShowScreen gScreen &dsRPGUpgradeDevice; {
-								criteria: "sUN"
-								checkMilitaryID: (@ gData 'checkMilitaryID)
-								replaceItem: (scrGetItem gScreen)
-								})
 							)
 					</Action>
 					
@@ -549,12 +546,10 @@
 									;	to replace this device?
 								
 									(setq canReplace
-										(and (not (@ gData 'upgradeInstallOnly))
-											(filter (objGetItems theShip (@ categoryDesc 'criteria)) theItemInCargo
-												(and
-													(objGetItemProperty gSource theItemInCargo 'installDevicePrice)
-													(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
-													)
+										(filter (objGetItems theShip (@ categoryDesc 'criteria)) theItemInCargo
+											(and
+												(objGetItemProperty gSource theItemInCargo 'installDevicePrice)
+												(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
 												)
 											)
 										)
@@ -591,9 +586,7 @@
 								;	Do we have any devices to install from cargo hold?
 
 								(setq canInstall 
-									(and (not (@ gData 'upgradeInstallOnly))
-										(objGetItems theShip (@ categoryDesc 'criteria))
-										)
+									(objGetItems theShip (@ categoryDesc 'criteria))
 									)
 								
 								;	Does this station have any items that we can purchase?
@@ -627,6 +620,20 @@
 				</Controls>
 
 				<Actions>
+					<Action id="actionUpgrade">
+						(block Nil
+							(if (not (scrGetItem gScreen))
+								(scrSetData gScreen 'deviceSelected { oldSlots:(map (objGetItems gPlayerShip "Id") theItem (itmGetInstallPos theItem)) })
+								)
+								
+							(scrShowScreen gScreen &dsRPGUpgradeDevice; {
+								criteria: (scrGetData gScreen 'categoryCriteria)
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								replaceItem: (scrGetItem gScreen)
+								})
+							)
+					</Action>
+					
 					<Action id="actionInstall">
 						(block Nil
 							;	On return, select either the newly installed item 
@@ -646,20 +653,6 @@
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							replaceItem: (scrGetItem gScreen)
 							})
-					</Action>
-					
-					<Action id="actionUpgrade">
-						(block Nil
-							(if (not (scrGetItem gScreen))
-								(scrSetData gScreen 'deviceSelected { oldSlots:(map (objGetItems gPlayerShip "Id") theItem (itmGetInstallPos theItem)) })
-								)
-								
-							(scrShowScreen gScreen &dsRPGUpgradeDevice; {
-								criteria: (scrGetData gScreen 'categoryCriteria)
-								checkMilitaryID: (@ gData 'checkMilitaryID)
-								replaceItem: (scrGetItem gScreen)
-								})
-							)
 					</Action>
 					
 					<Action id="actionEnable">
@@ -907,12 +900,10 @@
 									;	to replace this device?
 								
 									(setq canReplace
-										(and (not (@ gData 'upgradeInstallOnly))
-											(filter (objGetItems theShip (@ categoryDesc 'criteria)) theItemInCargo
-												(and
-													(objGetItemProperty gSource theItemInCargo 'installDevicePrice)
-													(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
-													)
+										(filter (objGetItems theShip (@ categoryDesc 'criteria)) theItemInCargo
+											(and
+												(objGetItemProperty gSource theItemInCargo 'installDevicePrice)
+												(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
 												)
 											)
 										)
@@ -949,9 +940,7 @@
 								;	Do we have any devices to install from cargo hold?
 
 								(setq canInstall 
-									(and (not (@ gData 'upgradeInstallOnly))
-										(objGetItems theShip (@ categoryDesc 'criteria))
-										)
+									(objGetItems theShip (@ categoryDesc 'criteria))
 									)
 								
 								;	Does this station have any items that we can purchase?
@@ -996,6 +985,20 @@
 							})
 					</Action>
 					
+					<Action id="actionUpgrade">
+						(block Nil
+							(if (not (scrGetItem gScreen))
+								(scrSetData gScreen 'deviceSelected { oldSlots:(map (objGetItems gPlayerShip "Id") theItem (itmGetInstallPos theItem)) })
+								)
+								
+							(scrShowScreen gScreen &dsRPGUpgradeDevice; {
+								criteria: (scrGetData gScreen 'categoryCriteria)
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								replaceItem: (scrGetItem gScreen)
+								})
+							)
+					</Action>
+					
 					<Action id="actionInstall">
 						(block Nil
 							;	On return, select either the newly installed item 
@@ -1015,20 +1018,6 @@
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							replaceItem: (scrGetItem gScreen)
 							})
-					</Action>
-					
-					<Action id="actionUpgrade">
-						(block Nil
-							(if (not (scrGetItem gScreen))
-								(scrSetData gScreen 'deviceSelected { oldSlots:(map (objGetItems gPlayerShip "Id") theItem (itmGetInstallPos theItem)) })
-								)
-								
-							(scrShowScreen gScreen &dsRPGUpgradeDevice; {
-								criteria: (scrGetData gScreen 'categoryCriteria)
-								checkMilitaryID: (@ gData 'checkMilitaryID)
-								replaceItem: (scrGetItem gScreen)
-								})
-							)
 					</Action>
 					
 					<Action id="actionEnable">

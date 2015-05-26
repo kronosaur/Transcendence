@@ -221,12 +221,7 @@
 												0
 												))
 											)
-										(setq targetObj (@
-											(filter (sysFindObject gPlayerShip "TAF +populated; S:d") theObj
-												(objGetItemProperty theObj foundItem 'installDevicePrice)
-												)
-											0
-											))
+										(setq targetObj (@ (rpgGetInstallerList gPlayerShip foundItem) 0))
 										)
 									(setq state 'installDevice)
 						
@@ -319,12 +314,7 @@
 								;	If we haven't yet installed the SmartCannon, remind the player
 						
 								(and (setq foundItem (@ (objGetItems gPlayerShip "wU +unid:&itSmartCannon;;") 0))
-										(setq targetObj (@
-											(filter (sysFindObject gPlayerShip "TAF +populated; S:d") theObj
-												(objGetItemProperty theObj foundItem 'installDevicePrice)
-												)
-											0
-											))
+										(setq targetObj (@ (rpgGetInstallerList gPlayerShip foundItem) 0))
 										)
 									(setq state 'installSmartCannon)
 
