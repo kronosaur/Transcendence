@@ -11,6 +11,7 @@ Game/HighScores.xml
 Game/Settings.xml
 Game/Snapshots/
 Game/TransData.xml
+Game/*.dll
 Game/*.exe
 Game/*.exe.manifest
 Game/*.tdb

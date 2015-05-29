@@ -36,6 +36,9 @@
     <Filter Include="Source Files\Game Session">
       <UniqueIdentifier>{71f6b08b-1213-4ea9-b840-8e42661b07de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SteamBuild">
+      <UniqueIdentifier>{fc4384a3-226d-4c29-a344-98fc8a0ddece}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CIntroShipController.cpp">
@@ -296,6 +299,12 @@
     </None>
     <None Include="Resources\Title.dxfn">
       <Filter>Resources</Filter>
+    </None>
+    <None Include="..\..\..\SteamBuild\ContentBuilder\scripts\app_build_1000.vdf">
+      <Filter>SteamBuild</Filter>
+    </None>
+    <None Include="..\..\..\SteamBuild\ContentBuilder\scripts\depot_build_1001.vdf">
+      <Filter>SteamBuild</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
