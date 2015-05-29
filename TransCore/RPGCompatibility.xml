@@ -328,7 +328,6 @@
 					</Action>
 
 				</Actions>
-
 			</LootQuantity>
 		</Panes>
 
@@ -428,6 +427,109 @@
 			<Text id="dockServicesScreenDesc">"Your ship is docked."</Text>
 			
 			<Text id="errorNoReactorTech">"The technology required to upgrade your reactor is not available at this station."</Text>
+		</Language>
+	</DockScreen>
+
+<!-- REMOVE DEVICE SCREEN ======================================================
+
+	This screen allows the player to remove a currently installed device.
+
+	gData uses the following fields:
+
+	shipObj: The object from which we are removing the device.
+	dockObj: The object that is removing the device.
+	deviceItem: The item to remove.
+	
+-->
+
+	<DockScreen UNID="&dsRPGRemoveDevice;"
+			inherit=			"&dsDockScreenBase;"
+			nestedScreen=		"true"
+			>
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(theItem (@ gData 'deviceItem))
+						(theShip (@ gData 'shipObj))
+						(theDock (@ gData 'dockObj))
+						
+						(currencyUsed (objGetDefaultCurrency theDock))
+						(costToRemove (objGetItemProperty theDock theItem 'removeDevicePrice))
+						
+						(result (shpCanRemoveDevice theShip theItem))
+						
+						(desc Nil)
+						(canRemove Nil)
+						)
+						
+						(switch
+							(not (isint result))
+								(setq desc result)
+								
+							(not (eq result 0))
+								(setq desc "The device cannot be removed.")
+								
+							(gr (itmGetMass theItem) (objGetCargoSpaceLeft theShip))
+								(setq desc (scrTranslate gScreen 'descNoRoomForDevice))
+								
+							(ls (objGetBalance theShip currencyUsed) costToRemove)
+								(setq desc (scrTranslate gScreen 'descRemoveCantAfford { cost:(fmtCurrency currencyUsed costToRemove) }))
+								
+							(eq costToRemove 0)
+								(block Nil
+									(setq desc (scrTranslate gScreen 'descRemoveFree))
+									(scrSetData gScreen 'cost 0)
+									(setq canRemove True)
+									)
+									
+							(block Nil
+								(setq desc (scrTranslate gScreen 'descRemove { cost:(fmtCurrency currencyUsed costToRemove) }))
+								(scrSetData gScreen 'cost costToRemove)
+								(setq canRemove True)
+								)
+							)
+						
+						;	Set description
+						
+						(scrSetDesc gScreen desc)
+						
+						;	Set actions
+						
+						(scrEnableAction gScreen 'actionRemove canRemove)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionRemove" default="1">
+						(block (
+							(theItem (@ gData 'deviceItem))
+							(theShip (@ gData 'shipObj))
+							(theDock (@ gData 'dockObj))
+							(currencyUsed (objGetDefaultCurrency theDock))
+							)
+							
+							(shpRemoveDevice theShip theItem)
+							(objCharge theShip currencyUsed (scrGetData gScreen 'cost))
+
+							(scrExitScreen gScreen)
+							)
+					</Action>
+					
+					<Action id="actionCancel" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+		
+		<Language>
+			<Text id="actionRemove">"[R]emove"</Text>
+			
+			<Text id="descNoRoomForDevice">"The device cannot be removed because there is no room in your cargo hold to store it."</Text>
+			<Text id="descRemoveCantAfford">(cat "The device can be removed for " (@ gData 'cost) ". Unfortunately, you cannot afford the cost.")</Text>
+			<Text id="descRemoveFree">"The device can be removed free of charge."</Text>
+			<Text id="descRemove">(cat "The device can be removed for " (@ gData 'cost) ".")</Text>
 		</Language>
 	</DockScreen>
 
@@ -546,168 +648,6 @@
 					</Action>
 
 					<Action name="Done" cancel="1" key="D">
-						(scrExitScreen gScreen)
-					</Action>
-				</Actions>
-			</Default>
-		</Panes>
-	</DockScreen>
-
-<!-- REPLACE ARMOR SCREEN ======================================================
-
-	This screen allows the player to refuel from a station. It requires the
-	station to use the <Refuel> directive in its <Trade> section.
-
-	gData uses the following fields:
-
-	'armorSeg: The armor segment to replace on the player
-	'checkMilitaryID: If True, we should check for a military ID before 
-			installing Military armor. We also refuse to install Illegal armor.
-
--->
-
-	<DockScreen UNID="&dsRPGReplaceArmor;"
-			type=				"itemPicker"
-			nestedScreen=		"true"
-			>
-
-		<ListOptions
-			dataFrom=	"player"
-			list=		"aU"
-			/>
-
-		<Panes>
-			<Default
-					desc=	"Pick an armor segment to install.">
-
-				<OnPaneInit>
-					(block (thisItem canInstall currencyUsed armorSeg)
-						(setq armorSeg (@ gData 'armorSeg))
-						(setq thisItem (scrGetItem gScreen))
-						(setq canInstall True)
-						(setq currencyUsed (objGetDefaultCurrency gSource))
-						
-						(if thisItem
-							(block (desc cargoNeeded)
-								(setq gResult (shpCanInstallArmor gPlayerShip thisItem armorSeg))
-								(setq gInstallStatus (objGetItemProperty gSource thisItem 'installItemStatus))
-								(setq gCost (@ gInstallStatus 'price))
-								(setq cargoNeeded (subtract (itmGetMass (shpGetArmor gPlayerShip armorSeg)) (itmGetMass thisItem)))
-
-								(switch
-									(eq gResult 1)
-										(block Nil
-											(setq desc (cat (itmGetName thisItem 3) " are too heavy for your ship's hull."))
-											(setq canInstall Nil)
-											)
-
-									(and (@ gData 'checkMilitaryID) 
-											(itmHasModifier thisItem "Military")
-											(not (objGetItems gPlayerShip "*+MilitaryID"))
-											)
-										(block Nil
-											(setq desc (cat "You must have a military ID to install " (itmGetName thisItem 0x80) "."))
-											(setq canInstall Nil)
-											)
-											
-									(and (@ gData 'checkMilitaryID) 
-											(itmHasModifier thisItem "Illegal")
-											)
-										(block Nil
-											(setq desc "We do not install illegal armor segments.")
-											(setq canInstall Nil)
-											)
-											
-									(not (isint gResult))
-										(block Nil
-											(setq desc gResult)
-											(setq canInstall Nil)
-											)
-
-									(not (eq gResult 0))
-										(block Nil
-											(setq desc "This armor segment cannot be installed.")
-											(setq canInstall Nil)
-											)
-
-									(not (@ gInstallStatus 'canInstall))
-										(block Nil
-											(if (@ gInstallStatus 'descID)
-												(setq desc (objTranslate gSource (@ gInstallStatus 'descID) { item:thisItem targetObj:gPlayerShip }))
-												(setq desc (cat "We do not have the technology to install " (itmGetName thisItem 0x80) "."))
-												)
-											(setq canInstall Nil)
-											)
-
-									(gr cargoNeeded (objGetCargoSpaceLeft gPlayerShip))
-										(block Nil
-											(setq desc "There is no room in your cargo hold to store the old armor segment.")
-											(setq canInstall Nil)
-											)
-
-									(gr gCost (objGetBalance gPlayerShip currencyUsed))
-										(block Nil
-											(setq desc (cat "This armor segment can be installed for " (fmtCurrency currencyUsed gCost) ". Unfortunately, you cannot afford this cost."))
-											(setq canInstall Nil)
-											)
-
-									(eq gCost 0)
-										(setq desc "This armor segment can be installed free of charge.")
-
-									(setq desc (cat "This armor segment can be installed for " (fmtCurrency currencyUsed gCost) "."))
-									)
-									
-								;	If the new segment is of a lower level than the current
-								;	segment, then warn the player
-								
-								(if canInstall
-									(switch
-										(gr (itmGetLevel (shpGetArmor gPlayerShip armorSeg)) (itmGetLevel thisItem))
-											(scrSetControlValue gScreen 'descWarning
-												(cat
-													"Note: Your currently installed " (itmGetName (shpGetArmor gPlayerShip armorSeg) 0x80)
-													" is higher level."
-													)
-												)
-										)
-									)
-
-								(scrSetDesc gScreen desc)
-								)
-
-							(block Nil
-								(scrSetDesc gScreen "You do not have any armor segments in your cargo hold.")
-								(setq canInstall Nil)
-								)
-							)
-
-						(scrEnableAction gScreen 0 canInstall)
-						)
-				</OnPaneInit>
-
-				<Controls>
-					<Text id="desc"/>
-					<Text id="descWarning" style="warning"/>
-				</Controls>
-
-				<Actions>
-					<Action name="Install this Armor" default="1" key="I" >
-						(block (thisItem currencyUsed)
-							(setq thisItem (scrGetItem gScreen))
-							(setq currencyUsed (objGetDefaultCurrency gSource))
-
-							(if (and thisItem (geq (objGetBalance gPlayerShip currencyUsed) gCost))
-								(block Nil
-									(shpInstallArmor gPlayerShip thisItem (@ gData 'armorSeg))
-									(objCharge gPlayerShip currencyUsed gCost)
-									
-									(scrExitScreen gScreen)
-									)
-								)
-							)
-					</Action>
-
-					<Action name="Cancel" cancel="1" key="C">
 						(scrExitScreen gScreen)
 					</Action>
 				</Actions>

@@ -227,7 +227,8 @@ class CGSelectorArea : public AGArea
 			SEntry (void) :
 					iType(typeNone),
 					pItemCtx(NULL),
-					iSlotType(devNone)
+					iSlotType(devNone),
+					iSlotPosIndex(-1)
 				{ }
 
 			~SEntry (void)
@@ -240,6 +241,7 @@ class CGSelectorArea : public AGArea
 			CItemCtx *pItemCtx;				//	Item represented (may be NULL)
 			DeviceNames iSlotType;			//	Type of slot (if empty)
 
+			int iSlotPosIndex;				//	Position index
 			RECT rcRect;					//	Location of region (always relative to the center
 											//	of the area).
 			};

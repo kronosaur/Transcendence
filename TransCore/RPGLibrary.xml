@@ -75,6 +75,7 @@
 	<!ENTITY dsRPGManageWeapons			"0x00010030">
 	<!ENTITY dsRPGDecontamination		"0x00010031">
 	<!ENTITY dsRPGAbandonedStation		"0x00010032">
+	<!ENTITY dsRPGManageBase			"0x00010033">
 	
 	<!-- 0040-004F CARGO CRATE -->
 	

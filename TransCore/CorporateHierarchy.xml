@@ -701,8 +701,10 @@
 					"We cannot install " (itmGetName (@ gData 'item) 0x04) " on your ship."
 					)
 			</Text>
+			<Text id="dockServices:installAbility">
+				(cat "We install Makayev items up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
+			</Text>
 		</Language>
-
 	</StationType>
 
 	<!-- Arms Dealer, Bushido -->
@@ -813,6 +815,9 @@
 					"We only install Bushido items. "
 					"We cannot install " (itmGetName (@ gData 'item) 0x04) " on your ship."
 					)
+			</Text>
+			<Text id="dockServices:installAbility">
+				(cat "We install Bushido items up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
 			</Text>
 		</Language>
 
@@ -1473,6 +1478,9 @@
 					"We only install Makayev items. "
 					"We cannot install " (itmGetName (@ gData 'item) 0x04) " on your ship."
 					)
+			<Text id="dockServices:installAbility">
+				(cat "We install Makayev items up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
+			</Text>
 			</Text>
 		</Language>
 

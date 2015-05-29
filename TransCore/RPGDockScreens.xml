@@ -2,7 +2,7 @@
 
 <TranscendenceModule>
 	
-	<DockScreen unid="&dsDockScreenBase;">
+	<Type unid="&dsDockScreenBase;">
 		<Language>
 			<Text id="actionCancel">"[C]ancel"</Text>
 			<Text id="actionCommoditiesExchange">"[C]ommodities Exchange"</Text>
@@ -14,7 +14,7 @@
 			<Text id="actionRepairReplaceArmor">"Repair or Replace [A]rmor"</Text>
 			<Text id="actionUndock">"[U]ndock"</Text>
 		</Language>
-	</DockScreen>
+	</Type>
 	
 <!-- ABANDONED STATION =========================================================
 

@@ -21,7 +21,7 @@
 
 	<DockScreen UNID="&dsRPGManageArmor;"
 			type=				"armorSelector"
-			inherit=			"&dsDockScreenBase;"
+			inherit=			"&dsRPGManageBase;"
 			nestedScreen=		"true"
 			>
 
@@ -54,6 +54,7 @@
 					(block (
 						(theItem (scrGetItem gScreen))
 						(theShip gPlayerShip)
+						(actionStatus Nil)
 						)
 						
 						(switch
@@ -64,10 +65,8 @@
 								(block (
 									(desc Nil)
 									(canInstall Nil)
-									(canUpgrade Nil)
 									)
 									
-									(scrSetDesc gScreen "")
 									(scrSetControlValue gScreen 'currentItem {
 										title: "Shield Generator Slot"
 										desc: "Your ship does not have a shield generator installed."
@@ -77,32 +76,24 @@
 
 									(scrSetData gScreen 'armorSeg 'shields)
 									
-									;	Do we have any shield generators in cargo hold that we can use
-									;	to replace this generator?
-								
-									(setq canInstall
-										(and (objGetItems theShip "sUN")
-											)
-										)
+									;	Install action
 									
-									;	Does this station have any shields that we can purchase?
-								
-									(setq canUpgrade
-										(and (not (@ gData 'noUpgrade))
-											(filter (objGetItems gSource "sUN") theItemToBuy
-												(and (objGetSellPrice gSource theItemToBuy)
-														(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
-														)
-												)
-											)
-										)
-								
+									(setq actionStatus (rpgCalcDockServiceInstallAction gSource theShip { category:'shields criteria:"sUN" }))
+									(scrShowAction gScreen 'actionInstall (@ actionStatus 'visible))
+									(scrEnableAction gScreen 'actionInstall (@ actionStatus 'enabled))
+									(scrSetActionDesc gScreen 'actionInstall (@ actionStatus 'desc))
+									
+									;	Upgrade action
+									
+									(setq actionStatus (rpgCalcDockServiceUpgradeAction gSource theShip theItem { category:'shields criteria:"sUN" }))
+									(scrShowAction gScreen 'actionUpgrade (and (not (@ gData 'noUpgrade)) (@ actionStatus 'visible)))
+									(scrEnableAction gScreen 'actionUpgrade (@ actionStatus 'enabled))
+									(scrSetActionDesc gScreen 'actionUpgrade (@ actionStatus 'desc))
+									
 									;	Enable/disable various actions
 								
 									(scrShowAction gScreen 'actionRepair Nil)
 									(scrShowAction gScreen 'actionReplace Nil)
-									(scrShowAction gScreen 'actionInstall canInstall)
-									(scrShowAction gScreen 'actionUpgrade canUpgrade)
 									(scrShowAction gScreen 'actionDisable Nil)
 									(scrShowAction gScreen 'actionEnable Nil)
 									(scrShowAction gScreen 'actionRemove Nil)
@@ -119,16 +110,12 @@
 									(desc Nil)
 									(canEnable Nil)
 									(canDisable Nil)
-									(canRemove Nil)
-									(canReplace Nil)
-									(canUpgrade Nil)
 									)
 									
 									(setq desc (cat (itmGetName theItem 0x0021) " installed."))
 									
 									;	Set the description
 								
-									(scrSetDesc gScreen desc)
 									(scrSetControlValue gScreen 'currentItem {
 										source: gPlayerShip
 										item: theItem
@@ -138,70 +125,39 @@
 
 									(scrSetData gScreen 'armorSeg 'shields)
 									
-									;	Do we have any shield generators in cargo hold that we can use
-									;	to replace this generator?
-								
-									(setq canReplace
-										(filter (objGetItems theShip "sUN") theItemInCargo
-											(and
-												(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
-												(objGetItemProperty gSource theItemInCargo 'installDevicePrice)
-												)
-											)
-										)
+									;	Upgrade action
 									
-									;	Does this station have any shields that we can purchase?
-								
-									(setq canUpgrade
-										(and (not (@ gData 'noUpgrade))
-											(filter (objGetItems gSource "sUN") theItemToBuy
-												(and (objGetSellPrice gSource theItemToBuy)
-														(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
-														(not (itmIsEqual theItemToBuy theItem 'ignoreInstalled))
-														(geq (itmGetLevel theItemToBuy) (itmGetLevel theItem))
-														)
-												)
-											)
-										)
-								
-									;	Can we remove the shields?
-								
-									(setq canRemove
-										(and (not (@ gData 'upgradeInstallOnly))
-											(objGetItemProperty gSource theItem 'removeDevicePrice)
-											)
-										)
+									(setq actionStatus (rpgCalcDockServiceUpgradeAction gSource theShip theItem { category:'shields criteria:"sUN" }))
+									(scrShowAction gScreen 'actionUpgrade (and (not (@ gData 'noUpgrade)) (@ actionStatus 'visible)))
+									(scrEnableAction gScreen 'actionUpgrade (@ actionStatus 'enabled))
+									(scrSetActionDesc gScreen 'actionUpgrade (@ actionStatus 'desc))
 									
+									;	Replace action
+									
+									(setq actionStatus (rpgCalcDockServiceReplaceAction gSource theShip theItem { category:'shields criteria:"sUN" }))
+									(scrShowAction gScreen 'actionReplace (@ actionStatus 'visible))
+									(scrEnableAction gScreen 'actionReplace (@ actionStatus 'enabled))
+									(scrSetActionDesc gScreen 'actionReplace (@ actionStatus 'desc))
+								
+									;	Remove action
+									
+									(setq actionStatus (rpgCalcDockServiceRemoveAction gSource theShip theItem { category:'shields criteria:"sUN" }))
+									(scrShowAction gScreen 'actionRemove (@ actionStatus 'visible))
+									(scrEnableAction gScreen 'actionRemove (@ actionStatus 'enabled))
+									(scrSetActionDesc gScreen 'actionRemove (@ actionStatus 'desc))
+									(scrSetData gScreen 'costToRemove (@ actionStatus 'cost))
+								
 									;	Enable/disable various actions
 								
 									(scrShowAction gScreen 'actionRepair Nil)
-									(scrShowAction gScreen 'actionReplace canReplace)
-									(scrShowAction gScreen 'actionUpgrade canUpgrade)
 									(scrShowAction gScreen 'actionDisable isEnabled)
 									(scrShowAction gScreen 'actionEnable (not isEnabled))
-									(scrShowAction gScreen 'actionRemove canRemove)
 									(scrShowAction gScreen 'actionInstall Nil)
 									)
 									
 							;	Otherwise, we expect armor...
 							
 							(block (
-							
-								;	Figure out the damage on the armor
-								
-								(damage (objGetArmorDamage theShip theItem))
-								(maxHP (shpGetArmorMaxHitPoints theShip theItem))
-								
-								;	Figure out how much it would cost to repair
-								
-								(currencyUsed (objGetDefaultCurrency gSource))
-								(costToRepair (objGetArmorRepairPrice gSource theItem damage))
-								
-								(armorNoun (cat (objGetArmorName theShip theItem) " " (itmGetName theItem 0)))
-								(desc Nil)
-								(canRepair Nil)
-								(canReplace Nil)
-								(canUpgrade Nil)
 								)
 								
 								; Remember the armor segment so that we can come back to 
@@ -209,65 +165,31 @@
 
 								(scrSetData gScreen 'armorSeg (itmGetArmorInstalledLocation theItem))
 								
-								;	Set a descriptor describing the amount of damage and the cost
-								;	of repairs
+								;	Repair armor action
 								
-								(switch
-									(eq damage 0)
-										(setq desc (typTranslate &dsRPGManageArmor; 'descArmorNotDamaged { armorNoun:armorNoun }))
-
-									(gr (itmGetProperty theItem 'repairLevel) (objGetProperty gSource 'repairArmorMaxLevel))
-										(setq desc (typTranslate &dsRPGManageArmor; 'descArmorNoTech { armorNoun:armorNoun }))
-										
-									(not costToRepair)
-										(setq desc (typTranslate &dsRPGManageArmor; 'descArmorCantRepair { armorNoun:armorNoun }))
-
-									(ls (subtract maxHP damage) (divide maxHP 4))
-										(setq desc (typTranslate &dsRPGManageArmor; 'descArmorTooMuchDamage { armorNoun:armorNoun }))
-
-									(ls (objGetBalance gPlayerShip currencyUsed) costToRepair)
-										(setq desc (typTranslate &dsRPGManageArmor; 'descArmorCantAfford { armorNoun:armorNoun cost:(fmtCurrency currencyUsed costToRepair) }))
-
-									(eq costToRepair 0)
-										(block Nil
-											(setq desc (typTranslate &dsRPGManageArmor; 'descArmorFreeRepair { armorNoun:armorNoun }))
-											(scrSetData gScreen 'costToRepair 0)
-											(setq canRepair True)
-											)
-
-									(block Nil
-										(setq desc (typTranslate &dsRPGManageArmor; 'descArmorRepair { armorNoun:armorNoun cost:(fmtCurrency currencyUsed costToRepair) }))
-										(scrSetData gScreen 'costToRepair costToRepair)
-										(setq canRepair True)
-										)
-									)
-									
+								(setq actionStatus (rpgCalcDockServiceRepairAction gSource theShip theItem { category:'armor }))
+								(scrShowAction gScreen 'actionRepair (@ actionStatus 'visible))
+								(scrEnableAction gScreen 'actionRepair (@ actionStatus 'enabled))
+								(scrSetActionDesc gScreen 'actionRepair (@ actionStatus 'desc))
+								(scrSetData gScreen 'costToRepair (@ actionStatus 'cost))
+								
 								;	Do we have any armor segments in cargo hold that we can use
 								;	to replace this armor?
 								
-								(setq canReplace
-									(filter (objGetItems theShip "aU") theItemInCargo
-										(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
-										)
-									)
-									
-								;	Does this station have any armor segments that we can purchase?
+								(setq actionStatus (rpgCalcDockServiceReplaceAction gSource theShip theItem { category:'armor criteria:"aU" }))
+								(scrShowAction gScreen 'actionReplace (@ actionStatus 'visible))
+								(scrEnableAction gScreen 'actionReplace (@ actionStatus 'enabled))
+								(scrSetActionDesc gScreen 'actionReplace (@ actionStatus 'desc))
 								
-								(setq canUpgrade
-									(and (not (@ gData 'noUpgrade))
-										(filter (objGetItems gSource "aU") theItemToBuy
-											(and (objGetSellPrice gSource theItemToBuy)
-													(objGetArmorReplacePrice gSource theItemToBuy)
-													(not (itmIsEqual theItemToBuy theItem 'ignoreInstalled))
-													(geq (itmGetLevel theItemToBuy) (itmGetLevel theItem))
-													)
-											)
-										)
-									)
+								;	Upgrade action
 									
+								(setq actionStatus (rpgCalcDockServiceUpgradeAction gSource theShip theItem { category:'armor criteria:"aU" }))
+								(scrShowAction gScreen 'actionUpgrade (and (not (@ gData 'noUpgrade)) (@ actionStatus 'visible)))
+								(scrEnableAction gScreen 'actionUpgrade (@ actionStatus 'enabled))
+								(scrSetActionDesc gScreen 'actionUpgrade (@ actionStatus 'desc))
+								
 								;	Set the description
 								
-								(scrSetDesc gScreen desc)
 								(scrSetControlValue gScreen 'currentItem {
 									source: gPlayerShip
 									item: theItem
@@ -275,9 +197,6 @@
 								
 								;	Enable/disable various actions
 								
-								(scrEnableAction gScreen 'actionRepair canRepair)
-								(scrShowAction gScreen 'actionReplace canReplace)
-								(scrShowAction gScreen 'actionUpgrade canUpgrade)
 								(scrShowAction gScreen 'actionDisable Nil)
 								(scrShowAction gScreen 'actionEnable Nil)
 								(scrShowAction gScreen 'actionRemove Nil)
@@ -289,7 +208,6 @@
 				
 				<Controls>
 					<ItemDisplay id="currentItem"/>
-					<Text id="desc"/>
 				</Controls>
 
 				<Actions>
@@ -364,11 +282,7 @@
 					</Action>
 					
 					<Action id="actionRemove">
-						(scrShowScreen gScreen &dsRPGRemoveDevice; {
-							shipObj: gPlayerShip
-							dockObj: gSource
-							deviceItem: (scrGetItem gScreen)
-							})
+						(scrShowPane gScreen "RemoveDevice")
 					</Action>
 					
 					<Action id="actionDone" cancel="1">
@@ -413,7 +327,7 @@
 
 	<DockScreen UNID="&dsRPGManageMiscDevices;"
 			type=				"miscSelector"
-			inherit=			"&dsDockScreenBase;"
+			inherit=			"&dsRPGManageBase;"
 			nestedScreen=		"true"
 			>
 
@@ -423,8 +337,8 @@
 			initialItem="=(block (
 			
 				;	deviceSelected is a struct with one of the following fields:
-				;		slotCategory: This means we should select a slot of 
-				;			this category.
+				;		slotPosIndex: This means we should select a slot of 
+				;			this index.
 				;		installPos: This means we should select a device in this
 				;			install position.
 				;		installCategory: This means we should select a device 
@@ -435,25 +349,36 @@
 				;			of old devices).
 				
 				(deviceSelected (scrGetData gScreen 'deviceSelected))
+				
+				;	If none of the player's devices are installed in one of the
+				;	oldSlots, then it means that we cancelled installation/upgrade
+				
+				(cancelled 
+					(and (@ deviceSelected 'oldSlots)
+						(not (filter (objGetItems gPlayerShip &quot;d~wsI&quot;) theItem
+							(not (find (@ deviceSelected 'oldSlots) (itmGetInstallPos theItem)))
+							))
+						)
+					)
 				)
 				
 				(switch
 					(not deviceSelected)
 						True
 						
-					(@ deviceSelected 'slotCategory)
-						(eq (@ deviceSelected 'slotCategory) (if (not (scrGetItem gScreen)) (@ (scrGetListEntry gScreen) 'category)))
+					(and (not cancelled) (@ deviceSelected 'oldSlots))
+						(and (scrGetItem gScreen) 
+							(not (find (@ deviceSelected 'oldSlots) (itmGetInstallPos (scrGetItem gScreen))))
+							)
+							
+					(@ deviceSelected 'slotPosIndex)
+						(eq (@ deviceSelected 'slotPosIndex) (if (not (scrGetItem gScreen)) (@ (scrGetListEntry gScreen) 'slotPosIndex)))
 						
 					(@ deviceSelected 'installPos)
 						(eq (@ deviceSelected 'installPos) (if (scrGetItem gScreen) (itmGetInstallPos (scrGetItem gScreen))))
 						
 					(@ deviceSelected 'installCategory)
 						(eq (@ deviceSelected 'installCategory) (if (scrGetItem gScreen) (itmGetProperty (scrGetItem gScreen) 'category) (@ (scrGetListEntry gScreen) 'category)))
-						
-					(@ deviceSelected 'oldSlots)
-						(and (scrGetItem gScreen) 
-							(not (find (@ deviceSelected 'oldSlots) (itmGetInstallPos (scrGetItem gScreen))))
-							)
 						
 					True
 					)
@@ -470,30 +395,32 @@
 						(canDisable Nil)
 						(canEnable Nil)
 						(canInstall Nil)
-						(canRemove Nil)
-						(canReplace Nil)
-						(canUpgrade Nil)
 						
 						(deviceTable {
 							cargoHold: {
+								category: 'cargoHold
 								criteria: "cUN"
 								}
 								
 							device: {
+								category: 'device
 								criteria: "d~wscrv UN"
 								}
 								
 							drive: {
+								category: 'drive
 								criteria: "vUN"
 								}
 								
 							reactor: {
+								category: 'reactor
 								criteria: "rUN"
 								}
 							})
 							
 						(category (if theItem (itmGetProperty theItem 'category) (@ (scrGetListEntry gScreen) 'category)))
 						(categoryDesc (@ deviceTable category))
+						(actionStatus Nil)
 						)
 						
 						(scrSetData gScreen 'categoryCriteria (@ categoryDesc 'criteria))
@@ -516,44 +443,29 @@
 									;	Remember selection
 									
 									(scrSetData gScreen 'deviceSelected { installPos:(itmGetInstallPos theItem) })
-										
-									;	Does this station have any items that we can purchase?
-								
-									(setq canUpgrade
-										(and
-											(not (@ gData 'noUpgrade))
-											(not (eq category 'device))
-											(filter (objGetItems gSource (@ categoryDesc 'criteria)) theItemToBuy
-												(and (objGetSellPrice gSource theItemToBuy)
-														(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
-														(not (itmIsEqual theItemToBuy theItem 'ignoreInstalled))
-														(geq (itmGetLevel theItemToBuy) (itmGetLevel theItem))
-														)
-												)
-											)
-										)
-										
-									;	Can we remove the item?
-								
-									(setq canRemove	
-										(and (not (@ gData 'upgradeInstallOnly))
-											(not (eq category 'reactor))
-											(objGetItemProperty gSource theItem 'removeDevicePrice)
-											)
-										)
 									
-									;	Do we have any devices in cargo hold that we can use
-									;	to replace this device?
-								
-									(setq canReplace
-										(filter (objGetItems theShip (@ categoryDesc 'criteria)) theItemInCargo
-											(and
-												(objGetItemProperty gSource theItemInCargo 'installDevicePrice)
-												(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
-												)
-											)
-										)
-										
+									;	Upgrade action
+									
+									(setq actionStatus (rpgCalcDockServiceUpgradeAction gSource theShip theItem categoryDesc))
+									(scrShowAction gScreen 'actionUpgrade (and (not (@ gData 'noUpgrade)) (@ actionStatus 'visible)))
+									(scrEnableAction gScreen 'actionUpgrade (@ actionStatus 'enabled))
+									(scrSetActionDesc gScreen 'actionUpgrade (@ actionStatus 'desc))
+									
+									;	Remove action
+									
+									(setq actionStatus (rpgCalcDockServiceRemoveAction gSource theShip theItem categoryDesc))
+									(scrShowAction gScreen 'actionRemove (@ actionStatus 'visible))
+									(scrEnableAction gScreen 'actionRemove (@ actionStatus 'enabled))
+									(scrSetActionDesc gScreen 'actionRemove (@ actionStatus 'desc))
+									(scrSetData gScreen 'costToRemove (@ actionStatus 'cost))
+									
+									;	Replace action
+									
+									(setq actionStatus (rpgCalcDockServiceReplaceAction gSource theShip theItem categoryDesc))
+									(scrShowAction gScreen 'actionReplace (@ actionStatus 'visible))
+									(scrEnableAction gScreen 'actionReplace (@ actionStatus 'enabled))
+									(scrSetActionDesc gScreen 'actionReplace (@ actionStatus 'desc))
+									
 									;	Enable disable?
 
 									(if (objGetItemProperty theShip theItem 'canBeDisabled)
@@ -562,6 +474,8 @@
 											(setq canEnable (not isEnabled))
 											)
 										)
+										
+									(scrShowAction gScreen 'actionInstall Nil)
 									)
 									
 							;	Otherwise, this is an empty slot, so we display something
@@ -581,55 +495,55 @@
 									
 								;	Remember selection
 									
-								(scrSetData gScreen 'deviceSelected { slotCategory:category })
+								(scrSetData gScreen 'deviceSelected { slotPosIndex:(@ (scrGetListEntry gScreen) 'slotPosIndex) })
 								
-								;	Do we have any devices to install from cargo hold?
-
-								(setq canInstall 
-									(objGetItems theShip (@ categoryDesc 'criteria))
-									)
+								;	Upgrade action
+									
+								(setq actionStatus (rpgCalcDockServiceUpgradeAction gSource theShip theItem categoryDesc))
+								(scrShowAction gScreen 'actionUpgrade (and (not (@ gData 'noUpgrade)) (@ actionStatus 'visible)))
+								(scrEnableAction gScreen 'actionUpgrade (@ actionStatus 'enabled))
+								(scrSetActionDesc gScreen 'actionUpgrade (@ actionStatus 'desc))
 								
-								;	Does this station have any items that we can purchase?
+								;	Install action
+									
+								(setq actionStatus (rpgCalcDockServiceInstallAction gSource theShip categoryDesc))
+								(scrShowAction gScreen 'actionInstall (@ actionStatus 'visible))
+								(scrEnableAction gScreen 'actionInstall (@ actionStatus 'enabled))
+								(scrSetActionDesc gScreen 'actionInstall (@ actionStatus 'desc))
 								
-								(setq canUpgrade
-									(and (not (@ gData 'noUpgrade))
-										(filter (objGetItems gSource (@ categoryDesc 'criteria)) theItemToBuy
-											(and (objGetSellPrice gSource theItemToBuy)
-													(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
-													)
-											)
-										)
-									)
+								(scrShowAction gScreen 'actionRemove Nil)
+								(scrShowAction gScreen 'actionReplace Nil)
 								)
 							)
 							
 						;	Enable/disable various actions
 								
-						(scrShowAction gScreen 'actionReplace canReplace)
-						(scrShowAction gScreen 'actionInstall canInstall)
-						(scrShowAction gScreen 'actionUpgrade canUpgrade)
 						(scrShowAction gScreen 'actionDisable canDisable)
 						(scrShowAction gScreen 'actionEnable canEnable)
-						(scrShowAction gScreen 'actionRemove canRemove)
 						)
 				</OnPaneInit>
 				
 				<Controls>
 					<ItemDisplay id="currentItem"/>
-					<Text id="desc"/>
 				</Controls>
 
 				<Actions>
 					<Action id="actionUpgrade">
 						(block Nil
 							(if (not (scrGetItem gScreen))
-								(scrSetData gScreen 'deviceSelected { oldSlots:(map (objGetItems gPlayerShip "Id") theItem (itmGetInstallPos theItem)) })
+								(scrSetData gScreen 'deviceSelected 
+									{ 
+										oldSlots: (map (objGetItems gPlayerShip "Id") theItem (itmGetInstallPos theItem))
+										slotPosIndex: (@ (scrGetListEntry gScreen) 'slotPosIndex)
+										}
+									)
 								)
 								
 							(scrShowScreen gScreen &dsRPGUpgradeDevice; {
 								criteria: (scrGetData gScreen 'categoryCriteria)
 								checkMilitaryID: (@ gData 'checkMilitaryID)
 								replaceItem: (scrGetItem gScreen)
+								slotPosIndex: (@ (scrGetListEntry gScreen) 'slotPosIndex)
 								})
 							)
 					</Action>
@@ -638,11 +552,17 @@
 						(block Nil
 							;	On return, select either the newly installed item 
 							;	or the original slot.
-							(scrSetData gScreen 'deviceSelected { oldSlots:(map (objGetItems gPlayerShip "Id") theItem (itmGetInstallPos theItem)) })
+							(scrSetData gScreen 'deviceSelected 
+								{ 
+									oldSlots: (map (objGetItems gPlayerShip "Id") theItem (itmGetInstallPos theItem))
+									slotPosIndex: (@ (scrGetListEntry gScreen) 'slotPosIndex)
+									}
+								)
 						
 							(scrShowScreen gScreen &dsRPGInstallDevice; {
 								criteria: (scrGetData gScreen 'categoryCriteria)
 								checkMilitaryID: (@ gData 'checkMilitaryID)
+								slotPosIndex: (@ (scrGetListEntry gScreen) 'slotPosIndex)
 								})
 							)
 					</Action>
@@ -670,11 +590,7 @@
 					</Action>
 					
 					<Action id="actionRemove">
-						(scrShowScreen gScreen &dsRPGRemoveDevice; {
-							shipObj: gPlayerShip
-							dockObj: gSource
-							deviceItem: (scrGetItem gScreen)
-							})
+						(scrShowPane gScreen "RemoveDevice")
 					</Action>
 					
 					<Action id="actionDone" cancel="1">
@@ -698,13 +614,21 @@
 					)
 			</Text>
 			
-			<Text id="slotTitle:cargoHold">"Cargo Hold Slot"</Text>
+			<Text id="slotTitle:cargoHold">"Cargo Expansion Slot"</Text>
 			<Text id="slotDesc:cargoHold">
-				(cat
-					"Your ship does not have a cargo hold upgrade installed.\n\n"
+				(switch
+					(eq (@ gData 'slotsAvail) 0)
+						(cat
+							"There are no free slots available for a cargo expansion. "
+							"(However, some devices do not require a free slot to be installed.)"
+							)
+							
+					(cat
+						"Your ship does not have a cargo expansion installed.\n\n"
 					
-					"Cargo hold upgrade can be installed to increase the carrying "
-					"capacity of your ship."
+						"Cargo expansions can be installed to increase the carrying "
+						"capacity of your ship."
+						)
 					)
 			</Text>
 			
@@ -730,13 +654,21 @@
 					)
 			</Text>
 			
-			<Text id="slotTitle:drive">"Drive Slot"</Text>
+			<Text id="slotTitle:drive">"Drive Upgrade Slot"</Text>
 			<Text id="slotDesc:drive">
-				(cat
-					"Your ship does not have a drive upgrade installed.\n\n"
+				(switch
+					(eq (@ gData 'slotsAvail) 0)
+						(cat
+							"There are no free slots available for a drive upgrade. "
+							"(However, some devices do not require a freee slot to be installed.)"
+							)
+							
+					(cat
+						"Your ship does not have a drive upgrade installed.\n\n"
 					
-					"Drive upgrades can be installed to increase the thrust and velocity "
-					"of your ship."
+						"Drive upgrades can be installed to increase the thrust and velocity "
+						"of your ship."
+						)
 					)
 			</Text>
 			
@@ -760,7 +692,7 @@
 
 	<DockScreen UNID="&dsRPGManageWeapons;"
 			type=				"weaponsSelector"
-			inherit=			"&dsDockScreenBase;"
+			inherit=			"&dsRPGManageBase;"
 			nestedScreen=		"true"
 			>
 
@@ -770,8 +702,8 @@
 			initialItem="=(block (
 			
 				;	deviceSelected is a struct with one of the following fields:
-				;		slotCategory: This means we should select a slot of 
-				;			this category.
+				;		slotPosIndex: This means we should select a slot of 
+				;			this slot position.
 				;		installPos: This means we should select a device in this
 				;			install position.
 				;		installCategory: This means we should select a device 
@@ -782,25 +714,36 @@
 				;			of old devices).
 				
 				(deviceSelected (scrGetData gScreen 'deviceSelected))
-				)
 				
+				;	If none of the player's devices are installed in one of the
+				;	oldSlots, then it means that we cancelled installation/upgrade
+				
+				(cancelled 
+					(and (@ deviceSelected 'oldSlots)
+						(not (filter (objGetItems gPlayerShip &quot;wI&quot;) theItem
+							(not (find (@ deviceSelected 'oldSlots) (itmGetInstallPos theItem)))
+							))
+						)
+					)
+				)
+
 				(switch
 					(not deviceSelected)
 						True
 						
-					(@ deviceSelected 'slotCategory)
-						(eq (@ deviceSelected 'slotCategory) (if (not (scrGetItem gScreen)) (@ (scrGetListEntry gScreen) 'category)))
+					(and (not cancelled) (@ deviceSelected 'oldSlots))
+						(and (scrGetItem gScreen) 
+							(not (find (@ deviceSelected 'oldSlots) (itmGetInstallPos (scrGetItem gScreen))))
+							)
+							
+					(@ deviceSelected 'slotPosIndex)
+						(eq (@ deviceSelected 'slotPosIndex) (if (not (scrGetItem gScreen)) (@ (scrGetListEntry gScreen) 'slotPosIndex)))
 						
 					(@ deviceSelected 'installPos)
 						(eq (@ deviceSelected 'installPos) (if (scrGetItem gScreen) (itmGetInstallPos (scrGetItem gScreen))))
 						
 					(@ deviceSelected 'installCategory)
 						(eq (@ deviceSelected 'installCategory) (if (scrGetItem gScreen) (itmGetProperty (scrGetItem gScreen) 'category) (@ (scrGetListEntry gScreen) 'category)))
-						
-					(@ deviceSelected 'oldSlots)
-						(and (scrGetItem gScreen) 
-							(not (find (@ deviceSelected 'oldSlots) (itmGetInstallPos (scrGetItem gScreen))))
-							)
 						
 					True
 					)
@@ -819,17 +762,16 @@
 						(canDisable Nil)
 						(canEnable Nil)
 						(canInstall Nil)
-						(canRemove Nil)
-						(canReplace Nil)
-						(canUpgrade Nil)
 						
 						(deviceTable {
 							weapon: {
+								category: 'weapon
 								criteria: "pUN"
 								ammoLabel: "actionBuyAmmo"
 								}
 								
 							launcher: {
+								category: 'launcher
 								criteria: "lUN"
 								ammoLabel: "actionBuyMissiles"
 								}
@@ -849,6 +791,7 @@
 							theItem
 								(block (
 									(isEnabled (objGetItemProperty theShip theItem 'enabled))
+									(actionStatus Nil)
 									)
 								
 									(scrSetControlValue gScreen 'currentItem {
@@ -860,54 +803,36 @@
 									
 									(scrSetData gScreen 'deviceSelected { installPos:(itmGetInstallPos theItem) })
 									
-									;	Does this weapon require ammo? Does this station have
-									;	ammo to sell?
+									;	Buy ammo action
 									
-									(setq requiresAmmo (itmGetProperty theItem 'ammoType))
-									(setq canBuyAmmo 
-										(and requiresAmmo 
-											(filter (objGetItems gSource (cat "m +launchedBy:" (itmGetType theItem) ";")) theItemToBuy
-												(objGetSellPrice gSource theItemToBuy)
-												)
-											)
-										)
-										
-									;	Does this station have any items that we can purchase?
-								
-									(setq canUpgrade
-										(and
-											(not (eq category 'device))
-											(not (@ gData 'noUpgrade))
-											(filter (objGetItems gSource (@ categoryDesc 'criteria)) theItemToBuy
-												(and (objGetSellPrice gSource theItemToBuy)
-														(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
-														(not (itmIsEqual theItemToBuy theItem 'ignoreInstalled))
-														(geq (itmGetLevel theItemToBuy) (itmGetLevel theItem))
-														)
-												)
-											)
-										)
-										
-									;	Can we remove the item?
-								
-									(setq canRemove	
-										(and (not (@ gData 'upgradeInstallOnly))
-											(objGetItemProperty gSource theItem 'removeDevicePrice)
-											)
-										)
+									(setq actionStatus (rpgCalcDockServiceBuyAmmo gSource theShip theItem categoryDesc))
+									(scrShowAction gScreen 'actionBuyAmmo (@ actionStatus 'visible))
+									(scrEnableAction gScreen 'actionBuyAmmo (@ actionStatus 'enabled))
+									(scrSetActionLabel gScreen 'actionBuyAmmo (scrTranslate gScreen (@ categoryDesc 'ammoLabel)))
+									(scrSetActionDesc gScreen 'actionBuyAmmo (@ actionStatus 'desc))
 									
-									;	Do we have any devices in cargo hold that we can use
-									;	to replace this device?
-								
-									(setq canReplace
-										(filter (objGetItems theShip (@ categoryDesc 'criteria)) theItemInCargo
-											(and
-												(objGetItemProperty gSource theItemInCargo 'installDevicePrice)
-												(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
-												)
-											)
-										)
+									;	Upgrade action
+									
+									(setq actionStatus (rpgCalcDockServiceUpgradeAction gSource theShip theItem categoryDesc))
+									(scrShowAction gScreen 'actionUpgrade (and (not (@ gData 'noUpgrade)) (@ actionStatus 'visible)))
+									(scrEnableAction gScreen 'actionUpgrade (@ actionStatus 'enabled))
+									(scrSetActionDesc gScreen 'actionUpgrade (@ actionStatus 'desc))
 										
+									;	Remove action
+									
+									(setq actionStatus (rpgCalcDockServiceRemoveAction gSource theShip theItem categoryDesc))
+									(scrShowAction gScreen 'actionRemove (@ actionStatus 'visible))
+									(scrEnableAction gScreen 'actionRemove (@ actionStatus 'enabled))
+									(scrSetActionDesc gScreen 'actionRemove (@ actionStatus 'desc))
+									(scrSetData gScreen 'costToRemove (@ actionStatus 'cost))
+									
+									;	Replace action
+									
+									(setq actionStatus (rpgCalcDockServiceReplaceAction gSource theShip theItem categoryDesc))
+									(scrShowAction gScreen 'actionReplace (@ actionStatus 'visible))
+									(scrEnableAction gScreen 'actionReplace (@ actionStatus 'enabled))
+									(scrSetActionDesc gScreen 'actionReplace (@ actionStatus 'desc))
+									
 									;	Enable disable?
 
 									(if (objGetItemProperty theShip theItem 'canBeDisabled)
@@ -916,6 +841,8 @@
 											(setq canEnable (not isEnabled))
 											)
 										)
+										
+									(scrShowAction gScreen 'actionInstall Nil)
 									)
 									
 							;	Otherwise, this is an empty slot, so we display something
@@ -935,46 +862,40 @@
 									
 								;	Remember selection
 									
-								(scrSetData gScreen 'deviceSelected { slotCategory:category })
+								(scrSetData gScreen 'deviceSelected { slotPosIndex:(@ (scrGetListEntry gScreen) 'slotPosIndex) })
 								
-								;	Do we have any devices to install from cargo hold?
+								;	Cannot buy ammo/missiles
+								
+								(scrShowAction gScreen 'actionBuyAmmo Nil)
+						
+								;	Upgrade action
+									
+								(setq actionStatus (rpgCalcDockServiceUpgradeAction gSource theShip theItem categoryDesc))
+								(scrShowAction gScreen 'actionUpgrade (and (not (@ gData 'noUpgrade)) (@ actionStatus 'visible)))
+								(scrEnableAction gScreen 'actionUpgrade (@ actionStatus 'enabled))
+								(scrSetActionDesc gScreen 'actionUpgrade (@ actionStatus 'desc))
 
-								(setq canInstall 
-									(objGetItems theShip (@ categoryDesc 'criteria))
-									)
+								;	Install action
+									
+								(setq actionStatus (rpgCalcDockServiceInstallAction gSource theShip categoryDesc))
+								(scrShowAction gScreen 'actionInstall (@ actionStatus 'visible))
+								(scrEnableAction gScreen 'actionInstall (@ actionStatus 'enabled))
+								(scrSetActionDesc gScreen 'actionInstall (@ actionStatus 'desc))
 								
-								;	Does this station have any items that we can purchase?
-								
-								(setq canUpgrade
-									(and (not (@ gData 'noUpgrade))
-										(filter (objGetItems gSource (@ categoryDesc 'criteria)) theItemToBuy
-											(and (objGetSellPrice gSource theItemToBuy)
-													(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
-													)
-											)
-										)
-									)
+								(scrShowAction gScreen 'actionRemove Nil)
+								(scrShowAction gScreen 'actionReplace Nil)
 								)
 							)
 							
 						;	Enable/disable various actions
 								
-						(scrShowAction gScreen 'actionBuyAmmo requiresAmmo)
-						(scrEnableAction gScreen 'actionBuyAmmo canBuyAmmo)
-						(scrSetActionLabel gScreen 'actionBuyAmmo (scrTranslate gScreen (@ categoryDesc 'ammoLabel)))
-						
-						(scrShowAction gScreen 'actionReplace canReplace)
-						(scrShowAction gScreen 'actionInstall canInstall)
-						(scrShowAction gScreen 'actionUpgrade canUpgrade)
 						(scrShowAction gScreen 'actionDisable canDisable)
 						(scrShowAction gScreen 'actionEnable canEnable)
-						(scrShowAction gScreen 'actionRemove canRemove)
 						)
 				</OnPaneInit>
 				
 				<Controls>
 					<ItemDisplay id="currentItem"/>
-					<Text id="desc"/>
 				</Controls>
 
 				<Actions>
@@ -988,13 +909,19 @@
 					<Action id="actionUpgrade">
 						(block Nil
 							(if (not (scrGetItem gScreen))
-								(scrSetData gScreen 'deviceSelected { oldSlots:(map (objGetItems gPlayerShip "Id") theItem (itmGetInstallPos theItem)) })
+								(scrSetData gScreen 'deviceSelected 
+									{ 
+										oldSlots: (map (objGetItems gPlayerShip "Id") theItem (itmGetInstallPos theItem))
+										slotPosIndex: (@ (scrGetListEntry gScreen) 'slotPosIndex)
+										}
+									)
 								)
 								
 							(scrShowScreen gScreen &dsRPGUpgradeDevice; {
 								criteria: (scrGetData gScreen 'categoryCriteria)
 								checkMilitaryID: (@ gData 'checkMilitaryID)
 								replaceItem: (scrGetItem gScreen)
+								slotPosIndex: (@ (scrGetListEntry gScreen) 'slotPosIndex)
 								})
 							)
 					</Action>
@@ -1003,11 +930,17 @@
 						(block Nil
 							;	On return, select either the newly installed item 
 							;	or the original slot.
-							(scrSetData gScreen 'deviceSelected { oldSlots:(map (objGetItems gPlayerShip "Id") theItem (itmGetInstallPos theItem)) })
+							(scrSetData gScreen 'deviceSelected 
+								{ 
+									oldSlots: (map (objGetItems gPlayerShip "Id") theItem (itmGetInstallPos theItem))
+									slotPosIndex: (@ (scrGetListEntry gScreen) 'slotPosIndex)
+									}
+								)
 						
 							(scrShowScreen gScreen &dsRPGInstallDevice; {
 								criteria: (scrGetData gScreen 'categoryCriteria)
 								checkMilitaryID: (@ gData 'checkMilitaryID)
+								slotPosIndex: (@ (scrGetListEntry gScreen) 'slotPosIndex)
 								})
 							)
 					</Action>
@@ -1035,11 +968,7 @@
 					</Action>
 					
 					<Action id="actionRemove">
-						(scrShowScreen gScreen &dsRPGRemoveDevice; {
-							shipObj: gPlayerShip
-							dockObj: gSource
-							deviceItem: (scrGetItem gScreen)
-							})
+						(scrShowPane gScreen "RemoveDevice")
 					</Action>
 					
 					<Action id="actionDone" cancel="1">
@@ -1060,7 +989,17 @@
 			<Text id="actionUpgrade">"Buy [U]pgrade"</Text>
 			
 			<Text id="slotTitle:launcher">"Launcher Slot"</Text>
-			<Text id="slotDesc:launcher">"Your ship does not have a missile launcher installed."</Text>
+			<Text id="slotDesc:launcher">
+				(switch
+					(eq (@ gData 'slotsAvail) 0)
+						(cat
+							"There are no free slots available for a launcher. "
+							"(However, some launchers do not require a free slot to be installed.)"
+							)
+							
+					"Your ship does not have a missile launcher installed."
+					)
+			</Text>
 			
 			<Text id="slotTitle:weapon">"Weapon Slot"</Text>
 			<Text id="slotDesc:weapon">
@@ -1084,107 +1023,183 @@
 		</Language>
 	</DockScreen>
 	
-<!-- REMOVE DEVICE SCREEN ======================================================
+<!-- REPLACE ARMOR SCREEN ======================================================
 
-	This screen allows the player to remove a currently installed device.
+	This screen allows the player to replace armor from a station. It requires 
+	the station to use the <ReplaceArmor> directive in its <Trade> section.
 
 	gData uses the following fields:
 
-	shipObj: The object from which we are removing the device.
-	dockObj: The object that is removing the device.
-	deviceItem: The item to remove.
-	
+	'armorSeg: The armor segment to replace on the player
+	'checkMilitaryID: If True, we should check for a military ID before 
+			installing Military armor. We also refuse to install Illegal armor.
+
 -->
 
-	<DockScreen UNID="&dsRPGRemoveDevice;"
-			inherit=			"&dsDockScreenBase;"
+	<DockScreen UNID="&dsRPGReplaceArmor;"
+			type=				"itemPicker"
 			nestedScreen=		"true"
 			>
-		<Panes>
-			<Default>
-				<OnPaneInit>
-					(block (
-						(theItem (@ gData 'deviceItem))
-						(theShip (@ gData 'shipObj))
-						(theDock (@ gData 'dockObj))
-						
-						(currencyUsed (objGetDefaultCurrency theDock))
-						(costToRemove (objGetItemProperty theDock theItem 'removeDevicePrice))
-						
-						(result (shpCanRemoveDevice theShip theItem))
-						
-						(desc Nil)
-						(canRemove Nil)
+
+		<ListOptions
+			dataFrom=	"player"
+			list=		"aU"
+			>
+			(block (
+				(criteria (if (@ gData 'criteria) (@ gData 'criteria) "aU"))
+				(armorSeg (@ gData 'armorSeg))
+				(armorToReplace (shpGetArmor gPlayerShip armorSeg))
+				)
+				
+				(scrSetListFilter gScreen (lambda (theItem)
+					(and
+						(itmMatches theItem criteria)
+						(or
+							(not armorToReplace)
+							(not (itmIsEqual theItem armorToReplace 'ignoreInstalled))
+							)
 						)
+					))
+				)
+		</ListOptions>
+
+		<Panes>
+			<Default
+					desc=	"Pick an armor segment to install.">
+
+				<OnPaneInit>
+					(block (thisItem canInstall currencyUsed armorSeg)
+						(setq armorSeg (@ gData 'armorSeg))
+						(setq thisItem (scrGetItem gScreen))
+						(setq canInstall True)
+						(setq currencyUsed (objGetDefaultCurrency gSource))
 						
-						(switch
-							(not (isint result))
-								(setq desc result)
-								
-							(not (eq result 0))
-								(setq desc "The device cannot be removed.")
-								
-							(gr (itmGetMass theItem) (objGetCargoSpaceLeft theShip))
-								(setq desc (scrTranslate gScreen 'descNoRoomForDevice))
-								
-							(ls (objGetBalance theShip currencyUsed) costToRemove)
-								(setq desc (scrTranslate gScreen 'descRemoveCantAfford { cost:(fmtCurrency currencyUsed costToRemove) }))
-								
-							(eq costToRemove 0)
-								(block Nil
-									(setq desc (scrTranslate gScreen 'descRemoveFree))
-									(scrSetData gScreen 'cost 0)
-									(setq canRemove True)
+						(if thisItem
+							(block (desc cargoNeeded)
+								(setq gResult (shpCanInstallArmor gPlayerShip thisItem armorSeg))
+								(setq gInstallStatus (objGetItemProperty gSource thisItem 'installItemStatus))
+								(setq gCost (@ gInstallStatus 'price))
+								(setq cargoNeeded (subtract (itmGetMass (shpGetArmor gPlayerShip armorSeg)) (itmGetMass thisItem)))
+
+								(switch
+									(eq gResult 1)
+										(block Nil
+											(setq desc (cat (itmGetName thisItem 3) " are too heavy for your ship's hull."))
+											(setq canInstall Nil)
+											)
+
+									(and (@ gData 'checkMilitaryID) 
+											(itmHasModifier thisItem "Military")
+											(not (objGetItems gPlayerShip "*+MilitaryID"))
+											)
+										(block Nil
+											(setq desc (cat "You must have a military ID to install " (itmGetName thisItem 0x80) "."))
+											(setq canInstall Nil)
+											)
+											
+									(and (@ gData 'checkMilitaryID) 
+											(itmHasModifier thisItem "Illegal")
+											)
+										(block Nil
+											(setq desc "We do not install illegal armor segments.")
+											(setq canInstall Nil)
+											)
+											
+									(not (isint gResult))
+										(block Nil
+											(setq desc gResult)
+											(setq canInstall Nil)
+											)
+
+									(not (eq gResult 0))
+										(block Nil
+											(setq desc "This armor segment cannot be installed.")
+											(setq canInstall Nil)
+											)
+
+									(not (@ gInstallStatus 'canInstall))
+										(block Nil
+											(if (@ gInstallStatus 'descID)
+												(setq desc (objTranslate gSource (@ gInstallStatus 'descID) { item:thisItem targetObj:gPlayerShip }))
+												(setq desc (cat "We do not have the technology to install " (itmGetName thisItem 0x80) "."))
+												)
+											(setq canInstall Nil)
+											)
+
+									(gr cargoNeeded (objGetCargoSpaceLeft gPlayerShip))
+										(block Nil
+											(setq desc "There is no room in your cargo hold to store the old armor segment.")
+											(setq canInstall Nil)
+											)
+
+									(gr gCost (objGetBalance gPlayerShip currencyUsed))
+										(block Nil
+											(setq desc (cat "This armor segment can be installed for " (fmtCurrency currencyUsed gCost) ". Unfortunately, you cannot afford this cost."))
+											(setq canInstall Nil)
+											)
+
+									(eq gCost 0)
+										(setq desc "This armor segment can be installed free of charge.")
+
+									(setq desc (cat "This armor segment can be installed for " (fmtCurrency currencyUsed gCost) "."))
 									)
 									
+								;	If the new segment is of a lower level than the current
+								;	segment, then warn the player
+								
+								(if canInstall
+									(switch
+										(gr (itmGetLevel (shpGetArmor gPlayerShip armorSeg)) (itmGetLevel thisItem))
+											(scrSetControlValue gScreen 'descWarning
+												(cat
+													"Note: Your currently installed " (itmGetName (shpGetArmor gPlayerShip armorSeg) 0x80)
+													" is higher level."
+													)
+												)
+										)
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+
 							(block Nil
-								(setq desc (scrTranslate gScreen 'descRemove { cost:(fmtCurrency currencyUsed costToRemove) }))
-								(scrSetData gScreen 'cost costToRemove)
-								(setq canRemove True)
+								(scrSetDesc gScreen "You do not have any armor segments in your cargo hold.")
+								(setq canInstall Nil)
 								)
 							)
-						
-						;	Set description
-						
-						(scrSetDesc gScreen desc)
-						
-						;	Set actions
-						
-						(scrEnableAction gScreen 'actionRemove canRemove)
+
+						(scrEnableAction gScreen 0 canInstall)
 						)
 				</OnPaneInit>
-				
-				<Actions>
-					<Action id="actionRemove" default="1">
-						(block (
-							(theItem (@ gData 'deviceItem))
-							(theShip (@ gData 'shipObj))
-							(theDock (@ gData 'dockObj))
-							(currencyUsed (objGetDefaultCurrency theDock))
-							)
-							
-							(shpRemoveDevice theShip theItem)
-							(objCharge theShip currencyUsed (scrGetData gScreen 'cost))
 
-							(scrExitScreen gScreen)
+				<Controls>
+					<Text id="desc"/>
+					<Text id="descWarning" style="warning"/>
+				</Controls>
+
+				<Actions>
+					<Action name="Install this Armor" default="1" key="I" >
+						(block (thisItem currencyUsed)
+							(setq thisItem (scrGetItem gScreen))
+							(setq currencyUsed (objGetDefaultCurrency gSource))
+
+							(if (and thisItem (geq (objGetBalance gPlayerShip currencyUsed) gCost))
+								(block Nil
+									(shpInstallArmor gPlayerShip thisItem (@ gData 'armorSeg))
+									(objCharge gPlayerShip currencyUsed gCost)
+									
+									(scrExitScreen gScreen)
+									)
+								)
 							)
 					</Action>
-					
-					<Action id="actionCancel" cancel="1">
+
+					<Action name="Cancel" cancel="1" key="C">
 						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
 		</Panes>
-		
-		<Language>
-			<Text id="actionRemove">"[R]emove"</Text>
-			
-			<Text id="descNoRoomForDevice">"The device cannot be removed because there is no room in your cargo hold to store it."</Text>
-			<Text id="descRemoveCantAfford">(cat "The device can be removed for " (@ gData 'cost) ". Unfortunately, you cannot afford the cost.")</Text>
-			<Text id="descRemoveFree">"The device can be removed free of charge."</Text>
-			<Text id="descRemove">(cat "The device can be removed for " (@ gData 'cost) ".")</Text>
-		</Language>
 	</DockScreen>
 
 <!-- UPGRADE ARMOR SCREEN ======================================================
@@ -1350,4 +1365,223 @@
 		</Language>
 	</DockScreen>
 
+<!-- BASE CLASSES -->
+
+	<DockScreen unid="&dsRPGManageBase;"
+			inherit=		"&dsDockScreenBase;"
+			>
+		<Panes>
+			<RemoveDevice>
+				<OnPaneInit>
+					(block Nil
+						(scrSetControlValue gScreen 'currentItem {
+							source: gPlayerShip
+							item: (scrGetItem gScreen)
+							})
+							
+						(scrSetDescTranslate gScreen 'descRemoveDeviceConfirm {
+							item: (scrGetItem gScreen) 
+							cost: 
+								(if (gr (scrGetData gScreen 'costToRemove) 0)
+									(fmtCurrency (objGetDefaultCurrency gSource) (scrGetData gScreen 'costToRemove))
+									)
+							})
+						)
+				</OnPaneInit>
+				
+				<Controls>
+					<ItemDisplay id="currentItem"/>
+					<Text id="desc"/>
+				</Controls>
+
+				<Actions>
+					<Action id="actionRemove" default="1">
+						(block Nil
+							(shpRemoveDevice gPlayerShip (scrGetItem gScreen))
+							(objCharge gPlayerShip (objGetDefaultCurrency gSource) (scrGetData gScreen 'costToRemove))
+
+							(scrRefreshScreen gScreen)
+							)
+					</Action>
+					
+					<Action id="actionCancel" cancel="1">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</RemoveDevice>
+		</Panes>
+		
+		<Language>
+			<Text id="actionBuyAmmo:ammoForSale">
+				(cat "We have ammo in stock for " (itmGetName (@ gData 'item) 0x04) ".")
+			</Text>
+			<Text id="actionBuyAmmo:noAmmoToBuy">
+				(cat "We do not have ammo for " (itmGetName (@ gData 'item) 0x04) ".")
+			</Text>
+			<Text id="actionBuyMissiles:missilesForSale">
+				(cat "We have missiles in stock for " (itmGetName (@ gData 'item) 0x04) ".")
+			</Text>
+			<Text id="actionBuyMissiles:noMissilesToBuy">
+				(cat "We do not have missiles for " (itmGetName (@ gData 'item) 0x04) ".")
+			</Text>
+			<Text id="actionInstall:noItemInCargo">
+				(switch
+					(= (@ gData 'category) 'cargoHold)
+						"You do not have any cargo expansions in your cargo hold."
+						
+					(= (@ gData 'category) 'drive)
+						"You do not have any drive upgrades in your cargo hold."
+						
+					(= (@ gData 'category) 'launcher)
+						"You do not have any launchers in your cargo hold."
+						
+					(= (@ gData 'category) 'reactor)
+						"You do not have any reactors in your cargo hold."
+						
+					(= (@ gData 'category) 'shields)
+						"You do not have any shield generators in your cargo hold."
+						
+					(= (@ gData 'category) 'weapon)
+						"You do not have any weapons in your cargo hold."
+						
+					"You do not have any devices in your cargo hold."
+					)
+			</Text>
+			<Text id="actionInstall:defaultAbility">
+				(cat "We install devices up to tech level " (objGetProperty (@ gData 'dockObj) 'installDeviceMaxLevel) ".")
+			</Text>
+			<Text id="actionInstall:upgradeInstallOnly">"Sorry, we only install or remove items as part of an upgrade purchase."</Text>
+				
+			<Text id="actionRemove:cannotAfford">
+				(cat "The device can be removed for " (@ gData 'cost) ". Unfortunately, you cannot afford the cost.")
+			</Text>
+			<Text id="actionRemove:cannotRemove">"The device cannot be removed."</Text>
+			<Text id="actionRemove:freeRemove">"The device can be removed free of charge."</Text>
+			<Text id="actionRemove:noRoomInCargo">"The device cannot be removed because there is no room in your cargo hold to store it."</Text>
+			<Text id="actionRemove:remove">(cat "The device can be removed for " (@ gData 'cost) ".")</Text>
+			<Text id="actionRemove:upgradeInstallOnly">"Sorry, we only install or remove items as part of an upgrade purchase."</Text>
+			<Text id="actionRemove:noTech">(cat "We do not have the technology to remove a level " (itmGetLevel (@ gData 'item)) " device.")</Text>
+			
+			<Text id="actionReplace:cannotReplace">"The device cannot be replaced."</Text>
+			<Text id="actionReplace:defaultAbility">
+				(switch
+					(and (= (@ gData 'category) 'armor) (@ gData 'maxLevel))
+						(cat 
+							"We install armor up to tech level " (objGetProperty (@ gData 'dockObj) 'installArmorMaxLevel) 
+							" (but you don't have anything better than level " (@ gData 'maxLevel) " in your cargo hold)."
+							)
+							
+					(@ gData 'maxLevel)
+						(cat 
+							"We install devices up to tech level " (objGetProperty (@ gData 'dockObj) 'installArmorMaxLevel)
+							" (but you don't have anything better than level " (@ gData 'maxLevel) " in your cargo hold)."
+							)
+						
+					(= (@ gData 'category) 'armor)
+						(cat "We install armor up to tech level " (objGetProperty (@ gData 'dockObj) 'installArmorMaxLevel) ".")
+						
+					(cat "We install devices up to tech level " (objGetProperty (@ gData 'dockObj) 'installDeviceMaxLevel) ".")
+					)
+			</Text>
+			<Text id="actionReplace:noItemInCargo">
+				(if (= (@ gData 'category) 'armor)
+					"There is nothing in your cargo hold to replace this armor segment with."
+					"There is nothing in your cargo hold to replace this device with."
+					)
+			</Text>
+			<Text id="actionReplace:noTech">(cat "We do not have the technology to replace a level " (itmGetLevel (@ gData 'item)) " device.")</Text>
+			<Text id="actionReplace:upgradeInstallOnly">"Sorry, we only install or remove items as part of an upgrade purchase."</Text>
+			
+			<Text id="actionUpgrade:cannotUpgrade">"The device cannot be upgraded."</Text>
+			<Text id="actionUpgrade:defaultAbility">
+				(switch
+					(= (@ gData 'category) 'armor)
+						(cat "We have armor segments in stock up to tech level " (@ gData 'maxLevel))
+					
+					(= (@ gData 'category) 'cargoHold)
+						(cat "We have cargo expansions in stock up to tech level " (@ gData 'maxLevel))
+						
+					(= (@ gData 'category) 'drive)
+						(cat "We have drive upgrades in stock up to tech level " (@ gData 'maxLevel))
+						
+					(= (@ gData 'category) 'launcher)
+						(cat "We have launchers in stock up to tech level " (@ gData 'maxLevel))
+						
+					(= (@ gData 'category) 'reactor)
+						(cat "We have reactors in stock up to tech level " (@ gData 'maxLevel))
+						
+					(= (@ gData 'category) 'shields)
+						(cat "We have shield generators in stock up to tech level " (@ gData 'maxLevel))
+						
+					(= (@ gData 'category) 'weapon)
+						(cat "We have weapons in stock up to tech level " (@ gData 'maxLevel))
+						
+					(cat "We have devices in stock up to tech level " (@ gData 'maxLevel))
+					)
+			</Text>
+			<Text id="actionUpgrade:noItemForSale">
+				(switch
+					(= (@ gData 'category) 'armor)
+						"We do not have any armor segments for sale."
+					
+					(= (@ gData 'category) 'cargoHold)
+						"We do not have any cargo expansions for sale."
+						
+					(= (@ gData 'category) 'drive)
+						"We do not have any drive upgrades for sale."
+						
+					(= (@ gData 'category) 'launcher)
+						"We do not have any launchers for sale."
+						
+					(= (@ gData 'category) 'reactor)
+						"We do not have any reactors for sale."
+						
+					(= (@ gData 'category) 'shields)
+						"We do not have any shield generators for sale."
+						
+					(= (@ gData 'category) 'weapon)
+						"We do not have any weapons for sale."
+						
+					"We do not have any devices for sale."
+					)
+			</Text>
+			<Text id="actionUpgrade:noItemUpgrade">
+				(switch
+					(= (@ gData 'category) 'armor)
+						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " armor.")
+					
+					(= (@ gData 'category) 'cargoHold)
+						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " cargo expansion.")
+						
+					(= (@ gData 'category) 'drive)
+						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " drive upgrade.")
+						
+					(= (@ gData 'category) 'launcher)
+						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " launcher.")
+						
+					(= (@ gData 'category) 'reactor)
+						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " reactor.")
+						
+					(= (@ gData 'category) 'shields)
+						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " shields.")
+						
+					(= (@ gData 'category) 'weapon)
+						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " weapon.")
+						
+					(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " device.")
+					)
+			</Text>
+			<Text id="actionUpgrade:noTech">(cat "We do not have the technology to upgrade a level " (itmGetLevel (@ gData 'item)) " device.")</Text>
+		
+			<Text id="descRemoveDeviceConfirm">
+				(switch
+					(not (@ gData 'cost))
+						(cat "We can remove " (itmGetName (@ gData 'item) 0x04) " free of charge. Are you sure you wish to continue?")
+						
+					(cat "We can remove " (itmGetName (@ gData 'item) 0x04) " for " (@ gData 'cost) ". Are you sure you wish to continue?")
+					)
+			</Text>
+		</Language>
+	</DockScreen>
+	
 </TranscendenceModule>

@@ -11,6 +11,7 @@
 
 #define CANCEL_ATTRIB				CONSTLIT("cancel")
 #define DEFAULT_ATTRIB				CONSTLIT("default")
+#define DESC_ID_ATTRIB				CONSTLIT("descID")
 #define ID_ATTRIB					CONSTLIT("id")
 #define KEY_ATTRIB					CONSTLIT("key")
 #define MINOR_ATTRIB				CONSTLIT("minor")
@@ -29,6 +30,11 @@ const int ACTION_BUTTON_HEIGHT =	22;
 const int ACTION_BUTTON_SPACING =	4;
 
 const int BOTTOM_MARGIN_Y =			46;
+
+const int CONTROL_BORDER_RADIUS =	4;
+const int CONTROL_INNER_PADDING =	8;
+
+const int AREA_PADDING =			64;
 
 CDockScreenActions::~CDockScreenActions (void)
 
@@ -55,7 +61,6 @@ ALERROR CDockScreenActions::AddAction (const CString &sID, int iPos, const CStri
 
 	SActionDesc *pAction = m_Actions.InsertAt(iPos);
 	pAction->sID = sID;
-	pAction->pButton = NULL;
 	pAction->pExtension = pExtension;
 	pAction->pCmd = NULL;
 	pAction->pCode = pCode->Reference();
@@ -113,22 +118,65 @@ void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot,
 	const CG16bitFont &MajorLabelFont = VI.GetFont(fontMediumHeavyBold);
 	const CG16bitFont &MinorLabelFont = VI.GetFont(fontMedium);
 
-	//	We create buttons in one of two areas. Major buttons are at the top of
-	//	the frame. Minor buttons are at the bottom. We start by counting the 
-	//	number of minor buttons.
+	//	Loop over all buttons and get some stats about them. We also generate
+	//	all labels because we might need to grow the (horizontal) size of buttons
+	//	depending on it.
 
+	bool bLongButtons = false;
 	int iMinorButtonCount = 0;
 	for (i = 0; i < GetCount(); i++)
 		{
 		SActionDesc *pAction = &m_Actions[i];
-		if (pAction->bVisible && pAction->bMinor)
+		if (!pAction->bVisible)
+			continue;
+
+		if (pAction->bMinor)
 			iMinorButtonCount++;
+
+		if (!pAction->sDesc.IsBlank() || !pAction->sDescID.IsBlank())
+			bLongButtons = true;
+
+		//	If the label is currently blank, then look up the ID in the language
+		//	table and see if we have something.
+
+		CString sLabelDesc;
+		if (pAction->sLabel.IsBlank() 
+				&& pRoot
+				&& !pAction->sID.IsBlank()
+				&& pRoot->TranslateText(NULL, pAction->sID, NULL, &sLabelDesc))
+			{
+			ParseLabelDesc(sLabelDesc, &pAction->sLabelTmp, &pAction->sKeyTmp);
+
+			//	We need to set the action key because we have to check for it
+			//	during input.
+
+			if (!pAction->sKeyTmp.IsBlank())
+				pAction->sKey = pAction->sKeyTmp;
+			}
+		else
+			{
+			pAction->sLabelTmp = pAction->sLabel;
+			pAction->sKeyTmp = pAction->sKey;
+			}
+
+		//	If we've got a quoted label, then make it longer
+
+		char *pPos = pAction->sLabelTmp.GetASCIIZPointer();
+		if (*pPos == '\"' || *pPos == '“')
+			bLongButtons = true;
 		}
 
-	//	Compute the top of the two areas.
+	//	We create buttons in one of two areas. Major buttons are at the top of
+	//	the frame. Minor buttons are at the bottom. We start by counting the 
+	//	number of minor buttons.
 
 	int yMajor = rcFrame.top;
 	int yMinor = rcFrame.bottom - BOTTOM_MARGIN_Y - (iMinorButtonCount * ACTION_BUTTON_HEIGHT) - ((iMinorButtonCount - 1) * ACTION_BUTTON_SPACING);
+
+	//	Padding
+
+	int xLeft = rcFrame.left + (bLongButtons ? 0 : AREA_PADDING);
+	int xRight = rcFrame.right - (bLongButtons ? 0 : AREA_PADDING);
 
 	//	Create all buttons
 
@@ -142,39 +190,26 @@ void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot,
 
 		CGButtonArea *pButton = new CGButtonArea;
 
-		//	If the label is currently blank, then look up the ID in the language
-		//	table and see if we have something.
+		//	Set the label and key (which we already computed)
 
-		if (pAction->sLabel.IsBlank() 
-				&& pRoot
-				&& !pAction->sID.IsBlank())
+		pButton->SetLabel(pAction->sLabelTmp);
+		pButton->SetLabelAccelerator(pAction->sKeyTmp);
+
+		//	If we have a description, set that
+
+		if (!pAction->sDesc.IsBlank())
+			pButton->SetDesc(pAction->sDesc);
+
+		//	Otherwise, if we have a description ID, then translate
+
+		else if (!pAction->sDescID.IsBlank() && pRoot)
 			{
-			CString sLabelDesc;
-			if (pRoot->TranslateText(NULL, pAction->sID, NULL, &sLabelDesc))
-				{
-				CString sLabel;
-				CString sKey;
-				ParseLabelDesc(sLabelDesc, &sLabel, &sKey);
-
-				//	Set the label. Note that we don't update pAction->sLabel in case
-				//	we want the label to be determined dynamically.
-
-				pButton->SetLabel(sLabel);
-
-				//	We need to set the action key because we have to check for it
-				//	during input.
-
-				if (!sKey.IsBlank())
-					pAction->sKey = sKey;
-				}
+			CString sText;
+			if (pRoot->TranslateText(NULL, pAction->sDescID, NULL, &sText))
+				pButton->SetDesc(sText);
 			}
 
-		//	Otherwise, just use the stored label and key
-
-		else
-			pButton->SetLabel(pAction->sLabel);
-
-		pButton->SetLabelAccelerator(pAction->sKey);
+		//	Enabled/disabled
 
 		if (!pAction->bEnabled)
 			pButton->SetDisabled();
@@ -186,9 +221,9 @@ void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot,
 			pButton->SetLabelFont(&MinorLabelFont);
 
 			RECT rcArea;
-			rcArea.left = rcFrame.left;
+			rcArea.left = xLeft;
 			rcArea.top = yMinor;
-			rcArea.right = rcFrame.right;
+			rcArea.right = xRight;
 			rcArea.bottom = yMinor + ACTION_BUTTON_HEIGHT;
 			pFrame->AddArea(pButton, rcArea, dwFirstTag + i);
 
@@ -197,15 +232,25 @@ void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot,
 		else
 			{
 			pButton->SetLabelFont(&MajorLabelFont);
+			pButton->SetPadding(CONTROL_INNER_PADDING);
+			pButton->SetBorderRadius(CONTROL_BORDER_RADIUS);
+			pButton->SetBackColor(VI.GetColor(colorAreaDialogInput));
+			pButton->SetBackColorHover(VI.GetColor(colorAreaDialogTitle));
+			pButton->SetDescColor(CG32bitPixel(128, 128, 128));	//	Same as CGItemDisplayArea
+			pButton->SetDescFont(&VI.GetFont(fontMedium));
 
 			RECT rcArea;
-			rcArea.left = rcFrame.left;
+			rcArea.left = xLeft;
 			rcArea.top = yMajor;
-			rcArea.right = rcFrame.right;
+			rcArea.right = xRight;
 			rcArea.bottom = yMajor + ACTION_BUTTON_HEIGHT;
+
+			int cyHeight = pButton->Justify(rcArea);
+			rcArea.bottom = rcArea.top + cyHeight;
+
 			pFrame->AddArea(pButton, rcArea, dwFirstTag + i);
 
-			yMajor += ACTION_BUTTON_HEIGHT + ACTION_BUTTON_SPACING;
+			yMajor += cyHeight + ACTION_BUTTON_SPACING;
 			}
 		}
 	}
@@ -473,6 +518,10 @@ ALERROR CDockScreenActions::InitFromXML (CExtension *pExtension, CXMLElement *pA
 		if (pAction->sID.IsBlank())
 			pAction->sID = strPatternSubst(CONSTLIT("%d"), i);
 
+		//	Description
+
+		pAction->sDescID = pActionDesc->GetAttribute(DESC_ID_ATTRIB);
+
 		//	Action
 
 		pAction->pExtension = pExtension;
@@ -499,7 +548,6 @@ ALERROR CDockScreenActions::InitFromXML (CExtension *pExtension, CXMLElement *pA
 
 		//	Defaults
 
-		pAction->pButton = NULL;
 		pAction->bVisible = true;
 		pAction->bEnabled = true;
 		pAction->bMinor = pActionDesc->GetAttributeBool(MINOR_ATTRIB);
@@ -645,6 +693,17 @@ ALERROR CDockScreenActions::RemoveAction (int iAction)
 	return NOERROR;
 	}
 
+void CDockScreenActions::SetDesc (int iAction, const CString &sDesc)
+
+//	SetDesc
+//
+//	Sets a description for an action
+
+	{
+	SActionDesc *pAction = &m_Actions[iAction];
+	pAction->sDesc = sDesc;
+	}
+
 void CDockScreenActions::SetEnabled (int iAction, bool bEnabled)
 
 //	SetEnabled
@@ -654,9 +713,6 @@ void CDockScreenActions::SetEnabled (int iAction, bool bEnabled)
 	{
 	SActionDesc *pAction = &m_Actions[iAction];
 	pAction->bEnabled = bEnabled;
-
-	if (pAction->pButton)
-		pAction->pButton->SetDisabled(!bEnabled);
 	}
 
 void CDockScreenActions::SetLabel (int iAction, const CString &sLabelDesc, const CString &sKey)
@@ -673,12 +729,6 @@ void CDockScreenActions::SetLabel (int iAction, const CString &sLabelDesc, const
 
 	if (!sKey.IsBlank())
 		pAction->sKey = sKey;
-
-	if (pAction->pButton)
-		{
-		pAction->pButton->SetLabel(pAction->sLabel);
-		pAction->pButton->SetLabelAccelerator(pAction->sKey);
-		}
 	}
 
 void CDockScreenActions::SetLabelDesc (SActionDesc *pAction, const CString &sLabelDesc, bool bOverrideSpecial)
@@ -805,7 +855,4 @@ void CDockScreenActions::SetVisible (int iAction, bool bVisible)
 	{
 	SActionDesc *pAction = &m_Actions[iAction];
 	pAction->bVisible = bVisible;
-
-	if (pAction->pButton)
-		pAction->pButton->ShowHide(bVisible);
 	}

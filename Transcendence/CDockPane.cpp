@@ -45,7 +45,7 @@ const int COUNTER_HEIGHT =			40;
 const int COUNTER_PADDING_BOTTOM =	24;
 
 const int DESC_PADDING_BOTTOM =		24;
-const int DESC_HEIGHT_GRANULARITY =	120;
+const int DESC_HEIGHT_GRANULARITY =	60;
 
 const int TEXT_INPUT_ID =			207;
 const int TEXT_INPUT_WIDTH =		380;

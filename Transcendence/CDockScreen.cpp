@@ -1659,7 +1659,22 @@ void CDockScreen::ShowPane (const CString &sName)
 
 	//	Find the pane named
 
-	CXMLElement *pNewPane = m_pPanes->GetContentElementByTag(sName);
+	CXMLElement *pNewPane;
+
+	//	If our root is a dockscreen, then we ask it for a pane (this will also
+	//	check for a pane in an ancestor).
+
+	CDockScreenType *pRootDockScreen = CDockScreenType::AsType(m_pRoot);
+	if (pRootDockScreen)
+		pNewPane = pRootDockScreen->GetPane(sName);
+
+	//	Otherwise, we ask our local pane list
+
+	else
+		pNewPane = m_pPanes->GetContentElementByTag(sName);
+
+	//	Error if we did not find a pane.
+
 	if (pNewPane == NULL)
 		{
 		CString sError = strPatternSubst(CONSTLIT("Unable to find pane: %s"), sName);

@@ -175,6 +175,9 @@
 					"We cannot install " (itmGetName (@ gData 'item) 0x04) " on your ship."
 					)
 			</Text>
+			<Text id="dockServices:installAbility">
+				(cat "We install Rasiermesser items up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
+			</Text>
 		</Language>
 
 	</StationType>
@@ -655,6 +658,9 @@
 					"We only install Rasiermesser items. "
 					"We cannot install " (itmGetName (@ gData 'item) 0x04) " on your ship."
 					)
+			</Text>
+			<Text id="dockServices:installAbility">
+				(cat "We install Rasiermesser items up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
 			</Text>
 		</Language>
 

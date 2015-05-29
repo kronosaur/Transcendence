@@ -161,7 +161,6 @@ class CDockScreenActions
 		bool FindByID (ICCItem *pItem, int *retiAction = NULL);
 		bool FindByKey (const CString &sKey, int *retiAction);
 		bool FindSpecial (SpecialAttribs iSpecial, int *retiAction);
-		inline CGButtonArea *GetButton (int iAction) const { return m_Actions[iAction].pButton; }
 		inline int GetCount (void) const { return m_Actions.GetCount(); }
 		inline const CString &GetKey (int iAction) const { return m_Actions[iAction].sKey; }
 		inline const CString &GetLabel (int iAction) const { return m_Actions[iAction].sLabel; }
@@ -171,7 +170,7 @@ class CDockScreenActions
 		bool IsSpecial (int iAction, SpecialAttribs iSpecial);
 		inline bool IsVisible (int iAction) const { return m_Actions[iAction].bVisible; }
 		ALERROR RemoveAction (int iAction);
-		inline void SetButton (int iAction, CGButtonArea *pButton) { m_Actions[iAction].pButton = pButton; }
+		void SetDesc (int iAction, const CString &sDesc);
 		void SetEnabled (int iAction, bool bEnabled = true);
 		void SetLabel (int iAction, const CString &sLabelDesc, const CString &sKey);
 		void SetSpecial (int iAction, SpecialAttribs iSpecial, bool bEnabled = true);
@@ -184,7 +183,8 @@ class CDockScreenActions
 			CString sID;
 			CString sLabel;			//	Label for the action
 			CString sKey;			//	Accelerator key
-			CGButtonArea *pButton;	//	Pointer to button area
+			CString sDescID;		//	Language ID to load description
+			CString sDesc;			//	Description
 
 			CExtension *pExtension;	//	Source of the code
 
@@ -200,6 +200,9 @@ class CDockScreenActions
 			bool bPrev;				//	This is the prev action [<-]
 			bool bNext;				//	This is the next action [->]
 			bool bMinor;			//	This is a minor/option button
+
+			CString sLabelTmp;		//	Temporary cache
+			CString sKeyTmp;
 			};
 
 		void ExecuteCode (CDockScreen *pScreen, const CString &sID, CExtension *pExtension, ICCItem *pCode);

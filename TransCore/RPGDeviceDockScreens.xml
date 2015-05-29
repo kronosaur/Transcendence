@@ -89,14 +89,16 @@
 					<Action id="actionInstall" default="1">
 						(if gCanInstall
 							(block (
-								(recommendedSlot 
-									(if (and (@ gData 'replaceItem)
+								(recommendedSlot {
+									deviceSlot: 
+										(if (and (@ gData 'replaceItem)
+												(itmGetInstallPos (@ gData 'replaceItem))
+												)
 											(itmGetInstallPos (@ gData 'replaceItem))
+											-1
 											)
-										(itmGetInstallPos (@ gData 'replaceItem))
-										-1
-										)
-									)
+									slotPosIndex: (@ gData 'slotPosIndex)
+									})
 								)
 								
 								(shpInstallDevice gPlayerShip (scrGetItem gScreen) recommendedSlot)
@@ -317,14 +319,16 @@
 					<Action id="actionBuyAndInstall" default="1">
 						(block (
 							(theItem (itmSetCount (scrGetItem gScreen) 1))
-							(recommendedSlot 
-								(if (and (@ gData 'replaceItem)
+							(recommendedSlot {
+								deviceSlot: 
+									(if (and (@ gData 'replaceItem)
+											(itmGetInstallPos (@ gData 'replaceItem))
+											)
 										(itmGetInstallPos (@ gData 'replaceItem))
+										-1
 										)
-									(itmGetInstallPos (@ gData 'replaceItem))
-									-1
-									)
-								)
+								slotPosIndex: (@ gData 'slotPosIndex)
+								})
 							)
 							
 							(rpgBuyItem gSource theItem (scrGetData gScreen 'cost) (objGetDefaultCurrency gSource))
