@@ -47,6 +47,10 @@
 #include "Zip.h"
 #include "Transcendence.h"
 
+#ifdef STEAM_BUILD
+#include "SteamUtil.h"
+#endif
+
 #define SERVICES_TAG							CONSTLIT("Services")
 
 #define CMD_NULL								CONSTLIT("null")
@@ -423,6 +427,19 @@ ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions *retO
 
 	CString sCurDir = pathGetExecutablePath(NULL);
 	::SetCurrentDirectory(sCurDir.GetASCIIZPointer());
+
+	//	Add the services that we want (we need to do this before we load settings
+	//	because we will get called back to initialize services).
+
+#ifdef STEAM_BUILD
+	m_Service.AddService(new CSteamService(m_HI));
+#else
+	CHexarcServiceFactory HexarcService;
+	m_Service.AddService(HexarcService.Create(m_HI));
+
+	CXelerusServiceFactory XelerusService;
+	m_Service.AddService(XelerusService.Create(m_HI));
+#endif
 
 	//	Load the settings from a file
 

@@ -11,6 +11,7 @@ Game/HighScores.xml
 Game/Settings.xml
 Game/Snapshots/
 Game/TransData.xml
+Game/*.dll
 Game/*.exe
 Game/*.exe.manifest
 Game/*.tdb
@@ -29,12 +30,15 @@ Game/*.tdb
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
+[Ss]team[Dd]ebug/
+[Ss]team[Rr]elease/
 x64/
 x86/
 build/
 bld/
 [Bb]in/
 [Oo]bj/
+*.tlog
 
 # Roslyn cache directories
 *.ide/
