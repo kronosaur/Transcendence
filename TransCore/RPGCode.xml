@@ -152,6 +152,79 @@
 					)
 				))
 				
+			(setq rpgCalcDockServiceRefuelAction (lambda (dockObj shipObj options)
+				(block (
+					(currencyUsed (objGetDefaultCurrency dockObj))
+					(fuelToUse (objGetRefuelItemAndPrice dockObj shipObj))
+					(fuelItem (@ fuelToUse 0))
+					(cost (@ fuelToUse 1))
+					(maxCount (if fuelToUse (shpGetFuelNeeded shipObj fuelItem) 0))
+					(maxAfford (if (gr cost 0) (divide (objGetBalance shipObj currencyUsed) cost) 0))
+					)
+					
+					(switch
+						(not fuelToUse)
+							{
+								visible: True
+								enabled: Nil
+								desc: (scrTranslate gScreen "actionRefuel:noCompatibleFuel")
+								}
+								
+						(= cost 0)
+							{
+								visible: True
+								enabled: True
+								desc: (scrTranslate gScreen "actionRefuel:freeRefuel" { item:fuelItem needed:maxCount })
+								
+								fuelItem: fuelItem
+								cost: cost
+								maxCount: maxCount
+								maxAfford: maxAfford
+								maxNeeded: maxCount
+								}
+								
+						(= maxCount 0)
+							{
+								visible: True
+								enabled: Nil
+								desc: (scrTranslate gScreen "actionRefuel:noFuelNeeded" { item:fuelItem })
+								}
+								
+						(= maxAfford 0)
+							{
+								visible: True
+								enabled: Nil
+								desc: (scrTranslate gScreen "actionRefuel:cantAfford" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount afford:maxAfford })
+								}
+								
+						(ls maxAfford maxCount)
+							{
+								visible: True
+								enabled: True
+								desc: (scrTranslate gScreen "actionRefuel:cantAfford" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount afford:maxAfford })
+								
+								fuelItem: fuelItem
+								cost: cost
+								maxCount: maxAfford
+								maxAfford: maxAfford
+								maxNeeded: maxCount
+								}
+								
+						{
+							visible: True
+							enabled: True
+							desc: (scrTranslate gScreen "actionRefuel:refuel" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount })
+								
+							fuelItem: fuelItem
+							cost: cost
+							maxCount: maxCount
+							maxAfford: maxAfford
+							maxNeeded: maxCount
+							}
+						)
+					)
+				))
+				
 			(setq rpgCalcDockServiceRemoveAction (lambda (dockObj shipObj theItem options)
 				(switch
 					;	For devices, excluding reactors

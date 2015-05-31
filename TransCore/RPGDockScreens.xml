@@ -656,7 +656,7 @@
 -->
 	
 	<DockScreen unid="&dsRPGDockServices;"
-			inherit=			"&dsDockScreenBase;"
+			inherit=			"&dsRPGDockServicesBase;"
 			backgroundID=		"player"
 			nestedScreen=		"true"
 			>
@@ -721,7 +721,21 @@
 									)
 								)
 							))
+							
+						(actionStatus Nil)
 						)
+						
+						;	Refuel services
+						
+						(setq actionStatus (rpgCalcDockServiceRefuelAction gSource gPlayerShip { }))
+						(scrShowAction gScreen 'actionRefuel (@ actionStatus 'visible))
+						(scrEnableAction gScreen 'actionRefuel (@ actionStatus 'enabled))
+						(scrSetActionDesc gScreen 'actionRefuel (@ actionStatus 'desc))
+						(scrSetData gScreen 'fuelCost (@ actionStatus 'cost))
+						(scrSetData gScreen 'fuelItem (@ actionStatus 'fuelItem))
+						(scrSetData gScreen 'fuelMax (@ actionStatus 'maxCount))
+						(scrSetData gScreen 'fuelNeeded (@ actionStatus 'maxNeeded))
+						(scrSetData gScreen 'fuelAfford (@ actionStatus 'maxAfford))
 					
 						;	Show/hide actions based on the services available
 						;	at this station.
@@ -746,8 +760,16 @@
 				</OnPaneInit>
 				
 				<Actions>
-					<Action id="actionRefuel" descID="actionRefuelDesc">
-						(scrShowScreen gScreen "&dsRPGRefuel;")
+					<Action id="actionRefuel">
+						(if (= (scrGetData gScreen 'fuelCost) 0)
+							(block Nil
+								(setq itemsToUse (itmCreate (itmGetType (scrGetData gScreen 'fuelItem)) count))
+								(shpRefuelFromItem gPlayerShip itemsToUse)
+								(scrRefreshScreen gScreen)
+								)
+								
+							(scrShowPane gScreen "RefuelShip")
+							)
 					</Action>
 
 					<Action id="actionRepairArmor">

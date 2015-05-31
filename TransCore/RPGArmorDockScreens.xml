@@ -21,7 +21,7 @@
 
 	<DockScreen UNID="&dsRPGManageArmor;"
 			type=				"armorSelector"
-			inherit=			"&dsRPGManageBase;"
+			inherit=			"&dsRPGDockServicesBase;"
 			nestedScreen=		"true"
 			>
 
@@ -377,7 +377,7 @@
 
 	<DockScreen UNID="&dsRPGManageMiscDevices;"
 			type=				"miscSelector"
-			inherit=			"&dsRPGManageBase;"
+			inherit=			"&dsRPGDockServicesBase;"
 			nestedScreen=		"true"
 			>
 
@@ -786,7 +786,7 @@
 
 	<DockScreen UNID="&dsRPGManageWeapons;"
 			type=				"weaponsSelector"
-			inherit=			"&dsRPGManageBase;"
+			inherit=			"&dsRPGDockServicesBase;"
 			nestedScreen=		"true"
 			>
 
@@ -1505,10 +1505,67 @@
 
 <!-- BASE CLASSES -->
 
-	<DockScreen unid="&dsRPGManageBase;"
+	<DockScreen unid="&dsRPGDockServicesBase;"
 			inherit=		"&dsDockScreenBase;"
 			>
 		<Panes>
+			<RefuelShip>
+				<OnPaneInit>
+					(block (
+						(currencyUsed (objGetDefaultCurrency gSource))
+						)
+						
+						(scrSetControlValue gScreen 'currentItem {
+							source: gSource
+							item: (scrGetData gScreen 'fuelItem)
+							})
+							
+						(scrSetDescTranslate gScreen 'descRefuelConfirm {
+							item: (scrGetData gScreen 'fuelItem) 
+							cost: (fmtCurrency currencyUsed (scrGetData gScreen 'fuelCost))
+							totalCost: (fmtCurrency currencyUsed (multiply (scrGetData gScreen 'fuelCost) (scrGetData gScreen 'fuelMax)))
+							needed: (scrGetData gScreen 'fuelNeeded)
+							afford: (scrGetData gScreen 'fuelAfford)
+							})
+							
+						(scrSetCounter gScreen (scrGetData gScreen 'fuelMax))
+						)
+				</OnPaneInit>
+				
+				<Controls>
+					<ItemDisplay id="currentItem"/>
+					<Text id="desc"/>
+					<Counter id="counter"/>
+				</Controls>
+
+				<Actions>
+					<Action id="actionRefuel" default="1">
+						(block (count)
+							(setq count (scrGetCounter gScreen))
+							(if (gr count (scrGetData gScreen 'fuelMax))
+								(scrSetCounter gScreen (scrGetData gScreen 'fuelMax))
+								
+								(block (itemsToUse currencyUsed)
+									(setq itemsToUse (itmCreate (itmGetType (scrGetData gScreen 'fuelItem)) count))
+									(setq currencyUsed (objGetDefaultCurrency gSource))
+									
+									(shpRefuelFromItem gPlayerShip itemsToUse)
+									
+									(objCharge gPlayerShip currencyUsed (multiply count (scrGetData gScreen 'fuelCost)))
+									(plyRecordBuyItem gPlayer itemsToUse currencyUsed (multiply count (scrGetData gScreen 'fuelCost)))
+									
+									(scrShowPane gScreen "Default")
+									)
+								)
+							)
+					</Action>
+					
+					<Action id="actionCancel" cancel="1">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</RefuelShip>
+			
 			<RemoveDevice>
 				<OnPaneInit>
 					(block Nil
@@ -1589,6 +1646,35 @@
 				(cat "We install devices up to tech level " (objGetProperty (@ gData 'dockObj) 'installDeviceMaxLevel) ".")
 			</Text>
 			<Text id="actionInstall:upgradeInstallOnly">"Sorry, we only install or remove items as part of an upgrade purchase."</Text>
+			
+			<Text id="actionRefuel:cantAfford">
+				(switch
+					(= (@ gData 'afford) 0)
+						(cat "We can refuel your ship with " (itmGetName (@ gData 'item) 0x02) " for " (@ gData 'cost) " each. Unfortunately, you cannot afford even one.")
+					
+					(cat "We can refuel your ship with " (itmGetName (@ gData 'item) 0x02) " for " (@ gData 'cost) " each.")
+					)
+			</Text>
+			<Text id="actionRefuel:noCompatibleFuel">
+				"We do not have fuel compatible with your ship's reactor."
+			</Text>
+			<Text id="actionRefuel:noFuelNeeded">
+				"Your ship is fully fueled."
+			</Text>
+			<Text id="actionRefuel:freeRefuel">
+				(switch
+					(= (@ gData 'needed) 0)
+						"We can refuel you free of charge, but your ship does not need any fuel."
+						
+					(= (@ gData 'needed) 1)
+						(cat "We can refuel you free of charge. Your ship needs one " (itmGetName (@ gData 'item) 0x00) ".")
+						
+					(cat "We can refuel you free of charge. Your ship needs " (@ gData 'needed) " " (itmGetName (@ gData 'item) 0x02) ".")
+					)
+			</Text>
+			<Text id="actionRefuel:refuel">
+				(cat "We can refuel your ship with " (itmGetName (@ gData 'item) 0x02) " at " (@ gData 'cost) " each.")
+			</Text>
 				
 			<Text id="actionRemove:cannotAfford">
 				(cat "The device can be removed for " (@ gData 'cost) ". Unfortunately, you cannot afford the cost.")
@@ -1711,6 +1797,25 @@
 			</Text>
 			<Text id="actionUpgrade:noTech">(cat "We do not have the technology to upgrade a level " (itmGetLevel (@ gData 'item)) " device.")</Text>
 		
+			<Text id="descRefuelConfirm">
+				(switch
+					(and (gr (@ gData 'needed) (@ gData 'afford)) (= (@ gData 'afford) 1))
+						(cat "Each " (itmGetName (@ gData 'item) 0x00) " costs " (@ gData 'cost) ". You can only afford a single one.")
+						
+					(gr (@ gData 'needed) (@ gData 'afford))
+						(cat "Each " (itmGetName (@ gData 'item) 0x00) " costs " (@ gData 'cost) ". "
+						"You can only afford " (@ gData 'afford) " " (itmGetName (@ gData 'item) 0x02) ". How many do you wish to buy?"
+						)
+
+					(= (@ gData 'needed) 1)
+						(cat "Your ship needs one " (itmGetName (@ gData 'item) 0x00) " for a total cost of " (@ gData 'cost) ".")
+						
+					(cat "Your ship needs " (@ gData 'needed) " " (itmGetName (@ gData 'item) 0x02) ". "
+						"Each " (itmGetName (@ gData 'item) 0x00) " costs " (@ gData 'cost) " (" (@ gData 'totalCost) " total). How many do you wish to buy?"
+						)
+					)
+			</Text>
+			
 			<Text id="descRemoveDeviceConfirm">
 				(switch
 					(not (@ gData 'cost))
