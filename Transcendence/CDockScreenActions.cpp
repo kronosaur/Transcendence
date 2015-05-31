@@ -31,8 +31,9 @@ const int ACTION_BUTTON_SPACING =	4;
 
 const int BOTTOM_MARGIN_Y =			46;
 
-const int CONTROL_BORDER_RADIUS =	4;
-const int CONTROL_INNER_PADDING =	8;
+const int CONTROL_BORDER_RADIUS =		4;
+const int CONTROL_INNER_PADDING_HORZ =	8;
+const int CONTROL_INNER_PADDING_VERT =	8;
 
 const int AREA_PADDING =			64;
 
@@ -81,6 +82,19 @@ ALERROR CDockScreenActions::AddAction (const CString &sID, int iPos, const CStri
 	return NOERROR;
 	}
 
+int CDockScreenActions::CalcAreaHeight (CDesignType *pRoot, const RECT &rcFrame)
+
+//	CalcAreaHeight
+//
+//	Compute the height of all buttons.
+
+	{
+	//	Force a justification
+
+	m_cxJustify = -1;
+	return Justify(pRoot, RectWidth(rcFrame));
+	}
+
 void CDockScreenActions::CleanUp (void)
 
 //	CleanUp
@@ -118,65 +132,22 @@ void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot,
 	const CG16bitFont &MajorLabelFont = VI.GetFont(fontMediumHeavyBold);
 	const CG16bitFont &MinorLabelFont = VI.GetFont(fontMedium);
 
-	//	Loop over all buttons and get some stats about them. We also generate
-	//	all labels because we might need to grow the (horizontal) size of buttons
-	//	depending on it.
+	//	Make sure we're justified
 
-	bool bLongButtons = false;
-	int iMinorButtonCount = 0;
-	for (i = 0; i < GetCount(); i++)
-		{
-		SActionDesc *pAction = &m_Actions[i];
-		if (!pAction->bVisible)
-			continue;
-
-		if (pAction->bMinor)
-			iMinorButtonCount++;
-
-		if (!pAction->sDesc.IsBlank() || !pAction->sDescID.IsBlank())
-			bLongButtons = true;
-
-		//	If the label is currently blank, then look up the ID in the language
-		//	table and see if we have something.
-
-		CString sLabelDesc;
-		if (pAction->sLabel.IsBlank() 
-				&& pRoot
-				&& !pAction->sID.IsBlank()
-				&& pRoot->TranslateText(NULL, pAction->sID, NULL, &sLabelDesc))
-			{
-			ParseLabelDesc(sLabelDesc, &pAction->sLabelTmp, &pAction->sKeyTmp);
-
-			//	We need to set the action key because we have to check for it
-			//	during input.
-
-			if (!pAction->sKeyTmp.IsBlank())
-				pAction->sKey = pAction->sKeyTmp;
-			}
-		else
-			{
-			pAction->sLabelTmp = pAction->sLabel;
-			pAction->sKeyTmp = pAction->sKey;
-			}
-
-		//	If we've got a quoted label, then make it longer
-
-		char *pPos = pAction->sLabelTmp.GetASCIIZPointer();
-		if (*pPos == '\"' || *pPos == '“')
-			bLongButtons = true;
-		}
+	Justify(pRoot, RectWidth(rcFrame));
 
 	//	We create buttons in one of two areas. Major buttons are at the top of
 	//	the frame. Minor buttons are at the bottom. We start by counting the 
 	//	number of minor buttons.
 
 	int yMajor = rcFrame.top;
-	int yMinor = rcFrame.bottom - BOTTOM_MARGIN_Y - (iMinorButtonCount * ACTION_BUTTON_HEIGHT) - ((iMinorButtonCount - 1) * ACTION_BUTTON_SPACING);
+	int yMinor = Max(rcFrame.top + m_cyMajorButtons,
+			rcFrame.bottom - BOTTOM_MARGIN_Y - (m_iMinorButtonCount * ACTION_BUTTON_HEIGHT) - ((m_iMinorButtonCount - 1) * ACTION_BUTTON_SPACING));
 
 	//	Padding
 
-	int xLeft = rcFrame.left + (bLongButtons ? 0 : AREA_PADDING);
-	int xRight = rcFrame.right - (bLongButtons ? 0 : AREA_PADDING);
+	int xLeft = rcFrame.left + (m_bLongButtons ? 0 : AREA_PADDING);
+	int xRight = rcFrame.right - (m_bLongButtons ? 0 : AREA_PADDING);
 
 	//	Create all buttons
 
@@ -190,38 +161,27 @@ void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot,
 
 		CGButtonArea *pButton = new CGButtonArea;
 
-		//	Set the label and key (which we already computed)
+		//	Set the label and key (which we already computed in the justify
+		//	pass).
 
 		pButton->SetLabel(pAction->sLabelTmp);
 		pButton->SetLabelAccelerator(pAction->sKeyTmp);
+		pButton->SetDesc(pAction->sDescTmp);
 
-		//	If we have a description, set that
+		//	Set common properties
 
-		if (!pAction->sDesc.IsBlank())
-			pButton->SetDesc(pAction->sDesc);
-
-		//	Otherwise, if we have a description ID, then translate
-
-		else if (!pAction->sDescID.IsBlank() && pRoot)
-			{
-			CString sText;
-			if (pRoot->TranslateText(NULL, pAction->sDescID, NULL, &sText))
-				pButton->SetDesc(sText);
-			}
-
-		//	Enabled/disabled
-
-		if (!pAction->bEnabled)
-			pButton->SetDisabled();
+		pButton->SetDisabled(!pAction->bEnabled);
+		pButton->SetLabelColor(VI.GetColor(colorTextHighlight));
 
 		//	These properties of the button depend on the type (major or minor)
 
 		if (pAction->bMinor)
 			{
 			pButton->SetLabelFont(&MinorLabelFont);
+			pButton->SetAcceleratorColor(VI.GetColor(colorAreaAccelerator));
 
 			RECT rcArea;
-			rcArea.left = xLeft;
+			rcArea.left = xLeft + CONTROL_INNER_PADDING_HORZ;
 			rcArea.top = yMinor;
 			rcArea.right = xRight;
 			rcArea.bottom = yMinor + ACTION_BUTTON_HEIGHT;
@@ -232,7 +192,8 @@ void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot,
 		else
 			{
 			pButton->SetLabelFont(&MajorLabelFont);
-			pButton->SetPadding(CONTROL_INNER_PADDING);
+			pButton->SetAcceleratorColor(VI.GetColor(colorTextAccelerator));
+			pButton->SetPadding(CONTROL_INNER_PADDING_VERT);
 			pButton->SetBorderRadius(CONTROL_BORDER_RADIUS);
 			pButton->SetBackColor(VI.GetColor(colorAreaDialogInput));
 			pButton->SetBackColorHover(VI.GetColor(colorAreaDialogTitle));
@@ -582,19 +543,168 @@ bool CDockScreenActions::IsSpecial (int iAction, SpecialAttribs iSpecial)
 		}
 	}
 
+int CDockScreenActions::Justify (CDesignType *pRoot, int cxJustify)
+
+//	Justify
+//
+//	Justifies all buttons and generates heights. We return the total height of 
+//	all buttons.
+
+	{
+	const CVisualPalette &VI = g_pHI->GetVisuals();
+	int i;
+
+	//	If we're already justified, nothing to do
+
+	if (m_cxJustify == cxJustify)
+		return m_cyTotalHeight;
+
+	//	Get some fonts
+
+	const CG16bitFont &MajorLabelFont = VI.GetFont(fontMediumHeavyBold);
+	const CG16bitFont &MinorLabelFont = VI.GetFont(fontMedium);
+
+	//	Loop over all buttons and get some stats about them. We also generate
+	//	all labels because we might need to grow the (horizontal) size of buttons
+	//	depending on it.
+
+	m_bLongButtons = false;
+	m_iMinorButtonCount = 0;
+	for (i = 0; i < GetCount(); i++)
+		{
+		SActionDesc *pAction = &m_Actions[i];
+		if (!pAction->bVisible)
+			continue;
+
+		if (pAction->bMinor)
+			m_iMinorButtonCount++;
+
+		if (!pAction->sDesc.IsBlank() || !pAction->sDescID.IsBlank())
+			m_bLongButtons = true;
+
+		//	If the label is currently blank, then look up the ID in the language
+		//	table and see if we have something.
+
+		CString sLabelDesc;
+		if (pAction->sLabel.IsBlank() 
+				&& pRoot
+				&& !pAction->sID.IsBlank()
+				&& pRoot->TranslateText(NULL, pAction->sID, NULL, &sLabelDesc))
+			{
+			TArray<CDockScreenActions::SpecialAttribs> Special;
+			ParseLabelDesc(sLabelDesc, &pAction->sLabelTmp, &pAction->sKeyTmp, &Special);
+
+			//	We need to set the action key because we have to check for it
+			//	during input.
+
+			if (!pAction->sKeyTmp.IsBlank())
+				pAction->sKey = pAction->sKeyTmp;
+
+			//	Set any special accelerators too (but only if we defined them).
+
+			if (Special.GetCount() > 0)
+				SetSpecial(pAction, Special);
+			}
+		else
+			{
+			pAction->sLabelTmp = pAction->sLabel;
+			pAction->sKeyTmp = pAction->sKey;
+			}
+
+		//	If we've got a quoted label, then make it longer
+
+		char *pPos = pAction->sLabelTmp.GetASCIIZPointer();
+		if (*pPos == '\"' || *pPos == '“')
+			m_bLongButtons = true;
+
+		//	If we have a description, set that
+
+		if (!pAction->sDesc.IsBlank())
+			pAction->sDescTmp = pAction->sDesc;
+
+		//	Otherwise, if we have a description ID, then translate
+
+		else if (!pAction->sDescID.IsBlank() && pRoot)
+			{
+			if (!pRoot->TranslateText(NULL, pAction->sDescID, NULL, &pAction->sDescTmp))
+				pAction->sDescTmp = NULL_STR;
+			}
+		else
+			pAction->sDescTmp = NULL_STR;
+		}
+
+	//	Now add up all the heights
+
+	int cxWidth = cxJustify;
+	if (!m_bLongButtons)
+		cxWidth -= (2 * AREA_PADDING);
+
+	m_cyTotalHeight = 0;
+	m_cyMajorButtons = 0;
+	for (i = 0; i < GetCount(); i++)
+		{
+		SActionDesc *pAction = &m_Actions[i];
+		if (!pAction->bVisible)
+			continue;
+
+		//	Minor buttons are fixed height
+
+		if (pAction->bMinor)
+			m_cyTotalHeight += ACTION_BUTTON_HEIGHT + ACTION_BUTTON_SPACING;
+
+		//	Major buttons need to be justified
+
+		else
+			{
+			int cyHeight = 0;
+
+			//	Top padding and label
+
+			cyHeight += CONTROL_INNER_PADDING_VERT;
+			cyHeight += MajorLabelFont.GetHeight();
+
+			//	Description
+
+			if (!pAction->sDescTmp.IsBlank())
+				{
+				int cxTextWidth = cxWidth - (2 * CONTROL_INNER_PADDING_HORZ);
+				int iLines = VI.GetFont(fontMedium).BreakText(pAction->sDescTmp, cxTextWidth, NULL);
+				cyHeight += iLines * VI.GetFont(fontMedium).GetHeight();
+				}
+
+			//	Bottom
+
+			cyHeight += CONTROL_INNER_PADDING_VERT + ACTION_BUTTON_SPACING;
+
+			m_cyTotalHeight += cyHeight;
+			m_cyMajorButtons += cyHeight;
+			}
+		}
+
+	//	Bottom margin
+
+	m_cyTotalHeight += BOTTOM_MARGIN_Y;
+
+	//	Done
+
+	m_cxJustify = cxJustify;
+	return m_cyTotalHeight;
+	}
+
 void CDockScreenActions::ParseLabelDesc (const CString &sLabelDesc, CString *retsLabel, CString *retsKey, TArray<SpecialAttribs> *retSpecial)
 
 //	ParseLabelDesc
 //
 //	Parses a label descriptor of the following forms:
 //
-//	Action:		This is a normal label
-//	[A]ction:	A is the special key
-//	[Enter]:	Treated as a normal label because key is > 1 character
-//	*Action:	This is the default action
-//	^Action:	This is the cancel action
-//	>Action:	This is the next key
-//	<Action:	This is the prev key
+//	Action:			This is a normal label
+//	[PgDn] Action:	This is a multi-key accelerator
+//	[A]ction:		A is the special key
+//	[Enter]:		Treated as a normal label because key is > 1 character
+//	*Action:		This is the default action
+//	^Action:		This is the cancel action
+//	>Action:		This is the next key
+//	<Action:		This is the prev key
 
 	{
 	char *pPos = sLabelDesc.GetASCIIZPointer();
@@ -628,42 +738,85 @@ void CDockScreenActions::ParseLabelDesc (const CString &sLabelDesc, CString *ret
 		pPos++;
 		}
 
-	//	Now parse the label looking for the bracket syntax.
+	//	Parse out the label and any accelerator key
 
 	CString sLabel;
 	CString sKey;
-	char *pStart = pPos;
 
-	while (*pPos != '\0')
+	//	See if we have a multi-key accelerator label
+
+	char *pStart = NULL;
+	char *pAccelStart = NULL;
+	char *pAccelEnd = NULL;
+	if (*pPos == '[')
 		{
-		if (pPos[0] == '[' && pPos[1] != '\0' && pPos[2] == ']')
+		pStart = pPos;
+		while (*pStart != '\0' && *pStart != ']')
+			pStart++;
+
+		if (*pStart == ']' && pStart[1] != '\0')
 			{
-			if (pStart)
-				sLabel.Append(CString(pStart, (int)(pPos - pStart)));
+			pAccelEnd = pStart;
 
-			pPos++;
-			if (*pPos == '\0')
-				break;
+			pStart++;
+			while (*pStart == ' ')
+				pStart++;
 
-			if (*pPos != ']')
-				{
-				sKey = CString(pPos, 1);
-				sLabel.Append(sKey);
-				pPos++;
-				}
+			//	Must be more than 1 character long
 
-			if (*pPos == ']')
-				pPos++;
-
-			pStart = pPos;
-			continue;
+			pAccelStart = pPos + 1;
+			if ((int)(pAccelEnd - pAccelStart) <= 1)
+				pStart = NULL;
 			}
 		else
-			pPos++;
+			pStart = NULL;
 		}
 
-	if (pStart != pPos)
-		sLabel.Append(CString(pStart, (int)(pPos - pStart)));
+	//	If we found a multi-key accelerator label, use that
+
+	if (pStart)
+		{
+		sKey = CString(pAccelStart, (int)(pAccelEnd - pAccelStart));
+		sLabel = CString(pStart);
+		}
+
+	//	Otherwise, parse for an embedded label using the bracket syntax.
+
+	else
+		{
+		pStart = pPos;
+
+		while (*pPos != '\0')
+			{
+			if (pPos[0] == '[' && pPos[1] != '\0' && pPos[2] == ']')
+				{
+				if (pStart)
+					sLabel.Append(CString(pStart, (int)(pPos - pStart)));
+
+				pPos++;
+				if (*pPos == '\0')
+					break;
+
+				if (*pPos != ']')
+					{
+					sKey = CString(pPos, 1);
+					sLabel.Append(sKey);
+					pPos++;
+					}
+
+				if (*pPos == ']')
+					pPos++;
+
+				pStart = pPos;
+				continue;
+				}
+			else
+				pPos++;
+			}
+
+		if (pStart != pPos)
+			sLabel.Append(CString(pStart, (int)(pPos - pStart)));
+		}
 
 	//	Done
 
@@ -741,8 +894,6 @@ void CDockScreenActions::SetLabelDesc (SActionDesc *pAction, const CString &sLab
 //	those should happen after this call.
 
 	{
-	int i;
-
 	CString sLabel;
 	CString sKey;
 	TArray<SpecialAttribs> Special;
@@ -753,15 +904,25 @@ void CDockScreenActions::SetLabelDesc (SActionDesc *pAction, const CString &sLab
 	pAction->sKey = sKey;
 
 	if (bOverrideSpecial || Special.GetCount() > 0)
-		{
-		pAction->bCancel = false;
-		pAction->bDefault = false;
-		pAction->bNext = false;
-		pAction->bPrev = false;
+		SetSpecial(pAction, Special);
+	}
 
-		for (i = 0; i < Special.GetCount(); i++)
-			SetSpecial(pAction, Special[i], true);
-		}
+void CDockScreenActions::SetSpecial (SActionDesc *pAction, const TArray<SpecialAttribs> &Special)
+
+//	SetSpecial
+//
+//	Sets all special attributes
+
+	{
+	int i;
+
+	pAction->bCancel = false;
+	pAction->bDefault = false;
+	pAction->bNext = false;
+	pAction->bPrev = false;
+
+	for (i = 0; i < Special.GetCount(); i++)
+		SetSpecial(pAction, Special[i], true);
 	}
 
 void CDockScreenActions::SetSpecial (SActionDesc *pAction, SpecialAttribs iSpecial, bool bEnabled)

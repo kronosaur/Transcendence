@@ -203,6 +203,12 @@
 								(scrShowAction gScreen 'actionInstall Nil)
 								)
 							)
+							
+						;	Page Down goes to the next page (either weapons or misc devices)
+						
+						(scrShowAction gScreen 'actionDonePgUp (@ gData 'doubleExit))
+						(scrShowAction gScreen 'actionManageWeapons (@ gData 'manageWeapons))
+						(scrShowAction gScreen 'actionManageMiscDevices (and (@ gData 'manageMiscDevices) (not (@ gData 'manageWeapons))))
 						)
 				</OnPaneInit>
 				
@@ -285,17 +291,61 @@
 						(scrShowPane gScreen "RemoveDevice")
 					</Action>
 					
-					<Action id="actionDone" cancel="1">
+					
+					<Action id="actionDonePgUp" minor="true">
 						(scrExitScreen gScreen)
+					</Action>
+					<Action id="actionManageWeapons" minor="true">
+						(block Nil
+							(scrExitScreen gScreen)
+							(scrShowScreen gScreen &dsRPGManageWeapons; {
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								noUpgrade: (@ gData 'noUpgrade)
+								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
+								
+								manageArmor: True
+								manageMiscDevices: (@ gData 'manageMiscDevices)
+								doubleExit: (@ gData 'doubleExit)
+								})
+							)
+					</Action>
+					<Action id="actionManageMiscDevices" minor="true">
+						(block Nil
+							(scrExitScreen gScreen)
+							(scrShowScreen gScreen &dsRPGManageMiscDevices; {
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								noUpgrade: (@ gData 'noUpgrade)
+								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
+								
+								manageArmor: True
+								manageWeapons: (@ gData 'manageWeapons)
+								doubleExit: (@ gData 'doubleExit)
+								})
+							)
+					</Action>
+					<Action id="actionDone" minor="true">
+						(block (
+							(doubleExit (@ gData 'doubleExit))
+							)
+							
+							(scrExitScreen gScreen)
+							(if doubleExit
+								(scrExitScreen gScreen)
+								)
+							)
 					</Action>
 				</Actions>
 			</Default>
 		</Panes>
 		
 		<Language>
+			<Text id="actionDone">"^[Esc] Done"</Text>
+			<Text id="actionDonePgUp">"&lt;[PgUp] Dock Services"</Text>
 			<Text id="actionDisable">"Disa[b]le"</Text>
 			<Text id="actionEnable">"Ena[b]le"</Text>
 			<Text id="actionInstall">"[I]nstall"</Text>
+			<Text id="actionManageMiscDevices">"&gt;[PgDn] Miscellaneous Devices"</Text>
+			<Text id="actionManageWeapons">"&gt;[PgDn] Weapons"</Text>
 			<Text id="actionRemove">"Remo[v]e"</Text>
 			<Text id="actionRepair">"[R]epair"</Text>
 			<Text id="actionReplace">"Re[p]lace"</Text>
@@ -520,6 +570,11 @@
 								
 						(scrShowAction gScreen 'actionDisable canDisable)
 						(scrShowAction gScreen 'actionEnable canEnable)
+
+						;	Show the previous action (either weapons or armor)
+						
+						(scrShowAction gScreen 'actionManageWeapons (@ gData 'manageWeapons))
+						(scrShowAction gScreen 'actionManageArmor (and (@ gData 'manageArmor) (not (@ gData 'manageWeapons))))
 						)
 				</OnPaneInit>
 				
@@ -593,8 +648,44 @@
 						(scrShowPane gScreen "RemoveDevice")
 					</Action>
 					
-					<Action id="actionDone" cancel="1">
-						(scrExitScreen gScreen)
+					<Action id="actionManageArmor" minor="true">
+						(block Nil
+							(scrExitScreen gScreen)
+							(scrShowScreen gScreen &dsRPGManageArmor; {
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								noUpgrade: (@ gData 'noUpgrade)
+								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
+							
+								manageMiscDevices: True
+								manageWeapons: (@ gData 'manageWeapons)
+								doubleExit: (@ gData 'doubleExit)
+								})
+							)
+					</Action>
+					<Action id="actionManageWeapons" minor="true">
+						(block Nil
+							(scrExitScreen gScreen)
+							(scrShowScreen gScreen &dsRPGManageWeapons; {
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								noUpgrade: (@ gData 'noUpgrade)
+								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
+								
+								manageArmor: (@ gData 'manageArmor)
+								manageMiscDevices: True
+								doubleExit: (@ gData 'doubleExit)
+								})
+							)
+					</Action>
+					<Action id="actionDone" minor="true">
+						(block (
+							(doubleExit (@ gData 'doubleExit))
+							)
+							
+							(scrExitScreen gScreen)
+							(if doubleExit
+								(scrExitScreen gScreen)
+								)
+							)
 					</Action>
 				</Actions>
 			</Default>
@@ -602,8 +693,11 @@
 		
 		<Language>
 			<Text id="actionDisable">"Disa[b]le"</Text>
+			<Text id="actionDone">"^[Esc] Done"</Text>
 			<Text id="actionEnable">"Ena[b]le"</Text>
 			<Text id="actionInstall">"[I]nstall"</Text>
+			<Text id="actionManageArmor">"&lt;[PgUp] Armor and Shields"</Text>
+			<Text id="actionManageWeapons">"&lt;[PgUp] Weapons"</Text>
 			<Text id="actionRemove">"Remo[v]e"</Text>
 			<Text id="actionReplace">"Re[p]lace"</Text>
 			<Text id="actionUpgrade">"Buy [U]pgrade"</Text>
@@ -891,6 +985,11 @@
 								
 						(scrShowAction gScreen 'actionDisable canDisable)
 						(scrShowAction gScreen 'actionEnable canEnable)
+
+						;	Page up/page down
+						
+						(scrShowAction gScreen 'actionManageArmor (@ gData 'manageArmor))
+						(scrShowAction gScreen 'actionManageMiscDevices (@ gData 'manageMiscDevices))
 						)
 				</OnPaneInit>
 				
@@ -971,8 +1070,44 @@
 						(scrShowPane gScreen "RemoveDevice")
 					</Action>
 					
-					<Action id="actionDone" cancel="1">
-						(scrExitScreen gScreen)
+					<Action id="actionManageArmor" minor="true">
+						(block Nil
+							(scrExitScreen gScreen)
+							(scrShowScreen gScreen &dsRPGManageArmor; {
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								noUpgrade: (@ gData 'noUpgrade)
+								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
+							
+								manageMiscDevices: (@ gData 'manageMiscDevices)
+								manageWeapons: True
+								doubleExit: (@ gData 'doubleExit)
+								})
+							)
+					</Action>
+					<Action id="actionManageMiscDevices" minor="true">
+						(block Nil
+							(scrExitScreen gScreen)
+							(scrShowScreen gScreen &dsRPGManageMiscDevices; {
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								noUpgrade: (@ gData 'noUpgrade)
+								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
+								
+								manageArmor: (@ gData 'manageArmor)
+								manageWeapons: True
+								doubleExit: (@ gData 'doubleExit)
+								})
+							)
+					</Action>
+					<Action id="actionDone" minor="true">
+						(block (
+							(doubleExit (@ gData 'doubleExit))
+							)
+							
+							(scrExitScreen gScreen)
+							(if doubleExit
+								(scrExitScreen gScreen)
+								)
+							)
 					</Action>
 				</Actions>
 			</Default>
@@ -982,8 +1117,11 @@
 			<Text id="actionBuyAmmo">"Buy [A]mmo"</Text>
 			<Text id="actionBuyMissiles">"Buy [M]issiles"</Text>
 			<Text id="actionDisable">"Disa[b]le"</Text>
+			<Text id="actionDone">"^[Esc] Done"</Text>
 			<Text id="actionEnable">"Ena[b]le"</Text>
 			<Text id="actionInstall">"[I]nstall"</Text>
+			<Text id="actionManageArmor">"&lt;[PgUp] Armor and Shields"</Text>
+			<Text id="actionManageMiscDevices">"&gt;[PgDn] Miscellaneous Devices"</Text>
 			<Text id="actionRemove">"Remo[v]e"</Text>
 			<Text id="actionReplace">"Re[p]lace"</Text>
 			<Text id="actionUpgrade">"Buy [U]pgrade"</Text>

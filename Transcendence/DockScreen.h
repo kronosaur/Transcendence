@@ -148,10 +148,11 @@ class CDockScreenActions
 			specialPrevKey,
 			};
 
-		CDockScreenActions (void) : m_pData(NULL) { }
+		CDockScreenActions (void) : m_pData(NULL), m_cxJustify(-1) { }
 		~CDockScreenActions (void);
 
 		ALERROR AddAction (const CString &sID, int iPos, const CString &sLabel, CExtension *pExtension, ICCItem *pCode, int *retiAction);
+		int CalcAreaHeight (CDesignType *pRoot, const RECT &rcFrame);
 		void CleanUp (void);
 		void CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot, DWORD dwFirstTag, const RECT &rcFrame);
 		void Execute (int iAction, CDockScreen *pScreen);
@@ -201,17 +202,26 @@ class CDockScreenActions
 			bool bNext;				//	This is the next action [->]
 			bool bMinor;			//	This is a minor/option button
 
-			CString sLabelTmp;		//	Temporary cache
+			CString sLabelTmp;		//	Temporary cache (after justify)
 			CString sKeyTmp;
+			CString sDescTmp;
 			};
 
 		void ExecuteCode (CDockScreen *pScreen, const CString &sID, CExtension *pExtension, ICCItem *pCode);
+		int Justify (CDesignType *pRoot, int cxJustify);
 		void ParseLabelDesc (const CString &sLabelDesc, CString *retsLabel, CString *retsKey = NULL, TArray<SpecialAttribs> *retSpecial = NULL);
 		void SetLabelDesc (SActionDesc *pAction, const CString &sLabelDesc, bool bOverrideSpecial = true);
+		void SetSpecial (SActionDesc *pAction, const TArray<SpecialAttribs> &Special);
 		void SetSpecial (SActionDesc *pAction, SpecialAttribs iSpecial, bool bEnabled);
 
 		TArray<SActionDesc> m_Actions;
 		ICCItem *m_pData;			//	Data passed in to scrShowScreen (may be NULL)
+
+		int m_cxJustify;			//	Width that we justified for
+		bool m_bLongButtons;		//	If true, we display long buttons
+		int m_iMinorButtonCount;	//	Number of minor buttons
+		int m_cyMajorButtons;		//	Total height of major buttons
+		int m_cyTotalHeight;		//	Total height of all buttons
 	};
 
 class CDockPane

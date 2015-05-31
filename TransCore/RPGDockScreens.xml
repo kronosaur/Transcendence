@@ -657,6 +657,7 @@
 	
 	<DockScreen unid="&dsRPGDockServices;"
 			inherit=			"&dsDockScreenBase;"
+			backgroundID=		"player"
 			nestedScreen=		"true"
 			>
 		<InitialPane>
@@ -732,6 +733,12 @@
 						(scrShowAction gScreen 'actionBuyAmmoAndMissiles (and ammoForSale (not canInstallWeapons)))
 						(scrEnableAction gScreen 'actionBuyAmmoAndMissiles canBuyAmmo)
 						
+						;	Page Down
+						
+						(scrShowAction gScreen 'actionRepairArmorPgDn canRepairArmor)
+						(scrShowAction gScreen 'actionWeaponsPgDn (and canInstallWeapons (not canRepairArmor)))
+						(scrShowAction gScreen 'actionMiscDevicesPgDn (and canInstallMiscDevices (not canInstallWeapons) (not canRepairArmor)))
+						
 						;	Descriptor
 						
 						(scrSetDescTranslate gScreen 'dockServicesScreenDesc)
@@ -739,7 +746,7 @@
 				</OnPaneInit>
 				
 				<Actions>
-					<Action id="actionRefuel">
+					<Action id="actionRefuel" descID="actionRefuelDesc">
 						(scrShowScreen gScreen "&dsRPGRefuel;")
 					</Action>
 
@@ -748,6 +755,10 @@
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							noUpgrade: (@ gData 'noUpgrade)
 							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
+							
+							manageMiscDevices: (scrIsActionEnabled gScreen 'actionMiscDevices)
+							manageWeapons: (scrIsActionEnabled gScreen 'actionWeapons)
+							doubleExit: True
 							})
 					</Action>
 					
@@ -779,6 +790,10 @@
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							noUpgrade: (@ gData 'noUpgrade)
 							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
+							
+							manageArmor: (scrIsActionEnabled gScreen 'actionRepairArmor)
+							manageMiscDevices: (scrIsActionEnabled gScreen 'actionMiscDevices)
+							doubleExit: True
 							})
 					</Action>
 
@@ -787,10 +802,47 @@
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							noUpgrade: (@ gData 'noUpgrade)
 							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
+							
+							manageArmor: (scrIsActionEnabled gScreen 'actionRepairArmor)
+							manageWeapons: (scrIsActionEnabled gScreen 'actionWeapons)
+							doubleExit: True
 							})
 					</Action>
-					
-					<Action id="actionDone" cancel="1">
+
+					<Action id="actionRepairArmorPgDn" minor="true">
+						(scrShowScreen gScreen &dsRPGManageArmor; {
+							checkMilitaryID: (@ gData 'checkMilitaryID)
+							noUpgrade: (@ gData 'noUpgrade)
+							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
+							
+							manageMiscDevices: (scrIsActionEnabled gScreen 'actionMiscDevices)
+							manageWeapons: (scrIsActionEnabled gScreen 'actionWeapons)
+							doubleExit: True
+							})
+					</Action>
+					<Action id="actionWeaponsPgDn" minor="true">
+						(scrShowScreen gScreen &dsRPGManageWeapons; {
+							checkMilitaryID: (@ gData 'checkMilitaryID)
+							noUpgrade: (@ gData 'noUpgrade)
+							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
+							
+							manageArmor: (scrIsActionEnabled gScreen 'actionRepairArmor)
+							manageMiscDevices: (scrIsActionEnabled gScreen 'actionMiscDevices)
+							doubleExit: True
+							})
+					</Action>
+					<Action id="actionMiscDevicesPgDn" minor="true">
+						(scrShowScreen gScreen &dsRPGManageMiscDevices; {
+							checkMilitaryID: (@ gData 'checkMilitaryID)
+							noUpgrade: (@ gData 'noUpgrade)
+							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
+							
+							manageArmor: (scrIsActionEnabled gScreen 'actionRepairArmor)
+							manageWeapons: (scrIsActionEnabled gScreen 'actionWeapons)
+							doubleExit: True
+							})
+					</Action>
+					<Action id="actionDone" minor="true">
 						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
@@ -876,15 +928,26 @@
 		
 		<Language>
 			<Text id="actionBuyAmmoAndMissiles">"[B]uy Ammo and Missiles"</Text>
-			<Text id="actionDone">"Do[n]e"</Text>
+			<Text id="actionBuyAmmoAndMissilesDesc">"We sell ammunition and missiles."</Text>
+			
+			<Text id="actionDone">"^[Esc] Done"</Text>
 			<Text id="actionInstallDevice">"Install [D]evice"</Text>
 			<Text id="actionMiscDevices">"[M]iscellaneous Devices"</Text>
+			<Text id="actionMiscDevicesDesc">"We install miscellaneous devices"</Text>
+			<Text id="actionMiscDevicesPgDn">"&gt;[PgDn] Miscellaneous Devices"</Text>
 			<Text id="actionRefuel">"[R]efuel"</Text>
+			<Text id="actionRefuelDesc">"We can refuel your ship."</Text>
+			
 			<Text id="actionRemoveDevice">"Remo[v]e Device"</Text>
 			<Text id="actionRemoveOverlays">"[R]emove All"</Text>
 			<Text id="actionRepairArmor">"[A]rmor and Shields"</Text>
+			<Text id="actionRepairArmorDesc">"We repair armor."</Text>
+			
+			<Text id="actionRepairArmorPgDn">"&gt;[PgDn] Armor and Shields"</Text>
 			<Text id="actionUpgradeReactor">"U[p]grade Reactor"</Text>
 			<Text id="actionWeapons">"[W]eapons"</Text>
+			<Text id="actionWeaponsDesc">"We install weapons."</Text>
+			<Text id="actionWeaponsPgDn">"&gt;[PgDn] Weapons"</Text>
 			
 			<Text id="dockServicesScreenDesc">"You are at a dock services terminal."</Text>
 			

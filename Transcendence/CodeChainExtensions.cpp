@@ -77,6 +77,7 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_DESC_TRANSLATE		21
 #define FN_SCR_REMOVE_ACTION		22
 #define FN_SCR_ACTION_DESC			23
+#define FN_SCR_IS_ACTION_ENABLED	24
 
 ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -181,6 +182,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		{	"scrGetListEntry",				fnScrGetOld,		FN_SCR_LIST_ENTRY,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(scrGetListEntry screen) -> entry
+
+		{	"scrIsActionEnabled",			fnScrGet,		FN_SCR_IS_ACTION_ENABLED,	
+			"(scrIsActionEnabled screen actionID) -> True/Nil",		
+			"iv",	0, },
 
 		{	"scrIsFirstOnInit",				fnScrGetOld,		FN_SCR_IS_FIRST_ON_INIT,	"",		NULL,	PPFLAG_SIDEEFFECTS, },
 		//	(scrIsFirstOnInit screen) => True/Nil
@@ -1252,6 +1257,23 @@ ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				return pCC->CreateNil();
 
 			return pCC->CreateString(sDesc);
+			}
+
+		case FN_SCR_IS_ACTION_ENABLED:
+			{
+			//	Only if valid
+
+			if (!pScreen->IsValid())
+				return pCC->CreateNil();
+
+			//	Parameters
+
+			int iAction;
+			CDockScreenActions &Actions = pScreen->GetActions();
+			if (!Actions.FindByID(pArgs->GetElement(1), &iAction))
+				return pCC->CreateError(CONSTLIT("Invalid action ID"), pArgs->GetElement(1));
+
+			return pCC->CreateBool(Actions.IsEnabled(iAction));
 			}
 
 		case FN_SCR_TRANSLATE:

@@ -794,6 +794,7 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 	CSpaceObject *pSource = Entry.pItemCtx->GetSource();
 	CInstalledArmor *pArmor = Entry.pItemCtx->GetArmor();
 	CInstalledDevice *pDevice = Entry.pItemCtx->GetDevice();
+	CDeviceClass *pDeviceClass;
 
 	//	Paint the item icon
 
@@ -816,6 +817,7 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 			Item.GetNounPhrase(nounShort | nounNoModifiers),
 			0,
 			CG16bitFont::AlignCenter);
+
 
 	//	If this is an armor segment, then paint HP, etc.
 
@@ -868,15 +870,10 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 			}
 		}
 
-	//	If this is not a device, then nothing to do
+	//	If this is a device, then paint device-specific stuff
 
-	else if (pDevice == NULL)
-		{
-		}
-
-	//	If this is a shield generator, then paint shield stuff
-
-	else if (pDevice->GetCategory() == itemcatShields)
+	else if (pDevice
+				&& (pDeviceClass = pDevice->GetClass()))
 		{
 		int x = rcRect.right - ITEM_ENTRY_PADDING_RIGHT;
 		int y = rcRect.top + ITEM_ENTRY_PADDING_TOP;
@@ -885,42 +882,53 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 
 		if (pDevice->IsEnabled())
 			{
-			int iHP;
-			int iMaxHP;
-			pDevice->GetStatus(pSource, &iHP, &iMaxHP);
-
-			CString sHP = strFromInt(iHP);
-			m_VI.GetFont(fontLarge).DrawText(Dest,
-					x,
-					y,
-					m_VI.GetColor(colorTextHighlight),
-					sHP,
-					CG16bitFont::AlignRight);
-			y += m_VI.GetFont(fontLarge).GetHeight();
-
-			//	Shield level
-
-			if (iMaxHP != iHP && iMaxHP > 0)
+			if (pDevice->GetCategory() == itemcatShields)
 				{
-				int iPercent = ((1000 * iHP / iMaxHP) + 5) / 10;
-				CString sPercent = strPatternSubst(CONSTLIT("%d%%"), iPercent);
+				int iHP;
+				int iMaxHP;
+				pDevice->GetStatus(pSource, &iHP, &iMaxHP);
 
-				m_VI.GetFont(fontMedium).DrawText(Dest,
+				CString sHP = strFromInt(iHP);
+				m_VI.GetFont(fontLarge).DrawText(Dest,
 						x,
 						y,
-						m_VI.GetColor(colorTextShields),
-						sPercent,
+						m_VI.GetColor(colorTextHighlight),
+						sHP,
 						CG16bitFont::AlignRight);
-				y += m_VI.GetFont(fontMedium).GetHeight();
+				y += m_VI.GetFont(fontLarge).GetHeight();
+
+				//	Shield level
+
+				if (iMaxHP != iHP && iMaxHP > 0)
+					{
+					int iPercent = ((1000 * iHP / iMaxHP) + 5) / 10;
+					CString sPercent = strPatternSubst(CONSTLIT("%d%%"), iPercent);
+
+					m_VI.GetFont(fontMedium).DrawText(Dest,
+							x,
+							y,
+							m_VI.GetColor(colorTextShields),
+							sPercent,
+							CG16bitFont::AlignRight);
+					y += m_VI.GetFont(fontMedium).GetHeight();
+					}
 				}
 			}
 		else
 			PaintModifier(Dest, x, y, CONSTLIT("disabled"), m_VI.GetColor(colorTextNormal), CG32bitPixel::Null(), &y);
 
+		//	External
+
+		if (pDevice->IsExternal() || pDeviceClass->IsExternal())
+			PaintModifier(Dest, x, y, CONSTLIT("external"), m_VI.GetColor(colorTextNormal), CG32bitPixel::Null(), &y);
+
 		//	Damaged
 
 		if (pDevice->IsDamaged())
 			PaintModifier(Dest, x, y, CONSTLIT("damaged"), m_VI.GetColor(colorTextDisadvantage), m_VI.GetColor(colorAreaDisadvantage), &y);
+
+		if (pDevice->IsDisrupted())
+			PaintModifier(Dest, x, y, CONSTLIT("ionized"), m_VI.GetColor(colorTextDisadvantage), m_VI.GetColor(colorAreaDisadvantage), &y);
 
 		//	Modifiers
 

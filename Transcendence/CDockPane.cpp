@@ -28,10 +28,7 @@
 #define STYLE_DEFAULT				CONSTLIT("default")
 #define STYLE_WARNING				CONSTLIT("warning")
 
-const int ACTION_BUTTON_HEIGHT =	22;
-const int ACTION_BUTTON_SPACING =	4;
 const int MAX_ACTIONS =				8;
-const int ACTION_REGION_HEIGHT =	(ACTION_BUTTON_HEIGHT * MAX_ACTIONS) + (ACTION_BUTTON_SPACING * (MAX_ACTIONS - 1));
 const int FIRST_ACTION_ID =			100;
 const int LAST_ACTION_ID =			199;
 
@@ -536,6 +533,7 @@ bool CDockPane::HandleKeyDown (int iVirtKey)
 		{
 		case VK_UP:
 		case VK_LEFT:
+		case VK_PRIOR:
 			{
 			int iAction;
 			if (m_Actions.FindSpecial(CDockScreenActions::specialPrevKey, &iAction))
@@ -549,6 +547,7 @@ bool CDockPane::HandleKeyDown (int iVirtKey)
 
 		case VK_DOWN:
 		case VK_RIGHT:
+		case VK_NEXT:
 			{
 			int iAction;
 			if (m_Actions.FindSpecial(CDockScreenActions::specialNextKey, &iAction))
@@ -734,8 +733,7 @@ void CDockPane::RenderControls (void)
 	//	Figure out how much room we need for actions and how much we have left
 	//	for controls.
 
-	int iActionCount = m_Actions.GetVisibleCount();
-	int cyActions = (iActionCount * ACTION_BUTTON_HEIGHT) + ((iActionCount - 1) * ACTION_BUTTON_SPACING);
+	int cyActions = m_Actions.CalcAreaHeight(m_pDockScreen->GetResolvedRoot(), m_rcPane);
 	int cyAvailable = RectHeight(m_rcPane) - PANE_PADDING_TOP - cyActions;
 
 	//	Compute the desired height of all variable-height controls
@@ -762,7 +760,7 @@ void CDockPane::RenderControls (void)
 
 	//	Compute the buffer between the controls and the actions
 
-	int cyControlsFull = Min(cyAvailable, AlignUp(cyControls, DESC_HEIGHT_GRANULARITY));
+	int cyControlsFull = Min(Max(PANE_PADDING_TOP + cyControls, cyAvailable), AlignUp(PANE_PADDING_TOP + cyControls, DESC_HEIGHT_GRANULARITY));
 
 	//	Figure out where to start.
 
@@ -798,7 +796,7 @@ void CDockPane::RenderControls (void)
 
 	RECT rcActions;
 	rcActions.left = m_rcPane.left;
-	rcActions.top = m_rcPane.top + PANE_PADDING_TOP + cyControlsFull;
+	rcActions.top = m_rcPane.top + cyControlsFull;
 	rcActions.right = m_rcPane.right;
 	rcActions.bottom = m_rcPane.bottom;
 

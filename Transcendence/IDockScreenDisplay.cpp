@@ -49,6 +49,18 @@ bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retO
 			retOptions->BackgroundDesc.pObj = Ctx.pLocation;
 			}
 
+		//	If the ID is "player" then we should ask the player ship
+
+		else if (strEquals(sBackgroundID, DATA_FROM_PLAYER))
+			{
+			CSpaceObject *pPlayer = g_pUniverse->GetPlayerShip();
+			if (pPlayer)
+				{
+				retOptions->BackgroundDesc.iType = backgroundObj;
+				retOptions->BackgroundDesc.pObj = pPlayer;
+				}
+			}
+
 		//	Otherwise, we expect an integer
 
 		else
