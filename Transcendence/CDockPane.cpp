@@ -533,7 +533,6 @@ bool CDockPane::HandleKeyDown (int iVirtKey)
 		{
 		case VK_UP:
 		case VK_LEFT:
-		case VK_PRIOR:
 			{
 			int iAction;
 			if (m_Actions.FindSpecial(CDockScreenActions::specialPrevKey, &iAction))
@@ -547,10 +546,33 @@ bool CDockPane::HandleKeyDown (int iVirtKey)
 
 		case VK_DOWN:
 		case VK_RIGHT:
-		case VK_NEXT:
 			{
 			int iAction;
 			if (m_Actions.FindSpecial(CDockScreenActions::specialNextKey, &iAction))
+				{
+				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+				m_Actions.Execute(iAction, m_pDockScreen);
+				return true;
+				}
+			break;
+			}
+
+		case VK_NEXT:
+			{
+			int iAction;
+			if (m_Actions.FindSpecial(CDockScreenActions::specialPgDnKey, &iAction))
+				{
+				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+				m_Actions.Execute(iAction, m_pDockScreen);
+				return true;
+				}
+			break;
+			}
+
+		case VK_PRIOR:
+			{
+			int iAction;
+			if (m_Actions.FindSpecial(CDockScreenActions::specialPgUpKey, &iAction))
 				{
 				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 				m_Actions.Execute(iAction, m_pDockScreen);

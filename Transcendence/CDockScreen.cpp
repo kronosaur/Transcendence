@@ -219,6 +219,7 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 		CGTextArea *pControl = new CGTextArea;
 		pControl->SetFont(pControlFont);
 		pControl->SetColor(rgbControlColor);
+		pControl->SetFontTable(&g_pHI->GetVisuals());
 
 		CString sAlign = pDesc->GetAttribute(ALIGN_ATTRIB);
 		if (strEquals(sAlign, ALIGN_CENTER))
@@ -1046,10 +1047,10 @@ void CDockScreen::InitDisplayControlRect (CXMLElement *pDesc, const RECT &rcFram
 	int yCenter;
 	bool bYCenter = pDesc->FindAttributeInteger(VCENTER_ATTRIB, &yCenter);
 
-	if (rcRect.right < 0)
+	if (rcRect.right <= 0)
 		rcRect.right = RectWidth(rcFrame) + rcRect.right;
 
-	if (rcRect.bottom < 0)
+	if (rcRect.bottom <= 0)
 		rcRect.bottom = RectHeight(rcFrame) + rcRect.bottom;
 
 	int cxWidth = pDesc->GetAttributeInteger(WIDTH_ATTRIB);
@@ -1564,7 +1565,10 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 
 					//	The result is the text for the control
 
-					pControl->SetText(pResult->GetStringValue());
+					CUIHelper UIHelper(*g_pHI);
+					CString sRTF;
+					UIHelper.GenerateDockScreenRTF(pResult->GetStringValue(), &sRTF);
+					pControl->SetRichText(sRTF);
 
 					//	If we have an error, report it as well
 
@@ -1602,7 +1606,11 @@ ALERROR CDockScreen::SetDisplayText (const CString &sID, const CString &sText)
 		return ERR_FAIL;
 
 	CGTextArea *pTextControl = (CGTextArea *)pControl->pArea;
-	pTextControl->SetText(g_pTrans->ComposePlayerNameString(sText));
+
+	CUIHelper UIHelper(*g_pHI);
+	CString sRTF;
+	UIHelper.GenerateDockScreenRTF(g_pTrans->ComposePlayerNameString(sText), &sRTF);
+	pTextControl->SetRichText(sRTF);
 
 	//	If we're explicitly setting the text, then we cannot animate
 

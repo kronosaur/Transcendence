@@ -88,52 +88,52 @@ SVirtKeyData g_VirtKeyData[] =
 		{	NULL,	NULL	},
 		{	NULL,	NULL	},
 
-		{	"Backspace",	NULL	},
-		{	"Tab",	NULL	},
+		{	"Backspace",	"Backspace"	},
+		{	"Tab",			"Tab"	},
 		{	NULL,	NULL	},
 		{	NULL,	NULL	},
-		{	"Clear",	NULL	},
-		{	"Return",	NULL	},
+		{	"Clear",		NULL	},
+		{	"Return",		"Enter"	},
 		{	NULL,	NULL	},
 		{	NULL,	NULL	},
 
 		//	0x10 - 0x1F
-		{	"Shift",	NULL	},
-		{	"Control",	NULL	},
-		{	"Menu",	NULL	},
-		{	"Pause",	NULL	},
-		{	"Capital",	NULL	},
-		{	"Kana",	NULL	},
-		{	NULL,	NULL	},
-		{	"Junja",	NULL	},
+		{	"Shift",		"Shift"	},
+		{	"Control",		"Ctrl"	},
+		{	"Menu",			NULL	},
+		{	"Pause",		NULL	},
+		{	"Capital",		NULL	},
+		{	"Kana",			NULL	},
+		{	NULL,			NULL	},
+		{	"Junja",		NULL	},
 
-		{	"Final",	NULL	},
-		{	"Kanji",	NULL	},
-		{	NULL,	NULL	},
-		{	"Escape",	NULL	},
-		{	"Convert",	NULL	},
+		{	"Final",		NULL	},
+		{	"Kanji",		NULL	},
+		{	NULL,			NULL	},
+		{	"Escape",		"Esc"	},
+		{	"Convert",		NULL	},
 		{	"NonConvert",	NULL	},
-		{	"Accept",	NULL	},
+		{	"Accept",		NULL	},
 		{	"ModeChange",	NULL	},
 
 		//	0x20 - 0x2F
-		{	"Space",	NULL	},
-		{	"PageUp",	NULL	},
-		{	"PageDown",	NULL	},
-		{	"End",	NULL	},
-		{	"Home",	NULL	},
-		{	"Left",	NULL	},
-		{	"Up",	NULL	},
-		{	"Right",	NULL	},
+		{	"Space",		"SpaceBar"	},
+		{	"PageUp",		"PgUp"	},
+		{	"PageDown",		"PgDn"	},
+		{	"End",			"End"	},
+		{	"Home",			"Home"	},
+		{	"Left",			"Left"	},
+		{	"Up",			"Up"	},
+		{	"Right",		"Right"	},
 
-		{	"Down",	NULL	},
-		{	"Select",	NULL	},
-		{	"Print",	NULL	},
-		{	"Execute",	NULL	},
-		{	"Snapshot",	NULL	},
-		{	"Insert",	NULL	},
-		{	"Delete",	NULL	},
-		{	"Help",	NULL	},
+		{	"Down",			"Down"	},
+		{	"Select",		NULL	},
+		{	"Print",		"PrtScn"	},
+		{	"Execute",		NULL	},
+		{	"Snapshot",		NULL	},
+		{	"Insert",		"Ins"	},
+		{	"Delete",		"Del"	},
+		{	"Help",			NULL	},
 
 		//	0x30 - 0x3F
 		{	"0",	NULL	},
@@ -212,33 +212,33 @@ SVirtKeyData g_VirtKeyData[] =
 		{	"NumpadSlash",	NULL	},
 
 		//	0x70 - 0x7F
-		{	"F1",	NULL	},
-		{	"F2",	NULL	},
-		{	"F3",	NULL	},
-		{	"F4",	NULL	},
-		{	"F5",	NULL	},
-		{	"F6",	NULL	},
-		{	"F7",	NULL	},
-		{	"F8",	NULL	},
+		{	"F1",			"F1"	},
+		{	"F2",			"F2"	},
+		{	"F3",			"F3"	},
+		{	"F4",			"F4"	},
+		{	"F5",			"F5"	},
+		{	"F6",			"F6"	},
+		{	"F7",			"F7"	},
+		{	"F8",			"F8"	},
 
-		{	"F9",	NULL	},
-		{	"F10",	NULL	},
-		{	"F11",	NULL	},
-		{	"F12",	NULL	},
-		{	"F13",	NULL	},
-		{	"F14",	NULL	},
-		{	"F15",	NULL	},
-		{	"F16",	NULL	},
+		{	"F9",			"F9"	},
+		{	"F10",			"F10"	},
+		{	"F11",			"F11"	},
+		{	"F12",			"F12"	},
+		{	"F13",			"F13"	},
+		{	"F14",			"F14"	},
+		{	"F15",			"F15"	},
+		{	"F16",			"F16"	},
 
 		//	0x80 - 0x8F
-		{	"F17",	NULL	},
-		{	"F18",	NULL	},
-		{	"F19",	NULL	},
-		{	"F20",	NULL	},
-		{	"F21",	NULL	},
-		{	"F22",	NULL	},
-		{	"F23",	NULL	},
-		{	"F24",	NULL	},
+		{	"F17",			"F17"	},
+		{	"F18",			"F18"	},
+		{	"F19",			"F19"	},
+		{	"F20",			"F20"	},
+		{	"F21",			"F21"	},
+		{	"F22",			"F22"	},
+		{	"F23",			"F23"	},
+		{	"F24",			"F24"	},
 
 		{	NULL,	NULL	},
 		{	NULL,	NULL	},
@@ -250,8 +250,8 @@ SVirtKeyData g_VirtKeyData[] =
 		{	NULL,	NULL	},
 
 		//	0x90 - 0x9F
-		{	"NumLock",	NULL	},
-		{	"ScrollLock",	NULL	},
+		{	"NumLock",		"NumLock"	},
+		{	"ScrollLock",	"ScrLock"	},
 		{	"FJ_Jisho",	NULL	},
 		{	"FJ_Masshou",	NULL	},
 		{	"FJ_Touroku",	NULL	},
@@ -512,7 +512,7 @@ CGameKeys::Keys CGameKeys::GetGameCommand (const CString &sCmd) const
 	return CGameKeys::keyError;
 	}
 
-DWORD CGameKeys::GetKey (const CString &sKey) const
+DWORD CGameKeys::GetKey (const CString &sKey)
 
 //	GetKey
 //
@@ -568,6 +568,16 @@ char CGameKeys::GetKeyIfChar (Keys iCommand) const
 			}
 
 	return '\0';
+	}
+
+CString CGameKeys::GetKeyLabel (DWORD dwVirtKey)
+
+//	GetKeyLabel
+//
+//	Returns the label for the given key
+
+	{
+	return CString(g_VirtKeyData[dwVirtKey].pszLabel, -1, true);
 	}
 
 ALERROR CGameKeys::ReadFromXML (CXMLElement *pDesc)

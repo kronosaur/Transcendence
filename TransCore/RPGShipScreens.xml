@@ -14,7 +14,13 @@
 
 				<Actions>
 					<Action name="Ship Configuration" key="S">
-						(scrShowScreen gScreen &dsShipConfig;)
+						;	Show the appropriate dock services screen based on the ship
+						;	class.
+					
+						(scrShowScreen gScreen
+							(objGetProperty gPlayerShip 'shipConfigScreen)
+							{ }
+							)
 					</Action>
 
 					<Action name="Missions" key="M">

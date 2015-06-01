@@ -690,25 +690,134 @@
 				)
 		</InitialPane>
 		
+		<Display>
+			
+			<!-- Left Column -->
+			
+			<Text left="0" right="0" top="280" bottom="0" align="left" font="Medium" color="#daebff">
+				(block (
+					;	Reactor stats
+					
+					(reactorItem (@ (objGetItems gPlayerShip "rI") 0))
+					(reactorText (if reactorItem (itmGetName reactorItem 0x00) (cat (objGetName gPlayerShip 0x80) " reactor")))
+					(reactorPower (divide (if reactorItem (objGetItemProperty gPlayerShip reactorItem 'power) (objGetProperty gPlayerShip 'power)) 1000))
+					(reactorPowerText
+						(switch
+							(gr reactorPower 1000)
+								(cat (divide reactorPower 1000) "." (divide (modulo reactorPower 1000) 100) " GW")
+								
+							(cat reactorPower " MW")
+							)
+						)
+					(reactorFuel
+						(map 
+							(map (itmGetTypes "f -notForSale; -notStandardFuel; -notStandard;") 'excludeNil fuelType 
+								(if (shpIsFuelCompatible gPlayerShip (itmCreate fuelType 1))
+									(itmCreate fuelType 1)
+									)
+								)
+							(list 'reduceMin 'original)
+							fuelItem
+							(itmGetLevel fuelItem)
+							)
+						)
+						
+					;	Drive Stats
+					
+					(driveItem (@ (objGetItems gPlayerShip "vI") 0))
+					(driveText (if driveItem (itmGetName driveItem 0x00) (cat (objGetName gPlayerShip 0x80) " drive")))
+					)
+					
+					(cat
+						"{/rtf "
+							"{/f:MediumBold;/c:#79828c; reactor:} " reactorText "\n"
+							"{/f:MediumBold;/c:#79828c; max. output:} " reactorPowerText "\n"
+							"{/f:MediumBold;/c:#79828c; fuel:} " (itmGetName reactorFuel 0x02) "\n"
+							"{/f:MediumBold;/c:#79828c; efficiency:} " (objGetProperty gPlayerShip 'fuelEfficiency) "\n"
+							"\n"
+							"{/f:MediumBold;/c:#79828c; drive:} " driveText "\n"
+							"{/f:MediumBold;/c:#79828c; max. speed:} ." (objGetProperty gPlayerShip 'maxSpeed) "c\n"
+							"{/f:MediumBold;/c:#79828c; thrust//mass:} " (/ (objGetProperty gPlayerShip 'thrustToWeight) 1000) "\n"
+							"{/f:MediumBold;/c:#79828c; maneuverability:} " (/ (objGetProperty gPlayerShip 'maneuver) 1000) "\n"
+						"}"
+						)
+					)
+			</Text>
+			
+			<!-- Right Column -->
+			
+			<Text left="0" right="0" top="280" bottom="0" align="right" font="Medium" color="#daebff">
+				(block (
+					;	Cargo Stats
+					
+					(cargoItem (@ (objGetItems gPlayerShip "cI") 0))
+					
+					;	Slots
+					
+					(deviceSlots (objGetProperty gPlayerShip 'deviceSlots))
+					(maxWeaponSlots (objGetProperty gPlayerShip 'deviceSlotsWeapons))
+					(maxNonWeaponSlots (objGetProperty gPlayerShip 'deviceSlotsNonWeapons))
+					(availDeviceSlots (objGetProperty gPlayerShip 'availableDeviceSlots))
+					(availWeaponSlots (objGetProperty gPlayerShip 'availableWeaponSlots))
+					(availNonWeaponSlots (objGetProperty gPlayerShip 'availableNonWeaponSlots))
+					)
+					
+					(cat
+						"{/rtf "
+							(if cargoItem (cat "{/f:MediumBold;/c:#79828c; cargo:} " (itmGetName cargoItem 0x00) "\n"))
+							"{/f:MediumBold;/c:#79828c; cargo space:} " (objGetProperty gPlayerShip 'cargoSpace) " tons\n"
+							"{/f:MediumBold;/c:#79828c; max. expansion:} " (objGetProperty gPlayerShip 'maxCargoSpace) " tons\n"
+							"\n"
+							"{/f:MediumBold;/c:#79828c; device slots:} " deviceSlots " (" availDeviceSlots " free)\n"
+							
+							(if (or (!= deviceSlots maxWeaponSlots)
+									(!= deviceSlots maxNonWeaponSlots)
+									)
+								(cat
+									"{/f:MediumBold;/c:#79828c; for weapon:} " maxWeaponSlots " (" availWeaponSlots " free)\n"
+									"{/f:MediumBold;/c:#79828c; for non-weapon:} " maxNonWeaponSlots " (" availNonWeaponSlots " free)\n"
+									)
+								)
+							"\n"
+							"{/f:MediumBold;/c:#79828c; max. armor:} " (/ (objGetProperty gPlayerShip 'maxArmorMass) 1000) " tons\n"
+							"\n"
+							"{/f:MediumBold;/c:#79828c; manufacturer:} " (objGetProperty gPlayerShip 'manufacturer) "\n"
+							"{/f:MediumBold;/c:#79828c; size:} " (objGetProperty gPlayerShip 'size) " meters\n"
+							"{/f:MediumBold;/c:#79828c; mass:} " (objGetProperty gPlayerSHip 'hullMass) " tons\n"
+						"}"
+						)
+					)
+			</Text>
+		</Display>
+		
 		<Panes>
 			<Default>
 				<OnPaneInit>
 					(block (
-						(canRepairArmor (objGetProperty gSource 'repairArmorMaxLevel))
-						(canInstallWeapons (and
-							(objGetProperty gSource 'installDeviceMaxLevel)
-							(or
-								(filter (objGetItems gPlayerShip "w") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
-								(filter (objGetItems gSource "w") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+						(isShipConfig (= gSource gPlayerShip))
+						(canRepairArmor (or isShipConfig (objGetProperty gSource 'repairArmorMaxLevel)))
+						(canInstallWeapons 
+							(or isShipConfig
+								(and
+									(objGetProperty gSource 'installDeviceMaxLevel)
+									(or
+										(filter (objGetItems gPlayerShip "w") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+										(filter (objGetItems gSource "w") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+										)
+									)
 								)
-							))
-						(canInstallMiscDevices (and
-							(objGetProperty gSource 'installDeviceMaxLevel)
-							(or
-								(filter (objGetItems gPlayerShip "d~ws") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
-								(filter (objGetItems gSource "d~ws") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+							)
+						(canInstallMiscDevices 
+							(or isShipConfig
+								(and
+									(objGetProperty gSource 'installDeviceMaxLevel)
+									(or
+										(filter (objGetItems gPlayerShip "d~ws") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+										(filter (objGetItems gSource "d~ws") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+										)
+									)
 								)
-							))
+							)
 						
 						(ammoWeapons (filter (objGetItems gPlayerShip "wI") theItem
 							(itmGetProperty theItem 'ammoType)
@@ -753,9 +862,14 @@
 						(scrShowAction gScreen 'actionWeaponsPgDn (and canInstallWeapons (not canRepairArmor)))
 						(scrShowAction gScreen 'actionMiscDevicesPgDn (and canInstallMiscDevices (not canInstallWeapons) (not canRepairArmor)))
 						
-						;	Descriptor
+						;	Description
 						
-						(scrSetDescTranslate gScreen 'dockServicesScreenDesc)
+						(scrSetDesc gScreen
+							(or (objTranslate gPlayerShip "dockServices:shipDesc")
+									(objGetProperty gPlayerShip 'playerDesc)
+									(scrTranslate gScreen 'shipConfigScreenDesc)
+									)
+							)
 						)
 				</OnPaneInit>
 				
@@ -952,11 +1066,11 @@
 			<Text id="actionBuyAmmoAndMissiles">"[B]uy Ammo and Missiles"</Text>
 			<Text id="actionBuyAmmoAndMissilesDesc">"We sell ammunition and missiles."</Text>
 			
-			<Text id="actionDone">"^[Esc] Done"</Text>
+			<Text id="actionDone">"[Escape] Done"</Text>
 			<Text id="actionInstallDevice">"Install [D]evice"</Text>
 			<Text id="actionMiscDevices">"[M]iscellaneous Devices"</Text>
 			<Text id="actionMiscDevicesDesc">"We install miscellaneous devices"</Text>
-			<Text id="actionMiscDevicesPgDn">"&gt;[PgDn] Miscellaneous Devices"</Text>
+			<Text id="actionMiscDevicesPgDn">"[PageDown] Miscellaneous Devices"</Text>
 			<Text id="actionRefuel">"[R]efuel"</Text>
 			<Text id="actionRefuelDesc">"We can refuel your ship."</Text>
 			
@@ -965,12 +1079,13 @@
 			<Text id="actionRepairArmor">"[A]rmor and Shields"</Text>
 			<Text id="actionRepairArmorDesc">"We repair armor."</Text>
 			
-			<Text id="actionRepairArmorPgDn">"&gt;[PgDn] Armor and Shields"</Text>
+			<Text id="actionRepairArmorPgDn">"[PageDown] Armor and Shields"</Text>
 			<Text id="actionUpgradeReactor">"U[p]grade Reactor"</Text>
 			<Text id="actionWeapons">"[W]eapons"</Text>
 			<Text id="actionWeaponsDesc">"We install weapons."</Text>
-			<Text id="actionWeaponsPgDn">"&gt;[PgDn] Weapons"</Text>
+			<Text id="actionWeaponsPgDn">"[PageDown] Weapons"</Text>
 			
+			<Text id="shipConfigScreenDesc">(cat "You're on board " (objGetName gPlayerShip 0x04) ".")</Text>
 			<Text id="dockServicesScreenDesc">"You are at a dock services terminal."</Text>
 			
 			<Text id="errorNoReactorTech">"The technology required to upgrade your reactor is not available at this station."</Text>

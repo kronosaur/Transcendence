@@ -2027,7 +2027,7 @@
 			mass=				"200"
 			frequency=			"rare"
 			numberAppearing=	"3d6"
-			attributes=			"Consumable; Fuel; Heliotropes; NotForSale"
+			attributes=			"consumable, fuel, heliotropes, notForSale"
 
 			data=				"50000"
 

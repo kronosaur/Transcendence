@@ -140,12 +140,15 @@ class CDockScreenActions
 	public:
 		enum SpecialAttribs
 			{
-			specialAll,
+			specialNone			= 0x00000000,
+			specialAll			= 0xFFFFFFFF,
 
-			specialDefault,
-			specialCancel,
-			specialNextKey,
-			specialPrevKey,
+			specialCancel		= 0x00000001,
+			specialDefault		= 0x00000002,
+			specialNextKey		= 0x00000004,
+			specialPrevKey		= 0x00000008,
+			specialPgDnKey		= 0x00000010,
+			specialPgUpKey		= 0x00000020,
 			};
 
 		CDockScreenActions (void) : m_pData(NULL), m_cxJustify(-1) { }
@@ -181,6 +184,15 @@ class CDockScreenActions
 	private:
 		struct SActionDesc
 			{
+			SActionDesc (void) :
+					pExtension(NULL),
+					pCmd(NULL),
+					pCode(NULL),
+					bVisible(false),
+					bEnabled(false),
+					dwSpecial(0)
+				{ }
+
 			CString sID;
 			CString sLabel;			//	Label for the action
 			CString sKey;			//	Accelerator key
@@ -196,10 +208,7 @@ class CDockScreenActions
 			bool bVisible;			//	Action is visible
 			bool bEnabled;			//	Action is enabled
 
-			bool bDefault;			//	This is the default action [Enter]
-			bool bCancel;			//	This is the cancel action [Esc]
-			bool bPrev;				//	This is the prev action [<-]
-			bool bNext;				//	This is the next action [->]
+			DWORD dwSpecial;		//	Special keys
 			bool bMinor;			//	This is a minor/option button
 
 			CString sLabelTmp;		//	Temporary cache (after justify)
@@ -208,6 +217,7 @@ class CDockScreenActions
 			};
 
 		void ExecuteCode (CDockScreen *pScreen, const CString &sID, CExtension *pExtension, ICCItem *pCode);
+		SpecialAttribs GetSpecialFromName (const CString &sSpecialName);
 		int Justify (CDesignType *pRoot, int cxJustify);
 		void ParseLabelDesc (const CString &sLabelDesc, CString *retsLabel, CString *retsKey = NULL, TArray<SpecialAttribs> *retSpecial = NULL);
 		void SetLabelDesc (SActionDesc *pAction, const CString &sLabelDesc, bool bOverrideSpecial = true);

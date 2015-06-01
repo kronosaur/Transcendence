@@ -37,6 +37,24 @@ const int CONTROL_INNER_PADDING_VERT =	8;
 
 const int AREA_PADDING =			64;
 
+struct SSpecialDesc
+	{
+	char *pszAttrib;
+	CDockScreenActions::SpecialAttribs dwSpecial;
+	};
+
+SSpecialDesc SPECIAL_DESC[] =
+	{
+		{	"cancel",	CDockScreenActions::specialCancel },
+		{	"default",	CDockScreenActions::specialDefault },
+		{	"nextKey",	CDockScreenActions::specialNextKey },
+		{	"pgDnKey",	CDockScreenActions::specialPgDnKey },
+		{	"pgUpKey",	CDockScreenActions::specialPgUpKey },
+		{	"prevKey",	CDockScreenActions::specialPrevKey },
+	};
+
+const int SPECIAL_DESC_COUNT =	(sizeof(SPECIAL_DESC) / sizeof(SPECIAL_DESC[0]));
+
 CDockScreenActions::~CDockScreenActions (void)
 
 //	CDockScreenActions destructor
@@ -418,6 +436,22 @@ bool CDockScreenActions::FindSpecial (SpecialAttribs iSpecial, int *retiAction)
 	return false;
 	}
 
+CDockScreenActions::SpecialAttribs CDockScreenActions::GetSpecialFromName (const CString &sSpecialName)
+
+//	GetSpecialFromName
+//
+//	Converts from a name to special attribute
+
+	{
+	int i;
+
+	for (i = 0; i < SPECIAL_DESC_COUNT; i++)
+		if (strEquals(sSpecialName, CString(SPECIAL_DESC[i].pszAttrib, -1, true)))
+			return SPECIAL_DESC[i].dwSpecial;
+
+	return specialNone;
+	}
+
 int CDockScreenActions::GetVisibleCount (void) const
 
 //	GetVisibleCount
@@ -442,7 +476,7 @@ ALERROR CDockScreenActions::InitFromXML (CExtension *pExtension, CXMLElement *pA
 //	Initialize from XML
 
 	{
-	int i;
+	int i, j;
 
 	//	Clean up current actions
 
@@ -502,10 +536,12 @@ ALERROR CDockScreenActions::InitFromXML (CExtension *pExtension, CXMLElement *pA
 		//	Otherwise, we take the values set by SetLabelDesc.
 
 		pActionDesc->FindAttribute(KEY_ATTRIB, &pAction->sKey);
-		pActionDesc->FindAttributeBool(DEFAULT_ATTRIB, &pAction->bDefault);
-		pActionDesc->FindAttributeBool(CANCEL_ATTRIB, &pAction->bCancel);
-		pActionDesc->FindAttributeBool(NEXT_KEY_ATTRIB, &pAction->bNext);
-		pActionDesc->FindAttributeBool(PREV_KEY_ATTRIB, &pAction->bPrev);
+		for (j = 0; j < SPECIAL_DESC_COUNT; j++)
+			{
+			bool bSpecial;
+			if (pActionDesc->FindAttributeBool(CString(SPECIAL_DESC[j].pszAttrib, -1, true), &bSpecial))
+				pAction->dwSpecial |= SPECIAL_DESC[j].dwSpecial;
+			}
 
 		//	Defaults
 
@@ -524,23 +560,7 @@ bool CDockScreenActions::IsSpecial (int iAction, SpecialAttribs iSpecial)
 //	Returns TRUE if the given action has the special attrib
 
 	{
-	switch (iSpecial)
-		{
-		case specialDefault:
-			return m_Actions[iAction].bDefault;
-
-		case specialCancel:
-			return m_Actions[iAction].bCancel;
-
-		case specialNextKey:
-			return m_Actions[iAction].bNext;
-
-		case specialPrevKey:
-			return m_Actions[iAction].bPrev;
-
-		default:
-			return false;
-		}
+	return ((m_Actions[iAction].dwSpecial & iSpecial) ? true : false);
 	}
 
 int CDockScreenActions::Justify (CDesignType *pRoot, int cxJustify)
@@ -697,14 +717,14 @@ void CDockScreenActions::ParseLabelDesc (const CString &sLabelDesc, CString *ret
 //
 //	Parses a label descriptor of the following forms:
 //
-//	Action:			This is a normal label
-//	[PgDn] Action:	This is a multi-key accelerator
-//	[A]ction:		A is the special key
-//	[Enter]:		Treated as a normal label because key is > 1 character
-//	*Action:		This is the default action
-//	^Action:		This is the cancel action
-//	>Action:		This is the next key
-//	<Action:		This is the prev key
+//	Action:				This is a normal label
+//	[PageDown] Action:	This is a multi-key accelerator
+//	[A]ction:			A is the special key
+//	[Enter]:			Treated as a normal label because key is > 1 character
+//	*Action:			This is the default action
+//	^Action:			This is the cancel action
+//	>Action:			This is the next key
+//	<Action:			This is the prev key
 
 	{
 	char *pPos = sLabelDesc.GetASCIIZPointer();
@@ -776,8 +796,56 @@ void CDockScreenActions::ParseLabelDesc (const CString &sLabelDesc, CString *ret
 
 	if (pStart)
 		{
-		sKey = CString(pAccelStart, (int)(pAccelEnd - pAccelStart));
 		sLabel = CString(pStart);
+
+		//	Look up this key by name
+
+		CString sKeyName = CString(pAccelStart, (int)(pAccelEnd - pAccelStart));
+		DWORD dwKey = CGameKeys::GetKey(sKeyName);
+		
+		//	If this is a valid key, then we use it as an accelerator 
+		//	and special key.
+
+		if (dwKey != INVALID_VIRT_KEY)
+			{
+			sKey = CGameKeys::GetKeyLabel(dwKey);
+
+			//	We only support a limited number of keys
+
+			switch (dwKey)
+				{
+				case VK_DOWN:
+				case VK_RIGHT:
+					retSpecial->Insert(specialNextKey);
+					break;
+
+				case VK_ESCAPE:
+					retSpecial->Insert(specialCancel);
+					break;
+
+				case VK_LEFT:
+				case VK_UP:
+					retSpecial->Insert(specialPrevKey);
+					break;
+
+				case VK_NEXT:
+					retSpecial->Insert(specialPgDnKey);
+					break;
+
+				case VK_PRIOR:
+					retSpecial->Insert(specialPgUpKey);
+					break;
+
+				case VK_RETURN:
+					retSpecial->Insert(specialDefault);
+					break;
+				}
+			}
+
+		//	Otherwise, just an accelerator
+
+		else
+			sKey = sKeyName;
 		}
 
 	//	Otherwise, parse for an embedded label using the bracket syntax.
@@ -916,13 +984,10 @@ void CDockScreenActions::SetSpecial (SActionDesc *pAction, const TArray<SpecialA
 	{
 	int i;
 
-	pAction->bCancel = false;
-	pAction->bDefault = false;
-	pAction->bNext = false;
-	pAction->bPrev = false;
+	pAction->dwSpecial = specialNone;
 
 	for (i = 0; i < Special.GetCount(); i++)
-		SetSpecial(pAction, Special[i], true);
+		pAction->dwSpecial |= Special[i];
 	}
 
 void CDockScreenActions::SetSpecial (SActionDesc *pAction, SpecialAttribs iSpecial, bool bEnabled)
@@ -932,31 +997,10 @@ void CDockScreenActions::SetSpecial (SActionDesc *pAction, SpecialAttribs iSpeci
 //	Sets the special attribute for an action
 
 	{
-	switch (iSpecial)
-		{
-		case specialAll:
-			pAction->bCancel = bEnabled;
-			pAction->bDefault = bEnabled;
-			pAction->bNext = bEnabled;
-			pAction->bPrev = bEnabled;
-			break;
-
-		case specialDefault:
-			pAction->bDefault = bEnabled;
-			break;
-
-		case specialCancel:
-			pAction->bCancel = bEnabled;
-			break;
-
-		case specialNextKey:
-			pAction->bNext = bEnabled;
-			break;
-
-		case specialPrevKey:
-			pAction->bPrev = bEnabled;
-			break;
-		}
+	if (bEnabled)
+		pAction->dwSpecial |= iSpecial;
+	else
+		pAction->dwSpecial &= ~iSpecial;
 	}
 
 void CDockScreenActions::SetSpecial (int iAction, SpecialAttribs iSpecial, bool bEnabled)
@@ -987,21 +1031,15 @@ bool CDockScreenActions::SetSpecial (CCodeChain &CC, int iAction, ICCItem *pSpec
 	for (i = 0; i < pSpecial->GetCount(); i++)
 		{
 		CString sSpecial = pSpecial->GetElement(i)->GetStringValue();
-
-		if (strEquals(sSpecial, ACTION_SPECIAL_CANCEL))
-			SetSpecial(iAction, CDockScreenActions::specialCancel);
-		else if (strEquals(sSpecial, ACTION_SPECIAL_DEFAULT))
-			SetSpecial(iAction, CDockScreenActions::specialDefault);
-		else if (strEquals(sSpecial, ACTION_SPECIAL_NEXT_KEY))
-			SetSpecial(iAction, CDockScreenActions::specialNextKey);
-		else if (strEquals(sSpecial, ACTION_SPECIAL_PREV_KEY))
-			SetSpecial(iAction, CDockScreenActions::specialPrevKey);
-		else
+		SpecialAttribs iSpecial = GetSpecialFromName(sSpecial);
+		if (iSpecial == specialNone)
 			{
 			if (retpError)
 				*retpError = CC.CreateError(CONSTLIT("Unknown action special key"), pSpecial->GetElement(i));
 			return false;
 			}
+
+		SetSpecial(iAction, iSpecial);
 		}
 
 	return true;

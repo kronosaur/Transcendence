@@ -1259,7 +1259,7 @@
 			mass=				"500"
 			frequency=			"uncommon"
 			numberAppearing=	"3d6"
-			attributes=			"Consumable; Fuel; Res;"
+			attributes=			"consumable, fuel, notStandardFuel, res"
 			
 			data=				"5000"
 

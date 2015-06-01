@@ -82,6 +82,11 @@
 				
 			(setq rpgCalcDockServiceBuyAmmo (lambda (dockObj shipObj theItem options)
 				(switch
+					(= dockObj shipObj)
+						{
+							visible: Nil
+							}
+							
 					;	If this item does not require ammo, then we hide the action
 					
 					(not (itmGetProperty theItem 'ammoType))
@@ -121,6 +126,11 @@
 				
 			(setq rpgCalcDockServiceInstallAction (lambda (dockObj shipObj options)
 				(switch
+					(= dockObj shipObj)
+						{
+							visible: Nil
+							}
+				
 					;	If no items to install, action is disabled
 					
 					(not (objGetItems shipObj (@ options 'criteria)))
@@ -163,6 +173,11 @@
 					)
 					
 					(switch
+						(= dockObj shipObj)
+							{
+								visible: Nil
+								}
+								
 						(not fuelToUse)
 							{
 								visible: True
@@ -227,6 +242,11 @@
 				
 			(setq rpgCalcDockServiceRemoveAction (lambda (dockObj shipObj theItem options)
 				(switch
+					(= dockObj shipObj)
+						{
+							visible: Nil
+							}
+							
 					;	For devices, excluding reactors
 					
 					(itmMatches theItem "d~rI")
@@ -309,6 +329,11 @@
 				
 			(setq rpgCalcDockServiceRepairAction (lambda (dockObj shipObj theItem options)
 				(switch
+					(= dockObj shipObj)
+						{
+							visible: Nil
+							}
+				
 					;	If armor segment...
 					
 					(= (itmGetProperty theItem 'category) 'armor)
@@ -384,6 +409,10 @@
 				
 			(setq rpgCalcDockServiceReplaceAction (lambda (dockObj shipObj theItem options)
 				(switch
+					(= dockObj shipObj)
+						{
+							visible: Nil
+							}
 				
 					;	For armor
 					
@@ -506,6 +535,10 @@
 				
 			(setq rpgCalcDockServiceUpgradeAction (lambda (dockObj shipObj theItem options)
 				(switch
+					(= dockObj shipObj)
+						{
+							visible: Nil
+							}
 				
 					;	For installing a new device
 					

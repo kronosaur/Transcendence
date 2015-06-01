@@ -24,6 +24,8 @@ const int NARROW_COLUMN_RIGHT_X =			NARROW_COLUMN_SPACING - (ITEM_ENTRY_WIDTH / 
 const int WIDE_COLUMN_LEFT_X =				-WIDE_COLUMN_SPACING - (ITEM_ENTRY_WIDTH / 2);
 const int WIDE_COLUMN_RIGHT_X =				WIDE_COLUMN_SPACING - (ITEM_ENTRY_WIDTH / 2);
 
+#define SINGLE_FREE_SLOT
+
 enum ELayoutPositions
 	{
 	posFront,
@@ -1269,9 +1271,13 @@ void CGSelectorArea::SetRegionsFromMiscDevices (CSpaceObject *pSource)
 	//	a launcher and we always have at least 1 empty slot, in case the player
 	//	finds a slot-less weapon.
 
+#ifdef SINGLE_FREE_SLOT
+	int iEmptySlots = 1;
+#else
 	int iNonWeaponSlotsInUse;
 	int iTotalSlotsInUse = pShip->CalcDeviceSlotsInUse(NULL, &iNonWeaponSlotsInUse);
 	int iEmptySlots = Max(1, Min((pClass->GetMaxDevices() - iTotalSlotsInUse), (pClass->GetMaxNonWeapons() - iNonWeaponSlotsInUse)) - (bHasReactor ? 0 : 1) - (bHasDrive ? 0 : 1) - (bHasCargo ? 0 : 1));
+#endif
 
 	for (i = 0; i < iEmptySlots; i++)
 		{
@@ -1410,9 +1416,13 @@ void CGSelectorArea::SetRegionsFromWeapons (CSpaceObject *pSource)
 	//	a launcher and we always have at least 1 empty slot, in case the player
 	//	finds a slot-less weapon.
 
+#ifdef SINGLE_FREE_SLOT
+	int iEmptySlots = 1;
+#else
 	int iWeaponSlotsInUse;
 	int iTotalSlotsInUse = pShip->CalcDeviceSlotsInUse(&iWeaponSlotsInUse);
 	int iEmptySlots = Max(1, Min((pClass->GetMaxDevices() - iTotalSlotsInUse), (pClass->GetMaxWeapons() - iWeaponSlotsInUse)) - (bHasLauncher ? 0 : 1));
+#endif
 
 	//	Try to position the empty slots
 

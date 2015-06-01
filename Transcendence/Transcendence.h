@@ -1568,10 +1568,12 @@ class CGameKeys
 
 		CGameKeys::Keys GetGameCommand (const CString &sCmd) const;
 		inline Keys GetGameCommand (DWORD dwVirtKey) const { return m_iMap[(dwVirtKey < 256 ? dwVirtKey : 0)]; }
-		DWORD GetKey (const CString &sKey) const;
 		char GetKeyIfChar (Keys iCommand) const;
 		ALERROR ReadFromXML (CXMLElement *pDesc);
 		ALERROR WriteAsXML (IWriteStream *pOutput);
+
+		static DWORD GetKey (const CString &sKey);
+		static CString GetKeyLabel (DWORD dwVirtKey);
 
 	private:
 		Keys m_iMap[256];

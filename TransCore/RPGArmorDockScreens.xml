@@ -339,13 +339,13 @@
 		</Panes>
 		
 		<Language>
-			<Text id="actionDone">"^[Esc] Done"</Text>
-			<Text id="actionDonePgUp">"&lt;[PgUp] Dock Services"</Text>
+			<Text id="actionDone">"[Escape] Done"</Text>
+			<Text id="actionDonePgUp">"[PageUp] Dock Services"</Text>
 			<Text id="actionDisable">"Disa[b]le"</Text>
 			<Text id="actionEnable">"Ena[b]le"</Text>
 			<Text id="actionInstall">"[I]nstall"</Text>
-			<Text id="actionManageMiscDevices">"&gt;[PgDn] Miscellaneous Devices"</Text>
-			<Text id="actionManageWeapons">"&gt;[PgDn] Weapons"</Text>
+			<Text id="actionManageMiscDevices">"[PageDown] Miscellaneous Devices"</Text>
+			<Text id="actionManageWeapons">"[PageDown] Weapons"</Text>
 			<Text id="actionRemove">"Remo[v]e"</Text>
 			<Text id="actionRepair">"[R]epair"</Text>
 			<Text id="actionReplace">"Re[p]lace"</Text>
@@ -693,11 +693,11 @@
 		
 		<Language>
 			<Text id="actionDisable">"Disa[b]le"</Text>
-			<Text id="actionDone">"^[Esc] Done"</Text>
+			<Text id="actionDone">"[Escape] Done"</Text>
 			<Text id="actionEnable">"Ena[b]le"</Text>
 			<Text id="actionInstall">"[I]nstall"</Text>
-			<Text id="actionManageArmor">"&lt;[PgUp] Armor and Shields"</Text>
-			<Text id="actionManageWeapons">"&lt;[PgUp] Weapons"</Text>
+			<Text id="actionManageArmor">"[PageUp] Armor and Shields"</Text>
+			<Text id="actionManageWeapons">"[PageUp] Weapons"</Text>
 			<Text id="actionRemove">"Remo[v]e"</Text>
 			<Text id="actionReplace">"Re[p]lace"</Text>
 			<Text id="actionUpgrade">"Buy [U]pgrade"</Text>
@@ -1117,11 +1117,11 @@
 			<Text id="actionBuyAmmo">"Buy [A]mmo"</Text>
 			<Text id="actionBuyMissiles">"Buy [M]issiles"</Text>
 			<Text id="actionDisable">"Disa[b]le"</Text>
-			<Text id="actionDone">"^[Esc] Done"</Text>
+			<Text id="actionDone">"[Escape] Done"</Text>
 			<Text id="actionEnable">"Ena[b]le"</Text>
 			<Text id="actionInstall">"[I]nstall"</Text>
-			<Text id="actionManageArmor">"&lt;[PgUp] Armor and Shields"</Text>
-			<Text id="actionManageMiscDevices">"&gt;[PgDn] Miscellaneous Devices"</Text>
+			<Text id="actionManageArmor">"[PageUp] Armor and Shields"</Text>
+			<Text id="actionManageMiscDevices">"[PageDown] Miscellaneous Devices"</Text>
 			<Text id="actionRemove">"Remo[v]e"</Text>
 			<Text id="actionReplace">"Re[p]lace"</Text>
 			<Text id="actionUpgrade">"Buy [U]pgrade"</Text>
@@ -1650,9 +1650,9 @@
 			<Text id="actionRefuel:cantAfford">
 				(switch
 					(= (@ gData 'afford) 0)
-						(cat "We can refuel your ship with " (itmGetName (@ gData 'item) 0x02) " for " (@ gData 'cost) " each. Unfortunately, you cannot afford even one.")
+						(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x02) ". Unfortunately, you cannot afford even one.")
 					
-					(cat "We can refuel your ship with " (itmGetName (@ gData 'item) 0x02) " for " (@ gData 'cost) " each.")
+					(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x02) ".")
 					)
 			</Text>
 			<Text id="actionRefuel:noCompatibleFuel">
@@ -1673,7 +1673,7 @@
 					)
 			</Text>
 			<Text id="actionRefuel:refuel">
-				(cat "We can refuel your ship with " (itmGetName (@ gData 'item) 0x02) " at " (@ gData 'cost) " each.")
+				(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x02) ".")
 			</Text>
 				
 			<Text id="actionRemove:cannotAfford">
