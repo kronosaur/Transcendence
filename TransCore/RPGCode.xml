@@ -825,7 +825,8 @@
 					(setq targetObj (if (@ data 'targetObj) (@ data 'targetObj) gPlayerShip))
 					(setq installerObj (if (@ data 'installerObj) (@ data 'installerObj) gSource))
 					(if (not currencyUsed) (setq currencyUsed (objGetDefaultCurrency targetObj)))
-					(setq itemName (itmGetName thisItem (if (or (@ data 'upgrade) (@ data 'buyAndInstall)) 0x40 0x04)))
+					(setq itemName (itmGetName thisItem 0x04))
+					;(setq itemName (itmGetName thisItem (if (or (@ data 'upgrade) (@ data 'buyAndInstall)) 0x40 0x04)))
 					(setq canInstall Nil)
 					
 					;	If the target object is not the player's ship, then we need to modify

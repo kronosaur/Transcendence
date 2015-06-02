@@ -46,7 +46,7 @@ int CGItemDisplayArea::Justify (const RECT &rcRect)
 
 	//	Otherwise, we expect a title and description
 
-	else
+	else if (!m_sTitle.IsBlank() || !m_sDesc.IsBlank())
 		{
 		const CG16bitFont &LargeBold = VI.GetFont(fontLargeBold);
 		const CG16bitFont &Medium = VI.GetFont(fontMedium);
@@ -68,6 +68,11 @@ int CGItemDisplayArea::Justify (const RECT &rcRect)
 
 		return cyHeight;
 		}
+
+	//	Otherwise, if we have nothing, then we're collapsed
+
+	else
+		return 0;
 	}
 
 void CGItemDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
@@ -78,6 +83,8 @@ void CGItemDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 	{
 	const CVisualPalette &VI = g_pHI->GetVisuals();
+
+	//	Draw background
 
 	CGDraw::RoundedRect(Dest,
 			rcRect.left,

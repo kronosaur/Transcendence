@@ -66,6 +66,13 @@
 							replaceItem: (@ gData 'replaceItem)
 							}))
 
+						(if (@ gData 'replaceItem)
+							(scrSetControlValue gScreen 'currentItem {
+								source: gPlayerShip
+								item: (@ gData 'replaceItem)
+								})
+							)
+							
 						(setq gCanInstall (@ theResult 'canInstall))
 						(setq gCost (@ theResult 'price))
 
@@ -81,6 +88,7 @@
 				</OnPaneInit>
 
 				<Controls>
+					<ItemDisplay id="currentItem"/>
 					<Text id="desc"/>
 					<Text id="descWarning" style="warning"/>
 				</Controls>
@@ -304,6 +312,13 @@
 							replaceItem: (@ gData 'replaceItem)
 							}))
 
+						(if (@ gData 'replaceItem)
+							(scrSetControlValue gScreen 'currentItem {
+								source: gPlayerShip
+								item: (@ gData 'replaceItem)
+								})
+							)
+
 						(scrSetData gScreen 'result theResult)
 						(scrSetData gScreen 'cost (@ theResult 'price))
 						
@@ -315,6 +330,11 @@
 						)
 				</OnPaneInit>
 
+				<Controls>
+					<ItemDisplay id="currentItem"/>
+					<Text id="desc"/>
+				</Controls>
+				
 				<Actions>
 					<Action id="actionBuyAndInstall" default="1">
 						(block (

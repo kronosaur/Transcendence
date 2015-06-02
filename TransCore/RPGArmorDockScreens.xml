@@ -1206,11 +1206,23 @@
 					desc=	"Pick an armor segment to install.">
 
 				<OnPaneInit>
-					(block (thisItem canInstall currencyUsed armorSeg)
-						(setq armorSeg (@ gData 'armorSeg))
-						(setq thisItem (scrGetItem gScreen))
-						(setq canInstall True)
-						(setq currencyUsed (objGetDefaultCurrency gSource))
+					(block (
+						(armorSeg (@ gData 'armorSeg))
+						(thisItem (scrGetItem gScreen))
+						(oldItem (shpGetArmor gPlayerShip armorSeg))
+						(currencyUsed (objGetDefaultCurrency gSource))
+						
+						(canInstall True)
+						)
+						
+						;	Show the current armor
+						
+						(scrSetControlValue gScreen 'currentItem {
+							source: gPlayerShip
+							item: oldItem
+							})
+							
+						;	Status
 						
 						(if thisItem
 							(block (desc cargoNeeded)
@@ -1272,14 +1284,20 @@
 
 									(gr gCost (objGetBalance gPlayerShip currencyUsed))
 										(block Nil
-											(setq desc (cat "This armor segment can be installed for " (fmtCurrency currencyUsed gCost) ". Unfortunately, you cannot afford this cost."))
+											(setq desc 
+												(cat "We can install " (itmGetName thisItem 0x04) " for " (fmtCurrency currencyUsed gCost) ". Unfortunately, you cannot afford this cost.")
+												)
 											(setq canInstall Nil)
 											)
 
 									(eq gCost 0)
-										(setq desc "This armor segment can be installed free of charge.")
+										(setq desc
+											(cat "We can install " (itmGetName thisItem 0x04) " free of charge.")
+											)
 
-									(setq desc (cat "This armor segment can be installed for " (fmtCurrency currencyUsed gCost) "."))
+									(setq desc
+										(cat "We can install " (itmGetName thisItem 0x04) " for " (fmtCurrency currencyUsed gCost) ".")
+										)
 									)
 									
 								;	If the new segment is of a lower level than the current
@@ -1311,6 +1329,7 @@
 				</OnPaneInit>
 
 				<Controls>
+					<ItemDisplay id="currentItem"/>
 					<Text id="desc"/>
 					<Text id="descWarning" style="warning"/>
 				</Controls>
@@ -1397,6 +1416,13 @@
 						(canInstall Nil)
 						)
 						
+						;	Show the current armor
+						
+						(scrSetControlValue gScreen 'currentItem {
+							source: gPlayerShip
+							item: oldItem
+							})
+						
 						;	Tell the player whether we can install the selected item and how 
 						;	much it will cost.
 						
@@ -1422,11 +1448,11 @@
 								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descNotEnoughRoom))
 							
 							(gr totalCost (objGetBalance gPlayerShip currencyUsed))
-								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descCannotAfford { cost:(fmtCurrency currencyUsed totalCost) }))
+								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descCannotAfford { armor:thisItem cost:(fmtCurrency currencyUsed totalCost) }))
 								
 							(eq totalCost 0)
 								(block Nil
-									(setq desc (typTranslate &dsRPGUpgradeArmor; 'descFreeInstall))
+									(setq desc (typTranslate &dsRPGUpgradeArmor; 'descFreeInstall { armor:thisItem }))
 									(scrSetData gScreen 'cost 0)
 									(setq canInstall True)
 									)
@@ -1434,7 +1460,7 @@
 							;	Otherwise, we're OK to install
 								
 							(block Nil
-								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descInstall { cost:(fmtCurrency currencyUsed totalCost) }))
+								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descInstall { armor:thisItem cost:(fmtCurrency currencyUsed totalCost) }))
 								(scrSetData gScreen 'cost totalCost)
 								(setq canInstall True)
 								)
@@ -1450,6 +1476,11 @@
 						)
 				</OnPaneInit>
 
+				<Controls>
+					<ItemDisplay id="currentItem"/>
+					<Text id="desc"/>
+				</Controls>
+				
 				<Actions>
 					<Action id="actionBuyAndInstall" default="1">
 						(block (thisItem currencyUsed)
@@ -1492,13 +1523,13 @@
 					)
 			</Text>
 			<Text id="descCannotAfford">
-				(cat "You can buy and install this armor segment for " (@ gData 'cost) ". Unfortunately, you cannot afford the cost.")))
+				(cat "We can install " (itmGetName (@ gData 'armor) 0x04) " for " (@ gData 'cost) ". Unfortunately, you cannot afford the cost.")))
 			</Text>
 			<Text id="descFreeInstall">
-				"This armor segment can be installed free of charge."
+				(cat "We can install " (itmGetName (@ gData 'armor) 0x04) " free of charge.")
 			</Text>
 			<Text id="descInstall">
-				(cat "You can buy and install this armor segment for " (@ gData 'cost) ".")))
+				(cat "We can install " (itmGetName (@ gData 'armor) 0x04) " for " (@ gData 'cost) ".")))
 			</Text>
 		</Language>
 	</DockScreen>
