@@ -662,7 +662,6 @@
 			>
 		<InitialPane>
 			(block (
-				(canRepairArmor (objGetProperty gSource 'repairArmorMaxLevel))
 				(removableOverlays Nil)
 				)
 				
@@ -673,7 +672,7 @@
 					;	We look for any overlay type with the "OnRemoveAtDockServices"
 					;	event.
 				
-					(and canRepairArmor
+					(and (objGetProperty gSource 'repairArmorMaxLevel)
 							(setq removableOverlays
 								(filter (objGetOverlays gPlayerShip) theID
 									(typHasEvent (objGetOverlayType gPlayerShip theID) 'OnRemoveAtDockServices)
@@ -795,18 +794,6 @@
 				<OnPaneInit>
 					(block (
 						(isShipConfig (= gSource gPlayerShip))
-						(canRepairArmor (or isShipConfig (objGetProperty gSource 'repairArmorMaxLevel)))
-						(canInstallWeapons 
-							(or isShipConfig
-								(and
-									(objGetProperty gSource 'installDeviceMaxLevel)
-									(or
-										(filter (objGetItems gPlayerShip "w") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
-										(filter (objGetItems gSource "w") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
-										)
-									)
-								)
-							)
 						(canInstallMiscDevices 
 							(or isShipConfig
 								(and
@@ -819,18 +806,6 @@
 								)
 							)
 						
-						(ammoWeapons (filter (objGetItems gPlayerShip "wI") theItem
-							(itmGetProperty theItem 'ammoType)
-							))
-						(ammoForSale (filter (objGetItems gSource "m") theItem (objGetSellPrice gSource theItem)))
-						(canBuyAmmo (and ammoWeapons
-							(filter ammoForSale theItem
-								(filter ammoWeapons theWeapon
-									(itmMatches theItem (cat "m +launchedBy:" (itmGetType theWeapon) ";"))
-									)
-								)
-							))
-							
 						(actionStatus Nil)
 						)
 						
@@ -845,22 +820,46 @@
 						(scrSetData gScreen 'fuelMax (@ actionStatus 'maxCount))
 						(scrSetData gScreen 'fuelNeeded (@ actionStatus 'maxNeeded))
 						(scrSetData gScreen 'fuelAfford (@ actionStatus 'maxAfford))
-					
-						;	Show/hide actions based on the services available
-						;	at this station.
-
-						(scrShowAction gScreen 'actionRepairArmor canRepairArmor)
-						(scrShowAction gScreen 'actionWeapons canInstallWeapons)
-						(scrShowAction gScreen 'actionMiscDevices canInstallMiscDevices)
 						
-						(scrShowAction gScreen 'actionBuyAmmoAndMissiles (and ammoForSale (not canInstallWeapons)))
-						(scrEnableAction gScreen 'actionBuyAmmoAndMissiles canBuyAmmo)
+						;	Armor services
+						
+						(setq actionStatus (rpgCalcDockServiceArmorAction gSource gPlayerShip { }))
+						(scrShowAction gScreen 'actionRepairArmor (@ actionStatus 'visible))
+						(scrEnableAction gScreen 'actionRepairArmor (@ actionStatus 'enabled))
+						(scrSetActionDesc gScreen 'actionRepairArmor (@ actionStatus 'desc))
+						
+						;	Weapon services
+						
+						(setq actionStatus (rpgCalcDockServiceWeaponsAction gSource gPlayerShip { }))
+						(scrShowAction gScreen 'actionWeapons (@ actionStatus 'visible))
+						(scrEnableAction gScreen 'actionWeapons (@ actionStatus 'enabled))
+						(scrSetActionDesc gScreen 'actionWeapons (@ actionStatus 'desc))
+
+						;	Misc devices
+						
+						(setq actionStatus (rpgCalcDockServiceMiscDevicesAction gSource gPlayerShip { }))
+						(scrShowAction gScreen 'actionMiscDevices (@ actionStatus 'visible))
+						(scrEnableAction gScreen 'actionMiscDevices (@ actionStatus 'enabled))
+						(scrSetActionDesc gScreen 'actionMiscDevices (@ actionStatus 'desc))
 						
 						;	Page Down
 						
-						(scrShowAction gScreen 'actionRepairArmorPgDn canRepairArmor)
-						(scrShowAction gScreen 'actionWeaponsPgDn (and canInstallWeapons (not canRepairArmor)))
-						(scrShowAction gScreen 'actionMiscDevicesPgDn (and canInstallMiscDevices (not canInstallWeapons) (not canRepairArmor)))
+						(scrShowAction gScreen 'actionRepairArmorPgDn
+							(scrIsActionEnabled gScreen 'actionRepairArmor)
+							)
+						(scrShowAction gScreen 'actionWeaponsPgDn 
+							(and 
+								(scrIsActionEnabled gScreen 'actionWeapons)
+								(not (scrIsActionEnabled gScreen 'actionRepairArmor))
+								)
+							)
+						(scrShowAction gScreen 'actionMiscDevicesPgDn 
+							(and 
+								(scrIsActionEnabled gScreen 'actionMiscDevices)
+								(not (scrIsActionEnabled gScreen 'actionWeapons))
+								(not (scrIsActionEnabled gScreen 'actionRepairArmor))
+								)
+							)
 						
 						;	Description
 						
@@ -896,29 +895,6 @@
 							manageWeapons: (scrIsActionEnabled gScreen 'actionWeapons)
 							doubleExit: True
 							})
-					</Action>
-					
-					<Action id="actionBuyAmmoAndMissiles">
-						(block (
-							(ammoWeapons (filter (objGetItems gPlayerShip "wI") theItem
-								(itmGetProperty theItem 'ammoType)
-								))
-							)
-							
-							(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
-								checkMilitaryID: (@ gData 'checkMilitaryID)
-								listFilter: (lambda (theItem)
-									(switch
-										(not (filter ammoWeapons theWeapon
-												(itmMatches theItem (cat "m +launchedBy:" (itmGetType theWeapon) ";"))
-												))
-											Nil
-											
-										(intComputeSellPrice theItem)
-										)
-									)
-								})
-							)
 					</Action>
 					
 					<Action id="actionWeapons">
@@ -1007,10 +983,6 @@
 						(canRemove Nil)
 						)
 						
-						(dbgOutput "total: " totalCost)
-						(dbgOutput "per: " costPerOverlay)
-						(dbgOutput "all: " removableOverlays)
-						
 						(switch
 							(ls (objGetBalance gPlayerShip currencyUsed) totalCost)
 								(scrSetDescTranslate gScreen 'descCannotAffordOverlayRemove { removableOverlays:removableOverlays cost:(fmtCurrency currencyUsed totalCost) })
@@ -1063,26 +1035,117 @@
 		</Panes>
 		
 		<Language>
-			<Text id="actionBuyAmmoAndMissiles">"[B]uy Ammo and Missiles"</Text>
-			<Text id="actionBuyAmmoAndMissilesDesc">"We sell ammunition and missiles."</Text>
-			
 			<Text id="actionDone">"[Escape] Done"</Text>
-			<Text id="actionInstallDevice">"Install [D]evice"</Text>
-			<Text id="actionMiscDevices">"[M]iscellaneous Devices"</Text>
-			<Text id="actionMiscDevicesDesc">"We install miscellaneous devices"</Text>
-			<Text id="actionMiscDevicesPgDn">"[PageDown] Miscellaneous Devices"</Text>
-			<Text id="actionRefuel">"[R]efuel"</Text>
-			<Text id="actionRefuelDesc">"We can refuel your ship."</Text>
 			
+			<Text id="actionMiscDevices">"[M]iscellaneous Devices"</Text>
+			<Text id="actionMiscDevices:nothing">"We don't upgrade or install miscellaneous devices."</Text>
+			<Text id="actionMiscDevices:shipConfig">"View and manage your reactor, drive upgrade, cargo expansion, and other devices."</Text>
+			<Text id="actionMiscDevices:defaultInstall">
+				(cat
+					"We install miscellaneous devices up to level " (@ gData 'maxLevel) "."
+					)
+			</Text>
+			<Text id="actionMiscDevices:defaultUpgrade">
+				(switch
+					;	If we only sell one item, say so
+					
+					(= (count (@ gData 'items)) 1)
+						(cat "We sell and install " (itmGetName (@ (@ gData 'items) 0) 0x02) ".")
+
+					;	Otherwise, describe the upgrade based on a category
+					
+					(scrTranslate gScreen "actionUpgrade:defaultAbility" {
+						maxLevel: (@ gData 'maxLevel)
+						category:
+							(switch
+								(= (count (@ gData 'items))
+										(count (filter (@ gData 'items) theItem (itmMatches theItem "r")))
+										)
+									'reactor
+									
+								(= (count (@ gData 'items))
+										(count (filter (@ gData 'items) theItem (itmMatches theItem "v")))
+										)
+									'drive
+									
+								(= (count (@ gData 'items))
+										(count (filter (@ gData 'items) theItem (itmMatches theItem "c")))
+										)
+									'cargoHold
+									
+								Nil
+								)
+						})
+					)
+			</Text>
+			
+			<Text id="actionMiscDevicesPgDn">"[PageDown] Miscellaneous Devices"</Text>
+			
+			<Text id="actionRefuel">"[R]efuel"</Text>
 			<Text id="actionRemoveDevice">"Remo[v]e Device"</Text>
 			<Text id="actionRemoveOverlays">"[R]emove All"</Text>
+			
 			<Text id="actionRepairArmor">"[A]rmor and Shields"</Text>
-			<Text id="actionRepairArmorDesc">"We repair armor."</Text>
+			<Text id="actionArmor:defaultArmorInstall">
+				(cat
+					"We install armor segments up to level " (@ gData 'maxLevel) "."
+					)
+			</Text>
+			<Text id="actionArmor:defaultArmorRepair">
+				(cat
+					"We repair armor up to level " (@ gData 'maxLevel) "."
+					)
+			</Text>
+			<Text id="actionArmor:defaultArmorUpgrade">
+				(cat
+					"We sell armor upgrades up to level " (@ gData 'maxLevel) "."
+					)
+			</Text>
+			<Text id="actionArmor:defaultShieldsInstall">
+				(cat
+					"We install shields up to level " (@ gData 'maxLevel) "."
+					)
+			</Text>
+			<Text id="actionArmor:defaultShieldsUpgrade">
+				(cat
+					"We sell shield upgrades up to level " (@ gData 'maxLevel) "."
+					)
+			</Text>
+			<Text id="actionArmor:noTechToRepair">
+				(cat
+					"We do not have the technology to repair your armor."
+					)
+			</Text>
+			<Text id="actionArmor:nothing">"We don't upgrade or install armor."</Text>
+			<Text id="actionArmor:shipConfig">"View and manage armor and shields."</Text>
 			
 			<Text id="actionRepairArmorPgDn">"[PageDown] Armor and Shields"</Text>
 			<Text id="actionUpgradeReactor">"U[p]grade Reactor"</Text>
+			
 			<Text id="actionWeapons">"[W]eapons"</Text>
-			<Text id="actionWeaponsDesc">"We install weapons."</Text>
+			<Text id="actionWeapons:defaultAmmo">
+				(cat
+					"We sell ammo up to level " (@ gData 'maxLevel) "."
+					)
+			</Text>
+			<Text id="actionWeapons:defaultInstall">
+				(cat
+					"We install weapons up to level " (@ gData 'maxLevel) "."
+					)
+			</Text>
+			<Text id="actionWeapons:defaultUpgrade">
+				(cat
+					"We sell weapon upgrades up to level " (@ gData 'maxLevel) "."
+					)
+			</Text>
+			<Text id="actionWeapons:noBetterUpgrades">
+				(cat
+					"We sell weapons up to level " (@ gData 'maxLevel) ", but none are as good as what your ship has."
+					)
+			</Text>
+			<Text id="actionWeapons:nothing">"We don't upgrade or install weapons."</Text>
+			<Text id="actionWeapons:shipConfig">"View and manage your weapons."</Text>
+			
 			<Text id="actionWeaponsPgDn">"[PageDown] Weapons"</Text>
 			
 			<Text id="shipConfigScreenDesc">(cat "You're on board " (objGetName gPlayerShip 0x04) ".")</Text>

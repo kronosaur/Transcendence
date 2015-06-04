@@ -771,20 +771,12 @@
 		<Items>
 			<RandomItem count="10" 
 					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"2"
-					levelCurve=		"1"
+					levelFrequency=	"systemLevel:u|c|ur"
 					/>
 			<RandomItem count="10" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"2"
-					levelCurve=		"1"
+					criteria=		"*~ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|ur"
 					/>
-			<RandomItem count="3" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"3"
-					levelCurve=		"1"
-					/>
-
 			<Item count="4d12"	item="&itHelium3FuelRod;" />
 		</Items>
 
@@ -798,6 +790,8 @@
 			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="93"/>
 			<RepairArmor	criteria="a L:1-5;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-5;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-5;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-5;" priceAdj="100"/>
 		</Trade>
 
 		<Ships>

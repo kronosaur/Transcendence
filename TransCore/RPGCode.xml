@@ -80,6 +80,130 @@
 					)
 				))
 				
+			(setq rpgCalcDockServiceArmorAction (lambda (dockObj shipObj options)
+				(block (
+					(armorForSale 
+						(filter (objGetItems dockObj "aU") theItemToBuy
+							(and (objGetSellPrice dockObj theItemToBuy)
+									(objGetArmorReplacePrice dockObj theItemToBuy)
+									)
+							)
+						)
+					(armorInCargo (objGetItems shipObj "aU"))
+					(armorToInstall
+						(filter armorInCargo theItemToInstall
+							(block (
+								(installStatus (objGetItemProperty dockObj theItemToInstall 'installItemStatus))
+								)
+								(and (@ installStatus 'canInstall)
+									(not (@ installStatus 'upgradeInstallOnly))
+									)
+								)
+							)
+						)
+						
+					(shieldsForSale 
+						(filter (objGetItems dockObj "sU") theItemToBuy
+							(and (objGetSellPrice dockObj theItemToBuy)
+									(objGetItemProperty dockObj theItemToBuy 'installDevicePrice)
+									)
+							)
+						)
+					(shieldsToInstall
+						(filter (objGetItems shipObj "sU") theItemToInstall
+							(block (
+								(installStatus (objGetItemProperty dockObj theItemToInstall 'installDeviceStatus))
+								)
+								(and (@ installStatus 'canInstall)
+									(not (@ installStatus 'upgradeInstallOnly))
+									)
+								)
+							)
+						)
+						
+					(maxArmorLevel (map armorForSale 'reduceMax theItemToBuy (itmGetLevel theItemToBuy)))
+					(maxShieldsLevel (map shieldsForSale 'reduceMax theItemToBuy (itmGetLevel theItemToBuy)))
+					(maxRepairArmorLevel (objGetProperty dockObj 'repairArmorMaxLevel))
+					
+					(minPlayerArmorLevel (map (objGetItems shipObj "aI") 'reduceMin theItemToUpgrade (itmGetLevel theItemToUpgrade)))
+					(minPlayerShieldsLevel (map (objGetItems shipObj "sI") 'reduceMin theItemToUpgrade (itmGetLevel theItemToUpgrade)))
+					)
+					
+					(switch
+						(= dockObj shipObj)
+							{
+								visible: True
+								enabled: True
+								desc: (scrTranslate gScreen "actionArmor:shipConfig")
+								}
+								
+						;	If we have upgrades
+						
+						(and armorForSale
+								(geq maxArmorLevel minPlayerArmorLevel)
+								)
+							{
+								visible: True
+								enabled: True
+								desc: (or (objTranslate dockObj "dockServices:armorAbility" { items:armorForSale maxLevel:maxArmorLevel })
+										(scrTranslate gScreen "actionArmor:defaultArmorUpgrade" { items:armorForSale maxLevel:maxArmorLevel })
+										)
+								}
+						
+						(and shieldsForSale
+								(geq maxShieldsLevel minPlayerShieldsLevel)
+								)
+							{
+								visible: True
+								enabled: True
+								desc: (or (objTranslate dockObj "dockServices:shieldsAbility" { items:shieldsForSale maxLevel:maxShieldsLevel })
+										(scrTranslate gScreen "actionArmor:defaultShieldsUpgrade" { items:shieldsForSale maxLevel:maxShieldsLevel })
+										)
+								}
+						
+						;	If we can install something for the player
+						
+						armorToInstall
+							{
+								visible: True
+								enabled: True
+								desc: (scrTranslate gScreen "actionArmor:defaultArmorInstall" { items:armorToInstall maxLevel:(objGetProperty dockObj 'installArmorMaxLevel) })
+								}
+								
+						shieldsToInstall
+							{
+								visible: True
+								enabled: True
+								desc: (scrTranslate gScreen "actionArmor:defaultShieldsInstall" { items:shieldsToInstall maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+								}
+								
+						;	Can we repair the player's armor?
+						
+						(geq maxRepairArmorLevel minPlayerArmorLevel)
+							{
+								visible: True
+								enabled: True
+								desc: (scrTranslate gScreen "actionArmor:defaultArmorRepair" { maxLevel:maxRepairArmorLevel })
+								}
+								
+						maxRepairArmorLevel
+							{
+								visible: True
+								enabled: Nil
+								desc: (scrTranslate gScreen "actionArmor:noTechToRepair" { maxLevel:maxRepairArmorLevel })
+								}
+								
+						;	Otherwise, nothing
+						
+						{
+							visible: True
+							enabled: Nil
+							desc: (scrTranslate gScreen "actionArmor:nothing")
+							}
+						)
+					)
+				))
+			
 			(setq rpgCalcDockServiceBuyAmmo (lambda (dockObj shipObj theItem options)
 				(switch
 					(= dockObj shipObj)
@@ -162,6 +286,69 @@
 					)
 				))
 				
+			(setq rpgCalcDockServiceMiscDevicesAction (lambda (dockObj shipObj options)
+				(block (
+					(itemsForSale 
+						(filter (objGetItems dockObj "d~wsU") theItemToBuy
+							(and (objGetSellPrice dockObj theItemToBuy)
+									(objGetItemProperty dockObj theItemToBuy 'installDevicePrice)
+									)
+							)
+						)
+					(itemsToInstall
+						(filter (objGetItems shipObj "d~wsU") theItemToInstall
+							(block (
+								(installStatus (objGetItemProperty dockObj theItemToInstall 'installDeviceStatus))
+								)
+								(and (@ installStatus 'canInstall)
+									(not (@ installStatus 'upgradeInstallOnly))
+									)
+								)
+							)
+						)
+						
+					(maxLevel (map itemsForSale 'reduceMax theItemToBuy (itmGetLevel theItemToBuy)))
+					)
+					
+					(switch
+						(= dockObj shipObj)
+							{
+								visible: True
+								enabled: True
+								desc: (scrTranslate gScreen "actionMiscDevices:shipConfig")
+								}
+								
+						;	If we have upgrades
+						
+						itemsForSale
+							{
+								visible: True
+								enabled: True
+								desc: (or (objTranslate dockObj "dockServices:miscDevicesAbility" { items:itemsForSale maxLevel:maxLevel })
+										(scrTranslate gScreen "actionMiscDevices:defaultUpgrade" { items:itemsForSale maxLevel:maxLevel })
+										)
+								}
+						
+						;	If we can install something for the player
+						
+						itemsToInstall
+							{
+								visible: True
+								enabled: True
+								desc: (scrTranslate gScreen "actionMiscDevices:defaultInstall" { items:itemsToInstall maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+								}
+								
+						;	Otherwise, nothing
+						
+						{
+							visible: True
+							enabled: Nil
+							desc: (scrTranslate gScreen "actionMiscDevices:nothing")
+							}
+						)
+					)
+				))
+			
 			(setq rpgCalcDockServiceRefuelAction (lambda (dockObj shipObj options)
 				(block (
 					(currencyUsed (objGetDefaultCurrency dockObj))
@@ -716,6 +903,103 @@
 					)
 				))
 				
+			(setq rpgCalcDockServiceWeaponsAction (lambda (dockObj shipObj options)
+				(block (
+					(itemsForSale 
+						(filter (objGetItems dockObj "wU") theItemToBuy
+							(and (objGetSellPrice dockObj theItemToBuy)
+									(objGetItemProperty dockObj theItemToBuy 'installDevicePrice)
+									)
+							)
+						)
+					(itemsToInstall
+						(filter (objGetItems shipObj "wU") theItemToInstall
+							(block (
+								(installStatus (objGetItemProperty dockObj theItemToInstall 'installDeviceStatus))
+								)
+								(and (@ installStatus 'canInstall)
+									(not (@ installStatus 'upgradeInstallOnly))
+									)
+								)
+							)
+						)
+					(ammoWeapons (filter (objGetItems shipObj "wI") theItem
+						(itmGetProperty theItem 'ammoType)
+						))
+					(ammoForSale
+						(filter (objGetItems dockObj "m") theItem
+							(and
+								(objGetSellPrice dockObj theItem)
+								(filter ammoWeapons theWeapon
+									(itmMatches theItem (cat "m +launchedBy:" (itmGetType theWeapon) ";"))
+									)
+								)
+							)
+						)
+						
+					(maxLevel (map itemsForSale 'reduceMax theItemToBuy (itmGetLevel theItemToBuy)))
+					(minPlayerLevel (map (objGetItems shipObj "wI") 'reduceMin theItemToUpgrade (itmGetLevel theItemToUpgrade)))
+					)
+					
+					(switch
+						(= dockObj shipObj)
+							{
+								visible: True
+								enabled: True
+								desc: (scrTranslate gScreen "actionWeapons:shipConfig")
+								}
+								
+						;	If we have upgrades
+						
+						(and itemsForSale
+								(geq maxLevel minPlayerLevel)
+								)
+							{
+								visible: True
+								enabled: True
+								desc: (or (objTranslate dockObj "dockServices:weaponsAbility" { items:itemsForSale maxLevel:maxLevel })
+										(scrTranslate gScreen "actionWeapons:defaultUpgrade" { items:itemsForSale maxLevel:maxLevel })
+										)
+								}
+						
+						;	If we can install something for the player
+						
+						itemsToInstall
+							{
+								visible: True
+								enabled: True
+								desc: (scrTranslate gScreen "actionWeapons:defaultInstall" { items:itemsToInstall maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+								}
+								
+						;	If we can sell ammo
+						
+						ammoForSale
+							{
+								visible: True
+								enabled: True
+								desc: (scrTranslate gScreen "actionWeapons:defaultAmmo" { items:ammoForSale maxLevel:(map ammoForSale 'reduceMax theItem (itmGetLevel theItem)) })
+								}
+								
+						;	No upgrades for player
+						
+						itemsForSale
+							{
+								visible: True
+								enabled: Nil
+								desc: (scrTranslate gScreen "actionWeapons:noBetterUpgrades" { maxLevel:maxLevel })
+								}
+								
+						;	Otherwise, nothing
+						
+						{
+							visible: True
+							enabled: Nil
+							desc: (scrTranslate gScreen "actionWeapons:nothing")
+							}
+						)
+					)
+				))
+			
 			;	rpgGetInstallerList
 			;
 			;	Returns a list of objects that are able to install the given item

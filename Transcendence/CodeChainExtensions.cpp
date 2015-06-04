@@ -1273,7 +1273,7 @@ ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			if (!Actions.FindByID(pArgs->GetElement(1), &iAction))
 				return pCC->CreateError(CONSTLIT("Invalid action ID"), pArgs->GetElement(1));
 
-			return pCC->CreateBool(Actions.IsEnabled(iAction));
+			return pCC->CreateBool(Actions.IsVisible(iAction) && Actions.IsEnabled(iAction));
 			}
 
 		case FN_SCR_TRANSLATE:

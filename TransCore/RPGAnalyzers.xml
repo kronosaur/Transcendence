@@ -136,13 +136,13 @@
 								(@ result 'desc)
 								))
 								
-							(dbgOutput "Analyze:")
+							;(dbgOutput "Analyze:")
 								
 							;	Set the filter so we only select the modified item
 							(scrSetListFilter gScreen (lambda (theItem)
 								(block Nil
-									(dbgOutput "item1: " (itmGetName theItem 0))
-									(dbgOutput "item2: " (itmGetName (@ result 'modifiedItem) 0))
+									;(dbgOutput "item1: " (itmGetName theItem 0))
+									;(dbgOutput "item2: " (itmGetName (@ result 'modifiedItem) 0))
 									(itmIsEqual theItem (@ result 'modifiedItem))
 									)
 								))
