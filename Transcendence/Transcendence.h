@@ -414,6 +414,7 @@ class CPlayerShipController : public IShipController
 		virtual void CancelCurrentOrder (void);
 		virtual void CancelDocking (void);
 		virtual CString DebugCrashInfo (void);
+		virtual CString GetAISettingString (const CString &sSetting);
 		virtual CString GetClass (void) { return CONSTLIT("player"); }
 		virtual int GetCombatPower (void);
 		virtual CCurrencyBlock *GetCurrencyBlock (void) { return &m_Credits; }
@@ -1880,6 +1881,7 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 		inline CCloudService &GetService (void) { return m_Service; }
 		inline CGameSettings &GetSettings (void) { return m_Settings; }
 		inline CSoundtrackManager &GetSoundtrack (void) { return m_Soundtrack; }
+		void PaintDebugInfo (CG32bitImage &Dest, const RECT &rcScreen);
 		void SetOptionBoolean (int iOption, bool bValue);
 		void SetOptionInteger (int iOption, int iValue);
 

@@ -199,6 +199,7 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 #ifdef DEBUG
 				PaintDebugLines();
 #endif
+				m_pTC->PaintDebugInfo(TheScreen, m_rcScreen);
 
 				//	Paint soundtrack info
 
@@ -392,6 +393,7 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 #ifdef DEBUG
 				PaintDebugLines();
 #endif
+				m_pTC->PaintDebugInfo(TheScreen, m_rcScreen);
 
 				//	Update the screen
 
@@ -428,6 +430,8 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 					TheScreen.Fill(m_rcScreen.left, m_rcScreen.top, RectWidth(m_rcScreen), RectHeight(m_rcScreen), BAR_COLOR);
 					}
 
+				m_pTC->PaintDebugInfo(TheScreen, m_rcScreen);
+
 				if (bTopMost)
 					g_pHI->GetScreenMgr().Blt();
 				break;
@@ -458,6 +462,7 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 #ifdef DEBUG
 				PaintDebugLines();
 #endif
+				m_pTC->PaintDebugInfo(TheScreen, m_rcScreen);
 
 				//	Update the screen
 

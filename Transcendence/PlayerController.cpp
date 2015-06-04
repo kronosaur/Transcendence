@@ -25,6 +25,9 @@ const Metric MIN_PORT_ANIMATION_DIST2 =			MIN_PORT_ANIMATION_DIST * MIN_PORT_ANI
 const DWORD FIRE_THRESHOLD =					150;
 const DWORD HIT_THRESHOLD =						90;
 
+const DWORD FIRE_THRESHOLD_EXIT =				600;
+const DWORD HIT_THRESHOLD_EXIT =				150;
+
 const DWORD DAMAGE_BAR_TIMER =					30 * 5;
 
 #define MAX_GATE_DISTANCE						(g_KlicksPerPixel * 150.0)
@@ -523,6 +526,19 @@ void CPlayerShipController::GenerateGameStats (CGameStats &Stats, bool bGameOver
 
 	{
 	m_Stats.GenerateGameStats(Stats, m_pShip, bGameOver);
+	}
+
+CString CPlayerShipController::GetAISettingString (const CString &sSetting)
+
+//	GetAISettingString
+//
+//	Returns custom settings
+
+	{
+	if (strEquals(sSetting, CONSTLIT("underAttack")))
+		return (m_bUnderAttack ? CONSTLIT("True") : NULL_STR);
+	else
+		return NULL_STR;
 	}
 
 int CPlayerShipController::GetCombatPower (void)
@@ -1795,8 +1811,8 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 		{
 		bool bStillUnderAttack = Ctx.pSystem->EnemiesInLRS()
 				&& (Ctx.pSystem->IsPlayerUnderAttack()
-					|| m_pShip->HasBeenHitLately(HIT_THRESHOLD)
-					|| m_pShip->HasFiredLately(FIRE_THRESHOLD));
+					|| m_pShip->HasBeenHitLately(HIT_THRESHOLD_EXIT)
+					|| m_pShip->HasFiredLately(FIRE_THRESHOLD_EXIT));
 		if (!bStillUnderAttack)
 			{
 			g_pHI->HICommand(CMD_PLAYER_COMBAT_ENDED);

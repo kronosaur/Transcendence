@@ -1951,6 +1951,18 @@ void CTranscendenceController::OnShutdown (EHIShutdownReasons iShutdownCode)
 		}
 	}
 
+void CTranscendenceController::PaintDebugInfo (CG32bitImage &Dest, const RECT &rcScreen)
+
+//	PaintDebugInfo
+//
+//	Paints debug info on top of the screen
+
+	{
+#ifdef DEBUG_SOUNDTRACK_STATE
+	m_Soundtrack.PaintDebugInfo(Dest, rcScreen);
+#endif
+	}
+
 bool CTranscendenceController::RequestCatalogDownload (const TArray<CMultiverseCatalogEntry *> &Downloads)
 
 //	RequestCatalogDownload
