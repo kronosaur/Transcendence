@@ -987,11 +987,13 @@ void CNewGameSession::SetShipClassImage (CShipClass *pClass, int x, int y, int c
 
 	//	New image frame
 
+	bool bAutoMask = (pClass->GetAPIVersion() < 26);
+
 	IAnimatron *pImageFrame = new CAniRect;
 	pImageFrame->SetID(ID_SHIP_CLASS_IMAGE);
 	pImageFrame->SetPropertyVector(PROP_POSITION, CVector(xImage, yImage));
 	pImageFrame->SetPropertyVector(PROP_SCALE, CVector(pImageToUse->GetWidth(), pImageToUse->GetHeight()));
-	pImageFrame->SetFillMethod(new CAniImageFill(pImageToUse, bFree));
+	pImageFrame->SetFillMethod(new CAniImageFill(pImageToUse, bFree, bAutoMask));
 
 	m_pRoot->AddLine(pImageFrame);
 	}
