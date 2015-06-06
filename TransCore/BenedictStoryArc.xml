@@ -293,7 +293,7 @@
 			<Text id="IntroFirst">
 				(cat
 					"You are docked at an abbey of the Sisters of Domina. "
-					"A woman wearing a flowing cardinal robe approaches you.\n\n"
+					"A woman in a flowing cardinal robe approaches you.\n\n"
 							
 					"\"Welcome, pilgrim! Your journey to the Galactic Core has just begun. "
 					"Your path will be filled with many obstacles, but do not worry: "
@@ -316,43 +316,36 @@
 					"your ship.\n\n"
 					
 					"The abbess continues: \"This is Benedict, our most valuable friend. "
-					"He will help you on your journey.\""
+					"He will help you prepare for your journey.\""
 					)
 			</Text>
 			
 			<Text id="q1:Label">"\"Who is [D]omina?\""</Text>
 			<Text id="q1:Answer">
-				(random (list
-					(cat
-						"\"Domina speaks to you in your dreams and visions. "
-						"She summons those like you to journey to the Core. "
-						"Perhaps if you reach her you will understand. "
-						"But do not be afraid&#x97;Domina will protect you.\""
-						)
-					(cat
-						"\"Domina speaks to you from her throne at the Galactic Core. "
-						"Only she knows the purpose of your journey. Perhaps if you reach her you will understand.\""
-						)
-					(cat
-						"\"Domina is the divine intelligence that guides you. "
-						"She waits for you at the Galactic Core for some purpose. "
-						"Perhaps if you reach her you will understand.\""
-						)
-					))
+				(cat
+					"\"Domina is the divine intelligence who brought you here!\n\n"
+					
+					"\"You can feel her in your thoughts, can't you? She compels you "
+					"to make the long journey to the Core.\n\n"
+					
+					"\"I envy you! Very few are chosen by Domina, and though we see "
+					"only a fraction of her plan, we know she fights to defend all life "
+					"in the Galaxy. Whatever her plan, your journey will affect "
+					"all humanity.\n\n"
+					
+					"\"Perhaps when you reach her you will understand.\""
+					)
 			</Text>
 			
 			<Text id="q2:Label">"\"How do I reach the [G]alactic Core?\""</Text>
 			<Text id="q2:Answer">
-				(random (list
-					(cat
-						"\"The stargates will take you. Seek them out and enter. "
-						"But be prepared for many obstacles. You must grow stronger to reach the Core.\""
-						)
-					(cat
-						"\"The stargates will take you. Seek them out and enter. "
-						"But remember that the farther you go, the greater the dangers.\""
-						)
-					))
+				(cat
+					"\"The stargates will take you. Seek them out and enter. "
+					"But be prepared for many obstacles. You must grow stronger to reach the Core.\n\n"
+					
+					"\"You will upgrade your ship in your travels, and eventually you'll "
+					"command terrible energies, enough to defeat anyone who blocks your path.\""
+					)
 			</Text>
 			
 			<Text id="q3:Label">"\"[W]hat obstacles will I face?\""</Text>
