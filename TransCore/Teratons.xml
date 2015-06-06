@@ -74,9 +74,9 @@
 
 	<ItemType UNID="&itKytrynPlasmaSeed;"
 			name=				"Kytryn plasma pod"
-			level=				"12"
-			value=				"1500"
-			mass=				"300"
+			level=				"10"
+			value=				"450"
+			mass=				"30"
 			attributes=			"Consumable; Alien; Missile; Teraton"
 			frequency=			"uncommon"
 			numberAppearing=	"1d6"

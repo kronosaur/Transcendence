@@ -4936,8 +4936,8 @@
 			frequency=			"common"
 			numberAppearing=	"1d20"
 
-			value=				"50"
-			mass=				"150"
+			value=				"120"
+			mass=				"50"
 			  
 			description=		"This shell cartridge is used by the kiloton cannon."
 			>

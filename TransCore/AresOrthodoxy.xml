@@ -217,8 +217,8 @@
 	<ItemType UNID="&itMicronuke;"
 			name=				"Ares micronuke"
 			level=				"7"
-			value=				"350"
-			mass=				"20"
+			value=				"375"
+			mass=				"50"
 			attributes=			"Ares; Consumable; Military; Missile; NotForSale;"
 			frequency=			"common"
 			numberAppearing=	"12d20"
@@ -279,7 +279,7 @@
 			<Fragment
 					type=			"area"
 
-					damage=			"thermo:1d12; WMD3"
+					damage=			"thermo:1d10; WMD3"
 					expansionSpeed=	"35"
 					missileSpeed=	"0"
 					lifetime=		"24"
@@ -449,8 +449,8 @@
 	<ItemType UNID="&itWarhammerNuke;"
 			name=				"Ares Warhammer nuke"
 			level=				"9"
-			value=				"1000"
-			mass=				"300"
+			value=				"1500"
+			mass=				"50"
 			attributes=			"Ares; Consumable; Military; Missile; NotForSale;"
 			frequency=			"rare"
 			numberAppearing=	"1d6"
@@ -465,7 +465,7 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"480"
-				damage=			"thermo:4d12; WMD7"
+				damage=			"thermo:2d10; WMD7"
 				missileSpeed=	"30"
 				hitPoints=		"30"
 

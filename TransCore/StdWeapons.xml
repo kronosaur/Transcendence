@@ -1628,6 +1628,7 @@
 				configuration=		"spread3"
 				fireRate=			"30"
 				powerUse=			"60"
+				multiTarget=		"true"
 				>
 
 			<Missiles>
@@ -1637,11 +1638,53 @@
 						damage=			"blast:4d6; momentum2; WMD4"
 						missileSpeed=	"50"
 						hitPoints=		"3"
+						maneuverRate=	"18"
 						 
 						effect=			"&efBlastShellDefault;"
 						fireEffect=		"&efBlastFireDefault;"
 						sound=			"&snRecoillessCannon;"
 						>
+
+					<Effect>
+						<ParticleJet
+								fixedPos=			"true"
+								emitRate=			"40"
+								tangentSpeed=		"3d2-3"
+								particleLifetime=	"10-30"
+								XformTime=			"10"
+								>
+							<ParticleEffect>
+								<Particle
+										style=			"plain"
+										minWidth=		"1"
+										maxWidth=		"3"
+										primaryColor=	"#ffffc0"
+										secondaryColor=	"#7e7e74"
+										/>
+							</ParticleEffect>
+						</ParticleJet>
+						
+						<Ray
+								style=			"smooth"
+								shape=			"diamond"
+								intensity=		"40"
+								primaryColor=	"#feffa1"
+								secondaryColor=	"#f76e24"
+								>
+							<Events>
+								<GetParameters>
+									(block (damageHP)
+										(setq damageHP (@ gData 'damageHP))
+					
+										{
+											length:	(mathScale damageHP	4 40 (divide (@ gData 'speed) 2) (@ gData 'speed) 50)
+											width: (mathScale damageHP 4 40 12 36 50)
+											}
+										)
+								</GetParameters>
+							</Events>
+						</Ray>
+					</Effect>
 
 					<HitEffect
 							sound="&snArmorHit1;"
@@ -1995,7 +2038,7 @@
 		<Image imageID="&rsItemsNAMI4;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
-				fireRate=			"25"
+				fireRate=			"40"
 				powerUse=			"30"
 				launcher=			"true"
 				>
@@ -2330,7 +2373,7 @@
 		<Image imageID="&rsItemsRasiermesser4;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
-				fireRate=			"15"
+				fireRate=			"16"
 				powerUse=			"50"
 				launcher=			"true"
 				>
@@ -2422,7 +2465,7 @@
 		<Image imageID="&rsItemsTaikon1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
-				fireRate=			"15"
+				fireRate=			"16"
 				powerUse=			"50"
 				>
 
@@ -2790,8 +2833,8 @@
 			frequency=			"common"
 			numberAppearing=	"2d12"
 
-			value=				"15"
-			mass=				"50"
+			value=				"5"
+			mass=				"20"
 			  
 			description=		"This is a standard hexagene high-explosive missile; cheap and light, they are the weapon of choice for modern patrol fleets."
 			>
@@ -2833,8 +2876,8 @@
 			frequency=			"common"
 			numberAppearing=	"2d8"
 
-			value=				"30"
-			mass=				"50"
+			value=				"10"
+			mass=				"20"
 			  
 			description=		"The warhead of this NAMI-compatible missile explodes into more than a dozen high-velocity shards."
 			>
@@ -2867,8 +2910,8 @@
 			<Fragment
 					count=			"5d6"
 					type=			"missile"
-					lifetime=		"5"
-					damage=			"kinetic:1d6+2; WMD1"
+					lifetime=		"6"
+					damage=			"kinetic:2d6; WMD1"
 					missileSpeed=	"32-48"
 							>
 
@@ -2902,8 +2945,8 @@
 			frequency=			"uncommon"
 			numberAppearing=	"1d6"
 
-			value=				"60"
-			mass=				"150"
+			value=				"12"
+			mass=				"40"
 			  
 			description=		"This is a heavier and more powerful version of the KM100."
 			>
@@ -2912,7 +2955,7 @@
 
 		<Missile
 			type=			"missile"
-			lifetime=		"120"
+			lifetime=		"60"
 			damage=			"blast:10d6; momentum4; WMD6"
 			missileSpeed=	"45"
 			hitPoints=		"15"
@@ -2945,8 +2988,8 @@
 			frequency=			"common"
 			numberAppearing=	"2d12"
 
-			value=				"50"
-			mass=				"60"
+			value=				"25"
+			mass=				"20"
 			  
 			description=		"A powerful optical and infrared tracking module allows this missile to home in on its target."
 			>
@@ -2956,7 +2999,7 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"blast:4d6; momentum4; WMD5"
+				damage=			"blast:8d6; momentum4; WMD6"
 				missileSpeed=	"40"
 				hitPoints=		"10"
 				maneuverability="2"
@@ -2989,8 +3032,8 @@
 			frequency=			"rare"
 			numberAppearing=	"2d4"
 
-			value=				"100"
-			mass=				"50"
+			value=				"50"
+			mass=				"30"
 			  
 			description=		"The XM300 warhead is jacketed with small amounts of plutonium. Though not enough for fission, the radioactive materials contaminate the target."
 			reverseArticle=		"true"
@@ -3001,7 +3044,7 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"blast:5d6; radiation1; momentum4; WMD4"
+				damage=			"blast:6d6; radiation1; momentum4; WMD4"
 				missileSpeed=	"45"
 				hitPoints=		"10"
 						 
@@ -3033,8 +3076,8 @@
 			frequency=			"uncommon"
 			numberAppearing=	"1d6"
 
-			value=				"150"
-			mass=				"180"
+			value=				"50"
+			mass=				"40"
 			  
 			description=		"The Broadsword missile is a heavier version of the tracking KM500 series."
 			>
@@ -3044,7 +3087,7 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"blast:10d6; momentum4; WMD6"
+				damage=			"blast:16d6; momentum4; WMD6"
 				missileSpeed=	"40"
 				hitPoints=		"15"
 				maneuverability="2"
@@ -3077,8 +3120,8 @@
 			frequency=			"uncommon"
 			numberAppearing=	"2d12"
 
-			value=				"150"
-			mass=				"100"
+			value=				"120"
+			mass=				"40"
 			  
 			description=		"An optical tracking missile carrying a 100-kiloton thermonuclear warhead. The XM900 is tightly controlled; only military vessels may carry them."
 			reverseArticle=		"true"
@@ -3147,8 +3190,8 @@
 			frequency=			"common"
 			numberAppearing=	"10d20"
 
-			value=				"20"
-			mass=				"25"
+			value=				"12"
+			mass=				"10"
 			  
 			description=		"This is a standard hexagene high-explosive grenade compatible with the MAG launcher."
 			>
@@ -3192,8 +3235,8 @@
 			frequency=			"common"
 			numberAppearing=	"10d20"
 
-			value=				"30"
-			mass=				"30"
+			value=				"24"
+			mass=				"20"
 			  
 			description=		"This is a larger version of the 400 MAG grenade. It is compatible with the MAG launcher."
 			>
@@ -3237,7 +3280,7 @@
 			frequency=			"common"
 			numberAppearing=	"10d20"
 
-			value=				"50"
+			value=				"45"
 			mass=				"30"
 			  
 			description=		"The largest MAG in common use, the 800 series packs twice as much hexagene as the 400 MAG and surrounds it with a fragmentation jacket."
@@ -3276,7 +3319,7 @@
 					count=			"5d6"
 					type=			"missile"
 					lifetime=		"12"
-					damage=			"kinetic:1d6+2; WMD1"
+					damage=			"kinetic:2d8; WMD1"
 					missileSpeed=	"40-60"
 							>
 				<Effect>
@@ -3310,8 +3353,8 @@
 			frequency=			"uncommon"
 			numberAppearing=	"2d20"
 
-			value=				"100"
-			mass=				"60"
+			value=				"70"
+			mass=				"20"
 			  
 			description=		"This specialized MAG is designed to inflict enhanced damage to energy fields."
 			>
@@ -3320,7 +3363,7 @@
 		
 		<Missile
 				type=			"missile"
-				damage=			"blast:6d6; shield5"
+				damage=			"blast:11d10; shield:5;"
 						
 				lifetime=		"80"
 				missileSpeed=	"30"
@@ -3355,8 +3398,8 @@
 			frequency=			"uncommon"
 			numberAppearing=	"4d20"
 
-			value=				"100"
-			mass=				"60"
+			value=				"90"
+			mass=				"30"
 			  
 			description=		"The ZG24 cluster MAG is a cluster grenade that explodes into dozens of smaller hexagene explosives."
 			>
@@ -3393,7 +3436,7 @@
 					count=			"20-28"
 					type=			"missile"
 					lifetime=		"40"
-					damage=			"blast:4d6; WMD3"
+					damage=			"blast:3d6; WMD3"
 					missileSpeed=	"40-60"
 							>
 				<Effect>
@@ -3451,7 +3494,7 @@
 		
 		<Missile
 				type=			"missile"
-				damage=			"blast:20d6; WMD7"
+				damage=			"blast:24d6; WMD7"
 						
 				lifetime=		"160"
 				missileSpeed=	"15"
@@ -3486,8 +3529,8 @@
 			frequency=			"uncommon"
 			numberAppearing=	"1d12"
 
-			value=				"200"
-			mass=				"60"
+			value=				"270"
+			mass=				"30"
 			  
 			description=		"The only military variant of the popular MAG series is this thermonuclear and radiological variant."
 			>
@@ -3553,8 +3596,8 @@
 			frequency=			"common"
 			numberAppearing=	"8d20"
 
-			value=				"20"
-			mass=				"25"
+			value=				"5"
+			mass=				"10"
 			  
 			description=		"The Strelka series of light missiles is compatible with the Makayev launcher. The White Strelka is the cheapest and least powerful of the series."
 			>
@@ -3584,8 +3627,8 @@
 			frequency=			"common"
 			numberAppearing=	"8d20"
 
-			value=				"35"
-			mass=				"25"
+			value=				"7"
+			mass=				"10"
 			  
 			description=		"The Strelka series of light missiles is compatible with the Makayev launcher. The Green Strelka packs more punch than the White version."
 			>
@@ -3627,8 +3670,8 @@
 			frequency=			"uncommon"
 			numberAppearing=	"8d20"
 
-			value=				"50"
-			mass=				"30"
+			value=				"24"
+			mass=				"20"
 			  
 			description=		"The Red Strelka is a thermonuclear version of the Makayev-compatible missile series."
 			>
@@ -3696,10 +3739,10 @@
 				>
 
 			<Fragment
-					count=			"1d4+12"
+					count=			"18-24"
 					type=			"missile"
 					lifetime=		"8"
-					damage=			"thermo:1d12; momentum1; WMD3"
+					damage=			"thermo:1d12; momentum1; WMD5"
 					missileSpeed=	"40-60"
 
 					effect=			"&efThermoShellDefault;"
@@ -3735,8 +3778,8 @@
 			frequency=			"common"
 			numberAppearing=	"2d20"
 
-			value=				"250"
-			mass=				"150"
+			value=				"90"
+			mass=				"70"
 			  
 			description=		"The CRM100 is a thermonuclear static mine deployed by the NAMI mine launcher."
 			>
@@ -3805,8 +3848,8 @@
 			frequency=			"uncommon"
 			numberAppearing=	"2d20"
 
-			value=				"500"
-			mass=				"150"
+			value=				"180"
+			mass=				"70"
 			  
 			description=		"The CRM500 is a tracking thermonuclear mine deployed by the NAMI mine launcher."
 			>
@@ -3878,8 +3921,8 @@
 			frequency=			"common"
 			numberAppearing=	"4d12"
 
-			value=				"50"
-			mass=				"50"
+			value=				"300"
+			mass=				"30"
 			  
 			description=		"This hypervelocity missile is compatible with the Rasiermesser launcher."
 			>
@@ -3889,7 +3932,7 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"thermo:8d24; momentum3; WMD7"
+				damage=			"thermo:8d20; momentum3; WMD7"
 				missileSpeed=	"70"
 				hitPoints=		"20"
 
@@ -3926,8 +3969,8 @@
 			frequency=			"common"
 			numberAppearing=	"4d12"
 
-			value=				"100"
-			mass=				"50"
+			value=				"600"
+			mass=				"30"
 			  
 			description=		"This is a tracking missile with a kiloton-yield warhead. It is compatible with the Rasiermesser launcher."
 			>
@@ -3937,7 +3980,7 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"thermo:6d24; momentum3; WMD7"
+				damage=			"thermo:10d20; momentum3; WMD7"
 				missileSpeed=	"65"
 				hitPoints=		"20"
 				maneuverability="2"
@@ -3977,8 +4020,8 @@
 			frequency=			"rare"
 			numberAppearing=	"1d6"
 
-			value=				"250"
-			mass=				"350"
+			value=				"300"
+			mass=				"50"
 			  
 			description=		"The M2 is a heavy siege weapon launched by the NAMI heavy launcher. It is designed to attack capital ships and stations."
 			reverseArticle=		"true"
@@ -4002,7 +4045,7 @@
 					count=			"1"
 					type=			"radius"
 
-					damage=			"thermo:10d24; momentum3; WMD7"
+					damage=			"thermo:16d24; momentum3; WMD7"
 					minRadius=		"2"
 					maxRadius=		"6"
 					missileSpeed=	"0"
@@ -4057,8 +4100,8 @@
 			frequency=			"uncommon"
 			numberAppearing=	"2d8"
 
-			value=				"250"
-			mass=				"300"
+			value=				"300"
+			mass=				"50"
 			  
 			description=		"Soon after launch, the S3 Medusa explodes to reveal a dozen independently-tracking thermonuclear missiles. The S3 requires the NAMI heavy launcher."
 			reverseArticle=		"true"
@@ -4096,8 +4139,8 @@
 					count=				"12"
 					type=				"missile"
 
-					damage=				"thermo:3d12; momentum3; WMD1"
-					missileSpeed=		"40"
+					damage=				"thermo:12d12; momentum3; WMD3"
+					missileSpeed=		"50"
 					lifetime=			"120"
 
 					multiTarget=		"true"
@@ -4170,8 +4213,8 @@
 			frequency=			"rare"
 			numberAppearing=	"1d4"
 
-			value=				"1000"
-			mass=				"500"
+			value=				"450"
+			mass=				"50"
 			  
 			description=		"The M5 Nemesis missile is an upgraded version of the M2. It requires the NAMI heavy launcher."
 			reverseArticle=		"true"
@@ -4271,8 +4314,8 @@
 			frequency=			"common"
 			numberAppearing=	"10d40"
 
-			value=				"6"
-			mass=				"20"
+			value=				"24"
+			mass=				"10"
 			  
 			description=		"This shell cartridge is used by the Akan 30 cannon."
 			>
@@ -4309,8 +4352,8 @@
 			frequency=			"uncommon"
 			numberAppearing=	"12d40"
 
-			value=				"35"
-			mass=				"25"
+			value=				"95"
+			mass=				"20"
 			  
 			description=		"Fired by thermo cannons, these rounds pack the yield of a nuclear device in a small, mass-produced shell."
 			>
@@ -4328,8 +4371,8 @@
 			frequency=			"uncommon"
 			numberAppearing=	"8d12"
 
-			value=				"100"
-			mass=				"60"
+			value=				"180"
+			mass=				"30"
 			  
 			description=		"These warheads are launched by Taikon's TM7 multitarget cannon."
 			>

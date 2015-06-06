@@ -233,7 +233,7 @@
 						type=			"missile"
 
 						lifetime=		"100"
-						damage=			"particle:12d8+6; WMD4"
+						damage=			"particle:15d8; WMD4"
 						hitPoints=		"15"
 
 						missileSpeed=	"60"
@@ -326,8 +326,8 @@
 	<ItemType UNID="&itParticleBoltCartridge;"
 			name=				"Nandao bolt cartridge"
 			level=				"5"
-			value=				"15"
-			mass=				"25"
+			value=				"35"
+			mass=				"10"
 			frequency=			"common"
 			numberAppearing=	"20d40"
 			attributes=			"Consumable; Missile; NotForSale; sungSlavers"

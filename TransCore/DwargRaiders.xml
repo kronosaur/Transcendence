@@ -319,7 +319,7 @@
 		<Image imageID="&rsItems5;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
-				fireRate=			"15"
+				fireRate=			"16"
 				powerUse=			"20"
 				>
 
@@ -355,8 +355,8 @@
 	<ItemType UNID="&itDwargCnidocystNodule;"
 			name=				"Dwarg cnidocyst nodule"
 			level=				"5"
-			value=				"75"
-			mass=				"10"
+			value=				"50"
+			mass=				"20"
 			attributes=			"Consumable; Dwarg; Missile; NotForSale; NotStandard"
 			frequency=			"uncommon"
 			numberAppearing=	"2d12"
