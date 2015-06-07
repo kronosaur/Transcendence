@@ -233,7 +233,7 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"180"
-				damage=			"thermo:4d12; WMD3"
+				damage=			"thermo:2d12; WMD3"
 				missileSpeed=	"60"
 				hitPoints=		"20"
 
