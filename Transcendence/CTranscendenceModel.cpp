@@ -2744,9 +2744,13 @@ void CTranscendenceModel::UseItem (CItem &Item)
 	CItemList &ItemList = pShip->GetItemList();
 	CItemType *pType = Item.GetType();
 
+	CItemType::SUseDesc UseDesc;
+	if (!pType->GetUseDesc(&UseDesc))
+		return;
+
 	//	Use in cockpit
 
-	if (pType->IsUsableInCockpit())
+	if (UseDesc.bUsableInCockpit)
 		{
 		CString sError;
 
@@ -2767,7 +2771,7 @@ void CTranscendenceModel::UseItem (CItem &Item)
 
 	//	Use screen
 
-	else if (pType->GetUseScreen())
+	else if (UseDesc.pScreenRoot)
 		{
 		CCodeChain &CC = m_Universe.GetCC();
 
@@ -2777,10 +2781,8 @@ void CTranscendenceModel::UseItem (CItem &Item)
 
 		//	Show the dock screen
 
-		CString sScreen;
-		CDesignType *pRoot = pType->GetUseScreen(&sScreen);
 		CString sError;
-		if (!ShowShipScreen(pType, pRoot, sScreen, NULL_STR, NULL, &sError))
+		if (!ShowShipScreen(pType, UseDesc.pScreenRoot, UseDesc.sScreenName, NULL_STR, NULL, &sError))
 			{
 			pShip->SendMessage(NULL, sError);
 			::kernelDebugLogMessage(sError);

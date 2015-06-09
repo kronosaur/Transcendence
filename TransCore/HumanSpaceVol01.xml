@@ -1613,6 +1613,14 @@
 	
 	<!ENTITY rsHurin					"0x00100150">
 	
+	<!-- 0160-017F MINING EQUIPMENT -->
+	
+	<!ENTITY baMiningPodItem			"0x00100160">
+	<!ENTITY stMiningPod				"0x00100161">
+	<!ENTITY ovMiningPodTimer			"0x00100162">
+	<!ENTITY itSeismicScannerPod		"0x00100163">
+	<!ENTITY vtSeismicScannerPower		"0x00100164">
+	
 	<!-- 1000-FFFF RESERVED -->
 	]>
 	
@@ -1683,6 +1691,7 @@
 	<Module filename="StdDevices.xml"/>
 	<Module filename="StdEffects.xml"/>
 	<Module filename="StdFuel.xml"/>
+	<Module filename="StdMiningEquipment.xml"/>
 	<Module filename="StdPlayerShips.xml"/>
 	<Module filename="StdShields.xml"/>
 	<Module filename="StdSovereigns.xml"/>

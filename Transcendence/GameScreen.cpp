@@ -1229,16 +1229,17 @@ void CTranscendenceWnd::ShowUsePicker (void)
 
 			//	Make sure we should show this entry
 
-			if (!pType->IsUsableInCockpit() && pType->GetUseScreen() == NULL)
+			CItemType::SUseDesc UseDesc;
+			if (!pType->GetUseDesc(&UseDesc))
 				continue;
 
-			if (pType->IsUsableOnlyIfInstalled() && !Item.IsInstalled())
+			if (UseDesc.bOnlyIfInstalled && !Item.IsInstalled())
 				continue;
 
-			if (pType->IsUsableOnlyIfUninstalled() && Item.IsInstalled())
+			if (UseDesc.bOnlyIfUninstalled && Item.IsInstalled())
 				continue;
 
-			if (pType->IsUsableOnlyIfEnabled())
+			if (UseDesc.bOnlyIfEnabled)
 				{
 				CInstalledDevice *pDevice = pShip->FindDevice(Item);
 				if (pDevice == NULL || !pDevice->IsEnabled())
@@ -1247,7 +1248,7 @@ void CTranscendenceWnd::ShowUsePicker (void)
 
 			//	Add to the list
 
-			bool bHasUseKey = (pType->IsKnown() && !pType->GetUseKey().IsBlank() && (*pType->GetUseKey().GetASCIIZPointer() != chUseKey));
+			bool bHasUseKey = (pType->IsKnown() && !UseDesc.sUseKey.IsBlank() && (*UseDesc.sUseKey.GetASCIIZPointer() != chUseKey));
 
 			//	Any items without use keys sort first (so that they are easier
 			//	to access).
@@ -1258,7 +1259,7 @@ void CTranscendenceWnd::ShowUsePicker (void)
 
 			SortedList.Insert(strPatternSubst(CONSTLIT("%d%s%04d"),
 						(bHasUseKey ? 1 : 0),
-						(bHasUseKey ? strPatternSubst(CONSTLIT("%s0"), pType->GetUseKey()) : strPatternSubst(CONSTLIT("%02d"), MAX_ITEM_LEVEL - pType->GetLevel())),
+						(bHasUseKey ? strPatternSubst(CONSTLIT("%s0"), UseDesc.sUseKey) : strPatternSubst(CONSTLIT("%02d"), MAX_ITEM_LEVEL - pType->GetLevel())),
 						i),
 					i);
 			}
@@ -1271,6 +1272,10 @@ void CTranscendenceWnd::ShowUsePicker (void)
 			CItem &Item = List.GetItem(SortedList.GetValue(i));
 			CItemType *pType = Item.GetType();
 
+			CItemType::SUseDesc UseDesc;
+			if (!pType->GetUseDesc(&UseDesc))
+				continue;
+
 			CString sCount;
 			if (Item.GetCount() > 1)
 				sCount = strFromInt(Item.GetCount());
@@ -1278,8 +1283,8 @@ void CTranscendenceWnd::ShowUsePicker (void)
 			//	Show the key only if the item is identified
 
 			CString sKey;
-			if (pType->IsKnown() && (*pType->GetUseKey().GetASCIIZPointer() != chUseKey))
-				sKey = pType->GetUseKey();
+			if (pType->IsKnown() && (*UseDesc.sUseKey.GetASCIIZPointer() != chUseKey))
+				sKey = UseDesc.sUseKey;
 
 			//	Name of item
 

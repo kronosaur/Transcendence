@@ -91,34 +91,100 @@
 	<Globals>
 		(block Nil
 			(setq intAsteroidOnMining (lambda (miningDifficulty)
-				(block (theOre)
-					; Figure out what ore exists here
-					(setq theOre (random (objGetItems gSource "* +Ore;")))
-
-					; Our chance of getting something is based on the probability
-					; We adjust it a bit because we don't want it to always succeed
-
-					(if (and theOre
-							(leq (random 1 100) (divide (multiply aMineProbability miningDifficulty) 100))
+				(block (
+					;	This table is used to number of HP required to extract a
+					;	ton of ore of a given level.
+					
+					(oreVolumeTable (list
+						1   1   2   2   3
+						4   5   7   9   11
+						15  19  25  33  42
+						55  72  93  121 158
+						205 266 346 450 586
+						))
+					
+					theOre successChance countMined
+					)
+				
+					;	NOTE:
+					;
+					;	EFFICIENCY is the probability that we succeed in mining ore.
+					;	VOLUME is the amount of ore we mine if we succeed.
+					;	YIELD is the percent of mined ore that we manage to extract
+					;		(the rest is lost).
+					;
+					;	EFFICIENCY and YIELD are both determined by the mining level
+					;	(from the damage descriptor). Consult the following table:
+					;
+					;	LEVEL	EFFICIENCY	YIELD
+					;	1		4			97
+					;	2		10			91
+					;	3		20			84
+					;	4		34			78
+					;	5		52			76
+					;	6		74			81
+					;	7		100			100
+					;
+					;	VOLUME is computed from hit points of damage.
+					
+					(switch
+					
+						;	Pick a random ore item that exists here. If no ore, 
+						;	then nothing to do.
+						
+						(not (setq theOre (random (objGetItems gSource "* +Ore;"))))
+							Nil
+							
+						;	Compute the chance of success. If there is no chance, 
+						;	nothing happens.
+						
+						(leq (setq successChance (divide (multiply aMineProbability miningDifficulty) 100)) 0)
+							Nil
+							
+						;	Figure out how many tons we mine this time.
+						
+						(leq (setq countMined 
+									(min 
+										(divide aHP (@ oreVolumeTable (itmGetLevel theOre)))
+										(itmGetCount theOre)
+										)
+									)
+								0)
+							Nil
+						
+						;	If we fail at extraction, then nothing
+						
+						(gr (random 1 100) successChance)
+							Nil
+								
+						;	Otherwise, success
+						
+						(block (
+							;	Compute the yield
+							
+							(yield (subtract 100 (divide (multiply aMineProbability (subtract 100 aMineProbability)) 100)))
+							(yieldMod (modulo (multiply countMined yield) 100))
+							(yieldCount 
+								(add
+									(divide (multiply countMined yield) 100)
+									(if (leq (random 1 100) yieldMod) 1 0)
+									)
+								)
+								
+							(minedOre (itmCreate (itmGetType theOre) countMined))
+							(extractedOre (itmCreate (itmGetType theOre) yieldCount))
+							
+							oreObj
 							)
-						(block (totalTons minedOre)
-							; Figure out how many tons we mined
-							(setq totalTons (random 1 50))
-							(if (ls totalTons aHP)
-								(setq totalTons aHP)
-								)
-							(if (gr totalTons (itmGetCount theOre))
-								(setq totalTons (itmGetCount theOre))
-								)
-
-							; Set the amount of ore to mine	
-							(setq theOre (itmCreate (itmGetType theOre) totalTons))
-
-							; Create the mined ore
-							(setq minedOre (sysCreateStation &stMinedOre; aMinePos))
-							(objRemoveItem gSource theOre)
-							(objAddItem minedOre theOre)
-							(objIncVel minedOre (sysVectorPolarVelocity aMineDir 5))
+							
+							(dbgOutput "Yield " yield)
+							(dbgOutput "Mined " (itmGetName minedOre 0x08))
+							(dbgOutput "Recovered " (itmGetName extractedOre 0x08))
+							
+							(setq oreObj (sysCreateStation &stMinedOre; aMinePos))
+							(objRemoveItem gSource minedOre)
+							(objAddItem oreObj extractedOre)
+							(objIncVel oreObj (sysVectorPolarVelocity aMineDir 5))
 							)
 						)
 					)

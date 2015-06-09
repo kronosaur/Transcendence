@@ -1031,6 +1031,8 @@
 			</Text>
 		</Language>
 	</StationType>
+	
+<!-- GLOBALS -->
 
 	<Globals>
 		(block Nil

@@ -344,6 +344,7 @@
     <Xml Include="Ore.xml" />
     <Xml Include="RPGLibrary.xml" />
     <Xml Include="GalaxyLibrary.xml" />
+    <Xml Include="StdMiningEquipment.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

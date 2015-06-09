@@ -79,7 +79,7 @@ bool ItemInTable (CItemType *pType, TableTypes iTable, int iLevel, int *retiScor
 			{
 			if (pType->GetCategory() != itemcatFuel
 					&& pType->GetCategory() != itemcatMissile
-					&& !pType->GetUseScreen()
+					&& !pType->IsUsable()
 					&& pType->GetCategory() != itemcatDrive
 					&& pType->GetCategory() != itemcatReactor)
 				return false;
@@ -89,7 +89,7 @@ bool ItemInTable (CItemType *pType, TableTypes iTable, int iLevel, int *retiScor
 		case tableMiscItems:
 			{
 			if (pType->GetCategory() != itemcatMisc
-					|| pType->GetUseScreen())
+					|| pType->IsUsable())
 				return false;
 			break;
 			}

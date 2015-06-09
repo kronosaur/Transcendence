@@ -348,5 +348,8 @@
     <Xml Include="GalaxyLibrary.xml">
       <Filter>Transcendence Galaxy Library</Filter>
     </Xml>
+    <Xml Include="StdMiningEquipment.xml">
+      <Filter>Human Space Library</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

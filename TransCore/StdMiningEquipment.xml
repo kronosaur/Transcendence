@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+<!-- STATION TYPES -->
+	
+	<!-- Mining Pod -->
+
+	<StationType UNID="&stMiningPod;"
+			name=				"(mining pod)"
+			sovereign=			"&svIndependent;"
+
+			scale=				"flotsam"
+			mobile=				"true"
+			mass=				"1"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsOreSmall;" imageX="48" imageY="0" imageWidth="24" imageHeight="24" />
+			<Image			imageID="&rsOreSmall;" imageX="48" imageY="24" imageWidth="24" imageHeight="24" />
+			<Image			imageID="&rsOreSmall;" imageX="48" imageY="48" imageWidth="24" imageHeight="24" />
+			<Image			imageID="&rsOreSmall;" imageX="48" imageY="72" imageWidth="24" imageHeight="24" />
+		</ImageVariants>
+	</StationType>
+
+<!-- ITEMS -->
+	
+	<!-- Level 2: Seismic Scanner Pod -->
+
+	<ItemType UNID="&itSeismicScannerPod;"
+			name=				"seismic scanner pod"
+			attributes=			"commonwealth, miningEquipment"
+			inherit=			"&baMiningPodItem;"
+			  
+			level=				"2"
+			frequency=			"uncommon"
+
+			value=				"250"
+			mass=				"500"
+
+			description=		"This scanner pod explodes into a seismic wave that reveals the location of valuable ores in asteroids. It has a 25 light-seconds range, a 20% false negative rate, and a 5% false positive rate."
+			>
+
+		<Image imageID="&rsItemsRasiermesser2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		
+		<Events>
+			<OnEffect>
+				(sysCreateWeaponFire 
+					&vtSeismicScannerPower; 
+					(@ gData 'sourceObj)
+					(objGetPos (@ gData 'podObj))
+					0
+					0
+					Nil
+					'detonateNow
+					)
+			</OnEffect>
+		</Events>
+	</ItemType>
+	
+	<!-- Level 2: Seismic Scanner Power -->
+	
+	<ItemType UNID="&vtSeismicScannerPower;"
+			name=				"seismic scanner power"
+			virtual=			"true"
+			level=				"2"
+			>
+
+		<Weapon
+				type=				"area"
+
+				damage=				"blast:3d6"
+				fireRate=			"30"
+				expansionSpeed=		"80"
+				missileSpeed=		"0"
+				lifetime=			"20"
+				powerUse=			"500"
+				canHitSource=		"true"
+				>
+
+			<Effect>
+				<Shockwave
+						style=			"image"
+						>
+					<Image imageID=				"&rsShatterShockwave;"
+							imageX=				"0" 
+							imageY=				"0" 
+							imageWidth=			"512" 
+							imageHeight=		"128"
+							/>
+				</Shockwave>
+			</Effect>
+		</Weapon>
+		
+		<Events>
+			<OnDamageAbandoned>
+				(if (objGetItems gSource "t +Ore;")
+					(dbgOutput "Found ore.")
+					(dbgOutput "Hit: " (objGetName gSource 0x00))
+					)
+			</OnDamageAbandoned>
+		</Events>
+	</ItemType>
+	
+<!-- OVERLAYS -->
+
+	<OverlayType UNID="&ovMiningPodTimer;"
+			>
+		
+		<Counter style=	"progress"
+				color=	"#cccc66"
+				max=	"100"
+				/>
+		
+		<Events>
+			<OnUpdate>
+				(block (
+					(startTime (objGetOverlayData gSource aOverlayID 'startTime))
+					(detonateTime 150)
+					(progress (subtract (unvGetTick) startTime))
+					(percentDone (if (gr detonateTime 0) (divide (multiply progress 100) detonateTime) 0))
+					(podType (objGetOverlayData gSource aOverlayID 'podType))
+					)
+					
+					(switch
+						;	If we're still ticking, set the counter
+						
+						(ls progress detonateTime)
+							(block Nil
+								(objSetOverlayProperty gSource aOverlayID 'counter percentDone)
+								(objSetOverlayProperty gSource aOverlayID 'counterLabel (typTranslate podType "msgWaiting"))
+								)
+
+						;	Boom!
+
+						(block Nil
+							(typFireEvent podType 'OnEffect {
+								sourceObj: (objGetObjByID (objGetOverlayData gSource aOverlayID 'sourceID))
+								podObj: gSource
+								overlayID: aOverlayID
+								})
+								
+							;	We get destroyed
+							
+							(objDestroy gSource)
+							)
+						)
+					)
+			</OnUpdate>
+		</Events>
+	</OverlayType>
+	
+<!-- BASE CLASSES -->
+	
+	<ItemType UNID="&baMiningPodItem;"
+			name=				"(mining pod)"
+			virtual=			"true"
+			level=				"1"
+			>
+		
+		<Invoke>
+			(block (
+				(miningPodObj Nil)
+				(overlayID Nil)
+				)
+				
+				;	Create a mining pod
+				
+				(setq miningPodObj (sysCreateStation &stMiningPod; (objGetPos gSource)))
+				(objSetName miningPodObj (itmGetName gItem 0x00) 0x00)
+				(objIncVel miningPodObj (sysVectorPolarVelocity (objGetProperty gSource 'rotation) 5))
+				
+				;	Add a timer overaly to the pod
+				
+				(setq overlayID	(objAddOverlay miningPodObj	&ovMiningPodTimer;))
+				(objSetOverlayData miningPodObj overlayID 'sourceID (objGetID gSource))
+				(objSetOverlayData miningPodObj overlayID 'startTime (unvGetTick))
+				(objSetOverlayData miningPodObj overlayID 'podType (itmGetType gItem))
+				)
+		</Invoke>
+		
+		<Events>
+		</Events>
+
+		<Language>
+			<Text id="msgWaiting">"Armed"</Text>
+		</Language>
+	</ItemType>
+	
+</TranscendenceModule>
+
