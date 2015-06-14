@@ -1947,12 +1947,10 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 
 //	Utility functions
 
-void AnimateMainWindow (HWND hWnd);
 void CopyGalacticMapToClipboard (HWND hWnd, CGalacticMapPainter *pPainter);
 void CopyGameStatsToClipboard (HWND hWnd, const CGameStats &GameStats);
 void GetCodeChainExtensions (SPrimitiveDefTable *retpTable);
 const CG16bitFont &GetFontByName (const SFontTable &Fonts, const CString &sFontName);
-CString TransPath (const CString &sPath);
 
 //	Animation functions
 

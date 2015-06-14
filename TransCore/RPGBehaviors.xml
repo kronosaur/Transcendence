@@ -96,6 +96,125 @@
 		</Events>
 	</ShipClass>
 	
+	<!-- Mining Behavior
+	
+		USAGE NOTES
+		
+		This simulates the behavior of a ship with a mining weapon mining an
+		ore deposit.
+		
+		EXTRA DATA
+		
+		depositID: If non-Nil, this is the deposit we should mine.
+								
+	-->
+
+	<ShipClass UNID="&evStdMiningBehavior;"
+			class=				"(mining behavior)"
+			virtual=			"true"
+			
+			attributes=			"behaviorClass"
+			>
+			
+		<Events>
+			<OnOrdersCompleted>
+				(block (
+					depositObj
+					oreObj
+					asteroidObj
+					)
+					
+					(switch
+						;	Is our cargo hold full? Then we're done.
+						
+						(ls (objGetCargoSpaceLeft gSource) 2000)
+							(shpOrder gSource 'gate)
+							
+						;	Are we far from our target area? If so, we need to get
+						;	closer.
+						
+						(and (setq depositObj (objGetObjByID (objGetData gSource 'depositID)))
+								(gr (objGetDistance gSource depositObj) 50)
+								)
+							(shpOrder gSource 'approach depositObj 25)
+						
+						;	If there is any ore in the area, then loot it.
+						
+						(and (setq oreObj (sysFindObject gSource "TN +minedOre;"))
+								(leq (objGetDistance gSource oreObj) 100)
+								(objGetItems oreObj "t +ore;")
+								)
+							(shpOrder gSource 'loot oreObj)
+							
+						;	Are there any asteroids nearby with discovered ore? If so,
+						;	then we mine them.
+
+						(setq asteroidObj (random
+								(filter (sysFindObject gSource "tN:50 +asteroid") theObj
+									(filter (objGetOverlays theObj) theOverlayID
+										(typHasAttribute (objGetOverlayType theObj theOverlayID) 'oreCount)
+										)
+									)
+								))
+							(shpOrder gSource 'attack asteroidObj (random 5 10))
+							
+						;	Otherwise, look for any asteroid in range that we haven't
+						;	already checked.
+						
+						(setq asteroidObj (random 
+								(filter (sysFindObject gSource "tN:50 +asteroid") theObj
+									(not (objGetData gSource (cat "00010050_Checked_" (objGetID theObj))))
+									)
+								))
+							(block Nil
+								(shpOrder gSource 'attack asteroidObj (random 5 10))
+								(objSetData gSource (cat "00010050_Checked_" (objGetID asteroidObj)) True)
+								)
+							
+						;	Otherwise, there's nothing to do
+						
+						(shpOrder gSource 'gate)
+						)
+					)
+			</OnOrdersCompleted>
+			
+			<OnAttacked>
+				(block (depositObj)
+					(switch
+						;	If no one is responsible, then nothing to do
+					
+						(not aOrderGiver)
+							Nil
+							
+						;	If this is a friend, then ignore
+						
+						(= (objGetDisposition gSource aOrderGiver) 'friend)
+							Nil
+						
+						;	If we're already attacking this target, then nothing to do
+					
+						(= (shpGetOrderTarget gSource) aOrderGiver)
+							Nil
+						
+						;	If we're not near our target area, then nothing to do
+					
+						(and (setq depositObj (objGetObjByID (objGetData gSource 'depositID)))
+								(gr (objGetDistance gSource depositObj) 50)
+								)
+							Nil
+						
+						;	Retaliate
+					
+						(block Nil
+							(shpCancelOrders gSource)
+							(shpOrder gSource 'attack aOrderGiver (random 10 20))
+							)
+						)
+					)
+			</OnAttacked>
+		</Events>
+	</ShipClass>
+	
 	<!-- Patrol Behavior
 	
 		USAGE NOTES

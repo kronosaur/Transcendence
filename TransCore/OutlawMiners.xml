@@ -271,30 +271,48 @@
 	<StationType UNID="&stAsteroidMineTitanium;"
 			name=				"outlaw titanium mine"
 			sovereign=			"&svOutlawMiners;"
+			inherit=			"&baOutlawMine;"
+				 
+			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
+				 
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
+				 
 			armorID=			"&itCeramicPlate;"
 			hitPoints=			"75"
+			multiHull=			"true"
+				 
+			canAttack=			"true"
 			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
-			levelFrequency=		"ucr-- ----- ----- ----- -----"
-			locationCriteria=	"++asteroids"
 			>
+
+		<!-- Encounter Info -->
 
 		<Names noArticle="true">Asteroid T%1%0%0%0</Names>
 
-		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
-		</ImageVariants>
+		<Encounter
+				levelFrequency=		"ucr-- ----- ----- ----- -----"
+				locationCriteria=	"++asteroids"
+				/>
 
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbOutlawMinerEncounters;"/>
+		</Encounters>
+
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Item count="2d6"	item="&itTitaniumOre;"/>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables3;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem3;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem3;"/>
+			</Table>
+		</Items>
+
+		<!-- Ships and Defenses -->
+		
 		<Ships>
 			<Table>
 				<Group chance="40">
@@ -319,28 +337,19 @@
 				</Group>
 			</Table>
 		</Ships>
+		
+		<!-- Image and Effects -->
+		
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
+		</ImageVariants>
 
-		<Satellites>
-			<Orbitals count="1d4" distance="2d8+6" angle="random">
-				<Table>
-					<Station chance="50" type="&stSmallAsteroid;"/>
-					<Station chance="50" type="&stOreSmallAsteroid;"/>
-				</Table>
-			</Orbitals>
-		</Satellites>
-
-		<Items>
-			<Item count="2d6"	item="&itTitaniumOre;"/>
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables3;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem3;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem3;"/>
-			</Table>
-		</Items>
-
-		<Encounters frequency="uncommon">
-			<Lookup table="&tbOutlawMinerEncounters;"/>
-		</Encounters>
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"70"
+				/>
 
 	</StationType>
 
@@ -349,30 +358,47 @@
 	<StationType UNID="&stAsteroidMinePalladium;"
 			name=				"outlaw palladium mine"
 			sovereign=			"&svOutlawMiners;"
+			inherit=			"&baOutlawMine;"
+				 
+			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
+				 
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
+				 
 			armorID=			"&itHeavyCeramicPlate;"
 			hitPoints=			"90"
+			multiHull=			"true"
+				 
+			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
-
-			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
-			levelFrequency=		"-ucr- ----- ----- ----- -----"
-			locationCriteria=	"++asteroids"
 			>
 
+		<!-- Encounter Info -->
+		
 		<Names noArticle="true">Asteroid L%1%0%0%0</Names>
 
-		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
-		</ImageVariants>
+		<Encounter
+				levelFrequency=		"-ucr- ----- ----- ----- -----"
+				locationCriteria=	"++asteroids"
+				/>
 
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbOutlawMinerEncounters;"/>
+		</Encounters>
+
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Item count="2d6"	item="&itPalladiumOre;"/>
+			<Table chance="50">
+				<Lookup chance="40" count="1" table="&trConsumables4;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem4;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem4;"/>
+			</Table>
+		</Items>
+
+		<!-- Ships and Defenses -->
+		
 		<Ships>
 			<Table>
 				<Group chance="25">
@@ -395,27 +421,18 @@
 			</Table>
 		</Ships>
 
-		<Satellites>
-			<Orbitals count="1d4" distance="2d8+6" angle="random">
-				<Table>
-					<Station chance="40" type="&stSmallAsteroid;"/>
-					<Station chance="60" type="&stOreSmallAsteroid;"/>
-				</Table>
-			</Orbitals>
-		</Satellites>
+		<!-- Image and Effects -->
+		
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
+		</ImageVariants>
 
-		<Items>
-			<Item count="2d6"	item="&itPalladiumOre;"/>
-			<Table chance="50">
-				<Lookup chance="40" count="1" table="&trConsumables4;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem4;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem4;"/>
-			</Table>
-		</Items>
-
-		<Encounters frequency="uncommon">
-			<Lookup table="&tbOutlawMinerEncounters;"/>
-		</Encounters>
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"70"
+				/>
 
 	</StationType>
 
@@ -424,30 +441,47 @@
 	<StationType UNID="&stAsteroidMineCeralloy;"
 			name=				"outlaw ceralloy mine"
 			sovereign=			"&svOutlawMiners;"
+			inherit=			"&baOutlawMine;"
+				 
+			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
+				 
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
+				 
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"150"
+			multiHull=			"true"
+				 
+			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
-
-			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
-			levelFrequency=		"--uur ----- ----- ----- -----"
-			locationCriteria=	"++asteroids"
 			>
 
+		<!-- Encounter Info -->
+		
 		<Names noArticle="true">Asteroid C%1%0%0%0</Names>
 
-		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
-		</ImageVariants>
+		<Encounter
+				levelFrequency=		"--uur ----- ----- ----- -----"
+				locationCriteria=	"++asteroids"
+				/>
 
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbOutlawMinerEncounters;"/>
+		</Encounters>
+
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Item count="2d6"	item="&itCeralloyOre;"/>
+			<Table chance="25">
+				<Lookup chance="40" count="1" table="&trConsumables5;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
+			</Table>
+		</Items>
+
+		<!-- Ships and Defenses -->
+		
 		<Ships>
 			<Table>
 				<Group chance="25">
@@ -466,27 +500,18 @@
 			</Table>
 		</Ships>
 
-		<Satellites>
-			<Orbitals count="1d4" distance="2d8+6" angle="random">
-				<Table>
-					<Station chance="30" type="&stSmallAsteroid;"/>
-					<Station chance="70" type="&stOreSmallAsteroid;"/>
-				</Table>
-			</Orbitals>
-		</Satellites>
+		<!-- Image and Effects -->
+		
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
+		</ImageVariants>
 
-		<Items>
-			<Item count="2d6"	item="&itCeralloyOre;"/>
-			<Table chance="25">
-				<Lookup chance="40" count="1" table="&trConsumables5;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
-			</Table>
-		</Items>
-
-		<Encounters frequency="uncommon">
-			<Lookup table="&tbOutlawMinerEncounters;"/>
-		</Encounters>
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"70"
+				/>
 
 	</StationType>
 
@@ -495,31 +520,60 @@
 	<StationType UNID="&stAsteroidMineDuralloy;"
 			name=				"outlaw duranium mine"
 			sovereign=			"&svOutlawMiners;"
+			inherit=			"&baOutlawMine;"
+				 
+			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
+				 
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
+				 
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"150"
+			multiHull=			"true"
+				 
+			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
-
-			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
-			levelFrequency=		"---uc r---- ----- ----- -----"
-			locationCriteria=	"++asteroids"
-			enemyExclusionRadius="40"
 			>
 
+		<!-- Encounter Info -->
+		
 		<Names noArticle="true">Asteroid D%1%0%0%0</Names>
 
-		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
-		</ImageVariants>
+		<Encounter
+				levelFrequency=		"---uc r---- ----- ----- -----"
+				locationCriteria=	"++asteroids"
+				enemyExclusionRadius="40"
+				/>
+		
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbOutlawMinerEncounters;"/>
+		</Encounters>
 
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Item count="3d8"	item="&itDuralloyOre;"/>
+			<Table chance="25">
+				<Lookup chance="40" count="1" table="&trConsumables5;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
+			</Table>
+		</Items>
+		
+		<!-- Satellites -->
+
+		<Satellites>
+			<Orbitals distance="8" angle="45">
+				<Station type="&stOutlawTurret;" imageVariant="2"/>
+			</Orbitals>
+
+			<Orbitals distance="8" angle="225">
+				<Station type="&stOutlawTurret;" imageVariant="0"/>
+			</Orbitals>
+		</Satellites>
+
+		<!-- Ships and Defenses -->
+		
 		<Ships>
 			<Table>
 				<Group chance="25">
@@ -542,36 +596,19 @@
 			</Table>
 		</Ships>
 
-		<Satellites>
-			<Orbitals distance="8" angle="45">
-				<Station type="&stOutlawTurret;" imageVariant="2"/>
-			</Orbitals>
+		<!-- Image and Effects -->
+		
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
+		</ImageVariants>
 
-			<Orbitals distance="8" angle="225">
-				<Station type="&stOutlawTurret;" imageVariant="0"/>
-			</Orbitals>
-
-			<Orbitals count="1d4" distance="2d8+6" angle="random">
-				<Table>
-					<Station chance="20" type="&stSmallAsteroid;"/>
-					<Station chance="80" type="&stOreSmallAsteroid;"/>
-				</Table>
-			</Orbitals>
-		</Satellites>
-
-		<Items>
-			<Item count="3d8"	item="&itDuralloyOre;"/>
-			<Table chance="25">
-				<Lookup chance="40" count="1" table="&trConsumables5;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
-			</Table>
-		</Items>
-
-		<Encounters frequency="uncommon">
-			<Lookup table="&tbOutlawMinerEncounters;"/>
-		</Encounters>
-
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"70"
+				/>
+		
 	</StationType>
 
 	<!-- Asteroid Mine, Pteracnium Ore -->
@@ -579,31 +616,68 @@
 	<StationType UNID="&stAsteroidMinePteracnium;"
 			name=				"outlaw pteracnium mine"
 			sovereign=			"&svOutlawMiners;"
+			inherit=			"&baOutlawMine;"
+				 
+			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
+				 
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
+				 
 			armorID=			"&itCeralloyArmor;"
 			hitPoints=			"200"
+			multiHull=			"true"
+				 
+			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
-
-			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
-			levelFrequency=		"----u ur--- ----- ----- -----"
-			locationCriteria=	"++asteroids"
-			enemyExclusionRadius="40"
 			>
 
+		<!-- Encounter Info -->
+		
 		<Names noArticle="true">Asteroid P%1%0%0%0</Names>
 
-		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
-		</ImageVariants>
+		<Encounter
+				levelFrequency=		"----u ur--- ----- ----- -----"
+				locationCriteria=	"++asteroids"
+				enemyExclusionRadius="40"
+				/>
+		
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbOutlawMinerEncounters;"/>
+		</Encounters>
+		
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Item count="2d6"	item="&itPteracniumOre;"/>
+			<Table chance="50">
+				<Lookup chance="40" count="1" table="&trConsumables6;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem6;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem6;"/>
+			</Table>
+		</Items>
+			
+		<!-- Satellites -->
+		
+		<Satellites>
+			<Orbitals distance="8" angle="45">
+				<Station type="&stOutlawTurret;" imageVariant="2"/>
+			</Orbitals>
 
+			<Orbitals distance="8" angle="135">
+				<Station type="&stOutlawTurret;" imageVariant="1"/>
+			</Orbitals>
+
+			<Orbitals distance="8" angle="225">
+				<Station type="&stOutlawTurret;" imageVariant="0"/>
+			</Orbitals>
+
+			<Orbitals distance="8" angle="315">
+				<Station type="&stOutlawTurret;" imageVariant="3"/>
+			</Orbitals>
+		</Satellites>
+
+		<!-- Ships and Defenses -->
+		
 		<Ships>
 			<Table>
 				<Group chance="25">
@@ -622,43 +696,18 @@
 			</Table>
 		</Ships>
 
-		<Satellites>
-			<Orbitals distance="8" angle="45">
-				<Station type="&stOutlawTurret;" imageVariant="2"/>
-			</Orbitals>
+		<!-- Image and Effects -->
+		
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
+		</ImageVariants>
 
-			<Orbitals distance="8" angle="135">
-				<Station type="&stOutlawTurret;" imageVariant="1"/>
-			</Orbitals>
-
-			<Orbitals distance="8" angle="225">
-				<Station type="&stOutlawTurret;" imageVariant="0"/>
-			</Orbitals>
-
-			<Orbitals distance="8" angle="315">
-				<Station type="&stOutlawTurret;" imageVariant="3"/>
-			</Orbitals>
-
-			<Orbitals count="1d4" distance="2d8+6" angle="random">
-				<Table>
-					<Station chance="10" type="&stSmallAsteroid;"/>
-					<Station chance="90" type="&stOreSmallAsteroid;"/>
-				</Table>
-			</Orbitals>
-		</Satellites>
-
-		<Items>
-			<Item count="2d6"	item="&itPteracniumOre;"/>
-			<Table chance="50">
-				<Lookup chance="40" count="1" table="&trConsumables6;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem6;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem6;"/>
-			</Table>
-		</Items>
-
-		<Encounters frequency="uncommon">
-			<Lookup table="&tbOutlawMinerEncounters;"/>
-		</Encounters>
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"70"
+				/>
 
 	</StationType>
 
@@ -667,30 +716,36 @@
 	<StationType UNID="&stOutlawTurret;"
 			name=				"Outlaw defense turret"
 			sovereign=			"&svOutlawMiners;"
+				 
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
-			noMapLabel=			"true"
-			noFriendlyFire=		"true"
-			canAttack=			"true"
-
+				 
 			mass=				"2000"
 			armorID=			"&itCeralloyArmor;"
 			hitPoints=			"90"
 			structuralHitPoints="25"
 			fireRateAdj=		"20"
+				 
+			canAttack=			"true"
 			ejectaType=			"&vtWreckEjecta;"
+			noMapLabel=			"true"
+			noFriendlyFire=		"true"
 			>
 
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itShtormRepeater;"	omnidirectional="true"/>
+		</Devices>
+
+		<!-- Image and Effects -->
+		
 		<ImageVariants>
 			<Image			imageID="&rsStations4;" imageX="192" imageY="448" imageWidth="42" imageHeight="42"/>
 			<Image			imageID="&rsStations4;" imageX="192" imageY="490" imageWidth="42" imageHeight="42"/>
 			<Image			imageID="&rsStations4;" imageX="192" imageY="532" imageWidth="42" imageHeight="42"/>
 			<Image			imageID="&rsStations4;" imageX="192" imageY="574" imageWidth="42" imageHeight="42"/>
 		</ImageVariants>
-
-		<Devices>
-			<Device deviceID="&itShtormRepeater;"	omnidirectional="true"/>
-		</Devices>
 
 		<DockingPorts
 				portCount=		"2"
@@ -760,6 +815,58 @@
 
 				<Escorts>
 					<Ship					   count="1d4+1"	class="&scHammerhead-II;" orders="escort"/>
+				</Escorts>
+			</Ship>
+		</LevelTable>
+	</ShipTable>
+
+	<ShipTable unid="&tbOutlawMinerProspector;">
+		<LevelTable>
+			<Ship levelFrequency="ucu-- -----" count="1"	 class="&scBorer;" eventHandler="&evStdMiningBehavior;">
+				<Escorts>
+					<Ship chance="80"		   count="1d2"	 class="&scHammerhead;" orders="escort"/>
+				</Escorts>
+			</Ship>
+		
+			<Ship levelFrequency="-ucu- -----" count="1"	 class="&scBorer;" eventHandler="&evStdMiningBehavior;">
+				<Escorts>
+					<Table>
+						<Ship chance="60"	   count="1d4"	 class="&scHammerhead;" orders="escort"/>
+						<Ship chance="30"	   count="1"	 class="&scBorer;" orders="escort"/>
+						<Ship chance="10"	   count="2"	 class="&scBorer;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+		
+			<Ship levelFrequency="--ucu -----" count="1"	 class="&scBorer-II;" eventHandler="&evStdMiningBehavior;">
+				<Escorts>
+					<Table>
+						<Ship chance="60"	   count="1d4"	 class="&scHammerhead;" orders="escort"/>
+						<Ship chance="30"	   count="1"	 class="&scBorer;" orders="escort"/>
+						<Ship chance="10"	   count="2"	 class="&scBorer;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+		
+			<Ship levelFrequency="---uc u----" count="1"	 class="&scBorer-II;" eventHandler="&evStdMiningBehavior;">
+				<Escorts>
+					<Table>
+						<Ship chance="20"	   count="1d6"	 class="&scHammerhead;" orders="escort"/>
+						<Ship chance="30"	   count="1d3"	 class="&scBorer;" orders="escort"/>
+						<Ship chance="40"	   count="1d3"	 class="&scHammerhead-II;" orders="escort"/>
+						<Ship chance="10"	   count="1"	 class="&scBorer-II;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+		
+			<Ship levelFrequency="----u currr" count="1"	 class="&scBorer-II;" eventHandler="&evStdMiningBehavior;">
+				<Escorts>
+					<Table>
+						<Ship chance="10"	   count="1d8"	 class="&scHammerhead;" orders="escort"/>
+						<Ship chance="20"	   count="1d4+1" class="&scBorer;" orders="escort"/>
+						<Ship chance="45"	   count="1d4+1" class="&scHammerhead-II;" orders="escort"/>
+						<Ship chance="25"	   count="1d3"	 class="&scBorer-II;" orders="escort"/>
+					</Table>
 				</Escorts>
 			</Ship>
 		</LevelTable>
@@ -894,6 +1001,65 @@
 			</OnOrdersCompleted>
 		</Events>
 	</ShipClass>
+	
+<!-- BASE CLASSES -->
+	
+	<StationType unid="&baOutlawMine;"
+			name=			"(outlaw mine base class)"
+			virtual=		"true"
+			>
+		
+		<Events>
+			<OnCreate>
+				(block (asteroidList)
+				
+					;	Get a list of all asteroids in the area
+					
+					(if (setq asteroidList (sysFindObject gSource "tN:50 +asteroid"))
+					
+						;	Asteroids in the area have a greater chance of having ore.
+						;	(The station was built here for a reason.)
+						
+						(enum asteroidList asteroidObj
+							(if (leq (random 1 100) 20)
+								(objAddRandomItems asteroidObj &tbAsteroidOre; (random 1 2))
+								)
+							)
+							
+						;	If there are no asteroids, then create some
+						
+						(for i 1 (random 2 5)
+							(sysCreateLookup "AsteroidSingleton" 
+								(sysOrbit aOrbit (random 8 22) (random 0 359))
+								)
+							)
+						)
+					)
+			</OnCreate>
+			
+			<OnOreDepositFound>
+				(switch
+					;	If we're dead, then just send a single prospector from the
+					;	nearest stargate.
+					
+					(objGetProperty gSource 'abandoned)
+						(block (minerObj)
+							(setq minerObj (sysCreateShip &tbOutlawMinerProspector; (sysFindObject gSource "GN") &svOutlawMiners;))
+							(objSetData minerObj 'depositID (objGetID (@ gData 'depositObj)))
+							)
+							
+					;	Otherwise, we send a random number from this station
+					
+					(for i 1 (random 0 3)
+						(block (minerObj)
+							(setq minerObj (sysCreateShip &tbOutlawMinerProspector; gSource &svOutlawMiners;))
+							(objSetData minerObj 'depositID (objGetID (@ gData 'depositObj)))
+							)
+						)
+					)
+			</OnOreDepositFound>
+		</Events>
+	</StationType>
 	
 <!-- RESOURCES -->
 

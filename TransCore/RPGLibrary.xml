@@ -81,6 +81,10 @@
 	
 	<!ENTITY stGenericCargoCrate		"0x00010040">
 	<!ENTITY rsGenericCargoCrate		"0x00010041">
+	
+	<!-- 0050-006F BEHAVIORS -->
+	
+	<!ENTITY evStdMiningBehavior		"0x00010050">
 	]>
 	
 <CoreLibrary

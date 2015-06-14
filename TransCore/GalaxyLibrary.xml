@@ -263,6 +263,10 @@
 	<!ENTITY rsDaazhenStargate			"0x000200B0">
 	<!ENTITY rsDaazhenStargateEffect	"0x000200B1">
 	<!ENTITY rsMajellenStargate			"0x000200B2">
+	
+	<!-- 00C0-00CF MINING -->
+	
+	<!ENTITY ovMiningOreCount			"0x000200C0">
 	]>
 	
 <CoreLibrary

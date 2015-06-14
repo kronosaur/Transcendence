@@ -54,7 +54,3 @@ const CG16bitFont &GetFontByName (const SFontTable &Fonts, const CString &sFontN
 		return Fonts.Console;
 	}
 
-CString TransPath (const CString &sPath)
-	{
-	return sPath;
-	}

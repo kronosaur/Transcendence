@@ -999,6 +999,29 @@
 						)
 					)
 				))
+				
+			;	rpgCalcToHit
+			;
+			;	This is a generic function useful for calculating probability of
+			;	something happending when you have an attack value and a defense
+			;	value.
+			;
+			;	attack and defense must both be between 0 and 100. The result is
+			;	a probability of success from 0 to 100.
+			;
+			;	See: https://forums.kronosaur.com/viewtopic.php?p=63206#p63206
+				
+			(setq rpgCalcToHit (lambda (attack defense)
+				(switch
+					(leq attack 0)
+						0
+						
+					(leq defense 0)
+						attack
+						
+					(divide (* attack attack) (+ attack defense))
+					)
+				))
 			
 			;	rpgGetInstallerList
 			;

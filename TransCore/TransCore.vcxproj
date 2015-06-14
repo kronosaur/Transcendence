@@ -320,11 +320,17 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Groups.xml" />
-    <None Include="Ice.xml" />
-    <None Include="Metallic.xml" />
+    <None Include="Ice.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Metallic.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Mining.xml" />
     <None Include="Neurohack.xml" />
-    <None Include="Primordial.xml" />
+    <None Include="Primordial.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Rocky.xml" />
     <None Include="Stargates.xml" />
     <None Include="StarSystems.xml">
@@ -332,14 +338,19 @@
     </None>
     <None Include="GalaxyCompatibility.xml" />
     <None Include="GalaxyEffects.xml" />
-    <None Include="Volcanic.xml" />
+    <None Include="Volcanic.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Worlds.xml">
       <SubType>Designer</SubType>
     </None>
     <None Include="Stars.xml" />
-    <None Include="Ovoids.xml" />
+    <None Include="Ovoids.xml">
+      <SubType>Designer</SubType>
+    </None>
     <Xml Include="CompatibilityLibrary.xml" />
     <Xml Include="CorePlaceholders.xml" />
+    <Xml Include="Ferians.xml" />
     <Xml Include="HumanSpaceVol01.xml" />
     <Xml Include="Ore.xml" />
     <Xml Include="RPGLibrary.xml" />

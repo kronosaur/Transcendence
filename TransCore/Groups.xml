@@ -30,6 +30,16 @@
 -->
 
 	<SystemPartTable unid="&tbAsteroidMorphologies;">
+		
+		<!-- ASTEROID SINGLETON -->
+		
+		<AsteroidSingleton>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<Lookup table="VariantAsteroid"/>
+				</_Morphology>
+			</Lookup>
+		</AsteroidSingleton>
 
 		<!-- ASTEROID ARCS -->
 

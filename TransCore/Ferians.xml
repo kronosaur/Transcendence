@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<Sovereign UNID="&svFerianMiners;"
+			name="Ferian miners"
+			alignment="neutral"
+			>
+		<Relationships>
+			<Relationship sovereign="&svRingers;" disposition="friend" mutual="true"/>
+		</Relationships>
+		
+		<Language>
+			<Text id="WatchYourTargets">"\"Grrr! Defend the nest!\""</Text>
+			<Text id="NiceShooting">""</Text>
+		</Language>
+	</Sovereign>
+
+	<Sovereign UNID="&svFerianMinersAngry;"
+			name="Ferian miners"
+			alignment="destructive order"
+			>
+		<Relationships>
+			<Relationship sovereign="&svFerianMiners;" disposition="friend" mutual="true"/>
+			<Relationship sovereign="&svRingers;" disposition="friend" mutual="true"/>
+		</Relationships>
+
+		<Language>
+			<Text id="WatchYourTargets">""</Text>
+			<Text id="NiceShooting">""</Text>
+		</Language>
+	</Sovereign>
+
+<!-- ENCOUNTERS -->
+	
+	<!-- Level 6: Ferian Colony
+	
+		EXTRA DATA
+
+		attackLevel:		Tracks how much the colony has been attacked
+		lastAttacker:		Last object that attacked us
+		maxMiners:			Max number of miners at one time
+		minersKilled:		Total number of miners killed
+		totalWarriors:		Total number of warrior created
+
+	-->
+
+	<StationType UNID="&stFerianColony;"
+			name=				"Ferian colony"
+			sovereign=			"&svFerianMiners;"
+				 
+			attributes=			"enemy, envEarth, envAvoidsAir, ferian, generic, neoHuman, miners, populated, zoanthrope"
+				 
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+				 
+			armorID=			"&itAdvancedPlasteelPlate;"
+			hitPoints=			"200"
+			multiHull=			"true"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtThermoExplosion1;"
+			ejectaType=			"&vtStoneAsteroidEjecta;"
+			noBlacklist=		"true"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				levelFrequency=		"---ru ccr-- ----- ----- -----"
+				locationCriteria=	"++asteroids"
+				/>
+
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Lookup count="4d8"	table="&tbAsteroidOre;"/>
+			<Item count="4d12"	item="&itChronimiumGas;" />
+		</Items>
+
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Ship count="3d6" class="&scFerianMiner;" orders="mine" controller="ferian"/>
+		</Ships>
+
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsStations5;" imageX="0" imageY="384" imageWidth="128" imageHeight="128"/>
+
+		<DockingPorts>
+			<Port x="0"		y="90" />
+			<Port x="0"		y="-90" />
+			<Port x="60"	y="60" />
+			<Port x="60"	y="-60" />
+			<Port x="90"	y="0" />
+			<Port x="-90"	y="0" />
+			<Port x="-60"	y="60" />
+			<Port x="-60"	y="-60" />
+		</DockingPorts>
+		
+		<!-- Events and Behavior -->
+
+		<Events>
+			<OnAttacked>
+				(if (and aOrderGiver
+						(objCanAttack aOrderGiver)
+						(not (eq (objGetDisposition gSource aOrderGiver) 'friend))
+						)
+					(block Nil
+						(objIncData gSource "attackLevel" 1)
+						(objSetObjRefData gSource "lastAttacker" aOrderGiver)
+						)
+					)
+			</OnAttacked>
+			
+			<OnCreate>
+				(block (asteroidCount maxMiners)
+				
+					;	Count the number of asteroids in the area (within 60 light-seconds)
+					
+					(setq asteroidCount (count (sysFindObject gSource "t:asteroid; N:60;")))
+					
+					;	If there we have less than four asteroids, create more.
+					
+					(if (ls asteroidCount 4)
+						(block (
+							(newAsteroids (random 2 5))
+							)
+							
+							(for i 1 newAsteroids
+								(sysCreateLookup "AsteroidSingleton" 
+									(sysOrbit aOrbit (random 8 22) (random 0 359))
+									)
+								)
+								
+							(setq asteroidCount (add asteroidCount newAsteroids))
+							)
+						)
+
+					;	Compute the number of miners
+					
+					(setq maxMiners (multiply asteroidCount 2))
+					(if (gr asteroidCount 0)
+						(setq maxMiners (add maxMiners (random 1 asteroidCount)))
+						)
+
+					;	Sometimes we get more miners
+					
+					(if (leq (random 1 100) 5)
+						(setq maxMiners (multiply maxMiners 2))
+						)
+
+					(objSetData gSource "maxMiners" maxMiners)
+					(objSetData gSource "attackLevel" 0)
+					(objSetData gSource "minersKilled" 0)
+
+					;	Register timer event for construction
+					
+					(sysAddObjRecurringTimerEvent (random 400 800) gSource "OnConstruction")
+					)
+			</OnCreate>
+
+			<OnConstruction>
+				(if (not (objIsAbandoned gSource))
+					(block (minerCount theTarget)
+						; Count the number of ferian miners for this base
+						(setq minerCount (count (sysFindObject gSource "sH")))
+						
+						(switch
+							; If we've already got our maximum, then nothing to do
+							(geq minerCount (objGetData gSource "maxMiners"))
+								Nil
+								
+							; If our attack level is high, send out a warrior
+							(and (leq (random 6 40) (objGetData gSource "attackLevel"))
+									(setq theTarget (objGetObjRefData gSource "lastAttacker"))
+									(objMatches theTarget gSource "sTA")
+									(ls (objGetData gSource "totalWarriors") (divide (objGetData gSource "maxMiners") 3))
+									(ls (count (sysFindObject gSource "sH +ferianWarrior")) 3)
+									(leq (objGetDistance gSource theTarget) 150)
+									)
+								(block (newWarrior)
+									(setq newWarrior
+										(sysCreateShip &scFerianWarrior; gSource 
+											(if (eq theTarget gPlayerShip) &svFerianMinersAngry; &svFerianMiners;)
+											)
+										)
+									(objAddSubordinate gSource newWarrior)
+									(objRegisterForEvents gSource newWarrior)
+									
+									(shpOrder newWarrior 'attack theTarget)
+									(shpOrder newWarrior 'gate gSource)
+
+									(objIncData gSource "totalWarriors")
+									)
+									
+							; If a lot of miners have been killed, then don't create more
+							(gr (objGetData gSource "minersKilled") (objGetData gSource "maxMiners"))
+								Nil
+									
+							; Otherwise, create a miner
+							(block (newMiner)
+								(setq newMiner
+									(sysCreateShip &scFerianMiner; gSource &svFerianMiners; "ferian")
+									)
+								(objAddSubordinate gSource newMiner)
+								(shpOrderMine newMiner gSource)
+								)
+							)
+							
+						; Decrement attack level
+						(if (gr (objGetData gSource "attackLevel") 0)
+							(objIncData gSource "attackLevel" -1)
+							)
+						)
+					)
+			</OnConstruction>
+			
+			<OnDestroy>
+				(block (warriorsLeft)
+					(setq warriorsLeft (subtract (divide (objGetData gSource "maxMiners") 3) (objGetData gSource "totalWarriors")))
+					(for i 1 (min warriorsLeft 3)
+						(block (newWarrior)
+							(setq newWarrior
+								(sysCreateShip &scFerianWarrior; gSource &svFerianMinersAngry;))
+
+							(if (and aOrderGiver 
+									(objCanAttack aOrderGiver)
+									)
+								(shpOrder newWarrior 'attack aOrderGiver)
+								(shpOrder newWarrior 'attackNearestEnemy)
+								)
+
+							(shpOrder newWarrior 'gate gSource)
+							)
+						)
+						
+					; All miners become angry
+					(enum (sysFindObject gSource "sH +ferianMiner") theMiner
+						(objSetSovereign theMiner &svFerianMinersAngry;)
+						)
+					)
+			</OnDestroy>
+			
+			<OnObjEnteredGate>
+				(if (and (eq aGateObj gSource)
+						(objMatches aObj Nil "s +ferianWarrior;")
+						)
+					(objIncData gSource "totalWarriors" -1)
+					)
+			</OnObjEnteredGate>
+			
+			<OnOreDepositFound>
+				(switch
+					;	If we're dead, then nothing
+					
+					(objGetProperty gSource 'abandoned)
+						Nil
+							
+					;	Otherwise, we send a random number of miners to the new deposit
+					
+					(block (
+						(maxMiners (objGetData gSource "maxMiners"))
+						(minersToSend 
+							(random 1 (max 1 (divide maxMiners 8)))
+							)
+						(minersAvail (filter (sysFindObject gSource "sH") minerObj
+							(not (objGetData minerObj 'depositID))
+							))
+						)
+						
+						(for i 1 (min minersToSend (count minersAvail))
+							(block (
+								(minerObj (@ minersAvail (subtract i 1)))
+								)
+								
+								(shpCancelOrders minerObj)
+								(shpOrder minerObj 'approach (@ gData 'depositObj) 20)
+								(shpOrder minerObj 'mine gSource)
+								(objSetData minerObj 'depositID (objGetID (@ gData 'depositObj)))
+								(dbgOutput "Sent miner " (objGetID minerObj) " to " (objGetID (@ gData 'depositObj)))
+								)
+							)
+							
+						;	Increment the max number of ferians
+						
+						(objIncData gSource 'maxMiners minersToSend)
+						)
+					)
+			</OnOreDepositFound>
+			
+			<OnMinerDestroyed>
+				(block Nil
+					(objIncData gSource "minersKilled")
+
+					(if (and aOrderGiver 
+							(objCanAttack aOrderGiver)
+							(not (eq (sovGetDisposition &svFerianMiners; (objGetSovereign aOrderGiver)) 'friend))
+							)
+						(block Nil
+							(objIncData gSource "attackLevel" 2)
+							(if (or (not (objGetObjRefData gSource "lastAttacker"))
+									(leq (random 1 100) 50)
+									)
+								(objSetObjRefData gSource "lastAttacker" aOrderGiver)
+								)
+							)
+						)
+					)
+			</OnMinerDestroyed>
+		</Events>
+		
+		<DockScreens>
+			<Main>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"You enter into a vast chamber, only partially pressurized. Large metal maws "
+								"consume a small fortune in rocks and ores delivered by Ferian miners.\n\n"
+								"Beneath them you see various vessels shrouded by the cranes and girders of a shipyard. "
+								"Most of the vessels are new Ferian miners being created out of raw materials. "
+								"A few are much larger and have a more sinister shape."
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+	</StationType>
+
+<!-- SHIP CLASSES -->
+	
+	<!-- Level 6: Ferian Miner -->
+
+	<ShipClass UNID="&scFerianMiner;"
+			manufacturer=		""
+			class=				"Ferian miner"
+			type=				""
+			defaultSovereign=	"&svFerianMiners;"
+
+			attributes=			"ferian, ferianMiner, genericClass, zoanthrope"
+			   
+			size=				"130"
+			mass=				"5000"
+			thrustRatio=		"4"
+			maxSpeed=			"17"
+			cargoSpace=			"200"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightPlasteelPlate;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itPlasmaTorch;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+		
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Item count="1d6" item="&itXenotiteFuelRod;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsMediumShips2;" imageX="704" imageY="0" imageWidth="64" imageHeight="64"/>
+		
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="23"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"40"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+		<Events>
+			<OnCreate>
+				(if (geq (random 1 100) 20)
+					(sysAddRandomOreByValue gSource
+						(@ 
+							(list 0 
+								20 50 100 200 500 1000 2000 5000 10000 20000)
+							(sysGetLevel)
+							)
+						)
+					)
+			</OnCreate>
+			
+			<OnDestroy>
+				(if (eq (shpGetOrder gSource) 'mine)
+					(objFireEvent (shpGetOrderTarget gSource) "OnMinerDestroyed")
+					)
+			</OnDestroy>
+		</Events>
+	</ShipClass>
+
+	<!-- Level 9: Ferian Warrior -->
+
+	<ShipClass UNID="&scFerianWarrior;"
+			manufacturer=		""
+			class=				"Ferian warrior"
+			type=				""
+			defaultSovereign=	"&svFerianMiners;"
+
+			attributes=			"ferian, ferianWarrior, genericClass, zoanthrope"
+			   
+			mass=				"1200"
+			thrustRatio=		"15"
+			maxSpeed=			"22"
+			cargoSpace=			"20"
+			>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itHeavyBlastPlate;"
+			count=				"12"
+			/>
+
+		<Devices>
+			<Device deviceID="&itFerianCannon;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Item count="1d6" item="&itPteracniumFuelRod;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsFerianWarrior;" imageWidth="144" imageHeight="144"/>
+		
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="66"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			combatStyle=		"chase"
+			fireRateAdj=		"20"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+	</ShipClass>
+
+<!-- ITEM TYPES -->
+	
+	<!-- Level 9: Ferian Cannon -->
+
+	<ItemType UNID="&itFerianCannon;"
+			name=				"Ferian plasma cannon"
+			attributes=			"Ferian; MajorItem; Military; NotForSale; NotStandard"
+			  
+			level=				"9"
+			frequency=			"notrandom"
+			  
+			value=				"88000"
+			mass=				"5000"
+
+			description=		"Ferians have adapted their plasma torches for combat."
+			>
+
+		<Image imageID="&rsItems9;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"particles"
+
+				damage=				"plasma:50; mining2; WMD4"
+				fireRate=			"30"
+				missileSpeed=		"60"
+				lifetime=			"40"
+				powerUse=			"2000"
+
+				particleCount=		"500"
+				particleSpreadAngle="1"
+				particleSplashChance="50"
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Effect>
+				<Particle
+						style=			"flame"
+						minWidth=		"3" 
+						maxWidth=		"3-7"
+						/>
+			</Effect>
+		</Weapon>
+	</ItemType>
+
+<!-- RESOURCES & EFFECTS -->
+	
+	<Image UNID="&rsFerianWarrior;"	bitmap="Resources\FerianWarrior.jpg"	bitmask="Resources\FerianWarriorMask.bmp"	loadOnUse="true"/>
+
+</TranscendenceModule>

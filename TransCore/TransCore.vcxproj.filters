@@ -351,5 +351,8 @@
     <Xml Include="StdMiningEquipment.xml">
       <Filter>Human Space Library</Filter>
     </Xml>
+    <Xml Include="Ferians.xml">
+      <Filter>Human Space Library</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

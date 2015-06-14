@@ -233,6 +233,7 @@
 		<Trade currency="credit" max="10000" replenish="500">
 			<Sell	criteria="wNU +unid:&itMiningLaser;;" priceAdj="100"	inventoryAdj="100"/>
 			<Sell	criteria="cNU +unid:&itMinersCargoHold;;" priceAdj="100"	inventoryAdj="100"/>
+			<Sell	criteria="*NU +miningEquipment; L:1-5;" priceAdj="100"	inventoryAdj="100"/>
 			<Sell	criteria="*NU +Ore; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU +Food; -Illegal; -NotForSale;"	priceAdj="90"/>
 			
@@ -343,6 +344,20 @@
 						)
 					)
 			</OnObjDestroyed>
+			
+			<OnOreDepositFound>
+				(switch
+					;	If there are no outlaw miners in the system, we send out
+					;	ships on their behalf.
+					
+					(not (sysFindObject Nil "T +outlawMiners; +populated;"))
+						(block (minerObj)
+							(setq minerObj (sysCreateShip &tbOutlawMinerProspector; (sysFindObject gSource "GN") &svOutlawMiners;))
+							(objSetData minerObj 'depositID (objGetID (@ gData 'depositObj)))
+							(dbgOutput "Created " (objGetName minerObj) " heading for " (objGetName (@ gData 'depositObj)))
+							)
+					)
+			</OnOreDepositFound>
 		</Events>
 
 		<DockScreens>
@@ -380,8 +395,31 @@
 				</InitialPane>
 
 				<Panes>
-					<Default
-							desc=	"You are in the docking bay of a mining colony.">
+					<Default>
+						<OnPaneInit>
+							(block (
+								(allDeposits (sysFindObject Nil "k D:oreDepositCount;"))
+								(undiscoveredDeposits (filter allDeposits depositObj
+									(not (objGetData depositObj 'lastNotifyTime))
+									))
+								)
+								
+								;	Text depends on state of deposits
+								
+								(switch
+									(not allDeposits)
+										(scrSetDescTranslate gScreen 'descNoDepositsInSystem)
+										
+									(not undiscoveredDeposits)
+										(scrSetDescTranslate gScreen 'descAllDepositsFound)
+									
+									(= (count undiscoveredDeposits) 1)
+										(scrSetDescTranslate gScreen 'descOneUndiscoveredDeposit)
+										
+									(scrSetDescTranslate gScreen 'descMultipleUndiscoveredDeposits)
+									)
+								)
+						</OnPaneInit>
 
 						<Actions>
 							<Action name="Meeting Hall" key="M" default="1">
@@ -929,6 +967,41 @@
 		</DockingPorts>
 
 		<Language>
+			<Text id="descNoDepositsInSystem">
+				(cat
+					"You are docked at a mining colony. A handful of miners tend to their "
+					"ships, but most are sitting around waiting for work that never comes.\n\n"
+					
+					"Empty loading bays are a silent reminder of past days."
+					)
+			</Text>
+			<Text id="descAllDepositsFound">
+				(cat
+					"You are docked at a mining colony. Dozens of miners prepare their "
+					"ships while others unload ore in cavernous bays.\n\n"
+					
+					"But the prospectors looking for undiscovered fields have all left "
+					"for more promising systems."
+					)
+			</Text>
+			<Text id="descOneUndiscoveredDeposit">
+				(cat
+					"You are docked at a mining colony. Dozens of prospectors are working "
+					"to outfit their ships.\n\n"
+					
+					"Everyone is talking about a vast ore deposit that has yet to be "
+					"found."
+					)
+			</Text>
+			<Text id="descMultipleUndiscoveredDeposits">
+				(cat
+					"You are docked at a mining colony. There is a frenzy of activity as "
+					"miners and prospectors outfit their ships for deep space exploration.\n\n"
+					
+					"Rumors fly about vast ore deposits out among the asteroid fields, "
+					"but no one has yet found any of them."
+					)
+			</Text>
 			<Text id="Rumors">
 				(random (list
 					(cat
@@ -1050,7 +1123,6 @@
 					allDestroyed
 					)
 				))
-
 			)
 	</Globals>
 

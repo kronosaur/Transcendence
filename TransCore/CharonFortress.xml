@@ -808,6 +808,12 @@
 				<Lookup table="AsteroidBelt500"/>
 			</Orbitals>
 
+			<!-- Create ore deposits -->
+			
+			<Code>
+				(trnCreateOreDeposits (random (list 0 0 0 1 1 1 1 1)))
+			</Code>
+			
 			<!-- Charon Pirate Fortress -->
 
 			<RandomLocation locationCriteria="*asteroidbelt">

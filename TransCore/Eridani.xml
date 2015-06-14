@@ -850,6 +850,14 @@
 							<Siblings count="1" arcInc="2d15-16" radiusInc="-20-20">
 								<Lookup table="DanteStations"/>
 							</Siblings>
+							
+							<Siblings count="1" arcInc="2d15-16" radiusInc="-20-20">
+								<Lookup table="LocationDefinition">
+									<_Morphology>
+										<Lookup table="VariantAsteroidTrojanLabel"/>
+									</_Morphology>
+								</Lookup>
+							</Siblings>
 						</Group>
 					</Trojan>
 
@@ -877,6 +885,14 @@
 
 							<Siblings count="1" arcInc="2d15-16" radiusInc="-20-20">
 								<Lookup table="DanteStations"/>
+							</Siblings>
+							
+							<Siblings count="1" arcInc="2d15-16" radiusInc="-20-20">
+								<Lookup table="LocationDefinition">
+									<_Morphology>
+										<Lookup table="VariantAsteroidTrojanLabel"/>
+									</_Morphology>
+								</Lookup>
 							</Siblings>
 						</Group>
 					</AntiTrojan>
@@ -924,6 +940,13 @@
 								<Lookup table="Stations1" probability="75"/>
 							</Orbitals>
 
+							<Orbitals distance="1d6" angle="random">
+								<Lookup table="LocationDefinition">
+									<_Morphology>
+										<Lookup table="VariantAsteroidTrojanLabel"/>
+									</_Morphology>
+								</Lookup>
+							</Orbitals>
 						</Group>
 					</Trojan>
 
@@ -941,6 +964,13 @@
 								<Lookup table="Stations1" probability="75"/>
 							</Orbitals>
 
+							<Orbitals distance="1d6" angle="random">
+								<Lookup table="LocationDefinition">
+									<_Morphology>
+										<Lookup table="VariantAsteroidTrojanLabel"/>
+									</_Morphology>
+								</Lookup>
+							</Orbitals>
 						</Group>
 					</AntiTrojan>
 
@@ -1201,6 +1231,14 @@
 								<Orbitals distance="1d8+6" angle="random">
 									<Station type="&stRaisuStation;" />
 								</Orbitals>
+								
+								<Orbitals distance="1d6" angle="random">
+									<Lookup table="LocationDefinition">
+										<_Morphology>
+											<Lookup table="VariantAsteroidTrojanLabel"/>
+										</_Morphology>
+									</Lookup>
+								</Orbitals>
 							</Trojan>
 
 							<AntiTrojan>
@@ -1208,6 +1246,14 @@
 
 								<Orbitals distance="1d8+6" angle="random">
 									<Lookup table="StJohnTrojanStations"/>
+								</Orbitals>
+								
+								<Orbitals distance="1d6" angle="random">
+									<Lookup table="LocationDefinition">
+										<_Morphology>
+											<Lookup table="VariantAsteroidTrojanLabel"/>
+										</_Morphology>
+									</Lookup>
 								</Orbitals>
 							</AntiTrojan>
 						</Group>
@@ -1219,6 +1265,14 @@
 								<Orbitals distance="1d8+6" angle="random">
 									<Lookup table="StJohnTrojanStations"/>
 								</Orbitals>
+								
+								<Orbitals distance="1d6" angle="random">
+									<Lookup table="LocationDefinition">
+										<_Morphology>
+											<Lookup table="VariantAsteroidTrojanLabel"/>
+										</_Morphology>
+									</Lookup>
+								</Orbitals>
 							</Trojan>
 
 							<AntiTrojan>
@@ -1226,6 +1280,14 @@
 
 								<Orbitals distance="1d8+6" angle="random">
 									<Station type="&stRaisuStation;" />
+								</Orbitals>
+								
+								<Orbitals distance="1d6" angle="random">
+									<Lookup table="LocationDefinition">
+										<_Morphology>
+											<Lookup table="VariantAsteroidTrojanLabel"/>
+										</_Morphology>
+									</Lookup>
 								</Orbitals>
 							</AntiTrojan>
 						</Group>
@@ -1268,6 +1330,12 @@
 			<!-- Create more stargates in case an extension added more links -->
 
 			<Lookup table="HumanSpaceStargates"/>
+			
+			<!-- Create ore deposits -->
+			
+			<Code>
+				(trnCreateOreDeposits (random 0 2))
+			</Code>
 
 		</SystemGroup>
 

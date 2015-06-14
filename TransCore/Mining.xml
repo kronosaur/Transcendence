@@ -8,13 +8,15 @@
 			name=				"mined ore"
 			noArticle=			"true"
 			sovereign=			"&svIndependent;"
+				 
+			attributes=			"minedOre"
+				 
 			dockScreen=			"&dsMinedOre;"
-
-			structuralHitPoints="100"
 
 			scale=				"ship"
 			mobile=				"true"
 			mass=				"10"
+			structuralHitPoints="100"
 			destroyWhenEmpty=	"true"
 			noMapIcon=			"true"
 			>
@@ -59,9 +61,9 @@
 			<Group criteria="*organicComp"
 				   levelValue="
 				  		100,      160,      250,      500,      1000,
-					   2000,     4000,     8000,    16000,     32000,
-					  64000,   128000,   256000,   512000,   1000000,
-					2000000,  4100000,  8200000, 16400000,	32800000"
+					   1750,     3000,     5300,     9250,     16500,
+					  30000,    53000,    96000,   175000,    315000,
+					 580000,  1100000,  2000000,  3800000,	 7200000"
 					>
 				<RandomItem criteria="* +ore; -notStandard; +organicComp;" levelFrequency="systemLevel:vruuc|c|cuurv" />
 			</Group>
@@ -77,9 +79,9 @@
 			<Group criteria="*waterComp"
 				   levelValue="
 				  		100,      160,      250,      500,      1000,
-					   2000,     4000,     8000,    16000,     32000,
-					  64000,   128000,   256000,   512000,   1000000,
-					2000000,  4100000,  8200000, 16400000,	32800000"
+					   1750,     3000,     5300,     9250,     16500,
+					  30000,    53000,    96000,   175000,    315000,
+					 580000,  1100000,  2000000,  3800000,	 7200000"
 					>
 				<RandomItem criteria="* +ore; -notStandard; +waterComp;" levelFrequency="systemLevel:vruuc|c|cuurv" />
 			</Group>
@@ -90,6 +92,31 @@
 
 	<Globals>
 		(block Nil
+			(setq miningNotifyOnOreDepositFound (lambda (depositObj finderObj)
+				(block (
+					(notifyInterval (subtract (unvGetTick) (objGetData depositObj 'lastNotifyTime)))
+					)
+					
+					;	If it's been a while since the last notification, then notify
+					;	(We wait 60 seconds before notifying again).
+					
+					(if (gr notifyInterval 1800)
+						(block Nil
+							(enum (sysFindObject Nil "TAV") theObj
+								(objFireEvent theObj 'OnOreDepositFound {
+									depositObj: depositObj
+									finderObj: finderObj
+									})
+								)
+								
+							;	Remember that we notified
+							
+							(objSetData depositObj 'lastNotifyTime (unvGetTick))
+							)
+						)
+					)
+				))
+				
 			(setq intAsteroidOnMining (lambda (miningDifficulty)
 				(block (
 					;	This table is used to number of HP required to extract a
@@ -104,19 +131,22 @@
 						))
 					
 					theOre successChance countMined
+					allOre extractedOre
 					)
 				
 					;	NOTE:
 					;
+					;	EFFORT is the effort applied to mining (0-100).
+					;	DIFFICULTY is how hard it is to mine a given asteroid (0-100).
 					;	EFFICIENCY is the probability that we succeed in mining ore.
 					;	VOLUME is the amount of ore we mine if we succeed.
 					;	YIELD is the percent of mined ore that we manage to extract
 					;		(the rest is lost).
 					;
-					;	EFFICIENCY and YIELD are both determined by the mining level
+					;	EFFORT and YIELD are both determined by the mining level
 					;	(from the damage descriptor). Consult the following table:
 					;
-					;	LEVEL	EFFICIENCY	YIELD
+					;	LEVEL	EFFORT		YIELD
 					;	1		4			97
 					;	2		10			91
 					;	3		20			84
@@ -125,66 +155,121 @@
 					;	6		74			81
 					;	7		100			100
 					;
-					;	VOLUME is computed from hit points of damage.
+					;	EFFICIENCY is computed from EFFORT and DIFFICULTY:
+					;
+					;	EFFICIENCY = (EFFORT * EFFORT) / (EFFORT + DIFFICULTY)
+					;
+					;	VOLUME is computed from hit points of damage and the level of
+					;	the ore we're trying to extract.
 					
 					(switch
 					
 						;	Pick a random ore item that exists here. If no ore, 
 						;	then nothing to do.
 						
-						(not (setq theOre (random (objGetItems gSource "* +Ore;"))))
+						(not (setq allOre (objGetItems gSource "* +Ore;")))
 							Nil
 							
 						;	Compute the chance of success. If there is no chance, 
 						;	nothing happens.
 						
-						(leq (setq successChance (divide (multiply aMineProbability miningDifficulty) 100)) 0)
+						(leq (setq successChance (rpgCalcToHit aMineProbability miningDifficulty)) 0)
 							Nil
 							
-						;	Figure out how many tons we mine this time.
-						
-						(leq (setq countMined 
-									(min 
-										(divide aHP (@ oreVolumeTable (itmGetLevel theOre)))
-										(itmGetCount theOre)
-										)
-									)
-								0)
-							Nil
-						
 						;	If we fail at extraction, then nothing
 						
 						(gr (random 1 100) successChance)
 							Nil
 								
+						;	Figure out how many tons we mine this time.
+						
+						(not (setq extractedOre 
+								(map allOre 'excludeNil theOre
+									(block (
+										(extractedCount 
+											(min 
+												(divide aHP (@ oreVolumeTable (itmGetLevel theOre)))
+												(itmGetCount theOre)
+												)
+											)
+										)
+										(if (gr extractedCount 0)
+											(itmSetCount theOre extractedCount)
+											)
+										)
+									)
+								))
+							Nil
+						
 						;	Otherwise, success
 						
 						(block (
 							;	Compute the yield
 							
 							(yield (subtract 100 (divide (multiply aMineProbability (subtract 100 aMineProbability)) 100)))
-							(yieldMod (modulo (multiply countMined yield) 100))
-							(yieldCount 
-								(add
-									(divide (multiply countMined yield) 100)
-									(if (leq (random 1 100) yieldMod) 1 0)
+							(minedOre
+								(map extractedOre 'excludeNil theOre
+									(block (
+										(yieldMod (modulo (multiply (itmGetCount theOre) yield) 100))
+										(yieldCount 
+											(add
+												(divide (multiply (itmGetCount theOre) yield) 100)
+												(if (leq (random 1 100) yieldMod) 1 0)
+												)
+											)
+										)
+										(if (gr yieldCount 0)
+											(itmSetCount theOre yieldCount)
+											)
+										)
 									)
 								)
 								
-							(minedOre (itmCreate (itmGetType theOre) countMined))
-							(extractedOre (itmCreate (itmGetType theOre) yieldCount))
-							
 							oreObj
 							)
+
+							(enum extractedOre theOre
+								(objRemoveItem gSource theOre)
+								)
 							
-							(dbgOutput "Yield " yield)
-							(dbgOutput "Mined " (itmGetName minedOre 0x08))
-							(dbgOutput "Recovered " (itmGetName extractedOre 0x08))
+							(if minedOre
+								(block (depositID)
+								
+									;	Create floating ore object
+									
+									(setq oreObj (sysCreateStation &stMinedOre; aMinePos))
+									(objIncVel oreObj (sysVectorPolarVelocity aMineDir 5))
+									
+									;	Put ore items in it
+									
+									(enum minedOre theOre
+										(objAddItem oreObj theOre)
+										)
+									
+									;	If we don't already have an ore count overlay, and if
+									;	there is any ore left in the asteroid, add one.
+									
+									(if (and (objGetItems gSource "t +ore;")
+											(not (filter (objGetOverlays gSource) theOverlay
+												(= (objGetOverlayType gSource theOverlay) &ovMiningOreCount;)
+												))
+											)
+										(block (
+											overlayID
+											)
 							
-							(setq oreObj (sysCreateStation &stMinedOre; aMinePos))
-							(objRemoveItem gSource minedOre)
-							(objAddItem oreObj extractedOre)
-							(objIncVel oreObj (sysVectorPolarVelocity aMineDir 5))
+											(setq overlayID (objAddOverlay gSource &ovMiningOreCount;))
+											(objSetOverlayProperty gSource overlayID 'counterLabel (typTranslate &ovMiningOreCount; 'msgScanning))
+											)
+										)
+										
+									;	If this asteroid is part of a deposit, then notify others
+									
+									(if (setq depositID (objGetData gSource 'oreDeposit))
+										(miningNotifyOnOreDepositFound (objGetObjByID depositID) aMiner)
+										)
+									)
+								)
 							)
 						)
 					)
@@ -198,11 +283,30 @@
 
 	<DockScreen UNID="&dsMinedOre;"
 			>
+		
+		<OnScreenInit>
+			(switch
+				;	If we have a miner's cargo hold, and there is ore here,
+				;	go straight to looting screen.
+				
+				(and (objGetItems gPlayerShip "*I +MinersHold;")
+						(objGetItems gSource "*")
+						)
+					(scrShowScreen gScreen &dsRPGLoot; {
+						forceUndock: 'forceUndock
+						})
+				)
+		</OnScreenInit>
 
 		<InitialPane>
-			(if (objGetItems gSource "*")
+			(switch
+				(not (objGetItems gPlayerShip "*I +MinersHold;"))
+					"NoMinersHold"
+					
+				(not (objGetItems gSource "*"))
+					"Empty"
+					
 				"Default"
-				"Empty"
 				)
 		</InitialPane>
 
@@ -215,7 +319,7 @@
 						(block Nil
 							(if (objGetItems gPlayerShip "*I +MinersHold;")
 								(scrShowScreen gScreen &dsRPGLoot; {
-									nextScreen: &dsMinedOre;
+									forceUndock: 'forceUndock
 									})
 								(scrShowPane gScreen "NoMinersHold")
 								)
@@ -254,7 +358,7 @@
 
 							; Loot
 							(scrShowScreen gScreen &dsRPGLoot; {
-								nextScreen: &dsMinedOre;
+								forceUndock: 'forceUndock
 								})
 							)
 					</Action>
@@ -276,6 +380,49 @@
 			</Empty>
 		</Panes>
 	</DockScreen>
+	
+<!-- OVERLAYS -->
+	
+	<OverlayType UNID="&ovMiningOreCount;"
+			attributes=		"oreCount"
+			>
+		<Counter style=		"flag"
+				color=		"#5ff12a"
+				showOnMap=	"true"
+				/>
+	
+		<Events>
+			<OnUpdate>
+				(block (
+					(oreFound (objGetItems gSource "t +Ore;"))
+					(tons (or 
+						(map oreFound 'reduceSum theItem (itmGetCount theItem))
+						0
+						))
+					)
+					
+					(if (= tons 0)
+						(objRemoveOverlay gSource aOverlayID)
+						(block Nil
+							(objSetOverlayProperty gSource aOverlayID 'counter tons)
+							(objSetOverlayProperty gSource aOverlayID 'counterLabel (typTranslate &ovMiningOreCount; 'msgTonsOfOre { count:tons }))
+							)
+						)
+					)
+			</OnUpdate>
+		</Events>
+	
+		<Language>
+			<Text id="msgNoOreFound">"No ore found"</Text>
+			<Text id="msgScanning">"Scanning..."</Text>
+			<Text id="msgTonsOfOre">
+				(if (= (@ gData 'count) 1)
+					"ton of ore"
+					"tons of ore"
+					)
+			</Text>
+		</Language>
+	</OverlayType>
 	
 <!-- RESOURCES -->
 

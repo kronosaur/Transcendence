@@ -326,6 +326,12 @@
 						</Table>
 					</Variants>
 				</Orbitals>
+				
+				<!-- Create ore deposits -->
+			
+				<Code>
+					(trnCreateOreDeposits (random (list 1 1 1 1 1 2 2 3)))
+				</Code>
 			</Group>
 		</AsteroidArcBeltSystem>
 
@@ -379,6 +385,12 @@
 						</Table>
 					</Variants>
 				</Orbitals>
+				
+				<!-- Create ore deposits -->
+			
+				<Code>
+					(trnCreateOreDeposits (random (list 1 1 1 1 1 2 2 3)))
+				</Code>
 			</Group>
 		</AsteroidBeltSystem>
 
@@ -467,6 +479,12 @@
 						</Table>
 					</Variants>
 				</Orbitals>
+				
+				<!-- Create ore deposits -->
+			
+				<Code>
+					(trnCreateOreDeposits (random (list 0 0 1 1 1 1 1 2)))
+				</Code>
 			</Group>
 		</DesertSystem>
 
@@ -519,6 +537,12 @@
 				<Orbitals count="2-6" distance="540-1300" angle="random" eccentricity="70-90" rotation="random" exclusionRadius="100">
 					<Lookup table="IceComet"/>
 				</Orbitals>
+				
+				<!-- Create ore deposits -->
+			
+				<Code>
+					(trnCreateOreDeposits (random (list 0 0 0 0 1 1 1 1)))
+				</Code>
 			</Group>
 		</IceSystem>
 
@@ -580,6 +604,12 @@
 						</Table>
 					</Variants>
 				</Orbitals>
+				
+				<!-- Create ore deposits -->
+			
+				<Code>
+					(trnCreateOreDeposits (random (list 0 0 1 1 1 1 2 2)))
+				</Code>
 			</Group>
 		</IceAsteroidSystem>
 
@@ -672,6 +702,12 @@
 						</Table>
 					</Variants>
 				</Orbitals>
+				
+				<!-- Create ore deposits -->
+			
+				<Code>
+					(trnCreateOreDeposits (random (list 0 0 0 0 1 1 1 1)))
+				</Code>
 			</Group>
 		</LightNebulaSystem>
 
@@ -722,6 +758,12 @@
 						</Table>
 					</Variants>
 				</Orbitals>
+				
+				<!-- Create ore deposits -->
+			
+				<Code>
+					(trnCreateOreDeposits (random (list 0 0 0 1 1 1 1 2)))
+				</Code>
 			</Group>
 		</MetallicSystem>
 		
@@ -790,6 +832,12 @@
 						</Table>
 					</Variants>
 				</Orbitals>
+				
+				<!-- Create ore deposits -->
+			
+				<Code>
+					(trnCreateOreDeposits (random (list 1 1 1 1 2 2 2 3)))
+				</Code>
 			</Group>
 		</MetallicAsteroidSystem>
 
@@ -843,6 +891,12 @@
 						</Table>
 					</Variants>
 				</Orbitals>
+				
+				<!-- Create ore deposits -->
+			
+				<Code>
+					(trnCreateOreDeposits (random (list 1 1 1 1 1 2 2 3)))
+				</Code>
 			</Group>
 		</OvoidBeltSystem>
 
@@ -926,6 +980,12 @@
 						</Table>
 					</Variants>
 				</Orbitals>
+				
+				<!-- Create ore deposits -->
+			
+				<Code>
+					(trnCreateOreDeposits (random (list 0 0 0 1 1 1 1 2)))
+				</Code>
 			</Group>
 		</PrimordialSystem>
 
@@ -978,6 +1038,12 @@
 				<Orbitals count="1d4-1" scale="light-minute" distance="1d8+8" angle="random" eccentricity="1d20+70" rotation="random" exclusionRadius="100">
 					<Lookup table="IceComet"/>
 				</Orbitals>
+				
+				<!-- Create ore deposits -->
+			
+				<Code>
+					(trnCreateOreDeposits (random (list 0 0 0 1 1 1 1 2)))
+				</Code>
 			</Group>
 		</RedDwarfSystem>
 
@@ -1032,6 +1098,12 @@
 						</Table>
 					</Variants>
 				</Orbitals>
+				
+				<!-- Create ore deposits -->
+			
+				<Code>
+					(trnCreateOreDeposits (random (list 0 1 1 1 1 1 2 2)))
+				</Code>
 			</Group>
 		</VolcanicSystem>
 
@@ -1083,6 +1155,12 @@
 						</Table>
 					</Variants>
 				</Orbitals>
+				
+				<!-- Create ore deposits -->
+			
+				<Code>
+					(trnCreateOreDeposits (random (list 1 1 1 1 1 2 2 3)))
+				</Code>
 			</Group>
 		</VolcanicAsteroidSystem>
 
@@ -1134,9 +1212,14 @@
 						</Table>
 					</Variants>
 				</Orbitals>
+				
+				<!-- Create ore deposits -->
+			
+				<Code>
+					(trnCreateOreDeposits (random (list 0 0 1 1 1 1 1 2)))
+				</Code>
 			</Group>
 		</YellowStarSystem>
-		
 	</SystemPartTable>
 
 <!-- STARS -->
@@ -1242,6 +1325,73 @@
 								; Create beacons
 								(sysCreateStation beaconType beacon1Pos)
 								(sysCreateStation beaconType beacon2Pos)
+								)
+							)
+						)
+					)
+				))
+				
+			(setq trnCreateOreDeposits (lambda (depositCount)
+				(block (
+					(triesLeft (* depositCount 10))
+					)
+					
+					(loop (and (gr depositCount 0) (gr triesLeft 0))
+						(block (
+							(radius (random 15 30))
+							loc
+							markerObj
+							allAsteroids
+							)
+							
+							(setq triesLeft (- triesLeft 1))
+						
+							(switch
+						
+								;	Pick a random location to place the deposit. If we
+								;	can't find one, then skip.
+						
+								(not (setq loc (sysGetRandomLocation "*asteroids; +asteroidBelt;")))
+									Nil
+								
+								;	Create a marker object at the deposit location
+								;	(If we can't create it, we skip)
+							
+								(not (setq markerObj (sysCreateMarker (cat "Ore Deposit " depositCount) (sysVectorRandom (@ loc 'pos) 16 10) &svIndependent;)))
+									Nil
+								
+								;	See how many asteroids are here. If there are less than
+								;	8, then we skip.
+							
+								(ls (count (setq allAsteroids (sysFindObject markerObj (cat "tN:" radius "; +asteroid;")))) 8)
+									(objDestroy markerObj)
+								
+								;	Otherwise, we create the ore deposit
+								
+								(block Nil
+							
+									;	Store some information about the deposit on the marker itself
+								
+									(objSetData markerObj 'oreDepositCount (count allAsteroids))
+									(objSetData markerObj 'oreDepositRadius radius)
+								
+									;	Add ore to each asteroid in range
+								
+									(enum allAsteroids asteroidObj
+										(block Nil
+											(objAddRandomItems asteroidObj &tbAsteroidOre; (random 1 12))
+										
+											;	Mark the asteroid so we know it is part of an 
+											;	ore deposit.
+										
+											(objSetData asteroidObj 'oreDeposit (objGetID markerObj))
+											)
+										)
+									
+									(dbgLog "Ore deposit " depositCount " with " (count allAsteroids) " asteroids")
+									
+									(setq depositCount (- depositCount 1))
+									)
 								)
 							)
 						)

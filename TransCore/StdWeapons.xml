@@ -345,46 +345,6 @@
 
 	</ItemType>
 
-	<!-- Mining Laser -->
-
-	<ItemType UNID="&itMiningLaser;"
-			name=				"mining laser"
-			attributes=			"commonwealth, energyWeapon, majorItem, miningEquipment, specialty"
-			  
-			level=				"2"
-			frequency=			"rare"
-
-			value=				"550"
-			mass=				"2000"
-			  
-			description=		"This powerful laser is generally used for asteroid mining."
-			>
-
-		<Image imageID="&rsItems2;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
-
-		<Weapon
-				type=				"beam"
-
-				repeating=			"4"
-				damage=				"laser:1d4; mining3"
-				fireRate=			"30"
-				lifetime=			"15"
-				powerUse=			"30"
-
-				hitEffect=			"&efGreenLaserHitEffect;" 
-				sound=				"&snLaserCannon;"
-				>
-			<Effect>
-				<Beam
-						beamType=			"laser"
-						primaryColor=		"0x5f, 0xf1, 0x2a"
-						secondaryColor=		"0x00, 0xff, 0x00"
-						/>
-			</Effect>
-		</Weapon>
-
-	</ItemType>
-
 	<!-- TK10 Trident Cannon -->
 
 	<ItemType UNID="&itTridentCannon;"
@@ -1746,49 +1706,6 @@
 						imageFrameCount="16"
 						imageTicksPerFrame="2"/>
 			</HitEffect>
-		</Weapon>
-	</ItemType>
-
-	<!-- Plasma Torch -->
-
-	<ItemType UNID="&itPlasmaTorch;"
-			name=				"plasma torch(es)"
-			attributes=			"commonwealth, majorItem, miningEquipment"
-			  
-			level=				"6"
-			frequency=			"rare"
-
-			value=				"18000"
-			mass=				"4000"
-			  
-			description=		"Plasma torches are used for large-scale asteroid mining."
-			>
-
-		<Image imageID="&rsItems6;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
-
-		<Weapon
-				type=				"particles"
-
-				damage=				"plasma:20; mining5; WMD2"
-				fireRate=			"30"
-				missileSpeed=		"40"
-				lifetime=			"30"
-				powerUse=			"300"
-
-				particleCount=		"1d11+44"
-				particleSpreadAngle="1"
-				sound=				"&snRecoillessCannon;"
-				>
-
-			<Effect>
-				<Particle
-						style=			"plain"
-						minWidth=		"3" 
-						maxWidth=		"6"
-						primaryColor=	"0xfc, 0xe8, 0x87"
-						secondaryColor=	"0x85, 0x0c, 0x0f"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 

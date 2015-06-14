@@ -1620,6 +1620,22 @@
 	<!ENTITY ovMiningPodTimer			"0x00100162">
 	<!ENTITY itSeismicScannerPod		"0x00100163">
 	<!ENTITY vtSeismicScannerPower		"0x00100164">
+	<!ENTITY ovMiningPodRadius			"0x00100165">
+	<!ENTITY ovMiningPodArmedRadius		"0x00100166">
+	<!ENTITY itClassAExcavationPod		"0x00100167">
+	<!ENTITY itClassBExcavationPod		"0x00100168">
+	<!ENTITY itClassCExcavationPod		"0x00100169">
+	<!ENTITY itAdvancedScannerPod		"0x0010016A">
+	<!ENTITY vtClassAExcavationPower	"0x0010016B">
+	<!ENTITY vtClassBExcavationPower	"0x0010016C">
+	<!ENTITY vtClassCExcavationPower	"0x0010016D">
+	<!ENTITY vtAdvancedScannerPower		"0x0010016E">
+	<!ENTITY baSeismicScannerPower		"0x0010016F">
+	
+	<!-- 0180-018F OUTLAW MINERS -->
+	
+	<!ENTITY baOutlawMine				"0x00100180">
+	<!ENTITY tbOutlawMinerProspector	"0x00100181">
 	
 	<!-- 1000-FFFF RESERVED -->
 	]>
@@ -1668,6 +1684,7 @@
 	<Module filename="CorporateHierarchy.xml"/>
 	<Module filename="DwargRaiders.xml"/>
 	<Module filename="EncountersVol01.xml"/>
+	<Module filename="Ferians.xml"/>
 	<Module filename="Iocrym.xml"/>
 	<Module filename="KateMorgental.xml"/>
 	<Module filename="KorolovShipping.xml"/>

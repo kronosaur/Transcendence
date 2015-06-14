@@ -1383,9 +1383,9 @@
 							)
 					</Action>
 
-					<Action name="Done" cancel="1" key="D">
+					<Action name="Done" cancel="1" default="1" key="D">
 						(block Nil
-							(scrExitScreen gScreen)
+							(scrExitScreen gScreen (@ gData 'forceUndock))
 
 							(if (@ gData 'nextScreen)
 								(scrShowScreen gScreen (@ gData 'nextScreen))
