@@ -175,19 +175,18 @@
 				lifetime=			"20"
 				powerUse=			"500"
 				canHitSource=		"true"
+				
+				sound=				"&snArmorHit1;"
 				>
 
 			<Effect>
 				<Shockwave
-						style=			"image"
-						>
-					<Image imageID=				"&rsShatterShockwave;"
-							imageX=				"0" 
-							imageY=				"0" 
-							imageWidth=			"512" 
-							imageHeight=		"128"
-							/>
-				</Shockwave>
+						style=			"glowRing"
+						width=			"2"
+						glowSize=		"12"
+						primaryColor=	"#ffd4cb"
+						secondaryColor=	"#f24b29"
+						/>
 			</Effect>
 		</Weapon>
 		
@@ -253,11 +252,22 @@
 				canHitSource=		"true"
 				>
 
+			<FireEffect
+					sound="&snArmorHit1;"
+							>
+				<Flare
+						style=			"fadingBlast"
+						radius=			"120"
+						primaryColor=	"#ffc29a"
+						lifetime=		"8"
+								/>
+			</FireEffect>
+			
 			<Effect>
 				<Shockwave
 						style=			"image"
 						>
-					<Image imageID=				"&rsShatterShockwave;"
+					<Image imageID=				"&rsShockwave3;"
 							imageX=				"0" 
 							imageY=				"0" 
 							imageWidth=			"512" 
@@ -325,11 +335,22 @@
 				canHitSource=		"true"
 				>
 
+			<FireEffect
+					sound="&snArmorHit1;"
+							>
+				<Flare
+						style=			"fadingBlast"
+						radius=			"180"
+						primaryColor=	"#ffc29a"
+						lifetime=		"8"
+								/>
+			</FireEffect>
+			
 			<Effect>
 				<Shockwave
 						style=			"image"
 						>
-					<Image imageID=				"&rsShatterShockwave;"
+					<Image imageID=				"&rsShockwave3;"
 							imageX=				"0" 
 							imageY=				"0" 
 							imageWidth=			"512" 
@@ -397,19 +418,18 @@
 				lifetime=			"38"
 				powerUse=			"500"
 				canHitSource=		"true"
+				
+				sound=				"&snArmorHit1;"
 				>
 
 			<Effect>
 				<Shockwave
-						style=			"image"
-						>
-					<Image imageID=				"&rsShatterShockwave;"
-							imageX=				"0" 
-							imageY=				"0" 
-							imageWidth=			"512" 
-							imageHeight=		"128"
-							/>
-				</Shockwave>
+						style=			"glowRing"
+						width=			"2"
+						glowSize=		"12"
+						primaryColor=	"#f7ffcc"
+						secondaryColor=	"#d1f229"
+						/>
 			</Effect>
 		</Weapon>
 		
@@ -518,11 +538,22 @@
 				canHitSource=		"true"
 				>
 
+			<FireEffect
+					sound="&snArmorHit1;"
+							>
+				<Flare
+						style=			"fadingBlast"
+						radius=			"240"
+						primaryColor=	"#ffc29a"
+						lifetime=		"8"
+								/>
+			</FireEffect>
+			
 			<Effect>
 				<Shockwave
 						style=			"image"
 						>
-					<Image imageID=				"&rsShatterShockwave;"
+					<Image imageID=				"&rsShockwave3;"
 							imageX=				"0" 
 							imageY=				"0" 
 							imageWidth=			"512" 
@@ -757,4 +788,3 @@
 	<Image UNID="&rsMiningPod;"		bitmap="Resources\MiningPod.jpg" bitmask="Resources\MiningPodMask.bmp" loadOnUse="true"/>
 	
 </TranscendenceModule>
-

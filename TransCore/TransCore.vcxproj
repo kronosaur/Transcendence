@@ -216,7 +216,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="StdEffects.xml" />
-    <None Include="CoreExplosions.xml" />
+    <None Include="CoreExplosions.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="StdFuel.xml" />
     <None Include="StdPlayerShips.xml">
       <SubType>Designer</SubType>
@@ -349,7 +351,9 @@
       <SubType>Designer</SubType>
     </None>
     <Xml Include="CompatibilityLibrary.xml" />
-    <Xml Include="CorePlaceholders.xml" />
+    <Xml Include="CorePlaceholders.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="Ferians.xml" />
     <Xml Include="HumanSpaceVol01.xml" />
     <Xml Include="Ore.xml" />

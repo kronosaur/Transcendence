@@ -289,7 +289,7 @@
 					<Shockwave
 							fadeStart=	"70"
 									>
-						<Image imageID=				"&rsShockwave1;"
+						<Image imageID=				"&rsShockwave2;"
 								imageX=				"0"
 								imageY=				"0"
 								imageWidth=			"512"
@@ -521,7 +521,7 @@
 					<Shockwave
 							fadeStart=	"70"
 									>
-						<Image imageID=				"&rsShockwave1;"
+						<Image imageID=				"&rsShockwave2;"
 								imageX=				"0"
 								imageY=				"0"
 								imageWidth=			"512"
