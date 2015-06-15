@@ -31,10 +31,8 @@
 			>
 
 		<ImageVariants>
-			<Image			imageID="&rsOreSmall;" imageX="48" imageY="0" imageWidth="24" imageHeight="24" />
-			<Image			imageID="&rsOreSmall;" imageX="48" imageY="24" imageWidth="24" imageHeight="24" />
-			<Image			imageID="&rsOreSmall;" imageX="48" imageY="48" imageWidth="24" imageHeight="24" />
-			<Image			imageID="&rsOreSmall;" imageX="48" imageY="72" imageWidth="24" imageHeight="24" />
+			<Image			imageID="&rsMiningPod;" imageX="0"  imageY="0"  imageWidth="24" imageHeight="24" />
+			<Image			imageID="&rsMiningPod;" imageX="24" imageY="0"  imageWidth="24" imageHeight="24" />
 		</ImageVariants>
 		
 		<Communications>
@@ -137,10 +135,11 @@
 			description=		"This scanner pod explodes into a seismic wave that reveals the location of valuable ores in asteroids. It has a 30 light-seconds range, and it detects ores up to level 5."
 			>
 
-		<Image imageID="&rsItemsRasiermesser2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems2;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
 		
 		<StaticData>
 			<Data id="effectRadius">30</Data>
+			<Data id="imageVariant">0</Data>
 			<Data id="oreCriteria">"t +ore; L:1-5;"</Data>
 		</StaticData>
 		
@@ -214,10 +213,11 @@
 			description=		"Class A excavation pods uses a seismic charge to extract ore from asteroids in a 30 light-second radius."
 			>
 
-		<Image imageID="&rsItemsRasiermesser2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems3;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
 		
 		<StaticData>
 			<Data id="effectRadius">30</Data>
+			<Data id="imageVariant">1</Data>
 		</StaticData>
 		
 		<Events>
@@ -285,10 +285,11 @@
 			description=		"This improved excavation pod has 40 light-second radius."
 			>
 
-		<Image imageID="&rsItemsRasiermesser2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems5;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
 		
 		<StaticData>
 			<Data id="effectRadius">40</Data>
+			<Data id="imageVariant">1</Data>
 		</StaticData>
 		
 		<Events>
@@ -356,10 +357,11 @@
 			description=		"This is an improved version of the seismic scanner pod. It detects ore of level 10 or below in a 60 light-second radius."
 			>
 
-		<Image imageID="&rsItemsRasiermesser2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems6;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
 		
 		<StaticData>
 			<Data id="effectRadius">60</Data>
+			<Data id="imageVariant">0</Data>
 			<Data id="oreCriteria">"t +ore; L:1-10;"</Data>
 		</StaticData>
 		
@@ -476,10 +478,11 @@
 			description=		"The class C excavation pod is used for large-scale asteroid mining. It uses a thermonuclear change and has a range of 60 light-seconds."
 			>
 
-		<Image imageID="&rsItemsRasiermesser2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems8;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
 		
 		<StaticData>
 			<Data id="effectRadius">60</Data>
+			<Data id="imageVariant">1</Data>
 		</StaticData>
 		
 		<Events>
@@ -602,6 +605,7 @@
 		
 		<Invoke>
 			(block (
+				(podType (itmGetType gItem))
 				(miningPodObj Nil)
 				(overlayID Nil)
 				)
@@ -612,7 +616,8 @@
 				(objSetName miningPodObj (itmGetName gItem 0x00) 0x00)
 				(objIncVel miningPodObj (sysVectorPolarVelocity (objGetProperty gSource 'rotation) 5))
 				(objSetData miningPodObj 'ownerID (objGetID gSource))
-				(objSetData miningPodObj 'podType (itmGetType gItem))
+				(objSetData miningPodObj 'podType podType)
+				(staSetImageVariant miningPodObj (typGetStaticData podType 'imageVariant))
 				
 				;	Add a radius overlay to indicate its area of effect
 
@@ -746,6 +751,10 @@
 				))
 			)
 	</Globals>
+	
+<!-- RESOURCES -->
+
+	<Image UNID="&rsMiningPod;"		bitmap="Resources\MiningPod.jpg" bitmask="Resources\MiningPodMask.bmp" loadOnUse="true"/>
 	
 </TranscendenceModule>
 
