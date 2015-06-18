@@ -233,7 +233,7 @@
 		<Trade currency="credit" max="10000" replenish="500">
 			<Sell	criteria="wNU +unid:&itMiningLaser;;" priceAdj="100"	inventoryAdj="100"/>
 			<Sell	criteria="cNU +unid:&itMinersCargoHold;;" priceAdj="100"	inventoryAdj="100"/>
-			<Sell	criteria="*NU +miningEquipment; L:1-5;" priceAdj="100"	inventoryAdj="100"/>
+			<Sell	criteria="*NU +miningEquipment; -Illegal; -NotForSale; -notStandard; L:1-5;" priceAdj="100"	inventoryAdj="100"/>
 			<Sell	criteria="*NU +Ore; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU +Food; -Illegal; -NotForSale;"	priceAdj="90"/>
 			
@@ -354,7 +354,6 @@
 						(block (minerObj)
 							(setq minerObj (sysCreateShip &tbOutlawMinerProspector; (sysFindObject gSource "GN") &svOutlawMiners;))
 							(objSetData minerObj 'depositID (objGetID (@ gData 'depositObj)))
-							(dbgOutput "Created " (objGetName minerObj) " heading for " (objGetName (@ gData 'depositObj)))
 							)
 					)
 			</OnOreDepositFound>

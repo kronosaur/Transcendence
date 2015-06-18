@@ -151,7 +151,9 @@
     <None Include="CommonwealthFleet.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="CommonwealthMetropolis.xml" />
+    <None Include="CommonwealthMetropolis.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="CommonwealthMilitia.xml">
       <SubType>Designer</SubType>
     </None>

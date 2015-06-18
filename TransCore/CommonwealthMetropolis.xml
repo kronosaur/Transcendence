@@ -41,9 +41,9 @@
 		<!-- Trade and Items -->
 		
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; L:1-5;" priceAdj="115" inventoryAdj="200"/>
+			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; -notStandard; L:1-5;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Sell	criteria="rNU L:1-4; -Illegal; -NotForSale;"	priceAdj="110"	inventoryAdj="100"/>
+			<Sell	criteria="rNU L:1-4; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
@@ -178,9 +178,9 @@
 		<!-- Trade and Items -->
 		
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Commonwealth; -PremiumAmmo; -Illegal; -NotForSale;" priceAdj="115" inventoryAdj="200"/>
+			<Sell	criteria="m +Commonwealth; -PremiumAmmo; -Illegal; -NotForSale; -notStandard;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Sell	criteria="rNU L:4-7; -Illegal; -NotForSale;"	priceAdj="110"	inventoryAdj="100"/>
+			<Sell	criteria="rNU L:4-7; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
