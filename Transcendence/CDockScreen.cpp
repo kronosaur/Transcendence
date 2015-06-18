@@ -1816,9 +1816,9 @@ void CDockScreen::UpdateCredits (void)
 	//	Money
 
 	CEconomyType *pEconomy = m_pLocation->GetDefaultEconomy();
-	m_pCredits->SetText(strPatternSubst(CONSTLIT("%s: %d"), 
+	m_pCredits->SetText(strPatternSubst(CONSTLIT("%s: %s"), 
 			strCapitalize(pEconomy->GetCurrencyNamePlural()),
-			(int)m_pPlayer->GetCredits(pEconomy->GetUNID())
+			strFormatInteger((int)m_pPlayer->GetCredits(pEconomy->GetUNID()), -1, FORMAT_THOUSAND_SEPARATOR)
 			));
 
 	//	Cargo space
