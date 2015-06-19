@@ -511,7 +511,7 @@
 			<Fragment
 					type=			"area"
 
-					damage=			"thermo:2d12; WMD7"
+					damage=			"thermo:2d10; WMD7"
 					expansionSpeed=	"25"
 					missileSpeed=	"0"
 					lifetime=		"24"
