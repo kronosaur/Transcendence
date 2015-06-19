@@ -2791,7 +2791,7 @@
 			  
 			level=				"3"
 			frequency=			"common"
-			numberAppearing=	"2d8"
+			numberAppearing=	"2d12"
 
 			value=				"10"
 			mass=				"20"
@@ -2825,9 +2825,9 @@
 			</HitEffect>
 
 			<Fragment
-					count=			"5d6"
+					count=			"6d6"
 					type=			"missile"
-					lifetime=		"6"
+					lifetime=		"10"
 					damage=			"kinetic:2d6; WMD1"
 					missileSpeed=	"32-48"
 							>
@@ -2860,7 +2860,7 @@
 			  
 			level=				"3"
 			frequency=			"uncommon"
-			numberAppearing=	"1d6"
+			numberAppearing=	"2d12"
 
 			value=				"12"
 			mass=				"40"
@@ -2901,11 +2901,11 @@
 			name=				"KM500 Stiletto missile"
 			attributes=			"basicAmmo, commonwealth, consumable, missile, NAMI, NAMILauncher"
 			  
-			level=				"4"
+			level=				"3"
 			frequency=			"common"
 			numberAppearing=	"2d12"
 
-			value=				"25"
+			value=				"15"
 			mass=				"20"
 			  
 			description=		"A powerful optical and infrared tracking module allows this missile to home in on its target."
@@ -2916,7 +2916,7 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"blast:8d6; momentum4; WMD6"
+				damage=			"blast:5d6; momentum4; WMD5"
 				missileSpeed=	"40"
 				hitPoints=		"10"
 				maneuverability="2"
@@ -2989,9 +2989,9 @@
 			name=				"KM550 Broadsword missile"
 			attributes=			"commonwealth, consumable, military, missile, NAMI, NAMILauncher"
 			  
-			level=				"5"
+			level=				"4"
 			frequency=			"uncommon"
-			numberAppearing=	"1d6"
+			numberAppearing=	"2d12"
 
 			value=				"50"
 			mass=				"40"
@@ -3004,7 +3004,7 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"blast:16d6; momentum4; WMD6"
+				damage=			"blast:10d6; momentum4; WMD6"
 				missileSpeed=	"40"
 				hitPoints=		"15"
 				maneuverability="2"
@@ -3236,7 +3236,7 @@
 					count=			"5d6"
 					type=			"missile"
 					lifetime=		"12"
-					damage=			"kinetic:2d8; WMD1"
+					damage=			"blast:2d8; WMD1"
 					missileSpeed=	"40-60"
 							>
 				<Effect>
@@ -3401,10 +3401,10 @@
 			frequency=			"uncommon"
 			numberAppearing=	"1d12"
 
-			value=				"250"
-			mass=				"120"
+			value=				"120"
+			mass=				"30"
 			  
-			description=		"This heavy MAG grenade packs 100kg of hexagene\x97enough to blast through the heavy armor of fortresses and military installations."
+			description=		"This heavy MAG grenade packs 25 kilos of hexagene\x97enough to blast through the heavy armor of fortresses and military installations."
 			>
 
 		<Image imageID="&rsItemsRasiermesser2;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -3446,7 +3446,7 @@
 			frequency=			"uncommon"
 			numberAppearing=	"1d12"
 
-			value=				"270"
+			value=				"220"
 			mass=				"30"
 			  
 			description=		"The only military variant of the popular MAG series is this thermonuclear and radiological variant."
@@ -3636,8 +3636,8 @@
 			frequency=			"rare"
 			numberAppearing=	"8d20"
 
-			value=				"150"
-			mass=				"35"
+			value=				"90"
+			mass=				"30"
 			  
 			description=		"The rare and powerful Black Strelka releases a dozen thermonuclear submunitions. It is compatible with the Makayev launcher."
 			>
@@ -4056,7 +4056,7 @@
 					count=				"12"
 					type=				"missile"
 
-					damage=				"thermo:12d12; momentum3; WMD3"
+					damage=				"thermo:6d12; momentum3; WMD3"
 					missileSpeed=		"50"
 					lifetime=			"120"
 
@@ -4231,7 +4231,7 @@
 			frequency=			"common"
 			numberAppearing=	"10d40"
 
-			value=				"24"
+			value=				"20"
 			mass=				"10"
 			  
 			description=		"This shell cartridge is used by the Akan 30 cannon."
