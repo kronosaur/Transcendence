@@ -306,6 +306,17 @@
 								)
 							)
 						)
+					(itemsToRemove
+						(filter (objGetItems shipObj "d~wsrI") theItemToRemove
+							(block (
+								(removeStatus (objGetItemProperty dockObj theItemToRemove 'removeItemStatus))
+								)
+								(and (@ removeStatus 'canRemove)
+									(not (@ removeStatus 'upgradeInstallOnly))
+									)
+								)
+							)
+						)
 						
 					(maxLevel (map itemsForSale 'reduceMax theItemToBuy (itmGetLevel theItemToBuy)))
 					)
@@ -336,6 +347,15 @@
 								visible: True
 								enabled: True
 								desc: (scrTranslate gScreen "actionMiscDevices:defaultInstall" { items:itemsToInstall maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+								}
+								
+						;	If we can remove something for the player
+						
+						itemsToRemove
+							{
+								visible: True
+								enabled: True
+								desc: (scrTranslate gScreen "actionMiscDevices:defaultRemove" { items:itemsToRemove maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
 								}
 								
 						;	Otherwise, nothing
@@ -923,6 +943,17 @@
 								)
 							)
 						)
+					(itemsToRemove
+						(filter (objGetItems shipObj "wI") theItemToRemove
+							(block (
+								(removeStatus (objGetItemProperty dockObj theItemToRemove 'removeItemStatus))
+								)
+								(and (@ removeStatus 'canRemove)
+									(not (@ removeStatus 'upgradeInstallOnly))
+									)
+								)
+							)
+						)
 					(ammoWeapons (filter (objGetItems shipObj "wI") theItem
 						(itmGetProperty theItem 'ammoType)
 						))
@@ -978,6 +1009,15 @@
 								visible: True
 								enabled: True
 								desc: (scrTranslate gScreen "actionWeapons:defaultAmmo" { items:ammoForSale maxLevel:(map ammoForSale 'reduceMax theItem (itmGetLevel theItem)) })
+								}
+								
+						;	If we can remove items
+						
+						itemsToRemove
+							{
+								visible: True
+								enabled: True
+								desc: (scrTranslate gScreen "actionWeapons:defaultRemove" { items:itemsToRemove maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
 								}
 								
 						;	No upgrades for player

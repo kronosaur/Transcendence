@@ -1045,6 +1045,11 @@
 					"We install miscellaneous devices up to level " (@ gData 'maxLevel) "."
 					)
 			</Text>
+			<Text id="actionMiscDevices:defaultRemove">
+				(cat
+					"We install miscellaneous devices up to level " (@ gData 'maxLevel) "."
+					)
+			</Text>
 			<Text id="actionMiscDevices:defaultUpgrade">
 				(switch
 					;	If we only sell one item, say so
@@ -1129,6 +1134,11 @@
 					)
 			</Text>
 			<Text id="actionWeapons:defaultInstall">
+				(cat
+					"We install weapons up to level " (@ gData 'maxLevel) "."
+					)
+			</Text>
+			<Text id="actionWeapons:defaultRemove">
 				(cat
 					"We install weapons up to level " (@ gData 'maxLevel) "."
 					)
