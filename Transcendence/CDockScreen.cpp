@@ -1036,10 +1036,21 @@ void CDockScreen::InitDisplayControlRect (CXMLElement *pDesc, const RECT &rcFram
 	{
 	RECT rcRect;
 
-	rcRect.left = pDesc->GetAttributeInteger(LEFT_ATTRIB);
-	rcRect.top = pDesc->GetAttributeInteger(TOP_ATTRIB);
-	rcRect.right = pDesc->GetAttributeInteger(RIGHT_ATTRIB);
-	rcRect.bottom = pDesc->GetAttributeInteger(BOTTOM_ATTRIB);
+	bool bValidLeft = pDesc->FindAttributeInteger(LEFT_ATTRIB, (int *)&rcRect.left);
+	if (!bValidLeft)
+		rcRect.left = 0;
+
+	bool bValidTop = pDesc->FindAttributeInteger(TOP_ATTRIB, (int *)&rcRect.top);
+	if (!bValidTop)
+		rcRect.top = 0;
+
+	bool bValidRight = pDesc->FindAttributeInteger(RIGHT_ATTRIB, (int *)&rcRect.right);
+	if (!bValidRight)
+		rcRect.right = 0;
+
+	bool bValidBottom = pDesc->FindAttributeInteger(BOTTOM_ATTRIB, (int *)&rcRect.bottom);
+	if (!bValidBottom)
+		rcRect.bottom = 0;
 
 	int xCenter;
 	bool bXCenter = pDesc->FindAttributeInteger(CENTER_ATTRIB, &xCenter);
@@ -1047,10 +1058,10 @@ void CDockScreen::InitDisplayControlRect (CXMLElement *pDesc, const RECT &rcFram
 	int yCenter;
 	bool bYCenter = pDesc->FindAttributeInteger(VCENTER_ATTRIB, &yCenter);
 
-	if (rcRect.right <= 0)
+	if (bValidRight && rcRect.right <= 0)
 		rcRect.right = RectWidth(rcFrame) + rcRect.right;
 
-	if (rcRect.bottom <= 0)
+	if (bValidBottom && rcRect.bottom <= 0)
 		rcRect.bottom = RectHeight(rcFrame) + rcRect.bottom;
 
 	int cxWidth = pDesc->GetAttributeInteger(WIDTH_ATTRIB);
@@ -1061,9 +1072,9 @@ void CDockScreen::InitDisplayControlRect (CXMLElement *pDesc, const RECT &rcFram
 			rcRect.left = xCenter + ((RectWidth(rcFrame) - cxWidth) / 2);
 			rcRect.right = rcRect.left + cxWidth;
 			}
-		else if (rcRect.right == 0)
+		else if (!bValidRight)
 			rcRect.right = rcRect.left + cxWidth;
-		else if (rcRect.left == 0)
+		else if (!bValidLeft)
 			rcRect.left = rcRect.right - cxWidth;
 		}
 	else
@@ -1080,9 +1091,9 @@ void CDockScreen::InitDisplayControlRect (CXMLElement *pDesc, const RECT &rcFram
 			rcRect.top = yCenter + ((RectHeight(rcFrame) - cyHeight) / 2);
 			rcRect.bottom = rcRect.top + cyHeight;
 			}
-		else if (rcRect.bottom == 0)
+		else if (!bValidBottom)
 			rcRect.bottom = rcRect.top + cyHeight;
-		else if (rcRect.top == 0)
+		else if (!bValidTop)
 			rcRect.top = rcRect.bottom - cyHeight;
 		}
 	else
