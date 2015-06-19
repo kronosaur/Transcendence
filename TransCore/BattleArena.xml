@@ -54,6 +54,7 @@
 						'playerLeft				= Player left arena
 						'playerKilled			= Player killed in arena
 						'waitingForMatchEnd		= Player was killed and melee is not done yet
+						'draw					= Battle is a draw
 
 	OpponentCount:	Number of opponents left
 	Opponent{n}:	Opponent 0-max
@@ -75,6 +76,7 @@
 	missileRep:		Current rep gained by firing missiles
 	explosionRep:	Current rep gained by explosions
 	fightTime:		Increment by 1 every 10 ticks
+	drawAllowed:	If True, player is allowed to call a draw
 	opponentArmor:	Lowest level that opponent's armor reached so far
 	timeTo50:		The fightTime at which the opponent's armor was 50 or below
 	timeTo25:		The fightTime at which the opponent's armor was 25 or below
@@ -274,7 +276,16 @@
 							(and (geq fightTime 120) (eq (modulo fightTime 30) 0)
 									(geq (objGetData gSource "lowestShields") 80)
 									(geq opponentArmor 90))
-								(plyMessage gPlayer "The crowd is bored")
+								(block Nil
+									(plyMessage gPlayer "The crowd is bored")
+									(objSetData gSource 'drawAllowed True)
+									)
+									
+							(and (geq fightTime 360) (eq (modulo fightTime 30) 0))
+								(block Nil
+									(plyMessage gPlayer "The crowd is bored")
+									(objSetData gSource 'drawAllowed True)
+									)
 							)
 
 						; Keep track of the lowest shield level reached (for the player's shields)
@@ -620,7 +631,7 @@
 						(block (theWeapon theLevel)
 							(setq theWeapon (itmCreate aWeaponUNID 1))
 							(setq theLevel (itmGetLevel theWeapon))
-							(if (itmMatches theWeapon "m &gt;$10")
+							(if (itmMatches theWeapon "m &gt;=$5")
 								(objIncData gSource "missileRep" (multiply theLevel (subtract theLevel 1)))
 								)
 							)
@@ -651,6 +662,12 @@
 
 							(not status)
 								"Default"
+
+							(and (eq status 'inProgress)
+									(objGetData gSource 'drawAllowed)
+									(not (objGetData gSource 'finalChallenge))
+									)
+								"CheckDraw"
 
 							(eq status 'inProgress)
 								"StillFighting"
@@ -845,6 +862,7 @@
 									; Done
 									(bamDoorsClose gSource)
 									(objRegisterForEvents gSource gPlayerShip)
+									(objSetData gSource "drawAllowed" Nil)
 									(objSetData gSource "Status" 'inProgress)
 
 									(scrExitDock gScreen)
@@ -1146,6 +1164,7 @@
 									(objRegisterForEvents gSource theShip)
 
 									; Set the reward
+									(objSetData gSource "finalChallenge" Nil)
 									(objSetData gSource "opponentSkill" (objGetData theShip "arenaSkill"))
 									(objSetData gSource "repGain" (objGetData theShip "arenaRepBonus"))
 									(objSetData gSource "missileRep" 0)
@@ -1155,6 +1174,7 @@
 									(objSetData gSource "lowestShields" (if (objGetItems gPlayerShip "sI") 100 0))
 									(objSetData gSource "lowestArmor" (subtract 100 (objGetVisibleDamage gPlayerShip)))
 									(objSetData gSource "fightTime" 0)
+									(objSetData gSource "drawAllowed" Nil)
 									(objSetData gSource "timeTo50" 1000)
 									(objSetData gSource "timeTo25" 1000)
 									(objSetData gSource "timeTo10" 1000)
@@ -1299,6 +1319,18 @@
 							</Action>
 						</Actions>
 					</GladiatorWinner>
+					
+					<GladiatorDraw>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descGladiatorDraw)
+						</OnPaneInit>
+					
+						<Actions>
+							<Action id="actionContinue" default="1" cancel="1">
+								(scrExitScreen gScreen)
+							</Action>
+						</Actions>
+					</GladiatorDraw>
 
 					<GladiatorLoser>
 						<OnPaneInit>
@@ -1559,6 +1591,8 @@
 							<Action name="Fight!" default="1" key="F">
 								(block (theShip)
 									(setq theShip (sysCreateShip &scTheSlicerManticore; (objGetPos gSource) &svGladiator;))
+									(objSetObjRefData gSource "Opponent1" theShip)
+									(shpSetAISetting theShip 'ignoreShieldsDown True)
 
 									; Position the opponent at the right spot
 									(objMoveTo theShip (sysVectorPolarOffset gSource (random 204 336) 45))
@@ -1571,6 +1605,7 @@
 									(objRegisterForEvents gSource theShip)
 
 									; Set the reward
+									(objSetData gSource "finalChallenge" True)
 									(objSetData gSource "prizeGain" 5000)
 									(objSetData gSource "repGain" 500)
 									(objSetData gSource "missileRep" 0)
@@ -1580,6 +1615,7 @@
 									(objSetData gSource "lowestShields" (if (objGetItems gPlayerShip "sI") 100 0))
 									(objSetData gSource "lowestArmor" (subtract 100 (objGetVisibleDamage gPlayerShip)))
 									(objSetData gSource "fightTime" 0)
+									(objSetData gSource "drawAllowed" Nil)
 									(objSetData gSource "timeTo50" 1000)
 									(objSetData gSource "timeTo25" 1000)
 									(objSetData gSource "timeTo10" 1000)
@@ -1694,7 +1730,7 @@
 					</Loser>
 
 					<FirstFight
-							desc=	"&quot;Welcome, citizen! You are about to join an elite group of men and women who have conquered their fears and proven their courage and skills in the ultimate test&#x97;mortal combat. All that remains is for you to sign this minor release indemnifying the Maximus Corporation against any liability in the event of harm, death, etc.&quot;">
+							desc=	"&quot;Welcome, citizen! You are about to join an elite group of men and women who have conquered their fears and proven their courage and skills in the ultimate test&#x97;mortal combat.\n\n&quot;All that remains is for you to sign this minor release indemnifying the Maximus Corporation against any liability in the event of harm, death, etc.&quot;">
 
 						<Actions>
 							<Action name="Sign" key="S">
@@ -1725,6 +1761,80 @@
 						</Actions>
 
 					</StillFighting>
+					
+					<CheckDraw>
+						<OnPaneInit>
+							(block (
+								(opponentObj (objGetObjRefData gSource "Opponent1"))
+								)
+								
+								;	Enemy stops attacking
+								
+								(shpCancelOrders opponentObj)
+								(shpOrder opponentObj 'wait)
+								
+								;	Description
+								
+								(scrSetDescTranslate gScreen 'descDrawOrNot)
+								)
+						</OnPaneInit>
+						
+						<Actions>
+							<Action id="actionDrawYes" default="1">
+								(block (
+									(opponentObj (objGetObjRefData gSource "Opponent1"))
+									)
+									
+									;	Remove the ship from the gladiator list
+									
+									(objSetData gSource "gladiatorList"
+										(filter (objGetData gSource "gladiatorList") theID (not (eq theID (objGetID opponentObj))))
+										)
+										
+									;	The match is over
+									
+									(if (not (objGetData gSource 'finalChallenge))
+										(objIncData gSource "matchCount" 1)
+										)
+										
+									(bamDoorsOpen gSource)
+									(objUnregisterForSystemEvents gSource)
+									(sysCancelTimerEvent gSource "OnFightCheck")
+									
+									;	Opponent done
+									
+									(shpCancelOrders opponentObj)
+									(objSuspend opponentObj)
+									
+									;	Set status
+									
+									(objSetData gSource "Status" Nil)
+									(objSetData gSource "OpponentCount" Nil)
+									
+									;	Katami debrief
+									
+									(scrShowPane gScreen 'GladiatorDraw)
+									)
+							</Action>
+							
+							<Action id="actionDrawNo" cancel="1">
+								(block (
+									(opponentObj (objGetObjRefData gSource "Opponent1"))
+									)
+									
+									;	Attack continues
+									
+									(shpCancelOrders opponentObj)
+									(shpOrder opponentObj 'attack gPlayerShip)
+									(shpOrder opponentObj 'dock gSource)
+									
+									;	Done
+									
+									(scrExitScreen gScreen)
+									)
+							</Action>
+						</Actions>
+					</CheckDraw>
 
 					<PlayerLeft
 							desc=	"&quot;You're banned from the games for leaving the arena in the middle of battle!&quot;">
@@ -1790,15 +1900,15 @@
 				</OnScreenInit>
 
 				<Display>
-					<Image left="12" right="-44" top="12" height="100" align="center" valign="center" transparent="true">
+					<Image left="12" right="-44" top="62" height="100" align="center" valign="center" transparent="true">
 						(shpGetImageDesc gSelect 0)
 					</Image>
 
-					<Text left="12" right="-44" top="100" height="40" align="center" font="SubTitle" color="255,210,152">
+					<Text left="12" right="-44" top="150" height="40" align="center" font="SubTitle" color="255,210,152">
 						(objGetName gSelect 0x00)
 					</Text>
 
-					<Text left="12" width="250" top="140" bottom="-140" align="right" font="MediumBold" color="200,206,199">
+					<Text left="12" width="250" top="190" bottom="-140" align="right" font="MediumBold" color="200,206,199">
 						(cat
 							"hull:\n"
 							"max speed:\n"
@@ -1808,7 +1918,7 @@
 							)
 					</Text>
 
-					<Text right="-44" width="250" top="140" bottom="-140" align="left" font="Medium" color="200,206,199">
+					<Text right="-44" width="250" top="190" bottom="-140" align="left" font="Medium" color="200,206,199">
 						(block (armorItem shieldItem allWeapons)
 							(setq armorItem (item (objGetItems gSelect "aI") 0))
 							(setq shieldItem (item (objGetItems gSelect "sI") 0))
@@ -1835,7 +1945,7 @@
 							)
 					</Text>
 
-					<Text left="52" right="-84" bottom="-12" height="120" align="center" font="Large" color="200,206,199">
+					<Text left="52" right="-84" bottom="-32" height="120" align="center" font="Large" color="200,206,199">
 						(block (desc skill repBonus thaName prize rnd1 rnd2 fromPlace)
 							(setq theName (objGetName gSelect 0x00))
 							(setq skill (objGetData gSelect "arenaSkill"))
@@ -1933,8 +2043,31 @@
 					</Default>
 				</Panes>
 			</ChooseOpponent>
-
 		</DockScreens>
+		
+		<Language>
+			<Text id="actionContinue">"[C]ontinue"</Text>
+			<Text id="actionDrawYes">"[A]ccept a Draw"</Text>
+			<Text id="actionDrawNo">"[C]ontinue Fighting"</Text>
+			
+			<Text id="descDrawOrNot">
+				(cat
+					"An Arena official looks at the battle metrics:\n\n"
+					
+					"\"The crowd is bored and you've officially passed the minimum battle time. "
+					"Do you want to declare a draw?\""
+					)
+			</Text>
+			<Text id="descGladiatorDraw">
+				(cat
+					"Mr. Katami looks disappointed:\n\n"
+					
+					"\"I knew that opponent would be hard to defeat! "
+					"But you survived and now we can learn from our mistake. Perhaps you need to "
+					"upgrade your weapons.\""
+					)
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Battle Arena Static Wall -->
@@ -3076,6 +3209,9 @@
 							)
 						)
 
+					; Ignore shields down (so we don't run into the Arena walls)
+					(shpSetAISetting theShip 'ignoreShieldsDown True)
+					
 					; Set the name
 					(objSetData theShip "arenaName" "Joe Gladiator")
 
