@@ -901,33 +901,33 @@
 									(eq rookiePoints 1)
 										(setq desc (cat
 											"\"Looks like you're better at running away than killing! "
-											"For killing a single opponent, we award you " prize " credits.\""
+											"For killing a single opponent, we award you " (fmtCurrency 'credit prize) ".\""
 											))
 
 									(and (leq rookiePoints 3) (leq rookieScore 8))
 										(setq desc (cat
 											"\"Hiding in a corner is not what the Arena is all about! "
-											"We've deposited " prize " credits in your account, but you'll have to do better "
+											"We've deposited " (fmtCurrency 'credit prize) " in your account, but you'll have to do better "
 											"if you want to be a gladiator."
 											))
 
 									(leq rookiePoints 8)
 										(setq desc (cat 
 											"\"You fight well for a rookie! You survived the melee and destroyed "
-											rookiePoints " opponents. We've deposited " prize
-											" credits in your account.\""
+											rookiePoints " opponents. We've deposited " (fmtCurrency 'credit prize)
+											" in your account.\""
 											))
 
 									(leq rookiePoints 11)
 										(setq desc (cat 
 											"\"Your skills are impressive! You will make a fine gladiator soon. "
-											"For killing " rookiePoints " opponents we have deposited " prize
-											" credits in your account.\""
+											"For killing " rookiePoints " opponents we have deposited " (fmtCurrency 'credit prize)
+											" in your account.\""
 											))
 
 									(setq desc (cat 
 										"\"You are a killing machine! For slaughtering " rookiePoints
-										" opponents, we award you " prize " credits.\""
+										" opponents, we award you " (fmtCurrency 'credit prize) ".\""
 										))
 									)
 
@@ -1263,7 +1263,7 @@
 
 								(scrSetDesc gScreen (cat
 									desc
-									"\n\nWinning this match has earned you " (objGetData gSource "prizeGain") " credits."
+									"\n\nWinning this match has earned you " (fmtCurrency 'credit (objGetData gSource "prizeGain")) "."
 									))
 								)
 						</OnPaneInit>
@@ -1994,7 +1994,7 @@
 									(setq desc (cat desc " This is a well-matched opponent that will draw the crowd."))
 								)
 
-							(setq desc (cat desc " For defeating " theName " you will receive " prize " credits."))
+							(setq desc (cat desc " For defeating " theName " you will receive " (fmtCurrency 'credit prize) "."))
 							)
 					</Text>
 				</Display>
