@@ -385,6 +385,13 @@
 								visible: Nil
 								}
 								
+						(not (objGetProperty dockObj 'refuelMaxLevel))
+							{
+								visible: True
+								enabled: Nil
+								desc: (scrTranslate gScreen "actionRefuel:noRefuel")
+								}
+								
 						(not fuelToUse)
 							{
 								visible: True

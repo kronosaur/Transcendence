@@ -1686,6 +1686,9 @@
 					(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x02) ".")
 					)
 			</Text>
+			<Text id="actionRefuel:noRefuel">
+				"We do not sell fuel."
+			</Text>
 			<Text id="actionRefuel:noCompatibleFuel">
 				"We do not have fuel compatible with your ship's reactor."
 			</Text>
