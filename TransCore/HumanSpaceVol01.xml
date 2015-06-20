@@ -1600,6 +1600,7 @@
 	<!-- 0100-011F CHARON PIRATES AND MARAUDERS -->
 	
 	<!ENTITY rsTripoli					"0x00100100">
+	<!ENTITY evCharonRaiderBehavior		"0x00100101">
 	
 	<!-- 0120-013F SUNG SLAVERS -->
 	

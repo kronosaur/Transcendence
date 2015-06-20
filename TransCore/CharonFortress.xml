@@ -118,7 +118,7 @@
 						<Ship chance="40" count="1" class="&scViking;" orders="escort"/>
 					</Escorts>
 				</Ship>
-				<Ship chance="10" count="1"	class="&scCharonFrigateRaider;">
+				<Ship chance="10" count="1"	class="&scCharonFrigateRaider;" eventHandler="&evCharonRaiderBehavior;">
 					<OnCreate>(objFireEvent gSource "OrderAmbush")</OnCreate>
 				</Ship>
 			</Table>
