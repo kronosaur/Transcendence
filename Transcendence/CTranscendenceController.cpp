@@ -99,8 +99,6 @@
 #define CMD_SERVICE_DOWNLOADS_COMPLETE			CONSTLIT("serviceDownloadsComplete")
 #define CMD_SERVICE_DOWNLOADS_IN_PROGRESS		CONSTLIT("serviceDownloadsInProgress")
 #define CMD_SERVICE_ERROR						CONSTLIT("serviceError")
-#define CMD_SERVICE_EXTENSION_LOAD_BEGIN		CONSTLIT("serviceExtensionLoadBegin")
-#define CMD_SERVICE_EXTENSION_LOAD_END			CONSTLIT("serviceExtensionLoadEnd")
 #define CMD_SERVICE_EXTENSION_LOADED			CONSTLIT("serviceExtensionLoaded")
 #define CMD_SERVICE_FILE_DOWNLOADED				CONSTLIT("serviceFileDownloaded")
 #define CMD_SERVICE_HOUSEKEEPING				CONSTLIT("serviceHousekeeping")
@@ -1580,18 +1578,6 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 			m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service), 0);
 			}
-		}
-
-	//	Starting to load extension. We need to temporarily freeze the
-	//	intro pane because we don't want two threads to access CC simultaneously.
-
-	else if (strEquals(sCmd, CMD_SERVICE_EXTENSION_LOAD_BEGIN))
-		{
-		g_pTrans->m_bPaused = true;
-		}
-	else if (strEquals(sCmd, CMD_SERVICE_EXTENSION_LOAD_END))
-		{
-		g_pTrans->m_bPaused = false;
 		}
 
 	//	Extension finished loaded

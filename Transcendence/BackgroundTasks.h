@@ -65,20 +65,29 @@ class CLoadExtensionTask : public IHITask
 		//	IHITask virtuals
 		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult)
 			{
-			m_HI.HIPostCommand(CONSTLIT("serviceExtensionLoadBegin"), NULL);
+			//	Status
+
 			m_HI.HIPostCommand(CONSTLIT("serviceStatus"), new CString(strPatternSubst(CONSTLIT("Loading %s..."), pathGetFilename(m_Status.sFilespec))));
 
+			//	Load the extension, but lock out the UI thread so that we don't
+			//	screw up the data structures.
+			//
+			//	NOTE: LoadNewExtension is protected by try/catch, so it will always return 
+			//	correctly.
+
+			m_HI.GetUISem().Lock();
 			ALERROR error = g_pUniverse->LoadNewExtension(m_Status.sFilespec, m_Status.FileDigest, retsResult);
+			m_HI.GetUISem().Unlock();
+
 			if (error)
 				{
 				m_HI.HIPostCommand(CONSTLIT("serviceError"), new CString(*retsResult));
-				m_HI.HIPostCommand(CONSTLIT("serviceExtensionLoadEnd"), NULL);
 				return ERR_FAIL;
 				}
 
 			m_HI.HIPostCommand(CONSTLIT("serviceStatus"), NULL);
 			m_HI.HIPostCommand(CONSTLIT("serviceExtensionLoaded"), NULL);
-			m_HI.HIPostCommand(CONSTLIT("serviceExtensionLoadEnd"), NULL);
+
 			return NOERROR;
 			}
 
