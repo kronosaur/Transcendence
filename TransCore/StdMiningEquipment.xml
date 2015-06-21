@@ -147,7 +147,7 @@
 			<OnEffect>
 				(sysCreateWeaponFire 
 					&vtSeismicScannerPower; 
-					(@ gData 'sourceObj)
+					(list (@ gData 'sourceObj) 'explosion Nil "seismic scanner pod" 0x00)
 					(objGetPos (@ gData 'podObj))
 					0
 					0
@@ -223,7 +223,7 @@
 			<OnEffect>
 				(sysCreateWeaponFire 
 					&vtClassAExcavationPower; 
-					(@ gData 'sourceObj)
+					(list (@ gData 'sourceObj) 'explosion Nil "class A excavation pod" 0x00)
 					(objGetPos (@ gData 'podObj))
 					0
 					0
@@ -306,7 +306,7 @@
 			<OnEffect>
 				(sysCreateWeaponFire 
 					&vtClassBExcavationPower; 
-					(@ gData 'sourceObj)
+					(list (@ gData 'sourceObj) 'explosion Nil "class B excavation pod" 0x00)
 					(objGetPos (@ gData 'podObj))
 					0
 					0
@@ -390,7 +390,7 @@
 			<OnEffect>
 				(sysCreateWeaponFire 
 					&vtAdvancedScannerPower; 
-					(@ gData 'sourceObj)
+					(list (@ gData 'sourceObj) 'explosion Nil "advanced scanner pod" 0x00)
 					(objGetPos (@ gData 'podObj))
 					0
 					0
@@ -509,7 +509,7 @@
 			<OnEffect>
 				(sysCreateWeaponFire 
 					&vtClassCExcavationPower; 
-					(@ gData 'sourceObj)
+					(list (@ gData 'sourceObj) 'explosion Nil "class C excavation pod" 0x00)
 					(objGetPos (@ gData 'podObj))
 					0
 					0
