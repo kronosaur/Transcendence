@@ -538,6 +538,8 @@ void CTranscendenceWnd::PaintLRS (void)
 //	Paint the long-range scanner
 
 	{
+	DEBUG_TRY
+
 	//	Update the LRS every 10 ticks
 
 	if ((m_iTick % LRS_UPDATE_DELAY) == 0)
@@ -604,6 +606,8 @@ void CTranscendenceWnd::PaintLRS (void)
 			m_LRS,
 			m_rcLRS.left,
 			m_rcLRS.top);
+
+	DEBUG_CATCH
 	}
 
 void CTranscendenceWnd::PaintMainScreenBorder (void)

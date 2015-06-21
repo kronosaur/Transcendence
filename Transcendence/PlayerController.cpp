@@ -1748,6 +1748,8 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 //	This is called every tick after all other objects have been updated.
 
 	{
+	DEBUG_TRY
+
 	//	Remember the AutoTarget. NOTE: We need to check again to see if the
 	//	target is destroyed because it could have gotten destroyed after it
 	//	was picked.
@@ -1858,6 +1860,8 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 
 		m_bSignalDock = false;
 		}
+
+	DEBUG_CATCH
 	}
 
 void CPlayerShipController::OnWeaponStatusChanged (void)

@@ -507,7 +507,7 @@
 		</Panes>
 	</DockScreen>
 
-	<DockScreen UNID="&dsUseDataRom;"
+	<DockScreen UNID="&dsUseDataROM;"
 			name=				"Ship's Interior"
 			backgroundID=		"none"
 			>

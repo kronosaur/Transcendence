@@ -161,7 +161,7 @@
 				<Item	chance="25"	count="2d6" item="&itPteracniumFuelRod;"/>
 				<Item	chance="30"	count="4d8" item="&itS3Missile;"/>
 				<Item	chance="15"	count="2d8" item="&itP120HexphaseArmor;"/>
-				<Item	chance="10"	count="1" item="&itTev9Blaster;"/>
+				<Item	chance="10"	count="1" item="&itTeV9Blaster;"/>
 				<Lookup chance="10" count="1" table="&trConsumables8;"/>
 				<Lookup chance="5"	count="1" table="&trMinorItem8;"/>
 				<Lookup chance="5"	count="1" table="&trMajorItem8;"/>
