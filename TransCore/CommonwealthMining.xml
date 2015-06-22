@@ -242,6 +242,8 @@
 			<ReplaceArmor	criteria="a L:1-5;" priceAdj="100"/>
 			<InstallDevice	criteria="d +miningEquipment; -Illegal; L:1-6;" priceAdj="50"/>
 			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
+			
+			<InstallDevice	criteria="d L:1-6;" priceAdj="unavailable"	messageID="descNoInstall"/>
 		</Trade>
 
 		<Ships>
@@ -1000,6 +1002,18 @@
 					"Rumors fly about vast ore deposits out among the asteroid fields, "
 					"but no one has yet found any of them."
 					)
+			</Text>
+			<Text id="descNoInstall">
+				(cat
+					"We only install mining equipment. "
+					"We cannot install " (itmGetName (@ gData 'item) 0x04) " on your ship."
+					)
+			</Text>
+			<Text id="dockServices:installAbility">
+				(cat "We install mining equipment up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
+			</Text>
+			<Text id="dockServices:weaponsAbility">
+				(cat "We sell mining equipment up to tech level " (@ gData 'maxLevel) ".")
 			</Text>
 			<Text id="Rumors">
 				(random (list

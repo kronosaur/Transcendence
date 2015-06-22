@@ -1006,7 +1006,9 @@
 							{
 								visible: True
 								enabled: True
-								desc: (scrTranslate gScreen "actionWeapons:defaultInstall" { items:itemsToInstall maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+								desc: (or (objTranslate dockObj "dockServices:installAbility" { items:itemsToInstall maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+										(scrTranslate gScreen "actionWeapons:defaultInstall" { items:itemsToInstall maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+										)
 								}
 								
 						;	If we can sell ammo
@@ -1024,7 +1026,9 @@
 							{
 								visible: True
 								enabled: True
-								desc: (scrTranslate gScreen "actionWeapons:defaultRemove" { items:itemsToRemove maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+								desc: (or (objTranslate dockObj "dockServices:installAbility" { items:itemsToRemove maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+										(scrTranslate gScreen "actionWeapons:defaultRemove" { items:itemsToRemove maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+										)
 								}
 								
 						;	No upgrades for player
