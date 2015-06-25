@@ -123,6 +123,7 @@
 					;	ton of ore of a given level.
 					
 					(oreVolumeTable (list
+						0
 						1   1   2   2   3
 						4   5   7   9   11
 						15  19  25  33  42
