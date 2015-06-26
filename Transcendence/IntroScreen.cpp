@@ -2170,38 +2170,9 @@ void CTranscendenceWnd::SetAccountControls (const CMultiverseModel &Multiverse)
 	//	Get the account state
 
 	CString sUsername;
-	CMultiverseModel::EOnlineStates iState = Multiverse.GetOnlineState(&sUsername);
-
 	CString sStatus;
-	CG32bitPixel rgbUsernameColor;
-	switch (iState)
-		{
-		case CMultiverseModel::stateDisabled:
-			sUsername = CONSTLIT("Offline");
-			sStatus = CONSTLIT("Multiverse disabled");
-			rgbUsernameColor = VI.GetColor(colorTextDialogLabel);
-			break;
-
-		case CMultiverseModel::stateNoUser:
-			sUsername = CONSTLIT("Offline");
-			sStatus = CONSTLIT("Click to register a new account");
-			rgbUsernameColor = VI.GetColor(colorTextDialogLabel);
-			break;
-
-		case CMultiverseModel::stateOffline:
-			sUsername = CONSTLIT("Offline");
-			sStatus = CONSTLIT("Click to sign in");
-			rgbUsernameColor = VI.GetColor(colorTextDialogLabel);
-			break;
-
-		case CMultiverseModel::stateOnline:
-			sStatus = CONSTLIT("Signed in to the Multiverse");
-			rgbUsernameColor = VI.GetColor(colorTextDialogInput);
-			break;
-
-		default:
-			ASSERT(false);
-		}
+	CMultiverseModel::EOnlineStates iState = Multiverse.GetOnlineState(&sUsername, &sStatus);
+	CG32bitPixel rgbUsernameColor = VI.GetColor(colorTextDialogLabel);
 
 	//	Metrics
 
@@ -2283,6 +2254,7 @@ void CTranscendenceWnd::SetAccountControls (const CMultiverseModel &Multiverse)
 
 	//	If the user is signed in, add buttons to edit account and sign out.
 
+#ifndef STEAM_BUILD
 	if (iState == CMultiverseModel::stateOnline)
 		{
 		int x = ICON_WIDTH + PADDING_LEFT;
@@ -2321,6 +2293,7 @@ void CTranscendenceWnd::SetAccountControls (const CMultiverseModel &Multiverse)
 
 		x += cxLink;
 		}
+#endif
 
 	//	Add it to the existing sequencer
 
