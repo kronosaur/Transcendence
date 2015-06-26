@@ -145,7 +145,11 @@ ALERROR CModExchangeSession::OnCommand (const CString &sCmd, void *pData)
 	if (strEquals(sCmd, CMD_CLOSE_SESSION))
 		CmdDone();
 	else if (strEquals(sCmd, CMD_OK_SESSION))
+#ifdef STEAM_BUILD
+		CmdDone();
+#else
 		sysOpenURL(URL_MULTIVERSE_CATALOG);
+#endif
 	else if (strEquals(sCmd, CMD_REFRESH))
 		CmdRefresh();
 	else if (strEquals(sCmd, CMD_REFRESH_COMPLETE))
@@ -181,12 +185,20 @@ ALERROR CModExchangeSession::OnInit (CString *retsError)
 
 	CUIHelper Helper(m_HI);
 	TArray<CUIHelper::SMenuEntry> Menu;
+	DWORD dwOptions = 0;
+
+#ifdef STEAM_BUILD
+	dwOptions = CUIHelper::OPTION_SESSION_OK_BUTTON | CUIHelper::OPTION_SESSION_NO_CANCEL_BUTTON;
+#else
 	CUIHelper::SMenuEntry *pEntry = Menu.Insert();
 	pEntry->sCommand = CMD_REFRESH;
 	pEntry->sLabel = CONSTLIT("Refresh");
 
+	dwOptions = CUIHelper::OPTION_SESSION_ADD_EXTENSION_BUTTON;
+#endif
+
 	IAnimatron *pTitle;
-	Helper.CreateSessionTitle(this, m_Service, CONSTLIT("Mod Collection"), &Menu, CUIHelper::OPTION_SESSION_ADD_EXTENSION_BUTTON, &pTitle);
+	Helper.CreateSessionTitle(this, m_Service, CONSTLIT("Mod Collection"), &Menu, dwOptions, &pTitle);
 	StartPerformance(pTitle, ID_CTRL_TITLE, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
 
 	//	Create a wait animation
