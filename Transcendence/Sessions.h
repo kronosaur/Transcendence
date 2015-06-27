@@ -179,40 +179,6 @@ class CGameSession : public IHISession
 		RECT m_rcScreen;					//	RECT of main screen within window.
 	};
 
-class CIntroSession : public IHISession
-	{
-	public:
-		CIntroSession (CHumanInterface &HI, CTranscendenceWnd::IntroState iInitialState) : IHISession(HI),
-				m_iInitialState(iInitialState)
-			{ }
-
-		//	IHISession virtuals
-		virtual CReanimator &GetReanimator (void) { return g_pTrans->GetReanimator(); }
-		virtual void OnAnimate (CG32bitImage &Screen, bool bTopMost);
-		virtual void OnChar (char chChar, DWORD dwKeyData) { g_pTrans->WMChar(chChar, dwKeyData); }
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyDown(iVirtKey, dwKeyData); }
-		virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyUp(iVirtKey, dwKeyData); }
-		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) { g_pTrans->WMLButtonDown(x, y, dwFlags); }
-		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonUp(x, y, dwFlags); }
-		virtual void OnMouseMove (int x, int y, DWORD dwFlags) { g_pTrans->WMMouseMove(x, y, dwFlags); }
-		virtual void OnMove (int x, int y) { g_pTrans->WMMove(x, y); }
-		virtual void OnReportHardCrash (CString *retsMessage) { *retsMessage = g_pTrans->GetCrashInfo(); }
-		virtual void OnSize (int cxWidth, int cyHeight) { g_pTrans->WMSize(cxWidth, cyHeight, 0); }
-
-	private:
-		void CreateSoundtrackTitleAnimation (CSoundType *pTrack, IAnimatron **retpAni);
-		void StartSoundtrackTitleAnimation (CSoundType *pTrack);
-
-		CTranscendenceWnd::IntroState m_iInitialState;
-
-		RECT m_rcMain;						//	Center RECT
-		RECT m_rcTop;						//	Top area (sign in controls, etc.)
-		RECT m_rcBottom;					//	Bottom area (buttons)
-	};
-
 class CLoadingSession : public IHISession
 	{
 	public:
@@ -504,3 +470,6 @@ class CWaitSession : public IHISession
 		CString m_sTitle;
 	};
 
+//	More sessions
+
+#include "IntroSession.h"

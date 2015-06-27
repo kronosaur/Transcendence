@@ -135,236 +135,6 @@ const int NEWS_PANE_INNER_SPACING_Y =			8;
 #define STYLE_NORMAL							CONSTLIT("normal")
 #define STYLE_TEXT								CONSTLIT("text")
 
-void CTranscendenceWnd::AnimateIntro (bool bTopMost)
-
-//	AnimateIntro
-//
-//	Paint intro screen
-
-	{
-	CG32bitImage &TheScreen = g_pHI->GetScreen();
-	const CVisualPalette &VI = g_pHI->GetVisuals();
-	CG32bitPixel rgbBackgroundColor = VI.GetColor(colorAreaDeep);
-
-	DWORD dwStartTimer;
-	if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
-		dwStartTimer = ::GetTickCount();
-
-	//	Tell the universe to paint
-
-	g_pUniverse->PaintPOV(TheScreen, m_rcIntroMain, 0);
-
-	//	Paint displays
-
-	m_ButtonBarDisplay.Update();
-	m_ButtonBarDisplay.Paint(TheScreen);
-
-	//	Paint a frame around viewscreen
-
-	TheScreen.FillLine(m_rcIntroMain.left, m_rcIntroMain.top - 1, RectWidth(m_rcIntroMain), RGB_FRAME);
-	TheScreen.FillLine(m_rcIntroMain.left, m_rcIntroMain.bottom, RectWidth(m_rcIntroMain), RGB_FRAME);
-	TheScreen.Fill(0, 0, RectWidth(m_rcIntroMain), m_rcIntroMain.top - 1, rgbBackgroundColor);
-
-	//	Paint reanimator
-
-	m_Reanimator.PaintFrame(TheScreen);
-
-	//	Update context
-
-	SSystemUpdateCtx Ctx;
-	Ctx.bForceEventFiring = true;
-
-	//	Paint based on state
-
-	switch (m_iIntroState)
-		{
-		case isEnterShipClass:
-			{
-			int xMidCenter = m_rcIntroMain.left + RectWidth(m_rcIntroMain) / 2;
-			int yMidCenter = m_rcIntroMain.bottom - RectHeight(m_rcIntroMain) / 3;
-
-			int cyHeight;
-			int cxWidth = Max(300, m_Fonts.SubTitle.MeasureText(m_sCommand, &cyHeight));
-
-			CG32bitPixel rgbBorderColor = CG32bitPixel::Blend(CG32bitPixel(0, 0, 0), m_Fonts.rgbTitleColor, (BYTE)128);
-			CGDraw::RectOutlineDotted(TheScreen, 
-					xMidCenter - cxWidth / 2 - 2, 
-					yMidCenter - 2, 
-					cxWidth + 4, 
-					cyHeight + 4, 
-					rgbBorderColor);
-
-			m_Fonts.SubTitle.DrawText(TheScreen,
-					xMidCenter,
-					yMidCenter,
-					m_Fonts.rgbTitleColor,
-					m_sCommand,
-					CG16bitFont::AlignCenter);
-			break;
-			}
-		}
-
-	//	If we've got a dialog box up, paint it
-
-	if (m_bOverwriteGameDlg)
-		PaintOverwriteGameDlg();
-
-	//	Figure out how long it took to paint
-
-	if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
-		{
-		DWORD dwNow = ::GetTickCount();
-		m_iPaintTime[m_iFrameCount % FRAME_RATE_COUNT] = dwNow - dwStartTimer;
-		dwStartTimer = dwNow;
-		}
-
-	//	Debug information
-
-	if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
-		PaintFrameRate();
-
-#ifdef DEBUG
-	PaintDebugLines();
-#endif
-
-	//	Update the screen
-
-	if (bTopMost)
-		g_pHI->GetScreenMgr().Blt();
-
-	//	Figure out how long it took to blt
-
-	if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
-		{
-		DWORD dwNow = ::GetTickCount();
-		m_iBltTime[m_iFrameCount % FRAME_RATE_COUNT] = dwNow - dwStartTimer;
-		dwStartTimer = dwNow;
-		}
-
-	//	If the same ship has been here for a while, then create a new ship
-
-	if (m_iTick - m_iLastShipCreated > MAX_TIME_WITH_ONE_SHIP)
-		{
-		CShip *pShip = g_pUniverse->GetPOV()->AsShip();
-		if (pShip)
-			{
-			pShip->Destroy(removedFromSystem, CDamageSource());
-			CreateIntroShips(0, 0, pShip);
-			}
-		}
-
-	//	Update the universe
-
-	if (!m_bPaused)
-		{
-		g_pUniverse->Update(Ctx);
-		m_iTick++;
-		}
-
-	//	Slight HACK: If the current POV is not a ship, then create a new one
-
-	if (g_pUniverse->GetPOV()->GetCategory() != CSpaceObject::catShip)
-		CreateIntroShips();
-
-	//	Advance the intro animation
-
-	switch (m_iIntroState)
-		{
-		case isBlankThenRandom:
-			if (--m_iIntroCounter == 0)
-				{
-				int iRoll = mathRandom(1, 100);
-				if (iRoll <= 50)
-					SetIntroState(isCredits);
-				else
-					SetIntroState(isHighScores);
-				}
-			break;
-
-		case isCredits:
-			if (!m_Reanimator.IsPerformanceRunning(ID_CREDITS_PERFORMANCE))
-				SetIntroState(isShipStats);
-			break;
-
-		case isShipStats:
-			if (!m_Reanimator.IsPerformanceRunning(ID_SHIP_DESC_PERFORMANCE))
-				SetIntroState(isBlankThenRandom);
-			break;
-
-		case isNews:
-			if (!m_Reanimator.IsPerformanceRunning(ID_NEWS_PERFORMANCE))
-				SetIntroState(isShipStats);
-			break;
-
-		case isEndGame:
-			if (!m_Reanimator.IsPerformanceRunning(ID_END_GAME_PERFORMANCE))
-				SetIntroState(isHighScoresEndGame);
-			break;
-
-		case isHighScores:
-			if (!m_Reanimator.IsPerformanceRunning(ID_HIGH_SCORES_PERFORMANCE))
-				SetIntroState(isShipStats);
-			break;
-
-		case isHighScoresEndGame:
-			if (!m_Reanimator.IsPerformanceRunning(ID_HIGH_SCORES_PERFORMANCE))
-				SetIntroState(isCredits);
-			break;
-
-		case isOpeningTitles:
-			if (!m_Reanimator.IsPerformanceRunning(ID_TITLES_PERFORMANCE))
-				SetIntroState(isNews);
-			break;
-		}
-
-	//	Figure out how long it took to update
-
-	if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
-		{
-		DWORD dwNow = ::GetTickCount();
-		m_iUpdateTime[m_iFrameCount % FRAME_RATE_COUNT] = dwNow - dwStartTimer;
-		dwStartTimer = dwNow;
-		}
-	}
-
-void CTranscendenceWnd::CancelCurrentIntroState (void)
-
-//	CancelCurrentIntroState
-//
-//	Cancels the current animation state
-
-	{
-	switch (m_iIntroState)
-		{
-		case isCredits:
-		case isHighScores:
-		case isBlankThenRandom:
-		case isNews:
-			SetIntroState(isShipStats);
-			break;
-
-		case isEndGame:
-			SetIntroState(isHighScoresEndGame);
-			break;
-
-		case isEnterShipClass:
-			SetIntroState(isShipStats);
-			break;
-
-		case isHighScoresEndGame:
-			SetIntroState(isCredits);
-			break;
-
-		case isOpeningTitles:
-			SetIntroState(isShipStats);
-			break;
-
-		case isShipStats:
-			SetIntroState(isBlankThenRandom);
-			break;
-		}
-	}
-
 void CTranscendenceWnd::CreateCreditsAnimation (IAnimatron **retpAnimatron)
 
 //	CreateCreditsAnimation
@@ -560,130 +330,6 @@ void CTranscendenceWnd::CreateHighScoresAnimation (CHighScoreList *pHighScoreLis
 	//	Done
 
 	*retpAnimatron = pAni;
-	}
-
-void CTranscendenceWnd::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereign, CSpaceObject *pShipDestroyed)
-
-//	CreateIntroShips
-//
-//	Makes sure that there are enough ships and that everyone has a target
-
-	{
-	DEBUG_TRY
-
-	int i;
-	CSystem *pSystem = g_pUniverse->GetCurrentSystem();
-
-	//	Make sure each sovereign has a ship
-
-	CSovereign *pSovereign1 = g_pUniverse->FindSovereign(g_PlayerSovereignUNID);
-	CSovereign *pSovereign2 = g_pUniverse->FindSovereign(UNID_UNKNOWN_ENEMY);
-	CShip *pShip1 = NULL;
-	CShip *pShip2 = NULL;
-
-	//	Sovereign of POV
-
-	DWORD dwCurSovereign = (dwSovereign ? dwSovereign : g_pUniverse->GetPOV()->GetSovereign()->GetUNID());
-
-	//	Look for the surviving ships
-
-	for (i = 0; i < pSystem->GetObjectCount(); i++)
-		{
-		CSpaceObject *pObj = pSystem->GetObject(i);
-
-		if (pObj
-				&& pObj->GetCategory() == CSpaceObject::catShip
-				&& !pObj->IsDestroyed()
-				&& pObj != pShipDestroyed
-				&& !pObj->IsInactive()
-				&& !pObj->IsVirtual()
-				&& !pObj->GetData(CONSTLIT("IntroController")).IsBlank())
-			{
-			if (pObj->GetSovereign() == pSovereign1)
-				{
-				if (pShip1 == NULL)
-					pShip1 = pObj->AsShip();
-				}
-			else if (pObj->GetSovereign() == pSovereign2)
-				{
-				if (pShip2 == NULL)
-					pShip2 = pObj->AsShip();
-				}
-			}
-		}
-
-	ASSERT(pShip1 == NULL || !pShip1->IsDestroyed());
-	ASSERT(pShip2 == NULL || !pShip2->IsDestroyed());
-
-	//	Create ships if necessary
-
-	if (pShip1 == NULL || (dwNewShipClass && dwCurSovereign == g_PlayerSovereignUNID))
-		CreateRandomShip(pSystem, (dwCurSovereign == g_PlayerSovereignUNID ? dwNewShipClass : 0), pSovereign1, &pShip1);
-
-	if (pShip2 == NULL || (dwNewShipClass && dwCurSovereign == UNID_UNKNOWN_ENEMY))
-		CreateRandomShip(pSystem, (dwCurSovereign == UNID_UNKNOWN_ENEMY ? dwNewShipClass : 0), pSovereign2, &pShip2);
-
-	//	Make sure every ship has an order to attack someone
-
-	for (i = 0; i < pSystem->GetObjectCount(); i++)
-		{
-		CSpaceObject *pObj = pSystem->GetObject(i);
-
-		if (pObj
-				&& pObj->GetCategory() == CSpaceObject::catShip
-				&& !pObj->IsDestroyed()
-				&& !pObj->IsInactive()
-				&& !pObj->IsVirtual()
-				&& pObj != pShipDestroyed)
-			{
-			CShip *pShip = pObj->AsShip();
-			if (pShip)
-				{
-				IShipController *pController = pShip->GetController();
-
-				CSpaceObject *pTarget;
-				IShipController::OrderTypes iOrder = pController->GetCurrentOrderEx(&pTarget);
-				if ((pShipDestroyed && pTarget == pShipDestroyed) || iOrder == IShipController::orderNone)
-					{
-					pController->CancelAllOrders();
-					if (pShip->GetSovereign() == pSovereign1)
-						pController->AddOrder(IShipController::orderDestroyTarget, pShip2, IShipController::SData());
-					else
-						pController->AddOrder(IShipController::orderDestroyTarget, pShip1, IShipController::SData());
-					}
-				}
-			}
-		}
-
-	//	Chance the POV if necessary
-
-	if (g_pUniverse->GetPOV() == pShipDestroyed 
-			|| g_pUniverse->GetPOV()->IsDestroyed()
-			|| g_pUniverse->GetPOV()->AsShip() == NULL
-			|| dwNewShipClass != 0)
-		{
-		//	Pick a POV of the same sovereign
-
-		if (dwCurSovereign == g_PlayerSovereignUNID)
-			g_pUniverse->SetPOV(pShip1);
-		else
-			g_pUniverse->SetPOV(pShip2);
-
-#ifdef DEBUG_COMBAT
-		pShip2->SetSelection();
-#endif
-		OnIntroPOVSet(g_pUniverse->GetPOV());
-		}
-
-	//	Mark and sweep, so we don't run out of memory
-
-	g_pUniverse->ClearLibraryBitmapMarks();
-	g_pUniverse->MarkLibraryBitmaps();
-	g_pUniverse->SweepLibraryBitmaps();
-
-	m_iLastShipCreated = m_iTick;
-
-	DEBUG_CATCH
 	}
 
 void CTranscendenceWnd::CreateLongCreditsAnimation (int x, int y, int cyHeight, IAnimatron **retpAnimatron)
@@ -1535,7 +1181,7 @@ int CTranscendenceWnd::GetHighScoresPos (void)
 
 	{
 	int i;
-	CHighScoreList *pHighScoreList = GetHighScoreList();
+	CHighScoreList *pHighScoreList = GetHighScoreListOld();
 
 	IAnimatron *pAni = m_Reanimator.GetPerformance(m_dwHighScoresPerformance);
 	if (pAni == NULL)
@@ -1598,9 +1244,6 @@ void CTranscendenceWnd::OnDblClickIntro (int x, int y, DWORD dwFlags)
 //	Handle WM_LBUTTONDBLCLK
 
 	{
-	if (m_bOverwriteGameDlg)
-		return;
-
 	//	See if the animator will handle it
 
 	bool bCapture = false;
@@ -1615,395 +1258,6 @@ void CTranscendenceWnd::OnDblClickIntro (int x, int y, DWORD dwFlags)
 		return;
 	}
 
-void CTranscendenceWnd::OnCharIntro (char chChar, DWORD dwKeyData)
-
-//	OnCharIntro
-//
-//	Handle WM_CHAR
-
-	{
-	int i;
-
-	if (m_bOverwriteGameDlg)
-		NULL;
-
-	//	See if the animator will handle it
-
-	else if (m_Reanimator.HandleChar(chChar, dwKeyData))
-		NULL;
-
-	else if (m_ButtonBarDisplay.OnChar(chChar))
-		NULL;
-
-	else if (m_iIntroState == isEnterShipClass)
-		{
-		switch (chChar)
-			{
-			//	VK_BACKSPACE
-
-			case '\010':
-				if (!m_sCommand.IsBlank())
-					m_sCommand = strSubString(m_sCommand, 0, m_sCommand.GetLength() - 1);
-				break;
-
-			//	VK_RETURN
-
-			case '\015':
-				{
-				CShip *pShip = g_pUniverse->GetPOV()->AsShip();
-				DWORD dwSovereign = (pShip ? pShip->GetSovereign()->GetUNID() : 0);
-
-				//	Parse the string into a ship class
-
-				CShipClass *pClass = g_pUniverse->FindShipClassByName(m_sCommand);
-				if (pClass == NULL)
-					{
-					SetIntroState(isShipStats);
-					break;
-					}
-
-				//	Destroy and create
-
-				DestroyIntroShips();
-				CreateIntroShips(pClass->GetUNID(), dwSovereign);
-				CancelCurrentIntroState();
-				break;
-				}
-
-			//	VK_ESCAPE
-
-			case '\033':
-				CancelCurrentIntroState();
-				break;
-
-			default:
-				if (chChar >= ' ')
-					m_sCommand.Append(CString(&chChar, 1));
-				break;
-			}
-		}
-
-	else
-		{
-		switch (chChar)
-			{
-			case ' ':
-				CancelCurrentIntroState();
-				break;
-
-			case '!':
-				SetIntroState(isEnterShipClass);
-				break;
-
-			case 'C':
-			case 'c':
-				SetIntroState(isCredits);
-				break;
-
-			case 'D':
-			case 'd':
-				{
-				//	Get the UNID of the current ship
-
-				CShip *pShip = g_pUniverse->GetPOV()->AsShip();
-				if (pShip == NULL)
-					break;
-
-				//	Count the number of ships in the system
-
-				CSystem *pSystem = pShip->GetSystem();
-				int iCount = 0;
-				for (i = 0; i < pSystem->GetObjectCount(); i++)
-					{
-					CSpaceObject *pObj = pSystem->GetObject(i);
-					if (pObj 
-							&& pObj->GetCategory() == CSpaceObject::catShip
-							&& !pObj->IsVirtual()
-							&& !pObj->IsInactive())
-						iCount++;
-					}
-
-				//	If we already have too many, we don't do anything
-
-				if (iCount > MAX_INTRO_SHIPS)
-					break;
-
-				//	Create a duplicate
-
-				CreateIntroShips(pShip->GetClassUNID(), pShip->GetSovereign()->GetUNID());
-				break;
-				}
-
-			case 'H':
-			case 'h':
-				if (m_iIntroState == isHighScores)
-					SetIntroState(isBlank);
-				else
-					SetIntroState(isHighScores);
-				break;
-
-			case 'K':
-			case 'k':
-				DestroyIntroShips();
-				CreateIntroShips();
-				break;
-
-			case 'L':
-			case 'l':
-				DoCommand(CMD_CONTINUE_OLD_GAME);
-				break;
-
-			case 'N':
-			case 'n':
-				{
-				CShip *pShip = g_pUniverse->GetPOV()->AsShip();
-				if (pShip == NULL)
-					break;
-
-				//	Get the UNID of the next ship class in order
-
-				DWORD dwNewShipClass = 0;
-				if (chChar == 'n' || chChar == 'N')
-					{
-					DWORD dwClass = pShip->GetClassUNID();
-					int iIndex = -1;
-					for (i = 0; i < g_pUniverse->GetShipClassCount(); i++)
-						if (g_pUniverse->GetShipClass(i)->GetUNID() == dwClass)
-							{
-							iIndex = i;
-							break;
-							}
-
-					CShipClass *pShipClass;
-					do
-						{
-						if (iIndex == -1 || (iIndex + 1) == g_pUniverse->GetShipClassCount())
-							iIndex = 0;
-						else
-							iIndex++;
-
-						pShipClass = g_pUniverse->GetShipClass(iIndex);
-						}
-					while (pShipClass->IsVirtual());
-
-					//	Set the variable so that the next ship created will
-					//	have the given class
-
-					dwNewShipClass = pShipClass->GetUNID();
-					}
-
-				//	Destroy all ships of the current class
-
-				DestroyIntroShips();
-
-				//	Create a new ship
-
-				CreateIntroShips(dwNewShipClass, pShip->GetSovereign()->GetUNID());
-				break;
-				}
-
-			case 'O':
-			case 'o':
-				{
-				CSpaceObject *pPOV = g_pUniverse->GetPOV();
-				if (pPOV->GetCategory() != CSpaceObject::catShip)
-					break;
-
-				CSystem *pSystem = pPOV->GetSystem();
-				CSovereign *pCurSovereign = pPOV->GetSovereign();
-
-				//	Make a list of all opponents
-
-				TArray<CSpaceObject *> Opponents;
-				for (i = 0; i < pSystem->GetObjectCount(); i++)
-					{
-					CSpaceObject *pObj = pSystem->GetObject(i);
-					if (pObj 
-							&& pObj->GetCategory() == CSpaceObject::catShip
-							&& pObj->GetSovereign() != pCurSovereign
-							&& !pObj->IsInactive()
-							&& !pObj->IsVirtual())
-						Opponents.Insert(pObj);
-					}
-
-				//	Pick a random opponent and set the POV
-
-				if (Opponents.GetCount() > 0)
-					{
-					g_pUniverse->SetPOV(Opponents[mathRandom(0, Opponents.GetCount() - 1)]);
-					SetIntroState(isShipStats);
-					}
-
-				break;
-				}
-
-			case 'P':
-				{
-				CSpaceObject *pPOV = g_pUniverse->GetPOV();
-				if (pPOV->GetCategory() != CSpaceObject::catShip)
-					break;
-
-				CSystem *pSystem = pPOV->GetSystem();
-				CSovereign *pCurSovereign = pPOV->GetSovereign();
-
-				//	Find the next POV in the list
-
-				int iTotalCount = pSystem->GetObjectCount();
-				for (i = 0; i < iTotalCount; i++)
-					{
-					CSpaceObject *pObj = pSystem->GetObject((pPOV->GetIndex() + iTotalCount - (i + 1)) % iTotalCount);
-					if (pObj 
-							&& pObj->GetCategory() == CSpaceObject::catShip
-							&& !pObj->IsVirtual()
-							&& !pObj->IsInactive())
-						{
-						g_pUniverse->SetPOV(pObj);
-						SetIntroState(isShipStats);
-						break;
-						}
-					}
-
-				break;
-				}
-
-			case 'p':
-				{
-				CSpaceObject *pPOV = g_pUniverse->GetPOV();
-				if (pPOV->GetCategory() != CSpaceObject::catShip)
-					break;
-
-				CSystem *pSystem = pPOV->GetSystem();
-				CSovereign *pCurSovereign = pPOV->GetSovereign();
-
-				//	Find the next POV in the list
-
-				int iTotalCount = pSystem->GetObjectCount();
-				for (i = 0; i < iTotalCount; i++)
-					{
-					CSpaceObject *pObj = pSystem->GetObject((pPOV->GetIndex() + i + 1) % iTotalCount);
-					if (pObj 
-							&& pObj->GetCategory() == CSpaceObject::catShip
-							&& !pObj->IsVirtual()
-							&& !pObj->IsInactive())
-						{
-						g_pUniverse->SetPOV(pObj);
-						SetIntroState(isShipStats);
-						break;
-						}
-					}
-
-				break;
-				}
-
-			case 'Q':
-			case 'q':
-				DoCommand(CMD_QUIT_GAME);
-				break;
-
-			case 'S':
-			case 's':
-				if (m_iIntroState == isShipStats)
-					SetIntroState(isBlank);
-				else
-					SetIntroState(isShipStats);
-				break;
-
-			case 'V':
-			case 'v':
-				SetIntroState(isOpeningTitles);
-				break;
-			}
-		}
-	}
-
-void CTranscendenceWnd::OnIntroPOVSet (CSpaceObject *pObj)
-
-//	OnIntroPOVSet
-//
-//	POV has changed
-
-	{
-	switch (m_iIntroState)
-		{
-		case isBlank:
-		case isBlankThenRandom:
-//		case isEnterShipClass:
-		case isShipStats:
-			SetIntroState(isShipStats);
-			break;
-		}
-	}
-
-void CTranscendenceWnd::OnKeyDownIntro (int iVirtKey, DWORD dwKeyData)
-
-//	OnKeyDownIntro
-//
-//	Handle WM_KEYDOWN
-
-	{
-	if (m_bOverwriteGameDlg)
-		NULL;
-
-	else if (m_ButtonBarDisplay.OnKeyDown(iVirtKey))
-		NULL;
-
-	else if (m_iIntroState == isEnterShipClass)
-		NULL;
-
-	else if (m_Reanimator.IsPaused())
-		m_Reanimator.Resume();
-
-	else
-		{
-		switch (iVirtKey)
-			{
-			case VK_ESCAPE:
-				CancelCurrentIntroState();
-				break;
-
-			case VK_RETURN:
-				DoCommand(CMD_START_NEW_GAME);
-				break;
-
-			case VK_UP:
-				if (m_iIntroState == isHighScores || m_iIntroState == isHighScoresEndGame)
-					SetHighScoresPrev();
-				break;
-
-			case VK_DOWN:
-				if (m_iIntroState == isHighScores || m_iIntroState == isHighScoresEndGame)
-					SetHighScoresNext();
-				break;
-
-			case VK_PRIOR:
-				if (m_iIntroState == isHighScores || m_iIntroState == isHighScoresEndGame)
-					SetHighScoresPrev();
-				else
-					m_Reanimator.FFBurst(-32, 15);
-				break;
-
-			case VK_NEXT:
-				if (m_iIntroState == isHighScores || m_iIntroState == isHighScoresEndGame)
-					SetHighScoresNext();
-				else
-					m_Reanimator.FFBurst(32, 15);
-				break;
-
-			case VK_PAUSE:
-				m_Reanimator.Pause();
-				break;
-
-			case VK_F1:
-				g_pHI->HICommand(CONSTLIT("uiShowHelp"));
-				break;
-
-			case VK_F2:
-				g_pHI->HICommand(CONSTLIT("uiShowGameStats"));
-				break;
-			}
-		}
-	}
-
 void CTranscendenceWnd::OnLButtonDownIntro (int x, int y, DWORD dwFlags)
 
 //	OnLButtonDownIntro
@@ -2011,24 +1265,6 @@ void CTranscendenceWnd::OnLButtonDownIntro (int x, int y, DWORD dwFlags)
 //	Handle WM_LBUTTONDOWN
 
 	{
-	if (m_bOverwriteGameDlg)
-		{
-		POINT pt;
-		pt.x = x;
-		pt.y = y;
-
-		if (::PtInRect(&m_rcOverwriteGameOK, pt))
-			{
-			m_bSavedGame = false;
-			m_bOverwriteGameDlg = false;
-			DoCommand(CMD_START_NEW_GAME);
-			}
-		else if (::PtInRect(&m_rcOverwriteGameCancel, pt))
-			m_bOverwriteGameDlg = false;
-
-		return;
-		}
-
 	//	See if the animator will handle it
 
 	bool bCapture = false;
@@ -2053,9 +1289,6 @@ void CTranscendenceWnd::OnLButtonUpIntro (int x, int y, DWORD dwFlags)
 	if (::GetCapture() == g_pHI->GetHWND())
 		::ReleaseCapture();
 
-	if (m_bOverwriteGameDlg)
-		return;
-
 	//	See if the animator will handle it
 
 	if (m_Reanimator.HandleLButtonUp(x, y, dwFlags))
@@ -2069,9 +1302,6 @@ void CTranscendenceWnd::OnMouseMoveIntro (int x, int y, DWORD dwFlags)
 //	Handle WM_MOUSEMOVE
 
 	{
-	if (m_bOverwriteGameDlg)
-		return;
-
 	//	See if the animator will handle it
 
 	if (m_Reanimator.HandleMouseMove(x, y, dwFlags))
@@ -2103,56 +1333,6 @@ void CTranscendenceWnd::PaintDlgButton (const RECT &rcRect, const CString &sText
 			m_Fonts.MediumHeavyBold,
 			RGB_DIALOG_BUTTON_TEXT,
 			sText);
-	}
-
-void CTranscendenceWnd::PaintOverwriteGameDlg (void)
-
-//	PaintOverwriteGameDlg
-//
-//	Paint dialog box
-
-	{
-	CG32bitImage &TheScreen = g_pHI->GetScreen();
-
-	//	Fade the background
-
-	TheScreen.Fill(0, 0, TheScreen.GetWidth(), TheScreen.GetHeight(), CG32bitPixel(0, 0, 0, 128));
-
-	//	Paint the dialog box frame
-
-	TheScreen.Fill(m_rcOverwriteGameDlg.left, m_rcOverwriteGameDlg.top, DIALOG_WIDTH, DIALOG_HEIGHT, RGB_DIALOG_BACKGROUND);
-
-	//	Paint the text
-
-	int y = m_rcOverwriteGameDlg.top + DIALOG_SPACING_Y;
-	int cy;
-	int cx = m_Fonts.SubTitle.MeasureText(STR_OVERWRITE_GAME, &cy);
-	TheScreen.DrawText(m_rcOverwriteGameDlg.left + (DIALOG_WIDTH - cx) / 2,
-			y,
-			m_Fonts.SubTitle,
-			RGB_DIALOG_TEXT,
-			STR_OVERWRITE_GAME);
-	y += cy + DIALOG_SPACING_Y;
-
-	cx = m_Fonts.Medium.MeasureText(STR_TEXT1, &cy);
-	TheScreen.DrawText(m_rcOverwriteGameDlg.left + (DIALOG_WIDTH - cx) / 2,
-			y,
-			m_Fonts.Medium,
-			RGB_DIALOG_TEXT,
-			STR_TEXT1);
-	y += cy;
-
-	cx = m_Fonts.Medium.MeasureText(STR_TEXT2, &cy);
-	TheScreen.DrawText(m_rcOverwriteGameDlg.left + (DIALOG_WIDTH - cx) / 2,
-			y,
-			m_Fonts.Medium,
-			RGB_DIALOG_TEXT,
-			STR_TEXT2);
-
-	//	Paint the buttons
-
-	PaintDlgButton(m_rcOverwriteGameOK, STR_OVERWRITE);
-	PaintDlgButton(m_rcOverwriteGameCancel, STR_CANCEL);
 	}
 
 void CTranscendenceWnd::SetAccountControls (const CMultiverseModel &Multiverse)
@@ -2341,7 +1521,7 @@ void CTranscendenceWnd::SetHighScoresNext (void)
 //	Select next high score
 
 	{
-	CHighScoreList *pHighScoreList = GetHighScoreList();
+	CHighScoreList *pHighScoreList = GetHighScoreListOld();
 
 	if (m_iHighScoreSelection == -1)
 		{
@@ -2377,7 +1557,7 @@ void CTranscendenceWnd::SetHighScoresPos (int iPos)
 //	Animates to the given position
 
 	{
-	CHighScoreList *pHighScoreList = GetHighScoreList();
+	CHighScoreList *pHighScoreList = GetHighScoreListOld();
 
 	if (iPos < 0 || iPos >= pHighScoreList->GetCount())
 		return;
@@ -2468,118 +1648,6 @@ void CTranscendenceWnd::SetHighScoresScroll (void)
 	m_iHighScoreSelection = -1;
 	}
 
-void CTranscendenceWnd::SetIntroState (IntroState iState)
-
-//	SetIntroState
-//
-//	Sets the given state
-
-	{
-	//	Note: It is OK to call this with iState already
-	//	equal to the current state. We still need to go through this code
-
-	switch (iState)
-		{
-		case isBlank:
-			StopAnimations();
-			break;
-
-		case isBlankThenRandom:
-			StopAnimations();
-			m_iIntroCounter = 3600;
-			break;
-
-		case isCredits:
-			StopAnimations();
-			m_Reanimator.StartPerformance(m_dwCreditsPerformance);
-			break;
-
-		case isEndGame:
-			{
-			CHighScoreList *pHighScoreList = GetHighScoreList();
-			StopAnimations();
-
-			int iLastHighScore = m_pTC->GetModel().GetLastHighScore();
-			const CGameRecord *pScore = (iLastHighScore != -1 ? &pHighScoreList->GetEntry(iLastHighScore) : NULL);
-			if (pScore == NULL)
-				return SetIntroState(isHighScoresEndGame);
-
-			IAnimatron *pAni;
-			CreateScoreAnimation(*pScore, &pAni);
-			DWORD dwScorePerformance = m_Reanimator.AddPerformance(pAni, ID_END_GAME_PERFORMANCE);
-			m_Reanimator.StartPerformance(dwScorePerformance, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
-			break;
-			}
-
-		case isEnterShipClass:
-			StopAnimations();
-			m_sCommand = NULL_STR;
-			break;
-
-		case isHighScores:
-			StopAnimations();
-			SetHighScoresScroll();
-			break;
-
-		case isHighScoresEndGame:
-			{
-			StopAnimations();
-			int iLastHighScore = m_pTC->GetModel().GetLastHighScore();
-			if (iLastHighScore != -1)
-				SetHighScoresPos(iLastHighScore);
-			else
-				SetHighScoresScroll();
-			break;
-			}
-
-		case isNews:
-			{
-			CMultiverseNewsEntry *pNews = m_pTC->GetMultiverse().GetNextNewsEntry();
-			if (pNews == NULL)
-				{
-				SetIntroState(isShipStats);
-				return;
-				}
-
-			StopAnimations();
-
-			IAnimatron *pAni;
-			CreateNewsAnimation(pNews, &pAni);
-			delete pNews;
-
-			DWORD dwPerformance = m_Reanimator.AddPerformance(pAni, ID_NEWS_PERFORMANCE);
-			m_Reanimator.StartPerformance(dwPerformance, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
-			break;
-			}
-
-		case isOpeningTitles:
-			StopAnimations();
-			m_Reanimator.StartPerformance(m_dwTitlesPerformance);
-			break;
-
-		case isShipStats:
-			{
-			CShip *pShip = g_pUniverse->GetPOV()->AsShip();
-			if (pShip == NULL)
-				return;
-
-			StopAnimations();
-
-			IAnimatron *pAni;
-			CreateShipDescAnimation(pShip, &pAni);
-			DWORD dwPerformance = m_Reanimator.AddPerformance(pAni, ID_SHIP_DESC_PERFORMANCE);
-			m_Reanimator.StartPerformance(dwPerformance, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
-			break;
-			}
-
-		default:
-			ASSERT(false);
-			return;
-		}
-
-	m_iIntroState = iState;
-	}
-
 void CTranscendenceWnd::SetMusicOption (void)
 
 //	SetMusicOption
@@ -2610,7 +1678,7 @@ void CTranscendenceWnd::SetMusicOption (void)
 		}
 	}
 
-ALERROR CTranscendenceWnd::StartIntro (CIntroSession *pThis, IntroState iState)
+ALERROR CTranscendenceWnd::StartIntro (CIntroSession *pThis)
 
 //	StartIntro
 //
@@ -2730,24 +1798,6 @@ ALERROR CTranscendenceWnd::StartIntro (CIntroSession *pThis, IntroState iState)
 			}
 		}
 
-	//	Other initialization
-
-	m_bOverwriteGameDlg = false;
-	m_rcOverwriteGameDlg.left = m_rcIntroMain.left + (RectWidth(m_rcIntroMain) - DIALOG_WIDTH) / 2;
-	m_rcOverwriteGameDlg.top = m_rcIntroMain.top + (RectHeight(m_rcIntroMain) - DIALOG_HEIGHT) / 2;
-	m_rcOverwriteGameDlg.right = m_rcOverwriteGameDlg.left + DIALOG_WIDTH;
-	m_rcOverwriteGameDlg.bottom = m_rcOverwriteGameDlg.top + DIALOG_HEIGHT;
-
-	int cxMid = m_rcOverwriteGameDlg.left + (DIALOG_WIDTH / 2);
-	m_rcOverwriteGameOK.left = cxMid - DIALOG_SPACING_X - DIALOG_BUTTON_WIDTH;
-	m_rcOverwriteGameOK.top = m_rcOverwriteGameDlg.bottom - DIALOG_SPACING_Y - DIALOG_BUTTON_HEIGHT;
-	m_rcOverwriteGameOK.right = m_rcOverwriteGameOK.left + DIALOG_BUTTON_WIDTH;
-	m_rcOverwriteGameOK.bottom = m_rcOverwriteGameOK.top + DIALOG_BUTTON_HEIGHT;
-
-	m_rcOverwriteGameCancel = m_rcOverwriteGameOK;
-	m_rcOverwriteGameCancel.left = cxMid + DIALOG_SPACING_X;
-	m_rcOverwriteGameCancel.right = m_rcOverwriteGameCancel.left + DIALOG_BUTTON_WIDTH;
-
 	//	No sound
 
 	g_pUniverse->SetSound(false);
@@ -2775,7 +1825,7 @@ ALERROR CTranscendenceWnd::StartIntro (CIntroSession *pThis, IntroState iState)
 
 	//	Create the high scores performance
 
-	CreateHighScoresAnimation(GetHighScoreList(), &pAnimation);
+	CreateHighScoresAnimation(GetHighScoreListOld(), &pAnimation);
 	m_dwHighScoresPerformance = m_Reanimator.AddPerformance(pAnimation, ID_HIGH_SCORES_PERFORMANCE);
 
 	//	Create the top bar
@@ -2790,12 +1840,7 @@ ALERROR CTranscendenceWnd::StartIntro (CIntroSession *pThis, IntroState iState)
 
 	//	Start
 
-	SetIntroState(iState);
 	m_State = gsIntro;
-
-	//	Show the cursor
-
-	ShowCursor(true);
 
 	return NOERROR;
 	}

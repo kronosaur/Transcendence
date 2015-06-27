@@ -1295,10 +1295,6 @@ LONG CTranscendenceWnd::WMChar (char chChar, DWORD dwKeyData)
 			break;
 			}
 
-		case gsIntro:
-			OnCharIntro(chChar, dwKeyData);
-			break;
-
 		case gsDestroyed:
 			{
 			switch (chChar)
@@ -2078,10 +2074,6 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 				}
 			break;
 			}
-
-		case gsIntro:
-			OnKeyDownIntro(iVirtKey, dwKeyData);
-			break;
 
 		case gsDocked:
 			{

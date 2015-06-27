@@ -604,6 +604,7 @@
     <ClInclude Include="Credits.h" />
     <ClInclude Include="DockScreen.h" />
     <ClInclude Include="DockScreenDisplayImpl.h" />
+    <ClInclude Include="IntroSession.h" />
     <ClInclude Include="PreComp.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sessions.h" />

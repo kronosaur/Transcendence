@@ -101,6 +101,7 @@
 #define CMD_SERVICE_ERROR						CONSTLIT("serviceError")
 #define CMD_SERVICE_EXTENSION_LOADED			CONSTLIT("serviceExtensionLoaded")
 #define CMD_SERVICE_FILE_DOWNLOADED				CONSTLIT("serviceFileDownloaded")
+#define CMD_SERVICE_HIGH_SCORE_LIST_LOADED		CONSTLIT("serviceHighScoreListLoaded")
 #define CMD_SERVICE_HOUSEKEEPING				CONSTLIT("serviceHousekeeping")
 #define CMD_SERVICE_NEWS_LOADED					CONSTLIT("serviceNewsLoaded")
 #define CMD_SERVICE_STATUS						CONSTLIT("serviceStatus")
@@ -675,7 +676,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Legacy CTranscendenceWnd takes over
 
-		m_HI.ShowSession(new CIntroSession(m_HI, CTranscendenceWnd::isOpeningTitles));
+		m_HI.ShowSession(new CIntroSession(m_HI, CIntroSession::isOpeningTitles));
 
 		//	Start the intro
 
@@ -784,7 +785,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_UI_BACK_TO_INTRO))
 		{
-		m_HI.ShowSession(new CIntroSession(m_HI, CTranscendenceWnd::isBlank));
+		m_HI.ShowSession(new CIntroSession(m_HI, CIntroSession::isBlank));
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1033,7 +1034,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Back to intro screen
 
-		m_HI.ShowSession(new CIntroSession(m_HI, CTranscendenceWnd::isShipStats));
+		m_HI.ShowSession(new CIntroSession(m_HI, CIntroSession::isShipStats));
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1196,7 +1197,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			}
 		else
 			{
-			m_HI.ShowSession(new CIntroSession(m_HI, CTranscendenceWnd::isEndGame));
+			m_HI.ShowSession(new CIntroSession(m_HI, CIntroSession::isEndGame));
 			m_iState = stateIntro;
 			DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 			m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1212,7 +1213,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (m_iState == stateEndGameStats)
 			{
-			m_HI.ShowSession(new CIntroSession(m_HI, CTranscendenceWnd::isEndGame));
+			m_HI.ShowSession(new CIntroSession(m_HI, CIntroSession::isEndGame));
 			m_iState = stateIntro;
 			DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 			m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1673,6 +1674,24 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Ask the extension collection for a list of missing resource files.
 
 		HICommand(CMD_SERVICE_DOWNLOAD_RESOURCES);
+		}
+
+	//	High score list
+
+	else if (strEquals(sCmd, CMD_SERVICE_HIGH_SCORE_LIST_LOADED))
+		{
+		CAdventureHighScoreList *pHighScoreList = (CAdventureHighScoreList *)pData;
+
+		//	If we're still in the intro, pass it on to it (it will take 
+		//	ownership of it).
+
+		if (m_iState == stateIntro)
+			m_HI.GetSession()->HICommand(CMD_SERVICE_HIGH_SCORE_LIST_LOADED, pHighScoreList);
+
+		//	Otherwise, we free the list
+
+		else
+			delete pHighScoreList;
 		}
 
 	else if (strEquals(sCmd, CMD_SERVICE_STATUS))

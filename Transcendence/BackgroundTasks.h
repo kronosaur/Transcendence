@@ -203,6 +203,33 @@ class CProcessDownloadsTask : public IHITask
 		CCloudService &m_Service;
 	};
 
+class CReadHighScoreListTask : public IHITask
+	{
+	public:
+		CReadHighScoreListTask (CHumanInterface &HI, CCloudService &Service, DWORD dwAdventure) : IHITask(HI), m_Service(Service), m_dwAdventure(dwAdventure) { }
+
+		//	IHITask virtuals
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult)
+			{
+			ALERROR error;
+
+			CAdventureHighScoreList *pHighScoreList = new CAdventureHighScoreList;
+			if (error = m_Service.ReadHighScoreList(pProcessor, m_dwAdventure, pHighScoreList, retsResult))
+				{
+				delete pHighScoreList;
+				return error;
+				}
+
+			m_HI.HIPostCommand(CONSTLIT("serviceHighScoreListLoaded"), pHighScoreList);
+
+			return NOERROR;
+			}
+
+	private:
+		CCloudService &m_Service;
+		DWORD m_dwAdventure;
+	};
+
 class CRegisterUserTask : public IHITask
 	{
 	public:

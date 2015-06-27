@@ -1118,7 +1118,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void CleanUpPlayerShip (void);
 		void ClearMessage (void);
 		inline CString ComposePlayerNameString (const CString &sString, ICCItem *pArgs = NULL);
-		void CreateIntroShips (DWORD dwNewShipClass = 0, DWORD dwSovereign = 0, CSpaceObject *pShipDestroyed = NULL);
 		inline void DamageFlash (void) { m_iDamageFlash = Min(2, m_iDamageFlash + 2); }
 		void DebugConsoleOutput (const CString &sOutput);
 		void DisplayMessage (CString sMessage);
@@ -1126,7 +1125,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		inline const CString &GetCrashInfo (void) { return m_sCrashInfo; }
 		inline bool GetDebugGame (void);
 		inline const SFontTable &GetFonts (void) { return m_Fonts; }
-		inline CHighScoreList *GetHighScoreList (void);
+		inline CHighScoreList *GetHighScoreListOld (void);
 		inline CTranscendenceModel &GetModel (void);
 		void GetMousePos (POINT *retpt);
 		inline CPlayerShipController *GetPlayer (void);
@@ -1140,7 +1139,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		inline bool InGameState (void) { return m_State == gsInGame; }
 		inline bool InMap (void) { return m_bShowingMap; }
 		inline bool InMenu (void) { return (m_CurrentMenu != menuNone || m_CurrentPicker != pickNone); }
-		void OnIntroPOVSet (CSpaceObject *pObj);
 		void OnObjDestroyed (const SDestroyCtx &Ctx);
 		void OnStargateSystemReady (void);
 		void PlayerDestroyed (const CString &sText, bool bResurrectionPending);
@@ -1184,20 +1182,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 			gsEndGame,
 			};
 
-		enum IntroState
-			{
-			isBlank,
-			isCredits,
-			isHighScores,
-			isHighScoresEndGame,
-			isOpeningTitles,
-			isEndGame,
-			isShipStats,
-			isBlankThenRandom,
-			isEnterShipClass,
-			isNews,
-			};
-
 		enum EpilogState
 			{
 			esEpitaph,
@@ -1230,8 +1214,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 			bool bModified;
 			};
 
-		void AnimateIntro (bool bTopMost);
-		void CancelCurrentIntroState (void);
 		void CreateCreditsAnimation (IAnimatron **retpAnimatron);
 		void CreateHighScoresAnimation (CHighScoreList *pHighScoreList, IAnimatron **retpAnimatron);
 		void CreateLongCreditsAnimation (int x, int y, int cyHeight, IAnimatron **retpAnimatron);
@@ -1247,12 +1229,9 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void OnAccountChanged (const CMultiverseModel &Multiverse);
 		void OnCommandIntro (const CString &sCmd, void *pData);
 		void OnDblClickIntro (int x, int y, DWORD dwFlags);
-		void OnCharIntro (char chChar, DWORD dwKeyData);
-		void OnKeyDownIntro (int iVirtKey, DWORD dwKeyData);
 		void OnLButtonDownIntro (int x, int y, DWORD dwFlags);
 		void OnLButtonUpIntro (int x, int y, DWORD dwFlags);
 		void OnMouseMoveIntro (int x, int y, DWORD dwFlags);
-		void PaintOverwriteGameDlg (void);
 		void PaintDlgButton (const RECT &rcRect, const CString &sText);
 		void SetAccountControls (const CMultiverseModel &Multiverse);
 		void SetDebugOption (void);
@@ -1260,9 +1239,8 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void SetHighScoresPos (int iPos);
 		void SetHighScoresPrev (void);
 		void SetHighScoresScroll (void);
-		void SetIntroState (IntroState iState);
 		void SetMusicOption (void);
-		ALERROR StartIntro (CIntroSession *pThis, IntroState iState = isHighScores);
+		ALERROR StartIntro (CIntroSession *pThis);
 		void StopAnimations (void);
 		void StopIntro (void);
 
@@ -1366,7 +1344,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 
 		//	Intro screen
 		CIntroSession *m_pIntroSession;
-		IntroState m_iIntroState;
 		int m_iIntroCounter;
 		DWORD m_dwIntroShipClass;
 		int m_iLastShipCreated;
@@ -1377,10 +1354,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		RECT m_rcIntroBottom;
 		CButtonBarData m_ButtonBar;
 		CButtonBarDisplay m_ButtonBarDisplay;
-		bool m_bOverwriteGameDlg;
-		RECT m_rcOverwriteGameDlg;
-		RECT m_rcOverwriteGameOK;
-		RECT m_rcOverwriteGameCancel;
 		DWORD m_dwCreditsPerformance;
 		DWORD m_dwTitlesPerformance;
 		DWORD m_dwHighScoresPerformance;
@@ -1769,7 +1742,7 @@ class CTranscendenceModel
 		inline bool GetDebugMode (void) const { return m_bDebugMode; }
 		inline CGameFile &GetGameFile (void) { return m_GameFile; }
 		inline const CGameRecord &GetGameRecord (void) { return m_GameRecord; }
-		inline CHighScoreList &GetHighScoreList (void) { return m_HighScoreList; }
+		inline CHighScoreList &GetHighScoreListOld (void) { return m_HighScoreList; }
 		inline CPlayerShipController *GetPlayer (void) { return m_pPlayer; }
 		inline const CString &GetProductName (void) { return m_Version.sProductName; }
 		inline const TArray<CString> &GetSaveFileFolders (void) const { return m_SaveFileFolders; }
@@ -1986,9 +1959,9 @@ inline CGameFile &CTranscendenceWnd::GetGameFile (void)
 	return m_pTC->GetModel().GetGameFile();
 	}
 
-inline CHighScoreList *CTranscendenceWnd::GetHighScoreList (void)
+inline CHighScoreList *CTranscendenceWnd::GetHighScoreListOld (void)
 	{
-	return &m_pTC->GetModel().GetHighScoreList(); 
+	return &m_pTC->GetModel().GetHighScoreListOld(); 
 	}
 
 inline CTranscendenceModel &CTranscendenceWnd::GetModel (void)

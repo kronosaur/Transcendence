@@ -39,11 +39,11 @@
     <Filter Include="SteamBuild">
       <UniqueIdentifier>{fc4384a3-226d-4c29-a344-98fc8a0ddece}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Intro Session">
+      <UniqueIdentifier>{5a650eb1-4f17-43ad-b2f3-0a076786ce4f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CIntroShipController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CLoadGameWithSignInTask.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -99,9 +99,6 @@
       <Filter>Source Files\Sessions</Filter>
     </ClCompile>
     <ClCompile Include="CWaitSession.cpp">
-      <Filter>Source Files\Sessions</Filter>
-    </ClCompile>
-    <ClCompile Include="IntroScreen.cpp">
       <Filter>Source Files\Sessions</Filter>
     </ClCompile>
     <ClCompile Include="CArmorDisplay.cpp">
@@ -191,9 +188,6 @@
     <ClCompile Include="CChooseAdventureSession.cpp">
       <Filter>Source Files\Sessions</Filter>
     </ClCompile>
-    <ClCompile Include="CIntroSession.cpp">
-      <Filter>Source Files\Sessions</Filter>
-    </ClCompile>
     <ClCompile Include="GameScreen.cpp">
       <Filter>Source Files\Game Session</Filter>
     </ClCompile>
@@ -230,6 +224,15 @@
     <ClCompile Include="CTranscendencePlayer.cpp">
       <Filter>Source Files\Player</Filter>
     </ClCompile>
+    <ClCompile Include="CIntroSession.cpp">
+      <Filter>Source Files\Intro Session</Filter>
+    </ClCompile>
+    <ClCompile Include="CIntroShipController.cpp">
+      <Filter>Source Files\Intro Session</Filter>
+    </ClCompile>
+    <ClCompile Include="IntroScreen.cpp">
+      <Filter>Source Files\Intro Session</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundTasks.h">
@@ -257,6 +260,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DockScreenDisplayImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IntroSession.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
