@@ -1233,7 +1233,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void AnimateIntro (bool bTopMost);
 		void CancelCurrentIntroState (void);
 		void CreateCreditsAnimation (IAnimatron **retpAnimatron);
-		void CreateHighScoresAnimation (IAnimatron **retpAnimatron);
+		void CreateHighScoresAnimation (CHighScoreList *pHighScoreList, IAnimatron **retpAnimatron);
 		void CreateLongCreditsAnimation (int x, int y, int cyHeight, IAnimatron **retpAnimatron);
 		void CreateNewsAnimation (CMultiverseNewsEntry *pEntry, IAnimatron **retpAnimatron);
 		void CreatePlayerBarAnimation (IAnimatron **retpAni);

@@ -178,6 +178,16 @@ void CProfileSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapt
 //	m_HI.ClosePopupSession();
 	}
 
+void CProfileSession::OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
+
+//	OnMouseWheel
+//
+//	Handle mouse wheel
+
+	{
+	HandlePageScrollMouseWheel(ID_PROFILE, iDelta);
+	}
+
 void CProfileSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 //	OnPaint

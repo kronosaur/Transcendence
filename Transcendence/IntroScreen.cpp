@@ -453,7 +453,7 @@ void CTranscendenceWnd::CreateCreditsAnimation (IAnimatron **retpAnimatron)
 	*retpAnimatron = pSeq;
 	}
 
-void CTranscendenceWnd::CreateHighScoresAnimation (IAnimatron **retpAnimatron)
+void CTranscendenceWnd::CreateHighScoresAnimation (CHighScoreList *pHighScoreList, IAnimatron **retpAnimatron)
 
 //	CreateHighScoresAnimation
 //
@@ -461,7 +461,6 @@ void CTranscendenceWnd::CreateHighScoresAnimation (IAnimatron **retpAnimatron)
 
 	{
 	int i, j;
-	CHighScoreList *pHighScoreList = GetHighScoreList();
 
 	//	Figure out the position
 
@@ -2776,7 +2775,7 @@ ALERROR CTranscendenceWnd::StartIntro (CIntroSession *pThis, IntroState iState)
 
 	//	Create the high scores performance
 
-	CreateHighScoresAnimation(&pAnimation);
+	CreateHighScoresAnimation(GetHighScoreList(), &pAnimation);
 	m_dwHighScoresPerformance = m_Reanimator.AddPerformance(pAnimation, ID_HIGH_SCORES_PERFORMANCE);
 
 	//	Create the top bar
