@@ -206,7 +206,10 @@ class CProcessDownloadsTask : public IHITask
 class CReadHighScoreListTask : public IHITask
 	{
 	public:
-		CReadHighScoreListTask (CHumanInterface &HI, CCloudService &Service, DWORD dwAdventure) : IHITask(HI), m_Service(Service), m_dwAdventure(dwAdventure) { }
+		CReadHighScoreListTask (CHumanInterface &HI, CCloudService &Service, const CAdventureHighScoreList::SSelect &Select) : IHITask(HI), 
+				m_Service(Service), 
+				m_Select(Select)
+			{ }
 
 		//	IHITask virtuals
 		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult)
@@ -214,12 +217,14 @@ class CReadHighScoreListTask : public IHITask
 			ALERROR error;
 
 			CAdventureHighScoreList *pHighScoreList = new CAdventureHighScoreList;
-			if (error = m_Service.ReadHighScoreList(pProcessor, m_dwAdventure, pHighScoreList, retsResult))
+			if (error = m_Service.ReadHighScoreList(pProcessor, m_Select.dwAdventure, pHighScoreList, retsResult))
 				{
+				m_HI.HIPostCommand(CONSTLIT("serviceHighScoreListError"));
 				delete pHighScoreList;
 				return error;
 				}
 
+			pHighScoreList->SetSelection(m_Select.sUsername, m_Select.iScore);
 			m_HI.HIPostCommand(CONSTLIT("serviceHighScoreListLoaded"), pHighScoreList);
 
 			return NOERROR;
@@ -227,7 +232,7 @@ class CReadHighScoreListTask : public IHITask
 
 	private:
 		CCloudService &m_Service;
-		DWORD m_dwAdventure;
+		CAdventureHighScoreList::SSelect m_Select;
 	};
 
 class CRegisterUserTask : public IHITask

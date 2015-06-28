@@ -6,6 +6,8 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
+#define ATTRIB_GENERIC_SHIP_CLASS				CONSTLIT("genericClass")
+
 #define CMD_ACCOUNT								CONSTLIT("cmdAccount")
 #define CMD_ACCOUNT_EDIT						CONSTLIT("cmdAccountEdit")
 #define CMD_CHANGE_PASSWORD						CONSTLIT("cmdChangePassword")
@@ -16,9 +18,11 @@
 #define CMD_SOUNDTRACK_NOW_PLAYING				CONSTLIT("cmdSoundtrackNowPlaying")
 #define CMD_TOGGLE_DEBUG						CONSTLIT("cmdToggleDebug")
 #define CMD_TOGGLE_MUSIC						CONSTLIT("cmdToggleMusic")
+#define CMD_UPDATE_HIGH_SCORE_LIST				CONSTLIT("cmdUpdateHighScoreList")
 
 #define CMD_INTRO_SHIP_DESTROYED				CONSTLIT("introShipDestroyed")
 
+#define CMD_SERVICE_HIGH_SCORE_LIST_ERROR		CONSTLIT("serviceHighScoreListError")
 #define CMD_SERVICE_HIGH_SCORE_LIST_LOADED		CONSTLIT("serviceHighScoreListLoaded")
 #define CMD_SERVICE_NEWS_LOADED					CONSTLIT("serviceNewsLoaded")
 
@@ -56,8 +60,6 @@ CIntroSession::~CIntroSession (void)
 //	CIntroSession destructor
 
 	{
-	if (m_pHighScoreList)
-		delete m_pHighScoreList;
 	}
 
 void CIntroSession::CancelCurrentState (void)
@@ -73,11 +75,15 @@ void CIntroSession::CancelCurrentState (void)
 		case isHighScores:
 		case isBlankThenRandom:
 		case isNews:
+		case isWaitingForHighScores:
 			SetState(isShipStats);
 			break;
 
 		case isEndGame:
-			SetState(isHighScoresEndGame);
+			if (m_HighScoreDisplay.HasHighScores())
+				SetState(isHighScoresEndGame);
+			else
+				SetState(isCredits);
 			break;
 
 		case isEnterShipClass:
@@ -98,13 +104,44 @@ void CIntroSession::CancelCurrentState (void)
 		}
 	}
 
-void CIntroSession::CmdShowHighScoreList (void)
+void CIntroSession::CmdShowHighScoreList (DWORD dwAdventure, const CString &sUsername, int iScore)
 
 //	CmdShowHighScoreList
 //
 //	Shows the high score list.
 
 	{
+	//	If we're already showing high scores, then stop
+
+	if (GetState() == isHighScores)
+		{
+		SetState(isBlank);
+		return;
+		}
+
+	//	If we're already waiting for high scores, keep waiting
+
+	if (GetState() == isWaitingForHighScores)
+		return;
+
+	//	If adventure is 0, pick a random adventure
+
+	if (dwAdventure == 0)
+		dwAdventure = DEFAULT_ADVENTURE_EXTENSION_UNID;
+
+	//	Get high scores from the server (and remember our state so that we know
+	//	what to do when we get back).
+
+	CAdventureHighScoreList::SSelect Select;
+	Select.dwAdventure = dwAdventure;
+	Select.sUsername = sUsername;
+	Select.iScore = iScore;
+
+	SetState(isWaitingForHighScores);
+	m_HI.HICommand(CMD_UPDATE_HIGH_SCORE_LIST, &Select);
+
+	//	When we get a response from the server, we'll get sent a serviceHighScoreListLoaded
+	//	command.
 	}
 
 void CIntroSession::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereign, CSpaceObject *pShipDestroyed)
@@ -163,10 +200,10 @@ void CIntroSession::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereign, C
 	//	Create ships if necessary
 
 	if (pShip1 == NULL || (dwNewShipClass && dwCurSovereign == g_PlayerSovereignUNID))
-		g_pTrans->CreateRandomShip(pSystem, (dwCurSovereign == g_PlayerSovereignUNID ? dwNewShipClass : 0), pSovereign1, &pShip1);
+		CreateRandomShip(pSystem, (dwCurSovereign == g_PlayerSovereignUNID ? dwNewShipClass : 0), pSovereign1, &pShip1);
 
 	if (pShip2 == NULL || (dwNewShipClass && dwCurSovereign == UNID_UNKNOWN_ENEMY))
-		g_pTrans->CreateRandomShip(pSystem, (dwCurSovereign == UNID_UNKNOWN_ENEMY ? dwNewShipClass : 0), pSovereign2, &pShip2);
+		CreateRandomShip(pSystem, (dwCurSovereign == UNID_UNKNOWN_ENEMY ? dwNewShipClass : 0), pSovereign2, &pShip2);
 
 	//	Make sure every ship has an order to attack someone
 
@@ -227,6 +264,175 @@ void CIntroSession::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereign, C
 	g_pUniverse->SweepLibraryBitmaps();
 
 	g_pTrans->m_iLastShipCreated = g_pTrans->m_iTick;
+
+	DEBUG_CATCH
+	}
+
+void CIntroSession::CreateIntroSystem (void)
+
+//	CreateIntroSystem
+//
+//	Creates the intro system.
+
+	{
+	ALERROR error;
+	int i;
+
+	//	Create an empty system
+
+	if (error = g_pUniverse->CreateEmptyStarSystem(&g_pTrans->m_pIntroSystem))
+		{
+		ASSERT(false);
+		return;
+		}
+
+	g_pUniverse->SetCurrentSystem(g_pTrans->m_pIntroSystem);
+
+	CSovereign *pSovereign1 = g_pUniverse->FindSovereign(g_PlayerSovereignUNID);
+	CSovereign *pSovereign2 = g_pUniverse->FindSovereign(UNID_UNKNOWN_ENEMY);
+
+	//	Create a couple of random enemy ships
+
+	CShip *pShip1;
+	CShip *pShip2;
+	if (error = CreateRandomShip(g_pTrans->m_pIntroSystem, 0, pSovereign1, &pShip1))
+		{
+		ASSERT(false);
+		return;
+		}
+
+	if (error = CreateRandomShip(g_pTrans->m_pIntroSystem, 0, pSovereign2, &pShip2))
+		{
+		ASSERT(false);
+		return;
+		}
+
+	//	Make the ships attack each other
+
+	for (i = 0; i < g_pTrans->m_pIntroSystem->GetObjectCount(); i++)
+		{
+		CSpaceObject *pObj = g_pTrans->m_pIntroSystem->GetObject(i);
+
+		if (pObj
+				&& pObj->GetCategory() == CSpaceObject::catShip
+				&& !pObj->IsVirtual()
+				&& !pObj->IsInactive()
+				&& !pObj->GetData(CONSTLIT("IntroController")).IsBlank())
+			{
+			CShip *pShip = pObj->AsShip();
+			if (pShip)
+				{
+				IShipController *pController = pShip->GetController();
+				if (pShip->GetSovereign() == pSovereign1)
+					pController->AddOrder(IShipController::orderDestroyTarget, pShip2, IShipController::SData());
+				else
+					pController->AddOrder(IShipController::orderDestroyTarget, pShip1, IShipController::SData());
+				}
+			}
+		}
+
+	//	No sound
+
+	g_pUniverse->SetSound(false);
+
+	//	Set the POV to one of them
+
+	g_pUniverse->SetPOV(pShip1);
+	g_pTrans->m_iTick = 0;
+	g_pTrans->m_iLastShipCreated = g_pTrans->m_iTick;
+
+	//	Initialize the system
+
+	g_pUniverse->MarkLibraryBitmaps();
+	}
+
+ALERROR CIntroSession::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSovereign *pSovereign, CShip **retpShip)
+
+//	CreateRandomShip
+//
+//	Creates a random ship
+
+	{
+	DEBUG_TRY
+
+	ALERROR error;
+	int i;
+
+	//	Figure out the class
+
+	int iTimeOut = 100;
+	CShipClass *pShipClass;
+	if (dwClass == 0
+			|| (pShipClass = g_pUniverse->FindShipClass(dwClass)) == NULL)
+		{
+		do
+			pShipClass = g_pUniverse->GetShipClass(mathRandom(0, g_pUniverse->GetShipClassCount()-1));
+		while (iTimeOut-- > 0
+				&&	(pShipClass->GetScore() > 1000 
+					|| pShipClass->IsPlayerShip()
+					|| pShipClass->IsVirtual()
+					|| !pShipClass->HasLiteralAttribute(ATTRIB_GENERIC_SHIP_CLASS)));
+		}
+
+	//	Normally we create a single ship, but sometimes we create lots
+
+	int iCount;
+	int iRoll = mathRandom(1, 100);
+
+	//	Adjust the roll for capital ships
+
+	if (pShipClass->GetHullMass() >= 10000)
+		iRoll -= 9;
+	else if (pShipClass->GetHullMass() >= 1000)
+		iRoll -= 6;
+
+	if (iRoll == 100)
+		iCount = mathRandom(30, 60);
+	else if (iRoll >= 98)
+		iCount = mathRandom(10, 20);
+	else if (iRoll >= 95)
+		iCount = mathRandom(5, 10);
+	else if (iRoll >= 90)
+		iCount = mathRandom(2, 5);
+	else
+		iCount = 1;
+
+	//	Create the ships
+
+	g_pUniverse->SetLogImageLoad(false);
+
+	for (i = 0; i < iCount; i++)
+		{
+		CShip *pShip;
+
+		if (error = pSystem->CreateShip(pShipClass->GetUNID(),
+				NULL,
+				NULL,
+				pSovereign,
+				PolarToVector(mathRandom(0, 359), mathRandom(250, 2500) * g_KlicksPerPixel),
+				NullVector,
+				mathRandom(0, 359),
+				NULL,
+				NULL,
+				&pShip))
+			{
+			g_pUniverse->SetLogImageLoad(true);
+			return error;
+			}
+
+		//	Override the controller
+
+		CIntroShipController *pNewController = new CIntroShipController(pShip->GetController());
+		pShip->SetController(pNewController, false);
+		pNewController->SetShip(pShip);
+		pShip->SetData(CONSTLIT("IntroController"), CONSTLIT("True"));
+
+		*retpShip = pShip;
+		}
+
+	g_pUniverse->SetLogImageLoad(true);
+
+	return NOERROR;
 
 	DEBUG_CATCH
 	}
@@ -431,10 +637,7 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 
 		case 'h':
 		case 'H':
-			if (GetState() == isHighScores)
-				SetState(isBlank);
-			else
-				CmdShowHighScoreList();
+			CmdShowHighScoreList();
 			break;
 
 		case 'K':
@@ -721,10 +924,22 @@ ALERROR CIntroSession::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SERVICE_HIGH_SCORE_LIST_LOADED))
 		{
-		if (m_pHighScoreList)
-			delete m_pHighScoreList;
+		m_HighScoreDisplay.SetHighScoreList((CAdventureHighScoreList *)pData);
 
-		m_pHighScoreList = (CAdventureHighScoreList *)pData;
+		//	If we were waiting for the high score list, then show it.
+
+		if (GetState() == isWaitingForHighScores)
+			{
+			if (m_HighScoreDisplay.HasHighScores())
+				SetState(isHighScores);
+			else
+				SetState(isShipStats);
+			}
+		}
+	else if (strEquals(sCmd, CMD_SERVICE_HIGH_SCORE_LIST_ERROR))
+		{
+		if (GetState() == isWaitingForHighScores)
+			SetState(isShipStats);
 		}
 
 	else if (strEquals(sCmd, CMD_SERVICE_NEWS_LOADED))
@@ -771,6 +986,10 @@ ALERROR CIntroSession::OnInit (CString *retsError)
 	m_rcBottom.left = 0;
 	m_rcBottom.bottom = g_cyScreen;
 	m_rcBottom.right = g_cxScreen;
+
+	//	Initialize the system
+
+	CreateIntroSystem();
 
 	//	Initialize
 
@@ -819,26 +1038,20 @@ void CIntroSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
 			case VK_UP:
 				if (GetState() == isHighScores || GetState() == isHighScoresEndGame)
-					g_pTrans->SetHighScoresPrev();
+					m_HighScoreDisplay.SelectPrev();
 				break;
 
 			case VK_DOWN:
 				if (GetState() == isHighScores || GetState() == isHighScoresEndGame)
-					g_pTrans->SetHighScoresNext();
+					m_HighScoreDisplay.SelectNext();
 				break;
 
 			case VK_PRIOR:
-				if (GetState() == isHighScores || GetState() == isHighScoresEndGame)
-					g_pTrans->SetHighScoresPrev();
-				else
-					Reanimator.FFBurst(-32, 15);
+				Reanimator.FFBurst(-32, 15);
 				break;
 
 			case VK_NEXT:
-				if (GetState() == isHighScores || GetState() == isHighScoresEndGame)
-					g_pTrans->SetHighScoresNext();
-				else
-					Reanimator.FFBurst(32, 15);
+				Reanimator.FFBurst(32, 15);
 				break;
 
 			case VK_PAUSE:
@@ -984,56 +1197,55 @@ void CIntroSession::SetState (EStates iState)
 	switch (iState)
 		{
 		case isBlank:
-			g_pTrans->StopAnimations();
+			StopAnimations();
 			break;
 
 		case isBlankThenRandom:
-			g_pTrans->StopAnimations();
+			StopAnimations();
 			g_pTrans->m_iIntroCounter = 3600;
 			break;
 
 		case isCredits:
-			g_pTrans->StopAnimations();
+			StopAnimations();
 			Reanimator.StartPerformance(g_pTrans->m_dwCreditsPerformance);
 			break;
 
 		case isEndGame:
 			{
-			CHighScoreList *pHighScoreList = g_pTrans->GetHighScoreListOld();
-			g_pTrans->StopAnimations();
+			StopAnimations();
 
-			int iLastHighScore = g_pTrans->m_pTC->GetModel().GetLastHighScore();
-			const CGameRecord *pScore = (iLastHighScore != -1 ? &pHighScoreList->GetEntry(iLastHighScore) : NULL);
-			if (pScore == NULL)
-				return SetState(isHighScoresEndGame);
+			const CGameRecord &Score = m_Model.GetGameRecord();
+			if (Score.GetScore() == 0)
+				{
+				CmdShowHighScoreList();
+				return;
+				}
 
 			IAnimatron *pAni;
-			g_pTrans->CreateScoreAnimation(*pScore, &pAni);
+			g_pTrans->CreateScoreAnimation(Score, &pAni);
 			DWORD dwScorePerformance = Reanimator.AddPerformance(pAni, ID_END_GAME_PERFORMANCE);
 			Reanimator.StartPerformance(dwScorePerformance, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+
+			//	While we're showing the performance, get the latest score
+
+			CAdventureHighScoreList::SSelect Select;
+			Select.dwAdventure = Score.GetAdventureUNID();
+			Select.sUsername = Score.GetUsername();
+			Select.iScore = Score.GetScore();
+			m_HI.HICommand(CMD_UPDATE_HIGH_SCORE_LIST, &Select);
 			break;
 			}
 
 		case isEnterShipClass:
-			g_pTrans->StopAnimations();
+			StopAnimations();
 			g_pTrans->m_sCommand = NULL_STR;
 			break;
 
 		case isHighScores:
-			g_pTrans->StopAnimations();
-			g_pTrans->SetHighScoresScroll();
-			break;
-
 		case isHighScoresEndGame:
-			{
-			g_pTrans->StopAnimations();
-			int iLastHighScore = g_pTrans->m_pTC->GetModel().GetLastHighScore();
-			if (iLastHighScore != -1)
-				g_pTrans->SetHighScoresPos(iLastHighScore);
-			else
-				g_pTrans->SetHighScoresScroll();
+			StopAnimations();
+			m_HighScoreDisplay.StartPerformance(Reanimator, ID_HIGH_SCORES_PERFORMANCE, g_pTrans->m_rcIntroMain);
 			break;
-			}
 
 		case isNews:
 			{
@@ -1044,7 +1256,7 @@ void CIntroSession::SetState (EStates iState)
 				return;
 				}
 
-			g_pTrans->StopAnimations();
+			StopAnimations();
 
 			IAnimatron *pAni;
 			g_pTrans->CreateNewsAnimation(pNews, &pAni);
@@ -1056,7 +1268,7 @@ void CIntroSession::SetState (EStates iState)
 			}
 
 		case isOpeningTitles:
-			g_pTrans->StopAnimations();
+			StopAnimations();
 			Reanimator.StartPerformance(g_pTrans->m_dwTitlesPerformance);
 			break;
 
@@ -1066,7 +1278,7 @@ void CIntroSession::SetState (EStates iState)
 			if (pShip == NULL)
 				return;
 
-			g_pTrans->StopAnimations();
+			StopAnimations();
 
 			IAnimatron *pAni;
 			g_pTrans->CreateShipDescAnimation(pShip, &pAni);
@@ -1074,6 +1286,10 @@ void CIntroSession::SetState (EStates iState)
 			Reanimator.StartPerformance(dwPerformance, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
 			break;
 			}
+
+		case isWaitingForHighScores:
+			StopAnimations();
+			break;
 
 		default:
 			ASSERT(false);
@@ -1106,6 +1322,23 @@ void CIntroSession::StartSoundtrackTitleAnimation (CSoundType *pTrack)
 		DWORD dwPerformance = Reanimator.AddPerformance(pAni, ID_SOUNDTRACK_TITLE_PERFORMANCE);
 		Reanimator.StartPerformance(dwPerformance, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
 		}
+	}
+
+void CIntroSession::StopAnimations (void)
+
+//	StopAnimations
+//
+//	Stops all intro animations (but not UI element animations)
+
+	{
+	CReanimator &Reanimator = GetReanimator();
+
+	Reanimator.StopPerformance(ID_CREDITS_PERFORMANCE);
+	Reanimator.StopPerformance(ID_END_GAME_PERFORMANCE);
+	Reanimator.StopPerformance(ID_SHIP_DESC_PERFORMANCE);
+	Reanimator.StopPerformance(ID_TITLES_PERFORMANCE);
+	Reanimator.StopPerformance(ID_NEWS_PERFORMANCE);
+	m_HighScoreDisplay.StopPerformance();
 	}
 
 void CIntroSession::Update (void)
@@ -1168,8 +1401,10 @@ void CIntroSession::Update (void)
 				int iRoll = mathRandom(1, 100);
 				if (iRoll <= 50)
 					SetState(isCredits);
-				else
+				else if (m_HighScoreDisplay.HasHighScores())
 					SetState(isHighScores);
+				else
+					SetState(isShipStats);
 				}
 			break;
 
@@ -1190,16 +1425,21 @@ void CIntroSession::Update (void)
 
 		case isEndGame:
 			if (!Reanimator.IsPerformanceRunning(ID_END_GAME_PERFORMANCE))
-				SetState(isHighScoresEndGame);
+				{
+				if (m_HighScoreDisplay.HasHighScores())
+					SetState(isHighScoresEndGame);
+				else
+					SetState(isCredits);
+				}
 			break;
 
 		case isHighScores:
-			if (!Reanimator.IsPerformanceRunning(ID_HIGH_SCORES_PERFORMANCE))
+			if (!m_HighScoreDisplay.IsPerformanceRunning())
 				SetState(isShipStats);
 			break;
 
 		case isHighScoresEndGame:
-			if (!Reanimator.IsPerformanceRunning(ID_HIGH_SCORES_PERFORMANCE))
+			if (!m_HighScoreDisplay.IsPerformanceRunning())
 				SetState(isCredits);
 			break;
 

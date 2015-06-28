@@ -11,11 +11,6 @@
 #define INTRO_DISPLAY_WIDTH						1024
 #define INTRO_DISPLAY_HEIGHT					512
 
-#define HIGHSCORE_DISPLAY_X						0
-#define HIGHSCORE_DISPLAY_Y						200
-#define HIGHSCORE_DISPLAY_WIDTH					500
-#define HIGHSCORE_DISPLAY_HEIGHT				250
-
 #define RGB_VERSION_COLOR						CG32bitPixel(128,128,128)
 #define RGB_COPYRIGHT_COLOR						CG32bitPixel(80,80,80)
 #define RGB_FRAME								CG32bitPixel(80,80,80)
@@ -41,15 +36,6 @@
 #define STR_OVERWRITE_GAME						CONSTLIT("Overwrite Saved Game?")
 #define STR_TEXT1								CONSTLIT("You currently have a saved game in progress.")
 #define STR_TEXT2								CONSTLIT("If you start a new game your will overwrite your saved game.")
-
-#define ATTRIB_GENERIC_SHIP_CLASS				CONSTLIT("genericClass")
-
-const int SCORE_COLUMN_WIDTH =					360;
-const Metric SCORE_SPACING_Y =					4.0;
-const Metric SCORE_SELECTION_WIDTH =			480.0;
-const Metric SCORE_SELECTION_X =				-120.0;
-const DWORD SCORE_SELECTION_OPACITY =			64;
-const int HIGH_SCORES_DURATION =				300;
 
 const Metric GAME_STAT_SELECTION_WIDTH =		480.0;
 const Metric GAME_STAT_SELECTION_X =			-20.0;
@@ -98,12 +84,9 @@ const int NEWS_PANE_INNER_SPACING_Y =			8;
 #define ID_GAME_STAT_SCROLLER					CONSTLIT("gsScroller")
 #define ID_GAME_STAT_FADER						CONSTLIT("gsFader")
 #define ID_GAME_STAT_SELECT_RECT				CONSTLIT("gsSelRect")
-#define ID_HIGH_SCORES_ANIMATOR					CONSTLIT("hsAnimator")
-#define ID_HIGH_SCORES_SELECT_RECT				CONSTLIT("hsSelRect")
 #define ID_ACCOUNT_CONTROLS						CONSTLIT("idAccount")
 #define ID_CREDITS_PERFORMANCE					CONSTLIT("idCredits")
 #define ID_END_GAME_PERFORMANCE					CONSTLIT("idEndGame")
-#define ID_HIGH_SCORES_PERFORMANCE				CONSTLIT("idHighScores")
 #define ID_PLAYER_BAR_PERFORMANCE				CONSTLIT("idPlayerBar")
 #define ID_SHIP_DESC_PERFORMANCE				CONSTLIT("idShipDescPerformance")
 #define ID_TITLES_PERFORMANCE					CONSTLIT("idTitles")
@@ -221,115 +204,6 @@ void CTranscendenceWnd::CreateCreditsAnimation (IAnimatron **retpAnimatron)
 	//	Done
 
 	*retpAnimatron = pSeq;
-	}
-
-void CTranscendenceWnd::CreateHighScoresAnimation (CHighScoreList *pHighScoreList, IAnimatron **retpAnimatron)
-
-//	CreateHighScoresAnimation
-//
-//	Creates scrolling high-scores
-
-	{
-	int i, j;
-
-	//	Figure out the position
-
-	int x = m_rcIntroMain.left + 2 * RectWidth(m_rcIntroMain) / 3;
-	int y = m_rcIntroMain.top;
-	int yEnd = m_rcIntroMain.bottom - m_Fonts.Header.GetHeight();
-	int cyHeight = yEnd - y;
-
-	//	We keep track of all the score positions in an array
-
-	m_pHighScorePos = new int [pHighScoreList->GetCount() + 1];
-
-	//	Create a scroller
-
-	CAniVScroller *pAni = new CAniVScroller;
-	pAni->SetPropertyVector(CONSTLIT("position"), CVector((Metric)x, (Metric)y));
-	pAni->SetPropertyMetric(CONSTLIT("viewportHeight"), (Metric)cyHeight);
-	pAni->SetPropertyMetric(CONSTLIT("fadeEdgeHeight"), (Metric)(cyHeight / 8));
-
-	//	Add a rect that we use to highlight selection.
-	//	We add it first because it paints behind everything
-
-	IAnimatron *pRect;
-	CAniRect::Create(CVector(0.0, 0.0), CVector(100.0, 10.0), m_Fonts.rgbLightTitleColor, 0, &pRect);
-	pRect->SetID(ID_HIGH_SCORES_SELECT_RECT);
-	pAni->AddLine(pRect);
-
-	//	Loop over all scores
-
-	for (i = 0; i < pHighScoreList->GetCount(); i++)
-		{
-		const CGameRecord &Score = pHighScoreList->GetEntry(i);
-
-		//	Position
-
-		Metric yPos = pAni->GetHeight() + (i > 0 ? SCORE_SPACING_Y : 0);
-		m_pHighScorePos[i] = (int)(yPos - (cyHeight / 3));
-
-		//	Score
-
-		IAnimatron *pText;
-		CAniText::Create(strFromInt(Score.GetScore()),
-				CVector((Metric)-m_Fonts.SubTitle.GetAverageWidth(), yPos),
-				&m_Fonts.SubTitle,
-				CG16bitFont::AlignRight,
-				m_Fonts.rgbTitleColor,
-				&pText);
-		pAni->AddLine(pText);
-
-		//	Name
-
-		CAniText::Create(Score.GetPlayerName(),
-				CVector(0.0, yPos),
-				&m_Fonts.SubTitle,
-				0,
-				m_Fonts.rgbTitleColor,
-				&pText);
-		pAni->AddLine(pText);
-
-		//	Ship class
-
-		CString sShipClass = Score.GetShipClass();
-		if (Score.IsDebug())
-			sShipClass.Append(CONSTLIT(" [debug]"));
-
-		CAniText::Create(sShipClass,
-				CVector(0.0, pAni->GetHeight()),
-				&m_Fonts.Medium,
-				0,
-				m_Fonts.rgbLightTitleColor,
-				&pText);
-		pAni->AddLine(pText);
-
-		//	Epitaph
-
-		CString sEpitaph = Score.GetDescription(CGameRecord::descEpitaph | CGameRecord::descPlayTime | CGameRecord::descResurrectCount);
-
-		TArray<CString> Lines;
-		m_Fonts.Medium.BreakText(sEpitaph, SCORE_COLUMN_WIDTH, &Lines);
-
-		for (j = 0; j < Lines.GetCount(); j++)
-			{
-			CAniText::Create(Lines[j],
-					CVector(0.0, pAni->GetHeight()),
-					&m_Fonts.Medium,
-					0,
-					m_Fonts.rgbLightTitleColor,
-					&pText);
-			pAni->AddLine(pText);
-			}
-		}
-
-	//	Set the end pos
-
-	m_pHighScorePos[i] = (int)pAni->GetHeight() - (cyHeight / 3);
-
-	//	Done
-
-	*retpAnimatron = pAni;
 	}
 
 void CTranscendenceWnd::CreateLongCreditsAnimation (int x, int y, int cyHeight, IAnimatron **retpAnimatron)
@@ -730,97 +604,6 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 	*retpAni = pRoot;
 	}
 
-ALERROR CTranscendenceWnd::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSovereign *pSovereign, CShip **retpShip)
-
-//	CreateRandomShip
-//
-//	Creates a random ship
-
-	{
-	DEBUG_TRY
-
-	ALERROR error;
-	int i;
-
-	//	Figure out the class
-
-	int iTimeOut = 100;
-	CShipClass *pShipClass;
-	if (dwClass == 0
-			|| (pShipClass = g_pUniverse->FindShipClass(dwClass)) == NULL)
-		{
-		do
-			pShipClass = g_pUniverse->GetShipClass(mathRandom(0, g_pUniverse->GetShipClassCount()-1));
-		while (iTimeOut-- > 0
-				&&	(pShipClass->GetScore() > 1000 
-					|| pShipClass->IsPlayerShip()
-					|| pShipClass->IsVirtual()
-					|| !pShipClass->HasLiteralAttribute(ATTRIB_GENERIC_SHIP_CLASS)));
-		}
-
-	//	Normally we create a single ship, but sometimes we create lots
-
-	int iCount;
-	int iRoll = mathRandom(1, 100);
-
-	//	Adjust the roll for capital ships
-
-	if (pShipClass->GetHullMass() >= 10000)
-		iRoll -= 9;
-	else if (pShipClass->GetHullMass() >= 1000)
-		iRoll -= 6;
-
-	if (iRoll == 100)
-		iCount = mathRandom(30, 60);
-	else if (iRoll >= 98)
-		iCount = mathRandom(10, 20);
-	else if (iRoll >= 95)
-		iCount = mathRandom(5, 10);
-	else if (iRoll >= 90)
-		iCount = mathRandom(2, 5);
-	else
-		iCount = 1;
-
-	//	Create the ships
-
-	g_pUniverse->SetLogImageLoad(false);
-
-	for (i = 0; i < iCount; i++)
-		{
-		CShip *pShip;
-
-		if (error = pSystem->CreateShip(pShipClass->GetUNID(),
-				NULL,
-				NULL,
-				pSovereign,
-				PolarToVector(mathRandom(0, 359), mathRandom(250, 2500) * g_KlicksPerPixel),
-				NullVector,
-				mathRandom(0, 359),
-				NULL,
-				NULL,
-				&pShip))
-			{
-			g_pUniverse->SetLogImageLoad(true);
-			return error;
-			}
-
-		//	Override the controller
-
-		CIntroShipController *pNewController = new CIntroShipController(this, pShip->GetController());
-		pShip->SetController(pNewController, false);
-		pNewController->SetShip(pShip);
-		pShip->SetData(CONSTLIT("IntroController"), CONSTLIT("True"));
-
-		*retpShip = pShip;
-		}
-
-	g_pUniverse->SetLogImageLoad(true);
-
-	return NOERROR;
-
-	DEBUG_CATCH
-	}
-
 void CTranscendenceWnd::CreateScoreAnimation (const CGameRecord &Stats, IAnimatron **retpAnimatron)
 
 //	CreateScoreAnimation
@@ -1173,29 +956,6 @@ void CTranscendenceWnd::DestroyIntroShips (void)
 		ShipsToDestroy[i]->Destroy(removedFromSystem, CDamageSource());
 	}
 
-int CTranscendenceWnd::GetHighScoresPos (void)
-
-//	GetHighScoresPos
-//
-//	Returns the current position of the high scores performance
-
-	{
-	int i;
-	CHighScoreList *pHighScoreList = GetHighScoreListOld();
-
-	IAnimatron *pAni = m_Reanimator.GetPerformance(m_dwHighScoresPerformance);
-	if (pAni == NULL)
-		return -1;
-
-	int yPos = (int)pAni->GetPropertyMetric(PROP_SCROLL_POS);
-
-	for (i = 0; i < pHighScoreList->GetCount(); i++)
-		if (m_pHighScorePos[i] >= yPos)
-			return Max(0, i);
-
-	return -1;
-	}
-
 void CTranscendenceWnd::OnAccountChanged (const CMultiverseModel &Multiverse)
 
 //	OnAccountChanged
@@ -1514,140 +1274,6 @@ void CTranscendenceWnd::SetDebugOption (void)
 		}
 	}
 
-void CTranscendenceWnd::SetHighScoresNext (void)
-
-//	SetHighScoresNext
-//
-//	Select next high score
-
-	{
-	CHighScoreList *pHighScoreList = GetHighScoreListOld();
-
-	if (m_iHighScoreSelection == -1)
-		{
-		int iPos = GetHighScoresPos();
-		if (iPos != -1)
-			SetHighScoresPos(iPos);
-		}
-	else
-		SetHighScoresPos(Min(m_iHighScoreSelection + 1, pHighScoreList->GetCount() - 1));
-	}
-
-void CTranscendenceWnd::SetHighScoresPrev (void)
-
-//	SetHighScoresPrev
-//
-//	Select previous high score
-
-	{
-	if (m_iHighScoreSelection == -1)
-		{
-		int iPos = GetHighScoresPos();
-		if (iPos != -1)
-			SetHighScoresPos(iPos);
-		}
-	else
-		SetHighScoresPos(Max(0, m_iHighScoreSelection - 1));
-	}
-
-void CTranscendenceWnd::SetHighScoresPos (int iPos)
-
-//	SetHighScoresPos
-//
-//	Animates to the given position
-
-	{
-	CHighScoreList *pHighScoreList = GetHighScoreListOld();
-
-	if (iPos < 0 || iPos >= pHighScoreList->GetCount())
-		return;
-
-	IAnimatron *pAni = m_Reanimator.GetPerformance(m_dwHighScoresPerformance);
-	if (pAni == NULL)
-		return;
-
-	//	Get the current scroll position
-
-	int yCurrent = (int)pAni->GetPropertyMetric(PROP_SCROLL_POS);
-	int yDest = m_pHighScorePos[iPos];
-
-	//	Delete any current animation
-
-	pAni->RemoveAnimation(ID_HIGH_SCORES_ANIMATOR);
-
-	//	Create animation that goes from the current position
-	//	to the desired position
-
-	CLinearMetric *pScroller = new CLinearMetric;
-	pScroller->SetParams(yCurrent, yDest, (yDest - yCurrent) / 16.0f);
-	pAni->AnimateProperty(PROP_SCROLL_POS, pScroller, 0, ID_HIGH_SCORES_ANIMATOR);
-
-	//	Create animation that fades out the whole list after a while
-
-	CLinearFade *pFader = new CLinearFade;
-	pFader->SetParams(pScroller->GetDuration() + HIGH_SCORES_DURATION, 0, 30);
-	pAni->AnimateProperty(PROP_OPACITY, pFader, 0, ID_HIGH_SCORES_ANIMATOR);
-
-	//	Set the selection to the proper spot
-
-	IAnimatron *pSelRect;
-	if (pAni->FindElement(ID_HIGH_SCORES_SELECT_RECT, &pSelRect))
-		{
-		int cyOffset = (m_rcIntroMain.bottom - m_Fonts.Header.GetHeight() - m_rcIntroMain.top) / 3;
-
-		pSelRect->SetPropertyVector(PROP_POSITION, CVector(SCORE_SELECTION_X, yDest + cyOffset));
-		pSelRect->SetPropertyVector(PROP_SCALE, CVector(SCORE_SELECTION_WIDTH, m_pHighScorePos[iPos + 1] - yDest));
-		pSelRect->SetPropertyOpacity(PROP_OPACITY, SCORE_SELECTION_OPACITY);
-		}
-
-	//	Restart animation
-
-	m_Reanimator.StartPerformance(m_dwHighScoresPerformance);
-
-	//	Remember the position
-
-	m_iHighScoreSelection = iPos;
-	}
-
-void CTranscendenceWnd::SetHighScoresScroll (void)
-
-//	SetHighScoresScroll
-//
-//	Animates high scores to scrolling mode
-
-	{
-	IAnimatron *pAni = m_Reanimator.GetPerformance(m_dwHighScoresPerformance);
-	if (pAni == NULL)
-		return;
-
-	//	Delete any current animations
-
-	pAni->RemoveAnimation(ID_HIGH_SCORES_ANIMATOR);
-
-	//	Scroller
-
-	CLinearMetric *pScroller = new CLinearMetric;
-	Metric cyViewport = pAni->GetPropertyMetric(PROP_VIEWPORT_HEIGHT);
-	RECT rcRect;
-	pAni->GetSpacingRect(&rcRect);
-	pScroller->SetParams(-cyViewport, (Metric)RectHeight(rcRect), 2.0);
-	pAni->AnimateProperty(PROP_SCROLL_POS, pScroller, 0, ID_HIGH_SCORES_ANIMATOR);
-
-	//	Clear the selection
-
-	IAnimatron *pSelRect;
-	if (pAni->FindElement(ID_HIGH_SCORES_SELECT_RECT, &pSelRect))
-		pSelRect->SetPropertyOpacity(PROP_OPACITY, 0);
-
-	//	Restart
-
-	m_Reanimator.StartPerformance(m_dwHighScoresPerformance);
-
-	//	No selection
-
-	m_iHighScoreSelection = -1;
-	}
-
 void CTranscendenceWnd::SetMusicOption (void)
 
 //	SetMusicOption
@@ -1685,9 +1311,6 @@ ALERROR CTranscendenceWnd::StartIntro (CIntroSession *pThis)
 //	Start introduction
 
 	{
-	ALERROR error;
-	int i;
-
 	//	Temporarily set this member variable because some of our functions are
 	//	implemented in CTranscendenceWnd. Over time, all those functions should
 	//	be moved to CIntroSession.
@@ -1745,73 +1368,6 @@ ALERROR CTranscendenceWnd::StartIntro (CIntroSession *pThis)
 	m_ButtonBarDisplay.SetFontTable(&m_Fonts);
 	m_ButtonBarDisplay.Init(this, &m_ButtonBar, m_rcIntroBottom);
 
-	//	Create an empty system
-
-	if (error = g_pUniverse->CreateEmptyStarSystem(&m_pIntroSystem))
-		{
-		ASSERT(false);
-		return error;
-		}
-
-	g_pUniverse->SetCurrentSystem(m_pIntroSystem);
-
-	CSovereign *pSovereign1 = g_pUniverse->FindSovereign(g_PlayerSovereignUNID);
-	CSovereign *pSovereign2 = g_pUniverse->FindSovereign(UNID_UNKNOWN_ENEMY);
-
-	//	Create a couple of random enemy ships
-
-	CShip *pShip1;
-	CShip *pShip2;
-	if (error = CreateRandomShip(m_pIntroSystem, 0, pSovereign1, &pShip1))
-		{
-		ASSERT(false);
-		return error;
-		}
-
-	if (error = CreateRandomShip(m_pIntroSystem, 0, pSovereign2, &pShip2))
-		{
-		ASSERT(false);
-		return error;
-		}
-
-	//	Make the ships attack each other
-
-	for (i = 0; i < m_pIntroSystem->GetObjectCount(); i++)
-		{
-		CSpaceObject *pObj = m_pIntroSystem->GetObject(i);
-
-		if (pObj
-				&& pObj->GetCategory() == CSpaceObject::catShip
-				&& !pObj->IsVirtual()
-				&& !pObj->IsInactive()
-				&& !pObj->GetData(CONSTLIT("IntroController")).IsBlank())
-			{
-			CShip *pShip = pObj->AsShip();
-			if (pShip)
-				{
-				IShipController *pController = pShip->GetController();
-				if (pShip->GetSovereign() == pSovereign1)
-					pController->AddOrder(IShipController::orderDestroyTarget, pShip2, IShipController::SData());
-				else
-					pController->AddOrder(IShipController::orderDestroyTarget, pShip1, IShipController::SData());
-				}
-			}
-		}
-
-	//	No sound
-
-	g_pUniverse->SetSound(false);
-
-	//	Set the POV to one of them
-
-	g_pUniverse->SetPOV(pShip1);
-	m_iTick = 0;
-	m_iLastShipCreated = m_iTick;
-
-	//	Initialize the system
-
-	g_pUniverse->MarkLibraryBitmaps();
-
 	//	Create the credits performance
 
 	IAnimatron *pAnimation;
@@ -1822,11 +1378,6 @@ ALERROR CTranscendenceWnd::StartIntro (CIntroSession *pThis)
 
 	CreateTitleAnimation(&pAnimation);
 	m_dwTitlesPerformance = m_Reanimator.AddPerformance(pAnimation, ID_TITLES_PERFORMANCE);
-
-	//	Create the high scores performance
-
-	CreateHighScoresAnimation(GetHighScoreListOld(), &pAnimation);
-	m_dwHighScoresPerformance = m_Reanimator.AddPerformance(pAnimation, ID_HIGH_SCORES_PERFORMANCE);
 
 	//	Create the top bar
 
@@ -1843,21 +1394,6 @@ ALERROR CTranscendenceWnd::StartIntro (CIntroSession *pThis)
 	m_State = gsIntro;
 
 	return NOERROR;
-	}
-
-void CTranscendenceWnd::StopAnimations (void)
-
-//	StopAnimations
-//
-//	Stops all intro animations (but not UI element animations)
-
-	{
-	m_Reanimator.StopPerformance(ID_CREDITS_PERFORMANCE);
-	m_Reanimator.StopPerformance(ID_END_GAME_PERFORMANCE);
-	m_Reanimator.StopPerformance(ID_HIGH_SCORES_PERFORMANCE);
-	m_Reanimator.StopPerformance(ID_SHIP_DESC_PERFORMANCE);
-	m_Reanimator.StopPerformance(ID_TITLES_PERFORMANCE);
-	m_Reanimator.StopPerformance(ID_NEWS_PERFORMANCE);
 	}
 
 void CTranscendenceWnd::StopIntro (void)
@@ -1880,17 +1416,8 @@ void CTranscendenceWnd::StopIntro (void)
 	if (m_dwTitlesPerformance)
 		m_Reanimator.DeletePerformance(m_dwTitlesPerformance);
 
-	if (m_dwHighScoresPerformance)
-		m_Reanimator.DeletePerformance(m_dwHighScoresPerformance);
-
 	if (m_dwPlayerBarPerformance)
 		m_Reanimator.DeletePerformance(m_dwPlayerBarPerformance);
-
-	if (m_pHighScorePos)
-		{
-		delete [] m_pHighScorePos;
-		m_pHighScorePos = NULL;
-		}
 
 	//	Destroy system
 

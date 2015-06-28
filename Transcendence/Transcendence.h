@@ -90,55 +90,6 @@ struct SFontTable
 
 //	Intro
 
-class CIntroShipController : public IShipController
-	{
-	public:
-		CIntroShipController (void);
-		CIntroShipController (CTranscendenceWnd *pTrans, IShipController *pDelegate);
-		virtual ~CIntroShipController (void);
-
-		inline void SetShip (CShip *pShip) { m_pShip = pShip; }
-
-		virtual void Behavior (void) { m_pDelegate->Behavior(); }
-		virtual CString DebugCrashInfo (void) { return m_pDelegate->DebugCrashInfo(); }
-		virtual int GetCombatPower (void) { return m_pDelegate->GetCombatPower(); }
-		virtual EManeuverTypes GetManeuver (void) { return m_pDelegate->GetManeuver(); }
-		virtual bool GetThrust (void) { return m_pDelegate->GetThrust(); }
-		virtual bool GetReverseThrust (void) { return m_pDelegate->GetReverseThrust(); }
-		virtual bool GetStopThrust (void) { return m_pDelegate->GetStopThrust(); }
-		virtual bool GetDeviceActivate (void) { return m_pDelegate->GetDeviceActivate(); }
-		virtual int GetFireDelay (void) { return m_pDelegate->GetFireDelay(); }
-		virtual int GetFireRateAdj (void) { return m_pDelegate->GetFireRateAdj(); }
-		virtual CSpaceObject *GetBase (void) { return m_pDelegate->GetBase(); }
-		virtual CSpaceObject *GetEscortPrincipal (void) const { return m_pDelegate->GetEscortPrincipal(); }
-		virtual CSpaceObject *GetOrderGiver (void) { return m_pShip; }
-		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const { return m_pDelegate->GetTarget(ItemCtx, bNoAutoTarget); }
-		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution) { m_pDelegate->GetWeaponTarget(TargetingCtx, ItemCtx, retpTarget, retiFireSolution); }
-
-		virtual void AddOrder (OrderTypes Order, CSpaceObject *pTarget, const IShipController::SData &Data, bool bAddBefore = false) { m_pDelegate->AddOrder(Order, pTarget, Data, bAddBefore); }
-		virtual void CancelAllOrders (void) { m_pDelegate->CancelAllOrders(); }
-		virtual void CancelCurrentOrder (void) { m_pDelegate->CancelCurrentOrder(); }
-		virtual OrderTypes GetCurrentOrderEx (CSpaceObject **retpTarget = NULL, IShipController::SData *retData = NULL) { return m_pDelegate->GetCurrentOrderEx(retpTarget, retData); }
-
-		//	Events
-
-		virtual void OnArmorRepaired (int iSection) { m_pDelegate->OnArmorRepaired(iSection); }
-		virtual void OnAttacked (CSpaceObject *pAttacker, const DamageDesc &Damage) { m_pDelegate->OnAttacked(pAttacker, Damage); }
-		virtual void OnDamaged (const CDamageSource &Cause, CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage) { m_pDelegate->OnDamaged(Cause, pArmor, Damage, iDamage); }
-		virtual void OnDestroyed (SDestroyCtx &Ctx);
-		virtual void OnDocked (CSpaceObject *pObj) { m_pDelegate->OnDocked(pObj); }
-		virtual void OnDockedObjChanged (CSpaceObject *pLocation) { m_pDelegate->OnDockedObjChanged(pLocation); }
-		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend) { m_pDelegate->OnEnterGate(pDestNode, sDestEntryPoint, pStargate, bAscend); }
-		virtual void OnFuelLowWarning (int iSeq) { m_pDelegate->OnFuelLowWarning(iSeq); }
-		virtual void OnObjDestroyed (const SDestroyCtx &Ctx) { m_pDelegate->OnObjDestroyed(Ctx); }
-		virtual void OnWeaponStatusChanged (void) { m_pDelegate->OnWeaponStatusChanged(); }
-
-	private:
-		CTranscendenceWnd *m_pTrans;
-		IShipController *m_pDelegate;
-		CShip *m_pShip;
-	};
-
 enum TargetTypes
 	{
 	targetEnemies,
@@ -1215,11 +1166,9 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 			};
 
 		void CreateCreditsAnimation (IAnimatron **retpAnimatron);
-		void CreateHighScoresAnimation (CHighScoreList *pHighScoreList, IAnimatron **retpAnimatron);
 		void CreateLongCreditsAnimation (int x, int y, int cyHeight, IAnimatron **retpAnimatron);
 		void CreateNewsAnimation (CMultiverseNewsEntry *pEntry, IAnimatron **retpAnimatron);
 		void CreatePlayerBarAnimation (IAnimatron **retpAni);
-		ALERROR CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSovereign *pSovereign, CShip **retpShip);
 		void CreateScoreAnimation (const CGameRecord &Stats, IAnimatron **retpAnimatron);
 		void CreateShipDescAnimation (CShip *pShip, IAnimatron **retpAnimatron);
 		void CreateTitleAnimation (IAnimatron **retpAnimatron);
@@ -1241,7 +1190,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void SetHighScoresScroll (void);
 		void SetMusicOption (void);
 		ALERROR StartIntro (CIntroSession *pThis);
-		void StopAnimations (void);
 		void StopIntro (void);
 
 		ALERROR StartGame (void);
@@ -1356,10 +1304,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		CButtonBarDisplay m_ButtonBarDisplay;
 		DWORD m_dwCreditsPerformance;
 		DWORD m_dwTitlesPerformance;
-		DWORD m_dwHighScoresPerformance;
 		DWORD m_dwPlayerBarPerformance;
-		int *m_pHighScorePos;
-		int m_iHighScoreSelection;
 		CString m_sCommand;
 		CString m_sNewsURL;
 
@@ -1431,7 +1376,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		CTextFileLog m_GameLog;
 
 	friend LONG APIENTRY MainWndProc (HWND hWnd, UINT message, UINT wParam, LONG lParam);
-	friend class CIntroShipController;
 	friend class CGameSession;
 	friend class CIntroSession;
 	friend class CTranscendenceController;

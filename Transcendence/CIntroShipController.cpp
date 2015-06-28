@@ -23,8 +23,7 @@ CIntroShipController::~CIntroShipController (void)
 		delete dynamic_cast<CObject *>(m_pDelegate);
 	}
 
-CIntroShipController::CIntroShipController (CTranscendenceWnd *pTrans, IShipController *pDelegate) : 
-		m_pTrans(pTrans),
+CIntroShipController::CIntroShipController (IShipController *pDelegate) : 
 		m_pDelegate(pDelegate)
 
 //	CIntroShipController constructor

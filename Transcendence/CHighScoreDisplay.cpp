@@ -1,15 +1,36 @@
 //	CHighScoreDisplay.cpp
 //
 //	CHighScoreDisplay class
+//	Copyright (c) 2015 by Kronosaur Productions, LLC. All Rights Reserved.
 
 #include "PreComp.h"
 #include "Transcendence.h"
 
-const int SCORE_COLUMN_WIDTH =				116;
-const int FADE_TIME =						30;
+#define ID_HIGH_SCORES_ANIMATOR					CONSTLIT("hsAnimator")
+#define ID_HIGH_SCORES_SELECT_RECT				CONSTLIT("hsSelRect")
 
-CHighScoreDisplay::CHighScoreDisplay (void) : m_pList(NULL),
-		m_iMode(modeNormal)
+#define PROP_FADE_EDGE_HEIGHT					CONSTLIT("fadeEdgeHeight")
+#define PROP_MAX_SCROLL_POS						CONSTLIT("maxScrollPos")
+#define PROP_OPACITY							CONSTLIT("opacity")
+#define PROP_POSITION							CONSTLIT("position")
+#define PROP_SCALE								CONSTLIT("scale")
+#define PROP_SCROLL_POS							CONSTLIT("scrollPos")
+#define PROP_VIEWPORT_HEIGHT					CONSTLIT("viewportHeight")
+
+const int SCORE_COLUMN_WIDTH =					360;
+const Metric SCORE_SPACING_Y =					4.0;
+const Metric SCORE_SELECTION_WIDTH =			480.0;
+const Metric SCORE_SELECTION_X =				-120.0;
+const DWORD SCORE_SELECTION_OPACITY =			64;
+
+const int HIGH_SCORES_DURATION =				300;
+
+CHighScoreDisplay::CHighScoreDisplay (void) :
+		m_pHighScoreList(NULL),
+		m_pReanimator(NULL),
+		m_pPerformance(NULL),
+		m_dwPerformance(0),
+		m_iSelection(-1)
 
 //	CHighScoreDisplay constructor
 
@@ -21,286 +42,373 @@ CHighScoreDisplay::~CHighScoreDisplay (void)
 //	CHighScoreDisplay destructor
 
 	{
-	CleanUp();
+	if (m_pReanimator)
+		m_pReanimator->DeletePerformance(m_dwPerformance);
+
+	if (m_pHighScoreList)
+		delete m_pHighScoreList;
+
+	DeletePerformance();
 	}
 
-void CHighScoreDisplay::CleanUp (void)
+void CHighScoreDisplay::CreatePerformance (CReanimator &Reanimator, const CString &sPerformanceID, const RECT &rcRect, CAdventureHighScoreList *pHighScoreList, IAnimatron **retpAnimatron)
 
-//	CleanUp
+//	CreatePerformance
 //
-//	Must be called to release resources
+//	Creates a performance
 
 	{
-	m_pList = NULL;
+	int i, j;
 
-	//	NOTE: We only do this to save memory. The destructor will
-	//	automatically free the memory.
+	//	Get some resources
 
-	m_Buffer.Destroy();
-	}
+	const CVisualPalette &VI = g_pHI->GetVisuals();
+	const CG16bitFont &SubTitleFont = VI.GetFont(fontSubTitle);
+	const CG16bitFont &HeaderFont = VI.GetFont(fontHeader);
+	const CG16bitFont &MediumFont = VI.GetFont(fontMedium);
+	CG32bitPixel rgbLightTitleColor = VI.GetColor(colorTextFade);
+	CG32bitPixel rgbTitleColor = VI.GetColor(colorTextHighlight);
 
-int CHighScoreDisplay::ComputeFirstEntry (int iHighlight)
+	//	Figure out the position
 
-//	ComputeFirstEntry
-//
-//	Computes the first entry. iHighlight is the entry that we
-//	should highlight (-1 if no highlight)
+	int x = rcRect.left + 2 * RectWidth(rcRect) / 3;
+	int y = rcRect.top;
+	int yEnd = rcRect.bottom - HeaderFont.GetHeight();
+	int cyHeight = yEnd - y;
 
-	{
-	ASSERT(m_pList);
+	//	We keep track of all the score positions in an array
 
-	if (iHighlight == -1)
-		return 0;
-	else
+	m_ScrollPos.DeleteAll();
+	m_ScrollPos.InsertEmpty(pHighScoreList->GetCount() + 1);
+
+	//	Create a scroller
+
+	CAniVScroller *pAni = new CAniVScroller;
+	pAni->SetPropertyVector(PROP_POSITION, CVector((Metric)x, (Metric)y));
+	pAni->SetPropertyMetric(PROP_VIEWPORT_HEIGHT, (Metric)cyHeight);
+	pAni->SetPropertyMetric(PROP_FADE_EDGE_HEIGHT, (Metric)(cyHeight / 8));
+
+	//	Add a rect that we use to highlight selection.
+	//	We add it first because it paints behind everything
+
+	IAnimatron *pRect;
+	CAniRect::Create(CVector(0.0, 0.0), CVector(100.0, 10.0), rgbLightTitleColor, 0, &pRect);
+	pRect->SetID(ID_HIGH_SCORES_SELECT_RECT);
+	pAni->AddLine(pRect);
+
+	//	Loop over all scores
+
+	for (i = 0; i < pHighScoreList->GetCount(); i++)
 		{
-		if (iHighlight >= 2)
-			return iHighlight - 2;
-		else
-			return 0;
+		const CGameRecord &Score = pHighScoreList->GetEntry(i);
+
+		//	Position
+
+		Metric yPos = pAni->GetHeight() + (i > 0 ? SCORE_SPACING_Y : 0);
+		m_ScrollPos[i] = (int)(yPos - (cyHeight / 3));
+
+		//	Score
+
+		IAnimatron *pText;
+		CAniText::Create(strFormatInteger(Score.GetScore(), -1, FORMAT_THOUSAND_SEPARATOR),
+				CVector((Metric)-SubTitleFont.GetAverageWidth(), yPos),
+				&SubTitleFont,
+				CG16bitFont::AlignRight,
+				rgbTitleColor,
+				&pText);
+		pAni->AddLine(pText);
+
+		//	Name
+
+		CAniText::Create(Score.GetUsername(),
+				CVector(0.0, yPos),
+				&SubTitleFont,
+				0,
+				rgbTitleColor,
+				&pText);
+		pAni->AddLine(pText);
+
+		//	Epitaph
+
+		CString sEpitaph = Score.GetDescription(CGameRecord::descEpitaph);
+
+		TArray<CString> Lines;
+		MediumFont.BreakText(sEpitaph, SCORE_COLUMN_WIDTH, &Lines);
+
+		for (j = 0; j < Lines.GetCount(); j++)
+			{
+			CAniText::Create(Lines[j],
+					CVector(0.0, pAni->GetHeight()),
+					&MediumFont,
+					0,
+					rgbTitleColor,
+					&pText);
+			pAni->AddLine(pText);
+			}
+
+		//	Some stats
+
+		CString sStats = Score.GetDescription(CGameRecord::descShip | CGameRecord::descPlayTime | CGameRecord::descResurrectCount);
+		Lines.DeleteAll();
+		MediumFont.BreakText(sStats, SCORE_COLUMN_WIDTH, &Lines);
+
+		for (j = 0; j < Lines.GetCount(); j++)
+			{
+			CAniText::Create(Lines[j],
+					CVector(0.0, pAni->GetHeight()),
+					&MediumFont,
+					0,
+					rgbLightTitleColor,
+					&pText);
+			pAni->AddLine(pText);
+			}
+		}
+
+	//	Set the end pos
+
+	m_ScrollPos[i] = (int)pAni->GetHeight() - (cyHeight / 3);
+
+	//	Done
+
+	*retpAnimatron = pAni;
+	}
+
+void CHighScoreDisplay::DeletePerformance (void)
+
+//	DeletePerformance
+//
+//	Deletes the performance
+
+	{
+	if (IsPerformanceCreated())
+		{
+		m_pReanimator->StopPerformance(m_sPerformance);
+		m_pReanimator->DeletePerformance(m_dwPerformance);
+
+		m_pReanimator = NULL;
+		m_dwPerformance = 0;
+		m_pPerformance = NULL;
 		}
 	}
 
-void CHighScoreDisplay::FadeIn (void)
+int CHighScoreDisplay::GetCurrentScrollPos (void)
 
-//	FadeIn
+//	GetCurrentScrollPos
 //
-//	Set fade in
+//	Returns the score entry closest to the current scroll position.
 
 	{
-	m_iMode = modeFadeIn;
-	m_iCounter = FADE_TIME;
+	int i;
+
+	if (!IsPerformanceCreated())
+		return -1;
+
+	int yPos = (int)m_pPerformance->GetPropertyMetric(PROP_SCROLL_POS);
+
+	for (i = 0; i < m_ScrollPos.GetCount() - 1; i++)
+		if (m_ScrollPos[i] >= yPos)
+			return Max(0, i);
+
+	return -1;
 	}
 
-void CHighScoreDisplay::FadeOut (void)
+bool CHighScoreDisplay::IsPerformanceRunning (void)
 
-//	FadeIn
+//	IsPerformanceRunning
 //
-//	Set fade in
+//	Returns TRUE if the performance is still running
 
 	{
-	m_iMode = modeFadeOut;
-	m_iCounter = FADE_TIME;
-	}
+	if (!IsPerformanceCreated())
+		return false;
 
-ALERROR CHighScoreDisplay::Init (const RECT &rcRect, CHighScoreList *pList, int iHighlight)
-
-//	Init
-//
-//	Must be called to initialize
-
-	{
-	ALERROR error;
-
-	ASSERT(m_pList == NULL);
-	m_pList = pList;
-	m_rcRect = rcRect;
-	m_iSelectedEntry = iHighlight;
-	m_iFirstEntry = ComputeFirstEntry(m_iSelectedEntry);
-
-	//	Create the off-screen buffer
-
-	if (error = m_Buffer.CreateBlank(RectWidth(rcRect), RectHeight(rcRect), false))
-		return error;
-
-	m_Buffer.SetTransparentColor(CG16bitImage::RGBValue(0,0,0));
-
-	//	Fade in
-
-	FadeIn();
-
-	return NOERROR;
-	}
-
-void CHighScoreDisplay::Paint (CG16bitImage &Dest)
-
-//	Paint
-//
-//	Paints the display
-
-	{
-	ASSERT(m_pList);
-
-	if (m_iMode == modeHidden)
-		return;
-
-	//	Opacity
-
-	DWORD dwOpacity;
-	if (m_iMode == modeFadeIn)
-		dwOpacity = 255 * (FADE_TIME - m_iCounter) / FADE_TIME;
-	else if (m_iMode == modeFadeOut)
-		dwOpacity = 255 * m_iCounter / FADE_TIME;
-	else
-		dwOpacity = 255;
-
-	//	If we have a selected entry, highlight the background
-
-	if (m_iSelectedEntry != -1)
-		{
-		RECT rcHighlight = m_rcHighlight;
-		::OffsetRect(&rcHighlight, m_rcRect.left, m_rcRect.top);
-
-		Dest.FillTransRGB(rcHighlight.left,
-				rcHighlight.top,
-				RectWidth(rcHighlight),
-				RectHeight(rcHighlight),
-				RGB(255, 255, 255),
-				32 * dwOpacity / 255);
-		}
-
-	//	Blt the scores
-
-	Dest.ColorTransBlt(0,
-			0,
-			RectWidth(m_rcRect),
-			RectHeight(m_rcRect),
-			dwOpacity,
-			m_Buffer,
-			m_rcRect.left,
-			m_rcRect.top);
+	return m_pReanimator->IsPerformanceRunning(m_sPerformance);
 	}
 
 void CHighScoreDisplay::SelectNext (void)
 
 //	SelectNext
 //
-//	Select the next score
+//	Select the next entry in the high score list
 
 	{
-	if (m_iSelectedEntry + 1 < m_pList->GetCount())
-		{
-		m_iSelectedEntry++;
-		m_iFirstEntry = ComputeFirstEntry(m_iSelectedEntry);
-		}
-	}
-
-void CHighScoreDisplay::SelectPrevious (void)
-
-//	SelectPrevious
-//
-//	Select the previous score
-
-	{
-	if (m_iSelectedEntry - 1 >= 0)
-		{
-		m_iSelectedEntry--;
-		m_iFirstEntry = ComputeFirstEntry(m_iSelectedEntry);
-		}
-	}
-
-void CHighScoreDisplay::Show (bool bShow)
-
-//	Show
-//
-//	Shows/hides display
-
-	{
-	m_iMode = (bShow ? modeNormal : modeHidden);
-	}
-
-void CHighScoreDisplay::Update (void)
-
-//	Update
-//
-//	Updates the display
-
-	{
-	ASSERT(m_pList);
-
-	m_Buffer.Fill(0, 0, RectWidth(m_rcRect), RectHeight(m_rcRect), CG16bitImage::RGBValue(0, 0, 0));
-
-	//	Don't bother drawing anything if we've got no scores
-
-	if (m_pList->GetCount() == 0)
+	if (!IsPerformanceCreated())
 		return;
 
-	//	Draw Title
-
-	m_pFonts->SubTitle.DrawText(m_Buffer, 
-			0, 
-			0, 
-			CG16bitImage::RGBValue(128,128,128), 
-			CONSTLIT("High Score List"));
-
-	int y = m_pFonts->SubTitle.GetHeight();
-
-	//	Draw each score
-
-	TArray<CString> Lines;
-	for (int i = m_iFirstEntry; 
-			(i < m_pList->GetCount()) && (y + m_pFonts->SubTitle.GetHeight() < RectHeight(m_rcRect)); 
-			i++)
+	if (m_iSelection == -1)
 		{
-		const CGameRecord &Entry = m_pList->GetEntry(i);
+		int iPos = GetCurrentScrollPos();
+		if (iPos != -1)
+			ScrollToPos(iPos);
+		}
+	else
+		ScrollToPos(Min(m_iSelection + 1, m_pHighScoreList->GetCount() - 1));
+	}
 
-		if (i == m_iSelectedEntry)
-			{
-			m_rcHighlight.left = 0;
-			m_rcHighlight.top = y;
-			m_rcHighlight.right = RectWidth(m_rcRect);
-			}
+void CHighScoreDisplay::SelectPrev (void)
 
-		CString sScore = strFromInt(Entry.GetScore(), false);
-		int cxWidth = m_pFonts->SubTitle.MeasureText(sScore, NULL);
-		m_pFonts->SubTitle.DrawText(m_Buffer,
-				(SCORE_COLUMN_WIDTH - 10) - cxWidth,
-				y,
-				CG16bitImage::RGBValue(128,128,128),
-				sScore);
+//	SelectPrev
+//
+//	Select the previous entry in the high score list
 
-		CString sName;
-		if (Entry.IsDebug())
-			sName = strPatternSubst(CONSTLIT("%d. %s [debug]"), i+1, Entry.GetPlayerName());
-		else
-			sName = strPatternSubst(CONSTLIT("%d. %s [%s]"), i+1, Entry.GetPlayerName(), Entry.GetShipClass());
-		m_pFonts->Medium.DrawText(m_Buffer,
-				SCORE_COLUMN_WIDTH,
-				y,
-				CG16bitImage::RGBValue(255,255,255),
-				sName);
+	{
+	if (!IsPerformanceCreated())
+		return;
 
-		CString sText = Entry.GetEndGameEpitaph();
-		sText.Capitalize(CString::capFirstLetter);
-		if (!Entry.GetPlayTimeString().IsBlank())
-			sText.Append(strPatternSubst(CONSTLIT("\nPlayed for %s"), Entry.GetPlayTimeString()));
+	if (m_iSelection == -1)
+		{
+		int iPos = GetCurrentScrollPos();
+		if (iPos != -1)
+			ScrollToPos(iPos);
+		}
+	else
+		ScrollToPos(Max(0, m_iSelection - 1));
+	}
 
-		if (Entry.GetResurrectCount() == 1)
-			sText.Append(CONSTLIT(" (resurrected once)"));
-		else if (Entry.GetResurrectCount() > 1)
-			sText.Append(strPatternSubst(CONSTLIT(" (resurrected %d times)"), Entry.GetResurrectCount()));
+void CHighScoreDisplay::ScrollToPos (int iPos)
 
-		y += m_pFonts->Medium.GetHeight();
-		Lines.DeleteAll();
-		m_pFonts->Medium.BreakText(sText, RectWidth(m_rcRect) - SCORE_COLUMN_WIDTH, &Lines);
-		for (int j = 0; j < Lines.GetCount(); j++)
-			{
-			m_pFonts->Medium.DrawText(m_Buffer,
-					SCORE_COLUMN_WIDTH,
-					y,
-					CG16bitImage::RGBValue(128,128,128),
-					Lines[j]);
+//	ScrollToPos
+//
+//	Scroll to the given entry
 
-			y += m_pFonts->Medium.GetHeight();
-			}
+	{
+	if (!IsPerformanceCreated() || iPos < 0 || iPos >= m_pHighScoreList->GetCount())
+		return;
 
-		y += 2;
+	const CVisualPalette &VI = g_pHI->GetVisuals();
+	const CG16bitFont &HeaderFont = VI.GetFont(fontHeader);
 
-		if (i == m_iSelectedEntry)
-			m_rcHighlight.bottom = y;
+	//	Get the current scroll position
+
+	int yCurrent = (int)m_pPerformance->GetPropertyMetric(PROP_SCROLL_POS);
+	int yDest = m_ScrollPos[iPos];
+
+	//	Delete any current animation
+
+	m_pPerformance->RemoveAnimation(ID_HIGH_SCORES_ANIMATOR);
+
+	//	Create animation that goes from the current position
+	//	to the desired position
+
+	CLinearMetric *pScroller = new CLinearMetric;
+	pScroller->SetParams(yCurrent, yDest, (yDest - yCurrent) / 16.0f);
+	m_pPerformance->AnimateProperty(PROP_SCROLL_POS, pScroller, 0, ID_HIGH_SCORES_ANIMATOR);
+
+	//	Create animation that fades out the whole list after a while
+
+	CLinearFade *pFader = new CLinearFade;
+	pFader->SetParams(pScroller->GetDuration() + HIGH_SCORES_DURATION, 0, 30);
+	m_pPerformance->AnimateProperty(PROP_OPACITY, pFader, 0, ID_HIGH_SCORES_ANIMATOR);
+
+	//	Set the selection to the proper spot
+
+	IAnimatron *pSelRect;
+	if (m_pPerformance->FindElement(ID_HIGH_SCORES_SELECT_RECT, &pSelRect))
+		{
+		int cyOffset = (m_rcScreen.bottom - HeaderFont.GetHeight() - m_rcScreen.top) / 3;
+
+		pSelRect->SetPropertyVector(PROP_POSITION, CVector(SCORE_SELECTION_X, yDest + cyOffset));
+		pSelRect->SetPropertyVector(PROP_SCALE, CVector(SCORE_SELECTION_WIDTH, m_ScrollPos[iPos + 1] - yDest));
+		pSelRect->SetPropertyOpacity(PROP_OPACITY, SCORE_SELECTION_OPACITY);
 		}
 
-	//	Update
+	//	Restart animation
 
-	switch (m_iMode)
+	m_pReanimator->StartPerformance(m_dwPerformance);
+
+	//	Remember the position
+
+	m_iSelection = iPos;
+	}
+
+void CHighScoreDisplay::SetHighScoreList (CAdventureHighScoreList *pList)
+
+//	SetHighScoreList
+//
+//	Set the list
+
+	{
+	if (m_pHighScoreList)
+		delete m_pHighScoreList;
+
+	m_pHighScoreList = pList;
+
+	//	If we've got a new high score list, then we need to delete the 
+	//	performance.
+
+	DeletePerformance();
+	}
+
+bool CHighScoreDisplay::StartPerformance (CReanimator &Reanimator, const CString &sPerformanceID, const RECT &rcScreen)
+
+//	StartPerformance
+//
+//	Starts the high score display performance. We return TRUE if we started it,
+//	or false if we failed (for some reason).
+
+	{
+	//	If we don't have a high score list, then there's nothing we can do.
+
+	if (m_pHighScoreList == NULL)
+		return false;
+
+	//	Make sure we have a performance
+
+	if (!IsPerformanceCreated())
 		{
-		case modeFadeIn:
-			if (--m_iCounter == 0)
-				m_iMode = modeNormal;
-			break;
+		m_pReanimator = &Reanimator;
+		m_sPerformance = sPerformanceID;
+		m_rcScreen = rcScreen;
 
-		case modeFadeOut:
-			if (--m_iCounter == 0)
-				m_iMode = modeHidden;
-			break;
+		CreatePerformance(Reanimator, sPerformanceID, rcScreen, m_pHighScoreList, &m_pPerformance);
+		m_dwPerformance = Reanimator.AddPerformance(m_pPerformance, m_sPerformance);
 		}
+
+	//	If we've got a selection, then scroll to the position
+
+	int iSelection = m_pHighScoreList->GetSelection();
+	if (iSelection != -1)
+		ScrollToPos(iSelection);
+
+	//	Otherwise, we just scroll
+
+	else
+		{
+		m_pPerformance->RemoveAnimation(ID_HIGH_SCORES_ANIMATOR);
+
+		//	Scroller
+
+		CLinearMetric *pScroller = new CLinearMetric;
+		Metric cyViewport = m_pPerformance->GetPropertyMetric(PROP_VIEWPORT_HEIGHT);
+		Metric cyHeight = m_pPerformance->GetPropertyMetric(PROP_MAX_SCROLL_POS);
+		pScroller->SetParams(-cyViewport, cyHeight + cyViewport, 2.0);
+		m_pPerformance->AnimateProperty(PROP_SCROLL_POS, pScroller, 0, ID_HIGH_SCORES_ANIMATOR);
+
+		//	Clear the selection
+
+		IAnimatron *pSelRect;
+		if (m_pPerformance->FindElement(ID_HIGH_SCORES_SELECT_RECT, &pSelRect))
+			pSelRect->SetPropertyOpacity(PROP_OPACITY, 0);
+
+		//	Restart
+
+		m_pReanimator->StartPerformance(m_dwPerformance);
+
+		//	No selection
+
+		m_iSelection = -1;
+		}
+
+	return true;
+	}
+
+void CHighScoreDisplay::StopPerformance (void)
+
+//	StopPerformance
+//
+//	Stops the performance
+
+	{
+	if (IsPerformanceCreated())
+		m_pReanimator->StopPerformance(m_sPerformance);
 	}

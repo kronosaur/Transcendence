@@ -233,6 +233,9 @@
     <ClCompile Include="IntroScreen.cpp">
       <Filter>Source Files\Intro Session</Filter>
     </ClCompile>
+    <ClCompile Include="CHighScoreDisplay.cpp">
+      <Filter>Source Files\Intro Session</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundTasks.h">

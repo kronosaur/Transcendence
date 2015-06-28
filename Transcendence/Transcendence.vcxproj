@@ -294,6 +294,7 @@
     <ClCompile Include="CGameSession.cpp" />
     <ClCompile Include="CGItemDisplayArea.cpp" />
     <ClCompile Include="CGSelectorArea.cpp" />
+    <ClCompile Include="CHighScoreDisplay.cpp" />
     <ClCompile Include="CIntroSession.cpp" />
     <ClCompile Include="CIntroShipController.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>

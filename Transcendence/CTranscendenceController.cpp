@@ -65,6 +65,7 @@
 #define CMD_SOUNDTRACK_PREV						CONSTLIT("cmdSoundtrackPrev")
 #define CMD_SOUNDTRACK_STOP						CONSTLIT("cmdSoundtrackStop")
 #define CMD_SOUNDTRACK_UPDATE_PLAY_POS			CONSTLIT("cmdSoundtrackUpdatePlayPos")
+#define CMD_UPDATE_HIGH_SCORE_LIST				CONSTLIT("cmdUpdateHighScoreList")
 
 #define CMD_GAME_ADVENTURE						CONSTLIT("gameAdventure")
 #define CMD_GAME_CREATE							CONSTLIT("gameCreate")
@@ -101,6 +102,7 @@
 #define CMD_SERVICE_ERROR						CONSTLIT("serviceError")
 #define CMD_SERVICE_EXTENSION_LOADED			CONSTLIT("serviceExtensionLoaded")
 #define CMD_SERVICE_FILE_DOWNLOADED				CONSTLIT("serviceFileDownloaded")
+#define CMD_SERVICE_HIGH_SCORE_LIST_ERROR		CONSTLIT("serviceHighScoreListError")
 #define CMD_SERVICE_HIGH_SCORE_LIST_LOADED		CONSTLIT("serviceHighScoreListLoaded")
 #define CMD_SERVICE_HOUSEKEEPING				CONSTLIT("serviceHousekeeping")
 #define CMD_SERVICE_NEWS_LOADED					CONSTLIT("serviceNewsLoaded")
@@ -676,7 +678,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Legacy CTranscendenceWnd takes over
 
-		m_HI.ShowSession(new CIntroSession(m_HI, CIntroSession::isOpeningTitles));
+		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, CIntroSession::isOpeningTitles));
 
 		//	Start the intro
 
@@ -785,7 +787,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_UI_BACK_TO_INTRO))
 		{
-		m_HI.ShowSession(new CIntroSession(m_HI, CIntroSession::isBlank));
+		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, CIntroSession::isBlank));
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1034,7 +1036,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Back to intro screen
 
-		m_HI.ShowSession(new CIntroSession(m_HI, CIntroSession::isShipStats));
+		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, CIntroSession::isShipStats));
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1197,7 +1199,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			}
 		else
 			{
-			m_HI.ShowSession(new CIntroSession(m_HI, CIntroSession::isEndGame));
+			m_HI.ShowSession(new CIntroSession(m_HI, m_Model, CIntroSession::isEndGame));
 			m_iState = stateIntro;
 			DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 			m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1213,7 +1215,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (m_iState == stateEndGameStats)
 			{
-			m_HI.ShowSession(new CIntroSession(m_HI, CIntroSession::isEndGame));
+			m_HI.ShowSession(new CIntroSession(m_HI, m_Model, CIntroSession::isEndGame));
 			m_iState = stateIntro;
 			DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 			m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1694,6 +1696,9 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			delete pHighScoreList;
 		}
 
+	else if (strEquals(sCmd, CMD_SERVICE_HIGH_SCORE_LIST_ERROR))
+		m_HI.GetSession()->HICommand(sCmd);
+
 	else if (strEquals(sCmd, CMD_SERVICE_STATUS))
 		{
 		CString *pState = (CString *)pData;
@@ -1753,6 +1758,14 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SOUNDTRACK_PLAY_PAUSE))
 		m_Soundtrack.TogglePlayPaused();
+
+	//	Update high score list
+
+	else if (strEquals(sCmd, CMD_UPDATE_HIGH_SCORE_LIST))
+		{
+		CAdventureHighScoreList::SSelect *pSelect = (CAdventureHighScoreList::SSelect *)pData;
+		m_HI.AddBackgroundTask(new CReadHighScoreListTask(m_HI, m_Service, *pSelect), 0);
+		}
 
 	//	Exit
 
