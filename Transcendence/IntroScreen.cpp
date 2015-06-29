@@ -31,12 +31,6 @@
 
 #define RGB_NEWS_PANE_BACKGROUND				CG32bitPixel(128, 213, 255)
 
-#define STR_OVERWRITE							CONSTLIT("Overwrite")
-#define STR_CANCEL								CONSTLIT("Cancel")
-#define STR_OVERWRITE_GAME						CONSTLIT("Overwrite Saved Game?")
-#define STR_TEXT1								CONSTLIT("You currently have a saved game in progress.")
-#define STR_TEXT2								CONSTLIT("If you start a new game your will overwrite your saved game.")
-
 const Metric GAME_STAT_SELECTION_WIDTH =		480.0;
 const Metric GAME_STAT_SELECTION_X =			-20.0;
 const DWORD GAME_STAT_SELECTION_OPACITY =		64;
