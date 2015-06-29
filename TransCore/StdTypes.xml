@@ -1839,6 +1839,7 @@
 			dockScreen=			"&dsNavBeacon;"
 			noMapLabel=			"true"
 			beacon=				"true"
+			immutable=			"true"
 			mass=				"2500"
 			>
 
