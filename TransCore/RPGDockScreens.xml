@@ -769,13 +769,11 @@
 							"\n"
 							"{/f:MediumBold;/c:#79828c; device slots:} " deviceSlots " (" availDeviceSlots " free)\n"
 							
-							(if (or (!= deviceSlots maxWeaponSlots)
-									(!= deviceSlots maxNonWeaponSlots)
-									)
-								(cat
-									"{/f:MediumBold;/c:#79828c; for weapon:} " maxWeaponSlots " (" availWeaponSlots " free)\n"
-									"{/f:MediumBold;/c:#79828c; for non-weapon:} " maxNonWeaponSlots " (" availNonWeaponSlots " free)\n"
-									)
+							(if (!= deviceSlots maxWeaponSlots)
+								(cat "{/f:MediumBold;/c:#79828c; for weapon:} " maxWeaponSlots " (" availWeaponSlots " free)\n")
+								)
+							(if (!= deviceSlots maxNonWeaponSlots)
+								(cat "{/f:MediumBold;/c:#79828c; for non-weapon:} " maxNonWeaponSlots " (" availNonWeaponSlots " free)\n") 
 								)
 							"\n"
 							"{/f:MediumBold;/c:#79828c; max. armor:} " (/ (objGetProperty gPlayerShip 'maxArmorMass) 1000) " tons\n"
@@ -876,7 +874,7 @@
 					<Action id="actionRefuel">
 						(if (= (scrGetData gScreen 'fuelCost) 0)
 							(block Nil
-								(setq itemsToUse (itmCreate (itmGetType (scrGetData gScreen 'fuelItem)) count))
+								(setq itemsToUse (itmCreate (itmGetType (scrGetData gScreen 'fuelItem)) (scrGetData gScreen 'fuelNeeded)))
 								(shpRefuelFromItem gPlayerShip itemsToUse)
 								(scrRefreshScreen gScreen)
 								)

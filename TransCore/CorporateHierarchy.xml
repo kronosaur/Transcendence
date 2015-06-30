@@ -1267,32 +1267,35 @@
 			<Main>
 				<Panes>
 					<Default>
-
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat "Welcome to " (objGetName gSource) ", your most reliable source of starship fuel and a member of the Earth Industries Conglomerate. All our fuel has been produced to the exacting standards required by today's reactors. Please use the terminal to proceed with your transaction."))
+							(block (actionStatus)
+								(scrSetDescTranslate gScreen 'desc)
+								
+								(setq actionStatus (rpgCalcDockServiceRefuelAction gSource gPlayerShip { }))
+								(scrShowAction gScreen 'actionRefuel (@ actionStatus 'visible))
+								(scrEnableAction gScreen 'actionRefuel (@ actionStatus 'enabled))
+								(scrSetActionDesc gScreen 'actionRefuel (@ actionStatus 'desc))
+								)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Refuel" key="R" default="1">
+							<Action id="actionRefuel" default="1">
 								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
-							<Action name="Buy Items" key="B">
+							<Action id="actionBuy">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
 		<DockingPorts>
@@ -1305,6 +1308,19 @@
 			<Port x="-50"	y="70" />
 			<Port x="-50"	y="-30" />
 		</DockingPorts>
+		
+		<Language>
+			<Text id="actionRefuel">"[R]efuel"</Text>
+			<Text id="actionBuy">"[B]uy Items"</Text>
+			<Text id="actionUndock">"[U]ndock"</Text>
+			
+			<Text id="desc">
+				(cat 
+					"Welcome to " (objGetName gSource) ", your most reliable source of starship fuel and a member of the Earth Industries Conglomerate.\n\n"
+					"All our fuel has been produced to the exacting standards required by today's reactors. Please use the terminal to proceed with your transaction."
+					)
+			</Text>
+		</Language>
 
 	</StationType>
 

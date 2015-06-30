@@ -389,21 +389,36 @@
 							{
 								visible: True
 								enabled: Nil
-								desc: (scrTranslate gScreen "actionRefuel:noRefuel")
+								desc: (or (scrTranslate gScreen "actionRefuel:noRefuel")
+										(typTranslate &dsRPGDockServicesBase; "actionRefuel:noRefuel")
+										)
 								}
 								
 						(not fuelToUse)
 							{
 								visible: True
 								enabled: Nil
-								desc: (scrTranslate gScreen "actionRefuel:noCompatibleFuel")
+								desc: (or (scrTranslate gScreen "actionRefuel:noCompatibleFuel")
+										(typTranslate &dsRPGDockServicesBase; "actionRefuel:noCompatibleFuel")
+										)
+								}
+								
+						(and (= cost 0) (= maxCount 0))
+							{
+								visible: True
+								enabled: Nil
+								desc: (or (scrTranslate gScreen "actionRefuel:freeRefuel" { item:fuelItem needed:maxCount })
+										(typTranslate &dsRPGDockServicesBase; "actionRefuel:freeRefuel" { item:fuelItem needed:maxCount })
+										)
 								}
 								
 						(= cost 0)
 							{
 								visible: True
 								enabled: True
-								desc: (scrTranslate gScreen "actionRefuel:freeRefuel" { item:fuelItem needed:maxCount })
+								desc: (or (scrTranslate gScreen "actionRefuel:freeRefuel" { item:fuelItem needed:maxCount })
+										(typTranslate &dsRPGDockServicesBase; "actionRefuel:freeRefuel" { item:fuelItem needed:maxCount })
+										)
 								
 								fuelItem: fuelItem
 								cost: cost
@@ -416,21 +431,27 @@
 							{
 								visible: True
 								enabled: Nil
-								desc: (scrTranslate gScreen "actionRefuel:noFuelNeeded" { item:fuelItem })
+								desc: (or (scrTranslate gScreen "actionRefuel:noFuelNeeded" { item:fuelItem })
+										(typTranslate &dsRPGDockServicesBase; "actionRefuel:noFuelNeeded" { item:fuelItem })
+										)
 								}
 								
 						(= maxAfford 0)
 							{
 								visible: True
 								enabled: Nil
-								desc: (scrTranslate gScreen "actionRefuel:cantAfford" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount afford:maxAfford })
+								desc: (or (scrTranslate gScreen "actionRefuel:cantAfford" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount afford:maxAfford })
+										(typTranslate &dsRPGDockServicesBase; "actionRefuel:cantAfford" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount afford:maxAfford })
+										)
 								}
 								
 						(ls maxAfford maxCount)
 							{
 								visible: True
 								enabled: True
-								desc: (scrTranslate gScreen "actionRefuel:cantAfford" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount afford:maxAfford })
+								desc: (or (scrTranslate gScreen "actionRefuel:cantAfford" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount afford:maxAfford })
+										(typTranslate &dsRPGDockServicesBase; "actionRefuel:cantAfford" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount afford:maxAfford })
+										)
 								
 								fuelItem: fuelItem
 								cost: cost
@@ -442,7 +463,9 @@
 						{
 							visible: True
 							enabled: True
-							desc: (scrTranslate gScreen "actionRefuel:refuel" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount })
+							desc: (or (scrTranslate gScreen "actionRefuel:refuel" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount })
+									(typTranslate &dsRPGDockServicesBase; "actionRefuel:refuel" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount })
+									)
 								
 							fuelItem: fuelItem
 							cost: cost

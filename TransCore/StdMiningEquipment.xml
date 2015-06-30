@@ -63,7 +63,7 @@
 						;	Add a timer overlay to the pod
 				
 						(setq overlayID	(objAddOverlay gSource	&ovMiningPodTimer;))
-						(objSetOverlayData gSource overlayID 'sourceID (objGetData gSource 'onwerID))
+						(objSetOverlayData gSource overlayID 'sourceID (objGetData gSource 'ownerID))
 						(objSetOverlayData gSource overlayID 'startTime (unvGetTick))
 						(objSetOverlayData gSource overlayID 'podType podType)
 						

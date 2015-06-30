@@ -931,7 +931,8 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 
 		//	Add the squadron option, if necessary
 
-		if (m_MenuData.GetCount() > 1 || GetPlayer()->HasFleet())
+		if ((m_MenuData.GetCount() > 1 && GetCommsStatus() != 0) 
+				|| GetPlayer()->HasFleet())
 			m_MenuData.AddMenuItem(SQUADRON_KEY, SQUADRON_LABEL, 0, 0);
 
 		//	Done

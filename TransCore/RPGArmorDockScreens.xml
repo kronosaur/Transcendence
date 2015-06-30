@@ -1681,9 +1681,9 @@
 			<Text id="actionRefuel:cantAfford">
 				(switch
 					(= (@ gData 'afford) 0)
-						(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x02) ". Unfortunately, you cannot afford even one.")
+						(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x00) ". Unfortunately, you cannot afford even one.")
 					
-					(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x02) ".")
+					(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x00) ".")
 					)
 			</Text>
 			<Text id="actionRefuel:noRefuel">
@@ -1707,7 +1707,7 @@
 					)
 			</Text>
 			<Text id="actionRefuel:refuel">
-				(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x02) ".")
+				(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x00) ".")
 			</Text>
 				
 			<Text id="actionRemove:cannotAfford">
