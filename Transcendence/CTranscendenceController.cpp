@@ -861,7 +861,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Otherwise start wait animation
 
 		else
-			m_HI.GetSession()->HICommand(CMD_SHOW_WAIT_ANIMATION);
+			m_HI.HISessionCommand(CMD_SHOW_WAIT_ANIMATION);
 
 		//	We set state so we don't repeat any of the actions above. [This 
 		//	could happen if the client sends us this message twice, e.g.,
@@ -1452,7 +1452,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Let the Mod Collection session refresh
 
-		m_HI.GetSession()->HICommand(CMD_SERVICE_EXTENSION_LOADED);
+		m_HI.HISessionCommand(CMD_SERVICE_EXTENSION_LOADED);
 
 		//	If we need to download a new version, do so now.
 
@@ -1590,7 +1590,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Let the current session know. For example, the Mod Collection session
 		//	uses this command to reload its list.
 
-		m_HI.GetSession()->HICommand(CMD_SERVICE_EXTENSION_LOADED);
+		m_HI.HISessionCommand(CMD_SERVICE_EXTENSION_LOADED);
 
 		//	Continue downloading
 
@@ -1671,7 +1671,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		{
 		//	Tell the current session that we loaded news.
 
-		m_HI.GetSession()->HICommand(CMD_SERVICE_NEWS_LOADED);
+		m_HI.HISessionCommand(CMD_SERVICE_NEWS_LOADED);
 
 		//	Ask the extension collection for a list of missing resource files.
 
@@ -1688,7 +1688,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	ownership of it).
 
 		if (m_iState == stateIntro)
-			m_HI.GetSession()->HICommand(CMD_SERVICE_HIGH_SCORE_LIST_LOADED, pHighScoreList);
+			m_HI.HISessionCommand(CMD_SERVICE_HIGH_SCORE_LIST_LOADED, pHighScoreList);
 
 		//	Otherwise, we free the list
 
@@ -1697,7 +1697,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		}
 
 	else if (strEquals(sCmd, CMD_SERVICE_HIGH_SCORE_LIST_ERROR))
-		m_HI.GetSession()->HICommand(sCmd);
+		m_HI.HISessionCommand(sCmd);
 
 	else if (strEquals(sCmd, CMD_SERVICE_STATUS))
 		{
@@ -1750,7 +1750,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_SOUNDTRACK_NOW_PLAYING))
 		{
 		m_Soundtrack.NotifyTrackPlaying((CSoundType *)pData);
-		m_HI.GetSession()->HICommand(sCmd, pData);
+		m_HI.HISessionCommand(sCmd, pData);
 		}
 
 	else if (strEquals(sCmd, CMD_SOUNDTRACK_UPDATE_PLAY_POS))
