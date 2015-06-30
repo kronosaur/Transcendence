@@ -152,7 +152,7 @@
 					0
 					0
 					Nil
-					'detonateNow
+					(list 'detonateNow 'fireEffect 'soundEffect)
 					)
 			</OnEffect>
 		</Events>
@@ -228,7 +228,7 @@
 					0
 					0
 					Nil
-					'detonateNow
+					(list 'detonateNow 'fireEffect 'soundEffect)
 					)
 			</OnEffect>
 		</Events>
@@ -311,7 +311,7 @@
 					0
 					0
 					Nil
-					'detonateNow
+					(list 'detonateNow 'fireEffect 'soundEffect)
 					)
 			</OnEffect>
 		</Events>
@@ -395,7 +395,7 @@
 					0
 					0
 					Nil
-					'detonateNow
+					(list 'detonateNow 'fireEffect 'soundEffect)
 					)
 			</OnEffect>
 		</Events>
@@ -514,7 +514,7 @@
 					0
 					0
 					Nil
-					'detonateNow
+					(list 'detonateNow 'fireEffect 'soundEffect)
 					)
 			</OnEffect>
 		</Events>
