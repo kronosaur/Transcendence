@@ -72,6 +72,8 @@ void CLRSDisplay::Update (void)
 //	Updates the display
 
 	{
+	DEBUG_TRY
+
 	bool bNewEnemies;
 	int cxWidth = RectWidth(m_rcRect);
 	int cyHeight = RectHeight(m_rcRect);
@@ -128,4 +130,6 @@ void CLRSDisplay::Update (void)
 			CG32bitPixel::Null(),
 			0,
 			0);
+
+	DEBUG_CATCH
 	}
