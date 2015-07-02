@@ -31,7 +31,6 @@ int g_cyScreen = 0;
 CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) : m_hWnd(hWnd),
 		m_pTC(pTC),
 		m_State(gsNone),
-		m_pLargeHUD(NULL),
 		m_pCurrentScreen(NULL),
 		m_bShowingMap(false),
 		m_bDebugConsole(false),
@@ -353,7 +352,7 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 					::OffsetRect(&rcRect, -m_rcMainScreen.left, -m_rcMainScreen.top);
 					m_pCurrentScreen->Invalidate(rcRect);
 
-					rcRect = m_rcLRS;
+					rcRect = m_LRSDisplay.GetRect();
 					::OffsetRect(&rcRect, -m_rcMainScreen.left, -m_rcMainScreen.top);
 					m_pCurrentScreen->Invalidate(rcRect);
 
@@ -520,6 +519,7 @@ void CTranscendenceWnd::CleanUpPlayerShip (void)
 	{
 	DEBUG_TRY
 
+	m_LRSDisplay.CleanUp();
 	m_ReactorDisplay.CleanUp();
 	m_DeviceDisplay.CleanUp();
 	m_TargetDisplay.CleanUp();

@@ -66,10 +66,6 @@
 #define SO_BETA_FORMATION					CONSTLIT("Beta formation")
 #define SO_GAMMA_FORMATION					CONSTLIT("Gamma formation")
 
-const int LRS_UPDATE_DELAY = 5;
-const int g_LRSWidth = 200;
-const int g_LRSHeight = 200;
-
 const int g_WeaponStatusWidth = 350;
 const int g_WeaponStatusHeight = 32;
 
@@ -81,6 +77,11 @@ const int g_iStellarScale = 0;
 const int g_iPlanetaryScale = 1;
 
 const int MAP_ZOOM_SPEED =					16;
+
+const int LRS_UPDATE_DELAY =				5;
+const int MIN_LRS_SIZE =					200;
+const int LRS_SCALE =						27;
+const CG32bitPixel RGB_LRS_BACKGROUND =		CG32bitPixel(17, 21, 26);
 
 void CTranscendenceWnd::Autopilot (bool bTurnOn)
 
@@ -424,26 +425,23 @@ ALERROR CTranscendenceWnd::InitDisplays (void)
 
 	m_bTransparencyEffects = true;
 
-	//	Create a bitmap for the LRS
-
-	if (!m_LRS.Create(g_LRSWidth, g_LRSHeight, CG32bitImage::alpha8))
-		return ERR_FAIL;
-
-	//m_rcLRS.left = m_rcScreen.left;
-	m_rcLRS.left = m_rcScreen.right - g_LRSWidth;
-	//m_rcLRS.top = g_cyScreen - g_LRSHeight;
-	m_rcLRS.top = 0;
-	m_rcLRS.right = m_rcLRS.left + g_LRSWidth;
-	m_rcLRS.bottom = m_rcLRS.top + g_LRSHeight;
-
 	//	Find some bitmaps that we need. NOTE: We lock the images because we
 	//	don't dispose of them.
 	//
 	//	LATER: These should be obtained form the player ship.
 
-	m_pLargeHUD = g_pUniverse->GetLibraryBitmap(g_LRSImageUNID, CDesignCollection::FLAG_IMAGE_LOCK);
 	m_pSRSSnow = g_pUniverse->GetLibraryBitmap(g_SRSSnowImageUNID, CDesignCollection::FLAG_IMAGE_LOCK);
-	m_pLRSBorder = g_pUniverse->GetLibraryBitmap(g_LRSBorderUNID, CDesignCollection::FLAG_IMAGE_LOCK);
+
+	//	Create LRS
+
+	int iLRSDiameter = Max(MIN_LRS_SIZE, LRS_SCALE * RectHeight(m_rcScreen) / 100);
+	rcRect.left = m_rcScreen.right - iLRSDiameter;
+	rcRect.top = 0;
+	rcRect.right = rcRect.left + iLRSDiameter;
+	rcRect.bottom = rcRect.top + iLRSDiameter;
+	m_LRSDisplay.Init(GetPlayer(), rcRect);
+	m_LRSDisplay.SetSnowImage(m_pSRSSnow);
+	m_LRSDisplay.SetBackgroundColor(RGB_LRS_BACKGROUND);
 
 	//	Create the message display
 
@@ -543,69 +541,11 @@ void CTranscendenceWnd::PaintLRS (void)
 	//	Update the LRS every 10 ticks
 
 	if ((m_iTick % LRS_UPDATE_DELAY) == 0)
-		{
-		bool bNewEnemies;
-
-		m_LRS.Blt(0, 0, g_LRSWidth, g_LRSHeight, *m_pLargeHUD, 0, 0);
-
-		//	If we're not blind, paint the LRS
-
-		if (GetPlayer() == NULL 
-				|| !GetPlayer()->GetShip()->IsLRSBlind())
-			{
-			RECT rcView;
-			rcView.left = 0;
-			rcView.top = 0;
-			rcView.right = g_LRSWidth;
-			rcView.bottom = g_LRSHeight;
-
-			Metric rKlicksPerPixel = g_LRSRange * 2 / RectWidth(rcView);
-			g_pUniverse->PaintPOVLRS(m_LRS, rcView, rKlicksPerPixel, 0, &bNewEnemies);
-
-			//	Notify player of enemies
-
-			if (bNewEnemies)
-				GetPlayer()->OnEnemyShipsDetected();
-			}
-
-		//	If we're blind, paint snow
-
-		else
-			{
-			PaintSnow(m_LRS, 0, 0, g_LRSWidth, g_LRSHeight);
-
-			int iCount = mathRandom(1, 8);
-			for (int i = 0; i < iCount; i++)
-				{
-				m_LRS.Fill(0, mathRandom(0, g_LRSHeight),
-						g_LRSWidth,
-						mathRandom(1, 20),
-						CG32bitPixel(108, 252, 128));
-				}
-			}
-
-		//	Mask out the border
-
-		m_LRS.SetMask(0,
-				0,
-				g_LRSWidth,
-				g_LRSHeight,
-				*m_pLRSBorder,
-				CG32bitPixel::Null(),
-				0,
-				0);
-		}
+		m_LRSDisplay.Update();
 
 	//	Blt the LRS
 
-	g_pHI->GetScreen().Blt(0,
-			0,
-			RectWidth(m_rcLRS),
-			RectHeight(m_rcLRS),
-			200,
-			m_LRS,
-			m_rcLRS.left,
-			m_rcLRS.top);
+	m_LRSDisplay.Paint(g_pHI->GetScreen());
 
 	DEBUG_CATCH
 	}

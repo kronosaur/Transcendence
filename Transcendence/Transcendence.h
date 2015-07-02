@@ -925,6 +925,36 @@ class CPlayerDisplay
 		const SFontTable *m_pFonts;
 	};
 
+class CLRSDisplay
+	{
+	public:
+		CLRSDisplay (void) :
+				m_rgbBackground(CG32bitPixel(0, 0, 0)),
+				m_pBackground(NULL),
+				m_pSnow(NULL)
+			{ }
+
+		void CleanUp (void);
+		inline const RECT &GetRect (void) { return m_rcRect; }
+		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect);
+		void Paint (CG32bitImage &Dest);
+		inline void SetBackgroundColor (CG32bitPixel rgbColor) { m_rgbBackground = rgbColor; }
+		inline void SetBackgroundImage (const CG32bitImage *pImage) { m_pBackground = pImage; }
+		inline void SetSnowImage (const CG32bitImage *pSnow) { m_pSnow = pSnow; }
+		void Update (void);
+
+	private:
+		CPlayerShipController *m_pPlayer;
+
+		RECT m_rcRect;
+		int m_iDiameter;					//	Diameter of scanner in pixels
+		CG32bitImage m_Buffer;
+		CG8bitImage m_Mask;
+		CG32bitPixel m_rgbBackground;
+		const CG32bitImage *m_pBackground;
+		const CG32bitImage *m_pSnow;
+	};
+
 class CReactorDisplay
 	{
 	public:
@@ -1337,14 +1367,11 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		RECT m_rcWindow;					//	Rect of main window in screen coordinates
 		RECT m_rcWindowScreen;				//	Rect of screen within window
 
-		CG32bitImage m_LRS;					//	Long-range scan
-		RECT m_rcLRS;						//	Rect on screen where LRS goes
-		CG32bitImage *m_pLargeHUD;			//	Background LRS image
 		CG32bitImage *m_pSRSSnow;			//	SRS snow image
-		CG32bitImage *m_pLRSBorder;			//	LRS border
 
 		CArmorDisplay m_ArmorDisplay;		//	Armor display object
 		CDeviceCounterDisplay m_DeviceDisplay;	//	Device counter display
+		CLRSDisplay m_LRSDisplay;			//	LRS display
 		CMessageDisplay m_MessageDisplay;	//	Message display object
 		CReactorDisplay m_ReactorDisplay;	//	Reactor status display object
 		CTargetDisplay m_TargetDisplay;		//	Targeting computer display
