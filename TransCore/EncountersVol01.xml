@@ -1456,7 +1456,8 @@
 			type=				"processor"
 			defaultSovereign=	"&svGaianTerraformers;"
 
-			mass=				"50000"
+			size=				"80"
+			mass=				"40000"
 			cargoSpace=			"25000"
 			thrust=				"50000"
 			maxSpeed=			"6"
@@ -1490,6 +1491,22 @@
 			rotationAccel=		"0.25"
 			/>
 
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"300"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"100"
+
+					posX=		"0"
+					posY=		"0"
+					sizeX=		"50"
+					sizeY=		"50"
+					/>
+		</Interior>
+		
 		<Items>
 			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
 			<Item				count="100"		item="&itThermoCannonShell;"/>
@@ -4568,7 +4585,7 @@
 			attributes=			"capitalShip, genericClass, majorShip, ranx"
 			   
 			size=				"350"
-			mass=				"25000"
+			mass=				"60000"
 			cargoSpace=			"15000"
 			thrustRatio=		"0.5"
 			maxSpeed=			"8"
@@ -5523,9 +5540,9 @@
 			alignment="destructive order"
 			/>
 
-	<!-- Ventari Cruiser -->
+	<!-- Ventari Destroyer -->
 
-	<ShipClass UNID="&scVentariCruiser;"
+	<ShipClass UNID="&scVentariDestroyer;"
 			manufacturer=		"Ventari"
 			class=				""
 			type=				"destroyer"
@@ -5533,7 +5550,8 @@
 
 			attributes=			"capitalShip, genericClass, ventari"
 
-			mass=				"5000"
+			size=				"120"
+			mass=				"17000"
 			thrustRatio=		"1.0"
 			maxSpeed=			"13"
 			cargoSpace=			"1000"
@@ -5549,9 +5567,9 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itIonDisruptor;" omnidirectional="true"									 posAngle="180" posRadius="5"  posZ="50"/>
-			<Device deviceID="&itTeV9Blaster;"	secondaryWeapon="true" minFireArc="350" maxFireArc="190" posAngle="110" posRadius="30" posZ="10"/>
-			<Device deviceID="&itTeV9Blaster;"	secondaryWeapon="true" minFireArc="170" maxFireArc="10"  posAngle="250" posRadius="30" posZ="10"/>
+			<Device deviceID="&itIonDisruptor;" omnidirectional="true"									 posAngle="180" posRadius="10"  posZ="60"/>
+			<Device deviceID="&itTeV9Blaster;"	secondaryWeapon="true" minFireArc="350" maxFireArc="190" posAngle="110" posRadius="60" posZ="5"/>
+			<Device deviceID="&itTeV9Blaster;"	secondaryWeapon="true" minFireArc="170" maxFireArc="10"  posAngle="250" posRadius="60" posZ="5"/>
 			<Device deviceID="&itYoroiS500;"/>
 			<Device deviceID="&it250MWReactor;"/>
 		</Devices>
@@ -5584,12 +5602,12 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips3;" imageX="480" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsVentariDestroyer;" imageWidth="150" imageHeight="150"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="160"	posRadius="24"	posZ="-20"	rotation="180"	sendToBack="*"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="23"	posZ="-20"	rotation="180"	sendToBack="*"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-160"	posRadius="24"	posZ="-20"	rotation="180"	sendToBack="*"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="165"	posRadius="61"	posZ="-20"	rotation="180"	sendToBack="*"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="59"	posZ="-20"	rotation="180"	sendToBack="*"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-165"	posRadius="61"	posZ="-20"	rotation="180"	sendToBack="*"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 
 		<!-- AI and Behavior -->
@@ -5646,19 +5664,21 @@
 		</Items>
 
 		<Ships>
-			<Ship					count="1d2"	class="&scVentariCruiser;"	orders="patrol" patrolDist="40"/>
+			<Ship					count="1d2"	class="&scVentariDestroyer;"	orders="patrol" patrolDist="40"/>
 		</Ships>
 
 		<Reinforcements minShips="1">
-			<Ship					count="1d2"	class="&scVentariCruiser;"	orders="patrol" patrolDist="40"/>
+			<Ship					count="1d2"	class="&scVentariDestroyer;"	orders="patrol" patrolDist="40"/>
 		</Reinforcements>
 
 		<Encounters frequency="common">
-			<Ship count="1"	class="&scVentariCruiser;" orders="wander"	maxShips="6"/>
+			<Ship count="1"	class="&scVentariDestroyer;" orders="wander"	maxShips="6"/>
 		</Encounters>
 
 	</StationType>
 
+	<Image UNID="&rsVentariDestroyer;"	bitmap="Resources\VentariDestroyer.jpg" bitmask="Resources\VentariDestroyerMask.bmp" loadOnUse="true"/>
+	
 <!-- Weapons Cache ======================================================== -->
 
 	<!-- Weapons Cache -->

@@ -916,6 +916,22 @@
 			rotationAccel=		"1.0"
 			/>
 
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"180"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"80"
+
+					posX=		"0"
+					posY=		"0"
+					sizeX=		"26"
+					sizeY=		"44"
+					/>
+		</Interior>
+		
 		<Items>
 			<Item				  count="2d6"	item="&itPteracniumFuelRod;"/>
 			<Table>

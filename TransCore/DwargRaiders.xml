@@ -173,6 +173,22 @@
 			rotationAccel=		"0.5"
 			/>
 
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"180"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"80"
+
+					posX=		"-41"
+					posY=		"0"
+					sizeX=		"29"
+					sizeY=		"45"
+					/>
+		</Interior>
+		
 		<Items>
 			<Item				  count="2d6"	item="&itXenotiteFuelRod;"/>
 			<Table>

@@ -1178,7 +1178,7 @@
 	<!ENTITY stHereticSun				"0x001C200F">
 
 	<!ENTITY scIocrymCommandShip		"0x001C3001">
-	<!ENTITY scSvalbardExplorer		"0x001C3002">
+	<!ENTITY scSvalbardExplorer			"0x001C3002">
 	<!ENTITY scIocrymWarningBuoy		"0x001C3003">
 	<!ENTITY scIocrymSentinel			"0x001C3004">
 	<!ENTITY scHuygensExplorer			"0x001C3005">
@@ -1286,8 +1286,8 @@
 	<!ENTITY stHeliotropeOutpost		"0x08010040">
 	<!ENTITY stHeliotropeColony			"0x08010041">
 	<!ENTITY scHeliotropeGunship		"0x08010042">
-	<!ENTITY scHeliotropeDestroyer		"0x08010043">	<!-- For compatibility -->
 	<!ENTITY scHeliotropeFrigate		"0x08010043">	<!-- Reclassified -->
+	<!ENTITY scHeliotropeDestroyer		"0x08010043">	<!-- For compatibility -->
 	<!ENTITY itHeliotropeFuel			"0x08010044">
 	<!ENTITY svHeliotropes				"0x08010045">
 	<!ENTITY tbHeliotropeEncounters		"0x08010046">
@@ -1304,7 +1304,8 @@
 	<!ENTITY rsXenophobeWorldship		"0x08010088">
 
 	<!ENTITY stVentariColony			"0x080100C0">
-	<!ENTITY scVentariCruiser			"0x080100C1">
+	<!ENTITY scVentariDestroyer			"0x080100C1">	<!-- Reclassified -->
+	<!ENTITY scVentariCruiser			"0x080100C1">	<!-- For compatibility -->
 
 	<!ENTITY stAbbasidOutpost			"0x08010100">
 	<!ENTITY itAbbasidThanogram			"0x08010101">
@@ -1564,6 +1565,7 @@
 	<!ENTITY rsCSC						"0x00100062">
 	<!ENTITY rsCSCWreckage				"0x00100063">
 	<!ENTITY rsAquila					"0x00100064">
+	<!ENTITY rsAurochs					"0x00100065">
 	
 	<!-- 0080-009F COMMONWEALTH -->
 	
@@ -1638,6 +1640,10 @@
 	
 	<!ENTITY baOutlawMine				"0x00100180">
 	<!ENTITY tbOutlawMinerProspector	"0x00100181">
+	
+	<!-- 0190-019F VENTARI SETTLERS -->
+	
+	<!ENTITY rsVentariDestroyer			"0x00100190">
 	
 	<!-- 1000-FFFF RESERVED -->
 	]>

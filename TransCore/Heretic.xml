@@ -631,7 +631,8 @@
 			type=				"explorer"
 			defaultSovereign=	"&svRingers;"
 
-			mass=				"5000"
+			size=				"195"
+			mass=				"4000"
 			cargoSpace=			"1500"
 			thrustRatio=		"0.8"
 			maxSpeed=			"12"
@@ -661,6 +662,22 @@
 			rotationAccel=		"0.5"
 			/>
 
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"120"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"80"
+
+					posX=		"-61"
+					posY=		"0"
+					sizeX=		"60"
+					sizeY=		"40"
+					/>
+		</Interior>
+		
 		<Items>
 			<Item count="1" item="&itHereticResearchROM;"/>
 		</Items>
@@ -781,7 +798,8 @@
 			type=				"explorer"
 			defaultSovereign=	"&svCorporate;"
 
-			mass=				"8000"
+			size=				"195"
+			mass=				"4000"
 			cargoSpace=			"1000"
 			thrustRatio=		"1.2"
 			maxSpeed=			"10"
@@ -834,6 +852,22 @@
 			rotationAccel=		"0.5"
 			/>
 		
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"120"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"80"
+
+					posX=		"-61"
+					posY=		"0"
+					sizeX=		"60"
+					sizeY=		"40"
+					/>
+		</Interior>
+
 		<Items>
 			<Item count="2d12" item="&itPteracniumFuelRod;"/>
 		</Items>

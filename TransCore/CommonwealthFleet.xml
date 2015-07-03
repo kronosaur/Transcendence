@@ -3766,7 +3766,8 @@ PLAYER DATA
 			type=				"transport"
 			defaultSovereign=	"&svCommonwealthFleet;"
 
-			mass=				"8000"
+			size=				"65"
+			mass=				"2000"
 			cargoSpace=			"5600"
 			thrustRatio=		"0.8"
 			maxSpeed=			"15"
@@ -3792,7 +3793,7 @@ PLAYER DATA
 		</Armor>
 
 		<Devices>
-			<Device deviceID="&itTeV9Blaster;" omnidirectional="true"/>
+			<Device deviceID="&itTeV9Blaster;" omnidirectional="true" posAngle="180" posRadius="12" posZ="10"/>
 			<Device deviceID="&itR5Deflector;"/>
 		</Devices>
 
@@ -3801,11 +3802,37 @@ PLAYER DATA
 			rotationAccel=		"0.5"
 			/>
 
-		<Image imageID="&rsMediumShips3;" imageX="768" imageY="0" imageWidth="96" imageHeight="96" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"30"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"70"
+
+					posX=		"-31"
+					posY=		"0"
+					sizeX=		"28"
+					sizeY=		"42"
+					/>
+			
+			<Compartment name="cargo contatiners"
+					type=		"cargo"
+					hitPoints=	"50"
+
+					posX=		"10"
+					posY=		"0"
+					sizeX=		"40"
+					sizeY=		"40"
+					/>
+		</Interior>
+		 
+		<Image imageID="&rsAurochs;" imageWidth="96" imageHeight="96"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="157"	posRadius="43"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="42"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="42"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
 			<Effect type="thrustMain"		posAngle="-157"	posRadius="43"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 
@@ -5281,6 +5308,7 @@ PLAYER DATA
 
 <!-- RESOURCES -->
 
+	<Image UNID="&rsAurochs;"		bitmap="Resources\Aurochs.jpg" bitmask="Resources\AurochsMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsAquila;"		bitmap="Resources\Aquila.jpg" bitmask="Resources\AquilaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsBritannia;"		bitmap="Resources\Britannia.jpg" bitmask="Resources\BritanniaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsCSC;"			bitmap="Resources\CSC.jpg" bitmask="Resources\CSCMask.bmp" loadOnUse="true" />

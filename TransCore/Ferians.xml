@@ -350,8 +350,8 @@
 
 			attributes=			"ferian, ferianMiner, genericClass, zoanthrope"
 			   
-			size=				"130"
-			mass=				"5000"
+			size=				"21"
+			mass=				"120"
 			thrustRatio=		"4"
 			maxSpeed=			"17"
 			cargoSpace=			"200"
@@ -426,7 +426,8 @@
 
 			attributes=			"ferian, ferianWarrior, genericClass, zoanthrope"
 			   
-			mass=				"1200"
+			size=				"130"
+			mass=				"5000"
 			thrustRatio=		"15"
 			maxSpeed=			"22"
 			cargoSpace=			"20"
@@ -447,6 +448,22 @@
 			maxRotationRate=	"9.0"
 			rotationAccel=		"1.0"
 			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"120"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"80"
+
+					posX=		"-40"
+					posY=		"0"
+					sizeX=		"58"
+					sizeY=		"26"
+					/>
+		</Interior>
 
 		<!-- Trade and Items -->
 		
