@@ -1001,61 +1001,6 @@
 							<Primary>
 								<Station type="&stPrimordialPlanetoidSizeF;" name="Morgana"/>
 							</Primary>
-
-							<!-- Debug Objects -->
-
-							<Orbitals debugOnly="true" distance="8" angle="random">
-								<Stargate objName="Debug" type="&stStargate;"/>
-							</Orbitals>
-
-							<Orbitals debugOnly="true" count="1" distance="5" scale="light-minute" angle="random">
-								<!--<Station type="&stCSCSaharaEncounter;" />-->
-								<!--<Station type="&stBlackMarketShipyard;" />-->
-							</Orbitals>
-
-							<Orbitals debugOnly="true" count="1" distance="5" scale="light-minute" angle="random">
-								<Orbitals distance="12" angle="random">
-									<!--<Station type="&stDwargFortress;"/>-->
-								</Orbitals>
-								<!--<Station type="&stHuariFortress;"/>-->
-								<!--<Station type="&stCommonwealthColonyArmed;" />-->
-							</Orbitals>
-
-							<Orbitals debugOnly="true" count="1" distance="20" angle="random">
-								<Station type="&stTinkerGathering;"/>
-								<!--
-								<Station type="&stTeratonFactory;"/>
-								<Station type="&stCommonwealthFortress;"/>
-								<Station type="&stSungSlaveCamp;"/>
-								<Station type="&stCentauriOccupation;"/>
-								<Station type="&stCSCAmericaEncounter;"/>
-								<LevelTable>
-									<Station levelFrequency="c----" type="&stWondrousDevices;"/>
-									<Station levelFrequency="-----" type="&stInsuranceCompany;"/>
-								</LevelTable>
-								<Station type="&stCSCSaharaEncounter;"/>
-								<Station type="&stInsuranceCompany;"/>
-								<Station type="&stKorolovShipping;"/>
-								<Station type="&stAgriculturalStation;" />
-								<Station type="&stCorporateTradingPost;" />
-								<Station type="&stCSCArcticaEncounter;"/>
-								<Station type="&stRingerShipyard;"/>
-								<Station type="&stGaianProcessorEncounter;" />
-								<Station type="&stFerianColony;" />
-								-->
-							</Orbitals>
-
-							<!--
-							<Orbitals debugOnly="true" count="50" distance="2d10" scale="light-minute" angle="random">
-								<Group>
-									<Station type="&stFerianColony;" />
-									<Orbitals count="3d6" distance="6d6" angle="random">
-										<Station type="&stMediumAsteroid;" />
-									</Orbitals>
-								</Group>
-							</Orbitals>
-							-->
-
 						</Group>
 
 						<!-- Mordred -->

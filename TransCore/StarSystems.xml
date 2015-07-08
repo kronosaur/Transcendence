@@ -1388,8 +1388,6 @@
 											)
 										)
 									
-									(dbgLog "Ore deposit " depositCount " with " (count allAsteroids) " asteroids")
-									
 									(setq depositCount (- depositCount 1))
 									)
 								)
