@@ -99,7 +99,7 @@ void CLRSDisplay::Update (void)
 
 		//	Notify player of enemies
 
-		if (bNewEnemies)
+		if (bNewEnemies && m_pPlayer)
 			m_pPlayer->OnEnemyShipsDetected();
 		}
 
