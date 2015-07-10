@@ -2380,14 +2380,15 @@
 							<Lookup table="StargateOutbound"/>
 							
 							<Siblings radiusInc="18">
-								<Station type="&stCommonwealthNavSign;">
-									<InitialData>
-										<Sign>"Travel\nWarning!"</Sign>
-										<Info>
-											"WARNING! Systems beyond St. Katharine's Star are not controlled by the Commonwealth. By entering this stargate you agree to hold the Commonwealth Transport System immune to liability in the event of injury, involuntary servitude, or death."
-										</Info>
-									</InitialData>
-								</Station>
+								<Code>
+									(if (sysGetObjectByName 'Outbound)
+										(block (navSignObj)
+											(setq navSignObj (sysCreateStation &stCommonwealthNavSign; (sysOrbitPos aOrbit)))
+											(objSetData navSignObj 'Sign (typTranslate &ssStKatharine; 'navSignWarningTitle))
+											(objSetData navSignObj 'Info (typTranslate &ssStKatharine; 'navSignWarningDesc))
+											)
+										)
+								</Code>
 							</Siblings>
 						</Group>
 						
@@ -2407,9 +2408,22 @@
 						<Station type="&stDesertTerrestrialSizeH;" name="Radiant" showOrbit="true"/>
 					</Primary>
 
-					<Orbitals count="1d3" distance="10" angle="equidistant">
-						<Lookup table="FriendlyStations" />
-					</Orbitals>
+					<Table>
+						<Orbitals chance="34" distance="16" angle="equidistant">
+							<Lookup table="FriendlyStations" />
+							<Label attributes="desert, planet, planetary, terrestrial"/>
+						</Orbitals>
+						<Orbitals chance="33" distance="16" angle="equidistant">
+							<Lookup table="FriendlyStations" />
+							<Lookup table="FriendlyStations" />
+							<Label attributes="desert, planet, planetary, terrestrial"/>
+						</Orbitals>
+						<Orbitals chance="33" distance="16" angle="equidistant">
+							<Lookup table="FriendlyStations" />
+							<Lookup table="FriendlyStations" />
+							<Lookup table="FriendlyStations" />
+						</Orbitals>
+					</Table>
 				</Group>
 			</Orbitals>
 
@@ -2468,11 +2482,10 @@
 							<Primary>
 								<Station type="&stRockyPlanetoidSizeE;" name="Nearworld"/>
 							</Primary>
-
+							
 							<Orbitals count="1d3-1" distance="10" angle="equidistant">
 								<Lookup table="FriendlyStations" />
 							</Orbitals>
-
 						</Group>
 					</Orbitals>
 
@@ -2484,11 +2497,10 @@
 								<Station type="&stIcePlanetoidSizeG;" name="Farworld"/>
 							</Primary>
 
-							<Orbitals distance="12" angle="equidistant">
+							<Orbitals distance="16" angle="equidistant">
 								<Lookup table="FriendlyOuterStations" />
 								<Lookup table="FriendlyOuterStations" />
 							</Orbitals>
-
 						</Group>
 					</Orbitals>
 
@@ -2505,7 +2517,7 @@
 							</Orbitals>
 
 							<Table>
-								<Null chance="20"/>
+								<Label  chance="20" attributes="asteroids"/>
 								<Lookup chance="50" table="FriendlyOuterStations" />
 								<Lookup chance="30" table="EnemyStations"/>
 							</Table>
@@ -2523,7 +2535,7 @@
 							</Orbitals>
 
 							<Table>
-								<Null chance="20"/>
+								<Label  chance="20" attributes="asteroids"/>
 								<Lookup chance="50" table="FriendlyOuterStations" />
 								<Lookup chance="30" table="EnemyStations"/>
 							</Table>
@@ -2546,14 +2558,15 @@
 							<Lookup table="StargateInbound"/>
 							
 							<Siblings radiusInc="18">
-								<Station type="&stCommonwealthNavSign;">
-									<InitialData>
-										<Sign>"Welcome!"</Sign>
-										<Info>
-											"Welcome to St. Katharine's Star, capital of the Commonwealth and metropolitan jewel of Human Space."
-										</Info>
-									</InitialData>
-								</Station>
+								<Code>
+									(if (sysGetObjectByName 'Inbound)
+										(block (navSignObj)
+											(setq navSignObj (sysCreateStation &stCommonwealthNavSign; (sysOrbitPos aOrbit)))
+											(objSetData navSignObj 'Sign (typTranslate &ssStKatharine; 'navSignWelcomeTitle))
+											(objSetData navSignObj 'Info (typTranslate &ssStKatharine; 'navSignWelcomeDesc))
+											)
+										)
+								</Code>
 							</Siblings>
 						</Group>
 						
@@ -2590,6 +2603,10 @@
 					<Primary>
 						<Station type="&stPrimordialPlanetoidSizeG;" name="Tenebrous" showOrbit="true"/>
 					</Primary>
+					
+					<Orbitals distance="20" angle="random">
+						<Label attributes="planet, planetary, planetoid, primordial"/>
+					</Orbitals>
 				</Group>
 			</Orbitals>
 
@@ -2598,7 +2615,20 @@
 			<Lookup table="HumanSpaceStargates"/>
 
 		</SystemGroup>
-
+		
+		<Language>
+			<Text id="navSignWelcomeTitle">"Welcome!"</Text>
+			<Text id="navSignWelcomeDesc">"Welcome to St. Katharine's Star, capital of the Commonwealth and metropolitan jewel of Human Space."</Text>
+			
+			<Text id="navSignWarningTitle">"Travel\nWarning!"</Text>
+			<Text id="navSignWarningDesc">
+				(cat
+					"WARNING! Systems beyond St. Katharine's Star are not controlled by the Commonwealth. "
+					"By entering this stargate you agree to hold the Commonwealth Transport System immune "
+					"to liability in the event of injury, involuntary servitude, or death."
+					)
+			</Text>
+		</Language>
 	</SystemType>
 
 <!-- GLOBALS -->
