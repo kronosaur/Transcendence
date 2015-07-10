@@ -2742,8 +2742,9 @@
 								/>
 					</Primary>
 
-					<Orbitals distance="12" angle="random">
+					<Orbitals distance="16" angle="equidistant">
 						<Lookup table="OtherStations"/>
+						<Label attributes="greenhouse, planet, planetary, terrestrial"/>
 					</Orbitals>
 
 					<Trojan>
@@ -2776,6 +2777,10 @@
 								/>
 					</Primary>
 
+					<Orbitals distance="16" angle="random">
+						<Label attributes="desert, planet, planetary, terrestrial"/>
+					</Orbitals>
+
 					<AntiTrojan>
 						<Group>
 							<Orbitals count="4d4+8" distance="1d48" angle="random">
@@ -2806,8 +2811,9 @@
 								/>
 					</Primary>
 
-					<Orbitals distance="24" angle="random">
+					<Orbitals distance="24" angle="equidistant">
 						<Lookup table="StargateOutbound"/>
+						<Label attributes="gasGiant, methaneGiant, planet, planetary"/>
 					</Orbitals>
 
 					<!-- Battle Arena -->
