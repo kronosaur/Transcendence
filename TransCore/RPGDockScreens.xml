@@ -1089,39 +1089,6 @@
 			<Text id="actionRemoveOverlays">"[R]emove All"</Text>
 			
 			<Text id="actionRepairArmor">"[A]rmor and Shields"</Text>
-			<Text id="actionArmor:defaultArmorInstall">
-				(cat
-					"We install armor segments up to level " (@ gData 'maxLevel) "."
-					)
-			</Text>
-			<Text id="actionArmor:defaultArmorRepair">
-				(cat
-					"We repair armor up to level " (@ gData 'maxLevel) "."
-					)
-			</Text>
-			<Text id="actionArmor:defaultArmorUpgrade">
-				(cat
-					"We sell armor upgrades up to level " (@ gData 'maxLevel) "."
-					)
-			</Text>
-			<Text id="actionArmor:defaultShieldsInstall">
-				(cat
-					"We install shields up to level " (@ gData 'maxLevel) "."
-					)
-			</Text>
-			<Text id="actionArmor:defaultShieldsUpgrade">
-				(cat
-					"We sell shield upgrades up to level " (@ gData 'maxLevel) "."
-					)
-			</Text>
-			<Text id="actionArmor:noTechToRepair">
-				(cat
-					"We do not have the technology to repair your armor."
-					)
-			</Text>
-			<Text id="actionArmor:nothing">"We don't upgrade or install armor."</Text>
-			<Text id="actionArmor:shipConfig">"View and manage armor and shields."</Text>
-			
 			<Text id="actionRepairArmorPgDn">"[PageDown] Armor and Shields"</Text>
 			<Text id="actionUpgradeReactor">"U[p]grade Reactor"</Text>
 			
