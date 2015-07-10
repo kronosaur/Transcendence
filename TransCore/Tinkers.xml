@@ -45,22 +45,33 @@
 	<StationType UNID="&stTinkerGathering;"
 			name=				"Tinker gathering"
 			sovereign=			"&svTinkers;"
+				 
+			attributes=			"envEarth, envAvoidsAir, friendly, generic, human, independent, majorStation, populated, tinkers"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			canAttack=			"true"
-
-			multiHull=			"true"
+			
+			size=				"110"
 			armorID=			"&itReinforcedTitanium1;"
 			hitPoints=			"250"
-			repairRate=			"5"
+			multiHull=			"true"
 			fireRateAdj=		"20"
+			repairRate=			"5"
+				 
+			canAttack=			"true"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"envEarth, envAvoidsAir, friendly, generic, human, independent, majorStation, populated, tinkers"
-			levelFrequency=		"uccuu r---- ----- ----- -----"
-			locationCriteria=	"+asteroids, -asteroidbelt"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				levelFrequency=		"uccuu r---- ----- ----- -----"
+				locationCriteria=	"+asteroids, -asteroidbelt"
+				unique=				"inSystem"
+				minAppearing=		"1"
+				enemyExclusionRadius="50"
+				/>
 
 		<Names noArticle="true">Tinker Alvarez; Tinker Bell; Tinker Cray; Tinker Draper;
 				Tinker Edison; Tinker Fermi; Tinker Goddard; Tinker Hale;
@@ -68,11 +79,34 @@
 				Tinker Noyce; Tinker Olsen; Tinker Plank; Tinker Rohrer;
 				Tinker Sikorsky; Tinker Tesla; Tinker Wang
 		</Names>
+		
+		<!-- Trade and Items -->
+		
+		<Trade currency="credit" max="15000" replenish="1250">
+			<Sell	criteria="*U -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Buy	criteria="*DU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="*DU -Illegal; -ID;"				priceAdj="50"/>
+			
+			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
+		</Trade>
+		
+		<Items>
+			<RandomItem count="3d6" 
+					criteria=		"aswd -Illegal; -Military; -NotStandard; -NotForSale;"
+					level=			"3"
+					levelCurve=		"2"
+					damaged=		"100"
+					/>
+		</Items>
 
-		<ImageVariants>
-			<Image	imageID="&rsTinkerStations;" imageX="0"   imageY="0"   imageWidth="130" imageHeight="130"/>
-			<Image	imageID="&rsTinkerStations;" imageX="0"   imageY="130" imageWidth="130" imageHeight="130"/>
-		</ImageVariants>
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itFlenserCannon;"	omnidirectional="true"/>
+		</Devices>
+		
+		<!-- Ships and Defenses -->
 
 		<Ships>
 			<Lookup count="1d4" table="&tbCommDefenders;"/>
@@ -86,110 +120,70 @@
 			</Table>
 		</Reinforcements>
 		
-		<Items>
-			<RandomItem count="3d6" 
-					criteria=		"aswd -Illegal; -Military; -NotStandard; -NotForSale;"
-					level=			"3"
-					levelCurve=		"2"
-					damaged=		"100"
-					/>
-		</Items>
+		<!-- Image and Effects -->
+		
+		<ImageVariants>
+			<Image	imageID="&rsTinkerStations;" imageX="0"   imageY="0"   imageWidth="130" imageHeight="130"/>
+			<Image	imageID="&rsTinkerStations;" imageX="0"   imageY="130" imageWidth="130" imageHeight="130"/>
+		</ImageVariants>
 
-		<Trade currency="credit" max="15000" replenish="1250">
-			<Sell	criteria="*U -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Buy	criteria="*DU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
-			<Buy	criteria="*DU -Illegal; -ID;"				priceAdj="50"/>
-			
-			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
-		</Trade>
-
-		<Devices>
-			<Device deviceID="&itFlenserCannon;"	omnidirectional="true"/>
-		</Devices>
-
-		<StaticData>
-			<CustomWork>
-				(
-					(&itTitaniumOre;		2	&itTitaniumPlate;)
-					(&itHeavyWater;			4	&itXMHArmor;)
-					(&itSiliconArmorPatch;	4	&itPhotorepairArmor;)
-					(&itCarbonSpool;		2	&itHeavyCeramicPlate;)
-					(&itPlasteelOre;		4	&itPlasteelPlate;)
-					(&itHyperfiberRoll;		4	&itTevlarCompositeArmor;)
-					(&itDuralloyOre;		5	&itDuralloyArmor;)
-					(&itReactiveArmor;		4	&itAdvancedReactiveArmor;)
-					(&itCeralloyOre;		5	&itCeralloyArmor;)
-					(&itOrthoSteelOre;		10	&itOrthoSteel;)
-
-					(&itClass1Deflector;	4	&itSolonShieldGenerator;)
-					(&itClass2Deflector;	2	&itSolonShieldGenerator;)
-					(&itSuperconductingCoil; 8	&itSuperconductingShields;)
-
-					(&itRecoillessCannon;	4	&itDualRecoillessCannon;)
-					(&itLaserCannon;		8	&itLaserArray;)
-					(&itPartisanCannon;		2	&itSmartCannon;)
-					(&itTurbolaserCannon;	4	&itDualTurbolaserCannon;)
-					(&itRadioactiveWaste;	8	&itWasteCannon;)
-					(&itFusionTrigger;		1	&itXM900Missile;)
-
-					(&itRepairingNanos;		6	&itArmorRepairDevice;)
-					)
-			</CustomWork>
-
-			<NPCService>
-				(	;	service					level	margin
-					(	'repairArmor			8		100		)
-					)
-			</NPCService>
-		</StaticData>
-
-		<Events>
-			<GetDockScreen>
-				; If the ship is radioactive then we need to decontaminate
-				(if (and (shpIsRadioactive gPlayerShip)
-						(not (objIsAbandoned gSource))
-						)
-					(list "Decon" 10)
-					Nil
-					)
-			</GetDockScreen>
-		</Events>
-
+		<DockingPorts>
+			<Port x="0"		y="90" />
+			<Port x="0"		y="-90" />
+			<Port x="60"	y="60" />
+			<Port x="60"	y="-60" />
+			<Port x="90"	y="0" />
+			<Port x="-90"	y="0" />
+			<Port x="-60"	y="60" />
+			<Port x="-60"	y="-60" />
+		</DockingPorts>
+		
+		<!-- Dock Screens -->
+		
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"You are docked at a station belonging to the Tinkers Guild. The docking bay is decorated with various ancient devices of unknown origin and purpose.">
+					<Default>
+						<OnPaneInit>
+							(block (actionStatus)
+							
+								(setq actionStatus (rpgCalcDockServiceArmorAction gSource gPlayerShip { }))
+								(scrShowAction gScreen 'actionRepairArmor (@ actionStatus 'visible))
+								(scrEnableAction gScreen 'actionRepairArmor (@ actionStatus 'enabled))
+								(scrSetActionDesc gScreen 'actionRepairArmor (@ actionStatus 'desc))
+								
+								(scrSetDescTranslate gScreen 'descWelcome)
+								)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy Scrap" default="1" key="B">
+							<Action id="actionBuyScrap" default="1">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: True
 									showInstallables: True
 									})
 							</Action>
 
-							<Action name="Sell Scrap" key="S">
+							<Action id="actionSellScrap">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
 							</Action>
 
-							<Action name="Custom Work" key="C">
+							<Action id="actionCustomWork">
 								(if (objGetData gSource 'customIntroDone)
 									(scrShowScreen gScreen &dsTinkerCustomWork;)
 									(scrShowPane gScreen "CustomWorkIntro")
 									)
 							</Action>
 
-							<Action name="Armor and Shields" key="A">
+							<Action id="actionRepairArmor">
 								(scrShowScreen gScreen &dsRPGManageArmor; {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -300,17 +294,71 @@
 				</Panes>
 			</Decon>
 		</DockScreens>
+		
+		<!-- Events and Behavior -->
 
-		<DockingPorts>
-			<Port x="0"		y="90" />
-			<Port x="0"		y="-90" />
-			<Port x="60"	y="60" />
-			<Port x="60"	y="-60" />
-			<Port x="90"	y="0" />
-			<Port x="-90"	y="0" />
-			<Port x="-60"	y="60" />
-			<Port x="-60"	y="-60" />
-		</DockingPorts>
+		<StaticData>
+			<CustomWork>
+				(
+					(&itTitaniumOre;		2	&itTitaniumPlate;)
+					(&itHeavyWater;			4	&itXMHArmor;)
+					(&itSiliconArmorPatch;	4	&itPhotorepairArmor;)
+					(&itCarbonSpool;		2	&itHeavyCeramicPlate;)
+					(&itPlasteelOre;		4	&itPlasteelPlate;)
+					(&itHyperfiberRoll;		4	&itTevlarCompositeArmor;)
+					(&itDuralloyOre;		5	&itDuralloyArmor;)
+					(&itReactiveArmor;		4	&itAdvancedReactiveArmor;)
+					(&itCeralloyOre;		5	&itCeralloyArmor;)
+					(&itOrthoSteelOre;		10	&itOrthoSteel;)
+
+					(&itClass1Deflector;	4	&itSolonShieldGenerator;)
+					(&itClass2Deflector;	2	&itSolonShieldGenerator;)
+					(&itSuperconductingCoil; 8	&itSuperconductingShields;)
+
+					(&itRecoillessCannon;	4	&itDualRecoillessCannon;)
+					(&itLaserCannon;		8	&itLaserArray;)
+					(&itPartisanCannon;		2	&itSmartCannon;)
+					(&itTurbolaserCannon;	4	&itDualTurbolaserCannon;)
+					(&itRadioactiveWaste;	8	&itWasteCannon;)
+					(&itFusionTrigger;		1	&itXM900Missile;)
+
+					(&itRepairingNanos;		6	&itArmorRepairDevice;)
+					)
+			</CustomWork>
+
+			<NPCService>
+				(	;	service					level	margin
+					(	'repairArmor			8		100		)
+					)
+			</NPCService>
+		</StaticData>
+
+		<Events>
+			<GetDockScreen>
+				; If the ship is radioactive then we need to decontaminate
+				(if (and (shpIsRadioactive gPlayerShip)
+						(not (objIsAbandoned gSource))
+						)
+					(list "Decon" 10)
+					Nil
+					)
+			</GetDockScreen>
+		</Events>
+		
+		<Language>
+			<Text id="actionBuyScrap">"[B]uy Scrap"</Text>
+			<Text id="actionCustomWork">"[C]ustom Work"</Text>
+			<Text id="actionRepairArmor">"[A]rmor and Shields"</Text>
+			<Text id="actionSellScrap">"[S]ell Scrap"</Text>
+			<Text id="actionUndock">"[U]ndock"</Text>
+			
+			<Text id="descWelcome">
+				(cat
+					"You are docked at a station belonging to the Tinkers Guild. "
+					"The docking bay is decorated with various ancient devices of unknown origin and purpose."
+					)
+			</Text>
+		</Language>
 	</StationType>
 	
 <!-- ITEMS -->
@@ -443,7 +491,7 @@
 						(switch
 							(not (@ fabInfo 'componentsNeededDesc))
 								(scrSetDesc gScreen
-									"\"To fabricate " (itmGetName theItem 0x0108) " we charge " (@ fabInfo 'workCost) " credits."
+									"\"To fabricate " (itmGetName theItem 0x0108) " we charge " (fmtCurrency 'credit (@ fabInfo 'workCost)) "."
 									errorDesc
 									"\""
 									)
@@ -451,7 +499,7 @@
 							(scrSetDesc gScreen
 								"\"To fabricate " (itmGetName theItem 0x0108) " we need "
 								(@ fabInfo 'componentsNeededDesc)
-								" plus " (@ fabInfo 'workCost) " credits."
+								" plus " (fmtCurrency 'credit (@ fabInfo 'workCost)) "."
 								errorDesc
 								"\""
 								)
@@ -558,8 +606,8 @@
 							"\"Nothing to it once you know how these machines work.\"\n\n"
 							
 							"Fabricated: " (itmGetName (@ theResult 'itemsCreated) 0x08) ".\n"
-							"Consumed: " (strItemList (@ theResult 'itemsConsumed) 0x08) ".\n"
-							"Total Cost: " (@ theResult 'totalCost) " credits."
+							(if (@ theResult 'itemsConsumed) (cat "Consumed: " (strItemList (@ theResult 'itemsConsumed) 0x08) ".\n"))
+							"Total Cost: " (fmtCurrency 'credit (@ theResult 'totalCost)) "."
 							)
 						)
 				</OnPaneInit>
