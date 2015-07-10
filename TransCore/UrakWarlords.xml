@@ -245,7 +245,7 @@
 			sortName=			"Urak.1.20"
 			>
 
-		<Image imageID="&rsItems3;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems4;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"missile"
@@ -253,8 +253,8 @@
 				damage=				"blast:1d4+4; momentum1; WMD3"
 				fireRate=			"12"
 				missileSpeed=		"40"
-				lifetime=			"12"
-				powerUse=			"20"
+				lifetime=			"38"
+				powerUse=			"100"
 
 				effect=				"&efBlastShellDefault;"
 				fireEffect=			"&efBlastFireDefault;"
@@ -288,14 +288,13 @@
 
 		<Weapon
 				type=				"missile"
-				fragmentCount=		"1d5+5"
 
 				damage=				"blast:4d12; momentum3; WMD3"
-				fireRate=			"35"
+				fireRate=			"36"
 				missileSpeed=		"50"
 				hitPoints=			"10"
 				lifetime=			"90"
-				powerUse=			"150"
+				powerUse=			"200"
 				recoil=				"2"
 
 				effect=				"&efBlastShellDefault;"
@@ -317,8 +316,9 @@
 			</HitEffect>
 
 			<Fragment 
+					count=			"3d6+5"
 					type=			"missile"
-					lifetime=		"4"
+					lifetime=		"10"
 					damage=			"blast:1d4+4; momentum2; WMD3"
 					missileSpeed=	"32-48"
 					>
