@@ -6,12 +6,11 @@ RELEASE
 [ ] Set apiVersion number, if necessary (TSEUtil.h)
 [ ] Set apiVersion number in Transcendence.xml
 [ ] Set TRANSCENDENCE_STABLE_RELEASE in TSE.h
-[ ] Set engine version in Multiverse
 [ ] Make sure Help screen is up-to-date
 [ ] Make sure Readme is up-to-date
 [ ] Increment saved game version, if necessary (TSEUtil.h)
 [ ] Build all for release mode
-[ ] Build tdb with /digest
+[ ] Build tdb with /digest (compileCore.bat)
 [ ] Add digest to CExtensionCollection.cpp
 [ ] Rebuild
 [ ] Sign executables (signall.bat)
@@ -26,6 +25,15 @@ RELEASE
 [ ] Post announcement to Forums, Facebook, Twitter
 
 [ ] Check in new version to GitHub
+
+STEAM RELEASE
+-------------------------------------------------------------------------------
+
+[ ] Follow standard release checklist
+[ ] Set version number in Transcendence Steam resource file
+[ ] Build all for Release Steam
+[ ] Sign executable (signall.bat)
+
 
 
 NEW APPLICATION (UI)
