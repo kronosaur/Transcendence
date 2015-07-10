@@ -4155,7 +4155,7 @@
 					count=			"1"
 					type=			"radius"
 
-					damage=			"thermo:15d24; momentum3; WMD7"
+					damage=			"thermo:24d24; momentum3; WMD7"
 					minRadius=		"3"
 					maxRadius=		"8"
 					missileSpeed=	"0"
