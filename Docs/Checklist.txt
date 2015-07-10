@@ -31,9 +31,16 @@ STEAM RELEASE
 
 [ ] Follow standard release checklist
 [ ] Set version number in Transcendence Steam resource file
-[ ] Build all for Release Steam
+[ ] Build all for SteamRelease
 [ ] Sign executable (signall.bat)
-
+[ ] Copy appropriate content to SteamBuild/ContentBuilder/content
+[ ] Run SteamBuil/ContentBuilder/builder/steamcmd.exe
+[ ] > login KronosaurProductions_Build
+[ ] > run_app_build_http ..\scripts\trans_ep_edition.vdf
+[ ] Goto https://partner.steamgames.com/apps/builds/364510
+[ ] Set the newly uploaded build to default
+[ ] Click Preview Changes and accept
+[ ] Run Steam client to test.
 
 
 NEW APPLICATION (UI)
