@@ -83,7 +83,7 @@
 			(setq rpgCalcDockServiceArmorAction (lambda (dockObj shipObj options)
 				(block (
 					(armorForSale 
-						(filter (objGetItems dockObj "aU") theItemToBuy
+						(filter (objGetItems dockObj "aUN") theItemToBuy
 							(and (objGetSellPrice dockObj theItemToBuy)
 									(objGetArmorReplacePrice dockObj theItemToBuy)
 									)
@@ -103,7 +103,7 @@
 						)
 						
 					(shieldsForSale 
-						(filter (objGetItems dockObj "sU") theItemToBuy
+						(filter (objGetItems dockObj "sUN") theItemToBuy
 							(and (objGetSellPrice dockObj theItemToBuy)
 									(objGetItemProperty dockObj theItemToBuy 'installDevicePrice)
 									)
@@ -134,7 +134,9 @@
 							{
 								visible: True
 								enabled: True
-								desc: (scrTranslate gScreen "actionArmor:shipConfig")
+								desc: (or (scrTranslate gScreen "actionArmor:shipConfig")
+										(typTranslate &dsRPGDockServicesBase; "actionArmor:shipConfig")
+										)
 								}
 								
 						;	If we have upgrades
@@ -147,6 +149,7 @@
 								enabled: True
 								desc: (or (objTranslate dockObj "dockServices:armorAbility" { items:armorForSale maxLevel:maxArmorLevel })
 										(scrTranslate gScreen "actionArmor:defaultArmorUpgrade" { items:armorForSale maxLevel:maxArmorLevel })
+										(typTranslate &dsRPGDockServicesBase; "actionArmor:defaultArmorUpgrade" { items:armorForSale maxLevel:maxArmorLevel })
 										)
 								}
 						
@@ -158,6 +161,7 @@
 								enabled: True
 								desc: (or (objTranslate dockObj "dockServices:shieldsAbility" { items:shieldsForSale maxLevel:maxShieldsLevel })
 										(scrTranslate gScreen "actionArmor:defaultShieldsUpgrade" { items:shieldsForSale maxLevel:maxShieldsLevel })
+										(typTranslate &dsRPGDockServicesBase; "actionArmor:defaultShieldsUpgrade" { items:shieldsForSale maxLevel:maxShieldsLevel })
 										)
 								}
 						
@@ -167,14 +171,18 @@
 							{
 								visible: True
 								enabled: True
-								desc: (scrTranslate gScreen "actionArmor:defaultArmorInstall" { items:armorToInstall maxLevel:(objGetProperty dockObj 'installArmorMaxLevel) })
+								desc: (or (scrTranslate gScreen "actionArmor:defaultArmorInstall" { items:armorToInstall maxLevel:(objGetProperty dockObj 'installArmorMaxLevel) })
+										(typTranslate &dsRPGDockServicesBase; "actionArmor:defaultArmorInstall" { items:armorToInstall maxLevel:(objGetProperty dockObj 'installArmorMaxLevel) })
+										)
 								}
 								
 						shieldsToInstall
 							{
 								visible: True
 								enabled: True
-								desc: (scrTranslate gScreen "actionArmor:defaultShieldsInstall" { items:shieldsToInstall maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+								desc: (or (scrTranslate gScreen "actionArmor:defaultShieldsInstall" { items:shieldsToInstall maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+										(typTranslate &dsRPGDockServicesBase; "actionArmor:defaultShieldsInstall" { items:shieldsToInstall maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+										)
 								}
 								
 						;	Can we repair the player's armor?
@@ -183,14 +191,18 @@
 							{
 								visible: True
 								enabled: True
-								desc: (scrTranslate gScreen "actionArmor:defaultArmorRepair" { maxLevel:maxRepairArmorLevel })
+								desc: (or (scrTranslate gScreen "actionArmor:defaultArmorRepair" { maxLevel:maxRepairArmorLevel })
+										(typTranslate &dsRPGDockServicesBase; "actionArmor:defaultArmorRepair" { maxLevel:maxRepairArmorLevel })
+										)
 								}
 								
 						maxRepairArmorLevel
 							{
 								visible: True
 								enabled: Nil
-								desc: (scrTranslate gScreen "actionArmor:noTechToRepair" { maxLevel:maxRepairArmorLevel })
+								desc: (or (scrTranslate gScreen "actionArmor:noTechToRepair" { maxLevel:maxRepairArmorLevel })
+										(typTranslate &dsRPGDockServicesBase; "actionArmor:noTechToRepair" { maxLevel:maxRepairArmorLevel })
+										)
 								}
 								
 						;	Otherwise, nothing
@@ -198,7 +210,9 @@
 						{
 							visible: True
 							enabled: Nil
-							desc: (scrTranslate gScreen "actionArmor:nothing")
+							desc: (or (scrTranslate gScreen "actionArmor:nothing")
+									(typTranslate &dsRPGDockServicesBase; "actionArmor:nothing")
+									)
 							}
 						)
 					)
@@ -289,7 +303,7 @@
 			(setq rpgCalcDockServiceMiscDevicesAction (lambda (dockObj shipObj options)
 				(block (
 					(itemsForSale 
-						(filter (objGetItems dockObj "d~wsU") theItemToBuy
+						(filter (objGetItems dockObj "d~wsUN") theItemToBuy
 							(and (objGetSellPrice dockObj theItemToBuy)
 									(objGetItemProperty dockObj theItemToBuy 'installDevicePrice)
 									)
@@ -956,7 +970,7 @@
 			(setq rpgCalcDockServiceWeaponsAction (lambda (dockObj shipObj options)
 				(block (
 					(itemsForSale 
-						(filter (objGetItems dockObj "wU") theItemToBuy
+						(filter (objGetItems dockObj "wUN") theItemToBuy
 							(and (objGetSellPrice dockObj theItemToBuy)
 									(objGetItemProperty dockObj theItemToBuy 'installDevicePrice)
 									)
