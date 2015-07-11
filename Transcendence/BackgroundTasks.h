@@ -75,9 +75,9 @@ class CLoadExtensionTask : public IHITask
 			//	NOTE: LoadNewExtension is protected by try/catch, so it will always return 
 			//	correctly.
 
-			m_HI.GetUISem().Lock();
+			g_pUniverse->GetSem().Lock();
 			ALERROR error = g_pUniverse->LoadNewExtension(m_Status.sFilespec, m_Status.FileDigest, retsResult);
-			m_HI.GetUISem().Unlock();
+			g_pUniverse->GetSem().Unlock();
 
 			if (error)
 				{

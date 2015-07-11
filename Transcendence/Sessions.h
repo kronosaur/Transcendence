@@ -154,7 +154,7 @@ class CGameSession : public IHISession
 		//	IHISession virtuals
 
 		virtual CReanimator &GetReanimator (void) { return g_pTrans->GetReanimator(); }
-		virtual void OnAnimate (CG32bitImage &Screen, bool bTopMost) { CSmartLock Lock(m_HI.GetUISem()); g_pTrans->Animate(Screen, this, bTopMost); }
+		virtual void OnAnimate (CG32bitImage &Screen, bool bTopMost) { CSmartLock Lock(g_pUniverse->GetSem()); g_pTrans->Animate(Screen, this, bTopMost); }
 		virtual void OnChar (char chChar, DWORD dwKeyData) { g_pTrans->WMChar(chChar, dwKeyData); }
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) { return NOERROR; }
 		virtual ALERROR OnInit (CString *retsError) { m_rcScreen = g_pTrans->m_rcScreen; SetNoCursor(true); return NOERROR; }

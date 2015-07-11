@@ -835,6 +835,8 @@ void CIntroSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 //	Animate the session
 
 	{
+	CSmartLock Lock(g_pUniverse->GetSem());
+
 	bool bFailed = false;
 
 	//	Update context
