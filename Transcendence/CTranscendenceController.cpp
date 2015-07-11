@@ -1445,7 +1445,10 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		CMultiverseCollection Collection;
 		if (m_Multiverse.GetCollection(&Collection) != NOERROR)
+			{
+			::kernelDebugLogMessage("Failed to GetCollection from Multiverse model.");
 			return NOERROR;
+			}
 
 		TArray<CMultiverseCatalogEntry *> Download;
 		g_pUniverse->SetRegisteredExtensions(Collection, &Download);

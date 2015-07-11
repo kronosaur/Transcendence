@@ -155,6 +155,7 @@ class CLoadUserCollectionTask : public IHITask
 		//	IHITask virtuals
 		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult)
 			{
+			CSmartLock Lock(g_pUniverse->GetSem());
 			::kernelDebugLogMessage("Loading user collection.");
 			return m_Service.LoadUserCollection(pProcessor, m_Multiverse, retsResult); 
 			}
@@ -337,7 +338,11 @@ class CUpgradeProgram : public IHITask
 			{ }
 
 		//	IHITask virtuals
-		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Service.DownloadUpgrade(pProcessor, m_sUpgradeURL, retsResult); }
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) 
+			{
+			::kernelDebugLogMessage("Upgrading Transcendence.");
+			return m_Service.DownloadUpgrade(pProcessor, m_sUpgradeURL, retsResult); 
+			}
 
 	private:
 		CCloudService &m_Service;
