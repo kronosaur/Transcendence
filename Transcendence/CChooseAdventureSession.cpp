@@ -136,7 +136,7 @@ void CChooseAdventureSession::CmdOK (void)
 
 	//	Remember the default extensions
 
-	m_Settings.SetDefaultExtensions(NewAdventure.pAdventure->GetUNID(), g_pUniverse->InDebugMode(), Defaults);
+	m_Settings.SetDefaultExtensions(NewAdventure.pAdventure->GetUNID(), m_ExtensionList, g_pUniverse->InDebugMode(), Defaults);
 
 	//	Remember some variables because after we close the session this object
 	//	will be gone.
@@ -826,7 +826,7 @@ void CChooseAdventureSession::SetExtensions (CExtension *pAdventure, int yPos)
 	//	Get the default list of options
 
 	TArray<DWORD> Defaults;
-	m_Settings.GetDefaultExtensions(pAdventure->GetUNID(), g_pUniverse->InDebugMode(), &Defaults);
+	m_Settings.GetDefaultExtensions(pAdventure->GetUNID(), m_ExtensionList, g_pUniverse->InDebugMode(), &Defaults);
 
 	//	Add all extension options
 

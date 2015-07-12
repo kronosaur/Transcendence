@@ -1591,7 +1591,7 @@ class CGameSettings
 
 		inline const CString &GetAppDataFolder (void) const { return m_sAppData; }
 		inline bool GetBoolean (int iOption) const { return m_Options[iOption].bValue; }
-		inline void GetDefaultExtensions (DWORD dwAdventure, bool bDebugMode, TArray<DWORD> *retList) const { m_Extensions.GetList(dwAdventure, bDebugMode, retList); }
+		inline void GetDefaultExtensions (DWORD dwAdventure, const TArray<CExtension *> &Available, bool bDebugMode, TArray<DWORD> *retList) const { m_Extensions.GetList(dwAdventure, Available, bDebugMode, retList); }
 		inline const TArray<CString> &GetExtensionFolders (void) const { return m_ExtensionFolders; }
 		inline const CString &GetInitialSaveFile (void) const { return m_sSaveFile; }
 		inline int GetInteger (int iOption) const { return m_Options[iOption].iValue; }
@@ -1601,7 +1601,7 @@ class CGameSettings
 		ALERROR ParseCommandLine (char *pszCmdLine);
 		ALERROR Save (const CString &sFilespec);
 		inline void SetBoolean (int iOption, bool bValue, bool bModifySettings = true) { SetValueBoolean(iOption, bValue, bModifySettings); if (bModifySettings) m_bModified = true; }
-		inline void SetDefaultExtensions (DWORD dwAdventure, bool bDebugMode, const TArray<DWORD> &List) { m_Extensions.SetList(dwAdventure, bDebugMode, List); m_bModified = true; }
+		inline void SetDefaultExtensions (DWORD dwAdventure, const TArray<CExtension *> &Available, bool bDebugMode, const TArray<DWORD> &List) { m_Extensions.SetList(dwAdventure, Available, bDebugMode, List); m_bModified = true; }
 		inline void SetInteger (int iOption, int iValue, bool bModifySettings = true) { SetValueInteger(iOption, iValue, bModifySettings); if (bModifySettings) m_bModified = true; }
 		inline void SetModified (void) { m_bModified = true; }
 		inline void SetSettingsHandler (IExtraSettingsHandler *pExtra) { m_pExtra = pExtra; }
