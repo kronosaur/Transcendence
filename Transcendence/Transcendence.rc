@@ -64,8 +64,8 @@ VS_VERSION_INFO$(MULTIVERSE_BUILD) VERSIONINFO
 #else
 VS_VERSION_INFO VERSIONINFO
 #endif
- FILEVERSION 1,6,301,0
- PRODUCTVERSION 1,6,301,0
+ FILEVERSION 1,6,302,0
+ PRODUCTVERSION 1,6,302,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -82,13 +82,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Kronosaur Productions, LLC"
             VALUE "FileDescription", "Transcendence"
-            VALUE "FileVersion", "1.6.301.0"
+            VALUE "FileVersion", "1.6.302.0"
             VALUE "InternalName", "Transcendence"
             VALUE "LegalCopyright", "Copyright © 2003-2015 Kronosaur Productions, LLC. All Rights Reserved."
             VALUE "LegalTrademarks", "Transcendence is a registered trademark of Kronosaur Productions, LLC."
             VALUE "OriginalFilename", "Transcendence.exe"
             VALUE "ProductName", "Transcendence"
-            VALUE "ProductVersion", "1.6 RC 1"
+            VALUE "ProductVersion", "1.6 RC 2"
         END
     END
     BLOCK "VarFileInfo"
@@ -104,8 +104,8 @@ VS_VERSION_INFO$(STEAM_BUILD) VERSIONINFO
 #else
 VS_VERSION_INFO VERSIONINFO
 #endif
- FILEVERSION 1,6,301,0
- PRODUCTVERSION 1,6,301,0
+ FILEVERSION 1,6,302,0
+ PRODUCTVERSION 1,6,302,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -122,13 +122,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Kronosaur Productions, LLC"
             VALUE "FileDescription", "Transcendence"
-            VALUE "FileVersion", "1.6.301.0"
+            VALUE "FileVersion", "1.6.302.0"
             VALUE "InternalName", "Transcendence"
             VALUE "LegalCopyright", "Copyright © 2003-2015 Kronosaur Productions, LLC. All Rights Reserved."
             VALUE "LegalTrademarks", "Transcendence is a registered trademark of Kronosaur Productions, LLC."
             VALUE "OriginalFilename", "Transcendence.exe"
             VALUE "ProductName", "Transcendence"
-            VALUE "ProductVersion", "1.6 RC 1 Steam"
+            VALUE "ProductVersion", "1.6 RC 2 Steam"
         END
     END
     BLOCK "VarFileInfo"
