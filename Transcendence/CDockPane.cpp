@@ -55,7 +55,8 @@ const int PANE_PADDING_EXTRA =		0;
 CDockPane::CDockPane (void) :
 		m_pPaneDesc(NULL),
 		m_pContainer(NULL),
-		m_bInShowPane(false)
+		m_bInShowPane(false),
+		m_bInExecuteAction(false)
 
 //	CDockPane constructor
 
@@ -93,6 +94,8 @@ void CDockPane::CleanUp (AGScreen *pScreen)
 	m_pPaneDesc = NULL;
 	m_pContainer = NULL;
 	m_bInShowPane = false;
+	m_bInExecuteAction = false;
+	m_sDeferredShowPane = NULL_STR;
 	}
 
 void CDockPane::CreateControl (EControlTypes iType, const CString &sID, const CString &sStyle)
@@ -287,6 +290,35 @@ ALERROR CDockPane::CreateControls (CString *retsError)
 	return NOERROR;
 	}
 
+void CDockPane::ExecuteAction (int iAction)
+
+//	ExecuteAction
+//
+//	Executes the given action.
+
+	{
+	g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+
+	//	Set up some context so we deal with re-entrancy issues.
+
+	m_bInExecuteAction = true;
+	m_sDeferredShowPane = NULL_STR;
+
+	//	Execute
+
+	m_Actions.Execute(iAction, m_pDockScreen);
+
+	//	If inside the action we changed the object (e.g., deleted an item) then
+	//	we might need to reload the pane. If so, we do it now.
+
+	m_bInExecuteAction = false;
+	if (!m_sDeferredShowPane.IsBlank())
+		{
+		m_Actions.ExecuteShowPane(m_sDeferredShowPane);
+		m_sDeferredShowPane = NULL_STR;
+		}
+	}
+
 void CDockPane::ExecuteCancelAction (void)
 
 //	ExecuteCancelAction
@@ -296,11 +328,40 @@ void CDockPane::ExecuteCancelAction (void)
 	{
 	int iAction;
 	if (m_Actions.FindSpecial(CDockScreenActions::specialCancel, &iAction))
-		m_Actions.Execute(iAction, m_pDockScreen);
+		ExecuteAction(iAction);
 	else
+		{
 		m_Actions.ExecuteExitScreen();
+		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+		}
+	}
 
-	g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+void CDockPane::ExecuteShowPane (const CString &sPane, bool bDeferIfNecessary)
+
+//	ExecuteShowPane
+//
+//	Shows the pane.
+	
+	{
+	//	If we're already inside ShowPane, then we don't need to do anything.
+	//	This can happen if we're inside of OnPaneInit and we do something that
+	//	might normally force us to recalc the pane (such as delete an item).
+
+	if (m_bInShowPane)
+		return;
+
+	//	If we're executing an action, and we've been asked to defer this reload,
+	//	then we defer.
+
+	if (m_bInExecuteAction && bDeferIfNecessary)
+		{
+		m_sDeferredShowPane = sPane;
+		return;
+		}
+
+	//	Do it.
+
+	m_Actions.ExecuteShowPane(sPane);
 	}
 
 bool CDockPane::FindControl (const CString &sID, SControl **retpControl) const
@@ -443,10 +504,7 @@ bool CDockPane::HandleAction (DWORD dwTag, DWORD dwData)
 	if (dwTag >= FIRST_ACTION_ID && dwTag <= LAST_ACTION_ID)
 		{
 		int iAction = (dwTag - FIRST_ACTION_ID);
-
-		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-		m_Actions.Execute(iAction, m_pDockScreen);
-
+		ExecuteAction(iAction);
 		return true;
 		}
 	else
@@ -512,8 +570,7 @@ bool CDockPane::HandleChar (char chChar)
 	int iAction;
 	if (m_Actions.FindByKey(CString(&chChar, 1), &iAction))
 		{
-		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-		m_Actions.Execute(iAction, m_pDockScreen);
+		ExecuteAction(iAction);
 		return true;
 		}
 
@@ -537,8 +594,7 @@ bool CDockPane::HandleKeyDown (int iVirtKey)
 			int iAction;
 			if (m_Actions.FindSpecial(CDockScreenActions::specialPrevKey, &iAction))
 				{
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				m_Actions.Execute(iAction, m_pDockScreen);
+				ExecuteAction(iAction);
 				return true;
 				}
 			break;
@@ -550,8 +606,7 @@ bool CDockPane::HandleKeyDown (int iVirtKey)
 			int iAction;
 			if (m_Actions.FindSpecial(CDockScreenActions::specialNextKey, &iAction))
 				{
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				m_Actions.Execute(iAction, m_pDockScreen);
+				ExecuteAction(iAction);
 				return true;
 				}
 			break;
@@ -562,8 +617,7 @@ bool CDockPane::HandleKeyDown (int iVirtKey)
 			int iAction;
 			if (m_Actions.FindSpecial(CDockScreenActions::specialPgDnKey, &iAction))
 				{
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				m_Actions.Execute(iAction, m_pDockScreen);
+				ExecuteAction(iAction);
 				return true;
 				}
 			break;
@@ -574,8 +628,7 @@ bool CDockPane::HandleKeyDown (int iVirtKey)
 			int iAction;
 			if (m_Actions.FindSpecial(CDockScreenActions::specialPgUpKey, &iAction))
 				{
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				m_Actions.Execute(iAction, m_pDockScreen);
+				ExecuteAction(iAction);
 				return true;
 				}
 			break;
@@ -631,16 +684,12 @@ bool CDockPane::HandleKeyDown (int iVirtKey)
 			int iAction;
 			if (m_Actions.FindSpecial(CDockScreenActions::specialDefault, &iAction))
 				{
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				m_Actions.Execute(iAction, m_pDockScreen);
-
+				ExecuteAction(iAction);
 				return true;
 				}
 			else if (m_Actions.GetCount() == 1)
 				{
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				m_Actions.Execute(0, m_pDockScreen);
-
+				ExecuteAction(0);
 				return true;
 				}
 			break;

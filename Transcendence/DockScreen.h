@@ -242,7 +242,7 @@ class CDockPane
 
 		void CleanUp (AGScreen *pScreen = NULL);
 		void ExecuteCancelAction (void);
-		inline void ExecuteShowPane (const CString &sPane) { if (!m_bInShowPane) m_Actions.ExecuteShowPane(sPane); }
+		void ExecuteShowPane (const CString &sPane, bool bDeferIfNecessary = false);
 		inline CDockScreenActions &GetActions (void) { return m_Actions; }
 		const CString &GetDescriptionString (void) const;
 		int GetCounterValue (void) const;
@@ -303,6 +303,7 @@ class CDockPane
 
 		void CreateControl (EControlTypes iType, const CString &sID, const CString &sStyle);
 		ALERROR CreateControls (CString *retsError);
+		void ExecuteAction (int iAction);
 		bool FindControl (const CString &sID, SControl **retpControl = NULL) const;
 		CGTextArea *GetTextControlByType (EControlTypes iType) const;
 		SControl *GetControlByType (EControlTypes iType) const;
@@ -321,6 +322,8 @@ class CDockPane
 
 		CString m_sDesc;					//	Current description
 		bool m_bInShowPane;					//	Keep track of re-entrancy
+		bool m_bInExecuteAction;			//	Inside m_Actions.Execute
+		CString m_sDeferredShowPane;
 	};
 
 class CDockScreen : public IScreenController

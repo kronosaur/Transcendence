@@ -1399,7 +1399,14 @@ void CDockScreen::ResetList (CSpaceObject *pLocation)
 
 	{
 	if (m_pDisplay->ResetList(pLocation) == IDockScreenDisplay::resultShowPane)
-		m_CurrentPane.ExecuteShowPane(EvalInitialPane());
+		{
+		//	NOTE: We defer the actual recal of the pane until after any action
+		//	is done. We need to do this because we don't want to execute
+		//	<OnPaneInit> in the middle of processing an action (since that might
+		//	change state which the action is relying on.
+
+		m_CurrentPane.ExecuteShowPane(EvalInitialPane(), true);
+		}
 	}
 
 void CDockScreen::ShowDisplay (bool bAnimateOnly)
