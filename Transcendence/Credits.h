@@ -22,7 +22,9 @@ const int SPECIAL_THANKS_COUNT = (sizeof(SPECIAL_THANKS) / sizeof(SPECIAL_THANKS
 
 static char *FEEDBACK[] =
 	{
+	"Aeon Blaze",
 	"Aeonic",
+	"ahrenjb",
 	"Amariithynar",
 	"Anakey",
 	"Androgeos",
@@ -44,6 +46,7 @@ static char *FEEDBACK[] =
 	"Boring",
 	"Boris the Cat",
 	"David Bradley",
+	"bromin",
 
 	"Cardinal",
 	"CFG",
@@ -74,13 +77,16 @@ static char *FEEDBACK[] =
 	"Markus Eckert",
 	"EditorRUS",
 	"El FluffyDragon",
+	"erwgd",
 	"Evilbob",
 
 	"F50",
 	"FAD",
 	"Fatboy",
+	"Ferdinand",
 	"Shane J. Filomena",
 	"Forevian",
+	"FourFire",
 	"Colin Freas",
 	"Danny Fremen",
 
@@ -103,6 +109,7 @@ static char *FEEDBACK[] =
 
 	"Eric James",
 	"jimj316",
+	"JohnBWatson",
 
 	"Wayne Ka'auamo",
 	"Kamikaze",
@@ -111,6 +118,7 @@ static char *FEEDBACK[] =
 //	"kay.py",	Same as Kris Parker
 	"Keleus",
 	"Kenquinn The Insane One",
+	"Kiro",
 	"Kobell",
 	"Kurukku",
 
@@ -123,10 +131,12 @@ static char *FEEDBACK[] =
 	"LordSutekh",
 	"Lypos",
 
+	"Mage2069",
 	"Magnus",
 	"Stefan Maier",
 	"Manekineko",
 	"D. F. McCourt",
+	"Megas",
 	"Mesh",
 	"Mingan",
 	"Mist",
@@ -139,6 +149,8 @@ static char *FEEDBACK[] =
 	"Nate879",
 	"Jeremy Nicoll",
 	"Jan Nielsen",
+	"Nimatek",
+	"NMS",
 
 	"Obsidean",
 	"OddBob",
@@ -187,10 +199,12 @@ static char *FEEDBACK[] =
 	"6cef",
 	"SJ",
 	"Peter F. Slattery",
+	"SolarGalaxy",
 	"Speaker for Treecats",
 	"SpeedOfSquid",
 	"Sponge & SpongeJr",
 	"Star Weaver",
+	"StarshipEngineer",
 	"stealthx",
 	"Stormhawk",
 	"Sutaa",
@@ -211,6 +225,7 @@ static char *FEEDBACK[] =
 	"The Wanderer",
 	"Watch TV, Do Nothing",
 	"Weelillad",
+	"Wolfwalker",
 	"Wurmish",
 
 	"Xephyr",
