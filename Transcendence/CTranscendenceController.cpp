@@ -551,6 +551,7 @@ ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions *retO
 	retOptions->m_iSoundVolume = m_Settings.GetInteger(CGameSettings::soundVolume);
 	retOptions->m_sMusicFolder = m_Settings.GetString(CGameSettings::musicPath);
 	retOptions->m_bDebugVideo = m_Settings.GetBoolean(CGameSettings::debugVideo);
+	retOptions->m_cyMaxScreen = (m_Settings.GetInteger(CGameSettings::maxResolution) <= 0 ? -1 : Max(600, m_Settings.GetInteger(CGameSettings::maxResolution)));
 
 	return NOERROR;
 	}

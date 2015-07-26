@@ -1566,6 +1566,7 @@ class CGameSettings
 			force600Res,					//	Force 1024x600 resolution
 			graphicsQuality,				//	SFX vs performance
 			no3DSystemMap,					//	3D system map projection
+			maxResolution,					//	Maximum vertical resolution.
 
 			//	Sounds options
 			noSound,						//	No sound (either music or sound effects)
@@ -1584,7 +1585,7 @@ class CGameSettings
 			debugSoundtrack,				//	Soundtrack debugging UI
 
 			//	Constants
-			OPTIONS_COUNT = 34,
+			OPTIONS_COUNT = 35,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }

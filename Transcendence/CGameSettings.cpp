@@ -77,6 +77,7 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"force600",					optionBoolean,	"false",	0	},
 		{	"graphicsQuality",			optionString,	"auto",		0	},
 		{	"no3DSystemMap",			optionBoolean,	"false",	0	},
+		{	"maxResolution",			optionInteger,	"1200",		0	},
 
 		//	Sounds options
 		{	"noSound",					optionBoolean,	"false",	0	},
