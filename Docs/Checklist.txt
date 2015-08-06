@@ -34,7 +34,7 @@ STEAM RELEASE
 [ ] Build all for SteamRelease
 [ ] Sign executable (signall.bat)
 [ ] Copy appropriate content to SteamBuild/ContentBuilder/content
-[ ] Run SteamBuil/ContentBuilder/builder/steamcmd.exe
+[ ] Run SteamBuild/ContentBuilder/builder/steamcmd.exe
 [ ] > login KronosaurProductions_Build
 [ ] > run_app_build_http ..\scripts\trans_ep_edition.vdf
 [ ] Goto https://partner.steamgames.com/apps/builds/364510
