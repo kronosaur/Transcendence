@@ -223,7 +223,7 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 				//	Update the screen
 
 				if (bTopMost)
-					g_pHI->GetScreenMgr().Blt();
+					g_pHI->GetScreenMgr().Render();
 
 				//	Figure out how long it took to blt
 
@@ -328,7 +328,7 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 				//	Update the screen
 
 				if (bTopMost)
-					g_pHI->GetScreenMgr().Blt();
+					g_pHI->GetScreenMgr().Render();
 
 				//	Update the universe (at 1/4 rate)
 
@@ -397,7 +397,7 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 				//	Update the screen
 
 				if (bTopMost)
-					g_pHI->GetScreenMgr().Blt();
+					g_pHI->GetScreenMgr().Render();
 
 				//	Update the universe
 
@@ -432,7 +432,7 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 				m_pTC->PaintDebugInfo(TheScreen, m_rcScreen);
 
 				if (bTopMost)
-					g_pHI->GetScreenMgr().Blt();
+					g_pHI->GetScreenMgr().Render();
 				break;
 				}
 
@@ -466,7 +466,7 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 				//	Update the screen
 
 				if (bTopMost)
-					g_pHI->GetScreenMgr().Blt();
+					g_pHI->GetScreenMgr().Render();
 
 				//	Update the universe
 

@@ -6,7 +6,6 @@
 #include <stdio.h>
 
 #include <windows.h>
-#include <ddraw.h>
 #include "Alchemy.h"
 #include "XMLUtil.h"
 #include "TransData.h"

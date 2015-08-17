@@ -1173,7 +1173,7 @@ void CIntroSession::Paint (CG32bitImage &Screen, bool bTopMost)
 	//	Update the screen
 
 	if (bTopMost)
-		m_HI.GetScreenMgr().Blt();
+		m_HI.GetScreenMgr().Render();
 
 	//	Figure out how long it took to blt
 
