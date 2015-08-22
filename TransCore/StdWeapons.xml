@@ -16,9 +16,9 @@
 			value=				"40"
 			mass=				"200"
 			  
-			charges=			"16"
-			massBonusPerCharge=	"50" 
-			valueBonusPerCharge="20"
+			charges=			"32"
+			massBonusPerCharge=	"20" 
+			valueBonusPerCharge="5"
 
 			description=		"This disposable weapon system is loaded with sixteen KM100 missiles. The weapon can be installed and uninstalled without the aid of a station."
 			>
@@ -203,9 +203,9 @@
 			value=				"40"
 			mass=				"200"
 			  
-			charges=			"16"
-			massBonusPerCharge=	"60" 
-			valueBonusPerCharge="60"
+			charges=			"32"
+			massBonusPerCharge=	"20" 
+			valueBonusPerCharge="15"
 
 			description=		"The DM1500 is loaded with sixteen KM500 tracking missiles. This weapon can be installed and uninstalled without the aid of a station."
 			>
@@ -216,7 +216,7 @@
 				type=				"missile"
 				launcher=			"true"
 
-				damage=				"blast:4d6; momentum4; WMD5"
+				damage=				"blast:5d6; momentum4; WMD5"
 				fireRate=			"30"
 				hitPoints=			"10"
 				lifetime=			"120"

@@ -112,8 +112,8 @@ PLAYER DATA
 			attributes=			"Disposable; MajorItem; Military; NAMI; Specialty"
 
 			charges=			"36"
-			massBonusPerCharge=	"100" 
-			valueBonusPerCharge="50"
+			massBonusPerCharge=	"40" 
+			valueBonusPerCharge="120"
 
 			description=		"This external pod is loaded with thirty-six XM900 nuclear missiles and can be installed without the aid of a station."
 			>

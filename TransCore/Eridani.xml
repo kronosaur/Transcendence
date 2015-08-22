@@ -423,7 +423,7 @@
 
 									; Give the player some KM500 missiles
 									(if (objGetItems gPlayerShip "lI -Disposable;")
-										(setq gItem (itmCreate &itKM500Missile; (random 24 48)))
+										(setq gItem (itmCreate &itKM500Missile; (random 32 48)))
 										(setq gItem (itmCreate &itDM1500MissileRack; 1))
 										)
 									(objAddItem gPlayerShip gItem)
