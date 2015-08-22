@@ -55,7 +55,7 @@
 				maxPower=		"100"
 				fuelEfficiency=	"15"
 				maxFuel=		"25000"
-				fuelCriteria=	"f L:1-4;" 
+				fuelCriteria=	"f L:1-3;" 
 				/>
 
 	</ItemType>
@@ -136,7 +136,7 @@
 				maxPower=		"150"
 				fuelEfficiency=	"15"
 				maxFuel=		"37500"
-				fuelCriteria=	"f L:1-4;" 
+				fuelCriteria=	"f L:1-3;" 
 				/>
 
 	</ItemType>
