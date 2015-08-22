@@ -259,7 +259,7 @@
 
 		<Armor
 			armorID=			"&itReactiveArmor;"
-			count=				"4"
+			count=				"2"
 			/>
 
 		<Devices>
@@ -316,7 +316,7 @@
 		<!-- Configuration -->
 
 		<Armor
-			armorID=			"&itReactiveArmor;"
+			armorID=			"&itHeavyReactiveArmor;"
 			count=				"2"
 			/>
 

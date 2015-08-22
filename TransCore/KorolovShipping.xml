@@ -3291,7 +3291,7 @@
 							)
 						)
 
-					(if (gr xp 0)
+					(if (gr xpGain 0)
 						(typSetGlobalData 
 							&stKorolovShipping; 
 							"xp"
@@ -3348,7 +3348,7 @@
 
 					; Store
 					(typSetGlobalData &stKorolovShipping; "xp" xp)
-					(typSetGlobalData &stKorolovShipping; "totalMissionsFailed" totalMissionsFailed)
+					(typSetGlobalData &stKorolovShipping; "totalMissionsFailed" (add totalMissionsFailed 1))
 
 					; Keep track of which freighters have been escorted
 					(setq recordID (cat "record" (objGetType transObj)))
