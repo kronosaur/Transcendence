@@ -1857,7 +1857,7 @@
 			value=				"50000"
 			mass=				"5000"
 			  
-			description=		"The star cannon fires a stream of high-energy ions. Star cannons are military weapons that cannot be used on civilian ships without a special ID."
+			description=		"The star cannon fires a stream of high-energy ions that continue to cause damage as they punch through armor."
 			>
 
 		<Image imageID="&rsItemsBushido2;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
