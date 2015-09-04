@@ -975,22 +975,14 @@
 		</Devices>
 
 		<Items>
-			<RandomItem count="10" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"6"
-					levelCurve=		"1"
+			<RandomItem	count="10" 
+					criteria=		"ad L:1-7; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|ur"
 					/>
 			<RandomItem count="10" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"6"
-					levelCurve=		"2"
+					criteria=		"*~ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|ur"
 					/>
-			<RandomItem count="3" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"5"
-					levelCurve=		"1"
-					/>
-
 			<Item count="4d12"	item="&itXenotiteFuelRod;" />
 		</Items>
 
@@ -1004,6 +996,8 @@
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="93"/>
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
