@@ -1688,7 +1688,7 @@ class CTranscendenceModel
 		ALERROR EndGameDestroyed (bool *retbResurrected = NULL);
 		ALERROR EndGameSave (CString *retsError = NULL);
 		ALERROR EndGameStargate (void);
-		ALERROR EnterScreenSession (CSpaceObject *pLocation, CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData);
+		ALERROR EnterScreenSession (CSpaceObject *pLocation, CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError = NULL);
 		void ExitScreenSession (bool bForceUndock = false);
 		bool FindScreenRoot (const CString &sScreen, CDesignType **retpRoot, CString *retsScreen = NULL, ICCItem **retpData = NULL);
 		inline int GetLastHighScore (void) { return m_iLastHighScore; }

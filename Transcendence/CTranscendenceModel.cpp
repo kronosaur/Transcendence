@@ -711,7 +711,7 @@ ALERROR CTranscendenceModel::EndGameStargate (void)
 	return EndGame();
 	}
 
-ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData)
+ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError)
 
 //	EnterScreenSession
 //
@@ -758,8 +758,7 @@ ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesig
 	//
 	//	Initialize the current screen object
 
-	CString sError;
-	if (error = ShowScreen(pRoot, sScreen, sPane, pData, &sError, false, true))
+	if (error = ShowScreen(pRoot, sScreen, sPane, pData, retsError, false, true))
 		{
 		//	Undo
 
@@ -1550,12 +1549,12 @@ void CTranscendenceModel::OnPlayerDocked (CSpaceObject *pObj)
 
 	//	Show screen
 
-	if (EnterScreenSession(m_pDock, NULL, DEFAULT_SCREEN_NAME, CString(), NULL) != NOERROR)
+	CString sError;
+	if (EnterScreenSession(m_pDock, NULL, DEFAULT_SCREEN_NAME, CString(), NULL, &sError) != NOERROR)
 		{
 		m_pPlayer->Undock();
 		m_pDock = NULL;
 
-		CString sError = strPatternSubst(CONSTLIT("[%s]: Unable to show dock screen"), m_pDock->GetType()->GetTypeName());
 		g_pTrans->DisplayMessage(sError);
 		::kernelDebugLogMessage(sError);
 		return;
@@ -2124,7 +2123,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 			{
 			if (pDefaultData)
 				pDefaultData->Discard(&CC);
-			*retsError = CONSTLIT("No local screens");
+			*retsError = strPatternSubst(CONSTLIT("No local screens in type %x."), pRoot->GetUNID());
 			return ERR_FAIL;
 			}
 
@@ -2133,7 +2132,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 			{
 			if (pDefaultData)
 				pDefaultData->Discard(&CC);
-			*retsError = strPatternSubst(CONSTLIT("Unable to find local screen: %s"), sScreenActual);
+			*retsError = strPatternSubst(CONSTLIT("Unable to find local screen %s in type %x."), sScreenActual, pRoot->GetUNID());
 			return ERR_FAIL;
 			}
 		}
@@ -2313,11 +2312,8 @@ bool CTranscendenceModel::ShowShipScreen (CDesignType *pDefaultScreensRoot, CDes
 
 	//	Show screen
 
-	if (EnterScreenSession(pShip, pRoot, sScreen, sPane, pData) != NOERROR)
-		{
-		*retsError = strPatternSubst(CONSTLIT("[%s]: Unable to show screen %s"), pRoot->GetTypeName(), sScreen);
+	if (EnterScreenSession(pShip, pRoot, sScreen, sPane, pData, retsError) != NOERROR)
 		return false;
-		}
 
 	return true;
 	}
