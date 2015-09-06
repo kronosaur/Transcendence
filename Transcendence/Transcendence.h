@@ -1580,13 +1580,14 @@ class CGameSettings
 			debugMode,						//	Program in debug mode
 			debugGame,						//	Game instance in debug mode
 			noDebugLog,						//	Do not write out a debug log
+			debugMusic,						//	Write out soundtrack information
 			debugVideo,						//	Write out video information
 			noCrashPost,					//	Do not post crash log to Multiverse
 			noCollectionDownload,			//	Do not automatically download collection
 			debugSoundtrack,				//	Soundtrack debugging UI
 
 			//	Constants
-			OPTIONS_COUNT = 36,
+			OPTIONS_COUNT = 37,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }

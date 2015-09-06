@@ -1881,6 +1881,7 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 
 	m_Soundtrack.SetMusicEnabled(!GetOptionBoolean(CGameSettings::noMusic));
 	m_Soundtrack.SetVolume(GetOptionInteger(CGameSettings::musicVolume));
+	m_Soundtrack.SetDebugMode(GetOptionBoolean(CGameSettings::debugMusic));
 	m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramLoad);
 
 	//	Initialize legacy window
