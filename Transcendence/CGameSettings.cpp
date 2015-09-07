@@ -91,7 +91,6 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"debugMode",				optionBoolean,	"false",	0	},
 		{	"debugGame",				optionBoolean,	"false",	0	},
 		{	"noDebugLog",				optionBoolean,	"false",	0	},
-		{	"debugMusic",				optionBoolean,	"false",	0	},
 		{	"debugVideo",				optionBoolean,	"false",	0	},
 		{	"noCrashPost",				optionBoolean,	"false",	0	},
 		{	"noCollectionDownload",		optionBoolean,	"false",	0	},
