@@ -633,7 +633,7 @@
 	<!-- Ithalium Watch -->
 
 	<ItemType UNID="&itIthaliumWatch;"
-			name=				"precision ithalium watch"
+			name=				"precision ithalium watch(es)"
 			level=				"9"
 			value=				"15000"
 			mass=				"1"
