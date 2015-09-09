@@ -271,32 +271,30 @@ void CTargetDisplay::Update (void)
 
 			//	Erase the area outside the target pane
 
-#if 0
 			if (pDisplayDesc)
 				{
 				const RECT &rcImage = pDisplayDesc->Image.GetImageRect();
 
-				m_Buffer.ClearMaskBlt(rcImage.left, 
+				m_Buffer.CopyChannel(channelAlpha,
+						rcImage.left, 
 						rcImage.top, 
 						RectWidth(rcImage), 
 						RectHeight(rcImage), 
 						pDisplayDesc->Image.GetImage(NULL_STR),
 						0,
-						0,
-						DEFAULT_TRANSPARENT_COLOR);
+						0);
 				}
 			else if (m_pBackground)
 				{
-				m_Buffer.ClearMaskBlt(0, 
+				m_Buffer.CopyChannel(channelAlpha,
+						0, 
 						0, 
 						DISPLAY_WIDTH, 
 						DISPLAY_HEIGHT, 
 						*m_pBackground,
 						0,
-						0,
-						DEFAULT_TRANSPARENT_COLOR);
+						0);
 				}
-#endif
 			}
 
 		//	Paint the name of the target
