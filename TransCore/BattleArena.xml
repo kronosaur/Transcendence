@@ -2178,8 +2178,10 @@
 			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="92"/>
 			<RepairArmor	criteria="a L:1-6;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-6;" priceAdj="100"/>
-			<InstallDevice	criteria="c +Illegal; L:1-6" priceAdj="100"/>
-			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
+			<InstallDevice	criteria="c +Illegal; L:1-6" priceAdj="100"	upgradeInstallOnly="true"/>
+			<RemoveDevice	criteria="c L:1-6;" priceAdj="100" upgradeInstallOnly="true"/>
+			
+			<InstallDevice	criteria="d L:1-6;" priceAdj="unavailable"	messageID="descNoInstall"/>
 		</Trade>
 		
 		<Items>
@@ -2362,6 +2364,17 @@
 			<Port x="-60"	y="-60" />
 		</DockingPorts>
 
+		<Language>
+			<Text id="descNoInstall">
+				(cat
+					"We only install smuggler's equipment. "
+					"We cannot install " (itmGetName (@ gData 'item) 0x04) " on your ship."
+					)
+			</Text>
+			<Text id="dockServices:installAbility">
+				(cat "We install smuggler's equipment up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Kate Morgental's Corporate Cruiser
