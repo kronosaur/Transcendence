@@ -1314,6 +1314,28 @@ void CPlayerShipController::OnPaintSRSEnhancements (CG32bitImage &Dest, SViewpor
 		m_pAutoDamage = NULL;
 		}
 
+#ifdef DEBUG_HIT_SCAN
+	CVector vStart = m_pShip->GetPos();
+	int x1, y1;
+	Ctx.XForm.Transform(vStart, &x1, &y1);
+
+	CVector vEnd = vStart + PolarToVector(m_pShip->GetRotation(), LIGHT_SECOND * 50);
+	CVector vHitPos;
+	int x2, y2;
+	CSpaceObject *pHit;
+	if (pHit = m_pShip->GetSystem()->HitScan(m_pShip, vStart, vEnd, &vHitPos))
+		{
+		Ctx.XForm.Transform(vHitPos, &x2, &y2);
+		CGDraw::Line(Dest, x1, y1, x2, y2, 1, CG32bitPixel(0xff, 0xff, 0x00));
+		CGDraw::Circle(Dest, x2, y2, 3, CG32bitPixel(0xff, 0xff, 0x00));
+		}
+	else
+		{
+		Ctx.XForm.Transform(vEnd, &x2, &y2);
+		CGDraw::Line(Dest, x1, y1, x2, y2, 1, CG32bitPixel(0x00, 0xff, 0x00));
+		}
+#endif
+
 	DEBUG_CATCH
 	}
 
