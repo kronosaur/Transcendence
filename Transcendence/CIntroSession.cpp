@@ -200,10 +200,16 @@ void CIntroSession::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereign, C
 	//	Create ships if necessary
 
 	if (pShip1 == NULL || (dwNewShipClass && dwCurSovereign == g_PlayerSovereignUNID))
-		CreateRandomShip(pSystem, (dwCurSovereign == g_PlayerSovereignUNID ? dwNewShipClass : 0), pSovereign1, &pShip1);
+		{
+		if (CreateRandomShip(pSystem, (dwCurSovereign == g_PlayerSovereignUNID ? dwNewShipClass : 0), pSovereign1, &pShip1) != NOERROR)
+			return;
+		}
 
 	if (pShip2 == NULL || (dwNewShipClass && dwCurSovereign == UNID_UNKNOWN_ENEMY))
-		CreateRandomShip(pSystem, (dwCurSovereign == UNID_UNKNOWN_ENEMY ? dwNewShipClass : 0), pSovereign2, &pShip2);
+		{
+		if (CreateRandomShip(pSystem, (dwCurSovereign == UNID_UNKNOWN_ENEMY ? dwNewShipClass : 0), pSovereign2, &pShip2) != NOERROR)
+			return;
+		}
 
 	//	Make sure every ship has an order to attack someone
 
@@ -296,16 +302,10 @@ void CIntroSession::CreateIntroSystem (void)
 	CShip *pShip1;
 	CShip *pShip2;
 	if (error = CreateRandomShip(g_pTrans->m_pIntroSystem, 0, pSovereign1, &pShip1))
-		{
-		ASSERT(false);
 		return;
-		}
 
 	if (error = CreateRandomShip(g_pTrans->m_pIntroSystem, 0, pSovereign2, &pShip2))
-		{
-		ASSERT(false);
 		return;
-		}
 
 	//	Make the ships attack each other
 
@@ -358,20 +358,48 @@ ALERROR CIntroSession::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSover
 	ALERROR error;
 	int i;
 
-	//	Figure out the class
+	//	Figure out the class. If we've got a class passed in, use that.
 
-	int iTimeOut = 100;
-	CShipClass *pShipClass;
-	if (dwClass == 0
-			|| (pShipClass = g_pUniverse->FindShipClass(dwClass)) == NULL)
+	CShipClass *pShipClass = NULL;
+	if (dwClass != 0
+			&& (pShipClass = g_pUniverse->FindShipClass(dwClass)) != NULL)
+		{ }
+
+	//	Otherwise, we pick a random ship
+
+	else
 		{
-		do
-			pShipClass = g_pUniverse->GetShipClass(mathRandom(0, g_pUniverse->GetShipClassCount()-1));
-		while (iTimeOut-- > 0
-				&&	(pShipClass->GetScore() > 1000 
-					|| pShipClass->IsPlayerShip()
-					|| pShipClass->IsVirtual()
-					|| !pShipClass->HasLiteralAttribute(ATTRIB_GENERIC_SHIP_CLASS)));
+		//	If necessary, build our table of ships.
+
+		if (m_ShipList.GetCount() == 0)
+			{
+			for (i = 0; i < g_pUniverse->GetShipClassCount(); i++)
+				{
+				CShipClass *pClass = g_pUniverse->GetShipClass(i);
+
+				//	Skip classes that we don't want in the intro
+
+				if (pClass->IsPlayerShip()
+						|| pClass->IsVirtual()
+						|| !pClass->HasLiteralAttribute(ATTRIB_GENERIC_SHIP_CLASS))
+					continue;
+
+				//	Add to our list, sorted by score
+
+				m_ShipList.Insert(pClass->GetScore(), pClass);
+				}
+			}
+
+		//	If no ships in our list, then we can't proceed
+
+		if (m_ShipList.GetCount() == 0)
+			return ERR_FAIL;
+
+		//	We only pick from the bottom half of the list, on the assumption that
+		//	we want the higher level ships to be a surprise for the player.
+
+		int iMax = m_ShipList.GetCount() / 2;
+		pShipClass = m_ShipList[mathRandom(0, iMax)];
 		}
 
 	//	Normally we create a single ship, but sometimes we create lots

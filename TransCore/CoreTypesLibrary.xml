@@ -105,6 +105,8 @@
 	<!ENTITY efMediumStationDamage		"0x0000900F">
 	
 	<!ENTITY rsMediumDamage				"0x0000F001">
+	<!ENTITY rsDefaultDockScreenBkgnd	"0x0000F013">	<!-- Same as rsZubrinDockScreenBkgnd -->
+	<!ENTITY rsDefaultDockScreenMask	"0x0000F014">	<!-- Same as rsZubrinDockScreenMask -->
 	<!ENTITY rsMissiles					"0x0000F101">
 	<!ENTITY rsMediumHit				"0x0000F106">
 	<!ENTITY rsShieldHit				"0x0000F107">

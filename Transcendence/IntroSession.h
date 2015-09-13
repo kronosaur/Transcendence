@@ -110,6 +110,8 @@ class CIntroSession : public IHISession
 		RECT m_rcBottom;					//	Bottom area (buttons)
 
 		CHighScoreDisplay m_HighScoreDisplay;
+
+		TSortMap<int, CShipClass *> m_ShipList;
 	};
 
 class CIntroShipController : public IShipController

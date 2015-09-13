@@ -128,53 +128,7 @@
 				))
 
 			(setq intDestroyItems (lambda (theObj)
-				(block (allItems remainingItems)
-					(setq allItems (objGetItems theObj "*U"))
-
-					; Generate a list of the items that are left
-					(setq remainingItems Nil)
-					(enum allItems theItem
-						(block (damagedItemCount undamgedItemCount)
-							(setq undamagedItemCount 0)
-							(setq damagedItemCount 0)
-							(switch
-								; 70% of devices and armor are destroyed
-								; 20% are damaged
-								; 10% are OK
-								(itmMatches theItem "ad")
-									(block (tenth tenthMod)
-										(setq tenth (divide (itmGetCount theItem) 10))
-										(setq tenthMod (modulo (itmGetCount theItem) 10))
-
-										(setq undamagedItemCount (add undamagedItemCount tenth (if (leq (random 1 10) tenthMod) 1 0)))
-										(setq damagedItemCount (add damagedItemCount tenth (if (leq (random 1 10) tenthMod) 1 0) tenth (if (leq (random 1 10) tenthMod) 1 0)))
-										)
-
-								; 70% of other items are destroyed
-								(block Nil
-									(setq undamagedItemCount (divide (multiply 30 (itmGetCount theItem)) 100))
-									)
-								)
-
-							; Add to our list
-							(if (gr damagedItemCount 0)
-								(setq remainingItems (append remainingItems (list (itmSetCount (itmSetDamaged theItem) damagedItemCount))))
-								)
-
-							(if (gr undamagedItemCount 0)
-								(setq remainingItems (append remainingItems (list (itmSetCount theItem undamagedItemCount))))
-								)
-
-							; Remove from object
-							(objRemoveItem theObj theItem)
-							)
-						)
-
-					; Add back remaining items
-					(enum remainingItems theItem
-						(objAddItem theObj theItem)
-						)
-					)
+				(rpgDestroyItems theObj)
 				))
 
 			(setq intGetGateToSystem (lambda (theSource destSystem)

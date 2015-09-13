@@ -1407,6 +1407,9 @@
 	
 -->
 
+	<Image UNID="&rsDefaultDockScreenBkgnd;"	bitmap="Resources\DockScreenBackground.jpg"/>
+	<Image UNID="&rsDefaultDockScreenMask;"	bitmask="Resources\DockScreenMask.bmp"/>
+	
 	<Image UNID="&rsExplosionsAG48;"	bitmap="Resources\Explosions-AG48.jpg"	bitmask="Resources\Explosions-AG48Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsExplosionsAG96;"	bitmap="Resources\Explosions-AG96.jpg"	bitmask="Resources\Explosions-AG96Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsMediumExplosions;" bitmap="Resources\MediumExplosions.jpg" bitmask="Resources\MediumExplosionsMask.bmp"/>

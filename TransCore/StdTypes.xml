@@ -85,8 +85,6 @@
 	<Image UNID="&rsZubrinLRS;"			bitmap="Resources\LargeHUD.jpg"		/>
 	<Image UNID="&rsZubrinLRSBorder;"	bitmask="Resources\LRSBorderMask.bmp"/>
 	<Image UNID="&rsZubrinTargeting;"	bitmap="Resources\WeaponsHUD.bmp"	bitmask="Resources\WeaponsHUDMask.bmp"	/>
-	<Image UNID="&rsZubrinDockScreenBkgnd;"	bitmap="Resources\DockScreenBackground.jpg"/>
-	<Image UNID="&rsZubrinDockScreenMask;"	bitmask="Resources\DockScreenMask.bmp"/>
 
 	<Image UNID="&rsSRSSnow;"			bitmap="Resources\ScreenSnow.jpg"/>
 
