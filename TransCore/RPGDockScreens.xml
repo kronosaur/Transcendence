@@ -46,7 +46,7 @@
 								
 							;	Otherwise, generic default
 							
-							(scrSetDescTranslate gScreen 'descAbandoendStationDefault)
+							(scrSetDescTranslate gScreen 'descAbandonedStationDefault)
 							)
 						)
 				</OnPaneInit>
