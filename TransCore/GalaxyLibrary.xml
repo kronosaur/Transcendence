@@ -267,6 +267,56 @@
 	<!-- 00C0-00CF MINING -->
 	
 	<!ENTITY ovMiningOreCount			"0x000200C0">
+	
+	<!-- 00D0-00DF ICE ASTEROIDS -->
+	
+	<!ENTITY rsIceAsteroidSizeA			"0x000200D0">
+	<!ENTITY rsIceAsteroidSizeB			"0x000200D1">
+	<!ENTITY rsIceAsteroidSizeC			"0x000200D2">
+	<!ENTITY rsIceAsteroidSizeD			"0x000200D3">
+	<!ENTITY rsIcePlanetoidSizeE		"0x000200D4">
+	<!ENTITY rsIcePlanetoidSizeF		"0x000200D5">
+	<!ENTITY rsIcePlanetoidSizeG		"0x000200D6">
+	
+	<!-- 00E0-00EF METALLIC ASTEROIDS -->
+	
+	<!ENTITY rsMetallicAsteroidSizeA	"0x000200E0">
+	<!ENTITY rsMetallicAsteroidSizeB	"0x000200E1">
+	<!ENTITY rsMetallicAsteroidSizeC	"0x000200E2">
+	<!ENTITY rsMetallicAsteroidSizeD	"0x000200E3">
+	<!ENTITY rsMetallicPlanetoidSizeE	"0x000200E4">
+	<!ENTITY rsMetallicPlanetoidSizeF	"0x000200E5">
+	<!ENTITY rsMetallicPlanetoidSizeG	"0x000200E6">
+	
+	<!-- 00F0-00FF PRIMORDIAL ASTEROIDS -->
+	
+	<!ENTITY rsPrimordialAsteroidSizeA	"0x000200F0">
+	<!ENTITY rsPrimordialAsteroidSizeB	"0x000200F1">
+	<!ENTITY rsPrimordialAsteroidSizeC	"0x000200F2">
+	<!ENTITY rsPrimordialAsteroidSizeD	"0x000200F3">
+	<!ENTITY rsPrimordialPlanetoidSizeE	"0x000200F4">
+	<!ENTITY rsPrimordialPlanetoidSizeF	"0x000200F5">
+	<!ENTITY rsPrimordialPlanetoidSizeG	"0x000200F6">
+	
+	<!-- 0100-010F ROCKY ASTEROIDS -->
+	
+	<!ENTITY rsRockyAsteroidSizeA		"0x00020100">
+	<!ENTITY rsRockyAsteroidSizeB		"0x00020101">
+	<!ENTITY rsRockyAsteroidSizeC		"0x00020102">
+	<!ENTITY rsRockyAsteroidSizeD		"0x00020103">
+	<!ENTITY rsRockyPlanetoidSizeE		"0x00020104">
+	<!ENTITY rsRockyPlanetoidSizeF		"0x00020105">
+	<!ENTITY rsRockyPlanetoidSizeG		"0x00020106">
+	
+	<!-- 0110-011F VOLCANIC ASTEROIDS -->
+	
+	<!ENTITY rsVolcanicAsteroidSizeA	"0x00020110">
+	<!ENTITY rsVolcanicAsteroidSizeB	"0x00020111">
+	<!ENTITY rsVolcanicAsteroidSizeC	"0x00020112">
+	<!ENTITY rsVolcanicAsteroidSizeD	"0x00020113">
+	<!ENTITY rsVolcanicPlanetoidSizeE	"0x00020114">
+	<!ENTITY rsVolcanicPlanetoidSizeF	"0x00020115">
+	<!ENTITY rsVolcanicPlanetoidSizeG	"0x00020116">
 	]>
 	
 <CoreLibrary

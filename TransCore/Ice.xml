@@ -135,17 +135,7 @@
 		ejectaType=			"&vtIceAsteroidEjecta;"
 		>
 
-		<ImageVariants>
-			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="0"   imageWidth="40" imageHeight="40"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="40"  imageWidth="40" imageHeight="40"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="80"  imageWidth="40" imageHeight="40"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="120" imageWidth="40" imageHeight="40"/>
-
-			<Image			imageID="&rsIceAsteroids;" imageX="40"  imageY="0"   imageWidth="40" imageHeight="40"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="40"  imageY="40"  imageWidth="40" imageHeight="40"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="40"  imageY="80"  imageWidth="40" imageHeight="40"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="40"  imageY="120" imageWidth="40" imageHeight="40"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsIceAsteroidSizeA;"/>
 
 		<Items>
 			<Table>
@@ -173,14 +163,8 @@
 
 		ejectaType=			"&vtIceAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="0"   imageWidth="60" imageHeight="60"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="60"  imageWidth="60" imageHeight="60"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="120" imageWidth="60" imageHeight="60"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="140" imageY="0"   imageWidth="60" imageHeight="60"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="140" imageY="60"  imageWidth="60" imageHeight="60"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="140" imageY="120" imageWidth="60" imageHeight="60"/>
-		</ImageVariants>
+		
+		<ImageLookup imageID="&rsIceAsteroidSizeB;"/>
 
 		<Items>
 			<Table>
@@ -208,17 +192,8 @@
 
 		ejectaType=			"&vtIceAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="160" imageWidth="80" imageHeight="80"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="240" imageWidth="80" imageHeight="80"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="320" imageWidth="80" imageHeight="80"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="400" imageWidth="80" imageHeight="80"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="480" imageWidth="80" imageHeight="80"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="560" imageWidth="80" imageHeight="80"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="640" imageWidth="80" imageHeight="80"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="720" imageWidth="80" imageHeight="80"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="800" imageWidth="80" imageHeight="80"/>
-		</ImageVariants>
+		
+		<ImageLookup imageID="&rsIceAsteroidSizeC;"/>
 
 		<Items>
 			<Table>
@@ -246,14 +221,8 @@
 
 		ejectaType=			"&vtIceAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="180" imageWidth="120" imageHeight="120"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="300" imageWidth="120" imageHeight="120"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="420" imageWidth="120" imageHeight="120"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="540" imageWidth="120" imageHeight="120"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="660" imageWidth="120" imageHeight="120"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="780" imageWidth="120" imageHeight="120"/>
-		</ImageVariants>
+		
+		<ImageLookup imageID="&rsIceAsteroidSizeD;"/>
 
 		<Items>
 			<Table>
@@ -281,10 +250,8 @@
 
 		ejectaType=			"&vtIceAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image			imageID="&rsIceAsteroids;" imageX="200" imageY="0"   imageWidth="140" imageHeight="140"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="200" imageY="140" imageWidth="140" imageHeight="140"/>
-		</ImageVariants>
+		
+		<ImageLookup imageID="&rsIcePlanetoidSizeE;"/>
 	</StationType>
 
 	<!-- Ice Planetoid Size F -->
@@ -299,10 +266,8 @@
 
 		ejectaType=			"&vtIceAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image			imageID="&rsIceAsteroids;" imageX="200" imageY="280" imageWidth="160" imageHeight="160"/>
-			<Image			imageID="&rsIceAsteroids;" imageX="200" imageY="440" imageWidth="160" imageHeight="160"/>
-		</ImageVariants>
+		
+		<ImageLookup imageID="&rsIcePlanetoidSizeF;"/>
 	</StationType>
 
 	<!-- Ice Planetoid Size G -->
@@ -317,14 +282,83 @@
 
 		ejectaType=			"&vtIceAsteroidEjecta;"
 		>
+		
+		<ImageLookup imageID="&rsIcePlanetoidSizeG;"/>
+	</StationType>
+
+<!-- RESOURCES -->
+	
+	<ImageComposite unid="&rsIceAsteroidSizeA;">
+		<ImageVariants>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="0"   imageWidth="40" imageHeight="40"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="40"  imageWidth="40" imageHeight="40"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="80"  imageWidth="40" imageHeight="40"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="120" imageWidth="40" imageHeight="40"/>
+
+			<Image			imageID="&rsIceAsteroids;" imageX="40"  imageY="0"   imageWidth="40" imageHeight="40"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="40"  imageY="40"  imageWidth="40" imageHeight="40"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="40"  imageY="80"  imageWidth="40" imageHeight="40"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="40"  imageY="120" imageWidth="40" imageHeight="40"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsIceAsteroidSizeB;">
+		<ImageVariants>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="0"   imageWidth="60" imageHeight="60"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="60"  imageWidth="60" imageHeight="60"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="120" imageWidth="60" imageHeight="60"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="140" imageY="0"   imageWidth="60" imageHeight="60"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="140" imageY="60"  imageWidth="60" imageHeight="60"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="140" imageY="120" imageWidth="60" imageHeight="60"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsIceAsteroidSizeC;">
+		<ImageVariants>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="160" imageWidth="80" imageHeight="80"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="240" imageWidth="80" imageHeight="80"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="320" imageWidth="80" imageHeight="80"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="400" imageWidth="80" imageHeight="80"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="480" imageWidth="80" imageHeight="80"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="560" imageWidth="80" imageHeight="80"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="640" imageWidth="80" imageHeight="80"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="720" imageWidth="80" imageHeight="80"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="800" imageWidth="80" imageHeight="80"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsIceAsteroidSizeD;">
+		<ImageVariants>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="180" imageWidth="120" imageHeight="120"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="300" imageWidth="120" imageHeight="120"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="420" imageWidth="120" imageHeight="120"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="540" imageWidth="120" imageHeight="120"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="660" imageWidth="120" imageHeight="120"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="780" imageWidth="120" imageHeight="120"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsIcePlanetoidSizeE;">
+		<ImageVariants>
+			<Image			imageID="&rsIceAsteroids;" imageX="200" imageY="0"   imageWidth="140" imageHeight="140"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="200" imageY="140" imageWidth="140" imageHeight="140"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsIcePlanetoidSizeF;">
+		<ImageVariants>
+			<Image			imageID="&rsIceAsteroids;" imageX="200" imageY="280" imageWidth="160" imageHeight="160"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="200" imageY="440" imageWidth="160" imageHeight="160"/>
+		</ImageVariants>
+	</ImageComposite>
+	
+	<ImageComposite unid="&rsIcePlanetoidSizeG;">
 		<ImageVariants>
 			<Image			imageID="&rsIceAsteroids;" imageX="200" imageY="600" imageWidth="180" imageHeight="180"/>
 			<Image			imageID="&rsIceAsteroids;" imageX="200" imageY="780" imageWidth="180" imageHeight="180"/>
 		</ImageVariants>
-	</StationType>
-
-<!-- RESOURCES -->
-
+	</ImageComposite>
+	
 	<Image UNID="&rsIceAsteroids;"			bitmap="Resources\IceAsteroids.jpg"			bitmask="Resources\IceAsteroidsMask.bmp"	loadOnUse="true"/>
 	<Image UNID="&rsWorldsIcePlanet1;"		bitmap="Resources\WorldsIcePlanet1.jpg"		bitmask="Resources\WorldsIcePlanetMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsWorldsIcePlanet2;"		bitmap="Resources\WorldsIcePlanet2.jpg"		bitmask="Resources\WorldsIcePlanetMask.bmp"  loadOnUse="true"/>
