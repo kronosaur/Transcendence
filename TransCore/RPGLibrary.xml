@@ -76,6 +76,7 @@
 	<!ENTITY dsRPGDecontamination		"0x00010031">
 	<!ENTITY dsRPGAbandonedStation		"0x00010032">
 	<!ENTITY dsRPGDockServicesBase		"0x00010033">
+	<!ENTITY dsRPGCommoditiesExchangeSell	"0x00010034">
 	
 	<!-- 0040-004F CARGO CRATE -->
 	

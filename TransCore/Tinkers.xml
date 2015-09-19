@@ -165,9 +165,8 @@
 							</Action>
 
 							<Action id="actionSellScrap">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action id="actionCustomWork">

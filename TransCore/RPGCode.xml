@@ -61,6 +61,13 @@
 					)
 				))
 				
+			(setq rpgBuyItems (lambda (itemCount itemCost)
+				(block (itemsToBuy)
+					(setq itemsToBuy (scrRemoveItem gScreen itemCount))
+					(rpgBuyItem gSource itemsToBuy (multiply itemCount itemCost) (objGetDefaultCurrency gSource))
+					)
+				))
+
 			(setq rpgDockServices (lambda (targetObj options)
 				(block Nil
 				
@@ -218,6 +225,10 @@
 					)
 				))
 			
+			(setq rpgCalcBuyPrice (lambda (thisItem)
+				(objGetBuyPrice gSource thisItem)
+				))
+
 			(setq rpgCalcDockServiceBuyAmmo (lambda (dockObj shipObj theItem options)
 				(switch
 					(= dockObj shipObj)
@@ -1088,6 +1099,10 @@
 					)
 				))
 				
+			(setq rpgCalcSellPrice (lambda (thisItem)
+				(objGetSellPrice gSource thisItem)
+				))
+
 			;	rpgCalcToHit
 			;
 			;	This is a generic function useful for calculating probability of
@@ -1560,6 +1575,17 @@
 					)
 				))
 				
+			(setq rpgJettisonItem (lambda (theObj theItem)
+				(block Nil
+					(objAddItem theObj theItem)
+
+					; If the player jettisoned explosive items, then mark the object
+					(if (or (itmMatches theItem "mf") (itmMatches theItem "* +explosive;"))
+						(objSetData theObj "PlayerExplosives" True)
+						)
+					)
+				))
+
 			(setq rpgMissionAssignment (lambda (options)
 			
 				;	Options may contain the following fields
@@ -1775,6 +1801,44 @@
 					(enum (objGetOverlays gPlayerShip) theOverlay
 						(objFireOverlayEvent gPlayerShip theOverlay "OnInsuranceClaim")
 						)
+					)
+				))
+				
+			(setq rpgSellItems (lambda (itemCount itemCost)
+				(block (itemsToSell)
+					(setq itemsToSell (scrRemoveItem gScreen itemCount))
+					
+					; Add to player ship
+					(objAddItem gSource itemsToSell)
+					
+					; Credit the player
+					(objCredit gPlayerShip (objGetDefaultCurrency gSource) (multiply itemCount itemCost))
+					(plyRecordSellItem gPlayer itemsToSell (objGetDefaultCurrency gSource) (multiply itemCount itemCost))
+
+					; Remove from station balance
+					(objCharge gSource (multiply itemCount itemCost))
+
+					; If the player just sold slaves, then keep track
+					(if (itmHasModifier itemsToSell "Slaves")
+						(block Nil
+							(setq sales (objGetData gPlayerShip "slaveSales"))
+							(if (not sales)
+								(setq sales 0)
+								)
+
+							(setq sales (add sales (multiply itemCount itemCost)))
+							(objSetData gPlayerShip "slaveSales" sales)
+
+							; Chance of getting caught
+							(if (ls (random 1 50) itemCount)
+								(intCommonwealthCrime 2 "slave-trading")
+								)
+							)
+						)
+						
+					; Remember that we've sold something, for tutorial 
+					; purposes.
+					(typSetData &svPlayer; 'tutorialSold True)
 					)
 				))
 			)

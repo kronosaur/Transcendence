@@ -906,9 +906,8 @@
 							</Action>
 
 							<Action name="Sell Autons" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Repair Active Autons" key="R">
@@ -1164,9 +1163,8 @@
 
 						<Actions>
 							<Action name="Sell Items" default="1" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Leave" cancel="1" key="L">
@@ -1664,9 +1662,8 @@
 							</Action>
 							
 							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 							
 							<Action name="Undock" cancel="1" key="U">
@@ -1965,9 +1962,8 @@
 
 						<Actions>
 							<Action name="Sell Items" key="S" default="1">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Leave" cancel="1" key="L">
@@ -2068,9 +2064,8 @@
 							</Action>
 
 							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -2634,9 +2629,8 @@
 							</Action>
 
 							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
