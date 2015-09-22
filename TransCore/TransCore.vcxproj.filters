@@ -354,5 +354,8 @@
     <Xml Include="Ferians.xml">
       <Filter>Human Space Library</Filter>
     </Xml>
+    <Xml Include="RPGComponents.xml">
+      <Filter>RPG Library</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

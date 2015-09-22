@@ -219,6 +219,27 @@
 	{	code: '(= '(1 3 3) '(1 2 3))			result: Nil }
 	{	code: '(= nil '(1 2 3))			result: Nil }
 	{	code: '(!= nil '(1 2 3))			result: True }
+
+	;	Conversion code
+
+	{	code: '(convertTo 'int32 5)			result: 5 }
+	{	code: '(convertTo 'int32 -5)		result: -5 }
+	{	code: '(convertTo 'int32 5.5)		result: 5 }
+	{	code: '(convertTo 'int32 5.1)		result: 5 }
+	{	code: '(convertTo 'int32 5.9)		result: 5 }
+	{	code: '(convertTo 'int32 -5.9)		result: -5 }
+	{	code: '(convertTo 'int32 "5")		result: 5 }
+	{	code: '(convertTo 'int32 "5.5")		result: 5 }
+	{	code: '(convertTo 'int32 "0x10")	result: 16 }
+	{	code: '(convertTo 'real 5)			result: 5.0 }
+	{	code: '(convertTo 'real 5.0)		result: 5.0 }
+	{	code: '(convertTo 'real 5.1)		result: 5.1 }
+	{	code: '(convertTo 'real "5")		result: 5.0 }
+	{	code: '(convertTo 'real "5.5")		result: 5.5 }
+	{	code: '(convertTo 'real "0x10")		result: 16.0 }
+	{	code: '(convertTo 'string 5)		result: "5" }
+	{	code: '(convertTo 'string 5.5)		result: "5.5" }
+	{	code: '(convertTo 'list 5)			result: '(5) }
 	))
 
 (block (

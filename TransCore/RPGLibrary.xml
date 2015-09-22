@@ -106,6 +106,7 @@
 	<Module filename="RPGCharacters.xml"/>
 	<Module filename="RPGCode.xml"/>
 	<Module filename="RPGCompatibility.xml"/>
+	<Module filename="RPGComponents.xml"/>
 	<Module filename="RPGArmorDockScreens.xml"/>
 	<Module filename="RPGDeviceDockScreens.xml"/>
 	<Module filename="RPGDialog.xml"/>

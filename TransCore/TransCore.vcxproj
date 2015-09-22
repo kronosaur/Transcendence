@@ -387,6 +387,7 @@
     <Xml Include="Ferians.xml" />
     <Xml Include="HumanSpaceVol01.xml" />
     <Xml Include="Ore.xml" />
+    <Xml Include="RPGComponents.xml" />
     <Xml Include="RPGLibrary.xml" />
     <Xml Include="GalaxyLibrary.xml" />
     <Xml Include="StdMiningEquipment.xml" />
