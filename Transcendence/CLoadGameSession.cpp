@@ -127,7 +127,7 @@ void CLoadGameSession::CmdReadComplete (CListSaveFilesTask *pTask)
 	{
 	const CVisualPalette &VI = m_HI.GetVisuals();
 	RECT rcRect;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcRect);
+	VI.GetWidescreenRect(&rcRect);
 
 	//	Done with wait animation
 
@@ -204,7 +204,7 @@ ALERROR CLoadGameSession::OnInit (CString *retsError)
 	{
 	const CVisualPalette &VI = m_HI.GetVisuals();
 	RECT rcRect;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcRect);
+	VI.GetWidescreenRect(&rcRect);
 
 	//	Create a task to read the list of save files from disk
 

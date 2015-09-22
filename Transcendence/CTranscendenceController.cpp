@@ -259,7 +259,7 @@ void CTranscendenceController::DisplayMultiverseStatus (const CString &sStatus, 
 		const int TOP_SPACING = 8;
 
 		RECT rcRect;
-		VI.GetWidescreenRect(m_HI.GetScreen(), &rcRect);
+		VI.GetWidescreenRect(&rcRect);
 
 		CAniSequencer *pRoot;
 		CAniSequencer::Create(CVector(rcRect.left, rcRect.bottom - (MediumFont.GetHeight() + TOP_SPACING)), &pRoot);

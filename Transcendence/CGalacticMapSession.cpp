@@ -94,13 +94,13 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 	//	Compute some rects
 
 	RECT rcCenter;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter);
+	VI.GetWidescreenRect(&rcCenter);
 
-	int cxWidth = m_HI.GetScreen().GetWidth();
-	int cyTotalHeight = Min(MAX_HEIGHT + 2 * BORDER_HEIGHT, m_HI.GetScreen().GetHeight());
+	int cxWidth = m_HI.GetScreenWidth();
+	int cyTotalHeight = Min(MAX_HEIGHT + 2 * BORDER_HEIGHT, m_HI.GetScreenHeight());
 	int cyHeight = cyTotalHeight - (2 * BORDER_HEIGHT);
 	m_rcView.left = 0;
-	m_rcView.top = (m_HI.GetScreen().GetHeight() - cyHeight) / 2;
+	m_rcView.top = (m_HI.GetScreenHeight() - cyHeight) / 2;
 	m_rcView.right = m_rcView.left + cxWidth;
 	m_rcView.bottom = m_rcView.top + cyHeight;
 

@@ -66,7 +66,7 @@ void CModExchangeSession::CmdRefresh (bool bFullRefresh)
 	{
 	const CVisualPalette &VI = m_HI.GetVisuals();
 	RECT rcCenter;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter);
+	VI.GetWidescreenRect(&rcCenter);
 
 	//	Done with current list
 
@@ -92,7 +92,7 @@ void CModExchangeSession::CmdRefreshComplete (CListCollectionTask *pTask)
 	{
 	const CVisualPalette &VI = m_HI.GetVisuals();
 	RECT rcRect;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcRect);
+	VI.GetWidescreenRect(&rcRect);
 
 	//	Done with wait animation
 
@@ -174,7 +174,7 @@ ALERROR CModExchangeSession::OnInit (CString *retsError)
 	{
 	const CVisualPalette &VI = m_HI.GetVisuals();
 	RECT rcCenter;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter);
+	VI.GetWidescreenRect(&rcCenter);
 
 	//	Create a task to read the list of save files from disk
 

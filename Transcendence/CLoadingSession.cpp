@@ -19,7 +19,7 @@ ALERROR CLoadingSession::OnInit (CString *retsError)
 	const CVisualPalette &VI = m_HI.GetVisuals();
 
 	RECT rcCenter;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter);
+	VI.GetWidescreenRect(&rcCenter);
 
 	//	Load a JPEG of the background image
 
@@ -63,8 +63,8 @@ ALERROR CLoadingSession::OnInit (CString *retsError)
 
 	//	Figure out the position of the stargate animation
 
-	int cxScreen = g_pHI->GetScreen().GetWidth();
-	int cyScreen = g_pHI->GetScreen().GetHeight();
+	int cxScreen = g_pHI->GetScreenWidth();
+	int cyScreen = g_pHI->GetScreenHeight();
 
 	m_rcStargate.left = (cxScreen - STARGATE_WIDTH) / 2;
 	m_rcStargate.right = m_rcStargate.left + STARGATE_WIDTH;

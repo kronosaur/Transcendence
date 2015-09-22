@@ -359,7 +359,7 @@ void CLoginSession::CreateDlgRegister (const CVisualPalette &VI, IAnimatron **re
 
 	RECT rcCenter;
 	RECT rcFull;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter, &rcFull);
+	VI.GetWidescreenRect(&rcCenter, &rcFull);
 
 	RECT rcDlg = rcCenter;
 	int cyDlg = 22 * VI.GetFont(fontLarge).GetHeight();
@@ -456,7 +456,7 @@ void CLoginSession::CreateDlgSignIn (const CVisualPalette &VI, IAnimatron **retp
 
 	RECT rcCenter;
 	RECT rcFull;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter, &rcFull);
+	VI.GetWidescreenRect(&rcCenter, &rcFull);
 
 	RECT rcDlg = rcCenter;
 	int cyDlg = 18 * VI.GetFont(fontLarge).GetHeight();
@@ -623,7 +623,7 @@ ALERROR CLoginSession::OnInit (CString *retsError)
 		{
 		const CVisualPalette &VI = m_HI.GetVisuals();
 		RECT rcRect;
-		VI.GetWidescreenRect(m_HI.GetScreen(), &rcRect);
+		VI.GetWidescreenRect(&rcRect);
 
 		//	Create a wait animation
 

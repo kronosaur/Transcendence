@@ -56,7 +56,7 @@ ALERROR CAdventureIntroSession::OnInit (CString *retsError)
 	{
 	const CVisualPalette &VI = m_HI.GetVisuals();
 	RECT rcRect;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcRect);
+	VI.GetWidescreenRect(&rcRect);
 
 	//	Create the title
 

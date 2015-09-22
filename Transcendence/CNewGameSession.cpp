@@ -502,7 +502,7 @@ ALERROR CNewGameSession::OnInit (CString *retsError)
 	//	position here.
 
 	RECT rcCenter;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter);
+	VI.GetWidescreenRect(&rcCenter);
 
 	m_cxLeftCol = RectWidth(rcCenter) / 3;
 	m_cxRightCol = m_cxLeftCol;

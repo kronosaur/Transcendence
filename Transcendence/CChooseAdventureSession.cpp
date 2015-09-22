@@ -305,7 +305,7 @@ ALERROR CChooseAdventureSession::OnInit (CString *retsError)
 	//	Compute some metrics
 
 	RECT rcCenter;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter, &m_rcFull);
+	VI.GetWidescreenRect(&rcCenter, &m_rcFull);
 
 	int cxPane = Min(RectWidth(rcCenter) / 2, PANE_WIDTH);
 	int xCenterLine = rcCenter.right - (RectWidth(rcCenter) / 4);
@@ -699,7 +699,7 @@ void CChooseAdventureSession::SetBackgroundImage (CExtension *pAdventure)
 
 	RECT rcCenter;
 	RECT rcFull;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter, &rcFull);
+	VI.GetWidescreenRect(&rcCenter, &rcFull);
 
 	int xRightEdge = rcCenter.right - (3 * RectWidth(rcCenter) / 8);
 

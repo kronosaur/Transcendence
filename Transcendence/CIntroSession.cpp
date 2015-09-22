@@ -453,7 +453,7 @@ void CIntroSession::CreateSoundtrackTitleAnimation (CSoundType *pTrack, IAnimatr
 	//	Position to the bottom-left of the main rect.
 
 	RECT rcCenter;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter);
+	VI.GetWidescreenRect(&rcCenter);
 
 	int x = rcCenter.left;
 	int cy = TitleFont.GetHeight() + 2 * BodyFont.GetHeight();

@@ -538,6 +538,8 @@ void CTranscendenceWnd::PaintLRS (void)
 	{
 	DEBUG_TRY
 
+	CG32bitImage &Screen = g_pHI->GetScreen();
+
 	//	Update the LRS every 10 ticks
 
 	if ((m_iTick % LRS_UPDATE_DELAY) == 0)
@@ -545,7 +547,7 @@ void CTranscendenceWnd::PaintLRS (void)
 
 	//	Blt the LRS
 
-	m_LRSDisplay.Paint(g_pHI->GetScreen());
+	m_LRSDisplay.Paint(Screen);
 
 	DEBUG_CATCH
 	}
