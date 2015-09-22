@@ -546,7 +546,7 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 	CCloudService &Service = m_pTC->GetService();
 
 	RECT rcRect;
-	VI.GetWidescreenRect(g_pHI->GetScreen(), &rcRect);
+	VI.GetWidescreenRect(&rcRect);
 
 	//	Create a sequencer to hold all the controls
 
@@ -1114,7 +1114,7 @@ void CTranscendenceWnd::SetAccountControls (const CMultiverseModel &Multiverse)
 	//	Compute metrics
 
 	RECT rcRect;
-	VI.GetWidescreenRect(g_pHI->GetScreen(), &rcRect);
+	VI.GetWidescreenRect(&rcRect);
 
 	//	Delete any existing controls
 

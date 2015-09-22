@@ -79,7 +79,7 @@ void CProfileSession::GetPaneRect (RECT *retrcRect)
 
 	RECT rcCenter;
 	RECT rcFull;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter, &rcFull);
+	VI.GetWidescreenRect(&rcCenter, &rcFull);
 
 	*retrcRect = rcCenter;
 	}

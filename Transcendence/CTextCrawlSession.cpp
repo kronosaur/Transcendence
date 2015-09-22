@@ -171,7 +171,7 @@ ALERROR CTextCrawlSession::OnInit (CString *retsError)
 	{
 	RECT rcCenter;
 	const CVisualPalette &VI = m_HI.GetVisuals();
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter);
+	VI.GetWidescreenRect(&rcCenter);
 
 	//	Compute the RECT where the text will go
 

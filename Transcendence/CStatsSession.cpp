@@ -110,7 +110,7 @@ ALERROR CStatsSession::OnInit (CString *retsError)
 
 	RECT rcCenter;
 	RECT rcFull;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter, &rcFull);
+	VI.GetWidescreenRect(&rcCenter, &rcFull);
 	const CG16bitFont &MediumFont = VI.GetFont(fontMedium);
 	const CG16bitFont &HeaderFont = VI.GetFont(fontHeader);
 

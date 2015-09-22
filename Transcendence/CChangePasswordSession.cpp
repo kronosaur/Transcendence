@@ -138,7 +138,7 @@ void CChangePasswordSession::CreateDlg (IAnimatron **retpDlg)
 	//	Figure out where the login dialog box will appear
 
 	RECT rcCenter;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter);
+	VI.GetWidescreenRect(&rcCenter);
 
 	RECT rcDlg = rcCenter;
 	int cyDlg = 15 * VI.GetFont(fontLarge).GetHeight();
