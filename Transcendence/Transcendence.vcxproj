@@ -377,6 +377,7 @@
     <ClCompile Include="CDockScreenStack.cpp" />
     <ClCompile Include="CGameSession.cpp" />
     <ClCompile Include="CGItemDisplayArea.cpp" />
+    <ClCompile Include="CGItemListDisplayArea.cpp" />
     <ClCompile Include="CGSelectorArea.cpp" />
     <ClCompile Include="CHighScoreDisplay.cpp" />
     <ClCompile Include="CIntroSession.cpp" />

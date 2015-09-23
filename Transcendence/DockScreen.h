@@ -261,9 +261,10 @@ class CDockPane
 			{
 			controlNone,
 
-			controlDesc,
 			controlCounter,
+			controlDesc,
 			controlItemDisplay,
+			controlItemListDisplay,
 			controlTextInput,
 			};
 
@@ -279,7 +280,8 @@ class CDockPane
 				{ }
 
 			inline CGTextArea *AsTextArea (void) { return (CGTextArea *)pArea; }
-			inline CGItemDisplayArea *AsItemDisplayArea (void) { return (CGItemDisplayArea *)pArea; }
+			inline CGItemDisplayArea *AsItemDisplayArea (void) { return (iType == controlItemDisplay ? (CGItemDisplayArea *)pArea : NULL); }
+			inline CGItemListDisplayArea *AsItemListDisplayArea (void) { return (iType == controlItemListDisplay ? (CGItemListDisplayArea *)pArea : NULL); }
 
 			EControlTypes iType;
 			CString sID;					//	Control ID

@@ -41,7 +41,7 @@ int CGItemDisplayArea::Justify (const RECT &rcRect)
 	if (m_Item.GetType())
 		{
 		CUIHelper UIHelper(*g_pHI);
-		return UIHelper.CalcItemEntryHeight(m_pSource, m_Item, rcInner, CUIHelper::OPTION_NO_ICON | CUIHelper::OPTION_TITLE);
+		return (2 * PADDING) + UIHelper.CalcItemEntryHeight(m_pSource, m_Item, rcInner, CUIHelper::OPTION_NO_ICON | CUIHelper::OPTION_TITLE);
 		}
 
 	//	Otherwise, we expect a title and description
@@ -55,7 +55,7 @@ int CGItemDisplayArea::Justify (const RECT &rcRect)
 		rcDrawRect.left += ITEM_TEXT_MARGIN_X;
 		rcDrawRect.right -= ITEM_TEXT_MARGIN_X;
 
-		int cyHeight = ITEM_TEXT_MARGIN_Y;
+		int cyHeight = ITEM_TEXT_MARGIN_Y + PADDING;
 		cyHeight += LargeBold.GetHeight();
 		cyHeight += ITEM_TITLE_EXTRA_MARGIN;	//	A little extra spacing
 
@@ -64,7 +64,7 @@ int CGItemDisplayArea::Justify (const RECT &rcRect)
 
 		//	Margin
 
-		cyHeight += ITEM_TEXT_MARGIN_BOTTOM;
+		cyHeight += ITEM_TEXT_MARGIN_BOTTOM + PADDING;
 
 		return cyHeight;
 		}

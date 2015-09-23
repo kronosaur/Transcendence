@@ -11,6 +11,7 @@
 #define COUNTER_TAG					CONSTLIT("Counter")
 #define INITIALIZE_TAG				CONSTLIT("Initialize")
 #define ITEM_DISPLAY_TAG			CONSTLIT("ItemDisplay")
+#define ITEM_LIST_DISPLAY_TAG		CONSTLIT("ItemListDisplay")
 #define ON_PANE_INIT_TAG			CONSTLIT("OnPaneInit")
 #define TEXT_TAG					CONSTLIT("Text")
 #define TEXT_INPUT_TAG				CONSTLIT("TextInput")
@@ -184,6 +185,22 @@ void CDockPane::CreateControl (EControlTypes iType, const CString &sID, const CS
 			break;
 			}
 
+		case controlItemListDisplay:
+			{
+			SControl *pControl = m_Controls.Insert();
+			pControl->iType = iType;
+			pControl->sID = sID;
+			pControl->cyHeight = 0;
+			pControl->cyMinHeight = 0;
+			pControl->cyMaxHeight = 0;
+
+			CGItemListDisplayArea *pItemDisplayArea = new CGItemListDisplayArea;
+
+			pControl->pArea = pItemDisplayArea;
+			m_pContainer->AddArea(pControl->pArea, m_rcPane, 0);
+			break;
+			}
+
 		case controlTextInput:
 			{
 			SControl *pControl = m_Controls.Insert();
@@ -242,6 +259,8 @@ ALERROR CDockPane::CreateControls (CString *retsError)
 				iType = controlCounter;
 			else if (strEquals(pControlDef->GetTag(), ITEM_DISPLAY_TAG))
 				iType = controlItemDisplay;
+			else if (strEquals(pControlDef->GetTag(), ITEM_LIST_DISPLAY_TAG))
+				iType = controlItemListDisplay;
 			else if (strEquals(pControlDef->GetTag(), TEXT_TAG))
 				iType = controlDesc;
 			else if (strEquals(pControlDef->GetTag(), TEXT_INPUT_TAG))
@@ -820,6 +839,7 @@ void CDockPane::RenderControls (void)
 			{
 			case controlDesc:
 			case controlItemDisplay:
+			case controlItemListDisplay:
 				Control.cyHeight = Control.pArea->Justify(Control.pArea->GetRect());
 				break;
 			}
@@ -900,6 +920,7 @@ bool CDockPane::SetControlValue (const CString &sID, ICCItem *pValue)
 //	control of the given ID.
 
 	{
+	int i;
 	CCodeChain &CC = g_pUniverse->GetCC();
 
 	SControl *pControl;
@@ -995,6 +1016,40 @@ bool CDockPane::SetControlValue (const CString &sID, ICCItem *pValue)
 				{
 				CItem Item = ::CreateItemFromList(CC, pValue);
 				pItemDisplayArea->SetItem(NULL, Item);
+				return true;
+				}
+
+			return false;
+			}
+
+		case controlItemListDisplay:
+			{
+			CGItemListDisplayArea *pDisplayArea = pControl->AsItemListDisplayArea();
+
+			//	Nil means nil
+
+			if (pValue->IsNil())
+				{
+				pDisplayArea->SetItemList(NULL, CItemList());
+				return true;
+				}
+
+			//	If this is a list then we expect a list of item values
+
+			else if (pValue->IsList())
+				{
+				CItemList ItemList;
+
+				for (i = 0; i < pValue->GetCount(); i++)
+					{
+					CItem Item = ::CreateItemFromList(CC, pValue->GetElement(i));
+					if (Item.GetType() == NULL)
+						continue;
+
+					ItemList.AddItem(Item);
+					}
+
+				pDisplayArea->SetItemList(NULL, ItemList);
 				return true;
 				}
 

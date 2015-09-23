@@ -45,6 +45,35 @@ class CGItemDisplayArea : public AGArea
 		CString m_sDesc;					//	If no item
 	};
 
+class CGItemListDisplayArea : public AGArea
+	{
+	public:
+		CGItemListDisplayArea (void);
+
+		inline void SetItemList (CSpaceObject *pSource, const CItemList &ItemList) { m_pSource = pSource; m_ItemList = ItemList; m_ItemList.SortItems(); Invalidate(); }
+		inline void SetText (const CString &sTitle, const CString &sDesc) { m_sTitle = sTitle; m_sDesc = sDesc; Invalidate(); }
+
+		//	AGArea virtuals
+		virtual int Justify (const RECT &rcRect);
+		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect);
+
+	private:
+		CSpaceObject *m_pSource;
+		CItemList m_ItemList;
+
+		CString m_sTitle;					//	If no items
+		CString m_sDesc;					//	If no items
+
+		//	Initialized on Justify
+
+		int m_cxBox;
+		int m_cyBox;
+		int m_iCols;
+		int m_iRows;
+		int m_xOffset;
+		int m_xLastRowOffset;
+	};
+
 class CGItemListArea : public AGArea
 	{
 	public:
