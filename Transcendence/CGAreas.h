@@ -50,16 +50,30 @@ class CGItemListDisplayArea : public AGArea
 	public:
 		CGItemListDisplayArea (void);
 
-		inline void SetItemList (CSpaceObject *pSource, const CItemList &ItemList) { m_pSource = pSource; m_ItemList = ItemList; m_ItemList.SortItems(); Invalidate(); }
-		inline void SetText (const CString &sTitle, const CString &sDesc) { m_sTitle = sTitle; m_sDesc = sDesc; Invalidate(); }
+		bool InitFromDesc (CCodeChain &CC, ICCItem *pDesc);
+		void SetItemList (CSpaceObject *pSource, const CItemList &ItemList);
+		inline void SetText (const CString &sTitle, const CString &sDesc) { m_sTitle = sTitle; m_sDesc = sDesc; m_ItemList.DeleteAll(); Invalidate(); }
 
 		//	AGArea virtuals
 		virtual int Justify (const RECT &rcRect);
 		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect);
 
 	private:
+		struct SEntry
+			{
+			SEntry (void) :
+					bGrayed(false)
+				{ }
+
+			CItem Item;
+			bool bGrayed;
+			};
+
+		bool InitFromItemList (CCodeChain &CC, ICCItem *pItemList);
+		void SortItemList (void);
+
 		CSpaceObject *m_pSource;
-		CItemList m_ItemList;
+		TArray<SEntry> m_ItemList;
 
 		CString m_sTitle;					//	If no items
 		CString m_sDesc;					//	If no items

@@ -6,6 +6,11 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
+#define FIELD_ENABLED				CONSTLIT("enabled")
+#define FIELD_ITEM					CONSTLIT("item")
+#define FIELD_ITEMS					CONSTLIT("items")
+#define FIELD_SOURCE				CONSTLIT("source")
+
 const int BORDER_RADIUS =						4;
 const int PADDING =								4;
 
@@ -31,6 +36,71 @@ CGItemListDisplayArea::CGItemListDisplayArea (void) :
 //	CGItemListDisplayArea constructor
 
 	{
+	}
+
+bool CGItemListDisplayArea::InitFromDesc (CCodeChain &CC, ICCItem *pDesc)
+
+//	InitFromDesc
+//
+//	Initialize from a descriptor
+
+	{
+	if (pDesc->IsNil())
+		SetItemList(NULL, CItemList());
+
+	//	If this is a list then we expect a list of item values
+
+	else if (pDesc->IsList())
+		{
+		if (!InitFromItemList(CC, pDesc))
+			return false;
+		}
+	else
+		return false;
+
+	return true;
+	}
+
+bool CGItemListDisplayArea::InitFromItemList (CCodeChain &CC, ICCItem *pItemList)
+
+//	InitFromItemList
+//
+//	Expects a list of items or a list of structs.
+
+	{
+	int i;
+
+	m_ItemList.DeleteAll();
+
+	for (i = 0; i < pItemList->GetCount(); i++)
+		{
+		SEntry *pEntry = m_ItemList.Insert();
+
+		ICCItem *pItemDesc = pItemList->GetElement(i);
+		if (pItemDesc->IsSymbolTable())
+			{
+			ICCItem *pItem = pItemDesc->GetElement(FIELD_ITEM);
+			if (pItem)
+				pEntry->Item = ::CreateItemFromList(CC, pItem);
+
+			ICCItem *pEnabled = pItemDesc->GetElement(FIELD_ENABLED);
+			pEntry->bGrayed = (pEnabled && pEnabled->IsNil());
+			}
+		else
+			pEntry->Item = ::CreateItemFromList(CC, pItemDesc);
+
+		//	Make sure this is a valid item
+
+		if (pEntry->Item.GetType() == NULL)
+			{
+			m_ItemList.Delete(m_ItemList.GetCount() - 1);
+			continue;
+			}
+		}
+
+	SortItemList();
+
+	return true;
 	}
 
 int CGItemListDisplayArea::Justify (const RECT &rcRect)
@@ -151,7 +221,7 @@ void CGItemListDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 		for (i = 0; i < m_ItemList.GetCount(); i++)
 			{
-			const CItem &Item = m_ItemList.GetItem(i);
+			const CItem &Item = m_ItemList[i].Item;
 			CItemType *pItemType = Item.GetType();
 			if (pItemType == NULL)
 				continue;
@@ -163,7 +233,7 @@ void CGItemListDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 			//	Paint the icon
 
-			DrawItemTypeIcon(Dest, xBox + xIcon, yBox, pItemType, ICON_WIDTH, ICON_HEIGHT);
+			DrawItemTypeIcon(Dest, xBox + xIcon, yBox, pItemType, ICON_WIDTH, ICON_HEIGHT, m_ItemList[i].bGrayed);
 
 			//	Paint the count
 
@@ -234,4 +304,46 @@ void CGItemListDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 				CG16bitFont::SmartQuotes,
 				&cyHeight);
 		}
+	}
+
+void CGItemListDisplayArea::SetItemList (CSpaceObject *pSource, const CItemList &ItemList) 
+
+//	SetItemList
+//
+//	Sets from a normal item list.
+	
+	{
+	int i;
+
+	m_pSource = pSource;
+	
+	m_ItemList.DeleteAll();
+	m_ItemList.InsertEmpty(ItemList.GetCount());
+	for (i = 0; i < ItemList.GetCount(); i++)
+		m_ItemList[i].Item = ItemList.GetItem(i);
+
+	SortItemList();
+	
+	Invalidate();
+	}
+
+void CGItemListDisplayArea::SortItemList (void)
+
+//	SortItemList
+//
+//	Sorts the item list
+
+	{
+	int i;
+
+	TSortMap<CString, int> Sort;
+	for (i = 0; i < m_ItemList.GetCount(); i++)
+		Sort.Insert(m_ItemList[i].Item.CalcSortKey(), i);
+
+	TArray<SEntry> NewList;
+	NewList.InsertEmpty(m_ItemList.GetCount());
+	for (i = 0; i < m_ItemList.GetCount(); i++)
+		NewList[i] = m_ItemList[Sort[i]];
+
+	m_ItemList.TakeHandoff(NewList);
 	}

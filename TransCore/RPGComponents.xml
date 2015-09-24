@@ -115,6 +115,16 @@
 						
 						componentsAvail: availableComponents
 						
+						;	This is a structure suitable for an ItemListDisplay control
+						
+						itemListDisplay:
+							(map availableComponents 'excludeNil theEntry
+								{
+									item: (@ theEntry 'item)
+									enabled: (geq (@ theEntry 'available) (itmGetCount (@ theEntry 'item)))
+									}
+								)
+						
 						;	Maximum number of items we can fabricate
 						
 						maxCount: maxCount

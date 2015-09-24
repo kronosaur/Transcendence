@@ -920,7 +920,6 @@ bool CDockPane::SetControlValue (const CString &sID, ICCItem *pValue)
 //	control of the given ID.
 
 	{
-	int i;
 	CCodeChain &CC = g_pUniverse->GetCC();
 
 	SControl *pControl;
@@ -1025,35 +1024,7 @@ bool CDockPane::SetControlValue (const CString &sID, ICCItem *pValue)
 		case controlItemListDisplay:
 			{
 			CGItemListDisplayArea *pDisplayArea = pControl->AsItemListDisplayArea();
-
-			//	Nil means nil
-
-			if (pValue->IsNil())
-				{
-				pDisplayArea->SetItemList(NULL, CItemList());
-				return true;
-				}
-
-			//	If this is a list then we expect a list of item values
-
-			else if (pValue->IsList())
-				{
-				CItemList ItemList;
-
-				for (i = 0; i < pValue->GetCount(); i++)
-					{
-					CItem Item = ::CreateItemFromList(CC, pValue->GetElement(i));
-					if (Item.GetType() == NULL)
-						continue;
-
-					ItemList.AddItem(Item);
-					}
-
-				pDisplayArea->SetItemList(NULL, ItemList);
-				return true;
-				}
-
-			return false;
+			return pDisplayArea->InitFromDesc(CC, pValue);
 			}
 
 		case controlTextInput:
