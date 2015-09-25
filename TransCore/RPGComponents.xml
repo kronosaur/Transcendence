@@ -149,6 +149,75 @@
 						}
 					)
 				))
+				
+			(setq rpgCreateFromComponents (lambda (createCtx theSource theCount options)
+				(block (
+					(itemToCreate (itmCreate (@ createCtx 'item) theCount))
+					(totalCost (* (@ createCtx 'workCost) theCount))
+					itemsConsumed
+					)
+				
+					;	Consume items. NOTE: We expect our callers to have already checked
+					;	to make sure there are enough items.
+					
+					(enum (@ createCtx 'componentsNeeded) theComponent
+						(block (
+							(leftToConsume (* theCount (itmGetCount theComponent)))
+							(goodItem (itmSetCount theComponent 1))
+							(damagedItem (itmSetProperty goodItem 'damaged True))
+							
+							available
+							)
+							
+							;	Consume damaged items first
+							
+							(setq available (min leftToConsume (objHasItem theSource damagedItem)))
+							(if (gr available 0)
+								(block Nil
+									(objRemoveItem theSource damagedItem available)
+									(setq leftToConsume (subtract leftToConsume available))
+									(setq itemsConsumed (append itemsConsumed (list (itmSetCount damagedItem available))))
+									)
+								)
+								
+							;	Consume good items
+							
+							(setq goodItem (itmCreate (@ theEntry 'item) 1))
+							(setq available (min leftToConsume (objHasItem theSource goodItem)))
+							(if (gr available 0)
+								(block Nil
+									(objRemoveItem theSource goodItem available)
+									(setq leftToConsume (subtract leftToConsume available))
+									(setq itemsConsumed (append itemsConsumed (list (itmSetCount goodItem available))))
+									)
+								)
+							)
+						)
+						
+					;	Charge player
+					
+					(objCharge theSource totalCost)
+					
+					;	Create the resulting item
+					
+					(objAddItem theSource itemToCreate)
+					
+					;	Loop over player missions and see if we've accomplished any of them
+					
+					;(enum (msnFind gSource "aS +unid:&msTinkerReminder;;") theMission
+					;	(if (itmIsEqual itemToCreate (tinkerCreateItem (msnGetData theMission 'recipe) 1))
+					;		(msnSuccess theMission)
+					;		)
+					;	)
+					
+					;	Return result
+					
+					{	itemsCreated: itemToCreate
+						itemsConsumed: itemsConsumed
+						totalCost: totalCost
+						}
+					)
+				))
 			)
 	</Globals>
 	
