@@ -6,11 +6,12 @@
 	
 	<Globals>
 		(block Nil
-			(setq rpgCalcCreateFromComponents (lambda (theItem theSource)
+			(setq rpgCalcCreateFromComponents (lambda (theItem theSource theFoundry)
 				(block (
-					(currencyUsed (itmGetProperty theItem 'currency))
+					(currencyUsed (objGetProperty theFoundry 'currency))
 					(componentsNeeded (itmGetProperty theItem 'components))
 					(itemCategory (itmGetProperty theItem 'category))
+					(itemCurrency (itmGetProperty theItem 'currency))
 					
 					;	Compute the total price of all components
 					
@@ -104,6 +105,7 @@
 						;	These fields determine various prices
 						
 						componentCost: componentPrice
+						currencyUsed: currencyUsed
 						workCost: workPrice
 						
 						;	This is a list of structures describing what components the
@@ -150,10 +152,11 @@
 					)
 				))
 				
-			(setq rpgCreateFromComponents (lambda (createCtx theSource theCount options)
+			(setq rpgCreateFromComponents (lambda (createCtx theSource theFoundry theCount options)
 				(block (
-					(itemToCreate (itmCreate (@ createCtx 'item) theCount))
+					(itemToCreate (itmSetCount (@ createCtx 'item) theCount))
 					(totalCost (* (@ createCtx 'workCost) theCount))
+					(currencyUsed (@ createCtx 'currencyUsed))
 					itemsConsumed
 					)
 				
@@ -175,19 +178,18 @@
 							(if (gr available 0)
 								(block Nil
 									(objRemoveItem theSource damagedItem available)
-									(setq leftToConsume (subtract leftToConsume available))
+									(setq leftToConsume (- leftToConsume available))
 									(setq itemsConsumed (append itemsConsumed (list (itmSetCount damagedItem available))))
 									)
 								)
 								
 							;	Consume good items
 							
-							(setq goodItem (itmCreate (@ theEntry 'item) 1))
 							(setq available (min leftToConsume (objHasItem theSource goodItem)))
 							(if (gr available 0)
 								(block Nil
 									(objRemoveItem theSource goodItem available)
-									(setq leftToConsume (subtract leftToConsume available))
+									(setq leftToConsume (- leftToConsume available))
 									(setq itemsConsumed (append itemsConsumed (list (itmSetCount goodItem available))))
 									)
 								)
@@ -196,7 +198,7 @@
 						
 					;	Charge player
 					
-					(objCharge theSource totalCost)
+					(objCharge theSource currencyUsed totalCost)
 					
 					;	Create the resulting item
 					
@@ -204,16 +206,19 @@
 					
 					;	Loop over player missions and see if we've accomplished any of them
 					
-					;(enum (msnFind gSource "aS +unid:&msTinkerReminder;;") theMission
-					;	(if (itmIsEqual itemToCreate (tinkerCreateItem (msnGetData theMission 'recipe) 1))
-					;		(msnSuccess theMission)
-					;		)
-					;	)
+					(if (@ options 'reminderCriteria)
+						(enum (msnFind theFoundry (@ options 'reminderCriteria)) theMission
+							(if (itmIsEqual itemToCreate (@ (msnGetData theMission 'forgeInfo) 'item))
+								(msnSuccess theMission)
+								)
+							)
+						)
 					
 					;	Return result
 					
 					{	itemsCreated: itemToCreate
 						itemsConsumed: itemsConsumed
+						currencyUsed: currencyUsed
 						totalCost: totalCost
 						}
 					)
