@@ -2830,7 +2830,7 @@
 					lifetime=		"10"
 					damage=			"kinetic:2d6; WMD1"
 					missileSpeed=	"32-48"
-							>
+					>
 
 				<Effect>
 					<ImageAndTail
