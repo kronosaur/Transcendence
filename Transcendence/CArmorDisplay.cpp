@@ -334,10 +334,10 @@ void CArmorDisplay::Update (void)
 		int y = SHIELD_IMAGE_HEIGHT / 2;
 
 		SViewportPaintCtx Ctx;
-		Ctx.iTick = g_pUniverse->GetTicks();
-		Ctx.iVariant = (iMaxHP > 0 ? (iHP * 100) / iMaxHP : 0);
-		Ctx.iDestiny = pShip->GetDestiny();
-		Ctx.iRotation = 90;
+		Ctx.Prepare(g_pUniverse->GetTicks(),
+				(iMaxHP > 0 ? (iHP * 100) / iMaxHP : 0),
+				90,
+				pShip->GetDestiny());
 
 		if (m_pShieldPainter == NULL)
 			m_pShieldPainter = ShieldDesc.pShieldEffect->CreatePainter(CCreatePainterCtx());

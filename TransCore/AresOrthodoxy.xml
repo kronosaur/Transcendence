@@ -420,7 +420,6 @@
 				recoil=				"2"
 
 				effect=				"&efThermoShellDefault;"
-				fireEffect=			"&efThermoFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 

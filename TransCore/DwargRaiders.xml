@@ -285,7 +285,6 @@
 				powerUse=			"120"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 		</Weapon>
@@ -413,7 +412,6 @@
 				powerUse=			"250"
 
 				effect=				"&efThermoShellDefault;"
-				fireEffect=			"&efThermoFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 

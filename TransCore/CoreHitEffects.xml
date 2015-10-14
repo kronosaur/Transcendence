@@ -1,0 +1,698 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+<!-- DEFAULT HIT EFFECTS =======================================================
+
+	These effects are used when a weapon hits a target. The variant value is
+	the number of hit points of damage caused to the target (after adjusting for
+	shields, armor, etc.)
+	
+	There is one effect for each damage type. Each of the effects has several 
+	variants depending on the amount of damage done. The first variant is the
+	effect to display when a weapon does no damage.
+	
+	A weapon may override these effects by provinding a specific <HitEffect>.
+	
+-->
+
+	<Effect UNID="&efLaserHitDefault;">
+		<Variants>
+			<Effect maxValue="0">
+				<Flare
+						style=			"fadingBlast"
+						radius=			"6"
+						primaryColor=	"0xf1, 0x5f, 0x2a"
+						lifetime=		"4"
+						/>
+			</Effect>
+			
+			<Effect maxValue="4" 
+					sound="&snArmorHit1;">
+				<Flare
+						style=			"fadingBlast"
+						radius=			"20"
+						primaryColor=	"0xf1, 0x5f, 0x2a"
+						secondaryColor=	"0xff, 0x00, 0x00"
+						lifetime=		"8"
+						/>
+			</Effect>
+			
+			<Effect maxValue="6" 
+					sound="&snArmorHit1;">
+				<Flare
+						style=			"fadingBlast"
+						radius=			"30"
+						primaryColor=	"0xf1, 0x5f, 0x2a"
+						secondaryColor=	"0xff, 0x00, 0x00"
+						lifetime=		"12"
+						/>
+			</Effect>
+			
+			<Effect maxValue="8" 
+					sound="&snArmorHit1;">
+				<Flare
+						style=			"fadingBlast"
+						radius=			"40"
+						primaryColor=	"0xf1, 0x5f, 0x2a"
+						secondaryColor=	"0xff, 0x00, 0x00"
+						lifetime=		"12"
+						/>
+			</Effect>
+			
+			<Effect
+					sound="&snArmorHit1;">
+				<Flare
+						style=			"fadingBlast"
+						radius=			"50"
+						primaryColor=	"0xf1, 0x5f, 0x2a"
+						secondaryColor=	"0xff, 0x00, 0x00"
+						lifetime=		"12"
+						/>
+			</Effect>
+		</Variants>
+	</Effect>
+
+	<Effect UNID="&efKineticHitDefault;">
+		<Variants>
+			<Effect maxValue="0">
+				<ParticleCloud
+						style=				"splash"
+						lifetime=			"15"
+						emitDuration=		"5"
+						emitRate=			"10"
+						emitSpeed=			"5-10"
+						particleLifetime=	"10"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								minWidth=		"1"
+								maxWidth=		"3"
+								primaryColor=		"0xcd, 0xf3, 0xff"
+								secondaryColor=		"0x8f, 0xa9, 0xb2"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+			
+			<Effect maxValue="16"
+					sound="&snArmorHit1;">
+				<Image imageID="&rsMediumHit;" 
+						imageX="0" 
+						imageY="0" 
+						imageWidth="32" 
+						imageHeight="32"
+						imageFrameCount="12"
+						imageTicksPerFrame="1"/>
+			</Effect>
+			
+			<Effect 
+					sound="&snArmorHit1;">
+				<Image imageID="&rsExplosionsAG48;"
+						imageX="0"
+						imageY="0"
+						imageWidth="48"
+						imageHeight="48"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</Effect>
+		</Variants>
+	</Effect>
+
+	<Effect UNID="&efParticleHitDefault;">
+		<Variants>
+			<Effect maxValue="0">
+				<ParticleCloud
+						style=				"splash"
+						lifetime=			"15"
+						emitDuration=		"5"
+						emitRate=			"10"
+						emitSpeed=			"5-10"
+						particleLifetime=	"10"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								minWidth=		"1"
+								maxWidth=		"3"
+								primaryColor=	"0x5f, 0xf1, 0x2a"
+								secondaryColor=	"0x5f, 0xf1, 0x2a"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+			
+			<Effect maxValue="9" 
+					sound="&snArmorHit1;">
+				<ParticleCloud
+						style=			"splash" 
+						lifetime=		"20" 
+						emitDuration=	"60"
+						emitRate=		"20-25"
+						emitSpeed=		"1-6"
+						particleLifetime="4"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								maxWidth=		"1-2"
+								primaryColor=	"0x5f, 0xf1, 0x2a"
+								secondaryColor=	"0x00, 0xff, 0x00"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+			
+			<Effect maxValue="13" 
+					sound="&snArmorHit1;">
+				<ParticleCloud
+						style=			"splash" 
+						lifetime=		"20" 
+						emitDuration=	"60"
+						emitRate=		"30-37"
+						emitSpeed=		"1-6"
+						particleLifetime="5"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								maxWidth=		"1-2"
+								primaryColor=	"0x5f, 0xf1, 0x2a"
+								secondaryColor=	"0x00, 0xff, 0x00"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+
+			<Effect
+					sound="&snArmorHit1;">
+				<ParticleCloud
+						style=			"splash" 
+						lifetime=		"20" 
+						emitDuration=	"60"
+						emitRate=		"40-50"
+						emitSpeed=		"1-6"
+						particleLifetime="5"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								maxWidth=		"1-2"
+								primaryColor=	"0x5f, 0xf1, 0x2a"
+								secondaryColor=	"0x00, 0xff, 0x00"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+		</Variants>
+	</Effect>
+	
+	<Effect UNID="&efBlastHitDefault;">
+		<Variants>
+			<Effect maxValue="0">
+				<ParticleCloud
+						style=				"splash"
+						lifetime=			"15"
+						emitDuration=		"5"
+						emitRate=			"10"
+						emitSpeed=			"5-10"
+						particleLifetime=	"10"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"flame"
+								minWidth=		"1"
+								maxWidth=		"3"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+			
+			<Effect maxValue="9" 
+					sound="&snArmorHit1;">
+				<Image imageID="&rsMediumHit;" 
+						imageX="0" 
+						imageY="0" 
+						imageWidth="32" 
+						imageHeight="32"
+						imageFrameCount="12"
+						imageTicksPerFrame="1"/>
+			</Effect>
+			
+			<Effect maxValue="13" 
+					sound="&snArmorHit1;">
+				<Image imageID="&rsMediumHit;" 
+						imageX="0" 
+						imageY="0" 
+						imageWidth="32" 
+						imageHeight="32"
+						imageFrameCount="12"
+						imageTicksPerFrame="1"/>
+			</Effect>
+			
+			<Effect maxValue="18" 
+					sound="&snArmorHit1;">
+				<Image imageID="&rsExplosionsAG48;"
+						imageX="0"
+						imageY="0"
+						imageWidth="48"
+						imageHeight="48"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</Effect>
+			
+			<Effect maxValue="27" 
+					sound="&snArmorHit1;">
+				<Image imageID="&rsExplosionsAG48;"
+						imageX="0"
+						imageY="0"
+						imageWidth="48"
+						imageHeight="48"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</Effect>
+			
+			<Effect
+					sound="&snArmorHit1;">
+				<Image imageID="&rsMediumExplosions;" 
+						imageX="0" 
+						imageY="0" 
+						imageWidth="64" 
+						imageHeight="64"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</Effect>
+		</Variants>
+	</Effect>
+
+	<Effect UNID="&efIonHitDefault;">
+		<Variants>
+			<Effect maxValue="0">
+				<ParticleCloud
+						style=				"splash"
+						lifetime=			"15"
+						emitDuration=		"5"
+						emitRate=			"10"
+						emitSpeed=			"5-10"
+						particleLifetime=	"10"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								minWidth=		"1"
+								maxWidth=		"3"
+								primaryColor=	"0xa0, 0xf0, 0xff"
+								secondaryColor=	"0x00, 0xa9, 0xff"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+			
+			<Effect maxValue="21" 
+					sound="&snArmorHit1;">
+				<ParticleCloud
+						style=			"splash" 
+						lifetime=		"20" 
+						emitDuration=	"60"
+						emitRate=		"20-25"
+						emitSpeed=		"1-6"
+						particleLifetime="4"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								maxWidth=		"1-2"
+								primaryColor=	"0xa0, 0xf0, 0xff"
+								secondaryColor=	"0x00, 0xa9, 0xff"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+			
+			<Effect maxValue="31" 
+					sound="&snArmorHit1;">
+				<ParticleCloud
+						style=			"splash" 
+						lifetime=		"20" 
+						emitDuration=	"60"
+						emitRate=		"30-37"
+						emitSpeed=		"1-6"
+						particleLifetime="5"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								maxWidth=		"1-2"
+								primaryColor=	"0xa0, 0xf0, 0xff"
+								secondaryColor=	"0x00, 0xa9, 0xff"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+
+			<Effect
+					sound="&snArmorHit1;">
+				<ParticleCloud
+						style=			"splash" 
+						lifetime=		"20" 
+						emitDuration=	"60"
+						emitRate=		"40-50"
+						emitSpeed=		"1-6"
+						particleLifetime="5"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								maxWidth=		"1-2"
+								primaryColor=	"0xa0, 0xf0, 0xff"
+								secondaryColor=	"0x00, 0xa9, 0xff"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+		</Variants>
+	</Effect>
+	
+	<Effect UNID="&efThermoHitDefault;">
+		<Variants>
+			<Effect maxValue="0">
+				<ParticleCloud
+						style=				"splash"
+						lifetime=			"15"
+						emitDuration=		"5"
+						emitRate=			"10"
+						emitSpeed=			"5-10"
+						particleLifetime=	"10"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"flame"
+								minWidth=		"1"
+								maxWidth=		"3"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+			
+			<Effect maxValue="21" 
+					sound="&snArmorHit1;">
+				<Image imageID="&rsExplosionsAG48;"
+						imageX="0"
+						imageY="0"
+						imageWidth="48"
+						imageHeight="48"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</Effect>
+			
+			<Effect maxValue="31" 
+					sound="&snArmorHit1;">
+				<Image imageID="&rsMediumExplosions;" 
+						imageX="0" 
+						imageY="0" 
+						imageWidth="64" 
+						imageHeight="64"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</Effect>
+			
+			<Effect maxValue="42"
+					sound="&snArmorHit1;">
+				<Image imageID="&rsExplosionsAG96;"
+						imageX="0"
+						imageY="0"
+						imageWidth="96"
+						imageHeight="96"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</Effect>
+			
+			<Effect
+					sound="&snArmorHit1;">
+				<Image imageID="&rsExplosionsAG96;"
+						imageX="0"
+						imageY="0"
+						imageWidth="96"
+						imageHeight="96"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</Effect>
+		</Variants>
+	</Effect>
+
+	<Effect UNID="&efPositronHitDefault;">
+		<Variants>
+			<Effect maxValue="0">
+				<ParticleCloud
+						style=				"splash"
+						lifetime=			"15"
+						emitDuration=		"5"
+						emitRate=			"10"
+						emitSpeed=			"5-10"
+						particleLifetime=	"10"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								minWidth=		"1"
+								maxWidth=		"3"
+								primaryColor=	"0xff, 0xf0, 0xa0"
+								secondaryColor=	"0xff, 0xa9, 0x00"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+			
+			<Effect maxValue="46" 
+					sound="&snArmorHit1;">
+				<ParticleCloud
+						style=			"splash" 
+						lifetime=		"20" 
+						emitDuration=	"60"
+						emitRate=		"20-25"
+						emitSpeed=		"1-6"
+						particleLifetime="4"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								maxWidth=		"1-2"
+								primaryColor=	"0xff, 0xf0, 0xa0"
+								secondaryColor=	"0xff, 0xa9, 0x00"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+			
+			<Effect maxValue="69" 
+					sound="&snArmorHit1;">
+				<ParticleCloud
+						style=			"splash" 
+						lifetime=		"20" 
+						emitDuration=	"60"
+						emitRate=		"30-37"
+						emitSpeed=		"1-6"
+						particleLifetime="5"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								maxWidth=		"1-2"
+								primaryColor=	"0xff, 0xf0, 0xa0"
+								secondaryColor=	"0xff, 0xa9, 0x00"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+
+			<Effect
+					sound="&snArmorHit1;">
+				<ParticleCloud
+						style=			"splash" 
+						lifetime=		"20" 
+						emitDuration=	"60"
+						emitRate=		"40-50"
+						emitSpeed=		"1-6"
+						particleLifetime="5"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								maxWidth=		"1-2"
+								primaryColor=	"0xff, 0xf0, 0xa0"
+								secondaryColor=	"0xff, 0xa9, 0x00"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+		</Variants>
+	</Effect>
+	
+	<Effect UNID="&efPlasmaHitDefault;">
+		<Variants>
+			<Effect maxValue="0">
+				<ParticleCloud
+						style=				"splash"
+						lifetime=			"15"
+						emitDuration=		"5"
+						emitRate=			"10"
+						emitSpeed=			"5-10"
+						particleLifetime=	"10"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								minWidth=		"1"
+								maxWidth=		"3"
+								primaryColor=	"0xff, 0xf0, 0xa0"
+								secondaryColor=	"0xff, 0xa9, 0x00"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+			
+			<Effect maxValue="23"
+					sound="&snArmorHit1;">
+					
+				<ParticleCloud
+						style=			"splash" 
+						lifetime=		"30"
+						emitDuration=	"5"
+						emitRate=		"8-10"
+						emitSpeed=		"1-6"
+						particleLifetime="10-15"
+						>
+					<ParticleEffect>
+						<Shape
+								directional=		"true"
+								scaleLength=		"12" 
+								scaleWidth=			"4"
+
+								scaleLengthInc=		"1" 
+
+								color=				"0xff, 0xfd, 0xad"
+								opacity=			"64"
+								>
+							<Point x="0"	y="0"/>
+							<Point x="-5"	y="29"/>
+							<Point x="-10"	y="44"/>
+							<Point x="-20"	y="50"/>
+							<Point x="-30"	y="47"/>
+							<Point x="-40"	y="44"/>
+							<Point x="-100"	y="0"/>
+							<Point x="-40"	y="-44"/>
+							<Point x="-30"	y="-47"/>
+							<Point x="-20"	y="-50"/>
+							<Point x="-10"	y="-44"/>
+							<Point x="-5"	y="-29"/>
+						</Shape>
+					</ParticleEffect>
+				</ParticleCloud>
+				
+				<Flare
+						style=			"fadingBlast"
+						radius=			"35"
+						primaryColor=	"0xff, 0xff, 0xff"
+						secondaryColor=	"0xff, 0xfd, 0xad"
+						lifetime=		"6"
+						/>
+			</Effect>
+			
+			<Effect maxValue="46"
+					sound="&snArmorHit1;">
+					
+				<ParticleCloud
+						style=			"splash" 
+						lifetime=		"30"
+						emitDuration=	"6"
+						emitRate=		"10-12"
+						emitSpeed=		"1-6"
+						particleLifetime="10-15"
+						>
+					<ParticleEffect>
+						<Shape
+								directional=		"true"
+								scaleLength=		"16" 
+								scaleWidth=			"4"
+
+								scaleLengthInc=		"1"
+
+								color=				"0xff, 0xfd, 0xad"
+								opacity=			"64"
+								>
+							<Point x="0"	y="0"/>
+							<Point x="-5"	y="29"/>
+							<Point x="-10"	y="44"/>
+							<Point x="-20"	y="50"/>
+							<Point x="-30"	y="47"/>
+							<Point x="-40"	y="44"/>
+							<Point x="-100"	y="0"/>
+							<Point x="-40"	y="-44"/>
+							<Point x="-30"	y="-47"/>
+							<Point x="-20"	y="-50"/>
+							<Point x="-10"	y="-44"/>
+							<Point x="-5"	y="-29"/>
+						</Shape>
+					</ParticleEffect>
+				</ParticleCloud>
+				
+				<Flare
+						style=			"fadingBlast"
+						radius=			"50"
+						primaryColor=	"0xff, 0xff, 0xff"
+						secondaryColor=	"0xff, 0xfd, 0xad"
+						lifetime=		"10"
+						/>
+			</Effect>
+			
+			<Effect
+					sound="&snArmorHit1;">
+					
+				<ParticleCloud
+						style=			"splash" 
+						lifetime=		"40" 
+						emitDuration=	"8"
+						emitRate=		"18-20"
+						emitSpeed=		"1-6"
+						particleLifetime="10-15"
+						>
+					<ParticleEffect>
+						<Shape
+								directional=		"true"
+								scaleLength=		"16" 
+								scaleWidth=			"6"
+
+								scaleLengthInc=		"1" 
+
+								color=				"0xff, 0xfd, 0xad"
+								opacity=			"64"
+								>
+							<Point x="0"	y="0"/>
+							<Point x="-5"	y="29"/>
+							<Point x="-10"	y="44"/>
+							<Point x="-20"	y="50"/>
+							<Point x="-30"	y="47"/>
+							<Point x="-40"	y="44"/>
+							<Point x="-100"	y="0"/>
+							<Point x="-40"	y="-44"/>
+							<Point x="-30"	y="-47"/>
+							<Point x="-20"	y="-50"/>
+							<Point x="-10"	y="-44"/>
+							<Point x="-5"	y="-29"/>
+						</Shape>
+					</ParticleEffect>
+				</ParticleCloud>
+				
+				<Flare
+						style=			"fadingBlast"
+						radius=			"80"
+						primaryColor=	"0xff, 0xff, 0xff"
+						secondaryColor=	"0xff, 0xfd, 0xad"
+						lifetime=		"10"
+						/>
+			</Effect>
+		</Variants>
+	</Effect>
+	
+</TranscendenceModule>

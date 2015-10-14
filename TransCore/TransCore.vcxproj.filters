@@ -357,5 +357,14 @@
     <Xml Include="RPGComponents.xml">
       <Filter>RPG Library</Filter>
     </Xml>
+    <Xml Include="CoreProjectileEffects.xml">
+      <Filter>Core Types</Filter>
+    </Xml>
+    <Xml Include="CoreHitEffects.xml">
+      <Filter>Core Types</Filter>
+    </Xml>
+    <Xml Include="CoreFireEffects.xml">
+      <Filter>Core Types</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

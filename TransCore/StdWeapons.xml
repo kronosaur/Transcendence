@@ -481,7 +481,6 @@
 				powerUse=			"30"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 		</Weapon>
@@ -934,7 +933,6 @@
 				powerUse=			"100"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -1008,7 +1006,6 @@
 				powerUse=			"100"
 
 				effect=				"&efSlamCannonShell;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 		</Weapon>
@@ -1115,7 +1112,6 @@
 						hitPoints=		"4"
 
 						effect=			"&efAkanCannonShell;"
-						fireEffect=		"&efBlastFireDefault;"
 						sound=			"&snRecoillessCannon;"
 						>
 				</Missile>
@@ -1290,7 +1286,6 @@
 				recoil=				"2"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 			<HitEffect
@@ -1433,7 +1428,6 @@
 				powerUse=			"250"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -1471,7 +1465,6 @@
 				powerUse=			"200"
 
 				effect=				"&efSlamCannonShell;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -1559,7 +1552,6 @@
 						hitPoints=		"4"
 
 						effect=			"&efAkanCannonShell;"
-						fireEffect=		"&efBlastFireDefault;"
 						sound=			"&snRecoillessCannon;"
 						>
 				</Missile>
@@ -1601,7 +1593,6 @@
 						maneuverRate=	"18"
 						 
 						effect=			"&efBlastShellDefault;"
-						fireEffect=		"&efBlastFireDefault;"
 						sound=			"&snRecoillessCannon;"
 						>
 
@@ -1691,7 +1682,6 @@
 				recoil=				"2"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -1912,7 +1902,6 @@
 				recoil=				"2"
 
 				effect=				"&efThermoShellDefault;"
-				fireEffect=			"&efThermoFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -2063,7 +2052,6 @@
 						lifetime=		"100"
 
 						effect=			"&efThermoCannonShell;"
-						fireEffect=		"&efThermoFireDefault;"
 						sound=			"&snRecoillessCannon;"
 						>
 
@@ -2119,7 +2107,6 @@
 				powerUse=			"500"
 
 				effect=				"&efThermoShellDefault;"
-				fireEffect=			"&efThermoFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -2175,7 +2162,6 @@
 				recoil=				"2"
 
 				effect=				"&efThermoShellDefault;"
-				fireEffect=			"&efThermoFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -2336,7 +2322,6 @@
 						hitPoints=		"10"
 
 						effect=			"&efThermoCannonShell;"
-						fireEffect=		"&efThermoFireDefault;"
 						sound=			"&snRecoillessCannon;"
 						>
 
@@ -2620,7 +2605,6 @@
 				counterUpdateRate=	"6"
 
 				effect=				"&efThermoShellDefault;"
-				fireEffect=			"&efThermoFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 

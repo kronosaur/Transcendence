@@ -376,14 +376,21 @@
     <None Include="Worlds.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Stars.xml" />
+    <None Include="Stars.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Ovoids.xml">
       <SubType>Designer</SubType>
     </None>
     <Xml Include="CompatibilityLibrary.xml" />
+    <Xml Include="CoreFireEffects.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="CoreHitEffects.xml" />
     <Xml Include="CorePlaceholders.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="CoreProjectileEffects.xml" />
     <Xml Include="Ferians.xml" />
     <Xml Include="HumanSpaceVol01.xml" />
     <Xml Include="Ore.xml" />

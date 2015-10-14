@@ -71,8 +71,7 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 		//	Set the ship rotation
 
 		Rotation.SetRotationAngle(pClass->GetRotationDesc(), pClass->GetRotationDesc().GetRotationAngle(i));
-		Ctx.iVariant = Rotation.GetFrameIndex();
-		Ctx.iRotation = Rotation.GetRotationAngle(pClass->GetRotationDesc());
+		Ctx.Prepare(0, Rotation.GetFrameIndex(), Rotation.GetRotationAngle(pClass->GetRotationDesc()), 0);
 
 		//	Since we don't have an object, we use the viewport center to indicate
 		//	the center of the object.

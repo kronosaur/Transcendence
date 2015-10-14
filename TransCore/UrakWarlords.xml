@@ -257,7 +257,6 @@
 				powerUse=			"100"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -298,7 +297,6 @@
 				recoil=				"2"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
 				hitEffect=			"&efFragmentationExplosion;"
 				sound=				"&snRecoillessCannon;"
 				>

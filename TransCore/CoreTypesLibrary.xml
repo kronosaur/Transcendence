@@ -149,6 +149,9 @@
 	<Module filename="CoreCode.xml"/>
 	<Module filename="CoreEffects.xml"/>
 	<Module filename="CoreExplosions.xml"/>
+	<Module filename="CoreFireEffects.xml"/>
+	<Module filename="CoreHitEffects.xml"/>
 	<Module filename="CorePlaceholders.xml"/>
+	<Module filename="CoreProjectileEffects.xml"/>
 
 </CoreLibrary>

@@ -56,8 +56,11 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 	int cyRow = cyRowTitle + Max(ITEM_ICON_HEIGHT, cyFrame * iFramesPerItem);
 	int cxRow = ITEM_ICON_WIDTH + cxFrame;
 
-	int cxImage = cxRow;
-	int cyImage = cyRow * Selection.GetCount();
+	int iColumns = Max(1, mathSqrt(Selection.GetCount()));
+	int iRows = (Selection.GetCount() + (iColumns - 1)) / iColumns;
+
+	int cxImage = cxRow * iColumns;
+	int cyImage = cyRow * iRows;
 
 	//	Initialize the output
 
@@ -159,8 +162,8 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		//	Compute the metrics of this row
 
-		int xRow = xOrigin;
-		int yRow = yOrigin + (i * cyRow);
+		int xRow = xOrigin + (i % iColumns) * cxRow;
+		int yRow = yOrigin + (i / iColumns) * cyRow;
 
 		//	Paint the weapon title
 
@@ -286,7 +289,7 @@ void PaintWeaponFrames (CG32bitImage &Image, CItemType *pType, CShip *pPlatform,
 
 	//	Skip for a while
 
-	for (j = 0; j < 20; j++)
+	for (j = 0; j < 100; j++)
 		g_pUniverse->Update(Ctx);
 
 	//	Uninstall weapon

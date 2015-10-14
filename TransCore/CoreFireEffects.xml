@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+<!-- DEFAULT FIRE EFFECTS ======================================================
+
+	These effects may be used in weapons to create fire effects.
+	
+-->
+	
+	<EffectType UNID="&efLaserFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					intensity=		"50"
+					
+					lifetime=		"3"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							primaryColor
+							secondaryColor
+							)
+							
+							;	Color depends on damage
+
+							(switch
+								(geq damageHP 15)
+									(block Nil
+										(setq primaryColor "#D500FF")
+										(setq secondaryColor "#6A00FF")
+										)
+
+								(geq damageHP 7)
+									(block Nil
+										(setq primaryColor "#55FF00")
+										(setq secondaryColor "#2A8000")
+										)
+
+								(geq damageHP 4)
+									(block Nil
+										(setq primaryColor "#FF5500")
+										(setq secondaryColor "#802A00")
+										)
+
+								(block Nil
+									(setq primaryColor "#FF0000")
+									(setq secondaryColor "#800000")
+									)
+								)
+							
+							{
+								radius: (mathScale damageHP 1 30 12 28 50)
+								primaryColor: primaryColor
+								secondaryColor: secondaryColor
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<Ray	style=			"smooth"
+					shape=			"tapered"
+					intensity=		"50"
+					xformRotation=	"180"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							primaryColor
+							secondaryColor
+							)
+							
+							;	Color depends on damage
+
+							(switch
+								(geq damageHP 15)
+									(block Nil
+										(setq primaryColor "#D500FF")
+										(setq secondaryColor "#6A00FF")
+										)
+
+								(geq damageHP 7)
+									(block Nil
+										(setq primaryColor "#55FF00")
+										(setq secondaryColor "#2A8000")
+										)
+
+								(geq damageHP 4)
+									(block Nil
+										(setq primaryColor "#FF5500")
+										(setq secondaryColor "#802A00")
+										)
+
+								(block Nil
+									(setq primaryColor "#FF0000")
+									(setq secondaryColor "#800000")
+									)
+								)
+							
+							{
+								length: (mathScale damageHP 1 30 24 56 50)
+								width: (mathScale damageHP 1 30 25 56 50)
+								primaryColor: primaryColor
+								secondaryColor: secondaryColor
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efKineticFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Ray	style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#CCF7FF"
+					secondaryColor=	"#667B80"
+					xformRotation=	"180"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:	(mathScale damageHP 6 80 60 96 50)
+								width: (mathScale damageHP 6 80 9 21 50)
+								intensity: 50
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efBlastFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Ray	style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#feffa1"
+					secondaryColor=	"#f76e24"
+					xformRotation=	"180"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:	(mathScale damageHP 6 80 16 64 50)
+								width: (mathScale damageHP 6 80 24 96 50)
+								intensity: 70
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efThermoFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Ray	style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#feffa1"
+					secondaryColor=	"#f76e24"
+					xformRotation=	"180"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:	(mathScale damageHP 6 80 16 64 50)
+								width: (mathScale damageHP 6 80 24 96 50)
+								intensity: 70
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+</TranscendenceModule>
