@@ -16,7 +16,34 @@
 	
 -->
 
-	<Effect UNID="&efLaserHitDefault;">
+	<EffectType unid="&efLaserHitDefault;"
+			 sound="&snArmorHit1;"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							(weaponHP (@ gData 'averageDamageHP))
+							(laserColor (coreCalcLaserColor weaponHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 1 30 6 80 50)
+								lifetime: (mathScale damageHP 1 30 4 20 50)
+								intensity: (if (= damageHP 0) 0 (mathScale damageHP 1 30 25 50 50))
+								primaryColor: (@ laserColor 'primaryColor)
+								secondaryColor: (@ laserColor 'secondaryColor)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+<!--
 		<Variants>
 			<Effect maxValue="0">
 				<Flare
@@ -71,7 +98,8 @@
 						/>
 			</Effect>
 		</Variants>
-	</Effect>
+-->
+	</EffectType>
 
 	<Effect UNID="&efKineticHitDefault;">
 		<Variants>
@@ -694,5 +722,38 @@
 			</Effect>
 		</Variants>
 	</Effect>
+	
+<!-- GLOBALS -->
+
+	<Globals>
+		(block Nil
+			(setq coreCalcLaserColor (lambda (damageHP)
+				(switch
+					(geq damageHP 15)
+						{
+							primaryColor: "#D500FF"
+							secondaryColor: "#6A00FF"
+							}
+							
+					(geq damageHP 7)
+						{
+							primaryColor: "#55FF00"
+							secondaryColor: "#2A8000"
+							}
+
+					(geq damageHP 4)
+						{
+							primaryColor: "#FF5500"
+							secondaryColor: "#802A00"
+							}
+
+					{
+						primaryColor: "#FF0000"
+						secondaryColor: "#800000"
+						}
+					)
+				))
+			)
+	</Globals>
 	
 </TranscendenceModule>
