@@ -22,41 +22,13 @@
 					<GetParameters>
 						(block (
 							(damageHP (@ gData 'damageHP))
-							primaryColor
-							secondaryColor
+							(laserColor (coreCalcLaserColor damageHP))
 							)
-							
-							;	Color depends on damage
-
-							(switch
-								(geq damageHP 15)
-									(block Nil
-										(setq primaryColor "#D500FF")
-										(setq secondaryColor "#6A00FF")
-										)
-
-								(geq damageHP 7)
-									(block Nil
-										(setq primaryColor "#55FF00")
-										(setq secondaryColor "#2A8000")
-										)
-
-								(geq damageHP 4)
-									(block Nil
-										(setq primaryColor "#FF5500")
-										(setq secondaryColor "#802A00")
-										)
-
-								(block Nil
-									(setq primaryColor "#FF0000")
-									(setq secondaryColor "#800000")
-									)
-								)
 							
 							{
 								radius: (mathScale damageHP 1 30 12 28 50)
-								primaryColor: primaryColor
-								secondaryColor: secondaryColor
+								primaryColor: (@ laserColor 'primaryColor)
+								secondaryColor: (@ laserColor 'secondaryColor)
 								}
 							)
 					</GetParameters>
@@ -75,42 +47,14 @@
 					<GetParameters>
 						(block (
 							(damageHP (@ gData 'damageHP))
-							primaryColor
-							secondaryColor
+							(laserColor (coreCalcLaserColor damageHP))
 							)
-							
-							;	Color depends on damage
-
-							(switch
-								(geq damageHP 15)
-									(block Nil
-										(setq primaryColor "#D500FF")
-										(setq secondaryColor "#6A00FF")
-										)
-
-								(geq damageHP 7)
-									(block Nil
-										(setq primaryColor "#55FF00")
-										(setq secondaryColor "#2A8000")
-										)
-
-								(geq damageHP 4)
-									(block Nil
-										(setq primaryColor "#FF5500")
-										(setq secondaryColor "#802A00")
-										)
-
-								(block Nil
-									(setq primaryColor "#FF0000")
-									(setq secondaryColor "#800000")
-									)
-								)
 							
 							{
 								length: (mathScale damageHP 1 30 24 56 50)
 								width: (mathScale damageHP 1 30 25 56 50)
-								primaryColor: primaryColor
-								secondaryColor: secondaryColor
+								primaryColor: (@ laserColor 'primaryColor)
+								secondaryColor: (@ laserColor 'secondaryColor)
 								}
 							)
 					</GetParameters>

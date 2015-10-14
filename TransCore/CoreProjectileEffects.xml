@@ -34,36 +34,11 @@
 				;	a parameter for the effect. For Ray effects, valid fields are:
 				;	intensity, length, width, primaryColor, and secondaryColor.
 
-				(block (damageHP primaryColor secondaryColor)
-					(setq damageHP (@ gData 'damageHP))
+				(block (
+					(damageHP (@ gData 'damageHP))
+					(laserColor (coreCalcLaserColor damageHP))
+					)
 
-					;	Color depends on damage
-
-					(switch
-						(geq damageHP 15)
-							(block Nil
-								(setq primaryColor "#D500FF")
-								(setq secondaryColor "#6A00FF")
-								)
-
-						(geq damageHP 7)
-							(block Nil
-								(setq primaryColor "#55FF00")
-								(setq secondaryColor "#2A8000")
-								)
-
-						(geq damageHP 4)
-							(block Nil
-								(setq primaryColor "#FF5500")
-								(setq secondaryColor "#802A00")
-								)
-
-						(block Nil
-							(setq primaryColor "#FF0000")
-							(setq secondaryColor "#800000")
-							)
-						)
-					
 					{
 						length:
 							(mathScale 
@@ -77,8 +52,8 @@
 						width: (mathScale damageHP 1 30 12 28 50)
 						intensity: 35
 
-						primaryColor: primaryColor
-						secondaryColor: secondaryColor
+						primaryColor: (@ laserColor 'primaryColor)
+						secondaryColor: (@ laserColor 'secondaryColor)
 						}
 					)
 			</GetParameters>

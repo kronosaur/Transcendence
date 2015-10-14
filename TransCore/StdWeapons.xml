@@ -1510,7 +1510,6 @@
 				powerUse=			"300"
 
 				effect=				"&efLaserBeamDefault;"
-				hitEffect=			"&efXRayLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
 		</Weapon>
