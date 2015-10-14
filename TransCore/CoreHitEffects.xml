@@ -32,73 +32,19 @@
 							)
 							
 							{
-								radius: (mathScale damageHP 1 30 6 80 50)
-								lifetime: (mathScale damageHP 1 30 4 20 50)
+								radius: (if (= damageHP 0) 6 (mathScale damageHP 1 30 20 60 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 1 30 8 16 50))
 								intensity: (if (= damageHP 0) 0 (mathScale damageHP 1 30 25 50 50))
 								primaryColor: (@ laserColor 'primaryColor)
 								secondaryColor: (@ laserColor 'secondaryColor)
+								
+								noSound: (= damageHP 0)
 								}
 							)
 					</GetParameters>
 				</Events>
 			</Orb>
 		</Effect>
-<!--
-		<Variants>
-			<Effect maxValue="0">
-				<Flare
-						style=			"fadingBlast"
-						radius=			"6"
-						primaryColor=	"0xf1, 0x5f, 0x2a"
-						lifetime=		"4"
-						/>
-			</Effect>
-			
-			<Effect maxValue="4" 
-					sound="&snArmorHit1;">
-				<Flare
-						style=			"fadingBlast"
-						radius=			"20"
-						primaryColor=	"0xf1, 0x5f, 0x2a"
-						secondaryColor=	"0xff, 0x00, 0x00"
-						lifetime=		"8"
-						/>
-			</Effect>
-			
-			<Effect maxValue="6" 
-					sound="&snArmorHit1;">
-				<Flare
-						style=			"fadingBlast"
-						radius=			"30"
-						primaryColor=	"0xf1, 0x5f, 0x2a"
-						secondaryColor=	"0xff, 0x00, 0x00"
-						lifetime=		"12"
-						/>
-			</Effect>
-			
-			<Effect maxValue="8" 
-					sound="&snArmorHit1;">
-				<Flare
-						style=			"fadingBlast"
-						radius=			"40"
-						primaryColor=	"0xf1, 0x5f, 0x2a"
-						secondaryColor=	"0xff, 0x00, 0x00"
-						lifetime=		"12"
-						/>
-			</Effect>
-			
-			<Effect
-					sound="&snArmorHit1;">
-				<Flare
-						style=			"fadingBlast"
-						radius=			"50"
-						primaryColor=	"0xf1, 0x5f, 0x2a"
-						secondaryColor=	"0xff, 0x00, 0x00"
-						lifetime=		"12"
-						/>
-			</Effect>
-		</Variants>
--->
 	</EffectType>
 
 	<Effect UNID="&efKineticHitDefault;">
