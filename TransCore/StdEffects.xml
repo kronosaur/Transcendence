@@ -44,6 +44,59 @@
 	<Effect UNID="&efMediumCannonFlash;">
 		<Polyflash/>
 	</Effect>
+	
+	<EffectType UNID="&efGreenLaserFireEffect;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					intensity=		"50"
+					primaryColor=	"#5ff12a"
+					secondaryColor=	"#00ff00"
+					
+					lifetime=		"3"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 1 30 12 28 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<Ray	style=			"smooth"
+					shape=			"tapered"
+					intensity=		"50"
+					xformRotation=	"180"
+					primaryColor=	"#5ff12a"
+					secondaryColor=	"#00ff00"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								length: (mathScale damageHP 1 30 24 56 50)
+								width: (mathScale damageHP 1 30 25 56 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
 
 <!-- COMMON HIT EFFECTS ========================================================
 
@@ -52,63 +105,35 @@
 	
 -->
 
-	<Effect UNID="&efGreenLaserHitEffect;">
-		<Variants>
-			<Effect maxValue="0">
-				<Flare
-						style=			"fadingBlast"
-						radius=			"6"
-						primaryColor=	"0x5f, 0xf1, 0x2a"
-						lifetime=		"4"
-						/>
-			</Effect>
-			
-			<Effect maxValue="4" 
-					sound="&snArmorHit1;">
-				<Flare
-						style=			"fadingBlast"
-						radius=			"20"
-						primaryColor=	"0x5f, 0xf1, 0x2a"
-						secondaryColor=	"0x00, 0xff, 0x00"
-						lifetime=		"8"
-						/>
-			</Effect>
-			
-			<Effect maxValue="6" 
-					sound="&snArmorHit1;">
-				<Flare
-						style=			"fadingBlast"
-						radius=			"30"
-						primaryColor=	"0x5f, 0xf1, 0x2a"
-						secondaryColor=	"0x00, 0xff, 0x00"
-						lifetime=		"12"
-						/>
-			</Effect>
-			
-			<Effect maxValue="8" 
-					sound="&snArmorHit1;">
-				<Flare
-						style=			"fadingBlast"
-						radius=			"40"
-						primaryColor=	"0x5f, 0xf1, 0x2a"
-						secondaryColor=	"0x00, 0xff, 0x00"
-						lifetime=		"12"
-						/>
-			</Effect>
-			
-			<Effect
-					sound="&snArmorHit1;">
-				<Flare
-						style=			"fadingBlast"
-						radius=			"50"
-						primaryColor=	"0x5f, 0xf1, 0x2a"
-						secondaryColor=	"0x00, 0xff, 0x00"
-						lifetime=		"12"
-						/>
-			</Effect>
-		</Variants>
-	</Effect>
-
+	<EffectType UNID="&efGreenLaserHitEffect;"
+			sound="&snArmorHit1;"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					primaryColor=	"#5ff12a"
+					secondaryColor=	"#00ff00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (if (= damageHP 0) 6 (mathScale damageHP 1 30 20 60 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 1 30 8 16 50))
+								intensity: (if (= damageHP 0) 0 (mathScale damageHP 1 30 25 50 50))
+								
+								noSound: (= damageHP 0)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+		
 	<Effect UNID="&efXRayLaserHitEffect;">
 		<Variants>
 			<Effect maxValue="0">

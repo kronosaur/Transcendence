@@ -726,7 +726,6 @@
 				powerUse=			"60"
 
 				effect=				"&efLaserBeamDefault;"
-				hitEffect=			"&efGreenLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
 		</Weapon>
@@ -899,7 +898,11 @@
 				>
 
 			<Effect>
-				<Image imageID="&rsMissiles4;" imageX="0" imageY="0" imageWidth="16" imageHeight="16" imageFrameCount="4" imageTicksPerFrame="1" randomStartFrame="true"/>
+				<Particle
+						style=			"line"
+						primaryColor=	"#ccf7ff"
+						secondaryColor=	"#2e3233"
+						/>
 			</Effect>
 		</Weapon>
 
@@ -1039,7 +1042,6 @@
 				powerUse=			"140"
 
 				effect=				"&efLaserBeamDefault;"
-				hitEffect=			"&efGreenLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
 		</Weapon>
@@ -1072,7 +1074,6 @@
 				powerUse=			"70"
 
 				effect=				"&efLaserBeamDefault;"
-				hitEffect=			"&efGreenLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
 		</Weapon>

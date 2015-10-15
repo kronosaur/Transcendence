@@ -104,7 +104,8 @@
 				lifetime=			"15"
 				powerUse=			"30"
 
-				hitEffect=			"&efGreenLaserHitEffect;" 
+				fireEffect=			"&efGreenLaserFireEffect;"
+				hitEffect=			"&efGreenLaserHitEffect;"
 				sound=				"&snLaserCannon;"
 				>
 			<Effect>
