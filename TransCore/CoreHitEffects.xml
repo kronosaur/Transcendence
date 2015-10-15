@@ -47,52 +47,95 @@
 		</Effect>
 	</EffectType>
 
-	<Effect UNID="&efKineticHitDefault;">
-		<Variants>
-			<Effect maxValue="0">
-				<ParticleCloud
-						style=				"splash"
-						lifetime=			"15"
-						emitDuration=		"5"
-						emitRate=			"10"
-						emitSpeed=			"5-10"
-						particleLifetime=	"10"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								minWidth=		"1"
-								maxWidth=		"3"
-								primaryColor=		"0xcd, 0xf3, 0xff"
-								secondaryColor=		"0x8f, 0xa9, 0xb2"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
-			
-			<Effect maxValue="16"
-					sound="&snArmorHit1;">
-				<Image imageID="&rsMediumHit;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="32" 
-						imageHeight="32"
-						imageFrameCount="12"
-						imageTicksPerFrame="1"/>
-			</Effect>
-			
-			<Effect 
-					sound="&snArmorHit1;">
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</Effect>
-		</Variants>
-	</Effect>
+	<EffectType UNID="&efKineticHitDefault;"
+			 sound="&snArmorHit1;"
+			>
+		<Effect>
+			<ParticleJet
+					emitRate=			"20"
+					emitSpeed=			"10-20"
+					emitStop=			"5"
+					particleLifetime=	"2-4"
+					spreadAngle=		"30"
+					lifetime=			"15"
+					xformRotation=		"180"
+					>
+				<ParticleEffect>
+					<Particle
+							style=			"plain"
+							minWidth=		"1"
+							maxWidth=		"3"
+							primaryColor=	"#fff4cc"
+							secondaryColor=	"#667b80"
+							/>
+				</ParticleEffect>
+				
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							(objHit (@ gData 'objHit))
+							(scale (objGetProperty objHit 'scale))
+							)
+							
+							;	No particle jet if there is no damage or if
+							;	we've hit a world/star. Also, we don't skip 
+							;	abandoned stations, since they create their own
+							;	ejacta.
+							
+							(if (or (= damageHP 0)
+									(= scale 'star)
+									(= scale 'world)
+									(objGetProperty objHit 'abandoned)
+									)
+								{
+									emitRate: 0
+									}
+									
+								{
+									emitRate: (mathScale damageHP 1 30 10 60 50)
+									}
+								)
+							)
+					</GetParameters>
+				</Events>
+			</ParticleJet>
+
+			<Orb	style=			"flare"
+					animate=		"fade"
+					primaryColor=	"#ccf7ff"
+					secondaryColor=	"#667b80"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (if (= damageHP 0) 6 (mathScale damageHP 1 30 20 60 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 1 30 8 16 50))
+								intensity: (if (= damageHP 0) 0 (mathScale damageHP 1 30 25 50 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+				
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+							
+					{
+						noSound: (= damageHP 0)
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
 
 	<Effect UNID="&efParticleHitDefault;">
 		<Variants>
