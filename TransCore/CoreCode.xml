@@ -464,7 +464,10 @@
 
 					;	Done
 
-					(add result toMin)
+					(if (ls toRange 0)
+						(subtract toMin result)
+						(add result toMin)
+						)
 					)
 				))
 				
