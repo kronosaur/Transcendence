@@ -169,7 +169,9 @@
 		</Events>
 	</EffectType>
 
-	<EffectType UNID="&efParticleHitDefault;">
+	<EffectType UNID="&efParticleHitDefault;"
+			sound="&snArmorHit1;"
+			>
 		<Effect>
 			<Orb	style=			"diffraction"
 					animate=		"fade"
