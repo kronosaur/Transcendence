@@ -41,18 +41,6 @@
 
 				effect=				"&efMissileNAMI;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 
 		<Invoke>
@@ -229,18 +217,6 @@
 
 				effect=				"&efMissileNAMI;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 
 		<Invoke>
@@ -1289,17 +1265,6 @@
 				effect=				"&efBlastShellDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 
 	</ItemType>
@@ -1468,18 +1433,6 @@
 				effect=				"&efSlamCannonShell;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 	</ItemType>
 
@@ -1636,18 +1589,6 @@
 							</Events>
 						</Ray>
 					</Effect>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosionsAG48;"
-								imageX="0"
-								imageY="0"
-								imageWidth="48"
-								imageHeight="48"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
 				</Missile>
 			</Missiles>
 		</Weapon>
@@ -1684,18 +1625,6 @@
 				effect=				"&efBlastShellDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 	</ItemType>
 
@@ -2752,18 +2681,6 @@
 				effect=			"&efMissileNAMI;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -2795,18 +2712,6 @@
 				effect=			"&efMissileNAMI;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 
 			<Fragment
 					count=			"6d6"
@@ -2864,18 +2769,6 @@
 			effect=			"&efMissileNAMI;"
 			sound=			"&snMissileLauncher;"
 			>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsMediumExplosions;"
-						imageX="0"
-						imageY="0"
-						imageWidth="64"
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -2908,18 +2801,6 @@
 				effect=			"&efMissileNAMI;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -2950,20 +2831,9 @@
 				hitPoints=		"10"
 						 
 				effect=			"&efMissileNAMI;"
+				hitEffect=		"&efRadioactiveHitEffect;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosion2AG128;"
-						imageX="0"
-						imageY="0"
-						imageWidth="128"
-						imageHeight="128"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -2996,18 +2866,6 @@
 				sound=			"&snMissileLauncher;"
 				effect=			"&efMissileNAMI;"
 				>
-						
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3111,18 +2969,6 @@
 				effect=			"&efMissileMAG;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3156,18 +3002,6 @@
 				effect=			"&efMissileMAG;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsMediumExplosions;"
-						imageX="0"
-						imageY="0"
-						imageWidth="64"
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3203,18 +3037,6 @@
 				effect=			"&efMissileMAG;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 
 			<Fragment
 					count=			"5d6"
@@ -3274,18 +3096,6 @@
 				effect=			"&efMissileMAG;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3321,18 +3131,6 @@
 				sound=			"&snMissileLauncher;"
 				>
 
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
-
 			<Fragment
 					count=			"20-28"
 					type=			"missile"
@@ -3358,18 +3156,6 @@
 						</ParticleEffect>
 					</SmokeTrail>
 				</Effect>
-
-				<HitEffect
-						sound="&snArmorHit1;"
-								>
-					<Image imageID="&rsExplosionsAG48;"
-							imageX="0"
-							imageY="0"
-							imageWidth="48"
-							imageHeight="48"
-							imageFrameCount="16"
-							imageTicksPerFrame="2"/>
-				</HitEffect>
 			</Fragment>
 
 		</Missile>
@@ -3405,18 +3191,6 @@
 				effect=			"&efMissileMAG;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG96;"
-						imageX="0"
-						imageY="0"
-						imageWidth="96"
-						imageHeight="96"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3546,18 +3320,6 @@
 				effect=			"&efMissileStrelka;"
 				sound=			"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 

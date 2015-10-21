@@ -5001,11 +5001,46 @@
 				powerUse=			"60"
 
 				missileSpeed=		"20"
+				
+				hitEffect=			"&efRadioactiveHitEffect;"
 				sound=				"&snLaserCannon;"
 				>
 
+			<Configuration aimTolerance="5">
+				<Shot angle="3d5-9"/>
+			</Configuration>
+			
 			<Effect>
+				<Orb	style=			"firecloud"
+						animate=		"explode"
+						lifetime=		"60"
+					
+						primaryColor=	"#00ff2b"
+						secondaryColor=	"#008015"
+						>
+					<Events>
+						<GetParameters>
+							(block (
+								(damageHP (@ gData 'damageHP))
+								(weaponUNID (@ gData 'weaponUNID))
+								)
+							
+								{
+									radius: (if (= damageHP 0) 10 (mathScale damageHP 6 80 20 45 50))
+									;lifetime: (if (= damageHP 0) 4 (mathScale damageHP 6 80 12 48 50))
+								
+									intensity: (seededRandom weaponUNID 50 70)
+									distortion: (mathScale damageHP 6 80 50 0 100)
+									detail: (seededRandom weaponUNID 20 25)
+									}
+								)
+						</GetParameters>
+					</Events>
+				</Orb>
+
+				<!--
 				<Image imageID="&rsMediumExplosions;" imageX="0" imageY="128" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
+				-->
 			</Effect>
 		</Weapon>
 	</ItemType>

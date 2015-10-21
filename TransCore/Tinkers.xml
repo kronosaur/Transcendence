@@ -394,18 +394,6 @@
 				effect=				"&efBlastShellDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 	</ItemType>
 
@@ -435,7 +423,6 @@
 				powerUse=			"250"
 
 				effect=				"&efLaserBeamDefault;"
-				hitEffect=			"&efXRayLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
 		</Weapon>

@@ -49,6 +49,16 @@
 	<!ENTITY efBlastFireDefault			"0x00000073">
 	<!ENTITY efIonFireDefault			"0x00000074">
 	<!ENTITY efThermoFireDefault		"0x00000075">
+	<!ENTITY efPositronFireDefault		"0x00000076">
+	<!ENTITY efPlasmaFireDefault		"0x00000077">
+	<!ENTITY efAntimatterFireDefault	"0x00000078">
+	<!ENTITY efNanoFireDefault			"0x00000079">
+	<!ENTITY efGravitonFireDefault		"0x0000007A">
+	<!ENTITY efSingularityFireDefault	"0x0000007B">
+	<!ENTITY efDarkAcidFireDefault		"0x0000007C">
+	<!ENTITY efDarkSteelFireDefault		"0x0000007D">
+	<!ENTITY efDarkLightningFireDefault	"0x0000007E">
+	<!ENTITY efDarkFireFireDefault		"0x0000007F">
 	
 	<!ENTITY efManeuveringThrusterDefault	"0x00000090">
 	<!ENTITY efMainThrusterDefault		"0x00000091">

@@ -45,6 +45,38 @@
 				</Events>
 			</Orb>
 		</Effect>
+		
+		<!--
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					(weaponHP (@ gData 'averageDamageHP))
+					(laserColor (coreCalcLaserColor weaponHP))
+					)
+					
+					{
+						effects: (list {
+							{
+								sfx: "orb"
+							
+								style: "flare"
+								animate: "fade"
+							
+								radius: (if (= damageHP 0) 6 (mathScale damageHP 1 30 20 60 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 1 30 8 16 50))
+								intensity: (if (= damageHP 0) 0 (mathScale damageHP 1 30 25 50 50))
+								primaryColor: (@ laserColor 'primaryColor)
+								secondaryColor: (@ laserColor 'secondaryColor)
+								}
+							)
+							
+						noSound: (= damageHP 0)
+						}
+					)
+			</GetParameters>
+		</Events>
+		-->
 	</EffectType>
 
 	<EffectType UNID="&efKineticHitDefault;"
@@ -54,7 +86,7 @@
 			<ParticleJet
 					emitRate=			"20"
 					emitSpeed=			"10-20"
-					emitStop=			"5"
+					emitLifetime=		"5"
 					particleLifetime=	"2-4"
 					spreadAngle=		"30"
 					lifetime=			"15"
@@ -137,172 +169,68 @@
 		</Events>
 	</EffectType>
 
-	<Effect UNID="&efParticleHitDefault;">
-		<Variants>
-			<Effect maxValue="0">
-				<ParticleCloud
-						style=				"splash"
-						lifetime=			"15"
-						emitDuration=		"5"
-						emitRate=			"10"
-						emitSpeed=			"5-10"
-						particleLifetime=	"10"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								minWidth=		"1"
-								maxWidth=		"3"
-								primaryColor=	"0x5f, 0xf1, 0x2a"
-								secondaryColor=	"0x5f, 0xf1, 0x2a"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
-			
-			<Effect maxValue="9" 
-					sound="&snArmorHit1;">
-				<ParticleCloud
-						style=			"splash" 
-						lifetime=		"20" 
-						emitDuration=	"60"
-						emitRate=		"20-25"
-						emitSpeed=		"1-6"
-						particleLifetime="4"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								maxWidth=		"1-2"
-								primaryColor=	"0x5f, 0xf1, 0x2a"
-								secondaryColor=	"0x00, 0xff, 0x00"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
-			
-			<Effect maxValue="13" 
-					sound="&snArmorHit1;">
-				<ParticleCloud
-						style=			"splash" 
-						lifetime=		"20" 
-						emitDuration=	"60"
-						emitRate=		"30-37"
-						emitSpeed=		"1-6"
-						particleLifetime="5"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								maxWidth=		"1-2"
-								primaryColor=	"0x5f, 0xf1, 0x2a"
-								secondaryColor=	"0x00, 0xff, 0x00"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
-
-			<Effect
-					sound="&snArmorHit1;">
-				<ParticleCloud
-						style=			"splash" 
-						lifetime=		"20" 
-						emitDuration=	"60"
-						emitRate=		"40-50"
-						emitSpeed=		"1-6"
-						particleLifetime="5"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								maxWidth=		"1-2"
-								primaryColor=	"0x5f, 0xf1, 0x2a"
-								secondaryColor=	"0x00, 0xff, 0x00"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
-		</Variants>
-	</Effect>
+	<EffectType UNID="&efParticleHitDefault;">
+		<Effect>
+			<Orb	style=			"diffraction"
+					animate=		"fade"
+					intensity=		"50"
+					primaryColor=	"#65ff2c"
+					secondaryColor=	"#808417"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 6 80 30 70 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 6 80 12 48 50))
+								
+								noSound: (= damageHP 0)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
 	
-	<Effect UNID="&efBlastHitDefault;">
-		<Variants>
-			<Effect maxValue="0">
-				<ParticleCloud
-						style=				"splash"
-						lifetime=			"15"
-						emitDuration=		"5"
-						emitRate=			"10"
-						emitSpeed=			"5-10"
-						particleLifetime=	"10"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"flame"
-								minWidth=		"1"
-								maxWidth=		"3"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
-			
-			<Effect maxValue="9" 
-					sound="&snArmorHit1;">
-				<Image imageID="&rsMediumHit;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="32" 
-						imageHeight="32"
-						imageFrameCount="12"
-						imageTicksPerFrame="1"/>
-			</Effect>
-			
-			<Effect maxValue="13" 
-					sound="&snArmorHit1;">
-				<Image imageID="&rsMediumHit;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="32" 
-						imageHeight="32"
-						imageFrameCount="12"
-						imageTicksPerFrame="1"/>
-			</Effect>
-			
-			<Effect maxValue="18" 
-					sound="&snArmorHit1;">
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</Effect>
-			
-			<Effect maxValue="27" 
-					sound="&snArmorHit1;">
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</Effect>
-			
-			<Effect
-					sound="&snArmorHit1;">
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</Effect>
-		</Variants>
-	</Effect>
-
+	<EffectType unid="&efBlastHitDefault;"
+			sound="&snArmorHit1;"
+			>
+		<Effect>
+			<Orb	style=			"fireblast"
+					animate=		"explode"
+					
+					primaryColor=	"#ffcf00"
+					secondaryColor=	"#d90000"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							(weaponUNID (@ gData 'weaponUNID))
+							)
+							
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 6 80 30 70 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 6 80 12 48 50))
+								primaryColor: (resColorBlend "#ffcf00" "#ffa200" (seededRandom weaponUNID 0 255))
+								
+								intensity: (seededRandom weaponUNID 50 100)
+								distortion: (mathScale damageHP 6 80 50 0 100)
+								detail: (seededRandom weaponUNID 20 40)
+								
+								noSound: (= damageHP 0)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+	
 	<Effect UNID="&efIonHitDefault;">
 		<Variants>
 			<Effect maxValue="0">

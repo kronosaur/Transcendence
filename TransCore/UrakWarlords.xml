@@ -297,21 +297,8 @@
 				recoil=				"2"
 
 				effect=				"&efBlastShellDefault;"
-				hitEffect=			"&efFragmentationExplosion;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 
 			<Fragment 
 					count=			"3d6+5"
