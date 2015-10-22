@@ -243,30 +243,50 @@
 					shape=			"tapered"
 					primaryColor=	"#00d5ff"
 					secondaryColor=	"#006b80"
-					/>
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:
+									(mathScale 
+										damageHP						; average damage of weapon
+										5								; min damage
+										70								; max damage
+										60								; min beam length
+										260								; max beam length
+										50								; scale gamma
+										)
+								width: (mathScale damageHP 5 70 20 40 50)
+								intensity: 40
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+			
+			<ParticleComet
+					particleCount=	"200"
+					primaryColor=	"#00d5ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+
+							{
+								particleCount: (mathScale damageHP 5 70 100 300 50)
+								length: (mathScale damageHP 5 70 60 220 50)
+								width: (mathScale damageHP 5 70 6 16 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleComet>
 		</Effect>
-
-		<Events>
-			<GetParameters>
-				(block (damageHP primaryColor secondaryColor)
-					(setq damageHP (@ gData 'damageHP))
-
-					{
-						length:
-							(mathScale 
-								damageHP						; average damage of weapon
-								5								; min damage
-								70								; max damage
-								60								; min beam length
-								260								; max beam length
-								50								; scale gamma
-								)
-						width: (mathScale damageHP 5 70 20 40 50)
-						intensity: 40
-						}
-					)
-			</GetParameters>
-		</Events>
 	</EffectType>
 
 	<EffectType UNID="&efThermoShellDefault;"
