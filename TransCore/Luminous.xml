@@ -43,6 +43,7 @@
 				powerUse=			"1000"
 
 				effect=				"&efEIBlasterBeam;"
+				fireEffect=			"&efEIBlasterFire;"
 				hitEffect=			"&efEIBlasterHit;" 
 				sound=				"&snLaserCannon;"
 				>

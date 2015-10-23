@@ -342,7 +342,7 @@
 				<Missile ammoID="&itDwargCnidocystNodule;"
 						type=			"missile"
 
-						damage=			"ion:4d6; EMP4"
+						damage=			"ion:4d6; EMP:4"
 						missileSpeed=	"50"
 						lifetime=		"180"
 						maneuverability="1"
@@ -351,12 +351,24 @@
 						>
 
 					<Effect>
+						<Ray
+								style=			"lightning"
+								shape=			"tapered"
+								length=			"60"
+								width=			"10"
+								intensity=		"50"
+								
+								primaryColor=	"#a0f0ff"
+								secondaryColor=	"#f0f0ff"
+								>
+						</Ray>
+						
 						<Starburst
-								style=			"lightningStar"
+								style=			"morningStar"
 								spikeCount=		"2d6+2"
 								spikeLength=	"2d10"
-								primaryColor=	"0xa0, 0xf0, 0xff"
-								secondaryColor=	"0xf0, 0xf0, 0xff"
+								primaryColor=	"#a0f0ff"
+								secondaryColor=	"#f0f0ff"
 								/>
 					</Effect>
 

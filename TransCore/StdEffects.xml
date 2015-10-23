@@ -37,6 +37,72 @@
 
 	<Image UNID="&rsExplosionsAG256;"	bitmap="Resources\Explosions-AG256.jpg"	bitmask="Resources\Explosions-AG256Mask.bmp" loadOnUse="true"/>
 	
+<!-- COMMON PROJECTILE EFFECTS =================================================
+
+-->
+	
+	<EffectType UNID="&efIonizingBeam;"
+			instance=			"creator"
+			>
+		<Effect>
+			<Ray
+					style=			"jagged"
+					shape=			"tapered"
+					primaryColor=	"#00d5ff"
+					secondaryColor=	"#006b80"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								length: (mathScale damageHP 5 70 60 260 50)
+								width: (mathScale damageHP 5 70 20 40 50)
+								intensity: 40
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+			
+			<Ray
+					style=			"lightning"
+					shape=			"tapered"
+					primaryColor=	"#00d5ff"
+					secondaryColor=	"#006b80"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							(weaponUNID (@ gData 'weaponUNID))
+							
+							(damageEMP (itmGetProperty weaponUNID 'damageEMP))
+							(damageBlinding (itmGetProperty weaponUNID 'damageBlinding))
+							
+							(intensity (switch
+								(gr damageEMP 0)
+									(+ 10 (* damageEMP 10))
+									
+								(gr damageBlinding 0)
+									(* damageBlinding 5)
+									
+								0
+								))
+							)
+							{
+								length: (mathScale damageHP 5 70 60 260 50)
+								width: (mathScale damageHP 5 70 10 20 50)
+								intensity: intensity
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
 <!-- COMMON FIRE EFFECTS =======================================================
 
 -->

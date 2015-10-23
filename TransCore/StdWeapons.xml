@@ -1150,21 +1150,14 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"ion:4d6; EMP3"
+				damage=				"ion:4d6; EMP:3"
 				fireRate=			"20"
 				lifetime=			"30"
 				powerUse=			"200"
 
+				effect=				"&efIonizingBeam;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"lightning"
-						primaryColor=		"0xa0, 0xf0, 0xff"
-						secondaryColor=		"0x00, 0xa9, 0xff"
-						intensity=			"4"
-						/>
-			</Effect>
 		</Weapon>
 
 	</ItemType>
@@ -1713,21 +1706,16 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"ion:5d6; deviceDisrupt2"
+				damage=				"ion:5d6; deviceDisrupt:2"
 				fireRate=			"20"
 				lifetime=			"30"
 				powerUse=			"800"
 
+				effect=				"&efEIDisruptorBeam;"
+				fireEffect=			"&efEIDisruptorFire;"
+				hitEffect=			"&efEIDisruptorHit;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"lightning"
-						primaryColor=		"0xf0, 0xff, 0xa0"
-						secondaryColor=		"0xa9, 0xff, 0x00"
-						intensity=			"5"
-						/>
-			</Effect>
 		</Weapon>
 
 	</ItemType>
@@ -1758,6 +1746,7 @@
 				powerUse=			"500"
 
 				effect=				"&efEIBlasterBeam;"
+				fireEffect=			"&efEIBlasterFire;"
 				hitEffect=			"&efEIBlasterHit;" 
 				sound=				"&snLaserCannon;"
 				>
@@ -1790,15 +1779,11 @@
 				passthrough=		"50"
 				powerUse=			"750"
 
+				effect=				"&efStarCannonBeam;"
+				fireEffect=			"&efStarCannonFire;"
+				hitEffect=			"&efStarCannonHit;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"starblaster"
-						primaryColor=		"0x00, 0x80, 0xff"
-						secondaryColor=		"0x80, 0xc0, 0xff"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -2140,6 +2125,7 @@
 				powerUse=			"1000"
 
 				effect=				"&efEIBlasterBeam;"
+				fireEffect=			"&efEIBlasterFire;"
 				hitEffect=			"&efEIBlasterHit;" 
 				sound=				"&snLaserCannon;"
 				>
@@ -2431,6 +2417,7 @@
 				powerUse=			"2000"
 
 				effect=				"&efEIBlasterBeam;"
+				fireEffect=			"&efEIBlasterFire;"
 				hitEffect=			"&efEIBlasterHit;" 
 				sound=				"&snLaserCannon;"
 				>
@@ -2495,6 +2482,7 @@
 				powerUse=			"1200"
 
 				effect=				"&efEIBlasterBeam;"
+				fireEffect=			"&efEIBlasterFire;"
 				hitEffect=			"&efEIBlasterHit;" 
 				sound=				"&snLaserCannon;"
 				>
@@ -4120,6 +4108,59 @@
 		</Effect>
 	</EffectType>
 
+	<EffectType UNID="&efEIBlasterFire;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					intensity=		"50"
+					primaryColor=	"#ff9500"
+					secondaryColor=	"#804a00"
+					
+					lifetime=		"3"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 5 70 12 28 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<Ray	style=			"jagged"
+					shape=			"tapered"
+					intensity=		"50"
+					xformRotation=	"180"
+					primaryColor=	"#ff9500"
+					secondaryColor=	"#804a00"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								length: (mathScale damageHP 5 70 24 56 50)
+								width: (mathScale damageHP 5 70 18 42 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
 	<EffectType UNID="&efEIBlasterBeam;"
 			instance=			"creator"
 			>
@@ -4129,119 +4170,290 @@
 					shape=			"tapered"
 					primaryColor=	"#ff9500"
 					secondaryColor=	"#804a00"
-					/>
-		</Effect>
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
 
+							{
+								length: (mathScale damageHP 5 70 60 260 50)
+								width: (mathScale damageHP 5 70 20 40 50)
+								intensity: 60
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+			
+			<ParticleComet
+					particleCount=	"200"
+					primaryColor=	"#ff9500"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+
+							{ 
+								particleCount: (mathScale damageHP 5 70 100 300 50)
+								length: (mathScale damageHP 5 70 60 220 50)
+								width: (mathScale damageHP 5 70 6 16 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleComet>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efEIBlasterHit;"
+			sound="&snArmorHit1;"
+			>
+		<Effect>
+			<Orb	style=			"diffraction"
+					animate=		"fade"
+					intensity=		"50"
+					primaryColor=	"#ffca80"
+					secondaryColor=	"#ff9500"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 6 80 30 70 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 6 80 12 48 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<ParticleSystem
+					style=			"radiate"
+					emitSpeed=		"4-8"
+					particleLifetime="8"
+					>
+				<ParticleEffect>
+					<Particle
+							style=			"plain"
+							minWidth=		"1"
+							maxWidth=		"3"
+							primaryColor=	"#ffca80"
+							secondaryColor=	"#ff9500"
+							/>
+				</ParticleEffect>
+				
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								lifetime: (if (= damageHP 0) 10 (mathScale damageHP 6 80 12 48 50))
+								emitRate: (mathScale damageHP 6 80 50 200 50)
+								emitLifetime: (if (= damageHP 0) 2 (mathScale damageHP 6 80 6 24 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleSystem>
+		</Effect>
+		
 		<Events>
 			<GetParameters>
-				(block (damageHP primaryColor secondaryColor)
-					(setq damageHP (@ gData 'damageHP))
-
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+							
 					{
-						length:
-							(mathScale 
-								damageHP						; average damage of weapon
-								5								; min damage
-								70								; max damage
-								60								; min beam length
-								260								; max beam length
-								50								; scale gamma
-								)
-						width: (mathScale damageHP 5 70 20 40 50)
-						intensity: 40
+						noSound: (= damageHP 0)
 						}
 					)
 			</GetParameters>
 		</Events>
 	</EffectType>
-
-	<Effect UNID="&efEIBlasterHit;">
-		<Variants>
-			<Effect maxValue="0">
-				<ParticleCloud
-						style=				"splash"
-						lifetime=			"15"
-						emitDuration=		"5"
-						emitRate=			"10"
-						emitSpeed=			"5-10"
-						particleLifetime=	"10"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								minWidth=		"1"
-								maxWidth=		"3"
-								primaryColor=	"#ffca80"
-								secondaryColor=	"#ff9500"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
+	
+	<EffectType UNID="&efEIDisruptorFire;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					intensity=		"50"
+					primaryColor=	"#f0ffa0"
+					secondaryColor=	"#a9ff00"
+					
+					lifetime=		"3"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 5 70 12 28 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
 			
-			<Effect maxValue="21" 
-					sound="&snArmorHit1;">
-				<ParticleCloud
-						style=			"splash" 
-						lifetime=		"20" 
-						emitDuration=	"60"
-						emitRate=		"20-25"
-						emitSpeed=		"1-6"
-						particleLifetime="4"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								maxWidth=		"1-2"
-								primaryColor=	"#ffca80"
-								secondaryColor=	"#ff9500"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
-			
-			<Effect maxValue="31" 
-					sound="&snArmorHit1;">
-				<ParticleCloud
-						style=			"splash" 
-						lifetime=		"20" 
-						emitDuration=	"60"
-						emitRate=		"30-37"
-						emitSpeed=		"1-6"
-						particleLifetime="5"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								maxWidth=		"1-2"
-								primaryColor=	"#ffca80"
-								secondaryColor=	"#ff9500"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
+			<Ray	style=			"jagged"
+					shape=			"tapered"
+					intensity=		"50"
+					xformRotation=	"180"
+					primaryColor=	"#f0ffa0"
+					secondaryColor=	"#a9ff00"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								length: (mathScale damageHP 5 70 24 56 50)
+								width: (mathScale damageHP 5 70 18 42 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
 
-			<Effect
-					sound="&snArmorHit1;">
-				<ParticleCloud
-						style=			"splash" 
-						lifetime=		"20" 
-						emitDuration=	"60"
-						emitRate=		"40-50"
-						emitSpeed=		"1-6"
-						particleLifetime="5"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								maxWidth=		"1-2"
-								primaryColor=	"#ffca80"
-								secondaryColor=	"#ff9500"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
-		</Variants>
-	</Effect>
+	<EffectType UNID="&efEIDisruptorBeam;"
+			instance=			"creator"
+			>
+		<Effect>
+			<Ray
+					style=			"jagged"
+					shape=			"tapered"
+					primaryColor=	"#f0ffa0"
+					secondaryColor=	"#a9ff00"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length: (mathScale damageHP 5 70 60 260 50)
+								width: (mathScale damageHP 5 70 20 40 50)
+								intensity: 60
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+			
+			<Ray
+					style=			"lightning"
+					shape=			"tapered"
+					primaryColor=	"#f0ffa0"
+					secondaryColor=	"#a9ff00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							(weaponUNID (@ gData 'weaponUNID))
+							
+							(damageDeviceDisrupt (itmGetProperty weaponUNID 'damageDeviceDisrupt))
+							(intensity (+ 20 (* damageDeviceDisrupt 10)))
+							)
+							{
+								length: (mathScale damageHP 5 70 60 260 50)
+								width: (mathScale damageHP 5 70 10 20 50)
+								intensity: intensity
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efEIDisruptorHit;"
+			sound="&snArmorHit1;"
+			>
+		<Effect>
+			<Orb	style=			"diffraction"
+					animate=		"fade"
+					intensity=		"50"
+					primaryColor=	"#f0ffa0"
+					secondaryColor=	"#a9ff00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 6 80 30 70 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 6 80 12 48 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<ParticleSystem
+					style=			"radiate"
+					emitSpeed=		"4-8"
+					particleLifetime="8"
+					>
+				<ParticleEffect>
+					<Particle
+							style=			"plain"
+							minWidth=		"1"
+							maxWidth=		"3"
+							primaryColor=	"#f0ffa0"
+							secondaryColor=	"#a9ff00"
+							/>
+				</ParticleEffect>
+				
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								lifetime: (if (= damageHP 0) 10 (mathScale damageHP 6 80 12 48 50))
+								emitRate: (mathScale damageHP 6 80 50 200 50)
+								emitLifetime: (if (= damageHP 0) 2 (mathScale damageHP 6 80 6 24 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleSystem>
+		</Effect>
+		
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+							
+					{
+						noSound: (= damageHP 0)
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
 	
 	<EffectType UNID="&efMissileMAG;"
 			instance=			"creator"
@@ -4538,6 +4750,186 @@
 				</Events>
 			</Ray>
 		</Effect>
+	</EffectType>
+	
+	<EffectType UNID="&efStarCannonFire;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					intensity=		"50"
+					primaryColor=	"#0080ff"
+					secondaryColor=	"#80c0ff"
+					
+					lifetime=		"3"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 5 70 12 28 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<Ray	style=			"jagged"
+					shape=			"tapered"
+					intensity=		"50"
+					xformRotation=	"180"
+					primaryColor=	"#0080ff"
+					secondaryColor=	"#80c0ff"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								length: (mathScale damageHP 5 70 24 56 50)
+								width: (mathScale damageHP 5 70 18 42 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efStarCannonBeam;"
+			instance=			"creator"
+			>
+		<Effect>
+			<Ray
+					style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#0080ff"
+					secondaryColor=	"#80c0ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length: (mathScale damageHP 5 70 60 260 50)
+								width: (mathScale damageHP 5 70 15 30 50)
+								intensity: 60
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+			
+			<ParticleComet
+					particleCount=	"200"
+					primaryColor=	"#80c0ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+
+							{ 
+								particleCount: (mathScale damageHP 5 70 100 300 50)
+								length: (mathScale damageHP 5 70 60 220 50)
+								width: (mathScale damageHP 5 70 6 16 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleComet>
+			
+			<Starburst
+					style=			"plain"
+					spikeCount=		"1d6+3"
+					spikeLength=	"15-30"
+					
+					primaryColor=	"#d8ecff"
+					secondaryColor=	"#0080ff"
+					/>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efStarCannonHit;"
+			sound="&snArmorHit1;"
+			>
+		<Effect>
+			<Orb	style=			"diffraction"
+					animate=		"fade"
+					intensity=		"50"
+					primaryColor=	"#80c0ff"
+					secondaryColor=	"#0080ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 6 80 30 70 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 6 80 12 48 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<ParticleSystem
+					style=			"radiate"
+					emitSpeed=		"4-8"
+					particleLifetime="8"
+					>
+				<ParticleEffect>
+					<Particle
+							style=			"plain"
+							minWidth=		"1"
+							maxWidth=		"3"
+							primaryColor=	"#80c0ff"
+							secondaryColor=	"#0080ff"
+							/>
+				</ParticleEffect>
+				
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								lifetime: (if (= damageHP 0) 10 (mathScale damageHP 6 80 12 48 50))
+								emitRate: (mathScale damageHP 6 80 50 200 50)
+								emitLifetime: (if (= damageHP 0) 2 (mathScale damageHP 6 80 6 24 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleSystem>
+		</Effect>
+		
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+							
+					{
+						noSound: (= damageHP 0)
+						}
+					)
+			</GetParameters>
+		</Events>
 	</EffectType>
 	
 	<EffectType UNID="&efThermoCannonShell;"

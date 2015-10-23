@@ -20,6 +20,7 @@
 	<!ENTITY efSlamCannonShell			"0x00000062">
 	<!ENTITY efAkanCannonShell			"0x00000063">
 	<!ENTITY efThermoCannonShell		"0x00000064">
+	<!ENTITY efEIBlasterFire			"0x00000065">
 	
 	<!ENTITY rsMissileNAMI				"0x00000080">
 	<!ENTITY efMissileNAMI				"0x00000081">
@@ -596,6 +597,7 @@
 	<!ENTITY efXRayLaserHitEffect		"0x00009011">
 	<!ENTITY efGreenLaserFireEffect		"0x00009012">
 	<!ENTITY efRadioactiveHitEffect		"0x00009013">
+	<!ENTITY efIonizingBeam				"0x00009014">
 
 	<!ENTITY sfSustain					"0x00009101">
 	<!ENTITY sfStrengthen				"0x00009102">
@@ -1646,6 +1648,18 @@
 	<!-- 0190-019F VENTARI SETTLERS -->
 	
 	<!ENTITY rsVentariDestroyer			"0x00100190">
+	
+	<!-- 01A0-01BF EARTH INDUSTRIES CORPORATION -->
+	
+	<!ENTITY efEIDisruptorFire			"0x001001A0">
+	<!ENTITY efEIDisruptorBeam			"0x001001A1">
+	<!ENTITY efEIDisruptorHit			"0x001001A2">
+	
+	<!-- 01C0-01DF BUSHIDO CORPORATION -->
+	
+	<!ENTITY efStarCannonFire			"0x001001C0">
+	<!ENTITY efStarCannonBeam			"0x001001C1">
+	<!ENTITY efStarCannonHit			"0x001001C2">
 	
 	<!-- 1000-FFFF RESERVED -->
 	]>

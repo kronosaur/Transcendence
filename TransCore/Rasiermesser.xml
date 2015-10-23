@@ -59,13 +59,13 @@
 
 			<Effect>
 				<Ray
-						style=			"smooth"
+						style=			"grainy"
 						shape=			"tapered"
-						primaryColor=	"#00d5ff"
+						primaryColor=	"#80eaff"
 						secondaryColor=	"#006b80"
-						width=			"6"
+						width=			"8"
 						length=			"80"
-						intensity=		"45"
+						intensity=		"50"
 						/>
 			</Effect>
 		</Weapon>

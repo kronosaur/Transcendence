@@ -64,6 +64,13 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 	SViewportPaintCtx Ctx;
 	for (i = 0; i < iRotationCount; i++)
 		{
+		CViewportPaintCtxSmartSave Save(Ctx);
+		Ctx.iTick = 0;
+		Ctx.iVariant = Rotation.GetFrameIndex();
+		Ctx.iRotation = Rotation.GetRotationAngle(pClass->GetRotationDesc());
+		Ctx.iDestiny = 0;
+		Ctx.iMaxLength = -1;
+
 		int x, y;
 
 		Output.GetCellCenter(i, &x, &y);
@@ -71,7 +78,6 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 		//	Set the ship rotation
 
 		Rotation.SetRotationAngle(pClass->GetRotationDesc(), pClass->GetRotationDesc().GetRotationAngle(i));
-		Ctx.Prepare(0, Rotation.GetFrameIndex(), Rotation.GetRotationAngle(pClass->GetRotationDesc()), 0);
 
 		//	Since we don't have an object, we use the viewport center to indicate
 		//	the center of the object.

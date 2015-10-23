@@ -785,6 +785,49 @@
 				>
 
 			<Effect>
+				<Ray
+						style=			"jagged"
+						shape=			"straight"
+						length=			"72"
+						
+						primaryColor=	"#00d5ff"
+						secondaryColor=	"#006b80"
+						>
+					<Events>
+						<GetParameters>
+							(block (
+								(damageHP (@ gData 'damageHP))
+								)
+								{
+									width: (mathScale damageHP 5 70 20 40 50)
+									intensity: 80
+									}
+								)
+						</GetParameters>
+					</Events>
+				</Ray>
+			
+				<ParticleComet
+						particleCount=	"200"
+						primaryColor=	"#00d5ff"
+						>
+					<Events>
+						<GetParameters>
+							(block (
+								(damageHP (@ gData 'damageHP))
+								)
+
+								{
+									particleCount: (mathScale damageHP 5 70 100 300 50)
+									length: 72 ;(mathScale damageHP 5 70 60 220 50)
+									width: 9
+									}
+								)
+						</GetParameters>
+					</Events>
+				</ParticleComet>
+
+				<!--
 				<Shape
 						directional=		"true"
 						scaleLength=		"72" 
@@ -826,6 +869,7 @@
 					<Point x="-100"	y="0"/>
 					<Point x="-25"	y="-50"/>
 				</Shape>
+				-->
 			</Effect>
 		</Weapon>
 
@@ -1714,21 +1758,14 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"ion:2d8+2; blinding3"
+				damage=				"ion:2d8+2; blinding:3"
 				fireRate=			"15"
 				lifetime=			"30"
 				powerUse=			"50"
 
+				effect=				"&efIonizingBeam;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"lightning"
-						primaryColor=		"0xa0, 0xf0, 0xff"
-						secondaryColor=		"0x00, 0xa9, 0xff"
-						intensity=			"1"
-						/>
-			</Effect>
 		</Weapon>
 
 	</ItemType>
