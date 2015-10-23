@@ -826,50 +826,6 @@
 						</GetParameters>
 					</Events>
 				</ParticleComet>
-
-				<!--
-				<Shape
-						directional=		"true"
-						scaleLength=		"72" 
-						scaleWidth=			"6"
-
-						color=				"0x00, 0xfc, 0x00"
-						opacity=			"140"
-						>
-					<Point x="0"	y="0"/>
-					<Point x="-35"	y="50"/>
-					<Point x="-100"	y="0"/>
-					<Point x="-35"	y="-50"/>
-				</Shape>
-
-				<Shape
-						directional=		"true"
-						scaleLength=		"72" 
-						scaleWidth=			"3"
-
-						color=				"0xe0, 0xfc, 0xe0"
-						opacity=			"255"
-						>
-					<Point x="0"	y="0"/>
-					<Point x="-35"	y="50"/>
-					<Point x="-100"	y="0"/>
-					<Point x="-35"	y="-50"/>
-				</Shape>
-
-				<Shape
-						directional=		"true"
-						scaleLength=		"64" 
-						scaleWidth=			"2"
-
-						color=				"0xff, 0xff, 0xff"
-						opacity=			"255"
-						>
-					<Point x="0"	y="0"/>
-					<Point x="-25"	y="50"/>
-					<Point x="-100"	y="0"/>
-					<Point x="-25"	y="-50"/>
-				</Shape>
-				-->
 			</Effect>
 		</Weapon>
 
