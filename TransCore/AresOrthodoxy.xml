@@ -240,6 +240,7 @@
 				fragmentCount=	"1"
 				failsafe=		"6"
 
+				hitEffect=		"&efThermoShockwaveExplosion;"
 				sound=			"&snMissileLauncher;"
 				>
 
@@ -265,17 +266,6 @@
 				<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
 			</Effect>
 
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"170"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-								/>
-			</HitEffect>
-
 			<Fragment
 					type=			"area"
 
@@ -283,7 +273,7 @@
 					expansionSpeed=	"35"
 					missileSpeed=	"0"
 					lifetime=		"24"
-							>
+					>
 
 				<Effect>
 					<Shockwave
@@ -422,24 +412,6 @@
 				effect=				"&efThermoShellDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG96;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="96" 
-						imageHeight="96"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"150"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-						/>
-			</HitEffect>
 		</Weapon>
 	</ItemType>
 
@@ -471,6 +443,7 @@
 				fragmentCount=	"1"
 				failsafe=		"15"
 
+				hitEffect=		"&efThermoShockwaveExplosion;"
 				sound=			"&snMissileLauncher;"
 				>
 
@@ -496,17 +469,6 @@
 				<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
 			</Effect>
 
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"400"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-								/>
-			</HitEffect>
-
 			<Fragment
 					type=			"area"
 
@@ -514,7 +476,7 @@
 					expansionSpeed=	"25"
 					missileSpeed=	"0"
 					lifetime=		"24"
-							>
+					>
 
 				<Effect>
 					<Shockwave

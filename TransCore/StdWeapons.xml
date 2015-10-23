@@ -1818,24 +1818,6 @@
 				effect=				"&efThermoShellDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"100"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-						/>
-			</HitEffect>
 		</Weapon>
 
 	</ItemType>
@@ -1968,24 +1950,6 @@
 						effect=			"&efThermoCannonShell;"
 						sound=			"&snRecoillessCannon;"
 						>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsMediumExplosions;" 
-								imageX="0" 
-								imageY="0" 
-								imageWidth="64" 
-								imageHeight="64"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-						<Flare
-								style=			"fadingBlast"
-								radius=			"95"
-								primaryColor=	"0xff, 0xff, 0xf0"
-								lifetime=		"8"
-								/>
-					</HitEffect>
 				</Missile>
 			</Missiles>
 
@@ -2023,24 +1987,6 @@
 				effect=				"&efThermoShellDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"95"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-						/>
-			</HitEffect>
 		</Weapon>
 
 	</ItemType>
@@ -2078,24 +2024,6 @@
 				effect=				"&efThermoShellDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG96;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="96" 
-						imageHeight="96"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"150"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-						/>
-			</HitEffect>
 		</Weapon>
 	</ItemType>
 
@@ -2239,24 +2167,6 @@
 						effect=			"&efThermoCannonShell;"
 						sound=			"&snRecoillessCannon;"
 						>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsMediumExplosions;" 
-								imageX="0" 
-								imageY="0" 
-								imageWidth="64" 
-								imageHeight="64"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-						<Flare
-								style=			"fadingBlast"
-								radius=			"95"
-								primaryColor=	"0xff, 0xff, 0xf0"
-								lifetime=		"8"
-								/>
-					</HitEffect>
 				</Missile>
 			</Missiles>
 
@@ -2362,29 +2272,9 @@
 						<Effect>
 							<Image imageID="&rsMissiles3;" imageX="48" imageY="0" imageWidth="16" imageHeight="16" rotationCount="20"/>
 						</Effect>
-
-						<HitEffect
-								sound="&snArmorHit1;"
-								>
-							<Image imageID="&rsMediumExplosions;" 
-									imageX="0" 
-									imageY="0" 
-									imageWidth="64" 
-									imageHeight="64"
-									imageFrameCount="16"
-									imageTicksPerFrame="2"/>
-							<Flare
-									style=			"fadingBlast"
-									radius=			"95"
-									primaryColor=	"0xff, 0xff, 0xf0"
-									lifetime=		"8"
-									/>
-						</HitEffect>
 					</Fragment>
-
 				</Missile>
 			</Missiles>
-
 		</Weapon>
 
 	</ItemType>
@@ -2524,24 +2414,6 @@
 				effect=				"&efThermoShellDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"95"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-						/>
-			</HitEffect>
 		</Weapon>
 
 	</ItemType>
@@ -2887,20 +2759,9 @@
 				maneuverability="2"
 
 				effect=			"&efMissileNAMI;"
+				hitEffect=		"&efThermoFragmentExplosion;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG128;"
-						imageX="0"
-						imageY="0"
-						imageWidth="128"
-						imageHeight="128"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 
 			<Fragment
 					count=			"1"
@@ -2910,18 +2771,10 @@
 					minRadius=		"1"
 					maxRadius=		"4"
 					missileSpeed=	"0"
-							>
-
-				<Effect>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"170"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-									/>
-				</Effect>
+					
+					hitEffect=		"&efThermoFragmentHit;"
+					>
 			</Fragment>
-
 		</Missile>
 	</ItemType>
 
@@ -3210,20 +3063,9 @@
 				hitPoints=		"30"
 						 
 				effect=			"&efMissileMAG;"
+				hitEffect=		"&efThermoFragmentExplosion;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG128;"
-						imageX="0"
-						imageY="0"
-						imageWidth="128"
-						imageHeight="128"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 
 			<Fragment
 					count=			"1"
@@ -3233,16 +3075,9 @@
 					minRadius=		"1"
 					maxRadius=		"4"
 					missileSpeed=	"0"
-							>
-
-				<Effect>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"190"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-									/>
-				</Effect>
+					
+					hitEffect=		"&efThermoFragmentHit;"
+					>
 			</Fragment>
 		</Missile>
 	</ItemType>
@@ -3339,24 +3174,6 @@
 				effect=			"&efMissileStrelka;"
 				sound=			"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"65"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-								/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3386,6 +3203,7 @@
 				hitPoints=		"5"
 
 				effect=			"&efMissileStrelka;"
+				hitEffect=		"&efBlastHitDefault;"
 				sound=			"&snRecoillessCannon;"
 				>
 
@@ -3397,22 +3215,7 @@
 					missileSpeed=	"40-60"
 
 					effect=			"&efThermoShellDefault;"
-							>
-				<HitEffect>
-					<Image imageID="&rsExplosionsAG48;"
-							imageX="0"
-							imageY="0"
-							imageWidth="48"
-							imageHeight="48"
-							imageFrameCount="16"
-							imageTicksPerFrame="2"/>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"40"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-									/>
-				</HitEffect>
+					>
 			</Fragment>
 		</Missile>
 	</ItemType>
@@ -3449,6 +3252,7 @@
 
 				failSafe=		"10"
 
+				hitEffect=		"&efBlastHitDefault;"
 				sound=			"&snMissileLauncher;"
 				>
 
@@ -3466,25 +3270,7 @@
 					lifetime=		"8"
 
 					effect=			"&efThermoShellDefault;"
-							>
-
-				<HitEffect
-						sound="&snArmorHit1;"
-								>
-					<Image imageID="&rsExplosionsAG48;"
-							imageX="0"
-							imageY="0"
-							imageWidth="48"
-							imageHeight="48"
-							imageFrameCount="16"
-							imageTicksPerFrame="2"/>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"220"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-									/>
-				</HitEffect>
+					>
 			</Fragment>
 		</Missile>
 	</ItemType>
@@ -3520,6 +3306,7 @@
 				failSafe=		"10"
 
 				sound=			"&snMissileLauncher;"
+				hitEffect=		"&efBlastHitDefault;"
 				>
 
 			<Effect>
@@ -3536,27 +3323,8 @@
 					lifetime=		"8"
 
 					effect=			"&efThermoShellDefault;"
-							>
-
-				<HitEffect
-						sound="&snArmorHit1;"
-								>
-					<Image imageID="&rsExplosionsAG48;"
-							imageX="0"
-							imageY="0"
-							imageWidth="48"
-							imageHeight="48"
-							imageFrameCount="16"
-							imageTicksPerFrame="2"/>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"220"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-									/>
-				</HitEffect>
+					>
 			</Fragment>
-
 		</Missile>
 	</ItemType>
 
@@ -3590,23 +3358,6 @@
 				effect=			"&efMissileRasiermesser;"
 				sound=			"&snMissileLauncher;"
 				>
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsMediumExplosions;"
-						imageX="0"
-						imageY="0"
-						imageWidth="64"
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"100"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-								/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3639,23 +3390,6 @@
 				effect=			"&efMissileRasiermesser;"
 				sound=			"&snMissileLauncher;"
 				>
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsMediumExplosions;"
-						imageX="0"
-						imageY="0"
-						imageWidth="64"
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"95"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-								/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3688,7 +3422,7 @@
 				hitPoints=		"40"
 
 				effect=			"&efMissileNAMIHeavy;"
-				hitEffect=		"&efFusionExplosion1;"
+				hitEffect=		"&efThermoFragmentExplosion;"
 				sound=			"&snMissileLauncher;"
 				>
 
@@ -3700,16 +3434,9 @@
 					minRadius=		"2"
 					maxRadius=		"6"
 					missileSpeed=	"0"
-							>
-
-				<Effect>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"300"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-									/>
-				</Effect>
+					
+					hitEffect=		"&efThermoFragmentHit;"
+					>
 			</Fragment>
 
 			<Fragment
@@ -3719,7 +3446,7 @@
 					lifetime=		"1d12+12"
 					damage=			"blast:2d6; WMD1"
 					missileSpeed=	"25-55"
-							>
+					>
 
 				<Effect>
 					<ImageAndTail
@@ -3797,7 +3524,7 @@
 					multiTarget=		"true"
 					autoAcquireTarget=	"true"
 					maneuverability=	"2"
-							>
+					>
 
 				<Effect>
 					<Image imageID="&rsMissileNAMI;" imageX="0" imageY="0" imageWidth="24" imageHeight="24" rotationCount="40"/>
@@ -3832,24 +3559,6 @@
 										/>
 					</Group>
 				</Effect>
-
-				<HitEffect
-						sound="&snArmorHit1;"
-								>
-					<Image imageID="&rsExplosionsAG48;"
-							imageX="0"
-							imageY="0"
-							imageWidth="48"
-							imageHeight="48"
-							imageFrameCount="16"
-							imageTicksPerFrame="2"/>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"65"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-									/>
-				</HitEffect>
 			</Fragment>
 		</Missile>
 	</ItemType>
@@ -3881,7 +3590,7 @@
 				hitPoints=		"40"
 
 				effect=			"&efMissileNAMIHeavy;"
-				hitEffect=		"&efFusionExplosion1;"
+				hitEffect=		"&efThermoFragmentExplosion;"
 				sound=			"&snMissileLauncher;"
 				>
 
@@ -3893,16 +3602,9 @@
 					minRadius=		"3"
 					maxRadius=		"8"
 					missileSpeed=	"0"
-							>
-
-				<Effect>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"450"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-									/>
-				</Effect>
+					
+					hitEffect=		"&efThermoFragmentHit;"
+					>
 			</Fragment>
 
 			<Fragment

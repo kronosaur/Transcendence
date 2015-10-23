@@ -304,6 +304,71 @@
 		</Events>
 	</EffectType>
 	
+	<EffectType unid="&efThermoHitDefault;"
+			sound="&snArmorHit1;"
+			>
+		<Effect>
+			<Orb	style=			"fireblast"
+					animate=		"explode"
+					
+					primaryColor=	"#ffcf00"
+					secondaryColor=	"#d90000"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							(weaponUNID (@ gData 'weaponUNID))
+							)
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 20 500 30 200 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 20 500 24 60 50))
+								primaryColor: (resColorBlend "#ffcf00" "#ffa200" (seededRandom weaponUNID 0 255))
+								
+								intensity: (seededRandom weaponUNID 50 100)
+								distortion: (mathScale damageHP 20 500 20 0 100)
+								detail: (seededRandom weaponUNID 30 60)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<Orb	style=			"flare"
+					animate=		"fade"
+					primaryColor=	"#fffff0"
+					secondaryColor=	"#fff2d4"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (if (= damageHP 0) 0 (mathScale damageHP 20 500 60 200 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 20 500 8 16 50))
+								intensity: (if (= damageHP 0) 0 (mathScale damageHP 20 500 25 50 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+		
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+					{
+						noSound: (= damageHP 0)
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
+	
+	<!--
 	<Effect UNID="&efThermoHitDefault;">
 		<Variants>
 			<Effect maxValue="0">
@@ -370,6 +435,7 @@
 			</Effect>
 		</Variants>
 	</Effect>
+	-->
 
 	<Effect UNID="&efPositronHitDefault;">
 		<Variants>

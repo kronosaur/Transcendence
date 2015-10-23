@@ -136,22 +136,10 @@ PLAYER DATA
 				lifetime=			"120"
 				maneuverability=	"2"
 
-				sound=				"&snMissileLauncher;"
-
 				effect=				"&efMissileNAMI;"
+				hitEffect=			"&efThermoFragmentExplosion;"
+				sound=				"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG128;"
-						imageX="0"
-						imageY="0"
-						imageWidth="128"
-						imageHeight="128"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 
 			<Fragment 
 					count=			"1"
@@ -161,18 +149,10 @@ PLAYER DATA
 					minRadius=		"1"
 					maxRadius=		"4"
 					missileSpeed=	"0"
+					
+					hitEffect=		"&efThermoFragmentHit;"
 					>
-
-				<Effect>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"170"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-							/>
-				</Effect>
 			</Fragment>
-
 		</Weapon>
 		
 		<Invoke>

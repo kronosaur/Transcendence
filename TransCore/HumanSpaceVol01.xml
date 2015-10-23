@@ -21,6 +21,9 @@
 	<!ENTITY efAkanCannonShell			"0x00000063">
 	<!ENTITY efThermoCannonShell		"0x00000064">
 	<!ENTITY efEIBlasterFire			"0x00000065">
+	<!ENTITY efThermoFragmentExplosion	"0x00000066">
+	<!ENTITY efThermoFragmentHit		"0x00000067">
+	<!ENTITY efThermoShockwaveExplosion	"0x00000068">
 	
 	<!ENTITY rsMissileNAMI				"0x00000080">
 	<!ENTITY efMissileNAMI				"0x00000081">

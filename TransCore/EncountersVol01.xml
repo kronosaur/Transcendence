@@ -1425,24 +1425,6 @@
 				effect=				"&efThermoShellDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG96;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="96" 
-						imageHeight="96"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"130"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-						/>
-			</HitEffect>
 		</Weapon>
 
 	</ItemType>
@@ -4436,6 +4418,7 @@
 
 						failsafe=		"10"
 
+						hitEffect=		"&efThermoFragmentExplosion;"
 						sound=			"&snMissileLauncher;"
 						>
 
@@ -4460,17 +4443,6 @@
 						<Image imageID="&rsMissiles;" imageX="0" imageY="48" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
 					</Effect>
 
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Flare
-								style=			"fadingBlast"
-								radius=			"150"
-								primaryColor=	"0xff, 0xff, 0xf0"
-								lifetime=		"8"
-								/>
-					</HitEffect>
-
 					<Fragment 
 							count=				"48"
 							type=				"missile"
@@ -4480,6 +4452,7 @@
 							lifetime=			"5"
 							
 							effect=				"&efThermoShellDefault;"
+							hitEffect=			"&efThermoFragmentHit;"
 							>
 					</Fragment>
 				</Missile>
