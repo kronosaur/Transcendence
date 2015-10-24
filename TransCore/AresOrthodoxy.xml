@@ -520,18 +520,9 @@
 				lifetime=			"60"
 				powerUse=			"2000"
 
+				effect=				"&efPositronBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-
-			<Image imageID="&rsMissiles4;" imageX="0" imageY="16" imageWidth="16" imageHeight="16" imageFrameCount="2" imageTicksPerFrame="4"/>
-
-			<Exhaust
-					creationRate=	"10"
-					lifetime=		"70"
-					drag=			"80">
-
-				<Image imageID="&rsMissiles4;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="8" imageTicksPerFrame="10"/>
-			</Exhaust>
 		</Weapon>
 	</ItemType>
 

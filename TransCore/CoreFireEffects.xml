@@ -259,4 +259,57 @@
 		</Effect>
 	</EffectType>
 
+	<EffectType UNID="&efPositronFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					intensity=		"50"
+					primaryColor=	"#f9ffb3"
+					secondaryColor=	"#806a00"
+					
+					lifetime=		"3"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 10 140 24 34 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<Ray	style=			"grainy"
+					shape=			"oval"
+					intensity=		"50"
+					xformRotation=	"180"
+					primaryColor=	"#f9ffb3"
+					secondaryColor=	"#806a00"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								length: (mathScale damageHP 10 140 24 56 50)
+								width: (mathScale damageHP 10 140 18 42 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
 </TranscendenceModule>

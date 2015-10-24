@@ -368,162 +368,76 @@
 		</Events>
 	</EffectType>
 	
-	<!--
-	<Effect UNID="&efThermoHitDefault;">
-		<Variants>
-			<Effect maxValue="0">
-				<ParticleCloud
-						style=				"splash"
-						lifetime=			"15"
-						emitDuration=		"5"
-						emitRate=			"10"
-						emitSpeed=			"5-10"
-						particleLifetime=	"10"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"flame"
-								minWidth=		"1"
-								maxWidth=		"3"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
+	<EffectType UNID="&efPositronHitDefault;"
+			sound="&snArmorHit1;"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					intensity=		"50"
+					primaryColor=	"#f9ffb3"
+					secondaryColor=	"#806a00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 12 160 30 70 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 12 160 12 48 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
 			
-			<Effect maxValue="21" 
-					sound="&snArmorHit1;">
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</Effect>
-			
-			<Effect maxValue="31" 
-					sound="&snArmorHit1;">
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</Effect>
-			
-			<Effect maxValue="42"
-					sound="&snArmorHit1;">
-				<Image imageID="&rsExplosionsAG96;"
-						imageX="0"
-						imageY="0"
-						imageWidth="96"
-						imageHeight="96"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</Effect>
-			
-			<Effect
-					sound="&snArmorHit1;">
-				<Image imageID="&rsExplosionsAG96;"
-						imageX="0"
-						imageY="0"
-						imageWidth="96"
-						imageHeight="96"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</Effect>
-		</Variants>
-	</Effect>
-	-->
-
-	<Effect UNID="&efPositronHitDefault;">
-		<Variants>
-			<Effect maxValue="0">
-				<ParticleCloud
-						style=				"splash"
-						lifetime=			"15"
-						emitDuration=		"5"
-						emitRate=			"10"
-						emitSpeed=			"5-10"
-						particleLifetime=	"10"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								minWidth=		"1"
-								maxWidth=		"3"
-								primaryColor=	"0xff, 0xf0, 0xa0"
-								secondaryColor=	"0xff, 0xa9, 0x00"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
-			
-			<Effect maxValue="46" 
-					sound="&snArmorHit1;">
-				<ParticleCloud
-						style=			"splash" 
-						lifetime=		"20" 
-						emitDuration=	"60"
-						emitRate=		"20-25"
-						emitSpeed=		"1-6"
-						particleLifetime="4"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								maxWidth=		"1-2"
-								primaryColor=	"0xff, 0xf0, 0xa0"
-								secondaryColor=	"0xff, 0xa9, 0x00"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
-			
-			<Effect maxValue="69" 
-					sound="&snArmorHit1;">
-				<ParticleCloud
-						style=			"splash" 
-						lifetime=		"20" 
-						emitDuration=	"60"
-						emitRate=		"30-37"
-						emitSpeed=		"1-6"
-						particleLifetime="5"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								maxWidth=		"1-2"
-								primaryColor=	"0xff, 0xf0, 0xa0"
-								secondaryColor=	"0xff, 0xa9, 0x00"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
-
-			<Effect
-					sound="&snArmorHit1;">
-				<ParticleCloud
-						style=			"splash" 
-						lifetime=		"20" 
-						emitDuration=	"60"
-						emitRate=		"40-50"
-						emitSpeed=		"1-6"
-						particleLifetime="5"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								maxWidth=		"1-2"
-								primaryColor=	"0xff, 0xf0, 0xa0"
-								secondaryColor=	"0xff, 0xa9, 0x00"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
-		</Variants>
-	</Effect>
+			<ParticleSystem
+					style=			"radiate"
+					emitSpeed=		"4-8"
+					particleLifetime="8"
+					>
+				<ParticleEffect>
+					<Particle
+							style=			"plain"
+							minWidth=		"1"
+							maxWidth=		"3"
+							primaryColor=	"#f9ffb3"
+							secondaryColor=	"#806a00"
+							/>
+				</ParticleEffect>
+				
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								lifetime: (if (= damageHP 0) 10 (mathScale damageHP 12 160 12 48 50))
+								emitRate: (mathScale damageHP 12 160 50 200 50)
+								emitLifetime: (if (= damageHP 0) 2 (mathScale damageHP 12 160 6 24 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleSystem>
+		</Effect>
+		
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+							
+					{
+						noSound: (= damageHP 0)
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
 	
 	<Effect UNID="&efPlasmaHitDefault;">
 		<Variants>

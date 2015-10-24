@@ -399,53 +399,46 @@
 				>
 
 			<Effect>
-				<Shape
-						directional=		"true"
-						scaleLength=		"72" 
-						scaleWidth=			"6"
-
-						scaleLengthInc=		"3" 
-
-						color=				"0xf0, 0xff, 0x00"
-						opacity=			"140"
+				<ParticleComet
+						length=			"80"
+						
+						primaryColor=	"#f9ffb3"
 						>
-					<Point x="0"	y="0"/>
-					<Point x="-35"	y="50"/>
-					<Point x="-100"	y="0"/>
-					<Point x="-35"	y="-50"/>
-				</Shape>
+					<Events>
+						<GetParameters>
+							(block (
+								(damageHP (@ gData 'damageHP))
+								)
 
-				<Shape
-						directional=		"true"
-						scaleLength=		"72" 
-						scaleWidth=			"4"
-
-						scaleLengthInc=		"3" 
-
-						color=				"0xf0, 0xff, 0x00"
-						opacity=			"255"
+								{
+									particleCount: (mathScale damageHP 10 140 100 300 50)
+									width: (mathScale damageHP 10 140 10 20 50)
+									}
+								)
+						</GetParameters>
+					</Events>
+				</ParticleComet>
+				<Ray
+						style=			"smooth"
+						shape=			"oval"
+						length=			"70"
+						intensity=		"60"
+						
+						primaryColor=	"#f9ffb3"
+						secondaryColor=	"#806a00"
 						>
-					<Point x="0"	y="0"/>
-					<Point x="-35"	y="50"/>
-					<Point x="-100"	y="0"/>
-					<Point x="-35"	y="-50"/>
-				</Shape>
-
-				<Shape
-						directional=		"true"
-						scaleLength=		"64" 
-						scaleWidth=			"3"
-
-						scaleLengthInc=		"3" 
-
-						color=				"0xff, 0xff, 0xff"
-						opacity=			"255"
-						>
-					<Point x="0"	y="0"/>
-					<Point x="-25"	y="50"/>
-					<Point x="-100"	y="0"/>
-					<Point x="-25"	y="-50"/>
-				</Shape>
+					<Events>
+						<GetParameters>
+							(block (
+								(damageHP (@ gData 'damageHP))
+								)
+								{
+									width: (mathScale damageHP 10 140 15 30 50)
+									}
+								)
+						</GetParameters>
+					</Events>
+				</Ray>
 			</Effect>
 		</Weapon>
 

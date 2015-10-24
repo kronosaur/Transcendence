@@ -376,6 +376,53 @@
 		</Effect>
 	</EffectType>
 
+	<EffectType UNID="&efPositronBeamDefault;"
+			instance=			"creator"
+			>
+		<Effect>
+			
+			<ParticleComet
+					particleCount=	"200"
+					primaryColor=	"#f9ffb3"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+
+							{
+								particleCount: (mathScale damageHP 10 140 200 300 50)
+								length: (mathScale damageHP 10 140 60 260 50)
+								width: (mathScale damageHP 10 140 8 12 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleComet>
+			<Ray
+					style=			"smooth"
+					shape=			"oval"
+					primaryColor=	"#f9ffb3"
+					secondaryColor=	"#806a00"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length: (mathScale damageHP	10 140 60 100 50)
+								width: (mathScale damageHP 10 140 15 30 50)
+								intensity: 60
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
 	<EffectType UNID="&efGravitonBeamDefault;"
 			instance=			"creator"
 			>
