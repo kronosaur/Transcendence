@@ -464,9 +464,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\Game\TransData.xml">
+    <None Include="..\Game\TransData.xml">
       <SubType>Designer</SubType>
-    </Xml>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Game\TLisp\ComparisonUnitTest.tlisp" />
