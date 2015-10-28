@@ -24,21 +24,27 @@
 		<Image imageID="&rsItems9;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
-				fireRate=			"15"
-
-				type=				"missile"
-				missileSpeed=		"40"
+				type=				"particles"
+				damage=				"plasma:60; WMD5"
+				
+				fireRate=			"16"
 				hitPoints=			"15"
 
-				lifetime=			"80"
-				damage=				"plasma:5d12; WMD5"
-				powerUse=			"2000"
+				powerUse=			"3000"
 				sound=				"&snRecoillessCannon;"
 				>
 
-			<Effect>
-				<Image imageID="&rsMediumExplosions;" imageX="0" imageY="64" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
-			</Effect>
+			<ParticleSystem
+					style=				"amorphous"
+					emitRate=			"40"
+					emitSpeed=			"36-44"
+					emitLifetime=		"1"
+					spreadAngle=		"6"
+					
+					particleLifetime=	"80"
+					particleEffect=		"&efPlasmaParticleDefault;"
+					>
+			</ParticleSystem>
 		</Weapon>
 	</ItemType>
 
