@@ -510,26 +510,26 @@
 
 		<Weapon
 				type=				"particles"
-
-				damage=				"plasma:50; mining2; WMD4"
+				damage=				"plasma:50; mining:2; WMD:4"
+				
 				fireRate=			"30"
-				missileSpeed=		"60"
-				lifetime=			"40"
-				powerUse=			"2000"
 
-				particleCount=		"500"
-				particleSpreadAngle="1"
-				particleSplashChance="50"
+				powerUse=			"2000"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Particle
-						style=			"flame"
-						minWidth=		"3" 
-						maxWidth=		"3-7"
-						/>
-			</Effect>
+			
+			<ParticleSystem
+					style=				"spray"
+					emitLifetime=		"1"
+					emitRate=			"100"
+					emitSpeed=			"60"
+					spreadAngle=		"1"
+					splashChance=		"50"
+					
+					particleLifetime=	"40"
+					particleEffect=		"&efPlasmaParticleDefault;"
+					>
+			</ParticleSystem>
 		</Weapon>
 	</ItemType>
 

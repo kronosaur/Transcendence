@@ -2472,41 +2472,29 @@
 		<Image imageID="&rsItemsEI3;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
+				type=				"particles"
+				damage=				"plasma:100; WMD:4"
+				
 				fireRate=			"20"
-
-				type=				"missile"
-
-				lifetime=			"60"
 				hitPoints=			"10"
-				damage=				"plasma:10d12+8; WMD4"
+
 				powerUse=			"3000"
-
-				missileSpeed=		"40"
-				sound=				"&snLaserCannon;"
+				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<MoltenBolt
-						width=				"16"
-						growth=				"24"
-						primaryColor=		"0xfe, 0xff, 0xce"
-						secondaryColor=		"0xff, 0xeb, 0x26"
-						/>
-			</Effect>
-
-			<HitEffect
-					sound="&snArmorHit1;"
+			
+			<ParticleSystem
+					style=				"comet"
+					emitLifetime=		"1"
+					emitRate=			"100"
+					emitSpeed=			"35-45"
+					emitWidth=			"50"
+					spreadAngle=		"3"
+					
+					particleLifetime=	"60"
+					particleEffect=		"&efPlasmaParticleDefault;"
 					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
+			</ParticleSystem>
 		</Weapon>
-
 	</ItemType>
 
 <!-- AMMUNITION & MISSILES -->

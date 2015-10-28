@@ -200,8 +200,9 @@
 
 						scaleLengthInc=		"3" 
 
-						color=				"0xff, 0xfd, 0xad"
+						color=				"#fffdad"
 						opacity=			"64"
+						blendMode=			"screen"
 						>
 					<Point x="0"	y="0"/>
 					<Point x="-5"	y="29"/>
@@ -277,12 +278,12 @@
 
 				damage=			"plasma:50; WMD2"
 				fireRate=		"15"
-				missileSpeed=	"20-40"
+				missileSpeed=	"30"
 				lifetime=		"26-32"
 				powerUse=		"3000"
 
 				particleCount=	"5d6"
-				particleEmitTime="5-12"
+				particleEmitTime="8"
 				particleSpreadWidth="25" 
 				particleSpreadAngle="0"
 
@@ -302,8 +303,9 @@
 
 						scaleLengthInc=		"3" 
 
-						color=				"0xff, 0xfd, 0xad"
+						color=				"#fffdad"
 						opacity=			"64"
+						blendMode=			"screen"
 						>
 					<Point x="0"	y="0"/>
 					<Point x="-5"	y="29"/>

@@ -422,6 +422,42 @@
 			</Ray>
 		</Effect>
 	</EffectType>
+	
+	<EffectType unid="&efPlasmaParticleDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb
+					instance=			"owner"
+						
+					style=				"smooth"
+					animate=			"explode"
+					intensity=			"40"
+						
+					blendMode=			"screen"
+					primaryColor=		"#feff00"
+					secondaryColor=		"#ffbf00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							(weaponUNID (@ gData 'weaponUNID))
+							(particleCount (max 1 (itmGetProperty weaponUNID 'particleCount)))
+							(damagePerParticle (/ damageHP particleCount))
+							)
+							
+							(dbgOutput "damagePerParticle: " damagePerParticle " radius: " (mathScale (int (* 20.0 damagePerParticle)) 5 40 5 40 50))
+							
+							{
+								radius: (mathScale (int (* 20.0 damagePerParticle)) 5 40 5 40 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
 
 	<EffectType UNID="&efGravitonBeamDefault;"
 			instance=			"creator"

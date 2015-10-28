@@ -147,6 +147,10 @@
 	
 	<!ENTITY unidCoreTypesLibrary		"0x00030000">
 	<!ENTITY rsDeepSpace				"0x00030001">
+	
+	<!-- 0020-002F PROJECTILE EFFECTS -->
+	
+	<!ENTITY efPlasmaParticleDefault	"0x00030020">
 	]>
 	
 <CoreLibrary
