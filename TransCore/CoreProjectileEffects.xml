@@ -436,7 +436,6 @@
 						
 					blendMode=			"screen"
 					primaryColor=		"#feff00"
-					secondaryColor=		"#ffbf00"
 					>
 				<Events>
 					<GetParameters>
@@ -448,6 +447,7 @@
 							)
 							{
 								radius: (mathScale (int (* 20.0 damagePerParticle)) 5 40 5 40 50)
+								secondaryColor: (if (geq damagePerParticle 1.5) "#ff7f00" "#ffbf00")
 								}
 							)
 					</GetParameters>

@@ -318,11 +318,10 @@
 		<Effect>
 			<Orb	style=			"smooth"
 					animate=		"fade"
-					intensity=		"20"
+					intensity=		"10"
+					
 					primaryColor=	"#feff00"
 					secondaryColor=	"#ffbf00"
-					
-					lifetime=		"3"
 					>
 				<Events>
 					<GetParameters>
@@ -331,38 +330,13 @@
 							)
 							
 							{
-								radius: (mathScale damageHP 10 160 24 40 50)
+								radius: (mathScale damageHP 10 300 24 120 50)
+								lifetime: (mathScale damageHP 10 300 2 8 50)
 								}
 							)
 					</GetParameters>
 				</Events>
 			</Orb>
-
-			<!--
-			<Ray	style=			"smooth"
-					shape=			"tapered"
-					primaryColor=	"#feff00"
-					secondaryColor=	"#ffbf00"
-					xformRotation=	"180"
-					
-					lifetime=		"3"
-					animateOpacity= "fade"
-					>
-				<Events>
-					<GetParameters>
-						(block (damageHP)
-							(setq damageHP (@ gData 'damageHP))
-
-							{
-								length:	(mathScale damageHP 10 160 24 96 50)
-								width: (mathScale damageHP 10 160 16 64 50)
-								intensity: 30
-								}
-							)
-					</GetParameters>
-				</Events>
-			</Ray>
-			-->
 		</Effect>
 	</EffectType>
 

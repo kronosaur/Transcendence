@@ -542,40 +542,54 @@
 		<Image imageID="&rsItems10;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
-				type=				"missile"
-				deviceSlots=		"2"
-
-				damage=				"plasma:24d24; WMD7"
+				type=				"particles"
+				damage=				"plasma:300; WMD:7"
+				
 				fireRate=			"80"
-				missileSpeed=		"65"
-				lifetime=			"120"
 				hitPoints=			"30"
+
+				deviceSlots=		"2"
 				powerUse=			"3000"
-
-				sound=				"&snLaserCannon;"
-
-				vaporTrailLength=	"24"
-				vaporTrailWidth=	"150"
-				vaporTrailWidthInc=	"10"
-				vaporTrailColor=	"0x57, 0x38, 0x00"
+				sound=				"&snRecoillessCannon;"
 				>
-
-			<FireEffect>
-				<Flare
-						style=				"fadingBlast"
-						lifetime=			"6"
-						radius=				"80"
-						primaryColor=		"0xff, 0xff, 0xf0"
-					/>
-			</FireEffect>
-
+			
+			<ParticleSystem
+					style=				"comet"
+					emitLifetime=		"1"
+					emitRate=			"150"
+					emitSpeed=			"50-70"
+					emitWidth=			"50"
+					
+					particleLifetime=	"120"
+					particleEffect=		"&efPlasmaParticleDefault;"
+					>
+			</ParticleSystem>
+			
 			<Effect>
-				<MoltenBolt
-						width=				"8"
-						growth=				"24"
-						primaryColor=		"0xff, 0xed, 0xcd"
-						secondaryColor=		"0xff, 0xb3, 0x27"
-						/>
+				<ParticleSystem
+						style=				"jet"
+						fixedPos=			"true"
+						emitRate=			"2-4"
+						tangentSpeed=		"-8-8"
+						particleLifetime=	"10"
+						XformTime=			"30"
+						>
+					<ParticleEffect>
+						<Orb
+								instance=			"owner"
+						
+								style=				"smooth"
+								animate=			"fade"
+								radius=				"20"
+								lifetime=			"10"
+								intensity=			"20"
+						
+								blendMode=			"screen"
+								primaryColor=		"#feff00"
+								secondaryColor=		"#ff7f00"
+								/>
+					</ParticleEffect>
+				</ParticleSystem>
 			</Effect>
 		</Weapon>
 	</ItemType>
@@ -1169,7 +1183,7 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itAresPlasmaCannon;" posAngle="0" posRadius="100" posZ="0"/>
+			<Device deviceID="&itAresPlasmaCannon;" posAngle="0" posRadius="80" posZ="0"/>
 			<Device deviceID="&itLightningTurret;" secondaryWeapon="true" posAngle="30"  posRadius="50" posZ="0"/>
 			<Device deviceID="&itLightningTurret;" secondaryWeapon="true" posAngle="330" posRadius="50" posZ="0"/>
 			<Device deviceID="&itKaidunShields;"/>
