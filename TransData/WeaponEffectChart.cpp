@@ -203,7 +203,10 @@ void PaintWeaponFrames (CG32bitImage &Image, CItemType *pType, CShip *pPlatform,
 	int iVariant;
 	CWeaponFireDesc *pDesc;
 	if (!CDeviceClass::FindWeaponFor(pType, &pWeapon, &iVariant, &pDesc))
+		{
+		printf("ERROR: Unable to find weapon for ammo.\n");
 		return;
+		}
 
 	//	Compute the number of ticks that we need to cover the distance
 
@@ -241,9 +244,17 @@ void PaintWeaponFrames (CG32bitImage &Image, CItemType *pType, CShip *pPlatform,
 	//	item in the list).
 
 	DeviceNames iDev = pPlatform->SelectWeapon(ItemList.GetItemAtCursor().GetInstalled(), iVariant);
+	CInstalledDevice *pInstalledDevice = pPlatform->GetNamedDevice(iDev);
+	if (pInstalledDevice == NULL
+			|| pInstalledDevice->GetClass()->GetUNID() != pWeapon->GetUNID())
+		{
+		printf("ERROR: Failed to install %s.\n", pWeapon->GetItemType()->GetNounPhrase(0).GetASCIIZPointer());
+		return;
+		}
 
 	//	Fire the weapon
 
+	pInstalledDevice->SetTimeUntilReady(0);
 	pPlatform->SetWeaponTriggered(iDev);
 
 	//	Update context

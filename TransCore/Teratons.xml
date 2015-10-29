@@ -103,26 +103,62 @@
 
 				failsafe=		"6"
 
-				hitEffect=		"&efFragmentationExplosion;"
 				sound=			"&snMissileLauncher;"
 				>
-
+			
 			<Effect>
-				<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
+				<Orb
+						style=				"flare"
+						radius=				"50"
+						intensity=			"50"
+						
+						blendMode=			"screen"
+						primaryColor=		"#feff00"
+						secondaryColor=		"#ffbf00"
+						/>
+			
+				<ParticleSystem
+						style=				"jet"
+						fixedPos=			"true"
+						emitRate=			"4-8"
+						tangentSpeed=		"-6-6"
+						particleLifetime=	"24"
+						XformTime=			"30"
+						>
+					<ParticleEffect>
+						<Orb
+								instance=			"owner"
+						
+								style=				"smooth"
+								animate=			"fade"
+								radius=				"10"
+								lifetime=			"24"
+								intensity=			"20"
+						
+								blendMode=			"screen"
+								primaryColor=		"#feff00"
+								secondaryColor=		"#ff7f00"
+								/>
+					</ParticleEffect>
+				</ParticleSystem>
 			</Effect>
 
 			<Fragment
-					count=			"36"
-					type=			"missile"
-
-					damage=			"plasma:3d12; WMD5"
-					missileSpeed=	"20"
-					lifetime=		"30"
-							>
-
-				<Effect>
-					<Image imageID="&rsMediumExplosions;" imageX="0" imageY="64" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
-				</Effect>
+					type=				"particles"
+					damage=				"plasma:500; WMD:4"
+					hitPoints=			"10"
+					>
+			
+				<ParticleSystem
+						style=				"radiate"
+						emitLifetime=		"1"
+						emitRate=			"120"
+						emitSpeed=			"20"
+					
+						particleLifetime=	"30"
+						particleEffect=		"&efPlasmaParticleDefault;"
+						>
+				</ParticleSystem>
 			</Fragment>
 		</Missile>
 	</ItemType>

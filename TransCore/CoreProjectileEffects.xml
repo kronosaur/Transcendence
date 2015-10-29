@@ -423,6 +423,58 @@
 		</Effect>
 	</EffectType>
 	
+	<EffectType unid="&efPlasmaBoltDefault;"
+			instance=			"creator"
+			>
+		<Effect>
+			<Orb
+					style=				"smooth"
+						
+					blendMode=			"screen"
+					primaryColor=		"#feff00"
+					secondaryColor=		"#ff7f00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (mathScale damageHP 10 100 10 50 50)
+								intensity: (mathScale damageHP 10 100 15 40 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<ParticleSystem
+					style=				"jet"
+					fixedPos=			"true"
+					emitRate=			"4-8"
+					tangentSpeed=		"-6-6"
+					particleLifetime=	"24"
+					XformTime=			"30"
+					>
+				<ParticleEffect>
+					<Orb
+							instance=			"owner"
+						
+							style=				"smooth"
+							animate=			"fade"
+							radius=				"10"
+							lifetime=			"24"
+							intensity=			"20"
+						
+							blendMode=			"screen"
+							primaryColor=		"#feff00"
+							secondaryColor=		"#ff7f00"
+							/>
+				</ParticleEffect>
+			</ParticleSystem>
+		</Effect>
+	</EffectType>
+
 	<EffectType unid="&efPlasmaParticleDefault;"
 			instance=			"owner"
 			>
