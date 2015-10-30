@@ -97,7 +97,6 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"480"
-				damage=			"plasma:3d12; WMD5"
 				missileSpeed=	"30"
 				hitPoints=		"20"
 
