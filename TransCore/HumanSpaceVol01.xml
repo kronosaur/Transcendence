@@ -1573,6 +1573,7 @@
 	<!ENTITY rsCSCWreckage				"0x00100063">
 	<!ENTITY rsAquila					"0x00100064">
 	<!ENTITY rsAurochs					"0x00100065">
+	<!ENTITY efLamplighterProjectile	"0x00100066">
 	
 	<!-- 0080-009F COMMONWEALTH -->
 	
@@ -1614,6 +1615,9 @@
 	<!-- 0120-013F SUNG SLAVERS -->
 	
 	<!ENTITY rsSungTransport			"0x00100120">
+	<!ENTITY efQianlongProjectile		"0x00100121">
+	<!ENTITY efQianlongFire				"0x00100122">
+	<!ENTITY efQianlongHit				"0x00100123">
 	
 	<!-- 0140-014F XENOPHOBES -->
 	
@@ -1663,6 +1667,10 @@
 	<!ENTITY efStarCannonFire			"0x001001C0">
 	<!ENTITY efStarCannonBeam			"0x001001C1">
 	<!ENTITY efStarCannonHit			"0x001001C2">
+	
+	<!-- 01E0-01EF IOCRYM -->
+	
+	<!ENTITY efQuantumsphereHit			"0x001001E0">
 	
 	<!-- 1000-FFFF RESERVED -->
 	]>

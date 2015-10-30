@@ -24,6 +24,7 @@
 			frequency=			"notrandom"
 			attributes=			"MajorItem; Military; NotForSale; qianlongArchcannon; sungSlavers"
 
+			charges=			"32"
 			description=		"The pinnacle of Sung Slaver technology, the Qianlong archcannon fires antimatter shells. The archcannon recharges with longzhu spheres."
 			>
 
@@ -32,56 +33,38 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"antimatter:4d12; WMD7"
-				fireRate=			"15"
+				damage=				"antimatter:6d12; WMD7"
+				fireRate=			"16"
 				missileSpeed=		"40"
 				hitPoints=			"5"
 				lifetime=			"113"
 				powerUse=			"100"
 				charges=			"true"
 
+				effect=				"&efQianlongProjectile;"
+				fireEffect=			"&efQianlongFire;"
+				hitEffect=			"&efQianlongHit;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Starburst
-						spikeCount=		"1d6+2"
-						spikeLength=	"4d20"
-						primaryColor=	"0xff, 0xff, 0x80"
-						secondaryColor=	"0xff, 0xff, 0x00"
-						/>
-			</Effect>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 
 		<Events>
 			<OnAIUpdate>
-				(if (and (leq (itmGetCharges gItem) 128)
+				(if (and (leq (itmGetCharges gItem) 256)
 						(objGetItems gSource "u +LongzhuSphere;"))
 					(block Nil
-						(setq aCharges 128)
+						(setq aCharges 256)
 						(objFireItemEvent gSource gItem "Recharge")
 						(objRemoveItem gSource (itmCreate &itLongzhuSphere; 1))
 						)
 					)
 			</OnAIUpdate>
-
+			
 			<Recharge>
 				; aCharges = amount to recharge
 				; Returns the amount recharged
 				(block (rechargeNeeded)
-					(setq rechargeNeeded (min aCharges (subtract 256 (itmGetCharges gItem))))
+					(setq rechargeNeeded (min aCharges (subtract 9999 (itmGetCharges gItem))))
 					(if (gr rechargeNeeded 0)
 						(shpRechargeItem gSource gItem rechargeNeeded)
 						)
@@ -89,7 +72,6 @@
 					)
 			</Recharge>
 		</Events>
-
 	</ItemType>
 
 <!-- LEVEL VII ITEMS -->
@@ -1668,7 +1650,7 @@
 							(switch
 								(eq itemType &itQianlongArchcannon;)
 									(block (recharged)
-										(setq aCharges 128)
+										(setq aCharges 256)
 										(setq recharged (objFireItemEvent gPlayerShip gItem "Recharge"))
 
 										(switch
@@ -1878,7 +1860,198 @@
 				))
 			)
 	</Globals>
+	
+<!-- EFFECTS -->
+	
+	<EffectType unid="&efQianlongProjectile;"
+			instance=			"creator"
+			>
+		<Effect>
+			<ParticleSystem
+					style=				"radiate"
+					emitSpeed=			"10-20"
+					>
+				<ParticleEffect>
+					<Orb
+							instance=			"owner"
+						
+							style=				"smooth"
+							animate=			"fade"
+							radius=				"10"
+							intensity=			"20"
+						
+							blendMode=			"screen"
+							primaryColor=		"#ff6a00"
+							secondaryColor=		"#ff2a00"
+							>
+						<Events>
+							<GetParameters>
+								(block (
+									(damageHP (@ gData 'damageHP))
+									)
+									{
+										lifetime: (mathScale damageHP 20 300 4 12 50)
+										}
+									)
+							</GetParameters>
+						</Events>
+					</Orb>
+				</ParticleEffect>
+				
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								emitRate: (mathScale damageHP 20 300 10 60 50)
+								particleLifetime: (mathScale damageHP 20 300 4 12 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleSystem>
 
+			<Orb
+					style=				"smooth"
+					animate=			"flicker"
+					spikeCount=			"6"
+						
+					blendMode=			"screen"
+					primaryColor=		"#ffa666"
+					secondaryColor=		"#ff6a00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (mathScale damageHP 20 300 15 60 50)
+								intensity: (mathScale damageHP 20 300 20 50 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+	
+	<EffectType UNID="&efQianlongFire;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"smooth"
+					animate=		"fade"
+					lifetime=		"9"
+					spikeCount=		"6"
+					
+					primaryColor=	"#ffa666"
+					secondaryColor=	"#ff6a00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 20 300 30 80 50)
+								intensity: (random 20 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efQianlongHit;"
+			sound="&snArmorHit1;"
+			>
+		<Effect>
+			<Orb	style=			"smooth"
+					animate=		"fade"
+					intensity=		"30"
+					
+					blendMode=		"screen"
+					primaryColor=	"#ffa666"
+					secondaryColor=	"#ff6a00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 20 300 50 100 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 20 300 24 60 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<ParticleSystem
+					style=				"radiate"
+					emitLifetime=		"1"
+					emitSpeed=			"10-20"
+					>
+				<ParticleEffect>
+					<Orb
+							instance=			"owner"
+						
+							style=				"smooth"
+							animate=			"fade"
+							radius=				"10"
+							intensity=			"20"
+						
+							blendMode=			"screen"
+							primaryColor=		"#ffa666"
+							secondaryColor=		"#ff6a00"
+							>
+						<Events>
+							<GetParameters>
+								(block (
+									(damageHP (@ gData 'damageHP))
+									)
+									{
+										lifetime: (mathScale damageHP 20 300 12 30 50)
+										}
+									)
+							</GetParameters>
+						</Events>
+					</Orb>
+				</ParticleEffect>
+				
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								emitRate: (mathScale damageHP 20 300 30 100 50)
+								particleLifetime: (mathScale damageHP 20 300 12 30 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleSystem>
+		</Effect>
+		
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+					{
+						noSound: (= damageHP 0)
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
+	
 <!-- RESOURCES -->
 
 	<Image UNID="&rsDragonSlaverImage;"	bitmap="Resources\DragonSlaver.jpg"	bitmask="Resources\DragonSlaverMask.bmp"  loadOnUse="true"/>

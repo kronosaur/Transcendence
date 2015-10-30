@@ -29,7 +29,7 @@
 	<!ENTITY efThermoShellDefault		"0x00000045">
 	<!ENTITY efPositronBeamDefault		"0x00000046">
 	<!ENTITY efPlasmaBoltDefault		"0x00000047">
-	<!ENTITY efAntimatterBeamDefault	"0x00000048">
+	<!ENTITY efAntimatterPodDefault		"0x00000048">
 	<!ENTITY efNanoBlobDefault			"0x00000049">
 	<!ENTITY efGravitonBeamDefault		"0x0000004A">
 	<!ENTITY efSingularityMassDefault	"0x0000004B">

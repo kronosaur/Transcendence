@@ -25,7 +25,7 @@
 
 		<Weapon
 				type=				"particles"
-				damage=				"plasma:60; WMD5"
+				damage=				"plasma:40; WMD5"
 				
 				fireRate=			"16"
 				hitPoints=			"15"

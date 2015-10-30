@@ -507,6 +507,80 @@
 			</Orb>
 		</Effect>
 	</EffectType>
+	
+	<EffectType unid="&efAntimatterPodDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<ParticleSystem
+					style=				"radiate"
+					emitSpeed=			"10-20"
+					>
+				<ParticleEffect>
+					<Orb
+							instance=			"owner"
+						
+							style=				"smooth"
+							animate=			"fade"
+							radius=				"10"
+							intensity=			"20"
+						
+							blendMode=			"screen"
+							primaryColor=		"#fbffcc"
+							secondaryColor=		"#ffe566"
+							>
+						<Events>
+							<GetParameters>
+								(block (
+									(damageHP (@ gData 'damageHP))
+									)
+									{
+										lifetime: (mathScale damageHP 20 300 4 12 50)
+										}
+									)
+							</GetParameters>
+						</Events>
+					</Orb>
+				</ParticleEffect>
+				
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								emitRate: (mathScale damageHP 20 300 10 60 50)
+								particleLifetime: (mathScale damageHP 20 300 4 12 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleSystem>
+			
+			<Orb
+					style=				"smooth"
+					animate=			"flicker"
+					spikeCount=			"6"
+						
+					blendMode=			"screen"
+					primaryColor=		"#fbffcc"
+					secondaryColor=		"#ffe566"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (mathScale damageHP 20 300 15 60 50)
+								intensity: (mathScale damageHP 20 300 20 50 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
 
 	<EffectType UNID="&efGravitonBeamDefault;"
 			instance=			"creator"

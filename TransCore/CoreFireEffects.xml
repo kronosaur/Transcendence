@@ -340,4 +340,33 @@
 		</Effect>
 	</EffectType>
 
+	<EffectType UNID="&efAntimatterFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"smooth"
+					animate=		"fade"
+					lifetime=		"9"
+					spikeCount=		"6"
+					
+					primaryColor=	"#fbffcc"
+					secondaryColor=	"#ffe566"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 20 300 30 80 50)
+								intensity: (random 20 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+
 </TranscendenceModule>

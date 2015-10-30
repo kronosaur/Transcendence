@@ -2473,7 +2473,7 @@
 
 		<Weapon
 				type=				"particles"
-				damage=				"plasma:100; WMD:4"
+				damage=				"plasma:70; WMD:4"
 				
 				fireRate=			"20"
 				hitPoints=			"10"

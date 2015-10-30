@@ -177,7 +177,7 @@ PLAYER DATA
 			frequency=			"notrandom"
 			attributes=			"MajorItem; Military"
 
-			description=		"Commissioned by Admiral Decker, this Commonwealth secret weapon is the most powerful weapon created by humans."
+			description=		"Commissioned by Admiral Decker, this Commonwealth secret weapon is arguably the most powerful weapon created by humans."
 			>
 
 		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -185,45 +185,16 @@ PLAYER DATA
 		<Weapon
 				type=				"missile"
 
-				damage=				"antimatter:6d12; WMD5"
-				fireRate=			"15"
+				damage=				"antimatter:7d12; WMD5"
+				fireRate=			"16"
 				missileSpeed=		"50"
 				lifetime=			"60"
 				hitPoints=			"30"
 				powerUse=			"2000"
 
+				effect=				"&efLamplighterProjectile;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Starburst
-						style=			"flare"
-						spikeCount=		"8"
-						spikeLength=	"20-30"
-						primaryColor=	"0xff, 0xff, 0x80"
-						secondaryColor=	"0xff, 0xff, 0x80"
-						/>
-
-				<ParticleComet
-						particleCount=	"200"
-						primaryColor=	"0xff, 0xff, 0x80"
-
-						width=			"8"
-						length=			"120"
-						/>
-			</Effect>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 
 	</ItemType>
@@ -255,38 +226,9 @@ PLAYER DATA
 				hitPoints=			"15"
 				powerUse=			"3000"
 
+				effect=				"&efLamplighterProjectile;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Starburst
-						style=			"plain"
-						spikeCount=		"8"
-						spikeLength=	"20-30"
-						primaryColor=	"0xff, 0xff, 0x80"
-						secondaryColor=	"0xff, 0xff, 0x80"
-						/>
-
-				<ParticleComet
-						particleCount=	"200"
-						primaryColor=	"0xff, 0xff, 0x80"
-
-						width=			"8"
-						length=			"120"
-						/>
-			</Effect>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 
 	</ItemType>
@@ -5285,6 +5227,55 @@ PLAYER DATA
 			</OnGlobalUniverseCreated>
 		</Events>
 	</Sovereign>
+	
+<!-- EFFECTS -->
+
+	<EffectType unid="&efLamplighterProjectile;"
+			instance=			"owner"
+			>
+		<Effect>
+			<ParticleComet
+					primaryColor=	"#ffe566"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								particleCount: (mathScale damageHP 20 150 100 300 50)
+								length: (mathScale damageHP 20 150 60 180 50)
+								width: (mathScale damageHP 20 150 4 12 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleComet>
+			
+			<Orb
+					style=				"smooth"
+					animate=			"flicker"
+					spikeCount=			"6"
+						
+					blendMode=			"screen"
+					primaryColor=		"#fbffcc"
+					secondaryColor=		"#ffe566"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (mathScale damageHP 20 300 15 60 50)
+								intensity: (mathScale damageHP 20 300 20 50 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
 
 <!-- RESOURCES -->
 
