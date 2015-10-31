@@ -799,7 +799,7 @@
 								(damageHP (@ gData 'damageHP))
 								)
 								{
-									width: (mathScale damageHP 5 70 20 40 50)
+									width: (mathScale damageHP 10 140 20 40 50)
 									intensity: 80
 									}
 								)
@@ -818,8 +818,8 @@
 								)
 
 								{
-									particleCount: (mathScale damageHP 5 70 100 300 50)
-									length: 72 ;(mathScale damageHP 5 70 60 220 50)
+									particleCount: (mathScale damageHP 10 140 100 300 50)
+									length: 72 ;(mathScale damageHP 10 140 60 220 50)
 									width: 9
 									}
 								)
@@ -1658,16 +1658,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length:
-									(mathScale 
-										damageHP						; average damage of weapon
-										2								; min damage
-										60								; max damage
-										60								; min beam length
-										220								; max beam length
-										50								; scale gamma
-										)
-								width: (mathScale damageHP 2 60 10 20 50)
+								length:	(mathScale damageHP 5 64 60 220 50)
+								width: (mathScale damageHP 5 64 10 20 50)
 								intensity: 20
 								}
 							)
@@ -4980,7 +4972,7 @@
 				<Orb	style=			"firecloud"
 						animate=		"explode"
 						lifetime=		"60"
-					
+
 						primaryColor=	"#00ff2b"
 						secondaryColor=	"#008015"
 						>
@@ -4992,21 +4984,17 @@
 								)
 							
 								{
-									radius: (if (= damageHP 0) 10 (mathScale damageHP 6 80 20 45 50))
-									;lifetime: (if (= damageHP 0) 4 (mathScale damageHP 6 80 12 48 50))
+									radius: (if (= damageHP 0) 10 (mathScale damageHP 5 64 20 45 50))
+									;lifetime: (if (= damageHP 0) 4 (mathScale damageHP 5 64 12 48 50))
 								
 									intensity: (seededRandom weaponUNID 50 70)
-									distortion: (mathScale damageHP 6 80 50 0 100)
+									distortion: (mathScale damageHP 5 64 50 0 100)
 									detail: (seededRandom weaponUNID 20 25)
 									}
 								)
 						</GetParameters>
 					</Events>
 				</Orb>
-
-				<!--
-				<Image imageID="&rsMediumExplosions;" imageX="0" imageY="128" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
-				-->
 			</Effect>
 		</Weapon>
 	</ItemType>

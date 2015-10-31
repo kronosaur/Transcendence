@@ -223,16 +223,21 @@
 						>
 
 					<Effect>
-						<Image imageID="&rsMissiles4;" imageX="0" imageY="64" imageWidth="16" imageHeight="16" imageFrameCount="4" imageTicksPerFrame="2"/>
-
 						<Starburst
 								spikeCount=		"1d6+2"
-								spikeLength=	"2d20"
-								primaryColor=	"0x80, 0xff, 0x80"
-								secondaryColor=	"0x00, 0xff, 0x00"
+								spikeLength=	"30-50"
+								primaryColor=	"#65ff2c"
+								secondaryColor=	"#808417"
+								/>
+						
+						<Orb
+								style=			"smooth"
+								radius=			"40"
+								intensity=		"20"
+								primaryColor=	"#65ff2c"
+								secondaryColor=	"#65ff2c"
 								/>
 					</Effect>
-
 				</Missile>
 			</Missiles>
 		</Weapon>
@@ -1890,7 +1895,7 @@
 									(damageHP (@ gData 'damageHP))
 									)
 									{
-										lifetime: (mathScale damageHP 20 300 4 12 50)
+										lifetime: (mathScale damageHP 50 680 4 12 50)
 										}
 									)
 							</GetParameters>
@@ -1904,8 +1909,8 @@
 							(damageHP (@ gData 'damageHP))
 							)
 							{
-								emitRate: (mathScale damageHP 20 300 10 60 50)
-								particleLifetime: (mathScale damageHP 20 300 4 12 50)
+								emitRate: (mathScale damageHP 50 680 10 60 50)
+								particleLifetime: (mathScale damageHP 50 680 4 12 50)
 								}
 							)
 					</GetParameters>
@@ -1927,8 +1932,8 @@
 							(damageHP (@ gData 'damageHP))
 							)
 							{
-								radius: (mathScale damageHP 20 300 15 60 50)
-								intensity: (mathScale damageHP 20 300 20 50 50)
+								radius: (mathScale damageHP 50 680 15 60 50)
+								intensity: (mathScale damageHP 50 680 20 50 50)
 								}
 							)
 					</GetParameters>
@@ -1956,7 +1961,7 @@
 							)
 							
 							{
-								radius: (mathScale damageHP 20 300 30 80 50)
+								radius: (mathScale damageHP 50 680 30 80 50)
 								intensity: (random 20 50)
 								}
 							)
@@ -1984,8 +1989,8 @@
 							(damageHP (@ gData 'damageHP))
 							)
 							{
-								radius: (if (= damageHP 0) 10 (mathScale damageHP 20 300 50 100 50))
-								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 20 300 24 60 50))
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 50 680 50 100 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 50 680 24 60 50))
 								}
 							)
 					</GetParameters>
@@ -2016,7 +2021,7 @@
 									(damageHP (@ gData 'damageHP))
 									)
 									{
-										lifetime: (mathScale damageHP 20 300 12 30 50)
+										lifetime: (mathScale damageHP 50 680 12 30 50)
 										}
 									)
 							</GetParameters>
@@ -2030,8 +2035,8 @@
 							(damageHP (@ gData 'damageHP))
 							)
 							{
-								emitRate: (mathScale damageHP 20 300 30 100 50)
-								particleLifetime: (mathScale damageHP 20 300 12 30 50)
+								emitRate: (mathScale damageHP 50 680 30 100 50)
+								particleLifetime: (mathScale damageHP 50 680 12 30 50)
 								}
 							)
 					</GetParameters>

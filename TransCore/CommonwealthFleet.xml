@@ -5243,9 +5243,9 @@ PLAYER DATA
 							(damageHP (@ gData 'damageHP))
 							)
 							{
-								particleCount: (mathScale damageHP 20 150 100 300 50)
-								length: (mathScale damageHP 20 150 60 180 50)
-								width: (mathScale damageHP 20 150 4 12 50)
+								particleCount: (mathScale damageHP 50 680 100 300 50)
+								length: (mathScale damageHP 50 680 60 180 50)
+								width: (mathScale damageHP 50 680 4 12 50)
 								}
 							)
 					</GetParameters>
@@ -5267,8 +5267,8 @@ PLAYER DATA
 							(damageHP (@ gData 'damageHP))
 							)
 							{
-								radius: (mathScale damageHP 20 300 15 60 50)
-								intensity: (mathScale damageHP 20 300 20 50 50)
+								radius: (mathScale damageHP 50 680 15 60 50)
+								intensity: (mathScale damageHP 50 680 20 50 50)
 								}
 							)
 					</GetParameters>

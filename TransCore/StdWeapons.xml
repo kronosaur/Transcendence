@@ -625,12 +625,13 @@
 								>
 							<Events>
 								<GetParameters>
-									(block (damageHP)
-										(setq damageHP (@ gData 'damageHP))
-					
+									(block (
+										(damageHP (@ gData 'damageHP))
+										(speed (@ gData 'speed))
+										)
 										{
-											length:	(mathScale damageHP	4 40 (divide (@ gData 'speed) 2) (@ gData 'speed) 50)
-											width: (mathScale damageHP 4 40 12 36 50)
+											length:	(mathScale damageHP	2 30 speed (@ speed 2) 50)
+											width: (mathScale damageHP 2 30 12 28 50)
 											}
 										)
 								</GetParameters>
@@ -1574,8 +1575,8 @@
 										(setq damageHP (@ gData 'damageHP))
 					
 										{
-											length:	(mathScale damageHP	4 40 (divide (@ gData 'speed) 2) (@ gData 'speed) 50)
-											width: (mathScale damageHP 4 40 12 36 50)
+											length:	(mathScale damageHP	2 30 (divide (@ gData 'speed) 2) (@ gData 'speed) 50)
+											width: (mathScale damageHP 2 30 12 36 50)
 											}
 										)
 								</GetParameters>
@@ -3784,8 +3785,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length:	(mathScale damageHP	6 80 16 64 50)
-								width: (mathScale damageHP 6 80 12 48 50)
+								length:	(mathScale damageHP	5 64 16 64 50)
+								width: (mathScale damageHP 5 64 12 48 50)
 								intensity: 10
 								}
 							)
@@ -3806,16 +3807,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length:
-									(mathScale 
-										damageHP						; average damage of weapon
-										6								; min damage
-										80								; max damage
-										30								; min beam length
-										110								; max beam length
-										50								; scale gamma
-										)
-								width: (mathScale damageHP 6 80 12 44 50)
+								length:	(mathScale damageHP 5 64 30 110 50)
+								width: (mathScale damageHP 5 64 12 44 50)
 								intensity: 30
 								}
 							)
@@ -3844,7 +3837,7 @@
 							)
 							
 							{
-								radius: (mathScale damageHP 5 70 12 28 50)
+								radius: (mathScale damageHP 10 140 12 28 50)
 								}
 							)
 					</GetParameters>
@@ -3868,8 +3861,8 @@
 							)
 							
 							{
-								length: (mathScale damageHP 5 70 24 56 50)
-								width: (mathScale damageHP 5 70 18 42 50)
+								length: (mathScale damageHP 10 140 24 56 50)
+								width: (mathScale damageHP 10 140 18 42 50)
 								}
 							)
 					</GetParameters>
@@ -3894,8 +3887,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length: (mathScale damageHP 5 70 60 260 50)
-								width: (mathScale damageHP 5 70 20 40 50)
+								length: (mathScale damageHP 10 140 60 260 50)
+								width: (mathScale damageHP 10 140 20 40 50)
 								intensity: 60
 								}
 							)
@@ -3914,9 +3907,9 @@
 							)
 
 							{ 
-								particleCount: (mathScale damageHP 5 70 100 300 50)
-								length: (mathScale damageHP 5 70 60 220 50)
-								width: (mathScale damageHP 5 70 6 16 50)
+								particleCount: (mathScale damageHP 10 140 100 300 50)
+								length: (mathScale damageHP 10 140 60 220 50)
+								width: (mathScale damageHP 10 140 6 16 50)
 								}
 							)
 					</GetParameters>
@@ -3942,8 +3935,8 @@
 							)
 							
 							{
-								radius: (if (= damageHP 0) 10 (mathScale damageHP 6 80 30 70 50))
-								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 6 80 12 48 50))
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 10 140 30 70 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 10 140 12 48 50))
 								}
 							)
 					</GetParameters>
@@ -3972,9 +3965,9 @@
 							)
 							
 							{
-								lifetime: (if (= damageHP 0) 10 (mathScale damageHP 6 80 12 48 50))
-								emitRate: (mathScale damageHP 6 80 50 200 50)
-								emitLifetime: (if (= damageHP 0) 2 (mathScale damageHP 6 80 6 24 50))
+								lifetime: (if (= damageHP 0) 10 (mathScale damageHP 10 140 12 48 50))
+								emitRate: (mathScale damageHP 10 140 50 200 50)
+								emitLifetime: (if (= damageHP 0) 2 (mathScale damageHP 10 140 6 24 50))
 								}
 							)
 					</GetParameters>
@@ -4015,7 +4008,7 @@
 							)
 							
 							{
-								radius: (mathScale damageHP 5 70 12 28 50)
+								radius: (mathScale damageHP 10 140 12 28 50)
 								}
 							)
 					</GetParameters>
@@ -4039,8 +4032,8 @@
 							)
 							
 							{
-								length: (mathScale damageHP 5 70 24 56 50)
-								width: (mathScale damageHP 5 70 18 42 50)
+								length: (mathScale damageHP 10 140 24 56 50)
+								width: (mathScale damageHP 10 140 18 42 50)
 								}
 							)
 					</GetParameters>
@@ -4065,8 +4058,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length: (mathScale damageHP 5 70 60 260 50)
-								width: (mathScale damageHP 5 70 20 40 50)
+								length: (mathScale damageHP 10 140 60 260 50)
+								width: (mathScale damageHP 10 140 20 40 50)
 								intensity: 60
 								}
 							)
@@ -4090,8 +4083,8 @@
 							(intensity (+ 20 (* damageDeviceDisrupt 10)))
 							)
 							{
-								length: (mathScale damageHP 5 70 60 260 50)
-								width: (mathScale damageHP 5 70 10 20 50)
+								length: (mathScale damageHP 10 140 60 260 50)
+								width: (mathScale damageHP 10 140 10 20 50)
 								intensity: intensity
 								}
 							)
@@ -4118,8 +4111,8 @@
 							)
 							
 							{
-								radius: (if (= damageHP 0) 10 (mathScale damageHP 6 80 30 70 50))
-								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 6 80 12 48 50))
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 10 140 30 70 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 10 140 12 48 50))
 								}
 							)
 					</GetParameters>
@@ -4148,9 +4141,9 @@
 							)
 							
 							{
-								lifetime: (if (= damageHP 0) 10 (mathScale damageHP 6 80 12 48 50))
-								emitRate: (mathScale damageHP 6 80 50 200 50)
-								emitLifetime: (if (= damageHP 0) 2 (mathScale damageHP 6 80 6 24 50))
+								lifetime: (if (= damageHP 0) 10 (mathScale damageHP 10 140 12 48 50))
+								emitRate: (mathScale damageHP 10 140 50 200 50)
+								emitLifetime: (if (= damageHP 0) 2 (mathScale damageHP 10 140 6 24 50))
 								}
 							)
 					</GetParameters>
@@ -4406,8 +4399,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length:	(mathScale damageHP	6 80 16 64 50)
-								width: (mathScale damageHP 6 80 6 24 50)
+								length:	(mathScale damageHP	5 64 16 64 50)
+								width: (mathScale damageHP 5 64 6 24 50)
 								intensity: 10
 								}
 							)
@@ -4428,8 +4421,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length:	(mathScale damageHP	6 80 16 64 50)
-								width: (mathScale damageHP 6 80 6 24 50)
+								length:	(mathScale damageHP	5 64 16 64 50)
+								width: (mathScale damageHP 5 64 6 24 50)
 								intensity: 10
 								}
 							)
@@ -4450,16 +4443,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length:
-									(mathScale 
-										damageHP						; average damage of weapon
-										6								; min damage
-										80								; max damage
-										30								; min beam length
-										110								; max beam length
-										50								; scale gamma
-										)
-								width: (mathScale damageHP 6 80 12 44 50)
+								length:	(mathScale damageHP 5 64 30 110 50)
+								width: (mathScale damageHP 5 64 12 44 50)
 								intensity: 30
 								}
 							)
@@ -4488,7 +4473,7 @@
 							)
 							
 							{
-								radius: (mathScale damageHP 5 70 12 28 50)
+								radius: (mathScale damageHP 10 140 12 28 50)
 								}
 							)
 					</GetParameters>
@@ -4512,8 +4497,8 @@
 							)
 							
 							{
-								length: (mathScale damageHP 5 70 24 56 50)
-								width: (mathScale damageHP 5 70 18 42 50)
+								length: (mathScale damageHP 10 140 24 56 50)
+								width: (mathScale damageHP 10 140 18 42 50)
 								}
 							)
 					</GetParameters>
@@ -4538,8 +4523,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length: (mathScale damageHP 5 70 60 260 50)
-								width: (mathScale damageHP 5 70 15 30 50)
+								length: (mathScale damageHP 10 140 60 260 50)
+								width: (mathScale damageHP 10 140 15 30 50)
 								intensity: 60
 								}
 							)
@@ -4558,9 +4543,9 @@
 							)
 
 							{ 
-								particleCount: (mathScale damageHP 5 70 100 300 50)
-								length: (mathScale damageHP 5 70 60 220 50)
-								width: (mathScale damageHP 5 70 6 16 50)
+								particleCount: (mathScale damageHP 10 140 100 300 50)
+								length: (mathScale damageHP 10 140 60 220 50)
+								width: (mathScale damageHP 10 140 6 16 50)
 								}
 							)
 					</GetParameters>
@@ -4595,8 +4580,8 @@
 							)
 							
 							{
-								radius: (if (= damageHP 0) 10 (mathScale damageHP 6 80 30 70 50))
-								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 6 80 12 48 50))
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 10 140 30 70 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 10 140 12 48 50))
 								}
 							)
 					</GetParameters>
@@ -4625,9 +4610,9 @@
 							)
 							
 							{
-								lifetime: (if (= damageHP 0) 10 (mathScale damageHP 6 80 12 48 50))
-								emitRate: (mathScale damageHP 6 80 50 200 50)
-								emitLifetime: (if (= damageHP 0) 2 (mathScale damageHP 6 80 6 24 50))
+								lifetime: (if (= damageHP 0) 10 (mathScale damageHP 10 140 12 48 50))
+								emitRate: (mathScale damageHP 10 140 50 200 50)
+								emitLifetime: (if (= damageHP 0) 2 (mathScale damageHP 10 140 6 24 50))
 								}
 							)
 					</GetParameters>

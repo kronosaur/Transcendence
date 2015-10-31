@@ -26,7 +26,7 @@
 							)
 							
 							{
-								radius: (mathScale damageHP 1 30 12 28 50)
+								radius: (mathScale damageHP 2 30 12 28 50)
 								primaryColor: (@ laserColor 'primaryColor)
 								secondaryColor: (@ laserColor 'secondaryColor)
 								}
@@ -51,8 +51,8 @@
 							)
 							
 							{
-								length: (mathScale damageHP 1 30 24 56 50)
-								width: (mathScale damageHP 1 30 25 56 50)
+								length: (mathScale damageHP 2 30 24 56 50)
+								width: (mathScale damageHP 2 30 25 56 50)
 								primaryColor: (@ laserColor 'primaryColor)
 								secondaryColor: (@ laserColor 'secondaryColor)
 								}
@@ -67,29 +67,29 @@
 			instance=			"owner"
 			>
 		<Effect>
-			<Ray	style=			"smooth"
-					shape=			"tapered"
-					primaryColor=	"#CCF7FF"
-					secondaryColor=	"#667B80"
-					xformRotation=	"180"
-					
+			<Orb	style=			"smooth"
+					animate=		"fade"
+					spikeCount=		"6"
+					intensity=		"20"
 					lifetime=		"3"
-					animateOpacity= "fade"
+					
+					blendMode=		"screen"
+					primaryColor=	"#b3f3ff"
+					secondaryColor=	"#e5faff"
 					>
 				<Events>
 					<GetParameters>
-						(block (damageHP)
-							(setq damageHP (@ gData 'damageHP))
-
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
 							{
-								length:	(mathScale damageHP 6 80 60 96 50)
-								width: (mathScale damageHP 6 80 9 21 50)
-								intensity: 50
+								radius: (mathScale damageHP 2 30 18 42 50)
 								}
 							)
 					</GetParameters>
 				</Events>
-			</Ray>
+			</Orb>
 		</Effect>
 	</EffectType>
 
@@ -112,7 +112,7 @@
 							)
 							
 							{
-								radius: (mathScale damageHP 2 60 12 28 50)
+								radius: (mathScale damageHP 5 64 12 28 50)
 								}
 							)
 					</GetParameters>
@@ -136,8 +136,8 @@
 							)
 							
 							{
-								length: (mathScale damageHP 2 60 24 56 50)
-								width: (mathScale damageHP 2 60 18 42 50)
+								length: (mathScale damageHP 5 64 24 56 50)
+								width: (mathScale damageHP 5 64 18 42 50)
 								}
 							)
 					</GetParameters>
@@ -165,8 +165,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length:	(mathScale damageHP 6 80 16 64 50)
-								width: (mathScale damageHP 6 80 24 96 50)
+								length:	(mathScale damageHP 5 64 16 64 50)
+								width: (mathScale damageHP 5 64 24 96 50)
 								intensity: 70
 								}
 							)
@@ -195,7 +195,7 @@
 							)
 							
 							{
-								radius: (mathScale damageHP 5 70 12 28 50)
+								radius: (mathScale damageHP 10 140 12 28 50)
 								}
 							)
 					</GetParameters>
@@ -219,8 +219,8 @@
 							)
 							
 							{
-								length: (mathScale damageHP 5 70 24 56 50)
-								width: (mathScale damageHP 5 70 18 42 50)
+								length: (mathScale damageHP 10 140 24 56 50)
+								width: (mathScale damageHP 10 140 18 42 50)
 								}
 							)
 					</GetParameters>
@@ -248,8 +248,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length:	(mathScale damageHP 6 80 16 64 50)
-								width: (mathScale damageHP 6 80 24 96 50)
+								length:	(mathScale damageHP 10 140 16 64 50)
+								width: (mathScale damageHP 10 140 24 96 50)
 								intensity: 70
 								}
 							)
@@ -278,7 +278,7 @@
 							)
 							
 							{
-								radius: (mathScale damageHP 10 140 24 34 50)
+								radius: (mathScale damageHP 20 300 24 34 50)
 								}
 							)
 					</GetParameters>
@@ -302,8 +302,8 @@
 							)
 							
 							{
-								length: (mathScale damageHP 10 140 24 56 50)
-								width: (mathScale damageHP 10 140 18 42 50)
+								length: (mathScale damageHP 20 300 24 56 50)
+								width: (mathScale damageHP 20 300 18 42 50)
 								}
 							)
 					</GetParameters>
@@ -330,8 +330,8 @@
 							)
 							
 							{
-								radius: (mathScale damageHP 10 300 24 120 50)
-								lifetime: (mathScale damageHP 10 300 2 8 50)
+								radius: (mathScale damageHP 20 300 24 120 50)
+								lifetime: (mathScale damageHP 20 300 2 8 50)
 								}
 							)
 					</GetParameters>
@@ -359,13 +359,66 @@
 							)
 							
 							{
-								radius: (mathScale damageHP 20 300 30 80 50)
+								radius: (mathScale damageHP 50 680 30 80 50)
 								intensity: (random 20 50)
 								}
 							)
 					</GetParameters>
 				</Events>
 			</Orb>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efGravitonFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb
+					style=				"smooth"
+					animate=			"fade"
+					intensity=			"20"
+					spikeCount=			"6"
+					primaryColor=		"#beb1ff"
+					secondaryColor=		"#9580ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								lifetime: (mathScale damageHP 110 1500 3 10 50)
+								radius: (mathScale damageHP 110 1500 40 100 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<Shockwave
+					style=			"glowRing"
+					speed=			"50"
+				
+					width=			"1"
+					glowSize=		"8"
+					fadeStart=		"0"
+					primaryColor=	"#9580ff"
+					secondaryColor=	"#2a00ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								lifetime: (mathScale damageHP 110 1500 3 5 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Shockwave>
 		</Effect>
 	</EffectType>
 
