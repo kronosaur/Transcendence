@@ -4973,6 +4973,7 @@
 						animate=		"explode"
 						lifetime=		"60"
 
+						blendMode=		"screen"
 						primaryColor=	"#00ff2b"
 						secondaryColor=	"#008015"
 						>

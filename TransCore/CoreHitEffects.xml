@@ -22,6 +22,7 @@
 		<Effect>
 			<Orb	style=			"flare"
 					animate=		"fade"
+					blendMode=		"screen"
 					>
 				<Events>
 					<GetParameters>
@@ -135,6 +136,8 @@
 
 			<Orb	style=			"flare"
 					animate=		"fade"
+					
+					blendMode=		"screen"
 					primaryColor=	"#ccf7ff"
 					secondaryColor=	"#667b80"
 					>
@@ -176,6 +179,8 @@
 			<Orb	style=			"diffraction"
 					animate=		"fade"
 					intensity=		"50"
+					
+					blendMode=		"screen"
 					primaryColor=	"#65ff2c"
 					secondaryColor=	"#808417"
 					>
@@ -205,6 +210,7 @@
 			<Orb	style=			"fireblast"
 					animate=		"explode"
 					
+					blendMode=		"screen"
 					primaryColor=	"#ffcf00"
 					secondaryColor=	"#d92400"
 					>
@@ -240,6 +246,8 @@
 			<Orb	style=			"diffraction"
 					animate=		"fade"
 					intensity=		"50"
+					
+					blendMode=		"screen"
 					primaryColor=	"#a0f0ff"
 					secondaryColor=	"#00a9ff"
 					>
@@ -311,6 +319,7 @@
 			<Orb	style=			"fireblast"
 					animate=		"explode"
 					
+					blendMode=		"screen"
 					primaryColor=	"#ffcf00"
 					secondaryColor=	"#d90000"
 					>
@@ -336,6 +345,8 @@
 			
 			<Orb	style=			"flare"
 					animate=		"fade"
+					
+					blendMode=		"screen"
 					primaryColor=	"#fffff0"
 					secondaryColor=	"#fff2d4"
 					>
@@ -375,6 +386,8 @@
 			<Orb	style=			"flare"
 					animate=		"fade"
 					intensity=		"50"
+					
+					blendMode=		"screen"
 					primaryColor=	"#f9ffb3"
 					secondaryColor=	"#806a00"
 					>

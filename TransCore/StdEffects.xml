@@ -264,6 +264,7 @@
 			<Orb	style=			"firecloud"
 					animate=		"explode"
 					
+					blendMode=		"screen"
 					primaryColor=	"#00ff2b"
 					secondaryColor=	"#008015"
 					>
@@ -298,6 +299,7 @@
 			<Orb	style=			"smooth"
 					animate=		"explode"
 					
+					blendMode=		"screen"
 					primaryColor=	"#ff7e00"
 					secondaryColor=	"#ff7e00"
 					>
@@ -323,6 +325,8 @@
 			
 			<Orb	style=			"flare"
 					animate=		"fade"
+					
+					blendMode=		"screen"
 					primaryColor=	"#fffff0"
 					secondaryColor=	"#fff2d4"
 					>
@@ -363,6 +367,7 @@
 			<Orb	style=			"fireblast"
 					animate=		"explode"
 					
+					blendMode=		"screen"
 					primaryColor=	"#ffcf00"
 					secondaryColor=	"#d90000"
 					>
@@ -396,6 +401,8 @@
 		<Effect>
 			<Orb	style=			"flare"
 					animate=		"fade"
+					
+					blendMode=		"screen"
 					primaryColor=	"#fffff0"
 					secondaryColor=	"#fff2d4"
 					>

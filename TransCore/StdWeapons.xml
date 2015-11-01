@@ -3925,6 +3925,8 @@
 			<Orb	style=			"diffraction"
 					animate=		"fade"
 					intensity=		"50"
+					
+					blendMode=		"screen"
 					primaryColor=	"#ffca80"
 					secondaryColor=	"#ff9500"
 					>
@@ -4101,6 +4103,8 @@
 			<Orb	style=			"diffraction"
 					animate=		"fade"
 					intensity=		"50"
+					
+					blendMode=		"screen"
 					primaryColor=	"#f0ffa0"
 					secondaryColor=	"#a9ff00"
 					>
@@ -4570,6 +4574,8 @@
 			<Orb	style=			"diffraction"
 					animate=		"fade"
 					intensity=		"50"
+					
+					blendMode=		"screen"
 					primaryColor=	"#80c0ff"
 					secondaryColor=	"#0080ff"
 					>
