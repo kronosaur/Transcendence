@@ -307,7 +307,7 @@
 					<GetParameters>
 						(block (
 							(weaponUNID (@ gData 'weaponUNID))
-							(damageHP (divide (itmGetProperty weaponUNID 'damage) 2))
+							(damageHP (divide (itmGetProperty weaponUNID 'damagePerProjectile) 2))
 							)
 							{
 								radius: (if (= damageHP 0) 10 (mathScale damageHP 10 140 30 200 50))
@@ -334,7 +334,7 @@
 					<GetParameters>
 						(block (
 							(weaponUNID (@ gData 'weaponUNID))
-							(damageHP (divide (itmGetProperty weaponUNID 'damage) 2))
+							(damageHP (divide (itmGetProperty weaponUNID 'damagePerProjectile) 2))
 							)
 							{
 								radius: (if (= damageHP 0) 0 (mathScale damageHP 10 140 60 200 50))
@@ -410,7 +410,7 @@
 					<GetParameters>
 						(block (
 							(weaponUNID (@ gData 'weaponUNID))
-							(damageHP (divide (itmGetProperty weaponUNID 'damage) 2))
+							(damageHP (divide (itmGetProperty weaponUNID 'damagePerProjectile) 2))
 							)
 							{
 								radius: (if (= damageHP 0) 0 (mathScale damageHP 10 140 60 200 50))
