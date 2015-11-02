@@ -272,6 +272,8 @@ void PaintWeaponFrames (CG32bitImage &Image, CItemType *pType, CShip *pPlatform,
 		//	Update the universe
 
 		g_pUniverse->Update(Ctx);
+		if (pPlatform->IsDestroyed())
+			printf("Platform destroyed.\n");
 
 		//	Paint
 
@@ -301,7 +303,11 @@ void PaintWeaponFrames (CG32bitImage &Image, CItemType *pType, CShip *pPlatform,
 	//	Skip for a while
 
 	for (j = 0; j < 100; j++)
+		{
 		g_pUniverse->Update(Ctx);
+		if (pPlatform->IsDestroyed())
+			printf("Platform destroyed.\n");
+		}
 
 	//	Uninstall weapon
 
