@@ -212,7 +212,7 @@
 				charges=			"true"
 
 				missileSpeed=		"40"
-				maneuverability=	"2"
+				maneuverRate=		"9"
 				sound=				"&snMissileLauncher;"
 
 				effect=				"&efMissileNAMI;"
@@ -598,23 +598,24 @@
 						>
 					
 					<Effect>
-						<ParticleJet
+						<ParticleSystem
+								style=				"jet"
 								fixedPos=			"true"
 								emitRate=			"40"
-								tangentSpeed=		"3d2-3"
+								tangentSpeed=		"-3-3"
 								particleLifetime=	"10-30"
-								XformTime=			"10"
+								XformTime=			"15"
 								>
 							<ParticleEffect>
 								<Particle
 										style=			"plain"
 										minWidth=		"1"
 										maxWidth=		"3"
-										primaryColor=	"#ffffc0"
-										secondaryColor=	"#7e7e74"
+										primaryColor=	"#f1f6ff"
+										secondaryColor=	"#73767d"
 										/>
 							</ParticleEffect>
-						</ParticleJet>
+						</ParticleSystem>
 						
 						<Ray
 								style=			"smooth"
@@ -1544,10 +1545,11 @@
 						>
 
 					<Effect>
-						<ParticleJet
+						<ParticleSystem
+								style=				"jet"
 								fixedPos=			"true"
 								emitRate=			"40"
-								tangentSpeed=		"3d2-3"
+								tangentSpeed=		"-3-3"
 								particleLifetime=	"10-30"
 								XformTime=			"10"
 								>
@@ -1560,7 +1562,7 @@
 										secondaryColor=	"#7e7e74"
 										/>
 							</ParticleEffect>
-						</ParticleJet>
+						</ParticleSystem>
 						
 						<Ray
 								style=			"smooth"
@@ -2215,7 +2217,8 @@
 						<Image imageID="&rsWeapons8DB32;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="20"/>
 						
 						<Group angleOffset="180" radiusOffset="8">
-							<ParticleJet
+							<ParticleSystem
+									style=				"jet"
 									fixedPos=			"true"
 									emitRate=			"80"
 									tangentSpeed=		"3d2-3"
@@ -2231,7 +2234,7 @@
 											secondaryColor=	"#7e7e74"
 											/>
 								</ParticleEffect>
-							</ParticleJet>
+							</ParticleSystem>
 				
 							<Ray
 									style=			"smooth"
@@ -2264,7 +2267,7 @@
 							damage=				"thermo:6d12+6; momentum3; WMD4"
 							missileSpeed=		"50"
 							lifetime=			"60"
-							maneuverability=	"4"
+							maneuverRate=		"9"
 
 							multiTarget=		"true"
 							autoAcquireTarget=	"true"
@@ -2672,7 +2675,7 @@
 				damage=			"blast:5d6; momentum4; WMD5"
 				missileSpeed=	"40"
 				hitPoints=		"10"
-				maneuverability="2"
+				maneuverRate=	"9"
 						 
 				effect=			"&efMissileNAMI;"
 				sound=			"&snMissileLauncher;"
@@ -2737,7 +2740,7 @@
 				damage=			"blast:10d6; momentum4; WMD6"
 				missileSpeed=	"40"
 				hitPoints=		"15"
-				maneuverability="2"
+				maneuverRate=	"9"
 						 
 				sound=			"&snMissileLauncher;"
 				effect=			"&efMissileNAMI;"
@@ -2772,7 +2775,7 @@
 				hitPoints=		"20"
 				lifetime=		"120"
 
-				maneuverability="2"
+				maneuverRate=	"9"
 
 				effect=			"&efMissileNAMI;"
 				hitEffect=		"&efThermoFragmentExplosion;"
@@ -3314,7 +3317,7 @@
 
 				damage=			"thermo:3d12; WMD6"
 				missileSpeed=	"10"
-				maneuverability="2"
+				maneuverRate=	"9"
 				lifetime=		"2400"
 				hitPoints=		"20"
 				stealth=		"6"
@@ -3401,7 +3404,7 @@
 				damage=			"thermo:10d20; momentum3; WMD7"
 				missileSpeed=	"65"
 				hitPoints=		"20"
-				maneuverability="2"
+				maneuverRate=	"9"
 						 
 				effect=			"&efMissileRasiermesser;"
 				sound=			"&snMissileLauncher;"
@@ -3539,14 +3542,15 @@
 
 					multiTarget=		"true"
 					autoAcquireTarget=	"true"
-					maneuverability=	"2"
+					maneuverRate=		"9"
 					>
 
 				<Effect>
 					<Image imageID="&rsMissileNAMI;" imageX="0" imageY="0" imageWidth="24" imageHeight="24" rotationCount="40"/>
 
 					<Group angleOffset="180" radiusOffset="10">
-						<ParticleJet
+						<ParticleSystem
+								style=				"jet"
 								fixedPos=			"true"
 								emitRate=			"30"
 								tangentSpeed=		"3d2-3"
@@ -3562,7 +3566,7 @@
 										secondaryColor=	"#7e7e74"
 												/>
 							</ParticleEffect>
-						</ParticleJet>
+						</ParticleSystem>
 
 						<Ray
 								style=			"smooth"
@@ -3756,7 +3760,8 @@
 			>
 		
 		<Effect>
-			<ParticleJet
+			<ParticleSystem
+					style=				"jet"
 					emitRate=			"20"
 					emitSpeed=			"30-45"
 					particleLifetime=	"7-20"
@@ -3771,7 +3776,7 @@
 							secondaryColor=	"#5b777a"
 							/>
 				</ParticleEffect>
-			</ParticleJet>
+			</ParticleSystem>
 			
 			<Ray
 					style=			"smooth"
@@ -4174,10 +4179,11 @@
 			>
 		
 		<Effect>
-			<ParticleJet
+			<ParticleSystem
+					style=				"jet"
 					fixedPos=			"true"
-					emitRate=			"20"
-					tangentSpeed=		"3d2-3"
+					emitRate=			"40"
+					tangentSpeed=		"-3-3"
 					particleLifetime=	"10-30"
 					XformTime=			"30"
 					>
@@ -4185,12 +4191,12 @@
 					<Particle
 							style=			"plain"
 							minWidth=		"1"
-							maxWidth=		"5"
+							maxWidth=		"4"
 							primaryColor=	"#f1f6ff"
 							secondaryColor=	"#73767d"
 							/>
 				</ParticleEffect>
-			</ParticleJet>
+			</ParticleSystem>
 			
 			<Image	imageID=			"&rsMissiles;"
 					imageX=				"0"
@@ -4202,7 +4208,7 @@
 					/>
 		</Effect>
 	</EffectType>
-
+	
 	<EffectType UNID="&efMissileNAMI;"
 			instance=			"creator"
 			>
@@ -4217,23 +4223,24 @@
 					/>
 			
 			<Group angleOffset="180" radiusOffset="10">
-				<ParticleJet
+				<ParticleSystem
+						style=				"jet"
 						fixedPos=			"true"
 						emitRate=			"40"
-						tangentSpeed=		"3d2-3"
+						tangentSpeed=		"-3-3"
 						particleLifetime=	"20-60"
-						XformTime=			"30"
+						XformTime=			"40"
 						>
 					<ParticleEffect>
 						<Particle
 								style=			"plain"
 								minWidth=		"1"
-								maxWidth=		"6"
+								maxWidth=		"5"
 								primaryColor=	"#ffffc0"
 								secondaryColor=	"#7e7e74"
 								/>
 					</ParticleEffect>
-				</ParticleJet>
+				</ParticleSystem>
 				
 				<Ray
 						style=			"smooth"
@@ -4262,23 +4269,24 @@
 					/>
 			
 			<Group angleOffset="180" radiusOffset="10">
-				<ParticleJet
+				<ParticleSystem
+						style=				"jet"
 						fixedPos=			"true"
 						emitRate=			"60"
-						tangentSpeed=		"3d2-3"
+						tangentSpeed=		"-3-3"
 						particleLifetime=	"20-60"
-						XformTime=			"20"
+						XformTime=			"50"
 						>
 					<ParticleEffect>
 						<Particle
 								style=			"plain"
 								minWidth=		"1"
-								maxWidth=		"5"
-								primaryColor=	"#ffffc0"
+								maxWidth=		"6"
+								primaryColor=	"#ffffb2"
 								secondaryColor=	"#7e7e74"
 								/>
 					</ParticleEffect>
-				</ParticleJet>
+				</ParticleSystem>
 				
 				<Ray
 						style=			"smooth"
@@ -4307,23 +4315,24 @@
 					/>
 			
 			<Group angleOffset="180" radiusOffset="10">
-				<ParticleJet
+				<ParticleSystem
+						style=				"jet"
 						fixedPos=			"true"
 						emitRate=			"80"
-						tangentSpeed=		"3d2-3"
+						tangentSpeed=		"-3-3"
 						particleLifetime=	"20-60"
-						XformTime=			"20"
+						XformTime=			"50"
 						>
 					<ParticleEffect>
 						<Particle
 								style=			"plain"
 								minWidth=		"1"
-								maxWidth=		"4"
-								primaryColor=	"#ffffc0"
-								secondaryColor=	"#7e7e74"
+								maxWidth=		"6"
+								primaryColor=	"#f1f6ff"
+								secondaryColor=	"#73767d"
 								/>
 					</ParticleEffect>
-				</ParticleJet>
+				</ParticleSystem>
 				
 				<Ray
 						style=			"smooth"
@@ -4352,23 +4361,24 @@
 					/>
 			
 			<Group angleOffset="180" radiusOffset="10">
-				<ParticleJet
+				<ParticleSystem
+						style=				"jet"
 						fixedPos=			"true"
-						emitRate=			"30"
-						tangentSpeed=		"3d2-3"
+						emitRate=			"40"
+						tangentSpeed=		"-3-3"
 						particleLifetime=	"15-45"
-						XformTime=			"20"
+						XformTime=			"30"
 						>
 					<ParticleEffect>
 						<Particle
 								style=			"plain"
 								minWidth=		"1"
 								maxWidth=		"4"
-								primaryColor=	"#ffffc0"
+								primaryColor=	"#fff2e5"
 								secondaryColor=	"#7e7e74"
 								/>
 					</ParticleEffect>
-				</ParticleJet>
+				</ParticleSystem>
 				
 				<Ray
 						style=			"smooth"
@@ -4645,7 +4655,8 @@
 			>
 		
 		<Effect>
-			<ParticleJet
+			<ParticleSystem
+					style=				"jet"
 					emitRate=			"20"
 					emitSpeed=			"50-60"
 					particleLifetime=	"20-60"
@@ -4660,7 +4671,7 @@
 							secondaryColor=	"#5b777a"
 							/>
 				</ParticleEffect>
-			</ParticleJet>
+			</ParticleSystem>
 			
 			<Ray
 					style=			"smooth"

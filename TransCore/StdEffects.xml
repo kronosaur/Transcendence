@@ -310,12 +310,12 @@
 							(damageHP (divide (itmGetProperty weaponUNID 'damagePerProjectile) 2))
 							)
 							{
-								radius: (if (= damageHP 0) 10 (mathScale damageHP 10 140 30 200 50))
-								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 10 140 12 30 50))
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 10 200 30 140 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 10 200 12 40 50))
 								primaryColor: (resColorBlend "#ffcf00" "#ffa200" (seededRandom weaponUNID 0 255))
 								
 								intensity: 50
-								distortion: (mathScale damageHP 10 140 20 0 100)
+								distortion: (mathScale damageHP 10 200 20 0 100)
 								detail: (seededRandom weaponUNID 30 60)
 								}
 							)
@@ -337,9 +337,9 @@
 							(damageHP (divide (itmGetProperty weaponUNID 'damagePerProjectile) 2))
 							)
 							{
-								radius: (if (= damageHP 0) 0 (mathScale damageHP 10 140 60 200 50))
-								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 10 140 8 16 50))
-								intensity: (if (= damageHP 0) 0 (mathScale damageHP 10 140 25 50 50))
+								radius: (if (= damageHP 0) 0 (mathScale damageHP 10 200 60 140 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 10 200 8 20 50))
+								intensity: (if (= damageHP 0) 0 (mathScale damageHP 10 200 25 60 50))
 								}
 							)
 					</GetParameters>
@@ -378,12 +378,12 @@
 							(weaponUNID (@ gData 'weaponUNID))
 							)
 							{
-								radius: (if (= damageHP 0) 10 (mathScale damageHP 10 140 30 200 50))
-								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 10 140 24 60 50))
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 10 200 30 140 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 10 200 24 60 50))
 								primaryColor: (resColorBlend "#ffcf00" "#ffa200" (seededRandom weaponUNID 0 255))
 								
 								intensity: (seededRandom weaponUNID 50 100)
-								distortion: (mathScale damageHP 10 140 20 0 100)
+								distortion: (mathScale damageHP 10 200 20 0 100)
 								detail: (seededRandom weaponUNID 30 60)
 								
 								noSound: (= damageHP 0)
@@ -410,12 +410,12 @@
 					<GetParameters>
 						(block (
 							(weaponUNID (@ gData 'weaponUNID))
-							(damageHP (divide (itmGetProperty weaponUNID 'damagePerProjectile) 2))
+							(damageHP (itmGetProperty weaponUNID 'damagePerProjectile))
 							)
 							{
-								radius: (if (= damageHP 0) 0 (mathScale damageHP 10 140 60 200 50))
-								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 10 140 8 16 50))
-								intensity: (if (= damageHP 0) 0 (mathScale damageHP 10 140 25 50 50))
+								radius: (if (= damageHP 0) 0 (mathScale damageHP 10 200 60 140 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 10 200 8 20 50))
+								intensity: (if (= damageHP 0) 0 (mathScale damageHP 10 200 25 60 50))
 								
 								noSound: (= damageHP 0)
 								}

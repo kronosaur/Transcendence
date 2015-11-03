@@ -345,7 +345,7 @@
 						damage=			"ion:4d6; EMP:4"
 						missileSpeed=	"50"
 						lifetime=		"180"
-						maneuverability="1"
+						maneuverRate=	"18"
 
 						sound=			"&snRecoillessCannon;"
 						>

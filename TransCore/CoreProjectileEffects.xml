@@ -555,7 +555,7 @@
 							(damageHP (@ gData 'damageHP))
 							)
 							{
-								emitRate: (mathScale damageHP 50 680 10 60 50)
+								emitRate: (mathScale damageHP 50 680 20 100 50)
 								particleLifetime: (mathScale damageHP 50 680 4 12 50)
 								}
 							)
@@ -578,7 +578,7 @@
 							(damageHP (@ gData 'damageHP))
 							)
 							{
-								radius: (mathScale damageHP 50 680 15 60 50)
+								radius: (mathScale damageHP 50 680 20 60 50)
 								intensity: (mathScale damageHP 50 680 20 50 50)
 								}
 							)

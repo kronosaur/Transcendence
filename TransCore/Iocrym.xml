@@ -62,7 +62,7 @@
 						hitPoints=		"10"
 						accelerationFactor="125"
 						maxMissileSpeed="60"
-						maneuverability="6"
+						maneuverRate=	"3"
 						lifetime=		"360"
 						
 						noFriendlyFire=	"true"

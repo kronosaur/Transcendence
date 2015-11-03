@@ -338,6 +338,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /weaponimages         Generates images of weapon effects.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
 		printf("      [/criteria:xxx]       only items that match criteria.\n");
+		printf("      [/shipClass:x]        UNID of ship class to use as platform.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
 		}
 	else if (pCmdLine->GetAttributeBool(WORD_GENERATOR_SWITCH))

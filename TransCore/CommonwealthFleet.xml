@@ -134,7 +134,7 @@ PLAYER DATA
 				missileSpeed=		"40"
 				hitPoints=			"20"
 				lifetime=			"120"
-				maneuverability=	"2"
+				maneuverRate=		"9"
 
 				effect=				"&efMissileNAMI;"
 				hitEffect=			"&efThermoFragmentExplosion;"
@@ -5244,8 +5244,8 @@ PLAYER DATA
 							)
 							{
 								particleCount: (mathScale damageHP 50 680 100 300 50)
-								length: (mathScale damageHP 50 680 60 180 50)
-								width: (mathScale damageHP 50 680 4 12 50)
+								length: (mathScale damageHP 50 680 80 220 50)
+								width: (mathScale damageHP 50 680 8 24 50)
 								}
 							)
 					</GetParameters>
@@ -5267,7 +5267,7 @@ PLAYER DATA
 							(damageHP (@ gData 'damageHP))
 							)
 							{
-								radius: (mathScale damageHP 50 680 15 60 50)
+								radius: (mathScale damageHP 50 680 30 80 50)
 								intensity: (mathScale damageHP 50 680 20 50 50)
 								}
 							)

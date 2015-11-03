@@ -4080,7 +4080,7 @@
 				damage=				"kinetic:4d6"
 				missileSpeed=		"12"
 				fireRate=			"30"
-				maneuverability=	"2"
+				maneuverRate=		"9"
 				lifetime=			"360"
 				powerUse=			"100"
 

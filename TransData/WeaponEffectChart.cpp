@@ -11,6 +11,7 @@
 #include "TransData.h"
 
 #define CRITERIA_ATTRIB						CONSTLIT("criteria")
+#define SHIP_UNID_ATTRIB					CONSTLIT("shipClass")
 
 #define STYLE_TITLE							CONSTLIT("title")
 
@@ -39,6 +40,12 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 		}
 
 	Selection.Sort();
+
+	//	Ship to use
+
+	DWORD dwPlatformUNID;
+	if (!pCmdLine->FindAttributeInteger(SHIP_UNID_ATTRIB, (int *)&dwPlatformUNID))
+		dwPlatformUNID = WEAPON_PLATFORM_UNID;
 
 	//	Compute some metrics
 
@@ -98,7 +105,7 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 	CSovereign *pPlatformSovereign = Universe.FindSovereign(PLAYER_SOVEREIGN_UNID);
 	CShip *pPlatform;
 	if (pPlatformSovereign == NULL
-				|| pSystem->CreateShip(WEAPON_PLATFORM_UNID,
+				|| pSystem->CreateShip(dwPlatformUNID,
 					NULL,
 					NULL,
 					pPlatformSovereign,
@@ -127,15 +134,19 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Install the largest possible reactor on the ship
 
-	CItem ReactorItem(Universe.FindItemType(REACTOR_UNID), 1);
+	CItemType *pReactorType = Universe.FindItemType(REACTOR_UNID);
+	if (pReactorType)
+		{
+		CItem ReactorItem(pReactorType, 1);
 
-	CItemListManipulator ItemList(pPlatform->GetItemList());
-	ItemList.AddItem(ReactorItem);
-	pPlatform->OnComponentChanged(comCargo);
-	pPlatform->ItemsModified();
-	pPlatform->InvalidateItemListAddRemove();
+		CItemListManipulator ItemList(pPlatform->GetItemList());
+		ItemList.AddItem(ReactorItem);
+		pPlatform->OnComponentChanged(comCargo);
+		pPlatform->ItemsModified();
+		pPlatform->InvalidateItemListAddRemove();
 
-	pPlatform->InstallItemAsDevice(ItemList);
+		pPlatform->InstallItemAsDevice(ItemList);
+		}
 
 	//	Set the POV
 
