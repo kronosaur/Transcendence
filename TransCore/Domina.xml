@@ -563,7 +563,7 @@
 	<StationType UNID="&stDomina;"
 			name=				"(domina)"
 			sovereign=			"&svDomina;"
-			virutal=			"true"
+			virtual=			"true"
 			>
 
 		<Events>
