@@ -832,7 +832,7 @@
 						<OnPaneInit>
 							(scrSetDesc gScreen
 								(cat
-									"\"Excellent! Maybe this weapon will make a diffence, eh? "
+									"\"Excellent! Maybe this weapon will make a difference, eh? "
 									"We'll enter the coordinates of the wreck into your computer, but you'll need a code "
 									"to enter the ship's weapons vault. The code is:"
 									"\n\n" (typGetGlobalData &stCSCEuropaWreck; "VaultCode")

@@ -515,7 +515,7 @@
 			<Main>
 				<Panes>
 					<Default
-							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewous membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
+							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewy membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
 
 						<Actions>
 							<Action name="Fabricator Chamber" default="1" key="F">
@@ -883,7 +883,7 @@
 			<Main>
 				<Panes>
 					<Default
-							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewous membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
+							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewy membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
 
 						<Actions>
 							<Action name="Research Chamber" default="1" key="R">
@@ -1315,7 +1315,7 @@
 			<Main>
 				<Panes>
 					<Default
-							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewous membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
+							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewy membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
 
 						<Actions>
 							<Action name="Trading Chamber" default="1" key="T">
