@@ -22,22 +22,39 @@
 
 	;	Original Integer Math
 
+	{	code: '(add 2)			result: 2	}
 	{	code: '(add 2 2)		result: 4	}
+	{	code: '(add 2 2 3 -5)	result: 2	}
 	{	code: '(subtract 2 2)	result: 0	}
+	{	code: '(multiply 5)		result: 5	}
 	{	code: '(multiply 2 2)	result: 4	}
+	{	code: '(multiply 5 5 4)	result: 100	}
 	{	code: '(divide 4 2)		result: 2	}
 	{	code: '(divide 5 2)		result: 2	}
 
+	{	code: '(add 2.6 2.5)	result: 4	}
+	{	code: '(subtract 2.4 2.5)	result: 0	}
+	{	code: '(multiply 2.5 2.5)	result: 4	}
+	{	code: '(divide 6 2.5)		result: 3	}
+
+	{	code: '(add (list 2 2 3))	result: 7	}
+	{	code: '(multiply (list 2 2 3))	result: 12	}
+
 	;	New Math
 
+	{	code: '(+ 2)			result: 2	}
 	{	code: '(+ 2 2)			result: 4	}
 	{	code: '(+ 2.5 2)		result: 4.5	}
 	{	code: '(+ 2.5 2.5)		result: 5.0	}
 	{	code: '(- 2.5 2.5)		result: 0	}
 	{	code: '(- 2.5 2.0)		result: 0.5	}
+	{	code: '(* 25)			result: 25	}
 	{	code: '(* 25 5 0.2)		result: 25.0	}
 	{	code: '(/ 25 5)			result: 5.0	}
 	{	code: '(/ 5 2)			result: 2.5	}
+
+	{	code: '(+ (list 2 2.0))			result: 4.0	}
+	{	code: '(* (list 2 2 5))			result: 20	}
 
 	;	Functions
 
