@@ -54,6 +54,7 @@
 			<ItemAttribute label="Kabuto"			criteria="* +kabuto;"/>
 			<ItemAttribute label="Makayev"			criteria="* +makayev;"/>
 			<ItemAttribute label="NAMI"				criteria="* +nami;"/>
+			<ItemAttribute label="OmniDefense"		criteria="* +omniDefense;"/>
 			<ItemAttribute label="Pacific Defense"	criteria="* +pacificDefense;"/>
 			<ItemAttribute label="Rasiermesser"		criteria="* +rasiermesser;"/>
 			<ItemAttribute label="Solon"			criteria="* +solon;"/>
