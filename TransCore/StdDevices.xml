@@ -827,7 +827,7 @@
 							)
 					
 					; If we are on top of a stargate, then jump to Elysium
-					(leq (objGetDistance gSource (sysFindObject gSource "GN")) 3)
+					(leq (objGetDistance gSource (sysFindObject gSource "GN")) 6)
 						(if (find (sysGetNodes) "Elysium")
 							(objGateTo gSource "Elysium" "Start" &efStargateOut;)
 							(objSendMessage gSource Nil "Transpace unstable in this area!")
