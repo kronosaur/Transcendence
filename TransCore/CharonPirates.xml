@@ -1273,11 +1273,13 @@
 <!-- SHIP ENCOUNTER TABLES ================================================ -->
 
 	<EncounterTable UNID="&etPirateAmbush1;">
-		<Ship class="&scCorsair;"	count="1d3" orders="attack"	sovereign="&svPirates;"/>
-		<Table>
-			<Ship chance="75" count="1"		class="&scCorsair;"	orders="attack"	sovereign="&svPirates;"/>
-			<Ship chance="25" count="1"		class="&scViking;"	orders="attack"	sovereign="&svPirates;"/>
-		</Table>
+		<Group>
+			<Ship class="&scCorsair;"	count="1d3" orders="attack"	sovereign="&svPirates;"/>
+			<Table>
+				<Ship chance="75" count="1"		class="&scCorsair;"	orders="attack"	sovereign="&svPirates;"/>
+				<Ship chance="25" count="1"		class="&scViking;"	orders="attack"	sovereign="&svPirates;"/>
+			</Table>
+		</Group>
 	</EncounterTable>
 
 	<EncounterTable UNID="&etPirateAmbush2;">
