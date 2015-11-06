@@ -366,5 +366,8 @@
     <Xml Include="CoreFireEffects.xml">
       <Filter>Core Types</Filter>
     </Xml>
+    <Xml Include="RPGShipBroker.xml">
+      <Filter>RPG Library</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

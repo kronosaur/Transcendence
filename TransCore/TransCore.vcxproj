@@ -399,6 +399,7 @@
     </Xml>
     <Xml Include="RPGLibrary.xml" />
     <Xml Include="GalaxyLibrary.xml" />
+    <Xml Include="RPGShipBroker.xml" />
     <Xml Include="StdMiningEquipment.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
