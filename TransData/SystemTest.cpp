@@ -65,7 +65,7 @@ void OutputSystemStats (SystemInfo *pSystemEntry)
 	//	Print
 
 	printf("Level %s: %s (%x) %d\n\n", 
-			strLevel(pSystemEntry->iLevel),
+			(LPSTR)strLevel(pSystemEntry->iLevel),
 			pSystemEntry->sName.GetASCIIZPointer(),
 			pSystemEntry->dwSystemType,
 			pSystemEntry->iCount);

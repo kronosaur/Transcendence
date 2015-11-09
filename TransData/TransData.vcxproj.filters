@@ -162,16 +162,12 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\Game\TransData.xml">
-      <Filter>XML Files</Filter>
-    </Xml>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\Game\TLisp\MathUnitTest.tlisp">
       <Filter>TLisp Files</Filter>
     </None>
     <None Include="..\Game\TLisp\ComparisonUnitTest.tlisp">
       <Filter>TLisp Files</Filter>
     </None>
+    <None Include="..\Game\TransData.xml" />
   </ItemGroup>
 </Project>
