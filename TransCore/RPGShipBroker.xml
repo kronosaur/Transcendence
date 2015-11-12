@@ -44,21 +44,213 @@
 			<Default>
 				<OnPaneInit>
 					(block (
+						(shipIDList (objGetData gSource "shipBroker:list"))
+						(selIndex (scrGetData gScreen 'selIndex))
 						(selData (scrGetData gScreen 'selData))
 						(selObj (objGetObjByID selData))
+						(currency (objGetProperty gSource 'currency))
+						
+						;	Compute some prices
+						
+						(playerShipPrice (objGetShipBuyPrice gSource gPlayerShip))
+						(newShipPrice (objGetShipSellPrice gSource selObj))
+						(tradeInPrice (- newShipPrice playerShipPrice))
+						
+						;	Compute some descriptions
+						
+						(newShipDesc (objGetProperty selObj 'playerDesc))
+						
+						;	Vars
+						
+						(canBuy Nil)
 						)
 						
 						(rpgSetShipStatsDisplay selObj { })
+						
+						;	Set the description
+						
+						(scrSetDesc gScreen
+							newShipDesc
+							
+							"\r\n"
+							"\r\n"
+						
+							(switch
+								(not playerShipPrice)
+									(scrTranslate gScreen 'descNoTradeIn)
+									
+								(gr tradeInPrice (objGetBalance gPlayerShip currency))
+									(scrTranslate gScreen 'descCantAfford { name:(objGetName selObj 0x04) price:(fmtCurrency currency tradeInPrice) })
+									
+								(ls tradeInPrice 0)
+									(block Nil
+										(setq canBuy True)
+										(scrTranslate gScreen 'descTradeInRefund { name:(objGetName selObj 0x04) price:(fmtCurrency currency (- tradeInPrice)) })
+										)
+									
+								(block Nil
+									(setq canBuy True)
+									(scrTranslate gScreen 'descTradeIn { name:(objGetName selObj 0x04) price:(fmtCurrency currency tradeInPrice) })
+									)
+								)
+							)
+							
+						;	Remember some calculations
+						
+						(scrSetData gScreen 'tradeInPrice tradeInPrice)
+						
+						;	Initialize actions
+						
+						(scrEnableAction gScreen 'actionBuyShip canBuy)
+						(scrShowAction gScreen 'actionNextShip (ls selIndex (- (count shipIDList) 1)))
+						(scrShowAction gScreen 'actionPrevShip (!= selIndex 0))
 						)
 				</OnPaneInit>
 				
 				<Actions>
+					<Action id="actionBuyShip">
+						(block (
+							(currency (objGetProperty gSource 'currency))
+							(tradeInPrice (scrGetData gScreen 'tradeInPrice))
+							
+							(shipIDList (objGetData gSource "shipBroker:list"))
+							(selData (scrGetData gScreen 'selData))
+							(selObj (objGetObjByID selData))
+							
+							(oldShip gPlayerShip)
+							(portPos nil)
+							)
+							
+							;	Move all the cargo from the player's ship to the new ship
+							
+							(enum (objGetItems gPlayerShip "*U") theItem
+								(block ()
+									(objRemoveItem gPlayerShip theItem)
+									(objAddItem selObj theItem)
+									)
+								)
+								
+							;	Remove the ship from our list of ships to sell
+							
+							(setq shipIDList (filter shipIDList theID (!= theID (objGetID selObj))))
+							(objSetData gSource "shipBroker:list" shipIDList)
+							
+							;	Charge the player
+							
+							(if (geq tradeInPrice 0)
+								(objCharge gPlayerShip currency tradeInPrice)
+								(objCredit gPlayerShip currency (- tradeInPrice))
+								)
+								
+							;	Trade ships
+							
+							(objResume selObj)
+							(plyChangeShip gPlayer selObj)
+							
+							;	The old ship is suspended and possibly available for sale
+							;	(But only if we can sell it).
+							
+							(if (objGetShipSellPrice gSource oldShip)
+								(objSuspend oldShip)
+									
+								;	Otherwise, we temporarily dock here and eventually leave.
+								
+								(block ()
+									(shpCancelOrders oldShip)
+									(shpOrder oldShip 'dock gSource)
+									(shpOrder oldShip 'wait (random 10 15))
+									(shpOrder oldShip 'gate)
+									)
+								)
+								
+							;	Position the new ship near a docking port
+							
+							(setq portPos
+								(@	(random
+										(filter (objGetProperty gSource 'dockingPorts) portDesc
+											(= (@ portDesc 'status) 'empty)
+											)
+										)
+									'pos
+									)
+								)
+							(if portPos
+								(objSetPos selObj portPos)
+								)
+								
+							(scrExitScreen gScreen)
+							)
+					</Action>
+					<Action id="actionNextShip"	minor="true">
+						(block (
+							(shipIDList (objGetData gSource "shipBroker:list"))
+							(selIndex (scrGetData gScreen 'selIndex))
+							(selData (scrGetData gScreen 'selData))
+							)
+						
+							(if (ls selIndex (- (count shipIDList) 1))
+								(block ()
+									(setq selIndex (+ selIndex 1))
+									(scrSetData gScreen 'selIndex selIndex)
+									(scrSetData gScreen 'selData (@ shipIDList selIndex))
+									
+									(scrShowPane gScreen "Default")
+									)
+								)
+							)
+					</Action>
+					<Action id="actionPrevShip" minor="true">
+						(block (
+							(shipIDList (objGetData gSource "shipBroker:list"))
+							(selIndex (scrGetData gScreen 'selIndex))
+							(selData (scrGetData gScreen 'selData))
+							)
+						
+							(if (gr selIndex 0)
+								(block ()
+									(setq selIndex (- selIndex 1))
+									(scrSetData gScreen 'selIndex selIndex)
+									(scrSetData gScreen 'selData (@ shipIDList selIndex))
+									
+									(scrShowPane gScreen "Default")
+									)
+								)
+							)
+					</Action>
 					<Action id="actionDone">
 						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
 		</Panes>
+		
+		<Language>
+			<Text id="actionBuyShip">"[B]uy Ship"</Text>
+			<Text id="actionNextShip">"&gt;[RightArrow] Next Ship"</Text>
+			<Text id="actionPrevShip">"&lt;[LeftArrow] Previous Ship"</Text>
+			
+			<Text id="descTradeIn">
+				(cat
+					"\"You can trade in your ship and purchase " (@ gData 'name) " for " (@ gData 'price) ".\""
+					)
+			</Text>
+			<Text id="descTradeInRefund">
+				(cat
+					"\"This ship is not as good as yours, but if you want to trade yours in, we'll pay you " (@ gData 'price) ".\""
+					)
+			</Text>
+			<Text id="descNoTradeIn">
+				(cat
+					"\"Unfortunately, we cannot offer you a trade-in because your ship is worthless to us.\""
+					)
+			</Text>
+			<Text id="descCantAfford">
+				(cat
+					"\"You can trade in your ship and purchase " (@ gData 'name) " for " (@ gData 'price) ". "
+					"Unfortunately, you cannot afford the cost.\""
+					)
+			</Text>
+		</Language>
 	</DockScreen>
 	
 <!-- GLOBALS -->

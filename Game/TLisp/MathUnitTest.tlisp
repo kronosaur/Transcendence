@@ -48,6 +48,9 @@
 	{	code: '(+ 2.5 2.5)		result: 5.0	}
 	{	code: '(- 2.5 2.5)		result: 0	}
 	{	code: '(- 2.5 2.0)		result: 0.5	}
+	{	code: '(- 100)			result: -100 }
+	{	code: '(- 0.5)			result: -0.5 }
+	{	code: '(- -0.5)			result: 0.5 }
 	{	code: '(* 25)			result: 25	}
 	{	code: '(* 25 5 0.2)		result: 25.0	}
 	{	code: '(/ 25 5)			result: 5.0	}

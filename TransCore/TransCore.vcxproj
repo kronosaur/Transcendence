@@ -65,7 +65,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -399,7 +401,9 @@
     </Xml>
     <Xml Include="RPGLibrary.xml" />
     <Xml Include="GalaxyLibrary.xml" />
-    <Xml Include="RPGShipBroker.xml" />
+    <Xml Include="RPGShipBroker.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="StdMiningEquipment.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
