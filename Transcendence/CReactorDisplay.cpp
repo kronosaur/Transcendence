@@ -104,9 +104,9 @@ void CReactorDisplay::Update (void)
 
 	//	Calculate fuel values
 
-	int iFuelLeft = pShip->GetFuelLeft();
-	int iMaxFuel = pShip->GetMaxFuel();
-	int iFuelLevel = (iMaxFuel > 0 ? (Min((iFuelLeft * 100 / iMaxFuel) + 1, 100)) : 0);
+	Metric rFuelLeft = pShip->GetFuelLeft();
+	Metric rMaxFuel = pShip->GetMaxFuel();
+	int iFuelLevel = (rMaxFuel > 0.0 ? ((int)Min((rFuelLeft * 100.0 / rMaxFuel) + 1.0, 100.0)) : 0);
 
 	//	Paint the fuel level
 
