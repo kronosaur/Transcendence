@@ -734,14 +734,22 @@
 							(switch
 								(not (isint itemStatus))
 									{
-										visible: Nil	;	If we cannot be removed, then the Remove action will show the error
+										;	If we cannot be removed, then the Remove action will show the error,
+										;	unless it's a reactor, in which case we have to show it here (because
+										;	Remove action never shows reactors).
+										
+										visible: (itmMatches theItem "r")
 										enabled: Nil
 										desc: itemStatus
 										}
 								
 								(not (eq itemStatus 0))
 									{
-										visible: Nil	;	If we cannot be removed, then the Remove action will show the error
+										;	If we cannot be removed, then the Remove action will show the error,
+										;	unless it's a reactor, in which case we have to show it here (because
+										;	Remove action never shows reactors).
+										
+										visible: (itmMatches theItem "r")
 										enabled: Nil
 										desc: (scrTranslate gScreen "actionReplace:cannotReplace" { item:theItem })
 										}

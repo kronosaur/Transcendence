@@ -49,7 +49,9 @@ class IDockScreenDisplay
 		struct SBackgroundDesc
 			{
 			SBackgroundDesc (void) :
-					iType(backgroundDefault)
+					iType(backgroundDefault),
+					dwImageID(0),
+					pObj(NULL)
 				{ }
 
 			EBackgroundTypes iType;			//	Type of image defined
@@ -485,6 +487,10 @@ class CDockScreen : public IScreenController
 
 		//	Events
 		ICCItem *m_pOnScreenUpdate;
+
+		//	Runtime
+		IDockScreenDisplay::SBackgroundDesc m_DeferredBackground;
+		TSortMap<CString, CString> m_DeferredDisplayText;
 	};
 
 struct SDockFrame

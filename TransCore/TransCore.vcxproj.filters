@@ -121,9 +121,6 @@
     <None Include="RogueFleet.xml">
       <Filter>Human Space Library</Filter>
     </None>
-    <None Include="RPGAnalyzers.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
     <None Include="SistersOfDomina.xml">
       <Filter>Human Space Library</Filter>
     </None>
@@ -324,6 +321,9 @@
     </None>
     <None Include="GalaxyEffects.xml">
       <Filter>Transcendence Galaxy Library</Filter>
+    </None>
+    <None Include="RPGAnalyzers.xml">
+      <Filter>RPG Library</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -232,7 +232,8 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 
 		//	Load the text code
 
-		pDControl->pCode = CC.Link(pDesc->GetContentText(0), 0, NULL);
+		const CString &sCode = pDesc->GetContentText(0);
+		pDControl->pCode = (!sCode.IsBlank() ? CC.Link(sCode, 0, NULL) : NULL);
 		}
 	else if (strEquals(pDesc->GetTag(), IMAGE_TAG))
 		{
@@ -265,7 +266,8 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 
 		//	Load the code that returns the image
 
-		pDControl->pCode = CC.Link(pDesc->GetContentText(0), 0, NULL);
+		const CString &sCode = pDesc->GetContentText(0);
+		pDControl->pCode = (!sCode.IsBlank() ? CC.Link(sCode, 0, NULL) : NULL);
 		}
 	else if (strEquals(pDesc->GetTag(), CANVAS_TAG))
 		{
@@ -277,7 +279,8 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 
 		//	Load the draw code
 
-		pDControl->pCode = CC.Link(pDesc->GetContentText(0), 0, NULL);
+		const CString &sCode = pDesc->GetContentText(0);
+		pDControl->pCode = (!sCode.IsBlank() ? CC.Link(sCode, 0, NULL) : NULL);
 		}
 	else if (strEquals(pDesc->GetTag(), GROUP_TAG))
 		{
@@ -297,7 +300,8 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 
 		//	Load the text code
 
-		pDControl->pCode = CC.Link(pDesc->GetContentText(0), 0, NULL);
+		const CString &sCode = pDesc->GetContentText(0);
+		pDControl->pCode = (!sCode.IsBlank() ? CC.Link(sCode, 0, NULL) : NULL);
 		}
 
 	//	Done
@@ -1121,6 +1125,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 	{
 	ALERROR error;
+	int i;
 
 	//	Make sure we clean up first
 
@@ -1217,6 +1222,15 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 		return ERR_FAIL;
 		}
 
+	//	If we have a deferred background setting, then use that (and reset it
+	//	so that we don't use it again).
+
+	if (m_DeferredBackground.iType != IDockScreenDisplay::backgroundDefault)
+		{
+		DisplayOptions.BackgroundDesc = m_DeferredBackground;
+		m_DeferredBackground.iType = IDockScreenDisplay::backgroundDefault;
+		}
+
 	//	Creates the title area
 
 	if (error = CreateTitleArea(m_pDesc, m_pScreen, m_rcBackground, m_rcScreen))
@@ -1268,6 +1282,13 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 		{
 		if (error = InitDisplay(DisplayCtx.pDisplayDesc, m_pScreen, m_rcScreen))
 			return error;
+
+		//	Set any deferred text
+
+		for (i = 0; i < m_DeferredDisplayText.GetCount(); i++)
+			SetDisplayText(m_DeferredDisplayText.GetKey(i), m_DeferredDisplayText[i]);
+
+		m_DeferredDisplayText.DeleteAll();
 		}
 
 	//	If the screen did not define a background image, then ask the display
@@ -1579,6 +1600,15 @@ void CDockScreen::SetBackground (const IDockScreenDisplay::SBackgroundDesc &Desc
 //	Sets the dock screen background
 
 	{
+	//	If we haven't yet initialized the screen (e.g., we're inside of
+	//	OnScreenInit) then we need to defer this.
+
+	if (m_pScreen == NULL)
+		{
+		m_DeferredBackground = Desc;
+		return;
+		}
+
 	//	Use a default, if necessary
 
 	if (Desc.iType == IDockScreenDisplay::backgroundDefault)
@@ -1640,6 +1670,17 @@ ALERROR CDockScreen::SetDisplayText (const CString &sID, const CString &sText)
 //	Sets the text for a display control
 
 	{
+	//	If the screen is not yet initialized, then we need to defer the setting
+	//	until later.
+
+	if (m_pScreen == NULL)
+		{
+		m_DeferredDisplayText.SetAt(sID, sText);
+		return NOERROR;
+		}
+
+	//	Set the value
+
 	SDisplayControl *pControl = FindDisplayControl(sID);
 	if (pControl == NULL || pControl->pArea == NULL)
 		return ERR_FAIL;

@@ -989,6 +989,14 @@
 				)
 		</InitialPane>
 		
+		<OnScreenInit>
+			(block ()
+				;	Background
+						
+				(rpgSetShipStatsDisplay gPlayerShip { })
+				)
+		</OnScreenInit>
+		
 		<Display>
 			<Text id="leftCol"	left="0" right="0" top="280" bottom="0" align="left" font="Medium" color="#daebff"/>
 			<Text id="rightCol"	left="0" right="0" top="280" bottom="0" align="right" font="Medium" color="#daebff"/>
@@ -1013,10 +1021,6 @@
 						
 						(actionStatus Nil)
 						)
-						
-						;	Background
-						
-						(rpgSetShipStatsDisplay gPlayerShip { })
 						
 						;	Refuel services
 						
