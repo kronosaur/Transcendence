@@ -562,14 +562,15 @@ class CArmorDisplay
 			CG32bitPixel rgbColor;
 			};
 
-
-		CUniverse *m_pUniverse;
 		CPlayerShipController *m_pPlayer;
+		int m_iSelection;
+
+		IHUDPainter *m_pArmorPainter;
+		IHUDPainter *m_pShieldsPainter;
 
 		RECT m_rcRect;
 		CG32bitImage m_Buffer;
 		const SFontTable *m_pFonts;
-		int m_iSelection;
 		TArray<STextPaint> m_Text;
 
 		DWORD m_dwCachedShipID;				//	Cached painters for this ship ID.

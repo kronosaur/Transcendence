@@ -42,6 +42,10 @@ bld/
 [Oo]bj/
 *.tlog
 
+## Visual Studio Config files
+
+.vs/config/applicationhost.config
+
 # Roslyn cache directories
 *.ide/
 
