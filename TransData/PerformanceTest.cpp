@@ -19,8 +19,168 @@ const int DEFAULT_UPDATE =		1000;
 const int SAMPLE_SIZE =			300;
 
 int GetValidObjCount (CSystem *pSystem);
+void TestPolygons (CUniverse &Universe, CXMLElement *pCmdLine);
+void TestUpdate (CUniverse &Universe, CXMLElement *pCmdLine);
 
 void PerformanceTest (CUniverse &Universe, CXMLElement *pCmdLine)
+	{
+	if (pCmdLine->FindAttribute(CONSTLIT("testPolygons")))
+		TestPolygons(Universe, pCmdLine);
+	else
+		TestUpdate(Universe, pCmdLine);
+	}
+
+int GetValidObjCount (CSystem *pSystem)
+	{
+	int i;
+	int iCount = 0;
+
+	for (i = 0; i < pSystem->GetObjectCount(); i++)
+		{
+		CSpaceObject *pObj = pSystem->GetObject(i);
+		if (pObj && !pObj->IsDestroyed())
+			iCount++;
+		}
+
+	return iCount;
+	}
+
+void TestPolygons (CUniverse &Universe, CXMLElement *pCmdLine)
+	{
+	int i;
+
+	const int FRAME_WIDTH = 256;
+	const int FRAME_HEIGHT = 256;
+	const int OUTPUT_WIDTH = FRAME_WIDTH * 2;
+	const int OUTPUT_HEIGHT = FRAME_HEIGHT;
+
+	//	Options
+
+	int iCount = pCmdLine->GetAttributeInteger(CONSTLIT("count"));
+	if (iCount == 0)
+		iCount = 1000;
+
+	int iBltCount = Max(1, iCount / 10);
+
+	//	Create the output image
+
+	CG32bitImage Output;
+	Output.Create(OUTPUT_WIDTH, OUTPUT_HEIGHT, CG32bitImage::alpha8);
+
+	//	Create a regular polygon
+
+	const int iSides = 17;
+	const Metric rRadius = 100.0;
+	const Metric rAngleStep = (TAU / iSides);
+
+	TArray<CVector> Shape1;
+	Shape1.InsertEmpty(iSides);
+	for (i = 0; i < iSides; i++)
+		Shape1[i] = CVector::FromPolar(i * rAngleStep, rRadius);
+
+	//	Create a point array, which we'll use for the binary region
+
+	SPoint Shape1Points[iSides];
+	for (i = 0; i < iSides; i++)
+		{
+		Shape1Points[i].x = (int)Shape1[i].GetX();
+		Shape1Points[i].y = (int)Shape1[i].GetY();
+		}
+
+	//	Create a path
+
+	CGPath Shape1Path;
+	Shape1Path.Init(Shape1);
+
+	//	We do timing tests first
+
+	TNumberSeries<Metric> Timing;
+
+	//	Time rasterization of a binary region
+
+	const int CALLS_PER_SAMPLE = 1000;
+	const int BLTS_PER_SAMPLE = 100;
+	DWORD dwStart = ::GetTickCount();
+	for (i = 0; i < iCount; i++)
+		{
+		CG16bitBinaryRegion Region;
+		Region.CreateFromPolygon(iSides, Shape1Points);
+
+		if (((i + 1) % CALLS_PER_SAMPLE) == 0)
+			Timing.Insert((Metric)::sysGetTicksElapsed(dwStart, &dwStart));
+		}
+
+	printf("CG16bitBinaryRegion::CreateFromPolygon: %s ms per %d\n", (LPSTR)strFromDouble(Timing.GetMean()), CALLS_PER_SAMPLE);
+
+	//	Time rasterization of path
+
+	Timing.DeleteAll();
+	dwStart = ::GetTickCount();
+	for (i = 0; i < iCount; i++)
+		{
+
+		CGRegion Region;
+		Shape1Path.Rasterize(&Region, 1);
+
+		if (((i + 1) % CALLS_PER_SAMPLE) == 0)
+			Timing.Insert((Metric)::sysGetTicksElapsed(dwStart, &dwStart));
+		}
+
+	printf("CGPath::Rasterize: %s ms per %d\n", (LPSTR)strFromDouble(Timing.GetMean()), CALLS_PER_SAMPLE);
+
+	//	Create the regions
+
+	CG16bitBinaryRegion Shape1BinaryRegion;
+	Shape1BinaryRegion.CreateFromPolygon(iSides, Shape1Points);
+
+	CGRegion Shape1Region;
+	Shape1Path.Rasterize(&Shape1Region, 4);
+
+	//	Time to blt
+
+	Timing.DeleteAll();
+	dwStart = ::GetTickCount();
+	for (i = 0; i < iBltCount; i++)
+		{
+		CGDraw::Region(Output, (FRAME_WIDTH / 2), (FRAME_HEIGHT / 2), Shape1BinaryRegion, CG32bitPixel(255, 255, 255));
+
+		if (((i + 1) % BLTS_PER_SAMPLE) == 0)
+			Timing.Insert((Metric)::sysGetTicksElapsed(dwStart, &dwStart));
+		}
+
+	printf("CGDraw::Region (CG16bitBinaryRegion): %s ms per %d\n", (LPSTR)strFromDouble(Timing.GetMean()), BLTS_PER_SAMPLE);
+
+	Timing.DeleteAll();
+	dwStart = ::GetTickCount();
+	for (i = 0; i < iBltCount; i++)
+		{
+		CGDraw::Region(Output, (FRAME_WIDTH / 2), (FRAME_HEIGHT / 2), Shape1Region, CG32bitPixel(255, 255, 255));
+
+		if (((i + 1) % BLTS_PER_SAMPLE) == 0)
+			Timing.Insert((Metric)::sysGetTicksElapsed(dwStart, &dwStart));
+		}
+
+	printf("CGDraw::Region (CGRegion): %s ms per %d\n", (LPSTR)strFromDouble(Timing.GetMean()), BLTS_PER_SAMPLE);
+
+	//	Clear
+
+	Output.Fill(CG32bitPixel(0, 0, 0));
+
+	//	Blt result
+
+	int x = 0;
+	int y = 0;
+	CGDraw::Region(Output, x + (FRAME_WIDTH / 2), y + (FRAME_HEIGHT / 2), Shape1BinaryRegion, CG32bitPixel(255, 255, 255));
+
+	x = FRAME_WIDTH;
+	CGDraw::Region(Output, x + (FRAME_WIDTH / 2), y + (FRAME_HEIGHT / 2), Shape1Region, CG32bitPixel(255, 255, 255));
+
+	//	Copy to clipboard
+
+	OutputImage(Output, NULL_STR);
+	}
+
+void TestUpdate (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
 	int i;
 	int iTrial;
@@ -154,19 +314,4 @@ void PerformanceTest (CUniverse &Universe, CXMLElement *pCmdLine)
 	printf("Total updates: %d\n", iUpdateCount * iCount);
 	printf("Average time for %d updates: %s\n", SAMPLE_SIZE, sTime.GetASCIIZPointer());
 	printf("Average time per update: %s\n", sTime2.GetASCIIZPointer());
-	}
-
-int GetValidObjCount (CSystem *pSystem)
-	{
-	int i;
-	int iCount = 0;
-
-	for (i = 0; i < pSystem->GetObjectCount(); i++)
-		{
-		CSpaceObject *pObj = pSystem->GetObject(i);
-		if (pObj && !pObj->IsDestroyed())
-			iCount++;
-		}
-
-	return iCount;
 	}
