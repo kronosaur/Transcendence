@@ -9,10 +9,7 @@ CArmorDisplay::CArmorDisplay (void) :
 		m_pPlayer(NULL),
 		m_iSelection(-1),
 		m_pArmorPainter(NULL),
-		m_pShieldsPainter(NULL),
-
-		m_dwCachedShipID(0),
-		m_pShieldPainter(NULL)
+		m_pShieldsPainter(NULL)
 
 //	CArmorDisplay constructor
 
@@ -46,16 +43,32 @@ void CArmorDisplay::CleanUp (void)
 		m_pShieldsPainter = NULL;
 		}
 
-	if (m_pShieldPainter)
-		{
-		m_pShieldPainter->Delete();
-		m_pShieldPainter = NULL;
-		}
-
 	m_pPlayer = NULL;
 	}
 
-ALERROR CArmorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect)
+RECT CArmorDisplay::GetRect (void) const
+
+//	GetRect
+//
+//	Returns the RECT for the display. Only valid after Init.
+
+	{
+	RECT rcRect;
+
+	if (m_pArmorPainter == NULL)
+		{
+		rcRect.left = 0;
+		rcRect.right = 0;
+		rcRect.top = 0;
+		rcRect.bottom = 0;
+		}
+	else
+		m_pArmorPainter->GetRect(&rcRect);
+
+	return rcRect;
+	}
+
+ALERROR CArmorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect, DWORD dwLocation)
 
 //	Init
 //
@@ -65,7 +78,6 @@ ALERROR CArmorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect)
 	CleanUp();
 
 	m_pPlayer = pPlayer;
-	m_rcRect = rcRect;
 
 	//	Create the two painters
 
@@ -74,6 +86,9 @@ ALERROR CArmorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect)
 	SDesignLoadCtx Ctx;
 	m_pArmorPainter = IHUDPainter::Create(Ctx, pShip->GetClass(), IHUDPainter::hudArmor);
 	m_pShieldsPainter = IHUDPainter::Create(Ctx, pShip->GetClass(), IHUDPainter::hudShields);
+
+	if (m_pArmorPainter)
+		m_pArmorPainter->SetLocation(rcRect, dwLocation);
 
 	return NOERROR;
 	}
@@ -94,7 +109,7 @@ void CArmorDisplay::Paint (CG32bitImage &Dest)
 	PaintCtx.iSegmentSelected = m_iSelection;
 	PaintCtx.pShieldsHUD = m_pShieldsPainter;
 
-	m_pArmorPainter->Paint(Dest, m_rcRect.left, m_rcRect.top, PaintCtx);
+	m_pArmorPainter->Paint(Dest, PaintCtx);
 	}
 
 void CArmorDisplay::SetSelection (int iSelection)

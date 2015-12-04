@@ -458,13 +458,7 @@ ALERROR CTranscendenceWnd::InitDisplays (void)
 	//	Initialize some displays (these need to be done after we've
 	//	created the universe).
 
-	rcRect.left = m_rcScreen.right - (ARMOR_DISPLAY_WIDTH + ARMOR_DISPLAY_MARGIN_X);
-	rcRect.top = g_cyScreen - (ARMOR_DISPLAY_HEIGHT + ARMOR_DISPLAY_MARGIN_Y);
-	//rcRect.top = 0;
-	rcRect.right = rcRect.left + ARMOR_DISPLAY_WIDTH;
-	rcRect.bottom = rcRect.top + ARMOR_DISPLAY_HEIGHT;
-	m_ArmorDisplay.SetFontTable(&m_Fonts);
-	m_ArmorDisplay.Init(GetPlayer(), rcRect);
+	m_ArmorDisplay.Init(GetPlayer(), m_rcScreen, IHUDPainter::locAlignBottom | IHUDPainter::locAlignRight);
 	m_ArmorDisplay.Update();
 
 	rcRect.left = 12;

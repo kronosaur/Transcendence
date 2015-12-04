@@ -545,36 +545,18 @@ class CArmorDisplay
 		~CArmorDisplay (void);
 
 		void CleanUp (void);
-		inline const RECT &GetRect (void) { return m_rcRect; }
-		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect);
+		RECT GetRect (void) const;
+		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect, DWORD dwLocation);
 		void Paint (CG32bitImage &Dest);
-		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 		void SetSelection (int iSelection);
 		void Update (void);
 
 	private:
-		struct STextPaint
-			{
-			CString sText;
-			int x;
-			int y;
-			const CG16bitFont *pFont;
-			CG32bitPixel rgbColor;
-			};
-
 		CPlayerShipController *m_pPlayer;
 		int m_iSelection;
 
 		IHUDPainter *m_pArmorPainter;
 		IHUDPainter *m_pShieldsPainter;
-
-		RECT m_rcRect;
-		CG32bitImage m_Buffer;
-		const SFontTable *m_pFonts;
-		TArray<STextPaint> m_Text;
-
-		DWORD m_dwCachedShipID;				//	Cached painters for this ship ID.
-		IEffectPainter *m_pShieldPainter;	//	Caches shield painter
 	};
 
 #define MAX_SCORES			100
