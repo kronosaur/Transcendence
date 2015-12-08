@@ -1018,23 +1018,15 @@ class CTargetDisplay
 		~CTargetDisplay (void);
 
 		void CleanUp (void);
-		inline const RECT &GetRect (void) { return m_rcRect; }
-		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect);
-		inline void Invalidate (void) { m_bInvalid = true; }
+		RECT GetRect (void) const;
+		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect, DWORD dwLocation);
+		inline void Invalidate (void) { if (m_pHUDPainter) m_pHUDPainter->Invalidate(); }
 		void Paint (CG32bitImage &Dest);
-		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 
 	private:
-		void PaintDeviceStatus (CShip *pShip, DeviceNames iDev, int x, int y);
-		void Update (void);
-
 		CPlayerShipController *m_pPlayer;
 
-		RECT m_rcRect;
-		CG32bitImage m_Buffer;
-		CG32bitImage *m_pBackground;
-		const SFontTable *m_pFonts;
-		bool m_bInvalid;
+		IHUDPainter *m_pHUDPainter;
 	};
 
 class CUIResources

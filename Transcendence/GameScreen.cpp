@@ -459,7 +459,6 @@ ALERROR CTranscendenceWnd::InitDisplays (void)
 	//	created the universe).
 
 	m_ArmorDisplay.Init(GetPlayer(), m_rcScreen, IHUDPainter::locAlignBottom | IHUDPainter::locAlignRight);
-	m_ArmorDisplay.Update();
 
 	rcRect.left = 12;
 	rcRect.top = 12;
@@ -469,13 +468,7 @@ ALERROR CTranscendenceWnd::InitDisplays (void)
 	m_ReactorDisplay.Init(GetPlayer(), rcRect);
 	m_ReactorDisplay.Update();
 
-	//rcRect.left = (RectWidth(m_rcScreen) - TARGET_DISPLAY_WIDTH) / 2;
-	rcRect.left = 0;
-	rcRect.right = rcRect.left + TARGET_DISPLAY_WIDTH;
-	rcRect.top = m_rcScreen.bottom - TARGET_DISPLAY_HEIGHT;
-	rcRect.bottom = m_rcScreen.bottom;
-	m_TargetDisplay.SetFontTable(&m_Fonts);
-	m_TargetDisplay.Init(GetPlayer(), rcRect);
+	m_TargetDisplay.Init(GetPlayer(), m_rcScreen, IHUDPainter::locAlignBottom | IHUDPainter::locAlignLeft);
 
 	rcRect.left = m_rcScreen.right - (MENU_DISPLAY_WIDTH + 4);
 	rcRect.top = (RectHeight(m_rcScreen) - MENU_DISPLAY_HEIGHT) / 2;
