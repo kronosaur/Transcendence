@@ -945,20 +945,16 @@ class CReactorDisplay
 		~CReactorDisplay (void);
 
 		void CleanUp (void);
-		inline const RECT &GetRect (void) { return m_rcRect; }
-		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect);
+		RECT GetRect (void) const;
+		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect, DWORD dwLocation);
+		inline void Invalidate (void) { if (m_pHUDPainter) m_pHUDPainter->Invalidate(); }
 		void Paint (CG32bitImage &Dest);
-		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
-		void Update (void);
+		void Update (int iTick);
 
 	private:
 		CPlayerShipController *m_pPlayer;
 
-		RECT m_rcRect;
-		CG32bitImage m_Buffer;
-		const SFontTable *m_pFonts;
-		int m_iTickCount;
-		int m_iOverloading;
+		IHUDPainter *m_pHUDPainter;
 	};
 
 class CCommandLineDisplay

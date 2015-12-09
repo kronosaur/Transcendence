@@ -102,7 +102,7 @@ ALERROR CTargetDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect
 	CShip *pShip = m_pPlayer->GetShip();
 
 	SDesignLoadCtx Ctx;
-	m_pHUDPainter = IHUDPainter::Create(Ctx, pShip->GetClass(), IHUDPainter::hudTargeting);
+	m_pHUDPainter = IHUDPainter::Create(Ctx, pShip->GetClass(), hudTargeting);
 	if (m_pHUDPainter)
 		m_pHUDPainter->SetLocation(rcRect, dwLocation);
 

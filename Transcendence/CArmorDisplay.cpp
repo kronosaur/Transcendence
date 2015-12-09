@@ -84,8 +84,8 @@ ALERROR CArmorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect,
 	CShip *pShip = m_pPlayer->GetShip();
 
 	SDesignLoadCtx Ctx;
-	m_pArmorPainter = IHUDPainter::Create(Ctx, pShip->GetClass(), IHUDPainter::hudArmor);
-	m_pShieldsPainter = IHUDPainter::Create(Ctx, pShip->GetClass(), IHUDPainter::hudShields);
+	m_pArmorPainter = IHUDPainter::Create(Ctx, pShip->GetClass(), hudArmor);
+	m_pShieldsPainter = IHUDPainter::Create(Ctx, pShip->GetClass(), hudShields);
 
 	if (m_pArmorPainter)
 		m_pArmorPainter->SetLocation(rcRect, dwLocation);
