@@ -1091,6 +1091,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		inline bool InGameState (void) { return m_State == gsInGame; }
 		inline bool InMap (void) { return m_bShowingMap; }
 		inline bool InMenu (void) { return (m_CurrentMenu != menuNone || m_CurrentPicker != pickNone); }
+		ALERROR InitDisplays (void);
 		void OnObjDestroyed (const SDestroyCtx &Ctx);
 		void OnStargateSystemReady (void);
 		void PlayerDestroyed (const CString &sText, bool bResurrectionPending);
@@ -1201,7 +1202,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void CleanUpDisplays (void);
 		void ClearDebugLines (void);
 		void ComputeScreenSize (void);
-		ALERROR InitDisplays (void);
 		void LoadPreferences (void);
 		void PaintDebugLines (void);
 		void PaintFrameRate (void);
@@ -1320,9 +1320,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 
 		//	Stargate effect
 		CStargateEffectPainter *m_pStargateEffect;
-
-		//	Performance options
-		bool m_bTransparencyEffects;
 
 		//	hWnds
 		HWND m_hWnd;

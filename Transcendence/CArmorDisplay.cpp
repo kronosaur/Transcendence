@@ -108,6 +108,7 @@ void CArmorDisplay::Paint (CG32bitImage &Dest)
 	PaintCtx.pSource = m_pPlayer->GetShip();
 	PaintCtx.iSegmentSelected = m_iSelection;
 	PaintCtx.pShieldsHUD = m_pShieldsPainter;
+	PaintCtx.byOpacity = g_pUniverse->GetSFXOptions().GetHUDOpacity();
 
 	m_pArmorPainter->Paint(Dest, PaintCtx);
 	}

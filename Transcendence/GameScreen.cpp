@@ -421,10 +421,6 @@ ALERROR CTranscendenceWnd::InitDisplays (void)
 	{
 	RECT rcRect;
 
-	//	Set up some options
-
-	m_bTransparencyEffects = true;
-
 	//	Find some bitmaps that we need. NOTE: We lock the images because we
 	//	don't dispose of them.
 	//
@@ -461,17 +457,6 @@ ALERROR CTranscendenceWnd::InitDisplays (void)
 	m_ArmorDisplay.Init(GetPlayer(), m_rcScreen, IHUDPainter::locAlignBottom | IHUDPainter::locAlignRight);
 	m_ReactorDisplay.Init(GetPlayer(), m_rcScreen, IHUDPainter::locAlignTop | IHUDPainter::locAlignLeft);
 	m_TargetDisplay.Init(GetPlayer(), m_rcScreen, IHUDPainter::locAlignBottom | IHUDPainter::locAlignLeft);
-
-#if 0
-	rcRect.left = 12;
-	rcRect.top = 12;
-	rcRect.right = rcRect.left + REACTOR_DISPLAY_WIDTH;
-	rcRect.bottom = rcRect.top + REACTOR_DISPLAY_HEIGHT;
-	m_ReactorDisplay.SetFontTable(&m_Fonts);
-	m_ReactorDisplay.Init(GetPlayer(), rcRect);
-	m_ReactorDisplay.Update();
-#endif
-
 
 	rcRect.left = m_rcScreen.right - (MENU_DISPLAY_WIDTH + 4);
 	rcRect.top = (RectHeight(m_rcScreen) - MENU_DISPLAY_HEIGHT) / 2;

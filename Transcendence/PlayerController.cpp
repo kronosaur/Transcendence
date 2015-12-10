@@ -2455,7 +2455,8 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip)
 
 	//	Update displays
 
-	m_pTrans->UpdateArmorDisplay();
+//	m_pTrans->UpdateArmorDisplay();
+	m_pTrans->InitDisplays();
 
 	return NOERROR;
 	}

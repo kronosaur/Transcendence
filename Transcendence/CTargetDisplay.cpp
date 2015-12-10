@@ -122,6 +122,7 @@ void CTargetDisplay::Paint (CG32bitImage &Dest)
 
 	SHUDPaintCtx PaintCtx;
 	PaintCtx.pSource = m_pPlayer->GetShip();
+	PaintCtx.byOpacity = g_pUniverse->GetSFXOptions().GetHUDOpacity();
 
 	m_pHUDPainter->Paint(Dest, PaintCtx);
 	}
