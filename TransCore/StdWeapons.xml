@@ -4348,7 +4348,7 @@
 	</EffectType>
 
 	<EffectType UNID="&efMissileStrelka;"
-			instance=			"game"
+			instance=			"creator"
 			>
 		
 		<Effect>
