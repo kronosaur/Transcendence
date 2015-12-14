@@ -491,7 +491,7 @@
 										; Otherwise...
 										
 										(block Nil
-											(intBuyItems 1 gCost)
+											(rpgBuyItems 1 gCost)
 											(scrShowPane gScreen "Default")
 											)
 										)
@@ -545,7 +545,7 @@
 									; Otherwise...
 									
 									(block Nil
-										(intBuyItems count gCost)
+										(rpgBuyItems count gCost)
 										(scrShowPane gScreen "Default")
 										)
 									)
@@ -619,7 +619,7 @@
 								(setq itemInstalled gItem)
 								(scrSetData gScreen 'itemInstalled itemInstalled)
 								
-								(intBuyItems 1 (add gCost gInstallCost))
+								(rpgBuyItems 1 (add gCost gInstallCost))
 								
 								(shpInstallDevice gPlayerShip itemInstalled)
 								(typSetData &svPlayer; 'tutorialInstalled True)
@@ -630,7 +630,7 @@
 
 					<Action name="Buy Only" key="B">
 						(block Nil
-							(intBuyItems 1 gCost)
+							(rpgBuyItems 1 gCost)
 							(scrShowPane gScreen "Default")
 							)
 					</Action>
@@ -1159,6 +1159,22 @@
 
 	<Globals>
 		(block Nil
+			(setq intBuyItems (lambda (itemCount itemCost)
+				(rpgBuyItems itemCount itemCost)
+				))
+
+			(setq intDestroyItems (lambda (theObj)
+				(rpgDestroyItems theObj)
+				))
+
+			(setq intJettisonItem (lambda (theObj theItem)
+				(rpgJettisonItem theObj theItem)
+				))
+
+			(setq intSellItems (lambda (itemCount itemCost)
+				(rpgSellItems itemCount itemCost)
+				))
+
 			; Dock screen functions --------------------------------------------
 			
 			(setq scrShowBuyScreen (lambda (itemsToSell returnScreen installOptions)
@@ -1223,7 +1239,6 @@
 					(scrShowScreen gScreen "&dsExchangeBuy;")
 					)
 				))
-
 			)
 	</Globals>
 </TranscendenceModule>

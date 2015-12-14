@@ -195,20 +195,24 @@
 			</OnCreate>
 
 			<OnDestroy>
-				; If we're destroyed, set the status (if we entered a gate, status will already be
-				; set, so don't set it again).
+				(block Nil
+					(rpgDestroyItems gSource)
+				
+					; If we're destroyed, set the status (if we entered a gate, status will already be
+					; set, so don't set it again).
 
-				(switch
-					(eq (typGetGlobalData &scCSCTerra; "antarctica") "escaped")
-						Nil
+					(switch
+						(eq (typGetGlobalData &scCSCTerra; "antarctica") "escaped")
+							Nil
 
-					(and gPlayerShip (eq aOrderGiver gPlayerShip))
-						(if (objGetGlobalData gSource "playerRewarded")
-							(typSetGlobalData &scCSCTerra; "antarctica" "betrayed")
-							(typSetGlobalData &scCSCTerra; "antarctica" "destroyedByPlayer")
-							)
+						(and gPlayerShip (eq aOrderGiver gPlayerShip))
+							(if (objGetGlobalData gSource "playerRewarded")
+								(typSetGlobalData &scCSCTerra; "antarctica" "betrayed")
+								(typSetGlobalData &scCSCTerra; "antarctica" "destroyedByPlayer")
+								)
 
-					(typSetGlobalData &scCSCTerra; "antarctica" "destroyed")
+						(typSetGlobalData &scCSCTerra; "antarctica" "destroyed")
+						)
 					)
 			</OnDestroy>
 

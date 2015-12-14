@@ -225,7 +225,7 @@
 					(enum playerItems theItem (objRemoveItem gSource theItem))
 					
 					; Destroy items on the station
-					(intDestroyItems gSource)
+					(rpgDestroyItems gSource)
 					
 					; Add back the player items
 					(enum playerItems theItem

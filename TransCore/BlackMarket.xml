@@ -841,7 +841,7 @@ PLAYER DATA
 			(setq intBlackMarketOnDestroy (lambda (cost)
 				(block Nil
 					; Destroy items on the station
-					(intDestroyItems gSource)
+					(rpgDestroyItems gSource)
 
 					; Player is tracked
 					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))

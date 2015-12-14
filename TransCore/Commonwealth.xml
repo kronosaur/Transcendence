@@ -2399,7 +2399,7 @@
 			(setq intCommonwealthOnDestroy (lambda Nil
 				(block Nil
 					; Destroy items on the station
-					(intDestroyItems gSource)
+					(rpgDestroyItems gSource)
 
 					; Add to the player's record
 					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))

@@ -3118,7 +3118,7 @@
 			(setq intCorporateOnDestroy (lambda Nil
 				(block (corporateCruiser theDestroyer)
 					; Destroy items on the station
-					(intDestroyItems gSource)
+					(rpgDestroyItems gSource)
 
 					; Create a corporate cruiser to avenge the station
 					(setq corporateCruiser

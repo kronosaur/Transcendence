@@ -112,20 +112,12 @@
 					)
 				))
 
-			(setq intBuyItems (lambda (itemCount itemCost)
-				(rpgBuyItems itemCount itemCount)
-				))
-
 			(setq intComputeBuyPrice (lambda (thisItem)
 				(objGetBuyPrice gSource thisItem)
 				))
 
 			(setq intComputeSellPrice (lambda (thisItem)
 				(objGetSellPrice gSource thisItem)
-				))
-
-			(setq intDestroyItems (lambda (theObj)
-				(rpgDestroyItems theObj)
 				))
 
 			(setq intGetGateToSystem (lambda (theSource destSystem)
@@ -307,10 +299,6 @@
 					)
 				))
 				
-			(setq intJettisonItem (lambda (theObj theItem)
-				(rpgJettisonItem theObj theItem)
-				))
-
 			(setq intLootAllItems (lambda (theSource theDest criteria)
 				(block (lootedItems)
 					(setq lootedItems (objGetItems theSource criteria))
@@ -326,10 +314,6 @@
 							)
 						)
 					)
-				))
-
-			(setq intSellItems (lambda (itemCount itemCost)
-				(rpgSellItems itemCount itemCost)
 				))
 
 			(setq intSetCompatibleFuelEx (lambda (fuelList)
@@ -570,7 +554,7 @@
 										(not (itmMatches theItem itemsToBuy))
 											Nil
 											
-										(intComputeBuyPrice theItem)
+										(objGetBuyPrice gSource theItem)
 										)
 									)
 								)
@@ -681,8 +665,9 @@
 					(mathProbTableLookup oreTable)
 					)
 				))
-			
+
 			; Aliases for backwards compatibility ------------------------------
+			
 			(setq comShowBuyScreen scrShowBuyScreen)
 			(setq comShowSellScreen scrShowSellScreen)
 			(setq intMassString strMassString)

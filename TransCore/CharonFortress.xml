@@ -219,14 +219,18 @@
 			</OnCreate>
 
 			<OnDestroy>
-				(if (and 
-						(eq (objGetData gSource "MissionStatus") "underAttack")
-						(not (eq aOrderGiver gPlayerShip))
+				(block Nil
+					(if (and 
+							(eq (objGetData gSource "MissionStatus") "underAttack")
+							(not (eq aOrderGiver gPlayerShip))
+							)
+						(block Nil
+							(objSetData gSource "MissionStatus" "destroyed")
+							(sysAddObjRecurringTimerEvent 150 gSource "OnCheckRevenge")
+							)
 						)
-					(block Nil
-						(objSetData gSource "MissionStatus" "destroyed")
-						(sysAddObjRecurringTimerEvent 150 gSource "OnCheckRevenge")
-						)
+						
+					(rpgDestroyItems gSource)
 					)
 			</OnDestroy>
 
