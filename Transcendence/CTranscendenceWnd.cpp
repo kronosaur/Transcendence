@@ -325,31 +325,12 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 				m_CurrentDock.Update(m_iTick);
 				m_iTick++;
 
-				//	Invalidate areas of the screen that are overlapped by
-				//	the displays. Note that we need to convert to main screen
-				//	coordinates.
+				//	Note: We need to invalidate the whole screen because we're
+				//	flipping between two buffers and we need to make sure both
+				//	buffers get painted.
 
 				if (m_pCurrentScreen)
-					{
-					RECT rcRect = m_ArmorDisplay.GetRect();
-					::OffsetRect(&rcRect, -m_rcMainScreen.left, -m_rcMainScreen.top);
-					m_pCurrentScreen->Invalidate(rcRect);
-
-					rcRect = m_TargetDisplay.GetRect();
-					::OffsetRect(&rcRect, -m_rcMainScreen.left, -m_rcMainScreen.top);
-					m_pCurrentScreen->Invalidate(rcRect);
-
-					rcRect = m_LRSDisplay.GetRect();
-					::OffsetRect(&rcRect, -m_rcMainScreen.left, -m_rcMainScreen.top);
-					m_pCurrentScreen->Invalidate(rcRect);
-
-					if (m_bDebugConsole)
-						{
-						rcRect = m_DebugConsole.GetRect();
-						::OffsetRect(&rcRect, -m_rcMainScreen.left, -m_rcMainScreen.top);
-						m_pCurrentScreen->Invalidate(rcRect);
-						}
-					}
+					m_pCurrentScreen->Invalidate();
 
 				break;
 				}
