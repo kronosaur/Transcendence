@@ -4969,7 +4969,7 @@
 			</Configuration>
 			
 			<Effect>
-				<Orb	style=			"firecloud"
+				<Orb	style=			"fireblast"
 						animate=		"explode"
 						lifetime=		"60"
 

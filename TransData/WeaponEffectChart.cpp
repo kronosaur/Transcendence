@@ -33,7 +33,7 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	CItemTypeTable Selection;
 	if (!Selection.Filter(pCmdLine->GetAttribute(CRITERIA_ATTRIB))
-			|| !Selection.Filter(CONSTLIT("wm")))
+			|| (Selection.IsAll() && !Selection.Filter(CONSTLIT("wm"))))
 		{
 		printf("No entries match criteria.\n");
 		return;

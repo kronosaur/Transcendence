@@ -261,7 +261,7 @@
 			sound="&snArmorHit1;"
 			>
 		<Effect>
-			<Orb	style=			"firecloud"
+			<Orb	style=			"fireblast"
 					animate=		"explode"
 					
 					blendMode=		"screen"

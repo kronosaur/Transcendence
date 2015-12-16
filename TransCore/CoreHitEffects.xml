@@ -211,8 +211,8 @@
 					animate=		"explode"
 					
 					blendMode=		"normal"
-					primaryColor=	"#ffcf00"
-					secondaryColor=	"#d92400"
+					primaryColor=	"#ffd200"
+					secondaryColor=	"#ff2a00"
 					>
 				<Events>
 					<GetParameters>
@@ -229,14 +229,47 @@
 								intensity: (seededRandom weaponUNID 50 100)
 								distortion: (mathScale damageHP 5 64 60 30 100)
 								detail: (seededRandom weaponUNID 20 40)
-								
-								noSound: (= damageHP 0)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<Orb	style=			"smooth"
+					animate=		"fade"
+					
+					blendMode=		"screen"
+					primaryColor=	"#fffff0"
+					secondaryColor=	"#ffed99"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 5 64 20 50 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 5 64 6 24 50))
+								intensity: (seededRandom weaponUNID 50 100)
 								}
 							)
 					</GetParameters>
 				</Events>
 			</Orb>
 		</Effect>
+		
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+							
+					{
+						noSound: (= damageHP 0)
+						}
+					)
+			</GetParameters>
+		</Events>
 	</EffectType>
 	
 	<EffectType UNID="&efIonHitDefault;"
@@ -320,8 +353,8 @@
 					animate=		"explode"
 					
 					blendMode=		"screen"
-					primaryColor=	"#ffcf00"
-					secondaryColor=	"#d90000"
+					primaryColor=	"#ffaa00"
+					secondaryColor=	"#d92400"
 					>
 				<Events>
 					<GetParameters>
@@ -357,7 +390,7 @@
 							)
 							{
 								radius: (if (= damageHP 0) 0 (mathScale damageHP 10 200 60 140 50))
-								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 10 200 8 20 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 10 200 12 30 50))
 								intensity: (if (= damageHP 0) 0 (mathScale damageHP 10 200 25 60 50))
 								}
 							)

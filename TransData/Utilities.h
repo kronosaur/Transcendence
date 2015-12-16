@@ -29,6 +29,7 @@ class CItemTypeTable
 		bool Filter (const CString &sCriteria);
 		int GetCount (void) const;
 		CItemType *GetItemType (int iIndex) const;
+		inline bool IsAll (void) const { return m_bAll;  }
 		void Sort (void);
 
 	private:

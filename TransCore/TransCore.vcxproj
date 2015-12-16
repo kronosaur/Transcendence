@@ -264,7 +264,9 @@
     <None Include="StdDockScreens.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="StdEffects.xml" />
+    <None Include="StdEffects.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="CoreExplosions.xml">
       <SubType>Designer</SubType>
     </None>
