@@ -109,10 +109,19 @@
 	<!ENTITY vtPlasmaExplosion4			"0x00005016">
 	<!ENTITY vtRadioactiveExplosion1	"0x00005017">
 	<!ENTITY vtRadioactiveExplosion2	"0x00005018">
+	<!ENTITY vtAntimatterExplosion1		"0x00005019">
+	<!ENTITY vtAntimatterExplosion2		"0x0000501A">
+	<!ENTITY vtAntimatterExplosion3		"0x0000501B">
+	<!ENTITY vtAntimatterExplosion4		"0x0000501C">
+	<!ENTITY vtGravitonExplosion1		"0x0000501D">
+	<!ENTITY vtGravitonExplosion2		"0x0000501E">
+	<!ENTITY vtGravitonExplosion3		"0x0000501F">
+	<!ENTITY vtGravitonExplosion4		"0x00005020">
 	
 	<!ENTITY efShieldHit1				"0x00009004">
 	<!ENTITY efLargeStationDamage		"0x0000900E">
 	<!ENTITY efMediumStationDamage		"0x0000900F">
+	<!ENTITY efRadioactiveHitEffect		"0x00009013">
 	
 	<!ENTITY rsMediumDamage				"0x0000F001">
 	<!ENTITY rsDefaultDockScreenBkgnd	"0x0000F013">	<!-- Same as rsZubrinDockScreenBkgnd -->

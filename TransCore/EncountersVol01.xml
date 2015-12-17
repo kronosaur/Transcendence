@@ -1846,7 +1846,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated"
+			attributes=			"enemy, envFire, envAvoidsWater, generic, heliotropes, human, populated"
 			levelFrequency=		"---cu r---- ----- ----- -----"
 			locationCriteria=	"+innerSystem, -void"
 			enemyExclusionRadius="50"
@@ -1901,7 +1901,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated"
+			attributes=			"enemy, envFire, envAvoidsWater, generic, heliotropes, human, populated"
 			levelFrequency=		"--cuv ----- ----- ----- -----"
 			locationCriteria=	"+innerSystem, -void"
 			>

@@ -257,41 +257,6 @@
 		</Variants>
 	</Effect>
 	
-	<EffectType unid="&efRadioactiveHitEffect;"
-			sound="&snArmorHit1;"
-			>
-		<Effect>
-			<Orb	style=			"fireblast"
-					animate=		"explode"
-					
-					blendMode=		"screen"
-					primaryColor=	"#00ff2b"
-					secondaryColor=	"#008015"
-					>
-				<Events>
-					<GetParameters>
-						(block (
-							(damageHP (@ gData 'damageHP))
-							(weaponUNID (@ gData 'weaponUNID))
-							)
-							
-							{
-								radius: (if (= damageHP 0) 10 (mathScale damageHP 5 64 40 90 50))
-								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 5 64 12 48 50))
-								
-								intensity: (seededRandom weaponUNID 50 70)
-								distortion: (mathScale damageHP 5 64 50 0 100)
-								detail: (seededRandom weaponUNID 20 25)
-								
-								noSound: (= damageHP 0)
-								}
-							)
-					</GetParameters>
-				</Events>
-			</Orb>
-		</Effect>
-	</EffectType>
-	
 	<EffectType unid="&efThermoFragmentExplosion;"
 			sound="&snArmorHit1;"
 			>

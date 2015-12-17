@@ -599,7 +599,6 @@
 	<!ENTITY efGreenLaserHitEffect		"0x00009010">
 	<!ENTITY efXRayLaserHitEffect		"0x00009011">
 	<!ENTITY efGreenLaserFireEffect		"0x00009012">
-	<!ENTITY efRadioactiveHitEffect		"0x00009013">
 	<!ENTITY efIonizingBeam				"0x00009014">
 
 	<!ENTITY sfSustain					"0x00009101">
