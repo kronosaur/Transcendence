@@ -717,7 +717,7 @@
 			maxSpeed=			"10"
 			cargoSpace=			"1000"
 
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtThermoExplosion2;"
 			>
 
 		<!-- Configuration -->
@@ -801,7 +801,7 @@
 			maxSpeed=			"16"
 			cargoSpace=			"1000"
 
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			>
 
 		<!-- Configuration -->
@@ -1172,7 +1172,7 @@
 
 			cyberDefenseLevel=	"8"
 			   
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtPlasmaExplosion2;"
 			>
 
 		<!-- Configuration -->
