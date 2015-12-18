@@ -21,7 +21,7 @@
 			thrustRatio=		"0.8"
 			maxSpeed=			"15"
 
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtBlastExplosion3;"
 			leavesWreck=		"80"
 
 			attributes=			""

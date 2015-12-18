@@ -874,7 +874,7 @@
 
 			cyberDefenseLevel=	"8"
 
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtThermoExplosion2;"
 
 			attributes=			"capitalShip, genericClass, majorShip, sungSlavers"
 			>

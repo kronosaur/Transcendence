@@ -271,7 +271,7 @@
 
 			cyberDefenseLevel=	"5"
 
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtBlastExplosion4;"
 
 			>
 
@@ -357,7 +357,7 @@
 
 			cyberDefenseLevel=	"8"
 
-			explosionType=		"&vtThermoExplosion2;"
+			explosionType=		"&vtThermoExplosion3;"
 			>
 
 		<!-- Configuration -->
@@ -468,7 +468,7 @@
 
 			cyberDefenseLevel=	"8"
 
-			explosionType=		"&vtThermoExplosion2;"
+			explosionType=		"&vtThermoExplosion4;"
 			>
 
 		<Names definiteArticle="true">Ark of Bennin; Ark of Certitude; Ark of Justice &amp; Retribution; Ark of Purity;
@@ -2105,7 +2105,7 @@
 			maxSpeed=			"8"
 			cargoSpace=			"1000"
 
-			explosionType=		"&vtBlastExplosion1;"
+			explosionType=		"&vtBlastExplosion4;"
 			>
 
 		<!-- Configuration -->
@@ -2544,7 +2544,7 @@
 			thrustRatio=		"0.4"
 			maxSpeed=			"6"
 
-			explosionType=		"&vtBlastExplosion1;"
+			explosionType=		"&vtBlastExplosion2;"
 
 			attributes=			"genericClass, marauders"
 			>
@@ -2636,7 +2636,7 @@
 
 			cyberDefenseLevel=	"4"
 
-			explosionType=		"&vtBlastExplosion1;"
+			explosionType=		"&vtBlastExplosion4;"
 			>
 
 		<!-- Configuration -->
@@ -3108,7 +3108,7 @@
 		<Devices>
 			<Device deviceID="&itAbsolutionCannon;"/>
 			<!--<Device deviceID="&itOracusHarassPower;"/>-->
-			<Device deviceID="&itClass2Deflector;"/>
+			<Device deviceID="&itClass1Deflector;"/>
 		</Devices>
 
 		<Maneuver
@@ -4479,6 +4479,7 @@
 			type=				"gunship"
 			defaultSovereign=	"&svRanxEmpire;"
 
+			level=				"6"
 			mass=				"60"
 			cargoSpace=			"10"
 			thrustRatio=		"12"
@@ -4549,7 +4550,7 @@
 
 			cyberDefenseLevel=	"6"
 
-			explosionType=		"&vtThermoExplosion2;"
+			explosionType=		"&vtThermoExplosion3;"
 			>
 
 		<!-- Configuration -->
@@ -4786,7 +4787,7 @@
 			cargoSpace=			"500"
 			cyberDefenseLevel=	"4"
 
-			explosionType=		"&vtKineticExplosion2;"
+			explosionType=		"&vtKineticExplosion3;"
 			>
 
 		<!-- Configuration -->
@@ -5065,6 +5066,8 @@
 			radioactiveWreck=	"true"
 
 			attributes=			"genericClass,sapiens"
+			   
+			explosionType=		"&vtRadioactiveExplosion1;"
 			>
 
 		<Armor>
@@ -5545,7 +5548,7 @@
 			maxSpeed=			"13"
 			cargoSpace=			"1000"
 
-			explosionType=		"&vtBlastExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			>
 
 		<!-- Configuration -->

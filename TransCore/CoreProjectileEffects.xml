@@ -500,7 +500,7 @@
 						(block (
 							(damageHP (@ gData 'damageHP))
 							(weaponUNID (@ gData 'weaponUNID))
-							(particleCount (max 1 (itmGetProperty weaponUNID 'particleCount)))
+							(particleCount (max 1 (@ gData 'particleCount)))
 							(damagePerParticle (/ damageHP particleCount))
 							)
 							{

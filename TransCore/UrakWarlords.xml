@@ -70,7 +70,7 @@
 
 			cyberDefenseLevel=	"4"
 
-			explosionType=		"&vtKineticExplosion4;"
+			explosionType=		"&vtBlastExplosion3;"
 			>
 
 		<!-- Configuration -->

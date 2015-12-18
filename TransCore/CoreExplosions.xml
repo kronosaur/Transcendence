@@ -212,8 +212,8 @@
 				
 				<Orb	style=			"fireblast"
 						animate=		"explode"
-						radius=			"80"
-						lifetime=		"32"
+						radius=			"90"
+						lifetime=		"36"
 						intensity=		"100"
 						distortion=		"50"
 						detail=			"40"
@@ -317,8 +317,8 @@
 				
 				<Orb	style=			"fireblast"
 						animate=		"explode"
-						radius=			"110"
-						lifetime=		"44"
+						radius=			"135"
+						lifetime=		"54"
 						intensity=		"100"
 						distortion=		"50"
 						detail=			"40"
@@ -422,8 +422,8 @@
 				
 				<Orb	style=			"fireblast"
 						animate=		"explode"
-						radius=			"135"
-						lifetime=		"53"
+						radius=			"165"
+						lifetime=		"66"
 						intensity=		"100"
 						distortion=		"50"
 						detail=			"30"
@@ -466,7 +466,7 @@
 					type=			"radius"
 					
 					damage=			"blast:3d12"
-					minRadius=		"0"
+					minRadius=		"1"
 					maxRadius=		"3"
 					/>
 
@@ -522,8 +522,8 @@
 				
 				<Orb	style=			"fireblast"
 						animate=		"explode"
-						radius=			"80"
-						lifetime=		"32"
+						radius=			"72"
+						lifetime=		"30"
 						intensity=		"100"
 						distortion=		"50"
 						detail=			"40"
@@ -567,7 +567,7 @@
 					
 					damage=			"blast:4d12"
 					minRadius=		"1"
-					maxRadius=		"4"
+					maxRadius=		"5"
 					/>
 
 			<Fragment
@@ -622,8 +622,8 @@
 				
 				<Orb	style=			"fireblast"
 						animate=		"explode"
-						radius=			"115"
-						lifetime=		"45"
+						radius=			"110"
+						lifetime=		"43"
 						intensity=		"100"
 						distortion=		"50"
 						detail=			"40"
@@ -667,7 +667,7 @@
 					
 					damage=			"blast:6d12"
 					minRadius=		"2"
-					maxRadius=		"6"
+					maxRadius=		"7"
 					/>
 
 			<Fragment
@@ -722,8 +722,8 @@
 				
 				<Orb	style=			"fireblast"
 						animate=		"explode"
-						radius=			"150"
-						lifetime=		"60"
+						radius=			"160"
+						lifetime=		"65"
 						intensity=		"100"
 						distortion=		"50"
 						detail=			"40"
@@ -767,7 +767,7 @@
 					
 					damage=			"blast:10d12"
 					minRadius=		"2"
-					maxRadius=		"7"
+					maxRadius=		"8"
 					/>
 
 			<Fragment
@@ -822,8 +822,8 @@
 				
 				<Orb	style=			"fireblast"
 						animate=		"explode"
-						radius=			"185"
-						lifetime=		"75"
+						radius=			"200"
+						lifetime=		"80"
 						intensity=		"100"
 						distortion=		"50"
 						detail=			"40"
@@ -867,7 +867,7 @@
 					
 					damage=			"blast:4d12; radiation:1"
 					minRadius=		"1"
-					maxRadius=		"4"
+					maxRadius=		"5"
 					
 					hitEffect=		"&efRadioactiveHitEffect;"
 					/>
@@ -915,8 +915,8 @@
 			<Effect>
 				<Orb	style=			"fireblast"
 						animate=		"explode"
-						radius=			"115"
-						lifetime=		"45"
+						radius=			"110"
+						lifetime=		"43"
 						intensity=		"100"
 						distortion=		"50"
 						detail=			"40"
@@ -960,7 +960,7 @@
 					
 					damage=			"blast:6d12; radiation:2"
 					minRadius=		"2"
-					maxRadius=		"6"
+					maxRadius=		"7"
 					
 					hitEffect=		"&efRadioactiveHitEffect;"
 					/>
@@ -1008,8 +1008,8 @@
 			<Effect>
 				<Orb	style=			"fireblast"
 						animate=		"explode"
-						radius=			"150"
-						lifetime=		"60"
+						radius=			"160"
+						lifetime=		"65"
 						intensity=		"100"
 						distortion=		"50"
 						detail=			"40"
@@ -1063,7 +1063,7 @@
 					damage=			"thermo:1d24; momentum3; WMD1"
 					expansionSpeed=	"25"
 					missileSpeed=	"0"
-					lifetime=		"18"
+					lifetime=		"14"
 					hitPoints=		"50"
 					>
 
@@ -1116,8 +1116,8 @@
 			<Effect>
 				<Orb	style=			"fireblast"
 						animate=		"explode"
-						radius=			"115"
-						lifetime=		"45"
+						radius=			"85"
+						lifetime=		"35"
 						intensity=		"80"
 						distortion=		"30"
 						detail=			"40"
@@ -1129,8 +1129,8 @@
 			
 				<Orb	style=			"flare"
 						animate=		"fade"
-						radius=			"115"
-						lifetime=		"22"
+						radius=			"85"
+						lifetime=		"17"
 						intensity=		"50"
 					
 						blendMode=		"screen"
@@ -1160,8 +1160,8 @@
 					type=			"radius"
 					
 					damage=			"thermo:6d24; momentum1; WMD3"
-					minRadius=		"2"
-					maxRadius=		"6"
+					minRadius=		"1"
+					maxRadius=		"5"
 					/>
 
 			<Fragment
@@ -1171,7 +1171,7 @@
 					damage=			"thermo:2d24; momentum3; WMD2"
 					expansionSpeed=	"25"
 					missileSpeed=	"0"
-					lifetime=		"24"
+					lifetime=		"22"
 					hitPoints=		"50"
 					>
 
@@ -1224,8 +1224,8 @@
 			<Effect>
 				<Orb	style=			"fireblast"
 						animate=		"explode"
-						radius=			"155"
-						lifetime=		"60"
+						radius=			"130"
+						lifetime=		"52"
 						intensity=		"80"
 						distortion=		"30"
 						detail=			"40"
@@ -1237,8 +1237,8 @@
 			
 				<Orb	style=			"flare"
 						animate=		"fade"
-						radius=			"155"
-						lifetime=		"30"
+						radius=			"130"
+						lifetime=		"26"
 						intensity=		"50"
 					
 						blendMode=		"screen"
@@ -1268,7 +1268,7 @@
 					type=			"radius"
 					
 					damage=			"thermo:8d24; momentum1; WMD3"
-					minRadius=		"3"
+					minRadius=		"2"
 					maxRadius=		"8"
 					/>
 			
@@ -1277,9 +1277,9 @@
 					type=			"area"
 
 					damage=			"thermo:2d24; momentum3; WMD2"
-					expansionSpeed=	"28"
+					expansionSpeed=	"25"
 					missileSpeed=	"0"
-					lifetime=		"24"
+					lifetime=		"32"
 					hitPoints=		"50"
 					>
 
@@ -1359,8 +1359,8 @@
 			<Effect>
 				<Orb	style=			"fireblast"
 						animate=		"explode"
-						radius=			"210"
-						lifetime=		"84"
+						radius=			"195"
+						lifetime=		"80"
 						intensity=		"80"
 						distortion=		"30"
 						detail=			"40"
@@ -1372,8 +1372,8 @@
 			
 				<Orb	style=			"flare"
 						animate=		"fade"
-						radius=			"210"
-						lifetime=		"42"
+						radius=			"195"
+						lifetime=		"40"
 						intensity=		"50"
 					
 						blendMode=		"screen"
@@ -1403,8 +1403,8 @@
 					type=			"radius"
 					
 					damage=			"thermo:8d24; momentum1; WMD3"
-					minRadius=		"4"
-					maxRadius=		"11"
+					minRadius=		"2"
+					maxRadius=		"10"
 					/>
 			
 			<Fragment
@@ -1412,9 +1412,9 @@
 					type=			"area"
 
 					damage=			"thermo:4d24; momentum3; WMD2"
-					expansionSpeed=	"30"
+					expansionSpeed=	"25"
 					missileSpeed=	"0"
-					lifetime=		"24"
+					lifetime=		"40"
 					hitPoints=		"50"
 					>
 
@@ -1440,7 +1440,7 @@
 					initialDelay=	"6"
 
 					damage=			"thermo:3d24; momentum2; WMD1"
-					expansionSpeed=	"26"
+					expansionSpeed=	"25"
 					missileSpeed=	"0"
 					lifetime=		"24"
 					hitPoints=		"50"
@@ -1495,8 +1495,8 @@
 			<Effect>
 				<Orb	style=			"fireblast"
 						animate=		"explode"
-						radius=			"260"
-						lifetime=		"100"
+						radius=			"240"
+						lifetime=		"95"
 						intensity=		"80"
 						distortion=		"30"
 						detail=			"40"
@@ -1508,8 +1508,8 @@
 			
 				<Orb	style=			"flare"
 						animate=		"fade"
-						radius=			"260"
-						lifetime=		"50"
+						radius=			"240"
+						lifetime=		"47"
 						intensity=		"50"
 					
 						blendMode=		"screen"
@@ -1532,62 +1532,47 @@
 
 		<Weapon
 				type=				"radius"
-
-				damage=				"plasma:14d24; WMD4"
-				minRadius=			"1"
-				maxRadius=			"5"
 				>
 
-			<Effect>
-				<Image imageID="&rsExplosion3AG128;"
-						imageX="0"
-						imageY="0"
-						imageWidth="128"
-						imageHeight="128"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</Effect>
-
 			<Fragment
-					count=			"1d4+4"
+					count=			"1"
+					type=			"radius"
+					
+					damage=			"plasma:8d24; WMD:4"
+					minRadius=		"1"
+					maxRadius=		"4"
+					/>
+			
+			<Fragment
+					count=			"1"
 					type=			"particles"
-
-					damage=			"plasma:100; WMD3"
-					missileSpeed=	"20-40"
-					lifetime=		"16-22"
-
-					particleCount=	"5d6"
-					particleEmitTime="5-12"
-					particleSpreadWidth="25" 
-					particleSpreadAngle="0"
+					damage=			"plasma:700; WMD:3"
 					>
-
-				<Effect>
-					<Shape
-							directional=		"true"
-							scaleLength=		"16" 
-							scaleWidth=			"6"
-
-							scaleLengthInc=		"3" 
-
-							color=				"0xff, 0xfd, 0xad"
-							opacity=			"64"
-							>
-						<Point x="0"	y="0"/>
-						<Point x="-5"	y="29"/>
-						<Point x="-10"	y="44"/>
-						<Point x="-20"	y="50"/>
-						<Point x="-30"	y="47"/>
-						<Point x="-40"	y="44"/>
-						<Point x="-100"	y="0"/>
-						<Point x="-40"	y="-44"/>
-						<Point x="-30"	y="-47"/>
-						<Point x="-20"	y="-50"/>
-						<Point x="-10"	y="-44"/>
-						<Point x="-5"	y="-29"/>
-					</Shape>
-				</Effect>
+				
+				<ParticleSystem
+						style=				"radiate"
+						emitLifetime=		"1"
+						emitRate=			"300"
+						emitSpeed=			"15-40"
+					
+						particleLifetime=	"17"
+						particleEffect=		"&efPlasmaParticleDefault;"
+						>
+				</ParticleSystem>
 			</Fragment>
+			
+			<Effect>
+				<Orb	style=			"smooth"
+						animate=		"fade"
+						radius=			"100"
+						lifetime=		"20"
+						intensity=		"30"
+					
+						blendMode=		"screen"
+						primaryColor=	"#feff00"
+						secondaryColor=	"#ff7f00"
+						/>
+			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -1603,62 +1588,224 @@
 
 		<Weapon
 				type=				"radius"
-
-				damage=				"plasma:14d24; WMD4"
-				minRadius=			"2"
-				maxRadius=			"6"
 				>
 
+			<Fragment
+					count=			"1"
+					type=			"radius"
+					
+					damage=			"plasma:16d24; WMD:4"
+					minRadius=		"2"
+					maxRadius=		"6"
+					/>
+			
+			<Fragment
+					count=			"1"
+					type=			"particles"
+					damage=			"plasma:1600; WMD:3"
+					>
+				
+				<ParticleSystem
+						style=				"radiate"
+						emitLifetime=		"1"
+						emitRate=			"600"
+						emitSpeed=			"15-40"
+					
+						particleLifetime=	"25"
+						particleEffect=		"&efPlasmaParticleDefault;"
+						>
+				</ParticleSystem>
+			</Fragment>
+			
 			<Effect>
-				<Image imageID="&rsExplosion3AG128;"
-						imageX="0"
-						imageY="0"
-						imageWidth="128"
-						imageHeight="128"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
+				<Orb	style=			"smooth"
+						animate=		"fade"
+						radius=			"160"
+						lifetime=		"30"
+						intensity=		"30"
+					
+						blendMode=		"screen"
+						primaryColor=	"#feff00"
+						secondaryColor=	"#ff7f00"
+						/>
 			</Effect>
+		</Weapon>
+	</ItemType>
+
+	<!-- Plasma Explosion III -->
+
+	<ItemType UNID="&vtPlasmaExplosion3;"
+			name=				"plasma explosion 3"
+			attributes=			"explosion"
+			virtual=			"true"
+			  
+			level=				"12"
+			>
+
+		<Weapon
+				type=				"radius"
+				>
 
 			<Fragment
-					count=			"2d4+8"
+					count=			"1"
+					type=			"radius"
+					
+					damage=			"plasma:15d60; WMD:4"
+					minRadius=		"2"
+					maxRadius=		"10"
+					/>
+			
+			<Fragment
+					count=			"1"
 					type=			"particles"
+					damage=			"plasma:3200; WMD:3"
+					>
+				
+				<ParticleSystem
+						style=				"radiate"
+						emitLifetime=		"1"
+						emitRate=			"600"
+						emitSpeed=			"15-35"
+					
+						particleLifetime=	"40"
+						particleEffect=		"&efPlasmaParticleDefault;"
+						>
+				</ParticleSystem>
+			</Fragment>
+			
+			<Effect>
+				<Orb	style=			"smooth"
+						animate=		"fade"
+						radius=			"230"
+						lifetime=		"45"
+						intensity=		"30"
+					
+						blendMode=		"screen"
+						primaryColor=	"#feff00"
+						secondaryColor=	"#ff7f00"
+						/>
+			</Effect>
+		</Weapon>
+	</ItemType>
 
-					damage=			"plasma:100; WMD3"
-					missileSpeed=	"20-40"
-					lifetime=		"16-22"
+	<!-- Plasma Explosion IV -->
 
-					particleCount=	"5d6"
-					particleEmitTime="5-12"
-					particleSpreadWidth="25"
-					particleSpreadAngle="0"
+	<ItemType UNID="&vtPlasmaExplosion4;"
+			name=				"plasma explosion 4"
+			attributes=			"explosion"
+			virtual=			"true"
+			  
+			level=				"13"
+			>
+
+		<Weapon
+				type=				"radius"
+				>
+
+			<Fragment
+					count=			"1"
+					type=			"radius"
+					
+					damage=			"plasma:24d60; WMD:4"
+					minRadius=		"3"
+					maxRadius=		"12"
+					/>
+			
+			<Fragment
+					count=			"1"
+					type=			"particles"
+					damage=			"plasma:5400; WMD:3"
+					>
+				
+				<ParticleSystem
+						style=				"radiate"
+						emitLifetime=		"1"
+						emitRate=			"600"
+						emitSpeed=			"15-35"
+					
+						particleLifetime=	"48"
+						particleEffect=		"&efPlasmaParticleDefault;"
+						>
+				</ParticleSystem>
+			</Fragment>
+			
+			<Effect>
+				<Orb	style=			"smooth"
+						animate=		"fade"
+						radius=			"280"
+						lifetime=		"55"
+						intensity=		"30"
+					
+						blendMode=		"screen"
+						primaryColor=	"#feff00"
+						secondaryColor=	"#ff7f00"
+						/>
+			</Effect>
+		</Weapon>
+	</ItemType>
+
+	<!-- Antimatter Explosion I -->
+
+	<ItemType UNID="&vtAntimatterExplosion1;"
+			name=				"antimatter explosion 1"
+			attributes=			"explosion"
+			virtual=			"true"
+			  
+			level=				"13"
+			>
+
+		<Weapon
+				type=				"radius"
+				>
+
+			<Fragment
+					count=			"1"
+					type=			"radius"
+					
+					damage=			"antimatter:8d24; WMD:4"
+					minRadius=		"1"
+					maxRadius=		"5"
+					/>
+			
+			<Fragment
+					count=			"1"
+					type=			"area"
+
+					damage=			"antimatter:4d24; momentum3; WMD2"
+					expansionSpeed=	"25"
+					missileSpeed=	"0"
+					lifetime=		"40"
+					hitPoints=		"50"
 					>
 
 				<Effect>
-					<Shape
-							directional=		"true"
-							scaleLength=		"16"
-							scaleWidth=			"6"
-
-							scaleLengthInc=		"3"
-
-							color=				"0xff, 0xfd, 0xad"
-							opacity=			"64"
-							>
-						<Point x="0"	y="0"/>
-						<Point x="-5"	y="29"/>
-						<Point x="-10"	y="44"/>
-						<Point x="-20"	y="50"/>
-						<Point x="-30"	y="47"/>
-						<Point x="-40"	y="44"/>
-						<Point x="-100"	y="0"/>
-						<Point x="-40"	y="-44"/>
-						<Point x="-30"	y="-47"/>
-						<Point x="-20"	y="-50"/>
-						<Point x="-10"	y="-44"/>
-						<Point x="-5"	y="-29"/>
-					</Shape>
+					<Shockwave
+							fadeStart=	"70"
+							blendMode=	"screen"
+						>
+						<Image imageID=				"&rsShockwave3;"
+								imageX=				"0"
+								imageY=				"0"
+								imageWidth=			"512"
+								imageHeight=		"128"
+								imageFrameCount=	"1"
+								imageTicksPerFrame=	"1"/>
+					</Shockwave>
 				</Effect>
 			</Fragment>
+			
+			<Effect>
+				<Orb	style=			"smooth"
+						animate=		"fade"
+						radius=			"160"
+						lifetime=		"32"
+						intensity=		"30"
+					
+						blendMode=		"screen"
+						primaryColor=	"#feff00"
+						secondaryColor=	"#ff7f00"
+						/>
+			</Effect>
 		</Weapon>
 	</ItemType>
 

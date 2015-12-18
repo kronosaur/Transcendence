@@ -65,7 +65,7 @@
 			maxSpeed=			"2"
 			cyberDefenseLevel=	"6"
 			   
-			explosionType=		"&vtThermoExplosion4;"
+			explosionType=		"&vtPlasmaExplosion2;"
 
 			dockScreen=			"Main"
 			defaultBackgroundID="&rsCSCBkgnd;"
@@ -819,7 +819,7 @@
 			maxSpeed=			"2"
 			cyberDefenseLevel=	"6"
 			   
-			explosionType=		"&vtThermoExplosion4;"
+			explosionType=		"&vtPlasmaExplosion2;"
 
 			dockScreen=			"Main"
 			>

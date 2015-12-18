@@ -142,7 +142,7 @@
 			thrustRatio=		"0.2"
 			maxSpeed=			"12"
 
-			explosionType=		"&vtBlastExplosion4;"
+			explosionType=		"&vtBlastExplosion3;"
 
 			attributes=			"dwarg, genericClass, zoanthrope"
 			>

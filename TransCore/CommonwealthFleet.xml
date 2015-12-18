@@ -304,7 +304,7 @@ PLAYER DATA
 			maxSpeed=			"16"
 
 			cyberDefenseLevel=	"8"
-			explosionType=		"&vtThermoExplosion2;"
+			explosionType=		"&vtThermoExplosion3;"
 
 			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, genericClass"
 			>
@@ -628,7 +628,7 @@ PLAYER DATA
 			cargoSpace=			"5000"
 			cyberDefenseLevel=	"8"
 			   
-			explosionType=		"&vtThermoExplosion4;"
+			explosionType=		"&vtPlasmaExplosion2;"
 
 			dockScreen=			"Main"
 			>
@@ -3237,7 +3237,7 @@ PLAYER DATA
 			maxSpeed=			"2"
 			cyberDefenseLevel=	"6"
 			   
-			explosionType=		"&vtThermoExplosion4;"
+			explosionType=		"&vtPlasmaExplosion2;"
 
 			dockScreen=			"Main"
 			>
