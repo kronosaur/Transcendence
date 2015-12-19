@@ -3694,7 +3694,7 @@ PLAYER DATA
 			thrustRatio=		"0.8"
 			maxSpeed=			"15"
 
-			explosionType=		"&vtBlastExplosion4;"
+			explosionType=		"&vtBlastExplosion3;"
 
 			attributes=			"freighter, genericClass"
 			>

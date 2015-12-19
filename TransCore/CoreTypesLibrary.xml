@@ -109,14 +109,6 @@
 	<!ENTITY vtPlasmaExplosion4			"0x00005016">
 	<!ENTITY vtRadioactiveExplosion1	"0x00005017">
 	<!ENTITY vtRadioactiveExplosion2	"0x00005018">
-	<!ENTITY vtAntimatterExplosion1		"0x00005019">
-	<!ENTITY vtAntimatterExplosion2		"0x0000501A">
-	<!ENTITY vtAntimatterExplosion3		"0x0000501B">
-	<!ENTITY vtAntimatterExplosion4		"0x0000501C">
-	<!ENTITY vtGravitonExplosion1		"0x0000501D">
-	<!ENTITY vtGravitonExplosion2		"0x0000501E">
-	<!ENTITY vtGravitonExplosion3		"0x0000501F">
-	<!ENTITY vtGravitonExplosion4		"0x00005020">
 	
 	<!ENTITY efShieldHit1				"0x00009004">
 	<!ENTITY efLargeStationDamage		"0x0000900E">
@@ -160,6 +152,17 @@
 	<!-- 0020-002F PROJECTILE EFFECTS -->
 	
 	<!ENTITY efPlasmaParticleDefault	"0x00030020">
+	
+	<!-- 0030-004F EXPLOSIONS -->
+
+	<!ENTITY vtAntimatterExplosion1		"0x00030030">
+	<!ENTITY vtAntimatterExplosion2		"0x00030031">
+	<!ENTITY vtAntimatterExplosion3		"0x00030032">
+	<!ENTITY vtAntimatterExplosion4		"0x00030033">
+	<!ENTITY vtGravitonExplosion1		"0x00030034">
+	<!ENTITY vtGravitonExplosion2		"0x00030035">
+	<!ENTITY vtGravitonExplosion3		"0x00030036">
+	<!ENTITY vtGravitonExplosion4		"0x00030037">
 	]>
 	
 <CoreLibrary

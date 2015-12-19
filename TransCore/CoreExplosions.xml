@@ -1762,7 +1762,7 @@
 					count=			"1"
 					type=			"radius"
 					
-					damage=			"antimatter:8d24; WMD:4"
+					damage=			"antimatter:4d60; WMD:4"
 					minRadius=		"1"
 					maxRadius=		"5"
 					/>
@@ -1771,39 +1771,334 @@
 					count=			"1"
 					type=			"area"
 
-					damage=			"antimatter:4d24; momentum3; WMD2"
+					damage=			"antimatter:2d60; momentum:2; WMD:2"
 					expansionSpeed=	"25"
 					missileSpeed=	"0"
-					lifetime=		"40"
+					lifetime=		"21"
 					hitPoints=		"50"
 					>
 
 				<Effect>
 					<Shockwave
-							fadeStart=	"70"
-							blendMode=	"screen"
-						>
-						<Image imageID=				"&rsShockwave3;"
-								imageX=				"0"
-								imageY=				"0"
-								imageWidth=			"512"
-								imageHeight=		"128"
-								imageFrameCount=	"1"
-								imageTicksPerFrame=	"1"/>
-					</Shockwave>
+							instance=		"owner"
+							style=			"cloud"
+							width=			"120"
+							intensity=		"20"
+							fadeStart=		"70"
+							
+							blendMode=		"screen"
+							primaryColor=	"#fbffcc"
+							secondaryColor=	"#ffe566"
+						/>
 				</Effect>
 			</Fragment>
 			
 			<Effect>
-				<Orb	style=			"smooth"
+				<ParticleSystem
+						style=				"radiate"
+						emitLifetime=		"1"
+						emitRate=			"100"
+						emitSpeed=			"10-30"
+						particleLifetime=	"40"
+						>
+					<ParticleEffect>
+						<Orb
+								instance=			"owner"
+						
+								style=				"smooth"
+								animate=			"fade"
+								radius=				"10"
+								intensity=			"50"
+								lifetime=			"40"
+						
+								blendMode=			"screen"
+								primaryColor=		"#fbffcc"
+								secondaryColor=		"#ffe566"
+								>
+						</Orb>
+					</ParticleEffect>
+				</ParticleSystem>
+				
+				<Orb	instance=		"owner"
+						style=			"smooth"
 						animate=		"fade"
-						radius=			"160"
-						lifetime=		"32"
+						radius=			"124"
+						lifetime=		"25"
 						intensity=		"30"
 					
 						blendMode=		"screen"
-						primaryColor=	"#feff00"
-						secondaryColor=	"#ff7f00"
+						primaryColor=	"#fbffcc"
+						secondaryColor=	"#ffe566"
+						/>
+			</Effect>
+		</Weapon>
+	</ItemType>
+
+	<!-- Antimatter Explosion II -->
+
+	<ItemType UNID="&vtAntimatterExplosion2;"
+			name=				"antimatter explosion 2"
+			attributes=			"explosion"
+			virtual=			"true"
+			  
+			level=				"14"
+			>
+
+		<Weapon
+				type=				"radius"
+				>
+
+			<Fragment
+					count=			"1"
+					type=			"radius"
+					
+					damage=			"antimatter:10d60; WMD:4"
+					minRadius=		"2"
+					maxRadius=		"8"
+					/>
+			
+			<Fragment
+					count=			"1"
+					type=			"area"
+
+					damage=			"antimatter:4d60; momentum:2; WMD:2"
+					expansionSpeed=	"25"
+					missileSpeed=	"0"
+					lifetime=		"31"
+					hitPoints=		"50"
+					>
+
+				<Effect>
+					<Shockwave
+							instance=		"owner"
+							style=			"cloud"
+							width=			"180"
+							intensity=		"20"
+							fadeStart=		"70"
+							
+							blendMode=		"screen"
+							primaryColor=	"#fbffcc"
+							secondaryColor=	"#ffe566"
+						/>
+				</Effect>
+			</Fragment>
+			
+			<Effect>
+				<ParticleSystem
+						style=				"radiate"
+						emitLifetime=		"1"
+						emitRate=			"100"
+						emitSpeed=			"10-30"
+						particleLifetime=	"40"
+						>
+					<ParticleEffect>
+						<Orb
+								instance=			"owner"
+						
+								style=				"smooth"
+								animate=			"fade"
+								radius=				"10"
+								intensity=			"50"
+								lifetime=			"40"
+						
+								blendMode=			"screen"
+								primaryColor=		"#fbffcc"
+								secondaryColor=		"#ffe566"
+								>
+						</Orb>
+					</ParticleEffect>
+				</ParticleSystem>
+				
+				<Orb	instance=		"owner"
+						style=			"smooth"
+						animate=		"fade"
+						radius=			"190"
+						lifetime=		"36"
+						intensity=		"30"
+					
+						blendMode=		"screen"
+						primaryColor=	"#fbffcc"
+						secondaryColor=	"#ffe566"
+						/>
+			</Effect>
+		</Weapon>
+	</ItemType>
+
+	<!-- Antimatter Explosion III -->
+
+	<ItemType UNID="&vtAntimatterExplosion3;"
+			name=				"antimatter explosion 3"
+			attributes=			"explosion"
+			virtual=			"true"
+			  
+			level=				"15"
+			>
+
+		<Weapon
+				type=				"radius"
+				>
+
+			<Fragment
+					count=			"1"
+					type=			"radius"
+					
+					damage=			"antimatter:16d60; WMD:4"
+					minRadius=		"3"
+					maxRadius=		"12"
+					/>
+			
+			<Fragment
+					count=			"1"
+					type=			"area"
+
+					damage=			"antimatter:9d60; momentum:2; WMD:2"
+					expansionSpeed=	"25"
+					missileSpeed=	"0"
+					lifetime=		"47"
+					hitPoints=		"50"
+					>
+
+				<Effect>
+					<Shockwave
+							instance=		"owner"
+							style=			"cloud"
+							width=			"180"
+							intensity=		"20"
+							fadeStart=		"70"
+							
+							blendMode=		"screen"
+							primaryColor=	"#fbffcc"
+							secondaryColor=	"#ffe566"
+						/>
+				</Effect>
+			</Fragment>
+			
+			<Effect>
+				<ParticleSystem
+						style=				"radiate"
+						emitLifetime=		"1"
+						emitRate=			"100"
+						emitSpeed=			"10-30"
+						particleLifetime=	"40"
+						>
+					<ParticleEffect>
+						<Orb
+								instance=			"owner"
+						
+								style=				"smooth"
+								animate=			"fade"
+								radius=				"10"
+								intensity=			"50"
+								lifetime=			"40"
+						
+								blendMode=			"screen"
+								primaryColor=		"#fbffcc"
+								secondaryColor=		"#ffe566"
+								>
+						</Orb>
+					</ParticleEffect>
+				</ParticleSystem>
+				
+				<Orb	instance=		"owner"
+						style=			"smooth"
+						animate=		"fade"
+						radius=			"280"
+						lifetime=		"58"
+						intensity=		"30"
+					
+						blendMode=		"screen"
+						primaryColor=	"#fbffcc"
+						secondaryColor=	"#ffe566"
+						/>
+			</Effect>
+		</Weapon>
+	</ItemType>
+
+	<!-- Antimatter Explosion IV -->
+
+	<ItemType UNID="&vtAntimatterExplosion4;"
+			name=				"antimatter explosion 4"
+			attributes=			"explosion"
+			virtual=			"true"
+			  
+			level=				"16"
+			>
+
+		<Weapon
+				type=				"radius"
+				>
+
+			<Fragment
+					count=			"1"
+					type=			"radius"
+					
+					damage=			"antimatter:24d60; WMD:4"
+					minRadius=		"4"
+					maxRadius=		"14"
+					/>
+			
+			<Fragment
+					count=			"1"
+					type=			"area"
+
+					damage=			"antimatter:16d60; momentum:2; WMD:2"
+					expansionSpeed=	"25"
+					missileSpeed=	"0"
+					lifetime=		"57"
+					hitPoints=		"50"
+					>
+
+				<Effect>
+					<Shockwave
+							instance=		"owner"
+							style=			"cloud"
+							width=			"240"
+							intensity=		"20"
+							fadeStart=		"70"
+							
+							blendMode=		"screen"
+							primaryColor=	"#fbffcc"
+							secondaryColor=	"#ffe566"
+						/>
+				</Effect>
+			</Fragment>
+			
+			<Effect>
+				<ParticleSystem
+						style=				"radiate"
+						emitLifetime=		"1"
+						emitRate=			"100"
+						emitSpeed=			"10-30"
+						particleLifetime=	"40"
+						>
+					<ParticleEffect>
+						<Orb
+								instance=			"owner"
+						
+								style=				"smooth"
+								animate=			"fade"
+								radius=				"10"
+								intensity=			"50"
+								lifetime=			"40"
+						
+								blendMode=			"screen"
+								primaryColor=		"#fbffcc"
+								secondaryColor=		"#ffe566"
+								>
+						</Orb>
+					</ParticleEffect>
+				</ParticleSystem>
+				
+				<Orb	instance=		"owner"
+						style=			"smooth"
+						animate=		"fade"
+						radius=			"340"
+						lifetime=		"65"
+						intensity=		"30"
+					
+						blendMode=		"screen"
+						primaryColor=	"#fbffcc"
+						secondaryColor=	"#ffe566"
 						/>
 			</Effect>
 		</Weapon>
