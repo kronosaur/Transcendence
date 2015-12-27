@@ -147,7 +147,7 @@ class CIntroShipController : public IShipController
 		//	Events
 
 		virtual void OnArmorRepaired (int iSection) { m_pDelegate->OnArmorRepaired(iSection); }
-		virtual void OnAttacked (CSpaceObject *pAttacker, const DamageDesc &Damage) { m_pDelegate->OnAttacked(pAttacker, Damage); }
+		virtual void OnAttacked (CSpaceObject *pAttacker, const SDamageCtx &Damage) { m_pDelegate->OnAttacked(pAttacker, Damage); }
 		virtual void OnDamaged (const CDamageSource &Cause, CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage) { m_pDelegate->OnDamaged(Cause, pArmor, Damage, iDamage); }
 		virtual void OnDestroyed (SDestroyCtx &Ctx);
 		virtual void OnDocked (CSpaceObject *pObj) { m_pDelegate->OnDocked(pObj); }
