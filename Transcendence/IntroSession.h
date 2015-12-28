@@ -123,7 +123,7 @@ class CIntroShipController : public IShipController
 
 		inline void SetShip (CShip *pShip) { m_pShip = pShip; }
 
-		virtual void Behavior (void) { m_pDelegate->Behavior(); }
+		virtual void Behavior (SUpdateCtx &Ctx) { m_pDelegate->Behavior(Ctx); }
 		virtual CString DebugCrashInfo (void) { return m_pDelegate->DebugCrashInfo(); }
 		virtual int GetCombatPower (void) { return m_pDelegate->GetCombatPower(); }
 		virtual EManeuverTypes GetManeuver (void) { return m_pDelegate->GetManeuver(); }
