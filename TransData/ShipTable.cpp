@@ -110,6 +110,7 @@ void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Output table
 
+	CCodeChainCtx CCCtx;
 	for (i = 0; i < Table.GetCount(); i++)
 		{
 		CShipClass *pClass = (CShipClass *)Table.GetValue(i);
@@ -122,15 +123,18 @@ void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine)
 				printf("\t");
 
 			const CString &sField = Cols[j];
-			CString sValue = pClass->GetDataField(sField);
+			ICCItem *pResult = pClass->GetProperty(CCCtx, sField);
 
 			if (strEquals(sField, FIELD_MANEUVER) 
 					|| strEquals(sField, FIELD_THRUST_TO_WEIGHT))
-				printf("%.1f", strToInt(sValue, 0, NULL) / 1000.0);
+				printf("%.1f", pResult->GetIntegerValue() / 1000.0);
 			else if (strEquals(sField, FIELD_SCORE_CALC))
 				printf("%d", pClass->CalcScore());
 			else
+				{
+				CString sValue = pResult->Print(&g_pUniverse->GetCC(), PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
 				printf(sValue.GetASCIIZPointer());
+				}
 			}
 
 		printf("\n");
