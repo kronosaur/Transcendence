@@ -2878,7 +2878,10 @@
 						)
 						
 					; If we were docked at an object that we just looted, then destroy the object
-					(if (objGetData dockedAt "0010201F_marked")
+					(if (and (objGetData dockedAt "0010201F_marked")
+							(ls (objGetProperty dockedAt 'mass) 2000)
+							(not (objGetProperty dockedAt 'immutable))
+							)
 						(objDestroy dockedAt gSource)
 						)
 					)
