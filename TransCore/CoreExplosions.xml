@@ -56,9 +56,9 @@
 							style="smooth"
 							shape="tapered"
 							length="32"
-							width="3"
-							primaryColor="#ffffff"
-							secondaryColor="#CCF7FF"
+							width="2"
+							primaryColor="#b3f3ff"
+							secondaryColor="#e5faff"
 							/>
 				</Effect>
 			</Fragment>
@@ -78,9 +78,9 @@
 							style="smooth"
 							shape="tapered"
 							length="64"
-							width="5"
-							primaryColor="#fffff0"
-							secondaryColor="#CCF7FF"
+							width="4"
+							primaryColor="#b3f3ff"
+							secondaryColor="#e5faff"
 							/>
 				</Effect>
 			</Fragment>
@@ -161,9 +161,9 @@
 							style="smooth"
 							shape="tapered"
 							length="32"
-							width="3"
-							primaryColor="#ffffff"
-							secondaryColor="#CCF7FF"
+							width="2"
+							primaryColor="#b3f3ff"
+							secondaryColor="#e5faff"
 							/>
 				</Effect>
 			</Fragment>
@@ -183,9 +183,9 @@
 							style="smooth"
 							shape="tapered"
 							length="64"
-							width="5"
-							primaryColor="#fffff0"
-							secondaryColor="#CCF7FF"
+							width="4"
+							primaryColor="#b3f3ff"
+							secondaryColor="#e5faff"
 							/>
 				</Effect>
 			</Fragment>
@@ -266,9 +266,9 @@
 							style="smooth"
 							shape="tapered"
 							length="32"
-							width="3"
-							primaryColor="#ffffff"
-							secondaryColor="#CCF7FF"
+							width="2"
+							primaryColor="#b3f3ff"
+							secondaryColor="#e5faff"
 							/>
 				</Effect>
 			</Fragment>
@@ -288,9 +288,9 @@
 							style="smooth"
 							shape="tapered"
 							length="64"
-							width="5"
-							primaryColor="#fffff0"
-							secondaryColor="#CCF7FF"
+							width="4"
+							primaryColor="#b3f3ff"
+							secondaryColor="#e5faff"
 							/>
 				</Effect>
 			</Fragment>
@@ -371,9 +371,9 @@
 							style="smooth"
 							shape="tapered"
 							length="32"
-							width="3"
-							primaryColor="#ffffff"
-							secondaryColor="#CCF7FF"
+							width="2"
+							primaryColor="#b3f3ff"
+							secondaryColor="#e5faff"
 							/>
 				</Effect>
 			</Fragment>
@@ -393,9 +393,9 @@
 							style="smooth"
 							shape="tapered"
 							length="64"
-							width="5"
-							primaryColor="#fffff0"
-							secondaryColor="#CCF7FF"
+							width="4"
+							primaryColor="#b3f3ff"
+							secondaryColor="#e5faff"
 							/>
 				</Effect>
 			</Fragment>
