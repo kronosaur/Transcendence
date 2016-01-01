@@ -1067,10 +1067,10 @@
 	<StationType UNID="&stCSCEuropaWreck;"
 			name=				"wreck of the CSC Europa"
 			sovereign=			"&svCommonwealthFleet;"
-			abandonedScreen=	"Main"
+			dockScreen=			"Main"
 			scale=				"ship"
 
-			structuralHitPoints="1300"
+			immutable=			"true"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"CSCEuropa, generic, locked, shipwreck, uncharted"
