@@ -671,7 +671,10 @@
 											(setq gItem (itmCreate &itTargetingComputerROM; 1))
 
 										(leq roll 50)
-											(setq gItem (itmCreate &itMilitaryID; 1))
+											(block Nil
+												(setq gItem (itmCreate &itMilitaryID; 1))
+												(itmSetKnown &itMilitaryID;)
+												)
 
 										(leq roll 75)
 											(setq gItem (itmCreate &itMuleAuton; 1))
