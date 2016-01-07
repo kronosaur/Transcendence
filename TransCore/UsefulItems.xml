@@ -2037,7 +2037,7 @@
 			level=				"2"
 			value=				"350"
 			mass=				"50"
-			frequency=			"rare"
+			frequency=			"uncommon"
 			attributes=			"MinorItem"
 
 			description=		"Kinetic upgrades increase the damage of a kinetic weapon."
@@ -2097,7 +2097,7 @@
 			level=				"7"
 			value=				"2500"
 			mass=				"50"
-			frequency=			"rare"
+			frequency=			"uncommon"
 			attributes=			"MinorItem"
 
 			description=		"Ion power capacitors are used to increase the destructive power of ion weapons."
@@ -2147,7 +2147,7 @@
 		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Invoke>
-			(intEnhanceWeaponUse 0x1002 Nil "has an improved fire rate")
+			(intEnhanceWeaponUse 0x1002 Nil "has an improved fire rate" 6)
 		</Invoke>
 	</ItemType>
 
@@ -2855,8 +2855,9 @@
 					)
 				))
 
-			(setq intEnhanceWeaponUse (lambda (newMods damageType successText)
+			(setq intEnhanceWeaponUse (lambda (newMods damageType successText maxLevel)
 				(block (notFound)
+					(if (not maxLevel) (setq maxLevel 10))
 					; Install
 					(setq notFound True)
 					(objEnumItems gSource "w~lI" theItem
@@ -2864,12 +2865,15 @@
 							(setq weaponItem theItem)
 							(if (and 
 									notFound 
-									(leq (itmGetLevel weaponItem) 10)
 									(or (not damageType) (eq (itmGetDamageType weaponItem) damageType))
 									(eq (shpGetItemDeviceName gSource weaponItem) 0)
 									)
 								(block Nil
 									(switch
+										; If the weapon is too advanced, it doesn't work
+										(gr (itmGetLevel weaponItem) maxLevel)
+											(objSendMessage gSource Nil (cat "Your " (itmGetName weaponItem 32) " is too advanced to be optimized"))
+												
 										; If the item is damaged, we repair it
 										(and (itmIsDamaged weaponItem) (ls newMods 0x8000))
 											(block Nil
