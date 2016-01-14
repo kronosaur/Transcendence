@@ -2694,14 +2694,24 @@
 									)
 
 								(eq coatingType 'regenerating)
-								(block Nil
+								(block (
+									desc result
+									(itemLevel (itmGetLevel (scrGetItem gScreen)))
+									)
 									(setq desc "The paste is a nanomachine matrix that regenerates the armor segment.")
+									
+									(switch
+										(geq itemLevel 10)
+											(setq gTitle (cat desc " Unfortunately, your armor is too advanced for the nanomachines."))
+											
+										(block Nil
+											(setq result
+												(shpEnhanceItem gPlayerShip (scrGetItem gScreen) 0x0200)
+												)
 
-									(setq result
-										(shpEnhanceItem gPlayerShip (scrGetItem gScreen) 0x0200)
+											(setq gTitle (cat desc (intArmorEnhanceStatus result)))
+											)
 										)
-
-									(setq gTitle (cat desc (intArmorEnhanceStatus result)))
 									)
 
 								(eq coatingType 'shieldresist)

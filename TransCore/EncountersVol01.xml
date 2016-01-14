@@ -1581,7 +1581,7 @@
 
 			data=				"50000"
 
-			description=		"Heliotrope starship fuel is known to be one of the cleanest and most powerful fuels available. Too bad that the Heliotrope don't part with it willingly."
+			description=		"Heliotrope starship fuel is known to be one of the cleanest and most powerful fuels available. Too bad the Heliotrope don't part with it willingly."
 			>
 
 		<Image imageID="&rsItems1;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
