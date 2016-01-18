@@ -327,13 +327,25 @@
 					
 					(reactorItem (@ (objGetItems shipObj "rI") 0))
 					(reactorText (if reactorItem (itmGetName reactorItem 0x00) (cat (objGetName shipObj 0x80) " reactor")))
-					(reactorPower (divide (if reactorItem (objGetItemProperty shipObj reactorItem 'power) (objGetProperty shipObj 'power)) 1000))
+					(reactorPower (divide (objGetProperty shipObj 'power) 1000))
 					(reactorPowerText
 						(switch
 							(gr reactorPower 1000)
 								(cat (divide reactorPower 1000) "." (divide (modulo reactorPower 1000) 100) " GW")
 								
 							(cat reactorPower " MW")
+							)
+						)
+					(reactorEfficiency (objGetProperty shipObj 'fuelEfficiencyBonus))
+					(reactorEfficiencyText
+						(switch
+							(gr reactorEfficiency 0)
+								(cat "+" reactorEfficiency "%")
+										
+							(ls reactorEfficiency 0)
+								(cat reactorEfficiency "%")
+										
+							"standard"
 							)
 						)
 					(reactorFuel
@@ -383,7 +395,7 @@
 								"{/f:MediumBold;/c:#79828c; reactor:} " reactorText "\n"
 								"{/f:MediumBold;/c:#79828c; max. output:} " reactorPowerText "\n"
 								"{/f:MediumBold;/c:#79828c; fuel:} " (itmGetName reactorFuel 0x02) "\n"
-								"{/f:MediumBold;/c:#79828c; efficiency:} " (objGetProperty shipObj 'fuelEfficiency) "\n"
+								"{/f:MediumBold;/c:#79828c; fuel efficiency:} " reactorEfficiencyText "\n"
 								"\n"
 								"{/f:MediumBold;/c:#79828c; drive:} " driveText "\n"
 								"{/f:MediumBold;/c:#79828c; max. speed:} ." (objGetProperty shipObj 'maxSpeed) "c\n"
@@ -405,10 +417,10 @@
 								"{/f:MediumBold;/c:#79828c; device slots:} " deviceSlots " (" availDeviceSlots " free)\n"
 							
 								(if (!= deviceSlots maxWeaponSlots)
-									(cat "{/f:MediumBold;/c:#79828c; for weapon:} " maxWeaponSlots " (" availWeaponSlots " free)\n")
+									(cat "{/f:MediumBold;/c:#79828c; for weapons:} " maxWeaponSlots " (" availWeaponSlots " free)\n")
 									)
 								(if (!= deviceSlots maxNonWeaponSlots)
-									(cat "{/f:MediumBold;/c:#79828c; for non-weapon:} " maxNonWeaponSlots " (" availNonWeaponSlots " free)\n") 
+									(cat "{/f:MediumBold;/c:#79828c; for non-weapons:} " maxNonWeaponSlots " (" availNonWeaponSlots " free)\n") 
 									)
 								"\n"
 								"{/f:MediumBold;/c:#79828c; max. armor:} " (/ (objGetProperty shipObj 'maxArmorMass) 1000) " tons\n"
