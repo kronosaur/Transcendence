@@ -395,7 +395,7 @@
 
 	<ItemType UNID="&itMnemonicProcessor;"
 			name=				"Heisenmachines quantum CPU"
-			attributes=			"commonwealth, majorItem, quantumCPU"
+			attributes=			"commonwealth, heisenmachines, majorItem, quantumCPU"
 			  
 			level=				"5"
 			frequency=			"uncommon"

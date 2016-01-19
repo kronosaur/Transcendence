@@ -51,14 +51,19 @@
 			<ItemAttribute label="Assembler"		criteria="* +assemblerCorp;"/>
 			<ItemAttribute label="Bushido"			criteria="* +bushido;"/>
 			<ItemAttribute label="EI"				criteria="* +ei;"/>
+			<ItemAttribute label="Heisenmachines"	criteria="* +heisenmachines;"/>
+			<ItemAttribute label="Honoku-Tomashi"	criteria="* +honokuTomashi;"/>
 			<ItemAttribute label="Kabuto"			criteria="* +kabuto;"/>
+			<ItemAttribute label="Kartal"			criteria="* +kartal;"/>
 			<ItemAttribute label="Makayev"			criteria="* +makayev;"/>
 			<ItemAttribute label="NAMI"				criteria="* +nami;"/>
 			<ItemAttribute label="OmniDefense"		criteria="* +omniDefense;"/>
+			<ItemAttribute label="Onorad"			criteria="* +onorad;"/>
 			<ItemAttribute label="Pacific Defense"	criteria="* +pacificDefense;"/>
 			<ItemAttribute label="Rasiermesser"		criteria="* +rasiermesser;"/>
 			<ItemAttribute label="Solon"			criteria="* +solon;"/>
 			<ItemAttribute label="Taikon"			criteria="* +taikon;"/>
+			<ItemAttribute label="Tenhove"			criteria="* +tenhove;"/>
 		</AttributeDesc>
 	</Sovereign>
 
