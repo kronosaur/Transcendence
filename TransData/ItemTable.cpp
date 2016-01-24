@@ -24,6 +24,14 @@
 #define FIELD_POWER_PER_SHOT				CONSTLIT("powerPerShot")
 #define FIELD_TOTAL_COUNT					CONSTLIT("totalCount")
 
+#define FIELD_BENCHMARK						CONSTLIT("benchmark")
+
+#define FIELD_BENCHMARK_AVERAGE_TIME		CONSTLIT("averageTime")
+#define FIELD_BENCHMARK_BEST_ARMOR			CONSTLIT("bestArmor")
+#define FIELD_BENCHMARK_BEST_TIME			CONSTLIT("bestTime")
+#define FIELD_BENCHMARK_WORST_ARMOR			CONSTLIT("worstArmor")
+#define FIELD_BENCHMARK_WORST_TIME			CONSTLIT("worstTime")
+
 #define TOTAL_COUNT_FILENAME				CONSTLIT("TransData_ItemCount.txt")
 
 static char *g_szTypeCode[] =
@@ -56,6 +64,8 @@ struct SItemTableCtx
 
 	TArray<CString> Cols;
 	CDesignTypeStats TotalCount;
+
+    CWeaponBenchmarkCtx WeaponBenchmarks;
 	};
 
 typedef TSortMap<CString, CItemType *> SItemTypeList;
@@ -400,7 +410,10 @@ void OutputHeader (SItemTableCtx &Ctx)
 		if (i != 0)
 			printf("\t");
 
-		printf(Ctx.Cols[i].GetASCIIZPointer());
+        if (strEquals(Ctx.Cols[i], FIELD_BENCHMARK))
+            printf("averageTime\tbestArmor\tbestArmorTime\tworstArmor\tworstArmorTime");
+        else
+		    printf(Ctx.Cols[i].GetASCIIZPointer());
 		}
 
 	printf("\n");
@@ -426,36 +439,73 @@ void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
 
 			const CString &sField = Ctx.Cols[j];
 
+            //  Handle some special fields
+
+            if (strEquals(sField, FIELD_BENCHMARK))
+                {
+                CWeaponBenchmarkCtx::SStats Stats;
+                if (!Ctx.WeaponBenchmarks.GetStats(pType, Stats))
+                    {
+                    printf("\t\t\t\t");
+                    }
+                else
+                    {
+                    CString sBestArmor;
+                    if (Stats.pBestArmor)
+                        {
+                        CItem BestArmor(Stats.pBestArmor, 1);
+                        sBestArmor = BestArmor.GetNounPhrase(nounShort);
+                        }
+
+                    CString sWorstArmor;
+                    if (Stats.pWorstArmor)
+                        {
+                        CItem WorstArmor(Stats.pWorstArmor, 1);
+                        sWorstArmor = WorstArmor.GetNounPhrase(nounShort);
+                        }
+
+                    printf("%d\t%s\t%d\t%s\t%d",
+                            Stats.iAverageTime,
+                            (LPSTR)sBestArmor,
+                            Stats.iBestTime,
+                            (LPSTR)sWorstArmor,
+                            Stats.iWorstTime);
+                    }
+                }
+
 			//	Get the field value
 
-			CString sValue;
-			CItem Item(pType, 1);
-			CItemCtx ItemCtx(Item);
-			CCodeChainCtx CCCtx;
+            else
+                {
+			    CString sValue;
+			    CItem Item(pType, 1);
+			    CItemCtx ItemCtx(Item);
+			    CCodeChainCtx CCCtx;
 
-			ICCItem *pResult = Item.GetProperty(&CCCtx, ItemCtx, sField);
+			    ICCItem *pResult = Item.GetProperty(&CCCtx, ItemCtx, sField);
 
-			if (pResult->IsNil())
-				sValue = NULL_STR;
-			else
-				sValue = pResult->Print(&g_pUniverse->GetCC(), PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
+			    if (pResult->IsNil())
+				    sValue = NULL_STR;
+			    else
+				    sValue = pResult->Print(&g_pUniverse->GetCC(), PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
 
-			pResult->Discard(&g_pUniverse->GetCC());
+			    pResult->Discard(&g_pUniverse->GetCC());
 
-			//	Format the value
+			    //	Format the value
 
-			if (strEquals(sField, FIELD_AVERAGE_DAMAGE) || strEquals(sField, FIELD_POWER_PER_SHOT))
-				printf("%.2f", strToInt(sValue, 0, NULL) / 1000.0);
-			else if (strEquals(sField, FIELD_POWER))
-				printf("%.1f", strToInt(sValue, 0, NULL) / 1000.0);
-			else if (strEquals(sField, FIELD_TOTAL_COUNT))
-				{
-				SDesignTypeInfo *pInfo = Ctx.TotalCount.GetAt(pType->GetUNID());
-				double rCount = (pInfo ? pInfo->rPerGameMeanCount : 0.0);
-				printf("%.2f", rCount);
-				}
-			else
-				printf(sValue.GetASCIIZPointer());
+			    if (strEquals(sField, FIELD_AVERAGE_DAMAGE) || strEquals(sField, FIELD_POWER_PER_SHOT))
+				    printf("%.2f", strToInt(sValue, 0, NULL) / 1000.0);
+			    else if (strEquals(sField, FIELD_POWER))
+				    printf("%.1f", strToInt(sValue, 0, NULL) / 1000.0);
+			    else if (strEquals(sField, FIELD_TOTAL_COUNT))
+				    {
+				    SDesignTypeInfo *pInfo = Ctx.TotalCount.GetAt(pType->GetUNID());
+				    double rCount = (pInfo ? pInfo->rPerGameMeanCount : 0.0);
+				    printf("%.2f", rCount);
+				    }
+			    else
+				    printf(sValue.GetASCIIZPointer());
+                }
 			}
 
 		printf("\n");

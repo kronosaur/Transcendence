@@ -9,6 +9,7 @@
 #include "TSE.h"
 #endif
 
+#include "ItemBenchmarks.h"
 #include "Utilities.h"
 
 //	Used by sim tables

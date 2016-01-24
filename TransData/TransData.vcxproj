@@ -306,6 +306,7 @@
     <ClCompile Include="Compile.cpp" />
     <ClCompile Include="COutputChart.cpp" />
     <ClCompile Include="CSimViewer.cpp" />
+    <ClCompile Include="CWeaponBenchmarkCtx.cpp" />
     <ClCompile Include="Effects.cpp" />
     <ClCompile Include="EncounterCount.cpp" />
     <ClCompile Include="EncounterFrequency.cpp" />
@@ -430,6 +431,7 @@
     <ClCompile Include="WorldImageChart.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ItemBenchmarks.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TransData.h" />
     <ClInclude Include="Utilities.h" />
