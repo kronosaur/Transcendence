@@ -99,7 +99,7 @@
 
 		<Armor
 				hitPoints=	"250"
-				hpBonus=	"  +0,  +0,+100,+100, +25,  +0"
+				hpBonus=	"  +0,  +0, +50,+100,  +0, +25"
 
 				repairTech=	"6"
 
@@ -266,7 +266,7 @@
 
 		<Armor
 				hitPoints=	"180"
-				hpBonus=	"  +0,  +0, +50, -25, +25,  +0"
+				hpBonus=	"  +0,  +0, -25, +50,  +0, +25"
 
 				blindingDamageAdj="0"
 				deviceDamageAdj="25"
@@ -355,7 +355,7 @@
 			mass=				"2500"
 			attributes=			"MinorItem; NotForSale; sungSlavers; TiledArmor"
 
-			description=		"This ceralloy-derived tiled armor can be cannibalized to repair other Sung armor segments."
+			description=		"This blast-resistant tiled armor can be cannibalized to repair other Sung armor segments."
 
 			useScreen=			"&dsUseArmorPatch;"
 			useUninstalledOnly=	"true"
@@ -367,7 +367,7 @@
 
 		<Armor
 				hitPoints=	"70"
-				hpBonus=	"  +0,  +0, +50, -25,  +0"
+				hpBonus=	"  +0,  +0, -25, +50,  +0"
 
 				repairTech=	"6"
 
@@ -404,7 +404,7 @@
 			mass=				"1500"
 			attributes=			"MinorItem; NotForSale; sungSlavers; TiledArmor"
 
-			description=		"The Sung created this ceralloy-derived tiled armor for their Wind slavers. The tiles can be cannibalized to repair other Sung armor segments."
+			description=		"The Sung created this blast-resistant tiled armor for their Wind slavers. The tiles can be cannibalized to repair other Sung armor segments."
 
 			useScreen=			"&dsUseArmorPatch;"
 			useUninstalledOnly=	"true"
@@ -416,7 +416,7 @@
 
 		<Armor
 				hitPoints=	"25"
-				hpBonus=	"  +0,  +0, +50, -25,  +0"
+				hpBonus=	"  +0,  +0, -25, +50,  +0"
 
 				repairTech=	"6"
 
