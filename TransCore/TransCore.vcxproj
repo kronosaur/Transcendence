@@ -415,7 +415,9 @@
     </Xml>
     <Xml Include="CoreProjectileEffects.xml" />
     <Xml Include="Ferians.xml" />
-    <Xml Include="HumanSpaceVol01.xml" />
+    <Xml Include="HumanSpaceVol01.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="Ore.xml" />
     <Xml Include="RPGComponents.xml">
       <SubType>Designer</SubType>

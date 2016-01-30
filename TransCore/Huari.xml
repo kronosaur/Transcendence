@@ -1420,7 +1420,7 @@
 					<AttackConvoyMission>
 						<OnPaneInit>
 							(scrSetDesc gScreen
-								"\"By the mercy of the Light we've learned the course and schedule of a slave ship carrying our bretheren. "
+								"\"By the mercy of the Light we've learned the course and schedule of a slave ship carrying our brethren. "
 								"You can free our citizens by attacking the transport and returning its living cargo to us.\n\n"
 								"\"Will you help us, %brother%?\""
 								)
@@ -1557,7 +1557,7 @@
 										)
 									(block Nil
 										(scrSetDesc gScreen (cat
-											"\"By the enduring Light, where are our bretheren? You didn't leave them on that slave ship, did you? "
+											"\"By the enduring Light, where are our brethren? You didn't leave them on that slave ship, did you? "
 											"There were " (strNumber (objGetData gSource "slaveCount")) " coffins on that ship and you need to account for all of them!\""
 											))
 										(setq gResult Nil)
