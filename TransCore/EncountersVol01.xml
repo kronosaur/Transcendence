@@ -1415,11 +1415,12 @@
 				type=				"beam"
 				deviceSlots=		"2"
 
-				damage=				"thermo:12d12; WMD7"
+				damage=				"thermo:24d20; WMD:7"
 				fireRate=			"60"
 				lifetime=			"30"
+                missileSpeed=       "50"
 				hitPoints=			"20"
-				powerUse=			"3500"
+				powerUse=			"200"
 				charges=			"true"
 
 				effect=				"&efThermoShellDefault;"
@@ -4396,7 +4397,7 @@
 
 		<Weapon
 				fireRate=			"20"
-				powerUse=			"100"
+				powerUse=			"50"
 				>
 
 			<Missiles>

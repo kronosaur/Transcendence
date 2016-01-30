@@ -372,7 +372,7 @@
 
 		<Weapon
 				fireRate=			"40"
-				powerUse=			"200"
+				powerUse=			"100"
 				reportAmmo=			"true"
 				>
 

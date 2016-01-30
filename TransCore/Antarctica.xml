@@ -1293,7 +1293,7 @@
 						<OnPaneInit>
 							(scrSetDesc gScreen 
 								"The bridge of the CSC Terra is busy with activity. Admiral Decker is leaning over a "
-								"holochart as the massive ship manuevers through the system."
+								"holochart as the massive ship maneuvers through the system."
 								)
 						</OnPaneInit>
 						

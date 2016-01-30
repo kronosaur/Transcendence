@@ -33,7 +33,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"antimatter:6d12; WMD7"
+				damage=				"antimatter:6d12; WMD:7"
 				fireRate=			"16"
 				missileSpeed=		"40"
 				hitPoints=			"5"
@@ -207,7 +207,7 @@
 
 		<Weapon
 				fireRate=			"30"
-				powerUse=			"60"
+				powerUse=			"30"
 				>
 
 			<Missiles>

@@ -22,7 +22,7 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"particle:1d8+1"
+				damage=				"particle:2d8"
 				fireRate=			"6"
 				lifetime=			"30"
 				powerUse=			"350"

@@ -785,7 +785,7 @@
 													(setq gResult "Tentacles reach out to accept your offering and the organic mass tentatively swallows it.\n\nWith a roar of anger, the organic mass spews a thick mist of bile. You are covered in a slimy broth of chemicals.")
 
 												(or (gr incMaterial 0) (gr incEnergy 0))
-													(setq gResult (cat "Tentacles reach out to accept your offering and the organic mass swallows it.\n\nOrgans and bladers gurgle as they process the " (if (gr incEnergy 0) "energy" "material") " you have fed them."))
+													(setq gResult (cat "Tentacles reach out to accept your offering and the organic mass swallows it.\n\nOrgans and bladders gurgle as they process the " (if (gr incEnergy 0) "energy" "material") " you have fed them."))
 
 												(setq gResult "Tentacles reach out to accept your offering, but after a tentative taste they discard it through one of the many tunnels along the wall of the pit.")
 												)
@@ -1509,7 +1509,7 @@
 				<OnPaneInit>
 					(scrSetDesc gScreen
 						(cat 
-							"You try to enter the Trading Chamber but a group of Teratons grab you and drag you back to your ship. Snorting with contempt for your weak ship, they rumage through your cargo hold looking for valuable items.\n\nThey take "
+							"You try to enter the Trading Chamber but a group of Teratons grab you and drag you back to your ship. Snorting with contempt for your weak ship, they rummage through your cargo hold looking for valuable items.\n\nThey take "
 							(itmGetName gItem 8)
 							" and leave you in pain on the deck of your ship."
 							)

@@ -124,7 +124,7 @@ PLAYER DATA
 				type=				"missile"
 				launcher=			"true"
 				fireRate=			"30"
-				powerUse=			"5"
+				powerUse=			"50"
 				charges=			"true"
 
 				deviceSlots=		"0"
@@ -185,7 +185,7 @@ PLAYER DATA
 		<Weapon
 				type=				"missile"
 
-				damage=				"antimatter:7d12; WMD5"
+				damage=				"antimatter:8d12; WMD:5"
 				fireRate=			"16"
 				missileSpeed=		"50"
 				lifetime=			"60"
@@ -219,7 +219,7 @@ PLAYER DATA
 				type=				"missile"
 				failureChance=		"10"
 
-				damage=				"antimatter:4d12; WMD5"
+				damage=				"antimatter:6d12; WMD:5"
 				fireRate=			"15"
 				missileSpeed=		"60"
 				lifetime=			"40"
@@ -262,7 +262,7 @@ PLAYER DATA
 			attributes=			"unknown"
 			>
 
-		<Names>weapon protype marked "Alpha"; weapon prototype marked "Beta"; weapon prototype marked "Gamma";
+		<Names>weapon prototype marked "Alpha"; weapon prototype marked "Beta"; weapon prototype marked "Gamma";
 			weapon prototype marked "Delta"; weapon prototype marked "Epsilon"; weapon prototype marked "Omega";
 			weapon prototype marked "0.1"; weapon prototype marked "X17"; weapon prototype marked "Trinity";
 			weapon prototype marked "Halifax"; weapon prototype marked "Test No. 6"; weapon prototype marked "596";

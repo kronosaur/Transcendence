@@ -485,7 +485,7 @@
 										(gr haveCount 5)
 											(block Nil
 												(setq gain 0)
-												(setq gTitle (cat "Dvalin is uninterested: \"Another one, ya? We will use it for balast, perhaps.\""))
+												(setq gTitle (cat "Dvalin is uninterested: \"Another one, ya? We will use it for ballast, perhaps.\""))
 												(setq gResult Nil)
 												)
 

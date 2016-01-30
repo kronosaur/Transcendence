@@ -4865,7 +4865,7 @@
 						<OnPaneInit>
 							(scrSetDesc gScreen
 								"You are docked at a massive alien structure. The walls appear to be made of a "
-								"blue-green crystaline substance that looks fragile but is actually immensely strong."
+								"blue-green crystalline substance that looks fragile but is actually immensely strong."
 								(if (herStatus 'controlPointCamp)
 									(cat
 										"\n\nCables and equipment run through the dock area into a large central chamber "

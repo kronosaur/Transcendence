@@ -99,7 +99,7 @@
 				type=				"beam"
 
 				repeating=			"4"
-				damage=				"laser:1d4; mining:3;"
+				damage=				"laser:1d4+1; mining:3;"
 				fireRate=			"30"
 				lifetime=			"15"
 				powerUse=			"30"

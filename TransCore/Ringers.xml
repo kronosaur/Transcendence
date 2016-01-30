@@ -390,10 +390,10 @@
 				repeating=			"4"
 				damage=				"positron:2d8"
 				fireRate=			"20"
-				missileSpeed=		"90"
-				lifetime=			"34"
+				missileSpeed=		"100"
+				lifetime=			"60"
 				interaction=		"0"
-				powerUse=			"3500"
+				powerUse=			"3000"
 
 				sound=				"&snLaserCannon;"
 				>

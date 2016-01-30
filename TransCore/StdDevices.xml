@@ -305,7 +305,7 @@
 			value=				"5000"
 			mass=				"1000"
 			  
-			description=		"This device combines a fast-doppler sensor with a targeting computer. Hostile missiles in its range are blasted into dust by a laser cannon."
+			description=		"This device combines a fast-Doppler sensor with a targeting computer. Hostile missiles in its range are blasted into dust by a laser cannon."
 			>
 
 		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>

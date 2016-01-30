@@ -958,7 +958,7 @@
 						<OnPaneInit>
 							(scrSetDesc gScreen 
 								"Apotamo greets you at the door of the Grand Hall.\n\n"
-								"\"Welcome back, %name%! Take your ease here before you continue on your ardous journey.\""
+								"\"Welcome back, %name%! Take your ease here before you continue on your arduous journey.\""
 								)
 						</OnPaneInit>
 
@@ -1663,7 +1663,7 @@
 									(objSetObjRefData gSource "missionTarget" gTarget)
 									(typIncGlobalData &svHuariEmpire; "missionCount")
 
-									(setq gDesc "\"We've programmed the stations's coordinates into your ship's computer. Go with the Light!\"")
+									(setq gDesc "\"We've programmed the station's coordinates into your ship's computer. Go with the Light!\"")
 									(scrShowPane gScreen "MissionAccepted")
 									)
 							</Action>

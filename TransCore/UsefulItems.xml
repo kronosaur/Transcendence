@@ -1414,7 +1414,7 @@
 			mass=				"1"
 			frequency=			"notrandom"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Info; MinorItem"
+			attributes=			"cannotOrder, Info; MinorItem"
 
 			description=		"The definitive guide to starship weapons and armor. This ROM contains specification for commercially available weapons and armor of the Commonwealth."
 			>
@@ -1448,7 +1448,7 @@
 			mass=				"1"
 			frequency=			"notrandom"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Info; MinorItem"
+			attributes=			"cannotOrder, Info; MinorItem"
 
 			description=		"The definitive guide to starship weapons and armor. This ROM contains specification for military weapons and armor used in the Commonwealth."
 			>
@@ -1482,7 +1482,7 @@
 			mass=				"1"
 			frequency=			"notrandom"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Info; MinorItem"
+			attributes=			"cannotOrder, Info; MinorItem"
 
 			description=		"The definitive guide to starship weapons and armor. This ROM contains specification for weapons and armor used by the Ancient Races."
 			>
@@ -1516,7 +1516,7 @@
 			mass=				"1"
 			frequency=			"notrandom"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Info; MinorItem"
+			attributes=			"cannotOrder, Info; MinorItem"
 
 			description=		"The definitive guide to starship weapons and armor. This ROM contains specification for weapons and armor developed by the Halo Races."
 
@@ -1551,7 +1551,7 @@
 			mass=				"1"
 			frequency=			"notrandom"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Info; MinorItem"
+			attributes=			"cannotOrder, Info; MinorItem"
 
 			description=		"The definitive guide to starship weapons and armor. This ROM contains specification for weapons and armor used by the Hierodules and the entities Oracus and Domina."
 

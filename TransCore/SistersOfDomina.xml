@@ -450,7 +450,7 @@
 			<Text id="SanctumIntro:3">
 				(cat
 					"You are in the sanctum of the Sisters of Domina. "
-					"A faint glow eminates from the micro-engraved plasteel walls and you feel a peaceful presence.\n\n"
+					"A faint glow emanates from the micro-engraved plasteel walls and you feel a peaceful presence.\n\n"
 					
 					"You are an adept in the service of Domina and have access to third-tier powers. "
 					"The strength of your connection to Domina is: " (typGetGlobalData &stDomina; "xp") "."
@@ -459,7 +459,7 @@
 			<Text id="SanctumIntro:4">
 				(cat
 					"You are in the sanctum of the Sisters of Domina. "
-					"A faint glow eminates from the micro-engraved plasteel walls and you feel a peaceful presence.\n\n"
+					"A faint glow emanates from the micro-engraved plasteel walls and you feel a peaceful presence.\n\n"
 					
 					"You are a curate in the service of Domina and have access to fourth-tier powers. "
 					"The strength of your connection to Domina is: " (typGetGlobalData &stDomina; "xp") "."

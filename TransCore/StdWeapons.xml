@@ -33,7 +33,7 @@
 				fireRate=			"30"
 				hitPoints=			"10"
 				lifetime=			"120"
-				powerUse=			"2"
+				powerUse=			"1"
 				charges=			"true"
 
 				missileSpeed=		"40"
@@ -309,7 +309,7 @@
 
 				damage=				"kinetic:2d6-1; momentum1"
 				fireRate=			"15"
-				missileSpeed=		"30"
+				missileSpeed=		"40"
 				interaction=		"80"
 				lifetime=			"80"
 				powerUse=			"22"
@@ -416,7 +416,6 @@
 		<Weapon
 				type=				"beam"
 
-				configuration=		"spread3"
 				damage=				"laser:1d4"
 				fireRate=			"12"
 				lifetime=			"30"
@@ -425,6 +424,11 @@
 				effect=				"&efLaserBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
+			<Configuration aimTolerance="6">
+				<Shot angle="-3"/>
+				<Shot angle="0"/>
+				<Shot angle="3"/>
+			</Configuration>
 		</Weapon>
 	</ItemType>
 
@@ -468,7 +472,7 @@
 			name=				"omnidirectional laser cannon"
 			attributes=			"commonwealth, EI, energyWeapon, majorItem"
 			  
-			level=				"3"
+			level=				"2"
 			frequency=			"rare"
 
 			value=				"1700"
@@ -513,7 +517,7 @@
 
 		<Weapon
 				fireRate=			"30"
-				powerUse=			"10"
+				powerUse=			"5"
 				launcher=			"true"
 				>
 
@@ -581,7 +585,7 @@
 
 		<Weapon
 				fireRate=			"15"
-				powerUse=			"10"
+				powerUse=			"5"
 				>
 
 			<Missiles>
@@ -650,7 +654,7 @@
 			name=				"dual recoilless cannon"
 			attributes=			"commonwealth, majorItem, NAMI"
 			  
-			level=				"3"
+			level=				"2"
 			frequency=			"uncommon"
 
 			value=				"1500"
@@ -670,7 +674,7 @@
 				missileSpeed=		"40"
 				interaction=		"80"
 				lifetime=			"60"
-				powerUse=			"50"
+				powerUse=			"30"
 
 				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
@@ -797,7 +801,7 @@
 
 		<Weapon
 				fireRate=			"20"
-				powerUse=			"20"
+				powerUse=			"10"
 				launcher=			"true"
 				>
 
@@ -979,7 +983,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"blast:3d6; momentum2; WMD1"
+				damage=				"blast:3d6; momentum:2; WMD:5"
 				fireRate=			"20"
 				missileSpeed=		"50"
 				hitPoints=			"3"
@@ -1078,7 +1082,7 @@
 
 		<Weapon
 				fireRate=			"10"
-				powerUse=			"40"
+				powerUse=			"20"
 				>
 
 			<Missiles>
@@ -1418,7 +1422,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"blast:5d6; momentum2; WMD2"
+				damage=				"blast:5d6; momentum:2; WMD:5"
 				fireRate=			"20"
 				missileSpeed=		"60"
 				lifetime=			"67"
@@ -1487,7 +1491,7 @@
 				omnidirectional=	"true"
 
 				fireRate=			"15"
-				powerUse=			"60"
+				powerUse=			"30"
 				>
 
 			<Missiles>
@@ -1527,7 +1531,7 @@
 		<Weapon
 				configuration=		"spread3"
 				fireRate=			"30"
-				powerUse=			"60"
+				powerUse=			"30"
 				multiTarget=		"true"
 				>
 
@@ -1678,7 +1682,7 @@
 				type=				"beam"
 
 				configuration=		"alternating"
-				damage=				"particle:3d8"
+				damage=				"particle:3d8+3"
 				fireRate=			"6"
 				lifetime=			"30"
 				powerUse=			"600"
@@ -1980,7 +1984,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:6d12; momentum2; WMD4"
+				damage=				"thermo:5d12; momentum:2; WMD:4"
 				fireRate=			"20"
 				missileSpeed=		"40"
 				hitPoints=			"5"
@@ -2050,10 +2054,10 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"ion:11d6; WMD1"
+				damage=				"ion:12d6; WMD:1"
 				fireRate=			"20"
 				lifetime=			"30"
-				powerUse=			"1000"
+				powerUse=			"750"
 
 				effect=				"&efEIBlasterBeam;"
 				fireEffect=			"&efEIBlasterFire;"
@@ -2123,7 +2127,7 @@
 
 		<Weapon
 				fireRate=			"16"
-				powerUse=			"50"
+				powerUse=			"100"
 				launcher=			"true"
 				>
 
@@ -2305,10 +2309,10 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"ion:8d20; WMD1"
+				damage=				"ion:26d6; WMD:1"
 				fireRate=			"30"
 				lifetime=			"30"
-				powerUse=			"2000"
+				powerUse=			"1500"
 
 				effect=				"&efEIBlasterBeam;"
 				fireEffect=			"&efEIBlasterFire;"
@@ -2370,10 +2374,10 @@
 				type=				"beam"
 
 				omnidirectional=	"true"
-				damage=				"ion:4d6; WMD1"
-				fireRate=			"15"
+				damage=				"ion:12d6; WMD:1"
+				fireRate=			"20"
 				lifetime=			"30"
-				powerUse=			"1200"
+				powerUse=			"1500"
 
 				effect=				"&efEIBlasterBeam;"
 				fireEffect=			"&efEIBlasterFire;"
@@ -2403,7 +2407,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:4d12+4; momentum2; WMD4"
+				damage=				"thermo:5d12; momentum:2; WMD:4"
 				fireRate=			"5"
 				missileSpeed=		"40"
 				hitPoints=			"5"
@@ -2442,19 +2446,23 @@
 		<Image imageID="&rsItemsTaikon1;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
-				configuration=		"spread3"
 				omnidirectional=	"true"
 				multiTarget=		"true"
 				powerUse=			"3000"
 
 				type=				"beam"
-				damage=				"ion:4d6; WMD1"
+				damage=				"ion:8d6; WMD:1"
 				fireRate=			"20"
 				lifetime=			"30"
 
 				effect=				"&efIonBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
+			<Configuration aimTolerance="6">
+				<Shot angle="-3"/>
+				<Shot angle="0"/>
+				<Shot angle="3"/>
+			</Configuration>
 		</Weapon>
 	</ItemType>
 

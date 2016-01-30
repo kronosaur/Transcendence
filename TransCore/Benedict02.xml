@@ -184,7 +184,7 @@
 					(msnRegisterForEvents gSource freighterObj)
 					(msnSetData gSource 'freighterID (objGetID freighterObj))
 
-					;	Create the enemies and set them to attack the freigther
+					;	Create the enemies and set them to attack the freighter
 
 					(enum enemies enemyDesc
 						(block (enemyObj)

@@ -50,7 +50,7 @@
 
 		<Weapon
 				fireRate=			"50"
-				powerUse=			"8000"
+				powerUse=			"1000"
 				>
 
 			<Missiles>
