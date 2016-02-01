@@ -130,7 +130,6 @@ PLAYER DATA
 				deviceSlots=		"0"
 				external=			"true"
 				
-				damage=				"thermo:6d24; momentum6; WMD7"
 				missileSpeed=		"40"
 				hitPoints=			"20"
 				lifetime=			"120"
@@ -185,7 +184,7 @@ PLAYER DATA
 		<Weapon
 				type=				"missile"
 
-				damage=				"antimatter:8d12; WMD:5"
+				damage=				"antimatter:10d12; WMD:5"
 				fireRate=			"16"
 				missileSpeed=		"50"
 				lifetime=			"60"

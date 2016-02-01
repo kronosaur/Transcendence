@@ -233,7 +233,6 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"180"
-				damage=			"thermo:2d12; WMD3"
 				missileSpeed=	"60"
 				hitPoints=		"20"
 
@@ -401,12 +400,12 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:12d12+12; momentum3; WMD5"
+				damage=				"thermo:12d12; momentum:3; WMD:5"
 				fireRate=			"40"
 				missileSpeed=		"50"
 				lifetime=			"120"
 				hitPoints=			"30"
-				powerUse=			"900"
+				powerUse=			"1200"
 				recoil=				"2"
 
 				effect=				"&efThermoShellDefault;"
@@ -436,7 +435,6 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"480"
-				damage=			"thermo:2d10; WMD7"
 				missileSpeed=	"30"
 				hitPoints=		"30"
 

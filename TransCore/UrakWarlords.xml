@@ -288,7 +288,6 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"blast:4d12; momentum3; WMD3"
 				fireRate=			"36"
 				missileSpeed=		"50"
 				hitPoints=			"10"

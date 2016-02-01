@@ -4404,7 +4404,6 @@
 				<Missile ammoID="&itKilotonCannonShell;"
 						type=			"missile"
 
-						damage=			"thermo:1d8+1; WMD4"
 						missileSpeed=	"50"
 						lifetime=		"120"
 						hitPoints=		"15"

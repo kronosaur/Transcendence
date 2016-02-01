@@ -101,7 +101,7 @@
 								(* speed 2)						; max bullet length
 								50								; scale gamma
 								)
-						width: (mathScale damageHP 2 30 12 28 50)
+						width: (mathScale damageHP 2 30 12 18 50)
 						intensity: 40
 						}
 					)

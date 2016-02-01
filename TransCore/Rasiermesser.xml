@@ -46,7 +46,7 @@
 		<Weapon
 				type=				"particles"
 
-				damage=				"ion:50; shield:9;"
+				damage=				"ion:60; shield:9;"
 				fireRate=			"15"
 				missileSpeed=		"100"
 				lifetime=			"30"

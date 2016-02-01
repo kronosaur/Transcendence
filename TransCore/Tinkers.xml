@@ -418,9 +418,9 @@
 
 				omnidirectional=	"true"
 				damage=				"laser:8d4"
-				fireRate=			"20"
+				fireRate=			"16"
 				lifetime=			"30"
-				powerUse=			"250"
+				powerUse=			"200"
 
 				effect=				"&efLaserBeamDefault;"
 				sound=				"&snLaserCannon;"

@@ -417,7 +417,7 @@
 				type=				"beam"
 
 				damage=				"laser:1d4"
-				fireRate=			"12"
+				fireRate=			"10"
 				lifetime=			"30"
 				powerUse=			"60"
 
@@ -454,11 +454,11 @@
 
 				omnidirectional=	"true"
 				damage=				"blast:1d6+1; momentum1; WMD3"
-				fireRate=			"15"
+				fireRate=			"16"
 				missileSpeed=		"40"
 				interaction=		"80"
 				lifetime=			"24"
-				powerUse=			"30"
+				powerUse=			"50"
 
 				effect=				"&efBlastShellDefault;"
 				sound=				"&snRecoillessCannon;"
@@ -1458,7 +1458,7 @@
 
 				configuration=		"dual"
 				damage=				"laser:8d4"
-				fireRate=			"15"
+				fireRate=			"16"
 				lifetime=			"30"
 				powerUse=			"300"
 
@@ -1782,7 +1782,7 @@
 
 				damage=				"ion:4d6-1"
 				fireRate=			"12"
-				lifetime=			"60"
+				lifetime=			"40"
 				passthrough=		"50"
 				powerUse=			"750"
 
@@ -1819,7 +1819,7 @@
 				missileSpeed=		"50"
 				lifetime=			"120"
 				hitPoints=			"10"
-				powerUse=			"400"
+				powerUse=			"600"
 				recoil=				"2"
 
 				effect=				"&efThermoShellDefault;"
@@ -2025,7 +2025,7 @@
 				missileSpeed=		"50"
 				lifetime=			"120"
 				hitPoints=			"10"
-				powerUse=			"1000"
+				powerUse=			"1200"
 				recoil=				"2"
 
 				effect=				"&efThermoShellDefault;"
@@ -2207,7 +2207,6 @@
 				<Missile ammoID="&itTM7Warhead;"
 						type=			"missile"
 
-						damage=			"thermo:6d12+6; momentum4; WMD4"
 						missileSpeed=	"40"
 						lifetime=		"12"
 						hitPoints=		"30"
@@ -2399,7 +2398,7 @@
 			value=				"220000"
 			mass=				"5000"
 			  
-			description=		"This improved version can fire at quadruple the rate of the tritium cannon. Unfortunately, the cannon overheats quickly if fired continuously."
+			description=		"This improved version can fire at more than triple the rate of the tritium cannon. Unfortunately, the cannon overheats quickly if fired continuously."
 			>
 
 		<Image imageID="&rsItemsNAMI3;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -2408,16 +2407,16 @@
 				type=				"missile"
 
 				damage=				"thermo:5d12; momentum:2; WMD:4"
-				fireRate=			"5"
+				fireRate=			"6"
 				missileSpeed=		"40"
 				hitPoints=			"5"
 				lifetime=			"60"
 				powerUse=			"2000"
 
 				counter=			"temperature"
-				counterActivate=	"2"
+				counterActivate=	"1"
 				counterUpdate=		"-1"
-				counterUpdateRate=	"6"
+				counterUpdateRate=	"5"
 
 				effect=				"&efThermoShellDefault;"
 				sound=				"&snRecoillessCannon;"
@@ -2551,7 +2550,7 @@
 			numberAppearing=	"2d12"
 
 			value=				"5"
-			mass=				"20"
+			mass=				"15"
 			  
 			description=		"This is a standard hexagene high-explosive missile; cheap and light, they are the weapon of choice for modern patrol fleets."
 			>
@@ -2562,7 +2561,7 @@
 				type=			"missile"
 				lifetime=		"120"
 				damage=			"blast:4d6; momentum4; WMD5"
-				missileSpeed=	"45"
+				missileSpeed=	"60"
 				hitPoints=		"10"
 						 
 				effect=			"&efMissileNAMI;"
@@ -2582,9 +2581,9 @@
 			numberAppearing=	"2d12"
 
 			value=				"10"
-			mass=				"20"
+			mass=				"15"
 			  
-			description=		"The warhead of this NAMI-compatible missile explodes into more than a dozen high-velocity shards."
+			description=		"The warhead of this NAMI-compatible missile explodes into dozens of high-velocity shards."
 			>
 
 		<Image imageID="&rsItemsNAMI2;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -2592,8 +2591,7 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"blast:2d6+2; momentum2; WMD1"
-				missileSpeed=	"45"
+				missileSpeed=	"60"
 				hitPoints=		"10"
 
 				effect=			"&efMissileNAMI;"
@@ -2604,26 +2602,11 @@
 					count=			"6d6"
 					type=			"missile"
 					lifetime=		"10"
-					damage=			"kinetic:2d6; WMD1"
+					damage=			"kinetic:3d6; WMD1"
 					missileSpeed=	"32-48"
+                    
+    				effect=			"&efKineticBoltDefault;"
 					>
-
-				<Effect>
-					<ImageAndTail
-							imageID=			"&rsMissiles4;"
-							imageX=				"0"
-							imageY=				"0"
-							imageWidth=			"16"
-							imageHeight=		"16"
-							imageFrameCount=	"4"
-							imageTicksPerFrame=	"1"
-
-							length=				"32"
-							width=				"1"
-							primaryColor=		"0xff, 0xff, 0xff"
-							secondaryColor=		"0xc0, 0xc2, 0x85"
-									/>
-				</Effect>
 			</Fragment>
 		</Missile>
 	</ItemType>
@@ -2638,7 +2621,7 @@
 			frequency=			"uncommon"
 			numberAppearing=	"2d12"
 
-			value=				"12"
+			value=				"20"
 			mass=				"40"
 			  
 			description=		"This is a heavier and more powerful version of the KM100."
@@ -2649,9 +2632,9 @@
 		<Missile
 			type=			"missile"
 			lifetime=		"60"
-			damage=			"blast:10d6; momentum4; WMD6"
-			missileSpeed=	"45"
-			hitPoints=		"15"
+			damage=			"blast:9d6; momentum:4; WMD:7"
+			missileSpeed=	"60"
+			hitPoints=		"10"
 						 
 			effect=			"&efMissileNAMI;"
 			sound=			"&snMissileLauncher;"
@@ -2670,7 +2653,7 @@
 			numberAppearing=	"2d12"
 
 			value=				"15"
-			mass=				"20"
+			mass=				"15"
 			  
 			description=		"A powerful optical and infrared tracking module allows this missile to home in on its target."
 			>
@@ -2701,8 +2684,8 @@
 			frequency=			"rare"
 			numberAppearing=	"2d4"
 
-			value=				"50"
-			mass=				"30"
+			value=				"30"
+			mass=				"15"
 			  
 			description=		"The XM300 warhead is jacketed with small amounts of plutonium. Though not enough for fission, the radioactive materials contaminate the target."
 			reverseArticle=		"true"
@@ -2714,7 +2697,7 @@
 				type=			"missile"
 				lifetime=		"120"
 				damage=			"blast:6d6; radiation1; momentum4; WMD4"
-				missileSpeed=	"45"
+				missileSpeed=	"60"
 				hitPoints=		"10"
 						 
 				effect=			"&efMissileNAMI;"
@@ -2735,7 +2718,7 @@
 			numberAppearing=	"2d12"
 
 			value=				"50"
-			mass=				"40"
+			mass=				"20"
 			  
 			description=		"The Broadsword missile is a heavier version of the tracking KM500 series."
 			>
@@ -2745,7 +2728,7 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"blast:10d6; momentum4; WMD6"
+				damage=			"blast:9d6; momentum:4; WMD:7"
 				missileSpeed=	"40"
 				hitPoints=		"15"
 				maneuverRate=	"9"
@@ -2767,7 +2750,7 @@
 			numberAppearing=	"2d12"
 
 			value=				"120"
-			mass=				"40"
+			mass=				"20"
 			  
 			description=		"An optical tracking missile carrying a 100-kiloton thermonuclear warhead. The XM900 is tightly controlled; only military vessels may carry them."
 			reverseArticle=		"true"
@@ -2778,7 +2761,6 @@
 		<Missile
 				type=			"missile"
 
-				damage=			"thermo:6d24; momentum6; WMD7"
 				missileSpeed=	"40"
 				hitPoints=		"20"
 				lifetime=		"120"
@@ -2860,7 +2842,7 @@
 		
 		<Missile
 				type=			"missile"
-				damage=			"blast:9d6; WMD5"
+				damage=			"blast:8d6; WMD:5"
 						
 				lifetime=		"80"
 				missileSpeed=	"30"
@@ -2894,7 +2876,6 @@
 		
 		<Missile
 				type=			"missile"
-				damage=			"blast:12d6; WMD5"
 						
 				lifetime=		"80"
 				missileSpeed=	"30"
@@ -2907,30 +2888,15 @@
 				>
 
 			<Fragment
-					count=			"5d6"
+					count=			"26-36"
 					type=			"missile"
 					lifetime=		"12"
-					damage=			"blast:2d8; WMD1"
+					damage=			"kinetic:5d6; WMD:1"
 					missileSpeed=	"40-60"
-							>
-				<Effect>
-					<ImageAndTail
-							imageID=			"&rsMissiles4;"
-							imageX=				"0"
-							imageY=				"0"
-							imageWidth=			"16"
-							imageHeight=		"16"
-							imageFrameCount=	"4"
-							imageTicksPerFrame=	"1"
-
-							length=				"32"
-							width=				"1"
-							primaryColor=		"0xff, 0xff, 0xff"
-							secondaryColor=		"0xc0, 0xc2, 0x85"
-									/>
-				</Effect>
+                    
+                    effect=         "&efBlastShellDefault;"
+					>
 			</Fragment>
-
 		</Missile>
 	</ItemType>
 
@@ -2954,7 +2920,7 @@
 		
 		<Missile
 				type=			"missile"
-				damage=			"blast:11d10; shield:5;"
+				damage=			"blast:12d10; shield:5;"
 						
 				lifetime=		"80"
 				missileSpeed=	"30"
@@ -2987,7 +2953,6 @@
 		
 		<Missile
 				type=			"missile"
-				damage=			"blast:12d6; WMD3"
 						
 				lifetime=		"80"
 				missileSpeed=	"30"
@@ -3000,32 +2965,15 @@
 				>
 
 			<Fragment
-					count=			"20-28"
+					count=			"26-36"
 					type=			"missile"
-					lifetime=		"40"
-					damage=			"blast:3d6; WMD3"
+					lifetime=		"36"
+					damage=			"blast:5d6; WMD:5"
 					missileSpeed=	"40-60"
-							>
-				<Effect>
-					<Image imageID="&rsMissiles3;" imageX="0" imageY="0" imageWidth="16" imageHeight="16" rotationCount="20"/>
-
-					<SmokeTrail
-							spread=			"4-6"
-							particleLifetime="16"
-							emitDuration=	"80"
-							emitRate=		"8-10"
-							emitSpeed=		"15-18"
-									>
-						<ParticleEffect>
-							<Particle
-									style=			"flame"
-									maxWidth=		"2-5"
-											/>
-						</ParticleEffect>
-					</SmokeTrail>
-				</Effect>
+                    
+                    effect=         "&efBlastShellDefault;"
+					>
 			</Fragment>
-
 		</Missile>
 	</ItemType>
 
@@ -3049,7 +2997,7 @@
 		
 		<Missile
 				type=			"missile"
-				damage=			"blast:24d6; WMD7"
+				damage=			"blast:26d6; WMD:7"
 						
 				lifetime=		"160"
 				missileSpeed=	"15"
@@ -3072,17 +3020,16 @@
 			frequency=			"uncommon"
 			numberAppearing=	"1d12"
 
-			value=				"220"
+			value=				"180"
 			mass=				"30"
 			  
-			description=		"The only military variant of the popular MAG series is this thermonuclear and radiological variant."
+			description=		"The only military variant of the popular MAG series is this thermonuclear variant."
 			>
 
 		<Image imageID="&rsItemsRasiermesser2;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
 		
 		<Missile
 				type=			"missile"
-				damage=			"thermo:8d24; WMD7"
 						
 				lifetime=		"120"
 				missileSpeed=	"20"
@@ -3098,9 +3045,9 @@
 					count=			"1"
 					type=			"radius"
 
-					damage=			"thermo:8d24; WMD7"
+					damage=			"thermo:14d24; WMD:7"
 					minRadius=		"1"
-					maxRadius=		"4"
+					maxRadius=		"6"
 					missileSpeed=	"0"
 					
 					hitEffect=		"&efThermoFragmentHit;"
@@ -3121,7 +3068,7 @@
 			frequency=			"common"
 			numberAppearing=	"8d20"
 
-			value=				"5"
+			value=				"6"
 			mass=				"10"
 			  
 			description=		"The Strelka series of light missiles is compatible with the Makayev launcher. The White Strelka is the cheapest and least powerful of the series."
@@ -3132,7 +3079,7 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"60"
-				damage=			"blast:3d6; momentum2; WMD3"
+				damage=			"blast:3d6; momentum:2; WMD:5"
 				missileSpeed=	"60"
 				hitPoints=		"5"
 
@@ -3152,7 +3099,7 @@
 			frequency=			"common"
 			numberAppearing=	"8d20"
 
-			value=				"7"
+			value=				"9"
 			mass=				"10"
 			  
 			description=		"The Strelka series of light missiles is compatible with the Makayev launcher. The Green Strelka packs more punch than the White version."
@@ -3163,7 +3110,7 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"60"
-				damage=			"blast:4d6+1; momentum2; WMD3"
+				damage=			"blast:5d6; momentum:2; WMD:5"
 				missileSpeed=	"60"
 				hitPoints=		"5"
 
@@ -3183,8 +3130,8 @@
 			frequency=			"uncommon"
 			numberAppearing=	"8d20"
 
-			value=				"24"
-			mass=				"20"
+			value=				"15"
+			mass=				"12"
 			  
 			description=		"The Red Strelka is a thermonuclear version of the Makayev-compatible missile series."
 			>
@@ -3194,7 +3141,7 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"60"
-				damage=			"thermo:3d12; momentum3; WMD5"
+				damage=			"thermo:3d12; momentum:3; WMD:5"
 				missileSpeed=	"60"
 				hitPoints=		"5"
 
@@ -3214,10 +3161,10 @@
 			frequency=			"rare"
 			numberAppearing=	"8d20"
 
-			value=				"90"
-			mass=				"30"
+			value=				"60"
+			mass=				"15"
 			  
-			description=		"The rare and powerful Black Strelka releases a dozen thermonuclear submunitions. It is compatible with the Makayev launcher."
+			description=		"The rare and powerful Black Strelka releases dozens of thermonuclear submunitions. It is compatible with the Makayev launcher."
 			>
 
 		<Image imageID="&rsItemsMakayev2;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -3225,20 +3172,19 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"60"
-				damage=			"thermo:1d12; momentum1; WMD3"
 				missileSpeed=	"60"
 				hitPoints=		"5"
 
 				effect=			"&efMissileStrelka;"
-				hitEffect=		"&efBlastHitDefault;"
+				hitEffect=		"&efThermoFragmentExplosion;"
 				sound=			"&snRecoillessCannon;"
 				>
 
 			<Fragment
-					count=			"18-24"
+					count=			"32-48"
 					type=			"missile"
 					lifetime=		"8"
-					damage=			"thermo:1d12; momentum1; WMD5"
+					damage=			"thermo:1d12+2; momentum:1; WMD:5"
 					missileSpeed=	"40-60"
 
 					effect=			"&efThermoShellDefault;"
@@ -3270,7 +3216,6 @@
 		<Missile
 				type=			"missile"
 
-				damage=			"thermo:3d12; WMD6"
 				missileSpeed=	"10"
 				accelerationFactor="60"
 				lifetime=		"4800"
@@ -3323,7 +3268,6 @@
 		<Missile
 				type=			"missile"
 
-				damage=			"thermo:3d12; WMD6"
 				missileSpeed=	"10"
 				maneuverRate=	"9"
 				lifetime=		"2400"
@@ -3444,7 +3388,6 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"thermo:1d12; momentum3; WMD7"
 				missileSpeed=	"55"
 				hitPoints=		"40"
 
@@ -3517,7 +3460,6 @@
 		<Missile
 				type=			"missile"
 
-				damage=			"thermo:4d12; momentum6; WMD1"
 				missileSpeed=	"30"
 				lifetime=		"20"
 				hitPoints=		"40"
@@ -3613,7 +3555,6 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"thermo:1d12; momentum3; WMD7"
 				missileSpeed=	"55"
 				hitPoints=		"40"
 
