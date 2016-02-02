@@ -1670,7 +1670,11 @@
 	<!-- 01E0-01EF IOCRYM -->
 	
 	<!ENTITY efQuantumsphereHit			"0x001001E0">
+    
+    <!-- 01F0-01FF TINKERS -->
 	
+	<!ENTITY itAmmoBoxXM900 			"0x001001F0">
+    
 	<!-- 1000-FFFF RESERVED -->
 	]>
 	

@@ -230,7 +230,7 @@
 		</Items>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Commonwealth; -Illegal; -NotForSale; -notStandard; L:4-6;" priceAdj="115" inventoryAdj="100"/>
+			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard; L:4-8;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="115"/>
 			<Buy	criteria="adumfNU -Illegal; -ID; -NotForSale;"	priceAdj="50"/>
 			<Buy	criteria="adumfNU -Illegal; -ID;"				priceAdj="10"/>
@@ -526,7 +526,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +Commonwealth; +BasicAmmo; -Illegal; -NotForSale; -notStandard;" priceAdj="110" inventoryAdj="100"/>
+			<Sell	criteria="m +commonwealth; +basicAmmo; -illegal; -notForSale; -notStandard;" priceAdj="110" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Buy	criteria="mwU -Illegal; -NotForSale;"	priceAdj="60"/>
 			<Buy	criteria="mwU -Illegal; -ID;"				priceAdj="10"/>
@@ -665,7 +665,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +Makayev; -Military; -Illegal; -NotForSale;" priceAdj="120" inventoryAdj="500"/>
+			<Sell	criteria="m +makayev; -military; -illegal; -notForSale;" priceAdj="120" inventoryAdj="500"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
@@ -788,7 +788,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +Bushido; -Illegal; -NotForSale;" priceAdj="120" inventoryAdj="300"/>
+			<Sell	criteria="m +bushido; -illegal; -notForSale;" priceAdj="120" inventoryAdj="300"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
 			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
@@ -1413,7 +1413,7 @@
 		</Items>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Makayev; -Illegal; -NotForSale;" priceAdj="110" inventoryAdj="800"/>
+			<Sell	criteria="m +makayev; -illegal; -notForSale;" priceAdj="110" inventoryAdj="800"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>

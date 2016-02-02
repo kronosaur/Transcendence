@@ -364,12 +364,12 @@
 	<!-- Fusion trigger -->
 
 	<ItemType UNID="&itFusionTrigger;"
-			name=				"fusion trigger"
+			name=				"[case(s) of ]fusion triggers"
 			level=				"5"
-			value=				"100"
-			mass=				"50"
+			value=				"1000"
+			mass=				"250"
 			frequency=			"rare"
-			numberAppearing=	"1d20"
+			numberAppearing=	"1d10"
 			attributes=			"Consumable; Explosive; Illegal; Volatile"
 
 			description=		"Fusion triggers are nuclear implosion devices used in fusion weapons such as the XM900 Lucifer missile. Fusion triggers are illegal throughout Human Space."

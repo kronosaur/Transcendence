@@ -57,7 +57,7 @@
 		<!-- Trade and Items -->
 		
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; -notStandard; L:1-10;" priceAdj="100" inventoryAdj="200"/>
+			<Sell	criteria="m +commonwealth; +military; -illegal; -notForSale; -notStandard; L:1-10;" priceAdj="100" inventoryAdj="500"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			<Sell	criteria="rNU L:1-9; -Illegal; -NotForSale; -notStandard;"	priceAdj="100"	inventoryAdj="100"/>
 			

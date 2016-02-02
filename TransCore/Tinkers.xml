@@ -32,7 +32,7 @@
 					{ item:&itSlamCannon;				enhancement:"+speed:70"				components:( { item:&itMakayevLauncher; count:1 } { item:&itSlamCannon; count:1 })	extraCost:0 }
 					{ item:&itDualTurbolaserCannon;		enhancement:Nil						components:( { item:&itTurbolaserCannon; count:4 })	extraCost:0 }
 					{ item:&itWasteCannon;				enhancement:Nil						components:( { item:&itRadioactiveWaste; count:8 })	extraCost:0 }
-					{ item:&itXM900Missile;				enhancement:Nil						components:( { item:&itFusionTrigger; count:1 })	extraCost:0 }
+					{ item:&itAmmoBoxXM900;				enhancement:Nil						components:( { item:&itFusionTrigger; count:1 })	extraCost:0 }
 					
 					{ item:&itArmorRepairDevice;		enhancement:Nil						components:( { item:&itRepairingNanos; count:6 })	extraCost:0 }
 					)
@@ -362,6 +362,27 @@
 	
 <!-- ITEMS -->
 	
+	<!-- Ammo Box, XM900 -->
+
+	<ItemType UNID="&itAmmoBoxXM900;"
+			name=				"XM900 ammunition box(es)"
+			level=				"7"
+			value=				"2900"
+			mass=				"500"
+			frequency=			"notRandom"
+			attributes=			"Consumable"
+
+			description=		"This box contains 24 XM900 Lucifer missiles."
+			reverseArticle=		"true"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="384" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(intAmmoBoxOpen (itmCreate &itXM900Missile; 24))
+		</Invoke>
+	</ItemType>
+
 	<!-- Dual Mark III Howitzer -->
 
 	<ItemType UNID="&itDualMarkIIIHowitzer;"

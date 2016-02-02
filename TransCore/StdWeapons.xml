@@ -2547,7 +2547,7 @@
 			  
 			level=				"2"
 			frequency=			"common"
-			numberAppearing=	"2d12"
+			numberAppearing=	"48-72"
 
 			value=				"5"
 			mass=				"15"
@@ -2578,7 +2578,7 @@
 			  
 			level=				"3"
 			frequency=			"common"
-			numberAppearing=	"2d12"
+			numberAppearing=	"48-72"
 
 			value=				"10"
 			mass=				"15"
@@ -2619,7 +2619,7 @@
 			  
 			level=				"3"
 			frequency=			"uncommon"
-			numberAppearing=	"2d12"
+			numberAppearing=	"48-72"
 
 			value=				"20"
 			mass=				"40"
@@ -2650,7 +2650,7 @@
 			  
 			level=				"3"
 			frequency=			"common"
-			numberAppearing=	"2d12"
+			numberAppearing=	"48-72"
 
 			value=				"15"
 			mass=				"15"
@@ -2678,16 +2678,16 @@
 
 	<ItemType UNID="&itXM300Missile;"
 			name=				"XM300 Reaper missile"
-			attributes=			"commonwealth, consumable, military, missile, NAMI, NAMILauncher, premiumAmmo"
+			attributes=			"commonwealth, consumable, illegal, missile, NAMI, NAMILauncher, premiumAmmo"
 			  
 			level=				"4"
 			frequency=			"rare"
-			numberAppearing=	"2d4"
+			numberAppearing=	"24-36"
 
 			value=				"30"
 			mass=				"15"
 			  
-			description=		"The XM300 warhead is jacketed with small amounts of plutonium. Though not enough for fission, the radioactive materials contaminate the target."
+			description=		"The XM300 warhead is jacketed with small amounts of plutonium&mdash;enough to fatally contaminate a target. This weapon is banned by treaty."
 			reverseArticle=		"true"
 			>
 
@@ -2715,7 +2715,7 @@
 			  
 			level=				"4"
 			frequency=			"uncommon"
-			numberAppearing=	"2d12"
+			numberAppearing=	"48-72"
 
 			value=				"50"
 			mass=				"20"
@@ -2747,7 +2747,7 @@
 			  
 			level=				"7"
 			frequency=			"uncommon"
-			numberAppearing=	"2d12"
+			numberAppearing=	"24-36"
 
 			value=				"120"
 			mass=				"20"
@@ -2797,7 +2797,7 @@
 			  
 			level=				"3"
 			frequency=			"common"
-			numberAppearing=	"10d20"
+			numberAppearing=	"96-144"
 
 			value=				"12"
 			mass=				"10"
@@ -2830,7 +2830,7 @@
 			  
 			level=				"4"
 			frequency=			"common"
-			numberAppearing=	"10d20"
+			numberAppearing=	"96-144"
 
 			value=				"24"
 			mass=				"20"
@@ -2863,7 +2863,7 @@
 			  
 			level=				"5"
 			frequency=			"common"
-			numberAppearing=	"10d20"
+			numberAppearing=	"96-144"
 
 			value=				"45"
 			mass=				"30"
@@ -2908,7 +2908,7 @@
 			  
 			level=				"6"
 			frequency=			"uncommon"
-			numberAppearing=	"2d20"
+			numberAppearing=	"48-72"
 
 			value=				"70"
 			mass=				"20"
@@ -2941,7 +2941,7 @@
 			  
 			level=				"6"
 			frequency=			"uncommon"
-			numberAppearing=	"4d20"
+			numberAppearing=	"96-144"
 
 			value=				"90"
 			mass=				"30"
@@ -2985,7 +2985,7 @@
 			  
 			level=				"7"
 			frequency=			"uncommon"
-			numberAppearing=	"1d12"
+			numberAppearing=	"48-72"
 
 			value=				"120"
 			mass=				"30"
@@ -3018,7 +3018,7 @@
 			  
 			level=				"8"
 			frequency=			"uncommon"
-			numberAppearing=	"1d12"
+			numberAppearing=	"48-72"
 
 			value=				"180"
 			mass=				"30"
@@ -3066,7 +3066,7 @@
 			  
 			level=				"5"
 			frequency=			"common"
-			numberAppearing=	"8d20"
+			numberAppearing=	"160-240"
 
 			value=				"6"
 			mass=				"10"
@@ -3097,7 +3097,7 @@
 			  
 			level=				"6"
 			frequency=			"common"
-			numberAppearing=	"8d20"
+			numberAppearing=	"160-240"
 
 			value=				"9"
 			mass=				"10"
@@ -3128,7 +3128,7 @@
 			  
 			level=				"7"
 			frequency=			"uncommon"
-			numberAppearing=	"8d20"
+			numberAppearing=	"160-240"
 
 			value=				"15"
 			mass=				"12"
@@ -3159,7 +3159,7 @@
 			  
 			level=				"9"
 			frequency=			"rare"
-			numberAppearing=	"8d20"
+			numberAppearing=	"160-240"
 
 			value=				"60"
 			mass=				"15"
@@ -3203,7 +3203,7 @@
 			  
 			level=				"7"
 			frequency=			"common"
-			numberAppearing=	"2d20"
+			numberAppearing=	"48-72"
 
 			value=				"90"
 			mass=				"70"
@@ -3255,7 +3255,7 @@
 			  
 			level=				"8"
 			frequency=			"uncommon"
-			numberAppearing=	"2d20"
+			numberAppearing=	"48-72"
 
 			value=				"180"
 			mass=				"70"
@@ -3309,7 +3309,7 @@
 			  
 			level=				"8"
 			frequency=			"common"
-			numberAppearing=	"4d12"
+			numberAppearing=	"48-72"
 
 			value=				"300"
 			mass=				"30"
@@ -3340,7 +3340,7 @@
 			  
 			level=				"9"
 			frequency=			"common"
-			numberAppearing=	"4d12"
+			numberAppearing=	"48-72"
 
 			value=				"600"
 			mass=				"30"
@@ -3374,7 +3374,7 @@
 			  
 			level=				"9"
 			frequency=			"rare"
-			numberAppearing=	"1d6"
+			numberAppearing=	"36-54"
 
 			value=				"300"
 			mass=				"50"
@@ -3446,7 +3446,7 @@
 			  
 			level=				"9"
 			frequency=			"uncommon"
-			numberAppearing=	"2d8"
+			numberAppearing=	"36-54"
 
 			value=				"300"
 			mass=				"50"
@@ -3541,7 +3541,7 @@
 			  
 			level=				"10"
 			frequency=			"rare"
-			numberAppearing=	"1d4"
+			numberAppearing=	"24-36"
 
 			value=				"450"
 			mass=				"50"
