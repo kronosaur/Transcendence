@@ -30,8 +30,8 @@
 				deviceSlots=		"2"
 
 				repeating=			"3"
-				damage=				"kinetic:1d6+1; momentum1"
-				fireRate=			"35"
+				damage=				"kinetic:1d6+1; momentum:1"
+				fireRate=			"30"
 				missileSpeed=		"50"
 				lifetime=			"30"
 				powerUse=			"100"
@@ -69,8 +69,8 @@
 				type=				"missile"
 				deviceSlots=		"2"
 
-				damage=				"kinetic:2d8+1; momentum1; WMD1"
-				fireRate=			"15"
+				damage=				"kinetic:2d8+1; momentum:1; WMD:5"
+				fireRate=			"16"
 				missileSpeed=		"50"
 				interaction=		"50"
 				lifetime=			"20"

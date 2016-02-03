@@ -307,7 +307,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"kinetic:2d6-1; momentum1"
+				damage=				"kinetic:2d6-1; momentum:1; WMD:4"
 				fireRate=			"15"
 				missileSpeed=		"40"
 				interaction=		"80"
@@ -453,7 +453,7 @@
 				type=				"missile"
 
 				omnidirectional=	"true"
-				damage=				"blast:1d6+1; momentum1; WMD3"
+				damage=				"blast:1d6+1; momentum:1; WMD:2"
 				fireRate=			"16"
 				missileSpeed=		"40"
 				interaction=		"80"
@@ -553,7 +553,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"kinetic:2d8+1; momentum1; WMD1"
+				damage=				"kinetic:2d8+1; momentum:1; WMD:4"
 				fireRate=			"15"
 				missileSpeed=		"40"
 				interaction=		"80"
@@ -769,7 +769,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"kinetic:4d8; momentum2; WMD2"
+				damage=				"kinetic:4d8; momentum:2; WMD:3"
 				fireRate=			"15"
 				missileSpeed=		"90"
 				lifetime=			"50"
@@ -868,7 +868,7 @@
 		<Weapon
 				type=				"particles"
 
-				damage=				"kinetic:25; WMD2"
+				damage=				"kinetic:25; WMD:1"
 				fireRate=			"15"
 				missileSpeed=		"40"
 				lifetime=			"60"
@@ -950,7 +950,7 @@
 				type=				"missile"
 
 				omnidirectional=	"true"
-				damage=				"kinetic:2d8+1; momentum1; WMD1"
+				damage=				"kinetic:2d8+1; momentum:1; WMD:4"
 				fireRate=			"15"
 				missileSpeed=		"40"
 				interaction=		"80"
@@ -1089,7 +1089,7 @@
 				<Missile ammoID="&itAkan30CannonShell;"
 						type=			"missile"
 
-						damage=			"blast:3d12; momentum2; WMD2"
+						damage=			"blast:3d12; momentum:2; WMD:5"
 						missileSpeed=	"50"
 						lifetime=		"120"
 						hitPoints=		"4"
@@ -1253,7 +1253,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"blast:5d12; momentum3; WMD3"
+				damage=				"blast:4d12; momentum:3; WMD:4"
 				fireRate=			"40"
 				missileSpeed=		"50"
 				lifetime=			"120"
@@ -1498,7 +1498,7 @@
 				<Missile ammoID="&itAkan30CannonShell;"
 						type=			"missile"
 
-						damage=			"blast:3d12; momentum2; WMD2"
+						damage=			"blast:3d12; momentum:2; WMD:5"
 						missileSpeed=	"50"
 						lifetime=		"120"
 						hitPoints=		"4"
@@ -1539,7 +1539,7 @@
 				<Missile ammoID="&itDragonflyCartridge;"
 						type=			"missile"
 						lifetime=		"120"
-						damage=			"blast:4d6; momentum2; WMD4"
+						damage=			"blast:4d6; momentum:2; WMD:6"
 						missileSpeed=	"50"
 						hitPoints=		"3"
 						maneuverRate=	"18"
@@ -1814,7 +1814,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:8d12; momentum3; WMD5"
+				damage=				"thermo:8d12; momentum:3; WMD:4"
 				fireRate=			"35"
 				missileSpeed=		"50"
 				lifetime=			"120"
@@ -1984,7 +1984,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:5d12; momentum:2; WMD:4"
+				damage=				"thermo:5d12; momentum:2; WMD:3"
 				fireRate=			"20"
 				missileSpeed=		"40"
 				hitPoints=			"5"
@@ -2020,7 +2020,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:12d12+9; momentum3; WMD5"
+				damage=				"thermo:12d12; momentum:3; WMD:4"
 				fireRate=			"40"
 				missileSpeed=		"50"
 				lifetime=			"120"
@@ -2267,7 +2267,7 @@
 							count=				"3"
 							type=				"missile"
 
-							damage=				"thermo:6d12+6; momentum3; WMD4"
+							damage=				"thermo:6d12+6; momentum:3; WMD:6"
 							missileSpeed=		"50"
 							lifetime=			"60"
 							maneuverRate=		"9"
@@ -2406,7 +2406,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:5d12; momentum:2; WMD:4"
+				damage=				"thermo:5d12; momentum:2; WMD:3"
 				fireRate=			"6"
 				missileSpeed=		"40"
 				hitPoints=			"5"
@@ -2809,7 +2809,7 @@
 
 		<Missile
 				type=			"missile"
-				damage=			"blast:6d6; WMD5"
+				damage=			"blast:6d6; WMD:6"
 						
 				lifetime=		"80"
 				missileSpeed=	"30"
@@ -2842,7 +2842,7 @@
 		
 		<Missile
 				type=			"missile"
-				damage=			"blast:8d6; WMD:5"
+				damage=			"blast:8d6; WMD:6"
 						
 				lifetime=		"80"
 				missileSpeed=	"30"

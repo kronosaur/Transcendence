@@ -159,7 +159,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"kinetic:1d6; momentum1"
+				damage=				"kinetic:1d6+1; momentum1"
 				fireRate=			"10"
 				missileSpeed=		"40"
 				lifetime=			"38"
@@ -250,7 +250,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"blast:1d4+4; momentum1; WMD3"
+				damage=				"blast:1d6+2; momentum:1; WMD:4"
 				fireRate=			"12"
 				missileSpeed=		"40"
 				lifetime=			"38"
@@ -300,10 +300,10 @@
 				>
 
 			<Fragment 
-					count=			"3d6+5"
+					count=			"24-32"
 					type=			"missile"
 					lifetime=		"10"
-					damage=			"blast:1d4+4; momentum2; WMD3"
+					damage=			"blast:1d6+2; momentum:1; WMD:4"
 					missileSpeed=	"32-48"
 					>
 
