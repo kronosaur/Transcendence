@@ -542,7 +542,7 @@
 			level=				"3"
 			frequency=			"uncommon"
 
-			value=				"1500"
+			value=				"1850"
 			mass=				"3000"
 			  
 			description=		"This recoilless kinetic cannon, manufactured by NAMI, is more powerful than the heavy recoilless cannon."
@@ -553,8 +553,8 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"kinetic:2d8+1; momentum:1; WMD:4"
-				fireRate=			"15"
+				damage=				"kinetic:2d8+2; momentum:1; WMD:4"
+				fireRate=			"16"
 				missileSpeed=		"40"
 				interaction=		"80"
 				lifetime=			"60"
@@ -735,8 +735,8 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"kinetic:14d8; momentum5; WMD5"
-				fireRate=			"45"
+				damage=				"kinetic:14d8; momentum:5; WMD:5"
+				fireRate=			"46"
 				missileSpeed=		"45"
 				interaction=		"90"
 				hitPoints=			"5"
@@ -869,7 +869,7 @@
 				type=				"particles"
 
 				damage=				"kinetic:25; WMD:1"
-				fireRate=			"15"
+				fireRate=			"16"
 				missileSpeed=		"40"
 				lifetime=			"60"
 				powerUse=			"150"
@@ -950,12 +950,12 @@
 				type=				"missile"
 
 				omnidirectional=	"true"
-				damage=				"kinetic:2d8+1; momentum:1; WMD:4"
-				fireRate=			"15"
+				damage=				"kinetic:2d8+2; momentum:1; WMD:4"
+				fireRate=			"16"
 				missileSpeed=		"40"
 				interaction=		"80"
 				lifetime=			"60"
-				powerUse=			"60"
+				powerUse=			"100"
 
 				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
@@ -986,8 +986,8 @@
 				damage=				"blast:3d6; momentum:2; WMD:5"
 				fireRate=			"20"
 				missileSpeed=		"50"
-				hitPoints=			"3"
-				lifetime=			"80"
+				hitPoints=			"10"
+				lifetime=			"60"
 				powerUse=			"100"
 
 				effect=				"&efSlamCannonShell;"
@@ -1124,7 +1124,7 @@
 
 				configuration=		"dual"
 				damage=				"kinetic:4d8; momentum2; WMD2"
-				fireRate=			"15"
+				fireRate=			"16"
 				missileSpeed=		"90"
 				lifetime=			"50"
 				interaction=		"20"
@@ -1190,7 +1190,7 @@
 
 				repeating=			"4"
 				damage=				"particle:1d4+1"
-				fireRate=			"15"
+				fireRate=			"16"
 				lifetime=			"60"
 				powerUse=			"300"
 
@@ -1253,12 +1253,12 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"blast:4d12; momentum:3; WMD:4"
+				damage=				"blast:5d12; momentum:3; WMD:4"
 				fireRate=			"40"
 				missileSpeed=		"50"
 				lifetime=			"120"
 				hitPoints=			"6"
-				powerUse=			"200"
+				powerUse=			"240"
 				recoil=				"2"
 
 				effect=				"&efBlastShellDefault;"
@@ -1322,7 +1322,7 @@
 
 				omnidirectional=	"true"
 				damage=				"particle:1d8+1"
-				fireRate=			"15"
+				fireRate=			"12"
 				lifetime=			"40"
 				powerUse=			"200"
 
@@ -1424,10 +1424,10 @@
 
 				damage=				"blast:5d6; momentum:2; WMD:5"
 				fireRate=			"20"
-				missileSpeed=		"60"
-				lifetime=			"67"
-				hitPoints=			"5"
-				powerUse=			"200"
+				missileSpeed=		"50"
+				lifetime=			"60"
+				hitPoints=			"25"
+				powerUse=			"240"
 
 				effect=				"&efSlamCannonShell;"
 				sound=				"&snRecoillessCannon;"
@@ -1490,7 +1490,7 @@
 		<Weapon
 				omnidirectional=	"true"
 
-				fireRate=			"15"
+				fireRate=			"16"
 				powerUse=			"30"
 				>
 
@@ -1523,7 +1523,7 @@
 			value=				"15000"
 			mass=				"1200"
 			  
-			description=		"This cheap cartridge missile launcher fires three micro-missiles at a ten-degree spread. The weapon requires Dragonfly missile cartridges."
+			description=		"This cheap cartridge missile launcher fires three tracking micro-missiles. The weapon requires Dragonfly missile cartridges."
 			>
 
 		<Image imageID="&rsItemsEI2;" imageX="96" imageY="288" imageWidth="96" imageHeight="96"/>
@@ -1539,7 +1539,7 @@
 				<Missile ammoID="&itDragonflyCartridge;"
 						type=			"missile"
 						lifetime=		"120"
-						damage=			"blast:4d6; momentum:2; WMD:6"
+						damage=			"blast:5d6; momentum:2; WMD:6"
 						missileSpeed=	"50"
 						hitPoints=		"3"
 						maneuverRate=	"18"
@@ -1619,7 +1619,7 @@
 				missileSpeed=		"50"
 				lifetime=			"120"
 				hitPoints=			"6"
-				powerUse=			"300"
+				powerUse=			"360"
 				recoil=				"2"
 
 				effect=				"&efBlastShellDefault;"
@@ -1648,7 +1648,7 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"particle:4d8"
+				damage=				"particle:5d8"
 				fireRate=			"15"
 				lifetime=			"40"
 				powerUse=			"300"
@@ -1880,7 +1880,7 @@
 				type=				"beam"
 
 				configuration=		"dual"
-				damage=				"particle:4d8"
+				damage=				"particle:5d8"
 				fireRate=			"15"
 				lifetime=			"40"
 				powerUse=			"600"
@@ -1912,7 +1912,7 @@
 				type=				"beam"
 
 				omnidirectional=	"true"
-				damage=				"particle:4d8"
+				damage=				"particle:5d8"
 				fireRate=			"15"
 				lifetime=			"40"
 				powerUse=			"400"

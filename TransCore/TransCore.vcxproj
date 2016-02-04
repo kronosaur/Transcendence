@@ -414,7 +414,9 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="CoreProjectileEffects.xml" />
-    <Xml Include="Ferians.xml" />
+    <Xml Include="Ferians.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="HumanSpaceVol01.xml">
       <SubType>Designer</SubType>
     </Xml>
@@ -427,7 +429,9 @@
     <Xml Include="RPGShipBroker.xml">
       <SubType>Designer</SubType>
     </Xml>
-    <Xml Include="StdMiningEquipment.xml" />
+    <Xml Include="StdMiningEquipment.xml">
+      <SubType>Designer</SubType>
+    </Xml>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

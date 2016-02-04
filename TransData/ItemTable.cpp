@@ -409,6 +409,7 @@ void OutputHeader (SItemTableCtx &Ctx)
             printf("averageTime\tbestArmor\tbestArmorTime\tworstArmor\tworstArmorTime");
         else if (strEquals(Ctx.Cols[i], FIELD_BALANCE_STATS))
             printf("balance\t"
+                    "balExCost\t"
                     "balDamage\t"
                     "balDamageType\t"
                     "balAmmo\t"
@@ -430,7 +431,9 @@ void OutputHeader (SItemTableCtx &Ctx)
                     "balPower\t"
                     "balCost\t"
                     "balSlots\t"
-                    "balExternal");
+                    "balExternal\t"
+                    "balLinkedFire\t"
+                    "balRecoil");
         else
 		    printf(Ctx.Cols[i].GetASCIIZPointer());
 		}
@@ -511,8 +514,9 @@ void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
                     {
                     CWeaponClass::SBalance Balance;
                     pWeapon->CalcBalance(ItemCtx, Balance);
-                    printf("%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f",
+                    printf("%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f",
                             Balance.rBalance,
+                            Balance.rBalance - Balance.rCost,
                             Balance.rDamage,
                             Balance.rDamageType,
                             Balance.rAmmo,
@@ -534,11 +538,13 @@ void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
                             Balance.rPower,
                             Balance.rCost,
                             Balance.rSlots,
-                            Balance.rExternal
+                            Balance.rExternal,
+                            Balance.rLinkedFire,
+                            Balance.rRecoil
                             );
                     }
                 else
-                    printf("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t");
+                    printf("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t");
                 }
 
 			//	Get the field value

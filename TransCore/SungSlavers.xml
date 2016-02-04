@@ -207,15 +207,15 @@
 
 		<Weapon
 				fireRate=			"30"
-				powerUse=			"30"
+				powerUse=			"40"
 				>
 
 			<Missiles>
 				<Missile ammoID="&itParticleBoltCartridge;"
 						type=			"missile"
 
-						lifetime=		"100"
-						damage=			"particle:15d8; WMD4"
+						lifetime=		"80"
+						damage=			"particle:15d8; WMD:4"
 						hitPoints=		"15"
 
 						missileSpeed=	"60"

@@ -416,12 +416,12 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:3d12; momentum2; WMD5"
+				damage=				"thermo:2d12+4; momentum:2; WMD:5"
 				fireRate=			"20"
 				missileSpeed=		"50"
-				lifetime=			"80"
-				hitPoints=			"15"
-				powerUse=			"250"
+				lifetime=			"60"
+				hitPoints=			"25"
+				powerUse=			"300"
 
 				effect=				"&efThermoShellDefault;"
 				sound=				"&snRecoillessCannon;"

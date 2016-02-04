@@ -251,7 +251,7 @@
 				type=				"missile"
 
 				damage=				"blast:1d6+2; momentum:1; WMD:4"
-				fireRate=			"12"
+				fireRate=			"14"
 				missileSpeed=		"40"
 				lifetime=			"38"
 				powerUse=			"100"
@@ -300,7 +300,7 @@
 				>
 
 			<Fragment 
-					count=			"24-32"
+					count=			"30-36"
 					type=			"missile"
 					lifetime=		"10"
 					damage=			"blast:1d6+2; momentum:1; WMD:4"

@@ -389,7 +389,7 @@
 			name=				"dual mark III howitzer"
 			attributes=			"cannotOrder, howitzer, majorItem, tinkers"
 
-			level=				"6"
+			level=				"7"
 			value=				"25000"
 			mass=				"10000"
 			frequency=			"notRandom"
