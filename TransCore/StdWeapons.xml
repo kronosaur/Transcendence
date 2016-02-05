@@ -488,7 +488,7 @@
 
 				omnidirectional=	"true"
 				damage=				"laser:1d4"
-				fireRate=			"15"
+				fireRate=			"10"
 				lifetime=			"30"
 				powerUse=			"30"
 
@@ -2599,7 +2599,7 @@
 				>
 
 			<Fragment
-					count=			"6d6"
+					count=			"7d6"
 					type=			"missile"
 					lifetime=		"10"
 					damage=			"kinetic:3d6; WMD1"
@@ -2776,7 +2776,7 @@
 					count=			"1"
 					type=			"radius"
 
-					damage=			"thermo:6d24; momentum6; WMD7"
+					damage=			"thermo:7d24; momentum6; WMD7"
 					minRadius=		"1"
 					maxRadius=		"4"
 					missileSpeed=	"0"
@@ -2800,7 +2800,7 @@
 			numberAppearing=	"96-144"
 
 			value=				"12"
-			mass=				"10"
+			mass=				"20"
 			  
 			description=		"This is a standard hexagene high-explosive grenade compatible with the MAG launcher."
 			>
@@ -2888,10 +2888,10 @@
 				>
 
 			<Fragment
-					count=			"26-36"
+					count=			"55-65"
 					type=			"missile"
 					lifetime=		"12"
-					damage=			"kinetic:5d6; WMD:1"
+					damage=			"kinetic:6d6; WMD:1"
 					missileSpeed=	"40-60"
                     
                     effect=         "&efBlastShellDefault;"
@@ -2920,7 +2920,7 @@
 		
 		<Missile
 				type=			"missile"
-				damage=			"blast:12d10; shield:5;"
+				damage=			"blast:12d12; shield:5;"
 						
 				lifetime=		"80"
 				missileSpeed=	"30"
@@ -2965,10 +2965,10 @@
 				>
 
 			<Fragment
-					count=			"26-36"
+					count=			"24-32"
 					type=			"missile"
 					lifetime=		"36"
-					damage=			"blast:5d6; WMD:5"
+					damage=			"blast:4d12; WMD:5"
 					missileSpeed=	"40-60"
                     
                     effect=         "&efBlastShellDefault;"
@@ -2997,7 +2997,7 @@
 		
 		<Missile
 				type=			"missile"
-				damage=			"blast:26d6; WMD:7"
+				damage=			"blast:24d12; WMD:7"
 						
 				lifetime=		"160"
 				missileSpeed=	"15"
@@ -3181,10 +3181,10 @@
 				>
 
 			<Fragment
-					count=			"32-48"
+					count=			"36-48"
 					type=			"missile"
 					lifetime=		"8"
-					damage=			"thermo:1d12+2; momentum:1; WMD:5"
+					damage=			"thermo:1d12+4; momentum:1; WMD:5"
 					missileSpeed=	"40-60"
 
 					effect=			"&efThermoShellDefault;"
@@ -3322,7 +3322,7 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"thermo:8d20; momentum3; WMD7"
+				damage=			"thermo:10d20; momentum3; WMD7"
 				missileSpeed=	"70"
 				hitPoints=		"20"
 

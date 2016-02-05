@@ -469,7 +469,7 @@
 			<ParticleSystem
 					style=				"spray"
 					emitLifetime=		"1"
-					emitRate=			"45-55"
+					emitRate=			"60-75"
 					emitSpeed=			"40"
 					spreadAngle=		"1"
 					
