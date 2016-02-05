@@ -983,7 +983,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"blast:3d6; momentum:2; WMD:5"
+				damage=				"blast:2d6+2; momentum:2; WMD:5"
 				fireRate=			"20"
 				missileSpeed=		"50"
 				hitPoints=			"10"
@@ -1190,7 +1190,7 @@
 
 				repeating=			"4"
 				damage=				"particle:1d4+1"
-				fireRate=			"16"
+				fireRate=			"18"
 				lifetime=			"60"
 				powerUse=			"300"
 
@@ -1422,7 +1422,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"blast:5d6; momentum:2; WMD:5"
+				damage=				"blast:4d6; momentum:2; WMD:5"
 				fireRate=			"20"
 				missileSpeed=		"50"
 				lifetime=			"60"
@@ -1460,7 +1460,7 @@
 				damage=				"laser:8d4"
 				fireRate=			"16"
 				lifetime=			"30"
-				powerUse=			"300"
+				powerUse=			"200"
 
 				effect=				"&efLaserBeamDefault;"
 				sound=				"&snLaserCannon;"
@@ -1716,7 +1716,7 @@
 				damage=				"ion:5d6; deviceDisrupt:2"
 				fireRate=			"20"
 				lifetime=			"30"
-				powerUse=			"800"
+				powerUse=			"500"
 
 				effect=				"&efEIDisruptorBeam;"
 				fireEffect=			"&efEIDisruptorFire;"
@@ -1781,8 +1781,8 @@
 				type=				"beam"
 
 				damage=				"ion:4d6-1"
-				fireRate=			"12"
-				lifetime=			"40"
+				fireRate=			"14"
+				lifetime=			"30"
 				passthrough=		"50"
 				powerUse=			"750"
 
@@ -1815,7 +1815,7 @@
 				type=				"missile"
 
 				damage=				"thermo:8d12; momentum:3; WMD:4"
-				fireRate=			"35"
+				fireRate=			"40"
 				missileSpeed=		"50"
 				lifetime=			"120"
 				hitPoints=			"10"
@@ -1951,7 +1951,7 @@
 
 						damage=			"thermo:6d12; momentum2; WMD5"
 						missileSpeed=	"60"
-						hitPoints=		"10"
+						hitPoints=		"20"
 						lifetime=		"100"
 
 						effect=			"&efThermoCannonShell;"
@@ -2020,7 +2020,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:12d12; momentum:3; WMD:4"
+				damage=				"thermo:11d12; momentum:3; WMD:4"
 				fireRate=			"40"
 				missileSpeed=		"50"
 				lifetime=			"120"
@@ -2054,10 +2054,10 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"ion:12d6; WMD:1"
+				damage=				"ion:11d6"
 				fireRate=			"20"
 				lifetime=			"30"
-				powerUse=			"750"
+				powerUse=			"1000"
 
 				effect=				"&efEIBlasterBeam;"
 				fireEffect=			"&efEIBlasterFire;"
@@ -2087,8 +2087,8 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"ion:1d6+1"
-				fireRate=			"15"
+				damage=				"ion:1d6+2"
+				fireRate=			"16"
 				lifetime=			"20"
 				powerUse=			"1000"
 
@@ -2158,8 +2158,8 @@
 		<Weapon
 				omnidirectional=	"true"
 
-				fireRate=			"15"
-				powerUse=			"80"
+				fireRate=			"16"
+				powerUse=			"150"
 				>
 
 			<Missiles>
@@ -2168,8 +2168,8 @@
 
 						damage=			"thermo:6d12; momentum2; WMD5"
 						missileSpeed=	"60"
+						hitPoints=		"20"
 						lifetime=		"100"
-						hitPoints=		"10"
 
 						effect=			"&efThermoCannonShell;"
 						sound=			"&snRecoillessCannon;"
@@ -3674,7 +3674,7 @@
 			frequency=			"uncommon"
 			numberAppearing=	"12d40"
 
-			value=				"95"
+			value=				"70"
 			mass=				"20"
 			  
 			description=		"Fired by thermo cannons, these rounds pack the yield of a nuclear device in a small, mass-produced shell."

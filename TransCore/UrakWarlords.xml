@@ -250,7 +250,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"blast:1d6+2; momentum:1; WMD:4"
+				damage=				"blast:1d6+1; momentum:1; WMD:4"
 				fireRate=			"14"
 				missileSpeed=		"40"
 				lifetime=			"38"

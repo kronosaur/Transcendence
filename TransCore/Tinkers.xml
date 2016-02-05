@@ -409,7 +409,7 @@
 				missileSpeed=		"50"
 				lifetime=			"120"
 				hitPoints=			"6"
-				powerUse=			"600"
+				powerUse=			"720"
 				recoil=				"4"
 
 				effect=				"&efBlastShellDefault;"

@@ -31,8 +31,9 @@
 
 				repeating=			"3"
 				damage=				"kinetic:1d6+1; momentum:1"
-				fireRate=			"30"
-				missileSpeed=		"50"
+				fireRate=			"24"
+				missileSpeed=		"40"
+				interaction=		"50"
 				lifetime=			"30"
 				powerUse=			"100"
 
