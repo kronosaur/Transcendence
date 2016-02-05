@@ -55,7 +55,7 @@ const int TITLE_BAR_HEIGHT =					128;
 
 const int MAX_INTRO_SHIPS =						500;
 const int MAX_TIME_WITH_ONE_SHIP =				(g_TicksPerSecond * 90);
-const int EXPAND_ON_IDLE_TIME = 150;
+const int EXPAND_ON_IDLE_TIME =                 900;
 
 const CG32bitPixel RGB_FRAME =					CG32bitPixel(80,80,80);
 
