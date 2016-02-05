@@ -812,6 +812,7 @@ class CButtonBarDisplay
 		void OnMouseMove (int x, int y);
 		void Paint (CG32bitImage &Dest);
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
+        inline void SetRect (const RECT &rcRect) { m_rcRect = rcRect;  ComputeButtonRects();  }
 		void Update (void);
 
 	private:

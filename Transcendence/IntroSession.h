@@ -75,9 +75,9 @@ class CIntroSession : public IHISession
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
 		virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyUp(iVirtKey, dwKeyData); }
 		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) { g_pTrans->WMLButtonDown(x, y, dwFlags); }
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) { m_iIdleTicks = 0;  if (m_bExpanded) m_bExpandedDesired = false; g_pTrans->WMLButtonDown(x, y, dwFlags); }
 		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonUp(x, y, dwFlags); }
-		virtual void OnMouseMove (int x, int y, DWORD dwFlags) { g_pTrans->WMMouseMove(x, y, dwFlags); }
+        virtual void OnMouseMove (int x, int y, DWORD dwFlags) { m_iIdleTicks = 0;  if (m_bExpanded) m_bExpandedDesired = false;  g_pTrans->WMMouseMove(x, y, dwFlags); }
 		virtual void OnMove (int x, int y) { g_pTrans->WMMove(x, y); }
 		virtual void OnReportHardCrash (CString *retsMessage) { *retsMessage = g_pTrans->GetCrashInfo(); }
 		virtual void OnSize (int cxWidth, int cyHeight) { g_pTrans->WMSize(cxWidth, cyHeight, 0); }
@@ -105,9 +105,16 @@ class CIntroSession : public IHISession
 		EStates m_iInitialState;
 		EStates m_iState;					//	Current state
 
-		RECT m_rcMain;						//	Center RECT
+		RECT m_rcMain;						//	Main animation RECT (where system is painted)
+        RECT m_rcCenter;                    //  Center RECT
 		RECT m_rcTop;						//	Top area (sign in controls, etc.)
 		RECT m_rcBottom;					//	Bottom area (buttons)
+
+        bool m_bExpanded;                   //  TRUE if the main screen is fully expanded
+        bool m_bExpandedDesired;            //  Desired setting for expanded/collapsed
+        int m_iIdleTicks;                   //  Number of ticks idle
+        RECT m_rcMainNormal;                //  Center RECT with button area
+        RECT m_rcMainExpanded;              //  Full screen
 
 		CHighScoreDisplay m_HighScoreDisplay;
 
