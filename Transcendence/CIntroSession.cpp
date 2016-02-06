@@ -1080,9 +1080,7 @@ void CIntroSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		switch (iVirtKey)
 			{
 			case VK_ESCAPE:
-                if (m_bExpanded)
-                    m_bExpandedDesired = false;
-
+                SetExpanded(false);
 				CancelCurrentState();
 				break;
 
@@ -1121,7 +1119,7 @@ void CIntroSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 				break;
 
             case VK_F11:
-                m_bExpandedDesired = !m_bExpanded;
+                SetExpanded(!m_bExpanded);
                 break;
 			}
 		}
@@ -1239,6 +1237,20 @@ void CIntroSession::Paint (CG32bitImage &Screen, bool bTopMost)
 		g_pTrans->m_iBltTime[g_pTrans->m_iFrameCount % FRAME_RATE_COUNT] = dwNow - dwStartTimer;
 		}
 	}
+
+void CIntroSession::SetExpanded (bool bExpanded)
+
+    //  SetExpanded
+    //
+    //  Sets the main view to be expanded or not.
+
+    {
+    if (m_bExpandedDesired != bExpanded)
+        {
+        m_bExpandedDesired = bExpanded;
+        ShowCursor(!bExpanded);
+        }
+    }
 
 void CIntroSession::SetState (EStates iState)
 
@@ -1446,7 +1458,7 @@ void CIntroSession::Update (void)
     //  Otherwise, if we've been idle for a while, expand
 
     else if (m_iIdleTicks > EXPAND_ON_IDLE_TIME)
-        m_bExpandedDesired = true;
+        SetExpanded(true);
 
 	//	Time update, if necessary
 

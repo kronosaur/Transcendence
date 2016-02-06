@@ -75,9 +75,9 @@ class CIntroSession : public IHISession
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
 		virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyUp(iVirtKey, dwKeyData); }
 		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) { m_iIdleTicks = 0;  if (m_bExpanded) m_bExpandedDesired = false; g_pTrans->WMLButtonDown(x, y, dwFlags); }
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) { m_iIdleTicks = 0;  SetExpanded(false); g_pTrans->WMLButtonDown(x, y, dwFlags); }
 		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonUp(x, y, dwFlags); }
-        virtual void OnMouseMove (int x, int y, DWORD dwFlags) { m_iIdleTicks = 0;  if (m_bExpanded) m_bExpandedDesired = false;  g_pTrans->WMMouseMove(x, y, dwFlags); }
+        virtual void OnMouseMove (int x, int y, DWORD dwFlags) { m_iIdleTicks = 0; SetExpanded(false); g_pTrans->WMMouseMove(x, y, dwFlags); }
 		virtual void OnMove (int x, int y) { g_pTrans->WMMove(x, y); }
 		virtual void OnReportHardCrash (CString *retsMessage) { *retsMessage = g_pTrans->GetCrashInfo(); }
 		virtual void OnSize (int cxWidth, int cyHeight) { g_pTrans->WMSize(cxWidth, cyHeight, 0); }
@@ -96,6 +96,7 @@ class CIntroSession : public IHISession
 		bool HandleChar (char chChar, DWORD dwKeyData);
 		void OnPOVSet (CSpaceObject *pObj);
 		void Paint (CG32bitImage &Screen, bool bTopMost);
+        void SetExpanded (bool bExpanded = true);
 		void SetState (EStates iState);
 		void StartSoundtrackTitleAnimation (CSoundType *pTrack);
 		void StopAnimations (void);
