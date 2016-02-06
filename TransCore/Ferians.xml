@@ -510,7 +510,7 @@
 
 		<Weapon
 				type=				"particles"
-				damage=				"plasma:50; mining:2; WMD:4"
+				damage=				"plasma:60; mining:2; WMD:4"
 				
 				fireRate=			"30"
 

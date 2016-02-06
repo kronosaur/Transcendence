@@ -2308,7 +2308,7 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"ion:26d6; WMD:1"
+				damage=				"ion:24d6"
 				fireRate=			"30"
 				lifetime=			"30"
 				powerUse=			"1500"
@@ -2373,10 +2373,10 @@
 				type=				"beam"
 
 				omnidirectional=	"true"
-				damage=				"ion:12d6; WMD:1"
-				fireRate=			"20"
+				damage=				"ion:11d6"
+				fireRate=			"24"
 				lifetime=			"30"
-				powerUse=			"1500"
+				powerUse=			"2000"
 
 				effect=				"&efEIBlasterBeam;"
 				fireEffect=			"&efEIBlasterFire;"
@@ -2450,7 +2450,7 @@
 				powerUse=			"3000"
 
 				type=				"beam"
-				damage=				"ion:8d6; WMD:1"
+				damage=				"ion:6d6"
 				fireRate=			"20"
 				lifetime=			"30"
 
@@ -2484,7 +2484,7 @@
 
 		<Weapon
 				type=				"particles"
-				damage=				"plasma:70; WMD:4"
+				damage=				"plasma:60; WMD:4"
 				
 				fireRate=			"20"
 				hitPoints=			"10"
