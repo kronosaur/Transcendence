@@ -390,7 +390,7 @@
 			attributes=			"cannotOrder, howitzer, majorItem, tinkers"
 
 			level=				"7"
-			value=				"25000"
+			value=				"47000"
 			mass=				"10000"
 			frequency=			"notRandom"
 			numberAppearing=	"1"
@@ -425,7 +425,7 @@
 			attributes=			"cannotOrder, energyWeapon, majorItem, tinkers"
 			  
 			level=				"5"
-			value=				"9000"
+			value=				"10000"
 			mass=				"2500"
 			frequency=			"notRandom"
 

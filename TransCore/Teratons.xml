@@ -12,7 +12,7 @@
 	<ItemType UNID="&itKytrynBlaster;"
 			name=				"Kytryn blaster"
 			level=				"9"
-			value=				"250000"
+			value=				"220000"
 			mass=				"3000"
 			frequency=			"rare"
 			attributes=			"Alien; MajorItem; Military; Teraton"

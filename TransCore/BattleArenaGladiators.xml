@@ -7,7 +7,7 @@
 	<ItemType UNID="&itSlicerCannon;"
 			name=				"PM6 Slicer cannon"
 			level=				"6"
-			value=				"20000"
+			value=				"35000"
 			mass=				"4000"
 			frequency=			"notrandom"
 			attributes=			"cannotOrder, EI; EnergyWeapon; MajorItem"

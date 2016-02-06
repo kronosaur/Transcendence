@@ -500,7 +500,7 @@
 			level=				"9"
 			frequency=			"notrandom"
 			  
-			value=				"88000"
+			value=				"150000"
 			mass=				"5000"
 
 			description=		"Ferians have adapted their plasma torches for combat."

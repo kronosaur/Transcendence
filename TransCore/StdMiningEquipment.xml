@@ -87,7 +87,7 @@
 			level=				"2"
 			frequency=			"rare"
 
-			value=				"550"
+			value=				"1150"
 			mass=				"2000"
 			  
 			description=		"This powerful laser is generally used for asteroid mining."
@@ -448,7 +448,7 @@
 			level=				"6"
 			frequency=			"rare"
 
-			value=				"18000"
+			value=				"12000"
 			mass=				"4000"
 			  
 			description=		"Plasma torches are used for large-scale asteroid mining."
