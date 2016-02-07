@@ -2602,7 +2602,7 @@
 					count=			"7d6"
 					type=			"missile"
 					lifetime=		"10"
-					damage=			"kinetic:3d6; WMD1"
+					damage=			"kinetic:2d6; WMD1"
 					missileSpeed=	"32-48"
                     
     				effect=			"&efKineticBoltDefault;"
@@ -2888,10 +2888,10 @@
 				>
 
 			<Fragment
-					count=			"55-65"
+					count=			"50-60"
 					type=			"missile"
 					lifetime=		"12"
-					damage=			"kinetic:6d6; WMD:1"
+					damage=			"kinetic:4d6; WMD:1"
 					missileSpeed=	"40-60"
                     
                     effect=         "&efBlastShellDefault;"
@@ -2965,10 +2965,10 @@
 				>
 
 			<Fragment
-					count=			"24-32"
+					count=			"28-38"
 					type=			"missile"
 					lifetime=		"36"
-					damage=			"blast:4d12; WMD:5"
+					damage=			"blast:4d6; WMD:5"
 					missileSpeed=	"40-60"
                     
                     effect=         "&efBlastShellDefault;"
@@ -3184,7 +3184,7 @@
 					count=			"36-48"
 					type=			"missile"
 					lifetime=		"8"
-					damage=			"thermo:1d12+4; momentum:1; WMD:5"
+					damage=			"thermo:1d12; momentum:1; WMD:5"
 					missileSpeed=	"40-60"
 
 					effect=			"&efThermoShellDefault;"

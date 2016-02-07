@@ -4450,10 +4450,10 @@
 					</Effect>
 
 					<Fragment 
-							count=				"48"
+							count=				"50-70"
 							type=				"missile"
 
-							damage=				"thermo:1d8+2; WMD4"
+							damage=				"thermo:1d12+2; WMD:4"
 							missileSpeed=		"70-90"
 							lifetime=			"5"
 							

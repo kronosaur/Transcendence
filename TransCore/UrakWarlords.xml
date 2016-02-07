@@ -303,7 +303,7 @@
 					count=			"30-36"
 					type=			"missile"
 					lifetime=		"10"
-					damage=			"blast:1d6+2; momentum:1; WMD:4"
+					damage=			"blast:1d6; momentum:1; WMD:4"
 					missileSpeed=	"32-48"
 					>
 

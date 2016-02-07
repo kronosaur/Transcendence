@@ -371,7 +371,7 @@
 			value=				"2900"
 			mass=				"500"
 			frequency=			"notRandom"
-			attributes=			"Consumable"
+			attributes=			"consumable, military"
 
 			description=		"This box contains 24 XM900 Lucifer missiles."
 			reverseArticle=		"true"
