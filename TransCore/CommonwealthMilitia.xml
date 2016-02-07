@@ -281,8 +281,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"450"
-			repairRate=			"3"
+			hitPoints=			"840"
+			regen=              "8.4"
 			shipRepairRate=		"3"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"

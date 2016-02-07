@@ -14,6 +14,7 @@
 			dockScreen=			"&dsCommonwealthStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 
+            level=              "4"
 			size=				"670"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"500"
@@ -153,9 +154,9 @@
 
 			size=				"670"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"1000"
+			hitPoints=			"1120"
 			multiHull=			"true"
-			regen=				"6"
+			regen=				"9"
 			shipRegen=			"4"
 
 			canAttack=			"true"

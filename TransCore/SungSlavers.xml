@@ -1136,7 +1136,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itSungArmor;"
-			hitPoints=			"200"
+			hitPoints=			"400"
+            regen=              "4.0"
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -1202,7 +1203,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itSungArmor;"
-			hitPoints=			"500"
+			hitPoints=			"1500"
+            regen=              "9.0"
 			fireRateAdj=		"20"
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"

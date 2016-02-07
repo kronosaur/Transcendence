@@ -138,7 +138,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itAdvancedPlasteelPlate;"
-			hitPoints=			"400"
+			hitPoints=			"800"
+            regen=              "6"
 			fireRateAdj=		"10"
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -1059,7 +1060,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itAdvancedPlasteelPlate;"
-			hitPoints=			"300"
+			hitPoints=			"900"
+            regen=              "9.0"
 			fireRateAdj=		"20"
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -2074,7 +2076,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itSungArmor;"
-			hitPoints=			"125"
+			hitPoints=			"400"
+            regen=              "4.0"
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 

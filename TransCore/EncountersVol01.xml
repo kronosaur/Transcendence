@@ -907,7 +907,8 @@
 			canAttack=			"true"
 
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"120"
+			hitPoints=			"160"
+            regen=              "0.5"
 			fireRateAdj=		"20"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -1284,7 +1285,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itLightPlasteelPlate;"
-			hitPoints=			"100"
+			hitPoints=			"250"
+            regen=              "1.3"
 			fireRateAdj=		"80"
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -1842,7 +1844,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itSolarArmor;"
-			hitPoints=			"400"
+			hitPoints=			"420"
+            regen=              "2.1"
 			fireRateAdj=		"20"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -1897,7 +1900,8 @@
 			canAttack=			"true"
 
 			armorID=			"&itHeavyCeramicPlate;"
-			hitPoints=			"100"
+			hitPoints=			"120"
+            regen=              "0.4"
 			fireRateAdj=		"40"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -2036,7 +2040,7 @@
 
 			multiHull=			"true"
 			armorID=			"&itLightPlasteelPlate;"
-			hitPoints=			"55"
+			hitPoints=			"40"
 			fireRateAdj=		"30"
 			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtIceAsteroidEjecta;"
@@ -2185,7 +2189,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itAdvancedPlasteelPlate;"
-			hitPoints=			"300"
+			hitPoints=			"900"
+            regen=              "9.0"
 			fireRateAdj=		"20"
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -2419,7 +2424,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itAdvancedCeralloyArmor;"
-			hitPoints=			"300"
+			hitPoints=			"240"
+            regen=              "0.7"
 			fireRateAdj=		"20"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -2728,7 +2734,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itLightPlasteelPlate;"
-			hitPoints=			"100"
+			hitPoints=			"160"
+            regen=              "0.5"
 			fireRateAdj=		"30"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -2775,7 +2782,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"150"
+			hitPoints=			"320"
+            regen=              "1.6"
 			fireRateAdj=		"20"
 			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -2843,7 +2851,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"250"
+			hitPoints=			"400"
+            regen=              "4"
 			fireRateAdj=		"20"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -3151,7 +3160,8 @@
 			canAttack=			"true"
 
 			armorID=			"&itLightBlastPlate;"
-			hitPoints=			"200"
+			hitPoints=			"210"
+            regen=              "0.6"
 			fireRateAdj=		"40"
 			ejectaType=			"&vtWreckEjecta;"
 			noFriendlyFire=		"true"
@@ -3202,7 +3212,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itBlastPlate;"
-			hitPoints=			"350"
+			hitPoints=			"700"
+            regen=              "3.5"
 			fireRateAdj=		"40"
 			ejectaType=			"&vtWreckEjecta;"
 			noFriendlyFire=		"true"
@@ -3722,7 +3733,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itCeramicPlate;"
-			hitPoints=			"75"
+			hitPoints=			"90"
+            regen=              "0.3"
 			fireRateAdj=		"40"
 			explosionType=		"&vtKineticExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -3784,7 +3796,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itHeavyCeramicPlate;"
-			hitPoints=			"100"
+			hitPoints=			"250"
+            regen=              "1.3"
 			fireRateAdj=		"30"
 			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -3972,7 +3985,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itAdvancedPlasteelPlate;"
-			hitPoints=			"200"
+			hitPoints=			"500"
+            regen=              "1.5"
 			stealth=			"15" 
 			fireRateAdj=		"80"
 			explosionType=		"&vtThermoExplosion1;"
@@ -4636,7 +4650,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itLightOrthoSteel;"
-			hitPoints=			"350"
+			hitPoints=			"370"
+            regen=              "1.1"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -4687,7 +4702,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itOrthoSteel;"
-			hitPoints=			"1000"
+			hitPoints=			"1800"
+            regen=              "18"
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -5121,7 +5137,8 @@
 			canAttack=			"true"
 
 			armorID=			"&itHardenedReactiveArmor;"
-			hitPoints=			"100"
+			hitPoints=			"120"
+            regen=              "0.4"
 			fireRateAdj=		"30"
 			explosionType=		"&vtRadioactiveExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -5178,7 +5195,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itHardenedReactiveArmor;"
-			hitPoints=			"150"
+			hitPoints=			"320"
+            regen=              "1.6"
 			fireRateAdj=		"20"
 			explosionType=		"&vtRadioactiveExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -5627,7 +5645,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itOrthoSteel;"
-			hitPoints=			"350"
+			hitPoints=			"740"
+            regen=              "3.7"
 			fireRateAdj=		"40"
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"

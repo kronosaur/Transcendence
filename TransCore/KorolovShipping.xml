@@ -1099,8 +1099,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"250"
-			repairRate=			"2"
+			hitPoints=			"470"
+			regen=              "1.4"
 			shipRepairRate=		"3"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"

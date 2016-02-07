@@ -159,8 +159,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itGusokuArmor;"
-			hitPoints=			"250"
-			repairRate=			"3"
+			hitPoints=			"280"
+			regen=              "0.8"
 			fireRateAdj=		"15"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -1030,8 +1030,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itCeralloyArmor;"
-			hitPoints=			"150"
-			repairRate=			"2"
+			hitPoints=			"250"
+			regen=              "1.3"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -1212,8 +1212,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itCeralloyArmor;"
-			hitPoints=			"100"
-			repairRate=			"1"
+			hitPoints=			"120"
+			regen=              "0.4"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -1342,8 +1342,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itAdvancedPlasteelPlate;"
-			hitPoints=			"700"
-			repairRate=			"3"
+			hitPoints=			"1400"
+			regen=              "4"
 			fireRateAdj=		"15"
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -1529,8 +1529,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itCeralloyArmor;"
-			hitPoints=			"350"
-			repairRate=			"2"
+			hitPoints=			"470"
+			regen=              "1.4"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -2011,8 +2011,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"75"
-			repairRate=			"1"
+			hitPoints=			"120"
+			regen=              "0.4"
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtIceAsteroidEjecta;"
 
@@ -2368,8 +2368,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itQuadroCarbideArmor;"
-			hitPoints=			"450"
-			repairRate=			"5"
+			hitPoints=			"470"
+			regen=              "1.4"
 			fireRateAdj=		"10"
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"

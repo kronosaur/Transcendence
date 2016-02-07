@@ -128,8 +128,8 @@ PLAYER DATA
 
 			multiHull=			"true"
 			armorID=			"&itBlastPlate;"
-			hitPoints=			"250"
-			repairRate=			"3"
+			hitPoints=			"320"
+			regen=			    "1.6"
 			fireRateAdj=		"20"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -529,8 +529,8 @@ PLAYER DATA
 
 			multiHull=			"true"
 			armorID=			"&itBlastPlate;"
-			hitPoints=			"500"
-			repairRate=			"3"
+			hitPoints=			"1100"
+			regen=			    "11"
 			shipRepairRate=		"3"
 			fireRateAdj=		"20"
 			explosionType=		"&vtThermoExplosion2;"
@@ -682,7 +682,7 @@ PLAYER DATA
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"250"
-			repairRate=			"3"
+			regen=			    "1.3"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 

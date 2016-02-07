@@ -210,8 +210,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itGusokuArmor;"
-			hitPoints=			"700"
-			repairRate=			"3"
+			hitPoints=			"1100"
+			regen=              "3.3"
 			fireRateAdj=		"80"
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"

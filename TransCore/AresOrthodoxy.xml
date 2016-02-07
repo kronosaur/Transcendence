@@ -1249,7 +1249,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itLightTharsisPlate;"
-			hitPoints=			"350"
+			hitPoints=			"370"
+            regen=              "1.1"
 			fireRateAdj=		"40"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -1302,7 +1303,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itTharsisPlate;"
-			hitPoints=			"600"
+			hitPoints=			"2400"
+            regen=              "20"
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -1360,7 +1362,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itMassiveTharsisPlate;"
-			hitPoints=			"1000"
+			hitPoints=			"3600"
+            regen=              "22"
 			explosionType=		"&vtThermoExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 

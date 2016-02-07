@@ -387,8 +387,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itIthaliumArmor;"
-			hitPoints=			"850"
-			repairRate=			"10"
+			hitPoints=			"1200"
+			regen=              "6.2"
 			fireRateAdj=		"10"
 			explosionType=		"&vtPlasmaExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -837,8 +837,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itIthaliumArmor;"
-			hitPoints=			"850"
-			repairRate=			"10"
+			hitPoints=			"1200"
+			regen=              "6.2"
 			fireRateAdj=		"10"
 			explosionType=		"&vtPlasmaExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -1259,8 +1259,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itIthaliumArmor;"
-			hitPoints=			"850"
-			repairRate=			"10"
+			hitPoints=			"1200"
+			regen=              "6.2"
 			fireRateAdj=		"10"
 			explosionType=		"&vtPlasmaExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"

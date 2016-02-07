@@ -417,7 +417,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itLuminousArmature;"
-			hitPoints=			"300"
+			hitPoints=			"600"
+            regen=              "3.0"
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 

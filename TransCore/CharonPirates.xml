@@ -761,7 +761,7 @@
 			canAttack=			"true"
 
 			armorID=			"&itReactiveArmor;"
-			hitPoints=			"75"
+			hitPoints=			"90"
 			fireRateAdj=		"60"
 			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -894,7 +894,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itHeavyReactiveArmor;"
-			hitPoints=			"100"
+			hitPoints=			"200"
+            regen=              "1"
 			fireRateAdj=		"40"
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"

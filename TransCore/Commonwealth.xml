@@ -739,7 +739,7 @@
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"100"
-			repairRate=			"1"
+			regen=              "0.5"
 			shipRepairRate=		"1"
 			fireRateAdj=		"80"
 			explosionType=		"&vtBlastExplosion3;"
@@ -946,8 +946,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"300"
-			repairRate=			"1"
+			hitPoints=			"560"
+			regen=              "2.8"
 			shipRepairRate=		"1"
 			fireRateAdj=		"40"
 			explosionType=		"&vtThermoExplosion1;"
@@ -1112,8 +1112,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"250"
-			repairRate=			"2"
+			hitPoints=			"370"
+			regen=              "1.1"
 			shipRepairRate=		"3"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -1196,8 +1196,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"100"
-			repairRate=			"1"
+			hitPoints=			"120"
+			regen=              "0.4"
 			shipRepairRate=		"1"
 			fireRateAdj=		"80"
 			explosionType=		"&vtBlastExplosion3;"
@@ -1322,7 +1322,7 @@
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"250"
-			repairRate=			"1"
+			regen=              "0.5"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated"
@@ -1646,7 +1646,7 @@
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"150"
-			repairRate=			"1"
+			regen=              "0.5"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated"
@@ -1916,7 +1916,7 @@
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"250"
-			repairRate=			"1"
+			regen=              "0.5"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, friendly, generic, human, populated"
@@ -2128,8 +2128,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"450"
-			repairRate=			"1"
+			hitPoints=			"950"
+			regen=              "4.8"
 			shipRepairRate=		"1"
 			fireRateAdj=		"40"
 			explosionType=		"&vtThermoExplosion1;"
@@ -2292,7 +2292,7 @@
 
 			mass=				"5000"
 			armorID=			"&itLightTitaniumPlate;"
-			hitPoints=			"10"
+			hitPoints=			"20"
 			>
 
 		<Image imageID="&rsStations1;" imageX="0" imageY="668" imageWidth="128" imageHeight="64"/>

@@ -1392,8 +1392,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"350"
-			repairRate=			"1"
+			hitPoints=			"740"
+			regen=              "3.7"
 			shipRepairRate=		"1"
 			fireRateAdj=		"40"
 			explosionType=		"&vtThermoExplosion1;"
@@ -1704,8 +1704,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"350"
-			repairRate=			"1"
+			hitPoints=			"370"
+            regen=              "1.1"
 			shipRepairRate=		"1"
 			fireRateAdj=		"40"
 			explosionType=		"&vtThermoExplosion1;"
@@ -2139,8 +2139,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itDiamondLatticeArmor;"
-			hitPoints=			"450"
-			repairRate=			"1"
+			hitPoints=			"810"
+			regen=              "2.4"
 			fireRateAdj=		"15"
 			explosionType=		"&vtPlasmaExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -2700,8 +2700,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itLightIthaliumArmor;"
-			hitPoints=			"350"
-			repairRate=			"3"
+			hitPoints=			"470"
+			regen=              "1.4"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"friendly, hereticStation, human, majorStation, populated, religious, sistersOfDomina"
@@ -3060,8 +3060,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itQuadroCarbideArmor;"
-			hitPoints=			"300"
-			repairRate=			"1"
+			hitPoints=			"610"
+			regen=              "1.8"
 			fireRateAdj=		"20"
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -3488,7 +3488,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itHeavyTharsisPlate;"
-			hitPoints=			"250"
+			hitPoints=			"610"
+            regen=              "1.8"
 			fireRateAdj=		"20"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"

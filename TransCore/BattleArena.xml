@@ -2130,8 +2130,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itBlastPlate;"
-			hitPoints=			"250"
-			repairRate=			"3"
+			hitPoints=			"320"
+			regen=			    "1.6"
 			fireRateAdj=		"20"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"

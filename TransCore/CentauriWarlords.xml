@@ -617,6 +617,7 @@
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"150"
+            regen=              "0.5"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -842,7 +843,7 @@
 			canAttack=			"true"
 
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"75"
+			hitPoints=			"90"
 			fireRateAdj=		"40"
 			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"

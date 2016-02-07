@@ -873,7 +873,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"100"
+			hitPoints=			"160"
+            regen=              "0.5"
 			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 

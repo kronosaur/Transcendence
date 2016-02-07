@@ -468,7 +468,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itDwargChitonArmor;"
-			hitPoints=			"150"
+			hitPoints=			"160"
+            regen=              "0.5"
 			fireRateAdj=		"50"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -523,7 +524,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itDwargCatoptricArmor;"
-			hitPoints=			"180"
+			hitPoints=			"210"
+            regen=              "0.6"
 			fireRateAdj=		"50"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -619,7 +621,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itDwargCatoptricArmor;"
-			hitPoints=			"180"
+			hitPoints=			"210"
+            regen=              "0.6"
 			fireRateAdj=		"50"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -672,8 +675,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itDwargHolochroalArmor;"
-			hitPoints=			"300"
-			repairRate=			"2"
+			hitPoints=			"900"
+			regen=              "9"
 			fireRateAdj=		"20"
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"

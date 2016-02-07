@@ -54,6 +54,7 @@
 			size=				"110"
 			armorID=			"&itReinforcedTitanium1;"
 			hitPoints=			"250"
+            regen=              "1"
 			multiHull=			"true"
 			fireRateAdj=		"20"
 			repairRate=			"5"
