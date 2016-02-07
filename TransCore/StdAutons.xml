@@ -186,7 +186,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsSmallShips1;" imageX="288" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsSmallShips1;" imageX="288" imageY="0" imageWidth="32" imageHeight="32"/>
 
 		<!-- AI and Behavior -->
 
@@ -261,7 +261,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsSmallShips1;" imageX="288" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsSmallShips1;" imageX="288" imageY="0" imageWidth="32" imageHeight="32"/>
 
 		<!-- AI and Behavior -->
 
@@ -417,7 +417,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsSmallShips1;" imageX="320" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsSmallShips1;" imageX="320" imageY="0" imageWidth="32" imageHeight="32"/>
 
 		<!-- AI and Behavior -->
 
@@ -502,7 +502,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsSmallShips1;" imageX="320" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsSmallShips1;" imageX="320" imageY="0" imageWidth="32" imageHeight="32"/>
 
 		<!-- AI and Behavior -->
 

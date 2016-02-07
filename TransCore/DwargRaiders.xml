@@ -47,7 +47,7 @@
 			rotationAccel=		"2.0"
 			/>
 
-		<Image imageID="&rsMediumShips1;" imageX="864" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="864" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="4"	posZ="0"	rotation="180"/>
@@ -112,7 +112,7 @@
 			<Item count="5d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips3;" imageX="672" imageY="0" imageWidth="96" imageHeight="96" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips3;" imageX="672" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="43"	posZ="0"	rotation="180"/>
@@ -198,7 +198,7 @@
 			</Table>
 		</Items>
 
-		<Image imageID="&rsMediumShips4;" imageX="896" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips4;" imageX="896" imageY="0" imageWidth="128" imageHeight="128"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="176"	posRadius="57"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"/>

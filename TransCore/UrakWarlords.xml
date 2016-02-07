@@ -40,7 +40,7 @@
 		<Items>
 		</Items>
 
-		<Image imageID="&rsMediumShips1;" imageX="816" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="816" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<AISettings
 			fireRateAdj=		"20"

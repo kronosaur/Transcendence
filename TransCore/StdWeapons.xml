@@ -2894,7 +2894,7 @@
 					damage=			"kinetic:4d6; WMD:1"
 					missileSpeed=	"40-60"
                     
-                    effect=         "&efBlastShellDefault;"
+                    effect=         "&efKineticBoltDefault;"
 					>
 			</Fragment>
 		</Missile>
@@ -4152,6 +4152,8 @@
 					imageY=				"16"
 					imageWidth=			"16"
 					imageHeight=		"16"
+                    
+                    lifetime=           "-1"
 					imageFrameCount=	"12"
 					imageTicksPerFrame=	"3"
 					/>

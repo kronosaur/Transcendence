@@ -781,7 +781,7 @@
 			gunship Yellow Emperor; gunship Zanzibar
 		</Names>
 
-		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>

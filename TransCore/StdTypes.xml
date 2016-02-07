@@ -1360,7 +1360,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsSmallShips1;" imageX="96" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsSmallShips1;" imageX="96" imageY="0" imageWidth="32" imageHeight="32"/>
 
 		<!-- AI and Behavior -->
 
@@ -1562,7 +1562,7 @@
 			
 			attributes=			"shipwreck"
 			>
-		<Image imageID="&rsMediumShips1;" imageX="0" imageY="96" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="0" imageY="96" imageWidth="48" imageHeight="48"/>
 
 		<Events>
 			<GetExplosionType>

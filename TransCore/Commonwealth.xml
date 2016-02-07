@@ -56,7 +56,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips2;" imageX="768" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips2;" imageX="768" imageY="0" imageWidth="64" imageHeight="64"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"/>
@@ -368,7 +368,7 @@
 			rotationAccel=		"1.0"
 			/>
 
-		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -422,7 +422,7 @@
 			<Item count="3d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -478,7 +478,7 @@
 			<Item count="3d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -540,7 +540,7 @@
 			combatStyle=		"advanced"
 			/>
 
-		<Image imageID="&rsMediumShips1;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>

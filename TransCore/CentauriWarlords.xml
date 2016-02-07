@@ -495,7 +495,7 @@
 			rotationAccel=		"1.0"
 			/>
 
-		<Image imageID="&rsMediumShips2;" imageX="384" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips2;" imageX="384" imageY="0" imageWidth="64" imageHeight="64"/>
 
 		<AISettings
 			fireRateAdj=		"30"

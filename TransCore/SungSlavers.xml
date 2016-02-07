@@ -477,7 +477,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips1;" imageX="480" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="480" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="141"	posRadius="7"	posZ="0"	rotation="180"/>
@@ -537,7 +537,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips2;" imageX="512" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips2;" imageX="512" imageY="0" imageWidth="64" imageHeight="64"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="166"	posRadius="25"	posZ="0"	rotation="180"/>

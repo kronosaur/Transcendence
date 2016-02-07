@@ -198,7 +198,7 @@
 			rotationAccel=		"2.0"
 			/>
 
-		<Image imageID="&rsSmallShips1;" imageX="32" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsSmallShips1;" imageX="32" imageY="0" imageWidth="32" imageHeight="32"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="10"	posZ="0"	rotation="180"/>
@@ -246,7 +246,7 @@
 			rotationAccel=		"2.0"
 			/>
 
-		<Image imageID="&rsSmallShips1;" imageX="64" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsSmallShips1;" imageX="64" imageY="0" imageWidth="32" imageHeight="32"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="167"	posRadius="15"	posZ="3"	rotation="180"/>
