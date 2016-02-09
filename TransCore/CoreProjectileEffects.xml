@@ -109,6 +109,33 @@
 		</Events>
 	</EffectType>
 
+	<EffectType UNID="&efKineticFragmentDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Ray
+					style=			"smooth"
+					shape=			"tapered"
+                    intensity=      "50"
+					primaryColor=	"#b3f3ff"
+					secondaryColor=	"#e5faff"
+					/>
+		</Effect>
+
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+					{
+						length: (mathScale damageHP 2 30 15 130 50)
+						width: (mathScale damageHP 2 30 1 8 50)
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
+
 	<EffectType UNID="&efParticleBeamDefault;"
 			instance=			"creator"
 			>
@@ -239,7 +266,65 @@
 			</Ray>
 		</Effect>
 	</EffectType>
-
+    
+    <EffectType unid="&efBlastFragmentDefault;"
+            instance=   "creator"
+            >
+        <Effect>
+		    <Ray
+				    style=			"smooth"
+				    shape=			"tapered"
+                    intensity=      "30"
+				    primaryColor=	"#f9e47d"
+				    secondaryColor=	"#ff8925"
+				    >
+			
+			    <Events>
+				    <GetParameters>
+					    (block (
+                            (damageHP (@ gData 'damageHP))
+                            )
+						    {
+							    length:	(mathScale damageHP 5 64 30 110 50)
+							    width: (mathScale damageHP 5 64 12 44 50)
+							    }
+						    )
+				    </GetParameters>
+			    </Events>
+		    </Ray>
+        
+		    <ParticleSystem
+				    style=				"jet"
+                    emitLifetime=       "80"
+				    emitSpeed=			"15-18"
+				    particleLifetime=	"16"
+				    spreadAngle=		"1-8"
+				    >
+			    <ParticleEffect>
+				    <Particle
+						    style=			"flame"
+                            minWidth=       "1"
+						    maxWidth=		"5-10"
+						    />
+			    </ParticleEffect>
+            
+                <Events>
+                    <GetParameters>
+				        (block (
+					        (damageHP (@ gData 'damageHP))
+                            (minEmitRate (mathScale damageHP 5 64 5 15 50))
+                            (maxEmitRate (int (* minEmitRate 1.5)))
+					        )
+					        {
+						        emitRate: (cat minEmitRate "-" maxEmitRate)
+						        }
+					        )
+                    </GetParameters>
+                </Events>
+		    </ParticleSystem>
+        </Effect>
+    </EffectType>
+    
 	<EffectType UNID="&efIonBeamDefault;"
 			instance=			"creator"
 			>

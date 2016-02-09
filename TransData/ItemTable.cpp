@@ -565,7 +565,7 @@ void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
 
 			    //	Format the value
 
-			    if (strEquals(sField, FIELD_AVERAGE_DAMAGE) || strEquals(sField, FIELD_POWER_PER_SHOT))
+			    if (strEquals(sField, FIELD_POWER_PER_SHOT))
 				    printf("%.2f", strToInt(sValue, 0, NULL) / 1000.0);
 			    else if (strEquals(sField, FIELD_POWER))
 				    printf("%.1f", strToInt(sValue, 0, NULL) / 1000.0);

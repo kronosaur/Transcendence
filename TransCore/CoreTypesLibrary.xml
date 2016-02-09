@@ -152,6 +152,8 @@
 	<!-- 0020-002F PROJECTILE EFFECTS -->
 	
 	<!ENTITY efPlasmaParticleDefault	"0x00030020">
+    <!ENTITY efKineticFragmentDefault   "0x00030021">
+    <!ENTITY efBlastFragmentDefault     "0x00030022">
 	
 	<!-- 0030-004F EXPLOSIONS -->
 
@@ -163,6 +165,18 @@
 	<!ENTITY vtGravitonExplosion2		"0x00030035">
 	<!ENTITY vtGravitonExplosion3		"0x00030036">
 	<!ENTITY vtGravitonExplosion4		"0x00030037">
+    <!ENTITY vtGravitonExplosion5       "0x00030038">
+    <!ENTITY vtKineticExplosion5        "0x00030039">
+    <!ENTITY vtBlastExplosion5          "0x0003003A">
+    <!ENTITY vtThermoExplosion5         "0x0003003B">
+    <!ENTITY vtPlasmaExplosion5         "0x0003003C">
+    <!ENTITY vtAntimatterExplosion5     "0x0003003D">
+    
+    <!ENTITY efKineticExplosion         "0x0003003E">
+    <!ENTITY efBlastExplosion           "0x0003003F">
+    <!ENTITY efThermoExplosion          "0x00030040">
+    <!ENTITY efPlasmaExplosion          "0x00030041">
+    <!ENTITY efAntimatterExplosion      "0x00030042">
 	]>
 	
 <CoreLibrary
