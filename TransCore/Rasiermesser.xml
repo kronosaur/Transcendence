@@ -88,7 +88,7 @@
 			hitPoints=			"250"
 			repairRate=			"3"
 			fireRateAdj=		"80"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, generic, human, independent, populated"

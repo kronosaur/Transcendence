@@ -742,7 +742,7 @@
 			regen=              "0.5"
 			shipRepairRate=		"1"
 			fireRateAdj=		"80"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, majorStation, primary, populated"
@@ -950,7 +950,7 @@
 			regen=              "2.8"
 			shipRepairRate=		"1"
 			fireRateAdj=		"40"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, majorStation, primary, populated"
@@ -1115,7 +1115,7 @@
 			hitPoints=			"370"
 			regen=              "1.1"
 			shipRepairRate=		"3"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, majorStation, populated"
@@ -1200,7 +1200,7 @@
 			regen=              "0.4"
 			shipRepairRate=		"1"
 			fireRateAdj=		"80"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated"
@@ -2132,7 +2132,7 @@
 			regen=              "4.8"
 			shipRepairRate=		"1"
 			fireRateAdj=		"40"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, populated"

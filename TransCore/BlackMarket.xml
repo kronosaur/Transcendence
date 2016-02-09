@@ -131,7 +131,7 @@ PLAYER DATA
 			hitPoints=			"320"
 			regen=			    "1.6"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"blackMarket, friendly, envEarth, envAvoidsAir, generic, human, majorStation, outlaws, populated"
@@ -533,7 +533,7 @@ PLAYER DATA
 			regen=			    "11"
 			shipRepairRate=		"3"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion2;"
+			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"blackMarket, envEarth, majorStation, envAvoidsAir, friendly, generic, human, outlaws, populated"
@@ -683,7 +683,7 @@ PLAYER DATA
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"250"
 			regen=			    "1.3"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"blackMarket, friendly, envAir, envAvoidsFire, generic, human, outlaws, populated"

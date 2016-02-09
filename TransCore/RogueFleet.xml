@@ -135,7 +135,7 @@
 			hitPoints=			"370"
             regen=              "1.1"
 			fireRateAdj=		"20"
-			explosionType=		"&vtBlastExplosion4;"
+			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated, rogue"
@@ -188,7 +188,7 @@
 			regen=              "4.8"
 			shipRepairRate=		"1"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated, rogue"

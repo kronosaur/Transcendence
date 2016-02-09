@@ -471,7 +471,7 @@
 			hitPoints=			"160"
             regen=              "0.5"
 			fireRateAdj=		"50"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"dwargColony, dwargRaiders, enemy, envWater, envAvoidsEarth, generic, neoHuman, populated, zoanthrope"
@@ -527,7 +527,7 @@
 			hitPoints=			"210"
             regen=              "0.6"
 			fireRateAdj=		"50"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"dwargColony, dwargRaiders, enemy, envWater, envAvoidsEarth, generic, neoHuman, populated, zoanthrope"
@@ -624,7 +624,7 @@
 			hitPoints=			"210"
             regen=              "0.6"
 			fireRateAdj=		"50"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"dwargRaiders, enemy, envWater, envAvoidsEarth, neoHuman, populated, zoanthrope"
@@ -678,7 +678,7 @@
 			hitPoints=			"900"
 			regen=              "9"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"dwargRaiders, enemy, envWater, envAvoidsEarth, generic, majorStation, neoHuman, populated, zoanthrope"

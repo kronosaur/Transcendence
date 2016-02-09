@@ -282,7 +282,7 @@
 			multiHull=			"true"
 				 
 			canAttack=			"true"
-			explosionType=		"&vtKineticExplosion3;"
+			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
 			>
@@ -369,7 +369,7 @@
 			multiHull=			"true"
 				 
 			canAttack=			"true"
-			explosionType=		"&vtBlastExplosion1;"
+			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 			>
 
@@ -452,7 +452,7 @@
 			multiHull=			"true"
 				 
 			canAttack=			"true"
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 			>
 
@@ -531,7 +531,7 @@
 			multiHull=			"true"
 				 
 			canAttack=			"true"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 			>
 
@@ -627,7 +627,7 @@
 			multiHull=			"true"
 				 
 			canAttack=			"true"
-			explosionType=		"&vtBlastExplosion4;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 			>
 

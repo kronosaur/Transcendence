@@ -60,7 +60,7 @@
 			repairRate=			"5"
 				 
 			canAttack=			"true"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 			>
 

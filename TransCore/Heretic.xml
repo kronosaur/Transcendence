@@ -1396,7 +1396,7 @@
 			regen=              "3.7"
 			shipRepairRate=		"1"
 			fireRateAdj=		"40"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, populated"
@@ -1708,7 +1708,7 @@
             regen=              "1.1"
 			shipRepairRate=		"1"
 			fireRateAdj=		"40"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, commonResearch, friendly, hereticStation, human, populated"
@@ -3063,7 +3063,7 @@
 			hitPoints=			"610"
 			regen=              "1.8"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, friendly, hereticStation, human, independent, populated"
@@ -3491,7 +3491,7 @@
 			hitPoints=			"610"
             regen=              "1.8"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"ares, hereticStation, neoHuman, populated"

@@ -25,7 +25,7 @@
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"100"
 			regen=              "0.4"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated, primary"

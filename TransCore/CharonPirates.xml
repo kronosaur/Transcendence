@@ -763,7 +763,7 @@
 			armorID=			"&itReactiveArmor;"
 			hitPoints=			"90"
 			fireRateAdj=		"60"
-			explosionType=		"&vtKineticExplosion3;"
+			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, generic, human, pirates, populated"
@@ -833,7 +833,7 @@
 			armorID=			"&itReactiveArmor;"
 			hitPoints=			"50"
 			fireRateAdj=		"60"
-			explosionType=		"&vtKineticExplosion2;"
+			explosionType=		"&vtKineticExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
@@ -897,7 +897,7 @@
 			hitPoints=			"200"
             regen=              "1"
 			fireRateAdj=		"40"
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			alertWhenDestroyed=	"30"
@@ -1017,7 +1017,7 @@
 			armorID=			"&itReactiveArmor;"
 			hitPoints=			"50"
 			fireRateAdj=		"40"
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"charonPirates, enemy, human, majorStation, pirates, populated, primaryStronghold, uncharted"
@@ -1095,7 +1095,7 @@
 			armorID=			"&itHeavyReactiveArmor;"
 			hitPoints=			"75"
 			fireRateAdj=		"40"
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			alertWhenDestroyed=	"30"
@@ -1190,7 +1190,7 @@
 			armorID=			"&itHeavyReactiveArmor;"
 			hitPoints=			"100"
 			fireRateAdj=		"40"
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			alertWhenDestroyed=	"30"

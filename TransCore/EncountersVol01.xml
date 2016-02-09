@@ -910,7 +910,7 @@
 			hitPoints=			"160"
             regen=              "0.5"
 			fireRateAdj=		"20"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"drugcartel, enemy, envWater, envAvoidsEarth, generic, human, outlaws, populated"
@@ -1091,6 +1091,7 @@
 			armorID=			"&itLightTitaniumPlate;"
 			hitPoints=			"50"
 			fireRateAdj=		"40"
+			explosionType=		"&vtKineticExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, generic, human, populated"
@@ -1153,6 +1154,7 @@
 			armorID=			"&itHeavyTitaniumPlate;"
 			hitPoints=			"50"
 			fireRateAdj=		"40"
+			explosionType=		"&vtKineticExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, generic, human, populated"
@@ -1224,6 +1226,7 @@
 			armorID=			"&itHeavyTitaniumPlate;"
 			hitPoints=			"50"
 			fireRateAdj=		"40"
+			explosionType=		"&vtKineticExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 			
 			attributes=			"anarchists, enemy, freeworldAnarchists, human, populated"
@@ -1288,7 +1291,7 @@
 			hitPoints=			"250"
             regen=              "1.3"
 			fireRateAdj=		"80"
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, generic, human, populated"
@@ -1847,7 +1850,7 @@
 			hitPoints=			"420"
             regen=              "2.1"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envFire, envAvoidsWater, generic, heliotropes, human, populated"
@@ -2192,7 +2195,7 @@
 			hitPoints=			"900"
             regen=              "9.0"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envWater, envAvoidsEarth, generic, huari, human, majorStation, populated"
@@ -2427,7 +2430,7 @@
 			hitPoints=			"240"
             regen=              "0.7"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envWater, envAvoidsEarth, generic, human, kobol, populated, warlords"
@@ -2737,7 +2740,7 @@
 			hitPoints=			"160"
             regen=              "0.5"
 			fireRateAdj=		"30"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, pirates, populated"
@@ -2785,7 +2788,7 @@
 			hitPoints=			"320"
             regen=              "1.6"
 			fireRateAdj=		"20"
-			explosionType=		"&vtBlastExplosion4;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, marauderCompound, pirates, populated"
@@ -2854,7 +2857,7 @@
 			hitPoints=			"400"
             regen=              "4"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, marauderStronghold, pirates,populated"
@@ -3679,7 +3682,7 @@
 			multiHull=			"true"
 			armorID=			"&itLightTitaniumPlate;"
 			hitPoints=			"50"
-			explosionType=		"&vtKineticExplosion3;"
+			explosionType=		"&vtKineticExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, outlaws, populated"
@@ -3734,7 +3737,7 @@
 			hitPoints=			"90"
             regen=              "0.3"
 			fireRateAdj=		"40"
-			explosionType=		"&vtKineticExplosion4;"
+			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, outlaws, populated"
@@ -3797,7 +3800,7 @@
 			hitPoints=			"250"
             regen=              "1.3"
 			fireRateAdj=		"30"
-			explosionType=		"&vtBlastExplosion1;"
+			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, outlawHaven, outlaws, populated"
@@ -4650,7 +4653,7 @@
 			armorID=			"&itLightOrthoSteel;"
 			hitPoints=			"370"
             regen=              "1.1"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, populated, ranx"
@@ -4702,7 +4705,7 @@
 			armorID=			"&itOrthoSteel;"
 			hitPoints=			"1800"
             regen=              "18"
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtThermoExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, majorStation, populated, ranx"
@@ -5646,7 +5649,7 @@
 			hitPoints=			"740"
             regen=              "3.7"
 			fireRateAdj=		"40"
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envFire, envAvoidsWater, generic, human, majorStation, populated"

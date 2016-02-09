@@ -162,7 +162,7 @@
 			hitPoints=			"280"
 			regen=              "0.8"
 			fireRateAdj=		"15"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -311,7 +311,7 @@
 			armorID=			"&itCeralloyArmor;"
 			hitPoints=			"100"
 			repairRate=			"1"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -464,7 +464,7 @@
 			armorID=			"&itCeralloyArmor;"
 			hitPoints=			"150"
 			repairRate=			"2"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -612,7 +612,7 @@
 			hitPoints=			"350"
 			repairRate=			"5"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -730,7 +730,7 @@
 			hitPoints=			"300"
 			repairRate=			"5"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -845,7 +845,7 @@
 			armorID=			"&itAdvancedPlasteelPlate;"
 			hitPoints=			"350"
 			repairRate=			"5"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -1214,7 +1214,7 @@
 			armorID=			"&itCeralloyArmor;"
 			hitPoints=			"120"
 			regen=              "0.4"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -1345,7 +1345,7 @@
 			hitPoints=			"1400"
 			regen=              "4"
 			fireRateAdj=		"15"
-			explosionType=		"&vtThermoExplosion2;"
+			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, majorStation, Makayev, populated"
@@ -1711,7 +1711,7 @@
 			armorID=			"&itCeralloyArmor;"
 			hitPoints=			"150"
 			repairRate=			"4"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, majorStation, populated"
@@ -2013,7 +2013,7 @@
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"120"
 			regen=              "0.4"
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtIceAsteroidEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envAvoidsFire, friendly, independent, generic, human, populated"
@@ -2122,7 +2122,7 @@
 			armorID=			"&itCeralloyArmor;"
 			hitPoints=			"250"
 			repairRate=			"4"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, corporateInsurance, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -2371,7 +2371,7 @@
 			hitPoints=			"470"
 			regen=              "1.4"
 			fireRateAdj=		"10"
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -2516,7 +2516,7 @@
 			armorID=			"&itAdvancedPlasteelPlate;"
 			hitPoints=			"350"
 			repairRate=			"5"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -2964,7 +2964,7 @@
 			armorID=			"&itAdvancedPlasteelPlate;"
 			hitPoints=			"350"
 			repairRate=			"5"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"

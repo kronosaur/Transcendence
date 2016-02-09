@@ -23,7 +23,7 @@
 			shipRegen=			"4"
 				 
 			canAttack=			"true"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 			>
 

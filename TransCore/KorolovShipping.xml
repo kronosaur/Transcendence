@@ -1102,7 +1102,7 @@
 			hitPoints=			"470"
 			regen=              "1.4"
 			shipRepairRate=		"3"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, corporateDecon, envAir, envEarth, envFire, envWater, friendly, generic, human, majorStation, korolovShipping, populated"

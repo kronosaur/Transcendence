@@ -419,7 +419,7 @@
 			armorID=			"&itLuminousArmature;"
 			hitPoints=			"600"
             regen=              "3.0"
-			explosionType=		"&vtThermoExplosion2;"
+			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"ai, enemy, envWater, envAvoidsEarth, generic, luminous, score"

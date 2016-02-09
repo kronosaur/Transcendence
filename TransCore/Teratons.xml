@@ -390,7 +390,7 @@
 			hitPoints=			"1200"
 			regen=              "6.2"
 			fireRateAdj=		"10"
-			explosionType=		"&vtPlasmaExplosion1;"
+			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envAir, envAvoidsFire, independent, friendly, generic, majorStation, populated, neoHuman, teraton, teratonFactory"
@@ -840,7 +840,7 @@
 			hitPoints=			"1200"
 			regen=              "6.2"
 			fireRateAdj=		"10"
-			explosionType=		"&vtPlasmaExplosion1;"
+			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envAir, envAvoidsFire, generic, independent, friendly, majorStation, populated, neoHuman, teraton, teratonResearch"
@@ -1262,7 +1262,7 @@
 			hitPoints=			"1200"
 			regen=              "6.2"
 			fireRateAdj=		"10"
-			explosionType=		"&vtPlasmaExplosion1;"
+			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envAir, envAvoidsFire, generic, independent, friendly, majorStation, populated, neoHuman, teraton, teratonTrading"

@@ -18,7 +18,7 @@
 			hitPoints=			"850"
 			regen=              "3.4"
 			fireRateAdj=		"10"
-			explosionType=		"&vtPlasmaExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envEarth, envAvoidsAir, friendly, generic, independent, majorStation, neoHuman, populated, ringers"
@@ -195,7 +195,7 @@
 			hitPoints=			"1800"
 			regen=              "5.5"
 			fireRateAdj=		"10"
-			explosionType=		"&vtPlasmaExplosion2;"
+			explosionType=		"&vtThermoExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envEarth, envAvoidsAir, friendly, generic, independent, majorStation, neoHuman, populated, ringers"

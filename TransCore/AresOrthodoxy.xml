@@ -1301,7 +1301,7 @@
 			armorID=			"&itTharsisPlate;"
 			hitPoints=			"2400"
             regen=              "20"
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtThermoExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"ares, aresMajor, enemy, envAir, envEarth, envFire, envWater, generic, majorStation, neoHuman, populated"
@@ -1360,7 +1360,7 @@
 			armorID=			"&itMassiveTharsisPlate;"
 			hitPoints=			"3600"
             regen=              "22"
-			explosionType=		"&vtThermoExplosion4;"
+			explosionType=		"&vtPlasmaExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"ares, aresMajor, enemy, envAir, envEarth, envFire, envWater, generic, majorStation, neoHuman, populated"

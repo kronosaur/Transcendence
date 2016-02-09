@@ -1138,7 +1138,7 @@
 			armorID=			"&itSungArmor;"
 			hitPoints=			"400"
             regen=              "4.0"
-			explosionType=		"&vtThermoExplosion2;"
+			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envEarth, envFire, envWater, generic, human, majorStation, populated, sungSlavers"

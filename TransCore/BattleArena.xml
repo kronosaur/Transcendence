@@ -2133,7 +2133,7 @@
 			hitPoints=			"320"
 			regen=			    "1.6"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"blackMarket, friendly, human, katamiRescue, majorStation, outlaws, populated"

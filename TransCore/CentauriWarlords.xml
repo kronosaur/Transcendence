@@ -618,7 +618,7 @@
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"150"
             regen=              "0.5"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, human, occupation, populated"
@@ -845,7 +845,7 @@
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"90"
 			fireRateAdj=		"40"
-			explosionType=		"&vtKineticExplosion3;"
+			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, generic, human, populated, warlords"

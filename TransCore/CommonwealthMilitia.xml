@@ -284,7 +284,7 @@
 			hitPoints=			"840"
 			regen=              "8.4"
 			shipRepairRate=		"3"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthArmory, commonwealthCustoms, commonMilitary, fleetDelivery, friendly, generic, human, majorStation, primary, populated"

@@ -1063,7 +1063,7 @@
 			hitPoints=			"900"
             regen=              "9.0"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envWater, envAvoidsEarth, generic, huari, human, majorStation, populated"
@@ -1964,7 +1964,7 @@
 			armorID=			"&itAdvancedPlasteelPlate;"
 			hitPoints=			"175"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envWater, envAvoidsEarth, generic, huari, human, populated"
@@ -2078,7 +2078,7 @@
 			armorID=			"&itSungArmor;"
 			hitPoints=			"400"
             regen=              "4.0"
-			explosionType=		"&vtThermoExplosion2;"
+			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, majorStation, populated, sungSlavers"
