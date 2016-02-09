@@ -1782,7 +1782,7 @@
 
 				damage=				"ion:4d6-1"
 				fireRate=			"14"
-				lifetime=			"30"
+				lifetime=			"40"
 				passthrough=		"50"
 				powerUse=			"750"
 

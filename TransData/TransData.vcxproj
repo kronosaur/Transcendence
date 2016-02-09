@@ -469,6 +469,9 @@
     <None Include="..\Game\TransData.xml">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Readme.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Game\TLisp\ComparisonUnitTest.tlisp" />

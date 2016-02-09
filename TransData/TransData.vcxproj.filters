@@ -175,5 +175,6 @@
       <Filter>TLisp Files</Filter>
     </None>
     <None Include="..\Game\TransData.xml" />
+    <None Include="Readme.htm" />
   </ItemGroup>
 </Project>
