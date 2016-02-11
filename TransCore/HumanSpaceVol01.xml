@@ -20,6 +20,10 @@
 	<!ENTITY efSlamCannonShell			"0x00000062">
 	<!ENTITY efAkanCannonShell			"0x00000063">
 	<!ENTITY efThermoCannonShell		"0x00000064">
+	<!ENTITY efEIBlasterFire			"0x00000065">
+	<!ENTITY efThermoFragmentExplosion	"0x00000066">
+	<!ENTITY efThermoFragmentHit		"0x00000067">
+	<!ENTITY efThermoShockwaveExplosion	"0x00000068">
 	
 	<!ENTITY rsMissileNAMI				"0x00000080">
 	<!ENTITY efMissileNAMI				"0x00000081">
@@ -594,6 +598,8 @@
 	<!ENTITY efGemOfSacrifice			"0x0000900D">
 	<!ENTITY efGreenLaserHitEffect		"0x00009010">
 	<!ENTITY efXRayLaserHitEffect		"0x00009011">
+	<!ENTITY efGreenLaserFireEffect		"0x00009012">
+	<!ENTITY efIonizingBeam				"0x00009014">
 
 	<!ENTITY sfSustain					"0x00009101">
 	<!ENTITY sfStrengthen				"0x00009102">
@@ -1566,6 +1572,7 @@
 	<!ENTITY rsCSCWreckage				"0x00100063">
 	<!ENTITY rsAquila					"0x00100064">
 	<!ENTITY rsAurochs					"0x00100065">
+	<!ENTITY efLamplighterProjectile	"0x00100066">
 	
 	<!-- 0080-009F COMMONWEALTH -->
 	
@@ -1607,6 +1614,9 @@
 	<!-- 0120-013F SUNG SLAVERS -->
 	
 	<!ENTITY rsSungTransport			"0x00100120">
+	<!ENTITY efQianlongProjectile		"0x00100121">
+	<!ENTITY efQianlongFire				"0x00100122">
+	<!ENTITY efQianlongHit				"0x00100123">
 	
 	<!-- 0140-014F XENOPHOBES -->
 	
@@ -1645,6 +1655,26 @@
 	
 	<!ENTITY rsVentariDestroyer			"0x00100190">
 	
+	<!-- 01A0-01BF EARTH INDUSTRIES CORPORATION -->
+	
+	<!ENTITY efEIDisruptorFire			"0x001001A0">
+	<!ENTITY efEIDisruptorBeam			"0x001001A1">
+	<!ENTITY efEIDisruptorHit			"0x001001A2">
+	
+	<!-- 01C0-01DF BUSHIDO CORPORATION -->
+	
+	<!ENTITY efStarCannonFire			"0x001001C0">
+	<!ENTITY efStarCannonBeam			"0x001001C1">
+	<!ENTITY efStarCannonHit			"0x001001C2">
+	
+	<!-- 01E0-01EF IOCRYM -->
+	
+	<!ENTITY efQuantumsphereHit			"0x001001E0">
+    
+    <!-- 01F0-01FF TINKERS -->
+	
+	<!ENTITY itAmmoBoxXM900 			"0x001001F0">
+    
 	<!-- 1000-FFFF RESERVED -->
 	]>
 	

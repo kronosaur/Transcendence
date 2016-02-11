@@ -545,35 +545,18 @@ class CArmorDisplay
 		~CArmorDisplay (void);
 
 		void CleanUp (void);
-		inline const RECT &GetRect (void) { return m_rcRect; }
-		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect);
+		RECT GetRect (void) const;
+		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect, DWORD dwLocation);
 		void Paint (CG32bitImage &Dest);
-		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 		void SetSelection (int iSelection);
 		void Update (void);
 
 	private:
-		struct STextPaint
-			{
-			CString sText;
-			int x;
-			int y;
-			const CG16bitFont *pFont;
-			CG32bitPixel rgbColor;
-			};
-
-
-		CUniverse *m_pUniverse;
 		CPlayerShipController *m_pPlayer;
-
-		RECT m_rcRect;
-		CG32bitImage m_Buffer;
-		const SFontTable *m_pFonts;
 		int m_iSelection;
-		TArray<STextPaint> m_Text;
 
-		DWORD m_dwCachedShipID;				//	Cached painters for this ship ID.
-		IEffectPainter *m_pShieldPainter;	//	Caches shield painter
+		IHUDPainter *m_pArmorPainter;
+		IHUDPainter *m_pShieldsPainter;
 	};
 
 #define MAX_SCORES			100
@@ -829,6 +812,7 @@ class CButtonBarDisplay
 		void OnMouseMove (int x, int y);
 		void Paint (CG32bitImage &Dest);
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
+        inline void SetRect (const RECT &rcRect) { m_rcRect = rcRect;  ComputeButtonRects();  }
 		void Update (void);
 
 	private:
@@ -962,20 +946,16 @@ class CReactorDisplay
 		~CReactorDisplay (void);
 
 		void CleanUp (void);
-		inline const RECT &GetRect (void) { return m_rcRect; }
-		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect);
+		RECT GetRect (void) const;
+		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect, DWORD dwLocation);
+		inline void Invalidate (void) { if (m_pHUDPainter) m_pHUDPainter->Invalidate(); }
 		void Paint (CG32bitImage &Dest);
-		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
-		void Update (void);
+		void Update (int iTick);
 
 	private:
 		CPlayerShipController *m_pPlayer;
 
-		RECT m_rcRect;
-		CG32bitImage m_Buffer;
-		const SFontTable *m_pFonts;
-		int m_iTickCount;
-		int m_iOverloading;
+		IHUDPainter *m_pHUDPainter;
 	};
 
 class CCommandLineDisplay
@@ -1035,23 +1015,15 @@ class CTargetDisplay
 		~CTargetDisplay (void);
 
 		void CleanUp (void);
-		inline const RECT &GetRect (void) { return m_rcRect; }
-		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect);
-		inline void Invalidate (void) { m_bInvalid = true; }
+		RECT GetRect (void) const;
+		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect, DWORD dwLocation);
+		inline void Invalidate (void) { if (m_pHUDPainter) m_pHUDPainter->Invalidate(); }
 		void Paint (CG32bitImage &Dest);
-		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 
 	private:
-		void PaintDeviceStatus (CShip *pShip, DeviceNames iDev, int x, int y);
-		void Update (void);
-
 		CPlayerShipController *m_pPlayer;
 
-		RECT m_rcRect;
-		CG32bitImage m_Buffer;
-		CG32bitImage *m_pBackground;
-		const SFontTable *m_pFonts;
-		bool m_bInvalid;
+		IHUDPainter *m_pHUDPainter;
 	};
 
 class CUIResources
@@ -1120,6 +1092,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		inline bool InGameState (void) { return m_State == gsInGame; }
 		inline bool InMap (void) { return m_bShowingMap; }
 		inline bool InMenu (void) { return (m_CurrentMenu != menuNone || m_CurrentPicker != pickNone); }
+		ALERROR InitDisplays (void);
 		void OnObjDestroyed (const SDestroyCtx &Ctx);
 		void OnStargateSystemReady (void);
 		void PlayerDestroyed (const CString &sText, bool bResurrectionPending);
@@ -1230,7 +1203,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void CleanUpDisplays (void);
 		void ClearDebugLines (void);
 		void ComputeScreenSize (void);
-		ALERROR InitDisplays (void);
 		void LoadPreferences (void);
 		void PaintDebugLines (void);
 		void PaintFrameRate (void);
@@ -1349,9 +1321,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 
 		//	Stargate effect
 		CStargateEffectPainter *m_pStargateEffect;
-
-		//	Performance options
-		bool m_bTransparencyEffects;
 
 		//	hWnds
 		HWND m_hWnd;

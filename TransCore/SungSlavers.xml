@@ -19,11 +19,12 @@
 	<ItemType UNID="&itQianlongArchcannon;"
 			name=				"Qianlong archcannon"
 			level=				"9"
-			value=				"190000"
+			value=				"220000"
 			mass=				"2500"
 			frequency=			"notrandom"
 			attributes=			"MajorItem; Military; NotForSale; qianlongArchcannon; sungSlavers"
 
+			charges=			"32"
 			description=		"The pinnacle of Sung Slaver technology, the Qianlong archcannon fires antimatter shells. The archcannon recharges with longzhu spheres."
 			>
 
@@ -32,56 +33,38 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"antimatter:4d12; WMD7"
-				fireRate=			"15"
+				damage=				"antimatter:8d12; WMD:7"
+				fireRate=			"16"
 				missileSpeed=		"40"
 				hitPoints=			"5"
 				lifetime=			"113"
 				powerUse=			"100"
 				charges=			"true"
 
+				effect=				"&efQianlongProjectile;"
+				fireEffect=			"&efQianlongFire;"
+				hitEffect=			"&efQianlongHit;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Starburst
-						spikeCount=		"1d6+2"
-						spikeLength=	"4d20"
-						primaryColor=	"0xff, 0xff, 0x80"
-						secondaryColor=	"0xff, 0xff, 0x00"
-						/>
-			</Effect>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 
 		<Events>
 			<OnAIUpdate>
-				(if (and (leq (itmGetCharges gItem) 128)
+				(if (and (leq (itmGetCharges gItem) 256)
 						(objGetItems gSource "u +LongzhuSphere;"))
 					(block Nil
-						(setq aCharges 128)
+						(setq aCharges 256)
 						(objFireItemEvent gSource gItem "Recharge")
 						(objRemoveItem gSource (itmCreate &itLongzhuSphere; 1))
 						)
 					)
 			</OnAIUpdate>
-
+			
 			<Recharge>
 				; aCharges = amount to recharge
 				; Returns the amount recharged
 				(block (rechargeNeeded)
-					(setq rechargeNeeded (min aCharges (subtract 256 (itmGetCharges gItem))))
+					(setq rechargeNeeded (min aCharges (subtract 9999 (itmGetCharges gItem))))
 					(if (gr rechargeNeeded 0)
 						(shpRechargeItem gSource gItem rechargeNeeded)
 						)
@@ -89,7 +72,6 @@
 					)
 			</Recharge>
 		</Events>
-
 	</ItemType>
 
 <!-- LEVEL VII ITEMS -->
@@ -117,7 +99,7 @@
 
 		<Armor
 				hitPoints=	"250"
-				hpBonus=	"  +0,  +0,+100,+100, +25,  +0"
+				hpBonus=	"  +0,  +0, +50,+100,  +0, +25"
 
 				repairTech=	"6"
 
@@ -212,7 +194,7 @@
 	<ItemType UNID="&itParticleBoltCannon;"
 			name=				"Nandao bolt cannon"
 			level=				"6"
-			value=				"16000"
+			value=				"25000"
 			mass=				"2000"
 			frequency=			"rare"
 			numberAppearing=	"1"
@@ -225,15 +207,15 @@
 
 		<Weapon
 				fireRate=			"30"
-				powerUse=			"60"
+				powerUse=			"40"
 				>
 
 			<Missiles>
 				<Missile ammoID="&itParticleBoltCartridge;"
 						type=			"missile"
 
-						lifetime=		"100"
-						damage=			"particle:15d8; WMD4"
+						lifetime=		"80"
+						damage=			"particle:15d8; WMD:4"
 						hitPoints=		"15"
 
 						missileSpeed=	"60"
@@ -241,16 +223,21 @@
 						>
 
 					<Effect>
-						<Image imageID="&rsMissiles4;" imageX="0" imageY="64" imageWidth="16" imageHeight="16" imageFrameCount="4" imageTicksPerFrame="2"/>
-
 						<Starburst
 								spikeCount=		"1d6+2"
-								spikeLength=	"2d20"
-								primaryColor=	"0x80, 0xff, 0x80"
-								secondaryColor=	"0x00, 0xff, 0x00"
+								spikeLength=	"30-50"
+								primaryColor=	"#65ff2c"
+								secondaryColor=	"#808417"
+								/>
+						
+						<Orb
+								style=			"smooth"
+								radius=			"40"
+								intensity=		"20"
+								primaryColor=	"#65ff2c"
+								secondaryColor=	"#65ff2c"
 								/>
 					</Effect>
-
 				</Missile>
 			</Missiles>
 		</Weapon>
@@ -279,7 +266,7 @@
 
 		<Armor
 				hitPoints=	"180"
-				hpBonus=	"  +0,  +0, +50, -25, +25,  +0"
+				hpBonus=	"  +0,  +0, -25, +50,  +0, +25"
 
 				blindingDamageAdj="0"
 				deviceDamageAdj="25"
@@ -368,7 +355,7 @@
 			mass=				"2500"
 			attributes=			"MinorItem; NotForSale; sungSlavers; TiledArmor"
 
-			description=		"This ceralloy-derived tiled armor can be cannibalized to repair other Sung armor segments."
+			description=		"This blast-resistant tiled armor can be cannibalized to repair other Sung armor segments."
 
 			useScreen=			"&dsUseArmorPatch;"
 			useUninstalledOnly=	"true"
@@ -380,7 +367,7 @@
 
 		<Armor
 				hitPoints=	"70"
-				hpBonus=	"  +0,  +0, +50, -25,  +0"
+				hpBonus=	"  +0,  +0, -25, +50,  +0"
 
 				repairTech=	"6"
 
@@ -417,7 +404,7 @@
 			mass=				"1500"
 			attributes=			"MinorItem; NotForSale; sungSlavers; TiledArmor"
 
-			description=		"The Sung created this ceralloy-derived tiled armor for their Wind slavers. The tiles can be cannibalized to repair other Sung armor segments."
+			description=		"The Sung created this blast-resistant tiled armor for their Wind slavers. The tiles can be cannibalized to repair other Sung armor segments."
 
 			useScreen=			"&dsUseArmorPatch;"
 			useUninstalledOnly=	"true"
@@ -429,7 +416,7 @@
 
 		<Armor
 				hitPoints=	"25"
-				hpBonus=	"  +0,  +0, +50, -25,  +0"
+				hpBonus=	"  +0,  +0, -25, +50,  +0"
 
 				repairTech=	"6"
 
@@ -490,7 +477,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips1;" imageX="480" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="480" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="141"	posRadius="7"	posZ="0"	rotation="180"/>
@@ -550,7 +537,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips2;" imageX="512" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips2;" imageX="512" imageY="0" imageWidth="64" imageHeight="64"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="166"	posRadius="25"	posZ="0"	rotation="180"/>
@@ -887,7 +874,7 @@
 
 			cyberDefenseLevel=	"8"
 
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtThermoExplosion2;"
 
 			attributes=			"capitalShip, genericClass, majorShip, sungSlavers"
 			>
@@ -1149,8 +1136,9 @@
 
 			multiHull=			"true"
 			armorID=			"&itSungArmor;"
-			hitPoints=			"200"
-			explosionType=		"&vtThermoExplosion2;"
+			hitPoints=			"400"
+            regen=              "4.0"
+			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envEarth, envFire, envWater, generic, human, majorStation, populated, sungSlavers"
@@ -1215,7 +1203,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itSungArmor;"
-			hitPoints=			"500"
+			hitPoints=			"1500"
+            regen=              "9.0"
 			fireRateAdj=		"20"
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -1668,7 +1657,7 @@
 							(switch
 								(eq itemType &itQianlongArchcannon;)
 									(block (recharged)
-										(setq aCharges 128)
+										(setq aCharges 256)
 										(setq recharged (objFireItemEvent gPlayerShip gItem "Recharge"))
 
 										(switch
@@ -1878,7 +1867,198 @@
 				))
 			)
 	</Globals>
+	
+<!-- EFFECTS -->
+	
+	<EffectType unid="&efQianlongProjectile;"
+			instance=			"creator"
+			>
+		<Effect>
+			<ParticleSystem
+					style=				"radiate"
+					emitSpeed=			"10-20"
+					>
+				<ParticleEffect>
+					<Orb
+							instance=			"owner"
+						
+							style=				"smooth"
+							animate=			"fade"
+							radius=				"10"
+							intensity=			"20"
+						
+							blendMode=			"screen"
+							primaryColor=		"#ff6a00"
+							secondaryColor=		"#ff2a00"
+							>
+						<Events>
+							<GetParameters>
+								(block (
+									(damageHP (@ gData 'damageHP))
+									)
+									{
+										lifetime: (mathScale damageHP 50 680 4 12 50)
+										}
+									)
+							</GetParameters>
+						</Events>
+					</Orb>
+				</ParticleEffect>
+				
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								emitRate: (mathScale damageHP 50 680 20 100 50)
+								particleLifetime: (mathScale damageHP 50 680 4 12 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleSystem>
 
+			<Orb
+					style=				"smooth"
+					animate=			"flicker"
+					spikeCount=			"6"
+						
+					blendMode=			"screen"
+					primaryColor=		"#ffa666"
+					secondaryColor=		"#ff6a00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (mathScale damageHP 50 680 20 60 50)
+								intensity: (mathScale damageHP 50 680 20 50 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+	
+	<EffectType UNID="&efQianlongFire;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"smooth"
+					animate=		"fade"
+					lifetime=		"9"
+					spikeCount=		"6"
+					
+					primaryColor=	"#ffa666"
+					secondaryColor=	"#ff6a00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 50 680 30 80 50)
+								intensity: (random 20 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efQianlongHit;"
+			sound="&snArmorHit1;"
+			>
+		<Effect>
+			<Orb	style=			"smooth"
+					animate=		"fade"
+					intensity=		"30"
+					
+					blendMode=		"screen"
+					primaryColor=	"#ffa666"
+					secondaryColor=	"#ff6a00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 50 680 50 100 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 50 680 24 60 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<ParticleSystem
+					style=				"radiate"
+					emitLifetime=		"1"
+					emitSpeed=			"10-20"
+					>
+				<ParticleEffect>
+					<Orb
+							instance=			"owner"
+						
+							style=				"smooth"
+							animate=			"fade"
+							radius=				"10"
+							intensity=			"20"
+						
+							blendMode=			"screen"
+							primaryColor=		"#ffa666"
+							secondaryColor=		"#ff6a00"
+							>
+						<Events>
+							<GetParameters>
+								(block (
+									(damageHP (@ gData 'damageHP))
+									)
+									{
+										lifetime: (mathScale damageHP 50 680 12 30 50)
+										}
+									)
+							</GetParameters>
+						</Events>
+					</Orb>
+				</ParticleEffect>
+				
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								emitRate: (mathScale damageHP 50 680 30 100 50)
+								particleLifetime: (mathScale damageHP 50 680 12 30 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleSystem>
+		</Effect>
+		
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+					{
+						noSound: (= damageHP 0)
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
+	
 <!-- RESOURCES -->
 
 	<Image UNID="&rsDragonSlaverImage;"	bitmap="Resources\DragonSlaver.jpg"	bitmask="Resources\DragonSlaverMask.bmp"  loadOnUse="true"/>

@@ -271,7 +271,7 @@
 
 			cyberDefenseLevel=	"5"
 
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtBlastExplosion4;"
 
 			>
 
@@ -357,7 +357,7 @@
 
 			cyberDefenseLevel=	"8"
 
-			explosionType=		"&vtThermoExplosion2;"
+			explosionType=		"&vtThermoExplosion3;"
 			>
 
 		<!-- Configuration -->
@@ -468,7 +468,7 @@
 
 			cyberDefenseLevel=	"8"
 
-			explosionType=		"&vtThermoExplosion2;"
+			explosionType=		"&vtThermoExplosion4;"
 			>
 
 		<Names definiteArticle="true">Ark of Bennin; Ark of Certitude; Ark of Justice &amp; Retribution; Ark of Purity;
@@ -760,7 +760,7 @@
 	<ItemType UNID="&itXenophobeLancer;"
 			name=				"Xenophobe ion lancer"
 			level=				"7"
-			value=				"45000"
+			value=				"55000"
 			mass=				"4500"
 			frequency=			"rare"
 			attributes=			"EnergyWeapon; Military; MajorItem; NotForSale; NotStandard"
@@ -785,47 +785,47 @@
 				>
 
 			<Effect>
-				<Shape
-						directional=		"true"
-						scaleLength=		"72" 
-						scaleWidth=			"6"
-
-						color=				"0x00, 0xfc, 0x00"
-						opacity=			"140"
+				<Ray
+						style=			"jagged"
+						shape=			"straight"
+						length=			"72"
+						
+						primaryColor=	"#00d5ff"
+						secondaryColor=	"#006b80"
 						>
-					<Point x="0"	y="0"/>
-					<Point x="-35"	y="50"/>
-					<Point x="-100"	y="0"/>
-					<Point x="-35"	y="-50"/>
-				</Shape>
-
-				<Shape
-						directional=		"true"
-						scaleLength=		"72" 
-						scaleWidth=			"3"
-
-						color=				"0xe0, 0xfc, 0xe0"
-						opacity=			"255"
+					<Events>
+						<GetParameters>
+							(block (
+								(damageHP (@ gData 'damageHP))
+								)
+								{
+									width: (mathScale damageHP 10 140 20 40 50)
+									intensity: 80
+									}
+								)
+						</GetParameters>
+					</Events>
+				</Ray>
+			
+				<ParticleComet
+						particleCount=	"200"
+						primaryColor=	"#00d5ff"
 						>
-					<Point x="0"	y="0"/>
-					<Point x="-35"	y="50"/>
-					<Point x="-100"	y="0"/>
-					<Point x="-35"	y="-50"/>
-				</Shape>
+					<Events>
+						<GetParameters>
+							(block (
+								(damageHP (@ gData 'damageHP))
+								)
 
-				<Shape
-						directional=		"true"
-						scaleLength=		"64" 
-						scaleWidth=			"2"
-
-						color=				"0xff, 0xff, 0xff"
-						opacity=			"255"
-						>
-					<Point x="0"	y="0"/>
-					<Point x="-25"	y="50"/>
-					<Point x="-100"	y="0"/>
-					<Point x="-25"	y="-50"/>
-				</Shape>
+								{
+									particleCount: (mathScale damageHP 10 140 100 300 50)
+									length: 72 ;(mathScale damageHP 10 140 60 220 50)
+									width: 9
+									}
+								)
+						</GetParameters>
+					</Events>
+				</ParticleComet>
 			</Effect>
 		</Weapon>
 
@@ -879,7 +879,7 @@
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="192" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips2;" imageX="192" imageY="0" imageWidth="64" imageHeight="64"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="18"	posZ="0"	rotation="180"/>
@@ -907,9 +907,10 @@
 			canAttack=			"true"
 
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"120"
+			hitPoints=			"160"
+            regen=              "0.5"
 			fireRateAdj=		"20"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"drugcartel, enemy, envWater, envAvoidsEarth, generic, human, outlaws, populated"
@@ -1063,7 +1064,7 @@
 			rotationAccel=		"6.0"
 			/>
 
-		<Image imageID="&rsSmallShips1;" imageX="128" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsSmallShips1;" imageX="128" imageY="0" imageWidth="32" imageHeight="32"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="8"	posZ="0"	rotation="180"/>
@@ -1090,6 +1091,7 @@
 			armorID=			"&itLightTitaniumPlate;"
 			hitPoints=			"50"
 			fireRateAdj=		"40"
+			explosionType=		"&vtKineticExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, generic, human, populated"
@@ -1152,6 +1154,7 @@
 			armorID=			"&itHeavyTitaniumPlate;"
 			hitPoints=			"50"
 			fireRateAdj=		"40"
+			explosionType=		"&vtKineticExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, generic, human, populated"
@@ -1223,6 +1226,7 @@
 			armorID=			"&itHeavyTitaniumPlate;"
 			hitPoints=			"50"
 			fireRateAdj=		"40"
+			explosionType=		"&vtKineticExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 			
 			attributes=			"anarchists, enemy, freeworldAnarchists, human, populated"
@@ -1284,9 +1288,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itLightPlasteelPlate;"
-			hitPoints=			"100"
+			hitPoints=			"250"
+            regen=              "1.3"
 			fireRateAdj=		"80"
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, generic, human, populated"
@@ -1415,35 +1420,17 @@
 				type=				"beam"
 				deviceSlots=		"2"
 
-				damage=				"thermo:12d12; WMD7"
+				damage=				"thermo:24d20; WMD:7"
 				fireRate=			"60"
 				lifetime=			"30"
+                missileSpeed=       "50"
 				hitPoints=			"20"
-				powerUse=			"3500"
+				powerUse=			"200"
 				charges=			"true"
 
 				effect=				"&efThermoShellDefault;"
-				fireEffect=			"&efThermoFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG96;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="96" 
-						imageHeight="96"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"130"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-						/>
-			</HitEffect>
 		</Weapon>
 
 	</ItemType>
@@ -1517,7 +1504,7 @@
 			</Table>
 		</Items>
 
-		<Image imageID="&rsLargeShips1;" imageX="1536" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsLargeShips1;" imageX="1536" imageY="0" imageWidth="192" imageHeight="192"/>
 
 		<AISettings
 			aggressor=			"true"
@@ -1600,7 +1587,7 @@
 
 			data=				"50000"
 
-			description=		"Heliotrope starship fuel is known to be one of the cleanest and most powerful fuels available. Too bad that the Heliotrope don't part with it willingly."
+			description=		"Heliotrope starship fuel is known to be one of the cleanest and most powerful fuels available. Too bad the Heliotrope don't part with it willingly."
 			>
 
 		<Image imageID="&rsItems1;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -1634,7 +1621,7 @@
 	<ItemType UNID="&itSunflareCannon;"
 			name=				"sunflare cannon"
 			level=				"5"
-			value=				"8500"
+			value=				"14000"
 			mass=				"6000"
 			frequency=			"veryrare"
 			numberAppearing=	"1"
@@ -1677,16 +1664,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length:
-									(mathScale 
-										damageHP						; average damage of weapon
-										2								; min damage
-										60								; max damage
-										60								; min beam length
-										220								; max beam length
-										50								; scale gamma
-										)
-								width: (mathScale damageHP 2 60 10 20 50)
+								length:	(mathScale damageHP 5 64 60 220 50)
+								width: (mathScale damageHP 5 64 10 20 50)
 								intensity: 20
 								}
 							)
@@ -1715,21 +1694,14 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"ion:2d8+2; blinding3"
+				damage=				"ion:2d8+2; blinding:3"
 				fireRate=			"15"
 				lifetime=			"30"
 				powerUse=			"50"
 
+				effect=				"&efIonizingBeam;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"lightning"
-						primaryColor=		"0xa0, 0xf0, 0xff"
-						secondaryColor=		"0x00, 0xa9, 0xff"
-						intensity=			"1"
-						/>
-			</Effect>
 		</Weapon>
 
 	</ItemType>
@@ -1845,7 +1817,7 @@
 			rotationAccel=		"2.0"
 			/>
 
-		<Image imageID="&rsSmallShips1;" imageX="224" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsSmallShips1;" imageX="224" imageY="0" imageWidth="32" imageHeight="32"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="10"	posZ="0"	rotation="180"/>
@@ -1875,12 +1847,13 @@
 
 			multiHull=			"true"
 			armorID=			"&itSolarArmor;"
-			hitPoints=			"400"
+			hitPoints=			"420"
+            regen=              "2.1"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated"
+			attributes=			"enemy, envFire, envAvoidsWater, generic, heliotropes, human, populated"
 			levelFrequency=		"---cu r---- ----- ----- -----"
 			locationCriteria=	"+innerSystem, -void"
 			enemyExclusionRadius="50"
@@ -1930,12 +1903,13 @@
 			canAttack=			"true"
 
 			armorID=			"&itHeavyCeramicPlate;"
-			hitPoints=			"100"
+			hitPoints=			"120"
+            regen=              "0.4"
 			fireRateAdj=		"40"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated"
+			attributes=			"enemy, envFire, envAvoidsWater, generic, heliotropes, human, populated"
 			levelFrequency=		"--cuv ----- ----- ----- -----"
 			locationCriteria=	"+innerSystem, -void"
 			>
@@ -2039,7 +2013,7 @@
 			rotationAccel=		"2.0"
 			/>
 
-		<Image imageID="&rsMediumShips1;" imageX="720" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="5" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="720" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="5"/>
 
 		<AISettings
 			fireRateAdj=		"40"
@@ -2069,7 +2043,7 @@
 
 			multiHull=			"true"
 			armorID=			"&itLightPlasteelPlate;"
-			hitPoints=			"55"
+			hitPoints=			"40"
 			fireRateAdj=		"30"
 			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtIceAsteroidEjecta;"
@@ -2139,7 +2113,7 @@
 			maxSpeed=			"8"
 			cargoSpace=			"1000"
 
-			explosionType=		"&vtBlastExplosion1;"
+			explosionType=		"&vtBlastExplosion4;"
 			>
 
 		<!-- Configuration -->
@@ -2190,7 +2164,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsHurin;" imageWidth="164" imageHeight="164" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsHurin;" imageWidth="164" imageHeight="164"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="165"	posRadius="76"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -2218,9 +2192,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itAdvancedPlasteelPlate;"
-			hitPoints=			"300"
+			hitPoints=			"900"
+            regen=              "9.0"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envWater, envAvoidsEarth, generic, huari, human, majorStation, populated"
@@ -2452,9 +2427,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itAdvancedCeralloyArmor;"
-			hitPoints=			"300"
+			hitPoints=			"240"
+            regen=              "0.7"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envWater, envAvoidsEarth, generic, human, kobol, populated, warlords"
@@ -2544,7 +2520,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips1;" imageX="432" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-9" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="432" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-9"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="155"	posRadius="10"	posZ="0"	rotation="180"/>
@@ -2578,7 +2554,7 @@
 			thrustRatio=		"0.4"
 			maxSpeed=			"6"
 
-			explosionType=		"&vtBlastExplosion1;"
+			explosionType=		"&vtBlastExplosion2;"
 
 			attributes=			"genericClass, marauders"
 			>
@@ -2611,7 +2587,7 @@
 			<Lookup chance="50" count="1"	table="&trMajorItem4;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips4;" imageX="0" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips4;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -2670,7 +2646,7 @@
 
 			cyberDefenseLevel=	"4"
 
-			explosionType=		"&vtBlastExplosion1;"
+			explosionType=		"&vtBlastExplosion4;"
 			>
 
 		<!-- Configuration -->
@@ -2761,9 +2737,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itLightPlasteelPlate;"
-			hitPoints=			"100"
+			hitPoints=			"160"
+            regen=              "0.5"
 			fireRateAdj=		"30"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, pirates, populated"
@@ -2808,9 +2785,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"150"
+			hitPoints=			"320"
+            regen=              "1.6"
 			fireRateAdj=		"20"
-			explosionType=		"&vtBlastExplosion4;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, marauderCompound, pirates, populated"
@@ -2876,9 +2854,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"250"
+			hitPoints=			"400"
+            regen=              "4"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, marauderStronghold, pirates,populated"
@@ -2989,7 +2968,7 @@
 	<ItemType UNID="&itAbsolutionCannon;"
 			name=				"Penitent cannon"
 			level=				"4"
-			value=				"4000"
+			value=				"2800"
 			mass=				"2000"
 			frequency=			"rare"
 			attributes=			"Alien; EnergyWeapon; MajorItem; NotForSale; NotStandard;"
@@ -3050,9 +3029,7 @@
 							imageX=				"0" 
 							imageY=				"128" 
 							imageWidth=			"512" 
-							imageHeight=		"64"
-							imageFrameCount=	"1"
-							imageTicksPerFrame=	"1"/>
+							imageHeight=		"64"/>
 				</Shockwave>
 			</Effect>
 
@@ -3099,7 +3076,7 @@
 			<Item count="5d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="64" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips2;" imageX="64" imageY="0" imageWidth="64" imageHeight="64"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
@@ -3142,7 +3119,7 @@
 		<Devices>
 			<Device deviceID="&itAbsolutionCannon;"/>
 			<!--<Device deviceID="&itOracusHarassPower;"/>-->
-			<Device deviceID="&itClass2Deflector;"/>
+			<Device deviceID="&itClass1Deflector;"/>
 		</Devices>
 
 		<Maneuver
@@ -3154,7 +3131,7 @@
 			<Item count="4d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips3;" imageX="0" imageY="0" imageWidth="96" imageHeight="96" rotationOffset="-25" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips3;" imageX="0" imageY="0" imageWidth="96" imageHeight="96" rotationOffset="-25"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="158"	posRadius="17"	posZ="0"	rotation="180"/>
@@ -3184,7 +3161,8 @@
 			canAttack=			"true"
 
 			armorID=			"&itLightBlastPlate;"
-			hitPoints=			"200"
+			hitPoints=			"210"
+            regen=              "0.6"
 			fireRateAdj=		"40"
 			ejectaType=			"&vtWreckEjecta;"
 			noFriendlyFire=		"true"
@@ -3235,7 +3213,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itBlastPlate;"
-			hitPoints=			"350"
+			hitPoints=			"700"
+            regen=              "3.5"
 			fireRateAdj=		"40"
 			ejectaType=			"&vtWreckEjecta;"
 			noFriendlyFire=		"true"
@@ -3703,7 +3682,7 @@
 			multiHull=			"true"
 			armorID=			"&itLightTitaniumPlate;"
 			hitPoints=			"50"
-			explosionType=		"&vtKineticExplosion3;"
+			explosionType=		"&vtKineticExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, outlaws, populated"
@@ -3755,9 +3734,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itCeramicPlate;"
-			hitPoints=			"75"
+			hitPoints=			"90"
+            regen=              "0.3"
 			fireRateAdj=		"40"
-			explosionType=		"&vtKineticExplosion4;"
+			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, outlaws, populated"
@@ -3817,9 +3797,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itHeavyCeramicPlate;"
-			hitPoints=			"100"
+			hitPoints=			"250"
+            regen=              "1.3"
 			fireRateAdj=		"30"
-			explosionType=		"&vtBlastExplosion1;"
+			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, outlawHaven, outlaws, populated"
@@ -4005,7 +3986,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itAdvancedPlasteelPlate;"
-			hitPoints=			"200"
+			hitPoints=			"500"
+            regen=              "1.5"
 			stealth=			"15" 
 			fireRateAdj=		"80"
 			explosionType=		"&vtThermoExplosion1;"
@@ -4114,7 +4096,7 @@
 				damage=				"kinetic:4d6"
 				missileSpeed=		"12"
 				fireRate=			"30"
-				maneuverability=	"2"
+				maneuverRate=		"9"
 				lifetime=			"360"
 				powerUse=			"100"
 
@@ -4430,20 +4412,20 @@
 
 		<Weapon
 				fireRate=			"20"
-				powerUse=			"100"
+				powerUse=			"50"
 				>
 
 			<Missiles>
 				<Missile ammoID="&itKilotonCannonShell;"
 						type=			"missile"
 
-						damage=			"thermo:1d8+1; WMD4"
 						missileSpeed=	"50"
 						lifetime=		"120"
 						hitPoints=		"15"
 
 						failsafe=		"10"
 
+						hitEffect=		"&efThermoFragmentExplosion;"
 						sound=			"&snMissileLauncher;"
 						>
 
@@ -4468,26 +4450,16 @@
 						<Image imageID="&rsMissiles;" imageX="0" imageY="48" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
 					</Effect>
 
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Flare
-								style=			"fadingBlast"
-								radius=			"150"
-								primaryColor=	"0xff, 0xff, 0xf0"
-								lifetime=		"8"
-								/>
-					</HitEffect>
-
 					<Fragment 
-							count=				"48"
+							count=				"50-70"
 							type=				"missile"
 
-							damage=				"thermo:1d8+2; WMD4"
+							damage=				"thermo:1d12+2; WMD:4"
 							missileSpeed=		"70-90"
 							lifetime=			"5"
 							
 							effect=				"&efThermoShellDefault;"
+							hitEffect=			"&efThermoFragmentHit;"
 							>
 					</Fragment>
 				</Missile>
@@ -4522,6 +4494,7 @@
 			type=				"gunship"
 			defaultSovereign=	"&svRanxEmpire;"
 
+			level=				"6"
 			mass=				"60"
 			cargoSpace=			"10"
 			thrustRatio=		"12"
@@ -4592,7 +4565,7 @@
 
 			cyberDefenseLevel=	"6"
 
-			explosionType=		"&vtThermoExplosion2;"
+			explosionType=		"&vtThermoExplosion3;"
 			>
 
 		<!-- Configuration -->
@@ -4678,8 +4651,9 @@
 
 			multiHull=			"true"
 			armorID=			"&itLightOrthoSteel;"
-			hitPoints=			"350"
-			explosionType=		"&vtThermoExplosion1;"
+			hitPoints=			"370"
+            regen=              "1.1"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, populated, ranx"
@@ -4729,8 +4703,9 @@
 
 			multiHull=			"true"
 			armorID=			"&itOrthoSteel;"
-			hitPoints=			"1000"
-			explosionType=		"&vtThermoExplosion3;"
+			hitPoints=			"1800"
+            regen=              "18"
+			explosionType=		"&vtThermoExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, majorStation, populated, ranx"
@@ -4829,7 +4804,7 @@
 			cargoSpace=			"500"
 			cyberDefenseLevel=	"4"
 
-			explosionType=		"&vtKineticExplosion2;"
+			explosionType=		"&vtKineticExplosion3;"
 			>
 
 		<!-- Configuration -->
@@ -4982,7 +4957,7 @@
 			level=				"4"
 			frequency=			"rare"
 
-			value=				"3500"
+			value=				"6200"
 			mass=				"6000"
 			  
 			description=		"The actinide waste cannon is a dirty weapon that shoots out a cloud of radioactive debris."
@@ -5002,11 +4977,43 @@
 				powerUse=			"60"
 
 				missileSpeed=		"20"
+				
+				hitEffect=			"&efRadioactiveHitEffect;"
 				sound=				"&snLaserCannon;"
 				>
 
+			<Configuration aimTolerance="5">
+				<Shot angle="3d5-9"/>
+			</Configuration>
+			
 			<Effect>
-				<Image imageID="&rsMediumExplosions;" imageX="0" imageY="128" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
+				<Orb	style=			"fireblast"
+						animate=		"explode"
+						lifetime=		"60"
+
+						blendMode=		"screen"
+						primaryColor=	"#00ff2b"
+						secondaryColor=	"#008015"
+						>
+					<Events>
+						<GetParameters>
+							(block (
+								(damageHP (@ gData 'damageHP))
+								(weaponUNID (@ gData 'weaponUNID))
+								)
+							
+								{
+									radius: (if (= damageHP 0) 10 (mathScale damageHP 5 64 20 45 50))
+									;lifetime: (if (= damageHP 0) 4 (mathScale damageHP 5 64 12 48 50))
+								
+									intensity: (seededRandom weaponUNID 50 70)
+									distortion: (mathScale damageHP 5 64 50 0 100)
+									detail: (seededRandom weaponUNID 20 25)
+									}
+								)
+						</GetParameters>
+					</Events>
+				</Orb>
 			</Effect>
 		</Weapon>
 	</ItemType>
@@ -5043,7 +5050,7 @@
 			rotationAccel=		"1.0"
 			/>
 
-		<Image imageID="&rsMediumShips1;" imageX="384" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="384" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="18"	posZ="0"	rotation="180"	sendToBack="*"/>
@@ -5076,6 +5083,8 @@
 			radioactiveWreck=	"true"
 
 			attributes=			"genericClass,sapiens"
+			   
+			explosionType=		"&vtRadioactiveExplosion1;"
 			>
 
 		<Armor>
@@ -5100,7 +5109,7 @@
 			<Item count="4d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="128" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips2;" imageX="128" imageY="0" imageWidth="64" imageHeight="64"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="158"	posRadius="22"	posZ="0"	rotation="180"	sendToBack="*"/>
@@ -5129,7 +5138,8 @@
 			canAttack=			"true"
 
 			armorID=			"&itHardenedReactiveArmor;"
-			hitPoints=			"100"
+			hitPoints=			"120"
+            regen=              "0.4"
 			fireRateAdj=		"30"
 			explosionType=		"&vtRadioactiveExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -5186,7 +5196,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itHardenedReactiveArmor;"
-			hitPoints=			"150"
+			hitPoints=			"320"
+            regen=              "1.6"
 			fireRateAdj=		"20"
 			explosionType=		"&vtRadioactiveExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -5556,7 +5567,7 @@
 			maxSpeed=			"13"
 			cargoSpace=			"1000"
 
-			explosionType=		"&vtBlastExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			>
 
 		<!-- Configuration -->
@@ -5635,9 +5646,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itOrthoSteel;"
-			hitPoints=			"350"
+			hitPoints=			"740"
+            regen=              "3.7"
 			fireRateAdj=		"40"
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envFire, envAvoidsWater, generic, human, majorStation, populated"

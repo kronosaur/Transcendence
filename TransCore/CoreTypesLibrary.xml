@@ -29,7 +29,7 @@
 	<!ENTITY efThermoShellDefault		"0x00000045">
 	<!ENTITY efPositronBeamDefault		"0x00000046">
 	<!ENTITY efPlasmaBoltDefault		"0x00000047">
-	<!ENTITY efAntimatterBeamDefault	"0x00000048">
+	<!ENTITY efAntimatterPodDefault		"0x00000048">
 	<!ENTITY efNanoBlobDefault			"0x00000049">
 	<!ENTITY efGravitonBeamDefault		"0x0000004A">
 	<!ENTITY efSingularityMassDefault	"0x0000004B">
@@ -49,6 +49,16 @@
 	<!ENTITY efBlastFireDefault			"0x00000073">
 	<!ENTITY efIonFireDefault			"0x00000074">
 	<!ENTITY efThermoFireDefault		"0x00000075">
+	<!ENTITY efPositronFireDefault		"0x00000076">
+	<!ENTITY efPlasmaFireDefault		"0x00000077">
+	<!ENTITY efAntimatterFireDefault	"0x00000078">
+	<!ENTITY efNanoFireDefault			"0x00000079">
+	<!ENTITY efGravitonFireDefault		"0x0000007A">
+	<!ENTITY efSingularityFireDefault	"0x0000007B">
+	<!ENTITY efDarkAcidFireDefault		"0x0000007C">
+	<!ENTITY efDarkSteelFireDefault		"0x0000007D">
+	<!ENTITY efDarkLightningFireDefault	"0x0000007E">
+	<!ENTITY efDarkFireFireDefault		"0x0000007F">
 	
 	<!ENTITY efManeuveringThrusterDefault	"0x00000090">
 	<!ENTITY efMainThrusterDefault		"0x00000091">
@@ -103,8 +113,11 @@
 	<!ENTITY efShieldHit1				"0x00009004">
 	<!ENTITY efLargeStationDamage		"0x0000900E">
 	<!ENTITY efMediumStationDamage		"0x0000900F">
+	<!ENTITY efRadioactiveHitEffect		"0x00009013">
 	
 	<!ENTITY rsMediumDamage				"0x0000F001">
+	<!ENTITY rsDefaultDockScreenBkgnd	"0x0000F013">	<!-- Same as rsZubrinDockScreenBkgnd -->
+	<!ENTITY rsDefaultDockScreenMask	"0x0000F014">	<!-- Same as rsZubrinDockScreenMask -->
 	<!ENTITY rsMissiles					"0x0000F101">
 	<!ENTITY rsMediumHit				"0x0000F106">
 	<!ENTITY rsShieldHit				"0x0000F107">
@@ -135,6 +148,35 @@
 	
 	<!ENTITY unidCoreTypesLibrary		"0x00030000">
 	<!ENTITY rsDeepSpace				"0x00030001">
+	
+	<!-- 0020-002F PROJECTILE EFFECTS -->
+	
+	<!ENTITY efPlasmaParticleDefault	"0x00030020">
+    <!ENTITY efKineticFragmentDefault   "0x00030021">
+    <!ENTITY efBlastFragmentDefault     "0x00030022">
+	
+	<!-- 0030-004F EXPLOSIONS -->
+
+	<!ENTITY vtAntimatterExplosion1		"0x00030030">
+	<!ENTITY vtAntimatterExplosion2		"0x00030031">
+	<!ENTITY vtAntimatterExplosion3		"0x00030032">
+	<!ENTITY vtAntimatterExplosion4		"0x00030033">
+	<!ENTITY vtGravitonExplosion1		"0x00030034">
+	<!ENTITY vtGravitonExplosion2		"0x00030035">
+	<!ENTITY vtGravitonExplosion3		"0x00030036">
+	<!ENTITY vtGravitonExplosion4		"0x00030037">
+    <!ENTITY vtGravitonExplosion5       "0x00030038">
+    <!ENTITY vtKineticExplosion5        "0x00030039">
+    <!ENTITY vtBlastExplosion5          "0x0003003A">
+    <!ENTITY vtThermoExplosion5         "0x0003003B">
+    <!ENTITY vtPlasmaExplosion5         "0x0003003C">
+    <!ENTITY vtAntimatterExplosion5     "0x0003003D">
+    
+    <!ENTITY efKineticExplosion         "0x0003003E">
+    <!ENTITY efBlastExplosion           "0x0003003F">
+    <!ENTITY efThermoExplosion          "0x00030040">
+    <!ENTITY efPlasmaExplosion          "0x00030041">
+    <!ENTITY efAntimatterExplosion      "0x00030042">
 	]>
 	
 <CoreLibrary
@@ -147,6 +189,9 @@
 	<Module filename="CoreCode.xml"/>
 	<Module filename="CoreEffects.xml"/>
 	<Module filename="CoreExplosions.xml"/>
+	<Module filename="CoreFireEffects.xml"/>
+	<Module filename="CoreHitEffects.xml"/>
 	<Module filename="CorePlaceholders.xml"/>
+	<Module filename="CoreProjectileEffects.xml"/>
 
 </CoreLibrary>

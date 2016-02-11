@@ -138,7 +138,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itAdvancedPlasteelPlate;"
-			hitPoints=			"400"
+			hitPoints=			"800"
+            regen=              "6"
 			fireRateAdj=		"10"
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -958,7 +959,7 @@
 						<OnPaneInit>
 							(scrSetDesc gScreen 
 								"Apotamo greets you at the door of the Grand Hall.\n\n"
-								"\"Welcome back, %name%! Take your ease here before you continue on your ardous journey.\""
+								"\"Welcome back, %name%! Take your ease here before you continue on your arduous journey.\""
 								)
 						</OnPaneInit>
 
@@ -1059,9 +1060,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itAdvancedPlasteelPlate;"
-			hitPoints=			"300"
+			hitPoints=			"900"
+            regen=              "9.0"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envWater, envAvoidsEarth, generic, huari, human, majorStation, populated"
@@ -1420,7 +1422,7 @@
 					<AttackConvoyMission>
 						<OnPaneInit>
 							(scrSetDesc gScreen
-								"\"By the mercy of the Light we've learned the course and schedule of a slave ship carrying our bretheren. "
+								"\"By the mercy of the Light we've learned the course and schedule of a slave ship carrying our brethren. "
 								"You can free our citizens by attacking the transport and returning its living cargo to us.\n\n"
 								"\"Will you help us, %brother%?\""
 								)
@@ -1557,7 +1559,7 @@
 										)
 									(block Nil
 										(scrSetDesc gScreen (cat
-											"\"By the enduring Light, where are our bretheren? You didn't leave them on that slave ship, did you? "
+											"\"By the enduring Light, where are our brethren? You didn't leave them on that slave ship, did you? "
 											"There were " (strNumber (objGetData gSource "slaveCount")) " coffins on that ship and you need to account for all of them!\""
 											))
 										(setq gResult Nil)
@@ -1663,7 +1665,7 @@
 									(objSetObjRefData gSource "missionTarget" gTarget)
 									(typIncGlobalData &svHuariEmpire; "missionCount")
 
-									(setq gDesc "\"We've programmed the stations's coordinates into your ship's computer. Go with the Light!\"")
+									(setq gDesc "\"We've programmed the station's coordinates into your ship's computer. Go with the Light!\"")
 									(scrShowPane gScreen "MissionAccepted")
 									)
 							</Action>
@@ -1962,7 +1964,7 @@
 			armorID=			"&itAdvancedPlasteelPlate;"
 			hitPoints=			"175"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envWater, envAvoidsEarth, generic, huari, human, populated"
@@ -2074,8 +2076,9 @@
 
 			multiHull=			"true"
 			armorID=			"&itSungArmor;"
-			hitPoints=			"125"
-			explosionType=		"&vtThermoExplosion2;"
+			hitPoints=			"400"
+            regen=              "4.0"
+			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, majorStation, populated, sungSlavers"

@@ -32,7 +32,7 @@
 					{ item:&itSlamCannon;				enhancement:"+speed:70"				components:( { item:&itMakayevLauncher; count:1 } { item:&itSlamCannon; count:1 })	extraCost:0 }
 					{ item:&itDualTurbolaserCannon;		enhancement:Nil						components:( { item:&itTurbolaserCannon; count:4 })	extraCost:0 }
 					{ item:&itWasteCannon;				enhancement:Nil						components:( { item:&itRadioactiveWaste; count:8 })	extraCost:0 }
-					{ item:&itXM900Missile;				enhancement:Nil						components:( { item:&itFusionTrigger; count:1 })	extraCost:0 }
+					{ item:&itAmmoBoxXM900;				enhancement:Nil						components:( { item:&itFusionTrigger; count:1 })	extraCost:0 }
 					
 					{ item:&itArmorRepairDevice;		enhancement:Nil						components:( { item:&itRepairingNanos; count:6 })	extraCost:0 }
 					)
@@ -54,12 +54,13 @@
 			size=				"110"
 			armorID=			"&itReinforcedTitanium1;"
 			hitPoints=			"250"
+            regen=              "1"
 			multiHull=			"true"
 			fireRateAdj=		"20"
 			repairRate=			"5"
 				 
 			canAttack=			"true"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 			>
 
@@ -165,9 +166,8 @@
 							</Action>
 
 							<Action id="actionSellScrap">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action id="actionCustomWork">
@@ -363,14 +363,35 @@
 	
 <!-- ITEMS -->
 	
+	<!-- Ammo Box, XM900 -->
+
+	<ItemType UNID="&itAmmoBoxXM900;"
+			name=				"XM900 ammunition box(es)"
+			level=				"7"
+			value=				"2900"
+			mass=				"500"
+			frequency=			"notRandom"
+			attributes=			"consumable, military"
+
+			description=		"This box contains 24 XM900 Lucifer missiles."
+			reverseArticle=		"true"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="384" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(intAmmoBoxOpen (itmCreate &itXM900Missile; 24))
+		</Invoke>
+	</ItemType>
+
 	<!-- Dual Mark III Howitzer -->
 
 	<ItemType UNID="&itDualMarkIIIHowitzer;"
 			name=				"dual mark III howitzer"
 			attributes=			"cannotOrder, howitzer, majorItem, tinkers"
 
-			level=				"6"
-			value=				"25000"
+			level=				"7"
+			value=				"47000"
 			mass=				"10000"
 			frequency=			"notRandom"
 			numberAppearing=	"1"
@@ -389,25 +410,12 @@
 				missileSpeed=		"50"
 				lifetime=			"120"
 				hitPoints=			"6"
-				powerUse=			"600"
+				powerUse=			"720"
 				recoil=				"4"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 	</ItemType>
 
@@ -418,7 +426,7 @@
 			attributes=			"cannotOrder, energyWeapon, majorItem, tinkers"
 			  
 			level=				"5"
-			value=				"9000"
+			value=				"10000"
 			mass=				"2500"
 			frequency=			"notRandom"
 
@@ -432,12 +440,11 @@
 
 				omnidirectional=	"true"
 				damage=				"laser:8d4"
-				fireRate=			"20"
+				fireRate=			"16"
 				lifetime=			"30"
-				powerUse=			"250"
+				powerUse=			"200"
 
 				effect=				"&efLaserBeamDefault;"
-				hitEffect=			"&efXRayLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
 		</Weapon>

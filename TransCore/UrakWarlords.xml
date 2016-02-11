@@ -40,7 +40,7 @@
 		<Items>
 		</Items>
 
-		<Image imageID="&rsMediumShips1;" imageX="816" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="816" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<AISettings
 			fireRateAdj=		"20"
@@ -70,7 +70,7 @@
 
 			cyberDefenseLevel=	"4"
 
-			explosionType=		"&vtKineticExplosion4;"
+			explosionType=		"&vtBlastExplosion3;"
 			>
 
 		<!-- Configuration -->
@@ -144,7 +144,7 @@
 	<ItemType UNID="&itUrakMassDriver;"
 			name=				"Urak mass driver"
 			level=				"3"
-			value=				"2000"
+			value=				"2100"
 			mass=				"6000"
 			frequency=			"rare"
 			attributes=			"MajorItem; NotForSale; Urak"
@@ -159,7 +159,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"kinetic:1d6; momentum1"
+				damage=				"kinetic:1d6+1; momentum1"
 				fireRate=			"10"
 				missileSpeed=		"40"
 				lifetime=			"38"
@@ -235,7 +235,7 @@
 	<ItemType UNID="&itUrakMassDriverAdvanced;"
 			name=				"advanced Urak mass driver"
 			level=				"4"
-			value=				"5000"
+			value=				"4600"
 			mass=				"4500"
 			frequency=			"rare"
 			attributes=			"MajorItem; NotForSale; Urak"
@@ -250,14 +250,13 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"blast:1d4+4; momentum1; WMD3"
-				fireRate=			"12"
+				damage=				"blast:1d6+1; momentum:1; WMD:4"
+				fireRate=			"14"
 				missileSpeed=		"40"
 				lifetime=			"38"
 				powerUse=			"100"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -273,7 +272,7 @@
 	<ItemType UNID="&itUrakHowitzer;"
 			name=				"Urak howitzer"
 			level=				"5"
-			value=				"9000"
+			value=				"7000"
 			mass=				"4500"
 			frequency=			"veryrare"
 			numberAppearing=	"1"
@@ -289,7 +288,6 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"blast:4d12; momentum3; WMD3"
 				fireRate=			"36"
 				missileSpeed=		"50"
 				hitPoints=			"10"
@@ -298,28 +296,14 @@
 				recoil=				"2"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
-				hitEffect=			"&efFragmentationExplosion;"
 				sound=				"&snRecoillessCannon;"
 				>
 
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
-
 			<Fragment 
-					count=			"3d6+5"
+					count=			"30-36"
 					type=			"missile"
 					lifetime=		"10"
-					damage=			"blast:1d4+4; momentum2; WMD3"
+					damage=			"blast:1d6; momentum:1; WMD:4"
 					missileSpeed=	"32-48"
 					>
 
@@ -356,7 +340,7 @@
 			armorID=			"&itUrakArmorLight;"
 			hitPoints=			"40"
 			fireRateAdj=		"60"
-			explosionType=		"&vtKineticExplosion4;"
+			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated, urakWarlords"
@@ -416,9 +400,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itUrakArmorLight;"
-			hitPoints=			"90"
+			hitPoints=			"120"
+            regen=              "0.4"
 			fireRateAdj=		"60"
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated, urakWarlords"
@@ -481,9 +466,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itUrakArmorHeavy;"
-			hitPoints=			"200"
+			hitPoints=			"630"
+            regen=              "6.3"
 			fireRateAdj=		"40"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, majorStation, populated, urakFortress, urakWarlords"

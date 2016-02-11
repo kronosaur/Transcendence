@@ -35,6 +35,7 @@ class IDockScreenDisplay
 			CDockScreen *pDockScreen;
 			CDesignType *pRoot;
 			CXMLElement *pDesc;
+			CXMLElement *pDisplayDesc;		//	<Display> element
 			AGScreen *pScreen;
 			RECT rcRect;
 			DWORD dwFirstID;
@@ -48,7 +49,9 @@ class IDockScreenDisplay
 		struct SBackgroundDesc
 			{
 			SBackgroundDesc (void) :
-					iType(backgroundDefault)
+					iType(backgroundDefault),
+					dwImageID(0),
+					pObj(NULL)
 				{ }
 
 			EBackgroundTypes iType;			//	Type of image defined
@@ -83,7 +86,7 @@ class IDockScreenDisplay
 		inline void DeleteCurrentItem (int iCount) { OnDeleteCurrentItem(iCount); }
 		inline const CItem &GetCurrentItem (void) const { return OnGetCurrentItem(); }
 		inline ICCItem *GetCurrentListEntry (void) const { return OnGetCurrentListEntry(); }
-		inline bool GetDefaultBackground (SBackgroundDesc *retDesc) { return OnGetDefaultBackground(retDesc); }
+		bool GetDefaultBackground (SBackgroundDesc *retDesc);
 		inline CItemListManipulator &GetItemListManipulator (void) { return OnGetItemListManipulator(); }
 		inline int GetListCursor (void) { return OnGetListCursor(); }
 		inline IListData *GetListData (void) { return OnGetListData(); }
@@ -101,6 +104,7 @@ class IDockScreenDisplay
 		inline void ShowPane (bool bNoListNavigation) { OnShowPane(bNoListNavigation); }
 
 		static bool GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retOptions, CString *retsError);
+		static bool ParseBackgrounDesc (ICCItem *pDesc, SBackgroundDesc *retDesc);
 
 	protected:
 		virtual void OnDeleteCurrentItem (int iCount) { }
@@ -261,9 +265,10 @@ class CDockPane
 			{
 			controlNone,
 
-			controlDesc,
 			controlCounter,
+			controlDesc,
 			controlItemDisplay,
+			controlItemListDisplay,
 			controlTextInput,
 			};
 
@@ -279,7 +284,8 @@ class CDockPane
 				{ }
 
 			inline CGTextArea *AsTextArea (void) { return (CGTextArea *)pArea; }
-			inline CGItemDisplayArea *AsItemDisplayArea (void) { return (CGItemDisplayArea *)pArea; }
+			inline CGItemDisplayArea *AsItemDisplayArea (void) { return (iType == controlItemDisplay ? (CGItemDisplayArea *)pArea : NULL); }
+			inline CGItemListDisplayArea *AsItemListDisplayArea (void) { return (iType == controlItemListDisplay ? (CGItemListDisplayArea *)pArea : NULL); }
 
 			EControlTypes iType;
 			CString sID;					//	Control ID
@@ -375,6 +381,7 @@ class CDockScreen : public IScreenController
 		inline bool IsCurrentItemValid (void) { return m_pDisplay->IsCurrentItemValid(); }
 		void SelectNextItem (bool *retbMore = NULL);
 		void SelectPrevItem (bool *retbMore = NULL);
+		void SetBackground (const IDockScreenDisplay::SBackgroundDesc &Desc);
 		inline void SetDescription (const CString &sDesc) { m_CurrentPane.SetDescription(sDesc); }
 		ALERROR SetDisplayText (const CString &sID, const CString &sText);
 		inline bool SetControlValue (const CString &sID, ICCItem *pValue) { return m_CurrentPane.SetControlValue(sID, pValue); }
@@ -421,8 +428,8 @@ class CDockScreen : public IScreenController
 
 		void BltSystemBackground (CSystem *pSystem, const RECT &rcRect);
 		void BltToBackgroundImage (const RECT &rcRect, CG32bitImage *pImage, int xSrc, int ySrc, int cxSrc, int cySrc);
-		ALERROR CreateBackgroundArea (IDockScreenDisplay::SBackgroundDesc &Desc, AGScreen *pScreen, const RECT &rcRect, const RECT &rcInner);
-		ALERROR CreateBackgroundImage (IDockScreenDisplay::SBackgroundDesc &Desc, const RECT &rcRect, int xOffset);
+		void CleanUpBackgroundImage (void);
+		ALERROR CreateBackgroundImage (const IDockScreenDisplay::SBackgroundDesc &Desc, const RECT &rcRect, int xOffset);
 		ALERROR CreateTitleArea (CXMLElement *pDesc, AGScreen *pScreen, const RECT &rcRect, const RECT &rcInner);
 		bool EvalBool (const CString &sString);
 		CString EvalInitialPane (void);
@@ -451,9 +458,13 @@ class CDockScreen : public IScreenController
 		ICCItem *m_pData;
 		CExtension *m_pExtension;
 		CXMLElement *m_pDesc;
-		AGScreen *m_pScreen;
 		bool m_bFirstOnInit;
 		bool m_bInOnInit;
+
+		//	Screen and metrics
+		AGScreen *m_pScreen;
+		RECT m_rcBackground;				//	RECT of background area (constrained to ~1280)
+		RECT m_rcScreen;					//	RECT of content area (contrained to ~1024)
 
 		//	Title and header
 		CG32bitImage *m_pBackgroundImage;
@@ -476,6 +487,10 @@ class CDockScreen : public IScreenController
 
 		//	Events
 		ICCItem *m_pOnScreenUpdate;
+
+		//	Runtime
+		IDockScreenDisplay::SBackgroundDesc m_DeferredBackground;
+		TSortMap<CString, CString> m_DeferredDisplayText;
 	};
 
 struct SDockFrame

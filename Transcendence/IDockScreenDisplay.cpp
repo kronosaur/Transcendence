@@ -22,6 +22,14 @@
 #define DATA_FROM_SOURCE			CONSTLIT("source")
 #define DATA_FROM_STATION			CONSTLIT("station")
 
+#define FIELD_IMAGE					CONSTLIT("image")
+#define FIELD_OBJ					CONSTLIT("obj")
+#define FIELD_TYPE					CONSTLIT("type")
+
+#define TYPE_IMAGE					CONSTLIT("image")
+#define TYPE_NONE					CONSTLIT("none")
+#define TYPE_OBJECT					CONSTLIT("object")
+
 bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retOptions, CString *retsError)
 
 //	GetDisplayOptions
@@ -216,6 +224,16 @@ bool IDockScreenDisplay::EvalString (const CString &sString, bool bPlain, ECodeC
 	return Ctx.RunEvalString(sString, bPlain, retsResult);
 	}
 
+bool IDockScreenDisplay::GetDefaultBackground (SBackgroundDesc *retDesc)
+
+//	GetDefaultBackground
+//
+//	Sets up any default backgrounds from the display.
+	
+	{
+	return OnGetDefaultBackground(retDesc);
+	}
+
 ALERROR IDockScreenDisplay::Init (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError)
 
 //	Init
@@ -240,4 +258,64 @@ void IDockScreenDisplay::OnShowPane (bool bNoListNavigation)
 	
 	{
 	g_pTrans->SelectArmor(-1); 
+	}
+
+bool IDockScreenDisplay::ParseBackgrounDesc (ICCItem *pDesc, SBackgroundDesc *retDesc)
+
+//	ParseBackroundDesc
+//
+//	Parses a descriptor. Returns TRUE if successful.
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	//	Nil means no default value
+
+	if (pDesc->IsNil())
+		retDesc->iType = backgroundDefault;
+
+	//	If we have a struct, we expect a certain format
+
+	else if (pDesc->IsSymbolTable())
+		{
+		CString sType = pDesc->GetStringAt(FIELD_TYPE);
+		if (sType.IsBlank() || strEquals(sType, TYPE_NONE))
+			retDesc->iType = backgroundNone;
+
+		else if (strEquals(sType, TYPE_IMAGE))
+			{
+			retDesc->iType = backgroundImage;
+
+			ICCItem *pImage = pDesc->GetElement(FIELD_IMAGE);
+			if (pImage == NULL)
+				return false;
+
+			else if (pImage->IsInteger())
+				retDesc->dwImageID = pImage->GetIntegerValue();
+
+			else
+				return false;
+			}
+		else if (strEquals(sType, TYPE_OBJECT))
+			{
+			retDesc->iType = backgroundObj;
+			retDesc->pObj = CreateObjFromItem(CC, pDesc->GetElement(FIELD_OBJ));
+			if (retDesc->pObj == NULL)
+				return false;
+			}
+		else
+			return false;
+		}
+
+	//	Otherwise, we can't parse.
+	//
+	//	LATER: We should eventually handle a list-based image descriptor, but we
+	//	would need to enhance SBackgroundDesc for that.
+
+	else
+		return false;
+
+	//	Success
+	
+	return true;
 	}

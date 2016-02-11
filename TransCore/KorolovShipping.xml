@@ -781,7 +781,7 @@
 			gunship Yellow Emperor; gunship Zanzibar
 		</Names>
 
-		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -1099,10 +1099,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"250"
-			repairRate=			"2"
+			hitPoints=			"470"
+			regen=              "1.4"
 			shipRepairRate=		"3"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, corporateDecon, envAir, envEarth, envFire, envWater, friendly, generic, human, majorStation, korolovShipping, populated"

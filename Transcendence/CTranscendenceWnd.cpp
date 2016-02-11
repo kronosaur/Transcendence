@@ -101,15 +101,6 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 						dwViewportFlags |= CSystem::VWP_ENHANCED_DISPLAY;
 					}
 
-				//	Update some displays
-
-				if ((m_iTick % 7) == 0)
-					{
-					SetProgramState(psUpdatingReactorDisplay);
-					m_ReactorDisplay.Update();
-					SetProgramState(psAnimating);
-					}
-
 				//	If we're showing damage flash, fill the screen
 
 				if (m_iDamageFlash > 0 && (m_iDamageFlash % 2) == 0)
@@ -162,6 +153,7 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 					m_ArmorDisplay.Paint(TheScreen);
 
 					SetProgramState(psPaintingReactorDisplay);
+					m_ReactorDisplay.Update(m_iTick);
 					m_ReactorDisplay.Paint(TheScreen);
 
 					SetProgramState(psPaintingTargetDisplay);
@@ -307,16 +299,11 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 
 				if (g_cyScreen >= 960)
 					{
-					if ((m_iTick % 7) == 0)
-						{
-						SetProgramState(psUpdatingReactorDisplay);
-						m_ReactorDisplay.Update();
-						}
-
 					SetProgramState(psPaintingLRS);
 					PaintLRS();
 
 					SetProgramState(psPaintingReactorDisplay);
+					m_ReactorDisplay.Update(m_iTick);
 					m_ReactorDisplay.Paint(TheScreen);
 					}
 
@@ -338,48 +325,25 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 				m_CurrentDock.Update(m_iTick);
 				m_iTick++;
 
-				//	Invalidate areas of the screen that are overlapped by
-				//	the displays. Note that we need to convert to main screen
-				//	coordinates.
+				//	Note: We need to invalidate the whole screen because we're
+				//	flipping between two buffers and we need to make sure both
+				//	buffers get painted.
 
 				if (m_pCurrentScreen)
-					{
-					RECT rcRect = m_ArmorDisplay.GetRect();
-					::OffsetRect(&rcRect, -m_rcMainScreen.left, -m_rcMainScreen.top);
-					m_pCurrentScreen->Invalidate(rcRect);
-
-					rcRect = m_TargetDisplay.GetRect();
-					::OffsetRect(&rcRect, -m_rcMainScreen.left, -m_rcMainScreen.top);
-					m_pCurrentScreen->Invalidate(rcRect);
-
-					rcRect = m_LRSDisplay.GetRect();
-					::OffsetRect(&rcRect, -m_rcMainScreen.left, -m_rcMainScreen.top);
-					m_pCurrentScreen->Invalidate(rcRect);
-
-					if (m_bDebugConsole)
-						{
-						rcRect = m_DebugConsole.GetRect();
-						::OffsetRect(&rcRect, -m_rcMainScreen.left, -m_rcMainScreen.top);
-						m_pCurrentScreen->Invalidate(rcRect);
-						}
-					}
+					m_pCurrentScreen->Invalidate();
 
 				break;
 				}
 
 			case gsEnteringStargate:
 				{
-				//	Update some displays
-
-				if ((m_iTick % 10) == 0)
-					m_ReactorDisplay.Update();
-
 				//	Tell the universe to paint
 
 				g_pUniverse->PaintPOV(TheScreen, m_rcScreen, 0);
 				PaintLRS();
 				m_ArmorDisplay.Paint(TheScreen);
 				m_MessageDisplay.Paint(TheScreen);
+				m_ReactorDisplay.Update(m_iTick);
 				m_ReactorDisplay.Paint(TheScreen);
 				m_TargetDisplay.Paint(TheScreen);
 				m_DeviceDisplay.Paint(TheScreen);
@@ -438,17 +402,13 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 
 			case gsLeavingStargate:
 				{
-				//	Update some displays
-
-				if ((m_iTick % 10) == 0)
-					m_ReactorDisplay.Update();
-
 				//	Tell the universe to paint
 
 				g_pUniverse->PaintPOV(TheScreen, m_rcScreen, 0);
 				PaintLRS();
 				m_ArmorDisplay.Paint(TheScreen);
 				m_MessageDisplay.Paint(TheScreen);
+				m_ReactorDisplay.Update(m_iTick);
 				m_ReactorDisplay.Paint(TheScreen);
 				m_TargetDisplay.Paint(TheScreen);
 				m_DeviceDisplay.Paint(TheScreen);

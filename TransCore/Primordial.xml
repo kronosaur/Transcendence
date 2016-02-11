@@ -79,16 +79,8 @@
 
 		ejectaType=			"&vtStoneAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="0"		imageWidth="40"  imageHeight="40"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="40"	 imageY="0"		imageWidth="40"  imageHeight="40"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"	 imageY="40"	imageWidth="40"  imageHeight="40"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="40"  imageY="40"	imageWidth="40"  imageHeight="40"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="80"	imageWidth="40"  imageHeight="40"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="40"  imageY="80"	imageWidth="40"  imageHeight="40"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="120"	imageWidth="40"  imageHeight="40"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="40"  imageY="120"	imageWidth="40"  imageHeight="40"/>
-		</ImageVariants>
+		
+		<ImageLookup imageID="&rsPrimordialAsteroidSizeA;"/>
 
 		<Items>
 			<Table>
@@ -118,18 +110,7 @@
 		>
 		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
 
-		<ImageVariants>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="0"		imageWidth="80"  imageHeight="80"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="80"    imageWidth="80"  imageHeight="80"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="160"   imageWidth="80"  imageHeight="80"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="160"   imageWidth="80"  imageHeight="80"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="240"   imageWidth="80"  imageHeight="80"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="240"   imageWidth="80"  imageHeight="80"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="320"   imageWidth="80"  imageHeight="80"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="320"   imageWidth="80"  imageHeight="80"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="400"   imageWidth="80"  imageHeight="80"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="400"   imageWidth="80"  imageHeight="80"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsPrimordialAsteroidSizeB;"/>
 
 		<Items>
 			<Table>
@@ -157,13 +138,7 @@
 
 		ejectaType=			"&vtStoneAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="160" imageY="0"		imageWidth="90"  imageHeight="90"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="160" imageY="90"	imageWidth="90"  imageHeight="90"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="160" imageY="180"	imageWidth="90"  imageHeight="90"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="160" imageY="270"	imageWidth="90"  imageHeight="90"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="160" imageY="360"	imageWidth="90"  imageHeight="90"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsPrimordialAsteroidSizeC;"/>
 
 		<Items>
 			<Table>
@@ -191,12 +166,7 @@
 
 		ejectaType=			"&vtStoneAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="250" imageY="0"		imageWidth="120"  imageHeight="120"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="250" imageY="120"	imageWidth="120"  imageHeight="120"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="250" imageY="240"	imageWidth="120"  imageHeight="120"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="250" imageY="360"	imageWidth="120"  imageHeight="120"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsPrimordialAsteroidSizeD;"/>
 
 		<Items>
 			<Table>
@@ -224,11 +194,7 @@
 
 		ejectaType=			"&vtStoneAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="370" imageY="0"		imageWidth="130"  imageHeight="130"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="370" imageY="130"	imageWidth="130"  imageHeight="130"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="370" imageY="260"	imageWidth="130"  imageHeight="130"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsPrimordialPlanetoidSizeE;"/>
 	</StationType>
 
 	<!-- Size F Primordial Planetoid -->
@@ -243,11 +209,7 @@
 
 		ejectaType=			"&vtStoneAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="500" imageY="0"     imageWidth="160"  imageHeight="160"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="500" imageY="160"   imageWidth="160"  imageHeight="160"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="500" imageY="320"   imageWidth="160"  imageHeight="160"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsPrimordialPlanetoidSizeF;"/>
 	</StationType>
 
 	<!-- Size F Primordial Planetoid -->
@@ -275,10 +237,7 @@
 
 		attributes=			"generic, inner, lifeZone, outer, planetoid, primordial"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="660" imageY="0"     imageWidth="180"  imageHeight="180"/>
-			<Image	imageID="&rsPrimordialAsteroids;"	imageX="660" imageY="180"   imageWidth="180"  imageHeight="180"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsPrimordialPlanetoidSizeG;"/>
 	</StationType>
 
 	<!-- Size H Primordial Terrestrial -->
@@ -379,6 +338,76 @@
 	</SpaceEnvironmentType>
 
 <!-- RESOURCES -->
+	
+	<ImageComposite unid="&rsPrimordialAsteroidSizeA;">
+		<ImageVariants>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="0"		imageWidth="40"  imageHeight="40"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="40"	 imageY="0"		imageWidth="40"  imageHeight="40"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"	 imageY="40"	imageWidth="40"  imageHeight="40"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="40"  imageY="40"	imageWidth="40"  imageHeight="40"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="80"	imageWidth="40"  imageHeight="40"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="40"  imageY="80"	imageWidth="40"  imageHeight="40"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="120"	imageWidth="40"  imageHeight="40"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="40"  imageY="120"	imageWidth="40"  imageHeight="40"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsPrimordialAsteroidSizeB;">
+		<ImageVariants>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="0"		imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="80"    imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="160"   imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="160"   imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="240"   imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="240"   imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="320"   imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="320"   imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="400"   imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="400"   imageWidth="80"  imageHeight="80"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsPrimordialAsteroidSizeC;">
+		<ImageVariants>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="160" imageY="0"		imageWidth="90"  imageHeight="90"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="160" imageY="90"	imageWidth="90"  imageHeight="90"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="160" imageY="180"	imageWidth="90"  imageHeight="90"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="160" imageY="270"	imageWidth="90"  imageHeight="90"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="160" imageY="360"	imageWidth="90"  imageHeight="90"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsPrimordialAsteroidSizeD;">
+		<ImageVariants>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="250" imageY="0"		imageWidth="120"  imageHeight="120"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="250" imageY="120"	imageWidth="120"  imageHeight="120"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="250" imageY="240"	imageWidth="120"  imageHeight="120"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="250" imageY="360"	imageWidth="120"  imageHeight="120"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsPrimordialPlanetoidSizeE;">
+		<ImageVariants>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="370" imageY="0"		imageWidth="130"  imageHeight="130"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="370" imageY="130"	imageWidth="130"  imageHeight="130"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="370" imageY="260"	imageWidth="130"  imageHeight="130"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsPrimordialPlanetoidSizeF;">
+		<ImageVariants>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="500" imageY="0"     imageWidth="160"  imageHeight="160"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="500" imageY="160"   imageWidth="160"  imageHeight="160"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="500" imageY="320"   imageWidth="160"  imageHeight="160"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsPrimordialPlanetoidSizeG;">
+		<ImageVariants>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="660" imageY="0"     imageWidth="180"  imageHeight="180"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="660" imageY="180"   imageWidth="180"  imageHeight="180"/>
+		</ImageVariants>
+	</ImageComposite>
 
 	<Image UNID="&rsPrimordialAsteroids;"	bitmap="Resources\PrimordialAsteroids.jpg"	bitmask="Resources\PrimordialAsteroidsMask.bmp"		loadOnUse="true"/>
 	<Image UNID="&rsPrimordialMist;"		bitmap="Resources\PrimordialMist.jpg"		bitmask="Resources\PrimordialMistMask.bmp"		loadOnUse="true"/>

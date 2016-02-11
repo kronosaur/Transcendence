@@ -139,7 +139,7 @@ void GenerateShieldStats (CUniverse &Universe, CXMLElement *pCmdLine)
 		if (bVerbose)
 			{
 			printf("%s\t%s\t%s\t(%d ticks; %.2f damage; %.2f regen/shot)%s\n",
-					strLevel(pWeapon->GetLevel()),
+					(LPSTR)strLevel(pWeapon->GetLevel()),
 					pWeapon->GetNounPhrase().GetASCIIZPointer(),
 					szBuffer,
 					iFireDelay,
@@ -150,7 +150,7 @@ void GenerateShieldStats (CUniverse &Universe, CXMLElement *pCmdLine)
 		else
 			{
 			printf("%s\t%s\t%s%s\n",
-					strLevel(pWeapon->GetLevel()),
+					(LPSTR)strLevel(pWeapon->GetLevel()),
 					pWeapon->GetNounPhrase().GetASCIIZPointer(),
 					szBuffer,
 					szEval);

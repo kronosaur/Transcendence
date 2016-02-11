@@ -78,6 +78,7 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_REMOVE_ACTION		22
 #define FN_SCR_ACTION_DESC			23
 #define FN_SCR_IS_ACTION_ENABLED	24
+#define FN_SCR_BACKGROUND_IMAGE		25
 
 ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -208,6 +209,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"scrSetActionLabel",			fnScrSet,		FN_SCR_ACTION_LABEL,
 			"(scrSetActionLabel screen actionID label [key] [special])",
 			"ivs*",		PPFLAG_SIDEEFFECTS, },
+
+		{	"scrSetBackgroundImage",		fnScrSet,		FN_SCR_BACKGROUND_IMAGE,
+			"(scrSetBackgroundImage screen imageDesc)",
+			"iv",		PPFLAG_SIDEEFFECTS, },
 
 		{	"scrSetControlValue",			fnScrSet,		FN_SCR_CONTROL_VALUE,
 			"(scrSetControlValue screen controlID value) -> True/Nil",
@@ -1496,6 +1501,16 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			if (pSpecial)
 				Actions.SetSpecial(*pCC, iAction, pSpecial, NULL);
 
+			return pCC->CreateTrue();
+			}
+
+		case FN_SCR_BACKGROUND_IMAGE:
+			{
+			IDockScreenDisplay::SBackgroundDesc Desc;
+			if (!IDockScreenDisplay::ParseBackgrounDesc(pArgs->GetElement(1), &Desc))
+				return pCC->CreateError(CONSTLIT("Invalid image description"), pArgs->GetElement(1));
+
+			pScreen->SetBackground(Desc);
 			return pCC->CreateTrue();
 			}
 

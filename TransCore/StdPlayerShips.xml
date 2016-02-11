@@ -90,7 +90,7 @@
 			>
 
 		<PlayerSettings
-			desc=				"The EI500 is slow and ungraceful, but its omnidirectional laser can hit even the fastest gunships. Seven open slots for devices give you lots of upgrade flexibility."
+			desc=				"The EI500 is slow and ungraceful, but its omnidirectional laser can hit even the fastest gunships. Six open slots for devices give you lots of upgrade flexibility."
 			largeImage=			"&rsEI100XLarge;"
 			initialClass=		"true"
 			startingCredits=	"5d20+200"

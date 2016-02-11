@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+<!-- DEFAULT FIRE EFFECTS ======================================================
+
+	These effects may be used in weapons to create fire effects.
+	
+-->
+	
+	<EffectType UNID="&efLaserFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					intensity=		"50"
+					
+					lifetime=		"3"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							(laserColor (coreCalcLaserColor damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 2 30 12 28 50)
+								primaryColor: (@ laserColor 'primaryColor)
+								secondaryColor: (@ laserColor 'secondaryColor)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<Ray	style=			"smooth"
+					shape=			"tapered"
+					intensity=		"50"
+					xformRotation=	"180"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							(laserColor (coreCalcLaserColor damageHP))
+							)
+							
+							{
+								length: (mathScale damageHP 2 30 24 56 50)
+								width: (mathScale damageHP 2 30 25 56 50)
+								primaryColor: (@ laserColor 'primaryColor)
+								secondaryColor: (@ laserColor 'secondaryColor)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efKineticFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"smooth"
+					animate=		"fade"
+					spikeCount=		"6"
+					intensity=		"20"
+					lifetime=		"3"
+					
+					blendMode=		"screen"
+					primaryColor=	"#b3f3ff"
+					secondaryColor=	"#e5faff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 2 30 18 42 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efParticleFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					intensity=		"50"
+					primaryColor=	"#65ff2c"
+					secondaryColor=	"#808417"
+					
+					lifetime=		"3"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 5 64 12 28 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<Ray	style=			"smooth"
+					shape=			"tapered"
+					intensity=		"50"
+					xformRotation=	"180"
+					primaryColor=	"#65ff2c"
+					secondaryColor=	"#808417"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								length: (mathScale damageHP 5 64 24 56 50)
+								width: (mathScale damageHP 5 64 18 42 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efBlastFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Ray	style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#feffa1"
+					secondaryColor=	"#f76e24"
+					xformRotation=	"180"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:	(mathScale damageHP 5 64 16 64 50)
+								width: (mathScale damageHP 5 64 24 96 50)
+								intensity: 70
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efIonFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					intensity=		"50"
+					primaryColor=	"#00d5ff"
+					secondaryColor=	"#006b80"
+					
+					lifetime=		"3"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 10 140 12 28 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<Ray	style=			"jagged"
+					shape=			"tapered"
+					intensity=		"50"
+					xformRotation=	"180"
+					primaryColor=	"#00d5ff"
+					secondaryColor=	"#006b80"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								length: (mathScale damageHP 10 140 24 56 50)
+								width: (mathScale damageHP 10 140 18 42 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efThermoFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Ray	style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#feffa1"
+					secondaryColor=	"#f76e24"
+					xformRotation=	"180"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:	(mathScale damageHP 10 140 16 64 50)
+								width: (mathScale damageHP 10 140 24 96 50)
+								intensity: 70
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efPositronFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					intensity=		"50"
+					primaryColor=	"#f9ffb3"
+					secondaryColor=	"#806a00"
+					
+					lifetime=		"3"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 20 300 24 34 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<Ray	style=			"grainy"
+					shape=			"oval"
+					intensity=		"50"
+					xformRotation=	"180"
+					primaryColor=	"#f9ffb3"
+					secondaryColor=	"#806a00"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								length: (mathScale damageHP 20 300 24 56 50)
+								width: (mathScale damageHP 20 300 18 42 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efPlasmaFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"smooth"
+					animate=		"fade"
+					intensity=		"10"
+					
+					primaryColor=	"#feff00"
+					secondaryColor=	"#ffbf00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 20 300 24 120 50)
+								lifetime: (mathScale damageHP 20 300 2 8 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efAntimatterFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"smooth"
+					animate=		"fade"
+					lifetime=		"9"
+					spikeCount=		"6"
+					
+					primaryColor=	"#fbffcc"
+					secondaryColor=	"#ffe566"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 50 680 30 80 50)
+								intensity: (random 20 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efGravitonFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb
+					style=				"smooth"
+					animate=			"fade"
+					intensity=			"20"
+					spikeCount=			"6"
+					primaryColor=		"#beb1ff"
+					secondaryColor=		"#9580ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								lifetime: (mathScale damageHP 110 1500 3 10 50)
+								radius: (mathScale damageHP 110 1500 40 100 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<Shockwave
+					style=			"glowRing"
+					speed=			"50"
+				
+					width=			"1"
+					glowSize=		"8"
+					fadeStart=		"0"
+					primaryColor=	"#9580ff"
+					secondaryColor=	"#2a00ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								lifetime: (mathScale damageHP 110 1500 3 5 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Shockwave>
+		</Effect>
+	</EffectType>
+
+</TranscendenceModule>

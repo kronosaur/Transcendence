@@ -12,7 +12,7 @@
 	<ItemType UNID="&itCentauriCLAW;"
 			name=				"CLAW cannon"
 			level=				"3"
-			value=				"2800"
+			value=				"1700"
 			mass=				"6000"
 			frequency=			"rare"
 			attributes=			"centauriWarlords; MajorItem; NotForSale"
@@ -30,9 +30,10 @@
 				deviceSlots=		"2"
 
 				repeating=			"3"
-				damage=				"kinetic:1d6+1; momentum1"
-				fireRate=			"35"
-				missileSpeed=		"50"
+				damage=				"kinetic:1d6+1; momentum:1"
+				fireRate=			"24"
+				missileSpeed=		"40"
+				interaction=		"50"
 				lifetime=			"30"
 				powerUse=			"100"
 
@@ -52,7 +53,7 @@
 	<ItemType UNID="&itCentauriHeavyCLAW;"
 			name=				"heavy CLAW cannon"
 			level=				"3"
-			value=				"2800"
+			value=				"1800"
 			mass=				"6000"
 			frequency=			"rare"
 			attributes=			"centauriWarlords; MajorItem; NotForSale"
@@ -69,8 +70,8 @@
 				type=				"missile"
 				deviceSlots=		"2"
 
-				damage=				"kinetic:2d8+1; momentum1; WMD1"
-				fireRate=			"15"
+				damage=				"kinetic:2d8+1; momentum:1; WMD:5"
+				fireRate=			"16"
 				missileSpeed=		"50"
 				interaction=		"50"
 				lifetime=			"20"
@@ -92,7 +93,7 @@
 	<ItemType UNID="&itCentauriRecoilless;"
 			name=				"Centauri recoilless| Centauri recoilless cannons"
 			level=				"1"
-			value=				"350"
+			value=				"150"
 			mass=				"2500"
 			frequency=			"uncommon"
 			attributes=			"centauriWarlords; MajorItem; NotForSale"
@@ -494,7 +495,7 @@
 			rotationAccel=		"1.0"
 			/>
 
-		<Image imageID="&rsMediumShips2;" imageX="384" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips2;" imageX="384" imageY="0" imageWidth="64" imageHeight="64"/>
 
 		<AISettings
 			fireRateAdj=		"30"
@@ -616,7 +617,8 @@
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"150"
-			explosionType=		"&vtBlastExplosion3;"
+            regen=              "0.5"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, human, occupation, populated"
@@ -841,9 +843,9 @@
 			canAttack=			"true"
 
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"75"
+			hitPoints=			"90"
 			fireRateAdj=		"40"
-			explosionType=		"&vtKineticExplosion3;"
+			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, generic, human, populated, warlords"

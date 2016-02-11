@@ -56,7 +56,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips2;" imageX="768" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips2;" imageX="768" imageY="0" imageWidth="64" imageHeight="64"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"/>
@@ -368,7 +368,7 @@
 			rotationAccel=		"1.0"
 			/>
 
-		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -422,7 +422,7 @@
 			<Item count="3d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -478,7 +478,7 @@
 			<Item count="3d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -540,7 +540,7 @@
 			combatStyle=		"advanced"
 			/>
 
-		<Image imageID="&rsMediumShips1;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
@@ -739,10 +739,10 @@
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"100"
-			repairRate=			"1"
+			regen=              "0.5"
 			shipRepairRate=		"1"
 			fireRateAdj=		"80"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, majorStation, primary, populated"
@@ -781,7 +781,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +Commonwealth; +BasicAmmo; -Illegal; -NotForSale; -notStandard; L:1-3;" priceAdj="115" inventoryAdj="100"/>
+			<Sell	criteria="m +commonwealth; +basicAmmo; -illegal; -notForSale; -notStandard; L:1-4;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
@@ -946,11 +946,11 @@
 
 			multiHull=			"true"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"300"
-			repairRate=			"1"
+			hitPoints=			"560"
+			regen=              "2.8"
 			shipRepairRate=		"1"
 			fireRateAdj=		"40"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, majorStation, primary, populated"
@@ -987,7 +987,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +Commonwealth; -Military; -Illegal; -NotForSale; -notStandard;" priceAdj="115" inventoryAdj="100"/>
+			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
@@ -1112,10 +1112,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"250"
-			repairRate=			"2"
+			hitPoints=			"370"
+			regen=              "1.1"
 			shipRepairRate=		"3"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, majorStation, populated"
@@ -1196,11 +1196,11 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"100"
-			repairRate=			"1"
+			hitPoints=			"120"
+			regen=              "0.4"
 			shipRepairRate=		"1"
 			fireRateAdj=		"80"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated"
@@ -1322,7 +1322,7 @@
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"250"
-			repairRate=			"1"
+			regen=              "0.5"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated"
@@ -1646,7 +1646,7 @@
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"150"
-			repairRate=			"1"
+			regen=              "0.5"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated"
@@ -1916,7 +1916,7 @@
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"250"
-			repairRate=			"1"
+			regen=              "0.5"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, friendly, generic, human, populated"
@@ -2128,11 +2128,11 @@
 
 			multiHull=			"true"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"450"
-			repairRate=			"1"
+			hitPoints=			"950"
+			regen=              "4.8"
 			shipRepairRate=		"1"
 			fireRateAdj=		"40"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, populated"
@@ -2170,7 +2170,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +Commonwealth; -PremiumAmmo; -Illegal; -NotForSale; -notStandard;" priceAdj="115" inventoryAdj="100"/>
+			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
@@ -2292,7 +2292,7 @@
 
 			mass=				"5000"
 			armorID=			"&itLightTitaniumPlate;"
-			hitPoints=			"10"
+			hitPoints=			"20"
 			>
 
 		<Image imageID="&rsStations1;" imageX="0" imageY="668" imageWidth="128" imageHeight="64"/>
@@ -2399,7 +2399,7 @@
 			(setq intCommonwealthOnDestroy (lambda Nil
 				(block Nil
 					; Destroy items on the station
-					(intDestroyItems gSource)
+					(rpgDestroyItems gSource)
 
 					; Add to the player's record
 					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
@@ -3623,7 +3623,10 @@
 						)
 						
 					; If we were docked at an object that we just looted, then destroy the object
-					(if (objGetData dockedAt "0010300c_marked")
+					(if (and (objGetData dockedAt "0010300c_marked")
+							(ls (objGetProperty dockedAt 'mass) 2000)
+							(not (objGetProperty dockedAt 'immutable))
+							)
 						(objDestroy dockedAt gSource)
 						)
 					)

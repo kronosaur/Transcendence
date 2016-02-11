@@ -38,7 +38,7 @@
 	<ItemType UNID="&itQuantumsphereDisintegrator;"
 			name=				"Quantumsphere disintegrator"
 			level=				"13"
-			value=				"4000000"
+			value=				"3000000"
 			mass=				"15000"
 			frequency=			"veryrare"
 			attributes=			"Alien; Iocrym; MajorItem"
@@ -50,7 +50,7 @@
 
 		<Weapon
 				fireRate=			"50"
-				powerUse=			"8000"
+				powerUse=			"1000"
 				>
 
 			<Missiles>
@@ -62,11 +62,12 @@
 						hitPoints=		"10"
 						accelerationFactor="125"
 						maxMissileSpeed="60"
-						maneuverability="6"
+						maneuverRate=	"3"
 						lifetime=		"360"
 						
 						noFriendlyFire=	"true"
 
+						hitEffect=		"&efQuantumsphereHit;"
 						sound=			"&snRecoillessCannon;"
 						>
 
@@ -74,10 +75,14 @@
 						<PlasmaSphere
 								spikeCount=		"1d6+2"
 								spikeLength=	"4d20"
-								primaryColor=	"0x80, 0xff, 0xff"
-								secondaryColor=	"0x00, 0xff, 0xff"
+								primaryColor=	"#80ffff"
+								secondaryColor=	"#00ffff"
 								/>
 					</Effect>
+					
+					<FireEffect>
+						<Null/>
+					</FireEffect>
 				</Missile>
 			</Missiles>
 		</Weapon>
@@ -162,7 +167,7 @@
 	<ItemType UNID="&itPlasmaThrower;"
 			name=				"Iocrym Avalanche cannon"
 			level=				"12"
-			value=				"1000000"
+			value=				"1500000"
 			mass=				"50000"
 			attributes=			"Alien; Iocrym; MajorItem"
 			frequency=			"rare"
@@ -180,43 +185,22 @@
 				configuration=	"wall"
 				damage=			"plasma:50; WMD5"
 				fireRate=		"20"
-				missileSpeed=	"20-40"
-				lifetime=		"26-32"
 				powerUse=		"6000"
-
-				particleCount=	"5d6"
-				particleEmitTime="5-12"
-				particleSpreadWidth="25" 
-				particleSpreadAngle="0"
 
 				sound=			"&snMissileLauncher;"
 				>
-
-			<Effect>
-				<Shape
-						directional=		"true"
-						scaleLength=		"16" 
-						scaleWidth=			"6"
-
-						scaleLengthInc=		"3" 
-
-						color=				"0xff, 0xfd, 0xad"
-						opacity=			"64"
-						>
-					<Point x="0"	y="0"/>
-					<Point x="-5"	y="29"/>
-					<Point x="-10"	y="44"/>
-					<Point x="-20"	y="50"/>
-					<Point x="-30"	y="47"/>
-					<Point x="-40"	y="44"/>
-					<Point x="-100"	y="0"/>
-					<Point x="-40"	y="-44"/>
-					<Point x="-30"	y="-47"/>
-					<Point x="-20"	y="-50"/>
-					<Point x="-10"	y="-44"/>
-					<Point x="-5"	y="-29"/>
-				</Shape>
-			</Effect>
+			
+			<ParticleSystem
+					style=				"spray"
+					emitLifetime=		"5-12"
+					emitRate=			"5d6"
+					emitSpeed=			"20-40"
+					emitWidth=			"25"
+					
+					particleLifetime=	"26-32"
+					particleEffect=		"&efPlasmaParticleDefault;"
+					>
+			</ParticleSystem>
 		</Weapon>
 
 	</ItemType>
@@ -277,14 +261,7 @@
 
 				damage=			"plasma:50; WMD2"
 				fireRate=		"15"
-				missileSpeed=	"20-40"
-				lifetime=		"26-32"
 				powerUse=		"3000"
-
-				particleCount=	"5d6"
-				particleEmitTime="5-12"
-				particleSpreadWidth="25" 
-				particleSpreadAngle="0"
 
 				sound=			"&snMissileLauncher;"
 				>
@@ -293,32 +270,18 @@
 				<Shot posAngle="90"  posRadius="10" angle="0"/>
 				<Shot posAngle="270" posRadius="10" angle="0"/>
 			</Configuration>
-
-			<Effect>
-				<Shape
-						directional=		"true"
-						scaleLength=		"16" 
-						scaleWidth=			"6"
-
-						scaleLengthInc=		"3" 
-
-						color=				"0xff, 0xfd, 0xad"
-						opacity=			"64"
-						>
-					<Point x="0"	y="0"/>
-					<Point x="-5"	y="29"/>
-					<Point x="-10"	y="44"/>
-					<Point x="-20"	y="50"/>
-					<Point x="-30"	y="47"/>
-					<Point x="-40"	y="44"/>
-					<Point x="-100"	y="0"/>
-					<Point x="-40"	y="-44"/>
-					<Point x="-30"	y="-47"/>
-					<Point x="-20"	y="-50"/>
-					<Point x="-10"	y="-44"/>
-					<Point x="-5"	y="-29"/>
-				</Shape>
-			</Effect>
+			
+			<ParticleSystem
+					style=				"spray"
+					emitLifetime=		"8"
+					emitRate=			"5d6"
+					emitSpeed=			"30"
+					emitWidth=			"25"
+					
+					particleLifetime=	"26-32"
+					particleEffect=		"&efPlasmaParticleDefault;"
+					>
+			</ParticleSystem>
 		</Weapon>
 
 	</ItemType>
@@ -328,7 +291,7 @@
 	<ItemType UNID="&itIocrymRepeller;"
 			name=				"Iocrym repeller"
 			level=				"10"
-			value=				"400000"
+			value=				"150000"
 			mass=				"5000"
 			frequency=			"veryrare"
 			attributes=			"Alien; Iocrym; Military; MajorItem; NotForSale"
@@ -424,7 +387,7 @@
 			cyberDefenseLevel=	"12"
 			timeStopImmune=		"true"
 
-			explosionType=		"&vtPlasmaExplosion1;"
+			explosionType=		"&vtPlasmaExplosion3;"
 			structuralHitPoints="50000"
 			>
 
@@ -629,7 +592,95 @@
 			<Port x="42"	y="-85" />
 		</DockingPorts>
 	</StationType>
-
+	
+<!-- EFFECTS -->
+	
+	<EffectType UNID="&efQuantumsphereHit;"
+			sound="&snArmorHit1;"
+			>
+		<Effect>
+			<Orb	style=			"smooth"
+					animate=		"fade"
+					intensity=		"30"
+					
+					blendMode=		"screen"
+					primaryColor=	"#80ffff"
+					secondaryColor=	"#00ffff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 50 680 50 100 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 50 680 24 60 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<ParticleSystem
+					style=				"radiate"
+					emitLifetime=		"1"
+					emitSpeed=			"10-20"
+					>
+				<ParticleEffect>
+					<Orb
+							instance=			"owner"
+						
+							style=				"smooth"
+							animate=			"fade"
+							radius=				"10"
+							intensity=			"20"
+						
+							blendMode=			"screen"
+							primaryColor=		"#80ffff"
+							secondaryColor=		"#00ffff"
+							>
+						<Events>
+							<GetParameters>
+								(block (
+									(damageHP (@ gData 'damageHP))
+									)
+									{
+										lifetime: (mathScale damageHP 50 680 12 30 50)
+										}
+									)
+							</GetParameters>
+						</Events>
+					</Orb>
+				</ParticleEffect>
+				
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								emitRate: (mathScale damageHP 50 680 30 100 50)
+								particleLifetime: (mathScale damageHP 50 680 12 30 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleSystem>
+		</Effect>
+		
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+					{
+						noSound: (= damageHP 0)
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
+	
 <!-- RESOURCES -->
 
 	<Image UNID="&rsIocrymSentinel;"	bitmap="Resources\IocrymSentinel.jpg" bitmask="Resources\IocrymSentinelMask.bmp" loadOnUse="true"/>

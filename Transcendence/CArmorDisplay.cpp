@@ -5,39 +5,11 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-#define ARMOR_SECTION_COUNT				4
-
-#define DISPLAY_WIDTH					360
-#define DISPLAY_HEIGHT					136
-
-#define SHIELD_IMAGE_WIDTH				136
-#define SHIELD_IMAGE_HEIGHT				136
-
-#define DESCRIPTION_WIDTH				(DISPLAY_WIDTH - SHIELD_IMAGE_WIDTH)
-
-#define HP_DISPLAY_WIDTH				26
-#define HP_DISPLAY_HEIGHT				14
-
-#define HP_DISPLAY_BACK_COLOR			CG32bitPixel(0,23,167)
-#define HP_DISPLAY_TEXT_COLOR			CG32bitPixel(150,180,255)
-
-#define SHIELD_HP_DISPLAY_X				DESCRIPTION_WIDTH
-#define SHIELD_HP_DISPLAY_Y				(DISPLAY_HEIGHT - 16)
-#define SHIELD_HP_DISPLAY_WIDTH			26
-#define SHIELD_HP_DISPLAY_HEIGHT		14
-#define DISABLED_TEXT_COLOR				CG32bitPixel(128,0,0)
-
-#define ARMOR_NAME_COLOR				CG32bitPixel(150,180,255)
-#define ARMOR_LINE_COLOR				CG32bitPixel(0,23,167)
-#define ARMOR_ENHANCE_X					224
-
-#define RGB_NAME_BACKGROUND				CG32bitPixel(16,16,16)
-
-CArmorDisplay::CArmorDisplay (void) : m_pUniverse(NULL),
+CArmorDisplay::CArmorDisplay (void) : 
 		m_pPlayer(NULL),
 		m_iSelection(-1),
-		m_dwCachedShipID(0),
-		m_pShieldPainter(NULL)
+		m_pArmorPainter(NULL),
+		m_pShieldsPainter(NULL)
 
 //	CArmorDisplay constructor
 
@@ -59,16 +31,44 @@ void CArmorDisplay::CleanUp (void)
 //	Delete relevant stuff
 
 	{
-	if (m_pShieldPainter)
+	if (m_pArmorPainter)
 		{
-		m_pShieldPainter->Delete();
-		m_pShieldPainter = NULL;
+		delete m_pArmorPainter;
+		m_pArmorPainter = NULL;
+		}
+
+	if (m_pShieldsPainter)
+		{
+		delete m_pShieldsPainter;
+		m_pShieldsPainter = NULL;
 		}
 
 	m_pPlayer = NULL;
 	}
 
-ALERROR CArmorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect)
+RECT CArmorDisplay::GetRect (void) const
+
+//	GetRect
+//
+//	Returns the RECT for the display. Only valid after Init.
+
+	{
+	RECT rcRect;
+
+	if (m_pArmorPainter == NULL)
+		{
+		rcRect.left = 0;
+		rcRect.right = 0;
+		rcRect.top = 0;
+		rcRect.bottom = 0;
+		}
+	else
+		m_pArmorPainter->GetRect(&rcRect);
+
+	return rcRect;
+	}
+
+ALERROR CArmorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect, DWORD dwLocation)
 
 //	Init
 //
@@ -77,14 +77,18 @@ ALERROR CArmorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect)
 	{
 	CleanUp();
 
-	m_pUniverse = pPlayer->GetShip()->GetUniverse();
 	m_pPlayer = pPlayer;
-	m_rcRect = rcRect;
 
-	//	Create the off-screen buffer
+	//	Create the two painters
 
-	if (!m_Buffer.Create(DISPLAY_WIDTH, DISPLAY_HEIGHT, CG32bitImage::alpha8))
-		return ERR_FAIL;
+	CShip *pShip = m_pPlayer->GetShip();
+
+	SDesignLoadCtx Ctx;
+	m_pArmorPainter = IHUDPainter::Create(Ctx, pShip->GetClass(), hudArmor);
+	m_pShieldsPainter = IHUDPainter::Create(Ctx, pShip->GetClass(), hudShields);
+
+	if (m_pArmorPainter)
+		m_pArmorPainter->SetLocation(rcRect, dwLocation);
 
 	return NOERROR;
 	}
@@ -96,32 +100,17 @@ void CArmorDisplay::Paint (CG32bitImage &Dest)
 //	Paints to the destination
 
 	{
-	DEBUG_TRY
+	if (m_pPlayer == NULL
+			|| m_pArmorPainter == NULL)
+		return;
 
-	int i;
+	SHUDPaintCtx PaintCtx;
+	PaintCtx.pSource = m_pPlayer->GetShip();
+	PaintCtx.iSegmentSelected = m_iSelection;
+	PaintCtx.pShieldsHUD = m_pShieldsPainter;
+	PaintCtx.byOpacity = g_pUniverse->GetSFXOptions().GetHUDOpacity();
 
-	Dest.Blt(0,
-			0,
-			RectWidth(m_rcRect),
-			RectHeight(m_rcRect),
-			255,
-			m_Buffer,
-			m_rcRect.left,
-			m_rcRect.top);
-
-	//	We paint some text on top so that we get the proper antialiasing
-
-	for (i = 0; i < m_Text.GetCount(); i++)
-		{
-		STextPaint *pPaint = &m_Text[i];
-		pPaint->pFont->DrawText(Dest,
-				m_rcRect.left + pPaint->x,
-				m_rcRect.top + pPaint->y,
-				pPaint->rgbColor,
-				pPaint->sText);
-		}
-
-	DEBUG_CATCH
+	m_pArmorPainter->Paint(Dest, PaintCtx);
 	}
 
 void CArmorDisplay::SetSelection (int iSelection)
@@ -145,297 +134,9 @@ void CArmorDisplay::Update (void)
 //	Updates buffer from data
 
 	{
-	int i;
+	if (m_pArmorPainter)
+		m_pArmorPainter->Invalidate();
 
-	if (m_pPlayer == NULL)
-		return;
-
-	const CVisualPalette &VI = g_pHI->GetVisuals();
-
-	CShip *pShip = m_pPlayer->GetShip();
-	const CPlayerSettings *pSettings = pShip->GetClass()->GetPlayerSettings();
-	CItemListManipulator ItemList(pShip->GetItemList());
-	const CG16bitFont &SmallFont = m_pPlayer->GetTrans()->GetFonts().Small;
-	m_Text.DeleteAll();
-
-	//	If we've changed ships then we need to delete the painters
-
-	if (m_dwCachedShipID != pShip->GetID())
-		{
-		if (m_pShieldPainter)
-			{
-			m_pShieldPainter->Delete();
-			m_pShieldPainter = NULL;
-			}
-
-		m_dwCachedShipID = pShip->GetID();
-		}
-
-	//	Erase everything
-
-	m_Buffer.Set(CG32bitPixel::Null());
-
-	//	Figure out the status of the shields
-
-	int iHP = 0;
-	int iMaxHP = 10;
-	CInstalledDevice *pShield = pShip->GetNamedDevice(devShields);
-	if (pShield)
-		pShield->GetStatus(pShip, &iHP, &iMaxHP);
-
-	//	Draw the base ship image, if we have it
-
-	const SArmorImageDesc &ArmorDesc = pSettings->GetArmorDesc();
-	if (ArmorDesc.ShipImage.IsLoaded())
-		{
-		const RECT &rcShip = ArmorDesc.ShipImage.GetImageRect();
-
-		//	For backwards compatibility, we blt with black as a back color if
-		//	we don't have a mask.
-
-		CGDraw::BltWithBackColor(m_Buffer,
-				 DESCRIPTION_WIDTH + ((SHIELD_IMAGE_WIDTH - RectWidth(rcShip)) / 2),
-				(SHIELD_IMAGE_HEIGHT - RectHeight(rcShip)) / 2,
-				ArmorDesc.ShipImage.GetImage(NULL_STR),
-				rcShip.left, 
-				rcShip.top, 
-				RectWidth(rcShip), 
-				RectHeight(rcShip),
-				CG32bitPixel(0, 0, 0));
-		}
-
-	//	Draw the old-style shields
-
-	const SShieldImageDesc &ShieldDesc = pSettings->GetShieldDesc();
-	if (!ShieldDesc.pShieldEffect)
-		{
-		int iWhole = (iMaxHP > 0 ? (iHP * 100) / iMaxHP : 0);
-		int iIndex = (100 - iWhole) / 20;
-
-		const RECT &rcShield = ShieldDesc.Image.GetImageRect();
-		m_Buffer.Blt(rcShield.left, 
-				rcShield.top + (RectHeight(rcShield) * iIndex), 
-				RectWidth(rcShield), 
-				RectHeight(rcShield), 
-				255,
-				ShieldDesc.Image.GetImage(NULL_STR), 
-				DESCRIPTION_WIDTH + ((SHIELD_IMAGE_WIDTH - RectWidth(rcShield)) / 2),
-				(SHIELD_IMAGE_HEIGHT - RectHeight(rcShield)) / 2);
-		}
-
-	if (pShield)
-		{
-		int cxWidth;
-
-		if (iMaxHP > 0)
-			{
-			m_Buffer.Fill(SHIELD_HP_DISPLAY_X,
-					SHIELD_HP_DISPLAY_Y, 
-					SHIELD_HP_DISPLAY_WIDTH, 
-					SHIELD_HP_DISPLAY_HEIGHT,
-					VI.GetColor(colorAreaShields));
-		
-			CString sHP = strFromInt(iHP);
-			int cxWidth = m_pFonts->Medium.MeasureText(sHP, NULL);
-			m_pFonts->Medium.DrawText(m_Buffer,
-					SHIELD_HP_DISPLAY_X + (SHIELD_HP_DISPLAY_WIDTH - cxWidth) / 2,
-					SHIELD_HP_DISPLAY_Y - 1,
-					VI.GetColor(colorTextShields),
-					sHP);
-			}
-
-		CGDraw::LineBroken(m_Buffer,
-				0,
-				SHIELD_HP_DISPLAY_Y,
-				SHIELD_HP_DISPLAY_X,
-				SHIELD_HP_DISPLAY_Y,
-				0,
-				VI.GetColor(colorAreaShields));
-
-		CG32bitPixel rgbColor;
-		if (pShield->IsEnabled() && !pShield->IsDamaged() && !pShield->IsDisrupted())
-			rgbColor = VI.GetColor(colorTextShields);
-		else
-			rgbColor = DISABLED_TEXT_COLOR;
-
-		CString sShieldName = pShield->GetClass()->GetName();
-		int cyHeight;
-		cxWidth = m_pFonts->Medium.MeasureText(sShieldName, &cyHeight);
-
-		//	Add the shield name to list of text to paint
-
-		STextPaint *pPaint = m_Text.Insert();
-		pPaint->sText = sShieldName;
-		pPaint->x = 0;
-		pPaint->y = SHIELD_HP_DISPLAY_Y;
-		pPaint->pFont = &m_pFonts->Medium;
-		pPaint->rgbColor = rgbColor;
-
-		//	Paint the modifiers
-
-		if (pShield->GetEnhancements() != NULL)
-			{
-			pShip->SetCursorAtNamedDevice(ItemList, devShields);
-			CString sMods = pShield->GetEnhancedDesc(pShip, &ItemList.GetItemAtCursor());
-			if (!sMods.IsBlank())
-				{
-				bool bDisadvantage = (*(sMods.GetASCIIZPointer()) == '-');
-
-				int cx = SmallFont.MeasureText(sMods);
-				m_Buffer.Fill(SHIELD_HP_DISPLAY_X - cx - 8,
-						SHIELD_HP_DISPLAY_Y,
-						cx + 8,
-						SHIELD_HP_DISPLAY_HEIGHT,
-						(bDisadvantage ? VI.GetColor(colorAreaDisadvantage) : VI.GetColor(colorAreaAdvantage)));
-
-				SmallFont.DrawText(m_Buffer,
-						SHIELD_HP_DISPLAY_X - cx - 4,
-						SHIELD_HP_DISPLAY_Y + (SHIELD_HP_DISPLAY_HEIGHT - SmallFont.GetHeight()) / 2,
-						(bDisadvantage ? VI.GetColor(colorTextDisadvantage) : VI.GetColor(colorTextAdvantage)),
-						sMods);
-				}
-			}
-		}
-
-	//	Draw armor
-
-	for (i = 0; i < pShip->GetArmorSectionCount(); i++)
-		{
-		const SArmorSegmentImageDesc *pImage = pSettings->GetArmorDesc(i);
-		if (pImage == NULL)
-			continue;
-
-		CInstalledArmor *pArmor = pShip->GetArmorSection(i);
-		int iMaxHP = pArmor->GetMaxHP(pShip);
-		int iWhole = (iMaxHP == 0 ? 100 : (pArmor->GetHitPoints() * 100) / iMaxHP);
-		int iIndex = (100 - iWhole) / 20;
-		
-		if (iIndex < 5)
-			{
-			const RECT &rcImage = pImage->Image.GetImageRect();
-
-			CGDraw::BltWithBackColor(m_Buffer,
-					DESCRIPTION_WIDTH + pImage->xDest,
-					pImage->yDest,
-					pImage->Image.GetImage(NULL_STR),
-					rcImage.left,
-					rcImage.top + iIndex * RectHeight(rcImage),
-					RectWidth(rcImage),
-					RectHeight(rcImage),
-					CG32bitPixel(0, 0, 0));
-			}
-		}
-
-	//	Draw the new style shields on top
-
-	if (ShieldDesc.pShieldEffect)
-		{
-		int x = DESCRIPTION_WIDTH + SHIELD_IMAGE_WIDTH / 2;
-		int y = SHIELD_IMAGE_HEIGHT / 2;
-
-		SViewportPaintCtx Ctx;
-		Ctx.iTick = g_pUniverse->GetTicks();
-		Ctx.iVariant = (iMaxHP > 0 ? (iHP * 100) / iMaxHP : 0);
-		Ctx.iDestiny = pShip->GetDestiny();
-		Ctx.iRotation = 90;
-
-		if (m_pShieldPainter == NULL)
-			m_pShieldPainter = ShieldDesc.pShieldEffect->CreatePainter(CCreatePainterCtx());
-
-		m_pShieldPainter->Paint(m_Buffer, x, y, Ctx);
-		}
-
-	//	Draw armor names
-
-	for (i = 0; i < pShip->GetArmorSectionCount(); i++)
-		{
-		const SArmorSegmentImageDesc *pImage = pSettings->GetArmorDesc(i);
-		if (pImage == NULL)
-			continue;
-
-		CInstalledArmor *pArmor = pShip->GetArmorSection(i);
-
-		//	Paint the HPs
-
-		if (i == m_iSelection)
-			{
-			m_Buffer.Fill(DESCRIPTION_WIDTH + pImage->xHP - 1, 
-					pImage->yHP - 1, 
-					HP_DISPLAY_WIDTH + 2, 
-					HP_DISPLAY_HEIGHT + 2,
-					CG32bitPixel::Darken(m_pFonts->rgbSelectBackground, 128));
-			}
-		else
-			{
-			m_Buffer.Fill(DESCRIPTION_WIDTH + pImage->xHP, 
-					pImage->yHP, 
-					HP_DISPLAY_WIDTH, 
-					HP_DISPLAY_HEIGHT,
-					HP_DISPLAY_BACK_COLOR);
-			}
-
-		CString sHP = strFromInt(pArmor->GetHitPoints());
-		int cxWidth = m_pFonts->Medium.MeasureText(sHP, NULL);
-		m_pFonts->Medium.DrawText(m_Buffer,
-				DESCRIPTION_WIDTH + pImage->xHP + (HP_DISPLAY_WIDTH - cxWidth) / 2,
-				pImage->yHP - 1,
-				m_pFonts->rgbTitleColor,
-				sHP);
-
-		//	Paint the armor name line
-
-		CGDraw::LineBroken(m_Buffer,
-				0,
-				pImage->yName + m_pFonts->Medium.GetHeight(),
-				DESCRIPTION_WIDTH + pImage->xHP + pImage->xNameDestOffset,
-				pImage->yHP + pImage->yNameDestOffset,
-				pImage->cxNameBreak,
-				(i == m_iSelection ? CG32bitPixel::Darken(m_pFonts->rgbSelectBackground, 128) : ARMOR_LINE_COLOR));
-
-		//	Paint the armor names
-
-		CString sName = pArmor->GetClass()->GetShortName();
-		int cy;
-		int cx = m_pFonts->Medium.MeasureText(sName, &cy) + 4;
-		if (i == m_iSelection)
-			{
-			m_Buffer.Fill(0, 
-					pImage->yName, 
-					cx, 
-					cy,
-					CG32bitPixel::Darken(m_pFonts->rgbSelectBackground, 128));
-			}
-
-		STextPaint *pPaint = m_Text.Insert();
-		pPaint->sText = sName;
-		pPaint->x = 2;
-		pPaint->y = pImage->yName;
-		pPaint->pFont = &m_pFonts->Medium;
-		pPaint->rgbColor = m_pFonts->rgbTitleColor;
-
-		//	Paint the modifiers
-
-		if (pArmor->GetMods().IsNotEmpty())
-			{
-			pShip->SetCursorAtArmor(ItemList, i);
-			CString sMods = ItemList.GetItemAtCursor().GetEnhancedDesc(pShip);
-			if (!sMods.IsBlank())
-				{
-				bool bDisadvantage = (*(sMods.GetASCIIZPointer()) == '-');
-
-				int cx = SmallFont.MeasureText(sMods);
-				m_Buffer.Fill(ARMOR_ENHANCE_X - cx - 4,
-						pImage->yName + m_pFonts->Medium.GetHeight() - HP_DISPLAY_HEIGHT,
-						cx + 8,
-						HP_DISPLAY_HEIGHT,
-						(bDisadvantage ? VI.GetColor(colorAreaDisadvantage) : VI.GetColor(colorAreaAdvantage)));
-
-				SmallFont.DrawText(m_Buffer,
-						ARMOR_ENHANCE_X - cx,
-						pImage->yName + 3,
-						(bDisadvantage ? VI.GetColor(colorTextDisadvantage) : VI.GetColor(colorTextAdvantage)),
-						sMods);
-				}
-			}
-		}
+	if (m_pShieldsPainter)
+		m_pShieldsPainter->Invalidate();
 	}

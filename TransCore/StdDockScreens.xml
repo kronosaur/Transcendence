@@ -713,7 +713,7 @@
 								(scrShowPane gScreen "SellQuantity")
 								(if (eq gMaxCount 1)
 									(block Nil
-										(intSellItems 1 gCost)
+										(rpgSellItems 1 gCost)
 										(setq gResult (add gResult gCost))
 										(scrShowPane gScreen "Default")
 										)
@@ -747,7 +747,7 @@
 							(if (gr count gMaxCount)
 								(scrSetCounter gScreen gMaxCount)
 								(block Nil
-									(intSellItems count gCost)
+									(rpgSellItems count gCost)
 									(setq gResult (add gResult (multiply count gCost)))
 									(scrShowPane gScreen "Default")
 									)

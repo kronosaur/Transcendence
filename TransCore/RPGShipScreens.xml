@@ -154,7 +154,7 @@
 
 									; Dump items
 									(setq itemsToJettison (scrRemoveItem gScreen 1))
-									(intJettisonItem gDest itemsToJettison)
+									(rpgJettisonItem gDest itemsToJettison)
 									(scrShowPane gScreen "Default")
 									)
 							)
@@ -192,7 +192,7 @@
 
 									; Dump items
 									(setq itemsToJettison (scrRemoveItem gScreen count))
-									(intJettisonItem gDest itemsToJettison)
+									(rpgJettisonItem gDest itemsToJettison)
 									(scrShowPane gScreen "Default")
 									)
 								)

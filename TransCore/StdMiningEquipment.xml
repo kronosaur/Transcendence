@@ -87,7 +87,7 @@
 			level=				"2"
 			frequency=			"rare"
 
-			value=				"550"
+			value=				"1150"
 			mass=				"2000"
 			  
 			description=		"This powerful laser is generally used for asteroid mining."
@@ -99,12 +99,13 @@
 				type=				"beam"
 
 				repeating=			"4"
-				damage=				"laser:1d4; mining:3;"
+				damage=				"laser:1d4+1; mining:3;"
 				fireRate=			"30"
 				lifetime=			"15"
 				powerUse=			"30"
 
-				hitEffect=			"&efGreenLaserHitEffect;" 
+				fireEffect=			"&efGreenLaserFireEffect;"
+				hitEffect=			"&efGreenLaserHitEffect;"
 				sound=				"&snLaserCannon;"
 				>
 			<Effect>
@@ -447,7 +448,7 @@
 			level=				"6"
 			frequency=			"rare"
 
-			value=				"18000"
+			value=				"12000"
 			mass=				"4000"
 			  
 			description=		"Plasma torches are used for large-scale asteroid mining."
@@ -457,27 +458,25 @@
 
 		<Weapon
 				type=				"particles"
-
-				damage=				"plasma:20; mining5; WMD2"
+				damage=				"plasma:30; mining:5; WMD:2"
+				
 				fireRate=			"30"
-				missileSpeed=		"40"
-				lifetime=			"30"
-				powerUse=			"300"
 
-				particleCount=		"1d11+44"
-				particleSpreadAngle="1"
+				powerUse=			"300"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Particle
-						style=			"plain"
-						minWidth=		"3" 
-						maxWidth=		"6"
-						primaryColor=	"0xfc, 0xe8, 0x87"
-						secondaryColor=	"0x85, 0x0c, 0x0f"
-						/>
-			</Effect>
+			
+			<ParticleSystem
+					style=				"spray"
+					emitLifetime=		"1"
+					emitRate=			"60-75"
+					emitSpeed=			"40"
+					spreadAngle=		"1"
+					
+					particleLifetime=	"30"
+					particleEffect=		"&efPlasmaParticleDefault;"
+					>
+			</ParticleSystem>
 		</Weapon>
 	</ItemType>
 

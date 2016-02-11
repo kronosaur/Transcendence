@@ -51,13 +51,19 @@
 			<ItemAttribute label="Assembler"		criteria="* +assemblerCorp;"/>
 			<ItemAttribute label="Bushido"			criteria="* +bushido;"/>
 			<ItemAttribute label="EI"				criteria="* +ei;"/>
+			<ItemAttribute label="Heisenmachines"	criteria="* +heisenmachines;"/>
+			<ItemAttribute label="Honoku-Tomashi"	criteria="* +honokuTomashi;"/>
 			<ItemAttribute label="Kabuto"			criteria="* +kabuto;"/>
+			<ItemAttribute label="Kartal"			criteria="* +kartal;"/>
 			<ItemAttribute label="Makayev"			criteria="* +makayev;"/>
 			<ItemAttribute label="NAMI"				criteria="* +nami;"/>
+			<ItemAttribute label="OmniDefense"		criteria="* +omniDefense;"/>
+			<ItemAttribute label="Onorad"			criteria="* +onorad;"/>
 			<ItemAttribute label="Pacific Defense"	criteria="* +pacificDefense;"/>
 			<ItemAttribute label="Rasiermesser"		criteria="* +rasiermesser;"/>
 			<ItemAttribute label="Solon"			criteria="* +solon;"/>
 			<ItemAttribute label="Taikon"			criteria="* +taikon;"/>
+			<ItemAttribute label="Tenhove"			criteria="* +tenhove;"/>
 		</AttributeDesc>
 	</Sovereign>
 
@@ -79,7 +85,7 @@
 
 			cyberDefenseLevel=	"8"
 
-			explosionType=		"&vtThermoExplosion2;"
+			explosionType=		"&vtThermoExplosion3;"
 			>
 
 		<!-- Configuration -->
@@ -153,10 +159,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itGusokuArmor;"
-			hitPoints=			"250"
-			repairRate=			"3"
+			hitPoints=			"280"
+			regen=              "0.8"
 			fireRateAdj=		"15"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -224,7 +230,7 @@
 		</Items>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Commonwealth; -Illegal; -NotForSale; -notStandard; L:4-6;" priceAdj="115" inventoryAdj="100"/>
+			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard; L:4-8;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="115"/>
 			<Buy	criteria="adumfNU -Illegal; -ID; -NotForSale;"	priceAdj="50"/>
 			<Buy	criteria="adumfNU -Illegal; -ID;"				priceAdj="10"/>
@@ -305,7 +311,7 @@
 			armorID=			"&itCeralloyArmor;"
 			hitPoints=			"100"
 			repairRate=			"1"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -458,7 +464,7 @@
 			armorID=			"&itCeralloyArmor;"
 			hitPoints=			"150"
 			repairRate=			"2"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -520,7 +526,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +Commonwealth; +BasicAmmo; -Illegal; -NotForSale; -notStandard;" priceAdj="110" inventoryAdj="100"/>
+			<Sell	criteria="m +commonwealth; +basicAmmo; -illegal; -notForSale; -notStandard;" priceAdj="110" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Buy	criteria="mwU -Illegal; -NotForSale;"	priceAdj="60"/>
 			<Buy	criteria="mwU -Illegal; -ID;"				priceAdj="10"/>
@@ -606,7 +612,7 @@
 			hitPoints=			"350"
 			repairRate=			"5"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -659,7 +665,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +Makayev; -Military; -Illegal; -NotForSale;" priceAdj="120" inventoryAdj="500"/>
+			<Sell	criteria="m +makayev; -military; -illegal; -notForSale;" priceAdj="120" inventoryAdj="500"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
@@ -724,7 +730,7 @@
 			hitPoints=			"300"
 			repairRate=			"5"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -782,7 +788,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +Bushido; -Illegal; -NotForSale;" priceAdj="120" inventoryAdj="300"/>
+			<Sell	criteria="m +bushido; -illegal; -notForSale;" priceAdj="120" inventoryAdj="300"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
 			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
@@ -839,7 +845,7 @@
 			armorID=			"&itAdvancedPlasteelPlate;"
 			hitPoints=			"350"
 			repairRate=			"5"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -906,9 +912,8 @@
 							</Action>
 
 							<Action name="Sell Autons" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Repair Active Autons" key="R">
@@ -1025,8 +1030,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itCeralloyArmor;"
-			hitPoints=			"150"
-			repairRate=			"2"
+			hitPoints=			"250"
+			regen=              "1.3"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -1164,9 +1169,8 @@
 
 						<Actions>
 							<Action name="Sell Items" default="1" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Leave" cancel="1" key="L">
@@ -1208,9 +1212,9 @@
 
 			multiHull=			"true"
 			armorID=			"&itCeralloyArmor;"
-			hitPoints=			"100"
-			repairRate=			"1"
-			explosionType=		"&vtThermoExplosion1;"
+			hitPoints=			"120"
+			regen=              "0.4"
+			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -1338,10 +1342,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itAdvancedPlasteelPlate;"
-			hitPoints=			"700"
-			repairRate=			"3"
+			hitPoints=			"1400"
+			regen=              "4"
 			fireRateAdj=		"15"
-			explosionType=		"&vtThermoExplosion2;"
+			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, majorStation, Makayev, populated"
@@ -1409,7 +1413,7 @@
 		</Items>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Makayev; -Illegal; -NotForSale;" priceAdj="110" inventoryAdj="800"/>
+			<Sell	criteria="m +makayev; -illegal; -notForSale;" priceAdj="110" inventoryAdj="800"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
@@ -1525,8 +1529,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itCeralloyArmor;"
-			hitPoints=			"350"
-			repairRate=			"2"
+			hitPoints=			"470"
+			regen=              "1.4"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -1664,9 +1668,8 @@
 							</Action>
 							
 							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 							
 							<Action name="Undock" cancel="1" key="U">
@@ -1708,7 +1711,7 @@
 			armorID=			"&itCeralloyArmor;"
 			hitPoints=			"150"
 			repairRate=			"4"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, majorStation, populated"
@@ -1965,9 +1968,8 @@
 
 						<Actions>
 							<Action name="Sell Items" key="S" default="1">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Leave" cancel="1" key="L">
@@ -2009,9 +2011,9 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"75"
-			repairRate=			"1"
-			explosionType=		"&vtBlastExplosion2;"
+			hitPoints=			"120"
+			regen=              "0.4"
+			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtIceAsteroidEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envAvoidsFire, friendly, independent, generic, human, populated"
@@ -2068,9 +2070,8 @@
 							</Action>
 
 							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -2121,7 +2122,7 @@
 			armorID=			"&itCeralloyArmor;"
 			hitPoints=			"250"
 			repairRate=			"4"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, corporateInsurance, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -2367,10 +2368,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itQuadroCarbideArmor;"
-			hitPoints=			"450"
-			repairRate=			"5"
+			hitPoints=			"470"
+			regen=              "1.4"
 			fireRateAdj=		"10"
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -2515,7 +2516,7 @@
 			armorID=			"&itAdvancedPlasteelPlate;"
 			hitPoints=			"350"
 			repairRate=			"5"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -2634,9 +2635,8 @@
 							</Action>
 
 							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -2964,7 +2964,7 @@
 			armorID=			"&itAdvancedPlasteelPlate;"
 			hitPoints=			"350"
 			repairRate=			"5"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
@@ -3123,7 +3123,7 @@
 			(setq intCorporateOnDestroy (lambda Nil
 				(block (corporateCruiser theDestroyer)
 					; Destroy items on the station
-					(intDestroyItems gSource)
+					(rpgDestroyItems gSource)
 
 					; Create a corporate cruiser to avenge the station
 					(setq corporateCruiser

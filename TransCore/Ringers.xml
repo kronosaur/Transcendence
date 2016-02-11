@@ -16,9 +16,9 @@
 			multiHull=			"true"
 			armorID=			"&itDiamondLatticeArmor;"
 			hitPoints=			"850"
-			repairRate=			"10"
+			regen=              "3.4"
 			fireRateAdj=		"10"
-			explosionType=		"&vtPlasmaExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envEarth, envAvoidsAir, friendly, generic, independent, majorStation, neoHuman, populated, ringers"
@@ -139,9 +139,8 @@
 							</Action>
 
 							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Done" cancel="1" key="D">
@@ -193,10 +192,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itDiamondLatticeArmor;"
-			hitPoints=			"850"
-			repairRate=			"10"
+			hitPoints=			"1800"
+			regen=              "5.5"
 			fireRateAdj=		"10"
-			explosionType=		"&vtPlasmaExplosion2;"
+			explosionType=		"&vtThermoExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envEarth, envAvoidsAir, friendly, generic, independent, majorStation, neoHuman, populated, ringers"
@@ -311,9 +310,8 @@
 							</Action>
 
 							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Done" cancel="1" key="D">
@@ -376,7 +374,7 @@
 	<ItemType UNID="&itPositronLancer;"
 			name=				"positron lancer"
 			level=				"10"
-			value=				"350000"
+			value=				"260000"
 			mass=				"2500"
 			frequency=			"rare"
 			attributes=			"EnergyWeapon; Military; MajorItem; Ringers"
@@ -392,62 +390,55 @@
 				repeating=			"4"
 				damage=				"positron:2d8"
 				fireRate=			"20"
-				missileSpeed=		"90"
-				lifetime=			"34"
+				missileSpeed=		"100"
+				lifetime=			"60"
 				interaction=		"0"
-				powerUse=			"3500"
+				powerUse=			"3000"
 
 				sound=				"&snLaserCannon;"
 				>
 
 			<Effect>
-				<Shape
-						directional=		"true"
-						scaleLength=		"72" 
-						scaleWidth=			"6"
-
-						scaleLengthInc=		"3" 
-
-						color=				"0xf0, 0xff, 0x00"
-						opacity=			"140"
+				<ParticleComet
+						length=			"80"
+						
+						primaryColor=	"#f9ffb3"
 						>
-					<Point x="0"	y="0"/>
-					<Point x="-35"	y="50"/>
-					<Point x="-100"	y="0"/>
-					<Point x="-35"	y="-50"/>
-				</Shape>
+					<Events>
+						<GetParameters>
+							(block (
+								(damageHP (@ gData 'damageHP))
+								)
 
-				<Shape
-						directional=		"true"
-						scaleLength=		"72" 
-						scaleWidth=			"4"
-
-						scaleLengthInc=		"3" 
-
-						color=				"0xf0, 0xff, 0x00"
-						opacity=			"255"
+								{
+									particleCount: (mathScale damageHP 20 300 100 300 50)
+									width: (mathScale damageHP 20 300 10 20 50)
+									}
+								)
+						</GetParameters>
+					</Events>
+				</ParticleComet>
+				<Ray
+						style=			"smooth"
+						shape=			"oval"
+						length=			"70"
+						intensity=		"60"
+						
+						primaryColor=	"#f9ffb3"
+						secondaryColor=	"#806a00"
 						>
-					<Point x="0"	y="0"/>
-					<Point x="-35"	y="50"/>
-					<Point x="-100"	y="0"/>
-					<Point x="-35"	y="-50"/>
-				</Shape>
-
-				<Shape
-						directional=		"true"
-						scaleLength=		"64" 
-						scaleWidth=			"3"
-
-						scaleLengthInc=		"3" 
-
-						color=				"0xff, 0xff, 0xff"
-						opacity=			"255"
-						>
-					<Point x="0"	y="0"/>
-					<Point x="-25"	y="50"/>
-					<Point x="-100"	y="0"/>
-					<Point x="-25"	y="-50"/>
-				</Shape>
+					<Events>
+						<GetParameters>
+							(block (
+								(damageHP (@ gData 'damageHP))
+								)
+								{
+									width: (mathScale damageHP 20 300 15 30 50)
+									}
+								)
+						</GetParameters>
+					</Events>
+				</Ray>
 			</Effect>
 		</Weapon>
 
@@ -469,7 +460,7 @@
 			(setq intRingerOnDestroy (lambda Nil
 				(block Nil
 					; Destroy items on the station
-					(intDestroyItems gSource)
+					(rpgDestroyItems gSource)
 
 					; Ringer crime
 					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))

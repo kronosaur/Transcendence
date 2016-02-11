@@ -24,8 +24,8 @@
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"100"
-			repairRate=			"1"
-			explosionType=		"&vtBlastExplosion3;"
+			regen=              "0.4"
+			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated, primary"

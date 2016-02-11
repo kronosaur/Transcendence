@@ -1,0 +1,703 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+<!-- DEFAULT PROJECTILE EFFECTS ================================================
+
+	These effects may be used in weapons to create some standard effects, such
+	as a laser beam.
+	
+	For scaling purposes, we assume the following damage ranges by tier:
+	
+	TIER					LOW		HIGH
+	
+	laser/kinetic			2		30
+	particle/blast			5		64
+	ion/thermo				10		140
+	positron/plasma			20		300
+	antimatter/nano			50		680
+	graviton/singularity	110		1,500
+	darkAcid/darkSteel		240		3,250
+	darkLightning/darkFire	530		7,200
+
+-->
+	
+	<EffectType UNID="&efLaserBeamDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Ray
+					style=			"smooth"
+					shape=			"tapered"
+					/>
+		</Effect>
+
+		<Events>
+			<GetParameters>
+				;	This event allows us to initialize effect parameters based 
+				;	on weapon properties. In particular, we adjust the size of 
+				;	the effect based on the amount of average damage.
+				;
+				;	For weapon effects, gData has the following fields:
+				;
+				;	damageHP: The average number of hit points of damage.
+				;	speed: The speed of the shot (as a percent of lightspeed).
+				;
+				;	The event must return a structure with each field representing
+				;	a parameter for the effect. For Ray effects, valid fields are:
+				;	intensity, length, width, primaryColor, and secondaryColor.
+
+				(block (
+					(damageHP (@ gData 'damageHP))
+					(laserColor (coreCalcLaserColor damageHP))
+					)
+
+					{
+						length:
+							(mathScale 
+								damageHP						; average damage of weapon
+								2								; min damage
+								30								; max damage
+								60								; min beam length
+								220								; max beam length
+								50								; scale gamma
+								)
+						width: (mathScale damageHP 2 30 12 28 50)
+						intensity: 35
+
+						primaryColor: (@ laserColor 'primaryColor)
+						secondaryColor: (@ laserColor 'secondaryColor)
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
+
+	<EffectType UNID="&efKineticBoltDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Ray
+					style=			"smooth"
+					shape=			"diamond"
+					primaryColor=	"#CCF7FF"
+					secondaryColor=	"#667B80"
+					/>
+		</Effect>
+
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					(speed (@ gData 'speed))
+					)
+					{
+						length:
+							(mathScale
+								damageHP						; average damage of weapon
+								2								; min damage
+								30								; max damage
+								speed							; min bullet length (based on speed)
+								(* speed 2)						; max bullet length
+								50								; scale gamma
+								)
+						width: (mathScale damageHP 2 30 12 18 50)
+						intensity: 40
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
+
+	<EffectType UNID="&efKineticFragmentDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Ray
+					style=			"smooth"
+					shape=			"tapered"
+                    intensity=      "50"
+					primaryColor=	"#b3f3ff"
+					secondaryColor=	"#e5faff"
+					/>
+		</Effect>
+
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+					{
+						length: (mathScale damageHP 2 30 15 130 50)
+						width: (mathScale damageHP 2 30 1 8 50)
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
+
+	<EffectType UNID="&efParticleBeamDefault;"
+			instance=			"creator"
+			>
+		<Effect>
+			<ParticleComet
+					particleCount=	"200"
+					primaryColor=	"#65ff2c"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+
+							{
+								particleCount: (mathScale damageHP 5 64 100 300 50)
+								length: (mathScale damageHP 5 64 66 240 50)
+								width: (mathScale damageHP 5 64 8 20 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleComet>
+			
+			<Ray
+					style=			"grainy"
+					shape=			"oval"
+					primaryColor=	"#65ff2c"
+					secondaryColor=	"#808417"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+
+							{
+								length:	(mathScale damageHP 5 64 66 240 50)
+								width: (mathScale damageHP 5 64 10 24 50)
+								intensity: 80
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efBlastShellDefault;"
+			instance=			"owner"
+			>
+		
+		<Effect>
+			<Ray
+					style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#feffa1"
+					secondaryColor=	"#f76e24"
+					length=			"12"
+					width=			"6"
+					xformRotation=	"10"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:	(mathScale damageHP	5 64 16 64 50)
+								width: (mathScale damageHP 5 64 6 24 50)
+								intensity: 10
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+			
+			<Ray
+					style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#feffa1"
+					secondaryColor=	"#f76e24"
+					xformRotation=	"-10"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:	(mathScale damageHP	5 64 16 64 50)
+								width: (mathScale damageHP 5 64 6 24 50)
+								intensity: 10
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+			
+			<Ray
+					style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#feffa1"
+					secondaryColor=	"#f76e24"
+					>
+			
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:
+									(mathScale 
+										damageHP						; average damage of weapon
+										5								; min damage
+										64								; max damage
+										60								; min beam length
+										220								; max beam length
+										50								; scale gamma
+										)
+								width: (mathScale damageHP 5 64 6 22 50)
+								intensity: 30
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+    
+    <EffectType unid="&efBlastFragmentDefault;"
+            instance=   "creator"
+            >
+        <Effect>
+		    <Ray
+				    style=			"smooth"
+				    shape=			"tapered"
+                    intensity=      "30"
+				    primaryColor=	"#f9e47d"
+				    secondaryColor=	"#ff8925"
+				    >
+			
+			    <Events>
+				    <GetParameters>
+					    (block (
+                            (damageHP (@ gData 'damageHP))
+                            )
+						    {
+							    length:	(mathScale damageHP 5 64 30 110 50)
+							    width: (mathScale damageHP 5 64 12 44 50)
+							    }
+						    )
+				    </GetParameters>
+			    </Events>
+		    </Ray>
+        
+		    <ParticleSystem
+				    style=				"jet"
+                    emitLifetime=       "80"
+				    emitSpeed=			"15-18"
+				    particleLifetime=	"16"
+				    spreadAngle=		"1-8"
+				    >
+			    <ParticleEffect>
+				    <Particle
+						    style=			"flame"
+                            minWidth=       "1"
+						    maxWidth=		"5-10"
+						    />
+			    </ParticleEffect>
+            
+                <Events>
+                    <GetParameters>
+				        (block (
+					        (damageHP (@ gData 'damageHP))
+                            (minEmitRate (mathScale damageHP 5 64 5 15 50))
+                            (maxEmitRate (int (* minEmitRate 1.5)))
+					        )
+					        {
+						        emitRate: (cat minEmitRate "-" maxEmitRate)
+						        }
+					        )
+                    </GetParameters>
+                </Events>
+		    </ParticleSystem>
+        </Effect>
+    </EffectType>
+    
+	<EffectType UNID="&efIonBeamDefault;"
+			instance=			"creator"
+			>
+		<Effect>
+			<Ray
+					style=			"jagged"
+					shape=			"tapered"
+					primaryColor=	"#00d5ff"
+					secondaryColor=	"#006b80"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:
+									(mathScale 
+										damageHP						; average damage of weapon
+										10								; min damage
+										140								; max damage
+										60								; min beam length
+										260								; max beam length
+										50								; scale gamma
+										)
+								width: (mathScale damageHP 10 140 20 40 50)
+								intensity: 40
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+			
+			<ParticleComet
+					particleCount=	"200"
+					primaryColor=	"#00d5ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+
+							{
+								particleCount: (mathScale damageHP 10 140 100 300 50)
+								length: (mathScale damageHP 10 140 60 220 50)
+								width: (mathScale damageHP 10 140 6 16 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleComet>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efThermoShellDefault;"
+			instance=			"creator"
+			>
+		
+		<Effect>
+			<ParticleJet
+					emitRate=			"20"
+					emitSpeed=			"2-10"
+					particleLifetime=	"5-15"
+					spreadAngle=		"45"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP lifetimeAdj)
+							(setq damageHP (@ gData 'damageHP))
+							(setq lifetimeAdj (mathScale damageHP 10 140 1 5 50))
+
+							{
+								particleLifetime: (cat lifetimeAdj "-" (multiply lifetimeAdj 3))
+								}
+							)
+					</GetParameters>
+				</Events>
+				
+				<ParticleEffect>
+					<Particle
+							style=			"plain"
+							minWidth=		"1"
+							maxWidth=		"2"
+							primaryColor=	"#ffe695"
+							secondaryColor=	"#ff5400"
+							/>
+				</ParticleEffect>
+			</ParticleJet>
+			
+			<ParticleJet
+					emitRate=			"20"
+					emitSpeed=			"40-60"
+					spreadAngle=		"1"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP lifetimeAdj)
+							(setq damageHP (@ gData 'damageHP))
+							(setq lifetimeAdj (mathScale damageHP 10 140 2 8 50))
+
+							{
+								particleLifetime: (cat lifetimeAdj "-" (multiply lifetimeAdj 3))
+								}
+							)
+					</GetParameters>
+				</Events>
+				
+				<ParticleEffect>
+					<Particle
+							style=			"plain"
+							minWidth=		"1"
+							maxWidth=		"3"
+							primaryColor=	"#ffe695"
+							secondaryColor=	"#ff5400"
+							/>
+				</ParticleEffect>
+			</ParticleJet>
+			
+			<Ray
+					style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#ffe695"
+					secondaryColor=	"#ff5400"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:	(mathScale damageHP	10 140 90 180 50)
+								width: (mathScale damageHP 10 140 16 45 50)
+								intensity: 50
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efPositronBeamDefault;"
+			instance=			"creator"
+			>
+		<Effect>
+			
+			<ParticleComet
+					particleCount=	"200"
+					primaryColor=	"#f9ffb3"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+
+							{
+								particleCount: (mathScale damageHP 20 300 200 300 50)
+								length: (mathScale damageHP 20 300 60 260 50)
+								width: (mathScale damageHP 20 300 8 12 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleComet>
+			<Ray
+					style=			"smooth"
+					shape=			"oval"
+					primaryColor=	"#f9ffb3"
+					secondaryColor=	"#806a00"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length: (mathScale damageHP	20 300 60 100 50)
+								width: (mathScale damageHP 20 300 15 30 50)
+								intensity: 60
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+	
+	<EffectType unid="&efPlasmaBoltDefault;"
+			instance=			"creator"
+			>
+		<Effect>
+			<Orb
+					style=				"smooth"
+						
+					blendMode=			"screen"
+					primaryColor=		"#feff00"
+					secondaryColor=		"#ff7f00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (mathScale damageHP 20 300 10 50 50)
+								intensity: (mathScale damageHP 20 300 15 40 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<ParticleSystem
+					style=				"jet"
+					fixedPos=			"true"
+					emitRate=			"4-8"
+					tangentSpeed=		"-6-6"
+					particleLifetime=	"24"
+					XformTime=			"30"
+					>
+				<ParticleEffect>
+					<Orb
+							instance=			"owner"
+						
+							style=				"smooth"
+							animate=			"fade"
+							radius=				"10"
+							lifetime=			"24"
+							intensity=			"20"
+						
+							blendMode=			"screen"
+							primaryColor=		"#feff00"
+							secondaryColor=		"#ff7f00"
+							/>
+				</ParticleEffect>
+			</ParticleSystem>
+		</Effect>
+	</EffectType>
+
+	<EffectType unid="&efPlasmaParticleDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb
+					instance=			"owner"
+						
+					style=				"smooth"
+					animate=			"explode"
+					intensity=			"40"
+						
+					blendMode=			"screen"
+					primaryColor=		"#feff00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							(weaponUNID (@ gData 'weaponUNID))
+							(particleCount (max 1 (@ gData 'particleCount)))
+							(damagePerParticle (/ damageHP particleCount))
+							)
+							{
+								radius: (mathScale (int (* 20.0 damagePerParticle)) 5 40 5 40 50)
+								secondaryColor: (if (geq damagePerParticle 1.5) "#ff7f00" "#ffbf00")
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+	
+	<EffectType unid="&efAntimatterPodDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<ParticleSystem
+					style=				"radiate"
+					emitSpeed=			"10-20"
+					>
+				<ParticleEffect>
+					<Orb
+							instance=			"owner"
+						
+							style=				"smooth"
+							animate=			"fade"
+							radius=				"10"
+							intensity=			"20"
+						
+							blendMode=			"screen"
+							primaryColor=		"#fbffcc"
+							secondaryColor=		"#ffe566"
+							>
+						<Events>
+							<GetParameters>
+								(block (
+									(damageHP (@ gData 'damageHP))
+									)
+									{
+										lifetime: (mathScale damageHP 50 680 4 12 50)
+										}
+									)
+							</GetParameters>
+						</Events>
+					</Orb>
+				</ParticleEffect>
+				
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								emitRate: (mathScale damageHP 50 680 20 100 50)
+								particleLifetime: (mathScale damageHP 50 680 4 12 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleSystem>
+			
+			<Orb
+					style=				"smooth"
+					animate=			"flicker"
+					spikeCount=			"6"
+						
+					blendMode=			"screen"
+					primaryColor=		"#fbffcc"
+					secondaryColor=		"#ffe566"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (mathScale damageHP 50 680 20 60 50)
+								intensity: (mathScale damageHP 50 680 20 50 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efGravitonBeamDefault;"
+			instance=			"creator"
+			>
+		<Effect>
+			<Ray
+					style=			"wavy"
+					shape=			"tapered"
+					primaryColor=	"#2a00ff"
+					secondaryColor=	"#9580ff"
+					/>
+		</Effect>
+
+		<Events>
+			<GetParameters>
+				(block (damageHP primaryColor secondaryColor)
+					(setq damageHP (@ gData 'damageHP))
+
+					{
+						length:	(mathScale damageHP 110 1500 80 260 50)
+						width: (mathScale damageHP 110 1500 30 80 50)
+						intensity: 70
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
+
+</TranscendenceModule>

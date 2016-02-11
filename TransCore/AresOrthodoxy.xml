@@ -188,7 +188,7 @@
 	<ItemType UNID="&itLightningCannon;"
 			name=				"Ares lightning cannon"
 			level=				"7"
-			value=				"45000"
+			value=				"24000"
 			mass=				"3000"
 			frequency=			"uncommon"
 			attributes=			"Ares; EnergyWeapon; Military; MajorItem; NotForSale;"
@@ -217,8 +217,8 @@
 	<ItemType UNID="&itMicronuke;"
 			name=				"Ares micronuke"
 			level=				"7"
-			value=				"375"
-			mass=				"50"
+			value=				"60"
+			mass=				"10"
 			attributes=			"Ares; Consumable; Military; Missile; NotForSale;"
 			frequency=			"common"
 			numberAppearing=	"12d20"
@@ -233,13 +233,13 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"180"
-				damage=			"thermo:2d12; WMD3"
 				missileSpeed=	"60"
 				hitPoints=		"20"
 
 				fragmentCount=	"1"
 				failsafe=		"6"
 
+				hitEffect=		"&efThermoShockwaveExplosion;"
 				sound=			"&snMissileLauncher;"
 				>
 
@@ -265,17 +265,6 @@
 				<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
 			</Effect>
 
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"170"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-								/>
-			</HitEffect>
-
 			<Fragment
 					type=			"area"
 
@@ -283,7 +272,7 @@
 					expansionSpeed=	"35"
 					missileSpeed=	"0"
 					lifetime=		"24"
-							>
+					>
 
 				<Effect>
 					<Shockwave
@@ -293,9 +282,7 @@
 								imageX=				"0"
 								imageY=				"0"
 								imageWidth=			"512"
-								imageHeight=		"128"
-								imageFrameCount=	"1"
-								imageTicksPerFrame=	"1"/>
+								imageHeight=		"128"/>
 					</Shockwave>
 				</Effect>
 			</Fragment>
@@ -370,7 +357,7 @@
 	<ItemType UNID="&itMicronukeCannon;"
 			name=				"Ares micronuke cannon"
 			level=				"8"
-			value=				"65000"
+			value=				"66000"
 			mass=				"4000"
 			frequency=			"uncommon"
 			attributes=			"Ares; MajorItem; Military; NotForSale;"
@@ -382,7 +369,7 @@
 
 		<Weapon
 				fireRate=			"40"
-				powerUse=			"200"
+				powerUse=			"100"
 				reportAmmo=			"true"
 				>
 
@@ -397,7 +384,7 @@
 	<ItemType UNID="&itHecatesCannon;"
 			name=				"Hecates cannon"
 			level=				"8"
-			value=				"85000"
+			value=				"94000"
 			mass=				"6000"
 			frequency=			"veryrare"
 			numberAppearing=	"1"
@@ -411,36 +398,17 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:12d12+12; momentum3; WMD5"
-				fireRate=			"40"
+				damage=				"thermo:11d12; momentum:3; WMD:7"
+				fireRate=			"50"
 				missileSpeed=		"50"
 				lifetime=			"120"
-				hitPoints=			"30"
-				powerUse=			"900"
+				hitPoints=			"10"
+				powerUse=			"1200"
 				recoil=				"2"
 
 				effect=				"&efThermoShellDefault;"
-				fireEffect=			"&efThermoFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG96;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="96" 
-						imageHeight="96"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"150"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-						/>
-			</HitEffect>
 		</Weapon>
 	</ItemType>
 
@@ -449,8 +417,8 @@
 	<ItemType UNID="&itWarhammerNuke;"
 			name=				"Ares Warhammer nuke"
 			level=				"9"
-			value=				"1500"
-			mass=				"50"
+			value=				"150"
+			mass=				"20"
 			attributes=			"Ares; Consumable; Military; Missile; NotForSale;"
 			frequency=			"rare"
 			numberAppearing=	"1d6"
@@ -465,13 +433,13 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"480"
-				damage=			"thermo:2d10; WMD7"
 				missileSpeed=	"30"
 				hitPoints=		"30"
 
 				fragmentCount=	"1"
 				failsafe=		"15"
 
+				hitEffect=		"&efThermoShockwaveExplosion;"
 				sound=			"&snMissileLauncher;"
 				>
 
@@ -497,17 +465,6 @@
 				<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
 			</Effect>
 
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"400"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-								/>
-			</HitEffect>
-
 			<Fragment
 					type=			"area"
 
@@ -515,7 +472,7 @@
 					expansionSpeed=	"25"
 					missileSpeed=	"0"
 					lifetime=		"24"
-							>
+					>
 
 				<Effect>
 					<Shockwave
@@ -525,9 +482,7 @@
 								imageX=				"0"
 								imageY=				"0"
 								imageWidth=			"512"
-								imageHeight=		"128"
-								imageFrameCount=	"1"
-								imageTicksPerFrame=	"1"/>
+								imageHeight=		"128"/>
 					</Shockwave>
 				</Effect>
 			</Fragment>
@@ -539,7 +494,7 @@
 	<ItemType UNID="&itAresArchcannon;"
 			name=				"Ares positron cannon"
 			level=				"9"
-			value=				"200000"
+			value=				"150000"
 			mass=				"1500"
 			frequency=			"uncommon"
 			attributes=			"Ares; EnergyWeapon; Military; MajorItem; NotForSale;"
@@ -559,18 +514,9 @@
 				lifetime=			"60"
 				powerUse=			"2000"
 
+				effect=				"&efPositronBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-
-			<Image imageID="&rsMissiles4;" imageX="0" imageY="16" imageWidth="16" imageHeight="16" imageFrameCount="2" imageTicksPerFrame="4"/>
-
-			<Exhaust
-					creationRate=	"10"
-					lifetime=		"70"
-					drag=			"80">
-
-				<Image imageID="&rsMissiles4;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="8" imageTicksPerFrame="10"/>
-			</Exhaust>
 		</Weapon>
 	</ItemType>
 
@@ -590,40 +536,54 @@
 		<Image imageID="&rsItems10;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
-				type=				"missile"
-				deviceSlots=		"2"
-
-				damage=				"plasma:24d24; WMD7"
+				type=				"particles"
+				damage=				"plasma:300; WMD:7"
+				
 				fireRate=			"80"
-				missileSpeed=		"65"
-				lifetime=			"120"
 				hitPoints=			"30"
+
+				deviceSlots=		"2"
 				powerUse=			"3000"
-
-				sound=				"&snLaserCannon;"
-
-				vaporTrailLength=	"24"
-				vaporTrailWidth=	"150"
-				vaporTrailWidthInc=	"10"
-				vaporTrailColor=	"0x57, 0x38, 0x00"
+				sound=				"&snRecoillessCannon;"
 				>
-
-			<FireEffect>
-				<Flare
-						style=				"fadingBlast"
-						lifetime=			"6"
-						radius=				"80"
-						primaryColor=		"0xff, 0xff, 0xf0"
-					/>
-			</FireEffect>
-
+			
+			<ParticleSystem
+					style=				"comet"
+					emitLifetime=		"1"
+					emitRate=			"150"
+					emitSpeed=			"50-70"
+					emitWidth=			"50"
+					
+					particleLifetime=	"120"
+					particleEffect=		"&efPlasmaParticleDefault;"
+					>
+			</ParticleSystem>
+			
 			<Effect>
-				<MoltenBolt
-						width=				"8"
-						growth=				"24"
-						primaryColor=		"0xff, 0xed, 0xcd"
-						secondaryColor=		"0xff, 0xb3, 0x27"
-						/>
+				<ParticleSystem
+						style=				"jet"
+						fixedPos=			"true"
+						emitRate=			"2-4"
+						tangentSpeed=		"-8-8"
+						particleLifetime=	"10"
+						XformTime=			"30"
+						>
+					<ParticleEffect>
+						<Orb
+								instance=			"owner"
+						
+								style=				"smooth"
+								animate=			"fade"
+								radius=				"20"
+								lifetime=			"10"
+								intensity=			"20"
+						
+								blendMode=			"screen"
+								primaryColor=		"#feff00"
+								secondaryColor=		"#ff7f00"
+								/>
+					</ParticleEffect>
+				</ParticleSystem>
 			</Effect>
 		</Weapon>
 	</ItemType>
@@ -751,7 +711,7 @@
 			maxSpeed=			"10"
 			cargoSpace=			"1000"
 
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtThermoExplosion2;"
 			>
 
 		<!-- Configuration -->
@@ -835,7 +795,7 @@
 			maxSpeed=			"16"
 			cargoSpace=			"1000"
 
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			>
 
 		<!-- Configuration -->
@@ -1206,7 +1166,7 @@
 
 			cyberDefenseLevel=	"8"
 			   
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtPlasmaExplosion2;"
 			>
 
 		<!-- Configuration -->
@@ -1217,7 +1177,7 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itAresPlasmaCannon;" posAngle="0" posRadius="100" posZ="0"/>
+			<Device deviceID="&itAresPlasmaCannon;" posAngle="0" posRadius="80" posZ="0"/>
 			<Device deviceID="&itLightningTurret;" secondaryWeapon="true" posAngle="30"  posRadius="50" posZ="0"/>
 			<Device deviceID="&itLightningTurret;" secondaryWeapon="true" posAngle="330" posRadius="50" posZ="0"/>
 			<Device deviceID="&itKaidunShields;"/>
@@ -1285,7 +1245,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itLightTharsisPlate;"
-			hitPoints=			"350"
+			hitPoints=			"370"
+            regen=              "1.1"
 			fireRateAdj=		"40"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -1338,8 +1299,9 @@
 
 			multiHull=			"true"
 			armorID=			"&itTharsisPlate;"
-			hitPoints=			"600"
-			explosionType=		"&vtThermoExplosion3;"
+			hitPoints=			"2400"
+            regen=              "20"
+			explosionType=		"&vtThermoExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"ares, aresMajor, enemy, envAir, envEarth, envFire, envWater, generic, majorStation, neoHuman, populated"
@@ -1396,8 +1358,9 @@
 
 			multiHull=			"true"
 			armorID=			"&itMassiveTharsisPlate;"
-			hitPoints=			"1000"
-			explosionType=		"&vtThermoExplosion4;"
+			hitPoints=			"3600"
+            regen=              "22"
+			explosionType=		"&vtPlasmaExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"ares, aresMajor, enemy, envAir, envEarth, envFire, envWater, generic, majorStation, neoHuman, populated"

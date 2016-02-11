@@ -46,11 +46,11 @@
 		<Weapon
 				type=				"particles"
 
-				damage=				"ion:50; shield:9;"
-				fireRate=			"15"
+				damage=				"ion:60; shield:9;"
+				fireRate=			"22"
 				missileSpeed=		"100"
 				lifetime=			"30"
-				powerUse=			"1500"
+				powerUse=			"2000"
 
 				particleCount=		"1d11+44"
 				particleSpreadAngle="5"
@@ -59,13 +59,13 @@
 
 			<Effect>
 				<Ray
-						style=			"smooth"
+						style=			"grainy"
 						shape=			"tapered"
-						primaryColor=	"#00d5ff"
+						primaryColor=	"#80eaff"
 						secondaryColor=	"#006b80"
-						width=			"6"
+						width=			"8"
 						length=			"80"
-						intensity=		"45"
+						intensity=		"50"
 						/>
 			</Effect>
 		</Weapon>
@@ -88,7 +88,7 @@
 			hitPoints=			"250"
 			repairRate=			"3"
 			fireRateAdj=		"80"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, generic, human, independent, populated"
@@ -133,7 +133,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +Rasiermesser; -Military; -Illegal; -NotForSale;" priceAdj="120" inventoryAdj="800"/>
+			<Sell	criteria="m +rasiermesser; -military; -illegal; -notForSale;" priceAdj="120" inventoryAdj="800"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
@@ -210,8 +210,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itGusokuArmor;"
-			hitPoints=			"700"
-			repairRate=			"3"
+			hitPoints=			"1100"
+			regen=              "3.3"
 			fireRateAdj=		"80"
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -277,7 +277,7 @@
 		</Items>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Rasiermesser; -Illegal; -NotForSale;" priceAdj="110" inventoryAdj="1200"/>
+			<Sell	criteria="m +rasiermesser; -illegal; -notForSale;" priceAdj="110" inventoryAdj="800"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 
 			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="100"/>
@@ -485,7 +485,7 @@
 										(gr haveCount 5)
 											(block Nil
 												(setq gain 0)
-												(setq gTitle (cat "Dvalin is uninterested: \"Another one, ya? We will use it for balast, perhaps.\""))
+												(setq gTitle (cat "Dvalin is uninterested: \"Another one, ya? We will use it for ballast, perhaps.\""))
 												(setq gResult Nil)
 												)
 

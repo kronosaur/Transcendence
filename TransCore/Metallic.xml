@@ -38,7 +38,7 @@
 	</SystemPartTable>
 
 <!-- ASTEROIDS & PLANETS -->
-
+	
 	<!-- Size A Metallic Asteroid -->
 
 	<StationType UNID="&stMetallicAsteroidSizeA;"
@@ -51,17 +51,8 @@
 
 		ejectaType=			"&vtMetallicAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="32"  imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="96"  imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="128"	imageWidth="32" imageHeight="32"/>
-
-			<Image	imageID="&rsMetallicAsteroids;" imageX="160"   imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="192"   imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="224"   imageY="128"	imageWidth="32" imageHeight="32"/>
-		</ImageVariants>
+		
+		<ImageLookup imageID="&rsMetallicAsteroidSizeA;"/>
 
 		<Items>
 			<Table>
@@ -91,18 +82,8 @@
 		>
 		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
 
-		<ImageVariants>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="0"		imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="0"		imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="0"		imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="192" imageY="0"		imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="64"	imageWidth="64" imageHeight="64"/>
-
-			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="64"	imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="64"	imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="192" imageY="64"	imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
-
+		<ImageLookup imageID="&rsMetallicAsteroidSizeB;"/>
+		
 		<Items>
 			<Table>
 				<Null chance="90"/>
@@ -129,14 +110,8 @@
 
 		ejectaType=			"&vtMetallicAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="0"		imageWidth="90" imageHeight="90"/>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="90"		imageWidth="90" imageHeight="90"/>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="180"		imageWidth="90" imageHeight="90"/>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="270"		imageWidth="90" imageHeight="90"/>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="360"		imageWidth="90" imageHeight="90"/>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="450"		imageWidth="90" imageHeight="90"/>
-		</ImageVariants>
+		
+		<ImageLookup imageID="&rsMetallicAsteroidSizeC;"/>
 
 		<Items>
 			<Table>
@@ -164,13 +139,8 @@
 
 		ejectaType=			"&vtMetallicAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="90"  imageY="0"		imageWidth="120" imageHeight="120"/>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="90"  imageY="120"		imageWidth="120" imageHeight="120"/>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="90"  imageY="240"		imageWidth="120" imageHeight="120"/>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="90"  imageY="360"		imageWidth="120" imageHeight="120"/>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="90"  imageY="480"		imageWidth="120" imageHeight="120"/>
-		</ImageVariants>
+		
+		<ImageLookup imageID="&rsMetallicAsteroidSizeD;"/>
 
 		<Items>
 			<Table>
@@ -198,11 +168,7 @@
 
 		ejectaType=			"&vtMetallicAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="210"  imageY="0"		imageWidth="140" imageHeight="140"/>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="210"  imageY="140"		imageWidth="140" imageHeight="140"/>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="210"  imageY="280"		imageWidth="140" imageHeight="140"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsMetallicPlanetoidSizeE;"/>
 	</StationType>
 
 	<!-- Metallic Planetoid Size F -->
@@ -217,11 +183,7 @@
 
 		ejectaType=			"&vtMetallicAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="350"  imageY="0"		imageWidth="150" imageHeight="150"/>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="350"  imageY="150"		imageWidth="150" imageHeight="150"/>
-			<Image	imageID="&rsMetallicAsteroids2;" imageX="350"  imageY="300"		imageWidth="150" imageHeight="150"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsMetallicPlanetoidSizeF;"/>
 	</StationType>
 
 	<!-- Metallic Planetoid Size G -->
@@ -236,14 +198,83 @@
 
 		ejectaType=			"&vtMetallicAsteroidEjecta;"
 		>
+		<ImageLookup imageID="&rsMetallicPlanetoidSizeG;"/>
+	</StationType>
+
+<!-- RESOURCES -->
+	
+	<ImageComposite unid="&rsMetallicAsteroidSizeA;">
+		<ImageVariants>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="32"  imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="96"  imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="128"	imageWidth="32" imageHeight="32"/>
+
+			<Image	imageID="&rsMetallicAsteroids;" imageX="160"   imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="192"   imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="224"   imageY="128"	imageWidth="32" imageHeight="32"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsMetallicAsteroidSizeB;">
+		<ImageVariants>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="0"		imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="0"		imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="0"		imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="192" imageY="0"		imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="64"	imageWidth="64" imageHeight="64"/>
+
+			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="64"	imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="64"	imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="192" imageY="64"	imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+	</ImageComposite>
+	
+	<ImageComposite unid="&rsMetallicAsteroidSizeC;">
+		<ImageVariants>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="0"		imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="90"		imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="180"		imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="270"		imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="360"		imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="450"		imageWidth="90" imageHeight="90"/>
+		</ImageVariants>
+	</ImageComposite>
+		
+	<ImageComposite unid="&rsMetallicAsteroidSizeD;">
+		<ImageVariants>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="90"  imageY="0"		imageWidth="120" imageHeight="120"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="90"  imageY="120"		imageWidth="120" imageHeight="120"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="90"  imageY="240"		imageWidth="120" imageHeight="120"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="90"  imageY="360"		imageWidth="120" imageHeight="120"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="90"  imageY="480"		imageWidth="120" imageHeight="120"/>
+		</ImageVariants>
+	</ImageComposite>
+	
+	<ImageComposite unid="&rsMetallicPlanetoidSizeE;">
+		<ImageVariants>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="210"  imageY="0"		imageWidth="140" imageHeight="140"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="210"  imageY="140"		imageWidth="140" imageHeight="140"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="210"  imageY="280"		imageWidth="140" imageHeight="140"/>
+		</ImageVariants>
+	</ImageComposite>
+	
+	<ImageComposite unid="&rsMetallicPlanetoidSizeF;">
+		<ImageVariants>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="350"  imageY="0"		imageWidth="150" imageHeight="150"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="350"  imageY="150"		imageWidth="150" imageHeight="150"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="350"  imageY="300"		imageWidth="150" imageHeight="150"/>
+		</ImageVariants>
+	</ImageComposite>
+	
+	<ImageComposite unid="&rsMetallicPlanetoidSizeG;">
 		<ImageVariants>
 			<Image	imageID="&rsMetallicAsteroids2;" imageX="210"  imageY="450"		imageWidth="180" imageHeight="180"/>
 			<Image	imageID="&rsMetallicAsteroids2;" imageX="390"  imageY="450"		imageWidth="180" imageHeight="180"/>
 		</ImageVariants>
-	</StationType>
-
-<!-- RESOURCES -->
-
+	</ImageComposite>
+	
 	<Image UNID="&rsMetallicAsteroids;"		bitmap="Resources\MetallicAsteroids.jpg"	bitmask="Resources\MetallicAsteroidsMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsMetallicAsteroids2;"	bitmap="Resources\MetallicAsteroids2.jpg"	bitmask="Resources\MetallicAsteroids2Mask.bmp"  loadOnUse="true"/>
 

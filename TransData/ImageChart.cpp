@@ -157,6 +157,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 	else
 		iOrder = orderName;
 
+	bool b3DGrid = pCmdLine->GetAttributeBool(CONSTLIT("3DGrid"));
 	bool bDockingPorts = pCmdLine->GetAttributeBool(CONSTLIT("portPos"));
 	bool bDevicePos = pCmdLine->GetAttributeBool(CONSTLIT("devicePos"));
 
@@ -437,6 +438,36 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 					if (bDevicePos)
 						pStationType->PaintDevicePositions(Output, xCenter - xOffset, yCenter -yOffset);
 					break;
+					}
+				}
+
+			//	Paint the 3D grid, if necessary
+
+			if (b3DGrid)
+				{
+				int iScale = Entry.pImage->GetImageViewportSize();
+				Metric rMaxRadius = g_KlicksPerPixel * cxImage * 0.5;
+				const Metric rGridSize = LIGHT_SECOND;
+
+				Metric rRadius;
+				for (rRadius = rGridSize; rRadius <= rMaxRadius; rRadius += rGridSize)
+					{
+					int iRadius = (int)((rRadius / g_KlicksPerPixel) + 0.5);
+					const int iGridAngle = 8;
+					int iPrevAngle = 0;
+					int iAngle;
+					for (iAngle = iGridAngle; iAngle <= 360; iAngle += iGridAngle)
+						{
+						int xFrom, yFrom;
+						C3DConversion::CalcCoord(iScale, iPrevAngle, iRadius, 0, &xFrom, &yFrom);
+
+						int xTo, yTo;
+						C3DConversion::CalcCoord(iScale, iAngle, iRadius, 0, &xTo, &yTo);
+
+						Output.DrawLine(xFrom + xCenter, yFrom + yCenter, xTo + xCenter, yTo + yCenter, 1, CG32bitPixel(255, 255, 0));
+
+						iPrevAngle = iAngle;
+						}
 					}
 				}
 

@@ -106,7 +106,7 @@ PLAYER DATA
 	<ItemType UNID="&itNM900MissilePod;"
 			name=				"NM900 external missile pod"
 			level=				"7"
-			value=				"200"
+			value=				"4200"
 			mass=				"1000"
 			frequency=			"rare"
 			attributes=			"Disposable; MajorItem; Military; NAMI; Specialty"
@@ -124,34 +124,21 @@ PLAYER DATA
 				type=				"missile"
 				launcher=			"true"
 				fireRate=			"30"
-				powerUse=			"5"
+				powerUse=			"50"
 				charges=			"true"
 
 				deviceSlots=		"0"
 				external=			"true"
 				
-				damage=				"thermo:6d24; momentum6; WMD7"
 				missileSpeed=		"40"
 				hitPoints=			"20"
 				lifetime=			"120"
-				maneuverability=	"2"
-
-				sound=				"&snMissileLauncher;"
+				maneuverRate=		"9"
 
 				effect=				"&efMissileNAMI;"
+				hitEffect=			"&efThermoFragmentExplosion;"
+				sound=				"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG128;"
-						imageX="0"
-						imageY="0"
-						imageWidth="128"
-						imageHeight="128"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 
 			<Fragment 
 					count=			"1"
@@ -161,18 +148,10 @@ PLAYER DATA
 					minRadius=		"1"
 					maxRadius=		"4"
 					missileSpeed=	"0"
+					
+					hitEffect=		"&efThermoFragmentHit;"
 					>
-
-				<Effect>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"170"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-							/>
-				</Effect>
 			</Fragment>
-
 		</Weapon>
 		
 		<Invoke>
@@ -192,12 +171,12 @@ PLAYER DATA
 	<ItemType UNID="&itLamplighter;"
 			name=				"Lamplighter archcannon"
 			level=				"10"
-			value=				"600000"
+			value=				"950000"
 			mass=				"5500"
 			frequency=			"notrandom"
 			attributes=			"MajorItem; Military"
 
-			description=		"Commissioned by Admiral Decker, this Commonwealth secret weapon is the most powerful weapon created by humans."
+			description=		"Commissioned by Admiral Decker, this Commonwealth secret weapon is arguably the most powerful weapon created by humans."
 			>
 
 		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -205,45 +184,16 @@ PLAYER DATA
 		<Weapon
 				type=				"missile"
 
-				damage=				"antimatter:6d12; WMD5"
-				fireRate=			"15"
+				damage=				"antimatter:10d12; WMD:5"
+				fireRate=			"16"
 				missileSpeed=		"50"
 				lifetime=			"60"
 				hitPoints=			"30"
 				powerUse=			"2000"
 
+				effect=				"&efLamplighterProjectile;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Starburst
-						style=			"flare"
-						spikeCount=		"8"
-						spikeLength=	"20-30"
-						primaryColor=	"0xff, 0xff, 0x80"
-						secondaryColor=	"0xff, 0xff, 0x80"
-						/>
-
-				<ParticleComet
-						particleCount=	"200"
-						primaryColor=	"0xff, 0xff, 0x80"
-
-						width=			"8"
-						length=			"120"
-						/>
-			</Effect>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 
 	</ItemType>
@@ -253,7 +203,7 @@ PLAYER DATA
 	<ItemType UNID="&itLamplighterPrototype;"
 			name=				"Project Lamplighter prototype"
 			level=				"10"
-			value=				"600000"
+			value=				"400000"
 			mass=				"5500"
 			frequency=			"notrandom"
 			unknownType=		"&itUnknownLamplighterPrototype;"
@@ -268,45 +218,16 @@ PLAYER DATA
 				type=				"missile"
 				failureChance=		"10"
 
-				damage=				"antimatter:4d12; WMD5"
+				damage=				"antimatter:6d12; WMD:5"
 				fireRate=			"15"
 				missileSpeed=		"60"
 				lifetime=			"40"
 				hitPoints=			"15"
 				powerUse=			"3000"
 
+				effect=				"&efLamplighterProjectile;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Starburst
-						style=			"plain"
-						spikeCount=		"8"
-						spikeLength=	"20-30"
-						primaryColor=	"0xff, 0xff, 0x80"
-						secondaryColor=	"0xff, 0xff, 0x80"
-						/>
-
-				<ParticleComet
-						particleCount=	"200"
-						primaryColor=	"0xff, 0xff, 0x80"
-
-						width=			"8"
-						length=			"120"
-						/>
-			</Effect>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 
 	</ItemType>
@@ -340,7 +261,7 @@ PLAYER DATA
 			attributes=			"unknown"
 			>
 
-		<Names>weapon protype marked "Alpha"; weapon prototype marked "Beta"; weapon prototype marked "Gamma";
+		<Names>weapon prototype marked "Alpha"; weapon prototype marked "Beta"; weapon prototype marked "Gamma";
 			weapon prototype marked "Delta"; weapon prototype marked "Epsilon"; weapon prototype marked "Omega";
 			weapon prototype marked "0.1"; weapon prototype marked "X17"; weapon prototype marked "Trinity";
 			weapon prototype marked "Halifax"; weapon prototype marked "Test No. 6"; weapon prototype marked "596";
@@ -382,7 +303,7 @@ PLAYER DATA
 			maxSpeed=			"16"
 
 			cyberDefenseLevel=	"8"
-			explosionType=		"&vtThermoExplosion2;"
+			explosionType=		"&vtThermoExplosion3;"
 
 			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, genericClass"
 			>
@@ -706,7 +627,7 @@ PLAYER DATA
 			cargoSpace=			"5000"
 			cyberDefenseLevel=	"8"
 			   
-			explosionType=		"&vtThermoExplosion4;"
+			explosionType=		"&vtPlasmaExplosion2;"
 
 			dockScreen=			"Main"
 			>
@@ -781,7 +702,7 @@ PLAYER DATA
 			/>
 		
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; -notStandard; L:1-10;" priceAdj="100" inventoryAdj="200"/>
+			<Sell	criteria="m +commonwealth; +military; -illegal; -notForSale; -notStandard; L:1-10;" priceAdj="100" inventoryAdj="500"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			<Sell	criteria="rNU L:1-9; -Illegal; -NotForSale; -notStandard;"	priceAdj="100"	inventoryAdj="100"/>
 			
@@ -3315,7 +3236,7 @@ PLAYER DATA
 			maxSpeed=			"2"
 			cyberDefenseLevel=	"6"
 			   
-			explosionType=		"&vtThermoExplosion4;"
+			explosionType=		"&vtPlasmaExplosion2;"
 
 			dockScreen=			"Main"
 			>
@@ -3384,7 +3305,7 @@ PLAYER DATA
 			/>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; -notStandard; L:1-10;" priceAdj="100" inventoryAdj="200"/>
+			<Sell	criteria="m +commonwealth; +military; -illegal; -notForSale; -notStandard; L:1-10;" priceAdj="100" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			<Sell	criteria="rNU L:1-8; -Illegal; -NotForSale; -notStandard;"	priceAdj="100"	inventoryAdj="100"/>
 			
@@ -3772,7 +3693,7 @@ PLAYER DATA
 			thrustRatio=		"0.8"
 			maxSpeed=			"15"
 
-			explosionType=		"&vtBlastExplosion4;"
+			explosionType=		"&vtBlastExplosion3;"
 
 			attributes=			"freighter, genericClass"
 			>
@@ -3922,7 +3843,7 @@ PLAYER DATA
 			<Lookup count="1"	table="&trMinorItem2;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="768" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips2;" imageX="768" imageY="0" imageWidth="64" imageHeight="64"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"/>
@@ -5305,6 +5226,55 @@ PLAYER DATA
 			</OnGlobalUniverseCreated>
 		</Events>
 	</Sovereign>
+	
+<!-- EFFECTS -->
+
+	<EffectType unid="&efLamplighterProjectile;"
+			instance=			"owner"
+			>
+		<Effect>
+			<ParticleComet
+					primaryColor=	"#ffe566"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								particleCount: (mathScale damageHP 50 680 100 300 50)
+								length: (mathScale damageHP 50 680 80 220 50)
+								width: (mathScale damageHP 50 680 8 24 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleComet>
+			
+			<Orb
+					style=				"smooth"
+					animate=			"flicker"
+					spikeCount=			"6"
+						
+					blendMode=			"screen"
+					primaryColor=		"#fbffcc"
+					secondaryColor=		"#ffe566"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (mathScale damageHP 50 680 30 80 50)
+								intensity: (mathScale damageHP 50 680 20 50 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
 
 <!-- RESOURCES -->
 

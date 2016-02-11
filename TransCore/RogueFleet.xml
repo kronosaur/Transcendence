@@ -21,7 +21,7 @@
 			thrustRatio=		"0.8"
 			maxSpeed=			"15"
 
-			explosionType=		"&vtBlastExplosion2;"
+			explosionType=		"&vtBlastExplosion3;"
 			leavesWreck=		"80"
 
 			attributes=			""
@@ -132,9 +132,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"300"
+			hitPoints=			"370"
+            regen=              "1.1"
 			fireRateAdj=		"20"
-			explosionType=		"&vtBlastExplosion4;"
+			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated, rogue"
@@ -183,11 +184,11 @@
 
 			multiHull=			"true"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"400"
-			repairRate=			"1"
+			hitPoints=			"950"
+			regen=              "4.8"
 			shipRepairRate=		"1"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated, rogue"

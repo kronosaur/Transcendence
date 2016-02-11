@@ -26,6 +26,7 @@ Game/*.tdb
 *.user
 *.userosscache
 *.sln.docstates
+*.VC.opendb
 
 # Build results
 [Dd]ebug/
@@ -41,6 +42,10 @@ bld/
 [Bb]in/
 [Oo]bj/
 *.tlog
+
+## Visual Studio Config files
+
+.vs/config/applicationhost.config
 
 # Roslyn cache directories
 *.ide/

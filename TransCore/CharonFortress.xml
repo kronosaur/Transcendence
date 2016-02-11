@@ -21,8 +21,9 @@
 			canAttack=			"true"
 
 			multiHull=			"true"
-			armorID=			"&itLightBlastPlate;"
-			hitPoints=			"200"
+			armorID=			"&itAdvancedReactiveArmor;"
+			hitPoints=			"300"
+            regen=              "3"
 			fireRateAdj=		"20"
 			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -170,11 +171,12 @@
 			canAttack=			"true"
 			noBlacklist=		"true"
 
+            level=              "4"
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			maxHitPoints=		"250"
+			maxHitPoints=		"470"
 			hitPoints=			"150"
-			repairRate=			"2"
+			regen=			    "1.4"
 			shipRepairRate=		"3"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -219,14 +221,18 @@
 			</OnCreate>
 
 			<OnDestroy>
-				(if (and 
-						(eq (objGetData gSource "MissionStatus") "underAttack")
-						(not (eq aOrderGiver gPlayerShip))
+				(block Nil
+					(if (and 
+							(eq (objGetData gSource "MissionStatus") "underAttack")
+							(not (eq aOrderGiver gPlayerShip))
+							)
+						(block Nil
+							(objSetData gSource "MissionStatus" "destroyed")
+							(sysAddObjRecurringTimerEvent 150 gSource "OnCheckRevenge")
+							)
 						)
-					(block Nil
-						(objSetData gSource "MissionStatus" "destroyed")
-						(sysAddObjRecurringTimerEvent 150 gSource "OnCheckRevenge")
-						)
+						
+					(rpgDestroyItems gSource)
 					)
 			</OnDestroy>
 
@@ -604,11 +610,12 @@
 			dockingPorts=		"10"
 			canAttack=			"true"
 
+            level=              "4"
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			maxHitPoints=		"250"
+			maxHitPoints=		"470"
 			hitPoints=			"150"
-			repairRate=			"2"
+			regen=			    "1.4"
 			shipRepairRate=		"3"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -667,7 +674,10 @@
 											(setq gItem (itmCreate &itTargetingComputerROM; 1))
 
 										(leq roll 50)
-											(setq gItem (itmCreate &itMilitaryID; 1))
+											(block Nil
+												(setq gItem (itmCreate &itMilitaryID; 1))
+												(itmSetKnown &itMilitaryID;)
+												)
 
 										(leq roll 75)
 											(setq gItem (itmCreate &itMuleAuton; 1))

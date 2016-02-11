@@ -216,7 +216,7 @@
 		</Items>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Commonwealth; -Military; -Illegal; -NotForSale; -notStandard;" priceAdj="115" inventoryAdj="200"/>
+			<Sell	criteria="m +commonwealth; -military; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="400"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Sell	criteria="rNU L:1-5; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
@@ -873,7 +873,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"100"
+			hitPoints=			"160"
+            regen=              "0.5"
 			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -1052,7 +1053,7 @@
 								"that their own alien morality prevents interference in the affairs of lesser species.\n\n"
 								"But regardless, the most important gift that the Iocrym left behind is "
 								"the knowledge that we are not alone in the Galaxy and that someday we will "
-								"join our alien bretheren as equals."
+								"join our alien brethren as equals."
 								)
 						</OnPaneInit>
 						
@@ -2878,7 +2879,10 @@
 						)
 						
 					; If we were docked at an object that we just looted, then destroy the object
-					(if (objGetData dockedAt "0010201F_marked")
+					(if (and (objGetData dockedAt "0010201F_marked")
+							(ls (objGetProperty dockedAt 'mass) 2000)
+							(not (objGetProperty dockedAt 'immutable))
+							)
 						(objDestroy dockedAt gSource)
 						)
 					)

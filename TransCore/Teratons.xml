@@ -12,7 +12,7 @@
 	<ItemType UNID="&itKytrynBlaster;"
 			name=				"Kytryn blaster"
 			level=				"9"
-			value=				"250000"
+			value=				"220000"
 			mass=				"3000"
 			frequency=			"rare"
 			attributes=			"Alien; MajorItem; Military; Teraton"
@@ -24,21 +24,27 @@
 		<Image imageID="&rsItems9;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
-				fireRate=			"15"
-
-				type=				"missile"
-				missileSpeed=		"40"
+				type=				"particles"
+				damage=				"plasma:40; WMD5"
+				
+				fireRate=			"16"
 				hitPoints=			"15"
 
-				lifetime=			"80"
-				damage=				"plasma:5d12; WMD5"
-				powerUse=			"2000"
+				powerUse=			"3000"
 				sound=				"&snRecoillessCannon;"
 				>
 
-			<Effect>
-				<Image imageID="&rsMediumExplosions;" imageX="0" imageY="64" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
-			</Effect>
+			<ParticleSystem
+					style=				"amorphous"
+					emitRate=			"40"
+					emitSpeed=			"36-44"
+					emitLifetime=		"1"
+					spreadAngle=		"6"
+					
+					particleLifetime=	"80"
+					particleEffect=		"&efPlasmaParticleDefault;"
+					>
+			</ParticleSystem>
 		</Weapon>
 	</ItemType>
 
@@ -91,32 +97,67 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"480"
-				damage=			"plasma:3d12; WMD5"
 				missileSpeed=	"30"
 				hitPoints=		"20"
 
 				failsafe=		"6"
 
-				hitEffect=		"&efFragmentationExplosion;"
 				sound=			"&snMissileLauncher;"
 				>
-
+			
 			<Effect>
-				<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
+				<Orb
+						style=				"flare"
+						radius=				"50"
+						intensity=			"50"
+						
+						blendMode=			"screen"
+						primaryColor=		"#feff00"
+						secondaryColor=		"#ffbf00"
+						/>
+			
+				<ParticleSystem
+						style=				"jet"
+						fixedPos=			"true"
+						emitRate=			"4-8"
+						tangentSpeed=		"-6-6"
+						particleLifetime=	"24"
+						XformTime=			"30"
+						>
+					<ParticleEffect>
+						<Orb
+								instance=			"owner"
+						
+								style=				"smooth"
+								animate=			"fade"
+								radius=				"10"
+								lifetime=			"24"
+								intensity=			"20"
+						
+								blendMode=			"screen"
+								primaryColor=		"#feff00"
+								secondaryColor=		"#ff7f00"
+								/>
+					</ParticleEffect>
+				</ParticleSystem>
 			</Effect>
 
 			<Fragment
-					count=			"36"
-					type=			"missile"
-
-					damage=			"plasma:3d12; WMD5"
-					missileSpeed=	"20"
-					lifetime=		"30"
-							>
-
-				<Effect>
-					<Image imageID="&rsMediumExplosions;" imageX="0" imageY="64" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
-				</Effect>
+					type=				"particles"
+					damage=				"plasma:500; WMD:4"
+					hitPoints=			"10"
+					>
+			
+				<ParticleSystem
+						style=				"radiate"
+						emitLifetime=		"1"
+						emitRate=			"120"
+						emitSpeed=			"20"
+					
+						particleLifetime=	"30"
+						particleEffect=		"&efPlasmaParticleDefault;"
+						>
+				</ParticleSystem>
 			</Fragment>
 		</Missile>
 	</ItemType>
@@ -184,7 +225,7 @@
 					(enum playerItems theItem (objRemoveItem gSource theItem))
 					
 					; Destroy items on the station
-					(intDestroyItems gSource)
+					(rpgDestroyItems gSource)
 					
 					; Add back the player items
 					(enum playerItems theItem
@@ -346,10 +387,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itIthaliumArmor;"
-			hitPoints=			"850"
-			repairRate=			"10"
+			hitPoints=			"1200"
+			regen=              "6.2"
 			fireRateAdj=		"10"
-			explosionType=		"&vtPlasmaExplosion1;"
+			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envAir, envAvoidsFire, independent, friendly, generic, majorStation, populated, neoHuman, teraton, teratonFactory"
@@ -474,7 +515,7 @@
 			<Main>
 				<Panes>
 					<Default
-							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewous membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
+							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewy membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
 
 						<Actions>
 							<Action name="Fabricator Chamber" default="1" key="F">
@@ -744,7 +785,7 @@
 													(setq gResult "Tentacles reach out to accept your offering and the organic mass tentatively swallows it.\n\nWith a roar of anger, the organic mass spews a thick mist of bile. You are covered in a slimy broth of chemicals.")
 
 												(or (gr incMaterial 0) (gr incEnergy 0))
-													(setq gResult (cat "Tentacles reach out to accept your offering and the organic mass swallows it.\n\nOrgans and bladers gurgle as they process the " (if (gr incEnergy 0) "energy" "material") " you have fed them."))
+													(setq gResult (cat "Tentacles reach out to accept your offering and the organic mass swallows it.\n\nOrgans and bladders gurgle as they process the " (if (gr incEnergy 0) "energy" "material") " you have fed them."))
 
 												(setq gResult "Tentacles reach out to accept your offering, but after a tentative taste they discard it through one of the many tunnels along the wall of the pit.")
 												)
@@ -796,10 +837,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itIthaliumArmor;"
-			hitPoints=			"850"
-			repairRate=			"10"
+			hitPoints=			"1200"
+			regen=              "6.2"
 			fireRateAdj=		"10"
-			explosionType=		"&vtPlasmaExplosion1;"
+			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envAir, envAvoidsFire, generic, independent, friendly, majorStation, populated, neoHuman, teraton, teratonResearch"
@@ -842,7 +883,7 @@
 			<Main>
 				<Panes>
 					<Default
-							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewous membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
+							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewy membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
 
 						<Actions>
 							<Action name="Research Chamber" default="1" key="R">
@@ -1178,9 +1219,8 @@
 							</Action>
 
 							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Leave" cancel="1" key="L">
@@ -1219,10 +1259,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itIthaliumArmor;"
-			hitPoints=			"850"
-			repairRate=			"10"
+			hitPoints=			"1200"
+			regen=              "6.2"
 			fireRateAdj=		"10"
-			explosionType=		"&vtPlasmaExplosion1;"
+			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envAir, envAvoidsFire, generic, independent, friendly, majorStation, populated, neoHuman, teraton, teratonTrading"
@@ -1275,7 +1315,7 @@
 			<Main>
 				<Panes>
 					<Default
-							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewous membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
+							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewy membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
 
 						<Actions>
 							<Action name="Trading Chamber" default="1" key="T">
@@ -1301,9 +1341,8 @@
 							</Action>
 
 							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Done" cancel="1" key="D">
@@ -1470,7 +1509,7 @@
 				<OnPaneInit>
 					(scrSetDesc gScreen
 						(cat 
-							"You try to enter the Trading Chamber but a group of Teratons grab you and drag you back to your ship. Snorting with contempt for your weak ship, they rumage through your cargo hold looking for valuable items.\n\nThey take "
+							"You try to enter the Trading Chamber but a group of Teratons grab you and drag you back to your ship. Snorting with contempt for your weak ship, they rummage through your cargo hold looking for valuable items.\n\nThey take "
 							(itmGetName gItem 8)
 							" and leave you in pain on the deck of your ship."
 							)

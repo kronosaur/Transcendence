@@ -23,6 +23,7 @@
 
 			reactorPower=		"150"
 			fuelCapacity=		"37500"
+			drivePowerUse=		"20"
 			maxArmor=			"6000"
 			maxCargoSpace=		"150"
 			maxDevices=			"8"
@@ -105,6 +106,7 @@
 
 			reactorPower=		"250"
 			fuelCapacity=		"60000"
+			drivePowerUse=		"20"
 			maxArmor=			"20000"
 			maxCargoSpace=		"200"
 			maxDevices=			"9"
@@ -174,7 +176,7 @@
 		<!-- Player Settings -->
 		
 		<PlayerSettings
-			desc=				"The EI500 is slow and ungraceful, but its omnidirectional laser can hit even the fastest gunships. Seven open slots for devices give you lots of upgrade flexibility."
+			desc=				"The EI500 is slow and ungraceful, but its omnidirectional laser can hit even the fastest gunships. Six open slots for devices give you lots of upgrade flexibility."
 			sortOrder=			"10"
 			largeImage=			"&rsEI100XLarge;"
 			initialClass=		"true"
@@ -202,6 +204,7 @@
 
 			reactorPower=		"100"
 			fuelCapacity=		"25000"
+			drivePowerUse=		"20"
 			maxArmor=			"12000"
 			maxCargoSpace=		"100"
 			maxDevices=			"8"

@@ -33,7 +33,7 @@
 				fireRate=			"30"
 				hitPoints=			"10"
 				lifetime=			"120"
-				powerUse=			"2"
+				powerUse=			"1"
 				charges=			"true"
 
 				missileSpeed=		"40"
@@ -41,18 +41,6 @@
 
 				effect=				"&efMissileNAMI;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 
 		<Invoke>
@@ -69,7 +57,7 @@
 			level=				"1"
 			frequency=			"common"
 
-			value=				"250"
+			value=				"380"
 			mass=				"1000"
 			  
 			description=		"A popular weapon for light freighters and fast gunships. This weapon is manufactured by the Earth Industries Conglomerate."
@@ -100,7 +88,7 @@
 			level=				"1"
 			frequency=			"uncommon"
 
-			value=				"300"
+			value=				"340"
 			mass=				"2500"
 			  
 			description=		"Recoilless cannons are slower than the ubiquitous laser cannon but pack a bigger punch."
@@ -133,7 +121,7 @@
 			level=				"1"
 			frequency=			"rare"
 
-			value=				"250"
+			value=				"270"
 			mass=				"2000"
 			  
 			description=		"This specialized version of the recoilless cannon shoots lighter projectiles but has a higher fire rate."
@@ -169,7 +157,7 @@
 			frequency=			"common"
 			showReference=		"true"
 
-			value=				"500"
+			value=				"820"
 			mass=				"1500"
 			  
 			description=		"Soon after release, the Bolide was obsoleted by EI's turbolaser cannon, though some insist the Bolide is a better weapon for the price."
@@ -224,23 +212,11 @@
 				charges=			"true"
 
 				missileSpeed=		"40"
-				maneuverability=	"2"
+				maneuverRate=		"9"
 				sound=				"&snMissileLauncher;"
 
 				effect=				"&efMissileNAMI;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 
 		<Invoke>
@@ -257,7 +233,7 @@
 			level=				"2"
 			frequency=			"uncommon"
 
-			value=				"750"
+			value=				"1200"
 			mass=				"2000"
 			  
 			description=		"Twin laser cannons manufactured by Earth Industries."
@@ -289,7 +265,7 @@
 			level=				"2"
 			frequency=			"uncommon"
 
-			value=				"550"
+			value=				"820"
 			mass=				"1250"
 			  
 			description=		"The fast-fire laser cannon uses enhanced capacitors and can reach a fire rate double that of the ubiquitous laser."
@@ -320,7 +296,7 @@
 			level=				"2"
 			frequency=			"common"
 
-			value=				"550"
+			value=				"1100"
 			mass=				"3000"
 			  
 			description=		"This is a heavier version of the common recoilless cannon."
@@ -331,9 +307,9 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"kinetic:2d6-1; momentum1"
+				damage=				"kinetic:2d6-1; momentum:1; WMD:4"
 				fireRate=			"15"
-				missileSpeed=		"30"
+				missileSpeed=		"40"
 				interaction=		"80"
 				lifetime=			"80"
 				powerUse=			"22"
@@ -354,7 +330,7 @@
 			level=				"2"
 			frequency=			"uncommon"
 
-			value=				"650"
+			value=				"1300"
 			mass=				"3500"
 			  
 			description=		"The TK10 Trident cannon is another in the popular series of NAMI kinetic weapons. The TK10 fires three small high-velocity projectiles."
@@ -395,7 +371,7 @@
 			level=				"3"
 			frequency=			"common"
 
-			value=				"1250"
+			value=				"1500"
 			mass=				"2000"
 			  
 			description=		"The Arbalest cannon is an automatic minigun that fires in bursts of four shells."
@@ -429,7 +405,7 @@
 			level=				"3"
 			frequency=			"rare"
 
-			value=				"1400"
+			value=				"2700"
 			mass=				"3000"
 			  
 			description=		"The laser cannon array consists of three laser cannons joined in a forward spread pattern."
@@ -440,15 +416,19 @@
 		<Weapon
 				type=				"beam"
 
-				configuration=		"spread3"
 				damage=				"laser:1d4"
-				fireRate=			"12"
+				fireRate=			"10"
 				lifetime=			"30"
 				powerUse=			"60"
 
 				effect=				"&efLaserBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
+			<Configuration aimTolerance="6">
+				<Shot angle="-3"/>
+				<Shot angle="0"/>
+				<Shot angle="3"/>
+			</Configuration>
 		</Weapon>
 	</ItemType>
 
@@ -461,7 +441,7 @@
 			level=				"3"
 			frequency=			"rare"
 
-			value=				"1600"
+			value=				"2000"
 			mass=				"3000"
 			  
 			description=		"This omnidirectional turret fires powerful high-explosive shells, but its range is very limited."
@@ -473,15 +453,14 @@
 				type=				"missile"
 
 				omnidirectional=	"true"
-				damage=				"blast:1d6+1; momentum1; WMD3"
-				fireRate=			"15"
+				damage=				"blast:1d6+1; momentum:1; WMD:2"
+				fireRate=			"16"
 				missileSpeed=		"40"
 				interaction=		"80"
 				lifetime=			"24"
-				powerUse=			"30"
+				powerUse=			"50"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 		</Weapon>
@@ -493,10 +472,10 @@
 			name=				"omnidirectional laser cannon"
 			attributes=			"commonwealth, EI, energyWeapon, majorItem"
 			  
-			level=				"3"
+			level=				"2"
 			frequency=			"rare"
 
-			value=				"1700"
+			value=				"1200"
 			mass=				"1000"
 			  
 			description=		"A single laser cannon with an automated targeting system."
@@ -509,7 +488,7 @@
 
 				omnidirectional=	"true"
 				damage=				"laser:1d4"
-				fireRate=			"15"
+				fireRate=			"10"
 				lifetime=			"30"
 				powerUse=			"30"
 
@@ -528,7 +507,7 @@
 			level=				"3"
 			frequency=			"common"
 
-			value=				"1000"
+			value=				"1500"
 			mass=				"1000"
 			  
 			description=		"This launcher is compatible with a full range of popular missiles including the KM100 Longbows and the XM900 Lucifers."
@@ -538,7 +517,7 @@
 
 		<Weapon
 				fireRate=			"30"
-				powerUse=			"10"
+				powerUse=			"5"
 				launcher=			"true"
 				>
 
@@ -563,7 +542,7 @@
 			level=				"3"
 			frequency=			"uncommon"
 
-			value=				"1500"
+			value=				"2300"
 			mass=				"3000"
 			  
 			description=		"This recoilless kinetic cannon, manufactured by NAMI, is more powerful than the heavy recoilless cannon."
@@ -574,8 +553,8 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"kinetic:2d8+1; momentum1; WMD1"
-				fireRate=			"15"
+				damage=				"kinetic:2d8+2; momentum:1; WMD:4"
+				fireRate=			"16"
 				missileSpeed=		"40"
 				interaction=		"80"
 				lifetime=			"60"
@@ -606,7 +585,7 @@
 
 		<Weapon
 				fireRate=			"15"
-				powerUse=			"10"
+				powerUse=			"5"
 				>
 
 			<Missiles>
@@ -623,23 +602,24 @@
 						>
 					
 					<Effect>
-						<ParticleJet
+						<ParticleSystem
+								style=				"jet"
 								fixedPos=			"true"
 								emitRate=			"40"
-								tangentSpeed=		"3d2-3"
+								tangentSpeed=		"-3-3"
 								particleLifetime=	"10-30"
-								XformTime=			"10"
+								XformTime=			"15"
 								>
 							<ParticleEffect>
 								<Particle
 										style=			"plain"
 										minWidth=		"1"
 										maxWidth=		"3"
-										primaryColor=	"#ffffc0"
-										secondaryColor=	"#7e7e74"
+										primaryColor=	"#f1f6ff"
+										secondaryColor=	"#73767d"
 										/>
 							</ParticleEffect>
-						</ParticleJet>
+						</ParticleSystem>
 						
 						<Ray
 								style=			"smooth"
@@ -650,12 +630,13 @@
 								>
 							<Events>
 								<GetParameters>
-									(block (damageHP)
-										(setq damageHP (@ gData 'damageHP))
-					
+									(block (
+										(damageHP (@ gData 'damageHP))
+										(speed (@ gData 'speed))
+										)
 										{
-											length:	(mathScale damageHP	4 40 (divide (@ gData 'speed) 2) (@ gData 'speed) 50)
-											width: (mathScale damageHP 4 40 12 36 50)
+											length:	(mathScale damageHP	2 30 speed (@ speed 2) 50)
+											width: (mathScale damageHP 2 30 12 28 50)
 											}
 										)
 								</GetParameters>
@@ -673,10 +654,10 @@
 			name=				"dual recoilless cannon"
 			attributes=			"commonwealth, majorItem, NAMI"
 			  
-			level=				"3"
+			level=				"2"
 			frequency=			"uncommon"
 
-			value=				"1500"
+			value=				"1100"
 			mass=				"5000"
 			  
 			description=		"Twin recoilless cannons manufactured by NAMI."
@@ -693,7 +674,7 @@
 				missileSpeed=		"40"
 				interaction=		"80"
 				lifetime=			"60"
-				powerUse=			"50"
+				powerUse=			"30"
 
 				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
@@ -710,7 +691,7 @@
 			level=				"3"
 			frequency=			"common"
 
-			value=				"1500"
+			value=				"1700"
 			mass=				"1500"
 			  
 			description=		"One of the most popular designs by the Earth Industries Conglomerate, the turbolaser cannon is a cheap, powerful, and reliable weapon."
@@ -727,7 +708,6 @@
 				powerUse=			"60"
 
 				effect=				"&efLaserBeamDefault;"
-				hitEffect=			"&efGreenLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
 		</Weapon>
@@ -744,7 +724,7 @@
 			level=				"4"
 			frequency=			"rare"
 
-			value=				"3500"
+			value=				"6300"
 			mass=				"6000"
 			  
 			description=		"The largest kinetic mass driver created by NAMI, the Ballista cannon can pummel a medium-sized station."
@@ -755,8 +735,8 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"kinetic:14d8; momentum5; WMD5"
-				fireRate=			"45"
+				damage=				"kinetic:14d8; momentum:5; WMD:5"
+				fireRate=			"46"
 				missileSpeed=		"45"
 				interaction=		"90"
 				hitPoints=			"5"
@@ -778,7 +758,7 @@
 			level=				"4"
 			frequency=			"rare"
 
-			value=				"3500"
+			value=				"5500"
 			mass=				"3000"
 			  
 			description=		"The Flenser relativistic cannon fires small masses at nearly the speed of light."
@@ -789,7 +769,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"kinetic:4d8; momentum2; WMD2"
+				damage=				"kinetic:4d8; momentum:2; WMD:3"
 				fireRate=			"15"
 				missileSpeed=		"90"
 				lifetime=			"50"
@@ -811,7 +791,7 @@
 			level=				"4"
 			frequency=			"uncommon"
 
-			value=				"2750"
+			value=				"3000"
 			mass=				"1000"
 			  
 			description=		"The MAG launcher is a flexible and sophisticated grenade launcher that is compatible with a large range of MAG munitions."
@@ -821,7 +801,7 @@
 
 		<Weapon
 				fireRate=			"20"
-				powerUse=			"20"
+				powerUse=			"10"
 				launcher=			"true"
 				>
 
@@ -846,7 +826,7 @@
 			level=				"4"
 			frequency=			"common"
 
-			value=				"3200"
+			value=				"4700"
 			mass=				"1500"
 			  
 			description=		"A modified linear accelerator fires energetic particles at its target."
@@ -877,7 +857,7 @@
 			level=				"4"
 			frequency=			"uncommon"
 
-			value=				"3400"
+			value=				"5200"
 			mass=				"4000"
 			  
 			description=		"NAMI's Morning Star cannon shoots a high-velocity cloud of dense particles that can severely damage light to medium armor."
@@ -888,8 +868,8 @@
 		<Weapon
 				type=				"particles"
 
-				damage=				"kinetic:25; WMD2"
-				fireRate=			"15"
+				damage=				"kinetic:25; WMD:1"
+				fireRate=			"16"
 				missileSpeed=		"40"
 				lifetime=			"60"
 				powerUse=			"150"
@@ -900,7 +880,11 @@
 				>
 
 			<Effect>
-				<Image imageID="&rsMissiles4;" imageX="0" imageY="0" imageWidth="16" imageHeight="16" imageFrameCount="4" imageTicksPerFrame="1" randomStartFrame="true"/>
+				<Particle
+						style=			"line"
+						primaryColor=	"#ccf7ff"
+						secondaryColor=	"#2e3233"
+						/>
 			</Effect>
 		</Weapon>
 
@@ -915,7 +899,7 @@
 			level=				"4"
 			frequency=			"rare"
 
-			value=				"3000"
+			value=				"2800"
 			mass=				"4000"
 			  
 			description=		"This dual cannon shoots high-explosive shells in a scattered pattern."
@@ -934,7 +918,6 @@
 				powerUse=			"100"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -955,7 +938,7 @@
 			level=				"4"
 			frequency=			"rare"
 
-			value=				"5000"
+			value=				"6800"
 			mass=				"4000"
 			  
 			description=		"An omnidirectional version of the Partisan cannon."
@@ -967,12 +950,12 @@
 				type=				"missile"
 
 				omnidirectional=	"true"
-				damage=				"kinetic:2d8+1; momentum1; WMD1"
-				fireRate=			"15"
+				damage=				"kinetic:2d8+2; momentum:1; WMD:4"
+				fireRate=			"16"
 				missileSpeed=		"40"
 				interaction=		"80"
 				lifetime=			"60"
-				powerUse=			"60"
+				powerUse=			"100"
 
 				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
@@ -989,7 +972,7 @@
 			level=				"4"
 			frequency=			"common"
 
-			value=				"3200"
+			value=				"4400"
 			mass=				"3000"
 			  
 			description=		"The slam cannon fires high-explosive shells."
@@ -1000,15 +983,14 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"blast:3d6; momentum2; WMD1"
+				damage=				"blast:2d6+2; momentum:2; WMD:5"
 				fireRate=			"20"
 				missileSpeed=		"50"
-				hitPoints=			"3"
-				lifetime=			"80"
+				hitPoints=			"10"
+				lifetime=			"60"
 				powerUse=			"100"
 
 				effect=				"&efSlamCannonShell;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 		</Weapon>
@@ -1024,7 +1006,7 @@
 			level=				"4"
 			frequency=			"uncommon"
 
-			value=				"3500"
+			value=				"4000"
 			mass=				"3000"
 			  
 			description=		"Turbolasers in a twin configuration have became popular with pirates and marauders."
@@ -1042,7 +1024,6 @@
 				powerUse=			"140"
 
 				effect=				"&efLaserBeamDefault;"
-				hitEffect=			"&efGreenLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
 		</Weapon>
@@ -1075,7 +1056,6 @@
 				powerUse=			"70"
 
 				effect=				"&efLaserBeamDefault;"
-				hitEffect=			"&efGreenLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
 		</Weapon>
@@ -1092,7 +1072,7 @@
 			level=				"5"
 			frequency=			"common"
 
-			value=				"7000"
+			value=				"10000"
 			mass=				"3000"
 			  
 			description=		"The Akan 30 is a powerful cannon designed by the Rasiermesser Corporation. This weapon requires Akan 30 cannon shells."
@@ -1102,20 +1082,19 @@
 
 		<Weapon
 				fireRate=			"10"
-				powerUse=			"40"
+				powerUse=			"20"
 				>
 
 			<Missiles>
 				<Missile ammoID="&itAkan30CannonShell;"
 						type=			"missile"
 
-						damage=			"blast:3d12; momentum2; WMD2"
+						damage=			"blast:3d12; momentum:2; WMD:5"
 						missileSpeed=	"50"
 						lifetime=		"120"
 						hitPoints=		"4"
 
 						effect=			"&efAkanCannonShell;"
-						fireEffect=		"&efBlastFireDefault;"
 						sound=			"&snRecoillessCannon;"
 						>
 				</Missile>
@@ -1145,7 +1124,7 @@
 
 				configuration=		"dual"
 				damage=				"kinetic:4d8; momentum2; WMD2"
-				fireRate=			"15"
+				fireRate=			"16"
 				missileSpeed=		"90"
 				lifetime=			"50"
 				interaction=		"20"
@@ -1166,7 +1145,7 @@
 			level=				"5"
 			frequency=			"rare"
 
-			value=				"6000"
+			value=				"8200"
 			mass=				"2000"
 			  
 			description=		"This cannon shoots out a stream of ionized particles that disrupts the control systems on most starships."
@@ -1177,21 +1156,14 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"ion:4d6; EMP3"
+				damage=				"ion:4d6; EMP:3"
 				fireRate=			"20"
 				lifetime=			"30"
 				powerUse=			"200"
 
+				effect=				"&efIonizingBeam;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"lightning"
-						primaryColor=		"0xa0, 0xf0, 0xff"
-						secondaryColor=		"0x00, 0xa9, 0xff"
-						intensity=			"4"
-						/>
-			</Effect>
 		</Weapon>
 
 	</ItemType>
@@ -1205,7 +1177,7 @@
 			level=				"5"
 			frequency=			"uncommon"
 
-			value=				"7000"
+			value=				"12000"
 			mass=				"3000"
 			  
 			description=		"The lancer cannon is a high-powered beam weapon."
@@ -1218,7 +1190,7 @@
 
 				repeating=			"4"
 				damage=				"particle:1d4+1"
-				fireRate=			"15"
+				fireRate=			"18"
 				lifetime=			"60"
 				powerUse=			"300"
 
@@ -1237,7 +1209,7 @@
 			level=				"5"
 			frequency=			"common"
 
-			value=				"5000"
+			value=				"6000"
 			mass=				"1000"
 			  
 			description=		"The Makayev consists of fast launch tubes compatible with the Strelka series of light missiles."
@@ -1270,7 +1242,7 @@
 			level=				"5"
 			frequency=			"uncommon"
 
-			value=				"6500"
+			value=				"12000"
 			mass=				"4500"
 			  
 			description=		"The mark I howitzer fires heavy, high-explosive shells."
@@ -1281,29 +1253,17 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"blast:5d12; momentum3; WMD3"
+				damage=				"blast:5d12; momentum:3; WMD:4"
 				fireRate=			"40"
 				missileSpeed=		"50"
 				lifetime=			"120"
 				hitPoints=			"6"
-				powerUse=			"200"
+				powerUse=			"240"
 				recoil=				"2"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 
 	</ItemType>
@@ -1317,7 +1277,7 @@
 			level=				"5"
 			frequency=			"common"
 
-			value=				"7000"
+			value=				"12000"
 			mass=				"3500"
 			  
 			description=		"A modified linear accelerator fires energetic particles at its target."
@@ -1349,7 +1309,7 @@
 			level=				"5"
 			frequency=			"rare"
 
-			value=				"10000"
+			value=				"12000"
 			mass=				"2000"
 			  
 			description=		"A single particle beam weapon with an automated targeting system."
@@ -1362,7 +1322,7 @@
 
 				omnidirectional=	"true"
 				damage=				"particle:1d8+1"
-				fireRate=			"15"
+				fireRate=			"12"
 				lifetime=			"40"
 				powerUse=			"200"
 
@@ -1381,7 +1341,7 @@
 			level=				"5"
 			frequency=			"common"
 
-			value=				"8000"
+			value=				"8500"
 			mass=				"2000"
 			  
 			description=		"The fastest weapon in its price range, this Bushido Corp design uses a double chamber to fire high-energy neutrons."
@@ -1413,7 +1373,7 @@
 			level=				"5"
 			frequency=			"uncommon"
 
-			value=				"8000"
+			value=				"10000"
 			mass=				"4000"
 			  
 			description=		"One of the most successful Makayev designs, the Moskva repeater fires a cluster of high-explosive shells."
@@ -1433,7 +1393,6 @@
 				powerUse=			"250"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -1452,7 +1411,7 @@
 			level=				"5"
 			frequency=			"uncommon"
 
-			value=				"8000"
+			value=				"9600"
 			mass=				"4500"
 			  
 			description=		"This is a heavier and more powerful version of the slam cannon."
@@ -1463,29 +1422,16 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"blast:5d6; momentum2; WMD2"
+				damage=				"blast:4d6; momentum:2; WMD:5"
 				fireRate=			"20"
-				missileSpeed=		"60"
-				lifetime=			"67"
-				hitPoints=			"5"
-				powerUse=			"200"
+				missileSpeed=		"50"
+				lifetime=			"60"
+				hitPoints=			"25"
+				powerUse=			"240"
 
 				effect=				"&efSlamCannonShell;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 	</ItemType>
 
@@ -1498,7 +1444,7 @@
 			level=				"5"
 			frequency=			"rare"
 
-			value=				"8000"
+			value=				"10000"
 			mass=				"1500"
 			  
 			description=		"A nuclear-powered laser source is the core of this weapon system."
@@ -1512,12 +1458,11 @@
 
 				configuration=		"dual"
 				damage=				"laser:8d4"
-				fireRate=			"15"
+				fireRate=			"16"
 				lifetime=			"30"
-				powerUse=			"300"
+				powerUse=			"200"
 
 				effect=				"&efLaserBeamDefault;"
-				hitEffect=			"&efXRayLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
 		</Weapon>
@@ -1534,7 +1479,7 @@
 			level=				"6"
 			frequency=			"uncommon"
 
-			value=				"19000"
+			value=				"25000"
 			mass=				"5000"
 			  
 			description=		"This weapons places an Akan 30 cannon on a computer-controlled, omnidirectional turret. This weapon requires Akan 30 cannon shells."
@@ -1545,21 +1490,20 @@
 		<Weapon
 				omnidirectional=	"true"
 
-				fireRate=			"15"
-				powerUse=			"60"
+				fireRate=			"16"
+				powerUse=			"30"
 				>
 
 			<Missiles>
 				<Missile ammoID="&itAkan30CannonShell;"
 						type=			"missile"
 
-						damage=			"blast:3d12; momentum2; WMD2"
+						damage=			"blast:3d12; momentum:2; WMD:5"
 						missileSpeed=	"50"
 						lifetime=		"120"
 						hitPoints=		"4"
 
 						effect=			"&efAkanCannonShell;"
-						fireEffect=		"&efBlastFireDefault;"
 						sound=			"&snRecoillessCannon;"
 						>
 				</Missile>
@@ -1576,10 +1520,10 @@
 			level=				"6"
 			frequency=			"uncommon"
 
-			value=				"15000"
+			value=				"22000"
 			mass=				"1200"
 			  
-			description=		"This cheap cartridge missile launcher fires three micro-missiles at a ten-degree spread. The weapon requires Dragonfly missile cartridges."
+			description=		"This cheap cartridge missile launcher fires three tracking micro-missiles. The weapon requires Dragonfly missile cartridges."
 			>
 
 		<Image imageID="&rsItemsEI2;" imageX="96" imageY="288" imageWidth="96" imageHeight="96"/>
@@ -1587,7 +1531,7 @@
 		<Weapon
 				configuration=		"spread3"
 				fireRate=			"30"
-				powerUse=			"60"
+				powerUse=			"30"
 				multiTarget=		"true"
 				>
 
@@ -1595,21 +1539,21 @@
 				<Missile ammoID="&itDragonflyCartridge;"
 						type=			"missile"
 						lifetime=		"120"
-						damage=			"blast:4d6; momentum2; WMD4"
+						damage=			"blast:5d6; momentum:2; WMD:6"
 						missileSpeed=	"50"
 						hitPoints=		"3"
 						maneuverRate=	"18"
 						 
 						effect=			"&efBlastShellDefault;"
-						fireEffect=		"&efBlastFireDefault;"
 						sound=			"&snRecoillessCannon;"
 						>
 
 					<Effect>
-						<ParticleJet
+						<ParticleSystem
+								style=				"jet"
 								fixedPos=			"true"
 								emitRate=			"40"
-								tangentSpeed=		"3d2-3"
+								tangentSpeed=		"-3-3"
 								particleLifetime=	"10-30"
 								XformTime=			"10"
 								>
@@ -1622,7 +1566,7 @@
 										secondaryColor=	"#7e7e74"
 										/>
 							</ParticleEffect>
-						</ParticleJet>
+						</ParticleSystem>
 						
 						<Ray
 								style=			"smooth"
@@ -1637,26 +1581,14 @@
 										(setq damageHP (@ gData 'damageHP))
 					
 										{
-											length:	(mathScale damageHP	4 40 (divide (@ gData 'speed) 2) (@ gData 'speed) 50)
-											width: (mathScale damageHP 4 40 12 36 50)
+											length:	(mathScale damageHP	2 30 (divide (@ gData 'speed) 2) (@ gData 'speed) 50)
+											width: (mathScale damageHP 2 30 12 36 50)
 											}
 										)
 								</GetParameters>
 							</Events>
 						</Ray>
 					</Effect>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosionsAG48;"
-								imageX="0"
-								imageY="0"
-								imageWidth="48"
-								imageHeight="48"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
 				</Missile>
 			</Missiles>
 		</Weapon>
@@ -1671,7 +1603,7 @@
 			level=				"6"
 			frequency=			"common"
 
-			value=				"15000"
+			value=				"25000"
 			mass=				"5000"
 			  
 			description=		"This is an improved version of the mark I howitzer."
@@ -1687,25 +1619,12 @@
 				missileSpeed=		"50"
 				lifetime=			"120"
 				hitPoints=			"6"
-				powerUse=			"300"
+				powerUse=			"360"
 				recoil=				"2"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 	</ItemType>
 
@@ -1718,7 +1637,7 @@
 			level=				"6"
 			frequency=			"common"
 
-			value=				"14000"
+			value=				"23000"
 			mass=				"4000"
 			  
 			description=		"This versatile weapon, developed by Earth Industries, has been adopted by the Commonwealth Fleet."
@@ -1729,7 +1648,7 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"particle:4d8"
+				damage=				"particle:5d8"
 				fireRate=			"15"
 				lifetime=			"40"
 				powerUse=			"300"
@@ -1751,7 +1670,7 @@
 			level=				"7"
 			frequency=			"rare"
 			  
-			value=				"60000"
+			value=				"40000"
 			mass=				"4000"
 
 			description=		"The top-of-the-line weapon manufactured by the Bushido corporation. This weapon consists of dual particle weapons linked by a high-speed control system."
@@ -1763,7 +1682,7 @@
 				type=				"beam"
 
 				configuration=		"alternating"
-				damage=				"particle:3d8"
+				damage=				"particle:3d8+3"
 				fireRate=			"6"
 				lifetime=			"30"
 				powerUse=			"600"
@@ -1783,7 +1702,7 @@
 			level=				"7"
 			frequency=			"rare"
 
-			value=				"40000"
+			value=				"35000"
 			mass=				"3000"
 			  
 			description=		"The ion disruptor's beam can penetrate a ship's hull and ionize the delicate mechanisms of weapons and other devices."
@@ -1794,21 +1713,16 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"ion:5d6; deviceDisrupt2"
+				damage=				"ion:5d6; deviceDisrupt:2"
 				fireRate=			"20"
 				lifetime=			"30"
-				powerUse=			"800"
+				powerUse=			"500"
 
+				effect=				"&efEIDisruptorBeam;"
+				fireEffect=			"&efEIDisruptorFire;"
+				hitEffect=			"&efEIDisruptorHit;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"lightning"
-						primaryColor=		"0xf0, 0xff, 0xa0"
-						secondaryColor=		"0xa9, 0xff, 0x00"
-						intensity=			"5"
-						/>
-			</Effect>
 		</Weapon>
 
 	</ItemType>
@@ -1822,7 +1736,7 @@
 			level=				"7"
 			frequency=			"common"
 			  
-			value=				"42000"
+			value=				"50000"
 			mass=				"3000"
 
 			description=		"EI consistently denies rumors that it used stolen Ares schematics to develop this line of ion weapons."
@@ -1839,6 +1753,7 @@
 				powerUse=			"500"
 
 				effect=				"&efEIBlasterBeam;"
+				fireEffect=			"&efEIBlasterFire;"
 				hitEffect=			"&efEIBlasterHit;" 
 				sound=				"&snLaserCannon;"
 				>
@@ -1854,7 +1769,7 @@
 			level=				"7"
 			frequency=			"common"
 
-			value=				"50000"
+			value=				"62000"
 			mass=				"5000"
 			  
 			description=		"The star cannon fires a stream of high-energy ions that continue to cause damage as they punch through armor."
@@ -1866,20 +1781,16 @@
 				type=				"beam"
 
 				damage=				"ion:4d6-1"
-				fireRate=			"12"
-				lifetime=			"60"
+				fireRate=			"14"
+				lifetime=			"40"
 				passthrough=		"50"
 				powerUse=			"750"
 
+				effect=				"&efStarCannonBeam;"
+				fireEffect=			"&efStarCannonFire;"
+				hitEffect=			"&efStarCannonHit;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"starblaster"
-						primaryColor=		"0x00, 0x80, 0xff"
-						secondaryColor=		"0x80, 0xc0, 0xff"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -1892,7 +1803,7 @@
 			level=				"7"
 			frequency=			"uncommon"
 
-			value=				"50000"
+			value=				"61000"
 			mass=				"6000"
 			  
 			description=		"The mark V howitzer fires a light thermonuclear shell."
@@ -1903,36 +1814,17 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:8d12; momentum3; WMD5"
-				fireRate=			"35"
+				damage=				"thermo:8d12; momentum:3; WMD:4"
+				fireRate=			"40"
 				missileSpeed=		"50"
 				lifetime=			"120"
 				hitPoints=			"10"
-				powerUse=			"400"
+				powerUse=			"600"
 				recoil=				"2"
 
 				effect=				"&efThermoShellDefault;"
-				fireEffect=			"&efThermoFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"100"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-						/>
-			</HitEffect>
 		</Weapon>
 
 	</ItemType>
@@ -1976,7 +1868,7 @@
 			level=				"7"
 			frequency=			"uncommon"
 
-			value=				"30000"
+			value=				"48000"
 			mass=				"9000"
 			  
 			description=		"Two TeV 9 blasters linked by a common fire control."
@@ -1988,7 +1880,7 @@
 				type=				"beam"
 
 				configuration=		"dual"
-				damage=				"particle:4d8"
+				damage=				"particle:5d8"
 				fireRate=			"15"
 				lifetime=			"40"
 				powerUse=			"600"
@@ -2008,7 +1900,7 @@
 			level=				"7"
 			frequency=			"rare"
 
-			value=				"60000"
+			value=				"64000"
 			mass=				"5000"
 			  
 			description=		"A single TeV 9 blaster mounted on an automated turret."
@@ -2020,7 +1912,7 @@
 				type=				"beam"
 
 				omnidirectional=	"true"
-				damage=				"particle:4d8"
+				damage=				"particle:5d8"
 				fireRate=			"15"
 				lifetime=			"40"
 				powerUse=			"400"
@@ -2040,7 +1932,7 @@
 			level=				"7"
 			frequency=			"common"
 
-			value=				"40000"
+			value=				"32000"
 			mass=				"5000"
 			  
 			description=		"Produced in great numbers in the Syrtis War, the cannon is now common throughout the Outer Realm. The cannon requires thermo cannon shells."
@@ -2059,31 +1951,12 @@
 
 						damage=			"thermo:6d12; momentum2; WMD5"
 						missileSpeed=	"60"
-						hitPoints=		"10"
+						hitPoints=		"20"
 						lifetime=		"100"
 
 						effect=			"&efThermoCannonShell;"
-						fireEffect=		"&efThermoFireDefault;"
 						sound=			"&snRecoillessCannon;"
 						>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsMediumExplosions;" 
-								imageX="0" 
-								imageY="0" 
-								imageWidth="64" 
-								imageHeight="64"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-						<Flare
-								style=			"fadingBlast"
-								radius=			"95"
-								primaryColor=	"0xff, 0xff, 0xf0"
-								lifetime=		"8"
-								/>
-					</HitEffect>
 				</Missile>
 			</Missiles>
 
@@ -2100,7 +1973,7 @@
 			level=				"7"
 			frequency=			"common"
 
-			value=				"45000"
+			value=				"65000"
 			mass=				"5000"
 			  
 			description=		"The tritium shells fired by this cannon detonate on contact in a thermonuclear explosion."
@@ -2111,7 +1984,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:6d12; momentum2; WMD4"
+				damage=				"thermo:5d12; momentum:2; WMD:3"
 				fireRate=			"20"
 				missileSpeed=		"40"
 				hitPoints=			"5"
@@ -2119,27 +1992,8 @@
 				powerUse=			"500"
 
 				effect=				"&efThermoShellDefault;"
-				fireEffect=			"&efThermoFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"95"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-						/>
-			</HitEffect>
 		</Weapon>
 
 	</ItemType>
@@ -2155,7 +2009,7 @@
 			level=				"8"
 			frequency=			"common"
 
-			value=				"85000"
+			value=				"100000"
 			mass=				"6000"
 			  
 			description=		"This venerable weapon design is still common at the edge of Human Space."
@@ -2166,36 +2020,17 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:12d12+9; momentum3; WMD5"
+				damage=				"thermo:11d12; momentum:3; WMD:4"
 				fireRate=			"40"
 				missileSpeed=		"50"
 				lifetime=			"120"
 				hitPoints=			"10"
-				powerUse=			"1000"
+				powerUse=			"1200"
 				recoil=				"2"
 
 				effect=				"&efThermoShellDefault;"
-				fireEffect=			"&efThermoFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG96;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="96" 
-						imageHeight="96"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"150"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-						/>
-			</HitEffect>
 		</Weapon>
 	</ItemType>
 
@@ -2208,7 +2043,7 @@
 			level=				"8"
 			frequency=			"common"
 			  
-			value=				"95000"
+			value=				"85000"
 			mass=				"4000"
 
 			description=		"The ion blaster fires a bolt of ionized particles."
@@ -2219,12 +2054,13 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"ion:11d6; WMD1"
+				damage=				"ion:11d6"
 				fireRate=			"20"
 				lifetime=			"30"
 				powerUse=			"1000"
 
 				effect=				"&efEIBlasterBeam;"
+				fireEffect=			"&efEIBlasterFire;"
 				hitEffect=			"&efEIBlasterHit;" 
 				sound=				"&snLaserCannon;"
 				>
@@ -2240,7 +2076,7 @@
 			level=				"8"
 			frequency=			"uncommon"
 
-			value=				"110000"
+			value=				"100000"
 			mass=				"3000"
 			  
 			description=		"The ion flame cannon fires multiple ion blasts in an arc in front of the ship."
@@ -2251,8 +2087,8 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"ion:1d6+1"
-				fireRate=			"15"
+				damage=				"ion:1d6+2"
+				fireRate=			"16"
 				lifetime=			"20"
 				powerUse=			"1000"
 
@@ -2291,7 +2127,7 @@
 
 		<Weapon
 				fireRate=			"16"
-				powerUse=			"50"
+				powerUse=			"100"
 				launcher=			"true"
 				>
 
@@ -2311,7 +2147,7 @@
 			level=				"8"
 			frequency=			"uncommon"
 
-			value=				"130000"
+			value=				"165000"
 			mass=				"6000"
 			  
 			description=		"This is a modified thermo cannon mounted on an automated turret. It requires thermo cannon shells."
@@ -2322,8 +2158,8 @@
 		<Weapon
 				omnidirectional=	"true"
 
-				fireRate=			"15"
-				powerUse=			"80"
+				fireRate=			"16"
+				powerUse=			"150"
 				>
 
 			<Missiles>
@@ -2332,31 +2168,12 @@
 
 						damage=			"thermo:6d12; momentum2; WMD5"
 						missileSpeed=	"60"
+						hitPoints=		"20"
 						lifetime=		"100"
-						hitPoints=		"10"
 
 						effect=			"&efThermoCannonShell;"
-						fireEffect=		"&efThermoFireDefault;"
 						sound=			"&snRecoillessCannon;"
 						>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsMediumExplosions;" 
-								imageX="0" 
-								imageY="0" 
-								imageWidth="64" 
-								imageHeight="64"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-						<Flare
-								style=			"fadingBlast"
-								radius=			"95"
-								primaryColor=	"0xff, 0xff, 0xf0"
-								lifetime=		"8"
-								/>
-					</HitEffect>
 				</Missile>
 			</Missiles>
 
@@ -2390,7 +2207,6 @@
 				<Missile ammoID="&itTM7Warhead;"
 						type=			"missile"
 
-						damage=			"thermo:6d12+6; momentum4; WMD4"
 						missileSpeed=	"40"
 						lifetime=		"12"
 						hitPoints=		"30"
@@ -2404,7 +2220,8 @@
 						<Image imageID="&rsWeapons8DB32;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="20"/>
 						
 						<Group angleOffset="180" radiusOffset="8">
-							<ParticleJet
+							<ParticleSystem
+									style=				"jet"
 									fixedPos=			"true"
 									emitRate=			"80"
 									tangentSpeed=		"3d2-3"
@@ -2420,7 +2237,7 @@
 											secondaryColor=	"#7e7e74"
 											/>
 								</ParticleEffect>
-							</ParticleJet>
+							</ParticleSystem>
 				
 							<Ray
 									style=			"smooth"
@@ -2450,10 +2267,10 @@
 							count=				"3"
 							type=				"missile"
 
-							damage=				"thermo:6d12+6; momentum3; WMD4"
+							damage=				"thermo:6d12+6; momentum:3; WMD:6"
 							missileSpeed=		"50"
 							lifetime=			"60"
-							maneuverability=	"4"
+							maneuverRate=		"9"
 
 							multiTarget=		"true"
 							autoAcquireTarget=	"true"
@@ -2462,29 +2279,9 @@
 						<Effect>
 							<Image imageID="&rsMissiles3;" imageX="48" imageY="0" imageWidth="16" imageHeight="16" rotationCount="20"/>
 						</Effect>
-
-						<HitEffect
-								sound="&snArmorHit1;"
-								>
-							<Image imageID="&rsMediumExplosions;" 
-									imageX="0" 
-									imageY="0" 
-									imageWidth="64" 
-									imageHeight="64"
-									imageFrameCount="16"
-									imageTicksPerFrame="2"/>
-							<Flare
-									style=			"fadingBlast"
-									radius=			"95"
-									primaryColor=	"0xff, 0xff, 0xf0"
-									lifetime=		"8"
-									/>
-						</HitEffect>
 					</Fragment>
-
 				</Missile>
 			</Missiles>
-
 		</Weapon>
 
 	</ItemType>
@@ -2500,7 +2297,7 @@
 			level=				"9"
 			frequency=			"common"
 			  
-			value=				"190000"
+			value=				"170000"
 			mass=				"4500"
 
 			description=		"This is a more powerful version of the ion blaster."
@@ -2511,12 +2308,13 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"ion:8d20; WMD1"
+				damage=				"ion:24d6"
 				fireRate=			"30"
 				lifetime=			"30"
-				powerUse=			"2000"
+				powerUse=			"1500"
 
 				effect=				"&efEIBlasterBeam;"
+				fireEffect=			"&efEIBlasterFire;"
 				hitEffect=			"&efEIBlasterHit;" 
 				sound=				"&snLaserCannon;"
 				>
@@ -2563,7 +2361,7 @@
 			level=				"9"
 			frequency=			"rare"
 
-			value=				"230000"
+			value=				"190000"
 			mass=				"5000"
 			  
 			description=		"Similar in design to the ion blaster, but mounted on an automated turret."
@@ -2575,12 +2373,13 @@
 				type=				"beam"
 
 				omnidirectional=	"true"
-				damage=				"ion:4d6; WMD1"
-				fireRate=			"15"
+				damage=				"ion:11d6"
+				fireRate=			"24"
 				lifetime=			"30"
-				powerUse=			"1200"
+				powerUse=			"2000"
 
 				effect=				"&efEIBlasterBeam;"
+				fireEffect=			"&efEIBlasterFire;"
 				hitEffect=			"&efEIBlasterHit;" 
 				sound=				"&snLaserCannon;"
 				>
@@ -2596,10 +2395,10 @@
 			level=				"9"
 			frequency=			"uncommon"
 
-			value=				"220000"
+			value=				"190000"
 			mass=				"5000"
 			  
-			description=		"This improved version can fire at quadruple the rate of the tritium cannon. Unfortunately, the cannon overheats quickly if fired continuously."
+			description=		"This improved version can fire at more than triple the rate of the tritium cannon. Unfortunately, the cannon overheats quickly if fired continuously."
 			>
 
 		<Image imageID="&rsItemsNAMI3;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -2607,40 +2406,21 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:4d12+4; momentum2; WMD4"
-				fireRate=			"5"
+				damage=				"thermo:5d12; momentum:2; WMD:3"
+				fireRate=			"6"
 				missileSpeed=		"40"
 				hitPoints=			"5"
 				lifetime=			"60"
 				powerUse=			"2000"
 
 				counter=			"temperature"
-				counterActivate=	"2"
+				counterActivate=	"1"
 				counterUpdate=		"-1"
-				counterUpdateRate=	"6"
+				counterUpdateRate=	"5"
 
 				effect=				"&efThermoShellDefault;"
-				fireEffect=			"&efThermoFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"95"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-						/>
-			</HitEffect>
 		</Weapon>
 
 	</ItemType>
@@ -2656,7 +2436,7 @@
 			level=				"10"
 			frequency=			"rare"
 
-			value=				"750000"
+			value=				"440000"
 			mass=				"16000"
 			  
 			description=		"Taikon's IM90 blaster mounts three independently targeted gun barrels, each firing a blast of ion energy."
@@ -2665,19 +2445,23 @@
 		<Image imageID="&rsItemsTaikon1;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
-				configuration=		"spread3"
 				omnidirectional=	"true"
 				multiTarget=		"true"
 				powerUse=			"3000"
 
 				type=				"beam"
-				damage=				"ion:4d6; WMD1"
+				damage=				"ion:6d6"
 				fireRate=			"20"
 				lifetime=			"30"
 
 				effect=				"&efIonBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
+			<Configuration aimTolerance="6">
+				<Shot angle="-3"/>
+				<Shot angle="0"/>
+				<Shot angle="3"/>
+			</Configuration>
 		</Weapon>
 	</ItemType>
 
@@ -2699,41 +2483,56 @@
 		<Image imageID="&rsItemsEI3;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
+				type=				"particles"
+				damage=				"plasma:60; WMD:4"
+				
 				fireRate=			"20"
-
-				type=				"missile"
-
-				lifetime=			"60"
 				hitPoints=			"10"
-				damage=				"plasma:10d12+8; WMD4"
+
 				powerUse=			"3000"
-
-				missileSpeed=		"40"
-				sound=				"&snLaserCannon;"
+				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<MoltenBolt
-						width=				"16"
-						growth=				"24"
-						primaryColor=		"0xfe, 0xff, 0xce"
-						secondaryColor=		"0xff, 0xeb, 0x26"
-						/>
-			</Effect>
-
-			<HitEffect
-					sound="&snArmorHit1;"
+			
+			<ParticleSystem
+					style=				"comet"
+					emitLifetime=		"1"
+					emitRate=			"100"
+					emitSpeed=			"35-45"
+					emitWidth=			"50"
+					spreadAngle=		"3"
+					
+					particleLifetime=	"60"
+					particleEffect=		"&efPlasmaParticleDefault;"
 					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
+			</ParticleSystem>
+			
+			<Effect>
+				<ParticleSystem
+						style=				"jet"
+						fixedPos=			"true"
+						emitRate=			"2-4"
+						tangentSpeed=		"-8-8"
+						particleLifetime=	"10"
+						XformTime=			"30"
+						>
+					<ParticleEffect>
+						<Orb
+								instance=			"owner"
+						
+								style=				"smooth"
+								animate=			"fade"
+								radius=				"20"
+								lifetime=			"10"
+								intensity=			"20"
+						
+								blendMode=			"screen"
+								primaryColor=		"#feff00"
+								secondaryColor=		"#ff7f00"
+								/>
+					</ParticleEffect>
+				</ParticleSystem>
+			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 <!-- AMMUNITION & MISSILES -->
@@ -2748,10 +2547,10 @@
 			  
 			level=				"2"
 			frequency=			"common"
-			numberAppearing=	"2d12"
+			numberAppearing=	"48-72"
 
 			value=				"5"
-			mass=				"20"
+			mass=				"15"
 			  
 			description=		"This is a standard hexagene high-explosive missile; cheap and light, they are the weapon of choice for modern patrol fleets."
 			>
@@ -2762,24 +2561,12 @@
 				type=			"missile"
 				lifetime=		"120"
 				damage=			"blast:4d6; momentum4; WMD5"
-				missileSpeed=	"45"
+				missileSpeed=	"60"
 				hitPoints=		"10"
 						 
 				effect=			"&efMissileNAMI;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -2791,12 +2578,12 @@
 			  
 			level=				"3"
 			frequency=			"common"
-			numberAppearing=	"2d12"
+			numberAppearing=	"48-72"
 
 			value=				"10"
-			mass=				"20"
+			mass=				"15"
 			  
-			description=		"The warhead of this NAMI-compatible missile explodes into more than a dozen high-velocity shards."
+			description=		"The warhead of this NAMI-compatible missile explodes into dozens of high-velocity shards."
 			>
 
 		<Image imageID="&rsItemsNAMI2;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -2804,50 +2591,22 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"blast:2d6+2; momentum2; WMD1"
-				missileSpeed=	"45"
+				missileSpeed=	"60"
 				hitPoints=		"10"
 
 				effect=			"&efMissileNAMI;"
 				sound=			"&snMissileLauncher;"
 				>
 
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
-
 			<Fragment
-					count=			"6d6"
+					count=			"7d6"
 					type=			"missile"
 					lifetime=		"10"
 					damage=			"kinetic:2d6; WMD1"
 					missileSpeed=	"32-48"
-							>
-
-				<Effect>
-					<ImageAndTail
-							imageID=			"&rsMissiles4;"
-							imageX=				"0"
-							imageY=				"0"
-							imageWidth=			"16"
-							imageHeight=		"16"
-							imageFrameCount=	"4"
-							imageTicksPerFrame=	"1"
-
-							length=				"32"
-							width=				"1"
-							primaryColor=		"0xff, 0xff, 0xff"
-							secondaryColor=		"0xc0, 0xc2, 0x85"
-									/>
-				</Effect>
+                    
+    				effect=			"&efKineticBoltDefault;"
+					>
 			</Fragment>
 		</Missile>
 	</ItemType>
@@ -2860,9 +2619,9 @@
 			  
 			level=				"3"
 			frequency=			"uncommon"
-			numberAppearing=	"2d12"
+			numberAppearing=	"48-72"
 
-			value=				"12"
+			value=				"20"
 			mass=				"40"
 			  
 			description=		"This is a heavier and more powerful version of the KM100."
@@ -2873,25 +2632,13 @@
 		<Missile
 			type=			"missile"
 			lifetime=		"60"
-			damage=			"blast:10d6; momentum4; WMD6"
-			missileSpeed=	"45"
-			hitPoints=		"15"
+			damage=			"blast:9d6; momentum:4; WMD:7"
+			missileSpeed=	"60"
+			hitPoints=		"10"
 						 
 			effect=			"&efMissileNAMI;"
 			sound=			"&snMissileLauncher;"
 			>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsMediumExplosions;"
-						imageX="0"
-						imageY="0"
-						imageWidth="64"
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -2903,10 +2650,10 @@
 			  
 			level=				"3"
 			frequency=			"common"
-			numberAppearing=	"2d12"
+			numberAppearing=	"48-72"
 
 			value=				"15"
-			mass=				"20"
+			mass=				"15"
 			  
 			description=		"A powerful optical and infrared tracking module allows this missile to home in on its target."
 			>
@@ -2919,23 +2666,11 @@
 				damage=			"blast:5d6; momentum4; WMD5"
 				missileSpeed=	"40"
 				hitPoints=		"10"
-				maneuverability="2"
+				maneuverRate=	"9"
 						 
 				effect=			"&efMissileNAMI;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -2943,16 +2678,16 @@
 
 	<ItemType UNID="&itXM300Missile;"
 			name=				"XM300 Reaper missile"
-			attributes=			"commonwealth, consumable, military, missile, NAMI, NAMILauncher, premiumAmmo"
+			attributes=			"commonwealth, consumable, illegal, missile, NAMI, NAMILauncher, premiumAmmo"
 			  
 			level=				"4"
 			frequency=			"rare"
-			numberAppearing=	"2d4"
+			numberAppearing=	"24-36"
 
-			value=				"50"
-			mass=				"30"
+			value=				"30"
+			mass=				"15"
 			  
-			description=		"The XM300 warhead is jacketed with small amounts of plutonium. Though not enough for fission, the radioactive materials contaminate the target."
+			description=		"The XM300 warhead is jacketed with small amounts of plutonium&mdash;enough to fatally contaminate a target. This weapon is banned by treaty."
 			reverseArticle=		"true"
 			>
 
@@ -2962,24 +2697,13 @@
 				type=			"missile"
 				lifetime=		"120"
 				damage=			"blast:6d6; radiation1; momentum4; WMD4"
-				missileSpeed=	"45"
+				missileSpeed=	"60"
 				hitPoints=		"10"
 						 
 				effect=			"&efMissileNAMI;"
+				hitEffect=		"&efRadioactiveHitEffect;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosion2AG128;"
-						imageX="0"
-						imageY="0"
-						imageWidth="128"
-						imageHeight="128"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -2991,10 +2715,10 @@
 			  
 			level=				"4"
 			frequency=			"uncommon"
-			numberAppearing=	"2d12"
+			numberAppearing=	"48-72"
 
 			value=				"50"
-			mass=				"40"
+			mass=				"20"
 			  
 			description=		"The Broadsword missile is a heavier version of the tracking KM500 series."
 			>
@@ -3004,26 +2728,14 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"blast:10d6; momentum4; WMD6"
+				damage=			"blast:9d6; momentum:4; WMD:7"
 				missileSpeed=	"40"
 				hitPoints=		"15"
-				maneuverability="2"
+				maneuverRate=	"9"
 						 
 				sound=			"&snMissileLauncher;"
 				effect=			"&efMissileNAMI;"
 				>
-						
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsMediumExplosions;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="64" 
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3035,10 +2747,10 @@
 			  
 			level=				"7"
 			frequency=			"uncommon"
-			numberAppearing=	"2d12"
+			numberAppearing=	"24-36"
 
 			value=				"120"
-			mass=				"40"
+			mass=				"20"
 			  
 			description=		"An optical tracking missile carrying a 100-kiloton thermonuclear warhead. The XM900 is tightly controlled; only military vessels may carry them."
 			reverseArticle=		"true"
@@ -3049,49 +2761,29 @@
 		<Missile
 				type=			"missile"
 
-				damage=			"thermo:6d24; momentum6; WMD7"
 				missileSpeed=	"40"
 				hitPoints=		"20"
 				lifetime=		"120"
 
-				maneuverability="2"
+				maneuverRate=	"9"
 
 				effect=			"&efMissileNAMI;"
+				hitEffect=		"&efThermoFragmentExplosion;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG128;"
-						imageX="0"
-						imageY="0"
-						imageWidth="128"
-						imageHeight="128"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 
 			<Fragment
 					count=			"1"
 					type=			"radius"
 
-					damage=			"thermo:6d24; momentum6; WMD7"
+					damage=			"thermo:7d24; momentum6; WMD7"
 					minRadius=		"1"
 					maxRadius=		"4"
 					missileSpeed=	"0"
-							>
-
-				<Effect>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"170"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-									/>
-				</Effect>
+					
+					hitEffect=		"&efThermoFragmentHit;"
+					>
 			</Fragment>
-
 		</Missile>
 	</ItemType>
 
@@ -3105,10 +2797,10 @@
 			  
 			level=				"3"
 			frequency=			"common"
-			numberAppearing=	"10d20"
+			numberAppearing=	"96-144"
 
 			value=				"12"
-			mass=				"10"
+			mass=				"20"
 			  
 			description=		"This is a standard hexagene high-explosive grenade compatible with the MAG launcher."
 			>
@@ -3117,7 +2809,7 @@
 
 		<Missile
 				type=			"missile"
-				damage=			"blast:6d6; WMD5"
+				damage=			"blast:6d6; WMD:6"
 						
 				lifetime=		"80"
 				missileSpeed=	"30"
@@ -3127,18 +2819,6 @@
 				effect=			"&efMissileMAG;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3150,7 +2830,7 @@
 			  
 			level=				"4"
 			frequency=			"common"
-			numberAppearing=	"10d20"
+			numberAppearing=	"96-144"
 
 			value=				"24"
 			mass=				"20"
@@ -3162,7 +2842,7 @@
 		
 		<Missile
 				type=			"missile"
-				damage=			"blast:9d6; WMD5"
+				damage=			"blast:8d6; WMD:6"
 						
 				lifetime=		"80"
 				missileSpeed=	"30"
@@ -3172,18 +2852,6 @@
 				effect=			"&efMissileMAG;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsMediumExplosions;"
-						imageX="0"
-						imageY="0"
-						imageWidth="64"
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3195,7 +2863,7 @@
 			  
 			level=				"5"
 			frequency=			"common"
-			numberAppearing=	"10d20"
+			numberAppearing=	"96-144"
 
 			value=				"45"
 			mass=				"30"
@@ -3208,7 +2876,6 @@
 		
 		<Missile
 				type=			"missile"
-				damage=			"blast:12d6; WMD5"
 						
 				lifetime=		"80"
 				missileSpeed=	"30"
@@ -3220,43 +2887,16 @@
 				sound=			"&snMissileLauncher;"
 				>
 
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
-
 			<Fragment
-					count=			"5d6"
+					count=			"50-60"
 					type=			"missile"
 					lifetime=		"12"
-					damage=			"blast:2d8; WMD1"
+					damage=			"kinetic:4d6; WMD:1"
 					missileSpeed=	"40-60"
-							>
-				<Effect>
-					<ImageAndTail
-							imageID=			"&rsMissiles4;"
-							imageX=				"0"
-							imageY=				"0"
-							imageWidth=			"16"
-							imageHeight=		"16"
-							imageFrameCount=	"4"
-							imageTicksPerFrame=	"1"
-
-							length=				"32"
-							width=				"1"
-							primaryColor=		"0xff, 0xff, 0xff"
-							secondaryColor=		"0xc0, 0xc2, 0x85"
-									/>
-				</Effect>
+                    
+                    effect=         "&efKineticBoltDefault;"
+					>
 			</Fragment>
-
 		</Missile>
 	</ItemType>
 
@@ -3268,7 +2908,7 @@
 			  
 			level=				"6"
 			frequency=			"uncommon"
-			numberAppearing=	"2d20"
+			numberAppearing=	"48-72"
 
 			value=				"70"
 			mass=				"20"
@@ -3280,7 +2920,7 @@
 		
 		<Missile
 				type=			"missile"
-				damage=			"blast:11d10; shield:5;"
+				damage=			"blast:12d12; shield:5;"
 						
 				lifetime=		"80"
 				missileSpeed=	"30"
@@ -3290,18 +2930,6 @@
 				effect=			"&efMissileMAG;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3313,7 +2941,7 @@
 			  
 			level=				"6"
 			frequency=			"uncommon"
-			numberAppearing=	"4d20"
+			numberAppearing=	"96-144"
 
 			value=				"90"
 			mass=				"30"
@@ -3325,7 +2953,6 @@
 		
 		<Missile
 				type=			"missile"
-				damage=			"blast:12d6; WMD3"
 						
 				lifetime=		"80"
 				missileSpeed=	"30"
@@ -3337,57 +2964,16 @@
 				sound=			"&snMissileLauncher;"
 				>
 
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
-
 			<Fragment
-					count=			"20-28"
+					count=			"28-38"
 					type=			"missile"
-					lifetime=		"40"
-					damage=			"blast:3d6; WMD3"
+					lifetime=		"36"
+					damage=			"blast:4d6; WMD:5"
 					missileSpeed=	"40-60"
-							>
-				<Effect>
-					<Image imageID="&rsMissiles3;" imageX="0" imageY="0" imageWidth="16" imageHeight="16" rotationCount="20"/>
-
-					<SmokeTrail
-							spread=			"4-6"
-							particleLifetime="16"
-							emitDuration=	"80"
-							emitRate=		"8-10"
-							emitSpeed=		"15-18"
-									>
-						<ParticleEffect>
-							<Particle
-									style=			"flame"
-									maxWidth=		"2-5"
-											/>
-						</ParticleEffect>
-					</SmokeTrail>
-				</Effect>
-
-				<HitEffect
-						sound="&snArmorHit1;"
-								>
-					<Image imageID="&rsExplosionsAG48;"
-							imageX="0"
-							imageY="0"
-							imageWidth="48"
-							imageHeight="48"
-							imageFrameCount="16"
-							imageTicksPerFrame="2"/>
-				</HitEffect>
+                    
+                    effect=         "&efBlastShellDefault;"
+					>
 			</Fragment>
-
 		</Missile>
 	</ItemType>
 
@@ -3399,7 +2985,7 @@
 			  
 			level=				"7"
 			frequency=			"uncommon"
-			numberAppearing=	"1d12"
+			numberAppearing=	"48-72"
 
 			value=				"120"
 			mass=				"30"
@@ -3411,7 +2997,7 @@
 		
 		<Missile
 				type=			"missile"
-				damage=			"blast:24d6; WMD7"
+				damage=			"blast:24d12; WMD:7"
 						
 				lifetime=		"160"
 				missileSpeed=	"15"
@@ -3421,18 +3007,6 @@
 				effect=			"&efMissileMAG;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG96;"
-						imageX="0"
-						imageY="0"
-						imageWidth="96"
-						imageHeight="96"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3444,19 +3018,18 @@
 			  
 			level=				"8"
 			frequency=			"uncommon"
-			numberAppearing=	"1d12"
+			numberAppearing=	"48-72"
 
-			value=				"220"
+			value=				"180"
 			mass=				"30"
 			  
-			description=		"The only military variant of the popular MAG series is this thermonuclear and radiological variant."
+			description=		"The only military variant of the popular MAG series is this thermonuclear variant."
 			>
 
 		<Image imageID="&rsItemsRasiermesser2;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
 		
 		<Missile
 				type=			"missile"
-				damage=			"thermo:8d24; WMD7"
 						
 				lifetime=		"120"
 				missileSpeed=	"20"
@@ -3464,39 +3037,21 @@
 				hitPoints=		"30"
 						 
 				effect=			"&efMissileMAG;"
+				hitEffect=		"&efThermoFragmentExplosion;"
 				sound=			"&snMissileLauncher;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG128;"
-						imageX="0"
-						imageY="0"
-						imageWidth="128"
-						imageHeight="128"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 
 			<Fragment
 					count=			"1"
 					type=			"radius"
 
-					damage=			"thermo:8d24; WMD7"
+					damage=			"thermo:14d24; WMD:7"
 					minRadius=		"1"
-					maxRadius=		"4"
+					maxRadius=		"6"
 					missileSpeed=	"0"
-							>
-
-				<Effect>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"190"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-									/>
-				</Effect>
+					
+					hitEffect=		"&efThermoFragmentHit;"
+					>
 			</Fragment>
 		</Missile>
 	</ItemType>
@@ -3511,9 +3066,9 @@
 			  
 			level=				"5"
 			frequency=			"common"
-			numberAppearing=	"8d20"
+			numberAppearing=	"160-240"
 
-			value=				"5"
+			value=				"6"
 			mass=				"10"
 			  
 			description=		"The Strelka series of light missiles is compatible with the Makayev launcher. The White Strelka is the cheapest and least powerful of the series."
@@ -3524,7 +3079,7 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"60"
-				damage=			"blast:3d6; momentum2; WMD3"
+				damage=			"blast:3d6; momentum:2; WMD:5"
 				missileSpeed=	"60"
 				hitPoints=		"5"
 
@@ -3542,9 +3097,9 @@
 			  
 			level=				"6"
 			frequency=			"common"
-			numberAppearing=	"8d20"
+			numberAppearing=	"160-240"
 
-			value=				"7"
+			value=				"9"
 			mass=				"10"
 			  
 			description=		"The Strelka series of light missiles is compatible with the Makayev launcher. The Green Strelka packs more punch than the White version."
@@ -3555,25 +3110,13 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"60"
-				damage=			"blast:4d6+1; momentum2; WMD3"
+				damage=			"blast:5d6; momentum:2; WMD:5"
 				missileSpeed=	"60"
 				hitPoints=		"5"
 
 				effect=			"&efMissileStrelka;"
 				sound=			"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3585,10 +3128,10 @@
 			  
 			level=				"7"
 			frequency=			"uncommon"
-			numberAppearing=	"8d20"
+			numberAppearing=	"160-240"
 
-			value=				"24"
-			mass=				"20"
+			value=				"15"
+			mass=				"12"
 			  
 			description=		"The Red Strelka is a thermonuclear version of the Makayev-compatible missile series."
 			>
@@ -3598,31 +3141,13 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"60"
-				damage=			"thermo:3d12; momentum3; WMD5"
+				damage=			"thermo:3d12; momentum:3; WMD:5"
 				missileSpeed=	"60"
 				hitPoints=		"5"
 
 				effect=			"&efMissileStrelka;"
 				sound=			"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"65"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-								/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3634,12 +3159,12 @@
 			  
 			level=				"9"
 			frequency=			"rare"
-			numberAppearing=	"8d20"
+			numberAppearing=	"160-240"
 
-			value=				"90"
-			mass=				"30"
+			value=				"60"
+			mass=				"15"
 			  
-			description=		"The rare and powerful Black Strelka releases a dozen thermonuclear submunitions. It is compatible with the Makayev launcher."
+			description=		"The rare and powerful Black Strelka releases dozens of thermonuclear submunitions. It is compatible with the Makayev launcher."
 			>
 
 		<Image imageID="&rsItemsMakayev2;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -3647,38 +3172,23 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"60"
-				damage=			"thermo:1d12; momentum1; WMD3"
 				missileSpeed=	"60"
 				hitPoints=		"5"
 
 				effect=			"&efMissileStrelka;"
+				hitEffect=		"&efThermoFragmentExplosion;"
 				sound=			"&snRecoillessCannon;"
 				>
 
 			<Fragment
-					count=			"18-24"
+					count=			"36-48"
 					type=			"missile"
 					lifetime=		"8"
-					damage=			"thermo:1d12; momentum1; WMD5"
+					damage=			"thermo:1d12; momentum:1; WMD:5"
 					missileSpeed=	"40-60"
 
 					effect=			"&efThermoShellDefault;"
-							>
-				<HitEffect>
-					<Image imageID="&rsExplosionsAG48;"
-							imageX="0"
-							imageY="0"
-							imageWidth="48"
-							imageHeight="48"
-							imageFrameCount="16"
-							imageTicksPerFrame="2"/>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"40"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-									/>
-				</HitEffect>
+					>
 			</Fragment>
 		</Missile>
 	</ItemType>
@@ -3693,7 +3203,7 @@
 			  
 			level=				"7"
 			frequency=			"common"
-			numberAppearing=	"2d20"
+			numberAppearing=	"48-72"
 
 			value=				"90"
 			mass=				"70"
@@ -3706,7 +3216,6 @@
 		<Missile
 				type=			"missile"
 
-				damage=			"thermo:3d12; WMD6"
 				missileSpeed=	"10"
 				accelerationFactor="60"
 				lifetime=		"4800"
@@ -3715,6 +3224,7 @@
 
 				failSafe=		"10"
 
+				hitEffect=		"&efBlastHitDefault;"
 				sound=			"&snMissileLauncher;"
 				>
 
@@ -3732,25 +3242,7 @@
 					lifetime=		"8"
 
 					effect=			"&efThermoShellDefault;"
-							>
-
-				<HitEffect
-						sound="&snArmorHit1;"
-								>
-					<Image imageID="&rsExplosionsAG48;"
-							imageX="0"
-							imageY="0"
-							imageWidth="48"
-							imageHeight="48"
-							imageFrameCount="16"
-							imageTicksPerFrame="2"/>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"220"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-									/>
-				</HitEffect>
+					>
 			</Fragment>
 		</Missile>
 	</ItemType>
@@ -3763,7 +3255,7 @@
 			  
 			level=				"8"
 			frequency=			"uncommon"
-			numberAppearing=	"2d20"
+			numberAppearing=	"48-72"
 
 			value=				"180"
 			mass=				"70"
@@ -3776,9 +3268,8 @@
 		<Missile
 				type=			"missile"
 
-				damage=			"thermo:3d12; WMD6"
 				missileSpeed=	"10"
-				maneuverability="2"
+				maneuverRate=	"9"
 				lifetime=		"2400"
 				hitPoints=		"20"
 				stealth=		"6"
@@ -3786,6 +3277,7 @@
 				failSafe=		"10"
 
 				sound=			"&snMissileLauncher;"
+				hitEffect=		"&efBlastHitDefault;"
 				>
 
 			<Effect>
@@ -3802,27 +3294,8 @@
 					lifetime=		"8"
 
 					effect=			"&efThermoShellDefault;"
-							>
-
-				<HitEffect
-						sound="&snArmorHit1;"
-								>
-					<Image imageID="&rsExplosionsAG48;"
-							imageX="0"
-							imageY="0"
-							imageWidth="48"
-							imageHeight="48"
-							imageFrameCount="16"
-							imageTicksPerFrame="2"/>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"220"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-									/>
-				</HitEffect>
+					>
 			</Fragment>
-
 		</Missile>
 	</ItemType>
 
@@ -3836,7 +3309,7 @@
 			  
 			level=				"8"
 			frequency=			"common"
-			numberAppearing=	"4d12"
+			numberAppearing=	"48-72"
 
 			value=				"300"
 			mass=				"30"
@@ -3849,30 +3322,13 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"thermo:8d20; momentum3; WMD7"
+				damage=			"thermo:10d20; momentum3; WMD7"
 				missileSpeed=	"70"
 				hitPoints=		"20"
 
 				effect=			"&efMissileRasiermesser;"
 				sound=			"&snMissileLauncher;"
 				>
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsMediumExplosions;"
-						imageX="0"
-						imageY="0"
-						imageWidth="64"
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"100"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-								/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3884,7 +3340,7 @@
 			  
 			level=				"9"
 			frequency=			"common"
-			numberAppearing=	"4d12"
+			numberAppearing=	"48-72"
 
 			value=				"600"
 			mass=				"30"
@@ -3900,28 +3356,11 @@
 				damage=			"thermo:10d20; momentum3; WMD7"
 				missileSpeed=	"65"
 				hitPoints=		"20"
-				maneuverability="2"
+				maneuverRate=	"9"
 						 
 				effect=			"&efMissileRasiermesser;"
 				sound=			"&snMissileLauncher;"
 				>
-			<HitEffect
-					sound="&snArmorHit1;"
-							>
-				<Image imageID="&rsMediumExplosions;"
-						imageX="0"
-						imageY="0"
-						imageWidth="64"
-						imageHeight="64"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"95"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-								/>
-			</HitEffect>
 		</Missile>
 	</ItemType>
 
@@ -3935,7 +3374,7 @@
 			  
 			level=				"9"
 			frequency=			"rare"
-			numberAppearing=	"1d6"
+			numberAppearing=	"36-54"
 
 			value=				"300"
 			mass=				"50"
@@ -3949,12 +3388,11 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"thermo:1d12; momentum3; WMD7"
 				missileSpeed=	"55"
 				hitPoints=		"40"
 
 				effect=			"&efMissileNAMIHeavy;"
-				hitEffect=		"&efFusionExplosion1;"
+				hitEffect=		"&efThermoFragmentExplosion;"
 				sound=			"&snMissileLauncher;"
 				>
 
@@ -3966,16 +3404,9 @@
 					minRadius=		"2"
 					maxRadius=		"6"
 					missileSpeed=	"0"
-							>
-
-				<Effect>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"300"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-									/>
-				</Effect>
+					
+					hitEffect=		"&efThermoFragmentHit;"
+					>
 			</Fragment>
 
 			<Fragment
@@ -3985,7 +3416,7 @@
 					lifetime=		"1d12+12"
 					damage=			"blast:2d6; WMD1"
 					missileSpeed=	"25-55"
-							>
+					>
 
 				<Effect>
 					<ImageAndTail
@@ -4015,7 +3446,7 @@
 			  
 			level=				"9"
 			frequency=			"uncommon"
-			numberAppearing=	"2d8"
+			numberAppearing=	"36-54"
 
 			value=				"300"
 			mass=				"50"
@@ -4029,7 +3460,6 @@
 		<Missile
 				type=			"missile"
 
-				damage=			"thermo:4d12; momentum6; WMD1"
 				missileSpeed=	"30"
 				lifetime=		"20"
 				hitPoints=		"40"
@@ -4062,14 +3492,15 @@
 
 					multiTarget=		"true"
 					autoAcquireTarget=	"true"
-					maneuverability=	"2"
-							>
+					maneuverRate=		"9"
+					>
 
 				<Effect>
 					<Image imageID="&rsMissileNAMI;" imageX="0" imageY="0" imageWidth="24" imageHeight="24" rotationCount="40"/>
 
 					<Group angleOffset="180" radiusOffset="10">
-						<ParticleJet
+						<ParticleSystem
+								style=				"jet"
 								fixedPos=			"true"
 								emitRate=			"30"
 								tangentSpeed=		"3d2-3"
@@ -4085,7 +3516,7 @@
 										secondaryColor=	"#7e7e74"
 												/>
 							</ParticleEffect>
-						</ParticleJet>
+						</ParticleSystem>
 
 						<Ray
 								style=			"smooth"
@@ -4098,24 +3529,6 @@
 										/>
 					</Group>
 				</Effect>
-
-				<HitEffect
-						sound="&snArmorHit1;"
-								>
-					<Image imageID="&rsExplosionsAG48;"
-							imageX="0"
-							imageY="0"
-							imageWidth="48"
-							imageHeight="48"
-							imageFrameCount="16"
-							imageTicksPerFrame="2"/>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"65"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-									/>
-				</HitEffect>
 			</Fragment>
 		</Missile>
 	</ItemType>
@@ -4128,7 +3541,7 @@
 			  
 			level=				"10"
 			frequency=			"rare"
-			numberAppearing=	"1d4"
+			numberAppearing=	"24-36"
 
 			value=				"450"
 			mass=				"50"
@@ -4142,12 +3555,11 @@
 		<Missile
 				type=			"missile"
 				lifetime=		"120"
-				damage=			"thermo:1d12; momentum3; WMD7"
 				missileSpeed=	"55"
 				hitPoints=		"40"
 
 				effect=			"&efMissileNAMIHeavy;"
-				hitEffect=		"&efFusionExplosion1;"
+				hitEffect=		"&efThermoFragmentExplosion;"
 				sound=			"&snMissileLauncher;"
 				>
 
@@ -4159,16 +3571,9 @@
 					minRadius=		"3"
 					maxRadius=		"8"
 					missileSpeed=	"0"
-							>
-
-				<Effect>
-					<Flare
-							style=			"fadingBlast"
-							radius=			"450"
-							primaryColor=	"0xff, 0xff, 0xf0"
-							lifetime=		"8"
-									/>
-				</Effect>
+					
+					hitEffect=		"&efThermoFragmentHit;"
+					>
 			</Fragment>
 
 			<Fragment
@@ -4269,7 +3674,7 @@
 			frequency=			"uncommon"
 			numberAppearing=	"12d40"
 
-			value=				"95"
+			value=				"70"
 			mass=				"20"
 			  
 			description=		"Fired by thermo cannons, these rounds pack the yield of a nuclear device in a small, mass-produced shell."
@@ -4304,7 +3709,8 @@
 			>
 		
 		<Effect>
-			<ParticleJet
+			<ParticleSystem
+					style=				"jet"
 					emitRate=			"20"
 					emitSpeed=			"30-45"
 					particleLifetime=	"7-20"
@@ -4319,7 +3725,7 @@
 							secondaryColor=	"#5b777a"
 							/>
 				</ParticleEffect>
-			</ParticleJet>
+			</ParticleSystem>
 			
 			<Ray
 					style=			"smooth"
@@ -4333,8 +3739,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length:	(mathScale damageHP	6 80 16 64 50)
-								width: (mathScale damageHP 6 80 12 48 50)
+								length:	(mathScale damageHP	5 64 16 64 50)
+								width: (mathScale damageHP 5 64 12 48 50)
 								intensity: 10
 								}
 							)
@@ -4355,17 +3761,62 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length:
-									(mathScale 
-										damageHP						; average damage of weapon
-										6								; min damage
-										80								; max damage
-										30								; min beam length
-										110								; max beam length
-										50								; scale gamma
-										)
-								width: (mathScale damageHP 6 80 12 44 50)
+								length:	(mathScale damageHP 5 64 30 110 50)
+								width: (mathScale damageHP 5 64 12 44 50)
 								intensity: 30
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efEIBlasterFire;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					intensity=		"50"
+					primaryColor=	"#ff9500"
+					secondaryColor=	"#804a00"
+					
+					lifetime=		"3"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 10 140 12 28 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<Ray	style=			"jagged"
+					shape=			"tapered"
+					intensity=		"50"
+					xformRotation=	"180"
+					primaryColor=	"#ff9500"
+					secondaryColor=	"#804a00"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								length: (mathScale damageHP 10 140 24 56 50)
+								width: (mathScale damageHP 10 140 18 42 50)
 								}
 							)
 					</GetParameters>
@@ -4383,129 +3834,305 @@
 					shape=			"tapered"
 					primaryColor=	"#ff9500"
 					secondaryColor=	"#804a00"
-					/>
-		</Effect>
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
 
+							{
+								length: (mathScale damageHP 10 140 60 260 50)
+								width: (mathScale damageHP 10 140 20 40 50)
+								intensity: 60
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+			
+			<ParticleComet
+					particleCount=	"200"
+					primaryColor=	"#ff9500"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+
+							{ 
+								particleCount: (mathScale damageHP 10 140 100 300 50)
+								length: (mathScale damageHP 10 140 60 220 50)
+								width: (mathScale damageHP 10 140 6 16 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleComet>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efEIBlasterHit;"
+			sound="&snArmorHit1;"
+			>
+		<Effect>
+			<Orb	style=			"diffraction"
+					animate=		"fade"
+					intensity=		"50"
+					
+					blendMode=		"screen"
+					primaryColor=	"#ffca80"
+					secondaryColor=	"#ff9500"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 10 140 30 70 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 10 140 12 48 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<ParticleSystem
+					style=			"radiate"
+					emitSpeed=		"4-8"
+					particleLifetime="8"
+					>
+				<ParticleEffect>
+					<Particle
+							style=			"plain"
+							minWidth=		"1"
+							maxWidth=		"3"
+							primaryColor=	"#ffca80"
+							secondaryColor=	"#ff9500"
+							/>
+				</ParticleEffect>
+				
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								lifetime: (if (= damageHP 0) 10 (mathScale damageHP 10 140 12 48 50))
+								emitRate: (mathScale damageHP 10 140 50 200 50)
+								emitLifetime: (if (= damageHP 0) 2 (mathScale damageHP 10 140 6 24 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleSystem>
+		</Effect>
+		
 		<Events>
 			<GetParameters>
-				(block (damageHP primaryColor secondaryColor)
-					(setq damageHP (@ gData 'damageHP))
-
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+							
 					{
-						length:
-							(mathScale 
-								damageHP						; average damage of weapon
-								5								; min damage
-								70								; max damage
-								60								; min beam length
-								260								; max beam length
-								50								; scale gamma
-								)
-						width: (mathScale damageHP 5 70 20 40 50)
-						intensity: 40
+						noSound: (= damageHP 0)
 						}
 					)
 			</GetParameters>
 		</Events>
 	</EffectType>
-
-	<Effect UNID="&efEIBlasterHit;">
-		<Variants>
-			<Effect maxValue="0">
-				<ParticleCloud
-						style=				"splash"
-						lifetime=			"15"
-						emitDuration=		"5"
-						emitRate=			"10"
-						emitSpeed=			"5-10"
-						particleLifetime=	"10"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								minWidth=		"1"
-								maxWidth=		"3"
-								primaryColor=	"#ffca80"
-								secondaryColor=	"#ff9500"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
+	
+	<EffectType UNID="&efEIDisruptorFire;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					intensity=		"50"
+					primaryColor=	"#f0ffa0"
+					secondaryColor=	"#a9ff00"
+					
+					lifetime=		"3"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 10 140 12 28 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
 			
-			<Effect maxValue="21" 
-					sound="&snArmorHit1;">
-				<ParticleCloud
-						style=			"splash" 
-						lifetime=		"20" 
-						emitDuration=	"60"
-						emitRate=		"20-25"
-						emitSpeed=		"1-6"
-						particleLifetime="4"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								maxWidth=		"1-2"
-								primaryColor=	"#ffca80"
-								secondaryColor=	"#ff9500"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
-			
-			<Effect maxValue="31" 
-					sound="&snArmorHit1;">
-				<ParticleCloud
-						style=			"splash" 
-						lifetime=		"20" 
-						emitDuration=	"60"
-						emitRate=		"30-37"
-						emitSpeed=		"1-6"
-						particleLifetime="5"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								maxWidth=		"1-2"
-								primaryColor=	"#ffca80"
-								secondaryColor=	"#ff9500"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
+			<Ray	style=			"jagged"
+					shape=			"tapered"
+					intensity=		"50"
+					xformRotation=	"180"
+					primaryColor=	"#f0ffa0"
+					secondaryColor=	"#a9ff00"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								length: (mathScale damageHP 10 140 24 56 50)
+								width: (mathScale damageHP 10 140 18 42 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
 
-			<Effect
-					sound="&snArmorHit1;">
-				<ParticleCloud
-						style=			"splash" 
-						lifetime=		"20" 
-						emitDuration=	"60"
-						emitRate=		"40-50"
-						emitSpeed=		"1-6"
-						particleLifetime="5"
-						>
-					<ParticleEffect>
-						<Particle
-								style=			"plain"
-								maxWidth=		"1-2"
-								primaryColor=	"#ffca80"
-								secondaryColor=	"#ff9500"
-								/>
-					</ParticleEffect>
-				</ParticleCloud>
-			</Effect>
-		</Variants>
-	</Effect>
+	<EffectType UNID="&efEIDisruptorBeam;"
+			instance=			"creator"
+			>
+		<Effect>
+			<Ray
+					style=			"jagged"
+					shape=			"tapered"
+					primaryColor=	"#f0ffa0"
+					secondaryColor=	"#a9ff00"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length: (mathScale damageHP 10 140 60 260 50)
+								width: (mathScale damageHP 10 140 20 40 50)
+								intensity: 60
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+			
+			<Ray
+					style=			"lightning"
+					shape=			"tapered"
+					primaryColor=	"#f0ffa0"
+					secondaryColor=	"#a9ff00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							(weaponUNID (@ gData 'weaponUNID))
+							
+							(damageDeviceDisrupt (itmGetProperty weaponUNID 'damageDeviceDisrupt))
+							(intensity (+ 20 (* damageDeviceDisrupt 10)))
+							)
+							{
+								length: (mathScale damageHP 10 140 60 260 50)
+								width: (mathScale damageHP 10 140 10 20 50)
+								intensity: intensity
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efEIDisruptorHit;"
+			sound="&snArmorHit1;"
+			>
+		<Effect>
+			<Orb	style=			"diffraction"
+					animate=		"fade"
+					intensity=		"50"
+					
+					blendMode=		"screen"
+					primaryColor=	"#f0ffa0"
+					secondaryColor=	"#a9ff00"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 10 140 30 70 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 10 140 12 48 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<ParticleSystem
+					style=			"radiate"
+					emitSpeed=		"4-8"
+					particleLifetime="8"
+					>
+				<ParticleEffect>
+					<Particle
+							style=			"plain"
+							minWidth=		"1"
+							maxWidth=		"3"
+							primaryColor=	"#f0ffa0"
+							secondaryColor=	"#a9ff00"
+							/>
+				</ParticleEffect>
+				
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								lifetime: (if (= damageHP 0) 10 (mathScale damageHP 10 140 12 48 50))
+								emitRate: (mathScale damageHP 10 140 50 200 50)
+								emitLifetime: (if (= damageHP 0) 2 (mathScale damageHP 10 140 6 24 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleSystem>
+		</Effect>
+		
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+							
+					{
+						noSound: (= damageHP 0)
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
 	
 	<EffectType UNID="&efMissileMAG;"
 			instance=			"creator"
 			>
 		
 		<Effect>
-			<ParticleJet
+			<ParticleSystem
+					style=				"jet"
 					fixedPos=			"true"
-					emitRate=			"20"
-					tangentSpeed=		"3d2-3"
+					emitRate=			"40"
+					tangentSpeed=		"-3-3"
 					particleLifetime=	"10-30"
 					XformTime=			"30"
 					>
@@ -4513,24 +4140,26 @@
 					<Particle
 							style=			"plain"
 							minWidth=		"1"
-							maxWidth=		"5"
+							maxWidth=		"4"
 							primaryColor=	"#f1f6ff"
 							secondaryColor=	"#73767d"
 							/>
 				</ParticleEffect>
-			</ParticleJet>
+			</ParticleSystem>
 			
 			<Image	imageID=			"&rsMissiles;"
 					imageX=				"0"
 					imageY=				"16"
 					imageWidth=			"16"
 					imageHeight=		"16"
+                    
+                    lifetime=           "-1"
 					imageFrameCount=	"12"
 					imageTicksPerFrame=	"3"
 					/>
 		</Effect>
 	</EffectType>
-
+	
 	<EffectType UNID="&efMissileNAMI;"
 			instance=			"creator"
 			>
@@ -4545,23 +4174,24 @@
 					/>
 			
 			<Group angleOffset="180" radiusOffset="10">
-				<ParticleJet
+				<ParticleSystem
+						style=				"jet"
 						fixedPos=			"true"
 						emitRate=			"40"
-						tangentSpeed=		"3d2-3"
+						tangentSpeed=		"-3-3"
 						particleLifetime=	"20-60"
-						XformTime=			"30"
+						XformTime=			"40"
 						>
 					<ParticleEffect>
 						<Particle
 								style=			"plain"
 								minWidth=		"1"
-								maxWidth=		"6"
+								maxWidth=		"5"
 								primaryColor=	"#ffffc0"
 								secondaryColor=	"#7e7e74"
 								/>
 					</ParticleEffect>
-				</ParticleJet>
+				</ParticleSystem>
 				
 				<Ray
 						style=			"smooth"
@@ -4590,23 +4220,24 @@
 					/>
 			
 			<Group angleOffset="180" radiusOffset="10">
-				<ParticleJet
+				<ParticleSystem
+						style=				"jet"
 						fixedPos=			"true"
 						emitRate=			"60"
-						tangentSpeed=		"3d2-3"
+						tangentSpeed=		"-3-3"
 						particleLifetime=	"20-60"
-						XformTime=			"20"
+						XformTime=			"50"
 						>
 					<ParticleEffect>
 						<Particle
 								style=			"plain"
 								minWidth=		"1"
-								maxWidth=		"5"
-								primaryColor=	"#ffffc0"
+								maxWidth=		"6"
+								primaryColor=	"#ffffb2"
 								secondaryColor=	"#7e7e74"
 								/>
 					</ParticleEffect>
-				</ParticleJet>
+				</ParticleSystem>
 				
 				<Ray
 						style=			"smooth"
@@ -4635,23 +4266,24 @@
 					/>
 			
 			<Group angleOffset="180" radiusOffset="10">
-				<ParticleJet
+				<ParticleSystem
+						style=				"jet"
 						fixedPos=			"true"
 						emitRate=			"80"
-						tangentSpeed=		"3d2-3"
+						tangentSpeed=		"-3-3"
 						particleLifetime=	"20-60"
-						XformTime=			"20"
+						XformTime=			"50"
 						>
 					<ParticleEffect>
 						<Particle
 								style=			"plain"
 								minWidth=		"1"
-								maxWidth=		"4"
-								primaryColor=	"#ffffc0"
-								secondaryColor=	"#7e7e74"
+								maxWidth=		"6"
+								primaryColor=	"#f1f6ff"
+								secondaryColor=	"#73767d"
 								/>
 					</ParticleEffect>
-				</ParticleJet>
+				</ParticleSystem>
 				
 				<Ray
 						style=			"smooth"
@@ -4667,7 +4299,7 @@
 	</EffectType>
 
 	<EffectType UNID="&efMissileStrelka;"
-			instance=			"game"
+			instance=			"creator"
 			>
 		
 		<Effect>
@@ -4680,23 +4312,24 @@
 					/>
 			
 			<Group angleOffset="180" radiusOffset="10">
-				<ParticleJet
+				<ParticleSystem
+						style=				"jet"
 						fixedPos=			"true"
-						emitRate=			"30"
-						tangentSpeed=		"3d2-3"
+						emitRate=			"40"
+						tangentSpeed=		"-3-3"
 						particleLifetime=	"15-45"
-						XformTime=			"20"
+						XformTime=			"30"
 						>
 					<ParticleEffect>
 						<Particle
 								style=			"plain"
 								minWidth=		"1"
 								maxWidth=		"4"
-								primaryColor=	"#ffffc0"
+								primaryColor=	"#fff2e5"
 								secondaryColor=	"#7e7e74"
 								/>
 					</ParticleEffect>
-				</ParticleJet>
+				</ParticleSystem>
 				
 				<Ray
 						style=			"smooth"
@@ -4731,8 +4364,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length:	(mathScale damageHP	6 80 16 64 50)
-								width: (mathScale damageHP 6 80 6 24 50)
+								length:	(mathScale damageHP	5 64 16 64 50)
+								width: (mathScale damageHP 5 64 6 24 50)
 								intensity: 10
 								}
 							)
@@ -4753,8 +4386,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length:	(mathScale damageHP	6 80 16 64 50)
-								width: (mathScale damageHP 6 80 6 24 50)
+								length:	(mathScale damageHP	5 64 16 64 50)
+								width: (mathScale damageHP 5 64 6 24 50)
 								intensity: 10
 								}
 							)
@@ -4775,16 +4408,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length:
-									(mathScale 
-										damageHP						; average damage of weapon
-										6								; min damage
-										80								; max damage
-										30								; min beam length
-										110								; max beam length
-										50								; scale gamma
-										)
-								width: (mathScale damageHP 6 80 12 44 50)
+								length:	(mathScale damageHP 5 64 30 110 50)
+								width: (mathScale damageHP 5 64 12 44 50)
 								intensity: 30
 								}
 							)
@@ -4794,12 +4419,195 @@
 		</Effect>
 	</EffectType>
 	
+	<EffectType UNID="&efStarCannonFire;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					intensity=		"50"
+					primaryColor=	"#0080ff"
+					secondaryColor=	"#80c0ff"
+					
+					lifetime=		"3"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 10 140 12 28 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<Ray	style=			"jagged"
+					shape=			"tapered"
+					intensity=		"50"
+					xformRotation=	"180"
+					primaryColor=	"#0080ff"
+					secondaryColor=	"#80c0ff"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								length: (mathScale damageHP 10 140 24 56 50)
+								width: (mathScale damageHP 10 140 18 42 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efStarCannonBeam;"
+			instance=			"creator"
+			>
+		<Effect>
+			<Ray
+					style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#0080ff"
+					secondaryColor=	"#80c0ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length: (mathScale damageHP 10 140 60 260 50)
+								width: (mathScale damageHP 10 140 15 30 50)
+								intensity: 60
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+			
+			<ParticleComet
+					particleCount=	"200"
+					primaryColor=	"#80c0ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+
+							{ 
+								particleCount: (mathScale damageHP 10 140 100 300 50)
+								length: (mathScale damageHP 10 140 60 220 50)
+								width: (mathScale damageHP 10 140 6 16 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleComet>
+			
+			<Starburst
+					style=			"plain"
+					spikeCount=		"1d6+3"
+					spikeLength=	"15-30"
+					
+					primaryColor=	"#d8ecff"
+					secondaryColor=	"#0080ff"
+					/>
+		</Effect>
+	</EffectType>
+
+	<EffectType UNID="&efStarCannonHit;"
+			sound="&snArmorHit1;"
+			>
+		<Effect>
+			<Orb	style=			"diffraction"
+					animate=		"fade"
+					intensity=		"50"
+					
+					blendMode=		"screen"
+					primaryColor=	"#80c0ff"
+					secondaryColor=	"#0080ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 10 140 30 70 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 10 140 12 48 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<ParticleSystem
+					style=			"radiate"
+					emitSpeed=		"4-8"
+					particleLifetime="8"
+					>
+				<ParticleEffect>
+					<Particle
+							style=			"plain"
+							minWidth=		"1"
+							maxWidth=		"3"
+							primaryColor=	"#80c0ff"
+							secondaryColor=	"#0080ff"
+							/>
+				</ParticleEffect>
+				
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								lifetime: (if (= damageHP 0) 10 (mathScale damageHP 10 140 12 48 50))
+								emitRate: (mathScale damageHP 10 140 50 200 50)
+								emitLifetime: (if (= damageHP 0) 2 (mathScale damageHP 10 140 6 24 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleSystem>
+		</Effect>
+		
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+							
+					{
+						noSound: (= damageHP 0)
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
+	
 	<EffectType UNID="&efThermoCannonShell;"
 			instance=			"creator"
 			>
 		
 		<Effect>
-			<ParticleJet
+			<ParticleSystem
+					style=				"jet"
 					emitRate=			"20"
 					emitSpeed=			"50-60"
 					particleLifetime=	"20-60"
@@ -4814,7 +4622,7 @@
 							secondaryColor=	"#5b777a"
 							/>
 				</ParticleEffect>
-			</ParticleJet>
+			</ParticleSystem>
 			
 			<Ray
 					style=			"smooth"

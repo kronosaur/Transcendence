@@ -5,6 +5,27 @@
 
 (setq TEST_SUITE (list
 
+	;	Literals
+
+	{	code: '(link "0")			result: 0		}
+	{	code: '(link "2")			result: 2		}
+	{	code: '(link "0.")			result: 0.0		}
+	{	code: '(link "0.1")			result: 0.1		}
+	{	code: '(link "-0.1")		result: -0.1	}
+	{	code: '(link "+0.1")		result: 0.1		}
+	{	code: '(link "0123")		result: 123		}
+	{	code: '(link "234")			result: 234		}
+	{	code: '(link "0x21")		result: 33		}
+	{	code: '(link "1.4e")		result: "1.4e"	}
+	{	code: '(link "1.4f")		result: "1.4f"	}
+	{	code: '(link "1.a")			result: "1.a"	}
+	{	code: '(link "1e3")			result: 1000.0	}
+	{	code: '(link "1e-3")		result: 0.001	}
+	{	code: '(link "1E-3")		result: 0.001	}
+	{	code: '(link "1.2E-3")		result: 0.0012	}
+	{	code: '(link "0123_test")	result: "0123_test"	}
+	{	code: '(link "1.4.5")		result: "1.4.5"	}
+
 	;	Equality
 
 	{	code: '(= 3 2)			result: Nil		}
@@ -22,22 +43,42 @@
 
 	;	Original Integer Math
 
+	{	code: '(add 2)			result: 2	}
 	{	code: '(add 2 2)		result: 4	}
+	{	code: '(add 2 2 3 -5)	result: 2	}
 	{	code: '(subtract 2 2)	result: 0	}
+	{	code: '(multiply 5)		result: 5	}
 	{	code: '(multiply 2 2)	result: 4	}
+	{	code: '(multiply 5 5 4)	result: 100	}
 	{	code: '(divide 4 2)		result: 2	}
 	{	code: '(divide 5 2)		result: 2	}
 
+	{	code: '(add 2.6 2.5)	result: 4	}
+	{	code: '(subtract 2.4 2.5)	result: 0	}
+	{	code: '(multiply 2.5 2.5)	result: 4	}
+	{	code: '(divide 6 2.5)		result: 3	}
+
+	{	code: '(add (list 2 2 3))	result: 7	}
+	{	code: '(multiply (list 2 2 3))	result: 12	}
+
 	;	New Math
 
+	{	code: '(+ 2)			result: 2	}
 	{	code: '(+ 2 2)			result: 4	}
 	{	code: '(+ 2.5 2)		result: 4.5	}
 	{	code: '(+ 2.5 2.5)		result: 5.0	}
 	{	code: '(- 2.5 2.5)		result: 0	}
 	{	code: '(- 2.5 2.0)		result: 0.5	}
+	{	code: '(- 100)			result: -100 }
+	{	code: '(- 0.5)			result: -0.5 }
+	{	code: '(- -0.5)			result: 0.5 }
+	{	code: '(* 25)			result: 25	}
 	{	code: '(* 25 5 0.2)		result: 25.0	}
 	{	code: '(/ 25 5)			result: 5.0	}
 	{	code: '(/ 5 2)			result: 2.5	}
+
+	{	code: '(+ (list 2 2.0))			result: 4.0	}
+	{	code: '(* (list 2 2 5))			result: 20	}
 
 	;	Functions
 

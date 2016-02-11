@@ -232,7 +232,8 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 
 		//	Load the text code
 
-		pDControl->pCode = CC.Link(pDesc->GetContentText(0), 0, NULL);
+		const CString &sCode = pDesc->GetContentText(0);
+		pDControl->pCode = (!sCode.IsBlank() ? CC.Link(sCode, 0, NULL) : NULL);
 		}
 	else if (strEquals(pDesc->GetTag(), IMAGE_TAG))
 		{
@@ -265,7 +266,8 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 
 		//	Load the code that returns the image
 
-		pDControl->pCode = CC.Link(pDesc->GetContentText(0), 0, NULL);
+		const CString &sCode = pDesc->GetContentText(0);
+		pDControl->pCode = (!sCode.IsBlank() ? CC.Link(sCode, 0, NULL) : NULL);
 		}
 	else if (strEquals(pDesc->GetTag(), CANVAS_TAG))
 		{
@@ -277,7 +279,8 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 
 		//	Load the draw code
 
-		pDControl->pCode = CC.Link(pDesc->GetContentText(0), 0, NULL);
+		const CString &sCode = pDesc->GetContentText(0);
+		pDControl->pCode = (!sCode.IsBlank() ? CC.Link(sCode, 0, NULL) : NULL);
 		}
 	else if (strEquals(pDesc->GetTag(), GROUP_TAG))
 		{
@@ -297,7 +300,8 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 
 		//	Load the text code
 
-		pDControl->pCode = CC.Link(pDesc->GetContentText(0), 0, NULL);
+		const CString &sCode = pDesc->GetContentText(0);
+		pDControl->pCode = (!sCode.IsBlank() ? CC.Link(sCode, 0, NULL) : NULL);
 		}
 
 	//	Done
@@ -365,6 +369,22 @@ void CDockScreen::BltToBackgroundImage (const RECT &rcRect, CG32bitImage *pImage
 		m_pBackgroundImage->Blt(xImage, 0, cxSrc, cySrc, *pImage, xSrc, ySrc);
 	}
 
+void CDockScreen::CleanUpBackgroundImage (void)
+
+//	CleanUpBackgroundImage
+//
+//	Cleans up the image
+
+	{
+	if (m_pBackgroundImage)
+		{
+		if (m_bFreeBackgroundImage)
+			delete m_pBackgroundImage;
+
+		m_pBackgroundImage = NULL;
+		}
+	}
+
 void CDockScreen::CleanUpScreen (void)
 
 //	CleanUpScreen
@@ -378,13 +398,7 @@ void CDockScreen::CleanUpScreen (void)
 		m_pScreen = NULL;
 		}
 
-	if (m_pBackgroundImage)
-		{
-		if (m_bFreeBackgroundImage)
-			delete m_pBackgroundImage;
-
-		m_pBackgroundImage = NULL;
-		}
+	CleanUpBackgroundImage();
 
 	if (m_pDisplay)
 		{
@@ -405,48 +419,7 @@ void CDockScreen::CleanUpScreen (void)
 		}
 	}
 
-ALERROR CDockScreen::CreateBackgroundArea (IDockScreenDisplay::SBackgroundDesc &Desc, AGScreen *pScreen, const RECT &rcRect, const RECT &rcInner)
-
-//	CreateBackgroundArea
-//
-//	Creates the background area
-
-	{
-	//	Generate a background image
-
-	CreateBackgroundImage(Desc, rcRect, rcInner.left - rcRect.left);
-
-	//	Create the area
-
-	if (m_pBackgroundImage)
-		{
-		//	Add the background
-
-		RECT rcBackArea;
-		CGImageArea *pImage = new CGImageArea;
-
-		RECT rcImage;
-		rcImage.left = 0;
-		rcImage.top = 0;
-		rcImage.right = m_pBackgroundImage->GetWidth();
-		rcImage.bottom = m_pBackgroundImage->GetHeight();
-		pImage->SetImage(m_pBackgroundImage, rcImage);
-
-		rcBackArea.left = rcRect.left;
-		rcBackArea.top = m_yDisplay;
-		rcBackArea.right = rcBackArea.left + RectWidth(rcRect);
-		rcBackArea.bottom = rcBackArea.top + m_pBackgroundImage->GetHeight();
-
-		//	bSendToBack = true because we may have created other areas before 
-		//	this and we need the background to be in back.
-
-		pScreen->AddArea(pImage, rcBackArea, IMAGE_AREA_ID, true);
-		}
-
-	return NOERROR;
-	}
-
-ALERROR CDockScreen::CreateBackgroundImage (IDockScreenDisplay::SBackgroundDesc &Desc, const RECT &rcRect, int xOffset)
+ALERROR CDockScreen::CreateBackgroundImage (const IDockScreenDisplay::SBackgroundDesc &Desc, const RECT &rcRect, int xOffset)
 
 //	CreateBackgroundImage
 //
@@ -470,6 +443,8 @@ ALERROR CDockScreen::CreateBackgroundImage (IDockScreenDisplay::SBackgroundDesc 
 		cyExtra = Max(pImage->GetHeight() - cyBackground, 0);
 
 	//	Create a new image for the background
+
+	CleanUpBackgroundImage();
 
 	m_pBackgroundImage = new CG32bitImage;
 	m_bFreeBackgroundImage = true;
@@ -1150,6 +1125,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 	{
 	ALERROR error;
+	int i;
 
 	//	Make sure we clean up first
 
@@ -1197,26 +1173,24 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	m_pScreen->SetController(this);
 	m_pScreen->SetBackgroundColor(BAR_COLOR);
 
-	RECT rcBackground;
 	int cxBackground = Min(MAX_BACKGROUND_WIDTH, RectWidth(rcRect));
 	int cyBackground = RectHeight(rcRect);
-	rcBackground.left = (RectWidth(rcRect) - cxBackground) / 2;
-	rcBackground.top = 0;
-	rcBackground.right = rcBackground.left + cxBackground;
-	rcBackground.bottom = rcBackground.top + cyBackground;
+	m_rcBackground.left = (RectWidth(rcRect) - cxBackground) / 2;
+	m_rcBackground.top = 0;
+	m_rcBackground.right = m_rcBackground.left + cxBackground;
+	m_rcBackground.bottom = m_rcBackground.top + cyBackground;
 
-	RECT rcScreen;
 	int cxScreen = Min(MAX_SCREEN_WIDTH, RectWidth(rcRect));
 	int cyScreen = RectHeight(rcRect);
-	rcScreen.left = (RectWidth(rcRect) - cxScreen) / 2;
-	rcScreen.top = 0;
-	rcScreen.right = rcScreen.left + cxScreen;
-	rcScreen.bottom = rcScreen.top + cyScreen;
+	m_rcScreen.left = (RectWidth(rcRect) - cxScreen) / 2;
+	m_rcScreen.top = 0;
+	m_rcScreen.right = m_rcScreen.left + cxScreen;
+	m_rcScreen.bottom = m_rcScreen.top + cyScreen;
 
 	//	The main display is centered on the screen, but we make sure that we have
 	//	enought room for the title bar (which goes above the display).
 
-	m_yDisplay = Max(g_cyTitle, (RectHeight(rcScreen) - g_cyDockScreen) / 2);
+	m_yDisplay = Max(g_cyTitle, (RectHeight(m_rcScreen) - g_cyDockScreen) / 2);
 
 	//	Prepare a display context
 
@@ -1225,6 +1199,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	DisplayCtx.dwFirstID = DISPLAY_ID;
 	DisplayCtx.pData = pData;
 	DisplayCtx.pDesc = m_pDesc;
+	DisplayCtx.pDisplayDesc = m_pDesc->GetContentElementByTag(DISPLAY_TAG);
 	DisplayCtx.pDockScreen = this;
 	DisplayCtx.pRoot = m_pRoot;
 	DisplayCtx.pVI = &g_pHI->GetVisuals();
@@ -1232,7 +1207,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	DisplayCtx.pLocation = m_pLocation;
 	DisplayCtx.pScreen = m_pScreen;
 
-	DisplayCtx.rcRect.left = rcScreen.left + SCREEN_PADDING_LEFT;
+	DisplayCtx.rcRect.left = m_rcScreen.left + SCREEN_PADDING_LEFT;
 	DisplayCtx.rcRect.top = m_yDisplay;
 	DisplayCtx.rcRect.right = DisplayCtx.rcRect.left + DESC_PANE_X;
 	DisplayCtx.rcRect.bottom = DisplayCtx.rcRect.top + g_cyDockScreen;
@@ -1247,9 +1222,18 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 		return ERR_FAIL;
 		}
 
+	//	If we have a deferred background setting, then use that (and reset it
+	//	so that we don't use it again).
+
+	if (m_DeferredBackground.iType != IDockScreenDisplay::backgroundDefault)
+		{
+		DisplayOptions.BackgroundDesc = m_DeferredBackground;
+		m_DeferredBackground.iType = IDockScreenDisplay::backgroundDefault;
+		}
+
 	//	Creates the title area
 
-	if (error = CreateTitleArea(m_pDesc, m_pScreen, rcBackground, rcScreen))
+	if (error = CreateTitleArea(m_pDesc, m_pScreen, m_rcBackground, m_rcScreen))
 		return error;
 
 	//	Get the list of panes for this screen
@@ -1292,12 +1276,19 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 		}
 
 	//	If we have a display element, then load the display controls
+	//	LATER: Move this to the default handler for m_pDisplay->Init
 
-	CXMLElement *pDisplay = m_pDesc->GetContentElementByTag(DISPLAY_TAG);
-	if (pDisplay)
+	if (DisplayCtx.pDisplayDesc)
 		{
-		if (error = InitDisplay(pDisplay, m_pScreen, rcScreen))
+		if (error = InitDisplay(DisplayCtx.pDisplayDesc, m_pScreen, m_rcScreen))
 			return error;
+
+		//	Set any deferred text
+
+		for (i = 0; i < m_DeferredDisplayText.GetCount(); i++)
+			SetDisplayText(m_DeferredDisplayText.GetKey(i), m_DeferredDisplayText[i]);
+
+		m_DeferredDisplayText.DeleteAll();
 		}
 
 	//	If the screen did not define a background image, then ask the display
@@ -1306,23 +1297,16 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	IDockScreenDisplay::SBackgroundDesc BackgroundDesc = DisplayOptions.BackgroundDesc;
 	if (BackgroundDesc.iType == IDockScreenDisplay::backgroundDefault)
 		{
-		if (!m_pDisplay->GetDefaultBackground(&BackgroundDesc))
-			{
-			if (BackgroundDesc.dwImageID = m_pLocation->GetDefaultBkgnd())
-				BackgroundDesc.iType = IDockScreenDisplay::backgroundImage;
-			else
-				{
-				BackgroundDesc.iType = IDockScreenDisplay::backgroundObj;
-				BackgroundDesc.pObj = m_pLocation;
-				}
-			}
+		m_pDisplay->GetDefaultBackground(&BackgroundDesc);
+
+		//	It's OK if m_pDisplay leaves it as a default. SetBackground (below)
+		//	will handle the default properly.
 		}
 
 	//	Create the background area. We do this after the display init because we
 	//	may need to refer to it to come up with a suitable background.
 
-	if (error = CreateBackgroundArea(BackgroundDesc, m_pScreen, rcBackground, rcScreen))
-		return error;
+	SetBackground(BackgroundDesc);
 
 	//	Cache the screen's OnUpdate
 
@@ -1341,9 +1325,9 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 	//	Show the pane
 
-	m_rcPane.left = rcScreen.right - g_cxActionsRegion;
+	m_rcPane.left = m_rcScreen.right - g_cxActionsRegion;
 	m_rcPane.top = m_yDisplay;
-	m_rcPane.right = rcScreen.right - SCREEN_PADDING_RIGHT;
+	m_rcPane.right = m_rcScreen.right - SCREEN_PADDING_RIGHT;
 	m_rcPane.bottom = m_rcPane.top + g_cyDockScreen;
 
 	if (!sPane.IsBlank())
@@ -1609,6 +1593,76 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 		}
 	}
 
+void CDockScreen::SetBackground (const IDockScreenDisplay::SBackgroundDesc &Desc)
+
+//	SetBackground
+//
+//	Sets the dock screen background
+
+	{
+	//	If we haven't yet initialized the screen (e.g., we're inside of
+	//	OnScreenInit) then we need to defer this.
+
+	if (m_pScreen == NULL)
+		{
+		m_DeferredBackground = Desc;
+		return;
+		}
+
+	//	Use a default, if necessary
+
+	if (Desc.iType == IDockScreenDisplay::backgroundDefault)
+		{
+		IDockScreenDisplay::SBackgroundDesc DefaultDesc;
+
+		if (DefaultDesc.dwImageID = m_pLocation->GetDefaultBkgnd())
+			DefaultDesc.iType = IDockScreenDisplay::backgroundImage;
+		else
+			{
+			DefaultDesc.iType = IDockScreenDisplay::backgroundObj;
+			DefaultDesc.pObj = m_pLocation;
+			}
+
+		CreateBackgroundImage(DefaultDesc, m_rcBackground, m_rcScreen.left - m_rcBackground.left);
+		}
+
+	//	Otherwise, create the image with the given descriptor
+
+	else
+		CreateBackgroundImage(Desc, m_rcBackground, m_rcScreen.left - m_rcBackground.left);
+
+	//	Create the area
+
+	if (m_pBackgroundImage)
+		{
+		//	Delete any previous image area, if necessary
+
+		m_pScreen->DestroyArea(IMAGE_AREA_ID);
+
+		//	Add the background
+
+		RECT rcBackArea;
+		CGImageArea *pImage = new CGImageArea;
+
+		RECT rcImage;
+		rcImage.left = 0;
+		rcImage.top = 0;
+		rcImage.right = m_pBackgroundImage->GetWidth();
+		rcImage.bottom = m_pBackgroundImage->GetHeight();
+		pImage->SetImage(m_pBackgroundImage, rcImage);
+
+		rcBackArea.left = m_rcBackground.left;
+		rcBackArea.top = m_yDisplay;
+		rcBackArea.right = rcBackArea.left + RectWidth(m_rcBackground);
+		rcBackArea.bottom = rcBackArea.top + m_pBackgroundImage->GetHeight();
+
+		//	bSendToBack = true because we may have created other areas before 
+		//	this and we need the background to be in back.
+
+		m_pScreen->AddArea(pImage, rcBackArea, IMAGE_AREA_ID, true);
+		}
+	}
+
 ALERROR CDockScreen::SetDisplayText (const CString &sID, const CString &sText)
 
 //	SetDisplayText
@@ -1616,6 +1670,17 @@ ALERROR CDockScreen::SetDisplayText (const CString &sID, const CString &sText)
 //	Sets the text for a display control
 
 	{
+	//	If the screen is not yet initialized, then we need to defer the setting
+	//	until later.
+
+	if (m_pScreen == NULL)
+		{
+		m_DeferredDisplayText.SetAt(sID, sText);
+		return NOERROR;
+		}
+
+	//	Set the value
+
 	SDisplayControl *pControl = FindDisplayControl(sID);
 	if (pControl == NULL || pControl->pArea == NULL)
 		return ERR_FAIL;

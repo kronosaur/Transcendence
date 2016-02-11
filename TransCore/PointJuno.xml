@@ -42,8 +42,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itP1000HexphaseArmor;"
-			hitPoints=			"1000"
-			repairRate=			"2"
+			hitPoints=			"1800"
+			regen=              "18"
 			shipRepairRate=		"3"
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -57,7 +57,7 @@
 		<!-- Trade and Items -->
 		
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; -notStandard; L:1-10;" priceAdj="100" inventoryAdj="200"/>
+			<Sell	criteria="m +commonwealth; +military; -illegal; -notForSale; -notStandard; L:1-10;" priceAdj="100" inventoryAdj="500"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			<Sell	criteria="rNU L:1-9; -Illegal; -NotForSale; -notStandard;"	priceAdj="100"	inventoryAdj="100"/>
 			
@@ -832,7 +832,7 @@
 						<OnPaneInit>
 							(scrSetDesc gScreen
 								(cat
-									"\"Excellent! Maybe this weapon will make a diffence, eh? "
+									"\"Excellent! Maybe this weapon will make a difference, eh? "
 									"We'll enter the coordinates of the wreck into your computer, but you'll need a code "
 									"to enter the ship's weapons vault. The code is:"
 									"\n\n" (typGetGlobalData &stCSCEuropaWreck; "VaultCode")
@@ -1067,10 +1067,10 @@
 	<StationType UNID="&stCSCEuropaWreck;"
 			name=				"wreck of the CSC Europa"
 			sovereign=			"&svCommonwealthFleet;"
-			abandonedScreen=	"Main"
+			dockScreen=			"Main"
 			scale=				"ship"
 
-			structuralHitPoints="1300"
+			immutable=			"true"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"CSCEuropa, generic, locked, shipwreck, uncharted"

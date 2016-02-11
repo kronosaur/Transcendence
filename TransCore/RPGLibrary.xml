@@ -76,6 +76,8 @@
 	<!ENTITY dsRPGDecontamination		"0x00010031">
 	<!ENTITY dsRPGAbandonedStation		"0x00010032">
 	<!ENTITY dsRPGDockServicesBase		"0x00010033">
+	<!ENTITY dsRPGCommoditiesExchangeSell	"0x00010034">
+	<!ENTITY dsRPGShipBroker			"0x00010035">
 	
 	<!-- 0040-004F CARGO CRATE -->
 	
@@ -105,12 +107,14 @@
 	<Module filename="RPGCharacters.xml"/>
 	<Module filename="RPGCode.xml"/>
 	<Module filename="RPGCompatibility.xml"/>
+	<Module filename="RPGComponents.xml"/>
 	<Module filename="RPGArmorDockScreens.xml"/>
 	<Module filename="RPGDeviceDockScreens.xml"/>
 	<Module filename="RPGDialog.xml"/>
 	<Module filename="RPGDockScreens.xml"/>
 	<Module filename="RPGMissions.xml"/>
 	<Module filename="RPGPlayer.xml"/>
+	<Module filename="RPGShipBroker.xml"/>
 	<Module filename="RPGShipScreens.xml"/>
 	<Module filename="RPGTypes.xml"/>
 	<Module filename="RPGWingmen.xml"/>

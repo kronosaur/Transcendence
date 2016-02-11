@@ -144,6 +144,9 @@
     <ClCompile Include="EncounterFrequency.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CWeaponBenchmarkCtx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -155,16 +158,14 @@
     <ClInclude Include="Utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ItemBenchmarks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TransData.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="..\Game\TransData.xml">
-      <Filter>XML Files</Filter>
-    </Xml>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Game\TLisp\MathUnitTest.tlisp">
@@ -173,5 +174,7 @@
     <None Include="..\Game\TLisp\ComparisonUnitTest.tlisp">
       <Filter>TLisp Files</Filter>
     </None>
+    <None Include="..\Game\TransData.xml" />
+    <None Include="Readme.htm" />
   </ItemGroup>
 </Project>

@@ -421,10 +421,6 @@ ALERROR CTranscendenceWnd::InitDisplays (void)
 	{
 	RECT rcRect;
 
-	//	Set up some options
-
-	m_bTransparencyEffects = true;
-
 	//	Find some bitmaps that we need. NOTE: We lock the images because we
 	//	don't dispose of them.
 	//
@@ -458,30 +454,9 @@ ALERROR CTranscendenceWnd::InitDisplays (void)
 	//	Initialize some displays (these need to be done after we've
 	//	created the universe).
 
-	rcRect.left = m_rcScreen.right - (ARMOR_DISPLAY_WIDTH + ARMOR_DISPLAY_MARGIN_X);
-	rcRect.top = g_cyScreen - (ARMOR_DISPLAY_HEIGHT + ARMOR_DISPLAY_MARGIN_Y);
-	//rcRect.top = 0;
-	rcRect.right = rcRect.left + ARMOR_DISPLAY_WIDTH;
-	rcRect.bottom = rcRect.top + ARMOR_DISPLAY_HEIGHT;
-	m_ArmorDisplay.SetFontTable(&m_Fonts);
-	m_ArmorDisplay.Init(GetPlayer(), rcRect);
-	m_ArmorDisplay.Update();
-
-	rcRect.left = 12;
-	rcRect.top = 12;
-	rcRect.right = rcRect.left + REACTOR_DISPLAY_WIDTH;
-	rcRect.bottom = rcRect.top + REACTOR_DISPLAY_HEIGHT;
-	m_ReactorDisplay.SetFontTable(&m_Fonts);
-	m_ReactorDisplay.Init(GetPlayer(), rcRect);
-	m_ReactorDisplay.Update();
-
-	//rcRect.left = (RectWidth(m_rcScreen) - TARGET_DISPLAY_WIDTH) / 2;
-	rcRect.left = 0;
-	rcRect.right = rcRect.left + TARGET_DISPLAY_WIDTH;
-	rcRect.top = m_rcScreen.bottom - TARGET_DISPLAY_HEIGHT;
-	rcRect.bottom = m_rcScreen.bottom;
-	m_TargetDisplay.SetFontTable(&m_Fonts);
-	m_TargetDisplay.Init(GetPlayer(), rcRect);
+	m_ArmorDisplay.Init(GetPlayer(), m_rcScreen, IHUDPainter::locAlignBottom | IHUDPainter::locAlignRight);
+	m_ReactorDisplay.Init(GetPlayer(), m_rcScreen, IHUDPainter::locAlignTop | IHUDPainter::locAlignLeft);
+	m_TargetDisplay.Init(GetPlayer(), m_rcScreen, IHUDPainter::locAlignBottom | IHUDPainter::locAlignLeft);
 
 	rcRect.left = m_rcScreen.right - (MENU_DISPLAY_WIDTH + 4);
 	rcRect.top = (RectHeight(m_rcScreen) - MENU_DISPLAY_HEIGHT) / 2;

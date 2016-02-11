@@ -1392,11 +1392,11 @@
 
 			multiHull=			"true"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"350"
-			repairRate=			"1"
+			hitPoints=			"740"
+			regen=              "3.7"
 			shipRepairRate=		"1"
 			fireRateAdj=		"40"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, populated"
@@ -1431,7 +1431,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +Commonwealth; -PremiumAmmo; -Illegal; -NotForSale; -notStandard;" priceAdj="115" inventoryAdj="100"/>
+			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
@@ -1704,11 +1704,11 @@
 
 			multiHull=			"true"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"350"
-			repairRate=			"1"
+			hitPoints=			"370"
+            regen=              "1.1"
 			shipRepairRate=		"1"
 			fireRateAdj=		"40"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, commonResearch, friendly, hereticStation, human, populated"
@@ -2139,8 +2139,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itDiamondLatticeArmor;"
-			hitPoints=			"450"
-			repairRate=			"1"
+			hitPoints=			"810"
+			regen=              "2.4"
 			fireRateAdj=		"15"
 			explosionType=		"&vtPlasmaExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -2639,9 +2639,8 @@
 							</Action>
 
 							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Done" cancel="1" key="D">
@@ -2701,8 +2700,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itLightIthaliumArmor;"
-			hitPoints=			"350"
-			repairRate=			"3"
+			hitPoints=			"470"
+			regen=              "1.4"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"friendly, hereticStation, human, majorStation, populated, religious, sistersOfDomina"
@@ -3061,10 +3060,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itQuadroCarbideArmor;"
-			hitPoints=			"300"
-			repairRate=			"1"
+			hitPoints=			"610"
+			regen=              "1.8"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, friendly, hereticStation, human, independent, populated"
@@ -3489,9 +3488,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itHeavyTharsisPlate;"
-			hitPoints=			"250"
+			hitPoints=			"610"
+            regen=              "1.8"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"ares, hereticStation, neoHuman, populated"
@@ -4866,7 +4866,7 @@
 						<OnPaneInit>
 							(scrSetDesc gScreen
 								"You are docked at a massive alien structure. The walls appear to be made of a "
-								"blue-green crystaline substance that looks fragile but is actually immensely strong."
+								"blue-green crystalline substance that looks fragile but is actually immensely strong."
 								(if (herStatus 'controlPointCamp)
 									(cat
 										"\n\nCables and equipment run through the dock area into a large central chamber "

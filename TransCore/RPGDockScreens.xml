@@ -46,7 +46,7 @@
 								
 							;	Otherwise, generic default
 							
-							(scrSetDescTranslate gScreen 'descAbandoendStationDefault)
+							(scrSetDescTranslate gScreen 'descAbandonedStationDefault)
 							)
 						)
 				</OnPaneInit>
@@ -119,9 +119,8 @@
 					</Action>
 
 					<Action id="actionSellItems">
-						(scrShowSellScreen
-							"*"
-							)
+						(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+							})
 					</Action>
 
 					<Action id="actionDone" cancel="1">
@@ -188,8 +187,8 @@
 							(switch
 								(not (itmMatches theItem itemCriteria))
 									Nil
-											
-								(intComputeSellPrice theItem)
+								
+								(rpgCalcSellPrice theItem)
 								)
 							))
 							
@@ -206,13 +205,13 @@
 						(block Nil
 							(scrSetData gScreen 'installablesOption True)
 							(if (typGetData &dsRPGCommoditiesExchangeBuy; 'showInstallables)
-								(scrSetListFilter gScreen intComputeSellPrice)
+								(scrSetListFilter gScreen rpgCalcSellPrice)
 								(scrSetListFilter gScreen (lambda (theItem)
 									(switch
 										(itmMatches theItem "adm")
 											Nil
 									
-										(intComputeSellPrice theItem)
+										(rpgCalcSellPrice theItem)
 										)
 									))
 								)
@@ -221,7 +220,7 @@
 					;	Otherwise, we sell everything listed in our Trade
 					;	directives.
 					
-					(scrSetListFilter gScreen intComputeSellPrice)
+					(scrSetListFilter gScreen rpgCalcSellPrice)
 					)
 				)
 		</ListOptions>
@@ -349,7 +348,7 @@
 								;	Otherwise, complete transaction
 									
 								(block Nil
-									(intBuyItems 1 itemCost)
+									(rpgBuyItems 1 itemCost)
 									(scrShowPane gScreen "Default")
 									)
 								)
@@ -408,7 +407,7 @@
 									(scrShowPane gScreen "InstallItem")
 									
 								(block Nil
-									(intBuyItems countToBuy itemCost)
+									(rpgBuyItems countToBuy itemCost)
 									(scrShowPane gScreen "Default")
 									)
 								)
@@ -464,7 +463,7 @@
 								
 							(scrSetData gScreen 'itemInstalled itemInstalled)
 								
-							(intBuyItems 1 installCost)
+							(rpgBuyItems 1 installCost)
 								
 							(shpInstallDevice gPlayerShip itemInstalled)
 							(typSetData &svPlayer; 'tutorialInstalled True)
@@ -477,7 +476,7 @@
 							(itemCost (scrGetData gScreen 'itemCost))
 							)
 							
-							(intBuyItems 1 itemCost)
+							(rpgBuyItems 1 itemCost)
 							(scrShowPane gScreen "Default")
 							)
 					</Action>
@@ -576,6 +575,307 @@
 		</Language>
 	</DockScreen>
 	
+<!-- COMMODITIES EXCHANGE SELL =================================================
+
+	This screen allows the player to sell items to a station. We use the 
+	<Trade> directives on the station to determine inventory and price.
+	
+	gData uses the following fields:
+	
+		criteria: If non-nil, we restrict sales to items matching this 
+				criteria.
+
+		listFilter: If non-nil, this is a function to use as a filter of items
+				for the player to sell.
+				
+		title: Title for screen (or Nil for station name)
+-->
+	
+	<DockScreen UNID="&dsRPGCommoditiesExchangeSell;"
+			name=				"=(if (@ gData 'title) (@ gData 'title) (objGetName gSource 0x400))"
+			type=				"itemPicker"
+			inherit=			"&dsDockScreenBase;"
+			nestedScreen=		"true"
+			>
+
+		<ListOptions
+				dataFrom=	"player"
+				list=		"*"
+				>
+			(block (
+				(itemCriteria (@ gData 'criteria))
+				)
+				
+				(switch
+					;	If we specify an item criteria, then create a function
+					;	that will filter.
+					
+					(and itemCriteria
+							(not (eq itemCriteria "*"))
+							)
+						(scrSetListFilter gScreen (lambda (theItem)
+							(switch
+								(not (itmMatches theItem itemCriteria))
+									Nil
+								
+								(rpgCalcBuyPrice theItem)
+								)
+							))
+							
+					;	If we specify a function, use that
+					
+					(@ gData 'listFilter)
+						(scrSetListFilter gScreen (@ gData 'listFilter))
+						
+					;	Otherwise, we sell everything listed in our Trade
+					;	directives.
+					
+					(scrSetListFilter gScreen rpgCalcBuyPrice)
+					)
+				)
+		</ListOptions>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(title (if (@ gData 'title) (@ gData 'title) (objGetName gSource 0x400)))
+						(thisItem (scrGetItem gScreen))
+						
+						;	Compute the cost of this item
+						
+						(currencyUsed (objGetDefaultCurrency gSource))
+						(itemCost (objGetBuyPrice gSource thisItem))
+						
+						;	Get some counts
+						
+						(existingCount (objHasItem gSource thisItem))
+						(averageCount (itmGetAverageAppearing thisItem))
+						(availCount (itmGetCount thisItem))
+						
+						;	Calc the price offered by the station
+						
+						(offerPrice
+							(switch
+								(not itemCost)
+									0
+									
+								(not (itmIsKnown thisItem))
+									(divide itemCost 10)
+									
+								(not existingCount)
+									itemCost
+									
+								(geq existingCount (multiply averageCount 5))
+									0
+
+								(geq existingCount (multiply averageCount 4))
+									(divide (multiply itemCost 25) 100)
+
+								(geq existingCount (multiply averageCount 3))
+									(divide (multiply itemCost 50) 100)
+
+								(geq existingCount (multiply averageCount 2))
+									(divide (multiply itemCost 75) 100)
+									
+								itemCost
+								)
+							)
+							
+						;	Compute the number of items the station is willing
+						;	to buy.
+						
+						(offerCount
+							(switch
+								(= offerPrice 0)
+									0
+									
+								(min availCount 
+									(divide (objGetBalance gSource) offerPrice)
+									)
+								)
+							)
+						)
+						
+						;	Set the description
+						
+						(switch
+							(not thisItem)
+								(scrSetDescTranslate gScreen 'errorNoItemsToSell)
+								
+							(scrSetDesc gScreen
+								;	The first part describes the item
+								
+								(if (gr offerCount 0)
+									(scrTranslate gScreen 'descItemStats {
+										value: (if (gr offerPrice 0) (fmtCurrency currencyUsed offerPrice))
+										max: offerCount
+										maxValue: (fmtCurrency currencyUsed (multiply offerPrice offerCount))
+										mass: (strMassString (itmGetMass thisItem))
+										maxMass: (strMassString (multiply (itmGetMass thisItem) offerCount))
+										})
+									)
+									
+								(switch
+									(= offerPrice 0)
+										(scrTranslate gScreen 'descNotForSale { title:title item:thisItem })
+										
+									(= offerCount 0)
+										(scrTranslate gScreen 'descNotEnoughMoney { title:title item:thisItem currency:(fmtCurrency currencyUsed True) })
+										
+									(= availCount 1)
+										(scrTranslate gScreen 'descBuyOnlyItem { title:title item:thisItem currency:(fmtCurrency currencyUsed offerPrice) })
+										
+									(= offerCount 1)
+										(scrTranslate gScreen 'descBuySingleItem { title:title item:thisItem currency:(fmtCurrency currencyUsed offerPrice) })
+										
+									(ls offerCount availCount)
+										(scrTranslate gScreen 'descBuySomeItems { title:title item:thisItem currency:(fmtCurrency currencyUsed offerPrice) offerCount:offerCount availCount:availCount })
+										
+									(scrTranslate gScreen 'descBuyAllItems { title:title item:thisItem currency:(fmtCurrency currencyUsed offerPrice) })
+									)
+								)
+							)
+							
+						;	Remember some computed values
+						
+						(scrSetData gScreen 'itemCost offerPrice)
+						(scrSetData gScreen 'maxCount offerCount)
+						
+						;	Enable/disable actions
+						
+						(scrEnableAction gScreen 'actionSell (gr offerCount 0))
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionSell" default="1">
+						(block (
+							(thisItem (scrGetItem gScreen))
+							(maxCount (scrGetData gScreen 'maxCount))
+							(itemCost (scrGetData gScreen 'itemCost))
+							)
+							
+							(switch
+								;	Ask for quantity, if necessary
+								
+								(gr maxCount 1)
+									(scrShowPane gScreen "SellQuantity")
+									
+								;	Done
+								
+								(block Nil
+									(rpgSellItems 1 itemCost)
+									(scrShowPane gScreen "Default")
+									)
+								)
+							)
+					</Action>
+
+					<Action id="actionDone" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+
+			<SellQuantity
+					showCounter=	"true">
+
+				<OnPaneInit>
+					(block (
+						(maxCount (scrGetData gScreen 'maxCount))
+						(itemCost (scrGetData gScreen 'itemCost))
+						)
+						
+						(scrSetDescTranslate gScreen 'descSellQuantity { value: (fmtCurrency (objGetDefaultCurrency gSource) itemCost) })
+						(scrSetCounter gScreen maxCount)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionSell" default="1">
+						(block (
+							(thisItem (scrGetItem gScreen))
+							(countToSell (scrGetCounter gScreen))
+							(maxCount (scrGetData gScreen 'maxCount))
+							(itemCost (scrGetData gScreen 'itemCost))
+							)
+							
+							(switch
+								(gr countToSell maxCount)
+									(scrSetCounter gScreen maxCount)
+									
+								(block Nil
+									(rpgSellItems countToSell itemCost)
+									(scrShowPane gScreen "Default")
+									)
+								)
+							)
+					</Action>
+
+					<Action id="actionCancel" cancel="1">
+						<ShowPane pane="Default"/>
+					</Action>
+				</Actions>
+			</SellQuantity>
+		</Panes>
+
+		<Language>
+			<Text id="actionSell">"[S]ell"</Text>
+			
+			<Text id="descItemStats">
+				(if (@ gData 'max)
+					(cat
+						"Unit price: " (@ gData 'value) " (" (@ gData 'max) " for " (@ gData 'maxValue) ")\n"
+						"Unit mass: " (@ gData 'mass) " (" (@ gData 'max) " for " (@ gData 'maxMass) ")\n\n"
+						)
+					(cat
+						"Unit price: " (@ gData 'value) "\n"
+						"Unit mass: " (@ gData 'mass) "\n\n"
+						)
+					)
+			</Text>
+			<Text id="errorNoItemsToSell">
+				"You have no items to sell to the station."
+			</Text>
+			<Text id="descNotForSale">
+				(cat
+					(@ gData 'title) " is not interested in buying " (itmGetName (@ gData 'item) 0x02) "."
+					)
+			</Text>
+			<Text id="descNotEnoughMoney">
+				(cat
+					(@ gData 'title) " cannot afford to buy " (itmGetName (@ gData 'item) 0x04) "."
+					)
+			</Text>
+			<Text id="descBuyOnlyItem">
+				(cat
+					(@ gData 'title) " offers " (@ gData 'currency) " for your " (itmGetName (@ gData 'item) 0x00) "."
+					)
+			</Text>
+			<Text id="descBuySingleItem">
+				(cat
+					(@ gData 'title) " offers " (@ gData 'currency) " for a single " (itmGetName (@ gData 'item) 0x00) "."
+					)
+			</Text>
+			<Text id="descBuySomeItems">
+				(cat
+					(@ gData 'title) " offers " (@ gData 'currency) " for each " (itmGetName (@ gData 'item) 0x00) " (up to a maximum of " (@ gData 'offerCount) ")."
+					)
+			</Text>
+			<Text id="descBuyAllItems">
+				(cat
+					(@ gData 'title) " offers " (@ gData 'currency) " for each " (itmGetName (@ gData 'item) 0x00) "."
+					)
+			</Text>
+			<Text id="descSellQuantity">
+				(cat
+					"How many items do you wish to sell at " (@ gData 'value) " each?"
+					)
+			</Text>
+		</Language>
+	</DockScreen>
+
 <!-- DECONTAMINATION ===========================================================
 
 	This screen allows a station to decontaminate the player's ship.
@@ -657,7 +957,7 @@
 	
 	<DockScreen unid="&dsRPGDockServices;"
 			inherit=			"&dsRPGDockServicesBase;"
-			backgroundID=		"player"
+			backgroundID=		"none"
 			nestedScreen=		"true"
 			>
 		<InitialPane>
@@ -689,102 +989,17 @@
 				)
 		</InitialPane>
 		
-		<Display>
-			
-			<!-- Left Column -->
-			
-			<Text left="0" right="0" top="280" bottom="0" align="left" font="Medium" color="#daebff">
-				(block (
-					;	Reactor stats
-					
-					(reactorItem (@ (objGetItems gPlayerShip "rI") 0))
-					(reactorText (if reactorItem (itmGetName reactorItem 0x00) (cat (objGetName gPlayerShip 0x80) " reactor")))
-					(reactorPower (divide (if reactorItem (objGetItemProperty gPlayerShip reactorItem 'power) (objGetProperty gPlayerShip 'power)) 1000))
-					(reactorPowerText
-						(switch
-							(gr reactorPower 1000)
-								(cat (divide reactorPower 1000) "." (divide (modulo reactorPower 1000) 100) " GW")
-								
-							(cat reactorPower " MW")
-							)
-						)
-					(reactorFuel
-						(map 
-							(map (itmGetTypes "f -notForSale; -notStandardFuel; -notStandard;") 'excludeNil fuelType 
-								(if (shpIsFuelCompatible gPlayerShip (itmCreate fuelType 1))
-									(itmCreate fuelType 1)
-									)
-								)
-							(list 'reduceMin 'original)
-							fuelItem
-							(itmGetLevel fuelItem)
-							)
-						)
+		<OnScreenInit>
+			(block ()
+				;	Background
 						
-					;	Drive Stats
-					
-					(driveItem (@ (objGetItems gPlayerShip "vI") 0))
-					(driveText (if driveItem (itmGetName driveItem 0x00) (cat (objGetName gPlayerShip 0x80) " drive")))
-					)
-					
-					(cat
-						"{/rtf "
-							"{/f:MediumBold;/c:#79828c; reactor:} " reactorText "\n"
-							"{/f:MediumBold;/c:#79828c; max. output:} " reactorPowerText "\n"
-							"{/f:MediumBold;/c:#79828c; fuel:} " (itmGetName reactorFuel 0x02) "\n"
-							"{/f:MediumBold;/c:#79828c; efficiency:} " (objGetProperty gPlayerShip 'fuelEfficiency) "\n"
-							"\n"
-							"{/f:MediumBold;/c:#79828c; drive:} " driveText "\n"
-							"{/f:MediumBold;/c:#79828c; max. speed:} ." (objGetProperty gPlayerShip 'maxSpeed) "c\n"
-							"{/f:MediumBold;/c:#79828c; thrust//mass:} " (/ (objGetProperty gPlayerShip 'thrustToWeight) 1000) "\n"
-							"{/f:MediumBold;/c:#79828c; maneuverability:} " (/ (objGetProperty gPlayerShip 'maneuver) 1000) "\n"
-						"}"
-						)
-					)
-			</Text>
-			
-			<!-- Right Column -->
-			
-			<Text left="0" right="0" top="280" bottom="0" align="right" font="Medium" color="#daebff">
-				(block (
-					;	Cargo Stats
-					
-					(cargoItem (@ (objGetItems gPlayerShip "cI") 0))
-					
-					;	Slots
-					
-					(deviceSlots (objGetProperty gPlayerShip 'deviceSlots))
-					(maxWeaponSlots (objGetProperty gPlayerShip 'deviceSlotsWeapons))
-					(maxNonWeaponSlots (objGetProperty gPlayerShip 'deviceSlotsNonWeapons))
-					(availDeviceSlots (objGetProperty gPlayerShip 'availableDeviceSlots))
-					(availWeaponSlots (objGetProperty gPlayerShip 'availableWeaponSlots))
-					(availNonWeaponSlots (objGetProperty gPlayerShip 'availableNonWeaponSlots))
-					)
-					
-					(cat
-						"{/rtf "
-							(if cargoItem (cat "{/f:MediumBold;/c:#79828c; cargo:} " (itmGetName cargoItem 0x00) "\n"))
-							"{/f:MediumBold;/c:#79828c; cargo space:} " (objGetProperty gPlayerShip 'cargoSpace) " tons\n"
-							"{/f:MediumBold;/c:#79828c; max. expansion:} " (objGetProperty gPlayerShip 'maxCargoSpace) " tons\n"
-							"\n"
-							"{/f:MediumBold;/c:#79828c; device slots:} " deviceSlots " (" availDeviceSlots " free)\n"
-							
-							(if (!= deviceSlots maxWeaponSlots)
-								(cat "{/f:MediumBold;/c:#79828c; for weapon:} " maxWeaponSlots " (" availWeaponSlots " free)\n")
-								)
-							(if (!= deviceSlots maxNonWeaponSlots)
-								(cat "{/f:MediumBold;/c:#79828c; for non-weapon:} " maxNonWeaponSlots " (" availNonWeaponSlots " free)\n") 
-								)
-							"\n"
-							"{/f:MediumBold;/c:#79828c; max. armor:} " (/ (objGetProperty gPlayerShip 'maxArmorMass) 1000) " tons\n"
-							"\n"
-							"{/f:MediumBold;/c:#79828c; manufacturer:} " (objGetProperty gPlayerShip 'manufacturer) "\n"
-							"{/f:MediumBold;/c:#79828c; size:} " (objGetProperty gPlayerShip 'size) " meters\n"
-							"{/f:MediumBold;/c:#79828c; mass:} " (objGetProperty gPlayerSHip 'hullMass) " tons\n"
-						"}"
-						)
-					)
-			</Text>
+				(rpgSetShipStatsDisplay gPlayerShip { })
+				)
+		</OnScreenInit>
+		
+		<Display>
+			<Text id="leftCol"	left="0" right="0" top="280" bottom="0" align="left" font="Medium" color="#daebff"/>
+			<Text id="rightCol"	left="0" right="0" top="280" bottom="0" align="right" font="Medium" color="#daebff"/>
 		</Display>
 		
 		<Panes>
@@ -1234,7 +1449,7 @@
 								(block (itemsToJettison)
 									; Dump items
 									(setq itemsToJettison (scrRemoveItem gScreen 1))
-									(intJettisonItem gSource itemsToJettison)
+									(rpgJettisonItem gSource itemsToJettison)
 									(scrShowPane gScreen "Default")
 									)
 							)
@@ -1265,7 +1480,7 @@
 								(block (itemsToJettison)
 									; Dump items
 									(setq itemsToJettison (scrRemoveItem gScreen count))
-									(intJettisonItem gSource itemsToJettison)
+									(rpgJettisonItem gSource itemsToJettison)
 									(scrShowPane gScreen "Default")
 									)
 								)

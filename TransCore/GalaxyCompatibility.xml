@@ -1275,7 +1275,7 @@
 
 		attributes=			"gasGiant"
 		>
-		<Image imageID="&rsWorlds1;" imageX="0" imageY="512" imageWidth="256" imageHeight="256" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsWorlds1;" imageX="0" imageY="512" imageWidth="256" imageHeight="256"/>
 	</StationType>
 
 	<!-- Methane Gas Giant -->
@@ -1288,7 +1288,7 @@
 
 		attributes=			"gasGiant"
 		>
-		<Image imageID="&rsWorlds1;" imageX="0" imageY="768" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsWorlds1;" imageX="0" imageY="768" imageWidth="192" imageHeight="192"/>
 	</StationType>
 
 	<!-- Primordial Star -->
@@ -1319,7 +1319,7 @@
 
 		attributes=			"star"
 		>
-	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
+	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
 	</StationType>
 
 	<!-- A-Type Star -->
@@ -1388,7 +1388,7 @@
 
 		attributes=			"star"
 		>
-	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
+	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
 	</StationType>
 
 	<!-- Red Dwarf Star -->
@@ -1402,7 +1402,7 @@
 
 		attributes=			"generic, star"
 		>
-	<Image imageID="&rsRedDwarfStar;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" imageFrameCount="0" imageTicksPerFrame="0"/>
+	<Image imageID="&rsRedDwarfStar;" imageX="0" imageY="0" imageWidth="256" imageHeight="256"/>
 	</StationType>
 
 	<!-- Blue Giant Star -->
@@ -1414,7 +1414,7 @@
 
 		attributes=			"star"
 		>
-	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
+	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
 	</StationType>
 
 <!-- MINING COMPATIBILITY -->

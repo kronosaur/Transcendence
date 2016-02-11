@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+<!-- SHIP BROKER ===============================================================
+
+	This screen allows the player to trade in their ship for a new one.
+	
+	gData uses the following fields:
+	
+		maxCount: Maximum number of ships to create.
+-->
+	
+	<DockScreen unid="&dsRPGShipBroker;"
+			inherit=			"&dsDockScreenBase;"
+			nestedScreen=		"true"
+			>
+		
+		<OnScreenInit>
+			(block (
+				(maxCount (if (@ gData 'maxCount) (@ gData 'maxCount) (random 3 5)))
+				(shipIDList (objGetData gSource "shipBroker:list"))
+				)
+				
+				;	If there are no ships in our list, then we need to create some
+				
+				(if (not shipIDList)
+					(setq shipIDList (rpgCreateShipsToSell gSource maxCount))
+					)
+					
+				;	Select the first ship in the list
+				
+				(scrSetData gScreen 'selIndex 0)
+				(scrSetData gScreen 'selData (@ shipIDList 0))
+				)
+		</OnScreenInit>
+		
+		<Display>
+			<Text id="leftCol"	left="0" right="0" top="280" bottom="0" align="left" font="Medium" color="#daebff"/>
+			<Text id="rightCol"	left="0" right="0" top="280" bottom="0" align="right" font="Medium" color="#daebff"/>
+		</Display>
+		
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(shipIDList (objGetData gSource "shipBroker:list"))
+						(selIndex (scrGetData gScreen 'selIndex))
+						(selData (scrGetData gScreen 'selData))
+						(selObj (objGetObjByID selData))
+						(currency (objGetProperty gSource 'currency))
+						
+						;	Compute some prices
+						
+						(playerShipPrice (objGetShipBuyPrice gSource gPlayerShip))
+						(newShipPrice (objGetShipSellPrice gSource selObj))
+						(tradeInPrice (- newShipPrice playerShipPrice))
+						
+						;	Compute some descriptions
+						
+						(newShipDesc (objGetProperty selObj 'playerDesc))
+						
+						;	Vars
+						
+						(canBuy Nil)
+						)
+						
+						(rpgSetShipStatsDisplay selObj { })
+						
+						;	Set the description
+						
+						(scrSetDesc gScreen
+							newShipDesc
+							
+							"\r\n"
+							"\r\n"
+						
+							(switch
+								(not playerShipPrice)
+									(scrTranslate gScreen 'descNoTradeIn)
+									
+								(gr tradeInPrice (objGetBalance gPlayerShip currency))
+									(scrTranslate gScreen 'descCantAfford { name:(objGetName selObj 0x04) price:(fmtCurrency currency tradeInPrice) })
+									
+								(ls tradeInPrice 0)
+									(block Nil
+										(setq canBuy True)
+										(scrTranslate gScreen 'descTradeInRefund { name:(objGetName selObj 0x04) price:(fmtCurrency currency (- tradeInPrice)) })
+										)
+									
+								(block Nil
+									(setq canBuy True)
+									(scrTranslate gScreen 'descTradeIn { name:(objGetName selObj 0x04) price:(fmtCurrency currency tradeInPrice) })
+									)
+								)
+							)
+							
+						;	Remember some calculations
+						
+						(scrSetData gScreen 'tradeInPrice tradeInPrice)
+						
+						;	Initialize actions
+						
+						(scrEnableAction gScreen 'actionBuyShip canBuy)
+						(scrShowAction gScreen 'actionNextShip (ls selIndex (- (count shipIDList) 1)))
+						(scrShowAction gScreen 'actionPrevShip (!= selIndex 0))
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionBuyShip">
+						(block (
+							(currency (objGetProperty gSource 'currency))
+							(tradeInPrice (scrGetData gScreen 'tradeInPrice))
+							
+							(shipIDList (objGetData gSource "shipBroker:list"))
+							(selData (scrGetData gScreen 'selData))
+							(selObj (objGetObjByID selData))
+							
+							(oldShip gPlayerShip)
+							(portPos nil)
+							)
+							
+							;	Move all the cargo from the player's ship to the new ship
+							
+							(enum (objGetItems gPlayerShip "*U") theItem
+								(block ()
+									(objRemoveItem gPlayerShip theItem)
+									(objAddItem selObj theItem)
+									)
+								)
+								
+							;	Remove the ship from our list of ships to sell
+							
+							(setq shipIDList (filter shipIDList theID (!= theID (objGetID selObj))))
+							(objSetData gSource "shipBroker:list" shipIDList)
+							
+							;	Charge the player
+							
+							(if (geq tradeInPrice 0)
+								(objCharge gPlayerShip currency tradeInPrice)
+								(objCredit gPlayerShip currency (- tradeInPrice))
+								)
+								
+							;	Trade ships
+							
+							(objResume selObj)
+							(plyChangeShip gPlayer selObj)
+							
+							;	The old ship is suspended and possibly available for sale
+							;	(But only if we can sell it).
+							
+							(if (objGetShipSellPrice gSource oldShip)
+								(objSuspend oldShip)
+									
+								;	Otherwise, we temporarily dock here and eventually leave.
+								
+								(block ()
+									(shpCancelOrders oldShip)
+									(shpOrder oldShip 'dock gSource)
+									(shpOrder oldShip 'wait (random 10 15))
+									(shpOrder oldShip 'gate)
+									)
+								)
+								
+							;	Position the new ship near a docking port
+							
+							(setq portPos
+								(@	(random
+										(filter (objGetProperty gSource 'dockingPorts) portDesc
+											(= (@ portDesc 'status) 'empty)
+											)
+										)
+									'pos
+									)
+								)
+							(if portPos
+								(objSetPos selObj portPos)
+								)
+								
+							(scrExitScreen gScreen)
+							)
+					</Action>
+					<Action id="actionNextShip"	minor="true">
+						(block (
+							(shipIDList (objGetData gSource "shipBroker:list"))
+							(selIndex (scrGetData gScreen 'selIndex))
+							(selData (scrGetData gScreen 'selData))
+							)
+						
+							(if (ls selIndex (- (count shipIDList) 1))
+								(block ()
+									(setq selIndex (+ selIndex 1))
+									(scrSetData gScreen 'selIndex selIndex)
+									(scrSetData gScreen 'selData (@ shipIDList selIndex))
+									
+									(scrShowPane gScreen "Default")
+									)
+								)
+							)
+					</Action>
+					<Action id="actionPrevShip" minor="true">
+						(block (
+							(shipIDList (objGetData gSource "shipBroker:list"))
+							(selIndex (scrGetData gScreen 'selIndex))
+							(selData (scrGetData gScreen 'selData))
+							)
+						
+							(if (gr selIndex 0)
+								(block ()
+									(setq selIndex (- selIndex 1))
+									(scrSetData gScreen 'selIndex selIndex)
+									(scrSetData gScreen 'selData (@ shipIDList selIndex))
+									
+									(scrShowPane gScreen "Default")
+									)
+								)
+							)
+					</Action>
+					<Action id="actionDone">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+		
+		<Language>
+			<Text id="actionBuyShip">"[B]uy Ship"</Text>
+			<Text id="actionNextShip">"&gt;[RightArrow] Next Ship"</Text>
+			<Text id="actionPrevShip">"&lt;[LeftArrow] Previous Ship"</Text>
+			
+			<Text id="descTradeIn">
+				(cat
+					"\"You can trade in your ship and purchase " (@ gData 'name) " for " (@ gData 'price) ".\""
+					)
+			</Text>
+			<Text id="descTradeInRefund">
+				(cat
+					"\"This ship is not as good as yours, but if you want to trade yours in, we'll pay you " (@ gData 'price) ".\""
+					)
+			</Text>
+			<Text id="descNoTradeIn">
+				(cat
+					"\"Unfortunately, we cannot offer you a trade-in because your ship is worthless to us.\""
+					)
+			</Text>
+			<Text id="descCantAfford">
+				(cat
+					"\"You can trade in your ship and purchase " (@ gData 'name) " for " (@ gData 'price) ". "
+					"Unfortunately, you cannot afford the cost.\""
+					)
+			</Text>
+		</Language>
+	</DockScreen>
+	
+<!-- GLOBALS -->
+	
+	<Globals>
+		(block Nil
+			(setq rpgCreateShipsToSell (lambda (sellerObj maxCount)
+				(block (
+					(shipObj Nil)
+					(shipList Nil)
+					(extraList Nil)
+					(shipIDList Nil)
+					)
+					
+					;	Create a list of ships to sell
+					
+					(setq shipList
+						(map (typFind "s +isPlayerClass:true;") 'excludeNil theClass
+							(switch
+						
+								;	Create a ship of this class
+								;	(If that fails, for some reason, then we skip it.
+							
+								(not (setq shipObj (sysCreateShip theClass (objGetPos sellerObj) (objGetSovereign sellerObj))))
+									Nil
+							
+								;	If we don't sell this kind of ship, then skip it.
+							
+								(not (objGetShipSellPrice sellerObj shipObj))
+									(block Nil
+										(objDestroy shipObj)
+										Nil
+										)
+									
+								;	Otherwise, return it
+							
+								shipObj
+								)
+							)
+						)
+						
+					;	Shuffle them
+					
+					(shuffle shipList)
+					
+					;	Split the list in two, with the second list being extra
+					;	ships that we don't need.
+					
+					(setq extraList (subset shipList maxCount))
+					(setq shipList (subset shipList 0 maxCount))
+					
+					;	Delete the extra ones
+					
+					(enum extraList shipObj (objDestroy shipObj))
+					
+					;	Suspend the ships
+					
+					(enum shipList shipObj (objSuspend shipObj))
+					
+					;	Store the list of ID with the seller object
+					
+					(setq shipIDList (map shipList shipObj (objGetID shipObj)))
+					(objSetData sellerObj "shipBroker:list" shipIDList)
+					
+					;	Return it
+					
+					shipIDList
+					)
+				))
+				
+			(setq rpgSetShipStatsDisplay (lambda (shipObj options)
+				(block (
+					;	Reactor stats
+					
+					(reactorItem (@ (objGetItems shipObj "rI") 0))
+					(reactorText (if reactorItem (itmGetName reactorItem 0x00) (cat (objGetName shipObj 0x80) " reactor")))
+					(reactorPower (divide (objGetProperty shipObj 'power) 1000))
+					(reactorPowerText
+						(switch
+							(gr reactorPower 1000)
+								(cat (divide reactorPower 1000) "." (divide (modulo reactorPower 1000) 100) " GW")
+								
+							(cat reactorPower " MW")
+							)
+						)
+					(reactorEfficiency (objGetProperty shipObj 'fuelEfficiencyBonus))
+					(reactorEfficiencyText
+						(switch
+							(gr reactorEfficiency 0)
+								(cat "+" reactorEfficiency "%")
+										
+							(ls reactorEfficiency 0)
+								(cat reactorEfficiency "%")
+										
+							"standard"
+							)
+						)
+					(reactorFuel
+						(map 
+							(map (itmGetTypes "f -notForSale; -notStandardFuel; -notStandard;") 'excludeNil fuelType 
+								(if (shpIsFuelCompatible shipObj (itmCreate fuelType 1))
+									(itmCreate fuelType 1)
+									)
+								)
+							(list 'reduceMin 'original)
+							fuelItem
+							(itmGetLevel fuelItem)
+							)
+						)
+						
+					;	Drive Stats
+					
+					(driveItem (@ (objGetItems shipObj "vI") 0))
+					(driveText (if driveItem (itmGetName driveItem 0x00) (cat (objGetName shipObj 0x80) " drive")))
+					
+					;	Cargo Stats
+					
+					(cargoItem (@ (objGetItems shipObj "cI") 0))
+					
+					;	Slots
+					
+					(deviceSlots (objGetProperty shipObj 'deviceSlots))
+					(maxWeaponSlots (objGetProperty shipObj 'deviceSlotsWeapons))
+					(maxNonWeaponSlots (objGetProperty shipObj 'deviceSlotsNonWeapons))
+					(availDeviceSlots (objGetProperty shipObj 'availableDeviceSlots))
+					(availWeaponSlots (objGetProperty shipObj 'availableWeaponSlots))
+					(availNonWeaponSlots (objGetProperty shipObj 'availableNonWeaponSlots))
+					)
+					
+					;	Set the background image
+						
+					(scrSetBackgroundImage gScreen {
+						type: 'object
+						obj: shipObj
+						})
+						
+					;	Set the left column of stats
+
+					(scrSetDisplayText gScreen 'leftCol
+						(cat
+							"{/rtf "
+								"{/f:MediumBold;/c:#79828c; reactor:} " reactorText "\n"
+								"{/f:MediumBold;/c:#79828c; max. output:} " reactorPowerText "\n"
+								"{/f:MediumBold;/c:#79828c; fuel:} " (itmGetName reactorFuel 0x02) "\n"
+								"{/f:MediumBold;/c:#79828c; fuel efficiency:} " reactorEfficiencyText "\n"
+								"\n"
+								"{/f:MediumBold;/c:#79828c; drive:} " driveText "\n"
+								"{/f:MediumBold;/c:#79828c; max. speed:} ." (objGetProperty shipObj 'maxSpeed) "c\n"
+								"{/f:MediumBold;/c:#79828c; thrust//mass:} " (/ (objGetProperty shipObj 'thrustToWeight) 1000) "\n"
+								"{/f:MediumBold;/c:#79828c; maneuverability:} " (/ (objGetProperty shipObj 'maneuver) 1000) "\n"
+							"}"
+							)
+						)
+						
+					;	Set the right column of stats
+					
+					(scrSetDisplayText gScreen 'rightCol
+						(cat
+							"{/rtf "
+								(if cargoItem (cat "{/f:MediumBold;/c:#79828c; cargo:} " (itmGetName cargoItem 0x00) "\n"))
+								"{/f:MediumBold;/c:#79828c; cargo space:} " (objGetProperty shipObj 'cargoSpace) " tons\n"
+								"{/f:MediumBold;/c:#79828c; max. expansion:} " (objGetProperty shipObj 'maxCargoSpace) " tons\n"
+								"\n"
+								"{/f:MediumBold;/c:#79828c; device slots:} " deviceSlots " (" availDeviceSlots " free)\n"
+							
+								(if (!= deviceSlots maxWeaponSlots)
+									(cat "{/f:MediumBold;/c:#79828c; for weapons:} " maxWeaponSlots " (" availWeaponSlots " free)\n")
+									)
+								(if (!= deviceSlots maxNonWeaponSlots)
+									(cat "{/f:MediumBold;/c:#79828c; for non-weapons:} " maxNonWeaponSlots " (" availNonWeaponSlots " free)\n") 
+									)
+								"\n"
+								"{/f:MediumBold;/c:#79828c; max. armor:} " (/ (objGetProperty shipObj 'maxArmorMass) 1000) " tons\n"
+								"\n"
+								"{/f:MediumBold;/c:#79828c; manufacturer:} " (objGetProperty shipObj 'manufacturer) "\n"
+								"{/f:MediumBold;/c:#79828c; size:} " (objGetProperty shipObj 'size) " meters\n"
+								"{/f:MediumBold;/c:#79828c; mass:} " (objGetProperty shipObj 'hullMass) " tons\n"
+							"}"
+							)
+						)
+					)
+				))
+			)
+	</Globals>
+	
+</TranscendenceModule>

@@ -121,9 +121,6 @@
     <None Include="RogueFleet.xml">
       <Filter>Human Space Library</Filter>
     </None>
-    <None Include="RPGAnalyzers.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
     <None Include="SistersOfDomina.xml">
       <Filter>Human Space Library</Filter>
     </None>
@@ -325,6 +322,9 @@
     <None Include="GalaxyEffects.xml">
       <Filter>Transcendence Galaxy Library</Filter>
     </None>
+    <None Include="RPGAnalyzers.xml">
+      <Filter>RPG Library</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Benedict.xml">
@@ -353,6 +353,21 @@
     </Xml>
     <Xml Include="Ferians.xml">
       <Filter>Human Space Library</Filter>
+    </Xml>
+    <Xml Include="RPGComponents.xml">
+      <Filter>RPG Library</Filter>
+    </Xml>
+    <Xml Include="CoreProjectileEffects.xml">
+      <Filter>Core Types</Filter>
+    </Xml>
+    <Xml Include="CoreHitEffects.xml">
+      <Filter>Core Types</Filter>
+    </Xml>
+    <Xml Include="CoreFireEffects.xml">
+      <Filter>Core Types</Filter>
+    </Xml>
+    <Xml Include="RPGShipBroker.xml">
+      <Filter>RPG Library</Filter>
     </Xml>
   </ItemGroup>
 </Project>

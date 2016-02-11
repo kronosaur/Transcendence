@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+<!-- GLOBALS -->
+	
+	<Globals>
+		(block Nil
+			(setq rpgCalcCreateFromComponents (lambda (theItem theSource theFoundry)
+				(block (
+					(currencyUsed (objGetProperty theFoundry 'currency))
+					(componentsNeeded (itmGetProperty theItem 'components))
+					(itemCategory (itmGetProperty theItem 'category))
+					(itemCurrency (itmGetProperty theItem 'currency))
+					
+					;	Compute the total price of all components
+					
+					(componentPrice
+						(map componentsNeeded 'reduceSum theComponent
+							;	For devices we assume a damaged device
+							(if (itmMatches theComponent "d")
+								(* (itmGetCount theComponent) (itmGetPrice (itmSetProperty theComponent 'damaged True) currencyUsed))
+								(* (itmGetCount theComponent) (itmGetPrice theComponent currencyUsed))
+								)
+							)
+						)
+						
+					;	Mark up is based on the type of item
+					
+					(markUp
+						(switch
+							(= itemCategory 'armor)
+								1.25
+								
+							(itmMatches theItem "d")
+								1.5
+								
+							1.2
+							)
+						)
+					(fullPrice (int (round (* componentPrice markUp))))
+					(workPrice (- fullPrice componentPrice))
+					
+					;	For each required component, add up the number of items the player
+					;	actually has. Note that we accept damaged items.
+						
+					(availableComponents
+						(map componentsNeeded theComponent
+							(block (countAvailable)
+								(setq countAvailable 0)
+									
+								;	Add the number of non-damaged items we have
+								
+								(setq countAvailable (add countAvailable
+									(objHasItem theSource theComponent 1)
+									))
+										
+								;	Now add damaged items
+									
+								(setq countAvailable (add countAvailable
+									(objHasItem theSource (itmSetProperty theComponent 'damaged True) 1)
+									))
+										
+								;	Compose entry
+									
+								{	item: theComponent
+									available: countAvailable
+									}
+								)
+							)
+						)
+					
+					;	Figure out the maximum number of items we could afford
+					;	to build, based ONLY on price (i.e., not counting
+					;	components).
+					
+					(maxCountPrice
+						(if (gr workPrice 0)
+							(int (/ (objGetBalance theSource currencyUsed) workPrice))
+							1000
+							)
+						)
+						
+					;	Now compute the max count based on component availability
+					
+					(maxCount
+						(min maxCountPrice
+							(map availableComponents 'reduceMin theEntry
+								(int (/ (@ theEntry 'available) (itmGetCount (@ theEntry 'item))))
+								)
+							)
+						)
+					)
+				
+					;	Return a structure describing various aspects of the fabrication
+					
+					{
+						item: theItem
+						
+						;	This is a list of items (with counts) required to fabricate.
+						
+						componentsNeeded: componentsNeeded
+						componentsNeededDesc: (strItemList componentsNeeded 0x0108)
+						
+						;	These fields determine various prices
+						
+						componentCost: componentPrice
+						currencyUsed: currencyUsed
+						workCost: workPrice
+						
+						;	This is a list of structures describing what components the
+						;	player has available. Each struct has two fields:
+						;
+						;	item: One of the items required (with counts)
+						;	available: The number of this item the player has (including
+						;		damaged.
+						
+						componentsAvail: availableComponents
+						
+						;	This is a structure suitable for an ItemListDisplay control
+						
+						itemListDisplay:
+							(map availableComponents 'excludeNil theEntry
+								{
+									item: (@ theEntry 'item)
+									enabled: (geq (@ theEntry 'available) (itmGetCount (@ theEntry 'item)))
+									}
+								)
+						
+						;	Maximum number of items we can fabricate
+						
+						maxCount: maxCount
+						
+						;	Missing components
+						
+						componentsMissing: 
+							(map availableComponents 'excludeNil theEntry 
+								(if (eq (@ theEntry 'available) 0)
+									(@ theEntry 'item)
+									)
+								)
+						
+						componentsLacking: 
+							(map availableComponents 'excludeNil theEntry 
+								(if (ls (@ theEntry 'available) (itmGetCount (@ theEntry 'item)))
+									(itmSetCount (@ theEntry 'item) 
+										(- (itmGetCount (@ theEntry 'item)) (@ theEntry 'available))
+										) 
+									)
+								)
+						}
+					)
+				))
+				
+			(setq rpgCreateFromComponents (lambda (createCtx theSource theFoundry theCount options)
+				(block (
+					(itemToCreate (itmSetCount (@ createCtx 'item) theCount))
+					(totalCost (* (@ createCtx 'workCost) theCount))
+					(currencyUsed (@ createCtx 'currencyUsed))
+					itemsConsumed
+					)
+				
+					;	Consume items. NOTE: We expect our callers to have already checked
+					;	to make sure there are enough items.
+					
+					(enum (@ createCtx 'componentsNeeded) theComponent
+						(block (
+							(leftToConsume (* theCount (itmGetCount theComponent)))
+							(goodItem (itmSetCount theComponent 1))
+							(damagedItem (itmSetProperty goodItem 'damaged True))
+							
+							available
+							)
+							
+							;	Consume damaged items first
+							
+							(setq available (min leftToConsume (objHasItem theSource damagedItem)))
+							(if (gr available 0)
+								(block Nil
+									(objRemoveItem theSource damagedItem available)
+									(setq leftToConsume (- leftToConsume available))
+									(setq itemsConsumed (append itemsConsumed (list (itmSetCount damagedItem available))))
+									)
+								)
+								
+							;	Consume good items
+							
+							(setq available (min leftToConsume (objHasItem theSource goodItem)))
+							(if (gr available 0)
+								(block Nil
+									(objRemoveItem theSource goodItem available)
+									(setq leftToConsume (- leftToConsume available))
+									(setq itemsConsumed (append itemsConsumed (list (itmSetCount goodItem available))))
+									)
+								)
+							)
+						)
+						
+					;	Charge player
+					
+					(objCharge theSource currencyUsed totalCost)
+					
+					;	Create the resulting item
+					
+					(objAddItem theSource itemToCreate)
+					
+					;	Loop over player missions and see if we've accomplished any of them
+					
+					(if (@ options 'reminderCriteria)
+						(enum (msnFind theFoundry (@ options 'reminderCriteria)) theMission
+							(if (itmIsEqual itemToCreate (@ (msnGetData theMission 'forgeInfo) 'item))
+								(msnSuccess theMission)
+								)
+							)
+						)
+					
+					;	Return result
+					
+					{	itemsCreated: itemToCreate
+						itemsConsumed: itemsConsumed
+						currencyUsed: currencyUsed
+						totalCost: totalCost
+						}
+					)
+				))
+			)
+	</Globals>
+	
+</TranscendenceModule>

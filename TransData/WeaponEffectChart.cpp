@@ -11,6 +11,7 @@
 #include "TransData.h"
 
 #define CRITERIA_ATTRIB						CONSTLIT("criteria")
+#define SHIP_UNID_ATTRIB					CONSTLIT("shipClass")
 
 #define STYLE_TITLE							CONSTLIT("title")
 
@@ -32,13 +33,19 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	CItemTypeTable Selection;
 	if (!Selection.Filter(pCmdLine->GetAttribute(CRITERIA_ATTRIB))
-			|| !Selection.Filter(CONSTLIT("wm")))
+			|| (Selection.IsAll() && !Selection.Filter(CONSTLIT("wm"))))
 		{
 		printf("No entries match criteria.\n");
 		return;
 		}
 
 	Selection.Sort();
+
+	//	Ship to use
+
+	DWORD dwPlatformUNID;
+	if (!pCmdLine->FindAttributeInteger(SHIP_UNID_ATTRIB, (int *)&dwPlatformUNID))
+		dwPlatformUNID = WEAPON_PLATFORM_UNID;
 
 	//	Compute some metrics
 
@@ -56,8 +63,11 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 	int cyRow = cyRowTitle + Max(ITEM_ICON_HEIGHT, cyFrame * iFramesPerItem);
 	int cxRow = ITEM_ICON_WIDTH + cxFrame;
 
-	int cxImage = cxRow;
-	int cyImage = cyRow * Selection.GetCount();
+	int iColumns = Max(1, mathSqrt(Selection.GetCount()));
+	int iRows = (Selection.GetCount() + (iColumns - 1)) / iColumns;
+
+	int cxImage = cxRow * iColumns;
+	int cyImage = cyRow * iRows;
 
 	//	Initialize the output
 
@@ -95,7 +105,7 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 	CSovereign *pPlatformSovereign = Universe.FindSovereign(PLAYER_SOVEREIGN_UNID);
 	CShip *pPlatform;
 	if (pPlatformSovereign == NULL
-				|| pSystem->CreateShip(WEAPON_PLATFORM_UNID,
+				|| pSystem->CreateShip(dwPlatformUNID,
 					NULL,
 					NULL,
 					pPlatformSovereign,
@@ -124,15 +134,19 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Install the largest possible reactor on the ship
 
-	CItem ReactorItem(Universe.FindItemType(REACTOR_UNID), 1);
+	CItemType *pReactorType = Universe.FindItemType(REACTOR_UNID);
+	if (pReactorType)
+		{
+		CItem ReactorItem(pReactorType, 1);
 
-	CItemListManipulator ItemList(pPlatform->GetItemList());
-	ItemList.AddItem(ReactorItem);
-	pPlatform->OnComponentChanged(comCargo);
-	pPlatform->ItemsModified();
-	pPlatform->InvalidateItemListAddRemove();
+		CItemListManipulator ItemList(pPlatform->GetItemList());
+		ItemList.AddItem(ReactorItem);
+		pPlatform->OnComponentChanged(comCargo);
+		pPlatform->ItemsModified();
+		pPlatform->InvalidateItemListAddRemove();
 
-	pPlatform->InstallItemAsDevice(ItemList);
+		pPlatform->InstallItemAsDevice(ItemList);
+		}
 
 	//	Set the POV
 
@@ -159,8 +173,8 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		//	Compute the metrics of this row
 
-		int xRow = xOrigin;
-		int yRow = yOrigin + (i * cyRow);
+		int xRow = xOrigin + (i % iColumns) * cxRow;
+		int yRow = yOrigin + (i / iColumns) * cyRow;
 
 		//	Paint the weapon title
 
@@ -200,7 +214,10 @@ void PaintWeaponFrames (CG32bitImage &Image, CItemType *pType, CShip *pPlatform,
 	int iVariant;
 	CWeaponFireDesc *pDesc;
 	if (!CDeviceClass::FindWeaponFor(pType, &pWeapon, &iVariant, &pDesc))
+		{
+		printf("ERROR: Unable to find weapon for ammo.\n");
 		return;
+		}
 
 	//	Compute the number of ticks that we need to cover the distance
 
@@ -238,9 +255,17 @@ void PaintWeaponFrames (CG32bitImage &Image, CItemType *pType, CShip *pPlatform,
 	//	item in the list).
 
 	DeviceNames iDev = pPlatform->SelectWeapon(ItemList.GetItemAtCursor().GetInstalled(), iVariant);
+	CInstalledDevice *pInstalledDevice = pPlatform->GetNamedDevice(iDev);
+	if (pInstalledDevice == NULL
+			|| pInstalledDevice->GetClass()->GetUNID() != pWeapon->GetUNID())
+		{
+		printf("ERROR: Failed to install %s.\n", pWeapon->GetItemType()->GetNounPhrase(0).GetASCIIZPointer());
+		return;
+		}
 
 	//	Fire the weapon
 
+	pInstalledDevice->SetTimeUntilReady(0);
 	pPlatform->SetWeaponTriggered(iDev);
 
 	//	Update context
@@ -258,6 +283,8 @@ void PaintWeaponFrames (CG32bitImage &Image, CItemType *pType, CShip *pPlatform,
 		//	Update the universe
 
 		g_pUniverse->Update(Ctx);
+		if (pPlatform->IsDestroyed())
+			printf("Platform destroyed.\n");
 
 		//	Paint
 
@@ -286,8 +313,12 @@ void PaintWeaponFrames (CG32bitImage &Image, CItemType *pType, CShip *pPlatform,
 
 	//	Skip for a while
 
-	for (j = 0; j < 20; j++)
+	for (j = 0; j < 100; j++)
+		{
 		g_pUniverse->Update(Ctx);
+		if (pPlatform->IsDestroyed())
+			printf("Platform destroyed.\n");
+		}
 
 	//	Uninstall weapon
 

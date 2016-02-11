@@ -128,10 +128,10 @@ PLAYER DATA
 
 			multiHull=			"true"
 			armorID=			"&itBlastPlate;"
-			hitPoints=			"250"
-			repairRate=			"3"
+			hitPoints=			"320"
+			regen=			    "1.6"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"blackMarket, friendly, envEarth, envAvoidsAir, generic, human, majorStation, outlaws, populated"
@@ -159,6 +159,8 @@ PLAYER DATA
 		</Devices>
 
 		<Trade currency="credit" max="100000" replenish="5000">
+			<Sell	criteria="m +illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="100"/>
+			<Sell	criteria="m +military; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="100"/>
 			<Sell	criteria="cNU +Illegal; -ID; -NotForSale; L:1-6;"	priceAdj="100"	inventoryAdj="100"/>
 			<Sell	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Sell	criteria="*NU -ID; -NotForSale;"	priceAdj="100"/>
@@ -230,9 +232,8 @@ PLAYER DATA
 							</Action>
 
 							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Dock Services" key="D">
@@ -528,11 +529,11 @@ PLAYER DATA
 
 			multiHull=			"true"
 			armorID=			"&itBlastPlate;"
-			hitPoints=			"500"
-			repairRate=			"3"
+			hitPoints=			"1100"
+			regen=			    "11"
 			shipRepairRate=		"3"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion2;"
+			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"blackMarket, envEarth, majorStation, envAvoidsAir, friendly, generic, human, outlaws, populated"
@@ -561,6 +562,8 @@ PLAYER DATA
 		</Devices>
 
 		<Trade currency="credit" max="100000" replenish="5000">
+			<Sell	criteria="m +illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200"/>
+			<Sell	criteria="m +military; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200"/>
 			<Sell	criteria="cNU +Illegal; -ID; -NotForSale; L:1-9;"	priceAdj="100"	inventoryAdj="100"/>
 			<Sell	criteria="rNU L:1-7; -NotForSale; -notStandard;"	priceAdj="100"	inventoryAdj="100"/>
 			<Sell	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="110"/>
@@ -628,9 +631,8 @@ PLAYER DATA
 							</Action>
 
 							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+									})
 							</Action>
 
 							<Action name="Dock Services" key="D">
@@ -680,8 +682,8 @@ PLAYER DATA
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"250"
-			repairRate=			"3"
-			explosionType=		"&vtBlastExplosion3;"
+			regen=			    "1.3"
+			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"blackMarket, friendly, envAir, envAvoidsFire, generic, human, outlaws, populated"
@@ -843,7 +845,7 @@ PLAYER DATA
 			(setq intBlackMarketOnDestroy (lambda (cost)
 				(block Nil
 					; Destroy items on the station
-					(intDestroyItems gSource)
+					(rpgDestroyItems gSource)
 
 					; Player is tracked
 					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))

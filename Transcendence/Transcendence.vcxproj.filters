@@ -239,6 +239,9 @@
     <ClCompile Include="CLRSDisplay.cpp">
       <Filter>Source Files\Displays</Filter>
     </ClCompile>
+    <ClCompile Include="CGItemListDisplayArea.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundTasks.h">

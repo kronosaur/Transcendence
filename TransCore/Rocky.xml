@@ -71,17 +71,7 @@
 
 		ejectaType=			"&vtStoneAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="768" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="800" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="832" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="864" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="896" imageWidth="32" imageHeight="32"/>
-
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="928" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="960" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="992" imageWidth="32" imageHeight="32"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsRockyAsteroidSizeA;"/>
 
 		<Items>
 			<Table>
@@ -150,17 +140,7 @@
 		>
 		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
 
-		<ImageVariants>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="0"   imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="64"  imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="128" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="192" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="256" imageWidth="64" imageHeight="64"/>
-
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="320" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="384" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="448" imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsRockyAsteroidSizeB;"/>
 
 		<Items>
 			<Table>
@@ -226,13 +206,7 @@
 
 		ejectaType=			"&vtStoneAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsRockyAsteroids;" imageX="0"   imageY="0"   imageWidth="90" imageHeight="90"/>
-			<Image	imageID="&rsRockyAsteroids;" imageX="0"   imageY="90"  imageWidth="90" imageHeight="90"/>
-			<Image	imageID="&rsRockyAsteroids;" imageX="0"   imageY="180" imageWidth="90" imageHeight="90"/>
-			<Image	imageID="&rsRockyAsteroids;" imageX="0"   imageY="270" imageWidth="90" imageHeight="90"/>
-			<Image	imageID="&rsRockyAsteroids;" imageX="0"   imageY="360" imageWidth="90" imageHeight="90"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsRockyAsteroidSizeC;"/>
 
 		<Items>
 			<Table>
@@ -294,12 +268,7 @@
 
 		ejectaType=			"&vtStoneAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsRockyAsteroids;" imageX="180" imageY="0"   imageWidth="110" imageHeight="110"/>
-			<Image	imageID="&rsRockyAsteroids;" imageX="180" imageY="110" imageWidth="110" imageHeight="110"/>
-			<Image	imageID="&rsRockyAsteroids;" imageX="180" imageY="220" imageWidth="110" imageHeight="110"/>
-			<Image	imageID="&rsRockyAsteroids;" imageX="180" imageY="330" imageWidth="110" imageHeight="110"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsRockyAsteroidSizeD;"/>
 
 		<Items>
 			<Table>
@@ -360,11 +329,7 @@
 
 		ejectaType=			"&vtStoneAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsRockyAsteroids;" imageX="400" imageY="0"   imageWidth="130" imageHeight="130"/>
-			<Image	imageID="&rsRockyAsteroids;" imageX="400" imageY="130" imageWidth="130" imageHeight="130"/>
-			<Image	imageID="&rsRockyAsteroids;" imageX="400" imageY="260" imageWidth="130" imageHeight="130"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsRockyPlanetoidSizeE;"/>
 	</StationType>
 
 	<!-- Rocky Planetoid Size F -->
@@ -379,11 +344,7 @@
 
 		ejectaType=			"&vtStoneAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsRockyAsteroids;" imageX="660" imageY="0"   imageWidth="160" imageHeight="160"/>
-			<Image	imageID="&rsRockyAsteroids;" imageX="660" imageY="160" imageWidth="160" imageHeight="160"/>
-			<Image	imageID="&rsRockyAsteroids;" imageX="660" imageY="320" imageWidth="160" imageHeight="160"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsRockyPlanetoidSizeF;"/>
 	</StationType>
 
 	<!-- Rocky Planetoid Size G -->
@@ -398,13 +359,80 @@
 
 		ejectaType=			"&vtStoneAsteroidEjecta;"
 		>
+		<ImageLookup imageID="&rsRockyPlanetoidSizeG;"/>
+	</StationType>
+
+<!-- RESOURCES -->
+	
+	<ImageComposite unid="&rsRockyAsteroidSizeA;">
+		<ImageVariants>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="768" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="800" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="832" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="864" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="896" imageWidth="32" imageHeight="32"/>
+
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="928" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="960" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="992" imageWidth="32" imageHeight="32"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsRockyAsteroidSizeB;">
+		<ImageVariants>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="0"   imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="64"  imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="128" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="192" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="256" imageWidth="64" imageHeight="64"/>
+
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="320" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="384" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="448" imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsRockyAsteroidSizeC;">
+		<ImageVariants>
+			<Image	imageID="&rsRockyAsteroids;" imageX="0"   imageY="0"   imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="0"   imageY="90"  imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="0"   imageY="180" imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="0"   imageY="270" imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="0"   imageY="360" imageWidth="90" imageHeight="90"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsRockyAsteroidSizeD;">
+		<ImageVariants>
+			<Image	imageID="&rsRockyAsteroids;" imageX="180" imageY="0"   imageWidth="110" imageHeight="110"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="180" imageY="110" imageWidth="110" imageHeight="110"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="180" imageY="220" imageWidth="110" imageHeight="110"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="180" imageY="330" imageWidth="110" imageHeight="110"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsRockyPlanetoidSizeE;">
+		<ImageVariants>
+			<Image	imageID="&rsRockyAsteroids;" imageX="400" imageY="0"   imageWidth="130" imageHeight="130"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="400" imageY="130" imageWidth="130" imageHeight="130"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="400" imageY="260" imageWidth="130" imageHeight="130"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsRockyPlanetoidSizeF;">
+		<ImageVariants>
+			<Image	imageID="&rsRockyAsteroids;" imageX="660" imageY="0"   imageWidth="160" imageHeight="160"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="660" imageY="160" imageWidth="160" imageHeight="160"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="660" imageY="320" imageWidth="160" imageHeight="160"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsRockyPlanetoidSizeG;">
 		<ImageVariants>
 			<Image	imageID="&rsRockyAsteroids;" imageX="980" imageY="0"   imageWidth="175" imageHeight="175"/>
 			<Image	imageID="&rsRockyAsteroids;" imageX="980" imageY="175" imageWidth="175" imageHeight="175"/>
 		</ImageVariants>
-	</StationType>
-
-<!-- RESOURCES -->
+	</ImageComposite>
 
 	<Image UNID="&rsRockyAsteroids;"	bitmap="Resources\RockyAsteroids.jpg"	bitmask="Resources\RockyAsteroidsMask.bmp"		loadOnUse="true"/>
 	

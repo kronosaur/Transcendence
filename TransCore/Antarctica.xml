@@ -65,7 +65,7 @@
 			maxSpeed=			"2"
 			cyberDefenseLevel=	"6"
 			   
-			explosionType=		"&vtThermoExplosion4;"
+			explosionType=		"&vtPlasmaExplosion2;"
 
 			dockScreen=			"Main"
 			defaultBackgroundID="&rsCSCBkgnd;"
@@ -139,7 +139,7 @@
 			/>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; -notStandard; L:1-10;" priceAdj="100" inventoryAdj="200"/>
+			<Sell	criteria="m +commonwealth; +military; -illegal; -notForSale; -notStandard; L:1-10;" priceAdj="100" inventoryAdj="500"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			<Sell	criteria="rNU L:1-9; -Illegal; -NotForSale; -notStandard;"	priceAdj="100"	inventoryAdj="100"/>
 			
@@ -195,20 +195,24 @@
 			</OnCreate>
 
 			<OnDestroy>
-				; If we're destroyed, set the status (if we entered a gate, status will already be
-				; set, so don't set it again).
+				(block Nil
+					(rpgDestroyItems gSource)
+				
+					; If we're destroyed, set the status (if we entered a gate, status will already be
+					; set, so don't set it again).
 
-				(switch
-					(eq (typGetGlobalData &scCSCTerra; "antarctica") "escaped")
-						Nil
+					(switch
+						(eq (typGetGlobalData &scCSCTerra; "antarctica") "escaped")
+							Nil
 
-					(and gPlayerShip (eq aOrderGiver gPlayerShip))
-						(if (objGetGlobalData gSource "playerRewarded")
-							(typSetGlobalData &scCSCTerra; "antarctica" "betrayed")
-							(typSetGlobalData &scCSCTerra; "antarctica" "destroyedByPlayer")
-							)
+						(and gPlayerShip (eq aOrderGiver gPlayerShip))
+							(if (objGetGlobalData gSource "playerRewarded")
+								(typSetGlobalData &scCSCTerra; "antarctica" "betrayed")
+								(typSetGlobalData &scCSCTerra; "antarctica" "destroyedByPlayer")
+								)
 
-					(typSetGlobalData &scCSCTerra; "antarctica" "destroyed")
+						(typSetGlobalData &scCSCTerra; "antarctica" "destroyed")
+						)
 					)
 			</OnDestroy>
 
@@ -815,7 +819,7 @@
 			maxSpeed=			"2"
 			cyberDefenseLevel=	"6"
 			   
-			explosionType=		"&vtThermoExplosion4;"
+			explosionType=		"&vtPlasmaExplosion2;"
 
 			dockScreen=			"Main"
 			>
@@ -888,7 +892,7 @@
 			/>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; -notStandard; L:1-10;" priceAdj="100" inventoryAdj="200"/>
+			<Sell	criteria="m +commonwealth; +military; -illegal; -notForSale; -notStandard; L:1-10;" priceAdj="100" inventoryAdj="500"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			<Sell	criteria="rNU L:1-9; -Illegal; -NotForSale; -notStandard;"	priceAdj="100"	inventoryAdj="100"/>
 			
@@ -1289,7 +1293,7 @@
 						<OnPaneInit>
 							(scrSetDesc gScreen 
 								"The bridge of the CSC Terra is busy with activity. Admiral Decker is leaning over a "
-								"holochart as the massive ship manuevers through the system."
+								"holochart as the massive ship maneuvers through the system."
 								)
 						</OnPaneInit>
 						
@@ -1519,8 +1523,8 @@
 
 			multiHull=			"true"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"250"
-			repairRate=			"1"
+			hitPoints=			"740"
+			regen=			    "3.7"
 			shipRepairRate=		"1"
 			fireRateAdj=		"80"
 			ejectaType=			"&vtWreckEjecta;"
@@ -1558,7 +1562,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +Commonwealth; -PremiumAmmo; -Illegal; -NotForSale; -notStandard;" priceAdj="115" inventoryAdj="100"/>
+			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"	priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>

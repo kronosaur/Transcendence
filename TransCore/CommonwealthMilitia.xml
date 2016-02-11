@@ -45,7 +45,7 @@
 			<Item count="3d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -281,10 +281,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"450"
-			repairRate=			"3"
+			hitPoints=			"840"
+			regen=              "8.4"
 			shipRepairRate=		"3"
-			explosionType=		"&vtThermoExplosion1;"
+			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthArmory, commonwealthCustoms, commonMilitary, fleetDelivery, friendly, generic, human, majorStation, primary, populated"
@@ -304,7 +304,7 @@
 		</Reinforcements>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +Commonwealth; -Illegal; -NotForSale; -notStandard; L:1-3;" priceAdj="115" inventoryAdj="100"/>
+			<Sell	criteria="m +commonwealth; -illegal; -notForSale; -notStandard; L:3-8;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Sell	criteria="rNU L:1-7; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100"/>
 			

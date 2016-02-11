@@ -103,17 +103,7 @@
 
 		ejectaType=			"&vtVolcanicAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="768" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="800" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="832" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="864" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="896" imageWidth="32" imageHeight="32"/>
-
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="928" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="960" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="992" imageWidth="32" imageHeight="32"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsVolcanicAsteroidSizeA;"/>
 
 		<Items>
 			<Table>
@@ -143,17 +133,7 @@
 		>
 		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
 
-		<ImageVariants>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="512" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="576" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="640" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="704" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="768" imageWidth="64" imageHeight="64"/>
-
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="832" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="896" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="960" imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsVolcanicAsteroidSizeB;"/>
 
 		<Items>
 			<Table>
@@ -181,13 +161,7 @@
 
 		ejectaType=			"&vtVolcanicAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="0"   imageY="0"   imageWidth="90" imageHeight="90"/>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="0"   imageY="90"  imageWidth="90" imageHeight="90"/>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="0"   imageY="180" imageWidth="90" imageHeight="90"/>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="0"   imageY="270" imageWidth="90" imageHeight="90"/>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="0"   imageY="360" imageWidth="90" imageHeight="90"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsVolcanicAsteroidSizeC;"/>
 
 		<Items>
 			<Table>
@@ -215,12 +189,7 @@
 
 		ejectaType=			"&vtVolcanicAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="90"  imageY="0"   imageWidth="110" imageHeight="110"/>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="90"  imageY="110" imageWidth="110" imageHeight="110"/>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="90"  imageY="220" imageWidth="110" imageHeight="110"/>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="90"  imageY="330" imageWidth="110" imageHeight="110"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsVolcanicAsteroidSizeD;"/>
 
 		<Items>
 			<Table>
@@ -248,11 +217,7 @@
 
 		ejectaType=			"&vtVolcanicAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="200"  imageY="0"   imageWidth="130" imageHeight="130"/>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="200"  imageY="130" imageWidth="130" imageHeight="130"/>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="200"  imageY="260" imageWidth="130" imageHeight="130"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsVolcanicPlanetoidSizeE;"/>
 	</StationType>
 
 	<!-- Volcanic Planetoid Size F -->
@@ -267,11 +232,7 @@
 
 		ejectaType=			"&vtVolcanicAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="330"  imageY="0"   imageWidth="160" imageHeight="160"/>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="330"  imageY="160" imageWidth="160" imageHeight="160"/>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="330"  imageY="320" imageWidth="160" imageHeight="160"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsVolcanicPlanetoidSizeF;"/>
 	</StationType>
 
 	<!-- Volcanic Planetoid Size G -->
@@ -286,10 +247,7 @@
 
 		ejectaType=			"&vtVolcanicAsteroidEjecta;"
 		>
-		<ImageVariants>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="490"  imageY="0"   imageWidth="180" imageHeight="180"/>
-			<Image	imageID="&rsVolcanicAsteroids;" imageX="490"  imageY="180" imageWidth="180" imageHeight="180"/>
-		</ImageVariants>
+		<ImageLookup imageID="&rsVolcanicPlanetoidSizeG;"/>
 	</StationType>
 
 	<!-- Size H Volcanic Terrestrial -->
@@ -311,6 +269,76 @@
 	</StationType>
 
 <!-- RESOURCES -->
+	
+	<ImageComposite unid="&rsVolcanicAsteroidSizeA;">
+		<ImageVariants>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="768" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="800" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="832" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="864" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="896" imageWidth="32" imageHeight="32"/>
+
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="928" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="960" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="992" imageWidth="32" imageHeight="32"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsVolcanicAsteroidSizeB;">
+		<ImageVariants>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="512" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="576" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="640" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="704" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="768" imageWidth="64" imageHeight="64"/>
+
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="832" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="896" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="960" imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsVolcanicAsteroidSizeC;">
+		<ImageVariants>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="0"   imageY="0"   imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="0"   imageY="90"  imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="0"   imageY="180" imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="0"   imageY="270" imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="0"   imageY="360" imageWidth="90" imageHeight="90"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsVolcanicAsteroidSizeD;">
+		<ImageVariants>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="90"  imageY="0"   imageWidth="110" imageHeight="110"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="90"  imageY="110" imageWidth="110" imageHeight="110"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="90"  imageY="220" imageWidth="110" imageHeight="110"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="90"  imageY="330" imageWidth="110" imageHeight="110"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsVolcanicPlanetoidSizeE;">
+		<ImageVariants>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="200"  imageY="0"   imageWidth="130" imageHeight="130"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="200"  imageY="130" imageWidth="130" imageHeight="130"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="200"  imageY="260" imageWidth="130" imageHeight="130"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsVolcanicPlanetoidSizeF;">
+		<ImageVariants>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="330"  imageY="0"   imageWidth="160" imageHeight="160"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="330"  imageY="160" imageWidth="160" imageHeight="160"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="330"  imageY="320" imageWidth="160" imageHeight="160"/>
+		</ImageVariants>
+	</ImageComposite>
+
+	<ImageComposite unid="&rsVolcanicPlanetoidSizeG;">
+		<ImageVariants>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="490"  imageY="0"   imageWidth="180" imageHeight="180"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="490"  imageY="180" imageWidth="180" imageHeight="180"/>
+		</ImageVariants>
+	</ImageComposite>
 
 	<Image UNID="&rsVolcanicAsteroids;"		bitmap="Resources\VolcanicAsteroids.jpg"	bitmask="Resources\VolcanicAsteroidsMask.bmp"		loadOnUse="true"/>
 	<Image UNID="&rsVolcanicTerrestrials;"	bitmap="Resources\VolcanicTerrestrials.jpg"	bitmask="Resources\VolcanicTerrestrialsMask.bmp"		loadOnUse="true"/>

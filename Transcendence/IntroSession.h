@@ -75,9 +75,9 @@ class CIntroSession : public IHISession
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
 		virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyUp(iVirtKey, dwKeyData); }
 		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) { g_pTrans->WMLButtonDown(x, y, dwFlags); }
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) { m_iIdleTicks = 0;  SetExpanded(false); g_pTrans->WMLButtonDown(x, y, dwFlags); }
 		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonUp(x, y, dwFlags); }
-		virtual void OnMouseMove (int x, int y, DWORD dwFlags) { g_pTrans->WMMouseMove(x, y, dwFlags); }
+        virtual void OnMouseMove (int x, int y, DWORD dwFlags) { m_iIdleTicks = 0; SetExpanded(false); g_pTrans->WMMouseMove(x, y, dwFlags); }
 		virtual void OnMove (int x, int y) { g_pTrans->WMMove(x, y); }
 		virtual void OnReportHardCrash (CString *retsMessage) { *retsMessage = g_pTrans->GetCrashInfo(); }
 		virtual void OnSize (int cxWidth, int cyHeight) { g_pTrans->WMSize(cxWidth, cyHeight, 0); }
@@ -96,6 +96,7 @@ class CIntroSession : public IHISession
 		bool HandleChar (char chChar, DWORD dwKeyData);
 		void OnPOVSet (CSpaceObject *pObj);
 		void Paint (CG32bitImage &Screen, bool bTopMost);
+        void SetExpanded (bool bExpanded = true);
 		void SetState (EStates iState);
 		void StartSoundtrackTitleAnimation (CSoundType *pTrack);
 		void StopAnimations (void);
@@ -105,11 +106,20 @@ class CIntroSession : public IHISession
 		EStates m_iInitialState;
 		EStates m_iState;					//	Current state
 
-		RECT m_rcMain;						//	Center RECT
+		RECT m_rcMain;						//	Main animation RECT (where system is painted)
+        RECT m_rcCenter;                    //  Center RECT
 		RECT m_rcTop;						//	Top area (sign in controls, etc.)
 		RECT m_rcBottom;					//	Bottom area (buttons)
 
+        bool m_bExpanded;                   //  TRUE if the main screen is fully expanded
+        bool m_bExpandedDesired;            //  Desired setting for expanded/collapsed
+        int m_iIdleTicks;                   //  Number of ticks idle
+        RECT m_rcMainNormal;                //  Center RECT with button area
+        RECT m_rcMainExpanded;              //  Full screen
+
 		CHighScoreDisplay m_HighScoreDisplay;
+
+		TSortMap<int, CShipClass *> m_ShipList;
 	};
 
 class CIntroShipController : public IShipController
@@ -121,7 +131,7 @@ class CIntroShipController : public IShipController
 
 		inline void SetShip (CShip *pShip) { m_pShip = pShip; }
 
-		virtual void Behavior (void) { m_pDelegate->Behavior(); }
+		virtual void Behavior (SUpdateCtx &Ctx) { m_pDelegate->Behavior(Ctx); }
 		virtual CString DebugCrashInfo (void) { return m_pDelegate->DebugCrashInfo(); }
 		virtual int GetCombatPower (void) { return m_pDelegate->GetCombatPower(); }
 		virtual EManeuverTypes GetManeuver (void) { return m_pDelegate->GetManeuver(); }
@@ -145,7 +155,7 @@ class CIntroShipController : public IShipController
 		//	Events
 
 		virtual void OnArmorRepaired (int iSection) { m_pDelegate->OnArmorRepaired(iSection); }
-		virtual void OnAttacked (CSpaceObject *pAttacker, const DamageDesc &Damage) { m_pDelegate->OnAttacked(pAttacker, Damage); }
+		virtual void OnAttacked (CSpaceObject *pAttacker, const SDamageCtx &Damage) { m_pDelegate->OnAttacked(pAttacker, Damage); }
 		virtual void OnDamaged (const CDamageSource &Cause, CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage) { m_pDelegate->OnDamaged(Cause, pArmor, Damage, iDamage); }
 		virtual void OnDestroyed (SDestroyCtx &Ctx);
 		virtual void OnDocked (CSpaceObject *pObj) { m_pDelegate->OnDocked(pObj); }

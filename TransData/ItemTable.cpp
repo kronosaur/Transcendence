@@ -24,6 +24,9 @@
 #define FIELD_POWER_PER_SHOT				CONSTLIT("powerPerShot")
 #define FIELD_TOTAL_COUNT					CONSTLIT("totalCount")
 
+#define FIELD_BENCHMARK						CONSTLIT("benchmark")
+#define FIELD_BALANCE_STATS                 CONSTLIT("balanceStats")
+
 #define TOTAL_COUNT_FILENAME				CONSTLIT("TransData_ItemCount.txt")
 
 static char *g_szTypeCode[] =
@@ -56,6 +59,8 @@ struct SItemTableCtx
 
 	TArray<CString> Cols;
 	CDesignTypeStats TotalCount;
+
+    CWeaponBenchmarkCtx WeaponBenchmarks;
 	};
 
 typedef TSortMap<CString, CItemType *> SItemTypeList;
@@ -400,7 +405,37 @@ void OutputHeader (SItemTableCtx &Ctx)
 		if (i != 0)
 			printf("\t");
 
-		printf(Ctx.Cols[i].GetASCIIZPointer());
+        if (strEquals(Ctx.Cols[i], FIELD_BENCHMARK))
+            printf("averageTime\tbestArmor\tbestArmorTime\tworstArmor\tworstArmorTime");
+        else if (strEquals(Ctx.Cols[i], FIELD_BALANCE_STATS))
+            printf("balance\t"
+                    "balExCost\t"
+                    "balDamage\t"
+                    "balDamageType\t"
+                    "balAmmo\t"
+                    "balOmni\t"
+                    "balTracking\t"
+                    "balRange\t"
+                    "balSpeed\t"
+                    "balWMD\t"
+                    "balRadiation\t"
+                    "balMining\t"
+                    "balShatter\t"
+                    "balDeviceDisrupt\t"
+                    "balDeviceDamage\t"
+                    "balDisintegrate\t"
+                    "balShieldPenetrate\t"
+                    "balArmorDamage\t"
+                    "balShieldDamage\t"
+                    "balProjectileHP\t"
+                    "balPower\t"
+                    "balCost\t"
+                    "balSlots\t"
+                    "balExternal\t"
+                    "balLinkedFire\t"
+                    "balRecoil");
+        else
+		    printf(Ctx.Cols[i].GetASCIIZPointer());
 		}
 
 	printf("\n");
@@ -418,6 +453,8 @@ void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
 	for (i = 0; i < ItemList.GetCount(); i++)
 		{
 		CItemType *pType = ItemList[i];
+		CItem Item(pType, 1);
+		CItemCtx ItemCtx(Item);
 
 		for (j = 0; j < Ctx.Cols.GetCount(); j++)
 			{
@@ -426,36 +463,121 @@ void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
 
 			const CString &sField = Ctx.Cols[j];
 
+            //  Handle some special fields
+
+            if (strEquals(sField, FIELD_BENCHMARK))
+                {
+                CWeaponBenchmarkCtx::SStats Stats;
+                if (!Ctx.WeaponBenchmarks.GetStats(pType, Stats))
+                    {
+                    printf("\t\t\t\t");
+                    }
+                else
+                    {
+                    CString sBestArmor;
+                    if (Stats.pBestArmor)
+                        {
+                        CItem BestArmor(Stats.pBestArmor, 1);
+                        sBestArmor = BestArmor.GetNounPhrase(nounShort);
+                        }
+
+                    CString sWorstArmor;
+                    if (Stats.pWorstArmor)
+                        {
+                        CItem WorstArmor(Stats.pWorstArmor, 1);
+                        sWorstArmor = WorstArmor.GetNounPhrase(nounShort);
+                        }
+
+                    printf("%d\t%s\t%d\t%s\t%d",
+                            Stats.iAverageTime,
+                            (LPSTR)sBestArmor,
+                            Stats.iBestTime,
+                            (LPSTR)sWorstArmor,
+                            Stats.iWorstTime);
+                    }
+                }
+
+            else if (strEquals(sField, FIELD_BALANCE_STATS))
+                {
+                CDeviceClass *pDevice = pType->GetDeviceClass();
+                CWeaponClass *pWeapon = NULL;
+
+                if (pDevice)
+                    pWeapon = pDevice->AsWeaponClass();
+                else if (pType->IsMissile() && ItemCtx.ResolveVariant())
+                    {
+                    pDevice = ItemCtx.GetVariantDevice();
+                    pWeapon = pDevice->AsWeaponClass();
+                    }
+
+                if (pWeapon)
+                    {
+                    CWeaponClass::SBalance Balance;
+                    pWeapon->CalcBalance(ItemCtx, Balance);
+                    printf("%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f",
+                            Balance.rBalance,
+                            Balance.rBalance - Balance.rCost,
+                            Balance.rDamage,
+                            Balance.rDamageType,
+                            Balance.rAmmo,
+                            Balance.rOmni,
+                            Balance.rTracking,
+                            Balance.rRange,
+                            Balance.rSpeed,
+                            Balance.rWMD,
+                            Balance.rRadiation,
+                            Balance.rMining,
+                            Balance.rShatter,
+                            Balance.rDeviceDisrupt,
+                            Balance.rDeviceDamage,
+                            Balance.rDisintegration,
+                            Balance.rShieldPenetrate,
+                            Balance.rArmor,
+                            Balance.rShield,
+                            Balance.rProjectileHP,
+                            Balance.rPower,
+                            Balance.rCost,
+                            Balance.rSlots,
+                            Balance.rExternal,
+                            Balance.rLinkedFire,
+                            Balance.rRecoil
+                            );
+                    }
+                else
+                    printf("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t");
+                }
+
 			//	Get the field value
 
-			CString sValue;
-			CItem Item(pType, 1);
-			CItemCtx ItemCtx(Item);
-			CCodeChainCtx CCCtx;
+            else
+                {
+			    CString sValue;
+			    CCodeChainCtx CCCtx;
 
-			ICCItem *pResult = Item.GetProperty(&CCCtx, ItemCtx, sField);
+			    ICCItem *pResult = Item.GetProperty(&CCCtx, ItemCtx, sField);
 
-			if (pResult->IsNil())
-				sValue = NULL_STR;
-			else
-				sValue = pResult->Print(&g_pUniverse->GetCC(), PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
+			    if (pResult->IsNil())
+				    sValue = NULL_STR;
+			    else
+				    sValue = pResult->Print(&g_pUniverse->GetCC(), PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
 
-			pResult->Discard(&g_pUniverse->GetCC());
+			    pResult->Discard(&g_pUniverse->GetCC());
 
-			//	Format the value
+			    //	Format the value
 
-			if (strEquals(sField, FIELD_AVERAGE_DAMAGE) || strEquals(sField, FIELD_POWER_PER_SHOT))
-				printf("%.2f", strToInt(sValue, 0, NULL) / 1000.0);
-			else if (strEquals(sField, FIELD_POWER))
-				printf("%.1f", strToInt(sValue, 0, NULL) / 1000.0);
-			else if (strEquals(sField, FIELD_TOTAL_COUNT))
-				{
-				SDesignTypeInfo *pInfo = Ctx.TotalCount.GetAt(pType->GetUNID());
-				double rCount = (pInfo ? pInfo->rPerGameMeanCount : 0.0);
-				printf("%.2f", rCount);
-				}
-			else
-				printf(sValue.GetASCIIZPointer());
+			    if (strEquals(sField, FIELD_POWER_PER_SHOT))
+				    printf("%.2f", strToInt(sValue, 0, NULL) / 1000.0);
+			    else if (strEquals(sField, FIELD_POWER))
+				    printf("%.1f", strToInt(sValue, 0, NULL) / 1000.0);
+			    else if (strEquals(sField, FIELD_TOTAL_COUNT))
+				    {
+				    SDesignTypeInfo *pInfo = Ctx.TotalCount.GetAt(pType->GetUNID());
+				    double rCount = (pInfo ? pInfo->rPerGameMeanCount : 0.0);
+				    printf("%.2f", rCount);
+				    }
+			    else
+				    printf(sValue.GetASCIIZPointer());
+                }
 			}
 
 		printf("\n");

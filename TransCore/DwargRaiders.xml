@@ -47,7 +47,7 @@
 			rotationAccel=		"2.0"
 			/>
 
-		<Image imageID="&rsMediumShips1;" imageX="864" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips1;" imageX="864" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="4"	posZ="0"	rotation="180"/>
@@ -112,7 +112,7 @@
 			<Item count="5d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips3;" imageX="672" imageY="0" imageWidth="96" imageHeight="96" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips3;" imageX="672" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="43"	posZ="0"	rotation="180"/>
@@ -142,7 +142,7 @@
 			thrustRatio=		"0.2"
 			maxSpeed=			"12"
 
-			explosionType=		"&vtBlastExplosion4;"
+			explosionType=		"&vtBlastExplosion3;"
 
 			attributes=			"dwarg, genericClass, zoanthrope"
 			>
@@ -198,7 +198,7 @@
 			</Table>
 		</Items>
 
-		<Image imageID="&rsMediumShips4;" imageX="896" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsMediumShips4;" imageX="896" imageY="0" imageWidth="128" imageHeight="128"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="176"	posRadius="57"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -261,7 +261,7 @@
 	<ItemType UNID="&itDwargXiphonCannon;"
 			name=				"Dwarg xiphon cannon"
 			level=				"4"
-			value=				"4500"
+			value=				"4000"
 			mass=				"3000"
 			frequency=			"rare"
 			numberAppearing=	"1"
@@ -285,7 +285,6 @@
 				powerUse=			"120"
 
 				effect=				"&efBlastShellDefault;"
-				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 		</Weapon>
@@ -324,7 +323,7 @@
 	<ItemType UNID="&itDwargCnidocystCannon;"
 			name=				"Dwarg cnidocyst cannon"
 			level=				"5"
-			value=				"5000"
+			value=				"8000"
 			mass=				"3000"
 			attributes=			"Dwarg; MajorItem; NotForSale; NotStandard"
 			frequency=			"rare"
@@ -343,21 +342,33 @@
 				<Missile ammoID="&itDwargCnidocystNodule;"
 						type=			"missile"
 
-						damage=			"ion:4d6; EMP4"
+						damage=			"ion:4d6; EMP:4"
 						missileSpeed=	"50"
 						lifetime=		"180"
-						maneuverability="1"
+						maneuverRate=	"18"
 
 						sound=			"&snRecoillessCannon;"
 						>
 
 					<Effect>
+						<Ray
+								style=			"lightning"
+								shape=			"tapered"
+								length=			"60"
+								width=			"10"
+								intensity=		"50"
+								
+								primaryColor=	"#a0f0ff"
+								secondaryColor=	"#f0f0ff"
+								>
+						</Ray>
+						
 						<Starburst
-								style=			"lightningStar"
+								style=			"morningStar"
 								spikeCount=		"2d6+2"
 								spikeLength=	"2d10"
-								primaryColor=	"0xa0, 0xf0, 0xff"
-								secondaryColor=	"0xf0, 0xf0, 0xff"
+								primaryColor=	"#a0f0ff"
+								secondaryColor=	"#f0f0ff"
 								/>
 					</Effect>
 
@@ -390,7 +401,7 @@
 	<ItemType UNID="&itDwargBehemothCannon;"
 			name=				"Dwarg behemoth cannon"
 			level=				"6"
-			value=				"20000"
+			value=				"25000"
 			mass=				"6000"
 			frequency=			"rare"
 			numberAppearing=	"1"
@@ -405,35 +416,16 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:3d12; momentum2; WMD5"
+				damage=				"thermo:2d12+4; momentum:2; WMD:5"
 				fireRate=			"20"
 				missileSpeed=		"50"
-				lifetime=			"80"
-				hitPoints=			"15"
-				powerUse=			"250"
+				lifetime=			"60"
+				hitPoints=			"25"
+				powerUse=			"300"
 
 				effect=				"&efThermoShellDefault;"
-				fireEffect=			"&efThermoFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-				<Flare
-						style=			"fadingBlast"
-						radius=			"65"
-						primaryColor=	"0xff, 0xff, 0xf0"
-						lifetime=		"8"
-						/>
-			</HitEffect>
 		</Weapon>
 
 	</ItemType>
@@ -476,9 +468,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itDwargChitonArmor;"
-			hitPoints=			"150"
+			hitPoints=			"160"
+            regen=              "0.5"
 			fireRateAdj=		"50"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"dwargColony, dwargRaiders, enemy, envWater, envAvoidsEarth, generic, neoHuman, populated, zoanthrope"
@@ -531,9 +524,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itDwargCatoptricArmor;"
-			hitPoints=			"180"
+			hitPoints=			"210"
+            regen=              "0.6"
 			fireRateAdj=		"50"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"dwargColony, dwargRaiders, enemy, envWater, envAvoidsEarth, generic, neoHuman, populated, zoanthrope"
@@ -627,9 +621,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itDwargCatoptricArmor;"
-			hitPoints=			"180"
+			hitPoints=			"210"
+            regen=              "0.6"
 			fireRateAdj=		"50"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"dwargRaiders, enemy, envWater, envAvoidsEarth, neoHuman, populated, zoanthrope"
@@ -680,10 +675,10 @@
 
 			multiHull=			"true"
 			armorID=			"&itDwargHolochroalArmor;"
-			hitPoints=			"300"
-			repairRate=			"2"
+			hitPoints=			"900"
+			regen=              "9"
 			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion3;"
+			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"dwargRaiders, enemy, envWater, envAvoidsEarth, generic, majorStation, neoHuman, populated, zoanthrope"

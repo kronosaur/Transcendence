@@ -194,7 +194,7 @@
 			hitPoints=			"100"
 			repairRate=			"1"
 			fireRateAdj=		"60"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, envEarth, envAvoidsAir, friendly, generic, human, mining, populated"
