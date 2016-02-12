@@ -20,7 +20,7 @@
 			massBonusPerCharge=	"20" 
 			valueBonusPerCharge="5"
 
-			description=		"This disposable weapon system is loaded with sixteen KM100 missiles. The weapon can be installed and uninstalled without the aid of a station."
+			description=		"This disposable weapon system is loaded with thirty-two KM100 missiles. The weapon can be installed and uninstalled without the aid of a station."
 			>
 
 		<Image imageID="&rsItemsNAMI2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -195,7 +195,7 @@
 			massBonusPerCharge=	"20" 
 			valueBonusPerCharge="15"
 
-			description=		"The DM1500 is loaded with sixteen KM500 tracking missiles. This weapon can be installed and uninstalled without the aid of a station."
+			description=		"The DM1500 is loaded with thirty-two KM500 tracking missiles. This weapon can be installed and uninstalled without the aid of a station."
 			>
 
 		<Image imageID="&rsItemsNAMI2;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
