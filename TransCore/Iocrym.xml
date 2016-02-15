@@ -46,7 +46,7 @@
 			description=		"As the Iocrym abhor chaos, their weapons are designed to reduce their targets to plasma clouds of uniform density."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems10;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				fireRate=			"50"
@@ -176,7 +176,7 @@
 			description=		"This weapon is used on Iocrym capital ships."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems10;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
 		
 		<Weapon
 				type=			"particles"
@@ -253,7 +253,7 @@
 			description=		"This is a plasma weapon used by the Iocrym gunships."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems10;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=			"particles"
@@ -300,7 +300,7 @@
 			description=		"This is a short-range weapon used by Iocrym commandships to defend their perimeter."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems10;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"missile"

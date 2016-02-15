@@ -2976,7 +2976,7 @@
 			description=		"Very little is known about these exotic, dark-matter weapons. The Order of Penitence uses these weapons in their ships."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems4;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"missile"

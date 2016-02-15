@@ -179,7 +179,7 @@ PLAYER DATA
 			description=		"Commissioned by Admiral Decker, this Commonwealth secret weapon is arguably the most powerful weapon created by humans."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems10;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"missile"
@@ -212,7 +212,7 @@ PLAYER DATA
 			description=		"This prototype is designed to test the antimatter blast chamber of the Project Lamplighter weapon."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems10;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"missile"
