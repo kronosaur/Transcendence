@@ -2584,7 +2584,7 @@ void CPlayerShipController::UpdateHelp (int iTick)
 
 		if (rSpeed > 0.9 * m_pShip->GetMaxSpeed())
 			{
-			m_pTrans->DisplayMessage(CONSTLIT("(press [A] to engage autopilot and travel faster)"));
+			m_pTrans->DisplayMessage(CONSTLIT("(press [A] to engage autopilot and accelerate time)"));
 			m_iLastHelpTick = iTick;
 			return;
 			}
