@@ -1078,7 +1078,7 @@
 			definiteArticle=	"true"
 			>
 
-		<Image			imageID="&rsCSCWreckage;" imageX="0" imageY="0" imageWidth="350" imageHeight="322"/>
+		<Image			imageID="&rsCSCWreckage;" imageX="0" imageY="0" imageWidth="332" imageHeight="320"/>
 
 		<Ships>
 			<Table>
