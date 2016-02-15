@@ -603,7 +603,7 @@
 							(damage (objGetArmorDamage shipObj theItem))
 							(maxHP (shpGetArmorMaxHitPoints shipObj theItem))
 							(currencyUsed (objGetDefaultCurrency dockObj))
-							(costToRepair (objGetArmorRepairPrice dockObj theItem damage))
+							(costToRepair (objGetArmorRepairPrice dockObj shipObj theItem damage))
 							(armorNoun (cat (objGetArmorName shipObj theItem) " " (itmGetName theItem 0x20)))
 							)
 							
@@ -627,13 +627,6 @@
 										visible: True
 										enabled: Nil
 										desc: (typTranslate &dsRPGManageArmor; 'descArmorCantRepair { armorNoun:armorNoun })
-										}
-
-								(ls (subtract maxHP damage) (divide maxHP 4))
-									{
-										visible: True
-										enabled: Nil
-										desc: (typTranslate &dsRPGManageArmor; 'descArmorTooMuchDamage { armorNoun:armorNoun })
 										}
 
 								(ls (objGetBalance shipObj currencyUsed) costToRepair)

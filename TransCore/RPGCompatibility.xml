@@ -578,7 +578,7 @@
 						; Ask the station to compute the cost of repairing the given hit points
 
 						(setq currencyUsed (objGetDefaultCurrency gSource))
-						(setq gCost (objGetArmorRepairPrice gSource theArmor damage))
+						(setq gCost (objGetArmorRepairPrice gSource gPlayerShip theArmor damage))
 
 						; Compose repair message for this segment
 
@@ -602,12 +602,6 @@
 							(not gCost)
 								(block Nil
 									(setq desc (cat desc " cannot be repaired at this station."))
-									(setq canRepair Nil)
-									)
-
-							(ls (subtract maxHP damage) (divide maxHP 4))
-								(block Nil
-									(setq desc (cat desc " is heavily damaged and cannot be repaired."))
 									(setq canRepair Nil)
 									)
 
