@@ -268,7 +268,7 @@
 			value=				"820"
 			mass=				"1250"
 			  
-			description=		"The fast-fire laser cannon uses enhanced capacitors and can reach a fire rate double that of the ubiquitous laser."
+			description=		"The fast-fire laser cannon uses enhanced capacitors and has a fire rate almost double that of a standard laser."
 			>
 
 		<Image imageID="&rsItemsEI1;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -277,7 +277,7 @@
 				type=				"beam"
 
 				damage=				"laser:1d4"
-				fireRate=			"5"
+				fireRate=			"6"
 				lifetime=			"30"
 				powerUse=			"30"
 
