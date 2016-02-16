@@ -7,7 +7,7 @@
 	<ItemType UNID="&itSlicerCannon;"
 			name=				"PM6 Slicer cannon"
 			level=				"6"
-			value=				"35000"
+			value=				"30000"
 			mass=				"4000"
 			frequency=			"notrandom"
 			attributes=			"cannotOrder, EI; EnergyWeapon; MajorItem"
@@ -22,10 +22,10 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"particle:2d8+3"
+				damage=				"particle:2d8+1"
 				fireRate=			"6"
 				lifetime=			"30"
-				powerUse=			"350"
+				powerUse=			"300"
 
 				effect=				"&efParticleBeamDefault;"
 				sound=				"&snLaserCannon;"
@@ -2148,7 +2148,7 @@
 			>
 
 		<Armor
-			armorID=			"&itHeavyBlastPlate;"
+			armorID=			"&itBlastPlate;"
 			count=				"6"
 			/>
 		
