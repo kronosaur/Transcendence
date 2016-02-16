@@ -1103,9 +1103,14 @@ ALERROR CTranscendenceModel::InitBackground (const CGameSettings &Settings, cons
 	if (Settings.GetBoolean(CGameSettings::no3DSystemMap))
 		m_Universe.GetSFXOptions().Set3DSystemMapEnabled(false);
 
+    //  Get the default list of extensions for the default adventure
+
+    TArray<DWORD> Extensions;
+    Settings.GetDefaultExtensions(DEFAULT_ADVENTURE_EXTENSION_UNID, m_bDebugMode, &Extensions);
+
 	//	Load the universe
 
-	if (error = LoadUniverse(sCollectionFolder, ExtensionFolders, retsError))
+	if (error = LoadUniverse(sCollectionFolder, ExtensionFolders, DEFAULT_ADVENTURE_EXTENSION_UNID, Extensions, retsError))
 		return error;
 
 	//	Load the high scores list
@@ -1382,7 +1387,7 @@ ALERROR CTranscendenceModel::LoadGameStats (const CString &sFilespec, CGameStats
 	return NOERROR;
 	}
 
-ALERROR CTranscendenceModel::LoadUniverse (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, CString *retsError)
+ALERROR CTranscendenceModel::LoadUniverse (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, DWORD dwAdventure, const TArray<DWORD> &Extensions, CString *retsError)
 
 //	LoadUniverse
 //
@@ -1405,8 +1410,8 @@ ALERROR CTranscendenceModel::LoadUniverse (const CString &sCollectionFolder, con
 		Ctx.ExtensionFolders = ExtensionFolders;
 		Ctx.pHost = g_pTrans;
 		Ctx.bDebugMode = m_bDebugMode;
-		Ctx.dwAdventure = DEFAULT_ADVENTURE_EXTENSION_UNID;
-		Ctx.bDefaultExtensions = true;
+		Ctx.dwAdventure = dwAdventure;
+        Ctx.ExtensionUNIDs = Extensions;
 		Ctx.bForceTDB = m_bForceTDB;
 
 		//	Add additional CodeChain primitives

@@ -1562,6 +1562,7 @@ class CGameSettings
 
 		inline const CString &GetAppDataFolder (void) const { return m_sAppData; }
 		inline bool GetBoolean (int iOption) const { return m_Options[iOption].bValue; }
+		inline void GetDefaultExtensions (DWORD dwAdventure, bool bDebugMode, TArray<DWORD> *retList) const { m_Extensions.GetList(dwAdventure, bDebugMode, retList); }
 		inline void GetDefaultExtensions (DWORD dwAdventure, const TArray<CExtension *> &Available, bool bDebugMode, TArray<DWORD> *retList) const { m_Extensions.GetList(dwAdventure, Available, bDebugMode, retList); }
 		inline const TArray<CString> &GetExtensionFolders (void) const { return m_ExtensionFolders; }
 		inline const CString &GetInitialSaveFile (void) const { return m_sSaveFile; }
@@ -1725,7 +1726,7 @@ class CTranscendenceModel
 		inline CString GetSaveFilePath (void) const { return (m_SaveFileFolders.GetCount() == 0 ? NULL_STR : m_SaveFileFolders[0]); }
 		ALERROR LoadGameStats (const CString &sFilespec, CGameStats *retStats);
 		ALERROR LoadHighScoreList (CString *retsError = NULL);
-		ALERROR LoadUniverse (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, CString *retsError = NULL);
+		ALERROR LoadUniverse (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, DWORD dwAdventure, const TArray<DWORD> &Extensions, CString *retsError = NULL);
 		void MarkGateFollowers (CSystem *pSystem);
 		ALERROR SaveGameStats (const CGameStats &Stats, bool bGameOver = false, bool bEndGame = false);
 		void TransferGateFollowers (CSystem *pOldSystem, CSystem *pSystem, CSpaceObject *pStargate);
