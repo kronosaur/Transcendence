@@ -294,7 +294,13 @@
 										(setq targetObj (objGetObjByID (msnGetData gSource 'hiddenEnemyID)))
 										(not (objGetProperty targetObj 'abandoned))
 										)
-									(setq state 'attackHiddenEnemy)
+                                    (block Nil
+									    (setq state 'attackHiddenEnemy)
+										
+										;	This is a risky mission, so save the game
+										
+										(msnSetData gSource 'missionCheckpoint True)
+										)
 									
 								;	If the player forgot to loot the station, remind her
 								
@@ -303,13 +309,7 @@
 										(objGetProperty targetObj 'abandoned)
 										(setq foundItem (@ (objGetItems targetObj "w +unid:&itSmartCannon;;") 0))
 										)
-									(block Nil
-										(setq state 'lootHiddenEnemy)
-										
-										;	This is a risky mission, so save the game
-										
-										(msnSetData gSource 'missionCheckpoint True)
-										)
+									(setq state 'lootHiddenEnemy)
 									
 								;	If we haven't yet installed the SmartCannon, remind the player
 						
@@ -738,10 +738,27 @@
 							
 						(cat
 							"\"Take your time on this mission. Your target is "
-							"well-defended and very dangerous. If you can, upgrade "
-							"your weapons before you go. Either way, make sure your "
-							"armor is fully repaired.\n\n"
-							
+							"well-defended and very dangerous. "
+                            
+                            (switch
+                                ;   If the player doesn't have a launcher installed, tell them
+                                ;   to get one.
+                                
+                                (not (objGetItems gPlayerShip "lI"))
+                                    (cat
+                                        "My tactical advice is to get a missile launcher before "
+                                        "you set out. Either way, make sure your armor is fully "
+                                        "repaired.\n\n"
+                                        )
+                                        
+                                ;   Otherwise, normal advice
+                                
+                                (cat
+                                    "If you can, upgrade your weapons before you go. Either way, "
+                                    "make sure your armor is fully repaired.\n\n"
+                                    )
+                                )
+                            
 							"\"One last thing: the station has something you'll want. "
 							"After you smash it, remember to loot the wreckage.\n\n"
 							

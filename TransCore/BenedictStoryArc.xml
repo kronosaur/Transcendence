@@ -163,9 +163,9 @@
 							
 						;	Add Benedict information, if necessary
 						
-						(if meetBenedict
-							(setq desc (cat desc (typTranslate &dsBenedictIntro; 'BenedictMeeting)))
-							)
+						;(if meetBenedict
+						;	(setq desc (cat desc (typTranslate &dsBenedictIntro; 'BenedictMeeting)))
+						;	)
 							
 						(scrSetDesc gScreen desc)
 						
@@ -233,6 +233,42 @@
 							;	If we listened this far, we get to use the sanctum
 							
 							(objSetData gSource "freeSanctum" True)
+                            
+                            ;   Intro done
+                            
+                            (scrShowPane gScreen 'IntroDone)
+						
+							;	Exit the screen so when we return, we're back at the main screen
+							
+							;(scrExitScreen gScreen)
+							
+							;	If we have an open mission or if the first Benedict mission is
+							;	available, then show it.
+							
+							;(if	(or (setq theMission (@ (msnFind gSource "oS") 0))
+							;		(setq theMission (msnCreate &msBenedictsDrones; gSource)))
+							;	(scrShowScreen gScreen &dsRPGMission;
+							;		{
+							;		missionObj: theMission
+							;		})
+							;	)
+							)
+					</Action>
+					
+					<Action id="actionDone" cancel="1">
+						(scrShowPane gScreen "IntroSkip")
+					</Action>
+				</Actions>
+			</Default>
+            
+            <IntroDone>
+                <OnPaneInit>
+					(scrSetDesc gScreen (typTranslate &dsBenedictIntro; "BenedictMeeting"))
+                </OnPaneInit>
+                
+                <Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(block (theMission)
 						
 							;	Exit the screen so when we return, we're back at the main screen
 							
@@ -250,12 +286,8 @@
 								)
 							)
 					</Action>
-					
-					<Action id="actionDone" cancel="1">
-						(scrShowPane gScreen "IntroSkip")
-					</Action>
-				</Actions>
-			</Default>
+                </Actions>
+            </IntroDone>
 			
 			<IntroSkip>
 				<OnPaneInit>
@@ -359,8 +391,6 @@
 			
 			<Text id="BenedictMeeting">
 				(cat
-					"\n\n"
-					
 					"The abbess signals an unseen companion and a stout man emerges from "
 					"the shadows. He marches to the abbess's side, looking past you at "
 					"your ship.\n\n"

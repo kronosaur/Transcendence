@@ -167,7 +167,7 @@
 					(stargateObj (objGetObjByID (msnGetData gSource 'stargateID)))
 					(destObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
 					(enemies (list
-						{	class:&scAtonement; }
+						{	class:&scAtonement; maxMissiles:4 }
 						{	class:&scRepentant; }
 						{	class:&scRepentant; }
 						))
@@ -196,6 +196,17 @@
 							;	Set the ships so they don't retreat when shields drop
 
 							(shpSetAISetting enemyObj 'ignoreShieldsDown True)
+                            
+                            ;   Atonement only gets a few missiles (otherwise the 
+                            ;   mission is too hard).
+                            
+                            (if (@ enemyDesc 'maxMissiles)
+                                (enum (objGetItems enemyObj "M") theMissiles
+                                    (if (gr (itmGetCount theMissiles) (@ enemyDesc 'maxMissiles))
+                                        (objRemoveItem enemyObj theMissiles (- (itmGetCount theMissiles) (@ enemyDesc 'maxMissiles)))
+                                        )
+                                    )
+                                )
 							)
 						)
 

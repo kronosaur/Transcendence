@@ -61,9 +61,9 @@
 			canAttack=			"true"
 
 			multiHull=			"true"
-			armorID=			"&itLightPlasteelPlate;"
+			armorID=			"&itTitaniumPlate;"
 			hitPoints=			"90"
-			fireRateAdj=		"20"
+			fireRateAdj=		"40"
 			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
