@@ -771,14 +771,12 @@
 		<Image imageID="&rsItems7;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
-				type=				"missile"
+				type=				"beam"
 
 				repeating=			"4"
 				damage=				"ion:1d8"
-				fireRate=			"15"
-				missileSpeed=		"100"
+				fireRate=			"16"
 				lifetime=			"60"
-				interaction=		"0"
 				powerUse=			"650"
 
 				sound=				"&snLaserCannon;"

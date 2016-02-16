@@ -64,8 +64,8 @@ VS_VERSION_INFO$(MULTIVERSE_BUILD) VERSIONINFO
 #else
 VS_VERSION_INFO VERSIONINFO
 #endif
- FILEVERSION 1,7,101,1
- PRODUCTVERSION 1,7,101,1
+ FILEVERSION 1,7,101,2
+ PRODUCTVERSION 1,7,101,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -82,13 +82,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Kronosaur Productions, LLC"
             VALUE "FileDescription", "Transcendence"
-            VALUE "FileVersion", "1.7.101.1"
+            VALUE "FileVersion", "1.7.101.2"
             VALUE "InternalName", "Transcendence"
             VALUE "LegalCopyright", "Copyright © 2003-2016 Kronosaur Productions, LLC. All Rights Reserved."
             VALUE "LegalTrademarks", "Transcendence is a registered trademark of Kronosaur Productions, LLC."
             VALUE "OriginalFilename", "Transcendence.exe"
             VALUE "ProductName", "Transcendence"
-            VALUE "ProductVersion", "1.7 Alpha 1"
+            VALUE "ProductVersion", "1.7 Alpha 1a"
         END
     END
     BLOCK "VarFileInfo"
