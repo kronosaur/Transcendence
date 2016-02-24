@@ -548,12 +548,21 @@ ALERROR CDockScreen::CreateBackgroundImage (const IDockScreenDisplay::SBackgroun
 			BltSystemBackground(Desc.pObj->GetSystem(), rcRect);
 
 			SViewportPaintCtx Ctx;
-			Ctx.pCenter = g_pUniverse->GetPlayerShip();
+            Ctx.pCenter = Desc.pObj;
+            Ctx.vCenterPos = Desc.pObj->GetPos();
+            Ctx.xCenter = xOffset + BACKGROUND_FOCUS_X;
+            Ctx.yCenter = BACKGROUND_FOCUS_Y;
 			Ctx.fNoSelection = true;
+            Ctx.fNoDockedShips = true;
+            Ctx.fShowSatellites = true;
 			Ctx.pObj = Desc.pObj;
+
+	        Ctx.XForm = ViewportTransform(Ctx.vCenterPos, g_KlicksPerPixel, Ctx.xCenter, Ctx.yCenter);
+	        Ctx.XFormRel = Ctx.XForm;
+
 			Desc.pObj->Paint(*m_pBackgroundImage,
-					xOffset + BACKGROUND_FOCUS_X,
-					BACKGROUND_FOCUS_Y,
+					Ctx.xCenter,
+					Ctx.yCenter,
 					Ctx);
 			}
 		}
