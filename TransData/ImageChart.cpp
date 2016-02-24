@@ -626,8 +626,11 @@ void InitStationTypeImage (SEntryDesc &Entry, CStationType *pStationType)
 	rcResult.right = RectWidth(rcBounds);
 	rcResult.bottom = RectHeight(rcBounds);
 
+    int xOffset = (RectWidth(rcBounds) / 2) - xCenter;
+    int yOffset = (RectHeight(rcBounds) / 2) - yCenter;
+
 	Entry.pCompositeImageArray = new CObjectImageArray;
-	Entry.pCompositeImageArray->Init(pCompositeImage, rcResult, 0, 0, true);
+	Entry.pCompositeImageArray->Init(pCompositeImage, rcResult, 0, 0, true, xOffset, yOffset);
 
 	//	Done
 
