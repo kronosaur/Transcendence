@@ -543,9 +543,27 @@ ALERROR CDockScreen::CreateBackgroundImage (const IDockScreenDisplay::SBackgroun
 
 		else
 			{
-			//	Paint the object on top of the system space background
+            //  Our image is only as wide as the space allotted for it (which is
+            //  less than the entire background).
 
-			BltSystemBackground(Desc.pObj->GetSystem(), rcRect);
+            int cxObjImage = (RectWidth(rcRect) / 2) + EXTRA_BACKGROUND_IMAGE;
+            int cyObjImage = cyBackground + cyExtra;
+
+            //  Create a temporary image
+
+            CG32bitImage ObjImage;
+	        ObjImage.Create(cxObjImage, cyObjImage);
+
+			//	Paint the system background
+
+	        CSystemType *pSystemType = Desc.pObj->GetSystem()->GetType();
+	        DWORD dwSpaceID = pSystemType->GetBackgroundUNID();
+	        CG32bitImage *pSpaceImage;
+	        if (dwSpaceID
+			        && (pSpaceImage = g_pUniverse->GetLibraryBitmap(dwSpaceID)))
+        		ObjImage.Blt(0, 0, ObjImage.GetWidth(), ObjImage.GetHeight(), *pSpaceImage, 0, 0);
+
+            //  Now paint the object
 
 			SViewportPaintCtx Ctx;
             Ctx.pCenter = Desc.pObj;
@@ -560,10 +578,14 @@ ALERROR CDockScreen::CreateBackgroundImage (const IDockScreenDisplay::SBackgroun
 	        Ctx.XForm = ViewportTransform(Ctx.vCenterPos, g_KlicksPerPixel, Ctx.xCenter, Ctx.yCenter);
 	        Ctx.XFormRel = Ctx.XForm;
 
-			Desc.pObj->Paint(*m_pBackgroundImage,
+			Desc.pObj->Paint(ObjImage,
 					Ctx.xCenter,
 					Ctx.yCenter,
 					Ctx);
+
+            //  Blt using the appropriate mask
+
+    		BltToBackgroundImage(rcRect, &ObjImage, 0, 0, ObjImage.GetWidth(), ObjImage.GetHeight());
 			}
 		}
 
