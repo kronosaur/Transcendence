@@ -1045,8 +1045,8 @@ void CGSelectorArea::SetRegionsFromArmor (CSpaceObject *pSource)
 		//	Position the armor segment in a circle (add 90 degrees because the
 		//	ship image points up).
 
-		CShipClass::HullSection *pSection = pClass->GetHullSection(i);
-		int iCenterAngle = 90 + AngleMiddle(pSection->iStartAt, AngleMod(pSection->iStartAt + pSection->iSpan));
+        const CShipArmorSegmentDesc &Section = pClass->GetHullSection(i);
+        int iCenterAngle = 90 + Section.GetCenterAngle();
 
 		int xCenter;
 		int yCenter;

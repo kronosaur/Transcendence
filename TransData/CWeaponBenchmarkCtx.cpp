@@ -63,7 +63,7 @@ bool CWeaponBenchmarkCtx::GetStats (CItemType *pWeaponItem, SStats &retStats)
             continue;
 
         Metric rHP = pArmorClass->GetMaxHP(ArmorCtx, true);
-        Metric rDamageAdj = pArmorClass->GetDamageAdj(iDamageType);
+        Metric rDamageAdj = pArmorClass->GetDamageAdj(ArmorCtx, iDamageType);
 
         //  Compute number of ticks to destroy the armor
 
