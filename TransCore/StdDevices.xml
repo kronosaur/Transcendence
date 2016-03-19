@@ -235,7 +235,7 @@
 		<DriveDevice
 				maxSpeed=		"20"
 				thrust=			"100"
-				powerUsed=		"50"
+				powerUse=		"50"
 				/>
 	</ItemType>
 
@@ -608,7 +608,7 @@
 		<DriveDevice
 				maxSpeed=		"25"
 				thrust=			"300"
-				powerUsed=		"300"
+				powerUse=		"300"
 				/>
 
 	</ItemType>
@@ -666,7 +666,7 @@
 		<DriveDevice
 				maxSpeed=		"25"
 				thrust=			"350"
-				powerUsed=		"1000"
+				powerUse=		"1000"
 				inertialessDrive="true"
 				/>
 
@@ -922,7 +922,7 @@
 		<DriveDevice
 				maxSpeed=		"30"
 				thrust=			"750"
-				powerUsed=		"2000"
+				powerUse=		"2000"
 				/>
 
 	</ItemType>

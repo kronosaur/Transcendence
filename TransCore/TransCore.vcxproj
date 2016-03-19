@@ -391,7 +391,9 @@
     <None Include="StarSystems.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="GalaxyCompatibility.xml" />
+    <None Include="GalaxyCompatibility.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="GalaxyEffects.xml" />
     <None Include="Volcanic.xml">
       <SubType>Designer</SubType>
