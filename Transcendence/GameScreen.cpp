@@ -1181,7 +1181,7 @@ void CTranscendenceWnd::ShowUsePicker (void)
 
 			SortedList.Insert(strPatternSubst(CONSTLIT("%d%s%04d"),
 						(bHasUseKey ? 1 : 0),
-						(bHasUseKey ? strPatternSubst(CONSTLIT("%s0"), UseDesc.sUseKey) : strPatternSubst(CONSTLIT("%02d"), MAX_ITEM_LEVEL - pType->GetLevel())),
+						(bHasUseKey ? strPatternSubst(CONSTLIT("%s0"), UseDesc.sUseKey) : strPatternSubst(CONSTLIT("%02d"), MAX_ITEM_LEVEL - Item.GetLevel())),
 						i),
 					i);
 			}

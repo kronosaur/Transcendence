@@ -46,7 +46,7 @@ bool CDockScreenSelector::OnGetDefaultBackground (SBackgroundDesc *retDesc)
 	if (pSource == NULL)
 		return false;
 
-	retDesc->iType = backgroundObj;
+	retDesc->iType = backgroundObjSchematicImage;
 	retDesc->pObj = pSource;
 
 	return true;

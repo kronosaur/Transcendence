@@ -473,66 +473,19 @@ ALERROR CDockScreen::CreateBackgroundImage (const IDockScreenDisplay::SBackgroun
 	if (Desc.iType == IDockScreenDisplay::backgroundNone)
 		;
 
-	//	Paint the object as the background
+	//	Paint hero object
 
-	else if (Desc.iType == IDockScreenDisplay::backgroundObj)
+	else if (Desc.iType == IDockScreenDisplay::backgroundObjHeroImage)
 		{
-		const CObjectImageArray *pHeroImage;
-
-		//	If this is the player ship then we draw a large image
-
-		CShip *pShip = Desc.pObj->AsShip();
-		CShipClass *pClass = (pShip ? pShip->GetClass() : NULL);
-		const CPlayerSettings *pPlayer = (pClass ? pClass->GetPlayerSettings() : NULL);
-		const CG32bitImage *pLargeImage = (pPlayer ? g_pUniverse->GetLibraryBitmap(pPlayer->GetLargeImage()) : NULL);
-
-		if (pLargeImage && !pLargeImage->IsEmpty())
-			{
-			if (pLargeImage->GetHeight() < cyBackground)
-				{
-				m_pBackgroundImage->Blt(0,
-						0,
-						pLargeImage->GetWidth(),
-						pLargeImage->GetHeight(),
-						255,
-						*pLargeImage,
-						xOffset + BACKGROUND_FOCUS_X - (pLargeImage->GetWidth() / 2),
-						BACKGROUND_FOCUS_Y - (pLargeImage->GetHeight() / 2));
-				}
-			else
-				{
-				Metric rScale = (Metric)cyBackground / pLargeImage->GetHeight();
-				CG32bitImage *pNewImage = new CG32bitImage;
-				pNewImage->CreateFromImageTransformed(*pLargeImage,
-						0,
-						0,
-						pLargeImage->GetWidth(),
-						pLargeImage->GetHeight(),
-						rScale,
-						rScale,
-						0.0);
-
-				m_pBackgroundImage->Blt(0,
-						0,
-						pNewImage->GetWidth(),
-						pNewImage->GetHeight(),
-						255,
-						*pNewImage,
-						xOffset + BACKGROUND_FOCUS_X - (pNewImage->GetWidth() / 2),
-						BACKGROUND_FOCUS_Y - (pNewImage->GetHeight() / 2));
-
-				delete pNewImage;
-				}
-			}
-
 		//	If we have a hero image, then use that
 
-		else if ((pHeroImage = &Desc.pObj->GetHeroImage()) && !pHeroImage->IsEmpty())
+		const CObjectImageArray &HeroImage = Desc.pObj->GetHeroImage();
+		if (!HeroImage.IsEmpty())
 			{
 			//	Paint the hero image on top of the system space background.
 
 			BltSystemBackground(Desc.pObj->GetSystem(), rcRect);
-			pHeroImage->PaintImage(*m_pBackgroundImage,
+			HeroImage.PaintImage(*m_pBackgroundImage,
 					xOffset + BACKGROUND_FOCUS_X,
 					BACKGROUND_FOCUS_Y,
 					0,
@@ -588,6 +541,24 @@ ALERROR CDockScreen::CreateBackgroundImage (const IDockScreenDisplay::SBackgroun
     		BltToBackgroundImage(rcRect, &ObjImage, 0, 0, ObjImage.GetWidth(), ObjImage.GetHeight());
 			}
 		}
+
+    //  Paint a schematic (top-down) image
+
+    else if (Desc.iType == IDockScreenDisplay::backgroundObjSchematicImage)
+        {
+        //  LATER: We should call a separate method and allow the developer
+        //  to specify separate images.
+
+        const CObjectImageArray &HeroImage = Desc.pObj->GetHeroImage();
+		if (!HeroImage.IsEmpty())
+			{
+			HeroImage.PaintImage(*m_pBackgroundImage,
+					xOffset + BACKGROUND_FOCUS_X,
+					BACKGROUND_FOCUS_Y,
+					0,
+					0);
+			}
+        }
 
 	//	If we have an image with a mask, just blt the masked image
 
@@ -1650,8 +1621,11 @@ void CDockScreen::SetBackground (const IDockScreenDisplay::SBackgroundDesc &Desc
 			DefaultDesc.iType = IDockScreenDisplay::backgroundImage;
 		else
 			{
-			DefaultDesc.iType = IDockScreenDisplay::backgroundObj;
 			DefaultDesc.pObj = m_pLocation;
+            if (m_pLocation->IsPlayer())
+			    DefaultDesc.iType = IDockScreenDisplay::backgroundObjSchematicImage;
+            else
+			    DefaultDesc.iType = IDockScreenDisplay::backgroundObjHeroImage;
 			}
 
 		CreateBackgroundImage(DefaultDesc, m_rcBackground, m_rcScreen.left - m_rcBackground.left);

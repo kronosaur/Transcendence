@@ -801,18 +801,19 @@ void CNewGameSession::SetShipClass (CShipClass *pClass, int x, int y, int cxWidt
 	TSortMap<CString, CItem> RightSide;
 	for (i = 0; i < Devices.GetCount(); i++)
 		{
+        const CItem &DevItem = Devices.GetDeviceDesc(i).Item;
 		CDeviceClass *pDevice = Devices.GetDeviceClass(i);
 		if (pDevice->GetCategory() == itemcatWeapon ||
 				pDevice->GetCategory() == itemcatLauncher)
-			RightSide.Insert(strPatternSubst(CONSTLIT("%02d_%02d_%s"), 1, pDevice->GetLevel(), pDevice->GetName()), CItem(pDevice->GetItemType(), 1));
+			RightSide.Insert(strPatternSubst(CONSTLIT("%02d_%02d_%s"), 1, DevItem.GetLevel(), DevItem.GetNounPhrase(0)), DevItem);
 		}
 
 	//	Add shields
 
 	TSortMap<CString, CItem> LeftSide;
-	CDeviceClass *pShields = Devices.GetNamedDevice(devShields);
+    const SDeviceDesc *pShields = Devices.GetDeviceDescByName(devShields);
 	if (pShields)
-		RightSide.Insert(strPatternSubst(CONSTLIT("%02d_%02d_%s"), 2, pShields->GetLevel(), pShields->GetName()), CItem(pShields->GetItemType(), 1));
+		RightSide.Insert(strPatternSubst(CONSTLIT("%02d_%02d_%s"), 2, pShields->Item.GetLevel(), pShields->Item.GetNounPhrase(0)), pShields->Item);
 
 	//	Add armor
 
@@ -834,9 +835,10 @@ void CNewGameSession::SetShipClass (CShipClass *pClass, int x, int y, int cxWidt
 
 	for (i = 0; i < Devices.GetCount(); i++)
 		{
+        const CItem &DevItem = Devices.GetDeviceDesc(i).Item;
 		CDeviceClass *pDevice = Devices.GetDeviceClass(i);
 		if (pDevice->GetCategory() == itemcatMiscDevice)
-			LeftSide.Insert(strPatternSubst(CONSTLIT("%02d_%02d_%s"), 4, pDevice->GetLevel(), pDevice->GetName()), CItem(pDevice->GetItemType(), 1));
+			LeftSide.Insert(strPatternSubst(CONSTLIT("%02d_%02d_%s"), 4, DevItem.GetLevel(), DevItem.GetNounPhrase(0)), DevItem);
 		}
 
 	//	Add device slots
@@ -921,8 +923,11 @@ void CNewGameSession::SetShipClassImage (CShipClass *pClass, int x, int y, int c
 
 	{
 	const CPlayerSettings *pPlayerSettings = pClass->GetPlayerSettings();
-	const CG32bitImage *pImage = g_pUniverse->GetLibraryBitmap(pPlayerSettings->GetLargeImage());
 
+    //  Ask the class for a hero image
+
+    const CG32bitImage *pImage = (!pClass->GetHeroImage().IsEmpty() ? &pClass->GetHeroImage().GetImage(CONSTLIT("New Game")) : NULL);
+    
 	//	Delete the previous one
 
 	DeleteElement(ID_SHIP_CLASS_IMAGE);

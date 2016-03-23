@@ -26,7 +26,8 @@ class IDockScreenDisplay
 
 			backgroundNone,					//	No background image
 			backgroundImage,				//	Use an image (by UNID)
-			backgroundObj,					//	Use the object's image
+			backgroundObjHeroImage,			//	Use the object's hero image
+			backgroundObjSchematicImage,	//	Use the object's top-down image
 			};
 
 		struct SInitCtx
@@ -56,7 +57,7 @@ class IDockScreenDisplay
 
 			EBackgroundTypes iType;			//	Type of image defined
 			DWORD dwImageID;				//	UNID to use (if iType == backgroundImage)
-			CSpaceObject *pObj;				//	Object to query (if iType == backgroundObj)
+			CSpaceObject *pObj;				//	Object to query (if iType == backgroundObjXXX)
 			};
 
 		struct SDisplayOptions

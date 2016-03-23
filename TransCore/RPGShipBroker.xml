@@ -383,7 +383,7 @@
 					;	Set the background image
 						
 					(scrSetBackgroundImage gScreen {
-						type: 'object
+						type: 'schematic
 						obj: shipObj
 						})
 						

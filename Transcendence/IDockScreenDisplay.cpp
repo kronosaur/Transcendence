@@ -26,9 +26,11 @@
 #define FIELD_OBJ					CONSTLIT("obj")
 #define FIELD_TYPE					CONSTLIT("type")
 
+#define TYPE_HERO					CONSTLIT("hero")
 #define TYPE_IMAGE					CONSTLIT("image")
 #define TYPE_NONE					CONSTLIT("none")
 #define TYPE_OBJECT					CONSTLIT("object")
+#define TYPE_SCHEMATIC				CONSTLIT("schematic")
 
 bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retOptions, CString *retsError)
 
@@ -49,11 +51,26 @@ bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retO
 		if (sBackgroundID.IsBlank() || strEquals(sBackgroundID, CONSTLIT("none")))
 			retOptions->BackgroundDesc.iType = backgroundNone;
 
+		else if (strEquals(sBackgroundID, TYPE_HERO))
+			{
+			retOptions->BackgroundDesc.iType = backgroundObjHeroImage;
+			retOptions->BackgroundDesc.pObj = Ctx.pLocation;
+			}
+
 		//	If the ID is "object" then we should ask the object
 
-		else if (strEquals(sBackgroundID, CONSTLIT("object")))
+		else if (strEquals(sBackgroundID, TYPE_OBJECT))
 			{
-			retOptions->BackgroundDesc.iType = backgroundObj;
+			retOptions->BackgroundDesc.pObj = Ctx.pLocation;
+            if (Ctx.pLocation->IsPlayer())
+			    retOptions->BackgroundDesc.iType = backgroundObjSchematicImage;
+            else
+			    retOptions->BackgroundDesc.iType = backgroundObjHeroImage;
+			}
+
+		else if (strEquals(sBackgroundID, TYPE_SCHEMATIC))
+			{
+			retOptions->BackgroundDesc.iType = backgroundObjSchematicImage;
 			retOptions->BackgroundDesc.pObj = Ctx.pLocation;
 			}
 
@@ -64,7 +81,7 @@ bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retO
 			CSpaceObject *pPlayer = g_pUniverse->GetPlayerShip();
 			if (pPlayer)
 				{
-				retOptions->BackgroundDesc.iType = backgroundObj;
+				retOptions->BackgroundDesc.iType = backgroundObjSchematicImage;
 				retOptions->BackgroundDesc.pObj = pPlayer;
 				}
 			}
@@ -282,6 +299,13 @@ bool IDockScreenDisplay::ParseBackgrounDesc (ICCItem *pDesc, SBackgroundDesc *re
 		if (sType.IsBlank() || strEquals(sType, TYPE_NONE))
 			retDesc->iType = backgroundNone;
 
+		else if (strEquals(sType, TYPE_HERO))
+			{
+			retDesc->iType = backgroundObjHeroImage;
+			retDesc->pObj = CreateObjFromItem(CC, pDesc->GetElement(FIELD_OBJ));
+			if (retDesc->pObj == NULL)
+				return false;
+			}
 		else if (strEquals(sType, TYPE_IMAGE))
 			{
 			retDesc->iType = backgroundImage;
@@ -298,7 +322,18 @@ bool IDockScreenDisplay::ParseBackgrounDesc (ICCItem *pDesc, SBackgroundDesc *re
 			}
 		else if (strEquals(sType, TYPE_OBJECT))
 			{
-			retDesc->iType = backgroundObj;
+			retDesc->pObj = CreateObjFromItem(CC, pDesc->GetElement(FIELD_OBJ));
+			if (retDesc->pObj == NULL)
+				return false;
+
+            if (retDesc->pObj->IsPlayer())
+    			retDesc->iType = backgroundObjSchematicImage;
+            else
+    			retDesc->iType = backgroundObjHeroImage;
+			}
+		else if (strEquals(sType, TYPE_SCHEMATIC))
+			{
+			retDesc->iType = backgroundObjSchematicImage;
 			retDesc->pObj = CreateObjFromItem(CC, pDesc->GetElement(FIELD_OBJ));
 			if (retDesc->pObj == NULL)
 				return false;
