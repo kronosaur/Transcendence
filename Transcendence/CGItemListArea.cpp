@@ -41,6 +41,7 @@ CGItemListArea::CGItemListArea (const CVisualPalette &VI) :
 		m_iType(listNone),
 		m_pUIRes(NULL),
 		m_pFonts(NULL),
+        m_rgbTextColor(255, 255, 255),
 		m_iOldCursor(-1),
 		m_yOffset(0),
 		m_yFirst(0),
@@ -256,13 +257,14 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 	//	Paint Background
 
+    CG32bitPixel rgbFadeBackColor = CG32bitPixel(CG32bitPixel::Darken(m_rgbBackColor, 220), 220);
 	CGDraw::RoundedRect(Dest,
 			rcRect.left,
 			rcRect.top,
 			RectWidth(rcRect),
 			RectHeight(rcRect),
 			BORDER_RADIUS + 1,
-			CG32bitPixel(m_VI.GetColor(colorAreaDialog), 220));
+			rgbFadeBackColor);
 
 	//	If there are no items here, then say so
 
@@ -396,7 +398,7 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 							RectWidth(rcCursor),
 							RectHeight(rcCursor),
 							BORDER_RADIUS,
-							m_VI.GetColor(colorAreaDialogInputFocus));
+							m_rgbBackColor);
 					}
 
 				//	Paint item
@@ -504,7 +506,7 @@ void CGItemListArea::PaintItem (CG32bitImage &Dest, const CItem &Item, const REC
 	if (bSelected)
 		dwOptions |= CUIHelper::OPTION_SELECTED;
 
-	UIHelper.PaintItemEntry(Dest, m_pListData->GetSource(), Item, rcRect, dwOptions);
+	UIHelper.PaintItemEntry(Dest, m_pListData->GetSource(), Item, rcRect, m_rgbTextColor, dwOptions);
 	}
 
 void CGItemListArea::SetList (CSpaceObject *pSource)

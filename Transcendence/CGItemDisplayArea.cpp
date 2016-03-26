@@ -14,7 +14,8 @@ const int ITEM_TITLE_EXTRA_MARGIN =				4;
 const int ITEM_TEXT_MARGIN_BOTTOM =				10;
 
 CGItemDisplayArea::CGItemDisplayArea (void) :
-		m_pSource(NULL)
+		m_pSource(NULL),
+        m_rgbTextColor(255, 255, 255)
 
 //	CGItemDisplayArea constructor
 
@@ -92,7 +93,7 @@ void CGItemDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 			RectWidth(rcRect),
 			RectHeight(rcRect),
 			BORDER_RADIUS,
-			VI.GetColor(colorAreaDialogInputFocus));
+			m_rgbBackColor);
 
 	RECT rcInner = rcRect;
 	rcInner.left += PADDING;
@@ -105,7 +106,7 @@ void CGItemDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 	if (m_Item.GetType())
 		{
 		CUIHelper UIHelper(*g_pHI);
-		UIHelper.PaintItemEntry(Dest, m_pSource, m_Item, rcInner, CUIHelper::OPTION_NO_ICON | CUIHelper::OPTION_TITLE);
+		UIHelper.PaintItemEntry(Dest, m_pSource, m_Item, rcInner, m_rgbTextColor, CUIHelper::OPTION_NO_ICON | CUIHelper::OPTION_TITLE);
 		}
 
 	//	Paint title and text
@@ -114,7 +115,6 @@ void CGItemDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 		{
 		const CG16bitFont &LargeBold = VI.GetFont(fontLargeBold);
 		const CG16bitFont &Medium = VI.GetFont(fontMedium);
-		CG32bitPixel rgbColorTitle = VI.GetColor(colorTextHighlight);
 		CG32bitPixel rgbColorDesc = CG32bitPixel(128,128,128);
 
 		RECT rcDrawRect = rcInner;
@@ -125,7 +125,7 @@ void CGItemDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 		int cyHeight = 0;
 		LargeBold.DrawText(Dest,
 				rcDrawRect,
-				rgbColorTitle,
+				m_rgbTextColor,
 				m_sTitle,
 				0,
 				CG16bitFont::SmartQuotes | CG16bitFont::TruncateLine,

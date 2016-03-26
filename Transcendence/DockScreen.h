@@ -162,7 +162,7 @@ class CDockScreenActions
 		ALERROR AddAction (const CString &sID, int iPos, const CString &sLabel, CExtension *pExtension, ICCItem *pCode, int *retiAction);
 		int CalcAreaHeight (CDesignType *pRoot, const RECT &rcFrame);
 		void CleanUp (void);
-		void CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot, DWORD dwFirstTag, const RECT &rcFrame);
+		void CreateButtons (const CDockScreenVisuals &DockScreenVisuals, CGFrameArea *pFrame, CDesignType *pRoot, DWORD dwFirstTag, const RECT &rcFrame);
 		void Execute (int iAction, CDockScreen *pScreen);
 		void ExecuteExitScreen (bool bForceUndock = false);
 		void ExecuteShowPane (const CString &sPane);
@@ -378,6 +378,7 @@ class CDockScreen : public IScreenController
 		inline CItemListManipulator &GetItemListManipulator (void) { return m_pDisplay->GetItemListManipulator(); }
 		inline int GetListCursor (void) { return m_pDisplay->GetListCursor(); }
 		inline IListData *GetListData (void) { return m_pDisplay->GetListData(); }
+        const CDockScreenVisuals &GetVisuals (void) const;
 		inline CString GetTextInput (void) { return m_CurrentPane.GetTextInputValue(); }
 		inline bool IsCurrentItemValid (void) { return m_pDisplay->IsCurrentItemValid(); }
 		void SelectNextItem (bool *retbMore = NULL);
@@ -390,9 +391,7 @@ class CDockScreen : public IScreenController
 		void SetListCursor (int iCursor);
 		inline void SetTextInput (const CString &sText) { m_CurrentPane.SetTextInputValue(sText); }
 		void ShowPane (const CString &sName);
-		bool ShowScreen (const CString &sName, const CString &sPane);
 		bool Translate (const CString &sTextID, ICCItem *pData, ICCItem **retpResult);
-		//inline void Undock (void) { m_pPlayer->Undock(); }
 
 		//	IScreenController virtuals
 		virtual void Action (DWORD dwTag, DWORD dwData = 0);

@@ -107,6 +107,7 @@ void CDockPane::CreateControl (EControlTypes iType, const CString &sID, const CS
 
 	{
 	const CVisualPalette &VI = g_pHI->GetVisuals();
+    const CDockScreenVisuals &DockScreenVisuals = m_pDockScreen->GetVisuals();
 
 	switch (iType)
 		{
@@ -179,6 +180,8 @@ void CDockPane::CreateControl (EControlTypes iType, const CString &sID, const CS
 			pControl->cyMaxHeight = 0;
 
 			CGItemDisplayArea *pItemDisplayArea = new CGItemDisplayArea;
+            pItemDisplayArea->SetColor(DockScreenVisuals.GetTitleTextColor());
+            pItemDisplayArea->SetBackColor(DockScreenVisuals.GetTextBackgroundColor());
 
 			pControl->pArea = pItemDisplayArea;
 			m_pContainer->AddArea(pControl->pArea, m_rcPane, 0);
@@ -461,6 +464,7 @@ void CDockPane::GetControlStyle (const CString &sStyle, SControlStyle *retStyle)
 
 	{
 	const CVisualPalette &VI = g_pHI->GetVisuals();
+    const CDockScreenVisuals &DockScreenVisuals = m_pDockScreen->GetVisuals();
 
 	if (strEquals(sStyle, STYLE_WARNING))
 		{
@@ -471,8 +475,8 @@ void CDockPane::GetControlStyle (const CString &sStyle, SControlStyle *retStyle)
 	else
 		{
 		retStyle->pTextFont = &VI.GetFont(fontLarge);
-		retStyle->TextColor = VI.GetColor(colorTextDockText);
-		retStyle->BackColor = VI.GetColor(colorAreaDialogInputFocus);
+        retStyle->TextColor = DockScreenVisuals.GetTextColor();
+        retStyle->BackColor = DockScreenVisuals.GetTextBackgroundColor();
 		}
 	}
 
@@ -891,7 +895,7 @@ void CDockPane::RenderControls (void)
 	rcActions.right = m_rcPane.right;
 	rcActions.bottom = m_rcPane.bottom;
 
-	m_Actions.CreateButtons(m_pContainer, m_pDockScreen->GetResolvedRoot(), FIRST_ACTION_ID, rcActions);
+	m_Actions.CreateButtons(m_pDockScreen->GetVisuals(), m_pContainer, m_pDockScreen->GetResolvedRoot(), FIRST_ACTION_ID, rcActions);
 	}
 
 ALERROR CDockPane::ReportError (const CString &sError)

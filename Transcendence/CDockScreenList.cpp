@@ -150,6 +150,7 @@ ALERROR CDockScreenList::OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, 
 
 	{
 	ALERROR error;
+    const CDockScreenVisuals &DockScreenVisuals = Ctx.pDockScreen->GetVisuals();
 
 	m_dwID = Ctx.dwFirstID;
 
@@ -172,6 +173,8 @@ ALERROR CDockScreenList::OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, 
 
 	m_pItemListControl->SetUIRes(&g_pTrans->GetUIRes());
 	m_pItemListControl->SetFontTable(Ctx.pFontTable);
+    m_pItemListControl->SetColor(DockScreenVisuals.GetTitleTextColor());
+    m_pItemListControl->SetBackColor(DockScreenVisuals.GetTextBackgroundColor());
 
 	//	Create. NOTE: Once we add it to the screen, it takes ownership of it. 
 	//	We do not have to free it.

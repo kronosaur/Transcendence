@@ -339,12 +339,12 @@ void CDockScreen::BltToBackgroundImage (const RECT &rcRect, CG32bitImage *pImage
 	int cxAvail = (RectWidth(rcRect) / 2) + EXTRA_BACKGROUND_IMAGE;
 	int xImage = -Max(0, cxSrc - cxAvail);
 
-	CG32bitImage *pScreenMask = g_pUniverse->GetLibraryBitmap(DEFAULT_DOCK_SCREEN_MASK_UNID);
-	if (pScreenMask)
+    CG32bitImage &ScreenMask = GetVisuals().GetContentMask().GetImage(CONSTLIT("ShowScreen"));
+	if (!ScreenMask.IsEmpty())
 		{
 		//	Center the mask and align it with the position of the background.
 
-		int xAlpha = Max(0, (pScreenMask->GetWidth() - m_pBackgroundImage->GetWidth()) / 2);
+		int xAlpha = Max(0, (ScreenMask.GetWidth() - m_pBackgroundImage->GetWidth()) / 2);
 
 		//	If the image is too small, then slide the mask over to the right
 		//	so that the fade-out part aligns with the right edge of the image.
@@ -356,12 +356,15 @@ void CDockScreen::BltToBackgroundImage (const RECT &rcRect, CG32bitImage *pImage
 		//	the image we want to blt.
 
 		CG32bitImage Mask;
-		if (xAlpha != 0)
-			{
-			Mask.Create(pImage->GetWidth(), pImage->GetHeight(), CG32bitImage::alpha8);
-			Mask.CopyChannel(channelAlpha, xAlpha, 0, pImage->GetWidth(), pImage->GetHeight(), *pScreenMask, 0, 0);
-			pScreenMask = &Mask;
-			}
+        CG32bitImage *pScreenMask;
+        if (xAlpha != 0)
+            {
+            Mask.Create(pImage->GetWidth(), pImage->GetHeight(), CG32bitImage::alpha8);
+            Mask.CopyChannel(channelAlpha, xAlpha, 0, pImage->GetWidth(), pImage->GetHeight(), ScreenMask, 0, 0);
+            pScreenMask = &Mask;
+            }
+        else
+            pScreenMask = &ScreenMask;
 
 		m_pBackgroundImage->BltMask(xSrc, ySrc, cxSrc, cySrc, *pScreenMask, *pImage, xImage, 0);
 		}
@@ -427,6 +430,8 @@ ALERROR CDockScreen::CreateBackgroundImage (const IDockScreenDisplay::SBackgroun
 //	m_pBackgroundImage and m_bFreeBackgroundImage
 
 	{
+    const CDockScreenVisuals &DockScreenVisuals = GetVisuals();
+
 	int cxBackground = RectWidth(rcRect);
 	int cyBackground = g_cyBackground;
 
@@ -453,19 +458,14 @@ ALERROR CDockScreen::CreateBackgroundImage (const IDockScreenDisplay::SBackgroun
 	if (cyExtra)
 		m_pBackgroundImage->Fill(0, cyBackground, cxBackground, cyExtra, 0);
 
-	//	Load the dock screen background based on the ship class
+	//	Load and blt the dock screen background based on the player ship class
 
-	DWORD dwScreenUNID = DEFAULT_DOCK_SCREEN_IMAGE_UNID;
-	DWORD dwScreenMaskUNID = DEFAULT_DOCK_SCREEN_MASK_UNID;
-	CG32bitImage *pScreenImage = g_pUniverse->GetLibraryBitmap(dwScreenUNID);
-
-	//	Blt to background
-
-	if (pScreenImage)
+    CG32bitImage &ScreenImage = DockScreenVisuals.GetBackground().GetImage(CONSTLIT("ShowScreen"));
+	if (!ScreenImage.IsEmpty())
 		{
 		//	Right-align the image on the screen
-		int xOffset = cxBackground - pScreenImage->GetWidth();
-		m_pBackgroundImage->Blt(0, 0, pScreenImage->GetWidth(), pScreenImage->GetHeight(), *pScreenImage, xOffset, 0);
+		int xOffset = cxBackground - ScreenImage.GetWidth();
+		m_pBackgroundImage->Blt(0, 0, ScreenImage.GetWidth(), ScreenImage.GetHeight(), ScreenImage, xOffset, 0);
 		}
 
 	//	If not image, then we're done
@@ -583,13 +583,14 @@ ALERROR CDockScreen::CreateTitleArea (CXMLElement *pDesc, AGScreen *pScreen, con
 
 	{
 	const CVisualPalette &VI = g_pHI->GetVisuals();
+    const CDockScreenVisuals &DockScreenVisuals = GetVisuals();
 
 	int yTop = m_yDisplay;
 
 	//	Add a background bar to the title part
 
 	CGImageArea *pImage = new CGImageArea;
-	pImage->SetBackColor(VI.GetColor(colorAreaDockTitle));
+	pImage->SetBackColor(DockScreenVisuals.GetTitleBackgroundColor());
 	RECT rcArea;
 	rcArea.left = rcRect.left;
 	rcArea.top = yTop - g_cyTitle;
@@ -598,7 +599,7 @@ ALERROR CDockScreen::CreateTitleArea (CXMLElement *pDesc, AGScreen *pScreen, con
 	pScreen->AddArea(pImage, rcArea, 0);
 
 	pImage = new CGImageArea;
-	pImage->SetBackColor(CG32bitPixel::Darken(VI.GetColor(colorAreaDockTitle), 200));
+	pImage->SetBackColor(CG32bitPixel::Darken(DockScreenVisuals.GetTitleBackgroundColor(), 200));
 	rcArea.left = rcRect.left;
 	rcArea.top = yTop - STATUS_BAR_HEIGHT;
 	rcArea.right = rcRect.right;
@@ -622,7 +623,7 @@ ALERROR CDockScreen::CreateTitleArea (CXMLElement *pDesc, AGScreen *pScreen, con
 	CGTextArea *pText = new CGTextArea;
 	pText->SetText(sName);
 	pText->SetFont(&m_pFonts->Title);
-	pText->SetColor(VI.GetColor(colorTextDockTitle));
+	pText->SetColor(DockScreenVisuals.GetTitleTextColor());
 	pText->AddShadowEffect();
 	rcArea.left = rcRect.left + 8;
 	rcArea.top = yTop - g_cyTitle;
@@ -636,7 +637,7 @@ ALERROR CDockScreen::CreateTitleArea (CXMLElement *pDesc, AGScreen *pScreen, con
 
 	m_pCredits = new CGTextArea;
 	m_pCredits->SetFont(&m_pFonts->MediumHeavyBold);
-	m_pCredits->SetColor(VI.GetColor(colorTextDockTitle));
+	m_pCredits->SetColor(DockScreenVisuals.GetTitleTextColor());
 
 	rcArea.left = rcInner.right - g_cxStats;
 	rcArea.top = yTop - STATUS_BAR_HEIGHT + cyOffset;
@@ -649,7 +650,7 @@ ALERROR CDockScreen::CreateTitleArea (CXMLElement *pDesc, AGScreen *pScreen, con
 	pText = new CGTextArea;
 	pText->SetText(CONSTLIT("Cargo Space:"));
 	pText->SetFont(&m_pFonts->MediumHeavyBold);
-	pText->SetColor(VI.GetColor(colorTextDockTitle));
+	pText->SetColor(DockScreenVisuals.GetTitleTextColor());
 
 	rcArea.left = rcInner.right - g_cxCargoStats;
 	rcArea.top = yTop - STATUS_BAR_HEIGHT + cyOffset;
@@ -661,7 +662,7 @@ ALERROR CDockScreen::CreateTitleArea (CXMLElement *pDesc, AGScreen *pScreen, con
 
 	m_pCargoSpace = new CGTextArea;
 	m_pCargoSpace->SetFont(&m_pFonts->MediumHeavyBold);
-	m_pCargoSpace->SetColor(VI.GetColor(colorTextDockTitle));
+	m_pCargoSpace->SetColor(DockScreenVisuals.GetTitleTextColor());
 
 	rcArea.left = rcInner.right - g_cxCargoStats + g_cxCargoStatsLabel;
 	rcArea.top = yTop - STATUS_BAR_HEIGHT + cyOffset;
@@ -721,6 +722,17 @@ CDesignType *CDockScreen::GetResolvedRoot (CString *retsResolveScreen) const
 
 	return CurFrame.pResolvedRoot;
 	}
+
+const CDockScreenVisuals &CDockScreen::GetVisuals (void) const
+
+//  GetVisuals
+//
+//  Returns the visuals for this dock screen (from the ship class)
+    
+    {
+    ASSERT(m_pPlayer);
+    return m_pPlayer->GetShip()->GetClass()->GetPlayerSettings()->GetDockScreenVisuals();
+    }
 
 bool CDockScreen::EvalBool (const CString &sCode)
 

@@ -140,6 +140,7 @@ const int FIRST_UNNAMED_SLOT_INDEX =		3;
 
 CGSelectorArea::CGSelectorArea (const CVisualPalette &VI) :
 		m_VI(VI),
+        m_rgbTextColor(255, 255, 255),
 		m_pSource(NULL),
 		m_iCursor(-1)
 
@@ -642,6 +643,7 @@ void CGSelectorArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 	const int xBackMargin = 3;
 	const int yBackMargin = 3;
 	const int iSelectionWidth = 2;
+    CG32bitPixel rgbFadeBackColor = CG32bitPixel(CG32bitPixel::Darken(m_rgbBackColor, 220), 220);
 
 	//	All coordinates are relative to the center of the area.
 
@@ -661,7 +663,7 @@ void CGSelectorArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 		//	Paint the background of the entry
 
-		CG32bitPixel rgbBackColor = (m_iCursor == i ? m_VI.GetColor(colorAreaDialogInputFocus) : CG32bitPixel(m_VI.GetColor(colorAreaDialog), 220));
+		CG32bitPixel rgbBackColor = (m_iCursor == i ? m_rgbBackColor : rgbFadeBackColor);
 
 		CGDraw::RoundedRect(Dest, 
 				rcRegion.left - xBackMargin, 
@@ -776,7 +778,7 @@ void CGSelectorArea::PaintEmptySlot (CG32bitImage &Dest, const RECT &rcRect, con
 
 	m_VI.GetFont(fontMedium).DrawText(Dest, 
 			rcText,
-			m_VI.GetColor(colorTextHighlight),
+			m_rgbTextColor,
 			sName,
 			0,
 			CG16bitFont::AlignCenter);
@@ -815,7 +817,7 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 
 	m_VI.GetFont(fontMedium).DrawText(Dest, 
 			rcText,
-			m_VI.GetColor(colorTextHighlight),
+			m_rgbTextColor,
 			Item.GetNounPhrase(nounShort | nounNoModifiers),
 			0,
 			CG16bitFont::AlignCenter);
@@ -834,7 +836,7 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 		m_VI.GetFont(fontLarge).DrawText(Dest,
 				x,
 				y,
-				m_VI.GetColor(colorTextHighlight),
+				m_rgbTextColor,
 				sHP,
 				CG16bitFont::AlignRight);
 		y += m_VI.GetFont(fontLarge).GetHeight();
@@ -894,7 +896,7 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 				m_VI.GetFont(fontLarge).DrawText(Dest,
 						x,
 						y,
-						m_VI.GetColor(colorTextHighlight),
+						m_rgbTextColor,
 						sHP,
 						CG16bitFont::AlignRight);
 				y += m_VI.GetFont(fontLarge).GetHeight();

@@ -352,7 +352,9 @@
     <None Include="RPGCode.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="RPGCompatibility.xml" />
+    <None Include="RPGCompatibility.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="RPGDockScreens.xml">
       <SubType>Designer</SubType>
     </None>

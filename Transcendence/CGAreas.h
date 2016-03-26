@@ -30,6 +30,8 @@ class CGItemDisplayArea : public AGArea
 	public:
 		CGItemDisplayArea (void);
 
+        inline void SetBackColor (CG32bitPixel rgbColor) { m_rgbBackColor = rgbColor; }
+        inline void SetColor (CG32bitPixel rgbColor) { m_rgbTextColor = rgbColor; }
 		inline void SetItem (CSpaceObject *pSource, const CItem &Item) { m_pSource = pSource; m_Item = Item; Invalidate(); }
 		inline void SetText (const CString &sTitle, const CString &sDesc) { m_sTitle = sTitle; m_sDesc = sDesc; Invalidate(); }
 
@@ -43,6 +45,9 @@ class CGItemDisplayArea : public AGArea
 
 		CString m_sTitle;					//	If no item
 		CString m_sDesc;					//	If no item
+
+        CG32bitPixel m_rgbTextColor;
+        CG32bitPixel m_rgbBackColor;
 	};
 
 class CGItemListDisplayArea : public AGArea
@@ -106,6 +111,8 @@ class CGItemListArea : public AGArea
 		bool MoveCursorBack (void);
 		bool MoveCursorForward (void);
 		inline void ResetCursor (void) { if (m_pListData) m_pListData->ResetCursor(); Invalidate(); }
+        inline void SetBackColor (CG32bitPixel rgbColor) { m_rgbBackColor = rgbColor; }
+        inline void SetColor (CG32bitPixel rgbColor) { m_rgbTextColor = rgbColor; }
 		inline void SetCursor (int iIndex) { if (m_pListData) m_pListData->SetCursor(iIndex); Invalidate(); }
 		inline void SetFilter (const CItemCriteria &Filter) { if (m_pListData) m_pListData->SetFilter(Filter); InitRowDesc(); Invalidate(); }
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
@@ -147,6 +154,8 @@ class CGItemListArea : public AGArea
 		const CVisualPalette &m_VI;
 		const CUIResources *m_pUIRes;
 		const SFontTable *m_pFonts;
+        CG32bitPixel m_rgbTextColor;
+        CG32bitPixel m_rgbBackColor;
 		int m_iOldCursor;						//	Cursor pos
 		int m_yOffset;							//	Painting offset for smooth scroll
 		int m_yFirst;							//	coord of first row relative to list rect
@@ -246,6 +255,8 @@ class CGSelectorArea : public AGArea
 		inline bool IsCursorValid (void) { return (m_iCursor != -1); }
 		bool MoveCursor (EDirections iDir);
 		inline void ResetCursor (void) { m_iCursor = -1; Invalidate(); }
+        inline void SetBackColor (CG32bitPixel rgbColor) { m_rgbBackColor = rgbColor; }
+        inline void SetColor (CG32bitPixel rgbColor) { m_rgbTextColor = rgbColor; }
 		inline void SetCursor (int iIndex) { m_iCursor = iIndex; Invalidate(); }
 		void SetRegions (CSpaceObject *pSource, EConfigurations iConfig);
 		void SyncCursor (void) { if (m_iCursor != -1 && m_iCursor >= m_Regions.GetCount()) m_iCursor = m_Regions.GetCount() - 1; }
@@ -302,6 +313,8 @@ class CGSelectorArea : public AGArea
 		void SetRegionsFromWeapons (CSpaceObject *pSource);
 
 		const CVisualPalette &m_VI;
+        CG32bitPixel m_rgbTextColor;
+        CG32bitPixel m_rgbBackColor;
 
 		CSpaceObject *m_pSource;
 		TArray<SEntry> m_Regions;

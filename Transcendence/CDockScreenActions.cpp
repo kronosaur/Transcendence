@@ -137,7 +137,7 @@ void CDockScreenActions::CleanUp (void)
 		}
 	}
 
-void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot, DWORD dwFirstTag, const RECT &rcFrame)
+void CDockScreenActions::CreateButtons (const CDockScreenVisuals &DockScreenVisuals, CGFrameArea *pFrame, CDesignType *pRoot, DWORD dwFirstTag, const RECT &rcFrame)
 
 //	CreateButtons
 //
@@ -149,6 +149,8 @@ void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot,
 	const CVisualPalette &VI = g_pHI->GetVisuals();
 	const CG16bitFont &MajorLabelFont = VI.GetFont(fontMediumHeavyBold);
 	const CG16bitFont &MinorLabelFont = VI.GetFont(fontMedium);
+
+    CG32bitPixel rgbActionBackground = CG32bitPixel::Darken(DockScreenVisuals.GetTextBackgroundColor(), 175);
 
 	//	Make sure we're justified
 
@@ -213,8 +215,8 @@ void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot,
 			pButton->SetAcceleratorColor(VI.GetColor(colorTextAccelerator));
 			pButton->SetPadding(CONTROL_INNER_PADDING_VERT);
 			pButton->SetBorderRadius(CONTROL_BORDER_RADIUS);
-			pButton->SetBackColor(VI.GetColor(colorAreaDialogInput));
-			pButton->SetBackColorHover(VI.GetColor(colorAreaDialogTitle));
+			pButton->SetBackColor(rgbActionBackground);
+			pButton->SetBackColorHover(DockScreenVisuals.GetTextBackgroundColor());
 			pButton->SetDescColor(CG32bitPixel(128, 128, 128));	//	Same as CGItemDisplayArea
 			pButton->SetDescFont(&VI.GetFont(fontMedium));
 

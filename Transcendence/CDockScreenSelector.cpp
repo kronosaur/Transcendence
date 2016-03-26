@@ -139,6 +139,8 @@ ALERROR CDockScreenSelector::OnInit (SInitCtx &Ctx, const SDisplayOptions &Optio
 //	Initialize
 
 	{
+    const CDockScreenVisuals &DockScreenVisuals = Ctx.pDockScreen->GetVisuals();
+
 	m_dwID = Ctx.dwFirstID;
 
 	//	Figure out where to get the data from: either the station
@@ -156,6 +158,9 @@ ALERROR CDockScreenSelector::OnInit (SInitCtx &Ctx, const SDisplayOptions &Optio
 		*retsError = CONSTLIT("Out of memory.");
 		return ERR_MEMORY;
 		}
+
+    m_pControl->SetColor(DockScreenVisuals.GetTitleTextColor());
+    m_pControl->SetBackColor(DockScreenVisuals.GetTextBackgroundColor());
 
 	//	Create. NOTE: Once we add it to the screen, it takes ownership of it. 
 	//	We do not have to free it.
