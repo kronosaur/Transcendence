@@ -1207,7 +1207,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void PaintDebugLines (void);
 		void PaintFrameRate (void);
 		void PaintLRS (void);
-		void PaintMainScreenBorder (void);
+		void PaintMainScreenBorder (CG32bitPixel rgbColor);
 		void PaintMap (void);
 		void PaintSnow (CG32bitImage &Dest, int x, int y, int cxWidth, int cyHeight);
 		void PaintSRSSnow (void);

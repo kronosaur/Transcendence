@@ -1185,7 +1185,8 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 	m_pScreen = new AGScreen(hWnd, rcRect);
 	m_pScreen->SetController(this);
-	m_pScreen->SetBackgroundColor(BAR_COLOR);
+
+	m_pScreen->SetBackgroundColor(GetVisuals().GetWindowBackgroundColor());
 
 	int cxBackground = Min(MAX_BACKGROUND_WIDTH, RectWidth(rcRect));
 	int cyBackground = RectHeight(rcRect);
@@ -1667,6 +1668,7 @@ void CDockScreen::SetBackground (const IDockScreenDisplay::SBackgroundDesc &Desc
 		rcImage.right = m_pBackgroundImage->GetWidth();
 		rcImage.bottom = m_pBackgroundImage->GetHeight();
 		pImage->SetImage(m_pBackgroundImage, rcImage);
+        pImage->SetTransBackground(true);
 
 		rcBackArea.left = m_rcBackground.left;
 		rcBackArea.top = m_yDisplay;

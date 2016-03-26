@@ -282,7 +282,7 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 
 				m_pCurrentScreen->Paint(TheScreen);
 				m_pCurrentScreen->Update();
-				PaintMainScreenBorder();
+				PaintMainScreenBorder(m_CurrentDock.GetVisuals().GetWindowBackgroundColor());
 
 				//	If we have room, paint armor display and target display
 

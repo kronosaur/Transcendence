@@ -527,7 +527,7 @@ void CTranscendenceWnd::PaintLRS (void)
 	DEBUG_CATCH
 	}
 
-void CTranscendenceWnd::PaintMainScreenBorder (void)
+void CTranscendenceWnd::PaintMainScreenBorder (CG32bitPixel rgbColor)
 
 //	PaintMainScreenBorder
 //
@@ -542,10 +542,10 @@ void CTranscendenceWnd::PaintMainScreenBorder (void)
 		int cxMainScreen = RectWidth(m_rcMainScreen);
 		int cyMainScreen = RectHeight(m_rcMainScreen);
 
-		TheScreen.Fill(0, 0, g_cxScreen, m_rcMainScreen.top, BAR_COLOR);
-		TheScreen.Fill(0, m_rcMainScreen.bottom, g_cxScreen, g_cyScreen - m_rcMainScreen.bottom, BAR_COLOR);
-		TheScreen.Fill(0, m_rcMainScreen.top, m_rcMainScreen.left, cyMainScreen, BAR_COLOR);
-		TheScreen.Fill(m_rcMainScreen.right, m_rcMainScreen.top, g_cxScreen - m_rcMainScreen.right, cyMainScreen, BAR_COLOR);
+		TheScreen.Fill(0, 0, g_cxScreen, m_rcMainScreen.top, rgbColor);
+		TheScreen.Fill(0, m_rcMainScreen.bottom, g_cxScreen, g_cyScreen - m_rcMainScreen.bottom, rgbColor);
+		TheScreen.Fill(0, m_rcMainScreen.top, m_rcMainScreen.left, cyMainScreen, rgbColor);
+		TheScreen.Fill(m_rcMainScreen.right, m_rcMainScreen.top, g_cxScreen - m_rcMainScreen.right, cyMainScreen, rgbColor);
 		}
 	}
 
