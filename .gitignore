@@ -41,7 +41,12 @@ build/
 bld/
 [Bb]in/
 [Oo]bj/
+
+# Other Visual Studio files
+
 *.tlog
+*.VC.db
+*.VC.opendb
 
 ## Visual Studio Config files
 
