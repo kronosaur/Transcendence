@@ -79,6 +79,7 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_ACTION_DESC			23
 #define FN_SCR_IS_ACTION_ENABLED	24
 #define FN_SCR_BACKGROUND_IMAGE		25
+#define FN_SCR_CONTROL_VALUE_TRANSLATE  26
 
 ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -217,6 +218,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"scrSetControlValue",			fnScrSet,		FN_SCR_CONTROL_VALUE,
 			"(scrSetControlValue screen controlID value) -> True/Nil",
 			"isv",		PPFLAG_SIDEEFFECTS, },
+
+		{	"scrSetControlValueTranslate",			fnScrSet,		FN_SCR_CONTROL_VALUE_TRANSLATE,
+			"(scrSetControlValueTranslate screen controlID textID [data]) -> True/Nil",
+			"iss*",		PPFLAG_SIDEEFFECTS, },
 
 		{	"scrSetCounter",				fnScrSetOld,		FN_SCR_COUNTER,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(scrSetCounter screen counter)
@@ -1374,8 +1379,10 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 	//	Convert the first argument into a dock screen object
 
 	CDockScreen *pScreen = GetDockScreenArg(pArgs->GetElement(0));
-	if (pScreen == NULL)
-		return pCC->CreateError(CONSTLIT("Screen expected"), pArgs->GetElement(0));
+    if (pScreen == NULL)
+        return pCC->CreateError(CONSTLIT("Screen expected"), pArgs->GetElement(0));
+    else if (!pScreen->IsValid())
+        return pCC->CreateNil();
 
 	//	Do the appropriate command
 
@@ -1383,13 +1390,6 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		{
 		case FN_SCR_ACTION_DESC:
 			{
-			//	Only if valid
-
-			if (!pScreen->IsValid())
-				return pCC->CreateNil();
-
-			//	Parameters
-
 			int iAction;
 			CDockScreenActions &Actions = pScreen->GetActions();
 			if (!Actions.FindByID(pArgs->GetElement(1), &iAction))
@@ -1406,13 +1406,6 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_SCR_ACTION_LABEL:
 			{
-			//	Only if valid
-
-			if (!pScreen->IsValid())
-				return pCC->CreateNil();
-
-			//	Parameters
-
 			int iAction;
 			CDockScreenActions &Actions = pScreen->GetActions();
 			if (!Actions.FindByID(pArgs->GetElement(1), &iAction))
@@ -1445,13 +1438,6 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_SCR_ADD_ACTION:
 			{
 			CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
-
-			//	Only if valid
-
-			if (!pScreen->IsValid())
-				return pCC->CreateNil();
-
-			//	Get the parameters
 
 			CDockScreenActions &Actions = pScreen->GetActions();
 			CString sID = pArgs->GetElement(1)->GetStringValue();
@@ -1521,6 +1507,32 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateBool(pScreen->SetControlValue(sID, pValue));
 			}
 
+        case FN_SCR_CONTROL_VALUE_TRANSLATE:
+            {
+			//	Translate
+
+			CString sID = pArgs->GetElement(1)->GetStringValue();
+			CString sText = pArgs->GetElement(2)->GetStringValue();
+
+			ICCItem *pData = NULL;
+			if (pArgs->GetCount() > 3)
+				pData = pArgs->GetElement(3);
+
+			ICCItem *pResult;
+			if (!pScreen->Translate(sText, pData, &pResult))
+				{
+				pScreen->SetDescription(strPatternSubst(CONSTLIT("Unknown Language ID: %s"), sText));
+				return pCC->CreateNil();
+				}
+
+			//	Set the screen descriptor
+
+            bool bSuccess = pScreen->SetControlValue(sID, pResult);
+			pResult->Discard(pCC);
+
+			return pCC->CreateBool(bSuccess);
+            }
+
 		case FN_SCR_DATA:
 			{
 			if (!g_pTrans->GetModel().InScreenSession())
@@ -1532,11 +1544,6 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_SCR_DESC:
 			{
-			//	Only if valid
-
-			if (!pScreen->IsValid())
-				return pCC->CreateNil();
-
 			//	If we have more than one arg, then we concatenate
 
 			if (pArgs->GetCount() > 2)
@@ -1562,11 +1569,6 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_SCR_DESC_TRANSLATE:
 			{
-			//	Only if valid
-
-			if (!pScreen->IsValid())
-				return pCC->CreateNil();
-
 			//	Translate
 
 			CString sText = pArgs->GetElement(1)->GetStringValue();
@@ -1592,11 +1594,6 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_SCR_ENABLE_ACTION:
 			{
-			//	Only if valid
-
-			if (!pScreen->IsValid())
-				return pCC->CreateNil();
-
 			//	Parameters
 
 			int iAction;
@@ -1638,11 +1635,6 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_SCR_REMOVE_ACTION:
 			{
-			//	Only if valid
-
-			if (!pScreen->IsValid())
-				return pCC->CreateNil();
-
 			//	Parameters
 
 			int iAction;
@@ -1691,11 +1683,6 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_SCR_SHOW_ACTION:
 			{
-			//	Only if valid
-
-			if (!pScreen->IsValid())
-				return pCC->CreateNil();
-
 			//	Parameters
 
 			int iAction;
