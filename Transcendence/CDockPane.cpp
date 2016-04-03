@@ -251,6 +251,8 @@ ALERROR CDockPane::CreateControls (CString *retsError)
 	CXMLElement *pControls = m_pPaneDesc->GetContentElementByTag(CONTROLS_TAG);
 	if (pControls)
 		{
+        bool bDescCreated = false;
+
 		for (i = 0; i < pControls->GetContentElementCount(); i++)
 			{
 			CXMLElement *pControlDef = pControls->GetContentElement(i);
@@ -287,10 +289,22 @@ ALERROR CDockPane::CreateControls (CString *retsError)
 			if (!pControlDef->FindAttribute(STYLE_ATTRIB, &sStyle))
 				sStyle = STYLE_DEFAULT;
 
+            //  Keep track of default controls created
+
+            if (strEquals(sID, DEFAULT_DESC_ID))
+                bDescCreated = true;
+
 			//	Create the control
 
 			CreateControl(iType, sID, sStyle);
 			}
+
+        //  If we don't have a default description control, create it. NOTE: It 
+        //  is safe to create controls that we never use, since empty ones get
+        //  collapsed.
+
+        if (!bDescCreated)
+            CreateControl(controlDesc, DEFAULT_DESC_ID, STYLE_DEFAULT);
 		}
 
 	//	Otherwise we create default controls
@@ -415,6 +429,22 @@ CDockPane::SControl *CDockPane::GetControlByType (EControlTypes iType) const
 	{
 	int i;
 
+    //  If we're looking for the desc control, look by default ID also, since
+    //  we might have multiple descriptor controls.
+
+    SControl *pControl = NULL;
+    switch (iType)
+        {
+        case controlDesc:
+            {
+            if (FindControl(DEFAULT_DESC_ID, &pControl))
+                return pControl;
+            break;
+            }
+        }
+
+    //  Look for the first control that matches the type
+
 	for (i = 0; i < m_Controls.GetCount(); i++)
 		if (m_Controls[i].iType == iType)
 			return &m_Controls[i];
@@ -487,17 +517,16 @@ CGTextArea *CDockPane::GetTextControlByType (EControlTypes iType) const
 //	Returns the control by type
 
 	{
-	int i;
-
 	switch (iType)
 		{
 		case controlCounter:
 		case controlDesc:
 		case controlTextInput:
-			for (i = 0; i < m_Controls.GetCount(); i++)
-				if (m_Controls[i].iType == iType)
-					return m_Controls[i].AsTextArea();
-			break;
+            SControl *pControl = GetControlByType(iType);
+            if (pControl == NULL)
+                return NULL;
+
+            return pControl->AsTextArea();
 		}
 
 	return NULL;
