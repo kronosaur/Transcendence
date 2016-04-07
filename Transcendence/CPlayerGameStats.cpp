@@ -32,6 +32,10 @@ const DWORD INVALID_TIME = 0xffffffff;
 
 #define NIL_VALUE								CONSTLIT("Nil")
 
+#define PROPERTY_FUEL_CONSUMED                  CONSTLIT("fuelConsumed")
+#define PROPERTY_SYSTEMS_VISITED                CONSTLIT("systemsVisited")
+#define PROPERTY_SYSTEMS_VISITED_COUNT          CONSTLIT("systemsVisitedCount")
+
 #define STR_DESTROYED							CONSTLIT("destroyed")
 #define STR_ENEMY_DESTROYED						CONSTLIT("enemyDestroyed")
 #define STR_FRIEND_DESTROYED					CONSTLIT("friendDestroyed")
@@ -60,6 +64,7 @@ void WriteTimeValue (CMemoryWriteStream &Output, DWORD dwTime);
 
 CPlayerGameStats::CPlayerGameStats (void) : m_iScore(0),
 		m_iResurrectCount(0),
+        m_rFuelConsumed(0.0),
 		m_iExtraSystemsVisited(0),
 		m_iExtraEnemyShipsDestroyed(0)
 
@@ -124,6 +129,168 @@ bool CPlayerGameStats::FindItemStats (DWORD dwUNID, SItemTypeStats **retpStats) 
 
 	return true;
 	}
+
+ICCItem *CPlayerGameStats::FindProperty (const CString &sProperty) const
+
+//  FindProperty
+//
+//  Returns a the given property (or NULL).
+
+    {
+    CCodeChain &CC = g_pUniverse->GetCC();
+
+    if (strEquals(sProperty, BEST_ENEMY_SHIPS_DESTROYED_STATS))
+        {
+        DWORD dwUNID;
+        int iCount = GetBestEnemyShipsDestroyed(&dwUNID);
+        if (iCount == 0)
+            return CC.CreateNil();
+
+        ICCItem *pResult = CC.CreateSymbolTable();
+        pResult->SetIntegerAt(CC, CONSTLIT("unid"), dwUNID);
+        pResult->SetIntegerAt(CC, CONSTLIT("count"), iCount);
+        return pResult;
+        }
+    else if (strEquals(sProperty, ENEMY_SHIPS_DESTROYED_STAT))
+        {
+        CMapIterator i;
+        int iCount = 0;
+        m_ShipStats.Reset(i);
+        while (m_ShipStats.HasMore(i))
+            {
+            SShipClassStats *pStats;
+            DWORD dwUNID = m_ShipStats.GetNext(i, &pStats);
+
+            iCount += pStats->iEnemyDestroyed;
+            }
+
+        return CC.CreateInteger(iCount + m_iExtraEnemyShipsDestroyed);
+        }
+    else if (strEquals(sProperty, ENEMY_STATIONS_DESTROYED_STAT))
+        {
+        CSovereign *pPlayerSovereign = g_pUniverse->FindSovereign(g_PlayerSovereignUNID);
+        if (pPlayerSovereign == NULL)
+            return CC.CreateInteger(0);
+
+        CMapIterator i;
+        int iCount = 0;
+        m_StationStats.Reset(i);
+        while (m_StationStats.HasMore(i))
+            {
+            SStationTypeStats *pStats;
+            DWORD dwUNID = m_StationStats.GetNext(i, &pStats);
+            CStationType *pType = g_pUniverse->FindStationType(dwUNID);
+            if (pType == NULL)
+                continue;
+
+            if (pType->GetSovereign()->IsEnemy(pPlayerSovereign))
+                iCount += pStats->iDestroyed;
+            }
+
+        return CC.CreateInteger(iCount);
+        }
+    else if (strEquals(sProperty, PROPERTY_FUEL_CONSUMED))
+        return CC.CreateDouble(m_rFuelConsumed);
+
+	else if (strEquals(sProperty, FRIENDLY_SHIPS_DESTROYED_STAT))
+		{
+		CMapIterator i;
+		int iCount = 0;
+		m_ShipStats.Reset(i);
+		while (m_ShipStats.HasMore(i))
+			{
+			SShipClassStats *pStats;
+			DWORD dwUNID = m_ShipStats.GetNext(i, &pStats);
+
+			iCount += pStats->iFriendDestroyed;
+			}
+
+		return CC.CreateInteger(iCount);
+		}
+	else if (strEquals(sProperty, FRIENDLY_STATIONS_DESTROYED_STAT))
+		{
+		CSovereign *pPlayerSovereign = g_pUniverse->FindSovereign(g_PlayerSovereignUNID);
+		if (pPlayerSovereign == NULL)
+			return CC.CreateInteger(0);
+
+		CMapIterator i;
+		int iCount = 0;
+		m_StationStats.Reset(i);
+		while (m_StationStats.HasMore(i))
+			{
+			SStationTypeStats *pStats;
+			DWORD dwUNID = m_StationStats.GetNext(i, &pStats);
+			CStationType *pType = g_pUniverse->FindStationType(dwUNID);
+			if (pType == NULL)
+				continue;
+
+			if (!pType->GetSovereign()->IsEnemy(pPlayerSovereign))
+				iCount += pStats->iDestroyed;
+			}
+
+		return CC.CreateInteger(iCount);
+		}
+	else if (strEquals(sProperty, RESURRECT_COUNT_STAT))
+		return CC.CreateInteger(m_iResurrectCount);
+
+	else if (strEquals(sProperty, SCORE_STAT))
+		return CC.CreateInteger(m_iScore);
+
+	else if (strEquals(sProperty, PROPERTY_SYSTEMS_VISITED))
+		{
+		CMemoryWriteStream Output;
+        if (Output.Create() != NOERROR)
+            return CC.CreateNil();
+
+        ICCItem *pResult = CC.CreateLinkedList();
+
+		CMapIterator i;
+		m_SystemStats.Reset(i);
+		while (m_SystemStats.HasMore(i))
+			{
+			SSystemStats *pStats;
+			const CString &sNodeID = m_SystemStats.GetNext(i, &pStats);
+
+            ICCItem *pSysData = CC.CreateSymbolTable();
+            pSysData->SetStringAt(CC, CONSTLIT("nodeID"), sNodeID);
+
+            if (pStats->dwFirstEntered != INVALID_TIME)
+                pSysData->SetIntegerAt(CC, CONSTLIT("firstEnteredOn"), pStats->dwFirstEntered);
+
+            if (pStats->dwLastEntered != INVALID_TIME)
+                pSysData->SetIntegerAt(CC, CONSTLIT("lastEnteredOn"), pStats->dwLastEntered);
+
+            if (pStats->dwLastLeft != INVALID_TIME)
+                pSysData->SetIntegerAt(CC, CONSTLIT("lastLeftOn"), pStats->dwLastLeft);
+
+            if (pStats->dwTotalTime != INVALID_TIME)
+                pSysData->SetIntegerAt(CC, CONSTLIT("totalTimeSpent"), pStats->dwTotalTime);
+
+            pResult->Append(CC, pSysData);
+            pSysData->Discard(&CC);
+			}
+
+        return pResult;
+		}
+	else if (strEquals(sProperty, PROPERTY_SYSTEMS_VISITED_COUNT))
+		{
+		CMapIterator i;
+		int iCount = 0;
+		m_SystemStats.Reset(i);
+		while (m_SystemStats.HasMore(i))
+			{
+			SSystemStats *pStats;
+			const CString &sNodeID = m_SystemStats.GetNext(i, &pStats);
+
+			if (pStats->dwLastEntered != INVALID_TIME)
+				iCount++;
+			}
+
+		return CC.CreateInteger(iCount + m_iExtraSystemsVisited);
+		}
+	else
+        return NULL;
+    }
 
 void CPlayerGameStats::GenerateGameStats (CGameStats &Stats, CSpaceObject *pPlayerShip, bool bGameOver) const
 
@@ -1236,6 +1403,7 @@ void CPlayerGameStats::ReadFromStream (SLoadCtx &Ctx)
 //	DWORD		m_iExtraEnemyShipsDestroyed
 //	CTimeSpan	m_PlayTime
 //	CTimeSpan	m_GameTime
+//  Metric      m_rFuelConsumed
 //
 //	DWORD		Count of item types
 //	DWORD			UNID
@@ -1325,6 +1493,9 @@ void CPlayerGameStats::ReadFromStream (SLoadCtx &Ctx)
 		Ctx.pStream->Read((char *)&m_PlayTime, sizeof(CTimeSpan));
 		Ctx.pStream->Read((char *)&m_GameTime, sizeof(CTimeSpan));
 		}
+
+    if (Ctx.dwVersion >= 129)
+    	Ctx.pStream->Read((char *)&m_rFuelConsumed, sizeof(Metric));
 
 	Ctx.pStream->Read((char *)&dwCount, sizeof(DWORD));
 	for (i = 0; i < (int)dwCount; i++)
@@ -1445,6 +1616,7 @@ void CPlayerGameStats::WriteToStream (IWriteStream *pStream)
 //	DWORD		m_iExtraEnemyShipsDestroyed
 //	CTimeSpan	m_PlayTime
 //	CTimeSpan	m_GameTime
+//  Metric      m_rFuelConsumed
 //
 //	DWORD		Count of item types
 //	DWORD			UNID
@@ -1496,6 +1668,7 @@ void CPlayerGameStats::WriteToStream (IWriteStream *pStream)
 	pStream->Write((char *)&m_iExtraEnemyShipsDestroyed, sizeof(DWORD));
 	pStream->Write((char *)&m_PlayTime, sizeof(CTimeSpan));
 	pStream->Write((char *)&m_GameTime, sizeof(CTimeSpan));
+	pStream->Write((char *)&m_rFuelConsumed, sizeof(Metric));
 
 	dwSave = m_ItemStats.GetCount();
 	pStream->Write((char *)&dwSave, sizeof(DWORD));

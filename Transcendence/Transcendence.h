@@ -137,6 +137,7 @@ class CPlayerGameStats
 		CPlayerGameStats (void);
 
 		int CalcEndGameScore (void) const;
+        ICCItem *FindProperty (const CString &sProperty) const;
 		void GenerateGameStats (CGameStats &Stats, CSpaceObject *pPlayer, bool bGameOver) const;
 		int GetBestEnemyShipsDestroyed (DWORD *retdwUNID = NULL) const;
 		CTimeSpan GetGameTime (void) const { return (!m_GameTime.IsBlank() ? m_GameTime : g_pUniverse->GetElapsedGameTime()); }
@@ -146,6 +147,7 @@ class CPlayerGameStats
 		CString GetStat (const CString &sStat) const;
 		DWORD GetSystemEnteredTime (const CString &sNodeID);
 		int IncStat (const CString &sStat, int iInc = 1);
+        inline void OnFuelConsumed (CSpaceObject *pPlayer, Metric rFuel) { m_rFuelConsumed += rFuel; }
 		void OnGameEnd (CSpaceObject *pPlayer);
 		void OnItemBought (const CItem &Item, CurrencyValue iTotalPrice);
 		void OnItemDamaged (const CItem &Item, int iHP);
@@ -229,6 +231,7 @@ class CPlayerGameStats
 		int m_iResurrectCount;					//	Number of times player has resurrected a game
 		CTimeSpan m_PlayTime;					//	Total time spent playing the game
 		CTimeSpan m_GameTime;					//	Total elapsed time in the game
+        Metric m_rFuelConsumed;                 //  Total fuel consumed (fuel units)
 
 		TMap<DWORD, SItemTypeStats> m_ItemStats;
 		TMap<DWORD, SShipClassStats> m_ShipStats;
@@ -325,6 +328,7 @@ class CPlayerShipController : public IShipController
 		inline void OnGameEnd (void) { m_Stats.OnGameEnd(m_pShip); }
 		inline void OnItemBought (const CItem &Item, CurrencyValue iTotalPrice) { m_Stats.OnItemBought(Item, iTotalPrice); }
 		inline void OnItemSold (const CItem &Item, CurrencyValue iTotalPrice) { m_Stats.OnItemSold(Item, iTotalPrice); }
+        void OnStartGame (void);
 		void OnSystemEntered (CSystem *pSystem, int *retiLastVisit = NULL) { m_Stats.OnSystemEntered(pSystem, retiLastVisit); }
 		void OnSystemLeft (CSystem *pSystem) { m_Stats.OnSystemLeft(pSystem); }
 		inline CurrencyValue Payment (DWORD dwEconUNID, CurrencyValue iCredits) { return m_Credits.IncCredits(dwEconUNID, iCredits); }
@@ -360,65 +364,68 @@ class CPlayerShipController : public IShipController
 		bool HasFleet (void);
 
 		//	IShipController virtuals
-		virtual void AddOrder (OrderTypes Order, CSpaceObject *pTarget, const IShipController::SData &Data, bool bAddBefore = false);
-		virtual void CancelAllOrders (void);
-		virtual void CancelCurrentOrder (void);
-		virtual void CancelDocking (void);
-		virtual CString DebugCrashInfo (void);
-		virtual CString GetAISettingString (const CString &sSetting);
-		virtual CString GetClass (void) { return CONSTLIT("player"); }
-		virtual int GetCombatPower (void);
-		virtual CCurrencyBlock *GetCurrencyBlock (void) { return &m_Credits; }
-		virtual OrderTypes GetCurrentOrderEx (CSpaceObject **retpTarget = NULL, IShipController::SData *retData = NULL);
-		virtual CSpaceObject *GetDestination (void) const { return m_pDestination; }
-		virtual EManeuverTypes GetManeuver (void);
-		virtual bool GetThrust (void);
-		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const;
-		virtual bool GetReverseThrust (void);
-		virtual bool GetStopThrust (void);
-		virtual CSpaceObject *GetOrderGiver (void) { return m_pShip; }
-		virtual bool GetDeviceActivate (void);
-		virtual int GetFireDelay (void) { return (int)((5.0 / STD_SECONDS_PER_UPDATE) + 0.5); }
-		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution);
-		virtual bool IsPlayer (void) const { return true; }
-		virtual void ReadFromStream (SLoadCtx &Ctx, CShip *pShip);
-		virtual void SetManeuver (EManeuverTypes iManeuver) { m_iManeuver = iManeuver; }
-		virtual void SetThrust (bool bThrust) { m_bThrust = bThrust; }
-		virtual void WriteToStream (IWriteStream *pStream);
+
+		virtual void AddOrder (OrderTypes Order, CSpaceObject *pTarget, const IShipController::SData &Data, bool bAddBefore = false) override;
+		virtual void CancelAllOrders (void) override;
+		virtual void CancelCurrentOrder (void) override;
+		virtual void CancelDocking (void) override;
+		virtual CString DebugCrashInfo (void) override;
+        virtual ICCItem *FindProperty (const CString &sProperty) override;
+		virtual CString GetAISettingString (const CString &sSetting) override;
+		virtual CString GetClass (void) override { return CONSTLIT("player"); }
+		virtual int GetCombatPower (void) override;
+		virtual CCurrencyBlock *GetCurrencyBlock (void) override { return &m_Credits; }
+		virtual OrderTypes GetCurrentOrderEx (CSpaceObject **retpTarget = NULL, IShipController::SData *retData = NULL) override;
+		virtual CSpaceObject *GetDestination (void) const override { return m_pDestination; }
+		virtual EManeuverTypes GetManeuver (void) override;
+		virtual bool GetThrust (void) override;
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const override;
+		virtual bool GetReverseThrust (void) override;
+		virtual bool GetStopThrust (void) override;
+		virtual CSpaceObject *GetOrderGiver (void) override { return m_pShip; }
+		virtual bool GetDeviceActivate (void) override;
+		virtual int GetFireDelay (void) override { return (int)((5.0 / STD_SECONDS_PER_UPDATE) + 0.5); }
+		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution) override;
+		virtual bool IsPlayer (void) const override { return true; }
+		virtual void ReadFromStream (SLoadCtx &Ctx, CShip *pShip) override;
+		virtual void SetManeuver (EManeuverTypes iManeuver) override { m_iManeuver = iManeuver; }
+		virtual void SetThrust (bool bThrust) override { m_bThrust = bThrust; }
+		virtual void WriteToStream (IWriteStream *pStream) override;
 
 		//	Events
-		virtual void OnArmorRepaired (int iSection);
-		virtual void OnBlindnessChanged (bool bBlind, bool bNoMessage = false);
-		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
-		virtual void OnComponentChanged (ObjectComponentTypes iComponent);
-		virtual void OnDamaged (const CDamageSource &Cause, CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage);
-		virtual bool OnDestroyCheck (DestructionTypes iCause, const CDamageSource &Attacker);
-		virtual void OnDestroyed (SDestroyCtx &Ctx);
-		virtual void OnDeviceEnabledDisabled (int iDev, bool bEnable, bool bSilent = false);
-		virtual void OnDeviceStatus (CInstalledDevice *pDev, int iEvent);
-		virtual void OnDocked (CSpaceObject *pObj);
-		virtual void OnDockedObjChanged (CSpaceObject *pLocation);
-		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend);
-		virtual void OnFuelLowWarning (int iSeq);
-		virtual void OnItemDamaged (const CItem &Item, int iHP) { m_Stats.OnItemDamaged(Item, iHP); }
-		virtual void OnItemFired (const CItem &Item) { m_Stats.OnItemFired(Item); }
-		virtual void OnItemInstalled (const CItem &Item) { m_Stats.OnItemInstalled(Item); }
-		virtual void OnItemUninstalled (const CItem &Item) { m_Stats.OnItemUninstalled(Item); }
-		virtual void OnLifeSupportWarning (int iSecondsLeft);
-		virtual void OnMissionCompleted (CMission *pMission, bool bSuccess);
-		virtual void OnNewSystem (CSystem *pSystem);
-		virtual void OnObjDamaged (const SDamageCtx &Ctx);
-		virtual void OnObjDestroyed (const SDestroyCtx &Ctx);
-		virtual void OnPaintSRSEnhancements (CG32bitImage &Dest, SViewportPaintCtx &Ctx);
-		virtual void OnProgramDamage (CSpaceObject *pHacker, const ProgramDesc &Program);
-		virtual void OnRadiationWarning (int iTicksLeft);
-		virtual void OnRadiationCleared (void);
-		virtual void OnReactorOverloadWarning (int iSeq);
-		void OnStartGame (void);
-		virtual void OnStationDestroyed (const SDestroyCtx &Ctx);
-		virtual void OnUpdatePlayer (SUpdateCtx &Ctx);
-		virtual void OnWeaponStatusChanged (void);
-		virtual void OnWreckCreated (CSpaceObject *pWreck);
+
+		virtual void OnArmorRepaired (int iSection) override;
+		virtual void OnBlindnessChanged (bool bBlind, bool bNoMessage = false) override;
+		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2) override;
+		virtual void OnComponentChanged (ObjectComponentTypes iComponent) override;
+		virtual void OnDamaged (const CDamageSource &Cause, CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage) override;
+		virtual bool OnDestroyCheck (DestructionTypes iCause, const CDamageSource &Attacker) override;
+		virtual void OnDestroyed (SDestroyCtx &Ctx) override;
+		virtual void OnDeviceEnabledDisabled (int iDev, bool bEnable, bool bSilent = false) override;
+		virtual void OnDeviceStatus (CInstalledDevice *pDev, int iEvent) override;
+		virtual void OnDocked (CSpaceObject *pObj) override;
+		virtual void OnDockedObjChanged (CSpaceObject *pLocation) override;
+		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend) override;
+        virtual void OnFuelConsumed (Metric rFuel) override;
+		virtual void OnFuelLowWarning (int iSeq) override;
+		virtual void OnItemDamaged (const CItem &Item, int iHP) override { m_Stats.OnItemDamaged(Item, iHP); }
+		virtual void OnItemFired (const CItem &Item) override { m_Stats.OnItemFired(Item); }
+		virtual void OnItemInstalled (const CItem &Item) override { m_Stats.OnItemInstalled(Item); }
+		virtual void OnItemUninstalled (const CItem &Item) override { m_Stats.OnItemUninstalled(Item); }
+		virtual void OnLifeSupportWarning (int iSecondsLeft) override;
+		virtual void OnMissionCompleted (CMission *pMission, bool bSuccess) override;
+		virtual void OnNewSystem (CSystem *pSystem) override;
+		virtual void OnObjDamaged (const SDamageCtx &Ctx) override;
+		virtual void OnObjDestroyed (const SDestroyCtx &Ctx) override;
+		virtual void OnPaintSRSEnhancements (CG32bitImage &Dest, SViewportPaintCtx &Ctx) override;
+		virtual void OnProgramDamage (CSpaceObject *pHacker, const ProgramDesc &Program) override;
+		virtual void OnRadiationWarning (int iTicksLeft) override;
+		virtual void OnRadiationCleared (void) override;
+		virtual void OnReactorOverloadWarning (int iSeq) override;
+		virtual void OnStationDestroyed (const SDestroyCtx &Ctx) override;
+		virtual void OnUpdatePlayer (SUpdateCtx &Ctx) override;
+		virtual void OnWeaponStatusChanged (void) override;
+		virtual void OnWreckCreated (CSpaceObject *pWreck) override;
 
 	private:
 		void ClearFireAngle (void);

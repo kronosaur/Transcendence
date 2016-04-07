@@ -463,6 +463,17 @@ CSpaceObject *CPlayerShipController::FindDockTarget (void)
 	return pStation;
 	}
 
+ICCItem *CPlayerShipController::FindProperty (const CString &sProperty)
+
+//  FindProperty
+//
+//  Returns the given property, or NULL if not found. Caller is responsible for
+//  discarding the result if not NULL.
+
+    {
+    return m_Stats.FindProperty(sProperty);
+    }
+
 void CPlayerShipController::Gate (void)
 
 //	Gate
@@ -1176,6 +1187,16 @@ void CPlayerShipController::OnEnemyShipsDetected (void)
 	m_pTrans->DisplayMessage(CONSTLIT("Enemy ships detected"));
 	g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_ENEMY_SHIP_ALARM));
 	}
+
+void CPlayerShipController::OnFuelConsumed (Metric rFuel)
+
+//  OnFuelConsumed
+//
+//  Fuel consumed
+
+    {
+    m_Stats.OnFuelConsumed(m_pShip, rFuel);
+    }
 
 void CPlayerShipController::OnFuelLowWarning (int iSeq)
 
@@ -2401,6 +2422,7 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip)
 	//	Old ship stops tracking fuel (otherwise, it would run out)
 
 	pOldShip->TrackFuel(false);
+    pOldShip->TrackMass(false);
 
 	//	Now set this controller to drive the new ship. gPlayer and gPlayerShip
 	//	will be set inside of SetPlayerShip.
@@ -2432,6 +2454,11 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip)
 	SetFireMain(false);
 	SetFireMissile(false);
 	m_bActivate = false;
+
+    //  Tell the ships that we've switched
+
+    pOldShip->FireOnPlayerLeftShip(pNewShip);
+    pNewShip->FireOnPlayerEnteredShip(pOldShip);
 
 	//	Call all types and tell them that we've switched ships
 

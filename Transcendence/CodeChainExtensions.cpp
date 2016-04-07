@@ -1381,7 +1381,7 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 	CDockScreen *pScreen = GetDockScreenArg(pArgs->GetElement(0));
     if (pScreen == NULL)
         return pCC->CreateError(CONSTLIT("Screen expected"), pArgs->GetElement(0));
-    else if (!pScreen->IsValid())
+    else if (!pScreen->InOnInit() && !pScreen->IsValid())
         return pCC->CreateNil();
 
 	//	Do the appropriate command
