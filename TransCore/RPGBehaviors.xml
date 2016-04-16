@@ -151,6 +151,7 @@
 
 						(setq asteroidObj (random
 								(filter (sysFindObject gSource "tN:50 +asteroid") theObj
+                                    ;   LATER: API 30 allows passing a criteria to objGetOverlays
 									(filter (objGetOverlays theObj) theOverlayID
 										(typHasAttribute (objGetOverlayType theObj theOverlayID) 'oreCount)
 										)

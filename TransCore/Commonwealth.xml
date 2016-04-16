@@ -2332,7 +2332,9 @@
 		</Events>
 	</StationType>
 
-	<OverlayType UNID="&ovNavSignText;">
+	<OverlayType UNID="&ovNavSignText;"
+            attributes=         "effect"
+            >
 		<Effect>
 			<Text text="Nav Sign"
 					font="SmallBold"

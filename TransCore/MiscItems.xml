@@ -1296,7 +1296,9 @@
 		</Events>
 	</ItemType>
 	
-	<OverlayType UNID="&ovUraniumWasteCheck;">
+	<OverlayType UNID="&ovUraniumWasteCheck;"
+            attributes=         "behavior"
+            >
 		<Events>
 			<OnUpdate>
 				; Create a barrel of waste every 90 cycles (45 seconds)

@@ -129,6 +129,7 @@
 -->
 	
 	<OverlayType UNID="&ovDamagedSiteSmall;"
+            attributes=         "effect"
 			>
 		<Effect>
 			<ParticleCloud
@@ -150,6 +151,7 @@
 	</OverlayType>
 	
 	<OverlayType UNID="&ovDamagedSiteMedium;"
+            attributes=         "effect"
 			>
 		<Effect>
 			<ParticleCloud
@@ -171,6 +173,7 @@
 	</OverlayType>
 	
 	<OverlayType UNID="&ovDeprezSiteSmall;"
+            attributes=         "effect"
 			>
 		<Effect>
 			<ParticleCloud

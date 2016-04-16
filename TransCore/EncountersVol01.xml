@@ -4210,6 +4210,7 @@
 	-->
 
 	<OverlayType UNID="&ovPteravoreFuelDrain;"
+            attributes=         "attached, galacticCreature, pteravore"
 			>
 		<Effect>
 			<Image imageID="&rsPteravoreClawOverlayHD;" imageWidth="32" imageHeight="32" rotationCount="120"/>

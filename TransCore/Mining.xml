@@ -385,7 +385,7 @@
 <!-- OVERLAYS -->
 	
 	<OverlayType UNID="&ovMiningOreCount;"
-			attributes=		"oreCount"
+			attributes=		"effect, oreCount"
 			>
 		<Counter style=		"flag"
 				color=		"#5ff12a"

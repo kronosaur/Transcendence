@@ -462,6 +462,8 @@
 <!-- Effects -->
 
 	<OverlayType UNID="&sfSustain;"
+            attributes=     "dominaPower, energyField, temporary"
+
 			absorbAdj=		"100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100"
 			weaponSuppress=	"*"
 			>
@@ -490,6 +492,8 @@
 	</OverlayType>
 
 	<OverlayType UNID="&sfStrengthen;"
+            attributes=     "dominaPower, effect, temporary"
+                 
 			weaponBonusAdj=	"100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100"
 			>
 		<Effect>
@@ -503,6 +507,8 @@
 	</OverlayType>
 
 	<OverlayType UNID="&sfDefend;"
+            attributes=     "dominaPower, energyField, temporary"
+                 
 			absorbAdj=		"100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100"
 			>
 		<Effect>

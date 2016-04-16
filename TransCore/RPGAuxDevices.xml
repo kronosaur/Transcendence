@@ -99,6 +99,7 @@
 	<!-- Auxiliary forward weapon mounts -->
 
 	<OverlayType UNID="&ovAuxForwardLeftMount;"
+            attributes=         "device, installed"
 			>
 		<Effect>
 			<Image imageID="&rsAuxMountOverlayHD;" imageX="0" imageWidth="32" imageHeight="32" rotationCount="120"/>
@@ -106,6 +107,7 @@
 	</OverlayType>
 
 	<OverlayType UNID="&ovAuxForwardRightMount;"
+            attributes=         "device, installed"
 			>
 		<Effect>
 			<Image imageID="&rsAuxMountOverlayHD;" imageX="32" imageWidth="32" imageHeight="32" rotationCount="120"/>

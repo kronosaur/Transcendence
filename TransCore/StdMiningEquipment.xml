@@ -566,6 +566,7 @@
 <!-- OVERLAYS -->
 
 	<OverlayType UNID="&ovMiningPodRadius;"
+            attributes=         "effect"
 			>
 		<Counter style=	"radius"
 				color=	"#5ff12a"
@@ -573,6 +574,7 @@
 	</OverlayType>
 	
 	<OverlayType UNID="&ovMiningPodArmedRadius;"
+            attributes=         "effect"
 			>
 		<Counter style=	"radius"
 				color=	"#f24b29"
@@ -580,6 +582,7 @@
 	</OverlayType>
 	
 	<OverlayType UNID="&ovMiningPodTimer;"
+            attributes=         "effect"
 			>
 		
 		<Counter style=	"progress"
