@@ -22,6 +22,7 @@
 #define DEBUG_SWITCH						CONSTLIT("debug")
 #define DECOMPILE_SWITCH					CONSTLIT("decompile")
 #define EFFECT_IMAGE_SWITCH					CONSTLIT("effectImage")
+#define EFFECT_PERF_SWITCH					CONSTLIT("effectPerf")
 #define ENCOUNTER_COUNT_SWITCH				CONSTLIT("encountercount")
 #define ENCOUNTER_FREQ_SWITCH				CONSTLIT("encounterfreq")
 #define ENCOUNTER_SIM_SWITCH				CONSTLIT("encountersim")
@@ -347,6 +348,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		GenerateShieldStats(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(EFFECT_IMAGE_SWITCH))
 		GenerateEffectImage(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(EFFECT_PERF_SWITCH))
+		DoEffectPerformanceTest(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SHIP_IMAGE_SWITCH))
 		GenerateShipImage(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SHIP_IMAGES_SWITCH))

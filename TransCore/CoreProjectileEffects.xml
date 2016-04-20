@@ -137,7 +137,7 @@
 	</EffectType>
 
 	<EffectType UNID="&efParticleBeamDefault;"
-			instance=			"creator"
+			instance=			"owner"
 			>
 		<Effect>
 			<ParticleComet
@@ -326,7 +326,7 @@
     </EffectType>
     
 	<EffectType UNID="&efIonBeamDefault;"
-			instance=			"creator"
+			instance=			"owner"
 			>
 		<Effect>
 			<Ray
@@ -468,7 +468,7 @@
 	</EffectType>
 
 	<EffectType UNID="&efPositronBeamDefault;"
-			instance=			"creator"
+			instance=			"owner"
 			>
 		<Effect>
 			
@@ -674,7 +674,7 @@
 	</EffectType>
 
 	<EffectType UNID="&efGravitonBeamDefault;"
-			instance=			"creator"
+			instance=			"owner"
 			>
 		<Effect>
 			<Ray

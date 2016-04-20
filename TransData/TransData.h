@@ -80,6 +80,7 @@ bool OutputImage (CG32bitImage &Image, const CString &sFilespec);
 ALERROR LoadDesignTypeStats (CDesignTypeStats *retStats);
 
 void Decompile (const CString &sDataFile, CXMLElement *pCmdLine);
+void DoEffectPerformanceTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void DoRandomNumberTest (void);
 void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void DoTradeSim (CUniverse &Universe, CXMLElement *pCmdLine);
