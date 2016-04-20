@@ -41,7 +41,7 @@
 					xformRotation=	"180"
 					
 					lifetime=		"3"
-					animateOpacity= "fade"
+					animate=        "fade"
 					>
 				<Events>
 					<GetParameters>
@@ -127,7 +127,7 @@
 					secondaryColor=	"#808417"
 					
 					lifetime=		"3"
-					animateOpacity= "fade"
+					animate=        "fade"
 					>
 				<Events>
 					<GetParameters>
@@ -157,7 +157,7 @@
 					xformRotation=	"180"
 					
 					lifetime=		"3"
-					animateOpacity= "fade"
+					animate=        "fade"
 					>
 				<Events>
 					<GetParameters>
@@ -210,7 +210,7 @@
 					secondaryColor=	"#006b80"
 					
 					lifetime=		"3"
-					animateOpacity= "fade"
+					animate=        "fade"
 					>
 				<Events>
 					<GetParameters>
@@ -240,7 +240,7 @@
 					xformRotation=	"180"
 					
 					lifetime=		"3"
-					animateOpacity= "fade"
+					animate=        "fade"
 					>
 				<Events>
 					<GetParameters>
@@ -293,7 +293,7 @@
 					secondaryColor=	"#806a00"
 					
 					lifetime=		"3"
-					animateOpacity= "fade"
+					animate=        "fade"
 					>
 				<Events>
 					<GetParameters>

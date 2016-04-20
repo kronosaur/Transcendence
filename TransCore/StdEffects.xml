@@ -145,7 +145,7 @@
 					secondaryColor=	"#00ff00"
 					
 					lifetime=		"3"
-					animateOpacity= "fade"
+					animate=        "fade"
 					>
 				<Events>
 					<GetParameters>
