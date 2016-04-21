@@ -432,11 +432,24 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 				case designStationType:
 					{
 					CStationType *pStationType = CStationType::AsType(Entry.pType);
+                    int xStationCenter = xCenter - xOffset;
+                    int yStationCenter = yCenter - yOffset;
+
 					if (bDockingPorts)
-						pStationType->PaintDockPortPositions(Output, xCenter - xOffset, yCenter - yOffset);
+						pStationType->PaintDockPortPositions(Output, xStationCenter, yStationCenter);
 
 					if (bDevicePos)
-						pStationType->PaintDevicePositions(Output, xCenter - xOffset, yCenter -yOffset);
+						pStationType->PaintDevicePositions(Output, xStationCenter, yStationCenter);
+
+                    //  If we have docking or device positions, mark the center of the station
+
+                    if (bDockingPorts || bDevicePos)
+                        {
+                        const int LINE_HALF_LENGTH = 24;
+                        const CG32bitPixel RGB_CENTER_CROSS(255, 255, 0);
+                        Output.DrawLine(xStationCenter - LINE_HALF_LENGTH, yStationCenter, xStationCenter + LINE_HALF_LENGTH, yStationCenter, 1, RGB_CENTER_CROSS);
+                        Output.DrawLine(xStationCenter, yStationCenter - LINE_HALF_LENGTH, xStationCenter, yStationCenter + LINE_HALF_LENGTH, 1, RGB_CENTER_CROSS);
+                        }
 					break;
 					}
 				}
