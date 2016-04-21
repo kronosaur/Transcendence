@@ -6,7 +6,7 @@
 
 	This screen is used to show simple dialog.
 
-	gData is a list of paneDesc. Each screenDesc has the following fields:
+	gData is a list of paneDesc. Each paneDesc has the following fields:
 	
 		desc: The description to show for the pane. [This should be literal text
 				after translation.]
