@@ -34,17 +34,19 @@
 					)
 				))
 
-			(setq rpgBuyItem (lambda (theObj theItem thePrice theCurrency)
+			(setq rpgBuyItem (lambda (theObj theItem thePrice theCurrency options)
 				(block Nil
 					; Add to player ship
-					(objAddItem gPlayerShip theItem)
+                    (if (not (@ options 'noAddItem))
+					    (objAddItem gPlayerShip theItem)
+                        )
 					
 					; Charge the player
 					(objCharge gPlayerShip theCurrency thePrice)
 					(plyRecordBuyItem gPlayer theItem theCurrency thePrice)
 
 					; Add to station balance
-					(objCredit gSource theCurrency thePrice)
+					(objCredit theObj theCurrency thePrice)
 
 					; If the player bought items at a black market station then
 					; increase xp
