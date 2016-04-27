@@ -1454,6 +1454,7 @@
 								)
 							
 							cargoNeeded itemToReplace resultMessage resultCode returnValue stationCannotInstall removeStatus
+                            installText installTextData
 							)
 						
 							;	Compute the cost to install
@@ -1489,41 +1490,55 @@
 								stationCannotInstall
 									(if (@ status 'descID)
 										(setq desc (objTranslate installerObj (@ status 'descID) { item:thisItem targetObj:targetObj }))
-										(setq desc (cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip "."))
+										(setq desc (or
+                                            (objTranslate installerObj 'rpg.noTechToInstallDevice { item:thisItem targetObj:targetObj })
+                                            (cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip ".")
+                                            ))
 										)
 									
-								;	If we don't match the tech criteria then we don't have the
-								;	technology to install.
+                                (or
+								        ;	If we don't match the tech criteria then we don't have the
+								        ;	technology to install.
 								
-								(and (@ data 'techCriteria)
-										(not (itmMatches thisItem (@ data 'techCriteria)))
-										)
-									(setq desc (cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip "."))
+								        (and (@ data 'techCriteria)
+										    (not (itmMatches thisItem (@ data 'techCriteria)))
+										    )
+                                            
+								        ;	If our max tech level is too low for the item, then we can't install
+								        ;	(except for specific items that we know about)
 								
-								;	If our max tech level is too low for the item, then we can't install
-								;	(except for specific items that we know about)
-								
-								(and (gr (itmGetLevel thisItem) (if (@ data 'maxTechLevel) (@ data 'maxTechLevel) 30))
-										(or (not (@ data 'techCriteriaOverride))
-											(not (itmMatches thisItem (@ data 'techCriteriaOverride)))
-											)
-										)
-									(setq desc (cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip "."))
-
-								(and (not totalCost)
-										(gr (itmGetLevel thisItem) (objGetProperty installerObj 'installDeviceMaxLevel))
-										)
-									(setq desc (cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip "."))
-
+								        (and (gr (itmGetLevel thisItem) (if (@ data 'maxTechLevel) (@ data 'maxTechLevel) 30))
+										    (or (not (@ data 'techCriteriaOverride))
+											    (not (itmMatches thisItem (@ data 'techCriteriaOverride)))
+											    )
+										    )
+                                            
+                                        ;   If we exceed the station's tech
+                                        
+								        (and (not totalCost)
+										    (gr (itmGetLevel thisItem) (objGetProperty installerObj 'installDeviceMaxLevel))
+										    )
+                                        )
+									(setq desc (or
+                                        (objTranslate installerObj 'rpg.noTechToInstallDevice { item:thisItem targetObj:targetObj })
+                                        (cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip ".")
+                                        ))
+                                        
 								(not totalCost)
-									(setq desc (cat (strCapitalize textWe) " cannot install " itemName " on " textYourShip "."))
+									(setq desc (or
+                                        (objTranslate installerObj 'rpg.cannotInstallDevice { item:thisItem targetObj:targetObj })
+                                        (cat (strCapitalize textWe) " cannot install " itemName " on " textYourShip ".")
+                                        ))
 									
 								;	Some stations only install an item if you purchase it from them.
 								
 								(and (@ status 'upgradeInstallOnly)
 										(not (@ data 'upgrade))
 										)
-									(setq desc (cat "Sorry, installation services are only available for purchased upgrades."))
+									(setq desc (or
+                                        (objTranslate installerObj 'rpg.cannotInstallDeviceWithoutUpgrade { item:thisItem targetObj:targetObj })
+                                        (cat "Sorry, installation services are only available for purchased upgrades.")
+                                        ))
 									
 								;	Check military ID
 
@@ -1531,39 +1546,60 @@
 										(itmHasModifier thisItem "Military")
 										(not (objGetItems targetObj "*+MilitaryID"))
 										)
-									(setq desc (cat "You must have a military ID to use " itemName "."))
+									(setq desc (or
+                                        (objTranslate installerObj 'rpg.cannotInstallDeviceWithoutMilitaryID { item:thisItem targetObj:targetObj })
+                                        (cat "You must have a military ID to use " itemName ".")
+                                        ))
 									
 								(and (@ data 'checkMilitaryID)
 										(itmHasModifier thisItem "Illegal")
 										)
-									(setq desc "We do not install illegal items.")
+									(setq desc (or
+                                        (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseIllegal { item:thisItem targetObj:targetObj })
+                                        "We do not install illegal items."
+                                        ))
 
 								(eq resultCode 'cannotInstall)
 									(setq desc resultMessage)
 
 								(eq resultCode 'noDeviceSlotsLeft)
-									(if (gr (itmGetProperty thisItem 'deviceSlots) 1)
-										(setq desc (cat (strCapitalize textYourShip) " does not have enough open device slots to install this device."))
-										(setq desc (cat (strCapitalize textYourShip) " does not have an open device slot for this device."))
-										)
+                                    (setq desc (or
+                                        (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseLackOfSlots { item:thisItem targetObj:targetObj slotsRequired:(itmGetProperty thisItem 'deviceSlots) })
+									    (if (gr (itmGetProperty thisItem 'deviceSlots) 1)
+										    (cat (strCapitalize textYourShip) " does not have enough open device slots to install this device.")
+										    (cat (strCapitalize textYourShip) " does not have an open device slot for this device.")
+										    )
+                                        ))
 
 								(eq resultCode 'reactorTooWeak)
-									(setq desc (cat (strCapitalize textYourShip) "'s reactor is not powerful enough for this device."))
+									(setq desc (or
+                                        (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseReactorTooWeak { item:thisItem targetObj:targetObj })
+                                        (cat (strCapitalize textYourShip) "'s reactor is not powerful enough for this device.")
+                                        ))
 
 								(eq resultCode 'reactorIncompatible)
-									(setq desc (cat "The power output of " itemName " is too high for " textYourShip "."))
+									(setq desc (or
+                                        (objTranslate installerObj 'rpg.cannotInstallReactorBecauseTooStrong { item:thisItem targetObj:targetObj })
+                                        (cat "The power output of " itemName " is too high for " textYourShip ".")
+                                        ))
 
 								(eq resultCode 'noWeaponSlotsLeft)
-									(if (gr (itmGetProperty thisItem 'deviceSlots) 1)
-										(setq desc (cat (strCapitalize textYourShip) " does not have enough open weapon slots to install this device."))
-										(setq desc (cat (strCapitalize textYourShip) " does not have an open weapon slot for this device."))
-										)
+                                    (setq desc (or
+                                        (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseLackOfWeaponSlots { item:thisItem targetObj:targetObj slotsRequired:(itmGetProperty thisItem 'deviceSlots) })
+									    (if (gr (itmGetProperty thisItem 'deviceSlots) 1)
+										    (cat (strCapitalize textYourShip) " does not have enough open weapon slots to install this device.")
+										    (cat (strCapitalize textYourShip) " does not have an open weapon slot for this device.")
+										    )
+                                        ))
 								
 								(eq resultCode 'noNonWeaponSlotsLeft)
-									(if (gr (itmGetProperty thisItem 'deviceSlots) 1)
-										(setq desc (cat (strCapitalize textYourShip) " does not have enough open non-weapon slots to install this device."))
-										(setq desc (cat (strCapitalize textYourShip) " does not have an open non-weapon slot for this device."))
-										)
+                                    (setq desc (or
+                                        (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseLackOfNonWeaponSlots { item:thisItem targetObj:targetObj slotsRequired:(itmGetProperty thisItem 'deviceSlots) })
+									    (if (gr (itmGetProperty thisItem 'deviceSlots) 1)
+										    (cat (strCapitalize textYourShip) " does not have enough open non-weapon slots to install this device.")
+										    (cat (strCapitalize textYourShip) " does not have an open non-weapon slot for this device.")
+										    )
+                                        ))
 									
 								(and (eq resultCode 'replacementRequired)
 										(eq (itmGetType thisItem) (itmGetType itemToReplace))
@@ -1571,19 +1607,35 @@
 										(eq (itmGetProperty thisItem 'damaged) (itmGetProperty itemToReplace 'damaged))
 										(geq (itmGetProperty thisItem 'charges) (itmGetProperty itemToReplace 'charges))
 										)
-									(setq desc (cat (strCapitalize textYourShip) " already has " itemName " (and cannot support more devices unless you remove one first)."))
+									(setq desc (or
+                                        (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseAlreadyInstalled { item:thisItem targetObj:targetObj })
+                                        (cat (strCapitalize textYourShip) " already has " itemName " (and cannot support more devices unless you remove one first).")
+                                        ))
 									
 								(eq resultCode 'replacementRequired)
 									(block Nil
-										(setq desc (cat (strCapitalize textWe) " can remove " textYour " " (itmGetName itemToReplace 0x80) " and install " itemName))
+										(setq desc (or
+                                            (objTranslate installerObj 'rpg.installDeviceAfterRemove { item:thisItem targetObj:targetObj itemToReplace:itemToReplace })
+                                            (cat (strCapitalize textWe) " can remove " textYour " " (itmGetName itemToReplace 0x80) " and install " itemName)
+                                            ))
+                                        (setq installText 'rpg.installDeviceAfterRemove)
+                                        (setq installTextData { item:thisItem targetObj:targetObj itemToReplace:itemToReplace })
 										(setq canInstall True)
 										)
 									
 								(not (eq resultCode 'ok))
-									(setq desc "This device cannot be installed.")
+									(setq desc (or
+                                        (objTranslate installerObj 'rpg.cannotInstallDevice { item:thisItem targetObj:targetObj })
+                                        "This device cannot be installed."
+                                        ))
 
 								(block Nil
-									(setq desc (cat (strCapitalize textWe) " can install " itemName " on " textYourShip))
+									(setq desc (or
+                                        (objTranslate installerObj 'rpg.installDevice { item:thisItem targetObj:targetObj })
+                                        (cat (strCapitalize textWe) " can install " itemName " on " textYourShip)
+                                        ))
+                                    (setq installText 'rpg.installDevice)
+                                    (setq installTextData { item:thisItem targetObj:targetObj })
 									(setq canInstall True)
 									)
 								)
@@ -1614,7 +1666,10 @@
 									(neq (setq removeStatus (shpCanRemoveDevice targetObj itemToReplace)) 0)
 									)
 								(block Nil
-									(setq desc (cat desc ". " (if (isint removeStatus) "Unfortunately, you cannot remove the device." removeStatus)))
+									(setq desc (or
+                                        (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseCannotRemove { item:thisItem targetObj:targetObj itemToReplace:itemToReplace removeStatus:removeStatus })
+                                        (cat desc ". " (if (isint removeStatus) "Unfortunately, you cannot remove the device." removeStatus))
+                                        ))
 									(setq canInstall Nil)
 									)
 								)
@@ -1626,7 +1681,10 @@
 									(not (@ data 'noCargoCheck))
 									)
 								(block Nil
-									(setq desc (cat desc ". Unfortunately, there isn't enough room in your cargo hold to do the swap."))
+									(setq desc (or
+                                        (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseNoRoomInCargo { item:thisItem targetObj:targetObj itemToReplace:itemToReplace removeStatus:removeStatus })
+                                        (cat desc ". Unfortunately, there isn't enough room in your cargo hold to do the swap.")
+                                        ))
 									(setq canInstall Nil)
 									)
 								)
@@ -1637,25 +1695,42 @@
 								(if (gr totalCost 0)
 									(if (gr totalCost (objGetBalance targetObj currencyUsed))
 										(block Nil
-											(setq desc (cat desc " for " (fmtCurrency currencyUsed totalCost) ". Unfortunately, you cannot afford the cost."))
+											(setq desc (or
+                                                (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseCannotAfford { item:thisItem targetObj:targetObj cost:(fmtCurrency currencyUsed totalCost) itemToReplace:itemToReplace removeStatus:removeStatus })
+                                                (cat desc " for " (fmtCurrency currencyUsed totalCost) ". Unfortunately, you cannot afford the cost.")
+                                                ))
 											(setq canInstall Nil)
 											)
-										(setq desc 
-											(cat 
-												desc " for " (if (@ data 'buyAndInstall) "an additional " "") 
+                                        (block (
+                                            (advertisedCost 
 												(if (or (@ data 'upgrade) (@ data 'installPriceAdj))
 													(fmtCurrency currencyUsed totalCost)
 													(fmtCurrency currencyUsed (subtract totalCost itemPrice))
 													)
-												"."
-												)
-											)
+                                                )
+                                            )
+										    (setq desc (or
+                                                (objTranslate 
+                                                    installerObj 
+                                                    installText
+                                                    (struct installTextData { cost:advertisedCost buyAndInstall:(@ data 'buyAndInstall) })
+                                                    )
+											    (cat 
+												    desc " for " (if (@ data 'buyAndInstall) "an additional " "") 
+												    advertisedCost
+												    "."
+												    )
+											    ))
+                                            )
 										)
 										
-									(if (not (eq installerObj gPlayerShip))
-										(setq desc (cat desc " at no charge."))
-										(setq desc (cat desc "."))
-										)
+                                    (setq desc (or
+                                        (objTranslate installerObj installText (struct installTextData { selfInstall:(eq installerObj gPlayerShip) }))
+									    (if (not (eq installerObj gPlayerShip))
+										    (cat desc " at no charge.")
+										    (cat desc ".")
+										    )
+                                        ))
 									)
 								)
 								
