@@ -63,7 +63,7 @@ CDockScreenActions::~CDockScreenActions (void)
 	CleanUp();
 	}
 
-ALERROR CDockScreenActions::AddAction (const CString &sID, int iPos, const CString &sLabel, CExtension *pExtension, ICCItem *pCode, int *retiAction)
+ALERROR CDockScreenActions::AddAction (const CString &sID, int iPos, const CString &sLabel, CExtension *pExtension, ICCItem *pCode, bool bMinor, int *retiAction)
 
 //	AddAction
 //
@@ -86,7 +86,7 @@ ALERROR CDockScreenActions::AddAction (const CString &sID, int iPos, const CStri
 
 	pAction->bVisible = true;
 	pAction->bEnabled = true;
-	pAction->bMinor = false;
+	pAction->bMinor = bMinor;
 
 	//	Set the label, etc.
 

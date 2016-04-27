@@ -1659,6 +1659,7 @@ class CTranscendenceModel
 		void OnPlayerExitedGate (void);
 		void OnPlayerTraveledThroughGate (void);
 		inline ICCItem *GetScreenData (const CString &sAttrib) { return m_DockFrames.GetData(sAttrib); }
+        inline CDockScreenStack &GetScreenStack (void) { return m_DockFrames; }
 		ALERROR EndGame (void);
 		ALERROR EndGame (const CString &sReason, const CString &sEpitaph, int iScoreChange = 0);
 		ALERROR EndGameClose (CString *retsError = NULL);

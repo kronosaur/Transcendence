@@ -80,6 +80,8 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_IS_ACTION_ENABLED	24
 #define FN_SCR_BACKGROUND_IMAGE		25
 #define FN_SCR_CONTROL_VALUE_TRANSLATE  26
+#define FN_SCR_GET_SCREEN           27
+#define FN_SCR_ADD_MINOR_ACTION		28
 
 ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -153,6 +155,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(scrAddAction screen actionID pos label [key] [special] code)",
 			"isis*c",	PPFLAG_SIDEEFFECTS, },
 
+		{	"scrAddMinorAction",			fnScrSet,		FN_SCR_ADD_MINOR_ACTION,
+			"(scrAddMinorAction screen actionID pos label [key] [special] code)",
+			"isis*c",	PPFLAG_SIDEEFFECTS, },
+
 		{	"scrEnableAction",				fnScrSet,		FN_SCR_ENABLE_ACTION,
 			"(scrEnableAction screen actionID enabled)",
 			"ivv",	PPFLAG_SIDEEFFECTS, },
@@ -184,6 +190,17 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		{	"scrGetListEntry",				fnScrGetOld,		FN_SCR_LIST_ENTRY,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(scrGetListEntry screen) -> entry
+
+		{	"scrGetScreen",				    fnScrGet,		FN_SCR_GET_SCREEN,
+            "(scrGetScreen gScreen) -> screenDesc\n\n"
+
+            "screenDesc:\n\n"
+
+            "   'screen: Current screen\n"
+            "   'pane: Current pane\n"
+            "   'data: Associated data",
+
+            "i",	0,	},
 
 		{	"scrIsActionEnabled",			fnScrGet,		FN_SCR_IS_ACTION_ENABLED,	
 			"(scrIsActionEnabled screen actionID) -> True/Nil",		
@@ -1269,6 +1286,31 @@ ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateString(sDesc);
 			}
 
+        case FN_SCR_GET_SCREEN:
+            {
+            const CDockScreenStack &DockFrames = g_pTrans->GetModel().GetScreenStack();
+            if (DockFrames.IsEmpty())
+                return pCC->CreateNil();
+
+            const SDockFrame &CurFrame = DockFrames.GetCurrent();
+            CString sScreen = CurFrame.sScreen;
+
+            ICCItem *pResult = pCC->CreateSymbolTable();
+
+            bool bNotUNID;
+            DWORD dwScreen = strToInt(sScreen, 0, &bNotUNID);
+            if (bNotUNID)
+                pResult->SetStringAt(*pCC, CONSTLIT("screen"), sScreen);
+            else
+                pResult->SetIntegerAt(*pCC, CONSTLIT("screen"), dwScreen);
+
+            pResult->SetStringAt(*pCC, CONSTLIT("pane"), CurFrame.sPane);
+            if (CurFrame.pStoredData)
+                pResult->SetAt(*pCC, CONSTLIT("data"), CurFrame.pStoredData);
+
+            return pResult;
+            }
+
 		case FN_SCR_IS_ACTION_ENABLED:
 			{
 			//	Only if valid
@@ -1436,6 +1478,7 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			}
 
 		case FN_SCR_ADD_ACTION:
+		case FN_SCR_ADD_MINOR_ACTION:
 			{
 			CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
 
@@ -1443,6 +1486,7 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			CString sID = pArgs->GetElement(1)->GetStringValue();
 			int iPos = (pArgs->GetElement(2)->IsNil() ? -1 : pArgs->GetElement(2)->GetIntegerValue());
 			CString sLabel = pArgs->GetElement(3)->GetStringValue();
+            bool bMinor = (dwData == FN_SCR_ADD_MINOR_ACTION);
 			
 			int iArg = 4;
 			CString sKey;
@@ -1476,7 +1520,7 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Add the action
 
 			int iAction;
-			if (Actions.AddAction(sID, iPos, sLabel, pCtx->GetExtension(), pCode, &iAction) != NOERROR)
+			if (Actions.AddAction(sID, iPos, sLabel, pCtx->GetExtension(), pCode, bMinor, &iAction) != NOERROR)
 				return pCC->CreateError(CONSTLIT("Unable to add action"), pArgs->GetElement(1));
 
 			//	Set key and special

@@ -229,6 +229,7 @@ class CGSelectorArea : public AGArea
 		enum EConfigurations
 			{
 			configArmor,
+            configDevices,
 			configMiscDevices,
 			configWeapons,
 			};
@@ -244,6 +245,22 @@ class CGSelectorArea : public AGArea
 			movePrev,						//	Move to previous region
 			};
 
+        struct SOptions
+            {
+            SOptions (void) :
+                    iConfig(configDevices),
+                    bNoEmptySlots(false),
+                    bAlwaysShowShields(false)
+                {
+                CItem::InitCriteriaAll(&ItemCriteria);
+                }
+
+            EConfigurations iConfig;
+            CItemCriteria ItemCriteria;
+            bool bNoEmptySlots;
+            bool bAlwaysShowShields;
+            };
+
 		CGSelectorArea (const CVisualPalette &VI);
 		~CGSelectorArea (void);
 
@@ -258,7 +275,8 @@ class CGSelectorArea : public AGArea
         inline void SetBackColor (CG32bitPixel rgbColor) { m_rgbBackColor = rgbColor; }
         inline void SetColor (CG32bitPixel rgbColor) { m_rgbTextColor = rgbColor; }
 		inline void SetCursor (int iIndex) { m_iCursor = iIndex; Invalidate(); }
-		void SetRegions (CSpaceObject *pSource, EConfigurations iConfig);
+		void SetRegions (CSpaceObject *pSource, const SOptions &Options);
+        void SetSlotNameAtCursor (const CString &sName);
 		void SyncCursor (void) { if (m_iCursor != -1 && m_iCursor >= m_Regions.GetCount()) m_iCursor = m_Regions.GetCount() - 1; }
 
 		//	AGArea virtuals
@@ -294,6 +312,7 @@ class CGSelectorArea : public AGArea
 			ETypes iType;					//	Type of entry
 			CItemCtx *pItemCtx;				//	Item represented (may be NULL)
 			DeviceNames iSlotType;			//	Type of slot (if empty)
+            CString sSlotName;              //  If empty
 
 			int iSlotPosIndex;				//	Position index
 			RECT rcRect;					//	Location of region (always relative to the center
@@ -309,6 +328,7 @@ class CGSelectorArea : public AGArea
 		void PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect, const SEntry &Entry);
 		void PaintModifier (CG32bitImage &Dest, int x, int y, const CString &sText, CG32bitPixel rgbColor, CG32bitPixel rgbBackColor, int *rety);
 		void SetRegionsFromArmor (CSpaceObject *pSource);
+		void SetRegionsFromDevices (CSpaceObject *pSource);
 		void SetRegionsFromMiscDevices (CSpaceObject *pSource);
 		void SetRegionsFromWeapons (CSpaceObject *pSource);
 
@@ -317,6 +337,11 @@ class CGSelectorArea : public AGArea
         CG32bitPixel m_rgbBackColor;
 
 		CSpaceObject *m_pSource;
+        CItemCriteria m_Criteria;
+        bool m_bNoEmptySlots;               //  Do not show empty slots
+        bool m_bAlwaysShowShields;          //  Always show shields in armor selected, even
+                                            //      if not part of criteria
+
 		TArray<SEntry> m_Regions;
 		int m_iCursor;
 	};

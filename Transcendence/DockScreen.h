@@ -62,7 +62,8 @@ class IDockScreenDisplay
 
 		struct SDisplayOptions
 			{
-			SDisplayOptions (void)
+			SDisplayOptions (void) :
+                    bNoEmptySlots(false)
 				{
 				rcControl.left = 0;
 				rcControl.top = 0;
@@ -79,7 +80,14 @@ class IDockScreenDisplay
 			CString sCode;					//	Code to generate list
 			CString sInitialItemCode;		//	Code to select initial item in list
 
+            //  Custom lists
+
 			CString sRowHeightCode;			//	For custom lists
+
+            //  Selectors
+
+            CString sSlotNameCode;          //  Code to name each slot
+            bool bNoEmptySlots;             //  If TRUE, don't show empty slots
 			};
 
 		virtual ~IDockScreenDisplay (void) { }
@@ -159,7 +167,7 @@ class CDockScreenActions
 		CDockScreenActions (void) : m_pData(NULL), m_cxJustify(-1) { }
 		~CDockScreenActions (void);
 
-		ALERROR AddAction (const CString &sID, int iPos, const CString &sLabel, CExtension *pExtension, ICCItem *pCode, int *retiAction);
+		ALERROR AddAction (const CString &sID, int iPos, const CString &sLabel, CExtension *pExtension, ICCItem *pCode, bool bMinor, int *retiAction);
 		int CalcAreaHeight (CDesignType *pRoot, const RECT &rcFrame);
 		void CleanUp (void);
 		void CreateButtons (const CDockScreenVisuals &DockScreenVisuals, CGFrameArea *pFrame, CDesignType *pRoot, DWORD dwFirstTag, const RECT &rcFrame);

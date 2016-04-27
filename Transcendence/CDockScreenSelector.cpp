@@ -150,6 +150,20 @@ ALERROR CDockScreenSelector::OnInit (SInitCtx &Ctx, const SDisplayOptions &Optio
 	if (pListSource == NULL)
 		return ERR_FAIL;
 
+    //  Generate options for selector control
+
+    CGSelectorArea::SOptions SelOptions;
+    SelOptions.iConfig = m_iConfig;
+    CItem::ParseCriteria(Options.sItemCriteria, &SelOptions.ItemCriteria);
+    SelOptions.bNoEmptySlots = Options.bNoEmptySlots;
+
+    //  If we're on API < 30, then we always show shields on armor selectors
+    //  (for backwards compatibility). Otherwise, we will rely on the item
+    //  criteria.
+
+    if (Ctx.pRoot && Ctx.pRoot->GetAPIVersion() < 30)
+        SelOptions.bAlwaysShowShields = true;
+
 	//	Create the selector control
 
 	m_pControl = new CGSelectorArea(*Ctx.pVI);
@@ -169,30 +183,53 @@ ALERROR CDockScreenSelector::OnInit (SInitCtx &Ctx, const SDisplayOptions &Optio
 
 	//	Initialize the control
 
-	m_pControl->SetRegions(pListSource, m_iConfig);
+	m_pControl->SetRegions(pListSource, SelOptions);
 
-	//	Position the cursor
+    //  If we have code to set slot names, then execute now.
 
-	SelectNextItem();
+    if (!Options.sSlotNameCode.IsBlank())
+        {
+        m_pControl->ResetCursor();
+        while (SelectNextItem())
+            {
+            //  We only care about empty slots
+
+            if (m_pControl->GetItemAtCursor().IsEmpty())
+                {
+                CString sName;
+                if (!EvalString(Options.sSlotNameCode, false, eventNone, &sName))
+                    {
+                    if (retsError) *retsError = sName;
+                    return ERR_FAIL;
+                    }
+
+                m_pControl->SetSlotNameAtCursor(sName);
+                }
+            }
+
+        m_pControl->ResetCursor();
+        }
 
 	//	Give the screen a chance to start at a different item (other
 	//	than the first)
 
-	if (!Options.sInitialItemCode.IsBlank())
-		{
-		bool bMore = IsCurrentItemValid();
-		while (bMore)
-			{
-			bool bResult;
-			if (!EvalBool(Options.sInitialItemCode, &bResult, retsError))
-				return ERR_FAIL;
+    if (!Options.sInitialItemCode.IsBlank())
+        {
+        while (SelectNextItem())
+            {
+            bool bResult;
+            if (!EvalBool(Options.sInitialItemCode, &bResult, retsError))
+                return ERR_FAIL;
 
-			if (bResult)
-				break;
+            if (bResult)
+                break;
+            }
+        }
 
-			bMore = SelectNextItem();
-			}
-		}
+    //  Otherwise, we start at the first item
+
+    else
+        SelectNextItem();
 
 	return NOERROR;
 	}

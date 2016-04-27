@@ -13,9 +13,11 @@
 #define HEIGHT_ATTRIB				CONSTLIT("height")
 #define INITIAL_ITEM_ATTRIB			CONSTLIT("initialItem")
 #define LIST_ATTRIB					CONSTLIT("list")
+#define NO_EMPTY_SLOTS_ATTRIB		CONSTLIT("noEmptySlots")
 #define POS_X_ATTRIB				CONSTLIT("posX")
 #define POS_Y_ATTRIB				CONSTLIT("posY")
 #define ROW_HEIGHT_ATTRIB			CONSTLIT("rowHeight")
+#define SLOT_NAME_ATTRIB			CONSTLIT("slotName")
 #define WIDTH_ATTRIB				CONSTLIT("width")
 
 #define DATA_FROM_PLAYER			CONSTLIT("player")
@@ -128,6 +130,11 @@ bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retO
 	retOptions->sCode = pOptions->GetContentText(0);
 	retOptions->sInitialItemCode = pOptions->GetAttribute(INITIAL_ITEM_ATTRIB);
 	retOptions->sRowHeightCode = pOptions->GetAttribute(ROW_HEIGHT_ATTRIB);
+
+    //  Selector options
+
+    retOptions->bNoEmptySlots = pOptions->GetAttributeBool(NO_EMPTY_SLOTS_ATTRIB);
+    retOptions->sSlotNameCode = pOptions->GetAttribute(SLOT_NAME_ATTRIB);
 
 	//	See if we have control position
 
