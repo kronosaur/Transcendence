@@ -1346,10 +1346,21 @@
                         
                     ;   Add button to exit
                     
-                    (if (@ curScreenDesc 'mainScreen)
-                        (scrAddMinorAction gScreen "ScreenSetNav_Exit" Nil "[Escape] Done"
-    					    (scrExitScreen gScreen)
-                            )
+                    (switch
+                        ;   If no screen set, then just add a normal done button
+                        
+                        (not screenSet)
+                            (scrAddAction gScreen 'actionDone Nil "" (scrExitScreen gScreen))
+                            
+                        ;   If we're on the root/main screen then we only need a single exit
+                        
+                        (@ curScreenDesc 'mainScreen)
+                            (scrAddMinorAction gScreen "ScreenSetNav_Exit" Nil "[Escape] Done"
+    					        (scrExitScreen gScreen)
+                                )
+                                
+                        ;   Otherwise, we need a double exit
+                        
                         (scrAddMinorAction gScreen "ScreenSetNav_Exit" Nil "[Escape] Done"
                             (block ()
 							    (scrExitScreen gScreen)
