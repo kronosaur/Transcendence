@@ -130,6 +130,7 @@ CTranscendenceModel::CTranscendenceModel (CHumanInterface &HI) :
 		m_bForceTDB(false),
 		m_bNoSound(false),
 		m_bNoMissionCheckpoint(false),
+        m_bNoCollectionLoad(false),
 		m_pPlayer(NULL),
 		m_pResurrectType(NULL),
 		m_pCrawlImage(NULL),
@@ -1063,6 +1064,7 @@ ALERROR CTranscendenceModel::Init (const CGameSettings &Settings)
 	m_bForceTDB = Settings.GetBoolean(CGameSettings::useTDB);
 	m_bNoMissionCheckpoint = Settings.GetBoolean(CGameSettings::noMissionCheckpoint);
 	m_bNoSound = Settings.GetBoolean(CGameSettings::noSound);
+    m_bNoCollectionLoad = Settings.GetBoolean(CGameSettings::noCollectionLoad);
 
 	return NOERROR;
 	}
@@ -1413,6 +1415,7 @@ ALERROR CTranscendenceModel::LoadUniverse (const CString &sCollectionFolder, con
 		Ctx.dwAdventure = dwAdventure;
         Ctx.ExtensionUNIDs = Extensions;
 		Ctx.bForceTDB = m_bForceTDB;
+        Ctx.bNoCollectionLoad = m_bNoCollectionLoad;
 
 		//	Add additional CodeChain primitives
 

@@ -1118,6 +1118,10 @@ void CIntroSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 				m_HI.HICommand(CONSTLIT("uiShowGameStats"));
 				break;
 
+            case VK_F3:
+                m_HI.HICommand(CONSTLIT("uiShowSettings"));
+                break;
+
             case VK_F11:
                 SetExpanded(!m_bExpanded);
                 break;

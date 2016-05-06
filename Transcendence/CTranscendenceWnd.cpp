@@ -2052,6 +2052,10 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 								g_pHI->HICommand(CONSTLIT("uiShowGameStats"));
 								break;
 
+                            case VK_F3:
+                                g_pHI->HICommand(CONSTLIT("uiShowSettings"));
+                                break;
+
 							default:
 								{
 								//	Let the dock screen handle it.

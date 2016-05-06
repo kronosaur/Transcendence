@@ -396,6 +396,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='SteamRelease|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="CKeyboardMapSession.cpp" />
     <ClCompile Include="CLoadGameWithSignInTask.cpp" />
     <ClCompile Include="CLRSDisplay.cpp" />
     <ClCompile Include="CodeChainExtensions.cpp">
@@ -747,6 +748,7 @@
     <ClInclude Include="Credits.h" />
     <ClInclude Include="DockScreen.h" />
     <ClInclude Include="DockScreenDisplayImpl.h" />
+    <ClInclude Include="GameSettings.h" />
     <ClInclude Include="IntroSession.h" />
     <ClInclude Include="PreComp.h" />
     <ClInclude Include="resource.h" />

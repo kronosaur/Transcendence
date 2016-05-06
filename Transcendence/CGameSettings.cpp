@@ -94,6 +94,7 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"debugVideo",				optionBoolean,	"false",	0	},
 		{	"noCrashPost",				optionBoolean,	"false",	0	},
 		{	"noCollectionDownload",		optionBoolean,	"false",	0	},
+		{	"noCollectionLoad",		    optionBoolean,	"false",	0	},
 		{	"debugSoundtrack",			optionBoolean,	"false",	0	},
 	};
 
@@ -336,7 +337,7 @@ ALERROR CGameSettings::Save (const CString &sFilespec)
 	int i;
 	ALERROR error;
 
-	if (!m_bModified)
+	if (!m_bModified && !m_KeyMap.IsModified())
 		return NOERROR;
 
 	//	Settings file

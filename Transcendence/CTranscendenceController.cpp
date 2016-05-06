@@ -125,6 +125,7 @@
 #define CMD_UI_SHOW_LOGIN						CONSTLIT("uiShowLogin")
 #define CMD_UI_SHOW_MOD_EXCHANGE				CONSTLIT("uiShowModExchange")
 #define CMD_UI_SHOW_PROFILE						CONSTLIT("uiShowProfile")
+#define CMD_UI_SHOW_SETTINGS    				CONSTLIT("uiShowSettings")
 #define CMD_UI_SIGN_OUT							CONSTLIT("uiSignOut")
 #define CMD_UI_START_EPILOGUE					CONSTLIT("uiStartEpilogue")
 #define CMD_UI_START_GAME						CONSTLIT("uiStartGame")
@@ -1281,6 +1282,14 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			return error;
 		}
 
+    //  Show game settings
+
+    else if (strEquals(sCmd, CMD_UI_SHOW_SETTINGS))
+        {
+        if (error = m_HI.OpenPopupSession(new CKeyboardMapSession(m_HI, m_Service, m_Settings)))
+            return error;
+        }
+
 	//	Volume controls
 
 	else if (strEquals(sCmd, CMD_UI_MUSIC_VOLUME_DOWN))
@@ -1483,6 +1492,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	task to process the download.
 
 		else if (!m_Settings.GetBoolean(CGameSettings::noCollectionDownload)
+                && !m_Settings.GetBoolean(CGameSettings::noCollectionLoad)
 				&& RequestCatalogDownload(Download))
 			{
 			m_iBackgroundState = stateDownloadingCatalogEntry;
@@ -1606,7 +1616,8 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SERVICE_DOWNLOAD_RESOURCES))
 		{
-		if (!m_Settings.GetBoolean(CGameSettings::noCollectionDownload))
+		if (!m_Settings.GetBoolean(CGameSettings::noCollectionDownload)
+                && !m_Settings.GetBoolean(CGameSettings::noCollectionLoad))
 			{
 			TArray<CString> LocalFilenames;
 			g_pUniverse->GetExtensionCollection().GetRequiredResources(&LocalFilenames);

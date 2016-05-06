@@ -9,11 +9,11 @@ class CAdventureIntroSession : public IHISession
 		CAdventureIntroSession (CHumanInterface &HI, CCloudService &Service, const CString &sAdventureName);
 
 		//	IHISession virtuals
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
-		virtual void OnReportHardCrash (CString *retsMessage);
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override;
+		virtual ALERROR OnInit (CString *retsError) override;
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
+		virtual void OnReportHardCrash (CString *retsMessage) override;
 
 	private:
 		void CmdDone (void);
@@ -28,11 +28,11 @@ class CChangePasswordSession : public IHISession
 		CChangePasswordSession (CHumanInterface &HI, CCloudService &Service);
 
 		//	IHISession virtuals
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
-		virtual void OnReportHardCrash (CString *retsMessage);
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override;
+		virtual ALERROR OnInit (CString *retsError) override;
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
+		virtual void OnReportHardCrash (CString *retsMessage) override;
 
 	private:
 		void CmdCancel (void);
@@ -50,12 +50,12 @@ class CChooseAdventureSession : public IHISession
 		CChooseAdventureSession (CHumanInterface &HI, CCloudService &Service, CGameSettings &Settings);
 
 		//	IHISession virtuals
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags);
-		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
-		virtual void OnReportHardCrash (CString *retsMessage);
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override;
+		virtual ALERROR OnInit (CString *retsError) override;
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
+		virtual void OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags) override;
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
+		virtual void OnReportHardCrash (CString *retsMessage) override;
 
 	private:
 		void CmdCancel (void);
@@ -92,12 +92,12 @@ class CGalacticMapSession : public IHISession
 		CGalacticMapSession (CHumanInterface &HI) : IHISession(HI), m_pMap(NULL), m_pPainter(NULL) { }
 
 		//	IHISession virtuals
-		virtual void OnCleanUp (void);
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
-		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
-		virtual void OnReportHardCrash (CString *retsMessage);
+		virtual void OnCleanUp (void) override;
+		virtual ALERROR OnInit (CString *retsError) override;
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override;
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
+		virtual void OnReportHardCrash (CString *retsMessage) override;
 		virtual void OnUpdate (bool bTopMost);
 
 	private:
@@ -122,25 +122,6 @@ class CGalacticMapSession : public IHISession
 		RECT m_rcHelp;
 	};
 
-class CHelpSession : public IHISession
-	{
-	public:
-		CHelpSession (CHumanInterface &HI) : IHISession(HI) { }
-
-		//	IHISession virtuals
-		virtual void OnCleanUp (void);
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
-		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
-		virtual void OnReportHardCrash (CString *retsMessage);
-		virtual void OnUpdate (bool bTopMost);
-
-	private:
-		CG32bitImage m_HelpImage;
-		int m_iHelpPage;
-	};
-
 class CGameSession : public IHISession
 	{
 	public:
@@ -153,20 +134,20 @@ class CGameSession : public IHISession
 
 		//	IHISession virtuals
 
-		virtual CReanimator &GetReanimator (void) { return g_pTrans->GetReanimator(); }
-		virtual void OnAnimate (CG32bitImage &Screen, bool bTopMost) { CSmartLock Lock(g_pUniverse->GetSem()); g_pTrans->Animate(Screen, this, bTopMost); }
-		virtual void OnChar (char chChar, DWORD dwKeyData) { g_pTrans->WMChar(chChar, dwKeyData); }
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) { return NOERROR; }
-		virtual ALERROR OnInit (CString *retsError) { m_rcScreen = g_pTrans->m_rcScreen; SetNoCursor(true); return NOERROR; }
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyDown(iVirtKey, dwKeyData); }
-		virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyUp(iVirtKey, dwKeyData); }
-		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) { g_pTrans->WMLButtonDown(x, y, dwFlags); }
-		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonUp(x, y, dwFlags); }
-		virtual void OnMouseMove (int x, int y, DWORD dwFlags) { g_pTrans->WMMouseMove(x, y, dwFlags); }
-		virtual void OnMove (int x, int y) { g_pTrans->WMMove(x, y); }
-		virtual void OnReportHardCrash (CString *retsMessage) { *retsMessage = g_pTrans->GetCrashInfo(); }
-		virtual void OnSize (int cxWidth, int cyHeight) { g_pTrans->WMSize(cxWidth, cyHeight, 0); }
+		virtual CReanimator &GetReanimator (void) override { return g_pTrans->GetReanimator(); }
+		virtual void OnAnimate (CG32bitImage &Screen, bool bTopMost) override { CSmartLock Lock(g_pUniverse->GetSem()); g_pTrans->Animate(Screen, this, bTopMost); }
+		virtual void OnChar (char chChar, DWORD dwKeyData) override { g_pTrans->WMChar(chChar, dwKeyData); }
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override { return NOERROR; }
+		virtual ALERROR OnInit (CString *retsError) override { m_rcScreen = g_pTrans->m_rcScreen; SetNoCursor(true); return NOERROR; }
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override { g_pTrans->WMKeyDown(iVirtKey, dwKeyData); }
+		virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) override { g_pTrans->WMKeyUp(iVirtKey, dwKeyData); }
+		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) override { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override { g_pTrans->WMLButtonDown(x, y, dwFlags); }
+		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) override { g_pTrans->WMLButtonUp(x, y, dwFlags); }
+		virtual void OnMouseMove (int x, int y, DWORD dwFlags) override { g_pTrans->WMMouseMove(x, y, dwFlags); }
+		virtual void OnMove (int x, int y) override { g_pTrans->WMMove(x, y); }
+		virtual void OnReportHardCrash (CString *retsMessage) override { *retsMessage = g_pTrans->GetCrashInfo(); }
+		virtual void OnSize (int cxWidth, int cyHeight) override { g_pTrans->WMSize(cxWidth, cyHeight, 0); }
 
 		//	Helpers
 
@@ -179,6 +160,128 @@ class CGameSession : public IHISession
 		RECT m_rcScreen;					//	RECT of main screen within window.
 	};
 
+class CHelpSession : public IHISession
+	{
+	public:
+		CHelpSession (CHumanInterface &HI) : IHISession(HI) { }
+
+		//	IHISession virtuals
+		virtual void OnCleanUp (void) override;
+		virtual ALERROR OnInit (CString *retsError) override;
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override;
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
+		virtual void OnReportHardCrash (CString *retsMessage) override;
+		virtual void OnUpdate (bool bTopMost) override;
+
+	private:
+		CG32bitImage m_HelpImage;
+		int m_iHelpPage;
+	};
+
+class CKeyboardMapSession : public IHISession
+    {
+	public:
+		CKeyboardMapSession (CHumanInterface &HI, CCloudService &Service, CGameSettings &Settings);
+
+		//	IHISession virtuals
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override;
+		virtual ALERROR OnInit (CString *retsError) override;
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override;
+        virtual void OnLButtonUp (int x, int y, DWORD dwFlags) override;
+        virtual void OnMouseMove (int x, int y, DWORD dwFlags) override;
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
+		virtual void OnReportHardCrash (CString *retsMessage) override;
+
+	private:
+        enum EKeySymbols
+            {
+            symbolNone,
+
+            symbolArrowUp,
+            symbolArrowDown,
+            symbolArrowLeft,
+            symbolArrowRight,
+            };
+
+        enum EKeyFlags
+            {
+            FLAG_RESERVED = 0x00000001,
+            };
+
+        struct SKeyData
+            {
+            char *pszKeyID;
+            int xCol;                       //  A normal key takes up two columns (col 0 = left-most)
+            int yRow;                       //  A normal key takes one row (row 0 = top row)
+            int cxWidth;                    //  Width of the key in columns
+            char *pszLabel;                 //  Label in keyboard
+            EKeySymbols iSymbol;            //  Symbol for label label
+            DWORD dwFlags;
+            };
+
+        struct SKeyDesc
+            {
+            CString sKeyID;                 //  ID of key in CGameKeys
+            RECT rcRect;                    //  Rect of key to draw
+            CString sLabel;                 //  Key label
+            EKeySymbols iSymbol;            //  Symbols for label
+            int iCmdBinding;                //  Index into m_Commands (-1 = none)
+            DWORD dwFlags;
+            };
+
+        struct SCommandDesc
+            {
+            CGameKeys::Keys iCmd;           //  Command
+            int iKeyBinding;                //  Index into m_Keys (-1 = none)
+            CString sLabel;                 //  Command label
+            int cxLabel;                    //  Width of command label
+
+            RECT rcRect;                    //  Draw the command label here.
+            TArray<POINT> Line;             //  Line to connect command to key
+            };
+
+        struct STargetCtx
+            {
+            int iCmdIndex;                  //  Index of command hit (-1 = none)
+            int iKeyIndex;                  //  Index of key hit (-1 = none)
+            bool bInKey;                    //  In key (otherwise, in command)
+            };
+
+        void ArrangeCommandLabels (const RECT &rcRect, const RECT &rcKeyboard);
+        void CmdNextLayout (void);
+        void CmdPrevLayout (void);
+        void CreateLayoutControls (void);
+        bool HitTest (int x, int y, STargetCtx &Ctx);
+        void LoadCommandMapping (void);
+        void PaintKey (CG32bitImage &Screen, const SKeyDesc &Key, CG32bitPixel rgbBack, CG32bitPixel rgbText);
+        void UpdateLayoutControls (void);
+
+        CCloudService &m_Service;
+		CGameSettings &m_Settings;
+        TArray<SKeyDesc> m_Keys;
+        TArray<SCommandDesc> m_Commands;
+
+        //  Keyboard metrics (valid after OnInit)
+
+        int m_xKeyboard;                    //  Position of keyboard
+        int m_yKeyboard;
+        int m_cxKeyboard;                   //  Size of keyboard
+        int m_cyKeyboard;
+        int m_cxKeyCol;                     //  Size of a key column (half the size of a key row)
+        int m_cyKeyRow;                     //  Height of a key
+        TSortMap<CString, int> m_KeyIDToIndex;
+
+        bool m_bEditable;                   //  TRUE if we can edit this layout
+        int m_iHoverKey;                    //  Hovering over this key (edit mode only)
+        int m_iHoverCommand;                //  Hovering over this command
+        int m_iSelectedCommand;             //  Command selected
+
+        static const SKeyData KEYBOARD_DATA[];
+        static const int KEYBOARD_DATA_COUNT;
+    };
+
 class CLoadingSession : public IHISession
 	{
 	public:
@@ -188,10 +291,10 @@ class CLoadingSession : public IHISession
 			{ }
 
 		//	IHISession virtuals
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
-		virtual void OnReportHardCrash (CString *retsMessage);
-		virtual void OnUpdate (bool bTopMost);
+		virtual ALERROR OnInit (CString *retsError) override;
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
+		virtual void OnReportHardCrash (CString *retsMessage) override;
+		virtual void OnUpdate (bool bTopMost) override;
 
 	private:
 		CG32bitImage m_TitleImage;
@@ -208,14 +311,14 @@ class CLoginSession : public IHISession
 		CLoginSession (CHumanInterface &HI, CCloudService &Service, const CString &sCommand = NULL_STR);
 
 		//	IHISession virtuals
-		virtual void OnCleanUp (void);
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
-		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
-		virtual void OnReportHardCrash (CString *retsMessage);
-		virtual void OnUpdate (bool bTopMost);
+		virtual void OnCleanUp (void) override;
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override;
+		virtual ALERROR OnInit (CString *retsError) override;
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override;
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
+		virtual void OnReportHardCrash (CString *retsMessage) override;
+		virtual void OnUpdate (bool bTopMost) override;
 
 	private:
 		enum Dialogs
@@ -253,11 +356,11 @@ class CLoadGameSession : public IHISession
 		CLoadGameSession (CHumanInterface &HI, CCloudService &Service, const TArray<CString> &Folders);
 
 		//	IHISession virtuals
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
-		virtual void OnReportHardCrash (CString *retsMessage);
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override;
+		virtual ALERROR OnInit (CString *retsError) override;
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
+		virtual void OnReportHardCrash (CString *retsMessage) override;
 
 	private:
 		void CmdCancel (void);
@@ -275,11 +378,11 @@ class CModExchangeSession : public IHISession
 		CModExchangeSession (CHumanInterface &HI, CCloudService &Service, CMultiverseModel &Multiverse, CExtensionCollection &Extensions, bool bDebugMode = false);
 
 		//	IHISession virtuals
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
-		virtual void OnReportHardCrash (CString *retsMessage);
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override;
+		virtual ALERROR OnInit (CString *retsError) override;
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
+		virtual void OnReportHardCrash (CString *retsMessage) override;
 
 	private:
 		void CmdDone (void);
@@ -300,15 +403,15 @@ class CNewGameSession : public IHISession
 		CNewGameSession (CHumanInterface &HI, CCloudService &Service, const SNewGameSettings &Defaults);
 
 		//	IHISession virtuals
-		virtual void OnCleanUp (void);
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
-		virtual void OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags);
-		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
-		virtual void OnReportHardCrash (CString *retsMessage);
-		virtual void OnUpdate (bool bTopMost);
+		virtual void OnCleanUp (void) override;
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override;
+		virtual ALERROR OnInit (CString *retsError) override;
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override;
+		virtual void OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags) override;
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
+		virtual void OnReportHardCrash (CString *retsMessage) override;
+		virtual void OnUpdate (bool bTopMost) override;
 
 	private:
 		void AddClassInfo (CShipClass *pClass, const CDeviceDescList &Devices, const CItem &Item, int x, int y, int cxWidth, DWORD dwOptions, int *retcyHeight, IAnimatron **retpAni);
@@ -362,15 +465,15 @@ class CProfileSession : public IHISession
 		CProfileSession (CHumanInterface &HI, CCloudService &Service);
 
 		//	IHISession virtuals
-		virtual void OnCleanUp (void);
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
-		virtual void OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags);
-		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
-		virtual void OnReportHardCrash (CString *retsMessage);
-		virtual void OnUpdate (bool bTopMost);
+		virtual void OnCleanUp (void) override;
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override;
+		virtual ALERROR OnInit (CString *retsError) override;
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override;
+		virtual void OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags) override;
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
+		virtual void OnReportHardCrash (CString *retsMessage) override;
+		virtual void OnUpdate (bool bTopMost) override;
 
 	private:
 		enum Panes
@@ -402,14 +505,14 @@ class CStatsSession : public IHISession
 		CStatsSession (CHumanInterface &HI, CCloudService &Service, CGameStats &Stats, DWORD dwFlags = 0) : IHISession(HI), m_Service(Service), m_dwFlags(dwFlags) { m_Stats.TakeHandoff(Stats); }
 
 		//	IHISession virtuals
-		virtual void OnCleanUp (void);
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
-		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
-		virtual void OnReportHardCrash (CString *retsMessage);
-		virtual void OnUpdate (bool bTopMost);
+		virtual void OnCleanUp (void) override;
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override;
+		virtual ALERROR OnInit (CString *retsError) override;
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override;
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
+		virtual void OnReportHardCrash (CString *retsMessage) override;
+		virtual void OnUpdate (bool bTopMost) override;
 
 	private:
 		void CreateCopyAnimation (const RECT &rcRect, int iDuration, IAnimatron **retpAni);
@@ -434,14 +537,14 @@ class CTextCrawlSession : public IHISession
 						   const CString &sCmdDone);
 
 		//	IHISession virtuals
-		virtual void OnCleanUp (void);
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
-		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
-		virtual void OnReportHardCrash (CString *retsMessage);
-		virtual void OnUpdate (bool bTopMost);
+		virtual void OnCleanUp (void) override;
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override;
+		virtual ALERROR OnInit (CString *retsError) override;
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override;
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
+		virtual void OnReportHardCrash (CString *retsMessage) override;
+		virtual void OnUpdate (bool bTopMost) override;
 
 	private:
 		void CreateCrawlAnimation (const CString &sText, const RECT &rcRect, IAnimatron **retpAni);
@@ -459,11 +562,11 @@ class CWaitSession : public IHISession
 		CWaitSession (CHumanInterface &HI, CCloudService &Service, const CString &sTitle);
 
 		//	IHISession virtuals
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid);
-		virtual void OnReportHardCrash (CString *retsMessage);
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override;
+		virtual ALERROR OnInit (CString *retsError) override;
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
+		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
+		virtual void OnReportHardCrash (CString *retsMessage) override;
 
 	private:
 		CCloudService &m_Service;
