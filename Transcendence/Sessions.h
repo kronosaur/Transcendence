@@ -146,6 +146,8 @@ class CGameSession : public IHISession
 		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) override { g_pTrans->WMLButtonUp(x, y, dwFlags); }
 		virtual void OnMouseMove (int x, int y, DWORD dwFlags) override { g_pTrans->WMMouseMove(x, y, dwFlags); }
 		virtual void OnMove (int x, int y) override { g_pTrans->WMMove(x, y); }
+		virtual void OnRButtonDown (int x, int y, DWORD dwFlags) override { g_pTrans->WMRButtonDown(x, y, dwFlags); }
+		virtual void OnRButtonUp (int x, int y, DWORD dwFlags) override { g_pTrans->WMRButtonUp(x, y, dwFlags); }
 		virtual void OnReportHardCrash (CString *retsMessage) override { *retsMessage = g_pTrans->GetCrashInfo(); }
 		virtual void OnSize (int cxWidth, int cyHeight) override { g_pTrans->WMSize(cxWidth, cyHeight, 0); }
 

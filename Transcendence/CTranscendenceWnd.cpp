@@ -198,6 +198,25 @@ void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession
 						&& !m_bShowingMap)
 					pSession->PaintSoundtrackTitles(TheScreen);
 
+                //  Paint the mouse cursor, if necessary
+
+                if (GetPlayer() && GetPlayer()->IsMouseAimEnabled())
+                    {
+                    int iMouseAimAngle;
+                    int xMouse, yMouse;
+                    if (g_pHI->GetMousePos(&xMouse, &yMouse))
+                        {
+                        int xCenter = m_rcScreen.left + RectWidth(m_rcScreen) / 2;
+                        int yCenter = m_rcScreen.top + RectHeight(m_rcScreen) / 2;
+                        iMouseAimAngle = ::IntVectorToPolar(xMouse - xCenter, yCenter - yMouse);
+                        CPaintHelper::PaintArrow(TheScreen, xMouse, yMouse, iMouseAimAngle, g_pHI->GetVisuals().GetColor(colorTextHighlight));
+                        }
+                    else
+                        iMouseAimAngle = -1;
+
+                    GetPlayer()->SetMouseAimAngle(iMouseAimAngle);
+                    }
+
 				//	Figure out how long it took to paint
 
 				if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
@@ -1836,6 +1855,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 							{
 							Autopilot(false);
 							GetPlayer()->SetThrust(true);
+                            GetPlayer()->SetMouseAimEnabled(false);
 							}
 						break;
 
@@ -1845,6 +1865,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 							{
 							Autopilot(false);
 							GetPlayer()->SetManeuver(RotateLeft);
+                            GetPlayer()->SetMouseAimEnabled(false);
 							}
 						break;
 
@@ -1854,6 +1875,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 							{
 							Autopilot(false);
 							GetPlayer()->SetManeuver(RotateRight);
+                            GetPlayer()->SetMouseAimEnabled(false);
 							}
 						break;
 
@@ -2188,6 +2210,14 @@ LONG CTranscendenceWnd::WMLButtonDown (int x, int y, DWORD dwFlags)
 			OnLButtonDownIntro(x, y, dwFlags);
 			break;
 
+        case gsInGame:
+            if (GetPlayer() && GetPlayer()->IsMouseAimEnabled())
+                {
+    			Autopilot(false);
+                GetPlayer()->SetFireMain(true);
+                }
+            break;
+
 		case gsDocked:
 			m_pCurrentScreen->LButtonDown(x, y);
 			break;
@@ -2209,6 +2239,11 @@ LONG CTranscendenceWnd::WMLButtonUp (int x, int y, DWORD dwFlags)
 			OnLButtonUpIntro(x, y, dwFlags);
 			break;
 
+        case gsInGame:
+            if (GetPlayer() && GetPlayer()->IsMouseAimEnabled())
+                GetPlayer()->SetFireMain(false);
+            break;
+
 		case gsDocked:
 			m_pCurrentScreen->LButtonUp(x, y);
 			break;
@@ -2229,6 +2264,11 @@ LONG CTranscendenceWnd::WMMouseMove (int x, int y, DWORD dwFlags)
 		case gsIntro:
 			OnMouseMoveIntro(x, y, dwFlags);
 			break;
+
+        case gsInGame:
+            if (GetPlayer())
+                GetPlayer()->SetMouseAimEnabled(true);
+            break;
 
 		case gsDocked:
 			m_pCurrentScreen->MouseMove(x, y);
@@ -2258,6 +2298,34 @@ LONG CTranscendenceWnd::WMMove (int x, int y)
 	::ClientToScreen(m_hWnd, (LPPOINT)&m_rcWindow);
 	::ClientToScreen(m_hWnd, (LPPOINT)&m_rcWindow + 1);
 
+	return 0;
+	}
+
+LONG CTranscendenceWnd::WMRButtonDown (int x, int y, DWORD dwFlags)
+
+//	WMRButtonDown
+//
+//	Handle WM_RBUTTONDOWN
+
+	{
+	switch (m_State)
+		{
+        case gsInGame:
+            if (GetPlayer() && GetPlayer()->IsMouseAimEnabled())
+    			Autopilot(false);
+            break;
+		}
+
+	return 0;
+	}
+
+LONG CTranscendenceWnd::WMRButtonUp (int x, int y, DWORD dwFlags)
+
+//	WMRButtonUp
+//
+//	Handle WM_RBUTTONUP
+
+	{
 	return 0;
 	}
 

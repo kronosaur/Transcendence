@@ -322,6 +322,7 @@ class CPlayerShipController : public IShipController
 		void InsuranceClaim (void);
 		inline bool IsGalacticMapAvailable (void) { return (m_pShip && (m_pShip->GetAbility(::ablGalacticMap) > ::ablUninstalled)); }
 		inline bool IsMapHUDActive (void) { return m_bMapHUD; }
+        inline bool IsMouseAimEnabled (void) const { return m_bMouseAim; }
 		inline bool IsUIMessageEnabled (UIMessageTypes iMsg) { return m_UIMsgs.IsEnabled(iMsg); }
 		void OnEnemyShipsDetected (void);
 		inline void OnGameEnd (void) { m_Stats.OnGameEnd(m_pShip); }
@@ -336,6 +337,8 @@ class CPlayerShipController : public IShipController
 		void SetDestination (CSpaceObject *pTarget);
 		inline void SetGenome (GenomeTypes iGenome) { m_iGenome = iGenome; }
 		inline void SetMapHUD (bool bActive) { m_bMapHUD = bActive; }
+        inline void SetMouseAimAngle (int iAngle) { m_iMouseAimAngle = iAngle; }
+        inline void SetMouseAimEnabled (bool bEnabled = true) { m_bMouseAim = bEnabled; }
 		inline void SetName (const CString &sName) { m_sName = sName; }
 		inline void SetResurrectCount (int iCount) { m_Stats.SetStat(CONSTLIT("resurrectCount"), ::strFromInt(iCount)); }
 		inline void SetStartingShipClass (DWORD dwUNID) { m_dwStartingShipClass = dwUNID; }
@@ -460,6 +463,9 @@ class CPlayerShipController : public IShipController
 
 		bool m_bMapHUD;							//	Show HUD on map
 		bool m_bDockPortIndicators;				//	Dock ports light up when near by
+
+        bool m_bMouseAim;                       //  Use mouse to aim
+        int m_iMouseAimAngle;                   //  Angle to aim towards
 
 		CCurrencyBlock m_Credits;				//	Money available to player
 		CPlayerGameStats m_Stats;				//	Player stats, including score
@@ -1262,6 +1268,8 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		LONG WMLButtonUp (int x, int y, DWORD dwFlags);
 		LONG WMMouseMove (int x, int y, DWORD dwFlags);
 		LONG WMMove (int x, int y);
+		LONG WMRButtonDown (int x, int y, DWORD dwFlags);
+		LONG WMRButtonUp (int x, int y, DWORD dwFlags);
 		LONG WMSize (int cxWidth, int cyHeight, int iSize);
 
 		CTranscendenceController *m_pTC;

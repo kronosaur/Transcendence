@@ -53,6 +53,8 @@ CPlayerShipController::CPlayerShipController (void) :
 		m_iLastHelpFireMissileTick(0),
 		m_bMapHUD(true),
 		m_bDockPortIndicators(true),
+        m_bMouseAim(true),
+        m_iMouseAimAngle(-1),
 		m_bUnderAttack(false),
 		m_pAutoDock(NULL),
 		m_iAutoDockPort(0),
@@ -1566,12 +1568,23 @@ bool CPlayerShipController::ToggleEnableDevice (int iDeviceIndex)
 
 EManeuverTypes CPlayerShipController::GetManeuver (void)
 	{
-	return m_iManeuver;
+    if (m_bMouseAim)
+        {
+        if (m_iMouseAimAngle == -1)
+            return NoRotation;
+        else
+            return m_pShip->GetManeuverToFace(m_iMouseAimAngle);
+        }
+    else
+	    return m_iManeuver;
 	}
 
 bool CPlayerShipController::GetThrust (void)
 	{
-	return m_bThrust;
+    if (m_bMouseAim)
+        return g_pHI->IsRButtonDown();
+    else
+	    return m_bThrust;
 	}
 
 bool CPlayerShipController::GetReverseThrust (void)
