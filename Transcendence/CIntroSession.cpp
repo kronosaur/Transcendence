@@ -14,6 +14,7 @@
 #define CMD_OPEN_NEWS							CONSTLIT("cmdOpenNews")
 #define CMD_SHOW_MOD_EXCHANGE					CONSTLIT("cmdShowModExchange")
 #define CMD_SHOW_PROFILE						CONSTLIT("cmdShowProfile")
+#define CMD_SHOW_SETTINGS						CONSTLIT("cmdShowSettings")
 #define CMD_SIGN_OUT							CONSTLIT("cmdSignOut")
 #define CMD_SOUNDTRACK_NOW_PLAYING				CONSTLIT("cmdSoundtrackNowPlaying")
 #define CMD_TOGGLE_DEBUG						CONSTLIT("cmdToggleDebug")
@@ -30,6 +31,7 @@
 #define CMD_UI_SHOW_LOGIN						CONSTLIT("uiShowLogin")
 #define CMD_UI_SHOW_MOD_EXCHANGE				CONSTLIT("uiShowModExchange")
 #define CMD_UI_SHOW_PROFILE						CONSTLIT("uiShowProfile")
+#define CMD_UI_SHOW_SETTINGS					CONSTLIT("uiShowSettings")
 #define CMD_UI_SIGN_OUT							CONSTLIT("uiSignOut")
 
 #define ID_GAME_STAT_PERFORMANCE				CONSTLIT("gameStatPerformance")
@@ -955,6 +957,9 @@ ALERROR CIntroSession::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_SHOW_MOD_EXCHANGE))
 		m_HI.HICommand(CMD_UI_SHOW_MOD_EXCHANGE);
 
+	else if (strEquals(sCmd, CMD_SHOW_SETTINGS))
+		m_HI.HICommand(CMD_UI_SHOW_SETTINGS);
+
 	else if (strEquals(sCmd, CMD_CHANGE_PASSWORD))
 		m_HI.HICommand(CMD_UI_CHANGE_PASSWORD);
 
@@ -1117,10 +1122,6 @@ void CIntroSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 			case VK_F2:
 				m_HI.HICommand(CONSTLIT("uiShowGameStats"));
 				break;
-
-            case VK_F3:
-                m_HI.HICommand(CONSTLIT("uiShowSettings"));
-                break;
 
             case VK_F11:
                 SetExpanded(!m_bExpanded);

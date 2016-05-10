@@ -59,6 +59,7 @@ const int NEWS_PANE_INNER_SPACING_Y =			8;
 #define CMD_OPEN_NEWS							CONSTLIT("cmdOpenNews")
 #define CMD_SHOW_MOD_EXCHANGE					CONSTLIT("cmdShowModExchange")
 #define CMD_SHOW_PROFILE						CONSTLIT("cmdShowProfile")
+#define CMD_SHOW_SETTINGS						CONSTLIT("cmdShowSettings")
 #define CMD_SIGN_OUT							CONSTLIT("cmdSignOut")
 #define CMD_TOGGLE_DEBUG						CONSTLIT("cmdToggleDebug")
 #define CMD_TOGGLE_MUSIC						CONSTLIT("cmdToggleMusic")
@@ -66,11 +67,6 @@ const int NEWS_PANE_INNER_SPACING_Y =			8;
 #define CMD_SERVICE_NEWS_LOADED					CONSTLIT("serviceNewsLoaded")
 
 //	These are commands that we send to the Controller
-#define CMD_UI_CHANGE_PASSWORD					CONSTLIT("uiChangePassword")
-#define CMD_UI_SHOW_LOGIN						CONSTLIT("uiShowLogin")
-#define CMD_UI_SHOW_MOD_EXCHANGE				CONSTLIT("uiShowModExchange")
-#define CMD_UI_SHOW_PROFILE						CONSTLIT("uiShowProfile")
-#define CMD_UI_SIGN_OUT							CONSTLIT("uiSignOut")
 
 #define EVENT_ON_CLICK							CONSTLIT("onClick")
 
@@ -567,6 +563,13 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 
 		x -= (BUTTON_WIDTH + PADDING_LEFT);
 		}
+
+    //  Keyboard settings
+
+	VI.CreateImageButton(pRoot, CMD_SHOW_SETTINGS, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageSettingsIcon), CONSTLIT("Keyboard Settings"), 0, &pButton);
+	pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_SHOW_SETTINGS);
+
+	x -= (BUTTON_WIDTH + PADDING_LEFT);
 
 	//	Music toggle
 
