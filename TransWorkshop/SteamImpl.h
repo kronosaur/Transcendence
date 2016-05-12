@@ -17,10 +17,16 @@ class CSteamCtx
 
         bool Connect (CString *retsError = NULL);
         bool CreateItem (PublishedFileId_t *retFileId, bool *retbAgreementRequired, CString *retsError = NULL);
+        bool GetOrCreateItem (DWORD dwUNID, PublishedFileId_t *retFileId, bool *retbCreated, CString *retsError = NULL);
+        inline AccountID_t GetUserAccountID (void) const { return SteamUser()->GetSteamID().GetAccountID(); }
+        bool GetUserContent (const TSortMap<CString, CString> &Tags, TArray<SteamUGCDetails_t> &Results, CString *retsError = NULL) const;
         inline const CString &GetUsername (void) const { return m_sUsername; }
+        bool UpdateItem (UGCUpdateHandle_t Update, const CString &sChangeNote, CString *retsError = NULL);
+        UGCUpdateHandle_t UpdateItemStart (PublishedFileId_t FileId) const;
 
     private:
-        bool ValidateConnected (CString *retsError = NULL);
+        inline CString ComposeUNID (DWORD dwUNID) const { return strPatternSubst(CONSTLIT("Transcendence:%08x"), dwUNID); }
+        bool ValidateConnected (CString *retsError = NULL) const;
 
         bool m_bConnected;
         CString m_sUsername;
@@ -112,3 +118,97 @@ class CUGCCreateItem : public TCallContext<CUGCCreateItem, CreateItemResult_t>
     friend TCallContext;
 	};
 
+class CUGCUpdateItem : public TCallContext<CUGCUpdateItem, SubmitItemUpdateResult_t>
+    {
+    public:
+        bool Call (UGCUpdateHandle_t Update, const CString &sChangeNote, CString *retsError)
+            {
+            return Invoke(SteamUGC()->SubmitItemUpdate(Update, (LPSTR)sChangeNote), retsError);
+            }
+
+    private:
+        void OnResult (SubmitItemUpdateResult_t *pResult)
+            {
+            }
+
+    friend TCallContext;
+    };
+
+class CUGCGetUserContent : public TCallContext<CUGCGetUserContent, SteamUGCQueryCompleted_t>
+    {
+    public:
+        bool Call (AppId_t nAppId, AccountID_t unAccountID, EUserUGCList eListType, const TSortMap<CString, CString> &Tags, TArray<SteamUGCDetails_t> &Results, CString *retsError = NULL)
+            {
+            int i;
+
+            //  Store results here
+
+            Results.DeleteAll();
+            m_pResults = &Results;
+
+            //  Loop until we've got all results
+            
+            m_bDone = false;
+            int iPage = 1;
+            while (!m_bDone)
+                {
+                m_Query = SteamUGC()->CreateQueryUserUGCRequest(unAccountID, 
+                        eListType, 
+                        k_EUGCMatchingUGCType_Items, 
+                        k_EUserUGCListSortOrder_CreationOrderDesc, 
+                        nAppId, 
+                        nAppId, 
+                        iPage);
+
+                //  Add required tags
+
+                for (i = 0; i < Tags.GetCount(); i++)
+                    SteamUGC()->AddRequiredKeyValueTag(m_Query, Tags.GetKey(i), Tags[i]);
+
+                //  Invoke
+
+                if (!Invoke(SteamUGC()->SendQueryUGCRequest(m_Query), retsError))
+                    {
+                    SteamUGC()->ReleaseQueryUGCRequest(m_Query);
+                    return false;
+                    }
+
+                SteamUGC()->ReleaseQueryUGCRequest(m_Query);
+                iPage++;
+                }
+
+            //  Done
+
+            return true;
+            }
+
+    private:
+        void OnResult (SteamUGCQueryCompleted_t *pResult)
+            {
+            DWORD i;
+
+            if (m_pResults->GetCount() == 0)
+                m_pResults->GrowToFit(pResult->m_unTotalMatchingResults);
+
+            for (i = 0; i < pResult->m_unNumResultsReturned; i++)
+                {
+                SteamUGCDetails_t *pDetails = m_pResults->Insert();
+                if (!SteamUGC()->GetQueryUGCResult(m_Query, i, pDetails))
+                    {
+                    //  LATER: Mark as an error.
+                    m_bDone = true;
+                    return;
+                    }
+                }
+
+            //  If we've got all details, then we're done
+
+            m_bDone = ((DWORD)m_pResults->GetCount() >= pResult->m_unTotalMatchingResults);
+            }
+
+        TArray<SteamUGCDetails_t> *m_pResults;
+        UGCQueryHandle_t m_Query;
+        bool m_bDone;
+
+    friend TCallContext;
+    };

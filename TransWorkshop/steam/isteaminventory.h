@@ -27,7 +27,7 @@
 // and will not be transferred to another player or re-used for another item.
 typedef uint64 SteamItemInstanceID_t;
 
-static const SteamItemInstanceID_t k_SteamItemInstanceIDInvalid = ~(SteamItemInstanceID_t)0;
+static const SteamItemInstanceID_t k_SteamItemInstanceIDInvalid = (SteamItemInstanceID_t)~0;
 
 // Types of items in your game are identified by a 32-bit "item definition number".
 // Valid definition numbers are between 1 and 999999999; numbers less than or equal to
@@ -38,7 +38,7 @@ typedef int32 SteamItemDef_t;
 
 enum ESteamItemFlags
 {
-	// Item status flags - these flags are permenantly attached to specific item instances
+	// Item status flags - these flags are permanently attached to specific item instances
 	k_ESteamItemNoTrade = 1 << 0, // This item is account-locked and cannot be traded or given away.
 
 	// Action confirmation flags - these flags are set one time only, as part of a result set
@@ -197,14 +197,14 @@ public:
 	virtual bool AddPromoItem( SteamInventoryResult_t *pResultHandle, SteamItemDef_t itemDef ) = 0;
 	virtual bool AddPromoItems( SteamInventoryResult_t *pResultHandle, ARRAY_COUNT(unArrayLength) const SteamItemDef_t *pArrayItemDefs, uint32 unArrayLength ) = 0;
 
-	// ConsumeItem() removes items from the inventory, permenantly. They cannot be recovered.
+	// ConsumeItem() removes items from the inventory, permanently. They cannot be recovered.
 	// Not for the faint of heart - if your game implements item removal at all, a high-friction
 	// UI confirmation process is highly recommended. Similar to GenerateItems, punArrayQuantity
 	// can be NULL or else an array of the same length as pArrayItems which describe the quantity
 	// of each item to destroy. ConsumeItem can be restricted to certain item definitions or
 	// fully blocked via the Steamworks website to minimize support/abuse issues such as the
 	// clasic "my brother borrowed my laptop and deleted all of my rare items".
-	METHOD_DESC(ConsumeItem() removes items from the inventory permenantly.)
+	METHOD_DESC(ConsumeItem() removes items from the inventory permanently.)
 	virtual bool ConsumeItem( SteamInventoryResult_t *pResultHandle, SteamItemInstanceID_t itemConsume, uint32 unQuantity ) = 0;
 
 	// ExchangeItems() is an atomic combination of GenerateItems and DestroyItems. It can be

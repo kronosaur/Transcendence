@@ -33,11 +33,25 @@ class CSimpleLibraryResolver : public IXMLParserController
 class CExtensionDirectory
     {
     public:
+        struct SExtensionInfo
+            {
+            DWORD dwUNID;
+            EExtensionTypes iType;
+            CString sName;
+            CString sVersion;
+            CString sDesc;
+            CString sFilespec;
+            DWORD dwCoverImage;
+
+            TArray<DWORD> Dependencies;
+            TArray<CString> Files;
+            };
+
         ~CExtensionDirectory (void);
 
-        bool CalcRequiredFiles (DWORD dwUNID, TArray<CString> &Files) const;
         bool FindByFilespec (const CString &sFilespec, DWORD *retdwUNID = NULL) const;
         bool FindLibraryEntities (DWORD dwUNID, CExternalEntityTable **retpTable) const;
+        bool GetExtensionInfo (DWORD dwUNID, SExtensionInfo &retInfo) const;
         bool Init (const CString &sRootPath, const CString &sFilespec, CString *retsError = NULL);
 
     private:
@@ -62,6 +76,7 @@ class CExtensionDirectory
 
         void AddCoreLibraries (CSimpleLibraryResolver &Resolver, SExtensionDesc *pExtension) const;
         void AddLibrary (CSimpleLibraryResolver &Resolver, DWORD dwUNID) const;
+        bool CalcRequiredFiles (DWORD dwUNID, TArray<DWORD> &Files) const;
         bool InitCore (const CString &sRootPath, CString *retsError = NULL);
         bool MarkLibraries (SExtensionDesc *pExtension, CResourceDb &Resources, CXMLElement *pRoot, CSimpleLibraryResolver &Resolver, CString *retsError) const;
         bool MarkModule (SExtensionDesc *pExtension, CResourceDb &Resources, CXMLElement *pModule, CSimpleLibraryResolver &Resolver, CString *retsError) const;

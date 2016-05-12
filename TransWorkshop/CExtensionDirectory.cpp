@@ -72,7 +72,7 @@ void CExtensionDirectory::AddLibrary (CSimpleLibraryResolver &Resolver, DWORD dw
     Resolver.AddTable(&pExtension->Entities);
     }
 
-bool CExtensionDirectory::CalcRequiredFiles (DWORD dwUNID, TArray<CString> &Files) const
+bool CExtensionDirectory::CalcRequiredFiles (DWORD dwUNID, TArray<DWORD> &Files) const
 
 //  CalcRequiredFiles
 //
@@ -102,8 +102,8 @@ bool CExtensionDirectory::CalcRequiredFiles (DWORD dwUNID, TArray<CString> &File
     //  Return marked files.
 
     for (i = 0; i < m_Extensions.GetCount(); i++)
-        if (m_Extensions[i]->bMarked)
-            Files.Insert(m_Extensions[i]->sFilespec);
+        if (m_Extensions[i]->bMarked && m_Extensions[i]->dwUNID != dwUNID)
+            Files.Insert(m_Extensions[i]->dwUNID);
 
     //  Done
 
@@ -145,6 +145,46 @@ bool CExtensionDirectory::FindLibraryEntities (DWORD dwUNID, CExternalEntityTabl
         return false;
 
     *retpTable = &pExtension->Entities;
+
+    return true;
+    }
+
+bool CExtensionDirectory::GetExtensionInfo (DWORD dwUNID, SExtensionInfo &retInfo) const
+
+//  GetExtensionInfo
+//
+//  Returns information about the given extension.
+
+    {
+    int i;
+
+    SExtensionDesc *pExtension;
+    if (!m_Extensions.Find(dwUNID, &pExtension))
+        return false;
+
+    retInfo.dwUNID = dwUNID;
+    retInfo.iType = pExtension->iType;
+    retInfo.sName = pExtension->sName;
+    retInfo.sFilespec = pExtension->sFilespec;
+    retInfo.sVersion = pExtension->sVersion;
+    retInfo.dwCoverImage = 0;
+
+    //  Get a list of dependencies
+
+    if (!CalcRequiredFiles(dwUNID, retInfo.Dependencies))
+        return false;
+
+    //  Generate a list of all required files
+
+    retInfo.Files.Insert(pExtension->sFilespec);
+    for (i = 0; i < retInfo.Dependencies.GetCount(); i++)
+        {
+        SExtensionDesc *pDependency;
+        if (!m_Extensions.Find(retInfo.Dependencies[i], &pDependency))
+            return false;
+
+        retInfo.Files.Insert(pDependency->sFilespec);
+        }
 
     return true;
     }

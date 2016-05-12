@@ -78,10 +78,6 @@ public:
 
 	// return the buildid of this app, may change at any time based on backend updates to the game
 	virtual int GetAppBuildId() = 0;
-#ifdef _PS3
-	// Result returned in a RegisterActivationCodeResponse_t callresult
-	virtual SteamAPICall_t RegisterActivationCode( const char *pchActivationCode ) = 0;
-#endif
 };
 
 #define STEAMAPPS_INTERFACE_VERSION "STEAMAPPS_INTERFACE_VERSION007"
@@ -148,7 +144,6 @@ struct NewLaunchQueryParameters_t
 {
 	enum { k_iCallback = k_iSteamAppsCallbacks + 14 };
 };
-
 
 #pragma pack( pop )
 #endif // ISTEAMAPPS_H

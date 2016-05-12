@@ -31,34 +31,119 @@ bool CCmdUpload::Execute (CSteamCtx &Ctx, CString *retsError)
         return false;
         }
 
-    //  Figure out which files we need to upload
+    //  We only support certain UNIDs
 
-    TArray<CString> Files;
-    if (!m_Extensions.CalcRequiredFiles(dwUNID, Files))
+    DWORD dwNamespace = (dwUNID & 0xf0000000);
+    if (dwNamespace != 0xA0000000
+            && dwNamespace != 0xB0000000
+            && dwNamespace != 0xC0000000
+            && dwNamespace != 0xD0000000
+            && dwNamespace != 0xE0000000)
         {
-        if (retsError) *retsError = CONSTLIT("Unable to calc required files.");
+        if (retsError) *retsError = strPatternSubst(CONSTLIT("Invalid UNID range for mod: %08x"), dwUNID);
         return false;
         }
 
-#ifdef DEBUG
-    for (i = 0; i < Files.GetCount(); i++)
-        printf("DEBUG: Upload %s\n", (LPSTR)Files[i]);
-#endif
-
-    return true;
-    //  Crack open the TDB file
-
-    CResourceDb RootTDB(m_sFilespec, true);
+    //  Get the FileId to upload to
 
     PublishedFileId_t FileId;
-    bool bMustSign;
-    if (!Ctx.CreateItem(&FileId, &bMustSign, retsError))
+    bool bCreated;
+    if (!Ctx.GetOrCreateItem(dwUNID, &FileId, &bCreated, retsError))
         return false;
 
-    printf("Created %x\n", (DWORD)FileId);
-    if (bMustSign)
-        printf("Must sign agreement.\n");
+    if (bCreated)
+        printf("Created new Steam item for %08x. FileId = %lld\n", dwUNID, FileId);
+    else
+        printf("Found existing Steam item for %08x. FileId = %lld\n", dwUNID, FileId);
 
+    //  Get information about the extension
+
+    CExtensionDirectory::SExtensionInfo ExtensionInfo;
+    if (!m_Extensions.GetExtensionInfo(dwUNID, ExtensionInfo))
+        {
+        if (retsError) *retsError = CONSTLIT("Unable to obtain info about extension.");
+        return false;
+        }
+
+    //  Create a temporary directory to hold files. They need to be in a 
+    //  directory to upload.
+
+    CString sTempRoot;
+    do
+        {
+        sTempRoot = pathAddComponent(pathGetTempPath(), strPatternSubst(CONSTLIT("%x_%x"), GetTickCount(), mathRandom(10000, 99999)));
+        }
+    while (pathExists(sTempRoot));
+
+    CString sTempFiles = pathAddComponent(sTempRoot, CONSTLIT("files"));
+    if (!pathCreate(sTempFiles))
+        {
+        if (retsError) *retsError = strPatternSubst(CONSTLIT("Unable to create temp path: %s."), sTempRoot);
+        return false;
+        }
+
+    //  Copy the required files to the temp directory.
+
+    for (i = 0; i < ExtensionInfo.Files.GetCount(); i++)
+        {
+        if (!fileCopy(ExtensionInfo.Files[i], pathAddComponent(sTempFiles, pathGetFilename(ExtensionInfo.Files[i]))))
+            {
+            pathDeleteAll(sTempRoot);
+            if (retsError) *retsError = CONSTLIT("Unable to copy TDBs to temp path.");
+            return false;
+            }
+
+        printf("Uploading %s\n", (LPSTR)ExtensionInfo.Files[i]);
+        }
+
+    //  Prepare an update structure
+
+    UGCUpdateHandle_t Update = Ctx.UpdateItemStart(FileId);
+
+    SteamUGC()->SetItemTitle(Update, ExtensionInfo.sName);
+
+    if (!ExtensionInfo.sDesc.IsBlank())
+        SteamUGC()->SetItemDescription(Update, ExtensionInfo.sDesc);
+
+    //  If we're creating, set a tag for the type
+
+    switch (ExtensionInfo.iType)
+        {
+        case extAdventure:
+            SteamUGC()->AddItemKeyValueTag(Update, "type", "transcendenceAdventure");
+            break;
+
+        case extExtension:
+            SteamUGC()->AddItemKeyValueTag(Update, "type", "transcendenceExpansion");
+            break;
+
+        case extLibrary:
+            SteamUGC()->AddItemKeyValueTag(Update, "type", "transcendenceLibrary");
+            break;
+
+        default:
+            SteamUGC()->AddItemKeyValueTag(Update, "type", "transcendenceExtension");
+            break;
+        }
+
+    //  Set the files
+
+    SteamUGC()->SetItemContent(Update, sTempFiles);
+
+    //  Update
+
+    printf("Uploading...");
+    if (!Ctx.UpdateItem(Update, strPatternSubst(CONSTLIT("Update to version: %s"), ExtensionInfo.sVersion), retsError))
+        {
+        pathDeleteAll(sTempRoot);
+        return false;
+        }
+
+    printf("\nUpdated %s (%08x) to %s.\n", (LPSTR)ExtensionInfo.sName, ExtensionInfo.dwUNID, (LPSTR)ExtensionInfo.sVersion);
+
+    //  Done. Clean up
+
+    pathDeleteAll(sTempRoot);
     return true;
     }
 

@@ -122,6 +122,13 @@ enum EResult
 	k_EResultAccountLimitExceeded = 95,			// Too many accounts access this resource
 	k_EResultAccountActivityLimitExceeded = 96,	// Too many changes to this account
 	k_EResultPhoneActivityLimitExceeded = 97,	// Too many changes to this phone
+	k_EResultRefundToWallet = 98,				// Cannot refund to payment method, must use wallet
+	k_EResultEmailSendFailure = 99,				// Cannot send an email
+	k_EResultNotSettled = 100,					// Can't perform operation till payment has settled
+	k_EResultNeedCaptcha = 101,					// Needs to provide a valid captcha
+	k_EResultGSLTDenied = 102,					// a game server login token owned by this token's owner has been banned
+	k_EResultGSOwnerDenied = 103,				// game server owner is denied for other reason (account lock, community ban, vac ban, missing phone)
+	k_EResultInvalidItemType = 104,				// the type of thing we were requested to act on is invalid
 };
 
 // Error codes for use with the voice functions
@@ -255,6 +262,8 @@ enum EAppOwnershipFlags
 	k_EAppOwnershipFlags_LicenseRecurring	= 0x1000,	// Recurring license, user is charged periodically
 	k_EAppOwnershipFlags_LicenseCanceled	= 0x2000,	// Mark as canceled, but might be still active if recurring
 	k_EAppOwnershipFlags_AutoGrant			= 0x4000,	// Ownership is based on any kind of autogrant license
+	k_EAppOwnershipFlags_PendingGift		= 0x8000,	// user has pending gift to redeem
+	k_EAppOwnershipFlags_RentalNotActivated	= 0x10000,	// Rental hasn't been activated yet
 };
 
 
@@ -424,6 +433,33 @@ enum EBroadcastUploadResult
 	k_EBroadcastUploadResultSettingsChanged = 10,	// the client changed broadcast settings 
 	k_EBroadcastUploadResultMissingAudio = 11,	// client failed to send audio data
 	k_EBroadcastUploadResultTooFarBehind = 12,	// clients was too slow uploading
+	k_EBroadcastUploadResultTranscodeBehind = 13,	// server failed to keep up with transcode
+};
+
+
+//-----------------------------------------------------------------------------
+// Purpose: codes for well defined launch options
+//-----------------------------------------------------------------------------
+enum ELaunchOptionType
+{
+	k_ELaunchOptionType_None		= 0,	// unknown what launch option does
+	k_ELaunchOptionType_Default		= 1,	// runs the game, app, whatever in default mode
+	k_ELaunchOptionType_SafeMode	= 2,	// runs the game in safe mode
+	k_ELaunchOptionType_Multiplayer = 3,	// runs the game in multiplayer mode
+	k_ELaunchOptionType_Config		= 4,	// runs config tool for this game
+	k_ELaunchOptionType_OpenVR		= 5,	// runs game in VR mode using OpenVR
+	k_ELaunchOptionType_Server		= 6,	// runs dedicated server for this game
+	k_ELaunchOptionType_Editor		= 7,	// runs game editor
+	k_ELaunchOptionType_Manual		= 8,	// shows game manual
+	k_ELaunchOptionType_Benchmark	= 9,	// runs game benchmark
+	k_ELaunchOptionType_Option1		= 10,	// generic run option, uses description field for game name
+	k_ELaunchOptionType_Option2		= 11,	// generic run option, uses description field for game name
+	k_ELaunchOptionType_Option3     = 12,	// generic run option, uses description field for game name
+	k_ELaunchOptionType_OtherVR		= 13,	// runs game in VR mode using the Oculus SDK or other vendor-specific VR SDK
+	k_ELaunchOptionType_OpenVROverlay = 14,	// runs an OpenVR dashboard overlay
+
+	
+	k_ELaunchOptionType_Dialog 		= 1000, // show launch options dialog
 };
 
 
@@ -949,8 +985,10 @@ public:
 
 		CRC32_t crc32;
 		CRC32_Init( &crc32 );
-		CRC32_ProcessBuffer( &crc32, pchExePath, V_strlen( pchExePath ) );
-		CRC32_ProcessBuffer( &crc32, pchAppName, V_strlen( pchAppName ) );
+		if ( pchExePath )
+			CRC32_ProcessBuffer( &crc32, pchExePath, V_strlen( pchExePath ) );
+		if ( pchAppName )
+			CRC32_ProcessBuffer( &crc32, pchAppName, V_strlen( pchAppName ) );
 		CRC32_Final( &crc32 );
 
 		// set the high-bit on the mod-id 

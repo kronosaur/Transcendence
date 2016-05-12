@@ -60,6 +60,7 @@ S_API ISteamNetworking *SteamGameServerNetworking();
 S_API ISteamGameServerStats *SteamGameServerStats();
 S_API ISteamHTTP *SteamGameServerHTTP();
 S_API ISteamInventory *SteamGameServerInventory();
+S_API ISteamUGC *SteamGameServerUGC();
 #endif
 
 S_API void SteamGameServer_Shutdown();
@@ -68,8 +69,20 @@ S_API void SteamGameServer_RunCallbacks();
 S_API bool SteamGameServer_BSecure();
 S_API uint64 SteamGameServer_GetSteamID();
 
-#define STEAM_GAMESERVER_CALLBACK( thisclass, func, param, var ) CCallback< thisclass, param, true > var; void func( param *pParam )
 
+//----------------------------------------------------------------------------------------------------------------------------------------------------------//
+// These macros are similar to the STEAM_CALLBACK_* macros in steam_api.h, but only trigger for gameserver callbacks
+//----------------------------------------------------------------------------------------------------------------------------------------------------------//
+#define STEAM_GAMESERVER_CALLBACK( thisclass, func, /*callback_type, [deprecated] var*/... ) \
+	_STEAM_CALLBACK_SELECT( ( __VA_ARGS__, GS, 3 ), ( this->SetGameserverFlag();, thisclass, func, __VA_ARGS__ ) )
+
+#define STEAM_GAMESERVER_CALLBACK_MANUAL( thisclass, func, callback_type, var ) \
+	CCallbackManual< thisclass, callback_type, true > var; void func( callback_type *pParam )
+
+
+
+#define _STEAM_CALLBACK_GS( _, thisclass, func, param, var ) \
+	CCallback< thisclass, param, true > var; void func( param *pParam )
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------//
 //	steamclient.dll private wrapper functions
@@ -103,6 +116,7 @@ public:
 	ISteamGameServerStats *SteamGameServerStats() { return m_pSteamGameServerStats; }
 	ISteamHTTP *SteamHTTP() { return m_pSteamHTTP; }
 	ISteamInventory *SteamInventory() { return m_pSteamInventory; }
+	ISteamUGC *SteamUGC() { return m_pSteamUGC; }
 
 private:
 	ISteamGameServer			*m_pSteamGameServer;
@@ -111,6 +125,7 @@ private:
 	ISteamGameServerStats		*m_pSteamGameServerStats;
 	ISteamHTTP					*m_pSteamHTTP;
 	ISteamInventory				*m_pSteamInventory;
+	ISteamUGC					*m_pSteamUGC;
 };
 
 inline CSteamGameServerAPIContext::CSteamGameServerAPIContext()
@@ -126,6 +141,7 @@ inline void CSteamGameServerAPIContext::Clear()
 	m_pSteamGameServerStats = NULL;
 	m_pSteamHTTP = NULL;
 	m_pSteamInventory = NULL;
+	m_pSteamUGC = NULL;
 }
 
 S_API ISteamClient *g_pSteamClientGameServer;
@@ -160,6 +176,10 @@ inline bool CSteamGameServerAPIContext::Init()
 
 	m_pSteamInventory = g_pSteamClientGameServer->GetISteamInventory( hSteamUser, hSteamPipe, STEAMINVENTORY_INTERFACE_VERSION );
 	if ( !m_pSteamInventory )
+		return false;
+
+	m_pSteamUGC = g_pSteamClientGameServer->GetISteamUGC( hSteamUser, hSteamPipe, STEAMUGC_INTERFACE_VERSION );
+	if ( !m_pSteamUGC )
 		return false;
 
 	return true;

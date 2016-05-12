@@ -153,6 +153,7 @@ public:
 	// Requests a ticket encrypted with an app specific shared key
 	// pDataToInclude, cbDataToInclude will be encrypted into the ticket
 	// ( This is asynchronous, you must wait for the ticket to be completed by the server )
+	CALL_RESULT( EncryptedAppTicketResponse_t )
 	virtual SteamAPICall_t RequestEncryptedAppTicket( void *pDataToInclude, int cbDataToInclude ) = 0;
 
 	// retrieve a finished ticket
@@ -176,6 +177,7 @@ public:
 	// or else immediately navigate to the result URL using a hidden browser window.
 	// NOTE 2: The resulting authorization cookie has an expiration time of one day,
 	// so it would be a good idea to request and visit a new auth URL every 12 hours.
+	CALL_RESULT( StoreAuthURLResponse_t )
 	virtual SteamAPICall_t RequestStoreAuthURL( const char *pchRedirectURL ) = 0;
 
 #ifdef _PS3
@@ -250,6 +252,7 @@ struct SteamServerConnectFailure_t
 {
 	enum { k_iCallback = k_iSteamUserCallbacks + 2 };
 	EResult m_eResult;
+	bool m_bStillRetrying;
 };
 
 

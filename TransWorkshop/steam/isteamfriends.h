@@ -81,6 +81,7 @@ enum EFriendFlags
 	k_EFriendFlagIgnored		= 0x200,
 	k_EFriendFlagIgnoredFriend	= 0x400,
 	k_EFriendFlagSuggested		= 0x800,
+	k_EFriendFlagChatMember		= 0x1000,
 	k_EFriendFlagAll			= 0xFFFF,
 };
 
@@ -175,6 +176,7 @@ public:
 	//
 	// If the name change fails to happen on the server, then an additional global PersonaStateChange_t will be posted
 	// to change the name back, in addition to the SetPersonaNameResponse_t callback.
+	CALL_RESULT( SetPersonaNameResponse_t )
 	virtual SteamAPICall_t SetPersonaName( const char *pchPersonaName ) = 0;
 
 	// gets the status of the current user
@@ -307,6 +309,7 @@ public:
 	// you can only ask about clans that a user is a member of
 	// note that this won't download avatars automatically; if you get an officer,
 	// and no avatar image is available, call RequestUserInformation( steamID, false ) to download the avatar
+	CALL_RESULT( ClanOfficerListResponse_t )
 	virtual SteamAPICall_t RequestClanOfficerList( CSteamID steamIDClan ) = 0;
 
 	// iteration of clan officers - can only be done when a RequestClanOfficerList() call has completed
@@ -358,6 +361,7 @@ public:
 	// this allows in-game access to group (clan) chats from in the game
 	// the behavior is somewhat sophisticated, because the user may or may not be already in the group chat from outside the game or in the overlay
 	// use ActivateGameOverlayToUser( "chat", steamIDClan ) to open the in-game overlay version of the chat
+	CALL_RESULT( JoinClanChatRoomCompletionResult_t )
 	virtual SteamAPICall_t JoinClanChatRoom( CSteamID steamIDClan ) = 0;
 	virtual bool LeaveClanChatRoom( CSteamID steamIDClan ) = 0;
 	virtual int GetClanChatMemberCount( CSteamID steamIDClan ) = 0;
@@ -378,8 +382,11 @@ public:
 	virtual int GetFriendMessage( CSteamID steamIDFriend, int iMessageID, void *pvData, int cubData, EChatEntryType *peChatEntryType ) = 0;
 
 	// following apis
+	CALL_RESULT( FriendsGetFollowerCount_t )
 	virtual SteamAPICall_t GetFollowerCount( CSteamID steamID ) = 0;
+	CALL_RESULT( FriendsIsFollowing_t )
 	virtual SteamAPICall_t IsFollowing( CSteamID steamID ) = 0;
+	CALL_RESULT( FriendsEnumerateFollowingList_t )
 	virtual SteamAPICall_t EnumerateFollowingList( uint32 unStartIndex ) = 0;
 };
 
