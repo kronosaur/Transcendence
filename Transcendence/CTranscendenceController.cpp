@@ -1837,6 +1837,10 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 
 	ExtensionFolders.Insert(m_Settings.GetExtensionFolders());
 
+    //  Let the service add more extension folders (Steam needs this)
+
+    ExtensionFolders.Insert(m_Service.GetExtensionFolders());
+
 	//	If our AppData is elsewhere, then add an Extensions folder under the
 	//	current folder. [This allows the player to manually place extensions in Program Files.]
 
