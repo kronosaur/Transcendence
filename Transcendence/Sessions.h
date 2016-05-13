@@ -89,13 +89,20 @@ class CChooseAdventureSession : public IHISession
 class CGalacticMapSession : public IHISession
 	{
 	public:
-		CGalacticMapSession (CHumanInterface &HI) : IHISession(HI), m_pMap(NULL), m_pPainter(NULL) { }
+		CGalacticMapSession (CHumanInterface &HI) : IHISession(HI), 
+                m_pMap(NULL), 
+                m_pPainter(NULL),
+                m_bDragging(false)
+            { }
 
 		//	IHISession virtuals
 		virtual void OnCleanUp (void) override;
 		virtual ALERROR OnInit (CString *retsError) override;
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override;
+        virtual void OnLButtonUp (int x, int y, DWORD dwFlags) override;
+        virtual void OnMouseMove (int x, int y, DWORD dwFlags) override;
+        virtual void OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags) override;
 		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
 		virtual void OnReportHardCrash (CString *retsMessage) override;
 		virtual void OnUpdate (bool bTopMost);
@@ -103,23 +110,34 @@ class CGalacticMapSession : public IHISession
 	private:
 		int GetScale (int iScaleIndex);
 		int GetScaleIndex (int iScale);
+        void PaintHelpPane (CG32bitImage &Screen);
 
 		CSystemMap *m_pMap;
 		CString m_sMapName;
-
-		CGalacticMapPainter *m_pPainter;
-		int m_iScale;
-		int m_iTargetScaleIndex;
-		int m_xCenter;
-		int m_yCenter;
-		int m_xTargetCenter;
-		int m_yTargetCenter;
-
+        int m_iMinScale;
+        int m_iMaxScale;
 		int m_iMinScaleIndex;
 		int m_iMaxScaleIndex;
 
+		CGalacticMapPainter *m_pPainter;
+
 		RECT m_rcView;
 		RECT m_rcHelp;
+
+		int m_iScale;                       //  Current scale
+		int m_xCenter;                      //  Current center (in galactic coordinates)
+		int m_yCenter;
+
+		int m_iTargetScaleIndex;            //  Desired scale
+        int m_iTargetScale;
+		int m_xTargetCenter;                //  Desired center
+		int m_yTargetCenter;
+
+        bool m_bDragging;                   //  TRUE if we're dragging the map
+        int m_xAnchor;                      //  Click anchor (in galactic coordinates)
+        int m_yAnchor;
+        int m_xAnchorCenter;                //  Map center at time of anchor drop
+        int m_yAnchorCenter;
 	};
 
 class CGameSession : public IHISession

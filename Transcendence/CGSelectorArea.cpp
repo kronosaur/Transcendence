@@ -1,6 +1,7 @@
 //	CGSelectorArea.cpp
 //
 //	CGSelectorArea class
+//	Copyright (c) 2016 by Kronosaur Productions, LLC. All Rights Reserved.
 
 #include "PreComp.h"
 #include "Transcendence.h"

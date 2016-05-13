@@ -431,9 +431,9 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 	CGDraw::RoundedRectOutline(Dest,
 			rcRect.left,
 			rcRect.top,
-			RectWidth(rcRect) - 1,
-			RectHeight(rcRect) - 1,
-			BORDER_RADIUS + 1,
+			RectWidth(rcRect),
+			RectHeight(rcRect),
+			BORDER_RADIUS,
 			1,
 			CG32bitPixel(80,80,80));
 

@@ -1,13 +1,26 @@
 //	CGalacticMapSession.cpp
 //
 //	CGalacticMapSession class
+//	Copyright (c) 2016 by Kronosaur Productions, LLC. All Rights Reserved.
 
 #include "PreComp.h"
 #include "Transcendence.h"
 
-const int MAX_HEIGHT =							1024;
-const int BORDER_HEIGHT =						96;
-const int SCROLL_STEP =							120;
+const int SCROLL_STEP = 120;
+const Metric MOUSE_WHEEL_ZOOM_IN = 1.001;
+const Metric MOUSE_WHEEL_ZOOM_OUT = 1.0 / MOUSE_WHEEL_ZOOM_IN;
+
+const int SCREEN_BORDER_X = 10;
+const int SCREEN_BORDER_Y = 10;
+
+const int PANE_PADDING_X = 10;
+const int PANE_PADDING_Y = 10;
+
+const int BORDER_RADIUS = 4;
+const int HELP_PANE_WIDTH = 280;
+const int HELP_PANE_HEIGHT = 180;
+const BYTE HELP_PANE_OPACITY = 128;
+
 
 #define STR_HELP_LINE1							CONSTLIT("[Arrows] to scroll")
 #define STR_HELP_LINE2							CONSTLIT("[Esc] to exit")
@@ -80,12 +93,10 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 
 	m_sMapName = m_pMap->GetName();
 
-	int iMinScale;
-	int iMaxScale;
-	m_pMap->GetScale(&m_iScale, &iMinScale, &iMaxScale);
+	m_pMap->GetScale(&m_iScale, &m_iMinScale, &m_iMaxScale);
 	m_iScale = GetScale(GetScaleIndex(m_iScale));
-	m_iMinScaleIndex = GetScaleIndex(iMinScale);
-	m_iMaxScaleIndex = GetScaleIndex(iMaxScale);
+	m_iMinScaleIndex = GetScaleIndex(m_iMinScale);
+	m_iMaxScaleIndex = GetScaleIndex(m_iMaxScale);
 
 	//	Create a painter
 
@@ -93,19 +104,12 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 
 	//	Compute some rects
 
-	RECT rcCenter;
-	VI.GetWidescreenRect(&rcCenter);
+    GetRect(m_rcView);
 
-	int cxWidth = m_HI.GetScreenWidth();
-	int cyTotalHeight = Min(MAX_HEIGHT + 2 * BORDER_HEIGHT, m_HI.GetScreenHeight());
-	int cyHeight = cyTotalHeight - (2 * BORDER_HEIGHT);
-	m_rcView.left = 0;
-	m_rcView.top = (m_HI.GetScreenHeight() - cyHeight) / 2;
-	m_rcView.right = m_rcView.left + cxWidth;
-	m_rcView.bottom = m_rcView.top + cyHeight;
-
-	m_rcHelp.left = rcCenter.left;
-	m_rcHelp.top = m_rcView.bottom + VI.GetFont(fontMedium).GetHeight();
+    m_rcHelp.left = m_rcView.left + SCREEN_BORDER_X;
+    m_rcHelp.right = m_rcHelp.left + HELP_PANE_WIDTH;
+    m_rcHelp.bottom = m_rcView.bottom - SCREEN_BORDER_Y;
+    m_rcHelp.top = m_rcHelp.bottom - HELP_PANE_HEIGHT;
 
 	//	Adjust the map position
 
@@ -113,7 +117,7 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 
 	//	Initialize animation
 
-	m_iTargetScaleIndex = GetScaleIndex(m_iScale);
+    m_iTargetScale = m_iScale;
 	m_xTargetCenter = m_xCenter;
 	m_yTargetCenter = m_yCenter;
 
@@ -136,15 +140,23 @@ void CGalacticMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
 		case VK_ADD:
 		case VK_OEM_PLUS:
-			m_iTargetScaleIndex = Min(m_iTargetScaleIndex + 1, m_iMaxScaleIndex);
-			m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, GetScale(m_iTargetScaleIndex), &m_xTargetCenter, &m_yTargetCenter);
+            {
+            int iTargetScaleIndex = GetScaleIndex(m_iTargetScale);
+            int iCurScale = GetScale(iTargetScaleIndex);
+            if (iCurScale > m_iTargetScale)
+                m_iTargetScale = Min(iCurScale, m_iMaxScale);
+            else
+			    m_iTargetScale = Min(GetScale(Min(iTargetScaleIndex + 1, m_iMaxScaleIndex)), m_iMaxScale);
+
+			m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
 			break;
+            }
 
 		case VK_CONTROL:
 			break;
 
 		case VK_DOWN:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter - (100 * SCROLL_STEP / GetScale(m_iTargetScaleIndex)), GetScale(m_iTargetScaleIndex), &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter - (100 * SCROLL_STEP / m_iTargetScale), m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		case VK_HOME:
@@ -154,35 +166,43 @@ void CGalacticMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 			if (pNode)
 				{
 				pNode->GetDisplayPos(&m_xTargetCenter, &m_yTargetCenter);
-				m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, GetScale(m_iTargetScaleIndex), &m_xTargetCenter, &m_yTargetCenter);
+				m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
 				}
 			break;
 			}
 
 		case VK_LEFT:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter - (100 * SCROLL_STEP / GetScale(m_iTargetScaleIndex)), m_yCenter, GetScale(m_iTargetScaleIndex), &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_rcView, m_xCenter - (100 * SCROLL_STEP / m_iTargetScale), m_yCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		case VK_NEXT:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter - (300 * SCROLL_STEP / GetScale(m_iTargetScaleIndex)), GetScale(m_iTargetScaleIndex), &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter - (300 * SCROLL_STEP / m_iTargetScale), m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		case VK_PRIOR:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter + (300 * SCROLL_STEP / GetScale(m_iTargetScaleIndex)), GetScale(m_iTargetScaleIndex), &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter + (300 * SCROLL_STEP / m_iTargetScale), m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		case VK_RIGHT:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter + (100 * SCROLL_STEP / GetScale(m_iTargetScaleIndex)), m_yCenter, GetScale(m_iTargetScaleIndex), &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_rcView, m_xCenter + (100 * SCROLL_STEP / m_iTargetScale), m_yCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		case VK_SUBTRACT:
 		case VK_OEM_MINUS:
-			m_iTargetScaleIndex = Max(m_iMinScaleIndex, m_iTargetScaleIndex - 1);
-			m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, GetScale(m_iTargetScaleIndex), &m_xTargetCenter, &m_yTargetCenter);
+            {
+            int iTargetScaleIndex = GetScaleIndex(m_iTargetScale);
+            int iCurScale = GetScale(iTargetScaleIndex);
+            if (iCurScale < m_iTargetScale)
+                m_iTargetScale = Max(iCurScale, m_iMinScale);
+            else
+			    m_iTargetScale = Max(m_iMinScale, GetScale(Max(m_iMinScaleIndex, iTargetScaleIndex - 1)));
+
+			m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
 			break;
+            }
 
 		case VK_UP:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter + (100 * SCROLL_STEP / GetScale(m_iTargetScaleIndex)), GetScale(m_iTargetScaleIndex), &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter + (100 * SCROLL_STEP / m_iTargetScale), m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		//	Done
@@ -200,10 +220,57 @@ void CGalacticMapSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retb
 //	LButtonDown
 
 	{
-	//	Done
+    m_pPainter->ViewToGalactic(x, y, m_rcView, m_xCenter, m_yCenter, m_iTargetScale, &m_xAnchor, &m_yAnchor);
+    m_xAnchorCenter = m_xCenter;
+    m_yAnchorCenter = m_yCenter;
 
-	m_HI.ClosePopupSession();
+    m_bDragging = true;
+    *retbCapture = true;
 	}
+
+void CGalacticMapSession::OnLButtonUp (int x, int y, DWORD dwFlags)
+
+//  OnLButtonUp
+//
+//  LButtonUp
+
+    {
+    m_bDragging = false;
+    }
+
+void CGalacticMapSession::OnMouseMove (int x, int y, DWORD dwFlags)
+
+//  OnMouseMOve
+//
+//  Mouse move
+
+    {
+    if (m_bDragging)
+        {
+        int xNewPos, yNewPos;
+        m_pPainter->ViewToGalactic(x, y, m_rcView, m_xAnchorCenter, m_yAnchorCenter, m_iTargetScale, &xNewPos, &yNewPos);
+		m_pPainter->AdjustCenter(m_rcView, m_xAnchorCenter - (xNewPos - m_xAnchor), m_yAnchorCenter - (yNewPos - m_yAnchor), m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
+        }
+    }
+
+void CGalacticMapSession::OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
+
+//  OnMouseWheel
+//
+//  Zoom in/out
+
+    {
+    if (iDelta > 0)
+        {
+        m_iTargetScale = Min((int)(m_iTargetScale * Min(100.0, pow(MOUSE_WHEEL_ZOOM_IN, (Metric)iDelta))), m_iMaxScale);
+		m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
+        }
+    else if (iDelta < 0)
+        {
+        m_iTargetScale = Max(m_iMinScale, (int)(m_iTargetScale * pow(MOUSE_WHEEL_ZOOM_OUT, (Metric)-iDelta)));
+		m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
+        }
+    }
 
 void CGalacticMapSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
@@ -236,32 +303,15 @@ void CGalacticMapSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 			g_pUniverse->GetCurrentSystem()->GetTopology()->GetDisplayPos(&xPos, &yPos);
 
 			int xShip, yShip;
-			m_pPainter->GetPos(xPos, yPos, m_rcView, m_xCenter, m_yCenter, m_iScale, &xShip, &yShip);
+			m_pPainter->GalacticToView(xPos, yPos, m_rcView, m_xCenter, m_yCenter, m_iScale, &xShip, &yShip);
 
 			pPlayer->PaintMap(CMapViewportCtx(), Screen, xShip, yShip);
 			}
 		}
 
-	//	Paint frame
-
-	Screen.Fill(0, 0, cxScreen, m_rcView.top, rgbBackgroundColor);
-	Screen.Fill(0, m_rcView.bottom, cxScreen, cyScreen - m_rcView.bottom, rgbBackgroundColor);
-	Screen.FillLine(0, m_rcView.top, cxScreen, rgbLineColor);
-	Screen.FillLine(0, m_rcView.bottom, cxScreen, rgbLineColor);
-
 	//	Paint some help text
 
-	int x = m_rcHelp.left;
-	int y = m_rcHelp.top;
-
-	Screen.DrawText(x, y, HeaderFont, VI.GetColor(colorTextHighlight), m_sMapName);
-	y += HeaderFont.GetHeight();
-	
-	Screen.DrawText(x, y, MediumFont, VI.GetColor(colorTextFade), STR_HELP_LINE1);
-	y += MediumFont.GetHeight();
-
-	Screen.DrawText(x, y, MediumFont, VI.GetColor(colorTextFade), STR_HELP_LINE2);
-	y += MediumFont.GetHeight();
+    PaintHelpPane(Screen);
 	}
 
 void CGalacticMapSession::OnReportHardCrash (CString *retsMessage)
@@ -281,11 +331,10 @@ void CGalacticMapSession::OnUpdate (bool bTopMost)
 //	Update
 
 	{
-	int iTargetScale = GetScale(m_iTargetScaleIndex);
-	if (iTargetScale != m_iScale)
+	if (m_iTargetScale != m_iScale)
 		{
-		int iDiff = iTargetScale - m_iScale;
-		m_iScale = (Absolute(iDiff) > 1 ? m_iScale + (iDiff / 2) : iTargetScale);
+		int iDiff = m_iTargetScale - m_iScale;
+		m_iScale = (Absolute(iDiff) > 1 ? m_iScale + (iDiff / 2) : m_iTargetScale);
 		HIInvalidate();
 		}
 
@@ -300,6 +349,39 @@ void CGalacticMapSession::OnUpdate (bool bTopMost)
 		HIInvalidate();
 		}
 	}
+
+void CGalacticMapSession::PaintHelpPane (CG32bitImage &Screen)
+
+//  PaintHelpPane
+//
+//  Paints the help pane.
+
+    {
+	const CVisualPalette &VI = m_HI.GetVisuals();
+	CG32bitPixel rgbBackgroundColor = VI.GetColor(colorAreaDeep);
+	CG32bitPixel rgbLineColor = VI.GetColor(colorLineFrame);
+	const CG16bitFont &HeaderFont = VI.GetFont(fontHeader);
+	const CG16bitFont &MediumFont = VI.GetFont(fontMedium);
+
+    //  Paint the pane background
+
+    CGDraw::RoundedRect(Screen, m_rcHelp.left, m_rcHelp.top, RectWidth(m_rcHelp), RectHeight(m_rcHelp), BORDER_RADIUS, CG32bitPixel(VI.GetColor(colorAreaDialog), HELP_PANE_OPACITY));
+    CGDraw::RoundedRectOutline(Screen, m_rcHelp.left, m_rcHelp.top, RectWidth(m_rcHelp), RectHeight(m_rcHelp), BORDER_RADIUS, 1, VI.GetColor(colorLineFrame));
+
+    //  Paint help text
+
+	int x = m_rcHelp.left + PANE_PADDING_X;
+	int y = m_rcHelp.top + PANE_PADDING_Y;
+
+	Screen.DrawText(x, y, HeaderFont, VI.GetColor(colorTextHighlight), m_sMapName);
+	y += HeaderFont.GetHeight();
+	
+	Screen.DrawText(x, y, MediumFont, VI.GetColor(colorTextFade), STR_HELP_LINE1);
+	y += MediumFont.GetHeight();
+
+	Screen.DrawText(x, y, MediumFont, VI.GetColor(colorTextFade), STR_HELP_LINE2);
+	y += MediumFont.GetHeight();
+    }
 
 void CopyGalacticMapToClipboard (HWND hWnd, CGalacticMapPainter *pPainter)
 	{
