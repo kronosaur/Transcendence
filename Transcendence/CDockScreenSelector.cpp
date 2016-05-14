@@ -322,13 +322,13 @@ void CDockScreenSelector::OnShowItem (void)
 		if (Item.IsInstalled() && Item.GetType()->IsArmor())
 			{
 			int iSeg = Item.GetInstalled();
-			g_pTrans->SelectArmor(iSeg);
+			SelectArmor(iSeg);
 			}
 		else
-			g_pTrans->SelectArmor(-1);
+			SelectArmor(-1);
 		}
 	else
-		g_pTrans->SelectArmor(-1);
+		SelectArmor(-1);
 	}
 
 void CDockScreenSelector::OnShowPane (bool bNoListNavigation)

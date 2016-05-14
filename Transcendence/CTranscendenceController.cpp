@@ -995,10 +995,6 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		{
 		m_Model.EndGame();
 
-		//	Clean up game state
-
-		g_pTrans->CleanUpDisplays();
-
 		//	Epilogue
 
 		HICommand(CMD_UI_START_EPILOGUE);
@@ -1016,10 +1012,6 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			g_pTrans->m_State = CTranscendenceWnd::gsInGame;
 		else
 			{
-			//	Clean up game state
-
-			g_pTrans->CleanUpDisplays();
-
 			//	Epilogue
 
 			HICommand(CMD_UI_START_EPILOGUE);
@@ -1033,12 +1025,10 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		if (error = m_Model.EndGameSave(&sError))
 			g_pTrans->DisplayMessage(sError);
 
-		//	Clean up game state
+        //	Back to intro screen
 
-		g_pTrans->CleanUpDisplays();
-
-		//	Back to intro screen
-
+        m_pGameSession = NULL;
+        m_Model.GetPlayer()->SetGameSession(NULL);
 		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, CIntroSession::isShipStats));
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
@@ -1049,7 +1039,9 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_GAME_READY))
 		{
-		m_HI.ShowSession(new CGameSession(m_HI, m_Settings, m_Soundtrack));
+        m_pGameSession = new CGameSession(m_HI, m_Settings, m_Model, m_Soundtrack);
+        m_Model.GetPlayer()->SetGameSession(m_pGameSession);
+		m_HI.ShowSession(m_pGameSession);
 		m_iState = stateInGame;
 
 		//	NOTE: It's OK to leave the default param (firstTime = true) for
@@ -1059,29 +1051,6 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		m_Soundtrack.NotifyGameStart();
 		m_Soundtrack.NotifyEnterSystem();
 		}
-
-#if 0
-	else if (strEquals(sCmd, CMD_GAME_START_EXISTING))
-		{
-		m_Model.StartGame(false);
-		m_iState = stateInGame;
-
-		//	NOTE: It's OK to leave the default param (firstTime = true) for
-		//	NotifyEnterSystem. We want the soundtrack to change to the system
-		//	track.
-
-		m_Soundtrack.NotifyGameStart();
-		m_Soundtrack.NotifyEnterSystem();
-		}
-	else if (strEquals(sCmd, CMD_GAME_START_NEW))
-		{
-		m_Model.StartGame(true);
-		m_iState = stateInGame;
-
-		m_Soundtrack.NotifyGameStart();
-		m_Soundtrack.NotifyEnterSystem();
-		}
-#endif
 
 	//	Player notifications
 
@@ -1141,10 +1110,6 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		{
 		m_Model.EndGameStargate();
 
-		//	Clean up game state
-
-		g_pTrans->CleanUpDisplays();
-
 		//	Epilogue
 
 		HICommand(CMD_UI_START_EPILOGUE);
@@ -1166,6 +1131,9 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Otherwise, start epilog session
 
+        m_pGameSession = NULL;
+        if (m_Model.GetPlayer())
+            m_Model.GetPlayer()->SetGameSession(NULL);
 		m_HI.ShowSession(new CTextCrawlSession(m_HI, m_Service, pCrawlImage, sCrawlText, CMD_SESSION_EPILOGUE_DONE));
 		m_iState = stateEpilogue;
 		m_Soundtrack.SetGameState(CSoundtrackManager::stateGameEpitaph, m_Model.GetCrawlSoundtrack());
@@ -1958,11 +1926,6 @@ void CTranscendenceController::OnShutdown (EHIShutdownReasons iShutdownCode)
 	//	Stop music
 
 	m_HI.GetSoundMgr().StopMusic();
-
-	//	Clean up displays (or else we'll be holding on to bad pointers after the
-	//	universe gets cleaned up)
-
-	g_pTrans->CleanUpDisplays();
 
 	//	If we're still in the game and we're exiting, make sure
 	//	to save the game first

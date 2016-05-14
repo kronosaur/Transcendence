@@ -3,6 +3,7 @@
 //	Dock Screen classes
 //	Copyright (c) 2014 by Kronosaur Productions, LLC. All Rights Reserved.
 
+class CGameSession;
 class CDockScreen;
 class CPlayerShipController;
 struct SDockFrame;
@@ -141,6 +142,7 @@ class IDockScreenDisplay
 		bool EvalBool (const CString &sCode, bool *retbResult, CString *retsError);
 		CSpaceObject *EvalListSource (const CString &sString, CString *retsError);
 		bool EvalString (const CString &sString, bool bPlain, ECodeChainEvents iEvent, CString *retsResult);
+        void SelectArmor (int iSelection);
 
 		CDockScreen *m_pDockScreen;
 		CSpaceObject *m_pLocation;
@@ -386,6 +388,7 @@ class CDockScreen : public IScreenController
 		inline CItemListManipulator &GetItemListManipulator (void) { return m_pDisplay->GetItemListManipulator(); }
 		inline int GetListCursor (void) { return m_pDisplay->GetListCursor(); }
 		inline IListData *GetListData (void) { return m_pDisplay->GetListData(); }
+        inline CGameSession *GetGameSession (void) { return m_pSession; }
         const CDockScreenVisuals &GetVisuals (void) const;
 		inline CString GetTextInput (void) { return m_CurrentPane.GetTextInputValue(); }
 		inline bool IsCurrentItemValid (void) { return m_pDisplay->IsCurrentItemValid(); }
@@ -396,6 +399,7 @@ class CDockScreen : public IScreenController
 		ALERROR SetDisplayText (const CString &sID, const CString &sText);
 		inline bool SetControlValue (const CString &sID, ICCItem *pValue) { return m_CurrentPane.SetControlValue(sID, pValue); }
 		inline void SetCounter (int iCount) { m_CurrentPane.SetCounterValue(iCount); }
+        inline void SetGameSession (CGameSession *pSession) { m_pSession = pSession; }
 		void SetListCursor (int iCursor);
 		inline void SetTextInput (const CString &sText) { m_CurrentPane.SetTextInputValue(sText); }
 		void ShowPane (const CString &sName);
@@ -459,6 +463,7 @@ class CDockScreen : public IScreenController
 		void InitDisplayControlRect (CXMLElement *pDesc, const RECT &rcFrame, RECT *retrcRect);
 
 		const SFontTable *m_pFonts;
+        CGameSession *m_pSession;
 		CPlayerShipController *m_pPlayer;
 		CDesignType *m_pRoot;
 		CString m_sScreen;

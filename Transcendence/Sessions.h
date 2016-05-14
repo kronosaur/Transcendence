@@ -111,6 +111,7 @@ class CGalacticMapSession : public IHISession
 		int GetScale (int iScaleIndex);
 		int GetScaleIndex (int iScale);
         void PaintHelpPane (CG32bitImage &Screen);
+        void SetTargetScale (int iTargetScale);
 
 		CSystemMap *m_pMap;
 		CString m_sMapName;
@@ -128,6 +129,9 @@ class CGalacticMapSession : public IHISession
 		int m_xCenter;                      //  Current center (in galactic coordinates)
 		int m_yCenter;
 
+        int m_cxLegendScale;                //  Length of legend scale
+        CString m_sLegendScale;             //  Label
+
 		int m_iTargetScaleIndex;            //  Desired scale
         int m_iTargetScale;
 		int m_xTargetCenter;                //  Desired center
@@ -138,46 +142,6 @@ class CGalacticMapSession : public IHISession
         int m_yAnchor;
         int m_xAnchorCenter;                //  Map center at time of anchor drop
         int m_yAnchorCenter;
-	};
-
-class CGameSession : public IHISession
-	{
-	public:
-		CGameSession (CHumanInterface &HI, 
-					  CGameSettings &Settings,
-					  CSoundtrackManager &Soundtrack) : IHISession(HI),
-				m_Settings(Settings),
-				m_Soundtrack(Soundtrack)
-			{ }
-
-		//	IHISession virtuals
-
-		virtual CReanimator &GetReanimator (void) override { return g_pTrans->GetReanimator(); }
-		virtual void OnAnimate (CG32bitImage &Screen, bool bTopMost) override { CSmartLock Lock(g_pUniverse->GetSem()); g_pTrans->Animate(Screen, this, bTopMost); }
-		virtual void OnChar (char chChar, DWORD dwKeyData) override { g_pTrans->WMChar(chChar, dwKeyData); }
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override { return NOERROR; }
-		virtual ALERROR OnInit (CString *retsError) override { m_rcScreen = g_pTrans->m_rcScreen; SetNoCursor(true); return NOERROR; }
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override { g_pTrans->WMKeyDown(iVirtKey, dwKeyData); }
-		virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) override { g_pTrans->WMKeyUp(iVirtKey, dwKeyData); }
-		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) override { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override { g_pTrans->WMLButtonDown(x, y, dwFlags); }
-		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) override { g_pTrans->WMLButtonUp(x, y, dwFlags); }
-		virtual void OnMouseMove (int x, int y, DWORD dwFlags) override { g_pTrans->WMMouseMove(x, y, dwFlags); }
-		virtual void OnMove (int x, int y) override { g_pTrans->WMMove(x, y); }
-		virtual void OnRButtonDown (int x, int y, DWORD dwFlags) override { g_pTrans->WMRButtonDown(x, y, dwFlags); }
-		virtual void OnRButtonUp (int x, int y, DWORD dwFlags) override { g_pTrans->WMRButtonUp(x, y, dwFlags); }
-		virtual void OnReportHardCrash (CString *retsMessage) override { *retsMessage = g_pTrans->GetCrashInfo(); }
-		virtual void OnSize (int cxWidth, int cyHeight) override { g_pTrans->WMSize(cxWidth, cyHeight, 0); }
-
-		//	Helpers
-
-		void PaintInfoText (CG32bitImage &Dest, const CString &sTitle, const TArray<CString> &Body, bool bAboveTargeting = true);
-		void PaintSoundtrackTitles (CG32bitImage &Dest);
-
-	private:
-		CGameSettings &m_Settings;
-		CSoundtrackManager &m_Soundtrack;
-		RECT m_rcScreen;					//	RECT of main screen within window.
 	};
 
 class CHelpSession : public IHISession

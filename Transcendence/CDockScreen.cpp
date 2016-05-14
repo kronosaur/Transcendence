@@ -106,6 +106,7 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 
 CDockScreen::CDockScreen (void) : 
 		m_pFonts(NULL),
+        m_pSession(NULL),
 		m_pPlayer(NULL),
 		m_pLocation(NULL),
 		m_pData(NULL),

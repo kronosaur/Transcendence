@@ -38,6 +38,7 @@ const DWORD DAMAGE_BAR_TIMER =					30 * 5;
 
 CPlayerShipController::CPlayerShipController (void) : 
 		m_pTrans(NULL),
+        m_pSession(NULL),
 		m_iManeuver(NoRotation),
 		m_bThrust(false),
 		m_bActivate(false),
@@ -910,7 +911,8 @@ void CPlayerShipController::OnArmorRepaired (int iSection)
 //	Armor repaired or replaced
 
 	{
-	m_pTrans->UpdateArmorDisplay();
+    if (m_pSession)
+        m_pSession->OnArmorRepaired(iSection);
 	}
 
 void CPlayerShipController::OnBlindnessChanged (bool bBlind, bool bNoMessage)
@@ -1029,8 +1031,8 @@ void CPlayerShipController::OnDamaged (const CDamageSource &Cause, CInstalledArm
 
 	//	Heavy damage (>= 10%) causes screen flash
 
-	if (iDamage >= (iMaxArmorHP / 10) && Damage.CausesSRSFlash())
-		m_pTrans->DamageFlash();
+	if (m_pSession && iDamage >= (iMaxArmorHP / 10) && Damage.CausesSRSFlash())
+		m_pSession->OnDamageFlash();
 
 	//	If we're down to 25% armor, then warn the player
 
@@ -1042,7 +1044,8 @@ void CPlayerShipController::OnDamaged (const CDamageSource &Cause, CInstalledArm
 
 	//	Update display
 
-	m_pTrans->UpdateArmorDisplay();
+    if (m_pSession)
+        m_pSession->OnArmorDamaged(pArmor->GetSect());
 
 	//	Register stats
 
@@ -1098,7 +1101,8 @@ void CPlayerShipController::OnDestroyed (SDestroyCtx &Ctx)
 	CString sEpitaph;
 	g_pTrans->GetModel().OnPlayerDestroyed(Ctx, &sEpitaph);
 
-	m_pTrans->PlayerDestroyed(sEpitaph, Ctx.bResurrectPending);
+    if (m_pSession)
+        m_pSession->OnPlayerDestroyed(Ctx, sEpitaph);
 
 	DEBUG_CATCH
 	}
@@ -1467,7 +1471,8 @@ void CPlayerShipController::OnStationDestroyed (const SDestroyCtx &Ctx)
 	if (m_pTarget == Ctx.pObj)
 		{
 		SetTarget(NULL);
-		m_pTrans->UpdateWeaponStatus();
+        if (m_pSession)
+            m_pSession->OnTargetChanged(m_pTarget);
 		}
 
 	if (m_pAutoDamage == Ctx.pObj)
@@ -1757,7 +1762,8 @@ void CPlayerShipController::OnObjDestroyed (const SDestroyCtx &Ctx)
 		{
 		m_pTarget = NULL;
 		ClearFireAngle();
-		m_pTrans->UpdateWeaponStatus();
+        if (m_pSession)
+            m_pSession->OnTargetChanged(m_pTarget);
 		}
 
 	if (m_pDestination == Ctx.pObj)
@@ -1927,7 +1933,8 @@ void CPlayerShipController::OnWeaponStatusChanged (void)
 //	Weapon status has changed
 
 	{
-	m_pTrans->UpdateWeaponStatus();
+    if (m_pSession)
+        m_pSession->OnWeaponStatusChanged();
 	}
 
 void CPlayerShipController::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
@@ -2082,6 +2089,9 @@ void CPlayerShipController::ReadyNextMissile (int iDir)
 				sVariant = pLauncher->GetName();
 			m_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("%s ready"), sVariant));
 			}
+
+        if (m_pSession)
+            m_pSession->OnWeaponStatusChanged();
 		}
 	else
 		m_pTrans->DisplayMessage(CONSTLIT("No launcher installed"));
@@ -2124,6 +2134,9 @@ void CPlayerShipController::ReadyNextWeapon (int iDir)
 		else
 			m_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Disabled %s selected"), pNewWeapon->GetName()));
 		}
+
+    if (m_pSession)
+        m_pSession->OnWeaponStatusChanged();
 	}
 
 void CPlayerShipController::Reset (void)
@@ -2140,7 +2153,8 @@ void CPlayerShipController::Reset (void)
 	if (m_pTarget)
 		{
 		SetTarget(NULL);
-		m_pTrans->UpdateWeaponStatus();
+        if (m_pSession)
+            m_pSession->OnTargetChanged(m_pTarget);
 		}
 
 	//	Clear destination
@@ -2495,8 +2509,8 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip)
 
 	//	Update displays
 
-//	m_pTrans->UpdateArmorDisplay();
-	m_pTrans->InitDisplays();
+    if (m_pSession)
+        m_pSession->OnPlayerChangedShips(pOldShip);
 
 	return NOERROR;
 	}

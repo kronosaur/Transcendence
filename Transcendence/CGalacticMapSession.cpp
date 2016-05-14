@@ -18,17 +18,20 @@ const int PANE_PADDING_Y = 10;
 
 const int BORDER_RADIUS = 4;
 const int HELP_PANE_WIDTH = 280;
-const int HELP_PANE_HEIGHT = 180;
 const BYTE HELP_PANE_OPACITY = 128;
 
-
-#define STR_HELP_LINE1							CONSTLIT("[Arrows] to scroll")
+#define STR_HELP_LINE1							CONSTLIT("Click and drag to navigate")
 #define STR_HELP_LINE2							CONSTLIT("[Esc] to exit")
 
 static int SCALE_LEVELS[] =
 	{	25, 50, 100, 200, 400 };
 
 const int SCALE_LEVELS_COUNT = (sizeof(SCALE_LEVELS) / sizeof(SCALE_LEVELS[0]));
+
+static int LEGEND_SCALE[] =
+    { 100000, 50000, 25000, 10000, 5000, 2500, 1000, 500, 250, 100, 50, 25, 10, 5, 2, 1, };
+
+const int LEGEND_SCALE_COUNT = (sizeof(LEGEND_SCALE) / sizeof(LEGEND_SCALE[0]));
 
 int CGalacticMapSession::GetScaleIndex (int iScale)
 
@@ -78,6 +81,8 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 
 	{
 	const CVisualPalette &VI = m_HI.GetVisuals();
+	const CG16bitFont &HeaderFont = VI.GetFont(fontHeader);
+	const CG16bitFont &MediumFont = VI.GetFont(fontMedium);
 
 	//	Get the map
 
@@ -108,8 +113,10 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 
     m_rcHelp.left = m_rcView.left + SCREEN_BORDER_X;
     m_rcHelp.right = m_rcHelp.left + HELP_PANE_WIDTH;
+
+    int cyPane = HeaderFont.GetHeight() + 4 * MediumFont.GetHeight() + 4 + (2 * PANE_PADDING_Y);
     m_rcHelp.bottom = m_rcView.bottom - SCREEN_BORDER_Y;
-    m_rcHelp.top = m_rcHelp.bottom - HELP_PANE_HEIGHT;
+    m_rcHelp.top = m_rcHelp.bottom - cyPane;
 
 	//	Adjust the map position
 
@@ -117,9 +124,9 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 
 	//	Initialize animation
 
-    m_iTargetScale = m_iScale;
 	m_xTargetCenter = m_xCenter;
 	m_yTargetCenter = m_yCenter;
+    SetTargetScale(m_iScale);
 
 	return NOERROR;
 	}
@@ -144,11 +151,9 @@ void CGalacticMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
             int iTargetScaleIndex = GetScaleIndex(m_iTargetScale);
             int iCurScale = GetScale(iTargetScaleIndex);
             if (iCurScale > m_iTargetScale)
-                m_iTargetScale = Min(iCurScale, m_iMaxScale);
+                SetTargetScale(iCurScale);
             else
-			    m_iTargetScale = Min(GetScale(Min(iTargetScaleIndex + 1, m_iMaxScaleIndex)), m_iMaxScale);
-
-			m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
+                SetTargetScale(GetScale(Min(iTargetScaleIndex + 1, m_iMaxScaleIndex)));
 			break;
             }
 
@@ -193,11 +198,9 @@ void CGalacticMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
             int iTargetScaleIndex = GetScaleIndex(m_iTargetScale);
             int iCurScale = GetScale(iTargetScaleIndex);
             if (iCurScale < m_iTargetScale)
-                m_iTargetScale = Max(iCurScale, m_iMinScale);
+                SetTargetScale(iCurScale);
             else
-			    m_iTargetScale = Max(m_iMinScale, GetScale(Max(m_iMinScaleIndex, iTargetScaleIndex - 1)));
-
-			m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
+                SetTargetScale(GetScale(Max(m_iMinScaleIndex, iTargetScaleIndex - 1)));
 			break;
             }
 
@@ -261,15 +264,9 @@ void CGalacticMapSession::OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
 
     {
     if (iDelta > 0)
-        {
-        m_iTargetScale = Min((int)(m_iTargetScale * Min(100.0, pow(MOUSE_WHEEL_ZOOM_IN, (Metric)iDelta))), m_iMaxScale);
-		m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
-        }
+        SetTargetScale((int)(m_iTargetScale * Min(100.0, pow(MOUSE_WHEEL_ZOOM_IN, (Metric)iDelta))));
     else if (iDelta < 0)
-        {
-        m_iTargetScale = Max(m_iMinScale, (int)(m_iTargetScale * pow(MOUSE_WHEEL_ZOOM_OUT, (Metric)-iDelta)));
-		m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
-        }
+        SetTargetScale((int)(m_iTargetScale * pow(MOUSE_WHEEL_ZOOM_OUT, (Metric)-iDelta)));
     }
 
 void CGalacticMapSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
@@ -381,6 +378,61 @@ void CGalacticMapSession::PaintHelpPane (CG32bitImage &Screen)
 
 	Screen.DrawText(x, y, MediumFont, VI.GetColor(colorTextFade), STR_HELP_LINE2);
 	y += MediumFont.GetHeight();
+
+    //  Paint the scale
+
+    if (m_cxLegendScale > 0)
+        {
+        y += MediumFont.GetHeight();
+
+        CG32bitPixel rgbScale = VI.GetColor(colorTextHighlight);
+        Screen.FillLine(x, y, m_cxLegendScale, rgbScale);
+        Screen.FillColumn(x, y - 2, 5, rgbScale);
+        Screen.FillColumn(x + m_cxLegendScale - 1, y - 2, 5, rgbScale);
+
+        y += 4;
+
+	    Screen.DrawText(x, y, MediumFont, rgbScale, m_sLegendScale);
+	    y += MediumFont.GetHeight();
+        }
+    }
+
+void CGalacticMapSession::SetTargetScale (int iTargetScale)
+
+//  SetTargetScale
+//
+//  Sets the target scale
+
+    {
+    int i;
+
+    m_iTargetScale = Min(Max(m_iMinScale, iTargetScale), m_iMaxScale);
+	m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
+
+    //  Initialize scale legend
+
+    Metric rLYPerPixel;
+    if (m_pMap == NULL || (rLYPerPixel = (100.0 * m_pMap->GetLightYearsPerPixel() / (Metric)m_iTargetScale)) <= 0.0)
+        {
+        m_cxLegendScale = 0;
+        return;
+        }
+
+    int cxMaxLength = HELP_PANE_WIDTH - (2 * PANE_PADDING_X);
+    for (i = 0; i < LEGEND_SCALE_COUNT; i++)
+        {
+        m_cxLegendScale = mathRound((Metric)LEGEND_SCALE[i] / rLYPerPixel);
+        if (m_cxLegendScale <= cxMaxLength)
+            break;
+        }
+
+    if (i == LEGEND_SCALE_COUNT)
+        {
+        m_cxLegendScale = 0;
+        return;
+        }
+
+    m_sLegendScale = strPatternSubst("%,d light-years", LEGEND_SCALE[i]);
     }
 
 void CopyGalacticMapToClipboard (HWND hWnd, CGalacticMapPainter *pPainter)

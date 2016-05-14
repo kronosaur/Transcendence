@@ -101,9 +101,6 @@
     <ClCompile Include="CWaitSession.cpp">
       <Filter>Source Files\Sessions</Filter>
     </ClCompile>
-    <ClCompile Include="CArmorDisplay.cpp">
-      <Filter>Source Files\Displays</Filter>
-    </ClCompile>
     <ClCompile Include="CButtonBarDisplay.cpp">
       <Filter>Source Files\Displays</Filter>
     </ClCompile>
@@ -129,12 +126,6 @@
       <Filter>Source Files\Displays</Filter>
     </ClCompile>
     <ClCompile Include="CPickerDisplay.cpp">
-      <Filter>Source Files\Displays</Filter>
-    </ClCompile>
-    <ClCompile Include="CReactorDisplay.cpp">
-      <Filter>Source Files\Displays</Filter>
-    </ClCompile>
-    <ClCompile Include="CTargetDisplay.cpp">
       <Filter>Source Files\Displays</Filter>
     </ClCompile>
     <ClCompile Include="CTextCrawlDisplay.cpp">
@@ -245,6 +236,15 @@
     <ClCompile Include="CKeyboardMapSession.cpp">
       <Filter>Source Files\Sessions</Filter>
     </ClCompile>
+    <ClCompile Include="GameSessionAnimate.cpp">
+      <Filter>Source Files\Game Session</Filter>
+    </ClCompile>
+    <ClCompile Include="CSystemMapDisplay.cpp">
+      <Filter>Source Files\Game Session</Filter>
+    </ClCompile>
+    <ClCompile Include="CHeadsUpDisplay.cpp">
+      <Filter>Source Files\Game Session</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundTasks.h">
@@ -278,6 +278,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSession.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

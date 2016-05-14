@@ -5,9 +5,10 @@
 	<SystemMap UNID="&smHumanSpace;"
 			name=				"Human Space" 
 			backgroundImage=	"&rsHumanSpace;"
-			initialScale=		"100"
-			minScale=			"50" 
-			maxScale=			"100" 
+			initialScale=		"200"
+			minScale=			"100" 
+			maxScale=			"250" 
+            lightYearsPerPixel= "0.4"
 			>
 
 		<!-- NEW BEYOND ==================================================== -->

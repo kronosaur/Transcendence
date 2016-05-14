@@ -111,17 +111,6 @@ void CTranscendenceWnd::Autopilot (bool bTurnOn)
 		}
 	}
 
-void CTranscendenceWnd::CleanUpDisplays (void)
-
-//	CleanUpDisplays
-//
-//	We clean up displays because some may hold on to pointers that will get
-//	destroyed.
-
-	{
-	m_ArmorDisplay.CleanUp();
-	}
-
 void CTranscendenceWnd::DisplayMessage (CString sMessage)
 
 //	DisplayMessage
@@ -454,10 +443,6 @@ ALERROR CTranscendenceWnd::InitDisplays (void)
 	//	Initialize some displays (these need to be done after we've
 	//	created the universe).
 
-	m_ArmorDisplay.Init(GetPlayer(), m_rcScreen, IHUDPainter::locAlignBottom | IHUDPainter::locAlignRight);
-	m_ReactorDisplay.Init(GetPlayer(), m_rcScreen, IHUDPainter::locAlignTop | IHUDPainter::locAlignLeft);
-	m_TargetDisplay.Init(GetPlayer(), m_rcScreen, IHUDPainter::locAlignBottom | IHUDPainter::locAlignLeft);
-
 	rcRect.left = m_rcScreen.right - (MENU_DISPLAY_WIDTH + 4);
 	rcRect.top = (RectHeight(m_rcScreen) - MENU_DISPLAY_HEIGHT) / 2;
 	rcRect.right = rcRect.left + MENU_DISPLAY_WIDTH;
@@ -467,7 +452,9 @@ ALERROR CTranscendenceWnd::InitDisplays (void)
 
 	rcRect.left = m_rcScreen.left + (RectWidth(m_rcScreen) - PICKER_DISPLAY_WIDTH) / 2;
 	rcRect.right = rcRect.left + PICKER_DISPLAY_WIDTH;
-	rcRect.top = m_ArmorDisplay.GetRect().top - PICKER_DISPLAY_HEIGHT;
+	rcRect.top = m_rcScreen.bottom - 200 - PICKER_DISPLAY_HEIGHT;
+//  LATER: Once we move the picker display to m_HUD, this will be fixed
+//	rcRect.top = m_ArmorDisplay.GetRect().top - PICKER_DISPLAY_HEIGHT;
 	rcRect.bottom = rcRect.top + PICKER_DISPLAY_HEIGHT;
 	m_PickerDisplay.SetFontTable(&m_Fonts);
 	m_PickerDisplay.Init(&m_MenuData, rcRect);
@@ -584,10 +571,12 @@ void CTranscendenceWnd::PaintMap (void)
 		{
 		int x = m_rcScreen.left + 2 * m_Fonts.LargeBold.GetAverageWidth();
 		int y;
-		if (GetPlayer()->IsMapHUDActive())
-			y = m_TargetDisplay.GetRect().top - 3 * m_Fonts.Header.GetHeight();
-		else
-			y = m_TargetDisplay.GetRect().bottom - 3 * m_Fonts.Header.GetHeight();
+
+        int yBottom = m_rcScreen.bottom;
+        if (GetPlayer()->IsMapHUDActive())
+            yBottom -= 200;
+
+        y = yBottom - 3 * m_Fonts.Header.GetHeight();
 
 		TheScreen.DrawText(x,
 				y,
@@ -656,17 +645,6 @@ void CTranscendenceWnd::PaintSRSSnow (void)
 	CShip *pShip = GetPlayer()->GetShip();
 	if (pShip && pShip->GetSystem())
 		g_pUniverse->PaintObject(TheScreen, m_rcMainScreen, pShip);
-	}
-
-void CTranscendenceWnd::SelectArmor (int iSeg)
-
-//	SelectArmor
-//
-//	Select an armor segment in the armor display
-
-	{
-	if (GetPlayer())
-		m_ArmorDisplay.SetSelection(iSeg);
 	}
 
 void CTranscendenceWnd::ShowCommsMenu (CSpaceObject *pObj)
@@ -976,46 +954,6 @@ void CTranscendenceWnd::ShowInvokeMenu (void)
 
 		m_MenuDisplay.Invalidate();
 		m_CurrentMenu = menuInvoke;
-		}
-	}
-
-void CTranscendenceWnd::ShowDockScreen (bool bShow)
-
-//	ShowDockScreen
-//
-//	Show/hide dock screen
-
-	{
-	if (bShow && m_State != gsDocked)
-		{
-		//	Show the cursor, if it was previously hidden
-
-		if (m_State == gsInGame)
-			ShowCursor(true);
-
-		//	New state
-
-		g_pUniverse->SetLogImageLoad(false);
-		m_State = gsDocked;
-		}
-	else if (m_State == gsDocked)
-		{
-		//	Deselect armor
-
-		SelectArmor(-1);
-
-		//	Hide the cursor
-
-		ShowCursor(false);
-
-		//	New state
-
-		g_pUniverse->SetLogImageLoad(true);
-		m_State = gsInGame;
-
-		//	Clean up
-
-		m_pCurrentScreen = NULL;
 		}
 	}
 

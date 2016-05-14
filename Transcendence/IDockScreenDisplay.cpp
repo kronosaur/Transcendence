@@ -281,7 +281,7 @@ void IDockScreenDisplay::OnShowPane (bool bNoListNavigation)
 //	default we clear the armor selection.
 	
 	{
-	g_pTrans->SelectArmor(-1); 
+	SelectArmor(-1); 
 	}
 
 bool IDockScreenDisplay::ParseBackgrounDesc (ICCItem *pDesc, SBackgroundDesc *retDesc)
@@ -361,3 +361,15 @@ bool IDockScreenDisplay::ParseBackgrounDesc (ICCItem *pDesc, SBackgroundDesc *re
 	
 	return true;
 	}
+
+void IDockScreenDisplay::SelectArmor (int iSelection)
+
+//  SelectArmor
+//
+//  Selects the given armor segment in the HUD.
+
+    {
+    CGameSession *pSession = (m_pDockScreen ? m_pDockScreen->GetGameSession() : NULL);
+    if (pSession)
+        pSession->OnArmorSelected(iSelection);
+    }

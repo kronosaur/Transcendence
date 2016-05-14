@@ -35,7 +35,6 @@ CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) 
 		m_bShowingMap(false),
 		m_bDebugConsole(false),
 		m_bAutopilot(false),
-		m_iDamageFlash(0),
 		m_dwIntroShipClass(0),
 		m_CurrentMenu(menuNone),
 		m_CurrentPicker(pickNone),
@@ -57,438 +56,6 @@ CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) 
 	ClearDebugLines();
 	}
 
-void CTranscendenceWnd::Animate (CG32bitImage &TheScreen, CGameSession *pSession, bool bTopMost)
-
-//	Animate
-//
-//	Called on each frame
-
-	{
-	bool bFailed = false;
-
-	//	Update context
-
-	SSystemUpdateCtx UpdateCtx;
-
-	try
-		{
-		SetProgramState(psAnimating);
-
-		//	Do the appropriate thing
-
-		switch (m_State)
-			{
-			case gsInGame:
-			case gsDestroyed:
-				{
-				DWORD dwStartTimer;
-				if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
-					dwStartTimer = ::GetTickCount();
-
-				//	Figure out some stats
-
-				DWORD dwViewportFlags = 0;
-				bool bBlind = false;
-				bool bShowMapHUD = false;
-				CShip *pShip = NULL;
-				if (GetPlayer())
-					{
-					pShip = GetPlayer()->GetShip();
-					bBlind = pShip->IsBlind();
-					bShowMapHUD = GetPlayer()->IsMapHUDActive();
-
-					if (pShip->IsSRSEnhanced())
-						dwViewportFlags |= CSystem::VWP_ENHANCED_DISPLAY;
-					}
-
-				//	If we're showing damage flash, fill the screen
-
-				if (m_iDamageFlash > 0 && (m_iDamageFlash % 2) == 0)
-					{
-					TheScreen.Set(CG32bitPixel(128,0,0));
-					if (pShip && pShip->GetSystem())
-						{
-						if (m_bShowingMap)
-							g_pUniverse->PaintObjectMap(TheScreen, m_rcMainScreen, pShip);
-						else
-							g_pUniverse->PaintObject(TheScreen, m_rcMainScreen, pShip);
-						}
-					}
-
-				//	Otherwise, if we're in map mode, paint the map
-
-				else if (m_bShowingMap)
-					{
-					SetProgramState(psPaintingMap);
-					PaintMap();
-					SetProgramState(psAnimating);
-					}
-
-				//	Otherwise, if we're blind, paint scramble
-
-				else if (bBlind 
-						&& (m_iTick % (20 + (((m_iTick / 100) * pShip->GetDestiny()) % 100))) > 15)
-					PaintSRSSnow();
-
-				//	Otherwise, paint the normal SRS screen
-
-				else
-					{
-					SetProgramState(psPaintingSRS);
-					g_pUniverse->PaintPOV(TheScreen, m_rcScreen, dwViewportFlags);
-					SetProgramState(psAnimating);
-					}
-
-				if (m_iDamageFlash > 0)
-					m_iDamageFlash--;
-
-				//	Paint various displays
-
-				SetProgramState(psPaintingLRS);
-				PaintLRS();
-
-				if (!m_bShowingMap || bShowMapHUD)
-					{
-					SetProgramState(psPaintingArmorDisplay);
-					m_ArmorDisplay.Paint(TheScreen);
-
-					SetProgramState(psPaintingReactorDisplay);
-					m_ReactorDisplay.Update(m_iTick);
-					m_ReactorDisplay.Paint(TheScreen);
-
-					SetProgramState(psPaintingTargetDisplay);
-					m_TargetDisplay.Paint(TheScreen);
-
-					SetProgramState(psPaintingDeviceDisplay);
-					m_DeviceDisplay.Paint(TheScreen);
-					}
-
-				if (m_CurrentPicker == pickNone)
-					{
-					SetProgramState(psPaintingMessageDisplay);
-					m_MessageDisplay.Paint(TheScreen);
-					}
-
-				SetProgramState(psAnimating);
-
-				if (m_CurrentMenu != menuNone)
-					m_MenuDisplay.Paint(TheScreen);
-				if (m_CurrentPicker != pickNone)
-					m_PickerDisplay.Paint(TheScreen);
-				if (m_bDebugConsole)
-					m_DebugConsole.Paint(TheScreen);
-
-#ifdef DEBUG_LINE_OF_FIRE
-				if (GetPlayer())
-					{
-					if (!GetPlayer()->GetShip()->IsLineOfFireClear(GetPlayer()->GetShip()->GetPos(),
-							NULL,
-							GetPlayer()->GetShip()->GetRotation()))
-						g_pUniverse->DebugOutput("line of fire blocked");
-					}
-#endif
-#ifdef DEBUG
-				PaintDebugLines();
-#endif
-				m_pTC->PaintDebugInfo(TheScreen, m_rcScreen);
-
-				//	Paint soundtrack info
-
-				if (m_pTC->GetOptionBoolean(CGameSettings::debugSoundtrack)
-						&& !m_bShowingMap)
-					pSession->PaintSoundtrackTitles(TheScreen);
-
-                //  Paint the mouse cursor, if necessary
-
-                if (GetPlayer() && GetPlayer()->IsMouseAimEnabled())
-                    {
-                    int iMouseAimAngle;
-                    int xMouse, yMouse;
-                    if (g_pHI->GetMousePos(&xMouse, &yMouse))
-                        {
-                        int xCenter = m_rcScreen.left + RectWidth(m_rcScreen) / 2;
-                        int yCenter = m_rcScreen.top + RectHeight(m_rcScreen) / 2;
-                        iMouseAimAngle = ::IntVectorToPolar(xMouse - xCenter, yCenter - yMouse);
-                        CPaintHelper::PaintArrow(TheScreen, xMouse, yMouse, iMouseAimAngle, g_pHI->GetVisuals().GetColor(colorTextHighlight));
-                        }
-                    else
-                        iMouseAimAngle = -1;
-
-                    GetPlayer()->SetMouseAimAngle(iMouseAimAngle);
-                    }
-
-				//	Figure out how long it took to paint
-
-				if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
-					{
-					DWORD dwNow = ::GetTickCount();
-					m_iPaintTime[m_iFrameCount % FRAME_RATE_COUNT] = dwNow - dwStartTimer;
-					dwStartTimer = dwNow;
-					}
-
-				//	Some debug information
-
-				if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
-					PaintFrameRate();
-
-				//	Update the screen
-
-				if (bTopMost)
-					g_pHI->GetScreenMgr().Render();
-
-				//	Figure out how long it took to blt
-
-				if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
-					{
-					DWORD dwNow = ::GetTickCount();
-					m_iBltTime[m_iFrameCount % FRAME_RATE_COUNT] = dwNow - dwStartTimer;
-					dwStartTimer = dwNow;
-					}
-
-				//	Update the universe
-
-				if (!m_bPaused || m_bPausedStep)
-					{
-					SetProgramState(psUpdating);
-					g_pUniverse->Update(UpdateCtx);
-					if (m_bAutopilot)
-						{
-						g_pUniverse->Update(UpdateCtx);
-						g_pUniverse->Update(UpdateCtx);
-						g_pUniverse->Update(UpdateCtx);
-						g_pUniverse->Update(UpdateCtx);
-						}
-					SetProgramState(psAnimating);
-
-					if (GetPlayer())
-						GetPlayer()->Update(m_iTick);
-					if (GetPlayer() && GetPlayer()->GetSelectedTarget())
-						m_TargetDisplay.Invalidate();
-					m_iTick++;
-
-					m_bPausedStep = false;
-					}
-
-				m_MessageDisplay.Update();
-
-				//	Figure out how long it took to update
-
-				if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
-					{
-					DWORD dwNow = ::GetTickCount();
-					m_iUpdateTime[m_iFrameCount % FRAME_RATE_COUNT] = dwNow - dwStartTimer;
-					dwStartTimer = dwNow;
-					}
-
-				//	Destroyed?
-
-				if (m_State == gsDestroyed)
-					{
-					if (!m_bPaused || m_bPausedStep)
-						{
-						if (--m_iCountdown == 0)
-							g_pHI->HICommand(CONSTLIT("gameEndDestroyed"));
-						m_bPausedStep = false;
-						}
-					}
-
-				break;
-				}
-
-			case gsDocked:
-				{
-				//	Paint the screen
-
-				m_pCurrentScreen->Paint(TheScreen);
-				m_pCurrentScreen->Update();
-				PaintMainScreenBorder(m_CurrentDock.GetVisuals().GetWindowBackgroundColor());
-
-				//	If we have room, paint armor display and target display
-
-				if (g_cyScreen >= 768)
-					{
-					SetProgramState(psPaintingArmorDisplay);
-					m_ArmorDisplay.Paint(TheScreen);
-
-					SetProgramState(psPaintingTargetDisplay);
-					m_TargetDisplay.Paint(TheScreen);
-					}
-
-				//	If we have even more room, paint the LRS and reactor display
-
-				if (g_cyScreen >= 960)
-					{
-					SetProgramState(psPaintingLRS);
-					PaintLRS();
-
-					SetProgramState(psPaintingReactorDisplay);
-					m_ReactorDisplay.Update(m_iTick);
-					m_ReactorDisplay.Paint(TheScreen);
-					}
-
-				//	Debug console
-
-				if (m_bDebugConsole)
-					m_DebugConsole.Paint(TheScreen);
-
-				//	Update the screen
-
-				if (bTopMost)
-					g_pHI->GetScreenMgr().Render();
-
-				//	Update the universe (at 1/4 rate)
-
-				if ((m_iTick % 4) == 0)
-					g_pUniverse->Update(UpdateCtx);
-				m_MessageDisplay.Update();
-				m_CurrentDock.Update(m_iTick);
-				m_iTick++;
-
-				//	Note: We need to invalidate the whole screen because we're
-				//	flipping between two buffers and we need to make sure both
-				//	buffers get painted.
-
-				if (m_pCurrentScreen)
-					m_pCurrentScreen->Invalidate();
-
-				break;
-				}
-
-			case gsEnteringStargate:
-				{
-				//	Tell the universe to paint
-
-				g_pUniverse->PaintPOV(TheScreen, m_rcScreen, 0);
-				PaintLRS();
-				m_ArmorDisplay.Paint(TheScreen);
-				m_MessageDisplay.Paint(TheScreen);
-				m_ReactorDisplay.Update(m_iTick);
-				m_ReactorDisplay.Paint(TheScreen);
-				m_TargetDisplay.Paint(TheScreen);
-				m_DeviceDisplay.Paint(TheScreen);
-
-				//	Debug information
-
-				if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
-					PaintFrameRate();
-
-#ifdef DEBUG
-				PaintDebugLines();
-#endif
-				m_pTC->PaintDebugInfo(TheScreen, m_rcScreen);
-
-				//	Update the screen
-
-				if (bTopMost)
-					g_pHI->GetScreenMgr().Render();
-
-				//	Update the universe
-
-				g_pUniverse->Update(UpdateCtx);
-				m_MessageDisplay.Update();
-				m_iTick++;
-
-				if (--m_iCountdown == 0)
-					{
-					g_pHI->HICommand(CONSTLIT("gameInsideStargate"));
-					m_State = gsWaitingForSystem;
-					}
-
-				break;
-				}
-
-			case gsWaitingForSystem:
-				{
-				if (g_pUniverse->GetSFXOptions().IsStargateTravelEffectEnabled())
-					{
-					if (m_pStargateEffect == NULL)
-						m_pStargateEffect = new CStargateEffectPainter;
-
-					m_pStargateEffect->Paint(TheScreen, m_rcScreen);
-					m_pStargateEffect->Update();
-					}
-				else
-					{
-					TheScreen.Fill(m_rcScreen.left, m_rcScreen.top, RectWidth(m_rcScreen), RectHeight(m_rcScreen), BAR_COLOR);
-					}
-
-				m_pTC->PaintDebugInfo(TheScreen, m_rcScreen);
-
-				if (bTopMost)
-					g_pHI->GetScreenMgr().Render();
-				break;
-				}
-
-			case gsLeavingStargate:
-				{
-				//	Tell the universe to paint
-
-				g_pUniverse->PaintPOV(TheScreen, m_rcScreen, 0);
-				PaintLRS();
-				m_ArmorDisplay.Paint(TheScreen);
-				m_MessageDisplay.Paint(TheScreen);
-				m_ReactorDisplay.Update(m_iTick);
-				m_ReactorDisplay.Paint(TheScreen);
-				m_TargetDisplay.Paint(TheScreen);
-				m_DeviceDisplay.Paint(TheScreen);
-
-				//	Debug information
-
-				if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
-					PaintFrameRate();
-
-#ifdef DEBUG
-				PaintDebugLines();
-#endif
-				m_pTC->PaintDebugInfo(TheScreen, m_rcScreen);
-
-				//	Update the screen
-
-				if (bTopMost)
-					g_pHI->GetScreenMgr().Render();
-
-				//	Update the universe
-
-				g_pUniverse->Update(UpdateCtx);
-				m_MessageDisplay.Update();
-				m_iTick++;
-
-				if (--m_iCountdown == 0)
-					{
-					g_pHI->HICommand(CONSTLIT("gameLeaveStargate"));
-					m_State = gsInGame;
-					}
-				break;
-				}
-
-			case gsEndGame:
-				{
-				g_pHI->HICommand(CONSTLIT("gameEndGame"));
-				break;
-				}
-			}
-
-		//	Flip
-
-		if (bTopMost)
-			g_pHI->GetScreenMgr().Flip();
-
-		SetProgramState(psUnknown);
-		}
-	catch (...)
-		{
-		bFailed = true;
-		}
-
-	//	Deal with errors/crashes
-
-	if (bFailed)
-		{
-		g_pHI->GetScreenMgr().StopDX();
-		ReportCrash();
-		}
-	}
-
 void CTranscendenceWnd::CleanUpPlayerShip (void)
 
 //	CleanUpPlayerShip
@@ -499,9 +66,7 @@ void CTranscendenceWnd::CleanUpPlayerShip (void)
 	DEBUG_TRY
 
 	m_LRSDisplay.CleanUp();
-	m_ReactorDisplay.CleanUp();
 	m_DeviceDisplay.CleanUp();
-	m_TargetDisplay.CleanUp();
 	m_MenuDisplay.CleanUp();
 	m_PickerDisplay.CleanUp();
 
@@ -717,60 +282,6 @@ void CTranscendenceWnd::PaintFrameRate (void)
 		m_iFrameCount++;
 		m_iStartAnimation = iNow;
 		}
-	}
-
-void CTranscendenceWnd::PlayerDestroyed (const CString &sText, bool bResurrectionPending)
-
-//	PlayerDestroyed
-//
-//	This method gets called when the player is destroyed
-
-	{
-	DEBUG_TRY
-
-	//	Clean up
-
-	HideCommsTargetMenu();
-	m_CurrentPicker = pickNone;
-	m_CurrentMenu = menuNone;
-	m_bAutopilot = false;
-	m_bShowingMap = false;
-	if (m_State == gsDocked)
-		GetPlayer()->Undock();
-
-	//	Update display
-
-	CString sMsg = sText;
-	if (strEquals(strWord(sMsg, 0), CONSTLIT("was")))
-		sMsg = strSubString(sMsg, 4, -1);
-	sMsg.Capitalize(CString::capFirstLetter);
-	DisplayMessage(sMsg);
-	UpdateArmorDisplay();
-
-	//	If we are insured, then set our state so that we come back to life
-	if (bResurrectionPending)
-		{
-		//	Prepare resurrect
-
-		m_State = gsDestroyed;
-		m_iCountdown = TICKS_AFTER_DESTROYED;
-		}
-
-	//	Otherwise, proceed with destruction
-
-	else
-		{
-		//	Done with ship screens
-
-		CleanUpPlayerShip();
-
-		//	Player destroyed
-
-		m_State = gsDestroyed;
-		m_iCountdown = TICKS_AFTER_DESTROYED;
-		}
-
-	DEBUG_CATCH
 	}
 
 void CTranscendenceWnd::PlayerEndGame (void)
@@ -1347,11 +858,6 @@ LONG CTranscendenceWnd::WMCreate (CString *retsError)
 	kernelDebugLogMessage(m_sVersion);
 	}
 
-	//	Load preferences
-
-	//LoadPreferences();
-	//g_pHI->GetSoundMgr().SetWaveVolume(m_Prefs.iSoundVolume);
-
 	//	Compute screen size
 
 	ComputeScreenSize();
@@ -1830,7 +1336,6 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 							Autopilot(false);
 							GetPlayer()->SetFireMain(false);
 							GetPlayer()->ReadyNextWeapon(1);
-							UpdateWeaponStatus();
 							m_chKeyDown = iVirtKey;
 							m_bNextWeaponKey = true;
 							}
@@ -1843,7 +1348,6 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 							Autopilot(false);
 							GetPlayer()->SetFireMain(false);
 							GetPlayer()->ReadyNextWeapon(-1);
-							UpdateWeaponStatus();
 							m_chKeyDown = iVirtKey;
 							m_bPrevWeaponKey = true;
 							}
@@ -1913,7 +1417,6 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							Autopilot(false);
 							GetPlayer()->ReadyNextMissile(1);
-							UpdateWeaponStatus();
 							GetPlayer()->SetUIMessageEnabled(uimsgSwitchMissileHint, false);
 							m_bNextMissileKey = true;
 							}
@@ -1925,7 +1428,6 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							Autopilot(false);
 							GetPlayer()->ReadyNextMissile(-1);
-							UpdateWeaponStatus();
 							GetPlayer()->SetUIMessageEnabled(uimsgSwitchMissileHint, false);
 							m_bPrevMissileKey = true;
 							}

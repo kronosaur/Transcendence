@@ -304,6 +304,7 @@ class CPlayerShipController : public IShipController
 		inline int GetCargoSpace (void) { return (int)(m_pShip->GetCargoSpaceLeft() + 0.5); }
 		inline int GetEndGameScore (void) { return m_Stats.CalcEndGameScore(); }
 		inline int GetEnemiesDestroyed (void) { return ::strToInt(m_Stats.GetStat(CONSTLIT("enemyShipsDestroyed")), 0); }
+        inline CGameSession *GetGameSession (void) { return m_pSession; }
 		inline CString GetItemStat (const CString &sStat, ICCItem *pItemCriteria) const { return m_Stats.GetItemStat(sStat, pItemCriteria); }
 		inline CString GetKeyEventStat (const CString &sStat, const CString &sNodeID, const CDesignTypeCriteria &Crit) const { return m_Stats.GetKeyEventStat(sStat, sNodeID, Crit); }
 		inline GenomeTypes GetPlayerGenome (void) const { return m_iGenome; }
@@ -335,6 +336,7 @@ class CPlayerShipController : public IShipController
 		void ReadyNextWeapon (int iDir = 1);
 		void ReadyNextMissile (int iDir = 1);
 		void SetDestination (CSpaceObject *pTarget);
+        inline void SetGameSession (CGameSession *pSession) { m_pSession = pSession; }
 		inline void SetGenome (GenomeTypes iGenome) { m_iGenome = iGenome; }
 		inline void SetMapHUD (bool bActive) { m_bMapHUD = bActive; }
         inline void SetMouseAimAngle (int iAngle) { m_iMouseAimAngle = iAngle; }
@@ -440,6 +442,7 @@ class CPlayerShipController : public IShipController
 		void UpdateHelp (int iTick);
 
 		CTranscendenceWnd *m_pTrans;
+        CGameSession *m_pSession;               //  Game session
 		CShip *m_pShip;
 
 		OrderTypes m_iOrder;					//	Last order
@@ -548,27 +551,6 @@ class CMessageDisplay : public CObject
 		SMessage m_Messages[MESSAGE_QUEUE_SIZE];
 
 		int m_cySmoothScroll;
-	};
-
-class CArmorDisplay
-	{
-	public:
-		CArmorDisplay (void);
-		~CArmorDisplay (void);
-
-		void CleanUp (void);
-		RECT GetRect (void) const;
-		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect, DWORD dwLocation);
-		void Paint (CG32bitImage &Dest);
-		void SetSelection (int iSelection);
-		void Update (void);
-
-	private:
-		CPlayerShipController *m_pPlayer;
-		int m_iSelection;
-
-		IHUDPainter *m_pArmorPainter;
-		IHUDPainter *m_pShieldsPainter;
 	};
 
 #define MAX_SCORES			100
@@ -951,25 +933,6 @@ class CLRSDisplay
 		const CG32bitImage *m_pSnow;
 	};
 
-class CReactorDisplay
-	{
-	public:
-		CReactorDisplay (void);
-		~CReactorDisplay (void);
-
-		void CleanUp (void);
-		RECT GetRect (void) const;
-		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect, DWORD dwLocation);
-		inline void Invalidate (void) { if (m_pHUDPainter) m_pHUDPainter->Invalidate(); }
-		void Paint (CG32bitImage &Dest);
-		void Update (int iTick);
-
-	private:
-		CPlayerShipController *m_pPlayer;
-
-		IHUDPainter *m_pHUDPainter;
-	};
-
 class CCommandLineDisplay
 	{
 	public:
@@ -1020,24 +983,6 @@ class CCommandLineDisplay
 		RECT m_rcCursor;
 	};
 
-class CTargetDisplay
-	{
-	public:
-		CTargetDisplay (void);
-		~CTargetDisplay (void);
-
-		void CleanUp (void);
-		RECT GetRect (void) const;
-		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect, DWORD dwLocation);
-		inline void Invalidate (void) { if (m_pHUDPainter) m_pHUDPainter->Invalidate(); }
-		void Paint (CG32bitImage &Dest);
-
-	private:
-		CPlayerShipController *m_pPlayer;
-
-		IHUDPainter *m_pHUDPainter;
-	};
-
 class CUIResources
 	{
 	public:
@@ -1077,13 +1022,10 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 	public:
 		CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC);
 
-		void Animate (CG32bitImage &TheScreen, CGameSession *pSession, bool bTopMost);
-
 		void Autopilot (bool bTurnOn);
 		void CleanUpPlayerShip (void);
 		void ClearMessage (void);
 		inline CString ComposePlayerNameString (const CString &sString, ICCItem *pArgs = NULL);
-		inline void DamageFlash (void) { m_iDamageFlash = Min(2, m_iDamageFlash + 2); }
 		void DebugConsoleOutput (const CString &sOutput);
 		void DisplayMessage (CString sMessage);
 		void DoCommand (DWORD dwCmd);
@@ -1098,7 +1040,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		inline const CString &GetRedirectMessage (void) { return m_sRedirectMessage; }
 		inline CGameSettings &GetSettings (void);
 		inline const CUIResources &GetUIRes (void) { return m_UIRes; }
-		void HideDockScreen (void);
 		inline bool InAutopilot (void) { return m_bAutopilot; }
 		inline bool InDockState (void) { return m_State == gsDocked; }
 		inline bool InGameState (void) { return m_State == gsInGame; }
@@ -1107,21 +1048,13 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		ALERROR InitDisplays (void);
 		void OnObjDestroyed (const SDestroyCtx &Ctx);
 		void OnStargateSystemReady (void);
-		void PlayerDestroyed (const CString &sText, bool bResurrectionPending);
 		void PlayerEndGame (void);
 		void PlayerEnteredGate (CSystem *pSystem, 
 							    CTopologyNode *pDestNode,
 							    const CString &sDestEntryPoint);
 		void RedirectDisplayMessage (bool bRedirect = true);
-		void SelectArmor (int iSeg);
-		CXMLElement *SetCurrentLocalScreens (CXMLElement *pLocalScreens);
-		void ShowDockScreen (bool bShow = true);
-		ALERROR ShowDockScreen (CSpaceObject *pLocation, CXMLElement *pScreenDesc, const CString &sPane);
 		inline void ShowSystemMap (bool bShow = true) { m_bShowingMap = bShow; }
-		ALERROR SwitchDockScreen (CXMLElement *pScreenDesc, const CString &sPane);
-		inline void UpdateArmorDisplay (void) { m_ArmorDisplay.Update(); }
 		inline void UpdateDeviceCounterDisplay (void) { m_DeviceDisplay.Invalidate(); }
-		inline void UpdateWeaponStatus (void) { m_TargetDisplay.Invalidate(); }
 
 		//	CUniverse::IHost
 		virtual void ConsoleOutput (const CString &sLine);
@@ -1187,7 +1120,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void CreateScoreAnimation (const CGameRecord &Stats, IAnimatron **retpAnimatron);
 		void CreateShipDescAnimation (CShip *pShip, IAnimatron **retpAnimatron);
 		void CreateTitleAnimation (IAnimatron **retpAnimatron);
-		int GetHighScoresPos (void);
 		DWORD GetIntroShipClass (void) { return m_dwIntroShipClass; }
 		void DestroyIntroShips (void);
 		void OnAccountChanged (const CMultiverseModel &Multiverse);
@@ -1199,23 +1131,14 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void PaintDlgButton (const RECT &rcRect, const CString &sText);
 		void SetAccountControls (const CMultiverseModel &Multiverse);
 		void SetDebugOption (void);
-		void SetHighScoresNext (void);
-		void SetHighScoresPos (int iPos);
-		void SetHighScoresPrev (void);
-		void SetHighScoresScroll (void);
 		void SetMusicOption (void);
 		ALERROR StartIntro (CIntroSession *pThis);
 		void StopIntro (void);
 
 		ALERROR StartGame (void);
 
-		void OnKeyDownHelp (int iVirtKey, DWORD dwKeyData);
-		void PaintHelpScreen (void);
-
-		void CleanUpDisplays (void);
 		void ClearDebugLines (void);
 		void ComputeScreenSize (void);
-		void LoadPreferences (void);
 		void PaintDebugLines (void);
 		void PaintFrameRate (void);
 		void PaintLRS (void);
@@ -1223,11 +1146,8 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void PaintMap (void);
 		void PaintSnow (CG32bitImage &Dest, int x, int y, int cxWidth, int cyHeight);
 		void PaintSRSSnow (void);
-		void PaintWeaponStatus (void);
 		void ReportCrash (void);
 		void ReportCrashEvent (CString *retsMessage);
-		ALERROR RestartGame (void);
-		void SavePreferences (void);
 		void ShowErrorMessage (const CString &sError);
 
 		void DoCommsMenu (int iIndex);
@@ -1247,20 +1167,15 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void ShowGameMenu (void);
 		void ShowUsePicker (void);
 
-		void OpenGameLog (void);
-		void CloseGameLog (void);
-
 		inline void SetGameCreated (bool bValue = true) { m_bGameCreated = bValue; }
 		inline bool IsGameCreated (void) { return m_bGameCreated; }
 
 		inline CGameFile &GetGameFile (void);
 
-		LONG WMActivateApp (bool bActivate);
 		LONG WMChar (char chChar, DWORD dwKeyData);
 		LONG WMClose (void);
 		LONG WMCreate (CString *retsError);
 		LONG WMDestroy (void);
-		LONG WMDisplayChange (int iBitDepth, int cxWidth, int cyHeight);
 		LONG WMKeyDown (int iVirtKey, DWORD dwKeyData);
 		LONG WMKeyUp (int iVirtKey, DWORD dwKeyData);
 		LONG WMLButtonDblClick (int x, int y, DWORD dwFlags);
@@ -1352,16 +1267,12 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 
 		CG32bitImage *m_pSRSSnow;			//	SRS snow image
 
-		CArmorDisplay m_ArmorDisplay;		//	Armor display object
 		CDeviceCounterDisplay m_DeviceDisplay;	//	Device counter display
 		CLRSDisplay m_LRSDisplay;			//	LRS display
 		CMessageDisplay m_MessageDisplay;	//	Message display object
-		CReactorDisplay m_ReactorDisplay;	//	Reactor status display object
-		CTargetDisplay m_TargetDisplay;		//	Targeting computer display
 		CMenuDisplay m_MenuDisplay;			//	Menu display
 		CPickerDisplay m_PickerDisplay;		//	Picker display
 		CCommandLineDisplay m_DebugConsole;	//	CodeChain debugging console
-		int m_iDamageFlash;					//	0 = no flash; odd = recover; even = flash;
 		Metric m_rMapScale[MAP_SCALE_COUNT];//	Map scale
 		int m_iMapScale;					//	Map scale index
 		int m_iMapZoomEffect;				//	0 = no zoom effect
@@ -1571,9 +1482,11 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 				m_iState(stateNone),
 				m_iBackgroundState(stateIdle),
 				m_Model(m_HI),
-				m_bUpgradeDownloaded(false)
+				m_bUpgradeDownloaded(false),
+                m_pGameSession(NULL)
 			{ }
 
+        inline CGameSession *GetGameSession (void) { return m_pGameSession; }
 		inline const CGameKeys &GetKeyMap (void) const { return m_Settings.GetKeyMap(); }
 		inline CTranscendenceModel &GetModel (void) { return m_Model; }
 		inline CMultiverseModel &GetMultiverse (void) { return m_Multiverse; }
@@ -1644,6 +1557,8 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 		bool m_bUpgradeDownloaded;
 
 		CGameSettings m_Settings;
+
+        CGameSession *m_pGameSession;       //  Keep a pointer so we can call it directly.
 	};
 
 //	Utility functions
@@ -1708,6 +1623,7 @@ inline CGameSettings &CTranscendenceWnd::GetSettings (void)
 	}
 
 #include "BackgroundTasks.h"
+#include "GameSession.h"
 #include "Sessions.h"
 
 #endif

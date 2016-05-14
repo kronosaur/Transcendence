@@ -778,8 +778,15 @@ ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesig
 
 	//	Switch state
 
-	if (bFirstFrame)
-		g_pTrans->ShowDockScreen(true);
+    if (bFirstFrame)
+        {
+        //  NOTE: Eventually, EnterScreenSession should be part of CGameSession
+        //  instead of the model.
+
+        CGameSession *pSession = GetPlayer()->GetGameSession();
+        if (pSession)
+            pSession->OnShowDockScreen(true);
+        }
 
 	return NOERROR;
 	}
@@ -838,7 +845,9 @@ void CTranscendenceModel::ExitScreenSession (bool bForceUndock)
 		//	Clean up
 
 		m_pDefaultScreensRoot = NULL;
-		g_pTrans->ShowDockScreen(false);
+        CGameSession *pSession = GetPlayer()->GetGameSession();
+        if (pSession)
+            pSession->OnShowDockScreen(false);
 		g_pTrans->m_CurrentDock.CleanUpScreen();
 
 		m_DockFrames.DeleteAll();
