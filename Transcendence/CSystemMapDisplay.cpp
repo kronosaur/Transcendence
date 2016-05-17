@@ -8,27 +8,44 @@
 
 #define STR_HELP_DESC						CONSTLIT("[+] and [-] to zoom map\n[H] to toggle HUD on/off")
 
+const Metric SCALE_100 = g_AU / 400.0;
 const int MAP_ZOOM_SPEED =					16;
 const int HELP_PANE_WIDTH = 280;
 const int SCREEN_BORDER_X = 10;
 const int SCREEN_BORDER_Y = 10;
 
+static CMapLegendPainter::SScaleEntry LEGEND_SCALE[] =
+    {
+        {   800,        "light-seconds",  LIGHT_SECOND },
+        {   400,        "light-seconds",  LIGHT_SECOND },
+        {   200,        "light-seconds",  LIGHT_SECOND },
+        {   100,        "light-seconds",  LIGHT_SECOND },
+        {   50,         "light-seconds",  LIGHT_SECOND },
+        {   25,         "light-seconds",  LIGHT_SECOND },
+        {   10,         "light-seconds",  LIGHT_SECOND },
+    };
+
+const int LEGEND_SCALE_COUNT = (sizeof(LEGEND_SCALE) / sizeof(LEGEND_SCALE[0]));
+
 CSystemMapDisplay::CSystemMapDisplay (CHumanInterface &HI, CTranscendenceModel &Model, CHeadsUpDisplay &HUD) :
         m_HI(HI),
         m_Model(Model),
         m_HUD(HUD),
-        m_iMapScale(1),
-        m_iMapZoomEffect(0),
-        m_HelpPainter(HI.GetVisuals())
+        m_HelpPainter(HI.GetVisuals(), LEGEND_SCALE, LEGEND_SCALE_COUNT)
 
 //  CSystemMapDisplay constructor
 
     {
-    int i;
+    }
 
-    m_rMapScale[0] = g_AU / 800.0;
-	for (i = 1; i < MAP_SCALE_COUNT; i++)
-		m_rMapScale[i] = m_rMapScale[i - 1] * 2.0;
+Metric CSystemMapDisplay::GetScaleKlicksPerPixel (int iScale) const
+
+//  GetScaleKlicksPerPixel
+//
+//  Converts from a relative to absolute scale
+
+    {
+    return 100.0 * SCALE_100 / iScale;
     }
 
 bool CSystemMapDisplay::HandleKeyDown (int iVirtKey, DWORD dwKeyData)
@@ -51,28 +68,37 @@ bool CSystemMapDisplay::HandleKeyDown (int iVirtKey, DWORD dwKeyData)
 
 		case VK_SUBTRACT:
 		case VK_OEM_MINUS:
-			if (m_iMapScale < (MAP_SCALE_COUNT - 1))
-				{
+            if (m_Scale.CanZoomOut())
+                {
 				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				m_iMapScale++;
-				m_iMapZoomEffect = 100;
-				}
+                m_Scale.ZoomOut();
+                }
 			break;
 
 		case VK_ADD:
 		case VK_OEM_PLUS:
-			if (m_iMapScale > 0)
-				{
+            if (m_Scale.CanZoomIn())
+                {
 				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				m_iMapScale--;
-				m_iMapZoomEffect = -100;
-				}
+                m_Scale.ZoomIn();
+                }
 			break;
 
         default:
             return false;
 		}
 
+    return true;
+    }
+
+bool CSystemMapDisplay::HandleMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
+
+//  HandleMouseWheel
+//
+//  Zoom in/out
+
+    {
+    m_Scale.ZoomWheel(iDelta);
     return true;
     }
 
@@ -91,9 +117,13 @@ bool CSystemMapDisplay::Init (const RECT &rcRect)
     if (pSystem == NULL)
         return false;
 
+    m_Scale.Init(100, 25, 200);
+
     m_HelpPainter.SetWidth(HELP_PANE_WIDTH);
     m_HelpPainter.SetTitle(pSystem->GetName());
     m_HelpPainter.SetDesc(STR_HELP_DESC);
+
+    m_HelpPainter.SetScale(GetScaleKlicksPerPixel(m_Scale.GetScale()));
 
     return true;
     }
@@ -126,26 +156,19 @@ void CSystemMapDisplay::Paint (CG32bitImage &Screen)
     {
 	SetProgramState(psPaintingMap);
 
-	//	Paint the map
+    //  Update zoom effect and compute scale
 
-	Metric rScale = m_rMapScale[m_iMapScale];
-	if (m_iMapZoomEffect != 0)
-		{
-		if (m_iMapZoomEffect > 0)
-			{
-			rScale = rScale * (1.0 - (m_iMapZoomEffect / 200.0));
-			m_iMapZoomEffect = Max(0, m_iMapZoomEffect - MAP_ZOOM_SPEED);
-			}
-		else
-			{
-			rScale = rScale * (1.0 - (m_iMapZoomEffect / 100.0));
-			m_iMapZoomEffect = Min(0, m_iMapZoomEffect + MAP_ZOOM_SPEED);
-			}
-		}
+    bool bScaleChanged = m_Scale.Update();
+    Metric rScale = GetScaleKlicksPerPixel(m_Scale.GetScale());
+
+	//	Paint the map
 
 	m_Model.GetUniverse().PaintPOVMap(Screen, m_rcScreen, rScale);
 
     //  Paint help text
+
+    if (bScaleChanged)
+        m_HelpPainter.SetScale(rScale);
 
     RECT rcRect;
     m_HUD.GetClearHorzRect(&rcRect);

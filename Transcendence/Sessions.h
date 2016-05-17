@@ -104,9 +104,7 @@ class CGalacticMapSession : public IHISession
 		virtual void OnUpdate (bool bTopMost);
 
 	private:
-		int GetScale (int iScaleIndex);
-		int GetScaleIndex (int iScale);
-        void SetTargetScale (int iTargetScale);
+        void SetTargetScale (void);
 
 		CSystemMap *m_pMap;
         int m_iMinScale;
@@ -119,12 +117,10 @@ class CGalacticMapSession : public IHISession
 
 		RECT m_rcView;
 
-		int m_iScale;                       //  Current scale
+        CMapScaleCounter m_Scale;           //  Map scale (100 = normal)
 		int m_xCenter;                      //  Current center (in galactic coordinates)
 		int m_yCenter;
 
-		int m_iTargetScaleIndex;            //  Desired scale
-        int m_iTargetScale;
 		int m_xTargetCenter;                //  Desired center
 		int m_yTargetCenter;
 

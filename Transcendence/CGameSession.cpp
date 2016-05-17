@@ -40,6 +40,22 @@ ALERROR CGameSession::OnInit (CString *retsError)
     return NOERROR;
     }
 
+void CGameSession::OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
+
+//  OnMouseWheel
+//
+//  Handle mouse wheel
+
+    {
+    switch (g_pTrans->m_State)
+        {
+        case CTranscendenceWnd::gsInGame:
+            if (g_pTrans->m_bShowingMap)
+                m_SystemMap.HandleMouseWheel(iDelta, x, y, dwFlags);
+            break;
+        }
+    }
+
 void CGameSession::OnPlayerDestroyed (SDestroyCtx &Ctx, const CString &sEpitaph)
 
 //  OnPlayerDestroyed

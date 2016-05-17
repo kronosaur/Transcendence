@@ -54,6 +54,7 @@ class CSystemMapDisplay
         CSystemMapDisplay (CHumanInterface &HI, CTranscendenceModel &Model, CHeadsUpDisplay &HUD);
 
         bool HandleKeyDown (int iVirtKey, DWORD dwKeyData);
+        bool HandleMouseWheel (int iDelta, int x, int y, DWORD dwFlags);
         bool Init (const RECT &rcRect);
         void OnHideMap (void);
         void OnShowMap (void);
@@ -65,15 +66,14 @@ class CSystemMapDisplay
             MAP_SCALE_COUNT = 4,
             };
 
+        Metric GetScaleKlicksPerPixel (int iScale) const;
+
         CHumanInterface &m_HI;
         CTranscendenceModel &m_Model;
         CHeadsUpDisplay &m_HUD;
         RECT m_rcScreen;
 
-		Metric m_rMapScale[MAP_SCALE_COUNT];//	Map scale
-		int m_iMapScale;					//	Map scale index
-		int m_iMapZoomEffect;				//	0 = no zoom effect
-
+        CMapScaleCounter m_Scale;           //  Track current map scale
         CMapLegendPainter m_HelpPainter;
     };
 
@@ -118,6 +118,7 @@ class CGameSession : public IHISession
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override { g_pTrans->WMLButtonDown(x, y, dwFlags); }
 		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) override { g_pTrans->WMLButtonUp(x, y, dwFlags); }
 		virtual void OnMouseMove (int x, int y, DWORD dwFlags) override { g_pTrans->WMMouseMove(x, y, dwFlags); }
+        virtual void OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags) override;
 		virtual void OnMove (int x, int y) override { g_pTrans->WMMove(x, y); }
 		virtual void OnRButtonDown (int x, int y, DWORD dwFlags) override { g_pTrans->WMRButtonDown(x, y, dwFlags); }
 		virtual void OnRButtonUp (int x, int y, DWORD dwFlags) override { g_pTrans->WMRButtonUp(x, y, dwFlags); }

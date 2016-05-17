@@ -7,8 +7,6 @@
 #include "Transcendence.h"
 
 const int SCROLL_STEP = 120;
-const Metric MOUSE_WHEEL_ZOOM_IN = 1.001;
-const Metric MOUSE_WHEEL_ZOOM_OUT = 1.0 / MOUSE_WHEEL_ZOOM_IN;
 
 const int SCREEN_BORDER_X = 10;
 const int SCREEN_BORDER_Y = 10;
@@ -22,29 +20,24 @@ const BYTE HELP_PANE_OPACITY = 128;
 
 #define STR_HELP_DESC							CONSTLIT("Click and drag to navigate\n[Esc] to exit")
 
-static int SCALE_LEVELS[] =
-	{	25, 50, 100, 200, 400 };
-
-const int SCALE_LEVELS_COUNT = (sizeof(SCALE_LEVELS) / sizeof(SCALE_LEVELS[0]));
-
 static CMapLegendPainter::SScaleEntry LEGEND_SCALE[] =
     {
-        {   100000,     "light-years" },
-        {   50000,      "light-years" },
-        {   25000,      "light-years" },
-        {   10000,      "light-years" },
-        {   5000,       "light-years" },
-        {   2500,       "light-years" },
-        {   1000,       "light-years" },
-        {   500,        "light-years" },
-        {   250,        "light-years" },
-        {   100,        "light-years" },
-        {   50,         "light-years" },
-        {   25,         "light-years" },
-        {   10,         "light-years" },
-        {   5,          "light-years" },
-        {   2,          "light-years" },
-        {   1,          "light-year" }
+        {   100000,     "light-years",  1.0 },
+        {   50000,      "light-years",  1.0 },
+        {   25000,      "light-years",  1.0 },
+        {   10000,      "light-years",  1.0 },
+        {   5000,       "light-years",  1.0 },
+        {   2500,       "light-years",  1.0 },
+        {   1000,       "light-years",  1.0 },
+        {   500,        "light-years",  1.0 },
+        {   250,        "light-years",  1.0 },
+        {   100,        "light-years",  1.0 },
+        {   50,         "light-years",  1.0 },
+        {   25,         "light-years",  1.0 },
+        {   10,         "light-years",  1.0 },
+        {   5,          "light-years",  1.0 },
+        {   2,          "light-years",  1.0 },
+        {   1,          "light-year",   1.0 }
     };
 
 const int LEGEND_SCALE_COUNT = (sizeof(LEGEND_SCALE) / sizeof(LEGEND_SCALE[0]));
@@ -59,32 +52,6 @@ CGalacticMapSession::CGalacticMapSession (CHumanInterface &HI) : IHISession(HI),
 
     { 
     }
-
-int CGalacticMapSession::GetScaleIndex (int iScale)
-
-//	GetScaleIndex
-//
-//	Returns the scale index for the given scale
-
-	{
-	int i;
-
-	for (i = 0; i < SCALE_LEVELS_COUNT; i++)
-		if (iScale <= SCALE_LEVELS[i])
-			return i;
-
-	return SCALE_LEVELS[SCALE_LEVELS_COUNT - 1];
-	}
-
-int CGalacticMapSession::GetScale (int iScaleIndex)
-
-//	GetScale
-//
-//	Returns the scale for the given index
-
-	{
-	return SCALE_LEVELS[iScaleIndex];
-	}
 
 void CGalacticMapSession::OnCleanUp (void)
 
@@ -123,10 +90,11 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 
 	//	Get basic map information
 
-	m_pMap->GetScale(&m_iScale, &m_iMinScale, &m_iMaxScale);
-	m_iScale = GetScale(GetScaleIndex(m_iScale));
-	m_iMinScaleIndex = GetScaleIndex(m_iMinScale);
-	m_iMaxScaleIndex = GetScaleIndex(m_iMaxScale);
+    int iScale;
+    int iMinScale;
+    int iMaxScale;
+	m_pMap->GetScale(&iScale, &iMinScale, &iMaxScale);
+    m_Scale.Init(iScale, iMinScale, iMaxScale);
 
 	//	Create a painter
 
@@ -138,7 +106,7 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 
 	//	Adjust the map position
 
-	m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter, m_iScale, &m_xCenter, &m_yCenter);
+	m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter, m_Scale.GetTargetScale(), &m_xCenter, &m_yCenter);
 
     //  Initialize help pane
 
@@ -150,7 +118,7 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 
 	m_xTargetCenter = m_xCenter;
 	m_yTargetCenter = m_yCenter;
-    SetTargetScale(m_iScale);
+    SetTargetScale();
 
 	return NOERROR;
 	}
@@ -171,21 +139,19 @@ void CGalacticMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
 		case VK_ADD:
 		case VK_OEM_PLUS:
-            {
-            int iTargetScaleIndex = GetScaleIndex(m_iTargetScale);
-            int iCurScale = GetScale(iTargetScaleIndex);
-            if (iCurScale > m_iTargetScale)
-                SetTargetScale(iCurScale);
-            else
-                SetTargetScale(GetScale(Min(iTargetScaleIndex + 1, m_iMaxScaleIndex)));
+            if (m_Scale.CanZoomIn())
+                {
+				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+                m_Scale.ZoomIn();
+                SetTargetScale();
+                }
 			break;
-            }
 
 		case VK_CONTROL:
 			break;
 
 		case VK_DOWN:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter - (100 * SCROLL_STEP / m_iTargetScale), m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter - (100 * SCROLL_STEP / m_Scale.GetTargetScale()), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		case VK_HOME:
@@ -195,41 +161,39 @@ void CGalacticMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 			if (pNode)
 				{
 				pNode->GetDisplayPos(&m_xTargetCenter, &m_yTargetCenter);
-				m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
+				m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 				}
 			break;
 			}
 
 		case VK_LEFT:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter - (100 * SCROLL_STEP / m_iTargetScale), m_yCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_rcView, m_xCenter - (100 * SCROLL_STEP / m_Scale.GetTargetScale()), m_yCenter, m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		case VK_NEXT:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter - (300 * SCROLL_STEP / m_iTargetScale), m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter - (300 * SCROLL_STEP / m_Scale.GetTargetScale()), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		case VK_PRIOR:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter + (300 * SCROLL_STEP / m_iTargetScale), m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter + (300 * SCROLL_STEP / m_Scale.GetTargetScale()), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		case VK_RIGHT:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter + (100 * SCROLL_STEP / m_iTargetScale), m_yCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_rcView, m_xCenter + (100 * SCROLL_STEP / m_Scale.GetTargetScale()), m_yCenter, m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		case VK_SUBTRACT:
 		case VK_OEM_MINUS:
-            {
-            int iTargetScaleIndex = GetScaleIndex(m_iTargetScale);
-            int iCurScale = GetScale(iTargetScaleIndex);
-            if (iCurScale < m_iTargetScale)
-                SetTargetScale(iCurScale);
-            else
-                SetTargetScale(GetScale(Max(m_iMinScaleIndex, iTargetScaleIndex - 1)));
-			break;
-            }
+            if (m_Scale.CanZoomOut())
+                {
+				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+                m_Scale.ZoomOut();
+                SetTargetScale();
+                }
+            break;
 
 		case VK_UP:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter + (100 * SCROLL_STEP / m_iTargetScale), m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter + (100 * SCROLL_STEP / m_Scale.GetTargetScale()), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		//	Done
@@ -247,7 +211,7 @@ void CGalacticMapSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retb
 //	LButtonDown
 
 	{
-    m_pPainter->ViewToGalactic(x, y, m_rcView, m_xCenter, m_yCenter, m_iTargetScale, &m_xAnchor, &m_yAnchor);
+    m_pPainter->ViewToGalactic(x, y, m_rcView, m_xCenter, m_yCenter, m_Scale.GetTargetScale(), &m_xAnchor, &m_yAnchor);
     m_xAnchorCenter = m_xCenter;
     m_yAnchorCenter = m_yCenter;
 
@@ -275,8 +239,8 @@ void CGalacticMapSession::OnMouseMove (int x, int y, DWORD dwFlags)
     if (m_bDragging)
         {
         int xNewPos, yNewPos;
-        m_pPainter->ViewToGalactic(x, y, m_rcView, m_xAnchorCenter, m_yAnchorCenter, m_iTargetScale, &xNewPos, &yNewPos);
-		m_pPainter->AdjustCenter(m_rcView, m_xAnchorCenter - (xNewPos - m_xAnchor), m_yAnchorCenter - (yNewPos - m_yAnchor), m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
+        m_pPainter->ViewToGalactic(x, y, m_rcView, m_xAnchorCenter, m_yAnchorCenter, m_Scale.GetTargetScale(), &xNewPos, &yNewPos);
+		m_pPainter->AdjustCenter(m_rcView, m_xAnchorCenter - (xNewPos - m_xAnchor), m_yAnchorCenter - (yNewPos - m_yAnchor), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
         }
     }
 
@@ -287,10 +251,8 @@ void CGalacticMapSession::OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
 //  Zoom in/out
 
     {
-    if (iDelta > 0)
-        SetTargetScale((int)(m_iTargetScale * Min(100.0, pow(MOUSE_WHEEL_ZOOM_IN, (Metric)iDelta))));
-    else if (iDelta < 0)
-        SetTargetScale((int)(m_iTargetScale * pow(MOUSE_WHEEL_ZOOM_OUT, (Metric)-iDelta)));
+    m_Scale.ZoomWheel(iDelta);
+    SetTargetScale();
     }
 
 void CGalacticMapSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
@@ -313,7 +275,7 @@ void CGalacticMapSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 	if (m_pPainter)
 		{
-		m_pPainter->Paint(Screen, m_rcView, m_xCenter, m_yCenter, m_iScale);
+		m_pPainter->Paint(Screen, m_rcView, m_xCenter, m_yCenter, m_Scale.GetScale());
 
 		//	Paint the ship
 
@@ -324,7 +286,7 @@ void CGalacticMapSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 			g_pUniverse->GetCurrentSystem()->GetTopology()->GetDisplayPos(&xPos, &yPos);
 
 			int xShip, yShip;
-			m_pPainter->GalacticToView(xPos, yPos, m_rcView, m_xCenter, m_yCenter, m_iScale, &xShip, &yShip);
+			m_pPainter->GalacticToView(xPos, yPos, m_rcView, m_xCenter, m_yCenter, m_Scale.GetScale(), &xShip, &yShip);
 
 			pPlayer->PaintMap(CMapViewportCtx(), Screen, xShip, yShip);
 			}
@@ -354,12 +316,8 @@ void CGalacticMapSession::OnUpdate (bool bTopMost)
 //	Update
 
 	{
-	if (m_iTargetScale != m_iScale)
-		{
-		int iDiff = m_iTargetScale - m_iScale;
-		m_iScale = (Absolute(iDiff) > 1 ? m_iScale + (iDiff / 2) : m_iTargetScale);
+    if (m_Scale.Update())
 		HIInvalidate();
-		}
 
 	if (m_xCenter != m_xTargetCenter || m_yCenter != m_yTargetCenter)
 		{
@@ -373,19 +331,18 @@ void CGalacticMapSession::OnUpdate (bool bTopMost)
 		}
 	}
 
-void CGalacticMapSession::SetTargetScale (int iTargetScale)
+void CGalacticMapSession::SetTargetScale (void)
 
 //  SetTargetScale
 //
 //  Sets the target scale
 
     {
-    m_iTargetScale = Min(Max(m_iMinScale, iTargetScale), m_iMaxScale);
-	m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
+	m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 
     //  Initialize scale legend
 
-    Metric rLYPerPixel = ((m_pMap == NULL || m_iTargetScale <= 0) ? 0.0 : (100.0 * m_pMap->GetLightYearsPerPixel() / (Metric)m_iTargetScale));
+    Metric rLYPerPixel = (m_pMap == NULL ? 0.0 : (100.0 * m_pMap->GetLightYearsPerPixel() / (Metric)m_Scale.GetTargetScale()));
     m_HelpPainter.SetScale(rLYPerPixel);
     }
 
