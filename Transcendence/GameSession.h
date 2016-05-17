@@ -51,20 +51,30 @@ class CHeadsUpDisplay
 class CSystemMapDisplay
     {
     public:
-        CSystemMapDisplay (CHumanInterface &HI, CTranscendenceModel &Model, CHeadsUpDisplay &HUD) :
-                m_HI(HI),
-                m_Model(Model),
-                m_HUD(HUD)
-            { }
+        CSystemMapDisplay (CHumanInterface &HI, CTranscendenceModel &Model, CHeadsUpDisplay &HUD);
 
+        bool HandleKeyDown (int iVirtKey, DWORD dwKeyData);
+        bool Init (const RECT &rcRect);
         void OnHideMap (void);
         void OnShowMap (void);
-        void Paint (CG32bitImage &Screen, CSpaceObject *pPOV);
+        void Paint (CG32bitImage &Screen);
 
     private:
+        enum EConstants
+            {
+            MAP_SCALE_COUNT = 4,
+            };
+
         CHumanInterface &m_HI;
         CTranscendenceModel &m_Model;
         CHeadsUpDisplay &m_HUD;
+        RECT m_rcScreen;
+
+		Metric m_rMapScale[MAP_SCALE_COUNT];//	Map scale
+		int m_iMapScale;					//	Map scale index
+		int m_iMapZoomEffect;				//	0 = no zoom effect
+
+        CMapLegendPainter m_HelpPainter;
     };
 
 class CGameSession : public IHISession
@@ -98,12 +108,12 @@ class CGameSession : public IHISession
 
 		virtual CReanimator &GetReanimator (void) override { return g_pTrans->GetReanimator(); }
         virtual void OnAnimate (CG32bitImage &Screen, bool bTopMost) override;
-		virtual void OnChar (char chChar, DWORD dwKeyData) override { g_pTrans->WMChar(chChar, dwKeyData); }
+        virtual void OnChar (char chChar, DWORD dwKeyData) override;
         virtual void OnCleanUp (void);
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override { return NOERROR; }
         virtual ALERROR OnInit (CString *retsError) override;
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override { g_pTrans->WMKeyDown(iVirtKey, dwKeyData); }
-		virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) override { g_pTrans->WMKeyUp(iVirtKey, dwKeyData); }
+        virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
+        virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) override;
 		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) override { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override { g_pTrans->WMLButtonDown(x, y, dwFlags); }
 		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) override { g_pTrans->WMLButtonUp(x, y, dwFlags); }

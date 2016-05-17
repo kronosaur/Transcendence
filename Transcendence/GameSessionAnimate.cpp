@@ -71,11 +71,7 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 				//	Otherwise, if we're in map mode, paint the map
 
 				else if (g_pTrans->m_bShowingMap)
-					{
-					SetProgramState(psPaintingMap);
-					g_pTrans->PaintMap();
-					SetProgramState(psAnimating);
-					}
+                    m_SystemMap.Paint(Screen);
 
 				//	Otherwise, if we're blind, paint scramble
 

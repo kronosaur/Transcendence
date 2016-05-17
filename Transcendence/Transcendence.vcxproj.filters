@@ -245,6 +245,9 @@
     <ClCompile Include="CHeadsUpDisplay.cpp">
       <Filter>Source Files\Game Session</Filter>
     </ClCompile>
+    <ClCompile Include="GameSessionKeyboard.cpp">
+      <Filter>Source Files\Game Session</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundTasks.h">

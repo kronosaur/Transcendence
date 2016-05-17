@@ -29,6 +29,7 @@ ALERROR CGameSession::OnInit (CString *retsError)
     m_rcScreen = g_pTrans->m_rcScreen;
     SetNoCursor(true);
     m_HUD.Init(m_rcScreen);
+    m_SystemMap.Init(m_rcScreen);
 
     //  In the future, m_CurrentDock should be our member, but for legacy 
     //  reasons, it is part of CTranscendenceWnd. Either way we need to give it

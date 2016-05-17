@@ -20,18 +20,45 @@ const int BORDER_RADIUS = 4;
 const int HELP_PANE_WIDTH = 280;
 const BYTE HELP_PANE_OPACITY = 128;
 
-#define STR_HELP_LINE1							CONSTLIT("Click and drag to navigate")
-#define STR_HELP_LINE2							CONSTLIT("[Esc] to exit")
+#define STR_HELP_DESC							CONSTLIT("Click and drag to navigate\n[Esc] to exit")
 
 static int SCALE_LEVELS[] =
 	{	25, 50, 100, 200, 400 };
 
 const int SCALE_LEVELS_COUNT = (sizeof(SCALE_LEVELS) / sizeof(SCALE_LEVELS[0]));
 
-static int LEGEND_SCALE[] =
-    { 100000, 50000, 25000, 10000, 5000, 2500, 1000, 500, 250, 100, 50, 25, 10, 5, 2, 1, };
+static CMapLegendPainter::SScaleEntry LEGEND_SCALE[] =
+    {
+        {   100000,     "light-years" },
+        {   50000,      "light-years" },
+        {   25000,      "light-years" },
+        {   10000,      "light-years" },
+        {   5000,       "light-years" },
+        {   2500,       "light-years" },
+        {   1000,       "light-years" },
+        {   500,        "light-years" },
+        {   250,        "light-years" },
+        {   100,        "light-years" },
+        {   50,         "light-years" },
+        {   25,         "light-years" },
+        {   10,         "light-years" },
+        {   5,          "light-years" },
+        {   2,          "light-years" },
+        {   1,          "light-year" }
+    };
 
 const int LEGEND_SCALE_COUNT = (sizeof(LEGEND_SCALE) / sizeof(LEGEND_SCALE[0]));
+
+CGalacticMapSession::CGalacticMapSession (CHumanInterface &HI) : IHISession(HI), 
+        m_pMap(NULL), 
+        m_pPainter(NULL),
+        m_HelpPainter(HI.GetVisuals(), LEGEND_SCALE, LEGEND_SCALE_COUNT),
+        m_bDragging(false)
+
+//  CGalacticMapSession constructor
+
+    { 
+    }
 
 int CGalacticMapSession::GetScaleIndex (int iScale)
 
@@ -96,8 +123,6 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 
 	//	Get basic map information
 
-	m_sMapName = m_pMap->GetName();
-
 	m_pMap->GetScale(&m_iScale, &m_iMinScale, &m_iMaxScale);
 	m_iScale = GetScale(GetScaleIndex(m_iScale));
 	m_iMinScaleIndex = GetScaleIndex(m_iMinScale);
@@ -111,16 +136,15 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 
     GetRect(m_rcView);
 
-    m_rcHelp.left = m_rcView.left + SCREEN_BORDER_X;
-    m_rcHelp.right = m_rcHelp.left + HELP_PANE_WIDTH;
-
-    int cyPane = HeaderFont.GetHeight() + 4 * MediumFont.GetHeight() + 4 + (2 * PANE_PADDING_Y);
-    m_rcHelp.bottom = m_rcView.bottom - SCREEN_BORDER_Y;
-    m_rcHelp.top = m_rcHelp.bottom - cyPane;
-
 	//	Adjust the map position
 
 	m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter, m_iScale, &m_xCenter, &m_yCenter);
+
+    //  Initialize help pane
+
+    m_HelpPainter.SetWidth(HELP_PANE_WIDTH);
+    m_HelpPainter.SetTitle(m_pMap->GetName());
+    m_HelpPainter.SetDesc(STR_HELP_DESC);
 
 	//	Initialize animation
 
@@ -308,7 +332,9 @@ void CGalacticMapSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 	//	Paint some help text
 
-    PaintHelpPane(Screen);
+    m_HelpPainter.Paint(Screen, 
+            m_rcView.left + SCREEN_BORDER_X, 
+            m_rcView.bottom - (SCREEN_BORDER_Y + m_HelpPainter.GetHeight()));
 	}
 
 void CGalacticMapSession::OnReportHardCrash (CString *retsMessage)
@@ -347,56 +373,6 @@ void CGalacticMapSession::OnUpdate (bool bTopMost)
 		}
 	}
 
-void CGalacticMapSession::PaintHelpPane (CG32bitImage &Screen)
-
-//  PaintHelpPane
-//
-//  Paints the help pane.
-
-    {
-	const CVisualPalette &VI = m_HI.GetVisuals();
-	CG32bitPixel rgbBackgroundColor = VI.GetColor(colorAreaDeep);
-	CG32bitPixel rgbLineColor = VI.GetColor(colorLineFrame);
-	const CG16bitFont &HeaderFont = VI.GetFont(fontHeader);
-	const CG16bitFont &MediumFont = VI.GetFont(fontMedium);
-
-    //  Paint the pane background
-
-    CGDraw::RoundedRect(Screen, m_rcHelp.left, m_rcHelp.top, RectWidth(m_rcHelp), RectHeight(m_rcHelp), BORDER_RADIUS, CG32bitPixel(VI.GetColor(colorAreaDialog), HELP_PANE_OPACITY));
-    CGDraw::RoundedRectOutline(Screen, m_rcHelp.left, m_rcHelp.top, RectWidth(m_rcHelp), RectHeight(m_rcHelp), BORDER_RADIUS, 1, VI.GetColor(colorLineFrame));
-
-    //  Paint help text
-
-	int x = m_rcHelp.left + PANE_PADDING_X;
-	int y = m_rcHelp.top + PANE_PADDING_Y;
-
-	Screen.DrawText(x, y, HeaderFont, VI.GetColor(colorTextHighlight), m_sMapName);
-	y += HeaderFont.GetHeight();
-	
-	Screen.DrawText(x, y, MediumFont, VI.GetColor(colorTextFade), STR_HELP_LINE1);
-	y += MediumFont.GetHeight();
-
-	Screen.DrawText(x, y, MediumFont, VI.GetColor(colorTextFade), STR_HELP_LINE2);
-	y += MediumFont.GetHeight();
-
-    //  Paint the scale
-
-    if (m_cxLegendScale > 0)
-        {
-        y += MediumFont.GetHeight();
-
-        CG32bitPixel rgbScale = VI.GetColor(colorTextHighlight);
-        Screen.FillLine(x, y, m_cxLegendScale, rgbScale);
-        Screen.FillColumn(x, y - 2, 5, rgbScale);
-        Screen.FillColumn(x + m_cxLegendScale - 1, y - 2, 5, rgbScale);
-
-        y += 4;
-
-	    Screen.DrawText(x, y, MediumFont, rgbScale, m_sLegendScale);
-	    y += MediumFont.GetHeight();
-        }
-    }
-
 void CGalacticMapSession::SetTargetScale (int iTargetScale)
 
 //  SetTargetScale
@@ -404,35 +380,13 @@ void CGalacticMapSession::SetTargetScale (int iTargetScale)
 //  Sets the target scale
 
     {
-    int i;
-
     m_iTargetScale = Min(Max(m_iMinScale, iTargetScale), m_iMaxScale);
 	m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_iTargetScale, &m_xTargetCenter, &m_yTargetCenter);
 
     //  Initialize scale legend
 
-    Metric rLYPerPixel;
-    if (m_pMap == NULL || (rLYPerPixel = (100.0 * m_pMap->GetLightYearsPerPixel() / (Metric)m_iTargetScale)) <= 0.0)
-        {
-        m_cxLegendScale = 0;
-        return;
-        }
-
-    int cxMaxLength = HELP_PANE_WIDTH - (2 * PANE_PADDING_X);
-    for (i = 0; i < LEGEND_SCALE_COUNT; i++)
-        {
-        m_cxLegendScale = mathRound((Metric)LEGEND_SCALE[i] / rLYPerPixel);
-        if (m_cxLegendScale <= cxMaxLength)
-            break;
-        }
-
-    if (i == LEGEND_SCALE_COUNT)
-        {
-        m_cxLegendScale = 0;
-        return;
-        }
-
-    m_sLegendScale = strPatternSubst("%,d light-years", LEGEND_SCALE[i]);
+    Metric rLYPerPixel = ((m_pMap == NULL || m_iTargetScale <= 0) ? 0.0 : (100.0 * m_pMap->GetLightYearsPerPixel() / (Metric)m_iTargetScale));
+    m_HelpPainter.SetScale(rLYPerPixel);
     }
 
 void CopyGalacticMapToClipboard (HWND hWnd, CGalacticMapPainter *pPainter)

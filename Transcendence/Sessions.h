@@ -89,11 +89,7 @@ class CChooseAdventureSession : public IHISession
 class CGalacticMapSession : public IHISession
 	{
 	public:
-		CGalacticMapSession (CHumanInterface &HI) : IHISession(HI), 
-                m_pMap(NULL), 
-                m_pPainter(NULL),
-                m_bDragging(false)
-            { }
+        CGalacticMapSession (CHumanInterface &HI);
 
 		//	IHISession virtuals
 		virtual void OnCleanUp (void) override;
@@ -110,27 +106,22 @@ class CGalacticMapSession : public IHISession
 	private:
 		int GetScale (int iScaleIndex);
 		int GetScaleIndex (int iScale);
-        void PaintHelpPane (CG32bitImage &Screen);
         void SetTargetScale (int iTargetScale);
 
 		CSystemMap *m_pMap;
-		CString m_sMapName;
         int m_iMinScale;
         int m_iMaxScale;
 		int m_iMinScaleIndex;
 		int m_iMaxScaleIndex;
 
 		CGalacticMapPainter *m_pPainter;
+        CMapLegendPainter m_HelpPainter;
 
 		RECT m_rcView;
-		RECT m_rcHelp;
 
 		int m_iScale;                       //  Current scale
 		int m_xCenter;                      //  Current center (in galactic coordinates)
 		int m_yCenter;
-
-        int m_cxLegendScale;                //  Length of legend scale
-        CString m_sLegendScale;             //  Label
 
 		int m_iTargetScaleIndex;            //  Desired scale
         int m_iTargetScale;

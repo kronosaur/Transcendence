@@ -1015,8 +1015,6 @@ class CUIResources
 
 #define CMD_LOAD_ADVENTURE					301
 
-#define MAP_SCALE_COUNT						4
-
 class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 	{
 	public:
@@ -1143,7 +1141,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void PaintFrameRate (void);
 		void PaintLRS (void);
 		void PaintMainScreenBorder (CG32bitPixel rgbColor);
-		void PaintMap (void);
 		void PaintSnow (CG32bitImage &Dest, int x, int y, int cxWidth, int cyHeight);
 		void PaintSRSSnow (void);
 		void ReportCrash (void);
@@ -1273,9 +1270,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		CMenuDisplay m_MenuDisplay;			//	Menu display
 		CPickerDisplay m_PickerDisplay;		//	Picker display
 		CCommandLineDisplay m_DebugConsole;	//	CodeChain debugging console
-		Metric m_rMapScale[MAP_SCALE_COUNT];//	Map scale
-		int m_iMapScale;					//	Map scale index
-		int m_iMapZoomEffect;				//	0 = no zoom effect
 
 		CGameStats m_LastStats;				//	Last game stats
 
