@@ -42,7 +42,8 @@ static CMapLegendPainter::SScaleEntry LEGEND_SCALE[] =
 
 const int LEGEND_SCALE_COUNT = (sizeof(LEGEND_SCALE) / sizeof(LEGEND_SCALE[0]));
 
-CGalacticMapSession::CGalacticMapSession (CHumanInterface &HI) : IHISession(HI), 
+CGalacticMapSession::CGalacticMapSession (CHumanInterface &HI, CGameSettings &Settings) : IHISession(HI), 
+        m_Settings(Settings),
         m_pMap(NULL), 
         m_pPainter(NULL),
         m_HelpPainter(HI.GetVisuals(), LEGEND_SCALE, LEGEND_SCALE_COUNT),
@@ -78,6 +79,10 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 	const CG16bitFont &HeaderFont = VI.GetFont(fontHeader);
 	const CG16bitFont &MediumFont = VI.GetFont(fontMedium);
 
+	//	Compute some rects
+
+    GetRect(m_rcView);
+
 	//	Get the map
 
 	CTopologyNode *pNode = g_pUniverse->GetCurrentTopologyNode();
@@ -99,14 +104,13 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 	//	Create a painter
 
 	m_pPainter = new CGalacticMapPainter(m_HI.GetVisuals(), m_pMap);
+    m_pPainter->SetViewport(m_rcView);
+    m_pPainter->SetScale(m_Scale.GetScale());
 
-	//	Compute some rects
+	//	Adjust the map position so we fit
 
-    GetRect(m_rcView);
-
-	//	Adjust the map position
-
-	m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter, m_Scale.GetTargetScale(), &m_xCenter, &m_yCenter);
+	m_pPainter->AdjustCenter(m_xCenter, m_yCenter, m_Scale.GetTargetScale(), &m_xCenter, &m_yCenter);
+    m_pPainter->SetPos(m_xCenter, m_yCenter);
 
     //  Initialize help pane
 
@@ -151,7 +155,7 @@ void CGalacticMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 			break;
 
 		case VK_DOWN:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter - (100 * SCROLL_STEP / m_Scale.GetTargetScale()), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_xCenter, m_yCenter - (100 * SCROLL_STEP / m_Scale.GetTargetScale()), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		case VK_HOME:
@@ -161,25 +165,25 @@ void CGalacticMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 			if (pNode)
 				{
 				pNode->GetDisplayPos(&m_xTargetCenter, &m_yTargetCenter);
-				m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
+				m_pPainter->AdjustCenter(m_xTargetCenter, m_yTargetCenter, m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 				}
 			break;
 			}
 
 		case VK_LEFT:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter - (100 * SCROLL_STEP / m_Scale.GetTargetScale()), m_yCenter, m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_xCenter - (100 * SCROLL_STEP / m_Scale.GetTargetScale()), m_yCenter, m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		case VK_NEXT:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter - (300 * SCROLL_STEP / m_Scale.GetTargetScale()), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_xCenter, m_yCenter - (300 * SCROLL_STEP / m_Scale.GetTargetScale()), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		case VK_PRIOR:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter + (300 * SCROLL_STEP / m_Scale.GetTargetScale()), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_xCenter, m_yCenter + (300 * SCROLL_STEP / m_Scale.GetTargetScale()), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		case VK_RIGHT:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter + (100 * SCROLL_STEP / m_Scale.GetTargetScale()), m_yCenter, m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_xCenter + (100 * SCROLL_STEP / m_Scale.GetTargetScale()), m_yCenter, m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		case VK_SUBTRACT:
@@ -193,7 +197,7 @@ void CGalacticMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
             break;
 
 		case VK_UP:
-			m_pPainter->AdjustCenter(m_rcView, m_xCenter, m_yCenter + (100 * SCROLL_STEP / m_Scale.GetTargetScale()), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
+			m_pPainter->AdjustCenter(m_xCenter, m_yCenter + (100 * SCROLL_STEP / m_Scale.GetTargetScale()), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
 		//	Done
@@ -211,12 +215,27 @@ void CGalacticMapSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retb
 //	LButtonDown
 
 	{
-    m_pPainter->ViewToGalactic(x, y, m_rcView, m_xCenter, m_yCenter, m_Scale.GetTargetScale(), &m_xAnchor, &m_yAnchor);
-    m_xAnchorCenter = m_xCenter;
-    m_yAnchorCenter = m_yCenter;
+    //  If we clicked on a node, then select
 
-    m_bDragging = true;
-    *retbCapture = true;
+    CGalacticMapPainter::SSelectResult Selection;
+    if (m_pPainter->HitTest(x, y, Selection)
+            && Selection.pNode)
+        {
+		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+        m_pPainter->SetSelection(Selection.pNode);
+        }
+
+    //  Otherwise, click and drag
+
+    else
+        {
+        m_pPainter->ViewToGalactic(x, y, m_xCenter, m_yCenter, m_Scale.GetTargetScale(), &m_xAnchor, &m_yAnchor);
+        m_xAnchorCenter = m_xCenter;
+        m_yAnchorCenter = m_yCenter;
+
+        m_bDragging = true;
+        *retbCapture = true;
+        }
 	}
 
 void CGalacticMapSession::OnLButtonUp (int x, int y, DWORD dwFlags)
@@ -226,7 +245,21 @@ void CGalacticMapSession::OnLButtonUp (int x, int y, DWORD dwFlags)
 //  LButtonUp
 
     {
-    m_bDragging = false;
+    if (m_bDragging)
+        {
+        int xNewPos, yNewPos;
+        m_pPainter->ViewToGalactic(x, y, m_xAnchorCenter, m_yAnchorCenter, m_Scale.GetTargetScale(), &xNewPos, &yNewPos);
+
+        //  If we didn't drag very much, then clear the selection.
+
+        if (Absolute(xNewPos - m_xAnchor) <= 2 && Absolute(yNewPos - m_yAnchor) <= 2)
+            {
+    		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+            m_pPainter->SetSelection(NULL);
+            }
+
+        m_bDragging = false;
+        }
     }
 
 void CGalacticMapSession::OnMouseMove (int x, int y, DWORD dwFlags)
@@ -239,8 +272,8 @@ void CGalacticMapSession::OnMouseMove (int x, int y, DWORD dwFlags)
     if (m_bDragging)
         {
         int xNewPos, yNewPos;
-        m_pPainter->ViewToGalactic(x, y, m_rcView, m_xAnchorCenter, m_yAnchorCenter, m_Scale.GetTargetScale(), &xNewPos, &yNewPos);
-		m_pPainter->AdjustCenter(m_rcView, m_xAnchorCenter - (xNewPos - m_xAnchor), m_yAnchorCenter - (yNewPos - m_yAnchor), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
+        m_pPainter->ViewToGalactic(x, y, m_xAnchorCenter, m_yAnchorCenter, m_Scale.GetTargetScale(), &xNewPos, &yNewPos);
+		m_pPainter->AdjustCenter(m_xAnchorCenter - (xNewPos - m_xAnchor), m_yAnchorCenter - (yNewPos - m_yAnchor), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
         }
     }
 
@@ -275,7 +308,7 @@ void CGalacticMapSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 	if (m_pPainter)
 		{
-		m_pPainter->Paint(Screen, m_rcView, m_xCenter, m_yCenter, m_Scale.GetScale());
+		m_pPainter->Paint(Screen);
 
 		//	Paint the ship
 
@@ -286,7 +319,7 @@ void CGalacticMapSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 			g_pUniverse->GetCurrentSystem()->GetTopology()->GetDisplayPos(&xPos, &yPos);
 
 			int xShip, yShip;
-			m_pPainter->GalacticToView(xPos, yPos, m_rcView, m_xCenter, m_yCenter, m_Scale.GetScale(), &xShip, &yShip);
+			m_pPainter->GalacticToView(xPos, yPos, m_xCenter, m_yCenter, m_Scale.GetScale(), &xShip, &yShip);
 
 			pPlayer->PaintMap(CMapViewportCtx(), Screen, xShip, yShip);
 			}
@@ -316,8 +349,14 @@ void CGalacticMapSession::OnUpdate (bool bTopMost)
 //	Update
 
 	{
+    if (m_pPainter == NULL)
+        return;
+
     if (m_Scale.Update())
+        {
+        m_pPainter->SetScale(m_Scale.GetScale());
 		HIInvalidate();
+        }
 
 	if (m_xCenter != m_xTargetCenter || m_yCenter != m_yTargetCenter)
 		{
@@ -326,6 +365,7 @@ void CGalacticMapSession::OnUpdate (bool bTopMost)
 		
 		m_xCenter = (Absolute(xDiff) > 1 ? m_xCenter + (xDiff / 2) : m_xTargetCenter);
 		m_yCenter = (Absolute(yDiff) > 1 ? m_yCenter + (yDiff / 2) : m_yTargetCenter);
+        m_pPainter->SetPos(m_xCenter, m_yCenter);
 
 		HIInvalidate();
 		}
@@ -338,7 +378,7 @@ void CGalacticMapSession::SetTargetScale (void)
 //  Sets the target scale
 
     {
-	m_pPainter->AdjustCenter(m_rcView, m_xTargetCenter, m_yTargetCenter, m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
+	m_pPainter->AdjustCenter(m_xTargetCenter, m_yTargetCenter, m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 
     //  Initialize scale legend
 
@@ -348,6 +388,13 @@ void CGalacticMapSession::SetTargetScale (void)
 
 void CopyGalacticMapToClipboard (HWND hWnd, CGalacticMapPainter *pPainter)
 	{
+    //  Save some parameters
+
+    RECT rcOldView = pPainter->GetViewport();
+    int xOldCenter, yOldCenter;
+    pPainter->GetPos(&xOldCenter, &yOldCenter);
+    int iOldScale = pPainter->GetScale();
+
 	//	Compute the size of the map
 
 	RECT rcView;
@@ -363,9 +410,18 @@ void CopyGalacticMapToClipboard (HWND hWnd, CGalacticMapPainter *pPainter)
 
 	//	Paint
 
-	pPainter->Paint(FullMap, rcView, 0, 0, 100);
+    pPainter->SetViewport(rcView);
+    pPainter->SetScale(100);
+    pPainter->SetPos(0, 0);
+	pPainter->Paint(FullMap);
 
 	//	Copy to cliboard
 
 	FullMap.CopyToClipboard();
+
+    //  Restore
+
+    pPainter->SetScale(iOldScale);
+    pPainter->SetViewport(rcOldView);
+    pPainter->SetPos(xOldCenter, yOldCenter);
 	}

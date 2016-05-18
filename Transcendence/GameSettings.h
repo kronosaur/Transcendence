@@ -151,6 +151,7 @@ class CGameKeys
 	        };
 
         void SetLayoutFromStatic (const SKeyMapEntry *pLayout, int iLayoutCount);
+
         static CString GetLayoutID (ELayouts iLayout);
         static ELayouts GetLayoutFromID (const CString &sLayoutID);
 

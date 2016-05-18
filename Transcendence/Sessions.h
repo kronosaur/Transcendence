@@ -89,7 +89,7 @@ class CChooseAdventureSession : public IHISession
 class CGalacticMapSession : public IHISession
 	{
 	public:
-        CGalacticMapSession (CHumanInterface &HI);
+        CGalacticMapSession (CHumanInterface &HI, CGameSettings &Settings);
 
 		//	IHISession virtuals
 		virtual void OnCleanUp (void) override;
@@ -106,6 +106,7 @@ class CGalacticMapSession : public IHISession
 	private:
         void SetTargetScale (void);
 
+        CGameSetting &m_Settings;
 		CSystemMap *m_pMap;
         int m_iMinScale;
         int m_iMaxScale;
