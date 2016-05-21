@@ -1212,7 +1212,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Show the map session
 
-		CGalacticMapSession *pSession = new CGalacticMapSession(m_HI);
+		CGalacticMapSession *pSession = new CGalacticMapSession(m_HI, m_Settings);
 		if (error = m_HI.OpenPopupSession(pSession))
 			return error;
 

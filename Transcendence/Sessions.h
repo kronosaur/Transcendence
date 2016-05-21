@@ -106,7 +106,7 @@ class CGalacticMapSession : public IHISession
 	private:
         void SetTargetScale (void);
 
-        CGameSetting &m_Settings;
+        CGameSettings &m_Settings;
 		CSystemMap *m_pMap;
         int m_iMinScale;
         int m_iMaxScale;
