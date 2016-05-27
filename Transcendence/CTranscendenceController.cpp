@@ -1028,7 +1028,8 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
         //	Back to intro screen
 
         m_pGameSession = NULL;
-        m_Model.GetPlayer()->SetGameSession(NULL);
+        if (m_Model.GetPlayer())
+            m_Model.GetPlayer()->SetGameSession(NULL);
 		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, CIntroSession::isShipStats));
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());

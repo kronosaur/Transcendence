@@ -104,6 +104,7 @@ class CGalacticMapSession : public IHISession
 		virtual void OnUpdate (bool bTopMost);
 
 	private:
+        void Select (CTopologyNode *pNode);
         void SetTargetScale (void);
 
         CGameSettings &m_Settings;

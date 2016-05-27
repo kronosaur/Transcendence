@@ -1961,6 +1961,11 @@ ALERROR CTranscendenceModel::SaveGame (DWORD dwFlags, CString *retsError)
 	ASSERT(m_GameFile.IsOpen());
 	m_Universe.FireOnGlobalUniverseSave();
 
+    //  Make sure we've updated current system data to global data.
+
+	CSystem *pSystem = m_pPlayer->GetShip()->GetSystem();
+    m_Universe.GetGlobalObjects().Refresh(pSystem);
+
 	//	Generate and save game stats
 
 	GenerateGameStats(&m_GameStats, false);
@@ -1974,7 +1979,6 @@ ALERROR CTranscendenceModel::SaveGame (DWORD dwFlags, CString *retsError)
 
 	//	Save the current system
 
-	CSystem *pSystem = m_pPlayer->GetShip()->GetSystem();
 	if (error = m_GameFile.SaveSystem(pSystem->GetID(), pSystem))
 		{
 		if (retsError)

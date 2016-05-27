@@ -18,6 +18,11 @@ const int BORDER_RADIUS = 4;
 const int HELP_PANE_WIDTH = 280;
 const BYTE HELP_PANE_OPACITY = 128;
 
+const int DETAIL_PANE_WIDTH = 512;
+const int DETAIL_PANE_HEIGHT = 512;
+
+#define ID_DETAILS  							CONSTLIT("idDetails")
+
 #define STR_HELP_DESC							CONSTLIT("Click and drag to navigate\n[Esc] to exit")
 
 static CMapLegendPainter::SScaleEntry LEGEND_SCALE[] =
@@ -78,6 +83,11 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 	const CVisualPalette &VI = m_HI.GetVisuals();
 	const CG16bitFont &HeaderFont = VI.GetFont(fontHeader);
 	const CG16bitFont &MediumFont = VI.GetFont(fontMedium);
+
+    //  Refresh global objects
+
+    if (g_pUniverse->GetCurrentSystem())
+        g_pUniverse->GetGlobalObjects().Refresh(g_pUniverse->GetCurrentSystem());
 
 	//	Compute some rects
 
@@ -208,6 +218,46 @@ void CGalacticMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		}
 	}
 
+void CGalacticMapSession::Select (CTopologyNode *pNode)
+
+//  Select
+//
+//  Selects the given node
+
+    {
+    //  If this node is already selected, skip
+
+    if (pNode == m_pPainter->GetSelection())
+        return;
+
+    //  Select
+
+	g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+    m_pPainter->SetSelection(pNode);
+
+    //  We always stop the performance, if there is one
+
+    StopPerformance(ID_DETAILS);
+
+    //  If we have a valid node, then show data for it.
+
+    if (pNode)
+        {
+        RECT rcPane = m_rcView;
+        rcPane.right = m_rcView.right - SCREEN_BORDER_X;
+        rcPane.left = rcPane.right - DETAIL_PANE_WIDTH;
+        rcPane.top = m_rcView.top + (RectHeight(m_rcView) - DETAIL_PANE_HEIGHT) / 2;
+        rcPane.bottom = rcPane.top + DETAIL_PANE_HEIGHT;
+
+        CGalacticMapSystemDetails Details(m_HI.GetVisuals(), GetReanimator(), rcPane);
+
+        IAnimatron *pAni;
+        Details.CreateDetailsPane(pNode, &pAni);
+
+    	StartPerformance(pAni, ID_DETAILS, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+        }
+    }
+
 void CGalacticMapSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture)
 
 //	OnLButtonDown
@@ -221,8 +271,7 @@ void CGalacticMapSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retb
     if (m_pPainter->HitTest(x, y, Selection)
             && Selection.pNode)
         {
-		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-        m_pPainter->SetSelection(Selection.pNode);
+        Select(Selection.pNode);
         }
 
     //  Otherwise, click and drag
@@ -253,10 +302,7 @@ void CGalacticMapSession::OnLButtonUp (int x, int y, DWORD dwFlags)
         //  If we didn't drag very much, then clear the selection.
 
         if (Absolute(xNewPos - m_xAnchor) <= 2 && Absolute(yNewPos - m_yAnchor) <= 2)
-            {
-    		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-            m_pPainter->SetSelection(NULL);
-            }
+            Select(NULL);
 
         m_bDragging = false;
         }
