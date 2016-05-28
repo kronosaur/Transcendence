@@ -164,9 +164,6 @@
     <ClCompile Include="CDockScreenActions.cpp">
       <Filter>Source Files\Dock Screens</Filter>
     </ClCompile>
-    <ClCompile Include="CPlayerGameStats.cpp">
-      <Filter>Source Files\Player</Filter>
-    </ClCompile>
     <ClCompile Include="CUIMessageController.cpp">
       <Filter>Source Files\Player</Filter>
     </ClCompile>

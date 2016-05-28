@@ -675,7 +675,6 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='SteamRelease|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="CDockScreenActions.cpp" />
-    <ClCompile Include="CPlayerGameStats.cpp" />
     <ClCompile Include="CUIMessageController.cpp" />
     <ClCompile Include="PlayerController.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
