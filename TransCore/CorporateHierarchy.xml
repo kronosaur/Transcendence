@@ -148,7 +148,7 @@
 	<!-- Adventurer Outfitters -->
 
 	<StationType UNID="&stAdventurerOutfitters;"
-			name=				"Adventurer Outfitters"
+			name=				"Adventurer Outfitters|Adventurer Outfitters"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -293,6 +293,11 @@
 			<Port x="-30"	y="-111" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">
+                "Refuels up to level 9 &mdash; Repairs armor up to level 9 &mdash; Installs armor up to level 10 &mdash; Installs purchased devices up to level 10 &mdash; Buys and sells commodities"
+            </Text>
+        </Language>
 	</StationType>
 
 	<!-- Armor Dealer -->
@@ -446,6 +451,9 @@
 			<Port x="90"	y="20" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">"Buys and sells armor and shields &mdash; Installs purchased items &mdash; Buys damaged armor and shields"</Text>
+        </Language>
 	</StationType>
 
 	<!-- Arms Dealer -->
@@ -593,12 +601,15 @@
 			<Port x="-50"	y="-50" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">"Buys and sells weapons and ammo &mdash; Installs purchased items &mdash; Buys damaged weapons"</Text>
+        </Language>
 	</StationType>
 
 	<!-- Arms Dealer, Makayev -->
 
 	<StationType UNID="&stArmsDealerMakayev;"
-			name=				"Makayev-Energia Space Systems"
+			name=				"Makayev-Energia Space Systems|Makayev-Energia Space Systems"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -710,6 +721,10 @@
 			<Text id="dockServices:installAbility">
 				(cat "We install Makayev items up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
 			</Text>
+
+            <Text id="core.mapDesc">
+                "Repairs armor up to level 8 &mdash; Installs Makayev armor up to level 7 &mdash; Installs Makayev devices up to level 7 &mdash; Sells Makayev products"
+            </Text>
 		</Language>
 	</StationType>
 
@@ -825,6 +840,10 @@
 			<Text id="dockServices:installAbility">
 				(cat "We install Bushido items up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
 			</Text>
+
+            <Text id="core.mapDesc">
+                "Repairs armor up to level 9 &mdash; Installs Bushido armor up to level 10 &mdash; Installs Bushido devices up to level 10 &mdash; Sells Bushido products"
+            </Text>
 		</Language>
 
 	</StationType>
@@ -1014,6 +1033,9 @@
 			<Port x="-60"	y="-60" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">"Buys and sells autons"</Text>
+        </Language>
 	</StationType>
 
 	<!-- Corporate Enclave -->
@@ -1196,6 +1218,9 @@
 			<Port x="-50"	y="-50" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">"Buys food, luxuries, meds, and resources"</Text>
+        </Language>
 	</StationType>
 
 	<!-- Fuel Depot -->
@@ -1324,6 +1349,10 @@
 					"All our fuel has been produced to the exacting standards required by today's reactors. Please use the terminal to proceed with your transaction."
 					)
 			</Text>
+        
+            <Text id="core.mapDesc">
+                "Refuels up to level 10 &mdash; Sells fuel and supplies"
+            </Text>
 		</Language>
 
 	</StationType>
@@ -1414,7 +1443,7 @@
 
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Sell	criteria="m +makayev; -illegal; -notForSale;" priceAdj="110" inventoryAdj="800"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="*NU +makayev; -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
@@ -1498,10 +1527,14 @@
 					"We only install Makayev items. "
 					"We cannot install " (itmGetName (@ gData 'item) 0x04) " on your ship."
 					)
+			</Text>
 			<Text id="dockServices:installAbility">
 				(cat "We install Makayev items up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
 			</Text>
-			</Text>
+            
+            <Text id="core.mapDesc">
+                "Refuels up to level 10 &mdash; Repairs/installs Makayev armor up to level 9 &mdash; Installs Makayev devices up to level 9 &mdash; Sells Makayev weapons and ammo"
+            </Text>
 		</Language>
 
 	</StationType>
@@ -1694,6 +1727,20 @@
 			<Port x="-67"	y="56" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDescCustom">
+                (block (
+                    (itemsConsumed (objGetData gSource 'itemsConsumed))
+                    (itemsCreated (objGetData gSource 'itemsCreated))
+                    )
+                    
+                    (cat
+                        "Buys " (join (map itemsConsumed theType (itmGetName theType 0x82)) 'oxfordComma) " &mdash; "
+                        "Sells " (join (map itemsCreated theType (itmGetName theType 0x82)) 'oxfordComma)
+                        )
+                    )
+            </Text>
+        </Language>
 	</StationType>
 
 	<!-- Merchant Prince Hotel -->
@@ -1995,6 +2042,9 @@
 			<Port x="-70"	y="25" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">"Buys food, luxuries, and meds"</Text>
+        </Language>
 	</StationType>
 
 	<!-- Ice Farm -->
@@ -2097,6 +2147,9 @@
 			<Port x="-40"	y="-40" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">"Sells luxuries &mdash; Buys food and supplies"</Text>
+        </Language>
 	</StationType>
 
 	<!-- Insurance Company
@@ -2109,7 +2162,7 @@
 	-->
 
 	<StationType UNID="&stInsuranceCompany;"
-			name=				"Clavius Insurance Conglomerate"
+			name=				"Clavius Insurance Conglomerate|Clavius Insurance Conglomerate"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -2352,12 +2405,17 @@
 			<Port x="-50"	y="10" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">
+                "Life insurance policies"
+            </Text>
+        </Language>
 	</StationType>
 
 	<!-- Taikon Ventures -->
 
 	<StationType UNID="&stTaikonVentures;"
-			name=				"Taikon Ventures"
+			name=				"Taikon Ventures|Taikon Ventures"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -2946,12 +3004,15 @@
 			<Port x="-84"	y="78" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">"Catalog ordering available &mdash; Buys and sells commodities"</Text>
+        </Language>
 	</StationType>
 
 	<!-- Wondrous Devices -->
 
 	<StationType UNID="&stWondrousDevices;"
-			name=				"Thor's Wondrous Devices"
+			name=				"Thor's Wondrous Devices|Thor's Wondrous Devices"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -3074,6 +3135,11 @@
 			<Port x="0"		y="130" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">
+                "Refuels up to level 8 &mdash; Repairs armor up to level 8 &mdash; Installs armor up to level 9 &mdash; Installs purchased devices up to level 9 &mdash; Buys and sells commodities"
+            </Text>
+        </Language>
 	</StationType>
 
 	<Globals>

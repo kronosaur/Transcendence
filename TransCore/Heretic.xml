@@ -1367,6 +1367,11 @@
 			</DonateFuel>
 		</DockScreens>
 
+        <Language>
+            <Text id="core.mapDesc">
+                "Corporate research vessel"
+            </Text>
+        </Language>
 	</ShipClass>
 
 <!-- STATIONS -->
@@ -3035,6 +3040,11 @@
 			<Port x="-60"	y="-60" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">
+                "Contemplation and communion"
+            </Text>
+        </Language>
 	</StationType>
 
 	<!-- TVX-1
@@ -3818,9 +3828,13 @@
 					</GetOut>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
+        <Language>
+            <Text id="core.mapDesc">
+                "Research base"
+            </Text>
+        </Language>
 	</StationType>
 
 	<!-- Sister Maryam's Archive
@@ -4229,6 +4243,12 @@
 			<Port x="92"	y="-33" />
 			<Port x="42"	y="-85" />
 		</DockingPorts>
+        
+        <Language>
+            <Text id="core.mapDesc">
+                "Alien structure"
+            </Text>
+        </Language>
 	</StationType>
 
 	<!-- MRAD sensor -->
@@ -4238,6 +4258,7 @@
 			sovereign=			"&svIndependent;"
 			dockScreen=			"Main"
 			mass=				"2000"
+            noMapDetails=       "true"
 			
 			attributes=			"mradProbe"
 			>
@@ -4380,7 +4401,6 @@
 			dockScreen=			"Main"
 			scale=				"ship"
 			mobile=				"true"
-			noMapIcon=			"true"
 			immutable=			"true"
 
 			ejectaType=			"&vtWreckEjecta;"
@@ -5309,6 +5329,12 @@
 			<Port x="92"	y="-33" />
 			<Port x="42"	y="-85" />
 		</DockingPorts>
+        
+        <Language>
+            <Text id="core.mapDesc">
+                "Alien structure"
+            </Text>
+        </Language>
 	</StationType>
 
 	<!-- Iocrym Manipulator

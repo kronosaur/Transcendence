@@ -1052,6 +1052,10 @@
 					"hurry to go to the Core. Rest here with us and seek Domina later.\""
 					)
 			</Text>
+            
+            <Text id="core.mapDesc">
+                "Commonwealth Fleet stronghold &mdash; Refuels up to level 9 &mdash; Repairs/installs armor up to level 10 &mdash; Installs devices up to level 9"
+            </Text>
 		</Language>
 	</StationType>
 

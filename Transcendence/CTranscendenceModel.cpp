@@ -1800,6 +1800,10 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 	SetProgramState(psStargateTransferringGateFollowers);
 	TransferGateFollowers(m_pOldSystem, pNewSystem, pStart);
 
+    //  Make sure we've updated current system data to global data.
+
+    m_Universe.GetGlobalObjects().Refresh(m_pOldSystem);
+
 	//	Let all types know that we have a new system. Again, this is called 
 	//	before the player has entered the system.
 

@@ -1018,7 +1018,6 @@
 			<Port x="-98"	y="-131" />
 			<Port x="-147"	y="-39" />
 		</DockingPorts>
-
 	</StationType>
 
 	<!-- Huari Fortress
@@ -1051,7 +1050,7 @@
 	-->
 
 	<StationType UNID="&stHuariFortress;"
-			name=				"Huari fortress"
+			name=				"Huari fortress(es)"
 			sovereign=			"&svHuariEmpire;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
@@ -2067,7 +2066,7 @@
 	<!-- Sung Fortress in Huaramarca -->
 
 	<StationType UNID="&stSungFortressInHuaramarca;"
-			name=				"Sung fortress"
+			name=				"Sung fortress(es)"
 			sovereign=			"&svSung;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"

@@ -1127,7 +1127,7 @@
 	<!-- Sung Fortress -->
 
 	<StationType UNID="&stSungFortress;"
-			name=				"Sung fortress"
+			name=				"Sung fortress(es)"
 			sovereign=			"&svSung;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
@@ -1316,7 +1316,7 @@
 	<!-- Sung Slave Quarters -->
 
 	<StationType UNID="&stSungSlaveQuarters1;"
-			name=				"Sung slave quarters"
+			name=				"Sung slave quarters|Sung slave quarters"
 			sovereign=			"&svSungSlaves;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsSungSlaveQuarters;"
@@ -1359,7 +1359,7 @@
 	<!-- Sung Slave Quarters -->
 
 	<StationType UNID="&stSungSlaveQuarters2;"
-			name=				"Sung slave quarters"
+			name=				"Sung slave quarters|Sung slave quarters"
 			sovereign=			"&svSungSlaves;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsSungSlaveQuarters;"

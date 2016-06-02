@@ -176,7 +176,6 @@
 			<Port x="39"	y="-72" />
 			<Port x="-39"	y="-72" />
 		</DockingPorts>
-
 	</StationType>
 
 	<!-- Ringer Shipyard -->
@@ -364,7 +363,6 @@
 			<Port x="58"	y="-138" />
 			<Port x="-58"	y="-138" />
 		</DockingPorts>
-
 	</StationType>
 
 <!-- LEVEL X ITEMS -->

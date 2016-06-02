@@ -271,7 +271,7 @@
 	-->
 
 	<StationType UNID="&stCommonwealthFortress;"
-			name=				"Commonwealth fortress"
+			name=				"Commonwealth fortress(es)"
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
@@ -1446,6 +1446,10 @@
 						)
 					))
 			</Text>
+            
+            <Text id="core.mapDesc">
+                "Commonwealth Militia HQ &mdash; Refuels up to level 8 &mdash; Repairs/installs armor up to level 8 &mdash; Installs devices up to level 8"
+            </Text>
 		</Language>
 	</StationType>
 	

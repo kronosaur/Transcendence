@@ -192,6 +192,7 @@
 			virtual=			"true"
 			definiteArticle=	"true"
 			
+            level=              "7"
 			attributes=			"commonwealthCustoms, dockObj, generic, human, majorStation, stKatsArcology"
 			>
 
@@ -418,6 +419,12 @@
 					)
 			</OnTrafficControl>
 		</Events>
+        
+        <Language>
+            <Text id="core.mapDesc">
+                "Capital of the Commonwealth &mdash; Refuels up to level 7 &mdash; Repairs/installs armor up to level 7 &mdash; Installs devices up to level 7 &mdash; Buys and sells commodities"
+            </Text>
+        </Language>
 	</StationType>
 	
 	<!-- Arcology Segment Base -->
@@ -1121,6 +1128,12 @@
 			<Port x="92"	y="-33" />
 			<Port x="42"	y="-85" />
 		</DockingPorts>
+        
+        <Language>
+            <Text id="core.mapDesc">
+                "Museum &mdash; Restaurant and bar"
+            </Text>
+        </Language>
 	</StationType>
 
 <!-- DOCK SCREENS -->

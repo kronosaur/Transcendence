@@ -134,7 +134,7 @@ void GenerateEncounterCount (CUniverse &Universe, CXMLElement *pCmdLine)
 					continue;
 
 				CSovereign *pSovereign = pEncounterType->GetControllingSovereign();
-				CString sSovereign = (pSovereign ? pSovereign->GetTypeName() : CONSTLIT("(Unknown)"));
+				CString sSovereign = (pSovereign ? pSovereign->GetTypeNounPhrase() : CONSTLIT("(Unknown)"));
 
 				printf("%d\t%s\t0x%08x\t%s\t%s\t%s\t%d.%03d",
 						NodeTable[i].iLevel,
@@ -142,7 +142,7 @@ void GenerateEncounterCount (CUniverse &Universe, CXMLElement *pCmdLine)
 						NodeTable[i].Table.GetKey(j),
 						pEncounterType->GetDataField(CONSTLIT("category")).GetASCIIZPointer(),
 						sSovereign.GetASCIIZPointer(),
-						pEncounterType->GetName().GetASCIIZPointer(),
+						pEncounterType->GetNounPhrase().GetASCIIZPointer(),
 						iCount,
 						iCountFrac);
 

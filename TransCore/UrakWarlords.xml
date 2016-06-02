@@ -457,7 +457,7 @@
 	<!-- Urak Fortress -->
 
 	<StationType UNID="&stUrakFortress;"
-			name=				"Urak fortress"
+			name=				"Urak fortress(es)"
 			sovereign=			"&svUrakWarlords;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"

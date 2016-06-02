@@ -460,7 +460,7 @@
 	<!-- Dwarg Colony -->
 
 	<StationType UNID="&stDwargColony;"
-			name=				"Dwarg colony"
+			name=				"Dwarg colony|Dwarg colonies"
 			sovereign=			"&svDwargRaiders;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
@@ -516,7 +516,7 @@
 	<!-- Dwarg Gathering -->
 
 	<StationType UNID="&stDwargGathering;"
-			name=				"Dwarg colony"
+			name=				"Dwarg colony|Dwarg colonies"
 			sovereign=			"&svDwargRaiders;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
@@ -612,7 +612,7 @@
 	<!-- Dwarg Gathering Satellite -->
 
 	<StationType UNID="&stDwargGatheringSat;"
-			name=				"Dwarg colony"
+			name=				"Dwarg colony|Dwarg colonies"
 			sovereign=			"&svDwargRaiders;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
@@ -667,7 +667,7 @@
 	<!-- Dwarg Fortress -->
 
 	<StationType UNID="&stDwargFortress;"
-			name=				"Dwarg fortress"
+			name=				"Dwarg fortress(es)"
 			sovereign=			"&svDwargRaiders;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"

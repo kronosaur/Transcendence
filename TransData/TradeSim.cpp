@@ -226,21 +226,21 @@ void OutputTradingStrategy (SItemTypeInfo &ItemInfo)
 	else if (pBestSeller == NULL)
 		printf("%s\t\t\t%s\t%d\t0.0%%\n", 
 				ItemInfo.pItem->GetNounPhrase(nounActual).GetASCIIZPointer(), 
-				pBestBuyer->GetName().GetASCIIZPointer(), 
+				pBestBuyer->GetNounPhrase().GetASCIIZPointer(), 
 				iBestBuyerPrice);
 
 	else if (pBestBuyer == NULL)
 		printf("%s\t%s\t%d\t\t\t0.0%%\n", 
 				ItemInfo.pItem->GetNounPhrase(nounActual).GetASCIIZPointer(), 
-				pBestSeller->GetName().GetASCIIZPointer(), 
+				pBestSeller->GetNounPhrase().GetASCIIZPointer(), 
 				iBestSellerPrice);
 
 	else
 		printf("%s\t%s\t%d\t%s\t%d\t%2.2f%%\n",
 				ItemInfo.pItem->GetNounPhrase(nounActual).GetASCIIZPointer(), 
-				pBestSeller->GetName().GetASCIIZPointer(),
+				pBestSeller->GetNounPhrase().GetASCIIZPointer(),
 				iBestSellerPrice,
-				pBestBuyer->GetName().GetASCIIZPointer(),
+				pBestBuyer->GetNounPhrase().GetASCIIZPointer(),
 				iBestBuyerPrice,
 				100.0 * (double)(iBestBuyerPrice - iBestSellerPrice) / (double)iBestSellerPrice);
 	}

@@ -135,6 +135,8 @@ void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine)
 				CString sValue = pResult->Print(&g_pUniverse->GetCC(), PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
 				printf(sValue.GetASCIIZPointer());
 				}
+
+            pResult->Discard(&g_pUniverse->GetCC());
 			}
 
 		printf("\n");

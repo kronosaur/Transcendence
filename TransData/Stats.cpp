@@ -132,7 +132,7 @@ void GenerateStationFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine)
 				char szBuffer[256];
 				wsprintf(szBuffer, "%02d %s", 
 						ftCommon - pType->GetFrequencyByLevel(iLevel),
-						pType->GetName().GetASCIIZPointer());
+						pType->GetNounPhrase().GetASCIIZPointer());
 						
 				Sort.AddEntry(CString(szBuffer), (CObject *)pType);
 				}
@@ -156,7 +156,7 @@ void GenerateStationFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine)
 					else if (strEquals(Cols[j], CONSTLIT("Freq")))
 						printf((LPSTR)FrequencyChar(pType->GetFrequencyByLevel(iLevel)));
 					else if (strEquals(Cols[j], CONSTLIT("Name")))
-						printf((LPSTR)pType->GetName());
+						printf((LPSTR)pType->GetNounPhrase());
 					else if (strEquals(Cols[j], CONSTLIT("Type")))
 						{
 						if (pType->HasAttribute(CONSTLIT("enemy")))
@@ -243,7 +243,7 @@ void GenerateStats (CUniverse &Universe, CXMLElement *pCmdLine)
 
 CString GetTypeDesc (CDesignType *pType)
 	{
-	CString sName = pType->GetTypeName();
+	CString sName = pType->GetTypeNounPhrase();
 	if (sName.IsBlank())
 		return strPatternSubst(CONSTLIT("%08x: [%s]"), pType->GetUNID(), pType->GetTypeClassName());
 	else

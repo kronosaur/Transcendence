@@ -100,11 +100,11 @@ void RunEncounterSim (CUniverse &Universe, CXMLElement *pCmdLine)
 		CSovereign *pAttackerSovereign = GetAttackerSovereign(Universe, pDefenderType);
 		if (pAttackerSovereign == NULL)
 			{
-			printf("ERROR: Unable to find enemy sovereign of encounter: %s [%x].\n", pDefenderType->GetName().GetASCIIZPointer(), pDefenderType->GetUNID());
+			printf("ERROR: Unable to find enemy sovereign of encounter: %s [%x].\n", pDefenderType->GetNounPhrase().GetASCIIZPointer(), pDefenderType->GetUNID());
 			return;
 			}
 
-		printf("%s [%x]\t%d", pDefenderType->GetName().GetASCIIZPointer(), pDefenderType->GetUNID(), pDefenderType->GetLevel());
+		printf("%s [%x]\t%d", pDefenderType->GetNounPhrase().GetASCIIZPointer(), pDefenderType->GetUNID(), pDefenderType->GetLevel());
 
 		//	Loop over all attackers
 

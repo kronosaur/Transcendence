@@ -249,7 +249,7 @@
 	-->
 
 	<StationType UNID="&stTeratonChrysalis;"
-			name=				"Teraton chrysalis"
+			name=				"Teraton chrysalis(es)"
 			sovereign=			"&svTeratons;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"

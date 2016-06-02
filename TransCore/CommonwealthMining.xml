@@ -1115,6 +1115,10 @@
 						)
 					))
 			</Text>
+            
+            <Text id="core.mapDesc">
+                "Refuels up to level 5 &mdash; Repairs/installs armor up to level 5 &mdash; Installs mining equipment up to level 6 &mdash; Sells ore &mdash; Buys food"
+            </Text>
 		</Language>
 	</StationType>
 	

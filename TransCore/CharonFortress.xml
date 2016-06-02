@@ -598,6 +598,11 @@
 			<Port x="70"	y="105" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">
+                "Hires freighter escorts &mdash; Refuels up to level 5 &mdash; Repairs/installs armor up to level 8 &mdash; Installs devices up to level 6"
+            </Text>
+        </Language>
 	</StationType>
 
 	<!-- Rebuilt Korolov -->
@@ -737,6 +742,11 @@
 			<Port x="70"	y="105" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">
+                "Under construction"
+            </Text>
+        </Language>
 	</StationType>
 
 	<!-- Charon Pirate Fortress System -->

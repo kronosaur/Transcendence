@@ -46,7 +46,7 @@
 	-->
 
 	<StationType UNID="&stFerianColony;"
-			name=				"Ferian colony"
+			name=				"Ferian colony|Ferian colonies"
 			sovereign=			"&svFerianMiners;"
 				 
 			attributes=			"enemy, envEarth, envAvoidsAir, ferian, generic, neoHuman, miners, populated, zoanthrope"

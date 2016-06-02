@@ -56,7 +56,7 @@
 	<!-- Sisters of Domina -->
 
 	<StationType UNID="&stSistersOfDomina;"
-			name=				"Sisters of Domina"
+			name=				"Sisters of Domina|Sisters of Domina"
 			sovereign=			"&svCommonwealth;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
@@ -198,6 +198,10 @@
 					"May the blessings of Domina protect you.\""
 					)
 			</Text>
+            
+            <Text id="core.mapDesc">
+                "Contemplation and communion"
+            </Text>
 		</Language>
 	</StationType>
 	

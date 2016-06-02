@@ -1180,6 +1180,11 @@
 			<Port x="70"	y="105" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">
+                "Refuels up to level 7 &mdash; Repairs/installs armor up to level 8 &mdash; Installs devices up to level 7"
+            </Text>
+        </Language>
 	</StationType>
 
 	<!-- Commonwealth Medical Suburb -->
@@ -1239,7 +1244,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="*NU +Meds; -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="*NU +Meds; -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			<Buy	criteria="*NU +Food; -Illegal;"	priceAdj="110"/>
 			<Buy	criteria="*NU +Lux; -Illegal;"	priceAdj="120"/>
 		</Trade>
@@ -1305,12 +1310,15 @@
 			<Port x="-60"	y="-60" />
 		</DockingPorts>
 
-		</StationType>
+        <Language>
+            <Text id="core.mapDesc">"Sells meds &mdash; Buys food and luxuries"</Text>
+        </Language>
+	</StationType>
 
 	<!-- Commonwealth Residentials -->
 
 	<StationType UNID="&stCommonwealthResidentials;"
-			name=				"Commonwealth residentials"
+			name=				"Commonwealth residentials|Commonwealth residentials"
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 

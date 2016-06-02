@@ -453,6 +453,11 @@
 			<Port x="-60"	y="-60" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">
+                "Refuels up to level 5 &mdash; Repairs/installs armor up to level 5 &mdash; Sells food &mdash; Buys luxuries and supplies"
+            </Text>
+        </Language>
 	</StationType>
 
 </TranscendenceModule>

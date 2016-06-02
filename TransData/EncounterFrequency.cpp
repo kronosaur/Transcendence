@@ -173,7 +173,7 @@ void GenerateEncounterFrequency (CUniverse &Universe, CXMLElement *pCmdLine)
 			printf("%d\t%s\t%s\t%d\t%d.%03d\t%d\t%d",
 					pEncounterType->GetLevel(),
 					pEncounterType->GetDataField(CONSTLIT("category")).GetASCIIZPointer(),
-					pEncounterType->GetName().GetASCIIZPointer(),
+					pEncounterType->GetNounPhrase().GetASCIIZPointer(),
 					EncounterFreq[i].iCount,
 					iAveWhole,
 					iAveFrac,
@@ -227,7 +227,7 @@ void GenerateEncounterFrequency (CUniverse &Universe, CXMLElement *pCmdLine)
 				//	Entries
 
 				for (j = 0; j < Table.Table.GetCount(); j++)
-					printf("%s\t%d\n", Table.Table.GetAt(j)->GetName().GetASCIIZPointer(), Table.Table.GetChance(j));
+					printf("%s\t%d\n", Table.Table.GetAt(j)->GetNounPhrase().GetASCIIZPointer(), Table.Table.GetChance(j));
 
 				printf("\n");
 				}
@@ -248,7 +248,7 @@ void GenerateEncounterFrequency (CUniverse &Universe, CXMLElement *pCmdLine)
 				printf("%d\t%s\t%s\t%d.%d\n",
 						Entry.iLevel,
 						Entry.sSystemName.GetASCIIZPointer(),
-						Entry.Table[j]->GetName().GetASCIIZPointer(), 
+						Entry.Table[j]->GetNounPhrase().GetASCIIZPointer(), 
 						iPercent / 10,
 						iPercent % 10);
 				}

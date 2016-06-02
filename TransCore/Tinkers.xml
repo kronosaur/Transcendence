@@ -358,6 +358,9 @@
 					"The docking bay is decorated with various ancient devices of unknown origin and purpose."
 					)
 			</Text>
+            <Text id="core.mapDesc">
+                "Fabricates special items &mdash; Repairs/installs armor up to level 8 &mdash; Buys and sells scrap"
+            </Text>
 		</Language>
 	</StationType>
 	

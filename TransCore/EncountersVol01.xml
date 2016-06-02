@@ -1836,7 +1836,7 @@
 	<!-- Heliotrope Colony -->
 
 	<StationType UNID="&stHeliotropeColony;"
-			name=				"Heliotrope colony"
+			name=				"Heliotrope colony|Heliotrope colonies"
 			sovereign=			"&svHeliotropes;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
@@ -2181,7 +2181,7 @@
 	</ShipClass>
 
 	<StationType UNID="&stHuariFortress;"
-			name=				"Huari fortress"
+			name=				"Huari fortress(es)"
 			sovereign=			"&svHuariEmpire;"
 			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
@@ -4693,7 +4693,7 @@
 	<!-- Ranx Fortress -->
 
 	<StationType UNID="&stRanxFortress;"
-			name=				"Ranx fortress"
+			name=				"Ranx fortress(es)"
 			sovereign=			"&svRanxEmpire;"
 			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
@@ -5636,7 +5636,7 @@
 	<!-- Ventari Colony -->
 
 	<StationType UNID="&stVentariColony;"
-			name=				"Ventari colony"
+			name=				"Ventari colony|Ventari colonies"
 			sovereign=			"&svVentariSettlers;"
 			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"

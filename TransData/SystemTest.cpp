@@ -50,7 +50,7 @@ CString GenerateStationKey (CStationType *pType, CSovereign *pPlayer, CString *r
 		pCat = "friend";
 
 	char szBuffer[1024];
-	wsprintf(szBuffer, "%s %s", pCat, pType->GetName().GetASCIIZPointer());
+	wsprintf(szBuffer, "%s %s", pCat, pType->GetNounPhrase().GetASCIIZPointer());
 
 	if (retsCategory)
 		*retsCategory = CString(pCat);
@@ -78,7 +78,7 @@ void OutputSystemStats (SystemInfo *pSystemEntry)
 
 		printf("%s\t%s\t", 
 				pEntry->sCategory.GetASCIIZPointer(),
-				pEntry->pType->GetName().GetASCIIZPointer());
+				pEntry->pType->GetNounPhrase().GetASCIIZPointer());
 
 		for (int k = 0; k < MAX_FREQUENCY_COUNT; k++)
 			{
@@ -302,7 +302,7 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 				printf("%d\t%s\t%s\t%d.%02d\t%d\n", 
 						i,
 						pEntry->sCategory.GetASCIIZPointer(),
-						pEntry->pType->GetName().GetASCIIZPointer(),
+						pEntry->pType->GetNounPhrase().GetASCIIZPointer(),
 						pEntry->iTotalCount / 100,
 						pEntry->iTotalCount % 100,
 						pEntry->pType->GetFrequencyByLevel(i));

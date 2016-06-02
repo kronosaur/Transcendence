@@ -156,6 +156,7 @@ void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		//	Output each row
 
+    	CCodeChainCtx CCCtx;
 		for (i = 0; i < Table.GetCount(); i++)
 			{
 			CStationType *pType = (CStationType *)Table.GetValue(i);
@@ -165,16 +166,16 @@ void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine)
 				if (j != 0)
 					printf("\t");
 
-				const CString &sField = Cols[j];
 
 				//	Get the value
 
-				CString sValue = pType->GetDataField(sField);
+				const CString &sField = Cols[j];
+    			ICCItem *pResult = pType->GetProperty(CCCtx, sField);
 
 				//	Format and output
 
 				if (strEquals(sField, FIELD_FIRE_RATE_ADJ))
-					printf("%.2f", strToInt(sValue, 0, NULL) / 1000.0);
+					printf("%.2f", pResult->GetIntegerValue() / 1000.0);
 				else if (strEquals(sField, FIELD_TOTAL_COUNT))
 					{
 					SDesignTypeInfo *pInfo = TotalCount.GetAt(pType->GetUNID());
@@ -187,7 +188,12 @@ void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine)
 					printf("%s", (pInfo ? pInfo->sDistribution : NULL_STR).GetASCIIZPointer());
 					}
 				else
-					printf(sValue.GetASCIIZPointer());
+				    {
+				    CString sValue = pResult->Print(&g_pUniverse->GetCC(), PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
+				    printf(sValue.GetASCIIZPointer());
+				    }
+
+                pResult->Discard(&g_pUniverse->GetCC());
 				}
 
 			printf("\n");

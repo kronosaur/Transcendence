@@ -2067,6 +2067,10 @@
 					"upgrade your weapons.\""
 					)
 			</Text>
+            
+            <Text id="core.mapDesc">
+                "Gladiatorial combat &mdash; Refuels up to level 5 &mdash; Repairs/installs armor up to level 6 &mdash; Installs devices up to level 6"
+            </Text>
 		</Language>
 	</StationType>
 

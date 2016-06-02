@@ -74,7 +74,7 @@
 	<!-- Arms Dealer, Rasiermesser -->
 
 	<StationType UNID="&stArmsDealerRasiermesser;"
-			name=				"Rasiermesser Arms &amp; Armor"
+			name=				"Rasiermesser Arms &amp; Armor|Rasiermesser Arms &amp; Armor"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -91,7 +91,7 @@
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, generic, human, independent, populated"
+			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, generic, human, independent, populated, rasiermesser"
 			levelFrequency=		"-rurv ----- ----- ----- -----"
 			locationCriteria=	"+planetary"
 
@@ -178,6 +178,10 @@
 			<Text id="dockServices:installAbility">
 				(cat "We install Rasiermesser items up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
 			</Text>
+            
+            <Text id="core.mapDesc">
+                "Repairs armor up to level 7 &mdash; Installs Rasiermesser armor up to level 7 &mdash; Installs Rasiermesser devices up to level 7 &mdash; Sells Rasiermesser products"
+            </Text>
 		</Language>
 
 	</StationType>
@@ -216,7 +220,7 @@
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, generic, human, independent, majorStation, populated"
+			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, generic, human, independent, majorStation, populated, rasiermesser"
 			levelFrequency=		"----- rur-- ----- ----- -----"
 			unique=				"inSystem"
 			locationCriteria=	"+planetary"
@@ -662,6 +666,18 @@
 			<Text id="dockServices:installAbility">
 				(cat "We install Rasiermesser items up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
 			</Text>
+            
+            <Text id="core.mapDescCustom">
+                (cat
+                    (if (objGetData gSource "Dvalin")
+                        "Dvalin's Research Lab &mdash; "
+                        )
+                    "Refuels up to level 9 &mdash; Repairs armor up to level 9 &mdash; Installs Rasiermesser armor up to level 8 &mdash; Installs Rasiermesser devices up to level 9 &mdash; Sells Rasiermesser products"
+                    )
+            </Text>
+            <Text id="core.mapDesc">
+                "Refuels up to level 9 &mdash; Repairs armor up to level 9 &mdash; Installs Rasiermesser armor up to level 8 &mdash; Installs Rasiermesser devices up to level 9 &mdash; Sells Rasiermesser products"
+            </Text>
 		</Language>
 
 	</StationType>

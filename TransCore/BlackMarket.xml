@@ -514,6 +514,10 @@ PLAYER DATA
 			<Text id="dockServices:installAbility">
 				(cat "We install smuggler's equipment up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
 			</Text>
+            
+            <Text id="core.mapDesc">
+                "Refuels up to level 6 &mdash; Repairs/installs armor up to level 6 &mdash; Installs purchased devices up to level 6 &mdash; Buys and sells illegal and military items"
+            </Text>
 		</Language>
 
 	</StationType>
@@ -667,6 +671,11 @@ PLAYER DATA
 			<Port x="12"	y="-72" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">
+                "Refuels up to level 7 &mdash; Repairs/installs armor up to level 9 &mdash; Installs devices up to level 9 &mdash; Buys and sells illegal and military items"
+            </Text>
+        </Language>
 	</StationType>
 
 	<!-- Tempus Lab -->
@@ -759,6 +768,11 @@ PLAYER DATA
 			<Port x="20"	y="80" />
 		</DockingPorts>
 
+        <Language>
+            <Text id="core.mapDesc">
+                "Sells illegal items"
+            </Text>
+        </Language>
 	</StationType>
 
 	<Globals>
