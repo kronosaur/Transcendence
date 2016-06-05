@@ -557,6 +557,28 @@ CGameKeys::Keys CGameKeys::GetGameCommand (const CString &sCmd) const
 	return CGameKeys::keyError;
 	}
 
+CGameKeys::Keys CGameKeys::GetGameCommandFromChar (char chChar) const
+
+//  GetGameCommand
+//
+//  Returns game command from character
+
+    {
+    const DWORD VK_FIRST_NUMBER = 0x30;
+    const DWORD VK_FIRST_LETTER = 0x41;
+
+    //  Convert from character to virtual key code
+
+    if (chChar >= '0' && chChar <= '9')
+        return GetGameCommand(VK_FIRST_NUMBER + (DWORD)(chChar - '0'));
+    else if (chChar >= 'A' && chChar <= 'Z')
+        return GetGameCommand(VK_FIRST_LETTER + (DWORD)(chChar - 'A'));
+    else if (chChar >= 'a' && chChar <= 'z')
+        return GetGameCommand(VK_FIRST_LETTER + (DWORD)(chChar - 'a'));
+    else
+        return keyError;
+    }
+
 DWORD CGameKeys::GetKey (const CString &sKey)
 
 //	GetKey

@@ -129,6 +129,7 @@
 #define CMD_UI_SIGN_OUT							CONSTLIT("uiSignOut")
 #define CMD_UI_START_EPILOGUE					CONSTLIT("uiStartEpilogue")
 #define CMD_UI_START_GAME						CONSTLIT("uiStartGame")
+#define CMD_UI_SWITCH_TO_SYSTEM_MAP				CONSTLIT("uiSwitchToSystemMap")
 #define CMD_UI_VOLUME_DOWN						CONSTLIT("uiVolumeDown")
 #define CMD_UI_VOLUME_UP						CONSTLIT("uiVolumeUp")
 
@@ -1213,7 +1214,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Show the map session
 
-		CGalacticMapSession *pSession = new CGalacticMapSession(m_HI, m_Settings);
+		CGalacticMapSession *pSession = new CGalacticMapSession(m_HI, m_Settings, m_Model.GetSystemMapThumbnails());
 		if (error = m_HI.OpenPopupSession(pSession))
 			return error;
 
@@ -1221,6 +1222,19 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		g_pTrans->ShowSystemMap(false);
 		}
+
+    //  Switch back to system map
+
+    else if (strEquals(sCmd, CMD_UI_SWITCH_TO_SYSTEM_MAP))
+        {
+        //  Close galactic map
+
+        m_HI.ClosePopupSession();
+
+        //  Show system map
+
+        g_pTrans->ShowSystemMap(true);
+        }
 
 	//	Show game stats session
 

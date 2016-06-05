@@ -1231,6 +1231,7 @@ class CTranscendenceModel
 		inline int GetLastHighScore (void) { return m_iLastHighScore; }
 		const SFileVersionInfo &GetProgramVersion (void) const { return m_Version; }
 		void GetScreenSession (SDockFrame *retFrame);
+        inline CSystemMapThumbnails &GetSystemMapThumbnails (void) { return m_SystemMapThumbnails; }
 		inline bool InScreenSession (void) { return !m_DockFrames.IsEmpty(); }
 		bool IsGalacticMapAvailable (CString *retsError = NULL);
 		void RecordFinalScore (const CString &sEpitaph, const CString &sEndGameReason, bool bEscaped);
@@ -1323,6 +1324,9 @@ class CTranscendenceModel
 		CDesignType *m_pDefaultScreensRoot;			//	Default root to look for local screens
 		CDockScreenStack m_DockFrames;				//	Stack of dock screens
 		TArray<CXMLElement *> m_ScreensInited;		//	List of screens that have called OnInit this session
+
+        //  Caches
+        CSystemMapThumbnails m_SystemMapThumbnails;
 
 		//	Temporaries
 		CDesignType *m_pResurrectType;				//	DesignType that will handle resurrect (or NULL)

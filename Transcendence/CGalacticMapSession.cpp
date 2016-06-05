@@ -23,6 +23,8 @@ const int DETAIL_PANE_HEIGHT = 512;
 
 #define ID_DETAILS  							CONSTLIT("idDetails")
 
+#define CMD_UI_SWITCH_TO_SYSTEM_MAP				CONSTLIT("uiSwitchToSystemMap")
+
 #define STR_HELP_DESC							CONSTLIT("Click and drag to navigate\n[Esc] to exit")
 
 static CMapLegendPainter::SScaleEntry LEGEND_SCALE[] =
@@ -47,8 +49,9 @@ static CMapLegendPainter::SScaleEntry LEGEND_SCALE[] =
 
 const int LEGEND_SCALE_COUNT = (sizeof(LEGEND_SCALE) / sizeof(LEGEND_SCALE[0]));
 
-CGalacticMapSession::CGalacticMapSession (CHumanInterface &HI, CGameSettings &Settings) : IHISession(HI), 
+CGalacticMapSession::CGalacticMapSession (CHumanInterface &HI, CGameSettings &Settings, CSystemMapThumbnails &SystemMapThumbnails) : IHISession(HI), 
         m_Settings(Settings),
+        m_SystemMapThumbnails(SystemMapThumbnails),
         m_pMap(NULL), 
         m_pPainter(NULL),
         m_HelpPainter(HI.GetVisuals(), LEGEND_SCALE, LEGEND_SCALE_COUNT),
@@ -57,6 +60,32 @@ CGalacticMapSession::CGalacticMapSession (CHumanInterface &HI, CGameSettings &Se
 //  CGalacticMapSession constructor
 
     { 
+    }
+
+void CGalacticMapSession::OnChar (char chChar, DWORD dwKeyData)
+
+//  OnChar
+//
+//  Handle character
+
+    {
+    //  We handle certain commands
+
+	CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommandFromChar(chChar);
+    switch (iCommand)
+        {
+        //  Switch back to system map
+
+        case CGameKeys::keyShowMap:
+            m_HI.HICommand(CMD_UI_SWITCH_TO_SYSTEM_MAP);
+            break;
+
+        //  If we hit the galactic map key again, we close this window
+
+        case CGameKeys::keyShowGalacticMap:
+            m_HI.ClosePopupSession();
+            break;
+        }
     }
 
 void CGalacticMapSession::OnCleanUp (void)
@@ -113,7 +142,7 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 
 	//	Create a painter
 
-	m_pPainter = new CGalacticMapPainter(m_HI.GetVisuals(), m_pMap);
+	m_pPainter = new CGalacticMapPainter(m_HI.GetVisuals(), m_pMap, m_SystemMapThumbnails);
     m_pPainter->SetViewport(m_rcView);
     m_pPainter->SetScale(m_Scale.GetScale());
 
@@ -168,6 +197,13 @@ void CGalacticMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 			m_pPainter->AdjustCenter(m_xCenter, m_yCenter - (100 * SCROLL_STEP / m_Scale.GetTargetScale()), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
 			break;
 
+        case VK_ESCAPE:
+            if (m_pPainter->GetSelection())
+                Select(NULL);
+            else
+			    m_HI.ClosePopupSession();
+            break;
+
 		case VK_HOME:
 		case VK_END:
 			{
@@ -208,12 +244,6 @@ void CGalacticMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
 		case VK_UP:
 			m_pPainter->AdjustCenter(m_xCenter, m_yCenter + (100 * SCROLL_STEP / m_Scale.GetTargetScale()), m_Scale.GetTargetScale(), &m_xTargetCenter, &m_yTargetCenter);
-			break;
-
-		//	Done
-
-		default:
-			m_HI.ClosePopupSession();
 			break;
 		}
 	}

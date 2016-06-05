@@ -129,6 +129,7 @@ class CGameKeys
         void GetCommands (TArray<SCommandKeyDesc> &Result) const;
 		CGameKeys::Keys GetGameCommand (const CString &sCmd) const;
 		inline Keys GetGameCommand (DWORD dwVirtKey) const { return m_iMap[(dwVirtKey < 256 ? dwVirtKey : 0)]; }
+        Keys GetGameCommandFromChar (char chChar) const;
 		char GetKeyIfChar (Keys iCommand) const;
         DWORD GetKey (Keys iCommand) const;
         inline ELayouts GetLayout (void) const { return m_iLayout; }
