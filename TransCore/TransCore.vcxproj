@@ -225,7 +225,9 @@
     <None Include="HSCompatibility.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="HumanSpaceMap.xml" />
+    <None Include="HumanSpaceMap.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Iocrym.xml">
       <SubType>Designer</SubType>
     </None>
