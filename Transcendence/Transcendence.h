@@ -1499,7 +1499,7 @@ inline CGameSettings &CTranscendenceWnd::GetSettings (void)
 	}
 
 #include "BackgroundTasks.h"
-#include "GameSession.h"
 #include "Sessions.h"
+#include "GameSession.h"
 
 #endif

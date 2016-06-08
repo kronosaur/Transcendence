@@ -89,7 +89,24 @@ class CChooseAdventureSession : public IHISession
 class CGalacticMapSession : public IHISession
 	{
 	public:
-        CGalacticMapSession (CHumanInterface &HI, CGameSettings &Settings, CSystemMapThumbnails &SystemMapThumbnails);
+        struct SOptions
+            {
+            SOptions (void) :
+                    xCenter(0),
+                    yCenter(0),
+                    iScale(0),
+                    pSelected(NULL),
+                    pCurNode(NULL)
+                { }
+
+            int xCenter;
+            int yCenter;
+            int iScale;                     //  0 = use defaults for everything
+            CTopologyNode *pSelected;
+            CTopologyNode *pCurNode;        //  Node at the time we saved options
+            };
+
+        CGalacticMapSession (CHumanInterface &HI, CGameSettings &Settings, CSystemMapThumbnails &SystemMapThumbnails, SOptions &SavedState);
 
 		//	IHISession virtuals
         virtual void OnChar (char chChar, DWORD dwKeyData) override;
@@ -105,11 +122,13 @@ class CGalacticMapSession : public IHISession
 		virtual void OnUpdate (bool bTopMost);
 
 	private:
+        void SaveState (void);
         void Select (CTopologyNode *pNode);
         void SetTargetScale (void);
 
         CGameSettings &m_Settings;
         CSystemMapThumbnails &m_SystemMapThumbnails;
+        SOptions &m_SavedState;
 		CSystemMap *m_pMap;
         int m_iMinScale;
         int m_iMaxScale;

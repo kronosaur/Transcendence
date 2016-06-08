@@ -127,6 +127,7 @@ class CGameSession : public IHISession
 
 		//	Helpers
 
+        CGalacticMapSession::SOptions &GetGalacticMapSettings (void) { return m_GalacticMapSettings; }
 		void PaintInfoText (CG32bitImage &Dest, const CString &sTitle, const TArray<CString> &Body, bool bAboveTargeting = true);
 		void PaintSoundtrackTitles (CG32bitImage &Dest);
 
@@ -138,5 +139,6 @@ class CGameSession : public IHISession
 
         CHeadsUpDisplay m_HUD;              //  Paint the HUD
         CSystemMapDisplay m_SystemMap;      //  Helps to paint the system map
+        CGalacticMapSession::SOptions m_GalacticMapSettings;
 		int m_iDamageFlash;					//	0 = no flash; odd = recover; even = flash;
 	};

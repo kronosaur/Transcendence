@@ -6,7 +6,7 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-#define STR_HELP_DESC						CONSTLIT("[+] and [-] to zoom map\n[H] to toggle HUD on/off")
+#define STR_HELP_DESC						CONSTLIT("Scroll wheel to zoom map\n[H] to toggle HUD on/off")
 
 const Metric SCALE_100 = g_AU / 400.0;
 const int MAP_ZOOM_SPEED =					16;

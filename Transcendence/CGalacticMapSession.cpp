@@ -49,9 +49,10 @@ static CMapLegendPainter::SScaleEntry LEGEND_SCALE[] =
 
 const int LEGEND_SCALE_COUNT = (sizeof(LEGEND_SCALE) / sizeof(LEGEND_SCALE[0]));
 
-CGalacticMapSession::CGalacticMapSession (CHumanInterface &HI, CGameSettings &Settings, CSystemMapThumbnails &SystemMapThumbnails) : IHISession(HI), 
+CGalacticMapSession::CGalacticMapSession (CHumanInterface &HI, CGameSettings &Settings, CSystemMapThumbnails &SystemMapThumbnails, SOptions &SavedState) : IHISession(HI), 
         m_Settings(Settings),
         m_SystemMapThumbnails(SystemMapThumbnails),
+        m_SavedState(SavedState),
         m_pMap(NULL), 
         m_pPainter(NULL),
         m_HelpPainter(HI.GetVisuals(), LEGEND_SCALE, LEGEND_SCALE_COUNT),
@@ -77,12 +78,14 @@ void CGalacticMapSession::OnChar (char chChar, DWORD dwKeyData)
         //  Switch back to system map
 
         case CGameKeys::keyShowMap:
+            SaveState();
             m_HI.HICommand(CMD_UI_SWITCH_TO_SYSTEM_MAP);
             break;
 
         //  If we hit the galactic map key again, we close this window
 
         case CGameKeys::keyShowGalacticMap:
+            SaveState();
             m_HI.ClosePopupSession();
             break;
         }
@@ -138,6 +141,18 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
     int iMinScale;
     int iMaxScale;
 	m_pMap->GetScale(&iScale, &iMinScale, &iMaxScale);
+
+    //  If we've got saved state, use that
+
+    if (m_SavedState.iScale != 0)
+        {
+        iScale = m_SavedState.iScale;
+        m_xCenter = m_SavedState.xCenter;
+        m_yCenter = m_SavedState.yCenter;
+        }
+
+    //  Initialize
+
     m_Scale.Init(iScale, iMinScale, iMaxScale);
 
 	//	Create a painter
@@ -162,6 +177,18 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 	m_xTargetCenter = m_xCenter;
 	m_yTargetCenter = m_yCenter;
     SetTargetScale();
+
+    //  Select something (but only if we're in the same node)
+
+    if (m_SavedState.pSelected
+            && pNode == m_SavedState.pCurNode)
+        Select(m_SavedState.pSelected);
+    else
+        m_SavedState.pSelected = NULL;
+
+    //  Remember our current node
+
+    m_SavedState.pCurNode = pNode;
 
 	return NOERROR;
 	}
@@ -198,10 +225,8 @@ void CGalacticMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 			break;
 
         case VK_ESCAPE:
-            if (m_pPainter->GetSelection())
-                Select(NULL);
-            else
-			    m_HI.ClosePopupSession();
+            SaveState();
+			m_HI.ClosePopupSession();
             break;
 
 		case VK_HOME:
@@ -446,6 +471,19 @@ void CGalacticMapSession::OnUpdate (bool bTopMost)
 		HIInvalidate();
 		}
 	}
+
+void CGalacticMapSession::SaveState (void)
+
+//  SaveState
+//
+//  Save state so we can come back to the same scale/position
+
+    {
+    m_SavedState.iScale = m_Scale.GetTargetScale();
+    m_SavedState.xCenter = m_xTargetCenter;
+    m_SavedState.yCenter = m_yTargetCenter;
+    m_SavedState.pSelected = m_pPainter->GetSelection();
+    }
 
 void CGalacticMapSession::SetTargetScale (void)
 

@@ -49,9 +49,6 @@
 
 #define BAR_COLOR							CG32bitPixel(0, 2, 10)
 
-#define STR_MAP_HELP						CONSTLIT("[+] and [-] to zoom map")
-#define STR_MAP_HELP2						CONSTLIT("[H] to toggle HUD on/off")
-
 #define SQUADRON_LETTER						'Q'
 #define SQUADRON_KEY						CONSTLIT("Q")
 #define SQUADRON_LABEL						CONSTLIT("Squadron")
