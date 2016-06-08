@@ -1268,6 +1268,14 @@ void CIntroSession::SetExpanded (bool bExpanded)
     //  Sets the main view to be expanded or not.
 
     {
+    //  If we're not yet done switching from one state to another, then ignore
+    //  this command
+
+    if (m_bExpandedDesired != m_bExpanded)
+        return;
+
+    //  Change state
+
     if (m_bExpandedDesired != bExpanded)
         {
         m_bExpandedDesired = bExpanded;
