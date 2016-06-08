@@ -1130,6 +1130,24 @@ void CIntroSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		}
 	}
 
+void CIntroSession::OnMouseMove (int x, int y, DWORD dwFlags)
+
+//  OnMouseMove
+//
+//  Handle mouse move
+    
+    {
+    //  If the mouse moves, show the controls (exit expanded mode).
+
+    if (m_HI.HasMouseMoved(x, y))
+        {
+        m_iIdleTicks = 0;
+        SetExpanded(false);
+        }
+    
+    g_pTrans->WMMouseMove(x, y, dwFlags);
+    }
+
 void CIntroSession::OnPOVSet (CSpaceObject *pObj)
 
 //	OnPOVSet

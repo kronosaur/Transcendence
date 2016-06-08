@@ -67,19 +67,19 @@ class CIntroSession : public IHISession
 		~CIntroSession (void);
 
 		//	IHISession virtuals
-		virtual CReanimator &GetReanimator (void) { return g_pTrans->GetReanimator(); }
-		virtual void OnAnimate (CG32bitImage &Screen, bool bTopMost);
-		virtual void OnChar (char chChar, DWORD dwKeyData);
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) { m_iIdleTicks = 0;  SetExpanded(false); g_pTrans->WMLButtonDown(x, y, dwFlags); }
-		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonUp(x, y, dwFlags); }
-        virtual void OnMouseMove (int x, int y, DWORD dwFlags) { m_iIdleTicks = 0; SetExpanded(false); g_pTrans->WMMouseMove(x, y, dwFlags); }
-		virtual void OnMove (int x, int y) { g_pTrans->WMMove(x, y); }
-		virtual void OnReportHardCrash (CString *retsMessage) { *retsMessage = g_pTrans->GetCrashInfo(); }
-		virtual void OnSize (int cxWidth, int cyHeight) { g_pTrans->WMSize(cxWidth, cyHeight, 0); }
+		virtual CReanimator &GetReanimator (void) override { return g_pTrans->GetReanimator(); }
+		virtual void OnAnimate (CG32bitImage &Screen, bool bTopMost) override;
+		virtual void OnChar (char chChar, DWORD dwKeyData) override;
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override;
+		virtual ALERROR OnInit (CString *retsError) override;
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
+		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) override { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override { m_iIdleTicks = 0;  SetExpanded(false); g_pTrans->WMLButtonDown(x, y, dwFlags); }
+		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) override { g_pTrans->WMLButtonUp(x, y, dwFlags); }
+        virtual void OnMouseMove (int x, int y, DWORD dwFlags) override;
+		virtual void OnMove (int x, int y) override { g_pTrans->WMMove(x, y); }
+		virtual void OnReportHardCrash (CString *retsMessage) override { *retsMessage = g_pTrans->GetCrashInfo(); }
+		virtual void OnSize (int cxWidth, int cyHeight) override { g_pTrans->WMSize(cxWidth, cyHeight, 0); }
 
 	private:
 		void CmdShowHighScoreList (DWORD dwAdventure = 0, const CString &sUsername = NULL_STR, int iScore = 0);

@@ -869,7 +869,7 @@ LONG CTranscendenceWnd::WMMouseMove (int x, int y, DWORD dwFlags)
 			break;
 
         case gsInGame:
-            if (GetPlayer())
+            if (GetPlayer() && g_pHI->HasMouseMoved(x, y))
                 GetPlayer()->SetMouseAimEnabled(true);
             break;
 
