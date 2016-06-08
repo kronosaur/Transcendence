@@ -421,8 +421,8 @@
 		</Events>
         
         <Language>
-            <Text id="core.mapDesc">
-                "Capital of the Commonwealth &mdash; Refuels up to level 7 &mdash; Repairs/installs armor up to level 7 &mdash; Installs devices up to level 7 &mdash; Buys and sells commodities"
+            <Text id="core.mapDescMain">
+                "Capital of the Commonwealth"
             </Text>
         </Language>
 	</StationType>

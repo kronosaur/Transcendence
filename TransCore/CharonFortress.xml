@@ -599,8 +599,8 @@
 		</DockingPorts>
 
         <Language>
-            <Text id="core.mapDesc">
-                "Hires freighter escorts &mdash; Refuels up to level 5 &mdash; Repairs/installs armor up to level 8 &mdash; Installs devices up to level 6"
+            <Text id="core.mapDescMain">
+                "Hires freighter escorts"
             </Text>
         </Language>
 	</StationType>

@@ -304,9 +304,9 @@
 		</Reinforcements>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +commonwealth; -illegal; -notForSale; -notStandard; L:3-8;" priceAdj="115" inventoryAdj="200"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Sell	criteria="rNU L:1-7; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100"/>
+			<Sell	criteria="m +commonwealth; -illegal; -notForSale; -notStandard; L:3-8;" priceAdj="115" inventoryAdj="200" noDescription="true"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110" noDescription="true"/>
+			<Sell	criteria="rNU L:1-7; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100" noDescription="true"/>
 			
 			<Refuel			criteria="f +BasicFuel; L:3-8;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
@@ -1447,8 +1447,8 @@
 					))
 			</Text>
             
-            <Text id="core.mapDesc">
-                "Commonwealth Militia HQ &mdash; Refuels up to level 8 &mdash; Repairs/installs armor up to level 8 &mdash; Installs devices up to level 8"
+            <Text id="core.mapDescMain">
+                "Commonwealth Militia HQ"
             </Text>
 		</Language>
 	</StationType>

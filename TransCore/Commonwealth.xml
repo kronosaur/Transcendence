@@ -1128,8 +1128,8 @@
 		<Image			imageID="&rsStations1;" imageX="256" imageY="0" imageWidth="224" imageHeight="224"/>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Sell	criteria="rNU L:1-5; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"  noDescription="true"/>
+			<Sell	criteria="rNU L:1-5; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100"  noDescription="true"/>
 			
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="95"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
@@ -1179,12 +1179,6 @@
 			<Port x="-70"	y="105" />
 			<Port x="70"	y="105" />
 		</DockingPorts>
-
-        <Language>
-            <Text id="core.mapDesc">
-                "Refuels up to level 7 &mdash; Repairs/installs armor up to level 8 &mdash; Installs devices up to level 7"
-            </Text>
-        </Language>
 	</StationType>
 
 	<!-- Commonwealth Medical Suburb -->

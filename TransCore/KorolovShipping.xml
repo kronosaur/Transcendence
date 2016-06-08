@@ -1117,7 +1117,7 @@
 		<Image			imageID="&rsStations1;" imageX="256" imageY="0" imageWidth="224" imageHeight="224"/>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="rNU L:1-5; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100"/>
+			<Sell	criteria="rNU L:1-5; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100" noDescription="true"/>
 			
 			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="90"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
@@ -2830,8 +2830,8 @@
 					)
 			</Text>
             
-            <Text id="core.mapDesc">
-                "Hires freighter escorts &mdash; Refuels up to level 5 &mdash; Repairs/installs armor up to level 8 &mdash; Installs devices up to level 6"
+            <Text id="core.mapDescMain">
+                "Hires freighter escorts"
             </Text>
 		</Language>
 	</StationType>
