@@ -2109,19 +2109,34 @@
 			</GetGlobalAchievements>
 
 			<OnObjDestroyed>
-				(if (eq gSource aObjDestroyed)
-				
-					; If our object gets destroyed and we don't end up on the
-					; resulting wreck, then we create our own object.
+                (switch
+                    
+                    ;   If not our object, then nothing to do
+                    
+                    (!= gSource aObjDestroyed)
+                        Nil
+						
+					;	If the ship we're on got destroyed, but it left a wreck with the
+					;	sphere on it, then we're OK.
 					
-					(if (or (not aWreckObj) (not (objGetItems aWreckObj "* +unid:&itDallSphere;")))
-						(block (theObj)
-							(setq theObj (sysCreateStation &stDallSphere; (objGetPos gSource)))
-							(objAddItem theObj (itmCreate &itDallSphere; 1))
-							(objIncVel theObj (sysVectorPolarVelocity (random 0 359) 5))
-							)
+					(and aWreckObj (objGetItems aWreckObj "* +unid:&itDallSphere;"))
+						Nil
+						
+					;	If the ship got destroyed in a gravity well, then the sphere is
+					;	permanently destroyed. (Otherwise we would keep creating and
+					;	destroying the sphere.)
+					
+					(= aDestroyReason 'gravity)
+						Nil
+						
+					;	Otherwise, the object drops on its own
+                        
+					(block (theObj)
+						(setq theObj (sysCreateStation &stDallSphere; (objGetPos gSource)))
+						(objAddItem theObj (itmCreate &itDallSphere; 1))
+						(objIncVel theObj (sysVectorPolarVelocity (random 0 359) 5))
 						)
-					)
+                    )
 			</OnObjDestroyed>
 			
 			<OnUpdate>

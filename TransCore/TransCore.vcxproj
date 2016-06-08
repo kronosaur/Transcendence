@@ -364,7 +364,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="RPGPlayer.xml" />
-    <None Include="RPGShipScreens.xml" />
+    <None Include="RPGShipScreens.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="RPGTypes.xml" />
     <None Include="RPGWingmen.xml" />
     <None Include="RPGArmorDockScreens.xml">
