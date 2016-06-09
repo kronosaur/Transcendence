@@ -1013,21 +1013,24 @@
 							<Action name="Command Center" default="1" key="C">
 								(if (milCanEnterCC)
 									(scrShowPane gScreen "CommandCenter")
-									(scrShowPane gScreen "AccessDenied")
+									(scrShowScreen gScreen &dsRPGMessage; { textID:'descNoCommandCenterAccess })
 									)
 							</Action>
 
 							<Action name="Officer's Club" key="O">
 								(if (gr (objGetData gPlayerShip "militiaRank") 0)
 									(scrShowPane gScreen "OfficersClub")
-									(scrShowPane gScreen "AccessDenied3")
+									(scrShowScreen gScreen &dsRPGMessage; { textID:'descNoOfficersClubAccess })
 									)
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								(rpgDockServices gPlayerShip {
-									checkMilitaryID: True
-									})
+								(if (gr (objGetData gPlayerShip "militiaRank") 0)
+									(rpgDockServices gPlayerShip {
+										checkMilitaryID: True
+										})
+									(scrShowScreen gScreen &dsRPGMessage; { textID:'descNoDockServicesAccess })
+									)
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -1036,30 +1039,6 @@
 						</Actions>
 
 					</Default>
-
-					<AccessDenied>
-						<OnPaneInit>
-							(scrSetDesc gScreen "Two guards flank the door to the Command Center. One of them checks your ID against a computer list: \"Sorry, %sir%, only experienced captains are allowed inside.\"")
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</AccessDenied>
-
-					<AccessDenied3>
-						<OnPaneInit>
-							(scrSetDesc gScreen "Two guards flank the door to the Officer's Club. One of them checks your ID against a computer list: \"Sorry, %sir%, only officers are allowed in the club.\"")
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</AccessDenied3>
 
 					<CommandCenter
 							desc="You are in the command center surrounded by wall maps and scanner displays. The commanding officer of the fortress looks up from his charts and asks, &quot;Are you looking for a mission, captain?&quot;">
@@ -1445,6 +1424,25 @@
 							)
 						)
 					))
+			</Text>
+			
+			<Text id="descNoCommandCenterAccess">
+				(cat 
+					"Two guards flank the door to the Command Center. One of them checks your ID against a computer list:\n\n"
+					"\"Sorry, %sir%, only experienced captains are allowed inside.\""
+					)
+			</Text>
+			<Text id="descNoOfficersClubAccess">
+				(cat 
+					"Two guards flank the door to the Officer's Club. One of them checks your ID against a computer list:\n\n"
+					"\"Sorry, %sir%, only officers are allowed in the club.\""
+					)
+			</Text>
+			<Text id="descNoDockServicesAccess">
+				(cat 
+					"Two guards flank the door to Dock Services. One of them checks your ID against a computer list:\n\n"
+					"\"Sorry, %sir%, only militia members are allowed in.\""
+					)
 			</Text>
             
             <Text id="core.mapDescMain">
