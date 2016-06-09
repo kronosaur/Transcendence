@@ -1073,6 +1073,10 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_GAME_ENTER_STARGATE))
 		{
 		CTopologyNode *pDestNode = (CTopologyNode *)pData;
+
+        if (m_pGameSession)
+            m_pGameSession->OnPlayerEnteredStargate(pDestNode);
+
 		if (pDestNode && !pDestNode->IsEndGame())
 			{
 			//	Figure out if we've entered this system before
@@ -1220,7 +1224,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Close the system map, if it is open
 
-		g_pTrans->ShowSystemMap(false);
+        m_pGameSession->ShowSystemMap(false);
 		}
 
     //  Switch back to system map
@@ -1233,7 +1237,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
         //  Show system map
 
-        g_pTrans->ShowSystemMap(true);
+        m_pGameSession->ShowSystemMap(true);
         }
 
 	//	Show game stats session

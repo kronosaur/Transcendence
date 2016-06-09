@@ -145,6 +145,11 @@ void CSystemMapDisplay::OnShowMap (void)
 //  later.
 
     {
+    CSystem *pSystem = m_Model.GetUniverse().GetCurrentSystem();
+    if (pSystem == NULL)
+        return;
+
+    m_HelpPainter.SetTitle(pSystem->GetName());
     }
 
 void CSystemMapDisplay::Paint (CG32bitImage &Screen)

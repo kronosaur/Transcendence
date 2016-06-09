@@ -918,7 +918,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		inline bool InAutopilot (void) { return m_bAutopilot; }
 		inline bool InDockState (void) { return m_State == gsDocked; }
 		inline bool InGameState (void) { return m_State == gsInGame; }
-		inline bool InMap (void) { return m_bShowingMap; }
 		inline bool InMenu (void) { return (m_CurrentMenu != menuNone || m_CurrentPicker != pickNone); }
 		ALERROR InitDisplays (void);
 		void OnObjDestroyed (const SDestroyCtx &Ctx);
@@ -928,7 +927,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 							    CTopologyNode *pDestNode,
 							    const CString &sDestEntryPoint);
 		void RedirectDisplayMessage (bool bRedirect = true);
-		inline void ShowSystemMap (bool bShow = true) { m_bShowingMap = bShow; }
 		inline void UpdateDeviceCounterDisplay (void) { m_DeviceDisplay.Invalidate(); }
 
 		//	CUniverse::IHost
@@ -1069,7 +1067,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 
 		//	Game
 		GameState m_State;					//	Game state
-		bool m_bShowingMap;					//	Showing system map
 		bool m_bAutopilot;					//	Autopilot is ON
 		bool m_bPaused;						//	Game paused
 		bool m_bPausedStep;					//	Step one frame

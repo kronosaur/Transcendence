@@ -61,7 +61,7 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 					Screen.Set(CG32bitPixel(128,0,0));
 					if (pShip && pShip->GetSystem())
 						{
-						if (g_pTrans->m_bShowingMap)
+						if (m_bShowingSystemMap)
 							g_pUniverse->PaintObjectMap(Screen, g_pTrans->m_rcMainScreen, pShip);
 						else
 							g_pUniverse->PaintObject(Screen, g_pTrans->m_rcMainScreen, pShip);
@@ -70,7 +70,7 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 
 				//	Otherwise, if we're in map mode, paint the map
 
-				else if (g_pTrans->m_bShowingMap)
+				else if (m_bShowingSystemMap)
                     m_SystemMap.Paint(Screen);
 
 				//	Otherwise, if we're blind, paint scramble
@@ -96,7 +96,7 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 				SetProgramState(psPaintingLRS);
 				g_pTrans->PaintLRS();
 
-				if (!g_pTrans->m_bShowingMap || bShowMapHUD)
+				if (!m_bShowingSystemMap || bShowMapHUD)
 					{
                     m_HUD.Update(g_pTrans->m_iTick);
                     m_HUD.Paint(Screen);
@@ -137,7 +137,7 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 				//	Paint soundtrack info
 
 				if (m_Settings.GetBoolean(CGameSettings::debugSoundtrack)
-						&& !g_pTrans->m_bShowingMap)
+						&& !m_bShowingSystemMap)
 					PaintSoundtrackTitles(Screen);
 
                 //  Paint the mouse cursor, if necessary

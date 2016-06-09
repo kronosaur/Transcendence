@@ -349,7 +349,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 				{
 				//	If showing the map, then we need to handle some keys
 
-				if (g_pTrans->m_bShowingMap)
+				if (m_bShowingSystemMap)
 					{
                     if (m_SystemMap.HandleKeyDown(iVirtKey, dwKeyData))
                         return;
@@ -443,10 +443,10 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 						break;
 
 					case CGameKeys::keyShowMap:
-						if (g_pTrans->m_bShowingMap)
+						if (m_bShowingSystemMap)
 							g_pTrans->Autopilot(false);
 						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-						g_pTrans->m_bShowingMap = !g_pTrans->m_bShowingMap;
+                        ShowSystemMap(!m_bShowingSystemMap);
 						pPlayer->SetUIMessageEnabled(uimsgMapHint, false);
 						g_pTrans->m_chKeyDown = iVirtKey;
 						break;
@@ -710,10 +710,10 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 							}
 						else if (iVirtKey == VK_ESCAPE)
 							{
-							if (g_pTrans->m_bShowingMap)
+							if (m_bShowingSystemMap)
 								{
 								g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-								g_pTrans->m_bShowingMap = false;
+                                ShowSystemMap(false);
 								}
 							else if (g_pTrans->m_bAutopilot)
 								{

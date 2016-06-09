@@ -88,9 +88,12 @@ class CGameSession : public IHISession
                 m_Model(Model),
 				m_Soundtrack(Soundtrack),
                 m_HUD(HI, Model),
+                m_bShowingSystemMap(false),
                 m_SystemMap(HI, Model, m_HUD),
         		m_iDamageFlash(0)
 			{ }
+
+        void ShowSystemMap (bool bShow = true);
 
         //  Notifications from player ship, etc.
 
@@ -100,6 +103,7 @@ class CGameSession : public IHISession
 		inline void OnDamageFlash (void) { m_iDamageFlash = Min(2, m_iDamageFlash + 2); }
         inline void OnPlayerChangedShips (CSpaceObject *pOldShip) { m_HUD.Init(m_rcScreen); g_pTrans->InitDisplays(); }
         void OnPlayerDestroyed (SDestroyCtx &Ctx, const CString &sEpitaph);
+        void OnPlayerEnteredStargate (CTopologyNode *pNode);
         void OnShowDockScreen (bool bShow);
         inline void OnTargetChanged (CSpaceObject *pTarget) { m_HUD.Invalidate(hudTargeting); }
         inline void OnWeaponStatusChanged (void) { m_HUD.Invalidate(hudTargeting); }
@@ -130,6 +134,7 @@ class CGameSession : public IHISession
         CGalacticMapSession::SOptions &GetGalacticMapSettings (void) { return m_GalacticMapSettings; }
 		void PaintInfoText (CG32bitImage &Dest, const CString &sTitle, const TArray<CString> &Body, bool bAboveTargeting = true);
 		void PaintSoundtrackTitles (CG32bitImage &Dest);
+        inline bool ShowingSystemMap (void) const { return m_bShowingSystemMap; }
 
 	private:
 		CGameSettings &m_Settings;
@@ -138,6 +143,7 @@ class CGameSession : public IHISession
 		RECT m_rcScreen;					//	RECT of main screen within window.
 
         CHeadsUpDisplay m_HUD;              //  Paint the HUD
+        bool m_bShowingSystemMap;           //  If TRUE, show map
         CSystemMapDisplay m_SystemMap;      //  Helps to paint the system map
         CGalacticMapSession::SOptions m_GalacticMapSettings;
 		int m_iDamageFlash;					//	0 = no flash; odd = recover; even = flash;

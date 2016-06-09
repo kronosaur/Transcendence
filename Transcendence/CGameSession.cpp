@@ -50,7 +50,7 @@ void CGameSession::OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
     switch (g_pTrans->m_State)
         {
         case CTranscendenceWnd::gsInGame:
-            if (g_pTrans->m_bShowingMap)
+            if (m_bShowingSystemMap)
                 m_SystemMap.HandleMouseWheel(iDelta, x, y, dwFlags);
             break;
         }
@@ -71,7 +71,7 @@ void CGameSession::OnPlayerDestroyed (SDestroyCtx &Ctx, const CString &sEpitaph)
 	g_pTrans->m_CurrentPicker = CTranscendenceWnd::pickNone;
 	g_pTrans->m_CurrentMenu = CTranscendenceWnd::menuNone;
 	g_pTrans->m_bAutopilot = false;
-	g_pTrans->m_bShowingMap = false;
+	m_bShowingSystemMap = false;
 	if (g_pTrans->m_State == CTranscendenceWnd::gsDocked)
 		m_Model.GetPlayer()->Undock();
 
@@ -110,6 +110,16 @@ void CGameSession::OnPlayerDestroyed (SDestroyCtx &Ctx, const CString &sEpitaph)
 	DEBUG_CATCH
     }
     
+void CGameSession::OnPlayerEnteredStargate (CTopologyNode *pNode)
+
+//  OnPlayerEnteredStargate
+//
+//  Player entered the stargate
+
+    {
+    ShowSystemMap(false);
+    }
+
 void CGameSession::OnShowDockScreen (bool bShow)
 
 //  OnShowDockScreen
@@ -223,3 +233,21 @@ void CGameSession::PaintSoundtrackTitles (CG32bitImage &Dest)
 
 	PaintInfoText(Dest, pTrack->GetTitle(), Desc, true);
 	}
+
+void CGameSession::ShowSystemMap (bool bShow)
+
+//  ShowSystemMap
+//
+//  Shows or hides the system map.
+
+    {
+    if (m_bShowingSystemMap != bShow)
+        {
+        m_bShowingSystemMap = bShow;
+
+        if (m_bShowingSystemMap)
+            m_SystemMap.OnShowMap();
+        else
+            m_SystemMap.OnHideMap();
+        }
+    }

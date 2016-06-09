@@ -32,7 +32,6 @@ CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) 
 		m_pTC(pTC),
 		m_State(gsNone),
 		m_pCurrentScreen(NULL),
-		m_bShowingMap(false),
 		m_bDebugConsole(false),
 		m_bAutopilot(false),
 		m_dwIntroShipClass(0),
@@ -307,7 +306,6 @@ void CTranscendenceWnd::PlayerEnteredGate (CSystem *pSystem,
 
 	m_iCountdown = TICKS_BEFORE_GATE;
 	m_State = gsEnteringStargate;
-	m_bShowingMap = false;
 	m_bAutopilot = false;
 	}
 
@@ -576,10 +574,6 @@ ALERROR CTranscendenceWnd::StartGame (void)
 	const CString &sWelcome = g_pUniverse->GetCurrentAdventureDesc()->GetWelcomeMessage();
 	if (!sWelcome.IsBlank())
 		m_MessageDisplay.DisplayMessage(sWelcome, m_Fonts.rgbTitleColor);
-
-	//	Set map state
-
-	m_bShowingMap = false;
 
 	//	Set the state appropriately
 
