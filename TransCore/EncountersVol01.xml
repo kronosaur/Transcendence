@@ -4899,7 +4899,7 @@
 
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"debris, friendly, shipwreck"
+			attributes=			"debris, friendly, salvagers, shipwreck"
 			levelFrequency=		"ruurv ----- ----- ----- -----"
 			locationCriteria=	"--planetary"
 			>
