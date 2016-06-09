@@ -232,18 +232,18 @@
 
 <!-- RESOURCES -->
 
-	<Image UNID="&rsEI100XArmor;"		bitmap="Resources\ArmorHUD_EI100X.bmp" />
-	<Image UNID="&rsArmorHUDShip_EI500;"	bitmap="Resources\ArmorHUDShip_EI500.jpg" />
+	<Image UNID="&rsEI100XArmor;"		bitmap="Resources\ArmorHUD_EI100X.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsArmorHUDShip_EI500;"	bitmap="Resources\ArmorHUDShip_EI500.jpg" bitmask="Resources\ArmorHUDShip_EI500Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsEI100XLarge;"		bitmap="Resources\EI100XLarge.jpg"	bitmask="Resources\EI100XLargeMask.bmp" 	loadOnUse="true" />
 
-	<Image UNID="&rsWolfenArmor;"		bitmap="Resources\ArmorHUD_Wolfen.bmp" />
-	<Image UNID="&rsArmorHUDShip_Wolfen;"	bitmap="Resources\ArmorHUDShip_Wolfen.jpg" />
+	<Image UNID="&rsWolfenArmor;"		bitmap="Resources\ArmorHUD_Wolfen.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsArmorHUDShip_Wolfen;"	bitmap="Resources\ArmorHUDShip_Wolfen.jpg" bitmask="Resources\ArmorHUDShip_WolfenMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsWolfenLarge;"		bitmap="Resources\WolfenLarge.jpg"	bitmask="Resources\WolfenLargeMask.bmp" 	loadOnUse="true" />
 	
-	<Image UNID="&rsZubrinArmor;"		bitmap="Resources\ArmorHUD.bmp" />
-	<Image UNID="&rsArmorHUDShip_Sapphire;"	bitmap="Resources\ArmorHUDShip_Sapphire.jpg" />
+	<Image UNID="&rsZubrinArmor;"		bitmap="Resources\ArmorHUD.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsArmorHUDShip_Sapphire;"	bitmap="Resources\ArmorHUDShip_Sapphire.jpg" bitmask="Resources\ArmorHUDShip_SapphireMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsZubrinLarge;"		bitmap="Resources\ZubrinLarge.jpg"	bitmask="Resources\ZubrinLargeMask.bmp" 	loadOnUse="true" />
-	<Image UNID="&rsZubrinReactor;"		bitmap="Resources\ReactorDisplay.jpg"	bitmask="Resources\ReactorDisplayMask.bmp"/>
+	<Image UNID="&rsZubrinReactor;"		bitmap="Resources\ReactorDisplay.jpg"	bitmask="Resources\ReactorDisplayMask.bmp"  loadOnUse="true"/>
 	
 	<Image UNID="&rsSapphireYacht;"		bitmap="Resources\ShipsSapphireYacht.jpg" bitmask="Resources\ShipsSapphireYachtMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsWolfenGunship;"		bitmap="Resources\ShipsWolfenGunship.jpg" bitmask="Resources\ShipsWolfenGunshipMask.bmp" loadOnUse="true"/>
