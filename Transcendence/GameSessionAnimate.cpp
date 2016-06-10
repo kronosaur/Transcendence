@@ -152,6 +152,20 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
                         int yCenter = m_rcScreen.top + RectHeight(m_rcScreen) / 2;
                         iMouseAimAngle = ::IntVectorToPolar(xMouse - xCenter, yCenter - yMouse);
                         CPaintHelper::PaintArrow(Screen, xMouse, yMouse, iMouseAimAngle, g_pHI->GetVisuals().GetColor(colorTextHighlight));
+
+#ifdef DEBUG_MOUSE_AIM
+						const CIntegralRotationDesc &Desc = pShip->GetRotationDesc();
+						const CIntegralRotation &Rotation = pShip->GetRotationState();
+
+						CString sDebugText = strPatternSubst(CONSTLIT("Aim: %d\nRotation: %d"), iMouseAimAngle, (pShip ? pShip->GetRotation() : 0));
+						if (Rotation.GetManeuverToFace(Desc, iMouseAimAngle) == NoRotation && Absolute(AngleBearing(iMouseAimAngle, pShip->GetRotation())) > 6)
+							{
+							Rotation.GetManeuverToFace(Desc, iMouseAimAngle);
+							}
+
+						const CG16bitFont &DebugFont = m_HI.GetVisuals().GetFont(fontMedium);
+						CPaintHelper::PaintArrowText(Screen, xMouse, yMouse, iMouseAimAngle, sDebugText, DebugFont, g_pHI->GetVisuals().GetColor(colorTextHighlight));
+#endif
                         }
                     else
                         iMouseAimAngle = -1;

@@ -5,6 +5,10 @@
 #ifndef INCL_TRANSCENDENCE
 #define INCL_TRANSCENDENCE
 
+#ifdef DEBUG
+//#define DEBUG_MOUSE_AIM
+#endif
+
 #ifndef INCL_TSE
 #include "TSE.h"
 #endif
