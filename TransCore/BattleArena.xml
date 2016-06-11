@@ -2854,123 +2854,123 @@
 
 							<!-- Arms Quarter -->
 						
-							<Offset scale="pixel"				xOffset="500"	 yOffset="-1695">
+							<Offset scale="pixel"				xOffset="719"	 yOffset="-1709">
 								<Station type="&stArmorDealer;" noMapLabel="true">
 									<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 130)</OnCreate>
 								</Station>
 							</Offset>
 
-							<Offset scale="pixel"				xOffset="730"	 yOffset="-1650">
+							<Offset scale="pixel"				xOffset="1118"	 yOffset="-1556">
 								<Lookup table="ArmsQuarterStation"/>
 							</Offset>
 
-							<Offset scale="pixel"				xOffset="545"	 yOffset="-1970">
+							<Offset scale="pixel"				xOffset="389"	 yOffset="-2174">
 								<Lookup table="ArmsQuarterStation"/>
 							</Offset>
 
-							<Offset scale="pixel"				xOffset="800"	 yOffset="-1920">
+							<Offset scale="pixel"				xOffset="839"	 yOffset="-2075">
 								<Station type="&stArmsDealer;" noMapLabel="true">
 									<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 130)</OnCreate>
 								</Station>
 							</Offset>
 
-							<Offset scale="pixel"				xOffset="300"	 yOffset="-2010">
+							<Offset scale="pixel"				xOffset="1295"	 yOffset="-1934">
 								<Lookup table="ArmsQuarterStation"/>
 							</Offset>
 							
 							<!-- Corporate Quarter -->
 
-							<Offset scale="pixel"				xOffset="1140"		 yOffset="-1485">
+							<Offset scale="pixel"				xOffset="1592"		 yOffset="-1211">
 								<Station type="&stCorporateEnclave;" noMapLabel="true"/>
 							</Offset>
 
-							<Offset scale="pixel"				xOffset="1360"		 yOffset="-1350">
+							<Offset scale="pixel"				xOffset="1892"		 yOffset="-1523">
 								<Station type="&stCommonwealthDryDock;" noMapLabel="true"/>
 							</Offset>
 
-							<Offset scale="pixel"				xOffset="1290"		 yOffset="-1750">
+							<Offset scale="pixel"				xOffset="1790"		 yOffset="-839">
 								<Station type="&stInsuranceCompany;" noMapLabel="true"/>
 							</Offset>
 
-							<Offset scale="pixel"				xOffset="1520"		 yOffset="-1605">
+							<Offset scale="pixel"				xOffset="2177"		 yOffset="-1070">
 								<Station type="&stHotel;" noMapLabel="true"/>
 							</Offset>
 
 							<!-- Left Quarter -->
 							
-							<Offset scale="pixel"				xOffset="-500"	 yOffset="-1695">
+							<Offset scale="pixel"				xOffset="-719"	 yOffset="-1709">
 								<Lookup table="MiddleQuarterStation"/>
 							</Offset>
 
-							<Offset scale="pixel"				xOffset="-730"	 yOffset="-1650">
+							<Offset scale="pixel"				xOffset="-1118"	 yOffset="-1556">
 								<Lookup table="LowerQuarterStation"/>
 							</Offset>
 
-							<Offset scale="pixel"				xOffset="-545"	 yOffset="-1970">
+							<Offset scale="pixel"				xOffset="-389"	 yOffset="-2174">
 								<Lookup table="MiddleQuarterStation"/>
 							</Offset>
 
-							<Offset scale="pixel"				xOffset="-800"	 yOffset="-1920">
+							<Offset scale="pixel"				xOffset="-839"	 yOffset="-2075">
 								<Lookup table="LowerQuarterStation"/>
 							</Offset>
 
-							<Offset scale="pixel"				xOffset="-300"	 yOffset="-2010">
+							<Offset scale="pixel"				xOffset="-1295"	 yOffset="-1934">
 								<Lookup table="MiddleQuarterStation"/>
 							</Offset>
 							
 							<!-- Middle Quarter -->
 							
-							<Offset scale="pixel"				xOffset="-1140"		 yOffset="-1485">
+							<Offset scale="pixel"				xOffset="-1592"		 yOffset="-1211">
 								<Lookup table="MiddleQuarterStation"/>
 							</Offset>
 
-							<Offset scale="pixel"				xOffset="-1360"		 yOffset="-1350">
+							<Offset scale="pixel"				xOffset="-1892"		 yOffset="-1523">
 								<Lookup table="MiddleQuarterStation"/>
 							</Offset>
 
-							<Offset scale="pixel"				xOffset="-1290"		 yOffset="-1750">
+							<Offset scale="pixel"				xOffset="-1790"		 yOffset="-839">
 								<Lookup table="MiddleQuarterStation"/>
 							</Offset>
 
-							<Offset scale="pixel"				xOffset="-1520"		 yOffset="-1605">
+							<Offset scale="pixel"				xOffset="-2177"		 yOffset="-1070">
 								<Lookup table="MiddleQuarterStation"/>
 							</Offset>
 							
 							<!-- Lower Quarter -->
 							
-							<Offset scale="pixel"				xOffset="1750"	 yOffset="-610">
+							<Offset scale="pixel"				xOffset="362"	 yOffset="-2722">
 								<Lookup table="LowerQuarterStation"/>
 							</Offset>
 							
-							<Offset scale="pixel"				xOffset="1960"	 yOffset="-610">
+							<Offset scale="pixel"				xOffset="371"	 yOffset="-2983">
 								<Lookup table="LowerQuarterStation"/>
 							</Offset>
 							
-							<Offset scale="pixel"				xOffset="2170"	 yOffset="-610">
+							<Offset scale="pixel"				xOffset="386"	 yOffset="-3286">
 								<Lookup table="LowerQuarterStation"/>
 							</Offset>
 							
-							<Offset scale="pixel"				xOffset="1730"	 yOffset="-835">
+							<Offset scale="pixel"				xOffset="671"	 yOffset="-2698">
 								<Lookup table="LowerQuarterStation"/>
 							</Offset>
 							
-							<Offset scale="pixel"				xOffset="1935"	 yOffset="-885">
+							<Offset scale="pixel"				xOffset="716"	 yOffset="-2983">
 								<Lookup table="LowerQuarterStation"/>
 							</Offset>
 							
-							<Offset scale="pixel"				xOffset="2135"	 yOffset="-930">
+							<Offset scale="pixel"				xOffset="749"	 yOffset="-3274">
 								<Lookup table="LowerQuarterStation"/>
 							</Offset>
 							
-							<Offset scale="pixel"				xOffset="1650"	 yOffset="-1035">
+							<Offset scale="pixel"				xOffset="1097"	 yOffset="-2632">
 								<Lookup table="LowerQuarterStation"/>
 							</Offset>
 							
-							<Offset scale="pixel"				xOffset="1825"	 yOffset="-1130">
+							<Offset scale="pixel"				xOffset="1169"	 yOffset="-2881">
 								<Lookup table="LowerQuarterStation"/>
 							</Offset>
 							
-							<Offset scale="pixel"				xOffset="2030"	 yOffset="-1215">
+							<Offset scale="pixel"				xOffset="1235"	 yOffset="-3166">
 								<Lookup table="LowerQuarterStation"/>
 							</Offset>
 						</Offset>

@@ -1038,22 +1038,22 @@
 									</Primary>
 
 									<!-- Industrial Center -->
-									<Siblings arcInc="+20">
+									<Siblings arcInc="+22">
 										<Station type="&stCorporateEnclave;" name="Greenwich Industries" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Dry Dock -->
-									<Siblings arcInc="-20">
+									<Siblings arcInc="-22">
 										<Station type="&stCommonwealthDryDock;" name="Starton Dry Dock" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Metropolis Station -->
-									<Siblings radiusInc="+20">
+									<Siblings radiusInc="+22">
 										<Lookup table="MetropolisStation"/>
 									</Siblings>
 
 									<!-- Metropolis Station -->
-									<Siblings radiusInc="-20">
+									<Siblings radiusInc="-22">
 										<Lookup table="MetropolisStation"/>
 									</Siblings>
 
@@ -1069,74 +1069,74 @@
 									<!-- Metropolis Stations -->
 									<Table>
 										<Group chance="50">
-											<Siblings arcInc="+35">
+											<Siblings arcInc="+39">
 												<Station type="&stBeringStation;" noMapLabel="true"/>
 											</Siblings>
 
 											<!-- Metropolis Station -->
-											<Siblings arcInc="-35">
+											<Siblings arcInc="-39">
 												<Lookup table="MetropolisStation"/>
 											</Siblings>
 										</Group>
 
 										<Group chance="50">
-											<Siblings arcInc="+35">
+											<Siblings arcInc="+39">
 												<Lookup table="MetropolisStation"/>
 											</Siblings>
 
 											<!-- Metropolis Station -->
-											<Siblings arcInc="-35">
+											<Siblings arcInc="-39">
 												<Station type="&stBeringStation;" noMapLabel="true"/>
 											</Siblings>
 										</Group>
 									</Table>
 
 									<!-- Slums -->
-									<Siblings arcInc="+50">
+									<Siblings arcInc="+55">
 										<Station type="&stCommonwealthSlums;" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Slums -->
-									<Siblings arcInc="-50">
+									<Siblings arcInc="-55">
 										<Station type="&stCommonwealthSlums;" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Peripheral nav beacons -->
-									<Siblings arcInc="+62">
+									<Siblings arcInc="+68">
 										<Station type="&stNavBeacon;" imageVariant="0"/>
 									</Siblings>
 
-									<Siblings arcInc="-62">
+									<Siblings arcInc="-68">
 										<Station type="&stNavBeacon;" imageVariant="0"/>
 									</Siblings>
 
 									<!-- Slums -->
-									<Siblings arcInc="+75">
+									<Siblings arcInc="+82">
 										<Station type="&stCommonwealthSlums;" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Slums -->
-									<Siblings arcInc="-75">
+									<Siblings arcInc="-82">
 										<Station type="&stCommonwealthSlums;" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Container Habitat -->
-									<Siblings arcInc="100-110">
+									<Siblings arcInc="110-121">
 										<Station type="&stContainerHabitat;" name="Starton Residentials" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Container Habitat -->
-									<Siblings arcInc="-100--110">
+									<Siblings arcInc="-110--121">
 										<Station type="&stContainerHabitat;" name="Starton Residentials" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Container Habitat -->
-									<Siblings radiusInc="10-13" arcInc="10-13">
+									<Siblings radiusInc="11-14" arcInc="11-14">
 										<Station type="&stContainerHabitat;" name="Starton Residentials" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Container Habitat -->
-									<Siblings radiusInc="10-13" arcInc="-10--13">
+									<Siblings radiusInc="11-14" arcInc="-11--14">
 										<Station type="&stContainerHabitat;" name="Starton Residentials" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
