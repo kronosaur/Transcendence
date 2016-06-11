@@ -15,52 +15,47 @@
 	<StationType UNID="&stAgriculturalStation;"
 			name=				"Commonwealth agricultural colony"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
+			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated, primary"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
+				 
+			level=				"3"
+			size=				"390"
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"250"
+			multiHull=			"true"
+			regen=              "2"
+				 
 			canAttack=			"true"
 			noBlacklist=		"true"
-
-			multiHull=			"true"
-			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"100"
-			regen=              "0.4"
 			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated, primary"
-			levelFrequency=		"rrr-- ----- ----- ----- -----"
-			locationCriteria=	"-asteroids, +lifeZone"
 			>
 
-		<Names noArticle="true">Archer Colony; Buran Station; Chekov Colony; Dante Station;
-				Ent Arbor Station; Farmstar Station; Georg Station IV;
-				Horticult Colony; Ivanov Station VII; Jol Station;
-				Kiev Colony; Luhansk Station; Mykolayiv Prime; New Reni;
-				Odesa Agricultural; Petersburg Colony; Rancher Fields Colony;
-				Stasohrad Combine; Tree Defenders Station; Ukraine Collective;
-				Vostok Station; West Arbor Colony; Yern Station; Zimaril %1;
-				%s Collective; %s Colony; %s Alpha; %s Beta; %s Gamma</Names>
+		<!-- Encounter Info -->
 
-		<Image			imageID="&rsStations1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
+		<Encounter
+				levelFrequency=		"rrr-- ----- ----- ----- -----"
+				locationCriteria=	"-asteroids, +lifeZone"
+				enemyExclusionRadius="50"
+				/>
 
-		<Ships>
-			<Lookup count="1d4+2" table="&tbCommPrivateCrafts;"/>
-		</Ships>
+		<Names noArticle="true">
+			Archer Colony; Buran Station; Chekov Colony; Dante Station;
+			Ent Arbor Station; Farmstar Station; Georg Station IV;
+			Horticult Colony; Ivanov Station VII; Jol Station;
+			Kiev Colony; Luhansk Station; Mykolayiv Prime; New Reni;
+			Odesa Agricultural; Petersburg Colony; Rancher Fields Colony;
+			Stasohrad Combine; Tree Defenders Station; Ukraine Collective;
+			Vostok Station; West Arbor Colony; Yern Station; Zimaril %1;
+			%s Collective; %s Colony; %s Alpha; %s Beta; %s Gamma
+		</Names>
 
-		<Items>
-			<RandomItem count="10" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"2"
-					levelCurve=		"1"
-					/>
-
-			<Lookup count="1d12" table="&trStationSupplies;"/>
-			<Item	count="3d12" item="&itGradeBGrains;"/>
-			<Item	count="3d12" item="&itGradeAGrains;"/>
-			<Item	count="2d12" item="&itWhiteRice;"/>
-		</Items>
-
+		<!-- Trade and Items -->
+		
 		<Trade currency="credit" max="10000" replenish="500">
 			<Sell	criteria="*NU +Food; -Illegal; -Lux; -NotForSale;"		priceAdj="75"/>
 
@@ -77,144 +72,37 @@
 			<ReplaceArmor	criteria="a L:1-5;" priceAdj="100"/>
 		</Trade>
 
-		<InitialData>
-			<State>		"start"		</State>
-			<Declined>	0			</Declined>
-			<Wave>		0			</Wave>
-		</InitialData>
+		<Items>
+			<RandomItem count="10" 
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					level=			"2"
+					levelCurve=		"1"
+					/>
 
-		<StaticData>
-			<NPCService>
-				(	;	service					level	margin
-					(	'repairArmor			5		100		)
-					)
-			</NPCService>
+			<Lookup count="1d12" table="&trStationSupplies;"/>
+			<Item	count="3d12" item="&itGradeBGrains;"/>
+			<Item	count="3d12" item="&itGradeAGrains;"/>
+			<Item	count="2d12" item="&itWhiteRice;"/>
+		</Items>
+		
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Lookup count="1d4+2" table="&tbCommPrivateCrafts;"/>
+		</Ships>
 
-			<Reward>	5000		</Reward>
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsCommonwealthAgriculturalColony;" imageWidth="320" imageHeight="290" viewportRatio="0.05"/>
 
-			<WaveData>
-				(
-					("wave 1"
-						"\"The first wave will be mostly composed of light gunships, although there is a small chance that they'll include the more powerful Viking-class ships. Don't worry, you'll have no trouble.\""
-
-						(lambda (station)
-							(block Nil
-								(sysAddEncounterEventAtDist 0 station &etPirateAmbush1; 300)
-								(sysAddEncounterEventAtDist 30 station &etPirateAmbush2; 300)
-								)
-							)
-						)
-
-					("wave 2"
-						"\"If the pirates are following their usual strategy, the next wave should be a little larger, but will again be mostly gunships. Watch out for the leaders, though, they'll be using the heavy Viking gunships.\""
-
-						(lambda (station)
-							(block Nil
-								(sysAddEncounterEventAtDist 0 station &etPirateAmbush2; 300)
-								(sysAddEncounterEventAtDist 90 station &etPirateAmbush2; 300)
-								)
-							)
-						)
-
-					("wave 3"
-						"\"OK, this is it. If we can hold out through this last wave, they'll likely give up. Plan on heavy gunships with missiles.\""
-
-						(lambda (station)
-							(block Nil
-								(sysAddEncounterEventAtDist 0 station &etPirateAmbush3; 300)
-								(sysAddEncounterEventAtDist 300 station &etPirateAmbush3; 300)
-								)
-							)
-						)
-					)
-			</WaveData>
-		</StaticData>
-
-		<Events>
-			<GetGlobalAchievements>
-				(block (theList)
-					(if (gr (typGetGlobalData &stAgriculturalStation; "missionsAccepted") 0)
-						(setq theList (list
-							(list
-								"Agricultural colonies defended"
-								(intMissionAchievementString (typGetGlobalData &stAgriculturalStation; "missionsCompleted") (typGetGlobalData &stAgriculturalStation; "missionsFailed"))
-								"missions &amp; activities"
-								)
-							))
-						)
-						
-					theList
-					)
-			</GetGlobalAchievements>
-
-			<OnTimer>
-				(block Nil
-					; Create the encounter
-					(apply 
-						(eval 
-							(item 
-								(item (objGetStaticData gSource "WaveData") (objGetData gSource "Wave"))
-								2
-								)
-							)
-						gSource 
-						Nil
-						)
-
-					; Mark WaveReady so that we know that we've already created the encounter
-					(objSetData gSource "WaveReady" True)
-					)
-			</OnTimer>
-
-			<OnDestroy>
-				(block (looter pirate)
-					(intCommonwealthOnDestroy)
-
-					(if (eq (objGetData gSource "State") "in-progress")
-						(block Nil
-							; Create a transport to come and loot the remains
-							(setq looter 
-								(sysCreateShip 
-									&scCharonFrigateRaider;
-									(sysVectorPolarOffset gSource (random 0 359) 25)
-									&svPirates;
-									)
-								)
-
-							(shpOrderLoot looter gSource)
-							(shpOrderGate looter)
-
-							; Assign some of the pirates to defend the transports and the
-							; rest to attack the player
-
-							(enum (sysFindObject gSource "sAE N:300;") pirate
-								(block (class)
-									(setq class (objGetType pirate))
-									(if (or (eq class &scCorsair;)
-											(eq class &scViking;)
-											(eq class &scCorsair-II;))
-										(block Nil
-											(shpCancelOrders pirate)
-											(if (eq (random 1 4) 1)
-												(shpOrderEscort pirate looter)
-												(shpOrderAttack pirate gPlayerShip)
-												)
-											)
-										)
-									)
-								)
-
-							; Send out more pirates to attack the player
-							(sysAddEncounterEventAtDist 0 gPlayerShip &etPirateAmbush4; 50)
-							
-							; Mission failed
-							(typIncGlobalData &stAgriculturalStation; "missionsFailed")
-							)
-						)
-					)
-			</OnDestroy>
-		</Events>
-
+		<DockingPorts
+				portCount=		"10"
+				portRadius=		"175"
+				>
+		</DockingPorts>
+		
+		<!-- Dock Screens -->
+		
 		<DockScreens>
 			<Main>
 				<InitialPane>
@@ -437,21 +325,148 @@
 
 					</MissionStatus>
 				</Panes>
-
 			</Main>
-
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="90" />
-			<Port x="0"		y="-90" />
-			<Port x="60"	y="60" />
-			<Port x="60"	y="-60" />
-			<Port x="90"	y="0" />
-			<Port x="-90"	y="0" />
-			<Port x="-60"	y="60" />
-			<Port x="-60"	y="-60" />
-		</DockingPorts>
+		<!-- Events and Data -->
+		
+		<InitialData>
+			<State>		"start"		</State>
+			<Declined>	0			</Declined>
+			<Wave>		0			</Wave>
+		</InitialData>
+
+		<StaticData>
+			<NPCService>
+				(	;	service					level	margin
+					(	'repairArmor			5		100		)
+					)
+			</NPCService>
+
+			<Reward>	5000		</Reward>
+
+			<WaveData>
+				(
+					("wave 1"
+						"\"The first wave will be mostly composed of light gunships, although there is a small chance that they'll include the more powerful Viking-class ships. Don't worry, you'll have no trouble.\""
+
+						(lambda (station)
+							(block Nil
+								(sysAddEncounterEventAtDist 0 station &etPirateAmbush1; 300)
+								(sysAddEncounterEventAtDist 30 station &etPirateAmbush2; 300)
+								)
+							)
+						)
+
+					("wave 2"
+						"\"If the pirates are following their usual strategy, the next wave should be a little larger, but will again be mostly gunships. Watch out for the leaders, though, they'll be using the heavy Viking gunships.\""
+
+						(lambda (station)
+							(block Nil
+								(sysAddEncounterEventAtDist 0 station &etPirateAmbush2; 300)
+								(sysAddEncounterEventAtDist 90 station &etPirateAmbush2; 300)
+								)
+							)
+						)
+
+					("wave 3"
+						"\"OK, this is it. If we can hold out through this last wave, they'll likely give up. Plan on heavy gunships with missiles.\""
+
+						(lambda (station)
+							(block Nil
+								(sysAddEncounterEventAtDist 0 station &etPirateAmbush3; 300)
+								(sysAddEncounterEventAtDist 300 station &etPirateAmbush3; 300)
+								)
+							)
+						)
+					)
+			</WaveData>
+		</StaticData>
+
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList)
+					(if (gr (typGetGlobalData &stAgriculturalStation; "missionsAccepted") 0)
+						(setq theList (list
+							(list
+								"Agricultural colonies defended"
+								(intMissionAchievementString (typGetGlobalData &stAgriculturalStation; "missionsCompleted") (typGetGlobalData &stAgriculturalStation; "missionsFailed"))
+								"missions &amp; activities"
+								)
+							))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+
+			<OnTimer>
+				(block Nil
+					; Create the encounter
+					(apply 
+						(eval 
+							(item 
+								(item (objGetStaticData gSource "WaveData") (objGetData gSource "Wave"))
+								2
+								)
+							)
+						gSource 
+						Nil
+						)
+
+					; Mark WaveReady so that we know that we've already created the encounter
+					(objSetData gSource "WaveReady" True)
+					)
+			</OnTimer>
+
+			<OnDestroy>
+				(block (looter pirate)
+					(intCommonwealthOnDestroy)
+
+					(if (eq (objGetData gSource "State") "in-progress")
+						(block Nil
+							; Create a transport to come and loot the remains
+							(setq looter 
+								(sysCreateShip 
+									&scCharonFrigateRaider;
+									(sysVectorPolarOffset gSource (random 0 359) 25)
+									&svPirates;
+									)
+								)
+
+							(shpOrderLoot looter gSource)
+							(shpOrderGate looter)
+
+							; Assign some of the pirates to defend the transports and the
+							; rest to attack the player
+
+							(enum (sysFindObject gSource "sAE N:300;") pirate
+								(block (class)
+									(setq class (objGetType pirate))
+									(if (or (eq class &scCorsair;)
+											(eq class &scViking;)
+											(eq class &scCorsair-II;))
+										(block Nil
+											(shpCancelOrders pirate)
+											(if (eq (random 1 4) 1)
+												(shpOrderEscort pirate looter)
+												(shpOrderAttack pirate gPlayerShip)
+												)
+											)
+										)
+									)
+								)
+
+							; Send out more pirates to attack the player
+							(sysAddEncounterEventAtDist 0 gPlayerShip &etPirateAmbush4; 50)
+							
+							; Mission failed
+							(typIncGlobalData &stAgriculturalStation; "missionsFailed")
+							)
+						)
+					)
+			</OnDestroy>
+		</Events>
 
         <Language>
             <Text id="core.mapDesc">
@@ -460,4 +475,8 @@
         </Language>
 	</StationType>
 
+<!-- RESOURCES -->
+
+	<Image UNID="&rsCommonwealthAgriculturalColony;"		bitmap="Resources\CommonwealthAgriculturalColony.jpg" bitmask="Resources\CommonwealthAgriculturalColonyMask.bmp"  loadOnUse="true"/>
+	
 </TranscendenceModule>

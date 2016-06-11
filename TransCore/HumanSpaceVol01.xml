@@ -1581,6 +1581,10 @@
 	<!ENTITY rsCommonwealthMetropolisArmored	"0x00100082">
 	<!ENTITY it10MWReactor				"0x00100083">
 	<!ENTITY it15MWReactor				"0x00100084">
+	<!ENTITY rsCommonwealthColony		"0x00100085">
+	<!ENTITY rsCommonwealthResidentials	"0x00100086">
+	<!ENTITY rsCommonwealthAgriculturalColony	"0x00100087">
+	<!ENTITY rsCommonwealthMedicalColony	"0x00100088">
 	
 	<!-- 00A0-00BF ARES ORTHODOXY -->
 	
