@@ -121,43 +121,34 @@ PLAYER DATA
 	<StationType UNID="&stBlackMarketStation;"
 			name=				"Black Market station"
 			sovereign=			"&svBlackMarket;"
-			dockScreen=			"Main"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itBlastPlate;"
-			hitPoints=			"320"
-			regen=			    "1.6"
-			fireRateAdj=		"20"
-			explosionType=		"&vtBlastExplosion2;"
-			ejectaType=			"&vtWreckEjecta;"
+			inherit=			"&baBlackMarketStation;"
 
 			attributes=			"blackMarket, friendly, envEarth, envAvoidsAir, generic, human, majorStation, outlaws, populated"
-			levelFrequency=		"-uccu v---- ----- ----- -----"
-			locationCriteria=	"+planetary"
+				 
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+
+			armorID=			"&itBlastPlate;"
+			hitPoints=			"320"
+			multiHull=			"true"
+			regen=			    "1.6"
+			fireRateAdj=		"20"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtBlastExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
 			>
 
-		<Image			imageID="&rsStations3;" imageX="128" imageY="0" imageWidth="128" imageHeight="128"/>
+		<!-- Encounter Info -->
 
-		<Ships>
-			<Ship	count="1" class="&scMolotok;" orders="guard"/>
-			<Lookup count="1d3+1" table="&tbBlackMarketShips;"/>
-		</Ships>
+		<Encounter
+				levelFrequency=		"-uccu v---- ----- ----- -----"
+				locationCriteria=	"+planetary"
+				enemyExclusionRadius="50"
+				/>
 
-		<Reinforcements minShips="4">
-			<Table>
-				<Ship chance="50"	count="1" class="&scMolotok;" orders="guard"/>
-				<Lookup chance="50"	count="1d2"	table="&tbBlackMarketShips;"/>
-			</Table>
-		</Reinforcements>
-
-		<Devices>
-			<Device deviceID="&itSlamCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
-			<Device deviceID="&itSlamCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
-		</Devices>
-
+		<!-- Trade and Items -->
+		
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Sell	criteria="m +illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="100"/>
 			<Sell	criteria="m +military; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="100"/>
@@ -190,28 +181,45 @@ PLAYER DATA
 			<!--<Lookup count="1d4" table="&trMilitaryItem8;"/>-->
 		</Items>
 
-		<Events>
-			<OnBountyHunterCheck>
-				(if (objGetData gPlayerShip "blackMarketCrimeCost")
-					(block (bountyHunter)
-						(setq bountyHunter (sysCreateShip &scMolotok; (objGetNearestStargate gPlayerShip) &svBlackMarket;))
-						(shpOrderAttack bountyHunter gPlayerShip)
-						)
-					)
-			</OnBountyHunterCheck>
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itSlamCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
+			<Device deviceID="&itSlamCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
+		</Devices>
 
-			<OnCreate>
-				; Register timer event for bounty hunters
-				(sysAddObjRecurringTimerEvent (random 4000 5000) gSource "OnBountyHunterCheck")
-			</OnCreate>
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Ship	count="1" class="&scMolotok;" orders="guard"/>
+			<Lookup count="1d3+1" table="&tbBlackMarketShips;"/>
+		</Ships>
 
-			<OnDestroy>
-				(intBlackMarketOnDestroy 250000)
-			</OnDestroy>
-		</Events>
+		<Reinforcements minShips="4">
+			<Table>
+				<Ship chance="50"	count="1" class="&scMolotok;" orders="guard"/>
+				<Lookup chance="50"	count="1d2"	table="&tbBlackMarketShips;"/>
+			</Table>
+		</Reinforcements>
 
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsStations3;" imageX="128" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<DockingPorts>
+			<Port x="0"		y="90" />
+			<Port x="0"		y="-90" />
+			<Port x="60"	y="60" />
+			<Port x="60"	y="-60" />
+			<Port x="90"	y="0" />
+			<Port x="-90"	y="0" />
+			<Port x="-60"	y="60" />
+			<Port x="-60"	y="-60" />
+		</DockingPorts>
+		
+		<!-- Dock Screen -->
+		
 		<DockScreens>
-
 			<Main>
 				<Panes>
 					<Default
@@ -251,7 +259,6 @@ PLAYER DATA
 			</Main>
 
 			<Boss>
-
 				<InitialPane>
 					(switch
 						(ls (objGetData gPlayerShip "blackMarketLevel") 2)
@@ -488,21 +495,17 @@ PLAYER DATA
 					</UpgradeShieldsComplete>
 
 				</Panes>
-
 			</Boss>
-
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="90" />
-			<Port x="0"		y="-90" />
-			<Port x="60"	y="60" />
-			<Port x="60"	y="-60" />
-			<Port x="90"	y="0" />
-			<Port x="-90"	y="0" />
-			<Port x="-60"	y="60" />
-			<Port x="-60"	y="-60" />
-		</DockingPorts>
+		<!-- Events and Data -->
+		
+		<StaticData>
+			<Data id="blackMarket.deployBountyHunters">True</Data>
+			
+			<Data id="blackMarket.destroyPenalty">250000</Data>
+			<Data id="blackMarket.destroyBountyHunters">(random 1 3)</Data>
+		</StaticData>
 		
 		<Language>
 			<Text id="descNoInstall">
@@ -519,7 +522,6 @@ PLAYER DATA
                 "Refuels up to level 6 &mdash; Repairs/installs armor up to level 6 &mdash; Installs purchased devices up to level 6 &mdash; Buys and sells illegal and military items"
             </Text>
 		</Language>
-
 	</StationType>
 
 	<!-- Black Market Shipyard -->
@@ -527,44 +529,35 @@ PLAYER DATA
 	<StationType UNID="&stBlackMarketShipyard;"
 			name=				"Black Market shipyard"
 			sovereign=			"&svBlackMarket;"
+			inherit=			"&baBlackMarketStation;"
+				 
+			attributes=			"blackMarket, envEarth, majorStation, envAvoidsAir, friendly, generic, human, outlaws, populated"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			canAttack=			"true"
-
-			multiHull=			"true"
+				 
 			armorID=			"&itBlastPlate;"
 			hitPoints=			"1100"
+			multiHull=			"true"
 			regen=			    "11"
 			shipRepairRate=		"3"
 			fireRateAdj=		"20"
+				 
+			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"blackMarket, envEarth, majorStation, envAvoidsAir, friendly, generic, human, outlaws, populated"
-			levelFrequency=		"---uc crr-- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="50"
 			>
 
-		<Image			imageID="&rsStations5;" imageX="0" imageY="896" imageWidth="256" imageHeight="256"/>
+		<!-- Encounter Info -->
 
-		<Ships>
-			<Ship	count="2" class="&scMolotok;" orders="guard"/>
-			<Lookup count="1d3+1" table="&tbBlackMarketShips;"/>
-		</Ships>
+		<Encounter
+				levelFrequency=		"---uc crr-- ----- ----- -----"
+				locationCriteria=	"+planetary"
+				enemyExclusionRadius="50"
+				/>
 
-		<Reinforcements minShips="4">
-			<Table>
-				<Ship chance="50"	count="1" class="&scMolotok;" orders="guard"/>
-				<Lookup chance="50"	count="1d2"	table="&tbBlackMarketShips;"/>
-			</Table>
-		</Reinforcements>
-
-		<Devices>
-			<Device deviceID="&itSlamCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
-			<Device deviceID="&itSlamCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
-		</Devices>
-
+		<!-- Trade and Items -->
+		
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Sell	criteria="m +illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200"/>
 			<Sell	criteria="m +military; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200"/>
@@ -600,28 +593,49 @@ PLAYER DATA
 			<Lookup chance="50" count="1d4" table="&trMilitaryItem7;"/>
 		</Items>
 
-		<Events>
-			<OnBountyHunterCheck>
-				(if (objGetData gPlayerShip "blackMarketCrimeCost")
-					(block (bountyHunter)
-						(setq bountyHunter (sysCreateShip &scMolotok; (objGetNearestStargate gPlayerShip) &svBlackMarket;))
-						(shpOrderAttack bountyHunter gPlayerShip)
-						)
-					)
-			</OnBountyHunterCheck>
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itSlamCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
+			<Device deviceID="&itSlamCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
+		</Devices>
 
-			<OnCreate>
-				; Register timer event for bounty hunters
-				(sysAddObjRecurringTimerEvent (random 4000 5000) gSource "OnBountyHunterCheck")
-			</OnCreate>
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Ship	count="2" class="&scMolotok;" orders="guard"/>
+			<Lookup count="1d3+1" table="&tbBlackMarketShips;"/>
+		</Ships>
 
-			<OnDestroy>
-				(intBlackMarketOnDestroy 500000)
-			</OnDestroy>
-		</Events>
+		<Reinforcements minShips="4">
+			<Table>
+				<Ship chance="50"	count="1" class="&scMolotok;" orders="guard"/>
+				<Lookup chance="50"	count="1d2"	table="&tbBlackMarketShips;"/>
+			</Table>
+		</Reinforcements>
+
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsStations5;" imageX="0" imageY="896" imageWidth="256" imageHeight="256"/>
+
+		<DockingPorts>
+			<Port x="53"	y="146" />
+			<Port x="-92"	y="100" />
+			<Port x="-148"	y="-42" />
+			<Port x="-64"	y="-134" />
+			<Port x="108"	y="-116" />
+			<Port x="148"	y="5" />
+
+			<Port x="62"	y="43" />
+			<Port x="-19"	y="76" />
+			<Port x="-67"	y="12" />
+			<Port x="-72"	y="-60" />
+			<Port x="12"	y="-72" />
+		</DockingPorts>
+		
+		<!-- Dock Screens -->
 
 		<DockScreens>
-
 			<Main>
 				<Panes>
 					<Default
@@ -653,24 +667,17 @@ PLAYER DATA
 					</Default>
 				</Panes>
 			</Main>
-
 		</DockScreens>
+		
+		<!-- Events and Data -->
 
-		<DockingPorts>
-			<Port x="53"	y="146" />
-			<Port x="-92"	y="100" />
-			<Port x="-148"	y="-42" />
-			<Port x="-64"	y="-134" />
-			<Port x="108"	y="-116" />
-			<Port x="148"	y="5" />
-
-			<Port x="62"	y="43" />
-			<Port x="-19"	y="76" />
-			<Port x="-67"	y="12" />
-			<Port x="-72"	y="-60" />
-			<Port x="12"	y="-72" />
-		</DockingPorts>
-
+		<StaticData>
+			<Data id="blackMarket.deployBountyHunters">True</Data>
+			
+			<Data id="blackMarket.destroyPenalty">500000</Data>
+			<Data id="blackMarket.destroyBountyHunters">(random 1 5)</Data>
+		</StaticData>
+		
         <Language>
             <Text id="core.mapDesc">
                 "Refuels up to level 7 &mdash; Repairs/installs armor up to level 9 &mdash; Installs devices up to level 9 &mdash; Buys and sells illegal and military items"
@@ -683,24 +690,46 @@ PLAYER DATA
 	<StationType UNID="&stTempusLab;"
 			name=				"tempus lab"
 			sovereign=			"&svBlackMarket;"
+			inherit=			"&baBlackMarketStation;"
+				 
+			attributes=			"blackMarket, friendly, envAir, envAvoidsFire, generic, human, outlaws, populated"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"6"
-			canAttack=			"true"
-
-			multiHull=			"true"
+				 
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"250"
+			multiHull=			"true"
 			regen=			    "1.3"
+				 
+			canAttack=			"true"
 			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"blackMarket, friendly, envAir, envAvoidsFire, generic, human, outlaws, populated"
-			levelFrequency=		"rcuuu r---- ----- ----- -----"
-			locationCriteria=	"--planetary"
 			>
 
-		<Image			imageID="&rsStations2;" imageX="128" imageY="128" imageWidth="128" imageHeight="128"/>
+		<!-- Encounter Info -->
+
+		<Encounter
+				levelFrequency=		"rcuuu r---- ----- ----- -----"
+				locationCriteria=	"--planetary"
+				/>
+
+		<!-- Trade and Items -->
+		
+		<Trade currency="credit" max="50000" replenish="2500">
+			<Sell	criteria="*NU +Illegal; -ID"	priceAdj="75"/>
+		</Trade>
+
+		<Items>
+			<Lookup count="4d4"		table="&trIllegalItems1;"/>
+			<Item	count="16d12"	item="&itTempusSyrette;" />
+			<Item	count="6d12"	item="&itMartianNori;" />
+			<Item	count="8d12"	item="&itBooster;" />
+		</Items>
+
+		<!-- Configuration -->
+		
+		<!-- Ships and Defenses -->
 
 		<Ships>
 			<Ship	count="1" class="&scMolotok;" orders="guard"/>
@@ -714,23 +743,21 @@ PLAYER DATA
 			</Table>
 		</Reinforcements>
 
-		<Items>
-			<Lookup count="4d4"		table="&trIllegalItems1;"/>
-			<Item	count="16d12"	item="&itTempusSyrette;" />
-			<Item	count="6d12"	item="&itMartianNori;" />
-			<Item	count="8d12"	item="&itBooster;" />
-		</Items>
-
-		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="*NU +Illegal; -ID"	priceAdj="75"/>
-		</Trade>
-
-		<Events>
-			<OnDestroy>
-				(intBlackMarketOnDestroy 150000)
-			</OnDestroy>
-		</Events>
-
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsStations2;" imageX="128" imageY="128" imageWidth="128" imageHeight="128"/>
+		
+		<DockingPorts>
+			<Port x="50"	y="60" />
+			<Port x="-80"	y="20" />
+			<Port x="-80"	y="-20" />
+			<Port x="60"	y="-52" />
+			<Port x="20"	y="-80" />
+			<Port x="20"	y="80" />
+		</DockingPorts>
+		
+		<!-- Dock Screens -->
+		
 		<DockScreens>
 			<Main
 				name=			"Tempus Lab"
@@ -753,27 +780,24 @@ PLAYER DATA
 						</Actions>
 
 					</Default>
-
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="50"	y="60" />
-			<Port x="-80"	y="20" />
-			<Port x="-80"	y="-20" />
-			<Port x="60"	y="-52" />
-			<Port x="20"	y="-80" />
-			<Port x="20"	y="80" />
-		</DockingPorts>
+		<!-- Events and Data -->
 
+		<StaticData>
+			<Data id="blackMarket.destroyPenalty">150000</Data>
+		</StaticData>
+		
         <Language>
             <Text id="core.mapDesc">
                 "Sells illegal items"
             </Text>
         </Language>
 	</StationType>
+    
+<!-- CODE -->
 
 	<Globals>
 		(block Nil
@@ -871,10 +895,22 @@ PLAYER DATA
 								)
 							)
 						)
+                        
+                    ; If the player is not part of the Black Market, then she is 
+                    ; treated as an enemy.
+                    
+					(if (eq (objGetData gPlayerShip "blackMarketXP") 0)
+						(block Nil
+							(sovSetDisposition &svBlackMarket; &svPlayer; 'enemy)
+							(sovSetDisposition &svPlayer; &svBlackMarket; 'enemy)
+    						)
+	    				)
 					)
 				))
 			)
 	</Globals>
+    
+<!-- DOCK SCREENS -->
 
 	<!-- Black Market Promotion -->
 
@@ -1142,7 +1178,95 @@ PLAYER DATA
 			</OnGlobalUniverseCreated>
 		</Events>
 	</Sovereign>
+    
+    <!-- Bounty Hunters 
+        Based on code by JohnBWatson. Thank you! -->
 	
+    <Sovereign UNID="&svBlackMarketBountyHunter;"
+			name="Bounty Hunters"
+			alignment="neutral"
+			>
+
+		<Relationships>
+			<Relationship sovereign="&svBlackMarket;" disposition="friend" mutual="true"/>
+			<Relationship sovereign="&svOutlaw;" disposition="friend" mutual="true"/>
+			<Relationship sovereign="&svDeathDrugsCartel;" disposition="friend" mutual="true"/>
+			<Relationship sovereign="&svPlayer;" disposition="enemy" mutual="true"/>
+		</Relationships>
+	</Sovereign>
+    
+<!-- BASE CLASSES -->
+
+	<StationType unid="&baBlackMarketStation;"
+			name=			"(Black Market base class)"
+			virtual=		"true"
+			>
+		<Events>
+			<OnCreate>
+				(if (objGetStaticData gSource 'blackMarket.deployBountyHunters)
+					(block Nil
+						;	Register timer event for bounty hunters
+						
+						(sysAddObjRecurringTimerEvent (random 4000 5000) gSource 'OnBountyHunterCheck)
+						
+						;	While the station is alive, we have an infinite number of bounty hunters
+						;	left.
+						
+						(objSetData gSource 'molotoksRemaining -1)
+						)
+					)
+			</OnCreate>
+			
+			<OnDestroy>
+				(block Nil
+					
+					;	Destroy items on the station
+					
+					(rpgDestroyItems gSource)
+
+					;	Player is tracked
+					
+					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
+						(block Nil
+							(objIncData gPlayerShip "blackMarketCrimeCost" (objGetStaticData gSource 'blackMarket.destroyPenalty))
+							(if (objGetData gPlayerShip "blackMarketCrime")
+								(objSetData gPlayerShip "blackMarketCrime" "multiple offenses against the Sindikat")
+								(objSetData gPlayerShip "blackMarketCrime" (cat "the destruction of " (objGetName gSource 4)))
+								)
+							)
+						)
+                        
+                    ;	If the player is not part of the Black Market, then she is 
+                    ;	treated as an enemy.
+                    
+					(if (eq (objGetData gPlayerShip "blackMarketXP") 0)
+						(block Nil
+							(sovSetDisposition &svBlackMarket; &svPlayer; 'enemy)
+							(sovSetDisposition &svPlayer; &svBlackMarket; 'enemy)
+    						)
+	    				)
+						
+					;	After death, only a certain number of bounty hunters go 
+					;	after the player.
+					
+					(if (objGetStaticData gSource 'blackMarket.deployBountyHunters)
+						(objSetData gSource 'molotoksRemaining (eval (objGetStaticData gSource 'blackMarket.destroyBountyHunters)))
+						)
+					)
+			</OnDestroy>
+			
+			<OnBountyHunterCheck>
+					(if (and (objGetData gPlayerShip 'blackMarketCrimeCost) (!= (objGetData gSource 'molotoksRemaining) 0))
+						(block (bountyHunter)
+							(setq bountyHunter (sysCreateShip &scMolotok; (objGetNearestStargate gPlayerShip) &svBlackMarketBountyHunter;))
+							(shpOrderAttack bountyHunter gPlayerShip)
+							(objIncData gSource 'molotoksRemaining -1)
+							)
+						)	
+			</OnBountyHunterCheck>
+		</Events>
+    </StationType>
+
 <!-- TABLES -->
 
 	<!-- Black Market ships -->

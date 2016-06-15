@@ -1679,6 +1679,11 @@
 	
 	<!ENTITY itAmmoBoxXM900 			"0x001001F0">
     
+    <!-- 0200-020F BLACK MARKET -->
+    
+	<!ENTITY svBlackMarketBountyHunter	"0x00100200">
+    <!ENTITY baBlackMarketStation       "0x00100201">
+    
 	<!-- 1000-FFFF RESERVED -->
 	]>
 	
