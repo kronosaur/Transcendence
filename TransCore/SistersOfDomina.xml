@@ -289,13 +289,33 @@
 								(leq roll 40)
 									(block (
 										(stargateObj (sysGetStargateLeadingToCore))
+										systemMessage
 										)
 										
-										(if stargateObj
-											(block Nil
-												(scrSetData gScreen 'stargateID (objGetID stargateObj))
-												(scrShowPane gScreen "StargateRevealed")
-												)
+										(switch
+										
+											;	If we get a stargate result, then tell the player to
+											;	follow the stargate.
+											
+											stargateObj
+												(block Nil
+													(objSetKnown stargateObj)
+													(scrSetData gScreen 'stargateID (objGetID stargateObj))
+													(scrShowPane gScreen "StargateRevealed")
+													)
+													
+											;	Otherwise, see if the system has some text to explain where
+											;	to go. We need this for the Heretic system.
+											
+											(setq systemMessage (typTranslate (sysGetSystemType) 'sisters.dominaRevealStargate))
+												(block Nil
+													(scrSetData gScreen 'stargateID Nil)
+													(scrSetData gScreen 'stargateText systemMessage)
+													(scrShowPane gScreen "StargateRevealed")
+													)
+											
+											;	Otherwise, nothing
+											
 											(scrShowPane gScreen "Nothing")
 											)
 										)
@@ -334,7 +354,10 @@
 			
 			<StargateRevealed>
 				<OnPaneInit>
-					(scrSetDesc gScreen (typTranslate &dsSistersSanctum; "StargateRevealedDesc"))
+					(if (scrGetData gScreen 'stargateID)
+						(scrSetDesc gScreen (typTranslate &dsSistersSanctum; "StargateRevealedDesc"))
+						(scrSetDesc gScreen (scrGetData gScreen 'stargateText))
+						)
 				</OnPaneInit>
 				
 				<Actions>
@@ -1151,191 +1174,6 @@
 				</Actions>
 			</Default>
 		</Panes>
-	</DockScreen>
-
-	<!-- Contemplate Domina Screen
-	
-		NOTE: Deprecated in 1.3 (API 22)
-
-		gPrevScreen: Must be set to the name/UNID of the screen to
-				navigate to when done.
-		gPrevPane: Must be set to the name of the pane to navigate
-				to when done.
-		gBonus: Increases/decreases chance of getting through to domina.
-				-1 to -10	= decreases chance
-				0			= no bonus
-				1 to 10		= increases chance
-
-		-->
-
-	<DockScreen UNID="&dsContemplateDomina;">
-
-		<Panes>
-
-			<Default
-					desc="Luminous veils dance in your head as your consciousness strains to hear the distant voice of Domina's mind...">
-
-				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
-						(block (roll attitude contemplate)
-							; consume
-							(setq attitude (objGetData gPlayerShip "sistersAttitude"))
-							(setq contemplate Nil)
-							(if (gr attitude 0)
-								(block Nil
-									(setq attitude (subtract attitude 1))
-									(objSetData gPlayerShip "sistersAttitude" attitude)
-									(setq contemplate True)
-									)
-								)
-
-							; Random result
-							(setq roll (subtract (random 1 20) gBonus))
-							(if (gr gBonus 0)
-								(setq gBonus (subtract gBonus 1))
-								)
-
-							; If we listened to the story, we always get the stargate
-							(if (objGetData gSource "freeSanctum")
-								(block Nil
-									(if (eq (sysGetLevel) 1)
-										(block Nil
-											(setq contemplate True)
-											(setq roll 8)
-											)
-										)
-									(objSetData gSource "freeSanctum" Nil)
-									)
-								)
-
-							(switch
-								(not contemplate)
-									(scrShowPane gScreen "Nothing")
-
-								; Gain in relationship
-								(leq roll 2)
-									(block Nil
-										(domGainXP 10)
-										(if (eq (random 1 3) 1)
-											(domGainXP 10)
-											)
-										(scrShowPane gScreen "Domina")
-										)
-
-								; All stations in system mapped
-								(leq roll 4)
-									(block Nil
-										(enum (sysFindObject gPlayerShip "Ts -uncharted;") obj
-											(objSetKnown obj)
-											)
-										(scrShowPane gScreen "MapSystem")
-										)
-
-								; Outbound stargate revealed
-								(leq roll 8)
-									(block Nil
-										(setq gDest (sysGetObjectByName gSource "Outbound"))
-										(if (and gDest (not (objIsKnown gDest)))
-											(block Nil
-												(objSetKnown gDest)
-												(scrShowPane gScreen "RevealStargate")
-												)
-
-											(scrShowPane gScreen "Nothing")
-											)
-										)
-
-								(scrShowPane gScreen "Nothing")
-								)
-							)
-					</Action>
-				</Actions>
-
-			</Default>
-
-			<Domina
-					desc="Your disembodied mind hurtles through space in the wake of a photon. Stars dance around you like fireflies. Nebulous veils part before you to reveal a fragment of the Eternal Pattern.\n\nYou feel the blessing of Domina upon you. She urges you to continue your journey to the Galactic Core.">
-
-				<Actions>
-					<Action name="Continue Contemplating" default="1" key="C">
-						(if (gr (objGetData gPlayerShip "sistersAttitude") 0)
-							(scrShowPane gScreen "Default")
-							(scrShowPane gScreen "NoMoreContemplating")
-							)
-					</Action>
-
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
-					</Action>
-				</Actions>
-			</Domina>
-
-			<MapSystem
-					desc="Images and patterns dance in your head like spinning galaxies. You see with the eyes of Domina but the visions blast your brain like a nova.\n\nWhen you recover from your reverie you remember only some mundane information about the position of stations in this star system.">
-
-				<Actions>
-					<Action name="Continue Contemplating" default="1" key="C">
-						(if (gr (objGetData gPlayerShip "sistersAttitude") 0)
-							(scrShowPane gScreen "Default")
-							(scrShowPane gScreen "NoMoreContemplating")
-							)
-					</Action>
-
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
-					</Action>
-				</Actions>
-			</MapSystem>
-
-			<Nothing
-					desc="Your contemplation ends as your rational mind considers the impossibility of communicating across the light-years.">
-
-				<Actions>
-					<Action name="Continue Contemplating" default="1" key="C">
-						(if (gr (objGetData gPlayerShip "sistersAttitude") 0)
-							(scrShowPane gScreen "Default")
-							(scrShowPane gScreen "NoMoreContemplating")
-							)
-					</Action>
-
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
-					</Action>
-				</Actions>
-			</Nothing>
-
-			<RevealStargate>
-
-				<OnPaneInit>
-					(scrSetDesc gScreen (cat "A connection with Domina is denied to you, but your brief attempt points the way to your destiny's end.\n\nStep through the " (objGetName gDest) " to the next system and you will be one step nearer to your goal."))
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Continue Contemplating" default="1" key="C">
-						(if (gr (objGetData gPlayerShip "sistersAttitude") 0)
-							(scrShowPane gScreen "Default")
-							(scrShowPane gScreen "NoMoreContemplating")
-							)
-					</Action>
-
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
-					</Action>
-				</Actions>
-			</RevealStargate>
-
-			<NoMoreContemplating
-					desc=	"&quot;You must not abuse the kindness of Domina. You must give of yourself to receive her blessing.&quot;">
-
-				<Actions>
-					<Action name="Leave" default="1" cancel="1" key="L">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
-					</Action>
-				</Actions>
-			</NoMoreContemplating>
-
-		</Panes>
-
 	</DockScreen>
 
 <!-- SISTERS OF DOMINA

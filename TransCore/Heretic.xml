@@ -5796,6 +5796,52 @@
 			</OnObjJumpPosAdj>
 		</Events>
 
+		<Language>
+			<Text id="sisters.dominaRevealStargate">
+				(block (
+					(gateObj (sysFindObject gPlayerShip "tN +unid:&stHereticGate;;"))
+					)
+					(switch
+						(objGetProperty gateObj 'active)
+							(typTranslate &ssHeretic; 'descRevealHereticGateActive)
+							
+						(objIsKnown gateObj)
+							(typTranslate &ssHeretic; 'descRevealHereticGateInactive)
+
+						(block Nil
+							(objSetKnown gateObj)
+							(typTranslate &ssHeretic; 'descRevealHereticGateUnknown)
+							)
+						)
+					)
+			</Text>
+			
+			<Text id="descRevealHereticGateActive">
+				(cat
+					"A connection with Domina is denied to you, but your brief attempt "
+					"points the way to your destiny's end.\n\n"
+						
+					"A vision of the Heretic Gate appears in your mind, prompting feelings "
+					"of excitement mixed with dread."
+					)
+			</Text>
+			<Text id="descRevealHereticGateInactive">
+				(cat
+					"A connection with Domina is denied to you, but your brief attempt "
+					"reveals a future vision of the Heretic Gate.\n\n"
+						
+					"You see it pulsing with ancient energies and spinning up to full working order."
+					)
+			</Text>
+			<Text id="descRevealHereticGateUnknown">
+				(cat
+					"A connection with Domina is denied to you, but your brief attempt "
+					"points the way forward.\n\n"
+						
+					"You see an ancient stargate at the edge of the system, guarded by a crystalline monster."
+					)
+			</Text>
+		</Language>
 	</SystemType>
 
 	<!-- Globals -->

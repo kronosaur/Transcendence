@@ -626,6 +626,9 @@
 						(not corewardNode)
 							Nil
 							
+						(= (sysGetNode) corewardNode)
+							Nil
+							
 						(sysGetStargateLeadingToNode corewardNode)
 						)
 					)

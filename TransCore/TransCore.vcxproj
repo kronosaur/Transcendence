@@ -282,7 +282,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="StdSovereigns.xml" />
-    <None Include="StdSystems.xml" />
+    <None Include="StdSystems.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="StdTypes.xml">
       <SubType>Designer</SubType>
     </None>
