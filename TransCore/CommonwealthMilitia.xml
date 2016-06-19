@@ -275,34 +275,33 @@
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
+			attributes=			"commonwealth, commonwealthArmory, commonwealthCustoms, commonMilitary, fleetDelivery, friendly, generic, human, majorStation, primary, populated"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			canAttack=			"true"
-
-			multiHull=			"true"
+				 
+			size=				"450"
 			armorID=			"&itP120HexphaseArmor;"
 			hitPoints=			"840"
+			multiHull=			"true"
 			regen=              "8.4"
 			shipRepairRate=		"3"
+				 
+			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"commonwealth, commonwealthArmory, commonwealthCustoms, commonMilitary, fleetDelivery, friendly, generic, human, majorStation, primary, populated"
-			levelFrequency=		"---cc ur--- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="75"
 			>
 
-		<Image			imageID="&rsStations1;" imageX="256" imageY="0" imageWidth="224" imageHeight="224"/>
+		<!-- Encounter Info -->
 
-		<Ships>
-			<Lookup count="2d3+1" table="&tbCommEliteDefenders;"/>
-		</Ships>
+		<Encounter
+				levelFrequency=		"---cc ur--- ----- ----- -----"
+				locationCriteria=	"+planetary"
+				enemyExclusionRadius="75"
+				/>
 
-		<Reinforcements minShips="5">
-			<Lookup table="&tbCommEliteDefenders;"/>
-		</Reinforcements>
-
+		<!-- Trade and Items -->
+		
 		<Trade currency="credit" max="50000" replenish="2500">
 			<Sell	criteria="m +commonwealth; -illegal; -notForSale; -notStandard; L:3-8;" priceAdj="115" inventoryAdj="200" noDescription="true"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110" noDescription="true"/>
@@ -351,19 +350,402 @@
 			<Item				count="8d20"	item="&itXM900Missile;" />
 		</Items>
 
-		<DockingPorts>
-			<Port x="0"		y="100" />
-			<Port x="-80"	y="40" />
-			<Port x="80"	y="40" />
-			<Port x="-60"	y="-40" />
-			<Port x="60"	y="-40" />
+		<!-- Configuration -->
+		
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Lookup count="2d3+1" table="&tbCommEliteDefenders;"/>
+		</Ships>
 
-			<Port x="0"		y="-105" />
-			<Port x="-130"	y="-17" />
-			<Port x="130"	y="-17" />
-			<Port x="-70"	y="105" />
-			<Port x="70"	y="105" />
+		<Reinforcements minShips="5">
+			<Lookup table="&tbCommEliteDefenders;"/>
+		</Reinforcements>
+
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsCommonwealthMilitiaFortress;" imageWidth="322" imageHeight="300" viewportRatio="0.05875"/>
+		
+		<DockingPorts
+				portCount=		"10"
+				portRadius=		"185"
+				>
 		</DockingPorts>
+		
+		<!-- Dock Screen -->
+			
+		<DockScreens>
+			<Main>
+				<InitialPane>
+					(block (missionStatus)
+						(setq missionStatus (objGetData gSource "MissionStatus"))
+						(switch
+							(eq missionStatus "inprogress")
+								"MissionInProgress"
+
+							(eq missionStatus "failure")
+								"MissionFailure"
+
+							(eq missionStatus "success")
+								"MissionSuccess"
+
+							"Default"
+							)
+						)
+				</InitialPane>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(block (desc playerRank)
+								; Make sure playerRank variable is initialized
+								(setq playerRank (milInit))
+
+								; Set the greeting based on the player's rank
+								(setq desc "You are in the main hall of a Commonwealth Militia Fortress.")
+
+								(switch
+									(eq playerRank 1)
+										(setq desc (cat desc " Squadron captains rush through the hall reading mission briefings and weapons manifests."))
+
+									(eq playerRank 2)
+										(setq desc (cat desc " Squadron captains rush through the hall on various missions; several stop to say hello to you. You feel like you belong."))
+
+									(eq playerRank 3)
+										(setq desc (cat desc " Squadron captains rush through the hall on various missions, each one stops to salute you as you pass."))
+
+									(setq desc (cat desc " Squadron captains rush through the hall reading mission briefings and weapons manifests. You feel out of place here."))
+									)
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Command Center" default="1" key="C">
+								(if (milCanEnterCC)
+									(scrShowPane gScreen "CommandCenter")
+									(scrShowScreen gScreen &dsRPGMessage; { textID:'descNoCommandCenterAccess })
+									)
+							</Action>
+
+							<Action name="Officer's Club" key="O">
+								(if (gr (objGetData gPlayerShip "militiaRank") 0)
+									(scrShowPane gScreen "OfficersClub")
+									(scrShowScreen gScreen &dsRPGMessage; { textID:'descNoOfficersClubAccess })
+									)
+							</Action>
+
+							<Action name="Dock Services" key="D">
+								(if (gr (objGetData gPlayerShip "militiaRank") 0)
+									(rpgDockServices gPlayerShip {
+										checkMilitaryID: True
+										})
+									(scrShowScreen gScreen &dsRPGMessage; { textID:'descNoDockServicesAccess })
+									)
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+
+					</Default>
+
+					<CommandCenter
+							desc="You are in the command center surrounded by wall maps and scanner displays. The commanding officer of the fortress looks up from his charts and asks, &quot;Are you looking for a mission, captain?&quot;">
+
+						<Actions>
+							<Action name="&quot;Yes sir, I'm ready.&quot;" default="1" key="Y">
+								(block (playerRank)
+									(setq playerRank (objGetData gPlayerShip "militiaRank"))
+									(if (eq playerRank -1)
+										(scrShowPane gScreen "TooManyFailures")
+										(block Nil
+											(setq gPrevScreen "Main")
+											(setq gPrevPane "Default")
+											(setq gMissionTitle Nil)
+											(setq gMissionListName (cat "Missions" (objGetData gPlayerShip "militiaRank")))
+											(setq gMissionNoneText "\"Sorry, there are no missions currently available.\"")
+											(setq gMissionAcceptText "\"Good luck, captain!\"")
+											(setq gMissionDeclineText "\"Why don't you make yourself useful and get us some tea or something.\"")
+											(scrShowScreen gScreen "&dsMission;")
+											)
+										)
+									)
+							</Action>
+
+							<Action name="&quot;No sir, I'm just looking.&quot;" cancel="1" key="N">
+								<ShowPane pane="GetOut"/>
+							</Action>
+						</Actions>
+					</CommandCenter>
+
+					<GetOut
+							desc="&quot;Why don't you make yourself useful and get us some tea or something.&quot;">
+
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</GetOut>
+
+					<MissionFailure
+							desc="&quot;You screwed that mission all the way to Sol and back. You better hit the sims, pilot!&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block (success failure)
+									(objSetData gSource "MissionStatus" Nil)
+
+									(setq success (objGetData gPlayerShip "militiaSuccess"))
+									(setq failure (add (objGetData gPlayerShip "militiaFailure") 1))
+									(objSetData gPlayerShip "militiaFailure" failure)
+
+									; If the player ever ends up with 3 more failures than
+									; successes then he is booted.
+									(if (geq failure (add success 3))
+										(objSetData gPlayerShip "militiaRank" -1)
+										)
+
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</MissionFailure>
+
+					<MissionInProgress
+							desc="&quot;What is your major malfunction!? Get back out there and complete your mission!&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<Exit/>
+							</Action>
+						</Actions>
+					</MissionInProgress>
+
+					<MissionSuccess
+							desc="&quot;Good work, captain! That was an outstanding mission.&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block (promoted)
+									(objSetData gSource "MissionStatus" Nil)
+									
+									; Reset the bar encounter after a successful mission
+									(objSetData gSource "NextBarEncounter" Nil)
+
+									; If we're promoted, show the promotion screen. Otherwise,
+									; show default.
+									(if (milMissionSuccess)
+										(milShowPromotionScreen "Main")
+										(scrShowPane gScreen "Default")
+										)
+									)
+							</Action>
+						</Actions>
+					</MissionSuccess>
+
+					<TooManyFailures
+							desc="&quot;How about getting us a cup of tea or something? That's probably a mission you could handle.&quot;">
+
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</TooManyFailures>
+
+					<OfficersClub
+							desc=	"The Officer's Club is packed with pilots and other officers having a few drinks to pass away the off-duty hours.">
+
+						<Actions>
+							<Action name="Sit at the Bar" key="S" default="1">
+								(if (geq (plyGetCredits gPlayer) 5)
+									(block Nil
+										(plyCharge gPlayer 5)
+										(scrShowPane gScreen "BarEncounter")
+										)
+									(scrShowPane gScreen "NoMoney")
+									)
+							</Action>
+
+							<Action name="Leave" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</OfficersClub>
+
+					<BarEncounter>
+						<OnPaneInit>
+							(block (rank)
+								(setq rank (objGetData gPlayerShip "militiaRank"))
+								(setq gResult Nil)
+
+								(switch
+									; If the player is black-listed, then she is not welcome
+									(eq rank -1)
+										(scrSetDesc gScreen "You spend 5 credits on drinks, but everyone avoids you. You feel out of place here.")
+
+									; Make sure enough time passes between encounters
+									(and (objGetData gSource "NextBarEncounter")
+											(ls (unvGetTick) (objGetData gSource "NextBarEncounter")))
+										(scrSetDesc gScreen "You spend 5 credits on drinks, but there aren't too many people here that you want to talk to.")
+
+									; If the player is a major, there is a chance of a henchman
+									(and (eq rank 2) (leq (random 1 100) 60) (not (typGetGlobalData &scRoninJenna; "status")))
+										(block Nil
+											(scrSetDesc gScreen "A young woman in a flight-suit and Commonwealth insignia sits next to you: \"I've seen you in action out there&#x97;you're not too bad for an old-timer.\"")
+											(setq gResult "jenna")
+											)
+
+									; If the player is a colonel, then another chance for a henchman
+									(and (eq rank 3) 
+											(leq (random 1 100) 80) 
+											(not (typGetGlobalData &scCenturionRama; "status"))
+											(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+											)
+										(block Nil
+											(scrSetDesc gScreen "You talk to Rama, a silver-haired pilot who seems to be wearing blaster armor under his flight-suit. You trade stories about flying and fighting, but when you mention your journey to the Core, he grows quiet and stares off into space.")
+											(setq gResult "rama")
+											)
+
+									; Otherwise, we get rumors
+									(block Nil
+										(scrSetDesc gScreen (typTranslate &stCommonwealthFortress; 'Rumors))
+										(setq gResult "rumor")
+										)
+									)
+
+								; Set the time for the next encounter
+								(if gResult
+									(objSetData gSource "NextBarEncounter" (add (unvGetTick) (random 1500 2000)))
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(switch
+									(eq gResult "jenna")
+										(scrShowPane gScreen "Jenna")
+
+									(eq gResult "rama")
+										(scrShowPane gScreen "Rama")
+
+									(scrShowPane gScreen "OfficersClub")
+									)
+							</Action>
+						</Actions>
+					</BarEncounter>
+
+					<Jenna
+							desc="&quot;I'm a pretty good pilot myself. What do you think about you and me taking on the bad guys together?&quot;">
+
+						<Actions>
+							<Action name="&quot;OK, you can come along.&quot;" default="1" key="O">
+								<ShowPane pane="JennaOK"/>
+							</Action>
+
+							<Action name="&quot;Sorry, kid, I travel alone.&quot;" cancel="1" key="S">
+								<ShowPane pane="JennaSorry"/>
+							</Action>
+						</Actions>
+					</Jenna>
+
+					<JennaOK
+							desc="&quot;Awesome! You won't regret it, I promise!&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block (ship)
+									; Create the ship
+									(setq ship (sysCreateShip &scRoninJenna; gSource &svCommonwealth;))
+									(objFireEvent ship "OrderJoinPlayer")
+
+									(scrShowPane gScreen "OfficersClub")
+									)
+							</Action>
+						</Actions>
+					</JennaOK>
+
+					<JennaSorry
+							desc="&quot;Yeah, well, I didn't think it would work out either.&quot; She leaves you and starts to talk to another pilot at the bar.">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									; Can't encounter Jenna again
+									(typSetGlobalData &scRoninJenna; "status" 'declined)
+									
+									(scrShowPane gScreen "OfficersClub")
+									)
+							</Action>
+						</Actions>
+					</JennaSorry>
+
+					<Rama
+							desc="Rama talks about his ship instead: &quot;I've made a lot of modifications to her over the years. You should see her in a fight: fast and tight as a lightship, but heavily armed. She's saved my life a hundred times.&quot;">
+
+						<Actions>
+							<Action name="&quot;Why don't you travel with me to the Core?&quot;" default="1" key="C">
+								<ShowPane pane="RamaOK"/>
+							</Action>
+
+							<Action name="&quot;Well, nice talking with you. Bye.&quot;" cancel="1" key="B">
+								<ShowPane pane="RamaSorry"/>
+							</Action>
+						</Actions>
+					</Rama>
+
+					<RamaOK
+							desc="Rama pauses for a long time, and when he speaks it is in a whisper. &quot;When I became a man, I went to see a monk about my future. He told me that I was destined to die on a journey to the Core.&quot; And then, Rama laughs and dispatches the rest of his drink. &quot;But I no longer fear my destiny. I will go with you!&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block (ship)
+									; Create the ship
+									(setq ship (sysCreateShip &scCenturionRama; gSource &svCommonwealth;))
+									(objFireEvent ship "OrderJoinPlayer")
+
+									(scrShowPane gScreen "OfficersClub")
+									)
+							</Action>
+						</Actions>
+					</RamaOK>
+
+					<RamaSorry
+							desc="As you get up to leave, Rama grabs your arm and says, &quot;Perhaps we will see each other again.&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									; Can't encounter Rama again
+									(typSetGlobalData &scCenturionRama; "status" 'declined)
+
+									(scrShowPane gScreen "OfficersClub")
+									)
+							</Action>
+						</Actions>
+					</RamaSorry>
+
+					<NoMoney
+							desc=	"You sit at the bar, but you don't even have enough money to buy a drink. You feel out of place.">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<ShowPane pane="OfficersClub"/>
+							</Action>
+						</Actions>
+
+					</NoMoney>
+
+				</Panes>
+			</Main>
+
+		</DockScreens>
+
+		<!-- Events and Data -->
 
 		<StaticData>
 			<Missions0>
@@ -963,377 +1345,6 @@
 			</OnTimerConvoyAppears>
 		</Events>
 
-		<DockScreens>
-			<Main>
-				<InitialPane>
-					(block (missionStatus)
-						(setq missionStatus (objGetData gSource "MissionStatus"))
-						(switch
-							(eq missionStatus "inprogress")
-								"MissionInProgress"
-
-							(eq missionStatus "failure")
-								"MissionFailure"
-
-							(eq missionStatus "success")
-								"MissionSuccess"
-
-							"Default"
-							)
-						)
-				</InitialPane>
-
-				<Panes>
-					<Default>
-						<OnPaneInit>
-							(block (desc playerRank)
-								; Make sure playerRank variable is initialized
-								(setq playerRank (milInit))
-
-								; Set the greeting based on the player's rank
-								(setq desc "You are in the main hall of a Commonwealth Militia Fortress.")
-
-								(switch
-									(eq playerRank 1)
-										(setq desc (cat desc " Squadron captains rush through the hall reading mission briefings and weapons manifests."))
-
-									(eq playerRank 2)
-										(setq desc (cat desc " Squadron captains rush through the hall on various missions; several stop to say hello to you. You feel like you belong."))
-
-									(eq playerRank 3)
-										(setq desc (cat desc " Squadron captains rush through the hall on various missions, each one stops to salute you as you pass."))
-
-									(setq desc (cat desc " Squadron captains rush through the hall reading mission briefings and weapons manifests. You feel out of place here."))
-									)
-								(scrSetDesc gScreen desc)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Command Center" default="1" key="C">
-								(if (milCanEnterCC)
-									(scrShowPane gScreen "CommandCenter")
-									(scrShowScreen gScreen &dsRPGMessage; { textID:'descNoCommandCenterAccess })
-									)
-							</Action>
-
-							<Action name="Officer's Club" key="O">
-								(if (gr (objGetData gPlayerShip "militiaRank") 0)
-									(scrShowPane gScreen "OfficersClub")
-									(scrShowScreen gScreen &dsRPGMessage; { textID:'descNoOfficersClubAccess })
-									)
-							</Action>
-
-							<Action name="Dock Services" key="D">
-								(if (gr (objGetData gPlayerShip "militiaRank") 0)
-									(rpgDockServices gPlayerShip {
-										checkMilitaryID: True
-										})
-									(scrShowScreen gScreen &dsRPGMessage; { textID:'descNoDockServicesAccess })
-									)
-							</Action>
-
-							<Action name="Undock" cancel="1" key="U">
-								<Exit/>
-							</Action>
-						</Actions>
-
-					</Default>
-
-					<CommandCenter
-							desc="You are in the command center surrounded by wall maps and scanner displays. The commanding officer of the fortress looks up from his charts and asks, &quot;Are you looking for a mission, captain?&quot;">
-
-						<Actions>
-							<Action name="&quot;Yes sir, I'm ready.&quot;" default="1" key="Y">
-								(block (playerRank)
-									(setq playerRank (objGetData gPlayerShip "militiaRank"))
-									(if (eq playerRank -1)
-										(scrShowPane gScreen "TooManyFailures")
-										(block Nil
-											(setq gPrevScreen "Main")
-											(setq gPrevPane "Default")
-											(setq gMissionTitle Nil)
-											(setq gMissionListName (cat "Missions" (objGetData gPlayerShip "militiaRank")))
-											(setq gMissionNoneText "\"Sorry, there are no missions currently available.\"")
-											(setq gMissionAcceptText "\"Good luck, captain!\"")
-											(setq gMissionDeclineText "\"Why don't you make yourself useful and get us some tea or something.\"")
-											(scrShowScreen gScreen "&dsMission;")
-											)
-										)
-									)
-							</Action>
-
-							<Action name="&quot;No sir, I'm just looking.&quot;" cancel="1" key="N">
-								<ShowPane pane="GetOut"/>
-							</Action>
-						</Actions>
-					</CommandCenter>
-
-					<GetOut
-							desc="&quot;Why don't you make yourself useful and get us some tea or something.&quot;">
-
-						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</GetOut>
-
-					<MissionFailure
-							desc="&quot;You screwed that mission all the way to Sol and back. You better hit the sims, pilot!&quot;">
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block (success failure)
-									(objSetData gSource "MissionStatus" Nil)
-
-									(setq success (objGetData gPlayerShip "militiaSuccess"))
-									(setq failure (add (objGetData gPlayerShip "militiaFailure") 1))
-									(objSetData gPlayerShip "militiaFailure" failure)
-
-									; If the player ever ends up with 3 more failures than
-									; successes then he is booted.
-									(if (geq failure (add success 3))
-										(objSetData gPlayerShip "militiaRank" -1)
-										)
-
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</MissionFailure>
-
-					<MissionInProgress
-							desc="&quot;What is your major malfunction!? Get back out there and complete your mission!&quot;">
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								<Exit/>
-							</Action>
-						</Actions>
-					</MissionInProgress>
-
-					<MissionSuccess
-							desc="&quot;Good work, captain! That was an outstanding mission.&quot;">
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block (promoted)
-									(objSetData gSource "MissionStatus" Nil)
-									
-									; Reset the bar encounter after a successful mission
-									(objSetData gSource "NextBarEncounter" Nil)
-
-									; If we're promoted, show the promotion screen. Otherwise,
-									; show default.
-									(if (milMissionSuccess)
-										(milShowPromotionScreen "Main")
-										(scrShowPane gScreen "Default")
-										)
-									)
-							</Action>
-						</Actions>
-					</MissionSuccess>
-
-					<TooManyFailures
-							desc="&quot;How about getting us a cup of tea or something? That's probably a mission you could handle.&quot;">
-
-						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</TooManyFailures>
-
-					<OfficersClub
-							desc=	"The Officer's Club is packed with pilots and other officers having a few drinks to pass away the off-duty hours.">
-
-						<Actions>
-							<Action name="Sit at the Bar" key="S" default="1">
-								(if (geq (plyGetCredits gPlayer) 5)
-									(block Nil
-										(plyCharge gPlayer 5)
-										(scrShowPane gScreen "BarEncounter")
-										)
-									(scrShowPane gScreen "NoMoney")
-									)
-							</Action>
-
-							<Action name="Leave" cancel="1" key="L">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</OfficersClub>
-
-					<BarEncounter>
-						<OnPaneInit>
-							(block (rank)
-								(setq rank (objGetData gPlayerShip "militiaRank"))
-								(setq gResult Nil)
-
-								(switch
-									; If the player is black-listed, then she is not welcome
-									(eq rank -1)
-										(scrSetDesc gScreen "You spend 5 credits on drinks, but everyone avoids you. You feel out of place here.")
-
-									; Make sure enough time passes between encounters
-									(and (objGetData gSource "NextBarEncounter")
-											(ls (unvGetTick) (objGetData gSource "NextBarEncounter")))
-										(scrSetDesc gScreen "You spend 5 credits on drinks, but there aren't too many people here that you want to talk to.")
-
-									; If the player is a major, there is a chance of a henchman
-									(and (eq rank 2) (leq (random 1 100) 60) (not (typGetGlobalData &scRoninJenna; "status")))
-										(block Nil
-											(scrSetDesc gScreen "A young woman in a flight-suit and Commonwealth insignia sits next to you: \"I've seen you in action out there&#x97;you're not too bad for an old-timer.\"")
-											(setq gResult "jenna")
-											)
-
-									; If the player is a colonel, then another chance for a henchman
-									(and (eq rank 3) 
-											(leq (random 1 100) 80) 
-											(not (typGetGlobalData &scCenturionRama; "status"))
-											(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
-											)
-										(block Nil
-											(scrSetDesc gScreen "You talk to Rama, a silver-haired pilot who seems to be wearing blaster armor under his flight-suit. You trade stories about flying and fighting, but when you mention your journey to the Core, he grows quiet and stares off into space.")
-											(setq gResult "rama")
-											)
-
-									; Otherwise, we get rumors
-									(block Nil
-										(scrSetDesc gScreen (typTranslate &stCommonwealthFortress; 'Rumors))
-										(setq gResult "rumor")
-										)
-									)
-
-								; Set the time for the next encounter
-								(if gResult
-									(objSetData gSource "NextBarEncounter" (add (unvGetTick) (random 1500 2000)))
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
-								(switch
-									(eq gResult "jenna")
-										(scrShowPane gScreen "Jenna")
-
-									(eq gResult "rama")
-										(scrShowPane gScreen "Rama")
-
-									(scrShowPane gScreen "OfficersClub")
-									)
-							</Action>
-						</Actions>
-					</BarEncounter>
-
-					<Jenna
-							desc="&quot;I'm a pretty good pilot myself. What do you think about you and me taking on the bad guys together?&quot;">
-
-						<Actions>
-							<Action name="&quot;OK, you can come along.&quot;" default="1" key="O">
-								<ShowPane pane="JennaOK"/>
-							</Action>
-
-							<Action name="&quot;Sorry, kid, I travel alone.&quot;" cancel="1" key="S">
-								<ShowPane pane="JennaSorry"/>
-							</Action>
-						</Actions>
-					</Jenna>
-
-					<JennaOK
-							desc="&quot;Awesome! You won't regret it, I promise!&quot;">
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block (ship)
-									; Create the ship
-									(setq ship (sysCreateShip &scRoninJenna; gSource &svCommonwealth;))
-									(objFireEvent ship "OrderJoinPlayer")
-
-									(scrShowPane gScreen "OfficersClub")
-									)
-							</Action>
-						</Actions>
-					</JennaOK>
-
-					<JennaSorry
-							desc="&quot;Yeah, well, I didn't think it would work out either.&quot; She leaves you and starts to talk to another pilot at the bar.">
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									; Can't encounter Jenna again
-									(typSetGlobalData &scRoninJenna; "status" 'declined)
-									
-									(scrShowPane gScreen "OfficersClub")
-									)
-							</Action>
-						</Actions>
-					</JennaSorry>
-
-					<Rama
-							desc="Rama talks about his ship instead: &quot;I've made a lot of modifications to her over the years. You should see her in a fight: fast and tight as a lightship, but heavily armed. She's saved my life a hundred times.&quot;">
-
-						<Actions>
-							<Action name="&quot;Why don't you travel with me to the Core?&quot;" default="1" key="C">
-								<ShowPane pane="RamaOK"/>
-							</Action>
-
-							<Action name="&quot;Well, nice talking with you. Bye.&quot;" cancel="1" key="B">
-								<ShowPane pane="RamaSorry"/>
-							</Action>
-						</Actions>
-					</Rama>
-
-					<RamaOK
-							desc="Rama pauses for a long time, and when he speaks it is in a whisper. &quot;When I became a man, I went to see a monk about my future. He told me that I was destined to die on a journey to the Core.&quot; And then, Rama laughs and dispatches the rest of his drink. &quot;But I no longer fear my destiny. I will go with you!&quot;">
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block (ship)
-									; Create the ship
-									(setq ship (sysCreateShip &scCenturionRama; gSource &svCommonwealth;))
-									(objFireEvent ship "OrderJoinPlayer")
-
-									(scrShowPane gScreen "OfficersClub")
-									)
-							</Action>
-						</Actions>
-					</RamaOK>
-
-					<RamaSorry
-							desc="As you get up to leave, Rama grabs your arm and says, &quot;Perhaps we will see each other again.&quot;">
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									; Can't encounter Rama again
-									(typSetGlobalData &scCenturionRama; "status" 'declined)
-
-									(scrShowPane gScreen "OfficersClub")
-									)
-							</Action>
-						</Actions>
-					</RamaSorry>
-
-					<NoMoney
-							desc=	"You sit at the bar, but you don't even have enough money to buy a drink. You feel out of place.">
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								<ShowPane pane="OfficersClub"/>
-							</Action>
-						</Actions>
-
-					</NoMoney>
-
-				</Panes>
-			</Main>
-
-		</DockScreens>
-
 		<Language>
 			<Text id="Rumors">
 				(random (list
@@ -1600,4 +1611,8 @@
 			)
 	</Globals>
 
+<!-- RESOURCES -->
+
+	<Image UNID="&rsCommonwealthMilitiaFortress;"			bitmap="Resources\CommonwealthMilitiaFortress.jpg" bitmask="Resources\CommonwealthMilitiaFortressMask.bmp" loadOnUse="true"/>
+	
 </TranscendenceModule>

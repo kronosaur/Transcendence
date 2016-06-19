@@ -1585,6 +1585,7 @@
 	<!ENTITY rsCommonwealthResidentials	"0x00100086">
 	<!ENTITY rsCommonwealthAgriculturalColony	"0x00100087">
 	<!ENTITY rsCommonwealthMedicalColony	"0x00100088">
+	<!ENTITY rsCommonwealthMilitiaFortress	"0x00100089">
 	
 	<!-- 00A0-00BF ARES ORTHODOXY -->
 	
