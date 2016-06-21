@@ -1137,7 +1137,7 @@ void CPlayerShipController::OnDeviceEnabledDisabled (int iDev, bool bEnable, boo
 		}
 	}
 
-void CPlayerShipController::OnDeviceStatus (CInstalledDevice *pDev, int iEvent)
+void CPlayerShipController::OnDeviceStatus (CInstalledDevice *pDev, CDeviceClass::DeviceNotificationTypes iEvent)
 
 //	OnDeviceStatus
 //
