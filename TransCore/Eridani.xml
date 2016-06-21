@@ -406,7 +406,7 @@
 
 						<Actions>
 							<Action name="Accept" key="A" default="1">
-								(block (arcoVaughn target)
+								(block (arcoVaughn target launcherItem missileTypes bestType)
 									; Track Arco Vaughn
 									(setq arcoVaughn (sysFindObject gSource "sN +arcoVaughn;"))
 									(objSetObjRefData gSource "target" arcoVaughn)
@@ -421,9 +421,39 @@
 									(shpCancelOrders gPlayerShip)
 									(shpOrder gPlayerShip 'attack target)
 
-									; Give the player some KM500 missiles
-									(if (objGetItems gPlayerShip "lI -Disposable;")
-										(setq gItem (itmCreate &itKM500Missile; (random 32 48)))
+									; Give the player some appropriate missiles
+									(switch
+										;	If we don't have a launcher, give a missile rack
+										(not (setq launcherItem (@ (objGetItems gPlayerShip "lI -Disposable;") 0)))
+											(setq gItem (itmCreate &itDM1500MissileRack; 1))
+											
+										;	Find all compatible missiles for this launcher
+										(not (setq missileTypes (itmGetTypes (cat "M +launchedBy:" (itmGetType launcherItem) ";"))))
+											(setq gItem (itmCreate &itDM1500MissileRack; 1))
+										
+										;	Find a tracking missile of level 3 or less.
+										(setq bestType
+												(map missileTypes (list 'reduceMax 'original 'excludeNil) theType 
+													(if (and (itmGetProperty theType 'tracking)
+															(leq (itmGetLevel theType) 3)
+															)
+														(itmGetLevel theType)
+														)
+													)
+												)
+											(setq gItem (itmCreate bestType (random 32 48)))
+											
+										;	Otherwise, any missile of level 5 or less.
+										(setq bestType
+												(map missileTypes (list 'reduceMax 'original 'excludeNil) theType 
+													(if (leq (itmGetLevel theType) 5)
+														(itmGetLevel theType)
+														)
+													)
+												)
+											(setq gItem (itmCreate bestType (random 32 48)))
+											
+										;	Otherwise, default to a missile rack
 										(setq gItem (itmCreate &itDM1500MissileRack; 1))
 										)
 									(objAddItem gPlayerShip gItem)
