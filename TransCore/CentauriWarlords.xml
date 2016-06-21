@@ -198,24 +198,31 @@
 
 		<Devices>
 			<Table>
-				<Device chance="25"	deviceID="&itCentauriCLAW;"/>
-				<Device chance="25"	deviceID="&itCentauriHeavyCLAW;"/>
+				<Group chance="25">
+					<Device deviceID="&itCentauriCLAW;"/>
+					<Device deviceID="&itAClassDefenseScreen;"/>
+				</Group>
+				<Group chance="25">
+					<Device deviceID="&itCentauriHeavyCLAW;"/>
+					<Device deviceID="&itAClassDefenseScreen;"/>
+				</Group>
 				<Group chance="25">
 					<Device deviceID="&itDualRecoillessCannon;"	enhanced="100"/>
 					<Device deviceID="&itClass2Deflector;"/>
 				</Group>
 				<Group chance="25">
-					<Device deviceID="&itDualRecoillessCannon;"	enhanced="100"/>
-					<Device deviceID="&itNAMIMissileLauncher;">
-						<Items>
-							<Table>
-								<Item chance="50" count="40-60"  item="&itFragmentationMissile;"/>
-								<Item chance="50" count="40-60"  item="&itKM500Missile;"/>
-							</Table>
-						</Items>
-					</Device>
+					<Device deviceID="&itDualLaserCannon;"	enhanced="100"/>
+					<Device deviceID="&itClass2Deflector;"/>
 				</Group>
 			</Table>
+			<Device deviceID="&itNAMIMissileLauncher;">
+				<Items>
+					<Table>
+						<Item chance="50" count="10-20"  item="&itFragmentationMissile;"/>
+						<Item chance="50" count="10-20"  item="&itKM100Missile;"/>
+					</Table>
+				</Items>
+			</Device>
 		</Devices>
 
 		<Maneuver
