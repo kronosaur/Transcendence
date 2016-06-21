@@ -395,7 +395,7 @@
 						)
 					)
 				))
-			
+				
 			(setq rpgCalcDockServiceRefuelAction (lambda (dockObj shipObj options)
 				(block (
 					(currencyUsed (objGetDefaultCurrency dockObj))
@@ -1121,6 +1121,75 @@
 					)
 				))
 				
+			(setq rpgCalcReactorRefuelAction (lambda (dockObj shipObj theItem options)
+				(block (
+					fuelItems
+					bestFuel
+					)
+					
+					(switch
+						;	If not a reactor, then this doesn't apply
+						
+						(not (itmMatches theItem "rI"))
+							{
+								visible: Nil
+								}
+								
+						;	If not the player ship, then we call the normal refuel code
+						
+						(!= dockObj shipObj)
+							(rpgCalcDockServiceRefuelAction dockObj shipObj {})
+							
+						;	If the player has no fuel items, then we can't refuel
+						
+						(not (setq fuelItems (objGetItems shipObj "f")))
+							{
+								visible: True
+								enabled: Nil
+								desc: (or (scrTranslate gScreen "actionRefuel:noFuelInCargo")
+										(typTranslate &dsRPGDockServicesBase; "actionRefuel:noFuelInCargo")
+										)
+								}
+								
+						;	If none of the fuel items are compatible, then we can't refuel.
+
+						(not (setq bestFuel (map fuelItems (list 'original 'reduceMin 'excludeNil) theFuel
+								(if (shpIsFuelCompatible shipObj theFuel)
+									(itmGetProperty theFuel 'fuelCapacity)
+									)
+								)))
+							{
+								visible: True
+								enabled: Nil
+								desc: (or (scrTranslate gScreen "actionRefuel:noCompatibleFuelInCargo")
+										(typTranslate &dsRPGDockServicesBase; "actionRefuel:noCompatibleFuelInCargo")
+										)
+								}
+								
+						;	If we're already full, no need for fuel
+						
+						(= (shpGetFuelNeeded shipObj bestFuel) 0)
+							{
+								visible: True
+								enabled: Nil
+								desc: (or (scrTranslate gScreen "actionRefuel:noFuelNeeded")
+										(typTranslate &dsRPGDockServicesBase; "actionRefuel:noFuelNeeded")
+										)
+								}
+								
+						;	Otherwise, we can refuel from cargo
+						
+						{
+							visible: True
+							enabled: True
+							desc: (or (scrTranslate gScreen "actionRefuel:refuelFromCargo")
+									(typTranslate &dsRPGDockServicesBase; "actionRefuel:refuelFromCargo")
+									)
+							}
+						)
+					)
+				))
+			
 			(setq rpgCalcSellPrice (lambda (thisItem)
 				(objGetSellPrice gSource thisItem)
 				))

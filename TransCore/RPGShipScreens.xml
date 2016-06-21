@@ -276,7 +276,7 @@
 
 									(if (plyGetRedirectMessage gPlayer)
 										(scrShowPane gScreen "RefuelMessage")
-										(scrShowScreen gScreen "&dsShipInterior;")
+										(scrExitScreen gScreen)
 										)
 									)
 								)
@@ -319,7 +319,7 @@
 
 								(if (plyGetRedirectMessage gPlayer)
 									(scrShowPane gScreen "RefuelMessage")
-									(scrShowScreen gScreen "&dsShipInterior;")
+									(scrExitScreen gScreen)
 									)
 								)
 							)
@@ -338,7 +338,7 @@
 
 				<Actions>
 					<Action name="Continue" default="1" cancel="1" key="C">
-						<Navigate screen="&dsShipInterior;"/>
+						<Exit/>
 					</Action>
 				</Actions>
 			</RefuelMessage>
@@ -373,7 +373,7 @@
 
 									(if (plyGetRedirectMessage gPlayer)
 										(scrShowPane gScreen "RefuelMessage")
-										(scrShowScreen gScreen "&dsShipInterior;")
+										(scrExitScreen gScreen)
 										)
 									)
 								)

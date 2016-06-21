@@ -446,6 +446,18 @@
 									
 									(scrSetData gScreen 'deviceSelected { installPos:(itmGetInstallPos theItem) })
 									
+									;	Refuel action
+									
+									(setq actionStatus (rpgCalcReactorRefuelAction gSource theShip theItem categoryDesc))
+									(scrShowAction gScreen 'actionRefuel (@ actionStatus 'visible))
+									(scrEnableAction gScreen 'actionRefuel (@ actionStatus 'enabled))
+									(scrSetActionDesc gScreen 'actionRefuel (@ actionStatus 'desc))
+									(scrSetData gScreen 'fuelCost (@ actionStatus 'cost))
+									(scrSetData gScreen 'fuelItem (@ actionStatus 'fuelItem))
+									(scrSetData gScreen 'fuelMax (@ actionStatus 'maxCount))
+									(scrSetData gScreen 'fuelNeeded (@ actionStatus 'maxNeeded))
+									(scrSetData gScreen 'fuelAfford (@ actionStatus 'maxAfford))
+									
 									;	Upgrade action
 									
 									(setq actionStatus (rpgCalcDockServiceUpgradeAction gSource theShip theItem categoryDesc))
@@ -514,6 +526,7 @@
 								(scrSetActionDesc gScreen 'actionInstall (@ actionStatus 'desc))
 								
 								(scrShowAction gScreen 'actionRemove Nil)
+								(scrShowAction gScreen 'actionRefuel Nil)
 								(scrShowAction gScreen 'actionReplace Nil)
 								)
 							)
@@ -535,6 +548,28 @@
 				</Controls>
 
 				<Actions>
+					<Action id="actionRefuel">
+						(switch
+							;	If refueling from cargo, bring up the screen
+							
+							(= gSource gPlayerShip)
+								(scrShowScreen gScreen &dsManualRefuel;)
+								
+							;	If free fuel, refuel now
+							
+							(= (scrGetData gScreen 'fuelCost) 0)
+								(block Nil
+									(setq itemsToUse (itmCreate (itmGetType (scrGetData gScreen 'fuelItem)) (scrGetData gScreen 'fuelNeeded)))
+									(shpRefuelFromItem gPlayerShip itemsToUse)
+									(scrRefreshScreen gScreen)
+									)
+									
+							;	Otherwise, purchase fuel
+								
+							(scrShowPane gScreen "RefuelShip")
+							)
+					</Action>
+					
 					<Action id="actionUpgrade">
 						(block Nil
 							(if (not (scrGetItem gScreen))
@@ -651,6 +686,7 @@
 			<Text id="actionManageArmor">"[PageUp] Armor and Shields"</Text>
 			<Text id="actionManageWeapons">"[PageUp] Weapons"</Text>
 			<Text id="actionRemove">"Remo[v]e"</Text>
+			<Text id="actionRefuel">"[R]efuel"</Text>
 			<Text id="actionReplace">"Re[p]lace"</Text>
 			<Text id="actionUpgrade">"Buy [U]pgrade"</Text>
 			
@@ -1646,6 +1682,15 @@
 			</Text>
 			<Text id="actionRefuel:refuel">
 				(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x00) ".")
+			</Text>
+			<Text id="actionRefuel:noFuelInCargo">
+				"You do not have any fuel on board your ship."
+			</Text>
+			<Text id="actionRefuel:noCompatibleFuelInCargo">
+				"You do not have any compatible fuel on board your ship."
+			</Text>
+			<Text id="actionRefuel:refuelFromCargo">
+				"You have fuel compatible with this reactor."
 			</Text>
 				
 			<Text id="actionRemove:cannotAfford">
