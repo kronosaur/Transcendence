@@ -321,7 +321,6 @@ DWORD CTranscendenceWnd::GetCommsStatus (void)
 		CSpaceObject *pObj = pSystem->GetObject(i);
 
 		if (pObj 
-				&& !pObj->IsInactive()
 				&& pObj != pShip)
 			dwStatus |= pShip->Communicate(pObj, msgQueryCommunications);
 		}
@@ -334,7 +333,6 @@ DWORD CTranscendenceWnd::GetCommsStatus (void)
 
 		if (pObj 
 				&& pObj->CanCommunicateWith(pShip)
-				&& !pObj->IsInactive()
 				&& pObj != pShip)
 			{
 			int iIndex;
@@ -699,7 +697,6 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 
 			if (pObj 
 					&& pObj->CanCommunicateWith(pShip)
-					&& !pObj->IsInactive()
 					&& pObj->GetEscortPrincipal() == pShip
 					&& pObj != pShip)
 				{
@@ -731,7 +728,6 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 
 			if (pObj 
 					&& pObj->CanCommunicateWith(pShip)
-					&& !pObj->IsInactive()
 					&& pObj->GetEscortPrincipal() != pShip
 					&& pObj != pShip)
 				{

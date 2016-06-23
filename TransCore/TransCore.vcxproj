@@ -348,8 +348,12 @@
     <None Include="RPGAutons.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="RPGAuxDevices.xml" />
-    <None Include="RPGBehaviors.xml" />
+    <None Include="RPGAuxDevices.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="RPGBehaviors.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="RPGCharacters.xml">
       <SubType>Designer</SubType>
     </None>

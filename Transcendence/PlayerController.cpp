@@ -436,8 +436,7 @@ CSpaceObject *CPlayerShipController::FindDockTarget (void)
 
 		if (pObj 
 				&& pObj->SupportsDocking(true)
-				&& !pObj->IsInactive()
-				&& !pObj->IsDestroyed()
+				&& !pObj->IsIntangible()
 				&& pObj != m_pShip)
 			{
 			CVector vDist = pObj->GetPos() - m_pShip->GetPos();
@@ -499,8 +498,7 @@ void CPlayerShipController::Gate (void)
 
 		if (pObj 
 				&& pObj->SupportsGating()
-				&& !pObj->IsInactive()
-				&& !pObj->IsDestroyed()
+				&& !pObj->IsIntangible()
 				&& pObj != m_pShip)
 			{
 			CVector vDist = pObj->GetPos() - m_pShip->GetPos();
@@ -602,7 +600,6 @@ DWORD CPlayerShipController::GetCommsStatus (void)
 		CSpaceObject *pObj = pSystem->GetObject(i);
 
 		if (pObj 
-				&& !pObj->IsInactive()
 				&& !pObj->IsDestroyed()
 				&& pObj != m_pShip)
 			dwStatus |= m_pShip->Communicate(pObj, msgQueryCommunications);
@@ -711,8 +708,6 @@ bool CPlayerShipController::HasCommsTarget (void)
 
 		if (pObj 
 				&& pObj->CanCommunicateWith(m_pShip)
-				&& !pObj->IsInactive()
-				&& !pObj->IsDestroyed()
 				&& pObj != m_pShip)
 			return true;
 		}
@@ -736,8 +731,6 @@ bool CPlayerShipController::HasFleet (void)
 
 		if (pObj 
 				&& (m_pShip->Communicate(pObj, msgQueryFleetStatus, m_pShip) == resAck)
-				&& !pObj->IsInactive()
-				&& !pObj->IsDestroyed()
 				&& pObj != m_pShip)
 			return true;
 		}

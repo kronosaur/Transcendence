@@ -183,8 +183,7 @@ void CIntroSession::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereign, C
 				&& pObj->GetCategory() == CSpaceObject::catShip
 				&& !pObj->IsDestroyed()
 				&& pObj != pShipDestroyed
-				&& !pObj->IsInactive()
-				&& !pObj->IsVirtual()
+				&& !pObj->IsIntangible()
 				&& !pObj->GetData(CONSTLIT("IntroController")).IsBlank())
 			{
 			if (pObj->GetSovereign() == pSovereign1)
@@ -226,8 +225,7 @@ void CIntroSession::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereign, C
 		if (pObj
 				&& pObj->GetCategory() == CSpaceObject::catShip
 				&& !pObj->IsDestroyed()
-				&& !pObj->IsInactive()
-				&& !pObj->IsVirtual()
+				&& !pObj->IsIntangible()
 				&& pObj != pShipDestroyed)
 			{
 			CShip *pShip = pObj->AsShip();
@@ -321,8 +319,7 @@ void CIntroSession::CreateIntroSystem (void)
 
 		if (pObj
 				&& pObj->GetCategory() == CSpaceObject::catShip
-				&& !pObj->IsVirtual()
-				&& !pObj->IsInactive()
+				&& !pObj->IsIntangible()
 				&& !pObj->GetData(CONSTLIT("IntroController")).IsBlank())
 			{
 			CShip *pShip = pObj->AsShip();
@@ -653,8 +650,7 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 				CSpaceObject *pObj = pSystem->GetObject(i);
 				if (pObj 
 						&& pObj->GetCategory() == CSpaceObject::catShip
-						&& !pObj->IsVirtual()
-						&& !pObj->IsInactive())
+						&& !pObj->IsIntangible())
 					iCount++;
 				}
 
@@ -757,8 +753,7 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 				if (pObj 
 						&& pObj->GetCategory() == CSpaceObject::catShip
 						&& pObj->GetSovereign() != pCurSovereign
-						&& !pObj->IsInactive()
-						&& !pObj->IsVirtual())
+						&& !pObj->IsIntangible())
 					Opponents.Insert(pObj);
 				}
 
@@ -792,8 +787,7 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 				CSpaceObject *pObj = pSystem->GetObject((pPOV->GetIndex() + iTotalCount - (i + 1)) % iTotalCount);
 				if (pObj 
 						&& pObj->GetCategory() == CSpaceObject::catShip
-						&& !pObj->IsVirtual()
-						&& !pObj->IsInactive())
+						&& !pObj->IsIntangible())
 					{
 					g_pUniverse->SetPOV(pObj);
 					SetState(isShipStats);
@@ -823,8 +817,7 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 				CSpaceObject *pObj = pSystem->GetObject((pPOV->GetIndex() + i + 1) % iTotalCount);
 				if (pObj 
 						&& pObj->GetCategory() == CSpaceObject::catShip
-						&& !pObj->IsVirtual()
-						&& !pObj->IsInactive())
+						&& !pObj->IsIntangible())
 					{
 					g_pUniverse->SetPOV(pObj);
 					SetState(isShipStats);
