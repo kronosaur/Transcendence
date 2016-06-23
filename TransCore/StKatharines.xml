@@ -199,17 +199,17 @@
 		<Items>
 			<RandomItem count="20" 
 					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"2"
+					level=			"4"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="20" 
 					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"2"
+					level=			"4"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="5" 
 					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"3"
+					level=			"5"
 					levelCurve=		"1"
 					/>
 					

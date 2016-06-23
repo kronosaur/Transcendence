@@ -9,7 +9,7 @@
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
-			level=				"1"
+			level=				"4"
 			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, populated, startonEridani"
 				 
 			dockScreen=			"&dsCommonwealthStation;"
@@ -1152,22 +1152,22 @@
 
 									<!-- Container Habitat -->
 									<Siblings arcInc="110-121">
-										<Station type="&stContainerHabitat;" name="Starton Residentials" noArticle="true" noMapLabel="true"/>
+										<Station type="&stContainerHabitat;" name="Starton Residentials|Starton Residentials" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Container Habitat -->
 									<Siblings arcInc="-110--121">
-										<Station type="&stContainerHabitat;" name="Starton Residentials" noArticle="true" noMapLabel="true"/>
+										<Station type="&stContainerHabitat;" name="Starton Residentials|Starton Residentials" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Container Habitat -->
 									<Siblings radiusInc="11-14" arcInc="11-14">
-										<Station type="&stContainerHabitat;" name="Starton Residentials" noArticle="true" noMapLabel="true"/>
+										<Station type="&stContainerHabitat;" name="Starton Residentials|Starton Residentials" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Container Habitat -->
 									<Siblings radiusInc="11-14" arcInc="-11--14">
-										<Station type="&stContainerHabitat;" name="Starton Residentials" noArticle="true" noMapLabel="true"/>
+										<Station type="&stContainerHabitat;" name="Starton Residentials|Starton Residentials" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
 								</Group>

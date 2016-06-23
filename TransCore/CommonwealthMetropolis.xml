@@ -58,19 +58,12 @@
 
 		<Items>
 			<RandomItem count="20" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"2"
-					levelCurve=		"1"
+					criteria=		"ad L:1-6; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|ur"
 					/>
 			<RandomItem count="20" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"2"
-					levelCurve=		"1"
-					/>
-			<RandomItem count="5" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"3"
-					levelCurve=		"1"
+					criteria=		"* L:1-6; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|ur"
 					/>
 		</Items>
 
@@ -195,19 +188,12 @@
 		
 		<Items>
 			<RandomItem count="20" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"6"
-					levelCurve=		"1"
+					criteria=		"ad L:1-8; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|ur"
 					/>
 			<RandomItem count="20" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"5"
-					levelCurve=		"1"
-					/>
-			<RandomItem count="5" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"6"
-					levelCurve=		"2"
+					criteria=		"* L:1-8; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|ur"
 					/>
 		</Items>
 		

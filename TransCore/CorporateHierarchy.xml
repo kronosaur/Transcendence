@@ -893,8 +893,7 @@
 		<Items>
 			<RandomItem count="20" 
 					criteria=		"* -Illegal; -Military; +Auton; -NotStandard; -NotForSale;"
-					level=			"4"
-					levelCurve=		"2"
+					levelFrequency=	"--rcu ur---"
 					/>
 		</Items>
 
@@ -2456,33 +2455,27 @@
 		<Items>
 			<RandomItem count="1d6" 
 					criteria=		"d +Taikon; -NotStandard; -NotForSale"
-					level=			"9"
-					levelCurve=		"1"
+					levelFrequency= "----- rrucu"
 					/>
 			<RandomItem count="1d6" 
 					criteria=		"a +Taikon; -NotStandard; -NotForSale"
-					level=			"9"
-					levelCurve=		"1"
+					levelFrequency= "----- rrucu"
 					/>
 			<RandomItem count="3d6" 
 					criteria=		"m +Taikon; -NotStandard; -NotForSale"
-					level=			"9"
-					levelCurve=		"1"
+					levelFrequency= "----- rrucu"
 					/>
 			<RandomItem count="1d6" 
 					criteria=		"* -NotStandard; -NotForSale;"
-					level=			"9"
-					levelCurve=		"1"
+					levelFrequency= "----- rrucu"
 					/>
 			<RandomItem count="2d6" 
 					criteria=		"*~ad -Alien; -NotStandard; -NotForSale;"
-					level=			"9"
-					levelCurve=		"1"
+					levelFrequency= "----- rrucu"
 					/>
 			<RandomItem count="1d3" 
 					criteria=		"* +Alien; -NotStandard; -NotForSale;"
-					level=			"9"
-					levelCurve=		"2"
+					levelFrequency= "----- rrucu r---- -----"
 					/>
 			<Item	count="6d12" item="&itPteracniumFuelRod;"/>
 		</Items>
