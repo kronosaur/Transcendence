@@ -1123,7 +1123,7 @@
 				type=				"missile"
 
 				configuration=		"dual"
-				damage=				"kinetic:4d8; momentum2; WMD2"
+				damage=				"kinetic:4d8; momentum:2; WMD:3"
 				fireRate=			"16"
 				missileSpeed=		"90"
 				lifetime=			"50"
@@ -1172,7 +1172,7 @@
 
 	<ItemType UNID="&itLancerCannon;"
 			name=				"lancer cannon"
-			attributes=			"commonwealth, EI, energyWeapon, majorItem"
+			attributes=			"bushido, commonwealth, energyWeapon, majorItem"
 			  
 			level=				"5"
 			frequency=			"uncommon"
@@ -1304,7 +1304,7 @@
 
 	<ItemType UNID="&itOmniParticleCannon;"
 			name=				"omnidirectional particle cannon"
-			attributes=			"bushido, commonwealth, energyWeapon, majorItem"
+			attributes=			"commonwealth, EI, energyWeapon, majorItem"
 			  
 			level=				"5"
 			frequency=			"rare"
