@@ -10,11 +10,11 @@
 			name=				"laser collimator"
 			attributes=			"commonwealth, majorItem, weaponEnhancer"
 			  
-			level=				"1"
+			level=				"2"
 			frequency=			"uncommon"
 			unknownType=		"&itUnknownEnhancer2;"
 
-			value=				"500"
+			value=				"1000"
 			mass=				"500"
 			  
 			description=		"A laser collimator is an after-market device that sharpens the focus of your laser cannons thereby increasing their damage."
@@ -23,7 +23,7 @@
 		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<MiscellaneousDevice
-				powerUse=		"5"
+				powerUse=		"10"
 				>
 			<EnhancementAbilities>
 				<Enhance type=			"laser"
@@ -81,7 +81,7 @@
 		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<MiscellaneousDevice
-				powerUse=		"10"
+				powerUse=		"7"
 				>
 			<EnhancementAbilities>
 				<Enhance type=			"kinetic"
@@ -247,11 +247,11 @@
 			name=				"particle accelerator"
 			attributes=			"commonwealth, majorItem, weaponEnhancer"
 			  
-			level=				"4"
+			level=				"5"
 			frequency=			"uncommon"
 			unknownType=		"&itUnknownEnhancer5;"
 
-			value=				"5000"
+			value=				"9000"
 			mass=				"1500"
 			  
 			description=		"This compact particle accelerator boosts the damage of any installed particle energy weapon."
@@ -260,7 +260,7 @@
 		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<MiscellaneousDevice
-				powerUse=		"100"
+				powerUse=		"70"
 				>
 			<EnhancementAbilities>
 				<Enhance type=			"particleAccelerator"
@@ -433,7 +433,7 @@
 		<Image imageID="&rsItemsMakayev1;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<MiscellaneousDevice
-				powerUse=		"150"
+				powerUse=		"100"
 				>
 			<EnhancementAbilities>
 				<Enhance type=			"makayevEnhancer"
@@ -491,7 +491,7 @@
 		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<MiscellaneousDevice
-				powerUse=		"250"
+				powerUse=		"150"
 				>
 			<EnhancementAbilities>
 				<Enhance type=			"howitzerLoader"
@@ -538,11 +538,11 @@
 			name=				"Rasiermesser weapon enhancer"
 			attributes=			"commonwealth, majorItem, rasiermesser, weaponEnhancer"
 			  
-			level=				"6"
+			level=				"5"
 			frequency=			"rare"
 			unknownType=		"&itUnknownEnhancer5;"
 
-			value=				"20000"
+			value=				"10000"
 			mass=				"1500"
 			  
 			description=		"This enhancer increases the damage potential of installed Rasiermesser kinetic and blast weapons."
@@ -551,7 +551,7 @@
 		<Image imageID="&rsItemsRasiermesser3;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<MiscellaneousDevice
-				powerUse=		"250"
+				powerUse=		"100"
 				>
 			<EnhancementAbilities>
 				<Enhance type=			"rasiermesserEnhancer"
@@ -634,7 +634,7 @@
 		<Image imageID="&rsItemsBushido2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<MiscellaneousDevice
-				powerUse=		"400"
+				powerUse=		"250"
 				>
 			<EnhancementAbilities>
 				<Enhance type=			"bushidoEnhancer"
