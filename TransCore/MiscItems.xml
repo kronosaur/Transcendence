@@ -488,7 +488,7 @@
 
 			description=		"Clone farms of the Senpaku Hogei Corporation make this well-respected product at a reasonable (compared to Earth salmon) price."
 
-			sortName=			"Hogei salmon, crate of froze"
+			sortName=			"Hogei salmon, crate of frozen"
 			>
 
 		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
