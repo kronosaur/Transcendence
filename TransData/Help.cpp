@@ -157,6 +157,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/averageCount]       average number appearing.\n");
 		printf("      [/averageDamage]      average damage (in HP).\n");
 		printf("      [/balanceDamage]      std damage for level and type (in HP per 180 ticks).\n");
+		printf("      [/balanceStats]       stats related to game balance.\n");
 		printf("      [/cost]               cost (in credits).\n");
 		printf("      [/damage]             average damage (in HP per 180 ticks).\n");
 		printf("      [/damageAdj]          damage type adjustment.\n");

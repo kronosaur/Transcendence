@@ -409,7 +409,7 @@ void OutputHeader (SItemTableCtx &Ctx)
             printf("averageTime\tbestArmor\tbestArmorTime\tworstArmor\tworstArmorTime");
         else if (strEquals(Ctx.Cols[i], FIELD_BALANCE_STATS))
             printf("balance\t"
-                    "balExCost\t"
+                    "balanceExcludeCost\t"
                     "balDamage\t"
                     "balDamageType\t"
                     "balAmmo\t"
