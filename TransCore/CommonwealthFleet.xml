@@ -144,7 +144,7 @@ PLAYER DATA
 					count=			"1"
 					type=			"radius"
 
-					damage=			"thermo:6d24; momentum6; WMD7"
+					damage=			"thermo:7d24; momentum6; WMD7"
 					minRadius=		"1"
 					maxRadius=		"4"
 					missileSpeed=	"0"

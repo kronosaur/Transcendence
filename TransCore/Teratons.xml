@@ -98,7 +98,7 @@
 				type=			"missile"
 				lifetime=		"480"
 				missileSpeed=	"30"
-				hitPoints=		"20"
+				hitPoints=		"50"
 
 				failsafe=		"6"
 

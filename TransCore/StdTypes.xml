@@ -969,7 +969,7 @@
 			unknownType=		"&itUnknownMnemonicCube;"
 			attributes=			"Info; MinorItem"
 
-			description=		"This algorithm enhances shield generators of technology levels IV through IX."
+			description=		"This algorithm enhances shield generators of technology levels 4 through 9."
 			>
 
 		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
@@ -1042,7 +1042,7 @@
 			unknownType=		"&itUnknownMnemonicCube;"
 			attributes=			"Info; MinorItem"
 
-			description=		"This algorithm increase the efficiency of shield generators of technology levels IV through IX."
+			description=		"This algorithm increases the efficiency of shield generators of technology levels 4 through 9."
 			>
 
 		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
