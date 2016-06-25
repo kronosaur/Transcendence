@@ -119,14 +119,14 @@
 		<Items>
 			<RandomItem count="1d12" 
 					criteria=		"w +Rasiermesser; -NotForSale;"
-					levelFrequency=	"-rucu r"
+					levelFrequency=	"systemLevel:u|c|ur"
 					enhanced=		"10"
 					enhancement=	"=(intRasiermesserWeaponEnhancement)"
 					/>
 
 			<RandomItem count="2d12" 
 					criteria=		"a +Rasiermesser; -NotForSale;"
-					levelFrequency=	"-rucu r"
+					levelFrequency=	"systemLevel:u|c|ur"
 					enhanced=		"10"
 					enhancement=	"=(intRasiermesserArmorEnhancement)"
 					/>
@@ -251,28 +251,28 @@
 		<Items>
 			<RandomItem count="1d12"
 					criteria=		"w +Rasiermesser; -NotForSale;"
-					levelFrequency=	"---ru cur"
+					levelFrequency=	"systemLevel:u|c|ur"
 					enhanced=		"20"
 					enhancement=	"=(intRasiermesserWeaponEnhancement)"
 					/>
 
 			<RandomItem count="1d12"
 					criteria=		"a +Rasiermesser; -NotForSale;"
-					levelFrequency=	"---ru cur"
+					levelFrequency=	"systemLevel:u|c|ur"
 					enhanced=		"20"
 					enhancement=	"=(intRasiermesserArmorEnhancement)"
 					/>
 
 			<RandomItem count="1d12"
 					criteria=		"w +Rasiermesser; -NotForSale;"
-					levelFrequency=	"----- rucur"
+					levelFrequency=	"systemLevel:r|u|cur"
 					enhanced=		"10"
 					enhancement=	"=(intRasiermesserWeaponEnhancement)"
 					/>
 
 			<RandomItem count="1d12"
 					criteria=		"a +Rasiermesser; -NotForSale;"
-					levelFrequency=	"----- rucur"
+					levelFrequency=	"systemLevel:r|u|cur"
 					enhanced=		"10"
 					enhancement=	"=(intRasiermesserArmorEnhancement)"
 					/>

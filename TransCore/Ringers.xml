@@ -44,38 +44,32 @@
 		<Items>
 			<RandomItem count="1d12" 
 					criteria=		"* +Meds; -Illegal; -NotStandard; -NotForSale;"
-					level=			"6"
-					levelCurve=		"2"
+					levelFrequency=	"systemLevel:ruc|u|r"
 					/>
 
 			<RandomItem count="1d4" 
 					criteria=		"w -NotStandard; -NotForSale;"
-					level=			"8"
-					levelCurve=		"2"
+					levelFrequency=	"systemLevel:ru|c|ur"
 					/>
 
 			<RandomItem count="1d4" 
 					criteria=		"d~w -NotStandard; -NotForSale;"
-					level=			"7"
-					levelCurve=		"2"
+					levelFrequency=	"systemLevel:ru|c|ur"
 					/>
 
 			<RandomItem count="1d8" 
 					criteria=		"a -NotStandard; -NotForSale;"
-					level=			"9"
-					levelCurve=		"1"
+					levelFrequency=	"systemLevel:r|u|cur"
 					/>
 
 			<RandomItem count="1d4" 
 					criteria=		"u -NotStandard; -NotForSale;"
-					level=			"7"
-					levelCurve=		"2"
+					levelFrequency=	"systemLevel:ru|c|ur"
 					/>
 
 			<RandomItem count="2d12" 
 					criteria=		"f -NotStandard; -NotForSale;"
-					level=			"7"
-					levelCurve=		"2"
+					levelFrequency=	"systemLevel:ru|c|ur"
 					/>
 
 			<Item				count="4d12"	item="&itEuropanIceMoss;" />
@@ -220,26 +214,24 @@
 		<Items>
 			<RandomItem count="1d4" 
 					criteria=		"w -NotStandard; -NotForSale;"
-					level=			"8"
-					levelCurve=		"2"
+					levelFrequency=	"systemLevel:ru|c|ur"
 					/>
 
 			<RandomItem count="1d8" 
 					criteria=		"d~w -NotStandard; -NotForSale;"
-					level=			"7"
-					levelCurve=		"2"
+					levelFrequency=	"systemLevel:ruc|u|r"
 					/>
 
 			<RandomItem count="1d8" 
 					criteria=		"a -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:r|u|cur"
 					level=			"9"
 					levelCurve=		"1"
 					/>
 
 			<RandomItem count="4d12" 
 					criteria=		"f -NotStandard; -NotForSale;"
-					level=			"7"
-					levelCurve=		"2"
+					levelFrequency=	"systemLevel:ru|c|ur"
 					/>
 
 			<Item				count="1"		item="&itPlasmaTorch;" />
