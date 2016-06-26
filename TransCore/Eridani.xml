@@ -644,7 +644,7 @@
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
-			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated"
+			attributes=			"commonwealth, commonwealthCustoms, friendly, human, populated"
 			noArticle=			"true"
 				 
 			dockScreen=			"Main"

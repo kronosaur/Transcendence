@@ -952,24 +952,22 @@
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
+			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, majorStation, primary, populated"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
 
-			multiHull=			"true"
+			size=				"390"
 			armorID=			"&itP120HexphaseArmor;"
 			hitPoints=			"560"
+			multiHull=			"true"
 			regen=              "2.8"
 			shipRepairRate=		"1"
-			fireRateAdj=		"40"
+				 
+			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, majorStation, primary, populated"
-			levelFrequency=		"---uu cu--- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="60"
+			fireRateAdj=		"40"
 			>
 
 		<Names noArticle="true">Anvil Station; Brimstone Station; Cerberus Station;
@@ -981,23 +979,15 @@
 				Vindication Colony; Wight Station; %s Colony; %s Alpha Station;
 				%s Beta Station; %s Gamma Station; %s Epsilon Station</Names>
 
-		<Image			imageID="&rsStations1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
+		<!-- Encounter Info -->
 
-		<Devices>
-			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true"/>
-		</Devices>
+		<Encounter
+				levelFrequency=		"---uu cu--- ----- ----- -----"
+				locationCriteria=	"+planetary"
+				enemyExclusionRadius="60"
+				/>
 
-		<Items>
-			<RandomItem	count="10" 
-					criteria=		"ad L:1-7; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|ur"
-					/>
-			<RandomItem count="10" 
-					criteria=		"*~ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|ur"
-					/>
-			<Item count="4d12"	item="&itXenotiteFuelRod;" />
-		</Items>
+		<!-- Trade and Items -->
 
 		<Trade currency="credit" max="50000" replenish="2500">
 			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200"/>
@@ -1013,6 +1003,46 @@
 			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 		</Trade>
 
+		<Items>
+			<RandomItem	count="10" 
+					criteria=		"ad L:1-7; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|ur"
+					/>
+			<RandomItem count="10" 
+					criteria=		"*~ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|ur"
+					/>
+			<Item count="4d12"	item="&itXenotiteFuelRod;" />
+		</Items>
+
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true"/>
+		</Devices>
+
+		<!-- Satellites -->
+		
+		<Satellites>
+			<Orbitals distance="12" angle="45">
+				<Station type="&stCommonwealthTurret;" imageVariant="2"/>
+			</Orbitals>
+
+			<Orbitals distance="12" angle="135">
+				<Station type="&stCommonwealthTurret;" imageVariant="1"/>
+			</Orbitals>
+
+			<Orbitals distance="12" angle="225">
+				<Station type="&stCommonwealthTurret;" imageVariant="0"/>
+			</Orbitals>
+
+			<Orbitals distance="12" angle="315">
+				<Station type="&stCommonwealthTurret;" imageVariant="3"/>
+			</Orbitals>
+		</Satellites>
+		
+		<!-- Ships and Defenses -->
+		
 		<Ships>
 			<Lookup count="2" table="&tbCommDefenders;"/>
 			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
@@ -1025,48 +1055,18 @@
 			</Table>
 		</Reinforcements>
 
-		<Satellites>
-			<Orbitals distance="7" angle="45">
-				<Station type="&stCommonwealthTurret;" imageVariant="2"/>
-			</Orbitals>
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsCommonwealthArmoredColony;" imageWidth="320" imageHeight="290" viewportRatio="0.05"/>
 
-			<Orbitals distance="7" angle="135">
-				<Station type="&stCommonwealthTurret;" imageVariant="1"/>
-			</Orbitals>
-
-			<Orbitals distance="7" angle="225">
-				<Station type="&stCommonwealthTurret;" imageVariant="0"/>
-			</Orbitals>
-
-			<Orbitals distance="7" angle="315">
-				<Station type="&stCommonwealthTurret;" imageVariant="3"/>
-			</Orbitals>
-		</Satellites>
-
-		<StaticData>
-			<NPCService>
-				(	;	service					level	margin
-					(	'repairArmor			7		100		)
-					)
-			</NPCService>
-		</StaticData>
-
-		<Events>
-			<OnCreate>
-				(sysAddObjRecurringTimerEvent 150 gSource "OnTrafficControl")
-			</OnCreate>
-
-			<OnContractGenerate>
-				(intGenerateStandardRequestContract1)
-			</OnContractGenerate>
-
-			<OnContractQuery>True</OnContractQuery>
-
-			<OnTrafficControl>
-				(comTrafficControl gSource 10)
-			</OnTrafficControl>
-		</Events>
-
+		<DockingPorts
+				portCount=		"10"
+				portRadius=		"175"
+				>
+		</DockingPorts>
+		
+		<!-- Dock Screens -->
+		
 		<DockScreens>
 			<Main>
 				<Panes>
@@ -1097,19 +1097,32 @@
 			</Main>
 
 		</DockScreens>
+		
+		<!-- Events and Data -->
 
-		<DockingPorts>
-			<Port x="0"		y="90" />
-			<Port x="0"		y="-90" />
-			<Port x="60"	y="60" />
-			<Port x="60"	y="-60" />
-			<Port x="90"	y="0" />
-			
-			<Port x="-90"	y="0" />
-			<Port x="-60"	y="60" />
-			<Port x="-60"	y="-60" />
-		</DockingPorts>
+		<StaticData>
+			<NPCService>
+				(	;	service					level	margin
+					(	'repairArmor			7		100		)
+					)
+			</NPCService>
+		</StaticData>
 
+		<Events>
+			<OnCreate>
+				(sysAddObjRecurringTimerEvent 150 gSource "OnTrafficControl")
+			</OnCreate>
+
+			<OnContractGenerate>
+				(intGenerateStandardRequestContract1)
+			</OnContractGenerate>
+
+			<OnContractQuery>True</OnContractQuery>
+
+			<OnTrafficControl>
+				(comTrafficControl gSource 10)
+			</OnTrafficControl>
+		</Events>
 	</StationType>
 
 	<!-- Commonwealth Dry Dock -->
@@ -1250,15 +1263,9 @@
 		</Trade>
 
 		<Items>
-			<RandomItem count="10" 
+			<RandomItem count="10-20" 
 					criteria=		"* +Meds; -Illegal; -Military; -Alien; -NotStandard; -NotForSale;"
-					level=			"3"
-					levelCurve=		"2"
-					/>
-			<RandomItem count="5" 
-					criteria=		"* +Meds; -Illegal; -Military; -Alien; -NotStandard; -NotForSale;"
-					level=			"2"
-					levelCurve=		"1"
+					levelFrequency=	"systemLevel:u|c|ur"
 					/>
 		</Items>
 
@@ -2154,54 +2161,36 @@
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
+			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, populated"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
+			
+			size=				"390"
 			armorID=			"&itP120HexphaseArmor;"
 			hitPoints=			"950"
+			multiHull=			"true"
 			regen=              "4.8"
 			shipRepairRate=		"1"
-			fireRateAdj=		"40"
+				 
+			canAttack=			"true"
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, populated"
-			levelFrequency=		"----- -ucr- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="50"
+			fireRateAdj=		"40"
 			>
 
 		<Names noArticle="true">Commonwealth Settlement %1%0%0%0</Names>
 
-		<Image			imageID="&rsStations1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
+		<!-- Encounter Info -->
 
-		<Devices>
-			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true"/>
-		</Devices>
+		<Encounter
+				levelFrequency=		"----- -ucr- ----- ----- -----"
+				locationCriteria=	"+planetary"
+				enemyExclusionRadius="50"
+				/>
 
-		<Items>
-			<RandomItem count="10" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"8"
-					levelCurve=		"1"
-					/>
-			<RandomItem count="10" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"8"
-					levelCurve=		"2"
-					/>
-			<RandomItem count="3" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"9"
-					levelCurve=		"1"
-					/>
-
-			<Item count="4d12"	item="&itXenotiteFuelRod;" />
-		</Items>
-
+		<!-- Trade and Items -->
+		
 		<Trade currency="credit" max="50000" replenish="2500">
 			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
@@ -2214,6 +2203,51 @@
 			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
 		</Trade>
 
+		<Items>
+			<RandomItem count="10" 
+					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|u"
+					/>
+			<RandomItem count="10" 
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:ru|c|ur"
+					/>
+			<RandomItem count="3" 
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:r|u|cu"
+					/>
+
+			<Item count="4d12"	item="&itPteracniumFuelRod;" />
+		</Items>
+
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true"/>
+		</Devices>
+
+		<!-- Satellites -->
+		
+		<Satellites>
+			<Orbitals distance="12" angle="45">
+				<Station type="&stCommonwealthTurret;" imageVariant="2"/>
+			</Orbitals>
+
+			<Orbitals distance="12" angle="135">
+				<Station type="&stCommonwealthTurret;" imageVariant="1"/>
+			</Orbitals>
+
+			<Orbitals distance="12" angle="225">
+				<Station type="&stCommonwealthTurret;" imageVariant="0"/>
+			</Orbitals>
+
+			<Orbitals distance="12" angle="315">
+				<Station type="&stCommonwealthTurret;" imageVariant="3"/>
+			</Orbitals>
+		</Satellites>
+
+		<!-- Ships and Defenses -->
+		
 		<Ships>
 			<Lookup count="2" table="&tbCommDefenders;"/>
 			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
@@ -2226,40 +2260,18 @@
 			</Table>
 		</Reinforcements>
 
-		<Satellites>
-			<Orbitals distance="7" angle="45">
-				<Station type="&stCommonwealthTurret;" imageVariant="2"/>
-			</Orbitals>
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsCommonwealthSettlement;" imageWidth="320" imageHeight="290" viewportRatio="0.05"/>
 
-			<Orbitals distance="7" angle="135">
-				<Station type="&stCommonwealthTurret;" imageVariant="1"/>
-			</Orbitals>
-
-			<Orbitals distance="7" angle="225">
-				<Station type="&stCommonwealthTurret;" imageVariant="0"/>
-			</Orbitals>
-
-			<Orbitals distance="7" angle="315">
-				<Station type="&stCommonwealthTurret;" imageVariant="3"/>
-			</Orbitals>
-		</Satellites>
-
-		<StaticData>
-			<NPCService>
-				(	;	service					level	margin
-					(	'repairArmor			8		100		)
-					)
-			</NPCService>
-		</StaticData>
-
-		<Events>
-			<OnContractGenerate>
-				(intGenerateStandardRequestContract1)
-			</OnContractGenerate>
-
-			<OnContractQuery>True</OnContractQuery>
-		</Events>
-
+		<DockingPorts
+				portCount=		"10"
+				portRadius=		"175"
+				>
+		</DockingPorts>
+		
+		<!-- Dock Screens -->
+		
 		<DockScreens>
 			<Main>
 				<Panes>
@@ -2290,19 +2302,24 @@
 			</Main>
 
 		</DockScreens>
+		
+		<!-- Events and Data -->
 
-		<DockingPorts>
-			<Port x="0"		y="90" />
-			<Port x="0"		y="-90" />
-			<Port x="60"	y="60" />
-			<Port x="60"	y="-60" />
-			<Port x="90"	y="0" />
-			
-			<Port x="-90"	y="0" />
-			<Port x="-60"	y="60" />
-			<Port x="-60"	y="-60" />
-		</DockingPorts>
+		<StaticData>
+			<NPCService>
+				(	;	service					level	margin
+					(	'repairArmor			8		100		)
+					)
+			</NPCService>
+		</StaticData>
 
+		<Events>
+			<OnContractGenerate>
+				(intGenerateStandardRequestContract1)
+			</OnContractGenerate>
+
+			<OnContractQuery>True</OnContractQuery>
+		</Events>
 	</StationType>
 
 	<!-- NavSign
@@ -3768,9 +3785,11 @@
 	
 <!-- RESOURCES -->
 
+	<Image UNID="&rsCommonwealthArmoredColony;"	bitmap="Resources\CommonwealthColonyArmored.jpg" bitmask="Resources\CommonwealthColonyArmoredMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsCommonwealthColony;"		bitmap="Resources\CommonwealthColony.jpg" bitmask="Resources\CommonwealthColonyMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsCommonwealthMedicalColony;"	bitmap="Resources\CommonwealthMedicalColony.jpg" bitmask="Resources\CommonwealthMedicalColonyMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsCommonwealthResidentials;"	bitmap="Resources\CommonwealthResidentials.jpg" bitmask="Resources\CommonwealthResidentialsMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsCommonwealthSettlement;"	bitmap="Resources\CommonwealthSettlement.jpg" bitmask="Resources\CommonwealthSettlementMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsCommonwealthSlumsImage;"	bitmap="Resources\CommonwealthSlums.jpg" bitmask="Resources\CommonwealthSlumsMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsIAVLight;"					bitmap="Resources\IAVLight.jpg" bitmask="Resources\IAVLightMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsIAVMedium;"					bitmap="Resources\IAVMedium.jpg" bitmask="Resources\IAVMediumMask.bmp" loadOnUse="true"/>

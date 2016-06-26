@@ -699,8 +699,14 @@
 				Anacreon Colony %1%0%0; Anacreon Colony %1%0%0
 		</Names>
 
-		<Image			imageID="&rsStations1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
+		<Image imageID="&rsCommonwealthSettlement;" imageWidth="320" imageHeight="290" viewportRatio="0.05"/>
 
+		<DockingPorts
+				portCount=		"10"
+				portRadius=		"175"
+				>
+		</DockingPorts>
+		
 		<Ships>
 			<Ship	count="1"	class="&scXenophobeWorldship;" orders="wander" sovereign="&svXenophobes;" >
 				<Escorts>
@@ -737,20 +743,7 @@
 					</Default>
 				</Panes>
 			</Main>
-
 		</DockScreens>
-
-		<DockingPorts>
-			<Port x="0"		y="90" />
-			<Port x="0"		y="-90" />
-			<Port x="60"	y="60" />
-			<Port x="60"	y="-60" />
-			<Port x="90"	y="0" />
-			<Port x="-90"	y="0" />
-			<Port x="-60"	y="60" />
-			<Port x="-60"	y="-60" />
-		</DockingPorts>
-
 	</StationType>
 
 	<!-- LEVEL VII ITEMS -->
