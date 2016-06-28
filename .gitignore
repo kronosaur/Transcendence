@@ -27,6 +27,8 @@ Game/*.tdb
 *.userosscache
 *.sln.docstates
 *.VC.opendb
+*.iobj
+*.ipdb
 
 # Build results
 [Dd]ebug/

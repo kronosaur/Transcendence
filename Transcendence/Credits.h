@@ -136,6 +136,7 @@ static char *FEEDBACK[] =
 	"Magnus",
 	"Stefan Maier",
 	"Manekineko",
+	"Marmot",
 	"D. F. McCourt",
 	"Megas",
 	"Mesh",
@@ -176,6 +177,7 @@ static char *FEEDBACK[] =
 	"raelz",
 	"Ralf",
 	"Rhonda Reese",
+	"Relanat",
 	"Retroactive",
 	"Revolver",
 	"robotarozum",
@@ -210,6 +212,7 @@ static char *FEEDBACK[] =
 	"Sutaa",
 
 	"Tamagoyaki",
+	"Tarbos",
 	"TaviRider",
 	"Rick Tengdin",
 	"Teslin K. R.",
