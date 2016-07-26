@@ -242,7 +242,10 @@
     <ClCompile Include="CHeadsUpDisplay.cpp">
       <Filter>Source Files\Game Session</Filter>
     </ClCompile>
-    <ClCompile Include="GameSessionKeyboard.cpp">
+    <ClCompile Include="GameSessionCommands.cpp">
+      <Filter>Source Files\Game Session</Filter>
+    </ClCompile>
+    <ClCompile Include="GameSessionInput.cpp">
       <Filter>Source Files\Game Session</Filter>
     </ClCompile>
   </ItemGroup>

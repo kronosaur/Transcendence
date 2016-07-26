@@ -1569,7 +1569,9 @@ EManeuverTypes CPlayerShipController::GetManeuver (void)
 	{
     if (m_bMouseAim)
         {
-        if (m_iMouseAimAngle == -1)
+        if (m_iMouseAimAngle == -1
+				|| m_pShip->IsOutOfFuel()
+				|| m_pShip->IsTimeStopped())
             return NoRotation;
         else
             return m_pShip->GetManeuverToFace(m_iMouseAimAngle);
@@ -1580,10 +1582,7 @@ EManeuverTypes CPlayerShipController::GetManeuver (void)
 
 bool CPlayerShipController::GetThrust (void)
 	{
-    if (m_bMouseAim)
-        return g_pHI->IsRButtonDown();
-    else
-	    return m_bThrust;
+    return m_bThrust;
 	}
 
 bool CPlayerShipController::GetReverseThrust (void)

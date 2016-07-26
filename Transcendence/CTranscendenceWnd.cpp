@@ -806,18 +806,6 @@ LONG CTranscendenceWnd::WMLButtonDown (int x, int y, DWORD dwFlags)
 		case gsIntro:
 			OnLButtonDownIntro(x, y, dwFlags);
 			break;
-
-        case gsInGame:
-            if (GetPlayer() && GetPlayer()->IsMouseAimEnabled())
-                {
-    			Autopilot(false);
-                GetPlayer()->SetFireMain(true);
-                }
-            break;
-
-		case gsDocked:
-			m_pCurrentScreen->LButtonDown(x, y);
-			break;
 		}
 
 	return 0;
@@ -835,15 +823,6 @@ LONG CTranscendenceWnd::WMLButtonUp (int x, int y, DWORD dwFlags)
 		case gsIntro:
 			OnLButtonUpIntro(x, y, dwFlags);
 			break;
-
-        case gsInGame:
-            if (GetPlayer() && GetPlayer()->IsMouseAimEnabled())
-                GetPlayer()->SetFireMain(false);
-            break;
-
-		case gsDocked:
-			m_pCurrentScreen->LButtonUp(x, y);
-			break;
 		}
 
 	return 0;
@@ -860,15 +839,6 @@ LONG CTranscendenceWnd::WMMouseMove (int x, int y, DWORD dwFlags)
 		{
 		case gsIntro:
 			OnMouseMoveIntro(x, y, dwFlags);
-			break;
-
-        case gsInGame:
-            if (GetPlayer() && g_pHI->HasMouseMoved(x, y))
-                GetPlayer()->SetMouseAimEnabled(true);
-            break;
-
-		case gsDocked:
-			m_pCurrentScreen->MouseMove(x, y);
 			break;
 		}
 

@@ -393,6 +393,8 @@ struct SGameKeyData
         {
         FLAG_HIDDEN =       0x00000001,
         FLAG_DEBUG_ONLY =   0x00000002,
+		FLAG_STATEFULL =	0x00000004,		//	Tracks when key is down vs. up (thrust, fire, etc.).
+		FLAG_NO_REPEAT =	0x00000008,		//	Ignore repeated keys
         };
 
 	char *pszName;
@@ -407,7 +409,7 @@ SGameKeyData g_GameKeyData[CGameKeys::keyCount] =
 		{	"Autopilot",            "Autopilot",                    0 },
 		{	"EnableDevices",        "Enable/Disable Devices",       0 },
 		{	"Communications",       "Communications",               0 },
-		{	"Dock",                 "Request Dock",                 0 },
+		{	"Dock",                 "Request Dock",                 SGameKeyData::FLAG_NO_REPEAT },
 		{	"TargetNextFriendly",   "Target Next Friendly",         0 },
 		{	"EnterGate",            "Enter Stargate",               0 },
 		{	"InvokePower",          "Invoke Power",                 0 },
@@ -419,12 +421,12 @@ SGameKeyData g_GameKeyData[CGameKeys::keyCount] =
 		{	"TargetNextEnemy",      "Target Next Enemy",            0 },
 		{	"UseItem",              "Use Item",                     0 },
 		{	"NextWeapon",           "Select Next Weapon",           0 },
-		{	"ThrustForward",        "Forward Thrust",               0 },
-		{	"Stop",                 "Stop Momentum",                0 },
-		{	"RotateLeft",           "Rotate Left",                  0 },
-		{	"RotateRight",          "Rotate Right",                 0 },
-		{	"FireWeapon",           "Fire Weapon",                  0 },
-		{	"FireMissile",          "Fire Missile",                 0 },
+		{	"ThrustForward",        "Forward Thrust",               SGameKeyData::FLAG_STATEFULL },
+		{	"Stop",                 "Stop Momentum",                SGameKeyData::FLAG_STATEFULL },
+		{	"RotateLeft",           "Rotate Left",                  SGameKeyData::FLAG_STATEFULL },
+		{	"RotateRight",          "Rotate Right",                 SGameKeyData::FLAG_STATEFULL },
+		{	"FireWeapon",           "Fire Weapon",                  SGameKeyData::FLAG_STATEFULL },
+		{	"FireMissile",          "Fire Missile",                 SGameKeyData::FLAG_STATEFULL },
 		{	"NextMissile",          "Select Next Missile",          0 },
 		{	"ShowHelp",             "Help",                         0 },
 		{	"ShowGameStats",        "Game Stats",                   0 },
@@ -744,6 +746,30 @@ CString CGameKeys::GetLayoutName (ELayouts iLayout) const
             return CONSTLIT("(Unknown)");
         }
     }
+
+bool CGameKeys::IsNonRepeatCommand (Keys iCommand) const
+
+//	IsNonRepeatCommand
+//
+//	Returns TRUE if this command ignored repeated keys.
+
+	{
+	ASSERT(iCommand > 0 && iCommand < keyCount);
+    const SGameKeyData &Data = g_GameKeyData[iCommand];
+	return (Data.dwFlags & SGameKeyData::FLAG_NO_REPEAT ? true : false);
+	}
+
+bool CGameKeys::IsStatefulCommand (Keys iCommand) const
+
+//	IsStatefulCommand
+//
+//	Returns TRUE if this command tracks the state of a key (up or down).
+
+	{
+	ASSERT(iCommand > 0 && iCommand < keyCount);
+    const SGameKeyData &Data = g_GameKeyData[iCommand];
+	return (Data.dwFlags & SGameKeyData::FLAG_STATEFULL ? true : false);
+	}
 
 ALERROR CGameKeys::ReadFromXML (CXMLElement *pDesc)
 
