@@ -539,6 +539,11 @@ void CGameSession::OnLButtonDblClick (int x, int y, DWORD dwFlags)
 	{
 	switch (g_pTrans->m_State)
 		{
+		case CTranscendenceWnd::gsInGame:
+			//	Double-click counts as a single click
+			OnLButtonDown(x, y, dwFlags, NULL);
+			break;
+
 		case CTranscendenceWnd::gsDocked:
 			g_pTrans->m_pCurrentScreen->LButtonDown(x, y);
 			break;
@@ -644,6 +649,23 @@ void CGameSession::OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
             break;
         }
     }
+
+void CGameSession::OnRButtonDblClick (int x, int y, DWORD dwFlags)
+
+//	OnRButtonDblClick
+//
+//	Handle mouse
+
+	{
+	switch (g_pTrans->m_State)
+		{
+		case CTranscendenceWnd::gsInGame:
+			//	Counts as single-click
+
+			OnRButtonDown(x, y, dwFlags);
+			break;
+		}
+	}
 
 void CGameSession::OnRButtonDown (int x, int y, DWORD dwFlags)
 
