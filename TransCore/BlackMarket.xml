@@ -1228,29 +1228,34 @@ PLAYER DATA
 					
 					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
 						(block Nil
-							(objIncData gPlayerShip "blackMarketCrimeCost" (objGetStaticData gSource 'blackMarket.destroyPenalty))
-							(if (objGetData gPlayerShip "blackMarketCrime")
-								(objSetData gPlayerShip "blackMarketCrime" "multiple offenses against the Sindikat")
-								(objSetData gPlayerShip "blackMarketCrime" (cat "the destruction of " (objGetName gSource 4)))
+								
+							;	If the player is not part of the Black Market, then she is 
+							;	treated as an enemy.
+                    
+							(if (eq (objGetData gPlayerShip "blackMarketXP") 0)
+								(block Nil
+									(sovSetDisposition &svBlackMarket; &svPlayer; 'enemy)
+									(sovSetDisposition &svPlayer; &svBlackMarket; 'enemy)
+    								)
+									
+								;	Otherwise, this is a Black Market crime
+								
+								(block Nil
+									(objIncData gPlayerShip "blackMarketCrimeCost" (objGetStaticData gSource 'blackMarket.destroyPenalty))
+									(if (objGetData gPlayerShip "blackMarketCrime")
+										(objSetData gPlayerShip "blackMarketCrime" "multiple offenses against the Sindikat")
+										(objSetData gPlayerShip "blackMarketCrime" (cat "the destruction of " (objGetName gSource 4)))
+										)
+									)
+	    						)
+						
+							;	After death, only a certain number of bounty hunters go 
+							;	after the player.
+					
+							(if (objGetStaticData gSource 'blackMarket.deployBountyHunters)
+								(objSetData gSource 'molotoksRemaining (eval (objGetStaticData gSource 'blackMarket.destroyBountyHunters)))
 								)
 							)
-						)
-                        
-                    ;	If the player is not part of the Black Market, then she is 
-                    ;	treated as an enemy.
-                    
-					(if (eq (objGetData gPlayerShip "blackMarketXP") 0)
-						(block Nil
-							(sovSetDisposition &svBlackMarket; &svPlayer; 'enemy)
-							(sovSetDisposition &svPlayer; &svBlackMarket; 'enemy)
-    						)
-	    				)
-						
-					;	After death, only a certain number of bounty hunters go 
-					;	after the player.
-					
-					(if (objGetStaticData gSource 'blackMarket.deployBountyHunters)
-						(objSetData gSource 'molotoksRemaining (eval (objGetStaticData gSource 'blackMarket.destroyBountyHunters)))
 						)
 					)
 			</OnDestroy>
