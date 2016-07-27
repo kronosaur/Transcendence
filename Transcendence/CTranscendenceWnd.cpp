@@ -43,10 +43,6 @@ CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) 
 		m_bRedirectDisplayMessage(false),
 		m_chKeyDown('\0'),
 		m_bDockKeyDown(false),
-		m_bNextWeaponKey(false),
-		m_bNextMissileKey(false),
-		m_bPrevWeaponKey(false),
-		m_bPrevMissileKey(false),
 		m_bPaused(false)
 
 //	CTranscendence constructor

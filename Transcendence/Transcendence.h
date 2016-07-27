@@ -1077,10 +1077,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		bool m_bDebugConsole;				//	Showing debug console
 		char m_chKeyDown;					//	Processed a WM_KEYDOWN (skip WM_CHAR)
 		bool m_bDockKeyDown;				//	Used to de-bounce dock key (so holding down 'D' does not select a dock action).
-		bool m_bNextWeaponKey;				//	Next weapon key is down
-		bool m_bNextMissileKey;				//	Next missile key is down
-		bool m_bPrevWeaponKey;				//	Prev weapon key is down
-		bool m_bPrevMissileKey;				//	Prev missile key is down
 		int m_iTick;
 		CDockScreen m_CurrentDock;
 		AGScreen *m_pCurrentScreen;

@@ -389,15 +389,24 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
 				ExecuteCommand(pPlayer, iCommand);
 
-				//	If the player uses the keyboard to thrust, then turn off mouse
-				//	move UI.
+				//	Handle some extra keyboard logic
 
 				switch (iCommand)
 					{
+					//	If the player uses the keyboard to thrust, then turn off mouse
+					//	move UI.
+
 					case CGameKeys::keyThrustForward:
 					case CGameKeys::keyRotateLeft:
 					case CGameKeys::keyRotateRight:
 		                pPlayer->SetMouseAimEnabled(false);
+						break;
+
+					//	We need to debounce the dock key so that it does not 
+					//	select a dock screen action.
+
+					case CGameKeys::keyDock:
+						g_pTrans->m_bDockKeyDown = true;
 						break;
 					}
 				}
@@ -502,6 +511,18 @@ void CGameSession::OnKeyUp (int iVirtKey, DWORD dwKeyData)
 				//	Execute the command
 
 				ExecuteCommandEnd(pPlayer, iCommand);
+
+				//	Handle some extra keyboard logic
+
+				switch (iCommand)
+					{
+					//	We need to debounce the dock key so that it does not 
+					//	select a dock screen action.
+
+					case CGameKeys::keyDock:
+						g_pTrans->m_bDockKeyDown = false;
+						break;
+					}
 				}
 
 			break;

@@ -13,6 +13,10 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 //	Executes the given command.
 
 	{
+	ASSERT(pPlayer);
+	if (pPlayer == NULL)
+		return;
+
 	switch (iCommand)
 		{
 		case CGameKeys::keyAutopilot:
@@ -52,7 +56,6 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 				g_pTrans->Autopilot(false);
 				pPlayer->Dock();
-				g_pTrans->m_bDockKeyDown = true;
 				}
 			break;
 
@@ -162,25 +165,17 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 			break;
 
 		case CGameKeys::keyNextWeapon:
-			if (pPlayer && !g_pTrans->m_bNextWeaponKey)
-				{
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				g_pTrans->Autopilot(false);
-				pPlayer->SetFireMain(false);
-				pPlayer->ReadyNextWeapon(1);
-				g_pTrans->m_bNextWeaponKey = true;
-				}
+			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+			g_pTrans->Autopilot(false);
+			pPlayer->SetFireMain(false);
+			pPlayer->ReadyNextWeapon(1);
 			break;
 
 		case CGameKeys::keyPrevWeapon:
-			if (pPlayer && !g_pTrans->m_bPrevWeaponKey)
-				{
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				g_pTrans->Autopilot(false);
-				pPlayer->SetFireMain(false);
-				pPlayer->ReadyNextWeapon(-1);
-				g_pTrans->m_bPrevWeaponKey = true;
-				}
+			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+			g_pTrans->Autopilot(false);
+			pPlayer->SetFireMain(false);
+			pPlayer->ReadyNextWeapon(-1);
 			break;
 
 		case CGameKeys::keyThrustForward:
@@ -239,25 +234,17 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 			break;
 
 		case CGameKeys::keyNextMissile:
-			if (!g_pTrans->m_bNextMissileKey)
-				{
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				g_pTrans->Autopilot(false);
-				pPlayer->ReadyNextMissile(1);
-				pPlayer->SetUIMessageEnabled(uimsgSwitchMissileHint, false);
-				g_pTrans->m_bNextMissileKey = true;
-				}
+			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+			g_pTrans->Autopilot(false);
+			pPlayer->ReadyNextMissile(1);
+			pPlayer->SetUIMessageEnabled(uimsgSwitchMissileHint, false);
 			break;
 
 		case CGameKeys::keyPrevMissile:
-			if (!g_pTrans->m_bPrevMissileKey)
-				{
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				g_pTrans->Autopilot(false);
-				pPlayer->ReadyNextMissile(-1);
-				pPlayer->SetUIMessageEnabled(uimsgSwitchMissileHint, false);
-				g_pTrans->m_bPrevMissileKey = true;
-				}
+			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+			g_pTrans->Autopilot(false);
+			pPlayer->ReadyNextMissile(-1);
+			pPlayer->SetUIMessageEnabled(uimsgSwitchMissileHint, false);
 			break;
 
 		case CGameKeys::keyShowHelp:
@@ -378,26 +365,6 @@ void CGameSession::ExecuteCommandEnd (CPlayerShipController *pPlayer, CGameKeys:
 
 		case CGameKeys::keyFireMissile:
 			pPlayer->SetFireMissile(false);
-			break;
-
-		case CGameKeys::keyNextWeapon:
-			g_pTrans->m_bNextWeaponKey = false;
-			break;
-
-		case CGameKeys::keyNextMissile:
-			g_pTrans->m_bNextMissileKey = false;
-			break;
-
-		case CGameKeys::keyPrevWeapon:
-			g_pTrans->m_bPrevWeaponKey = false;
-			break;
-
-		case CGameKeys::keyPrevMissile:
-			g_pTrans->m_bPrevMissileKey = false;
-			break;
-
-		case CGameKeys::keyDock:
-			g_pTrans->m_bDockKeyDown = false;
 			break;
 
 		case CGameKeys::keyPause:
