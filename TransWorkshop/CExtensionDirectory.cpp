@@ -227,6 +227,11 @@ bool CExtensionDirectory::Init (const CString &sRootPath, const CString &sFilesp
         if (*FileDesc.sFilename.GetASCIIZPointer() == '_')
             continue;
 
+		//	Skip Transcendence.tdb file
+
+		if (strEquals(FileDesc.sFilename, TRANSCENDENCE_TDB))
+			continue;
+
         //	Get path and extension
 
         CString sFilepath = pathAddComponent(sPath, FileDesc.sFilename);
@@ -275,7 +280,7 @@ bool CExtensionDirectory::Init (const CString &sRootPath, const CString &sFilesp
         else
             {
             delete pExtension;
-            printf("WARNING: Unknoen extension type: %s\n", (LPSTR)pRoot->GetTag());
+            printf("WARNING: Unknown extension type: %s\n", (LPSTR)pRoot->GetTag());
             continue;
             }
 

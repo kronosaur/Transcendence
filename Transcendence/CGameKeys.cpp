@@ -502,6 +502,9 @@ CGameKeys::CGameKeys (void) :
 	{
 	ASSERT(GAME_KEY_DATA_COUNT == CGameKeys::keyCount);
     SetLayout(layoutDefault);
+
+	for (int i = 0; i < 256; i++)
+		m_CustomMap[i] = keyNone;
 	}
 
 void CGameKeys::GetCommands (TArray<SCommandKeyDesc> &Result) const
