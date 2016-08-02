@@ -1813,6 +1813,20 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 	if (error = m_Model.Init(m_Settings))
 		return error;
 
+	//	If the clouds services have not been initialized yet (because there was no
+	//	<Services> tag in the settings file) then initialize to defaults here.
+	//	(We need to do this BEFORE we ask the services for extension folders.)
+
+	if (m_Service.IsEmpty())
+		{
+		bool bModified;
+		if (error = m_Service.InitFromXML(m_HI, NULL, &bModified))
+			return error;
+
+		if (bModified)
+			m_Settings.SetModified();
+		}
+
 	//	Figure out where the Collection folder is and where the Extension
 	//	folders are.
 
@@ -1844,19 +1858,6 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 	//	(this will load the universe)
 
 	m_HI.AddBackgroundTask(new CInitModelTask(m_HI, m_Model, m_Settings, sCollectionFolder, ExtensionFolders), 0, this, CMD_MODEL_INIT_DONE);
-
-	//	If the clouds services have not been initialized yet (because there was no
-	//	<Services> tag in the settings file) then initialize to defaults here.
-
-	if (m_Service.IsEmpty())
-		{
-		bool bModified;
-		if (error = m_Service.InitFromXML(m_HI, NULL, &bModified))
-			return error;
-
-		if (bModified)
-			m_Settings.SetModified();
-		}
 
 	//	Allow the service to load private info
 

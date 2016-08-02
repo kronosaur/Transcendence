@@ -345,13 +345,13 @@
 		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
 		
 		<ImageVariants>
-			<Image	imageID="&rsOvoidAsteroids;" imageX="0"  imageY="736"   imageWidth="172" imageHeight="172"/>
-			<Image	imageID="&rsOvoidAsteroids;" imageX="172"  imageY="736"   imageWidth="172" imageHeight="172"/>
-			<Image	imageID="&rsOvoidAsteroids;" imageX="344"  imageY="736"   imageWidth="172" imageHeight="172"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="0"    imageY="736"   imageWidth="180" imageHeight="180"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="180"  imageY="736"   imageWidth="180" imageHeight="180"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="360"  imageY="736"   imageWidth="180" imageHeight="180"/>
 			
-			<Image	imageID="&rsOvoidAsteroids;" imageX="0"  imageY="908"   imageWidth="172" imageHeight="172"/>
-			<Image	imageID="&rsOvoidAsteroids;" imageX="172"  imageY="908"   imageWidth="172" imageHeight="172"/>
-			<Image	imageID="&rsOvoidAsteroids;" imageX="344"  imageY="908"   imageWidth="172" imageHeight="172"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="0"    imageY="916"   imageWidth="180" imageHeight="180"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="180"  imageY="916"   imageWidth="180" imageHeight="180"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="360"  imageY="916"   imageWidth="180" imageHeight="180"/>
 		</ImageVariants>
 	</StationType>
 

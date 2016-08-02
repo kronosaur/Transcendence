@@ -7,6 +7,10 @@
 
 #define FILE_TYPE_TDB							CONSTLIT("tdb")
 
+#define UPLOAD_SWITCH							CONSTLIT("upload")
+
+#define STR_TRUE								CONSTLIT("true")
+
 bool CCmdUpload::Execute (CSteamCtx &Ctx, CString *retsError)
 
 //  Execute
@@ -154,11 +158,15 @@ bool CCmdUpload::Init (CXMLElement *pCmdLine, CString *retsError)
 //  Initialize from command line.
 
     {
-    m_sFilespec = pCmdLine->GetContentText(0);
-    if (m_sFilespec.IsBlank())
+    m_sFilespec = pCmdLine->GetAttribute(UPLOAD_SWITCH);
+    if (m_sFilespec.IsBlank() || strEquals(m_sFilespec, STR_TRUE))
         {
-        *retsError = CONSTLIT("Expected TDB filespec to upload.");
-        return false;
+		m_sFilespec = pCmdLine->GetContentText(0);
+		if (m_sFilespec.IsBlank())
+			{
+			*retsError = CONSTLIT("Expected TDB filespec to upload.");
+			return false;
+			}
         }
 
     //  Path must exist

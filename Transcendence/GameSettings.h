@@ -135,6 +135,8 @@ class CGameKeys
         inline ELayouts GetLayout (void) const { return m_iLayout; }
         CString GetLayoutName (ELayouts iLayout) const;
         inline bool IsModified (void) const { return m_bModified; }
+		bool IsNonRepeatCommand (Keys iCommand) const;
+		bool IsStatefulCommand (Keys iCommand) const;
 		ALERROR ReadFromXML (CXMLElement *pDesc);
         void SetGameKey (const CString &sKeyID, Keys iCommand);
         void SetLayout (ELayouts iLayout);

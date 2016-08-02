@@ -53,6 +53,7 @@ END
 // remains consistent on all systems.
 APPICON                 ICON                    "Resources\\Transcendence.ico"
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -64,8 +65,8 @@ VS_VERSION_INFO$(MULTIVERSE_BUILD) VERSIONINFO
 #else
 VS_VERSION_INFO VERSIONINFO
 #endif
- FILEVERSION 1,7,102,1
- PRODUCTVERSION 1,7,102,1
+ FILEVERSION 1,7,102,3
+ PRODUCTVERSION 1,7,102,3
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -82,13 +83,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Kronosaur Productions, LLC"
             VALUE "FileDescription", "Transcendence"
-            VALUE "FileVersion", "1.7.102.1"
+            VALUE "FileVersion", "1.7.102.3"
             VALUE "InternalName", "Transcendence"
             VALUE "LegalCopyright", "Copyright © 2003-2016 Kronosaur Productions, LLC. All Rights Reserved."
             VALUE "LegalTrademarks", "Transcendence is a registered trademark of Kronosaur Productions, LLC."
             VALUE "OriginalFilename", "Transcendence.exe"
             VALUE "ProductName", "Transcendence"
-            VALUE "ProductVersion", "1.7 Alpha 2"
+            VALUE "ProductVersion", "1.7 Alpha 2b"
         END
     END
     BLOCK "VarFileInfo"
@@ -104,8 +105,8 @@ VS_VERSION_INFO$(STEAM_BUILD) VERSIONINFO
 #else
 VS_VERSION_INFO VERSIONINFO
 #endif
- FILEVERSION 1,6,403,1
- PRODUCTVERSION 1,6,403,1
+ FILEVERSION 1,7,102,3
+ PRODUCTVERSION 1,7,102,3
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -122,13 +123,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Kronosaur Productions, LLC"
             VALUE "FileDescription", "Transcendence"
-            VALUE "FileVersion", "1.6.403.1"
+            VALUE "FileVersion", "1.7.102.3"
             VALUE "InternalName", "Transcendence"
-            VALUE "LegalCopyright", "Copyright © 2003-2015 Kronosaur Productions, LLC. All Rights Reserved."
+            VALUE "LegalCopyright", "Copyright © 2003-2016 Kronosaur Productions, LLC. All Rights Reserved."
             VALUE "LegalTrademarks", "Transcendence is a registered trademark of Kronosaur Productions, LLC."
             VALUE "OriginalFilename", "Transcendence.exe"
             VALUE "ProductName", "Transcendence"
-            VALUE "ProductVersion", "1.6.3 Steam"
+            VALUE "ProductVersion", "1.7 Alpha 2b Steam"
         END
     END
     BLOCK "VarFileInfo"
@@ -145,14 +146,23 @@ END
 //
 
 IDR_TITLE_IMAGE         JPEG                    "Resources\\Title.jpg"
+
 IDR_STARGATE_IMAGE      JPEG                    "Resources\\Stargate.JPG"
+
 IDR_GAME_BUTTONS_IMAGE  JPEG                    "Resources\\GameButtonIcons.jpg"
+
 IDR_ICON_DISPLAY_IMAGE  JPEG                    "Resources\\IconDisplay.jpg"
+
 IDR_HELP_BACKGROUND     JPEG                    "Resources\\Help Screen.jpg"
+
 IDR_SELECT_SHIP_IMAGE   JPEG                    "Resources\\SelectShipIcons.jpg"
+
 IDR_GAME_STATS_SCREEN   JPEG                    "Resources\\Game Stats Screen.jpg"
+
 JPEG_DAMAGE_TYPE_ICONS  JPEG                    "Resources\\DamageTypes.jpg"
+
 JPEG_UI_ICONS           JPEG                    "Resources\\UIIcons.jpg"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -160,8 +170,11 @@ JPEG_UI_ICONS           JPEG                    "Resources\\UIIcons.jpg"
 //
 
 IDR_STARGATE_MASK       BITMAP                  "Resources\\StargateMask.BMP"
+
 BMP_DAMAGE_TYPE_ICONS_MASK BITMAP                  "Resources\\DamageTypesMask.bmp"
+
 BMP_UI_ICONS_MASK       BITMAP                  "Resources\\UIIconsMask.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -169,12 +182,19 @@ BMP_UI_ICONS_MASK       BITMAP                  "Resources\\UIIconsMask.bmp"
 //
 
 DXFN_HEADER             DXFN                    "Resources\\Header.dxfn"
+
 DXFN_HEADER_BOLD        DXFN                    "Resources\\HeaderBold.dxfn"
+
 DXFN_SUBTITLE           DXFN                    "Resources\\SubTitle.dxfn"
+
 DXFN_SUBTITLE_BOLD      DXFN                    "Resources\\SubTitleBold.dxfn"
+
 DXFN_SUBTITLE_HEAVY_BOLD DXFN                    "Resources\\SubTitleHeavyBold.dxfn"
+
 DXFN_TITLE              DXFN                    "Resources\\Title.dxfn"
+
 DXFN_LOGO_TITLE         DXFN                    "Resources\\LogoTitle.dxfn"
+
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 

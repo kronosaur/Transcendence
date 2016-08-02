@@ -30,7 +30,9 @@ bool CCmdHelp::Execute (CSteamCtx &Ctx, CString *retsError)
 
     else
         {
-
+		printf("TransWorkshop [options]\n\n");
+		printf("   /upload {TDB file}    Upload TDB and dependencies.\n");
+		printf("   /?                    Show help.\n");
         }
 
     return true;

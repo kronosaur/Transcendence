@@ -32,6 +32,8 @@ void CTransWorkshop::Run (CXMLElement *pCmdLine)
         return;
         }
 
+	printf("\n");
+
     //  Parse the command line
 
     ITransCommand *pCmd;
@@ -72,7 +74,7 @@ bool CTransWorkshop::ParseCommandLine (CXMLElement *pCmdLine, ITransCommand **re
     ITransCommand *pCmd;
     if (pCmdLine->GetAttributeBool(NOARGS))
         pCmd = new CCmdHelp;
-    else if (pCmdLine->GetAttributeBool(UPLOAD_SWITCH))
+    else if (pCmdLine->FindAttribute(UPLOAD_SWITCH))
         pCmd = new CCmdUpload;
     else
         pCmd = NULL;

@@ -393,6 +393,8 @@ struct SGameKeyData
         {
         FLAG_HIDDEN =       0x00000001,
         FLAG_DEBUG_ONLY =   0x00000002,
+		FLAG_STATEFULL =	0x00000004,		//	Tracks when key is down vs. up (thrust, fire, etc.).
+		FLAG_NO_REPEAT =	0x00000008,		//	Ignore repeated keys
         };
 
 	char *pszName;
@@ -404,30 +406,30 @@ SGameKeyData g_GameKeyData[CGameKeys::keyCount] =
 	{
 		{	NULL },	//	keyNone
 
-		{	"Autopilot",            "Autopilot",                    0 },
-		{	"EnableDevices",        "Enable/Disable Devices",       0 },
-		{	"Communications",       "Communications",               0 },
-		{	"Dock",                 "Request Dock",                 0 },
+		{	"Autopilot",            "Autopilot",                    SGameKeyData::FLAG_NO_REPEAT },
+		{	"EnableDevices",        "Enable/Disable Devices",       SGameKeyData::FLAG_NO_REPEAT },
+		{	"Communications",       "Communications",               SGameKeyData::FLAG_NO_REPEAT },
+		{	"Dock",                 "Request Dock",                 SGameKeyData::FLAG_NO_REPEAT },
 		{	"TargetNextFriendly",   "Target Next Friendly",         0 },
-		{	"EnterGate",            "Enter Stargate",               0 },
-		{	"InvokePower",          "Invoke Power",                 0 },
-		{	"ShowMap",              "System Map",                   0 },
-		{	"Pause",                "Pause Game",                   0 },
-		{	"CommandSquadron",      "Squadron Communications",      0 },
+		{	"EnterGate",            "Enter Stargate",               SGameKeyData::FLAG_NO_REPEAT },
+		{	"InvokePower",          "Invoke Power",                 SGameKeyData::FLAG_NO_REPEAT },
+		{	"ShowMap",              "System Map",                   SGameKeyData::FLAG_NO_REPEAT },
+		{	"Pause",                "Pause Game",                   SGameKeyData::FLAG_NO_REPEAT },
+		{	"CommandSquadron",      "Squadron Communications",      SGameKeyData::FLAG_NO_REPEAT },
 		{	"ClearTarget",          "Clear Target",                 0 },
-		{	"ShipStatus",           "Ship's Status",                0 },
+		{	"ShipStatus",           "Ship's Status",                SGameKeyData::FLAG_NO_REPEAT },
 		{	"TargetNextEnemy",      "Target Next Enemy",            0 },
-		{	"UseItem",              "Use Item",                     0 },
-		{	"NextWeapon",           "Select Next Weapon",           0 },
-		{	"ThrustForward",        "Forward Thrust",               0 },
-		{	"Stop",                 "Stop Momentum",                0 },
-		{	"RotateLeft",           "Rotate Left",                  0 },
-		{	"RotateRight",          "Rotate Right",                 0 },
-		{	"FireWeapon",           "Fire Weapon",                  0 },
-		{	"FireMissile",          "Fire Missile",                 0 },
-		{	"NextMissile",          "Select Next Missile",          0 },
-		{	"ShowHelp",             "Help",                         0 },
-		{	"ShowGameStats",        "Game Stats",                   0 },
+		{	"UseItem",              "Use Item",                     SGameKeyData::FLAG_NO_REPEAT },
+		{	"NextWeapon",           "Select Next Weapon",           SGameKeyData::FLAG_NO_REPEAT },
+		{	"ThrustForward",        "Forward Thrust",               SGameKeyData::FLAG_STATEFULL },
+		{	"Stop",                 "Stop Momentum",                SGameKeyData::FLAG_STATEFULL },
+		{	"RotateLeft",           "Rotate Left",                  SGameKeyData::FLAG_STATEFULL },
+		{	"RotateRight",          "Rotate Right",                 SGameKeyData::FLAG_STATEFULL },
+		{	"FireWeapon",           "Fire Weapon",                  SGameKeyData::FLAG_STATEFULL },
+		{	"FireMissile",          "Fire Missile",                 SGameKeyData::FLAG_STATEFULL },
+		{	"NextMissile",          "Select Next Missile",          SGameKeyData::FLAG_NO_REPEAT },
+		{	"ShowHelp",             "Help",                         SGameKeyData::FLAG_NO_REPEAT },
+		{	"ShowGameStats",        "Game Stats",                   SGameKeyData::FLAG_NO_REPEAT },
 		{	NULL },
 		{	NULL },
 		{	NULL },
@@ -448,7 +450,7 @@ SGameKeyData g_GameKeyData[CGameKeys::keyCount] =
 		{	"Special0",    NULL,                            SGameKeyData::FLAG_HIDDEN  },
 
 		{	"EnableAllDevices",    NULL,                            SGameKeyData::FLAG_HIDDEN },
-		{	"DisableAllDevices",    NULL,                            SGameKeyData::FLAG_HIDDEN },
+		{	"DisableAllDevices",    NULL,                           SGameKeyData::FLAG_HIDDEN },
 		{	"ToggleEnableAllDevices",    NULL,                            SGameKeyData::FLAG_HIDDEN },
 		{	"ToggleEnableDevice00",    NULL,                            SGameKeyData::FLAG_HIDDEN	},
 		{	"ToggleEnableDevice01",    NULL,                            SGameKeyData::FLAG_HIDDEN	},
@@ -483,11 +485,11 @@ SGameKeyData g_GameKeyData[CGameKeys::keyCount] =
 		{	"ToggleEnableDevice30",    NULL,                            SGameKeyData::FLAG_HIDDEN	},
 		{	"ToggleEnableDevice31",    NULL,                            SGameKeyData::FLAG_HIDDEN	},
 
-		{	"TargetPreviousFriendly",   "Target Previous Friendly",     SGameKeyData::FLAG_HIDDEN	},
-		{	"TargetPreviousEnemy",      "Target Previous Enemy",        SGameKeyData::FLAG_HIDDEN	},
-		{	"PreviousWeapon",           "Select Previous Weapon",       SGameKeyData::FLAG_HIDDEN	},
-		{	"PreviousMissile",          "Select Previous Missile",      SGameKeyData::FLAG_HIDDEN	},
-		{	"ShowGalacticMap",          "Stargate Map",                 0 },
+		{	"TargetPreviousFriendly",   "Target Previous Friendly",     SGameKeyData::FLAG_NO_REPEAT | SGameKeyData::FLAG_HIDDEN	},
+		{	"TargetPreviousEnemy",      "Target Previous Enemy",        SGameKeyData::FLAG_NO_REPEAT | SGameKeyData::FLAG_HIDDEN	},
+		{	"PreviousWeapon",           "Select Previous Weapon",       SGameKeyData::FLAG_NO_REPEAT | SGameKeyData::FLAG_HIDDEN	},
+		{	"PreviousMissile",          "Select Previous Missile",      SGameKeyData::FLAG_NO_REPEAT | SGameKeyData::FLAG_HIDDEN	},
+		{	"ShowGalacticMap",          "Stargate Map",                 SGameKeyData::FLAG_NO_REPEAT },
 	};
 
 const int GAME_KEY_DATA_COUNT = (sizeof(g_GameKeyData) / sizeof(g_GameKeyData[0]));
@@ -500,6 +502,9 @@ CGameKeys::CGameKeys (void) :
 	{
 	ASSERT(GAME_KEY_DATA_COUNT == CGameKeys::keyCount);
     SetLayout(layoutDefault);
+
+	for (int i = 0; i < 256; i++)
+		m_CustomMap[i] = keyNone;
 	}
 
 void CGameKeys::GetCommands (TArray<SCommandKeyDesc> &Result) const
@@ -744,6 +749,30 @@ CString CGameKeys::GetLayoutName (ELayouts iLayout) const
             return CONSTLIT("(Unknown)");
         }
     }
+
+bool CGameKeys::IsNonRepeatCommand (Keys iCommand) const
+
+//	IsNonRepeatCommand
+//
+//	Returns TRUE if this command ignored repeated keys.
+
+	{
+	ASSERT(iCommand > 0 && iCommand < keyCount);
+    const SGameKeyData &Data = g_GameKeyData[iCommand];
+	return (Data.dwFlags & SGameKeyData::FLAG_NO_REPEAT ? true : false);
+	}
+
+bool CGameKeys::IsStatefulCommand (Keys iCommand) const
+
+//	IsStatefulCommand
+//
+//	Returns TRUE if this command tracks the state of a key (up or down).
+
+	{
+	ASSERT(iCommand > 0 && iCommand < keyCount);
+    const SGameKeyData &Data = g_GameKeyData[iCommand];
+	return (Data.dwFlags & SGameKeyData::FLAG_STATEFULL ? true : false);
+	}
 
 ALERROR CGameKeys::ReadFromXML (CXMLElement *pDesc)
 

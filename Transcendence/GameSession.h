@@ -93,6 +93,8 @@ class CGameSession : public IHISession
         		m_iDamageFlash(0)
 			{ }
 
+		void ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Keys iCommand);
+		void ExecuteCommandEnd (CPlayerShipController *pPlayer, CGameKeys::Keys iCommand);
         void ShowSystemMap (bool bShow = true);
 
         //  Notifications from player ship, etc.
@@ -118,14 +120,15 @@ class CGameSession : public IHISession
         virtual ALERROR OnInit (CString *retsError) override;
         virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
         virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) override;
-		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) override { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override { g_pTrans->WMLButtonDown(x, y, dwFlags); }
-		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) override { g_pTrans->WMLButtonUp(x, y, dwFlags); }
-		virtual void OnMouseMove (int x, int y, DWORD dwFlags) override { g_pTrans->WMMouseMove(x, y, dwFlags); }
+		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) override;
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override;
+		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) override;
+		virtual void OnMouseMove (int x, int y, DWORD dwFlags) override;
         virtual void OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags) override;
 		virtual void OnMove (int x, int y) override { g_pTrans->WMMove(x, y); }
-		virtual void OnRButtonDown (int x, int y, DWORD dwFlags) override { g_pTrans->WMRButtonDown(x, y, dwFlags); }
-		virtual void OnRButtonUp (int x, int y, DWORD dwFlags) override { g_pTrans->WMRButtonUp(x, y, dwFlags); }
+		virtual void OnRButtonDblClick (int x, int y, DWORD dwFlags) override;
+		virtual void OnRButtonDown (int x, int y, DWORD dwFlags) override;
+		virtual void OnRButtonUp (int x, int y, DWORD dwFlags) override;
 		virtual void OnReportHardCrash (CString *retsMessage) override { *retsMessage = g_pTrans->GetCrashInfo(); }
 		virtual void OnSize (int cxWidth, int cyHeight) override { g_pTrans->WMSize(cxWidth, cyHeight, 0); }
 
