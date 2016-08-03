@@ -72,7 +72,7 @@ void CExtensionDirectory::AddLibrary (CSimpleLibraryResolver &Resolver, DWORD dw
     Resolver.AddTable(&pExtension->Entities);
     }
 
-bool CExtensionDirectory::CalcRequiredFiles (DWORD dwUNID, TArray<DWORD> &Files) const
+bool CExtensionDirectory::CalcRequiredFiles (DWORD dwUNID, TArray<DWORD> &Files, CString *retsError) const
 
 //  CalcRequiredFiles
 //
@@ -83,12 +83,6 @@ bool CExtensionDirectory::CalcRequiredFiles (DWORD dwUNID, TArray<DWORD> &Files)
 
     Files.DeleteAll();
 
-    //  Find the root extension.
-
-    SExtensionDesc *pRoot;
-    if (!m_Extensions.Find(dwUNID, &pRoot))
-        return false;
-
     //  Clear all marks
 
     for (i = 0; i < m_Extensions.GetCount(); i++)
@@ -96,7 +90,7 @@ bool CExtensionDirectory::CalcRequiredFiles (DWORD dwUNID, TArray<DWORD> &Files)
 
     //  Recursively mark all files used by the given extension.
 
-    if (!MarkRequiredExtensions(pRoot))
+    if (!MarkRequiredExtensions(dwUNID, retsError))
         return false;
 
     //  Return marked files.
@@ -149,7 +143,7 @@ bool CExtensionDirectory::FindLibraryEntities (DWORD dwUNID, CExternalEntityTabl
     return true;
     }
 
-bool CExtensionDirectory::GetExtensionInfo (DWORD dwUNID, SExtensionInfo &retInfo) const
+bool CExtensionDirectory::GetExtensionInfo (DWORD dwUNID, SExtensionInfo &retInfo, CString *retsError) const
 
 //  GetExtensionInfo
 //
@@ -174,14 +168,25 @@ bool CExtensionDirectory::GetExtensionInfo (DWORD dwUNID, SExtensionInfo &retInf
     if (!CalcRequiredFiles(dwUNID, retInfo.Dependencies))
         return false;
 
-    //  Generate a list of all required files
+    //  Generate a list of all required files (but exclude core files, which 
+	//	always ship separately).
 
     retInfo.Files.Insert(pExtension->sFilespec);
     for (i = 0; i < retInfo.Dependencies.GetCount(); i++)
         {
+		//	If this dependency is a core file, then skip it.
+
+		if (IsOfficialUNID(retInfo.Dependencies[i]))
+			continue;
+
+		//	Make sure this library exists
+
         SExtensionDesc *pDependency;
         if (!m_Extensions.Find(retInfo.Dependencies[i], &pDependency))
+			{
+			if (retsError) *retsError = strPatternSubst(CONSTLIT("Unable to find TDB for extension %08x."), retInfo.Dependencies[i]);
             return false;
+			}
 
         retInfo.Files.Insert(pDependency->sFilespec);
         }
@@ -435,14 +440,8 @@ bool CExtensionDirectory::MarkLibraries (SExtensionDesc *pExtension, CResourceDb
         if (strEquals(pType->GetTag(), LIBRARY_TAG))
             {
             DWORD dwUNID = pType->GetAttributeInteger(ATTRIB_UNID);
-            SExtensionDesc *pLibrary;
-            if (!m_Extensions.Find(dwUNID, &pLibrary))
-                {
-                if (retsError) *retsError = strPatternSubst(CONSTLIT("Unable to find library %08x."), dwUNID);
-                return false;
-                }
 
-            if (!MarkRequiredExtensions(pLibrary, retsError))
+            if (!MarkRequiredExtensions(dwUNID, retsError))
                 return false;
             }
         else if (strEquals(pType->GetTag(), MODULE_TAG))
@@ -498,13 +497,28 @@ bool CExtensionDirectory::MarkModule (SExtensionDesc *pExtension, CResourceDb &R
     return true;
     }
 
-bool CExtensionDirectory::MarkRequiredExtensions (SExtensionDesc *pExtension, CString *retsError) const
+bool CExtensionDirectory::MarkRequiredExtensions (DWORD dwUNID, CString *retsError) const
 
 //  MarkRequiredExtensions
 //
 //  Mark the given extension, and any extensions required.
 
     {
+	//	If we're an official library, then skip, since we never upload those
+	//	either.
+
+	if (IsOfficialUNID(dwUNID))
+		return true;
+
+	//	Find the extension
+
+    SExtensionDesc *pExtension;
+    if (!m_Extensions.Find(dwUNID, &pExtension))
+        {
+        if (retsError) *retsError = strPatternSubst(CONSTLIT("Unable to find extension %08x."), dwUNID);
+        return false;
+        }
+
     //  If we're already marked, then nothing to do.
 
     if (pExtension->bMarked)
