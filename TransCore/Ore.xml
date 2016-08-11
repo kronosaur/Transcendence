@@ -304,10 +304,10 @@
 
 <!-- LEVEL 9 -->
 	
-	<!-- itHadronArcheolith -->
+	<!-- itHadronArchaeolith -->
 
-	<ItemType UNID="&itHadronArcheolith;"
-			name=				"[ton(s) of ]hadron archeolith"
+	<ItemType UNID="&itHadronArchaeolith;"
+			name=				"[ton(s) of ]hadron archaeolith"
 			level=				"9"
 			value=				"4000"
 			mass=				"1000"
@@ -317,7 +317,7 @@
 
 			description=		"This rare resource was originally created in the Big Bang and cannot be replenished. It is used today as a fuel for zero-point energy generators."
 
-			sortName=			"hadron archeolith, ton of"
+			sortName=			"hadron archaeolith, ton of"
 			>
 
 		<Image imageID="&rsItems1;" imageX="96" imageY="576" imageWidth="96" imageHeight="96"/>
