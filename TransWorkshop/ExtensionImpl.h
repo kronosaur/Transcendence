@@ -51,7 +51,7 @@ class CExtensionDirectory
 
         bool FindByFilespec (const CString &sFilespec, DWORD *retdwUNID = NULL) const;
         bool FindLibraryEntities (DWORD dwUNID, CExternalEntityTable **retpTable) const;
-        bool GetExtensionInfo (DWORD dwUNID, SExtensionInfo &retInfo) const;
+        bool GetExtensionInfo (DWORD dwUNID, SExtensionInfo &retInfo, CString *retsError = NULL) const;
         bool Init (const CString &sRootPath, const CString &sFilespec, CString *retsError = NULL);
 
     private:
@@ -76,11 +76,11 @@ class CExtensionDirectory
 
         void AddCoreLibraries (CSimpleLibraryResolver &Resolver, SExtensionDesc *pExtension) const;
         void AddLibrary (CSimpleLibraryResolver &Resolver, DWORD dwUNID) const;
-        bool CalcRequiredFiles (DWORD dwUNID, TArray<DWORD> &Files) const;
+        bool CalcRequiredFiles (DWORD dwUNID, TArray<DWORD> &Files, CString *retsError = NULL) const;
         bool InitCore (const CString &sRootPath, CString *retsError = NULL);
         bool MarkLibraries (SExtensionDesc *pExtension, CResourceDb &Resources, CXMLElement *pRoot, CSimpleLibraryResolver &Resolver, CString *retsError) const;
         bool MarkModule (SExtensionDesc *pExtension, CResourceDb &Resources, CXMLElement *pModule, CSimpleLibraryResolver &Resolver, CString *retsError) const;
-        bool MarkRequiredExtensions (SExtensionDesc *pExtension, CString *retsError = NULL) const;
+        bool MarkRequiredExtensions (DWORD dwUNID, CString *retsError = NULL) const;
 
         CString m_sRootPath;                //  Path for Transcendence.tdb
         TSortMap<DWORD, SExtensionDesc *> m_Extensions;
