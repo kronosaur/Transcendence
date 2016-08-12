@@ -2106,6 +2106,8 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 //	and m_pDefaultScreensRoot
 
 	{
+	DEBUG_TRY
+
 	ALERROR error;
 	CCodeChain &CC = m_Universe.GetCC();
 
@@ -2272,6 +2274,8 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 		m_DockFrames.SetCurrentPane(sNewPane);
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 void CTranscendenceModel::ShowShipScreen (void)

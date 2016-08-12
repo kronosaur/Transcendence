@@ -1140,6 +1140,8 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 //	that has been initialized appropriately.
 
 	{
+	DEBUG_TRY
+
 	ALERROR error;
 	int i;
 
@@ -1256,6 +1258,11 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	//	Get the list of panes for this screen
 
 	m_pPanes = m_pDesc->GetContentElementByTag(PANES_TAG);
+	if (m_pPanes == NULL)
+		{
+		::kernelDebugLogMessage("ERROR: No <Panes> tag defined.");
+		return ERR_FAIL;
+		}
 
 	//	Create the main display object based on the type parameter.
 
@@ -1375,6 +1382,8 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	*retpScreen = m_pScreen;
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 ALERROR CDockScreen::ReportError (const CString &sError)
@@ -1755,6 +1764,8 @@ void CDockScreen::ShowPane (const CString &sName)
 //	Shows the pane of the given name
 
 	{
+	DEBUG_TRY
+
 	const CVisualPalette &VI = g_pHI->GetVisuals();
 
 #ifdef DEBUG_STRING_LEAKS
@@ -1818,6 +1829,8 @@ void CDockScreen::ShowPane (const CString &sName)
 #ifdef DEBUG_STRING_LEAKS
 	CString::DebugOutputLeakedStrings();
 #endif
+
+	DEBUG_CATCH
 	}
 
 void CDockScreen::SelectNextItem (bool *retbMore)
