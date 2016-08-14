@@ -1795,7 +1795,7 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 
 	//	Set the new system
 
-	m_Universe.SetNewSystem(pNewSystem, pShip, pStart);
+	m_Universe.SetNewSystem(pNewSystem, pStart);
 
 	//	Move any henchmen through the stargate (note: we do this here because
 	//	we need to remove the henchmen out of the old system before we save).
