@@ -1092,33 +1092,41 @@
 	<StationType UNID="&stKorolovShipping;"
 			name=				"Korolov Shipping"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+				 
+			attributes=			"corporate, corporateCustoms, corporateDecon, envAir, envEarth, envFire, envWater, friendly, generic, human, majorStation, korolovShipping, populated"
+				 
 			dockScreen=			"Dispatch"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"10"
-			canAttack=			"true"
-
-			multiHull=			"true"
+			
+			size=				"390"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"470"
+			multiHull=			"true"
 			regen=              "1.4"
 			shipRepairRate=		"3"
+				 
+			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"corporate, corporateCustoms, corporateDecon, envAir, envEarth, envFire, envWater, friendly, generic, human, majorStation, korolovShipping, populated"
-			levelFrequency=		"ccc-- ----- ----- ----- -----"
-			unique=				"inSystem"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="50"
 
 			noArticle=			"true"
 			>
 
-		<Image			imageID="&rsStations1;" imageX="256" imageY="0" imageWidth="224" imageHeight="224"/>
+		<!-- Encounter Info -->
+
+		<Encounter
+				levelFrequency=		"ccc-- ----- ----- ----- -----"
+				locationCriteria=	"+planetary"
+				unique=				"inSystem"
+				enemyExclusionRadius="50"
+				/>
+
+		<!-- Trade and Items -->
 
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Sell	criteria="rNU L:1-5; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100" noDescription="true"/>
-			
+
 			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="90"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
@@ -1126,6 +1134,18 @@
 			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
 		</Trade>
 
+		<!-- Configuration -->
+
+		<!-- Satellites -->
+		
+		<Satellites>
+			<Orbitals count="1d4" distance="2d8+6" angle="random">
+				<Station type="&stSealedCargoContainer;"/>
+			</Orbitals>
+		</Satellites>
+
+		<!-- Ships and Defenses -->
+		
 		<Ships>
 			<Ship					count="1d2" class="&scRoninC;" orders="guard"/>
 			<Table count="1d4+1">
@@ -1138,408 +1158,27 @@
 			</Table>
 		</Ships>
 
-		<Satellites>
-			<Orbitals count="1d4" distance="2d8+6" angle="random">
-				<Station type="&stSealedCargoContainer;"/>
-			</Orbitals>
-		</Satellites>
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsKorolovShipping;" imageWidth="292" imageHeight="364"/>
 
-		<StaticData>
-			<assistantDirectorTable>
-				(	; last name
-					("Ash" )
-					("Burke" )
-					("Czerniawski" )
-					("Gordievsky" )
-					("Jones" )
-					("Leung" )
-					("Price" )
-					("Penkovsky" )
-					("Reagan" )
-					("Sheppard" )
-					("Sorge" )
-					("Valerii" )
-					)
-			</assistantDirectorTable>
+		<DockingPorts>
+			<Port x="-18"	y="128" />
+			<Port x="100"	y="127" />
+			<Port x="156"	y="31" />
+			<Port x="165"	y="-45" />
+			<Port x="98"	y="-75" />
+			<Port x="120"	y="-153" />
 
-			<freighterData>
-				(	; class			description
-					(&scAntaresI;	"The Antares I design is more than a hundred years old, built originally by the massive Polyarny Shipyards orbiting Ceres. Slow and unencumbered by armor, the Antares I can haul 30 kilotons of cargo, but only the most skilled pilots can protect it from pirate attack. Only Masters in the Korolov Shipping Corporation are rated to escort the Antares I class.")
-					(&scAntaresII;	"While sacrificing none of its cargo capacity, the Antares II has a top speed 50% higher than its predecessor. Escort pilots must have the rank of Journeyman or Master to defend the Antares II class.")
-					(&scAntaresV;	"The Antares V is basically a stretched version of the earlier II series. It has larger cargo capacity and upgraded weapons. Escort pilots must have the rank of Journeyman or Master to escort the Antares V class.")
-					(&scEI100;		"The EI100 class freighter was designed for fast interplanetary transportation. Early in its history, it even carried passengers, but today it carries light commodities. Because of the relatively low value of its cargo, the EI100 is often escorted by Apprentice pilots.")
-					(&scEI200;		"The EI200 class freighter is a larger and faster version of the 100 series. It has double the cargo capacity and upgraded armor and weapons. It is designed to transport small quantities of high-value cargo. The EI200 is so well defended that even Apprentices are allowed to escort them.")
-					(&scEI7000;		"The 7000 is the most powerful member of the EI freighter series. With a cargo capacity of 2 kilotons and heavy armor and weapons, the EI7000 is ideal for high-value cargos. Only Journeymen and Masters are rated to escort the EI7000 class.")
-					)
-			</freighterData>
+			<Port x="0"		y="-162" />
+			<Port x="-90"	y="-165" />
+			<Port x="-103"	y="-82" />
+			<Port x="-178"	y="-46" />
+			<Port x="-113"	y="43" />
+			<Port x="-98"	y="122" />
+		</DockingPorts>
 
-			<msgTableBeginEscort>
-				(
-					"Glad to have you with us, %name%"
-					"On course for %2%"
-					"%-1% reporting in"
-					"Nice to have you on our wing"
-					"%-1% on course"
-					"%-1% on course for %2%"
-					)
-			</msgTableBeginEscort>
-
-			<pirateData>
-				(	; class			description
-					(&scCorsair;	"The backbone of the Charon Pirate fleet consists of these fast and deadly gunships. Piloted by young and somewhat inexperienced pirates, they are nonetheless dangerous in large numbers.")
-					(&scViking;		"The Viking-class gunship is powerful and well-armored. It is slower than a Corsair, but more than fast enough to chase down a freighter.")
-					(&scCorsair-II;	"More than an upgrade, the Corsair-II sports shields and a missile launcher.")
-					(&scViking-II;	"The Viking-II is an upgraded version with shields and dual turbolasers.")
-					(&scDrake;		"The Drake is the pirates' mobile battering ram. Heavily armored and loaded with missiles, the Drake will pummel you to pieces from long range.")
-					(&scCharonFrigateRaider;	"The sight of these frigates brings fear to most freighter pilots. Fast, silent, and loaded with hurt, a Charon frigate can destroy a small fleet of escort ships. Do not challenge these ships unless you know what you're doing.")
-					)
-			</pirateData>
-		</StaticData>
-
-		<Events>
-			<GetGlobalAchievements>
-				(block (theList level missionsTotal missionsFailed)
-					(setq level (typGetGlobalData &stKorolovShipping; "level"))
-					(setq missionsTotal (typGetGlobalData &stKorolovShipping; "totalMissionCount"))
-					(setq missionsFailed (typGetGlobalData &stKorolovShipping; "totalMissionsFailed"))
-					
-					(if (and level (gr missionsTotal 0))
-						(setq theList (list
-							(list
-								"Korolov rank"
-								(switch
-									(eq level -1) "Blacklisted"
-									(eq level 1) "Apprentice"
-									(eq level 2) "Journeyman"
-									(eq level 3) "Master"
-									(eq level 4) "Legend"
-									(cat "ERROR: Korolov level: " level)
-									) 
-								)
-								
-							(list
-								"Korolov escort missions"
-								(intMissionAchievementString (subtract missionsTotal missionsFailed) missionsFailed)
-								"missions &amp; activities"
-								)
-							))
-						)
-						
-					theList
-					)
-			</GetGlobalAchievements>
-
-			<OnCreate>
-				(block (charonStronghold)
-					; Register a recurring event
-					(sysAddObjRecurringTimerEvent 240 gSource "OnTrafficControl")
-					(objSetData gSource "freightersInFlight" 0)
-					(objSetData gSource "missionCount" 0)
-
-					; Every station is overseen by a different AD
-					(objSetData gSource "assistantDirector"
-						(item (random (objGetStaticData gSource "assistantDirectorTable")) 0)
-						)
-
-					; Find the primary Charon stronghold in the system
-					(setq charonStronghold (chrGetPrimaryStronghold gSource))
-					(objSetObjRefData gSource "charonStronghold" charonStronghold)
-					(objRegisterForEvents gSource charonStronghold)
-					)
-			</OnCreate>
-
-			<OnDestroy>
-				(block Nil
-					(intCorporateOnDestroy)
-					(sysCancelTimerEvent gSource "OnTrafficControl")
-					)
-			</OnDestroy>
-
-			<OnObjDestroyed>
-				(block (missionID)
-					(setq missionID (objGetData gSource "missionID"))
-
-					(switch
-						; If a freighter on a mission got destroyed, deal with it
-						(and (eq aObjDestroyed (objGetObjRefData gSource "missionFreighter"))
-								(eq (objGetData gSource "missionStatus") 'inprogress)
-								(or (eq missionID 'escortRoundTrip) (eq missionID 'escortToGate))
-								)
-							(block Nil
-								(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
-									(block Nil
-										(korMissionFailure aObjDestroyed)
-										(objSetData gSource "missionStatus" "destroyedByPlayer")
-										(plyMessage gPlayer "Mission failed")
-										)
-									(block Nil
-										(korMissionFailure aObjDestroyed)
-										(objSetData gSource "missionStatus" "destroyed")
-										(plyMessage gPlayer "Mission failed")
-										)
-									)
-								)
-
-						; If we destroyed the charon stronghold, then mission accomplished
-						(eq aObjDestroyed (objGetObjRefData gSource "charonStronghold"))
-							(block (destroyedByPlayer)
-								(setq destroyedByPlayer (and gPlayerShip (eq aOrderGiver gPlayerShip)))
-
-								(if (and (eq missionID 'hitStronghold) (eq (objGetData gSource "missionStatus") 'inprogress))
-									(block (xpBonus)
-										(setq xpBonus (if destroyedByPlayer 250 100))
-										(korMissionStrongholdSuccess xpBonus destroyedByPlayer)
-										(objSetData gSource "missionStatus" 'success)
-
-										(shpCancelOrders gPlayerShip)
-										(plyMessage gPlayer "Mission complete!")
-										)
-									)
-
-								(objUnregisterForEvents gSource aObjDestroyed)
-								(objSetData gSource "charonDominates" Nil)
-								(objSetData gSource "hitStronghold" Nil)
-								)
-
-						; If the mission leader got destroyed, then deal with it
-						(and (objGetData gSource "hitStronghold")
-								(eq aObjDestroyed (objGetObjRefData gSource "missionLeader"))
-								)
-							(block Nil
-								; If the player is not participating in the mission, then we failed
-								(if (not (eq (objGetData gSource "missionStatus") 'inprogress))
-									(block Nil
-										(objSetData gSource "charonDominates" True)
-										(objSetData gSource "hitStronghold" Nil)
-										)
-									)
-								)
-
-						; If one of our freighters got destroyed, decrement our count
-						(objGetData aObjDestroyed "korolovInFlight")
-							(block Nil
-								(if (gr (objGetData gSource "freightersInFlight") 0)
-									(objIncData gSource "freightersInFlight" -1)
-									)
-								)
-						)
-					)
-			</OnObjDestroyed>
-
-			<OnObjDocked>
-				(switch
-					; If a freighter on a mission docked, then mission is successful
-					(and (eq aDockTarget gSource)
-							(eq aObjDocked (objGetObjRefData gSource "missionFreighter"))
-							(eq (objGetData gSource "missionStatus") 'inprogress)
-							)
-						(block Nil
-							(korMissionSuccess aObjDocked (objGetData gSource "missionXP"))
-							(objSetData gSource "missionStatus" 'success)
-							(objUnregisterForEvents gSource aObjDocked)
-							(objSetData aObjDocked "korolovPlayerEscort" Nil)
-
-							(shpCancelOrders gPlayerShip)
-							(plyMessage gPlayer "Mission complete!")
-							)
-
-					; If a freighter docked with us, order its escorts to dock too
-					(and (objGetData aObjDocked "korolovInFlight")
-							(eq aDockTarget gSource)
-							)
-						(block (theEscort noRoom)
-							(setq noRoom (geq (count (sysFindObject gSource "sO:docked;")) 9))
-							(enum (sysFindObject aObjDocked "sZ O:escort") theEscort
-								(block Nil
-									(shpCancelOrders theEscort)
-									(if noRoom
-										(shpOrder theEscort "gate")
-										(shpOrder theEscort "guard" gSource)
-										)
-									)
-								)
-							(if (gr (objGetData gSource "freightersInFlight") 0)
-								(objIncData gSource "freightersInFlight" -1)
-								)
-							(objSetData aObjDocked "korolovInFlight" Nil)
-							(objUnregisterForEvents gSource aObjDocked)
-							)
-					)
-			</OnObjDocked>
-
-			<OnObjEnteredGate>
-				(switch
-					; If a freighter on a mission, then mission is successful
-					(and (eq aObj (objGetObjRefData gSource "missionFreighter"))
-							(eq (objGetData gSource "missionStatus") 'inprogress)
-							)
-						(block Nil
-							(korMissionSuccess aObj (objGetData gSource "missionXP"))
-							(objSetData gSource "missionStatus" 'success)
-							(plyMessage gPlayer "Mission complete!")
-							)
-					)
-			</OnObjEnteredGate>
-
-			<OnTrafficControl>
-				(block (dockedFreighters escorts freightersInFlight freighterCount escortCount portsLeft)
-
-					; Initialize some variables
-					(setq escorts (sysFindObject gSource "sHZ O:guard;"))
-					(setq dockedFreighters (sysFindObject gSource "sHZ O:docked; +commonwealth; +freighter;"))
-					(setq freightersInFlight (objGetData gSource "freightersInFlight"))
-					(setq freighterCount (add (count dockedFreighters) freightersInFlight))
-					(setq escortCount (add (count escorts) freightersInFlight))
-
-					; Exclude freighters being escorted by the player
-					(setq dockedFreighters (filter dockedFreighters theFreighter
-						(not (objGetData theFreighter "korolovPlayerEscort"))
-						))
-
-					; See if we have any docking ports free
-					(setq portsLeft (gr (objGetOpenDockingPortCount gSource) 0))
-
-					; If we don't have enough escorts, then we better get some more
-					(if (and portsLeft
-							(or
-								(and (ls escortCount 3) (eq (random 1 5) 1))
-								(and (objGetData gSource "needEscorts") (eq (random 1 3) 1))
-								)
-							)
-						(block (newShip)
-							(setq newShip
-								(sysCreateShip 
-									(random '(&scRoninB; &scRoninB; &scRoninC; &scRoninC; &scRoninC; &scWolfen; &scCenturion;))
-									(objGetNearestStargate gSource) 
-									&svCorporate;
-									)
-								)
-							(shpOrder newShip "guard" gSource)
-							(objSetData gSource "needEscorts" Nil)
-							)
-						)
-
-					; If we don't have enough freighters, then we ask for some
-					(if (and portsLeft
-							(or (ls freighterCount 2)
-								(and (ls freighterCount 3) (eq (random 1 3) 1))
-								(and (ls freighterCount 6) (eq (random 1 17) 1)))
-							)
-						(block (newShip)
-							(setq newShip
-								(sysCreateShip 
-									(random '(&scEI100; &scEI100; &scEI200; &scEI200; &scAntaresI; &scAntaresII; &scAntaresV; &scEI7000;))
-									(objGetNearestStargate gSource) 
-									&svCorporate;
-									)
-								)
-							(shpOrder newShip "dock" gSource)
-							)
-						)
-
-					; Send out a freighter to a random station
-					(switch
-						; If we have no ports left, then send some escorts away
-						(and (not portsLeft) escorts)
-							(block (theCount)
-								(setq theCount (max 1 (subtract (count escorts) 5)))
-								(for i 1 theCount
-									(block (theEscort)
-										(setq theEscort (item escorts (subtract i 1)))
-										(shpCancelOrders theEscort)
-										(shpOrder theEscort 'gate)
-										)
-									)
-								)
-
-						; Must have freighters
-						(not dockedFreighters)
-							Nil
-
-						; If failed to destroy charon stronghold then we hold
-						(and (objGetData gSource "charonDominates") portsLeft)
-							Nil
-
-						; If we're in the middle of attack stronghold, then we hold
-						(and (objGetData gSource "hitStronghold") portsLeft)
-							Nil
-
-						; If the player is docked, then we don't do anything
-						(and (objIsDockedAt gPlayerShip gSource) portsLeft)
-							Nil
-
-						; If we're under attack, then we don't do anything
-						(objIsUnderAttack gSource)
-							Nil
-
-						; If we don't have enough freighters, then don't worry
-						(and (ls (count dockedFreighters) 3) portsLeft)
-							Nil
-
-						; Random interval
-						(and (gr (random 1 6) 1) portsLeft)
-							Nil
-							
-						; Otherwise, send out a freighter
-						(block (freighter dest gateMission)
-							(setq freighter (random dockedFreighters))
-
-							; See if the freighter already has a destination
-							(setq dest (objGetObjRefData freighter "korolovDest"))
-							(if dest
-								(setq gateMission (objMatches dest Nil "G"))
-								(if (or (leq (random 1 100) 30) (not portsLeft))
-									(block Nil
-										(setq dest (random (sysFindObject gSource "G -uncharted;")))
-										(setq gateMission True)
-										)
-									(block Nil
-										(setq dest (random (sysFindObject gSource "TAF +populated; -occupation; -uncharted;")))
-										(setq gateMission Nil)
-										)
-									)
-								)
-
-							(if gateMission
-								; 30% of the time we leave the system
-								(block Nil
-									(shpCancelOrders freighter)
-									(shpOrder freighter "gate" dest)
-									(objSetObjRefData freighter "korolovDest" Nil)
-									)
-
-								; The rest of the time, we dock at a station and return
-								(if dest
-									(block Nil
-										(shpCancelOrders freighter)
-										(shpOrder freighter "dock" dest)
-										(shpOrder freighter "wait" Nil (random 5 12))
-										(shpOrder freighter "dock" gSource)
-										(objRegisterForEvents gSource freighter)
-										(objSetObjRefData freighter "korolovDest" Nil)
-
-										(objIncData gSource "freightersInFlight" 1)
-										(objSetData freighter "korolovInFlight" True)
-
-										; Send an escort too
-										(if escorts
-											(block (escort)
-												(setq escort (random escorts))
-												(shpCancelOrders escort)
-												(shpOrder escort "escort" freighter)
-												)
-
-											; If we have no escorts, then we need some
-											(objSetData gSource "needEscorts" True)
-											)
-										)
-									)
-								)
-							)
-						)
-					)
-			</OnTrafficControl>
-		</Events>
+		<!-- Dock Screen -->
 
 		<DockScreens>
 			<Dispatch>
@@ -2798,19 +2437,404 @@
 
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="100" />
-			<Port x="-80"	y="40" />
-			<Port x="80"	y="40" />
-			<Port x="-60"	y="-40" />
-			<Port x="60"	y="-40" />
+		<!-- Events and Data -->
+		
+		<StaticData>
+			<assistantDirectorTable>
+				(	; last name
+					("Ash" )
+					("Burke" )
+					("Czerniawski" )
+					("Gordievsky" )
+					("Jones" )
+					("Leung" )
+					("Price" )
+					("Penkovsky" )
+					("Reagan" )
+					("Sheppard" )
+					("Sorge" )
+					("Valerii" )
+					)
+			</assistantDirectorTable>
 
-			<Port x="0"		y="-105" />
-			<Port x="-130"	y="-17" />
-			<Port x="130"	y="-17" />
-			<Port x="-70"	y="105" />
-			<Port x="70"	y="105" />
-		</DockingPorts>
+			<freighterData>
+				(	; class			description
+					(&scAntaresI;	"The Antares I design is more than a hundred years old, built originally by the massive Polyarny Shipyards orbiting Ceres. Slow and unencumbered by armor, the Antares I can haul 30 kilotons of cargo, but only the most skilled pilots can protect it from pirate attack. Only Masters in the Korolov Shipping Corporation are rated to escort the Antares I class.")
+					(&scAntaresII;	"While sacrificing none of its cargo capacity, the Antares II has a top speed 50% higher than its predecessor. Escort pilots must have the rank of Journeyman or Master to defend the Antares II class.")
+					(&scAntaresV;	"The Antares V is basically a stretched version of the earlier II series. It has larger cargo capacity and upgraded weapons. Escort pilots must have the rank of Journeyman or Master to escort the Antares V class.")
+					(&scEI100;		"The EI100 class freighter was designed for fast interplanetary transportation. Early in its history, it even carried passengers, but today it carries light commodities. Because of the relatively low value of its cargo, the EI100 is often escorted by Apprentice pilots.")
+					(&scEI200;		"The EI200 class freighter is a larger and faster version of the 100 series. It has double the cargo capacity and upgraded armor and weapons. It is designed to transport small quantities of high-value cargo. The EI200 is so well defended that even Apprentices are allowed to escort them.")
+					(&scEI7000;		"The 7000 is the most powerful member of the EI freighter series. With a cargo capacity of 2 kilotons and heavy armor and weapons, the EI7000 is ideal for high-value cargos. Only Journeymen and Masters are rated to escort the EI7000 class.")
+					)
+			</freighterData>
+
+			<msgTableBeginEscort>
+				(
+					"Glad to have you with us, %name%"
+					"On course for %2%"
+					"%-1% reporting in"
+					"Nice to have you on our wing"
+					"%-1% on course"
+					"%-1% on course for %2%"
+					)
+			</msgTableBeginEscort>
+
+			<pirateData>
+				(	; class			description
+					(&scCorsair;	"The backbone of the Charon Pirate fleet consists of these fast and deadly gunships. Piloted by young and somewhat inexperienced pirates, they are nonetheless dangerous in large numbers.")
+					(&scViking;		"The Viking-class gunship is powerful and well-armored. It is slower than a Corsair, but more than fast enough to chase down a freighter.")
+					(&scCorsair-II;	"More than an upgrade, the Corsair-II sports shields and a missile launcher.")
+					(&scViking-II;	"The Viking-II is an upgraded version with shields and dual turbolasers.")
+					(&scDrake;		"The Drake is the pirates' mobile battering ram. Heavily armored and loaded with missiles, the Drake will pummel you to pieces from long range.")
+					(&scCharonFrigateRaider;	"The sight of these frigates brings fear to most freighter pilots. Fast, silent, and loaded with hurt, a Charon frigate can destroy a small fleet of escort ships. Do not challenge these ships unless you know what you're doing.")
+					)
+			</pirateData>
+		</StaticData>
+
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList level missionsTotal missionsFailed)
+					(setq level (typGetGlobalData &stKorolovShipping; "level"))
+					(setq missionsTotal (typGetGlobalData &stKorolovShipping; "totalMissionCount"))
+					(setq missionsFailed (typGetGlobalData &stKorolovShipping; "totalMissionsFailed"))
+					
+					(if (and level (gr missionsTotal 0))
+						(setq theList (list
+							(list
+								"Korolov rank"
+								(switch
+									(eq level -1) "Blacklisted"
+									(eq level 1) "Apprentice"
+									(eq level 2) "Journeyman"
+									(eq level 3) "Master"
+									(eq level 4) "Legend"
+									(cat "ERROR: Korolov level: " level)
+									) 
+								)
+								
+							(list
+								"Korolov escort missions"
+								(intMissionAchievementString (subtract missionsTotal missionsFailed) missionsFailed)
+								"missions &amp; activities"
+								)
+							))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+
+			<OnCreate>
+				(block (charonStronghold)
+					; Register a recurring event
+					(sysAddObjRecurringTimerEvent 240 gSource "OnTrafficControl")
+					(objSetData gSource "freightersInFlight" 0)
+					(objSetData gSource "missionCount" 0)
+
+					; Every station is overseen by a different AD
+					(objSetData gSource "assistantDirector"
+						(item (random (objGetStaticData gSource "assistantDirectorTable")) 0)
+						)
+
+					; Find the primary Charon stronghold in the system
+					(setq charonStronghold (chrGetPrimaryStronghold gSource))
+					(objSetObjRefData gSource "charonStronghold" charonStronghold)
+					(objRegisterForEvents gSource charonStronghold)
+					)
+			</OnCreate>
+
+			<OnDestroy>
+				(block Nil
+					(typFireObjEvent &baCorporateStation; gSource 'OnDestroy)
+					(sysCancelTimerEvent gSource "OnTrafficControl")
+					)
+			</OnDestroy>
+
+			<OnObjDestroyed>
+				(block (missionID)
+					(setq missionID (objGetData gSource "missionID"))
+
+					(switch
+						; If a freighter on a mission got destroyed, deal with it
+						(and (eq aObjDestroyed (objGetObjRefData gSource "missionFreighter"))
+								(eq (objGetData gSource "missionStatus") 'inprogress)
+								(or (eq missionID 'escortRoundTrip) (eq missionID 'escortToGate))
+								)
+							(block Nil
+								(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
+									(block Nil
+										(korMissionFailure aObjDestroyed)
+										(objSetData gSource "missionStatus" "destroyedByPlayer")
+										(plyMessage gPlayer "Mission failed")
+										)
+									(block Nil
+										(korMissionFailure aObjDestroyed)
+										(objSetData gSource "missionStatus" "destroyed")
+										(plyMessage gPlayer "Mission failed")
+										)
+									)
+								)
+
+						; If we destroyed the charon stronghold, then mission accomplished
+						(eq aObjDestroyed (objGetObjRefData gSource "charonStronghold"))
+							(block (destroyedByPlayer)
+								(setq destroyedByPlayer (and gPlayerShip (eq aOrderGiver gPlayerShip)))
+
+								(if (and (eq missionID 'hitStronghold) (eq (objGetData gSource "missionStatus") 'inprogress))
+									(block (xpBonus)
+										(setq xpBonus (if destroyedByPlayer 250 100))
+										(korMissionStrongholdSuccess xpBonus destroyedByPlayer)
+										(objSetData gSource "missionStatus" 'success)
+
+										(shpCancelOrders gPlayerShip)
+										(plyMessage gPlayer "Mission complete!")
+										)
+									)
+
+								(objUnregisterForEvents gSource aObjDestroyed)
+								(objSetData gSource "charonDominates" Nil)
+								(objSetData gSource "hitStronghold" Nil)
+								)
+
+						; If the mission leader got destroyed, then deal with it
+						(and (objGetData gSource "hitStronghold")
+								(eq aObjDestroyed (objGetObjRefData gSource "missionLeader"))
+								)
+							(block Nil
+								; If the player is not participating in the mission, then we failed
+								(if (not (eq (objGetData gSource "missionStatus") 'inprogress))
+									(block Nil
+										(objSetData gSource "charonDominates" True)
+										(objSetData gSource "hitStronghold" Nil)
+										)
+									)
+								)
+
+						; If one of our freighters got destroyed, decrement our count
+						(objGetData aObjDestroyed "korolovInFlight")
+							(block Nil
+								(if (gr (objGetData gSource "freightersInFlight") 0)
+									(objIncData gSource "freightersInFlight" -1)
+									)
+								)
+						)
+					)
+			</OnObjDestroyed>
+
+			<OnObjDocked>
+				(switch
+					; If a freighter on a mission docked, then mission is successful
+					(and (eq aDockTarget gSource)
+							(eq aObjDocked (objGetObjRefData gSource "missionFreighter"))
+							(eq (objGetData gSource "missionStatus") 'inprogress)
+							)
+						(block Nil
+							(korMissionSuccess aObjDocked (objGetData gSource "missionXP"))
+							(objSetData gSource "missionStatus" 'success)
+							(objUnregisterForEvents gSource aObjDocked)
+							(objSetData aObjDocked "korolovPlayerEscort" Nil)
+
+							(shpCancelOrders gPlayerShip)
+							(plyMessage gPlayer "Mission complete!")
+							)
+
+					; If a freighter docked with us, order its escorts to dock too
+					(and (objGetData aObjDocked "korolovInFlight")
+							(eq aDockTarget gSource)
+							)
+						(block (theEscort noRoom)
+							(setq noRoom (geq (count (sysFindObject gSource "sO:docked;")) 9))
+							(enum (sysFindObject aObjDocked "sZ O:escort") theEscort
+								(block Nil
+									(shpCancelOrders theEscort)
+									(if noRoom
+										(shpOrder theEscort "gate")
+										(shpOrder theEscort "guard" gSource)
+										)
+									)
+								)
+							(if (gr (objGetData gSource "freightersInFlight") 0)
+								(objIncData gSource "freightersInFlight" -1)
+								)
+							(objSetData aObjDocked "korolovInFlight" Nil)
+							(objUnregisterForEvents gSource aObjDocked)
+							)
+					)
+			</OnObjDocked>
+
+			<OnObjEnteredGate>
+				(switch
+					; If a freighter on a mission, then mission is successful
+					(and (eq aObj (objGetObjRefData gSource "missionFreighter"))
+							(eq (objGetData gSource "missionStatus") 'inprogress)
+							)
+						(block Nil
+							(korMissionSuccess aObj (objGetData gSource "missionXP"))
+							(objSetData gSource "missionStatus" 'success)
+							(plyMessage gPlayer "Mission complete!")
+							)
+					)
+			</OnObjEnteredGate>
+
+			<OnTrafficControl>
+				(block (dockedFreighters escorts freightersInFlight freighterCount escortCount portsLeft)
+
+					; Initialize some variables
+					(setq escorts (sysFindObject gSource "sHZ O:guard;"))
+					(setq dockedFreighters (sysFindObject gSource "sHZ O:docked; +commonwealth; +freighter;"))
+					(setq freightersInFlight (objGetData gSource "freightersInFlight"))
+					(setq freighterCount (add (count dockedFreighters) freightersInFlight))
+					(setq escortCount (add (count escorts) freightersInFlight))
+
+					; Exclude freighters being escorted by the player
+					(setq dockedFreighters (filter dockedFreighters theFreighter
+						(not (objGetData theFreighter "korolovPlayerEscort"))
+						))
+
+					; See if we have any docking ports free
+					(setq portsLeft (gr (objGetOpenDockingPortCount gSource) 0))
+
+					; If we don't have enough escorts, then we better get some more
+					(if (and portsLeft
+							(or
+								(and (ls escortCount 3) (eq (random 1 5) 1))
+								(and (objGetData gSource "needEscorts") (eq (random 1 3) 1))
+								)
+							)
+						(block (newShip)
+							(setq newShip
+								(sysCreateShip 
+									(random '(&scRoninB; &scRoninB; &scRoninC; &scRoninC; &scRoninC; &scWolfen; &scCenturion;))
+									(objGetNearestStargate gSource) 
+									&svCorporate;
+									)
+								)
+							(shpOrder newShip "guard" gSource)
+							(objSetData gSource "needEscorts" Nil)
+							)
+						)
+
+					; If we don't have enough freighters, then we ask for some
+					(if (and portsLeft
+							(or (ls freighterCount 2)
+								(and (ls freighterCount 3) (eq (random 1 3) 1))
+								(and (ls freighterCount 6) (eq (random 1 17) 1)))
+							)
+						(block (newShip)
+							(setq newShip
+								(sysCreateShip 
+									(random '(&scEI100; &scEI100; &scEI200; &scEI200; &scAntaresI; &scAntaresII; &scAntaresV; &scEI7000;))
+									(objGetNearestStargate gSource) 
+									&svCorporate;
+									)
+								)
+							(shpOrder newShip "dock" gSource)
+							)
+						)
+
+					; Send out a freighter to a random station
+					(switch
+						; If we have no ports left, then send some escorts away
+						(and (not portsLeft) escorts)
+							(block (theCount)
+								(setq theCount (max 1 (subtract (count escorts) 5)))
+								(for i 1 theCount
+									(block (theEscort)
+										(setq theEscort (item escorts (subtract i 1)))
+										(shpCancelOrders theEscort)
+										(shpOrder theEscort 'gate)
+										)
+									)
+								)
+
+						; Must have freighters
+						(not dockedFreighters)
+							Nil
+
+						; If failed to destroy charon stronghold then we hold
+						(and (objGetData gSource "charonDominates") portsLeft)
+							Nil
+
+						; If we're in the middle of attack stronghold, then we hold
+						(and (objGetData gSource "hitStronghold") portsLeft)
+							Nil
+
+						; If the player is docked, then we don't do anything
+						(and (objIsDockedAt gPlayerShip gSource) portsLeft)
+							Nil
+
+						; If we're under attack, then we don't do anything
+						(objIsUnderAttack gSource)
+							Nil
+
+						; If we don't have enough freighters, then don't worry
+						(and (ls (count dockedFreighters) 3) portsLeft)
+							Nil
+
+						; Random interval
+						(and (gr (random 1 6) 1) portsLeft)
+							Nil
+							
+						; Otherwise, send out a freighter
+						(block (freighter dest gateMission)
+							(setq freighter (random dockedFreighters))
+
+							; See if the freighter already has a destination
+							(setq dest (objGetObjRefData freighter "korolovDest"))
+							(if dest
+								(setq gateMission (objMatches dest Nil "G"))
+								(if (or (leq (random 1 100) 30) (not portsLeft))
+									(block Nil
+										(setq dest (random (sysFindObject gSource "G -uncharted;")))
+										(setq gateMission True)
+										)
+									(block Nil
+										(setq dest (random (sysFindObject gSource "TAF +populated; -occupation; -uncharted;")))
+										(setq gateMission Nil)
+										)
+									)
+								)
+
+							(if gateMission
+								; 30% of the time we leave the system
+								(block Nil
+									(shpCancelOrders freighter)
+									(shpOrder freighter "gate" dest)
+									(objSetObjRefData freighter "korolovDest" Nil)
+									)
+
+								; The rest of the time, we dock at a station and return
+								(if dest
+									(block Nil
+										(shpCancelOrders freighter)
+										(shpOrder freighter "dock" dest)
+										(shpOrder freighter "wait" Nil (random 5 12))
+										(shpOrder freighter "dock" gSource)
+										(objRegisterForEvents gSource freighter)
+										(objSetObjRefData freighter "korolovDest" Nil)
+
+										(objIncData gSource "freightersInFlight" 1)
+										(objSetData freighter "korolovInFlight" True)
+
+										; Send an escort too
+										(if escorts
+											(block (escort)
+												(setq escort (random escorts))
+												(shpCancelOrders escort)
+												(shpOrder escort "escort" freighter)
+												)
+
+											; If we have no escorts, then we need some
+											(objSetData gSource "needEscorts" True)
+											)
+										)
+									)
+								)
+							)
+						)
+					)
+			</OnTrafficControl>
+		</Events>
 
 		<Language>
 			<Text id="VolkovIntro">
@@ -3491,5 +3515,7 @@
 	<Image UNID="&rsEI7000Image;"		bitmap="Resources\EI7000.jpg" bitmask="Resources\EI7000Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsKorolovInsignia;"	bitmap="Resources\KorolovInsignia.jpg" bitmask="Resources\KorolovInsigniaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsKorolovLogo;"		bitmap="Resources\KorolovLogo.jpg" bitmask="Resources\KorolovLogoMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsKorolovShipping;"	bitmap="Resources\KorolovShipping.jpg" bitmask="Resources\KorolovShippingMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsKorolovShippingConstruction;"	bitmap="Resources\KorolovShippingConstruction.jpg" bitmask="Resources\KorolovShippingConstructionMask.bmp" loadOnUse="true"/>
 
 </TranscendenceModule>

@@ -1563,6 +1563,8 @@
 	<!-- 0040-005F CORPORATE HIERARCHY -->
 	
 	<!ENTITY rsRasiermesserFactoryHero	"0x00100040">
+	<!ENTITY rsKorolovShipping			"0x00100041">
+	<!ENTITY rsKorolovShippingConstruction	"0x00100042">
 	
 	<!-- 0060-007F COMMONWEALTH FLEET -->
 	

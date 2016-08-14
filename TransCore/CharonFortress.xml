@@ -186,7 +186,25 @@
 			noArticle=			"true"
 			>
 
-		<Image			imageID="&rsStations1;" imageX="256" imageY="0" imageWidth="224" imageHeight="224"/>
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsKorolovShipping;" imageWidth="292" imageHeight="364"/>
+
+		<DockingPorts>
+			<Port x="-18"	y="128" />
+			<Port x="100"	y="127" />
+			<Port x="156"	y="31" />
+			<Port x="165"	y="-45" />
+			<Port x="98"	y="-75" />
+			<Port x="120"	y="-153" />
+
+			<Port x="0"		y="-162" />
+			<Port x="-90"	y="-165" />
+			<Port x="-103"	y="-82" />
+			<Port x="-178"	y="-46" />
+			<Port x="-113"	y="43" />
+			<Port x="-98"	y="122" />
+		</DockingPorts>
 
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Sell	criteria="rNU L:1-5; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100"/>
@@ -584,20 +602,6 @@
 
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="100" />
-			<Port x="-80"	y="40" />
-			<Port x="80"	y="40" />
-			<Port x="-60"	y="-40" />
-			<Port x="60"	y="-40" />
-
-			<Port x="0"		y="-105" />
-			<Port x="-130"	y="-17" />
-			<Port x="130"	y="-17" />
-			<Port x="-70"	y="105" />
-			<Port x="70"	y="105" />
-		</DockingPorts>
-
         <Language>
             <Text id="core.mapDescMain">
                 "Hires freighter escorts"
@@ -610,33 +614,61 @@
 	<StationType UNID="&stKorolovAtCharonCons;"
 			name=				"Korolov Shipping"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+				 
+			attributes=			"corporate, corporateCustoms, corporateDecon, friendly, human, majorStation, populated, korolovShipping, underConstruction"
+				 
+            level=              "4"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"10"
-			canAttack=			"true"
-
-            level=              "4"
-			multiHull=			"true"
+				 
+			size=				"390"
 			armorID=			"&itPlasteelPlate;"
 			maxHitPoints=		"470"
 			hitPoints=			"150"
+			multiHull=			"true"
 			regen=			    "1.4"
 			shipRepairRate=		"3"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"corporate, corporateCustoms, corporateDecon, friendly, human, majorStation, populated, korolovShipping, underConstruction"
 
 			noArticle=			"true"
 			>
 
-		<Image			imageID="&rsStations3;" imageX="0" imageY="128" imageWidth="224" imageHeight="224"/>
-
+		<!-- Trade and Items -->
+		
+		<!-- Ships and Defenses -->
+		
 		<Ships>
 			<Lookup count="1d2" table="&tbCommDefenders;"/>
 			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
 			<Ship	count="2d6" class="&scRoninC;" orders="patrol" patrolDist="10"/>
 		</Ships>
 
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsKorolovShippingConstruction;" imageWidth="332" imageHeight="376"/>
+
+		<DockingPorts>
+			<Port x="-18"	y="128" />
+			<Port x="100"	y="127" />
+			<Port x="156"	y="31" />
+			<Port x="165"	y="-45" />
+			<Port x="98"	y="-75" />
+			<Port x="120"	y="-153" />
+
+			<Port x="0"		y="-162" />
+			<Port x="-90"	y="-165" />
+			<Port x="-103"	y="-82" />
+			<Port x="-178"	y="-46" />
+			<Port x="-113"	y="43" />
+			<Port x="-98"	y="122" />
+		</DockingPorts>
+
+		<!-- Dock Screen -->
+		
 		<DockScreens>
 			<Main
 				name=			"Korolov Shipping"
@@ -728,20 +760,8 @@
 			</Reward>
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="100" />
-			<Port x="-80"	y="40" />
-			<Port x="80"	y="40" />
-			<Port x="-60"	y="-40" />
-			<Port x="60"	y="-40" />
-
-			<Port x="0"		y="-105" />
-			<Port x="-130"	y="-17" />
-			<Port x="130"	y="-17" />
-			<Port x="-70"	y="105" />
-			<Port x="70"	y="105" />
-		</DockingPorts>
-
+		<!-- Events and Data -->
+		
         <Language>
             <Text id="core.mapDesc">
                 "Under construction"
