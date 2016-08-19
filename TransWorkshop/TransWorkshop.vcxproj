@@ -184,6 +184,18 @@
     <ClCompile Include="TransWorkshop.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Alchemy\CodeChain\CodeChain.vcxproj">
+      <Project>{39983ccd-095b-4b41-854f-4967a254a07c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Alchemy\DirectXUtil\DirectXUtil.vcxproj">
+      <Project>{696afbf6-ca1a-4302-b9ef-01bdbc483280}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Alchemy\Graphics\Graphics.vcxproj">
+      <Project>{d52d8a0e-fd89-44d9-903d-624aad7e7155}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Alchemy\IntelJPEGUtil\IntelJPEGUtil.vcxproj">
+      <Project>{ecac7e19-acbc-4c3c-b89a-7bc7049b6f2e}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\Alchemy\Kernel\Kernel.vcxproj">
       <Project>{86ce5721-1967-49b7-9eed-3a014171daf1}</Project>
     </ProjectReference>
