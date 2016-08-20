@@ -279,7 +279,6 @@ class CPlayerShipController : public IShipController
 
 		//	Events
 
-		virtual void OnArmorRepaired (int iSection) override;
 		virtual void OnBlindnessChanged (bool bBlind, bool bNoMessage = false) override;
 		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2) override;
 		virtual void OnComponentChanged (ObjectComponentTypes iComponent) override;
@@ -292,21 +291,16 @@ class CPlayerShipController : public IShipController
 		virtual void OnDockedObjChanged (CSpaceObject *pLocation) override;
 		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend) override;
         virtual void OnFuelConsumed (Metric rFuel) override;
-		virtual void OnFuelLowWarning (int iSeq) override;
 		virtual void OnItemDamaged (const CItem &Item, int iHP) override { m_Stats.OnItemDamaged(Item, iHP); }
 		virtual void OnItemFired (const CItem &Item) override { m_Stats.OnItemFired(Item); }
 		virtual void OnItemInstalled (const CItem &Item) override { m_Stats.OnItemInstalled(Item); }
 		virtual void OnItemUninstalled (const CItem &Item) override { m_Stats.OnItemUninstalled(Item); }
-		virtual void OnLifeSupportWarning (int iSecondsLeft) override;
 		virtual void OnMissionCompleted (CMission *pMission, bool bSuccess) override;
 		virtual void OnNewSystem (CSystem *pSystem) override;
 		virtual void OnObjDamaged (const SDamageCtx &Ctx) override;
 		virtual void OnObjDestroyed (const SDestroyCtx &Ctx) override;
 		virtual void OnPaintSRSEnhancements (CG32bitImage &Dest, SViewportPaintCtx &Ctx) override;
 		virtual void OnProgramDamage (CSpaceObject *pHacker, const ProgramDesc &Program) override;
-		virtual void OnRadiationWarning (int iTicksLeft) override;
-		virtual void OnRadiationCleared (void) override;
-		virtual void OnReactorOverloadWarning (int iSeq) override;
 		virtual void OnShipStatus (EShipStatusNotifications iEvent, DWORD dwData = 0) override;
 		virtual void OnStationDestroyed (const SDestroyCtx &Ctx) override;
 		virtual void OnUpdatePlayer (SUpdateCtx &Ctx) override;

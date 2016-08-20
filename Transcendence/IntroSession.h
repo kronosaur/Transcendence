@@ -130,39 +130,38 @@ class CIntroShipController : public IShipController
 
 		inline void SetShip (CShip *pShip) { m_pShip = pShip; }
 
-		virtual void Behavior (SUpdateCtx &Ctx) { m_pDelegate->Behavior(Ctx); }
-		virtual CString DebugCrashInfo (void) { return m_pDelegate->DebugCrashInfo(); }
-		virtual int GetCombatPower (void) { return m_pDelegate->GetCombatPower(); }
-		virtual EManeuverTypes GetManeuver (void) { return m_pDelegate->GetManeuver(); }
-		virtual bool GetThrust (void) { return m_pDelegate->GetThrust(); }
-		virtual bool GetReverseThrust (void) { return m_pDelegate->GetReverseThrust(); }
-		virtual bool GetStopThrust (void) { return m_pDelegate->GetStopThrust(); }
-		virtual bool GetDeviceActivate (void) { return m_pDelegate->GetDeviceActivate(); }
-		virtual int GetFireDelay (void) { return m_pDelegate->GetFireDelay(); }
-		virtual int GetFireRateAdj (void) { return m_pDelegate->GetFireRateAdj(); }
-		virtual CSpaceObject *GetBase (void) { return m_pDelegate->GetBase(); }
-		virtual CSpaceObject *GetEscortPrincipal (void) const { return m_pDelegate->GetEscortPrincipal(); }
-		virtual CSpaceObject *GetOrderGiver (void) { return m_pShip; }
-		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const { return m_pDelegate->GetTarget(ItemCtx, bNoAutoTarget); }
-		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution) { m_pDelegate->GetWeaponTarget(TargetingCtx, ItemCtx, retpTarget, retiFireSolution); }
+		virtual void Behavior (SUpdateCtx &Ctx) override { m_pDelegate->Behavior(Ctx); }
+		virtual CString DebugCrashInfo (void) override { return m_pDelegate->DebugCrashInfo(); }
+		virtual int GetCombatPower (void) override { return m_pDelegate->GetCombatPower(); }
+		virtual EManeuverTypes GetManeuver (void) override { return m_pDelegate->GetManeuver(); }
+		virtual bool GetThrust (void) override { return m_pDelegate->GetThrust(); }
+		virtual bool GetReverseThrust (void) override { return m_pDelegate->GetReverseThrust(); }
+		virtual bool GetStopThrust (void) override { return m_pDelegate->GetStopThrust(); }
+		virtual bool GetDeviceActivate (void) override { return m_pDelegate->GetDeviceActivate(); }
+		virtual int GetFireDelay (void) override { return m_pDelegate->GetFireDelay(); }
+		virtual int GetFireRateAdj (void) override { return m_pDelegate->GetFireRateAdj(); }
+		virtual CSpaceObject *GetBase (void) const override { return m_pDelegate->GetBase(); }
+		virtual CSpaceObject *GetEscortPrincipal (void) const override { return m_pDelegate->GetEscortPrincipal(); }
+		virtual CSpaceObject *GetOrderGiver (void) override { return m_pShip; }
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const override { return m_pDelegate->GetTarget(ItemCtx, bNoAutoTarget); }
+		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution) override { m_pDelegate->GetWeaponTarget(TargetingCtx, ItemCtx, retpTarget, retiFireSolution); }
 
-		virtual void AddOrder (OrderTypes Order, CSpaceObject *pTarget, const IShipController::SData &Data, bool bAddBefore = false) { m_pDelegate->AddOrder(Order, pTarget, Data, bAddBefore); }
-		virtual void CancelAllOrders (void) { m_pDelegate->CancelAllOrders(); }
-		virtual void CancelCurrentOrder (void) { m_pDelegate->CancelCurrentOrder(); }
-		virtual OrderTypes GetCurrentOrderEx (CSpaceObject **retpTarget = NULL, IShipController::SData *retData = NULL) { return m_pDelegate->GetCurrentOrderEx(retpTarget, retData); }
+		virtual void AddOrder (OrderTypes Order, CSpaceObject *pTarget, const IShipController::SData &Data, bool bAddBefore = false) override { m_pDelegate->AddOrder(Order, pTarget, Data, bAddBefore); }
+		virtual void CancelAllOrders (void) override { m_pDelegate->CancelAllOrders(); }
+		virtual void CancelCurrentOrder (void) override { m_pDelegate->CancelCurrentOrder(); }
+		virtual OrderTypes GetCurrentOrderEx (CSpaceObject **retpTarget = NULL, IShipController::SData *retData = NULL) override { return m_pDelegate->GetCurrentOrderEx(retpTarget, retData); }
 
 		//	Events
 
-		virtual void OnArmorRepaired (int iSection) { m_pDelegate->OnArmorRepaired(iSection); }
-		virtual void OnAttacked (CSpaceObject *pAttacker, const SDamageCtx &Damage) { m_pDelegate->OnAttacked(pAttacker, Damage); }
-		virtual void OnDamaged (const CDamageSource &Cause, CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage) { m_pDelegate->OnDamaged(Cause, pArmor, Damage, iDamage); }
-		virtual void OnDestroyed (SDestroyCtx &Ctx);
-		virtual void OnDocked (CSpaceObject *pObj) { m_pDelegate->OnDocked(pObj); }
-		virtual void OnDockedObjChanged (CSpaceObject *pLocation) { m_pDelegate->OnDockedObjChanged(pLocation); }
-		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend) { m_pDelegate->OnEnterGate(pDestNode, sDestEntryPoint, pStargate, bAscend); }
-		virtual void OnFuelLowWarning (int iSeq) { m_pDelegate->OnFuelLowWarning(iSeq); }
-		virtual void OnObjDestroyed (const SDestroyCtx &Ctx) { m_pDelegate->OnObjDestroyed(Ctx); }
-		virtual void OnWeaponStatusChanged (void) { m_pDelegate->OnWeaponStatusChanged(); }
+		virtual void OnAttacked (CSpaceObject *pAttacker, const SDamageCtx &Damage) override { m_pDelegate->OnAttacked(pAttacker, Damage); }
+		virtual void OnDamaged (const CDamageSource &Cause, CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage) override { m_pDelegate->OnDamaged(Cause, pArmor, Damage, iDamage); }
+		virtual void OnDestroyed (SDestroyCtx &Ctx) override;
+		virtual void OnDocked (CSpaceObject *pObj) override { m_pDelegate->OnDocked(pObj); }
+		virtual void OnDockedObjChanged (CSpaceObject *pLocation) override { m_pDelegate->OnDockedObjChanged(pLocation); }
+		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend) override { m_pDelegate->OnEnterGate(pDestNode, sDestEntryPoint, pStargate, bAscend); }
+		virtual void OnObjDestroyed (const SDestroyCtx &Ctx) override { m_pDelegate->OnObjDestroyed(Ctx); }
+		virtual void OnShipStatus (EShipStatusNotifications iEvent, DWORD dwData = 0) override { m_pDelegate->OnShipStatus(iEvent, dwData); }
+		virtual void OnWeaponStatusChanged (void) override { m_pDelegate->OnWeaponStatusChanged(); }
 
 	private:
 		IShipController *m_pDelegate;

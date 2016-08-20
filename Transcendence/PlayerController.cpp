@@ -898,17 +898,6 @@ void CPlayerShipController::InsuranceClaim (void)
 		}
 	}
 
-void CPlayerShipController::OnArmorRepaired (int iSection)
-
-//	OnArmorRepaired
-//
-//	Armor repaired or replaced
-
-	{
-    if (m_pSession)
-        m_pSession->OnArmorRepaired(iSection);
-	}
-
 void CPlayerShipController::OnBlindnessChanged (bool bBlind, bool bNoMessage)
 
 //	OnBlindnessChanged
@@ -1198,39 +1187,6 @@ void CPlayerShipController::OnFuelConsumed (Metric rFuel)
     m_Stats.OnFuelConsumed(m_pShip, rFuel);
     }
 
-void CPlayerShipController::OnFuelLowWarning (int iSeq)
-
-//	OnFuelLowWarning
-//
-//	Warn of low fuel
-
-	{
-	//	If -1, we are out of fuel
-
-	if (iSeq == -1)
-		{
-		m_pTrans->DisplayMessage(CONSTLIT("Out of fuel!"));
-
-		//	Stop
-
-		SetThrust(false);
-		SetManeuver(NoRotation);
-		SetFireMain(false);
-		SetFireMissile(false);
-		}
-
-	//	Don't warn the player every time
-
-	else if ((iSeq % 15) == 0)
-		{
-		if (m_UIMsgs.IsEnabled(uimsgRefuelHint))
-			m_pTrans->DisplayMessage(CONSTLIT("(press [S] to access refueling screen)"));
-		m_pTrans->DisplayMessage(CONSTLIT("Fuel low!"));
-		if ((iSeq % 30) == 0)
-			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_FUEL_LOW_ALARM));
-		}
-	}
-
 void CPlayerShipController::OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend)
 
 //	OnEnterGate
@@ -1250,21 +1206,6 @@ void CPlayerShipController::OnEnterGate (CTopologyNode *pDestNode, const CString
 	//	Let the model handle everything
 
 	g_pTrans->GetModel().OnPlayerEnteredGate(pDestNode, sDestEntryPoint, pStargate);
-	}
-
-void CPlayerShipController::OnLifeSupportWarning (int iSecondsLeft)
-
-//	OnLifeSupportWarning
-//
-//	Handle life support warning
-
-	{
-	if (iSecondsLeft > 10 && ((iSecondsLeft % 5) != 0))
-		NULL;
-	else if (iSecondsLeft > 1)
-		m_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Life support failure in %d seconds"), iSecondsLeft));
-	else if (iSecondsLeft == 1)
-		m_pTrans->DisplayMessage(CONSTLIT("Life support failure in 1 second"));
 	}
 
 void CPlayerShipController::OnPaintSRSEnhancements (CG32bitImage &Dest, SViewportPaintCtx &Ctx)
@@ -1360,58 +1301,6 @@ void CPlayerShipController::OnPaintSRSEnhancements (CG32bitImage &Dest, SViewpor
 	DEBUG_CATCH
 	}
 
-void CPlayerShipController::OnRadiationWarning (int iTicksLeft)
-
-//	OnRadiationWarning
-//
-//	Handle radiation warning
-
-	{
-	if ((iTicksLeft % 10) == 0)
-		{
-		int iSecondsLeft = iTicksLeft / g_TicksPerSecond;
-
-		if (iSecondsLeft > 10 && ((iSecondsLeft % 5) != 0))
-			NULL;
-		else if (iSecondsLeft > 1)
-			m_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Radiation Warning: Fatal exposure in %d seconds"), iSecondsLeft));
-		else if (iSecondsLeft == 1)
-			m_pTrans->DisplayMessage(CONSTLIT("Radiation Warning: Fatal exposure in 1 second"));
-		else
-			m_pTrans->DisplayMessage(CONSTLIT("Radiation Warning: Fatal exposure received"));
-
-		if ((iTicksLeft % 150) == 0)
-			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_RADIATION_ALARM));
-		}
-	}
-
-void CPlayerShipController::OnRadiationCleared (void)
-
-//	OnRadiationCleared
-//
-//	Handler radiation cleared
-
-	{
-	m_pTrans->DisplayMessage(CONSTLIT("Decontamination complete"));
-	}
-
-void CPlayerShipController::OnReactorOverloadWarning (int iSeq)
-
-//	OnReactorOverlordWarning
-//
-//	Handler reactor overload
-
-	{
-	//	Warn every 60 ticks
-
-	if ((iSeq % 6) == 0)
-		{
-		m_pTrans->DisplayMessage(CONSTLIT("Warning: Reactor overload"));
-		if ((iSeq % 24) == 0)
-			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_REACTOR_OVERLOAD_ALARM));
-		}
-	}
-
 void CPlayerShipController::OnShipStatus (EShipStatusNotifications iEvent, DWORD dwData)
 
 //	OnShipStatus
@@ -1421,6 +1310,103 @@ void CPlayerShipController::OnShipStatus (EShipStatusNotifications iEvent, DWORD
 	{
 	switch (iEvent)
 		{
+		case statusArmorRepaired:
+			{
+			int iSeg = (int)dwData;
+
+			if (m_pSession)
+				m_pSession->OnArmorRepaired(iSeg);
+			break;
+			}
+
+		case statusFuelLowWarning:
+			{
+			int iSeq = (int)dwData;
+
+			//	If -1, we are out of fuel
+
+			if (iSeq == -1)
+				{
+				m_pTrans->DisplayMessage(CONSTLIT("Out of fuel!"));
+
+				//	Stop
+
+				SetThrust(false);
+				SetManeuver(NoRotation);
+				SetFireMain(false);
+				SetFireMissile(false);
+				}
+
+			//	Don't warn the player every time
+
+			else if ((iSeq % 15) == 0)
+				{
+				if (m_UIMsgs.IsEnabled(uimsgRefuelHint))
+					m_pTrans->DisplayMessage(CONSTLIT("(press [S] to access refueling screen)"));
+				m_pTrans->DisplayMessage(CONSTLIT("Fuel low!"));
+				if ((iSeq % 30) == 0)
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_FUEL_LOW_ALARM));
+				}
+
+			break;
+			}
+
+		case statusLifeSupportWarning:
+			{
+			int iSecondsLeft = (int)dwData;
+
+			if (iSecondsLeft > 10 && ((iSecondsLeft % 5) != 0))
+				NULL;
+			else if (iSecondsLeft > 1)
+				m_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Life support failure in %d seconds"), iSecondsLeft));
+			else if (iSecondsLeft == 1)
+				m_pTrans->DisplayMessage(CONSTLIT("Life support failure in 1 second"));
+			break;
+			}
+
+		case statusRadiationCleared:
+			m_pTrans->DisplayMessage(CONSTLIT("Decontamination complete"));
+			break;
+
+		case statusRadiationWarning:
+			{
+			int iTicksLeft = (int)dwData;
+
+			if ((iTicksLeft % 10) == 0)
+				{
+				int iSecondsLeft = iTicksLeft / g_TicksPerSecond;
+
+				if (iSecondsLeft > 10 && ((iSecondsLeft % 5) != 0))
+					NULL;
+				else if (iSecondsLeft > 1)
+					m_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Radiation Warning: Fatal exposure in %d seconds"), iSecondsLeft));
+				else if (iSecondsLeft == 1)
+					m_pTrans->DisplayMessage(CONSTLIT("Radiation Warning: Fatal exposure in 1 second"));
+				else
+					m_pTrans->DisplayMessage(CONSTLIT("Radiation Warning: Fatal exposure received"));
+
+				if ((iTicksLeft % 150) == 0)
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_RADIATION_ALARM));
+				}
+
+			break;
+			}
+
+		case statusReactorOverloadWarning:
+			{
+			int iSeq = (int)dwData;
+
+			//	Warn every 60 ticks
+
+			if ((iSeq % 6) == 0)
+				{
+				m_pTrans->DisplayMessage(CONSTLIT("Warning: Reactor overload"));
+				if ((iSeq % 24) == 0)
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_REACTOR_OVERLOAD_ALARM));
+				}
+			break;
+			}
+
 		case statusReactorPowerFailure:
 			m_pTrans->DisplayMessage(CONSTLIT("No power from reactor"));
 
