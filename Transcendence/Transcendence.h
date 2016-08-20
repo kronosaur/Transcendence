@@ -307,6 +307,7 @@ class CPlayerShipController : public IShipController
 		virtual void OnRadiationWarning (int iTicksLeft) override;
 		virtual void OnRadiationCleared (void) override;
 		virtual void OnReactorOverloadWarning (int iSeq) override;
+		virtual void OnShipStatus (EShipStatusNotifications iEvent, DWORD dwData = 0) override;
 		virtual void OnStationDestroyed (const SDestroyCtx &Ctx) override;
 		virtual void OnUpdatePlayer (SUpdateCtx &Ctx) override;
 		virtual void OnWeaponStatusChanged (void) override;

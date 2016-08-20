@@ -227,6 +227,10 @@ CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 			sText = strPatternSubst(CONSTLIT("was disintegrated %s"), sCause);
 			break;
 
+		case killedByPowerFailure:
+			sText = CONSTLIT("lost all reactor power");
+			break;
+
 		case killedByRunningOutOfFuel:
 			sText = CONSTLIT("ran out of fuel");
 			break;

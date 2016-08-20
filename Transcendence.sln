@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CodeChain", "..\Alchemy\CodeChain\CodeChain.vcxproj", "{39983CCD-095B-4B41-854F-4967A254A07C}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -469,12 +469,10 @@ Global
 		{910B3EA2-DB1B-4F5D-B3C5-9AB1B600936B}.Debug in Program Files|x64.Build.0 = Debug|x64
 		{910B3EA2-DB1B-4F5D-B3C5-9AB1B600936B}.Debug|ARM.ActiveCfg = Debug|Win32
 		{910B3EA2-DB1B-4F5D-B3C5-9AB1B600936B}.Debug|Win32.ActiveCfg = Debug|Win32
-		{910B3EA2-DB1B-4F5D-B3C5-9AB1B600936B}.Debug|Win32.Build.0 = Debug|Win32
 		{910B3EA2-DB1B-4F5D-B3C5-9AB1B600936B}.Debug|x64.ActiveCfg = Debug|x64
 		{910B3EA2-DB1B-4F5D-B3C5-9AB1B600936B}.Debug|x64.Build.0 = Debug|x64
 		{910B3EA2-DB1B-4F5D-B3C5-9AB1B600936B}.Release|ARM.ActiveCfg = Release|Win32
 		{910B3EA2-DB1B-4F5D-B3C5-9AB1B600936B}.Release|Win32.ActiveCfg = Release|Win32
-		{910B3EA2-DB1B-4F5D-B3C5-9AB1B600936B}.Release|Win32.Build.0 = Release|Win32
 		{910B3EA2-DB1B-4F5D-B3C5-9AB1B600936B}.Release|x64.ActiveCfg = Release|x64
 		{910B3EA2-DB1B-4F5D-B3C5-9AB1B600936B}.Release|x64.Build.0 = Release|x64
 		{910B3EA2-DB1B-4F5D-B3C5-9AB1B600936B}.ReleaseWithoutAsm|ARM.ActiveCfg = Release|x64

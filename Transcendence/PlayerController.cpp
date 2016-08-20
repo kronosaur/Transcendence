@@ -1412,6 +1412,30 @@ void CPlayerShipController::OnReactorOverloadWarning (int iSeq)
 		}
 	}
 
+void CPlayerShipController::OnShipStatus (EShipStatusNotifications iEvent, DWORD dwData)
+
+//	OnShipStatus
+//
+//	Something has happened to the ship...
+
+	{
+	switch (iEvent)
+		{
+		case statusReactorPowerFailure:
+			m_pTrans->DisplayMessage(CONSTLIT("No power from reactor"));
+
+			SetThrust(false);
+			SetManeuver(NoRotation);
+			SetFireMain(false);
+			SetFireMissile(false);
+			break;
+
+		case statusReactorRestored:
+			m_pTrans->DisplayMessage(CONSTLIT("Reactor power restored"));
+			break;
+		}
+	}
+
 void CPlayerShipController::OnStartGame (void)
 
 //	OnStartGame
@@ -1570,7 +1594,7 @@ EManeuverTypes CPlayerShipController::GetManeuver (void)
     if (m_bMouseAim)
         {
         if (m_iMouseAimAngle == -1
-				|| m_pShip->IsOutOfFuel()
+				|| m_pShip->IsOutOfPower()
 				|| m_pShip->IsTimeStopped())
             return NoRotation;
         else

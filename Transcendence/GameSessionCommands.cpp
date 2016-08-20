@@ -28,7 +28,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 		case CGameKeys::keyEnableDevice:
 			if (!pPlayer->DockingInProgress() 
 					&& !pPlayer->GetShip()->IsParalyzed()
-					&& !pPlayer->GetShip()->IsOutOfFuel()
+					&& !pPlayer->GetShip()->IsOutOfPower()
 					&& !pPlayer->GetShip()->IsTimeStopped())
 				{
 				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
@@ -49,7 +49,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 			break;
 
 		case CGameKeys::keyDock:
-			if (!pPlayer->GetShip()->IsOutOfFuel()
+			if (!pPlayer->GetShip()->IsOutOfPower()
 					&& !pPlayer->GetShip()->IsParalyzed()
 					&& !pPlayer->GetShip()->IsTimeStopped())
 				{
@@ -72,7 +72,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 		case CGameKeys::keyEnterGate:
 			if (!pPlayer->DockingInProgress()
 					&& !pPlayer->GetShip()->IsParalyzed()
-					&& !pPlayer->GetShip()->IsOutOfFuel()
+					&& !pPlayer->GetShip()->IsOutOfPower()
 					&& !pPlayer->GetShip()->IsTimeStopped())
 				{
 				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
@@ -179,7 +179,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 			break;
 
 		case CGameKeys::keyThrustForward:
-			if (!pPlayer->GetShip()->IsOutOfFuel()
+			if (!pPlayer->GetShip()->IsOutOfPower()
 					&& !pPlayer->GetShip()->IsTimeStopped())
 				{
 				g_pTrans->Autopilot(false);
@@ -188,7 +188,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 			break;
 
 		case CGameKeys::keyRotateLeft:
-			if (!pPlayer->GetShip()->IsOutOfFuel()
+			if (!pPlayer->GetShip()->IsOutOfPower()
 					&& !pPlayer->GetShip()->IsTimeStopped())
 				{
 				g_pTrans->Autopilot(false);
@@ -197,7 +197,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 			break;
 
 		case CGameKeys::keyRotateRight:
-			if (!pPlayer->GetShip()->IsOutOfFuel()
+			if (!pPlayer->GetShip()->IsOutOfPower()
 					&& !pPlayer->GetShip()->IsTimeStopped())
 				{
 				g_pTrans->Autopilot(false);
@@ -206,7 +206,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 			break;
 
 		case CGameKeys::keyStop:
-			if (!pPlayer->GetShip()->IsOutOfFuel()
+			if (!pPlayer->GetShip()->IsOutOfPower()
 					&& !pPlayer->GetShip()->IsTimeStopped())
 				{
 				g_pTrans->Autopilot(false);
@@ -215,7 +215,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 			break;
 
 		case CGameKeys::keyFireWeapon:
-			if (!pPlayer->GetShip()->IsOutOfFuel()
+			if (!pPlayer->GetShip()->IsOutOfPower()
 					&& !pPlayer->GetShip()->IsTimeStopped())
 				{
 				g_pTrans->Autopilot(false);
@@ -224,7 +224,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 			break;
 
 		case CGameKeys::keyFireMissile:
-			if (!pPlayer->GetShip()->IsOutOfFuel()
+			if (!pPlayer->GetShip()->IsOutOfPower()
 					&& !pPlayer->GetShip()->IsTimeStopped())
 				{
 				g_pTrans->Autopilot(false);
@@ -281,7 +281,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 		case CGameKeys::keyEnableAllDevices:
 			if (!pPlayer->GetShip()->IsTimeStopped()
 					&& !pPlayer->GetShip()->IsParalyzed()
-					&& !pPlayer->GetShip()->IsOutOfFuel())
+					&& !pPlayer->GetShip()->IsOutOfPower())
 				{
 				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 				pPlayer->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
@@ -292,7 +292,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 		case CGameKeys::keyDisableAllDevices:
 			if (!pPlayer->GetShip()->IsTimeStopped()
 					&& !pPlayer->GetShip()->IsParalyzed()
-					&& !pPlayer->GetShip()->IsOutOfFuel())
+					&& !pPlayer->GetShip()->IsOutOfPower())
 				{
 				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 				pPlayer->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
@@ -303,7 +303,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 		case CGameKeys::keyEnableAllDevicesToggle:
 			if (!pPlayer->GetShip()->IsTimeStopped()
 					&& !pPlayer->GetShip()->IsParalyzed()
-					&& !pPlayer->GetShip()->IsOutOfFuel())
+					&& !pPlayer->GetShip()->IsOutOfPower())
 				{
 				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 				pPlayer->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
@@ -318,7 +318,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 				{
 				if (!pPlayer->GetShip()->IsTimeStopped()
 						&& !pPlayer->GetShip()->IsParalyzed()
-						&& !pPlayer->GetShip()->IsOutOfFuel())
+						&& !pPlayer->GetShip()->IsOutOfPower())
 					{
 					int iDevice = (iCommand - CGameKeys::keyEnableDeviceToggle00);
 
