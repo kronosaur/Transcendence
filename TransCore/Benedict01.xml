@@ -99,10 +99,6 @@
 							(msnRegisterForEvents gSource hiddenObj)
 							)
 						)
-					
-					;	Update call allows us to check when various sub-tasks are done.
-					
-					(msnAddRecurringTimerEvent gSource 30 "OnUpdate")
 					)
 			</OnAccepted>
 
@@ -455,6 +451,11 @@
 						;	If we've already completed a task, then skip
 						
 						(msnGetData gSource 'taskCompleted)
+							Nil
+							
+						;	If no state, then skip
+						
+						(not state)
 							Nil
 							
 						;	Check to see if we completed the Habitat mission
