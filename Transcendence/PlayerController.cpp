@@ -562,7 +562,7 @@ int CPlayerShipController::GetCombatPower (void)
 //	CombatPower = ((reactor-power)^0.515) / 2.5
 
 	{
-	int iReactorPower = m_pShip->GetReactorDesc()->GetMaxPower();
+	int iReactorPower = m_pShip->GetMaxPower();
 	if (iReactorPower <= 100)
 		return 4;
 	else if (iReactorPower <= 250)
