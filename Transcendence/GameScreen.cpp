@@ -1033,6 +1033,27 @@ void CTranscendenceWnd::ShowUsePicker (void)
 					continue;
 				}
 
+			//	Some options only trigger if item is installed. This allows 
+			//	items that can be used BOTH when uninstalled and when complete.
+			//	That is, bOnlyIfInstalled and bOnlyIfCompleteArmor are
+			//	orthogonal.
+
+			if (Item.IsInstalled())
+				{
+				if (UseDesc.bOnlyIfCompleteArmor)
+					{
+					CInstalledArmor *pArmor = pShip->FindArmor(Item);
+					if (pArmor == NULL || !pArmor->IsComplete() || !pArmor->IsPrime())
+						continue;
+					}
+				else if (UseDesc.bAsArmorSet)
+					{
+					CInstalledArmor *pArmor = pShip->FindArmor(Item);
+					if (pArmor == NULL || !pArmor->IsPrime())
+						continue;
+					}
+				}
+
 			//	Add to the list
 
 			bool bHasUseKey = (pType->IsKnown() && !UseDesc.sUseKey.IsBlank() && (*UseDesc.sUseKey.GetASCIIZPointer() != chUseKey));

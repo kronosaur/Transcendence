@@ -2797,7 +2797,10 @@ void CTranscendenceModel::UseItem (CItem &Item)
 		//	Done
 
 		if (!sError.IsBlank())
+			{
 			pShip->SendMessage(NULL, sError);
+			::kernelDebugLogMessage(sError);
+			}
 
 		pShip->OnComponentChanged(comCargo);
 		}
