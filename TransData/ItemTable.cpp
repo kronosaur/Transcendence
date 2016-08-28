@@ -551,17 +551,8 @@ void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
 
             else
                 {
-			    CString sValue;
 			    CCodeChainCtx CCCtx;
-
-			    ICCItem *pResult = Item.GetProperty(&CCCtx, ItemCtx, sField);
-
-			    if (pResult->IsNil())
-				    sValue = NULL_STR;
-			    else
-				    sValue = pResult->Print(&g_pUniverse->GetCC(), PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
-
-			    pResult->Discard(&g_pUniverse->GetCC());
+			    CString sValue = Item.GetItemPropertyString(CCCtx, ItemCtx, sField);
 
 			    //	Format the value
 
