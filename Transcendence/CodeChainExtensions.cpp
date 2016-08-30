@@ -100,6 +100,8 @@ ICCItem *fnPlyComposeString (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwDat
 #define ACTION_SPECIAL_NEXT_KEY		CONSTLIT("nextKey")
 #define ACTION_SPECIAL_PREV_KEY		CONSTLIT("prevKey")
 
+#define ERR_NO_CODE_CHAIN_CTX			CONSTLIT("No CodeChainCtx")
+
 static PRIMITIVEPROCDEF g_Extensions[] =
 	{
 		//	Game function
@@ -487,6 +489,9 @@ CG32bitImage *GetCanvasArg (CEvalContext *pEvalCtx, ICCItem *pArgs, int iArg)
 	else
 		{
 		CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
+		if (pCtx == NULL)
+			return NULL;
+
 		return pCtx->GetCanvas();
 		}
 	}
@@ -1415,8 +1420,12 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 //	Sets screen data
 
 	{
-	CCodeChain *pCC = pEvalCtx->pCC;
 	int i;
+
+	CCodeChain *pCC = pEvalCtx->pCC;
+	CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
+	if (pCtx == NULL)
+		return pCC->CreateError(ERR_NO_CODE_CHAIN_CTX);
 
 	//	Convert the first argument into a dock screen object
 
@@ -1480,7 +1489,6 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_SCR_ADD_ACTION:
 		case FN_SCR_ADD_MINOR_ACTION:
 			{
-			CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
 
 			CDockScreenActions &Actions = pScreen->GetActions();
 			CString sID = pArgs->GetElement(1)->GetStringValue();
@@ -1757,6 +1765,9 @@ ICCItem *fnScrSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 	{
 	CCodeChain *pCC = pEvalCtx->pCC;
 	CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
+	if (pCtx == NULL)
+		return pCC->CreateError(ERR_NO_CODE_CHAIN_CTX);
+
 	ICCItem *pArgs;
 	ICCItem *pResult;
 
@@ -1864,6 +1875,8 @@ ICCItem *fnScrShowScreen (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 	{
 	CCodeChain *pCC = pEvalCtx->pCC;
 	CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
+	if (pCtx == NULL)
+		return pCC->CreateError(ERR_NO_CODE_CHAIN_CTX);
 
 	//	Get the arguments
 
