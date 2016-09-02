@@ -39,7 +39,8 @@ class IDockScreenDisplay
 			CXMLElement *pDesc;
 			CXMLElement *pDisplayDesc;		//	<Display> element
 			AGScreen *pScreen;
-			RECT rcRect;
+			RECT rcScreen;					//	Entire screen
+			RECT rcRect;					//	Standard area
 			DWORD dwFirstID;
 			const CVisualPalette *pVI;
 			const SFontTable *pFontTable;
@@ -153,6 +154,12 @@ class IDockScreenDisplay
 class CDockScreenActions
 	{
 	public:
+		enum EArrangements
+			{
+			arrangeVertical,				//	Stack buttons in a single column
+			arrangeHorizontal,				//	Arrange horizontally
+			};
+
 		enum SpecialAttribs
 			{
 			specialNone			= 0x00000000,
@@ -170,9 +177,9 @@ class CDockScreenActions
 		~CDockScreenActions (void);
 
 		ALERROR AddAction (const CString &sID, int iPos, const CString &sLabel, CExtension *pExtension, ICCItem *pCode, bool bMinor, int *retiAction);
-		int CalcAreaHeight (CDesignType *pRoot, const RECT &rcFrame);
+		int CalcAreaHeight (CDesignType *pRoot, EArrangements iArrangement, const RECT &rcFrame);
 		void CleanUp (void);
-		void CreateButtons (const CDockScreenVisuals &DockScreenVisuals, CGFrameArea *pFrame, CDesignType *pRoot, DWORD dwFirstTag, const RECT &rcFrame);
+		void CreateButtons (const CDockScreenVisuals &DockScreenVisuals, CGFrameArea *pFrame, CDesignType *pRoot, DWORD dwFirstTag, EArrangements iArrangement, const RECT &rcFrame);
 		void Execute (int iAction, CDockScreen *pScreen);
 		void ExecuteExitScreen (bool bForceUndock = false);
 		void ExecuteShowPane (const CString &sPane);
@@ -200,6 +207,8 @@ class CDockScreenActions
 		struct SActionDesc
 			{
 			SActionDesc (void) :
+					cyHeight(0),
+					rcRect({ 0, 0, 0, 0 }),
 					pExtension(NULL),
 					pCmd(NULL),
 					pCode(NULL),
@@ -213,6 +222,8 @@ class CDockScreenActions
 			CString sKey;			//	Accelerator key
 			CString sDescID;		//	Language ID to load description
 			CString sDesc;			//	Description
+			int cyHeight;			//	Justified height of button
+			RECT rcRect;			//	RECT of button
 
 			CExtension *pExtension;	//	Source of the code
 
@@ -231,6 +242,7 @@ class CDockScreenActions
 			CString sDescTmp;
 			};
 
+		void Arrange (EArrangements iArrangement, CDesignType *pRoot, const RECT &rcFrame);
 		void ExecuteCode (CDockScreen *pScreen, const CString &sID, CExtension *pExtension, ICCItem *pCode);
 		SpecialAttribs GetSpecialFromName (const CString &sSpecialName);
 		int Justify (CDesignType *pRoot, int cxJustify);
@@ -245,13 +257,24 @@ class CDockScreenActions
 		int m_cxJustify;			//	Width that we justified for
 		bool m_bLongButtons;		//	If true, we display long buttons
 		int m_iMinorButtonCount;	//	Number of minor buttons
+		int m_iMajorButtonCount;	//	Number of major buttons
 		int m_cyMajorButtons;		//	Total height of major buttons
 		int m_cyTotalHeight;		//	Total height of all buttons
+		int m_cyMax;				//	Height of tallest button
 	};
 
 class CDockPane
 	{
 	public:
+		enum ELayouts
+			{
+			layoutNone,						//	Unknown or invalid layout
+
+			layoutRight,					//	Right side pane (default)
+			layoutLeft,						//	Left side pane
+			layoutBottomBar,				//	Thin bottom bar
+			};
+
 		CDockPane (void);
 		~CDockPane (void);
 
@@ -265,7 +288,7 @@ class CDockPane
 		bool HandleAction (DWORD dwTag, DWORD dwData);
 		bool HandleChar (char chChar);
 		bool HandleKeyDown (int iVirtKey);
-		ALERROR InitPane (CDockScreen *pDockScreen, CXMLElement *pPaneDesc, const RECT &rcPaneRect);
+		ALERROR InitPane (CDockScreen *pDockScreen, CXMLElement *pPaneDesc, const RECT &rcFullRect);
 		bool SetControlValue (const CString &sID, ICCItem *pValue);
 		void SetCounterValue (int iValue);
 		void SetDescription (const CString &sDesc);
@@ -318,20 +341,26 @@ class CDockPane
 			CG32bitPixel TextColor;
 			};
 
-		void CreateControl (EControlTypes iType, const CString &sID, const CString &sStyle);
-		ALERROR CreateControls (CString *retsError);
+		void CreateControl (EControlTypes iType, const CString &sID, const CString &sStyle, RECT rcPane);
+		ALERROR CreateControls (RECT rcPane, CString *retsError);
 		void ExecuteAction (int iAction);
 		bool FindControl (const CString &sID, SControl **retpControl = NULL) const;
 		CGTextArea *GetTextControlByType (EControlTypes iType) const;
 		SControl *GetControlByType (EControlTypes iType) const;
 		void GetControlStyle (const CString &sStyle, SControlStyle *retStyle) const;
-		void RenderControls (void);
+		bool InitLayout (const CString &sLayout, const RECT &rcFullRect, CString *retsError = NULL);
+		void JustifyControls (int *retcyTotalHeight = NULL);
+		void PositionControls (int x, int y);
+		void RenderControlsBottomBar (void);
+		void RenderControlsColumn (void);
 		ALERROR ReportError (const CString &sError);
 
 		CDockScreen *m_pDockScreen;			//	Dock screen object
 		CXMLElement *m_pPaneDesc;			//	XML describing pane
 
-		RECT m_rcPane;						//	Pane region relative to screen
+		ELayouts m_iLayout;					//	Layout of controls and actions
+		RECT m_rcControls;					//	Rectangular region for controls
+		RECT m_rcActions;					//	Rectangular region for actions
 		CGFrameArea *m_pContainer;			//	Hold all pane areas
 
 		TArray<SControl> m_Controls;
@@ -495,7 +524,6 @@ class CDockScreen : public IScreenController
 
 		//	Panes
 		CXMLElement *m_pPanes;
-		RECT m_rcPane;
 		CDockPane m_CurrentPane;
 
 		//	Events
@@ -548,3 +576,4 @@ class CDockScreenStack
 	};
 
 #include "DockScreenDisplayImpl.h"
+#include "DockScreenSubjugate.h"

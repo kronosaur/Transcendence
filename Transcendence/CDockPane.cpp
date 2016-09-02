@@ -18,6 +18,7 @@
 
 #define DESC_ATTRIB					CONSTLIT("desc")
 #define ID_ATTRIB					CONSTLIT("id")
+#define LAYOUT_ATTRIB				CONSTLIT("layout")
 #define SHOW_COUNTER_ATTRIB			CONSTLIT("showCounter")
 #define SHOW_TEXT_INPUT_ATTRIB		CONSTLIT("showTextInput")
 #define STYLE_ATTRIB				CONSTLIT("style")
@@ -25,6 +26,10 @@
 #define DEFAULT_DESC_ID				CONSTLIT("desc")
 #define DEFAULT_COUNTER_ID			CONSTLIT("counter")
 #define DEFAULT_TEXT_INPUT_ID		CONSTLIT("textInput")
+
+#define LAYOUT_BOTTOM_BAR			CONSTLIT("bottomBar")
+#define LAYOUT_LEFT					CONSTLIT("left")
+#define LAYOUT_RIGHT				CONSTLIT("right")
 
 #define STYLE_DEFAULT				CONSTLIT("default")
 #define STYLE_WARNING				CONSTLIT("warning")
@@ -53,8 +58,15 @@ const int TEXT_INPUT_PADDING_BOTTOM = 24;
 const int PANE_PADDING_TOP =		24;
 const int PANE_PADDING_EXTRA =		0;
 
+const int STD_PANE_WIDTH =			392;
+const int STD_PANE_PADDING_LEFT =	8;
+const int STD_PANE_PADDING_RIGHT =	8;
+const int STD_PANE_PADDING_BOTTOM =	8;
+const int THIN_PANE_HEIGHT =		100;
+
 CDockPane::CDockPane (void) :
 		m_pPaneDesc(NULL),
+		m_iLayout(layoutNone),
 		m_pContainer(NULL),
 		m_bInShowPane(false),
 		m_bInExecuteAction(false)
@@ -99,7 +111,7 @@ void CDockPane::CleanUp (AGScreen *pScreen)
 	m_sDeferredShowPane = NULL_STR;
 	}
 
-void CDockPane::CreateControl (EControlTypes iType, const CString &sID, const CString &sStyle)
+void CDockPane::CreateControl (EControlTypes iType, const CString &sID, const CString &sStyle, RECT rcPane)
 
 //	CreateControl
 //
@@ -128,11 +140,11 @@ void CDockPane::CreateControl (EControlTypes iType, const CString &sID, const CS
 			pTextArea->SetStyles(alignCenter);
 
 			RECT rcInput;
-			rcInput.left = m_rcPane.left + (RectWidth(m_rcPane) - COUNTER_WIDTH) / 2;
+			rcInput.left = rcPane.left + (RectWidth(rcPane) - COUNTER_WIDTH) / 2;
 			rcInput.right = rcInput.left + COUNTER_WIDTH;
 
 			//	Height doesn't matter for now; we recalc later
-			rcInput.top = m_rcPane.top;
+			rcInput.top = rcPane.top;
 			rcInput.bottom = rcInput.top + COUNTER_HEIGHT;
 
 			pControl->pArea = pTextArea;
@@ -166,7 +178,7 @@ void CDockPane::CreateControl (EControlTypes iType, const CString &sID, const CS
 			pTextArea->SetFontTable(&VI);
 
 			pControl->pArea = pTextArea;
-			m_pContainer->AddArea(pControl->pArea, m_rcPane, 0);
+			m_pContainer->AddArea(pControl->pArea, rcPane, 0);
 			break;
 			}
 
@@ -184,7 +196,7 @@ void CDockPane::CreateControl (EControlTypes iType, const CString &sID, const CS
             pItemDisplayArea->SetBackColor(DockScreenVisuals.GetTextBackgroundColor());
 
 			pControl->pArea = pItemDisplayArea;
-			m_pContainer->AddArea(pControl->pArea, m_rcPane, 0);
+			m_pContainer->AddArea(pControl->pArea, rcPane, 0);
 			break;
 			}
 
@@ -200,7 +212,7 @@ void CDockPane::CreateControl (EControlTypes iType, const CString &sID, const CS
 			CGItemListDisplayArea *pItemDisplayArea = new CGItemListDisplayArea;
 
 			pControl->pArea = pItemDisplayArea;
-			m_pContainer->AddArea(pControl->pArea, m_rcPane, 0);
+			m_pContainer->AddArea(pControl->pArea, rcPane, 0);
 			break;
 			}
 
@@ -220,9 +232,9 @@ void CDockPane::CreateControl (EControlTypes iType, const CString &sID, const CS
 			pTextArea->SetCursor(0, 0);
 
 			RECT rcInput;
-			rcInput.left = m_rcPane.left + (RectWidth(m_rcPane) - TEXT_INPUT_WIDTH) / 2;
+			rcInput.left = rcPane.left + (RectWidth(rcPane) - TEXT_INPUT_WIDTH) / 2;
 			rcInput.right = rcInput.left + TEXT_INPUT_WIDTH;
-			rcInput.top = m_rcPane.top;
+			rcInput.top = rcPane.top;
 			rcInput.bottom = rcInput.top + TEXT_INPUT_HEIGHT;
 
 			pControl->pArea = pTextArea;
@@ -235,7 +247,7 @@ void CDockPane::CreateControl (EControlTypes iType, const CString &sID, const CS
 		}
 	}
 
-ALERROR CDockPane::CreateControls (CString *retsError)
+ALERROR CDockPane::CreateControls (RECT rcPane, CString *retsError)
 
 //	CreateControls
 //
@@ -296,7 +308,7 @@ ALERROR CDockPane::CreateControls (CString *retsError)
 
 			//	Create the control
 
-			CreateControl(iType, sID, sStyle);
+			CreateControl(iType, sID, sStyle, rcPane);
 			}
 
         //  If we don't have a default description control, create it. NOTE: It 
@@ -304,7 +316,7 @@ ALERROR CDockPane::CreateControls (CString *retsError)
         //  collapsed.
 
         if (!bDescCreated)
-            CreateControl(controlDesc, DEFAULT_DESC_ID, STYLE_DEFAULT);
+            CreateControl(controlDesc, DEFAULT_DESC_ID, STYLE_DEFAULT, rcPane);
 		}
 
 	//	Otherwise we create default controls
@@ -313,14 +325,14 @@ ALERROR CDockPane::CreateControls (CString *retsError)
 		{
 		//	Create the text description control
 
-		CreateControl(controlDesc, DEFAULT_DESC_ID, STYLE_DEFAULT);
+		CreateControl(controlDesc, DEFAULT_DESC_ID, STYLE_DEFAULT, rcPane);
 
 		//	Create counter or input fields
 
 		if (m_pPaneDesc->GetAttributeBool(SHOW_COUNTER_ATTRIB))
-			CreateControl(controlCounter, DEFAULT_COUNTER_ID, STYLE_DEFAULT);
+			CreateControl(controlCounter, DEFAULT_COUNTER_ID, STYLE_DEFAULT, rcPane);
 		else if (m_pPaneDesc->GetAttributeBool(SHOW_TEXT_INPUT_ATTRIB))
-			CreateControl(controlTextInput, DEFAULT_TEXT_INPUT_ID, STYLE_DEFAULT);
+			CreateControl(controlTextInput, DEFAULT_TEXT_INPUT_ID, STYLE_DEFAULT, rcPane);
 		}
 
 	return NOERROR;
@@ -751,13 +763,63 @@ bool CDockPane::HandleKeyDown (int iVirtKey)
 	return false;
 	}
 
-ALERROR CDockPane::InitPane (CDockScreen *pDockScreen, CXMLElement *pPaneDesc, const RECT &rcPaneRect)
+bool CDockPane::InitLayout (const CString &sLayout, const RECT &rcFullRect, CString *retsError)
+
+//	InitLayout
+//
+//	Initializes the layout metrics.
+
+	{
+	if (sLayout.IsBlank() || strEquals(sLayout, LAYOUT_RIGHT))
+		{
+		m_iLayout = layoutRight;
+
+		m_rcControls.right = rcFullRect.right - STD_PANE_PADDING_RIGHT;
+		m_rcControls.left = m_rcControls.right - STD_PANE_WIDTH;
+		m_rcControls.top = rcFullRect.top;
+		m_rcControls.bottom = rcFullRect.bottom;
+
+		m_rcActions = m_rcControls;
+		}
+	else if (strEquals(sLayout, LAYOUT_LEFT))
+		{
+		m_iLayout = layoutLeft;
+
+		m_rcControls.left = STD_PANE_PADDING_LEFT;
+		m_rcControls.right = m_rcControls.left + STD_PANE_WIDTH;
+		m_rcControls.top = rcFullRect.top;
+		m_rcControls.bottom = rcFullRect.bottom;
+
+		m_rcActions = m_rcControls;
+		}
+	else if (strEquals(sLayout, LAYOUT_BOTTOM_BAR))
+		{
+		m_iLayout = layoutBottomBar;
+		m_rcControls = rcFullRect;
+		m_rcControls.bottom -= STD_PANE_PADDING_BOTTOM;
+
+		m_rcActions = m_rcControls;
+		}
+	else
+		{
+		if (retsError) *retsError = strPatternSubst(CONSTLIT("Invalid layout: %s"), sLayout);
+		return false;
+		}
+
+	//	Done
+
+	return true;
+	}
+
+ALERROR CDockPane::InitPane (CDockScreen *pDockScreen, CXMLElement *pPaneDesc, const RECT &rcFullRect)
 
 //	InitPane
 //
 //	Initializes the pane.
 
 	{
+	CString sError;
+
 	//	Initialize
 
 	AGScreen *pScreen = pDockScreen->GetScreen();
@@ -765,16 +827,22 @@ ALERROR CDockPane::InitPane (CDockScreen *pDockScreen, CXMLElement *pPaneDesc, c
 
 	m_pDockScreen = pDockScreen;
 	m_pPaneDesc = pPaneDesc;
-	m_rcPane = rcPaneRect;
 	ICCItem *pData = m_pDockScreen->GetData();
 
 	//	Make sure we don't recurse
 
 	m_bInShowPane = true;
 
+	//	Pane layout
+
+	if (!InitLayout(m_pPaneDesc->GetAttribute(LAYOUT_ATTRIB), rcFullRect, &sError))
+		{
+		ReportError(strPatternSubst(CONSTLIT("Pane %s: %s"), pPaneDesc->GetTag(), sError));
+		return NOERROR;
+		}
+
 	//	Initialize list of actions.
 
-	CString sError;
 	if (m_Actions.InitFromXML(m_pDockScreen->GetExtension(), m_pPaneDesc->GetContentElementByTag(ACTIONS_TAG), pData, &sError) != NOERROR)
 		{
 		ReportError(strPatternSubst(CONSTLIT("Pane %s: %s"), pPaneDesc->GetTag(), sError));
@@ -782,13 +850,22 @@ ALERROR CDockPane::InitPane (CDockScreen *pDockScreen, CXMLElement *pPaneDesc, c
 		}
 
 	//	Create a new pane
+	//
+	//	NOTE: Children of the container have RECTs relative to the screen,
+	//	not the container, so we just have to contain fill the screen anyway.
+
+	RECT rcContainer;
+	rcContainer.left = 0;
+	rcContainer.top = 0;
+	rcContainer.right = RectWidth(pScreen->GetRect());
+	rcContainer.bottom = RectHeight(pScreen->GetRect());
 
 	m_pContainer = new CGFrameArea;
-	pScreen->AddArea(m_pContainer, m_rcPane, 0);
+	pScreen->AddArea(m_pContainer, rcContainer, 0);
 
 	//	Create the appropriate set of controls
 
-	if (CreateControls(&sError) != NOERROR)
+	if (CreateControls(m_rcControls, &sError) != NOERROR)
 		{
 		ReportError(strPatternSubst(CONSTLIT("Pane %s: %s"), pPaneDesc->GetTag(), sError));
 		return NOERROR;
@@ -835,7 +912,16 @@ ALERROR CDockPane::InitPane (CDockScreen *pDockScreen, CXMLElement *pPaneDesc, c
 	//	Now that all the controls (and actions) have been initialized, resize them
 	//	so that they fit
 
-	RenderControls();
+	switch (m_iLayout)
+		{
+		case layoutBottomBar:
+			RenderControlsBottomBar();
+			break;
+
+		default:
+			RenderControlsColumn();
+			break;
+		}
 
 	//	Done
 
@@ -844,27 +930,22 @@ ALERROR CDockPane::InitPane (CDockScreen *pDockScreen, CXMLElement *pPaneDesc, c
 	return NOERROR;
 	}
 
-void CDockPane::RenderControls (void)
+void CDockPane::JustifyControls (int *retcyTotalHeight)
 
-//	RenderControls
+//	JustifyControls
 //
-//	Position all controls and actions so they fit.
+//	Initializes cyHeight for all controls (by justifying all controls).
 
 	{
 	int i;
-
-	//	Figure out how much room we need for actions and how much we have left
-	//	for controls.
-
-	int cyActions = m_Actions.CalcAreaHeight(m_pDockScreen->GetResolvedRoot(), m_rcPane);
-	int cyAvailable = RectHeight(m_rcPane) - PANE_PADDING_TOP - cyActions;
-
-	//	Compute the desired height of all variable-height controls
 
 	int cyControls = 0;
 	for (i = 0; i < m_Controls.GetCount(); i++)
 		{
 		SControl &Control = m_Controls[i];
+
+		if (i != 0)
+			cyControls += CONTROL_PADDING_BOTTOM;
 
 		//	Compute the desired height of all variable-height controls
 
@@ -879,18 +960,23 @@ void CDockPane::RenderControls (void)
 
 		//	Add up the total
 
-		cyControls += Control.cyHeight + CONTROL_PADDING_BOTTOM;
+		cyControls += Control.cyHeight;
 		}
 
-	//	Compute the buffer between the controls and the actions
+	//	Done
 
-	int cyControlsFull = Min(Max(PANE_PADDING_TOP + cyControls, cyAvailable), AlignUp(PANE_PADDING_TOP + cyControls, DESC_HEIGHT_GRANULARITY));
+	if (retcyTotalHeight)
+		*retcyTotalHeight = cyControls;
+	}
 
-	//	Figure out where to start.
+void CDockPane::PositionControls (int x, int y)
 
-	int y = m_rcPane.top + PANE_PADDING_TOP;
+//	PositionControls
+//
+//	Positions the set of controls at the given coordinates.
 
-	//	Now resize all the control to the appropriate height.
+	{
+	int i;
 
 	for (i = 0; i < m_Controls.GetCount(); i++)
 		{
@@ -915,16 +1001,72 @@ void CDockPane::RenderControls (void)
 			y += Control.cyHeight + CONTROL_PADDING_BOTTOM;
 			}
 		}
+	}
+
+void CDockPane::RenderControlsBottomBar (void)
+
+//	RenderControlsBottomBar
+//
+//	Position all controls and actions so they fit.
+
+	{
+	//	Compute the vertical height of the actions
+
+	int cyActions = m_Actions.CalcAreaHeight(m_pDockScreen->GetResolvedRoot(), CDockScreenActions::arrangeHorizontal, m_rcActions);
+
+	//	Compute the desired height of all variable-height controls
+
+	int cyControls;
+	JustifyControls(&cyControls);
+
+	//	We position the controls just above the actions
+
+	int x = m_rcControls.left;
+	int y = m_rcControls.bottom - cyActions - STD_PANE_PADDING_BOTTOM - cyControls;
+	PositionControls(x, y);
+
+	//	Create the action buttons at the bottom
+
+	m_Actions.CreateButtons(m_pDockScreen->GetVisuals(), m_pContainer, m_pDockScreen->GetResolvedRoot(), FIRST_ACTION_ID, CDockScreenActions::arrangeHorizontal, m_rcActions);
+	}
+
+void CDockPane::RenderControlsColumn (void)
+
+//	RenderControlsColumn
+//
+//	Position all controls and actions so they fit.
+
+	{
+	//	Figure out how much room we need for actions and how much we have left
+	//	for controls.
+
+	int cyActions = m_Actions.CalcAreaHeight(m_pDockScreen->GetResolvedRoot(), CDockScreenActions::arrangeVertical, m_rcActions);
+	int cyAvailable = RectHeight(m_rcControls) - PANE_PADDING_TOP - cyActions;
+
+	//	Compute the desired height of all variable-height controls
+
+	int cyControls = 0;
+	JustifyControls(&cyControls);
+
+	//	Compute the buffer between the controls and the actions
+
+	int cyControlsFull = Min(Max(PANE_PADDING_TOP + cyControls, cyAvailable), AlignUp(PANE_PADDING_TOP + cyControls, DESC_HEIGHT_GRANULARITY));
+
+	//	Figure out where to start.
+
+	int x = m_rcControls.left;
+	int y = m_rcControls.top + PANE_PADDING_TOP;
+	PositionControls(x, y);
 
 	//	Create the action buttons (deals with extra space above and show/hide)
 
 	RECT rcActions;
-	rcActions.left = m_rcPane.left;
-	rcActions.top = m_rcPane.top + cyControlsFull;
-	rcActions.right = m_rcPane.right;
-	rcActions.bottom = m_rcPane.bottom;
+	rcActions.left = m_rcControls.left;
+	rcActions.top = m_rcControls.top + cyControlsFull;
+	rcActions.right = m_rcControls.right;
+	rcActions.bottom = m_rcControls.bottom;
 
-	m_Actions.CreateButtons(m_pDockScreen->GetVisuals(), m_pContainer, m_pDockScreen->GetResolvedRoot(), FIRST_ACTION_ID, rcActions);
+	m_Actions.CreateButtons(m_pDockScreen->GetVisuals(), m_pContainer, m_pDockScreen->GetResolvedRoot(), FIRST_ACTION_ID, CDockScreenActions::arrangeVertical, rcActions);
 	}
 
 ALERROR CDockPane::ReportError (const CString &sError)
@@ -937,7 +1079,7 @@ ALERROR CDockPane::ReportError (const CString &sError)
 	//	Make sure we have a description control
 
 	if (GetTextControlByType(controlDesc) == NULL)
-		CreateControl(controlDesc, DEFAULT_DESC_ID, STYLE_WARNING);
+		CreateControl(controlDesc, DEFAULT_DESC_ID, STYLE_WARNING, m_rcControls);
 
 	//	Report the error through the screen. This will add screen information and
 	//	eventually call us back at SetDescription.

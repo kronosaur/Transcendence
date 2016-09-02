@@ -365,6 +365,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CArtifactAICorePainter.cpp" />
     <ClCompile Include="CChooseAdventureSession.cpp" />
     <ClCompile Include="CDockPane.cpp" />
     <ClCompile Include="CDockScreenCustomItemList.cpp" />
@@ -373,10 +374,12 @@
     <ClCompile Include="CDockScreenList.cpp" />
     <ClCompile Include="CDockScreenSelector.cpp" />
     <ClCompile Include="CDockScreenStack.cpp" />
+    <ClCompile Include="CDockScreenSubjugate.cpp" />
     <ClCompile Include="CGameSession.cpp" />
     <ClCompile Include="CGItemDisplayArea.cpp" />
     <ClCompile Include="CGItemListDisplayArea.cpp" />
     <ClCompile Include="CGSelectorArea.cpp" />
+    <ClCompile Include="CGSubjugateArea.cpp" />
     <ClCompile Include="CHeadsUpDisplay.cpp" />
     <ClCompile Include="CHighScoreDisplay.cpp" />
     <ClCompile Include="CIntroSession.cpp" />
@@ -701,6 +704,7 @@
     <ClInclude Include="Credits.h" />
     <ClInclude Include="DockScreen.h" />
     <ClInclude Include="DockScreenDisplayImpl.h" />
+    <ClInclude Include="DockScreenSubjugate.h" />
     <ClInclude Include="GameSession.h" />
     <ClInclude Include="GameSettings.h" />
     <ClInclude Include="IntroSession.h" />

@@ -87,12 +87,13 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 #define VCENTER_ATTRIB				CONSTLIT("vcenter")
 #define WIDTH_ATTRIB				CONSTLIT("width")
 
-#define SCREEN_TYPE_ARMOR_SELECTOR	CONSTLIT("armorSelector")
-#define SCREEN_TYPE_CUSTOM_PICKER	CONSTLIT("customPicker")
+#define SCREEN_TYPE_ARMOR_SELECTOR		CONSTLIT("armorSelector")
+#define SCREEN_TYPE_CUSTOM_PICKER		CONSTLIT("customPicker")
 #define SCREEN_TYPE_CUSTOM_ITEM_PICKER	CONSTLIT("customItemPicker")
-#define SCREEN_TYPE_DEVICE_SELECTOR	CONSTLIT("deviceSelector")
-#define SCREEN_TYPE_ITEM_PICKER		CONSTLIT("itemPicker")
-#define SCREEN_TYPE_MISC_SELECTOR	CONSTLIT("miscSelector")
+#define SCREEN_TYPE_DEVICE_SELECTOR		CONSTLIT("deviceSelector")
+#define SCREEN_TYPE_ITEM_PICKER			CONSTLIT("itemPicker")
+#define SCREEN_TYPE_MISC_SELECTOR		CONSTLIT("miscSelector")
+#define SCREEN_TYPE_SUBJUGATE_MINIGAME	CONSTLIT("subjugateMinigame")
 #define SCREEN_TYPE_WEAPONS_SELECTOR	CONSTLIT("weaponsSelector")
 
 #define ALIGN_CENTER				CONSTLIT("center")
@@ -1226,6 +1227,10 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	DisplayCtx.pLocation = m_pLocation;
 	DisplayCtx.pScreen = m_pScreen;
 
+	DisplayCtx.rcScreen = m_rcScreen;
+	DisplayCtx.rcScreen.top = m_yDisplay;
+	DisplayCtx.rcScreen.bottom = DisplayCtx.rcScreen.top + g_cyDockScreen;
+
 	DisplayCtx.rcRect.left = m_rcScreen.left + SCREEN_PADDING_LEFT;
 	DisplayCtx.rcRect.top = m_yDisplay;
 	DisplayCtx.rcRect.right = DisplayCtx.rcRect.left + DESC_PANE_X;
@@ -1285,6 +1290,9 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 	else if (strEquals(sType, SCREEN_TYPE_MISC_SELECTOR))
 		m_pDisplay = new CDockScreenSelector(CGSelectorArea::configMiscDevices);
+
+	else if (strEquals(sType, SCREEN_TYPE_SUBJUGATE_MINIGAME))
+		m_pDisplay = new CDockScreenSubjugate;
 
 	else if (strEquals(sType, SCREEN_TYPE_WEAPONS_SELECTOR))
 		m_pDisplay = new CDockScreenSelector(CGSelectorArea::configWeapons);
@@ -1351,11 +1359,6 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 		}
 
 	//	Show the pane
-
-	m_rcPane.left = m_rcScreen.right - g_cxActionsRegion;
-	m_rcPane.top = m_yDisplay;
-	m_rcPane.right = m_rcScreen.right - SCREEN_PADDING_RIGHT;
-	m_rcPane.bottom = m_rcPane.top + g_cyDockScreen;
 
 	if (!sPane.IsBlank())
 		{
@@ -1817,7 +1820,13 @@ void CDockScreen::ShowPane (const CString &sName)
 
 	//	Initialize the pane based on the pane descriptor
 
-	m_CurrentPane.InitPane(this, pNewPane, m_rcPane);
+	RECT rcPane;
+	rcPane.left = m_rcScreen.left;
+	rcPane.right = m_rcScreen.right;
+	rcPane.top = m_yDisplay;
+	rcPane.bottom = rcPane.top + g_cyDockScreen;
+
+	m_CurrentPane.InitPane(this, pNewPane, rcPane);
 
 	//	Update screen
 	//	Show the currently selected item

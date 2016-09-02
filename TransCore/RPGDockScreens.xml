@@ -77,7 +77,7 @@
 					"Leaking fluids and venting gases obscure the ruined machinery inside."
 					)
 			</Text>
-			<Text id="descAbandoendStationPopulated">
+			<Text id="descAbandonedStationPopulated">
 				(cat 
 					"You are docked at the lifeless ruins of a destroyed station. "
 					"Wrecked machinery and smoldering bodies litter the silent, cavernous bay."

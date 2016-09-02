@@ -248,6 +248,15 @@
     <ClCompile Include="GameSessionInput.cpp">
       <Filter>Source Files\Game Session</Filter>
     </ClCompile>
+    <ClCompile Include="CDockScreenSubjugate.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="CGSubjugateArea.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="CArtifactAICorePainter.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundTasks.h">
@@ -284,6 +293,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameSession.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DockScreenSubjugate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

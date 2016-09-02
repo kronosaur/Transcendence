@@ -27,7 +27,8 @@
 #define ACTION_SPECIAL_PREV_KEY		CONSTLIT("prevKey")
 
 const int ACTION_BUTTON_HEIGHT =	22;
-const int ACTION_BUTTON_SPACING =	4;
+const int ACTION_BUTTON_SPACING_Y =	4;
+const int ACTION_BUTTON_SPACING_X =	22;
 
 const int BOTTOM_MARGIN_Y =			46;
 
@@ -36,6 +37,8 @@ const int CONTROL_INNER_PADDING_HORZ =	8;
 const int CONTROL_INNER_PADDING_VERT =	8;
 
 const int AREA_PADDING =			64;
+
+const int DEFAULT_BUTTON_WIDTH =	200;
 
 struct SSpecialDesc
 	{
@@ -100,7 +103,109 @@ ALERROR CDockScreenActions::AddAction (const CString &sID, int iPos, const CStri
 	return NOERROR;
 	}
 
-int CDockScreenActions::CalcAreaHeight (CDesignType *pRoot, const RECT &rcFrame)
+void CDockScreenActions::Arrange (EArrangements iArrangement, CDesignType *pRoot, const RECT &rcFrame)
+
+//	Arrange
+//
+//	Positions the buttons in the given arrangement.
+
+	{
+	int i;
+
+	switch (iArrangement)
+		{
+		case arrangeHorizontal:
+			{
+			//	Make sure we're justified
+
+			Justify(pRoot, DEFAULT_BUTTON_WIDTH);
+
+			//	Compute some metrics
+
+			int iTotalCount = m_iMajorButtonCount + m_iMinorButtonCount;
+			int cxTotalWidth = iTotalCount * DEFAULT_BUTTON_WIDTH + (iTotalCount - 1) * ACTION_BUTTON_SPACING_X;
+			int xLeft = rcFrame.left + (RectWidth(rcFrame) - cxTotalWidth) / 2;
+			int yTop = rcFrame.bottom - m_cyMax;
+
+			//	Position all buttons
+
+			for (i = 0; i < GetCount(); i++)
+				{
+				SActionDesc *pAction = &m_Actions[i];
+				if (!pAction->bVisible)
+					continue;
+
+				//	Set the size
+
+				pAction->rcRect.left = xLeft;
+				pAction->rcRect.right = xLeft + DEFAULT_BUTTON_WIDTH;
+				pAction->rcRect.top = yTop;
+				pAction->rcRect.bottom = yTop + pAction->cyHeight;
+
+				xLeft += DEFAULT_BUTTON_WIDTH + ACTION_BUTTON_SPACING_X;
+				}
+
+			break;
+			}
+
+		case arrangeVertical:
+			{
+			//	Make sure we're justified
+
+			Justify(pRoot, RectWidth(rcFrame));
+
+			//	We create buttons in one of two areas. Major buttons are at the top of
+			//	the frame. Minor buttons are at the bottom. We start by counting the 
+			//	number of minor buttons.
+
+			int yMajor = rcFrame.top;
+			int yMinor = Max(rcFrame.top + m_cyMajorButtons,
+					rcFrame.bottom - BOTTOM_MARGIN_Y - (m_iMinorButtonCount * ACTION_BUTTON_HEIGHT) - ((m_iMinorButtonCount - 1) * ACTION_BUTTON_SPACING_Y));
+
+			//	Padding
+
+			int xLeft = rcFrame.left + (m_bLongButtons ? 0 : AREA_PADDING);
+			int xRight = rcFrame.right - (m_bLongButtons ? 0 : AREA_PADDING);
+
+			//	Set the size for all buttons
+
+			for (i = 0; i < GetCount(); i++)
+				{
+				SActionDesc *pAction = &m_Actions[i];
+				if (!pAction->bVisible)
+					continue;
+
+				//	These properties of the button depend on the type (major or minor)
+
+				if (pAction->bMinor)
+					{
+					pAction->rcRect.left = xLeft + CONTROL_INNER_PADDING_HORZ;
+					pAction->rcRect.top = yMinor;
+					pAction->rcRect.right = xRight;
+					pAction->rcRect.bottom = yMinor + pAction->cyHeight;
+
+					yMinor += pAction->cyHeight + ACTION_BUTTON_SPACING_Y;
+					}
+				else
+					{
+					pAction->rcRect.left = xLeft;
+					pAction->rcRect.top = yMajor;
+					pAction->rcRect.right = xRight;
+					pAction->rcRect.bottom = yMajor + pAction->cyHeight;
+
+					yMajor += pAction->cyHeight + ACTION_BUTTON_SPACING_Y;
+					}
+				}
+
+			break;
+			}
+
+		default:
+			ASSERT(false);
+		}
+	}
+
+int CDockScreenActions::CalcAreaHeight (CDesignType *pRoot, EArrangements iArrangement, const RECT &rcFrame)
 
 //	CalcAreaHeight
 //
@@ -110,7 +215,18 @@ int CDockScreenActions::CalcAreaHeight (CDesignType *pRoot, const RECT &rcFrame)
 	//	Force a justification
 
 	m_cxJustify = -1;
-	return Justify(pRoot, RectWidth(rcFrame));
+	Justify(pRoot, RectWidth(rcFrame));
+
+	//	Return the height based on the arrangement.
+
+	switch (iArrangement)
+		{
+		case arrangeHorizontal:
+			return m_cyMax;
+
+		default:
+			return m_cyTotalHeight;
+		}
 	}
 
 void CDockScreenActions::CleanUp (void)
@@ -137,7 +253,7 @@ void CDockScreenActions::CleanUp (void)
 		}
 	}
 
-void CDockScreenActions::CreateButtons (const CDockScreenVisuals &DockScreenVisuals, CGFrameArea *pFrame, CDesignType *pRoot, DWORD dwFirstTag, const RECT &rcFrame)
+void CDockScreenActions::CreateButtons (const CDockScreenVisuals &DockScreenVisuals, CGFrameArea *pFrame, CDesignType *pRoot, DWORD dwFirstTag, EArrangements iArrangement, const RECT &rcFrame)
 
 //	CreateButtons
 //
@@ -152,22 +268,10 @@ void CDockScreenActions::CreateButtons (const CDockScreenVisuals &DockScreenVisu
 
     CG32bitPixel rgbActionBackground = CG32bitPixel::Darken(DockScreenVisuals.GetTextBackgroundColor(), 175);
 
-	//	Make sure we're justified
+	//	Arrange the buttons. This will justify and initialize rcRect for all
+	//	actions.
 
-	Justify(pRoot, RectWidth(rcFrame));
-
-	//	We create buttons in one of two areas. Major buttons are at the top of
-	//	the frame. Minor buttons are at the bottom. We start by counting the 
-	//	number of minor buttons.
-
-	int yMajor = rcFrame.top;
-	int yMinor = Max(rcFrame.top + m_cyMajorButtons,
-			rcFrame.bottom - BOTTOM_MARGIN_Y - (m_iMinorButtonCount * ACTION_BUTTON_HEIGHT) - ((m_iMinorButtonCount - 1) * ACTION_BUTTON_SPACING));
-
-	//	Padding
-
-	int xLeft = rcFrame.left + (m_bLongButtons ? 0 : AREA_PADDING);
-	int xRight = rcFrame.right - (m_bLongButtons ? 0 : AREA_PADDING);
+	Arrange(iArrangement, pRoot, rcFrame);
 
 	//	Create all buttons
 
@@ -200,14 +304,7 @@ void CDockScreenActions::CreateButtons (const CDockScreenVisuals &DockScreenVisu
 			pButton->SetLabelFont(&MinorLabelFont);
 			pButton->SetAcceleratorColor(VI.GetColor(colorAreaAccelerator));
 
-			RECT rcArea;
-			rcArea.left = xLeft + CONTROL_INNER_PADDING_HORZ;
-			rcArea.top = yMinor;
-			rcArea.right = xRight;
-			rcArea.bottom = yMinor + ACTION_BUTTON_HEIGHT;
-			pFrame->AddArea(pButton, rcArea, dwFirstTag + i);
-
-			yMinor += ACTION_BUTTON_HEIGHT + ACTION_BUTTON_SPACING;
+			pFrame->AddArea(pButton, pAction->rcRect, dwFirstTag + i);
 			}
 		else
 			{
@@ -219,19 +316,9 @@ void CDockScreenActions::CreateButtons (const CDockScreenVisuals &DockScreenVisu
 			pButton->SetBackColorHover(DockScreenVisuals.GetTextBackgroundColor());
 			pButton->SetDescColor(CG32bitPixel(128, 128, 128));	//	Same as CGItemDisplayArea
 			pButton->SetDescFont(&VI.GetFont(fontMedium));
+			pButton->Justify(pAction->rcRect);
 
-			RECT rcArea;
-			rcArea.left = xLeft;
-			rcArea.top = yMajor;
-			rcArea.right = xRight;
-			rcArea.bottom = yMajor + ACTION_BUTTON_HEIGHT;
-
-			int cyHeight = pButton->Justify(rcArea);
-			rcArea.bottom = rcArea.top + cyHeight;
-
-			pFrame->AddArea(pButton, rcArea, dwFirstTag + i);
-
-			yMajor += cyHeight + ACTION_BUTTON_SPACING;
+			pFrame->AddArea(pButton, pAction->rcRect, dwFirstTag + i);
 			}
 		}
 	}
@@ -592,6 +679,7 @@ int CDockScreenActions::Justify (CDesignType *pRoot, int cxJustify)
 
 	m_bLongButtons = false;
 	m_iMinorButtonCount = 0;
+	m_iMajorButtonCount = 0;
 	for (i = 0; i < GetCount(); i++)
 		{
 		SActionDesc *pAction = &m_Actions[i];
@@ -600,6 +688,8 @@ int CDockScreenActions::Justify (CDesignType *pRoot, int cxJustify)
 
 		if (pAction->bMinor)
 			m_iMinorButtonCount++;
+		else
+			m_iMajorButtonCount++;
 
 		if (!pAction->sDesc.IsBlank() || !pAction->sDescID.IsBlank())
 			m_bLongButtons = true;
@@ -663,6 +753,7 @@ int CDockScreenActions::Justify (CDesignType *pRoot, int cxJustify)
 
 	m_cyTotalHeight = 0;
 	m_cyMajorButtons = 0;
+	m_cyMax = 0;
 	for (i = 0; i < GetCount(); i++)
 		{
 		SActionDesc *pAction = &m_Actions[i];
@@ -672,18 +763,21 @@ int CDockScreenActions::Justify (CDesignType *pRoot, int cxJustify)
 		//	Minor buttons are fixed height
 
 		if (pAction->bMinor)
-			m_cyTotalHeight += ACTION_BUTTON_HEIGHT + ACTION_BUTTON_SPACING;
+			{
+			pAction->cyHeight = ACTION_BUTTON_HEIGHT;
+			m_cyTotalHeight += pAction->cyHeight + ACTION_BUTTON_SPACING_Y;
+			}
 
 		//	Major buttons need to be justified
 
 		else
 			{
-			int cyHeight = 0;
+			pAction->cyHeight = 0;
 
 			//	Top padding and label
 
-			cyHeight += CONTROL_INNER_PADDING_VERT;
-			cyHeight += MajorLabelFont.GetHeight();
+			pAction->cyHeight += CONTROL_INNER_PADDING_VERT;
+			pAction->cyHeight += MajorLabelFont.GetHeight();
 
 			//	Description
 
@@ -691,16 +785,21 @@ int CDockScreenActions::Justify (CDesignType *pRoot, int cxJustify)
 				{
 				int cxTextWidth = cxWidth - (2 * CONTROL_INNER_PADDING_HORZ);
 				int iLines = VI.GetFont(fontMedium).BreakText(pAction->sDescTmp, cxTextWidth, NULL);
-				cyHeight += iLines * VI.GetFont(fontMedium).GetHeight();
+				pAction->cyHeight += iLines * VI.GetFont(fontMedium).GetHeight();
 				}
 
 			//	Bottom
 
-			cyHeight += CONTROL_INNER_PADDING_VERT + ACTION_BUTTON_SPACING;
+			pAction->cyHeight += CONTROL_INNER_PADDING_VERT;
 
-			m_cyTotalHeight += cyHeight;
-			m_cyMajorButtons += cyHeight;
+			m_cyTotalHeight += pAction->cyHeight + ACTION_BUTTON_SPACING_Y;
+			m_cyMajorButtons += pAction->cyHeight + ACTION_BUTTON_SPACING_Y;
 			}
+
+		//	Keep track of tallest button
+
+		if (pAction->cyHeight > m_cyMax)
+			m_cyMax = pAction->cyHeight;
 		}
 
 	//	Bottom margin

@@ -345,4 +345,3 @@ class CGSelectorArea : public AGArea
 		TArray<SEntry> m_Regions;
 		int m_iCursor;
 	};
-
