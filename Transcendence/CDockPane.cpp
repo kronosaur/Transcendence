@@ -852,7 +852,11 @@ ALERROR CDockPane::InitPane (CDockScreen *pDockScreen, CXMLElement *pPaneDesc, c
 	//	Create a new pane
 	//
 	//	NOTE: Children of the container have RECTs relative to the screen,
-	//	not the container, so we just have to contain fill the screen anyway.
+	//	not the container, so these coordinates don't really matter. EXCEPT
+	//	that we don't want the container to overlap the dock screen display.
+	//	At this point, we don't know the size/location of the pane (because
+	//	we haven't yet measured all the controls). So we just specify a 
+	//	temporary size and change it later inside of RenderXXX.
 
 	RECT rcContainer;
 	rcContainer.left = 0;
@@ -1028,6 +1032,13 @@ void CDockPane::RenderControlsBottomBar (void)
 	//	Create the action buttons at the bottom
 
 	m_Actions.CreateButtons(m_pDockScreen->GetVisuals(), m_pContainer, m_pDockScreen->GetResolvedRoot(), FIRST_ACTION_ID, CDockScreenActions::arrangeHorizontal, m_rcActions);
+
+	//	Now that we know the size of the pane, we set the container size so that we
+	//	don't overlap the screen display.
+
+	RECT rcContainer = m_rcControls;
+	rcContainer.top = y;
+	m_pContainer->SetRect(rcContainer);
 	}
 
 void CDockPane::RenderControlsColumn (void)
@@ -1067,6 +1078,11 @@ void CDockPane::RenderControlsColumn (void)
 	rcActions.bottom = m_rcControls.bottom;
 
 	m_Actions.CreateButtons(m_pDockScreen->GetVisuals(), m_pContainer, m_pDockScreen->GetResolvedRoot(), FIRST_ACTION_ID, CDockScreenActions::arrangeVertical, rcActions);
+
+	//	Now that we know the size of the pane, we set the container size so that we
+	//	don't overlap the screen display.
+
+	m_pContainer->SetRect(m_rcControls);
 	}
 
 ALERROR CDockPane::ReportError (const CString &sError)

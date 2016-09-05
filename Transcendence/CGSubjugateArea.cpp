@@ -21,8 +21,12 @@ const int DAIMON_SPACING_Y =				12;
 
 const int DMZ_WIDTH =						40;				//	Distance from outer edge of countermeasures to daimons
 
+const int INFO_PANE_WIDTH =					200;
+const DWORD INFO_PANE_HOVER_TIME =			300;
+
 CGSubjugateArea::CGSubjugateArea (const CVisualPalette &VI) : 
-		m_VI(VI)
+		m_VI(VI),
+		m_InfoPane(VI)
 
 //	CGSubjugateArea constructor
 
@@ -102,7 +106,78 @@ CGSubjugateArea::~CGSubjugateArea (void)
 	{
 	}
 
-//	AGArea virtuals
+
+void CGSubjugateArea::HideInfoPane (void)
+
+//	HideInfoPane
+//
+//	Hides the info pane if it is showing
+
+	{
+	if (m_InfoPaneSel.iType != selectNone)
+		{
+		m_InfoPane.Hide();
+		m_InfoPaneSel = SSelection();
+		Invalidate();
+		}
+	}
+
+bool CGSubjugateArea::HitTest (int x, int y, SSelection &Sel) const
+
+//	HitTest
+//
+//	Returns TRUE if the point is over an active region.
+//	NOTE: x,y are paint coordinates (i.e., screen relative).
+
+	{
+	//	Check countermeasures
+
+	if (HitTestCountermeasureLoci(x, y, &Sel.iIndex))
+		{
+		Sel.iType = selectCountermeasureLoci;
+		return true;
+		}
+
+	//	Nothing
+
+	Sel = SSelection();
+	return false;
+	}
+
+bool CGSubjugateArea::HitTestCountermeasureLoci (int x, int y, int *retiIndex) const
+
+//	HitTestCountermeasureLoci
+//
+//	Returns TRUE if the point is over a countermeasure loci.
+
+	{
+	int i;
+
+	//	Convert mouse position to radial coordinates relative to the center of
+	//	the core.
+
+	Metric rRadius;
+	int iAngle = VectorToPolar(CVector(x - m_xCenter, m_yCenter - y), &rRadius);
+	int iRadius = (int)rRadius;
+
+	//	See if we're inside any loci
+
+	for (i = 0; i < m_CountermeasureLoci.GetCount(); i++)
+		{
+		const SCountermeasureLocus &Locus = m_CountermeasureLoci[i];
+
+		if (iAngle >= Locus.iStartAngle && iAngle < (Locus.iStartAngle + Locus.iArc)
+				&& iRadius >= Locus.iInnerRadius && iRadius < Locus.iOuterRadius)
+			{
+			if (retiIndex)
+				*retiIndex = i;
+
+			return true;
+			}
+		}
+
+	return false;
+	}
 
 bool CGSubjugateArea::LButtonDown (int x, int y)
 
@@ -111,7 +186,52 @@ bool CGSubjugateArea::LButtonDown (int x, int y)
 //	Handle mouse
 
 	{
+	//	We store everything in paint coordinates, so we need to convert
+
+	GetParent()->ConvertToPaintCoords(x, y);
+
 	return false;
+	}
+
+void CGSubjugateArea::MouseEnter (void)
+
+//	MouseEnter
+//
+//	Mouse has entered area
+
+	{
+	}
+
+void CGSubjugateArea::MouseLeave (void)
+
+//	MouseLeave
+//
+//	Mouse has left area
+
+	{
+	m_Hover = SSelection();
+	HideInfoPane();
+	}
+
+void CGSubjugateArea::MouseMove (int x, int y)
+
+//	MoveMose
+//
+//	Mouse has moved within the area.
+
+	{
+	//	We store everything in paint coordinates, so we need to convert
+
+	GetParent()->ConvertToPaintCoords(x, y);
+
+	//	Hit test (store the result in m_Hover).
+
+	HitTest(x, y, m_Hover);
+
+	//	Close the info pane, if necessary
+
+	if (m_Hover != m_InfoPaneSel)
+		HideInfoPane();
 	}
 
 void CGSubjugateArea::OnSetRect (void)
@@ -150,46 +270,63 @@ void CGSubjugateArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 //	Paint
 
 	{
-	Dest.Fill(m_rcHand.left, m_rcHand.top, RectWidth(m_rcHand), RectHeight(m_rcHand), CG32bitPixel(128, 128, 255, 128));
-
-	m_AICorePainter.Paint(Dest, m_xCenter, m_yCenter);
-	PaintLoci(Dest, rcRect);
-	}
-
-void CGSubjugateArea::PaintLoci (CG32bitImage &Dest, const RECT &rcRect) const
-
-//	PaintLoci
-//
-//	Paints the daimon and countermeasure loci.
-
-	{
 	int i;
 
+	Dest.Fill(m_rcHand.left, m_rcHand.top, RectWidth(m_rcHand), RectHeight(m_rcHand), CG32bitPixel(128, 128, 255, 128));
+
+	//	Paint the central core animation
+
+	m_AICorePainter.Paint(Dest, m_xCenter, m_yCenter);
+
+	//	Paint the deployed countermeasures
+
 	for (i = 0; i < m_CountermeasureLoci.GetCount(); i++)
-		{
-		CGDraw::Arc(Dest,
-				m_xCenter,
-				m_yCenter,
-				m_CountermeasureLoci[i].iInnerRadius,
-				m_CountermeasureLoci[i].iStartAngle,
-				m_CountermeasureLoci[i].iStartAngle + m_CountermeasureLoci[i].iArc,
-				COUNTERMEASURE_WIDTH,
-				m_rgbCountermeasureBack,
-				CGDraw::blendNormal,
-				COUNTERMEASURE_SPACING / 2,
-				CGDraw::ARC_INNER_RADIUS);
-		}
+		PaintCountermeasureLocus(Dest, m_CountermeasureLoci[i]);
+
+	//	Paint the deployed daimons
 
 	for (i = 0; i < m_DaimonLoci.GetCount(); i++)
-		{
-		CGDraw::RoundedRect(Dest,
-				m_xCenter + m_DaimonLoci[i].xPos,
-				m_yCenter + m_DaimonLoci[i].yPos,
-				m_DaimonLoci[i].cxWidth,
-				m_DaimonLoci[i].cyHeight,
-				DAIMON_BORDER_RADIUS,
-				m_rgbDaimonBack);
-		}
+		PaintDaimonLocus(Dest, m_DaimonLoci[i]);
+
+	//	Paint the info pane on top of everything
+
+	m_InfoPane.Paint(Dest);
+	}
+
+void CGSubjugateArea::PaintCountermeasureLocus (CG32bitImage &Dest, const SCountermeasureLocus &Locus) const
+
+//	PaintCountermeasureLocus
+//
+//	Paints a deployed countermeasure.
+
+	{
+	CGDraw::Arc(Dest,
+			m_xCenter,
+			m_yCenter,
+			Locus.iInnerRadius,
+			Locus.iStartAngle,
+			Locus.iStartAngle + Locus.iArc,
+			COUNTERMEASURE_WIDTH,
+			m_rgbCountermeasureBack,
+			CGDraw::blendNormal,
+			COUNTERMEASURE_SPACING / 2,
+			CGDraw::ARC_INNER_RADIUS);
+	}
+
+void CGSubjugateArea::PaintDaimonLocus (CG32bitImage &Dest, const SDaimonLocus &Locus) const
+
+//	PaintDaimonLocus
+//
+//	Paints a deployed daimon
+
+	{
+	CGDraw::RoundedRect(Dest,
+			m_xCenter + Locus.xPos,
+			m_yCenter + Locus.yPos,
+			Locus.cxWidth,
+			Locus.cyHeight,
+			DAIMON_BORDER_RADIUS,
+			m_rgbDaimonBack);
 	}
 
 void CGSubjugateArea::Update (void)
@@ -199,4 +336,26 @@ void CGSubjugateArea::Update (void)
 //	Update
 
 	{
+	//	See if we need to show the info pane
+
+	if (GetScreen()->GetTimeSinceMouseMove() >= INFO_PANE_HOVER_TIME
+			&& m_InfoPaneSel != m_Hover)
+		{
+		POINT pt;
+		GetScreen()->GetMousePos(&pt);
+		int x = pt.x;
+		int y = pt.y;
+		GetParent()->ConvertToPaintCoords(x, y);
+
+		switch (m_Hover.iType)
+			{
+			case selectCountermeasureLoci:
+				m_InfoPane.SetTitle(strPatternSubst("Countermeasure %d", m_Hover.iIndex + 1));
+				m_InfoPane.SetDescription(CONSTLIT("This is a countermeasure that counters your measure."));
+				m_InfoPane.Show(x, y, INFO_PANE_WIDTH, GetPaintRect());
+				m_InfoPaneSel = m_Hover;
+				Invalidate();
+				break;
+			}
+		}
 	}

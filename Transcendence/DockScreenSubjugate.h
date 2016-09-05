@@ -23,14 +23,25 @@ class CGSubjugateArea : public AGArea
 
 		//	AGArea virtuals
 
-		virtual bool LButtonDown (int x, int y);
-		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect);
-		virtual void Update (void);
+		virtual bool LButtonDown (int x, int y) override;
+		virtual void MouseEnter (void) override;
+		virtual void MouseLeave (void) override;
+		virtual void MouseMove (int x, int y) override;
+		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect) override;
+		virtual void Update (void) override;
 
 	protected:
 		virtual void OnSetRect (void) override;
 
 	private:
+		enum ESelectionTypes
+			{
+			selectNone,
+			
+			selectCountermeasureLoci,
+			selectDaimonLoci,
+			};
+
 		struct SCountermeasureLocus
 			{
 			int iStartAngle;				//	Starting angle (degrees)
@@ -47,14 +58,41 @@ class CGSubjugateArea : public AGArea
 			int cyHeight;
 			};
 
-		void PaintLoci (CG32bitImage &Dest, const RECT &rcRect) const;
+		struct SSelection
+			{
+			SSelection (void) :
+					iType(selectNone),
+					iIndex(-1)
+				{ }
+
+			bool operator== (const SSelection &Src) const 
+				{ return (iType == Src.iType && iIndex == Src.iIndex); }
+			bool operator!= (const SSelection &Src) const 
+				{ return (iType != Src.iType || iIndex != Src.iIndex); }
+
+			ESelectionTypes iType;
+			int iIndex;						//	Idex of countermeasure, daimon, etc.
+			};
+
+		void HideInfoPane (void);
+		bool HitTest (int x, int y, SSelection &Sel) const;
+		bool HitTestCountermeasureLoci (int x, int y, int *retiIndex = NULL) const;
+		void PaintCountermeasureLocus (CG32bitImage &Dest, const SCountermeasureLocus &Locus) const;
+		void PaintDaimonLocus (CG32bitImage &Dest, const SDaimonLocus &Locus) const;
 
 		const CVisualPalette &m_VI;
 
 		//	Game state
 
+		CArtifactAICorePainter m_AICorePainter;
 		TArray<SCountermeasureLocus> m_CountermeasureLoci;
 		TArray<SDaimonLocus> m_DaimonLoci;
+
+		//	UI state
+
+		SSelection m_Hover;					//	What we're currently hovering over
+		CHoverDescriptionPainter m_InfoPane;//	Info pane on hover
+		SSelection m_InfoPaneSel;			//	What the info pane is showing
 
 		//	Metrics
 
@@ -67,10 +105,6 @@ class CGSubjugateArea : public AGArea
 
 		CG32bitPixel m_rgbCountermeasureBack;
 		CG32bitPixel m_rgbDaimonBack;
-
-		//	Paint helpers
-
-		CArtifactAICorePainter m_AICorePainter;
 	};
 
 class CDockScreenSubjugate : public IDockScreenDisplay
