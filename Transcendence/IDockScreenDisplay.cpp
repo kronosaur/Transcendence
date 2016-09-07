@@ -9,6 +9,7 @@
 #define LIST_OPTIONS_TAG			CONSTLIT("ListOptions")
 
 #define BACKGROUND_ID_ATTRIB		CONSTLIT("backgroundID")
+#define CRITERIA_ATTRIB				CONSTLIT("criteria")
 #define DATA_FROM_ATTRIB			CONSTLIT("dataFrom")
 #define HEIGHT_ATTRIB				CONSTLIT("height")
 #define INITIAL_ITEM_ATTRIB			CONSTLIT("initialItem")
@@ -18,6 +19,7 @@
 #define POS_Y_ATTRIB				CONSTLIT("posY")
 #define ROW_HEIGHT_ATTRIB			CONSTLIT("rowHeight")
 #define SLOT_NAME_ATTRIB			CONSTLIT("slotName")
+#define TYPE_ATTRIB					CONSTLIT("type")
 #define WIDTH_ATTRIB				CONSTLIT("width")
 
 #define DATA_FROM_PLAYER			CONSTLIT("player")
@@ -115,18 +117,30 @@ bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retO
 		retOptions->rcControl.bottom = 482;
 		}
 
+	//	Get the type
+
+	if (Ctx.pDisplayDesc
+			&& Ctx.pDisplayDesc->FindAttribute(TYPE_ATTRIB, &retOptions->sType))
+		NULL;
+	else
+		retOptions->sType = Ctx.pDesc->GetAttribute(TYPE_ATTRIB);
+
 	//	There are a couple of different ways to get options (for backwards
 	//	compatibility).
 
 	CXMLElement *pOptions;
 	if ((pOptions = Ctx.pDesc->GetContentElementByTag(LIST_OPTIONS_TAG)) == NULL
-			&& (pOptions = Ctx.pDesc->GetContentElementByTag(LIST_TAG)) == NULL)
+			&& (pOptions = Ctx.pDesc->GetContentElementByTag(LIST_TAG)) == NULL
+			&& (pOptions = Ctx.pDisplayDesc) == NULL)
 		return true;
+
+	retOptions->pOptions = pOptions;
 
 	//	Read from the element
 
 	retOptions->sDataFrom = pOptions->GetAttribute(DATA_FROM_ATTRIB);
-	retOptions->sItemCriteria = pOptions->GetAttribute(LIST_ATTRIB);
+	if (!pOptions->FindAttribute(CRITERIA_ATTRIB, &retOptions->sItemCriteria))
+		retOptions->sItemCriteria = pOptions->GetAttribute(LIST_ATTRIB);
 	retOptions->sCode = pOptions->GetContentText(0);
 	retOptions->sInitialItemCode = pOptions->GetAttribute(INITIAL_ITEM_ATTRIB);
 	retOptions->sRowHeightCode = pOptions->GetAttribute(ROW_HEIGHT_ATTRIB);

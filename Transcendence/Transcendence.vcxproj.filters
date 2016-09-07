@@ -42,6 +42,9 @@
     <Filter Include="Source Files\Intro Session">
       <UniqueIdentifier>{5a650eb1-4f17-43ad-b2f3-0a076786ce4f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Artifact Awakening">
+      <UniqueIdentifier>{87d58081-1ea7-431e-9628-572c79e4a22f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CLoadGameWithSignInTask.cpp">
@@ -248,14 +251,17 @@
     <ClCompile Include="GameSessionInput.cpp">
       <Filter>Source Files\Game Session</Filter>
     </ClCompile>
-    <ClCompile Include="CDockScreenSubjugate.cpp">
-      <Filter>Source Files\Dock Screens</Filter>
+    <ClCompile Include="CArtifactAICorePainter.cpp">
+      <Filter>Source Files\Artifact Awakening</Filter>
     </ClCompile>
     <ClCompile Include="CGSubjugateArea.cpp">
-      <Filter>Source Files\Displays</Filter>
+      <Filter>Source Files\Artifact Awakening</Filter>
     </ClCompile>
-    <ClCompile Include="CArtifactAICorePainter.cpp">
-      <Filter>Source Files\Displays</Filter>
+    <ClCompile Include="CDockScreenSubjugate.cpp">
+      <Filter>Source Files\Artifact Awakening</Filter>
+    </ClCompile>
+    <ClCompile Include="CDaimonButtonPainter.cpp">
+      <Filter>Source Files\Artifact Awakening</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

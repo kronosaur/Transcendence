@@ -427,7 +427,9 @@
     <Xml Include="CorePlaceholders.xml">
       <SubType>Designer</SubType>
     </Xml>
-    <Xml Include="CoreProjectileEffects.xml" />
+    <Xml Include="CoreProjectileEffects.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="Ferians.xml">
       <SubType>Designer</SubType>
     </Xml>

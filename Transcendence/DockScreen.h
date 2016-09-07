@@ -65,6 +65,7 @@ class IDockScreenDisplay
 		struct SDisplayOptions
 			{
 			SDisplayOptions (void) :
+					pOptions(NULL),
                     bNoEmptySlots(false)
 				{
 				rcControl.left = 0;
@@ -77,6 +78,9 @@ class IDockScreenDisplay
 
 			RECT rcControl;					//	Position of main control
 
+			CString sType;					//	Display type
+			CXMLElement *pOptions;			//	Element containing options (<List> or <ListOptions> or <Display>)
+											//		May be NULL.
 			CString sDataFrom;				//	Source of display data (may be a function)
 			CString sItemCriteria;			//	Criteria of items to show in list (may be a function)
 			CString sCode;					//	Code to generate list

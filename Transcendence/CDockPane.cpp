@@ -61,7 +61,7 @@ const int PANE_PADDING_EXTRA =		0;
 const int STD_PANE_WIDTH =			392;
 const int STD_PANE_PADDING_LEFT =	8;
 const int STD_PANE_PADDING_RIGHT =	8;
-const int STD_PANE_PADDING_BOTTOM =	8;
+const int STD_PANE_PADDING_BOTTOM =	24;
 const int THIN_PANE_HEIGHT =		100;
 
 CDockPane::CDockPane (void) :
@@ -795,10 +795,18 @@ bool CDockPane::InitLayout (const CString &sLayout, const RECT &rcFullRect, CStr
 	else if (strEquals(sLayout, LAYOUT_BOTTOM_BAR))
 		{
 		m_iLayout = layoutBottomBar;
-		m_rcControls = rcFullRect;
-		m_rcControls.bottom -= STD_PANE_PADDING_BOTTOM;
 
-		m_rcActions = m_rcControls;
+		//	Controls are centered
+
+		m_rcControls.left = rcFullRect.left + (RectWidth(rcFullRect) - STD_PANE_WIDTH) / 2;
+		m_rcControls.right = m_rcControls.left + STD_PANE_WIDTH;
+		m_rcControls.top = rcFullRect.top;
+		m_rcControls.bottom = rcFullRect.bottom - STD_PANE_PADDING_BOTTOM;
+
+		//	Actions the the full width
+
+		m_rcActions = rcFullRect;
+		m_rcActions.bottom -= STD_PANE_PADDING_BOTTOM;
 		}
 	else
 		{
@@ -1036,8 +1044,11 @@ void CDockPane::RenderControlsBottomBar (void)
 	//	Now that we know the size of the pane, we set the container size so that we
 	//	don't overlap the screen display.
 
-	RECT rcContainer = m_rcControls;
+	RECT rcContainer;
+	rcContainer.left = m_rcActions.left;
+	rcContainer.right = m_rcActions.right;
 	rcContainer.top = y;
+	rcContainer.bottom = m_rcActions.bottom;
 	m_pContainer->SetRect(rcContainer);
 	}
 
@@ -1059,9 +1070,13 @@ void CDockPane::RenderControlsColumn (void)
 	int cyControls = 0;
 	JustifyControls(&cyControls);
 
+	//	Account for padding, top and bottom
+
+	cyControls += PANE_PADDING_TOP + CONTROL_PADDING_BOTTOM;
+
 	//	Compute the buffer between the controls and the actions
 
-	int cyControlsFull = Min(Max(PANE_PADDING_TOP + cyControls, cyAvailable), AlignUp(PANE_PADDING_TOP + cyControls, DESC_HEIGHT_GRANULARITY));
+	int cyControlsFull = Min(Max(cyControls, cyAvailable), AlignUp(cyControls, DESC_HEIGHT_GRANULARITY));
 
 	//	Figure out where to start.
 

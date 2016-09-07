@@ -15,6 +15,47 @@ class CArtifactAICorePainter
 	private:
 	};
 
+class CDaimonButtonPainter
+	{
+	public:
+		enum EStyles
+			{
+			styleNone,
+
+			styleMain,
+			};
+
+		enum EStates
+			{
+			stateNone,
+
+			stateNormal,
+			stateHover,
+			stateDown,
+			stateDisabled,
+			};
+
+		CDaimonButtonPainter (const CVisualPalette &VI);
+
+		bool HitTest (int x, int y) const;
+		void Paint (CG32bitImage &Dest, EStates iState) const;
+		inline void SetLabel (const CString &sLabel) { m_sLabel = sLabel; }
+		inline void SetPos (int x, int y) { m_xPos = x; m_yPos = y; }
+		inline void SetStyle (EStyles iStyle) { m_iStyle = iStyle; }
+		void Update (void);
+
+	private:
+		void PaintMainStyle (CG32bitImage &Dest, EStates iState) const;
+
+		const CVisualPalette &m_VI;
+
+		EStyles m_iStyle;
+		int m_xPos;							//	Center position of button
+		int m_yPos;
+		int m_iRadius;						//	Button radius
+		CString m_sLabel;					//	Label
+	};
+
 class CGSubjugateArea : public AGArea
 	{
 	public:
@@ -38,8 +79,9 @@ class CGSubjugateArea : public AGArea
 			{
 			selectNone,
 			
-			selectCountermeasureLoci,
-			selectDaimonLoci,
+			selectCountermeasureLoci,		//	A countermeasure locus
+			selectDaimonLoci,				//	A daimon locus (a deployed daimon)
+			selectDeployBtn,				//	The Deploy button
 			};
 
 		struct SCountermeasureLocus
@@ -93,6 +135,8 @@ class CGSubjugateArea : public AGArea
 		SSelection m_Hover;					//	What we're currently hovering over
 		CHoverDescriptionPainter m_InfoPane;//	Info pane on hover
 		SSelection m_InfoPaneSel;			//	What the info pane is showing
+
+		CDaimonButtonPainter m_DeployBtn;	//	Deploy button
 
 		//	Metrics
 

@@ -88,6 +88,7 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 #define WIDTH_ATTRIB				CONSTLIT("width")
 
 #define SCREEN_TYPE_ARMOR_SELECTOR		CONSTLIT("armorSelector")
+#define SCREEN_TYPE_CANVAS				CONSTLIT("canvas")
 #define SCREEN_TYPE_CUSTOM_PICKER		CONSTLIT("customPicker")
 #define SCREEN_TYPE_CUSTOM_ITEM_PICKER	CONSTLIT("customItemPicker")
 #define SCREEN_TYPE_DEVICE_SELECTOR		CONSTLIT("deviceSelector")
@@ -1271,34 +1272,38 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 	//	Create the main display object based on the type parameter.
 
-	CString sType = m_pDesc->GetAttribute(TYPE_ATTRIB);
+	if (DisplayOptions.sType.IsBlank() || strEquals(DisplayOptions.sType, SCREEN_TYPE_CANVAS))
+		m_pDisplay = new CDockScreenNullDisplay;
 
-	if (strEquals(sType, SCREEN_TYPE_ITEM_PICKER))
+	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_ITEM_PICKER))
 		m_pDisplay = new CDockScreenItemList;
 
-	else if (strEquals(sType, SCREEN_TYPE_CUSTOM_PICKER))
+	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_CUSTOM_PICKER))
 		m_pDisplay = new CDockScreenCustomList;
 
-	else if (strEquals(sType, SCREEN_TYPE_CUSTOM_ITEM_PICKER))
+	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_CUSTOM_ITEM_PICKER))
 		m_pDisplay = new CDockScreenCustomItemList;
 
-	else if (strEquals(sType, SCREEN_TYPE_ARMOR_SELECTOR))
+	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_ARMOR_SELECTOR))
 		m_pDisplay = new CDockScreenSelector(CGSelectorArea::configArmor);
 
-	else if (strEquals(sType, SCREEN_TYPE_DEVICE_SELECTOR))
+	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_DEVICE_SELECTOR))
 		m_pDisplay = new CDockScreenSelector(CGSelectorArea::configDevices);
 
-	else if (strEquals(sType, SCREEN_TYPE_MISC_SELECTOR))
+	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_MISC_SELECTOR))
 		m_pDisplay = new CDockScreenSelector(CGSelectorArea::configMiscDevices);
 
-	else if (strEquals(sType, SCREEN_TYPE_SUBJUGATE_MINIGAME))
+	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_SUBJUGATE_MINIGAME))
 		m_pDisplay = new CDockScreenSubjugate;
 
-	else if (strEquals(sType, SCREEN_TYPE_WEAPONS_SELECTOR))
+	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_WEAPONS_SELECTOR))
 		m_pDisplay = new CDockScreenSelector(CGSelectorArea::configWeapons);
-
+	
 	else
-		m_pDisplay = new CDockScreenNullDisplay;
+		{
+		::kernelDebugLogMessage("ERROR: Invalid display type: %s.", DisplayOptions.sType);
+		return ERR_FAIL;
+		}
 
 	//	Initialize
 
@@ -1311,9 +1316,10 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 		}
 
 	//	If we have a display element, then load the display controls
-	//	LATER: Move this to the default handler for m_pDisplay->Init
+	//	LATER: Move this to its own display class.
 
-	if (DisplayCtx.pDisplayDesc)
+	if (DisplayCtx.pDisplayDesc
+			&& (DisplayOptions.sType.IsBlank() || strEquals(DisplayOptions.sType, SCREEN_TYPE_CANVAS)))
 		{
 		if (error = InitDisplay(DisplayCtx.pDisplayDesc, m_pScreen, m_rcScreen))
 			return error;

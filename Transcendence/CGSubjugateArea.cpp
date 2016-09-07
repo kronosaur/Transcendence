@@ -6,6 +6,8 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
+#define STR_DEPLOY					CONSTLIT("Deploy")
+
 const int COUNTERMEASURES_COUNT =			6;
 const int COUNTERMEASURES_INNER_RADIUS =	94;
 const int COUNTERMEASURES_ARC_ANGLE =		(360 / COUNTERMEASURES_COUNT);
@@ -26,7 +28,8 @@ const DWORD INFO_PANE_HOVER_TIME =			300;
 
 CGSubjugateArea::CGSubjugateArea (const CVisualPalette &VI) : 
 		m_VI(VI),
-		m_InfoPane(VI)
+		m_InfoPane(VI),
+		m_DeployBtn(VI)
 
 //	CGSubjugateArea constructor
 
@@ -130,18 +133,27 @@ bool CGSubjugateArea::HitTest (int x, int y, SSelection &Sel) const
 //	NOTE: x,y are paint coordinates (i.e., screen relative).
 
 	{
+	//	Check deploy button
+
+	if (m_DeployBtn.HitTest(x, y))
+		Sel.iType = selectDeployBtn;
+
 	//	Check countermeasures
 
-	if (HitTestCountermeasureLoci(x, y, &Sel.iIndex))
-		{
+	else if (HitTestCountermeasureLoci(x, y, &Sel.iIndex))
 		Sel.iType = selectCountermeasureLoci;
-		return true;
+
+	//	Otherwise, nothing
+
+	else
+		{
+		Sel = SSelection();
+		return false;
 		}
 
-	//	Nothing
+	//	Success!
 
-	Sel = SSelection();
-	return false;
+	return true;
 	}
 
 bool CGSubjugateArea::HitTestCountermeasureLoci (int x, int y, int *retiIndex) const
@@ -250,6 +262,10 @@ void CGSubjugateArea::OnSetRect (void)
 	int xCol2 = xCol1 + cxThird;
 	int xCol3 = rcRect.right - cxThird;
 
+	//	Center line (vertically)
+
+	int yRectCenter = rcRect.top + (RectHeight(rcRect) / 2);
+
 	//	The list of daimons in hand is in the first column
 
 	m_rcHand.left = xCol1;
@@ -260,7 +276,13 @@ void CGSubjugateArea::OnSetRect (void)
 	//	The core is at the center of the 3rd column
 
 	m_xCenter = xCol3 + (cxThird / 2);
-	m_yCenter = rcRect.top + (RectHeight(rcRect) / 2);
+	m_yCenter = yRectCenter;
+
+	//	Position the deploy button at the center of the boundary between 
+	//	columns 1 and 2.
+
+	m_DeployBtn.SetPos(xCol2, yRectCenter);
+	m_DeployBtn.SetLabel(STR_DEPLOY);
 	}
 
 void CGSubjugateArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
@@ -272,7 +294,7 @@ void CGSubjugateArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 	{
 	int i;
 
-	Dest.Fill(m_rcHand.left, m_rcHand.top, RectWidth(m_rcHand), RectHeight(m_rcHand), CG32bitPixel(128, 128, 255, 128));
+//	Dest.Fill(rcRect.left, rcRect.top, RectWidth(rcRect), RectHeight(rcRect), CG32bitPixel(128, 128, 255, 0x40));
 
 	//	Paint the central core animation
 
@@ -287,6 +309,16 @@ void CGSubjugateArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 	for (i = 0; i < m_DaimonLoci.GetCount(); i++)
 		PaintDaimonLocus(Dest, m_DaimonLoci[i]);
+
+	//	Paint the deploy button
+
+	CDaimonButtonPainter::EStates iDeployBtnState;
+	if (m_Hover.iType == selectDeployBtn)
+		iDeployBtnState = CDaimonButtonPainter::stateHover;
+	else
+		iDeployBtnState = CDaimonButtonPainter::stateNormal;
+
+	m_DeployBtn.Paint(Dest, iDeployBtnState);
 
 	//	Paint the info pane on top of everything
 
@@ -336,6 +368,10 @@ void CGSubjugateArea::Update (void)
 //	Update
 
 	{
+	//	Update all our components
+
+	m_DeployBtn.Update();
+
 	//	See if we need to show the info pane
 
 	if (GetScreen()->GetTimeSinceMouseMove() >= INFO_PANE_HOVER_TIME

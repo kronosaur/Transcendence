@@ -2,11 +2,27 @@
 //
 //	CDockScreenSubjugate class
 //	Copyright (c) 2016 by Kronosaur Productions, LLC. All Rights Reserved.
+//
+//	USAGE
+//
+//	<Display type="subjugateMinigame">
+//		<Data>
+//			;	Expression should evaluate to a definition struct
+//			;	(see below)
+//		</Data>
+//	</Display>
+//
+//	DEFINITION STRUCTURE
+//
+//	{
+//		daimons: ...				; daimon definitions
+//		countermeasures: ...		; countermeasure definitions
+//		}
 
 #include "PreComp.h"
 #include "Transcendence.h"
 
-const int CONTROL_HEIGHT =			480;
+const int CONTROL_HEIGHT =			420;
 
 ALERROR CDockScreenSubjugate::OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError)
 
