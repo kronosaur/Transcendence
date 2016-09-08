@@ -6,7 +6,7 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-#define STR_DEPLOY					CONSTLIT("Deploy")
+#define STR_DEPLOY							CONSTLIT("Deploy")
 
 const int COUNTERMEASURES_COUNT =			6;
 const int COUNTERMEASURES_INNER_RADIUS =	94;
@@ -26,8 +26,10 @@ const int DMZ_WIDTH =						40;				//	Distance from outer edge of countermeasures
 const int INFO_PANE_WIDTH =					200;
 const DWORD INFO_PANE_HOVER_TIME =			300;
 
-CGSubjugateArea::CGSubjugateArea (const CVisualPalette &VI) : 
+CGSubjugateArea::CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate &Controller) : 
 		m_VI(VI),
+		m_Controller(Controller),
+		m_iState(stateStart),
 		m_InfoPane(VI),
 		m_DeployBtn(VI)
 
@@ -110,6 +112,27 @@ CGSubjugateArea::~CGSubjugateArea (void)
 	}
 
 
+void CGSubjugateArea::ArtifactSubdued (void)
+
+//	ArtifactSubdued
+//
+//	This is called when the artifact is successfully subjugated
+
+	{
+	m_iState = stateSuccess;
+	m_Controller.OnCompleted(true);
+	}
+
+void CGSubjugateArea::DeployDaimon (void)
+
+//	DeployDaimon
+//
+//	Deploy the currently selected daimon.
+
+	{
+	ArtifactSubdued();
+	}
+
 void CGSubjugateArea::HideInfoPane (void)
 
 //	HideInfoPane
@@ -133,9 +156,17 @@ bool CGSubjugateArea::HitTest (int x, int y, SSelection &Sel) const
 //	NOTE: x,y are paint coordinates (i.e., screen relative).
 
 	{
+	//	Only works if we're active
+
+	if (!IsActive())
+		{
+		Sel = SSelection();
+		return false;
+		}
+
 	//	Check deploy button
 
-	if (m_DeployBtn.HitTest(x, y))
+	else if (m_DeployBtn.HitTest(x, y))
 		Sel.iType = selectDeployBtn;
 
 	//	Check countermeasures
@@ -191,6 +222,16 @@ bool CGSubjugateArea::HitTestCountermeasureLoci (int x, int y, int *retiIndex) c
 	return false;
 	}
 
+bool CGSubjugateArea::LButtonDoubleClick (int x, int y)
+
+//	LButtonDoubleClick
+//
+//	Handle mouse
+
+	{
+	return LButtonDown(x, y);
+	}
+
 bool CGSubjugateArea::LButtonDown (int x, int y)
 
 //	LButtonDown
@@ -202,7 +243,52 @@ bool CGSubjugateArea::LButtonDown (int x, int y)
 
 	GetParent()->ConvertToPaintCoords(x, y);
 
-	return false;
+	//	See what we clicked on.
+
+	if (!HitTest(x, y, m_Clicked))
+		return false;
+
+	//	Handle the click (if necessary)
+
+
+	return true;
+	}
+
+void CGSubjugateArea::LButtonUp (int x, int y)
+
+//	LButotnUp
+//
+//	Handle mouse
+
+	{
+	//	We store everything in paint coordinates, so we need to convert
+
+	GetParent()->ConvertToPaintCoords(x, y);
+
+	//	Remember where we clicked, but undo our internal state in case we
+	//	need to return early.
+
+	SSelection Clicked = m_Clicked;
+	m_Clicked = SSelection();
+
+	//	See where we are now
+
+	SSelection Released;
+	if (!HitTest(x, y, Released))
+		return;
+
+	//	Handle it if we released at an active point
+
+	switch (Released.iType)
+		{
+		case selectDeployBtn:
+			//	If we clicked down on the button and released over it, then we
+			//	do it.
+
+			if (Clicked.iType == selectDeployBtn)
+				DeployDaimon();
+			break;
+		}
 	}
 
 void CGSubjugateArea::MouseEnter (void)
@@ -313,7 +399,11 @@ void CGSubjugateArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 	//	Paint the deploy button
 
 	CDaimonButtonPainter::EStates iDeployBtnState;
-	if (m_Hover.iType == selectDeployBtn)
+	if (!IsActive())
+		iDeployBtnState = CDaimonButtonPainter::stateDisabled;
+	else if (g_pHI->IsLButtonDown() && m_Hover.iType == selectDeployBtn && m_Clicked.iType == selectDeployBtn)
+		iDeployBtnState = CDaimonButtonPainter::stateDown;
+	else if (!g_pHI->IsLButtonDown() && m_Hover.iType == selectDeployBtn)
 		iDeployBtnState = CDaimonButtonPainter::stateHover;
 	else
 		iDeployBtnState = CDaimonButtonPainter::stateNormal;

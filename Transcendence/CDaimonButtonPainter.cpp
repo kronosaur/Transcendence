@@ -71,10 +71,20 @@ void CDaimonButtonPainter::PaintMainStyle (CG32bitImage &Dest, EStates iState) c
 	//	Brighten the background if we're hovering.
 
 	CG32bitPixel rgbBack;
-	if (iState == stateHover)
+	if (iState == stateDisabled)
+		rgbBack = CG32bitPixel(0x40, 0x40, 0x40);
+	else if (iState == stateDown)
 		rgbBack = CG32bitPixel::Blend(STYLE_MAIN_BACKGROUND, STYLE_MAIN_FOREGROUND, (BYTE)0x80);
+	else if (iState == stateHover)
+		rgbBack = CG32bitPixel::Blend(STYLE_MAIN_BACKGROUND, STYLE_MAIN_FOREGROUND, (BYTE)0x40);
 	else
 		rgbBack = STYLE_MAIN_BACKGROUND;
+
+	CG32bitPixel rgbFore;
+	if (iState == stateDisabled)
+		rgbFore = CG32bitPixel(0x80, 0x80, 0x80);
+	else
+		rgbFore = STYLE_MAIN_FOREGROUND;
 
 	//	Paint
 
@@ -82,7 +92,7 @@ void CDaimonButtonPainter::PaintMainStyle (CG32bitImage &Dest, EStates iState) c
 
 	//	Paint outer ring
 
-	CGDraw::Arc(Dest, m_xPos, m_yPos, m_iRadius, 0, 0, STYLE_MAIN_RING1_WIDTH, STYLE_MAIN_FOREGROUND);
+	CGDraw::Arc(Dest, m_xPos, m_yPos, m_iRadius, 0, 0, STYLE_MAIN_RING1_WIDTH, rgbFore);
 
 	int iAngleInc = 360 / STYLE_MAIN_DETAIL_COUNT;
 	int iArc = iAngleInc / 2;
@@ -90,7 +100,7 @@ void CDaimonButtonPainter::PaintMainStyle (CG32bitImage &Dest, EStates iState) c
 	int iAngle = iStartAngle;
 	for (i = 0; i < STYLE_MAIN_DETAIL_COUNT; i++)
 		{
-		CGDraw::Arc(Dest, m_xPos, m_yPos, m_iRadius, iAngle, iAngle + iArc, STYLE_MAIN_RING2_WIDTH, STYLE_MAIN_FOREGROUND);
+		CGDraw::Arc(Dest, m_xPos, m_yPos, m_iRadius, iAngle, iAngle + iArc, STYLE_MAIN_RING2_WIDTH, rgbFore);
 		iAngle += iAngleInc;
 		}
 	}

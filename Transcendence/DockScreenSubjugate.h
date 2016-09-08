@@ -5,6 +5,8 @@
 
 #pragma once
 
+class CDockScreenSubjugate;
+
 class CArtifactAICorePainter
 	{
 	public:
@@ -59,12 +61,14 @@ class CDaimonButtonPainter
 class CGSubjugateArea : public AGArea
 	{
 	public:
-		CGSubjugateArea (const CVisualPalette &VI);
+		CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate &Controller);
 		~CGSubjugateArea (void);
 
 		//	AGArea virtuals
 
+		virtual bool LButtonDoubleClick (int x, int y) override;
 		virtual bool LButtonDown (int x, int y) override;
+		virtual void LButtonUp (int x, int y) override;
 		virtual void MouseEnter (void) override;
 		virtual void MouseLeave (void) override;
 		virtual void MouseMove (int x, int y) override;
@@ -75,10 +79,18 @@ class CGSubjugateArea : public AGArea
 		virtual void OnSetRect (void) override;
 
 	private:
+		enum EStates
+			{
+			stateStart,						//	Have not yet deployed a single daimon
+			stateInBattle,					//	Have deployed a daimon, but no resolution
+			stateSuccess,					//	Artifact subjugated
+			stateFailure,					//	Failed to subjugate
+			};
+
 		enum ESelectionTypes
 			{
 			selectNone,
-			
+
 			selectCountermeasureLoci,		//	A countermeasure locus
 			selectDaimonLoci,				//	A daimon locus (a deployed daimon)
 			selectDeployBtn,				//	The Deploy button
@@ -116,16 +128,21 @@ class CGSubjugateArea : public AGArea
 			int iIndex;						//	Idex of countermeasure, daimon, etc.
 			};
 
+		void ArtifactSubdued (void);
+		void DeployDaimon (void);
 		void HideInfoPane (void);
 		bool HitTest (int x, int y, SSelection &Sel) const;
 		bool HitTestCountermeasureLoci (int x, int y, int *retiIndex = NULL) const;
+		inline bool IsActive (void) const { return (m_iState == stateStart || m_iState == stateInBattle); }
 		void PaintCountermeasureLocus (CG32bitImage &Dest, const SCountermeasureLocus &Locus) const;
 		void PaintDaimonLocus (CG32bitImage &Dest, const SDaimonLocus &Locus) const;
 
 		const CVisualPalette &m_VI;
+		CDockScreenSubjugate &m_Controller;
 
 		//	Game state
 
+		EStates m_iState;
 		CArtifactAICorePainter m_AICorePainter;
 		TArray<SCountermeasureLocus> m_CountermeasureLoci;
 		TArray<SDaimonLocus> m_DaimonLoci;
@@ -133,6 +150,7 @@ class CGSubjugateArea : public AGArea
 		//	UI state
 
 		SSelection m_Hover;					//	What we're currently hovering over
+		SSelection m_Clicked;				//	What we've clicked down on (but not yet up)
 		CHoverDescriptionPainter m_InfoPane;//	Info pane on hover
 		SSelection m_InfoPaneSel;			//	What the info pane is showing
 
@@ -153,14 +171,23 @@ class CGSubjugateArea : public AGArea
 
 class CDockScreenSubjugate : public IDockScreenDisplay
 	{
+	public:
+		CDockScreenSubjugate (void);
+
+		void OnCompleted (bool bSuccess);
+
 	protected:
+
 		//	IDockScreenDisplay
 
 		virtual bool OnGetDefaultBackground (SBackgroundDesc *retDesc) override { retDesc->iType = backgroundNone; return true; }
 		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) override;
 
 	private:
+		void FireOnCompleted (bool bSuccess);
+
 		CGSubjugateArea *m_pControl;
 		DWORD m_dwID;						//	ID of control
+		CEventHandler m_Events;
 	};
 
