@@ -14,6 +14,8 @@ const int STYLE_MAIN_DETAIL_COUNT =			6;	//	Number of blocks around edge
 
 const CG32bitPixel STYLE_MAIN_BACKGROUND =	CG32bitPixel(0x36, 0x4d, 0x36);		//	H:120 S:30  B:30
 const CG32bitPixel STYLE_MAIN_FOREGROUND =	CG32bitPixel(0xb3, 0xff, 0xb3);		//	H:120 S:30  B:100
+//const CG32bitPixel STYLE_MAIN_BACKGROUND =	CG32bitPixel(0x4d, 0x36, 0x4d);		//	H:300 S:30  B:30
+//const CG32bitPixel STYLE_MAIN_FOREGROUND =	CG32bitPixel(0xff, 0xb2, 0xff);		//	H:300 S:30  B:100
 
 CDaimonButtonPainter::CDaimonButtonPainter (const CVisualPalette &VI) :
 		m_VI(VI),

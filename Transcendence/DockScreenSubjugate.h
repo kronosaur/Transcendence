@@ -64,6 +64,12 @@ class CGSubjugateArea : public AGArea
 		CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate &Controller);
 		~CGSubjugateArea (void);
 
+		void AddCountermeasure (CItemType *pItem);
+		void AddDaimon (CItemType *pItem);
+		inline void SetEgo (int iValue) { m_iEgo = iValue; }
+		inline void SetIntelligence (int iValue) { m_iIntelligence = iValue; }
+		inline void SetWillpower (int iValue) { m_iWillpower = iValue; }
+
 		//	AGArea virtuals
 
 		virtual bool LButtonDoubleClick (int x, int y) override;
@@ -96,12 +102,22 @@ class CGSubjugateArea : public AGArea
 			selectDeployBtn,				//	The Deploy button
 			};
 
+		struct SCountermeasureEntry
+			{
+			CItemType *pCountermeasure;
+			};
+
 		struct SCountermeasureLocus
 			{
 			int iStartAngle;				//	Starting angle (degrees)
 			int iArc;						//	Arc in degrees (counter-clockwise)
 			int iInnerRadius;				//	Inner radius in pixels
 			int iOuterRadius;				//	Outer radius in pixels
+			};
+
+		struct SDaimonEntry
+			{
+			CItemType *pDaimon;
 			};
 
 		struct SDaimonLocus
@@ -143,9 +159,15 @@ class CGSubjugateArea : public AGArea
 		//	Game state
 
 		EStates m_iState;
+		int m_iEgo;
+		int m_iIntelligence;
+		int m_iWillpower;
 		CArtifactAICorePainter m_AICorePainter;
+		TSortMap<CString, SDaimonEntry> m_DaimonList;	//	List of available daimons to deploy
+		TArray<SDaimonLocus> m_DaimonLoci;	//	Locations to which daimons are deployed
+
+		TArray<SCountermeasureEntry> m_CountermeasureList;
 		TArray<SCountermeasureLocus> m_CountermeasureLoci;
-		TArray<SDaimonLocus> m_DaimonLoci;
 
 		//	UI state
 
@@ -175,6 +197,7 @@ class CDockScreenSubjugate : public IDockScreenDisplay
 		CDockScreenSubjugate (void);
 
 		void OnCompleted (bool bSuccess);
+		void OnStarted (void);
 
 	protected:
 

@@ -30,6 +30,9 @@ CGSubjugateArea::CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate
 		m_VI(VI),
 		m_Controller(Controller),
 		m_iState(stateStart),
+		m_iEgo(1),
+		m_iIntelligence(1),
+		m_iWillpower(1),
 		m_InfoPane(VI),
 		m_DeployBtn(VI)
 
@@ -111,6 +114,28 @@ CGSubjugateArea::~CGSubjugateArea (void)
 	{
 	}
 
+
+void CGSubjugateArea::AddCountermeasure (CItemType *pItem)
+
+//	AddCountermeasure
+//
+//	Adds a countermeasure for the artifact to deploy
+
+	{
+	SCountermeasureEntry *pEntry = m_CountermeasureList.Insert();
+	pEntry->pCountermeasure = pItem;
+	}
+
+void CGSubjugateArea::AddDaimon (CItemType *pItem)
+
+//	AddDaimon
+//
+//	Adds a daimon for the player to deploy
+
+	{
+	SDaimonEntry *pEntry = m_DaimonList.Insert(pItem->GetNounPhrase());
+	pEntry->pDaimon = pItem;
+	}
 
 void CGSubjugateArea::ArtifactSubdued (void)
 
