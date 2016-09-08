@@ -1192,7 +1192,10 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	m_pScreen = new AGScreen(hWnd, rcRect);
 	m_pScreen->SetController(this);
 
-	m_pScreen->SetBackgroundColor(GetVisuals().GetWindowBackgroundColor());
+	if (g_pUniverse->GetSFXOptions().IsDockScreenTransparent())
+		m_pScreen->SetBackgroundColor(CG32bitPixel::Null());
+	else
+		m_pScreen->SetBackgroundColor(GetVisuals().GetWindowBackgroundColor());
 
 	int cxBackground = Min(MAX_BACKGROUND_WIDTH, RectWidth(rcRect));
 	int cyBackground = RectHeight(rcRect);

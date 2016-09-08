@@ -140,6 +140,8 @@ class CGameSession : public IHISession
         inline bool ShowingSystemMap (void) const { return m_bShowingSystemMap; }
 
 	private:
+		void PaintSRS (CG32bitImage &Screen);
+
 		CGameSettings &m_Settings;
         CTranscendenceModel &m_Model;
 		CSoundtrackManager &m_Soundtrack;

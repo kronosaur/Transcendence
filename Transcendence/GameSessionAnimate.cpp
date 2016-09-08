@@ -38,64 +38,16 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 				if (m_Settings.GetBoolean(CGameSettings::debugVideo))
 					dwStartTimer = ::GetTickCount();
 
-				//	Figure out some stats
+				//	Paint the main image
 
-				DWORD dwViewportFlags = 0;
-				bool bBlind = false;
-				bool bShowMapHUD = false;
-				CShip *pShip = NULL;
-				if (g_pTrans->GetPlayer())
-					{
-					pShip = g_pTrans->GetPlayer()->GetShip();
-					bBlind = pShip->IsBlind();
-					bShowMapHUD = g_pTrans->GetPlayer()->IsMapHUDActive();
-
-					if (pShip->IsSRSEnhanced())
-						dwViewportFlags |= CSystem::VWP_ENHANCED_DISPLAY;
-					}
-
-				//	If we're showing damage flash, fill the screen
-
-				if (m_iDamageFlash > 0 && (m_iDamageFlash % 2) == 0)
-					{
-					Screen.Set(CG32bitPixel(128,0,0));
-					if (pShip && pShip->GetSystem())
-						{
-						if (m_bShowingSystemMap)
-							g_pUniverse->PaintObjectMap(Screen, g_pTrans->m_rcMainScreen, pShip);
-						else
-							g_pUniverse->PaintObject(Screen, g_pTrans->m_rcMainScreen, pShip);
-						}
-					}
-
-				//	Otherwise, if we're in map mode, paint the map
-
-				else if (m_bShowingSystemMap)
-                    m_SystemMap.Paint(Screen);
-
-				//	Otherwise, if we're blind, paint scramble
-
-				else if (bBlind 
-						&& (g_pTrans->m_iTick % (20 + (((g_pTrans->m_iTick / 100) * pShip->GetDestiny()) % 100))) > 15)
-					g_pTrans->PaintSRSSnow();
-
-				//	Otherwise, paint the normal SRS screen
-
-				else
-					{
-					SetProgramState(psPaintingSRS);
-					g_pUniverse->PaintPOV(Screen, m_rcScreen, dwViewportFlags);
-					SetProgramState(psAnimating);
-					}
-
-				if (m_iDamageFlash > 0)
-					m_iDamageFlash--;
+				PaintSRS(Screen);
 
 				//	Paint various displays
 
 				SetProgramState(psPaintingLRS);
 				g_pTrans->PaintLRS();
 
+				bool bShowMapHUD = (g_pTrans->GetPlayer() && g_pTrans->GetPlayer()->IsMapHUDActive());
 				if (!m_bShowingSystemMap || bShowMapHUD)
 					{
                     m_HUD.Update(g_pTrans->m_iTick);
@@ -119,6 +71,15 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 					g_pTrans->m_PickerDisplay.Paint(Screen);
 				if (g_pTrans->m_bDebugConsole)
 					g_pTrans->m_DebugConsole.Paint(Screen);
+
+				//	If we're in a HUD menu, run quarter speed
+
+				bool bSlowMotion = (g_pTrans->m_CurrentMenu == CTranscendenceWnd::menuCommsTarget
+						|| g_pTrans->m_CurrentMenu == CTranscendenceWnd::menuComms
+						|| g_pTrans->m_CurrentMenu == CTranscendenceWnd::menuCommsSquadron
+						|| g_pTrans->m_CurrentMenu == CTranscendenceWnd::menuInvoke
+						|| g_pTrans->m_CurrentPicker == CTranscendenceWnd::pickUsableItem
+						|| g_pTrans->m_CurrentPicker == CTranscendenceWnd::pickEnableDisableItem);
 
 #ifdef DEBUG_LINE_OF_FIRE
 				if (GetPlayer())
@@ -206,13 +167,21 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 				if (!g_pTrans->m_bPaused || g_pTrans->m_bPausedStep)
 					{
 					SetProgramState(psUpdating);
-					g_pUniverse->Update(UpdateCtx);
-					if (g_pTrans->m_bAutopilot)
+					if (bSlowMotion)
+						{
+						if ((g_pTrans->m_iTick % 4) == 0)
+							g_pUniverse->Update(UpdateCtx);
+						}
+					else
 						{
 						g_pUniverse->Update(UpdateCtx);
-						g_pUniverse->Update(UpdateCtx);
-						g_pUniverse->Update(UpdateCtx);
-						g_pUniverse->Update(UpdateCtx);
+						if (g_pTrans->m_bAutopilot)
+							{
+							g_pUniverse->Update(UpdateCtx);
+							g_pUniverse->Update(UpdateCtx);
+							g_pUniverse->Update(UpdateCtx);
+							g_pUniverse->Update(UpdateCtx);
+							}
 						}
 					SetProgramState(psAnimating);
 
@@ -255,9 +224,19 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 				{
 				//	Paint the screen
 
+				bool bShowSRS = g_pUniverse->GetSFXOptions().IsDockScreenTransparent();
+
+				if (bShowSRS)
+					{
+					PaintSRS(Screen);
+					Screen.Fill(CG32bitPixel(0, 0, 0, 0x80));
+					}
+
 				g_pTrans->m_pCurrentScreen->Paint(Screen);
 				g_pTrans->m_pCurrentScreen->Update();
-				g_pTrans->PaintMainScreenBorder(g_pTrans->m_CurrentDock.GetVisuals().GetWindowBackgroundColor());
+
+				if (!bShowSRS)
+					g_pTrans->PaintMainScreenBorder(g_pTrans->m_CurrentDock.GetVisuals().GetWindowBackgroundColor());
 
                 //  Paint displays
 
@@ -434,4 +413,65 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 		g_pTrans->ReportCrash();
 		}
     }
+
+void CGameSession::PaintSRS (CG32bitImage &Screen)
+
+//	PaintSRS
+//
+//	Paints the main screen
+
+	{
+	//	Figure out some stats
+
+	DWORD dwViewportFlags = 0;
+	bool bBlind = false;
+	bool bShowMapHUD = false;
+	CShip *pShip = NULL;
+	if (g_pTrans->GetPlayer())
+		{
+		pShip = g_pTrans->GetPlayer()->GetShip();
+		bBlind = pShip->IsBlind();
+		bShowMapHUD = g_pTrans->GetPlayer()->IsMapHUDActive();
+
+		if (pShip->IsSRSEnhanced())
+			dwViewportFlags |= CSystem::VWP_ENHANCED_DISPLAY;
+		}
+
+	//	If we're showing damage flash, fill the screen
+
+	if (m_iDamageFlash > 0 && (m_iDamageFlash % 2) == 0)
+		{
+		Screen.Set(CG32bitPixel(128,0,0));
+		if (pShip && pShip->GetSystem())
+			{
+			if (m_bShowingSystemMap)
+				g_pUniverse->PaintObjectMap(Screen, g_pTrans->m_rcMainScreen, pShip);
+			else
+				g_pUniverse->PaintObject(Screen, g_pTrans->m_rcMainScreen, pShip);
+			}
+		}
+
+	//	Otherwise, if we're in map mode, paint the map
+
+	else if (m_bShowingSystemMap)
+        m_SystemMap.Paint(Screen);
+
+	//	Otherwise, if we're blind, paint scramble
+
+	else if (bBlind 
+			&& (g_pTrans->m_iTick % (20 + (((g_pTrans->m_iTick / 100) * pShip->GetDestiny()) % 100))) > 15)
+		g_pTrans->PaintSRSSnow();
+
+	//	Otherwise, paint the normal SRS screen
+
+	else
+		{
+		SetProgramState(psPaintingSRS);
+		g_pUniverse->PaintPOV(Screen, m_rcScreen, dwViewportFlags);
+		SetProgramState(psAnimating);
+		}
+
+	if (m_iDamageFlash > 0)
+		m_iDamageFlash--;
+	}
 

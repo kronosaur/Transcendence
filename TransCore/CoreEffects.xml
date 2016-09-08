@@ -258,7 +258,7 @@
 	
 -->
 
-	<Image UNID="&rsDefaultDockScreenBkgnd;"	bitmap="Resources\DockScreenBackground.jpg"/>
+	<Image UNID="&rsDefaultDockScreenBkgnd;"	bitmap="Resources\DockScreenBackground.jpg"	bitmask="Resources\DockScreenBackgroundMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsDefaultDockScreenMask;"	bitmask="Resources\DockScreenMask.bmp"/>
 	
 	<Image UNID="&rsExplosionsAG48;"	bitmap="Resources\Explosions-AG48.jpg"	bitmask="Resources\Explosions-AG48Mask.bmp" loadOnUse="true"/>
