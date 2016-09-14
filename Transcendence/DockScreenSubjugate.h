@@ -7,6 +7,25 @@
 
 class CDockScreenSubjugate;
 
+class CArtifactAwakenVisuals
+	{
+	public:
+		enum EColors
+			{
+			colorDeployDaimonBack =				0,
+			colorDeployDaimonFore =				1,
+			colorDeployDaimonTitle =			2,
+			colorDaimonLocusBack =				3,
+			colorCountermeasureLocusBack =		4,
+			colorAICoreBack =					5,
+			colorAICoreFore =					6,
+
+			colorCount =						7,
+			};
+
+		static CG32bitPixel GetColor (EColors iColor);
+	};
+
 class CArtifactAICorePainter
 	{
 	public:
@@ -58,14 +77,84 @@ class CDaimonButtonPainter
 		CString m_sLabel;					//	Label
 	};
 
+class CDaimonList
+	{
+	public:
+		CDaimonList (void);
+		~CDaimonList (void);
+
+		void Add (CItemType *pItem);
+		void DeleteAll (void);
+		inline int GetCount (void) const { return m_Sorted.GetCount(); }
+		inline CItemType *GetDaimon (int iIndex) const { return m_Sorted[iIndex]->pDaimon; }
+		inline int GetDaimonHeight (int iIndex) const { return m_Sorted[iIndex]->cyHeight; }
+		inline int GetSelection (void) const { return m_iSelection; }
+		inline void SetDaimonHeight (int iIndex, int cyHeight) { m_Sorted[iIndex]->cyHeight = cyHeight; }
+		inline int SetSelection (int iSelection) { m_iSelection = Max(0, Min(iSelection, GetCount() - 1)); return m_iSelection; }
+
+	private:
+		struct SDaimonEntry
+			{
+			SDaimonEntry (void) :
+					dwID(0),
+					pDaimon(NULL),
+					cyHeight(-1)
+				{ }
+
+			DWORD dwID;
+			CItemType *pDaimon;
+
+			int cyHeight;					//	Height (-1 if not yet justified)
+			};
+
+		DWORD m_dwNextID;
+		TSortMap<DWORD, SDaimonEntry *> m_List;
+		TSortMap<CString, SDaimonEntry *> m_Sorted;
+
+		int m_iSelection;					//	Currently selected index
+	};
+
+class CDaimonListPainter
+	{
+	public:
+		CDaimonListPainter (const CVisualPalette &VI);
+
+		bool HitTest (int xPos, int yPos, int *retiIndex) const;
+		void OnSelectionChanged (int iOldSelection, int iNewSelection);
+		void Paint (CG32bitImage &Dest);
+		inline void SetList (CDaimonList &List) { m_pList = &List; }
+		inline void SetRect (const RECT &rcRect) { m_rcRect = rcRect; m_cxWidth = RectWidth(rcRect); }
+		bool Update (void);
+
+	private:
+		int CalcListPos (void) const;
+		int CalcTop (int iIndex) const;
+		void PaintDaimon (CG32bitImage &Dest, CItemType *pDaimon, int x, int y, int cxWidth, int cyHeight);
+		int Justify (int cxWidth) const;
+
+		const CVisualPalette &m_VI;
+		CDaimonList *m_pList;
+		RECT m_rcRect;
+		int m_cxWidth;						//	Width to paint
+		int m_yAnimation;					//	Animate scrolling
+	};
+
 class CGSubjugateArea : public AGArea
 	{
 	public:
+		enum ECommands
+			{
+			cmdSelectPrevDaimon,
+			cmdSelectNextDaimon,
+			};
+
 		CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate &Controller);
 		~CGSubjugateArea (void);
 
 		void AddCountermeasure (CItemType *pItem);
 		void AddDaimon (CItemType *pItem);
+		void Command (ECommands iCommand, void *pData = NULL);
+		bool IsCommandValid (ECommands iCommand, void *pData = NULL) const;
 		inline void SetEgo (int iValue) { m_iEgo = iValue; }
 		inline void SetIntelligence (int iValue) { m_iIntelligence = iValue; }
 		inline void SetWillpower (int iValue) { m_iWillpower = iValue; }
@@ -78,6 +167,7 @@ class CGSubjugateArea : public AGArea
 		virtual void MouseEnter (void) override;
 		virtual void MouseLeave (void) override;
 		virtual void MouseMove (int x, int y) override;
+		virtual void MouseWheel (int iDelta, int x, int y, DWORD dwFlags) override;
 		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect) override;
 		virtual void Update (void) override;
 
@@ -98,6 +188,7 @@ class CGSubjugateArea : public AGArea
 			selectNone,
 
 			selectCountermeasureLoci,		//	A countermeasure locus
+			selectDaimonList,				//	A daimon in the list.
 			selectDaimonLoci,				//	A daimon locus (a deployed daimon)
 			selectDeployBtn,				//	The Deploy button
 			};
@@ -113,11 +204,6 @@ class CGSubjugateArea : public AGArea
 			int iArc;						//	Arc in degrees (counter-clockwise)
 			int iInnerRadius;				//	Inner radius in pixels
 			int iOuterRadius;				//	Outer radius in pixels
-			};
-
-		struct SDaimonEntry
-			{
-			CItemType *pDaimon;
 			};
 
 		struct SDaimonLocus
@@ -152,6 +238,7 @@ class CGSubjugateArea : public AGArea
 		inline bool IsActive (void) const { return (m_iState == stateStart || m_iState == stateInBattle); }
 		void PaintCountermeasureLocus (CG32bitImage &Dest, const SCountermeasureLocus &Locus) const;
 		void PaintDaimonLocus (CG32bitImage &Dest, const SDaimonLocus &Locus) const;
+		void SelectDaimon (int iNewSelection);
 
 		const CVisualPalette &m_VI;
 		CDockScreenSubjugate &m_Controller;
@@ -163,7 +250,7 @@ class CGSubjugateArea : public AGArea
 		int m_iIntelligence;
 		int m_iWillpower;
 		CArtifactAICorePainter m_AICorePainter;
-		TSortMap<CString, SDaimonEntry> m_DaimonList;	//	List of available daimons to deploy
+		CDaimonList m_DaimonList;			//	List of available daimons to deploy
 		TArray<SDaimonLocus> m_DaimonLoci;	//	Locations to which daimons are deployed
 
 		TArray<SCountermeasureEntry> m_CountermeasureList;
@@ -176,6 +263,7 @@ class CGSubjugateArea : public AGArea
 		CHoverDescriptionPainter m_InfoPane;//	Info pane on hover
 		SSelection m_InfoPaneSel;			//	What the info pane is showing
 
+		CDaimonListPainter m_DaimonListPainter;
 		CDaimonButtonPainter m_DeployBtn;	//	Deploy button
 
 		//	Metrics
@@ -204,6 +292,7 @@ class CDockScreenSubjugate : public IDockScreenDisplay
 		//	IDockScreenDisplay
 
 		virtual bool OnGetDefaultBackground (SBackgroundDesc *retDesc) override { retDesc->iType = backgroundNone; return true; }
+		virtual EResults OnHandleKeyDown (int iVirtKey) override;
 		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) override;
 
 	private:

@@ -263,6 +263,15 @@
     <ClCompile Include="CDaimonButtonPainter.cpp">
       <Filter>Source Files\Artifact Awakening</Filter>
     </ClCompile>
+    <ClCompile Include="CDaimonList.cpp">
+      <Filter>Source Files\Artifact Awakening</Filter>
+    </ClCompile>
+    <ClCompile Include="CDaimonListPainter.cpp">
+      <Filter>Source Files\Artifact Awakening</Filter>
+    </ClCompile>
+    <ClCompile Include="CArtifactAwakenVisuals.cpp">
+      <Filter>Source Files\Artifact Awakening</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundTasks.h">

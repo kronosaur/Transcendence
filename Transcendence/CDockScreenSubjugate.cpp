@@ -85,6 +85,28 @@ void CDockScreenSubjugate::OnCompleted (bool bSuccess)
 	//	access any member variables.
 	}
 
+IDockScreenDisplay::EResults CDockScreenSubjugate::OnHandleKeyDown (int iVirtKey)
+
+//	OnHandleKeyDown
+//
+//	Handle key down
+
+	{
+	switch (iVirtKey)
+		{
+		case VK_UP:
+			m_pControl->Command(CGSubjugateArea::cmdSelectPrevDaimon);
+			return resultHandled;
+
+		case VK_DOWN:
+			m_pControl->Command(CGSubjugateArea::cmdSelectNextDaimon);
+			return resultHandled;
+
+		default:
+			return resultNone;
+		}
+	}
+
 ALERROR CDockScreenSubjugate::OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError)
 
 //	OnInit

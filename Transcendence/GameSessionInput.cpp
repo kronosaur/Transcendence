@@ -647,6 +647,10 @@ void CGameSession::OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
             if (m_bShowingSystemMap)
                 m_SystemMap.HandleMouseWheel(iDelta, x, y, dwFlags);
             break;
+
+		case CTranscendenceWnd::gsDocked:
+			g_pTrans->m_pCurrentScreen->MouseWheel(iDelta, x, y, dwFlags);
+			break;
         }
     }
 

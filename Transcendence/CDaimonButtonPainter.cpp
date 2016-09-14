@@ -12,10 +12,7 @@ const int STYLE_MAIN_RING1_WIDTH =			4;	//	Width of outer edge
 const int STYLE_MAIN_RING2_WIDTH =			8;	//	Width of blocks around edge
 const int STYLE_MAIN_DETAIL_COUNT =			6;	//	Number of blocks around edge
 
-const CG32bitPixel STYLE_MAIN_BACKGROUND =	CG32bitPixel(0x36, 0x4d, 0x36);		//	H:120 S:30  B:30
-const CG32bitPixel STYLE_MAIN_FOREGROUND =	CG32bitPixel(0xb3, 0xff, 0xb3);		//	H:120 S:30  B:100
-//const CG32bitPixel STYLE_MAIN_BACKGROUND =	CG32bitPixel(0x4d, 0x36, 0x4d);		//	H:300 S:30  B:30
-//const CG32bitPixel STYLE_MAIN_FOREGROUND =	CG32bitPixel(0xff, 0xb2, 0xff);		//	H:300 S:30  B:100
+#define STYLECOLOR(x)						(CArtifactAwakenVisuals::GetColor(CArtifactAwakenVisuals::##x))
 
 CDaimonButtonPainter::CDaimonButtonPainter (const CVisualPalette &VI) :
 		m_VI(VI),
@@ -70,23 +67,26 @@ void CDaimonButtonPainter::PaintMainStyle (CG32bitImage &Dest, EStates iState) c
 	{
 	int i;
 
+	CG32bitPixel rgbStyleBack = STYLECOLOR(colorDeployDaimonBack);
+	CG32bitPixel rgbStyleFore = STYLECOLOR(colorDeployDaimonFore);
+
 	//	Brighten the background if we're hovering.
 
 	CG32bitPixel rgbBack;
 	if (iState == stateDisabled)
 		rgbBack = CG32bitPixel(0x40, 0x40, 0x40);
 	else if (iState == stateDown)
-		rgbBack = CG32bitPixel::Blend(STYLE_MAIN_BACKGROUND, STYLE_MAIN_FOREGROUND, (BYTE)0x80);
+		rgbBack = CG32bitPixel::Blend(rgbStyleBack, rgbStyleFore, (BYTE)0x80);
 	else if (iState == stateHover)
-		rgbBack = CG32bitPixel::Blend(STYLE_MAIN_BACKGROUND, STYLE_MAIN_FOREGROUND, (BYTE)0x40);
+		rgbBack = CG32bitPixel::Blend(rgbStyleBack, rgbStyleFore, (BYTE)0x40);
 	else
-		rgbBack = STYLE_MAIN_BACKGROUND;
+		rgbBack = rgbStyleBack;
 
 	CG32bitPixel rgbFore;
 	if (iState == stateDisabled)
 		rgbFore = CG32bitPixel(0x80, 0x80, 0x80);
 	else
-		rgbFore = STYLE_MAIN_FOREGROUND;
+		rgbFore = rgbStyleFore;
 
 	//	Paint
 

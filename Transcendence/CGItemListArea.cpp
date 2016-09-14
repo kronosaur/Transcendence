@@ -584,18 +584,7 @@ void CGItemListArea::Update (void)
 
 	if (m_yOffset)
 		{
-		int iDelta;
-		if (m_yOffset > 0)
-			{
-			iDelta = Max(12, m_yOffset / 4);
-			m_yOffset = Max(0, m_yOffset - iDelta);
-			}
-		else
-			{
-			iDelta = Min(-12, m_yOffset / 4);
-			m_yOffset = Min(0, m_yOffset - iDelta);
-			}
-
+		m_yOffset = CUIHelper::ScrollAnimationDecay(m_yOffset);
 		Invalidate();
 		}
 	}

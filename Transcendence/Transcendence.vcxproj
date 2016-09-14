@@ -366,8 +366,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CArtifactAICorePainter.cpp" />
+    <ClCompile Include="CArtifactAwakenVisuals.cpp" />
     <ClCompile Include="CChooseAdventureSession.cpp" />
     <ClCompile Include="CDaimonButtonPainter.cpp" />
+    <ClCompile Include="CDaimonList.cpp" />
+    <ClCompile Include="CDaimonListPainter.cpp" />
     <ClCompile Include="CDockPane.cpp" />
     <ClCompile Include="CDockScreenCustomItemList.cpp" />
     <ClCompile Include="CDockScreenCustomList.cpp" />

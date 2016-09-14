@@ -16,8 +16,8 @@ const int COUNTERMEASURE_WIDTH =			80;
 
 const int DAIMON_BORDER_RADIUS =			6;
 const int DAIMON_COUNT =					6;
-const int DAIMON_HEIGHT =					80;
-const int DAIMON_WIDTH =					120;
+const int DAIMON_HEIGHT =					96;
+const int DAIMON_WIDTH =					96;
 const int DAIMON_SPACING_X =				12;
 const int DAIMON_SPACING_Y =				12;
 
@@ -25,6 +25,10 @@ const int DMZ_WIDTH =						40;				//	Distance from outer edge of countermeasures
 
 const int INFO_PANE_WIDTH =					200;
 const DWORD INFO_PANE_HOVER_TIME =			300;
+
+const int MOUSE_SCROLL_SENSITIVITY =		240;
+
+const int DEPLOY_BUTTON_RADIUS =			40;
 
 CGSubjugateArea::CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate &Controller) : 
 		m_VI(VI),
@@ -34,6 +38,7 @@ CGSubjugateArea::CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate
 		m_iIntelligence(1),
 		m_iWillpower(1),
 		m_InfoPane(VI),
+		m_DaimonListPainter(VI),
 		m_DeployBtn(VI)
 
 //	CGSubjugateArea constructor
@@ -133,8 +138,7 @@ void CGSubjugateArea::AddDaimon (CItemType *pItem)
 //	Adds a daimon for the player to deploy
 
 	{
-	SDaimonEntry *pEntry = m_DaimonList.Insert(pItem->GetNounPhrase());
-	pEntry->pDaimon = pItem;
+	m_DaimonList.Add(pItem);
 	}
 
 void CGSubjugateArea::ArtifactSubdued (void)
@@ -146,6 +150,25 @@ void CGSubjugateArea::ArtifactSubdued (void)
 	{
 	m_iState = stateSuccess;
 	m_Controller.OnCompleted(true);
+	}
+
+void CGSubjugateArea::Command (ECommands iCommand, void *pData)
+
+//	Command
+//
+//	Execute a command
+
+	{
+	switch (iCommand)
+		{
+		case cmdSelectNextDaimon:
+			SelectDaimon(m_DaimonList.GetSelection() + 1);
+			break;
+
+		case cmdSelectPrevDaimon:
+			SelectDaimon(m_DaimonList.GetSelection() - 1);
+			break;
+		}
 	}
 
 void CGSubjugateArea::DeployDaimon (void)
@@ -188,6 +211,12 @@ bool CGSubjugateArea::HitTest (int x, int y, SSelection &Sel) const
 		Sel = SSelection();
 		return false;
 		}
+
+	//	Check the list of daimons (NOTE: We could return iIndex of -1 if we
+	//	are over the list area, but not on an actual item).
+
+	else if (m_DaimonListPainter.HitTest(x, y, &Sel.iIndex))
+		Sel.iType = selectDaimonList;
 
 	//	Check deploy button
 
@@ -247,6 +276,26 @@ bool CGSubjugateArea::HitTestCountermeasureLoci (int x, int y, int *retiIndex) c
 	return false;
 	}
 
+bool CGSubjugateArea::IsCommandValid (ECommands iCommand, void *pData) const
+
+//	IsCommandValid
+//
+//	Returns TRUE if the command can be executed right now.
+
+	{
+	switch (iCommand)
+		{
+		case cmdSelectNextDaimon:
+			return (m_DaimonList.GetSelection() < m_DaimonList.GetCount() - 1);
+
+		case cmdSelectPrevDaimon:
+			return (m_DaimonList.GetSelection() > 0);
+
+		default:
+			return false;
+		}
+	}
+
 bool CGSubjugateArea::LButtonDoubleClick (int x, int y)
 
 //	LButtonDoubleClick
@@ -275,13 +324,20 @@ bool CGSubjugateArea::LButtonDown (int x, int y)
 
 	//	Handle the click (if necessary)
 
+	switch (m_Clicked.iType)
+		{
+		case selectDaimonList:
+			if (m_Clicked.iIndex != -1)
+				SelectDaimon(m_Clicked.iIndex);
+			break;
+		}
 
 	return true;
 	}
 
 void CGSubjugateArea::LButtonUp (int x, int y)
 
-//	LButotnUp
+//	LButtonUp
 //
 //	Handle mouse
 
@@ -357,6 +413,39 @@ void CGSubjugateArea::MouseMove (int x, int y)
 		HideInfoPane();
 	}
 
+void CGSubjugateArea::MouseWheel (int iDelta, int x, int y, DWORD dwFlags)
+
+//	MouseWheel
+//
+//	Handle mouse scrolling
+
+	{
+	//	We store everything in paint coordinates, so we need to convert
+
+	GetParent()->ConvertToPaintCoords(x, y);
+
+	//	Hit test (store the result in m_Hover).
+
+	SSelection Select;
+	if (!HitTest(x, y, Select))
+		return;
+
+	//	Handle it
+
+	switch (Select.iType)
+		{
+		case selectDaimonList:
+			{
+			int iChange = (-iDelta / MOUSE_SCROLL_SENSITIVITY);
+			if (iChange == 0)
+				iChange = -Sign(iDelta / (MOUSE_SCROLL_SENSITIVITY / 8));
+
+			SelectDaimon(m_DaimonList.GetSelection() + iChange);
+			break;
+			}
+		}
+	}
+
 void CGSubjugateArea::OnSetRect (void)
 
 //	OnSetRect
@@ -377,6 +466,11 @@ void CGSubjugateArea::OnSetRect (void)
 
 	int yRectCenter = rcRect.top + (RectHeight(rcRect) / 2);
 
+	//	The core is at the center of the 3rd column
+
+	m_xCenter = xCol3 + (cxThird / 2);
+	m_yCenter = yRectCenter;
+
 	//	The list of daimons in hand is in the first column
 
 	m_rcHand.left = xCol1;
@@ -384,15 +478,13 @@ void CGSubjugateArea::OnSetRect (void)
 	m_rcHand.right = xCol1 + cxThird;
 	m_rcHand.bottom = rcRect.bottom;
 
-	//	The core is at the center of the 3rd column
-
-	m_xCenter = xCol3 + (cxThird / 2);
-	m_yCenter = yRectCenter;
+	m_DaimonListPainter.SetList(m_DaimonList);
+	m_DaimonListPainter.SetRect(m_rcHand);
 
 	//	Position the deploy button at the center of the boundary between 
 	//	columns 1 and 2.
 
-	m_DeployBtn.SetPos(xCol2, yRectCenter);
+	m_DeployBtn.SetPos(xCol2 + DEPLOY_BUTTON_RADIUS, yRectCenter);
 	m_DeployBtn.SetLabel(STR_DEPLOY);
 	}
 
@@ -420,6 +512,10 @@ void CGSubjugateArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 	for (i = 0; i < m_DaimonLoci.GetCount(); i++)
 		PaintDaimonLocus(Dest, m_DaimonLoci[i]);
+
+	//	Paint the available daimons
+
+	m_DaimonListPainter.Paint(Dest);
 
 	//	Paint the deploy button
 
@@ -476,6 +572,24 @@ void CGSubjugateArea::PaintDaimonLocus (CG32bitImage &Dest, const SDaimonLocus &
 			m_rgbDaimonBack);
 	}
 
+void CGSubjugateArea::SelectDaimon (int iNewSelection)
+
+//	SelectDaimon
+//
+//	Selects the given daimon
+
+	{
+	int iOldSelection = m_DaimonList.GetSelection();
+	iNewSelection = m_DaimonList.SetSelection(iNewSelection);
+
+	if (iOldSelection != iNewSelection)
+		{
+		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+		m_DaimonListPainter.OnSelectionChanged(iOldSelection, iNewSelection);
+		Invalidate();
+		}
+	}
+
 void CGSubjugateArea::Update (void)
 
 //	Update
@@ -484,6 +598,9 @@ void CGSubjugateArea::Update (void)
 
 	{
 	//	Update all our components
+
+	if (m_DaimonListPainter.Update())
+		Invalidate();
 
 	m_DeployBtn.Update();
 
