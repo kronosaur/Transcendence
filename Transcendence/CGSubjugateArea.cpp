@@ -23,6 +23,9 @@ const int DAIMON_SPACING_Y =				12;
 
 const int DMZ_WIDTH =						40;				//	Distance from outer edge of countermeasures to daimons
 
+const int ICON_WIDTH =						64;
+const int ICON_HEIGHT =						64;
+
 const int INFO_PANE_WIDTH =					200;
 const DWORD INFO_PANE_HOVER_TIME =			300;
 
@@ -30,13 +33,11 @@ const int MOUSE_SCROLL_SENSITIVITY =		240;
 
 const int DEPLOY_BUTTON_RADIUS =			40;
 
-CGSubjugateArea::CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate &Controller) : 
+CGSubjugateArea::CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate &Controller, CArtifactAwakening &Artifact) : 
 		m_VI(VI),
 		m_Controller(Controller),
+		m_Artifact(Artifact),
 		m_iState(stateStart),
-		m_iEgo(1),
-		m_iIntelligence(1),
-		m_iWillpower(1),
 		m_InfoPane(VI),
 		m_DaimonListPainter(VI),
 		m_DeployBtn(VI)
@@ -55,6 +56,7 @@ CGSubjugateArea::CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate
 		{
 		SCountermeasureLocus &Locus = m_CountermeasureLoci[i];
 
+		Locus.iIndex = i;
 		Locus.iStartAngle = iAngle;
 		Locus.iArc = COUNTERMEASURES_ARC_ANGLE;
 		Locus.iInnerRadius = COUNTERMEASURES_INNER_RADIUS;
@@ -76,35 +78,46 @@ CGSubjugateArea::CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate
 	//	Initialize the daimon loci.
 
 	m_DaimonLoci.InsertEmpty(DAIMON_COUNT);
+	m_DaimonLoci[0].iIndex = 0;
 	m_DaimonLoci[0].xPos = xCentralRow;
 	m_DaimonLoci[0].yPos = -(DAIMON_HEIGHT / 2);
 	m_DaimonLoci[0].cxWidth = DAIMON_WIDTH;
 	m_DaimonLoci[0].cyHeight = DAIMON_HEIGHT;
 
+	m_DaimonLoci[1].iIndex = 1;
 	m_DaimonLoci[1].xPos = xTopRow;
 	m_DaimonLoci[1].yPos = -(DAIMON_HEIGHT / 2) - (DAIMON_HEIGHT + DAIMON_SPACING_Y);
 	m_DaimonLoci[1].cxWidth = DAIMON_WIDTH;
 	m_DaimonLoci[1].cyHeight = DAIMON_HEIGHT;
 
+	m_DaimonLoci[2].iIndex = 2;
 	m_DaimonLoci[2].xPos = xTopRow;
 	m_DaimonLoci[2].yPos = (DAIMON_HEIGHT / 2) + DAIMON_SPACING_Y;
 	m_DaimonLoci[2].cxWidth = DAIMON_WIDTH;
 	m_DaimonLoci[2].cyHeight = DAIMON_HEIGHT;
 
+	m_DaimonLoci[3].iIndex = 3;
 	m_DaimonLoci[3].xPos = xCentralRow - (DAIMON_WIDTH + DAIMON_SPACING_X);
 	m_DaimonLoci[3].yPos = -(DAIMON_HEIGHT / 2);
 	m_DaimonLoci[3].cxWidth = DAIMON_WIDTH;
 	m_DaimonLoci[3].cyHeight = DAIMON_HEIGHT;
 
+	m_DaimonLoci[4].iIndex = 4;
 	m_DaimonLoci[4].xPos = xTopRow - (DAIMON_WIDTH + DAIMON_SPACING_X);
 	m_DaimonLoci[4].yPos = -(DAIMON_HEIGHT / 2) - (DAIMON_HEIGHT + DAIMON_SPACING_Y);
 	m_DaimonLoci[4].cxWidth = DAIMON_WIDTH;
 	m_DaimonLoci[4].cyHeight = DAIMON_HEIGHT;
 
+	m_DaimonLoci[5].iIndex = 5;
 	m_DaimonLoci[5].xPos = xTopRow - (DAIMON_WIDTH + DAIMON_SPACING_X);
 	m_DaimonLoci[5].yPos = (DAIMON_HEIGHT / 2) + DAIMON_SPACING_Y;
 	m_DaimonLoci[5].cxWidth = DAIMON_WIDTH;
 	m_DaimonLoci[5].cyHeight = DAIMON_HEIGHT;
+
+	//	Add the daimons to the list of available daimons
+
+	for (i = 0; i < m_Artifact.GetInitialDaimons().GetCount(); i++)
+		m_DaimonList.Add(m_Artifact.GetInitialDaimons()[i]);
 
 	//	Compute some colors
 
@@ -117,28 +130,6 @@ CGSubjugateArea::~CGSubjugateArea (void)
 //	CGSubjugateArea destructor
 
 	{
-	}
-
-
-void CGSubjugateArea::AddCountermeasure (CItemType *pItem)
-
-//	AddCountermeasure
-//
-//	Adds a countermeasure for the artifact to deploy
-
-	{
-	SCountermeasureEntry *pEntry = m_CountermeasureList.Insert();
-	pEntry->pCountermeasure = pItem;
-	}
-
-void CGSubjugateArea::AddDaimon (CItemType *pItem)
-
-//	AddDaimon
-//
-//	Adds a daimon for the player to deploy
-
-	{
-	m_DaimonList.Add(pItem);
 	}
 
 void CGSubjugateArea::ArtifactSubdued (void)
@@ -554,6 +545,17 @@ void CGSubjugateArea::PaintCountermeasureLocus (CG32bitImage &Dest, const SCount
 			CGDraw::blendNormal,
 			COUNTERMEASURE_SPACING / 2,
 			CGDraw::ARC_INNER_RADIUS);
+
+	CArtifactProgram *pProgram = m_Artifact.GetLocusProgram(CArtifactProgram::typeCountermeasure, Locus.iIndex);
+	if (pProgram)
+		{
+		int iCenterAngle = Locus.iStartAngle + (Locus.iArc / 2);
+		CVector vOffset = PolarToVector(iCenterAngle, Locus.iInnerRadius + (COUNTERMEASURE_WIDTH / 2));
+		int x = m_xCenter + (int)vOffset.GetX();
+		int y = m_yCenter - (int)vOffset.GetY();
+
+		PaintProgram(Dest, *pProgram, x, y);
+		}
 	}
 
 void CGSubjugateArea::PaintDaimonLocus (CG32bitImage &Dest, const SDaimonLocus &Locus) const
@@ -570,6 +572,20 @@ void CGSubjugateArea::PaintDaimonLocus (CG32bitImage &Dest, const SDaimonLocus &
 			Locus.cyHeight,
 			DAIMON_BORDER_RADIUS,
 			m_rgbDaimonBack);
+	}
+
+void CGSubjugateArea::PaintProgram (CG32bitImage &Dest, const CArtifactProgram &Program, int x, int y) const
+
+//	PaintProgram
+//
+//	Paints a deployed program at the given coordinates.
+
+	{
+	CItemType *pType = Program.GetItemType();
+
+	//	Paint the icon (centered)
+
+	DrawItemTypeIcon(Dest, x - (ICON_WIDTH / 2), y - (ICON_HEIGHT / 2), pType, ICON_WIDTH, ICON_HEIGHT);
 	}
 
 void CGSubjugateArea::SelectDaimon (int iNewSelection)

@@ -69,7 +69,8 @@ CDockPane::CDockPane (void) :
 		m_iLayout(layoutNone),
 		m_pContainer(NULL),
 		m_bInShowPane(false),
-		m_bInExecuteAction(false)
+		m_bInExecuteAction(false),
+		m_bDescError(false)
 
 //	CDockPane constructor
 
@@ -1270,7 +1271,10 @@ void CDockPane::SetDescription (const CString &sDesc)
 //	Sets the description
 
 	{
-	m_sDesc = sDesc;
+	//	If we've already set an error, then we ignore subsequent changes.
+
+	if (!m_bDescError)
+		m_sDesc = sDesc;
 
 	SControl *pControl;
 	if (pControl = GetControlByType(controlDesc))
@@ -1278,10 +1282,22 @@ void CDockPane::SetDescription (const CString &sDesc)
 		CGTextArea *pTextArea = pControl->AsTextArea();
 		CUIHelper UIHelper(*g_pHI);
 		CString sRTF;
-		UIHelper.GenerateDockScreenRTF(sDesc, &sRTF);
+		UIHelper.GenerateDockScreenRTF(m_sDesc, &sRTF);
 
 		pTextArea->SetRichText(sRTF);
 		}
+	}
+
+void CDockPane::SetDescriptionError (const CString &sDesc)
+
+//	SetDescriptionError
+//
+//	Sets an error message
+
+	{
+	m_bDescError = false;
+	SetDescription(sDesc);
+	m_bDescError = true;
 	}
 
 void CDockPane::SetTextInputValue (const CString &sValue)

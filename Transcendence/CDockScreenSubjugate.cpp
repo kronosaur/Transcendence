@@ -94,12 +94,15 @@ IDockScreenDisplay::EResults CDockScreenSubjugate::OnHandleKeyDown (int iVirtKey
 	{
 	switch (iVirtKey)
 		{
-		case VK_UP:
-			m_pControl->Command(CGSubjugateArea::cmdSelectPrevDaimon);
-			return resultHandled;
-
 		case VK_DOWN:
 			m_pControl->Command(CGSubjugateArea::cmdSelectNextDaimon);
+			return resultHandled;
+
+		case VK_RETURN:
+			return resultHandled;
+
+		case VK_UP:
+			m_pControl->Command(CGSubjugateArea::cmdSelectPrevDaimon);
 			return resultHandled;
 
 		default:
@@ -128,37 +131,21 @@ ALERROR CDockScreenSubjugate::OnInit (SInitCtx &Ctx, const SDisplayOptions &Opti
 			return error;
 		}
 
-	//	Create the control
-
-	m_pControl = new CGSubjugateArea(*Ctx.pVI, *this);
-	if (m_pControl == NULL)
-		{
-		*retsError = CONSTLIT("Out of memory.");
-		return ERR_MEMORY;
-		}
-
-	//	Create. NOTE: Once we add it to the screen, it takes ownership of it. 
-	//	We do not have to free it.
-
-	m_dwID = Ctx.dwFirstID;
-	RECT rcControl = Ctx.rcScreen;
-	rcControl.bottom = rcControl.top + CONTROL_HEIGHT;
-	Ctx.pScreen->AddArea(m_pControl, rcControl, m_dwID);
-
 	//	Initialize with data
 
 	if (m_pData)
 		{
+		CArtifactAwakening::SCreateDesc CreateDesc;
 		ICCItem *pValue;
 
 		pValue = m_pData->GetElement(FIELD_EGO);
-		m_pControl->SetEgo(pValue ? Max(1, Min(pValue->GetIntegerValue(), MAX_STATISTIC)) : 1);
+		CreateDesc.Stat[CArtifactStat::statEgo] = (pValue ? Max(1, Min(pValue->GetIntegerValue(), MAX_STATISTIC)) : 1);
 
 		pValue = m_pData->GetElement(FIELD_INTELLIGENCE);
-		m_pControl->SetIntelligence(pValue ? Max(1, Min(pValue->GetIntegerValue(), MAX_STATISTIC)) : 1);
+		CreateDesc.Stat[CArtifactStat::statIntelligence] = (pValue ? Max(1, Min(pValue->GetIntegerValue(), MAX_STATISTIC)) : 1);
 
 		pValue = m_pData->GetElement(FIELD_WILLPOWER);
-		m_pControl->SetWillpower(pValue ? Max(1, Min(pValue->GetIntegerValue(), MAX_STATISTIC)) : 1);
+		CreateDesc.Stat[CArtifactStat::statWillpower] = (pValue ? Max(1, Min(pValue->GetIntegerValue(), MAX_STATISTIC)) : 1);
 
 		//	Add all countermeasures
 
@@ -173,7 +160,7 @@ ALERROR CDockScreenSubjugate::OnInit (SInitCtx &Ctx, const SDisplayOptions &Opti
 				continue;
 				}
 
-			m_pControl->AddCountermeasure(pItem);
+			CreateDesc.Countermeasures.Insert(pItem);
 			}
 
 		//	Add all daimons
@@ -189,9 +176,31 @@ ALERROR CDockScreenSubjugate::OnInit (SInitCtx &Ctx, const SDisplayOptions &Opti
 				continue;
 				}
 
-			m_pControl->AddDaimon(pItem);
+			CreateDesc.Daimons.Insert(pItem);
 			}
+
+		//	Initialize
+
+		if (!m_Artifact.Init(CreateDesc, retsError))
+			return ERR_MEMORY;
 		}
+
+	//	Create the control
+
+	m_pControl = new CGSubjugateArea(*Ctx.pVI, *this, m_Artifact);
+	if (m_pControl == NULL)
+		{
+		*retsError = CONSTLIT("Out of memory.");
+		return ERR_MEMORY;
+		}
+
+	//	Create. NOTE: Once we add it to the screen, it takes ownership of it. 
+	//	We do not have to free it.
+
+	m_dwID = Ctx.dwFirstID;
+	RECT rcControl = Ctx.rcScreen;
+	rcControl.bottom = rcControl.top + CONTROL_HEIGHT;
+	Ctx.pScreen->AddArea(m_pControl, rcControl, m_dwID);
 
 	//	Done
 

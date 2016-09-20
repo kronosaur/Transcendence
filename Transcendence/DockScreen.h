@@ -283,6 +283,7 @@ class CDockPane
 		~CDockPane (void);
 
 		void CleanUp (AGScreen *pScreen = NULL);
+		inline void ClearDescriptionError (void) { m_bDescError = false; }
 		void ExecuteCancelAction (void);
 		void ExecuteShowPane (const CString &sPane, bool bDeferIfNecessary = false);
 		inline CDockScreenActions &GetActions (void) { return m_Actions; }
@@ -296,6 +297,7 @@ class CDockPane
 		bool SetControlValue (const CString &sID, ICCItem *pValue);
 		void SetCounterValue (int iValue);
 		void SetDescription (const CString &sDesc);
+		void SetDescriptionError (const CString &sDesc);
 		void SetTextInputValue (const CString &sValue);
 
 	private:
@@ -373,6 +375,7 @@ class CDockPane
 		CString m_sDesc;					//	Current description
 		bool m_bInShowPane;					//	Keep track of re-entrancy
 		bool m_bInExecuteAction;			//	Inside m_Actions.Execute
+		bool m_bDescError;					//	Main description is an error.
 		CString m_sDeferredShowPane;
 	};
 
@@ -429,6 +432,7 @@ class CDockScreen : public IScreenController
 		void SelectPrevItem (bool *retbMore = NULL);
 		void SetBackground (const IDockScreenDisplay::SBackgroundDesc &Desc);
 		inline void SetDescription (const CString &sDesc) { m_CurrentPane.SetDescription(sDesc); }
+		inline void SetDescriptionError (const CString &sDesc) { m_CurrentPane.SetDescriptionError(sDesc); }
 		ALERROR SetDisplayText (const CString &sID, const CString &sText);
 		inline bool SetControlValue (const CString &sID, ICCItem *pValue) { return m_CurrentPane.SetControlValue(sID, pValue); }
 		inline void SetCounter (int iCount) { m_CurrentPane.SetCounterValue(iCount); }

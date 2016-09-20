@@ -148,16 +148,11 @@ class CGSubjugateArea : public AGArea
 			cmdSelectNextDaimon,
 			};
 
-		CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate &Controller);
+		CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate &Controller, CArtifactAwakening &Artifact);
 		~CGSubjugateArea (void);
 
-		void AddCountermeasure (CItemType *pItem);
-		void AddDaimon (CItemType *pItem);
 		void Command (ECommands iCommand, void *pData = NULL);
 		bool IsCommandValid (ECommands iCommand, void *pData = NULL) const;
-		inline void SetEgo (int iValue) { m_iEgo = iValue; }
-		inline void SetIntelligence (int iValue) { m_iIntelligence = iValue; }
-		inline void SetWillpower (int iValue) { m_iWillpower = iValue; }
 
 		//	AGArea virtuals
 
@@ -193,13 +188,9 @@ class CGSubjugateArea : public AGArea
 			selectDeployBtn,				//	The Deploy button
 			};
 
-		struct SCountermeasureEntry
-			{
-			CItemType *pCountermeasure;
-			};
-
 		struct SCountermeasureLocus
 			{
+			int iIndex;						//	Locus index
 			int iStartAngle;				//	Starting angle (degrees)
 			int iArc;						//	Arc in degrees (counter-clockwise)
 			int iInnerRadius;				//	Inner radius in pixels
@@ -208,6 +199,7 @@ class CGSubjugateArea : public AGArea
 
 		struct SDaimonLocus
 			{
+			int iIndex;						//	Locus index
 			int xPos;						//	Pos of upper-left corner relative to center
 			int yPos;
 			int cxWidth;
@@ -227,7 +219,7 @@ class CGSubjugateArea : public AGArea
 				{ return (iType != Src.iType || iIndex != Src.iIndex); }
 
 			ESelectionTypes iType;
-			int iIndex;						//	Idex of countermeasure, daimon, etc.
+			int iIndex;						//	Index of countermeasure, daimon, etc.
 			};
 
 		void ArtifactSubdued (void);
@@ -238,6 +230,7 @@ class CGSubjugateArea : public AGArea
 		inline bool IsActive (void) const { return (m_iState == stateStart || m_iState == stateInBattle); }
 		void PaintCountermeasureLocus (CG32bitImage &Dest, const SCountermeasureLocus &Locus) const;
 		void PaintDaimonLocus (CG32bitImage &Dest, const SDaimonLocus &Locus) const;
+		void PaintProgram (CG32bitImage &Dest, const CArtifactProgram &Program, int x, int y) const;
 		void SelectDaimon (int iNewSelection);
 
 		const CVisualPalette &m_VI;
@@ -246,14 +239,11 @@ class CGSubjugateArea : public AGArea
 		//	Game state
 
 		EStates m_iState;
-		int m_iEgo;
-		int m_iIntelligence;
-		int m_iWillpower;
-		CArtifactAICorePainter m_AICorePainter;
+		CArtifactAwakening &m_Artifact;		//	Core mini-game
 		CDaimonList m_DaimonList;			//	List of available daimons to deploy
-		TArray<SDaimonLocus> m_DaimonLoci;	//	Locations to which daimons are deployed
 
-		TArray<SCountermeasureEntry> m_CountermeasureList;
+		CArtifactAICorePainter m_AICorePainter;
+		TArray<SDaimonLocus> m_DaimonLoci;	//	Locations to which daimons are deployed
 		TArray<SCountermeasureLocus> m_CountermeasureLoci;
 
 		//	UI state
@@ -298,6 +288,7 @@ class CDockScreenSubjugate : public IDockScreenDisplay
 	private:
 		void FireOnCompleted (bool bSuccess);
 
+		CArtifactAwakening m_Artifact;		//	Mini-game data
 		CGSubjugateArea *m_pControl;
 		DWORD m_dwID;						//	ID of control
 		CEventHandler m_Events;

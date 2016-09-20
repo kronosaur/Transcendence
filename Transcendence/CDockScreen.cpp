@@ -418,6 +418,7 @@ void CDockScreen::CleanUpScreen (void)
 	m_pData = NULL;
 
 	m_CurrentPane.CleanUp();
+	m_CurrentPane.ClearDescriptionError();
 
 	if (m_pOnScreenUpdate)
 		{
@@ -758,7 +759,7 @@ bool CDockScreen::EvalBool (const CString &sCode)
 
 	if (pResult->IsError())
 		{
-		SetDescription(pResult->GetStringValue());
+		SetDescriptionError(pResult->GetStringValue());
 		kernelDebugLogMessage(pResult->GetStringValue());
 		}
 
@@ -809,7 +810,7 @@ CString CDockScreen::EvalInitialPane (CSpaceObject *pSource, ICCItem *pData)
 			{
 			CString sError = pResult->GetStringValue();
 			::kernelDebugLogMessage(sError);
-			SetDescription(sError);
+			SetDescriptionError(sError);
 			}
 		else
 			sPane = pResult->GetStringValue();
@@ -1312,7 +1313,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 	if (error = m_pDisplay->Init(DisplayCtx, DisplayOptions, &sError))
 		{
-		SetDescription(sError);
+		SetDescriptionError(sError);
 		kernelDebugLogMessage(sError);
 
 		//	Continue
@@ -1410,7 +1411,7 @@ ALERROR CDockScreen::ReportError (const CString &sError)
 				(m_sScreen.IsBlank() ? NULL_STR : strPatternSubst(CONSTLIT("/%s"), m_sScreen)),
 				sError);
 
-	SetDescription(sNewError);
+	SetDescriptionError(sNewError);
 	kernelDebugLogMessage(sNewError);
 
 	return ERR_FAIL;
@@ -1816,7 +1817,7 @@ void CDockScreen::ShowPane (const CString &sName)
 	if (pNewPane == NULL)
 		{
 		CString sError = strPatternSubst(CONSTLIT("Unable to find pane: %s"), sName);
-		SetDescription(sError);
+		SetDescriptionError(sError);
 		kernelDebugLogMessage(sError);
 		return;
 		}
