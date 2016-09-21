@@ -171,7 +171,7 @@ int CDaimonListPainter::Justify (int cxWidth) const
 
 		CItemType *pDaimon = m_pList->GetDaimon(i);
 
-		int yDaimon = Helper.CalcItemEntryHeight(NULL, CItem(pDaimon, 1), rcRect, CUIHelper::OPTION_SMALL_ICON);
+		int yDaimon = Helper.CalcItemEntryHeight(NULL, CItem(pDaimon, 1), rcRect, CUIHelper::OPTION_SMALL_ICON | CUIHelper::OPTION_TITLE);
 
 		m_pList->SetDaimonHeight(i, yDaimon);
 		yTotal += yDaimon;
@@ -286,7 +286,7 @@ void CDaimonListPainter::PaintDaimon (CG32bitImage &Dest, CItemType *pDaimon, in
 	rcItem.top = y;
 	rcItem.right = x + cxWidth;
 	rcItem.bottom = y + cyHeight;
-	Helper.PaintItemEntry(Dest, NULL, CItem(pDaimon, 1), rcItem, STYLECOLOR(colorDeployDaimonTitle), CUIHelper::OPTION_SMALL_ICON);
+	Helper.PaintItemEntry(Dest, NULL, CItem(pDaimon, 1), rcItem, STYLECOLOR(colorDeployDaimonTitle), CUIHelper::OPTION_SMALL_ICON | CUIHelper::OPTION_TITLE);
 	}
 
 bool CDaimonListPainter::Update (void)

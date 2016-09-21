@@ -266,7 +266,9 @@ class CGSubjugateArea : public AGArea
 		//	Visuals
 
 		CG32bitPixel m_rgbCountermeasureBack;
+		CG32bitPixel m_rgbCountermeasureLabel;
 		CG32bitPixel m_rgbDaimonBack;
+		CG32bitPixel m_rgbDaimonLabel;
 	};
 
 class CDockScreenSubjugate : public IDockScreenDisplay

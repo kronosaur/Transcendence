@@ -14,6 +14,8 @@ const int COUNTERMEASURES_ARC_ANGLE =		(360 / COUNTERMEASURES_COUNT);
 const int COUNTERMEASURE_SPACING =			12;
 const int COUNTERMEASURE_WIDTH =			80;
 
+const int CURSOR_OFFSET_Y =					16;
+
 const int DAIMON_BORDER_RADIUS =			6;
 const int DAIMON_COUNT =					6;
 const int DAIMON_HEIGHT =					96;
@@ -25,7 +27,10 @@ const int DMZ_WIDTH =						40;				//	Distance from outer edge of countermeasures
 
 const int ICON_WIDTH =						64;
 const int ICON_HEIGHT =						64;
+const int ICON_LABEL_WIDTH =				120;
+const int ICON_LABEL_HEIGHT =				64;
 
+const int ITEM_INFO_PANE_WIDTH =			318;
 const int INFO_PANE_WIDTH =					200;
 const DWORD INFO_PANE_HOVER_TIME =			300;
 
@@ -122,7 +127,9 @@ CGSubjugateArea::CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate
 	//	Compute some colors
 
 	m_rgbCountermeasureBack = CG32bitPixel(255, 127, 127, 66);		//	H:0   S:50 B:100
+	m_rgbCountermeasureLabel = CG32bitPixel(255, 127, 127);			//	H:0   S:50 B:100
 	m_rgbDaimonBack = CG32bitPixel(229, 161, 229, 66);				//	H:300 S:30 B:90
+	m_rgbDaimonLabel = CG32bitPixel(229, 161, 229);					//	H:300 S:30 B:90
 	}
 
 CGSubjugateArea::~CGSubjugateArea (void)
@@ -583,9 +590,24 @@ void CGSubjugateArea::PaintProgram (CG32bitImage &Dest, const CArtifactProgram &
 	{
 	CItemType *pType = Program.GetItemType();
 
+	//	Choose some colors
+
+	CG32bitPixel rgbLabel = (Program.GetType() == CArtifactProgram::typeCountermeasure ? m_rgbCountermeasureLabel : m_rgbDaimonLabel);
+
 	//	Paint the icon (centered)
 
 	DrawItemTypeIcon(Dest, x - (ICON_WIDTH / 2), y - (ICON_HEIGHT / 2), pType, ICON_WIDTH, ICON_HEIGHT);
+
+	//	Paint the name
+
+	RECT rcText;
+	rcText.left = x - (ICON_LABEL_WIDTH / 2);
+	rcText.right = rcText.left + ICON_LABEL_WIDTH;
+	rcText.top = y + (ICON_HEIGHT / 2);
+	rcText.bottom = rcText.top + ICON_LABEL_HEIGHT;
+
+	DWORD dwNounFlags = nounNoModifiers | nounShort | nounTitleCapitalize;
+	m_VI.GetFont(fontMedium).DrawText(Dest, rcText, rgbLabel, pType->GetNounPhrase(dwNounFlags), 0, CG16bitFont::AlignCenter);
 	}
 
 void CGSubjugateArea::SelectDaimon (int iNewSelection)
@@ -634,12 +656,22 @@ void CGSubjugateArea::Update (void)
 		switch (m_Hover.iType)
 			{
 			case selectCountermeasureLoci:
-				m_InfoPane.SetTitle(strPatternSubst("Countermeasure %d", m_Hover.iIndex + 1));
-				m_InfoPane.SetDescription(CONSTLIT("This is a countermeasure that counters your measure."));
-				m_InfoPane.Show(x, y, INFO_PANE_WIDTH, GetPaintRect());
+				{
+				CArtifactProgram *pProgram = m_Artifact.GetLocusProgram(CArtifactProgram::typeCountermeasure, m_Hover.iIndex);
+				if (pProgram)
+					{
+					m_InfoPane.SetItem(CItem(pProgram->GetItemType(), 1));
+					m_InfoPane.Show(x, y + CURSOR_OFFSET_Y, ITEM_INFO_PANE_WIDTH, GetPaintRect());
+					m_InfoPaneSel = m_Hover;
+					Invalidate();
+					}
+				else
+					m_InfoPane.Hide();
+
 				m_InfoPaneSel = m_Hover;
 				Invalidate();
 				break;
+				}
 			}
 		}
 	}
