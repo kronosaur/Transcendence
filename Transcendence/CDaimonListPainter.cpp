@@ -13,8 +13,6 @@ const int CORNER_RADIUS =					4;
 const int LINE_WIDTH =						1;
 const int SELECTION_EXTRA_WIDTH =			40;
 
-#define STYLECOLOR(x)						(CArtifactAwakenVisuals::GetColor(CArtifactAwakenVisuals::##x))
-
 CDaimonListPainter::CDaimonListPainter (const CVisualPalette &VI) :
 		m_VI(VI),
 		m_pList(NULL),
@@ -271,8 +269,8 @@ void CDaimonListPainter::Paint (CG32bitImage &Dest)
 		if (i == iSelection)
 			{
 			Dest.ResetClipRect();
-			CGDraw::RoundedRect(Dest, x, y, m_cxWidth + SELECTION_EXTRA_WIDTH, cyDaimon, CORNER_RADIUS, STYLECOLOR(colorDeployDaimonBack));
-			CGDraw::RoundedRectOutline(Dest, x, y, m_cxWidth + SELECTION_EXTRA_WIDTH, cyDaimon, CORNER_RADIUS, LINE_WIDTH, STYLECOLOR(colorDeployDaimonFore));
+			CGDraw::RoundedRect(Dest, x, y, m_cxWidth + SELECTION_EXTRA_WIDTH, cyDaimon, CORNER_RADIUS, AA_STYLECOLOR(colorDeployDaimonBack));
+			CGDraw::RoundedRectOutline(Dest, x, y, m_cxWidth + SELECTION_EXTRA_WIDTH, cyDaimon, CORNER_RADIUS, LINE_WIDTH, AA_STYLECOLOR(colorDeployDaimonFore));
 			Dest.SetClipRect(m_rcRect);
 			}
 
@@ -304,7 +302,7 @@ void CDaimonListPainter::PaintDaimon (CG32bitImage &Dest, CItemType *pDaimon, in
 	rcItem.top = y;
 	rcItem.right = x + cxWidth;
 	rcItem.bottom = y + cyHeight;
-	Helper.PaintItemEntry(Dest, NULL, CItem(pDaimon, 1), rcItem, STYLECOLOR(colorDeployDaimonTitle), CUIHelper::OPTION_SMALL_ICON | CUIHelper::OPTION_TITLE);
+	Helper.PaintItemEntry(Dest, NULL, CItem(pDaimon, 1), rcItem, AA_STYLECOLOR(colorDeployDaimonTitle), CUIHelper::OPTION_SMALL_ICON | CUIHelper::OPTION_TITLE);
 	}
 
 bool CDaimonListPainter::Update (void)

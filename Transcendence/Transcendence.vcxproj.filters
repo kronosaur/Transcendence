@@ -272,6 +272,9 @@
     <ClCompile Include="CArtifactAwakenVisuals.cpp">
       <Filter>Source Files\Artifact Awakening</Filter>
     </ClCompile>
+    <ClCompile Include="CArtifactStatPainter.cpp">
+      <Filter>Source Files\Artifact Awakening</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundTasks.h">

@@ -204,5 +204,5 @@ ALERROR CDockScreenSubjugate::OnInit (SInitCtx &Ctx, const SDisplayOptions &Opti
 
 	//	Done
 
-	return true;
+	return NOERROR;
 	}

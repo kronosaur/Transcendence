@@ -758,10 +758,7 @@ bool CDockScreen::EvalBool (const CString &sCode)
 	Ctx.Discard(pExp);
 
 	if (pResult->IsError())
-		{
-		SetDescriptionError(pResult->GetStringValue());
-		kernelDebugLogMessage(pResult->GetStringValue());
-		}
+		ReportError(pResult->GetStringValue());
 
 	bool bResult = !pResult->IsNil();
 	Ctx.Discard(pResult);
@@ -807,11 +804,7 @@ CString CDockScreen::EvalInitialPane (CSpaceObject *pSource, ICCItem *pData)
 		Ctx.Discard(pExp);
 
 		if (pResult->IsError())
-			{
-			CString sError = pResult->GetStringValue();
-			::kernelDebugLogMessage(sError);
-			SetDescriptionError(sError);
-			}
+			ReportError(pResult->GetStringValue());
 		else
 			sPane = pResult->GetStringValue();
 
@@ -1313,8 +1306,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 	if (error = m_pDisplay->Init(DisplayCtx, DisplayOptions, &sError))
 		{
-		SetDescriptionError(sError);
-		kernelDebugLogMessage(sError);
+		ReportError(sError);
 
 		//	Continue
 		}
@@ -1411,8 +1403,10 @@ ALERROR CDockScreen::ReportError (const CString &sError)
 				(m_sScreen.IsBlank() ? NULL_STR : strPatternSubst(CONSTLIT("/%s"), m_sScreen)),
 				sError);
 
-	SetDescriptionError(sNewError);
-	kernelDebugLogMessage(sNewError);
+	//	Set the error on the pane description.
+
+	m_CurrentPane.SetDescriptionError(sNewError);
+	::kernelDebugLogMessage(sNewError);
 
 	return ERR_FAIL;
 	}
@@ -1816,9 +1810,7 @@ void CDockScreen::ShowPane (const CString &sName)
 
 	if (pNewPane == NULL)
 		{
-		CString sError = strPatternSubst(CONSTLIT("Unable to find pane: %s"), sName);
-		SetDescriptionError(sError);
-		kernelDebugLogMessage(sError);
+		ReportError(strPatternSubst(CONSTLIT("Unable to find pane: %s"), sName));
 		return;
 		}
 

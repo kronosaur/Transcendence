@@ -432,7 +432,6 @@ class CDockScreen : public IScreenController
 		void SelectPrevItem (bool *retbMore = NULL);
 		void SetBackground (const IDockScreenDisplay::SBackgroundDesc &Desc);
 		inline void SetDescription (const CString &sDesc) { m_CurrentPane.SetDescription(sDesc); }
-		inline void SetDescriptionError (const CString &sDesc) { m_CurrentPane.SetDescriptionError(sDesc); }
 		ALERROR SetDisplayText (const CString &sID, const CString &sText);
 		inline bool SetControlValue (const CString &sID, ICCItem *pValue) { return m_CurrentPane.SetControlValue(sID, pValue); }
 		inline void SetCounter (int iCount) { m_CurrentPane.SetCounterValue(iCount); }

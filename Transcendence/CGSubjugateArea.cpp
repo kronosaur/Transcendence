@@ -38,12 +38,16 @@ const int MOUSE_SCROLL_SENSITIVITY =		240;
 
 const int DEPLOY_BUTTON_RADIUS =			40;
 
+const int STAT_BOX_WIDTH =					90;
+const int STAT_BOX_HEIGHT =					32;
+const int STAT_BOX_SPACING_X =				2;
+
 CGSubjugateArea::CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate &Controller, CArtifactAwakening &Artifact) : 
 		m_VI(VI),
 		m_Controller(Controller),
 		m_Artifact(Artifact),
-		m_iState(stateStart),
 		m_InfoPane(VI),
+		m_StatsPainter{ VI, VI, VI },
 		m_DaimonListPainter(VI),
 		m_DeployBtn(VI)
 
@@ -51,6 +55,10 @@ CGSubjugateArea::CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate
 
 	{
 	int i;
+
+	//	Initialize stats
+
+	RefreshStatsPainters();
 
 	//	Initialize the countermeasure loci (these form a ring around the central
 	//	core).
@@ -146,7 +154,6 @@ void CGSubjugateArea::ArtifactSubdued (void)
 //	This is called when the artifact is successfully subjugated
 
 	{
-	m_iState = stateSuccess;
 	m_Controller.OnCompleted(true);
 	}
 
@@ -190,16 +197,37 @@ void CGSubjugateArea::DeployDaimon (void)
 		CString sError;
 		if (!m_Artifact.DeployDaimon(pDaimon, &sError))
 			{
+			//	Can fail if we've already filled up all loci, but we should
+			//	check for this elsewhere.
 			return;
 			}
+
+		//	Remove from our list
 
 		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 		int iNewSelection = m_DaimonList.DeleteSelectedDaimon();
 		m_DaimonListPainter.OnSelectionDeleted(iSelection);
-		Invalidate();
-		}
 
-	//ArtifactSubdued();
+		//	Update turn
+
+		TArray<CArtifactAwakening::SEventDesc> Results;
+		CArtifactAwakening::EResultTypes iResult = m_Artifact.NextTurn(m_DaimonList.GetCount(), Results);
+
+		//	Update the stats
+
+		RefreshStatsPainters();
+
+		//	Repaint
+
+		Invalidate();
+
+		//	If the battle is over, handle it.
+
+		if (iResult == CArtifactAwakening::resultArtifactSubdued)
+			ArtifactSubdued();
+		else if (iResult == CArtifactAwakening::resultPlayerFailed)
+			PlayerFailed();
+		}
 	}
 
 void CGSubjugateArea::HideInfoPane (void)
@@ -474,6 +502,7 @@ void CGSubjugateArea::OnSetRect (void)
 //	The rectangle has been set, so we can compute some metrics
 
 	{
+	int i;
 	RECT rcRect = GetParent()->GetPaintRect(GetRect());
 
 	//	We split the rect in thirds
@@ -502,6 +531,28 @@ void CGSubjugateArea::OnSetRect (void)
 	m_DaimonListPainter.SetList(m_DaimonList);
 	m_DaimonListPainter.SetRect(m_rcHand);
 
+	//	Position the stats rects
+
+	int cxAllStats = (CArtifactStat::statCount * STAT_BOX_WIDTH + (CArtifactStat::statCount - 1) * STAT_BOX_SPACING_X);
+	int xBox = m_xCenter - (cxAllStats / 2);
+	int yBox = rcRect.top;
+	for (i = 0; i < CArtifactStat::statCount; i++)
+		{
+		RECT rcBox;
+		rcBox.left = xBox;
+		rcBox.right = rcBox.left + STAT_BOX_WIDTH;
+		rcBox.top = yBox;
+		rcBox.bottom = rcBox.top + STAT_BOX_HEIGHT;
+
+		m_StatsPainter[i].SetRect(rcBox);
+
+		xBox += STAT_BOX_WIDTH + STAT_BOX_SPACING_X;
+		}
+
+	m_StatsPainter[CArtifactStat::statEgo].SetLabel(CONSTLIT("ego"));
+	m_StatsPainter[CArtifactStat::statIntelligence].SetLabel(CONSTLIT("intelligence"));
+	m_StatsPainter[CArtifactStat::statWillpower].SetLabel(CONSTLIT("willpower"));
+
 	//	Position the deploy button at the center of the boundary between 
 	//	columns 1 and 2.
 
@@ -523,6 +574,11 @@ void CGSubjugateArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 	//	Paint the central core animation
 
 	m_AICorePainter.Paint(Dest, m_xCenter, m_yCenter);
+
+	//	Paint the core stats
+
+	for (i = 0; i < CArtifactStat::statCount; i++)
+		m_StatsPainter[i].Paint(Dest);
 
 	//	Paint the deployed countermeasures
 
@@ -555,6 +611,15 @@ void CGSubjugateArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 	//	Paint the info pane on top of everything
 
 	m_InfoPane.Paint(Dest);
+	}
+
+void CGSubjugateArea::PaintCoreStats (CG32bitImage &Dest) const
+
+//	PaintCoreStats
+//
+//	Paint the core stats
+
+	{
 	}
 
 void CGSubjugateArea::PaintCountermeasureLocus (CG32bitImage &Dest, const SCountermeasureLocus &Locus) const
@@ -625,10 +690,11 @@ void CGSubjugateArea::PaintProgram (CG32bitImage &Dest, const CArtifactProgram &
 	//	Choose some colors
 
 	CG32bitPixel rgbLabel = (Program.GetType() == CArtifactProgram::typeCountermeasure ? m_rgbCountermeasureLabel : m_rgbDaimonLabel);
+	bool bGrayed = !Program.IsActive();
 
 	//	Paint the icon (centered)
 
-	DrawItemTypeIcon(Dest, x - (ICON_WIDTH / 2), y - (ICON_HEIGHT / 2), pType, ICON_WIDTH, ICON_HEIGHT);
+	DrawItemTypeIcon(Dest, x - (ICON_WIDTH / 2), y - (ICON_HEIGHT / 2), pType, ICON_WIDTH, ICON_HEIGHT, bGrayed);
 
 	//	Paint the name
 
@@ -640,6 +706,31 @@ void CGSubjugateArea::PaintProgram (CG32bitImage &Dest, const CArtifactProgram &
 
 	DWORD dwNounFlags = nounNoModifiers | nounShort | nounTitleCapitalize;
 	m_VI.GetFont(fontMedium).DrawText(Dest, rcText, rgbLabel, pType->GetNounPhrase(dwNounFlags), 0, CG16bitFont::AlignCenter);
+	}
+
+void CGSubjugateArea::PlayerFailed (void)
+
+//	PlayerFailed
+//
+//	Player failed to subdue
+
+	{
+	m_Controller.OnCompleted(false);
+	}
+
+void CGSubjugateArea::RefreshStatsPainters (void)
+
+//	RefreshStatsPainters
+//
+//	Updates painters from the artifact data.
+
+	{
+	int i;
+
+	//	Initialize stats
+
+	for (i = 0; i < CArtifactStat::statCount; i++)
+		m_StatsPainter[i].SetStat(m_Artifact.GetCoreStat((CArtifactStat::ETypes)i));
 	}
 
 void CGSubjugateArea::SelectDaimon (int iNewSelection)

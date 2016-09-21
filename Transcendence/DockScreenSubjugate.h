@@ -26,6 +26,8 @@ class CArtifactAwakenVisuals
 		static CG32bitPixel GetColor (EColors iColor);
 	};
 
+#define AA_STYLECOLOR(x)						(CArtifactAwakenVisuals::GetColor(CArtifactAwakenVisuals::##x))
+
 class CArtifactAICorePainter
 	{
 	public:
@@ -34,6 +36,24 @@ class CArtifactAICorePainter
 		void Paint (CG32bitImage &Dest, int x, int y);
 
 	private:
+	};
+
+class CArtifactStatPainter
+	{
+	public:
+		CArtifactStatPainter (const CVisualPalette &VI);
+
+		void Paint (CG32bitImage &Dest) const;
+		inline void SetLabel (const CString &sValue) { m_sLabel = sValue; }
+		inline void SetRect (const RECT &rcRect) { m_rcRect = rcRect; }
+		inline void SetStat (int iValue) { m_iValue = iValue; }
+
+	private:
+		const CVisualPalette &m_VI;
+		CString m_sLabel;
+		int m_iValue;
+
+		RECT m_rcRect;
 	};
 
 class CDaimonButtonPainter
@@ -175,14 +195,6 @@ class CGSubjugateArea : public AGArea
 		virtual void OnSetRect (void) override;
 
 	private:
-		enum EStates
-			{
-			stateStart,						//	Have not yet deployed a single daimon
-			stateInBattle,					//	Have deployed a daimon, but no resolution
-			stateSuccess,					//	Artifact subjugated
-			stateFailure,					//	Failed to subjugate
-			};
-
 		enum ESelectionTypes
 			{
 			selectNone,
@@ -232,10 +244,13 @@ class CGSubjugateArea : public AGArea
 		void HideInfoPane (void);
 		bool HitTest (int x, int y, SSelection &Sel) const;
 		bool HitTestCountermeasureLoci (int x, int y, int *retiIndex = NULL) const;
-		inline bool IsActive (void) const { return (m_iState == stateStart || m_iState == stateInBattle); }
+		inline bool IsActive (void) const { return (m_Artifact.GetStatus() == CArtifactAwakening::resultBattleContinues); }
+		void PaintCoreStats (CG32bitImage &Dest) const;
 		void PaintCountermeasureLocus (CG32bitImage &Dest, const SCountermeasureLocus &Locus) const;
 		void PaintDaimonLocus (CG32bitImage &Dest, const SDaimonLocus &Locus) const;
 		void PaintProgram (CG32bitImage &Dest, const CArtifactProgram &Program, int x, int y) const;
+		void PlayerFailed (void);
+		void RefreshStatsPainters (void);
 		void SelectDaimon (int iNewSelection);
 
 		const CVisualPalette &m_VI;
@@ -243,7 +258,6 @@ class CGSubjugateArea : public AGArea
 
 		//	Game state
 
-		EStates m_iState;
 		CArtifactAwakening &m_Artifact;		//	Core mini-game
 		CDaimonList m_DaimonList;			//	List of available daimons to deploy
 
@@ -258,6 +272,7 @@ class CGSubjugateArea : public AGArea
 		CHoverDescriptionPainter m_InfoPane;//	Info pane on hover
 		SSelection m_InfoPaneSel;			//	What the info pane is showing
 
+		CArtifactStatPainter m_StatsPainter[CArtifactStat::statCount];
 		CDaimonListPainter m_DaimonListPainter;
 		CDaimonButtonPainter m_DeployBtn;	//	Deploy button
 
