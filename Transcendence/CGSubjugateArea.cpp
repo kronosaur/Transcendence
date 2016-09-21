@@ -157,8 +157,15 @@ void CGSubjugateArea::Command (ECommands iCommand, void *pData)
 //	Execute a command
 
 	{
+	if (!IsActive())
+		return;
+
 	switch (iCommand)
 		{
+		case cmdDeployDaimon:
+			DeployDaimon();
+			break;
+
 		case cmdSelectNextDaimon:
 			SelectDaimon(m_DaimonList.GetSelection() + 1);
 			break;
@@ -176,7 +183,23 @@ void CGSubjugateArea::DeployDaimon (void)
 //	Deploy the currently selected daimon.
 
 	{
-	ArtifactSubdued();
+	int iSelection = m_DaimonList.GetSelection();
+	CItemType *pDaimon = m_DaimonList.GetDaimon(iSelection);
+	if (pDaimon)
+		{
+		CString sError;
+		if (!m_Artifact.DeployDaimon(pDaimon, &sError))
+			{
+			return;
+			}
+
+		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+		int iNewSelection = m_DaimonList.DeleteSelectedDaimon();
+		m_DaimonListPainter.OnSelectionDeleted(iSelection);
+		Invalidate();
+		}
+
+	//ArtifactSubdued();
 	}
 
 void CGSubjugateArea::HideInfoPane (void)
@@ -518,7 +541,7 @@ void CGSubjugateArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 	//	Paint the deploy button
 
 	CDaimonButtonPainter::EStates iDeployBtnState;
-	if (!IsActive())
+	if (!IsActive() || m_DaimonList.GetSelection() == -1)
 		iDeployBtnState = CDaimonButtonPainter::stateDisabled;
 	else if (g_pHI->IsLButtonDown() && m_Hover.iType == selectDeployBtn && m_Clicked.iType == selectDeployBtn)
 		iDeployBtnState = CDaimonButtonPainter::stateDown;
@@ -579,6 +602,15 @@ void CGSubjugateArea::PaintDaimonLocus (CG32bitImage &Dest, const SDaimonLocus &
 			Locus.cyHeight,
 			DAIMON_BORDER_RADIUS,
 			m_rgbDaimonBack);
+
+	CArtifactProgram *pProgram = m_Artifact.GetLocusProgram(CArtifactProgram::typeDaimon, Locus.iIndex);
+	if (pProgram)
+		{
+		int x = m_xCenter + Locus.xPos + (Locus.cxWidth / 2);
+		int y = m_yCenter + Locus.yPos + (Locus.cyHeight / 2);
+
+		PaintProgram(Dest, *pProgram, x, y);
+		}
 	}
 
 void CGSubjugateArea::PaintProgram (CG32bitImage &Dest, const CArtifactProgram &Program, int x, int y) const

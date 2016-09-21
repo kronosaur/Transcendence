@@ -85,12 +85,13 @@ class CDaimonList
 
 		void Add (CItemType *pItem);
 		void DeleteAll (void);
+		int DeleteSelectedDaimon (void);
 		inline int GetCount (void) const { return m_Sorted.GetCount(); }
-		inline CItemType *GetDaimon (int iIndex) const { return m_Sorted[iIndex]->pDaimon; }
-		inline int GetDaimonHeight (int iIndex) const { return m_Sorted[iIndex]->cyHeight; }
+		inline CItemType *GetDaimon (int iIndex) const { return (IsValid(iIndex) ? m_Sorted[iIndex]->pDaimon : NULL); }
+		inline int GetDaimonHeight (int iIndex) const { return (IsValid(iIndex) ? m_Sorted[iIndex]->cyHeight : 0); }
 		inline int GetSelection (void) const { return m_iSelection; }
-		inline void SetDaimonHeight (int iIndex, int cyHeight) { m_Sorted[iIndex]->cyHeight = cyHeight; }
-		inline int SetSelection (int iSelection) { m_iSelection = Max(0, Min(iSelection, GetCount() - 1)); return m_iSelection; }
+		inline void SetDaimonHeight (int iIndex, int cyHeight) { if (IsValid(iIndex)) m_Sorted[iIndex]->cyHeight = cyHeight; }
+		inline int SetSelection (int iSelection) { if (GetCount() == 0) return -1; m_iSelection = Max(0, Min(iSelection, GetCount() - 1)); return m_iSelection; }
 
 	private:
 		struct SDaimonEntry
@@ -107,11 +108,13 @@ class CDaimonList
 			int cyHeight;					//	Height (-1 if not yet justified)
 			};
 
+		inline bool IsValid (int iIndex) const { return (iIndex >= 0 && iIndex < m_Sorted.GetCount()); }
+
 		DWORD m_dwNextID;
 		TSortMap<DWORD, SDaimonEntry *> m_List;
 		TSortMap<CString, SDaimonEntry *> m_Sorted;
 
-		int m_iSelection;					//	Currently selected index
+		int m_iSelection;					//	Currently selected index (-1 = no selection)
 	};
 
 class CDaimonListPainter
@@ -121,6 +124,7 @@ class CDaimonListPainter
 
 		bool HitTest (int xPos, int yPos, int *retiIndex) const;
 		void OnSelectionChanged (int iOldSelection, int iNewSelection);
+		void OnSelectionDeleted (int iOldSelection);
 		void Paint (CG32bitImage &Dest);
 		inline void SetList (CDaimonList &List) { m_pList = &List; }
 		inline void SetRect (const RECT &rcRect) { m_rcRect = rcRect; m_cxWidth = RectWidth(rcRect); }
@@ -144,6 +148,7 @@ class CGSubjugateArea : public AGArea
 	public:
 		enum ECommands
 			{
+			cmdDeployDaimon,				//	Deploys the selected daimon
 			cmdSelectPrevDaimon,
 			cmdSelectNextDaimon,
 			};

@@ -38,6 +38,8 @@ int CDaimonListPainter::CalcListPos (void) const
 		return 0;
 
 	int iSelection = m_pList->GetSelection();
+	if (iSelection == -1)
+		return 0;
 
 	//	Compute the offset from the top of the RECT to the top of the selected
 	//	entry. The selected entry is centered.
@@ -199,6 +201,20 @@ void CDaimonListPainter::OnSelectionChanged (int iOldSelection, int iNewSelectio
 	m_yAnimation = (CalcTop(iNewSelection) - CalcTop(iOldSelection)) + (m_pList->GetDaimonHeight(iNewSelection) - m_pList->GetDaimonHeight(iOldSelection)) / 2;
 	}
 
+void CDaimonListPainter::OnSelectionDeleted (int iOldSelection)
+
+//	OnSelectionDeleted
+//
+//	The selection has been deleted.
+
+	{
+	if (m_pList == NULL)
+		return;
+
+	Justify(m_cxWidth);
+	m_yAnimation = 0;
+	}
+
 void CDaimonListPainter::Paint (CG32bitImage &Dest)
 
 //	Paint
@@ -214,6 +230,8 @@ void CDaimonListPainter::Paint (CG32bitImage &Dest)
 		return;
 
 	int iSelection = m_pList->GetSelection();
+	if (iSelection == -1)
+		return;
 
 	//	Make sure we are justified (so we know the heights of all daimons)
 
