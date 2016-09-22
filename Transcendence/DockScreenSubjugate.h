@@ -34,8 +34,20 @@ class CArtifactAICorePainter
 		CArtifactAICorePainter (void);
 
 		void Paint (CG32bitImage &Dest, int x, int y);
+		void Update (void);
 
 	private:
+		static void CreateSphere (Metric rRadius, TArray<CVector3D> &Result);
+		static void CreateSphereRandom (int iPoints, Metric rRadius, TArray<CVector3D> &Result);
+
+		TArray<CVector3D> m_SpherePoints;
+		TArray<CGeometry3D::SIndexedLine> m_SphereEdges;
+
+		CVector3D m_vRotation;				//	Current rotation
+		CVector3D m_vRotationRate;			//	Rotation per tick
+
+		CProjection3D m_Camera;
+		CXForm3D m_Xform;
 	};
 
 class CArtifactStatPainter

@@ -764,6 +764,7 @@ void CGSubjugateArea::Update (void)
 		Invalidate();
 
 	m_DeployBtn.Update();
+	m_AICorePainter.Update();
 
 	//	See if we need to show the info pane
 
