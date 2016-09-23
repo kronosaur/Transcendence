@@ -42,9 +42,13 @@ class CArtifactAICorePainter
 
 		TArray<CVector3D> m_SpherePoints;
 		TArray<CGeometry3D::SIndexedLine> m_SphereEdges;
-
-		CVector3D m_vRotation;				//	Current rotation
+		CStepIncrementor m_RadiusAdj1;
+		CStepIncrementor m_RadiusAdj2;
+		CStepIncrementor m_RadiusAdj3;
 		CVector3D m_vRotationRate;			//	Rotation per tick
+
+		int m_iTick;						//	Current tick
+		CVector3D m_vRotation;				//	Current rotation
 
 		CProjection3D m_Camera;
 		CXForm3D m_Xform;

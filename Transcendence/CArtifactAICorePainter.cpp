@@ -8,13 +8,21 @@
 
 const int MAX_RADIUS =						80;
 
+const int CYCLE_1 =							255;
+const int CYCLE_2 =							150;
+const int CYCLE_3 =							1055;
+
 CArtifactAICorePainter::CArtifactAICorePainter (void) :
-		m_Camera(0.25 * PI)
+		m_Camera(0.25 * PI),
+		m_iTick(0),
+		m_RadiusAdj1(CStepIncrementor::styleSin, 0.95, 1.05, CYCLE_1),
+		m_RadiusAdj2(CStepIncrementor::styleSin, 0.95, 1.05, CYCLE_2),
+		m_RadiusAdj3(CStepIncrementor::styleSin, 0.90, 1.10, CYCLE_3)
 
 //	CArtifactAICorePainter constructor
 
 	{
-	m_vRotationRate = CVector3D(0.01 * PI, 0.003 * PI, 0.0);
+	m_vRotationRate = CVector3D(0.001 * PI, 0.0005 * PI, 0.0);
 
 	//	Generate a random sphere mesh.
 
@@ -92,11 +100,33 @@ void CArtifactAICorePainter::Paint (CG32bitImage &Dest, int x, int y)
 
 	//CGDraw::Circle(Dest, x, y, MAX_RADIUS, STYLECOLOR(colorAICoreBack));
 
-	CG32bitPixel rgbCore = AA_STYLECOLOR(colorAICoreFore);
+	CG32bitPixel rgbCore = CG32bitPixel(AA_STYLECOLOR(colorAICoreFore), 0x80);
+	CG32bitPixel rgbGlow = CG32bitPixel(0xff, 0x00, 0x00);
+
+	//	Adjust all sphere points
+
+	TArray<CVector3D> AdjustedPoints = m_SpherePoints;
+	for (i = 0; i < AdjustedPoints.GetCount(); i++)
+		{
+		switch (i % 3)
+			{
+			case 0:
+				AdjustedPoints[i] = AdjustedPoints[i] * m_RadiusAdj1.GetAt(m_iTick) * m_RadiusAdj2.GetAt(m_iTick + i);
+				break;
+
+			case 1:
+				AdjustedPoints[i] = AdjustedPoints[i] * m_RadiusAdj1.GetAt(m_iTick) * m_RadiusAdj3.GetAt(m_iTick + i);
+				break;
+
+			default:
+				AdjustedPoints[i] = AdjustedPoints[i] * m_RadiusAdj1.GetAt(m_iTick);
+				break;
+			}
+		}
 
 	//	Transform all sphere points in the projection
 
-	TArray<CVector> Points = m_Camera.Transform(m_Xform, m_SpherePoints);
+	TArray<CVector> Points = m_Camera.Transform(m_Xform, AdjustedPoints);
 
 	//	Paint all edges
 
@@ -113,6 +143,10 @@ void CArtifactAICorePainter::Paint (CG32bitImage &Dest, int x, int y)
 		{
 		Dest.DrawDot(x + (int)Points[i].GetX(), y - (int)Points[i].GetY(), rgbCore, markerSmallRound);
 		}
+
+	//	Paint the inner glow
+
+	CGDraw::CircleGradient(Dest, x, y, MAX_RADIUS, rgbGlow);
 	}
 
 void CArtifactAICorePainter::Update (void)
@@ -122,6 +156,8 @@ void CArtifactAICorePainter::Update (void)
 //	Update animation
 
 	{
+	m_iTick++;
+
 	CVector3D vPos(0.0, 0.0, 2.0);
 	CVector3D vScale(70.0, 70.0, 70.0);
 
