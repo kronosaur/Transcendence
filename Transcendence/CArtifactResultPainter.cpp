@@ -6,36 +6,42 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-CArtifactResultPainter::CArtifactResultPainter (int iTurn,
-												CArtifactProgram *pSource,
+CArtifactResultPainter::CArtifactResultPainter (CArtifactProgram *pSource,
 												int xSource,
 												int ySource,
-												CArtifactProgram::EEffectTypes iEffect,
+												CArtifactAwakening::EEventTypes iEvent,
 												CArtifactProgram *pTarget,
 												int xTarget,
-												int yTarget) :
-		m_iTurn(iTurn),
+												int yTarget,
+												int iDelay) :
 		m_pSource(pSource),
 		m_xSource(xSource),
 		m_ySource(ySource),
-		m_iEffect(iEffect),
+		m_iEvent(iEvent),
 		m_pTarget(pTarget),
 		m_xTarget(xTarget),
 		m_yTarget(yTarget),
+		m_iDelay(iDelay),
 		m_bMarked(false)
 
 	//	CArtifactResultPainter constructor
 
 	{
-	switch (m_iEffect)
+	switch (m_iEvent)
 		{
-		case CArtifactProgram::effectHalt:
+		case CArtifactAwakening::eventActivated:
+			m_iStyle = styleActivateProgram;
+			break;
+
+		case CArtifactAwakening::eventHalted:
 			m_iStyle = styleArcLightning;
 			m_rgbPrimaryColor = CG32bitPixel(255, 255, 255);
 			m_rgbSecondaryColor = CG32bitPixel(255, 128, 128);
 			break;
 
-		case CArtifactProgram::effectTargetStat:
+		case CArtifactAwakening::eventEgoChanged:
+		case CArtifactAwakening::eventIntelligenceChanged:
+		case CArtifactAwakening::eventWillpowerChanged:
 			{
 			m_iStyle = styleCircuit;
 			m_rgbPrimaryColor = CG32bitPixel(255, 255, 255);
@@ -137,6 +143,48 @@ CVector CArtifactResultPainter::CircuitLineSplitPoint (const CVector &vFrom, con
 	return CVector(vFrom.GetX() + rSplit * rdX, vFrom.GetY() + rSplit * rdY);
 	}
 
+CArtifactProgram *CArtifactResultPainter::GetProgramActivated (void) const
+
+//	GetProgramActivated
+//
+//	If this effect activates a program, and if the effect is active, then we return
+//	the program being activated. Otherwise, we return NULL.
+
+	{
+	if (m_iDelay > 0)
+		return NULL;
+
+	switch (m_iEvent)
+		{
+		case CArtifactAwakening::eventActivated:
+			return m_pSource;
+
+		default:
+			return NULL;
+		}
+	}
+
+CArtifactProgram *CArtifactResultPainter::GetProgramHalted (void) const
+
+//	GetProgramHalted
+//
+//	If this effect halts a program, and if the effect is active, then we return
+//	the program being halted. Otherwise, we return NULL.
+
+	{
+	if (m_iDelay > 0)
+		return NULL;
+
+	switch (m_iEvent)
+		{
+		case CArtifactAwakening::eventHalted:
+			return m_pTarget;
+
+		default:
+			return NULL;
+		}
+	}
+
 bool CArtifactResultPainter::IsEqualTo (const CArtifactResultPainter &Src) const
 
 //	IsEqualTo
@@ -145,7 +193,7 @@ bool CArtifactResultPainter::IsEqualTo (const CArtifactResultPainter &Src) const
 
 	{
 	return (m_pSource == Src.m_pSource
-			&& m_iEffect == Src.m_iEffect
+			&& m_iEvent == Src.m_iEvent
 			&& m_pTarget == Src.m_pTarget);
 	}
 
@@ -156,6 +204,13 @@ void CArtifactResultPainter::Paint (CG32bitImage &Dest) const
 //	Paints the effect
 
 	{
+	//	If we're delayed, don't paint
+
+	if (m_iDelay > 0)
+		return;
+
+	//	Paint
+
 	switch (m_iStyle)
 		{
 		case styleArcLightning:
@@ -175,4 +230,6 @@ void CArtifactResultPainter::Update (void)
 //	Updates the effect
 
 	{
+	if (m_iDelay > 0)
+		m_iDelay--;
 	}

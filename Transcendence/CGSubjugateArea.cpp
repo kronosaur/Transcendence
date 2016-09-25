@@ -202,6 +202,8 @@ bool CGSubjugateArea::AddEffect (const CArtifactAwakening::SEventDesc &Event, in
 		case CArtifactAwakening::eventActivated:
 			if (!Event.bAlreadyReported)
 				m_Messages.AddMessage(CONSTLIT("Activated"), CArtifactMessagePainter::styleInfo, xProgram, yProgram + MESSAGE_OFFSET_Y, iDelay);
+
+			AddEffect(new CArtifactResultPainter(Event.pSource, xProgram, yProgram, Event.iEvent, NULL, 0, 0, iDelay));
 			break;
 
 		case CArtifactAwakening::eventDeployed:
@@ -217,7 +219,7 @@ bool CGSubjugateArea::AddEffect (const CArtifactAwakening::SEventDesc &Event, in
 				m_Messages.AddMessage(CONSTLIT("Ego attacked"), CArtifactMessagePainter::styleInfo, xStat, yStat + STAT_MESSAGE_OFFSET_Y, iDelay);
 				}
 
-			AddEffect(new CArtifactResultPainter(m_Artifact.GetTurn(), Event.pSource, xProgram, yProgram, CArtifactProgram::effectTargetStat, NULL, m_xCenter, m_yCenter));
+			AddEffect(new CArtifactResultPainter(Event.pSource, xProgram, yProgram, Event.iEvent, NULL, m_xCenter, m_yCenter, iDelay));
 			break;
 
 		case CArtifactAwakening::eventIntelligenceChanged:
@@ -228,7 +230,7 @@ bool CGSubjugateArea::AddEffect (const CArtifactAwakening::SEventDesc &Event, in
 				m_Messages.AddMessage(CONSTLIT("Intelligence suppressed"), CArtifactMessagePainter::styleInfo, xStat, yStat + STAT_MESSAGE_OFFSET_Y, iDelay);
 				}
 
-			AddEffect(new CArtifactResultPainter(m_Artifact.GetTurn(), Event.pSource, xProgram, yProgram, CArtifactProgram::effectTargetStat, NULL, m_xCenter, m_yCenter));
+			AddEffect(new CArtifactResultPainter(Event.pSource, xProgram, yProgram, Event.iEvent, NULL, m_xCenter, m_yCenter, iDelay));
 			break;
 
 		case CArtifactAwakening::eventWillpowerChanged:
@@ -239,7 +241,7 @@ bool CGSubjugateArea::AddEffect (const CArtifactAwakening::SEventDesc &Event, in
 				m_Messages.AddMessage(CONSTLIT("Willpower sapped"), CArtifactMessagePainter::styleInfo, xStat, yStat + STAT_MESSAGE_OFFSET_Y, iDelay);
 				}
 
-			AddEffect(new CArtifactResultPainter(m_Artifact.GetTurn(), Event.pSource, xProgram, yProgram, CArtifactProgram::effectTargetStat, NULL, m_xCenter, m_yCenter));
+			AddEffect(new CArtifactResultPainter(Event.pSource, xProgram, yProgram, Event.iEvent, NULL, m_xCenter, m_yCenter, iDelay));
 			break;
 
 		case CArtifactAwakening::eventHalted:
@@ -249,7 +251,7 @@ bool CGSubjugateArea::AddEffect (const CArtifactAwakening::SEventDesc &Event, in
 
 			if (!Event.bAlreadyReported)
 				m_Messages.AddMessage(CONSTLIT("Halted"), CArtifactMessagePainter::styleInfo, xTarget, yTarget + MESSAGE_OFFSET_Y, iDelay);
-			AddEffect(new CArtifactResultPainter(m_Artifact.GetTurn(), Event.pSource, xProgram, yProgram, CArtifactProgram::effectHalt, Event.pTarget, xTarget, yTarget));
+			AddEffect(new CArtifactResultPainter(Event.pSource, xProgram, yProgram, Event.iEvent, Event.pTarget, xTarget, yTarget, iDelay));
 			break;
 			}
 
@@ -260,7 +262,7 @@ bool CGSubjugateArea::AddEffect (const CArtifactAwakening::SEventDesc &Event, in
 
 			if (!Event.bAlreadyReported)
 				m_Messages.AddMessage(CONSTLIT("Security boosted"), CArtifactMessagePainter::styleInfo, xTarget, yTarget + MESSAGE_OFFSET_Y, iDelay);
-			AddEffect(new CArtifactResultPainter(m_Artifact.GetTurn(), Event.pSource, xProgram, yProgram, CArtifactProgram::effectPatchDefense, Event.pTarget, xTarget, yTarget));
+			AddEffect(new CArtifactResultPainter(Event.pSource, xProgram, yProgram, Event.iEvent, Event.pTarget, xTarget, yTarget, iDelay));
 			break;
 			}
 
@@ -271,7 +273,7 @@ bool CGSubjugateArea::AddEffect (const CArtifactAwakening::SEventDesc &Event, in
 
 			if (!Event.bAlreadyReported)
 				m_Messages.AddMessage(CONSTLIT("computer power increased"), CArtifactMessagePainter::styleInfo, xTarget, yTarget + MESSAGE_OFFSET_Y, iDelay);
-			AddEffect(new CArtifactResultPainter(m_Artifact.GetTurn(), Event.pSource, xProgram, yProgram, CArtifactProgram::effectPatchStrength, Event.pTarget, xTarget, yTarget));
+			AddEffect(new CArtifactResultPainter(Event.pSource, xProgram, yProgram, Event.iEvent, Event.pTarget, xTarget, yTarget, iDelay));
 			break;
 			}
 
@@ -823,14 +825,15 @@ void CGSubjugateArea::PaintCountermeasureLocus (CG32bitImage &Dest, const SCount
 			CGDraw::ARC_INNER_RADIUS);
 
 	CArtifactProgram *pProgram = m_Artifact.GetLocusProgram(CArtifactProgram::typeCountermeasure, Locus.iIndex);
-	if (pProgram)
+	if (pProgram
+			&& !Locus.bHidden)
 		{
 		int iCenterAngle = Locus.iStartAngle + (Locus.iArc / 2);
 		CVector vOffset = PolarToVector(iCenterAngle, Locus.iInnerRadius + (COUNTERMEASURE_WIDTH / 2));
 		int x = m_xCenter + (int)vOffset.GetX();
 		int y = m_yCenter - (int)vOffset.GetY();
 
-		PaintProgram(Dest, *pProgram, x, y);
+		PaintProgram(Dest, *pProgram, x, y, Locus.bPaintHalted);
 		}
 	}
 
@@ -855,11 +858,11 @@ void CGSubjugateArea::PaintDaimonLocus (CG32bitImage &Dest, const SDaimonLocus &
 		int x = m_xCenter + Locus.xPos + (Locus.cxWidth / 2);
 		int y = m_yCenter + Locus.yPos + (Locus.cyHeight / 2);
 
-		PaintProgram(Dest, *pProgram, x, y);
+		PaintProgram(Dest, *pProgram, x, y, Locus.bPaintHalted);
 		}
 	}
 
-void CGSubjugateArea::PaintProgram (CG32bitImage &Dest, const CArtifactProgram &Program, int x, int y) const
+void CGSubjugateArea::PaintProgram (CG32bitImage &Dest, const CArtifactProgram &Program, int x, int y, bool bGrayed) const
 
 //	PaintProgram
 //
@@ -871,7 +874,6 @@ void CGSubjugateArea::PaintProgram (CG32bitImage &Dest, const CArtifactProgram &
 	//	Choose some colors
 
 	CG32bitPixel rgbLabel = (Program.GetType() == CArtifactProgram::typeCountermeasure ? m_rgbCountermeasureLabel : m_rgbDaimonLabel);
-	bool bGrayed = !Program.IsActive();
 
 	//	Paint the icon (centered)
 
@@ -998,10 +1000,43 @@ void CGSubjugateArea::Update (void)
 	m_AICorePainter.Update();
 	m_Messages.Update();
 
+	//	Reset all programs so they paint fully. We then check effects to see if 
+	//	we need to paint a program as halted.
+
+	for (i = 0; i < m_CountermeasureLoci.GetCount(); i++)
+		{
+		m_CountermeasureLoci[i].bHidden = true;
+		m_CountermeasureLoci[i].bPaintHalted = false;
+		}
+
+	for (i = 0; i < m_DaimonLoci.GetCount(); i++)
+		m_DaimonLoci[i].bPaintHalted = false;
+
 	//	Update all effects
 
 	for (i = 0; i < m_Effects.GetCount(); i++)
+		{
 		m_Effects[i]->Update();
+
+		//	If this effect activates a program
+
+		CArtifactProgram *pProgram;
+		if (pProgram = m_Effects[i]->GetProgramActivated())
+			{
+			if (pProgram->GetType() == CArtifactProgram::typeCountermeasure)
+				m_CountermeasureLoci[pProgram->GetLocusIndex()].bHidden = false;
+			}
+
+		//	See if this effect has halted a program
+
+		if (pProgram = m_Effects[i]->GetProgramHalted())
+			{
+			if (pProgram->GetType() == CArtifactProgram::typeCountermeasure)
+				m_CountermeasureLoci[pProgram->GetLocusIndex()].bPaintHalted = true;
+			else
+				m_DaimonLoci[pProgram->GetLocusIndex()].bPaintHalted = true;
+			}
+		}
 
 	//	See if we need to show the info pane
 

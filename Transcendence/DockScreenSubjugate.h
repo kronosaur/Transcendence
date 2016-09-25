@@ -76,19 +76,20 @@ class CArtifactStatPainter
 class CArtifactResultPainter
 	{
 	public:
-		CArtifactResultPainter (int iTurn,
-				CArtifactProgram *pSource, 
+		CArtifactResultPainter (CArtifactProgram *pSource, 
 				int xSource, 
 				int ySource, 
-				CArtifactProgram::EEffectTypes iEffect, 
+				CArtifactAwakening::EEventTypes iEvent, 
 				CArtifactProgram *pTarget, 
 				int xTarget, 
-				int yTarget);
+				int yTarget,
+				int iDelay);
 
-		inline CArtifactProgram::EEffectTypes GetEffectType (void) const { return m_iEffect; }
+		inline CArtifactAwakening::EEventTypes GetEventType (void) const { return m_iEvent; }
 		inline CArtifactProgram *GetProgram (void) const { return m_pSource; }
+		CArtifactProgram *GetProgramActivated (void) const;
+		CArtifactProgram *GetProgramHalted (void) const;
 		inline CArtifactProgram *GetTarget (void) const { return m_pTarget; }
-		inline int GetTurn (void) const { return m_iTurn; }
 		bool IsEqualTo (const CArtifactResultPainter &Src) const;
 		inline bool IsMarked (void) const { return m_bMarked; }
 		inline void Mark (bool bValue = true) { m_bMarked = bValue; }
@@ -100,6 +101,7 @@ class CArtifactResultPainter
 			{
 			styleNone,
 
+			styleActivateProgram,
 			styleArcLightning,
 			styleCircuit,
 			};
@@ -109,12 +111,11 @@ class CArtifactResultPainter
 		static void CircuitLineSplit (TArray<CVector> &Result, int iStart, int iEnd, int iDepth, int *retiNewEnd = NULL);
 		static CVector CircuitLineSplitPoint (const CVector &vFrom, const CVector &vTo);
 
-		int m_iTurn;
 		CArtifactProgram *m_pSource;
 		int m_xSource;
 		int m_ySource;
 
-		CArtifactProgram::EEffectTypes m_iEffect;
+		CArtifactAwakening::EEventTypes m_iEvent;
 		CArtifactProgram *m_pTarget;
 		int m_xTarget;
 		int m_yTarget;
@@ -122,6 +123,7 @@ class CArtifactResultPainter
 		EStyles m_iStyle;
 		CG32bitPixel m_rgbPrimaryColor;
 		CG32bitPixel m_rgbSecondaryColor;
+		int m_iDelay;
 
 		TArray<CVector> m_Line;
 		CGRegion m_Region;
@@ -343,20 +345,36 @@ class CGSubjugateArea : public AGArea
 
 		struct SCountermeasureLocus
 			{
+			SCountermeasureLocus (void) :
+					iIndex(-1),
+					bHidden(false),
+					bPaintHalted(false)
+				{ }
+
 			int iIndex;						//	Locus index
 			int iStartAngle;				//	Starting angle (degrees)
 			int iArc;						//	Arc in degrees (counter-clockwise)
 			int iInnerRadius;				//	Inner radius in pixels
 			int iOuterRadius;				//	Outer radius in pixels
+
+			bool bHidden;					//	Don't paint
+			bool bPaintHalted;				//	Paint grayed out
 			};
 
 		struct SDaimonLocus
 			{
+			SDaimonLocus (void) :
+					iIndex(-1),
+					bPaintHalted(false)
+				{ }
+
 			int iIndex;						//	Locus index
 			int xPos;						//	Pos of upper-left corner relative to center
 			int yPos;
 			int cxWidth;
 			int cyHeight;
+
+			bool bPaintHalted;
 			};
 
 		struct SSelection
@@ -387,7 +405,7 @@ class CGSubjugateArea : public AGArea
 		void PaintCoreStats (CG32bitImage &Dest) const;
 		void PaintCountermeasureLocus (CG32bitImage &Dest, const SCountermeasureLocus &Locus) const;
 		void PaintDaimonLocus (CG32bitImage &Dest, const SDaimonLocus &Locus) const;
-		void PaintProgram (CG32bitImage &Dest, const CArtifactProgram &Program, int x, int y) const;
+		void PaintProgram (CG32bitImage &Dest, const CArtifactProgram &Program, int x, int y, bool bGrayed) const;
 		void PlayerFailed (void);
 		void RefreshEffects (const TArray<CArtifactAwakening::SEventDesc> &Events);
 		void RefreshStatsPainters (void);
