@@ -23,6 +23,8 @@ const int DAIMON_WIDTH =					96;
 const int DAIMON_SPACING_X =				12;
 const int DAIMON_SPACING_Y =				12;
 
+const int DEFAULT_DELAY_INC =				90;
+
 const int DMZ_WIDTH =						40;				//	Distance from outer edge of countermeasures to daimons
 
 const int ICON_WIDTH =						64;
@@ -34,6 +36,8 @@ const int ITEM_INFO_PANE_WIDTH =			318;
 const int INFO_PANE_WIDTH =					200;
 const DWORD INFO_PANE_HOVER_TIME =			300;
 
+const int MESSAGE_OFFSET_Y =				-24;
+
 const int MOUSE_SCROLL_SENSITIVITY =		240;
 
 const int DEPLOY_BUTTON_RADIUS =			40;
@@ -42,6 +46,8 @@ const int STAT_BOX_WIDTH =					90;
 const int STAT_BOX_HEIGHT =					32;
 const int STAT_BOX_SPACING_X =				2;
 
+const int STAT_MESSAGE_OFFSET_Y =			32;
+
 CGSubjugateArea::CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate &Controller, CArtifactAwakening &Artifact) : 
 		m_VI(VI),
 		m_Controller(Controller),
@@ -49,6 +55,7 @@ CGSubjugateArea::CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate
 		m_InfoPane(VI),
 		m_StatsPainter{ VI, VI, VI },
 		m_DaimonListPainter(VI),
+		m_Messages(VI),
 		m_DeployBtn(VI)
 
 //	CGSubjugateArea constructor
@@ -145,6 +152,134 @@ CGSubjugateArea::~CGSubjugateArea (void)
 //	CGSubjugateArea destructor
 
 	{
+	CleanUp();
+	}
+
+void CGSubjugateArea::AddEffect (CArtifactResultPainter *pEffect)
+
+//	AddEffect
+//
+//	Adds an effect to our list of effect painters if we don't already have it.
+
+	{
+	int i;
+
+	//	See if we already have this effect. If we do, then just mark the effect
+	//	(to indicate that it is in use) and free the input.
+
+	for (i = 0; i < m_Effects.GetCount(); i++)
+		if (m_Effects[i]->IsEqualTo(*pEffect))
+			{
+			m_Effects[i]->Mark();
+			delete pEffect;
+			return;
+			}
+
+	//	Otherwise, we need to add it to the list (and mark it).
+
+	m_Effects.Insert(pEffect);
+	pEffect->Mark();
+	}
+
+bool CGSubjugateArea::AddEffect (const CArtifactAwakening::SEventDesc &Event, int iDelay)
+
+//	AddEffect
+//
+//	Adds an appropriate effect. Returns TRUE if we handled this effect (such that we need
+//	to increase the delay).
+
+	{
+	//	Calculate the position of the source program
+
+	int xProgram, yProgram;
+	if (Event.pSource)
+		GetProgramPos(Event.pSource->GetType(), Event.pSource->GetLocusIndex(), &xProgram, &yProgram);
+
+	//	Create the effect
+
+	switch (Event.iEvent)
+		{
+		case CArtifactAwakening::eventActivated:
+			if (!Event.bAlreadyReported)
+				m_Messages.AddMessage(CONSTLIT("Activated"), CArtifactMessagePainter::styleInfo, xProgram, yProgram + MESSAGE_OFFSET_Y, iDelay);
+			break;
+
+		case CArtifactAwakening::eventDeployed:
+			if (!Event.bAlreadyReported)
+				m_Messages.AddMessage(CONSTLIT("Deployed"), CArtifactMessagePainter::styleInfo, xProgram, yProgram + MESSAGE_OFFSET_Y, iDelay);
+			break;
+
+		case CArtifactAwakening::eventEgoChanged:
+			if (!Event.bAlreadyReported)
+				{
+				int xStat, yStat;
+				m_StatsPainter[CArtifactStat::statEgo].GetPos(&xStat, &yStat);
+				m_Messages.AddMessage(CONSTLIT("Ego attacked"), CArtifactMessagePainter::styleInfo, xStat, yStat + STAT_MESSAGE_OFFSET_Y, iDelay);
+				}
+
+			AddEffect(new CArtifactResultPainter(m_Artifact.GetTurn(), Event.pSource, xProgram, yProgram, CArtifactProgram::effectTargetStat, NULL, m_xCenter, m_yCenter));
+			break;
+
+		case CArtifactAwakening::eventIntelligenceChanged:
+			if (!Event.bAlreadyReported)
+				{
+				int xStat, yStat;
+				m_StatsPainter[CArtifactStat::statIntelligence].GetPos(&xStat, &yStat);
+				m_Messages.AddMessage(CONSTLIT("Intelligence suppressed"), CArtifactMessagePainter::styleInfo, xStat, yStat + STAT_MESSAGE_OFFSET_Y, iDelay);
+				}
+
+			AddEffect(new CArtifactResultPainter(m_Artifact.GetTurn(), Event.pSource, xProgram, yProgram, CArtifactProgram::effectTargetStat, NULL, m_xCenter, m_yCenter));
+			break;
+
+		case CArtifactAwakening::eventWillpowerChanged:
+			if (!Event.bAlreadyReported)
+				{
+				int xStat, yStat;
+				m_StatsPainter[CArtifactStat::statWillpower].GetPos(&xStat, &yStat);
+				m_Messages.AddMessage(CONSTLIT("Willpower sapped"), CArtifactMessagePainter::styleInfo, xStat, yStat + STAT_MESSAGE_OFFSET_Y, iDelay);
+				}
+
+			AddEffect(new CArtifactResultPainter(m_Artifact.GetTurn(), Event.pSource, xProgram, yProgram, CArtifactProgram::effectTargetStat, NULL, m_xCenter, m_yCenter));
+			break;
+
+		case CArtifactAwakening::eventHalted:
+			{
+			int xTarget, yTarget;
+			GetProgramPos(Event.pTarget->GetType(), Event.pTarget->GetLocusIndex(), &xTarget, &yTarget);
+
+			if (!Event.bAlreadyReported)
+				m_Messages.AddMessage(CONSTLIT("Halted"), CArtifactMessagePainter::styleInfo, xTarget, yTarget + MESSAGE_OFFSET_Y, iDelay);
+			AddEffect(new CArtifactResultPainter(m_Artifact.GetTurn(), Event.pSource, xProgram, yProgram, CArtifactProgram::effectHalt, Event.pTarget, xTarget, yTarget));
+			break;
+			}
+
+		case CArtifactAwakening::eventDefenseChanged:
+			{
+			int xTarget, yTarget;
+			GetProgramPos(Event.pTarget->GetType(), Event.pTarget->GetLocusIndex(), &xTarget, &yTarget);
+
+			if (!Event.bAlreadyReported)
+				m_Messages.AddMessage(CONSTLIT("Security boosted"), CArtifactMessagePainter::styleInfo, xTarget, yTarget + MESSAGE_OFFSET_Y, iDelay);
+			AddEffect(new CArtifactResultPainter(m_Artifact.GetTurn(), Event.pSource, xProgram, yProgram, CArtifactProgram::effectPatchDefense, Event.pTarget, xTarget, yTarget));
+			break;
+			}
+
+		case CArtifactAwakening::eventStrengthChanged:
+			{
+			int xTarget, yTarget;
+			GetProgramPos(Event.pTarget->GetType(), Event.pTarget->GetLocusIndex(), &xTarget, &yTarget);
+
+			if (!Event.bAlreadyReported)
+				m_Messages.AddMessage(CONSTLIT("computer power increased"), CArtifactMessagePainter::styleInfo, xTarget, yTarget + MESSAGE_OFFSET_Y, iDelay);
+			AddEffect(new CArtifactResultPainter(m_Artifact.GetTurn(), Event.pSource, xProgram, yProgram, CArtifactProgram::effectPatchStrength, Event.pTarget, xTarget, yTarget));
+			break;
+			}
+
+		default:
+			return false;
+		}
+
+	return true;
 	}
 
 void CGSubjugateArea::ArtifactSubdued (void)
@@ -155,6 +290,19 @@ void CGSubjugateArea::ArtifactSubdued (void)
 
 	{
 	m_Controller.OnCompleted(true);
+	}
+
+void CGSubjugateArea::CleanUp (void)
+
+//	CleanUp
+//
+//	Free up all resources
+
+	{
+	int i;
+
+	for (i = 0; i < m_Effects.GetCount(); i++)
+		delete m_Effects[i];
 	}
 
 void CGSubjugateArea::Command (ECommands iCommand, void *pData)
@@ -194,28 +342,28 @@ void CGSubjugateArea::DeployDaimon (void)
 	CItemType *pDaimon = m_DaimonList.GetDaimon(iSelection);
 	if (pDaimon)
 		{
-		CString sError;
-		if (!m_Artifact.DeployDaimon(pDaimon, &sError))
-			{
-			//	Can fail if we've already filled up all loci, but we should
-			//	check for this elsewhere.
-			return;
-			}
-
-		//	Remove from our list
-
 		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-		int iNewSelection = m_DaimonList.DeleteSelectedDaimon();
-		m_DaimonListPainter.OnSelectionDeleted(iSelection);
 
 		//	Update turn
 
 		TArray<CArtifactAwakening::SEventDesc> Results;
-		CArtifactAwakening::EResultTypes iResult = m_Artifact.NextTurn(m_DaimonList.GetCount(), Results);
+		CArtifactAwakening::EResultTypes iResult = m_Artifact.PlayTurn(pDaimon, m_DaimonList.GetCount(), Results);
 
-		//	Update the stats
+		//	Can fail if we've already filled up all loci, but we should
+		//	check for this elsewhere.
+
+		if (iResult == CArtifactAwakening::resultError)
+			return;
+
+		//	Remove the daimon from our list
+
+		int iNewSelection = m_DaimonList.DeleteSelectedDaimon();
+		m_DaimonListPainter.OnSelectionDeleted(iSelection);
+
+		//	Refresh state
 
 		RefreshStatsPainters();
+		RefreshEffects(Results);
 
 		//	Repaint
 
@@ -227,6 +375,30 @@ void CGSubjugateArea::DeployDaimon (void)
 			ArtifactSubdued();
 		else if (iResult == CArtifactAwakening::resultPlayerFailed)
 			PlayerFailed();
+		}
+	}
+
+void CGSubjugateArea::GetProgramPos (CArtifactProgram::EProgramTypes iType, int iLocus, int *retx, int *rety) const
+
+//	GetProgramPos
+//
+//	Returns the position of the given program locus (center).
+
+	{
+	if (iType == CArtifactProgram::typeCountermeasure)
+		{
+		const SCountermeasureLocus &Locus = m_CountermeasureLoci[iLocus];
+
+		int iCenterAngle = Locus.iStartAngle + (Locus.iArc / 2);
+		CVector vOffset = PolarToVector(iCenterAngle, Locus.iInnerRadius + (COUNTERMEASURE_WIDTH / 2));
+		*retx = m_xCenter + (int)vOffset.GetX();
+		*rety = m_yCenter - (int)vOffset.GetY();
+		}
+	else
+		{
+		const SDaimonLocus &Locus = m_DaimonLoci[iLocus];
+		*retx = m_xCenter + Locus.xPos + (Locus.cxWidth / 2);
+		*rety = m_yCenter + Locus.yPos + (Locus.cyHeight / 2);
 		}
 	}
 
@@ -608,6 +780,15 @@ void CGSubjugateArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 	m_DeployBtn.Paint(Dest, iDeployBtnState);
 
+	//	Paint effects
+
+	for (i = 0; i < m_Effects.GetCount(); i++)
+		m_Effects[i]->Paint(Dest);
+
+	//	Messages
+
+	m_Messages.Paint(Dest);
+
 	//	Paint the info pane on top of everything
 
 	m_InfoPane.Paint(Dest);
@@ -718,6 +899,54 @@ void CGSubjugateArea::PlayerFailed (void)
 	m_Controller.OnCompleted(false);
 	}
 
+void CGSubjugateArea::RefreshEffects (const TArray<CArtifactAwakening::SEventDesc> &Events)
+
+//	RefreshEffects
+//
+//	Loops over all effects in m_Artifact and makes sure they are reflected in 
+//	our array.
+
+	{
+	int i;
+	int iDelay = 0;
+
+	//	Loop over all effects and clear their marks so we can tell which ones we
+	//	need to delete.
+
+	for (i = 0; i < m_Effects.GetCount(); i++)
+		m_Effects[i]->Mark(false);
+
+	//	Loop over all events and add effects and messages as appropriate.
+
+	for (i = 0; i < Events.GetCount(); i++)
+		{
+		const CArtifactAwakening::SEventDesc &Event = Events[i];
+
+		//	Add any effects and messages for this event.
+
+		if (AddEffect(Event, iDelay))
+			{
+			//	If we added an effect, and if this event hasn't already been 
+			//	reported, then we add a delay.
+
+			if (!Event.bAlreadyReported)
+				iDelay += DEFAULT_DELAY_INC;
+			}
+		}
+
+	//	Delete any effects that we're no longer using
+
+	for (i = 0; i < m_Effects.GetCount(); i++)
+		{
+		if (!m_Effects[i]->IsMarked())
+			{
+			delete m_Effects[i];
+			m_Effects.Delete(i);
+			i--;
+			}
+		}
+	}
+
 void CGSubjugateArea::RefreshStatsPainters (void)
 
 //	RefreshStatsPainters
@@ -758,6 +987,8 @@ void CGSubjugateArea::Update (void)
 //	Update
 
 	{
+	int i;
+
 	//	Update all our components
 
 	if (m_DaimonListPainter.Update())
@@ -765,6 +996,12 @@ void CGSubjugateArea::Update (void)
 
 	m_DeployBtn.Update();
 	m_AICorePainter.Update();
+	m_Messages.Update();
+
+	//	Update all effects
+
+	for (i = 0; i < m_Effects.GetCount(); i++)
+		m_Effects[i]->Update();
 
 	//	See if we need to show the info pane
 

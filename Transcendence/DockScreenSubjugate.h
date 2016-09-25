@@ -59,6 +59,7 @@ class CArtifactStatPainter
 	public:
 		CArtifactStatPainter (const CVisualPalette &VI);
 
+		inline void GetPos (int *retx, int *rety) const { RectCenter(m_rcRect, retx, rety); }
 		void Paint (CG32bitImage &Dest) const;
 		inline void SetLabel (const CString &sValue) { m_sLabel = sValue; }
 		inline void SetRect (const RECT &rcRect) { m_rcRect = rcRect; }
@@ -70,6 +71,124 @@ class CArtifactStatPainter
 		int m_iValue;
 
 		RECT m_rcRect;
+	};
+
+class CArtifactResultPainter
+	{
+	public:
+		CArtifactResultPainter (int iTurn,
+				CArtifactProgram *pSource, 
+				int xSource, 
+				int ySource, 
+				CArtifactProgram::EEffectTypes iEffect, 
+				CArtifactProgram *pTarget, 
+				int xTarget, 
+				int yTarget);
+
+		inline CArtifactProgram::EEffectTypes GetEffectType (void) const { return m_iEffect; }
+		inline CArtifactProgram *GetProgram (void) const { return m_pSource; }
+		inline CArtifactProgram *GetTarget (void) const { return m_pTarget; }
+		inline int GetTurn (void) const { return m_iTurn; }
+		bool IsEqualTo (const CArtifactResultPainter &Src) const;
+		inline bool IsMarked (void) const { return m_bMarked; }
+		inline void Mark (bool bValue = true) { m_bMarked = bValue; }
+		void Paint (CG32bitImage &Dest) const;
+		void Update (void);
+
+	private:
+		enum EStyles
+			{
+			styleNone,
+
+			styleArcLightning,
+			styleCircuit,
+			};
+
+		static CVector CircuitLineBendPoint (const CVector &vFrom, const CVector &vTo);
+		static void CircuitLineCreate (const CVector &vFrom, const CVector &vTo, const CVector &vMiddle, TArray<CVector> &Result);
+		static void CircuitLineSplit (TArray<CVector> &Result, int iStart, int iEnd, int iDepth, int *retiNewEnd = NULL);
+		static CVector CircuitLineSplitPoint (const CVector &vFrom, const CVector &vTo);
+
+		int m_iTurn;
+		CArtifactProgram *m_pSource;
+		int m_xSource;
+		int m_ySource;
+
+		CArtifactProgram::EEffectTypes m_iEffect;
+		CArtifactProgram *m_pTarget;
+		int m_xTarget;
+		int m_yTarget;
+
+		EStyles m_iStyle;
+		CG32bitPixel m_rgbPrimaryColor;
+		CG32bitPixel m_rgbSecondaryColor;
+
+		TArray<CVector> m_Line;
+		CGRegion m_Region;
+
+		bool m_bMarked;
+	};
+
+class CArtifactMessagePainter
+	{
+	public:
+		enum EStyles
+			{
+			styleNone,
+
+			styleInfo,
+			styleDanger,
+			};
+		
+		CArtifactMessagePainter (const CVisualPalette &VI);
+
+		void AddMessage (const CString &sText, EStyles iStyle, int x, int y, int iDelay = 0);
+		void Paint (CG32bitImage &Dest) const;
+		void Update (void);
+
+	private:
+		enum EStates
+			{
+			stateNone,
+
+			stateBlinkIn,
+			stateDelay,
+			stateDelete,
+			stateFadeOut,
+			stateNormal,
+			stateTTYIn,
+			};
+
+		struct SEntry
+			{
+			SEntry (void) :
+					iStyle(styleNone),
+					iState(stateNone),
+					iTick(0),
+					pFont(NULL)
+				{ }
+
+			EStyles iStyle;
+			CString sText;
+			int x;
+			int y;
+
+			EStates iState;
+			int iTick;
+			const CG16bitFont *pFont;
+			CG32bitPixel rgbText;
+			};
+
+
+		void PaintBlinkIn (CG32bitImage &Dest, SEntry &Entry) const;
+		void PaintFadeOut (CG32bitImage &Dest, SEntry &Entry) const;
+		void PaintNormal (CG32bitImage &Dest, SEntry &Entry) const;
+		void PaintTTYIn (CG32bitImage &Dest, SEntry &Entry) const;
+		void UpdateNextState (SEntry &Entry) const;
+
+		const CVisualPalette &m_VI;
+		TArray<SEntry> m_Entries;
+		int m_iTick;
 	};
 
 class CDaimonButtonPainter
@@ -192,6 +311,7 @@ class CGSubjugateArea : public AGArea
 		CGSubjugateArea (const CVisualPalette &VI, CDockScreenSubjugate &Controller, CArtifactAwakening &Artifact);
 		~CGSubjugateArea (void);
 
+		void CleanUp (void);
 		void Command (ECommands iCommand, void *pData = NULL);
 		bool IsCommandValid (ECommands iCommand, void *pData = NULL) const;
 
@@ -255,8 +375,11 @@ class CGSubjugateArea : public AGArea
 			int iIndex;						//	Index of countermeasure, daimon, etc.
 			};
 
+		void AddEffect (CArtifactResultPainter *pEffect);
+		bool AddEffect (const CArtifactAwakening::SEventDesc &Event, int iDelay);
 		void ArtifactSubdued (void);
 		void DeployDaimon (void);
+		void GetProgramPos (CArtifactProgram::EProgramTypes iType, int iLocus, int *retx, int *rety) const;
 		void HideInfoPane (void);
 		bool HitTest (int x, int y, SSelection &Sel) const;
 		bool HitTestCountermeasureLoci (int x, int y, int *retiIndex = NULL) const;
@@ -266,6 +389,7 @@ class CGSubjugateArea : public AGArea
 		void PaintDaimonLocus (CG32bitImage &Dest, const SDaimonLocus &Locus) const;
 		void PaintProgram (CG32bitImage &Dest, const CArtifactProgram &Program, int x, int y) const;
 		void PlayerFailed (void);
+		void RefreshEffects (const TArray<CArtifactAwakening::SEventDesc> &Events);
 		void RefreshStatsPainters (void);
 		void SelectDaimon (int iNewSelection);
 
@@ -277,20 +401,25 @@ class CGSubjugateArea : public AGArea
 		CArtifactAwakening &m_Artifact;		//	Core mini-game
 		CDaimonList m_DaimonList;			//	List of available daimons to deploy
 
+		//	Painters
+
 		CArtifactAICorePainter m_AICorePainter;
+		CArtifactStatPainter m_StatsPainter[CArtifactStat::statCount];
+		CDaimonListPainter m_DaimonListPainter;
 		TArray<SDaimonLocus> m_DaimonLoci;	//	Locations to which daimons are deployed
 		TArray<SCountermeasureLocus> m_CountermeasureLoci;
+		TArray<CArtifactResultPainter *> m_Effects;
+		CArtifactMessagePainter m_Messages;
+
+		CDaimonButtonPainter m_DeployBtn;	//	Deploy button
+
+		CHoverDescriptionPainter m_InfoPane;//	Info pane on hover
+		SSelection m_InfoPaneSel;			//	What the info pane is showing
 
 		//	UI state
 
 		SSelection m_Hover;					//	What we're currently hovering over
 		SSelection m_Clicked;				//	What we've clicked down on (but not yet up)
-		CHoverDescriptionPainter m_InfoPane;//	Info pane on hover
-		SSelection m_InfoPaneSel;			//	What the info pane is showing
-
-		CArtifactStatPainter m_StatsPainter[CArtifactStat::statCount];
-		CDaimonListPainter m_DaimonListPainter;
-		CDaimonButtonPainter m_DeployBtn;	//	Deploy button
 
 		//	Metrics
 
