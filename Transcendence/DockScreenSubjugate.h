@@ -471,7 +471,7 @@ class CDockScreenSubjugate : public IDockScreenDisplay
 		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) override;
 
 	private:
-		void FireOnCompleted (bool bSuccess);
+		void FireOnCompleted (const CString &sReason);
 
 		CArtifactAwakening m_Artifact;		//	Mini-game data
 		CGSubjugateArea *m_pControl;

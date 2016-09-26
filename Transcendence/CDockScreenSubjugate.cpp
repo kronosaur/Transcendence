@@ -39,6 +39,11 @@
 #define ON_COMPLETED_EVENT			CONSTLIT("OnCompleted")
 #define ON_STARTED_EVENT			CONSTLIT("OnStarted")
 
+#define PARAM_REASON				CONSTLIT("aReason")
+
+#define REASON_FAILURE				CONSTLIT("failure")
+#define REASON_SUCCESS				CONSTLIT("success")
+
 const int MAX_STATISTIC =			24;
 const int CONTROL_HEIGHT =			420;
 
@@ -49,7 +54,7 @@ CDockScreenSubjugate::CDockScreenSubjugate (void)
 	{
 	}
 
-void CDockScreenSubjugate::FireOnCompleted (bool bSuccess)
+void CDockScreenSubjugate::FireOnCompleted (const CString &sReason)
 
 //	FireOnCompleted
 //
@@ -64,6 +69,7 @@ void CDockScreenSubjugate::FireOnCompleted (bool bSuccess)
 	Ctx.SetScreen(m_pDockScreen);
 	Ctx.SaveAndDefineSourceVar(m_pLocation);
 	Ctx.SaveAndDefineDataVar(m_pData);
+	Ctx.DefineString(PARAM_REASON, sReason);
 
 	ICCItem *pResult = Ctx.Run(pCode);	//	LATER:Event
 	if (pResult->IsError())
@@ -79,7 +85,7 @@ void CDockScreenSubjugate::OnCompleted (bool bSuccess)
 //	Done with attempt.
 
 	{
-	FireOnCompleted(bSuccess);
+	FireOnCompleted((bSuccess ? REASON_SUCCESS : REASON_FAILURE));
 
 	//	NOTE: After we fire this event, we might be destroyed, so do not try to
 	//	access any member variables.
