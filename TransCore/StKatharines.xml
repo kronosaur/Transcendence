@@ -1596,6 +1596,13 @@
 								)
 							)
 					</Action>
+					
+					<Action id="actionUniversityHospital">
+						(rpgMissionAssignment {
+							missionCriteria: (cat "n +stKatsHospital; =" (sysGetLevel) ";")
+							noMissionTextID: 'descHospitalEmpty
+							})
+					</Action>
 
 					<Action name="Leave" cancel="1" key="L">
 						(scrShowScreen gScreen &dsStKatsArcology;)
@@ -1985,6 +1992,16 @@
 		</Panes>
 		
 		<Language>
+			<Text id="actionUniversityHospital">"[U]niversity Hospital"</Text>
+			
+			<Text id="descHospitalEmpty">
+				(cat
+					"You enter the brightly lit central garden of the New Victoria University Hospital. "
+					"Recovering patients sit on articulated gurneys, while doctors and medtechs pass through, "
+					"heads burried in datapads."
+					)
+			</Text>
+			
 			<Text id="DallWelcome">
 				(cat
 					"You meet one of the faculty members of the Taikon School:\n\n"

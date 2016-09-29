@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Fiona in St. Katharine's Star =========================================
+
+	EXTRA DATA
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msFionaInStKats;"
+			name=				"Fiona in St. Kats"
+			attributes=			"benedictStoryArc, stKatsHospital"
+
+			level=				"4"
+			maxAppearing=		"1"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<StaticData>
+			<sequence>40</sequence>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block ()
+					(switch
+						;	See if the mission is still available
+
+						(not (benedict_isMissionAvailable (objGetType gSource)))
+							(msnDestroy gSource)
+
+						;	OK
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					)
+					;	Create wreckage of Fiona's ship.
+					
+					;	Mission accepted
+					
+					(msnRegisterForEvents gSource gPlayerShip)
+					(benedict_missionAccepted gSource)
+					)
+			</OnAccepted>
+
+			<OnSetPlayerTarget>
+			</OnSetPlayerTarget>
+			
+			<OnObjDestroyed>
+			</OnObjDestroyed>
+		</Events>
+		
+		<Language>
+			<Text id="Name">"Recover Datarom from Wreckage"</Text>
+			<Text id="Summary">
+				(cat
+					"Find the wreckage of Fiona's ship and retrieve dataroms.\n\n"
+					"System: " (sysGetName) "\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="Intro">
+				(list
+					{
+						desc: (cat
+							"LATER: You enter the hospital garden and see Fiona"
+							)
+						}
+					)
+			</Text>
+			<Text id="Briefing">
+				(list
+					{
+						desc: (cat
+							"LATER: Find my freighter."
+							)
+						}
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(list
+					{
+						desc: (cat
+							"LATER: Great! Get back quickly."
+							)
+						}
+					)
+			</Text>
+			<Text id="DeclineReply">
+				(cat
+					"LATER: You disappoint me."
+					)
+			</Text>
+			<Text id="InProgress">
+				(cat
+					"LATER: What are you doing here?"
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(cat
+					"LATER: Interesting information."
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+		</Language>
+	</MissionType>
+	
+</TranscendenceModule>

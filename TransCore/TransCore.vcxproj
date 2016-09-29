@@ -420,6 +420,7 @@
       <SubType>Designer</SubType>
     </None>
     <Xml Include="Benedict04.xml" />
+    <Xml Include="Benedict05.xml" />
     <Xml Include="CompatibilityLibrary.xml" />
     <Xml Include="CoreFireEffects.xml">
       <SubType>Designer</SubType>

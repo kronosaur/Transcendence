@@ -26,6 +26,7 @@
 	<!ENTITY unidStormhound				"0x00200011">
 	<!ENTITY scStormhound				"0x00200012">
 	<!ENTITY tbBenedict04Encounters		"0x00200013">
+	<!ENTITY msFionaInStKats			"0x00200014">
 	
 	<!-- 0021xxxx HUARI ==================================================== -->
 	
@@ -168,6 +169,7 @@
 	<Module filename="Benedict02.xml"/>
 	<Module filename="Benedict03.xml"/>
 	<Module filename="Benedict04.xml"/>
+	<Module filename="Benedict05.xml"/>
 	<Module filename="BenedictStoryArc.xml"/>
 	<Module filename="Elysium.xml"/>
 	<Module filename="Huari.xml"/>
