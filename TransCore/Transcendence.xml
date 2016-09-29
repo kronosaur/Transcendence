@@ -92,28 +92,11 @@
 
 	<!-- PART I 0020 0xxx -->
 
-	<!ENTITY unidStarsOfThePilgrim		"0x00200000">
-	<!ENTITY smHumanSpace				"0x00200001">
-	<!ENTITY rsHumanSpace				"0x00200002">
-	<!ENTITY smElysium					"0x00200003">
-	<!ENTITY unidPartISystemMap			"0x00200004">
-	<!ENTITY msReachGalacticCore		"0x00200005">
-	<!ENTITY unidBenedictStoryArc		"0x00200006">
-	<!ENTITY dsBenedictIntro			"0x00200007">
-	<!ENTITY msBenedictsDrones			"0x00200008">
-	<!ENTITY msBenedictAndFiona			"0x00200009">
-	<!-- UNUSED 0x0020000A -->
-	<!ENTITY msBenedictToKorolov		"0x0020000B">
-	<!ENTITY msBenedictTraining			"0x0020000C">
+	<!ENTITY unidPartISystemMap			"0x00200004">	<!-- Needed for backwards compatibility -->
 	
 	<!-- HUARI 0021 0xxx -->
 	
-	<!ENTITY smHuariSpace				"0x00210001">
-
 	<!-- PART I SOUNDTRACK 0082 -->
-
-	<!ENTITY muDominaMainTheme			"0x00820020">
-	<!ENTITY muDominaEndTitles01		"0x00820120">
 	]>
 
 <TranscendenceUniverse

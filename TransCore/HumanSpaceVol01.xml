@@ -1257,7 +1257,13 @@
 	<!ENTITY dsTeratonMugging			"0x001FA001">
 	
 	<!ENTITY rsTeratonChrysalis			"0x001FF001">
+	
+	<!-- MAP 0020 0xxx -->
 
+	<!ENTITY smHumanSpace				"0x00200001">
+	<!ENTITY rsHumanSpace				"0x00200002">
+	<!ENTITY smElysium					"0x00200003">
+	
 	<!-- DOMINA 0020 1xxx -->
 	
 	<!ENTITY svDomina					"0x00201001">
@@ -1590,6 +1596,8 @@
 	<!ENTITY rsCommonwealthMilitiaFortress	"0x00100089">
 	<!ENTITY rsCommonwealthArmoredColony	"0x0010008A">
 	<!ENTITY rsCommonwealthSettlement	"0x0010008B">
+	<!ENTITY scElixirYacht				"0x0010008C">
+	<!ENTITY rsElixirYacht				"0x0010008D">
 	
 	<!-- 00A0-00BF ARES ORTHODOXY -->
 	

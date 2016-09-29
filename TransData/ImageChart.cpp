@@ -98,6 +98,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 		orderName = 3,
 		orderLevel = 4,
 		orderSovereign = 5,
+		orderManufacturer = 6,
 		};
 
 	//	Item criteria
@@ -154,6 +155,8 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 		iOrder = orderLevel;
 	else if (strEquals(sOrder, CONSTLIT("sovereign")))
 		iOrder = orderSovereign;
+	else if (strEquals(sOrder, CONSTLIT("manufacturer")))
+		iOrder = orderManufacturer;
 	else
 		iOrder = orderName;
 
@@ -334,6 +337,14 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 				wsprintf(szBuffer, "%s|%s|%x", NewEntry.sSovereignName.GetASCIIZPointer(), NewEntry.sName.GetASCIIZPointer(), pType->GetUNID());
 				NewEntry.sCategorize = NewEntry.sSovereignName;
 				break;
+
+			case orderManufacturer:
+				{
+				CString sManufacturer = NewEntry.pType->GetPropertyString(CONSTLIT("manufacturer"));
+				wsprintf(szBuffer, "%s|%s|%x", sManufacturer.GetASCIIZPointer(), NewEntry.sName.GetASCIIZPointer(), pType->GetUNID());
+				NewEntry.sCategorize = sManufacturer;
+				break;
+				}
 
 			default:
 				wsprintf(szBuffer, "%s%x", NewEntry.sName.GetASCIIZPointer(), pType->GetUNID());

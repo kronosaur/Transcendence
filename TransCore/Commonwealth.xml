@@ -834,28 +834,36 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"You are in the docking bay of a Commonwealth colony. Except for a few shuttles, the docking bay of this station is deserted. A loose hose is spilling dirty water onto the landing pad; elsewhere, an automatic load-lifter moves forward and back again as it unloads a ship's cargo hold. The air smells of liquid fuel and exhaust.">
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Commodities Exchange" default="1" key="C">
+							<Action id="actionMainHall" default="1">
+								(rpgMissionAssignment {
+									missionCriteria: (cat "n +commonwealthColony; =" (sysGetLevel) ";")
+									noMissionTextID: 'descHallEmpty
+									maxPerStation: 1
+									})
+							</Action>
+					
+							<Action id="actionCommoditiesExchange">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Dock Services" key="D">
+							<Action id="actionDockServices">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 				</Panes>
 			</Main>
@@ -886,6 +894,28 @@
 				(comTrafficControl gSource 10)
 			</OnTrafficControl>
 		</Events>
+		
+		<Language>
+			<Text id="actionCommoditiesExchange">"[C]ommodities Exchange"</Text>
+			<Text id="actionDockServices">"[D]ock Services"</Text>
+			<Text id="actionMainHall">"[M]eeting Hall"</Text>
+			<Text id="actionUndock">"[U]ndock"</Text>
+			
+			<Text id="descWelcome">
+				(cat
+					"You are in the docking bay of a Commonwealth colony. Except for a few shuttles, "
+					"the docking bay of this station is deserted. A loose hose spills dirty "
+					"water onto the landing pad; elsewhere, an automatic load-lifter moves forward "
+					"and back again as it unloads a ship's cargo hold. The air smells of liquid fuel "
+					"and exhaust."
+					)
+			</Text>
+			<Text id="descHallEmpty">
+				(cat
+					"The meeting hall is busy with commercial activity; everyone goes about their business."
+					)
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Commonwealth Turret -->

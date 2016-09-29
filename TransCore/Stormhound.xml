@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Stormhound -->
+	
+	<Type UNID="&unidStormhound;">
+		<StaticData>
+			<Data id="MissionAttribute">"stormhoundMission"</Data>
+			<Data id="Name">"Stormhound"</Data>
+			<Data id="Sovereign">&svCommonwealth;</Data>
+		</StaticData>
+
+		<Events>
+			<OnCharacterCanBeMet>
+				True
+			</OnCharacterCanBeMet>
+
+			<OnGlobalSystemStopped>
+				(rpgCharacterAscend &unidStormhound;)
+			</OnGlobalSystemStopped>
+		</Events>
+	</Type>
+	
+	<!-- Stormhound's Ship -->
+
+	<ShipClass UNID="&scStormhound;"
+			manufacturer=		"Zubrin Systems"
+			class=				"Elixir"
+			type=				"megayacht"
+
+			attributes=			"stormhound"
+			character=			"&unidStormhound;"
+
+			size=				"37"
+			mass=				"100"
+			thrustRatio=		"5"
+			maxSpeed=			"16"
+			cargoSpace=			"10"
+
+			dockingPorts=		"4"
+			dockScreen=			"&dsRPGCharacterDefault;"
+			>
+
+		<Names noArticle="true" personalName="true">Stormhound</Names>
+		
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightIthaliumArmor;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Table>
+				<Device chance="30" item="&itOmniTeV9Blaster;" enhancement="0x1005"/>
+				<Device chance="25" item="&itMarkVHowitzer;"/>
+				<Device chance="20" item="&itDualTeV9Blaster;"/>
+				<Device chance="25" item="&itTritiumCannon;"/>
+			</Table>
+			<Device deviceID="&itMammoth25Deflector;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"5.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Image imageID="&rsIAVHeavy;" imageWidth="72" imageHeight="72"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="151"	posRadius="31"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-151"	posRadius="31"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<AISettings
+			fireRateAdj=		"10"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<Language>
+			<Text id="FirstMeetingIntro">
+				(cat
+					"The airlock opens into a wide hall with clean, curved walls and comfortable couches. "
+					"Two large men in fine suits and tactical eyewear stop you firmly.\n\n"
+					
+					"Behind them, a short elegant man in a neolinen suit waves them off: "
+					"\"Stand down, gentlemen. %He%'s a friend, I believe.\""
+					)
+			</Text>
+
+			<Text id="MeetingIntro">
+				(cat
+					"The airlock opens into a wide hall with clean, curved walls and comfortable couches. "
+					"Two large men in fine suits and tactical eyewear frisk you firmly. Without apology, "
+					"they lead you forward."
+					)
+			</Text>
+
+			<Text id="NoMissions">
+				(cat
+					"The airlock refuses to open."
+					)
+			</Text>
+		</Language>
+	</ShipClass>
+	
+</TranscendenceModule>

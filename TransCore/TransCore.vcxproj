@@ -419,6 +419,7 @@
     <None Include="Ovoids.xml">
       <SubType>Designer</SubType>
     </None>
+    <Xml Include="Benedict04.xml" />
     <Xml Include="CompatibilityLibrary.xml" />
     <Xml Include="CoreFireEffects.xml">
       <SubType>Designer</SubType>
@@ -448,6 +449,7 @@
     <Xml Include="StdMiningEquipment.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="Stormhound.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

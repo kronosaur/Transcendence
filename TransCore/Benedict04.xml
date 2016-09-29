@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Benedict in New Beyond ===================================================
+
+	EXTRA DATA
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msBenedictInNewBeyond;"
+			name=				"Benedict in New Beyond"
+			attributes=			"benedictStoryArc, commonwealthColony"
+
+			level=				"2-3"
+			maxAppearing=		"1"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<StaticData>
+			<sequence>30</sequence>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block ()
+					(switch
+						;	See if the mission is still available
+
+						(not (benedict_isMissionAvailable (objGetType gSource)))
+							(msnDestroy gSource)
+
+						;	OK
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					stormhoundObj
+					travelTime
+					)
+					
+					;	Create Stormhound's ship out in the middle of nowhere.
+					
+					(setq stormhoundObj
+						(rpgCharacterCreateShip
+							&unidStormhound;
+							&scStormhound;
+							(sysVectorRandom gPlayerShip 600 100)
+							{ repairAll:True }
+							)
+						)
+					(shpCancelOrders stormhoundObj)
+					(shpOrder stormhoundObj 'hold)
+					
+					(msnRegisterForEvents gSource stormhoundObj)
+					(msnSetData gSource 'stormhoundID (objGetID stormhoundObj))
+					
+					;	Set the proper screen
+
+					(rpgCharacterSetScreen 
+						&unidStormhound;
+						{	screen: &dsRPGDialog;
+							translateType: &msBenedictInNewBeyond;
+							translateID: 'StormhoundMeeting
+							}
+						)
+						
+					;	Create some Penitents to intercept the player
+					
+					(setq travelTime (sysCalcTravelTime (objGetDistance gPlayerShip stormhoundObj) (shpGetMaxSpeed gPlayerShip)))
+					(sysAddEncounterEventAtDist 
+						(divide (multiply (random 30 45) travelTime) 100)
+						gPlayerShip &tbBenedict04Encounters; (random 60 100)
+						)
+					
+					;	Mission accepted
+					
+					(msnRegisterForEvents gSource gPlayerShip)
+					(benedict_missionAccepted gSource)
+					)
+			</OnAccepted>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'stormhoundID)) 'dock)
+			</OnSetPlayerTarget>
+			
+			<OnObjDestroyed>
+				(switch
+				
+					;	If Stormhound dies, the mission fails.
+					
+					(eq (objGetID aObjDestroyed) (msnGetData gSource 'stormhoundID))
+						(msnFailure gSource)
+					)
+			</OnObjDestroyed>
+			
+			<OnMeetingDone>
+				(block (
+					(stormhoundObj (objGetObjByID (msnGetData gSource 'stormhoundID)))
+					)
+					
+					;	Stormhound leaves
+					
+					(shpCancelOrders stormhoundObj)
+					(shpOrder stormhoundObj 'gate)
+					
+					;	Mission successful
+					
+					(msnSuccess gSource)
+					)
+			</OnMeetingDone>
+			
+			<GetGlobalAchievements>
+				(block (theList)
+					(if (msnFind "r +unid:&msBenedictInNewBeyond;; +property:isSuccess;")
+						(setq theList (list
+							(list 
+								"Made contact with Stormhound"
+								Nil
+								"achievements &amp; regrets"
+								)
+							))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+		</Events>
+		
+		<Language>
+			<Text id="Name">"Meet Benedict's Informant"</Text>
+			<Text id="Summary">
+				(cat
+					"Meet Benedict's informant in deep space. Authenticate with the codeword, \"Stormhound\".\n\n"
+					"System: " (sysGetName) "\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="Intro">
+				(list
+					{
+						desc: (cat
+							"LATER: You run into Benedict at a station"
+							)
+						}
+					)
+			</Text>
+			<Text id="Briefing">
+				(list
+					{
+						desc: (cat
+							"LATER: Go out to meet my contact."
+							)
+						}
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(list
+					{
+						desc: (cat
+							"LATER: Great, use the codeword, \"Stormhound\"."
+							)
+						}
+					)
+			</Text>
+			<Text id="DeclineReply">
+				(cat
+					"LATER: You disappoint me."
+					)
+			</Text>
+			<Text id="InProgress">
+				(cat
+					"LATER: What are you doing here?"
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(cat
+					"LATER: Interesting information."
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+			
+			<Text id="StormhoundMeeting">
+				(list
+					{
+						desc: (cat
+							"LATER: Here's some secret info."
+							)
+						}
+					{
+						desc: (cat
+							"LATER: Good bye."
+							)
+							
+						nextPane: 'forceUndock
+							
+						nextCode: 
+							(lambda ()
+								(msnFireEvent (@ (msnFind "a +unid:&msBenedictInNewBeyond;;") 0) 'OnMeetingDone)
+								)
+						}
+					)
+			</Text>
+		</Language>
+	</MissionType>
+	
+<!-- TABLES AND RESOURCES -->
+
+	<EncounterTable UNID="&tbBenedict04Encounters;">
+		<LevelTable>
+			<Ship	levelFrequency="cccuv -----"	class="&scRepentant;"	count="1"	orders="attack"	sovereign="&svPenitents;"/>
+			<Ship	levelFrequency="-vucu -----"	class="&scRepentant;"	count="2"	orders="attack"	sovereign="&svPenitents;"/>
+			<Ship	levelFrequency="--vuc -----"	class="&scRepentant;"	count="3"	orders="attack"	sovereign="&svPenitents;"/>
+			<Group	levelFrequency="---vu ccccc">
+				<Ship	class="&scAtonement;"	count="1"	orders="attack"	sovereign="&svPenitents;"/>
+				<Ship	class="&scRepentant;"	count="2"	orders="attack"	sovereign="&svPenitents;"/>
+			</Group>
+		</LevelTable>
+	</EncounterTable>
+
+</TranscendenceModule>

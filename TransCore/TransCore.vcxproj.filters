@@ -369,5 +369,11 @@
     <Xml Include="RPGShipBroker.xml">
       <Filter>RPG Library</Filter>
     </Xml>
+    <Xml Include="Benedict04.xml">
+      <Filter>Part I</Filter>
+    </Xml>
+    <Xml Include="Stormhound.xml">
+      <Filter>Part I</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
