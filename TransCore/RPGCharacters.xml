@@ -29,6 +29,7 @@
 -->
 
 	<DockScreen UNID="&dsRPGCharacterDefault;"
+			inherit=			"&dsDockScreenBase;"
 			>
 		<OnScreenInit>
 			;	Make sure the player is allowed to talk to this character.
@@ -58,20 +59,22 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(switch
-						;	If the player has never met the character, then we do a quick intro.
+					(block (
+						(firstMeeting (not (typGetData (objGetProperty gSource 'character) 'firstPlayerMeetingTime)))
+						)
 
-						(not (typGetData (objGetProperty gSource 'character) 'firstPlayerMeetingTime))
-							(scrSetDesc gScreen (objTranslate gSource 'FirstMeetingIntro))
-
-						;	Otherwise, the normal description
-
-						(scrSetDesc gScreen (objTranslate gSource 'MeetingIntro))
+						(rpgPagePaneInit gScreen 
+							(scrTranslate gScreen (if firstMeeting 'FirstMeetingIntro 'MeetingIntro))
+							)
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" key="C" default="1" cancel="1">
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrShowPane gScreen 'Default)
+					</Action>
+					
+					<Action id="actionDone" default="1" cancel="1">
 						(block (charType screenData)
 							(setq charType (objGetProperty gSource 'character))
 

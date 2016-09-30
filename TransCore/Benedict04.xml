@@ -144,8 +144,53 @@
 				(list
 					{
 						desc: (cat
-							"LATER: You run into Benedict at a station"
+							"You enter the meeting hall and watch business men and women scurry to meetings.\n\n"
+							
+							"Just then a hand grabs you and pulls you into a side corridor. It's Benedict. "
+							"He's wearing thin body armor underneath a rumpled dark suit. He scans your whole "
+							"body with a gloved hand.\n\n"
+							
+							"\"Don't move,\" he says."
 							)
+							
+						nextLabel: "\"[W]hat's going on?\""
+						}
+						
+					{
+						desc: (cat
+							"\"I'm being followed.\"\n\n"
+							)
+							
+						nextLabel: "\"[W]ho's following you?\""
+						}
+						
+					{
+						desc: (cat
+							"\"That's what I'm trying to find out. I need your help.\"\n\n"
+							)
+							
+						nextLabel: "\"[A]nything.\""
+						}
+						
+					{
+						desc: (cat
+							"\"I've got a contact who says he know why Fion was attacked. "
+							"I can't get to him when I'm being trailed. But you can meet "
+							"him while I distract my followers.\"\n\n"
+							)
+							
+						nextLabel: "\"[D]one. Have you heard from Fiona?\""
+						}
+						
+					{
+						desc: (cat
+							"Benedict looks down uncomfortably.\n\n"
+							
+							"\"No...I mean she's recovering in St. Kats, but I haven't heard "
+							"from her yet.\"\n\n"
+							)
+							
+						nextLabel: "\"[I]'m sorry.\""
 						}
 					)
 			</Text>
@@ -153,28 +198,30 @@
 				(list
 					{
 						desc: (cat
-							"LATER: Go out to meet my contact."
+							"He shuts his eyes for a moment, looking tired and sad.\n\n"
+							
+							"\"Use the codeword 'stormhound' to talk to my contact. We'll meet "
+							"afterwards in deep space. OK?"
 							)
+							
+						acceptLabel: "\"[I]'m on my way.\""
+						declineLabel: "\"[L]et me prepare my ship first.\""
 						}
 					)
 			</Text>
 			<Text id="AcceptReply">
-				(list
-					{
-						desc: (cat
-							"LATER: Great, use the codeword, \"Stormhound\"."
-							)
-						}
+				(cat
+					"\"Good luck!\""
 					)
 			</Text>
 			<Text id="DeclineReply">
 				(cat
-					"LATER: You disappoint me."
+					"\"Alright, but don't take too long, my contact won't wait forever.\""
 					)
 			</Text>
 			<Text id="InProgress">
 				(cat
-					"LATER: What are you doing here?"
+					"\"Don't take too long, my contact won't wait forever.\""
 					)
 			</Text>
 			<Text id="SuccessDebrief">
@@ -190,12 +237,56 @@
 				(list
 					{
 						desc: (cat
-							"LATER: One of the Sisters leaked Fiona's info; Oh by the way, Benedict was a Penitent, now mindwiped."
+							"A short, elegant man in a neolinen suit appears behind the bodyguards.\n\n"
+							
+							"\"Stand down, gentlement. %He%'s a friend, I believe.\""
 							)
+							
+						nextLabel: "\"[W]ho are you?\""
 						}
 					{
 						desc: (cat
-							"LATER: Good bye."
+							"Stormhound laughs softly.\n\n"
+							
+							"\"Ah! You don't recognize me! Good. Probably for the best. I'm a friend of "
+							"Benedict's. One of the few, I'm afraid.\""
+							)
+							
+						nextLabel: "\"[H]e said you have information.\""
+						}
+					{
+						desc: (cat
+							"\"I have a warning. One that now applies to you as well. This business with "
+							"Fiona is not going end well.\""
+							)
+							
+						nextLabel: "\"[B]enedict can handle it.\""
+						}
+					{
+						desc: (cat
+							"\"Can he? He's good in a fight, I grant, but only when he knows who the enemy is. "
+							"Benedict is focused on the Penitents, but they are not the real threat.\""
+							)
+							
+						nextLabel: "\"[W]ho is the real threat?.\""
+						}
+					{
+						desc: (cat
+							"\"You don't know much about Benedict, do you? Did you know he was once a Penitent "
+							"himself? No, he probably didn't tell you that. He grew up with the Penitents and "
+							"even fought for them.\n\n"
+							
+							"\"In his twenties he was captured by the Sisters and mindwiped. He probably doesn't "
+							"even remember his past life anymore.\""
+							)
+							
+						nextLabel: "\"[B]enedict is the real threat?.\""
+						}
+					{
+						desc: (cat
+							"Stormhound laughs, "\"Oh no, of course not!\n\n"
+							
+							"\"It's the Sisters. It has always been the Sisters. You tell Benedict that.\"\n\n"
 							)
 							
 						nextPane: 'forceUndock

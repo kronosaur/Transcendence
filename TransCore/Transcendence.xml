@@ -92,7 +92,11 @@
 
 	<!-- PART I 0020 0xxx -->
 
-	<!ENTITY unidPartISystemMap			"0x00200004">	<!-- Needed for backwards compatibility -->
+	<!-- Needed for backwards compatibility -->
+	<!ENTITY smHumanSpace				"0x00200001">
+	<!ENTITY rsHumanSpace				"0x00200002">
+	<!ENTITY smElysium					"0x00200003">
+	<!ENTITY unidPartISystemMap			"0x00200004">
 	
 	<!-- HUARI 0021 0xxx -->
 	

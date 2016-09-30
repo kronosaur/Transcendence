@@ -81,12 +81,17 @@
 
 		<Language>
 			<Text id="FirstMeetingIntro">
-				(cat
-					"The airlock opens into a wide hall with clean, curved walls and comfortable couches. "
-					"Two large men in fine suits and tactical eyewear stop you firmly.\n\n"
-					
-					"Behind them, a short elegant man in a neolinen suit waves them off: "
-					"\"Stand down, gentlemen. %He%'s a friend, I believe.\""
+				(list
+					{
+						desc: (cat
+							"The airlock opens into a wide hall with clean, curved walls and comfortable couches. "
+							"Two large men in fine suits and tactical eyewear stop you firmly.\n\n"
+							
+							"\"This is a private vessel. Unless you need assistance, we insist that you please leave.\""
+							)
+							
+						nextLabel: "\"Uh, '[S]tormhound'?\""
+						}
 					)
 			</Text>
 
