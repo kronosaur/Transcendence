@@ -174,7 +174,7 @@
 						
 					{
 						desc: (cat
-							"\"I've got a contact who says he know why Fion was attacked. "
+							"\"I've got a contact who says he know why Fiona was attacked. "
 							"I can't get to him when I'm being trailed. But you can meet "
 							"him while I distract my followers.\"\n\n"
 							)
@@ -225,8 +225,125 @@
 					)
 			</Text>
 			<Text id="SuccessDebrief">
-				(cat
-					"LATER: Interesting information."
+				(list
+					{
+						desc: (cat
+							"Benedict meets you at the airlock.\n\n"
+							
+							"\"How did it go? What did he say?\""
+							)
+							
+						actions: (list
+							{
+								;	BRANCH A
+								label: "\"[N]othing! The guy's a lunatic!\""
+								nextPane: 'sayNothing
+								}
+							{
+								;	BRANCH B
+								label: "\"[H]e said you were mindwiped!\""
+								nextPane: 'sayMindwiped
+								}
+							{
+								;	BRANCH C
+								label: "\"He said the [S]isters are behind it!\""
+								nextPane: 'saySisters
+								}
+							)
+						}
+						
+					;	BRANCH A
+					
+					{
+						id: 'sayNothing
+						desc: (cat
+							"Benedict shakes his head.\n\n"
+							
+							"\"Yeah, something seemed off about him. Thanks for trying.\""
+							)
+							
+						nextLabel: "\"[W]hat will you do now?\""
+						}
+					{
+						desc: (cat
+							"\"I'll start from the beginning. Whatever Fiona was looking for "
+							"is the key to the whole thing. If I can just figure it out I'll be "
+							"able to help her."
+							
+							"\"Go and see her, would you? Maybe she'll remember something useful "
+							"She's at the University Hospital in St. Katharine's Star."
+							)
+							
+						nextLabel: "\"[I] will.\""
+						nextPane: 'exitScreen
+						}
+						
+					;	BRANCH B
+					
+					{
+						id: 'sayMindwiped
+						desc: (cat
+							"Benedict is silent for a moment.\n\n"
+							
+							"\"He's right,\" say Benedict softly, \"I was so young! I was boiling with "
+							"anger! At the injustice of the universe! At the stupidity of people!"
+							
+							"\"But the Sisters helped me. They helped me to see my own stupidity&mdash;"
+							"my own fears. I chose to be mindwiped, OK? I didn't want to be that person "
+							"anymore.\""
+							)
+							
+						nextLabel: "\"[D]oes Fiona know?\""
+						}
+					{
+						desc: (cat
+							"Benedict sits down, shoulders hunched: \"No. I should have told her.\"\n\n"
+							
+							"He pauses for a while and then rises: \"I will tell her, once we figure "
+							"this out. Did Stormhound tell you anything useful?\""
+							)
+							
+						actions: (list
+							{
+								;	BRANCH B.1
+								label: "\"[N]o, nothing else.\""
+								nextPane: 'sayNothing2
+								}
+							{
+								;	BRANCH B.2
+								label: "\"He said the [S]isters are behind it!\""
+								nextPane: 'saySisters
+								}
+							)
+						}
+					{
+						id: 'sayNothing2
+						desc: (cat
+							"\"Alright, I'll start from the beginning. Whatever Fiona was looking for "
+							"is the key to the whole thing. If I can just figure it out I'll be "
+							"able to help her.\n\n"
+							
+							"\"Go and see her, would you? Maybe she'll remember something useful "
+							"She's at the University Hospital in St. Katharine's Star."
+							)
+							
+						nextLabel: "\"[I] will.\""
+						nextPane: 'exitScreen
+						}
+						
+					;	BRANCH C
+					
+					{
+						id: 'saySisters
+						desc: (cat
+							"\"Impossible! Why would they hurt Fiona? She's a true follower of Domina..."
+							"why would they...\n\n"
+							
+							"\"No, it's impossible.\"\n\n"
+							
+							"Benedict says no more, but the thought seems to trouble him."
+							)
+						}
 					)
 			</Text>
 			<Text id="SuccessMsg">
@@ -268,7 +385,7 @@
 							"Benedict is focused on the Penitents, but they are not the real threat.\""
 							)
 							
-						nextLabel: "\"[W]ho is the real threat?.\""
+						nextLabel: "\"[W]ho is the real threat?\""
 						}
 					{
 						desc: (cat
@@ -280,11 +397,11 @@
 							"even remember his past life anymore.\""
 							)
 							
-						nextLabel: "\"[B]enedict is the real threat?.\""
+						nextLabel: "\"[B]enedict is the real threat?\""
 						}
 					{
 						desc: (cat
-							"Stormhound laughs, "\"Oh no, of course not!\n\n"
+							"Stormhound laughs, \"Oh no, of course not!\n\n"
 							
 							"\"It's the Sisters. It has always been the Sisters. You tell Benedict that.\"\n\n"
 							)

@@ -1950,7 +1950,9 @@
 					(pageCount (rpgPageCount textDesc))
 					(pageNo (if (scrGetData theScreen 'curPage) (scrGetData theScreen 'curPage) 0))
 					(pageDesc (rpgPageDesc textDesc pageNo))
+
 						
+					nextPageNo
 					atLastPage
 					)
 					
@@ -1960,12 +1962,90 @@
 
 					; Next page
 
-					(setq pageNo (add pageNo 1))
-					(setq atLastPage (geq pageNo pageCount))
+					(switch
+						;	If we've got custom actions, then we don't use nextPageNo
+						
+						(@ pageDesc 'actions)
+							(setq nextPageNo 0)
+							
+						(= (@ pageDesc 'nextPane) 'exitScreen)
+							(setq nextPageNo pageCount)
+							
+						(@ pageDesc 'nextPane)
+							(setq nextPageNo (rpgFindIndexByID textDesc (@ pageDesc 'nextPane)))
+							
+						(setq nextPageNo (add pageNo 1))
+						)
+						
+					(setq atLastPage (geq nextPageNo pageCount))
 
 					;	Initialize actions
 					
 					(switch
+						;	If we have a list of actions, then create them
+							
+						(@ pageDesc 'actions)
+							(block (
+								(nextActionID 0)
+								)
+								(enum (@ pageDesc 'actions) actionDesc
+									(block Nil
+										(scrAddAction 
+											theScreen 
+											(cat "action" nextActionID)
+											Nil
+											(@ actionDesc 'label)
+											Nil
+											(switch
+												(eq (count (@ pageDesc 'actions)) 1)
+													(list "default" "cancel")
+												(eq nextActionID 0)
+													"default"
+												(eq nextActionID (subtract (count (@ pageDesc 'actions)) 1))
+													"cancel"
+												Nil
+												)
+											(lambda ()
+												(block Nil
+													(if (@ actionDesc 'code)
+														((@ actionDesc 'code))
+														)
+													
+													(switch
+														(not (@ actionDesc 'nextPane))
+															(scrExitScreen theScreen)
+														
+														(eq (@ actionDesc 'nextPane) 'exitScreen)
+															(scrExitScreen theScreen)
+														
+														(eq (@ actionDesc 'nextPane) 'forceUndock)
+															(scrExitScreen theScreen 'forceUndock)
+														
+														(block Nil
+															(scrSetData theScreen 'curPage (rpgFindIndexByID textDesc (@ actionDesc 'nextPane)))
+															(scrShowPane theScreen (@ (scrGetScreen theScreen) 'pane))
+															)
+														)
+													)
+												)
+											)
+											
+										(setq nextActionID (add nextActionID 1))
+										)
+									)
+									
+								;	Hide other button
+
+								(scrShowAction theScreen 'actionContinue Nil)
+								(if (@ options 'acceptDecline)
+									(block Nil
+										(scrShowAction theScreen 'actionAccept Nil)
+										(scrShowAction theScreen 'actionDecline Nil)
+										)
+										
+									(scrShowAction theScreen 'actionDone Nil)
+									)
+								)
 						
 						;	If we're not at the last page, we always set the continue
 						;	action and hide the others.
@@ -2023,7 +2103,7 @@
 					
 					; Remember page
 
-					(scrSetData theScreen 'curPage (if atLastPage Nil pageNo))
+					(scrSetData theScreen 'curPage (if atLastPage Nil nextPageNo))
 					)
 				))
 

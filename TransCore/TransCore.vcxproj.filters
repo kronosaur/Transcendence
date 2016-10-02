@@ -378,5 +378,8 @@
     <Xml Include="Benedict05.xml">
       <Filter>Part I</Filter>
     </Xml>
+    <Xml Include="CommonwealthShips.xml">
+      <Filter>Human Space Library</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

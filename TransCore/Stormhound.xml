@@ -32,12 +32,14 @@
 			attributes=			"stormhound"
 			character=			"&unidStormhound;"
 
-			size=				"37"
-			mass=				"100"
-			thrustRatio=		"5"
-			maxSpeed=			"16"
-			cargoSpace=			"10"
+			size=				"140"
+			mass=				"3000"
+			thrustRatio=		"2.0"
+			maxSpeed=			"20"
+			cargoSpace=			"3000"
 
+			explosionType=		"&vtBlastExplosion2;"
+			   
 			dockingPorts=		"4"
 			dockScreen=			"&dsRPGCharacterDefault;"
 			>
@@ -47,38 +49,64 @@
 		<!-- Configuration -->
 		
 		<Armor
-			armorID=			"&itLightIthaliumArmor;"
-			count=				"4"
+			armorID=			"&itCarbideCarapace;"
+			count=				"12"
 			/>
 		
 		<Devices>
-			<Table>
-				<Device chance="30" item="&itOmniTeV9Blaster;" enhancement="0x1005"/>
-				<Device chance="25" item="&itMarkVHowitzer;"/>
-				<Device chance="20" item="&itDualTeV9Blaster;"/>
-				<Device chance="25" item="&itTritiumCannon;"/>
-			</Table>
-			<Device deviceID="&itMammoth25Deflector;"/>
+			<Device deviceID="&itIonBlaster;" omnidirectional="true" />
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
+			<Device deviceID="&itNephrenB700;"/>
 		</Devices>
 
 		<Maneuver
-			maxRotationRate=	"5.0"
-			rotationAccel=		"1.0"
+			maxRotationRate=	"6.0"
+			rotationAccel=		"1.5"
+			rotationStopAccel=	"6.0"
 			/>
 
-		<Image imageID="&rsIAVHeavy;" imageWidth="72" imageHeight="72"/>
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"80"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"50"
+
+					posX=		"-50"
+					posY=		"0"
+					sizeX=		"50"
+					sizeY=		"32"
+					/>
+		</Interior>
+		
+		<Items>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsElixirMegayacht;" imageWidth="185" imageHeight="185" rotationCount="120" rotationColumns="12"/>
+		<HeroImage imageID="&rsElixirMegayachtHero;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="151"	posRadius="31"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-151"	posRadius="31"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="176"	posRadius="64"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-176"	posRadius="64"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="172"	posRadius="64"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-172"	posRadius="64"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-180"	posRadius="64"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
-		
+
 		<AISettings
-			fireRateAdj=		"10"
+			fireRateAdj=		"20"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
+			combatStyle=		"standOff"
 			/>
 
+		<!-- AI and Behavior -->
+		
 		<Language>
 			<Text id="FirstMeetingIntro">
 				(list
