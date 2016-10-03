@@ -1752,7 +1752,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SOUNDTRACK_NOW_PLAYING))
 		{
-		m_Soundtrack.NotifyTrackPlaying((CSoundType *)pData);
+		m_Soundtrack.NotifyTrackPlaying((CMusicResource *)pData);
 		m_HI.HISessionCommand(sCmd, pData);
 		}
 

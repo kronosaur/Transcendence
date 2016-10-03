@@ -368,6 +368,9 @@ void AddTypeToIsland (CUniverse &Universe, ReverseIndexMap &ReverseIndex, Island
 	if (pType->GetType() == designShipTable)
 		return;
 
+	if (pType->GetType() == designSound)
+		return;
+
 	//	Exclude default types
 
 	if (g_DefaultTypes.Find(pType->GetUNID()))
@@ -500,7 +503,7 @@ void GenerateTypeIslands (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		//	Exclude images
 
-		if (bExcludeImages && pType->GetType() == designImage)
+		if (bExcludeImages && (pType->GetType() == designImage || pType->GetType() == designSound))
 			continue;
 
 		if (pType->GetType() == designShipTable)

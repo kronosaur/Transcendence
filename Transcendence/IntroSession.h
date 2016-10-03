@@ -89,7 +89,7 @@ class CIntroSession : public IHISession
 		ALERROR CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSovereign *pSovereign, CShip **retpShip);
 
 		void CancelCurrentState (void);
-		void CreateSoundtrackTitleAnimation (CSoundType *pTrack, IAnimatron **retpAni);
+		void CreateSoundtrackTitleAnimation (CMusicResource *pTrack, IAnimatron **retpAni);
 		inline EStates GetState (void) const { return m_iState; }
 		bool HandleCommandBoxChar (char chChar, DWORD dwKeyData);
 		bool HandleChar (char chChar, DWORD dwKeyData);
@@ -97,7 +97,7 @@ class CIntroSession : public IHISession
 		void Paint (CG32bitImage &Screen, bool bTopMost);
         void SetExpanded (bool bExpanded = true);
 		void SetState (EStates iState);
-		void StartSoundtrackTitleAnimation (CSoundType *pTrack);
+		void StartSoundtrackTitleAnimation (CMusicResource *pTrack);
 		void StopAnimations (void);
 		void Update (void);
 
