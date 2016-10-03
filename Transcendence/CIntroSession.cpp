@@ -468,7 +468,7 @@ ALERROR CIntroSession::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSover
 	DEBUG_CATCH
 	}
 
-void CIntroSession::CreateSoundtrackTitleAnimation (CSoundType *pTrack, IAnimatron **retpAni)
+void CIntroSession::CreateSoundtrackTitleAnimation (CMusicResource *pTrack, IAnimatron **retpAni)
 
 //	CreateSoundtrackTitleAnimation
 //
@@ -980,7 +980,7 @@ ALERROR CIntroSession::OnCommand (const CString &sCmd, void *pData)
 		SetState(isNews);
 
 	else if (strEquals(sCmd, CMD_SOUNDTRACK_NOW_PLAYING))
-		StartSoundtrackTitleAnimation((CSoundType *)pData);
+		StartSoundtrackTitleAnimation((CMusicResource *)pData);
 
 	else if (strEquals(sCmd, CMD_INTRO_SHIP_DESTROYED))
 		{
@@ -1393,7 +1393,7 @@ void CIntroSession::SetState (EStates iState)
 	m_iState = iState;
 	}
 
-void CIntroSession::StartSoundtrackTitleAnimation (CSoundType *pTrack)
+void CIntroSession::StartSoundtrackTitleAnimation (CMusicResource *pTrack)
 
 //	StartSoundtrackTitleAnimation
 //

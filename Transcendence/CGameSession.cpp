@@ -193,7 +193,7 @@ void CGameSession::PaintSoundtrackTitles (CG32bitImage &Dest)
 
 	{
 	int iPos;
-	CSoundType *pTrack = m_Soundtrack.GetCurrentTrack(&iPos);
+	CMusicResource *pTrack = m_Soundtrack.GetCurrentTrack(&iPos);
 	if (pTrack == NULL)
 		return;
 

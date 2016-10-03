@@ -1240,7 +1240,7 @@ class CTranscendenceModel
 		void CleanUp (void);
 		inline const CString &GetCopyright (void) { return m_Version.sCopyright; }
 		inline CG32bitImage *GetCrawlImage (void) const { return m_pCrawlImage; }
-		inline CSoundType *GetCrawlSoundtrack (void) const { return m_pCrawlSoundtrack; }
+		inline CMusicResource *GetCrawlSoundtrack (void) const { return m_pCrawlSoundtrack; }
 		inline const CString &GetCrawlText (void) const { return m_sCrawlText; }
 		inline bool GetDebugMode (void) const { return m_bDebugMode; }
 		inline CGameFile &GetGameFile (void) { return m_GameFile; }
@@ -1257,7 +1257,7 @@ class CTranscendenceModel
 		ALERROR LoadGame (const CString &sSignedInUsername, const CString &sFilespec, CString *retsError);
 		inline void ResetPlayer (void) { m_pPlayer = NULL; }
 		inline void SetCrawlImage (DWORD dwImage) { m_pCrawlImage = g_pUniverse->GetLibraryBitmap(dwImage); }
-		inline void SetCrawlSoundtrack (DWORD dwTrack) { m_pCrawlSoundtrack = g_pUniverse->FindSoundType(dwTrack); }
+		inline void SetCrawlSoundtrack (DWORD dwTrack) { m_pCrawlSoundtrack = g_pUniverse->FindMusicResource(dwTrack); }
 		inline void SetCrawlText (const CString &sText) { m_sCrawlText = sText; }
 		void SetDebugMode (bool bDebugMode = true);
 		ALERROR SaveHighScoreList (CString *retsError = NULL);
@@ -1326,7 +1326,7 @@ class CTranscendenceModel
 		CString m_sEpitaph;							//	Epitaph
 		int m_iScoreBonus;							//	Score bonus for completing the game
 		CG32bitImage *m_pCrawlImage;				//	For epilogue/prologue
-		CSoundType *m_pCrawlSoundtrack;				//	For epilogue/prologue
+		CMusicResource *m_pCrawlSoundtrack;				//	For epilogue/prologue
 		CString m_sCrawlText;						//	For epilogue/prologue
 
 		//	Stargate temporaries
