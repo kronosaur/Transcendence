@@ -118,7 +118,7 @@
 							"\"This is a private vessel. Unless you need assistance, we insist that you please leave.\""
 							)
 							
-						nextLabel: "\"Uh, '[S]tormhound'?\""
+						label: "\"Uh, '[S]tormhound'?\""
 						}
 					)
 			</Text>

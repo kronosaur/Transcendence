@@ -17,6 +17,7 @@
 
 			expireTime=			"5400"
 			failureAfterOutOfSystem="5400"
+			debriefAfterOutOfSystem="true"
 			>
 
 		<StaticData>
@@ -140,7 +141,7 @@
 					"Payment: None"
 					)
 			</Text>
-			<Text id="Intro">
+			<Text id="FirstIntro">
 				(list
 					{
 						desc: (cat
@@ -153,7 +154,7 @@
 							"\"Don't move,\" he says."
 							)
 							
-						nextLabel: "\"[W]hat's going on?\""
+						label: "\"[W]hat's going on?\""
 						}
 						
 					{
@@ -161,7 +162,7 @@
 							"\"I'm being followed.\"\n\n"
 							)
 							
-						nextLabel: "\"[W]ho's following you?\""
+						label: "\"[W]ho's following you?\""
 						}
 						
 					{
@@ -169,7 +170,7 @@
 							"\"That's what I'm trying to find out. I need your help.\"\n\n"
 							)
 							
-						nextLabel: "\"[A]nything.\""
+						label: "\"[A]nything.\""
 						}
 						
 					{
@@ -179,7 +180,7 @@
 							"him while I distract my followers.\"\n\n"
 							)
 							
-						nextLabel: "\"[D]one. Have you heard from Fiona?\""
+						label: "\"[D]one. Have you heard from Fiona?\""
 						}
 						
 					{
@@ -190,7 +191,19 @@
 							"from her yet.\"\n\n"
 							)
 							
-						nextLabel: "\"[I]'m sorry.\""
+						label: "\"[I]'m sorry.\""
+						}
+					)
+			</Text>
+			<Text id="Intro">
+				(list
+					{
+						desc: (cat
+							"Benedict is waiting for you in the meeting hall.\n\n"
+							
+							"\"I still need you to meet my contact and find out why Fiona was "
+							"attacked.\""
+							)
 						}
 					)
 			</Text>
@@ -201,7 +214,7 @@
 							"He shuts his eyes for a moment, looking tired and sad.\n\n"
 							
 							"\"Use the codeword 'stormhound' to talk to my contact. We'll meet "
-							"afterwards in deep space. OK?"
+							"here afterwards. OK?"
 							)
 							
 						acceptLabel: "\"[I]'m on my way.\""
@@ -237,17 +250,17 @@
 							{
 								;	BRANCH A
 								label: "\"[N]othing! The guy's a lunatic!\""
-								nextPane: 'sayNothing
+								nextPage: 'sayNothing
 								}
 							{
 								;	BRANCH B
 								label: "\"[H]e said you were mindwiped!\""
-								nextPane: 'sayMindwiped
+								nextPage: 'sayMindwiped
 								}
 							{
 								;	BRANCH C
 								label: "\"He said the [S]isters are behind it!\""
-								nextPane: 'saySisters
+								nextPage: 'saySisters
 								}
 							)
 						}
@@ -262,20 +275,20 @@
 							"\"Yeah, something seemed off about him. Thanks for trying.\""
 							)
 							
-						nextLabel: "\"[W]hat will you do now?\""
+						label: "\"[W]hat will you do now?\""
 						}
 					{
 						desc: (cat
 							"\"I'll start from the beginning. Whatever Fiona was looking for "
 							"is the key to the whole thing. If I can just figure it out I'll be "
-							"able to help her."
+							"able to help her.\n\n"
 							
 							"\"Go and see her, would you? Maybe she'll remember something useful "
 							"She's at the University Hospital in St. Katharine's Star."
 							)
 							
-						nextLabel: "\"[I] will.\""
-						nextPane: 'exitScreen
+						label: "\"[I] will.\""
+						nextPage: 'exitPane
 						}
 						
 					;	BRANCH B
@@ -293,7 +306,7 @@
 							"anymore.\""
 							)
 							
-						nextLabel: "\"[D]oes Fiona know?\""
+						label: "\"[D]oes Fiona know?\""
 						}
 					{
 						desc: (cat
@@ -307,12 +320,12 @@
 							{
 								;	BRANCH B.1
 								label: "\"[N]o, nothing else.\""
-								nextPane: 'sayNothing2
+								nextPage: 'sayNothing2
 								}
 							{
 								;	BRANCH B.2
 								label: "\"He said the [S]isters are behind it!\""
-								nextPane: 'saySisters
+								nextPage: 'saySisters
 								}
 							)
 						}
@@ -327,8 +340,8 @@
 							"She's at the University Hospital in St. Katharine's Star."
 							)
 							
-						nextLabel: "\"[I] will.\""
-						nextPane: 'exitScreen
+						label: "\"[I] will.\""
+						nextPage: 'exitPane
 						}
 						
 					;	BRANCH C
@@ -343,6 +356,8 @@
 							
 							"Benedict says no more, but the thought seems to trouble him."
 							)
+							
+						code: (lambda () (typIncData &unidBenedictStoryArc; 'clues 1))
 						}
 					)
 			</Text>
@@ -359,7 +374,7 @@
 							"\"Stand down, gentlement. %He%'s a friend, I believe.\""
 							)
 							
-						nextLabel: "\"[W]ho are you?\""
+						label: "\"[W]ho are you?\""
 						}
 					{
 						desc: (cat
@@ -369,7 +384,7 @@
 							"Benedict's. One of the few, I'm afraid.\""
 							)
 							
-						nextLabel: "\"[H]e said you have information.\""
+						label: "\"[H]e said you have information.\""
 						}
 					{
 						desc: (cat
@@ -377,7 +392,7 @@
 							"Fiona is not going end well.\""
 							)
 							
-						nextLabel: "\"[B]enedict can handle it.\""
+						label: "\"[B]enedict can handle it.\""
 						}
 					{
 						desc: (cat
@@ -385,7 +400,7 @@
 							"Benedict is focused on the Penitents, but they are not the real threat.\""
 							)
 							
-						nextLabel: "\"[W]ho is the real threat?\""
+						label: "\"[W]ho is the real threat?\""
 						}
 					{
 						desc: (cat
@@ -397,7 +412,7 @@
 							"even remember his past life anymore.\""
 							)
 							
-						nextLabel: "\"[B]enedict is the real threat?\""
+						label: "\"[B]enedict is the real threat?\""
 						}
 					{
 						desc: (cat
@@ -406,9 +421,9 @@
 							"\"It's the Sisters. It has always been the Sisters. You tell Benedict that.\"\n\n"
 							)
 							
-						nextPane: 'forceUndock
+						nextPage: 'forceUndock
 							
-						nextCode: 
+						code: 
 							(lambda ()
 								(msnFireEvent (@ (msnFind "a +unid:&msBenedictInNewBeyond;;") 0) 'OnMeetingDone)
 								)

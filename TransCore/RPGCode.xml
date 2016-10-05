@@ -1945,165 +1945,326 @@
 				))
 				
 			(setq rpgPagePaneInit (lambda (theScreen textDesc options)
+			
+				;	This function is used to set up a pane with the multi-page
+				;	script structure.
+				;
+				;	textDesc is a list of page descriptors (or a plain string).
+				;
+				;	(scrGetData gScreen 'curPage) is the current page to display.
+				;	A value of Nil means that we should show the first page.
+				;
+				;	The set of actions for a page is determined as follows:
+				;
+				;	If we're on the last page and (@ options 'onAcceptDecline) is
+				;	set, then we show Accept/Decline options (we ignore any
+				;	actions definitions).
+				;
+				;	If we have (@ pageDesc 'actions) then we create an action
+				;	for each entry. The nextPage field on the action descriptor
+				;	has the following possibilities:
+				;
+				;		'exitScreen: We unconditionally exit the screen. [Not
+				;				valid if (@ options 'onExitPane) is defined.]
+				;
+				;		'forceUndock: We unconditionally exit the screen and
+				;				for an undock. [Not valid if (@ options 'onExitPane)
+				;				is defined.]
+				;
+				;		'missionAccept: Accept the mission.
+				;
+				;		'missionDecline: Decline the mission.
+				;
+				;		'nextPage (or Nil): We advance to the next page (by
+				;				reloading the pane) or invoke the exitPane
+				;				action (see below) if we're at the last page.
+				;
+				;		'exitPane: We either invoke the (@ options 'onExitPane)
+				;				code (if any) or just exit the screen.
+				;
+				;		{value}: For any other value, we look up the value as
+				;				an ID in textDesc. If we find it, then we
+				;				navigate to that page. Otherwise, we invoke
+				;				(@ options 'onNavigate) and pass in the value
+				;				as a parameter.
+				;
+				;	We accept the following options:
+				;
+				;		missionObj: Required if 'onAcceptDecline is defined.
+				;
+				;		onAcceptDecline: (lambda (theScreen acceptDecline pageDesc options) ...)
+				;				This function will handle a mission accept or decline.
+				;
+				;		onExitPane: (lambda (theScreen pageDesc options) ...)
+				;				This function is called when we continue past the last
+				;				page.
+				;
+				;		onNavigate: (lambda (theScreen nextPage pageDesc options) ...)
+				;				This function does a custom navigation.
+				
 				(block (
-					(missionObj (scrGetData theScreen 'missionObj))
 					(pageCount (rpgPageCount textDesc))
 					(pageNo (if (scrGetData theScreen 'curPage) (scrGetData theScreen 'curPage) 0))
 					(pageDesc (rpgPageDesc textDesc pageNo))
+					
+					(actions (@ pageDesc 'actions))
+					(atLastPage (= pageNo (- pageCount 1)))
 
-						
-					nextPageNo
-					atLastPage
+					(nextActionID 0)
 					)
 					
-					; Show the appropriate page
+					;	Show the appropriate page
 
 					(scrSetDesc theScreen (@ pageDesc 'desc))
-
-					; Next page
-
-					(switch
-						;	If we've got custom actions, then we don't use nextPageNo
-						
-						(@ pageDesc 'actions)
-							(setq nextPageNo 0)
-							
-						(= (@ pageDesc 'nextPane) 'exitScreen)
-							(setq nextPageNo pageCount)
-							
-						(@ pageDesc 'nextPane)
-							(setq nextPageNo (rpgFindIndexByID textDesc (@ pageDesc 'nextPane)))
-							
-						(setq nextPageNo (add pageNo 1))
-						)
-						
-					(setq atLastPage (geq nextPageNo pageCount))
-
-					;	Initialize actions
+					
+					;	Make sure the actions list is properly initialized.
 					
 					(switch
-						;	If we have a list of actions, then create them
-							
-						(@ pageDesc 'actions)
-							(block (
-								(nextActionID 0)
+						;	If we're on an Accept/Decline mission page and we're 
+						;	at the last page (or if actions == 'acceptDecline), then
+						;	we show Accept/Decline actions.
+						
+						(and (@ options 'onAcceptDecline)
+								(or atLastPage (= actions 'acceptDecline))
 								)
-								(enum (@ pageDesc 'actions) actionDesc
-									(block Nil
-										(scrAddAction 
-											theScreen 
-											(cat "action" nextActionID)
-											Nil
-											(@ actionDesc 'label)
-											Nil
-											(switch
-												(eq (count (@ pageDesc 'actions)) 1)
-													(list "default" "cancel")
-												(eq nextActionID 0)
-													"default"
-												(eq nextActionID (subtract (count (@ pageDesc 'actions)) 1))
-													"cancel"
-												Nil
-												)
-											(lambda ()
-												(block Nil
-													(if (@ actionDesc 'code)
-														((@ actionDesc 'code))
-														)
+							(setq actions (list
+								{
+									label: (or (@ pageDesc 'acceptLabel)
+										(msnTranslate (@ options 'missionObj) 'AcceptLabel)
+										(typTranslate &dsRPGMission; 'actionAccept)
+										)
+									code: (@ pageDesc 'acceptCode)
+									nextPage: 'missionAccept
+									}
+								{
+									label: (or (@ pageDesc 'declineLabel)
+										(msnTranslate (@ options 'missionObj) 'DeclineLabel)
+										(typTranslate &dsRPGMission; 'actionDecline)
+										)
+									code: (@ pageDesc 'declineCode)
+									nextPage: 'missionDecline
+									}
+								))
+							
+						;	If we don't have a list of actions, then we auto-generate 
+						;	them based on variables on the page descriptor.
+						
+						(!= (typeof actions) 'list)
+							(setq actions (list {
+								label: (or (@ pageDesc 'label) (@ pageDesc 'nextLabel))
+								nextPage: (@ pageDesc 'nextPage)
+								code: (or (@ pageDesc 'code) (@ pageDesc 'nextCode))
+								}))
+						)
+						
+					;	Initialize all actions.
+					
+					(enum actions actionDesc
+						(block (
+							(nextPage (@ actionDesc 'nextPage))
+							
+							(actionID (cat "action" nextActionID))
+							
+							;	Figure out the label, if we don't have one.
+							
+							(actionLabel
+								(switch
+									(@ actionDesc 'label)
+										(@ actionDesc 'label)
+										
+									;	If we're continuing, and at the last page, then we
+									;	use the [D]one label.
+									
+									(and (or (not nextPage) (= nextPage 'nextPage))
+											atLastPage
+											)
+										(scrTranslate theScreen 'actionDone)
+										
+									;	If we've got an explicit exit, then use the [D]one
+									;	label.
+									
+									(or (= nextPage 'exitPane) (= nextPage 'exitScreen))
+										(scrTranslate theScreen 'actionDone)
+										
+									;	If we've got an explicit undock, then use the [U]ndock
+									;	label.
+									
+									(= nextPage 'forceUndock)
+										(scrTranslate theScreen 'actionUndock)
+										
+									;	Otherwise, we use the [C]ontinue label.
+										
+									(scrTranslate theScreen 'actionContinue)
+									)
+								)
+								
+							;	Figure out accelerators
+							
+							(actionAccel
+								(switch
+									(eq (count (@ pageDesc 'actions)) 1)
+										(list "default" "cancel")
+									(eq nextActionID 0)
+										"default"
+									(eq nextActionID (subtract (count (@ pageDesc 'actions)) 1))
+										"cancel"
+									Nil
+									)
+								)
+								
+							(nextPageNo Nil)
+							)
+							
+							;	We don't support explicit exit if we've got an onExitPane
+							;	option.
+							
+							(if (and (or (= nextPage 'exitScreen) (= nextPage 'forceUndock))
+										(@ options 'onExitPane)
+										)
+								(setq nextPage Nil)
+								)
+								
+							;	We don't support mission accept/decline unless we've got a
+							;	mission object and onAcceptDecline.
+							
+							(if (and (or (= nextPage 'missionAccept) (= nextPage 'missionDecline))
+										(or (not (@ options 'onAcceptDecline)) (not (@ options 'missionObj)))
+										)
+								(setq nextPage Nil)
+								)
+							
+							;	Generate appropriate action
+							
+							(switch
+								;	If we're continuing, and we're at the last page
+								;	then we exit.
+								
+								(or (= nextPage 'exitPane)
+										(and atLastPage
+											(or (not nextPage) (= nextPage 'nextPage))
+											)
+										)
+									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
+										(lambda ()
+											(block Nil
+												(if (@ actionDesc 'code)
+													((@ actionDesc 'code))
+													)
 													
-													(switch
-														(not (@ actionDesc 'nextPane))
-															(scrExitScreen theScreen)
-														
-														(eq (@ actionDesc 'nextPane) 'exitScreen)
-															(scrExitScreen theScreen)
-														
-														(eq (@ actionDesc 'nextPane) 'forceUndock)
-															(scrExitScreen theScreen 'forceUndock)
-														
-														(block Nil
-															(scrSetData theScreen 'curPage (rpgFindIndexByID textDesc (@ actionDesc 'nextPane)))
-															(scrShowPane theScreen (@ (scrGetScreen theScreen) 'pane))
-															)
-														)
+												(scrSetData theScreen 'curPage Nil)
+												(if (@ options 'onExitPane)
+													((@ options 'onExitPane) theScreen pageDesc options)
+													(scrExitScreen theScreen)
 													)
 												)
 											)
+										)
+										
+								;	If we're continuing, then go to the next page.
+								
+								(or (not nextPage) (= nextPage 'nextPage))
+									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
+										(lambda ()
+											(block Nil
+												(if (@ actionDesc 'code)
+													((@ actionDesc 'code))
+													)
+													
+												(scrSetData theScreen 'curPage (+ pageNo 1))
+												(scrShowPane theScreen (@ (scrGetScreen theScreen) 'pane))
+												)
+											)
+										)
+								
+								(= nextPage 'exitScreen)
+									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
+										(lambda ()
+											(block Nil
+												(if (@ actionDesc 'code)
+													((@ actionDesc 'code))
+													)
+													
+												(scrExitScreen theScreen)
+												)
+											)
+										)
+								
+								(= nextPage 'forceUndock)
+									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
+										(lambda ()
+											(block Nil
+												(if (@ actionDesc 'code)
+													((@ actionDesc 'code))
+													)
+													
+												(scrExitScreen theScreen 'forceUndock)
+												)
+											)
+										)
+									
+								(= nextPage 'missionAccept)
+									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
+										(lambda ()
+											(block Nil
+												(if (@ actionDesc 'code)
+													((@ actionDesc 'code))
+													)
+													
+												((@ options 'onAcceptDecline) theScreen 'accept pageDesc options)
+												)
+											)
+										)
+								
+								(= nextPage 'missionDecline)
+									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
+										(lambda ()
+											(block Nil
+												(if (@ actionDesc 'code)
+													((@ actionDesc 'code))
+													)
+													
+												((@ options 'onAcceptDecline) theScreen 'decline pageDesc options)
+												)
+											)
+										)
+										
+								;	If we have a new page number by ID, then navigate to it.
+								
+								(setq nextPageNo (rpgFindIndexByID textDesc nextPage))
+									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
+										(lambda ()
+											(block Nil
+												(if (@ actionDesc 'code)
+													((@ actionDesc 'code))
+													)
+													
+												(scrSetData theScreen 'curPage nextPageNo)
+												(scrShowPane theScreen (@ (scrGetScreen theScreen) 'pane))
+												)
+											)
+										)
+								
+								;	If we have onNavigate, invoke that
+								
+								(@ options 'onNavigate)
+									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
+										(lambda ()
+											(block Nil
+												(if (@ actionDesc 'code)
+													((@ actionDesc 'code))
+													)
+													
+												((@ options 'onNavigate) theScreen nextPage pageDesc options)
+												)
+											)
+										)
+								)
+							
+							;	Next action ID
 											
-										(setq nextActionID (add nextActionID 1))
-										)
-									)
-									
-								;	Hide other button
-
-								(scrShowAction theScreen 'actionContinue Nil)
-								(if (@ options 'acceptDecline)
-									(block Nil
-										(scrShowAction theScreen 'actionAccept Nil)
-										(scrShowAction theScreen 'actionDecline Nil)
-										)
-										
-									(scrShowAction theScreen 'actionDone Nil)
-									)
-								)
-						
-						;	If we're not at the last page, we always set the continue
-						;	action and hide the others.
-						
-						(not atLastPage)
-							(block Nil
-								(scrShowAction theScreen 'actionContinue True)
-								(if (@ pageDesc 'nextLabel)
-									(scrSetActionLabel theScreen 'actionContinue (@ pageDesc 'nextLabel) (@ pageDesc 'nextKey))
-									)
-									
-								(if (@ options 'acceptDecline)
-									(block Nil
-										(scrShowAction theScreen 'actionAccept Nil)
-										(scrShowAction theScreen 'actionDecline Nil)
-										)
-										
-									(scrShowAction theScreen 'actionDone Nil)
-									)
-								)
-								
-						;	If we've got accept/decline buttons, show them
-						
-						(@ options 'acceptDecline)
-							(block (
-								(acceptLabel (if (@ pageDesc 'acceptLabel)
-									(@ pageDesc 'acceptLabel)
-									(msnTranslate missionObj 'AcceptLabel (typTranslate &dsRPGMission; 'actionAccept))
-									))
-								(declineLabel (if (@ pageDesc 'declineLabel)
-									(@ pageDesc 'declineLabel)
-									(msnTranslate missionObj 'DeclineLabel (typTranslate &dsRPGMission; 'actionDecline))
-									))
-								)
-								
-								(scrShowAction theScreen 'actionContinue Nil)
-								
-								(scrShowAction theScreen 'actionAccept True)
-								(scrSetActionLabel theScreen 'actionAccept acceptLabel)
-								
-								(scrShowAction theScreen 'actionDecline atLastPage)
-								(scrSetActionLabel theScreen 'actionDecline declineLabel)
-								)
-								
-						;	Otherwise, enable the done button
-						
-						(block Nil
-							(scrShowAction theScreen 'actionContinue Nil)
-							(scrShowAction theScreen 'actionDone True)
-							(if (@ pageDesc 'nextLabel)
-								(scrSetActionLabel theScreen 'actionDone (@ pageDesc 'nextLabel) (@ pageDesc 'nextKey))
-								)
+							(setq nextActionID (add nextActionID 1))
 							)
 						)
-					
-					; Remember page
-
-					(scrSetData theScreen 'curPage (if atLastPage Nil nextPageNo))
 					)
 				))
 

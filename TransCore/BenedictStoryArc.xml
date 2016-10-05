@@ -20,6 +20,11 @@
 			
 	introDone: If True, then we no longer need to show the Benedict Intro screen
 			at the Sisters of Domina.
+			
+	clues: There are 3 opportunities for the player to share information with
+			Benedict and/or Fiona. Each time the player does so, we increment
+			this variable.
+			
 
 	-->
 

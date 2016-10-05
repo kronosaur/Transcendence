@@ -64,63 +64,57 @@
 						)
 
 						(rpgPagePaneInit gScreen 
-							(scrTranslate gScreen (if firstMeeting 'FirstMeetingIntro 'MeetingIntro))
-							)
-						)
-				</OnPaneInit>
-
-				<Actions>
-					<Action id="actionContinue" default="1" cancel="1">
-						(scrShowPane gScreen 'Default)
-					</Action>
-					
-					<Action id="actionDone" default="1" cancel="1">
-						(block (charType screenData)
-							(setq charType (objGetProperty gSource 'character))
-
-							;	We've met character
-
-							(rpgCharacterSetMeeting charType)
+							(scrTranslate gScreen (if firstMeeting 'FirstMeetingIntro 'MeetingIntro)) {
 							
-							;	Next screen
+							onExitPane: (lambda (theScreen pageDesc options)
+								(block (charType screenData)
+									(setq charType (objGetProperty gSource 'character))
 
-							(setq screenData (typGetData charType 'screenData))
-							(if screenData
+									;	We've met character
+
+									(rpgCharacterSetMeeting charType)
 							
-								;	If a screen has been set, show it.
+									;	Next screen
+
+									(setq screenData (typGetData charType 'screenData))
+									(if screenData
+							
+										;	If a screen has been set, show it.
 								
-								(switch
+										(switch
 								
-									;	If we have a translateType and translateID, then translate
-									;	[We need to do this sometimes if the data that we're passing has 
-									;	non-serializable objects.]
+											;	If we have a translateType and translateID, then translate
+											;	[We need to do this sometimes if the data that we're passing has 
+											;	non-serializable objects.]
 									
-									(@ screenData 'translateID)
-										(scrShowScreen 
-											gScreen 
-											(@ screenData 'screen) 
-											(typTranslate (@ screenData 'translateType) (@ screenData 'translateID))
+											(@ screenData 'translateID)
+												(scrShowScreen 
+													gScreen 
+													(@ screenData 'screen) 
+													(typTranslate (@ screenData 'translateType) (@ screenData 'translateID))
+													)
+									
+											;	Otherwise, we expect a screen.
+									
+											(scrShowScreen 
+												gScreen 
+												(@ screenData 'screen) 
+												(@ screenData 'pane) 
+												(@ screenData 'data)
+												)
 											)
-									
-									;	Otherwise, we expect a screen.
-									
-									(scrShowScreen 
-										gScreen 
-										(@ screenData 'screen) 
-										(@ screenData 'pane) 
-										(@ screenData 'data)
+
+										;	If no set screen, look for missions.
+
+										(rpgCharacterShowMissionScreen gSource { 
+											nextScreen: 'forceUndock
+											})
 										)
 									)
-
-								;	If no set screen, look for missions.
-
-								(rpgCharacterShowMissionScreen gSource { 
-									nextScreen: 'forceUndock
-									})
 								)
-							)
-					</Action>
-				</Actions>
+							})
+						)
+				</OnPaneInit>
 			</Default>
 		</Panes>
 	</DockScreen>
