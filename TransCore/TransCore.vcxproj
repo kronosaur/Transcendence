@@ -423,6 +423,8 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="Benedict05.xml" />
+    <Xml Include="Benedict05A.xml" />
+    <Xml Include="Benedict06.xml" />
     <Xml Include="CommonwealthShips.xml" />
     <Xml Include="CompatibilityLibrary.xml" />
     <Xml Include="CoreFireEffects.xml">
@@ -438,6 +440,7 @@
     <Xml Include="Ferians.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="HugoSandoval.xml" />
     <Xml Include="HumanSpaceVol01.xml">
       <SubType>Designer</SubType>
     </Xml>

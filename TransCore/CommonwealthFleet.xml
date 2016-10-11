@@ -4053,7 +4053,7 @@ PLAYER DATA
 			thrustRatio=		"9.0"
 			maxSpeed=			"22"
 
-			attributes=			"commonwealth,commonMilitary,genericClass"
+			attributes=			"commonwealth, commonwealthMilitary, commonMilitary, genericClass"
 			>
 
 		<Armor>
@@ -4123,7 +4123,7 @@ PLAYER DATA
 			thrustRatio=		"9.0"
 			maxSpeed=			"20"
 
-			attributes=			"commonwealth,commonMilitary,genericClass"
+			attributes=			"commonwealth, commonwealthMilitary, commonMilitary, genericClass"
 			>
 
 		<Armor>
@@ -4181,7 +4181,7 @@ PLAYER DATA
 			thrustRatio=		"12.0"
 			maxSpeed=			"22"
 
-			attributes=			"commonwealth,commonMilitary,genericClass"
+			attributes=			"commonwealth, commonwealthMilitary, commonMilitary, genericClass"
 			>
 
 		<Armor>

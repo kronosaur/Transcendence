@@ -216,6 +216,67 @@
 
 	</ShipClass>
 
+	<!-- Level 4: Asterion-class Heavy Gunship -->
+
+	<ShipClass UNID="&scAsterionHeavyGunship;"
+			manufacturer=		"NAMI"
+			class=				"Asterion"
+			type=				"heavy gunship"
+			defaultSovereign=	"&svCommonwealth;"
+
+			attributes=			"commonwealth, genericClass"
+
+			size=				"44"
+			mass=				"200"
+			thrustRatio=		"4.0"
+			maxSpeed=			"20"
+			cargoSpace=			"100"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itPlasteelPlate;"
+			count=				"6"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itBallistaCannon;"	posAngle="180" posRadius="8" posZ="20"/>
+			<Device deviceID="&itHullPlateIonizer;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"3.0"
+			/>
+
+		<Items>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsAsterionHeavyGunship;" imageWidth="72" imageHeight="72" rotationCount="120" rotationColumns="12" viewportRatio="0.00625"/>
+		<HeroImage imageID="&rsAsterionHeavyGunshipHero;" imageWidth="320" imageHeight="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="115"	posRadius="26"	posZ="6"	rotation="180" bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="-115"	posRadius="26"	posZ="6"	rotation="180" bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="166"	posRadius="34"	posZ="9"	rotation="180" />
+			<Effect type="thrustMain"		posAngle="-166"	posRadius="34"	posZ="9"	rotation="180" />
+		</Effects>
+
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"35"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			ignoreShieldsDown=	"true"
+			/>
+	</ShipClass>
+	
 	<!-- Level 4: EI500 Freighter -->
 
 	<ShipClass UNID="&scEI500;"
@@ -458,6 +519,76 @@
 			/>
 
 	</ShipClass>
+	
+	<!-- Level 5: Armstrong-class Transport -->
+
+	<ShipClass UNID="&scArmstrongTransport;"
+			manufacturer=		"NAMI"
+			class=				"Armstrong"
+			type=				"transport"
+			defaultSovereign=	"&svCommonwealth;"
+			   
+			attributes=			"commonwealth, freighter, genericClass"
+
+			size=				"58"
+			mass=				"500"
+			thrustRatio=		"2.0"
+			maxSpeed=			"18"
+			cargoSpace=			"500"
+			>
+
+		<Names definiteArticle="true">
+			transport Akers; transport Budarin; transport Crippen; transport Duke;
+			transport Eisele; transport Fincke; transport Gagarin; transport Helms;
+			transport Irwin; transport Jing; transport Kolodin; transport Liu;
+			transport McDivitt; transport Noguchi; transport Ochoa; transport Payette;
+			transport Resnik; transport Schmitt; transport Titov; tranport Volk;
+			transport Williams; transport Yegorov
+		</Names>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itPlasteelPlate;"
+			count=				"6"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itOmniParticleCannon;"	posAngle="0" posRadius="4" posZ="16"/>
+			<Device deviceID="&itCyclotronDeflectorIV;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"6.0"
+			rotationAccel=		"3.0"
+			/>
+
+		<Items>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsArmstrongTransport;" imageWidth="90" imageHeight="90" rotationCount="120" rotationColumns="12" viewportRatio="0.0075"/>
+		<HeroImage imageID="&rsArmstrongTransportHero;" imageWidth="320" imageHeight="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="162"	posRadius="42"	posZ="6"	rotation="180" />
+			<Effect type="thrustMain"		posAngle="-162"	posRadius="42"	posZ="6"	rotation="180" />
+			<Effect type="thrustMain"		posAngle="110"	posRadius="23"	posZ="3"	rotation="180" />
+			<Effect type="thrustMain"		posAngle="-110"	posRadius="23"	posZ="3"	rotation="180" />
+		</Effects>
+
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"standOff"
+			/>
+
+	</ShipClass>
 
 	<!-- Level 6: Elixir-class Megayacht -->
 
@@ -531,17 +662,19 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsElixirMegayacht;" imageWidth="185" imageHeight="185" rotationCount="120" rotationColumns="12"/>
+		<Image imageID="&rsElixirMegayacht;" imageWidth="185" imageHeight="185" rotationCount="120" rotationColumns="12" viewportRatio="0.0225"/>
 		<HeroImage imageID="&rsElixirMegayachtHero;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="176"	posRadius="64"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-176"	posRadius="64"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="172"	posRadius="64"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-172"	posRadius="64"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-180"	posRadius="64"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="176"	posRadius="70"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-176"	posRadius="70"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="172"	posRadius="70"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-172"	posRadius="70"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-180"	posRadius="70"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 
+		<!-- AI and Behavior -->
+		
 		<AISettings
 			fireRateAdj=		"20"
 			fireAccuracy=		"90"
@@ -549,8 +682,6 @@
 			
 			combatStyle=		"standOff"
 			/>
-
-		<!-- AI and Behavior -->
 
 	</ShipClass>
 
@@ -860,6 +991,7 @@
 			<Ship levelFrequency="cccuu r----" count="1" class="&scEI100;" orders="gateOnThreat"/>
 			<Ship levelFrequency="ruccc uur--" count="1" class="&scEI200;" orders="gateOnThreat"/>
 			<Ship levelFrequency="ruucc cr---" count="1" class="&scRoninB;" orders="gateOnThreat"/>
+			<Ship levelFrequency="-vruc urv--" count="1" class="&scArmstrongTransport;" orders="gateOnThreat"/>
 			<Ship levelFrequency="uuucc cur--" count="1" class="&scWolfen;" orders="gateOnThreat"/>
 			<Ship levelFrequency="rrruc ccuuu" count="1" class="&scEI500;" orders="gateOnThreat"/>
 			<Ship levelFrequency="-rrcc cuurr" count="1" class="&scIAVMedium;" orders="gateOnThreat"/>
@@ -880,6 +1012,7 @@
 			<Ship levelFrequency="vvruu urr--" count="1" class="&scAntaresII;"/>
 			<Ship levelFrequency="ruccc uur--" count="1" class="&scEI200;"/>
 			<Ship levelFrequency="rrruu ur---" count="1" class="&scRoninB;"/>
+			<Ship levelFrequency="-vruc urv--" count="1" class="&scArmstrongTransport;"/>
 			<Ship levelFrequency="uuucc cuuuu" count="1" class="&scWolfen;"/>
 			<Ship levelFrequency="rrruc ccuuu" count="1" class="&scEI500;"/>
 			<Ship levelFrequency="-rrcc cuuuu" count="1" class="&scIAVMedium;"/>
@@ -887,11 +1020,16 @@
 			<Ship levelFrequency="--rru uuuuu" count="1" class="&scRoninC;"/>
 			<Ship levelFrequency="--vrr rrvvv" count="1" class="&scEI7000;"/>
 			<Ship levelFrequency="----r uurvv" count="1" class="&scScarabFreighter;"/>
+			<Ship levelFrequency="----v rrv--" count="1" class="&scElixirMegayacht;"/>
 		</LevelTable>
 	</ShipTable>
 	
 <!-- RESOURCES -->
 
+	<Image UNID="&rsArmstrongTransport;"		bitmap="Resources\ArmstrongTransport.jpg" bitmask="Resources\ArmstrongTransportMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsArmstrongTransportHero;"	bitmap="Resources\ArmstrongTransportLarge.jpg" bitmask="Resources\ArmstrongTransportLargeMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsAsterionHeavyGunship;"		bitmap="Resources\AsterionHeavyGunship.jpg" bitmask="Resources\AsterionHeavyGunshipMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsAsterionHeavyGunshipHero;"	bitmap="Resources\AsterionHeavyGunshipLarge.jpg" bitmask="Resources\AsterionHeavyGunshipLargeMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsElixirMegayacht;"			bitmap="Resources\ElixirMegayacht.jpg" bitmask="Resources\ElixirMegayachtMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsElixirMegayachtHero;"		bitmap="Resources\ElixirMegayachtLarge.jpg" bitmask="Resources\ElixirMegayachtLargeMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsIAVLight;"					bitmap="Resources\IAVLight.jpg" bitmask="Resources\IAVLightMask.bmp" loadOnUse="true"/>

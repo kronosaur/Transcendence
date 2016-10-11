@@ -2224,6 +2224,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 	CString sNewPane;
 
 	m_Universe.SetLogImageLoad(false);
+	CString sError;
 	error = g_pTrans->m_CurrentDock.InitScreen(m_HI.GetHWND(),
 			g_pTrans->m_rcMainScreen,
 			NewFrame,
@@ -2232,7 +2233,8 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 			sPane,
 			pData,
 			&sNewPane,
-			&g_pTrans->m_pCurrentScreen);
+			&g_pTrans->m_pCurrentScreen,
+			&sError);
 	m_Universe.SetLogImageLoad(true);
 
 	//	We no longer need pDefaultData. Anyone who needed it took out a 
@@ -2258,7 +2260,8 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 			m_DockFrames.DiscardOldFrame(OldFrame);
 			}
 
-		*retsError = CONSTLIT("InitScreen failed.");
+		::kernelDebugLogMessage("InitScreen: %s", sError);
+		if (retsError) *retsError = sError;
 		return error;
 		}
 

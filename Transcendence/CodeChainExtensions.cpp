@@ -82,6 +82,7 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_CONTROL_VALUE_TRANSLATE  26
 #define FN_SCR_GET_SCREEN           27
 #define FN_SCR_ADD_MINOR_ACTION		28
+#define FN_SCR_INC_DATA				29
 
 ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -203,6 +204,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
             "   'data: Associated data",
 
             "i",	0,	},
+
+		{	"scrIncData",					fnScrSet,		FN_SCR_INC_DATA,
+			"(scrIncData screen attrib [increment])",
+			"is*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrIsActionEnabled",			fnScrGet,		FN_SCR_IS_ACTION_ENABLED,	
 			"(scrIsActionEnabled screen actionID) -> True/Nil",		
@@ -1674,6 +1679,16 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			g_pTrans->GetModel().ExitScreenSession(bForceUndock);
 			return pCC->CreateTrue();
+			}
+
+		case FN_SCR_INC_DATA:
+			{
+			if (!g_pTrans->GetModel().InScreenSession())
+				return pCC->CreateNil();
+
+			ICCItem *pResult;
+			g_pTrans->GetModel().IncScreenData(pArgs->GetElement(1)->GetStringValue(), (pArgs->GetCount() >= 3 ? pArgs->GetElement(2) : NULL), &pResult);
+			return pResult;
 			}
 
 		case FN_SCR_REFRESH_SCREEN:

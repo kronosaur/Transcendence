@@ -1565,6 +1565,8 @@
 	<!-- 0030-003F SISTERS OF DOMINA -->
 	
 	<!ENTITY rsSistersShrineHero		"0x00100030">
+	<!ENTITY scHandOfDomina				"0x00100031">
+	<!ENTITY rsHandOfDomina				"0x00100032">
 	
 	<!-- 0040-005F CORPORATE HIERARCHY -->
 	
@@ -1599,6 +1601,12 @@
 	<!ENTITY scElixirMegayacht			"0x0010008C">
 	<!ENTITY rsElixirMegayacht			"0x0010008D">
 	<!ENTITY rsElixirMegayachtHero		"0x0010008E">
+	<!ENTITY scArmstrongTransport		"0x0010008F">
+	<!ENTITY rsArmstrongTransport		"0x00100090">
+	<!ENTITY rsArmstrongTransportHero	"0x00100091">
+	<!ENTITY scAsterionHeavyGunship		"0x00100092">
+	<!ENTITY rsAsterionHeavyGunship		"0x00100093">
+	<!ENTITY rsAsterionHeavyGunshipHero	"0x00100094">
 	
 	<!-- 00A0-00BF ARES ORTHODOXY -->
 	
@@ -1732,7 +1740,6 @@
 		most part. -->
 		
 	<Module filename="AresOrthodoxy.xml"/>
-	<Module filename="Benedict.xml"/>
 	<Module filename="BlackMarket.xml"/>
 	<Module filename="CentauriWarlords.xml"/>
 	<Module filename="CharonPirates.xml"/>

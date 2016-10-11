@@ -2078,23 +2078,23 @@
 									(and (or (not nextPage) (= nextPage 'nextPage))
 											atLastPage
 											)
-										(scrTranslate theScreen 'actionDone)
+										(or (scrTranslate theScreen 'actionDone) (typTranslate &dsDockScreenBase; 'actionDone))
 										
 									;	If we've got an explicit exit, then use the [D]one
 									;	label.
 									
 									(or (= nextPage 'exitPane) (= nextPage 'exitScreen))
-										(scrTranslate theScreen 'actionDone)
+										(or (scrTranslate theScreen 'actionDone) (typTranslate &dsDockScreenBase; 'actionDone))
 										
 									;	If we've got an explicit undock, then use the [U]ndock
 									;	label.
 									
 									(= nextPage 'forceUndock)
-										(scrTranslate theScreen 'actionUndock)
+										(or (scrTranslate theScreen 'actionUndock) (typTranslate &dsDockScreenBase; 'actionUndock))
 										
 									;	Otherwise, we use the [C]ontinue label.
 										
-									(scrTranslate theScreen 'actionContinue)
+									(or (scrTranslate theScreen 'actionContinue) (typTranslate &dsDockScreenBase; 'actionContinue))
 									)
 								)
 								

@@ -27,6 +27,14 @@
 	<!ENTITY scStormhound				"0x00200012">
 	<!ENTITY tbBenedict04Encounters		"0x00200013">
 	<!ENTITY msFionaInStKats			"0x00200014">
+	<!ENTITY unidHugoSandoval			"0x00200015">
+	<!ENTITY scHugoSandovalArmstrong	"0x00200016">
+	<!ENTITY msFindHandOfSolace			"0x00200017">
+	<!ENTITY stHandOfSolaceWreck		"0x00200018">
+	<!ENTITY ovBenedict05ScanRange		"0x00200019">
+	<!ENTITY tbBenedict05Encounters		"0x0020001A">
+	<!ENTITY scBenedictAsterion			"0x0020001B">
+	<!ENTITY msInfiltratePenitents		"0x0020001C">
 	
 	<!-- 0021xxxx HUARI ==================================================== -->
 	
@@ -164,15 +172,19 @@
 		</StaticData>
 	</AdventureDesc>
 		
+	<Module filename="Benedict.xml"/>
 	<Module filename="Benedict00.xml"/>
 	<Module filename="Benedict01.xml"/>
 	<Module filename="Benedict02.xml"/>
 	<Module filename="Benedict03.xml"/>
 	<Module filename="Benedict04.xml"/>
 	<Module filename="Benedict05.xml"/>
+	<Module filename="Benedict05A.xml"/>
+	<Module filename="Benedict06.xml"/>
 	<Module filename="BenedictStoryArc.xml"/>
 	<Module filename="Elysium.xml"/>
 	<Module filename="Huari.xml"/>
+	<Module filename="HugoSandoval.xml"/>
 	<Module filename="PlayerShips.xml"/>
 	<Module filename="Stormhound.xml"/>
 		

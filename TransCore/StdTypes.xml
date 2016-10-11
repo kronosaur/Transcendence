@@ -1379,7 +1379,7 @@
 	anarchists				anarchists
 	commonwealth			commonwealth station
 	commonFleet				Commonwealth Fleet
-	commonMilitary			either Commonwealth militia or Commonwealth Fleet
+	commonwealthMilitary	either Commonwealth militia or Commonwealth Fleet
 	enemy					enemy of the player
 	friendly				friend of the player
 	populated				not an automated station

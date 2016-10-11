@@ -275,7 +275,7 @@
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
-			attributes=			"commonwealth, commonwealthArmory, commonwealthCustoms, commonMilitary, fleetDelivery, friendly, generic, human, majorStation, primary, populated"
+			attributes=			"commonwealth, commonwealthArmory, commonwealthCustoms, commonwealthMilitary, commonMilitary, fleetDelivery, friendly, generic, human, majorStation, primary, populated"
 				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"

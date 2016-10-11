@@ -415,7 +415,7 @@
 				(not (typGetData &unidBenedictStoryArc; 'curMission))
 				))
 				
-			(setq benedict_isMissionAvailable (lambda (missionUNID)
+			(setq benedict_isMissionAvailable (lambda (missionUNID options)
 				(block (curMission)
 					(setq curMission (typGetData &unidBenedictStoryArc; 'curMission))
 
@@ -423,7 +423,9 @@
 						;	If there are active missions that the player has not 
 						;	yet completed, then they need to complete them first.
 
-						(msnFind "a +benedictStoryArc;")
+						(and (not (@ options 'allowActiveMissions))
+								(msnFind "a +benedictStoryArc;")
+								)
 							Nil
 
 						;	If the new mission is earlier than the latest mission
