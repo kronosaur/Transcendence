@@ -1707,7 +1707,7 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			int iAction;
 			CDockScreenActions &Actions = pScreen->GetActions();
 			if (!Actions.FindByID(pArgs->GetElement(1), &iAction))
-				return pCC->CreateError(CONSTLIT("Invalid action ID"), pArgs->GetElement(1));
+				return pCC->CreateNil();
 
 			Actions.RemoveAction(iAction);
 			return pCC->CreateTrue();

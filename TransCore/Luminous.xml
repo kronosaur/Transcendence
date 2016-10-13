@@ -410,7 +410,6 @@
 	<StationType UNID="&stLuminousAssembler;"
 			name=				"Luminous Assembler"
 			sovereign=			"&svLuminous;"
-			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"

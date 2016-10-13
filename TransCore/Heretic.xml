@@ -108,7 +108,7 @@
 					
 					(if (or (not aWreckObj) (not (objGetItems aWreckObj "* +unid:&itStargateControlRod;")))
 						(block (theObj)
-							(setq theObj (sysCreateFlotsam &itStargateControlRod; (objGetPos gSource) &svIndependent;))
+							(setq theObj (sysCreateFlotsam &itStargateControlRod; (objGetPos gSource) &svNeutral;))
 							(objIncVel theObj (sysVectorPolarVelocity (random 0 359) 5))
 							)
 						)
@@ -2340,16 +2340,16 @@
 						; If we're at the first buoy, create some wrecks around the area
 						(eq aPathPoint 0)
 							(block Nil
-								(sysCreateShipwreck &scIocrymSentinel; (sysVectorPolarOffset newObjPos (random 0 359) 4) &svIndependent;)
+								(sysCreateShipwreck &scIocrymSentinel; (sysVectorPolarOffset newObjPos (random 0 359) 4) &svNeutral;)
 								(for i 1 (random 3 4)
-									(sysCreateShipwreck &scLuminousDrone; (sysVectorPolarOffset newObjPos (random 0 359) (random 5 12)) &svIndependent;)
+									(sysCreateShipwreck &scLuminousDrone; (sysVectorPolarOffset newObjPos (random 0 359) (random 5 12)) &svNeutral;)
 									)
 								)
 
 						; At the 4th buoy, create a centurion wreck
 						(eq aPathPoint 4)
 							(block (theWreck theMessage)
-								(setq theWreck (sysCreateShipwreck &scCenturion; (sysVectorPolarOffset newObjPos (random 0 359) (random 4 12)) &svIndependent;))
+								(setq theWreck (sysCreateShipwreck &scCenturion; (sysVectorPolarOffset newObjPos (random 0 359) (random 4 12)) &svNeutral;))
 								(setq theMessage (itmCreate &itDataROM; 1))
 								(setq theMessage (itmSetData theMessage "Text" (cat
 									"RECORDED from astrokor.masud.9277huygens_explorer.rinc\n\n"
@@ -3863,7 +3863,7 @@
 
 	<StationType UNID="&stMaryamsArchive;"
 			name=				"Iocrym archive"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"Main"
 			mass=				"2000"
 			
@@ -4264,7 +4264,7 @@
 
 	<StationType UNID="&stMRADSensor;"
 			name=				"(MRAD sensor)"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"Main"
 			mass=				"2000"
             noMapDetails=       "true"
@@ -4325,7 +4325,7 @@
 
 	<StationType UNID="&stLogBuoy;"
 			name=				"log buoy"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"DisplayLog"
 			noMapLabel=			"true"
 			mass=				"1000"
@@ -4406,7 +4406,7 @@
 
 	<StationType UNID="&stSvalbardWreck;"
 			name=				"wreck of the Svalbard Explorer"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"Main"
 			scale=				"ship"
 			mobile=				"true"
@@ -4509,7 +4509,7 @@
 
 	<StationType UNID="&stHereticGate;"
 			name=				"Heretic Gate"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"Main"
 
 			immutable=			"true"
@@ -4672,7 +4672,7 @@
 
 	<StationType UNID="&stHereticControlCenter;"
 			name=				"Iocrym control point"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"Main"
 
 			multiHull=			"true"
@@ -5356,7 +5356,7 @@
 
 	<StationType UNID="&stIocrymManipulator;"
 			name=				"Iocrym manipulator"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"Main"
 			dockingPorts=		"4"
 				 
@@ -5453,7 +5453,6 @@
 	<StationType UNID="&stHereticSun;"
 			name=				"Heretic"
 			scale=				"star"
-			sovereign=			"&svIndependent;"
 
 			attributes=			"star"
 				 

@@ -2874,7 +2874,7 @@
 
 	<StationType UNID="&stHelenaVolkov;"
 			name=				"wreck of Helena Volkov's EI500 freighter"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"Main"
 			scale=				"ship"
 			noMapIcon=			"true"

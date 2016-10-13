@@ -16,7 +16,6 @@
 			name=				"Fortress of the Charon Pirates"
 			sovereign=			"&svPirates;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 

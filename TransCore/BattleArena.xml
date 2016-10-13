@@ -2590,7 +2590,7 @@
 	<StationType UNID="&stRigelAureliusStar;"
 		name=				"(G class star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
+		sovereign=			"&svNeutral;"
 		spaceColor=			"#66664c"
 		maxLightRadius=		"300"
 

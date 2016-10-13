@@ -1410,7 +1410,7 @@
 
 	<StationType UNID="&stBarricade1;"
 			name=				"titanium barricade"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsBarricade;"
 
 			structuralHitPoints="25"
@@ -1438,7 +1438,7 @@
 
 	<StationType UNID="&stBarricade2;"
 			name=				"titanium barricade"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsBarricade;"
 
 			structuralHitPoints="50"
@@ -1466,7 +1466,7 @@
 
 	<StationType UNID="&stBarricade3;"
 			name=				"titanium barricade"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsBarricade;"
 
 			structuralHitPoints="100"
@@ -1496,7 +1496,7 @@
 
 	<StationType UNID="&stFlotsam;"
 			name=				"(flotsam)"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"Main"
 
 			scale=				"ship"
@@ -1552,7 +1552,7 @@
 
 	<StationType UNID="&stShipwreck;"
 			name=				"(shipwreck)"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsAbandonedShip;"
 			scale=				"ship"
 			mobile=				"true"
@@ -1783,7 +1783,7 @@
 
 	<StationType UNID="&stTanRuDorem;"
 			name=				"Tan&#x95;Ru&#x95;Dorem"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"Main"
 
 			multiHull=			"true"

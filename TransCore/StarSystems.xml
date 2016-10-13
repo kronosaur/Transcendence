@@ -1357,7 +1357,7 @@
 								;	Create a marker object at the deposit location
 								;	(If we can't create it, we skip)
 							
-								(not (setq markerObj (sysCreateMarker (cat "Ore Deposit " depositCount) (sysVectorRandom (@ loc 'pos) 16 10) &svIndependent;)))
+								(not (setq markerObj (sysCreateMarker (cat "Ore Deposit " depositCount) (sysVectorRandom (@ loc 'pos) 16 10) &svNeutral;)))
 									Nil
 								
 								;	See how many asteroids are here. If there are less than

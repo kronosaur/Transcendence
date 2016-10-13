@@ -35,6 +35,9 @@
 	<!ENTITY tbBenedict05Encounters		"0x0020001A">
 	<!ENTITY scBenedictAsterion			"0x0020001B">
 	<!ENTITY msInfiltratePenitents		"0x0020001C">
+	<!ENTITY svBenedict06Infiltrate		"0x0020001D">
+	<!ENTITY evBenedict06PenitentBase	"0x0020001E">
+	<!ENTITY ovBenedict06Disarm			"0x0020001F">
 	
 	<!-- 0021xxxx HUARI ==================================================== -->
 	

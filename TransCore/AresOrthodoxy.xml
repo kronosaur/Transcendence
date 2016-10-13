@@ -1239,7 +1239,6 @@
 			name=				"Ares outpost"
 			sovereign=			"&svAres;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -1293,7 +1292,6 @@
 			name=				"Ares commune"
 			sovereign=			"&svAres;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -1352,7 +1350,6 @@
 			name=				"Ares shipyard"
 			sovereign=			"&svAres;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 

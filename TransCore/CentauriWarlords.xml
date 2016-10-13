@@ -794,7 +794,6 @@
 			name=				"Centauri warlord camp"
 			sovereign=			"&svCentauriWarlords;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -845,7 +844,6 @@
 			name=				"Centauri warlord stronghold"
 			sovereign=			"&svCentauriWarlords;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 

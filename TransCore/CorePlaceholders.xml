@@ -19,6 +19,11 @@
 			alignment="constructive chaos"
 			/>
 
+	<Sovereign UNID="&svNeutral;"
+			name="neutral"
+			alignment="neutral"
+			/>
+
 	<Sovereign UNID="&svUnknownEnemy;"
 			name="Unknown Enemy"
 			alignment="destructive order"
@@ -99,7 +104,7 @@
 
 	<StationType UNID="&stFlotsam;"
 			name=				"(flotsam)"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 
 			scale=				"ship"
 			mobile=				"true"
@@ -114,7 +119,7 @@
 
 	<StationType UNID="&stShipwreck;"
 			name=				"(shipwreck)"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			scale=				"ship"
 			mobile=				"true"
 			noMapIcon=			"true"

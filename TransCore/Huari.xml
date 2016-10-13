@@ -2069,7 +2069,6 @@
 			name=				"Sung fortress(es)"
 			sovereign=			"&svSung;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 

@@ -360,7 +360,7 @@
 
 	<StationType UNID="&stHandOfSolaceWreck;"
 			name=				"wreck of the Hand of Solace"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 				 
 			attributes=			"shipwreck, sistersOfDomina"
 				 

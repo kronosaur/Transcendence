@@ -7,7 +7,7 @@
 	<StationType UNID="&stMinedOre;"
 			name=				"mined ore"
 			noArticle=			"true"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 				 
 			attributes=			"minedOre"
 				 

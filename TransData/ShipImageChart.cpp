@@ -193,11 +193,6 @@ void GenerateShipImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 		if (!pClass->MatchesCriteria(Criteria))
 			continue;
 
-		//	Skip player ship classes
-
-		if (pClass->GetPlayerSettings())
-			continue;
-
 		//	Skip non-generic classes
 
 		if (!bAllClasses && !pClass->HasLiteralAttribute(CONSTLIT("genericClass")))

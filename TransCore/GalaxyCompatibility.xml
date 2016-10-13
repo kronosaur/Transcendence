@@ -791,7 +791,6 @@
 		name=				"(rocky asteroid)"
 		scale=				"world"
 		size=				"4"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, rocky"
 
@@ -825,7 +824,6 @@
 		name=				"(rocky asteroid)"
 		scale=				"world"
 		size=				"65"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, rocky"
 
@@ -861,7 +859,6 @@
 		name=				"(rocky asteroid)"
 		scale=				"world"
 		size=				"250"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, rocky"
 
@@ -888,7 +885,6 @@
 		name=				"(rocky planetoid)"
 		scale=				"world"
 		size=				"1150"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"planetoid, rocky"
 
@@ -910,7 +906,6 @@
 		name=				"(rocky terrestrial)"
 		scale=				"world"
 		size=				"1150"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"rocky, terrestrial"
 		>
@@ -928,7 +923,6 @@
 		name=				"(frost asteroid)"
 		scale=				"world"
 		size=				"4"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, frost"
 
@@ -960,7 +954,6 @@
 		name=				"(frost asteroid)"
 		scale=				"world"
 		size=				"65"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, frost"
 
@@ -993,7 +986,6 @@
 		name=				"(ice asteroid)"
 		scale=				"world"
 		size=				"4"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, ice"
 
@@ -1027,7 +1019,6 @@
 		name=				"(ice planetoid)"
 		scale=				"world"
 		size=				"1150"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"ice, planetoid"
 
@@ -1054,7 +1045,6 @@
 		name=				"(ice terrestrial)"
 		scale=				"world"
 		size=				"4700"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"ice, terrestrial"
 		>
@@ -1072,7 +1062,6 @@
 		name=				"(metallic asteroid)"
 		scale=				"world"
 		size=				"4"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, metallic"
 
@@ -1103,7 +1092,6 @@
 		name=				"(metallic asteroid)"
 		scale=				"world"
 		size=				"55"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, metallic"
 
@@ -1135,7 +1123,6 @@
 		name=				"(volcanic asteroid)"
 		scale=				"world"
 		size=				"4"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, volcanic"
 
@@ -1167,7 +1154,6 @@
 		name=				"(volcanic asteroid)"
 		scale=				"world"
 		size=				"70"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, volcanic"
 
@@ -1199,7 +1185,6 @@
 		name=				"(volcanic terrestrial)"
 		scale=				"world"
 		size=				"5000"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"terrestrial, volcanic"
 		>
@@ -1217,7 +1202,6 @@
 		name=				"(biosphere terrestrial)"
 		scale=				"world"
 		size=				"10000"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"biosphere, terrestrial"
 		>
@@ -1235,7 +1219,6 @@
 		name=				"(desert terrestrial)"
 		scale=				"world"
 		size=				"7000"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"desert, terrestrial"
 		>
@@ -1253,7 +1236,6 @@
 		name=				"(greenhouse terrestrial)"
 		scale=				"world"
 		size=				"5000"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"co2planet, terrestrial"
 		>
@@ -1271,7 +1253,6 @@
 		name=				"(hydrogen gas giant)"
 		scale=				"world"
 		size=				"140000"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"gasGiant"
 		>
@@ -1284,7 +1265,6 @@
 		name=				"(methane gas giant)"
 		scale=				"world"
 		size=				"50000"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"gasGiant"
 		>
@@ -1296,7 +1276,6 @@
 	<StationType UNID="&stPrimordialStar;"
 		name=				"(primordial star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 		spaceColor=			"0x4d, 0x41, 0x0f"
 		maxLightRadius=		"400"
 
@@ -1315,7 +1294,6 @@
 	<StationType UNID="&stO-TypeStar;"
 		name=				"(star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"star"
 		>
@@ -1327,7 +1305,6 @@
 	<StationType UNID="&stA-TypeStar;"
 		name=				"(A class star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 		spaceColor=			"0x12, 0x50, 0x79"
 		maxLightRadius=		"800"
 
@@ -1346,7 +1323,6 @@
 	<StationType UNID="&stG-TypeStar;"
 		name=				"(G class star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 		spaceColor=			"#656551"
 		maxLightRadius=		"620"
 
@@ -1365,7 +1341,6 @@
 	<StationType UNID="&stK-TypeStar;"
 		name=				"(K class star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 		spaceColor=			"0x70, 0x44, 0x1a"
 		maxLightRadius=		"620"
 
@@ -1384,7 +1359,6 @@
 	<StationType UNID="&stM-TypeStar;"
 		name=				"(star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"star"
 		>
@@ -1396,7 +1370,6 @@
 	<StationType UNID="&stRedDwarfStar;"
 		name=				"(red dwarf star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 		spaceColor=			"0x59, 0x0e, 0x00"
 		maxLightRadius=		"320"
 
@@ -1410,7 +1383,6 @@
 	<StationType UNID="&stBlueGiantStar;"
 		name=				"(star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"star"
 		>
@@ -1424,7 +1396,6 @@
 	<StationType UNID="&stOreSmallAsteroid;"
 			name=				"(small ore asteroid)"
 			scale=				"world"
-			sovereign=			"&svIndependent;"
 
 			attributes=			"asteroid, stoneAsteroid, tinyAsteroid"
 
@@ -1460,7 +1431,6 @@
 	<StationType UNID="&stOreMediumAsteroid;"
 		name=				"(medium ore asteroid)"
 		scale=				"world"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, mediumAsteroid, stoneAsteroid"
 
@@ -1498,7 +1468,6 @@
 	<StationType UNID="&stOreSmallFrostAsteroid;"
 		name=				"(small frost ore asteroid)"
 		scale=				"world"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, frostAsteroid, tinyAsteroid"
 
@@ -1534,7 +1503,6 @@
 	<StationType UNID="&stOreMediumFrostAsteroid;"
 		name=				"(medium frost ore asteroid)"
 		scale=				"world"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, frostAsteroid, mediumAsteroid"
 
@@ -1570,7 +1538,6 @@
 	<StationType UNID="&stOreSmallMetallicAsteroid;"
 		name=				"(asteroid)"
 		scale=				"world"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, metallicAsteroid, tinyAsteroid"
 
@@ -1605,7 +1572,6 @@
 	<StationType UNID="&stOreMediumMetallicAsteroid;"
 		name=				"(asteroid)"
 		scale=				"world"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, mediumAsteroid, metallicAsteroid"
 
@@ -1641,7 +1607,6 @@
 	<StationType UNID="&stOreSmallVolcanicAsteroid;"
 		name=				"(small volcanic ore asteroid)"
 		scale=				"world"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, tinyAsteroid, volcanicAsteroid"
 
@@ -1677,7 +1642,6 @@
 	<StationType UNID="&stOreMediumVolcanicAsteroid;"
 		name=				"(medium volcanic ore asteroid)"
 		scale=				"world"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, mediumAsteroid, volcanicAsteroid"
 

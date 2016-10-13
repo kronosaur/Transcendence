@@ -90,6 +90,9 @@
 											(typGetData &unidBenedictStoryArc; 'firstDockedAtSisters)
 											)
 										(block Nil
+											;	Remove the built-in action to talk to the Abbess
+											
+											
 											;	Add an action to talk to the Abbess
 						
 											(scrAddAction gScreen 'talkToAbbess 0 (typTranslate &unidBenedictStoryArc; 'actionTalkToAbbess)

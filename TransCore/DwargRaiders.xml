@@ -463,7 +463,6 @@
 			name=				"Dwarg colony|Dwarg colonies"
 			sovereign=			"&svDwargRaiders;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			canAttack=			"true"
 
 			multiHull=			"true"
@@ -519,7 +518,6 @@
 			name=				"Dwarg colony|Dwarg colonies"
 			sovereign=			"&svDwargRaiders;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			canAttack=			"true"
 
 			multiHull=			"true"
@@ -615,7 +613,6 @@
 			name=				"Dwarg colony|Dwarg colonies"
 			sovereign=			"&svDwargRaiders;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			canAttack=			"true"
 			noMapLabel=			"true"
 
@@ -670,7 +667,6 @@
 			name=				"Dwarg fortress(es)"
 			sovereign=			"&svDwargRaiders;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			canAttack=			"true"
 
 			multiHull=			"true"

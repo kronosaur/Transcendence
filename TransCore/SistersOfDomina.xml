@@ -57,7 +57,7 @@
 
 	<StationType UNID="&stSistersOfDomina;"
 			name=				"Sisters of Domina|Sisters of Domina"
-			sovereign=			"&svCommonwealth;"
+			sovereign=			"&svSistersOfDomina;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -131,8 +131,7 @@
 		</StaticData>
 
 		<DockScreens>
-			<Main
-				>
+			<Main>
 				<Panes>
 					<Default>
 						<OnPaneInit>
@@ -149,6 +148,13 @@
 						</OnPaneInit>
 
 						<Actions>
+							<Action id="actionTalkToAbbess">
+								(rpgMissionAssignment {
+									missionCriteria: (cat "n +sistersMission; =" (sysGetLevel) ";")
+									noMissionTextID: 'descNothingToTalkAbout
+									maxPerStation: 1
+									})
+							</Action>
 							<Action id="actionSanctum">
 								(scrShowScreen gScreen &dsSistersSanctum;)
 							</Action>
@@ -179,6 +185,7 @@
 		</DockingPorts>
 
 		<Language>
+			<Text id="actionTalkToAbbess">"Talk to [A]bbess"</Text>
 			<Text id="actionDonate">"[D]onate"</Text>
 			<Text id="actionPilgrimsAid">"[P]ilgrim's Aid"</Text>
 			<Text id="actionSanctum">"[S]anctum"</Text>
@@ -198,6 +205,21 @@
 					"May the blessings of Domina protect you.\""
 					)
 			</Text>
+			<Text id="descNothingToTalkAbout">
+				(cat
+					"You enter the abbess's spartan office and chat with her. She leaves you with "
+					"a small piece of advice:\n\n"
+					
+					(objTranslate gSource (cat 'descAbbessAdvice (min (sysGetLevel) 7)))
+					)
+			</Text>
+			<Text id="descAbbessAdvice1">"\"You are one of the few who can commune with Domina; do not waste this blessing.\""</Text>
+			<Text id="descAbbessAdvice2">"\"Do not kill for sport. But do not be afraid to fight for Domina.\""</Text>
+			<Text id="descAbbessAdvice3">"\"Domina seeks connection with all thinking beings, and even death cannot fully erase the luminous patterns of sentience.\""</Text>
+			<Text id="descAbbessAdvice4">"\"Domina can guide you, but you must seek your own answers.\""</Text>
+			<Text id="descAbbessAdvice5">"\"Do not let Domina's brilliance blind you to the strength and worth of mere humans.\""</Text>
+			<Text id="descAbbessAdvice6">"\"Domina controls you, but it's up to you to keep your humanity. Always remember that.\""</Text>
+			<Text id="descAbbessAdvice7">"\"The universe is dark and lonely; I do not envy your task.\""</Text>
             
             <Text id="core.mapDesc">
                 "Contemplation and communion"

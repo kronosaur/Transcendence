@@ -126,7 +126,6 @@
 			name=				"Rogue Fleet cache"
 			sovereign=			"&svRogueFleet;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -178,7 +177,6 @@
 			name=				"Rogue Fleet settlement"
 			sovereign=			"&svRogueFleet;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 

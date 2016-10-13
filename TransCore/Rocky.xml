@@ -65,7 +65,6 @@
 		name=				"(rocky asteroid)"
 		scale=				"world"
 		size=				"4"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, rocky"
 
@@ -93,7 +92,6 @@
 		name=				"(rocky outer asteroid)"
 		scale=				"world"
 		size=				"4"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, outer, rocky"
 
@@ -132,7 +130,6 @@
 		name=				"(rocky asteroid)"
 		scale=				"world"
 		size=				"65"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, rocky"
 
@@ -162,7 +159,6 @@
 		name=				"(rocky outer asteroid)"
 		scale=				"world"
 		size=				"65"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, outer, rocky"
 
@@ -200,7 +196,6 @@
 		name=				"(rocky asteroid)"
 		scale=				"world"
 		size=				"250"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, rocky"
 
@@ -228,7 +223,6 @@
 		name=				"(rocky outer asteroid)"
 		scale=				"world"
 		size=				"250"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, outer, rocky"
 
@@ -262,7 +256,6 @@
 		name=				"(rocky asteroid)"
 		scale=				"world"
 		size=				"625"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, rocky"
 
@@ -290,7 +283,6 @@
 		name=				"(rocky outer asteroid)"
 		scale=				"world"
 		size=				"625"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, outer, rocky"
 
@@ -323,7 +315,6 @@
 		name=				"(rocky planetoid)"
 		scale=				"world"
 		size=				"1150"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, outer, planetoid, rocky"
 
@@ -338,7 +329,6 @@
 		name=				"(rocky planetoid)"
 		scale=				"world"
 		size=				"2050"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, outer, planetoid, rocky"
 
@@ -353,7 +343,6 @@
 		name=				"(rocky planetoid)"
 		scale=				"world"
 		size=				"4000"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, outer, planetoid, rocky"
 

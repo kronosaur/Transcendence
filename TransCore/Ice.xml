@@ -128,7 +128,6 @@
 		name=				"(ice asteroid)"
 		scale=				"world"
 		size=				"7"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, ice, inner, lifeZone, outer"
 
@@ -157,7 +156,6 @@
 		name=				"(ice asteroid)"
 		scale=				"world"
 		size=				"60"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, ice, inner, lifeZone, outer"
 
@@ -186,7 +184,6 @@
 		name=				"(ice asteroid)"
 		scale=				"world"
 		size=				"165"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, ice, inner, lifeZone, outer"
 
@@ -215,7 +212,6 @@
 		name=				"(ice asteroid)"
 		scale=				"world"
 		size=				"670"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, ice, inner, lifeZone, outer"
 
@@ -244,7 +240,6 @@
 		name=				"(ice planetoid)"
 		scale=				"world"
 		size=				"1250"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, ice, inner, lifeZone, outer, planetoid"
 
@@ -260,7 +255,6 @@
 		name=				"(ice planetoid)"
 		scale=				"world"
 		size=				"2450"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, ice, inner, lifeZone, outer, planetoid"
 
@@ -276,7 +270,6 @@
 		name=				"(ice planetoid)"
 		scale=				"world"
 		size=				"4000"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, ice, inner, lifeZone, outer, planetoid"
 

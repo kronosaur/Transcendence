@@ -78,6 +78,7 @@
 	<!ENTITY svIndependent				"0x00001003">
 	<!ENTITY ecCreditEconomy			"0x00001017">
 	<!ENTITY svUnknownEnemy				"0x00001018">
+	<!ENTITY svNeutral					"0x00001019">
 	
 	<!ENTITY stShipwreck				"0x00002001">
 	<!ENTITY stFlotsam					"0x0000200E">

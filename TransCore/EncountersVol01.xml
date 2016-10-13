@@ -56,7 +56,6 @@
 			name=				"Abbasid outpost"
 			sovereign=			"&svAbbasid;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -893,7 +892,6 @@
 			name=				"Death Drug Cartel outpost"
 			sovereign=			"&svDeathDrugsCartel;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -1075,7 +1073,6 @@
 			name=				"Anarchist habitat"
 			sovereign=			"&svAnarchists;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"4"
 			canAttack=			"true"
 
@@ -1138,7 +1135,6 @@
 			name=				"Anarchist gathering"
 			sovereign=			"&svAnarchists;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"4"
 			canAttack=			"true"
 
@@ -1209,7 +1205,6 @@
 			name=				"Anarchist gathering"
 			sovereign=			"&svAnarchists;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"4"
 			noMapLabel=			"true"
 			canAttack=			"true"
@@ -1273,7 +1268,6 @@
 			name=				"Anarchist settlement"
 			sovereign=			"&svAnarchists;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -1832,7 +1826,6 @@
 			name=				"Heliotrope colony|Heliotrope colonies"
 			sovereign=			"&svHeliotropes;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -1889,7 +1882,6 @@
 			name=				"Heliotrope outpost"
 			sovereign=			"&svHeliotropes;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -2028,7 +2020,6 @@
 			name=				"Himal refuge"
 			sovereign=			"&svHimalSeparatists;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -2176,7 +2167,6 @@
 	<StationType UNID="&stHuariFortress;"
 			name=				"Huari fortress(es)"
 			sovereign=			"&svHuariEmpire;"
-			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
@@ -2412,7 +2402,6 @@
 			name=				"Kobol warlord camp"
 			sovereign=			"&svKobolWarlords;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -2722,7 +2711,6 @@
 			name=				"Marauder outpost"
 			sovereign=			"&svMarauders;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -2770,7 +2758,6 @@
 			name=				"Marauder compound"
 			sovereign=			"&svMarauders;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -2839,7 +2826,6 @@
 			name=				"Marauder stronghold"
 			sovereign=			"&svMarauders;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -3147,7 +3133,6 @@
 			name=				"Penitent shrine"
 			sovereign=			"&svPenitents;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -3198,7 +3183,6 @@
 			name=				"Penitent sanctum"
 			sovereign=			"&svPenitents;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -3666,7 +3650,6 @@
 			name=				"outlaw camp"
 			sovereign=			"&svOutlaw;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -3719,7 +3702,6 @@
 			name=				"outlaw base"
 			sovereign=			"&svOutlaw;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -3782,7 +3764,6 @@
 			name=				"outlaw haven"
 			sovereign=			"&svOutlaw;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -3971,7 +3952,6 @@
 	<StationType UNID="&stPteravoreLair;"
 			name=				"pteravore lair"
 			sovereign=			"&svPteravores;"
-			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
 
@@ -4636,7 +4616,6 @@
 	<StationType UNID="&stRanxOutpost;"
 			name=				"Ranx outpost"
 			sovereign=			"&svRanxEmpire;"
-			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
@@ -4688,7 +4667,6 @@
 	<StationType UNID="&stRanxFortress;"
 			name=				"Ranx fortress(es)"
 			sovereign=			"&svRanxEmpire;"
-			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
@@ -5125,7 +5103,6 @@
 			name=				"Sapiens camp"
 			sovereign=			"&svSapiens;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -5182,7 +5159,6 @@
 			name=				"Sapiens compound"
 			sovereign=			"&svSapiens;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -5296,7 +5272,7 @@
 
 	<StationType UNID="&stSealedCargoContainer;"
 			name=				"abandoned cargo container"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			abandonedScreen=	"Main"
 			dockScreen=			"Main"
 
@@ -5631,7 +5607,6 @@
 	<StationType UNID="&stVentariColony;"
 			name=				"Ventari colony|Ventari colonies"
 			sovereign=			"&svVentariSettlers;"
-			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"

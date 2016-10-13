@@ -4553,7 +4553,6 @@ PLAYER DATA
 			name=				"Rogue Fleet settlement"
 			sovereign=			"&svRogueFleet;"
 			abandonedScreen=	"Main"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 

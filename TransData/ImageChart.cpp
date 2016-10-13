@@ -256,11 +256,6 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 				{
 				CShipClass *pClass = CShipClass::AsType(pType);
 
-				//	Skip player classes, unless we want all.
-
-				if (!bAll && pClass->IsPlayerShip())
-					continue;
-
 				//	Skip non-generic classess
 
 				if (!bAll && !pClass->HasLiteralAttribute(CONSTLIT("genericClass")))

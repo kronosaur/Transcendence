@@ -718,7 +718,6 @@
 			sovereign=			"&svOutlawMiners;"
 				 
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 				 
 			mass=				"2000"
 			armorID=			"&itCeralloyArmor;"

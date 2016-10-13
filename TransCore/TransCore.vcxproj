@@ -393,7 +393,9 @@
     <None Include="Metallic.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Mining.xml" />
+    <None Include="Mining.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Neurohack.xml" />
     <None Include="Primordial.xml">
       <SubType>Designer</SubType>
