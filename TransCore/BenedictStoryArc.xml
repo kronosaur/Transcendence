@@ -120,7 +120,7 @@
 		</Events>
 		
 		<Language>
-			<Text id="actionTalkToAbbess">"Talk to [A]bbess"</Text>
+			<Text id="actionTalkToAbbess">"[M]atriarch's Chamber"</Text>
 			<Text id="actionTalkToBenedict">"Talk to [B]enedict"</Text>
 		</Language>
 	</Type>

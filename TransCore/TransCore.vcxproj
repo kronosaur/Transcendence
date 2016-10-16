@@ -427,6 +427,7 @@
     <Xml Include="Benedict05.xml" />
     <Xml Include="Benedict05A.xml" />
     <Xml Include="Benedict06.xml" />
+    <Xml Include="Benedict07.xml" />
     <Xml Include="CommonwealthShips.xml" />
     <Xml Include="CompatibilityLibrary.xml" />
     <Xml Include="CoreFireEffects.xml">
@@ -455,6 +456,7 @@
     <Xml Include="RPGShipBroker.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="Sanctuary.xml" />
     <Xml Include="StdMiningEquipment.xml">
       <SubType>Designer</SubType>
     </Xml>

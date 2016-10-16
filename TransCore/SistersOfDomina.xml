@@ -185,7 +185,7 @@
 		</DockingPorts>
 
 		<Language>
-			<Text id="actionTalkToAbbess">"Talk to [A]bbess"</Text>
+			<Text id="actionTalkToAbbess">"[M]atriarch's Chamber"</Text>
 			<Text id="actionDonate">"[D]onate"</Text>
 			<Text id="actionPilgrimsAid">"[P]ilgrim's Aid"</Text>
 			<Text id="actionSanctum">"[S]anctum"</Text>

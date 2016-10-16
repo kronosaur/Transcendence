@@ -1567,6 +1567,9 @@
 	<!ENTITY rsSistersShrineHero		"0x00100030">
 	<!ENTITY scHandOfDomina				"0x00100031">
 	<!ENTITY rsHandOfDomina				"0x00100032">
+	<!ENTITY ssSanctuary				"0x00100033">
+	<!ENTITY stCathedralOfDomina		"0x00100034">
+	<!ENTITY rsCathedralOfDomina		"0x00100035">
 	
 	<!-- 0040-005F CORPORATE HIERARCHY -->
 	
@@ -1734,6 +1737,7 @@
 	<Module filename="Eridani.xml"/>
 	<Module filename="Heretic.xml"/>
 	<Module filename="PointJuno.xml"/>
+	<Module filename="Sanctuary.xml"/>
 	<Module filename="StKatharines.xml"/>
 		
 	<!-- These modules implement encounters. They should be clean, for the

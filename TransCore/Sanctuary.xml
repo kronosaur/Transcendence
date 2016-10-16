@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+<!-- ENCOUNTERS -->
+	
+	<!-- Cathedral of Domina -->
+
+	<StationType UNID="&stCathedralOfDomina;"
+			name=				"Cathedral of Domina"
+			sovereign=			"&svSistersOfDomina;"
+
+			attributes=			"envAir, envAvoidsFire, friendly, generic, human, majorStation, populated, religious, sistersOfDomina"
+				 
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+				 
+			size=				"565"
+			armorID=			"&itHeavyMeteorsteel;"
+			hitPoints=			"1680"
+			multiHull=			"true"
+			regen=              "25"
+			shipRegen=			"4"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtBlastExplosion5;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			definiteArticle=	"true"
+			>
+		
+		<!-- Encounter Info -->
+
+		<!-- Trade and Items -->
+		
+		<Trade currency="credit" max="250000" replenish="2500">
+			<AcceptDonation	criteria="*"					priceAdj="100" actualPrice="true"/>
+		</Trade>
+
+		<Items>
+			<Table count="1d6">
+				<Lookup chance="25" count="1d3" table="&trConsumables2;"/>
+				<Lookup chance="25" count="1"	table="&trConsumables3;"/>
+				<Lookup chance="25" count="1"	table="&trMinorItem2;"/>
+				<Lookup chance="15" count="1"	table="&trMinorItem3;"/>
+				<Lookup chance="10" count="1"	table="&trMajorItem2;"/>
+			</Table>
+		</Items>
+
+		<!-- Configuration -->
+		
+		<!-- Satellites -->
+
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Lookup count="1d2+1" table="&tbCommDefenders;"/>
+			<Lookup count="1d3+1" table="&tbCommPrivateCrafts;"/>
+		</Ships>
+
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsCathedralOfDomina;" imageWidth="380" imageHeight="380" viewportRatio="0.0725"/>
+		
+		<DockingPorts
+				portCount=		"12"
+				portRadius=		"205"
+				>
+		</DockingPorts>
+		
+		<!-- Dock Screens -->
+		
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(block Nil
+								(if (not (objGetData gPlayerShip "sistersAttitude"))
+									(objSetData gPlayerShip "sistersAttitude" 0)
+									)
+
+								(scrSetDesc gScreen (objTranslate gSource 'descWelcome))
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionCentralChamber">
+								(rpgMissionAssignment {
+									missionCriteria: (cat "n +cathedralOfDominaMission; =5;")
+									noMissionTextID: 'descNothingToTalkAbout
+									})
+							</Action>
+							<Action id="actionSanctum">
+								(scrShowScreen gScreen &dsSistersSanctum;)
+							</Action>
+							<Action id="actionPilgrimsAid" default="1">
+								(scrShowScreen gScreen &dsSistersDockServices;)
+							</Action>
+							<Action id="actionDonate">
+								(scrShowScreen gScreen &dsSistersDonate;)
+							</Action>
+							<Action id="actionUndock" cancel="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+		
+		<!-- Events and Behavior -->
+
+		<Language>
+			<Text id="actionCentralChamber">"[C]entral Chamber"</Text>
+			<Text id="actionDonate">"[D]onate"</Text>
+			<Text id="actionPilgrimsAid">"[P]ilgrim's Aid"</Text>
+			<Text id="actionSanctum">"[S]anctum"</Text>
+			<Text id="actionUndock">"[U]ndock"</Text>
+			
+			<Text id="descWelcome">
+				(cat
+					"LATER: You are in the Cathedral of Domina"
+					)
+			</Text>
+			<Text id="descNothingToTalkAbout">
+				(cat
+					"LATER: The chamber is empty."
+					)
+			</Text>
+            
+            <Text id="core.mapDesc">
+                "Contemplation and communion"
+            </Text>
+		</Language>
+	</StationType>
+	
+<!-- SANCTUARY STAR SYSTEM -->
+
+	<SystemType UNID="&ssSanctuary;"
+				attributes=			"envAir"
+				backgroundID=		"&rsLightNebulaSpace;"
+				spaceEnvironmentTileSize=	"large"
+				>
+		<SystemGroup>
+			<Lookup table="LightNebulaSystem"/>
+
+			<!-- Place the two stargates -->
+
+			<Lookup table="HumanSpaceStargates"/>
+
+			<!-- Primary Station -->
+
+			<RandomLocation locationCriteria="++lifeZone; *planet">
+				<Group>
+					<Station type="&stCathedralOfDomina;"/>
+					
+					<Siblings arcInc="+22">
+						<Station type="&stCommonwealthResidentials;" noMapLabel="true"/>
+					</Siblings>
+					<Siblings arcInc="-22">
+						<Station type="&stCommonwealthResidentials;" noMapLabel="true"/>
+					</Siblings>
+					<Siblings arcInc="+40">
+						<Station type="&stCommonwealthSlums;" noMapLabel="true"/>
+					</Siblings>
+					<Siblings arcInc="-40">
+						<Station type="&stCommonwealthSlums;" noMapLabel="true"/>
+					</Siblings>
+				</Group>
+				
+			</RandomLocation>
+
+			<!-- Random Stations -->
+
+			<FillLocations
+					percentFull=		"80" 
+					stationCriteria=	"!primary; !debris; +envAir; -envAvoidsAir" 
+					percentEnemies=		"50"
+					separateEnemies=	"true"
+					/>
+
+			<!-- Random Debris -->
+
+			<RandomLocation probability="50" locationCriteria="++outerSystem; ++asteroids">
+				<Orbitals count="1d6" distance="1d8+6" angle="random">
+					<RandomStation stationCriteria="*debris"/>
+				</Orbitals>
+			</RandomLocation>
+
+			<FillLocations
+					percentFull=		"50"
+					stationCriteria=	"*debris"
+					/>
+
+			<!-- Void Encounters -->
+
+			<Orbitals count="1d12" distance="3d200+240" angle="random" exclusionRadius="100">
+				<Table>
+					<RandomStation chance="80" stationCriteria="*debris"/>
+					<RandomStation chance="18" stationCriteria="*enemy" locationAttribs="void"/>
+					<RandomStation chance="2"  stationCriteria="*friendly; !debris; !primary" locationAttribs="void"/>
+				</Table>
+			</Orbitals>
+		</SystemGroup>
+	</SystemType>
+	
+<!-- RESOURCES -->
+
+	<Image UNID="&rsCathedralOfDomina;" bitmap="Resources\CathedralOfDomina.jpg" bitmask="Resources\CathedralOfDominaMask.bmp" loadOnUse="true" />
+
+</TranscendenceModule>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Rescue Benedict =======================================================
+
+	EXTRA DATA
+	
+	======================================================================== -->
+	
+	<MissionType UNID="&msRescueBenedict;"
+			name=				"Rescue Benedict"
+			attributes=			"benedictStoryArc, cathedralOfDominaMission"
+
+			level=				"5"
+			maxAppearing=		"1"
+			priority=			"100"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<StaticData>
+			<sequence>70</sequence>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block ()
+					(switch
+						;	See if the mission is still available
+
+						(not (benedict_isMissionAvailable (objGetType gSource)))
+							(msnDestroy gSource)
+							
+						;	OK
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					)
+					
+					)
+			</OnAccepted>
+			<OnAcceptedUndock>
+				(block (
+					)
+					
+					)
+			</OnAcceptedUndock>
+
+			<OnSetPlayerTarget>
+				;(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'dock)
+			</OnSetPlayerTarget>
+			
+			<OnObjDestroyed>
+			</OnObjDestroyed>
+			
+			<OnDebriefed>
+				(block (
+					)
+					)
+			</OnDebriefed>
+			
+			<GetGlobalAchievements>
+			</GetGlobalAchievements>
+		</Events>
+		
+		<Language>
+			<Text id="Name">"Rescue Benedict"</Text>
+			<Text id="Summary">
+				(cat
+					"Intercept a Penitent convoy carrying Benedict.\n\n"
+					"System: " (sysGetName) "\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="Intro">
+				(list
+					{
+						desc: (cat
+							"LATER: Meeting of the Circle of Obligation screwed you over."
+							)
+						}
+					)
+			</Text>
+			<Text id="Briefing">
+				(list
+					{
+						desc: (cat
+							"LATER: But there's still time to save Benedict."
+							)
+						}
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(cat
+					"LATER: Follow my lead."
+					)
+			</Text>
+			<Text id="DeclineReply">
+				(cat
+					"\"OK, but don't take too long.\""
+					)
+			</Text>
+			<Text id="InProgress">
+				(cat
+					"LATER: Get back out there!"
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(list
+					{
+						desc: (cat
+							"LATER: Benedict says the children are headed towards Eta Ceti."
+							)
+						}
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+			<Text id="FailureDebrief">
+				(cat
+					"LATER: Kack!"
+					)
+			</Text>
+		</Language>
+	</MissionType>
+	
+</TranscendenceModule>

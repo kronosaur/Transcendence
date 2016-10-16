@@ -38,6 +38,7 @@
 	<!ENTITY svBenedict06Infiltrate		"0x0020001D">
 	<!ENTITY evBenedict06PenitentBase	"0x0020001E">
 	<!ENTITY ovBenedict06Disarm			"0x0020001F">
+	<!ENTITY msRescueBenedict			"0x00200020">
 	
 	<!-- 0021xxxx HUARI ==================================================== -->
 	

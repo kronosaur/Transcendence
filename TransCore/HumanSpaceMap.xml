@@ -202,7 +202,7 @@
 					level=			"5"
 					attributes=		"huaramarcaGate, humanSpace, mainline, ungoverned"
 					>
-				<System UNID="&ssEarthSpaceNebulae;"/>
+				<System UNID="&ssSanctuary;"/>
 			</System>
 
 			<MapEffect>
