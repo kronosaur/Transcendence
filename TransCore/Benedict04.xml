@@ -50,7 +50,7 @@
 					(setq stormhoundObj
 						(rpgCharacterCreateShip
 							&unidStormhound;
-							&scStormhound;
+							&scStormhoundYacht;
 							(sysVectorRandom gPlayerShip 600 100)
 							{ repairAll:True }
 							)

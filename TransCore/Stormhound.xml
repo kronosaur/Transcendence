@@ -24,7 +24,7 @@
 	
 	<!-- Stormhound's Ship -->
 
-	<ShipClass UNID="&scStormhound;"
+	<ShipClass UNID="&scStormhoundYacht;"
 			manufacturer=		"Zubrin Systems"
 			class=				"Elixir"
 			type=				"megayacht"
@@ -97,6 +97,8 @@
 			<Effect type="thrustMain"		posAngle="-180"	posRadius="70"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 
+		<!-- AI and Behavior -->
+		
 		<AISettings
 			fireRateAdj=		"20"
 			fireAccuracy=		"90"
@@ -105,8 +107,6 @@
 			combatStyle=		"standOff"
 			/>
 
-		<!-- AI and Behavior -->
-		
 		<Language>
 			<Text id="FirstMeetingIntro">
 				(list
@@ -128,6 +128,122 @@
 					"The airlock opens into a wide hall with clean, curved walls and comfortable couches. "
 					"Two large men in fine suits and tactical eyewear frisk you firmly. Without apology, "
 					"they lead you forward."
+					)
+			</Text>
+
+			<Text id="NoMissions">
+				(cat
+					"The airlock refuses to open."
+					)
+			</Text>
+		</Language>
+	</ShipClass>
+	
+	<!-- Stormhound's COMSOC HQ -->
+
+	<ShipClass UNID="&scStormhoundAquila;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Aquila"
+			type=				"cruiser"
+
+			attributes=			"capitalShip, stormhound"
+			character=			"&unidStormhound;"
+			   
+			size=				"220"
+			mass=				"26000"
+			thrustRatio=		"1"
+			maxSpeed=			"16"
+			cargoSpace=			"1000"
+
+			cyberDefenseLevel=	"8"
+			explosionType=		"&vtThermoExplosion3;"
+
+			dockingPorts=		"4"
+			dockScreen=			"&dsRPGCharacterDefault;"
+			>
+
+		<Names definiteArticle="true">CSS Changeling</Names>
+		
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itP210HexphaseArmor;"
+			count=				"16"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="355" maxFireArc="175" posAngle="90" posRadius="24" posZ="8"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="160" maxFireArc="5" posAngle="-90" posRadius="24" posZ="8"/>
+			<Device deviceID="&itNAMIHeavyLauncher;" omnidirectional="true">
+				<Items>
+					<Item count="4d20" item="&itS3Missile;"/>
+				</Items>
+			</Device>
+			<Device deviceID="&itR9Deflector;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"3"
+			rotationAccel=		"0.5"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"200"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"100"
+
+					posX=		"-75"
+					posY=		"0"
+					sizeX=		"42"
+					sizeY=		"56"
+					/>
+		</Interior>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsAquila;" imageWidth="210" imageHeight="210"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="168"	posRadius="94"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-168"	posRadius="94"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="94"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"95"
+			perception=			"4"
+
+			combatStyle=		"standOff"
+			/>
+
+		<Language>
+			<Text id="FirstMeetingIntro">
+				(list
+					{
+						desc: (cat
+							"The airlock opens and you see two Commonwealth troopers train their weapons on you. "
+							"\"You'd better have an amazing reason for being here, or this is going to be the "
+							"worst day of your life.\""
+							)
+							
+						label: "\"Uh, '[S]tormhound'?\""
+						}
+					)
+			</Text>
+
+			<Text id="MeetingIntro">
+				(cat
+					"The airlock opens and you see two Commonwealth troopers standing at attention. "
+					"Stormhound walks past them and dismisses them with a nod.\n\n"
+					
+					"\"Good day, %name%!\""
 					)
 			</Text>
 

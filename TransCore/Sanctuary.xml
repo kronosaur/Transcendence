@@ -120,12 +120,15 @@
 			
 			<Text id="descWelcome">
 				(cat
-					"LATER: You are in the Cathedral of Domina"
+					"The Cathedral of Domina is the center of the Sisterhood, and one of their most holy sites. "
+					"Built originally in the 2150s, the cathedral has expanded to become a small metropolis."
 					)
 			</Text>
 			<Text id="descNothingToTalkAbout">
 				(cat
-					"LATER: The chamber is empty."
+					"The beautiful central chamber, built hundreds of years ago by Saint Eugenia, "
+					"is lit by the holograms of various Sisters. Lay and ordained women walk "
+					"through the halls in quiet conversation."
 					)
 			</Text>
             
@@ -152,23 +155,24 @@
 			<!-- Primary Station -->
 
 			<RandomLocation locationCriteria="++lifeZone; *planet">
-				<Group>
-					<Station type="&stCathedralOfDomina;"/>
+				<Siblings minRadius="50">
+					<Group>
+						<Station type="&stCathedralOfDomina;"/>
 					
-					<Siblings arcInc="+22">
-						<Station type="&stCommonwealthResidentials;" noMapLabel="true"/>
-					</Siblings>
-					<Siblings arcInc="-22">
-						<Station type="&stCommonwealthResidentials;" noMapLabel="true"/>
-					</Siblings>
-					<Siblings arcInc="+40">
-						<Station type="&stCommonwealthSlums;" noMapLabel="true"/>
-					</Siblings>
-					<Siblings arcInc="-40">
-						<Station type="&stCommonwealthSlums;" noMapLabel="true"/>
-					</Siblings>
-				</Group>
-				
+						<Siblings arcInc="+30">
+							<Station type="&stCommonwealthResidentials;" noMapLabel="true"/>
+						</Siblings>
+						<Siblings arcInc="-30">
+							<Station type="&stCommonwealthResidentials;" noMapLabel="true"/>
+						</Siblings>
+						<Siblings arcInc="+48">
+							<Station type="&stCommonwealthSlums;" noMapLabel="true"/>
+						</Siblings>
+						<Siblings arcInc="-48">
+							<Station type="&stCommonwealthSlums;" noMapLabel="true"/>
+						</Siblings>
+					</Group>
+				</Siblings>
 			</RandomLocation>
 
 			<!-- Random Stations -->

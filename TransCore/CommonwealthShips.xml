@@ -1036,5 +1036,7 @@
 	<Image UNID="&rsIAVMedium;"					bitmap="Resources\IAVMedium.jpg" bitmask="Resources\IAVMediumMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsIAVHeavy;"					bitmap="Resources\IAVHeavy.jpg" bitmask="Resources\IAVHeavyMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsManticore;"					bitmap="Resources\Manticore.jpg" bitmask="Resources\ManticoreMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsScorpionGunship;"			bitmap="Resources\ScorpionGunship.jpg" bitmask="Resources\ScorpionGunshipMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsScorpionGunshipHero;"		bitmap="Resources\ScorpionGunshipLarge.jpg" bitmask="Resources\ScorpionGunshipLargeMask.bmp" loadOnUse="true"/>
 
 </TranscendenceModule>

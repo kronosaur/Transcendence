@@ -327,9 +327,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="Benedict.xml">
-      <Filter>Part I</Filter>
-    </Xml>
     <Xml Include="CorePlaceholders.xml">
       <Filter>Core Types</Filter>
     </Xml>
@@ -372,17 +369,11 @@
     <Xml Include="Benedict04.xml">
       <Filter>Part I</Filter>
     </Xml>
-    <Xml Include="Stormhound.xml">
-      <Filter>Part I</Filter>
-    </Xml>
     <Xml Include="Benedict05.xml">
       <Filter>Part I</Filter>
     </Xml>
     <Xml Include="CommonwealthShips.xml">
       <Filter>Human Space Library</Filter>
-    </Xml>
-    <Xml Include="HugoSandoval.xml">
-      <Filter>Part I</Filter>
     </Xml>
     <Xml Include="Benedict05A.xml">
       <Filter>Part I</Filter>
@@ -394,6 +385,24 @@
       <Filter>Human Space Library</Filter>
     </Xml>
     <Xml Include="Benedict07.xml">
+      <Filter>Part I</Filter>
+    </Xml>
+    <Xml Include="Penitents.xml">
+      <Filter>Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Benedict.xml">
+      <Filter>Human Space Library</Filter>
+    </Xml>
+    <Xml Include="HugoSandoval.xml">
+      <Filter>Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Stormhound.xml">
+      <Filter>Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Fiona.xml">
+      <Filter>Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Benedict08.xml">
       <Filter>Part I</Filter>
     </Xml>
   </ItemGroup>

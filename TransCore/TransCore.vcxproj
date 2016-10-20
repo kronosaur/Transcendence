@@ -427,7 +427,10 @@
     <Xml Include="Benedict05.xml" />
     <Xml Include="Benedict05A.xml" />
     <Xml Include="Benedict06.xml" />
-    <Xml Include="Benedict07.xml" />
+    <Xml Include="Benedict07.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="Benedict08.xml" />
     <Xml Include="CommonwealthShips.xml" />
     <Xml Include="CompatibilityLibrary.xml" />
     <Xml Include="CoreFireEffects.xml">
@@ -443,11 +446,17 @@
     <Xml Include="Ferians.xml">
       <SubType>Designer</SubType>
     </Xml>
-    <Xml Include="HugoSandoval.xml" />
+    <Xml Include="Fiona.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="HugoSandoval.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="HumanSpaceVol01.xml">
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="Ore.xml" />
+    <Xml Include="Penitents.xml" />
     <Xml Include="RPGComponents.xml">
       <SubType>Designer</SubType>
     </Xml>

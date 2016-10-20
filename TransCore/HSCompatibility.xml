@@ -1342,22 +1342,6 @@
 
 	</DockScreen>
 	
-	<!-- Older versions defined Benedict in Human Space instead of SotP -->
-	
-	<Type UNID="&unidBenedict;">
-		<StaticData>
-			<MissionAttribute>"benedictMission"</MissionAttribute>
-			<Name>"Benedict"</Name>
-			<Sovereign>&svCommonwealth;</Sovereign>
-		</StaticData>
-
-		<Events>
-		</Events>
-
-		<Language>
-		</Language>
-	</Type>
-
 	<Globals>
 		(block Nil
 			(setq intBuyItems (lambda (itemCount itemCost)

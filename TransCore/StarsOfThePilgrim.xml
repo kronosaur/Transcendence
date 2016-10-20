@@ -23,22 +23,19 @@
 	<!-- 0010-005F BENEDICT MISSION ARC -->
 	
 	<!ENTITY msBenedictInNewBeyond		"0x00200010">
-	<!ENTITY unidStormhound				"0x00200011">
-	<!ENTITY scStormhound				"0x00200012">
-	<!ENTITY tbBenedict04Encounters		"0x00200013">
-	<!ENTITY msFionaInStKats			"0x00200014">
-	<!ENTITY unidHugoSandoval			"0x00200015">
-	<!ENTITY scHugoSandovalArmstrong	"0x00200016">
-	<!ENTITY msFindHandOfSolace			"0x00200017">
-	<!ENTITY stHandOfSolaceWreck		"0x00200018">
-	<!ENTITY ovBenedict05ScanRange		"0x00200019">
-	<!ENTITY tbBenedict05Encounters		"0x0020001A">
-	<!ENTITY scBenedictAsterion			"0x0020001B">
-	<!ENTITY msInfiltratePenitents		"0x0020001C">
-	<!ENTITY svBenedict06Infiltrate		"0x0020001D">
-	<!ENTITY evBenedict06PenitentBase	"0x0020001E">
-	<!ENTITY ovBenedict06Disarm			"0x0020001F">
-	<!ENTITY msRescueBenedict			"0x00200020">
+	<!ENTITY tbBenedict04Encounters		"0x00200011">
+	<!ENTITY msFionaInStKats			"0x00200012">
+	<!ENTITY msFindHandOfSolace			"0x00200013">
+	<!ENTITY stHandOfSolaceWreck		"0x00200014">
+	<!ENTITY ovBenedict05ScanRange		"0x00200015">
+	<!ENTITY tbBenedict05Encounters		"0x00200016">
+	<!ENTITY msInfiltratePenitents		"0x00200017">
+	<!ENTITY svBenedict06Infiltrate		"0x00200018">
+	<!ENTITY evBenedict06PenitentBase	"0x00200019">
+	<!ENTITY ovBenedict06Disarm			"0x0020001A">
+	<!ENTITY msRescueBenedict			"0x0020001B">
+	<!ENTITY evBenedict07PenitentWreck	"0x0020001C">
+	<!ENTITY msRescueChildrenFromPenitents	"0x0020001D">
 	
 	<!-- 0021xxxx HUARI ==================================================== -->
 	
@@ -176,7 +173,6 @@
 		</StaticData>
 	</AdventureDesc>
 		
-	<Module filename="Benedict.xml"/>
 	<Module filename="Benedict00.xml"/>
 	<Module filename="Benedict01.xml"/>
 	<Module filename="Benedict02.xml"/>
@@ -185,12 +181,12 @@
 	<Module filename="Benedict05.xml"/>
 	<Module filename="Benedict05A.xml"/>
 	<Module filename="Benedict06.xml"/>
+	<Module filename="Benedict07.xml"/>
+	<Module filename="Benedict08.xml"/>
 	<Module filename="BenedictStoryArc.xml"/>
 	<Module filename="Elysium.xml"/>
 	<Module filename="Huari.xml"/>
-	<Module filename="HugoSandoval.xml"/>
 	<Module filename="PlayerShips.xml"/>
-	<Module filename="Stormhound.xml"/>
 		
 <!-- ADVENTURE MAP -->
 

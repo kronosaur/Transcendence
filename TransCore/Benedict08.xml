@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Penitent Fortress =====================================================
+
+	EXTRA DATA
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msRescueChildrenFromPenitents;"
+			name=				"Rescue Children from Penitents"
+			attributes=			"benedictStoryArc"
+
+			level=				"7"
+			maxAppearing=		"1"
+			priority=			"100"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			noDebrief=			"true"
+			>
+
+		<StaticData>
+			<sequence>80</sequence>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block ()
+					(switch
+						;	See if the mission is still available
+
+						(not (benedict_isMissionAvailable (objGetType gSource)))
+							(msnDestroy gSource)
+
+						;	OK
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+			</OnAccepted>
+
+			<OnSetPlayerTarget>
+				;(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'stormhoundID)) 'dock)
+			</OnSetPlayerTarget>
+			
+			<OnObjDestroyed>
+			</OnObjDestroyed>
+			
+			<OnGlobalSystemStarted>
+				(switch
+					;	If not in EC, then nothing to do
+					
+					(!= (sysGetNode) 'EC)
+						Nil
+						
+					;	If this mission is not available, then nothing to do.
+						
+					(not (benedict_isMissionAvailable (objGetType gSource)))
+						Nil
+						
+					;	Create Sandoval here.
+					
+					(block (
+						sandovalObj
+						)
+					
+						;	Pick a position nearest to the gate towards SK
+
+						(setq sandovalObj
+							(rpgCharacterCreateShip
+								&unidHugoSandoval;
+								&scHugoSandovalArmstrong;
+								(sysVectorRandom (sysGetStargateLeadingToNode 'SK) 20 40)
+								{ repairAll:True }
+								)
+							)
+						
+						;	Order appropriately
+
+						(shpCancelOrders sandovalObj)
+						(shpOrder sandovalObj 'hold)
+						)
+					)
+			</OnGlobalSystemStarted>
+
+			<GetGlobalAchievements>
+			</GetGlobalAchievements>
+		</Events>
+		
+		<Language>
+			<Text id="Name">"Rescue Children from Penitents"</Text>
+			<Text id="Summary">
+				(cat
+					"Help Stormhound to smash the Penitent fortress and rescue the children there.\n\n"
+					"System: " (sysGetName) "\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="Intro">
+				(list
+					{
+						desc: (cat
+							"LATER: Stormhound, what are you doing here?"
+							)
+						}
+					)
+			</Text>
+			<Text id="Briefing">
+				(list
+					{
+						desc: (cat
+							"LATER: OK, we need to smash the Penitent station."
+							)
+							
+						acceptLabel: "\"[I]'m on my way.\""
+						declineLabel: "\"[L]et me prepare my ship first.\""
+						}
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(cat
+					"\"Good luck!\""
+					)
+			</Text>
+			<Text id="DeclineReply">
+				(cat
+					"LATER: Don't take too long."
+					)
+			</Text>
+			<Text id="InProgress">
+				(cat
+					"LATER: Get out there."
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+		</Language>
+	</MissionType>
+	
+</TranscendenceModule>
