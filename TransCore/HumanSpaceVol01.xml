@@ -1718,6 +1718,8 @@
 	<!ENTITY rsExcruciatorDestroyer		"0x00100211">
 	<!ENTITY itPX3HexageneMAG			"0x00100212">
 	<!ENTITY itPX19OblivionMAG			"0x00100213">
+	<!ENTITY stPenitentMonastery		"0x00100214">
+	<!ENTITY ssEtaCeti					"0x00100215">
 	
 	<!-- 0230-024F CHARACTERS -->
 	
@@ -1756,6 +1758,7 @@
 	<Module filename="BattleArenaGladiators.xml"/>
 	<Module filename="CharonFortress.xml"/>
 	<Module filename="Eridani.xml"/>
+	<Module filename="EtaCeti.xml"/>
 	<Module filename="Heretic.xml"/>
 	<Module filename="PointJuno.xml"/>
 	<Module filename="Sanctuary.xml"/>

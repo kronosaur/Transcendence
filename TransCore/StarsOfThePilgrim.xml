@@ -36,6 +36,7 @@
 	<!ENTITY msRescueBenedict			"0x0020001B">
 	<!ENTITY evBenedict07PenitentWreck	"0x0020001C">
 	<!ENTITY msRescueChildrenFromPenitents	"0x0020001D">
+	<!ENTITY evBenedict08PenitentBase	"0x0020001E">
 	
 	<!-- 0021xxxx HUARI ==================================================== -->
 	

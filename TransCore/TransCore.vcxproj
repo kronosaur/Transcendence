@@ -443,6 +443,7 @@
     <Xml Include="CoreProjectileEffects.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="EtaCeti.xml" />
     <Xml Include="Ferians.xml">
       <SubType>Designer</SubType>
     </Xml>

@@ -3,14 +3,21 @@
 <TranscendenceModule>
 	
 	<!-- Penitent Fortress =====================================================
-
+	
 	EXTRA DATA
+	
+		targetID: ID of Penitent Monastery
+		
+		
+	NOTES
+	
+		The Penitent monastery is always in the system. We 
 
 	======================================================================== -->
 	
 	<MissionType UNID="&msRescueChildrenFromPenitents;"
 			name=				"Rescue Children from Penitents"
-			attributes=			"benedictStoryArc"
+			attributes=			"benedictStoryArc, stormhoundMission"
 
 			level=				"7"
 			maxAppearing=		"1"
@@ -27,65 +34,172 @@
 
 		<Events>
 			<OnCreate>
-				(block ()
+				(block (targetObj)
 					(switch
 						;	See if the mission is still available
 
 						(not (benedict_isMissionAvailable (objGetType gSource)))
 							(msnDestroy gSource)
+							
+						;	No mission if the Penitent station is already destroyed
+						
+						(not (setq targetObj (@ (sysFindObject Nil "TA +unid:&stPenitentMonastery;;") 0)))
+							(msnDestroy gSource)
+							
+						;	If the Penitent station doesn't have the correct event handler,
+						;	then it means that someone else changed it. This should never
+						;	happen.
+						
+						(!= (objGetEventHandler targetObj) &evBenedict08PenitentBase;)
+							(msnDestroy gSource)
 
-						;	OK
+						;	Remember the target
+						
+						(block ()
+							(msnSetData gSource 'targetID (objGetID targetObj))
+							(msnRegisterForEvents gSource targetObj)
+							)
 						)
 					)
 			</OnCreate>
 
-			<OnAccepted>
-			</OnAccepted>
+			<OnAcceptedUndock>
+				(block (
+					(stormhoundObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					;	Order the Changeling to orbit the station (let the player destroy the station)
+					
+					(shpCancelOrders stormhoundObj)
+					(shpOrder stormhoundObj 'orbit targetObj 10)
+					
+					(msnSetPlayerTarget gSource)
+					)
+			</OnAcceptedUndock>
 
 			<OnSetPlayerTarget>
-				;(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'stormhoundID)) 'dock)
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					(if (objGetProperty targetObj 'abandoned)
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'dock)
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)))
+						)
+					)
 			</OnSetPlayerTarget>
 			
 			<OnObjDestroyed>
+				(switch
+					;	Penitent Monastery destroyed
+					
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(if (msnGetProperty gSource 'isActive)
+						
+							;	If the mission is active, then we continue
+							
+							(block (
+								(stormhoundObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+								)
+								
+								(shpCancelOrders stormhoundObj)
+								(shpOrder stormhoundObj 'dock aObjDestroyed)
+								
+								(objSendMessage gPlayerShip stormhoundObj (msnTranslate gSource 'msgTargetDestroyed))
+								)
+							
+							;	Otherwise, the mission fails
+							
+							(msnFailure gSource)
+							)
+							
+					;	If the Changeling is destroyed, the mission fails.
+					
+					(= (objGetID aObjDestroyed) (msnGetProperty gSource 'ownerID))
+						(msnFailure gSource)
+					)
 			</OnObjDestroyed>
 			
-			<OnGlobalSystemStarted>
+			<OnCompleted>
 				(switch
-					;	If not in EC, then nothing to do
-					
-					(!= (sysGetNode) 'EC)
-						Nil
-						
-					;	If this mission is not available, then nothing to do.
-						
-					(not (benedict_isMissionAvailable (objGetType gSource)))
-						Nil
-						
-					;	Create Sandoval here.
-					
-					(block (
-						sandovalObj
-						)
-					
-						;	Pick a position nearest to the gate towards SK
-
-						(setq sandovalObj
-							(rpgCharacterCreateShip
-								&unidHugoSandoval;
-								&scHugoSandovalArmstrong;
-								(sysVectorRandom (sysGetStargateLeadingToNode 'SK) 20 40)
-								{ repairAll:True }
-								)
+					(= aReason 'success)
+						(block (
+							(stormhoundObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+							(skGateObj (sysGetStargateLeadingToNode 'SK))
 							)
+					
+							;	Stormhound returns to SK
+							
+							(shpCancelOrders stormhoundObj)
+							(shpOrder stormhoundObj 'gate skGateObj)
+							)
+					)
+			</OnCompleted>
+			
+			<OnGlobalSystemStarted>
+				(block (
+					penitentObj
+					)
+					(switch
+						;	If not in EC, then nothing to do
+					
+						(!= (sysGetNode) 'EC)
+							Nil
 						
-						;	Order appropriately
+						;	If this mission is not available, then nothing to do.
+						
+						(not (benedict_isMissionAvailable (objGetType gSource)))
+							Nil
+						
+						;	No mission if the Penitent station is already destroyed
+						
+						(not (setq penitentObj (@ (sysFindObject Nil "TA +unid:&stPenitentMonastery;;") 0)))
+							Nil
 
-						(shpCancelOrders sandovalObj)
-						(shpOrder sandovalObj 'hold)
+						;	Set up mission
+					
+						(block (
+							stormhoundObj
+							)
+							;	Make sure the Penitent monastery has an event handler
+							
+							(if (not (objGetEventHandler penitentObj))
+								(objSetEventHandler penitentObj &evBenedict08PenitentBase;)
+								)
+
+							;	Create Stormhound near gate to SK
+
+							(setq stormhoundObj
+								(rpgCharacterCreateShip
+									&unidStormhound;
+									&scStormhoundAquila;
+									(sysVectorRandom (sysGetStargateLeadingToNode 'SK) 20 40)
+									{ repairAll:True }
+									)
+								)
+						
+							;	Order appropriately
+
+							(shpCancelOrders stormhoundObj)
+							(shpOrder stormhoundObj 'hold)
+							)
 						)
 					)
 			</OnGlobalSystemStarted>
 
+			<OnRescueDone>
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					;	Mission succeeds
+					
+					(msnSuccess gSource)
+					
+					;	No need for the station event handler
+					
+					(objSetEventHandler targetObj Nil)
+					)
+			</OnRescueDone>
+			
 			<GetGlobalAchievements>
 			</GetGlobalAchievements>
 		</Events>
@@ -138,7 +252,86 @@
 			<Text id="SuccessMsg">
 				"Mission complete!"
 			</Text>
+			
+			<Text id="dlgRescueChildren">
+				(list
+					{
+						desc: (cat
+							"LATER: You rescue the children"
+							)
+						nextPage: 'forceUndock
+						code: (lambda ()
+							(block (
+								(missionObj (@ (msnFind "a +unid:&msRescueChildrenFromPenitents;;") 0))
+								)
+								(msnFireEvent missionObj 'OnRescueDone)
+								)
+							)
+						}
+					)
+			</Text>
+			<Text id="dlgChildrenDead">
+				(list
+					{
+						desc: (cat
+							"LATER: The children are all dead."
+							)
+						nextPage: 'forceUndock
+						}
+					)
+			</Text>
+			<Text id="dlgWaitForStormhound">
+				(list
+					{
+						desc: (cat "You decide to wait for Stormhound.")
+						nextPage: 'forceUndock
+						}
+					)
+			</Text>
+			
+			<Text id="msgTargetDestroyed">"Good work! We're inbound!"</Text>
 		</Language>
 	</MissionType>
 	
+<!-- BEHAVIORS -->
+
+	<Type UNID="&evBenedict08PenitentBase;">
+		<Events>
+			<GetDockScreen>
+				(block (
+					(missionObj (@ (msnFind "a +unid:&msRescueChildrenFromPenitents;;") 0))
+					(stormhoundObj (objGetObjByID (msnGetProperty missionObj 'ownerID)))
+					)
+				
+					(switch
+						;	Only if Penitent station is abandoned
+						
+						(not (objGetProperty gSource 'abandoned))
+							Nil
+
+						;	If no mission, then it means the player destroyed the monastery before
+						;	accepting the mission. Same if the mission failed.
+						
+						(or (not missionObj) (msnGetProperty missionObj 'isFailure))
+							(list &dsRPGDialog; (typTranslate &msRescueChildrenFromPenitents; 'dlgChildrenDead) 10)
+							
+						;	If the mission is no longer active, then we're done
+						
+						(not (msnGetProperty missionObj 'isActive))
+							Nil
+							
+						;	If Stormhound isn't here yet, we wait
+							
+						(!= (objGetProperty stormhoundObj 'dockedAtID) (objGetID gSource))
+							(list &dsRPGDialog; (typTranslate &msRescueChildrenFromPenitents; 'dlgWaitForStormhound) 10)
+							
+						;	Otherwise, we rescue the children
+						
+						(list &dsRPGDialog; (typTranslate &msRescueChildrenFromPenitents; 'dlgRescueChildren) 10)
+						)
+					)
+			</GetDockScreen>
+		</Events>
+	</Type>
+
 </TranscendenceModule>

@@ -19,168 +19,24 @@
     <Filter Include="Transcendence Galaxy Library">
       <UniqueIdentifier>{f0df8dab-f35b-432f-8f48-d857cf0f924e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Human Space Library\Star Systems">
+      <UniqueIdentifier>{d4cb7273-3da3-4275-9fc5-78295e095dc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Human Space Library\Encounters">
+      <UniqueIdentifier>{b33ac3ac-3346-4d8b-b1b3-ef7b253a1f89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Human Space Library\Items">
+      <UniqueIdentifier>{36ba9821-7ac3-48a5-b32c-77fbe79b8a73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Human Space Library\Miscellaneous">
+      <UniqueIdentifier>{63cc6687-e95b-4c83-8021-ea2fc3f9c088}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Human Space Library\Characters">
+      <UniqueIdentifier>{dbe8cf34-7bb0-4df2-a8c4-5578f693ba9a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Transcendence.xml" />
-    <None Include="Antarctica.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="AresOrthodoxy.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="BattleArena.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="BattleArenaGladiators.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="BlackMarket.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="CentauriWarlords.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="CharonFortress.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="CharonPirates.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Code.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Commonwealth.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="CommonwealthAgricultural.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="CommonwealthFleet.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="CommonwealthMetropolis.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="CommonwealthMilitia.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="CommonwealthMining.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="CorporateHierarchy.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Domina.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="DwargRaiders.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="EncountersVol01.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Eridani.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Heretic.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="HSCompatibility.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="HumanSpaceMap.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Iocrym.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="KateMorgental.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="KorolovShipping.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Luminous.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="MiscItems.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="OutlawMiners.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="PointJuno.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Rasiermesser.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Ringers.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="RogueFleet.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="SistersOfDomina.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="StdArmor.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="StdAutons.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="StdDevices.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="StdDockScreens.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="StdEffects.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="StdFuel.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="StdPlayerShips.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="StdShields.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="StdSovereigns.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="StdSystems.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="StdTypes.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="StdUnknownItems.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="StdWeapons.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="StKatharines.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="SungSlavers.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Teratons.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="Tinkers.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="UrakWarlords.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
-    <None Include="UsefulItems.xml">
-      <Filter>Human Space Library</Filter>
-    </None>
     <None Include="CoreCode.xml">
       <Filter>Core Types</Filter>
     </None>
@@ -325,6 +181,165 @@
     <None Include="RPGAnalyzers.xml">
       <Filter>RPG Library</Filter>
     </None>
+    <None Include="Antarctica.xml">
+      <Filter>Human Space Library\Star Systems</Filter>
+    </None>
+    <None Include="AresOrthodoxy.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="BattleArena.xml">
+      <Filter>Human Space Library\Star Systems</Filter>
+    </None>
+    <None Include="BattleArenaGladiators.xml">
+      <Filter>Human Space Library\Star Systems</Filter>
+    </None>
+    <None Include="BlackMarket.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="CentauriWarlords.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="CharonFortress.xml">
+      <Filter>Human Space Library\Star Systems</Filter>
+    </None>
+    <None Include="CharonPirates.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="Code.xml">
+      <Filter>Human Space Library\Miscellaneous</Filter>
+    </None>
+    <None Include="Commonwealth.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="CommonwealthAgricultural.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="CommonwealthFleet.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="CommonwealthMetropolis.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="CommonwealthMilitia.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="CommonwealthMining.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="CorporateHierarchy.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="Domina.xml">
+      <Filter>Human Space Library\Miscellaneous</Filter>
+    </None>
+    <None Include="DwargRaiders.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="EncountersVol01.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="Eridani.xml">
+      <Filter>Human Space Library\Star Systems</Filter>
+    </None>
+    <None Include="Heretic.xml">
+      <Filter>Human Space Library\Star Systems</Filter>
+    </None>
+    <None Include="HSCompatibility.xml">
+      <Filter>Human Space Library\Miscellaneous</Filter>
+    </None>
+    <None Include="HumanSpaceMap.xml">
+      <Filter>Human Space Library\Star Systems</Filter>
+    </None>
+    <None Include="Iocrym.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="KateMorgental.xml">
+      <Filter>Human Space Library\Characters</Filter>
+    </None>
+    <None Include="KorolovShipping.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="Luminous.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="MiscItems.xml">
+      <Filter>Human Space Library\Items</Filter>
+    </None>
+    <None Include="OutlawMiners.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="PointJuno.xml">
+      <Filter>Human Space Library\Star Systems</Filter>
+    </None>
+    <None Include="Rasiermesser.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="Ringers.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="RogueFleet.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="SistersOfDomina.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="StdArmor.xml">
+      <Filter>Human Space Library\Items</Filter>
+    </None>
+    <None Include="StdAutons.xml">
+      <Filter>Human Space Library\Items</Filter>
+    </None>
+    <None Include="StdDevices.xml">
+      <Filter>Human Space Library\Items</Filter>
+    </None>
+    <None Include="StdFuel.xml">
+      <Filter>Human Space Library\Items</Filter>
+    </None>
+    <None Include="StdShields.xml">
+      <Filter>Human Space Library\Items</Filter>
+    </None>
+    <None Include="StdWeapons.xml">
+      <Filter>Human Space Library\Items</Filter>
+    </None>
+    <None Include="StdDockScreens.xml">
+      <Filter>Human Space Library\Miscellaneous</Filter>
+    </None>
+    <None Include="StdEffects.xml">
+      <Filter>Human Space Library\Miscellaneous</Filter>
+    </None>
+    <None Include="StdPlayerShips.xml">
+      <Filter>Human Space Library\Miscellaneous</Filter>
+    </None>
+    <None Include="StdSovereigns.xml">
+      <Filter>Human Space Library\Miscellaneous</Filter>
+    </None>
+    <None Include="StdSystems.xml">
+      <Filter>Human Space Library\Star Systems</Filter>
+    </None>
+    <None Include="StdTypes.xml">
+      <Filter>Human Space Library\Miscellaneous</Filter>
+    </None>
+    <None Include="StdUnknownItems.xml">
+      <Filter>Human Space Library\Items</Filter>
+    </None>
+    <None Include="StKatharines.xml">
+      <Filter>Human Space Library\Star Systems</Filter>
+    </None>
+    <None Include="SungSlavers.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="Teratons.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="Tinkers.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="UrakWarlords.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </None>
+    <None Include="UsefulItems.xml">
+      <Filter>Human Space Library\Items</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CorePlaceholders.xml">
@@ -344,12 +359,6 @@
     </Xml>
     <Xml Include="GalaxyLibrary.xml">
       <Filter>Transcendence Galaxy Library</Filter>
-    </Xml>
-    <Xml Include="StdMiningEquipment.xml">
-      <Filter>Human Space Library</Filter>
-    </Xml>
-    <Xml Include="Ferians.xml">
-      <Filter>Human Space Library</Filter>
     </Xml>
     <Xml Include="RPGComponents.xml">
       <Filter>RPG Library</Filter>
@@ -372,38 +381,47 @@
     <Xml Include="Benedict05.xml">
       <Filter>Part I</Filter>
     </Xml>
-    <Xml Include="CommonwealthShips.xml">
-      <Filter>Human Space Library</Filter>
-    </Xml>
     <Xml Include="Benedict05A.xml">
       <Filter>Part I</Filter>
     </Xml>
     <Xml Include="Benedict06.xml">
       <Filter>Part I</Filter>
     </Xml>
-    <Xml Include="Sanctuary.xml">
-      <Filter>Human Space Library</Filter>
-    </Xml>
     <Xml Include="Benedict07.xml">
       <Filter>Part I</Filter>
     </Xml>
-    <Xml Include="Penitents.xml">
-      <Filter>Human Space Library</Filter>
-    </Xml>
-    <Xml Include="Benedict.xml">
-      <Filter>Human Space Library</Filter>
-    </Xml>
-    <Xml Include="HugoSandoval.xml">
-      <Filter>Human Space Library</Filter>
-    </Xml>
-    <Xml Include="Stormhound.xml">
-      <Filter>Human Space Library</Filter>
-    </Xml>
-    <Xml Include="Fiona.xml">
-      <Filter>Human Space Library</Filter>
-    </Xml>
     <Xml Include="Benedict08.xml">
       <Filter>Part I</Filter>
+    </Xml>
+    <Xml Include="Benedict.xml">
+      <Filter>Human Space Library\Characters</Filter>
+    </Xml>
+    <Xml Include="CommonwealthShips.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </Xml>
+    <Xml Include="EtaCeti.xml">
+      <Filter>Human Space Library\Star Systems</Filter>
+    </Xml>
+    <Xml Include="Ferians.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </Xml>
+    <Xml Include="Fiona.xml">
+      <Filter>Human Space Library\Characters</Filter>
+    </Xml>
+    <Xml Include="HugoSandoval.xml">
+      <Filter>Human Space Library\Characters</Filter>
+    </Xml>
+    <Xml Include="Penitents.xml">
+      <Filter>Human Space Library\Encounters</Filter>
+    </Xml>
+    <Xml Include="Sanctuary.xml">
+      <Filter>Human Space Library\Star Systems</Filter>
+    </Xml>
+    <Xml Include="StdMiningEquipment.xml">
+      <Filter>Human Space Library\Items</Filter>
+    </Xml>
+    <Xml Include="Stormhound.xml">
+      <Filter>Human Space Library\Characters</Filter>
     </Xml>
   </ItemGroup>
 </Project>

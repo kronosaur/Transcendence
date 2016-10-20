@@ -16,27 +16,49 @@
 	<StationType UNID="&stPenitentShrine;"
 			name=				"Penitent shrine"
 			sovereign=			"&svPenitents;"
+				 
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, penitents, populated, religious"
+				 
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
+				 
 			armorID=			"&itLightBlastPlate;"
 			hitPoints=			"210"
-            regen=              "0.6"
-			fireRateAdj=		"40"
+			multiHull=			"true"
+            regen=              "2"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 			noFriendlyFire=		"true"
-
-			attributes=			"enemy, envAir, envAvoidsFire, generic, human, penitents, populated, religious"
-			levelFrequency=		"---rc urv-- ----- ----- -----"
-			locationCriteria=	"+nebulae"
 			>
 
-		<Image			imageID="&rsStations5;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
+		<!-- Encounter Info -->
 
+		<Encounter
+				levelFrequency=		"---rc uv--- ----- ----- -----"
+				locationCriteria=	"+nebulae"
+				enemyExclusionRadius="50"
+				/>
+
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Lookup					count="1d4"	table="&trStationSupplies;" />
+			<Table>
+				<Lookup chance="50"	count="1" table="&trHaloGems;"/>
+				<Lookup chance="20" count="1" table="&trConsumables6;"/>
+				<Lookup chance="20" count="1" table="&trMinorItem6;"/>
+				<Lookup chance="10" count="1" table="&trMajorItem6;"/>
+			</Table>
+		</Items>
+
+		<!-- Configuration -->
+		
 		<Devices>
 			<Device deviceID="&itOracusHarassPower;"/>
 		</Devices>
+
+		<!-- Ships and Defenses -->
 
 		<Ships>
 			<Table>
@@ -49,46 +71,66 @@
 			</Table>
 		</Ships>
 
-		<Items>
-			<Lookup					count="1d4"	table="&trStationSupplies;" />
-			<Table>
-				<Lookup chance="50"	count="1" table="&trHaloGems;"/>
-				<Lookup chance="20" count="1" table="&trConsumables6;"/>
-				<Lookup chance="20" count="1" table="&trMinorItem6;"/>
-				<Lookup chance="10" count="1" table="&trMajorItem6;"/>
-			</Table>
-		</Items>
+		<!-- Image and Effects -->
 
+		<Image			imageID="&rsStations5;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"64"
+				>
+		</DockingPorts>
 	</StationType>
 
-	<!-- Level 7: Penitent Sanctum -->
+	<!-- Level 6: Penitent Sanctum -->
 
 	<StationType UNID="&stPenitentSanctum;"
 			name=				"Penitent sanctum"
 			sovereign=			"&svPenitents;"
+				 
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, penitents, populated, religious"
+				 
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
+				 
 			armorID=			"&itBlastPlate;"
 			hitPoints=			"700"
-            regen=              "3.5"
-			fireRateAdj=		"40"
+			multiHull=			"true"
+            regen=              "8"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 			noFriendlyFire=		"true"
-
-			attributes=			"enemy, envAir, envAvoidsFire, generic, human, penitents, populated, religious"
-			levelFrequency=		"----v curv- ----- ----- -----"
-			locationCriteria=	"+nebulae"
 			>
 
-		<Image			imageID="&rsStations5;" imageX="128" imageY="256" imageWidth="128" imageHeight="128"/>
+		<!-- Encounter Info -->
 
+		<Encounter
+				levelFrequency=		"----r cuv-- ----- ----- -----"
+				locationCriteria=	"+nebulae"
+				enemyExclusionRadius="60"
+				/>
+
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Lookup					count="1d4"	table="&trStationSupplies;" />
+			<Lookup chance="65"		count="1"	table="&trHaloGems;"/>
+			<Table chance="50">
+				<Lookup chance="40" count="1" table="&trConsumables7;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem7;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem7;"/>
+			</Table>
+		</Items>
+		
+		<!-- Configuration -->
+		
 		<Devices>
 			<Device deviceID="&itOracusHarassPower;"/>
 			<Device deviceID="&itAbsolutionCannon;"	omnidirectional="true"/>
 		</Devices>
+
+		<!-- Ships and Defenses -->
 
 		<Ships>
 			<Table>
@@ -101,6 +143,49 @@
 			</Table>
 		</Ships>
 
+		<!-- Image and Effects -->
+
+		<Image			imageID="&rsStations5;" imageX="128" imageY="256" imageWidth="128" imageHeight="128"/>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"64"
+				>
+		</DockingPorts>
+	</StationType>
+	
+	<!-- Level 7: Penitent Monastery -->
+
+	<StationType UNID="&stPenitentMonastery;"
+			name=				"Penitent monastery"
+			sovereign=			"&svPenitents;"
+				 
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, penitents, populated, religious"
+				 
+			abandonedScreen=	"&dsAbandonedStation;"
+				 
+			armorID=			"&itBlastPlate;"
+			hitPoints=			"1800"
+			multiHull=			"true"
+            regen=              "35"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtThermoExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+			noFriendlyFire=		"true"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				levelFrequency=		"----- vur-- ----- ----- -----"
+				locationCriteria=	"+nebulae"
+				enemyExclusionRadius="80"
+				unique=				"inSystem"
+				/>
+		
+		<!-- Trade and Items -->
+		
 		<Items>
 			<Lookup					count="1d4"	table="&trStationSupplies;" />
 			<Lookup chance="95"		count="1"	table="&trHaloGems;"/>
@@ -110,7 +195,36 @@
 				<Lookup chance="20" count="1" table="&trMajorItem7;"/>
 			</Table>
 		</Items>
+		
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itOracusHarassPower;"/>
+			<Device deviceID="&itAbsolutionCannon;"	omnidirectional="true"/>
+		</Devices>
 
+		<!-- Ships and Defenses -->
+
+		<Ships>
+			<Table>
+				<Ship chance="25"	count="1d6"	class="&scRepentant;"	orders="guard"/>
+				<Group chance="50">
+					<Ship			count="1d4"	class="&scRepentant;"	orders="guard"/>
+					<Ship			count="1"	class="&scAtonement;"	orders="guard"/>
+				</Group>
+				<Ship chance="25"	count="1d4"	class="&scAtonement;"	orders="guard"/>
+			</Table>
+		</Ships>
+
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsStations5;" imageX="128" imageY="256" imageWidth="128" imageHeight="128"/>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"64"
+				>
+		</DockingPorts>
 	</StationType>
 	
 <!-- SHIP CLASSES -->

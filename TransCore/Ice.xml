@@ -72,6 +72,22 @@
 			</Lookup>
 		</AsteroidIceBelt100>
 		
+		<AsteroidIceBelt500>
+			<Lookup table="RegionDefinition">
+				<_Morphology>
+					<Variant variant="ice">
+						<OrbitalDistribution count="2d125+375" radialWidth="130">
+							<Lookup table="VariantAsteroid"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="6-12"	radialWidth="130">
+							<Lookup table="VariantAsteroidBeltLabel"/>
+						</OrbitalDistribution>
+					</Variant>
+				</_Morphology>
+			</Lookup>
+		</AsteroidIceBelt500>
+		
 		<!-- PLANETS AND PLANETOIDS -->
 
 		<IcePrimary>
