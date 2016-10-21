@@ -235,6 +235,16 @@
 							
 						label: "\"Uh, '[S]tormhound'?\""
 						}
+					{
+						desc: (cat
+							"A voice behind the troopers says, \"Stand down, gentlemen.\"\n\n"
+							
+							"A short, elegant man in a neolinen suit appears. He walks past the two troopers "
+							"and dismisses them with a nod.\n\n"
+							
+							"\"Good day, %name%!\""
+							)
+						}
 					)
 			</Text>
 

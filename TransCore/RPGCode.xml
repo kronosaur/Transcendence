@@ -2102,11 +2102,11 @@
 							
 							(actionAccel
 								(switch
-									(eq (count (@ pageDesc 'actions)) 1)
+									(eq (count actions) 1)
 										(list "default" "cancel")
 									(eq nextActionID 0)
 										"default"
-									(eq nextActionID (subtract (count (@ pageDesc 'actions)) 1))
+									(eq nextActionID (subtract (count actions) 1))
 										"cancel"
 									Nil
 									)

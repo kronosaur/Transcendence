@@ -217,8 +217,29 @@
 				(list
 					{
 						desc: (cat
-							"LATER: Stormhound, what are you doing here?"
+							"Stormhound leads you to the tactical room. A central map "
+							"depicts the entire system. Green and red markers dance in their "
+							"orbits.\n\n"
+							
+							"Benedict and Fiona smile as you enter.\n\n"
+							
+							"\"It's good to see you, %name%,\" says Benedict, \"Welcome "
+							"about the CSS Changeling!\""
 							)
+						label: "\"[N]ice ship!\""
+						}
+					{
+						desc: (cat
+							"\"We have Stormhound to thank for that. He heard about our plan "
+							"to rescue the children from the Penitents, and he made a few "
+							"calls.\"\n\n"
+							
+							"\"Indeed,\" says Stormhound, \"Officially this ship does not exist, "
+							"which makes it useful for certain kinds of operations.\n\n"
+							
+							"\"But we don't have any time to waste.\""
+							)
+						label: "\"[W]hat's the plan?\""
 						}
 					)
 			</Text>
@@ -226,27 +247,31 @@
 				(list
 					{
 						desc: (cat
-							"LATER: OK, we need to smash the Penitent station."
-							)
+							"Benedict points at the map. \"Now that you're here, we could use "
+							"your help.\n\n"
 							
-						acceptLabel: "\"[I]'m on my way.\""
+							"\"The children are being kept at a fortified monastery in this system. "
+							"The Changeling will engage the ships defending the area, while you "
+							"breach the monastery. Then we'll dock and extract the children.\""
+							)
+						acceptLabel: "\"[C]ount me in.\""
 						declineLabel: "\"[L]et me prepare my ship first.\""
 						}
 					)
 			</Text>
 			<Text id="AcceptReply">
 				(cat
-					"\"Good luck!\""
+					"\"Let's go then, and good luck to us all!\""
 					)
 			</Text>
 			<Text id="DeclineReply">
 				(cat
-					"LATER: Don't take too long."
+					"\"OK, but don't take too long!\""
 					)
 			</Text>
 			<Text id="InProgress">
 				(cat
-					"LATER: Get out there."
+					"\"No time to waste! Get back out there!\""
 					)
 			</Text>
 			<Text id="SuccessMsg">
@@ -257,7 +282,150 @@
 				(list
 					{
 						desc: (cat
-							"LATER: You rescue the children"
+							"The docking bay is lit by emergency lights, and a vacuum alarm "
+							"shrieks in the distance.\n\n"
+							
+							"Benedict and Fiona enter the bay, followed by Stormhound and a "
+							"squard of Commonwealth marines.\n\n"
+							
+							"Benedict waves his hand, \"Stormhound, secure the docking bay! "
+							"Make sure we can return back to the ship. We'll meet you in "
+							"medical.\""
+							)
+						}
+					{
+						desc: (cat
+							"You wind your way through the station with Fiona and her autons "
+							"in the lead. Eventually you enter a ward filled with small beds. "
+							"Three medtechs in light-gray gowns turn as you enter, but Fiona "
+							"and Benedict subdue them quickly.\n\n"
+							
+							"Fiona checks one of the bed, \"The children are here, but..."
+							"oh my gods!\""
+							)
+						}
+					{
+						desc: (cat
+							"You look in the nearest bed and see a child wrapped in blankets. "
+							"Her cranium is elongated to twice the normal size, "
+							"and her neck and shoulders are rough and almost scaly.\n\n"
+							
+							"She looks at you and cries a raspy shriek."
+							)
+						label: "\"[W]hat the hell happened to them!?\""
+						}
+					{
+						desc: (cat
+							"Just then, an impossibly tall figure steps out of a dark "
+							"corridor. He knocks Fiona against a wall with a single swipe. "
+							"Benedict raises his arm cannon, but the figure is too fast. "
+							"It leaps at him, leaving him in a crumpled heap.\n\n"
+							
+							"The figure turns to face you. His bald head is leathery and "
+							"elongated, and his whole body is covered in rough, chitinous "
+							"scales. Two large, membranous wings protrude from his back, "
+							"flapping slowly as he turns."
+							)
+						}
+					{
+						desc: (cat
+							"The figure looks straight at you with bright blue human eyes.\n\n"
+							
+							"\"It's too late! Whether you reach the Core or not, Domina's plan "
+							"has already failed. We humans will survive!\""
+							)
+						label: "\"'[W]e humans'?\""
+						}
+					{
+						desc: (cat
+							"\"Just remember one thing, pilgrim: the Ancient Races are doomed. "
+							"When the time comes, be sure to pick the right side.\""
+							)
+						label: "\"[W]hat the hell are you?\""
+						}
+					{
+						desc: (cat
+							"Before he can answer, Stormhound burst in with a squad of "
+							"marines. They fire at the figure, but it jumps with incredible "
+							"speed and flies through a shaft.\n\n"
+							
+							"Stormhound grabs your arm, \"Are you alright?\""
+							)
+						label: "\"[N]ot really, no.\""
+						}
+					{
+						desc: (cat
+							"Stormhound waves the marine captain over. \"Take these children "
+							"back to the ship. Get Doctor Sanger on them. I want to know if "
+							"they're like the other.\"\n\n"
+							
+							"The captain leaves with a crisp, \"Yes, sir.\""
+							)
+						label: "\"[W]hat's wrong with the children?\""
+						}
+					{
+						desc: (cat
+							"\"Nothing, unfortunately. They're perfectly healthy.\""
+							)
+						label: "\"[T]hey're like that creature!\""
+						}
+					{
+						desc: (cat
+							"\"Yes. They're a neohuman breed the Penitents have created. "
+							"They call themselves the 'Arioi.' It's what Sister Ston was "
+							"working on.\""
+							)
+						label: "\"[W]hy?\""
+						}
+					{
+						desc: (cat
+							"Stormhound chuckles, \"Does it matter? It's not going to be "
+							"a reason we like.\"\n\n"
+							
+							"Benedict regains consciousness and helps Fiona up. Fiona shakes "
+							"her head and bolts upright, \"The children! Are they OK?\""
+							)
+						}
+					{
+						desc: (cat
+							"Stormhound walks to them, \"Yes, we'll take care of them. "
+							"That, at least, we can do.\""
+							)
+						label: "\"[W]hat now?\""
+						}
+					{
+						desc: (cat
+							"Benedict checks his arm cannon, \"We keep fighting! The Penitents, "
+							"the Sisters, it doesn't matter. We keep fighting them!\"\n\n"
+							
+							"Fiona takes his hand and looks at him, \"No, we have to be smart. "
+							"And we need allies. Sister McMurray helped us. We need to help her "
+							"reclaim the Sisterhood. Restore it to what it should be.\""
+							)
+						}
+					{
+						desc: (cat
+							"Stormhound nods, \"You won't be able to do anything on your own, "
+							"but it so happens I could use people with your skills.\"\n\n"
+							
+							"Benedict looks at him, \"Thank you. We don't have any place else "
+							"to go.\""
+							)
+						}
+					{
+						desc: (cat
+							"Benedict turns to you, \"Thank you for helping us. I know you have "
+							"your own quest, and it may turn out to be the most important one of all.\"\n\n"
+							
+							"Fiona frowns, \"Benedict is right. Whatever's going on, the answers "
+							"are out there, beyond the Quarantine Zone. I hope you find them.\""
+							)
+						}
+					{
+						desc: (cat
+							"Benedict and Fiona walk back towards the CSS Changeling, arm in arm.\n\n"
+							
+							"Benedict waves back to you, \"Goodbye, %name%, and good luck!\""
 							)
 						nextPage: 'forceUndock
 						code: (lambda ()
@@ -274,7 +442,14 @@
 				(list
 					{
 						desc: (cat
-							"LATER: The children are all dead."
+							"The station is filled with smoke and lit only by emergency lights. "			
+							"Bodies slump everywhere, some bloodied, others asphyxiated.\n\n"
+							
+							"You make your way to a large medical ward filled with a dozen small "
+							"beds. You look in one of the beds and see a blanked-wrapped body "
+							"of a deformed child. Tiny lifeless eyes stare at you.\n\n"
+							
+							"You run out quickly."
 							)
 						nextPage: 'forceUndock
 						}
