@@ -164,7 +164,7 @@
 				 
 			abandonedScreen=	"&dsAbandonedStation;"
 				 
-			armorID=			"&itBlastPlate;"
+			armorID=			"&itHeavyBlastPlate;"
 			hitPoints=			"1800"
 			multiHull=			"true"
             regen=              "35"
@@ -218,11 +218,11 @@
 
 		<!-- Image and Effects -->
 		
-		<Image			imageID="&rsStations5;" imageX="128" imageY="256" imageWidth="128" imageHeight="128"/>
+		<Image			imageID="&rsPenitentMonastery;" imageWidth="290" imageHeight="256" viewportRatio="0.05"/>
 
 		<DockingPorts
-				portCount=		"8"
-				portRadius=		"64"
+				portCount=		"12"
+				portRadius=		"160"
 				>
 		</DockingPorts>
 	</StationType>
@@ -364,11 +364,11 @@
 
 			attributes=			"capitalShip, genericClass, penitents"
 
-			size=				"140"
-			mass=				"14000"
+			size=				"195"
+			mass=				"17000"
 			thrustRatio=		"1"
 			maxSpeed=			"12"
-			cargoSpace=			"500"
+			cargoSpace=			"1500"
 
 			cyberDefenseLevel=	"4"
 
@@ -383,14 +383,14 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itMAGLauncher;"	omnidirectional="true">
+			<Device deviceID="&itMAGLauncher;"	omnidirectional="true" posAngle="0" posRadius="20" posZ="25">
 				<Items>
 					<Item count="2d6" item="&itPX19OblivionMAG;"/>
 					<Item count="12d6" item="&itPX3HexageneMAG;"/>
 				</Items>
 			</Device>
-			<Device deviceID="&itAbsolutionCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="160" posAngle="17"  posRadius="66"  posZ="5"/>
-			<Device deviceID="&itAbsolutionCannon;" secondaryWeapon="true" minFireArc="200" maxFireArc="20"	 posAngle="343" posRadius="66"  posZ="5"/>
+			<Device deviceID="&itAbsolutionCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="160" posAngle="25"  posRadius="35"  posZ="25"/>
+			<Device deviceID="&itAbsolutionCannon;" secondaryWeapon="true" minFireArc="200" maxFireArc="20"	 posAngle="-25" posRadius="35"  posZ="25"/>
 			<Device deviceID="&itClass3Deflector;"/>
 			<Device deviceID="&it100MWReactor;"/>
 		</Devices>
@@ -429,13 +429,13 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsTripoli;" imageWidth="156" imageHeight="156"/>
+		<Image imageID="&rsExcruciatorDestroyer;" imageWidth="190" imageHeight="190" rotationCount="120" rotationColumns="12" viewportRatio="0.025"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="167"	posRadius="72"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-167"	posRadius="72"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="175"	posRadius="70"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-175"	posRadius="70"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="174"	posRadius="88"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-174"	posRadius="88"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="174"	posRadius="88"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-174"	posRadius="88"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
@@ -609,5 +609,10 @@
 			</Fragment>
 		</Missile>
 	</ItemType>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsExcruciatorDestroyer;" bitmap="Resources\ExcruciatorDestroyer.jpg" bitmask="Resources\ExcruciatorDestroyerMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsPenitentMonastery;" bitmap="Resources\PenitentMonastery.jpg" bitmask="Resources\PenitentMonasteryMask.bmp" loadOnUse="true" />
 
 </TranscendenceModule>
