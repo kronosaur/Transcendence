@@ -249,6 +249,12 @@
 							0
 							))
 							
+						;	Mark up
+						
+						(baseCost (itmGetPrice thisItem currencyUsed))
+						(itemMarkup (if (gr itemCost 0) (- itemCost baseCost) 0))
+						(itemMarkupPercent (if (gr baseCost 0) (int (round (* (/ itemMarkup baseCost) 100)))))
+							
 						;	How many items can we fit?
 						
 						(fitCount (objGetFitCount gPlayerShip thisItem))
@@ -280,6 +286,9 @@
 							(scrSetDesc gScreen
 								(scrTranslate gScreen 'descItemStats {
 									value: (if (gr itemCost 0) (fmtCurrency currencyUsed itemCost))
+									markup: (if (geq itemMarkup 0) (fmtCurrency currencyUsed itemMarkup))
+									discount: (if (ls itemMarkup 0) (fmtCurrency currencyUsed (abs itemMarkup)))
+									markupPercent: (abs itemMarkupPercent)
 									max: (if (gr maxCount 1) maxCount)
 									maxValue: (fmtCurrency currencyUsed (multiply itemCost maxCount))
 									mass: (strMassString (itmGetMass thisItem))
@@ -515,11 +524,21 @@
 				(if (@ gData 'max)
 					(cat
 						"Unit price: " (@ gData 'value) " (" (@ gData 'max) " for " (@ gData 'maxValue) ")\n"
-						"Unit mass: " (@ gData 'mass) " (" (@ gData 'max) " for " (@ gData 'maxMass) ")\n\n"
+						"Unit mass: " (@ gData 'mass) " (" (@ gData 'max) " for " (@ gData 'maxMass) ")\n"
+						(if (@ gData 'markup) 
+							(cat "Unit markup: " (@ gData 'markup) " (" (@ gData 'markupPercent) "%)\n")
+							(cat "Unit discount: " (@ gData 'discount) " (" (@ gData 'markupPercent) "%)\n")
+							)
+						"\n"
 						)
 					(cat
 						"Unit price: " (@ gData 'value) "\n"
-						"Unit mass: " (@ gData 'mass) "\n\n"
+						"Unit mass: " (@ gData 'mass) "\n"
+						(if (@ gData 'markup) 
+							(cat "Unit markup: " (@ gData 'markup) " (" (@ gData 'markupPercent) "%)\n")
+							(cat "Unit discount: " (@ gData 'discount) " (" (@ gData 'markupPercent) "%)\n")
+							)
+						"\n"
 						)
 					)
 			</Text>
@@ -682,6 +701,12 @@
 								)
 							)
 							
+						;	Mark up
+						
+						(baseCost (itmGetPrice thisItem currencyUsed))
+						(itemMarkup (if (gr offerPrice 0) (- offerPrice baseCost) 0))
+						(itemMarkupPercent (if (gr baseCost 0) (int (round (* (/ itemMarkup baseCost) 100)))))
+						
 						;	Compute the number of items the station is willing
 						;	to buy.
 						
@@ -709,7 +734,10 @@
 								(if (gr offerCount 0)
 									(scrTranslate gScreen 'descItemStats {
 										value: (if (gr offerPrice 0) (fmtCurrency currencyUsed offerPrice))
-										max: offerCount
+										markup: (if (geq itemMarkup 0) (fmtCurrency currencyUsed itemMarkup))
+										discount: (if (ls itemMarkup 0) (fmtCurrency currencyUsed (abs itemMarkup)))
+										markupPercent: (abs itemMarkupPercent)
+										max: (if (gr offerCount 1) offerCount)
 										maxValue: (fmtCurrency currencyUsed (multiply offerPrice offerCount))
 										mass: (strMassString (itmGetMass thisItem))
 										maxMass: (strMassString (multiply (itmGetMass thisItem) offerCount))
@@ -827,11 +855,21 @@
 				(if (@ gData 'max)
 					(cat
 						"Unit price: " (@ gData 'value) " (" (@ gData 'max) " for " (@ gData 'maxValue) ")\n"
-						"Unit mass: " (@ gData 'mass) " (" (@ gData 'max) " for " (@ gData 'maxMass) ")\n\n"
+						"Unit mass: " (@ gData 'mass) " (" (@ gData 'max) " for " (@ gData 'maxMass) ")\n"
+						(if (@ gData 'markup) 
+							(cat "Unit markup: " (@ gData 'markup) " (" (@ gData 'markupPercent) "%)\n")
+							(cat "Unit discount: " (@ gData 'discount) " (" (@ gData 'markupPercent) "%)\n")
+							)
+						"\n"
 						)
 					(cat
 						"Unit price: " (@ gData 'value) "\n"
-						"Unit mass: " (@ gData 'mass) "\n\n"
+						"Unit mass: " (@ gData 'mass) "\n"
+						(if (@ gData 'markup) 
+							(cat "Unit markup: " (@ gData 'markup) " (" (@ gData 'markupPercent) "%)\n")
+							(cat "Unit discount: " (@ gData 'discount) " (" (@ gData 'markupPercent) "%)\n")
+							)
+						"\n"
 						)
 					)
 			</Text>
