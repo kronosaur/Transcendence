@@ -16,7 +16,7 @@
 			mass=				"1"
 			frequency=			"veryrare"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Consumable; Info"
+			attributes=			"consumable, info, systemMap"
 
 			description=		"This program contains the location of all Charon pirate bases in the system."
 			>

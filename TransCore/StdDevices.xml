@@ -8,7 +8,7 @@
 
 	<ItemType UNID="&itLaserEnhancer;"
 			name=				"laser collimator"
-			attributes=			"commonwealth, majorItem, weaponEnhancer"
+			attributes=			"commonwealth, majorItem, weaponEnhance, weaponEnhancer"
 			  
 			level=				"2"
 			frequency=			"uncommon"
@@ -66,7 +66,7 @@
 
 	<ItemType UNID="&itKineticEnhancer;"
 			name=				"cannon accelerator"
-			attributes=			"commonwealth, majorItem, weaponEnhancer"
+			attributes=			"commonwealth, majorItem, weaponEnhance, weaponEnhancer"
 			  
 			level=				"2"
 			frequency=			"uncommon"
@@ -245,7 +245,7 @@
 
 	<ItemType UNID="&itParticleEnhancer;"
 			name=				"particle accelerator"
-			attributes=			"commonwealth, majorItem, weaponEnhancer"
+			attributes=			"commonwealth, majorItem, weaponEnhance, weaponEnhancer"
 			  
 			level=				"5"
 			frequency=			"uncommon"
@@ -297,7 +297,7 @@
 
 	<ItemType UNID="&itMissileDefense;"
 			name=				"ICX missile defense turret"
-			attributes=			"commonwealth, majorItem"
+			attributes=			"autoDefense, commonwealth, majorItem"
 			  
 			level=				"4"
 			frequency=			"uncommon"
@@ -369,7 +369,7 @@
 
 	<ItemType UNID="&itArmorRepairDevice;"
 			name=				"patcher arm"
-			attributes=			"commonwealth, honokuTomashi, majorItem"
+			attributes=			"armorRepair, commonwealth, honokuTomashi, majorItem"
 			  
 			level=				"4"
 			frequency=			"rare"
@@ -418,7 +418,7 @@
 
 	<ItemType UNID="&itMakayevBlastEnhancer;"
 			name=				"Makayev weapon enhancer"
-			attributes=			"commonwealth, majorItem, makayev, weaponEnhancer"
+			attributes=			"commonwealth, majorItem, makayev, weaponEnhance, weaponEnhancer"
 			  
 			level=				"5"
 			frequency=			"rare"
@@ -476,7 +476,7 @@
 
 	<ItemType UNID="&itHowitzerHighSpeedLoader;"
 			name=				"high-speed howitzer loader"
-			attributes=			"commonwealth, majorItem, weaponEnhancer"
+			attributes=			"commonwealth, majorItem, weaponEnhance, weaponEnhancer"
 			  
 			level=				"6"
 			frequency=			"rare"
@@ -506,7 +506,7 @@
 
 	<ItemType UNID="&itPatchSpider;"
 			name=				"patch spider"
-			attributes=			"commonwealth, majorItem"
+			attributes=			"armorRepair, commonwealth, majorItem"
 			  
 			level=				"6"
 			frequency=			"rare"
@@ -536,7 +536,7 @@
 
 	<ItemType UNID="&itRasiermesserEnhancer;"
 			name=				"Rasiermesser weapon enhancer"
-			attributes=			"commonwealth, majorItem, rasiermesser, weaponEnhancer"
+			attributes=			"commonwealth, majorItem, rasiermesser, weaponEnhance, weaponEnhancer"
 			  
 			level=				"5"
 			frequency=			"rare"
@@ -619,7 +619,7 @@
 
 	<ItemType UNID="&itBushidoEnhancer;"
 			name=				"Bushido weapon enhancer"
-			attributes=			"bushido, commonwealth, majorItem, weaponEnhancer"
+			attributes=			"bushido, commonwealth, majorItem, weaponEnhance, weaponEnhancer"
 			  
 			level=				"7"
 			frequency=			"rare"
@@ -676,7 +676,7 @@
 
 	<ItemType UNID="&itLongreachIAutocannon;"
 			name=				"Longreach I autocannon"
-			attributes=			"commonwealth, majorItem"
+			attributes=			"autoDefense, commonwealth, majorItem"
 			  
 			level=				"7"
 			frequency=			"rare"

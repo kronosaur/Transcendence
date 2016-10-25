@@ -216,7 +216,7 @@
 			frequency=			"rare"
 			numberAppearing=	"1d6"
 			unknownType=		"&itUnknownMnemonicCube;"
-			attributes=			"Consumable; Info; Luminous;"
+			attributes=			"consumable, info, luminous, quantumProgram"
 
 			description=		"This cube contains algorithms used by Luminous to control its drones. When invoked on a quantum CPU, this causes drones to immediately leave the system."
 			>
@@ -259,7 +259,7 @@
 			mass=				"50"
 			frequency=			"veryrare"
 			unknownType=		"&itUnknownMnemonicCube;"
-			attributes=			"Consumable; Info; Luminous"
+			attributes=			"consumable, info, luminous, quantumProgram"
 
 			description=		"When invoked, this algorithm will reprogram a Luminous drone and imprint it with instructions to defend its programmer."
 			>
