@@ -147,9 +147,9 @@
 
 			size=				"670"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"1120"
+			hitPoints=			"1400"
 			multiHull=			"true"
-			regen=				"9"
+			regen=				"28"
 			shipRegen=			"4"
 
 			canAttack=			"true"
