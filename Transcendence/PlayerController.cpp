@@ -60,6 +60,7 @@ CPlayerShipController::CPlayerShipController (void) :
 		m_pAutoDock(NULL),
 		m_iAutoDockPort(0),
 		m_bShowAutoTarget(false),
+		m_bTargetOutOfRange(false),
 		m_pAutoTarget(NULL),
 		m_iAutoTargetTick(0),
 		m_pAutoDamage(NULL),
@@ -1258,7 +1259,7 @@ void CPlayerShipController::OnPaintSRSEnhancements (CG32bitImage &Dest, SViewpor
 	//	If we have a target, then paint a target reticle.
 	//	NOTE: We do this even if friendly because weapons will still aim at them.
 
-	if (m_pTarget)
+	if (m_pTarget && !m_bTargetOutOfRange)
 		PaintTargetingReticle(Ctx, Dest, m_pTarget);
 
 	//	If we have an auto target and we want to show it, paint a reticle
@@ -1617,8 +1618,12 @@ CSpaceObject *CPlayerShipController::GetTarget (CItemCtx &ItemCtx, bool bNoAutoT
 //	Returns the target for the player ship
 
 	{
-	if (m_pTarget || bNoAutoTarget)
+	if (bNoAutoTarget)
 		return m_pTarget;
+
+	else if (m_pTarget && !m_bTargetOutOfRange)
+		return m_pTarget;
+
 	else
 		{
 		//	Return the autotarget
@@ -1832,6 +1837,8 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 		m_pAutoTarget = NULL;
 		m_bShowAutoTarget = false;
 		}
+
+	m_bTargetOutOfRange = Ctx.bPlayerTargetOutOfRange;
 
 	//	Compute the AutoDock target.
 	//
@@ -2184,6 +2191,7 @@ void CPlayerShipController::Reset (void)
 	m_pAutoDock = NULL;
 	m_pAutoTarget = NULL;
 	m_bSignalDock = false;
+	m_bTargetOutOfRange = false;
 
 	DEBUG_CATCH
 	}
@@ -2277,6 +2285,8 @@ void CPlayerShipController::SetTarget (CSpaceObject *pTarget)
 		m_TargetList.RemoveAll();
 		ClearFireAngle();
 		}
+
+	m_bTargetOutOfRange = false;
 	}
 
 void CPlayerShipController::SelectNextFriendly (int iDir)

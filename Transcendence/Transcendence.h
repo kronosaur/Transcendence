@@ -363,6 +363,7 @@ class CPlayerShipController : public IShipController
 		CVector m_vAutoDockPort;				//	The current dock port position;
 
 		bool m_bShowAutoTarget;					//	If TRUE, we show the autotarget
+		bool m_bTargetOutOfRange;				//	If TRUE, m_pTarget is out of weapon range
 		CSpaceObject *m_pAutoTarget;			//	Saved autotarget.
 		mutable int m_iAutoTargetTick;
 
