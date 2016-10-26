@@ -3009,7 +3009,7 @@
 						(block (destObj)
 							(setq destObj (random allDests))
 							(shpOrder gSource 'dock destObj)
-							(shpOrder gSource 'wait (random 10 60))
+							(shpOrder gSource 'waitForThreat (random 10 60))
 							(objSetData gSource "behavior" 'docked)
 							)
 						)

@@ -2780,7 +2780,7 @@
 			<OrderDockAtStKats>
 				(block Nil
 					(shpOrder gSource 'dock aDockObj)
-					(shpOrder gSource 'wait (random 10 200))
+					(shpOrder gSource 'waitForThreat (random 10 200))
 					(objSetData gSource "0010201F_status" 'dockedAtNewVictoria)
 					)
 			</OrderDockAtStKats>
@@ -2819,7 +2819,7 @@
 								(setq theTarget (random (sysFindObject gSource "T +arcology")))
 								(shpOrder gSource 'orbit (sysFindObject Nil "TNV +stKatsArcology;") 20 (random 20 40))
 								(shpOrder gSource 'dock theTarget)
-								(shpOrder gSource 'wait (random 10 60))
+								(shpOrder gSource 'waitForThreat (random 10 60))
 								(objSetData gSource "0010201F_status" 'dockedAtNewVictoria)
 								)
 								
@@ -2863,7 +2863,7 @@
 									(block (theTarget)
 										(setq theTarget (random (sysFindObject gSource "TAF +populated; -arcology; -occupation;")))
 										(shpOrder gSource 'dock theTarget)
-										(shpOrder gSource 'wait (random 10 20))
+										(shpOrder gSource 'waitForThreat (random 10 20))
 										(objSetData gSource "0010201F_status" 'dockedAtStation)
 										)
 									)
@@ -2908,7 +2908,7 @@
 											(setq theTarget (random (sysFindObject gSource "T +arcology")))
 											(shpOrder gSource 'orbit (sysFindObject Nil "TNV +stKatsArcology;") 20 (random 20 40))
 											(shpOrder gSource 'dock theTarget)
-											(shpOrder gSource 'wait (random 10 60))
+											(shpOrder gSource 'waitForThreat (random 10 60))
 											(objSetData gSource "0010201F_status" 'dockedAtNewVictoria)
 											)
 											
@@ -2916,7 +2916,7 @@
 									(block (theTarget)
 										(setq theTarget (random (sysFindObject gSource "TAF +populated; -arcology; -occupation;")))
 										(shpOrder gSource 'dock theTarget)
-										(shpOrder gSource 'wait (random 10 20))
+										(shpOrder gSource 'waitForThreat (random 10 20))
 										(objSetData gSource "0010201F_status" 'dockedAtStation)
 										)
 									)

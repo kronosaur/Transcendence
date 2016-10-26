@@ -577,7 +577,7 @@
 
 									; Send Dragon Slaver after the player
 									(setq enemyObj (sysCreateShip &scDragonSlaver; gateObj &svSung;))
-									(shpOrder enemyObj 'wait Nil 10)
+									(shpOrder enemyObj 'waitForThreat Nil 10)
 									(shpOrder enemyObj 'attack gPlayerShip)
 									(shpOrder enemyObj 'attack gSource)
 
