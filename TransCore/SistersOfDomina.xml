@@ -1247,13 +1247,11 @@
 			   
 			attributes=			"commonwealth, genericClass, sistersOfDomina"
 
-			size=				"140"
-			mass=				"3000"
-			thrustRatio=		"2.0"
-			maxSpeed=			"20"
-			cargoSpace=			"3000"
-
-			explosionType=		"&vtBlastExplosion2;"
+			size=				"75"
+			mass=				"2100"
+			thrustRatio=		"2"
+			maxSpeed=			"12"
+			cargoSpace=			"2000"
 			>
 
 		<Names definiteArticle="true">
@@ -1270,30 +1268,39 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itLancerCannon;" omnidirectional="true" />
-			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
-			<Device deviceID="&itCeratopsQuasiArmor2;"/>
+			<Device deviceID="&itPartisanCannon;" omnidirectional="true" posAngle="0" posRadius="25" posZ="15"/>
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" posAngle="180" posRadius="30" posZ="15"/>
+			<Device deviceID="&itYoroiS100;"/>
 		</Devices>
 
 		<Maneuver
 			maxRotationRate=	"6.0"
-			rotationAccel=		"1.5"
-			rotationStopAccel=	"6.0"
+			rotationAccel=		"1"
 			/>
 
 		<Interior>
 			<Compartment name="interior"
-					hitPoints=	"80"
+					hitPoints=	"30"
 					/>
 			
 			<Compartment name="main drive"
 					type=		"mainDrive"
+					hitPoints=	"70"
+
+					posX=		"-40"
+					posY=		"0"
+					sizeX=		"26"
+					sizeY=		"50"
+					/>
+			
+			<Compartment name="cargo contatiners"
+					type=		"cargo"
 					hitPoints=	"50"
 
-					posX=		"-50"
+					posX=		"6"
 					posY=		"0"
-					sizeX=		"50"
-					sizeY=		"32"
+					sizeX=		"74"
+					sizeY=		"36"
 					/>
 		</Interior>
 
@@ -1302,16 +1309,17 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsElixirMegayacht;" imageWidth="185" imageHeight="185" rotationCount="120" rotationColumns="12"/>
-		<HeroImage imageID="&rsElixirMegayachtHero;" imageWidth="320" imageHeight="320"/>
+		<Image imageID="&rsHandOfDomina;" imageWidth="110" imageHeight="110"	rotationCount="120" rotationColumns="12" viewportRatio="0.01"/>
+		<HeroImage imageID="&rsHandOfDominaHero;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="176"	posRadius="64"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-176"	posRadius="64"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="172"	posRadius="64"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-172"	posRadius="64"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-180"	posRadius="64"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="165"	posRadius="52"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-165"	posRadius="52"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="165"	posRadius="52"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-165"	posRadius="52"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
+
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"20"
@@ -1320,8 +1328,6 @@
 			
 			combatStyle=		"standOff"
 			/>
-
-		<!-- AI and Behavior -->
 
 	</ShipClass>
 
@@ -1371,6 +1377,8 @@
 
 <!-- RESOURCES -->
 
+	<Image UNID="&rsHandOfDomina;"		bitmap="Resources\HandOfDomina.jpg" bitmask="Resources\HandOfDominaMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsHandOfDominaHero;"		bitmap="Resources\HandOfDominaLarge.jpg" bitmask="Resources\HandOfDominaLargeMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsSistersShrineBkgnd;" bitmap="Resources\SistersShrine.jpg" loadOnUse="true" />
 	<Image UNID="&rsSistersShrineHero;" bitmap="Resources\SistersShrineHero.jpg" bitmask="Resources\SistersShrineHeroMask.bmp" loadOnUse="true" />
 

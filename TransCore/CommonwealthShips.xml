@@ -1019,8 +1019,9 @@
 			<Ship levelFrequency="--vuu urrrr" count="1" class="&scAntaresV;"/>
 			<Ship levelFrequency="--rru uuuuu" count="1" class="&scRoninC;"/>
 			<Ship levelFrequency="--vrr rrvvv" count="1" class="&scEI7000;"/>
+			<Ship levelFrequency="---vv rvv--" count="1" class="&scHandOfDomina;"/>
+			<Ship levelFrequency="---rv vvv--" count="1" class="&scElixirMegayacht;"/>
 			<Ship levelFrequency="----r uurvv" count="1" class="&scScarabFreighter;"/>
-			<Ship levelFrequency="----v rrv--" count="1" class="&scElixirMegayacht;"/>
 		</LevelTable>
 	</ShipTable>
 	

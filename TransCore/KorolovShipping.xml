@@ -640,7 +640,7 @@
 			/>
 
 		<Devices>
-			<Device deviceID="&itTurbolaserCannon;" omnidirectional="true"/>
+			<Device deviceID="&itTurbolaserCannon;" omnidirectional="true" posAngle="0" posRadius="25" posZ="15"/>
 			<Device deviceID="&itClass3Deflector;"/>
 		</Devices>
 
@@ -677,8 +677,9 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsEI7000Image;" imageX="0" imageY="0" imageWidth="110" imageHeight="110"/>
-
+		<Image imageID="&rsEI7000Image;" imageWidth="110" imageHeight="110"	rotationCount="20" rotationColumns="1" viewportRatio="0.01"/>
+		<HeroImage imageID="&rsEI7000Hero;" imageWidth="320" imageHeight="320"/>
+		
 		<Effects>
 			<Effect type="thrustMain"		posAngle="165"	posRadius="52"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 			<Effect type="thrustMain"		posAngle="-165"	posRadius="52"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -3513,6 +3514,7 @@
 	<Image UNID="&rsAntaresVImage;"		bitmap="Resources\AntaresV.jpg" bitmask="Resources\AntaresVMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsEI200Image;"		bitmap="Resources\EI200.jpg" bitmask="Resources\EI200Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsEI7000Image;"		bitmap="Resources\EI7000.jpg" bitmask="Resources\EI7000Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsEI7000Hero;"		bitmap="Resources\EI7000Large.jpg" bitmask="Resources\EI7000LargeMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsKorolovInsignia;"	bitmap="Resources\KorolovInsignia.jpg" bitmask="Resources\KorolovInsigniaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsKorolovLogo;"		bitmap="Resources\KorolovLogo.jpg" bitmask="Resources\KorolovLogoMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsKorolovShipping;"	bitmap="Resources\KorolovShipping.jpg" bitmask="Resources\KorolovShippingMask.bmp" loadOnUse="true"/>

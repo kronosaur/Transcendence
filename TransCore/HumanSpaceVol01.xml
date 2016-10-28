@@ -1570,6 +1570,7 @@
 	<!ENTITY ssSanctuary				"0x00100033">
 	<!ENTITY stCathedralOfDomina		"0x00100034">
 	<!ENTITY rsCathedralOfDomina		"0x00100035">
+	<!ENTITY rsHandOfDominaHero			"0x00100036">
 	
 	<!-- 0040-005F CORPORATE HIERARCHY -->
 	
@@ -1613,6 +1614,7 @@
 	<!ENTITY scScorpionGunship			"0x00100095">
 	<!ENTITY rsScorpionGunship			"0x00100096">
 	<!ENTITY rsScorpionGunshipHero		"0x00100097">
+	<!ENTITY rsEI7000Hero				"0x00100098">
 	
 	<!-- 00A0-00BF ARES ORTHODOXY -->
 	
