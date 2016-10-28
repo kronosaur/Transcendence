@@ -1478,10 +1478,9 @@
 
 					(thisItem (@ data 'item))
 					(targetObj (if (@ data 'targetObj) (@ data 'targetObj) gPlayerShip))
-					(currencyUsed (if (@ data 'currencyUsed) (@ data 'currencyUsed) (objGetDefaultCurrency targetObj)))
 					(installerObj (if (@ data 'installerObj) (@ data 'installerObj) gSource))
+					(currencyUsed (if (@ data 'currencyUsed) (@ data 'currencyUsed) (objGetDefaultCurrency installerObj)))
 					(itemName (itmGetName thisItem 0x04))
-					;(setq itemName (itmGetName thisItem (if (or (@ data 'upgrade) (@ data 'buyAndInstall)) 0x40 0x04)))
 					(canInstall Nil)
 
 					;	If the target object is not the player's ship, then we need to modify
@@ -1519,22 +1518,32 @@
 							)
 
 							;	Check if the station can install the device
-							(if	(or (@ data 'maxTechLevel) (@ data 'techCriteria))
-
+							
+							(switch
 								; If tech criteria provided then use them for check
-								(setq stationCannotInstall (or
-									;	If we don't match the tech criteria then we don't have the
-									;	technology to install.
-									(and (@ data 'techCriteria) (not (itmMatches thisItem (@ data 'techCriteria))))
+								
+								(or (@ data 'maxTechLevel) (@ data 'techCriteria))
+									(setq stationCannotInstall (or
+										;	If we don't match the tech criteria then we don't have the
+										;	technology to install.
+										(and (@ data 'techCriteria) (not (itmMatches thisItem (@ data 'techCriteria))))
 
-									;	If our max tech level is too low for the item, then we can't install
-									;	(except for specific items that we know about)
-									(and (gr (itmGetLevel thisItem) (or (@ data 'maxTechLevel) 30))
-										(or (not (@ data 'techCriteriaOverride))
-											(not (itmMatches thisItem (@ data 'techCriteriaOverride)))
+										;	If our max tech level is too low for the item, then we can't install
+										;	(except for specific items that we know about)
+										(and (gr (itmGetLevel thisItem) (or (@ data 'maxTechLevel) 30))
+											(or (not (@ data 'techCriteriaOverride))
+												(not (itmMatches thisItem (@ data 'techCriteriaOverride)))
+												)
 											)
-										)
-									))
+										))
+										
+								;	If the installer is the player ship, and it doesn't define
+								;	and installation limits, then just allow everything. (This means
+								;	that callers are responsible for setting limits. E.g., the Auton
+								;	Bay handles this.)
+								
+								(and (= installerObj gPlayerShip) (not (objGetProperty installerObj 'installDeviceMaxLevel)))
+									(setq stationCannotInstall Nil)
 
 								;	Otherwise result depends on installDeviceStatus property
 								(setq stationCannotInstall (not (@ status 'canInstall)))
