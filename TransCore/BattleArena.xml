@@ -626,6 +626,10 @@
 
 			<OnSystemWeaponFire>
 				(switch
+					; If this is a repeat, then ignore
+					aWeaponRepeat
+						Nil
+						
 					; If the player fires a missile (or other expensive disposable) she gets a bonus
 					(eq aWeaponObj gPlayerShip)
 						(block (theWeapon theLevel)
