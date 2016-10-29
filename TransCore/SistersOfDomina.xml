@@ -148,7 +148,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action id="actionTalkToAbbess">
+							<Action id="actionTalkToAbbess" default="1">
 								(rpgMissionAssignment {
 									missionCriteria: (cat "n +sistersMission; =" (sysGetLevel) ";")
 									noMissionTextID: 'descNothingToTalkAbout

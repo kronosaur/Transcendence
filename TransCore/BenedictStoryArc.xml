@@ -120,8 +120,8 @@
 		</Events>
 		
 		<Language>
-			<Text id="actionTalkToAbbess">"[M]atriarch's Chamber"</Text>
-			<Text id="actionTalkToBenedict">"Talk to [B]enedict"</Text>
+			<Text id="actionTalkToAbbess">"*[M]atriarch's Chamber"</Text>
+			<Text id="actionTalkToBenedict">"*Talk to [B]enedict"</Text>
 		</Language>
 	</Type>
 	
@@ -360,7 +360,7 @@
 					)
 			</Text>
 			
-			<Text id="q1:Label">"\"Who is [D]omina?\""</Text>
+			<Text id="q1:Label">"*\"Who is [D]omina?\""</Text>
 			<Text id="q1:Answer">
 				(cat
 					"\"Domina is the divine intelligence who brought you here!\n\n"
@@ -377,7 +377,7 @@
 					)
 			</Text>
 			
-			<Text id="q2:Label">"\"How do I reach the [G]alactic Core?\""</Text>
+			<Text id="q2:Label">"*\"How do I reach the [G]alactic Core?\""</Text>
 			<Text id="q2:Answer">
 				(cat
 					"\"The stargates will take you. Seek them out and enter. "
@@ -388,7 +388,7 @@
 					)
 			</Text>
 			
-			<Text id="q3:Label">"\"[W]hat obstacles will I face?\""</Text>
+			<Text id="q3:Label">"*\"[W]hat obstacles will I face?\""</Text>
 			<Text id="q3:Answer">
 				(cat
 					"\"Star travel is dangerous, even in the Commonwealth. "

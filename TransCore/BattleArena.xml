@@ -627,7 +627,7 @@
 			<OnSystemWeaponFire>
 				(switch
 					; If this is a repeat, then ignore
-					aWeaponRepeat
+					(!= aFireRepeat 0)
 						Nil
 						
 					; If the player fires a missile (or other expensive disposable) she gets a bonus
