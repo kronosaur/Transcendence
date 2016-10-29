@@ -1689,6 +1689,7 @@
 
 								(and (eq resultCode 'replacementRequired)
 										(eq (itmGetType thisItem) (itmGetType itemToReplace))
+										(eq (itmGetLevel thisItem) (itmGetLevel itemToReplace))
 										(eq (itmIsEnhanced thisItem) (itmIsEnhanced itemToReplace))
 										(eq (itmGetProperty thisItem 'damaged) (itmGetProperty itemToReplace 'damaged))
 										(geq (itmGetProperty thisItem 'charges) (itmGetProperty itemToReplace 'charges))
