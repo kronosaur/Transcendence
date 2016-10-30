@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Fiona in St. Katharine's Star =========================================
+
+	EXTRA DATA
+	
+	======================================================================== -->
+	
+	<MissionType UNID="&msFionaInStKats;"
+			name=				"Fiona in St. Kats"
+			attributes=			"benedictStoryArc, stKatsHospital"
+
+			level=				"4"
+			maxAppearing=		"1"
+			priority=			"100"
+
+			noDebrief=			"true"
+			>
+
+		<StaticData>
+			<sequence>50</sequence>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block ()
+					(switch
+						;	See if the mission is still available
+
+						(not (benedict_isMissionAvailable (objGetType gSource)))
+							(msnDestroy gSource)
+							
+						;	OK
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					)
+					;	Mission accepted
+					
+					(benedict_missionAccepted gSource)
+					)
+			</OnAccepted>
+
+			<OnSetPlayerTarget>
+			</OnSetPlayerTarget>
+			
+			<OnObjDestroyed>
+			</OnObjDestroyed>
+		</Events>
+		
+		<Language>
+			<Text id="Name">"Contact Hugo Sandoval"</Text>
+			<Text id="Summary">
+				(cat
+					"Go to " (sysGetName 'C5) " and find Hugo Sandoval. He flies a heavily modified Armstrong-class transport.\n\n"
+					"System: " (sysGetName 'C5) "\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="Intro">
+				(list
+					{
+						desc: (cat
+							"You enter the brightly lit central garden of the New Victoria University Hospital. "
+							"Recovering patients sit on articulated gurneys, while doctors and medtechs pass through, "
+							"heads buried in datapads.\n\n"
+							
+							"Nearby, Fiona rests at a bench, hooked up to a medical bot:\n\n"
+							
+							"\"I'm glad to finally meet you. Thank you for saving my life in Eridani.\""
+							)
+							
+						label: "\"[D]o you remember what happened?\""
+						}
+					{
+						desc: (cat
+							"Fiona looks around and engages a privacy screen.\n\n"
+							
+							"\"Look, I don't know you, OK? Thanks again, but everything is fine.\""
+							)
+							
+						label: "\"[B]enedict is worried about you.\""
+						}
+					{
+						desc: (cat
+							"Fiona blinks tears away and looks down.\n\n"
+							
+							"\"I don't know who to trust, OK?\"\n\n"
+							
+							"She pauses for a long time and then sits up straight to face you. A fresh scar "
+							"curves under her left eye and disappears behind her ear."
+							)
+						}
+					{
+						desc: (cat
+							"\"I was investigating a murder. A medtech on our mobile clinic found dead. "
+							"I talked to Sister Elana Ston, in charge of the clinic. She said the medical "
+							"ship had been ambushed by marauders and that the medtech may have tipped them off. "
+							"Thought the marauders had spaced her too.\""
+							)
+							
+						label: "\"A [S]ister in league with marauders?\""
+						}
+					{
+						desc: (cat
+							"\"Yeah, I know it doesn't make sense, OK? But I couldn't find any other evidence, "
+							"and the medical ship had recently been lost in combat, so it fit.\n\n"
+							
+							"\"But then I got a strange message.\""
+							)
+							
+						label: "\"[L]et me guess, Stormhound, right?\""
+						}
+					{
+						desc: (cat
+							"Fiona arches an eyebrow, impressed.\n\n"
+							
+							"\"Yes! He said it wasn't marauders. He told me to look for the wreckage of the medical ship in the "
+							(sysGetName 'C5) " system. Asked to tell him what I found.\n\n"
+							
+							"\"But I never got there. Penitents attacked me on my way and here I am.\""
+							)
+							
+						label: "\"[W]ho knows about this? Benedict?\""
+						}
+					{
+						desc: (cat
+							"Fiona stares at you.\n\n"
+							
+							"\"No. Not yet. Stormhound told me about his past. I'm questioning everything, OK?\""
+							)
+						
+						actions: (list
+							{
+								label: "\"[Y]ou can trust Benedict.\""
+								nextPage: 'trustBenedict
+								}
+							{
+								label: "\"[D]on't trust Benedict.\""
+								nextPage: 'dontTrustBenedict
+								}
+							)
+						}
+					{
+						id: 'trustBenedict
+						desc: (cat
+							"Fiona closes her eyes and smiles.\n\n"
+							
+							"\"I want to believe that, OK? I really do. But I can't take the chance that I'm wrong.\""
+							)
+							
+						label: "\"[W]hat do we do now?\""
+						nextPage: 'exitPane
+						}
+					{
+						id: 'dontTrustBenedict
+						desc: (cat
+							"Fiona closes her eyes and frowns.\n\n"
+							
+							"\"I don't know anymore. But either way, I can't take the chance that he's turned.\""
+							)
+						
+						label: "\"[W]hat do we do now?\""
+						nextPage: 'exitPane
+						}
+					)
+			</Text>
+			<Text id="Briefing">
+				(list
+					{
+						desc: (cat
+							"Fiona brings up a starmap on her datapad.\n\n"
+							
+							"\"I'm going to need your help. Go to the " (sysGetName 'C5) " system and "
+							"get in touch with Hugo Sandoval. He's a friend of mine. He's a merc, but "
+							"I can trust him.\n\n"
+							
+							"\"Together you should be able to find the wreckage of Sister Ston's medical "
+							"ship. Perhaps we'll scrape off a clue.\""
+							)
+							
+						acceptLabel: "\"[I]'m on my way.\""
+						declineLabel: "\"[L]et me prepare first.\""
+						}
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(cat
+					"\"Good luck, %name%!\""
+					)
+			</Text>
+			<Text id="DeclineReply">
+				(cat
+					"\"Alright, but don't take long. Something tells me we don't have much time.\""
+					)
+			</Text>
+			<Text id="InProgress">
+				(cat
+					"\"Something tells me we don't have much time. The sooner you reach Sandoval, the better!\""
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				""
+			</Text>
+		</Language>
+	</MissionType>
+	
+</TranscendenceModule>

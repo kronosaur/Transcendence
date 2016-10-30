@@ -13,7 +13,7 @@
 			mass=				"2500"
 			frequency=			"uncommon"
 			unknownType=		"&vtUnknownAmmoBox;"
-			attributes=			"Consumable"
+			attributes=			"ammoBox, consumable"
 
 			description=		"This box contains Akan 30 cannon shell cartridges."
 			>
@@ -35,7 +35,7 @@
 			mass=				"2500"
 			frequency=			"common"
 			unknownType=		"&vtUnknownAmmoBox;"
-			attributes=			"Consumable"
+			attributes=			"ammoBox, consumable"
 
 			description=		"This box contains White Strelka missiles, compatible with the Makayev launcher."
 			>
@@ -58,7 +58,7 @@
 			frequency=			"common"
 			numberAppearing=	"1d4"
 			unknownType=		"&vtUnknownAmmoBox;"
-			attributes=			"Consumable"
+			attributes=			"ammoBox, consumable"
 
 			description=		"This box contains ZG24 Cluster MAGs."
 			>
@@ -81,7 +81,7 @@
 			frequency=			"uncommon"
 			numberAppearing=	"1d6"
 			unknownType=		"&vtUnknownAmmoBox;"
-			attributes=			"Consumable; Military"
+			attributes=			"ammoBox, consumable, military"
 
 			description=		"This box contains thermo cannon shell cartridges."
 			>
@@ -103,7 +103,7 @@
 			mass=				"2500"
 			frequency=			"uncommon"
 			unknownType=		"&vtUnknownAmmoBox;"
-			attributes=			"Consumable; Military"
+			attributes=			"ammoBox, consumable, military"
 
 			description=		"This box contains Red Strelka missiles, compatible with the Makayev launcher."
 			>
@@ -125,7 +125,7 @@
 			mass=				"2500"
 			frequency=			"uncommon"
 			unknownType=		"&vtUnknownAmmoBox;"
-			attributes=			"Consumable; Illegal; ContrabandBox"
+			attributes=			"ammoBox, consumable, contrabandBox, illegal"
 
 			description=		"This sealed container, made out of an old ammunition box, contains illegal items."
 			>
@@ -157,7 +157,7 @@
 			mass=				"2500"
 			frequency=			"uncommon"
 			unknownType=		"&vtUnknownAmmoBox;"
-			attributes=			"Consumable; CannotOrder"
+			attributes=			"ammoBox, consumable, cannotOrder"
 
 			description=		"This ammunition box contains leaky radioactive ordnance."
 			>
@@ -198,7 +198,7 @@
 			mass=				"2500"
 			frequency=			"uncommon"
 			unknownType=		"&vtUnknownAmmoBox;"
-			attributes=			"Consumable; CannotOrder"
+			attributes=			"ammoBox, consumable, cannotOrder"
 
 			description=		"This ammunition box has been rigged to disable the ship when it is opened."
 			>
@@ -692,7 +692,7 @@
 			mass=				"1000"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
-			attributes=			"ArmorEnhance; MinorItem; Res"
+			attributes=			"armorDamage, minorItem, res"
 			unknownType=		"&itUnknownBarrel5;"
 
 			description=		"Meteorsteel interferes with most kinds of shield generators."
@@ -808,7 +808,7 @@
 			unknownType=		"&itUnknownBarrel;"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
-			attributes=			"ArmorEnhance; Consumable"
+			attributes=			"armorDamage, consumable"
 
 			description=		"These nanomachines are used to recycle old ships and armors into their basic components. Use with caution: Do not allow contact with a ship's armor or hull."
 
@@ -831,7 +831,7 @@
 			frequency=			"common"
 			numberAppearing=	"1d4"
 			unknownType=		"&itUnknownBarrel;"
-			attributes=			"Consumable; Res;"
+			attributes=			"armorDamage, consumable, res"
 
 			description=		"Powerful organic acids such as these are used in various industrial processes. Use with caution: Do not allow contact with a ship's armor or hull."
 
@@ -1150,7 +1150,7 @@
 			mass=				"1"
 			frequency=			"uncommon"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Info; MinorItem"
+			attributes=			"info, minorItem, shipEquipment"
 
 			description=		"This program allows the ship's captain to rest while the ship maintains a steady course."
 			>
@@ -1187,7 +1187,7 @@
 			mass=				"1"
 			frequency=			"rare"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Consumable; CannotOrder"
+			attributes=			"cashCard, consumable, cannotOrder"
 
 			description=		"This ROM stores digital cash and may be redeemed automatically with your ship's computer."
 
@@ -1221,7 +1221,7 @@
 			mass=				"1"
 			frequency=			"rare"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Consumable; CannotOrder"
+			attributes=			"cashCard, consumable, cannotOrder"
 
 			description=		"This ROM stores digital cash and may be redeemed automatically with your ship's computer."
 
@@ -1255,7 +1255,7 @@
 			mass=				"1"
 			frequency=			"rare"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Consumable; CannotOrder"
+			attributes=			"cashCard, consumable, cannotOrder"
 
 			description=		"This ROM stores digital cash and may be redeemed automatically with your ship's computer."
 
@@ -1339,7 +1339,7 @@
 			mass=				"1"
 			frequency=			"common"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Info; MinorItem"
+			attributes=			"info, minorItem, shipEquipment"
 
 			description=		"This ROM enhances a ship's visual display to show the bearing of ships and stations beyond normal visual range."
 			>
@@ -1382,7 +1382,7 @@
 			mass=				"1"
 			frequency=			"uncommon"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Info; MinorItem"
+			attributes=			"info, minorItem, shipEquipment"
 
 			description=		"This ROM would normally enhance a ship's visual display, but a manufacturing defect makes it worse than useless. Plugging this in to your ship's computer will temporarily damage your display screen."
 
@@ -1586,7 +1586,7 @@
 			mass=				"1"
 			frequency=			"uncommon"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Consumable; Info"
+			attributes=			"consumable, info, systemMap"
 
 			description=		"This program accesses the central cartography libraries to generate a map of the current system."
 			>
@@ -1644,7 +1644,7 @@
 			mass=				"1"
 			frequency=			"uncommon"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Consumable; Info; Military"
+			attributes=			"consumable, info, military, systemMap"
 
 			description=		"This program accesses military databases to generate a map of enemy stations in the system."
 			>
@@ -1688,7 +1688,7 @@
 			mass=				"1"
 			frequency=			"uncommon"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Info; MinorItem"
+			attributes=			"info, minorItem, shipEquipment"
 
 			description=		"A targeting program is required to aim guided missiles such as the KM500 Stiletto."
 			>
@@ -1751,7 +1751,7 @@
 			mass=				"1"
 			frequency=			"uncommon"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Info; MinorItem"
+			attributes=			"info, minorItem, shieldEnhance"
 
 			description=		"This ROM upgrades a shield generator so that it is more effective at absorbing damage. The ROM works on generators up to technology level VI."
 			>
@@ -1817,7 +1817,7 @@
 			mass=				"10"
 			frequency=			"rare"
 			unknownType=		"&vtUnknownFieldCrystal;"
-			attributes=			"MajorItem; FieldCrystal"
+			attributes=			"fieldCrystal, majorItem, shieldEnhance"
 
 			description=		"Diamond field crystals increase the power of tech VII-XII shield generators. Unlike other field crystals, a generator can use multiple diamond field crystals."
 			>
@@ -1838,7 +1838,7 @@
 			mass=				"10"
 			frequency=			"uncommon"
 			unknownType=		"&vtUnknownFieldCrystal;"
-			attributes=			"MajorItem; FieldCrystal"
+			attributes=			"fieldCrystal, majorItem, shieldEnhance"
 
 			description=		"Yellow etherium is used to create energy fields that reflect positron energy. Unfortunately, it has a limited duration."
 
@@ -1874,7 +1874,7 @@
 			mass=				"10"
 			frequency=			"uncommon"
 			unknownType=		"&vtUnknownFieldCrystal;"
-			attributes=			"MinorItem; FieldCrystal"
+			attributes=			"fieldCrystal, minorItem, shieldEnhance"
 
 			description=		"In pristine state, this field crystal is used to reflect ion energy. But this decayed crystal would do more harm than good."
 			>
@@ -1895,7 +1895,7 @@
 			mass=				"10"
 			frequency=			"uncommon"
 			unknownType=		"&vtUnknownFieldCrystal;"
-			attributes=			"MajorItem; FieldCrystal"
+			attributes=			"fieldCrystal, majorItem, shieldEnhance"
 
 			description=		"Blue etherium is used to create energy fields that reflect ion energy. Unfortunately, it has a limited duration."
 			
@@ -1931,7 +1931,7 @@
 			mass=				"10"
 			frequency=			"common"
 			unknownType=		"&vtUnknownFieldCrystal;"
-			attributes=			"MajorItem; FieldCrystal"
+			attributes=			"fieldCrystal, majorItem, shieldEnhance"
 
 			description=		"Molbidium crystals are often used to increase the power density of shield generators."
 			>
@@ -1952,7 +1952,7 @@
 			mass=				"10"
 			frequency=			"common"
 			unknownType=		"&vtUnknownFieldCrystal;"
-			attributes=			"MajorItem; FieldCrystal"
+			attributes=			"fieldCrystal, majorItem, shieldEnhance"
 
 			description=		"Green etherium is used to create energy fields that reflect particle beam energy. Unfortunately, it has a limited duration."
 
@@ -2018,7 +2018,7 @@
 			value=				"250"
 			mass=				"25"
 			frequency=			"uncommon"
-			attributes=			"MinorItem"
+			attributes=			"minorItem, weaponEnhance"
 
 			description=		"Laser amplifiers are used to repair and upgrade laser weapons."
 			>
@@ -2038,7 +2038,7 @@
 			value=				"350"
 			mass=				"50"
 			frequency=			"uncommon"
-			attributes=			"MinorItem"
+			attributes=			"minorItem, weaponEnhance"
 
 			description=		"Kinetic upgrades increase the damage of a kinetic weapon."
 			>
@@ -2058,7 +2058,7 @@
 			value=				"500"
 			mass=				"25"
 			frequency=			"uncommon"
-			attributes=			"MinorItem"
+			attributes=			"minorItem, weaponEnhance"
 
 			description=		"This weapon upgrade increases the power of particle beams."
 			>
@@ -2078,7 +2078,7 @@
 			value=				"1000"
 			mass=				"75"
 			frequency=			"uncommon"
-			attributes=			"MinorItem"
+			attributes=			"minorItem, weaponEnhance"
 
 			description=		"This high-explosive upgrade increases the damage done by blast weapons."
 			>
@@ -2098,7 +2098,7 @@
 			value=				"2500"
 			mass=				"50"
 			frequency=			"uncommon"
-			attributes=			"MinorItem"
+			attributes=			"minorItem, weaponEnhance"
 
 			description=		"Ion power capacitors are used to increase the destructive power of ion weapons."
 			>
@@ -2118,7 +2118,7 @@
 			value=				"5000"
 			mass=				"150"
 			frequency=			"uncommon"
-			attributes=			"MinorItem"
+			attributes=			"minorItem, weaponEnhance"
 
 			description=		"This weapon upgrade increases the damage done by thermo weapons."
 			>
@@ -2139,7 +2139,7 @@
 			mass=				"1"
 			frequency=			"uncommon"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Info; MinorItem"
+			attributes=			"info, minorItem, weaponEnhance"
 
 			description=		"This ROM increases the rate of fire of the ship's primary weapon."
 			>
@@ -2160,7 +2160,7 @@
 			mass=				"1"
 			frequency=			"veryrare"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Info; MinorItem"
+			attributes=			"info, minorItem, weaponDamage"
 
 			description=		"Because of a manufacturing defect, this ROM damages the ship's primary weapon when installed."
 			>
@@ -2209,7 +2209,7 @@
 			mass=				"1"
 			frequency=			"veryrare"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Info; MinorItem; NotForSale"
+			attributes=			"info, minorItem, notForSale, shieldEnhance"
 
 			description=		"One of Hiro's first creations, this ROM can increase the strength of any shield generator up to tech level VI."
 			>

@@ -39,7 +39,6 @@
 	<StationType UNID="&stStarClassM8;"
 		name=				"(M8 class red dwarf)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 				 
 		attributes=			"generic, star"
 				 
@@ -64,7 +63,6 @@
 	<StationType UNID="&stStarClassM5;"
 		name=				"(M5 class red dwarf)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 				 
 		attributes=			"generic, star"
 				 
@@ -89,7 +87,6 @@
 	<StationType UNID="&stStarClassM0;"
 		name=				"(M0 class red dwarf)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 				 
 		attributes=			"generic, star"
 				 
@@ -111,7 +108,6 @@
 	<StationType UNID="&stStarClassK5;"
 		name=				"(K5 class star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 				 
 		attributes=			"generic, star"
 				 
@@ -133,7 +129,6 @@
 	<StationType UNID="&stStarClassK0;"
 		name=				"(K0 class star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 				 
 		attributes=			"generic, star"
 				 
@@ -155,7 +150,6 @@
 	<StationType UNID="&stStarClassG5;"
 		name=				"(G5 class star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 				 
 		attributes=			"generic, star"
 				 
@@ -177,7 +171,6 @@
 	<StationType UNID="&stStarClassG2;"
 		name=				"(G2 class star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 				 
 		attributes=			"generic, star"
 				 
@@ -199,7 +192,6 @@
 	<StationType UNID="&stStarClassG0;"
 		name=				"(G0 class star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 				 
 		attributes=			"generic, star"
 				 
@@ -221,7 +213,6 @@
 	<StationType UNID="&stStarClassF5;"
 		name=				"(F5 class star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 				 
 		attributes=			"generic, star"
 				 
@@ -243,7 +234,6 @@
 	<StationType UNID="&stStarClassF0;"
 		name=				"(F0 class star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 				 
 		attributes=			"generic, star"
 				 
@@ -265,7 +255,6 @@
 	<StationType UNID="&stStarClassA5;"
 		name=				"(A5 class star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 				 
 		attributes=			"generic, star"
 				 
@@ -287,7 +276,6 @@
 	<StationType UNID="&stStarClassA0;"
 		name=				"(A0 class star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 				 
 		attributes=			"generic, star"
 				 
@@ -315,7 +303,6 @@
 	<StationType UNID="&stNebulaStar;"
 		name=				"(nebula star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 				 
 		attributes=			"generic, star"
 				 
@@ -339,7 +326,6 @@
 	<StationType UNID="&stRedGiantStar;"
 		name=				"(red giant star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 				 
 		attributes=			"generic, star"
 				 
@@ -367,7 +353,6 @@
 	<StationType UNID="&stWhiteDwarfStar;"
 		name=				"(white dwarf star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
 				 
 		attributes=			"generic, gravityDanger, star"
 				 

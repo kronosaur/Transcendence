@@ -97,7 +97,6 @@
 		name=				"(volcanic asteroid)"
 		scale=				"world"
 		size=				"4"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, outer, volcanic"
 
@@ -125,7 +124,6 @@
 		name=				"(volcanic asteroid)"
 		scale=				"world"
 		size=				"70"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, outer, volcanic"
 
@@ -155,7 +153,6 @@
 		name=				"(volcanic asteroid)"
 		scale=				"world"
 		size=				"255"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, outer, volcanic"
 
@@ -183,7 +180,6 @@
 		name=				"(volcanic asteroid)"
 		scale=				"world"
 		size=				"590"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, outer, volcanic"
 
@@ -211,7 +207,6 @@
 		name=				"(volcanic planetoid)"
 		scale=				"world"
 		size=				"1000"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, outer, planetoid, volcanic"
 
@@ -226,7 +221,6 @@
 		name=				"(volcanic planetoid)"
 		scale=				"world"
 		size=				"2450"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, outer, planetoid, volcanic"
 
@@ -241,7 +235,6 @@
 		name=				"(volcanic planetoid)"
 		scale=				"world"
 		size=				"3750"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, outer, planetoid, volcanic"
 
@@ -256,7 +249,6 @@
 		name=				"(volcanic terrestrial)"
 		scale=				"world"
 		size=				"5250"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, terrestrial, volcanic"
 		>

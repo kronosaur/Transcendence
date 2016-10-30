@@ -1474,49 +1474,30 @@
 				;	price:					Total installation cost
 				;	desc:					Description of installation attempt
 
-				(block (thisItem totalCost canInstall desc descWarning itemName currencyUsed targetObj installerObj textYourShip textWe textYour)
-				
-					(setq thisItem (@ data 'item))
-					(setq currencyUsed (@ data 'currencyUsed))
-					(setq targetObj (if (@ data 'targetObj) (@ data 'targetObj) gPlayerShip))
-					(setq installerObj (if (@ data 'installerObj) (@ data 'installerObj) gSource))
-					(if (not currencyUsed) (setq currencyUsed (objGetDefaultCurrency targetObj)))
-					(setq itemName (itmGetName thisItem 0x04))
-					;(setq itemName (itmGetName thisItem (if (or (@ data 'upgrade) (@ data 'buyAndInstall)) 0x40 0x04)))
-					(setq canInstall Nil)
-					
+				(block (totalCost desc descWarning
+
+					(thisItem (@ data 'item))
+					(targetObj (if (@ data 'targetObj) (@ data 'targetObj) gPlayerShip))
+					(installerObj (if (@ data 'installerObj) (@ data 'installerObj) gSource))
+					(currencyUsed (if (@ data 'currencyUsed) (@ data 'currencyUsed) (objGetDefaultCurrency installerObj)))
+					(itemName (itmGetName thisItem 0x04))
+					(canInstall Nil)
+
 					;	If the target object is not the player's ship, then we need to modify
 					;	some text
-					
-					(setq textYourShip
-						(if (eq targetObj gPlayerShip)
-							"your ship"
-							(cat "the " (objGetName targetObj 0x00))
-							)
-						)
-						
-					(setq textWe
-						(if (eq installerObj gPlayerShip)
-							"you"
-							"we"
-							)
-						)
-						
-					(setq textYour
-						(if (eq targetObj gPlayerShip)
-							"your"
-							"the"
-							)
-						)
-						
+					(textYourShip (if (= targetObj gPlayerShip) "your ship" (cat "the " (objGetName targetObj 0x00))))
+					(textWe (if (= installerObj gPlayerShip) "you" "we"))
+					(textYour (if (= targetObj gPlayerShip) "your" "the"))
+					)
+
 					(if thisItem
 						(block (
 							;	We use installDeviceStatus instead of installItemStatus because we
 							;	don't want to install armor objects.
-							
+
 							(status (objGetItemProperty installerObj thisItem 'installDeviceStatus))
-							(itemPrice 
-								(if (or (@ data 'upgrade) (@ data 'buyAndInstall)) 
+							(itemPrice
+								(if (or (@ data 'upgrade) (@ data 'buyAndInstall))
 									(objGetSellPrice installerObj thisItem)
 									0
 									)
@@ -1525,30 +1506,61 @@
 								(switch
 									(not (@ data 'replaceItem))
 										-1
-										
+
 									(not (itmGetInstallPos (@ data 'replaceItem)))
 										-1
-										
+
 									(itmGetInstallPos (@ data 'replaceItem))
 									)
 								)
-							
 							cargoNeeded itemToReplace resultMessage resultCode returnValue stationCannotInstall removeStatus
-                            installText installTextData
+							installText installTextData
 							)
-						
-							;	Compute the cost to install
+
+							;	Check if the station can install the device
 							
+							(switch
+								; If tech criteria provided then use them for check
+								
+								(or (@ data 'maxTechLevel) (@ data 'techCriteria))
+									(setq stationCannotInstall (or
+										;	If we don't match the tech criteria then we don't have the
+										;	technology to install.
+										(and (@ data 'techCriteria) (not (itmMatches thisItem (@ data 'techCriteria))))
+
+										;	If our max tech level is too low for the item, then we can't install
+										;	(except for specific items that we know about)
+										(and (gr (itmGetLevel thisItem) (or (@ data 'maxTechLevel) 30))
+											(or (not (@ data 'techCriteriaOverride))
+												(not (itmMatches thisItem (@ data 'techCriteriaOverride)))
+												)
+											)
+										))
+										
+								;	If the installer is the player ship, and it doesn't define
+								;	and installation limits, then just allow everything. (This means
+								;	that callers are responsible for setting limits. E.g., the Auton
+								;	Bay handles this.)
+								
+								(and (= installerObj gPlayerShip) (not (objGetProperty installerObj 'installDeviceMaxLevel)))
+									(setq stationCannotInstall Nil)
+
+								;	Otherwise result depends on installDeviceStatus property
+								(setq stationCannotInstall (not (@ status 'canInstall)))
+								)
+
+							;	Compute the cost to install
+
 							(switch
 								(@ data 'totalPrice)
 									(setq totalCost (@ data 'totalPrice))
 
 								(@ data 'installPriceAdj)
 									(setq totalCost (rpgAdjustInstallPrice Nil thisItem (@ data 'installPriceAdj) currencyUsed))
-									
+
 								(@ status 'canInstall)
 									(setq totalCost	(add (@ status 'price) itemPrice))
-									
+
 								;	If we get this far, then we cannot install
 
 								(block Nil
@@ -1556,70 +1568,57 @@
 									(setq stationCannotInstall True)
 									)
 								)
-								
-							;	Ask the object is we can install the item
+
+							;	Ask the object if we can install the item
 
 							(setq returnValue (objCanInstallItem targetObj thisItem recommendedSlot))
 							(setq resultCode (@ returnValue 1))
 							(setq resultMessage (@ returnValue 2))
 							(setq itemToReplace (@ returnValue 3))
-							
+
 							(switch
 								;	If not installable at this station, then ignore
-								
+
 								stationCannotInstall
 									(if (@ status 'descID)
 										(setq desc (objTranslate installerObj (@ status 'descID) { item:thisItem targetObj:targetObj }))
 										(setq desc (or
-                                            (objTranslate installerObj 'rpg.noTechToInstallDevice { item:thisItem targetObj:targetObj })
-                                            (cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip ".")
-                                            ))
+											(objTranslate installerObj 'rpg.noTechToInstallDevice { item:thisItem targetObj:targetObj })
+											(scrTranslate gScreen 'rpg.noTechToInstallDevice { item:thisItem targetObj:targetObj })
+											(cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip ".")
+											))
 										)
-									
-                                (or
-								        ;	If we don't match the tech criteria then we don't have the
-								        ;	technology to install.
-								
-								        (and (@ data 'techCriteria)
-										    (not (itmMatches thisItem (@ data 'techCriteria)))
-										    )
-                                            
-								        ;	If our max tech level is too low for the item, then we can't install
-								        ;	(except for specific items that we know about)
-								
-								        (and (gr (itmGetLevel thisItem) (if (@ data 'maxTechLevel) (@ data 'maxTechLevel) 30))
-										    (or (not (@ data 'techCriteriaOverride))
-											    (not (itmMatches thisItem (@ data 'techCriteriaOverride)))
-											    )
-										    )
-                                            
-                                        ;   If we exceed the station's tech
-                                        
-								        (and (not totalCost)
-										    (gr (itmGetLevel thisItem) (objGetProperty installerObj 'installDeviceMaxLevel))
-										    )
-                                        )
+
+								;   If we exceed the station's tech
+
+								(and (not totalCost)
+									(gr (itmGetLevel thisItem) (objGetProperty installerObj 'installDeviceMaxLevel))
+									)
 									(setq desc (or
-                                        (objTranslate installerObj 'rpg.noTechToInstallDevice { item:thisItem targetObj:targetObj })
-                                        (cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip ".")
-                                        ))
-                                        
+										(objTranslate installerObj 'rpg.noTechToInstallDevice { item:thisItem targetObj:targetObj })
+										(scrTranslate gScreen 'rpg.noTechToInstallDevice { item:thisItem targetObj:targetObj })
+										(cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip ".")
+										))
+
+
 								(not totalCost)
 									(setq desc (or
-                                        (objTranslate installerObj 'rpg.cannotInstallDevice { item:thisItem targetObj:targetObj })
-                                        (cat (strCapitalize textWe) " cannot install " itemName " on " textYourShip ".")
-                                        ))
-									
+										(objTranslate installerObj 'rpg.cannotInstallDevice { item:thisItem targetObj:targetObj })
+										(scrTranslate gScreen 'rpg.cannotInstallDevice { item:thisItem targetObj:targetObj })
+										(cat (strCapitalize textWe) " cannot install " itemName " on " textYourShip ".")
+										))
+
 								;	Some stations only install an item if you purchase it from them.
-								
+
 								(and (@ status 'upgradeInstallOnly)
 										(not (@ data 'upgrade))
 										)
 									(setq desc (or
-                                        (objTranslate installerObj 'rpg.cannotInstallDeviceWithoutUpgrade { item:thisItem targetObj:targetObj })
-                                        (cat "Sorry, installation services are only available for purchased upgrades.")
-                                        ))
-									
+										(objTranslate installerObj 'rpg.cannotInstallDeviceWithoutUpgrade { item:thisItem targetObj:targetObj })
+										(scrTranslate gScreen 'rpg.cannotInstallDeviceWithoutUpgrade { item:thisItem targetObj:targetObj })
+										(cat "Sorry, installation services are only available for purchased upgrades.")
+										))
+
 								;	Check military ID
 
 								(and (@ data 'checkMilitaryID)
@@ -1627,95 +1626,107 @@
 										(not (objGetItems targetObj "*+MilitaryID"))
 										)
 									(setq desc (or
-                                        (objTranslate installerObj 'rpg.cannotInstallDeviceWithoutMilitaryID { item:thisItem targetObj:targetObj })
-                                        (cat "You must have a military ID to use " itemName ".")
-                                        ))
-									
+										(objTranslate installerObj 'rpg.cannotInstallDeviceWithoutMilitaryID { item:thisItem targetObj:targetObj })
+										(scrTranslate gScreen 'rpg.cannotInstallDeviceWithoutMilitaryID { item:thisItem targetObj:targetObj })
+										(cat "You must have a military ID to use " itemName ".")
+										))
+
 								(and (@ data 'checkMilitaryID)
 										(itmHasModifier thisItem "Illegal")
 										)
 									(setq desc (or
-                                        (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseIllegal { item:thisItem targetObj:targetObj })
-                                        "We do not install illegal items."
-                                        ))
+										(objTranslate installerObj 'rpg.cannotInstallDeviceBecauseIllegal { item:thisItem targetObj:targetObj })
+										(scrTranslate gScreen 'rpg.cannotInstallDeviceBecauseIllegal { item:thisItem targetObj:targetObj })
+										"We do not install illegal items."
+										))
 
 								(eq resultCode 'cannotInstall)
 									(setq desc resultMessage)
 
 								(eq resultCode 'noDeviceSlotsLeft)
-                                    (setq desc (or
-                                        (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseLackOfSlots { item:thisItem targetObj:targetObj slotsRequired:(itmGetProperty thisItem 'deviceSlots) })
-									    (if (gr (itmGetProperty thisItem 'deviceSlots) 1)
-										    (cat (strCapitalize textYourShip) " does not have enough open device slots to install this device.")
-										    (cat (strCapitalize textYourShip) " does not have an open device slot for this device.")
-										    )
-                                        ))
+									(setq desc (or
+										(objTranslate installerObj 'rpg.cannotInstallDeviceBecauseLackOfSlots { item:thisItem targetObj:targetObj slotsRequired:(itmGetProperty thisItem 'deviceSlots) })
+										(scrTranslate gScreen 'rpg.cannotInstallDeviceBecauseLackOfSlots { item:thisItem targetObj:targetObj slotsRequired:(itmGetProperty thisItem 'deviceSlots) })
+										(if (gr (itmGetProperty thisItem 'deviceSlots) 1)
+											(cat (strCapitalize textYourShip) " does not have enough open device slots to install this device.")
+											(cat (strCapitalize textYourShip) " does not have an open device slot for this device.")
+											)
+										))
 
 								(eq resultCode 'reactorTooWeak)
 									(setq desc (or
-                                        (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseReactorTooWeak { item:thisItem targetObj:targetObj })
-                                        (cat (strCapitalize textYourShip) "'s reactor is not powerful enough for this device.")
-                                        ))
+										(objTranslate installerObj 'rpg.cannotInstallDeviceBecauseReactorTooWeak { item:thisItem targetObj:targetObj })
+										(scrTranslate gScreen 'rpg.cannotInstallDeviceBecauseReactorTooWeak { item:thisItem targetObj:targetObj })
+										(cat (strCapitalize textYourShip) "'s reactor is not powerful enough for this device.")
+										))
 
 								(eq resultCode 'reactorIncompatible)
 									(setq desc (or
-                                        (objTranslate installerObj 'rpg.cannotInstallReactorBecauseTooStrong { item:thisItem targetObj:targetObj })
-                                        (cat "The power output of " itemName " is too high for " textYourShip ".")
-                                        ))
+										(objTranslate installerObj 'rpg.cannotInstallReactorBecauseTooStrong { item:thisItem targetObj:targetObj })
+										(scrTranslate gScreen 'rpg.cannotInstallReactorBecauseTooStrong { item:thisItem targetObj:targetObj })
+										(cat "The power output of " itemName " is too high for " textYourShip ".")
+										))
 
 								(eq resultCode 'noWeaponSlotsLeft)
-                                    (setq desc (or
-                                        (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseLackOfWeaponSlots { item:thisItem targetObj:targetObj slotsRequired:(itmGetProperty thisItem 'deviceSlots) })
-									    (if (gr (itmGetProperty thisItem 'deviceSlots) 1)
-										    (cat (strCapitalize textYourShip) " does not have enough open weapon slots to install this device.")
-										    (cat (strCapitalize textYourShip) " does not have an open weapon slot for this device.")
-										    )
-                                        ))
-								
+									(setq desc (or
+										(objTranslate installerObj 'rpg.cannotInstallDeviceBecauseLackOfWeaponSlots { item:thisItem targetObj:targetObj slotsRequired:(itmGetProperty thisItem 'deviceSlots) })
+										(scrTranslate gScreen 'rpg.cannotInstallDeviceBecauseLackOfWeaponSlots { item:thisItem targetObj:targetObj slotsRequired:(itmGetProperty thisItem 'deviceSlots) })
+										(if (gr (itmGetProperty thisItem 'deviceSlots) 1)
+											(cat (strCapitalize textYourShip) " does not have enough open weapon slots to install this device.")
+											(cat (strCapitalize textYourShip) " does not have an open weapon slot for this device.")
+											)
+										))
+
 								(eq resultCode 'noNonWeaponSlotsLeft)
-                                    (setq desc (or
-                                        (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseLackOfNonWeaponSlots { item:thisItem targetObj:targetObj slotsRequired:(itmGetProperty thisItem 'deviceSlots) })
-									    (if (gr (itmGetProperty thisItem 'deviceSlots) 1)
-										    (cat (strCapitalize textYourShip) " does not have enough open non-weapon slots to install this device.")
-										    (cat (strCapitalize textYourShip) " does not have an open non-weapon slot for this device.")
-										    )
-                                        ))
-									
+									(setq desc (or
+										(objTranslate installerObj 'rpg.cannotInstallDeviceBecauseLackOfNonWeaponSlots { item:thisItem targetObj:targetObj slotsRequired:(itmGetProperty thisItem 'deviceSlots) })
+										(scrTranslate gScreen 'rpg.cannotInstallDeviceBecauseLackOfNonWeaponSlots { item:thisItem targetObj:targetObj slotsRequired:(itmGetProperty thisItem 'deviceSlots) })
+										(if (gr (itmGetProperty thisItem 'deviceSlots) 1)
+											(cat (strCapitalize textYourShip) " does not have enough open non-weapon slots to install this device.")
+											(cat (strCapitalize textYourShip) " does not have an open non-weapon slot for this device.")
+											)
+										))
+
 								(and (eq resultCode 'replacementRequired)
 										(eq (itmGetType thisItem) (itmGetType itemToReplace))
+										(eq (itmGetLevel thisItem) (itmGetLevel itemToReplace))
 										(eq (itmIsEnhanced thisItem) (itmIsEnhanced itemToReplace))
 										(eq (itmGetProperty thisItem 'damaged) (itmGetProperty itemToReplace 'damaged))
 										(geq (itmGetProperty thisItem 'charges) (itmGetProperty itemToReplace 'charges))
 										)
 									(setq desc (or
-                                        (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseAlreadyInstalled { item:thisItem targetObj:targetObj })
-                                        (cat (strCapitalize textYourShip) " already has " itemName " (and cannot support more devices unless you remove one first).")
-                                        ))
-									
+										(objTranslate installerObj 'rpg.cannotInstallDeviceBecauseAlreadyInstalled { item:thisItem targetObj:targetObj })
+										(scrTranslate gScreen 'rpg.cannotInstallDeviceBecauseAlreadyInstalled { item:thisItem targetObj:targetObj })
+										(cat (strCapitalize textYourShip) " already has " itemName " (and cannot support more devices unless you remove one first).")
+										))
+
 								(eq resultCode 'replacementRequired)
 									(block Nil
 										(setq desc (or
-                                            (objTranslate installerObj 'rpg.installDeviceAfterRemove { item:thisItem targetObj:targetObj itemToReplace:itemToReplace })
-                                            (cat (strCapitalize textWe) " can remove " textYour " " (itmGetName itemToReplace 0x80) " and install " itemName)
-                                            ))
-                                        (setq installText 'rpg.installDeviceAfterRemove)
-                                        (setq installTextData { item:thisItem targetObj:targetObj itemToReplace:itemToReplace })
+											(objTranslate installerObj 'rpg.installDeviceAfterRemove { item:thisItem targetObj:targetObj itemToReplace:itemToReplace })
+											(scrTranslate gScreen 'rpg.installDeviceAfterRemove { item:thisItem targetObj:targetObj itemToReplace:itemToReplace })
+											(cat (strCapitalize textWe) " can remove " textYour " " (itmGetName itemToReplace 0x80) " and install " itemName)
+											))
+										(setq installText 'rpg.installDeviceAfterRemove)
+										(setq installTextData { item:thisItem targetObj:targetObj itemToReplace:itemToReplace })
 										(setq canInstall True)
 										)
-									
+
 								(not (eq resultCode 'ok))
 									(setq desc (or
-                                        (objTranslate installerObj 'rpg.cannotInstallDevice { item:thisItem targetObj:targetObj })
-                                        "This device cannot be installed."
-                                        ))
+										(objTranslate installerObj 'rpg.cannotInstallDevice { item:thisItem targetObj:targetObj })
+										(scrTranslate gScreen 'rpg.cannotInstallDevice { item:thisItem targetObj:targetObj })
+										"This device cannot be installed."
+										))
 
 								(block Nil
 									(setq desc (or
-                                        (objTranslate installerObj 'rpg.installDevice { item:thisItem targetObj:targetObj })
-                                        (cat (strCapitalize textWe) " can install " itemName " on " textYourShip)
-                                        ))
-                                    (setq installText 'rpg.installDevice)
-                                    (setq installTextData { item:thisItem targetObj:targetObj })
+										(objTranslate installerObj 'rpg.installDevice { item:thisItem targetObj:targetObj })
+										(scrTranslate gScreen 'rpg.installDevice { item:thisItem targetObj:targetObj })
+										(cat (strCapitalize textWe) " can install " itemName " on " textYourShip)
+										))
+									(setq installText 'rpg.installDevice)
+									(setq installTextData { item:thisItem targetObj:targetObj })
 									(setq canInstall True)
 									)
 								)
@@ -1726,7 +1737,7 @@
 							(if (and canInstall itemToReplace)
 								(block Nil
 									(if (not (@ data 'totalPrice))
-										(setq totalCost 
+										(setq totalCost
 											(add totalCost (objGetItemProperty installerObj itemToReplace 'removeDevicePrice))
 											)
 										)
@@ -1739,17 +1750,18 @@
 										)
 									)
 								)
-								
+
 							; See if we are allowed to remove the device
-							
+
 							(if (and canInstall itemToReplace
 									(neq (setq removeStatus (shpCanRemoveDevice targetObj itemToReplace)) 0)
 									)
 								(block Nil
 									(setq desc (or
-                                        (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseCannotRemove { item:thisItem targetObj:targetObj itemToReplace:itemToReplace removeStatus:removeStatus })
-                                        (cat desc ". " (if (isint removeStatus) "Unfortunately, you cannot remove the device." removeStatus))
-                                        ))
+										(objTranslate installerObj 'rpg.cannotInstallDeviceBecauseCannotRemove { item:thisItem targetObj:targetObj itemToReplace:itemToReplace removeStatus:removeStatus })
+										(scrTranslate gScreen 'rpg.cannotInstallDeviceBecauseCannotRemove { item:thisItem targetObj:targetObj itemToReplace:itemToReplace removeStatus:removeStatus })
+										(cat desc ". " (if (isint removeStatus) "Unfortunately, you cannot remove the device." removeStatus))
+										))
 									(setq canInstall Nil)
 									)
 								)
@@ -1762,9 +1774,10 @@
 									)
 								(block Nil
 									(setq desc (or
-                                        (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseNoRoomInCargo { item:thisItem targetObj:targetObj itemToReplace:itemToReplace removeStatus:removeStatus })
-                                        (cat desc ". Unfortunately, there isn't enough room in your cargo hold to do the swap.")
-                                        ))
+										(objTranslate installerObj 'rpg.cannotInstallDeviceBecauseNoRoomInCargo { item:thisItem targetObj:targetObj itemToReplace:itemToReplace removeStatus:removeStatus })
+										(scrTranslate gScreen 'rpg.cannotInstallDeviceBecauseNoRoomInCargo { item:thisItem targetObj:targetObj itemToReplace:itemToReplace removeStatus:removeStatus })
+										(cat desc ". Unfortunately, there isn't enough room in your cargo hold to do the swap.")
+										))
 									(setq canInstall Nil)
 									)
 								)
@@ -1776,46 +1789,53 @@
 									(if (gr totalCost (objGetBalance targetObj currencyUsed))
 										(block Nil
 											(setq desc (or
-                                                (objTranslate installerObj 'rpg.cannotInstallDeviceBecauseCannotAfford { item:thisItem targetObj:targetObj cost:(fmtCurrency currencyUsed totalCost) itemToReplace:itemToReplace removeStatus:removeStatus })
-                                                (cat desc " for " (fmtCurrency currencyUsed totalCost) ". Unfortunately, you cannot afford the cost.")
-                                                ))
+												(objTranslate installerObj 'rpg.cannotInstallDeviceBecauseCannotAfford { item:thisItem targetObj:targetObj cost:(fmtCurrency currencyUsed totalCost) itemToReplace:itemToReplace removeStatus:removeStatus })
+												(scrTranslate gScreen 'rpg.cannotInstallDeviceBecauseCannotAfford { item:thisItem targetObj:targetObj cost:(fmtCurrency currencyUsed totalCost) itemToReplace:itemToReplace removeStatus:removeStatus })
+												(cat desc " for " (fmtCurrency currencyUsed totalCost) ". Unfortunately, you cannot afford the cost.")
+												))
 											(setq canInstall Nil)
 											)
-                                        (block (
-                                            (advertisedCost 
+										(block (
+											(advertisedCost
 												(if (or (@ data 'upgrade) (@ data 'installPriceAdj))
 													(fmtCurrency currencyUsed totalCost)
 													(fmtCurrency currencyUsed (subtract totalCost itemPrice))
 													)
-                                                )
-                                            )
-										    (setq desc (or
-                                                (objTranslate 
-                                                    installerObj 
-                                                    installText
-                                                    (struct installTextData { cost:advertisedCost buyAndInstall:(@ data 'buyAndInstall) })
-                                                    )
-											    (cat 
-												    desc " for " (if (@ data 'buyAndInstall) "an additional " "") 
-												    advertisedCost
-												    "."
-												    )
-											    ))
-                                            )
+												)
+											)
+											(setq desc (or
+												(objTranslate
+													installerObj
+													installText
+													(struct installTextData { cost:advertisedCost buyAndInstall:(@ data 'buyAndInstall) })
+													)
+												(scrTranslate
+													gScreen
+													installText
+													(struct installTextData { cost:advertisedCost buyAndInstall:(@ data 'buyAndInstall) })
+													)
+												(cat
+													desc " for " (if (@ data 'buyAndInstall) "an additional " "")
+													advertisedCost
+													"."
+													)
+												))
+											)
 										)
-										
-                                    (setq desc (or
-                                        (objTranslate installerObj installText (struct installTextData { selfInstall:(eq installerObj gPlayerShip) }))
-									    (if (not (eq installerObj gPlayerShip))
-										    (cat desc " at no charge.")
-										    (cat desc ".")
-										    )
-                                        ))
+
+									(setq desc (or
+										(objTranslate installerObj installText (struct installTextData { selfInstall:(eq installerObj gPlayerShip) }))
+										(scrTranslate gScreen installText (struct installTextData { selfInstall:(eq installerObj gPlayerShip) }))
+										(if (not (eq installerObj gPlayerShip))
+											(cat desc " at no charge.")
+											(cat desc ".")
+											)
+										))
 									)
 								)
-								
+
 							;	See if we are downgrading
-							
+
 							(if (and canInstall
 									itemToReplace
 									(ls (itmGetLevel thisItem) (itmGetLevel itemToReplace))
@@ -1826,7 +1846,7 @@
 								(setq descWarning (cat "Note: Your currently installed " (itmGetName itemToReplace 0x00) " is higher level."))
 								)
 							)
-							
+
 						(setq desc "You do not have any devices that can be installed.")
 						)
 
@@ -1945,85 +1965,326 @@
 				))
 				
 			(setq rpgPagePaneInit (lambda (theScreen textDesc options)
+			
+				;	This function is used to set up a pane with the multi-page
+				;	script structure.
+				;
+				;	textDesc is a list of page descriptors (or a plain string).
+				;
+				;	(scrGetData gScreen 'curPage) is the current page to display.
+				;	A value of Nil means that we should show the first page.
+				;
+				;	The set of actions for a page is determined as follows:
+				;
+				;	If we're on the last page and (@ options 'onAcceptDecline) is
+				;	set, then we show Accept/Decline options (we ignore any
+				;	actions definitions).
+				;
+				;	If we have (@ pageDesc 'actions) then we create an action
+				;	for each entry. The nextPage field on the action descriptor
+				;	has the following possibilities:
+				;
+				;		'exitScreen: We unconditionally exit the screen. [Not
+				;				valid if (@ options 'onExitPane) is defined.]
+				;
+				;		'forceUndock: We unconditionally exit the screen and
+				;				for an undock. [Not valid if (@ options 'onExitPane)
+				;				is defined.]
+				;
+				;		'missionAccept: Accept the mission.
+				;
+				;		'missionDecline: Decline the mission.
+				;
+				;		'nextPage (or Nil): We advance to the next page (by
+				;				reloading the pane) or invoke the exitPane
+				;				action (see below) if we're at the last page.
+				;
+				;		'exitPane: We either invoke the (@ options 'onExitPane)
+				;				code (if any) or just exit the screen.
+				;
+				;		{value}: For any other value, we look up the value as
+				;				an ID in textDesc. If we find it, then we
+				;				navigate to that page. Otherwise, we invoke
+				;				(@ options 'onNavigate) and pass in the value
+				;				as a parameter.
+				;
+				;	We accept the following options:
+				;
+				;		missionObj: Required if 'onAcceptDecline is defined.
+				;
+				;		onAcceptDecline: (lambda (theScreen acceptDecline pageDesc options) ...)
+				;				This function will handle a mission accept or decline.
+				;
+				;		onExitPane: (lambda (theScreen pageDesc options) ...)
+				;				This function is called when we continue past the last
+				;				page.
+				;
+				;		onNavigate: (lambda (theScreen nextPage pageDesc options) ...)
+				;				This function does a custom navigation.
+				
 				(block (
-					(missionObj (scrGetData theScreen 'missionObj))
 					(pageCount (rpgPageCount textDesc))
 					(pageNo (if (scrGetData theScreen 'curPage) (scrGetData theScreen 'curPage) 0))
 					(pageDesc (rpgPageDesc textDesc pageNo))
-						
-					atLastPage
+					
+					(actions (@ pageDesc 'actions))
+					(atLastPage (= pageNo (- pageCount 1)))
+
+					(nextActionID 0)
 					)
 					
-					; Show the appropriate page
+					;	Show the appropriate page
 
 					(scrSetDesc theScreen (@ pageDesc 'desc))
-
-					; Next page
-
-					(setq pageNo (add pageNo 1))
-					(setq atLastPage (geq pageNo pageCount))
-
-					;	Initialize actions
+					
+					;	Make sure the actions list is properly initialized.
 					
 					(switch
+						;	If we're on an Accept/Decline mission page and we're 
+						;	at the last page (or if actions == 'acceptDecline), then
+						;	we show Accept/Decline actions.
 						
-						;	If we're not at the last page, we always set the continue
-						;	action and hide the others.
+						(and (@ options 'onAcceptDecline)
+								(or atLastPage (= actions 'acceptDecline))
+								)
+							(setq actions (list
+								{
+									label: (or (@ pageDesc 'acceptLabel)
+										(msnTranslate (@ options 'missionObj) 'AcceptLabel)
+										(typTranslate &dsRPGMission; 'actionAccept)
+										)
+									code: (@ pageDesc 'acceptCode)
+									nextPage: 'missionAccept
+									}
+								{
+									label: (or (@ pageDesc 'declineLabel)
+										(msnTranslate (@ options 'missionObj) 'DeclineLabel)
+										(typTranslate &dsRPGMission; 'actionDecline)
+										)
+									code: (@ pageDesc 'declineCode)
+									nextPage: 'missionDecline
+									}
+								))
+							
+						;	If we don't have a list of actions, then we auto-generate 
+						;	them based on variables on the page descriptor.
 						
-						(not atLastPage)
-							(block Nil
-								(scrShowAction theScreen 'actionContinue True)
-								(if (@ pageDesc 'nextLabel)
-									(scrSetActionLabel theScreen 'actionContinue (@ pageDesc 'nextLabel) (@ pageDesc 'nextKey))
-									)
+						(!= (typeof actions) 'list)
+							(setq actions (list {
+								label: (or (@ pageDesc 'label) (@ pageDesc 'nextLabel))
+								nextPage: (@ pageDesc 'nextPage)
+								code: (or (@ pageDesc 'code) (@ pageDesc 'nextCode))
+								}))
+						)
+						
+					;	Initialize all actions.
+					
+					(enum actions actionDesc
+						(block (
+							(nextPage (@ actionDesc 'nextPage))
+							
+							(actionID (cat "action" nextActionID))
+							
+							;	Figure out the label, if we don't have one.
+							
+							(actionLabel
+								(switch
+									(@ actionDesc 'label)
+										(@ actionDesc 'label)
+										
+									;	If we're continuing, and at the last page, then we
+									;	use the [D]one label.
 									
-								(if (@ options 'acceptDecline)
-									(block Nil
-										(scrShowAction theScreen 'actionAccept Nil)
-										(scrShowAction theScreen 'actionDecline Nil)
+									(and (or (not nextPage) (= nextPage 'nextPage))
+											atLastPage
+											)
+										(or (scrTranslate theScreen 'actionDone) (typTranslate &dsDockScreenBase; 'actionDone))
+										
+									;	If we've got an explicit exit, then use the [D]one
+									;	label.
+									
+									(or (= nextPage 'exitPane) (= nextPage 'exitScreen))
+										(or (scrTranslate theScreen 'actionDone) (typTranslate &dsDockScreenBase; 'actionDone))
+										
+									;	If we've got an explicit undock, then use the [U]ndock
+									;	label.
+									
+									(= nextPage 'forceUndock)
+										(or (scrTranslate theScreen 'actionUndock) (typTranslate &dsDockScreenBase; 'actionUndock))
+										
+									;	Otherwise, we use the [C]ontinue label.
+										
+									(or (scrTranslate theScreen 'actionContinue) (typTranslate &dsDockScreenBase; 'actionContinue))
+									)
+								)
+								
+							;	Figure out accelerators
+							
+							(actionAccel
+								(switch
+									(eq (count actions) 1)
+										(list "default" "cancel")
+									(eq nextActionID 0)
+										"default"
+									(eq nextActionID (subtract (count actions) 1))
+										"cancel"
+									Nil
+									)
+								)
+								
+							(nextPageNo Nil)
+							)
+							
+							;	We don't support explicit exit if we've got an onExitPane
+							;	option.
+							
+							(if (and (or (= nextPage 'exitScreen) (= nextPage 'forceUndock))
+										(@ options 'onExitPane)
+										)
+								(setq nextPage Nil)
+								)
+								
+							;	We don't support mission accept/decline unless we've got a
+							;	mission object and onAcceptDecline.
+							
+							(if (and (or (= nextPage 'missionAccept) (= nextPage 'missionDecline))
+										(or (not (@ options 'onAcceptDecline)) (not (@ options 'missionObj)))
+										)
+								(setq nextPage Nil)
+								)
+							
+							;	Generate appropriate action
+							
+							(switch
+								;	If we're continuing, and we're at the last page
+								;	then we exit.
+								
+								(or (= nextPage 'exitPane)
+										(and atLastPage
+											(or (not nextPage) (= nextPage 'nextPage))
+											)
+										)
+									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
+										(lambda ()
+											(block Nil
+												(if (@ actionDesc 'code)
+													((@ actionDesc 'code))
+													)
+													
+												(scrSetData theScreen 'curPage Nil)
+												(if (@ options 'onExitPane)
+													((@ options 'onExitPane) theScreen pageDesc options)
+													(scrExitScreen theScreen)
+													)
+												)
+											)
 										)
 										
-									(scrShowAction theScreen 'actionDone Nil)
-									)
+								;	If we're continuing, then go to the next page.
+								
+								(or (not nextPage) (= nextPage 'nextPage))
+									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
+										(lambda ()
+											(block Nil
+												(if (@ actionDesc 'code)
+													((@ actionDesc 'code))
+													)
+													
+												(scrSetData theScreen 'curPage (+ pageNo 1))
+												(scrShowPane theScreen (@ (scrGetScreen theScreen) 'pane))
+												)
+											)
+										)
+								
+								(= nextPage 'exitScreen)
+									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
+										(lambda ()
+											(block Nil
+												(if (@ actionDesc 'code)
+													((@ actionDesc 'code))
+													)
+													
+												(scrExitScreen theScreen)
+												)
+											)
+										)
+								
+								(= nextPage 'forceUndock)
+									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
+										(lambda ()
+											(block Nil
+												(if (@ actionDesc 'code)
+													((@ actionDesc 'code))
+													)
+													
+												(scrExitScreen theScreen 'forceUndock)
+												)
+											)
+										)
+									
+								(= nextPage 'missionAccept)
+									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
+										(lambda ()
+											(block Nil
+												(if (@ actionDesc 'code)
+													((@ actionDesc 'code))
+													)
+													
+												((@ options 'onAcceptDecline) theScreen 'accept pageDesc options)
+												)
+											)
+										)
+								
+								(= nextPage 'missionDecline)
+									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
+										(lambda ()
+											(block Nil
+												(if (@ actionDesc 'code)
+													((@ actionDesc 'code))
+													)
+													
+												((@ options 'onAcceptDecline) theScreen 'decline pageDesc options)
+												)
+											)
+										)
+										
+								;	If we have a new page number by ID, then navigate to it.
+								
+								(setq nextPageNo (rpgFindIndexByID textDesc nextPage))
+									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
+										(lambda ()
+											(block Nil
+												(if (@ actionDesc 'code)
+													((@ actionDesc 'code))
+													)
+													
+												(scrSetData theScreen 'curPage nextPageNo)
+												(scrShowPane theScreen (@ (scrGetScreen theScreen) 'pane))
+												)
+											)
+										)
+								
+								;	If we have onNavigate, invoke that
+								
+								(@ options 'onNavigate)
+									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
+										(lambda ()
+											(block Nil
+												(if (@ actionDesc 'code)
+													((@ actionDesc 'code))
+													)
+													
+												((@ options 'onNavigate) theScreen nextPage pageDesc options)
+												)
+											)
+										)
 								)
-								
-						;	If we've got accept/decline buttons, show them
-						
-						(@ options 'acceptDecline)
-							(block (
-								(acceptLabel (if (@ pageDesc 'acceptLabel)
-									(@ pageDesc 'acceptLabel)
-									(msnTranslate missionObj 'AcceptLabel (typTranslate &dsRPGMission; 'actionAccept))
-									))
-								(declineLabel (if (@ pageDesc 'declineLabel)
-									(@ pageDesc 'declineLabel)
-									(msnTranslate missionObj 'DeclineLabel (typTranslate &dsRPGMission; 'actionDecline))
-									))
-								)
-								
-								(scrShowAction theScreen 'actionContinue Nil)
-								
-								(scrShowAction theScreen 'actionAccept True)
-								(scrSetActionLabel theScreen 'actionAccept acceptLabel)
-								
-								(scrShowAction theScreen 'actionDecline atLastPage)
-								(scrSetActionLabel theScreen 'actionDecline declineLabel)
-								)
-								
-						;	Otherwise, enable the done button
-						
-						(block Nil
-							(scrShowAction theScreen 'actionContinue Nil)
-							(scrShowAction theScreen 'actionDone True)
-							(if (@ pageDesc 'nextLabel)
-								(scrSetActionLabel theScreen 'actionDone (@ pageDesc 'nextLabel) (@ pageDesc 'nextKey))
-								)
+							
+							;	Next action ID
+											
+							(setq nextActionID (add nextActionID 1))
 							)
 						)
-					
-					; Remember page
-
-					(scrSetData theScreen 'curPage (if atLastPage Nil pageNo))
 					)
 				))
 

@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Rescue Benedict =======================================================
+
+	EXTRA DATA
+	
+	status: Current mission status:
+	
+		Nil: Destroy targetID
+		'rescue: Dock with wreckID (wreck of Penitent destroyer)
+		
+	targetID: ID of destroyer to hit.
+	wreckID: ID of destroyer wreck.
+	
+	======================================================================== -->
+	
+	<MissionType UNID="&msRescueBenedict;"
+			name=				"Rescue Benedict"
+			attributes=			"benedictStoryArc, cathedralOfDominaMission"
+
+			level=				"5"
+			maxAppearing=		"1"
+			priority=			"100"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			noDebrief=			"true"
+			>
+
+		<StaticData>
+			<sequence>70</sequence>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block ()
+					(switch
+						;	See if the mission is still available
+
+						(not (benedict_isMissionAvailable (objGetType gSource)))
+							(msnDestroy gSource)
+							
+						;	OK
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					(ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					
+					fionaObj
+					sandovalObj
+					)
+					;	Create ships for Fiona and Sandoval
+					
+					(setq sandovalObj
+						(rpgCharacterCreateShip
+							&unidHugoSandoval;
+							&scHugoSandovalArmstrong;
+							ownerObj
+							{ repairAll:True }
+							)
+						)
+					(shpOrder sandovalObj 'escort gPlayerShip)
+					(objSetProperty sandovalObj 'dockingEnabled Nil)
+					(objSetProperty sandovalObj 'alwaysLeaveWreck True)
+					
+					(msnRegisterForEvents gSource sandovalObj)
+					(msnSetData gSource 'sandovalID (objGetID sandovalObj))
+					
+					(setq fionaObj
+						(rpgCharacterCreateShip
+							&unidFiona;
+							&scFionaScorpion;
+							ownerObj
+							{ repairAll:True }
+							)
+						)
+					(shpOrder fionaObj 'escort gPlayerShip)
+					(objSetProperty fionaObj 'dockingEnabled Nil)
+					(objSetProperty fionaObj 'alwaysLeaveWreck True)
+							
+					(msnRegisterForEvents gSource fionaObj)
+					(msnSetData gSource 'fionaID (objGetID fionaObj))
+					)
+			</OnAccepted>
+			<OnAcceptedUndock>
+				(block (
+					(ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(etaCetiGateObj (sysGetStargateLeadingToNode 'EC))
+					
+					;	Pick a point 600 light-seconds away from the Cathedral, away from the
+					;	destination stargate.
+					
+					(startCenterPos (sysVectorPolarOffset ownerObj (sysVectorAngle ownerObj etaCetiGateObj) 600))
+					
+					;	Now pick a random point within 100 light-seconds for the convoy
+					;	to start at.
+					
+					(convoyPos (sysVectorRandom startCenterPos 100 60 "TAE"))
+					
+					targetObj
+					)
+					
+					;	Create Penitent destroyer
+					
+					(setq targetObj (sysCreateShip &scExcruciatorDestroyer; convoyPos &svPenitents;))
+					(shpOrder targetObj 'gate etaCetiGateObj)
+					(objSetProperty targetObj 'alwaysLeaveWreck True)
+					
+					(msnRegisterForEvents gSource targetObj)
+					(msnSetData gSource 'targetID (objGetID targetObj))
+					
+					;	Create escorts
+					
+					(for i 1 (random 3 4)
+						(block (escortObj)
+							(setq escortObj (sysCreateShip &scRepentant; convoyPos &svPenitents;))
+							(shpOrder escortObj 'escort targetObj)
+							)
+						)
+						
+					(msnSetPlayerTarget gSource)
+					)
+			</OnAcceptedUndock>
+
+			<OnSetPlayerTarget>
+				(switch
+					(= (msnGetData gSource 'status) 'rescue)
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'wreckID)) 'dock)
+						
+					(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+			</OnSetPlayerTarget>
+			
+			<OnObjDestroyed>
+				(switch
+					;	If wreck was destroyed, then we fail (should never happen,
+					;	because we make the wreck immutable).
+					
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'wreckID))
+						(msnFailure gSource)
+					
+					;	If not the target, then ignore
+					
+					(!= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						Nil
+						
+					;	If the target entered a stargate, then we lose
+					
+					(= aDestroyReason 'enteredStargate)
+						(msnFailure gSource)
+						
+					;	If no wreck, the mission failure (should never happen)
+					
+					(not aWreckObj)
+						(msnFailure gSource)
+						
+					;	Otherwise, if the target was destroyed, then the player needs to dock with the wreck
+					
+					(block (
+						(fionaObj (objGetObjByID (msnGetData gSource 'fionaID)))
+						(sandovalObj (objGetObjByID (msnGetData gSource 'sandovalID)))
+						)
+						
+						;	Set up the wreck
+						
+						(objSetEventHandler aWreckObj &evBenedict07PenitentWreck;)
+						(objSetProperty aWreckObj 'maxStructuralHP 0)
+						(msnSetData gSource 'wreckID (objGetID aWreckObj))
+						(msnRegisterForEvents gSource aWreckObj)
+						
+						;	Order Fiona to dock
+						
+						(shpCancelOrders fionaObj)
+						(shpOrder fionaObj 'sendMessage gPlayerShip (msnTranslate gSource 'msgDidIt))
+						(shpOrder fionaObj 'dock aWreckObj)
+						
+						;	Order Sandoval to orbit (can't patrol, because wreck is enemy, and
+						;	patrolling will cause Sandoval to attack us).
+						
+						(shpCancelOrders sandovalObj)
+						(shpOrder sandovalObj 'sendMessage gPlayerShip (msnTranslate gSource 'msgCoverYou))
+						(shpOrder sandovalObj 'orbit aWreckObj 8)
+						
+						(msnSetData gSource 'status 'rescue)
+						(msnSetPlayerTarget gSource)
+						)
+					)
+			</OnObjDestroyed>
+			
+			<OnDebriefed>
+			</OnDebriefed>
+			
+			<OnCompleted>
+				(switch
+					(= aReason 'success)
+						(block (
+							(etaCetiGateObj (sysGetStargateLeadingToNode 'EC))
+							(fionaObj (objGetObjByID (msnGetData gSource 'fionaID)))
+							(sandovalObj (objGetObjByID (msnGetData gSource 'sandovalID)))
+							)
+					
+							;	Fiona and Sandoval leave
+							
+							(shpCancelOrders fionaObj)
+							(shpOrder fionaObj 'gate etaCetiGateObj)
+							
+							(shpCancelOrders sandovalObj)
+							(shpOrder sandovalObj 'gate etaCetiGateObj)
+							)
+							
+					(= aReason 'failure)
+						(block (
+							(skGateObj (sysGetStargateLeadingToNode 'SK))
+							(fionaObj (objGetObjByID (msnGetData gSource 'fionaID)))
+							(sandovalObj (objGetObjByID (msnGetData gSource 'sandovalID)))
+							)
+							
+							;	Fiona and Sandoval return to SK
+							
+							(shpCancelOrders fionaObj)
+							(objSendMessage gPlayerShip fionaObj (msnTranslate gSource 'msgBenedictDead1))
+							(shpOrder fionaObj 'wait 6)
+							(shpOrder fionaObj 'sendMessage gPlayerShip (msnTranslate gSource 'msgBenedictDead2))
+							(shpOrder fionaObj 'gate skGateObj)
+							
+							(shpCancelOrders sandovalObj)
+							(shpOrder sandovalObj 'wait 3)
+							(shpOrder sandovalObj 'sendMessage gPlayerShip (msnTranslate gSource 'msgBenedictDead3))
+							(shpOrder sandovalObj 'escort fionaObj)
+							(shpOrder sandovalObj 'gate skGateObj)
+							)
+					)
+			</OnCompleted>
+			
+			<OnRescueDone>
+				(block (
+					)
+					;	Mission succeeds
+					
+					(msnSuccess gSource)
+					)
+			</OnRescueDone>
+			
+			<GetGlobalAchievements>
+			</GetGlobalAchievements>
+		</Events>
+		
+		<Language>
+			<Text id="Name">"Rescue Benedict"</Text>
+			<Text id="Summary">
+				(cat
+					"Intercept a Penitent convoy carrying Benedict.\n\n"
+					"System: " (sysGetName) "\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="Intro">
+				(list
+					{
+						desc: (cat
+							"The beautiful central chamber, built hundreds of years ago by Saint Eugenia, "
+							"is lit by the holograms of various Sisters. Lay and ordained women walk "
+							"through the halls in quiet conversation.\n\n"
+							
+							"You see Fiona and Sandoval pacing in front of a large meteorsteel door."
+							)
+						label: "\"[A]ny word on Benedict?\""
+						}
+					{
+						desc: (cat
+							"Fiona frowns, \"No, but we're waiting for an audience with the "
+							"Circle of Obligation, the Sisters' leadership. They'll help us.\""
+							)
+						label: "\"[H]ow can you be sure?\""
+						}
+					{
+						desc: (cat
+							"\"I talked to Sister Oriela, the grandmatriarch of the Sister. "
+							"I gave her the video ROM of Sister Ston talking to the Penitents. "
+							"She's convened a meeting of the Circle to formally charge "
+							"Sister Ston.\"\n\n"
+							
+							"Just then, the meteorsteel door opens and all of you are led inside."
+							)
+						}
+					{
+						desc: (cat
+							"The Circle of Obligation sits at a curved table in front of you. "
+							"The grandmatriarch, clad in a high collar that hides her many wrinkles, "
+							"stands as you enter.\n\n"
+							
+							"To her right, Sister Colleen McMurray, long rumored to be her successor, "
+							"nods to Fiona.\n\n"
+							
+							"Sister Elana Ston frowns at one edge of the table. She occasionally looks "
+							"behind her at a pair of guards."
+							)
+						}
+					{
+						desc: (cat
+							"The grandmatriach sits down, \"Fiona, will you tell us your story.\"\n\n"
+							
+							"Fiona recounts how a murder investigation led her to suspect "
+							"that Sister Ston was plotting with the Penitent Order. "
+							"She lauds Benedict, who obtained video evidence, at the cost "
+							"of his own freedom and possibly his life."
+							)
+						}
+					{
+						desc: (cat
+							"Fiona shows the video to the assembled Sisters. The room explodes "
+							"in chaos when they see Sister Ston delivering a dozen infants to "
+							"the Penitents.\n\n"
+							
+							"The grandmatriach silences them, \"Enough! We are not finished yet.\"\n\n"
+							
+							"She continues, \"Thank you Fiona. Now let us hear from Sister "
+							"Isabel, our cybertech.\""
+							)
+						}
+					{
+						desc: (cat
+							"Fiona shoots a look of panic at Sandoval.\n\n"
+							
+							"Sister Isabel steps forward: \"Right. Well, I've analyzed Fiona's "
+							"video, and I'm sorry to say that it has 53 distinct stream artifacts "
+							"and probably a dozen injection sites...\"\n\n"
+							
+							"McMurray interrupts her, \"Sister, would you summarize, please.\""
+							)
+						}
+					{
+						desc: (cat
+							"Sister Isabel looks at Fiona and then at the floor: \"The video is "
+							"a fake. Probably a splice or a hypervisualized...\"\n\n"
+							
+							"\"Thank you, Sister Isabel!\" says the grandmatriarch with a wave. "
+							"\"Fiona, I'm afraid you've been the unwitting pawn in an effort to "
+							"bring discord to our Sisterhood.\""
+							)
+						}
+					{
+						desc: (cat
+							"Sister Ston rises with a smile. \"I bear no ill will, Fiona. "
+							"No doubt the Penitents are trying to undermine us. Perhaps this "
+							"Benedict is himself involved. I'm glad the truth was revealed "
+							"in time.\"\n\n"
+							
+							"Guards usher you all out of the room, and the meteorsteel door "
+							"shuts firmly."
+							)
+						label: "\"[W]hat just happened?\""
+						}
+					{
+						desc: (cat
+							"Fiona's face is flushed. \"We've been played! The grandmatriarch...\"\n\n"
+							
+							"Sandoval interrupts, \"Played by whom, eh? Maybe Sister Ston is right "
+							"about Benedict. He could have planned the whole thing from the "
+							"beginning.\""
+							)
+						label: "\"[N]o, I trust Benedict!\""
+						}
+					{
+						desc: (cat
+							"Fiona agrees, \"And I don't trust Sister Ston. But if the "
+							"grandmatriarch is involved...\"\n\n"
+							
+							"Just then, Sister Colleen McMurray appears from a side corridor. "
+							"\"If the grandmatriarch were involved, you'd all be dead! But "
+							"don't look for help from her either.\""
+							)
+						label: "\"[W]hat do you mean?\""
+						}
+					{
+						desc: (cat
+							"\"The Sisterhood is compromised; schism is inevitable.\"\n\n"
+							
+							"\"And it's all %his% fault,\" she says, pointing at you."
+							)
+						label: "\"[M]e? What did I do?\""
+						}
+					{
+						desc: (cat
+							"\"Maybe not you, specifically, but a pilgrim. One of the "
+							"pilgrims beamed back her logbooks before she died. The contents "
+							"are secret still, but they've already sparked conflict in "
+							"the Circle of Obligation.\""
+							)
+						label: "\"[D]id she discover something?\""
+						}
+					{
+						desc: (cat
+							"\"Maybe you'll find out yourself. But it doesn't matter now; "
+							"the damage is done. All you can do is get far away from here. "
+							"Save yourselves.\""
+							)
+						label: "\"[G]ive up? Just like that?\""
+						}
+					{
+						desc: (cat
+							"\"I didn't say give up! There's one more service you can perform. "
+							"My spies tell me that Benedict is still alive.\n\n"
+							
+							"\"He's on a convoy, being taken to Eta Ceti. He'll pass through "
+							"this system soon. If you leave now, you'll have a chance to "
+							"free him.\""
+							)
+						}
+					)
+			</Text>
+			<Text id="Briefing">
+				(list
+					{
+						desc: (cat
+							"Fiona looks at you and Sandoval. \"If there's a chance we can "
+							"save Benedict, we need to take it.\n\n"
+							
+							"\"Please help me rescue him.\""
+							)
+						acceptLabel: "\"[O]f course!\""
+						declineLabel: "\"[L]et me prepare first.\""
+						}
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(cat
+					"Sandoval nods at you. \"You've got the best ship, pet. We'll follow "
+					"your lead!\""
+					)
+			</Text>
+			<Text id="DeclineReply">
+				(cat
+					"\"OK, but don't take too long. That convoy will be here any time now.\""
+					)
+			</Text>
+			<Text id="InProgress">
+				(cat
+					"Fiona is desperate, \"We gotta get out there! We'll never catch up to the "
+					"convoy if we don't leave now!\""
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+			
+			<Text id="dlgRescueBenedict">
+				(list
+					{
+						desc: (cat
+							"You enter the smoking wreckage of the Penitent ship. "
+							"Fiona carries a datapad controlling a squad of autons.\n\n"
+							
+							"You make your way slowly, dispatching all resistance. Finally, "
+							"the autons detect a figure running towards you.\n\n"
+							
+							"\"Hold\" says Fiona."
+							)
+						}
+					{
+						desc: (cat
+							"Benedict appears. A bloody arms hangs uselessly at his side, "
+							"but he walks proudly. He rushes to embrace Fiona.\n\n"
+							
+							"\"I'm OK,\" he says to her, \"But we need to get out of here.\""
+							)
+						label: "\"[A]nd go where?\""
+						}
+					{
+						desc: (cat
+							"Fiona agrees, \"Stormhound was right. We can't trust the Sisters! "
+							"We can't go back there!\"\n\n"
+							
+							"But Benedict insists, \"I know where they took the children! "
+							"They're in Eta Ceti, probably part of some experiment! We've got "
+							"to save them.\""
+							)
+						}
+					{
+						desc: (cat
+							"Fiona breaks away, shaking her head. \"We've got no support! "
+							"You know we'll never make it.\"\n\n"
+							
+							"But Benedict takes her hands, \"Fiona, I don't know who I was "
+							"before the mindwipe. But I know who I am now! I'm someone who would "
+							"risk everything to save those children. That's who I want to be!\""
+							)
+						}
+					{
+						desc: (cat
+							"Fiona beams a smile a Benedict, \"I won't let you go alone again. "
+							"Together to the end, OK?\"\n\n"
+							
+							"Benedict hugs her. Then he turns to you. \"I can't ask you to come "
+							"with us. Who knows what Domina plans for you. But if you find "
+							"yourself in Eta Ceti, we could use your help.\""
+							)
+						actions: (list
+							{
+								;	BRANCH A
+								label: "\"[I]'ll be there!\""
+								nextPage: 'accept
+								}
+							{
+								;	BRANCH B
+								label: "\"[D]omina has the final say.\""
+								nextPage: 'decline
+								}
+							)
+						}
+					{
+						id: 'accept
+						desc: (cat
+							"Fiona smiles at you. \"Thank you. We'll see you there!\""
+							)
+						nextPage: 'forceUndock
+						code: (lambda ()
+							(block (
+								(missionObj (@ (msnFind "a +unid:&msRescueBenedict;;") 0))
+								)
+								(msnFireEvent missionObj 'OnRescueDone)
+								)
+							)
+						}
+					{
+						id: 'decline
+						desc: (cat
+							"Benedict nods. \"I know. I don't envy you. Goodbye, %name%.\""
+							)
+						nextPage: 'forceUndock
+						code: (lambda ()
+							(block (
+								(missionObj (@ (msnFind "a +unid:&msRescueBenedict;;") 0))
+								)
+								(msnFireEvent missionObj 'OnRescueDone)
+								)
+							)
+						}
+					)
+			</Text>
+			<Text id="dlgWaitForFiona">
+				(list
+					{
+						desc: (cat "You decide to wait for Fiona.")
+						nextPage: 'forceUndock
+						}
+					)
+			</Text>
+			
+			<Text id="msgBenedictDead1">"\"Nooooo!\""</Text>
+			<Text id="msgBenedictDead2">"\"Let's get the hell out of here.\""</Text>
+			<Text id="msgBenedictDead3">"\"Sorry, pet, you're on your own.\""</Text>
+			<Text id="msgCoverYou">"\"I'll cover you! Get Benedict!\""</Text>
+			<Text id="msgDidIt">"\"We got it!\""</Text>
+		</Language>
+	</MissionType>
+	
+<!-- BEHAVIORS -->
+
+	<Type UNID="&evBenedict07PenitentWreck;">
+		<Events>
+			<GetDockScreen>
+				(block (
+					(missionObj (@ (msnFind "a +unid:&msRescueBenedict;;") 0))
+					(fionaObj (objGetObjByID (msnGetData missionObj 'fionaID)))
+					)
+				
+					(switch
+						;	If no mission, or mission already completed, nothing to do.
+						
+						(or (not missionObj)
+								(msnGetProperty missionObj 'isCompleted)
+								)
+							Nil
+							
+						;	If Fiona has not yet docked with the wreck, the player has to wait.
+						
+						(!= (objGetProperty fionaObj 'dockedAtID) (objGetID gSource))
+							(list &dsRPGDialog; (typTranslate &msRescueBenedict; 'dlgWaitForFiona) 10)
+
+						;	Rescue script
+						
+						(list &dsRPGDialog; (typTranslate &msRescueBenedict; 'dlgRescueBenedict) 10)
+						)
+					)
+			</GetDockScreen>
+		</Events>
+	</Type>
+
+</TranscendenceModule>

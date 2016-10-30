@@ -6,7 +6,7 @@
 
 	<StationType UNID="&stGenericCargoCrate;"
 			name=				"abandoned cargo crate"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsRPGAbandonedStation;"
 
 			structuralHitPoints="10"

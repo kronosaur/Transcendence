@@ -382,8 +382,7 @@ ALERROR CIntroSession::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSover
 
 				//	Skip classes that we don't want in the intro
 
-				if (pClass->IsPlayerShip()
-						|| pClass->IsVirtual()
+				if (pClass->IsVirtual()
 						|| !pClass->HasLiteralAttribute(ATTRIB_GENERIC_SHIP_CLASS))
 					continue;
 

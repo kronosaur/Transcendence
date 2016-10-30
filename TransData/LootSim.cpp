@@ -246,7 +246,7 @@ void AddItems (CSpaceObject *pObj, SystemInfo *pSystemEntry)
 
 			//	Increment value
 
-			pSystemEntry->iTotalLootValue += Item.GetValue(true) * Item.GetCount();
+			pSystemEntry->iTotalLootValue += Item.GetTradePrice(NULL, true) * Item.GetCount();
 			}
 		}
 	}

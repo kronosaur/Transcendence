@@ -32,7 +32,7 @@ void GenerateArmorTable (CUniverse &Universe, CXMLElement *pCmdLine)
 		printf("%d\t%s\t%d\t%d\t%d\t", 
 				pItem->GetLevel(), 
 				sName.GetASCIIZPointer(), 
-				Item.GetValue(true), 
+				Item.GetTradePrice(NULL, true), 
 				Item.GetMassKg(),
 				iHP);
 

@@ -252,9 +252,9 @@
 															})
 														)
 													)
-												(list 'reduceMax 'original)
+												(list 'excludeNil 'reduceMax 'original)
 												theResult
-												(@ theResult 'buyerPrice)
+												(if (gr (@ theResult 'buyerPrice) 0) (@ theResult 'buyerPrice))
 												)
 											)
 										)

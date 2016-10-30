@@ -1128,7 +1128,8 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 								 const CString &sPane,
 								 ICCItem *pData,
 								 CString *retsPane,
-								 AGScreen **retpScreen)
+								 AGScreen **retpScreen,
+								 CString *retsError)
 
 //	InitScreen
 //
@@ -1159,7 +1160,10 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	//	Initialize CodeChain processor
 
 	if (error = InitCodeChain(g_pTrans, m_pLocation))
+		{
+		if (retsError) *retsError = CONSTLIT("Unable to initialize CodeChain.");
 		return error;
+		}
 
 	//	Call OnScreenInit
 
@@ -1238,11 +1242,8 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	//	a background image.
 
 	IDockScreenDisplay::SDisplayOptions DisplayOptions;
-	if (!IDockScreenDisplay::GetDisplayOptions(DisplayCtx, &DisplayOptions, &sError))
-		{
-		::kernelDebugLogMessage(sError);
+	if (!IDockScreenDisplay::GetDisplayOptions(DisplayCtx, &DisplayOptions, retsError))
 		return ERR_FAIL;
-		}
 
 	//	If we have a deferred background setting, then use that (and reset it
 	//	so that we don't use it again).
@@ -1256,14 +1257,17 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	//	Creates the title area
 
 	if (error = CreateTitleArea(m_pDesc, m_pScreen, m_rcBackground, m_rcScreen))
+		{
+		if (retsError) *retsError = CONSTLIT("Unable to create title area.");
 		return error;
+		}
 
 	//	Get the list of panes for this screen
 
 	m_pPanes = m_pDesc->GetContentElementByTag(PANES_TAG);
 	if (m_pPanes == NULL)
 		{
-		::kernelDebugLogMessage("ERROR: No <Panes> tag defined.");
+		if (retsError) *retsError = CONSTLIT("ERROR: No <Panes> tag defined.");
 		return ERR_FAIL;
 		}
 
@@ -1298,7 +1302,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	
 	else
 		{
-		::kernelDebugLogMessage("ERROR: Invalid display type: %s.", DisplayOptions.sType);
+		if (retsError) *retsError = strPatternSubst(CONSTLIT("ERROR: Invalid display type: %s."), DisplayOptions.sType);
 		return ERR_FAIL;
 		}
 
@@ -1318,7 +1322,10 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 			&& (DisplayOptions.sType.IsBlank() || strEquals(DisplayOptions.sType, SCREEN_TYPE_CANVAS)))
 		{
 		if (error = InitDisplay(DisplayCtx.pDisplayDesc, m_pScreen, m_rcScreen))
+			{
+			if (retsError) *retsError = CONSTLIT("Unable to initialize display.");
 			return error;
+			}
 
 		//	Set any deferred text
 

@@ -73,7 +73,6 @@
 		name=				"(primordial asteroid)"
 		scale=				"world"
 		size=				"6"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, outer, primordial"
 
@@ -102,7 +101,6 @@
 		name=				"(primordial asteroid)"
 		scale=				"world"
 		size=				"55"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, outer, primordial"
 
@@ -132,7 +130,6 @@
 		name=				"(primordial asteroid)"
 		scale=				"world"
 		size=				"250"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, outer, primordial"
 
@@ -160,7 +157,6 @@
 		name=				"(primordial asteroid)"
 		scale=				"world"
 		size=				"740"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, outer, primordial"
 
@@ -188,7 +184,6 @@
 		name=				"(primordial planetoid)"
 		scale=				"world"
 		size=				"1150"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, outer, planetoid, primordial"
 
@@ -203,7 +198,6 @@
 		name=				"(primordial planetoid)"
 		scale=				"world"
 		size=				"1640"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, outer, planetoid, primordial"
 
@@ -218,7 +212,6 @@
 		name=				"(primordial planetoid)"
 		scale=				"world"
 		size=				"2530"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, outer, planetoid, primordial"
 		>
@@ -233,7 +226,6 @@
 		name=				"(primordial planetoid)"
 		scale=				"world"
 		size=				"4000"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, outer, planetoid, primordial"
 		>
@@ -246,7 +238,6 @@
 		name=				"(primordial terrestrial)"
 		scale=				"world"
 		size=				"4285"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, outer, primordial, terrestrial"
 		>
@@ -261,7 +252,6 @@
 		name=				"(primordial terrestrial)"
 		scale=				"world"
 		size=				"6300"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"atmosphere, denseAtmosphere, generic, inner, lifeZone, outer, primordial, terrestrial"
 		>
@@ -277,7 +267,6 @@
 		name=				"(primordial terrestrial)"
 		scale=				"world"
 		size=				"22000"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, outer, primordial, terrestrial"
 		>
@@ -292,7 +281,6 @@
 		name=				"(primordial gas giant)"
 		scale=				"world"
 		size=				"48200"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"atmosphere, denseAtmosphere, gasGiant, generic, inner, lifeZone, outer, primordial"
 		>

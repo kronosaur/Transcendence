@@ -1596,6 +1596,13 @@
 								)
 							)
 					</Action>
+					
+					<Action id="actionUniversityHospital">
+						(rpgMissionAssignment {
+							missionCriteria: (cat "n +stKatsHospital; =" (sysGetLevel) ";")
+							noMissionTextID: 'descHospitalEmpty
+							})
+					</Action>
 
 					<Action name="Leave" cancel="1" key="L">
 						(scrShowScreen gScreen &dsStKatsArcology;)
@@ -1985,6 +1992,16 @@
 		</Panes>
 		
 		<Language>
+			<Text id="actionUniversityHospital">"[U]niversity Hospital"</Text>
+			
+			<Text id="descHospitalEmpty">
+				(cat
+					"You enter the brightly lit central garden of the New Victoria University Hospital. "
+					"Recovering patients sit on articulated gurneys, while doctors and medtechs pass through, "
+					"heads burried in datapads."
+					)
+			</Text>
+			
 			<Text id="DallWelcome">
 				(cat
 					"You meet one of the faculty members of the Taikon School:\n\n"
@@ -2161,7 +2178,7 @@
 
 	<StationType UNID="&stDallSphere;"
 			name=				"inert metal sphere"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"Main"
 
 			scale=				"ship"
@@ -2203,7 +2220,7 @@
 
 	<StationType UNID="&stDallMissionWreck;"
 			name=				"Sung transport wreck"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"Main"
 			scale=				"ship"
 			mobile=				"true"
@@ -2763,7 +2780,7 @@
 			<OrderDockAtStKats>
 				(block Nil
 					(shpOrder gSource 'dock aDockObj)
-					(shpOrder gSource 'wait (random 10 200))
+					(shpOrder gSource 'waitForThreat (random 10 200))
 					(objSetData gSource "0010201F_status" 'dockedAtNewVictoria)
 					)
 			</OrderDockAtStKats>
@@ -2802,7 +2819,7 @@
 								(setq theTarget (random (sysFindObject gSource "T +arcology")))
 								(shpOrder gSource 'orbit (sysFindObject Nil "TNV +stKatsArcology;") 20 (random 20 40))
 								(shpOrder gSource 'dock theTarget)
-								(shpOrder gSource 'wait (random 10 60))
+								(shpOrder gSource 'waitForThreat (random 10 60))
 								(objSetData gSource "0010201F_status" 'dockedAtNewVictoria)
 								)
 								
@@ -2846,7 +2863,7 @@
 									(block (theTarget)
 										(setq theTarget (random (sysFindObject gSource "TAF +populated; -arcology; -occupation;")))
 										(shpOrder gSource 'dock theTarget)
-										(shpOrder gSource 'wait (random 10 20))
+										(shpOrder gSource 'waitForThreat (random 10 20))
 										(objSetData gSource "0010201F_status" 'dockedAtStation)
 										)
 									)
@@ -2891,7 +2908,7 @@
 											(setq theTarget (random (sysFindObject gSource "T +arcology")))
 											(shpOrder gSource 'orbit (sysFindObject Nil "TNV +stKatsArcology;") 20 (random 20 40))
 											(shpOrder gSource 'dock theTarget)
-											(shpOrder gSource 'wait (random 10 60))
+											(shpOrder gSource 'waitForThreat (random 10 60))
 											(objSetData gSource "0010201F_status" 'dockedAtNewVictoria)
 											)
 											
@@ -2899,7 +2916,7 @@
 									(block (theTarget)
 										(setq theTarget (random (sysFindObject gSource "TAF +populated; -arcology; -occupation;")))
 										(shpOrder gSource 'dock theTarget)
-										(shpOrder gSource 'wait (random 10 20))
+										(shpOrder gSource 'waitForThreat (random 10 20))
 										(objSetData gSource "0010201F_status" 'dockedAtStation)
 										)
 									)

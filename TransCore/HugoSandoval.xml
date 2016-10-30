@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Hugo Sandoval -->
+	
+	<Type UNID="&unidHugoSandoval;">
+		<StaticData>
+			<Data id="MissionAttribute">"hugoSandovalMission"</Data>
+			<Data id="Name">"Hugo Sandoval"</Data>
+			<Data id="Sovereign">&svCommonwealth;</Data>
+		</StaticData>
+
+		<Events>
+			<OnCharacterCanBeMet>
+				True
+			</OnCharacterCanBeMet>
+
+			<OnGlobalSystemStopped>
+				(rpgCharacterAscend &unidHugoSandoval;)
+			</OnGlobalSystemStopped>
+		</Events>
+	</Type>
+	
+	<!-- Sandoval's Ship -->
+
+	<ShipClass UNID="&scHugoSandovalArmstrong;"
+			manufacturer=		"NAMI"
+			class=				"Armstrong"
+			type=				"transport"
+
+			attributes=			"hugoSandoval"
+			character=			"&unidHugoSandoval;"
+
+			size=				"58"
+			mass=				"500"
+			thrustRatio=		"2.0"
+			maxSpeed=			"18"
+			cargoSpace=			"500"
+
+			dockingPorts=		"4"
+			dockScreen=			"&dsRPGCharacterDefault;"
+			>
+
+		<Names noArticle="true" personalName="true">Hugo Sandoval</Names>
+		
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itDuralloyArmor;"
+			count=				"6"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itAkan600Turret;"	posAngle="0" posRadius="4" posZ="16">
+				<Items>
+					<Item count="500" item="&itAkan30CannonShell;"/>
+				</Items>
+			</Device>
+			<Device deviceID="&itNephrenP25;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"6.0"
+			rotationAccel=		"3.0"
+			/>
+
+		<Items>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsArmstrongTransport;" imageWidth="90" imageHeight="90" rotationCount="120" rotationColumns="12" viewportRatio="0.0075"/>
+		<HeroImage imageID="&rsArmstrongTransportHero;" imageWidth="320" imageHeight="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="162"	posRadius="42"	posZ="6"	rotation="180" />
+			<Effect type="thrustMain"		posAngle="-162"	posRadius="42"	posZ="6"	rotation="180" />
+			<Effect type="thrustMain"		posAngle="110"	posRadius="23"	posZ="3"	rotation="180" />
+			<Effect type="thrustMain"		posAngle="-110"	posRadius="23"	posZ="3"	rotation="180" />
+		</Effects>
+
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"standOff"
+			/>
+
+		<Language>
+			<Text id="FirstMeetingIntro">
+				(list
+					{
+						desc: (cat
+							"The airlock opens and you see a slim man wearing a well-fitted "
+							"carbon-fiber jacket. A scattering of gray shines on otherwise "
+							"dark hair.\n\n"
+							
+							"A faint smile and bright eyes draw attention away from the "
+							"compact blaster in his right hand."
+							)
+						}
+					)
+			</Text>
+
+			<Text id="MeetingIntro">
+				(cat
+					"The airlock opens and you see Hugo Sandoval waiting for you in his "
+					"well-fitted carbon-fiber jacket.\n\n"
+					
+					"\"Welcome back, %name%!\""
+					)
+			</Text>
+
+			<Text id="NoMissions">
+				(cat
+					"The airlock refuses to open."
+					)
+			</Text>
+		</Language>
+	</ShipClass>
+	
+</TranscendenceModule>

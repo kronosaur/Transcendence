@@ -21,7 +21,7 @@
 
 	<StationType UNID="&stMiningPod;"
 			name=				"(mining pod)"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 				 
 			attributes=			"miningPod"
 

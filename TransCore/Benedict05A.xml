@@ -1,0 +1,711 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Find the Hand of Solace ===============================================
+
+	EXTRA DATA
+
+	benedictID: ID of Benedict's ship
+	overlayID: ID of scanning overlay for Sandoval's ship
+	sandovalID: ID of Sandoval's ship
+	scanPosID: Marker object for scan position.
+	wreckID: ObjID of the wreck.
+	
+	======================================================================== -->
+	
+	<MissionType UNID="&msFindHandOfSolace;"
+			name=				"Find Hand of Solace"
+			attributes=			"benedictStoryArc, hugoSandovalMission"
+
+			level=				"4"
+			maxAppearing=		"1"
+			priority=			"100"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			noDebrief=			"true"
+			>
+
+		<StaticData>
+			<sequence>55</sequence>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block ()
+					(switch
+						;	See if the mission is still available
+
+						(not (benedict_isMissionAvailable (objGetType gSource) { allowActiveMissions:True }))
+							(msnDestroy gSource)
+							
+						;	OK
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					(findSandovalMission (@ (msnFind "a +unid:&msFionaInStKats;;") 0))
+					(sandovalObj (sysFindObject gSource "sNA +hugoSandoval"))
+					
+					benedictObj
+					wreckObj
+					markerObj
+					wreckBearing
+					wreckDist
+					)
+					
+					;	As soon as we accept, we complete the previous mission.
+					
+					(if findSandovalMission
+						(msnSuccess findSandovalMission)
+						)
+						
+					;	Remember sandoval's ship
+					
+					(msnSetData gSource 'sandovalID (objGetID sandovalObj))
+						
+					;	Create the wreck of the Hand of Solace
+					
+					(setq wreckObj
+						(sysCreateStation &stHandOfSolaceWreck; 
+							(sysVectorRandom 
+								sandovalObj 
+								(lambda () (sysVectorPolarOffset Nil (random 0 359) (random 480 1440)))
+								120
+								"sTA"
+								)
+							&svCommonwealth;
+							)
+						)
+					(msnSetData gSource 'wreckID (objGetID wreckObj))
+					
+					(setq wreckBearing (sysVectorAngle wreckObj sandovalObj))
+					(setq wreckDist (sysVectorDistance wreckObj sandovalObj))
+					
+					;	Create Benedict's ship and dock with the wreck
+					
+					(setq benedictObj
+						(rpgCharacterCreateShip
+							&unidBenedict;
+							&scBenedictAsterion;
+							wreckObj
+							{ repairAll:True }
+							)
+						)
+						
+					(msnSetData gSource 'benedictID (objGetID benedictObj))
+						
+					(shpCancelOrders benedictObj)
+					(shpOrder benedictObj 'dock wreckObj)
+					(objSetProperty benedictObj 'dockingEnabled Nil)
+					
+					;	Pick a scanning spot
+					
+					(setq markerObj
+						(sysCreateMarker "ScanPos"
+							(sysVectorRandom 
+								sandovalObj 
+								(lambda () (sysVectorPolarOffset Nil (+ wreckBearingAngle (random -90 90)) (/ wreckDist 2)))
+								60
+								"sTA"
+								)
+							&svCommonwealth;
+							)
+						)
+					(msnSetData gSource 'scanPosID (objGetID markerObj))
+					
+					;	Set up enemies
+						
+					;	Mission accepted
+					
+					(benedict_missionAccepted gSource)
+					)
+			</OnAccepted>
+			
+			<OnAcceptedUndock>
+				(block (
+					(sandovalObj (objGetObjByID (msnGetData gSource 'sandovalID)))
+					(markerObj (objGetObjByID (msnGetData gSource 'scanPosID)))
+					)
+					
+					;	Order Sandoval's ship
+					
+					(shpCancelOrders sandovalObj)
+					(shpOrder sandovalObj 'approach markerObj)
+					(shpOrder sandovalObj 'fireEvent gSource 'OnScanStart)
+					(shpOrder sandovalObj 'hold)
+					)
+			</OnAcceptedUndock>
+
+			<OnSetPlayerTarget>
+				(switch
+					(msnGetData gSource 'foundWreck)
+						(block (
+							(wreckObj (objGetObjByID (msnGetData gSource 'wreckID)))
+							)
+							(rpgSetTarget gSource aReason wreckObj 'dock)
+							)
+					)
+			</OnSetPlayerTarget>
+			
+			<OnObjDestroyed>
+				(switch
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'sandovalID))
+						(msnFailure gSource)
+					)
+			</OnObjDestroyed>
+			
+			<OnCompleted>
+				(block (
+					(sandovalObj (objGetObjByID (msnGetData gSource 'sandovalID)))
+					(benedictObj (objGetObjByID (msnGetData gSource 'benedictID)))
+					)
+					;	Sandoval heads to SK
+					
+					(if sandovalObj
+						(block ()
+							(shpCancelOrders sandovalObj)
+							(shpOrder sandovalObj 'gate (sysGetStargateLeadingToNode 'SK))
+							)
+						)
+						
+					;	Benedict heads to Sanctuary
+					
+					(if benedictObj
+						(block ()
+							(shpCancelOrders benedictObj)
+							(shpOrder benedictObj 'gate (sysGetStargateLeadingToNode 'CD))
+							)
+						)
+					)
+			</OnCompleted>
+			
+			<OnGlobalSystemStarted>
+				(switch
+					;	If not in C5, then nothing to do
+					
+					(!= (sysGetNode) 'C5)
+						Nil
+						
+					;	If we don't have a mission to meet Sandoval, then 
+					;	there's nothing to do.
+					
+					(not (rpgIsMissionActive &msFionaInStKats;))
+						Nil
+						
+					;	Create Sandoval here.
+					
+					(block (
+						sandovalObj
+						)
+					
+						;	Pick a position nearest to the gate towards SK
+
+						(setq sandovalObj
+							(rpgCharacterCreateShip
+								&unidHugoSandoval;
+								&scHugoSandovalArmstrong;
+								(sysVectorRandom (sysGetStargateLeadingToNode 'SK) 20 40)
+								{ repairAll:True }
+								)
+							)
+						
+						;	Order appropriately
+
+						(shpCancelOrders sandovalObj)
+						(shpOrder sandovalObj 'hold)
+						)
+					)
+			</OnGlobalSystemStarted>
+
+			<OnScanStart>
+				(block (
+					(sandovalObj (objGetObjByID (msnGetData gSource 'sandovalID)))
+					)
+					(msnSetData gSource 'overlayID 
+						(objAddOverlay sandovalObj &ovBenedict05ScanRange;)
+						)
+					)
+			</OnScanStart>
+			
+			<OnScanComplete>
+				(block (
+					(sandovalObj (objGetObjByID (msnGetData gSource 'sandovalID)))
+					(wreckObj (objGetObjByID (msnGetData gSource 'wreckID)))
+					)
+					;	Done with the overlay
+					
+					(objRemoveOverlay sandovalObj (msnGetData gSource 'overlayID))
+
+					;	Tell the player and set the target
+					
+					(objSendMessage gPlayerShip sandovalObj (msnTranslate gSource 'msgFoundWreck))
+					(msnSetData gSource 'foundWreck True)
+					(msnSetPlayerTarget gSource)
+					
+					;	Order the ship
+					
+					(shpCancelOrders sandovalObj)
+					(shpOrder sandovalObj 'dock wreckObj)
+					)
+			</OnScanComplete>
+			
+			<OnDataAcquired>
+				(block ()
+					;	Mission success
+					
+					(typIncData &unidBenedictStoryArc; 'clues 1)
+					(msnSuccess gSource)
+					)
+			</OnDataAcquired>
+		</Events>
+		
+		<Language>
+			<Text id="Name">"Help Sandoval Find the Hand of Solace"</Text>
+			<Text id="Summary">
+				(cat
+					"Follow Sandoval and help him scan for the wreckage of the Hand of Solace. "
+					"Do not enter or let anyone enter the scanning zone.\n\n"
+					
+					"System: " (sysGetName) "\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="FirstIntro">
+				(list
+					{
+						desc: (cat
+							"Sandoval shakes his head and puts his blaster away.\n\n"
+							
+							"\"So you're Fiona's new pet? "
+							(if (= (plyGetGenome gPlayer) 'humanFemale)
+								"Well, I'm not disappointed."
+								"Well, I expected someone taller."
+								)
+							"\""
+							)
+							
+						label: "\"[C]an we skip the banter?\""
+						}
+					{
+						desc: (cat
+							"\"All business, eh? Just like Fiona! OK, let's get to work!\n\n"
+							
+							"\"We're looking for a tiny wreck in an entire star system. "
+							"Not my favorite job, by far. But I've got enough equipment "
+							"here to do it. I'll be able to pick up even the faintest radiation.\""
+							)
+							
+						label: "\"[W]hat are we waiting for?\""
+						}
+					{
+						desc: (cat
+							"\"Nothing's easy, pet. We'll be scanning right in the middle "
+							"of marauder territory, and we're going to be attracting a lot of "
+							"attention.\""
+							)
+							
+						label: "\"[I] can handle marauders.\""
+						}
+					{
+						desc: (cat
+							"\"I'm sure you can, pet. But here's the trick: a gunship engine belching "
+							"hot plasma is going to blind the scanner, right? You'll have to keep "
+							"all ships away from me until I'm done scanning.\""
+							)
+						label: "\"[I]'ll do what I can.\""
+						}
+					)
+			</Text>
+			<Text id="Briefing">
+				(list
+					{
+						desc: (cat
+							"\"Alright. Follow me to the search area.\""
+							)
+						acceptLabel: "\"[I]'m right behing you.\""
+						declineLabel: "\"[L]et me prepare first.\""
+						}
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(cat
+					"\"Try to keep up, pet!\""
+					)
+			</Text>
+			<Text id="DeclineReply">
+				(cat
+					"\"Don't take long, right?\""
+					)
+			</Text>
+			<Text id="InProgress">
+				(cat
+					"\"As much as I would enjoy your visit, we've got work to do.\""
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+			
+			<Text id="msgFoundWreck">"Found it! Follow my lead!"</Text>
+		</Language>
+	</MissionType>
+	
+<!-- STATION TYPES -->
+	
+	<!-- Hand of Solace Wreck -->
+
+	<StationType UNID="&stHandOfSolaceWreck;"
+			name=				"wreck of the Hand of Solace"
+			sovereign=			"&svNeutral;"
+				 
+			attributes=			"shipwreck, sistersOfDomina"
+				 
+			dockScreen=			"Main"
+				 
+			scale=				"ship"
+				 
+			ejectaType=			"&vtWreckEjecta;"
+				 
+			definiteArticle=	"true"
+			>
+		
+		<!-- Image and Effects -->
+		
+		<Image shipwreckID="&scHandOfDomina;"/>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+		
+		<!-- Dock Screen -->
+		
+		<DockScreens>
+			<Main>
+				<OnScreenInit>
+					(block (
+						(missionObj (@ (msnFind "a +unid:&msFindHandOfSolace;;") 0))
+						(sandovalObj (objGetObjByID (msnGetData missionObj 'sandovalID)))
+						)
+						(switch
+							;	If no mission object, then go to standard loot screen
+							
+							(not missionObj)
+								(scrShowScreen gScreen &dsAbandonedShip;)
+								
+							;	If Sandoval is dead, we go to special text without Sandoval
+							
+							(not sandovalObj)
+								(scrSetData gScreen 'dialogTree 'dlgBenedictAlone)
+								
+							;	If Sandoval has not yet docked, then wait for him
+							
+							(!= (objGetProperty sandovalObj 'dockedAtID) (objGetID gSource))
+								(scrSetData gScreen 'dialogTree 'dlgWaitForSandoval)
+							
+							;	Otherwise, we go to the normal screen
+						
+							(scrSetData gScreen 'dialogTree 'dlgHandOfSolace)
+							)
+						)
+				</OnScreenInit>
+				
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(rpgPagePaneInit gScreen (objTranslate gSource (scrGetData gScreen 'dialogTree)))
+						</OnPaneInit>
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+		
+		<!-- Events and Data -->
+		
+		<Events>
+		</Events>
+
+		<Language>
+			<Text id="dlgHandOfSolace">
+				(list
+					{
+						desc: (cat
+							"You board the medical ship behind Sandoval and are immediately "
+							"confronted by an armored figure. He opens his helmet.\n\n"
+							
+							"It's Benedict."
+							)
+						label: "\"[W]hat are you doing here?\""
+						}
+					{
+						desc: (cat
+							"\"Fiona was attacked before she could find this wreck. This is what "
+							"they were trying to keep her from seeing.\"\n\n"
+							
+							"He looks at Sandoval, arm cannon ready.\n\n"
+							
+							"\"But I guess you already know that. Hello, Sandoval\""
+							)
+						}
+					{
+						desc: (cat
+							"Sandoval nods with a smirk and casually shows his empty hands.\n\n"
+							
+							"\"I'm impressed, Benedict. I guess you're not just a mindless gun.\""
+							)
+						label: "\"[D]id you find anything?\""
+						}
+					{
+						desc: (cat
+							"\"No. Everything's been wiped: computers, logs, comms records. Everything\n\n"
+							
+							"\"There was definite fighting. The hull's covered in laser scars and blast damage. "
+							"The reactor's scrammed and useless. No bodies, of course. Everything's clean.\""
+							)
+						label: "\"[S]o that's it?\""
+						}
+					{
+						desc: (cat
+							"Sandoval turns towards him, \"What about propulsion?\"\n\n"
+							
+							"Benedict shakes his head, \"Dead. Everything's vented...\"\n\n"
+							
+							"\"The firmware!\" interrupts Sandoval, \"The black-box! Is it still "
+							"sealed?\""
+							)
+						label: "\"[T]he what?\""
+						}
+					{
+						desc: (cat
+							"Sandoval bounces his way to the aft compartments. You and Benedict "
+							"follow.\n\n"
+							
+							"\"The drive system logs all acceleration events for servicing and "
+							"maintenance!\" says Sandoval. \"We can use the data to reconstruct "
+							"the ship's course. That might tell us something.\""
+							)
+						label: "\"[I]f they didn't wipe it.\""
+						}
+					{
+						desc: (cat
+							"Sandoval plugs into the drive system and downloads its data.\n\n"
+							
+							"\"It looks OK. I can't reconstruct it here, but I'll take it back "
+							"to Fiona and we can plot a path.\n\n"
+							
+							"\"Thanks for your help, %name%. I'll tell Fiona you said hi.\""
+							)
+						label: "\"[G]ood luck!\""
+						}
+					{
+						desc: (cat
+							"Benedict is about to interject, but stops himself. He looks deflated.\n\n"
+							
+							"Sandoval shakes his head and smiles, \"Don't look like a lost little "
+							"microsaur! Here, take a copy of the data and do your own analysis. "
+							"We'll share what we find. Deal?\"\n\n"
+							
+							"Benedict grunts a thank you to Sandoval. He nods to you, \"I'm heading "
+							"towards Sancturary. Maybe we'll meet again!\""
+							)
+							
+						code: (lambda ()
+							(block (
+								(missionObj (@ (msnFind "a +unid:&msFindHandOfSolace;;") 0))
+								)
+								(msnFireEvent missionObj 'OnDataAcquired)
+								)
+							)
+						}
+					)
+			</Text>
+			<Text id="dlgWaitForSandoval">
+				(list
+					{
+						desc: (cat "You decide to wait for Sandoval.")
+						nextPage: 'forceUndock
+						}
+					)
+			</Text>
+			<Text id="dlgBenedictAlone">
+				(list
+					{
+						desc: (cat
+							"LATER: Sandoval is dead, so it's just the two of us."
+							)
+							
+						code: (lambda ()
+							(block (
+								(missionObj (@ (msnFind "a +unid:&msFindHandOfSolace;;") 0))
+								)
+								(msnFireEvent missionObj 'OnDataAcquired)
+								)
+							)
+						}
+					)
+			</Text>
+		</Language>
+	</StationType>
+
+<!-- OVERLAYS -->
+	
+	<OverlayType UNID="&ovBenedict05ScanRange;"
+            attributes=         "effect"
+			>
+		<Counter style=	"radius"
+				color=	"#6666cc"
+				/>
+		
+		<Events>
+			<OnCreate>
+				(block Nil
+					(objSetOverlayProperty gSource aOverlayID 'counter 25)
+					(objSetOverlayData gSource aOverlayID 'scanDuration 1800)
+					(objSetOverlayData gSource aOverlayID 'scanEnd (+ (unvGetTick) 1800))
+					(objSetOverlayProperty gSource aOverlayID 'counterLabel (typTranslate &ovBenedict05ScanRange; "msgScanning" { percent:0 }))
+					
+					(objSendMessage gPlayerShip gSource (typTranslate &ovBenedict05ScanRange; 'msgStartScan))
+					)
+			</OnCreate>
+			
+			<OnUpdate>
+				(block (
+					)
+					
+					(switch
+						;	If we're waiting for the area to clear, then see if there are any
+						;	ships in the area.
+						
+						(objGetOverlayData gSource aOverlayID 'waitToClear)
+							(if (not (sysFindObject gSource "sA N:25;"))
+								(block ()
+									(objSetOverlayData gSource aOverlayID 'scanEnd (+ (unvGetTick) 1800))
+									(objSetOverlayProperty gSource aOverlayID 'counterLabel (typTranslate &ovBenedict05ScanRange; "msgScanning" { percent:0 }))
+								
+									(objSendMessage gPlayerShip gSource (typTranslate &ovBenedict05ScanRange; 'msgRestartScan))
+									(objSetOverlayData gSource aOverlayID 'waitToClear Nil)
+									)
+								)
+								
+						;	If we've finished with our scan, then we can proceed.
+						
+						(gr (unvGetTick) (objGetOverlayData gSource aOverlayID 'scanEnd))
+							(msnFireEvent (@ (msnFind "a +unid:&msFindHandOfSolace;;") 0) 'OnScanComplete)
+								
+						;	Check to see if any ships have entered the scanning zone. If so,
+						;	then we restart
+					
+						(sysFindObject gSource "sA N:25;")
+							(block Nil
+								(objSetOverlayProperty gSource aOverlayID 'counterLabel (typTranslate &ovBenedict05ScanRange; "msgInterference"))
+								(objSendMessage gPlayerShip gSource (typTranslate &ovBenedict05ScanRange; 'msgScanRuined))
+								(objSetOverlayData gSource aOverlayID 'waitToClear True)
+								)
+								
+						;	Otherwise, continue scanning
+						
+						(block (
+							(scanDuration (objGetOverlayData gSource aOverlayID 'scanDuration))
+							(scanEnd (objGetOverlayData gSource aOverlayID 'scanEnd))
+							(scanTime (- (unvGetTick) (- scanEnd scanDuration)))
+							)
+							(objSetOverlayProperty gSource aOverlayID 'counterLabel 
+								(typTranslate &ovBenedict05ScanRange; "msgScanning" { 
+									percent: (divide (* 100 scanTime) scanDuration)
+									})
+								)
+							)
+						)
+						
+					;	Randomly create encounters to attack Sandoval. At 1800 ticks duration, we 
+					;	will get called at OnUpdate 60 times (if we never interrupt). We expect to
+					;	get a little more than 1 encounter per minute.
+					
+					(if (and (= (random 1 50) 1)
+							(ls (objGetOverlayData gSource aOverlayID 'wavesSent) 10)
+							)
+						(block ()
+							(sysAddEncounterEventAtDist 
+								(random 0 29)
+								gSource &tbBenedict05Encounters; (random 60 100)
+								)
+								
+							(objIncOverlayData gSource aOverlayID 'wavesSent)
+							)
+						)
+					)
+			</OnUpdate>
+		</Events>
+		
+		<Language>
+			<Text id="msgStartScan">
+				"\"Starting my scan...keep the area clear!\""
+			</Text>
+			<Text id="msgRestartScan">
+				"\"Restarting scan...keep the area clear!\""
+			</Text>
+			<Text id="msgScanning">
+				(cat "Scanning..." (@ gData 'percent) "%")
+			</Text>
+			<Text id="msgInterference">
+				(cat "Interference!")
+			</Text>
+			<Text id="msgScanRuined">
+				(cat "Kack! We lost the alignment. We have to recalibrate!")
+			</Text>
+		</Language>
+	</OverlayType>
+	
+<!-- TABLES AND RESOURCES -->
+
+	<EncounterTable UNID="&tbBenedict05Encounters;">
+		<LevelTable>
+			<Ship	levelFrequency="cccuv -----"	class="&scCorsair-II;"	count="1"	orders="attack"	sovereign="&svMarauders;">
+				<Escorts>
+					<Table>
+						<Ship chance="50"	   count="1d2"	class="&scCorsair-II;" orders="escort"/>
+						<Ship chance="50"	   count="1d2"	class="&scViking-II;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+			<Ship	levelFrequency="-vucu -----"	class="&scCorsair-II;"	count="1"	orders="attack"	sovereign="&svMarauders;">
+				<Escorts>
+					<Table count="2">
+						<Ship chance="50"	   count="1d2"	class="&scCorsair-II;" orders="escort"/>
+						<Ship chance="50"	   count="1d2"	class="&scViking-II;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+			<Ship	levelFrequency="--uuc -----"	class="&scDrake;" count="1"	orders="attack" sovereign="&svMarauders;">
+				<Escorts>
+					<Table>
+						<Ship chance="30"	   count="1d4"	class="&scCorsair-II;" orders="escort"/>
+						<Ship chance="70"	   count="1d6"	class="&scViking-II;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+			<Ship	levelFrequency="--vuc -----"	class="&scCorsair-II;"	count="1"	orders="attack"	sovereign="&svMarauders;">
+				<Escorts>
+					<Table count="3">
+						<Ship chance="50"	   count="1d2"	class="&scCorsair-II;" orders="escort"/>
+						<Ship chance="50"	   count="1d2"	class="&scViking-II;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+			<Ship	levelFrequency="---vu ccccc"	class="&scCorsair-II;"	count="1"	orders="attack"	sovereign="&svMarauders;">
+				<Escorts>
+					<Table count="4">
+						<Ship chance="50"	   count="1d2"	class="&scCorsair-II;" orders="escort"/>
+						<Ship chance="50"	   count="1d2"	class="&scViking-II;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+		</LevelTable>
+	</EncounterTable>
+
+</TranscendenceModule>

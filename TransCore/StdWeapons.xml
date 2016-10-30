@@ -813,6 +813,9 @@
 				<Missile ammoID="&itZG24ClusterMAG;"/>
 				<Missile ammoID="&it3KSiegeMAG;"/>
 				<Missile ammoID="&itHighFluxMAG;"/>
+				
+				<Missile ammoID="&itPX3HexageneMAG;"/>
+				<Missile ammoID="&itPX19OblivionMAG;"/>
 			</Missiles>
 		</Weapon>
 	</ItemType>

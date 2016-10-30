@@ -57,7 +57,7 @@
 
 	<StationType UNID="&stSistersOfDomina;"
 			name=				"Sisters of Domina|Sisters of Domina"
-			sovereign=			"&svCommonwealth;"
+			sovereign=			"&svSistersOfDomina;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -131,8 +131,7 @@
 		</StaticData>
 
 		<DockScreens>
-			<Main
-				>
+			<Main>
 				<Panes>
 					<Default>
 						<OnPaneInit>
@@ -149,6 +148,13 @@
 						</OnPaneInit>
 
 						<Actions>
+							<Action id="actionTalkToAbbess" default="1">
+								(rpgMissionAssignment {
+									missionCriteria: (cat "n +sistersMission; =" (sysGetLevel) ";")
+									noMissionTextID: 'descNothingToTalkAbout
+									maxPerStation: 1
+									})
+							</Action>
 							<Action id="actionSanctum">
 								(scrShowScreen gScreen &dsSistersSanctum;)
 							</Action>
@@ -179,6 +185,7 @@
 		</DockingPorts>
 
 		<Language>
+			<Text id="actionTalkToAbbess">"[M]atriarch's Chamber"</Text>
 			<Text id="actionDonate">"[D]onate"</Text>
 			<Text id="actionPilgrimsAid">"[P]ilgrim's Aid"</Text>
 			<Text id="actionSanctum">"[S]anctum"</Text>
@@ -198,6 +205,21 @@
 					"May the blessings of Domina protect you.\""
 					)
 			</Text>
+			<Text id="descNothingToTalkAbout">
+				(cat
+					"You enter the abbess's spartan office and chat with her. She leaves you with "
+					"a small piece of advice:\n\n"
+					
+					(objTranslate gSource (cat 'descAbbessAdvice (min (sysGetLevel) 7)))
+					)
+			</Text>
+			<Text id="descAbbessAdvice1">"\"You are one of the few who can commune with Domina; do not waste this blessing.\""</Text>
+			<Text id="descAbbessAdvice2">"\"Do not kill for sport. But do not be afraid to fight for Domina.\""</Text>
+			<Text id="descAbbessAdvice3">"\"Domina seeks connection with all thinking beings, and even death cannot fully erase the luminous patterns of sentience.\""</Text>
+			<Text id="descAbbessAdvice4">"\"Domina can guide you, but you must seek your own answers.\""</Text>
+			<Text id="descAbbessAdvice5">"\"Do not let Domina's brilliance blind you to the strength and worth of mere humans.\""</Text>
+			<Text id="descAbbessAdvice6">"\"Domina controls you, but it's up to you to keep your humanity. Always remember that.\""</Text>
+			<Text id="descAbbessAdvice7">"\"The universe is dark and lonely; I do not envy your task.\""</Text>
             
             <Text id="core.mapDesc">
                 "Contemplation and communion"
@@ -1212,6 +1234,103 @@
 		</Events>
 	</Sovereign>
 	
+<!-- SHIP CLASSES -->
+	
+	<!-- Level 5: Hand of Domina Hospital Ship -->
+
+	<ShipClass UNID="&scHandOfDomina;"
+			manufacturer=		"Earth Industries"
+			class=				"Hand of Domina"
+			type=				"medical ship"
+			level=				"5"
+			defaultSovereign=	"&svSistersOfDomina;"
+			   
+			attributes=			"commonwealth, genericClass, sistersOfDomina"
+
+			size=				"75"
+			mass=				"2100"
+			thrustRatio=		"2"
+			maxSpeed=			"12"
+			cargoSpace=			"2000"
+			>
+
+		<Names definiteArticle="true">
+			Hand of Benevolence; Hand of Charity; Hand of Comfort; Hand of Compassion; 
+			Hand of Hope; Hand of Mercy; Hand of Refuge; Hand of Relief; Hand of Rescue; 
+			Hand of Salvation; Hand of Succor; Hand of Tranquility
+		</Names>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itCeralloyArmor;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itPartisanCannon;" omnidirectional="true" posAngle="0" posRadius="25" posZ="15"/>
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" posAngle="180" posRadius="30" posZ="15"/>
+			<Device deviceID="&itYoroiS100;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"6.0"
+			rotationAccel=		"1"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"30"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"70"
+
+					posX=		"-40"
+					posY=		"0"
+					sizeX=		"26"
+					sizeY=		"50"
+					/>
+			
+			<Compartment name="cargo contatiners"
+					type=		"cargo"
+					hitPoints=	"50"
+
+					posX=		"6"
+					posY=		"0"
+					sizeX=		"74"
+					sizeY=		"36"
+					/>
+		</Interior>
+
+		<Items>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsHandOfDomina;" imageWidth="110" imageHeight="110"	rotationCount="120" rotationColumns="12" viewportRatio="0.01"/>
+		<HeroImage imageID="&rsHandOfDominaHero;" imageWidth="320" imageHeight="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="165"	posRadius="52"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-165"	posRadius="52"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="165"	posRadius="52"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-165"	posRadius="52"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"standOff"
+			/>
+
+	</ShipClass>
+
 <!-- GLOBALS -->
 	
 	<Globals>
@@ -1258,6 +1377,8 @@
 
 <!-- RESOURCES -->
 
+	<Image UNID="&rsHandOfDomina;"		bitmap="Resources\HandOfDomina.jpg" bitmask="Resources\HandOfDominaMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsHandOfDominaHero;"		bitmap="Resources\HandOfDominaLarge.jpg" bitmask="Resources\HandOfDominaLargeMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsSistersShrineBkgnd;" bitmap="Resources\SistersShrine.jpg" loadOnUse="true" />
 	<Image UNID="&rsSistersShrineHero;" bitmap="Resources\SistersShrineHero.jpg" bitmask="Resources\SistersShrineHeroMask.bmp" loadOnUse="true" />
 

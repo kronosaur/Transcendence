@@ -2,9 +2,50 @@
 
 <!DOCTYPE TranscendenceAdventure
 	[
-	<!-- 0020 0000-FFFF THE STARS OF THE PILGRIM -->
+	<!-- 0020xxxx THE STARS OF THE PILGRIM ADVENTURE ======================= -->
+	
+	<!-- 0000-000F CORE/COMPATIBILITY -->
 	
 	<!ENTITY unidStarsOfThePilgrim		"0x00200000">
+	<!-- HUMAN SPACE LIBRARY 0x00200001 -->
+	<!-- HUMAN SPACE LIBRARY 0x00200002 -->
+	<!-- HUMAN SPACE LIBRARY 0x00200003 -->
+	<!ENTITY unidPartISystemMap			"0x00200004">
+	<!ENTITY msReachGalacticCore		"0x00200005">
+	<!ENTITY unidBenedictStoryArc		"0x00200006">
+	<!ENTITY dsBenedictIntro			"0x00200007">
+	<!ENTITY msBenedictsDrones			"0x00200008">
+	<!ENTITY msBenedictAndFiona			"0x00200009">
+	<!-- UNUSED 0x0020000A -->
+	<!ENTITY msBenedictToKorolov		"0x0020000B">
+	<!ENTITY msBenedictTraining			"0x0020000C">
+	
+	<!-- 0010-005F BENEDICT MISSION ARC -->
+	
+	<!ENTITY msBenedictInNewBeyond		"0x00200010">
+	<!ENTITY tbBenedict04Encounters		"0x00200011">
+	<!ENTITY msFionaInStKats			"0x00200012">
+	<!ENTITY msFindHandOfSolace			"0x00200013">
+	<!ENTITY stHandOfSolaceWreck		"0x00200014">
+	<!ENTITY ovBenedict05ScanRange		"0x00200015">
+	<!ENTITY tbBenedict05Encounters		"0x00200016">
+	<!ENTITY msInfiltratePenitents		"0x00200017">
+	<!ENTITY svBenedict06Infiltrate		"0x00200018">
+	<!ENTITY evBenedict06PenitentBase	"0x00200019">
+	<!ENTITY ovBenedict06Disarm			"0x0020001A">
+	<!ENTITY msRescueBenedict			"0x0020001B">
+	<!ENTITY evBenedict07PenitentWreck	"0x0020001C">
+	<!ENTITY msRescueChildrenFromPenitents	"0x0020001D">
+	<!ENTITY evBenedict08PenitentBase	"0x0020001E">
+	
+	<!-- 0021xxxx HUARI ==================================================== -->
+	
+	<!ENTITY smHuariSpace				"0x00210001">
+	
+	<!-- 0082xxxx PART I SOUNDTRACK ======================================== -->
+
+	<!ENTITY muDominaMainTheme			"0x00820020">
+	<!ENTITY muDominaEndTitles01		"0x00820120">
 	]>
 	
 <TranscendenceAdventure
@@ -137,6 +178,12 @@
 	<Module filename="Benedict01.xml"/>
 	<Module filename="Benedict02.xml"/>
 	<Module filename="Benedict03.xml"/>
+	<Module filename="Benedict04.xml"/>
+	<Module filename="Benedict05.xml"/>
+	<Module filename="Benedict05A.xml"/>
+	<Module filename="Benedict06.xml"/>
+	<Module filename="Benedict07.xml"/>
+	<Module filename="Benedict08.xml"/>
 	<Module filename="BenedictStoryArc.xml"/>
 	<Module filename="Elysium.xml"/>
 	<Module filename="Huari.xml"/>

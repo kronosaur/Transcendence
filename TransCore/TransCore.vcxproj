@@ -393,7 +393,9 @@
     <None Include="Metallic.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Mining.xml" />
+    <None Include="Mining.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Neurohack.xml" />
     <None Include="Primordial.xml">
       <SubType>Designer</SubType>
@@ -419,6 +421,17 @@
     <None Include="Ovoids.xml">
       <SubType>Designer</SubType>
     </None>
+    <Xml Include="Benedict04.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="Benedict05.xml" />
+    <Xml Include="Benedict05A.xml" />
+    <Xml Include="Benedict06.xml" />
+    <Xml Include="Benedict07.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="Benedict08.xml" />
+    <Xml Include="CommonwealthShips.xml" />
     <Xml Include="CompatibilityLibrary.xml" />
     <Xml Include="CoreFireEffects.xml">
       <SubType>Designer</SubType>
@@ -430,13 +443,21 @@
     <Xml Include="CoreProjectileEffects.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="EtaCeti.xml" />
     <Xml Include="Ferians.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="Fiona.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="HugoSandoval.xml">
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="HumanSpaceVol01.xml">
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="Ore.xml" />
+    <Xml Include="Penitents.xml" />
     <Xml Include="RPGComponents.xml">
       <SubType>Designer</SubType>
     </Xml>
@@ -445,7 +466,11 @@
     <Xml Include="RPGShipBroker.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="Sanctuary.xml" />
     <Xml Include="StdMiningEquipment.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="Stormhound.xml">
       <SubType>Designer</SubType>
     </Xml>
   </ItemGroup>

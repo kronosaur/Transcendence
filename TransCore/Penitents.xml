@@ -1,0 +1,618 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+<!-- Order of Penitence =================================================== -->
+
+	<Sovereign UNID="&svPenitents;"
+			name="Order of Penitence"
+			alignment="destructive order"
+			/>
+	
+<!-- ENCOUNTERS -->
+
+	<!-- Level 5: Penitent Shrine -->
+
+	<StationType UNID="&stPenitentShrine;"
+			name=				"Penitent shrine"
+			sovereign=			"&svPenitents;"
+				 
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, penitents, populated, religious"
+				 
+			abandonedScreen=	"&dsAbandonedStation;"
+				 
+			armorID=			"&itLightBlastPlate;"
+			hitPoints=			"210"
+			multiHull=			"true"
+            regen=              "2"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtBlastExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+			noFriendlyFire=		"true"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				levelFrequency=		"---rc uv--- ----- ----- -----"
+				locationCriteria=	"+nebulae"
+				enemyExclusionRadius="50"
+				/>
+
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Lookup					count="1d4"	table="&trStationSupplies;" />
+			<Table>
+				<Lookup chance="50"	count="1" table="&trHaloGems;"/>
+				<Lookup chance="20" count="1" table="&trConsumables6;"/>
+				<Lookup chance="20" count="1" table="&trMinorItem6;"/>
+				<Lookup chance="10" count="1" table="&trMajorItem6;"/>
+			</Table>
+		</Items>
+
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itOracusHarassPower;"/>
+		</Devices>
+
+		<!-- Ships and Defenses -->
+
+		<Ships>
+			<Table>
+				<Ship chance="50"	count="1d4"	class="&scRepentant;"	orders="guard"/>
+				<Group chance="40">
+					<Ship			count="1d2"	class="&scRepentant;"	orders="guard"/>
+					<Ship			count="1"	class="&scAtonement;"	orders="guard"/>
+				</Group>
+				<Ship chance="10"	count="1d2"	class="&scAtonement;"	orders="guard"/>
+			</Table>
+		</Ships>
+
+		<!-- Image and Effects -->
+
+		<Image			imageID="&rsStations5;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"64"
+				>
+		</DockingPorts>
+	</StationType>
+
+	<!-- Level 6: Penitent Sanctum -->
+
+	<StationType UNID="&stPenitentSanctum;"
+			name=				"Penitent sanctum"
+			sovereign=			"&svPenitents;"
+				 
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, penitents, populated, religious"
+				 
+			abandonedScreen=	"&dsAbandonedStation;"
+				 
+			armorID=			"&itBlastPlate;"
+			hitPoints=			"700"
+			multiHull=			"true"
+            regen=              "8"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+			noFriendlyFire=		"true"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				levelFrequency=		"----r cuv-- ----- ----- -----"
+				locationCriteria=	"+nebulae"
+				enemyExclusionRadius="60"
+				/>
+
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Lookup					count="1d4"	table="&trStationSupplies;" />
+			<Lookup chance="65"		count="1"	table="&trHaloGems;"/>
+			<Table chance="50">
+				<Lookup chance="40" count="1" table="&trConsumables7;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem7;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem7;"/>
+			</Table>
+		</Items>
+		
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itOracusHarassPower;"/>
+			<Device deviceID="&itAbsolutionCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<!-- Ships and Defenses -->
+
+		<Ships>
+			<Table>
+				<Ship chance="25"	count="1d6"	class="&scRepentant;"	orders="guard"/>
+				<Group chance="50">
+					<Ship			count="1d4"	class="&scRepentant;"	orders="guard"/>
+					<Ship			count="1"	class="&scAtonement;"	orders="guard"/>
+				</Group>
+				<Ship chance="25"	count="1d4"	class="&scAtonement;"	orders="guard"/>
+			</Table>
+		</Ships>
+
+		<!-- Image and Effects -->
+
+		<Image			imageID="&rsStations5;" imageX="128" imageY="256" imageWidth="128" imageHeight="128"/>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"64"
+				>
+		</DockingPorts>
+	</StationType>
+	
+	<!-- Level 7: Penitent Monastery -->
+
+	<StationType UNID="&stPenitentMonastery;"
+			name=				"Penitent monastery"
+			sovereign=			"&svPenitents;"
+				 
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, penitents, populated, religious"
+				 
+			abandonedScreen=	"&dsAbandonedStation;"
+				 
+			armorID=			"&itHeavyBlastPlate;"
+			hitPoints=			"1800"
+			multiHull=			"true"
+            regen=              "35"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtThermoExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+			noFriendlyFire=		"true"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				levelFrequency=		"----- vur-- ----- ----- -----"
+				locationCriteria=	"+nebulae"
+				enemyExclusionRadius="80"
+				unique=				"inSystem"
+				/>
+		
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Lookup					count="1d4"	table="&trStationSupplies;" />
+			<Lookup chance="95"		count="1"	table="&trHaloGems;"/>
+			<Table chance="50">
+				<Lookup chance="40" count="1" table="&trConsumables7;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem7;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem7;"/>
+			</Table>
+		</Items>
+		
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itOracusHarassPower;"/>
+			<Device deviceID="&itAbsolutionCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<!-- Ships and Defenses -->
+
+		<Ships>
+			<Table>
+				<Ship chance="25"	count="1d6"	class="&scRepentant;"	orders="guard"/>
+				<Group chance="50">
+					<Ship			count="1d4"	class="&scRepentant;"	orders="guard"/>
+					<Ship			count="1"	class="&scAtonement;"	orders="guard"/>
+				</Group>
+				<Ship chance="25"	count="1d4"	class="&scAtonement;"	orders="guard"/>
+			</Table>
+		</Ships>
+
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsPenitentMonastery;" imageWidth="290" imageHeight="256" viewportRatio="0.05"/>
+
+		<DockingPorts
+				portCount=		"12"
+				portRadius=		"160"
+				>
+		</DockingPorts>
+	</StationType>
+	
+<!-- SHIP CLASSES -->
+
+	<!-- Level 4: Repentant-class Gunship -->
+
+	<ShipClass UNID="&scRepentant;"
+			manufacturer=		"United African States"
+			class=				"Repentant"
+			type=				"gunship"
+			defaultSovereign=	"&svPenitents;"
+
+			attributes=			"genericClass, penitent, penitents"
+			   
+			mass=				"50"
+			thrustRatio=		"7"
+			maxSpeed=			"25"
+			cargoSpace=			"25"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itAbsolutionCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"6.0"
+			/>
+
+		<!-- Items -->
+		
+		<Items>
+			<Item count="4d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsMediumShips3;" imageX="0" imageY="0" imageWidth="96" imageHeight="96" rotationOffset="-25"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="17"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="17"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"10"
+			fireAccuracy=		"90"
+			perception=			"4"
+			ignoreShieldsDown=	"true"
+			
+			combatStyle=		"advanced"
+			/>
+	</ShipClass>
+
+	<!-- Level 5: Atonement-class Gunship -->
+
+	<ShipClass UNID="&scAtonement;"
+			manufacturer=		"United African States"
+			class=				"Atonement"
+			type=				"heavy gunship"
+			defaultSovereign=	"&svPenitents;"
+
+			attributes=			"genericClass, penitent, penitents"
+			   
+			mass=				"100"
+			thrustRatio=		"7"
+			maxSpeed=			"20"
+			cargoSpace=			"25"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itHeavyPlasteelPlate;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itAbsolutionCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+			<Device deviceID="&itMAGLauncher;">
+				<Items>
+					<Item count="2d6" item="&itPX3HexageneMAG;"/>
+				</Items>
+			</Device>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"3.0"
+			/>
+		
+		<!-- Items -->
+
+		<Items>
+			<Item count="5d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsMediumShips2;" imageX="64" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"25"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+	</ShipClass>
+
+	<!-- Level 6: Excruciator-class Destroyer -->
+
+	<ShipClass UNID="&scExcruciatorDestroyer;"
+			manufacturer=		"Penitents"
+			class=				"Excruciator"
+			type=				"destroyer"
+			defaultSovereign=	"&svPenitents;"
+
+			attributes=			"capitalShip, genericClass, penitents"
+
+			size=				"195"
+			mass=				"17000"
+			thrustRatio=		"1"
+			maxSpeed=			"12"
+			cargoSpace=			"1500"
+
+			cyberDefenseLevel=	"4"
+
+			explosionType=		"&vtBlastExplosion4;"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itBlastPlate;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itMAGLauncher;"	omnidirectional="true" posAngle="0" posRadius="20" posZ="25">
+				<Items>
+					<Item count="2d6" item="&itPX19OblivionMAG;"/>
+					<Item count="12d6" item="&itPX3HexageneMAG;"/>
+				</Items>
+			</Device>
+			<Device deviceID="&itAbsolutionCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="160" posAngle="25"  posRadius="35"  posZ="25"/>
+			<Device deviceID="&itAbsolutionCannon;" secondaryWeapon="true" minFireArc="200" maxFireArc="20"	 posAngle="-25" posRadius="35"  posZ="25"/>
+			<Device deviceID="&itClass3Deflector;"/>
+			<Device deviceID="&it100MWReactor;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"5"
+			rotationAccel=		"0.5"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"250"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"100"
+
+					posX=		"-52"
+					posY=		"0"
+					sizeX=		"26"
+					sizeY=		"42"
+					/>
+		</Interior>
+		
+		<!-- Items -->
+
+		<Items>
+			<Item				  count="2d6"	item="&itHeliumAssembly;"/>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables6;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem6;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem6;"/>
+			</Table>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsExcruciatorDestroyer;" imageWidth="190" imageHeight="190" rotationCount="120" rotationColumns="12" viewportRatio="0.025"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="174"	posRadius="88"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-174"	posRadius="88"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="174"	posRadius="88"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-174"	posRadius="88"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"5"
+			
+			combatStyle=		"standOff"
+			/>
+
+	</ShipClass>
+
+<!-- ITEM TYPES -->
+	
+	<!-- Level 4: Absolution cannon -->
+
+	<ItemType UNID="&itAbsolutionCannon;"
+			name=				"Penitent cannon"
+			level=				"4"
+			value=				"2800"
+			mass=				"2000"
+			frequency=			"rare"
+			attributes=			"alien, energyWeapon, penitents, majorItem, notForSale, notStandard"
+
+			description=		"Very little is known about these exotic, dark-matter weapons. The Order of Penitence uses these weapons in their ships."
+			>
+
+		<Image imageID="&rsItems4;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"darkAcid:2d8; WMD1"
+				fireRate=			"30"
+				missileSpeed=		"45"
+				lifetime=			"40"
+				powerUse=			"200"
+
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Effect>
+				<ParticleComet
+						particleCount=	"160"
+						primaryColor=	"0x00, 0xd8, 0xc6"
+
+						width=			"6"
+						length=			"80"
+						/>
+				
+				<Image imageID="&rsMissiles4;" imageX="0" imageY="48" imageWidth="16" imageHeight="16" imageFrameCount="8" imageTicksPerFrame="1"/>
+			</Effect>
+		</Weapon>
+	</ItemType>
+
+	<!-- Level 4: PX3 Hexagene MAG -->
+
+	<ItemType UNID="&itPX3HexageneMAG;"
+			name=				"PX3 hexagene MAG"
+			attributes=			"consumable, MAGLauncher, missile, notStandard, penitents"
+			  
+			level=				"4"
+			frequency=			"rare"
+			numberAppearing=	"96-144"
+
+			value=				"30"
+			mass=				"30"
+			  
+			description=		"Penitents have modified a standard 400 hexagene MAG to track a target."
+			>
+
+		<Image imageID="&rsItemsRasiermesser2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Missile
+				type=			"missile"
+				damage=			"blast:6d6; WMD:6"
+						
+				lifetime=		"80"
+				missileSpeed=	"30"
+						
+				hitPoints=		"20"
+				maneuverRate=	"18"
+						 
+				effect=			"&efMissileMAG;"
+				sound=			"&snMissileLauncher;"
+				>
+		</Missile>
+	</ItemType>
+
+	<!-- Level 5: Oracus HARASS power -->
+
+	<ItemType UNID="&itOracusHarassPower;"
+			name=				"Oracus HARASS power"
+			virtual=			"true"
+			level=				"5"
+			>
+
+		<Weapon
+				type=				"area"
+
+				damage=				"darkAcid:2d8; WMD1"
+				fireRate=			"30"
+				expansionSpeed=		"15"
+				missileSpeed=		"0"
+				lifetime=			"40"
+				powerUse=			"200"
+				>
+
+			<Effect>
+				<Shockwave>
+					<Image imageID=				"&rsShockwave1;"
+							imageX=				"0" 
+							imageY=				"128" 
+							imageWidth=			"512" 
+							imageHeight=		"64"/>
+				</Shockwave>
+			</Effect>
+		</Weapon>
+	</ItemType>
+
+	<!-- Level 6: PX19 Oblivion MAG -->
+
+	<ItemType UNID="&itPX19OblivionMAG;"
+			name=				"PX19 Oblivion MAG"
+			attributes=			"consumable, MAGLauncher, missile, notStandard, penitents"
+			  
+			level=				"6"
+			frequency=			"rare"
+			numberAppearing=	"96-144"
+
+			value=				"80"
+			mass=				"30"
+			  
+			description=		"Penitent engineers have recently miniturized their dark matter weapons and mounted them on standard MAG grenades."
+			>
+
+		<Image imageID="&rsItemsRasiermesser2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Missile
+				type=			"missile"
+				fragmentCount=	"1"
+						
+				lifetime=		"80"
+				missileSpeed=	"30"
+						
+				hitPoints=		"20"
+						 
+				effect=			"&efMissileMAG;"
+				sound=			"&snMissileLauncher;"
+				>
+			<Fragment
+					type=			"area"
+
+					damage=			"darkAcid:2d8; WMD1"
+					expansionSpeed=	"15"
+					missileSpeed=	"0"
+					lifetime=		"40"
+					>
+
+				<Effect>
+					<Shockwave>
+						<Image imageID=				"&rsShockwave1;"
+								imageX=				"0" 
+								imageY=				"128" 
+								imageWidth=			"512" 
+								imageHeight=		"64"/>
+					</Shockwave>
+				</Effect>
+			</Fragment>
+		</Missile>
+	</ItemType>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsExcruciatorDestroyer;" bitmap="Resources\ExcruciatorDestroyer.jpg" bitmask="Resources\ExcruciatorDestroyerMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsPenitentMonastery;" bitmap="Resources\PenitentMonastery.jpg" bitmask="Resources\PenitentMonasteryMask.bmp" loadOnUse="true" />
+
+</TranscendenceModule>

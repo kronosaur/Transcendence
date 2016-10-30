@@ -613,6 +613,86 @@
 			</Group>
 		</IceAsteroidSystem>
 
+		<!-- ICE NEBULA SYSTEM =================================================
+
+			Cold
+			Nebula
+
+		-->
+
+		<IceNebulaSystem>
+			<Group>
+				<Code>
+					(trnCreateStarAndZones aOrbit &stRedGiantStar; {
+						metallicComp:	'(60 10 10)
+						organicComp:	'(10 10  0)
+						rockyComp:		'(30 50 30)
+						waterComp:		'( 0 30 60)
+						})
+				</Code>
+				
+				<AddAttribute attributes="redGiantSystem, nebulaSystem"/>
+				
+				<!-- Nebulae -->
+
+				<Orbitals count="2d3+1" distance="1d10+4" scale="light-minute" angle="random">
+					<SpaceEnvironment 
+							type=			"&seLightNebula;"
+							shape=			"arc" 
+							width=			"100"
+							widthVariation=	"100"
+							span=			"1d40+50"
+							erode=			"50"
+
+							patchType=		"&efNebula;"
+							patchFrequency=	"50"
+
+							encountersCount="1d2"
+							>
+						<Label attributes="brightNebulae, nebulae, void"/>
+					</SpaceEnvironment>
+				</Orbitals>
+
+				<!-- Worlds -->
+
+				<Orbitals count="5-8" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
+					<Variants>
+						<Table maxRadius="300">
+							<Lookup chance="10" table="DesertPrimary"/>
+							<Lookup chance="10" table="GreenhousePrimary"/>
+							<Lookup chance="10" table="MetallicPrimary"/>
+							<Lookup chance="65"  table="RockyPrimary"/>
+							<Lookup chance="5" table="VolcanicPrimary"/>
+						</Table>
+						<Lookup	maxRadius="450" table="AsteroidIceBelt500"/>
+						<Table maxRadius="600">
+							<Lookup chance="5" table="DesertPrimary"/>
+							<Lookup chance="5" table="GreenhousePrimary"/>
+							<Lookup chance="10" table="MetallicPrimary"/>
+							<Lookup chance="10" table="RockyPrimary"/>
+							<Lookup chance="50" table="IcePrimary"/>
+							<Lookup chance="20" table="GasGiantPrimary"/>
+						</Table>
+						<Table maxRadius="2000">
+							<Lookup chance="5"  table="DesertPrimary"/>
+							<Lookup chance="55" table="IcePrimary"/>
+							<Lookup chance="5"  table="MetallicPrimary"/>
+							<Lookup chance="15" table="GasGiantPrimary"/>
+							<Lookup chance="5"  table="AsteroidIceBelt100"/>
+							<Lookup chance="10" table="AsteroidIceArc50"/>
+							<Lookup chance="10" table="AsteroidIceArc100"/>
+						</Table>
+					</Variants>
+				</Orbitals>
+				
+				<!-- Create ore deposits -->
+			
+				<Code>
+					(trnCreateOreDeposits (random (list 0 1 1 1 1 1 2 2)))
+				</Code>
+			</Group>
+		</IceNebulaSystem>
+
 		<!-- LIGHT NEBULA SYSTEM ===============================================
 
 			Nebula
@@ -1357,7 +1437,7 @@
 								;	Create a marker object at the deposit location
 								;	(If we can't create it, we skip)
 							
-								(not (setq markerObj (sysCreateMarker (cat "Ore Deposit " depositCount) (sysVectorRandom (@ loc 'pos) 16 10) &svIndependent;)))
+								(not (setq markerObj (sysCreateMarker (cat "Ore Deposit " depositCount) (sysVectorRandom (@ loc 'pos) 16 10) &svNeutral;)))
 									Nil
 								
 								;	See how many asteroids are here. If there are less than

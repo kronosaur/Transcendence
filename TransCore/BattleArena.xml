@@ -626,6 +626,10 @@
 
 			<OnSystemWeaponFire>
 				(switch
+					; If this is a repeat, then ignore
+					(!= aFireRepeat 0)
+						Nil
+						
 					; If the player fires a missile (or other expensive disposable) she gets a bonus
 					(eq aWeaponObj gPlayerShip)
 						(block (theWeapon theLevel)
@@ -2590,7 +2594,7 @@
 	<StationType UNID="&stRigelAureliusStar;"
 		name=				"(G class star)"
 		scale=				"star"
-		sovereign=			"&svIndependent;"
+		sovereign=			"&svNeutral;"
 		spaceColor=			"#66664c"
 		maxLightRadius=		"300"
 

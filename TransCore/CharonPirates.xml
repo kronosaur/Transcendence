@@ -16,7 +16,7 @@
 			mass=				"1"
 			frequency=			"veryrare"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Consumable; Info"
+			attributes=			"consumable, info, systemMap"
 
 			description=		"This program contains the location of all Charon pirate bases in the system."
 			>
@@ -702,7 +702,6 @@
 			name=				"Charon Pirates cache"
 			sovereign=			"&svPirates;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -756,7 +755,6 @@
 			name=				"Charon Pirates outpost"
 			sovereign=			"&svPirates;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -826,7 +824,6 @@
 			name=				"Charon Pirates outpost"
 			sovereign=			"&svPirates;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -888,7 +885,6 @@
 			name=				"Charon Pirates stronghold"
 			sovereign=			"&svPirates;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -1009,7 +1005,6 @@
 			name=				"Charon Pirates stronghold"
 			sovereign=			"&svPirates;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -1087,7 +1082,6 @@
 			name=				"Charon Pirates stronghold"
 			sovereign=			"&svPirates;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -1182,7 +1176,6 @@
 			name=				"Charon Pirates stronghold"
 			sovereign=			"&svPirates;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 

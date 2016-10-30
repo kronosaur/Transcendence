@@ -20,6 +20,11 @@
 			
 	introDone: If True, then we no longer need to show the Benedict Intro screen
 			at the Sisters of Domina.
+			
+	clues: There are 3 opportunities for the player to share information with
+			Benedict and/or Fiona. Each time the player does so, we increment
+			this variable.
+			
 
 	-->
 
@@ -85,6 +90,9 @@
 											(typGetData &unidBenedictStoryArc; 'firstDockedAtSisters)
 											)
 										(block Nil
+											;	Remove the built-in action to talk to the Abbess
+											
+											
 											;	Add an action to talk to the Abbess
 						
 											(scrAddAction gScreen 'talkToAbbess 0 (typTranslate &unidBenedictStoryArc; 'actionTalkToAbbess)
@@ -112,8 +120,8 @@
 		</Events>
 		
 		<Language>
-			<Text id="actionTalkToAbbess">"Talk to [A]bbess"</Text>
-			<Text id="actionTalkToBenedict">"Talk to [B]enedict"</Text>
+			<Text id="actionTalkToAbbess">"*[M]atriarch's Chamber"</Text>
+			<Text id="actionTalkToBenedict">"*Talk to [B]enedict"</Text>
 		</Language>
 	</Type>
 	
@@ -352,7 +360,7 @@
 					)
 			</Text>
 			
-			<Text id="q1:Label">"\"Who is [D]omina?\""</Text>
+			<Text id="q1:Label">"*\"Who is [D]omina?\""</Text>
 			<Text id="q1:Answer">
 				(cat
 					"\"Domina is the divine intelligence who brought you here!\n\n"
@@ -369,7 +377,7 @@
 					)
 			</Text>
 			
-			<Text id="q2:Label">"\"How do I reach the [G]alactic Core?\""</Text>
+			<Text id="q2:Label">"*\"How do I reach the [G]alactic Core?\""</Text>
 			<Text id="q2:Answer">
 				(cat
 					"\"The stargates will take you. Seek them out and enter. "
@@ -380,7 +388,7 @@
 					)
 			</Text>
 			
-			<Text id="q3:Label">"\"[W]hat obstacles will I face?\""</Text>
+			<Text id="q3:Label">"*\"[W]hat obstacles will I face?\""</Text>
 			<Text id="q3:Answer">
 				(cat
 					"\"Star travel is dangerous, even in the Commonwealth. "
@@ -410,7 +418,7 @@
 				(not (typGetData &unidBenedictStoryArc; 'curMission))
 				))
 				
-			(setq benedict_isMissionAvailable (lambda (missionUNID)
+			(setq benedict_isMissionAvailable (lambda (missionUNID options)
 				(block (curMission)
 					(setq curMission (typGetData &unidBenedictStoryArc; 'curMission))
 
@@ -418,7 +426,9 @@
 						;	If there are active missions that the player has not 
 						;	yet completed, then they need to complete them first.
 
-						(msnFind "a +benedictStoryArc;")
+						(and (not (@ options 'allowActiveMissions))
+								(msnFind "a +benedictStoryArc;")
+								)
 							Nil
 
 						;	If the new mission is earlier than the latest mission

@@ -549,7 +549,6 @@
 			name=				"Iocrym outpost"
 			sovereign=			"&svIocrym;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			canAttack=			"true"
 
 			multiHull=			"true"

@@ -85,7 +85,6 @@
 		name=				"(biosphere terrestrial)"
 		scale=				"world"
 		size=				"10000"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"biosphere, generic, terrestrial"
 		>
@@ -102,7 +101,6 @@
 		name=				"(desert terrestrial)"
 		scale=				"world"
 		size=				"8300"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"desert, generic, terrestrial"
 		>
@@ -119,7 +117,6 @@
 		name=				"(greenhouse terrestrial)"
 		scale=				"world"
 		size=				"13250"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, greenhouse, terrestrial"
 		>
@@ -136,7 +133,6 @@
 		name=				"(hydrogen gas giant)"
 		scale=				"world"
 		size=				"151500"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"gasGiant, generic"
 		>
@@ -153,7 +149,6 @@
 		name=				"(methane gas giant)"
 		scale=				"world"
 		size=				"49500"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"gasGiant, generic"
 		>
@@ -171,7 +166,6 @@
 		name=				"(ringed gas giant)"
 		scale=				"world"
 		size=				"100000"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"gasGiant, generic, ringSystem"
 		>

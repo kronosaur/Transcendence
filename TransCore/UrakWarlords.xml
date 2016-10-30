@@ -333,7 +333,6 @@
 			name=				"Urak outpost"
 			sovereign=			"&svUrakWarlords;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			canAttack=			"true"
 
 			multiHull=			"true"
@@ -395,7 +394,6 @@
 			name=				"Urak mine"
 			sovereign=			"&svUrakWarlords;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			canAttack=			"true"
 
 			multiHull=			"true"
@@ -460,7 +458,6 @@
 			name=				"Urak fortress(es)"
 			sovereign=			"&svUrakWarlords;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 

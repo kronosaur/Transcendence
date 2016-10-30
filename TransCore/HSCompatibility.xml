@@ -20,7 +20,7 @@
 
 	<StationType UNID="&stCargoCrate;"
 			name=				"abandoned cargo crate"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsAbandonedCrate;"
 
 			structuralHitPoints="10"
@@ -1341,7 +1341,7 @@
 		</Panes>
 
 	</DockScreen>
-
+	
 	<Globals>
 		(block Nil
 			(setq intBuyItems (lambda (itemCount itemCost)

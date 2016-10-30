@@ -50,7 +50,7 @@
 												)
 											(block Nil
 												(shpOrder gSource 'dock shelterObj)
-												(shpOrder gSource 'wait (random 10 40))
+												(shpOrder gSource 'waitForThreat (random 10 40))
 												)
 											)
 											

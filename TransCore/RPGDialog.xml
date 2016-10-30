@@ -81,23 +81,25 @@
 												Nil
 												)
 											(lambda ()
-												(block Nil
+												(block (
+													(nextPage (or (@ actionDesc 'nextPage) (@ actionDesc 'nextPane)))
+													)
 													(if (@ actionDesc 'code)
 														((@ actionDesc 'code))
 														)
 													
 													(switch
-														(not (@ actionDesc 'nextPane))
+														(not nextPage)
 															(scrExitScreen gScreen)
 														
-														(eq (@ actionDesc 'nextPane) 'exitScreen)
+														(eq nextPage 'exitScreen)
 															(scrExitScreen gScreen)
 														
-														(eq (@ actionDesc 'nextPane) 'forceUndock)
+														(eq nextPage 'forceUndock)
 															(scrExitScreen gScreen 'forceUndock)
 														
 														(block Nil
-															(scrSetData gScreen 'curPage (rpgFindIndexByID gData (@ actionDesc 'nextPane)))
+															(scrSetData gScreen 'curPage (rpgFindIndexByID gData nextPage))
 															(scrShowPane gScreen "Default")
 															)
 														)
@@ -111,45 +113,51 @@
 									
 							;	Otherwise we create a single "Continue" action
 							
-							(scrAddAction
-								gScreen
-								(if (ls pageNo pageCount)
-									"actionContinue"
-									"actionDone"
-									)
-								Nil
-								(if (@ pageDesc 'nextLabel) (@ pageDesc 'nextLabel) "")
-								Nil
-								(list "default" "cancel")
-								(lambda ()
-									(block (
-										(pageNo (if (scrGetData gScreen 'curPage) (scrGetData gScreen 'curPage) 0))
+							(block (
+								(nextPage (or (@ pageDesc 'nextPage) (@ pageDesc 'nextPane)))
+								(label (or (@ pageDesc 'label) (@ pageDesc 'nextLabel)))
+								(code (or (@ pageDesc 'code) (@ pageDesc 'nextCode)))
+								)
+								(scrAddAction
+									gScreen
+									(if (ls pageNo pageCount)
+										"actionContinue"
+										"actionDone"
 										)
-										(if (@ pageDesc 'nextCode)
-											((@ pageDesc 'nextCode))
+									Nil
+									(if label label "")
+									Nil
+									(list "default" "cancel")
+									(lambda ()
+										(block (
+											(pageNo (if (scrGetData gScreen 'curPage) (scrGetData gScreen 'curPage) 0))
 											)
+											(if code
+												(code)
+												)
 										
-										(switch
-											(eq (@ pageDesc 'nextPane) 'exitScreen)
-												(scrExitScreen gScreen)
+											(switch
+												(eq nextPage 'exitScreen)
+													(scrExitScreen gScreen)
 												
-											(eq (@ pageDesc 'nextPane) 'forceUndock)
-												(scrExitScreen gScreen 'forceUndock)
+												(eq nextPage 'forceUndock)
+													(scrExitScreen gScreen 'forceUndock)
 												
-											(@ pageDesc 'nextPane)
-												(block Nil
-													(scrSetData gScreen 'curPage (rpgFindIndexByID gData (@ pageDesc 'nextPane)))
-													(scrShowPane gScreen "Default")
-													)
-											
-											(block Nil
-												(setq pageNo (add pageNo 1))
-												(if (ls pageNo pageCount)
+												nextPage
 													(block Nil
-														(scrSetData gScreen 'curPage pageNo)
+														(scrSetData gScreen 'curPage (rpgFindIndexByID gData nextPage))
 														(scrShowPane gScreen "Default")
 														)
-													(scrExitScreen gScreen)
+											
+												(block Nil
+													(setq pageNo (add pageNo 1))
+													(if (ls pageNo pageCount)
+														(block Nil
+															(scrSetData gScreen 'curPage pageNo)
+															(scrShowPane gScreen "Default")
+															)
+														(scrExitScreen gScreen)
+														)
 													)
 												)
 											)

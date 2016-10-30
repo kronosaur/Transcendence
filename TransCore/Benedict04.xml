@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Benedict in New Beyond ===================================================
+
+	EXTRA DATA
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msBenedictInNewBeyond;"
+			name=				"Meet Stormhound"
+			attributes=			"benedictStoryArc, commonwealthColony"
+
+			level=				"2-3"
+			maxAppearing=		"1"
+			priority=			"100"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			debriefAfterOutOfSystem="true"
+			>
+
+		<StaticData>
+			<sequence>40</sequence>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block ()
+					(switch
+						;	See if the mission is still available
+
+						(not (benedict_isMissionAvailable (objGetType gSource)))
+							(msnDestroy gSource)
+
+						;	OK
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					stormhoundObj
+					travelTime
+					)
+					
+					;	Create Stormhound's ship out in the middle of nowhere.
+					
+					(setq stormhoundObj
+						(rpgCharacterCreateShip
+							&unidStormhound;
+							&scStormhoundYacht;
+							(sysVectorRandom gPlayerShip 600 100)
+							{ repairAll:True }
+							)
+						)
+					(shpCancelOrders stormhoundObj)
+					(shpOrder stormhoundObj 'hold)
+					
+					(msnRegisterForEvents gSource stormhoundObj)
+					(msnSetData gSource 'stormhoundID (objGetID stormhoundObj))
+					
+					;	Set the proper screen
+
+					(rpgCharacterSetScreen 
+						&unidStormhound;
+						{	screen: &dsRPGDialog;
+							translateType: &msBenedictInNewBeyond;
+							translateID: 'StormhoundMeeting
+							}
+						)
+						
+					;	Create some Penitents to intercept the player
+					
+					(setq travelTime (sysCalcTravelTime (objGetDistance gPlayerShip stormhoundObj) (shpGetMaxSpeed gPlayerShip)))
+					(sysAddEncounterEventAtDist 
+						(divide (multiply (random 30 45) travelTime) 100)
+						gPlayerShip &tbBenedict04Encounters; (random 60 100)
+						)
+					
+					;	Mission accepted
+					
+					(msnRegisterForEvents gSource gPlayerShip)
+					(benedict_missionAccepted gSource)
+					)
+			</OnAccepted>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'stormhoundID)) 'dock)
+			</OnSetPlayerTarget>
+			
+			<OnObjDestroyed>
+				(switch
+				
+					;	If Stormhound dies, the mission fails.
+					
+					(eq (objGetID aObjDestroyed) (msnGetData gSource 'stormhoundID))
+						(msnFailure gSource)
+					)
+			</OnObjDestroyed>
+			
+			<OnMeetingDone>
+				(block (
+					(stormhoundObj (objGetObjByID (msnGetData gSource 'stormhoundID)))
+					)
+					
+					;	Stormhound leaves
+					
+					(shpCancelOrders stormhoundObj)
+					(shpOrder stormhoundObj 'gate)
+					
+					;	Mission successful
+					
+					(msnSuccess gSource)
+					)
+			</OnMeetingDone>
+			
+			<GetGlobalAchievements>
+				(block (theList)
+					(if (msnFind "r +unid:&msBenedictInNewBeyond;; +property:isSuccess;")
+						(setq theList (list
+							(list 
+								"Made contact with Stormhound"
+								Nil
+								"achievements &amp; regrets"
+								)
+							))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+		</Events>
+		
+		<Language>
+			<Text id="Name">"Meet Benedict's Informant"</Text>
+			<Text id="Summary">
+				(cat
+					"Meet Benedict's informant in deep space. Authenticate with the codeword, \"Stormhound\".\n\n"
+					"System: " (sysGetName) "\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="FirstIntro">
+				(list
+					{
+						desc: (cat
+							"You enter the meeting hall and watch business men and women scurry to meetings.\n\n"
+							
+							"Just then a hand grabs you and pulls you into a side corridor. It's Benedict. "
+							"He's wearing thin body armor underneath a rumpled dark suit. He scans your whole "
+							"body with a gloved hand.\n\n"
+							
+							"\"Don't move,\" he says."
+							)
+							
+						label: "\"[W]hat's going on?\""
+						}
+						
+					{
+						desc: (cat
+							"\"I'm being followed.\"\n\n"
+							)
+							
+						label: "\"[W]ho's following you?\""
+						}
+						
+					{
+						desc: (cat
+							"\"That's what I'm trying to find out. I need your help.\"\n\n"
+							)
+							
+						label: "\"[A]nything.\""
+						}
+						
+					{
+						desc: (cat
+							"\"I've got a contact who says he know why Fiona was attacked. "
+							"I can't get to him when I'm being trailed. But you can meet "
+							"him while I distract my followers.\"\n\n"
+							)
+							
+						label: "\"[D]one. Have you heard from Fiona?\""
+						}
+						
+					{
+						desc: (cat
+							"Benedict looks down uncomfortably.\n\n"
+							
+							"\"No...I mean she's recovering in St. Kats, but I haven't heard "
+							"from her yet.\"\n\n"
+							)
+							
+						label: "\"[I]'m sorry.\""
+						}
+					)
+			</Text>
+			<Text id="Intro">
+				(list
+					{
+						desc: (cat
+							"Benedict is waiting for you in the meeting hall.\n\n"
+							
+							"\"I still need you to meet my contact and find out why Fiona was "
+							"attacked.\""
+							)
+						}
+					)
+			</Text>
+			<Text id="Briefing">
+				(list
+					{
+						desc: (cat
+							"He shuts his eyes for a moment, looking tired and sad.\n\n"
+							
+							"\"Use the codeword 'stormhound' to talk to my contact. We'll meet "
+							"here afterwards. OK?"
+							)
+							
+						acceptLabel: "\"[I]'m on my way.\""
+						declineLabel: "\"[L]et me prepare my ship first.\""
+						}
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(cat
+					"\"Good luck!\""
+					)
+			</Text>
+			<Text id="DeclineReply">
+				(cat
+					"\"Alright, but don't take too long, my contact won't wait forever.\""
+					)
+			</Text>
+			<Text id="InProgress">
+				(cat
+					"\"Don't take too long, my contact won't wait forever.\""
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(list
+					{
+						desc: (cat
+							"Benedict meets you at the airlock.\n\n"
+							
+							"\"How did it go? What did he say?\""
+							)
+							
+						actions: (list
+							{
+								;	BRANCH A
+								label: "\"[N]othing! The guy's a lunatic!\""
+								nextPage: 'sayNothing
+								}
+							{
+								;	BRANCH B
+								label: "\"[H]e said you were mindwiped!\""
+								nextPage: 'sayMindwiped
+								}
+							{
+								;	BRANCH C
+								label: "\"He said the [S]isters are behind it!\""
+								nextPage: 'saySisters
+								}
+							)
+						}
+						
+					;	BRANCH A
+					
+					{
+						id: 'sayNothing
+						desc: (cat
+							"Benedict shakes his head.\n\n"
+							
+							"\"Yeah, something seemed off about him. Thanks for trying.\""
+							)
+							
+						label: "\"[W]hat will you do now?\""
+						}
+					{
+						desc: (cat
+							"\"I'll start from the beginning. Whatever Fiona was looking for "
+							"is the key to the whole thing. If I can just figure it out I'll be "
+							"able to help her.\n\n"
+							
+							"\"Go and see her, would you? Maybe she'll remember something useful "
+							"She's at the University Hospital in St. Katharine's Star."
+							)
+							
+						label: "\"[I] will.\""
+						nextPage: 'exitPane
+						}
+						
+					;	BRANCH B
+					
+					{
+						id: 'sayMindwiped
+						desc: (cat
+							"Benedict is silent for a moment.\n\n"
+							
+							"\"He's right,\" say Benedict softly, \"I was so young! I was boiling with "
+							"anger! At the injustice of the universe! At the stupidity of people!"
+							
+							"\"But the Sisters helped me. They helped me to see my own stupidity&mdash;"
+							"my own fears. I chose to be mindwiped, OK? I didn't want to be that person "
+							"anymore.\""
+							)
+							
+						label: "\"[D]oes Fiona know?\""
+						}
+					{
+						desc: (cat
+							"Benedict sits down, shoulders hunched: \"No. I should have told her.\"\n\n"
+							
+							"He pauses for a while and then rises: \"I will tell her, once we figure "
+							"this out. Did Stormhound tell you anything useful?\""
+							)
+							
+						actions: (list
+							{
+								;	BRANCH B.1
+								label: "\"[N]o, nothing else.\""
+								nextPage: 'sayNothing2
+								}
+							{
+								;	BRANCH B.2
+								label: "\"He said the [S]isters are behind it!\""
+								nextPage: 'saySisters
+								}
+							)
+						}
+					{
+						id: 'sayNothing2
+						desc: (cat
+							"\"Alright, I'll start from the beginning. Whatever Fiona was looking for "
+							"is the key to the whole thing. If I can just figure it out I'll be "
+							"able to help her.\n\n"
+							
+							"\"Go and see her, would you? Maybe she'll remember something useful "
+							"She's at the University Hospital in St. Katharine's Star."
+							)
+							
+						label: "\"[I] will.\""
+						nextPage: 'exitPane
+						}
+						
+					;	BRANCH C
+					
+					{
+						id: 'saySisters
+						desc: (cat
+							"\"Impossible! Why would they hurt Fiona? She's a true follower of Domina..."
+							"why would they...\n\n"
+							
+							"\"No, it's impossible.\"\n\n"
+							
+							"Benedict says no more, but the thought seems to trouble him."
+							)
+							
+						code: (lambda () (typIncData &unidBenedictStoryArc; 'clues 1))
+						}
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+			
+			<Text id="StormhoundMeeting">
+				(list
+					{
+						desc: (cat
+							"A short, elegant man in a neolinen suit appears behind the bodyguards.\n\n"
+							
+							"\"Stand down, gentlement. %He%'s a friend, I believe.\""
+							)
+							
+						label: "\"[W]ho are you?\""
+						}
+					{
+						desc: (cat
+							"Stormhound laughs softly.\n\n"
+							
+							"\"Ah! You don't recognize me! Good. Probably for the best. I'm a friend of "
+							"Benedict's. One of the few, I'm afraid.\""
+							)
+							
+						label: "\"[H]e said you have information.\""
+						}
+					{
+						desc: (cat
+							"\"I have a warning. One that now applies to you as well. This business with "
+							"Fiona is not going end well.\""
+							)
+							
+						label: "\"[B]enedict can handle it.\""
+						}
+					{
+						desc: (cat
+							"\"Can he? He's good in a fight, I grant, but only when he knows who the enemy is. "
+							"Benedict is focused on the Penitents, but they are not the real threat.\""
+							)
+							
+						label: "\"[W]ho is the real threat?\""
+						}
+					{
+						desc: (cat
+							"\"You don't know much about Benedict, do you? Did you know he was once a Penitent "
+							"himself? No, he probably didn't tell you that. He grew up with the Penitents and "
+							"even fought for them.\n\n"
+							
+							"\"In his twenties he was captured by the Sisters and mindwiped. He probably doesn't "
+							"even remember his past life anymore.\""
+							)
+							
+						label: "\"[B]enedict is the real threat?\""
+						}
+					{
+						desc: (cat
+							"Stormhound laughs, \"Oh no, of course not!\n\n"
+							
+							"\"It's the Sisters. It has always been the Sisters. You tell Benedict that.\"\n\n"
+							)
+							
+						nextPage: 'forceUndock
+							
+						code: 
+							(lambda ()
+								(msnFireEvent (@ (msnFind "a +unid:&msBenedictInNewBeyond;;") 0) 'OnMeetingDone)
+								)
+						}
+					)
+			</Text>
+		</Language>
+	</MissionType>
+	
+<!-- TABLES AND RESOURCES -->
+
+	<EncounterTable UNID="&tbBenedict04Encounters;">
+		<LevelTable>
+			<Ship	levelFrequency="cccuv -----"	class="&scRepentant;"	count="1"	orders="attack"	sovereign="&svPenitents;"/>
+			<Ship	levelFrequency="-vucu -----"	class="&scRepentant;"	count="2"	orders="attack"	sovereign="&svPenitents;"/>
+			<Ship	levelFrequency="--vuc -----"	class="&scRepentant;"	count="3"	orders="attack"	sovereign="&svPenitents;"/>
+			<Group	levelFrequency="---vu ccccc">
+				<Ship	class="&scAtonement;"	count="1"	orders="attack"	sovereign="&svPenitents;"/>
+				<Ship	class="&scRepentant;"	count="2"	orders="attack"	sovereign="&svPenitents;"/>
+			</Group>
+		</LevelTable>
+	</EncounterTable>
+
+</TranscendenceModule>

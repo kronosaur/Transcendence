@@ -45,7 +45,6 @@
 		name=				"(metallic asteroid)"
 		scale=				"world"
 		size=				"4"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, metallic, outer"
 
@@ -74,7 +73,6 @@
 		name=				"(metallic asteroid)"
 		scale=				"world"
 		size=				"55"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, metallic, outer"
 
@@ -104,7 +102,6 @@
 		name=				"(metallic asteroid)"
 		scale=				"world"
 		size=				"250"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, metallic, outer"
 
@@ -133,7 +130,6 @@
 		name=				"(metallic asteroid)"
 		scale=				"world"
 		size=				"625"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, metallic, outer"
 
@@ -162,7 +158,6 @@
 		name=				"(metallic planetoid)"
 		scale=				"world"
 		size=				"1150"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone,  metallic, outer, planetoid"
 
@@ -177,7 +172,6 @@
 		name=				"(metallic planetoid)"
 		scale=				"world"
 		size=				"2050"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, metallic, outer, planetoid"
 
@@ -192,7 +186,6 @@
 		name=				"(metallic planetoid)"
 		scale=				"world"
 		size=				"4000"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, metallic, outer, planetoid"
 

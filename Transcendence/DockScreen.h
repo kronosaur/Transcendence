@@ -404,7 +404,8 @@ class CDockScreen : public IScreenController
 							const CString &sPane,
 							ICCItem *pData,
 							CString *retsPane,
-							AGScreen **retpScreen);
+							AGScreen **retpScreen,
+							CString *retsError = NULL);
 		inline bool InOnInit (void) { return m_bInOnInit; }
 		inline bool IsFirstOnInit (void) { return m_bFirstOnInit; }
 		inline bool IsValid (void) { return (m_pScreen != NULL); }
@@ -570,6 +571,7 @@ class CDockScreenStack
 		ICCItem *GetData (const CString &sAttrib);
 		inline int GetCount (void) const { return m_Stack.GetCount(); }
 		const SDockFrame &GetCurrent (void) const;
+		void IncData (const CString &sAttrib, ICCItem *pData, ICCItem **retpResult = NULL);
 		inline bool IsEmpty (void) const { return (m_Stack.GetCount() == 0); }
 		void Push (const SDockFrame &Frame);
 		void Pop (void);

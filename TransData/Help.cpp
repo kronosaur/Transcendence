@@ -129,6 +129,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/sort:xxx]           Sort worlds in given order.\n");
 		printf("         largest               Larger objects first.\n");
 		printf("         level                 By level (ascending).\n");
+		printf("         manufacturer          Categorize by manufacturer.\n");
 		printf("         name                  By name.\n");
 		printf("         smallest              Smaller objects first.\n");
 		printf("         sovereign             Categorize by sovereign.\n");

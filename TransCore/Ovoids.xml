@@ -113,7 +113,6 @@
 		name=				"(ovoid asteroid)"
 		scale=				"world"
 		size=				"4"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, outer, ovoid"
 
@@ -161,7 +160,6 @@
 		name=				"(ovoid asteroid)"
 		scale=				"world"
 		size=				"70"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, outer, ovoid"
 
@@ -211,7 +209,6 @@
 		name=				"(ovoid asteroid)"
 		scale=				"world"
 		size=				"255"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, outer, ovoid"
 
@@ -253,7 +250,6 @@
 		name=				"(ovoid asteroid)"
 		scale=				"world"
 		size=				"590"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"asteroid, generic, inner, lifeZone, outer, ovoid"
 
@@ -291,7 +287,6 @@
 		name=				"(ovoid planetoid)"
 		scale=				"world"
 		size=				"1000"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, outer, planetoid, ovoid"
 
@@ -314,7 +309,6 @@
 		name=				"(ovoid planetoid)"
 		scale=				"world"
 		size=				"2450"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, outer, planetoid, ovoid"
 
@@ -336,7 +330,6 @@
 		name=				"(ovoid planetoid)"
 		scale=				"world"
 		size=				"3750"
-		sovereign=			"&svIndependent;"
 
 		attributes=			"generic, inner, lifeZone, outer, ovoid, planetoid"
 

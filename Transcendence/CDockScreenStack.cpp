@@ -194,6 +194,61 @@ void CDockScreenStack::SetCurrentPane (const CString &sPane)
 		}
 	}
 
+void CDockScreenStack::IncData (const CString &sAttrib, ICCItem *pValue, ICCItem **retpResult)
+
+//	IncData
+//
+//	Increments data
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+	if (IsEmpty())
+		{
+		if (retpResult) *retpResult = CC.CreateNil();
+		return;
+		}
+
+    //  If pValue is NULL, we default to 1. We add ref no matter what so that
+    //  we can discard unconditionally.
+
+    if (pValue == NULL)
+        pValue = CC.CreateInteger(1);
+    else
+        pValue->Reference();
+
+    //  If the entry is currently blank, then we just take the increment.
+
+	ICCItem *pOriginal = GetData(sAttrib);
+    ICCItem *pResult = NULL;
+    if (pOriginal->IsNil())
+        pResult = pValue->Reference();
+
+    //  Otherwise, we need to get the data value
+
+    else
+        {
+        if (pOriginal->IsDouble() || pValue->IsDouble())
+            pResult = CC.CreateDouble(pOriginal->GetDoubleValue() + pValue->GetDoubleValue());
+        else
+            pResult = CC.CreateInteger(pOriginal->GetIntegerValue() + pValue->GetIntegerValue());
+        }
+
+    pOriginal->Discard(&CC);
+
+    //  Store
+
+	SetData(sAttrib, pResult);
+
+    //  Done
+
+    if (retpResult)
+        *retpResult = pResult;
+    else
+        pResult->Discard(&CC);
+
+    pValue->Discard(&CC);
+	}
+
 void CDockScreenStack::SetData (const CString &sAttrib, ICCItem *pData)
 
 //	SetData

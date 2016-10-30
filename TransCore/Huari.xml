@@ -577,7 +577,7 @@
 
 									; Send Dragon Slaver after the player
 									(setq enemyObj (sysCreateShip &scDragonSlaver; gateObj &svSung;))
-									(shpOrder enemyObj 'wait Nil 10)
+									(shpOrder enemyObj 'waitForThreat Nil 10)
 									(shpOrder enemyObj 'attack gPlayerShip)
 									(shpOrder enemyObj 'attack gSource)
 
@@ -2069,7 +2069,6 @@
 			name=				"Sung fortress(es)"
 			sovereign=			"&svSung;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 

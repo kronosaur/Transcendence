@@ -1,0 +1,573 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Infiltrate Penitents ==================================================
+
+	EXTRA DATA
+	
+	targetID: ID of Penitent station
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msInfiltratePenitents;"
+			name=				"Infiltrate Penitents"
+			attributes=			"benedictStoryArc, commonwealthColonyArmed, sistersMission"
+
+			level=				"5"
+			maxAppearing=		"1"
+			priority=			"100"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<StaticData>
+			<sequence>60</sequence>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block ()
+					(switch
+						;	See if the mission is still available
+
+						(not (benedict_isMissionAvailable (objGetType gSource)))
+							(msnDestroy gSource)
+							
+						;	Only valid in system C6A (or C6)
+
+						(!= (sysGetNode) (if (find (sysGetNodes) 'C6A) 'C6A 'C6))
+							(msnDestroy gSource)
+							
+						;	OK
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					targetObj
+					)
+					
+					;	If there isn't a Penitent Sanctum here, we create one.
+					
+					(setq targetObj (or 
+						(sysFindObject gPlayerShip "TAR +unid:&stPenitentSanctum;;")
+						(sysCreateStation &stPenitentSanctum;
+							(sysVectorRandom
+								Nil
+								(random 1100 1400)
+								120
+								"TA"
+								)
+							)
+						))
+						
+					(objSetEventHandler targetObj &evBenedict06PenitentBase;)
+					(msnSetData gSource 'targetID (objGetID targetObj))
+					(msnRegisterForEvents gSource targetObj)
+					)
+			</OnAccepted>
+			<OnAcceptedUndock>
+				(block (
+					(ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					
+					(newReactor (itmCreate &it50MWReactor; 1))
+					
+					(oldShipObj gPlayerShip)
+					newShipObj
+					)
+					
+					;	Remember the player's old ship.
+					
+					(msnSetData gSource 'playerShipID (objGetID gPlayerShip))
+					
+					;	Create a Penitent ship for the player
+					
+					(setq newShipObj (sysCreateShip &scAtonement; (objGetPos gPlayerShip) &svBenedict06Infiltrate;))
+					
+					;	Install a reactor, because otherwise we're not going anywhere
+					
+					(objAddItem newShipObj newReactor)
+					(shpInstallDevice newShipObj newReactor)
+					(objSetProperty newShipObj 'fuelLeft (objGetProperty newShipObj 'maxFuel))
+					
+					;	Install targeting ROM
+					
+					(objChangeEquipmentStatus newShipObj 'TargetingComputer 'install)
+					
+					;	Switch ships
+					
+					(plyChangeShip gPlayer newShipObj)
+					
+					;	Set the sovereign because plyChangeShip always sets it to
+					;	the default player sovereign.
+					
+					(objSetSovereign newShipObj &svBenedict06Infiltrate;)
+					
+					;	Set the old player ship to dock at the station (and wait)
+					
+					(shpCancelOrders oldShipObj)
+					(shpOrder oldShipObj 'dock ownerObj)
+					
+					;	Update target
+					
+					(msnSetPlayerTarget gSource)
+					)
+			</OnAcceptedUndock>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'dock)
+			</OnSetPlayerTarget>
+			
+			<OnObjDestroyed>
+				(switch
+				
+					;	If the Penitent station is destroyed before we dock, then 
+					;	we fail the mission.
+					
+					(eq (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(msnFailure gSource)
+					)
+			</OnObjDestroyed>
+			
+			<OnDebriefed>
+				(block (
+					(ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(originalShipObj (objGetObjByID (msnGetData gSource 'playerShipID)))
+					(penitentShipObj gPlayerShip)
+					)
+					
+					;	Restore the player's ship
+					
+					(plyChangeShip gPlayer originalShipObj)
+					
+					;	Leave the original Penitent ship at the Sisters (and eventually leave)
+					
+					(shpCancelOrders penitentShipObj)
+					(shpOrder penitentShipObj 'dock ownerObj)
+					(shpOrder penitentShipObj 'wait 120)
+					(shpOrder penitentShipObj 'gate)
+					)
+			</OnDebriefed>
+			
+			<OnGlobalSystemStarted>
+				(switch
+					;	This mission is spawned in C6A, or C6 (if C6A does not exist).
+					;	If we're not in the right node, then nothing to do.
+					
+					(!= (sysGetNode) (if (find (sysGetNodes) 'C6A) 'C6A 'C6))
+						Nil
+						
+					;	If the mission isn't available, then nothing to do
+					
+					(not (benedict_isMissionAvailable &msInfiltratePenitents;))
+						Nil
+						
+					;	If we've already gone through this setup code, then skip it.
+					;	Otherwise we would keep creating stations whenever one got
+					;	destroyed.
+					
+					(typGetData &msInfiltratePenitents; 'setupDone)
+						Nil
+
+					;	Otherwise, prepare the system.
+					
+					(block (penitentLoc)
+						
+						;	If there is a station here that can give the mission then 
+						;	we don't need to do anything (the player will automatically
+						;	get the mission there).
+						;
+						;	But otherwise we create a Sisters station
+					
+						(if (not (or 
+								(sysFindObject Nil "TA +unid:&stCommonwealthColonyArmed;;")
+								(sysFindObject Nil "TA +unid:&stSistersOfDomina;;")
+								))
+								
+							;	We create the station at an appropriate system location, or, if
+							;	not found, at a random position.
+							
+							(sysCreateStation &stSistersOfDomina;
+								(or (@ (sysGetRandomLocation "-innerSystem; +planetary" { remove:True objType:&stSistersOfDomina; }) 'pos)
+									(sysVectorRandom
+										Nil
+										(lambda () (random 300 900))
+										60
+										"TAE"
+										)
+									)
+								)
+							)
+							
+						;	If there isn't a Penitent Sanctum here, and if we have an
+						;	appropriate location, then we create a Penitent station. 
+						;
+						;	If no appropriate location, then we just wait until mission
+						;	accept to create the station.
+						
+						(if (and (not (sysFindObject Nil "TA +unid:&stPenitentSanctum;;"))
+									(setq pos (@ (sysGetRandomLocation "+nebulae" { remove:True objType:&stPenitentSanctum; }) 'pos))
+									)
+							(sysCreateStation &stPenitentSanctum; pos)
+							)
+							
+						(typSetData &msInfiltratePenitents; 'setupDone True)
+						)
+					)
+			</OnGlobalSystemStarted>
+			
+			<OnInfiltrateDone>
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					;	Mission succeeds
+					
+					(msnSuccess gSource)
+					
+					;	But player gets attacked by Penitent ships
+					
+					(sovSetDisposition &svPenitents; &svBenedict06Infiltrate; 'enemy)
+					(sovSetDisposition &svBenedict06Infiltrate; &svPenitents; 'enemy)
+					
+					;	Apply an overlay to the station to prevent it from firing.
+					;	Otherwise the player will get killed instantly.
+					
+					(objAddOverlay targetObj &ovBenedict06Disarm; 150)
+					)
+			</OnInfiltrateDone>
+			
+			<GetGlobalAchievements>
+			</GetGlobalAchievements>
+		</Events>
+		
+		<Language>
+			<Text id="Name">"Infiltrate a Penitent Sanctum"</Text>
+			<Text id="Summary">
+				(cat
+					"Help Benedict to infiltrate a Penitent Sanctum.\n\n"
+					"System: " (sysGetName) "\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="Intro">
+				(list
+					{
+						desc: (cat
+							"Benedict greets you as you enter:\n\n"
+							
+							"\"%name%! I'm glad you're here! I've reconstructed the drive data "
+							"from the medical ship. They deviated from their scheduled course "
+							"to dock at a Penitent station in this system!\""
+							)
+						label: "\"[H]umanitarian mission, maybe?\""
+						}
+					{
+						desc: (cat
+							"\"Not likely! Maybe Stormhound is right. I think Sister Elana Ston "
+							"is hiding something. Whatever she was doing with the Penitents, maybe "
+							"she got caught and had to scuttle the medical ship to erase the "
+							"evidence.\""
+							)
+						label: "\"[W]hat are you going to do?\""
+						}
+					{
+						desc: (cat
+							"\"I've got an idea, but I need your help. Have you ever flown a "
+							"Penitent ship?\""
+							)
+						label: "\"[I] don't like where this is going...\""
+						}
+					)
+			</Text>
+			<Text id="Briefing">
+				(list
+					{
+						desc: (cat
+							"Benedict takes you around to another docking bay.\n\n"
+							
+							"\"I've had the Sisters refurbish a Penitent ship that "
+							"we destroyed recently. We can use it to enter the Penitent "
+							"Sanctum and find out what the medical ship was doing there.\n\n"
+							
+							"\"I really need you on this. Are you in?\""
+							)
+						acceptLabel: "\"[S]ure, let's go.\""
+						declineLabel: "\"[M]aybe. Let me prepare first.\""
+						}
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(cat
+					"\"Alright. Just get us to the Penitent station and I'll take care "
+					"of the rest.\""
+					)
+			</Text>
+			<Text id="DeclineReply">
+				(cat
+					"\"OK, but don't take too long.\""
+					)
+			</Text>
+			<Text id="InProgress">
+				(cat
+					"\"What are we doing back here? We need to go to the Penitent "
+					"station!\""
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(list
+					{
+						desc: (cat
+							"Fiona and Sandoval meet you at the airlock.\n\n"
+							
+							"Fiona looks past you at the ship, \"Where's Benedict? "
+							"He told us to meet him here.\""
+							)
+						}
+					{
+						desc: (cat
+							"You give Fiona the video data ROM and tell her about Benedict "
+							"staying behind.\n\n"
+							
+							"Sandoval interrupts you, \"If we leave now maybe we can get him "
+							"out of there!\"\n\n"
+							
+							"But Fiona shakes her head, \"How? Even if he's not dead already "
+							"we'd have to blow the station to get him, and that could kill "
+							"him too!\""
+							)
+						}
+					{
+						desc: (cat
+							"Fiona continues, \"And we don't know what's going on! Why is "
+							"Sister Ston working with Penitents? Who were those children?\n\n"
+							
+							"\"Maybe if we figure it out we'll have some leverage to get "
+							"Benedict out.\""
+							)
+						label: "\"[W]hat's your plan?\""
+						}
+					{
+						desc: (cat
+							"\"We're going to Sanctuary. I've got enough to make Sister Ston "
+							"talk.\n\n"
+							
+							"\"Meet us there and by then we might have a plan to rescue Benedict!\""
+							)
+						label: "\"[B]e careful!\""
+						}
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+			<Text id="FailureDebrief">
+				(cat
+					"\"What a shame! Now we'll never know why the medical ship was docking at the Penitents!\""
+					)
+			</Text>
+			
+			<Text id="AtPenitents">
+				(list
+					{
+						desc: (cat
+							"You enter the Penitent docking bay with Benedict at your side. "
+							"Dock workers in vacuum suits prep a handful of ships.\n\n"
+							
+							"Benedict points to an elevated level that overlooks the entire bay, "
+							"\"That's where we're going.\"\n\n"
+							
+							"Gray-garbed Penitents pass you as you head for the elevator. None "
+							"look up from their datapads."
+							)
+						}
+					{
+						desc: (cat
+							"The door to the elevated level slides open into a control room. "
+							"A tall, middle-aged man in a simple gray outfit looks up from his "
+							"console as you enter.\n\n"
+							
+							"\"Who are you, please?\""
+							)
+						actions: (list
+							{
+								;	BRANCH A
+								label: "\"[W]e're here to relieve you.\""
+								nextPage: 'bluffRelieve
+								}
+							{
+								;	BRANCH B
+								label: "\"[G]ot called about a malfunction.\""
+								nextPage: 'bluffRepair
+								}
+							{
+								;	BRANCH C
+								label: "\"[P]risoner transfer from cell block 1138.\""
+								nextPage: 'bluff1138
+								}
+							)
+						}
+					{
+						id: 'bluffRelieve
+						desc: (cat
+							"The controller appears confused, \"I just started my shift.\""
+							)
+						label: "\"[Y]eah, but...you look tired.\""
+						}
+					{
+						desc: (cat
+							"\"Why aren't you wearing your wristband? Why are there two of you? "
+							"And why haven't I seen you before...\"\n\n"
+							
+							"The Penitent suddenly heads towards a panel on the opposite wall, "
+							"but Benedict intercepts him. He bashes the Penitent with his arm "
+							"cannon, leaving him motionless on the floor."
+							)
+						label: "\"[N]ow what?\""
+						nextPage: 'videoReview
+						}
+					{
+						id: 'bluffRepair
+						desc: (cat
+							"The controller stares at both of you without speaking. Then he "
+							"calmly looks down at his screen:\n\n"
+							
+							"\"Our scanner has been ionized. You'll need to depolarize the dish.\""
+							)
+						label: "\"[Y]eah, that's why we're here.\""
+						}
+					{
+						desc: (cat
+							"\"Great!\n\n
+							
+							"\"Of course, you're in the wrong place. Everyone knows the "
+							"scanner dish is in the central hub.\"\n\n"
+							
+							"The Penitent suddenly heads towards a panel on the opposite wall, "
+							"but Benedict intercepts him. He bashes the Penitent with his arm "
+							"cannon, leaving him motionless on the floor."
+							)
+						label: "\"[N]ow what?\""
+						nextPage: 'videoReview
+						}
+					{
+						id: 'bluff1138
+						desc: (cat
+							"\"Where have I heard that before...\"\n\n"
+							
+							"The Penitent suddenly heads towards a panel on the opposite wall, "
+							"but Benedict intercepts him. He bashes the Penitent with his arm "
+							"cannon, leaving him motionless on the floor."
+							)
+						label: "\"[N]ow what?\""
+						nextPage: 'videoReview
+						}
+					{
+						id: 'videoReview
+						desc: (cat
+							"\"We only have a few minutes,\" says Benedict, as he swipes around "
+							"on the console. \"Here it is! Docking bay video of when the medical "
+							"ship docked.\"\n\n"
+							
+							"The screen flickers to a recorded view of the docking bay. "
+							"You see Sister Elana Ston step out of the medical ship. There is no "
+							"sound, but you see her talking with a couple of Penitents in their "
+							"monochrome suits."
+							)
+						}
+					{
+						desc: (cat
+							"Sister Ston walks back to her ship, and for several "
+							"minutes nothing more happens. But then a dozen medtechs come out of "
+							"the ship, each escorting a small gurney. They take the gurneys into "
+							"the halls of the Penitent station and out of the camera frame.\n\n"
+							
+							"Each gurney carries a small infant, wrapped in blankets, and hooked "
+							"up to a monitoring pad."
+							)
+						}
+					{
+						desc: (cat
+							"Just then, you hear shouts from below and see a group of Penitents, "
+							"weapons out, enter the docking bay.\n\n"
+							
+							"Benedict hands you a data ROM, \"Take this video back to Fiona! "
+							"Don't trust anyone else. Go now!\""
+							)
+						label: "\"[W]here are you going?\""
+						}
+					{
+						desc: (cat
+							"\"I'll buy you some time. Don't argue! I've got a plan to leave in "
+							"one piece.\n\n"
+							
+							"\"But just in case, tell Fiona that...\"\n\n"
+							
+							"A blast hits above your head, and you scramble towards the door. "
+							"Benedict powers up his arm cannon and waves you through."
+							)
+						}
+					{
+						desc: (cat
+							"You hear deafening shots behind you as you make your way to the ship."
+							)
+						nextPage: 'forceUndock
+						
+						code: (lambda ()
+							(block (
+								(missionObj (@ (msnFind "a +unid:&msInfiltratePenitents;;") 0))
+								)
+								(msnFireEvent missionObj 'OnInfiltrateDone)
+								)
+							)
+						}
+					)
+			</Text>
+		</Language>
+	</MissionType>
+	
+<!-- OVERLAYS -->
+	
+	<OverlayType UNID="&ovBenedict06Disarm;"
+            attributes=         "effect"
+			disarm=		"true"
+			>
+	</OverlayType>
+	
+<!-- BEHAVIORS -->
+
+	<Type UNID="&evBenedict06PenitentBase;">
+		<Events>
+			<GetDockScreen>
+				(block (missionObj)
+				
+					;	Screen when we dock
+				
+					(if (and
+							(not (objGetProperty gSource 'abandoned))
+							(setq missionObj (@ (msnFind "a +unid:&msInfiltratePenitents;;") 0))
+							(not (msnGetProperty missionObj 'isCompleted))
+							)
+						(list &dsRPGDialog; (typTranslate &msInfiltratePenitents; 'AtPenitents) 10)
+						)
+					)
+			</GetDockScreen>
+		</Events>
+	</Type>
+
+<!-- TABLES AND RESOURCES -->
+	
+	<Sovereign UNID="&svBenedict06Infiltrate;"
+			name="Order of Penitence"
+			alignment="destructive order"
+			>
+		<Relationships>
+			<Relationship sovereign="&svSistersOfDomina;" disposition="friend" mutual="true"/>
+		</Relationships>
+	</Sovereign>
+
+</TranscendenceModule>

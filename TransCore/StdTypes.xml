@@ -925,7 +925,7 @@
 			mass=				"50"
 			frequency=			"uncommon"
 			unknownType=		"&itUnknownMnemonicCube;"
-			attributes=			"Consumable; Info"
+			attributes=			"consumable, info, quantumProgram"
 
 			description=		"This algorithm hacks into near-by enemy ship computers and temporarily disable their control systems. Scramble1.5 requires a quantum CPU to execute."
 			>
@@ -967,7 +967,7 @@
 			mass=				"50"
 			frequency=			"uncommon"
 			unknownType=		"&itUnknownMnemonicCube;"
-			attributes=			"Info; MinorItem"
+			attributes=			"info, minorItem, quantumProgram, shieldEnhance"
 
 			description=		"This algorithm enhances shield generators of technology levels 4 through 9."
 			>
@@ -1040,7 +1040,7 @@
 			mass=				"50"
 			frequency=			"uncommon"
 			unknownType=		"&itUnknownMnemonicCube;"
-			attributes=			"Info; MinorItem"
+			attributes=			"info, minorItem, quantumProgram, shieldEnhance"
 
 			description=		"This algorithm increases the efficiency of shield generators of technology levels 4 through 9."
 			>
@@ -1113,7 +1113,7 @@
 			mass=				"50"
 			frequency=			"rare"
 			unknownType=		"&itUnknownMnemonicCube;"
-			attributes=			"Info; MinorItem"
+			attributes=			"info, minorItem, quantumProgram, shieldDamage"
 
 			description=		"The first version of the ShieldPower algorithm is promising but contains significant bugs."
 			>
@@ -1379,7 +1379,7 @@
 	anarchists				anarchists
 	commonwealth			commonwealth station
 	commonFleet				Commonwealth Fleet
-	commonMilitary			either Commonwealth militia or Commonwealth Fleet
+	commonwealthMilitary	either Commonwealth militia or Commonwealth Fleet
 	enemy					enemy of the player
 	friendly				friend of the player
 	populated				not an automated station
@@ -1410,7 +1410,7 @@
 
 	<StationType UNID="&stBarricade1;"
 			name=				"titanium barricade"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsBarricade;"
 
 			structuralHitPoints="25"
@@ -1438,7 +1438,7 @@
 
 	<StationType UNID="&stBarricade2;"
 			name=				"titanium barricade"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsBarricade;"
 
 			structuralHitPoints="50"
@@ -1466,7 +1466,7 @@
 
 	<StationType UNID="&stBarricade3;"
 			name=				"titanium barricade"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsBarricade;"
 
 			structuralHitPoints="100"
@@ -1496,7 +1496,7 @@
 
 	<StationType UNID="&stFlotsam;"
 			name=				"(flotsam)"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"Main"
 
 			scale=				"ship"
@@ -1552,7 +1552,7 @@
 
 	<StationType UNID="&stShipwreck;"
 			name=				"(shipwreck)"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsAbandonedShip;"
 			scale=				"ship"
 			mobile=				"true"
@@ -1783,7 +1783,7 @@
 
 	<StationType UNID="&stTanRuDorem;"
 			name=				"Tan&#x95;Ru&#x95;Dorem"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svNeutral;"
 			dockScreen=			"Main"
 
 			multiHull=			"true"

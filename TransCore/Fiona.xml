@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Fiona -->
+	
+	<Type UNID="&unidFiona;">
+		<StaticData>
+			<Data id="MissionAttribute">"fionaMission"</Data>
+			<Data id="Name">"Fiona"</Data>
+			<Data id="Sovereign">&svCommonwealth;</Data>
+		</StaticData>
+
+		<Events>
+			<OnCharacterCanBeMet>
+				True
+			</OnCharacterCanBeMet>
+
+			<OnGlobalSystemStopped>
+				(rpgCharacterAscend &unidFiona;)
+			</OnGlobalSystemStopped>
+		</Events>
+	</Type>
+	
+	<!-- Fiona's Ship -->
+	
+	<ShipClass UNID="&scFionaScorpion;"
+			manufacturer=		"Earth Industries"
+			class=				"Scorpion"
+			type=				"gunship"
+			defaultSovereign=	"&svCommonwealth;"
+
+			attributes=			"fiona"
+			character=			"&unidFiona;"
+			   
+			size=				"40"
+			mass=				"70"
+			thrustRatio=		"8"
+			maxSpeed=			"25"
+			cargoSpace=			"40"
+
+			dockingPorts=		"4"
+			dockScreen=			"&dsRPGCharacterDefault;"
+			>
+
+		<Names noArticle="true" personalName="true">Fiona</Names>
+		
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itQuadroCarbideArmor;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itLightIonBlaster;"/>
+			<Device deviceID="&itYoroiMX;"/>
+			<Device deviceID="&itThermoCannon;">
+				<Items>
+					<Item	 count="20d20"	item="&itThermoCannonShell;"/>
+				</Items>
+			</Device>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"3.0"
+			/>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsScorpionGunship;" imageWidth="68" imageHeight="68" rotationCount="120" rotationColumns="12" viewportRatio="0.005625"/>
+		<HeroImage imageID="&rsScorpionGunshipHero;" imageWidth="320" imageHeight="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="170"	posRadius="30"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-170"	posRadius="30"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"20"
+			fireRangeAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+		<Language>
+			<Text id="FirstMeetingIntro">
+				(list
+					{
+						desc: (cat
+							"LATER: Fiona intro."
+							)
+						}
+					)
+			</Text>
+
+			<Text id="MeetingIntro">
+				(cat
+					"LATER: Fiona"
+					)
+			</Text>
+
+			<Text id="NoMissions">
+				(cat
+					"The airlock refuses to open."
+					)
+			</Text>
+		</Language>
+	</ShipClass>
+	
+</TranscendenceModule>

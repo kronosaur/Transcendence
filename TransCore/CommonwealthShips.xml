@@ -1,0 +1,1043 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Level 2: Ronin A-class Gunship -->
+
+	<ShipClass UNID="&scRoninA;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Ronin/A"
+			type=				"gunship"
+			defaultSovereign=	"&svCommonwealth;"
+
+			mass=				"60"
+			cargoSpace=			"50"
+			thrustRatio=		"5.5"
+			maxSpeed=			"20"
+
+			attributes=			"commonwealth, genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itLightCeramicPlate;"/>
+			<ArmorSection start="225" span="90" armorID="&itLightCeramicPlate;"/>
+			<ArmorSection start="135" span="90" armorID="&itLightCeramicPlate;"/>
+			<ArmorSection start="45"  span="90" armorID="&itLightCeramicPlate;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itBlaster;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<AISettings
+			fireRateAdj=		"45"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Level 2: Ronin B-class Gunship -->
+
+	<ShipClass UNID="&scRoninB;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Ronin/B"
+			type=				"gunship"
+			defaultSovereign=	"&svCommonwealth;"
+
+			mass=				"60"
+			cargoSpace=			"50"
+			thrustRatio=		"5.5"
+			maxSpeed=			"20"
+
+			attributes=			"commonwealth, genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itCeramicPlate;"/>
+			<ArmorSection start="225" span="90" armorID="&itCeramicPlate;"/>
+			<ArmorSection start="135" span="90" armorID="&itCeramicPlate;"/>
+			<ArmorSection start="45"  span="90" armorID="&itCeramicPlate;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itBlaster;"/>
+			<Device deviceID="&itNAMIMissileLauncher;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Items>
+			<Item count="2d6" item="&itKM100Missile;"/>
+			<Item count="3d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<AISettings
+			fireRateAdj=		"40"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+	</ShipClass>
+
+	<!-- Level 2: Sapphire Yacht -->
+
+	<ShipClass UNID="&scSapphireYacht;"
+			manufacturer=		"Zubrin Systems"
+			class=				"Sapphire"
+			type=				"yacht"
+			defaultSovereign=	"&svCommonwealth;"
+
+			mass=				"30"
+			cargoSpace=			"50"
+			thrust=				"150"
+			maxSpeed=			"20"
+
+			attributes=			"commonwealth, genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itReactiveArmor;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itReactiveArmor;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itReactiveArmor;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itReactiveArmor;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itRecoillessCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"2.0"
+			/>
+
+		<Items>
+			<Item count="4d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+		<Image imageID="&rsMediumShips1;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="rotateRight"		posAngle="12"	posRadius="20"	posZ="0"	rotation="90"/>
+			<Effect type="rotateRight"		posAngle="-130"	posRadius="18"	posZ="0"	rotation="270"/>
+			<Effect type="rotateLeft"		posAngle="-12"	posRadius="20"	posZ="0"	rotation="270"/>
+			<Effect type="rotateLeft"		posAngle="130"	posRadius="18"	posZ="0"	rotation="90"/>
+		</Effects>
+
+	</ShipClass>
+
+	<!-- Level 3: Light IAV -->
+
+	<ShipClass UNID="&scIAVLight;"
+			manufacturer=		"(Various)"
+			class=				"light IAV"
+			type=				""
+			defaultSovereign=	"&svCommonwealth;"
+
+			size=				"27"
+			mass=				"25"
+			cargoSpace=			"5"
+			thrustRatio=		"6"
+			maxSpeed=			"13"
+
+			attributes=			"commonwealth, genericClass, iav"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itHeavyTitaniumPlate;" />
+			<ArmorSection start="90"  span="180" armorID="&itHeavyTitaniumPlate;" />
+		</Armor>
+
+		<Devices>
+			<Table>
+				<Device chance="30" item="&itPartisanCannon;" enhanced="10"/>
+				<Device chance="45" item="&itTurbolaserCannon;" enhanced="15"/>
+				<Device chance="25" item="&itArbalestCannon;" enhanced="5"/>
+			</Table>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"5.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Image imageID="&rsIAVLight;" imageWidth="48" imageHeight="48"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="22"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="21"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="22"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"30"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Level 4: Asterion-class Heavy Gunship -->
+
+	<ShipClass UNID="&scAsterionHeavyGunship;"
+			manufacturer=		"NAMI"
+			class=				"Asterion"
+			type=				"heavy gunship"
+			defaultSovereign=	"&svCommonwealth;"
+
+			attributes=			"commonwealth, genericClass"
+
+			size=				"44"
+			mass=				"200"
+			thrustRatio=		"4.0"
+			maxSpeed=			"20"
+			cargoSpace=			"100"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itPlasteelPlate;"
+			count=				"6"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itBallistaCannon;"	posAngle="180" posRadius="8" posZ="20"/>
+			<Device deviceID="&itHullPlateIonizer;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"3.0"
+			/>
+
+		<Items>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsAsterionHeavyGunship;" imageWidth="72" imageHeight="72" rotationCount="120" rotationColumns="12" viewportRatio="0.00625"/>
+		<HeroImage imageID="&rsAsterionHeavyGunshipHero;" imageWidth="320" imageHeight="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="115"	posRadius="26"	posZ="6"	rotation="180" bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="-115"	posRadius="26"	posZ="6"	rotation="180" bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="166"	posRadius="34"	posZ="9"	rotation="180" />
+			<Effect type="thrustMain"		posAngle="-166"	posRadius="34"	posZ="9"	rotation="180" />
+		</Effects>
+
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"35"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			ignoreShieldsDown=	"true"
+			/>
+	</ShipClass>
+	
+	<!-- Level 4: EI500 Freighter -->
+
+	<ShipClass UNID="&scEI500;"
+			manufacturer=		"Earth Industries"
+			class=				"EI500"
+			type=				"freighter"
+			defaultSovereign=	"&svCommonwealth;"
+
+			attributes=			"commonwealth, freighter, genericClass"
+			 
+			size=				"27"
+			mass=				"150"
+			thrustRatio=		"2.0"
+			maxSpeed=			"18"
+			cargoSpace=			"200"
+			>
+
+		<Names definiteArticle="true">
+			freighter Armadillo; freighter Bjorn; freighter Caballero;
+			freighter Dai Jinn; freighter Emerson; freighter Fantastic;
+			freighter Geometer; freighter Han; freighter Iceberg;
+			freighter Jasper; freighter Kraken; freighter La Belle;
+			freighter Mjolnir; freighter Nnrnuracc; freighter Octavio;
+			freighter Pangea; freighter Qatar; freighter Ramirez;
+			freighter Solitude; freighter Tempest; freighter United States;
+			freighter Von Bulow; freighter West Wind; freighter Xavier;
+			freighter Yonder Star; freighter Zorro
+		</Names>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itOmniTurbolaserCannon;"/>
+			<Device deviceID="&itClass3Deflector;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"4.5"
+			rotationAccel=		"0.5"
+			/>
+
+		<Items>
+			<Item count="1d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsMediumShips2;" imageX="768" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-144"	posRadius="28"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<AISettings
+			fireRateAdj=		"120"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+		<!-- AI and Behavior -->
+
+		<Events>
+			<OnDestroy>
+				(korOnShipDestroyed)
+			</OnDestroy>
+		</Events>
+	</ShipClass>
+	
+	<!-- Level 4: Ronin C-class Gunship -->
+
+	<ShipClass UNID="&scRoninC;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Ronin/C"
+			type=				"gunship"
+			defaultSovereign=	"&svCommonwealth;"
+
+			mass=				"60"
+			cargoSpace=			"50"
+			thrustRatio=		"5.5"
+			maxSpeed=			"20"
+
+			attributes=			"commonwealth,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itHeavyCeramicPlate;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itHeavyCeramicPlate;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itHeavyCeramicPlate;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itHeavyCeramicPlate;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"/>
+			<Device deviceID="&itNAMIMissileLauncher;"/>
+			<Device deviceID="&itClass2Deflector;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Items>
+			<Item count="2d6" item="&itFragmentationMissile;"/>
+			<Item count="3d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+	</ShipClass>
+
+	<!-- Level 4: Wolfen-class Gunship -->
+
+	<ShipClass UNID="&scWolfen;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Wolfen"
+			type=				"gunship"
+			defaultSovereign=	"&svCommonwealth;"
+
+			mass=				"20"
+			cargoSpace=			"35"
+			thrust=				"200"
+			maxSpeed=			"25"
+
+			attributes=			"commonwealth, genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itPolyceramicPlate;"/>
+			<ArmorSection start="225" span="90" armorID="&itPolyceramicPlate;"/>
+			<ArmorSection start="135" span="90" armorID="&itPolyceramicPlate;"/>
+			<ArmorSection start="45"  span="90" armorID="&itPolyceramicPlate;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itDualTurbolaserCannon;"/>
+			<Device deviceID="&itNAMIMissileLauncher;"/>
+			<Device deviceID="&itMonopoleDeflector;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"12.0"
+			rotationAccel=		"2.0"
+			/>
+
+		<Items>
+			<Item count="1d6" item="&itHelium3FuelRod;"/>
+			<Item count="4d6" item="&itKM500Missile;"/>
+		</Items>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+		<Image imageID="&rsMediumShips1;" imageX="768" imageY="0" imageWidth="48" imageHeight="48"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-180"	posRadius="18"	posZ="-5"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="rotateRight"		posAngle="45"	posRadius="20"	posZ="0"	rotation="135"/>
+			<Effect type="rotateRight"		posAngle="-110"	posRadius="16"	posZ="0"	rotation="315"/>
+			<Effect type="rotateLeft"		posAngle="-45"	posRadius="20"	posZ="0"	rotation="225"/>
+			<Effect type="rotateLeft"		posAngle="110"	posRadius="16"	posZ="0"	rotation="45"/>
+		</Effects>
+
+	</ShipClass>
+	
+	<!-- Level 5: Medium IAV -->
+
+	<ShipClass UNID="&scIAVMedium;"
+			manufacturer=		"(Various)"
+			class=				"medium IAV"
+			type=				""
+			defaultSovereign=	"&svCommonwealth;"
+
+			size=				"42"
+			mass=				"50"
+			cargoSpace=			"10"
+			thrustRatio=		"6.5"
+			maxSpeed=			"16"
+
+			attributes=			"commonwealth, genericClass, iav"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itHeavyReactiveArmor;" />
+			<ArmorSection start="90"  span="180" armorID="&itHeavyReactiveArmor;" />
+		</Armor>
+
+		<Devices>
+			<Table>
+				<Device chance="30" item="&itLancerCannon;" enhanced="15"/>
+				<Device chance="45" item="&itDualParticleBeamWeapon;" enhanced="15"/>
+				<Device chance="25" item="&itHeavySlamCannon;"/>
+			</Table>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"5.0"
+			rotationAccel=		"0.5"
+			/>
+
+		<Image imageID="&rsIAVMedium;" imageWidth="64" imageHeight="64"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="168"	posRadius="30"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-168"	posRadius="30"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"20"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+	
+	<!-- Level 5: Armstrong-class Transport -->
+
+	<ShipClass UNID="&scArmstrongTransport;"
+			manufacturer=		"NAMI"
+			class=				"Armstrong"
+			type=				"transport"
+			defaultSovereign=	"&svCommonwealth;"
+			   
+			attributes=			"commonwealth, freighter, genericClass"
+
+			size=				"58"
+			mass=				"500"
+			thrustRatio=		"2.0"
+			maxSpeed=			"18"
+			cargoSpace=			"500"
+			>
+
+		<Names definiteArticle="true">
+			transport Akers; transport Budarin; transport Crippen; transport Duke;
+			transport Eisele; transport Fincke; transport Gagarin; transport Helms;
+			transport Irwin; transport Jing; transport Kolodin; transport Liu;
+			transport McDivitt; transport Noguchi; transport Ochoa; transport Payette;
+			transport Resnik; transport Schmitt; transport Titov; tranport Volk;
+			transport Williams; transport Yegorov
+		</Names>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itPlasteelPlate;"
+			count=				"6"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itOmniParticleCannon;"	posAngle="0" posRadius="4" posZ="16"/>
+			<Device deviceID="&itCyclotronDeflectorIV;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"6.0"
+			rotationAccel=		"3.0"
+			/>
+
+		<Items>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsArmstrongTransport;" imageWidth="90" imageHeight="90" rotationCount="120" rotationColumns="12" viewportRatio="0.0075"/>
+		<HeroImage imageID="&rsArmstrongTransportHero;" imageWidth="320" imageHeight="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="162"	posRadius="42"	posZ="6"	rotation="180" />
+			<Effect type="thrustMain"		posAngle="-162"	posRadius="42"	posZ="6"	rotation="180" />
+			<Effect type="thrustMain"		posAngle="110"	posRadius="23"	posZ="3"	rotation="180" />
+			<Effect type="thrustMain"		posAngle="-110"	posRadius="23"	posZ="3"	rotation="180" />
+		</Effects>
+
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"standOff"
+			/>
+
+	</ShipClass>
+
+	<!-- Level 6: Elixir-class Megayacht -->
+
+	<ShipClass UNID="&scElixirMegayacht;"
+			manufacturer=		"Zubrin Systems"
+			class=				"Elixir"
+			type=				"megayacht"
+			level=				"6"
+			defaultSovereign=	"&svCommonwealth;"
+			   
+			attributes=			"commonwealth, genericClass"
+
+			size=				"140"
+			mass=				"3000"
+			thrustRatio=		"2.0"
+			maxSpeed=			"20"
+			cargoSpace=			"3000"
+
+			explosionType=		"&vtBlastExplosion2;"
+			>
+
+		<Names definiteArticle="true">
+			megayacht Azzam; megayacht Blue Moon; megayacht Callisto; megayacht Christina; megayacht Cloudbreak;
+			megayacht Delma; megayacht Destriero; megayacht Dubai; megayacht Eminence; megayacht Enigma;
+			megayacht Faith; megayacht Fountainhead; megayacht Hampshire; megayacht Indian Empress;
+			megayacht Infinity; megayacht Katara; megayacht Lady Beatrice; megayacht Lady Lara; megayacht Lady Moira;
+			megayacht Le Grand Noir; megayacht Legend; megayacht Limitless; megayacht Lioness; megayacht Luna;
+			megayacht Madame Gu; megayacht Meduse; megayacht Moonlight; megayacht Nahlin; megayacht Nero;
+			megayacht Ona; megayacht Paraffin; megayacht Pelorus; megayacht Quantum Blue; megayacht Rabdan;
+			megayacht Rising Sun; megayacht Savannah; megayacht Serene; megayacht Symphony; megayacht Topaz;
+			megayacht Venus; megayacht Virginian; megayacht Yersin
+		</Names>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itCeralloyArmor;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itLancerCannon;" omnidirectional="true" />
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
+			<Device deviceID="&itCeratopsQuasiArmor2;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"6.0"
+			rotationAccel=		"1.5"
+			rotationStopAccel=	"6.0"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"80"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"50"
+
+					posX=		"-50"
+					posY=		"0"
+					sizeX=		"50"
+					sizeY=		"32"
+					/>
+		</Interior>
+
+		<Items>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsElixirMegayacht;" imageWidth="185" imageHeight="185" rotationCount="120" rotationColumns="12" viewportRatio="0.0225"/>
+		<HeroImage imageID="&rsElixirMegayachtHero;" imageWidth="320" imageHeight="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="176"	posRadius="70"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-176"	posRadius="70"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="172"	posRadius="70"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-172"	posRadius="70"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-180"	posRadius="70"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"standOff"
+			/>
+
+	</ShipClass>
+
+	<!-- Level 6: Scarab Freighter -->
+
+	<ShipClass UNID="&scScarabFreighter;"
+			manufacturer=		"NAMI"
+			class=				"Scarab"
+			type=				"superfreighter"
+			level=				"6"
+			defaultSovereign=	"&svCommonwealth;"
+			   
+			attributes=			"commonwealth, freighter, genericClass"
+
+			size=				"175"
+			mass=				"15000"
+			thrustRatio=		"0.2"
+			maxSpeed=			"6"
+			cargoSpace=			"120000"
+
+			explosionType=		"&vtBlastExplosion4;"
+			>
+
+		<Names definiteArticle="true">
+			superfreighter St. Aoki; superfreighter St. Beatrice; superfreighter St. Celendin;
+			superfreighter St. Dominarus; superfreighter St. Elaine; superfreighter St. Florentine;
+			superfreighter St. Goramesh; superfreighter St. Haldane; superfreighter St. Inez;
+			superfreighter St. Jotur; superfreighter St. Kim; superfreighter St. Lin Chemei;
+			superfreighter St. Miranda; superfreighter St. Navreen; superfreighter St. Orinaga;
+			superfreighter St. Pelerine; superfreighter St. Queleborn; superfreighter St. Rebecca;
+			superfreighter St. Salvador; superfreighter St. Tomashi; superfreighter St. Unami;
+			superfreighter St. Voxanna; superfreighter St. Ha-neul; superfreighter St. Joo-eun;
+			superfreighter St. Emiko; superfreighter St. Aiko; superfreighter St. Rumiko;
+			superfreighter St. Bharati; superfreighter St. Madhavi; superfreighter St. Astrel
+		</Names>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"20"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itSlamCannon;" omnidirectional="true"/>
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"2.0"
+			rotationAccel=		"0.2"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"20"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"50"
+
+					posX=		"-68"
+					posY=		"0"
+					sizeX=		"26"
+					sizeY=		"50"
+					/>
+			
+			<Compartment name="cargo contatiners"
+					type=		"cargo"
+					hitPoints=	"100"
+
+					posX=		"19"
+					posY=		"0"
+					sizeX=		"140"
+					sizeY=		"50"
+					/>
+		</Interior>
+
+		<Items>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsLargeShips1;" imageX="1344" imageY="0" imageWidth="192" imageHeight="192"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="174"	posRadius="78"	posZ="-3"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-174"	posRadius="78"	posZ="-3"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="174"	posRadius="78"	posZ="3"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-174"	posRadius="78"	posZ="3"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="80"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"standOff"
+			/>
+
+		<!-- AI and Behavior -->
+
+		<Events>
+			<OnDestroy>
+				(korOnShipDestroyed)
+			</OnDestroy>
+		</Events>
+	</ShipClass>
+
+	<!-- Level 7: Heavy IAV -->
+
+	<ShipClass UNID="&scIAVHeavy;"
+			manufacturer=		"(Various)"
+			class=				"heavy IAV"
+			type=				""
+			defaultSovereign=	"&svCommonwealth;"
+
+			size=				"37"
+			mass=				"100"
+			cargoSpace=			"10"
+			thrustRatio=		"5"
+			maxSpeed=			"16"
+
+			attributes=			"commonwealth, genericClass, iav"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itLightBlastPlate;"/>
+			<ArmorSection start="225" span="90" armorID="&itLightBlastPlate;"/>
+			<ArmorSection start="135" span="90" armorID="&itLightBlastPlate;"/>
+			<ArmorSection start="45"  span="90" armorID="&itLightBlastPlate;"/>
+		</Armor>
+
+		<Devices>
+			<Table>
+				<Device chance="30" item="&itOmniTeV9Blaster;" enhancement="0x1005"/>
+				<Device chance="25" item="&itMarkVHowitzer;"/>
+				<Device chance="20" item="&itDualTeV9Blaster;"/>
+				<Device chance="25" item="&itTritiumCannon;"/>
+			</Table>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"5.0"
+			rotationAccel=		"0.5"
+			/>
+
+		<Image imageID="&rsIAVHeavy;" imageWidth="72" imageHeight="72"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="151"	posRadius="31"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-151"	posRadius="31"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"15"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Level 7: Manticore-class Heavy Gunship -->
+
+	<ShipClass UNID="&scManticore;"
+			manufacturer=		"Makayev-Energia"
+			class=				"Manticore"
+			type=				"heavy gunship"
+			defaultSovereign=	"&svCommonwealth;"
+
+			mass=				"90"
+			cargoSpace=			"50"
+			thrustRatio=		"2.0"
+			maxSpeed=			"18"
+
+			attributes=			"commonwealth, genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itBlastPlate;"/>
+			<ArmorSection start="225" span="90" armorID="&itBlastPlate;"/>
+			<ArmorSection start="135" span="90" armorID="&itBlastPlate;"/>
+			<ArmorSection start="45"  span="90" armorID="&itBlastPlate;"/>
+		</Armor>
+
+		<Devices>
+			<Table>
+				<Group chance="25">
+					<Device item="&itMarkIIIHowitzer;"/>
+					<Device item="&itCyclotronDeflectorIV;"/>
+				</Group>
+
+				<Group chance="25">
+					<Device item="&itAkan600Turret;">
+						<Items>
+							<Item count="500" item="&itAkan30CannonShell;"/>
+						</Items>
+					</Device>
+
+					<Device item="&itCyclotronDeflectorIV;"/>
+				</Group>
+
+				<Group chance="25">
+					<Device item="&itMarkVHowitzer;"/>
+					<Device item="&itCyclotronDeflectorIII;"/>
+				</Group>
+
+				<Group chance="25">
+					<Device item="&itMoskvaLightTurret;" secondaryWeapon="true"/>
+					<Device item="&itArmorRepairDevice;"/>
+					<Device item="&itCyclotronDeflectorIV;"/>
+				</Group>
+			</Table>
+
+			<Table>
+				<Device chance="50" item="&itMakayevLauncher;">
+					<Items>
+						<Item count="50" item="&itStrelkaRed;"/>
+						<Item count="250" item="&itStrelkaGreen;"/>
+					</Items>
+				</Device>
+
+				<Device chance="50" item="&itMAGLauncher;">
+					<Items>
+						<Item count="20-30" item="&itZG24ClusterMAG;"/>
+						<Item count="30-50" item="&itHighFluxMAG;"/>
+					</Items>
+				</Device>
+			</Table>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"2.0"
+			/>
+
+		<Items>
+			<Item count="2d6" item="&itHeliumAssembly;"/>
+		</Items>
+
+		<Image imageID="&rsManticore;" imageWidth="80" imageHeight="80"/>
+		
+		<Effects>
+			<Effect type="thrustMain"		posAngle="157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
+			<Effect type="thrustMain"		posAngle="-157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
+			<Effect type="rotateRight"		posAngle="46"	posRadius="30"	posZ="0"	rotation="135"/>
+			<Effect type="rotateRight"		posAngle="-142"	posRadius="23"	posZ="0"	rotation="315"/>
+			<Effect type="rotateLeft"		posAngle="-46"	posRadius="30"	posZ="0"	rotation="225"/>
+			<Effect type="rotateLeft"		posAngle="142"	posRadius="23"	posZ="0"	rotation="45"/>
+		</Effects>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"15"
+			fireAccuracy=		"95"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+	</ShipClass>
+
+<!-- TABLES -->
+
+	<!-- Commonwealth defenders for normal stations -->
+
+	<ShipTable unid="&tbCommDefenders;">
+		<LevelTable>
+			<Ship levelFrequency="cccr- -----" count="1" class="&scRoninA;" orders="guard"/>
+			<Ship levelFrequency="cccrr -----" count="1" class="&scIAVLight;" orders="guard"/>
+			<Ship levelFrequency="ruucc cr---" count="1" class="&scRoninB;" orders="guard"/>
+			<Ship levelFrequency="uuucc cur--" count="1" class="&scWolfen;" orders="guard"/>
+			<Ship levelFrequency="---uu ccccu" count="1" class="&scRoninC;" orders="guard"/>
+			<Ship levelFrequency="-rrcc crr--" count="1" class="&scIAVMedium;" orders="guard"/>
+			<Ship levelFrequency="uuucc ccccc" count="1" class="&scCenturion;" orders="guard"/>
+			<Ship levelFrequency="--ruu ucccc" count="1" class="&scIAVHeavy;" orders="guard"/>
+			<Ship levelFrequency="--ruc cuuuu" count="1" class="&scManticore;" orders="guard"/>
+			<Ship levelFrequency="----- -uuuu" count="1" class="&scBritannia;" orders="guard"/>
+		</LevelTable>
+	</ShipTable>
+	
+	<!-- Commonwealth defenders for large/important stations -->
+
+	<ShipTable unid="&tbCommEliteDefenders;">
+		<LevelTable>
+			<Ship levelFrequency="cccr- -----" count="1" class="&scRoninB;" orders="guard"/>
+			<Ship levelFrequency="cccuu ur---" count="1" class="&scWolfen;" orders="guard"/>
+			<Ship levelFrequency="uuccc cuuuu" count="1" class="&scRoninC;" orders="guard"/>
+			<Ship levelFrequency="cccuu rr---" count="1" class="&scIAVMedium;" orders="guard"/>
+			<Ship levelFrequency="ccccc ccccc" count="1" class="&scCenturion;" orders="guard"/>
+			<Ship levelFrequency="uuucc ccccc" count="1" class="&scIAVHeavy;" orders="guard"/>
+			<Ship levelFrequency="ruuuc ccccc" count="1" class="&scManticore;" orders="guard"/>
+			<Ship levelFrequency="---uu uuuuu" count="1" class="&scBritannia;" orders="guard"/>
+		</LevelTable>
+	</ShipTable>
+
+	<!-- Commonwealth private crafts -->
+
+	<ShipTable unid="&tbCommPrivateCrafts;">
+		<LevelTable>
+			<Ship levelFrequency="uuurr -----" count="1" class="&scBorer;" orders="gateOnThreat"/>
+			<Ship levelFrequency="ccrr- -----" count="1" class="&scRoninA;" orders="gateOnThreat"/>
+			<Ship levelFrequency="ccrr- -----" count="1" class="&scSapphireYacht;" orders="gateOnThreat"/>
+			<Ship levelFrequency="cccrr -----" count="1" class="&scIAVLight;" orders="gateOnThreat"/>
+			<Ship levelFrequency="cccuu r----" count="1" class="&scEI100;" orders="gateOnThreat"/>
+			<Ship levelFrequency="ruccc uur--" count="1" class="&scEI200;" orders="gateOnThreat"/>
+			<Ship levelFrequency="ruucc cr---" count="1" class="&scRoninB;" orders="gateOnThreat"/>
+			<Ship levelFrequency="-vruc urv--" count="1" class="&scArmstrongTransport;" orders="gateOnThreat"/>
+			<Ship levelFrequency="uuucc cur--" count="1" class="&scWolfen;" orders="gateOnThreat"/>
+			<Ship levelFrequency="rrruc ccuuu" count="1" class="&scEI500;" orders="gateOnThreat"/>
+			<Ship levelFrequency="-rrcc cuurr" count="1" class="&scIAVMedium;" orders="gateOnThreat"/>
+			<Ship levelFrequency="---uu ccccu" count="1" class="&scRoninC;" orders="gateOnThreat"/>
+		</LevelTable>
+	</ShipTable>
+	
+	<!-- Commonwealth random traffic -->
+	
+	<ShipTable unid="&tbCommTraffic;">
+		<LevelTable>
+			<Ship levelFrequency="uuurr -----" count="1" class="&scBorer;"/>
+			<Ship levelFrequency="uurr- -----" count="1" class="&scRoninA;"/>
+			<Ship levelFrequency="ccrr- -----" count="1" class="&scSapphireYacht;"/>
+			<Ship levelFrequency="cccrr -----" count="1" class="&scIAVLight;"/>
+			<Ship levelFrequency="vvvrr r----" count="1" class="&scAntaresI;"/>
+			<Ship levelFrequency="cccuu r----" count="1" class="&scEI100;"/>
+			<Ship levelFrequency="vvruu urr--" count="1" class="&scAntaresII;"/>
+			<Ship levelFrequency="ruccc uur--" count="1" class="&scEI200;"/>
+			<Ship levelFrequency="rrruu ur---" count="1" class="&scRoninB;"/>
+			<Ship levelFrequency="-vruc urv--" count="1" class="&scArmstrongTransport;"/>
+			<Ship levelFrequency="uuucc cuuuu" count="1" class="&scWolfen;"/>
+			<Ship levelFrequency="rrruc ccuuu" count="1" class="&scEI500;"/>
+			<Ship levelFrequency="-rrcc cuuuu" count="1" class="&scIAVMedium;"/>
+			<Ship levelFrequency="--vuu urrrr" count="1" class="&scAntaresV;"/>
+			<Ship levelFrequency="--rru uuuuu" count="1" class="&scRoninC;"/>
+			<Ship levelFrequency="--vrr rrvvv" count="1" class="&scEI7000;"/>
+			<Ship levelFrequency="---vv rvv--" count="1" class="&scHandOfDomina;"/>
+			<Ship levelFrequency="---rv vvv--" count="1" class="&scElixirMegayacht;"/>
+			<Ship levelFrequency="----r uurvv" count="1" class="&scScarabFreighter;"/>
+		</LevelTable>
+	</ShipTable>
+	
+<!-- RESOURCES -->
+
+	<Image UNID="&rsArmstrongTransport;"		bitmap="Resources\ArmstrongTransport.jpg" bitmask="Resources\ArmstrongTransportMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsArmstrongTransportHero;"	bitmap="Resources\ArmstrongTransportLarge.jpg" bitmask="Resources\ArmstrongTransportLargeMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsAsterionHeavyGunship;"		bitmap="Resources\AsterionHeavyGunship.jpg" bitmask="Resources\AsterionHeavyGunshipMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsAsterionHeavyGunshipHero;"	bitmap="Resources\AsterionHeavyGunshipLarge.jpg" bitmask="Resources\AsterionHeavyGunshipLargeMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsElixirMegayacht;"			bitmap="Resources\ElixirMegayacht.jpg" bitmask="Resources\ElixirMegayachtMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsElixirMegayachtHero;"		bitmap="Resources\ElixirMegayachtLarge.jpg" bitmask="Resources\ElixirMegayachtLargeMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsIAVLight;"					bitmap="Resources\IAVLight.jpg" bitmask="Resources\IAVLightMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsIAVMedium;"					bitmap="Resources\IAVMedium.jpg" bitmask="Resources\IAVMediumMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsIAVHeavy;"					bitmap="Resources\IAVHeavy.jpg" bitmask="Resources\IAVHeavyMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsManticore;"					bitmap="Resources\Manticore.jpg" bitmask="Resources\ManticoreMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsScorpionGunship;"			bitmap="Resources\ScorpionGunship.jpg" bitmask="Resources\ScorpionGunshipMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsScorpionGunshipHero;"		bitmap="Resources\ScorpionGunshipLarge.jpg" bitmask="Resources\ScorpionGunshipLargeMask.bmp" loadOnUse="true"/>
+
+</TranscendenceModule>
