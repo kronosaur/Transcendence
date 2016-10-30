@@ -33,6 +33,7 @@ static char *FEEDBACK[] =
 	"Aniki",
 	"Apemant",
 	"Aquilai",
+	"Archcannon/0xABCDEF"
 	"Arkheias",
 	"AssumedPseudonym",
 	"Azmond",
