@@ -243,7 +243,7 @@
 											(setq desc (cat
 												"You attempt to analyze " (itmGetName itemToAnalyze 0x40) " but accidentally destroy " 
 												(if (gr (itmGetCount itemToAnalyze) 1) "them" "it")
-												" with a burst high-energy ions. "
+												" with a burst of high-energy ions. "
 												))
 											(objRemoveItem sourceObj itemToAnalyze)
 											(setq modifiedItem Nil)

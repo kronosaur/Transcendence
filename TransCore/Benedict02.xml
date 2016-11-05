@@ -336,7 +336,7 @@
 							"\"They wouldn't have survived without you.\""
 							)
 							
-						nextLabel: "\"Who is the woman in the tank?\""
+						nextLabel: "\"[W]ho is the woman in the tank?\""
 						}
 					{	desc: (cat
 							"Benedict looks across the docking bay at the rejuv tank "
@@ -348,7 +348,7 @@
 							"was about to make a critical discovery. Now her data "
 							"is lost along with the ship and crew. She's all we have left.\""
 							)
-						nextLabel: "\"Who are the Penitents?\""
+						nextLabel: "\"[W]ho are the Penitents?\""
 						}
 					{	desc: (cat
 							"Anger flashes across Benedict's face.\n\n"
