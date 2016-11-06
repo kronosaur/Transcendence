@@ -326,7 +326,7 @@
 						desc: (cat
 							"\"Alright. Follow me to the search area.\""
 							)
-						acceptLabel: "\"[I]'m right behing you.\""
+						acceptLabel: "\"[I]'m right behind you.\""
 						declineLabel: "\"[L]et me prepare first.\""
 						}
 					)
@@ -449,7 +449,7 @@
 							
 							"He looks at Sandoval, arm cannon ready.\n\n"
 							
-							"\"But I guess you already know that. Hello, Sandoval\""
+							"\"But I guess you already know that. Hello, Sandoval.\""
 							)
 						}
 					{
@@ -462,7 +462,7 @@
 						}
 					{
 						desc: (cat
-							"\"No. Everything's been wiped: computers, logs, comms records. Everything\n\n"
+							"\"No. Everything's been wiped: computers, logs, comms records. Everything.\n\n"
 							
 							"\"There was definite fighting. The hull's covered in laser scars and blast damage. "
 							"The reactor's scrammed and useless. No bodies, of course. Everything's clean.\""
@@ -511,7 +511,7 @@
 							"We'll share what we find. Deal?\"\n\n"
 							
 							"Benedict grunts a thank you to Sandoval. He nods to you, \"I'm heading "
-							"towards Sancturary. Maybe we'll meet again!\""
+							"towards Sanctuary. Maybe we'll meet again!\""
 							)
 							
 						code: (lambda ()
@@ -644,10 +644,10 @@
 		
 		<Language>
 			<Text id="msgStartScan">
-				"\"Starting my scan...keep the area clear!\""
+				"\"Starting my scan...Keep the area clear!\""
 			</Text>
 			<Text id="msgRestartScan">
-				"\"Restarting scan...keep the area clear!\""
+				"\"Restarting scan...Keep the area clear!\""
 			</Text>
 			<Text id="msgScanning">
 				(cat "Scanning..." (@ gData 'percent) "%")

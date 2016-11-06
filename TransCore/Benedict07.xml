@@ -280,7 +280,7 @@
 						}
 					{
 						desc: (cat
-							"\"I talked to Sister Oriela, the grandmatriarch of the Sister. "
+							"\"I talked to Sister Oriela, the grandmatriarch of the Sisters. "
 							"I gave her the video ROM of Sister Ston talking to the Penitents. "
 							"She's convened a meeting of the Circle to formally charge "
 							"Sister Ston.\"\n\n"
@@ -493,7 +493,7 @@
 						}
 					{
 						desc: (cat
-							"Fiona beams a smile a Benedict, \"I won't let you go alone again. "
+							"Fiona beams a smile at Benedict, \"I won't let you go alone again. "
 							"Together to the end, OK?\"\n\n"
 							
 							"Benedict hugs her. Then he turns to you. \"I can't ask you to come "

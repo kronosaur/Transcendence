@@ -176,7 +176,7 @@
 						
 					{
 						desc: (cat
-							"\"I've got a contact who says he know why Fiona was attacked. "
+							"\"I've got a contact who says he knows why Fiona was attacked. "
 							"I can't get to him when I'm being trailed. But you can meet "
 							"him while I distract my followers.\"\n\n"
 							)
@@ -299,8 +299,8 @@
 						desc: (cat
 							"Benedict is silent for a moment.\n\n"
 							
-							"\"He's right,\" say Benedict softly, \"I was so young! I was boiling with "
-							"anger! At the injustice of the universe! At the stupidity of people!"
+							"\"He's right,\" says Benedict softly, \"I was so young! I was boiling with "
+							"anger! At the injustice of the universe! At the stupidity of people!\n\n"
 							
 							"\"But the Sisters helped me. They helped me to see my own stupidity&mdash;"
 							"my own fears. I chose to be mindwiped, OK? I didn't want to be that person "
@@ -351,7 +351,7 @@
 						id: 'saySisters
 						desc: (cat
 							"\"Impossible! Why would they hurt Fiona? She's a true follower of Domina..."
-							"why would they...\n\n"
+							"Why would they...\n\n"
 							
 							"\"No, it's impossible.\"\n\n"
 							
@@ -372,7 +372,7 @@
 						desc: (cat
 							"A short, elegant man in a neolinen suit appears behind the bodyguards.\n\n"
 							
-							"\"Stand down, gentlement. %He%'s a friend, I believe.\""
+							"\"Stand down, gentlemen. %He%'s a friend, I believe.\""
 							)
 							
 						label: "\"[W]ho are you?\""

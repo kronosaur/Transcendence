@@ -286,7 +286,7 @@
 							"shrieks in the distance.\n\n"
 							
 							"Benedict and Fiona enter the bay, followed by Stormhound and a "
-							"squard of Commonwealth marines.\n\n"
+							"squad of Commonwealth marines.\n\n"
 							
 							"Benedict waves his hand, \"Stormhound, secure the docking bay! "
 							"Make sure we can return back to the ship. We'll meet you in "
@@ -300,7 +300,7 @@
 							"Three medtechs in light-gray gowns turn as you enter, but Fiona "
 							"and Benedict subdue them quickly.\n\n"
 							
-							"Fiona checks one of the bed, \"The children are here, but..."
+							"Fiona checks one of the beds, \"The children are here, but..."
 							"oh my gods!\""
 							)
 						}
@@ -345,7 +345,7 @@
 						}
 					{
 						desc: (cat
-							"Before he can answer, Stormhound burst in with a squad of "
+							"Before he can answer, Stormhound bursts in with a squad of "
 							"marines. They fire at the figure, but it jumps with incredible "
 							"speed and flies through a shaft.\n\n"
 							
