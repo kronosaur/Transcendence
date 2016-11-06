@@ -435,7 +435,9 @@
     <Xml Include="Benedict08.xml">
       <SubType>Designer</SubType>
     </Xml>
-    <Xml Include="CommonwealthShips.xml" />
+    <Xml Include="CommonwealthShips.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="CompatibilityLibrary.xml" />
     <Xml Include="CoreFireEffects.xml">
       <SubType>Designer</SubType>

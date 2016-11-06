@@ -909,8 +909,8 @@
 
 				<Device chance="50" item="&itMAGLauncher;">
 					<Items>
+						<Item count="30-50" item="&it800HexageneMAG;"/>
 						<Item count="20-30" item="&itZG24ClusterMAG;"/>
-						<Item count="30-50" item="&itHighFluxMAG;"/>
 					</Items>
 				</Device>
 			</Table>
