@@ -30,6 +30,10 @@
 			>
 		
 		<!-- Encounter Info -->
+		
+		<Encounter
+				exclusionRadius="80"
+				/>
 
 		<!-- Trade and Items -->
 		
