@@ -161,10 +161,13 @@
 					;	they can appear in other systems).
 
 					(setq shipObj (objGetObjByID (typGetData type 'objID)))
-					(if shipObj
+					(if (and shipObj
+							(not (objGetProperty shipObj 'ascended))
+							)
 						(block Nil
 							(typSetData type 'lastNodeID (sysGetNode))
 							(typSetData type 'lastSystemPos (objGetPos shipObj))
+							(typSetData type 'lastKnown (objGetProperty shipObj 'known))
 							(sysAscendObject shipObj)
 							)
 						)
@@ -292,27 +295,41 @@
 						(not objID)
 							(block Nil
 								(setq shipObj (sysCreateShip shipClassUNID pos (typGetStaticData charType 'Sovereign)))
-								(objSetKnown shipObj)
+								(objSetProperty shipObj 'known (@ options 'setKnown))
+								(typSetData charType 'objID (objGetId shipObj))
+								(typSetData charType 'screenData Nil)
+								)
+								
+						;	If we can't find the object, then this is an error, but we
+						;	create the ship anyway
+						
+						(not (setq shipObj (objGetObjByID objID)))
+							(block Nil
+								(printTo 'log "ERROR: Unable to find object ID: " objID ".")
+								
+								(setq shipObj (sysCreateShip shipClassUNID pos (typGetStaticData charType 'Sovereign)))
+								(objSetProperty shipObj 'known (@ options 'setKnown))
 								(typSetData charType 'objID (objGetId shipObj))
 								(typSetData charType 'screenData Nil)
 								)
 
-						;	If we can't access the object, then we assume that he is
-						;	ascended and we need to bring him to this system.
+						;	If the object is ascended, we descend it.
 
-						(not (setq shipObj (objGetObjByID objID)))
-							(block Nil
+						(objGetProperty shipObj 'ascended)
+							(block (isKnown)
 
 								;	If ship has been here all along, then just place him in the
 								;	original position.
 
 								(if (eq (sysGetNode) (typGetData charType 'lastNodeID))
-									(setq pos (typGetData charType 'lastSystemPos))
+									(block Nil
+										(setq pos (typGetData charType 'lastSystemPos))
+										(setq isKnown (typGetData charType 'lastKnown))
+										)
 									
-									;	If he was not here last, then clear out the player's
-									;	knowledge of the ship's position
+									;	If he was not here last, then we honor options
 
-									(objSetProperty shipObj 'known Nil)
+									(setq isKnown (@ options 'setKnown))
 									)
 
 								;	Descend him back to the system
@@ -328,6 +345,10 @@
 										(typSetData charType 'objID (objGetId shipObj))
 										)
 									)
+									
+								;	Set known
+								
+								(objSetProperty shipObj 'known isKnown)
 									
 								;	Done
 								

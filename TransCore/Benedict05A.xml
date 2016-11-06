@@ -362,7 +362,7 @@
 			name=				"wreck of the Hand of Solace"
 			sovereign=			"&svNeutral;"
 				 
-			attributes=			"shipwreck, sistersOfDomina"
+			attributes=			"shipwreck, sistersOfDomina, uncharted"
 				 
 			dockScreen=			"Main"
 				 
@@ -378,7 +378,7 @@
 		<Image shipwreckID="&scHandOfDomina;"/>
 
 		<DockingPorts
-				portCount=		"2"
+				portCount=		"6"
 				portRadius=		"48"
 				maxDist=		"3"
 				/>
