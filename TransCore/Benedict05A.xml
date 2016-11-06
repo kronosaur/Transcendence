@@ -628,13 +628,35 @@
 					
 					(if (and (= (random 1 50) 1)
 							(ls (objGetOverlayData gSource aOverlayID 'wavesSent) 10)
+							(gr (- (unvGetTick) (objGetOverlayData gSource aOverlayID 'lastWaveTime)) 300)
 							)
-						(block ()
-							(sysAddEncounterEventAtDist 
-								(random 0 29)
-								gSource &tbBenedict05Encounters; (random 60 100)
+						(block (enemies)
+						
+							;	Create a wave of ships.
+							;
+							;	Pick a point where the ships will appear. It must be far enough
+							;	away from Sandoval and out of LRS range of the player.
+							
+							(setq enemies (sysCreateShip 
+								&tbBenedict05Encounters;
+								(sysVectorRandom gSource (random 200 250) 50 "sTA")
+								&svMarauders;
+								{ target:gSource }
+								))
+								
+							;	Sandoval tells the player about the wave
+							
+							(if (geq (count enemies) 1)
+								(block ()
+									(objSendMessage gPlayerShip gSource (typTranslate &ovBenedict05ScanRange; 'msgIncomingWave))
+									(shpCancelOrders gPlayerShip)
+									(shpOrder gPlayerShip 'attack (@ enemies 0))
+									)
 								)
 								
+							;	Keep track of the number of waves created
+							
+							(objSetOverlayData gSource aOverlayID 'lastWaveTime (unvGetTick))
 							(objIncOverlayData gSource aOverlayID 'wavesSent)
 							)
 						)
@@ -657,6 +679,13 @@
 			</Text>
 			<Text id="msgScanRuined">
 				(cat "Kack! We lost the alignment. We have to recalibrate!")
+			</Text>
+			<Text id="msgIncomingWave">
+				(random (list
+					(cat "Marauders coming in!")
+					(cat "Here they come!")
+					(cat "We've got hostiles coming in!")
+					))
 			</Text>
 		</Language>
 	</OverlayType>
@@ -681,7 +710,7 @@
 					</Table>
 				</Escorts>
 			</Ship>
-			<Ship	levelFrequency="--uuc -----"	class="&scDrake;" count="1"	orders="attack" sovereign="&svMarauders;">
+			<Ship	levelFrequency="--rru -----"	class="&scDrake;" count="1"	orders="attack" sovereign="&svMarauders;">
 				<Escorts>
 					<Table>
 						<Ship chance="30"	   count="1d4"	class="&scCorsair-II;" orders="escort"/>
@@ -689,17 +718,9 @@
 					</Table>
 				</Escorts>
 			</Ship>
-			<Ship	levelFrequency="--vuc -----"	class="&scCorsair-II;"	count="1"	orders="attack"	sovereign="&svMarauders;">
-				<Escorts>
-					<Table count="3">
-						<Ship chance="50"	   count="1d2"	class="&scCorsair-II;" orders="escort"/>
-						<Ship chance="50"	   count="1d2"	class="&scViking-II;" orders="escort"/>
-					</Table>
-				</Escorts>
-			</Ship>
 			<Ship	levelFrequency="---vu ccccc"	class="&scCorsair-II;"	count="1"	orders="attack"	sovereign="&svMarauders;">
 				<Escorts>
-					<Table count="4">
+					<Table count="3">
 						<Ship chance="50"	   count="1d2"	class="&scCorsair-II;" orders="escort"/>
 						<Ship chance="50"	   count="1d2"	class="&scViking-II;" orders="escort"/>
 					</Table>
