@@ -458,7 +458,7 @@ ALERROR CDockScreen::CreateBackgroundImage (const IDockScreenDisplay::SBackgroun
 
 	m_pBackgroundImage = new CG32bitImage;
 	m_bFreeBackgroundImage = true;
-	m_pBackgroundImage->Create(cxBackground, cyBackground + cyExtra);
+	m_pBackgroundImage->Create(cxBackground, cyBackground + cyExtra, CG32bitImage::alpha8);
 
 	if (cyExtra)
 		m_pBackgroundImage->Fill(0, cyBackground, cxBackground, cyExtra, 0);
@@ -470,7 +470,7 @@ ALERROR CDockScreen::CreateBackgroundImage (const IDockScreenDisplay::SBackgroun
 		{
 		//	Right-align the image on the screen
 		int xOffset = cxBackground - ScreenImage.GetWidth();
-		m_pBackgroundImage->Blt(0, 0, ScreenImage.GetWidth(), ScreenImage.GetHeight(), ScreenImage, xOffset, 0);
+		m_pBackgroundImage->Copy(0, 0, ScreenImage.GetWidth(), ScreenImage.GetHeight(), ScreenImage, xOffset, 0);
 		}
 
 	//	If not image, then we're done
