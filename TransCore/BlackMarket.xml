@@ -893,18 +893,18 @@ PLAYER DATA
 								(objSetData gPlayerShip "blackMarketCrime" "multiple offenses against the Sindikat")
 								(objSetData gPlayerShip "blackMarketCrime" (cat "the destruction of " (objGetName gSource 4)))
 								)
+								
+							; If the player is not part of the Black Market, then she is 
+							; treated as an enemy.
+                    
+							(if (eq (objGetData gPlayerShip "blackMarketXP") 0)
+								(block Nil
+									(sovSetDisposition &svBlackMarket; &svPlayer; 'enemy)
+									(sovSetDisposition &svPlayer; &svBlackMarket; 'enemy)
+    								)
+	    						)
 							)
 						)
-                        
-                    ; If the player is not part of the Black Market, then she is 
-                    ; treated as an enemy.
-                    
-					(if (eq (objGetData gPlayerShip "blackMarketXP") 0)
-						(block Nil
-							(sovSetDisposition &svBlackMarket; &svPlayer; 'enemy)
-							(sovSetDisposition &svPlayer; &svBlackMarket; 'enemy)
-    						)
-	    				)
 					)
 				))
 			)
