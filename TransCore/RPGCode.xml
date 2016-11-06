@@ -1544,6 +1544,18 @@
 								
 								(and (= installerObj gPlayerShip) (not (objGetProperty installerObj 'installDeviceMaxLevel)))
 									(setq stationCannotInstall Nil)
+									
+								;	If we have totalPrice or installPriceAdj AND we're a previous version, then
+								;	we always allow an install (even if no TradeDesc). We need this for backwards
+								;	compatibility.
+								
+								(and (ls (getAPIVersion) 31)
+										(or (@ data 'totalPrice) (@ data 'installPriceAdj))
+										)
+									(block Nil
+										(dbgOutput "API: " (getAPIVersion))
+										(setq stationCannotInstall Nil)
+										)
 
 								;	Otherwise result depends on installDeviceStatus property
 								(setq stationCannotInstall (not (@ status 'canInstall)))

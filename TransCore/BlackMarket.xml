@@ -163,10 +163,10 @@ PLAYER DATA
 			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="92"/>
 			<RepairArmor	criteria="a L:1-6;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-6;" priceAdj="100"/>
-			<InstallDevice	criteria="c +Illegal; L:1-6" priceAdj="100"	upgradeInstallOnly="true"/>
-			<RemoveDevice	criteria="c L:1-6;" priceAdj="100" upgradeInstallOnly="true"/>
+			<InstallDevice	criteria="c +Illegal; L:1-8" priceAdj="100"	upgradeInstallOnly="true"/>
+			<RemoveDevice	criteria="c L:1-8;" priceAdj="100" upgradeInstallOnly="true"/>
 			
-			<InstallDevice	criteria="d L:1-6;" priceAdj="unavailable"	messageID="descNoInstall"/>
+			<InstallDevice	criteria="d L:1-8;" priceAdj="unavailable"	messageID="descNoInstall"/>
 		</Trade>
 		
 		<Items>
@@ -322,7 +322,7 @@ PLAYER DATA
 										(setq gCheckMilitaryID Nil)
 										
 										(scrShowPane gScreen "UpgradeWeaponComplete")
-										(scrShowScreen gScreen "&dsInstallSpecificDevice;")
+										(scrShowScreen gScreen "&dsInstallSpecificDevice;" { buyAndInstall:True })
 										)
 									(scrShowPane gScreen "NoUpgrade")
 									)
@@ -351,7 +351,7 @@ PLAYER DATA
 											)
 										(setq gCheckMilitaryID Nil)
 										(scrShowPane gScreen "UpgradeShieldsComplete")
-										(scrShowScreen gScreen "&dsInstallSpecificDevice;")
+										(scrShowScreen gScreen "&dsInstallSpecificDevice;" { buyAndInstall:True })
 										)
 									(scrShowPane gScreen "NoUpgrade")
 									)

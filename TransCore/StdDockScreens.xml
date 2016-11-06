@@ -208,6 +208,10 @@
 		gCost: Cost of installation (in station currency)
 		gCheckMilitaryID: If True, this screen does not allow installing
 				military weapons without an ID
+				
+		DATA
+		
+		buyAndInstall: If true, we're installing as part of purchase.
 	-->
 
 	<DockScreen UNID="&dsInstallSpecificDevice;"
@@ -229,7 +233,7 @@
 								Nil									; install criteria
 								gCheckMilitaryID					; check military ID
 								Nil									; item is in cargo
-								Nil)								; buy and install
+								(@ gData 'buyAndInstall))			; buy and install
 							)
 							
 						(setq gCanInstall (item theResult 0))
