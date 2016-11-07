@@ -11,6 +11,12 @@
 		Nil: Destroy targetID
 		'rescue: Dock with wreckID (wreck of Penitent destroyer)
 		
+	fionaStatus: Fiona's current status
+	
+		Nil: Fiona is alive and well
+		'wrecked: Fiona's ship is wrecked and Fiona is waiting there.
+		'withPlayer: Fiona has been rescued by the player.
+		
 	targetID: ID of destroyer to hit.
 	wreckID: ID of destroyer wreck.
 	
@@ -129,6 +135,11 @@
 
 			<OnSetPlayerTarget>
 				(switch
+					(and (= (msnGetData gSource 'status) 'rescue)
+							(= (msnGetData gSource 'fionaStatus) 'wrecked)
+							)
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'fionaWreckID)) 'dock)
+					
 					(= (msnGetData gSource 'status) 'rescue)
 						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'wreckID)) 'dock)
 						
@@ -143,6 +154,18 @@
 					
 					(= (objGetID aObjDestroyed) (msnGetData gSource 'wreckID))
 						(msnFailure gSource)
+						
+					;	Deal with Fiona getting killed
+					
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'fionaID))
+						(block Nil
+							(objSetEventHandler aWreckObj &evBenedict07FionaWreck;)
+							(objSetProperty aWreckObj 'maxStructuralHP 0)
+							(msnSetData gSource 'fionaStatus 'wrecked)
+							(msnSetData gSource 'fionaWreckID (objGetID aWreckObj))
+							
+							(objSendMessage gPlayerShip aWreckObj (msnTranslate gSource 'msgFionaWrecked))
+							)
 					
 					;	If not the target, then ignore
 					
@@ -175,16 +198,27 @@
 						
 						;	Order Fiona to dock
 						
-						(shpCancelOrders fionaObj)
-						(shpOrder fionaObj 'sendMessage gPlayerShip (msnTranslate gSource 'msgDidIt))
-						(shpOrder fionaObj 'dock aWreckObj)
+						(if fionaObj
+							(block ()
+								(shpCancelOrders fionaObj)
+								(shpOrder fionaObj 'sendMessage gPlayerShip (msnTranslate gSource 'msgDidIt))
+								(shpOrder fionaObj 'dock aWreckObj)
+								)
+							)
 						
 						;	Order Sandoval to orbit (can't patrol, because wreck is enemy, and
 						;	patrolling will cause Sandoval to attack us).
 						
-						(shpCancelOrders sandovalObj)
-						(shpOrder sandovalObj 'sendMessage gPlayerShip (msnTranslate gSource 'msgCoverYou))
-						(shpOrder sandovalObj 'orbit aWreckObj 8)
+						(if sandovalObj
+							(block ()
+								(shpCancelOrders sandovalObj)
+								(if (= (msnGetData gSource 'fionaStatus) 'wrecked)
+									(shpOrder sandovalObj 'sendMessage gPlayerShip (msnTranslate gSource 'msgCoverYouGetFiona))
+									(shpOrder sandovalObj 'sendMessage gPlayerShip (msnTranslate gSource 'msgCoverYou))
+									)
+								(shpOrder sandovalObj 'orbit aWreckObj 8)
+								)
+							)
 						
 						(msnSetData gSource 'status 'rescue)
 						(msnSetPlayerTarget gSource)
@@ -206,11 +240,19 @@
 					
 							;	Fiona and Sandoval leave
 							
-							(shpCancelOrders fionaObj)
-							(shpOrder fionaObj 'gate etaCetiGateObj)
+							(if fionaObj
+								(block ()
+									(shpCancelOrders fionaObj)
+									(shpOrder fionaObj 'gate etaCetiGateObj)
+									)
+								)
 							
-							(shpCancelOrders sandovalObj)
-							(shpOrder sandovalObj 'gate etaCetiGateObj)
+							(if sandovalObj
+								(block ()
+									(shpCancelOrders sandovalObj)
+									(shpOrder sandovalObj 'gate etaCetiGateObj)
+									)
+								)
 							)
 							
 					(= aReason 'failure)
@@ -220,19 +262,37 @@
 							(sandovalObj (objGetObjByID (msnGetData gSource 'sandovalID)))
 							)
 							
+							;	If Fiona is wrecked, then nothing
+							
+							(if (= (msnGetData gSource 'fionaStatus) 'wrecked)
+								(block (
+									(fionaWreckObj (objGetObjByID (msnGetData gSource 'fionaWreckID)))
+									)
+									(objSendMessage gPlayerShip fionaWreckObj (msnTranslate gSource 'msgBenedictDead1))
+									)
+								)
+							
 							;	Fiona and Sandoval return to SK
 							
-							(shpCancelOrders fionaObj)
-							(objSendMessage gPlayerShip fionaObj (msnTranslate gSource 'msgBenedictDead1))
-							(shpOrder fionaObj 'wait 6)
-							(shpOrder fionaObj 'sendMessage gPlayerShip (msnTranslate gSource 'msgBenedictDead2))
-							(shpOrder fionaObj 'gate skGateObj)
+							(if fionaObj
+								(block ()
+									(shpCancelOrders fionaObj)
+									(objSendMessage gPlayerShip fionaObj (msnTranslate gSource 'msgBenedictDead1))
+									(shpOrder fionaObj 'wait 6)
+									(shpOrder fionaObj 'sendMessage gPlayerShip (msnTranslate gSource 'msgBenedictDead2))
+									(shpOrder fionaObj 'gate skGateObj)
+									)
+								)
 							
-							(shpCancelOrders sandovalObj)
-							(shpOrder sandovalObj 'wait 3)
-							(shpOrder sandovalObj 'sendMessage gPlayerShip (msnTranslate gSource 'msgBenedictDead3))
-							(shpOrder sandovalObj 'escort fionaObj)
-							(shpOrder sandovalObj 'gate skGateObj)
+							(if sandovalObj
+								(block ()
+									(shpCancelOrders sandovalObj)
+									(shpOrder sandovalObj 'wait 3)
+									(shpOrder sandovalObj 'sendMessage gPlayerShip (msnTranslate gSource 'msgBenedictDead3))
+									(shpOrder sandovalObj 'escort fionaObj)
+									(shpOrder sandovalObj 'gate skGateObj)
+									)
+								)
 							)
 					)
 			</OnCompleted>
@@ -551,12 +611,59 @@
 						}
 					)
 			</Text>
+			<Text id="dlgGoRescueFiona">
+				(list
+					{
+						desc: (cat
+							"Fiona calls you on the comms.\n\n"
+							
+							"\"Come get me! I can help you rescue Benedict!\""
+							)
+						nextPage: 'forceUndock
+						}
+					)
+			</Text>
+			
+			<Text id="dlgRescueFiona">
+				(list
+					{
+						desc: (cat
+							"Fiona meets you at the airlock.\n\n"
+							
+							"\"I'm alright. Let's get to the wreckage and rescue Benedict!\""
+							)
+						nextPage: 'forceUndock
+						code: (lambda ()
+							(block (
+								(missionObj (@ (msnFind "a +unid:&msRescueBenedict;;") 0))
+								)
+								(msnSetData missionObj 'fionaStatus 'withPlayer)
+								(msnSetPlayerTarget missionObj)
+								)
+							)
+						}
+					)
+			</Text>
+			<Text id="dlgContinueWithAttack">
+				(list
+					{
+						desc: (cat
+							"Fiona meets you at the airlock.\n\n"
+							
+							"\"Don't let that Penitent ship get away! Come back for me when you're done!\""
+							)
+						nextPage: 'forceUndock
+						}
+					)
+			</Text>
 			
 			<Text id="msgBenedictDead1">"\"Nooooo!\""</Text>
 			<Text id="msgBenedictDead2">"\"Let's get the hell out of here.\""</Text>
 			<Text id="msgBenedictDead3">"\"Sorry, pet, you're on your own.\""</Text>
 			<Text id="msgCoverYou">"\"I'll cover you! Get Benedict!\""</Text>
+			<Text id="msgCoverYouGetFiona">"\"I'll cover you! Get Fiona!\""</Text>
 			<Text id="msgDidIt">"\"We got it!\""</Text>
+			<Text id="msgFionaWrecked">"\"I'm OK! Proceed with the mission!\""</Text>
 		</Language>
 	</MissionType>
 	
@@ -578,14 +685,55 @@
 								)
 							Nil
 							
+						;	If Fiona is at the wreck, then we need to rescue her
+						
+						(= (msnGetData missionObj 'fionaStatus) 'wrecked)
+							(list &dsRPGDialog; (typTranslate &msRescueBenedict; 'dlgGoRescueFiona) 10)
+							
 						;	If Fiona has not yet docked with the wreck, the player has to wait.
 						
-						(!= (objGetProperty fionaObj 'dockedAtID) (objGetID gSource))
+						(and (!= (objGetProperty fionaObj 'dockedAtID) (objGetID gSource))
+								(not (msnGetData missionObj 'fionaStatus))
+								)
 							(list &dsRPGDialog; (typTranslate &msRescueBenedict; 'dlgWaitForFiona) 10)
 
 						;	Rescue script
 						
 						(list &dsRPGDialog; (typTranslate &msRescueBenedict; 'dlgRescueBenedict) 10)
+						)
+					)
+			</GetDockScreen>
+		</Events>
+	</Type>
+
+	<Type UNID="&evBenedict07FionaWreck;">
+		<Events>
+			<GetDockScreen>
+				(block (
+					(missionObj (@ (msnFind "a +unid:&msRescueBenedict;;") 0))
+					)
+				
+					(switch
+						;	If no mission, or mission already completed, nothing to do.
+						
+						(or (not missionObj)
+								(msnGetProperty missionObj 'isCompleted)
+								)
+							Nil
+							
+						;	If Fiona has already been rescued from the wreck, nothing to do
+						
+						(!= (msnGetData missionObj 'fionaStatus) 'wrecked)
+							Nil
+							
+						;	If we haven't yet destroyed the target, Fiona tells us to continue
+						
+						(!= (msnGetData missionObj 'status) 'rescue)
+							(list &dsRPGDialog; (typTranslate &msRescueBenedict; 'dlgContinueWithAttack) 10)
+							
+						;	Rescue script
+						
+						(list &dsRPGDialog; (typTranslate &msRescueBenedict; 'dlgRescueFiona) 10)
 						)
 					)
 			</GetDockScreen>

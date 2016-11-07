@@ -100,7 +100,9 @@
 					
 					;	Switch ships
 					
-					(plyChangeShip gPlayer newShipObj)
+					(plyChangeShip gPlayer newShipObj {
+						noOrderTransfer: True
+						})
 					
 					;	Set the sovereign because plyChangeShip always sets it to
 					;	the default player sovereign.
@@ -140,16 +142,36 @@
 					(penitentShipObj gPlayerShip)
 					)
 					
-					;	Restore the player's ship
+					(switch
 					
-					(plyChangeShip gPlayer originalShipObj)
+						;	If the original ship is destroyed, then the Penitent ship
+						;	becomes permanent, so we set the sovereign.
+						
+						(not originalShipObj)
+							(block ()
+								(objSetSovereign gPlayerShip &svPlayer;)
+								)
+						
+						;	Switch back
+						
+						(block ()
 					
-					;	Leave the original Penitent ship at the Sisters (and eventually leave)
+							;	Restore the player's ship
 					
-					(shpCancelOrders penitentShipObj)
-					(shpOrder penitentShipObj 'dock ownerObj)
-					(shpOrder penitentShipObj 'wait 120)
-					(shpOrder penitentShipObj 'gate)
+							(plyChangeShip gPlayer originalShipObj)
+					
+							;	Set the sovereign of the Penitent ship so it is not attacked
+					
+							(objSetSovereign penitentShipObj &svSistersOfDomina;)
+					
+							;	Leave the original Penitent ship at the Sisters (and eventually leave)
+					
+							(shpCancelOrders penitentShipObj)
+							(shpOrder penitentShipObj 'dock ownerObj)
+							(shpOrder penitentShipObj 'wait 120)
+							(shpOrder penitentShipObj 'gate)
+							)
+						)
 					)
 			</OnDebriefed>
 			
@@ -229,15 +251,16 @@
 					
 					(msnSuccess gSource)
 					
-					;	But player gets attacked by Penitent ships
+					;	Stop that ship!
 					
-					(sovSetDisposition &svPenitents; &svBenedict06Infiltrate; 'enemy)
-					(sovSetDisposition &svBenedict06Infiltrate; &svPenitents; 'enemy)
+					(objSendMessage gPlayerShip targetObj (msnTranslate gSource 'msgStopThatShip))
 					
 					;	Apply an overlay to the station to prevent it from firing.
 					;	Otherwise the player will get killed instantly.
+					;
+					;	When the overlay is done, we'll attack the player
 					
-					(objAddOverlay targetObj &ovBenedict06Disarm; 150)
+					(objAddOverlay targetObj &ovBenedict06Disarm; 120)
 					)
 			</OnInfiltrateDone>
 			
@@ -527,6 +550,8 @@
 						}
 					)
 			</Text>
+			
+			<Text id="msgStopThatShip">"Destroy that ship!"</Text>
 		</Language>
 	</MissionType>
 	
@@ -536,6 +561,20 @@
             attributes=         "effect"
 			disarm=		"true"
 			>
+		<Events>
+			<OnDestroy>
+				(block Nil
+					;	Player gets attacked by Penitent ships
+					
+					(sovSetDisposition &svPenitents; &svBenedict06Infiltrate; 'enemy)
+					(sovSetDisposition &svBenedict06Infiltrate; &svPenitents; 'enemy)
+					
+					;	Tell the station to attack the player
+					
+					(objCommunicate gSource gSource 'deterTarget gPlayerShip)
+					)
+			</OnDestroy>
+		</Events>
 	</OverlayType>
 	
 <!-- BEHAVIORS -->
@@ -567,6 +606,7 @@
 			>
 		<Relationships>
 			<Relationship sovereign="&svSistersOfDomina;" disposition="friend" mutual="true"/>
+			<Relationship sovereign="&svCommonwealth;" disposition="neutral" mutual="true"/>
 		</Relationships>
 	</Sovereign>
 

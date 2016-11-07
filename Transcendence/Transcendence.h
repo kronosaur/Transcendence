@@ -235,7 +235,7 @@ class CPlayerShipController : public IShipController
 		inline void SetShip (CShip *pShip) { m_pShip = pShip; }
 		inline void SetStopThrust (bool bStop) { m_bStopThrust = bStop; }
 		inline void SetUIMessageEnabled (UIMessageTypes iMsg, bool bEnabled = true) { m_UIMsgs.SetEnabled(iMsg, bEnabled); }
-		ALERROR SwitchShips (CShip *pNewShip);
+		ALERROR SwitchShips (CShip *pNewShip, SPlayerChangedShipsCtx &Options);
 		void Undock (void);
 		void Update (int iTick);
 

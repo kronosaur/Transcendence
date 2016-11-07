@@ -295,8 +295,13 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		//	----------------
 
 		{	"plyChangeShip",				fnPlySet,		FN_PLY_CHANGE_SHIPS,
-			"(plyChangeShip player newShip) -> True/Nil",
-			"ii",	PPFLAG_SIDEEFFECTS,	},
+			"(plyChangeShip player newShip [options]) -> True/Nil\n\n"
+				
+			"options:\n\n"
+
+			"   'noOrderTransfer\n"
+				,
+			"ii*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"plyCharge",					fnPlySet,		FN_PLY_CHARGE,
 			"(plyCharge player [currency] charge) -> credits left",
@@ -1049,9 +1054,18 @@ ICCItem *fnPlySet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			if (pNewShip == g_pUniverse->GetPlayerShip())
 				return pCC->CreateError(CONSTLIT("Ship is already player's ship"), pArgs->GetElement(1));
 
+			//	Options
+
+			SPlayerChangedShipsCtx Options;
+			ICCItem *pOptions = (pArgs->GetCount() >= 3 ? pArgs->GetElement(2) : NULL);
+			if (pOptions)
+				{
+				Options.bNoOrderTransfer = pOptions->GetBooleanAt(CONSTLIT("noOrderTransfer"));
+				}
+
 			//	Change ships
 
-			if (pPlayer->SwitchShips(pNewShip) != NOERROR)
+			if (pPlayer->SwitchShips(pNewShip, Options) != NOERROR)
 				return pCC->CreateNil();
 
 			//	Done

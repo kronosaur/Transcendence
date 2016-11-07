@@ -2425,7 +2425,7 @@ void CPlayerShipController::SelectNextTarget (int iDir)
 		}
 	}
 
-ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip)
+ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip, SPlayerChangedShipsCtx &Options)
 
 //	SwitchShips
 //
@@ -2517,7 +2517,7 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip)
 				&& !pObj->IsDestroyed()
 				&& pObj != pOldShip
 				&& pObj != pNewShip)
-			pObj->OnPlayerChangedShips(pOldShip);
+			pObj->OnPlayerChangedShips(pOldShip, Options);
 		}
 
 	//	Update displays
