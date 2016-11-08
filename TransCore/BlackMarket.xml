@@ -562,7 +562,7 @@ PLAYER DATA
 			<Sell	criteria="m +illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200"/>
 			<Sell	criteria="m +military; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200"/>
 			<Sell	criteria="cNU +Illegal; -ID; -NotForSale; L:1-9;"	priceAdj="100"	inventoryAdj="100"/>
-			<Sell	criteria="rNU L:1-7; -NotForSale; -notStandard;"	priceAdj="100"	inventoryAdj="100"/>
+			<Sell	criteria="rNU L:5-9; -NotForSale; -notStandard;"	priceAdj="100"	inventoryAdj="100"/>
 			<Sell	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Sell	criteria="*NU -ID; -NotForSale;"	priceAdj="100"/>
 			<Buy	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="85"/>

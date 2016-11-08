@@ -206,7 +206,7 @@
 		</DockingPorts>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="rNU L:1-5; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100"/>
+			<Sell	criteria="rNU L:3-5; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100"/>
 			
 			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="90"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>

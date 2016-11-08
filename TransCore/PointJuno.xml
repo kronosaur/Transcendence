@@ -59,7 +59,7 @@
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Sell	criteria="m +commonwealth; +military; -illegal; -notForSale; -notStandard; L:1-10;" priceAdj="100" inventoryAdj="500" noDescription="true"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100" noDescription="true"/>
-			<Sell	criteria="rNU L:1-9; -Illegal; -NotForSale; -notStandard;"	priceAdj="100"	inventoryAdj="100" noDescription="true"/>
+			<Sell	criteria="rNU L:6-9; -Illegal; -NotForSale; -notStandard;"	priceAdj="100"	inventoryAdj="100" noDescription="true"/>
 			
 			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="90"/>
 			<RepairArmor	criteria="a L:1-10;" priceAdj="100"/>
