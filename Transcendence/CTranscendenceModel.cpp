@@ -1811,10 +1811,16 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 
     m_Universe.GetGlobalObjects().Refresh(m_pOldSystem);
 
+	//	Compute how long (in ticks) it has been since this system has been
+	//	updated.
+
+	int iLastUpdated = pNewSystem->GetLastUpdated();
+	DWORD dwElapsedTime = (iLastUpdated > 0 ? ((DWORD)m_Universe.GetTicks() - (DWORD)iLastUpdated) : 0);
+
 	//	Let all types know that we have a new system. Again, this is called 
 	//	before the player has entered the system.
 
-	m_Universe.GetDesignCollection().FireOnGlobalSystemStarted();
+	m_Universe.GetDesignCollection().FireOnGlobalSystemStarted(dwElapsedTime);
 
 	//	Garbage-collect images and load those for the new system
 
