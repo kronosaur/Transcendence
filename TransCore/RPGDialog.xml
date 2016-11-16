@@ -120,8 +120,13 @@
 								)
 								(scrAddAction
 									gScreen
-									(if (ls pageNo pageCount)
-										"actionContinue"
+									(switch
+										(ls (+ pageNo 1) pageCount)
+											"actionContinue"
+											
+										(= nextPage 'forceUndock)
+											"actionUndock"
+											
 										"actionDone"
 										)
 									Nil
