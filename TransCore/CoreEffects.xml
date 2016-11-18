@@ -97,7 +97,10 @@
 				</ParticleEffect>
 			</ParticleJet>
 			
-			<Ray>
+				<Ray	style=			"smooth"
+						shape=			"tapered"
+						blendMode=		"screen"
+						>
 				<Events>
 					<GetParameters>
 						(block (thrusterPower maxSpeed primaryTable)
@@ -106,8 +109,6 @@
 							(setq primaryTable (list "#FF7F38" "#FF8F46" "#FFA054" "#FFB065" "#FFBF75" "#FFCF86" "#FFDF97" "#FFEEA7" "#FFFEB8" "#FFFEB8" "#FAFDC0" "#F5FDC8" "#EFFCD0" "#EAFBD8" "#E5FBDF" "#E0FAE7" "#DAF9EF" "#D5F9F7" "#D0F8FF" "#D0F8FF"))
 
 							{
-								style: "smooth"
-								shape: "tapered"
 								length: (mathScale maxSpeed 12 20 40 80 50)
 								width: (mathScale thrusterPower 1000 5000 24 64 50)
 								intensity: (mathScale maxSpeed 12 20 40 60 50)
