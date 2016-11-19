@@ -1939,6 +1939,51 @@
 					)
 				))
 
+			(setq rpgMissionAssignmentOnScreenInit (lambda (options)
+			
+				;	Options may contain the following fields
+				;
+				;		maxPerStation: Maximum number of missions that we give out at
+				;				this station.
+				;
+				;		missionCriteria: Criteria used to create new missions. [Required]
+				
+				(block (newMissions)
+					(switch
+						;	If we have an active/open mission from this station then nothing to
+						;	do. We go through the normal dock screen.
+
+						(@ (msnFind gSource "aoS") 0)
+							True
+
+						;	Don't give out more than X mission per station
+								
+						(and (@ options 'maxPerStation) 
+								(geq (count (msnFind gSource "*S")) (@ options 'maxPerStation))
+								)
+							True
+
+						;	See if there are any missions for the ship that we should show directly
+						;	when we dock (as opposed to when the player goes to the bridge).
+						;
+						;	If not, nothing to do.
+
+						(not (setq newMissions (typFind (cat (@ options 'missionCriteria) " +onDockMission;"))))
+							True
+
+						;	Create a random mission from the list. If we fail, then just continue
+						;	as normal.
+
+						(not (setq theMission (msnCreate newMissions gSource)))
+							True
+						
+						;	Otherwise, show the mission screen
+					
+						(scrShowScreen gScreen &dsRPGMission; { missionObj: theMission })
+						)
+					)
+				))
+
 			(setq rpgPageCount (lambda (textDesc)
 				(if (isatom textDesc) 1 (count textDesc))
 				))
