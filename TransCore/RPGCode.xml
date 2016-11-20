@@ -2097,6 +2097,22 @@
 					;	Make sure the actions list is properly initialized.
 					
 					(switch
+						;	If we're on an Accept/Decline mission page but the 
+						;	mission does not support declining, then we just have
+						;	a single action.
+						
+						(and (@ options 'onAcceptDecline)
+								(or atLastPage (= actions 'acceptDecline))
+								(not (msnGetProperty (@ options 'missionObj) 'canBeDeclined))
+								)
+							(setq actions (list
+								{
+									label: (or (scrTranslate theScreen 'actionUndock) (typTranslate &dsDockScreenBase; 'actionUndock))
+									code: (@ pageDesc 'acceptCode)
+									nextPage: 'missionAccept
+									}
+								))
+						
 						;	If we're on an Accept/Decline mission page and we're 
 						;	at the last page (or if actions == 'acceptDecline), then
 						;	we show Accept/Decline actions.

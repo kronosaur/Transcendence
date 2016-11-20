@@ -162,12 +162,36 @@
 							{
 								missionObj: missionObj
 								onAcceptDecline: (lambda (theScreen acceptDecline pageDesc options)
-									(if (= acceptDecline 'accept)
-										(block Nil
-											(msnAccept (@ options 'missionObj))
-											(scrSetData gScreen 'curPage Nil)
-											(scrShowPane gScreen "ReplyAccept")
-											)
+									(switch
+										;	If no decline, then we always accept and undock.
+										
+										(not (msnGetProperty (@ options 'missionObj) 'canBeDeclined))
+											(block Nil
+												(msnAccept (@ options 'missionObj))
+												(scrSetData gScreen 'curPage Nil)
+
+												;	Undock
+												
+												(scrExitScreen gScreen 'forceUndock)
+												(setq aDockTarget gSource)
+												(msnFireEvent missionObj "OnAcceptedUndock")
+
+												;	Save the game
+
+												(gamSave 'missionCheckpoint)
+												)
+												
+										;	If we accept, then navigate to ReplyAccept
+										
+										(= acceptDecline 'accept)
+											(block Nil
+												(msnAccept (@ options 'missionObj))
+												(scrSetData gScreen 'curPage Nil)
+												(scrShowPane gScreen "ReplyAccept")
+												)
+										
+										;	Otherwise, we declined
+										
 										(block Nil
 											(msnDecline (@ options 'missionObj))
 											(scrSetData gScreen 'curPage Nil)
