@@ -600,6 +600,7 @@
 	<!ENTITY efXRayLaserHitEffect		"0x00009011">
 	<!ENTITY efGreenLaserFireEffect		"0x00009012">
 	<!ENTITY efIonizingBeam				"0x00009014">
+	<!ENTITY efGreenLaserContinuousBeam	"0x00009015">
 
 	<!ENTITY sfSustain					"0x00009101">
 	<!ENTITY sfStrengthen				"0x00009102">

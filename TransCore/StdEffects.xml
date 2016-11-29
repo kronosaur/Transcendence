@@ -41,6 +41,28 @@
 
 -->
 	
+	<EffectType UNID="&efGreenLaserContinuousBeam;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Ray
+					style=			"smooth"
+					shape=			"straight"
+					intensity=		"45"
+					primaryColor=	"#5ff12a"
+					secondaryColor=	"#00ff00"
+					/>
+		</Effect>
+
+		<Events>
+			<GetParameters>
+				{
+					width: (mathScale (@ gData 'damageHP) 2 30 8 20 50)
+					}
+			</GetParameters>
+		</Events>
+	</EffectType>
+
 	<EffectType UNID="&efIonizingBeam;"
 			instance=			"creator"
 			>

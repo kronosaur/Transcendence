@@ -96,25 +96,19 @@
 		<Image imageID="&rsItems2;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
-				type=				"beam"
+				type=				"continuousBeam"
 
 				repeating=			"4"
 				damage=				"laser:1d4+1; mining:3;"
 				fireRate=			"30"
-				lifetime=			"15"
+				lifetime=			"3"
 				powerUse=			"30"
 
+				effect=				"&efGreenLaserContinuousBeam;"
 				fireEffect=			"&efGreenLaserFireEffect;"
 				hitEffect=			"&efGreenLaserHitEffect;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"laser"
-						primaryColor=		"0x5f, 0xf1, 0x2a"
-						secondaryColor=		"0x00, 0xff, 0x00"
-						/>
-			</Effect>
 		</Weapon>
 
 	</ItemType>
