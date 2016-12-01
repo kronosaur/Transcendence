@@ -7,7 +7,6 @@
 
 #define INVOKE_REFRESH_INTERVAL					100		//	Ticks to gain 1 point of deity rel (if rel is negative)
 
-#define CMD_PLAYER_COMBAT_MISSION_STARTED		CONSTLIT("playerCombatMisionStarted")
 #define CMD_PLAYER_COMBAT_ENDED					CONSTLIT("playerCombatEnded")
 #define CMD_PLAYER_COMBAT_STARTED				CONSTLIT("playerCombatStarted")
 
@@ -117,13 +116,6 @@ void CPlayerShipController::AddOrder (OrderTypes Order, CSpaceObject *pTarget, c
 				pTarget->SetShowHighlight();
 			break;
 		}
-
-	//	Tell controller that we're in combat mode
-
-	if (Order == orderGuard
-			|| Order == orderEscort
-			|| Order == orderDestroyTarget)
-		g_pHI->HICommand(CMD_PLAYER_COMBAT_MISSION_STARTED);
 
 	//	Remember our orders
 

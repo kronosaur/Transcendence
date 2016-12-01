@@ -92,16 +92,28 @@ ICCItem *fnScrShowScreen (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
 ICCItem *fnPlyComposeString (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
-#define ALIGN_CENTER				CONSTLIT("center")
-#define ALIGN_RIGHT					CONSTLIT("right")
-#define ALIGN_LEFT					CONSTLIT("left")
+#define FN_UI_SET_SOUNDTRACK_MODE	1
 
-#define ACTION_SPECIAL_CANCEL		CONSTLIT("cancel")
-#define ACTION_SPECIAL_DEFAULT		CONSTLIT("default")
-#define ACTION_SPECIAL_NEXT_KEY		CONSTLIT("nextKey")
-#define ACTION_SPECIAL_PREV_KEY		CONSTLIT("prevKey")
+ICCItem *fnUISet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
-#define ERR_NO_CODE_CHAIN_CTX			CONSTLIT("No CodeChainCtx")
+#define ALIGN_CENTER						CONSTLIT("center")
+#define ALIGN_RIGHT							CONSTLIT("right")
+#define ALIGN_LEFT							CONSTLIT("left")
+
+#define ACTION_SPECIAL_CANCEL				CONSTLIT("cancel")
+#define ACTION_SPECIAL_DEFAULT				CONSTLIT("default")
+#define ACTION_SPECIAL_NEXT_KEY				CONSTLIT("nextKey")
+#define ACTION_SPECIAL_PREV_KEY				CONSTLIT("prevKey")
+
+#define CMD_SOUNDTRACK_PLAY_MISSION_TRACK	CONSTLIT("cmdSoundtrackPlayMissionTrack")
+#define CMD_SOUNDTRACK_STOP_MISSION_TRACK	CONSTLIT("cmdSoundtrackStopMissionTrack")
+#define CMD_SOUNDTRACK_STOP_MISSION_TRACK_TRAVEL	CONSTLIT("cmdSoundtrackStopMissionTrackTravel")
+
+#define MODE_MISSION_END					CONSTLIT("missionEnd")
+#define MODE_MISSION_END_TRAVEL				CONSTLIT("missionEndTravel")
+#define MODE_MISSION_START					CONSTLIT("missionStart")
+
+#define ERR_NO_CODE_CHAIN_CTX				CONSTLIT("No CodeChainCtx")
 
 static PRIMITIVEPROCDEF g_Extensions[] =
 	{
@@ -436,6 +448,13 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"plyUseItem",					fnPlySet,			FN_PLY_USE_ITEM,
 			"(plyUseItem player item)",
 			"iv",	PPFLAG_SIDEEFFECTS,	},
+
+		//	UI functions
+		//	------------
+
+		{	"uiSetSoundtrackMode",					fnUISet,	FN_UI_SET_SOUNDTRACK_MODE,
+			"(uiSetSoundtrackMode mode [soundtrackUNID])",
+			"s*",	PPFLAG_SIDEEFFECTS,	},
 
 		//	Deprecated functions
 		//	--------------------
@@ -1977,3 +1996,51 @@ ICCItem *fnScrShowScreen (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	return pCC->CreateTrue();
 	}
+
+ICCItem *fnUISet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
+
+//	fnUISet
+//
+//	Does UI stuff
+
+	{
+	CCodeChain *pCC = pEvalCtx->pCC;
+
+	//	Do the appropriate command
+
+	switch (dwData)
+		{
+		case FN_UI_SET_SOUNDTRACK_MODE:
+			{
+			CString sMode = pArgs->GetElement(0)->GetStringValue();
+
+			//	Get the track (optionally). It's OK if we get back NULL, because we assume
+			//	the track has not yet been installed.
+
+			CMusicResource *pTrack = NULL;
+			if (pArgs->GetCount() >= 2)
+				pTrack = g_pUniverse->FindMusicResource(pArgs->GetElement(1)->GetIntegerValue());
+
+			//	Do it
+
+			if (strEquals(sMode, MODE_MISSION_END))
+				g_pHI->HICommand(CMD_SOUNDTRACK_STOP_MISSION_TRACK);
+
+			else if (strEquals(sMode, MODE_MISSION_END_TRAVEL))
+				g_pHI->HICommand(CMD_SOUNDTRACK_STOP_MISSION_TRACK_TRAVEL);
+
+			else if (strEquals(sMode, MODE_MISSION_START))
+				g_pHI->HICommand(CMD_SOUNDTRACK_PLAY_MISSION_TRACK, pTrack);
+
+			else
+				return pCC->CreateError(CONSTLIT("Unknown mode"), pArgs->GetElement(0));
+
+			return pCC->CreateTrue();
+			}
+
+		default:
+			ASSERT(FALSE);
+			return pCC->CreateNil();
+		}
+	}
+

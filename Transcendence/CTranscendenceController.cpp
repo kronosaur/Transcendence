@@ -61,9 +61,12 @@
 #define CMD_SOUNDTRACK_DONE						CONSTLIT("cmdSoundtrackDone")
 #define CMD_SOUNDTRACK_NEXT						CONSTLIT("cmdSoundtrackNext")
 #define CMD_SOUNDTRACK_NOW_PLAYING				CONSTLIT("cmdSoundtrackNowPlaying")
+#define CMD_SOUNDTRACK_PLAY_MISSION_TRACK		CONSTLIT("cmdSoundtrackPlayMissionTrack")
 #define CMD_SOUNDTRACK_PLAY_PAUSE				CONSTLIT("cmdSoundtrackPlayPause")
 #define CMD_SOUNDTRACK_PREV						CONSTLIT("cmdSoundtrackPrev")
 #define CMD_SOUNDTRACK_STOP						CONSTLIT("cmdSoundtrackStop")
+#define CMD_SOUNDTRACK_STOP_MISSION_TRACK		CONSTLIT("cmdSoundtrackStopMissionTrack")
+#define CMD_SOUNDTRACK_STOP_MISSION_TRACK_TRAVEL	CONSTLIT("cmdSoundtrackStopMissionTrackTravel")
 #define CMD_SOUNDTRACK_UPDATE_PLAY_POS			CONSTLIT("cmdSoundtrackUpdatePlayPos")
 #define CMD_UPDATE_HIGH_SCORE_LIST				CONSTLIT("cmdUpdateHighScoreList")
 
@@ -90,7 +93,6 @@
 #define CMD_MODEL_NEW_GAME_CREATED				CONSTLIT("modelNewGameCreated")
 
 #define CMD_PLAYER_COMBAT_ENDED					CONSTLIT("playerCombatEnded")
-#define CMD_PLAYER_COMBAT_MISSION_STARTED		CONSTLIT("playerCombatMisionStarted")
 #define CMD_PLAYER_COMBAT_STARTED				CONSTLIT("playerCombatStarted")
 #define CMD_PLAYER_UNDOCKED						CONSTLIT("playerUndocked")
 
@@ -1056,14 +1058,20 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	//	Player notifications
 
-	else if (strEquals(sCmd, CMD_PLAYER_COMBAT_MISSION_STARTED))
-		m_Soundtrack.NotifyStartCombatMission();
+	else if (strEquals(sCmd, CMD_SOUNDTRACK_PLAY_MISSION_TRACK))
+		m_Soundtrack.NotifyStartMissionTrack((CMusicResource *)pData);
+
+	else if (strEquals(sCmd, CMD_SOUNDTRACK_STOP_MISSION_TRACK))
+		m_Soundtrack.NotifyEndMissionTrack();
+
+	else if (strEquals(sCmd, CMD_SOUNDTRACK_STOP_MISSION_TRACK_TRAVEL))
+		m_Soundtrack.NotifyEndMissionTrack(true);
 
 	else if (strEquals(sCmd, CMD_PLAYER_COMBAT_ENDED))
 		m_Soundtrack.NotifyEndCombat();
 
 	else if (strEquals(sCmd, CMD_PLAYER_COMBAT_STARTED))
-		m_Soundtrack.NotifyStartCombat();
+		m_Soundtrack.NotifyStartCombat((CMusicResource *)pData);
 
 	else if (strEquals(sCmd, CMD_PLAYER_UNDOCKED))
 		m_Soundtrack.NotifyUndocked();
