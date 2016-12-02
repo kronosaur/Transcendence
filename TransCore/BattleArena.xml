@@ -474,6 +474,11 @@
 										(objIncData gSource "meleeCount" 1)
 										(objIncData gSource "rookieScore" (objGetData gSource "rookiePoints"))
 										(objSetData gSource "OpponentCount" Nil)
+										
+										; Back to travel music (we're still technically in combat, because we
+										; haven't detected that we're out yet, so we force travel mode).
+								
+										(uiSetSoundtrackMode 'missionEndTravel)
 										)
 									)
 								)
@@ -533,6 +538,11 @@
 								; Unregister (if necessary)
 								(objUnregisterForSystemEvents gSource)
 								(sysCancelTimerEvent gSource "OnFightCheck")
+								
+								; Back to travel music (we're still technically in combat, because we
+								; haven't detected that we're out yet, so we force travel mode).
+								
+								(uiSetSoundtrackMode 'missionEndTravel)
 								)
 
 						(eq arenaRank 'challenger)
@@ -874,6 +884,9 @@
 									(objSetData gSource "drawAllowed" Nil)
 									(objSetData gSource "Status" 'inProgress)
 
+									; Play Slicer track
+									(uiSetSoundtrackMode 'missionStart 0x00820160)
+
 									(scrExitDock gScreen)
 									)
 							</Action>
@@ -1203,6 +1216,9 @@
 									(bamDoorsClose gSource)
 									(objRegisterForEvents gSource gPlayerShip)
 									(objSetData gSource "Status" 'inProgress)
+
+									; Play Slicer track
+									(uiSetSoundtrackMode 'missionStart 0x00820160)
 
 									(scrExitDock gScreen)
 									)
