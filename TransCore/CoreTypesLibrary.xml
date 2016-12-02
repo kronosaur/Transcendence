@@ -155,6 +155,7 @@
 	<!ENTITY efPlasmaParticleDefault	"0x00030020">
     <!ENTITY efKineticFragmentDefault   "0x00030021">
     <!ENTITY efBlastFragmentDefault     "0x00030022">
+	<!ENTITY efAntimatterParticleDefault	"0x00030023">
 	
 	<!-- 0030-004F EXPLOSIONS -->
 

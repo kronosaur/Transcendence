@@ -599,6 +599,39 @@
 		</Effect>
 	</EffectType>
 	
+	<EffectType unid="&efAntimatterParticleDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb
+					instance=			"owner"
+						
+					style=				"smooth"
+					animate=			"explode"
+					intensity=			"40"
+						
+					blendMode=			"screen"
+					primaryColor=		"#fbffcc"
+					secondaryColor=		"#ffe566"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							(weaponUNID (@ gData 'weaponUNID))
+							(particleCount (max 1 (@ gData 'particleCount)))
+							(damagePerParticle (/ damageHP particleCount))
+							)
+							{
+								radius: (mathScale (int (* 20.0 damagePerParticle)) 10 80 5 40 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+	
 	<EffectType unid="&efAntimatterPodDefault;"
 			instance=			"owner"
 			>
