@@ -112,6 +112,10 @@
 						(msnAccept trainingMission)
 						)
 						
+					;	Complete the mission so we don't get offered it again
+					
+					(msnSuccess gSource)
+						
 					;	Return Nil to exit
 					
 					Nil
@@ -233,7 +237,7 @@
 					"Benedict stares. A smile flashes for an instant.\n\n"
 					
 					"\"Fine. You'll be working your weapons soon enough. "
-					"Come back when you're ready to tackle something more dangerous.\""
+					"Meet me in the Matriarch's Chamber when you're ready to tackle something more dangerous.\""
 					)
 			</Text>
 			<Text id="InProgress">

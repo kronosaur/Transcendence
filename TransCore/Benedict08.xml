@@ -147,7 +147,7 @@
 						
 						;	If this mission is not available, then nothing to do.
 						
-						(not (benedict_isMissionAvailable (objGetType gSource)))
+						(not (benedict_isMissionAvailable &msRescueChildrenFromPenitents;))
 							Nil
 						
 						;	No mission if the Penitent station is already destroyed

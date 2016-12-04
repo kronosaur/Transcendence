@@ -666,6 +666,8 @@
 					)
 					
 					(cat
+						"Benedict greets you as you enter.\n\n"
+						
 						"\"Every star system has its share of outlaws and warlords. "
 						"Most people fear them, but you can't afford to.\n\n"
 						
@@ -1052,7 +1054,9 @@
 			</Text>
 			<Text id="visitHabitat:Begin">
 				(cat
-					"\"There's a Commonwealth habitat nearby that needs protection "
+					"Benedict greets you as you enter.\n\n"
+					
+					"\"Ready for action? There's a Commonwealth habitat nearby that needs protection "
 					"from warlords.\n\n"
 					
 					"\"Help them now and they may pay you in hard credits.\""

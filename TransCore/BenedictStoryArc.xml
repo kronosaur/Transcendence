@@ -63,60 +63,6 @@
 					Nil
 					)
 			</GetGlobalDockScreen>
-			
-			<OnGlobalPaneInit>
-				(switch
-					;	If not a pilgrim, nothing to do
-					
-					(not (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;))
-						Nil
-						
-					;	If we're at a Sisters of Domina station, see if we need to add
-					;	some actions.
-					
-					(and (eq aScreen "0x00182001/Main") (eq aPane "Default"))
-						(switch
-						
-							;	If we're in the starting system, then we add actions to interact
-							;	with Benedict
-							
-							(eq (sysGetNode) (objGetProperty gPlayerShip 'startingSystem))
-								(switch
-							
-									;	If we're showing the Sisters of Domina main screen, and if we're
-									;	in the starting system, then give access to the intro screen.
-					
-									(and (not (typGetData &unidBenedictStoryArc; 'introDone))
-											(typGetData &unidBenedictStoryArc; 'firstDockedAtSisters)
-											)
-										(block Nil
-											;	Remove the built-in action to talk to the Abbess
-											
-											
-											;	Add an action to talk to the Abbess
-						
-											(scrAddAction gScreen 'talkToAbbess 0 (typTranslate &unidBenedictStoryArc; 'actionTalkToAbbess)
-												(scrShowScreen gScreen &dsBenedictIntro;)
-												)
-											)
-											
-									;	If we have an active mission, then add an action to talk to Benedict.
-									
-									(msnFind gSource "aS +benedictStoryArc;")
-										(scrAddAction gScreen 'talkToBenedict 0 (typTranslate &unidBenedictStoryArc; 'actionTalkToBenedict)
-											(scrShowScreen gScreen &dsRPGMission;
-												{
-												missionObj: (@ (msnFind gSource "aS +benedictStoryArc;") 0)
-												})
-											)
-									)
-							)
-							
-					;	Otherwise, nothing
-					
-					Nil
-					)
-			</OnGlobalPaneInit>
 		</Events>
 		
 		<Language>
