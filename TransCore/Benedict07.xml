@@ -48,6 +48,18 @@
 						(not (benedict_isMissionAvailable (objGetType gSource)))
 							(msnDestroy gSource)
 							
+						;	Must have completed Sandoval mission (but previous Benedict
+						;	mission is optional).
+						
+						(not (msnFind "r +unid:&msFindHandOfSolace;; +property:isSuccess;"))
+							(msnDestroy gSource)
+
+						;	If Penitent infiltration mission fails, we can't proceed
+						;	(but OK if we never do it).
+						
+						(msnFind "r +unid:&msInfiltratePenitents;; +property:isFailure;")
+							(msnDestroy gSource)
+
 						;	OK
 						)
 					)
@@ -320,6 +332,23 @@
 					)
 			</Text>
 			<Text id="Intro">
+				(switch
+					;	If we never got the Penitent infiltration mission, tell the player
+					;	what Benedict found.
+					
+					(not (msnFind "r +unid:&msInfiltratePenitents;; +property:isSuccess;"))
+						(append 
+							(msnTranslate gSource 'Intro.benedictExpo)
+							(msnTranslate gSource 'Intro.circleOfObligation)
+							)
+
+					(append
+						(msnTranslate gSource 'Intro.default)
+						(msnTranslate gSource 'Intro.circleOfObligation)
+						)
+					)
+			</Text>
+			<Text id="Intro.default">
 				(list
 					{
 						desc: (cat
@@ -348,6 +377,62 @@
 							"Just then, the meteorsteel door opens and all of you are led inside."
 							)
 						}
+					)
+			</Text>
+			<Text id="Intro.benedictExpo">
+				(list
+					{
+						desc: (cat
+							"The beautiful central chamber, built hundreds of years ago by Saint Eugenia, "
+							"is lit by the holograms of various Sisters. Lay and ordained women walk "
+							"through the halls in quiet conversation.\n\n"
+							
+							"You see Fiona and Sandoval pacing in front of a large meteorsteel door."
+							)
+						label: "\"[W]here's Benedict?\""
+						}
+					{
+						desc: (cat
+							"Fiona frowns, \"You haven't heard? He was captured by Penitents!\"\n\n"
+							
+							"Sandoval interjects, \"Actually, I think he's working them from the inside. "
+							"He's not as stupid as I thought.\""
+							)
+						label: "\"[W]hat happened?\""
+						}
+					{
+						desc: (cat
+							"Sandoval smiles, \"We had the perfect plan! Benedict and I infiltrated "
+							"a Penitent station looking for evidence&mdash;and we found some! "
+							"We've got a video ROM of Sister Ston making a deal with the Penitents.\n\n"
+							
+							"\"But we almost got caught and Benedict stayed behind to give me a chance "
+							"to escape.\""
+							)
+						label: "\"[S]ister Ston?\""
+						}
+					{
+						desc: (cat
+							"Fiona is furious, \"She's betrayed us! And with the video we can prove it!\n\n"
+							
+							"\"We're waiting for an audience with the Circle of Obligation, the "
+							"Sisters' leadership. They'll help us.\""
+							)
+						label: "\"[H]ow can you be sure?\""
+						}
+					{
+						desc: (cat
+							"\"I talked to Sister Oriela, the grandmatriarch of the Sisters. "
+							"I gave her the video ROM and she's convened a meeting of the Circle "
+							"to formally charge Sister Ston.\"\n\n"
+							
+							"Just then, the meteorsteel door opens and all of you are led inside."
+							)
+						}
+					)
+			</Text>
+			<Text id="Intro.circleOfObligation">
+				(list
 					{
 						desc: (cat
 							"The Circle of Obligation sits at a curved table in front of you. "

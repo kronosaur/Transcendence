@@ -33,7 +33,22 @@
 
 						(not (benedict_isMissionAvailable (objGetType gSource)))
 							(msnDestroy gSource)
-
+							
+						;	Only if we're in the New Beyond
+						
+						(not (sysHasAttribute 'newBeyond))
+							(msnDestroy gSource)
+							
+						;	If Fiona is dead, mission doesn't show up
+						
+						(not (rpgCharacterIsAliveAndWell &unidFiona;))
+							(msnDestroy gSource)
+							
+						;	If player skipped original Fiona mission, then nothing here.
+						
+						(not (msnFind "r +unid:&msBenedictAndFiona;; +property:isSuccess;"))
+							(msnDestroy gSource)
+							
 						;	OK
 						)
 					)
@@ -92,11 +107,18 @@
 			
 			<OnObjDestroyed>
 				(switch
+					;	We don't care if an object ascends or enters a stargate
+					
+					(or (= aDestroyReason 'ascended) (= aDestroyReason 'enteredStargate))
+						Nil
 				
 					;	If Stormhound dies, the mission fails.
 					
 					(eq (objGetID aObjDestroyed) (msnGetData gSource 'stormhoundID))
-						(msnFailure gSource)
+						(block Nil
+							(rpgCharacterSetStatus &unidStormhound; 'dead)
+							(msnFailure gSource)
+							)
 					)
 			</OnObjDestroyed>
 			
@@ -364,6 +386,16 @@
 			</Text>
 			<Text id="SuccessMsg">
 				"Mission complete!"
+			</Text>
+			<Text id="FailureDebrief">
+				(cat
+					"Benedict slumps in a chair, rubbing his forehead with his hand:\n\n"
+					
+					"\"I should never have trusted you on such a mission! "
+					"I failed her...\"\n\n"
+					
+					"Benedict says no more."
+					)
 			</Text>
 			
 			<Text id="StormhoundMeeting">

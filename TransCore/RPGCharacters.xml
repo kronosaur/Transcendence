@@ -442,6 +442,27 @@
 				(typGetData charType 'playerRel)
 				))
 
+			(setq rpgCharacterGetStatus (lambda (charType)
+				(typGetData charType 'status)
+				))
+
+			(setq rpgCharacterIsAliveAndWell (lambda (charType)
+				(block (
+					(status (typGetData charType 'status))
+					)
+					(switch
+						;	Dead means dead
+						
+						(= status 'dead)
+							Nil
+							
+						;	Otherwise, we're alive and well
+						
+						True
+						)
+					)
+				))
+
 			(setq rpgCharacterSetMeeting (lambda (charType)
 				(block Nil
 					(typSetData charType 'latestPlayerMeetingTime (unvGetTick))
@@ -453,6 +474,18 @@
 
 			(setq rpgCharacterSetScreen (lambda (charType screenData)
 				(typSetData charType 'screenData screenData)
+				))
+				
+			(setq rpgCharacterSetStatus (lambda (charType status)
+			
+				;	This function sets the status of the character. We support the following
+				;	values:
+				;
+				;	Nil: Character is alive and well. No special status.
+				;
+				;	'dead: Character is dead.
+				
+				(typSetData charType 'status status)
 				))
 
 			(setq rpgCharacterShowMissionScreen (lambda (missionSource options)

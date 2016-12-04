@@ -153,8 +153,18 @@
 			
 			<OnObjDestroyed>
 				(switch
+					;	We don't care if an object ascends or enters a stargate
+					
+					(or (= aDestroyReason 'ascended) (= aDestroyReason 'enteredStargate))
+						Nil
+						
+					;	If Sandoval dies, mission failure.
+				
 					(= (objGetID aObjDestroyed) (msnGetData gSource 'sandovalID))
-						(msnFailure gSource)
+						(block Nil
+							(rpgCharacterSetStatus &unidHugoSandoval; 'dead)
+							(msnFailure gSource)
+							)
 					)
 			</OnObjDestroyed>
 			
@@ -399,6 +409,7 @@
 								(scrShowScreen gScreen &dsAbandonedShip;)
 								
 							;	If Sandoval is dead, we go to special text without Sandoval
+							;	[This can't happen because the mission fails if Sandoval is dead.]
 							
 							(not sandovalObj)
 								(scrSetData gScreen 'dialogTree 'dlgBenedictAlone)

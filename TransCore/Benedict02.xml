@@ -115,6 +115,7 @@
 						(msnGetData gSource 'playerDestroyedFreighter)
 							(block Nil
 								(rpgCharacterChangeRel &unidBenedict; 'betrayal)
+								(rpgCharacterSetStatus &unidFiona; 'dead)
 								(setq achievementText 'AchievementBetrayal)
 								)
 								
@@ -122,6 +123,7 @@
 
 						(block Nil
 							(rpgCharacterChangeRel &unidBenedict; 'failure)
+							(rpgCharacterSetStatus &unidFiona; 'dead)
 							(setq achievementText 'AchievementFailure)
 							)
 						)

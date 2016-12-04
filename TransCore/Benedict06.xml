@@ -40,6 +40,11 @@
 						(!= (sysGetNode) (if (find (sysGetNodes) 'C6A) 'C6A 'C6))
 							(msnDestroy gSource)
 							
+						;	Must have completed Sandoval mission
+						
+						(not (msnFind "r +unid:&msFindHandOfSolace;; +property:isSuccess;"))
+							(msnDestroy gSource)
+
 						;	OK
 						)
 					)

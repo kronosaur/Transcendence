@@ -8,12 +8,15 @@
 
 	korolovNodeID:			The system where the station can be found.
 	korolovID:				ID of Korolov station.
+	
+	NOTE: This mission does not have the benedictStoryArc attribute because
+	we don't want it to hold up the other missions.
 
 	======================================================================== -->
 	
 	<MissionType UNID="&msBenedictToKorolov;"
 			name=				"Benedict to Korolov"
-			attributes=			"benedictStoryArc"
+			attributes=			""
 
 			level=				"1"
 				 

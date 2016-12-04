@@ -32,6 +32,11 @@
 						(not (benedict_isMissionAvailable (objGetType gSource)))
 							(msnDestroy gSource)
 							
+						;	If Fiona is dead, mission doesn't show up
+						
+						(not (rpgCharacterIsAliveAndWell &unidFiona;))
+							(msnDestroy gSource)
+							
 						;	OK
 						)
 					)
