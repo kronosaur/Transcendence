@@ -285,8 +285,15 @@
 				))
 
 			(setq rpgCharacterCreateShip (lambda (charType shipClassUNID pos options)
-				(block (objID shipObj)
-					(setq objID (typGetData charType 'objID))
+				(block (
+					;	We store a ship ID for every unique ship class. Some characters
+					;	use multiple ships.
+					
+					(shipIDVar (cat 'objID_ (int shipClassUNID)))
+					(objID (typGetData charType shipIDVar))
+					
+					shipObj
+					)
 
 					(switch
 						;	If ship for character does not exist, then we need to 
@@ -296,7 +303,7 @@
 							(block Nil
 								(setq shipObj (sysCreateShip shipClassUNID pos (typGetStaticData charType 'Sovereign)))
 								(objSetProperty shipObj 'known (@ options 'setKnown))
-								(typSetData charType 'objID (objGetId shipObj))
+								(typSetData charType shipIDVar (objGetId shipObj))
 								(typSetData charType 'screenData Nil)
 								)
 								
@@ -309,7 +316,7 @@
 								
 								(setq shipObj (sysCreateShip shipClassUNID pos (typGetStaticData charType 'Sovereign)))
 								(objSetProperty shipObj 'known (@ options 'setKnown))
-								(typSetData charType 'objID (objGetId shipObj))
+								(typSetData charType shipIDVar (objGetId shipObj))
 								(typSetData charType 'screenData Nil)
 								)
 
@@ -342,7 +349,7 @@
 								(if (not shipObj)
 									(block Nil
 										(setq shipObj (sysCreateShip shipClassUNID pos (typGetStaticData charType 'Sovereign)))
-										(typSetData charType 'objID (objGetId shipObj))
+										(typSetData charType shipIDVar (objGetId shipObj))
 										)
 									)
 									
