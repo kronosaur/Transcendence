@@ -908,7 +908,7 @@
 					sizeY=		"46"
 					/>
 			
-			<Compartment name="cargo contatiners"
+			<Compartment name="cargo containers"
 					type=		"cargo"
 					hitPoints=	"180"
 
@@ -992,7 +992,7 @@
 					sizeY=		"46"
 					/>
 			
-			<Compartment name="cargo contatiners"
+			<Compartment name="cargo containers"
 					type=		"cargo"
 					hitPoints=	"180"
 

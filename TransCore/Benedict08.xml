@@ -224,7 +224,7 @@
 							"Benedict and Fiona smile as you enter.\n\n"
 							
 							"\"It's good to see you, %name%,\" says Benedict, \"Welcome "
-							"about the CSS Changeling!\""
+							"aboard the CSS Changeling!\""
 							)
 						label: "\"[N]ice ship!\""
 						}

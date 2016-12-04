@@ -1012,7 +1012,7 @@
 					sizeY=		"30"
 					/>
 			
-			<Compartment name="cargo contatiners"
+			<Compartment name="cargo containers"
 					type=		"cargo"
 					hitPoints=	"150"
 

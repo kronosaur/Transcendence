@@ -3738,7 +3738,7 @@ PLAYER DATA
 					sizeY=		"42"
 					/>
 			
-			<Compartment name="cargo contatiners"
+			<Compartment name="cargo containers"
 					type=		"cargo"
 					hitPoints=	"50"
 
