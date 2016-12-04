@@ -1824,30 +1824,50 @@
 	<StationType UNID="&stHeliotropeColony;"
 			name=				"Heliotrope colony|Heliotrope colonies"
 			sovereign=			"&svHeliotropes;"
+				 
+			attributes=			"enemy, envFire, envAvoidsWater, generic, heliotropes, human, populated"
+				 
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
+				 
 			armorID=			"&itSolarArmor;"
 			hitPoints=			"420"
+			multiHull=			"true"
             regen=              "2.1"
+				 
+			canAttack=			"true"
 			fireRateAdj=		"20"
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"enemy, envFire, envAvoidsWater, generic, heliotropes, human, populated"
-			levelFrequency=		"---cu r---- ----- ----- -----"
-			locationCriteria=	"+innerSystem, -void"
-			enemyExclusionRadius="50"
 			>
 
-		<Image			imageID="&rsStations4;" imageX="0" imageY="0" imageWidth="192" imageHeight="192"/>
+		<!-- Encounter Info -->
+
+		<Encounter
+				levelFrequency=		"---cu r---- ----- ----- -----"
+				locationCriteria=	"+innerSystem, -void"
+				enemyExclusionRadius="50"
+				/>
+
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Item count="3d12" item="&itHelium3FuelRod;"/>
+			<Item count="3d12" item="&itHeliotropeFuel;"/>
+			<Table chance="50">
+				<Lookup chance="40" count="1" table="&trConsumables5;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
+			</Table>
+		</Items>
+
+		<!-- Configuration -->
 
 		<Devices>
 			<Device deviceID="&itSunflareCannon;"	omnidirectional="true"/>
 		</Devices>
 
+		<!-- Ships and Defenses -->
+		
 		<Ships>
 			<Table>
 				<Ship  chance="25"	count="2d6"	class="&scHeliotropeGunship;"	orders="patrol:5"/>
@@ -1859,20 +1879,21 @@
 			</Table>
 		</Ships>
 
-		<Items>
-			<Item count="3d12" item="&itHelium3FuelRod;"/>
-			<Item count="3d12" item="&itHeliotropeFuel;"/>
-			<Table chance="50">
-				<Lookup chance="40" count="1" table="&trConsumables5;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
-			</Table>
-		</Items>
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsStations4;" imageX="0" imageY="0" imageWidth="192" imageHeight="192"/>
 
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"115"
+				>
+		</DockingPorts>
+		
+		<!-- Random Encounters -->
+		
 		<Encounters frequency="common">
 			<Lookup table="&tbHeliotropeEncounters;"/>
 		</Encounters>
-
 	</StationType>
 
 	<!-- Heliotrope Outpost -->
@@ -1880,32 +1901,30 @@
 	<StationType UNID="&stHeliotropeOutpost;"
 			name=				"Heliotrope outpost"
 			sovereign=			"&svHeliotropes;"
+				 
+			attributes=			"enemy, envFire, envAvoidsWater, generic, heliotropes, human, populated"
+				 
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
+				 
 			armorID=			"&itHeavyCeramicPlate;"
 			hitPoints=			"120"
             regen=              "0.4"
+				 
+			canAttack=			"true"
 			fireRateAdj=		"40"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"enemy, envFire, envAvoidsWater, generic, heliotropes, human, populated"
-			levelFrequency=		"--cuv ----- ----- ----- -----"
-			locationCriteria=	"+innerSystem, -void"
 			>
 
-		<Image			imageID="&rsStations3;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+		<!-- Encounter Info -->
 
-		<Devices>
-			<Device deviceID="&itSunflareCannon;"	omnidirectional="true"/>
-		</Devices>
+		<Encounter
+				levelFrequency=		"--cuv ----- ----- ----- -----"
+				locationCriteria=	"+innerSystem, -void"
+				/>
 
-		<Ships>
-			<Ship count="1d4+1"	class="&scHeliotropeGunship;"	orders="guard"/>
-		</Ships>
-
+		<!-- Trade and Items -->
+		
 		<Items>
 			<Item count="1d12" item="&itHelium3FuelRod;"/>
 			<Item count="1d6" item="&itHeliotropeFuel;"/>
@@ -1916,10 +1935,33 @@
 			</Table>
 		</Items>
 
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itSunflareCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Ship count="1d4+1"	class="&scHeliotropeGunship;"	orders="guard"/>
+		</Ships>
+
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsStations3;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+		
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"82"
+				>
+		</DockingPorts>
+		
+		<!-- Random Encounters -->
+
 		<Encounters frequency="common">
 			<Lookup table="&tbHeliotropeEncounters;"/>
 		</Encounters>
-
 	</StationType>
 	
 	<!-- Heliotrope Encounters -->

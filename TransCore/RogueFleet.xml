@@ -137,7 +137,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated, rogue"
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated, rogue, rogueFleet"
 			levelFrequency=		"----- vcu-- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			>
@@ -176,39 +176,31 @@
 	<StationType UNID="&stRogueFleetSettlement;"
 			name=				"Rogue Fleet settlement"
 			sovereign=			"&svRogueFleet;"
+				 
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated, rogue, rogueFleet"
+				 
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
+				 
 			armorID=			"&itP120HexphaseArmor;"
 			hitPoints=			"950"
+			multiHull=			"true"
 			regen=              "4.8"
 			shipRepairRate=		"1"
+				 
+			canAttack=			"true"
 			fireRateAdj=		"20"
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated, rogue"
-			levelFrequency=		"----- -rcr- ----- ----- -----"
-			locationCriteria=	"+asteroids"
 			>
 
-		<Image			imageID="&rsStations8;" imageX="128" imageY="896" imageWidth="128" imageHeight="128"/>
+		<!-- Encounter Info -->
 
-		<Devices>
-			<Device deviceID="&itStarCannon;"	omnidirectional="true"/>
-		</Devices>
+		<Encounter
+				levelFrequency=		"----- -rcr- ----- ----- -----"
+				locationCriteria=	"+asteroids"
+				/>
 
-		<Ships>
-			<Ship		count="1"		class="&scCenturionX;" orders="patrol" patrolDist="20">
-				<Escorts>
-					<Ship		count="1d3"		class="&scCenturion;" orders="escort"/>
-				</Escorts>
-			</Ship>
-			<Ship		count="1"		class="&scCenturionX;" orders="guard"/>
-			<Ship		count="1d3"		class="&scCenturion;" orders="guard"/>
-		</Ships>
+		<!-- Trade and Items -->
 
 		<Items>
 			<Table>
@@ -220,7 +212,34 @@
 				<Lookup chance="10" count="1" table="&trMajorItem9;"/>
 			</Table>
 		</Items>
+		
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itStarCannon;"	omnidirectional="true"/>
+		</Devices>
 
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Ship		count="1"		class="&scCenturionX;" orders="patrol" patrolDist="20">
+				<Escorts>
+					<Ship		count="1d3"		class="&scCenturion;" orders="escort"/>
+				</Escorts>
+			</Ship>
+			<Ship		count="1"		class="&scCenturionX;" orders="guard"/>
+			<Ship		count="1d3"		class="&scCenturion;" orders="guard"/>
+		</Ships>
+
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsStations8;" imageX="128" imageY="896" imageWidth="128" imageHeight="128" viewportRatio="0.01"/>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"85"
+				>
+		</DockingPorts>
 	</StationType>
 
 	<EncounterTable UNID="&etRogueAmbush1;">
