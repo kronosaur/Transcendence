@@ -1613,8 +1613,15 @@ CSpaceObject *CPlayerShipController::GetTarget (CItemCtx &ItemCtx, bool bNoAutoT
 	if (bNoAutoTarget)
 		return m_pTarget;
 
-	else if (m_pTarget && !m_bTargetOutOfRange)
+	//	Use the player's designated target if it's in range and it's angry at
+	//	the player.
+
+	else if (m_pTarget 
+			&& !m_bTargetOutOfRange
+			&& m_pTarget->IsAngryAt(m_pShip))
 		return m_pTarget;
+
+	//	Otherwise, we use the auto-target.
 
 	else
 		{
