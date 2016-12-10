@@ -176,7 +176,9 @@
     <None Include="Antarctica.xml">
       <SubType>Designer</SubType>
     </None>
-    <Xml Include="Benedict.xml" />
+    <Xml Include="Benedict.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <None Include="BlackMarket.xml">
       <SubType>Designer</SubType>
     </None>

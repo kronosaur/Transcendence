@@ -41,22 +41,9 @@
 					    (objAddItem gPlayerShip theItem)
                         )
 					
-					; Charge the player
-					(objCharge gPlayerShip theCurrency thePrice)
-					(plyRecordBuyItem gPlayer theItem theCurrency thePrice)
-
-					; Add to station balance
-					(objCredit theObj theCurrency thePrice)
-
-					; If the player bought items at a black market station then
-					; increase xp
-					(if (and
-							(objHasAttribute theObj "blackmarket")
-							(itmHasModifier theItem "Illegal")
-							)
-						(objIncData gPlayerShip "blackMarketXP" (divide thePrice 100))
-						)
-						
+					; Record the transaction
+					(objRecordBuyItem gPlayerShip theObj theItem theCurrency thePrice)
+					
 					; Remember that we've bought something, for tutorial 
 					; purposes.
 					(typSetData &svPlayer; 'tutorialBought True)
@@ -2462,31 +2449,9 @@
 					; Add to player ship
 					(objAddItem gSource itemsToSell)
 					
-					; Credit the player
-					(objCredit gPlayerShip (objGetDefaultCurrency gSource) (multiply itemCount itemCost))
-					(plyRecordSellItem gPlayer itemsToSell (objGetDefaultCurrency gSource) (multiply itemCount itemCost))
-
-					; Remove from station balance
-					(objCharge gSource (multiply itemCount itemCost))
-
-					; If the player just sold slaves, then keep track
-					(if (itmHasModifier itemsToSell "Slaves")
-						(block Nil
-							(setq sales (objGetData gPlayerShip "slaveSales"))
-							(if (not sales)
-								(setq sales 0)
-								)
-
-							(setq sales (add sales (multiply itemCount itemCost)))
-							(objSetData gPlayerShip "slaveSales" sales)
-
-							; Chance of getting caught
-							(if (ls (random 1 50) itemCount)
-								(intCommonwealthCrime 2 "slave-trading")
-								)
-							)
-						)
-						
+					; Record transaction
+					(objRecordBuyItem gSource gPlayerShip itemsToSell (objGetDefaultCurrency gSource) (* itemCount itemCost))
+					
 					; Remember that we've sold something, for tutorial 
 					; purposes.
 					(typSetData &svPlayer; 'tutorialSold True)

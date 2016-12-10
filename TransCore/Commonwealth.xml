@@ -2875,6 +2875,21 @@
 					Nil
 					)
 			</GetGlobalDockScreen>
+			
+			<OnGlobalPlayerSoldItem>
+				(switch
+					;	If the player sold slaves, chance they get caught
+					
+					(itmHasModifier gItem 'slaves)
+						(block ()
+							(objIncData gPlayerShip 'slaveSales (ecoExchange aPrice aCurrency 'credit))
+
+							(if (ls (random 1 50) (itmGetCount gItem))
+								(intCommonwealthCrime 2 "slave-trading")
+								)
+							)
+					)
+			</OnGlobalPlayerSoldItem>
 		</Events>
 	</Sovereign>
 

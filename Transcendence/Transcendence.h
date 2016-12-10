@@ -208,8 +208,6 @@ class CPlayerShipController : public IShipController
 		inline bool IsUIMessageEnabled (UIMessageTypes iMsg) { return m_UIMsgs.IsEnabled(iMsg); }
 		void OnEnemyShipsDetected (void);
 		inline void OnGameEnd (void) { m_Stats.OnGameEnd(m_pShip); }
-		inline void OnItemBought (const CItem &Item, CurrencyValue iTotalPrice) { m_Stats.OnItemBought(Item, iTotalPrice); }
-		inline void OnItemSold (const CItem &Item, CurrencyValue iTotalPrice) { m_Stats.OnItemSold(Item, iTotalPrice); }
         void OnStartGame (void);
 		void OnSystemEntered (CSystem *pSystem, int *retiLastVisit = NULL) { m_Stats.OnSystemEntered(pSystem, retiLastVisit); }
 		void OnSystemLeft (CSystem *pSystem) { m_Stats.OnSystemLeft(pSystem); }
@@ -291,9 +289,11 @@ class CPlayerShipController : public IShipController
 		virtual void OnDockedObjChanged (CSpaceObject *pLocation) override;
 		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend) override;
         virtual void OnFuelConsumed (Metric rFuel) override;
+		virtual void OnItemBought (const CItem &Item, CurrencyValue iTotalPrice) override { m_Stats.OnItemBought(Item, iTotalPrice); }
 		virtual void OnItemDamaged (const CItem &Item, int iHP) override { m_Stats.OnItemDamaged(Item, iHP); }
 		virtual void OnItemFired (const CItem &Item) override { m_Stats.OnItemFired(Item); }
 		virtual void OnItemInstalled (const CItem &Item) override { m_Stats.OnItemInstalled(Item); }
+		virtual void OnItemSold (const CItem &Item, CurrencyValue iTotalPrice) override { m_Stats.OnItemSold(Item, iTotalPrice); }
 		virtual void OnItemUninstalled (const CItem &Item) override { m_Stats.OnItemUninstalled(Item); }
 		virtual void OnMissionCompleted (CMission *pMission, bool bSuccess) override;
 		virtual void OnNewSystem (CSystem *pSystem) override;

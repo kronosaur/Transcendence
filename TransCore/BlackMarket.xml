@@ -1166,6 +1166,18 @@ PLAYER DATA
 						)
 					)
 			</GetGlobalPlayerPriceAdj>
+			
+			<OnGlobalPlayerBoughtItem>
+				(switch
+					;	If the player bought illegal items from the Black Market then
+					;	we add to XP.
+					
+					(and (objHasAttribute aSellerObj 'blackMarket)
+							(itmHasModifier gItem 'illegal)
+							)
+						(objIncData gPlayerShip 'blackMarketXP (divide (ecoExchange aPrice aCurrency 'credit) 100))
+					)
+			</OnGlobalPlayerBoughtItem>
 
 			<OnGlobalUniverseCreated>
 				(block Nil
