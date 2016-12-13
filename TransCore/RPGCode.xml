@@ -2442,12 +2442,12 @@
 				    )            
                 ))
                 
-			(setq rpgSellItems (lambda (itemCount itemCost)
+			(setq rpgSellItems (lambda (itemCount itemCost inventoryObj)
 				(block (itemsToSell)
 					(setq itemsToSell (scrRemoveItem gScreen itemCount))
 					
 					; Add to player ship
-					(objAddItem gSource itemsToSell)
+					(objAddItem (or inventoryObj gSource) itemsToSell)
 					
 					; Record transaction
 					(objRecordBuyItem gSource gPlayerShip itemsToSell (objGetDefaultCurrency gSource) (* itemCount itemCost))

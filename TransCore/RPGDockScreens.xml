@@ -97,6 +97,8 @@
 				item.
 				
 		showInstallables: If True, we always show all devices, etc.
+		
+		sourceObj: If not Nil, use this as the object for inventory purposes.
 	
 -->
 	
@@ -115,11 +117,13 @@
 						(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							showInstallables: (@ gData 'showInstallables)
+							sourceObj: (@ gData 'sourceObj)
 							})
 					</Action>
 
 					<Action id="actionSellItems">
 						(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+							sourceObj: (@ gData 'sourceObj)
 							})
 					</Action>
 
@@ -160,6 +164,11 @@
 				
 		showInstallables: If non-nil, then we show weapons, armor, etc. in the
 				screen.
+				
+		sourceObj: If non-nil, get items from this object. NOTE: This is just
+				for the list of items; the <Trade> descriptors (and other stuff
+				still come from gSource).
+		
 -->
 	
 	<DockScreen unid="&dsRPGCommoditiesExchangeBuy;"
@@ -169,11 +178,12 @@
 			>
 		
 		<ListOptions
-				dataFrom=	"station"
+				dataFrom=	"=(if (@ gData 'sourceObj) (@ gData 'sourceObj) 'station)"
 				list=		"*"
 				>
 			(block (
 				(itemCriteria (@ gData 'criteria))
+				(sourceObj (if (@ gData 'sourceObj) (@ gData 'sourceObj) gSource))
 				)
 				
 				(switch
@@ -200,7 +210,7 @@
 					;	If we want to hide installables, then we need to filter
 					
 					(and (not (@ gData 'showInstallables))
-							(objGetItems gSource "Uadm")
+							(objGetItems sourceObj "Uadm")
 							)
 						(block Nil
 							(scrSetData gScreen 'installablesOption True)
@@ -607,6 +617,10 @@
 		listFilter: If non-nil, this is a function to use as a filter of items
 				for the player to sell.
 				
+		sourceObj: If non-nil, get items from this object. NOTE: This is just
+				for the list of items; the <Trade> descriptors (and other stuff
+				still come from gSource).
+				
 		title: Title for screen (or Nil for station name)
 -->
 	
@@ -782,6 +796,7 @@
 							(thisItem (scrGetItem gScreen))
 							(maxCount (scrGetData gScreen 'maxCount))
 							(itemCost (scrGetData gScreen 'itemCost))
+							(sourceObj (if (@ gData 'sourceObj) (@ gData 'sourceObj) gSource))
 							)
 							
 							(switch
@@ -793,7 +808,7 @@
 								;	Done
 								
 								(block Nil
-									(rpgSellItems 1 itemCost)
+									(rpgSellItems 1 itemCost sourceObj)
 									(scrShowPane gScreen "Default")
 									)
 								)
@@ -827,6 +842,7 @@
 							(countToSell (scrGetCounter gScreen))
 							(maxCount (scrGetData gScreen 'maxCount))
 							(itemCost (scrGetData gScreen 'itemCost))
+							(sourceObj (if (@ gData 'sourceObj) (@ gData 'sourceObj) gSource))
 							)
 							
 							(switch
@@ -834,7 +850,7 @@
 									(scrSetCounter gScreen maxCount)
 									
 								(block Nil
-									(rpgSellItems countToSell itemCost)
+									(rpgSellItems countToSell itemCost sourceObj)
 									(scrShowPane gScreen "Default")
 									)
 								)
@@ -988,6 +1004,8 @@
 				rpgGetReactorUpgradeList. Otherwise, we do not offer a reactor
 				upgrade at this station.
 				
+		'sourceObj: If not Nil, use this as the object for inventory purposes.
+	
 		'upgradeInstallOnly: If True, we only offer device installation services if
 				the player buys an upgrade.
 	
@@ -1140,6 +1158,7 @@
 						(scrShowScreen gScreen &dsRPGManageArmor; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							noUpgrade: (@ gData 'noUpgrade)
+							sourceObj: (@ gData 'sourceObj)
 							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
 							
 							manageMiscDevices: (scrIsActionEnabled gScreen 'actionMiscDevices)
@@ -1152,6 +1171,7 @@
 						(scrShowScreen gScreen &dsRPGManageWeapons; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							noUpgrade: (@ gData 'noUpgrade)
+							sourceObj: (@ gData 'sourceObj)
 							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
 							
 							manageArmor: (scrIsActionEnabled gScreen 'actionRepairArmor)
@@ -1164,6 +1184,7 @@
 						(scrShowScreen gScreen &dsRPGManageMiscDevices; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							noUpgrade: (@ gData 'noUpgrade)
+							sourceObj: (@ gData 'sourceObj)
 							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
 							
 							manageArmor: (scrIsActionEnabled gScreen 'actionRepairArmor)
@@ -1176,6 +1197,7 @@
 						(scrShowScreen gScreen &dsRPGManageArmor; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							noUpgrade: (@ gData 'noUpgrade)
+							sourceObj: (@ gData 'sourceObj)
 							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
 							
 							manageMiscDevices: (scrIsActionEnabled gScreen 'actionMiscDevices)
@@ -1187,6 +1209,7 @@
 						(scrShowScreen gScreen &dsRPGManageWeapons; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							noUpgrade: (@ gData 'noUpgrade)
+							sourceObj: (@ gData 'sourceObj)
 							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
 							
 							manageArmor: (scrIsActionEnabled gScreen 'actionRepairArmor)
@@ -1198,6 +1221,7 @@
 						(scrShowScreen gScreen &dsRPGManageMiscDevices; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							noUpgrade: (@ gData 'noUpgrade)
+							sourceObj: (@ gData 'sourceObj)
 							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
 							
 							manageArmor: (scrIsActionEnabled gScreen 'actionRepairArmor)
@@ -1421,6 +1445,9 @@
 	This screen allows the player to jettison items either to the docked object
 	or to a crate in space.
 
+	gData uses the following fields:
+	
+	sourceObj: Object to jettison to.
 -->
 
 	<DockScreen UNID="&dsRPGJettison;"
@@ -1439,13 +1466,15 @@
 					desc=	"There are no items in your cargo hold that can be jettisoned.">
 
 				<OnPaneInit>
-					(block (thisItem)
-						(setq thisItem (scrGetItem gScreen))
+					(block (
+						(thisItem (scrGetItem gScreen))
+						(sourceObj (if (@ gData 'sourceObj) (@ gData 'sourceObj) gSource))
+						)
 
 						(if thisItem
 							(block (availCount fitCount)
 								(setq availCount (itmGetCount thisItem))
-								(setq fitCount (objGetFitCount gSource thisItem))
+								(setq fitCount (objGetFitCount sourceObj thisItem))
 								(setq gMaxCount (min availCount fitCount))
 
 								(setq desc (cat "Unit mass: " (strMassString (itmGetMass thisItem))))
@@ -1453,8 +1482,8 @@
 									(setq desc (cat desc " (" gMaxCount " at " (strMassString (multiply (itmGetMass thisItem) gMaxCount)) ")"))
 									)
 
-								(if (ls (objGetCargoSpaceLeft gSource) 200000)
-									(setq desc (cat desc "\nCapacity: " (strMassString (objGetCargoSpaceLeft gSource))))
+								(if (ls (objGetCargoSpaceLeft sourceObj) 200000)
+									(setq desc (cat desc "\nCapacity: " (strMassString (objGetCargoSpaceLeft sourceObj))))
 									)
 
 								(switch
@@ -1479,17 +1508,21 @@
 
 				<Actions>
 					<Action name="Jettison this Item" default="1" key="J" >
-						(switch
-							(gr gMaxCount 1)
-								(scrShowPane gScreen "JettisonQuantity")
+						(block (
+							(sourceObj (if (@ gData 'sourceObj) (@ gData 'sourceObj) gSource))
+							)
+							(switch
+								(gr gMaxCount 1)
+									(scrShowPane gScreen "JettisonQuantity")
 
-							(eq gMaxCount 1)
-								(block (itemsToJettison)
-									; Dump items
-									(setq itemsToJettison (scrRemoveItem gScreen 1))
-									(rpgJettisonItem gSource itemsToJettison)
-									(scrShowPane gScreen "Default")
-									)
+								(eq gMaxCount 1)
+									(block (itemsToJettison)
+										; Dump items
+										(setq itemsToJettison (scrRemoveItem gScreen 1))
+										(rpgJettisonItem sourceObj itemsToJettison)
+										(scrShowPane gScreen "Default")
+										)
+								)
 							)
 					</Action>
 
@@ -1511,14 +1544,16 @@
 
 				<Actions>
 					<Action name="Jettison" default="1" key="J">
-						(block (count)
-							(setq count (scrGetCounter gScreen))
+						(block (
+							(sourceObj (if (@ gData 'sourceObj) (@ gData 'sourceObj) gSource))
+							(count (scrGetCounter gScreen))
+							)
 							(if (gr count gMaxCount)
 								(scrSetCounter gScreen gMaxCount)
 								(block (itemsToJettison)
 									; Dump items
 									(setq itemsToJettison (scrRemoveItem gScreen count))
-									(rpgJettisonItem gSource itemsToJettison)
+									(rpgJettisonItem sourceObj itemsToJettison)
 									(scrShowPane gScreen "Default")
 									)
 								)
@@ -1540,9 +1575,11 @@
 
 	gData uses the following fields:
 
-	nextScreen:			If specified, we navigate to the given screen when we're
-						done. This may also be a list consisting of a screen and
-						a pane.
+	nextScreen:	If specified, we navigate to the given screen when we're done.
+		This may also be a list consisting of a screen and a pane.
+						
+	sourceObj: Object to loot from (if Nil, we look from the station we're 
+		docked with.
 -->
 
 	<DockScreen UNID="&dsRPGLoot;"
@@ -1551,7 +1588,7 @@
 			>
 
 		<ListOptions
-			dataFrom=	"station"
+			dataFrom=	"=(if (@ gData 'sourceObj) (@ gData 'sourceObj) 'station)"
 			list=		"*U"
 			/>
 

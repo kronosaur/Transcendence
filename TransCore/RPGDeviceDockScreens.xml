@@ -264,6 +264,7 @@
 	'checkMilitaryID: If True, we should check for a military ID before 
 			installing Military armor. We also refuse to install Illegal armor.
 	'replaceItem: The installed device to replace (may be Nil).
+	'sourceObj: If not Nil, use this as the object for inventory purposes.
 
 -->
 
@@ -274,7 +275,7 @@
 			>
 
 		<ListOptions
-				dataFrom=	"source"
+				dataFrom=	"=(if (@ gData 'sourceObj) (@ gData 'sourceObj) 'source)"
 				list=		"*"
 				>
 			(block (
@@ -349,12 +350,13 @@
 										)
 								slotPosIndex: (@ gData 'slotPosIndex)
 								})
+							(sourceObj (if (@ gData 'sourceObj) (@ gData 'sourceObj) gSource))
 							)
 							
 							(rpgBuyItem gSource theItem (scrGetData gScreen 'cost) (objGetDefaultCurrency gSource))
 							(shpInstallDevice gPlayerShip theItem recommendedSlot)
 							(typSetData &svPlayer; 'tutorialInstalled True)
-							(objRemoveItem gSource theItem)
+							(objRemoveItem sourceObj theItem)
 							
 							;	If the original item is still installed, then uninstall it
 							

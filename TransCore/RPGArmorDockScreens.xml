@@ -14,6 +14,8 @@
 	
 	'noUpgrade: If True, do not offer to see upgrades.
 	
+	'sourceObj: If not Nil, use this as the object for inventory purposes.
+	
 	'upgradeInstallOnly: If True, we only offer device installation services if
 			the player buys an upgrade.
 	
@@ -234,6 +236,7 @@
 								(scrShowScreen gScreen &dsRPGUpgradeArmor; {
 									armorSeg: (scrGetData gScreen 'armorSeg)
 									checkMilitaryID: (@ gData 'checkMilitaryID)
+									sourceObj: (@ gData 'sourceObj)
 									})
 									
 							;	Otherwise, assume shields
@@ -242,6 +245,7 @@
 								criteria: "sUN"
 								checkMilitaryID: (@ gData 'checkMilitaryID)
 								replaceItem: (scrGetItem gScreen)
+								sourceObj: (@ gData 'sourceObj)
 								})
 							)
 					</Action>
@@ -370,6 +374,8 @@
 
 	'checkMilitaryID: If True, we should check for a military ID.
 
+	'sourceObj: If not Nil, use this as the object for inventory purposes.
+	
 	'upgradeInstallOnly: If True, we only offer device installation services if
 			the player buys an upgrade.
 	
@@ -586,6 +592,7 @@
 								checkMilitaryID: (@ gData 'checkMilitaryID)
 								replaceItem: (scrGetItem gScreen)
 								slotPosIndex: (@ (scrGetListEntry gScreen) 'slotPosIndex)
+								sourceObj: (@ gData 'sourceObj)
 								})
 							)
 					</Action>
@@ -641,6 +648,7 @@
 							(scrShowScreen gScreen &dsRPGManageArmor; {
 								checkMilitaryID: (@ gData 'checkMilitaryID)
 								noUpgrade: (@ gData 'noUpgrade)
+								sourceObj: (@ gData 'sourceObj)
 								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
 							
 								manageMiscDevices: True
@@ -655,6 +663,7 @@
 							(scrShowScreen gScreen &dsRPGManageWeapons; {
 								checkMilitaryID: (@ gData 'checkMilitaryID)
 								noUpgrade: (@ gData 'noUpgrade)
+								sourceObj: (@ gData 'sourceObj)
 								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
 								
 								manageArmor: (@ gData 'manageArmor)
@@ -767,6 +776,8 @@
 
 	'checkMilitaryID: If True, we should check for a military ID.
 
+	'sourceObj: If not Nil, use this as the object for inventory purposes.
+	
 	'upgradeInstallOnly: If True, we only offer device installation services if
 			the player buys an upgrade.
 	
@@ -942,6 +953,7 @@
 						(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							criteria: (cat "m +launchedBy:" (itmGetType (scrGetItem gScreen)) ";")
+							sourceObj: (@ gData 'sourceObj)
 							})
 					</Action>
 					
@@ -961,6 +973,7 @@
 								checkMilitaryID: (@ gData 'checkMilitaryID)
 								replaceItem: (scrGetItem gScreen)
 								slotPosIndex: (@ (scrGetListEntry gScreen) 'slotPosIndex)
+								sourceObj: (@ gData 'sourceObj)
 								})
 							)
 					</Action>
@@ -1016,6 +1029,7 @@
 							(scrShowScreen gScreen &dsRPGManageArmor; {
 								checkMilitaryID: (@ gData 'checkMilitaryID)
 								noUpgrade: (@ gData 'noUpgrade)
+								sourceObj: (@ gData 'sourceObj)
 								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
 							
 								manageMiscDevices: (@ gData 'manageMiscDevices)
@@ -1030,6 +1044,7 @@
 							(scrShowScreen gScreen &dsRPGManageMiscDevices; {
 								checkMilitaryID: (@ gData 'checkMilitaryID)
 								noUpgrade: (@ gData 'noUpgrade)
+								sourceObj: (@ gData 'sourceObj)
 								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
 								
 								manageArmor: (@ gData 'manageArmor)
@@ -1310,6 +1325,7 @@
 	'checkMilitaryID: If True, we should check for a military ID before 
 			installing Military armor. We also refuse to install Illegal armor.
 
+	sourceObj: If not Nil, use this as the object for inventory purposes.
 -->
 
 	<DockScreen UNID="&dsRPGUpgradeArmor;"
@@ -1319,7 +1335,7 @@
 			>
 
 		<ListOptions
-				dataFrom=	"source"
+				dataFrom=	"=(if (@ gData 'sourceObj) (@ gData 'sourceObj) 'source)"
 				list=		"*"
 				>
 			(scrSetListFilter gScreen (lambda (theItem)
@@ -1423,11 +1439,13 @@
 				
 				<Actions>
 					<Action id="actionBuyAndInstall" default="1">
-						(block (thisItem currencyUsed)
-							(setq thisItem (scrGetItem gScreen))
-							(setq currencyUsed (objGetDefaultCurrency gSource))
+						(block (
+							(thisItem (scrGetItem gScreen))
+							(currencyUsed (objGetDefaultCurrency gSource))
+							(sourceObj (if (@ gData 'sourceObj) (@ gData 'sourceObj) gSource))
+							)
 							
-							(objRemoveItem gSource thisItem 1)
+							(objRemoveItem sourceObj thisItem 1)
 							(objAddItem gPlayerShip thisItem 1)
 
 							(shpInstallArmor gPlayerShip thisItem (@ gData 'armorSeg))
