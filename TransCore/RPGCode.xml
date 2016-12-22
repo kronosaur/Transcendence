@@ -263,40 +263,59 @@
 				))
 				
 			(setq rpgCalcDockServiceInstallAction (lambda (dockObj shipObj options)
-				(switch
-					(= dockObj shipObj)
-						{
-							visible: Nil
-							}
+				(block (
+					allItems
+					)
+					(switch
+						(= dockObj shipObj)
+							{
+								visible: Nil
+								}
 				
-					;	If no items to install, action is disabled
+						;	If no items to install, action is disabled
 					
-					(not (objGetItems shipObj (@ options 'criteria)))
+						(not (setq allItems (objGetItems shipObj (@ options 'criteria))))
+							{
+								visible: True
+								enabled: Nil
+								desc: (scrTranslate gScreen "actionInstall:noItemInCargo" { category:(@ options 'category) })
+								}
+								
+						;	If none of the items can be installed because of compatibility, then
+						;	say so.
+						
+						(not (filter allItems theItemToInstall
+								(!= (@ (objCanInstallItem shipObj theItemToInstall) 1) 'notCompatible)
+								))
+							{
+								visible: True
+								enabled: Nil
+								desc: (or
+										(objTranslate shipObj 'rpg.noCompatibleDeviceInCargo { category:(@ options 'category) })
+										(scrTranslate gScreen "actionInstall:noCompatibleItemInCargo" { category:(@ options 'category) })
+										)
+								}
+								
+						;	If none of the items in our cargo hold can be installed because
+						;	the station requires an upgrade (purchase) then we show an error.
+					
+						(not (filter allItems theItemToInstall
+								(not (@ (objGetItemProperty dockObj theItemToInstall 'installItemStatus) 'upgradeInstallOnly))
+								))
+							{
+								visible: True
+								enabled: Nil
+								desc: (scrTranslate gScreen "actionInstall:upgradeInstallOnly" { category:(@ options 'category) })
+								}
+							
 						{
 							visible: True
-							enabled: Nil
-							desc: (scrTranslate gScreen "actionInstall:noItemInCargo" { category:(@ options 'category) })
+							enabled: True
+							desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) })
+									(scrTranslate gScreen "actionInstall:defaultAbility" { category:(@ options 'category) dockObj:dockObj })
+									)
 							}
-							
-					;	If none of the items in our cargo hold can be installed because
-					;	the station requires an upgrade (purchase) then we show an error.
-					
-					(not (filter (objGetItems shipObj (@ options 'criteria)) theItemToInstall
-							(not (@ (objGetItemProperty dockObj theItemToInstall 'installItemStatus) 'upgradeInstallOnly))
-							))
-						{
-							visible: True
-							enabled: Nil
-							desc: (scrTranslate gScreen "actionInstall:upgradeInstallOnly" { category:(@ options 'category) })
-							}
-							
-					{
-						visible: True
-						enabled: True
-						desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) })
-								(scrTranslate gScreen "actionInstall:defaultAbility" { category:(@ options 'category) dockObj:dockObj })
-								)
-						}
+						)
 					)
 				))
 				
@@ -306,6 +325,7 @@
 						(filter (objGetItems dockObj "d~wsUN") theItemToBuy
 							(and (objGetSellPrice dockObj theItemToBuy)
 									(objGetItemProperty dockObj theItemToBuy 'installDevicePrice)
+									(!= (@ (objCanInstallItem shipObj theItemToBuy) 1) 'notCompatible)
 									)
 							)
 						)
@@ -800,6 +820,7 @@
 								(filter (objGetItems dockObj (@ options 'criteria)) theItemToBuy
 									(and (objGetSellPrice dockObj theItemToBuy)
 											(objGetItemProperty dockObj theItemToBuy 'installDevicePrice)
+											(!= (@ (objCanInstallItem shipObj theItemToBuy) 1) 'notCompatible)
 											)
 									)
 								)
@@ -835,6 +856,7 @@
 								(filter (objGetItems dockObj (@ options 'criteria)) theItemToBuy
 									(and (objGetSellPrice dockObj theItemToBuy)
 											(objGetArmorReplacePrice dockObj theItemToBuy)
+											(!= (@ (objCanInstallItem shipObj theItemToBuy) 1) 'notCompatible)
 											)
 									)
 								)
@@ -889,6 +911,7 @@
 								(filter (objGetItems dockObj (@ options 'criteria)) theItemToBuy
 									(and (objGetSellPrice dockObj theItemToBuy)
 											(objGetItemProperty dockObj theItemToBuy 'installDevicePrice)
+											(!= (@ (objCanInstallItem shipObj theItemToBuy) 1) 'notCompatible)
 											)
 									)
 								)
@@ -993,6 +1016,7 @@
 						(filter (objGetItems dockObj "wUN") theItemToBuy
 							(and (objGetSellPrice dockObj theItemToBuy)
 									(objGetItemProperty dockObj theItemToBuy 'installDevicePrice)
+									(!= (@ (objCanInstallItem shipObj theItemToBuy) 1) 'notCompatible)
 									)
 							)
 						)
@@ -1641,6 +1665,13 @@
 
 								(eq resultCode 'cannotInstall)
 									(setq desc resultMessage)
+									
+								(eq resultCode 'notCompatible)
+									(setq desc (or 
+										(objTranslate installerObj 'rpg.cannotInstallDeviceBecauseNotCompatible { item:thisItem targetObj:targetObj })
+										(scrTranslate gScreen 'rpg.cannotInstallDeviceBecauseNotCompatible { item:thisItem targetObj:targetObj })
+										"This device is not compatible with your ship."
+										))
 
 								(eq resultCode 'noDeviceSlotsLeft)
 									(setq desc (or

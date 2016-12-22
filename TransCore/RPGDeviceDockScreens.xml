@@ -293,6 +293,7 @@
 							(not (itmIsEqual theItem (@ gData 'replaceItem) 'ignoreInstalled))
 							)
 						(geq (itmGetLevel theItem) minLevel)
+						(!= (@ (objCanInstallItem gPlayerShip theItem) 1) 'notCompatible)
 						)
 					))
 				)

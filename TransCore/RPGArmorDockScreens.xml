@@ -1180,19 +1180,36 @@
 						;	Status
 						
 						(if thisItem
-							(block (desc cargoNeeded)
-								(setq gResult (shpCanInstallArmor gPlayerShip thisItem armorSeg))
+							(block (
+								(returnValue (objCanInstallItem gPlayerShip thisItem armorSeg))
+								(resultCode (@ returnValue 1))
+								(resultMessage (@ returnValue 2))
+								(itemToReplace (@ returnValue 3))
+								
+								desc
+								cargoNeeded
+								)
 								(setq gInstallStatus (objGetItemProperty gSource thisItem 'installItemStatus))
 								(setq gCost (@ gInstallStatus 'price))
 								(setq cargoNeeded (subtract (itmGetMass (shpGetArmor gPlayerShip armorSeg)) (itmGetMass thisItem)))
 
 								(switch
-									(eq gResult 1)
+									(= resultCode 'notCompatible)
+										(block Nil
+											(setq desc (or 
+												(objTranslate gPlayerShip 'rpg.cannotInstallArmorBecauseNotCompatible { item:thisItem targetObj:gPlayerShip })
+												(scrTranslate gScreen 'rpg.cannotInstallArmorBecauseNotCompatible { item:thisItem targetObj:gPlayerShip })
+												"This armor segment is not compatible with your ship."
+												))
+											(setq canInstall Nil)
+											)
+
+									(= resultCode 'armorTooHeavy)
 										(block Nil
 											(setq desc (cat (itmGetName thisItem 3) " are too heavy for your ship's hull."))
 											(setq canInstall Nil)
 											)
-
+											
 									(and (@ gData 'checkMilitaryID) 
 											(itmHasModifier thisItem "Military")
 											(not (objGetItems gPlayerShip "*+MilitaryID"))
@@ -1210,13 +1227,13 @@
 											(setq canInstall Nil)
 											)
 											
-									(not (isint gResult))
+									(= resultCode 'cannotInstall)
 										(block Nil
-											(setq desc gResult)
+											(setq desc resultMessage)
 											(setq canInstall Nil)
 											)
-
-									(not (eq gResult 0))
+									
+									(not (eq resultCode 'ok))
 										(block Nil
 											(setq desc "This armor segment cannot be installed.")
 											(setq canInstall Nil)
@@ -1344,6 +1361,7 @@
 					(objGetSellPrice gSource theItem)
 					(objGetArmorReplacePrice gSource theItem)
 					(geq (itmGetLevel theItem) (itmGetLevel (shpGetArmor gPlayerShip (@ gData 'armorSeg))))
+					(!= (@ (objCanInstallItem gPlayerShip theItem) 1) 'notCompatible)
 					)
 				))
 		</ListOptions>
@@ -1665,6 +1683,29 @@
 					"You do not have any devices in your cargo hold."
 					)
 			</Text>
+			<Text id="actionInstall:noCompatibleItemInCargo">
+				(switch
+					(= (@ gData 'category) 'cargoHold)
+						"You do not have any compatible cargo expansions in your cargo hold."
+						
+					(= (@ gData 'category) 'drive)
+						"You do not have any compatible drive upgrades in your cargo hold."
+						
+					(= (@ gData 'category) 'launcher)
+						"You do not have any compatible launchers in your cargo hold."
+						
+					(= (@ gData 'category) 'reactor)
+						"You do not have any compatible reactors in your cargo hold."
+						
+					(= (@ gData 'category) 'shields)
+						"You do not have any compatible shield generators in your cargo hold."
+						
+					(= (@ gData 'category) 'weapon)
+						"You do not have any compatible weapons in your cargo hold."
+						
+					"You do not have any compatible devices in your cargo hold."
+					)
+			</Text>
 			<Text id="actionInstall:defaultAbility">
 				(cat "We install devices up to tech level " (objGetProperty (@ gData 'dockObj) 'installDeviceMaxLevel) ".")
 			</Text>
@@ -1857,6 +1898,40 @@
 						(cat "We can remove " (itmGetName (@ gData 'item) 0x04) " free of charge. Are you sure you wish to continue?")
 						
 					(cat "We can remove " (itmGetName (@ gData 'item) 0x04) " for " (@ gData 'cost) ". Are you sure you wish to continue?")
+					)
+			</Text>
+			
+			<Text id="rpg.cannotInstallArmorBecauseNotCompatible">
+				(cat
+					"This armor segment is not compatible with your ship."
+					)
+			</Text>
+			<Text id="rpg.cannotInstallDeviceBecauseNotCompatible">
+				(cat
+					"This device is not compatible with your ship."
+					)
+			</Text>
+			<Text id="rpg.noCompatibleDeviceInCargo">
+				(switch
+					(= (@ gData 'category) 'cargoHold)
+						"You do not have any compatible cargo expansions in your cargo hold."
+						
+					(= (@ gData 'category) 'drive)
+						"You do not have any compatible drive upgrades in your cargo hold."
+						
+					(= (@ gData 'category) 'launcher)
+						"You do not have any compatible launchers in your cargo hold."
+						
+					(= (@ gData 'category) 'reactor)
+						"You do not have any compatible reactors in your cargo hold."
+						
+					(= (@ gData 'category) 'shields)
+						"You do not have any compatible shield generators in your cargo hold."
+						
+					(= (@ gData 'category) 'weapon)
+						"You do not have any compatible weapons in your cargo hold."
+						
+					"You do not have any compatible devices in your cargo hold."
 					)
 			</Text>
 		</Language>
