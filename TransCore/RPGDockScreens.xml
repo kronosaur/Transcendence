@@ -44,6 +44,11 @@
 							(objHasAttribute gSource 'populated)
 								(scrSetDescTranslate gScreen 'descAbandonedStationPopulated)
 								
+							;	If a ship, use ship description.
+							
+							(= (objGetProperty gSource 'scale) 'ship)
+								(scrSetDescTranslate gScreen 'descAbandonedShipDefault { name:(objGetName gSource 0x04) })
+								
 							;	Otherwise, generic default
 							
 							(scrSetDescTranslate gScreen 'descAbandonedStationDefault)
@@ -81,6 +86,11 @@
 				(cat 
 					"You are docked at the lifeless ruins of a destroyed station. "
 					"Wrecked machinery and smoldering bodies litter the silent, cavernous bay."
+					)
+			</Text>
+			<Text id="descAbandonedShipDefault">
+				(cat
+					"You are docked with " (@ gData 'name) "."
 					)
 			</Text>
 		</Language>

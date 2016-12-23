@@ -1548,39 +1548,6 @@
 				/>
 	</StationType>
 
-	<!-- Shipwreck -->
-
-	<StationType UNID="&stShipwreck;"
-			name=				"(shipwreck)"
-			sovereign=			"&svNeutral;"
-			dockScreen=			"&dsAbandonedShip;"
-			scale=				"ship"
-			mobile=				"true"
-			noMapIcon=			"true"
-
-			ejectaType=			"&vtWreckEjecta;"
-			
-			attributes=			"shipwreck"
-			>
-		<Image imageID="&rsMediumShips1;" imageX="0" imageY="96" imageWidth="48" imageHeight="48"/>
-
-		<Events>
-			<GetExplosionType>
-				(intContainerGetExplosionType gSource)
-			</GetExplosionType>
-
-			<OnDamage>
-				(intContainerOnDamage gSource aDamageHP)
-			</OnDamage>
-		</Events>
-
-		<DockingPorts
-				portCount=		"2"
-				portRadius=		"48"
-				maxDist=		"3"
-				/>
-	</StationType>
-
 	<!-- Shipwreck 1 -->
 
 	<StationType UNID="&stShipwreck1;"

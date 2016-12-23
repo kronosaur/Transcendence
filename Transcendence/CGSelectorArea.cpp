@@ -850,11 +850,10 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 
 		//	Damage
 
-		int iMaxHP = pArmor->GetMaxHP(pSource);
-		if (iMaxHP != pArmor->GetHitPoints() && iMaxHP > 0)
+		int iIntegrity = pArmor->GetHitPointsPercent(pSource);
+		if (iIntegrity != 100)
 			{
-			int iPercent = ((1000 * pArmor->GetHitPoints() / iMaxHP) + 5) / 10;
-			CString sPercent = strPatternSubst(CONSTLIT("%d%%"), iPercent);
+			CString sPercent = strPatternSubst(CONSTLIT("%d%%"), iIntegrity);
 
 			m_VI.GetFont(fontMedium).DrawText(Dest,
 					x,
@@ -910,10 +909,10 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 
 				//	Shield level
 
-				if (iMaxHP != iHP && iMaxHP > 0)
+				int iIntegrity = pDevice->GetHitPointsPercent(pSource);
+				if (iIntegrity != 100)
 					{
-					int iPercent = ((1000 * iHP / iMaxHP) + 5) / 10;
-					CString sPercent = strPatternSubst(CONSTLIT("%d%%"), iPercent);
+					CString sPercent = strPatternSubst(CONSTLIT("%d%%"), iIntegrity);
 
 					m_VI.GetFont(fontMedium).DrawText(Dest,
 							x,

@@ -404,7 +404,9 @@
     <None Include="Primordial.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Rocky.xml" />
+    <None Include="Rocky.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Stargates.xml" />
     <None Include="StarSystems.xml">
       <SubType>Designer</SubType>

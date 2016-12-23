@@ -49,6 +49,37 @@
 		</Language>
 	</StationType>
 
+	<!-- Shipwreck -->
+
+	<StationType UNID="&stShipwreck;"
+			name=				"(shipwreck)"
+			sovereign=			"&svNeutral;"
+			dockScreen=			"&dsRPGAbandonedStation;"
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+
+			ejectaType=			"&vtWreckEjecta;"
+			
+			attributes=			"shipwreck"
+			>
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
 <!-- RESOURCES -->
 
 	<Image UNID="&rsGenericCargoCrate;"	bitmap="Resources\CargoCrate.jpg"		bitmask="Resources\CargoCrateMask.bmp"		loadOnUse="true" />
