@@ -96,22 +96,26 @@
 		<Image imageID="&rsItems2;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
-				type=				"continuousBeam"
+				type=				"beam"
 
 				repeating=			"4"
 				damage=				"laser:1d4+1; mining:3;"
-				relativisticSpeed=	"true"
 				fireRate=			"30"
-				lifetime=			"3"
+				lifetime=			"15"
 				powerUse=			"30"
 
-				effect=				"&efGreenLaserContinuousBeam;"
 				fireEffect=			"&efGreenLaserFireEffect;"
 				hitEffect=			"&efGreenLaserHitEffect;"
 				sound=				"&snLaserCannon;"
 				>
+			<Effect>
+				<Beam
+						beamType=			"laser"
+						primaryColor=		"0x5f, 0xf1, 0x2a"
+						secondaryColor=		"0x00, 0xff, 0x00"
+						/>
+			</Effect>			
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Level 2: Seismic Scanner Pod -->

@@ -346,7 +346,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="HUD.xml" />
-    <None Include="RPGAnalyzers.xml" />
+    <None Include="RPGAnalyzers.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="RPGAutons.xml">
       <SubType>Designer</SubType>
     </None>
