@@ -1613,12 +1613,12 @@ CSpaceObject *CPlayerShipController::GetTarget (CItemCtx &ItemCtx, bool bNoAutoT
 	if (bNoAutoTarget)
 		return m_pTarget;
 
-	//	Use the player's designated target if it's in range and it's angry at
-	//	the player.
+	//	Use the player's designated target if it's in range and it's not a friend,
+	//	then we use it as a target.
 
 	else if (m_pTarget 
 			&& !m_bTargetOutOfRange
-			&& m_pTarget->IsAngryAt(m_pShip))
+			&& (m_pShip->CanTargetFriendlies() || !m_pTarget->IsFriend(m_pShip) || m_pTarget->IsAngryAt(m_pShip)))
 		return m_pTarget;
 
 	//	Otherwise, we use the auto-target.
