@@ -46,7 +46,7 @@
 			value=				"750"
 			mass=				"1000"
 
-			description=		"This reactor has a peak power output of 10MW."
+			description=		"This is the smallest of the Nova series, suitable for small ships."
 			>
 
 		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
@@ -127,7 +127,7 @@
 			value=				"1000"
 			mass=				"1000"
 
-			description=		"This reactor has a peak power output of 15MW."
+			description=		"This fusion reactor is often used on high-performance civilian ships."
 			>
 
 		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
@@ -178,7 +178,7 @@
 			value=				"3000"
 			mass=				"3000"
 
-			description=		"The Nova-25 reactor is a popular upgrade for those ships that need to support advanced weaponry. The reactor has a peak power output of 25MW."
+			description=		"The Nova-25 reactor is a popular upgrade for those ships that need to support advanced weaponry or greater thrust."
 			>
 
 		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
@@ -351,7 +351,7 @@
 			value=				"5500"
 			mass=				"3500"
 
-			description=		"This reactor has a peak power output of 50MW."
+			description=		"In its stock configuration this fusion reactor has a peak power output of 50MW."
 			>
 
 		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
@@ -456,7 +456,7 @@
 			value=				"10000"
 			mass=				"4000"
 			  
-			description=		"With 100MW peak power output, this reactor can power all except the most advanced military weapons and devices."
+			description=		"The top of the line Nova-100 reactor is popular for its fuel efficiency."
 			>
 
 		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
@@ -574,7 +574,7 @@
 			value=				"20000"
 			mass=				"5000"
 
-			description=		"Though older than the Nova series, the 150NX remains popular in the Commonwealth. It has peak power output of 150MW."
+			description=		"Though older than the Nova series, the 150NX remains popular in the Commonwealth."
 			>
 
 		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
@@ -734,7 +734,7 @@
 			value=				"60000"
 			mass=				"5000"
 
-			description=		"The SN2500 is a military reactor designed for the advanced Centurion/X heavy gunship. At 250MW peak power, it is the most powerful reactor of its size."
+			description=		"The SN2500 is a military reactor designed for the advanced Centurion/X heavy gunship."
 			reverseArticle=		"true"
 			>
 
@@ -860,7 +860,7 @@
 			value=				"100000"
 			mass=				"7000"
 
-			description=		"The 500MW Koshiba reactor is the most powerful fusion reactor in existence."
+			description=		"The Koshiba-500 is an antimatter reactor used on large military ships."
 			>
 
 		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
@@ -888,7 +888,7 @@
 			value=				"200000"
 			mass=				"7000"
 
-			description=		"Based on a Ringer design, this is an exotic vacuum reactor rated at 1GW peak power output."
+			description=		"Based on a Ringer design, this is an exotic zero-point energy reactor."
 			>
 
 		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
