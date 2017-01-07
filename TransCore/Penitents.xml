@@ -238,11 +238,12 @@
 			defaultSovereign=	"&svPenitents;"
 
 			attributes=			"genericClass, penitent, penitents"
-			   
-			mass=				"50"
+
+			size=				"77"
+			mass=				"600"
 			thrustRatio=		"7"
 			maxSpeed=			"25"
-			cargoSpace=			"25"
+			cargoSpace=			"100"
 			>
 
 		<!-- Configuration -->
@@ -270,11 +271,12 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips3;" imageX="0" imageY="0" imageWidth="96" imageHeight="96" rotationOffset="-25"/>
+		<Image imageID="&rsRepentantGunship;" imageWidth="100" imageHeight="100" rotationOffset="-25" rotationCount="120" rotationColumns="12" viewportRatio="0.01"/>
+		<HeroImage imageID="&rsRepentantGunshipHero;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="158"	posRadius="17"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-158"	posRadius="17"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="167"	posRadius="34"	posZ="6"	rotation="180"	bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="-167"	posRadius="34"	posZ="6"	rotation="180"	bringToFront="*"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
@@ -299,11 +301,12 @@
 			defaultSovereign=	"&svPenitents;"
 
 			attributes=			"genericClass, penitent, penitents"
-			   
-			mass=				"100"
+
+			size=				"74"
+			mass=				"1200"
 			thrustRatio=		"7"
 			maxSpeed=			"20"
-			cargoSpace=			"25"
+			cargoSpace=			"500"
 			>
 
 		<!-- Configuration -->
@@ -332,14 +335,15 @@
 
 		<Items>
 			<Item count="5d6" item="&itHelium3FuelRod;"/>
-		</Items>
+		</Items> 
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips2;" imageX="64" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsAtonementHeavyGunship;" imageWidth="100" imageHeight="100" rotationCount="120" rotationColumns="12" viewportRatio="0.01"/>
+		<HeroImage imageID="&rsAtonementHeavyGunshipHero;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="44"	posZ="0"	rotation="180"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
@@ -612,7 +616,12 @@
 
 <!-- RESOURCES -->
 
-	<Image UNID="&rsExcruciatorDestroyer;" bitmap="Resources\ExcruciatorDestroyer.jpg" bitmask="Resources\ExcruciatorDestroyerMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsAtonementHeavyGunship;"		bitmap="Resources\AtonementHeavyGunship.jpg" bitmask="Resources\AtonementHeavyGunshipMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsAtonementHeavyGunshipHero;"	bitmap="Resources\AtonementHeavyGunshipLarge.jpg" bitmask="Resources\AtonementHeavyGunshipLargeMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsExcruciatorDestroyer;"		bitmap="Resources\ExcruciatorDestroyer.jpg" bitmask="Resources\ExcruciatorDestroyerMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsRepentantGunship;"			bitmap="Resources\RepentantGunship.jpg" bitmask="Resources\RepentantGunshipMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsRepentantGunshipHero;"		bitmap="Resources\RepentantGunshipLarge.jpg" bitmask="Resources\RepentantGunshipLargeMask.bmp" loadOnUse="true" />
+	
 	<Image UNID="&rsPenitentMonastery;" bitmap="Resources\PenitentMonastery.jpg" bitmask="Resources\PenitentMonasteryMask.bmp" loadOnUse="true" />
 
 </TranscendenceModule>

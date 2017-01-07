@@ -1724,6 +1724,10 @@
 	<!ENTITY stPenitentMonastery		"0x00100214">
 	<!ENTITY ssEtaCeti					"0x00100215">
 	<!ENTITY rsPenitentMonastery		"0x00100216">
+	<!ENTITY rsRepentantGunship			"0x00100217">
+	<!ENTITY rsRepentantGunshipHero		"0x00100218">
+	<!ENTITY rsAtonementHeavyGunship	"0x00100219">
+	<!ENTITY rsAtonementHeavyGunshipHero	"0x0010021A">
 	
 	<!-- 0230-024F CHARACTERS -->
 	
