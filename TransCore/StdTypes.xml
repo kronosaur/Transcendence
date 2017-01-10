@@ -906,7 +906,7 @@
 			mass=				"1"
 			frequency=			"veryrare"
 			unknownType=		"&itUnknownID;"
-			attributes=			"MilitaryID; ID; MinorItem"
+			attributes=			"commonwealth, ID, militaryID, minorItem"
 
 			description=		"This identification chip is used by the Commonwealth military to identify authorized military personnel."
 

@@ -471,7 +471,9 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="Ore.xml" />
-    <Xml Include="Penitents.xml" />
+    <Xml Include="Penitents.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="RPGComponents.xml">
       <SubType>Designer</SubType>
     </Xml>

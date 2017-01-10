@@ -5006,7 +5006,7 @@ PLAYER DATA
 								(gr (objGetData gPlayerShip "fleetXP") 0)
 									"\"Because of your crimes against the Commonwealth you are hereby discharged from the Fleet.\""
 									
-								(objGetItems gPlayerShip "*+MilitaryID")
+								(objGetItems gPlayerShip "* +commonwealth; +militaryID")
 									"\"Because of your crimes against the Commonwealth your military ID is hereby revoked.\""
 									
 								"\"You're nothing but a common criminal, not even worth putting in the locker.\""
@@ -5022,7 +5022,7 @@ PLAYER DATA
 						(block (milIDs)
 							(objSetData gPlayerShip "fleetLevel" 1)
 							(objSetData gPlayerShip "fleetXP" 0)
-							(enum (objGetItems gPlayerShip "* +MilitaryID") theItem
+							(enum (objGetItems gPlayerShip "* +commonwealth; +militaryID") theItem
 								(objRemoveItem gPlayerShip theItem)
 								)
 							(scrExitScreen gScreen 'forceUndock)
