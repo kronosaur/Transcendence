@@ -241,7 +241,7 @@
 
 			size=				"77"
 			mass=				"600"
-			thrustRatio=		"7"
+			thrustRatio=		"5"
 			maxSpeed=			"25"
 			cargoSpace=			"100"
 			>
@@ -304,7 +304,7 @@
 
 			size=				"74"
 			mass=				"1200"
-			thrustRatio=		"7"
+			thrustRatio=		"3"
 			maxSpeed=			"20"
 			cargoSpace=			"500"
 			>

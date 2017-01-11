@@ -79,7 +79,7 @@
 					(ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
 					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
 					
-					(newReactor (itmCreate &it50MWReactor; 1))
+					(newReactor (itmCreate &it100MWReactor; 1))
 					
 					(oldShipObj gPlayerShip)
 					newShipObj
@@ -91,7 +91,8 @@
 					
 					;	Create a Penitent ship for the player
 					
-					(setq newShipObj (sysCreateShip &scAtonement; (objGetPos gPlayerShip) &svBenedict06Infiltrate;))
+					(setq newShipObj (sysCreateShip &scAtonement; (objGetPos gPlayerShip) &svBenedict06Infiltrate; &evBenedict06PenitentShip;))
+					(msnSetData gSource 'penitentShipID (objGetID newShipObj))
 					
 					;	Install a reactor, because otherwise we're not going anywhere
 					
@@ -135,7 +136,7 @@
 					;	If the Penitent station is destroyed before we dock, then 
 					;	we fail the mission.
 					
-					(eq (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
 						(msnFailure gSource)
 					)
 			</OnObjDestroyed>
@@ -144,10 +145,15 @@
 				(block (
 					(ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
 					(originalShipObj (objGetObjByID (msnGetData gSource 'playerShipID)))
-					(penitentShipObj gPlayerShip)
+					(penitentShipObj (objGetObjByID (msnGetData gSource 'penitentShipID)))
 					)
 					
 					(switch
+						;	If we're not in the penitent ship, then do nothing: we've already
+						;	switched. This can happen if we resurrect due to insurance.
+						
+						(!= penitentShipObj gPlayerShip)
+							Nil
 					
 						;	If the original ship is destroyed, then the Penitent ship
 						;	becomes permanent, so we set the sovereign.
@@ -583,6 +589,53 @@
 	</OverlayType>
 	
 <!-- BEHAVIORS -->
+	
+	<Type unid="&evBenedict06PenitentShip;">
+		<Events>
+			<OnInsuranceClaim>
+				(block (
+					(missionObj (@ (msnFind "* +unid:&msInfiltratePenitents;;") 0))
+					(originalShipObj (objGetObjByID (msnGetData missionObj 'playerShipID)))
+					(penitentShipObj (objGetObjByID (msnGetData missionObj 'penitentShipID)))
+					)
+					
+					;	If the mission is still active, we fail it.
+					
+					(if (msnGetProperty missionObj 'isActive)
+						(msnFailure missionObj)
+						)
+					
+					;	Switch back to the original player ship.
+					
+					(switch
+						;	If we're not in the Penitent ship, or if our original ship is
+						;	destroyed, then go through the normal resurrection.
+						
+						(or (not originalShipObj)
+								(!= penitentShipObj gPlayerShip)
+								)
+							Nil
+							
+						;	Otherwise, we switch back to the original player ship
+						
+						(block Nil
+							;	Restore the player's ship
+					
+							(plyChangeShip gPlayer originalShipObj)
+							
+							;	Destroy the old penitent ship
+							
+							(objDestroy penitentShipObj)
+							
+							;	Return True to indicate that we handled this claim.
+							
+							True
+							)
+						)
+					)
+			</OnInsuranceClaim>
+		</Events>
+	</Type>
 
 	<Type UNID="&evBenedict06PenitentBase;">
 		<Events>

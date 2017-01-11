@@ -2207,13 +2207,21 @@
 					(typIncGlobalData &stInsuranceCompany; "claims")
 					(typSetGlobalData &stInsuranceCompany; "insured" Nil)
 
-					; Put the player in a safe place and repair the ship
-					(rpgRestorePlayer)
+					; Restore the ship					
+					(switch
+						; If the player ship has custom insurance code, then we 
+						; don't do anything more.
+						(objFireEvent gPlayerShip 'OnInsuranceClaim)
+							Nil
+						
+						; Put the player in a safe place and repair the ship
+						(rpgRestorePlayer)
+						)
 
 					; Create a rescue ship nearby
 					(setq rescueObj (sysCreateShip 
 						&scCorporateCruiser; 
-						(sysVectorPolarOffset gPlayerShip (random 0 359) 5)
+						(sysVectorRandom gPlayerShip 5 5 "TA")
 						&svCorporate;
 						))
 
