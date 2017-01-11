@@ -1161,7 +1161,7 @@
 									</Siblings>
 
 									<!-- Container Habitat -->
-									<Siblings radiusInc="11-14" arcInc="11-14">
+									<Siblings radiusInc="-11--14" arcInc="11-14">
 										<Station type="&stContainerHabitat;" name="Starton Residentials|Starton Residentials" noArticle="true" noMapLabel="true"/>
 									</Siblings>
 
