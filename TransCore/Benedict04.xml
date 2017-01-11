@@ -86,13 +86,12 @@
 							}
 						)
 						
-					;	Create some Penitents to intercept the player
+					;	Add an event when the player gets near Stormhound
 					
-					(setq travelTime (sysCalcTravelTime (objGetDistance gPlayerShip stormhoundObj) (shpGetMaxSpeed gPlayerShip)))
-					(sysAddEncounterEventAtDist 
-						(divide (multiply (random 30 45) travelTime) 100)
-						gPlayerShip &tbBenedict04Encounters; (random 60 100)
-						)
+					(sysAddTypeRangeEvent &msBenedictInNewBeyond; 'OnEncounter {
+						center: stormhoundObj
+						radius: (* (/ (random 60 40) 100) (objGetDistance gPlayerShip stormhoundObj))
+						})
 					
 					;	Mission accepted
 					
@@ -153,6 +152,18 @@
 					theList
 					)
 			</GetGlobalAchievements>
+			
+			<OnEncounter>
+				(block (
+					(missionObj (@ (msnFind "a +unid:&msBenedictInNewBeyond;;") 0))
+					)
+					(if missionObj
+						(sysCreateEncounter &tbBenedict04Encounters; {
+							target: gPlayerShip
+							})
+						)
+					)
+			</OnEncounter>
 		</Events>
 		
 		<Language>

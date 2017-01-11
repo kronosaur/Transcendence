@@ -283,7 +283,7 @@
 		
 		<AISettings
 			aggressor=			"true"
-			fireRateAdj=		"10"
+			fireRateAdj=		"20"
 			fireAccuracy=		"90"
 			perception=			"4"
 			ignoreShieldsDown=	"true"
@@ -350,7 +350,7 @@
 		
 		<AISettings
 			aggressor=			"true"
-			fireRateAdj=		"25"
+			fireRateAdj=		"20"
 			fireAccuracy=		"90"
 			perception=			"4"
 			
