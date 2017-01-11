@@ -2727,7 +2727,7 @@ void CTranscendenceModel::TransferGateFollowers (CSystem *pOldSystem, CSystem *p
 		//	(We do this before we remove the follower from the system because otherwise
 		//	the system will automatically remove the events)
 
-		CTimedEventList ObjEvents;
+		CSystemEventList ObjEvents;
 		pFollower->GetSystem()->TransferObjEventsOut(pFollower, ObjEvents);
 
 		//	Remove the ship from the old system

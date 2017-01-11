@@ -1335,7 +1335,7 @@ class CTranscendenceModel
 		CTopologyNode *m_pDestNode;					//	While player in gate
 		CString m_sDestEntryPoint;					//	While player in gate
 		CSystem *m_pOldSystem;						//	While player in gate
-		CTimedEventList m_TimerEvents;				//	Timer events (temp while we gate)
+		CSystemEventList m_TimerEvents;				//	Timer events (temp while we gate)
 		TArray<DWORD> m_GateFollowers;				//	ObjID of any wingmen (temp while we gate)
 	};
 
