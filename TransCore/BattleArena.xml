@@ -2510,6 +2510,7 @@
 										; Otherwise, destroy the station
 										(block Nil
 											(shpCancelOrders gSource)
+											(shpOrder gSource 'approach theTarget 100)
 											(shpOrder gSource 'attack theTarget)
 
 											(objSetData gSource "behavior" 'katamiRescueDestroy)
