@@ -271,6 +271,14 @@
 							{
 								visible: Nil
 								}
+								
+						;	If we cannot install items, then we omit this option. We will show the
+						;	proper error in Upgrade
+						
+						(not (objGetProperty dockObj 'installDeviceMaxLevel))
+							{
+								visible: Nil
+								}
 				
 						;	If no items to install, action is disabled
 					
@@ -529,6 +537,15 @@
 							)
 							
 							(switch
+								;	If we cannot remove devices, then say so.
+						
+								(not (objGetProperty dockObj 'removeDeviceMaxLevel))
+									{
+										visible: True
+										enabled: Nil
+										desc: (scrTranslate gScreen 'actionInstall.noDeviceRemove { item:theItem })
+										}
+										
 								(@ dockStatus 'upgradeInstallOnly)
 									{
 										visible: Nil	;	The Replace action already shows the message, so no need to repeat
@@ -734,6 +751,14 @@
 							)
 							
 							(switch
+								;	If we cannot install items, then we omit this option. We will show the
+								;	proper error in Upgrade
+						
+								(not (objGetProperty dockObj 'installDeviceMaxLevel))
+									{
+										visible: Nil
+										}
+							
 								(not (isint itemStatus))
 									{
 										;	If we cannot be removed, then the Remove action will show the error,
@@ -828,6 +853,15 @@
 							)
 							
 							(switch
+								;	If we cannot install items, then say so.
+						
+								(not (objGetProperty dockObj 'installDeviceMaxLevel))
+									{
+										visible: True
+										enabled: Nil
+										desc: (scrTranslate gScreen 'actionInstall.noDeviceInstall { category:(@ options 'category) })
+										}
+				
 								(not itemsForSale)
 									{
 										visible: True
@@ -931,6 +965,15 @@
 							)
 							
 							(switch
+								;	If we cannot install items, then say so.
+						
+								(not (objGetProperty dockObj 'installDeviceMaxLevel))
+									{
+										visible: True
+										enabled: Nil
+										desc: (scrTranslate gScreen 'actionInstall.noDeviceInstall { category:(@ options 'category) })
+										}
+				
 								(not (isint itemStatus))
 									{
 										visible: Nil	;	If we cannot be removed, then the Remove action will show the error

@@ -1660,6 +1660,12 @@
 				(cat "We do not have missiles for " (itmGetName (@ gData 'item) 0x04) ".")
 			</Text>
 			
+			<Text id="actionInstall.noDeviceInstall">
+				(cat "We do not install devices.")
+			</Text>
+			<Text id="actionInstall.noDeviceRemove">
+				(cat "We do not remove devices.")
+			</Text>
 			<Text id="actionInstall:noItemInCargo">
 				(switch
 					(= (@ gData 'category) 'cargoHold)
