@@ -179,7 +179,8 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 			break;
 
 		case CGameKeys::keyThrustForward:
-			if (!pPlayer->GetShip()->IsOutOfPower()
+			if (!pPlayer->DockingInProgress()
+					&& !pPlayer->GetShip()->IsOutOfPower()
 					&& !pPlayer->GetShip()->IsTimeStopped())
 				{
 				g_pTrans->Autopilot(false);
@@ -206,7 +207,8 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 			break;
 
 		case CGameKeys::keyStop:
-			if (!pPlayer->GetShip()->IsOutOfPower()
+			if (!pPlayer->DockingInProgress()
+					&& !pPlayer->GetShip()->IsOutOfPower()
 					&& !pPlayer->GetShip()->IsTimeStopped())
 				{
 				g_pTrans->Autopilot(false);
@@ -215,7 +217,8 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 			break;
 
 		case CGameKeys::keyFireWeapon:
-			if (!pPlayer->GetShip()->IsOutOfPower()
+			if (!pPlayer->DockingInProgress()
+					&& !pPlayer->GetShip()->IsOutOfPower()
 					&& !pPlayer->GetShip()->IsTimeStopped())
 				{
 				g_pTrans->Autopilot(false);
@@ -224,7 +227,8 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 			break;
 
 		case CGameKeys::keyFireMissile:
-			if (!pPlayer->GetShip()->IsOutOfPower()
+			if (!pPlayer->DockingInProgress()
+					&& !pPlayer->GetShip()->IsOutOfPower()
 					&& !pPlayer->GetShip()->IsTimeStopped())
 				{
 				g_pTrans->Autopilot(false);
