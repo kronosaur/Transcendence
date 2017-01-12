@@ -14,7 +14,7 @@ class CGDrawArea : public AGArea
 		inline CG32bitImage &GetCanvas (void) { CreateImage(); return m_Image; }
 
 		//	AGArea virtuals
-		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect);
+		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect) override;
 
 	private:
 		void CreateImage (void);
@@ -36,8 +36,8 @@ class CGItemDisplayArea : public AGArea
 		inline void SetText (const CString &sTitle, const CString &sDesc) { m_sTitle = sTitle; m_sDesc = sDesc; Invalidate(); }
 
 		//	AGArea virtuals
-		virtual int Justify (const RECT &rcRect);
-		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect);
+		virtual int Justify (const RECT &rcRect) override;
+		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect) override;
 
 	private:
 		CSpaceObject *m_pSource;
@@ -60,8 +60,8 @@ class CGItemListDisplayArea : public AGArea
 		inline void SetText (const CString &sTitle, const CString &sDesc) { m_sTitle = sTitle; m_sDesc = sDesc; m_ItemList.DeleteAll(); Invalidate(); }
 
 		//	AGArea virtuals
-		virtual int Justify (const RECT &rcRect);
-		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect);
+		virtual int Justify (const RECT &rcRect) override;
+		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect) override;
 
 	private:
 		struct SEntry
@@ -124,9 +124,10 @@ class CGItemListArea : public AGArea
 		inline void SyncCursor (void) { if (m_pListData) m_pListData->SyncCursor(); Invalidate(); }
 
 		//	AGArea virtuals
-		virtual bool LButtonDown (int x, int y);
-		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect);
-		virtual void Update (void);
+		virtual bool LButtonDown (int x, int y) override;
+		virtual void MouseWheel (int iDelta, int x, int y, DWORD dwFlags) override;
+		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect) override;
+		virtual void Update (void) override;
 
 	private:
 		enum ListTypes
@@ -176,8 +177,8 @@ class CGNeurohackArea : public AGArea
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 
 		//	AGArea virtuals
-		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect);
-		virtual void Update (void);
+		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect) override;
+		virtual void Update (void) override;
 
 	private:
 		struct SNode
@@ -281,9 +282,9 @@ class CGSelectorArea : public AGArea
 
 		//	AGArea virtuals
 
-		virtual bool LButtonDown (int x, int y);
-		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect);
-		virtual void Update (void);
+		virtual bool LButtonDown (int x, int y) override;
+		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect) override;
+		virtual void Update (void) override;
 
 	private:
 		enum ETypes

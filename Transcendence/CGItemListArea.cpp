@@ -33,6 +33,8 @@ const int ATTRIB_PADDING_Y =				1;
 const int ATTRIB_SPACING_X =				2;
 const int ATTRIB_SPACING_Y =				2;
 
+const int MOUSE_SCROLL_SENSITIVITY =		30;
+
 #define STR_NO_ITEMS						CONSTLIT("There are no items here")
 
 CGItemListArea::CGItemListArea (const CVisualPalette &VI) :
@@ -212,6 +214,46 @@ bool CGItemListArea::LButtonDown (int x, int y)
 		}
 
 	return false;
+	}
+
+void CGItemListArea::MouseWheel (int iDelta, int x, int y, DWORD dwFlags)
+
+//	MouseWheel
+//
+//	Handles scrolling
+
+	{
+	int i;
+
+	//	Short-circuit
+
+	if (m_pListData == NULL)
+		return;
+
+	//	Figure out how many lines to move
+
+	int iChange = -Sign(iDelta / MOUSE_SCROLL_SENSITIVITY);
+
+	bool bOK = false;
+	if (iChange > 0)
+		{
+		for (i = 0; i < iChange; i++)
+			{
+			if (m_pListData->MoveCursorForward())
+				bOK = true;
+			}
+		}
+	else
+		{
+		for (i = 0; i < -iChange; i++)
+			{
+			if (m_pListData->MoveCursorBack())
+				bOK = true;
+			}
+		}
+
+	if (bOK)
+		Invalidate();
 	}
 
 bool CGItemListArea::MoveCursorBack (void)
