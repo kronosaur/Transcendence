@@ -32,6 +32,8 @@ const DWORD DAMAGE_BAR_TIMER =					30 * 5;
 #define MAX_GATE_DISTANCE						(g_KlicksPerPixel * 150.0)
 #define MAX_STARGATE_HELP_RANGE					(g_KlicksPerPixel * 256.0)
 
+#define PROPERTY_CHARACTER_CLASS				CONSTLIT("characterClass")
+
 #define SETTING_ENABLED							CONSTLIT("enabled")
 #define SETTING_TRUE							CONSTLIT("true")
 
@@ -55,6 +57,7 @@ CPlayerShipController::CPlayerShipController (void) :
 		m_bDockPortIndicators(true),
         m_bMouseAim(true),
         m_iMouseAimAngle(-1),
+		m_pCharacterClass(NULL),
 		m_bUnderAttack(false),
 		m_pAutoDock(NULL),
 		m_iAutoDockPort(0),
@@ -466,7 +469,12 @@ ICCItem *CPlayerShipController::FindProperty (const CString &sProperty)
 //  discarding the result if not NULL.
 
     {
-    return m_Stats.FindProperty(sProperty);
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sProperty, PROPERTY_CHARACTER_CLASS))
+		return (m_pCharacterClass ? CC.CreateInteger(m_pCharacterClass->GetUNID()) : CC.CreateNil());
+	else
+		return m_Stats.FindProperty(sProperty);
     }
 
 void CPlayerShipController::Gate (void)
@@ -1954,6 +1962,7 @@ void CPlayerShipController::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
 //
 //	DWORD		m_iGenome
 //	DWORD		m_dwStartingShipClass
+//	DWORD		m_dwCharacterClass
 //	DWORD		m_pShip (CSpaceObject ref)
 //	DWORD		m_pStation (CSpaceObject ref)
 //	DWORD		m_pTarget (CSpaceObject ref)
@@ -1971,6 +1980,18 @@ void CPlayerShipController::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
 
 	Ctx.pStream->Read((char *)&m_iGenome, sizeof(DWORD));
 	Ctx.pStream->Read((char *)&m_dwStartingShipClass, sizeof(DWORD));
+	if (Ctx.dwVersion >= 141)
+		{
+		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
+		m_pCharacterClass = g_pUniverse->FindGenericType(dwLoad);
+		}
+	else
+		{
+		m_pCharacterClass = pShip->GetClass()->GetCharacterClass();
+		if (m_pCharacterClass == NULL)
+			m_pCharacterClass = g_pUniverse->FindGenericType(UNID_PILGRIM_CHARACTER_CLASS);
+		}
+
 	CSystem::ReadObjRefFromStream(Ctx, (CSpaceObject **)&m_pShip);
 	CSystem::ReadObjRefFromStream(Ctx, &m_pStation);
 	CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
@@ -2733,6 +2754,7 @@ void CPlayerShipController::WriteToStream (IWriteStream *pStream)
 //
 //	DWORD		m_iGenome
 //	DWORD		m_dwStartingShipClass
+//	DWORD		m_dwCharacterClass
 //	DWORD		m_pShip (CSpaceObject ref)
 //	DWORD		m_pStation (CSpaceObject ref)
 //	DWORD		m_pTarget (CSpaceObject ref)
@@ -2751,6 +2773,10 @@ void CPlayerShipController::WriteToStream (IWriteStream *pStream)
 
 	pStream->Write((char *)&m_iGenome, sizeof(DWORD));
 	pStream->Write((char *)&m_dwStartingShipClass, sizeof(DWORD));
+
+	dwSave = (m_pCharacterClass ? m_pCharacterClass->GetUNID() : 0);
+	pStream->Write((char *)&dwSave, sizeof(DWORD));
+
 	m_pShip->WriteObjRefToStream(m_pShip, pStream);
 	m_pShip->WriteObjRefToStream(m_pStation, pStream);
 	m_pShip->WriteObjRefToStream(m_pTarget, pStream);

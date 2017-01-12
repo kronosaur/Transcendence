@@ -214,6 +214,7 @@ class CPlayerShipController : public IShipController
 		inline CurrencyValue Payment (DWORD dwEconUNID, CurrencyValue iCredits) { return m_Credits.IncCredits(dwEconUNID, iCredits); }
 		void ReadyNextWeapon (int iDir = 1);
 		void ReadyNextMissile (int iDir = 1);
+		inline void SetCharacterClass (CGenericType *pClass) { m_pCharacterClass = pClass; }
 		void SetDestination (CSpaceObject *pTarget);
         inline void SetGameSession (CGameSession *pSession) { m_pSession = pSession; }
 		inline void SetGenome (GenomeTypes iGenome) { m_iGenome = iGenome; }
@@ -353,6 +354,7 @@ class CPlayerShipController : public IShipController
 		CString m_sName;						//	Player name
 		GenomeTypes m_iGenome;					//	Player genome
 		DWORD m_dwStartingShipClass;			//	Starting ship class
+		CGenericType *m_pCharacterClass;		//	Character class
 
 		bool m_bUnderAttack;					//	TRUE if we're currently under attack
 

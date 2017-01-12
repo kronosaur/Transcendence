@@ -2600,6 +2600,7 @@ ALERROR CTranscendenceModel::StartNewGameBackground (const SNewGameSettings &New
 	//	Associate with the controller
 
 	m_pPlayer->SetShip(pPlayerShip);
+	m_pPlayer->SetCharacterClass(pPlayerShip->GetClass()->GetCharacterClass());
 
 	//	All items on the ship are automatically 
 	//	known to the player
