@@ -919,7 +919,7 @@
 			combatStyle=		"advanced"
 			/>
 
-		<Image imageID="&rsWolfenGunship;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="40"/>
+		<Image imageID="&rsWolfenGunshipHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="158"	posRadius="20"	posZ="0"	rotation="180"/>

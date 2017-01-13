@@ -150,7 +150,7 @@
 			combatStyle=		"advanced"
 			/>
 
-		<Image imageID="&rsMediumShips1;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsSapphireYachtHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"	rotationCount="120"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
@@ -329,7 +329,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips2;" imageX="768" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsEI500FreighterHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"/>
@@ -454,7 +454,7 @@
 			combatStyle=		"advanced"
 			/>
 
-		<Image imageID="&rsMediumShips1;" imageX="768" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsWolfenGunshipHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="158"	posRadius="20"	posZ="0"	rotation="180"/>

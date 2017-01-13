@@ -3843,7 +3843,7 @@ PLAYER DATA
 			<Lookup count="1"	table="&trMinorItem2;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="768" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsEI500FreighterHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"/>
