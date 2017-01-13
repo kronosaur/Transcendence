@@ -1220,7 +1220,8 @@
 			class=				"Manticore"
 			type=				"heavy gunship"
 
-			mass=				"90"
+			size=				"33"
+			mass=				"120"
 			cargoSpace=			"50"
 			thrustRatio=		"2.0"
 			maxSpeed=			"18"
@@ -1238,27 +1239,27 @@
 		<Devices>
 			<Table>
 				<Group chance="25">
-					<Device item="&itBallistaCannon;"/>
+					<Device item="&itBallistaCannon;"	posAngle="40"	posRadius="37"	posZ="0"/>
 					<Device item="&itClass2Deflector;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itArbalestCannon;" enhanced="100"/>
+					<Device item="&itArbalestCannon;" enhanced="100"	posAngle="40"	posRadius="37"	posZ="0"/>
 					<Device item="&itMonopoleDeflector;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itParticleBeamWeapon;"/>
+					<Device item="&itParticleBeamWeapon;"	posAngle="40"	posRadius="37"	posZ="0"/>
 					<Device item="&itHullPlateIonizer;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itSlamCannon;"/>
+					<Device item="&itSlamCannon;"	posAngle="40"	posRadius="37"	posZ="0"/>
 					<Device item="&itClass2Deflector;"/>
 				</Group>
 			</Table>
 
-			<Device item="&itMAGLauncher;">
+			<Device item="&itMAGLauncher;"	posAngle="-40"	posRadius="37"	posZ="0">
 				<Items>
 					<Item			  count="15-25" item="&it600HexageneMAG;"/>
 					<Item chance="50" count="5-10" item="&it800HexageneMAG;"/>
@@ -1275,15 +1276,12 @@
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsManticore;" imageWidth="80" imageHeight="80"/>
+		<Image imageID="&rsManticore120;" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="12" viewportRatio="0.00625"/>
+		<HeroImage imageID="&rsManticoreHero;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
-			<Effect type="thrustMain"		posAngle="-157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
-			<Effect type="rotateRight"		posAngle="46"	posRadius="30"	posZ="0"	rotation="135"/>
-			<Effect type="rotateRight"		posAngle="-142"	posRadius="23"	posZ="0"	rotation="315"/>
-			<Effect type="rotateLeft"		posAngle="-46"	posRadius="30"	posZ="0"	rotation="225"/>
-			<Effect type="rotateLeft"		posAngle="142"	posRadius="23"	posZ="0"	rotation="45"/>
+			<Effect type="thrustMain"		posAngle="157"	posRadius="29"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-157"	posRadius="29"	posZ="0"	rotation="180"/>
 		</Effects>
 
 		<Names noArticle="true" personalName="true">
@@ -1706,7 +1704,8 @@
 			class=				"Manticore"
 			type=				"heavy gunship"
 
-			mass=				"90"
+			size=				"33"
+			mass=				"120"
 			cargoSpace=			"50"
 			thrustRatio=		"2.0"
 			maxSpeed=			"18"
@@ -1724,27 +1723,27 @@
 		<Devices>
 			<Table>
 				<Group chance="25">
-					<Device item="&itBallistaCannon;"/>
+					<Device item="&itBallistaCannon;"	posAngle="40"	posRadius="37"	posZ="0"/>
 					<Device item="&itMonopoleDeflector;" enhancement="0x0105"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itHeavySlamCannon;"/>
+					<Device item="&itHeavySlamCannon;"	posAngle="40"	posRadius="37"	posZ="0"/>
 					<Device item="&itMonopoleDeflector;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itParticleBeamWeapon;"/>
+					<Device item="&itParticleBeamWeapon;"	posAngle="40"	posRadius="37"	posZ="0"/>
 					<Device item="&itCyclotronDeflectorIII;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itSlamCannon;"/>
+					<Device item="&itSlamCannon;"	posAngle="40"	posRadius="37"	posZ="0"/>
 					<Device item="&itCyclotronDeflectorIII;"/>
 				</Group>
 			</Table>
 
-			<Device item="&itMAGLauncher;">
+			<Device item="&itMAGLauncher;"	posAngle="-40"	posRadius="37"	posZ="0">
 				<Items>
 					<Item count="15-25" item="&it800HexageneMAG;"/>
 					<Item count="15-25" item="&it600HexageneMAG;"/>
@@ -1761,15 +1760,12 @@
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsManticore;" imageWidth="80" imageHeight="80"/>
+		<Image imageID="&rsManticore120;" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="12" viewportRatio="0.00625"/>
+		<HeroImage imageID="&rsManticoreHero;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
-			<Effect type="thrustMain"		posAngle="-157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
-			<Effect type="rotateRight"		posAngle="46"	posRadius="30"	posZ="0"	rotation="135"/>
-			<Effect type="rotateRight"		posAngle="-142"	posRadius="23"	posZ="0"	rotation="315"/>
-			<Effect type="rotateLeft"		posAngle="-46"	posRadius="30"	posZ="0"	rotation="225"/>
-			<Effect type="rotateLeft"		posAngle="142"	posRadius="23"	posZ="0"	rotation="45"/>
+			<Effect type="thrustMain"		posAngle="157"	posRadius="29"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-157"	posRadius="29"	posZ="0"	rotation="180"/>
 		</Effects>
 
 		<Names noArticle="true" personalName="true">
@@ -1954,7 +1950,8 @@
 			class=				"Manticore"
 			type=				"heavy gunship"
 
-			mass=				"90"
+			size=				"33"
+			mass=				"120"
 			cargoSpace=			"50"
 			thrustRatio=		"2.0"
 			maxSpeed=			"18"
@@ -1972,12 +1969,12 @@
 		<Devices>
 			<Table>
 				<Group chance="25">
-					<Device item="&itMarkIHowitzer;"/>
+					<Device item="&itMarkIHowitzer;"	posAngle="40"	posRadius="37"	posZ="0"/>
 					<Device item="&itCyclotronDeflectorIII;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itAkan30Cannon;">
+					<Device item="&itAkan30Cannon;"		posAngle="40"	posRadius="37"	posZ="0">
 						<Items>
 							<Item count="500" item="&itAkan30CannonShell;"/>
 						</Items>
@@ -1987,26 +1984,26 @@
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itUrakHowitzer;"/>
+					<Device item="&itUrakHowitzer;"	posAngle="40"	posRadius="37"	posZ="0"/>
 					<Device item="&itCyclotronDeflectorIV;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itMoskvaLightTurret;" secondaryWeapon="true"/>
+					<Device item="&itMoskvaLightTurret;"  posAngle="0"	posRadius="5"	posZ="10" secondaryWeapon="true"/>
 					<Device item="&itArmorRepairDevice;"/>
 					<Device item="&itCyclotronDeflectorIV;"/>
 				</Group>
 			</Table>
 
 			<Table>
-				<Device chance="50" item="&itMakayevLauncher;">
+				<Device chance="50" item="&itMakayevLauncher;"	posAngle="0"	posRadius="20"	posZ="0">
 					<Items>
 						<Item count="50" item="&itStrelkaGreen;"/>
 						<Item count="250" item="&itStrelkaWhite;"/>
 					</Items>
 				</Device>
 
-				<Device chance="50" item="&itMAGLauncher;">
+				<Device chance="50" item="&itMAGLauncher;"	posAngle="-40"	posRadius="37"	posZ="0">
 					<Items>
 						<Item count="20-30" item="&itZG24ClusterMAG;"/>
 						<Item count="30-50" item="&it800HexageneMAG;"/>
@@ -2024,15 +2021,12 @@
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsManticore;" imageWidth="80" imageHeight="80"/>
+		<Image imageID="&rsManticore120;" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="12" viewportRatio="0.00625"/>
+		<HeroImage imageID="&rsManticoreHero;" imageWidth="320" imageHeight="320"/>
 		
 		<Effects>
-			<Effect type="thrustMain"		posAngle="157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
-			<Effect type="thrustMain"		posAngle="-157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
-			<Effect type="rotateRight"		posAngle="46"	posRadius="30"	posZ="0"	rotation="135"/>
-			<Effect type="rotateRight"		posAngle="-142"	posRadius="23"	posZ="0"	rotation="315"/>
-			<Effect type="rotateLeft"		posAngle="-46"	posRadius="30"	posZ="0"	rotation="225"/>
-			<Effect type="rotateLeft"		posAngle="142"	posRadius="23"	posZ="0"	rotation="45"/>
+			<Effect type="thrustMain"		posAngle="157"	posRadius="29"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-157"	posRadius="29"	posZ="0"	rotation="180"/>
 		</Effects>
 
 		<Names noArticle="true" personalName="true">
@@ -2139,7 +2133,8 @@
 			class=				"Manticore"
 			type=				"heavy gunship"
 
-			mass=				"90"
+			size=				"33"
+			mass=				"120"
 			cargoSpace=			"50"
 			thrustRatio=		"4.0"
 			maxSpeed=			"22"
@@ -2153,27 +2148,27 @@
 			/>
 		
 		<Devices>
-			<Device item="&itSlicerCannon;"/>
+			<Device item="&itSlicerCannon;"	posAngle="0"	posRadius="20"	posZ="0"/>
 
 			<Table>
 				<Group chance="25">
-					<Device item="&itOmniPartisanCannon;" secondaryWeapon="true"/>
+					<Device item="&itOmniPartisanCannon;"  posAngle="0"	posRadius="5"	posZ="10" secondaryWeapon="true"/>
 					<Device item="&itR1Deflector;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itOmniPartisanCannon;" enhanced="100" secondaryWeapon="true"/>
+					<Device item="&itOmniPartisanCannon;" enhanced="100"  posAngle="0"	posRadius="5"	posZ="10" secondaryWeapon="true"/>
 					<Device item="&itCyclotronDeflectorIV;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itOmniPartisanCannon;" secondaryWeapon="true"/>
+					<Device item="&itOmniPartisanCannon;"  posAngle="0"	posRadius="5"	posZ="10" secondaryWeapon="true"/>
 					<Device item="&itArmorRepairDevice;"/>
 					<Device item="&itCyclotronDeflectorIV;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itMakayevLauncher;">
+					<Device item="&itMakayevLauncher;"	posAngle="0"	posRadius="20"	posZ="0">
 						<Items>
 							<Table>
 								<Item chance="60" count="250" item="&itStrelkaWhite;"/>
@@ -2197,15 +2192,12 @@
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsManticore;" imageWidth="80" imageHeight="80"/>
+		<Image imageID="&rsManticore120;" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="12" viewportRatio="0.00625"/>
+		<HeroImage imageID="&rsManticoreHero;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
-			<Effect type="thrustMain"		posAngle="-157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
-			<Effect type="rotateRight"		posAngle="46"	posRadius="30"	posZ="0"	rotation="135"/>
-			<Effect type="rotateRight"		posAngle="-142"	posRadius="23"	posZ="0"	rotation="315"/>
-			<Effect type="rotateLeft"		posAngle="-46"	posRadius="30"	posZ="0"	rotation="225"/>
-			<Effect type="rotateLeft"		posAngle="142"	posRadius="23"	posZ="0"	rotation="45"/>
+			<Effect type="thrustMain"		posAngle="157"	posRadius="29"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-157"	posRadius="29"	posZ="0"	rotation="180"/>
 		</Effects>
 
 		<Names noArticle="true" personalName="true">The Slicer</Names>

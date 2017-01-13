@@ -1616,6 +1616,8 @@
 	<!ENTITY rsScorpionGunship			"0x00100096">
 	<!ENTITY rsScorpionGunshipHero		"0x00100097">
 	<!ENTITY rsEI7000Hero				"0x00100098">
+	<!ENTITY rsManticore120				"0x00100099">
+	<!ENTITY rsManticoreHero			"0x0010009A">
 	
 	<!-- 00A0-00BF ARES ORTHODOXY -->
 	
