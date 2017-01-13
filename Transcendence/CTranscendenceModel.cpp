@@ -2592,10 +2592,6 @@ ALERROR CTranscendenceModel::StartNewGameBackground (const SNewGameSettings &New
 
 	pPlayerShip->TrackFuel();
 	pPlayerShip->TrackMass();
-#ifdef DEBUG_SHIP
-	pPlayerShip->InstallTargetingComputer();
-	pPlayerShip->SetSRSEnhanced();
-#endif
 
 	//	Associate with the controller
 

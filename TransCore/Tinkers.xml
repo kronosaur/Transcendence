@@ -70,7 +70,6 @@
 				levelFrequency=		"uccuu r---- ----- ----- -----"
 				locationCriteria=	"+asteroids, -asteroidbelt"
 				unique=				"inSystem"
-				minAppearing=		"1"
 				enemyExclusionRadius="50"
 				/>
 

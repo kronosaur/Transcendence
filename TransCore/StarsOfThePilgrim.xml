@@ -70,6 +70,10 @@
 			startingSystem=			"SE"
 			startingPos=			"Start"
 			>
+		
+		<EncounterOverrides>
+			<Encounter unid="&stTinkerGathering;"	minAppearing="1"/>
+		</EncounterOverrides>
 
 		<Language>
 			<Text id="description">
