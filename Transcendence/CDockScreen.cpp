@@ -156,18 +156,20 @@ void CDockScreen::Action (DWORD dwTag, DWORD dwData)
 		//	If handled, then we're done
 
 		case IDockScreenDisplay::resultHandled:
-			return;
+			break;
 
 		//	If we need to reshow the pane, do it.
 
 		case IDockScreenDisplay::resultShowPane:
 			m_CurrentPane.ExecuteShowPane(EvalInitialPane());
-			return;
+			break;
+
+		//	Otherwise, invoke the button
+
+		default:
+			m_CurrentPane.HandleAction(dwTag, dwData);
+			break;
 		}
-
-	//	Otherwise, invoke the button
-
-	m_CurrentPane.HandleAction(dwTag, dwData);
 	}
 
 void CDockScreen::AddDisplayControl (CXMLElement *pDesc, 
@@ -312,6 +314,16 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 
 	if (retpDControl)
 		*retpDControl = pDControl;
+	}
+
+void CDockScreen::AddListFilter (const CString &sID, const CString &sLabel, const CItemCriteria &Filter)
+
+//	AddListFilter
+//
+//	Adds a new user-selectable filter to the current list.
+
+	{
+	m_pDisplay->AddListFilter(sID, sLabel, Filter);
 	}
 
 void CDockScreen::BltSystemBackground (CSystem *pSystem, const RECT &rcRect)

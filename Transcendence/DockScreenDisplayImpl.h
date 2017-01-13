@@ -8,12 +8,22 @@ class CDockScreenList : public IDockScreenDisplay
 	public:
 		CDockScreenList (void) :
 				m_pItemListControl(NULL),
-				m_bNoListNavigation(false)
+				m_bNoListNavigation(false),
+				m_dwNextFilterID(0)
 			{ }
 
 	protected:
+		struct SFilter
+			{
+			CString sID;
+			DWORD dwID;
+			CString sLabel;
+			CItemCriteria Filter;
+			};
+
 		//	IDockScreenDisplay
 
+		virtual EResults OnAddListFilter (const CString &sID, const CString &sLabel, const CItemCriteria &Filter) override;
 		virtual void OnDeleteCurrentItem (int iCount) override;
 		virtual const CItem &OnGetCurrentItem (void) const override;
 		virtual ICCItem *OnGetCurrentListEntry (void) const override;
@@ -40,11 +50,15 @@ class CDockScreenList : public IDockScreenDisplay
 
 		//	Helpers
 
-
+		bool FindFilter (DWORD dwID, int *retiIndex = NULL) const;
+		bool FindFilter (const CString &sID, int *retiIndex = NULL) const;
 
 		CGItemListArea *m_pItemListControl;
 		DWORD m_dwID;
 		bool m_bNoListNavigation;
+
+		TArray<SFilter> m_Filters;
+		DWORD m_dwNextFilterID;
 	};
 
 class CDockScreenCustomItemList : public CDockScreenList

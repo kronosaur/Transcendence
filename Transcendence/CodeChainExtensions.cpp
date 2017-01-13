@@ -83,6 +83,7 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_GET_SCREEN           27
 #define FN_SCR_ADD_MINOR_ACTION		28
 #define FN_SCR_INC_DATA				29
+#define FN_SCR_ADD_LIST_FILTER		30
 
 ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -169,6 +170,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"scrAddAction",					fnScrSet,		FN_SCR_ADD_ACTION,
 			"(scrAddAction screen actionID pos label [key] [special] code)",
 			"isis*c",	PPFLAG_SIDEEFFECTS, },
+
+		{	"scrAddListFilter",			fnScrSet,			FN_SCR_ADD_LIST_FILTER,
+			"(scrAddListFilter screen filterID label filter)",
+			"issv",		PPFLAG_SIDEEFFECTS, },
 
 		{	"scrAddMinorAction",			fnScrSet,		FN_SCR_ADD_MINOR_ACTION,
 			"(scrAddMinorAction screen actionID pos label [key] [special] code)",
@@ -1576,6 +1581,25 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			if (pSpecial)
 				Actions.SetSpecial(*pCC, iAction, pSpecial, NULL);
+
+			return pCC->CreateTrue();
+			}
+
+		case FN_SCR_ADD_LIST_FILTER:
+			{
+			CString sID = pArgs->GetElement(1)->GetStringValue();
+			CString sLabel = pArgs->GetElement(2)->GetStringValue();
+
+			CItemCriteria Filter;
+			if (pArgs->GetElement(3)->IsFunction())
+				Filter.pFilter = pArgs->GetElement(3)->Reference();
+			else
+				{
+				CString sFilter = pArgs->GetElement(3)->GetStringValue();
+				CItem::ParseCriteria(sFilter, &Filter);
+				}
+
+			pScreen->AddListFilter(sID, sLabel, Filter);
 
 			return pCC->CreateTrue();
 			}

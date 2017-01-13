@@ -7,6 +7,7 @@
 
 #define LIST_TAG					CONSTLIT("List")
 #define LIST_OPTIONS_TAG			CONSTLIT("ListOptions")
+#define ON_DISPLAY_INIT_TAG			CONSTLIT("OnDisplayInit")
 
 #define BACKGROUND_ID_ATTRIB		CONSTLIT("backgroundID")
 #define CRITERIA_ATTRIB				CONSTLIT("criteria")
@@ -114,7 +115,7 @@ bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retO
 		retOptions->rcControl.left = 0;
 		retOptions->rcControl.top = 23;
 		retOptions->rcControl.right = 600;
-		retOptions->rcControl.bottom = 482;
+		retOptions->rcControl.bottom = 502;
 		}
 
 	//	Get the type
@@ -141,9 +142,16 @@ bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retO
 	retOptions->sDataFrom = pOptions->GetAttribute(DATA_FROM_ATTRIB);
 	if (!pOptions->FindAttribute(CRITERIA_ATTRIB, &retOptions->sItemCriteria))
 		retOptions->sItemCriteria = pOptions->GetAttribute(LIST_ATTRIB);
-	retOptions->sCode = pOptions->GetContentText(0);
 	retOptions->sInitialItemCode = pOptions->GetAttribute(INITIAL_ITEM_ATTRIB);
 	retOptions->sRowHeightCode = pOptions->GetAttribute(ROW_HEIGHT_ATTRIB);
+
+	//	Init code
+
+	CXMLElement *pInitCode = pOptions->GetContentElementByTag(ON_DISPLAY_INIT_TAG);
+	if (pInitCode == NULL)
+		pInitCode = pOptions;
+
+	retOptions->sCode = pInitCode->GetContentText(0);
 
     //  Selector options
 
@@ -270,6 +278,16 @@ bool IDockScreenDisplay::GetDefaultBackground (SBackgroundDesc *retDesc)
 	
 	{
 	return OnGetDefaultBackground(retDesc);
+	}
+
+CDockScreenStack &IDockScreenDisplay::GetScreenStack (void) const
+
+//	GetScreenStack
+//
+//	Returns the screen stack.
+
+	{
+	return g_pTrans->GetModel().GetScreenStack();
 	}
 
 ALERROR IDockScreenDisplay::Init (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError)

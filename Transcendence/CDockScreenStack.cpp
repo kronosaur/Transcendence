@@ -93,6 +93,24 @@ ICCItem *CDockScreenStack::GetData (const CString &sAttrib)
 	return pResult;
 	}
 
+const CString &CDockScreenStack::GetDisplayData (const CString &sID)
+
+//	GetDisplayData
+//
+//	Returns opaque data stored by displays
+
+	{
+	if (IsEmpty())
+		return NULL_STR;
+
+	SDockFrame &Frame = m_Stack[m_Stack.GetCount() - 1];
+	CString *pValue = Frame.DisplayData.GetAt(sID);
+	if (pValue == NULL)
+		return NULL_STR;
+
+	return *pValue;
+	}
+
 void CDockScreenStack::Push (const SDockFrame &Frame)
 
 //	Push
@@ -272,4 +290,18 @@ void CDockScreenStack::SetData (const CString &sAttrib, ICCItem *pData)
 	ICCItem *pResult = Frame.pStoredData->AddEntry(&CC, pKey, pData);
 	pResult->Discard(&CC);
 	pKey->Discard(&CC);
+	}
+
+void CDockScreenStack::SetDisplayData (const CString &sID, const CString &sData)
+
+//	SetDisplayData
+//
+//	Sets opaque data for a display
+
+	{
+	if (IsEmpty())
+		return;
+
+	SDockFrame &Frame = m_Stack[m_Stack.GetCount() - 1];
+	Frame.DisplayData.SetAt(sID, sData);
 	}

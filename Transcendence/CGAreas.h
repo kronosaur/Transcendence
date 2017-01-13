@@ -99,6 +99,7 @@ class CGItemListArea : public AGArea
 		CGItemListArea (const CVisualPalette &VI);
 		~CGItemListArea (void);
 
+		void AddTab (DWORD dwID, const CString &sLabel);
 		void CleanUp (void);
 		inline void DeleteAtCursor (int iCount) { if (m_pListData) m_pListData->DeleteAtCursor(iCount); InitRowDesc(); Invalidate(); }
 		inline int GetCursor (void) { return (m_pListData ? m_pListData->GetCursor() : -1); }
@@ -111,6 +112,7 @@ class CGItemListArea : public AGArea
 		bool MoveCursorBack (void);
 		bool MoveCursorForward (void);
 		inline void ResetCursor (void) { if (m_pListData) m_pListData->ResetCursor(); Invalidate(); }
+		void SelectTab (DWORD dwID);
         inline void SetBackColor (CG32bitPixel rgbColor) { m_rgbBackColor = rgbColor; }
         inline void SetColor (CG32bitPixel rgbColor) { m_rgbTextColor = rgbColor; }
 		inline void SetCursor (int iIndex) { if (m_pListData) m_pListData->SetCursor(iIndex); Invalidate(); }
@@ -125,6 +127,8 @@ class CGItemListArea : public AGArea
 
 		//	AGArea virtuals
 		virtual bool LButtonDown (int x, int y) override;
+		virtual void MouseLeave (void) override;
+		virtual void MouseMove (int x, int y) override;
 		virtual void MouseWheel (int iDelta, int x, int y, DWORD dwFlags) override;
 		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect) override;
 		virtual void Update (void) override;
@@ -143,11 +147,20 @@ class CGItemListArea : public AGArea
 			int cyHeight;						//	Height of this row
 			};
 
+		struct STabDesc
+			{
+			DWORD dwID;
+			CString sLabel;
+			int cxWidth;
+			};
+
 		int CalcRowHeight (int iRow);
 		void InitRowDesc (void);
 		int FindRow (int y);
+		bool HitTestTabs (int x, int y, int *retiTab);
 		void PaintCustom (CG32bitImage &Dest, const RECT &rcRect, bool bSelected);
 		void PaintItem (CG32bitImage &Dest, const CItem &Item, const RECT &rcRect, bool bSelected);
+		void PaintTab (CG32bitImage &Dest, const STabDesc &Tab, const RECT &rcRect, bool bSelected, bool bHover);
 
 		IListData *m_pListData;
 		ListTypes m_iType;
@@ -164,6 +177,11 @@ class CGItemListArea : public AGArea
 
 		int m_cyTotalHeight;					//	Total heigh of all rows
 		TArray<SRowDesc> m_Rows;
+
+		TArray<STabDesc> m_Tabs;
+		int m_iCurTab;							//	Current selected tab (-1 = none)
+		int m_iHoverTab;						//	Hover tab (-1 = none)
+		int m_cyTabHeight;						//	Height of tab row
 	};
 
 class CGNeurohackArea : public AGArea

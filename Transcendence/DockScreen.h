@@ -5,6 +5,7 @@
 
 class CGameSession;
 class CDockScreen;
+class CDockScreenStack;
 class CPlayerShipController;
 struct SDockFrame;
 
@@ -98,6 +99,7 @@ class IDockScreenDisplay
 
 		virtual ~IDockScreenDisplay (void) { }
 
+		inline EResults AddListFilter (const CString &sID, const CString &sLabel, const CItemCriteria &Filter) { return OnAddListFilter(sID, sLabel, Filter); }
 		inline void DeleteCurrentItem (int iCount) { OnDeleteCurrentItem(iCount); }
 		inline const CItem &GetCurrentItem (void) const { return OnGetCurrentItem(); }
 		inline ICCItem *GetCurrentListEntry (void) const { return OnGetCurrentListEntry(); }
@@ -122,6 +124,7 @@ class IDockScreenDisplay
 		static bool ParseBackgrounDesc (ICCItem *pDesc, SBackgroundDesc *retDesc);
 
 	protected:
+		virtual EResults OnAddListFilter (const CString &sID, const CString &sLabel, const CItemCriteria &Filter) { return resultNone; }
 		virtual void OnDeleteCurrentItem (int iCount) { }
 		virtual const CItem &OnGetCurrentItem (void) const { return CItem::NullItem(); }
 		virtual ICCItem *OnGetCurrentListEntry (void) const { return NULL; }
@@ -147,6 +150,7 @@ class IDockScreenDisplay
 		bool EvalBool (const CString &sCode, bool *retbResult, CString *retsError);
 		CSpaceObject *EvalListSource (const CString &sString, CString *retsError);
 		bool EvalString (const CString &sString, bool bPlain, ECodeChainEvents iEvent, CString *retsResult);
+		CDockScreenStack &GetScreenStack (void) const;
         void SelectArmor (int iSelection);
 
 		CDockScreen *m_pDockScreen;
@@ -385,6 +389,7 @@ class CDockScreen : public IScreenController
 		CDockScreen (void);
 		virtual ~CDockScreen (void);
 
+		void AddListFilter (const CString &sID, const CString &sLabel, const CItemCriteria &Filter);
 		void CleanUpScreen (void);
 		bool EvalString (const CString &sString, ICCItem *pData = NULL, bool bPlain = false, ECodeChainEvents iEvent = eventNone, CString *retsResult = NULL);
 		inline void ExecuteCancelAction (void) { m_CurrentPane.ExecuteCancelAction(); }
@@ -412,6 +417,7 @@ class CDockScreen : public IScreenController
 		ALERROR ReportError (const CString &sError);
 		inline void ResetFirstOnInit (void) { m_bFirstOnInit = true; }
 		void ResetList (CSpaceObject *pLocation);
+		void SelectListFilter (const CString &sID);
 		void SetListFilter (const CItemCriteria &Filter);
 		void Update (int iTick);
 
@@ -561,6 +567,8 @@ struct SDockFrame
 
 	CDesignType *pResolvedRoot;
 	CString sResolvedScreen;
+
+	TSortMap<CString, CString> DisplayData;	//	Opaque data used by displays
 	};
 
 class CDockScreenStack
@@ -569,6 +577,7 @@ class CDockScreenStack
 		void DeleteAll (void);
 		void DiscardOldFrame (SDockFrame &OldFrame);
 		ICCItem *GetData (const CString &sAttrib);
+		const CString &GetDisplayData (const CString &sID);
 		inline int GetCount (void) const { return m_Stack.GetCount(); }
 		const SDockFrame &GetCurrent (void) const;
 		void IncData (const CString &sAttrib, ICCItem *pData, ICCItem **retpResult = NULL);
@@ -579,6 +588,7 @@ class CDockScreenStack
 		void SetCurrent (const SDockFrame &NewFrame, SDockFrame *retPrevFrame = NULL);
 		void SetCurrentPane (const CString &sPane);
 		void SetData (const CString &sAttrib, ICCItem *pData);
+		void SetDisplayData (const CString &sID, const CString &sData);
 
 	private:
 		TArray<SDockFrame> m_Stack;

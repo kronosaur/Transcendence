@@ -6,8 +6,72 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
+#define FIELD_FILTER_SELECTED		CONSTLIT("filterSelected")
+
 const int PICKER_ROW_HEIGHT	=	96;
 const int PICKER_ROW_COUNT =	4;
+
+const DWORD FILTER_BUTTON_FIRST_ID =		0xf0000000;
+
+bool CDockScreenList::FindFilter (DWORD dwID, int *retiIndex) const
+
+//	FindFilter
+//
+//	Find the filter by ID
+
+	{
+	int i;
+
+	for (i = 0; i < m_Filters.GetCount(); i++)
+		if (dwID == m_Filters[i].dwID)
+			{
+			if (retiIndex)
+				*retiIndex = i;
+
+			return true;
+			}
+
+	return false;
+	}
+
+bool CDockScreenList::FindFilter (const CString &sID, int *retiIndex) const
+
+//	FindFilter
+//
+//	Finds the filter by ID
+
+	{
+	int i;
+
+	for (i = 0; i < m_Filters.GetCount(); i++)
+		if (strEquals(sID, m_Filters[i].sID))
+			{
+			if (retiIndex)
+				*retiIndex = i;
+
+			return true;
+			}
+
+	return false;
+	}
+
+IDockScreenDisplay::EResults CDockScreenList::OnAddListFilter (const CString &sID, const CString &sLabel, const CItemCriteria &Filter)
+
+//	OnAddListFilter
+//
+//	Adds a user-selectable list filter.
+
+	{
+	SFilter *pNewFilter = m_Filters.Insert();
+	pNewFilter->sID = sID;
+	pNewFilter->dwID = FILTER_BUTTON_FIRST_ID + m_dwNextFilterID++;
+	pNewFilter->sLabel = sLabel;
+	pNewFilter->Filter = Filter;
+
+	m_pItemListControl->AddTab(pNewFilter->dwID, pNewFilter->sLabel);
+
+	return resultHandled;
+	}
 
 void CDockScreenList::OnDeleteCurrentItem (int iCount)
 
@@ -49,6 +113,8 @@ IDockScreenDisplay::EResults CDockScreenList::OnHandleAction (DWORD dwTag, DWORD
 	{
 	if (dwTag == m_dwID)
 		{
+		int iFilter;
+
 		switch (dwData)
 			{
 			case ITEM_LIST_AREA_PAGE_DOWN_ACTION:
@@ -56,14 +122,25 @@ IDockScreenDisplay::EResults CDockScreenList::OnHandleAction (DWORD dwTag, DWORD
 				return resultNone;
 
 			default:
-				if (!m_bNoListNavigation)
+				if (m_bNoListNavigation)
+					return resultHandled;
+
+				else if (FindFilter(dwData, &iFilter))
+					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+					m_pItemListControl->SetFilter(m_Filters[iFilter].Filter);
+					m_pItemListControl->MoveCursorForward();
+					GetScreenStack().SetDisplayData(FIELD_FILTER_SELECTED, strFromInt(m_Filters[iFilter].dwID));
+
+					ShowItem();
+					return resultShowPane;
+					}
+				else
 					{
 					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					m_pItemListControl->SetCursor(dwData);
 					return resultShowPane;
 					}
-				else
-					return resultHandled;
 			}
 		}
 	else
@@ -185,6 +262,25 @@ ALERROR CDockScreenList::OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, 
 
 	if (error = OnInitList(Ctx, Options, retsError))
 		return error;
+
+	//	If we have tabs, select the first one
+
+	if (m_Filters.GetCount() > 0)
+		{
+		CString sID = GetScreenStack().GetDisplayData(FIELD_FILTER_SELECTED);
+		int iFilter;
+		if (sID.IsBlank() || !FindFilter(strToInt(sID, 0), &iFilter))
+			{
+			m_pItemListControl->SetFilter(m_Filters[0].Filter);
+			m_pItemListControl->MoveCursorForward();
+			}
+		else
+			{
+			m_pItemListControl->SelectTab(m_Filters[iFilter].dwID);
+			m_pItemListControl->SetFilter(m_Filters[iFilter].Filter);
+			m_pItemListControl->MoveCursorForward();
+			}
+		}
 
 	return NOERROR;
 	}

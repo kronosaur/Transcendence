@@ -35,6 +35,9 @@ const int ATTRIB_SPACING_Y =				2;
 
 const int MOUSE_SCROLL_SENSITIVITY =		30;
 
+const int TAB_PADDING_X =					16;
+const int TAB_HEIGHT =						24;
+
 #define STR_NO_ITEMS						CONSTLIT("There are no items here")
 
 CGItemListArea::CGItemListArea (const CVisualPalette &VI) :
@@ -47,7 +50,10 @@ CGItemListArea::CGItemListArea (const CVisualPalette &VI) :
 		m_iOldCursor(-1),
 		m_yOffset(0),
 		m_yFirst(0),
-		m_cyRow(DEFAULT_ROW_HEIGHT)
+		m_cyRow(DEFAULT_ROW_HEIGHT),
+		m_iCurTab(-1),
+		m_iHoverTab(-1),
+		m_cyTabHeight(0)
 
 //	CGItemListArea constructor
 
@@ -61,6 +67,26 @@ CGItemListArea::~CGItemListArea (void)
 	{
 	if (m_pListData)
 		delete m_pListData;
+	}
+
+void CGItemListArea::AddTab (DWORD dwID, const CString &sLabel)
+
+//	AddTab
+//
+//	Adds a new tab
+
+	{
+	const CG16bitFont &MediumFont = m_VI.GetFont(fontMedium);
+
+	STabDesc *pNewTab = m_Tabs.Insert();
+	pNewTab->dwID = dwID;
+	pNewTab->sLabel = sLabel;
+	pNewTab->cxWidth = MediumFont.MeasureText(sLabel) + 2 * TAB_PADDING_X;
+
+	if (m_iCurTab == -1)
+		m_iCurTab = 0;
+
+	m_cyTabHeight = TAB_HEIGHT;
 	}
 
 int CGItemListArea::CalcRowHeight (int iRow)
@@ -160,6 +186,39 @@ ICCItem *CGItemListArea::GetEntryAtCursor (void)
 	return m_pListData->GetEntryAtCursor(CC);
 	}
 
+bool CGItemListArea::HitTestTabs (int x, int y, int *retiTab)
+
+//	HitTestTabs
+//
+//	See if we hit a tab.
+
+	{
+	int i;
+	RECT rcRect = GetRect();
+
+	if (y >= rcRect.top && y < rcRect.top + m_cyTabHeight)
+		{
+		int xTab = rcRect.left;
+
+		for (i = 0; i < m_Tabs.GetCount(); i++)
+			{
+			if (x >= xTab && x < xTab + m_Tabs[i].cxWidth)
+				{
+				if (retiTab)
+					*retiTab = i;
+
+				return true;
+				}
+
+			xTab += m_Tabs[i].cxWidth;
+			}
+		}
+
+	//	If we get this far, not found.
+
+	return false;
+	}
+
 void CGItemListArea::InitRowDesc (void)
 
 //	InitRowDesc
@@ -202,11 +261,27 @@ bool CGItemListArea::LButtonDown (int x, int y)
 //	Handle button down
 
 	{
-	if (m_iOldCursor != -1 && m_pListData->GetCount())
+	//	Hit test the tab area
+
+	int iTab;
+	if (HitTestTabs(x, y, &iTab))
 		{
+		m_iCurTab = iTab;
+		Invalidate();
+
+		SignalAction(m_Tabs[iTab].dwID);
+		return true;
+		}
+
+	//	List
+
+	else if (m_iOldCursor != -1 && m_pListData->GetCount())
+		{
+		int yListTop = GetRect().top + m_cyTabHeight;
+
 		//	Figure out the cursor position that the user clicked on
 
-		int iPos = FindRow((y - GetRect().top) - m_yFirst);
+		int iPos = FindRow((y - yListTop) - m_yFirst);
 		if (iPos >= 0 && iPos < m_pListData->GetCount())
 			SignalAction(iPos);
 
@@ -216,6 +291,38 @@ bool CGItemListArea::LButtonDown (int x, int y)
 	return false;
 	}
 
+void CGItemListArea::MouseLeave (void)
+
+//	MouseLeave
+//
+//	Handle hover
+
+	{
+	if (m_iHoverTab != -1)
+		{
+		m_iHoverTab = -1;
+		Invalidate();
+		}
+	}
+
+void CGItemListArea::MouseMove (int x, int y)
+
+//	MouseMove
+//
+//	Handle hover
+
+	{
+	int iTab;
+	if (!HitTestTabs(x, y, &iTab))
+		iTab = -1;
+
+	if (iTab != m_iHoverTab)
+		{
+		m_iHoverTab = iTab;
+		Invalidate();
+		}
+	}
+
 void CGItemListArea::MouseWheel (int iDelta, int x, int y, DWORD dwFlags)
 
 //	MouseWheel
@@ -223,8 +330,6 @@ void CGItemListArea::MouseWheel (int iDelta, int x, int y, DWORD dwFlags)
 //	Handles scrolling
 
 	{
-	int i;
-
 	//	Short-circuit
 
 	if (m_pListData == NULL)
@@ -233,27 +338,13 @@ void CGItemListArea::MouseWheel (int iDelta, int x, int y, DWORD dwFlags)
 	//	Figure out how many lines to move
 
 	int iChange = -Sign(iDelta / MOUSE_SCROLL_SENSITIVITY);
+	int iNewPos = m_pListData->GetCursor() + iChange;
 
-	bool bOK = false;
-	if (iChange > 0)
+	if (iNewPos != m_pListData->GetCursor())
 		{
-		for (i = 0; i < iChange; i++)
-			{
-			if (m_pListData->MoveCursorForward())
-				bOK = true;
-			}
+		if (iNewPos >= 0 && iNewPos < m_pListData->GetCount())
+			SignalAction(iNewPos);
 		}
-	else
-		{
-		for (i = 0; i < -iChange; i++)
-			{
-			if (m_pListData->MoveCursorBack())
-				bOK = true;
-			}
-		}
-
-	if (bOK)
-		Invalidate();
 	}
 
 bool CGItemListArea::MoveCursorBack (void)
@@ -289,6 +380,8 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 //	Paint the area
 
 	{
+	int i;
+
 	//	Can't paint if we are not properly initialized
 
 	if (m_pFonts == NULL)
@@ -308,12 +401,47 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 			BORDER_RADIUS + 1,
 			rgbFadeBackColor);
 
+	//	Paint the tab area, if we have one
+
+	if (m_Tabs.GetCount() > 0)
+		{
+		int x = rcRect.left + 1;
+		int y = rcRect.top + 1;
+
+		//	Paint the background of the tab area
+
+		CG32bitPixel rgbBack = m_rgbBackColor;
+		CGDraw::RoundedRect(Dest, rcRect.left + 1, rcRect.top + 1, RectWidth(rcRect) - 2, m_cyTabHeight - 2, BORDER_RADIUS - 1, rgbBack);
+
+		Dest.FillLine(rcRect.left, rcRect.top + m_cyTabHeight - 1, RectWidth(rcRect), CG32bitPixel(80, 80, 80));
+
+		//	Paint the tabs
+
+		for (i = 0; i < m_Tabs.GetCount(); i++)
+			{
+			RECT rcTab;
+			rcTab.left = x;
+			rcTab.right = rcTab.left + m_Tabs[i].cxWidth;
+			rcTab.top = y;
+			rcTab.bottom = y + m_cyTabHeight - 2;
+
+			PaintTab(Dest, m_Tabs[i], rcTab, (i == m_iCurTab), (i == m_iHoverTab));
+
+			x += m_Tabs[i].cxWidth;
+			}
+		}
+
+	//	Figure out where the list will paint
+
+	RECT rcList = rcRect;
+	rcList.top += m_cyTabHeight;
+
 	//	If there are no items here, then say so
 
 	if (m_pListData == NULL || !m_pListData->IsCursorValid())
 		{
-		int x = rcRect.left + (RectWidth(rcRect) - m_pFonts->LargeBold.MeasureText(STR_NO_ITEMS)) / 2;
-		int y = rcRect.top + (RectHeight(rcRect) - m_pFonts->LargeBold.GetHeight()) / 2;
+		int x = rcList.left + (RectWidth(rcList) - m_pFonts->LargeBold.MeasureText(STR_NO_ITEMS)) / 2;
+		int y = rcList.top + (RectHeight(rcList) - m_pFonts->LargeBold.GetHeight()) / 2;
 
 		Dest.DrawText(x, y,
 				m_pFonts->LargeBold,
@@ -331,6 +459,11 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 		int iCount = m_pListData->GetCount();
 
 		ASSERT(iCursor >= 0 && iCursor < m_Rows.GetCount());
+
+		//	Clip to the list rect
+
+		RECT rcOldClip = Dest.GetClipRect();
+		Dest.SetClipRect(rcList);
 
 		//	If the cursor has changed, update the offset so that we
 		//	have a smooth scroll.
@@ -352,7 +485,7 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 		//	Figure out the ideal position of the cursor (relative to the
 		//	rect).
 
-		int yIdeal = m_yOffset + ((RectHeight(rcRect) - m_Rows[iCursor].cyHeight) / 2);
+		int yIdeal = m_yOffset + ((RectHeight(rcList) - m_Rows[iCursor].cyHeight) / 2);
 
 		//	Figure out the actual position of the cursor row (relative to the
 		//	rect).
@@ -364,12 +497,12 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 			yCursor = m_Rows[iCursor].yPos;
 
 		//	If the total number of lines is less than the whole rect
-		else if (m_cyTotalHeight < RectHeight(rcRect))
+		else if (m_cyTotalHeight < RectHeight(rcList))
 			yCursor = m_Rows[iCursor].yPos;
 
 		//	If the cursor is in the bottom part of the list
-		else if ((m_cyTotalHeight - m_Rows[iCursor].yPos) < (RectHeight(rcRect) - yIdeal))
-			yCursor = (RectHeight(rcRect) - (m_cyTotalHeight - m_Rows[iCursor].yPos));
+		else if ((m_cyTotalHeight - m_Rows[iCursor].yPos) < (RectHeight(rcList) - yIdeal))
+			yCursor = (RectHeight(rcList) - (m_cyTotalHeight - m_Rows[iCursor].yPos));
 
 		//	The cursor is in the middle of the list
 		else
@@ -390,12 +523,12 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 		//	Paint
 
-		int y = rcRect.top + yStart;
+		int y = rcList.top + yStart;
 		int iPos = iStart;
 		bool bPaintSeparator = false;
 		RECT rcItem;
 
-		while (y < rcRect.bottom && iPos < m_Rows.GetCount())
+		while (y < rcList.bottom && iPos < m_Rows.GetCount())
 			{
 			//	Paint previous separator
 
@@ -418,9 +551,9 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 				m_pListData->SetCursor(iPos);
 
 				rcItem.top = y;
-				rcItem.left = rcRect.left;
+				rcItem.left = rcList.left;
 				rcItem.bottom = y + m_Rows[iPos].cyHeight;
-				rcItem.right = rcRect.right;
+				rcItem.right = rcList.right;
 
 				//	See if we need to paint the cursor
 
@@ -466,6 +599,7 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 		//	Done
 
 		m_pListData->SetCursor(iCursor);
+		Dest.SetClipRect(rcOldClip);
 		}
 
 	//	Paint a frame
@@ -549,6 +683,60 @@ void CGItemListArea::PaintItem (CG32bitImage &Dest, const CItem &Item, const REC
 		dwOptions |= CUIHelper::OPTION_SELECTED;
 
 	UIHelper.PaintItemEntry(Dest, m_pListData->GetSource(), Item, rcRect, m_rgbTextColor, dwOptions);
+	}
+
+void CGItemListArea::PaintTab (CG32bitImage &Dest, const STabDesc &Tab, const RECT &rcRect, bool bSelected, bool bHover)
+
+//	PaintTab
+//
+//	Paints a tab
+
+	{
+	const CG16bitFont &MediumFont = m_VI.GetFont(fontMedium);
+
+	CG32bitPixel rgbBackColor;
+	CG32bitPixel rgbTextColor;
+	if (bSelected)
+		{
+		rgbBackColor = CG32bitPixel(m_rgbTextColor, 128);
+		rgbTextColor = m_rgbBackColor;
+		}
+	else if (bHover)
+		{
+		rgbBackColor = CG32bitPixel(m_rgbTextColor, 30);
+		rgbTextColor = CG32bitPixel(m_rgbTextColor, 190);
+		}
+	else
+		rgbTextColor = CG32bitPixel(m_rgbTextColor, 190);
+
+	if (bSelected || bHover)
+		CGDraw::RoundedRect(Dest,
+				rcRect.left,
+				rcRect.top,
+				RectWidth(rcRect),
+				RectHeight(rcRect),
+				BORDER_RADIUS - 1,
+				rgbBackColor);
+
+	MediumFont.DrawText(Dest, rcRect, rgbTextColor, Tab.sLabel, 0, CG16bitFont::AlignCenter | CG16bitFont::AlignMiddle);
+	}
+
+void CGItemListArea::SelectTab (DWORD dwID)
+
+//	SelectTab
+//
+//	Selects the given tab
+
+	{
+	int i;
+
+	for (i = 0; i < m_Tabs.GetCount(); i++)
+		if (m_Tabs[i].dwID == dwID)
+			{
+			m_iCurTab = i;
+			Invalidate();
+			break;
+			}
 	}
 
 void CGItemListArea::SetList (CSpaceObject *pSource)

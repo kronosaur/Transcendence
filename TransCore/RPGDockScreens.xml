@@ -182,68 +182,83 @@
 -->
 	
 	<DockScreen unid="&dsRPGCommoditiesExchangeBuy;"
-			type=				"itemPicker"
 			inherit=			"&dsDockScreenBase;"
 			nestedScreen=		"true"
 			>
 		
-		<ListOptions
+		<Display type="itemPicker"
 				dataFrom=	"=(if (@ gData 'sourceObj) (@ gData 'sourceObj) 'station)"
 				list=		"*"
 				>
-			(block (
-				(itemCriteria (@ gData 'criteria))
-				(sourceObj (if (@ gData 'sourceObj) (@ gData 'sourceObj) gSource))
-				)
+			<OnDisplayInit>
+				(block (
+					(itemCriteria (@ gData 'criteria))
+					(sourceObj (if (@ gData 'sourceObj) (@ gData 'sourceObj) gSource))
+					)
 				
-				(switch
-					;	If we specify an item criteria, then create a function
-					;	that will filter.
+					(switch
+						;	If we specify an item criteria, then create a function
+						;	that will filter.
 					
-					(and itemCriteria
-							(not (eq itemCriteria "*"))
-							)
-						(scrSetListFilter gScreen (lambda (theItem)
-							(switch
-								(not (itmMatches theItem itemCriteria))
-									Nil
-								
-								(rpgCalcSellPrice theItem)
+						(and itemCriteria
+								(not (eq itemCriteria "*"))
 								)
-							))
+							(scrSetListFilter gScreen (lambda (theItem)
+								(switch
+									(not (itmMatches theItem itemCriteria))
+										Nil
+								
+									(rpgCalcSellPrice theItem)
+									)
+								))
 							
-					;	If we specify a function, use that
+						;	If we specify a function, use that
 					
-					(@ gData 'listFilter)
-						(scrSetListFilter gScreen (@ gData 'listFilter))
+						(@ gData 'listFilter)
+							(scrSetListFilter gScreen (@ gData 'listFilter))
 						
-					;	If we want to hide installables, then we need to filter
+						;	If we want to hide installables, then we need to add some
+						;	user-selectable filters.
 					
-					(and (not (@ gData 'showInstallables))
-							(objGetItems sourceObj "Uadm")
-							)
-						(block Nil
-							(scrSetData gScreen 'installablesOption True)
-							(if (typGetData &dsRPGCommoditiesExchangeBuy; 'showInstallables)
-								(scrSetListFilter gScreen rpgCalcSellPrice)
-								(scrSetListFilter gScreen (lambda (theItem)
+						(and (not (@ gData 'showInstallables))
+								(objGetItems sourceObj "Uadm")
+								)
+							(block Nil
+							
+								(scrAddListFilter gScreen 'filterGeneral "General" (lambda (theItem)
 									(switch
 										(itmMatches theItem "adm")
 											Nil
-									
+											
 										(rpgCalcSellPrice theItem)
 										)
 									))
+									
+								(scrAddListFilter gScreen 'filterInstallable "Devices &amp; Armor" (lambda (theItem)
+									(switch
+										(itmMatches theItem "ad")
+											(rpgCalcSellPrice theItem)
+										)
+									))
+							
+								(scrAddListFilter gScreen 'filterAmmo "Ammo" (lambda (theItem)
+									(switch
+										(itmMatches theItem "m")
+											(rpgCalcSellPrice theItem)
+										)
+									))
+							
+								(scrAddListFilter gScreen 'filterAll "All" rpgCalcSellPrice)
 								)
-							)
 					
-					;	Otherwise, we sell everything listed in our Trade
-					;	directives.
+						;	Otherwise, we sell everything listed in our Trade
+						;	directives.
 					
-					(scrSetListFilter gScreen rpgCalcSellPrice)
+						(scrSetListFilter gScreen rpgCalcSellPrice)
+						)
 					)
-				)
-		</ListOptions>
+			</OnDisplayInit>
+		</Display>
 		
 		<Panes>
 			<Default>
@@ -349,8 +364,6 @@
 						;	Enable/disable actions
 						
 						(scrEnableAction gScreen 'actionBuy (gr maxCount 0))
-						(scrShowAction gScreen 'actionShowInstallables (and (scrGetData gScreen 'installablesOption) (not (typGetData &dsRPGCommoditiesExchangeBuy; 'showInstallables))))
-						(scrShowAction gScreen 'actionHideInstallables (and (scrGetData gScreen 'installablesOption) (typGetData &dsRPGCommoditiesExchangeBuy; 'showInstallables)))
 						)
 				</OnPaneInit>
 				
@@ -381,20 +394,6 @@
 									(scrShowPane gScreen "Default")
 									)
 								)
-							)
-					</Action>
-					
-					<Action id="actionShowInstallables" minor="true">
-						(block Nil
-							(typSetData &dsRPGCommoditiesExchangeBuy; 'showInstallables True)
-							(scrRefreshScreen gScreen)
-							)
-					</Action>
-					
-					<Action id="actionHideInstallables" minor="true">
-						(block Nil
-							(typSetData &dsRPGCommoditiesExchangeBuy; 'showInstallables Nil)
-							(scrRefreshScreen gScreen)
 							)
 					</Action>
 					
