@@ -31,13 +31,7 @@
 		<Events>
 			<OnCreate>
 				(block Nil
-
 					(switch
-						;	This mission only works in Eridani
-
-						(not (eq (sysGetNode) 'SE))
-							(msnDestroy gSource)
-
 						;	Set up the mission
 
 						(block Nil
@@ -48,7 +42,7 @@
 
 			<OnAccepted>
 				(block (
-					(stargateObj (sysFindObject nil "G:Outbound; N"))
+					(stargateObj (sysGetStargateLeadingToNode 'SK))
 					(timeToGate (sysCalcTravelTime (objGetDistance gPlayerShip stargateObj) (shpGetMaxSpeed gPlayerShip)))
 					)
 

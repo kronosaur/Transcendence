@@ -68,37 +68,31 @@
 			</OnCreate>
 
 			<OnAccepted>
-				(block Nil
+				(block (hiddenObj enemyPos enemyType)
 					;	Keep track of player
 					
 					(msnRegisterForEvents gSource gPlayerShip)
 					
 					;	Create a hidden station somewhere out in the deep
-					
-					(if (eq (sysGetNode) 'SE)
-						(block (hiddenObj enemyPos enemyType)
-						
-							;	Pick a random enemy and location
+					;	Pick a random enemy and location
 							
-							(setq enemyType (random (list &stAbbasidOutpost; &stAnarchistGathering; &stUrakOutpost;)))
-							(setq enemyPos (sysVectorRandom Nil (random 950 1000) 150 "TsA"))
+					(setq enemyType (random (list &stAbbasidOutpost; &stAnarchistGathering; &stUrakOutpost;)))
+					(setq enemyPos (sysVectorRandom Nil (random 950 1000) 150 "TsA"))
 							
-							;	Create the enemy station
+					;	Create the enemy station
 							
-							(setq hiddenObj (sysCreateStation enemyType enemyPos))
+					(setq hiddenObj (sysCreateStation enemyType enemyPos))
 							
-							;	Place treasure on the station (but first remove any existing treasure)
+					;	Place treasure on the station (but first remove any existing treasure)
 							
-							(enum (objGetItems hiddenObj "*U") theItem (objRemoveItem hiddenObj theItem))
-							(objAddItem hiddenObj (itmCreate &itSmartCannon; 1))
-							(objAddItem hiddenObj (itmCreate &itSmartCannonShell; 300))
+					(enum (objGetItems hiddenObj "*U") theItem (objRemoveItem hiddenObj theItem))
+					(objAddItem hiddenObj (itmCreate &itSmartCannon; 1))
+					(objAddItem hiddenObj (itmCreate &itSmartCannonShell; 300))
 							
-							;	Remember it
+					;	Remember it
 							
-							(msnSetData gSource 'hiddenEnemyID (objGetID hiddenObj))
-							(msnRegisterForEvents gSource hiddenObj)
-							)
-						)
+					(msnSetData gSource 'hiddenEnemyID (objGetID hiddenObj))
+					(msnRegisterForEvents gSource hiddenObj)
 					)
 			</OnAccepted>
 
@@ -194,6 +188,7 @@
 													(and 
 														(gr (itmGetLevel theItem) (itmGetLevel (objGetProperty gPlayerShip 'selectedWeapon)))
 														(@ (objCanInstallItem gPlayerShip theItem) 0)
+														(gr (objGetProperty gPlayerShip 'power) (* 2.5 (itmGetProperty theItem 'power)))
 														)
 													)
 												0
@@ -203,6 +198,7 @@
 													(and
 														(not (objGetProperty gPlayerShip 'selectedLauncher))
 														(@ (objCanInstallItem gPlayerShip theItem) 0)
+														(gr (objGetProperty gPlayerShip 'power) (* 2.5 (itmGetProperty theItem 'power)))
 														)
 													)
 												0
@@ -212,6 +208,7 @@
 													(and
 														(gr (itmGetLevel theItem) (itmGetLevel (@ (objGetItems gPlayerShip "sI") 0)))
 														(@ (objCanInstallItem gPlayerShip theItem) 0)
+														(gr (objGetProperty gPlayerShip 'power) (* 2.5 (itmGetProperty theItem 'power)))
 														)
 													)
 												0
@@ -279,15 +276,16 @@
 										
 								;	Send the player to explore all friendly stations (until they are all explored)
 								
-								(filter (sysFindObject gPlayerShip "TAF +populated; -uncharted;") theObj 
-										(not (objIsKnown theObj))
+								(and (eq (sysGetNode) 'SE)
+										(filter (sysFindObject gPlayerShip "TAF +populated; -uncharted;") theObj 
+												(not (objIsKnown theObj))
+												)
 										)
 									(setq state 'exploreSystem)
 									
 								;	Send the player to destroy the hidden station, if it's not yet destroyed
 								
-								(and (eq (sysGetNode) 'SE)
-										(setq targetObj (objGetObjByID (msnGetData gSource 'hiddenEnemyID)))
+								(and (setq targetObj (objGetObjByID (msnGetData gSource 'hiddenEnemyID)))
 										(not (objGetProperty targetObj 'abandoned))
 										)
                                     (block Nil
@@ -300,8 +298,7 @@
 									
 								;	If the player forgot to loot the station, remind her
 								
-								(and (eq (sysGetNode) 'SE)
-										(setq targetObj (objGetObjByID (msnGetData gSource 'hiddenEnemyID)))
+								(and (setq targetObj (objGetObjByID (msnGetData gSource 'hiddenEnemyID)))
 										(objGetProperty targetObj 'abandoned)
 										(setq foundItem (@ (objGetItems targetObj "w +unid:&itSmartCannon;;") 0))
 										)
@@ -310,14 +307,14 @@
 								;	If we haven't yet installed the SmartCannon, remind the player
 						
 								(and (setq foundItem (@ (objGetItems gPlayerShip "wU +unid:&itSmartCannon;;") 0))
+										(not (objGetItems gPlayerShip "wI L:3-"))
 										(setq targetObj (@ (rpgGetInstallerList gPlayerShip foundItem) 0))
 										)
 									(setq state 'installSmartCannon)
 
-								;	If we're in Eridani then we get the mission to defend a freighter
+								;	Mission to defend a freighter
 
-								(and (eq (sysGetNode) 'SE)
-										(setq ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+								(and (setq ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
 										(setq fionaMission (msnCreate &msBenedictAndFiona; ownerObj))
 										)
 									(block Nil
@@ -420,7 +417,18 @@
 						(and (or (eq state 'attackFirstStation) (eq state 'attackCentauri) (eq state 'attackHiddenEnemy))
 								(eq (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
 								)
-							(setq taskDone True)
+							(block Nil
+								(setq taskDone True)
+								
+								;	If we've never looted and there isn't any loot on this station,
+								;	create some.
+								
+								(if (and (not (typGetData &svPlayer; 'tutorialLooted))
+										(not (objGetItems aObjDestroyed "*UN"))
+										)
+									(objAddItem aObjDestroyed &itCentauriRice; (random 1 4))
+									)
+								)
 						)
 						
 					;	If we completed a task, then set state
