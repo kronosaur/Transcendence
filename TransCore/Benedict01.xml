@@ -121,7 +121,12 @@
 					;	should give the player.
 					
 					(if (not state)
-						(block Nil
+						(block (
+							;	Compute highest level installed weapon
+							
+							(bestWeaponLevel (map (objGetItems gPlayerShip "pI") 'reduceMax theItem (itmGetLevel theItem)))
+							)
+						
 							(switch
 							
 								;	Make sure we're not in the middle of some other mission
@@ -186,7 +191,7 @@
 											(setq foundItem (@
 												(filter (objGetItems gPlayerShip "pUN -disposable;") theItem 
 													(and 
-														(gr (itmGetLevel theItem) (itmGetLevel (objGetProperty gPlayerShip 'selectedWeapon)))
+														(gr (itmGetLevel theItem) bestWeaponLevel)
 														(@ (objCanInstallItem gPlayerShip theItem) 0)
 														(gr (objGetProperty gPlayerShip 'power) (* 2.5 (itmGetProperty theItem 'power)))
 														)
@@ -307,7 +312,8 @@
 								;	If we haven't yet installed the SmartCannon, remind the player
 						
 								(and (setq foundItem (@ (objGetItems gPlayerShip "wU +unid:&itSmartCannon;;") 0))
-										(not (objGetItems gPlayerShip "wI L:3-"))
+										(not (objGetItems gPlayerShip "wI +unid:&itSmartCannon;"))
+										(not (objGetItems gPlayerShip "wI L:4-"))
 										(setq targetObj (@ (rpgGetInstallerList gPlayerShip foundItem) 0))
 										)
 									(setq state 'installSmartCannon)
