@@ -37,6 +37,11 @@
 						(not (rpgCharacterIsAliveAndWell &unidFiona;))
 							(msnDestroy gSource)
 							
+						;	If player skipped original Fiona mission, then nothing here.
+						
+						(not (msnFind "r +unid:&msBenedictAndFiona;; +property:isSuccess;"))
+							(msnDestroy gSource)
+							
 						;	OK
 						)
 					)
