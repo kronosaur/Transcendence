@@ -100,26 +100,28 @@
 						desc: (cat
 							"Fiona blinks tears away and looks down.\n\n"
 							
-							"\"I don't know who to trust, OK?\"\n\n"
+							"\"You don't want to get involved, OK?\"\n\n"
 							
-							"She pauses for a long time and then sits up straight to face you. A fresh scar "
+							"She pauses for a long time, but seeing your persistence she shakes her head and sighs. A fresh scar "
 							"curves under her left eye and disappears behind her ear."
 							)
 						}
 					{
 						desc: (cat
-							"\"I was investigating a murder. A medtech on our mobile clinic found dead. "
-							"I talked to Sister Elana Ston, in charge of the clinic. She said the medical "
-							"ship had been ambushed by marauders and that the medtech may have tipped them off. "
-							"Thought the marauders had spaced her too.\""
+							"\"A few months ago, one of our medical ships, the Hand of Solace, was ambushed and "
+							"wrecked by marauders. Sister Elana Ston was in command at the time, and she survived "
+							"along with a medtech. Later, the medtech was found dead&mdash;blasted, actually.\n\n"
+							
+							"\"Sister Ston thought the medtech might have been involved with the marauders and "
+							"then betrayed by them.\""
 							)
 							
-						label: "\"A [S]ister in league with marauders?\""
+						label: "\"[A] medtech in league with marauders?\""
 						}
 					{
 						desc: (cat
-							"\"Yeah, I know it doesn't make sense, OK? But I couldn't find any other evidence, "
-							"and the medical ship had recently been lost in combat, so it fit.\n\n"
+							"\"Yeah, I know it doesn't make sense, OK? But I couldn't find any other explanation. "
+							"And the Hand of Solace was gone, so there was no evidence.\n\n"
 							
 							"\"But then I got a strange message.\""
 							)

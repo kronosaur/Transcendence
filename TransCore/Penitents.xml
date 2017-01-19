@@ -200,19 +200,26 @@
 		
 		<Devices>
 			<Device deviceID="&itOracusHarassPower;"/>
-			<Device deviceID="&itAbsolutionCannon;"	omnidirectional="true"/>
+			<Device deviceID="&itAbsolutionCannon;"	posAngle="10" posRadius="126" posZ="5" omnidirectional="true"/>
+			<Device deviceID="&itAbsolutionCannon;"	posAngle="100" posRadius="126" posZ="5" omnidirectional="true"/>
+			<Device deviceID="&itAbsolutionCannon;"	posAngle="190" posRadius="126" posZ="5" omnidirectional="true"/>
+			<Device deviceID="&itAbsolutionCannon;"	posAngle="280" posRadius="126" posZ="5" omnidirectional="true"/>
 		</Devices>
 
 		<!-- Ships and Defenses -->
 
-		<Ships>
+		<Ships minShips="2">
 			<Table>
-				<Ship chance="25"	count="1d6"	class="&scRepentant;"	orders="guard"/>
+				<Ship chance="20"	count="8-10"	class="&scRepentant;"	orders="patrol:10"/>
 				<Group chance="50">
-					<Ship			count="1d4"	class="&scRepentant;"	orders="guard"/>
-					<Ship			count="1"	class="&scAtonement;"	orders="guard"/>
+					<Ship			count="4-6"	class="&scRepentant;"	orders="patrol:10"/>
+					<Ship			count="2-4"	class="&scAtonement;"	orders="guard"/>
 				</Group>
-				<Ship chance="25"	count="1d4"	class="&scAtonement;"	orders="guard"/>
+				<Ship chance="20"	count="6-8"	class="&scAtonement;"	orders="guard"/>
+				<Group chance="10">
+					<Ship			count="1d4"	class="&scRepentant;"	orders="guard"/>
+					<Ship			count="1"	class="&scExcruciatorDestroyer;"	orders="patrol:20"/>
+				</Group>
 			</Table>
 		</Ships>
 

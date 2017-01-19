@@ -2871,8 +2871,7 @@
 						<OnPaneInit>
 							(scrSetDesc gScreen
 								"\"Welcome, pilgrim! Your journey to Domina has only just begun, yet I fear that your road is blocked. "
-								"Many called by Domina have made it this far, yet none have journeyed beyond. The Iocrym, who no doubt serve Oracus, "
-								"have blocked your path. They want to prevent you from meeting Domina.\""
+								"The Iocrym, who no doubt serve Oracus, have blocked your path. They want to prevent you from meeting Domina.\""
 								)
 						</OnPaneInit>
 						

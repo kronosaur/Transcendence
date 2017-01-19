@@ -313,7 +313,7 @@
 						}
 					{
 						desc: (cat
-							"\"Nothing's easy, pet. We'll be scanning right in the middle "
+							"\"Nothing's easy, kid. We'll be scanning right in the middle "
 							"of marauder territory, and we're going to be attracting a lot of "
 							"attention.\""
 							)
@@ -322,7 +322,7 @@
 						}
 					{
 						desc: (cat
-							"\"I'm sure you can, pet. But here's the trick: a gunship engine belching "
+							"\"I'm sure you can. But here's the trick: a gunship engine belching "
 							"hot plasma is going to blind the scanner, right? You'll have to keep "
 							"all ships away from me until I'm done scanning.\""
 							)
@@ -343,7 +343,7 @@
 			</Text>
 			<Text id="AcceptReply">
 				(cat
-					"\"Try to keep up, pet!\""
+					"\"Try to keep up!\""
 					)
 			</Text>
 			<Text id="DeclineReply">
@@ -493,7 +493,7 @@
 						}
 					{
 						desc: (cat
-							"Sandoval bounces his way to the aft compartments. You and Benedict "
+							"Sandoval's magnetic boots clang as he runs to the aft compartments. You and Benedict "
 							"follow.\n\n"
 							
 							"\"The drive system logs all acceleration events for servicing and "
