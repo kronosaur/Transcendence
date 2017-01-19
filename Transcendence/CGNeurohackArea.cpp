@@ -5,7 +5,7 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-const CG32bitPixel RGB_BACKGROUND =					CG32bitPixel(0,0,0);
+const CG32bitPixel RGB_BACKGROUND =					CG32bitPixel(0,0,0,0);
 const CG32bitPixel RGB_LINE =						CG32bitPixel(255,255,255);
 const CG32bitPixel RGB_LIGHTNING =					CG32bitPixel(192,192,255);
 

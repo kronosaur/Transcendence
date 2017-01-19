@@ -59,7 +59,7 @@
 					)
 			</OnDisplayInit>
 			
-			<Neurohack left="36" right="-36" top="30" bottom="-30">
+			<Neurohack left="36" right="-36" top="30" bottom="370">
 				(list gNeurohackWillpower gNeurohackDamage)
 			</Neurohack>
 			
@@ -245,7 +245,7 @@
 							)
 					</Action>
 					
-					<Action name="Disconnect" cancel="1" key="D">
+					<Action name="Disconnect" cancel="1" key="n">
 						(block Nil
 							(scrExitScreen gScreen)
 
