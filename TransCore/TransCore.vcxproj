@@ -373,7 +373,9 @@
     <None Include="RPGMissions.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="RPGPlayer.xml" />
+    <None Include="RPGPlayer.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="RPGShipScreens.xml">
       <SubType>Designer</SubType>
     </None>

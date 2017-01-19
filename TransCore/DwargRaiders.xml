@@ -564,7 +564,7 @@
 			</Table>
 		</Items>
 
-		<Satellites>
+		<Satellites overlapCheck="planetoids">
 			<Table>
 				<Group chance="50">
 					<Siblings arcInc="16" radiusInc="1d4+3">

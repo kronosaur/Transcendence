@@ -1086,7 +1086,7 @@
 			<Ship   count="1d4"	class="&scWindSlaver;" orders="attack"/>
 		</Encounters>
 
-		<Satellites>
+		<Satellites overlapCheck="asteroids">
 			<Orbitals count="6" distance="8" angle="equidistant">
 				<Station type="&stSungDefenseSat1;"/>
 			</Orbitals>
@@ -1270,7 +1270,7 @@
 			</Table>
 		</Encounters>
 
-		<Satellites>
+		<Satellites overlapCheck="asteroids">
 			<Orbitals count="8" distance="14" angle="equidistant">
 				<Station type="&stSungDefenseSat1;"/>
 			</Orbitals>

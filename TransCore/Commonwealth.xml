@@ -333,7 +333,7 @@
 
 		<!-- Satellites -->
 		
-		<Satellites>
+		<Satellites overlapCheck="asteroids">
 			<Orbitals distance="12" angle="45">
 				<Station type="&stCommonwealthTurret;" imageVariant="2"/>
 			</Orbitals>
@@ -1570,7 +1570,7 @@
 
 		<!-- Satellites -->
 		
-		<Satellites>
+		<Satellites overlapCheck="asteroids">
 			<Orbitals distance="12" angle="45">
 				<Station type="&stCommonwealthTurret;" imageVariant="2"/>
 			</Orbitals>

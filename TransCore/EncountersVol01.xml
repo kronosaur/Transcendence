@@ -1186,7 +1186,7 @@
 			</Table>
 		</Items>
 
-		<Satellites>
+		<Satellites overlapCheck="asteroids">
 			<Orbitals count="1d3+1" distance="1d4+6" angle="random">
 				<Station type="&stAnarchistGatheringSat;"/>
 			</Orbitals>
