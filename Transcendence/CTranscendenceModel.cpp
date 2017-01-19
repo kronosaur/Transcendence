@@ -1121,14 +1121,18 @@ ALERROR CTranscendenceModel::InitBackground (const CGameSettings &Settings, cons
 	if (Settings.GetBoolean(CGameSettings::no3DSystemMap))
 		m_Universe.GetSFXOptions().Set3DSystemMapEnabled(false);
 
+	DWORD dwAdventure = Settings.GetInteger(CGameSettings::lastAdventure);
+	if (dwAdventure == 0)
+		dwAdventure = DEFAULT_ADVENTURE_EXTENSION_UNID;
+
     //  Get the default list of extensions for the default adventure
 
     TArray<DWORD> Extensions;
-    Settings.GetDefaultExtensions(DEFAULT_ADVENTURE_EXTENSION_UNID, m_bDebugMode, &Extensions);
+    Settings.GetDefaultExtensions(dwAdventure, m_bDebugMode, &Extensions);
 
 	//	Load the universe
 
-	if (error = LoadUniverse(sCollectionFolder, ExtensionFolders, DEFAULT_ADVENTURE_EXTENSION_UNID, Extensions, retsError))
+	if (error = LoadUniverse(sCollectionFolder, ExtensionFolders, dwAdventure, Extensions, retsError))
 		return error;
 
 	//	Load the high scores list
