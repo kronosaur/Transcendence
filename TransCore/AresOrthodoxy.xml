@@ -1334,7 +1334,7 @@
 
 		<Satellites overlapCheck="asteroids">
 			<Orbitals count="2d4" distance="12" angle="equidistant">
-				<Ship class="&scAresCannon;" count="1" sovereign="&svAres;" orders="hold"/>
+				<Ship class="&scAresCannon;" count="1" sovereign="&svAres;" orders="sentry"/>
 			</Orbitals>
 		</Satellites>
 
@@ -1402,7 +1402,7 @@
 
 		<Satellites overlapCheck="asteroids">
 			<Orbitals id="test" count="2d6" distance="12" angle="equidistant">
-				<Ship class="&scAresCannon;" count="1" sovereign="&svAres;" orders="hold"/>
+				<Ship class="&scAresCannon;" count="1" sovereign="&svAres;" orders="sentry"/>
 			</Orbitals>
 		</Satellites>
 
