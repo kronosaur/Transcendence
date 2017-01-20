@@ -825,7 +825,7 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 	m_VI.GetFont(fontMedium).DrawText(Dest, 
 			rcText,
 			m_rgbTextColor,
-			Item.GetNounPhrase(nounShort | nounNoModifiers),
+			Item.GetNounPhrase(CItemCtx(), nounShort | nounNoModifiers),
 			0,
 			CG16bitFont::AlignCenter);
 

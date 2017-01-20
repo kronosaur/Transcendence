@@ -260,7 +260,9 @@
     <None Include="SistersOfDomina.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="StdArmor.xml" />
+    <None Include="StdArmor.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="StdAutons.xml">
       <SubType>Designer</SubType>
     </None>

@@ -258,7 +258,7 @@ void CGItemListDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 			rcText.top = yBox + ICON_HEIGHT;
 			rcText.right = rcText.left + m_cxBox;
 			rcText.bottom = rcText.top + Medium.GetHeight() * 2;
-			Medium.DrawText(Dest, rcText, rgbColorTitle, Item.GetNounPhrase(dwNounPhraseFlags), 0, CG16bitFont::AlignCenter);
+			Medium.DrawText(Dest, rcText, rgbColorTitle, Item.GetNounPhrase(CItemCtx(), dwNounPhraseFlags), 0, CG16bitFont::AlignCenter);
 				
 			//	Next
 

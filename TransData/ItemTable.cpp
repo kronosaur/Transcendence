@@ -478,14 +478,14 @@ void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
                     if (Stats.pBestArmor)
                         {
                         CItem BestArmor(Stats.pBestArmor, 1);
-                        sBestArmor = BestArmor.GetNounPhrase(nounShort);
+                        sBestArmor = BestArmor.GetNounPhrase(ItemCtx, nounShort);
                         }
 
                     CString sWorstArmor;
                     if (Stats.pWorstArmor)
                         {
                         CItem WorstArmor(Stats.pWorstArmor, 1);
-                        sWorstArmor = WorstArmor.GetNounPhrase(nounShort);
+                        sWorstArmor = WorstArmor.GetNounPhrase(ItemCtx, nounShort);
                         }
 
                     printf("%d\t%s\t%d\t%s\t%d",
