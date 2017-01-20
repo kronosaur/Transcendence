@@ -3223,7 +3223,7 @@
 				accelerationFactor="60"
 				lifetime=		"4800"
 				hitPoints=		"20"
-				stealth=		"7"
+				stealth=		"15"
 
 				failSafe=		"10"
 
@@ -3275,7 +3275,7 @@
 				maneuverRate=	"9"
 				lifetime=		"2400"
 				hitPoints=		"20"
-				stealth=		"6"
+				stealth=		"12"
 
 				failSafe=		"10"
 

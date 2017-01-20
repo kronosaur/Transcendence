@@ -3704,7 +3704,7 @@
 			armorID=			"&itAdvancedPlasteelPlate;"
 			hitPoints=			"500"
             regen=              "1.5"
-			stealth=			"15" 
+			stealth=			"10" 
 			fireRateAdj=		"80"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
