@@ -39,6 +39,7 @@ class CDockScreenList : public IDockScreenDisplay
 		virtual EResults OnResetList (CSpaceObject *pLocation) override;
 		virtual EResults OnSetListCursor (int iCursor) override;
 		virtual EResults OnSetListFilter (const CItemCriteria &Filter) override;
+		virtual EResults OnSetLocation (CSpaceObject *pLocation) override;
 		virtual bool OnSelectNextItem (void) override;
 		virtual bool OnSelectPrevItem (void) override;
 		virtual void OnShowItem (void) override;
@@ -124,6 +125,7 @@ class CDockScreenSelector : public IDockScreenDisplay
 		virtual EResults OnResetList (CSpaceObject *pLocation) override;
 		virtual EResults OnSetListCursor (int iCursor) override;
 		virtual EResults OnSetListFilter (const CItemCriteria &Filter) override;
+		virtual EResults OnSetLocation (CSpaceObject *pLocation) override;
 		virtual bool OnSelectNextItem (void) override;
 		virtual bool OnSelectPrevItem (void) override;
 		virtual void OnShowItem (void) override;

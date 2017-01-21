@@ -1207,6 +1207,7 @@ class CTranscendenceModel
 		ALERROR GetGameStats (CGameStats *retStats);
 
 		void OnDockedObjChanged (CSpaceObject *pObj);
+		void OnPlayerChangedShips (CSpaceObject *pOldShip, CSpaceObject *pNewShip, SPlayerChangedShipsCtx &Options);
 		void OnPlayerDestroyed (SDestroyCtx &Ctx, CString *retsEpitaph = NULL);
 		void OnPlayerDocked (CSpaceObject *pObj);
 		void OnPlayerEnteredGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);

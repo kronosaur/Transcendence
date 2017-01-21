@@ -1783,6 +1783,21 @@ void CDockScreen::SetListFilter (const CItemCriteria &Filter)
 		m_CurrentPane.ExecuteShowPane(EvalInitialPane());
 	}
 
+void CDockScreen::SetLocation (CSpaceObject *pLocation)
+
+//	SetLocation
+//
+//	Sets the location
+
+	{
+	m_pLocation = pLocation;
+	if (m_pDisplay)
+		{
+		if (m_pDisplay->SetLocation(pLocation) == IDockScreenDisplay::resultShowPane)
+			m_CurrentPane.ExecuteShowPane(EvalInitialPane());
+		}
+	}
+
 void CDockScreen::ShowPane (const CString &sName)
 
 //	ShowPane

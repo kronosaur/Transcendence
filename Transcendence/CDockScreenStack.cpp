@@ -305,3 +305,16 @@ void CDockScreenStack::SetDisplayData (const CString &sID, const CString &sData)
 	SDockFrame &Frame = m_Stack[m_Stack.GetCount() - 1];
 	Frame.DisplayData.SetAt(sID, sData);
 	}
+
+void CDockScreenStack::SetLocation (CSpaceObject *pLocation)
+
+//	SetLocation
+//
+//	Sets the location for all frames. This is called, e.g., when we change ships.
+
+	{
+	int i;
+
+	for (i = 0; i < m_Stack.GetCount(); i++)
+		m_Stack[i].pLocation = pLocation;
+	}

@@ -337,6 +337,17 @@ IDockScreenDisplay::EResults CDockScreenList::OnSetListFilter (const CItemCriter
 	return resultShowPane;
 	}
 
+IDockScreenDisplay::EResults CDockScreenList::OnSetLocation (CSpaceObject *pLocation)
+
+//	OnSetLocation
+//
+//	The location has changed
+
+	{
+	//	LATER: Deal with changing location
+	return resultShowPane;
+	}
+
 bool CDockScreenList::OnSelectNextItem (void)
 
 //	OnSelectNextItem

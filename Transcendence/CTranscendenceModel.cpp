@@ -1498,6 +1498,47 @@ void CTranscendenceModel::OnDockedObjChanged (CSpaceObject *pObj)
 	g_pTrans->m_CurrentDock.ResetList(pObj);
 	}
 
+void CTranscendenceModel::OnPlayerChangedShips (CSpaceObject *pOldShip, CSpaceObject *pNewShip, SPlayerChangedShipsCtx &Options)
+
+//	OnPlayerChangedShips
+//
+//	Handle the player changing ships.
+
+	{
+	int i;
+
+	//	If we're docked, update all frames with the new ship
+
+	if (g_pTrans->m_CurrentDock.GetLocation() == pOldShip)
+		{
+		pOldShip->ClearPlayerDocked();
+		pNewShip->SetPlayerDocked();
+
+		g_pTrans->m_CurrentDock.SetLocation(pNewShip);
+		m_DockFrames.SetLocation(pNewShip);
+		}
+
+	//	Call all types and tell them that we've switched ships
+
+	m_Universe.FireOnGlobalPlayerChangedShips(pOldShip);
+
+	//	Call all objects in the system and tell them that we've
+	//	changed ships.
+
+	CSystem *pSystem = m_Universe.GetCurrentSystem();
+	ASSERT(pSystem);
+
+	for (i = 0; i < pSystem->GetObjectCount(); i++)
+		{
+		CSpaceObject *pObj = pSystem->GetObject(i);
+		if (pObj 
+				&& !pObj->IsDestroyed()
+				&& pObj != pOldShip
+				&& pObj != pNewShip)
+			pObj->OnPlayerChangedShips(pOldShip, Options);
+		}
+	}
+
 void CTranscendenceModel::OnPlayerDestroyed (SDestroyCtx &Ctx, CString *retsEpitaph)
 
 //	OnPlayerDestroyed

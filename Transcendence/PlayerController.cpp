@@ -2452,8 +2452,6 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip, SPlayerChangedShips
 //	Switches the player's ship
 
 	{
-	int i;
-
 	ASSERT(m_pShip);
 	CShip *pOldShip = m_pShip;
 
@@ -2520,25 +2518,9 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip, SPlayerChangedShips
     pOldShip->FireOnPlayerLeftShip(pNewShip);
     pNewShip->FireOnPlayerEnteredShip(pOldShip);
 
-	//	Call all types and tell them that we've switched ships
+	//	Tell the model that we changed ships
 
-	g_pUniverse->FireOnGlobalPlayerChangedShips(pOldShip);
-
-	//	Call all objects in the system and tell them that we've
-	//	changed ships.
-
-	CSystem *pSystem = g_pUniverse->GetCurrentSystem();
-	ASSERT(pSystem);
-
-	for (i = 0; i < pSystem->GetObjectCount(); i++)
-		{
-		CSpaceObject *pObj = pSystem->GetObject(i);
-		if (pObj 
-				&& !pObj->IsDestroyed()
-				&& pObj != pOldShip
-				&& pObj != pNewShip)
-			pObj->OnPlayerChangedShips(pOldShip, Options);
-		}
+	g_pTrans->GetModel().OnPlayerChangedShips(pOldShip, pNewShip, Options);
 
 	//	Update displays
 

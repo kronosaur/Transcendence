@@ -115,6 +115,7 @@ class IDockScreenDisplay
 		inline EResults ResetList (CSpaceObject *pLocation) { return OnResetList(pLocation); }
 		inline EResults SetListCursor (int iCursor) { return OnSetListCursor(iCursor); }
 		inline EResults SetListFilter (const CItemCriteria &Filter) { return OnSetListFilter(Filter); }
+		inline EResults SetLocation (CSpaceObject *pLocation) { m_pLocation = pLocation; return OnSetLocation(pLocation); }
 		inline bool SelectNextItem (void) { return OnSelectNextItem(); }
 		inline bool SelectPrevItem (void) { return OnSelectPrevItem(); }
 		inline void ShowItem (void) { OnShowItem(); }
@@ -140,6 +141,7 @@ class IDockScreenDisplay
 		virtual EResults OnResetList (CSpaceObject *pLocation) { return resultNone; }
 		virtual EResults OnSetListCursor (int iCursor) { return resultNone; }
 		virtual EResults OnSetListFilter (const CItemCriteria &Filter) { return resultNone; }
+		virtual EResults OnSetLocation (CSpaceObject *pLocation) { return resultNone; }
 		virtual bool OnSelectNextItem (void) { return false; }
 		virtual bool OnSelectPrevItem (void) { return false; }
 		virtual void OnShowItem (void) { }
@@ -419,6 +421,7 @@ class CDockScreen : public IScreenController
 		void ResetList (CSpaceObject *pLocation);
 		void SelectListFilter (const CString &sID);
 		void SetListFilter (const CItemCriteria &Filter);
+		void SetLocation (CSpaceObject *pLocation);
 		void Update (int iTick);
 
 		//	Methods used by script code
@@ -589,6 +592,7 @@ class CDockScreenStack
 		void SetCurrentPane (const CString &sPane);
 		void SetData (const CString &sAttrib, ICCItem *pData);
 		void SetDisplayData (const CString &sID, const CString &sData);
+		void SetLocation (CSpaceObject *pLocation);
 
 	private:
 		TArray<SDockFrame> m_Stack;
