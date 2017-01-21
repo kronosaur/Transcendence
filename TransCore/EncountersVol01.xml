@@ -4000,7 +4000,7 @@
 						; (about 1 pteracnium rod every 2 seconds
 						(eq gSource gPlayerShip)
 							(block Nil
-								(shpConsumeFuel gPlayerShip 12500)
+								(shpConsumeFuel gPlayerShip 12500 'drain)
 								(objIncOverlayData gSource aOverlayID "fuelConsumed" 12500)
 								)
 

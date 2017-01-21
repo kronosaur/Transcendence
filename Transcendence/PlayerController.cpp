@@ -1178,14 +1178,18 @@ void CPlayerShipController::OnEnemyShipsDetected (void)
 	g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_ENEMY_SHIP_ALARM));
 	}
 
-void CPlayerShipController::OnFuelConsumed (Metric rFuel)
+void CPlayerShipController::OnFuelConsumed (Metric rFuel, CReactorDesc::EFuelUseTypes iUse)
 
 //  OnFuelConsumed
 //
 //  Fuel consumed
 
     {
-    m_Stats.OnFuelConsumed(m_pShip, rFuel);
+	//	We track fuel consumption (but not fuel drain, such as from pteravores).
+	//	Bioships use fuel consumption to track growth.
+
+	if (iUse == CReactorDesc::fuelConsume)
+		m_Stats.OnFuelConsumed(m_pShip, rFuel);
     }
 
 void CPlayerShipController::OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend)
