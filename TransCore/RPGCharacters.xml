@@ -155,19 +155,49 @@
 
 	<Globals>
 		(block Nil
-			(setq rpgCharacterAscend (lambda (type)
-				(block (shipObj)
-					;	If character is in this system, then ascend them (so that
-					;	they can appear in other systems).
-
-					(setq shipObj (objGetObjByID (typGetData type 'objID)))
-					(if (and shipObj
-							(not (objGetProperty shipObj 'ascended))
-							)
+			(setq rpgCharacterAscend (lambda (charType)
+				(block (
+					(lastNodeID (typGetData charType 'lastNodeID))
+					
+					shipClassValue
+					objID
+					shipObj
+					)
+					
+					(switch
+						;	If lastNodeID doesn't equal this system, then nothing to do.
+						
+						(and lastNodeID (!= lastNodeID (sysGetNode)))
+							Nil
+							
+						;	If no last ship class then we can't do anything because we don't know
+						;	how to find the object ID.
+						
+						(not (setq shipClassValue (typGetData charType 'lastShipClass)))
+							Nil
+							
+						;	Get the object ID from the character type and ship class
+						
+						(not (setq objID 
+								(typGetData charType 
+									(cat 'objID_ (int shipClassValue))
+									)
+								))
+							Nil
+							
+						;	If no ship or the ship is already ascended, then nothing to do
+						
+						(not (setq shipObj (objGetObjByID objID)))
+							Nil
+							
+						(objGetProperty shipObj 'ascended)
+							Nil
+							
+						;	Otherwise, ascend the object
+						
 						(block Nil
-							(typSetData type 'lastNodeID (sysGetNode))
-							(typSetData type 'lastSystemPos (objGetPos shipObj))
-							(typSetData type 'lastKnown (objGetProperty shipObj 'known))
+							(typSetData charType 'lastSystemPos (objGetPos shipObj))
+							(typSetData charType 'lastKnown (objGetProperty shipObj 'known))
 							(sysAscendObject shipObj)
 							)
 						)
@@ -301,9 +331,10 @@
 						;	create him.
 
 						(not objID)
-							(block Nil
+ 							(block Nil
 								(setq shipObj (sysCreateShip shipClassUNID pos (typGetStaticData charType 'Sovereign)))
 								(objSetProperty shipObj 'known (@ options 'setKnown))
+								(typSetData charType 'lastNodeID (sysGetNode))
 								(typSetData charType 'lastShipClass shipClassUNID)
 								(typSetData charType shipIDVar (objGetId shipObj))
 								(typSetData charType 'screenData Nil)
@@ -318,6 +349,7 @@
 								
 								(setq shipObj (sysCreateShip shipClassUNID pos (typGetStaticData charType 'Sovereign)))
 								(objSetProperty shipObj 'known (@ options 'setKnown))
+								(typSetData charType 'lastNodeID (sysGetNode))
 								(typSetData charType 'lastShipClass shipClassUNID)
 								(typSetData charType shipIDVar (objGetId shipObj))
 								(typSetData charType 'screenData Nil)
@@ -352,6 +384,7 @@
 								(if (not shipObj)
 									(block Nil
 										(setq shipObj (sysCreateShip shipClassUNID pos (typGetStaticData charType 'Sovereign)))
+										(typSetData charType 'lastNodeID (sysGetNode))
 										(typSetData charType 'lastShipClass shipClassUNID)
 										(typSetData charType shipIDVar (objGetId shipObj))
 										)
