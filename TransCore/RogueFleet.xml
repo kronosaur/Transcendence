@@ -52,7 +52,7 @@
 			rotationAccel=		"0.5"
 			/>
 
-		<Image imageID="&rsAurochs;" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsAurochsHD;" imageWidth="96" imageHeight="96"		rotationCount="120" rotationColumns="12"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="157"	posRadius="43"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>

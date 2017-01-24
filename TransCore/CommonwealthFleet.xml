@@ -3749,7 +3749,7 @@ PLAYER DATA
 					/>
 		</Interior>
 		 
-		<Image imageID="&rsAurochs;" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsAurochsHD;" imageWidth="96" imageHeight="96"		rotationCount="120" rotationColumns="12"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="157"	posRadius="43"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -5278,6 +5278,8 @@ PLAYER DATA
 <!-- RESOURCES -->
 
 	<Image UNID="&rsAurochs;"		bitmap="Resources\Aurochs.jpg" bitmask="Resources\AurochsMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsAurochsHD;"		bitmap="Resources\AurochsHD.jpg"	bitmask="Resources\AurochsHDMask.bmp" 	loadOnUse="true" />
+	
 	<Image UNID="&rsAquila;"		bitmap="Resources\Aquila.jpg" bitmask="Resources\AquilaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsBritannia;"		bitmap="Resources\Britannia.jpg" bitmask="Resources\BritanniaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsCSC;"			bitmap="Resources\CSC.jpg" bitmask="Resources\CSCMask.bmp" loadOnUse="true" />
