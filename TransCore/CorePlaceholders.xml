@@ -197,7 +197,7 @@
 			description=		"The largest kinetic mass driver created by NAMI, the Ballista cannon can pummel a medium-sized station."
 			>
 
-		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"missile"
