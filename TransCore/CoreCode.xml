@@ -567,17 +567,17 @@
 			; argument is in kilograms. This function returns strings of the
 			; following forms:
 			;
-			; n Kg
+			; n kg
 			; n.m tons
 			; ------------------------------------------------------------------
 			
 				(block Nil
 					(switch
 						(eq mass 1)
-							"1 Kg"
+							"1 kg"
 
 						(ls mass 1000)
-							(cat mass " Kg")
+							(cat mass " kg")
 
 						(block (tons remainder)
 							(setq tons (divide mass 1000))
