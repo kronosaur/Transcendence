@@ -314,6 +314,10 @@
 			thrustRatio=		"3"
 			maxSpeed=			"20"
 			cargoSpace=			"500"
+
+			maxArmor=			"20000"
+			maxCargoSpace=		"500"
+			maxDevices=			"6"
 			>
 
 		<!-- Configuration -->
