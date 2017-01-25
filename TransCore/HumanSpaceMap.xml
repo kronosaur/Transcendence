@@ -57,7 +57,7 @@
 		<Node ID="BA" x="207" y="-205">
 			<System
 					name=			"Rigel Aurelius"
-					level=			"2"
+					level=			"3"
 					attributes=		"humanSpace, mainline, newBeyond"
 					>
 				<System UNID="&ssBattleArena;"/>
