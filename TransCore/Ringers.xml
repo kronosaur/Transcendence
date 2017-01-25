@@ -212,6 +212,8 @@
 		</Devices>
 
 		<Items>
+			<RandomItem count="1d4" criteria="r -illegal; -notForSale; -notStandard; L:7-9;"		levelFrequency="systemLevel:ru|c|curv"/>
+			
 			<RandomItem count="1d4" 
 					criteria=		"w -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:ru|c|ur"
@@ -240,7 +242,6 @@
 		<Trade currency="rin" max="100000" replenish="5000">
 			<Sell	criteria="*NU +RingerValuable;"		priceAdj="550"/>
 			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
-			<Sell	criteria="rNU L:7-9; -NotForSale; -notStandard;"	priceAdj="100"	inventoryAdj="100"/>
 			<Buy	criteria="*NU +RingerValuable;"		priceAdj="500"/>
 			<Buy	criteria="*NU +Res; &gt;=4;"		priceAdj="65"/>
 			

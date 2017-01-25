@@ -1126,7 +1126,7 @@
 		<!-- Trade and Items -->
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="rNU L:3-5; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100" noDescription="true"/>
+			<Sell	criteria="*NU -illegal; -notForSale; -notStandard;"	priceAdj="110"	noDescription="true"/>
 
 			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="90"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
@@ -1134,6 +1134,10 @@
 			<InstallDevice	criteria="d L:1-6;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
 		</Trade>
+		
+		<Items>
+			<RandomItem count="1d4" criteria="r -illegal; -military; -notForSale; -notStandard; L:3-6;"		levelFrequency="systemLevel:ru|c|curv"/>
+		</Items>
 
 		<!-- Configuration -->
 

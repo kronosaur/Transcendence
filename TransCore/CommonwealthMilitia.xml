@@ -305,7 +305,6 @@
 		<Trade currency="credit" max="50000" replenish="2500">
 			<Sell	criteria="m +commonwealth; -illegal; -notForSale; -notStandard; L:3-8;" priceAdj="115" inventoryAdj="200" noDescription="true"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110" noDescription="true"/>
-			<Sell	criteria="rNU L:4-8; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100" noDescription="true"/>
 			
 			<Refuel			criteria="f +BasicFuel; L:3-8;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
@@ -315,6 +314,8 @@
 		</Trade>
 		
 		<Items>
+			<RandomItem count="1d4" criteria="r -alien; -illegal; -specialty; -notForSale; -notStandard; L:4-8;"		levelFrequency="systemLevel:ru|c|curv"/>
+			
 			<RandomItem count="2d4" 
 					criteria=		"w -Illegal; -Alien; -Specialty; -NotStandard; -NotForSale"
 					level=			"5"

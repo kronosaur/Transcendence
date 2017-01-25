@@ -44,7 +44,6 @@
 		<Trade currency="credit" max="200000" replenish="5000">
 			<Sell	criteria="m +commonwealth; -military; -illegal; -notForSale; -notStandard; L:1-6;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Sell	criteria="rNU L:1-4; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
@@ -57,6 +56,8 @@
 		</Trade>
 
 		<Items>
+			<RandomItem count="1d4" criteria="r -illegal; -notForSale; -notStandard; L:1-6;"		levelFrequency="systemLevel:ru|c|curv"/>
+			
 			<RandomItem count="20" 
 					criteria=		"ad L:1-6; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:u|c|ur"
@@ -174,7 +175,6 @@
 		<Trade currency="credit" max="200000" replenish="5000">
 			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Sell	criteria="rNU L:4-7; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
@@ -187,6 +187,8 @@
 		</Trade>
 		
 		<Items>
+			<RandomItem count="1d4" criteria="r -alien; -illegal; -military; -notForSale; -notStandard; L:4-8;"		levelFrequency="systemLevel:ru|c|curv"/>
+			
 			<RandomItem count="20" 
 					criteria=		"ad L:1-8; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:u|c|ur"

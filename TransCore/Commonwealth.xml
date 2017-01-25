@@ -494,8 +494,7 @@
 		<Image			imageID="&rsStations1;" imageX="256" imageY="0" imageWidth="224" imageHeight="224"/>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"  noDescription="true"/>
-			<Sell	criteria="rNU L:3-7; -Illegal; -NotForSale; -notStandard;"	priceAdj="110"	inventoryAdj="100"  noDescription="true"/>
+			<Sell	criteria="*NU -illegal; -ID; -notForSale;"	priceAdj="110"  noDescription="true"/>
 			
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="95"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
@@ -503,6 +502,10 @@
 			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 		</Trade>
+		
+		<Items>
+			<RandomItem count="1d6" criteria="r -illegal; -military; -notForSale; -notStandard; L:3-7;"		levelFrequency="systemLevel:ru|c|curv"/>
+		</Items>
 
 		<Ships>
 			<Lookup count="1d3" table="&tbCommDefenders;"/>
