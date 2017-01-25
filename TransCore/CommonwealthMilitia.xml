@@ -314,38 +314,15 @@
 		</Trade>
 		
 		<Items>
-			<RandomItem count="1d4" criteria="r -alien; -illegal; -specialty; -notForSale; -notStandard; L:4-8;"		levelFrequency="systemLevel:ru|c|curv"/>
+			<RandomItem count="2d10" 
+					criteria=		"ad~r L:1-8; -alien; -illegal; -notForSale; -notStandard; -specialty;"
+					levelFrequency=	"systemLevel:u|c|crv"
+					/>
+			<RandomItem count="1d4" 
+					criteria=		"r L:4-8; -alien; -illegal; -specialty; -notForSale; -notStandard;"
+					levelFrequency="systemLevel:ru|c|curv"
+					/>
 			
-			<RandomItem count="2d4" 
-					criteria=		"w -Illegal; -Alien; -Specialty; -NotStandard; -NotForSale"
-					level=			"5"
-					levelCurve=		"1"
-					/>
-
-			<RandomItem count="1d4" 
-					criteria=		"w -Illegal; -Alien; -Specialty; -NotStandard; -NotForSale"
-					level=			"6"
-					levelCurve=		"1"
-					/>
-
-			<RandomItem count="1d4" 
-					criteria=		"s -Illegal; -Alien; -Specialty; -NotStandard; -NotForSale"
-					level=			"6"
-					levelCurve=		"1"
-					/>
-
-			<RandomItem count="1d4" 
-					criteria=		"s -Illegal; -Alien; -Specialty; -NotStandard; -NotForSale"
-					level=			"6"
-					levelCurve=		"1"
-					/>
-
-			<RandomItem count="2d4" 
-					criteria=		"a -Illegal; -Alien; -Specialty; -NotStandard; -NotForSale"
-					level=			"6"
-					levelCurve=		"1"
-					/>
-
 			<Item				count="16d20"	item="&itKM500Missile;" />
 			<Item				count="8d20"	item="&itKM550Missile;" />
 			<Item				count="8d20"	item="&itXM900Missile;" />

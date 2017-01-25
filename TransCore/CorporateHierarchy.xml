@@ -193,38 +193,36 @@
 
 		<Items>
 			<RandomItem count="1d12" 
-					criteria=		"w -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|ur"
+					criteria=		"a L:1-10; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|crv"
 					enhanced=		"5"
 					enhancement=	"=(intHPEnhancement1)"
 					/>
-
 			<RandomItem count="1d12" 
-					criteria=		"d~w -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|ur"
+					criteria=		"w L:1-10; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|crv"
+					enhanced=		"5"
+					enhancement=	"=(intHPEnhancement1)"
+					/>
+			<RandomItem count="1d12" 
+					criteria=		"d~w L:1-10; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|crv"
 					enhanced=		"5"
 					enhancement=	"=(intCorporateGenerateEnhancement gItem)"
 					/>
 
 			<RandomItem count="1d12" 
-					criteria=		"a -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|ur"
-					enhanced=		"5"
-					enhancement=	"=(intHPEnhancement1)"
-					/>
-
-			<RandomItem count="1d12" 
 					criteria=		"u -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|ur"
+					levelFrequency=	"systemLevel:ru|c|cur"
 					/>
 
 			<RandomItem count="2d12" 
 					criteria=		"m -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|ur"
+					levelFrequency=	"systemLevel:ru|c|cur"
 					/>
 
 			<RandomItem count="1d6" 
-					criteria=		"adu -Specialty; -NotStandard; -NotForSale;"
+					criteria=		"adu L:1-10; -Specialty; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:-|r|cur"
 					/>
 		</Items>
@@ -237,9 +235,9 @@
 
 			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-10;" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-10;" priceAdj="100"	upgradeInstallOnly="true"/>
-			<RemoveDevice	criteria="d L:1-10;" priceAdj="100"	upgradeInstallOnly="true"/>
+			<ReplaceArmor	criteria="a L:1-10;" priceAdj="110"/>
+			<InstallDevice	criteria="d L:1-10;" priceAdj="110"	upgradeInstallOnly="true"/>
+			<RemoveDevice	criteria="d L:1-10;" priceAdj="110"	upgradeInstallOnly="true"/>
 		</Trade>
 
 		<Events>
@@ -343,20 +341,20 @@
 
 		<Items>
 			<RandomItem count="8-12" 
-					criteria=		"as -Illegal; -Military; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|u"
+					criteria=		"as L:1-7; -Illegal; -Military; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|ur"
 					enhanced=		"10"
 					enhancement=	"=(intHPEnhancement1)"
 					/>
 			<RandomItem count="8-12" 
-					criteria=		"as -Illegal; -Military; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:-|u|cu"
+					criteria=		"as L:1-7; -Illegal; -Military; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:-|u|crv"
 					enhanced=		"5"
 					enhancement=	"=(intHPEnhancement1)"
 					/>
 			<RandomItem count="6-10" 
-					criteria=		"as -Illegal; -Military; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|ur"
+					criteria=		"as L:1-7; -Illegal; -Military; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|cur"
 					/>
 			<RandomItem count="4" 
 					criteria=		"u +ArmorRepair; -Illegal; -Military; -NotStandard; -NotForSale;"
@@ -495,20 +493,20 @@
 
 		<Items>
 			<RandomItem count="10" 
-					criteria=		"w -Illegal; -Military; -NotStandard; -NotForSale;"
+					criteria=		"w L:1-5; -Illegal; -Military; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:c|-|-"
 					enhanced=		"10"
 					enhancement=	"=(intHPEnhancement2)"
 					/>
 			<RandomItem count="15" 
-					criteria=		"w -Illegal; -Military; -NotStandard; -NotForSale;"
+					criteria=		"w L:1-5; -Illegal; -Military; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:u|c|u"
 					enhanced=		"10"
 					enhancement=	"=(intHPEnhancement1)"
 					/>
 			<RandomItem count="8" 
-					criteria=		"w -Illegal; -Military; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:ru|c|ur"
+					criteria=		"w L:1-5; -Illegal; -Military; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:ru|c|crv"
 					enhanced=		"5"
 					enhancement=	"=(intHPEnhancement1)"
 					/>
@@ -639,19 +637,19 @@
 
 		<Items>
 			<RandomItem count="1d12" 
-					criteria=		"w +Makayev; -NotForSale;"
-					levelFrequency=	"systemLevel:ru|c|ur"
+					criteria=		"w L:1-7; +Makayev; -NotForSale;"
+					levelFrequency=	"systemLevel:ru|c|crv"
 					enhanced=		"10"
 					enhancement=	"=(intMakayevWeaponEnhancement)"
 					/>
 
 			<RandomItem chance="65" count="1d4" 
-					criteria=		"d~w +Makayev; -NotForSale;"
+					criteria=		"d~w L:1-7; +Makayev; -NotForSale;"
 					levelFrequency=	"systemLevel:ru|c|ur"
 					/>
 
 			<RandomItem count="2d12" 
-					criteria=		"a +Makayev; -NotForSale;"
+					criteria=		"a L:1-7; +Makayev; -NotForSale;"
 					levelFrequency=	"systemLevel:ru|c|ur"
 					enhanced=		"10"
 					enhancement=	"=(intMakayevArmorEnhancement)"
@@ -762,28 +760,28 @@
 
 		<Items>
 			<RandomItem count="1d12" 
-					criteria=		"w +Bushido; -NotForSale;"
-					levelFrequency=	"systemLevel:ru|c|ur"
+					criteria=		"w L:1-10; +Bushido; -NotForSale;"
+					levelFrequency=	"systemLevel:ru|c|crv"
 					enhanced=		"10"
 					enhancement=	"=(intBushidoWeaponEnhancement)"
 					/>
 
 			<RandomItem count="1d12" 
-					criteria=		"s +Bushido; -NotForSale;"
+					criteria=		"s L:1-10; +Bushido; -NotForSale;"
 					levelFrequency=	"systemLevel:ru|c|ur"
 					enhanced=		"10"
 					enhancement=	"=(intBushidoShieldEnhancement)"
 					/>
 
 			<RandomItem count="1d12" 
-					criteria=		"a +Bushido; -NotForSale;"
+					criteria=		"a L:1-10; +Bushido; -NotForSale;"
 					levelFrequency=	"systemLevel:ru|c|ur"
 					enhanced=		"10"
 					enhancement=	"=(intBushidoArmorEnhancement)"
 					/>
 
 			<RandomItem count="1d12" 
-					criteria=		"a +Bushido; -NotForSale;"
+					criteria=		"a L:1-10; +Bushido; -NotForSale;"
 					levelFrequency=	"systemLevel:r|u|cur"
 					enhanced=		"5"
 					enhancement=	"=(intBushidoArmorEnhancement)"
@@ -1398,35 +1396,35 @@
 
 		<Items>
 			<RandomItem count="2d3"
-					criteria=		"w +Makayev; -NotForSale;"
-					levelFrequency=	"systemLevel:uc|c|ur"
+					criteria=		"w L:1-10; +Makayev; -NotForSale;"
+					levelFrequency=	"systemLevel:uc|c|crv"
 					enhanced=		"20"
 					enhancement=	"=(intMakayevWeaponEnhancement)"
 					/>
 
 			<RandomItem count="2d6"
-					criteria=		"a +Makayev; -NotForSale;"
-					levelFrequency=	"systemLevel:uc|c|ur"
+					criteria=		"a L:1-10; +Makayev; -NotForSale;"
+					levelFrequency=	"systemLevel:uc|c|crv"
 					enhanced=		"20"
 					enhancement=	"=(intMakayevArmorEnhancement)"
 					/>
 
 			<RandomItem count="2d3"
-					criteria=		"w +Makayev; -NotForSale;"
+					criteria=		"w L:1-10; +Makayev; -NotForSale;"
 					levelFrequency=	"systemLevel:u|c|cur"
 					enhanced=		"10"
 					enhancement=	"=(intMakayevWeaponEnhancement)"
 					/>
 
 			<RandomItem count="2d6"
-					criteria=		"a +Makayev; -NotForSale;"
+					criteria=		"a L:1-10; +Makayev; -NotForSale;"
 					levelFrequency=	"systemLevel:u|c|cur"
 					enhanced=		"10"
 					enhancement=	"=(intMakayevArmorEnhancement)"
 					/>
 
 			<RandomItem count="1d4"
-					criteria=		"d~w +Makayev; -NotForSale;"
+					criteria=		"d~w L:1-10; +Makayev; -NotForSale;"
 					levelFrequency=	"systemLevel:rucc|c|ur"
 					/>
 		</Items>
@@ -2459,19 +2457,19 @@
 
 		<Items>
 			<RandomItem count="1d6" 
-					criteria=		"d +Taikon; -NotStandard; -NotForSale"
-					levelFrequency=	"systemLevel:ru|c|u"
+					criteria=		"d L:1-11; +Taikon; -NotStandard; -NotForSale"
+					levelFrequency=	"systemLevel:ru|c|ur"
 					/>
 			<RandomItem count="1d6" 
-					criteria=		"a +Taikon; -NotStandard; -NotForSale"
-					levelFrequency=	"systemLevel:ru|c|u"
+					criteria=		"a L:1-11; +Taikon; -NotStandard; -NotForSale"
+					levelFrequency=	"systemLevel:ru|c|ur"
 					/>
 			<RandomItem count="3d6" 
 					criteria=		"m +Taikon; -NotStandard; -NotForSale"
-					levelFrequency=	"systemLevel:ru|c|u"
+					levelFrequency=	"systemLevel:ru|c|ur"
 					/>
 			<RandomItem count="1d6" 
-					criteria=		"* -NotStandard; -NotForSale;"
+					criteria=		"* L:1-11; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:ru|c|u"
 					/>
 			<RandomItem count="2d6" 
@@ -2479,7 +2477,7 @@
 					levelFrequency=	"systemLevel:ru|c|u"
 					/>
 			<RandomItem count="1d3" 
-					criteria=		"* +Alien; -NotStandard; -NotForSale;"
+					criteria=		"* L:1-11; +Alien; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:u|c|ur"
 					/>
 			<Item	count="6d12" item="&itPteracniumFuelRod;"/>
@@ -2601,8 +2599,6 @@
 			<RandomItem count="20-30" 
 					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:vru|c|urv"
-					level=			"5"
-					levelCurve=		"0"
 					/>
 		</Items>
 
@@ -3035,13 +3031,13 @@
 
 		<Items>
 			<RandomItem count="20-30" 
-					criteria=		"admu -Illegal; -Military; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|ur"
+					criteria=		"admu L:1-9; -Illegal; -Military; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|crv"
 					enhanced=		"5"
 					enhancement=	"=(intCorporateGenerateEnhancement gItem)"
 					/>
 			<RandomItem count="8" 
-					criteria=		"admu -Illegal; -Military; -NotStandard; -NotForSale;"
+					criteria=		"admu L:1-9; -Illegal; -Military; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:r|u|cur"
 					enhanced=		"1"
 					enhancement=	"=(intCorporateGenerateEnhancement gItem)"

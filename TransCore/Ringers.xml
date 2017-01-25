@@ -215,20 +215,18 @@
 			<RandomItem count="1d4" criteria="r -illegal; -notForSale; -notStandard; L:7-9;"		levelFrequency="systemLevel:ru|c|curv"/>
 			
 			<RandomItem count="1d4" 
-					criteria=		"w -NotStandard; -NotForSale;"
+					criteria=		"w L:1-10; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:ru|c|ur"
 					/>
 
 			<RandomItem count="1d8" 
-					criteria=		"d~w -NotStandard; -NotForSale;"
+					criteria=		"d~w L:1-10; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:ruc|u|r"
 					/>
 
 			<RandomItem count="1d8" 
-					criteria=		"a -NotStandard; -NotForSale;"
+					criteria=		"a L:1-10; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:r|u|cur"
-					level=			"9"
-					levelCurve=		"1"
 					/>
 
 			<RandomItem count="4d12" 

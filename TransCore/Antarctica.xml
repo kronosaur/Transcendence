@@ -1556,16 +1556,12 @@
 
 		<Items>
 			<RandomItem count="10" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|u"
+					criteria=		"ad L:1-8; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|cvr"
 					/>
 			<RandomItem count="10" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:ru|c|ur"
-					/>
-			<RandomItem count="3" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:r|u|cu"
+					criteria=		"*~ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:ru|c|cur"
 					/>
 
 			<Item count="4d12"	item="&itPteracniumFuelRod;" />

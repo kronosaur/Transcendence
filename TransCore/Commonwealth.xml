@@ -69,12 +69,12 @@
 
 		<Items>
 			<RandomItem count="10" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|ur"
+					criteria=		"ad L:1-5; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|crv"
 					/>
 			<RandomItem count="10" 
 					criteria=		"*~ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|ur"
+					levelFrequency=	"systemLevel:ru|c|cur"
 					/>
 			<Item count="4d12"	item="&itHelium3FuelRod;" />
 		</Items>
@@ -316,11 +316,11 @@
 		<Items>
 			<RandomItem	count="10" 
 					criteria=		"ad L:1-7; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|ur"
+					levelFrequency=	"systemLevel:u|c|cvr"
 					/>
 			<RandomItem count="10" 
 					criteria=		"*~ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|ur"
+					levelFrequency=	"systemLevel:ru|c|cur"
 					/>
 			<Item count="4d12"	item="&itXenotiteFuelRod;" />
 		</Items>
@@ -608,7 +608,7 @@
 		<Items>
 			<RandomItem count="10-20" 
 					criteria=		"* +Meds; -Illegal; -Military; -Alien; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|ur"
+					levelFrequency=	"systemLevel:ru|c|cur"
 					/>
 		</Items>
 
@@ -1550,16 +1550,12 @@
 
 		<Items>
 			<RandomItem count="10" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|u"
+					criteria=		"ad L:1-8; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|cvr"
 					/>
 			<RandomItem count="10" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:ru|c|ur"
-					/>
-			<RandomItem count="3" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:r|u|cu"
+					criteria=		"*~ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:ru|c|cur"
 					/>
 
 			<Item count="4d12"	item="&itPteracniumFuelRod;" />

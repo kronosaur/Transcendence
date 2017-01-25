@@ -48,22 +48,22 @@
 		</Trade>
 
 		<Items>
-			<RandomItem count="1d3" criteria="r -alien; -illegal; -military; -notForSale; -notStandard; L:3-4;"		levelFrequency="systemLevel:ru|c|curv"/>
+			<RandomItem count="2d10" 
+					criteria=		"a L:1-7; -alien; -illegal; -military; -notForSale; -notStandard; -specialty;"
+					levelFrequency=	"systemLevel:u|c|crv"
+					/>
+			<RandomItem count="1d4" 
+					criteria=		"r L:1-6; -alien; -illegal; -military; -notForSale; -notStandard;"	
+					levelFrequency="systemLevel:ru|c|curv"
+					/>
+			<RandomItem count="2d10" 
+					criteria=		"d~r L:1-6; -alien; -illegal; -military; -notForSale; -notStandard; -specialty;"
+					levelFrequency=	"systemLevel:u|c|crv"
+					/>
 			
 			<RandomItem count="20" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"2"
-					levelCurve=		"1"
-					/>
-			<RandomItem count="20" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"2"
-					levelCurve=		"1"
-					/>
-			<RandomItem count="5" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					level=			"3"
-					levelCurve=		"1"
+					criteria=		"*~ad -alien; -illegal; -military; -notForSale; -notStandard; -specialty;"
+					levelFrequency=	"systemLevel:ru|c|cur"
 					/>
 		</Items>
 
