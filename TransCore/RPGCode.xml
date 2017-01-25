@@ -2457,6 +2457,8 @@
 					(objFixParalysis gPlayerShip)
 					(shpDecontaminate gPlayerShip)
 					
+					(objSetProperty gPlayerShip 'interiorHP (objGetProperty gPlayerShip 'maxInteriorHP))
+					
 					; Remove any overlays that shouldn't be there (e.g., pteravores)
 					(enum (objGetOverlays gPlayerShip) theOverlay
 						(objFireOverlayEvent gPlayerShip theOverlay "OnInsuranceClaim")
