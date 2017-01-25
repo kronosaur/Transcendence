@@ -30,7 +30,7 @@ void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine)
 	//	Get the criteria from the command line. Always append 's' because we
 	//	want ship classes.
 
-	CString sCriteria = strPatternSubst(CONSTLIT("%s s"), pCmdLine->GetAttribute(CONSTLIT("criteria")));
+	CString sCriteria = strPatternSubst(CONSTLIT("%s; s"), pCmdLine->GetAttribute(CONSTLIT("criteria")));
 	CDesignTypeCriteria Criteria;
 	if (CDesignTypeCriteria::ParseCriteria(sCriteria, &Criteria) != NOERROR)
 		{
