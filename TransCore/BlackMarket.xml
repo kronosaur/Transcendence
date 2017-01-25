@@ -150,9 +150,8 @@ PLAYER DATA
 		<!-- Trade and Items -->
 		
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="100"/>
-			<Sell	criteria="m +military; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="100"/>
-			<Sell	criteria="cNU +Illegal; -ID; -NotForSale; L:1-6;"	priceAdj="100"	inventoryAdj="100"/>
+			<Sell	criteria="m +illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="100" levelFrequency="systemLevel:ru|c|cur"/>
+			<Sell	criteria="m +military; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="100" levelFrequency="systemLevel:ru|c|cur"/>
 			<Sell	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Sell	criteria="*NU -ID; -NotForSale;"	priceAdj="100"/>
 			<Buy	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="85"/>
@@ -170,15 +169,22 @@ PLAYER DATA
 		</Trade>
 		
 		<Items>
-			<Item	count="8d12"	item="&itTempusSyrette;" />
-			<Item	count="6d12"	item="&itMartianNori;" />
-			<Item	count="4d12"	item="&itBooster;" />
-			<Item	count="4d12"	item="&itDeathDrugs;" />
-			<Lookup count="4d4" table="&trIllegalItems1;"/>
-			<Lookup count="2d4" table="&trIllegalItems2;"/>
-			<Lookup count="1d4" table="&trIllegalItems3;"/>
-			<Lookup count="2d4" table="&trMilitaryItem5;"/>
-			<!--<Lookup count="1d4" table="&trMilitaryItem8;"/>-->
+			<RandomItem count="1d4"
+					criteria=		"c L:1-8; +illegal; -notForSale; -notStandard;"
+					levelFrequency=	"systemLevel:rrrru|c|cur"
+					/>
+			<RandomItem count="6d12" 
+					criteria=		"t +consumerGood; +illegal;"
+					levelFrequency=	"systemLevel:ruc|c|cur"
+					/>
+			<RandomItem count="4d4" 
+					criteria=		"* +illegal; -consumerGood; -id;"
+					levelFrequency=	"systemLevel:ruc|c|cur"
+					/>
+			<RandomItem count="2d4" 
+					criteria=		"* +military;"
+					levelFrequency=	"systemLevel:ru|c|crv"
+					/>
 		</Items>
 
 		<!-- Configuration -->
@@ -559,9 +565,8 @@ PLAYER DATA
 		<!-- Trade and Items -->
 		
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200"/>
-			<Sell	criteria="m +military; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200"/>
-			<Sell	criteria="cNU +Illegal; -ID; -NotForSale; L:1-9;"	priceAdj="100"/>
+			<Sell	criteria="m +illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ru|c|cur"/>
+			<Sell	criteria="m +military; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ru|c|cur"/>
 			<Sell	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Sell	criteria="*NU -ID; -NotForSale;"	priceAdj="100"/>
 			<Buy	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="85"/>
@@ -577,22 +582,31 @@ PLAYER DATA
 		</Trade>
 			
 		<Items>
-			<RandomItem count="1d4" criteria="c +illegal; -notForSale; -notStandard;"	levelFrequency="systemLevel:rrrru|c|cur"/>
-			<RandomItem count="1d4" criteria="r -notForSale; -notStandard; L:5-9;"		levelFrequency="systemLevel:ru|c|curv"/>
+			<RandomItem count="1d4"
+					criteria=		"c L:1-9; +illegal; -notForSale; -notStandard;"
+					levelFrequency=	"systemLevel:rrrru|c|cur"
+					/>
+			<RandomItem count="1d4"
+					criteria=		"r L:5-9; -notForSale; -notStandard;"
+					levelFrequency="systemLevel:ru|c|curv"
+					/>
 			
-			<Item	count="8d12"	item="&itTempusSyrette;" />
-			<Item	count="6d12"	item="&itMartianNori;" />
-			<Item	count="4d12"	item="&itBooster;" />
-			<Item	count="4d12"	item="&itDeathDrugs;" />
-			<Lookup count="4d4" table="&trIllegalItems1;"/>
-			<Lookup count="2d4" table="&trIllegalItems2;"/>
-			<Lookup count="1d4" table="&trIllegalItems3;"/>
+			<RandomItem count="6d12" 
+					criteria=		"t +consumerGood; +illegal;"
+					levelFrequency=	"systemLevel:ruc|c|cur"
+					/>
+			<RandomItem count="4d4" 
+					criteria=		"* +illegal; -consumerGood; -id;"
+					levelFrequency=	"systemLevel:ruc|c|cur"
+					/>
+			<RandomItem count="4d4" 
+					criteria=		"* +military;"
+					levelFrequency=	"systemLevel:ru|c|crv"
+					/>
+			
 			<Item count="20d20"		item="&it800HexageneMAG;" />
 			<Item count="20d20"		item="&itZG24ClusterMAG;" />
 			<Item count="20d20"		item="&itDragonflyCartridge;" />
-			<Lookup count="2d4" table="&trMilitaryItem5;"/>
-			<Lookup count="1d4" table="&trMilitaryItem6;"/>
-			<Lookup chance="50" count="1d4" table="&trMilitaryItem7;"/>
 		</Items>
 
 		<!-- Configuration -->
@@ -723,10 +737,10 @@ PLAYER DATA
 		</Trade>
 
 		<Items>
-			<Lookup count="4d4"		table="&trIllegalItems1;"/>
-			<Item	count="16d12"	item="&itTempusSyrette;" />
-			<Item	count="6d12"	item="&itMartianNori;" />
-			<Item	count="8d12"	item="&itBooster;" />
+			<RandomItem count="12d12" 
+					criteria=		"t +consumerGood; +illegal;"
+					levelFrequency=	"systemLevel:ruc|c|cur"
+					/>
 		</Items>
 
 		<!-- Configuration -->

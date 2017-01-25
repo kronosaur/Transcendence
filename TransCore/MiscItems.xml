@@ -53,7 +53,7 @@
 			mass=				"50"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"Bombay Sapphire has maintained enormous popularity as a premium spirit with ten botanicals and a unique vapor-infusion procession to make a subtly complex, highly nuanced gin."
 
@@ -72,7 +72,7 @@
 			frequency=			"rare"
 			numberAppearing=	"1d6"
 			mass=				"1"
-			attributes=			"Consumable; Illegal"
+			attributes=			"Consumable; consumerGood, Illegal"
 
 			description=		"A strong base of O3 'boosted' with a pure dose of metaendorphile paste, this drug is considered to be the best narcotic on the black market. It is extremely addictive, and thus banned everywhere."
 
@@ -112,7 +112,7 @@
 			frequency=			"rare"
 			numberAppearing=	"1d6"
 			mass=				"1"
-			attributes=			"Consumable; Illegal; Meds"
+			attributes=			"Consumable; consumerGood, Illegal; Meds"
 
 			description=		"Cancer dust is a complex blend of oncokillers and nanomachines that cures most forms of human cancer. This is an unlicensed (and thus illegal) batch, most likely manufactured at a Death Drug laboratory."
 
@@ -131,7 +131,7 @@
 			mass=				"50"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"Even after the disastrous tectonic quakes of the 22nd century, the island city states of New California on Earth continue to make the most excellent of red wines."
 
@@ -184,7 +184,7 @@
 			mass=				"250"
 			frequency=			"common"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Food"
+			attributes=			"Consumable; consumerGood, Food"
 
 			description=		"With its subtle flavor and rich aroma, Centauri rice is a popular accompaniment to many gourmet dishes."
 
@@ -256,7 +256,7 @@
 			mass=				"100"
 			frequency=			"rare"
 			numberAppearing=	"1"
-			attributes=			"Consumable; Meds"
+			attributes=			"Consumable; consumerGood, Meds"
 
 			description=		"Cyanavir is a powerful antiviral drug that is particularly effective against filoviruses and retroviruses."
 
@@ -294,7 +294,7 @@
 			mass=				"1"
 			frequency=			"common"
 			numberAppearing=	"1"
-			attributes=			"Consumable"
+			attributes=			"Consumable, consumerGood"
 
 			description=		"A few decades ago, digital wrist computers were quite fashionable, and some of the more expensive models were worn by celebrities. This utilitarian model was not one of them."
 			>
@@ -330,7 +330,7 @@
 			mass=				"1"
 			frequency=			"rare"
 			numberAppearing=	"1d12"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"This exquisite spice is made from a dried moss originally found on the frozen Jovian moon."
 
@@ -349,7 +349,7 @@
 			mass=				"50"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"Popularized by the 3DV epic, 'Exile Starport', this champagne is trendy and very expensive."
 
@@ -389,7 +389,7 @@
 			mass=				"250"
 			frequency=			"uncommon"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Food"
+			attributes=			"Consumable; consumerGood, Food"
 
 			description=		"This is a genetically modified grain variety that is designed to grow under low-gravity and high-radiation conditions. This grade is not approved for human consumption and is only used for animal feed."
 
@@ -410,7 +410,7 @@
 			mass=				"500"
 			frequency=			"common"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"A guilty pleasure of the executive crowd, natural ham has unique subtle flavors without any of the carcinogenic effects of the vat-grown variety."
 
@@ -465,7 +465,7 @@
 			mass=				"50"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"Old and extremely rare, the years of maturing have left only that which is essential--the richness and smoothness of an exceptional, full-bodied cognac, incredibly long in the mouth."
 
@@ -484,7 +484,7 @@
 			mass=				"100"
 			frequency=			"rare"
 			numberAppearing=	"1d6"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"Clone farms of the Senpaku Hogei Corporation make this well-respected product at a reasonable (compared to Earth salmon) price."
 
@@ -580,7 +580,7 @@
 			mass=				"10"
 			frequency=			"uncommon"
 			numberAppearing=	"1d2"
-			attributes=			"Consumable; Meds"
+			attributes=			"Consumable; consumerGood, Meds"
 
 			description=		"Hypermycin is the strongest civilian antibiotic&#x97;only a few strains of phobos aerium are immune to it."
 
@@ -601,7 +601,7 @@
 			mass=				"250"
 			frequency=			"uncommon"
 			numberAppearing=	"1d3"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"This crate contains whole salmon from the Earth oceans around Iceland. The salmon has been carefully cryopreserved and tastes as fresh as possible for fish caught dozens of light-years away."
 
@@ -620,7 +620,7 @@
 			mass=				"1"
 			frequency=			"rare"
 			numberAppearing=	"2d4"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"This precious delicacy is imported from Earth and served only at special Corporate functions."
 
@@ -639,7 +639,7 @@
 			mass=				"1"
 			frequency=			"rare"
 			numberAppearing=	"1"
-			attributes=			"Consumable; Lux"
+			attributes=			"Consumable; consumerGood, Lux"
 
 			description=		"These beautifully handmade, mechanical wristwatches are often worn by high-level Corporate officers."
 			>
@@ -658,7 +658,7 @@
 			mass=				"50"
 			frequency=			"common"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"This green tea, scented with natural jasmine, is hand-rolled into pearl shapes."
 
@@ -677,7 +677,7 @@
 			mass=				"50"
 			frequency=			"common"
 			numberAppearing=	"1d12"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"Created by the Ringers, the khan plant is a genetically-engineered, cancer-fighting descendant of the lowly tea bush. The jinn-khan variety is one of the most popular in Human Space."
 
@@ -698,7 +698,7 @@
 			mass=				"500"
 			frequency=			"uncommon"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Food"
+			attributes=			"Consumable; consumerGood, Food"
 
 			description=		"Famous for its refreshing effects and calming advertisements, Kobe spring water is the drink of choice for Corporate executives."
 
@@ -735,7 +735,7 @@
 			mass=				"1"
 			frequency=			"common"
 			numberAppearing=	"2d6"
-			attributes=			"Consumable; Illegal"
+			attributes=			"Consumable; consumerGood, Illegal"
 
 			description=		"Laudanum is an illegal drug popular with the middle members of the Corporate Hierarchy."
 			>
@@ -752,7 +752,7 @@
 			mass=				"10"
 			frequency=			"common"
 			numberAppearing=	"1d2"
-			attributes=			"Consumable; Lux"
+			attributes=			"Consumable; consumerGood, Lux"
 
 			description=		"Expensive almost to the point of extravagance, leather boots are nevertheless popular throughout the wealthier parts of the Commonwealth."
 
@@ -790,7 +790,7 @@
 			mass=				"2"
 			frequency=			"common"
 			numberAppearing=	"1d6"
-			attributes=			"Consumable; Illegal"
+			attributes=			"Consumable; consumerGood, Illegal"
 
 			description=		"This exotic seaweed grows only in the subterranean water havens of Mars. Martian nori is strongly hallucinogenic if consumed and is consequently banned throughout most of Human Space."
 
@@ -859,7 +859,7 @@
 			mass=				"500"
 			frequency=			"common"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"The finest Earth sake is made in a small town in Japan."
 
@@ -897,7 +897,7 @@
 			mass=				"100"
 			frequency=			"common"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Meds"
+			attributes=			"Consumable; consumerGood, Meds"
 
 			description=		"Neuranase is a non-addictive painkiller used both for acute and chronic pain."
 
@@ -916,7 +916,7 @@
 			mass=				"1"
 			frequency=			"common"
 			numberAppearing=	"1"
-			attributes=			"Consumable; Lux"
+			attributes=			"Consumable; consumerGood, Lux"
 
 			description=		"The Neuros personal media player is a portable device that feeds signals directly into the sensory branches of the brain."
 			>
@@ -933,7 +933,7 @@
 			mass=				"500"
 			frequency=			"uncommon"
 			numberAppearing=	"1d20"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"This vintage beverage is extremely popular with high-level Corporate and Military leaders."
 
@@ -954,7 +954,7 @@
 			mass=				"250"
 			frequency=			"common"
 			numberAppearing=	"1d6"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"One of the finest olive oils available in Human Space, Bariani olive oil is imported from Earth at great cost."
 
@@ -1011,7 +1011,7 @@
 			mass=				"1"
 			frequency=			"uncommon"
 			numberAppearing=	"1d6"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"This subtle spice is grown only on some Centauri planets."
 
@@ -1030,7 +1030,7 @@
 			mass=				"250"
 			frequency=			"common"
 			numberAppearing=	"2d4"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"Most people think vat-grown beef is good enough and far more affordable, but connoisseurs cannot get enough of this organically-grown prime beef."
 
@@ -1127,7 +1127,7 @@
 			mass=				"50"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"Corporate chefs seek out this spice, grown only by the Ringers, which produces a flavor unlike anything from Earth."
 
@@ -1148,7 +1148,7 @@
 			mass=				"50"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Lux"
+			attributes=			"Consumable; consumerGood, Lux"
 
 			description=		"This rarest of fabrics has many synthetic imitators, but none approach the feel of organic silk."
 
@@ -1167,7 +1167,7 @@
 			mass=				"5"
 			frequency=			"rare"
 			numberAppearing=	"1d2"
-			attributes=			"Consumable; Lux"
+			attributes=			"Consumable; consumerGood, Lux"
 
 			description=		"This designer woman's suit is popular with Corporate executives and Commonwealth officials."
 			>
@@ -1183,7 +1183,7 @@
 			value=				"150"
 			frequency=			"uncommon"
 			mass=				"1"
-			attributes=			"Consumable; Illegal; Info"
+			attributes=			"Consumable; consumerGood, Illegal; Info"
 
 			description=		"The Ultimate Edition of this classic passive fiction is too expensive for most consumers, but an underground criminal organization has cracked the encryption keys and produced a bootleg version."
 
@@ -1221,7 +1221,7 @@
 			frequency=			"uncommon"
 			numberAppearing=	"1d6"
 			mass=				"1"
-			attributes=			"Consumable; Illegal"
+			attributes=			"Consumable; consumerGood, Illegal"
 
 			description=		"Tempus is a popular amphetamine that slows down the user's subjective time. Tempus is illegal throughout most of Human Space."
 			>
@@ -1238,7 +1238,7 @@
 			mass=				"50"
 			frequency=			"common"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"Infinitely superior to the synthetic variety produced on most stations."
 
@@ -1374,7 +1374,7 @@
 			mass=				"250"
 			frequency=			"rare"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Food"
+			attributes=			"Consumable; consumerGood, Food"
 
 			description=		"This is a high-protein variety of rice popular in the Commonwealth."
 
@@ -1393,7 +1393,7 @@
 			mass=				"5"
 			frequency=			"rare"
 			numberAppearing=	"1d2"
-			attributes=			"Consumable; Meds"
+			attributes=			"Consumable; consumerGood, Meds"
 
 			description=		"Stimuzine is a popular drug that stimulates muscle growth in low-gravity environments."
 
@@ -1412,7 +1412,7 @@
 			mass=				"50"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Food"
+			attributes=			"Consumable; consumerGood, Food"
 
 			description=		"This popular rum is made throughout the Commonwealth at stations licensed by the Cloud9 Corporation."
 
@@ -1431,7 +1431,7 @@
 			mass=				"500"
 			frequency=			"uncommon"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Food"
+			attributes=			"Consumable; consumerGood, Food"
 
 			description=		"Much of the food available on stations is shipped frozen from various agricultural centers."
 
@@ -1450,7 +1450,7 @@
 			mass=				"500"
 			frequency=			"uncommon"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Food"
+			attributes=			"Consumable; consumerGood, Food"
 
 			description=		"This vat-grown meat tastes remarkably like beef, at least according to anyone who has never been on Earth."
 
@@ -1469,7 +1469,7 @@
 			mass=				"500"
 			frequency=			"uncommon"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Food"
+			attributes=			"Consumable; consumerGood, Food"
 
 			description=		"This vat-grown synthetic meat tastes almost, but not quite, totally unlike salmon."
 
@@ -1507,7 +1507,7 @@
 			mass=				"500"
 			frequency=			"rare"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Food"
+			attributes=			"Consumable; consumerGood, Food"
 
 			description=		"Though this water is no longer bottled at its eponymous river, the brand is still considered a mark of purity throughout the Commonwealth."
 
@@ -1526,7 +1526,7 @@
 			mass=				"250"
 			frequency=			"common"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Food"
+			attributes=			"Consumable; consumerGood, Food"
 
 			description=		"Quadrotriticale, the most common grade A grain, is a genetically modified variety suitable for human consumption and generally ideal for space-borne colonies."
 
@@ -1545,7 +1545,7 @@
 			mass=				"50"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Lux"
+			attributes=			"Consumable; consumerGood, Lux"
 
 			description=		"A synthetic fabric superior to cotton and generally cheap to produce."
 
@@ -1583,7 +1583,7 @@
 			mass=				"50"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"Grown in the arid hills of New Marineris, this wine is known for its strong flavor and traditional production methods."
 
@@ -1602,7 +1602,7 @@
 			mass=				"500"
 			frequency=			"common"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Food"
+			attributes=			"Consumable; consumerGood, Food"
 
 			description=		"The United Earth Military developed this synthetic food to feed the millions of soldiers needed for the invasion of Mars."
 
@@ -1621,7 +1621,7 @@
 			mass=				"250"
 			frequency=			"uncommon"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Food"
+			attributes=			"Consumable; consumerGood, Food"
 
 			description=		"Red Nebula beer is advertised throughout the Commonwealth."
 
@@ -1640,7 +1640,7 @@
 			mass=				"100"
 			frequency=			"uncommon"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Meds"
+			attributes=			"Consumable; consumerGood, Meds"
 
 			description=		"This crate contains standard medical supplies such as antibiotics, sterilization paste, and plasma precursors."
 
@@ -1659,7 +1659,7 @@
 			mass=				"500"
 			frequency=			"uncommon"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"A product of Starton Eridani, this mineral water is trendy among the Corporate crowd."
 
@@ -1678,7 +1678,7 @@
 			mass=				"25"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Meds"
+			attributes=			"Consumable; consumerGood, Meds"
 
 			description=		"Biofactor paste is a genetically engineered substance that promotes healing and delays aging."
 
@@ -1697,7 +1697,7 @@
 			mass=				"50"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Lux"
+			attributes=			"Consumable; consumerGood, Lux"
 
 			description=		"Photocotton is modified variety of cotton that can be dyed by simple exposure to light of different wavelengths."
 
@@ -1716,7 +1716,7 @@
 			mass=				"50"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"Chardonnay produced by the ancient methods of Australia is today considered to be the best in the Commonwealth."
 
@@ -1735,7 +1735,7 @@
 			mass=				"50"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
-			attributes=			"Consumable; Food; Lux"
+			attributes=			"Consumable; consumerGood, Food; Lux"
 
 			description=		"Vodka has always been an important liquor in the frozen colonies of Europa. This is the best Europan brand and the only one exported outside of the Sol system."
 
@@ -1754,7 +1754,7 @@
 			mass=				"500"
 			frequency=			"common"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Food"
+			attributes=			"Consumable; consumerGood, Food"
 
 			description=		"Huge farms on Earth raise this once extinct animal to produce a delicacy known throughout the Commonwealth."
 
@@ -1792,7 +1792,7 @@
 			mass=				"5"
 			frequency=			"uncommon"
 			numberAppearing=	"1d2"
-			attributes=			"Consumable; Lux"
+			attributes=			"Consumable; consumerGood, Lux"
 
 			description=		"The standard uniform of the Corporate Hierarchy."
 			>

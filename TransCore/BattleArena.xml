@@ -2203,28 +2203,37 @@
 		</Devices>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="cNU +Illegal; -ID; -NotForSale; L:1-6;"	priceAdj="100"	inventoryAdj="100"/>
+			<Sell	criteria="m +illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="100" levelFrequency="systemLevel:ru|c|cur"/>
+			<Sell	criteria="m +military; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="100" levelFrequency="systemLevel:ru|c|cur"/>
 			<Sell	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Sell	criteria="*NU -ID; -NotForSale;"	priceAdj="100"/>
 			<Buy	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="85"/>
 			<Buy	criteria="*NU +military; -ID -NotForSale;"		priceAdj="90"/>
+			<Buy	criteria="*NU +Illegal; -ID;"				priceAdj="10"/>
+			<Buy	criteria="*NU +military; -ID;"				priceAdj="10"/>
 			
 			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="92"/>
 			<RepairArmor	criteria="a L:1-6;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-6;" priceAdj="100"/>
-			<InstallDevice	criteria="c +Illegal; L:1-6" priceAdj="100"	upgradeInstallOnly="true"/>
-			<RemoveDevice	criteria="c L:1-6;" priceAdj="100" upgradeInstallOnly="true"/>
+			<InstallDevice	criteria="c +Illegal; L:1-8" priceAdj="100"	upgradeInstallOnly="true"/>
+			<RemoveDevice	criteria="c L:1-8;" priceAdj="100" upgradeInstallOnly="true"/>
 			
-			<InstallDevice	criteria="d L:1-6;" priceAdj="unavailable"	messageID="descNoInstall"/>
+			<InstallDevice	criteria="d L:1-8;" priceAdj="unavailable"	messageID="descNoInstall"/>
 		</Trade>
 		
 		<Items>
-			<Item	count="1d12"	item="&itTempusSyrette;" />
-			<Item	count="1d12"	item="&itMartianNori;" />
-			<Item	count="1d12"	item="&itBooster;" />
-			<Item	count="1d12"	item="&itDeathDrugs;" />
-			<Lookup count="1d4" table="&trIllegalItems1;"/>
-			<Lookup count="1d4" table="&trIllegalItems2;"/>
+			<RandomItem count="1d4"
+					criteria=		"c L:1-8; +illegal; -notForSale; -notStandard;"
+					levelFrequency=	"systemLevel:rrrru|c|cur"
+					/>
+			<RandomItem count="6d12" 
+					criteria=		"t +consumerGood; +illegal;"
+					levelFrequency=	"systemLevel:ruc|c|cur"
+					/>
+			<RandomItem count="4d4" 
+					criteria=		"* +illegal; -consumerGood; -id;"
+					levelFrequency=	"systemLevel:ruc|c|cur"
+					/>
 		</Items>
 
 		<!-- Events and Data -->

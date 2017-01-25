@@ -23,7 +23,7 @@
 			mass=				"5"
 			frequency=			"notrandom"
 			numberAppearing=	"1d12"
-			attributes=			"Consumable; Food; FreshFood; Lux; Specialty"
+			attributes=			"Consumable; consumerGood, Food; FreshFood; Lux; Specialty"
 
 			description=		"Fresh strawberries are a delicacy found only near living worlds."
 			>
@@ -57,7 +57,7 @@
 			mass=				"5"
 			frequency=			"notrandom"
 			numberAppearing=	"1d12"
-			attributes=			"Consumable; Food; FreshFood; Lux; Specialty"
+			attributes=			"Consumable; consumerGood, Food; FreshFood; Lux; Specialty"
 
 			description=		"White peaches are a delicacy found only near living worlds."
 			>
@@ -91,7 +91,7 @@
 			mass=				"5"
 			frequency=			"notrandom"
 			numberAppearing=	"1d12"
-			attributes=			"Consumable; Food; FreshFood; Lux; Specialty"
+			attributes=			"Consumable; consumerGood, Food; FreshFood; Lux; Specialty"
 
 			description=		"Bellfruits are a delicacy found only near living worlds."
 			>
@@ -125,7 +125,7 @@
 			mass=				"5"
 			frequency=			"notrandom"
 			numberAppearing=	"1d12"
-			attributes=			"Consumable; Food; FreshFood; Lux; Specialty"
+			attributes=			"Consumable; consumerGood, Food; FreshFood; Lux; Specialty"
 
 			description=		"Lucumas are a delicious fruit found only near living worlds."
 			>
@@ -159,7 +159,7 @@
 			mass=				"1"
 			frequency=			"notrandom"
 			numberAppearing=	"1d12"
-			attributes=			"Consumable; Food; Lux; Specialty"
+			attributes=			"Consumable; consumerGood, Food; Lux; Specialty"
 
 			description=		"Coffee beans from the tropical regions of the planet Incandescent are famous throughout Human Space."
 			>
@@ -215,7 +215,7 @@
 		</Items>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +commonwealth; -military; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="400"/>
+			<Sell	criteria="m +commonwealth; -military; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="400" levelFrequency="systemLevel:ru|c|cur"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>

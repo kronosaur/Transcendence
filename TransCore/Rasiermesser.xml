@@ -113,7 +113,11 @@
 		</Reinforcements>
 
 		<Devices>
-			<Device deviceID="&itAkan30Cannon;"	omnidirectional="true"/>
+			<Device deviceID="&itAkan30Cannon;"	omnidirectional="true">
+				<Items>
+					<Item count="900" item="&itAkan30CannonShell;"/>
+				</Items>
+			</Device>
 		</Devices>
 
 		<Items>
@@ -133,7 +137,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +rasiermesser; -military; -illegal; -notForSale;" priceAdj="120" inventoryAdj="800"/>
+			<Sell	criteria="m +rasiermesser; -military; -illegal; -notForSale;" priceAdj="120" inventoryAdj="800" levelFrequency="systemLevel:ru|c|cur"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
@@ -245,7 +249,11 @@
 		</Reinforcements>
 
 		<Devices>
-			<Device deviceID="&itAkan30Cannon;"	omnidirectional="true"/>
+			<Device deviceID="&itAkan30Cannon;"	omnidirectional="true">
+				<Items>
+					<Item count="900" item="&itAkan30CannonShell;"/>
+				</Items>
+			</Device>
 		</Devices>
 
 		<Items>
@@ -281,7 +289,7 @@
 		</Items>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +rasiermesser; -illegal; -notForSale;" priceAdj="110" inventoryAdj="800"/>
+			<Sell	criteria="m +rasiermesser; -illegal; -notForSale;" priceAdj="110" inventoryAdj="800" levelFrequency="systemLevel:ru|c|cur"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 
 			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="100"/>
