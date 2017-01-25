@@ -886,8 +886,11 @@
 
 		<Items>
 			<RandomItem count="20" 
-					criteria=		"* -Illegal; -Military; +Auton; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|ur"
+					criteria=		"* +auton; -illegal; -military; -notStandard; -notForSale;"
+					levelFrequency=	"systemLevel:ucc|c|cur"
+					/>
+			<RandomItem count="1d6" 
+					criteria=		"* +auton; -illegal; -military; -notStandard; -notForSale; L:4"
 					/>
 		</Items>
 
