@@ -196,7 +196,7 @@
 		<Items>
 			<RandomItem count="2d10" 
 					criteria=		"a L:1-9; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|cvr"
+					levelFrequency=	"systemLevel:u|c|crv"
 					/>
 			<RandomItem count="1d4" 
 					criteria=		"r L:4-8; -alien; -illegal; -military; -notForSale; -notStandard;"
@@ -204,7 +204,7 @@
 					/>
 			<RandomItem count="2d10" 
 					criteria=		"d~r L:1-8; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|cvr"
+					levelFrequency=	"systemLevel:u|c|crv"
 					/>
 			
 			<RandomItem count="20" 
