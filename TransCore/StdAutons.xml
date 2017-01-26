@@ -590,7 +590,7 @@
 							(filter (sysFindObject gSource "Ts -uncharted; S:d;") theObj
 								(and (not (objIsKnown theObj))
 										(objGetProperty theObj 'hasDockingPorts)
-										(objCanAttack theObj)
+										(or (objCanAttack theObj) (objMatches theObj gSource "G"))
 										)
 								)
 							0))
@@ -672,7 +672,7 @@
 									(filter (sysFindObject gSource "Ts -uncharted; S:d;") theObj
 										(and (not (objIsKnown theObj))
 												(objGetProperty theObj 'hasDockingPorts)
-												(objCanAttack theObj)
+												(or (objCanAttack theObj) (objMatches theObj gSource "G"))
 												)
 										)
 									0))
