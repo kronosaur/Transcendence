@@ -3295,6 +3295,21 @@
 				(intCorporateOnDestroy)
 			</OnDestroy>
 		</Events>
+		
+		<Language>
+			<Text id="customs.chargedForDecon">
+				(cat
+					"Corporate security stops your ship for decontamination. "
+					"You are automatically charged " (@ gData 'cost) " for decontaminating your ship."
+					)
+			</Text>
+			<Text id="customs.cantAffordDecon">
+				(cat
+					"Corporate security stops your ship for decontamination. "
+					"Unfortunately, you do not have " (@ gData 'cost) " to pay for decontamination."
+					)
+			</Text>
+		</Language>
 	</StationType>
 
 <!-- TABLES -->

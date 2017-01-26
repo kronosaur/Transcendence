@@ -1864,17 +1864,21 @@
 	<!-- Commonwealth Decontamination -->
 
 	<DockScreen UNID="&dsCommonwealthDecon;"	nestedScreen="true">
-
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(if (geq (plyGetCredits gPlayer) 250)
-						(block Nil
-							(scrSetDesc gScreen "Commonwealth Customs stops your ship for decontamination. You are automatically charged 250 credits for decontaminating your ship.")
-							(plyCharge gPlayer 250)
-							(shpDecontaminate gPlayerShip)
+					(block (
+						(currencyUsed (objGetProperty gSource 'currency))
+						(cost (ecoExchange 250 'credit currencyUsed))
+						)
+						(if (geq (objGetBalance gPlayerShip currencyUsed) cost)
+							(block Nil
+								(scrSetDescTranslate gScreen 'customs.chargedForDecon { cost:(fmtCurrency currencyUsed cost) })
+								(objCharge gPlayerShip currencyUsed cost)
+								(shpDecontaminate gPlayerShip)
+								)
+							(scrSetDescTranslate gScreen 'customs.cantAffordDecon { cost:(fmtCurrency currencyUsed cost) })
 							)
-						(scrSetDesc gScreen "Commonwealth Customs stops your ship for decontamination. Unfortunately, you cannot afford the 250 credit cost of decontamination.")
 						)
 				</OnPaneInit>
 
@@ -1888,6 +1892,21 @@
 				</Actions>
 			</Default>
 		</Panes>
+		
+		<Language>
+			<Text id="customs.chargedForDecon">
+				(cat
+					"Commonwealth Customs stops your ship for decontamination. "
+					"You are automatically charged " (@ gData 'cost) " for decontaminating your ship."
+					)
+			</Text>
+			<Text id="customs.cantAffordDecon">
+				(cat
+					"Commonwealth Customs stops your ship for decontamination. "
+					"Unfortunately, you do not have " (@ gData 'cost) " to pay for decontamination."
+					)
+			</Text>
+		</Language>
 	</DockScreen>
 
 	<!-- Commonwealth Free Slaves -->
