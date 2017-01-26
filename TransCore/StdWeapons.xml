@@ -32,11 +32,11 @@
 				damage=				"blast:4d6; momentum4; WMD5"
 				fireRate=			"30"
 				hitPoints=			"10"
-				lifetime=			"120"
+				lifetime=			"90"
 				powerUse=			"1"
 				charges=			"true"
 
-				missileSpeed=		"40"
+				missileSpeed=		"60"
 				sound=				"&snMissileLauncher;"
 
 				effect=				"&efMissileNAMI;"
@@ -1024,7 +1024,7 @@
 				damage=				"laser:3d4"
 				fireRate=			"12"
 				lifetime=			"30"
-				powerUse=			"140"
+				powerUse=			"120"
 
 				effect=				"&efLaserBeamDefault;"
 				sound=				"&snLaserCannon;"
@@ -1441,7 +1441,7 @@
 	<!-- X-Ray laser cannon -->
 
 	<ItemType UNID="&itXRayLaserCannon;"
-			name=				"x-ray laser cannon"
+			name=				"dual x-ray laser cannon"
 			attributes=			"bushido, commonwealth, energyWeapon, majorItem, specialty"
 			  
 			level=				"5"
@@ -2562,7 +2562,7 @@
 
 		<Missile
 				type=			"missile"
-				lifetime=		"120"
+				lifetime=		"90"
 				damage=			"blast:4d6; momentum4; WMD5"
 				missileSpeed=	"60"
 				hitPoints=		"10"
@@ -2593,7 +2593,7 @@
 
 		<Missile
 				type=			"missile"
-				lifetime=		"120"
+				lifetime=		"90"
 				missileSpeed=	"60"
 				hitPoints=		"10"
 
@@ -2698,7 +2698,7 @@
 
 		<Missile
 				type=			"missile"
-				lifetime=		"120"
+				lifetime=		"90"
 				damage=			"blast:6d6; radiation1; momentum4; WMD4"
 				missileSpeed=	"60"
 				hitPoints=		"10"
@@ -2835,7 +2835,7 @@
 			frequency=			"common"
 			numberAppearing=	"96-144"
 
-			value=				"24"
+			value=				"30"
 			mass=				"20"
 			  
 			description=		"This is a larger version of the 400 MAG grenade. It is compatible with the MAG launcher."
@@ -2845,7 +2845,7 @@
 		
 		<Missile
 				type=			"missile"
-				damage=			"blast:8d6; WMD:6"
+				damage=			"blast:9d6; WMD:6"
 						
 				lifetime=		"80"
 				missileSpeed=	"30"
@@ -3035,7 +3035,7 @@
 				type=			"missile"
 						
 				lifetime=		"120"
-				missileSpeed=	"20"
+				missileSpeed=	"30"
 						
 				hitPoints=		"30"
 						 
