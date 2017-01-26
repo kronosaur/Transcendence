@@ -9,16 +9,6 @@
 			alignment="constructive chaos"
 			/>
 
-	<Sovereign UNID="&svFriendlyAuton;"
-			name="auton"
-			alignment="constructive chaos"
-			>
-		<Language>
-			<Text id="WatchYourTargets">""</Text>
-			<Text id="NiceShooting">""</Text>
-		</Language>
-	</Sovereign>
-
 	<Sovereign UNID="&svDefectiveAuton;"
 			name="auton"
 			alignment="constructive chaos"

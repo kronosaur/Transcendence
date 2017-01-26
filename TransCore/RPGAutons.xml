@@ -2,6 +2,16 @@
 
 <TranscendenceModule>
 	
+	<Sovereign UNID="&svFriendlyAuton;"
+			name="auton"
+			alignment="constructive chaos"
+			>
+		<Language>
+			<Text id="WatchYourTargets">""</Text>
+			<Text id="NiceShooting">""</Text>
+		</Language>
+	</Sovereign>
+
 	<!-- Auton Base Class
 	
 	Do not rely on the implementation of this class across versions. If you wish
