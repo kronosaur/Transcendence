@@ -946,6 +946,44 @@
 					(objAddItem gSource email)
 					)
 			</OnCreate>
+			
+			<OnAttacked>
+				(block (
+					(arcoVaughnObj (sysFindObject Nil "sAN +arcoVaughn"))
+					)
+					(switch
+						;	If Arco is dead, nothing to do
+						
+						(not arcoVaughnObj)
+							Nil
+							
+						;	If arco is already attacking the player, nothing to do.
+						
+						(= (objGetData arcoVaughnObj 'behavior) 'killPlayer)
+							Nil
+							
+						;	If the attack is not from the player, or if we can't see
+						;	the player, then nothing to do
+						
+						(or (!= aOrderGiver gPlayerShip)
+								(not (objCanDetectTarget arcoVaughnObj gPlayerShip))
+								)
+							Nil
+
+						;	Arco attacks the player
+						
+						(block Nil
+							(shpCancelOrders arcoVaughnObj)
+							(shpOrder arcoVaughnObj 'attack gPlayerShip)
+							(objSetData arcoVaughnObj "behavior" 'killPlayer)
+
+							(objSendMessage gPlayerShip arcoVaughnObj
+								(random (objGetStaticData arcoVaughnObj "msgTableWTF"))
+								)
+							)
+						)
+					)
+			</OnAttacked>
 		</Events>
 
 		<DockScreens>
