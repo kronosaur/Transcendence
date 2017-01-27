@@ -894,33 +894,36 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 			{
 			if (pDevice->GetCategory() == itemcatShields)
 				{
-				int iHP;
-				int iMaxHP;
-				pDevice->GetStatus(pSource, &iHP, &iMaxHP);
-
-				CString sHP = strFromInt(iHP);
-				m_VI.GetFont(fontLarge).DrawText(Dest,
-						x,
-						y,
-						m_rgbTextColor,
-						sHP,
-						CG16bitFont::AlignRight);
-				y += m_VI.GetFont(fontLarge).GetHeight();
-
-				//	Shield level
-
 				int iIntegrity = pDevice->GetHitPointsPercent(pSource);
-				if (iIntegrity != 100)
+				if (iIntegrity != -1)
 					{
-					CString sPercent = strPatternSubst(CONSTLIT("%d%%"), iIntegrity);
+					int iHP;
+					int iMaxHP;
+					pDevice->GetStatus(pSource, &iHP, &iMaxHP);
 
-					m_VI.GetFont(fontMedium).DrawText(Dest,
+					CString sHP = strFromInt(iHP);
+					m_VI.GetFont(fontLarge).DrawText(Dest,
 							x,
 							y,
-							m_VI.GetColor(colorTextShields),
-							sPercent,
+							m_rgbTextColor,
+							sHP,
 							CG16bitFont::AlignRight);
-					y += m_VI.GetFont(fontMedium).GetHeight();
+					y += m_VI.GetFont(fontLarge).GetHeight();
+
+					//	Shield level
+
+					if (iIntegrity != 100)
+						{
+						CString sPercent = strPatternSubst(CONSTLIT("%d%%"), iIntegrity);
+
+						m_VI.GetFont(fontMedium).DrawText(Dest,
+								x,
+								y,
+								m_VI.GetColor(colorTextShields),
+								sPercent,
+								CG16bitFont::AlignRight);
+						y += m_VI.GetFont(fontMedium).GetHeight();
+						}
 					}
 				}
 			}

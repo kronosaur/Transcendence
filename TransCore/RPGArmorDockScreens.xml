@@ -148,12 +148,21 @@
 									(scrEnableAction gScreen 'actionRemove (@ actionStatus 'enabled))
 									(scrSetActionDesc gScreen 'actionRemove (@ actionStatus 'desc))
 									(scrSetData gScreen 'costToRemove (@ actionStatus 'cost))
-								
+									
+									;	Enable disable?
+
+									(if (objGetItemProperty theShip theItem 'canBeDisabled)
+										(block Nil
+											(setq canDisable isEnabled)
+											(setq canEnable (not isEnabled))
+											)
+										)
+										
 									;	Enable/disable various actions
 								
 									(scrShowAction gScreen 'actionRepair Nil)
-									(scrShowAction gScreen 'actionDisable isEnabled)
-									(scrShowAction gScreen 'actionEnable (not isEnabled))
+									(scrShowAction gScreen 'actionDisable canDisable)
+									(scrShowAction gScreen 'actionEnable canEnable)
 									(scrShowAction gScreen 'actionInstall Nil)
 									)
 									
