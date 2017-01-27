@@ -943,7 +943,7 @@
 					</Default>
 
 					<NoAutons
-							desc=	"A sales droid approaches you: &quot;You do not currently have any autons to repair, but I would be delighted to show you some of our newest models.&quot;">
+							desc=	"A sales drone approaches you: &quot;You do not currently have any autons to repair, but I would be delighted to show you some of our newest models.&quot;">
 
 						<Actions>
 							<Action name="Leave" cancel="1" default="1" key="L">
@@ -1116,7 +1116,7 @@
 					</Illegals>
 
 					<MaintenanceLevel
-							desc=	"You are in the maintenance level of a Corporate Enclave. The drone of the atmosphere processors and the waste converters drowns out all other noises. There is an empty maintenance shop here filled with various machines and droids; an empty laudanum ampule peeks out from under the workbench.">
+							desc=	"You are in the maintenance level of a Corporate Enclave. The drone of the atmosphere processors and the waste converters drowns out all other noises. There is an empty maintenance shop here filled with various machines and drones; an empty laudanum ampule peeks out from under the workbench.">
 
 						<Actions>
 							<Action name="Leave" default="1" cancel="1" key="L">
@@ -1126,7 +1126,7 @@
 					</MaintenanceLevel>
 
 					<MaintenanceShop
-							desc=	"You are in the maintenance shop surrounded by various machines and droids. There are four men in the room repairing various items. One of the men walks towards you and says, &quot;You must be the new delivery person. Show me what you've got to sell.&quot;">
+							desc=	"You are in the maintenance shop surrounded by various machines and drones. There are four men in the room repairing various items. One of the men walks towards you and says, &quot;You must be the new delivery person. Show me what you've got to sell.&quot;">
 
 						<Actions>
 							<Action name="&quot;Sorry, you have me confused with someone else.&quot;" cancel="1" key="S">

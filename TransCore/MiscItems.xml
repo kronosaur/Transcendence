@@ -34,7 +34,7 @@
 			numberAppearing=	"1"
 			attributes=			"Consumable; Meds"
 
-			description=		"Autodocs are small, multi-limbed droids that treat simple wounds and dispense basic medicines. Though no replacement for a real doctor or even a good rejuv tank, autodocs are quite popular in remote stations."
+			description=		"Autodocs are small, multi-limbed drones that treat simple wounds and dispense basic medicines. Though no replacement for a real doctor or even a good rejuv tank, autodocs are quite popular in remote stations."
 
 			sortName=			"autodoc, portable"
 			>
