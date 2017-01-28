@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!DOCTYPE TranscendenceModule
+	[
+	<!-- 0160-016F BATTLE ARENA TRACKS -->
+	
+	<!ENTITY muArenaSlicer					"0x00820160">
+	<!ENTITY muArenaSurvivor				"0x00820161">
+	<!ENTITY muArenaContender				"0x00820162">
+	<!ENTITY muArenaVictor					"0x00820163">
+	<!ENTITY muArenaChampion				"0x00820164">
+	]>
+
 <TranscendenceModule>
 
 	<Sovereign UNID="&svGladiator;"
@@ -478,6 +489,7 @@
 										; Back to travel music (we're still technically in combat, because we
 										; haven't detected that we're out yet, so we force travel mode).
 								
+										(uiQueueSoundtrack (if (geq (objGetData gSource "rookieScore") 20) &muArenaContender; &muArenaSurvivor;))
 										(uiSetSoundtrackMode 'missionEndTravel)
 										)
 									)
@@ -542,6 +554,7 @@
 								; Back to travel music (we're still technically in combat, because we
 								; haven't detected that we're out yet, so we force travel mode).
 								
+								(uiQueueSoundtrack &muArenaVictor;)
 								(uiSetSoundtrackMode 'missionEndTravel)
 								)
 
@@ -574,6 +587,7 @@
 								; Back to travel music (we're still technically in combat, because we
 								; haven't detected that we're out yet, so we force travel mode).
 								
+								(uiQueueSoundtrack &muArenaChampion;)
 								(uiSetSoundtrackMode 'missionEndTravel)
 								)
 						)
@@ -885,7 +899,7 @@
 									(objSetData gSource "Status" 'inProgress)
 
 									; Play Slicer track
-									(uiSetSoundtrackMode 'missionStart 0x00820160)
+									(uiSetSoundtrackMode 'missionStart &muArenaSlicer;)
 
 									(scrExitDock gScreen)
 									)
@@ -1218,7 +1232,7 @@
 									(objSetData gSource "Status" 'inProgress)
 
 									; Play Slicer track
-									(uiSetSoundtrackMode 'missionStart 0x00820160)
+									(uiSetSoundtrackMode 'missionStart &muArenaSlicer;)
 
 									(scrExitDock gScreen)
 									)
@@ -1660,7 +1674,7 @@
 									(objSetData gSource "Status" 'inProgress)
 									
 									; Play Slicer track
-									(uiSetSoundtrackMode 'missionStart 0x00820160)
+									(uiSetSoundtrackMode 'missionStart &muArenaSlicer;)
 
 									(scrExitDock gScreen)
 									)

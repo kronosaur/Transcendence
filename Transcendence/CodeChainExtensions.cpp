@@ -94,6 +94,7 @@ ICCItem *fnScrShowScreen (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnPlyComposeString (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
 #define FN_UI_SET_SOUNDTRACK_MODE	1
+#define FN_UI_QUEUE_SOUNDTRACK		2
 
 ICCItem *fnUISet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
@@ -107,6 +108,7 @@ ICCItem *fnUISet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define ACTION_SPECIAL_PREV_KEY				CONSTLIT("prevKey")
 
 #define CMD_SOUNDTRACK_PLAY_MISSION_TRACK	CONSTLIT("cmdSoundtrackPlayMissionTrack")
+#define CMD_SOUNDTRACK_QUEUE_ADD			CONSTLIT("cmdSoundtrackQueueAdd")
 #define CMD_SOUNDTRACK_STOP_MISSION_TRACK	CONSTLIT("cmdSoundtrackStopMissionTrack")
 #define CMD_SOUNDTRACK_STOP_MISSION_TRACK_TRAVEL	CONSTLIT("cmdSoundtrackStopMissionTrackTravel")
 
@@ -456,6 +458,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		//	UI functions
 		//	------------
+
+		{	"uiQueueSoundtrack",					fnUISet,	FN_UI_QUEUE_SOUNDTRACK,
+			"(uiQueueSoundtrack soundtrackUNID [options])",
+			"i*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"uiSetSoundtrackMode",					fnUISet,	FN_UI_SET_SOUNDTRACK_MODE,
 			"(uiSetSoundtrackMode mode [soundtrackUNID])",
@@ -2034,6 +2040,22 @@ ICCItem *fnUISet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	switch (dwData)
 		{
+		case FN_UI_QUEUE_SOUNDTRACK:
+			{
+			//	Get the track. If we can't find it, we assume that it has not 
+			//	been loaded and fail gracefully.
+
+			CMusicResource *pTrack = g_pUniverse->FindMusicResource(pArgs->GetElement(0)->GetIntegerValue());
+			if (pTrack == NULL)
+				return pCC->CreateNil();
+
+			//	Do it
+
+			g_pHI->HICommand(CMD_SOUNDTRACK_QUEUE_ADD, pTrack);
+
+			return pCC->CreateTrue();
+			}
+
 		case FN_UI_SET_SOUNDTRACK_MODE:
 			{
 			CString sMode = pArgs->GetElement(0)->GetStringValue();

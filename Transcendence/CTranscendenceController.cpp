@@ -64,6 +64,7 @@
 #define CMD_SOUNDTRACK_PLAY_MISSION_TRACK		CONSTLIT("cmdSoundtrackPlayMissionTrack")
 #define CMD_SOUNDTRACK_PLAY_PAUSE				CONSTLIT("cmdSoundtrackPlayPause")
 #define CMD_SOUNDTRACK_PREV						CONSTLIT("cmdSoundtrackPrev")
+#define CMD_SOUNDTRACK_QUEUE_ADD				CONSTLIT("cmdSoundtrackQueueAdd")
 #define CMD_SOUNDTRACK_STOP						CONSTLIT("cmdSoundtrackStop")
 #define CMD_SOUNDTRACK_STOP_MISSION_TRACK		CONSTLIT("cmdSoundtrackStopMissionTrack")
 #define CMD_SOUNDTRACK_STOP_MISSION_TRACK_TRAVEL	CONSTLIT("cmdSoundtrackStopMissionTrackTravel")
@@ -1060,6 +1061,9 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SOUNDTRACK_PLAY_MISSION_TRACK))
 		m_Soundtrack.NotifyStartMissionTrack((CMusicResource *)pData);
+
+	else if (strEquals(sCmd, CMD_SOUNDTRACK_QUEUE_ADD))
+		m_Soundtrack.NotifyAddToQueue((CMusicResource *)pData);
 
 	else if (strEquals(sCmd, CMD_SOUNDTRACK_STOP_MISSION_TRACK))
 		m_Soundtrack.NotifyEndMissionTrack();
