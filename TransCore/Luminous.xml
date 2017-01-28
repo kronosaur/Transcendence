@@ -67,6 +67,7 @@
 
 			maxDevices=			"2"
 			cyberDefenseLevel=	"10"
+			explosionType=		"&vtBlastExplosion2;"
 
 			attributes=			"AI, genericClass, luminous, luminousDrone"
 			>
