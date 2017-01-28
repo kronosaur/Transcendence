@@ -58,10 +58,10 @@
 					count=			"1d6"
 					type=			"missile"
 
-					damage=			"kinetic:2d12; momentum2; WMD2"
+					damage=			"kinetic:1d6; momentum1; WMD1"
 					missileSpeed=	"15-25"
 					lifetime=		"12-20"
-					hitPoints=		"50"
+					hitPoints=		"10"
                     
                     effect=         "&efKineticFragmentDefault;"
 					>
@@ -285,7 +285,7 @@
 					count=			"1"
 					type=			"radius"
 					
-					damage=			"blast:3d12"
+					damage=			"blast:1d12"
 					minRadius=		"1"
 					maxRadius=		"3"
 					/>
@@ -691,7 +691,7 @@
 					count=			"1"
 					type=			"radius"
 					
-					damage=			"thermo:2d12; momentum1; WMD3"
+					damage=			"thermo:1d12; momentum1; WMD3"
 					minRadius=		"1"
 					maxRadius=		"3"
 					/>
@@ -1111,7 +1111,7 @@
 					count=			"1"
 					type=			"radius"
 					
-					damage=			"plasma:5d24; WMD:4"
+					damage=			"plasma:2d24; WMD:4"
 					minRadius=		"1"
 					maxRadius=		"4"
 					/>
@@ -1119,7 +1119,7 @@
 			<Fragment
 					count=			"1"
 					type=			"particles"
-					damage=			"plasma:525; WMD:3"
+					damage=			"plasma:200; WMD:3"
 					>
 				
 				<ParticleSystem
@@ -1356,7 +1356,7 @@
 					count=			"1"
 					type=			"radius"
 					
-					damage=			"antimatter:3d60; WMD:4"
+					damage=			"antimatter:1d60; WMD:4"
 					minRadius=		"1"
 					maxRadius=		"4"
 					/>
@@ -1365,7 +1365,7 @@
 					count=			"1"
 					type=			"area"
 
-					damage=			"antimatter:1d19; momentum:2; WMD:2"
+					damage=			"antimatter:1d8; momentum:2; WMD:2"
 					expansionSpeed=	"25"
 					missileSpeed=	"0"
 					lifetime=		"21"
@@ -1701,7 +1701,7 @@
                             )
                             {
                                 radius: (@ '(0 40 60 80 110 140) explosionSize)
-                                lifetime: (@ '(0 12 18 24 33 42) explosionSize)
+                                lifetime: (@ '(0 24 36 48 66 84) explosionSize)
                                 }
                             )
                     </GetParameters>
@@ -1784,7 +1784,7 @@
                             )
                             {
                                 radius: (@ '(0 45 69 103 125 159) explosionSize)
-                                lifetime: (@ '(0 14 21 31 38 48) explosionSize)
+                                lifetime: (@ '(0 27 41 62 75 96) explosionSize)
                                 }
                             )
                     </GetParameters>
@@ -1836,7 +1836,7 @@
                             )
                             {
                                 radius: (@ '(0 78 117 175 214 273) explosionSize)
-                                lifetime: (@ '(0 16 24 36 43 55) explosionSize)
+                                lifetime: (@ '(0 31 47 70 86 109) explosionSize)
                                 }
                             )
                     </GetParameters>
@@ -1864,7 +1864,7 @@
                             )
                             {
                                 radius: (@ '(0 89 133 200 244 311) explosionSize)
-                                lifetime: (@ '(0 18 27 40 49 62) explosionSize)
+                                lifetime: (@ '(0 31 47 70 86 109) explosionSize)
                                 }
                             )
                     </GetParameters>
@@ -1928,7 +1928,7 @@
                             )
                             {
                                 radius: (@ '(0 101 152 228 279 355) explosionSize)
-                                lifetime: (@ '(0 21 31 46 56 71) explosionSize)
+                                lifetime: (@ '(0 31 47 70 86 109) explosionSize)
                                 }
                             )
                     </GetParameters>
