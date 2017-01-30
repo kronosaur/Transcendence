@@ -94,6 +94,47 @@ int CCommandLineDisplay::GetOutputCount (void)
 		return ((m_iOutputEnd + MAX_LINES + 1 - m_iOutputStart) % (MAX_LINES + 1));
 	}
 
+void CCommandLineDisplay::AppendHistory(const CString &sLine)
+
+//	AppendHistory
+//
+//	Append a line of input to the history buffer
+
+{
+	if (!(sLine == GetHistory(0)))
+		{
+		m_iHistoryStart = (m_iHistoryStart + (MAX_LINES + 1) - 1) % (MAX_LINES + 1);
+		if (m_iHistoryStart == m_iHistoryEnd)
+			m_iHistoryEnd = (m_iHistoryEnd + (MAX_LINES + 1) - 1) % (MAX_LINES + 1);
+
+		m_History[m_iHistoryStart] = sLine;
+		}
+	m_iHistoryIndex = -1;
+}
+
+const CString &CCommandLineDisplay::GetHistory(int iLine)
+
+//	GetHistory
+//
+//	Returns the history line
+
+{
+	return m_History[(m_iHistoryStart + iLine) % (MAX_LINES + 1)];
+}
+
+int CCommandLineDisplay::GetHistoryCount(void)
+
+//	GetHistoryCount
+//
+//	Returns the number of lines in the history buffer
+
+{
+	if (m_iHistoryStart == m_iHistoryEnd)
+		return 0;
+	else
+		return ((m_iHistoryEnd + MAX_LINES + 1 - m_iHistoryStart) % (MAX_LINES + 1));
+}
+
 ALERROR CCommandLineDisplay::Init (CTranscendenceWnd *pTrans, const RECT &rcRect)
 
 //	Init
@@ -105,6 +146,9 @@ ALERROR CCommandLineDisplay::Init (CTranscendenceWnd *pTrans, const RECT &rcRect
 	m_rcRect = rcRect;
 	m_iOutputStart = 0;
 	m_iOutputEnd = 0;
+	m_iHistoryStart = 0;
+	m_iHistoryEnd = 0;
+	m_iHistoryIndex = -1;
 	m_sInput = NULL_STR;
 	m_bInvalid = true;
 
@@ -143,22 +187,43 @@ void CCommandLineDisplay::InputEnter (void)
 //	Invoke input
 
 	{
-	m_sLastLine = m_sInput;
+	AppendHistory(m_sInput);
 	Output(m_sInput, INPUT_COLOR);
 	ClearInput();
 	}
 
-void CCommandLineDisplay::InputLastLine (void)
+void CCommandLineDisplay::InputHistoryUp (void)
 
-//	InputLastLine
+//	InputHistoryUp
 //
-//	Recalls the last line
+//	Recalls a line from the history buffer
 
 	{
-	if (!m_sLastLine.IsBlank())
+	if (m_iHistoryIndex < (GetHistoryCount()-1))
 		{
-		m_sInput = m_sLastLine;
+		m_iHistoryIndex++;
+		m_sInput = GetHistory(m_iHistoryIndex);
 		m_bInvalid = true;
+		}
+	}
+
+void CCommandLineDisplay::InputHistoryDown(void)
+
+//	InputHistoryDown
+//
+//	Recalls a line from the history buffer
+
+	{
+	if (m_iHistoryIndex > 0)
+		{
+		m_iHistoryIndex--;
+		m_sInput = GetHistory(m_iHistoryIndex);
+		m_bInvalid = true;
+		}
+	else
+		{
+		m_iHistoryIndex = -1;
+		ClearInput();
 		}
 	}
 
@@ -203,7 +268,11 @@ void CCommandLineDisplay::OnKeyDown (int iVirtKey, DWORD dwKeyState)
 			}
 
 		case VK_UP:
-			InputLastLine();
+			InputHistoryUp();
+			break;
+
+		case VK_DOWN:
+			InputHistoryDown();
 			break;
 		}
 	}
