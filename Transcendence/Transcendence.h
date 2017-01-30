@@ -819,13 +819,14 @@ class CCommandLineDisplay
 		~CCommandLineDisplay (void);
 
 		void CleanUp (void);
-		inline void ClearInput (void) { m_sInput = NULL_STR; m_bInvalid = true; }
+		inline void ClearInput (void) { m_sInput = NULL_STR; m_iCursorPos = 0; m_bInvalid = true; }
 		inline const CString &GetInput (void) { return m_sInput; }
 		inline int GetOutputLineCount (void) { return GetOutputCount(); }
 		inline const RECT &GetRect (void) { return m_rcRect; }
 		ALERROR Init (CTranscendenceWnd *pTrans, const RECT &rcRect);
 		void Input (const CString &sInput);
 		void InputBackspace (void);
+		void InputDelete (void);
 		void InputEnter (void);
 		void InputHistoryUp(void);
 		void InputHistoryDown(void);
@@ -862,6 +863,7 @@ class CCommandLineDisplay
 		int m_iHistoryStart;
 		int m_iHistoryEnd;
 		int m_iHistoryIndex;
+		int m_iCursorPos;
 
 
 		CG32bitImage m_Buffer;
