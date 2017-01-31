@@ -3490,16 +3490,18 @@
 							(eq aOrderGiver gPlayerShip)
 							(eq (sovGetDisposition &svCommonwealth; (objGetSovereign gSource)) 'friend)
 							(not (sysFindObject gPlayerShip "sTAE N:100"))
+							(not (objGetData gSource "noPiracyCheck"))
 							(setq theWitness (random 
-								(filter (sysFindObject gSource "sTAF Z N:100; -auton; -zoanthrope;") theObj 
+								(filter (sysFindObject gSource "sTAF Z N:100; -auton; -zoanthrope; -nonInterference;") theObj 
 									(and (objCanDetectTarget theObj gSource)
+										(objCanDetectTarget theObj gPlayerShip)
+										(not (typHasAttribute (objGetSovereign theObj) 'nonInterference))
 										(or (not (eq (shpGetOrder theObj) 'escort))
 											(not (eq (shpGetOrderTarget theObj) gPlayerShip))
 											)
 										)
 									)
 								))
-							(not (objGetData gSource "noPiracyCheck"))
 							)
 						(block Nil
 							(objSendMessage gPlayerShip theWitness "Pirate!")
