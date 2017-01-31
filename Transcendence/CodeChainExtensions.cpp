@@ -48,6 +48,7 @@ ICCItem *fnScrItem (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 #define FN_PLY_GET_KEY_EVENT_STAT	20
 #define FN_PLY_USE_ITEM				21
 #define FN_PLY_IS_MESSAGE_ENABLED	22
+#define FN_PLY_INC_SCORE			23
 
 ICCItem *fnPlyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnPlyGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -437,6 +438,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'systemsVisited\n",
 
 			"is",	0,	},
+
+		{	"plyIncScore",					fnPlySet,			FN_PLY_INC_SCORE,
+			"(plyIncScore player scoreInc) -> score",
+			"ii",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"plyMessage",					fnPlySetOld,		FN_PLY_MESSAGE,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(plyMessage player message)
@@ -1138,6 +1143,13 @@ ICCItem *fnPlySet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			pPlayer->SetUIMessageEnabled(iMsg, (pArgs->GetElement(2)->IsNil() ? false : true));
 			pResult = pCC->CreateTrue();
+			break;
+			}
+
+		case FN_PLY_INC_SCORE:
+			{
+			int iNewScore = pPlayer->GetGameStats().IncScore(pArgs->GetElement(1)->GetIntegerValue());
+			pResult = pCC->CreateInteger(iNewScore);
 			break;
 			}
 
