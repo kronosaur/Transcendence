@@ -819,15 +819,17 @@ class CCommandLineDisplay
 		~CCommandLineDisplay (void);
 
 		void CleanUp (void);
-		inline void ClearInput (void) { m_sInput = NULL_STR; m_bInvalid = true; }
+		inline void ClearInput (void) { m_sInput = NULL_STR; m_iCursorPos = 0; m_bInvalid = true; }
 		inline const CString &GetInput (void) { return m_sInput; }
 		inline int GetOutputLineCount (void) { return GetOutputCount(); }
 		inline const RECT &GetRect (void) { return m_rcRect; }
 		ALERROR Init (CTranscendenceWnd *pTrans, const RECT &rcRect);
 		void Input (const CString &sInput);
 		void InputBackspace (void);
+		void InputDelete (void);
 		void InputEnter (void);
-		void InputLastLine (void);
+		void InputHistoryUp(void);
+		void InputHistoryDown(void);
 		void OnKeyDown (int iVirtKey, DWORD dwKeyState);
 		void Output (const CString &sOutput, CG32bitPixel rgbColor = CG32bitPixel::Null());
 		void Paint (CG32bitImage &Dest);
@@ -843,6 +845,9 @@ class CCommandLineDisplay
 		const CString &GetOutput (int iLine);
 		CG32bitPixel GetOutputColor (int iLine);
 		int GetOutputCount (void);
+		void AppendHistory(const CString &sLine);
+		const CString &GetHistory(int iLine);
+		int GetHistoryCount(void);
 		void Update (void);
 
 		CTranscendenceWnd *m_pTrans;
@@ -854,7 +859,12 @@ class CCommandLineDisplay
 		int m_iOutputStart;
 		int m_iOutputEnd;
 		CString m_sInput;
-		CString m_sLastLine;
+		CString m_History[MAX_LINES + 1];
+		int m_iHistoryStart;
+		int m_iHistoryEnd;
+		int m_iHistoryIndex;
+		int m_iCursorPos;
+
 
 		CG32bitImage m_Buffer;
 		bool m_bInvalid;

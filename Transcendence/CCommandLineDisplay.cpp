@@ -94,6 +94,47 @@ int CCommandLineDisplay::GetOutputCount (void)
 		return ((m_iOutputEnd + MAX_LINES + 1 - m_iOutputStart) % (MAX_LINES + 1));
 	}
 
+void CCommandLineDisplay::AppendHistory(const CString &sLine)
+
+//	AppendHistory
+//
+//	Append a line of input to the history buffer
+
+{
+	if (!(sLine == GetHistory(0)))
+		{
+		m_iHistoryStart = (m_iHistoryStart + (MAX_LINES + 1) - 1) % (MAX_LINES + 1);
+		if (m_iHistoryStart == m_iHistoryEnd)
+			m_iHistoryEnd = (m_iHistoryEnd + (MAX_LINES + 1) - 1) % (MAX_LINES + 1);
+
+		m_History[m_iHistoryStart] = sLine;
+		}
+	m_iHistoryIndex = -1;
+}
+
+const CString &CCommandLineDisplay::GetHistory(int iLine)
+
+//	GetHistory
+//
+//	Returns the history line
+
+{
+	return m_History[(m_iHistoryStart + iLine) % (MAX_LINES + 1)];
+}
+
+int CCommandLineDisplay::GetHistoryCount(void)
+
+//	GetHistoryCount
+//
+//	Returns the number of lines in the history buffer
+
+{
+	if (m_iHistoryStart == m_iHistoryEnd)
+		return 0;
+	else
+		return ((m_iHistoryEnd + MAX_LINES + 1 - m_iHistoryStart) % (MAX_LINES + 1));
+}
+
 ALERROR CCommandLineDisplay::Init (CTranscendenceWnd *pTrans, const RECT &rcRect)
 
 //	Init
@@ -105,6 +146,10 @@ ALERROR CCommandLineDisplay::Init (CTranscendenceWnd *pTrans, const RECT &rcRect
 	m_rcRect = rcRect;
 	m_iOutputStart = 0;
 	m_iOutputEnd = 0;
+	m_iHistoryStart = 0;
+	m_iHistoryEnd = 0;
+	m_iHistoryIndex = -1;
+	m_iCursorPos = 0;
 	m_sInput = NULL_STR;
 	m_bInvalid = true;
 
@@ -118,7 +163,19 @@ void CCommandLineDisplay::Input (const CString &sInput)
 //	Add characters to input buffer
 
 	{
-	m_sInput.Append(sInput);
+	if (m_iCursorPos < m_sInput.GetLength())
+		{
+		CString sCat;
+		sCat = strSubString(m_sInput, 0, m_iCursorPos);
+		sCat.Append(sInput);
+		sCat.Append(strSubString(m_sInput, m_iCursorPos, -1));
+		m_sInput = sCat;
+		}
+	else
+		{
+		m_sInput.Append(sInput);
+		}
+	m_iCursorPos++;
 	m_bInvalid = true;
 	}
 
@@ -131,10 +188,31 @@ void CCommandLineDisplay::InputBackspace (void)
 	{
 	if (m_sInput.GetLength() > 0)
 		{
-		m_sInput = strSubString(m_sInput, 0, m_sInput.GetLength() - 1);
+		if (m_iCursorPos == m_sInput.GetLength())
+			m_sInput = strSubString(m_sInput, 0, m_sInput.GetLength() - 1);
+		else
+			m_sInput = strCat(strSubString(m_sInput, 0, m_iCursorPos - 1), strSubString(m_sInput, m_iCursorPos, -1));
+		m_iCursorPos--;
 		m_bInvalid = true;
 		}
 	}
+
+void CCommandLineDisplay::InputDelete(void)
+
+//	InputDelete
+//
+//	Delete characters from input buffer
+
+{
+	if (m_sInput.GetLength() > 0 && m_iCursorPos < m_sInput.GetLength())
+	{
+		if (m_iCursorPos == 0)
+			m_sInput = strSubString(m_sInput, 1, -1);
+		else
+			m_sInput = strCat(strSubString(m_sInput, 0, m_iCursorPos), strSubString(m_sInput, m_iCursorPos+1, -1));
+		m_bInvalid = true;
+	}
+}
 
 void CCommandLineDisplay::InputEnter (void)
 
@@ -143,22 +221,45 @@ void CCommandLineDisplay::InputEnter (void)
 //	Invoke input
 
 	{
-	m_sLastLine = m_sInput;
+	AppendHistory(m_sInput);
 	Output(m_sInput, INPUT_COLOR);
 	ClearInput();
 	}
 
-void CCommandLineDisplay::InputLastLine (void)
+void CCommandLineDisplay::InputHistoryUp (void)
 
-//	InputLastLine
+//	InputHistoryUp
 //
-//	Recalls the last line
+//	Recalls a line from the history buffer
 
 	{
-	if (!m_sLastLine.IsBlank())
+	if (m_iHistoryIndex < (GetHistoryCount()-1))
 		{
-		m_sInput = m_sLastLine;
+		m_iHistoryIndex++;
+		m_sInput = GetHistory(m_iHistoryIndex);
+		m_iCursorPos = m_sInput.GetLength();
 		m_bInvalid = true;
+		}
+	}
+
+void CCommandLineDisplay::InputHistoryDown(void)
+
+//	InputHistoryDown
+//
+//	Recalls a line from the history buffer
+
+	{
+	if (m_iHistoryIndex > 0)
+		{
+		m_iHistoryIndex--;
+		m_sInput = GetHistory(m_iHistoryIndex);
+		m_iCursorPos = m_sInput.GetLength();
+		m_bInvalid = true;
+		}
+	else
+		{
+		m_iHistoryIndex = -1;
+		ClearInput();
 		}
 	}
 
@@ -173,6 +274,10 @@ void CCommandLineDisplay::OnKeyDown (int iVirtKey, DWORD dwKeyState)
 		{
 		case VK_BACK:
 			InputBackspace();
+			break;
+
+		case VK_DELETE:
+			InputDelete();
 			break;
 
 		case VK_RETURN:
@@ -203,7 +308,31 @@ void CCommandLineDisplay::OnKeyDown (int iVirtKey, DWORD dwKeyState)
 			}
 
 		case VK_UP:
-			InputLastLine();
+			InputHistoryUp();
+			break;
+
+		case VK_DOWN:
+			InputHistoryDown();
+			break;
+
+		case VK_LEFT:
+			if (m_iCursorPos > 0) m_iCursorPos--;
+			m_bInvalid = true;
+			break;
+
+		case VK_RIGHT:
+			if (m_iCursorPos < m_sInput.GetLength()) m_iCursorPos++;
+			m_bInvalid = true;
+			break;
+
+		case VK_HOME:
+			m_iCursorPos = 0;
+			m_bInvalid = true;
+			break;
+
+		case VK_END:
+			m_iCursorPos = m_sInput.GetLength();
+			m_bInvalid = true;
 			break;
 		}
 	}
@@ -261,6 +390,13 @@ void CCommandLineDisplay::Paint (CG32bitImage &Dest)
 			RectWidth(m_rcCursor) - 1, 
 			RectHeight(m_rcCursor),
 			(((m_iCounter % 30) < 20) ? INPUT_COLOR : BACK_COLOR));
+
+	//	Redraw character under cursor
+	if ((m_iCounter % 30) >= 20 && m_iCursorPos < m_sInput.GetLength())
+		{
+		CString sLine(m_sInput.GetASCIIZPointer() + m_iCursorPos, 1);
+		m_Buffer.DrawText(m_rcCursor.left, m_rcCursor.top, m_pFonts->Console, INPUT_COLOR, sLine);
+		}
 
 	//	Blt
 
@@ -344,17 +480,20 @@ void CCommandLineDisplay::Update (void)
 	int iRemainder = iInputCols % iCols;
 	int iRemainderText = (iRemainder == 0 ? iCols : iRemainder) - 1;
 
-	m_rcCursor.left = x + iRemainderText * cxCol;
-	m_rcCursor.top = y;
-	m_rcCursor.right = m_rcCursor.left + cxCol;
-	m_rcCursor.bottom = m_rcCursor.top + cyLine;
-
 	int iStart = m_sInput.GetLength() - iRemainderText;
 	while (y >= yMin && iStart >= 0)
 		{
 		CString sLine(m_sInput.GetASCIIZPointer() + iStart, iRemainderText);
 		m_Buffer.DrawText(x, y, m_pFonts->Console, INPUT_COLOR, sLine);
 
+		// Work out where the cursor should be
+		if (m_iCursorPos >= iStart && (m_iCursorPos - iStart) < iCols)
+			{
+			m_rcCursor.left = x + (m_iCursorPos-iStart) * cxCol;
+			m_rcCursor.top = y;
+			m_rcCursor.right = m_rcCursor.left + cxCol;
+			m_rcCursor.bottom = m_rcCursor.top + cyLine;
+			}
 		y -= cyLine;
 		iStart -= iCols;
 		iRemainderText = iCols;
