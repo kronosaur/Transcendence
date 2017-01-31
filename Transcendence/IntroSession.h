@@ -130,38 +130,74 @@ class CIntroShipController : public IShipController
 
 		inline void SetShip (CShip *pShip) { m_pShip = pShip; }
 
+		virtual void AccumulateCrewMetrics (SCrewMetrics &Metrics) override { m_pDelegate->AccumulateCrewMetrics(Metrics); }
 		virtual void Behavior (SUpdateCtx &Ctx) override { m_pDelegate->Behavior(Ctx); }
+		virtual void CancelDocking (void) override { m_pDelegate->CancelDocking(); }
 		virtual CString DebugCrashInfo (void) override { return m_pDelegate->DebugCrashInfo(); }
+        virtual ICCItem *FindProperty (const CString &sProperty) override { return m_pDelegate->FindProperty(sProperty); }
+		virtual bool FollowsObjThroughGate (CSpaceObject *pLeader = NULL) override { return m_pDelegate->FollowsObjThroughGate(pLeader); }
+		virtual int GetAISettingInteger (const CString &sSetting) override { return m_pDelegate->GetAISettingInteger(sSetting); }
+		virtual CString GetAISettingString (const CString &sSetting) override { return m_pDelegate->GetAISettingString(sSetting); }
+		virtual const CAISettings *GetAISettings (void) override { return m_pDelegate->GetAISettings(); }
+		virtual CSpaceObject *GetBase (void) const override { return m_pDelegate->GetBase(); }
+		virtual CString GetClass (void) override { return m_pDelegate->GetClass(); }
 		virtual int GetCombatPower (void) override { return m_pDelegate->GetCombatPower(); }
-		virtual EManeuverTypes GetManeuver (void) override { return m_pDelegate->GetManeuver(); }
-		virtual bool GetThrust (void) override { return m_pDelegate->GetThrust(); }
-		virtual bool GetReverseThrust (void) override { return m_pDelegate->GetReverseThrust(); }
-		virtual bool GetStopThrust (void) override { return m_pDelegate->GetStopThrust(); }
+		virtual CCurrencyBlock *GetCurrencyBlock (void) override { return m_pDelegate->GetCurrencyBlock(); }
+		virtual CSpaceObject *GetDestination (void) const override { return m_pDelegate->GetDestination(); }
 		virtual bool GetDeviceActivate (void) override { return m_pDelegate->GetDeviceActivate(); }
+		virtual CSpaceObject *GetEscortPrincipal (void) const override { return m_pDelegate->GetEscortPrincipal(); }
 		virtual int GetFireDelay (void) override { return m_pDelegate->GetFireDelay(); }
 		virtual int GetFireRateAdj (void) override { return m_pDelegate->GetFireRateAdj(); }
-		virtual CSpaceObject *GetBase (void) const override { return m_pDelegate->GetBase(); }
-		virtual CSpaceObject *GetEscortPrincipal (void) const override { return m_pDelegate->GetEscortPrincipal(); }
+		virtual EManeuverTypes GetManeuver (void) override { return m_pDelegate->GetManeuver(); }
 		virtual CSpaceObject *GetOrderGiver (void) override { return m_pShip; }
+		virtual bool GetReverseThrust (void) override { return m_pDelegate->GetReverseThrust(); }
+		virtual CSpaceObject *GetShip (void) override { return m_pShip; }
+		virtual bool GetStopThrust (void) override { return m_pDelegate->GetStopThrust(); }
 		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const override { return m_pDelegate->GetTarget(ItemCtx, bNoAutoTarget); }
+		virtual bool GetThrust (void) override { return m_pDelegate->GetThrust(); }
 		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution) override { m_pDelegate->GetWeaponTarget(TargetingCtx, ItemCtx, retpTarget, retiFireSolution); }
+		virtual bool IsAngryAt (CSpaceObject *pObj) const override { return m_pDelegate->IsAngryAt(pObj); }
+		virtual int SetAISettingInteger (const CString &sSetting, int iValue) override { return m_pDelegate->SetAISettingInteger(sSetting, iValue); }
+		virtual CString SetAISettingString (const CString &sSetting, const CString &sValue) override { return m_pDelegate->SetAISettingString(sSetting, sValue); }
+		virtual void SetCommandCode (ICCItem *pCode) override { m_pDelegate->SetCommandCode(pCode); }
+		virtual void SetManeuver (EManeuverTypes iManeuver) override { m_pDelegate->SetManeuver(iManeuver); }
+		virtual void SetThrust (bool bThrust) override { m_pDelegate->SetThrust(bThrust); }
 
 		virtual void AddOrder (OrderTypes Order, CSpaceObject *pTarget, const IShipController::SData &Data, bool bAddBefore = false) override { m_pDelegate->AddOrder(Order, pTarget, Data, bAddBefore); }
 		virtual void CancelAllOrders (void) override { m_pDelegate->CancelAllOrders(); }
 		virtual void CancelCurrentOrder (void) override { m_pDelegate->CancelCurrentOrder(); }
+		virtual bool CancelOrder (int iIndex) override { return m_pDelegate->CancelOrder(iIndex); }
 		virtual OrderTypes GetCurrentOrderEx (CSpaceObject **retpTarget = NULL, IShipController::SData *retData = NULL) override { return m_pDelegate->GetCurrentOrderEx(retpTarget, retData); }
+		virtual OrderTypes GetOrder (int iIndex, CSpaceObject **retpTarget = NULL, IShipController::SData *retData = NULL) const override { return m_pDelegate->GetOrder(iIndex, retpTarget, retData); }
+		virtual int GetOrderCount (void) const override { return m_pDelegate->GetOrderCount(); }
 
 		//	Events
 
 		virtual void OnAttacked (CSpaceObject *pAttacker, const SDamageCtx &Damage) override { m_pDelegate->OnAttacked(pAttacker, Damage); }
+		virtual void OnBlindnessChanged (bool bBlind, bool bNoMessage = false) override { m_pDelegate->OnBlindnessChanged(bBlind, bNoMessage); }
+		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2) override { return m_pDelegate->OnCommunicate(pSender, iMessage, pParam1, dwParam2); }
+		virtual void OnComponentChanged (ObjectComponentTypes iComponent) override { m_pDelegate->OnComponentChanged(iComponent); }
 		virtual void OnDamaged (const CDamageSource &Cause, CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage) override { m_pDelegate->OnDamaged(Cause, pArmor, Damage, iDamage); }
+		virtual void OnDeviceEnabledDisabled (int iDev, bool bEnabled, bool bSilent = false) override { m_pDelegate->OnDeviceEnabledDisabled(iDev, bEnabled, bSilent); }
+		virtual void OnDeviceStatus (CInstalledDevice *pDev, CDeviceClass::DeviceNotificationTypes iEvent) override { m_pDelegate->OnDeviceStatus(pDev, iEvent); }
+		virtual bool OnDestroyCheck (DestructionTypes iCause, const CDamageSource &Attacker) override { return m_pDelegate->OnDestroyCheck(iCause, Attacker); }
 		virtual void OnDestroyed (SDestroyCtx &Ctx) override;
 		virtual void OnDocked (CSpaceObject *pObj) override { m_pDelegate->OnDocked(pObj); }
 		virtual void OnDockedObjChanged (CSpaceObject *pLocation) override { m_pDelegate->OnDockedObjChanged(pLocation); }
 		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend) override { m_pDelegate->OnEnterGate(pDestNode, sDestEntryPoint, pStargate, bAscend); }
+        virtual void OnFuelConsumed (Metric rFuel, CReactorDesc::EFuelUseTypes iUse) override { m_pDelegate->OnFuelConsumed(rFuel, iUse); }
+		virtual void OnHitBarrier (CSpaceObject *pBarrierObj, const CVector &vPos) override { m_pDelegate->OnHitBarrier(pBarrierObj, vPos); }
+		virtual void OnMissionCompleted (CMission *pMission, bool bSuccess) override { m_pDelegate->OnMissionCompleted(pMission, bSuccess); }
+		virtual void OnObjDamaged (const SDamageCtx &Ctx) override { m_pDelegate->OnObjDamaged(Ctx); }
 		virtual void OnObjDestroyed (const SDestroyCtx &Ctx) override { m_pDelegate->OnObjDestroyed(Ctx); }
+		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate) override { m_pDelegate->OnObjEnteredGate(pObj, pDestNode, sDestEntryPoint, pStargate); }
+		virtual void OnPaintSRSEnhancements (CG32bitImage &Dest, SViewportPaintCtx &Ctx) override { m_pDelegate->OnPaintSRSEnhancements(Dest, Ctx); }
+		virtual void OnProgramDamage (CSpaceObject *pHacker, const ProgramDesc &Program) override { m_pDelegate->OnProgramDamage(pHacker, Program); }
 		virtual void OnShipStatus (EShipStatusNotifications iEvent, DWORD dwData = 0) override { m_pDelegate->OnShipStatus(iEvent, dwData); }
+		virtual void OnStatsChanged (void) override { m_pDelegate->OnStatsChanged(); }
+		virtual void OnStationDestroyed (const SDestroyCtx &Ctx) override { m_pDelegate->OnStationDestroyed(Ctx); }
 		virtual void OnWeaponStatusChanged (void) override { m_pDelegate->OnWeaponStatusChanged(); }
+		virtual void OnWreckCreated (CSpaceObject *pWreck) override { m_pDelegate->OnWreckCreated(pWreck); }
 
 	private:
 		IShipController *m_pDelegate;

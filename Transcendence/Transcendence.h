@@ -253,6 +253,7 @@ class CPlayerShipController : public IShipController
 		virtual void CancelAllOrders (void) override;
 		virtual void CancelCurrentOrder (void) override;
 		virtual void CancelDocking (void) override;
+		virtual bool CancelOrder (int iIndex) override;
 		virtual CString DebugCrashInfo (void) override;
         virtual ICCItem *FindProperty (const CString &sProperty) override;
 		virtual CString GetAISettingString (const CString &sSetting) override;
@@ -266,7 +267,9 @@ class CPlayerShipController : public IShipController
 		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const override;
 		virtual bool GetReverseThrust (void) override;
 		virtual bool GetStopThrust (void) override;
+		virtual OrderTypes GetOrder (int iIndex, CSpaceObject **retpTarget = NULL, IShipController::SData *retData = NULL) const override;
 		virtual CSpaceObject *GetOrderGiver (void) override { return m_pShip; }
+		virtual int GetOrderCount (void) const override { return (m_iOrder == IShipController::orderNone ? 0 : 1); }
 		virtual bool GetDeviceActivate (void) override;
 		virtual int GetFireDelay (void) override { return (int)((5.0 / STD_SECONDS_PER_UPDATE) + 0.5); }
 		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution) override;

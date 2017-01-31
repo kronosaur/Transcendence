@@ -194,6 +194,20 @@ void CPlayerShipController::CancelCurrentOrder (void)
 	SetDestination(NULL);
 	}
 
+bool CPlayerShipController::CancelOrder (int iIndex)
+
+//	CancelOrder
+//
+//	Cancels an order
+
+	{
+	if (iIndex != 0)
+		return false;
+
+	CancelCurrentOrder();
+	return true;
+	}
+
 void CPlayerShipController::CancelDocking (void)
 
 //	CancelDocking
@@ -616,6 +630,19 @@ IShipController::OrderTypes CPlayerShipController::GetCurrentOrderEx (CSpaceObje
 //	Returns the current order
 
 	{
+	return GetOrder(0, retpTarget, retData);
+	}
+
+IShipController::OrderTypes CPlayerShipController::GetOrder (int iIndex, CSpaceObject **retpTarget, IShipController::SData *retData) const
+
+//	GetOrder
+//
+//	Returns the order
+
+	{
+	if (iIndex > 0)
+		return orderNone;
+
 	switch (m_iOrder)
 		{
 		case orderGuard:
