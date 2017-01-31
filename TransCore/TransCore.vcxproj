@@ -434,7 +434,9 @@
     <Xml Include="Benedict04.xml">
       <SubType>Designer</SubType>
     </Xml>
-    <Xml Include="Benedict05.xml" />
+    <Xml Include="Benedict05.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="Benedict05A.xml">
       <SubType>Designer</SubType>
     </Xml>
