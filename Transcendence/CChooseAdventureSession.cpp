@@ -192,6 +192,8 @@ void CChooseAdventureSession::CmdSelectExtensions (bool bSelect)
 	for (i = 0; i < m_ExtensionList.GetCount(); i++)
 		if (!m_ExtensionList[i]->IsDisabled())
 			SetPropertyBool(strPatternSubst(CONSTLIT("idExtension:%d"), i), PROP_CHECKED, bSelect);
+
+	SetAdventureStatus(m_AdventureList[m_iSelection], m_yBottomSection);
 	}
 
 void CChooseAdventureSession::CreateAdventureDesc (CExtension *pAdventure)
