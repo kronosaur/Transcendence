@@ -1833,7 +1833,18 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 	if (pStart == NULL)
 		{
 		kernelDebugLogMessage("Unable to find destination stargate %s in destination system.", m_sDestEntryPoint);
-		throw CException(ERR_FAIL);
+		for (int i = 0; i < pNewSystem->GetObjectCount(); i++)
+			{
+			CSpaceObject *pObj = pNewSystem->GetObject(i);
+			if (pObj == NULL || pObj->IsDestroyed())
+				continue;
+
+			pStart = pObj;
+			break;
+			}
+
+		if (pStart == NULL)
+			throw CException(ERR_FAIL);
 		}
 
 	//	Let all types know that the current system is going away
