@@ -186,6 +186,42 @@ ICCItem *CGItemListArea::GetEntryAtCursor (void)
 	return m_pListData->GetEntryAtCursor(CC);
 	}
 
+bool CGItemListArea::GetNextTab (DWORD *retdwID) const
+
+//	GetNextTab
+//
+//	Returns the next tab
+
+	{
+	if (m_iCurTab == -1 || m_Tabs.GetCount() < 2)
+		return false;
+
+	int iTab = (m_iCurTab + 1) % m_Tabs.GetCount();
+	
+	if (retdwID)
+		*retdwID = m_Tabs[iTab].dwID;
+
+	return true;
+	}
+
+bool CGItemListArea::GetPrevTab (DWORD *retdwID) const
+
+//	GetPrevTab
+//
+//	Returns the previous tab
+
+	{
+	if (m_iCurTab == -1 || m_Tabs.GetCount() < 2)
+		return false;
+
+	int iTab = (m_iCurTab + m_Tabs.GetCount() - 1) % m_Tabs.GetCount();
+	
+	if (retdwID)
+		*retdwID = m_Tabs[iTab].dwID;
+
+	return true;
+	}
+
 bool CGItemListArea::HitTestTabs (int x, int y, int *retiTab)
 
 //	HitTestTabs
@@ -266,9 +302,6 @@ bool CGItemListArea::LButtonDown (int x, int y)
 	int iTab;
 	if (HitTestTabs(x, y, &iTab))
 		{
-		m_iCurTab = iTab;
-		Invalidate();
-
 		SignalAction(m_Tabs[iTab].dwID);
 		return true;
 		}

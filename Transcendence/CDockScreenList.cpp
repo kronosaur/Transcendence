@@ -127,12 +127,10 @@ IDockScreenDisplay::EResults CDockScreenList::OnHandleAction (DWORD dwTag, DWORD
 
 				else if (FindFilter(dwData, &iFilter))
 					{
-					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-					m_pItemListControl->SetFilter(m_Filters[iFilter].Filter);
-					m_pItemListControl->MoveCursorForward();
-					GetScreenStack().SetDisplayData(FIELD_FILTER_SELECTED, strFromInt(m_Filters[iFilter].dwID));
+					if (!SelectTab(dwData, iFilter))
+						return resultHandled;
 
-					ShowItem();
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					return resultShowPane;
 					}
 				else
@@ -154,10 +152,11 @@ IDockScreenDisplay::EResults CDockScreenList::OnHandleKeyDown (int iVirtKey)
 //	Handles key down. If we don't handle the given key, we return resultNone.
 
 	{
+	DWORD dwTab;
+
 	switch (iVirtKey)
 		{
 		case VK_UP:
-		case VK_LEFT:
 			if (!m_bNoListNavigation)
 				{
 				bool bOK = SelectPrevItem();
@@ -171,7 +170,6 @@ IDockScreenDisplay::EResults CDockScreenList::OnHandleKeyDown (int iVirtKey)
 				return resultHandled;
 
 		case VK_DOWN:
-		case VK_RIGHT:
 			if (!m_bNoListNavigation)
 				{
 				bool bOK = SelectNextItem();
@@ -209,6 +207,52 @@ IDockScreenDisplay::EResults CDockScreenList::OnHandleKeyDown (int iVirtKey)
 					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 
 				m_pItemListControl->Invalidate();
+				return resultShowPane;
+				}
+			else
+				return resultHandled;
+
+		case VK_LEFT:
+			if (m_bNoListNavigation)
+				return resultHandled;
+
+			else if (m_pItemListControl->GetPrevTab(&dwTab))
+				{
+				if (!SelectTab(dwTab))
+					return resultHandled;
+
+				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+				return resultShowPane;
+				}
+			else
+				return OnHandleKeyDown(VK_UP);
+
+		case VK_RIGHT:
+			if (m_bNoListNavigation)
+				return resultHandled;
+
+			else if (m_pItemListControl->GetNextTab(&dwTab))
+				{
+				if (!SelectTab(dwTab))
+					return resultHandled;
+
+				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+				return resultShowPane;
+				}
+			else
+				return OnHandleKeyDown(VK_DOWN);
+
+		case VK_TAB:
+			if (!m_bNoListNavigation)
+				{
+				DWORD dwNextTab;
+				if (!m_pItemListControl->GetNextTab(&dwNextTab))
+					return resultHandled;
+
+				if (!SelectTab(dwNextTab))
+					return resultHandled;
+
+				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 				return resultShowPane;
 				}
 			else
@@ -409,4 +453,31 @@ void CDockScreenList::OnShowPane (bool bNoListNavigation)
 	//	If this is set, don't allow the list selection to change
 
 	m_bNoListNavigation = bNoListNavigation;
+	}
+
+bool CDockScreenList::SelectTab (DWORD dwID, int iFilter)
+
+//	SelectTab
+//
+//	Selects the given tab by ID.
+
+	{
+	//	Find the filter if we don't know it.
+
+	if (iFilter == -1)
+		{
+		if (!FindFilter(dwID, &iFilter))
+			return false;
+		}
+
+	//	Select the tab and filter
+
+	m_pItemListControl->SelectTab(dwID);
+	m_pItemListControl->SetFilter(m_Filters[iFilter].Filter);
+	m_pItemListControl->MoveCursorForward();
+	GetScreenStack().SetDisplayData(FIELD_FILTER_SELECTED, strFromInt(m_Filters[iFilter].dwID));
+
+	ShowItem();
+
+	return true;
 	}

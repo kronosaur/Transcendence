@@ -53,6 +53,7 @@ class CDockScreenList : public IDockScreenDisplay
 
 		bool FindFilter (DWORD dwID, int *retiIndex = NULL) const;
 		bool FindFilter (const CString &sID, int *retiIndex = NULL) const;
+		bool SelectTab (DWORD dwID, int iFilter = -1);
 
 		CGItemListArea *m_pItemListControl;
 		DWORD m_dwID;

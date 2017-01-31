@@ -107,6 +107,8 @@ class CGItemListArea : public AGArea
 		inline const CItem &GetItemAtCursor (void) { return (m_pListData ? m_pListData->GetItemAtCursor() : g_DummyItem); }
 		inline CItemListManipulator &GetItemListManipulator (void) { return (m_pListData ? m_pListData->GetItemListManipulator() : g_DummyItemListManipulator); }
 		inline IListData *GetList (void) const { return m_pListData; }
+		bool GetNextTab (DWORD *retdwID) const;
+		bool GetPrevTab (DWORD *retdwID) const;
 		inline CSpaceObject *GetSource (void) { return (m_pListData ? m_pListData->GetSource() : NULL); }
 		inline bool IsCursorValid (void) { return (m_pListData ? m_pListData->IsCursorValid() : false); }
 		bool MoveCursorBack (void);
