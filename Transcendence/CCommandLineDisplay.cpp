@@ -242,7 +242,12 @@ void CCommandLineDisplay::AutoCompleteSearch(void)
 		Input(strSubString(sCommon, sCurCmd.GetLength(), -1));
 
 	if (iPartCount > 1)
-		Output(sOutput, HINT_COLOR);
+	{
+		m_sHint = sOutput;
+		m_bInvalid = true;
+	}
+	else
+		ClearHint();
 
 	if (iPartCount == 1 && sCommon.GetLength() == sCurCmd.GetLength())
 		{
@@ -356,6 +361,7 @@ void CCommandLineDisplay::InputEnter (void)
 	AppendHistory(m_sInput);
 	Output(m_sInput, INPUT_COLOR);
 	ClearInput();
+	ClearHint();
 	}
 
 void CCommandLineDisplay::InputHistoryUp (void)
@@ -602,13 +608,18 @@ void CCommandLineDisplay::Update (void)
 	int iInputCols = m_sInput.GetLength() + 1;
 	int iInputLines = (iInputCols / iCols) + ((iInputCols % iCols) ? 1 : 0);
 
+	//	Figure out how many lines we need for the hint
+
+	int iHintCols = (m_sHint.IsBlank()) ? 0 : m_sHint.GetLength() + 1;
+	int iHintLines = (iHintCols / iCols) + ((iHintCols % iCols) ? 1 : 0);
+
 	//	Figure out how many lines in the output
 
 	int iOutputLines = GetOutputCount();
 
 	//	Paint from the bottom up
 
-	int iTotalLines = Min(iLines, iInputLines + iOutputLines);
+	int iTotalLines = Min(iLines, iInputLines + iHintLines + iOutputLines);
 	int x = LEFT_SPACING;
 	int yMin = TOP_SPACING;
 	int y = yMin + (iTotalLines - 1) * cyLine;
@@ -632,6 +643,21 @@ void CCommandLineDisplay::Update (void)
 			m_rcCursor.right = m_rcCursor.left + cxCol;
 			m_rcCursor.bottom = m_rcCursor.top + cyLine;
 			}
+		y -= cyLine;
+		iStart -= iCols;
+		iRemainderText = iCols;
+		}
+
+	//	Paint the hint line
+
+	iRemainder = iHintCols % iCols;
+	iRemainderText = (iRemainder == 0 ? iCols : iRemainder) - 1;
+
+	iStart = m_sHint.GetLength() - iRemainderText;
+	while (y >= yMin && iStart >= 0)
+		{
+		CString sLine(m_sHint.GetASCIIZPointer() + iStart, iRemainderText);
+		m_Buffer.DrawText(x, y, m_pFonts->Console, HINT_COLOR, sLine);
 		y -= cyLine;
 		iStart -= iCols;
 		iRemainderText = iCols;
