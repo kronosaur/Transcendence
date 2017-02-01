@@ -138,7 +138,7 @@
 
 			multiHull=			"true"
 			armorID=			"&itAdvancedPlasteelPlate;"
-			hitPoints=			"800"
+			hitPoints=			"2000"
             regen=              "6"
 			fireRateAdj=		"10"
 			explosionType=		"&vtThermoExplosion3;"
@@ -546,7 +546,7 @@
 									(setq startPos
 										(sysVectorPolarOffset gSource 
 											(sysVectorAngle (sysVectorSubtract (objGetPos gateObj) (objGetPos gSource)))
-											350
+											1000
 											)
 										)
 
@@ -554,11 +554,13 @@
 									(setq huariTargets (sysFindObject gSource "AT N:350; +huari; +populated; -huariTemple;"))
 
 									(enum huariTargets theTarget
-										(for i 1 4
+										(for i 1 (random 1 2)
 											(block Nil
 												(setq enemyObj (sysCreateShip &scCarrierEarthSlaver; startPos &svSung;))
 												; Reduce the number of wind slavers
-												(objSetData enemyObj "totalCount" (random 3 5))
+												(objSetData enemyObj "totalCount" (random 5 8))
+												; Point the player at this ship
+												(objSetShowAsDestination enemyObj)
 												; Attack the bases
 												(setq aTargetObj theTarget)
 												(objFireEvent enemyObj "OrderBombardTarget")
@@ -570,6 +572,7 @@
 									(for i 1 4
 										(block Nil
 											(setq enemyObj (sysCreateShip &scCarrierEarthSlaver; startPos &svSung;))
+											(objSetShowAsDestination enemyObj)
 											(setq aTargetObj gSource)
 											(objFireEvent enemyObj "OrderBombardTarget")
 											)
