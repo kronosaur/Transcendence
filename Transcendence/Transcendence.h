@@ -852,6 +852,8 @@ class CCommandLineDisplay
 		const CString &GetHistory(int iLine);
 		int GetHistoryCount(void);
 		void Update (void);
+		const CString GetCurrentCmd (void);
+		void AutoCompleteSearch (void);
 
 		CTranscendenceWnd *m_pTrans;
 		const SFontTable *m_pFonts;

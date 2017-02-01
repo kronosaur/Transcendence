@@ -8,6 +8,7 @@
 #define BACK_COLOR					(CG32bitPixel(20, 20, 20))
 #define TEXT_COLOR					(CG32bitPixel(200, 200, 200))
 #define INPUT_COLOR					(CG32bitPixel(255, 255, 200))
+#define HINT_COLOR					(CG32bitPixel(200, 200, 255))
 
 const int LEFT_SPACING =			2;
 const int RIGHT_SPACING =			2;
@@ -135,6 +136,137 @@ int CCommandLineDisplay::GetHistoryCount(void)
 		return ((m_iHistoryEnd + MAX_LINES + 1 - m_iHistoryStart) % (MAX_LINES + 1));
 }
 
+const CString CCommandLineDisplay::GetCurrentCmd(void)
+
+//	GetCurrentCmd
+//
+//	Returns the command fragment under the cursor from the input line
+
+	{
+	int iPos;
+	CString sWord;
+
+	// Want to extract the word to the left of cursor
+	for (iPos = m_iCursorPos - 1; iPos >= 0; iPos--)
+		{
+		char *pPos = m_sInput.GetASCIIZPointer() + iPos;
+		if (*pPos == ' ' || *pPos == '(')
+			{
+			iPos++;
+			break;
+			}
+		if (*pPos == ')' || *pPos == '\'' || *pPos == '"')
+			return NULL_STR;
+		}
+
+	if (iPos < 0) iPos = 0;
+	return strSubString(m_sInput, iPos, m_iCursorPos - iPos);
+	}
+
+void CCommandLineDisplay::AutoCompleteSearch(void)
+
+//	AutocompleteSearch
+//
+//	Searches the global symbol table for matches to the current command.
+
+	{
+	const CString sCurCmd = GetCurrentCmd();
+	CString sOutput;
+	CString sCommon;
+	char *pPos;
+	char *pPartStart;
+	int iPartCount;
+
+	if (sCurCmd.IsBlank())
+		return;
+
+	// Get the list of global symbols
+
+	CCodeChain &CC = g_pUniverse->GetCC();
+	ICCItem *pResult = CC.ListGlobals();
+	CString sGlobals = CC.Unlink(pResult);
+
+	//	Get info about the symbols string
+
+	pPos = sGlobals.GetPointer();
+	pPos++; // first character is a bracket
+
+	//	Parse the string
+
+	iPartCount = 0;
+	pPartStart = pPos;
+
+	while (*pPos != '\0')
+		{
+		//	If we've found a delimeter, then flush the string up to now
+		//	to the current part.
+
+		if (*pPos == ' ' || *pPos == ')')
+		{
+			CString sGlobal(pPartStart, pPos - pPartStart);// iPartLength);
+
+			if (strStartsWith(sGlobal, sCurCmd))
+				{
+				if (iPartCount == 0)
+					sCommon = sGlobal;
+				else
+					{
+					// If we have multiple matching commands then find the longest common stem
+					int iLen = Min(sCommon.GetLength(), sGlobal.GetLength());
+					int i;
+					char *pPos1 = sCommon.GetPointer();
+					char *pPos2 = sGlobal.GetPointer();
+					for (i = 0; i < iLen; i++)
+						{
+						if (CharLower((LPTSTR)(BYTE)(*pPos1)) != CharLower((LPTSTR)(BYTE)(*pPos2)))
+							break;
+						pPos1++;
+						pPos2++;
+						}
+					sCommon.Truncate(i);
+					}
+				sOutput.Append(sGlobal);
+				sOutput.Append(CONSTLIT(" "));
+				iPartCount++;
+				}
+
+			//	Skip to the next part
+			pPos++;
+			pPartStart = pPos;
+			}
+		else
+			pPos++;
+		}
+
+	if (sCommon.GetLength() > sCurCmd.GetLength())
+		Input(strSubString(sCommon, sCurCmd.GetLength(), -1));
+
+	if (iPartCount > 1)
+		Output(sOutput, HINT_COLOR);
+
+	if (iPartCount == 1 && sCommon.GetLength() == sCurCmd.GetLength())
+		{
+		CString sHelpCmd;
+		sHelpCmd = CONSTLIT("(help '");
+		sHelpCmd.Append(sCurCmd);
+		sHelpCmd.Append(CONSTLIT(")"));
+
+		CCodeChainCtx Ctx;
+		ICCItem *pCode = Ctx.Link(sHelpCmd, 0, NULL);
+		ICCItem *pResult = Ctx.Run(pCode);
+
+		if (pResult->IsIdentifier())
+			sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
+		else
+			sOutput = CC.Unlink(pResult);
+
+		Ctx.Discard(pResult);
+		Ctx.Discard(pCode);
+
+		Output(sOutput, HINT_COLOR);
+		}
+	}
+
 ALERROR CCommandLineDisplay::Init (CTranscendenceWnd *pTrans, const RECT &rcRect)
 
 //	Init
@@ -175,7 +307,7 @@ void CCommandLineDisplay::Input (const CString &sInput)
 		{
 		m_sInput.Append(sInput);
 		}
-	m_iCursorPos++;
+	m_iCursorPos += sInput.GetLength();
 	m_bInvalid = true;
 	}
 
@@ -304,6 +436,12 @@ void CCommandLineDisplay::OnKeyDown (int iVirtKey, DWORD dwKeyState)
 
 				Output(sOutput);
 				}
+			break;
+			}
+
+		case VK_TAB:
+			{
+			AutoCompleteSearch();
 			break;
 			}
 
