@@ -4698,7 +4698,7 @@ PLAYER DATA
 				(block (theShip theEntry squadronList)
 				
 					; Create the ship
-					(setq theShip (sysCreateShip theClass theCSC &svCommonwealthFleet;))
+					(setq theShip (sysCreateShip theClass theCSC (objGetSovereign theCSC)))
 					(objSuspend theShip)
 					
 					; Create the squadron entry

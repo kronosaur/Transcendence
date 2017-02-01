@@ -457,7 +457,7 @@
 							; Deploy sentinels
 							(for i 1 theCount
 								(block (theSentinel)
-									(setq theSentinel (sysCreateShip &scIocrymSentinel; gSource &svIocrym;))
+									(setq theSentinel (sysCreateShip &scIocrymSentinel; gSource (objGetSovereign gSource)))
 									(shpOrder theSentinel 'attack theTarget)
 									(shpOrder theSentinel 'gate gSource)
 									
