@@ -5193,11 +5193,11 @@
 								(setq desc "The cargo container was filled with a powerful industrial solvent which has flooded your ship's cargo hold.")
 
 								; pick a random item in the ship's cargo hold to damage
-								(setq allItems (objGetItems gPlayerShip "*U -ID;"))
+								(setq allItems (objGetItems gPlayerShip "*U -ID; -questItem;"))
 
 								; Destroy an item
 								(if (eq (count allItems) 0)
-									(setq desc (cat desc " Fortunately, your cargo hold is empty and nothing was damaged."))
+									(setq desc (cat desc " Fortunately, nothing was damaged."))
 									(block (itemDamaged)
 										(setq itemDamaged (random allItems))
 										(setq desc (cat desc " The solvent has destroyed " (itmGetName itemDamaged 8) "."))
