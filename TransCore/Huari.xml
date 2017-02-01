@@ -96,7 +96,7 @@
 			value=				"48"
 			mass=				"1"
 			frequency=			"notrandom"
-			attributes=			"Consumable; Meds; NotForSale"
+			attributes=			"consumable, meds, notForSale, questItem"
 
 			description=		"Sodium thioseptal is a drug used to induce a temporary coma."
 			sortName=			"thioseptal, vial of"

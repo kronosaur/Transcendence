@@ -92,7 +92,7 @@
 			frequency=			"notrandom"
 			numberAppearing=	"1"
 			unknownType=		"&itUnknownHyperglyph;"
-			attributes=			"Alien; HereticStargate; HyperglyphRod; MinorItem; NotForSale"
+			attributes=			"alien, hereticStargate, hyperglyphRod, minorItem, notForSale, questItem"
 
 			description=		"This hyperglyph rod is used to program stargates."
 			>
@@ -128,7 +128,7 @@
 			mass=				"10000"
 			frequency=			"notrandom"
 			numberAppearing=	"1"
-			attributes=			"Alien; IocrymCyberneticTower; NotForSale"
+			attributes=			"alien, iocrymCyberneticTower, notForSale, questItem"
 
 			description=		"This massive and beautiful crystalline tower is clearly part of a larger structure."
 			>
@@ -203,7 +203,7 @@
 			value=				"15000"
 			mass=				"2000"
 			frequency=			"notrandom"
-			attributes=			"MajorItem; MRADExperiment; NotForSale"
+			attributes=			"majorItem, MRADExperiment, notForSale, questItem"
 
 			charges=			"6"
 
@@ -597,7 +597,7 @@
 			value=				"0"
 			mass=				"1"
 			frequency=			"notrandom"
-			attributes=			"HereticROM; Info; MinorItem; NotForSale"
+			attributes=			"hereticROM, info, minorItem, notForSale, questItem"
 
 			description=		"This ROM contains research data about Iocrym technology."
 			>
@@ -612,7 +612,7 @@
 			value=				"0"
 			mass=				"1"
 			frequency=			"notrandom"
-			attributes=			"HereticROM; Info; MinorItem; NotForSale; LesserData"
+			attributes=			"hereticROM, info, lesserData, minorItem, notForSale, questItem"
 
 			description=		"This ROM contains research data about Iocrym technology."
 			>

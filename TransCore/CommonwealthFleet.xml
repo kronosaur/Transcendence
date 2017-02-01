@@ -207,7 +207,7 @@ PLAYER DATA
 			mass=				"5500"
 			frequency=			"notrandom"
 			unknownType=		"&itUnknownLamplighterPrototype;"
-			attributes=			"MajorItem; Military; LamplighterPrototype"
+			attributes=			"lamplighterPrototype, majorItem, military, questItem"
 
 			description=		"This prototype is designed to test the antimatter blast chamber of the Project Lamplighter weapon."
 			>
@@ -240,7 +240,7 @@ PLAYER DATA
 			value=				"0"
 			frequency=			"notrandom"
 			mass=				"1"
-			attributes=			"cannotOrder, Consumable; Info; LamplighterDataROM"
+			attributes=			"cannotOrder, consumable, info, lamplighterDataROM, notForSale, questItem"
 
 			description=		"This unmarked ROM contains what looks like experimental data. It contains millions of data points collected over several years; their meaning and purpose is unknown."
 			>
@@ -3466,7 +3466,7 @@ PLAYER DATA
 							<Action name="Talk to Medical Officer" key="M">
 								(block Nil
 									; See if the player has any medical supplies
-									(setq gItem (objGetItems gPlayerShip "*U+Meds"))
+									(setq gItem (objGetItems gPlayerShip "*U +Meds; -questItem; -notForSale;"))
 
 									(if gItem
 										(scrShowPane gScreen "SellMedicalItems")

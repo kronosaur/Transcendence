@@ -1315,7 +1315,7 @@
 			mass=				"1"
 			frequency=			"notrandom"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"Info; MinorItem; NeurohackROM; NotForSale"
+			attributes=			"info, minorItem, neurohackROM, notForSale, questItem"
 
 			description=		"This ROM enables you to connect to AIs and subdue them."
 			
