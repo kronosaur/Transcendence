@@ -1778,6 +1778,11 @@
 			<Text id="actionRemove:cannotRemove">"The device cannot be removed."</Text>
 			<Text id="actionRemove:freeRemove">"The device can be removed free of charge."</Text>
 			<Text id="actionRemove:noRoomInCargo">"The device cannot be removed because there is no room in your cargo hold to store it."</Text>
+			<Text id="actionRemove.noRoomForCargoHold">
+				(cat
+					"Cannot remove cargo expansion because you have too much cargo."
+					)
+			</Text>
 			<Text id="actionRemove:remove">(cat "The device can be removed for " (@ gData 'cost) ".")</Text>
 			<Text id="actionRemove:upgradeInstallOnly">"Sorry, we only install or remove items as part of an upgrade purchase."</Text>
 			<Text id="actionRemove:noTech">(cat "We do not have the technology to remove a level " (itmGetLevel (@ gData 'item)) " device.")</Text>

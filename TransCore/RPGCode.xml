@@ -566,6 +566,13 @@
 										enabled: Nil
 										desc: itemStatus
 										}
+										
+								(= itemStatus 1)
+									{
+										visible: True
+										enabled: Nil
+										desc: (scrTranslate gScreen "actionRemove.noRoomForCargoHold" { item:theItem })
+										}
 								
 								(not (eq itemStatus 0))
 									{

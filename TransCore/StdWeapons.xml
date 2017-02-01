@@ -453,7 +453,7 @@
 				type=				"missile"
 
 				omnidirectional=	"true"
-				damage=				"blast:1d6+1; momentum:1; WMD:2"
+				damage=				"blast:1d6+1; momentum:1; WMD:3"
 				fireRate=			"16"
 				missileSpeed=		"40"
 				interaction=		"80"

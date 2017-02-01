@@ -24,7 +24,7 @@
 			attributes=			"envEarth, envAvoidsAir, friendly, generic, independent, majorStation, neoHuman, populated, ringers"
 			levelFrequency=		"----- rcurv ----- ----- -----"
 			locationCriteria=	"+outerSystem, +ringedGiant|+100"
-			enemyExclusionRadius="50"
+			enemyExclusionRadius="100"
 			>
 
 		<Image			imageID="&rsStations6;" imageX="0" imageY="256" imageWidth="160" imageHeight="192"/>
@@ -194,7 +194,7 @@
 			attributes=			"envEarth, envAvoidsAir, friendly, generic, independent, majorStation, neoHuman, populated, ringers"
 			levelFrequency=		"----- -ruur ----- ----- -----"
 			locationCriteria=	"+outerSystem, +ringedGiant|+100"
-			enemyExclusionRadius="100"
+			enemyExclusionRadius="150"
 			>
 
 		<Image			imageID="&rsStations7;" imageX="0" imageY="1024" imageWidth="256" imageHeight="256"/>

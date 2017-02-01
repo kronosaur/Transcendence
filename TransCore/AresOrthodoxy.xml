@@ -1305,7 +1305,7 @@
 			attributes=			"ares, aresMajor, enemy, envAir, envEarth, envFire, envWater, generic, majorStation, neoHuman, populated"
 			levelFrequency=		"----- -vuur ----- ----- -----"
 			locationCriteria=	"-asteroids"
-			enemyExclusionRadius="60"
+			enemyExclusionRadius="100"
 			>
 
 		<Image			imageID="&rsStations7;" imageX="0" imageY="0" imageWidth="256" imageHeight="256"/>
@@ -1363,7 +1363,7 @@
 			attributes=			"ares, aresMajor, enemy, envAir, envEarth, envFire, envWater, generic, majorStation, neoHuman, populated"
 			levelFrequency=		"----- --vuu ----- ----- -----"
 			locationCriteria=	"-asteroids"
-			enemyExclusionRadius="100"
+			enemyExclusionRadius="150"
 			>
 
 		<Image			imageID="&rsStations9;" imageX="0" imageY="256" imageWidth="256" imageHeight="256"/>
