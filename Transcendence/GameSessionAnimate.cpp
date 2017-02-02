@@ -103,7 +103,9 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 
                 //  Paint the mouse cursor, if necessary
 
-                if (g_pTrans->GetPlayer() && g_pTrans->GetPlayer()->IsMouseAimEnabled())
+                if (g_pTrans->GetPlayer() 
+						&& !InMenu()
+						&& g_pTrans->GetPlayer()->IsMouseAimEnabled())
                     {
                     int iMouseAimAngle;
                     int xMouse, yMouse;

@@ -18,7 +18,8 @@ CGameSession::CGameSession (CHumanInterface &HI,
         m_SystemMap(HI, Model, m_HUD),
 		m_CurrentMenu(menuNone),
 		m_pCurrentComms(NULL),
-        m_iDamageFlash(0)
+        m_iDamageFlash(0),
+		m_bIgnoreButtonUp(false)
 
 //	CGameSession constructor
 
@@ -33,7 +34,15 @@ void CGameSession::DismissMenu (void)
 //	for our own context.
 
 	{
-	m_CurrentMenu = menuNone;
+	if (m_CurrentMenu != menuNone)
+		{
+		m_CurrentMenu = menuNone;
+
+		//	Mouse controls the ship again
+
+		ShowCursor(false);
+		SyncMouseToPlayerShip();
+		}
 	}
 
 void CGameSession::HideMenu (void)
@@ -97,6 +106,8 @@ void CGameSession::OnCleanUp (void)
 //  We're going away
 
     {
+	HideMenu();
+
     //  In the future, m_CurrentDock should be our member, so we won't need
     //  this.
 
@@ -349,6 +360,9 @@ bool CGameSession::ShowMenu (EMenuTypes iMenu)
 
 	switch (iMenu)
 		{
+		case menuNone:
+			return false;
+
 		case menuComms:
 			if (m_pCurrentComms == NULL)
 				return false;
@@ -399,6 +413,7 @@ bool CGameSession::ShowMenu (EMenuTypes iMenu)
 			return false;
 		}
 
+	ShowCursor(true);
 	m_CurrentMenu = iMenu;
 
 	return true;

@@ -206,7 +206,7 @@ void CTranscendenceWnd::DoEnableDisableItemCommand (DWORD dwData)
 	m_CurrentPicker = pickNone;
 	}
 
-void CTranscendenceWnd::DoGameMenuCommand (DWORD dwCmd)
+bool CTranscendenceWnd::DoGameMenuCommand (DWORD dwCmd)
 
 //	DoGameMenuCommand
 //
@@ -218,12 +218,16 @@ void CTranscendenceWnd::DoGameMenuCommand (DWORD dwCmd)
 		case CMD_PAUSE:
 			m_CurrentMenu = menuNone;
 			g_pHI->HICommand(CONSTLIT("uiShowHelp"));
-			break;
+			return true;
 
 		case CMD_SAVE:
 			m_CurrentMenu = menuNone;
 			g_pHI->HICommand(CONSTLIT("gameEndSave"));
-			break;
+
+			//	FALSE means don't try to dismiss the menu because the session has
+			//	been killed.
+
+			return false;
 
 		case CMD_SELF_DESTRUCT:
 			DisplayMessage(CONSTLIT("Warning: Self-Destruct Activated"));
@@ -234,7 +238,14 @@ void CTranscendenceWnd::DoGameMenuCommand (DWORD dwCmd)
 			m_MenuData.AddMenuItem(CONSTLIT("2"), CONSTLIT("Cancel"), 0, CMD_CANCEL);
 			m_MenuDisplay.Invalidate();
 			m_CurrentMenu = menuSelfDestructConfirm;
-			break;
+
+			//	We return FALSE because we're putting up a new menu.
+
+			return false;
+
+		default:
+			m_CurrentMenu = menuNone;
+			return true;
 		}
 	}
 

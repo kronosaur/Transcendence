@@ -86,8 +86,7 @@ void CGameSession::OnChar (char chChar, DWORD dwKeyData)
 						{
                         case CTranscendenceWnd::menuGame:
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-							g_pTrans->DoGameMenuCommand(dwData);
-							if (g_pTrans->m_CurrentMenu == CTranscendenceWnd::menuNone)
+							if (g_pTrans->DoGameMenuCommand(dwData))
 								DismissMenu();
 							break;
 
@@ -403,7 +402,6 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 					//	If the player uses the keyboard to thrust, then turn off mouse
 					//	move UI.
 
-					case CGameKeys::keyThrustForward:
 					case CGameKeys::keyRotateLeft:
 					case CGameKeys::keyRotateRight:
 		                pPlayer->SetMouseAimEnabled(false);
@@ -549,8 +547,14 @@ void CGameSession::OnLButtonDblClick (int x, int y, DWORD dwFlags)
 	switch (g_pTrans->m_State)
 		{
 		case CTranscendenceWnd::gsInGame:
-			//	Double-click counts as a single click
-			OnLButtonDown(x, y, dwFlags, NULL);
+			if (InMenu())
+				{
+				}
+			else
+				{
+				//	Double-click counts as a single click
+				OnLButtonDown(x, y, dwFlags, NULL);
+				}
 			break;
 
 		case CTranscendenceWnd::gsDocked:
@@ -574,10 +578,20 @@ void CGameSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture
 			if (pPlayer == NULL || !pPlayer->IsMouseAimEnabled())
 				break;
 
+			m_bIgnoreButtonUp = false;
+
 			//	If paused, then we're done
 
 			if (g_pTrans->m_bPaused)
 				ExecuteCommandEnd(pPlayer, CGameKeys::keyPause);
+
+			//	If in a menu, let the menu handle it.
+
+			else if (InMenu())
+				{
+				//	If a command caused us to switch out of menu mode, then we 
+				//	need to swallow the next mouse up.
+				}
 
 			//	Execute the command
 
@@ -610,8 +624,28 @@ void CGameSession::OnLButtonUp (int x, int y, DWORD dwFlags)
 			if (pPlayer == NULL || !pPlayer->IsMouseAimEnabled())
 				break;
 
-			CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(VK_LBUTTON);
-			ExecuteCommandEnd(pPlayer, iCommand);
+			//	If in a menu, let the menu handle it.
+
+			if (InMenu())
+				{
+				}
+
+			//	If we used to be in a menu, but we closed in a button down, then 
+			//	we need to ignore the next button up.
+
+			else if (m_bIgnoreButtonUp)
+				{
+				m_bIgnoreButtonUp = false;
+				}
+
+			//	Command.
+
+			else
+				{
+				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(VK_LBUTTON);
+				ExecuteCommandEnd(pPlayer, iCommand);
+				}
+
             break;
 			}
 
@@ -641,6 +675,12 @@ void CGameSession::OnMButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture
 			if (g_pTrans->m_bPaused)
 				ExecuteCommandEnd(pPlayer, CGameKeys::keyPause);
 
+			//	Ignore if in a menu
+
+			else if (InMenu())
+				{
+				}
+
 			//	Execute the command
 
 			else
@@ -668,8 +708,19 @@ void CGameSession::OnMButtonUp (int x, int y, DWORD dwFlags)
 			if (pPlayer == NULL || !pPlayer->IsMouseAimEnabled())
 				break;
 
-			CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(VK_MBUTTON);
-			ExecuteCommandEnd(pPlayer, iCommand);
+			//	Ignore if in a menu
+
+			if (InMenu())
+				{
+				}
+
+			//	Command
+
+			else
+				{
+				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(VK_MBUTTON);
+				ExecuteCommandEnd(pPlayer, iCommand);
+				}
             break;
 			}
 		}
@@ -677,7 +728,7 @@ void CGameSession::OnMButtonUp (int x, int y, DWORD dwFlags)
 
 void CGameSession::OnMouseMove (int x, int y, DWORD dwFlags) 
 	
-//	OnLButtonDblClick
+//	OnMouseMove
 //
 //	Handle mouse
 
@@ -690,7 +741,7 @@ void CGameSession::OnMouseMove (int x, int y, DWORD dwFlags)
 			if (pPlayer == NULL)
 				break;
 
-            if (g_pHI->HasMouseMoved(x, y))
+            if (!InMenu() && g_pHI->HasMouseMoved(x, y))
                 pPlayer->SetMouseAimEnabled(true);
             break;
 			}
@@ -758,6 +809,12 @@ void CGameSession::OnRButtonDown (int x, int y, DWORD dwFlags)
 			if (g_pTrans->m_bPaused)
 				ExecuteCommandEnd(pPlayer, CGameKeys::keyPause);
 
+			//	Ignore if we're in a menu
+
+			else if (InMenu())
+				{
+				}
+
 			//	Execute the command
 
 			else
@@ -785,8 +842,16 @@ void CGameSession::OnRButtonUp (int x, int y, DWORD dwFlags)
 			if (pPlayer == NULL || !pPlayer->IsMouseAimEnabled())
 				break;
 
-			CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(VK_RBUTTON);
-			ExecuteCommandEnd(pPlayer, iCommand);
+			//	If nore if in a menu
+
+			if (InMenu())
+				{
+				}
+			else
+				{
+				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(VK_RBUTTON);
+				ExecuteCommandEnd(pPlayer, iCommand);
+				}
             break;
 			}
 		}

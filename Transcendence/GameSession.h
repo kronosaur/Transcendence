@@ -72,9 +72,10 @@ class CGameSession : public IHISession
 		//	Helpers
 
         CGalacticMapSession::SOptions &GetGalacticMapSettings (void) { return m_GalacticMapSettings; }
+		inline bool InMenu (void) { return (m_CurrentMenu != menuNone); }
+        inline bool InSystemMap (void) const { return m_bShowingSystemMap; }
 		void PaintInfoText (CG32bitImage &Dest, const CString &sTitle, const TArray<CString> &Body, bool bAboveTargeting = true);
 		void PaintSoundtrackTitles (CG32bitImage &Dest);
-        inline bool ShowingSystemMap (void) const { return m_bShowingSystemMap; }
 
 	private:
 		void DismissMenu (void);
@@ -95,4 +96,5 @@ class CGameSession : public IHISession
 		CSpaceObject *m_pCurrentComms;		//	Object that we're currently communicating with
         CGalacticMapSession::SOptions m_GalacticMapSettings;
 		int m_iDamageFlash;					//	0 = no flash; odd = recover; even = flash;
+		bool m_bIgnoreButtonUp;				//	If we closed a menu on button down, ignore button up
 	};

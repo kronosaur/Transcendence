@@ -2625,7 +2625,7 @@ void CPlayerShipController::UpdateHelp (int iTick)
 	if (!m_pTrans->InGameState() 
 			|| DockingInProgress() 
 			|| m_pTrans->InAutopilot()
-			|| m_pTrans->InMenu()
+			|| m_pSession->InMenu()
 			|| m_pShip->IsDestroyed()
 			|| m_pShip->GetSystem() == NULL)
 		return;
@@ -2640,7 +2640,7 @@ void CPlayerShipController::UpdateHelp (int iTick)
 	if (m_UIMsgs.IsEnabled(uimsgDockHint))
 		{
 		if (!bEnemiesInRange
-				&& !m_pSession->ShowingSystemMap()
+				&& !m_pSession->InSystemMap()
 				&& m_pAutoDock)
 			{
 			m_pTrans->DisplayMessage(CONSTLIT("(press [D] to dock with stations and wrecks)"));
@@ -2660,7 +2660,7 @@ void CPlayerShipController::UpdateHelp (int iTick)
 		ItemList.SetFilter(UsableItems);
 		bool bHasUsableItems = ItemList.MoveCursorForward();
 
-		if (!m_pSession->ShowingSystemMap()
+		if (!m_pSession->InSystemMap()
 				&& bHasUsableItems
 				&& (m_iLastHelpUseTick == 0 || (iTick - m_iLastHelpUseTick) > 9000))
 			{
@@ -2701,7 +2701,7 @@ void CPlayerShipController::UpdateHelp (int iTick)
 	if (m_UIMsgs.IsEnabled(uimsgGateHint))
 		{
 		if (!bEnemiesInRange
-				&& !m_pSession->ShowingSystemMap()
+				&& !m_pSession->InSystemMap()
 				&& m_pShip->IsStargateInRange(MAX_STARGATE_HELP_RANGE))
 			{
 			m_pTrans->DisplayMessage(CONSTLIT("(press [G] over stargate to travel to next system)"));

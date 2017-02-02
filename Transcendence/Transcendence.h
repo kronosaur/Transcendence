@@ -933,7 +933,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		inline bool InAutopilot (void) { return m_bAutopilot; }
 		inline bool InDockState (void) { return m_State == gsDocked; }
 		inline bool InGameState (void) { return m_State == gsInGame; }
-		inline bool InMenu (void) { return (m_CurrentMenu != menuNone || m_CurrentPicker != pickNone); }
 		ALERROR InitDisplays (void);
 		void OnStargateSystemReady (void);
 		void PlayerEndGame (void);
@@ -1038,7 +1037,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 
 		void DoCommsMenu (int iIndex);
 		void DoCommsSquadronMenu (const CString &sName, MessageTypes iOrder, DWORD dwData2);
-		void DoGameMenuCommand (DWORD dwCmd);
+		bool DoGameMenuCommand (DWORD dwCmd);
 		void DoSelfDestructConfirmCommand (DWORD dwCmd);
 		void DoEnableDisableItemCommand (DWORD dwData);
 		void DoInvocation (CPower *pPower);
