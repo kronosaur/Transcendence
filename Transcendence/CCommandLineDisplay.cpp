@@ -234,7 +234,11 @@ void CCommandLineDisplay::AutoCompleteSearch(void)
 		m_sHint = NULL_STR;
 
 	if (!sHelp.IsBlank())
-		Output(sHelp, HINT_COLOR);
+		{
+		if (!m_sHint.IsBlank())
+			m_sHint.Append(CONSTLIT("\n"));
+		m_sHint.Append(sHelp);
+		}
 	}
 
 ALERROR CCommandLineDisplay::Init (CTranscendenceWnd *pTrans, const RECT &rcRect)
@@ -575,8 +579,12 @@ void CCommandLineDisplay::Update (void)
 
 	//	Figure out how many lines we need for the hint
 
-	int iHintCols = (m_sHint.IsBlank()) ? 0 : m_sHint.GetLength() + 1;
-	int iHintLines = (iHintCols / iCols) + ((iHintCols % iCols) ? 1 : 0);
+	TArray<CString> HintLines;
+	m_pFonts->Console.BreakText(m_sHint,
+			(RectWidth(m_rcRect) - (LEFT_SPACING + RIGHT_SPACING)),
+			&HintLines);
+
+	int iHintLines = HintLines.GetCount();
 
 	//	Figure out how many lines in the output
 
@@ -615,17 +623,12 @@ void CCommandLineDisplay::Update (void)
 
 	//	Paint the hint line
 
-	iRemainder = iHintCols % iCols;
-	iRemainderText = (iRemainder == 0 ? iCols : iRemainder) - 1;
-
-	iStart = m_sHint.GetLength() - iRemainderText;
-	while (y >= yMin && iStart >= 0)
+	while (y >= yMin && iHintLines > 0)
 		{
-		CString sLine(m_sHint.GetASCIIZPointer() + iStart, iRemainderText);
-		m_Buffer.DrawText(x, y, m_pFonts->Console, HINT_COLOR, sLine);
+		m_Buffer.DrawText(x, y, m_pFonts->Console, HINT_COLOR, HintLines[iHintLines - 1]);
+
 		y -= cyLine;
-		iStart -= iCols;
-		iRemainderText = iCols;
+		iHintLines--;
 		}
 
 	//	Paint each line of output
