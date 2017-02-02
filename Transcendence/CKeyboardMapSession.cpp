@@ -30,6 +30,10 @@
 #define PROP_TEXT								CONSTLIT("text")
 #define PROP_TEXT_ALIGN_HORZ					CONSTLIT("textAlignHorz")
 
+#ifdef DEBUG
+//#define DEBUG_KEYMAP
+#endif
+
 const int KEY_SPACING = 4;
 const int KEY_CORNER_RADIUS = 3;
 const int LABEL_SPACING = 4;
@@ -645,9 +649,10 @@ void CKeyboardMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 //  Handle keys
 
     {
-	int i;
-
 	//	Flash the key
+
+#ifdef DEBUG_KEYMAP
+	int i;
 
 	DWORD dwTVirtKey = CGameKeys::TranslateVirtKey(iVirtKey, dwKeyData);
 	for (i = 0; i < m_Keys.GetCount(); i++)
@@ -656,6 +661,7 @@ void CKeyboardMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 			m_iFlashKey = i;
 			m_iFlashUntil = m_iTick + 150;
 			}
+#endif
 
 	//	Command
 
