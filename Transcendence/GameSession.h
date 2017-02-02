@@ -10,18 +10,22 @@
 class CGameSession : public IHISession
 	{
 	public:
-		CGameSession (CHumanInterface &HI, 
-					  CGameSettings &Settings,
-                      CTranscendenceModel &Model,
-					  CSoundtrackManager &Soundtrack) : IHISession(HI),
-				m_Settings(Settings),
-                m_Model(Model),
-				m_Soundtrack(Soundtrack),
-                m_HUD(HI, Model),
-                m_bShowingSystemMap(false),
-                m_SystemMap(HI, Model, m_HUD),
-        		m_iDamageFlash(0)
-			{ }
+		enum EMenuTypes
+			{
+			menuNone,
+
+			menuComms,						//	Choose message to send
+			menuCommsSquadron,				//	Choose message for squadron
+			menuCommsTarget,				//	Choose target for comms
+			menuDebugConsole,				//	Debug console
+			menuEnableDevice,				//	Choose device to enable/disable
+			menuGame,						//	Game menu
+			menuInvoke,						//	Invoke power
+			menuSelfDestructConfirm,		//	Confirm self-destruct
+			menuUseItem,					//	Choose item to use
+			};
+
+		CGameSession (CHumanInterface &HI, CGameSettings &Settings, CTranscendenceModel &Model, CSoundtrackManager &Soundtrack);
 
 		void ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Keys iCommand);
 		void ExecuteCommandEnd (CPlayerShipController *pPlayer, CGameKeys::Keys iCommand);
@@ -33,6 +37,7 @@ class CGameSession : public IHISession
         inline void OnArmorRepaired (int iSegment) { m_HUD.Invalidate(hudArmor); }
         inline void OnArmorSelected (int iSelection) { m_HUD.SetArmorSelection(iSelection); }
 		inline void OnDamageFlash (void) { m_iDamageFlash = Min(2, m_iDamageFlash + 2); }
+		void OnObjDestroyed (const SDestroyCtx &Ctx);
         inline void OnPlayerChangedShips (CSpaceObject *pOldShip) { m_HUD.Init(m_rcScreen); g_pTrans->InitDisplays(); }
         void OnPlayerDestroyed (SDestroyCtx &Ctx, const CString &sEpitaph);
         void OnPlayerEnteredStargate (CTopologyNode *pNode);
@@ -72,7 +77,10 @@ class CGameSession : public IHISession
         inline bool ShowingSystemMap (void) const { return m_bShowingSystemMap; }
 
 	private:
+		void DismissMenu (void);
+		void HideMenu (void);
 		void PaintSRS (CG32bitImage &Screen);
+		bool ShowMenu (EMenuTypes iMenu);
 		void SyncMouseToPlayerShip (void);
 
 		CGameSettings &m_Settings;
@@ -83,6 +91,8 @@ class CGameSession : public IHISession
         CHeadsUpDisplay m_HUD;              //  Paint the HUD
         bool m_bShowingSystemMap;           //  If TRUE, show map
         CSystemMapDisplay m_SystemMap;      //  Helps to paint the system map
+		EMenuTypes m_CurrentMenu;			//	Current menu being displayed
+		CSpaceObject *m_pCurrentComms;		//	Object that we're currently communicating with
         CGalacticMapSession::SOptions m_GalacticMapSettings;
 		int m_iDamageFlash;					//	0 = no flash; odd = recover; even = flash;
 	};

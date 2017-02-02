@@ -1832,7 +1832,8 @@ void CPlayerShipController::OnObjDestroyed (const SDestroyCtx &Ctx)
 
 	//	Let the UI deal with destroyed objects
 
-	m_pTrans->OnObjDestroyed(Ctx);
+	if (m_pSession)
+		m_pSession->OnObjDestroyed(Ctx);
 	}
 
 void CPlayerShipController::OnProgramDamage (CSpaceObject *pHacker, const ProgramDesc &Program)

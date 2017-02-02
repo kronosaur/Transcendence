@@ -87,38 +87,47 @@ void CGameSession::OnChar (char chChar, DWORD dwKeyData)
                         case CTranscendenceWnd::menuGame:
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							g_pTrans->DoGameMenuCommand(dwData);
+							if (g_pTrans->m_CurrentMenu == CTranscendenceWnd::menuNone)
+								DismissMenu();
 							break;
 
                         case CTranscendenceWnd::menuSelfDestructConfirm:
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							g_pTrans->DoSelfDestructConfirmCommand(dwData);
+							DismissMenu();
 							break;
 
                         case CTranscendenceWnd::menuComms:
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							g_pTrans->DoCommsMenu(dwData);
+							DismissMenu();
+							m_pCurrentComms = NULL;
 							break;
 
                         case CTranscendenceWnd::menuCommsTarget:
 							{
-							CSpaceObject *pObj = (CSpaceObject *)dwData;
-							g_pTrans->HideCommsTargetMenu(pObj);
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-							if (pObj)
-								g_pTrans->ShowCommsMenu((CSpaceObject *)pObj);
+
+							m_pCurrentComms = (CSpaceObject *)dwData;
+							HideMenu();
+							if (m_pCurrentComms)
+								ShowMenu(menuComms);
 							else
-								g_pTrans->ShowCommsSquadronMenu();
+								ShowMenu(menuCommsSquadron);
 							break;
 							}
 
                         case CTranscendenceWnd::menuCommsSquadron:
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							g_pTrans->DoCommsSquadronMenu(g_pTrans->m_MenuData.GetItemLabel(iIndex), (MessageTypes)dwData, dwData2);
+							DismissMenu();
+							m_pCurrentComms = NULL;
 							break;
 
                         case CTranscendenceWnd::menuInvoke:
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							g_pTrans->DoInvocation((CPower *)dwData);
+							DismissMenu();
 							break;
 						}
 					}
@@ -150,12 +159,14 @@ void CGameSession::OnChar (char chChar, DWORD dwKeyData)
                         case CTranscendenceWnd::pickUsableItem:
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							g_pTrans->DoUseItemCommand(dwData);
+							DismissMenu();
 							break;
 
                         case CTranscendenceWnd::pickEnableDisableItem:
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							pPlayer->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
 							g_pTrans->DoEnableDisableItemCommand(dwData);
+							DismissMenu();
 							break;
 						}
 					}
@@ -233,7 +244,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 				if (iVirtKey == VK_ESCAPE)
 					{
 					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-					g_pTrans->m_bDebugConsole = false;
+					HideMenu();
 					}
 				else
 					g_pTrans->m_DebugConsole.OnKeyDown(iVirtKey, dwKeyData);
@@ -256,13 +267,8 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 				else
 					{
 					CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(dwTVirtKey);
-					if (iCommand == CGameKeys::keyShowConsole 
-							&& m_Settings.GetBoolean(CGameSettings::debugMode)
-							&& !g_pUniverse->IsRegistered())
-						{
-						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-						g_pTrans->m_bDebugConsole = !g_pTrans->m_bDebugConsole;
-						}
+					if (iCommand == CGameKeys::keyShowConsole)
+						ExecuteCommand(pPlayer, iCommand);
 					}
 				}
 
@@ -273,8 +279,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 				if (iVirtKey == VK_ESCAPE)
 					{
 					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-					g_pTrans->HideCommsTargetMenu();
-					g_pTrans->m_CurrentMenu = CTranscendenceWnd::menuNone;
+					HideMenu();
 					}
 				else
 					{
@@ -283,8 +288,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 							|| (iCommand == CGameKeys::keyCommunications && g_pTrans->m_CurrentMenu == CTranscendenceWnd::menuCommsTarget))
 						{
 						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-						g_pTrans->HideCommsTargetMenu();
-						g_pTrans->m_CurrentMenu = CTranscendenceWnd::menuNone;
+						HideMenu();
 						}
 					}
 				}
@@ -300,12 +304,14 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
                         case CTranscendenceWnd::pickUsableItem:
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							g_pTrans->DoUseItemCommand(g_pTrans->m_MenuData.GetItemData(g_pTrans->m_PickerDisplay.GetSelection()));
+							DismissMenu();
 							break;
 
                         case CTranscendenceWnd::pickEnableDisableItem:
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							pPlayer->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
 							g_pTrans->DoEnableDisableItemCommand(g_pTrans->m_MenuData.GetItemData(g_pTrans->m_PickerDisplay.GetSelection()));
+							DismissMenu();
 							break;
 						}
 					}
@@ -324,7 +330,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 				else if (iVirtKey == VK_ESCAPE)
 					{
 					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-					g_pTrans->m_CurrentPicker = CTranscendenceWnd::pickNone;
+					HideMenu();
 					}
 
 				else
@@ -334,7 +340,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 							|| (iCommand == CGameKeys::keyUseItem && g_pTrans->m_CurrentPicker == CTranscendenceWnd::pickUsableItem))
 						{
 						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-						g_pTrans->m_CurrentPicker = CTranscendenceWnd::pickNone;
+						HideMenu();
 						}
 					}
 				}
@@ -356,7 +362,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 				else
 					{
 					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-					g_pTrans->ShowGameMenu();
+					ShowMenu(menuGame);
 					}
 				}
 
@@ -416,12 +422,16 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
 		case CTranscendenceWnd::gsDocked:
 			{
+            CPlayerShipController *pPlayer = m_Model.GetPlayer();
+			if (pPlayer == NULL)
+				return;
+
 			//	Deal with console
 
 			if (g_pTrans->m_bDebugConsole)
 				{
 				if (iVirtKey == VK_ESCAPE)
-					g_pTrans->m_bDebugConsole = false;
+					HideMenu();
 				else
 					g_pTrans->m_DebugConsole.OnKeyDown(iVirtKey, dwKeyData);
 				}
@@ -434,12 +444,8 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 				switch (iCommand)
 					{
 					case CGameKeys::keyShowConsole:
-						{
-						if (m_Settings.GetBoolean(CGameSettings::debugMode)
-								&& !g_pUniverse->IsRegistered())
-							g_pTrans->m_bDebugConsole = !g_pTrans->m_bDebugConsole;
+						ExecuteCommand(pPlayer, iCommand);
 						break;
-						}
 
 					default:
 						switch (iVirtKey)

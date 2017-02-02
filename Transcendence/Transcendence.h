@@ -935,7 +935,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		inline bool InGameState (void) { return m_State == gsInGame; }
 		inline bool InMenu (void) { return (m_CurrentMenu != menuNone || m_CurrentPicker != pickNone); }
 		ALERROR InitDisplays (void);
-		void OnObjDestroyed (const SDestroyCtx &Ctx);
 		void OnStargateSystemReady (void);
 		void PlayerEndGame (void);
 		void PlayerEnteredGate (CSystem *pSystem, 

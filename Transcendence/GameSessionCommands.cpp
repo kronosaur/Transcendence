@@ -33,7 +33,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 				{
 				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 				g_pTrans->Autopilot(false);
-				g_pTrans->ShowEnableDisablePicker();
+				ShowMenu(menuEnableDevice);
 				}
 			break;
 
@@ -43,8 +43,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 				{
 				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 				g_pTrans->Autopilot(false);
-				pPlayer->SetUIMessageEnabled(uimsgCommsHint, false);
-				g_pTrans->ShowCommsTargetMenu();
+				ShowMenu(menuCommsTarget);
 				}
 			break;
 
@@ -87,7 +86,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 				{
 				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 				g_pTrans->Autopilot(false);
-				g_pTrans->ShowInvokeMenu();
+				ShowMenu(menuInvoke);
 				}
 			break;
 
@@ -127,7 +126,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 				{
 				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 				g_pTrans->Autopilot(false);
-				g_pTrans->ShowCommsSquadronMenu();
+				ShowMenu(menuCommsSquadron);
 				}
 			break;
 
@@ -160,7 +159,7 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 				{
 				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 				g_pTrans->Autopilot(false);
-				g_pTrans->ShowUsePicker();
+				ShowMenu(menuUseItem);
 				}
 			break;
 
@@ -277,7 +276,10 @@ void CGameSession::ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Ke
 					&& !g_pUniverse->IsRegistered())
 				{
 				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				g_pTrans->m_bDebugConsole = !g_pTrans->m_bDebugConsole;
+				if (m_CurrentMenu == menuDebugConsole)
+					HideMenu();
+				else
+					ShowMenu(menuDebugConsole);
 				}
 			break;
 			}

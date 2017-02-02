@@ -6,6 +6,90 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
+CGameSession::CGameSession (CHumanInterface &HI, 
+							CGameSettings &Settings,
+							CTranscendenceModel &Model,
+							CSoundtrackManager &Soundtrack) : IHISession(HI),
+		m_Settings(Settings),
+        m_Model(Model),
+		m_Soundtrack(Soundtrack),
+        m_HUD(HI, Model),
+        m_bShowingSystemMap(false),
+        m_SystemMap(HI, Model, m_HUD),
+		m_CurrentMenu(menuNone),
+		m_pCurrentComms(NULL),
+        m_iDamageFlash(0)
+
+//	CGameSession constructor
+
+	{
+	}
+
+void CGameSession::DismissMenu (void)
+
+//	DismissMenu
+//
+//	The menu has already been hidden (in g_pTrans) but we need to dismiss it
+//	for our own context.
+
+	{
+	m_CurrentMenu = menuNone;
+	}
+
+void CGameSession::HideMenu (void)
+
+//	HideMenu
+//
+//	Hides the current menu.
+
+	{
+	switch (m_CurrentMenu)
+		{
+		case menuNone:
+			return;
+
+		case menuComms:
+			g_pTrans->HideCommsTargetMenu(NULL);
+			g_pTrans->m_CurrentMenu = CTranscendenceWnd::menuNone;
+			break;
+
+		case menuCommsSquadron:
+			g_pTrans->m_CurrentMenu = CTranscendenceWnd::menuNone;
+			break;
+
+		case menuCommsTarget:
+			g_pTrans->HideCommsTargetMenu(m_pCurrentComms);
+			g_pTrans->m_CurrentMenu = CTranscendenceWnd::menuNone;
+			break;
+
+		case menuDebugConsole:
+			g_pTrans->m_bDebugConsole = false;
+			break;
+
+		case menuEnableDevice:
+			g_pTrans->m_CurrentPicker = CTranscendenceWnd::pickNone;
+			break;
+
+		case menuGame:
+			g_pTrans->m_CurrentMenu = CTranscendenceWnd::menuNone;
+			break;
+
+		case menuInvoke:
+			g_pTrans->m_CurrentMenu = CTranscendenceWnd::menuNone;
+			break;
+
+		case menuSelfDestructConfirm:
+			g_pTrans->m_CurrentMenu = CTranscendenceWnd::menuNone;
+			break;
+
+		case menuUseItem:
+			g_pTrans->m_CurrentPicker = CTranscendenceWnd::pickNone;
+			break;
+		}
+
+	DismissMenu();
+	}
+
 void CGameSession::OnCleanUp (void)
 
 //  OnCleanUp
@@ -45,6 +129,28 @@ ALERROR CGameSession::OnInit (CString *retsError)
     return NOERROR;
     }
 
+void CGameSession::OnObjDestroyed (const SDestroyCtx &Ctx)
+
+//	OnObjDestroyed
+//
+//	An object has been destroyed
+
+	{
+	//	If we're showing the comms menu, reload the list (in case
+	//	any ships got destroyed)
+
+	if (m_CurrentMenu == menuCommsTarget)
+		{
+		HideMenu();
+		ShowMenu(menuCommsTarget);
+		}
+	else if (m_CurrentMenu == menuComms && m_pCurrentComms == Ctx.pObj)
+		{
+		HideMenu();
+		m_pCurrentComms = NULL;
+		}
+	}
+
 void CGameSession::OnPlayerDestroyed (SDestroyCtx &Ctx, const CString &sEpitaph)
 
 //  OnPlayerDestroyed
@@ -56,9 +162,7 @@ void CGameSession::OnPlayerDestroyed (SDestroyCtx &Ctx, const CString &sEpitaph)
 
 	//	Clean up
 
-	g_pTrans->HideCommsTargetMenu();
-	g_pTrans->m_CurrentPicker = CTranscendenceWnd::pickNone;
-	g_pTrans->m_CurrentMenu = CTranscendenceWnd::menuNone;
+	HideMenu();
 	g_pTrans->m_bAutopilot = false;
 	m_bShowingSystemMap = false;
 	if (g_pTrans->m_State == CTranscendenceWnd::gsDocked)
@@ -222,6 +326,82 @@ void CGameSession::PaintSoundtrackTitles (CG32bitImage &Dest)
 	//	Paint
 
 	PaintInfoText(Dest, pTrack->GetTitle(), Desc, true);
+	}
+
+bool CGameSession::ShowMenu (EMenuTypes iMenu)
+
+//	ShowMenu
+//
+//	Shows the given menu.
+
+	{
+	CPlayerShipController *pPlayer = m_Model.GetPlayer();
+	if (pPlayer == NULL)
+		return false;
+
+	//	Can't do anything if we're currently showing a menu. Need to dismiss
+	//	first.
+
+	if (m_CurrentMenu != menuNone)
+		return false;
+
+	//	Bring up the menu
+
+	switch (iMenu)
+		{
+		case menuComms:
+			if (m_pCurrentComms == NULL)
+				return false;
+
+			g_pTrans->ShowCommsMenu(m_pCurrentComms);
+			break;
+
+		case menuCommsSquadron:
+			g_pTrans->ShowCommsSquadronMenu();
+			if (g_pTrans->m_CurrentMenu == CTranscendenceWnd::menuNone)
+				return false;
+			break;
+
+		case menuCommsTarget:
+			pPlayer->SetUIMessageEnabled(uimsgCommsHint, false);
+			g_pTrans->ShowCommsTargetMenu();
+			if (g_pTrans->m_CurrentMenu == CTranscendenceWnd::menuNone)
+				return false;
+			break;
+
+		case menuDebugConsole:
+			g_pTrans->m_bDebugConsole = true;
+			break;
+
+		case menuEnableDevice:
+			g_pTrans->ShowEnableDisablePicker();
+			if (g_pTrans->m_CurrentPicker == CTranscendenceWnd::pickNone)
+				return false;
+			break;
+
+		case menuGame:
+			g_pTrans->ShowGameMenu();
+			break;
+
+		case menuInvoke:
+			g_pTrans->ShowInvokeMenu();
+			if (g_pTrans->m_CurrentMenu == CTranscendenceWnd::menuNone)
+				return false;
+			break;
+
+		case menuUseItem:
+			g_pTrans->ShowUsePicker();
+			if (g_pTrans->m_CurrentPicker == CTranscendenceWnd::pickNone)
+				return false;
+			break;
+
+		default:
+			return false;
+		}
+
+	m_CurrentMenu = iMenu;
+
+	return true;
 	}
 
 void CGameSession::ShowSystemMap (bool bShow)

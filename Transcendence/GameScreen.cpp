@@ -464,28 +464,6 @@ ALERROR CTranscendenceWnd::InitDisplays (void)
 	return NOERROR;
 	}
 
-void CTranscendenceWnd::OnObjDestroyed (const SDestroyCtx &Ctx)
-
-//	OnObjDestroyed
-//
-//	Object destroyed
-
-	{
-	//	If we're showing the comms menu, reload the list (in case
-	//	any ships got destroyed)
-
-	if (m_CurrentMenu == menuCommsTarget)
-		ShowCommsTargetMenu();
-	else if (m_CurrentMenu == menuComms)
-		{
-		if (Ctx.pObj == m_pMenuObj)
-			{
-			m_CurrentMenu = menuNone;
-			m_pMenuObj = NULL;
-			}
-		}
-	}
-
 void CTranscendenceWnd::PaintLRS (void)
 
 //	PaintLRS
