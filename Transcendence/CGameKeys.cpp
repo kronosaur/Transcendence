@@ -47,6 +47,9 @@ const CGameKeys::SKeyMapEntry CGameKeys::DEFAULT_MAP[] =
 		//	'Y' unused
 		//	'Z' unused
 
+		{	VK_LBUTTON,			CGameKeys::keyFireWeapon },
+		{	VK_RBUTTON,			CGameKeys::keyThrustForward },
+
 		{	VK_CONTROL,			CGameKeys::keyFireWeapon },
 		{	VK_DOWN,			CGameKeys::keyThrustForward },
 		{	VK_LEFT,			CGameKeys::keyRotateLeft },
@@ -72,7 +75,8 @@ struct SVirtKeyData
 	{
     enum EFlags
         {
-        FLAG_NON_STANDARD =        0x00000001,
+        FLAG_NON_STANDARD =			0x00000001,	//	Not available in keyboard UI
+		FLAG_SPECIAL_KEY =			0x00000002,	//	Custom VK code
         };
 
 	char *pszName;
@@ -84,10 +88,10 @@ SVirtKeyData g_VirtKeyData[] =
 	{
 		//	0x00 - 0x0F
 		{	NULL,	NULL,   0	},
+		{	"LButton",	NULL,   0	},
+		{	"RButton",	NULL,   0	},
 		{	NULL,	NULL,   0	},
-		{	NULL,	NULL,   0	},
-		{	NULL,	NULL,   0	},
-		{	NULL,	NULL,   0	},
+		{	"MButton",	NULL,   0	},
 		{	NULL,	NULL,   0	},
 		{	NULL,	NULL,   0	},
 		{	NULL,	NULL,   0	},
@@ -197,23 +201,23 @@ SVirtKeyData g_VirtKeyData[] =
 		{	"Sleep",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
 
 		//	0x60 - 0x6F
-		{	"Numpad0",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
-		{	"Numpad1",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
-		{	"Numpad2",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
-		{	"Numpad3",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
-		{	"Numpad4",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
-		{	"Numpad5",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
-		{	"Numpad6",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
-		{	"Numpad7",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
+		{	"Numpad0",	NULL,	0	},
+		{	"Numpad1",	NULL,   0	},
+		{	"Numpad2",	NULL,	0	},
+		{	"Numpad3",	NULL,	0	},
+		{	"Numpad4",	NULL,	0	},
+		{	"Numpad5",	NULL,	0	},
+		{	"Numpad6",	NULL,	0	},
+		{	"Numpad7",	NULL,	0	},
 
-		{	"Numpad8",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
-		{	"Numpad9",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
-		{	"NumpadStar",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
-		{	"NumpadPlus",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
+		{	"Numpad8",	NULL,	0	},
+		{	"Numpad9",	NULL,	0	},
+		{	"NumpadStar",	NULL,	0	},
+		{	"NumpadPlus",	NULL,	0	},
 		{	"NumpadSeparator",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
-		{	"NumpadMinus",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
-		{	"NumpadPeriod",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
-		{	"NumpadSlash",	NULL,   SVirtKeyData::FLAG_NON_STANDARD	},
+		{	"NumpadMinus",	NULL,	0	},
+		{	"NumpadPeriod",	NULL,	0	},
+		{	"NumpadSlash",	NULL,	0	},
 
 		//	0x70 - 0x7F
 		{	"F1",			"F1",   0	},
@@ -349,7 +353,10 @@ SVirtKeyData g_VirtKeyData[] =
 		{	NULL,	NULL,   0	},
 
 		//	0xE0 - 0xEF
-		{	NULL,	NULL,   0	},
+		//	NOTE: These are normally reserved for OEMs, so we use them fo special
+		//	keys which don't have their own VK code (such as Numpad Enter).
+
+		{	"NumpadEnter",	NULL,   SVirtKeyData::FLAG_SPECIAL_KEY	},
 		{	NULL,	NULL,   0	},
 		{	NULL,	NULL,   0	},
 		{	NULL,	NULL,   0	},
@@ -516,6 +523,8 @@ void CGameKeys::GetCommands (TArray<SCommandKeyDesc> &Result) const
     {
     int i;
 
+	TSortMap<int, int> CmdToIndex;
+
     Result.DeleteAll();
     Result.GrowToFit(keyCount);
 
@@ -539,11 +548,30 @@ void CGameKeys::GetCommands (TArray<SCommandKeyDesc> &Result) const
         else
             pNewCmd->sCmdLabel = CONSTLIT("(unknown)");
 
-        //  See what key we're bound to
+		CmdToIndex.SetAt(i, Result.GetCount() - 1);
+		}
 
-        pNewCmd->dwVirtKey = GetKey(pNewCmd->iCmd);
-        pNewCmd->sKeyID = GetKeyID(pNewCmd->dwVirtKey);
-        }
+	//	Now add all bindings
+
+	for (i = 0; i < 256; i++)
+		{
+		if (m_iMap[i] != keyNone)
+			{
+			//	Find the command
+
+			int *pIndex = CmdToIndex.GetAt(m_iMap[i]);
+			if (pIndex == NULL)
+				continue;
+
+			SCommandKeyDesc &Cmd = Result[*pIndex];
+
+			//	Add the key
+
+			SBindingDesc *pBinding = Cmd.Keys.Insert();
+			pBinding->dwVirtKey = (DWORD)i;
+			pBinding->sKeyID = CString(g_VirtKeyData[i].pszName, -1, true);
+			}
+		}
     }
 
 CGameKeys::Keys CGameKeys::GetGameCommand (const CString &sCmd) const
@@ -865,16 +893,29 @@ void CGameKeys::SetGameKey (const CString &sKeyID, Keys iCommand)
 //  Binds the command to the given key (in the custom layout only).
 
     {
+	int i;
+
     DWORD dwVirtKey = GetKey(sKeyID);
     if (dwVirtKey == INVALID_VIRT_KEY)
         return;
 
+	//	If we're trying to change the default layout, switch over to the custom
+	//	layout.
+
+	if (m_iLayout == layoutDefault)
+		{
+        for (i = 0; i < 256; i++)
+            m_CustomMap[i] = m_iMap[i];
+
+		m_iLayout = layoutCustom;
+		}
+
+	//	Update the key
+
     m_CustomMap[(dwVirtKey < 256 ? dwVirtKey : 0)] = iCommand;
+    m_iMap[(dwVirtKey < 256 ? dwVirtKey : 0)] = iCommand;
 
-    //  If the custom map is currently selected, then change it.
-
-    if (m_iLayout == layoutCustom)
-        m_iMap[(dwVirtKey < 256 ? dwVirtKey : 0)] = iCommand;
+	//	Need to save out
 
     m_bModified = true;
     }
@@ -964,4 +1005,60 @@ ALERROR CGameKeys::WriteAsXML (IWriteStream *pOutput)
 		return error;
 
 	return NOERROR;
+	}
+
+DWORD CGameKeys::TranslateVirtKey (DWORD dwVirtKey, DWORD dwKeyData)
+
+//	TranslateVirtKey
+//
+//	We need to translate some keys
+
+	{
+	const DWORD EXTENDED_BIT = (1 << 24);
+	bool bExtended = ((dwKeyData & EXTENDED_BIT) == EXTENDED_BIT);
+
+	switch (dwVirtKey)
+		{
+		//	When NumLock is off, we need to translate these to their numpad
+		//	equivalents.
+
+		case VK_INSERT:
+			return (!bExtended ? VK_NUMPAD0 : dwVirtKey);
+
+		case VK_END:
+			return (!bExtended ? VK_NUMPAD1 : dwVirtKey);
+
+		case VK_DOWN:
+			return (!bExtended ? VK_NUMPAD2 : dwVirtKey);
+
+		case VK_NEXT:
+			return (!bExtended ? VK_NUMPAD3 : dwVirtKey);
+
+		case VK_LEFT:
+			return (!bExtended ? VK_NUMPAD4 : dwVirtKey);
+
+		case VK_CLEAR:
+			return (!uiIsNumLockOn() ? VK_NUMPAD5 : dwVirtKey);
+
+		case VK_RIGHT:
+			return (!bExtended ? VK_NUMPAD6 : dwVirtKey);
+
+		case VK_HOME:
+			return (!bExtended ? VK_NUMPAD7 : dwVirtKey);
+
+		case VK_UP:
+			return (!bExtended ? VK_NUMPAD8 : dwVirtKey);
+
+		case VK_PRIOR:
+			return (!bExtended ? VK_NUMPAD9 : dwVirtKey);
+
+		case VK_RETURN:
+			return (bExtended ? VK_NUMPAD_ENTER : dwVirtKey);
+
+		case VK_DELETE:
+			return (!bExtended ? VK_DECIMAL : dwVirtKey);
+
+		default:
+			return dwVirtKey;
+		}
 	}

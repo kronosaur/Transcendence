@@ -115,13 +115,24 @@ class CGameKeys
 			keyCount =					82,
 			};
 
+		enum ESpecialVirtKeys
+			{
+			VK_NUMPAD_ENTER =			0xE0,
+			};
+
+		struct SBindingDesc
+			{
+            CString sKeyID;
+            DWORD dwVirtKey;
+			};
+
         struct SCommandKeyDesc
             {
             CGameKeys::Keys iCmd;
-            CString sKeyID;
-            DWORD dwVirtKey;
             CString sCmdID;
             CString sCmdLabel;
+
+			TArray<SBindingDesc> Keys;
             };
 
 		CGameKeys (void);
@@ -145,6 +156,7 @@ class CGameKeys
 		static DWORD GetKey (const CString &sKey);
 		static CString GetKeyID (DWORD dwVirtKey);
 		static CString GetKeyLabel (DWORD dwVirtKey);
+		static DWORD TranslateVirtKey (DWORD dwVirtKey, DWORD dwKeyData);
 
 	private:
         struct SKeyMapEntry

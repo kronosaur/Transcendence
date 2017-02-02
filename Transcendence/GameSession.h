@@ -123,6 +123,8 @@ class CGameSession : public IHISession
 		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) override;
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override;
 		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) override;
+		virtual void OnMButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override;
+		virtual void OnMButtonUp (int x, int y, DWORD dwFlags) override;
 		virtual void OnMouseMove (int x, int y, DWORD dwFlags) override;
         virtual void OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags) override;
 		virtual void OnMove (int x, int y) override { g_pTrans->WMMove(x, y); }

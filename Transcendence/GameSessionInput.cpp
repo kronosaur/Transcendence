@@ -214,6 +214,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
     {
 	bool bKeyRepeat = uiIsKeyRepeat(dwKeyData);
+	DWORD dwTVirtKey = CGameKeys::TranslateVirtKey(iVirtKey, dwKeyData);
 
 	switch (g_pTrans->m_State)
 		{
@@ -254,7 +255,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
 				else
 					{
-					CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(iVirtKey);
+					CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(dwTVirtKey);
 					if (iCommand == CGameKeys::keyShowConsole 
 							&& m_Settings.GetBoolean(CGameSettings::debugMode)
 							&& !g_pUniverse->IsRegistered())
@@ -277,7 +278,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 					}
 				else
 					{
-					CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(iVirtKey);
+					CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(dwTVirtKey);
 					if ((iCommand == CGameKeys::keyInvokePower && g_pTrans->m_CurrentMenu == CTranscendenceWnd::menuInvoke)
 							|| (iCommand == CGameKeys::keyCommunications && g_pTrans->m_CurrentMenu == CTranscendenceWnd::menuCommsTarget))
 						{
@@ -328,7 +329,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
 				else
 					{
-					CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(iVirtKey);
+					CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(dwTVirtKey);
 					if ((iCommand == CGameKeys::keyEnableDevice && g_pTrans->m_CurrentPicker == CTranscendenceWnd::pickEnableDisableItem)
 							|| (iCommand == CGameKeys::keyUseItem && g_pTrans->m_CurrentPicker == CTranscendenceWnd::pickUsableItem))
 						{
@@ -371,7 +372,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 				{
 				//	See if this is a command
 
-				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(iVirtKey);
+				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(dwTVirtKey);
 				if (iCommand == CGameKeys::keyNone)
 					return;
 
@@ -429,7 +430,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
 			else
 				{
-				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(iVirtKey);
+				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(dwTVirtKey);
 				switch (iCommand)
 					{
 					case CGameKeys::keyShowConsole:
@@ -476,6 +477,8 @@ void CGameSession::OnKeyUp (int iVirtKey, DWORD dwKeyData)
 //  Key up
 
     {
+	DWORD dwTVirtKey = CGameKeys::TranslateVirtKey(iVirtKey, dwKeyData);
+
 	switch (g_pTrans->m_State)
 		{
         case CTranscendenceWnd::gsInGame:
@@ -499,7 +502,7 @@ void CGameSession::OnKeyUp (int iVirtKey, DWORD dwKeyData)
 
 			else
 				{
-				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(iVirtKey);
+				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(dwTVirtKey);
 				if (iCommand == CGameKeys::keyNone)
 					return;
 
@@ -573,7 +576,10 @@ void CGameSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture
 			//	Execute the command
 
 			else
-				ExecuteCommand(pPlayer, CGameKeys::keyFireWeapon);
+				{
+				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(VK_LBUTTON);
+				ExecuteCommand(pPlayer, iCommand);
+				}
             break;
 			}
 
@@ -598,13 +604,68 @@ void CGameSession::OnLButtonUp (int x, int y, DWORD dwFlags)
 			if (pPlayer == NULL || !pPlayer->IsMouseAimEnabled())
 				break;
 
-			ExecuteCommandEnd(pPlayer, CGameKeys::keyFireWeapon);
+			CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(VK_LBUTTON);
+			ExecuteCommandEnd(pPlayer, iCommand);
             break;
 			}
 
 		case CTranscendenceWnd::gsDocked:
 			g_pTrans->m_pCurrentScreen->LButtonUp(x, y);
 			break;
+		}
+	}
+
+void CGameSession::OnMButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture)
+
+//	OnMButtonDown
+//
+//	Handle mouse
+
+	{
+	switch (g_pTrans->m_State)
+		{
+		case CTranscendenceWnd::gsInGame:
+			{
+            CPlayerShipController *pPlayer = m_Model.GetPlayer();
+			if (pPlayer == NULL || !pPlayer->IsMouseAimEnabled())
+				break;
+
+			//	If paused, then we're done
+
+			if (g_pTrans->m_bPaused)
+				ExecuteCommandEnd(pPlayer, CGameKeys::keyPause);
+
+			//	Execute the command
+
+			else
+				{
+				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(VK_MBUTTON);
+				ExecuteCommand(pPlayer, iCommand);
+				}
+            break;
+			}
+		}
+	}
+
+void CGameSession::OnMButtonUp (int x, int y, DWORD dwFlags) 
+
+//	OnMButtonUp
+//
+//	Handle mouse
+
+	{
+	switch (g_pTrans->m_State)
+		{
+		case CTranscendenceWnd::gsInGame:
+			{
+            CPlayerShipController *pPlayer = m_Model.GetPlayer();
+			if (pPlayer == NULL || !pPlayer->IsMouseAimEnabled())
+				break;
+
+			CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(VK_MBUTTON);
+			ExecuteCommandEnd(pPlayer, iCommand);
+            break;
+			}
 		}
 	}
 
@@ -694,7 +755,10 @@ void CGameSession::OnRButtonDown (int x, int y, DWORD dwFlags)
 			//	Execute the command
 
 			else
-				ExecuteCommand(pPlayer, CGameKeys::keyThrustForward);
+				{
+				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(VK_RBUTTON);
+				ExecuteCommand(pPlayer, iCommand);
+				}
             break;
 			}
 		}
@@ -715,7 +779,8 @@ void CGameSession::OnRButtonUp (int x, int y, DWORD dwFlags)
 			if (pPlayer == NULL || !pPlayer->IsMouseAimEnabled())
 				break;
 
-			ExecuteCommandEnd(pPlayer, CGameKeys::keyThrustForward);
+			CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(VK_RBUTTON);
+			ExecuteCommandEnd(pPlayer, iCommand);
             break;
 			}
 		}

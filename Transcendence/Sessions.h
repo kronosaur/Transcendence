@@ -187,6 +187,7 @@ class CKeyboardMapSession : public IHISession
         virtual void OnMouseMove (int x, int y, DWORD dwFlags) override;
 		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
 		virtual void OnReportHardCrash (CString *retsMessage) override;
+		virtual void OnUpdate (bool bTopMost) override;
 
 	private:
         enum EKeySymbols
@@ -204,20 +205,44 @@ class CKeyboardMapSession : public IHISession
             FLAG_RESERVED = 0x00000001,
             };
 
+		enum EDeviceTypes
+			{
+			deviceNone,
+
+			deviceKeyboard,
+			deviceMouse,
+			deviceNumpad,
+			};
+
         struct SKeyData
             {
             char *pszKeyID;
             int xCol;                       //  A normal key takes up two columns (col 0 = left-most)
             int yRow;                       //  A normal key takes one row (row 0 = top row)
             int cxWidth;                    //  Width of the key in columns
+			int cyHeight;					//	Height in rows
             char *pszLabel;                 //  Label in keyboard
             EKeySymbols iSymbol;            //  Symbol for label label
             DWORD dwFlags;
             };
 
+		struct SDeviceData
+			{
+			EDeviceTypes iDevice;			//	Device type
+			char *pszLabel;					//	Label for the device (e.g., keyboard, mouse, controller)
+			const SKeyData *pKeys;			//	Keys available to map
+			int iKeyCount;					//	Number of keys in map
+
+			int iCols;						//	Columns
+			int iRows;						//	Rows
+			int xOffset;
+			int yOffset;
+			};
+
         struct SKeyDesc
             {
             CString sKeyID;                 //  ID of key in CGameKeys
+			DWORD dwVirtKey;				//	Virtual key
             RECT rcRect;                    //  Rect of key to draw
             CString sLabel;                 //  Key label
             EKeySymbols iSymbol;            //  Symbols for label
@@ -227,7 +252,15 @@ class CKeyboardMapSession : public IHISession
 
         struct SCommandDesc
             {
+			SCommandDesc (void) :
+					iCmd(CGameKeys::keyNone),
+					iKeyBinding(-1),
+					cxLabel(0),
+					rcRect{ 0, 0, 0, 0 }
+				{ }
+
             CGameKeys::Keys iCmd;           //  Command
+			CString sKeyBinding;			//	ID of key we're bound to
             int iKeyBinding;                //  Index into m_Keys (-1 = none)
             CString sLabel;                 //  Command label
             int cxLabel;                    //  Width of command label
@@ -244,18 +277,24 @@ class CKeyboardMapSession : public IHISession
             };
 
         void ArrangeCommandLabels (const RECT &rcRect, const RECT &rcKeyboard);
+        void CmdClearBinding (void);
         void CmdNextLayout (void);
         void CmdPrevLayout (void);
-        void CreateLayoutControls (void);
+        void CmdResetDefault (void);
+        void CreateDeviceSelector (void);
+		void InitBindings (void);
+		void InitCommands (void);
+		void InitDevice (const SDeviceData &Device);
         bool HitTest (int x, int y, STargetCtx &Ctx);
-        void LoadCommandMapping (void);
-        void PaintKey (CG32bitImage &Screen, const SKeyDesc &Key, CG32bitPixel rgbBack, CG32bitPixel rgbText);
-        void UpdateLayoutControls (void);
+        void PaintKey (CG32bitImage &Screen, const SKeyDesc &Key, CG32bitPixel rgbBack, CG32bitPixel rgbText, bool bFlash);
+		void UpdateDeviceSelector (void);
+		void UpdateMenu (void);
 
         CCloudService &m_Service;
 		CGameSettings &m_Settings;
         TArray<SKeyDesc> m_Keys;
         TArray<SCommandDesc> m_Commands;
+		RECT m_rcRect;
 
         //  Keyboard metrics (valid after OnInit)
 
@@ -268,12 +307,23 @@ class CKeyboardMapSession : public IHISession
         TSortMap<CString, int> m_KeyIDToIndex;
 
         bool m_bEditable;                   //  TRUE if we can edit this layout
+		int m_iDevice;						//	Selected device
         int m_iHoverKey;                    //  Hovering over this key (edit mode only)
         int m_iHoverCommand;                //  Hovering over this command
         int m_iSelectedCommand;             //  Command selected
+		int m_iTick;
+		int m_iFlashKey;					//	Index of key (in m_Keys) to flash
+		int m_iFlashUntil;					//	Stop flashing on this tick
+
+		static const SDeviceData DEVICE_DATA[];
+        static const int DEVICE_DATA_COUNT;
 
         static const SKeyData KEYBOARD_DATA[];
         static const int KEYBOARD_DATA_COUNT;
+        static const SKeyData NUMPAD_DATA[];
+        static const int NUMPAD_DATA_COUNT;
+        static const SKeyData MOUSE_DATA[];
+        static const int MOUSE_DATA_COUNT;
     };
 
 class CLoadingSession : public IHISession

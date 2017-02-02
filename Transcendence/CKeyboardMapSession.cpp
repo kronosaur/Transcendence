@@ -13,6 +13,9 @@
 #define CMD_OK_SESSION							CONSTLIT("cmdOKSession")
 #define CMD_PREV_LAYOUT 						CONSTLIT("cmdPrevLayout")
 
+#define CMD_RESET_DEFAULT 						CONSTLIT("cmdResetDefault")
+#define CMD_CLEAR_BINDING 						CONSTLIT("cmdClearBinding")
+
 #define ID_CTRL_TITLE							CONSTLIT("ctrlTitle")
 #define ID_LAYOUT_LABEL							CONSTLIT("idLayoutLabel")
 #define ID_SETTINGS								CONSTLIT("idSettings")
@@ -36,9 +39,6 @@ const int LINE_WIDTH = 2;
 
 const int KEYBOARD_HEIGHT = 220;
 const int KEYBOARD_ROWS = 6;
-const int KEYBOARD_COLS = 37;
-const int KEYBOARD_OFFSET_X = 50;
-const int KEYBOARD_OFFSET_Y = 60;
 
 const int MAJOR_PADDING_TOP =					20;
 const int SMALL_BUTTON_HEIGHT =					48;
@@ -46,112 +46,46 @@ const int SMALL_BUTTON_WIDTH =					48;
 const int SMALL_SPACING_HORZ =					8;
 const int SMALL_SPACING_VERT =					8;
 
-const CKeyboardMapSession::SKeyData CKeyboardMapSession::KEYBOARD_DATA[] =
-    {
-        //  Row 0
+#include "KeyboardMapData.h"
 
-        {   "Escape",       1,   0,  2,  "Esc",         symbolNone,     CKeyboardMapSession::FLAG_RESERVED  },
-        {   "F1",           3,   0,  2,  "F1",          symbolNone,     0   },
-        {   "F2",           5,   0,  2,  "F2",          symbolNone,     0   },
-        {   "F3",           7,   0,  2,  "F3",          symbolNone,     0   },
-        {   "F4",           9,   0,  2,  "F4",          symbolNone,     0   },
-        {   "F5",           11,  0,  2,  "F5",          symbolNone,     0   },
-        {   "F6",           13,  0,  2,  "F6",          symbolNone,     0   },
-        {   "F7",           15,  0,  2,  "F7",          symbolNone,     0   },
-        {   "F8",           17,  0,  2,  "F8",          symbolNone,     0   },
-        {   "F9",           19,  0,  2,  "F9",          symbolNone,     0   },
-        {   "F10",          21,  0,  2,  "F10",         symbolNone,     0   },
-        {   "F11",          23,  0,  2,  "F11",         symbolNone,     0   },
-        {   "F12",          25,  0,  2,  "F12",         symbolNone,     0   },
+const CKeyboardMapSession::SDeviceData CKeyboardMapSession::DEVICE_DATA[] =
+	{
+		{
+			deviceKeyboard,			//	Device type
+			"Keyboard",				//	Name
+			KEYBOARD_DATA,			//	Data
+			KEYBOARD_DATA_COUNT,
 
-        //  Row 1
+			37,						//	Cols
+			6,						//	Rows
+			50,						//	x offset
+			60,						//	y offset
+			},
+		{
+			deviceNumpad,			//	Device type
+			"Number Pad",			//	Name
+			NUMPAD_DATA,			//	Data
+			NUMPAD_DATA_COUNT,
 
-        {   "BackQuote",    0,   1,  2,  "`",           symbolNone,     0    },
-        {   "1",            2,   1,  2,  "1",           symbolNone,     0    },
-        {   "2",            4,   1,  2,  "2",           symbolNone,     0    },
-        {   "3",            6,   1,  2,  "3",           symbolNone,     0    },
-        {   "4",            8,   1,  2,  "4",           symbolNone,     0    },
-        {   "5",            10,  1,  2,  "5",           symbolNone,     0    },
-        {   "6",            12,  1,  2,  "6",           symbolNone,     0    },
-        {   "7",            14,  1,  2,  "7",           symbolNone,     0    },
-        {   "8",            16,  1,  2,  "8",           symbolNone,     0    },
-        {   "9",            18,  1,  2,  "9",           symbolNone,     0    },
-        {   "0",            20,  1,  2,  "0",           symbolNone,     0   },
-        {   "Minus",        22,  1,  2,  "-",           symbolNone,     0   },
-        {   "Equal",        24,  1,  2,  "=",           symbolNone,     0   },
-        {   "Backspace",    26,  1,  3,  "Back",        symbolNone,     0   },
+			8,						//	Cols
+			5,						//	Rows
+			0,						//	x offset
+			30,						//	y offset
+			},
+		{
+			deviceMouse,			//	Device type
+			"Mouse",				//	Name
+			MOUSE_DATA,				//	Data
+			MOUSE_DATA_COUNT,
 
-        //  Row 2
+			7,						//	Cols
+			5,						//	Rows
+			0,						//	x offset
+			45,						//	y offset
+			},
+	};
 
-        {   "Tab",          0,   2,  3,  "Tab",         symbolNone,     0    },
-        {   "Q",            3,   2,  2,  "Q",           symbolNone,     0    },
-        {   "W",            5,   2,  2,  "W",           symbolNone,     0    },
-        {   "E",            7,   2,  2,  "E",           symbolNone,     0    },
-        {   "R",            9,   2,  2,  "R",           symbolNone,     0    },
-        {   "T",            11,  2,  2,  "T",           symbolNone,     0    },
-        {   "Y",            13,  2,  2,  "Y",           symbolNone,     0    },
-        {   "U",            15,  2,  2,  "U",           symbolNone,     0    },
-        {   "I",            17,  2,  2,  "I",           symbolNone,     0    },
-        {   "O",            19,  2,  2,  "O",           symbolNone,     0    },
-        {   "P",            21,  2,  2,  "P",           symbolNone,     0    },
-        {   "OpenBracket",  23,  2,  2,  "[",           symbolNone,     0    },
-        {   "CloseBracket", 25,  2,  2,  "]",           symbolNone,     0    },
-        {   "Backslash",    27,  2,  2,  "\\",          symbolNone,     0    },
-
-        //  Row 3
-
-        {   "Capital",      1,   3,  3,  "Caps",        symbolNone,     CKeyboardMapSession::FLAG_RESERVED    },
-        {   "A",            4,   3,  2,  "A",           symbolNone,     0    },
-        {   "S",            6,   3,  2,  "S",           symbolNone,     0    },
-        {   "D",            8,   3,  2,  "D",           symbolNone,     0    },
-        {   "F",            10,  3,  2,  "F",           symbolNone,     0    },
-        {   "G",            12,  3,  2,  "G",           symbolNone,     0    },
-        {   "H",            14,  3,  2,  "H",           symbolNone,     0    },
-        {   "J",            16,  3,  2,  "J",           symbolNone,     0    },
-        {   "K",            18,  3,  2,  "K",           symbolNone,     0    },
-        {   "L",            20,  3,  2,  "L",           symbolNone,     0    },
-        {   "SemiColon",    22,  3,  2,  ";",           symbolNone,     0    },
-        {   "Quote",        24,  3,  2,  "'",           symbolNone,     0    },
-        {   "Return",       26,  3,  3,  "Enter",       symbolNone,     0    },
-
-        //  Row 4
-
-        {   "Shift",        2,   4,  3,  "Shift",       symbolNone,     0    },
-        {   "Z",            5,   4,  2,  "Z",           symbolNone,     0    },
-        {   "X",            7,   4,  2,  "X",           symbolNone,     0    },
-        {   "C",            9,   4,  2,  "C",           symbolNone,     0    },
-        {   "V",            11,  4,  2,  "V",           symbolNone,     0    },
-        {   "B",            13,  4,  2,  "B",           symbolNone,     0    },
-        {   "N",            15,  4,  2,  "N",           symbolNone,     0    },
-        {   "M",            17,  4,  2,  "M",           symbolNone,     0    },
-        {   "Comma",        19,  4,  2,  ",",           symbolNone,     0    },
-        {   "Period",       21,  4,  2,  ".",           symbolNone,     0    },
-        {   "Slash",        23,  4,  2,  "/",           symbolNone,     0    },
-        {   NULL,           25,  4,  3,  "Shift",       symbolNone,     0    },
-
-        //  Row 5
-
-        {   "Control",      6,   5,  2,  "Ctrl",        symbolNone,     0    },
-        {   "Space",        8,   5,  14, "",            symbolNone,     0    },
-        {   NULL,           22,  5,  2,  "Ctrl",        symbolNone,     0    },
-
-        //  Number Pad
-
-        {   "Insert",       31,  1,  2,  "Ins",         symbolNone,     0  },
-        {   "Home",         33,  1,  2,  "Home",        symbolNone,     0 },
-        {   "PageUp",       35,  1,  2,  "PgUp",        symbolNone,     0 },
-
-        {   "Delete",       31,  2,  2,  "Del",         symbolNone,     0  },
-        {   "End",          33,  2,  2,  "End",         symbolNone,     0 },
-        {   "PageDown",     35,  2,  2,  "PgDn",        symbolNone,     0 },
-
-        {   "Up",           33,  4,  2,  NULL,          symbolArrowUp,      0  },
-        {   "Left",         31,  5,  2,  NULL,          symbolArrowLeft,    0  },
-        {   "Down",         33,  5,  2,  NULL,          symbolArrowDown,    0 },
-        {   "Right",        35,  5,  2,  NULL,          symbolArrowRight,   0 },
-    };
-
-const int CKeyboardMapSession::KEYBOARD_DATA_COUNT = (sizeof(KEYBOARD_DATA) / sizeof(KEYBOARD_DATA[0]));
+const int CKeyboardMapSession::DEVICE_DATA_COUNT = (sizeof(DEVICE_DATA) / sizeof(DEVICE_DATA[0]));
 
 CKeyboardMapSession::CKeyboardMapSession (CHumanInterface &HI, CCloudService &Service, CGameSettings &Settings) : IHISession(HI),
         m_Service(Service),
@@ -159,7 +93,10 @@ CKeyboardMapSession::CKeyboardMapSession (CHumanInterface &HI, CCloudService &Se
         m_bEditable(false),
         m_iHoverKey(-1),
         m_iHoverCommand(-1),
-        m_iSelectedCommand(-1)
+        m_iSelectedCommand(-1),
+		m_iTick(0),
+		m_iFlashKey(-1),
+		m_iFlashUntil(0)
 
 //  CKeyboardMapSession constructor
 
@@ -191,6 +128,7 @@ void CKeyboardMapSession::ArrangeCommandLabels (const RECT &rcRect, const RECT &
     Labels.InsertEmpty(m_Commands.GetCount());
     for (i = 0; i < m_Commands.GetCount(); i++)
         {
+		Labels[i].sLabel = m_Commands[i].sLabel;
         Labels[i].cxWidth = m_Commands[i].cxLabel + cxLabelSpacing;
         Labels[i].cyHeight = LabelFont.GetHeight() + cyLabelSpacing;
 
@@ -222,6 +160,7 @@ void CKeyboardMapSession::ArrangeCommandLabels (const RECT &rcRect, const RECT &
         {
         m_Commands[i].rcRect = Labels[i].rcRect;
         m_Commands[i].rcRect.bottom -= cyLabelSpacing;
+		m_Commands[i].Line.DeleteAll();
         }
 
     //  Now compute lines to connect commands to keys
@@ -295,19 +234,37 @@ void CKeyboardMapSession::ArrangeCommandLabels (const RECT &rcRect, const RECT &
         }
     }
 
+void CKeyboardMapSession::CmdClearBinding (void)
+
+//	CmdClearBinding
+//
+//	Clear the key binding of the selected command
+
+	{
+	if (m_iSelectedCommand != -1 && m_Commands[m_iSelectedCommand].iKeyBinding != -1)
+		{
+		const SCommandDesc &Command = m_Commands[m_iSelectedCommand];
+	    m_Settings.GetKeyMap().SetGameKey(m_Keys[Command.iKeyBinding].sKeyID, CGameKeys::keyNone);
+		InitBindings();
+		UpdateMenu();
+		}
+	}
+
 void CKeyboardMapSession::CmdNextLayout (void)
 
 //  CmdNextLayout
 //
-//  Select the next layout
+//  Select the next device
 
     {
-    CGameKeys::ELayouts iCurLayout = m_Settings.GetKeyMap().GetLayout();
-    if (iCurLayout < CGameKeys::layoutCount - 1)
+	if (m_iDevice < DEVICE_DATA_COUNT - 1)
         {
-        CGameKeys::ELayouts iNewLayout = (CGameKeys::ELayouts)(iCurLayout + 1);
-        m_Settings.GetKeyMap().SetLayout(iNewLayout);
-        UpdateLayoutControls();
+		m_iDevice++;
+		InitDevice(DEVICE_DATA[m_iDevice]);
+		InitBindings();
+		m_iSelectedCommand = -1;
+		UpdateDeviceSelector();
+		UpdateMenu();
         }
     }
 
@@ -315,21 +272,36 @@ void CKeyboardMapSession::CmdPrevLayout (void)
 
 //  CmdPrevLayout
 //
-//  Select the previous layout
+//  Select the previous device
 
     {
-    CGameKeys::ELayouts iCurLayout = m_Settings.GetKeyMap().GetLayout();
-    if (iCurLayout > CGameKeys::layoutDefault)
+	if (m_iDevice > 0)
         {
-        CGameKeys::ELayouts iNewLayout = (CGameKeys::ELayouts)(iCurLayout - 1);
-        m_Settings.GetKeyMap().SetLayout(iNewLayout);
-        UpdateLayoutControls();
+		m_iDevice--;
+		InitDevice(DEVICE_DATA[m_iDevice]);
+		InitBindings();
+		m_iSelectedCommand = -1;
+		UpdateDeviceSelector();
+		UpdateMenu();
         }
     }
 
-void CKeyboardMapSession::CreateLayoutControls (void)
+void CKeyboardMapSession::CmdResetDefault (void)
 
-//  CreateLayoutControls
+//	CmdResetDefault
+//
+//	Resets the bindings to default
+
+	{
+	m_Settings.GetKeyMap().SetLayout(CGameKeys::layoutDefault);
+	InitBindings();
+	m_iSelectedCommand = -1;
+	UpdateMenu();
+	}
+
+void CKeyboardMapSession::CreateDeviceSelector (void)
+
+//  CreateDeviceSelector
 //
 //  Create arrows to select a layout
 
@@ -337,18 +309,15 @@ void CKeyboardMapSession::CreateLayoutControls (void)
 	const CVisualPalette &VI = m_HI.GetVisuals();
 	const CG16bitFont &SubTitleFont = VI.GetFont(fontSubTitle);
 
-	RECT rcRect;
-	VI.GetWidescreenRect(&rcRect);
-
     //  Create a sequencer to hold all controls
 
 	CAniSequencer *pRoot;
-	CAniSequencer::Create(CVector(rcRect.left, rcRect.top), &pRoot);
+	CAniSequencer::Create(CVector(m_rcRect.left, m_rcRect.top), &pRoot);
     int y = MAJOR_PADDING_TOP;
 
 	//	Create buttons to select the layout
 
-	int xCenter = (RectWidth(rcRect) / 2);
+	int xCenter = (RectWidth(m_rcRect) / 2);
 	int xHalfSpacing = SMALL_SPACING_HORZ / 2;
 
 	IAnimatron *pLeftButton;
@@ -380,7 +349,7 @@ void CKeyboardMapSession::CreateLayoutControls (void)
 	IAnimatron *pLabel = new CAniText;
     pLabel->SetID(ID_LAYOUT_LABEL);
 	pLabel->SetPropertyVector(PROP_POSITION, CVector(0.0, y + SMALL_BUTTON_HEIGHT + SMALL_SPACING_VERT));
-	pLabel->SetPropertyVector(PROP_SCALE, CVector(RectWidth(rcRect), 100.0));
+	pLabel->SetPropertyVector(PROP_SCALE, CVector(RectWidth(m_rcRect), 100.0));
 	pLabel->SetPropertyColor(PROP_COLOR, VI.GetColor(colorTextDialogInput));
 	pLabel->SetPropertyFont(PROP_FONT, &SubTitleFont);
 	pLabel->SetPropertyString(PROP_TEXT_ALIGN_HORZ, ALIGN_CENTER);
@@ -434,25 +403,83 @@ bool CKeyboardMapSession::HitTest (int x, int y, STargetCtx &Ctx)
     return false;
     }
 
-void CKeyboardMapSession::LoadCommandMapping (void)
+void CKeyboardMapSession::InitBindings (void)
 
-//  LoadCommandMapping
+//	InitBindings
 //
-//  Loads the current keyboard mapping and creates command entries and 
-//  connections appropriately.
+//	Initializes bindings between commands and keys. We assume that both InitCommands
+//	and InitDevice have been called.
 
-    {
-    int i;
+	{
+    int i, j;
 	const CVisualPalette &VI = m_HI.GetVisuals();
-    const CG16bitFont &LabelFont = VI.GetFont(fontMedium);
-
-	RECT rcRect;
-	VI.GetWidescreenRect(&rcRect);
 
     //  Reset keyboard to remove bindings
 
     for (i = 0; i < m_Keys.GetCount(); i++)
         m_Keys[i].iCmdBinding = -1;
+
+    //  Load commands. NOTE: These do not change from session to session, so 
+	//	they should match when we initialized.
+
+    TArray<CGameKeys::SCommandKeyDesc> Commands;
+    m_Settings.GetKeyMap().GetCommands(Commands);
+	ASSERT(Commands.GetCount() == m_Commands.GetCount());
+
+    for (i = 0; i < Commands.GetCount(); i++)
+        {
+		m_Commands[i].sKeyBinding = NULL_STR;
+		m_Commands[i].iKeyBinding = -1;
+
+		//	See if we have a binding to one of the keys on this device.
+
+		for (j = 0; j < Commands[i].Keys.GetCount(); j++)
+			{
+			const CGameKeys::SBindingDesc &Binding = Commands[i].Keys[j];
+            int *pKey = m_KeyIDToIndex.GetAt(Binding.sKeyID);
+			if (pKey)
+				{
+				m_Commands[i].sKeyBinding = Binding.sKeyID;
+				m_Commands[i].iKeyBinding = *pKey;
+				m_Keys[*pKey].iCmdBinding = i;
+				break;
+				}
+			}
+
+		//	If we have a binding, but not to a key in this device, init the
+		//	binding ID so that we know that this command is not completely
+		//	unbound.
+
+		if (m_Commands[i].sKeyBinding.IsBlank() && Commands[i].Keys.GetCount() > 0)
+			m_Commands[i].sKeyBinding = Commands[i].Keys[0].sKeyID;
+        }
+
+    //  Figure out where each command label should go
+
+    RECT rcKeyboard;
+    rcKeyboard.left = m_xKeyboard;
+    rcKeyboard.top = m_yKeyboard;
+    rcKeyboard.right = m_xKeyboard + m_cxKeyboard;
+    rcKeyboard.bottom = m_yKeyboard + m_cyKeyboard;
+
+    int cxBoundsSpacing = Max(0, (int)Min(m_rcRect.right - rcKeyboard.right, rcKeyboard.left - m_rcRect.left) - (LABEL_COLUMN_SPACING * m_cxKeyCol));
+    RECT rcBounds = m_rcRect;
+    rcBounds.top += MAJOR_PADDING_TOP + SMALL_BUTTON_HEIGHT + SMALL_SPACING_VERT + VI.GetFont(fontSubTitle).GetHeight();
+    rcBounds.left = m_rcRect.left + cxBoundsSpacing;
+    rcBounds.right = m_rcRect.right - cxBoundsSpacing;
+    ArrangeCommandLabels(rcBounds, rcKeyboard);
+	}
+
+void CKeyboardMapSession::InitCommands (void)
+
+//	InitCommands
+//
+//	Initializes the list of commands.
+
+	{
+	int i;
+	const CVisualPalette &VI = m_HI.GetVisuals();
+    const CG16bitFont &LabelFont = VI.GetFont(fontMedium);
 
     //  Load commands
 
@@ -468,39 +495,63 @@ void CKeyboardMapSession::LoadCommandMapping (void)
         pNewCmd->iCmd = Commands[i].iCmd;
         pNewCmd->sLabel = Commands[i].sCmdLabel;
         pNewCmd->cxLabel = LabelFont.MeasureText(pNewCmd->sLabel);
-
-        //  See what key we're bound to
-
-        if (!Commands[i].sKeyID.IsBlank())
-            {
-            int *pKey = m_KeyIDToIndex.GetAt(Commands[i].sKeyID);
-            if (pKey && m_Keys[*pKey].iCmdBinding == -1)
-                {
-                pNewCmd->iKeyBinding = *pKey;
-                m_Keys[*pKey].iCmdBinding = iCmdIndex;
-                }
-            else
-                pNewCmd->iKeyBinding = -1;
-            }
-        else
-            pNewCmd->iKeyBinding = -1;
         }
+	}
 
-    //  Figure out where each command label should go
+void CKeyboardMapSession::InitDevice (const SDeviceData &Device)
 
-    RECT rcKeyboard;
-    rcKeyboard.left = m_xKeyboard;
-    rcKeyboard.top = m_yKeyboard;
-    rcKeyboard.right = m_xKeyboard + m_cxKeyboard;
-    rcKeyboard.bottom = m_yKeyboard + m_cyKeyboard;
+//	InitDevice
+//
+//	Initializes the given device. NOTE: We assume that m_cxKeyCol and m_cyKeyRow
+//	are initialized.
 
-    int cxBoundsSpacing = Max(0, (int)Min(rcRect.right - rcKeyboard.right, rcKeyboard.left - rcRect.left) - (LABEL_COLUMN_SPACING * m_cxKeyCol));
-    RECT rcBounds = rcRect;
-    rcBounds.top += MAJOR_PADDING_TOP + SMALL_BUTTON_HEIGHT + SMALL_SPACING_VERT + VI.GetFont(fontSubTitle).GetHeight();
-    rcBounds.left = rcRect.left + cxBoundsSpacing;
-    rcBounds.right = rcRect.right - cxBoundsSpacing;
-    ArrangeCommandLabels(rcBounds, rcKeyboard);
-    }
+	{
+	int i;
+
+	//	Center the keyboard on the screen
+
+    m_cxKeyboard = (Device.iCols * m_cxKeyCol) - KEY_SPACING;
+    m_cyKeyboard = (Device.iRows * m_cyKeyRow) - KEY_SPACING;
+
+    m_xKeyboard = m_rcRect.left + (RectWidth(m_rcRect) - m_cxKeyboard) / 2 + Device.xOffset;
+    m_yKeyboard = m_rcRect.top + (RectHeight(m_rcRect) - m_cyKeyboard) / 2 + Device.yOffset;
+
+    //  Initialize all the keys metrics
+
+	m_Keys.DeleteAll();
+	m_KeyIDToIndex.DeleteAll();
+
+    m_Keys.InsertEmpty(Device.iKeyCount);
+    m_KeyIDToIndex.GrowToFit(Device.iKeyCount);
+    for (i = 0; i < m_Keys.GetCount(); i++)
+        {
+        if (Device.pKeys[i].pszKeyID)
+			{
+            m_Keys[i].sKeyID = CString(Device.pKeys[i].pszKeyID);
+			m_Keys[i].dwVirtKey = CGameKeys::GetKey(m_Keys[i].sKeyID);
+			}
+		else
+			m_Keys[i].dwVirtKey = INVALID_VIRT_KEY;
+
+        if (Device.pKeys[i].pszLabel)
+            m_Keys[i].sLabel = CString(Device.pKeys[i].pszLabel);
+
+        m_Keys[i].iSymbol = Device.pKeys[i].iSymbol;
+
+        m_Keys[i].rcRect.left = m_xKeyboard + m_cxKeyCol * Device.pKeys[i].xCol;
+        m_Keys[i].rcRect.top = m_yKeyboard + m_cyKeyRow * Device.pKeys[i].yRow;
+        m_Keys[i].rcRect.right = m_Keys[i].rcRect.left + (m_cxKeyCol * Device.pKeys[i].cxWidth) - KEY_SPACING;
+        m_Keys[i].rcRect.bottom = m_Keys[i].rcRect.top + (m_cyKeyRow * Device.pKeys[i].cyHeight) - KEY_SPACING;
+
+        m_Keys[i].iCmdBinding = -1;
+        m_Keys[i].dwFlags = Device.pKeys[i].dwFlags;
+
+        //  Add this key ID to the index
+
+        if (!m_Keys[i].sKeyID.IsBlank())
+            m_KeyIDToIndex.Insert(m_Keys[i].sKeyID, i);
+        }
+	}
 
 ALERROR CKeyboardMapSession::OnCommand (const CString &sCmd, void *pData)
 
@@ -517,6 +568,10 @@ ALERROR CKeyboardMapSession::OnCommand (const CString &sCmd, void *pData)
 		CmdNextLayout();
 	else if (strEquals(sCmd, CMD_PREV_LAYOUT))
 		CmdPrevLayout();
+	else if (strEquals(sCmd, CMD_RESET_DEFAULT))
+		CmdResetDefault();
+	else if (strEquals(sCmd, CMD_CLEAR_BINDING))
+		CmdClearBinding();
 
     return NOERROR;
     }
@@ -528,70 +583,57 @@ ALERROR CKeyboardMapSession::OnInit (CString *retsError)
 //  Initialize the session.
 
     {
-    int i;
-
 	const CVisualPalette &VI = m_HI.GetVisuals();
-    const CG16bitFont &LabelFont = VI.GetFont(fontMedium);
+	VI.GetWidescreenRect(&m_rcRect);
 
-	RECT rcRect;
-	VI.GetWidescreenRect(&rcRect);
+	//	Load the commands. The set of commands don't change during the session.
+
+	InitCommands();
 
     //  Keyboard metrics
 
     m_cyKeyRow = AlignDown((KEYBOARD_HEIGHT + KEY_SPACING) / KEYBOARD_ROWS, 2);
     m_cxKeyCol = m_cyKeyRow / 2;
 
-    m_cxKeyboard = (KEYBOARD_COLS * m_cxKeyCol) - KEY_SPACING;
-    m_cyKeyboard = (KEYBOARD_ROWS * m_cyKeyRow) - KEY_SPACING;
+	//	Initialize device
 
-    int cyKey = m_cyKeyRow - KEY_SPACING;
+	m_iDevice = 0;
+	InitDevice(DEVICE_DATA[m_iDevice]);
 
-    m_xKeyboard = rcRect.left + (RectWidth(rcRect) - m_cxKeyboard) / 2 + KEYBOARD_OFFSET_X;
-    m_yKeyboard = rcRect.top + (RectHeight(rcRect) - m_cyKeyboard) / 2 + KEYBOARD_OFFSET_Y;
+	//	Initialize bindings between keys and commands
 
-    //  Initialize all the keys metrics
+	InitBindings();
+	m_iSelectedCommand = -1;
 
-    m_Keys.InsertEmpty(KEYBOARD_DATA_COUNT);
-    m_KeyIDToIndex.GrowToFit(KEYBOARD_DATA_COUNT);
-    for (i = 0; i < m_Keys.GetCount(); i++)
-        {
-        if (KEYBOARD_DATA[i].pszKeyID)
-            m_Keys[i].sKeyID = CString(KEYBOARD_DATA[i].pszKeyID);
+	//	Buttons to switch to different devices
 
-        if (KEYBOARD_DATA[i].pszLabel)
-            m_Keys[i].sLabel = CString(KEYBOARD_DATA[i].pszLabel);
+	CreateDeviceSelector();
+	UpdateDeviceSelector();
 
-        m_Keys[i].iSymbol = KEYBOARD_DATA[i].iSymbol;
+	//	State
 
-        m_Keys[i].rcRect.left = m_xKeyboard + m_cxKeyCol * KEYBOARD_DATA[i].xCol;
-        m_Keys[i].rcRect.top = m_yKeyboard + m_cyKeyRow * KEYBOARD_DATA[i].yRow;
-        m_Keys[i].rcRect.right = m_Keys[i].rcRect.left + (m_cxKeyCol * KEYBOARD_DATA[i].cxWidth) - KEY_SPACING;
-        m_Keys[i].rcRect.bottom = m_Keys[i].rcRect.top + cyKey;
+	m_bEditable = true;
 
-        m_Keys[i].iCmdBinding = -1;
-        m_Keys[i].dwFlags = KEYBOARD_DATA[i].dwFlags;
+	//	Set up a menu
 
-        //  Add this key ID to the index
+	TArray<CUIHelper::SMenuEntry> Menu;
+	CUIHelper::SMenuEntry *pEntry = Menu.Insert();
+	pEntry->sCommand = CMD_RESET_DEFAULT;
+	pEntry->sLabel = CONSTLIT("Reset to default");
 
-        if (!m_Keys[i].sKeyID.IsBlank())
-            m_KeyIDToIndex.Insert(m_Keys[i].sKeyID, i);
-        }
-
-    //  Initialize the list of layouts
-
-    CreateLayoutControls();
-
-    //  Initialize all commands (including bindings)
-
-    UpdateLayoutControls();
+	pEntry = Menu.Insert();
+	pEntry->sCommand = CMD_CLEAR_BINDING;
+	pEntry->sLabel = CONSTLIT("Clear key binding");
 
     //  Create the background and title
 
 	CUIHelper Helper(m_HI);
 	IAnimatron *pTitle;
 	DWORD dwOptions = CUIHelper::OPTION_SESSION_OK_BUTTON | CUIHelper::OPTION_SESSION_NO_CANCEL_BUTTON;
-	Helper.CreateSessionTitle(this, m_Service, CONSTLIT("Keyboard"), NULL, dwOptions, &pTitle);
+	Helper.CreateSessionTitle(this, m_Service, CONSTLIT("Settings & Options"), &Menu, dwOptions, &pTitle);
 	StartPerformance(pTitle, ID_CTRL_TITLE, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+
+	UpdateMenu();
 
     return NOERROR;
     }
@@ -603,6 +645,20 @@ void CKeyboardMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 //  Handle keys
 
     {
+	int i;
+
+	//	Flash the key
+
+	DWORD dwTVirtKey = CGameKeys::TranslateVirtKey(iVirtKey, dwKeyData);
+	for (i = 0; i < m_Keys.GetCount(); i++)
+		if (m_Keys[i].dwVirtKey == dwTVirtKey)
+			{
+			m_iFlashKey = i;
+			m_iFlashUntil = m_iTick + 150;
+			}
+
+	//	Command
+
 	switch (iVirtKey)
 		{
 		case VK_RETURN:
@@ -661,7 +717,7 @@ void CKeyboardMapSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retb
 
                     //  Reload mappings
 
-                    LoadCommandMapping();
+                    InitBindings();
 
                     //  NOTE: The list of commands does not change within a session, so the
                     //  command index should be the same.
@@ -701,6 +757,8 @@ void CKeyboardMapSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retb
         else
             m_iSelectedCommand = -1;
         }
+
+	UpdateMenu();
     }
 
 void CKeyboardMapSession::OnLButtonUp (int x, int y, DWORD dwFlags)
@@ -788,7 +846,7 @@ void CKeyboardMapSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
         //  Draw the key
 
-        PaintKey(Screen, Key, (Key.iCmdBinding != -1 ? rgbBoundKey : rgbUnboundKey), rgbText);
+        PaintKey(Screen, Key, (Key.iCmdBinding != -1 ? rgbBoundKey : rgbUnboundKey), rgbText, i == m_iFlashKey);
         }
 
     //  Paint all the commands
@@ -804,7 +862,7 @@ void CKeyboardMapSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
             rgbBack = rgbSelected;
         else if (i == m_iHoverCommand)
             rgbBack = rgbHoverColor;
-        else if (m_bEditable && Command.iKeyBinding == -1)
+        else if (m_bEditable && Command.sKeyBinding.IsBlank())
             rgbBack = VI.GetColor(colorTextDockWarning);
         else
             rgbBack = rgbBoundKey;
@@ -833,7 +891,7 @@ void CKeyboardMapSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
         const SCommandDesc &Command = m_Commands[m_iSelectedCommand];
 
         if (Command.iKeyBinding != -1)
-            PaintKey(Screen, m_Keys[Command.iKeyBinding], rgbSelected, rgbText);
+            PaintKey(Screen, m_Keys[Command.iKeyBinding], rgbSelected, rgbText, Command.iKeyBinding == m_iFlashKey);
 
         for (j = 0; j < Command.Line.GetCount() - 1; j++)
             Screen.DrawLine(Command.Line[j].x, Command.Line[j].y, Command.Line[j + 1].x, Command.Line[j + 1].y, LINE_WIDTH, rgbSelected);
@@ -842,7 +900,7 @@ void CKeyboardMapSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
     if (m_iHoverKey != -1)
         {
         const SKeyDesc &Key = m_Keys[m_iHoverKey];
-        PaintKey(Screen, m_Keys[m_iHoverKey], rgbSelected, rgbText);
+        PaintKey(Screen, m_Keys[m_iHoverKey], rgbSelected, rgbText, m_iHoverKey == m_iFlashKey);
         }
 
     if (m_iHoverCommand != -1 && m_iSelectedCommand != m_iHoverCommand)
@@ -850,7 +908,7 @@ void CKeyboardMapSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
         const SCommandDesc &Command = m_Commands[m_iHoverCommand];
 
         if (Command.iKeyBinding != -1)
-            PaintKey(Screen, m_Keys[Command.iKeyBinding], rgbHoverColor, rgbText);
+            PaintKey(Screen, m_Keys[Command.iKeyBinding], rgbHoverColor, rgbText, Command.iKeyBinding == m_iFlashKey);
 
         for (j = 0; j < Command.Line.GetCount() - 1; j++)
             Screen.DrawLine(Command.Line[j].x, Command.Line[j].y, Command.Line[j + 1].x, Command.Line[j + 1].y, LINE_WIDTH, rgbHoverColor);
@@ -867,7 +925,17 @@ void CKeyboardMapSession::OnReportHardCrash (CString *retsMessage)
 	*retsMessage = CONSTLIT("session: CKeyboardMapSession\r\n");
     }
 
-void CKeyboardMapSession::PaintKey (CG32bitImage &Screen, const SKeyDesc &Key, CG32bitPixel rgbBack, CG32bitPixel rgbText)
+void CKeyboardMapSession::OnUpdate (bool bTopMost)
+
+//	OnUpdate
+//
+//	Update once per frame
+
+	{
+	m_iTick++;
+	}
+
+void CKeyboardMapSession::PaintKey (CG32bitImage &Screen, const SKeyDesc &Key, CG32bitPixel rgbBack, CG32bitPixel rgbText, bool bFlash)
 
 //  PaintKey
 //
@@ -877,6 +945,11 @@ void CKeyboardMapSession::PaintKey (CG32bitImage &Screen, const SKeyDesc &Key, C
 	const CVisualPalette &VI = m_HI.GetVisuals();
     const CG16bitFont &KeyFont = VI.GetFont(fontMediumHeavyBold);
     const CG16bitFont &SmallKeyFont = VI.GetFont(fontSmall);
+
+	//	Flash?
+
+	if (bFlash && m_iTick < m_iFlashUntil && (m_iTick % 2) == 0)
+		rgbBack = CG32bitPixel(0, 0, 0);
 
     //  Draw the key
 
@@ -928,37 +1001,42 @@ void CKeyboardMapSession::PaintKey (CG32bitImage &Screen, const SKeyDesc &Key, C
         SmallKeyFont.DrawText(Screen, Key.rcRect, rgbText, Key.sLabel, 0, CG16bitFont::AlignCenter | CG16bitFont::AlignMiddle);
     }
 
-void CKeyboardMapSession::UpdateLayoutControls (void)
+void CKeyboardMapSession::UpdateDeviceSelector (void)
 
-//  UpdateLayoutControls
+//	UpdateDeviceSelector
 //
-//  Update layout controls when the layout has changed.
+//	Updates the device selector
 
-    {
-    CGameKeys::ELayouts iCurLayout = m_Settings.GetKeyMap().GetLayout();
-
+	{
     //  Set the new label
 
 	IAnimatron *pLabel = GetElement(ID_LAYOUT_LABEL);
     if (pLabel)
-        pLabel->SetPropertyString(PROP_TEXT, m_Settings.GetKeyMap().GetLayoutName(iCurLayout));
+        pLabel->SetPropertyString(PROP_TEXT, CString(DEVICE_DATA[m_iDevice].pszLabel));
 
     //  Enable/disable next/prev button
 
     IAnimatron *pNext = GetElement(CMD_NEXT_LAYOUT);
     if (pNext)
-        pNext->SetPropertyBool(PROP_ENABLED, iCurLayout < CGameKeys::layoutCount - 1);
+        pNext->SetPropertyBool(PROP_ENABLED, m_iDevice < DEVICE_DATA_COUNT - 1);
 
 	IAnimatron *pPrev = GetElement(CMD_PREV_LAYOUT);
 	if (pPrev)
-		pPrev->SetPropertyBool(PROP_ENABLED, iCurLayout > CGameKeys::layoutDefault);
+		pPrev->SetPropertyBool(PROP_ENABLED, m_iDevice > 0);
+	}
 
-    //  Reload commands
+void CKeyboardMapSession::UpdateMenu (void)
 
-    LoadCommandMapping();
+//	UpdateMenu
+//
+//	Enables/disables menu items.
 
-    //  If this is the custom layout, then we can edit it
+	{
+	IAnimatron *pItem = GetElement(CMD_RESET_DEFAULT);
+	if (pItem)
+		pItem->SetPropertyBool(PROP_ENABLED, m_Settings.GetKeyMap().GetLayout() != CGameKeys::layoutDefault);
 
-    m_bEditable = (iCurLayout == CGameKeys::layoutCustom);
-    m_iSelectedCommand = -1;
-    }
+	pItem = GetElement(CMD_CLEAR_BINDING);
+	if (pItem)
+		pItem->SetPropertyBool(PROP_ENABLED, (m_iSelectedCommand != -1 && m_Commands[m_iSelectedCommand].iKeyBinding != -1));
+	}
