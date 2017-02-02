@@ -143,6 +143,7 @@ class CGameSession : public IHISession
 
 	private:
 		void PaintSRS (CG32bitImage &Screen);
+		void SyncMouseToPlayerShip (void);
 
 		CGameSettings &m_Settings;
         CTranscendenceModel &m_Model;

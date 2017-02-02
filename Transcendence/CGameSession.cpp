@@ -31,6 +31,11 @@ ALERROR CGameSession::OnInit (CString *retsError)
     m_HUD.Init(m_rcScreen);
     m_SystemMap.Init(m_rcScreen);
 
+	//	Move the mouse cursor so that it points to where the ship is points.
+	//	Otherwise the ship will try to turn to point to the mouse.
+
+	SyncMouseToPlayerShip();
+
     //  In the future, m_CurrentDock should be our member, but for legacy 
     //  reasons, it is part of CTranscendenceWnd. Either way we need to give it
     //  a pointer to us so it can tells us things.
@@ -132,6 +137,7 @@ void CGameSession::OnShowDockScreen (bool bShow)
 		//	Hide the cursor
 
 		ShowCursor(false);
+		SyncMouseToPlayerShip();
 
 		//	New state
 
@@ -235,3 +241,42 @@ void CGameSession::ShowSystemMap (bool bShow)
             m_SystemMap.OnHideMap();
         }
     }
+
+void CGameSession::SyncMouseToPlayerShip (void)
+
+//	SyncMouseToPlayerShip
+//
+//	Move the mouse so it points where the player ship is pointing.
+
+	{
+	CPlayerShipController *pPlayer = m_Model.GetPlayer();
+	if (pPlayer == NULL)
+		return;
+
+	CShip *pPlayerShip = pPlayer->GetShip();
+	if (pPlayerShip == NULL)
+		return;
+
+	//	Create a vector that points to where the mouse should be relative to the
+	//	center of the viewport. We pick 300 pixels because that's the largest value
+	//	that would fit on a 1024x600 screen (our minimum req).
+
+	CVector vMouse = PolarToVector(pPlayerShip->GetRotation(), 300.0);
+
+	//	Compute the center of the viewport in screen coordinates
+
+	int xCenter = m_HI.GetScreenWidth() / 2;
+	int yCenter = m_HI.GetScreenHeight() / 2;
+
+	//	Compute the mouse position in screen coordinates.
+
+	int xMouse = xCenter + (int)vMouse.GetX();
+	int yMouse = yCenter - (int)vMouse.GetY();
+
+	//	Convert to global coordinates
+
+	int xGlobal, yGlobal;
+	m_HI.GetScreenMgr().LocalToGlobal(xMouse, yMouse, &xGlobal, &yGlobal);
+
+	::SetCursorPos(xGlobal, yGlobal);
+	}
