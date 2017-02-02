@@ -325,6 +325,9 @@
     <ClInclude Include="KeyboardMapData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameSessionDisplays.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.gitignore">

@@ -713,6 +713,7 @@
     <ClInclude Include="DockScreenDisplayImpl.h" />
     <ClInclude Include="DockScreenSubjugate.h" />
     <ClInclude Include="GameSession.h" />
+    <ClInclude Include="GameSessionDisplays.h" />
     <ClInclude Include="GameSettings.h" />
     <ClInclude Include="IntroSession.h" />
     <ClInclude Include="KeyboardMapData.h" />

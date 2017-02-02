@@ -1033,7 +1033,7 @@ void CPlayerShipController::OnDamaged (const CDamageSource &Cause, CInstalledArm
 //	We get called here when the ship takes damage
 
 	{
-	if (pArmor == NULL)
+	if (m_pSession == NULL || pArmor == NULL)
 		return;
 
 	int iMaxArmorHP = pArmor->GetMaxHP(m_pShip);
@@ -1042,7 +1042,7 @@ void CPlayerShipController::OnDamaged (const CDamageSource &Cause, CInstalledArm
 
 	//	Heavy damage (>= 10%) causes screen flash
 
-	if (m_pSession && iDamage >= (iMaxArmorHP / 10) && Damage.CausesSRSFlash())
+	if (iDamage >= (iMaxArmorHP / 10) && Damage.CausesSRSFlash())
 		m_pSession->OnDamageFlash();
 
 	//	If we're down to 25% armor, then warn the player
@@ -1055,8 +1055,7 @@ void CPlayerShipController::OnDamaged (const CDamageSource &Cause, CInstalledArm
 
 	//	Update display
 
-    if (m_pSession)
-        m_pSession->OnArmorDamaged(pArmor->GetSect());
+	m_pSession->OnArmorDamaged(pArmor->GetSect());
 
 	//	Register stats
 
@@ -2605,6 +2604,11 @@ void CPlayerShipController::UpdateHelp (int iTick)
 //	Checks to see if we should show a help message to the player
 
 	{
+	//	Must have a session
+
+	if (m_pSession == NULL)
+		return;
+
 	//	If we just showed help, then skip
 
 	if ((iTick - m_iLastHelpTick) < 240)
@@ -2655,7 +2659,7 @@ void CPlayerShipController::UpdateHelp (int iTick)
 		ItemList.SetFilter(UsableItems);
 		bool bHasUsableItems = ItemList.MoveCursorForward();
 
-		if (!m_pSession->ShowingSystemMap() 
+		if (!m_pSession->ShowingSystemMap()
 				&& bHasUsableItems
 				&& (m_iLastHelpUseTick == 0 || (iTick - m_iLastHelpUseTick) > 9000))
 			{
@@ -2696,7 +2700,7 @@ void CPlayerShipController::UpdateHelp (int iTick)
 	if (m_UIMsgs.IsEnabled(uimsgGateHint))
 		{
 		if (!bEnemiesInRange
-				&& !m_pSession->ShowingSystemMap() 
+				&& !m_pSession->ShowingSystemMap()
 				&& m_pShip->IsStargateInRange(MAX_STARGATE_HELP_RANGE))
 			{
 			m_pTrans->DisplayMessage(CONSTLIT("(press [G] over stargate to travel to next system)"));
