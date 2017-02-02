@@ -171,105 +171,70 @@ void CCommandLineDisplay::AutoCompleteSearch(void)
 
 	{
 	const CString sCurCmd = GetCurrentCmd();
-	CString sOutput;
 	CString sCommon;
-	char *pPos;
-	char *pPartStart;
-	int iPartCount;
+	CString sHelp;
 
+	ClearHint();
 	if (sCurCmd.IsBlank())
 		return;
 
-	// Get the list of global symbols
+	//	Get the list of global symbols
 
-	CCodeChain &CC = g_pUniverse->GetCC();
-	ICCItem *pResult = CC.ListGlobals();
-	CString sGlobals = CC.Unlink(pResult);
+	ICCItem *pGlobals = g_pUniverse->GetCC().GetGlobals();
 
-	//	Get info about the symbols string
+	int iMatches = 0;
 
-	pPos = sGlobals.GetPointer();
-	pPos++; // first character is a bracket
-
-	//	Parse the string
-
-	iPartCount = 0;
-	pPartStart = pPos;
-
-	while (*pPos != '\0')
+	for (int i = 0; i < pGlobals->GetCount(); i++)
 		{
-		//	If we've found a delimeter, then flush the string up to now
-		//	to the current part.
+		CString sGlobal = pGlobals->GetKey(i);
 
-		if (*pPos == ' ' || *pPos == ')')
-		{
-			CString sGlobal(pPartStart, pPos - pPartStart);// iPartLength);
-
-			if (strStartsWith(sGlobal, sCurCmd))
+		//	Partial match
+		if (strStartsWith(sGlobal, sCurCmd))
+			{
+			if (iMatches == 0)
+				sCommon = sGlobal;
+			//	If we have multiple matching commands then find the longest common stem
+			else
 				{
-				if (iPartCount == 0)
-					sCommon = sGlobal;
-				else
+				int iLen = min(sCommon.GetLength(), sGlobal.GetLength());
+				char *pPos1 = sCommon.GetPointer();
+				char *pPos2 = sGlobal.GetPointer();
+				int i;
+				for (i = 0; i < iLen; i++)
 					{
-					// If we have multiple matching commands then find the longest common stem
-					int iLen = Min(sCommon.GetLength(), sGlobal.GetLength());
-					int i;
-					char *pPos1 = sCommon.GetPointer();
-					char *pPos2 = sGlobal.GetPointer();
-					for (i = 0; i < iLen; i++)
-						{
-						if (CharLower((LPTSTR)(BYTE)(*pPos1)) != CharLower((LPTSTR)(BYTE)(*pPos2)))
-							break;
-						pPos1++;
-						pPos2++;
-						}
-					sCommon.Truncate(i);
+					if (CharLower((LPTSTR)(BYTE)(*pPos1)) != CharLower((LPTSTR)(BYTE)(*pPos2)))
+						break;
+					pPos1++;
+					pPos2++;
 					}
-				sOutput.Append(sGlobal);
-				sOutput.Append(CONSTLIT(" "));
-				iPartCount++;
+				sCommon.Truncate(i);
+				m_sHint.Append(CONSTLIT(" "));
 				}
-
-			//	Skip to the next part
-			pPos++;
-			pPartStart = pPos;
+			//	Append the command to the auto complete hint
+			m_sHint.Append(sGlobal);
+			iMatches++;
 			}
-		else
-			pPos++;
+
+		if (strEquals(sGlobal, sCurCmd))
+			{
+			//	Exact match - get help text
+			ICCItem *pItem = pGlobals->GetElement(i);
+			if (pItem->IsPrimitive())
+				sHelp = pItem->GetHelp();
+			}
 		}
 
+	//	If the common stem is longer than the current command, then auto complete
 	if (sCommon.GetLength() > sCurCmd.GetLength())
 		Input(strSubString(sCommon, sCurCmd.GetLength(), -1));
 
-	if (iPartCount > 1)
-	{
-		m_sHint = sOutput;
-		m_bInvalid = true;
-	}
-	else
-		ClearHint();
+	//	If we only have one match then no need to show hint as we have either
+	//	auto completed or will show help text insead
+	if (iMatches == 1)
+		m_sHint = NULL_STR;
 
-	if (iPartCount == 1 && sCommon.GetLength() == sCurCmd.GetLength())
-		{
-		CString sHelpCmd;
-		sHelpCmd = CONSTLIT("(help '");
-		sHelpCmd.Append(sCurCmd);
-		sHelpCmd.Append(CONSTLIT(")"));
-
-		CCodeChainCtx Ctx;
-		ICCItem *pCode = Ctx.Link(sHelpCmd, 0, NULL);
-		ICCItem *pResult = Ctx.Run(pCode);
-
-		if (pResult->IsIdentifier())
-			sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
-		else
-			sOutput = CC.Unlink(pResult);
-
-		Ctx.Discard(pResult);
-		Ctx.Discard(pCode);
-
-		Output(sOutput, HINT_COLOR);
-		}
+	if (!sHelp.IsBlank())
+		Output(sHelp, HINT_COLOR);
 	}
 
 ALERROR CCommandLineDisplay::Init (CTranscendenceWnd *pTrans, const RECT &rcRect)
