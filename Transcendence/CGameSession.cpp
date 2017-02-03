@@ -19,7 +19,8 @@ CGameSession::CGameSession (CHumanInterface &HI,
 		m_CurrentMenu(menuNone),
 		m_pCurrentComms(NULL),
         m_iDamageFlash(0),
-		m_bIgnoreButtonUp(false)
+		m_bIgnoreButtonUp(false),
+		m_bIgnoreMouseMove(false)
 
 //	CGameSession constructor
 
@@ -42,6 +43,11 @@ void CGameSession::DismissMenu (void)
 
 		ShowCursor(false);
 		SyncMouseToPlayerShip();
+
+		//	Ignore the next mouse move message, for purpose of enabling mouse
+		//	control.
+
+		m_bIgnoreMouseMove = true;
 		}
 	}
 
@@ -253,6 +259,7 @@ void CGameSession::OnShowDockScreen (bool bShow)
 
 		ShowCursor(false);
 		SyncMouseToPlayerShip();
+		m_bIgnoreMouseMove = true;
 
 		//	New state
 
@@ -413,7 +420,12 @@ bool CGameSession::ShowMenu (EMenuTypes iMenu)
 			return false;
 		}
 
+	//	Show our cursor, in case the menus have mouse UI
+
 	ShowCursor(true);
+
+	//	Set state
+
 	m_CurrentMenu = iMenu;
 
 	return true;
@@ -450,6 +462,12 @@ void CGameSession::SyncMouseToPlayerShip (void)
 
 	CShip *pPlayerShip = pPlayer->GetShip();
 	if (pPlayerShip == NULL)
+		return;
+
+	//	If we're not using the mouse to move the ship, then we don't need to
+	//	do this.
+
+	if (!pPlayer->IsMouseAimEnabled())
 		return;
 
 	//	Create a vector that points to where the mouse should be relative to the

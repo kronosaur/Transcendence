@@ -573,14 +573,18 @@ class CPickerDisplay
 		int GetSelection (void);
 		ALERROR Init (CMenuData *pMenu, const RECT &rcRect);
 		inline void Invalidate (void) { m_bInvalid = true; }
+		bool LButtonDown (int x, int y);
+		bool MouseMove (int x, int y);
+		bool MouseWheel (int iDelta, int x, int y);
 		void Paint (CG32bitImage &Dest);
-		inline void ResetSelection (void) { m_iSelection = 0; }
+		inline void ResetSelection (void) { m_iSelection = 0; m_iHover = -1; m_iFirstInView = 0; m_cxSmoothScroll = 0; m_bInvalid = true; }
 		void SelectNext (void);
 		void SelectPrev (void);
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 		inline void SetHelpText (const CString &sText) { m_sHelpText = sText; }
 
 	private:
+		int HitTest (int x, int y) const;
 		void PaintSelection (CG32bitImage &Dest, int x, int y);
 		void Update (void);
 
@@ -590,6 +594,13 @@ class CPickerDisplay
 		CG32bitImage m_Buffer;
 		const SFontTable *m_pFonts;
 		int m_iSelection;
+		int m_iHover;
+		int m_cxSmoothScroll;
+
+		RECT m_rcView;
+		int m_iFirstInView;
+		int m_iCountInView;
+
 		bool m_bInvalid;
 		CString m_sHelpText;
 	};

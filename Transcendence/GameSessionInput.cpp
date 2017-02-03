@@ -547,8 +547,46 @@ void CGameSession::OnLButtonDblClick (int x, int y, DWORD dwFlags)
 	switch (g_pTrans->m_State)
 		{
 		case CTranscendenceWnd::gsInGame:
+			{
+			CPlayerShipController *pPlayer = m_Model.GetPlayer();
+			if (pPlayer == NULL)
+				break;
+
 			if (InMenu())
 				{
+				switch (m_CurrentMenu)
+					{
+					//	If we double-clicked on an entry, then we choose that entry.
+
+					case menuEnableDevice:
+						if (g_pTrans->m_PickerDisplay.LButtonDown(x, y))
+							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
+							pPlayer->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
+							g_pTrans->DoEnableDisableItemCommand(g_pTrans->m_MenuData.GetItemData(g_pTrans->m_PickerDisplay.GetSelection()));
+							DismissMenu();
+
+							m_bIgnoreButtonUp = true;
+							}
+
+						break;
+
+					case menuUseItem:
+						if (g_pTrans->m_PickerDisplay.LButtonDown(x, y))
+							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
+							g_pTrans->DoUseItemCommand(g_pTrans->m_MenuData.GetItemData(g_pTrans->m_PickerDisplay.GetSelection()));
+							DismissMenu();
+
+							m_bIgnoreButtonUp = true;
+							}
+
+						break;
+
+					default:
+						OnLButtonDown(x, y, dwFlags, NULL);
+						break;
+					}
 				}
 			else
 				{
@@ -556,6 +594,7 @@ void CGameSession::OnLButtonDblClick (int x, int y, DWORD dwFlags)
 				OnLButtonDown(x, y, dwFlags, NULL);
 				}
 			break;
+			}
 
 		case CTranscendenceWnd::gsDocked:
 			g_pTrans->m_pCurrentScreen->LButtonDown(x, y);
@@ -575,23 +614,41 @@ void CGameSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture
 		case CTranscendenceWnd::gsInGame:
 			{
             CPlayerShipController *pPlayer = m_Model.GetPlayer();
-			if (pPlayer == NULL || !pPlayer->IsMouseAimEnabled())
+			if (pPlayer == NULL)
 				break;
 
 			m_bIgnoreButtonUp = false;
 
-			//	If paused, then we're done
-
-			if (g_pTrans->m_bPaused)
-				ExecuteCommandEnd(pPlayer, CGameKeys::keyPause);
-
 			//	If in a menu, let the menu handle it.
 
-			else if (InMenu())
+			if (InMenu())
 				{
-				//	If a command caused us to switch out of menu mode, then we 
-				//	need to swallow the next mouse up.
+				switch (m_CurrentMenu)
+					{
+					case menuEnableDevice:
+					case menuUseItem:
+						//	Try to select, but if nothing selected, then dismiss the menu
+
+						if (!g_pTrans->m_PickerDisplay.LButtonDown(x, y))
+							{
+							HideMenu();
+							m_bIgnoreButtonUp = true;
+							}
+
+						break;
+					}
 				}
+
+			//	If mouse aiming not enabled, nothing to do
+
+			else if (!pPlayer->IsMouseAimEnabled())
+				{
+				}
+
+			//	If paused, then we're done
+
+			else if (g_pTrans->m_bPaused)
+				ExecuteCommandEnd(pPlayer, CGameKeys::keyPause);
 
 			//	Execute the command
 
@@ -621,7 +678,7 @@ void CGameSession::OnLButtonUp (int x, int y, DWORD dwFlags)
 		case CTranscendenceWnd::gsInGame:
 			{
             CPlayerShipController *pPlayer = m_Model.GetPlayer();
-			if (pPlayer == NULL || !pPlayer->IsMouseAimEnabled())
+			if (pPlayer == NULL)
 				break;
 
 			//	If in a menu, let the menu handle it.
@@ -636,6 +693,12 @@ void CGameSession::OnLButtonUp (int x, int y, DWORD dwFlags)
 			else if (m_bIgnoreButtonUp)
 				{
 				m_bIgnoreButtonUp = false;
+				}
+
+			//	If mouse aiming not enabled, nothing to do
+
+			else if (!pPlayer->IsMouseAimEnabled())
+				{
 				}
 
 			//	Command.
@@ -667,19 +730,25 @@ void CGameSession::OnMButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture
 		case CTranscendenceWnd::gsInGame:
 			{
             CPlayerShipController *pPlayer = m_Model.GetPlayer();
-			if (pPlayer == NULL || !pPlayer->IsMouseAimEnabled())
+			if (pPlayer == NULL)
 				break;
-
-			//	If paused, then we're done
-
-			if (g_pTrans->m_bPaused)
-				ExecuteCommandEnd(pPlayer, CGameKeys::keyPause);
 
 			//	Ignore if in a menu
 
-			else if (InMenu())
+			if (InMenu())
 				{
 				}
+
+			//	If mouse aiming not enabled, nothing to do
+
+			else if (!pPlayer->IsMouseAimEnabled())
+				{
+				}
+
+			//	If paused, then we're done
+
+			else if (g_pTrans->m_bPaused)
+				ExecuteCommandEnd(pPlayer, CGameKeys::keyPause);
 
 			//	Execute the command
 
@@ -705,12 +774,18 @@ void CGameSession::OnMButtonUp (int x, int y, DWORD dwFlags)
 		case CTranscendenceWnd::gsInGame:
 			{
             CPlayerShipController *pPlayer = m_Model.GetPlayer();
-			if (pPlayer == NULL || !pPlayer->IsMouseAimEnabled())
+			if (pPlayer == NULL)
 				break;
 
 			//	Ignore if in a menu
 
 			if (InMenu())
+				{
+				}
+
+			//	If mouse aiming not enabled, nothing to do
+
+			else if (!pPlayer->IsMouseAimEnabled())
 				{
 				}
 
@@ -741,8 +816,29 @@ void CGameSession::OnMouseMove (int x, int y, DWORD dwFlags)
 			if (pPlayer == NULL)
 				break;
 
-            if (!InMenu() && g_pHI->HasMouseMoved(x, y))
+			//	If we're in a menu, let the menu handle it
+
+			if (InMenu())
+				{
+				switch (m_CurrentMenu)
+					{
+					case menuEnableDevice:
+					case menuUseItem:
+						g_pTrans->m_PickerDisplay.MouseMove(x, y);
+						break;
+					}
+				}
+
+			//	If we're ignoring mouse move, then skip
+
+			else if (m_bIgnoreMouseMove)
+				m_bIgnoreMouseMove = false;
+
+			//	Otherwise, enable mouse aim
+
+            else if (g_pHI->HasMouseMoved(x, y))
                 pPlayer->SetMouseAimEnabled(true);
+
             break;
 			}
 
@@ -764,6 +860,16 @@ void CGameSession::OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
         case CTranscendenceWnd::gsInGame:
             if (m_bShowingSystemMap)
                 m_SystemMap.HandleMouseWheel(iDelta, x, y, dwFlags);
+			else if (InMenu())
+				{
+				switch (m_CurrentMenu)
+					{
+					case menuEnableDevice:
+					case menuUseItem:
+						g_pTrans->m_PickerDisplay.MouseWheel(iDelta, x, y);
+						break;
+					}
+				}
             break;
 
 		case CTranscendenceWnd::gsDocked:
@@ -801,19 +907,25 @@ void CGameSession::OnRButtonDown (int x, int y, DWORD dwFlags)
 		case CTranscendenceWnd::gsInGame:
 			{
             CPlayerShipController *pPlayer = m_Model.GetPlayer();
-			if (pPlayer == NULL || !pPlayer->IsMouseAimEnabled())
+			if (pPlayer == NULL)
 				break;
-
-			//	If paused, then we're done
-
-			if (g_pTrans->m_bPaused)
-				ExecuteCommandEnd(pPlayer, CGameKeys::keyPause);
 
 			//	Ignore if we're in a menu
 
-			else if (InMenu())
+			if (InMenu())
 				{
 				}
+
+			//	If mouse aiming not enabled, nothing to do
+
+			else if (!pPlayer->IsMouseAimEnabled())
+				{
+				}
+
+			//	If paused, then we're done
+
+			else if (g_pTrans->m_bPaused)
+				ExecuteCommandEnd(pPlayer, CGameKeys::keyPause);
 
 			//	Execute the command
 
@@ -839,7 +951,7 @@ void CGameSession::OnRButtonUp (int x, int y, DWORD dwFlags)
 		case CTranscendenceWnd::gsInGame:
 			{
             CPlayerShipController *pPlayer = m_Model.GetPlayer();
-			if (pPlayer == NULL || !pPlayer->IsMouseAimEnabled())
+			if (pPlayer == NULL)
 				break;
 
 			//	If nore if in a menu
@@ -847,6 +959,15 @@ void CGameSession::OnRButtonUp (int x, int y, DWORD dwFlags)
 			if (InMenu())
 				{
 				}
+
+			//	If mouse aiming not enabled, nothing to do
+
+			else if (!pPlayer->IsMouseAimEnabled())
+				{
+				}
+
+			//	Command
+
 			else
 				{
 				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(VK_RBUTTON);

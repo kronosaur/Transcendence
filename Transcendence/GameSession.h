@@ -97,4 +97,5 @@ class CGameSession : public IHISession
         CGalacticMapSession::SOptions m_GalacticMapSettings;
 		int m_iDamageFlash;					//	0 = no flash; odd = recover; even = flash;
 		bool m_bIgnoreButtonUp;				//	If we closed a menu on button down, ignore button up
+		bool m_bIgnoreMouseMove;			//	Ignore mouse move, for purposes of enabling mouse flight
 	};
