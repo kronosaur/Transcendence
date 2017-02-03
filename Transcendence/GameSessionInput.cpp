@@ -858,8 +858,18 @@ void CGameSession::OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
     switch (g_pTrans->m_State)
         {
         case CTranscendenceWnd::gsInGame:
+			{
+            CPlayerShipController *pPlayer = m_Model.GetPlayer();
+			if (pPlayer == NULL)
+				break;
+
+			//	If we're in the map, let the map handle it.
+
             if (m_bShowingSystemMap)
                 m_SystemMap.HandleMouseWheel(iDelta, x, y, dwFlags);
+
+			//	If we're in a menu, let the menu handle it.
+
 			else if (InMenu())
 				{
 				switch (m_CurrentMenu)
@@ -870,7 +880,80 @@ void CGameSession::OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
 						break;
 					}
 				}
+
+			//	If mouse aiming not enabled, nothing to do
+
+			else if (!pPlayer->IsMouseAimEnabled())
+				{
+				}
+
+			//	If paused, then we're done
+
+			else if (g_pTrans->m_bPaused)
+				ExecuteCommandEnd(pPlayer, CGameKeys::keyPause);
+
+			//	There is some set of commands that we can execute using the 
+			//	scroll wheel. We handle them here.
+
+			else
+				{
+				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(VK_MBUTTON);
+				switch (iCommand)
+					{
+					case CGameKeys::keyTargetNextFriendly:
+					case CGameKeys::keyTargetPrevFriendly:
+						{
+						if (iDelta > 0)
+							ExecuteCommand(pPlayer, CGameKeys::keyTargetPrevFriendly);
+						else
+							ExecuteCommand(pPlayer, CGameKeys::keyTargetNextFriendly);
+						break;
+						}
+
+					case CGameKeys::keyTargetNextEnemy:
+					case CGameKeys::keyTargetPrevEnemy:
+						{
+						if (iDelta > 0)
+							ExecuteCommand(pPlayer, CGameKeys::keyTargetPrevEnemy);
+						else
+							ExecuteCommand(pPlayer, CGameKeys::keyTargetNextEnemy);
+						break;
+						}
+
+					case CGameKeys::keyNextWeapon:
+					case CGameKeys::keyPrevWeapon:
+						{
+						if (iDelta > 0)
+							ExecuteCommand(pPlayer, CGameKeys::keyPrevWeapon);
+						else
+							ExecuteCommand(pPlayer, CGameKeys::keyNextWeapon);
+						break;
+						}
+
+					case CGameKeys::keyNextMissile:
+					case CGameKeys::keyPrevMissile:
+						{
+						if (iDelta > 0)
+							ExecuteCommand(pPlayer, CGameKeys::keyPrevMissile);
+						else
+							ExecuteCommand(pPlayer, CGameKeys::keyNextMissile);
+						break;
+						}
+
+					case CGameKeys::keyVolumeDown:
+					case CGameKeys::keyVolumeUp:
+						{
+						if (iDelta > 0)
+							ExecuteCommand(pPlayer, CGameKeys::keyVolumeUp);
+						else
+							ExecuteCommand(pPlayer, CGameKeys::keyVolumeDown);
+						break;
+						}
+					}
+				}
+
             break;
+			}
 
 		case CTranscendenceWnd::gsDocked:
 			g_pTrans->m_pCurrentScreen->MouseWheel(iDelta, x, y, dwFlags);
