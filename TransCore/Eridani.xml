@@ -182,7 +182,6 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, occupation, populated, raisuStation"
-			level=				"1"
 
 			noArticle=			"true"
 			>

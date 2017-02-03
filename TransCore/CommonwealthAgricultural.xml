@@ -28,7 +28,6 @@
 			hitPoints=			"250"
 			regen=				"5"
 			multiHull=			"true"
-			regen=              "2"
 				 
 			canAttack=			"true"
 			noBlacklist=		"true"

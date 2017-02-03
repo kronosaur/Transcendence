@@ -1035,7 +1035,6 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated"
-			level=				"1"
 			>
 
 		<Names noArticle="true">Habitat Alpha %1%0; Habitat Beta %1%0; Habitat Gamma %1%0; Habitat Delta %1%0;
