@@ -50,14 +50,14 @@
 				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			
+
+			level=				"5"
 			size=				"110"
 			armorID=			"&itReinforcedTitanium1;"
 			hitPoints=			"250"
-            regen=              "1"
+            regen=              "2"
 			multiHull=			"true"
 			fireRateAdj=		"20"
-			repairRate=			"5"
 				 
 			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion2;"

@@ -969,12 +969,12 @@
 		<LevelTable>
 			<Ship levelFrequency="cccr- -----" count="1" class="&scRoninB;" orders="guard"/>
 			<Ship levelFrequency="cccuu ur---" count="1" class="&scWolfen;" orders="guard"/>
-			<Ship levelFrequency="uuccc cuuuu" count="1" class="&scRoninC;" orders="guard"/>
 			<Ship levelFrequency="cccuu rr---" count="1" class="&scIAVMedium;" orders="guard"/>
-			<Ship levelFrequency="ccccc ccccc" count="1" class="&scCenturion;" orders="guard"/>
+			<Ship levelFrequency="uuccc uur--" count="1" class="&scRoninC;" orders="guard"/>
+			<Ship levelFrequency="ccccc ccuur" count="1" class="&scCenturion;" orders="guard"/>
 			<Ship levelFrequency="uuucc ccccc" count="1" class="&scIAVHeavy;" orders="guard"/>
 			<Ship levelFrequency="ruuuc ccccc" count="1" class="&scManticore;" orders="guard"/>
-			<Ship levelFrequency="---uu uuuuu" count="1" class="&scBritannia;" orders="guard"/>
+			<Ship levelFrequency="---ru uuuuu" count="1" class="&scBritannia;" orders="guard"/>
 		</LevelTable>
 	</ShipTable>
 

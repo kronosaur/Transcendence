@@ -55,8 +55,8 @@
 			abandonedScreen=	"&dsAbandonedStation;"
 				 
 			armorID=			"&itAdvancedPlasteelPlate;"
-			hitPoints=			"280"
-            regen=              "0.8"
+			hitPoints=			"500"
+            regen=              "10"
 			multiHull=			"true"
 				 
 			canAttack=			"true"

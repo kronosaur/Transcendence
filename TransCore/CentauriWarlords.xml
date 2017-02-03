@@ -621,10 +621,11 @@
 			canAttack=			"true"
 			noBlacklist=		"true"
 
+			level=				"4"
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"150"
-            regen=              "0.5"
+            regen=              "1"
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -849,6 +850,7 @@
 
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"90"
+			regen=				"1"
 			fireRateAdj=		"40"
 			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -897,6 +899,7 @@
 			canAttack=			"true"
 			noFriendlyTarget=	"true"
 
+			level=				"2"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"35"
 			ejectaType=			"&vtWreckEjecta;"

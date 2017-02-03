@@ -1099,13 +1099,14 @@
 				 
 			dockScreen=			"Dispatch"
 			abandonedScreen=	"&dsAbandonedStation;"
-			
+
+			level=				"4"
 			size=				"390"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"470"
+			hitPoints=			"630"
 			multiHull=			"true"
-			regen=              "1.4"
-			shipRepairRate=		"3"
+			regen=              "6"
+			shipRegen=			"6"
 				 
 			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion3;"

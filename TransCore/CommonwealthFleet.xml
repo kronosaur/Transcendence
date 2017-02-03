@@ -4562,8 +4562,8 @@ PLAYER DATA
 			armorID=			"&itP120HexphaseArmor;"
 			maxHitPoints=		"250"
 			hitPoints=			"0"
-			repairRate=			"1"
-			shipRepairRate=		"1"
+			regen=				"6"
+			shipRegen=			"6"
 			fireRateAdj=		"20"
 			ejectaType=			"&vtWreckEjecta;"
 

@@ -17,9 +17,9 @@
 
 			size=				"670"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"500"
+			hitPoints=			"800"
 			multiHull=			"true"
-			regen=				"4"
+			regen=				"8"
 			shipRegen=			"4"
 				 
 			canAttack=			"true"
@@ -174,10 +174,11 @@
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
 
+			level=				"3"
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"150"
-			repairRate=			"1"
+			regen=				"1"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, occupation, populated, raisuStation"
@@ -651,12 +652,12 @@
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 
-			level=				"3"
+			level=				"4"
 			size=				"390"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"250"
+			hitPoints=			"320"
+			regen=				"6"
 			multiHull=			"true"
-			regen=              "0.5"
 				 
 			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion2;"

@@ -280,12 +280,13 @@
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 				 
+			level=				"6"
 			size=				"450"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"840"
+			hitPoints=			"1400"
 			multiHull=			"true"
-			regen=              "8.4"
-			shipRepairRate=		"3"
+			regen=              "11"
+			shipRegen=			"10"
 				 
 			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion4;"

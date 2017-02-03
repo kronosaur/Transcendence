@@ -271,8 +271,8 @@
 			armorID=			"&itP120HexphaseArmor;"
 			hitPoints=			"560"
 			multiHull=			"true"
-			regen=              "2.8"
-			shipRepairRate=		"1"
+			regen=              "10"
+			shipRegen=			"6"
 				 
 			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion3;"
@@ -476,11 +476,12 @@
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
 
+			level=				"5"
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"370"
-			regen=              "1.1"
-			shipRepairRate=		"3"
+			hitPoints=			"800"
+			regen=              "8"
+			shipRegen=			"8"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -700,12 +701,12 @@
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 
-			level=				"3"
+			level=				"4"
 			size=				"390"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"250"
+			hitPoints=			"320"
 			multiHull=			"true"
-			regen=              "0.5"
+			regen=              "6"
 				 
 			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion2;"
@@ -1026,10 +1027,11 @@
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
 
+			level=				"3"
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"150"
-			regen=              "0.5"
+			regen=              "1"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated"
@@ -1296,10 +1298,11 @@
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
 
+			level=				"4"
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"250"
-			regen=              "0.5"
+			hitPoints=			"160"
+			regen=              "1"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, friendly, generic, human, populated"
@@ -1513,8 +1516,8 @@
 			armorID=			"&itP120HexphaseArmor;"
 			hitPoints=			"950"
 			multiHull=			"true"
-			regen=              "4.8"
-			shipRepairRate=		"1"
+			regen=              "20"
+			shipRegen=			"4"
 				 
 			canAttack=			"true"
 			explosionType=		"&vtThermoExplosion2;"

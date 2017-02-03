@@ -19,7 +19,7 @@
 			armorID=			"&itHeavyMeteorsteel;"
 			hitPoints=			"1680"
 			multiHull=			"true"
-			regen=              "25"
+			regen=              "16"
 			shipRegen=			"4"
 				 
 			canAttack=			"true"

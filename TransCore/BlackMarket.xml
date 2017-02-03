@@ -131,7 +131,7 @@ PLAYER DATA
 			armorID=			"&itBlastPlate;"
 			hitPoints=			"320"
 			multiHull=			"true"
-			regen=			    "1.6"
+			regen=			    "6"
 			fireRateAdj=		"20"
 				 
 			canAttack=			"true"
@@ -546,7 +546,7 @@ PLAYER DATA
 			hitPoints=			"1100"
 			multiHull=			"true"
 			regen=			    "11"
-			shipRepairRate=		"3"
+			shipRegen=			"11"
 			fireRateAdj=		"20"
 				 
 			canAttack=			"true"

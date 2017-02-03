@@ -1245,7 +1245,7 @@
 			multiHull=			"true"
 			armorID=			"&itLightTharsisPlate;"
 			hitPoints=			"370"
-            regen=              "1.1"
+            regen=              "4"
 			fireRateAdj=		"40"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -1298,7 +1298,7 @@
 			multiHull=			"true"
 			armorID=			"&itTharsisPlate;"
 			hitPoints=			"2400"
-            regen=              "20"
+            regen=              "25"
 			explosionType=		"&vtThermoExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 

@@ -14,16 +14,16 @@
 			dockScreen=			"&dsCommonwealthStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 
-            level=              "4"
+            level=              "5"
 			size=				"670"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"500"
+			hitPoints=			"1000"
 			multiHull=			"true"
-			regen=				"4"
+			regen=				"8"
 			shipRegen=			"4"
 			
 			canAttack=			"true"
-			explosionType=		"&vtBlastExplosion3;"
+			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 			>
 
@@ -153,15 +153,16 @@
 			dockScreen=			"&dsCommonwealthStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 
+			level=				"7"
 			size=				"670"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"1400"
+			hitPoints=			"1900"
 			multiHull=			"true"
-			regen=				"28"
-			shipRegen=			"4"
+			regen=				"15"
+			shipRegen=			"8"
 
 			canAttack=			"true"
-			explosionType=		"&vtBlastExplosion4;"
+			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 			>
 

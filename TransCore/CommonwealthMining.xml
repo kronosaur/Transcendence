@@ -192,7 +192,7 @@
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"100"
-			repairRate=			"1"
+			regen=				"1"
 			fireRateAdj=		"60"
 			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"

@@ -26,6 +26,7 @@
 			size=				"390"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"250"
+			regen=				"5"
 			multiHull=			"true"
 			regen=              "2"
 				 

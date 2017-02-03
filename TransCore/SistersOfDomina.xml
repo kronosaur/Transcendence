@@ -65,7 +65,7 @@
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"160"
-			regen=              "0.5"
+			regen=              "2"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envAir, envAvoidsFire, friendly, generic, human, majorStation, populated, religious, sistersOfDomina"

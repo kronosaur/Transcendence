@@ -279,6 +279,7 @@
 				 
 			armorID=			"&itCeramicPlate;"
 			hitPoints=			"75"
+			regen=				"1"
 			multiHull=			"true"
 				 
 			canAttack=			"true"
@@ -366,6 +367,7 @@
 				 
 			armorID=			"&itHeavyCeramicPlate;"
 			hitPoints=			"90"
+			regen=				"1"
 			multiHull=			"true"
 				 
 			canAttack=			"true"
@@ -449,6 +451,7 @@
 				 
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"150"
+			regen=				"2"
 			multiHull=			"true"
 				 
 			canAttack=			"true"
@@ -528,6 +531,7 @@
 				 
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"150"
+			regen=				"2"
 			multiHull=			"true"
 				 
 			canAttack=			"true"
@@ -623,7 +627,8 @@
 			abandonedScreen=	"&dsAbandonedStation;"
 				 
 			armorID=			"&itCeralloyArmor;"
-			hitPoints=			"200"
+			hitPoints=			"250"
+			regen=				"2"
 			multiHull=			"true"
 				 
 			canAttack=			"true"
