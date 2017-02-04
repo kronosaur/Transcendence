@@ -184,25 +184,31 @@
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
+			attributes=			"commonwealth, commonwealthCustoms, envEarth, envAvoidsAir, friendly, generic, human, mining, populated"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
 
-			multiHull=			"true"
+			size=				"300"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"100"
+			multiHull=			"true"
 			regen=				"1"
+				 
 			fireRateAdj=		"60"
+				 
+			canAttack=			"true"
 			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
-
-			attributes=			"commonwealth, commonwealthCustoms, envEarth, envAvoidsAir, friendly, generic, human, mining, populated"
-			levelFrequency=		"ccur- ----- ----- ----- -----"
-			locationCriteria=	"+asteroids, -outerSystem"
-
-			noArticle=			"true"
 			>
+		
+		<!-- Encounter Info -->
+		
+		<Encounter
+				levelFrequency=		"ccur- ----- ----- ----- -----"
+				locationCriteria=	"+asteroids, -outerSystem"
+				enemyExclusionRadius="60"
+				/>
 
 		<Names noArticle="true">Amundsen Mining Colony; Benin %1%0%0; Clementine Mining Association; Duralloy Dreams;
 				EI Mining Colony %1%0; Freetown Mining; St. George's Colony; %1%0%0%0 Hades;
@@ -212,24 +218,8 @@
 				UN%0%0%0 Mining Colony; St. Victoria's Colony; %1%0%0%0 Welkom; X%0%0%0 Mining Colony;
 				Yafran Colony; Zagazig Minerals</Names>
 
-		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
-		</ImageVariants>
-
-		<Devices>
-			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
-		</Devices>
-
-		<Items>
-			<RandomItem 
-					criteria=		"* +Ore; -NotStandard; -NotForSale;"
-					level=			"1"
-					levelCurve=		"2"
-					/>
-		</Items>
-
+		<!-- Trade and Items -->
+		
 		<Trade currency="credit" max="10000" replenish="500">
 			<Sell	criteria="wNU +unid:&itMiningLaser;;" priceAdj="100"	inventoryAdj="100"/>
 			<Sell	criteria="cNU +unid:&itMinersCargoHold;;" priceAdj="100"	inventoryAdj="100"/>
@@ -246,6 +236,24 @@
 			<InstallDevice	criteria="d L:1-6;" priceAdj="unavailable"	messageID="descNoInstall"/>
 		</Trade>
 
+		<Items>
+			<RandomItem 
+					criteria=		"* +Ore; -NotStandard; -NotForSale;"
+					level=			"1"
+					levelCurve=		"2"
+					/>
+		</Items>
+
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
+		</Devices>
+
+		<!-- Satellites -->
+
+		<!-- Ships and Defenses -->
+		
 		<Ships>
 			<Lookup count="1" table="&tbCommDefenders;"/>
 			<Lookup count="1d2" table="&tbCommPrivateCrafts;"/>
@@ -260,107 +268,27 @@
 			</Table>
 		</Reinforcements>
 
-		<StaticData>
-			<NPCService>
-				(	;	service					level	margin
-					(	'repairArmor			5		100		)
-					)
-			</NPCService>
-		</StaticData>
-
-		<Events>
-			<OnCreate>
-				;	Add ore to sell based on system ore frequency
+		<!-- Image and Effects -->
+		
+		<ImageVariants>
+			<LocationCriteriaTable>
+				<Image criteria="*ice"			imageID="&rsMiningColonyIce;"			imageWidth="260" imageHeight="260"/>
+				<Image criteria="*metallic"		imageID="&rsMiningColonyMetallic;"		imageWidth="260" imageHeight="260"/>
+				<Image criteria="*primordial"	imageID="&rsMiningColonyPrimordial;"	imageWidth="260" imageHeight="260"/>
+				<Image criteria="*volcanic"		imageID="&rsMiningColonyVolcanic;"		imageWidth="260" imageHeight="260"/>
 				
-				(sysAddRandomOreByValue gSource
-					(@ 
-						(list 0 
-							2000 5000 10000 20000 50000 
-							100000 200000 500000 1000000 2000000)
-						(sysGetLevel)
-						)
-					)
-			</OnCreate>
-			
-			<GetGlobalAchievements>
-				(block (theList)
-					(if (gr (typGetGlobalData &stMiningColony; "totalMissionCount") 0)
-						(setq theList (list
-							(list
-								"Mining colony missions"
-								(intMissionAchievementString (typGetGlobalData &stMiningColony; "missionsCompleted") (typGetGlobalData &stMiningColony; "missionsFailed"))
-								"missions &amp; activities"
-								)
-							))
-						)
-						
-					theList
-					)
-			</GetGlobalAchievements>
+				<Image criteria="*~"			imageID="&rsMiningColonyRocky;"			imageWidth="260" imageHeight="260"/>
+			</LocationCriteriaTable>
+		</ImageVariants>
 
-			<OnContractGenerate>
-				(intGenerateMiningRequestContract1)
-			</OnContractGenerate>
-
-			<OnContractQuery>True</OnContractQuery>
-
-			<OnObjDestroyed>
-				(block (missionID)
-					(setq missionID (objGetData gSource "missionID"))
-					(if (eq (objGetData gSource "missionStatus") 'inProgress)
-						(switch
-							(eq missionID 'DestroyIllegalMiners)
-								(if (mneAllTargetsDestroyed gSource aObjDestroyed)
-									(block Nil
-										(objSetData gSource "missionStatus" 'success)
-										(typIncGlobalData &stMiningColony; "missionsCompleted")
-										(shpCancelOrders gPlayerShip)
-										(shpOrder gPlayerShip 'dock gSource)
-										(plyMessage gPlayer "Mission complete!")
-										)
-									)
-
-							(eq missionID 'SaveMiningShip)
-								(switch
-									(eq aObjDestroyed (objGetObjRefData gSource "targetMiner"))
-										(block Nil
-											(objSetData gSource "missionStatus" 'failure)
-											(typIncGlobalData &stMiningColony; "missionsFailed")
-											(shpCancelOrders gPlayerShip)
-											(plyMessage gPlayer "Mission failed!")
-											)
-
-									(if (mneAllTargetsDestroyed gSource aObjDestroyed)
-										(block (theMiner)
-											(objFireEvent (objGetObjRefData gSource "targetMiner") "OrderSetFree")
-
-											(objSetData gSource "missionStatus" 'success)
-											(typIncGlobalData &stMiningColony; "missionsCompleted")
-											(shpCancelOrders gPlayerShip)
-											(shpOrder gPlayerShip 'dock gSource)
-											(plyMessage gPlayer "Mission complete!")
-											)
-										)
-									)
-							)
-						)
-					)
-			</OnObjDestroyed>
-			
-			<OnOreDepositFound>
-				(switch
-					;	If there are no outlaw miners in the system, we send out
-					;	ships on their behalf.
-					
-					(not (sysFindObject Nil "T +outlawMiners; +populated;"))
-						(block (minerObj)
-							(setq minerObj (sysCreateShip &tbOutlawMinerProspector; (sysFindObject gSource "GN") &svOutlawMiners;))
-							(objSetData minerObj 'depositID (objGetID (@ gData 'depositObj)))
-							)
-					)
-			</OnOreDepositFound>
-		</Events>
-
+		<DockingPorts
+				portCount=		"9"
+				portRadius=		"120"
+				>
+		</DockingPorts>
+		
+		<!-- Dock Screens -->
+		
 		<DockScreens>
 			<Main>
 				<InitialPane>
@@ -956,16 +884,108 @@
 
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="90" />
-			<Port x="0"		y="-90" />
-			<Port x="60"	y="60" />
-			<Port x="60"	y="-60" />
-			<Port x="90"	y="0" />
-			<Port x="-90"	y="0" />
-			<Port x="-60"	y="60" />
-			<Port x="-60"	y="-60" />
-		</DockingPorts>
+		<!-- Events and Data -->
+		
+		<StaticData>
+			<NPCService>
+				(	;	service					level	margin
+					(	'repairArmor			5		100		)
+					)
+			</NPCService>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				;	Add ore to sell based on system ore frequency
+				
+				(sysAddRandomOreByValue gSource
+					(@ 
+						(list 0 
+							2000 5000 10000 20000 50000 
+							100000 200000 500000 1000000 2000000)
+						(sysGetLevel)
+						)
+					)
+			</OnCreate>
+			
+			<GetGlobalAchievements>
+				(block (theList)
+					(if (gr (typGetGlobalData &stMiningColony; "totalMissionCount") 0)
+						(setq theList (list
+							(list
+								"Mining colony missions"
+								(intMissionAchievementString (typGetGlobalData &stMiningColony; "missionsCompleted") (typGetGlobalData &stMiningColony; "missionsFailed"))
+								"missions &amp; activities"
+								)
+							))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+
+			<OnContractGenerate>
+				(intGenerateMiningRequestContract1)
+			</OnContractGenerate>
+
+			<OnContractQuery>True</OnContractQuery>
+
+			<OnObjDestroyed>
+				(block (missionID)
+					(setq missionID (objGetData gSource "missionID"))
+					(if (eq (objGetData gSource "missionStatus") 'inProgress)
+						(switch
+							(eq missionID 'DestroyIllegalMiners)
+								(if (mneAllTargetsDestroyed gSource aObjDestroyed)
+									(block Nil
+										(objSetData gSource "missionStatus" 'success)
+										(typIncGlobalData &stMiningColony; "missionsCompleted")
+										(shpCancelOrders gPlayerShip)
+										(shpOrder gPlayerShip 'dock gSource)
+										(plyMessage gPlayer "Mission complete!")
+										)
+									)
+
+							(eq missionID 'SaveMiningShip)
+								(switch
+									(eq aObjDestroyed (objGetObjRefData gSource "targetMiner"))
+										(block Nil
+											(objSetData gSource "missionStatus" 'failure)
+											(typIncGlobalData &stMiningColony; "missionsFailed")
+											(shpCancelOrders gPlayerShip)
+											(plyMessage gPlayer "Mission failed!")
+											)
+
+									(if (mneAllTargetsDestroyed gSource aObjDestroyed)
+										(block (theMiner)
+											(objFireEvent (objGetObjRefData gSource "targetMiner") "OrderSetFree")
+
+											(objSetData gSource "missionStatus" 'success)
+											(typIncGlobalData &stMiningColony; "missionsCompleted")
+											(shpCancelOrders gPlayerShip)
+											(shpOrder gPlayerShip 'dock gSource)
+											(plyMessage gPlayer "Mission complete!")
+											)
+										)
+									)
+							)
+						)
+					)
+			</OnObjDestroyed>
+			
+			<OnOreDepositFound>
+				(switch
+					;	If there are no outlaw miners in the system, we send out
+					;	ships on their behalf.
+					
+					(not (sysFindObject Nil "T +outlawMiners; +populated;"))
+						(block (minerObj)
+							(setq minerObj (sysCreateShip &tbOutlawMinerProspector; (sysFindObject gSource "GN") &svOutlawMiners;))
+							(objSetData minerObj 'depositID (objGetID (@ gData 'depositObj)))
+							)
+					)
+			</OnOreDepositFound>
+		</Events>
 
 		<Language>
 			<Text id="descNoDepositsInSystem">
@@ -1142,5 +1162,13 @@
 				))
 			)
 	</Globals>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsMiningColonyIce;"			bitmap="Resources\MiningColonyIce.jpg"	bitmask="Resources\MiningColonyIceMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsMiningColonyMetallic;"		bitmap="Resources\MiningColonyMetallic.jpg"	bitmask="Resources\MiningColonyMetallicMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsMiningColonyPrimordial;"	bitmap="Resources\MiningColonyPrimordial.jpg"	bitmask="Resources\MiningColonyPrimordialMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsMiningColonyRocky;"			bitmap="Resources\MiningColonyRocky.jpg"	bitmask="Resources\MiningColonyRockyMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsMiningColonyVolcanic;"		bitmap="Resources\MiningColonyVolcanic.jpg"	bitmask="Resources\MiningColonyVolcanicMask.bmp" 	loadOnUse="true" />
 
 </TranscendenceModule>

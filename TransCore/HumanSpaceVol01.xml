@@ -1743,6 +1743,14 @@
 	<!ENTITY scFionaScorpion			"0x00100236">
 	<!ENTITY scStormhoundAquila			"0x00100237">
 	
+	<!-- 0250-026F COMMONWEALTH MINING -->
+	
+	<!ENTITY rsMiningColonyIce			"0x00100250">
+	<!ENTITY rsMiningColonyMetallic		"0x00100251">
+	<!ENTITY rsMiningColonyPrimordial	"0x00100252">
+	<!ENTITY rsMiningColonyRocky		"0x00100253">
+	<!ENTITY rsMiningColonyVolcanic		"0x00100254">
+	
 	<!-- 1000-FFFF RESERVED -->
 	]>
 	
