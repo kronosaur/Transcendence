@@ -3654,7 +3654,7 @@
 			name=				"Dragonfly missile cartridge"
 			attributes=			"commonwealth, consumable, EI, missile"
 			  
-			level=				"4"
+			level=				"6"
 			frequency=			"common"
 			numberAppearing=	"10d20"
 
