@@ -342,15 +342,46 @@
 		<!-- Image and Effects -->
 		
 		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
+			<LocationCriteriaTable>
+				<Variants criteria="*ice">
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*metallic">
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*primordial">
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*volcanic">
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				
+				<Variants criteria="*~">
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+			</LocationCriteriaTable>
 		</ImageVariants>
 
 		<DockingPorts
 				portCount=		"8"
-				portRadius=		"70"
-				/>
+				portRadius=		"120"
+				>
+		</DockingPorts>
 
 	</StationType>
 
@@ -426,15 +457,46 @@
 		<!-- Image and Effects -->
 		
 		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
+			<LocationCriteriaTable>
+				<Variants criteria="*ice">
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*metallic">
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*primordial">
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*volcanic">
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				
+				<Variants criteria="*~">
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+			</LocationCriteriaTable>
 		</ImageVariants>
 
 		<DockingPorts
 				portCount=		"8"
-				portRadius=		"70"
-				/>
+				portRadius=		"120"
+				>
+		</DockingPorts>
 
 	</StationType>
 
@@ -506,15 +568,46 @@
 		<!-- Image and Effects -->
 		
 		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
+			<LocationCriteriaTable>
+				<Variants criteria="*ice">
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*metallic">
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*primordial">
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*volcanic">
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				
+				<Variants criteria="*~">
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+			</LocationCriteriaTable>
 		</ImageVariants>
 
 		<DockingPorts
 				portCount=		"8"
-				portRadius=		"70"
-				/>
+				portRadius=		"120"
+				>
+		</DockingPorts>
 
 	</StationType>
 
@@ -567,11 +660,11 @@
 		<!-- Satellites -->
 
 		<Satellites overlapCheck="asteroids">
-			<Orbitals distance="8" angle="45">
+			<Orbitals distance="9" angle="45">
 				<Station type="&stOutlawTurret;" imageVariant="2"/>
 			</Orbitals>
 
-			<Orbitals distance="8" angle="225">
+			<Orbitals distance="9" angle="225">
 				<Station type="&stOutlawTurret;" imageVariant="0"/>
 			</Orbitals>
 		</Satellites>
@@ -603,15 +696,46 @@
 		<!-- Image and Effects -->
 		
 		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
+			<LocationCriteriaTable>
+				<Variants criteria="*ice">
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*metallic">
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*primordial">
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*volcanic">
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				
+				<Variants criteria="*~">
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+			</LocationCriteriaTable>
 		</ImageVariants>
 
 		<DockingPorts
 				portCount=		"8"
-				portRadius=		"70"
-				/>
+				portRadius=		"120"
+				>
+		</DockingPorts>
 		
 	</StationType>
 
@@ -664,19 +788,19 @@
 		<!-- Satellites -->
 		
 		<Satellites overlapCheck="asteroids">
-			<Orbitals distance="8" angle="45">
+			<Orbitals distance="9" angle="45">
 				<Station type="&stOutlawTurret;" imageVariant="2"/>
 			</Orbitals>
 
-			<Orbitals distance="8" angle="135">
+			<Orbitals distance="9" angle="135">
 				<Station type="&stOutlawTurret;" imageVariant="1"/>
 			</Orbitals>
 
-			<Orbitals distance="8" angle="225">
+			<Orbitals distance="9" angle="225">
 				<Station type="&stOutlawTurret;" imageVariant="0"/>
 			</Orbitals>
 
-			<Orbitals distance="8" angle="315">
+			<Orbitals distance="9" angle="315">
 				<Station type="&stOutlawTurret;" imageVariant="3"/>
 			</Orbitals>
 		</Satellites>
@@ -704,15 +828,46 @@
 		<!-- Image and Effects -->
 		
 		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
+			<LocationCriteriaTable>
+				<Variants criteria="*ice">
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*metallic">
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*primordial">
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*volcanic">
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				
+				<Variants criteria="*~">
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+			</LocationCriteriaTable>
 		</ImageVariants>
 
 		<DockingPorts
 				portCount=		"8"
-				portRadius=		"70"
-				/>
+				portRadius=		"120"
+				>
+		</DockingPorts>
 
 	</StationType>
 
@@ -1067,6 +1222,11 @@
 	
 <!-- RESOURCES -->
 
-	<Image UNID="&rsBorer;"		bitmap="Resources\Borer.jpg" bitmask="Resources\BorerMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsBorer;"					bitmap="Resources\Borer.jpg" bitmask="Resources\BorerMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsOutlawMineIce;"			bitmap="Resources\OutlawMineIce.jpg" bitmask="Resources\OutlawMineIceMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsOutlawMineMetallic;"	bitmap="Resources\OutlawMineMetallic.jpg" bitmask="Resources\OutlawMineMetallicMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsOutlawMinePrimordial;"	bitmap="Resources\OutlawMinePrimordial.jpg" bitmask="Resources\OutlawMinePrimordialMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsOutlawMineRocky;"		bitmap="Resources\OutlawMineRocky.jpg" bitmask="Resources\OutlawMineRockyMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsOutlawMineVolcanic;"	bitmap="Resources\OutlawMineVolcanic.jpg" bitmask="Resources\OutlawMineVolcanicMask.bmp" loadOnUse="true"/>
 
 </TranscendenceModule>

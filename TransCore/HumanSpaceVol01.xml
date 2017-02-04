@@ -1688,6 +1688,11 @@
 	
 	<!ENTITY baOutlawMine				"0x00100180">
 	<!ENTITY tbOutlawMinerProspector	"0x00100181">
+	<!ENTITY rsOutlawMineIce			"0x00100182">
+	<!ENTITY rsOutlawMineMetallic		"0x00100183">
+	<!ENTITY rsOutlawMinePrimordial		"0x00100184">
+	<!ENTITY rsOutlawMineRocky			"0x00100185">
+	<!ENTITY rsOutlawMineVolcanic		"0x00100186">
 	
 	<!-- 0190-019F VENTARI SETTLERS -->
 	
