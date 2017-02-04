@@ -8,6 +8,7 @@
 #define BACK_COLOR					(CG32bitPixel(20, 20, 20))
 #define TEXT_COLOR					(CG32bitPixel(200, 200, 200))
 #define INPUT_COLOR					(CG32bitPixel(255, 255, 200))
+#define HINT_COLOR					(CG32bitPixel(200, 200, 255))
 
 const int LEFT_SPACING =			2;
 const int RIGHT_SPACING =			2;
@@ -135,6 +136,111 @@ int CCommandLineDisplay::GetHistoryCount(void)
 		return ((m_iHistoryEnd + MAX_LINES + 1 - m_iHistoryStart) % (MAX_LINES + 1));
 }
 
+const CString CCommandLineDisplay::GetCurrentCmd(void)
+
+//	GetCurrentCmd
+//
+//	Returns the command fragment under the cursor from the input line
+
+	{
+	int iPos;
+	CString sWord;
+
+	// Want to extract the word to the left of cursor
+	for (iPos = m_iCursorPos - 1; iPos >= 0; iPos--)
+		{
+		char *pPos = m_sInput.GetASCIIZPointer() + iPos;
+		if (*pPos == ' ' || *pPos == '(')
+			{
+			iPos++;
+			break;
+			}
+		if (*pPos == ')' || *pPos == '\'' || *pPos == '"')
+			return NULL_STR;
+		}
+
+	if (iPos < 0) iPos = 0;
+	return strSubString(m_sInput, iPos, m_iCursorPos - iPos);
+	}
+
+void CCommandLineDisplay::AutoCompleteSearch(void)
+
+//	AutocompleteSearch
+//
+//	Searches the global symbol table for matches to the current command.
+
+	{
+	const CString sCurCmd = GetCurrentCmd();
+	CString sCommon;
+	CString sHelp;
+
+	ClearHint();
+	if (sCurCmd.IsBlank())
+		return;
+
+	//	Get the list of global symbols
+
+	ICCItem *pGlobals = g_pUniverse->GetCC().GetGlobals();
+
+	int iMatches = 0;
+
+	for (int i = 0; i < pGlobals->GetCount(); i++)
+		{
+		CString sGlobal = pGlobals->GetKey(i);
+
+		//	Partial match
+		if (strStartsWith(sGlobal, sCurCmd))
+			{
+			if (iMatches == 0)
+				sCommon = sGlobal;
+			//	If we have multiple matching commands then find the longest common stem
+			else
+				{
+				int iLen = min(sCommon.GetLength(), sGlobal.GetLength());
+				char *pPos1 = sCommon.GetPointer();
+				char *pPos2 = sGlobal.GetPointer();
+				int i;
+				for (i = 0; i < iLen; i++)
+					{
+					if (CharLower((LPTSTR)(BYTE)(*pPos1)) != CharLower((LPTSTR)(BYTE)(*pPos2)))
+						break;
+					pPos1++;
+					pPos2++;
+					}
+				sCommon.Truncate(i);
+				m_sHint.Append(CONSTLIT(" "));
+				}
+			//	Append the command to the auto complete hint
+			m_sHint.Append(sGlobal);
+			iMatches++;
+			}
+
+		if (strEquals(sGlobal, sCurCmd))
+			{
+			//	Exact match - get help text
+			ICCItem *pItem = pGlobals->GetElement(i);
+			if (pItem->IsPrimitive())
+				sHelp = pItem->GetHelp();
+			}
+		}
+
+	//	If the common stem is longer than the current command, then auto complete
+	if (sCommon.GetLength() > sCurCmd.GetLength())
+		Input(strSubString(sCommon, sCurCmd.GetLength(), -1));
+
+	//	If we only have one match then no need to show hint as we have either
+	//	auto completed or will show help text insead
+	if (iMatches == 1)
+		m_sHint = NULL_STR;
+
+	if (!sHelp.IsBlank())
+		{
+		if (!m_sHint.IsBlank())
+			m_sHint.Append(CONSTLIT("\n"));
+		m_sHint.Append(sHelp);
+		}
+	}
+
 ALERROR CCommandLineDisplay::Init (CTranscendenceWnd *pTrans, const RECT &rcRect)
 
 //	Init
@@ -175,7 +281,7 @@ void CCommandLineDisplay::Input (const CString &sInput)
 		{
 		m_sInput.Append(sInput);
 		}
-	m_iCursorPos++;
+	m_iCursorPos += sInput.GetLength();
 	m_bInvalid = true;
 	}
 
@@ -224,6 +330,7 @@ void CCommandLineDisplay::InputEnter (void)
 	AppendHistory(m_sInput);
 	Output(m_sInput, INPUT_COLOR);
 	ClearInput();
+	ClearHint();
 	}
 
 void CCommandLineDisplay::InputHistoryUp (void)
@@ -304,6 +411,12 @@ void CCommandLineDisplay::OnKeyDown (int iVirtKey, DWORD dwKeyState)
 
 				Output(sOutput);
 				}
+			break;
+			}
+
+		case VK_TAB:
+			{
+			AutoCompleteSearch();
 			break;
 			}
 
@@ -464,13 +577,22 @@ void CCommandLineDisplay::Update (void)
 	int iInputCols = m_sInput.GetLength() + 1;
 	int iInputLines = (iInputCols / iCols) + ((iInputCols % iCols) ? 1 : 0);
 
+	//	Figure out how many lines we need for the hint
+
+	TArray<CString> HintLines;
+	m_pFonts->Console.BreakText(m_sHint,
+			(RectWidth(m_rcRect) - (LEFT_SPACING + RIGHT_SPACING)),
+			&HintLines);
+
+	int iHintLines = HintLines.GetCount();
+
 	//	Figure out how many lines in the output
 
 	int iOutputLines = GetOutputCount();
 
 	//	Paint from the bottom up
 
-	int iTotalLines = Min(iLines, iInputLines + iOutputLines);
+	int iTotalLines = Min(iLines, iInputLines + iHintLines + iOutputLines);
 	int x = LEFT_SPACING;
 	int yMin = TOP_SPACING;
 	int y = yMin + (iTotalLines - 1) * cyLine;
@@ -497,6 +619,16 @@ void CCommandLineDisplay::Update (void)
 		y -= cyLine;
 		iStart -= iCols;
 		iRemainderText = iCols;
+		}
+
+	//	Paint the hint line
+
+	while (y >= yMin && iHintLines > 0)
+		{
+		m_Buffer.DrawText(x, y, m_pFonts->Console, HINT_COLOR, HintLines[iHintLines - 1]);
+
+		y -= cyLine;
+		iHintLines--;
 		}
 
 	//	Paint each line of output
