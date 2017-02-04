@@ -101,7 +101,7 @@ void CCommandLineDisplay::AppendHistory(const CString &sLine)
 //
 //	Append a line of input to the history buffer
 
-{
+	{
 	if (!(sLine == GetHistory(0)))
 		{
 		m_iHistoryStart = (m_iHistoryStart + (MAX_LINES + 1) - 1) % (MAX_LINES + 1);
@@ -111,7 +111,7 @@ void CCommandLineDisplay::AppendHistory(const CString &sLine)
 		m_History[m_iHistoryStart] = sLine;
 		}
 	m_iHistoryIndex = -1;
-}
+	}
 
 const CString &CCommandLineDisplay::GetHistory(int iLine)
 
@@ -119,9 +119,9 @@ const CString &CCommandLineDisplay::GetHistory(int iLine)
 //
 //	Returns the history line
 
-{
+	{
 	return m_History[(m_iHistoryStart + iLine) % (MAX_LINES + 1)];
-}
+	}
 
 int CCommandLineDisplay::GetHistoryCount(void)
 
@@ -129,12 +129,12 @@ int CCommandLineDisplay::GetHistoryCount(void)
 //
 //	Returns the number of lines in the history buffer
 
-{
+	{
 	if (m_iHistoryStart == m_iHistoryEnd)
 		return 0;
 	else
 		return ((m_iHistoryEnd + MAX_LINES + 1 - m_iHistoryStart) % (MAX_LINES + 1));
-}
+	}
 
 const CString CCommandLineDisplay::GetCurrentCmd(void)
 
@@ -309,16 +309,16 @@ void CCommandLineDisplay::InputDelete(void)
 //
 //	Delete characters from input buffer
 
-{
-	if (m_sInput.GetLength() > 0 && m_iCursorPos < m_sInput.GetLength())
 	{
+	if (m_sInput.GetLength() > 0 && m_iCursorPos < m_sInput.GetLength())
+		{
 		if (m_iCursorPos == 0)
 			m_sInput = strSubString(m_sInput, 1, -1);
 		else
 			m_sInput = strCat(strSubString(m_sInput, 0, m_iCursorPos), strSubString(m_sInput, m_iCursorPos+1, -1));
 		m_bInvalid = true;
+		}
 	}
-}
 
 void CCommandLineDisplay::InputEnter (void)
 
