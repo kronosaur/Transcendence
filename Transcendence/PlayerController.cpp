@@ -1124,6 +1124,8 @@ void CPlayerShipController::OnDeviceEnabledDisabled (int iDev, bool bEnable, boo
 //	Device has been disabled (generally by reactor overload)
 
 	{
+	DEBUG_TRY
+
 	CInstalledDevice *pDevice = m_pShip->GetDevice(iDev);
 	if (pDevice 
 			&& !pDevice->IsEmpty())
@@ -1144,6 +1146,8 @@ void CPlayerShipController::OnDeviceEnabledDisabled (int iDev, bool bEnable, boo
 						pDevice->GetClass()->GetName())));
 			}
 		}
+
+	DEBUG_CATCH
 	}
 
 void CPlayerShipController::OnDeviceStatus (CInstalledDevice *pDev, CDeviceClass::DeviceNotificationTypes iEvent)
@@ -1339,6 +1343,8 @@ void CPlayerShipController::OnShipStatus (EShipStatusNotifications iEvent, DWORD
 //	Something has happened to the ship...
 
 	{
+	DEBUG_TRY
+
 	switch (iEvent)
 		{
 		case statusArmorRepaired:
@@ -1451,6 +1457,8 @@ void CPlayerShipController::OnShipStatus (EShipStatusNotifications iEvent, DWORD
 			m_pTrans->DisplayMessage(CONSTLIT("Reactor power restored"));
 			break;
 		}
+
+	DEBUG_CATCH
 	}
 
 void CPlayerShipController::OnStartGame (void)
