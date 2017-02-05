@@ -155,64 +155,92 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		//	---------------------
 
 		{	"cnvDrawImage",					fnCanvas,			FN_CNV_DRAW_IMAGE,
-			"(cnvDrawImage x y imageDesc [screen] [ID])",
+			"(cnvDrawImage x y imageDesc [screen] [ID]) -> True/Nil",
 			"iil*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"cnvDrawLine",					fnCanvas,			FN_CNV_DRAW_LINE,
-			"(cnvDrawLine xFrom yFrom xTo yTo width color [screen] [ID])",
+			"(cnvDrawLine xFrom yFrom xTo yTo width color [screen] [ID]) -> True/Nil",
 			"iiiiiv*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"cnvDrawRect",					fnCanvas,			FN_CNV_DRAW_RECT,
-			"(cnvDrawRect x y width height color [screen] [ID])",
+			"(cnvDrawRect x y width height color [screen] [ID]) -> True/Nil",
 			"iiiiv*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"cnvDrawText",					fnCanvas,			FN_CNV_DRAW_TEXT,
-			"(cnvDrawText x y [width] text font color alignment [screen] [ID])",
+			"(cnvDrawText x y [width] text font color alignment [screen] [ID]) -> True/Nil\n\n"
+
+			"font:\n\n"
+
+			"   'Small\n"
+			"   'Medium\n"
+			"   'MediumBold\n"
+			"   'MediumHeavyBold\n"
+			"   'Large\n"
+			"   'LargeBold\n"
+			"   'Header\n"
+			"   'HeaderBold\n"
+			"   'SubTitle\n"
+			"   'SubTitleBold\n"
+			"   'SubTitleHeavyBold\n"
+			"   'Title\n"
+			"\n"
+			"alignment:\n\n"
+			"   'left\n"
+			"   'cener\n"
+			"   'right\n",
+
 			"ii*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrAddAction",					fnScrSet,		FN_SCR_ADD_ACTION,
-			"(scrAddAction screen actionID pos label [key] [special] code)",
+			"(scrAddAction screen actionID pos label [key] [special] code) -> True/Nil",
 			"isis*c",	PPFLAG_SIDEEFFECTS, },
 
 		{	"scrAddListFilter",			fnScrSet,			FN_SCR_ADD_LIST_FILTER,
-			"(scrAddListFilter screen filterID label filter)",
+			"(scrAddListFilter screen filterID label filter) -> True/Nil\n\n"
+
+			"filter can be lambda function or item criteria\n",
+
 			"issv",		PPFLAG_SIDEEFFECTS, },
 
 		{	"scrAddMinorAction",			fnScrSet,		FN_SCR_ADD_MINOR_ACTION,
-			"(scrAddMinorAction screen actionID pos label [key] [special] code)",
+			"(scrAddMinorAction screen actionID pos label [key] [special] code) -> True/Nil",
 			"isis*c",	PPFLAG_SIDEEFFECTS, },
 
 		{	"scrEnableAction",				fnScrSet,		FN_SCR_ENABLE_ACTION,
-			"(scrEnableAction screen actionID enabled)",
+			"(scrEnableAction screen actionID enabled) -> True/Nil",
 			"ivv",	PPFLAG_SIDEEFFECTS, },
 
 		{	"scrExitScreen",				fnScrSet,		FN_SCR_EXIT_SCREEN,
-			"(scrExitScreen screen ['forceUndock])",
+			"(scrExitScreen screen ['forceUndock]) -> True/Nil",
 			"i*",	PPFLAG_SIDEEFFECTS, },
 
-		{	"scrGetCounter",				fnScrGetOld,		FN_SCR_COUNTER,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
-		//	(scrGetCounter screen)
+		{	"scrGetCounter",				fnScrGetOld,		FN_SCR_COUNTER,
+			"(scrGetCounter screen) -> value",
+			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrGetData",					fnScrGet,		FN_SCR_DATA,
 			"(scrGetData screen attrib) -> data",
 			"is",	0,	},
 
 		{	"scrGetDesc",					fnScrGet,		FN_SCR_DESC,
-			"(scrGetDesc screen)",
+			"(scrGetDesc screen) -> text",
 			"i",	0,	},
 
-		{	"scrGetInputText",				fnScrGetOld,		FN_SCR_INPUT_TEXT,	"",		NULL,	PPFLAG_SIDEEFFECTS, },
-		//	(scrGetInputText screen) => string
+		{	"scrGetInputText",				fnScrGetOld,		FN_SCR_INPUT_TEXT,
+			"(scrGetInputText screen) -> text",
+			NULL,	PPFLAG_SIDEEFFECTS, },
 
-		{	"scrGetItem",					fnScrItem,		FN_SCR_GET_ITEM,	"",		NULL,	PPFLAG_SIDEEFFECTS, },
-		//	(scrGetItem screen) => item
+		{	"scrGetItem",					fnScrItem,		FN_SCR_GET_ITEM,
+			"(scrGetItem screen) -> item",
+			NULL,	PPFLAG_SIDEEFFECTS, },
 
 		{	"scrGetListCursor",				fnScrGet,		FN_SCR_LIST_CURSOR,
 			"(scrGetListCursor screen) -> cursor",
 			"i",	0,	},
 
-		{	"scrGetListEntry",				fnScrGetOld,		FN_SCR_LIST_ENTRY,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
-		//	(scrGetListEntry screen) -> entry
+		{	"scrGetListEntry",				fnScrGetOld,		FN_SCR_LIST_ENTRY,
+			"(scrGetListEntry screen) -> entry",
+			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrGetScreen",				    fnScrGet,		FN_SCR_GET_SCREEN,
             "(scrGetScreen gScreen) -> screenDesc\n\n"
@@ -226,37 +254,39 @@ static PRIMITIVEPROCDEF g_Extensions[] =
             "i",	0,	},
 
 		{	"scrIncData",					fnScrSet,		FN_SCR_INC_DATA,
-			"(scrIncData screen attrib [increment])",
+			"(scrIncData screen attrib [increment]) -> value",
 			"is*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrIsActionEnabled",			fnScrGet,		FN_SCR_IS_ACTION_ENABLED,	
 			"(scrIsActionEnabled screen actionID) -> True/Nil",		
 			"iv",	0, },
 
-		{	"scrIsFirstOnInit",				fnScrGetOld,		FN_SCR_IS_FIRST_ON_INIT,	"",		NULL,	PPFLAG_SIDEEFFECTS, },
-		//	(scrIsFirstOnInit screen) => True/Nil
+		{	"scrIsFirstOnInit",				fnScrGetOld,		FN_SCR_IS_FIRST_ON_INIT,
+			"(scrIsFirstOnInit screen) -> True/Nil",
+			NULL,	PPFLAG_SIDEEFFECTS, },
 
 		{	"scrRefreshScreen",				fnScrSet,		FN_SCR_REFRESH_SCREEN,
-			"(scrRefreshScreen screen)",
+			"(scrRefreshScreen screen) -> True/Nil",
 			"i",	PPFLAG_SIDEEFFECTS, },
 
 		{	"scrRemoveAction",				fnScrSet,		FN_SCR_REMOVE_ACTION,
-			"(scrRemoveAction screen actionID)",
+			"(scrRemoveAction screen actionID) -> True/Nil",
 			"is",	PPFLAG_SIDEEFFECTS, },
 
-		{	"scrRemoveItem",				fnScrItem,		FN_SCR_REMOVE_ITEM,	"",		NULL,	PPFLAG_SIDEEFFECTS, },
-		//	(scrRemoveItem screen count) => item
+		{	"scrRemoveItem",				fnScrItem,		FN_SCR_REMOVE_ITEM,
+			"(scrRemoveItem screen count) -> item",
+			NULL,	PPFLAG_SIDEEFFECTS, },
 
 		{	"scrSetActionDesc",				fnScrSet,		FN_SCR_ACTION_DESC,
-			"(scrSetActionDesc screen actionID descID)",
+			"(scrSetActionDesc screen actionID descID) -> True/Nil",
 			"ivv",		PPFLAG_SIDEEFFECTS, },
 
 		{	"scrSetActionLabel",			fnScrSet,		FN_SCR_ACTION_LABEL,
-			"(scrSetActionLabel screen actionID label [key] [special])",
+			"(scrSetActionLabel screen actionID label [key] [special]) -> True/Nil",
 			"ivs*",		PPFLAG_SIDEEFFECTS, },
 
 		{	"scrSetBackgroundImage",		fnScrSet,		FN_SCR_BACKGROUND_IMAGE,
-			"(scrSetBackgroundImage screen imageDesc)",
+			"(scrSetBackgroundImage screen imageDesc) -> True/Nil",
 			"iv",		PPFLAG_SIDEEFFECTS, },
 
 		{	"scrSetControlValue",			fnScrSet,		FN_SCR_CONTROL_VALUE,
@@ -267,15 +297,16 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(scrSetControlValueTranslate screen controlID textID [data]) -> True/Nil",
 			"iss*",		PPFLAG_SIDEEFFECTS, },
 
-		{	"scrSetCounter",				fnScrSetOld,		FN_SCR_COUNTER,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
-		//	(scrSetCounter screen counter)
+		{	"scrSetCounter",				fnScrSetOld,		FN_SCR_COUNTER,
+			"(scrSetCounter screen counter) -> True/Nil",
+			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrSetData",					fnScrSet,		FN_SCR_DATA,
-			"(scrSetData screen attrib data)",
+			"(scrSetData screen attrib data) -> True/Nil",
 			"isv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrSetDesc",					fnScrSet,		FN_SCR_DESC,
-			"(scrSetDesc screen text [text...])",
+			"(scrSetDesc screen text [text...]) -> True/Nil",
 			"i*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrSetDescTranslate",			fnScrSet,		FN_SCR_DESC_TRANSLATE,
@@ -283,28 +314,31 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"is*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrSetDisplayText",			fnScrSet,			FN_SCR_SET_DISPLAY_TEXT,
-			"(scrSetDisplayText screen ID text [text...])",
+			"(scrSetDisplayText screen ID text [text...]) -> True/Nil",
 			"iss*",	PPFLAG_SIDEEFFECTS,	},
 
-		{	"scrSetInputText",				fnScrSetOld,		FN_SCR_INPUT_TEXT,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
-		//	(scrSetInputText screen text)
+		{	"scrSetInputText",				fnScrSetOld,		FN_SCR_INPUT_TEXT,
+			"(scrSetInputText screen text) -> True/Nil",
+			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrSetListCursor",				fnScrSet,		FN_SCR_LIST_CURSOR,
-			"(scrSetListCursor screen cursor)",
+			"(scrSetListCursor screen cursor) -> True/Nil",
 			"ii",	0,	},
 
-		{	"scrSetListFilter",				fnScrSetOld,		FN_SCR_LIST_FILTER,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
-		//	(scrSetListFilter screen filter)
+		{	"scrSetListFilter",				fnScrSetOld,		FN_SCR_LIST_FILTER,
+			"(scrSetListFilter screen filter) -> True/Nil",
+			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrShowAction",				fnScrSet,			FN_SCR_SHOW_ACTION,
-			"(scrShowAction screen actionID shown)",
+			"(scrShowAction screen actionID shown) -> True/Nil",
 			"ivv",	PPFLAG_SIDEEFFECTS, },
 
-		{	"scrShowPane",					fnScrSetOld,		FN_SCR_SHOW_PANE,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
-		//	(scrShowPane screen pane)
+		{	"scrShowPane",					fnScrSetOld,		FN_SCR_SHOW_PANE,
+			"(scrShowPane screen pane) -> True/Nil",
+			NULL,	PPFLAG_SIDEEFFECTS, },
 
 		{	"scrShowScreen",				fnScrShowScreen,	0,
-			"(scrShowScreen screenGlobal screen [pane] [data])",
+			"(scrShowScreen screenGlobal screen [pane] [data]) -> True/Nil",
 			"vv*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrTranslate",					fnScrGet,		FN_SCR_TRANSLATE,
@@ -328,28 +362,30 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"iv*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"plyComposeString",				fnPlyComposeString,		0,
-			"(plyComposeString player string [arg1 arg2 ... argn]) -> string",
-			"is*",	0,	},
-		//	(plyComposeString player string)
-		//		%name%				player name
-		//		%he%				he or she
-		//		%his%				his or her (matching case)
-		//		%hers%				his or hers (matching case)
-		//		%him%				him or her (matching case)
-		//		%sir%				sir or ma'am (matching case)
-		//		%man%				man or woman (matching case)
-		//		%brother%			brother or sister (matching case)
-		//		%son%				son or daughter (matching case)
-		//		%%					%
-		//		%1%					arg1
-		//		%2%					...
+			"(plyComposeString player string [arg1 arg2 ... argn]) -> text\n\n"
+
+			"When composing the string the following substitutions are made:\n\n"
+			"   %name%         player name\n"
+			"   %he%           he or she\n"
+			"   %his%          his or her (matching case)\n"
+			"   %hers%         his or hers (matching case)\n"
+			"   %him%          him or her (matching case)\n"
+			"   %sir%          sir or ma'am (matching case)\n"
+			"   %man%          man or woman (matching case)\n"
+			"   %brother%      brother or sister (matching case)\n"
+			"   %son%          son or daughter (matching case)\n"
+			"   %%             %\n"
+			"   %1%            arg1\n"
+			"   %2%            ...\n",
+
+			"is*",	0, },
 
 		{	"plyCredit",					fnPlySet,	FN_PLY_CREDITS,
 			"(plyCredit player [currency] credit) -> credits left",
 			"iv*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"plyDestroyed",					fnPlySetOld,		FN_PLY_DESTROYED, 
-			"(plyDestroyed player epitaph)",
+			"(plyDestroyed player epitaph) -> True/Nil",
 			NULL,	PPFLAG_SIDEEFFECTS, },
 
 		{	"plyIsMessageEnabled",			fnPlyGet,			FN_PLY_IS_MESSAGE_ENABLED,
@@ -419,8 +455,9 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 			"isv",	PPFLAG_SIDEEFFECTS, },
 
-		{	"plyGetRedirectMessage",		fnPlyGetOld,		FN_PLY_REDIRECT_MESSAGE,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
-		//	(plyGetRedirectMessage player)
+		{	"plyGetRedirectMessage",		fnPlyGetOld,		FN_PLY_REDIRECT_MESSAGE,
+			"(plyGetRedirectMessage player) -> text or Nil",
+			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"plyGetStat",					fnPlyGet,			FN_PLY_GET_STAT,
 			"(plyGetStat player stat) -> value\n\n"
@@ -443,33 +480,35 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(plyIncScore player scoreInc) -> score",
 			"ii",	PPFLAG_SIDEEFFECTS,	},
 
-		{	"plyMessage",					fnPlySetOld,		FN_PLY_MESSAGE,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
-		//	(plyMessage player message)
+		{	"plyMessage",					fnPlySetOld,		FN_PLY_MESSAGE,
+			"(plyMessage player message) -> True/Nil",
+			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"plyRecordBuyItem",				fnPlySet,			FN_PLY_RECORD_BUY_ITEM,
-			"(plyRecordBuyItem player item [currency] totalPrice)",
+			"(plyRecordBuyItem player item [currency] totalPrice) -> True/Nil",
 			"iv*i",	0,	},
 
 		{	"plyRecordSellItem",			fnPlySet,			FN_PLY_RECORD_SELL_ITEM,
-			"(plyRecordSellItem player item [currency] totalPrice)",
+			"(plyRecordSellItem player item [currency] totalPrice) -> True/Nil",
 			"iv*i",	0,	},
 
-		{	"plyRedirectMessage",			fnPlySetOld,		FN_PLY_REDIRECT_MESSAGE,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
-		//	(plyRedirectMessage player True/Nil)
+		{	"plyRedirectMessage",			fnPlySetOld,		FN_PLY_REDIRECT_MESSAGE,
+			"(plyRedirectMessage player True/Nil) -> True/Nil",
+			NULL,	PPFLAG_SIDEEFFECTS, },
 
 		{	"plyUseItem",					fnPlySet,			FN_PLY_USE_ITEM,
-			"(plyUseItem player item)",
+			"(plyUseItem player item) -> True/Nil",
 			"iv",	PPFLAG_SIDEEFFECTS,	},
 
 		//	UI functions
 		//	------------
 
 		{	"uiQueueSoundtrack",					fnUISet,	FN_UI_QUEUE_SOUNDTRACK,
-			"(uiQueueSoundtrack soundtrackUNID [options])",
+			"(uiQueueSoundtrack soundtrackUNID [options]) -> True/Nil",
 			"i*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"uiSetSoundtrackMode",					fnUISet,	FN_UI_SET_SOUNDTRACK_MODE,
-			"(uiSetSoundtrackMode mode [soundtrackUNID])",
+			"(uiSetSoundtrackMode mode [soundtrackUNID]) -> True/Nil",
 			"s*",	PPFLAG_SIDEEFFECTS,	},
 
 		//	Deprecated functions
