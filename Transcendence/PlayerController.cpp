@@ -1320,7 +1320,7 @@ void CPlayerShipController::OnPaintSRSEnhancements (CG32bitImage &Dest, SViewpor
 	CVector vHitPos;
 	int x2, y2;
 	CSpaceObject *pHit;
-	if (pHit = m_pShip->GetSystem()->HitScan(m_pShip, vStart, vEnd, &vHitPos))
+	if (pHit = m_pShip->GetSystem()->HitScan(m_pShip, vStart, vEnd, false, &vHitPos))
 		{
 		Ctx.XForm.Transform(vHitPos, &x2, &y2);
 		CGDraw::Line(Dest, x1, y1, x2, y2, 1, CG32bitPixel(0xff, 0xff, 0x00));
