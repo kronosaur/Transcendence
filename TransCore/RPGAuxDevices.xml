@@ -18,14 +18,17 @@
 
 		<Events>
 			<CanBeInstalled>
-				(block (auxDeviceCount)
+				(block (
 					; Count the number of auxiliary devices installed
 					
-					(setq auxDeviceCount (count (objGetItems gSource "dI +auxMountDevice")))
-					
+					(auxDeviceCount (count (objGetItems gSource "dI +auxMountDevice")))
+					)
 					(switch
 						; We do not allow more than two auxiliary devices
-						(geq auxDeviceCount 2)
+						
+						(and (geq auxDeviceCount 2)
+								(not (itmMatches aItemToReplace "* +auxMountDevice;"))
+								)
 							"Your ship already has two side-mounted devices; you cannot install another one."
 	
 						; Otherwise, we can install it
