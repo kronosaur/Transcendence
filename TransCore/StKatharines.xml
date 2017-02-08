@@ -2497,12 +2497,11 @@
 						</Table>
 					</Orbitals>
 					
-					<Orbitals count="12-16" distance="48" angle="equidistant">
+					<Orbitals count="12-16" distance="52" angle="equidistant">
 						<Table>
-							<Station chance="20" type="&stCommonwealthResidentials;" noMapLabel="true"/>
-							<Station chance="30" type="&stContainerHabitat;" noMapLabel="true"/>
+							<Station chance="40" type="&stContainerHabitat;" noMapLabel="true"/>
 							<Station chance="30" type="&stCommonwealthSlums;" noMapLabel="true"/>
-							<Station chance="20" type="&stManufacturingPlant;"/>
+							<Station chance="30" type="&stManufacturingPlant;"/>
 						</Table>
 					</Orbitals>
 				</Group>
