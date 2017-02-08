@@ -2894,10 +2894,10 @@
 					count=			"50-60"
 					type=			"missile"
 					lifetime=		"12"
-					damage=			"kinetic:4d6; WMD:1"
+					damage=			"blast:2d6-1; WMD:1"
 					missileSpeed=	"40-60"
                     
-                    effect=         "&efKineticBoltDefault;"
+                    effect=         "&efBlastShellDefault;"
 					>
 			</Fragment>
 		</Missile>
