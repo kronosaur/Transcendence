@@ -182,7 +182,7 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 
     if (m_SavedState.pSelected
             && pNode == m_SavedState.pCurNode)
-        Select(m_SavedState.pSelected);
+        Select(m_SavedState.pSelected, true);
     else
         m_SavedState.pSelected = NULL;
 
@@ -273,7 +273,7 @@ void CGalacticMapSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		}
 	}
 
-void CGalacticMapSession::Select (CTopologyNode *pNode)
+void CGalacticMapSession::Select (CTopologyNode *pNode, bool bNoSound)
 
 //  Select
 //
@@ -287,7 +287,8 @@ void CGalacticMapSession::Select (CTopologyNode *pNode)
 
     //  Select
 
-	g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+	if (!bNoSound)
+		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
     m_pPainter->SetSelection(pNode);
 
     //  We always stop the performance, if there is one

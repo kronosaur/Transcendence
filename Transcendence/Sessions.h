@@ -123,7 +123,7 @@ class CGalacticMapSession : public IHISession
 
 	private:
         void SaveState (void);
-        void Select (CTopologyNode *pNode);
+        void Select (CTopologyNode *pNode, bool bNoSound = false);
         void SetTargetScale (void);
 
         CGameSettings &m_Settings;
