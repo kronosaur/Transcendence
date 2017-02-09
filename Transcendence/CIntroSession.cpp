@@ -52,6 +52,8 @@
 
 #define PROP_POSITION							CONSTLIT("position")
 
+#define PROPERTY_PRIMARY_WEAPON					CONSTLIT("primaryWeapon")
+
 const int INTRO_DISPLAY_HEIGHT =				512;
 const int TITLE_BAR_HEIGHT =					128;
 
@@ -384,6 +386,11 @@ ALERROR CIntroSession::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSover
 
 				if (pClass->IsVirtual()
 						|| !pClass->HasLiteralAttribute(ATTRIB_GENERIC_SHIP_CLASS))
+					continue;
+
+				//	Skip unarmed ships
+
+				if (pClass->GetPropertyString(PROPERTY_PRIMARY_WEAPON).IsBlank())
 					continue;
 
 				//	Add to our list, sorted by score
