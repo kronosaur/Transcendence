@@ -17,7 +17,7 @@ class CSteamCtx
 
         bool Connect (CString *retsError = NULL);
         bool CreateItem (PublishedFileId_t *retFileId, bool *retbAgreementRequired, CString *retsError = NULL);
-        bool GetOrCreateItem (DWORD dwUNID, PublishedFileId_t *retFileId, bool *retbCreated, CString *retsError = NULL);
+        bool GetOrCreateItem (DWORD dwUNID, EExtensionTypes iType, PublishedFileId_t *retFileId, bool *retbCreated, CString *retsError = NULL);
         inline AccountID_t GetUserAccountID (void) const { return SteamUser()->GetSteamID().GetAccountID(); }
         bool GetUserContent (const TSortMap<CString, CString> &Tags, TArray<SteamUGCDetails_t> &Results, CString *retsError = NULL) const;
         inline const CString &GetUsername (void) const { return m_sUsername; }

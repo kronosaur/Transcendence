@@ -5,16 +5,20 @@
 
 #include "stdafx.h"
 
+#define ATTRIB_BITMAP					CONSTLIT("bitmap")
+#define ATTRIB_COVER_IMAGE_ID			CONSTLIT("coverImageID")
 #define ATTRIB_FILENAME                 CONSTLIT("filename")
 #define ATTRIB_NAME                     CONSTLIT("name")
 #define ATTRIB_UNID                     CONSTLIT("unid")
 #define ATTRIB_VERSION                  CONSTLIT("version")
 
 #define EXTENSIONS_FILTER               CONSTLIT("*.tdb")
+#define FOLDER_COLLECTION				CONSTLIT("Collection")
 
 #define TRANSCENDENCE_TDB               CONSTLIT("Transcendence.tdb")
 
 #define CORE_LIBRARY_TAG				CONSTLIT("CoreLibrary")
+#define IMAGE_TAG						CONSTLIT("Image")
 #define LIBRARY_TAG                     CONSTLIT("Library")
 #define MODULE_TAG                      CONSTLIT("Module")
 #define MODULES_TAG                     CONSTLIT("Modules")
@@ -72,38 +76,6 @@ void CExtensionDirectory::AddLibrary (CSimpleLibraryResolver &Resolver, DWORD dw
     Resolver.AddTable(&pExtension->Entities);
     }
 
-bool CExtensionDirectory::CalcRequiredFiles (DWORD dwUNID, TArray<DWORD> &Files, CString *retsError) const
-
-//  CalcRequiredFiles
-//
-//  Returns a list of all files (TDB libraries) used by the given extension
-
-    {
-    int i;
-
-    Files.DeleteAll();
-
-    //  Clear all marks
-
-    for (i = 0; i < m_Extensions.GetCount(); i++)
-        m_Extensions[i]->bMarked = false;
-
-    //  Recursively mark all files used by the given extension.
-
-    if (!MarkRequiredExtensions(dwUNID, retsError))
-        return false;
-
-    //  Return marked files.
-
-    for (i = 0; i < m_Extensions.GetCount(); i++)
-        if (m_Extensions[i]->bMarked && m_Extensions[i]->dwUNID != dwUNID)
-            Files.Insert(m_Extensions[i]->dwUNID);
-
-    //  Done
-
-    return true;
-    }
-
 bool CExtensionDirectory::FindByFilespec (const CString &sFilespec, DWORD *retdwUNID) const
 
 //  FindByFilespec
@@ -143,7 +115,7 @@ bool CExtensionDirectory::FindLibraryEntities (DWORD dwUNID, CExternalEntityTabl
     return true;
     }
 
-bool CExtensionDirectory::GetExtensionInfo (DWORD dwUNID, SExtensionInfo &retInfo, CString *retsError) const
+bool CExtensionDirectory::GetExtensionInfo (DWORD dwUNID, SExtensionInfo &retInfo, CString *retsError)
 
 //  GetExtensionInfo
 //
@@ -161,17 +133,24 @@ bool CExtensionDirectory::GetExtensionInfo (DWORD dwUNID, SExtensionInfo &retInf
     retInfo.sName = pExtension->sName;
     retInfo.sFilespec = pExtension->sFilespec;
     retInfo.sVersion = pExtension->sVersion;
-    retInfo.dwCoverImage = 0;
 
-    //  Get a list of dependencies
+    //  Load the necessary extensions and all their resources
 
-    if (!CalcRequiredFiles(dwUNID, retInfo.Dependencies))
+    if (!LoadDependencies(dwUNID, retInfo.Dependencies, retsError))
         return false;
+
+	//	Look for the image file
+
+	SImageDesc *pImage;
+	if (pExtension->dwCoverImage != 0
+			&& (pImage = pExtension->Images.GetAt(pExtension->dwCoverImage)))
+		retInfo.sCoverImage = pImage->sImage;
+	else
+		retInfo.sCoverImage = NULL_STR;
 
     //  Generate a list of all required files (but exclude core files, which 
 	//	always ship separately).
 
-    retInfo.Files.Insert(pExtension->sFilespec);
     for (i = 0; i < retInfo.Dependencies.GetCount(); i++)
         {
 		//	If this dependency is a core file, then skip it.
@@ -208,104 +187,21 @@ bool CExtensionDirectory::Init (const CString &sRootPath, const CString &sFilesp
     if (!InitCore(sRootPath, retsError))
         return false;
 
-	//	Load all extensions in the folder
+	//	Load all extensions in the current folder
 
-    CString sPath = pathGetPath(sFilespec);
-	CFileDirectory Dir(pathAddComponent(sPath, EXTENSIONS_FILTER));
-    while (Dir.HasMore())
-        {
-        SFileDesc FileDesc;
-        Dir.GetNextDesc(&FileDesc);
+	if (!InitFolder(pathGetPath(sFilespec), true, retsError))
+		return false;
 
-        //	Skip hidden or system files
+	//	If the Collections folder exists, use that.
 
-        if (FileDesc.bHiddenFile || FileDesc.bSystemFile)
-            continue;
+	CString sCollectionPath = pathAddComponent(sRootPath, FOLDER_COLLECTION);
+	if (pathExists(sCollectionPath))
+		{
+		if (!InitFolder(sCollectionPath, false, retsError))
+			return false;
+		}
 
-        //	Skip any file or directory that starts with a dot
-
-        if (*FileDesc.sFilename.GetASCIIZPointer() == '.')
-            continue;
-
-        //	Skip any file or directory that stars with '_'
-
-        if (*FileDesc.sFilename.GetASCIIZPointer() == '_')
-            continue;
-
-		//	Skip Transcendence.tdb file
-
-		if (strEquals(FileDesc.sFilename, TRANSCENDENCE_TDB))
-			continue;
-
-        //	Get path and extension
-
-        CString sFilepath = pathAddComponent(sPath, FileDesc.sFilename);
-
-        //	If this is a folder, then skip
-
-        if (FileDesc.bFolder)
-            continue;
-
-		//	Open the file
-
-		CResourceDb ExtDb(sFilepath, true);
-		if (ExtDb.Open(DFOPEN_FLAG_READ_ONLY, &sError) != NOERROR)
-			{
-            //  Report error, but continue
-
-            printf("WARNING: Unable to open %s: %s\n", (LPSTR)sFilepath, (LPSTR)sError);
-            continue;
-			}
-
-        //  Create an entry
-
-        SExtensionDesc *pExtension = new SExtensionDesc;
-
-        //  Load the root element as a stub.
-
-        CXMLElement *pRoot;
-        if (ExtDb.LoadGameFileStub(&pRoot, &pExtension->Entities, &sError) != NOERROR)
-            {
-            delete pExtension;
-            printf("WARNING: Unable to open %s: %s\n", (LPSTR)sFilepath, (LPSTR)sError);
-            continue;
-            }
-
-        pExtension->dwUNID = pRoot->GetAttributeInteger(ATTRIB_UNID);
-        pExtension->sFilespec = sFilepath;
-        pExtension->sName = pRoot->GetAttribute(ATTRIB_NAME);
-        pExtension->sVersion = pRoot->GetAttribute(ATTRIB_VERSION);
-
-        if (strEquals(pRoot->GetTag(), TRANSCENDENCE_ADVENTURE_TAG))
-            pExtension->iType = extAdventure;
-        else if (strEquals(pRoot->GetTag(), TRANSCENDENCE_LIBRARY_TAG))
-            pExtension->iType = extLibrary;
-        else if (strEquals(pRoot->GetTag(), TRANSCENDENCE_EXTENSION_TAG))
-            pExtension->iType = extExtension;
-        else
-            {
-            delete pExtension;
-            printf("WARNING: Unknown extension type: %s\n", (LPSTR)pRoot->GetTag());
-            continue;
-            }
-
-        //  Make sure there are no duplicates
-
-        if (m_Extensions.GetAt(pExtension->dwUNID))
-            {
-            delete pExtension;
-            printf("WARNING: Ignoring %s: duplicate UNID.\n", (LPSTR)sFilepath);
-            continue;
-            }
-
-        //  Add to our list. Once added, we own the object.
-
-        m_Extensions.Insert(pExtension->dwUNID, pExtension);
-
-#ifdef DEBUG
-        printf("DEBUG: Loaded %s (%08x)\n", (LPSTR)pExtension->sName, pExtension->dwUNID);
-#endif
-        }
+	//	Done
 
     return true;
     }
@@ -425,83 +321,118 @@ bool CExtensionDirectory::InitCore (const CString &sRootPath, CString *retsError
     return true;
     }
 
-bool CExtensionDirectory::MarkLibraries (SExtensionDesc *pExtension, CResourceDb &Resources, CXMLElement *pRoot, CSimpleLibraryResolver &Resolver, CString *retsError) const
+bool CExtensionDirectory::InitFolder (const CString &sPath, bool bWarnDuplicates, CString *retsError)
 
-//  MarkLibraries
+//	InitFolder
 //
-//  Loops over all design types in pRoot and marks references to libraries.
+//	Loads all extensions in the given folder.
+
+	{
+	CString sError;
+
+	CFileDirectory Dir(pathAddComponent(sPath, EXTENSIONS_FILTER));
+    while (Dir.HasMore())
+        {
+        SFileDesc FileDesc;
+        Dir.GetNextDesc(&FileDesc);
+
+        //	Skip hidden or system files
+
+        if (FileDesc.bHiddenFile || FileDesc.bSystemFile)
+            continue;
+
+        //	Skip any file or directory that starts with a dot
+
+        if (*FileDesc.sFilename.GetASCIIZPointer() == '.')
+            continue;
+
+        //	Skip any file or directory that stars with '_'
+
+        if (*FileDesc.sFilename.GetASCIIZPointer() == '_')
+            continue;
+
+		//	Skip Transcendence.tdb file
+
+		if (strEquals(FileDesc.sFilename, TRANSCENDENCE_TDB))
+			continue;
+
+        //	Get path and extension
+
+        CString sFilepath = pathAddComponent(sPath, FileDesc.sFilename);
+
+        //	If this is a folder, then skip
+
+        if (FileDesc.bFolder)
+            continue;
+
+		//	Load the extension. If we fail, we report the error but continue.
+
+		SExtensionDesc *pExtension;
+		if (!LoadExtensionStub(sFilepath, &pExtension, &sError))
+			{
+			printf("WARNING: %s\n", (LPSTR)sError);
+			continue;
+			}
+
+        //  Make sure there are no duplicates
+
+        if (m_Extensions.GetAt(pExtension->dwUNID))
+            {
+            delete pExtension;
+			if (bWarnDuplicates)
+				printf("WARNING: Ignoring %s: duplicate UNID.\n", (LPSTR)sFilepath);
+            continue;
+            }
+
+        //  Add to our list. Once added, we own the object.
+
+        m_Extensions.Insert(pExtension->dwUNID, pExtension);
+
+#ifdef DEBUG
+        printf("DEBUG: Loaded %s (%08x)\n", (LPSTR)pExtension->sName, pExtension->dwUNID);
+#endif
+        }
+
+	return true;
+	}
+
+bool CExtensionDirectory::LoadDependencies (DWORD dwUNID, TArray<DWORD> &Files, CString *retsError)
+
+//  CalcRequiredFiles
+//
+//  Returns a list of all files (TDB libraries) used by the given extension
 
     {
-    int i, j;
+    int i;
 
-    for (i = 0; i < pRoot->GetContentElementCount(); i++)
-        {
-        CXMLElement *pType = pRoot->GetContentElement(i);
-        if (strEquals(pType->GetTag(), LIBRARY_TAG))
-            {
-            DWORD dwUNID = pType->GetAttributeInteger(ATTRIB_UNID);
+    Files.DeleteAll();
 
-            if (!MarkRequiredExtensions(dwUNID, retsError))
-                return false;
-            }
-        else if (strEquals(pType->GetTag(), MODULE_TAG))
-            {
-            if (!MarkModule(pExtension, Resources, pType, Resolver, retsError))
-                return false;
-            }
-        else if (strEquals(pType->GetTag(), MODULES_TAG))
-            {
-            for (j = 0; j < pType->GetContentElementCount(); j++)
-                {
-                CXMLElement *pModule = pType->GetContentElement(j);
-                if (!MarkModule(pExtension, Resources, pModule, Resolver, retsError))
-                    return false;
-                }
-            }
-        }
+    //  Clear all marks
+
+    for (i = 0; i < m_Extensions.GetCount(); i++)
+        m_Extensions[i]->bMarked = false;
+
+    //  Recursively mark all files used by the given extension.
+
+    if (!LoadExtension(dwUNID, retsError))
+        return false;
+
+    //  Return marked files.
+
+    for (i = 0; i < m_Extensions.GetCount(); i++)
+        if (m_Extensions[i]->bMarked && m_Extensions[i]->dwUNID != dwUNID)
+            Files.Insert(m_Extensions[i]->dwUNID);
+
+    //  Done
 
     return true;
     }
 
-bool CExtensionDirectory::MarkModule (SExtensionDesc *pExtension, CResourceDb &Resources, CXMLElement *pModule, CSimpleLibraryResolver &Resolver, CString *retsError) const
+bool CExtensionDirectory::LoadExtension (DWORD dwUNID, CString *retsError)
 
-//  MarkModule
+//  LoadExtension
 //
-//  Recurses into a module (in case there are any libraries).
-
-    {
-	CString sFilename = pModule->GetAttribute(ATTRIB_FILENAME);
-
-	//	Load the module XML
-
-	CXMLElement *pModuleXML;
-    if (Resources.LoadModule(NULL_STR, sFilename, &pModuleXML, retsError) != NOERROR)
-        return false;
-
-	if (!strEquals(pModuleXML->GetTag(), TRANSCENDENCE_MODULE_TAG))
-		{
-		delete pModuleXML;
-		if (retsError) *retsError = strPatternSubst(CONSTLIT("Module must have <TranscendenceModule> root element: %s"), sFilename);
-        return false;
-		}
-
-    //  Recurse
-
-    if (!MarkLibraries(pExtension, Resources, pModuleXML, Resolver, retsError))
-        {
-        delete pModuleXML;
-        return false;
-        }
-
-    delete pModuleXML;
-    return true;
-    }
-
-bool CExtensionDirectory::MarkRequiredExtensions (DWORD dwUNID, CString *retsError) const
-
-//  MarkRequiredExtensions
-//
-//  Mark the given extension, and any extensions required.
+//  Loads the extension full and marks it as required.
 
     {
 	//	If we're an official library, then skip, since we never upload those
@@ -534,34 +465,212 @@ bool CExtensionDirectory::MarkRequiredExtensions (DWORD dwUNID, CString *retsErr
 
     pExtension->bMarked = true;
 
-    //  Now load the extension.
+	CResourceDb Resources(pExtension->sFilespec);
+	if (Resources.Open(DFOPEN_FLAG_READ_ONLY, retsError) != NOERROR)
+		return false;
 
-    CResourceDb Resources(pExtension->sFilespec);
-    if (Resources.Open(DFOPEN_FLAG_READ_ONLY, retsError) != NOERROR)
-        return false;
+	//	If we don't have a full XML document, then load it now
 
-    //  Resolver
+	if (pExtension->pGameFile == NULL)
+		{
+		//  Resolver
 
-	CSimpleLibraryResolver Resolver(*this);
-    AddCoreLibraries(Resolver, pExtension);
-    Resolver.AddTable(&pExtension->Entities);
+		CSimpleLibraryResolver Resolver(*this);
+		AddCoreLibraries(Resolver, pExtension);
+		Resolver.AddTable(&pExtension->Entities);
 
-    //  Load the root file
+		//  Load the root file
 
-	CXMLElement *pGameFile;
-	if (Resources.LoadGameFile(&pGameFile, &Resolver, retsError, NULL) != NOERROR)
-        return false;
+		if (Resources.LoadGameFile(&pExtension->pGameFile, &Resolver, retsError, NULL) != NOERROR)
+			return false;
+
+		//	Load all definitions and populate the extension description with
+		//	image, module, and libraries.
+
+		CString sError;
+		if (!LoadExtensionDefinitions(pExtension, pExtension->pGameFile, &sError))
+			{
+			if (retsError) *retsError = strPatternSubst(CONSTLIT("Unable to load extension %08x: %s"), dwUNID, sError);
+			return false;
+			}
+		}
 
     //  Mark all libraries we find
 
-    if (!MarkLibraries(pExtension, Resources, pGameFile, Resolver, retsError))
-        {
-        delete pGameFile;
+    if (!MarkLibraries(pExtension, Resources, pExtension->pGameFile, retsError))
         return false;
-        }
 
     //  Done
 
-    delete pGameFile;
     return true;
     }
+
+bool CExtensionDirectory::LoadExtensionDefinitions (SExtensionDesc *pExtension, CXMLElement *pRoot, CString *retsError)
+
+//	LoadExtensionDefinitions
+//
+//	Loads image, module, and library definitions.
+
+	{
+	int i;
+
+	for (i = 0; i < pRoot->GetContentElementCount(); i++)
+		{
+		CXMLElement *pDesc = pRoot->GetContentElement(i);
+
+		if (strEquals(pDesc->GetTag(), IMAGE_TAG))
+			{
+			DWORD dwUNID = pDesc->GetAttributeInteger(ATTRIB_UNID);
+			if (dwUNID == 0)
+				{
+				*retsError = strPatternSubst(CONSTLIT("Invalid UNID for %s."), pDesc->GetTag());
+				return false;
+				}
+
+			CString sImage = pDesc->GetAttribute(ATTRIB_BITMAP);
+			if (sImage.IsBlank())
+				{
+				*retsError = strPatternSubst(CONSTLIT("Invalid bitmap parameter for image: %08x."), dwUNID);
+				return false;
+				}
+
+			SImageDesc *pNewImage = pExtension->Images.SetAt(dwUNID);
+			pNewImage->sImage = sImage;
+			}
+		}
+
+	return true;
+	}
+
+bool CExtensionDirectory::LoadExtensionStub (const CString &sFilespec, SExtensionDesc **retpExtension, CString *retsError)
+
+//	LoadExtensionStub
+//
+//	Loads an extension from a filespec
+
+	{
+	CString sError;
+
+	//	Open the file
+
+	CResourceDb ExtDb(sFilespec, true);
+	if (ExtDb.Open(DFOPEN_FLAG_READ_ONLY, &sError) != NOERROR)
+		{
+        if (retsError) *retsError = strPatternSubst(CONSTLIT("Unable to open %s: %s."), sFilespec, sError);
+        return false;
+		}
+
+    //  Create an entry
+
+    SExtensionDesc *pExtension = new SExtensionDesc;
+
+    //  Load the root element.
+
+    CXMLElement *pRoot;
+    if (ExtDb.LoadGameFileStub(&pRoot, &pExtension->Entities, &sError) != NOERROR)
+        {
+        delete pExtension;
+        if (retsError) *retsError = strPatternSubst(CONSTLIT("Unable to open root XML in %s: %s."), sFilespec, sError);
+        return false;
+        }
+
+    pExtension->dwUNID = pRoot->GetAttributeInteger(ATTRIB_UNID);
+    pExtension->sFilespec = sFilespec;
+    pExtension->sName = pRoot->GetAttribute(ATTRIB_NAME);
+    pExtension->sVersion = pRoot->GetAttribute(ATTRIB_VERSION);
+
+    if (strEquals(pRoot->GetTag(), TRANSCENDENCE_ADVENTURE_TAG))
+        pExtension->iType = extAdventure;
+    else if (strEquals(pRoot->GetTag(), TRANSCENDENCE_LIBRARY_TAG))
+        pExtension->iType = extLibrary;
+    else if (strEquals(pRoot->GetTag(), TRANSCENDENCE_EXTENSION_TAG))
+        pExtension->iType = extExtension;
+    else
+        {
+		delete pRoot;
+        delete pExtension;
+        if (retsError) *retsError = strPatternSubst(CONSTLIT("Unable extension type: %s"), pRoot->GetTag());
+        return false;
+        }
+
+	pExtension->dwCoverImage = pRoot->GetAttributeInteger(ATTRIB_COVER_IMAGE_ID);
+
+	//	Done
+
+	delete pRoot;
+	*retpExtension = pExtension;
+	return true;
+	}
+
+bool CExtensionDirectory::MarkLibraries (SExtensionDesc *pExtension, CResourceDb &Resources, CXMLElement *pRoot, CString *retsError)
+
+//  MarkLibraries
+//
+//  Loops over all design types in pRoot and marks references to libraries.
+
+    {
+    int i, j;
+
+    for (i = 0; i < pRoot->GetContentElementCount(); i++)
+        {
+        CXMLElement *pType = pRoot->GetContentElement(i);
+        if (strEquals(pType->GetTag(), LIBRARY_TAG))
+            {
+            DWORD dwUNID = pType->GetAttributeInteger(ATTRIB_UNID);
+
+            if (!LoadExtension(dwUNID, retsError))
+                return false;
+            }
+        else if (strEquals(pType->GetTag(), MODULE_TAG))
+            {
+            if (!MarkModule(pExtension, Resources, pType, retsError))
+                return false;
+            }
+        else if (strEquals(pType->GetTag(), MODULES_TAG))
+            {
+            for (j = 0; j < pType->GetContentElementCount(); j++)
+                {
+                CXMLElement *pModule = pType->GetContentElement(j);
+                if (!MarkModule(pExtension, Resources, pModule, retsError))
+                    return false;
+                }
+            }
+        }
+
+    return true;
+    }
+
+bool CExtensionDirectory::MarkModule (SExtensionDesc *pExtension, CResourceDb &Resources, CXMLElement *pModule, CString *retsError)
+
+//  MarkModule
+//
+//  Recurses into a module (in case there are any libraries).
+
+    {
+	CString sFilename = pModule->GetAttribute(ATTRIB_FILENAME);
+
+	//	Load the module XML
+
+	CXMLElement *pModuleXML;
+    if (Resources.LoadModule(NULL_STR, sFilename, &pModuleXML, retsError) != NOERROR)
+        return false;
+
+	if (!strEquals(pModuleXML->GetTag(), TRANSCENDENCE_MODULE_TAG))
+		{
+		delete pModuleXML;
+		if (retsError) *retsError = strPatternSubst(CONSTLIT("Module must have <TranscendenceModule> root element: %s"), sFilename);
+        return false;
+		}
+
+    //  Recurse
+
+    if (!MarkLibraries(pExtension, Resources, pModuleXML, retsError))
+        {
+        delete pModuleXML;
+        return false;
+        }
+
+    delete pModuleXML;
+    return true;
+    }
+

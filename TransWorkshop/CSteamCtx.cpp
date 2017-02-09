@@ -5,6 +5,7 @@
 
 #include "stdafx.h"
 
+#define FIELD_TYPE                              CONSTLIT("type")
 #define FIELD_UNID                              CONSTLIT("unid")
 
 const AppId_t TRANSCENDENCE_APP_ID = 364510;
@@ -58,7 +59,7 @@ bool CSteamCtx::CreateItem (PublishedFileId_t *retFileId, bool *retbAgreementReq
     return Thunk.Call(TRANSCENDENCE_APP_ID, k_EWorkshopFileTypeCommunity, retFileId, retbAgreementRequired, retsError);
     }
 
-bool CSteamCtx::GetOrCreateItem (DWORD dwUNID, PublishedFileId_t *retFileId, bool *retbCreated, CString *retsError)
+bool CSteamCtx::GetOrCreateItem (DWORD dwUNID, EExtensionTypes iType, PublishedFileId_t *retFileId, bool *retbCreated, CString *retsError)
 
 //  GetOrCreateItem
 //
@@ -105,6 +106,29 @@ bool CSteamCtx::GetOrCreateItem (DWORD dwUNID, PublishedFileId_t *retFileId, boo
         UGCUpdateHandle_t Update = SteamUGC()->StartItemUpdate(TRANSCENDENCE_APP_ID, FileId);
         if (!SteamUGC()->AddItemKeyValueTag(Update, (LPSTR)FIELD_UNID, (LPSTR)sUNID))
             return false;
+
+		//	Set the type
+
+		switch (iType)
+			{
+			case extAdventure:
+				SteamUGC()->AddItemKeyValueTag(Update, (LPSTR)FIELD_TYPE, "transcendenceAdventure");
+				break;
+
+			case extExtension:
+				SteamUGC()->AddItemKeyValueTag(Update, (LPSTR)FIELD_TYPE, "transcendenceExpansion");
+				break;
+
+			case extLibrary:
+				SteamUGC()->AddItemKeyValueTag(Update, (LPSTR)FIELD_TYPE, "transcendenceLibrary");
+				break;
+
+			default:
+				SteamUGC()->AddItemKeyValueTag(Update, (LPSTR)FIELD_TYPE, "transcendenceExtension");
+				break;
+			}
+
+		//	Update
 
         if (!UpdateItem(Update, CONSTLIT("Extension created."), retsError))
             return false;
