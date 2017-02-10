@@ -15,11 +15,13 @@
 
 #define LOOT_TYPE_ASTEROIDS					CONSTLIT("asteroids")
 #define LOOT_TYPE_ENEMIES					CONSTLIT("enemies")
+#define LOOT_TYPE_INVENTORY					CONSTLIT("inventory")
 
 enum ELootTypes
 	{
 	lootEnemies =			0x00000001,		//	Loot enemy ships and stations
 	lootMining =			0x00000002,		//	Asteroid ore
+	lootInventory =			0x00000004,		//	Inventory on friendly stations (for trade)
 	};
 
 class SystemInfo : public CObject
@@ -44,7 +46,7 @@ class SystemInfo : public CObject
 		int iTotalLootValue;
 	};
 
-void AddItems (CSpaceObject *pObj, SystemInfo *pSystemEntry);
+void AddItems (CSpaceObject *pObj, const CItemCriteria &Criteria, SystemInfo *pSystemEntry);
 
 void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
@@ -56,6 +58,22 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 	int iSystemSample = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("count"), 1, -1, 1);
 	bool bLogo = !pCmdLine->GetAttributeBool(NO_LOGO_SWITCH);
 
+	//	Criteria
+
+	CSpaceObject::Criteria Criteria;
+	CString sCriteria = pCmdLine->GetAttribute(CONSTLIT("criteria"));
+	if (sCriteria.IsBlank())
+		sCriteria = CONSTLIT("*");
+
+	CSpaceObject::ParseCriteria(NULL, sCriteria, &Criteria);
+
+	CItemCriteria ItemCriteria;
+	CString sItemCriteria = pCmdLine->GetAttribute(CONSTLIT("itemCriteria"));
+	if (!sItemCriteria.IsBlank())
+		CItem::ParseCriteria(sItemCriteria, &ItemCriteria);
+	else
+		CItem::InitCriteriaAll(&ItemCriteria);
+
 	//	Figure out what we're looting
 
 	DWORD dwLootType = 0;
@@ -64,6 +82,9 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	if (pCmdLine->GetAttributeBool(LOOT_TYPE_ASTEROIDS))
 		dwLootType |= lootMining;
+
+	if (pCmdLine->GetAttributeBool(LOOT_TYPE_INVENTORY))
+		dwLootType |= lootInventory;
 
 	//	Default to enemies
 
@@ -77,8 +98,6 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 		{
 		if (bLogo)
 			printf("pass %d...\n", i+1);
-
-		CTopologyNode *pNode = Universe.GetFirstTopologyNode();
 
 		int iNode;
 		for (iNode = 0; iNode < Universe.GetTopologyNodeCount(); iNode++)
@@ -115,10 +134,12 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			//	Create a table of all items
 
+			CSpaceObject::SCriteriaMatchCtx Ctx(Criteria);
 			for (j = 0; j < pSystem->GetObjectCount(); j++)
 				{
 				CSpaceObject *pObj = pSystem->GetObject(j);
-				if (pObj == NULL)
+				if (pObj == NULL
+						|| !pObj->MatchesCriteria(Ctx, Criteria))
 					continue;
 
 				//	Asteroid mining
@@ -127,7 +148,7 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 						&& pObj->GetScale() == scaleWorld
 						&& pObj->GetItemList().GetCount() != 0)
 					{
-					AddItems(pObj, pSystemEntry);
+					AddItems(pObj, ItemCriteria, pSystemEntry);
 					continue;
 					}
 
@@ -149,9 +170,20 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 
 					if (pWreck)
 						{
-						AddItems(pWreck, pSystemEntry);
+						AddItems(pWreck, ItemCriteria, pSystemEntry);
 						continue;
 						}
+					}
+
+				//	Inventory
+
+				if ((dwLootType & lootInventory)
+						&& pObj->GetSovereign()
+						&& !pObj->GetSovereign()->IsEnemy(pPlayer)
+						&& pObj->HasTradeService(serviceSell))
+					{
+					AddItems(pObj, ItemCriteria, pSystemEntry);
+					continue;
 					}
 				}
 
@@ -216,7 +248,7 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 		}
 	}
 
-void AddItems (CSpaceObject *pObj, SystemInfo *pSystemEntry)
+void AddItems (CSpaceObject *pObj, const CItemCriteria &Criteria, SystemInfo *pSystemEntry)
 	{
 	ALERROR error;
 
@@ -226,27 +258,33 @@ void AddItems (CSpaceObject *pObj, SystemInfo *pSystemEntry)
 		{
 		const CItem &Item(ItemList.GetItemAtCursor());
 
-		if (!Item.IsInstalled() && !Item.IsDamaged())
+		//	Skip items we're not interested in.
+
+		if (!Item.MatchesCriteria(Criteria)
+				|| Item.IsInstalled()
+				|| Item.IsDamaged())
+			continue;
+
+		//	Add the item
+
+		CString sKey = strFromInt(Item.GetType()->GetUNID(), false);
+
+		//	Find the item type in the table
+
+		ItemInfo *pEntry;
+		if (error = pSystemEntry->Items.Lookup(sKey, (CObject **)&pEntry))
 			{
-			CString sKey = strFromInt(Item.GetType()->GetUNID(), false);
+			pEntry = new ItemInfo;
+			pEntry->pType = Item.GetType();
+			pEntry->iTotalCount = Item.GetCount();
 
-			//	Find the item type in the table
-
-			ItemInfo *pEntry;
-			if (error = pSystemEntry->Items.Lookup(sKey, (CObject **)&pEntry))
-				{
-				pEntry = new ItemInfo;
-				pEntry->pType = Item.GetType();
-				pEntry->iTotalCount = Item.GetCount();
-
-				pSystemEntry->Items.AddEntry(sKey, pEntry);
-				}
-			else
-				pEntry->iTotalCount += Item.GetCount();
-
-			//	Increment value
-
-			pSystemEntry->iTotalLootValue += Item.GetTradePrice(NULL, true) * Item.GetCount();
+			pSystemEntry->Items.AddEntry(sKey, pEntry);
 			}
+		else
+			pEntry->iTotalCount += Item.GetCount();
+
+		//	Increment value
+
+		pSystemEntry->iTotalLootValue += Item.GetTradePrice(NULL, true) * Item.GetCount();
 		}
 	}

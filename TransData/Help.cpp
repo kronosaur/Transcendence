@@ -20,6 +20,7 @@
 #define ENTITIES_SWITCH						CONSTLIT("entities")
 #define ITEM_FREQUENCY_SWITCH				CONSTLIT("itemsim")
 #define ITEM_TABLE_SWITCH					CONSTLIT("itemtable")
+#define LOOT_SIM_SWITCH						CONSTLIT("lootsim")
 #define PERF_TEST_SWITCH					CONSTLIT("perftest")
 #define RANDOM_ITEMS_SWITCH					CONSTLIT("randomitems")
 #define RANDOM_NUMBER_TEST					CONSTLIT("randomnumbertest")
@@ -185,6 +186,17 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/unid]               unid of item type.\n");
 		printf("      [/variantCount]       number of weapon variants.\n");
 		printf("      [/weaponSuppress]     shield prevents firing these damage types.\n");
+		}
+	else if (pCmdLine->GetAttributeBool(LOOT_SIM_SWITCH))
+		{
+		printf("  /lootsim              Simulation of items encountered in a game.\n");
+		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      /count:n		        n iterations.\n");
+		printf("      /criteria:n           Types of stations to sample.\n");
+		printf("      /itemCriteria:n       Types of items to include.\n");
+		printf("      /asteroids	        Include all ore on asteroids.\n");
+		printf("      /enemies   	        Include all loot on enemy ships and stations.\n");
+		printf("      /inventory   	        Include all items for sale at friendly stations.\n");
 		}
 	else if (pCmdLine->GetAttributeBool(PERF_TEST_SWITCH))
 		{
@@ -380,6 +392,8 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /encounterFreq        Outputs encounter tables.\n");
 		printf("  /encountersim         Simulate an attack on the station.\n");
 		printf("  /encountertable       Encounter table.\n");
+		if (bDebug)
+			printf("  /lootsim              Simulation of items found in a game.\n");
 		if (bDebug)
 			printf("  /perftest             Performance test.\n");
 		printf("  /run                  Shows a TransLisp interpreter or runs a command.\n");
