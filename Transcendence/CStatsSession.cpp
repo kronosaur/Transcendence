@@ -216,6 +216,19 @@ void CStatsSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCaptur
 	m_HI.HICommand(CMD_SESSION_STATS_DONE);
 	}
 
+void CStatsSession::OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
+
+//	OnMouseWheel
+//
+//	Handle mouse wheel
+
+	{
+	if (iDelta > 0)
+		SetSelection(GAME_STAT_POSITION_PREV);
+	else if (iDelta < 0)
+		SetSelection(GAME_STAT_POSITION_NEXT);
+	}
+
 void CStatsSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 //	OnPaint

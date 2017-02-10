@@ -554,6 +554,7 @@ class CStatsSession : public IHISession
 		virtual ALERROR OnInit (CString *retsError) override;
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override;
+		virtual void OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags) override;
 		virtual void OnPaint (CG32bitImage &Screen, const RECT &rcInvalid) override;
 		virtual void OnReportHardCrash (CString *retsMessage) override;
 		virtual void OnUpdate (bool bTopMost) override;
