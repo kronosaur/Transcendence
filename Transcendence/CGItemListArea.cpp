@@ -154,6 +154,24 @@ void CGItemListArea::CleanUp (void)
 		}
 	}
 
+void CGItemListArea::EnableTab (DWORD dwID, bool bEnabled)
+
+//	EnableTab
+//
+//	Enable/disable a tab
+
+	{
+	int i;
+
+	for (i = 0; i < m_Tabs.GetCount(); i++)
+		if (m_Tabs[i].dwID == dwID)
+			{
+			m_Tabs[i].bDisabled = !bEnabled;
+			Invalidate();
+			break;
+			}
+	}
+
 int CGItemListArea::FindRow (int y)
 
 //	FindRow
@@ -197,6 +215,11 @@ bool CGItemListArea::GetNextTab (DWORD *retdwID) const
 		return false;
 
 	int iTab = (m_iCurTab + 1) % m_Tabs.GetCount();
+	while (m_Tabs[iTab].bDisabled && iTab != m_iCurTab)
+		iTab = (iTab + 1) % m_Tabs.GetCount();
+
+	if (iTab == m_iCurTab)
+		return false;
 	
 	if (retdwID)
 		*retdwID = m_Tabs[iTab].dwID;
@@ -215,7 +238,12 @@ bool CGItemListArea::GetPrevTab (DWORD *retdwID) const
 		return false;
 
 	int iTab = (m_iCurTab + m_Tabs.GetCount() - 1) % m_Tabs.GetCount();
-	
+	while (m_Tabs[iTab].bDisabled && iTab != m_iCurTab)
+		iTab = (iTab + m_Tabs.GetCount() - 1) % m_Tabs.GetCount();
+
+	if (iTab == m_iCurTab)
+		return false;
+
 	if (retdwID)
 		*retdwID = m_Tabs[iTab].dwID;
 
@@ -302,7 +330,9 @@ bool CGItemListArea::LButtonDown (int x, int y)
 	int iTab;
 	if (HitTestTabs(x, y, &iTab))
 		{
-		SignalAction(m_Tabs[iTab].dwID);
+		if (!m_Tabs[iTab].bDisabled)
+			SignalAction(m_Tabs[iTab].dwID);
+
 		return true;
 		}
 
@@ -729,7 +759,10 @@ void CGItemListArea::PaintTab (CG32bitImage &Dest, const STabDesc &Tab, const RE
 
 	CG32bitPixel rgbBackColor;
 	CG32bitPixel rgbTextColor;
-	if (bSelected)
+	if (Tab.bDisabled)
+		rgbTextColor = CG32bitPixel(m_rgbTextColor, 64);
+
+	else if (bSelected)
 		{
 		rgbBackColor = CG32bitPixel(m_rgbTextColor, 128);
 		rgbTextColor = m_rgbBackColor;
@@ -742,7 +775,7 @@ void CGItemListArea::PaintTab (CG32bitImage &Dest, const STabDesc &Tab, const RE
 	else
 		rgbTextColor = CG32bitPixel(m_rgbTextColor, 190);
 
-	if (bSelected || bHover)
+	if (!Tab.bDisabled && (bSelected || bHover))
 		CGDraw::RoundedRect(Dest,
 				rcRect.left,
 				rcRect.top,

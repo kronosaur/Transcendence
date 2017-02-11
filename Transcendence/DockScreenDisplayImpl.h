@@ -15,10 +15,17 @@ class CDockScreenList : public IDockScreenDisplay
 	protected:
 		struct SFilter
 			{
+			SFilter (void) :
+					bAllFilter(false),
+					bDisabled(false)
+				{ }
+
 			CString sID;
 			DWORD dwID;
 			CString sLabel;
 			CItemCriteria Filter;
+			bool bAllFilter;
+			bool bDisabled;
 			};
 
 		//	IDockScreenDisplay
@@ -51,6 +58,7 @@ class CDockScreenList : public IDockScreenDisplay
 
 		//	Helpers
 
+		bool FilterHasItems (const CItemCriteria &Filter) const;
 		bool FindFilter (DWORD dwID, int *retiIndex = NULL) const;
 		bool FindFilter (const CString &sID, int *retiIndex = NULL) const;
 		bool SelectTab (DWORD dwID, int iFilter = -1);

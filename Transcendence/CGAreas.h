@@ -101,6 +101,7 @@ class CGItemListArea : public AGArea
 
 		void AddTab (DWORD dwID, const CString &sLabel);
 		void CleanUp (void);
+		void EnableTab (DWORD dwID, bool bEnabled = true);
 		inline void DeleteAtCursor (int iCount) { if (m_pListData) m_pListData->DeleteAtCursor(iCount); InitRowDesc(); Invalidate(); }
 		inline int GetCursor (void) { return (m_pListData ? m_pListData->GetCursor() : -1); }
 		ICCItem *GetEntryAtCursor (void);
@@ -151,9 +152,14 @@ class CGItemListArea : public AGArea
 
 		struct STabDesc
 			{
+			STabDesc (void) :
+					bDisabled(false)
+				{ }
+
 			DWORD dwID;
 			CString sLabel;
 			int cxWidth;
+			bool bDisabled;
 			};
 
 		int CalcRowHeight (int iRow);

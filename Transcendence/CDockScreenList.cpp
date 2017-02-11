@@ -6,12 +6,33 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
+#define FIELD_FILTER_ALL			CONSTLIT("filterAll")
 #define FIELD_FILTER_SELECTED		CONSTLIT("filterSelected")
 
 const int PICKER_ROW_HEIGHT	=	96;
 const int PICKER_ROW_COUNT =	4;
 
 const DWORD FILTER_BUTTON_FIRST_ID =		0xf0000000;
+
+bool CDockScreenList::FilterHasItems (const CItemCriteria &Filter) const
+
+//	FilterHasItems
+//
+//	Returns TRUE if the filter selects any item in this object.
+
+	{
+	//	Get the source.
+
+	CSpaceObject *pSource = m_pItemListControl->GetSource();
+	if (pSource == NULL)
+		return false;
+
+	//	Get an item list manipulator
+
+	CItemListManipulator ItemList(pSource->GetItemList());
+	ItemList.SetFilter(Filter);
+	return ItemList.MoveCursorForward();
+	}
 
 bool CDockScreenList::FindFilter (DWORD dwID, int *retiIndex) const
 
@@ -67,6 +88,8 @@ IDockScreenDisplay::EResults CDockScreenList::OnAddListFilter (const CString &sI
 	pNewFilter->dwID = FILTER_BUTTON_FIRST_ID + m_dwNextFilterID++;
 	pNewFilter->sLabel = sLabel;
 	pNewFilter->Filter = Filter;
+
+	pNewFilter->bAllFilter = strEquals(sID, FIELD_FILTER_ALL);
 
 	m_pItemListControl->AddTab(pNewFilter->dwID, pNewFilter->sLabel);
 
@@ -270,6 +293,7 @@ ALERROR CDockScreenList::OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, 
 //	Initialize
 
 	{
+	int i;
 	ALERROR error;
     const CDockScreenVisuals &DockScreenVisuals = Ctx.pDockScreen->GetVisuals();
 
@@ -311,19 +335,58 @@ ALERROR CDockScreenList::OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, 
 
 	if (m_Filters.GetCount() > 0)
 		{
+		//	First see if any of our filters should be disabled and figure out
+		//	our first non-disabled filter (so we can use it as a default).
+
+		int iAllFilter = -1;
+		int iFilterCount = 0;
+		int iFirstValidFilter = -1;
+		for (i = 0; i < m_Filters.GetCount(); i++)
+			{
+			m_Filters[i].bDisabled = !FilterHasItems(m_Filters[i].Filter);
+			m_pItemListControl->EnableTab(m_Filters[i].dwID, !m_Filters[i].bDisabled);
+
+			if (iFirstValidFilter == -1 && !m_Filters[i].bDisabled)
+				iFirstValidFilter = i;
+
+			if (!m_Filters[i].bDisabled)
+				{
+				if (m_Filters[i].bAllFilter)
+					iAllFilter = i;
+				else
+					iFilterCount++;
+				}
+			}
+
+		//	If there's only one tab other than the all filter, then we disable that
+		//	tab too.
+
+		if (iFilterCount == 1 && iAllFilter != -1)
+			{
+			for (i = 0; i < m_Filters.GetCount(); i++)
+				{
+				if (!m_Filters[i].bAllFilter)
+					{
+					m_Filters[i].bDisabled = true;
+					m_pItemListControl->EnableTab(m_Filters[i].dwID, false);
+					}
+				}
+
+			iFirstValidFilter = iAllFilter;
+			}
+
+		//	See if we've saved a specific filter.
+
 		CString sID = GetScreenStack().GetDisplayData(FIELD_FILTER_SELECTED);
 		int iFilter;
-		if (sID.IsBlank() || !FindFilter(strToInt(sID, 0), &iFilter))
-			{
-			m_pItemListControl->SetFilter(m_Filters[0].Filter);
-			m_pItemListControl->MoveCursorForward();
-			}
-		else
-			{
-			m_pItemListControl->SelectTab(m_Filters[iFilter].dwID);
-			m_pItemListControl->SetFilter(m_Filters[iFilter].Filter);
-			m_pItemListControl->MoveCursorForward();
-			}
+		if (sID.IsBlank() || !FindFilter(strToInt(sID, 0), &iFilter) || m_Filters[iFilter].bDisabled)
+			iFilter = iFirstValidFilter;
+
+		//	Select the filter
+
+		m_pItemListControl->SelectTab(m_Filters[iFilter].dwID);
+		m_pItemListControl->SetFilter(m_Filters[iFilter].Filter);
+		m_pItemListControl->MoveCursorForward();
 		}
 
 	return NOERROR;

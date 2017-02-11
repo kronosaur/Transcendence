@@ -220,9 +220,7 @@
 						;	If we want to hide installables, then we need to add some
 						;	user-selectable filters.
 					
-						(and (not (@ gData 'showInstallables))
-								(objGetItems sourceObj "Uadm")
-								)
+						(not (@ gData 'showInstallables))
 							(block Nil
 							
 								(scrAddListFilter gScreen 'filterGeneral "General" (lambda (theItem)
