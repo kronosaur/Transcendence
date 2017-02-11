@@ -345,7 +345,7 @@
 		<!-- Items -->
 
 		<Items>
-			<Item count="5d6" item="&itHelium3FuelRod;"/>
+			<Item count="3d6" item="&itHeliumAssembly;"/>
 		</Items> 
 
 		<!-- Image and Effects -->
