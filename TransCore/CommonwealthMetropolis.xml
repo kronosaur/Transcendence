@@ -493,7 +493,7 @@
 							(scrShowSellScreen
 								(lambda (theItem)
 									(switch
-										(itmMatches theItem "*NU +illegal; +consumeGood; -ID;")
+										(itmMatches theItem "*NU +illegal; +consumerGood; -ID;")
 											(divide (multiply 150 (itmGetPrice theItem 'credit)) 100)
 											
 										Nil
