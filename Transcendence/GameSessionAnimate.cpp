@@ -238,7 +238,7 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 				g_pTrans->m_pCurrentScreen->Update();
 
 				if (!bShowSRS)
-					g_pTrans->PaintMainScreenBorder(g_pTrans->m_CurrentDock.GetVisuals().GetWindowBackgroundColor());
+					g_pTrans->PaintMainScreenBorder(m_CurrentDock.GetVisuals().GetWindowBackgroundColor());
 
                 //  Paint displays
 
@@ -268,7 +268,7 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 				if ((g_pTrans->m_iTick % 4) == 0)
 					g_pUniverse->Update(UpdateCtx);
 				g_pTrans->m_MessageDisplay.Update();
-				g_pTrans->m_CurrentDock.Update(g_pTrans->m_iTick);
+				m_CurrentDock.Update(g_pTrans->m_iTick);
 				g_pTrans->m_iTick++;
 
 				//	Note: We need to invalidate the whole screen because we're

@@ -5,6 +5,7 @@
 
 #pragma once
 
+class CDockScreen;
 class CDockScreenSubjugate;
 
 class CArtifactAwakenVisuals
@@ -457,7 +458,7 @@ class CGSubjugateArea : public AGArea
 class CDockScreenSubjugate : public IDockScreenDisplay
 	{
 	public:
-		CDockScreenSubjugate (void);
+		CDockScreenSubjugate (CDockScreen &DockScreen);
 
 		void OnCompleted (bool bSuccess);
 		void OnStarted (void);

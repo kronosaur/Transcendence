@@ -178,7 +178,7 @@ bool IDockScreenDisplay::EvalBool (const CString &sCode, bool *retbResult, CStri
 
 	{
 	CCodeChainCtx Ctx;
-	Ctx.SetScreen(m_pDockScreen);
+	Ctx.SetScreen(&m_DockScreen);
 	Ctx.SaveAndDefineSourceVar(m_pLocation);
 	Ctx.SaveAndDefineDataVar(m_pData);
 
@@ -263,7 +263,7 @@ bool IDockScreenDisplay::EvalString (const CString &sString, bool bPlain, ECodeC
 	{
 	CCodeChainCtx Ctx;
 	Ctx.SetEvent(iEvent);
-	Ctx.SetScreen(m_pDockScreen);
+	Ctx.SetScreen(&m_DockScreen);
 	Ctx.SaveAndDefineSourceVar(m_pLocation);
 	Ctx.SaveAndDefineDataVar(m_pData);
 
@@ -297,7 +297,6 @@ ALERROR IDockScreenDisplay::Init (SInitCtx &Ctx, const SDisplayOptions &Options,
 //	Initialize
 
 	{
-	m_pDockScreen = Ctx.pDockScreen;
 	m_pPlayer = Ctx.pPlayer;
 	m_pLocation = Ctx.pLocation;
 	m_pData = Ctx.pData;
@@ -401,7 +400,5 @@ void IDockScreenDisplay::SelectArmor (int iSelection)
 //  Selects the given armor segment in the HUD.
 
     {
-    CGameSession *pSession = (m_pDockScreen ? m_pDockScreen->GetGameSession() : NULL);
-    if (pSession)
-        pSession->OnArmorSelected(iSelection);
+    m_DockScreen.GetGameSession().OnArmorSelected(iSelection);
     }

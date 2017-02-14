@@ -6,7 +6,7 @@
 class CDockScreenList : public IDockScreenDisplay
 	{
 	public:
-		CDockScreenList (void) :
+		CDockScreenList (CDockScreen &DockScreen) : IDockScreenDisplay(DockScreen),
 				m_pItemListControl(NULL),
 				m_bNoListNavigation(false),
 				m_dwNextFilterID(0)
@@ -62,6 +62,7 @@ class CDockScreenList : public IDockScreenDisplay
 		bool FindFilter (DWORD dwID, int *retiIndex = NULL) const;
 		bool FindFilter (const CString &sID, int *retiIndex = NULL) const;
 		bool SelectTab (DWORD dwID, int iFilter = -1);
+		bool SetDefaultTab (const CString &sID);
 
 		CGItemListArea *m_pItemListControl;
 		DWORD m_dwID;
@@ -73,6 +74,10 @@ class CDockScreenList : public IDockScreenDisplay
 
 class CDockScreenCustomItemList : public CDockScreenList
 	{
+	public:
+		CDockScreenCustomItemList (CDockScreen &DockScreen) : CDockScreenList(DockScreen)
+			{ }
+
 	protected:
 
 		//	CDockScreenList
@@ -85,6 +90,10 @@ class CDockScreenCustomItemList : public CDockScreenList
 
 class CDockScreenCustomList : public CDockScreenList
 	{
+	public:
+		CDockScreenCustomList (CDockScreen &DockScreen) : CDockScreenList(DockScreen)
+			{ }
+
 	protected:
 
 		//	CDockScreenList
@@ -94,6 +103,10 @@ class CDockScreenCustomList : public CDockScreenList
 
 class CDockScreenItemList : public CDockScreenList
 	{
+	public:
+		CDockScreenItemList (CDockScreen &DockScreen) : CDockScreenList(DockScreen)
+			{ }
+
 	protected:
 
 		//	CDockScreenList
@@ -106,12 +119,15 @@ class CDockScreenItemList : public CDockScreenList
 
 class CDockScreenNullDisplay : public IDockScreenDisplay
 	{
+	public:
+		CDockScreenNullDisplay (CDockScreen &DockScreen) : IDockScreenDisplay(DockScreen)
+			{ }
 	};
 
 class CDockScreenSelector : public IDockScreenDisplay
 	{
 	public:
-		CDockScreenSelector (CGSelectorArea::EConfigurations iConfig) :
+		CDockScreenSelector (CDockScreen &DockScreen, CGSelectorArea::EConfigurations iConfig) : IDockScreenDisplay(DockScreen),
 				m_iConfig(iConfig),
 				m_bNoListNavigation(false),
 				m_pControl(NULL)

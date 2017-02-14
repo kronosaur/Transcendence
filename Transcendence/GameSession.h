@@ -71,7 +71,9 @@ class CGameSession : public IHISession
 
 		//	Helpers
 
+		CDockScreen &GetDockScreen (void) { return m_CurrentDock; }
         CGalacticMapSession::SOptions &GetGalacticMapSettings (void) { return m_GalacticMapSettings; }
+		CGameSettings &GetGameSettings (void) { return m_Settings; }
 		inline bool InMenu (void) { return (m_CurrentMenu != menuNone); }
         inline bool InSystemMap (void) const { return m_bShowingSystemMap; }
 		void PaintInfoText (CG32bitImage &Dest, const CString &sTitle, const TArray<CString> &Body, bool bAboveTargeting = true);
@@ -89,13 +91,22 @@ class CGameSession : public IHISession
 		CSoundtrackManager &m_Soundtrack;
 		RECT m_rcScreen;					//	RECT of main screen within window.
 
+		//	HUD state
+
         CHeadsUpDisplay m_HUD;              //  Paint the HUD
-        bool m_bShowingSystemMap;           //  If TRUE, show map
-        CSystemMapDisplay m_SystemMap;      //  Helps to paint the system map
 		EMenuTypes m_CurrentMenu;			//	Current menu being displayed
 		CSpaceObject *m_pCurrentComms;		//	Object that we're currently communicating with
-        CGalacticMapSession::SOptions m_GalacticMapSettings;
 		int m_iDamageFlash;					//	0 = no flash; odd = recover; even = flash;
 		bool m_bIgnoreButtonUp;				//	If we closed a menu on button down, ignore button up
 		bool m_bIgnoreMouseMove;			//	Ignore mouse move, for purposes of enabling mouse flight
+
+		//	Map state
+
+        bool m_bShowingSystemMap;           //  If TRUE, show map
+        CSystemMapDisplay m_SystemMap;      //  Helps to paint the system map
+        CGalacticMapSession::SOptions m_GalacticMapSettings;
+
+		//	Dock screen state
+
+		CDockScreen m_CurrentDock;			//	Current dock screen
 	};

@@ -192,6 +192,12 @@ class IExtraSettingsHandler
 class CGameSettings
 	{
 	public:
+		//	TO ADD A NEW OPTION:
+		//
+		//	1.	Add an entry here. OK to add in the middle.
+		//	2.	Increment OPTIONS_COUNT
+		//	3.	In CGameSettings.cpp add an entry to g_OptionData at the appropriate spot.
+
 		enum Options
 			{
 			//	Game play options
@@ -206,6 +212,7 @@ class CGameSettings
 			noFullCreate,					//	If TRUE, we don't create all systems in the topology
 			showManeuverEffects,			//	Shows maneuvering effects
 			noMissionCheckpoint,			//	Do not save on mission accept
+			defaultBuyTab,					//	Default tab when buying items
 
 			//	Installation options
 			useTDB,							//	Force use of .TDB
@@ -243,7 +250,7 @@ class CGameSettings
 			debugSoundtrack,				//	Soundtrack debugging UI
 
 			//	Constants
-			OPTIONS_COUNT = 37,
+			OPTIONS_COUNT = 38,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }

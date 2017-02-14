@@ -97,6 +97,10 @@ class IDockScreenDisplay
             bool bNoEmptySlots;             //  If TRUE, don't show empty slots
 			};
 
+		IDockScreenDisplay (CDockScreen &DockScreen) :
+				m_DockScreen(DockScreen)
+			{ }
+
 		virtual ~IDockScreenDisplay (void) { }
 
 		inline EResults AddListFilter (const CString &sID, const CString &sLabel, const CItemCriteria &Filter) { return OnAddListFilter(sID, sLabel, Filter); }
@@ -155,7 +159,7 @@ class IDockScreenDisplay
 		CDockScreenStack &GetScreenStack (void) const;
         void SelectArmor (int iSelection);
 
-		CDockScreen *m_pDockScreen;
+		CDockScreen &m_DockScreen;
 		CSpaceObject *m_pLocation;
 		CPlayerShipController *m_pPlayer;
 		ICCItem *m_pData;
@@ -388,7 +392,7 @@ class CDockPane
 class CDockScreen : public IScreenController
 	{
 	public:
-		CDockScreen (void);
+		CDockScreen (CGameSession &Session);
 		virtual ~CDockScreen (void);
 
 		void AddListFilter (const CString &sID, const CString &sLabel, const CItemCriteria &Filter);
@@ -434,7 +438,7 @@ class CDockScreen : public IScreenController
 		inline CItemListManipulator &GetItemListManipulator (void) { return m_pDisplay->GetItemListManipulator(); }
 		inline int GetListCursor (void) { return m_pDisplay->GetListCursor(); }
 		inline IListData *GetListData (void) { return m_pDisplay->GetListData(); }
-        inline CGameSession *GetGameSession (void) { return m_pSession; }
+        inline CGameSession &GetGameSession (void) { return m_Session; }
         const CDockScreenVisuals &GetVisuals (void) const;
 		inline CString GetTextInput (void) { return m_CurrentPane.GetTextInputValue(); }
 		inline bool IsCurrentItemValid (void) { return m_pDisplay->IsCurrentItemValid(); }
@@ -445,7 +449,6 @@ class CDockScreen : public IScreenController
 		ALERROR SetDisplayText (const CString &sID, const CString &sText);
 		inline bool SetControlValue (const CString &sID, ICCItem *pValue) { return m_CurrentPane.SetControlValue(sID, pValue); }
 		inline void SetCounter (int iCount) { m_CurrentPane.SetCounterValue(iCount); }
-        inline void SetGameSession (CGameSession *pSession) { m_pSession = pSession; }
 		void SetListCursor (int iCursor);
 		inline void SetTextInput (const CString &sText) { m_CurrentPane.SetTextInputValue(sText); }
 		void ShowPane (const CString &sName);
@@ -509,7 +512,7 @@ class CDockScreen : public IScreenController
 		void InitDisplayControlRect (CXMLElement *pDesc, const RECT &rcFrame, RECT *retrcRect);
 
 		const SFontTable *m_pFonts;
-        CGameSession *m_pSession;
+        CGameSession &m_Session;
 		CPlayerShipController *m_pPlayer;
 		CDesignType *m_pRoot;
 		CString m_sScreen;

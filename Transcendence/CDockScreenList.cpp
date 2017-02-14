@@ -153,6 +153,18 @@ IDockScreenDisplay::EResults CDockScreenList::OnHandleAction (DWORD dwTag, DWORD
 					if (!SelectTab(dwData, iFilter))
 						return resultHandled;
 
+					//	If ctrl-key is down, the make this the default tab
+
+					if (uiIsControlDown())
+						{
+						CString sID = m_Filters[iFilter].sID;
+						SetDefaultTab(sID);
+
+						//	Remember the setting
+
+						m_DockScreen.GetGameSession().GetGameSettings().SetString(CGameSettings::defaultBuyTab, sID);
+						}
+
 					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					return resultShowPane;
 					}
@@ -335,6 +347,12 @@ ALERROR CDockScreenList::OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, 
 
 	if (m_Filters.GetCount() > 0)
 		{
+		//	If we have a default tab, then move it to the beginning.
+
+		const CString &sDefaultTab = m_DockScreen.GetGameSession().GetGameSettings().GetString(CGameSettings::defaultBuyTab);
+		if (!sDefaultTab.IsBlank())
+			SetDefaultTab(sDefaultTab);
+
 		//	First see if any of our filters should be disabled and figure out
 		//	our first non-disabled filter (so we can use it as a default).
 
@@ -541,6 +559,38 @@ bool CDockScreenList::SelectTab (DWORD dwID, int iFilter)
 	GetScreenStack().SetDisplayData(FIELD_FILTER_SELECTED, strFromInt(m_Filters[iFilter].dwID));
 
 	ShowItem();
+
+	return true;
+	}
+
+bool CDockScreenList::SetDefaultTab (const CString &sID)
+
+//	SetDefaultTab
+//
+//	Moves the given tab (by ID) to the front (so that it is selected by default).
+//	If the tab is not found, we return FALSE.
+
+	{
+	int iTab;
+	if (!FindFilter(sID, &iTab))
+		return false;
+
+	//	If we're already at the front, then we're done
+
+	if (iTab == 0)
+		return true;
+
+	//	Re-order our list
+
+	SFilter Tab = m_Filters[iTab];
+	m_Filters.Delete(iTab);
+	m_Filters.Insert(Tab, 0);
+
+	//	Tell our control to move the tab to the front
+
+	m_pItemListControl->MoveTabToFront(Tab.dwID);
+
+	//	Done
 
 	return true;
 	}

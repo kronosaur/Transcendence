@@ -106,9 +106,9 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 
 #define BAR_COLOR							CG32bitPixel(0, 2, 10)
 
-CDockScreen::CDockScreen (void) : 
+CDockScreen::CDockScreen (CGameSession &Session) : 
 		m_pFonts(NULL),
-        m_pSession(NULL),
+        m_Session(Session),
 		m_pPlayer(NULL),
 		m_pLocation(NULL),
 		m_pData(NULL),
@@ -1286,31 +1286,31 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	//	Create the main display object based on the type parameter.
 
 	if (DisplayOptions.sType.IsBlank() || strEquals(DisplayOptions.sType, SCREEN_TYPE_CANVAS))
-		m_pDisplay = new CDockScreenNullDisplay;
+		m_pDisplay = new CDockScreenNullDisplay(*this);
 
 	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_ITEM_PICKER))
-		m_pDisplay = new CDockScreenItemList;
+		m_pDisplay = new CDockScreenItemList(*this);
 
 	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_CUSTOM_PICKER))
-		m_pDisplay = new CDockScreenCustomList;
+		m_pDisplay = new CDockScreenCustomList(*this);
 
 	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_CUSTOM_ITEM_PICKER))
-		m_pDisplay = new CDockScreenCustomItemList;
+		m_pDisplay = new CDockScreenCustomItemList(*this);
 
 	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_ARMOR_SELECTOR))
-		m_pDisplay = new CDockScreenSelector(CGSelectorArea::configArmor);
+		m_pDisplay = new CDockScreenSelector(*this, CGSelectorArea::configArmor);
 
 	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_DEVICE_SELECTOR))
-		m_pDisplay = new CDockScreenSelector(CGSelectorArea::configDevices);
+		m_pDisplay = new CDockScreenSelector(*this, CGSelectorArea::configDevices);
 
 	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_MISC_SELECTOR))
-		m_pDisplay = new CDockScreenSelector(CGSelectorArea::configMiscDevices);
+		m_pDisplay = new CDockScreenSelector(*this, CGSelectorArea::configMiscDevices);
 
 	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_SUBJUGATE_MINIGAME))
-		m_pDisplay = new CDockScreenSubjugate;
+		m_pDisplay = new CDockScreenSubjugate(*this);
 
 	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_WEAPONS_SELECTOR))
-		m_pDisplay = new CDockScreenSelector(CGSelectorArea::configWeapons);
+		m_pDisplay = new CDockScreenSelector(*this, CGSelectorArea::configWeapons);
 	
 	else
 		{

@@ -1102,7 +1102,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		char m_chKeyDown;					//	Processed a WM_KEYDOWN (skip WM_CHAR)
 		bool m_bDockKeyDown;				//	Used to de-bounce dock key (so holding down 'D' does not select a dock action).
 		int m_iTick;
-		CDockScreen m_CurrentDock;
 		AGScreen *m_pCurrentScreen;
 		MenuTypes m_CurrentMenu;
 		CMenuData m_MenuData;

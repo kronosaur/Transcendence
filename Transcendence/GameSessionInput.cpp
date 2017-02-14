@@ -210,7 +210,7 @@ void CGameSession::OnChar (char chChar, DWORD dwKeyData)
 
 			//	Handle it.
 
-			g_pTrans->m_CurrentDock.HandleChar(chChar);
+			m_CurrentDock.HandleChar(chChar);
 			break;
 			}
 		}
@@ -460,7 +460,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 								{
 								//	Let the dock screen handle it.
 
-								g_pTrans->m_CurrentDock.HandleKeyDown(iVirtKey);
+								m_CurrentDock.HandleKeyDown(iVirtKey);
 								}
 							}
 						break;

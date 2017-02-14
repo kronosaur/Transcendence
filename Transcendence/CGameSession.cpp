@@ -20,7 +20,8 @@ CGameSession::CGameSession (CHumanInterface &HI,
 		m_pCurrentComms(NULL),
         m_iDamageFlash(0),
 		m_bIgnoreButtonUp(false),
-		m_bIgnoreMouseMove(false)
+		m_bIgnoreMouseMove(false),
+		m_CurrentDock(*this)
 
 //	CGameSession constructor
 
@@ -113,11 +114,6 @@ void CGameSession::OnCleanUp (void)
 
     {
 	HideMenu();
-
-    //  In the future, m_CurrentDock should be our member, so we won't need
-    //  this.
-
-    g_pTrans->m_CurrentDock.SetGameSession(NULL);
     }
 
 ALERROR CGameSession::OnInit (CString *retsError)
@@ -136,12 +132,6 @@ ALERROR CGameSession::OnInit (CString *retsError)
 	//	Otherwise the ship will try to turn to point to the mouse.
 
 	SyncMouseToPlayerShip();
-
-    //  In the future, m_CurrentDock should be our member, but for legacy 
-    //  reasons, it is part of CTranscendenceWnd. Either way we need to give it
-    //  a pointer to us so it can tells us things.
-
-    g_pTrans->m_CurrentDock.SetGameSession(this);
 
     return NOERROR;
     }

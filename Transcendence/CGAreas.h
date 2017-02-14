@@ -114,6 +114,7 @@ class CGItemListArea : public AGArea
 		inline bool IsCursorValid (void) { return (m_pListData ? m_pListData->IsCursorValid() : false); }
 		bool MoveCursorBack (void);
 		bool MoveCursorForward (void);
+		void MoveTabToFront (DWORD dwID);
 		inline void ResetCursor (void) { if (m_pListData) m_pListData->ResetCursor(); Invalidate(); }
 		void SelectTab (DWORD dwID);
         inline void SetBackColor (CG32bitPixel rgbColor) { m_rgbBackColor = rgbColor; }
@@ -165,6 +166,7 @@ class CGItemListArea : public AGArea
 		int CalcRowHeight (int iRow);
 		void InitRowDesc (void);
 		int FindRow (int y);
+		bool FindTab (DWORD dwID, int *retiIndex = NULL) const;
 		bool HitTestTabs (int x, int y, int *retiTab);
 		void PaintCustom (CG32bitImage &Dest, const RECT &rcRect, bool bSelected);
 		void PaintItem (CG32bitImage &Dest, const CItem &Item, const RECT &rcRect, bool bSelected);

@@ -161,15 +161,12 @@ void CGItemListArea::EnableTab (DWORD dwID, bool bEnabled)
 //	Enable/disable a tab
 
 	{
-	int i;
-
-	for (i = 0; i < m_Tabs.GetCount(); i++)
-		if (m_Tabs[i].dwID == dwID)
-			{
-			m_Tabs[i].bDisabled = !bEnabled;
-			Invalidate();
-			break;
-			}
+	int iTab;
+	if (FindTab(dwID, &iTab))
+		{
+		m_Tabs[iTab].bDisabled = !bEnabled;
+		Invalidate();
+		}
 	}
 
 int CGItemListArea::FindRow (int y)
@@ -187,6 +184,27 @@ int CGItemListArea::FindRow (int y)
 			return i;
 
 	return -1;
+	}
+
+bool CGItemListArea::FindTab (DWORD dwID, int *retiIndex) const
+
+//	FindTab
+//
+//	Finds the given tab
+
+	{
+	int i;
+
+	for (i = 0; i < m_Tabs.GetCount(); i++)
+		if (m_Tabs[i].dwID == dwID)
+			{
+			if (retiIndex)
+				*retiIndex = i;
+
+			return true;
+			}
+
+	return false;
 	}
 
 ICCItem *CGItemListArea::GetEntryAtCursor (void)
@@ -434,6 +452,44 @@ bool CGItemListArea::MoveCursorForward (void)
 	if (bOK)
 		Invalidate();
 	return bOK;
+	}
+
+void CGItemListArea::MoveTabToFront (DWORD dwID)
+
+//	MoveTabToFront
+//
+//	Moves the tab to the front.
+
+	{
+	int iTab;
+
+	if (!FindTab(dwID, &iTab))
+		return;
+
+	//	If we're already at the front, then nothing to do
+
+	if (iTab == 0)
+		return;
+
+	//	Remember the selected tab so we can select it after everything moves.
+
+	DWORD dwCurTab = 0;
+	if (m_iCurTab != -1)
+		dwCurTab = m_Tabs[m_iCurTab].dwID;
+
+	//	Re-order the tabs
+
+	STabDesc Tab = m_Tabs[iTab];
+	m_Tabs.Delete(iTab);
+	m_Tabs.Insert(Tab, 0);
+
+	//	Set the new current tab
+
+	if (m_iCurTab != -1)
+		if (!FindTab(dwCurTab, &m_iCurTab))
+			m_iCurTab = -1;
+
+	Invalidate();
 	}
 
 void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
@@ -794,15 +850,12 @@ void CGItemListArea::SelectTab (DWORD dwID)
 //	Selects the given tab
 
 	{
-	int i;
-
-	for (i = 0; i < m_Tabs.GetCount(); i++)
-		if (m_Tabs[i].dwID == dwID)
-			{
-			m_iCurTab = i;
-			Invalidate();
-			break;
-			}
+	int iTab;
+	if (FindTab(dwID, &iTab))
+		{
+		m_iCurTab = iTab;
+		Invalidate();
+		}
 	}
 
 void CGItemListArea::SetList (CSpaceObject *pSource)

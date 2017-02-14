@@ -538,13 +538,20 @@ ALERROR CTranscendenceModel::EndGameClose (CString *retsError)
 		{
 		case stateInGame:
 			{
+	        CGameSession *pSession = GetPlayer()->GetGameSession();
+			if (pSession == NULL)
+				{
+				ASSERT(false);
+				break;
+				}
+			
 			int iMaxLoops = 100;
 
 			//	If we have dock screens up, keep hitting the cancel action
 			//	until we're done.
 
 			while (!m_DockFrames.IsEmpty() && iMaxLoops-- > 0)
-				g_pTrans->m_CurrentDock.ExecuteCancelAction();
+				pSession->GetDockScreen().ExecuteCancelAction();
 
 			if (!m_DockFrames.IsEmpty())
 				ExitScreenSession(true);
@@ -728,11 +735,17 @@ ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesig
 //
 //	If pRoot is NULL then we attempt to resolve it using sScreen
 //	and m_pDefaultScreensRoot
+//
+//	NOTE: Eventually thes function should probably move to the game session (maybe).
 
 	{
 	ALERROR error;
 	ASSERT(pLocation);
 
+	CGameSession *pSession = GetPlayer()->GetGameSession();
+	if (pSession == NULL)
+		return ERR_FAIL;
+			
 	bool bFirstFrame = m_DockFrames.IsEmpty();
 
 	//	Mark the object so that it knows that the player is docked with it.
@@ -744,7 +757,7 @@ ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesig
 	//	If this is our first frame, then this is the first OnInit
 
 	if (bFirstFrame)
-		g_pTrans->m_CurrentDock.ResetFirstOnInit();
+		pSession->GetDockScreen().ResetFirstOnInit();
 
 	//	Add a new frame.
 	//	Note that pRoot might be NULL and sScreen might be [DefaultScreen] at
@@ -809,6 +822,10 @@ void CTranscendenceModel::ExitScreenSession (bool bForceUndock)
 
 	ASSERT(!m_DockFrames.IsEmpty());
 
+	CGameSession *pSession = GetPlayer()->GetGameSession();
+	if (pSession == NULL)
+		return;
+			
 	//	If we have another frame, then switch back to that screen
 
 	if (m_DockFrames.GetCount() > 1 && !bForceUndock)
@@ -855,7 +872,7 @@ void CTranscendenceModel::ExitScreenSession (bool bForceUndock)
         CGameSession *pSession = GetPlayer()->GetGameSession();
         if (pSession)
             pSession->OnShowDockScreen(false);
-		g_pTrans->m_CurrentDock.CleanUpScreen();
+		pSession->GetDockScreen().CleanUpScreen();
 
 		m_DockFrames.DeleteAll();
 		}
@@ -1495,7 +1512,11 @@ void CTranscendenceModel::OnDockedObjChanged (CSpaceObject *pObj)
 //	An object that was marked with SetPlayerDocked has changed
 
 	{
-	g_pTrans->m_CurrentDock.ResetList(pObj);
+	CGameSession *pSession = GetPlayer()->GetGameSession();
+	if (pSession == NULL)
+		return;
+			
+	pSession->GetDockScreen().ResetList(pObj);
 	}
 
 void CTranscendenceModel::OnPlayerChangedShips (CSpaceObject *pOldShip, CSpaceObject *pNewShip, SPlayerChangedShipsCtx &Options)
@@ -1507,14 +1528,18 @@ void CTranscendenceModel::OnPlayerChangedShips (CSpaceObject *pOldShip, CSpaceOb
 	{
 	int i;
 
+	CGameSession *pSession = GetPlayer()->GetGameSession();
+	if (pSession == NULL)
+		return;
+			
 	//	If we're docked, update all frames with the new ship
 
-	if (g_pTrans->m_CurrentDock.GetLocation() == pOldShip)
+	if (pSession->GetDockScreen().GetLocation() == pOldShip)
 		{
 		pOldShip->ClearPlayerDocked();
 		pNewShip->SetPlayerDocked();
 
-		g_pTrans->m_CurrentDock.SetLocation(pNewShip);
+		pSession->GetDockScreen().SetLocation(pNewShip);
 		m_DockFrames.SetLocation(pNewShip);
 		}
 
@@ -2149,13 +2174,17 @@ ALERROR CTranscendenceModel::ShowPane (const CString &sPane)
 	{
 	ASSERT(!m_DockFrames.IsEmpty());
 
+	CGameSession *pSession = GetPlayer()->GetGameSession();
+	if (pSession == NULL)
+		return ERR_FAIL;
+
 	//	Update the frame
 
 	m_DockFrames.SetCurrentPane(sPane);
 
 	//	Show it
 
-	g_pTrans->m_CurrentDock.ShowPane(sPane);
+	pSession->GetDockScreen().ShowPane(sPane);
 
 	//	Done
 
@@ -2176,6 +2205,10 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 
 	ALERROR error;
 	CCodeChain &CC = m_Universe.GetCC();
+
+	CGameSession *pSession = GetPlayer()->GetGameSession();
+	if (pSession == NULL)
+		return ERR_FAIL;
 
 	ASSERT(!m_DockFrames.IsEmpty());
 
@@ -2287,7 +2320,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 
 	m_Universe.SetLogImageLoad(false);
 	CString sError;
-	error = g_pTrans->m_CurrentDock.InitScreen(m_HI.GetHWND(),
+	error = pSession->GetDockScreen().InitScreen(m_HI.GetHWND(),
 			g_pTrans->m_rcMainScreen,
 			NewFrame,
 			pExtension,

@@ -47,7 +47,7 @@
 const int MAX_STATISTIC =			24;
 const int CONTROL_HEIGHT =			420;
 
-CDockScreenSubjugate::CDockScreenSubjugate (void)
+CDockScreenSubjugate::CDockScreenSubjugate (CDockScreen &DockScreen) : IDockScreenDisplay(DockScreen)
 
 //	CDockScreenSubjugate constructor
 
@@ -66,7 +66,7 @@ void CDockScreenSubjugate::FireOnCompleted (const CString &sReason)
 		return;
 
 	CCodeChainCtx Ctx;
-	Ctx.SetScreen(m_pDockScreen);
+	Ctx.SetScreen(&m_DockScreen);
 	Ctx.SaveAndDefineSourceVar(m_pLocation);
 	Ctx.SaveAndDefineDataVar(m_pData);
 	Ctx.DefineString(PARAM_REASON, sReason);
