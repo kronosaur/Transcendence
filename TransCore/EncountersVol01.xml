@@ -1282,6 +1282,7 @@
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, generic, human, populated"
 			levelFrequency=		"-rcuv ----- ----- ----- -----"
 			locationCriteria=	"+asteroids"
+			enemyExclusionRadius="75"
 			>
 
 		<Image		imageID="&rsAnarchistStations;" imageX="0"   imageY="244" imageWidth="260" imageHeight="260"/>
