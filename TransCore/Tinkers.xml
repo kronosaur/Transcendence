@@ -160,7 +160,6 @@
 							<Action id="actionBuyScrap" default="1">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: True
-									showInstallables: True
 									})
 							</Action>
 
