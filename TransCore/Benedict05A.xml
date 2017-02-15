@@ -330,6 +330,16 @@
 						}
 					)
 			</Text>
+			<Text id="Intro">
+				(list
+					{
+						desc: (cat
+							"\"You ready now? Armor all clean? Weapons loaded? Do you need a hug before we go?\""
+							)
+						label: "\"[G]o to hell.\""
+						}
+					)
+			</Text>
 			<Text id="Briefing">
 				(list
 					{
