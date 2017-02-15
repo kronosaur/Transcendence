@@ -986,6 +986,10 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 				}
 			}
 
+		//	Remember the last adventure so that we load this in the intro next time.
+
+		m_Settings.SetInteger(CGameSettings::lastAdventure, (int)g_pUniverse->GetCurrentAdventureDesc()->GetExtensionUNID());
+
 		//	Start game (this does some stuff and then calls cmdGameStart)
 
 		g_pTrans->StartGame();
