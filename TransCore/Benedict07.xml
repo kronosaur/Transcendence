@@ -82,7 +82,7 @@
 							{ repairAll:True }
 							)
 						)
-					(shpOrder sandovalObj 'escort gPlayerShip)
+					(objSetEventHandler sandovalObj &evBenedict07Wingman;)
 					(objSetProperty sandovalObj 'dockingEnabled Nil)
 					(objSetProperty sandovalObj 'alwaysLeaveWreck True)
 					
@@ -97,7 +97,7 @@
 							{ repairAll:True }
 							)
 						)
-					(shpOrder fionaObj 'escort gPlayerShip)
+					(objSetEventHandler fionaObj &evBenedict07Wingman;)
 					(objSetProperty fionaObj 'dockingEnabled Nil)
 					(objSetProperty fionaObj 'alwaysLeaveWreck True)
 							
@@ -212,6 +212,7 @@
 						
 						(if fionaObj
 							(block ()
+								(objSetEventHandler fionaObj Nil)
 								(shpCancelOrders fionaObj)
 								(shpOrder fionaObj 'sendMessage gPlayerShip (msnTranslate gSource 'msgDidIt))
 								(shpOrder fionaObj 'dock aWreckObj)
@@ -223,6 +224,7 @@
 						
 						(if sandovalObj
 							(block ()
+								(objSetEventHandler sandovalObj Nil)
 								(shpCancelOrders sandovalObj)
 								(if (= (msnGetData gSource 'fionaStatus) 'wrecked)
 									(shpOrder sandovalObj 'sendMessage gPlayerShip (msnTranslate gSource 'msgCoverYouGetFiona))
@@ -288,6 +290,7 @@
 							
 							(if fionaObj
 								(block ()
+									(objSetEventHandler fionaObj Nil)
 									(shpCancelOrders fionaObj)
 									(objSendMessage gPlayerShip fionaObj (msnTranslate gSource 'msgBenedictDead1))
 									(shpOrder fionaObj 'wait 6)
@@ -298,6 +301,7 @@
 							
 							(if sandovalObj
 								(block ()
+									(objSetEventHandler sandovalObj Nil)
 									(shpCancelOrders sandovalObj)
 									(shpOrder sandovalObj 'wait 3)
 									(shpOrder sandovalObj 'sendMessage gPlayerShip (msnTranslate gSource 'msgBenedictDead3))
@@ -744,7 +748,7 @@
 			
 			<Text id="msgBenedictDead1">"\"Nooooo!\""</Text>
 			<Text id="msgBenedictDead2">"\"Let's get the hell out of here.\""</Text>
-			<Text id="msgBenedictDead3">"\"Sorry, pet, you're on your own.\""</Text>
+			<Text id="msgBenedictDead3">"\"Sorry, kid, you're on your own.\""</Text>
 			<Text id="msgCoverYou">"\"I'll cover you! Get Benedict!\""</Text>
 			<Text id="msgCoverYouGetFiona">"\"I'll cover you! Get Fiona!\""</Text>
 			<Text id="msgDidIt">"\"We got it!\""</Text>
@@ -822,6 +826,173 @@
 						)
 					)
 			</GetDockScreen>
+		</Events>
+	</Type>
+
+	<Type UNID="&evBenedict07Wingman;">
+		<Communications>
+			<Message name="Attack target" key="A">
+				<OnShow>
+					(and (objGetTarget gSender)
+						(not (eq (objGetTarget gSender) (objGetTarget gSource)))
+						)
+				</OnShow>
+				
+				<Invoke>
+					(switch
+						(eq (objGetTarget gSender) gSource)
+							(objSendMessage gSender gSource (objTranslate gSource 'IcantAttackMyself "\"Unable to comply\""))
+						
+						(and (not (objIsEnemy gPlayerShip (objGetTarget gSender)))
+								(not (objIsAngryAt (objGetTarget gSender) gPlayerShip))
+								)
+							(objSendMessage gSender gSource (objTranslate gSource 'IcantAttackFriends "\"Unable to comply\""))
+
+						(block Nil
+							(shpCancelOrders gSource)
+							(shpOrder gSource 'attack (objGetTarget gSender))
+							
+							(objSetData gSource "behavior" 'attackingTarget)
+							(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck "\"Acknowledged\""))
+							)
+						)
+				</Invoke>
+			</Message>
+			
+			<Message name="Break &amp; attack" key="B">
+				<OnShow>
+					(eq (objGetData gSource "behavior") 'escorting)
+				</OnShow>
+				
+				<Invoke>
+					(block (theTarget)
+						(switch
+							(or (not (setq theTarget (sysFindObject gPlayerShip "sTYAN")))
+									(gr (objGetDistance gPlayerShip theTarget) 100)
+									)
+								(objSendMessage gSender gSource (objTranslate gSource 'NoTargetInRange "\"No target in range\""))
+							
+							(block Nil
+								(shpCancelOrders gSource)
+								(shpOrder gSource 'attack theTarget)
+								
+								(objSetData gSource "behavior" 'attackingAtWill)
+								(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck "\"Acknowledged\""))
+								)
+							)
+						)
+				</Invoke>
+			</Message>
+
+			<Message name="Form up" key="F">
+				<OnShow>
+					(and 
+						(or (eq (objGetData gSource "behavior") 'waiting)
+							(objCommunicate gSource gSender 'QueryAttackStatus)
+							)
+						)
+				</OnShow>
+
+				<Invoke>
+					(block (behavior)
+						(setq behavior (objGetData gSource "behavior"))
+						(switch
+							(eq behavior 'escorting)
+								(block Nil
+									(objCommunicate gSource gSender 'FormUp)
+									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck "\"Acknowledged\""))
+									)
+
+							(block Nil
+								(shpCancelOrders gSource)
+								(shpOrder gSource 'follow gPlayerShip)
+								
+								(objSetData gSource "behavior" 'escorting)
+								(if (or (eq behavior 'attackingTarget) (eq behavior 'attackingAtWill))
+									(objSendMessage gSender gSource (objTranslate gSource 'CancelAttackAck "\"Acknowledged\""))
+									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck "\"Acknowledged\""))
+									)
+								)
+							)
+						)
+				</Invoke>
+			</Message>
+			
+			<Message name="Status" key="S">
+				<OnShow>
+					True
+				</OnShow>
+				
+				<Invoke>
+					(block (behavior armorDamage shieldLevel)
+						(setq behavior (objGetData gSource "behavior"))
+						
+						(objSendMessage gSender gSource
+							(switch
+								(eq behavior 'waiting)
+									(objTranslate gSource 'StatusWaiting "\"Waiting\"")
+									
+								(and (eq (setq armorDamage (objGetVisibleDamage gSource)) 0)
+										(or (eq (setq shieldLevel (objGetShieldLevel gSource)) 100) (eq shieldLevel -1))
+										)
+									(objTranslate gSource 'Status100Percent "\"No damage\"")
+
+								(eq armorDamage 0)
+									(cat "Shields down to " shieldLevel "%")
+								
+								(cat "Armor is " armorDamage "% damaged")
+								)
+							)
+							
+						(objSetShowAsDestination gSource Nil 'autoclear)
+						)
+				</Invoke>
+			</Message>
+
+			<Message name="Wait" key="W">
+				<OnShow>
+					(eq (objGetData gSource "behavior") 'escorting)
+				</OnShow>
+
+				<Invoke>
+					(block Nil
+						(shpCancelOrders gSource)
+						(shpOrder gSource 'hold)
+						
+						(objSetData gSource "behavior" 'waiting)
+						(objSendMessage gSender gSource (objTranslate gSource 'WaitAck "\"Acknowledged\""))
+						)
+				</Invoke>
+			</Message>
+		</Communications>
+		
+		<Events>
+			<OnOrdersCompleted>
+				(block (behavior theTarget)
+					(setq behavior (objGetData gSource "behavior"))
+					
+					; Set orders and state
+					
+					(switch
+						(and (eq behavior 'attackingAtWill)
+								(setq theTarget (sysFindObject gPlayerShip "sTYAN"))
+								(leq (objGetDistance gPlayerShip theTarget) 100)
+								)
+							(shpOrder gSource 'attack theTarget)
+								
+						gPlayerShip
+							(block Nil
+								(shpOrder gSource 'follow gPlayerShip)
+								(objSetData gSource "behavior" 'escorting)
+								)
+
+						(block Nil
+							(shpOrder gSource 'hold)
+							(objSetData gSource "behavior" 'waiting)
+							)
+						)
+					)
+			</OnOrdersCompleted>
 		</Events>
 	</Type>
 

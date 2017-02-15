@@ -39,6 +39,7 @@
 	<!ENTITY evBenedict08PenitentBase	"0x0020001E">
 	<!ENTITY evBenedict07FionaWreck		"0x0020001F">
 	<!ENTITY evBenedict06PenitentShip	"0x00200020">
+	<!ENTITY evBenedict07Wingman		"0x00200021">
 	
 	<!-- 0021xxxx HUARI ==================================================== -->
 	

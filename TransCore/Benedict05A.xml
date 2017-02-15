@@ -338,6 +338,15 @@
 							)
 						label: "\"[G]o to hell.\""
 						}
+					{
+						desc: (cat
+							"\"You're not as fun as I expected.\n\n"
+							
+							"\"Remember, keep all ships away from me until I'm done scanning. It's "
+							"our best chance to find the Hand of Solace.\""
+							)
+						label: "\"[G]ot it.\""
+						}
 					)
 			</Text>
 			<Text id="Briefing">

@@ -121,6 +121,25 @@
 					"The airlock refuses to open."
 					)
 			</Text>
+			
+			<Text id="ArmorRepaired">			"\"My ship's as good as new\""</Text>
+			<Text id="AttackTargetAck">			"\"Target acquired\""</Text>
+			<Text id="CancelAttackAck">			"\"Acknowledged\""</Text>
+			<Text id="FormUpAck">				"\"Acknowledged\""</Text>
+			<Text id="IcantAttackFriends">		"\"You're not serious!\""</Text>
+			<Text id="IcantAttackMyself">		"\"Ha! Very funny!\""</Text>
+			<Text id="ImRepairingArmor">		"Sandoval docks to repair his armor"</Text>
+			<Text id="MyArmorNeedsRepair">		"\"My ship needs repairs\""</Text>
+			<Text id="NiceShooting">			""</Text>
+			<Text id="NoTargetInRange">			"\"No targets in sight\""</Text>
+			<Text id="Status100Percent">		"\"All systems normal\""</Text>
+			<Text id="StatusAttackingTarget">	"\"Engaging the enemy\""</Text>
+			<Text id="StatusGoingHome">			""</Text>
+			<Text id="StatusRepairingArmor">	"\"Repairing my ship\""</Text>
+			<Text id="StatusWaiting">			"\"Waiting as ordered\""</Text>
+			<Text id="WaitAck">					"\"Acknowledged\""</Text>
+			<Text id="WatchYourTargets">		""</Text>
+			<Text id="WingmanJoined">			"\"Lead on, fearless leader!\""</Text>
 		</Language>
 	</ShipClass>
 	
