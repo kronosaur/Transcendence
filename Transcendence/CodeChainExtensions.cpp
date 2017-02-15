@@ -271,7 +271,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		{	"scrRemoveAction",				fnScrSet,		FN_SCR_REMOVE_ACTION,
 			"(scrRemoveAction screen actionID) -> True/Nil",
-			"is",	PPFLAG_SIDEEFFECTS, },
+			"iv",	PPFLAG_SIDEEFFECTS, },
 
 		{	"scrRemoveItem",				fnScrItem,		FN_SCR_REMOVE_ITEM,
 			"(scrRemoveItem screen count) -> item",
