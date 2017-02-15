@@ -168,7 +168,7 @@
 						;	If lastNodeID doesn't equal this system, then nothing to do.
 						
 						(and lastNodeID (!= lastNodeID (sysGetNode)))
-							Nil
+							Nil	;(dbgOutput (sysGetNode) ": lastNodeID = " lastNodeID)
 							
 						;	If no last ship class then we can't do anything because we don't know
 						;	how to find the object ID.
@@ -183,15 +183,15 @@
 									(cat 'objID_ (int shipClassValue))
 									)
 								))
-							Nil
+							Nil	;(dbgOutput (sysGetNode) ": Can't find object ID for " charType)
 							
 						;	If no ship or the ship is already ascended, then nothing to do
 						
 						(not (setq shipObj (objGetObjByID objID)))
-							Nil
+							Nil	;(dbgOutput (sysGetNode) ": Can't find ship object")
 							
 						(objGetProperty shipObj 'ascended)
-							Nil
+							Nil	;(dbgOutput (sysGetNode) ": Ship already ascended")
 							
 						;	Otherwise, ascend the object
 						
@@ -199,6 +199,7 @@
 							(typSetData charType 'lastSystemPos (objGetPos shipObj))
 							(typSetData charType 'lastKnown (objGetProperty shipObj 'known))
 							(sysAscendObject shipObj)
+							; (dbgOutput (sysGetNode) ": Ship ascended: " (objGetID shipObj))
 							)
 						)
 					)
@@ -338,6 +339,8 @@
 								(typSetData charType 'lastShipClass shipClassUNID)
 								(typSetData charType shipIDVar (objGetId shipObj))
 								(typSetData charType 'screenData Nil)
+								
+								; (dbgOutput (sysGetNode) ": No obj ID; creating ship: " (objGetID shipObj))
 								)
 								
 						;	If we can't find the object, then this is an error, but we
@@ -353,6 +356,8 @@
 								(typSetData charType 'lastShipClass shipClassUNID)
 								(typSetData charType shipIDVar (objGetId shipObj))
 								(typSetData charType 'screenData Nil)
+								
+								; (dbgOutput (sysGetNode) ": Obj ID not found; creating ship: " (objGetID shipObj))
 								)
 
 						;	If the object is ascended, we descend it.
@@ -377,6 +382,7 @@
 								;	Descend him back to the system
 
 								(setq shipObj (sysDescendObject objID pos))
+								; (dbgOutput (sysGetNode) ": Descending ship: " (objGetID shipObj))
 								
 								;	If we could not descend, then something happened. Just create
 								;	the character here.
@@ -384,12 +390,15 @@
 								(if (not shipObj)
 									(block Nil
 										(setq shipObj (sysCreateShip shipClassUNID pos (typGetStaticData charType 'Sovereign)))
-										(typSetData charType 'lastNodeID (sysGetNode))
-										(typSetData charType 'lastShipClass shipClassUNID)
-										(typSetData charType shipIDVar (objGetId shipObj))
+										(typSetData charType shipIDVar (objGetID shipObj))
 										)
 									)
 									
+								;	Remember where we are
+									
+								(typSetData charType 'lastNodeID (sysGetNode))
+								(typSetData charType 'lastShipClass shipClassUNID)
+								
 								;	Set known
 								
 								(objSetProperty shipObj 'known isKnown)
