@@ -1769,7 +1769,7 @@
 							(block Nil
 								(switch
 									; Alien items cannot be enhanced
-									(itmHasModifier shieldItem "Alien")
+									(itmHasAttribute shieldItem "Alien")
 										(objSendMessage gSource Nil "Shield generator is too alien for the ROM to enhance")
 
 									; If the shield generator is too advanced, then nothing happens

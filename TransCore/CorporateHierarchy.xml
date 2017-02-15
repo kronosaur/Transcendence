@@ -1805,11 +1805,11 @@
 
 									(objEnumItems gPlayerShip "*U" theItem
 										(block Nil
-											(if (itmHasModifier theItem 'Illegal)
+											(if (itmHasAttribute theItem 'Illegal)
 												(setq hasIllegals True)
 												)
 
-											(if (itmHasModifier theItem 'BlackMarketID)
+											(if (itmHasAttribute theItem 'BlackMarketID)
 												(setq hasID True)
 												)
 											)

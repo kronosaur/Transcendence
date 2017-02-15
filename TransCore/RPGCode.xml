@@ -1695,7 +1695,7 @@
 								;	Check military ID
 
 								(and (@ data 'checkMilitaryID)
-										(itmHasModifier thisItem "Military")
+										(itmHasAttribute thisItem "Military")
 										(not (objGetItems targetObj "*+MilitaryID"))
 										)
 									(setq desc (or
@@ -1705,7 +1705,7 @@
 										))
 
 								(and (@ data 'checkMilitaryID)
-										(itmHasModifier thisItem "Illegal")
+										(itmHasAttribute thisItem "Illegal")
 										)
 									(setq desc (or
 										(objTranslate installerObj 'rpg.cannotInstallDeviceBecauseIllegal { item:thisItem targetObj:targetObj })

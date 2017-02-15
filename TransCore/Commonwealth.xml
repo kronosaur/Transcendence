@@ -2903,7 +2903,7 @@
 				(switch
 					;	If the player sold slaves, chance they get caught
 					
-					(itmHasModifier gItem 'slaves)
+					(itmHasAttribute gItem 'slaves)
 						(block ()
 							(objIncData gPlayerShip 'slaveSales (ecoExchange aPrice aCurrency 'credit))
 

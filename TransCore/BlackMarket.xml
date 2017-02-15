@@ -827,14 +827,14 @@ PLAYER DATA
 							Nil
 
 						; Military items are priced depending on level
-						(itmHasModifier thisItem 'Military)
+						(itmHasAttribute thisItem 'Military)
 							(if (ls (objGetData gPlayerShip "blackMarketLevel") 4)
 								(multiply cost 2)
 								(divide (multiply cost 125) 100)
 								)
 
 						; Illegal items cost 10% more
-						(itmHasModifier thisItem 'Illegal)
+						(itmHasAttribute thisItem 'Illegal)
 							(divide (multiply cost 110) 100)
 
 						; Other items at cost
@@ -850,13 +850,13 @@ PLAYER DATA
 						(or (itmIsDamaged thisItem) (itmIsInstalled thisItem))
 							Nil
 
-						(itmHasModifier thisItem 'ID)
+						(itmHasAttribute thisItem 'ID)
 							Nil
 
-						(itmHasModifier thisItem 'Military)
+						(itmHasAttribute thisItem 'Military)
 							(divide (multiply cost 90) 100)
 
-						(itmHasModifier thisItem 'Illegal)
+						(itmHasAttribute thisItem 'Illegal)
 							(divide (multiply cost 85) 100)
 
 						Nil
@@ -1189,7 +1189,7 @@ PLAYER DATA
 					;	we add to XP.
 					
 					(and (objHasAttribute aSellerObj 'blackMarket)
-							(itmHasModifier gItem 'illegal)
+							(itmHasAttribute gItem 'illegal)
 							)
 						(objIncData gPlayerShip 'blackMarketXP (divide (ecoExchange aPrice aCurrency 'credit) 100))
 					)

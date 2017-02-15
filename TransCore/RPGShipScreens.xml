@@ -256,7 +256,7 @@
 							; Handle refuel
 							(switch
 								; If this item requires confirmation, show pane
-								(itmHasModifier (scrGetItem gScreen) 'ConfirmRefuel)
+								(itmHasAttribute (scrGetItem gScreen) 'ConfirmRefuel)
 									(scrShowPane gScreen "ConfirmRefuel")
 
 								; If there are more than one item, get count

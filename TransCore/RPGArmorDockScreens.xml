@@ -1225,7 +1225,7 @@
 											)
 											
 									(and (@ gData 'checkMilitaryID) 
-											(itmHasModifier thisItem "Military")
+											(itmHasAttribute thisItem "Military")
 											(not (objGetItems gPlayerShip "*+MilitaryID"))
 											)
 										(block Nil
@@ -1234,7 +1234,7 @@
 											)
 											
 									(and (@ gData 'checkMilitaryID) 
-											(itmHasModifier thisItem "Illegal")
+											(itmHasAttribute thisItem "Illegal")
 											)
 										(block Nil
 											(setq desc "We do not install illegal armor segments.")
@@ -1422,13 +1422,13 @@
 								(setq desc (@ result 2))
 								
 							(and (@ gData 'checkMilitaryID) 
-									(itmHasModifier thisItem "Military")
+									(itmHasAttribute thisItem "Military")
 									(not (objGetItems gPlayerShip "*+MilitaryID"))
 									)
 								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descNeedMilitaryID { armor:thisItem }))
 								
 							(and (@ gData 'checkMilitaryID) 
-									(itmHasModifier thisItem "Illegal")
+									(itmHasAttribute thisItem "Illegal")
 									)
 								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descArmorIllegal { armor:thisItem }))
 								
