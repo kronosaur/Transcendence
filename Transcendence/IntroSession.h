@@ -70,6 +70,7 @@ class CIntroSession : public IHISession
 		virtual CReanimator &GetReanimator (void) override { return g_pTrans->GetReanimator(); }
 		virtual void OnAnimate (CG32bitImage &Screen, bool bTopMost) override;
 		virtual void OnChar (char chChar, DWORD dwKeyData) override;
+		virtual void OnCleanUp (void) override;
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override;
 		virtual ALERROR OnInit (CString *retsError) override;
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;

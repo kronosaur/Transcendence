@@ -937,6 +937,17 @@ void CIntroSession::OnChar (char chChar, DWORD dwKeyData)
 		HandleChar(chChar, dwKeyData);
 	}
 
+void CIntroSession::OnCleanUp (void)
+
+//	OnCleanUp
+//
+//	Clean up
+
+	{
+	if (m_bExpandedDesired)
+		::ShowCursor(true);
+	}
+
 ALERROR CIntroSession::OnCommand (const CString &sCmd, void *pData)
 
 //	OnCommand
