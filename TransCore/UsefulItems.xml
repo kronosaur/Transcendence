@@ -51,7 +51,7 @@
 	<!-- Ammo Box, Cluser MAG -->
 
 	<ItemType UNID="&itAmmoBoxMAG;"
-			name=				"Cluster MAG ammunition box(es)"
+			name=				"ZG24 cluster MAG ammunition box(es)"
 			level=				"6"
 			value=				"1250"
 			mass=				"2500"
@@ -60,7 +60,7 @@
 			unknownType=		"&vtUnknownAmmoBox;"
 			attributes=			"ammoBox, consumable"
 
-			description=		"This box contains ZG24 Cluster MAGs."
+			description=		"This box contains ZG24 cluster MAGs."
 			>
 
 		<Image imageID="&rsItems1;" imageX="0" imageY="384" imageWidth="96" imageHeight="96"/>
@@ -119,7 +119,7 @@
 	<!-- Ammo Box, Contraband -->
 
 	<ItemType UNID="&itAmmoBoxContraband;"
-			name=				"Contraband ammunition box(es)"
+			name=				"contraband ammunition box(es)"
 			level=				"6"
 			value=				"3000"
 			mass=				"2500"

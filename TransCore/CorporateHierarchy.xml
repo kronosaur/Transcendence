@@ -1091,7 +1091,7 @@
 							</Action>
 
 							<Action name="Maintenance Level" key="M">
-								(if (objGetItems gPlayerShip "*NU +Illegal; -ID")
+								(if (objGetItems gPlayerShip "*NU +Illegal; -ID; +property:known;")
 									(scrShowPane gScreen "Illegals")
 									(scrShowPane gScreen "MaintenanceLevel")
 									)
@@ -1144,7 +1144,7 @@
 									(scrShowSellScreen
 										(lambda (theItem)
 											(switch
-												(itmMatches theItem "*NU +Illegal; -ID")
+												(itmMatches theItem "*NU +Illegal; -ID; +property:known;")
 													(divide (multiply 90 (itmGetPrice theItem 'credit)) 100)
 													
 												Nil
@@ -1805,7 +1805,7 @@
 
 									(objEnumItems gPlayerShip "*U" theItem
 										(block Nil
-											(if (itmHasAttribute theItem 'Illegal)
+											(if (itmMatches theItem "*U +illegal; +property:known;")
 												(setq hasIllegals True)
 												)
 
@@ -1893,7 +1893,7 @@
 
 						<OnPaneInit>
 							(block Nil
-								(setq gItem (random (objGetItems gPlayerShip "*U +Illegal;")))
+								(setq gItem (random (objGetItems gPlayerShip "*U +Illegal; +property:known;")))
 								(scrSetDesc gScreen (cat "As you finish dinner one of the brothers says, \"I wish I could get a hold of some " (itmGetName gItem 2) ".\" You respond:"))
 								)
 						</OnPaneInit>
