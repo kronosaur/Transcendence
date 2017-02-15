@@ -1793,8 +1793,11 @@
 	<Module filename="Benedict.xml"/>
 	<Module filename="Fiona.xml"/>
 	<Module filename="HugoSandoval.xml"/>
+	<Module filename="Jenna.xml"/>
 	<Module filename="KateMorgental.xml"/>
+	<Module filename="Rama.xml"/>
 	<Module filename="Stormhound.xml"/>
+	<Module filename="Volkov.xml"/>
 	
 	<!-- These modules implement encounters. They should be clean, for the
 		most part. -->

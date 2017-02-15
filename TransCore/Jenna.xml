@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Jenna's Ronin Gunship	-->
+
+	<ShipClass UNID="&scRoninJenna;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Ronin/C"
+			type=				"gunship"
+
+			mass=				"60"
+			cargoSpace=			"50"
+			thrustRatio=		"5.5"
+			maxSpeed=			"20"
+
+			leavesWreck=		"50"
+
+			attributes=			"commonwealth"
+			
+			inherit=			"&baStdWingmanBase;"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itCeralloyArmor;"/>
+			<ArmorSection start="225" span="90" armorID="&itCeralloyArmor;"/>
+			<ArmorSection start="135" span="90" armorID="&itCeralloyArmor;"/>
+			<ArmorSection start="45"  span="90" armorID="&itCeralloyArmor;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itDualParticleBeamWeapon;"/>
+			<Device deviceID="&itCyclotronDeflectorIV;"/>
+			<Device deviceID="&it25MWReactor;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Items>
+			<Item count="3d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<Names noArticle="true" personalName="true">Jenna</Names>
+
+		<AISettings
+			fireRateAdj=		"15"
+			fireAccuracy=		"95"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+			
+		<StaticData>
+			<!-- This is an optional field. If present, the wingman
+				will leave the player beyond a certain point. -->
+			<MaxSystemLevel>7</MaxSystemLevel>
+		</StaticData>
+		
+		<Language>
+			<Text id="ArmorRepaired">			"\"Good as new!\""</Text>
+			<Text id="AttackTargetAck">			"\"I got it!\""</Text>
+			<Text id="CancelAttackAck">			"\"Roger, I'm inbound\""</Text>
+			<Text id="FormUpAck">				"\"Roger, I'm inbound\""</Text>
+			<Text id="IcantAttackFriends">		"\"Aren't they the good guys?\""</Text>
+			<Text id="IcantAttackMyself">		"\"Yeah, right!\""</Text>
+			<Text id="ImFarFromHome">			"\"Whoa, I'm pretty far from home!\""</Text>
+			<Text id="ImTooFarFromHome">		"\"I don't like being so far from home\""</Text>
+			<Text id="ImGoingHome">				"\"I can't follow you anymore; I'm sorry\""</Text>
+			<Text id="ImRepairingArmor">		"Jenna docks to repair her armor"</Text>
+			<Text id="MyArmorNeedsRepair">		"\"Can we go somewhere to repair my armor?\""</Text>
+			<Text id="NiceShooting">			"\"Not bad for an old-timer!\""</Text>
+			<Text id="NoTargetInRange">			"\"I think you're seeing things...\""</Text>
+			<Text id="Status100Percent">		"\"Ready when you are, old-timer\""</Text>
+			<Text id="StatusAttackingTarget">	"\"I'm a little busy right now\""</Text>
+			<Text id="StatusGoingHome">			"\"I'm sorry, my mind is made up: I'm going home\""</Text>
+			<Text id="StatusRepairingArmor">	"\"I'm just repairing my armor\""</Text>
+			<Text id="StatusWaiting">			"\"I'm waiting for you\""</Text>
+			<Text id="WaitAck">					"\"OK, but don't be gone too long\""</Text>
+			<Text id="WatchYourTargets">		"\"Hey, watch it!\""</Text>
+			<Text id="WingmanJoined">			"\"Ready for action, boss\""</Text>
+			<Text id="WingmanKilled">			"You have a sad feeling for a moment, then it passes"</Text>
+		</Language>
+
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList status)
+					(setq status (typGetGlobalData &scRoninJenna; "status"))
+
+					(if status
+						(setq theList (list
+							(list
+								(switch
+									(eq status 'joined) "Joined by Jenna"
+									(eq status 'declined) "Declined Jenna's company"
+									(eq status 'destroyed) "Lost Jenna"
+									(eq status 'destroyedByPlayer) "Killed Jenna"
+									(eq status 'returnedHome) "Allowed Jenna to return home"
+									(cat "ERROR: Jenna status: " status)
+									)
+								Nil
+								"achievements &amp; regrets"
+								)
+							))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+		</Events>
+	</ShipClass>
+
+</TranscendenceModule>
