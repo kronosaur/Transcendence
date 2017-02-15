@@ -70,6 +70,7 @@
 		<Armor
 			armorID=			"&itAdvancedPlasteelPlate;"
 			count=				"6"
+			enhancement=		"+immunity:radiation"
 			/>
 		
 		<Devices>

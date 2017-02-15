@@ -49,6 +49,7 @@
 		<Armor
 			armorID=			"&itDuralloyArmor;"
 			count=				"6"
+			enhancement=		"+immunity:radiation"
 			/>
 		
 		<Devices>
