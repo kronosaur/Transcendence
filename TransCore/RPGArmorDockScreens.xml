@@ -1798,7 +1798,7 @@
 							
 					(@ gData 'maxLevel)
 						(cat 
-							"We install devices up to tech level " (objGetProperty (@ gData 'dockObj) 'installArmorMaxLevel)
+							"We install devices up to tech level " (objGetProperty (@ gData 'dockObj) 'installDeviceMaxLevel)
 							" (but you don't have anything better than level " (@ gData 'maxLevel) " in your cargo hold)."
 							)
 						
