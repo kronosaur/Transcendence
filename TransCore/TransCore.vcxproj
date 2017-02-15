@@ -476,10 +476,12 @@
     <Xml Include="HumanSpaceVol01.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="Jenna.xml" />
     <Xml Include="Ore.xml" />
     <Xml Include="Penitents.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="Rama.xml" />
     <Xml Include="RPGComponents.xml">
       <SubType>Designer</SubType>
     </Xml>
@@ -495,6 +497,7 @@
     <Xml Include="Stormhound.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="Volkov.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

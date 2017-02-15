@@ -423,5 +423,14 @@
     <Xml Include="Stormhound.xml">
       <Filter>Human Space Library\Characters</Filter>
     </Xml>
+    <Xml Include="Rama.xml">
+      <Filter>Human Space Library\Characters</Filter>
+    </Xml>
+    <Xml Include="Jenna.xml">
+      <Filter>Human Space Library\Characters</Filter>
+    </Xml>
+    <Xml Include="Volkov.xml">
+      <Filter>Human Space Library\Characters</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
