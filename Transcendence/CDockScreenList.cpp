@@ -402,6 +402,11 @@ ALERROR CDockScreenList::OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, 
 		if (sID.IsBlank() || !FindFilter(strToInt(sID, 0), &iFilter) || m_Filters[iFilter].bDisabled)
 			iFilter = iFirstValidFilter;
 
+		//	If we still don't have a valid filter, default to the first filter
+
+		if (iFilter == -1)
+			iFilter = 0;
+
 		//	Select the filter
 
 		m_pItemListControl->SelectTab(m_Filters[iFilter].dwID);
