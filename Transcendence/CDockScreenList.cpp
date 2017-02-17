@@ -305,6 +305,8 @@ ALERROR CDockScreenList::OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, 
 //	Initialize
 
 	{
+	DEBUG_TRY
+
 	int i;
 	ALERROR error;
     const CDockScreenVisuals &DockScreenVisuals = Ctx.pDockScreen->GetVisuals();
@@ -408,6 +410,8 @@ ALERROR CDockScreenList::OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, 
 		}
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 bool CDockScreenList::OnIsCurrentItemValid (void) const

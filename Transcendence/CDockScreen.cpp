@@ -411,6 +411,8 @@ void CDockScreen::CleanUpScreen (void)
 //	Called to bring the screen down after InitScreen
 
 	{
+	DEBUG_TRY
+
 	if (m_pScreen)
 		{
 		delete m_pScreen;
@@ -437,6 +439,8 @@ void CDockScreen::CleanUpScreen (void)
 		m_pOnScreenUpdate->Discard(&g_pUniverse->GetCC());
 		m_pOnScreenUpdate = NULL;
 		}
+
+	DEBUG_CATCH
 	}
 
 ALERROR CDockScreen::CreateBackgroundImage (const IDockScreenDisplay::SBackgroundDesc &Desc, const RECT &rcRect, int xOffset)
@@ -599,6 +603,8 @@ ALERROR CDockScreen::CreateTitleArea (CXMLElement *pDesc, AGScreen *pScreen, con
 //	Creates the title and status bar
 
 	{
+	DEBUG_TRY
+
 	const CVisualPalette &VI = g_pHI->GetVisuals();
     const CDockScreenVisuals &DockScreenVisuals = GetVisuals();
 
@@ -690,6 +696,8 @@ ALERROR CDockScreen::CreateTitleArea (CXMLElement *pDesc, AGScreen *pScreen, con
 	UpdateCredits();
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 ICCItem *CDockScreen::GetCurrentListEntry (void)
@@ -797,6 +805,8 @@ CString CDockScreen::EvalInitialPane (CSpaceObject *pSource, ICCItem *pData)
 //	Invokes <InitialPane> code and returns the result (or "Default")
 
 	{
+	DEBUG_TRY
+
 	CXMLElement *pInitialPane = m_pDesc->GetContentElementByTag(INITIAL_PANE_TAG);
 	if (pInitialPane)
 		{
@@ -825,6 +835,8 @@ CString CDockScreen::EvalInitialPane (CSpaceObject *pSource, ICCItem *pData)
 		}
 	else
 		return CONSTLIT("Default");
+
+	DEBUG_CATCH
 	}
 
 bool CDockScreen::EvalString (const CString &sString, ICCItem *pData, bool bPlain, ECodeChainEvents iEvent, CString *retsResult)
@@ -871,6 +883,8 @@ ALERROR CDockScreen::FireOnScreenInit (CSpaceObject *pSource, ICCItem *pData, CS
 //	Fire screen OnScreenInit
 
 	{
+	DEBUG_TRY
+
 	//	We accept either OnScreenInit or OnInit
 
 	CXMLElement *pOnInit = m_pDesc->GetContentElementByTag(ON_SCREEN_INIT_TAG);
@@ -913,6 +927,8 @@ ALERROR CDockScreen::FireOnScreenInit (CSpaceObject *pSource, ICCItem *pData, CS
 	m_bFirstOnInit = false;
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 void CDockScreen::HandleChar (char chChar)
@@ -980,6 +996,8 @@ ALERROR CDockScreen::InitDisplay (CXMLElement *pDisplayDesc, AGScreen *pScreen, 
 //	Initializes display controls
 
 	{
+	DEBUG_TRY
+
 	int i;
 	CCodeChain &CC = g_pUniverse->GetCC();
 
@@ -1024,6 +1042,8 @@ ALERROR CDockScreen::InitDisplay (CXMLElement *pDisplayDesc, AGScreen *pScreen, 
 		}
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 void CDockScreen::InitDisplayControlRect (CXMLElement *pDesc, const RECT &rcFrame, RECT *retrcRect)
@@ -1655,6 +1675,8 @@ void CDockScreen::SetBackground (const IDockScreenDisplay::SBackgroundDesc &Desc
 //	Sets the dock screen background
 
 	{
+	DEBUG_TRY
+
 	//	If we haven't yet initialized the screen (e.g., we're inside of
 	//	OnScreenInit) then we need to defer this.
 
@@ -1720,6 +1742,8 @@ void CDockScreen::SetBackground (const IDockScreenDisplay::SBackgroundDesc &Desc
 
 		m_pScreen->AddArea(pImage, rcBackArea, IMAGE_AREA_ID, true);
 		}
+
+	DEBUG_CATCH
 	}
 
 ALERROR CDockScreen::SetDisplayText (const CString &sID, const CString &sText)

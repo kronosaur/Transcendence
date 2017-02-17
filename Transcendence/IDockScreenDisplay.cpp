@@ -45,6 +45,8 @@ bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retO
 //	selector displays.
 
 	{
+	DEBUG_TRY
+
 	//	Initialize background image options
 
 	CString sBackgroundID;
@@ -168,6 +170,8 @@ bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retO
 		}
 
 	return true;
+
+	DEBUG_CATCH
 	}
 
 bool IDockScreenDisplay::EvalBool (const CString &sCode, bool *retbResult, CString *retsError)

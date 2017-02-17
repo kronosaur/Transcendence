@@ -13,6 +13,8 @@ ALERROR CDockScreenItemList::OnInitList (SInitCtx &Ctx, const SDisplayOptions &O
 //	Initialize list
 
 	{
+	DEBUG_TRY
+
 	//	Figure out where to get the data from: either the station
 	//	or the player's ship.
 
@@ -71,4 +73,6 @@ ALERROR CDockScreenItemList::OnInitList (SInitCtx &Ctx, const SDisplayOptions &O
 	//	Done
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
