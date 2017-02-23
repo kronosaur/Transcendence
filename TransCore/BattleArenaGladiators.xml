@@ -1056,9 +1056,9 @@
 			type=				"armed transport"
 
 			size=				"60"
-			mass=				"1000"
-			cargoSpace=			"50"
-			thrustRatio=		"1.0"
+			mass=				"600"
+			cargoSpace=			"1000"
+			thrustRatio=		"1.5"
 			maxSpeed=			"16"
 
 			attributes=			"battleArena, gladiator"

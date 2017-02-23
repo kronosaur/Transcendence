@@ -3103,10 +3103,10 @@
 			attributes=			"freighter, genericClass, outlaws"
 			   
 			size=				"60"
-			mass=				"1000"
+			mass=				"600"
 			thrustRatio=		"1.5"
 			maxSpeed=			"16"
-			cargoSpace=			"2000"
+			cargoSpace=			"1000"
 			>
 
 		<!-- Configuration -->
@@ -3165,10 +3165,10 @@
 			attributes=			"freighter, genericClass, outlaws"
 			   
 			size=				"95"
-			mass=				"1500"
+			mass=				"900"
 			thrustRatio=		"1.1"
 			maxSpeed=			"16"
-			cargoSpace=			"5000"
+			cargoSpace=			"1500"
 			>
 
 		<Armor>
@@ -4190,7 +4190,7 @@
 
 	<ItemType UNID="&itKilotonCannonShell;"
 			name=				"kiloton cannon shell"
-			attributes=			"consumable, missile, ranx"
+			attributes=			"consumable, military, missile, ranx, specialty"
 			  
 			level=				"6"
 			frequency=			"common"

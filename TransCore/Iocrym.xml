@@ -148,7 +148,7 @@
 			mass=				"100000"
 			frequency=			"rare"
 			unknownType=		"&itUnknownAlienDevice10;"
-			attributes=			"Alien; Iocrym; MajorItem"
+			attributes=			"alien, armorRepair, iocrym, majorItem"
 
 			description=		"This alien device heals Iocrym armor. It is possible that it is able to repair other kinds of armor as well."
 			>
