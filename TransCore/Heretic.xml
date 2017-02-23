@@ -3804,7 +3804,7 @@
 							(scrSetDesc gScreen
 								"An Ares scientist comes forward:\n\n"
 								"\"Welcome, Human! We are studying the Iocrym just as you are now. Return "
-								"here when you task is complete and perhaps we can help each other.\""
+								"here when your task is complete and perhaps we can help each other.\""
 								)
 						</OnPaneInit>
 						
