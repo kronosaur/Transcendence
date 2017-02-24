@@ -869,9 +869,7 @@ void CTranscendenceModel::ExitScreenSession (bool bForceUndock)
 		//	Clean up
 
 		m_pDefaultScreensRoot = NULL;
-        CGameSession *pSession = GetPlayer()->GetGameSession();
-        if (pSession)
-            pSession->OnShowDockScreen(false);
+		pSession->OnShowDockScreen(false);
 		pSession->GetDockScreen().CleanUpScreen();
 
 		m_DockFrames.DeleteAll();
@@ -1534,7 +1532,8 @@ void CTranscendenceModel::OnPlayerChangedShips (CSpaceObject *pOldShip, CSpaceOb
 			
 	//	If we're docked, update all frames with the new ship
 
-	if (pSession->GetDockScreen().GetLocation() == pOldShip)
+	if (InScreenSession() 
+			&& pSession->GetDockScreen().GetLocation() == pOldShip)
 		{
 		pOldShip->ClearPlayerDocked();
 		pNewShip->SetPlayerDocked();
