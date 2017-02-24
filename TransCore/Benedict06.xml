@@ -663,6 +663,7 @@
 			alignment="destructive order"
 			>
 		<Relationships>
+			<Relationship sovereign="&svPlayer;" disposition="friend" mutual="true"/>
 			<Relationship sovereign="&svSistersOfDomina;" disposition="friend" mutual="true"/>
 			<Relationship sovereign="&svCommonwealth;" disposition="neutral" mutual="true"/>
 		</Relationships>
