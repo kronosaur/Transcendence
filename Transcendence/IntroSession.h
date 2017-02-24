@@ -88,6 +88,7 @@ class CIntroSession : public IHISession
 		void CreateIntroSystem (void);
 		void CreateIntroShips (DWORD dwNewShipClass = 0, DWORD dwSovereign = 0, CSpaceObject *pShipDestroyed = NULL);
 		ALERROR CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSovereign *pSovereign, CShip **retpShip);
+		void InitShipTable (TSortMap<int, CShipClass *> &List, bool bAll = false);
 
 		void CancelCurrentState (void);
 		void CreateSoundtrackTitleAnimation (CMusicResource *pTrack, IAnimatron **retpAni);

@@ -351,6 +351,39 @@ void CIntroSession::CreateIntroSystem (void)
 	g_pUniverse->MarkLibraryBitmaps();
 	}
 
+void CIntroSession::InitShipTable (TSortMap<int, CShipClass *> &List, bool bAll)
+
+//	InitShipTable
+//
+//	Initializes the table with ships
+
+	{
+	int i;
+
+	if (List.GetCount() == 0)
+		{
+		for (i = 0; i < g_pUniverse->GetShipClassCount(); i++)
+			{
+			CShipClass *pClass = g_pUniverse->GetShipClass(i);
+
+			//	Skip classes that we don't want in the intro
+
+			if (pClass->IsVirtual()
+					|| (!bAll && !pClass->HasLiteralAttribute(ATTRIB_GENERIC_SHIP_CLASS)))
+				continue;
+
+			//	Skip unarmed ships
+
+			if (pClass->GetPropertyString(PROPERTY_PRIMARY_WEAPON).IsBlank())
+				continue;
+
+			//	Add to our list, sorted by score
+
+			List.Insert(pClass->GetScore(), pClass);
+			}
+		}
+	}
+
 ALERROR CIntroSession::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSovereign *pSovereign, CShip **retpShip)
 
 //	CreateRandomShip
@@ -378,31 +411,22 @@ ALERROR CIntroSession::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSover
 
 		if (m_ShipList.GetCount() == 0)
 			{
-			for (i = 0; i < g_pUniverse->GetShipClassCount(); i++)
+			InitShipTable(m_ShipList);
+
+			//	If no ships in our list, then try again but include all ships (not 
+			//	just the ones with genericClass).
+
+			if (m_ShipList.GetCount() == 0)
 				{
-				CShipClass *pClass = g_pUniverse->GetShipClass(i);
+				InitShipTable(m_ShipList, true);
 
-				//	Skip classes that we don't want in the intro
+				//	If we still don't have any ships, then we can't do anything. This 
+				//	should never happen because we have ships in CoreTypes.
 
-				if (pClass->IsVirtual()
-						|| !pClass->HasLiteralAttribute(ATTRIB_GENERIC_SHIP_CLASS))
-					continue;
-
-				//	Skip unarmed ships
-
-				if (pClass->GetPropertyString(PROPERTY_PRIMARY_WEAPON).IsBlank())
-					continue;
-
-				//	Add to our list, sorted by score
-
-				m_ShipList.Insert(pClass->GetScore(), pClass);
+				if (m_ShipList.GetCount() == 0)
+					return ERR_FAIL;
 				}
 			}
-
-		//	If no ships in our list, then we can't proceed
-
-		if (m_ShipList.GetCount() == 0)
-			return ERR_FAIL;
 
 		//	We only pick from the bottom half of the list, on the assumption that
 		//	we want the higher level ships to be a surprise for the player.
