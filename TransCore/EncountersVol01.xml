@@ -3059,7 +3059,7 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itArbalestCannon;" omnidirectional="true"	posAngle="180" posRadius="5" posZ="20"/>
+			<Device deviceID="&itArbalestCannon;" omnidirectional="true"	posAngle="180" posRadius="7" posZ="20"/>
 			<Device deviceID="&itClass1Deflector;"/>
 		</Devices>
 
@@ -3074,11 +3074,12 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsSotho;" imageX="0" imageY="0" imageWidth="72" imageHeight="72"/>
+		<Image imageID="&rsSotho120;" imageWidth="72" imageHeight="72" rotationCount="120" rotationColumns="12" viewportRatio="0.00625"/>
+		<HeroImage imageID="&rsSothoHero;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="164"	posRadius="29"	posZ="0"	rotation="180"	sendToBack="3,4,16,17"/>
-			<Effect type="thrustMain"		posAngle="-164"	posRadius="29"	posZ="0"	rotation="180"	sendToBack="3,4,16,17"/>
+			<Effect type="thrustMain"		posAngle="164"	posRadius="30"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-164"	posRadius="30"	posZ="0"	rotation="180"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
@@ -3683,6 +3684,8 @@
 	
 	<Image UNID="&rsOromo;"				bitmap="Resources\Oromo.jpg"		bitmask="Resources\OromoMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsSotho;"				bitmap="Resources\Sotho.jpg"		bitmask="Resources\SothoMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsSotho120;"			bitmap="Resources\Sotho120.jpg"		bitmask="Resources\Sotho120Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsSothoHero;"			bitmap="Resources\SothoLarge.jpg"		bitmask="Resources\SothoLargeMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsT31ArmedTransport;"	bitmap="Resources\T31Transport.jpg"		bitmask="Resources\T31TransportMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsT55ArmedTransport;"	bitmap="Resources\T55Transport.jpg"		bitmask="Resources\T55TransportMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsZulu;"				bitmap="Resources\Zulu.jpg"		bitmask="Resources\ZuluMask.bmp"  loadOnUse="true"/>

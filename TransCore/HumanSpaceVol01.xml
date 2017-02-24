@@ -1684,7 +1684,7 @@
 	<!ENTITY baSeismicScannerPower		"0x0010016F">
 	<!ENTITY rsMiningPod				"0x00100170">
 	
-	<!-- 0180-018F OUTLAW MINERS -->
+	<!-- 0180-018F OUTLAWS -->
 	
 	<!ENTITY baOutlawMine				"0x00100180">
 	<!ENTITY tbOutlawMinerProspector	"0x00100181">
@@ -1693,6 +1693,8 @@
 	<!ENTITY rsOutlawMinePrimordial		"0x00100184">
 	<!ENTITY rsOutlawMineRocky			"0x00100185">
 	<!ENTITY rsOutlawMineVolcanic		"0x00100186">
+	<!ENTITY rsSotho120					"0x00100187">
+	<!ENTITY rsSothoHero				"0x00100188">
 	
 	<!-- 0190-019F VENTARI SETTLERS -->
 	
