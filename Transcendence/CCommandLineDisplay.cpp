@@ -292,7 +292,7 @@ void CCommandLineDisplay::InputBackspace (void)
 //	Delete characters from input buffer
 
 	{
-	if (m_sInput.GetLength() > 0)
+	if (m_iCursorPos > 0)
 		{
 		if (m_iCursorPos == m_sInput.GetLength())
 			m_sInput = strSubString(m_sInput, 0, m_sInput.GetLength() - 1);
