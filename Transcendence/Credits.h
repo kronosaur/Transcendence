@@ -11,12 +11,12 @@ const int ADDITIONAL_PROGRAMMING_COUNT = (sizeof(ADDITIONAL_PROGRAMMING) / sizeo
 
 static char *SPECIAL_THANKS[] =
 	{
-	"Ember Anderson (Shrike) • Betelgeuse • Nathan Brown (Atarlost)",
-	"Michael Curran (Burzmali) • Ruggero Dondi (Digdug) • Johan Friis (Alterecco)",
-	"Alexander Huitric (Wolfy) • David Lenker (dvlenk6) • Hendrik Liersch (Bimbel)",
-	"Jess Merkley (Fossaman) • Jason Miao • Kieran Mitchell (Yugi)",
-	"Mike Mosher (Prophet) • Bryan Murray (Periculi) • Joe Needleman (Ttech)",
-	"Dan Newman (SparcMan) • Robert Patrick (RPC)",
+	"Betelgeuse • Nathan Brown (Atarlost) • Michael Curran (Burzmali)",
+	"Ruggero Dondi (Digdug) • Johan Friis (Alterecco) • Alexander Huitric (Wolfy)",
+	"David Lenker (dvlenk6) • Hendrik Liersch (Bimbel) • Jess Merkley (Fossaman)",
+	"Jason Miao • Kieran Mitchell (Yugi) • Mike Mosher (Prophet)",
+	"Bryan Murray (Periculi) • Joe Needleman (Ttech) • Dan Newman (SparcMan)",
+	"Robert Patrick (RPC) • Ember Song (Shrike)",
 	};
 
 const int SPECIAL_THANKS_COUNT = (sizeof(SPECIAL_THANKS) / sizeof(SPECIAL_THANKS[0]));
