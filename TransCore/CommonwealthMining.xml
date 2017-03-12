@@ -619,9 +619,15 @@
 		<Events>
 			<OnCreate>
 				(block Nil
+					(switch
+						;	Reduce chance of mission if player has already completed one
+						(and (msnFind Nil "r +commonwealthMining;")
+								(ls (random 1 100) 33))
+							(msnDestroy gSource)
 
-					;	Set the reward
-					(msnSetData gSource 'reward (+ 100 (* 100 (sysGetLevel))))
+						;	Set the reward
+						(msnSetData gSource 'reward (+ 100 (* 100 (sysGetLevel))))
+						)
 					)
 			</OnCreate>
 
