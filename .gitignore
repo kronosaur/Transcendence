@@ -49,6 +49,8 @@ bld/
 
 *.tlog
 *.VC.db
+*.VC.db-shm
+*.VC.db-wal
 *.VC.opendb
 
 ## Visual Studio Config files
