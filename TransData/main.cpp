@@ -10,6 +10,10 @@
 #include "XMLUtil.h"
 #include "TransData.h"
 
+#ifdef DEBUG
+//#define DEBUG_PERFORMANCE
+#endif
+
 #define NOARGS								CONSTLIT("noArgs")
 #define QUESTION_MARK_SWITCH				CONSTLIT("?")
 #define HELP_SWITCH							CONSTLIT("help")
@@ -540,12 +544,21 @@ ALERROR InitUniverse (CUniverse &Universe, CHost &Host, const CString &sFilespec
 	//	Open the universe
 
 	Ctx.bNoResources = ((dwInitFlags & flagNoResources) == flagNoResources);
+	Ctx.bNoCollectionCheck = true;
+
+#ifdef DEBUG_PERFORMANCE
+	DWORD dwStart = ::GetTickCount();
+#endif
 
 	if (error = Universe.Init(Ctx, retsError))
 		return error;
 
 	if (error = Universe.InitGame(0, retsError))
 		return error;
+
+#ifdef DEBUG_PERFORMANCE
+	printf("Universe Init: %d ms.\n", sysGetTicksElapsed(dwStart));
+#endif
 
 	//	Mark everything as known
 
