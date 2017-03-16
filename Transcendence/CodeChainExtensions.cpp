@@ -135,7 +135,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"options:\n\n"
 			
 			"   'checkpoint (or Nil)\n"
-			"   'missionCheckpoint\n",
+			"   'missionCheckpoint",
 
 			"*",	PPFLAG_SIDEEFFECTS, },
 
@@ -186,8 +186,8 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"\n"
 			"alignment:\n\n"
 			"   'left\n"
-			"   'cener\n"
-			"   'right\n",
+			"   'center\n"
+			"   'right",
 
 			"ii*",	PPFLAG_SIDEEFFECTS,	},
 
@@ -198,7 +198,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"scrAddListFilter",			fnScrSet,			FN_SCR_ADD_LIST_FILTER,
 			"(scrAddListFilter screen filterID label filter) -> True/Nil\n\n"
 
-			"filter can be lambda function or item criteria\n",
+			"filter can be lambda function or item criteria",
 
 			"issv",		PPFLAG_SIDEEFFECTS, },
 
@@ -376,7 +376,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   %son%          son or daughter (matching case)\n"
 			"   %%             %\n"
 			"   %1%            arg1\n"
-			"   %2%            ...\n",
+			"   %2%            ...",
 
 			"is*",	0, },
 
@@ -403,7 +403,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'mapHint\n"
 			"   'refuelHint\n"
 			"   'switchMissileHint\n"
-			"   'useItemHint\n",
+			"   'useItemHint",
 
 			"is",	0, },
 
@@ -425,7 +425,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'itemsDamagedHP\n"
 			"   'itemsFiredCount\n"
 			"   'itemsSoldCount\n"
-			"   'itemsSoldValue\n",
+			"   'itemsSoldValue",
 
 			"isv",	0,	},
 
@@ -439,7 +439,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'missionCompleted\n"
 			"   'missionFailure\n"
 			"   'missionSuccess\n"
-			"   'objsDestroyed\n",
+			"   'objsDestroyed",
 
 			"isvs",	0,	},
 
@@ -451,7 +451,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'allHints\n"
 			"   'allMessages\n"
 			"   'enabledHints\n"
-			"   (plus all messageIDs for plyIsMessageEnabled)\n",
+			"   (plus all messageIDs for plyIsMessageEnabled)",
 
 			"isv",	PPFLAG_SIDEEFFECTS, },
 
@@ -472,7 +472,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'resurrectCount\n"
 			"   'score\n"
 			"   'systemData\n"
-			"   'systemsVisited\n",
+			"   'systemsVisited",
 
 			"is",	0,	},
 
