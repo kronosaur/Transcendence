@@ -89,6 +89,34 @@
 			<Text id="WatchYourTargets">		"\"Hey, watch it!\""</Text>
 			<Text id="WingmanJoined">			"\"Ready for action, boss\""</Text>
 			<Text id="WingmanKilled">			"You have a sad feeling for a moment, then it passes"</Text>
+
+			<Text id="Intro">
+				(list
+					{
+						desc: (cat
+							"A young woman in a flight-suit and Commonwealth insignia sits next to you:\n\n"
+							"\"I've seen you in action out there&#x97;you're not too bad for an old-timer.\""
+							)
+						}
+					{
+						desc: (cat
+							"\"I'm a pretty good pilot myself. What do you think about you and me "
+							"taking on the bad guys together\""
+							)
+						acceptLabel: "\"[O]K, you can come along.\""
+						declineLabel: "\"[S]orry, kid, I travel alone.\""
+						}
+					)
+			</Text>
+			<Text id="AcceptReply">
+				"\"Awesome! You won't regret it, I promise!\""
+			</Text>
+			<Text id="DeclineReply">
+				(cat
+					"\"Yeah, well, I didn't think it would work out either.\""
+					" She leaves you and starts to talk to another pilot at the bar."
+					)
+			</Text>
 		</Language>
 
 		<Events>

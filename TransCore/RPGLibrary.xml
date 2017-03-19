@@ -78,6 +78,7 @@
 	<!ENTITY dsRPGDockServicesBase		"0x00010033">
 	<!ENTITY dsRPGCommoditiesExchangeSell	"0x00010034">
 	<!ENTITY dsRPGShipBroker			"0x00010035">
+	<!ENTITY dsRPGWingmanEncounter		"0x00010036">
 	
 	<!-- 0040-004F CARGO CRATE -->
 	
