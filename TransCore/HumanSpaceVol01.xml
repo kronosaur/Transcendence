@@ -10,6 +10,11 @@
 	<!ENTITY msKorolovNewFreighter		"0xDDDEF005">
 	<!ENTITY tbKorolovEscortPirates		"0xDDDEF006">
 	<!ENTITY msKorolovKillStronghold	"0xDDDEF007">
+	<!ENTITY unidCommonwealthMilitia	"0xDDDEF008">
+	<!ENTITY msCMGatePatrol				"0xDDDEF009">
+	<!ENTITY msCMDestroyConvoy			"0xDDDEF00A">
+	<!ENTITY msCMDestroyThreat			"0xDDDEF00B">
+	<!ENTITY msCMEscortSuperFreighter	"0xDDDEF00C">
 
 
 	<!ENTITY ssEarthSpaceStandard		"0x00000001">
@@ -1826,6 +1831,10 @@
 	<Module filename="CommonwealthFleet.xml"/>
 	<Module filename="CommonwealthMetropolis.xml"/>
 	<Module filename="CommonwealthMilitia.xml"/>
+	<Module filename="CommonwealthMilitiaMission01.xml"/>
+	<Module filename="CommonwealthMilitiaMission02.xml"/>
+	<Module filename="CommonwealthMilitiaMission03.xml"/>
+	<Module filename="CommonwealthMilitiaMission04.xml"/>
 	<Module filename="CommonwealthMining.xml"/>
 	<Module filename="CommonwealthShips.xml"/>
 	<Module filename="CorporateHierarchy.xml"/>
