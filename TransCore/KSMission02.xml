@@ -1,0 +1,411 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: New Freighter ================================================
+
+	Escort a new freigher from a stargate back to Korolov. This mission is used when the Korolov
+	station does not have any freighters suitable for the player to escort, or only has one or two
+	freighters left.
+
+	Uses tbPirateRaider1 and tbPirateRaider2
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	freighterID:	ID of freighter to escort
+	gateID:			ID of gate where freighter will arrive
+	escortType:		Type of freighter being escorted
+	missionXP:		XP awarded for completing mission
+	pricePerContainer:	Price per container - used to fill freighter
+	cargoValue:		Value of cargo in freighter
+	attackRoll:
+		1	Standard pirate raid
+		2	Pirates follow freighter through gate
+		3	Pirates waiting at gate to ambush freighter
+	playerDestroyedFreighter:	True if player destroyed the freighter (will be blacklisted)
+
+	======================================================================== -->
+
+	<MissionType UNID="&msKorolovNewFreighter;"
+			name=			"Korolov Escort (incoming)"
+			attributes=		"korolov, escort"
+
+			level=			"1-3"
+			>
+
+		<Events>
+			<OnCreate>
+				(block (
+					(playerLevel (korGetPlayerLevel))
+					dockedFreighters freighterCount qualifyCount gateObj
+					)
+
+					(setq dockedFreighters (sysFindObject aOwnerObj "sHZ O:docked; +commonwealth; +freighter;"))
+					(setq freighterCount (count dockedFreighters))
+					(setq qualifyCount (count
+						(filter
+							dockedFreighters
+							theFreighter
+							(geq playerLevel (objGetStaticData theFreighter "korolovMinLevel"))
+							)
+						))
+
+					(switch
+						; Finite number of missions per station
+						(ls (objGetData aOwnerObj 'remainingMissions) 1)
+							(msnDestroy gSource)
+
+						; Only offer to new pilots and levels 1-3
+						(not (find '(0 1 2 3) playerLevel))
+							(msnDestroy gSource)
+
+						; No missions once the stronghold is destroyed
+						(objIsAbandoned (objGetObjRefData aOwnerObj 'charonStronghold))
+							(msnDestroy gSource)
+
+						; If we're too close to the gates then no mission
+						(not (setq gateObj (random (sysFindObject aOwnerObj "GR:300; -uncharted;"))))
+							(msnDestroy gSource)
+
+						; If there are no freighters we're qualified to escort, or only 1-2 total, then offer mission
+						(or (= qualifyCount 0) (ls freighterCount 2) (and (ls freighterCount 3) (= (random 1 3) 1)))
+							(block (pricePerContainer cargoValue escortRate escortFee escortType)
+
+								(setq escortType (random (korFreighterTypes playerLevel)))
+								; Figure out the price per container of the cargo (This depends on the freighter class)
+								(setq pricePerContainer (eval (typGetStaticData escortType "korolovContainerPrice")))
+								(if (leq pricePerContainer 0)
+									(setq pricePerContainer 200)
+									)
+
+								; Calculate how much cargo freighter can hold
+								(setq cargoValue (* pricePerContainer
+									(/ (typGetProperty escortType 'cargoSpace) 25)
+									))
+
+								; Compute the fee that we will pay for escort based on the value of the
+								; cargo and the rate that the freighter will pay
+								(setq escortRate (typGetStaticData escortType "korolovEscortRate"))
+								(if (or (not escortRate) (= escortRate 0)) (setq escortRate 100))
+								(setq escortFee (/ (* escortRate cargoValue) 10000))
+								(setq escortFee (/ (* escortFee 65) 100))
+								; Adjust the fee randomly and round down to the nearest 50
+								(setq escortFee
+									(intRoundDown
+										(/ (* escortFee (random 75 125)) 100)
+										50
+										)
+									)
+
+
+								; Mission settings
+								(msnSetData gSource 'gateID (objGetID gateObj))
+								(msnSetData gSource 'escortType (random (korFreighterTypes playerLevel)))
+								(msnSetData gSource 'missionXP 75)
+								(msnSetData gSource 'pricePerContainer pricePerContainer)
+								(msnSetData gSource 'cargoValue cargoValue)
+								(msnSetData gSource 'reward escortFee)
+								)
+
+						; No mission available
+						(msnDestroy gSource)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
+					(gateTime (sysCalcTravelTime (objGetDistance gPlayerShip gateObj) (shpGetMaxSpeed gPlayerShip)))
+					(roll (random 1 100))
+					)
+
+					(switch
+						; 60% of the time we use the standard Charon transport raid
+						(leq roll 60)
+							(msnSetData gSource 'attackRoll 1)
+
+						; 20% of the time pirates follow the transport through the gate
+						(leq roll 80)
+							(msnSetData gSource 'attackRoll 2)
+
+						; 20% of time there are pirates waiting at the gate
+						(block Nil
+							(msnSetData gSource 'attackRoll 3)
+							(objFireEvent gSource 'CreateGatePirates)
+							)
+						)
+					(sysAddObjTimerEvent (add gateTime 300) gSource "OnFreighterArrives")
+					)
+			</OnAccepted>
+
+			<OnDeclined>
+				(msnDestroy gSource)
+			</OnDeclined>
+
+			<OnSetPlayerTarget>
+				(switch
+					; If we have a freighter ID, then escort it.
+					(msnGetData gSource 'freighterID)
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'freighterID)) 'escort)
+
+					;	Otherwise, point to the stargate
+					(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'gateID)) 'dock)
+					)
+			</OnSetPlayerTarget>
+
+			<OnCompleted>
+				(korEscortMissionCompleted gSource aReason gData)
+			</OnCompleted>
+
+			<OnReward>
+				(korGiveReward gSource)
+			</OnReward>
+
+			<OnObjDestroyed>
+				(switch
+					(= aDestroyReason 'enteredStargate)
+						Nil
+
+					; If the ship dies, mission fails
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'freighterID))
+						(block Nil
+							(msnSetData gSource 'playerDestroyedFreighter (and gPlayerShip (= aOrderGiver gPlayerShip)))
+							(msnFailure gSource)
+							)
+
+					(= (objGetData aObjDestroyed 'mission) (msnGetProperty gSource 'id))
+						(msnIncData gSource 'attackersLeft -1)
+					)
+			</OnObjDestroyed>
+
+			<OnObjDocked>
+				(switch
+					; If a freighter on a mission docked, then mission is successful
+					(and
+						(= (objGetID aObjDocked) (msnGetData gSource 'freighterID))
+						(= (objGetID aDockTarget) (msnGetProperty gSource 'ownerID))
+						)
+						(block Nil
+							(objSetData aObjDocked "korolovPlayerEscort" Nil)
+							(msnSuccess gSource)
+							)
+					)
+			</OnObjDocked>
+
+			<OnFreighterArrives>
+				(block (
+					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
+					(destObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					freighterObj cargoValue
+					)
+					(plyMessage gPlayer "Freighter arrived!")
+
+					(setq freighterObj (sysCreateShip (msnGetData gSource 'escortType) gateObj &svCorporate; &evKorolovFreighterBehavior;))
+					(objSetData freighterObj "korolovPlayerEscort" True)
+					(msnRegisterForEvents gSource freighterObj)
+					(msnSetData gSource 'freighterID (objGetID freighterObj))
+					(msnSetPlayerTarget gSource)
+
+					; Load the freighter with cargo
+					(korEmptyFreighter freighterObj)
+					(setq cargoValue (korFillFreighter freighterObj (msnGetData gSource 'pricePerContainer)))
+
+					; Add some attackers
+					(switch
+						; 60% of the time we use the standard Charon transport raid
+						(= (msnGetData gSource 'attackRoll) 1)
+							(block Nil
+								(chrRaidTransport freighterObj destObj gateObj cargoValue)
+								(objSendMessage gPlayerShip freighterObj (msnTranslate gSource 'msgBeginEscort))
+								)
+
+						; 20% of the time pirates follow the transport through the gate
+						(= (msnGetData gSource 'attackRoll) 2)
+							(block Nil
+								(sysAddObjTimerEvent 60 gSource 'OnPirateFollow)
+								(objSendMessage gPlayerShip freighterObj (msnTranslate gSource 'msgFollowed))
+								(chrRaidTransport freighterObj destObj gateObj (/ cargoValue 2))
+								)
+
+						; 20% of time there are pirates waiting at the gate
+						(block Nil
+							(if (= (msnGetData gSource 'attackersLeft) 0)
+								(objSendMessage gPlayerShip freighterObj (msnTranslate gSource 'msgBeginEscort)))
+							(if (geq (msnGetData gSource 'attackersLeft) 5)
+								(objSendMessage gPlayerShip freighterObj (msnTranslate gSource 'msgAmbush)))
+							(objFireEvent gSource 'OrderAttackFreighter)
+							(chrRaidTransport freighterObj destObj gateObj (/ cargoValue 2))
+							)
+						)
+					)
+			</OnFreighterArrives>
+
+			<OnPirateFollow>
+				(block Nil
+					(objFireEvent gSource 'CreateGatePirates)
+					(objFireEvent gSource 'OrderAttackFreighter)
+					)
+			</OnPirateFollow>
+
+			<CreateGatePirates>
+				(block (
+					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
+					(cargoValue (msnGetData gSource 'cargoValue))
+					num
+					)
+					(switch
+						(leq cargoValue 75000)
+							(setq num (random 4 6))
+						(leq cargoValue 150000)
+							(setq num (random 5 8))
+						(leq cargoValue 300000)
+							(setq num (random 6 10))
+						(leq cargoValue 600000)
+							(setq num (random 7 12))
+						(setq num (random 8 14))
+						)
+
+					(for i 1 num (block (enemyObj)
+						(setq enemyObj (sysCreateShip &tbKorolovEscortPirates; gateObj &svPirates;))
+						(objSetData enemyObj 'mission (msnGetProperty gSource 'id))
+						(shpOrder enemyObj 'patrol gateObj 15)
+						(msnRegisterForEvents gSource enemyObj)
+						(msnIncData gSource 'attackersLeft 1)
+						))
+					)
+			</CreateGatePirates>
+
+			<OrderAttackFreighter>
+				(block ((freighterObj (objGetObjByID (msnGetData gSource 'freighterID))))
+					(enum
+						(filter
+							(sysFindObject gSource "sD:mission;")
+							obj
+							(= (objGetData obj 'mission) (msnGetProperty gSource 'id))
+							)
+						enemyObj
+						(block Nil
+							(shpCancelOrders enemyObj)
+							(shpOrder enemyObj 'attack freighterObj)
+							)
+						)
+					)
+			</OrderAttackFreighter>
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Escort Korolov Freighter"
+			</Text>
+
+			<Text id="Summary">
+				(block (
+					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
+					)
+					(cat
+						"Your mission is to escort a freighter arriving at the " (objGetName gateObj 4)
+						 " back to the Korolov station and defend it from any attackers.\n\n"
+
+						"System: " (sysGetName) "\n"
+						"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward)) "\n"
+						)
+					)
+			</Text>
+
+			<Text id="Intro">
+				(cat
+					"The command center is quiet as you enter. Most of the freighter captains "
+					"appear to be out on missions. A manager walks over to you: "
+					"\"Hello %name%. Do you wish to hire yourself out as a freighter escort?\""
+					)
+			</Text>
+
+			<Text id="Briefing">
+				(block (
+					(gate (objGetObjByID (msnGetData gSource 'gateID)))
+					)
+					(strCapitalize
+						(cat
+							"A " (typGetDataField (msnGetData gSource 'escortType) 'name)
+							" will be entering the system at the " (objGetName gate 4)
+							". We will pay " (fmtCurrency 'credit (msnGetData gSource 'reward))
+							" if you escort her safely back to our location."
+
+							"\n\nDo you wish to accept this assignment?"
+							)
+						)
+					)
+			</Text>
+
+			<Text id="AcceptReply">
+				"\"Great! The freighter will be arriving in system shorted so don't delay. Good luck!\""
+			</Text>
+
+			<Text id="DeclineReply">
+				"\"Oh well\""
+			</Text>
+
+			<Text id="InProgress">
+				"\"The freighter you're supposed to be escorting is already on its way!\""
+			</Text>
+			<Text id="FailureDebrief">
+				(if (msnGetData gSource 'playerDestroyedFreighter)
+					(cat "\"Either your poor marksmanship or deliberate malice destroyed the"
+						" freighter entrusted to your care! You will never work for us again, captain.\""
+						)
+					(cat "\"Your timidity under fire and your lack of skill doomed the poor crew"
+						" of your freighter and its cargo!\""
+						)
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(typTranslate &unidKorolovShipping; 'SuccessDebrief {reward:(msnGetData gSource 'reward)})
+			</Text>
+			<Text id="msgBeginEscort">
+				(block (
+					(ship (objGetName (objGetObjByID (msnGetData gSource 'freighterID)) 0))
+					)
+					(random (list
+						"Glad to have you with us, captain"
+						(cat ship " reporting in")
+						"Good to have you on our wing, %name%"
+						(cat ship " on course")
+						))
+					)
+			</Text>
+			<Text id="msgFollowed">
+				(block (
+					(ship (objGetName (objGetObjByID (msnGetData gSource 'freighterID)) 0))
+					)
+					(random (list
+						"Help! The pirates are right behind us"
+						(cat "Mayday, Mayday, Mayday. " ship " under attack by pirates")
+						))
+					)
+			</Text>
+			<Text id="msgAmbush">
+				(random (list
+					"Kack! The pirates were waiting for us"
+					"It's an ambush!"
+					"It's a kacking warzone out here!"
+					))
+			</Text>
+		</Language>
+
+	</MissionType>
+
+<!-- TABLES -->
+
+	<ShipTable unid="&tbKorolovEscortPirates;">
+		<LevelTable>
+			<Ship levelFrequency="cccur r----" class="&scCorsair;" />
+			<Ship levelFrequency="vuccc urr--" class="&scViking;" />
+			<Ship levelFrequency="-vucc currr" class="&scCorsair-II;" />
+			<Ship levelFrequency="--vuc ccurr" class="&scViking-II;" />
+			<Ship levelFrequency="---vu cccuu" class="&scBarbary;" />
+		</LevelTable>
+	</ShipTable>
+
+</TranscendenceModule>

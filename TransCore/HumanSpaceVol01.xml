@@ -2,6 +2,16 @@
 
 <!DOCTYPE CoreLibrary
 	[
+	<!-- MissionType Refactor - these types should be assigned an official unid -->
+	<!ENTITY unidKorolovShipping		"0xDDDEF001">
+	<!ENTITY evKorolovFreighterBehavior	"0xDDDEF002">
+	<!ENTITY dsKorolovPromotion			"0xDDDEF003">
+	<!ENTITY msKorolovEscort			"0xDDDEF004">
+	<!ENTITY msKorolovNewFreighter		"0xDDDEF005">
+	<!ENTITY tbKorolovEscortPirates		"0xDDDEF006">
+	<!ENTITY msKorolovKillStronghold	"0xDDDEF007">
+
+
 	<!ENTITY ssEarthSpaceStandard		"0x00000001">
 	<!ENTITY ssEarthSpaceRedDwarf		"0x00000002">
 	<!ENTITY ssEarthSpaceAsteroids		"0x00000003">
@@ -1824,6 +1834,9 @@
 	<Module filename="Ferians.xml"/>
 	<Module filename="Iocrym.xml"/>
 	<Module filename="KorolovShipping.xml"/>
+	<Module filename="KSMission01.xml"/>
+	<Module filename="KSMission02.xml"/>
+	<Module filename="KSMission03.xml"/>
 	<Module filename="Luminous.xml"/>
 	<Module filename="OutlawMiners.xml"/>
 	<Module filename="Penitents.xml"/>
