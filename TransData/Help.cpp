@@ -150,6 +150,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /itemtable            Item table.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
 		printf("      [/byAttribute]        Categorize by attribute.\n");
+		printf("      [/byComponent]        Categorize by component used.\n");
 		printf("      [/byShipClass]        Categorize by ship class using the item.\n");
 		printf("      [/byShipClassUsage]   Show ship classes using given item.\n");
 		printf("      [/criteria:xxx]       only items that match criteria.\n");

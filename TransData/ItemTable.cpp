@@ -10,6 +10,7 @@
 #include "TransData.h"
 
 #define BY_ATTRIBUTE_ATTRIB					CONSTLIT("byAttribute")
+#define BY_COMPONENT_ATTRIB					CONSTLIT("byComponent")
 #define BY_SHIP_CLASS_ATTRIB				CONSTLIT("byShipClass")
 #define BY_SHIP_CLASS_USAGE_ATTRIB			CONSTLIT("byShipClassUsage")
 #define CRITERIA_ATTRIB						CONSTLIT("criteria")
@@ -85,6 +86,7 @@ bool CalcColumns (SItemTableCtx &Ctx, CXMLElement *pCmdLine);
 int GetItemFreq (CItemType *pType);
 int GetItemType (CItemType *pType);
 void OutputByAttribute (SItemTableCtx &Ctx, const SItemTypeList &ItemList);
+void OutputByComponent (SItemTableCtx &Ctx, const SItemTypeList &ItemList);
 void OutputByShipClass (SItemTableCtx &Ctx, const SItemTypeList &ItemList, bool bShowUsage);
 void OutputHeader (SItemTableCtx &Ctx);
 void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList);
@@ -123,6 +125,9 @@ void GenerateItemTable (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	if (pCmdLine->GetAttributeBool(BY_ATTRIBUTE_ATTRIB))
 		OutputByAttribute(Ctx, ItemList);
+
+	else if (pCmdLine->GetAttributeBool(BY_COMPONENT_ATTRIB))
+		OutputByComponent(Ctx, ItemList);
 
 	else if (pCmdLine->GetAttributeBool(BY_SHIP_CLASS_ATTRIB))
 		OutputByShipClass(Ctx, ItemList, false);
@@ -279,6 +284,59 @@ void OutputByAttribute (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
 	for (i = 0; i < ByAttributeTable.GetCount(); i++)
 		{
 		const SAttributeEntry &Entry = ByAttributeTable[i];
+		printf("%s\n\n", Entry.sAttribute.GetASCIIZPointer());
+
+		OutputHeader(Ctx);
+		OutputTable(Ctx, Entry.ItemTable);
+		printf("\n");
+		}
+	}
+
+void OutputByComponent (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
+	{
+	int i, j;
+
+	//	For each component, make a list of which items require that component.
+
+	SByAttributeTypeList ByComponentTable;
+	for (i = 0; i < ItemList.GetCount(); i++)
+		{
+		const CString &sKey = ItemList.GetKey(i);
+		CItemType *pType = ItemList[i];
+
+		//	Loop over all components
+
+		const CItemList &Components = pType->GetComponents();
+		for (j = 0; j < Components.GetCount(); j++)
+			{
+			const CItem &ComponentItem = Components.GetItem(j);
+			CString sUNID = strPatternSubst(CONSTLIT("%08x: %s"), ComponentItem.GetType()->GetUNID(), ComponentItem.GetNounPhrase(CItemCtx()));
+			bool bNew;
+			SAttributeEntry *pEntry = ByComponentTable.SetAt(sUNID, &bNew);
+			if (bNew)
+				pEntry->sAttribute = sUNID;
+
+			pEntry->ItemTable.Insert(sKey, pType);
+			}
+
+		//	If no components
+
+		if (Components.GetCount() == 0)
+			{
+			bool bNew;
+			SAttributeEntry *pEntry = ByComponentTable.SetAt(CONSTLIT("(none)"), &bNew);
+			if (bNew)
+				pEntry->sAttribute = CONSTLIT("(none)");
+
+			pEntry->ItemTable.Insert(sKey, pType);
+			}
+		}
+
+	//	Now loop over all attributes
+
+	for (i = 0; i < ByComponentTable.GetCount(); i++)
+		{
+		const SAttributeEntry &Entry = ByComponentTable[i];
 		printf("%s\n\n", Entry.sAttribute.GetASCIIZPointer());
 
 		OutputHeader(Ctx);
