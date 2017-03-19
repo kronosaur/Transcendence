@@ -745,6 +745,7 @@
 	<!ENTITY msDestroyThreatToSlums		"0x00101000">
 	<!ENTITY msSaveMiningShip			"0x00101001">
 	<!ENTITY msDestroyIllegalMiners		"0x00101002">
+	<!ENTITY msCommAgriDefend			"0x00101003">
 	
 	<!ENTITY stStartonEridani			"0x00102001">
 	<!ENTITY stCommonwealthSettlement	"0x00102002">
