@@ -14,7 +14,7 @@
 
 	<MissionType UNID="&msCFRecon;"
 			name=			"Recon Ares station"
-			attributes=		"commonwealthFleet, rank1"
+			attributes=		"commonwealthFleet, cscTaskForce, rank1"
 
 			level=			"5-8"
 
@@ -24,15 +24,17 @@
 
 		<Events>
 			<OnCreate>
-				(block (stationList)
+				(block (targetObj)
 					(switch
 						;	Need a major Ares station in the system
-						(not (setq stationList (sysFindObject aOwnerObj "ATE "))) ;+ares; +majorStation;")))
+						(not (setq targetObj (random (sysFindObject aOwnerObj "ATE +ares; +majorStation;"))))
 							(msnDestroy gSource)
 
 						;	Create the mission
 						(block Nil
-							(msnSetData gSource 'targetID (objGetID (random stationList)))
+							(msnSetData gSource 'targetID (objGetID targetObj))
+							(objRegisterForEvents gSource targetObj)
+
 							(msnSetData gSource 'missionXP 100)
 							)
 						)
@@ -47,8 +49,7 @@
 					(staClearReconned targetObj)
 					(staSetFireReconEvent targetObj)
 
-					;	Get events for the station
-					(objRegisterForEvents gSource targetObj)
+					;	Register events
 					(objRegisterForEvents gSource gPlayerShip)
 					)
 			</OnAccepted>
