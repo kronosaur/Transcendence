@@ -732,25 +732,25 @@ PLAYER DATA
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat "You are in the docking bay of the " (objGetName gSource) "."))
+							(scrSetDescTranslate gScreen 'descWelcome)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Bridge" key="B">
-								<Navigate screen="Bridge"/>
+							<Action id="actionBridge" default="1">
+								(scrShowScreen gScreen "Bridge")
 							</Action>
 
-							<Action name="Flight Deck" key="F">
-								<Navigate screen="FlightDeck"/>
+							<Action id="actionFlightDeck">
+								(scrShowScreen gScreen "FlightDeck")
 							</Action>
 
-							<Action name="Dock Services" key="D">
+							<Action id="actionDockServices">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -793,8 +793,8 @@ PLAYER DATA
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Leave" cancel="1" key="L">
-								<Navigate screen="Main"/>
+							<Action id="actionLeave" default="1" cancel="1">
+								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
 					</Default>
@@ -816,9 +816,9 @@ PLAYER DATA
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(block (behavior)
+							(block (behavior rank)
 								(setq behavior (objGetData gSource "behavior"))
-								(setq gLevel (objGetData gPlayerShip "fleetLevel"))
+								(setq rank (objGetData gPlayerShip "fleetLevel"))
 								
 								(switch
 									(eq behavior 'moving)
@@ -827,7 +827,7 @@ PLAYER DATA
 											"The ship is on maneuvers and the XO is giving orders to the astrogator and the sensor chief."
 											)
 											
-									(eq gLevel 1)
+									(eq rank 1)
 										(scrSetDesc gScreen
 											"The flight deck of " (objGetName gSource 0x04) 
 											" hums with the activity of men and women working at terminals and holocharts. "
@@ -844,20 +844,26 @@ PLAYER DATA
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Talk to Executive Officer" key="X">
-								(block (behavior)
-									(setq behavior (objGetData gSource "behavior"))
+							<Action id="actionTalk" default="1">
+								(block (
+									(behavior (objGetData gSource "behavior"))
+									(rank (objGetData gPlayerShip "fleetLevel"))
+									)
+									(dbgOutput (cat "n +commonwealthFleet; +rank" (int rank) "; =" (sysGetLevel) ";") )
 									(switch
 										(eq behavior 'moving)
 											(scrShowPane gScreen "ShipMoving")
 										
-										; TODO: Call rpgMissionAssignment here
-										Nil
+										(rpgMissionAssignment {
+											missionCriteria: (cat "n +commonwealthFleet; +rank" (int rank) "; =" (sysGetLevel) ";")
+											noMissionTextID: 'descNoMissions
+											})
+										)
 									)
 							</Action>
 
-							<Action name="Leave" cancel="1" key="L">
-								<Navigate screen="Main"/>
+							<Action id="actionLeave" cancel="1">
+								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
 					</Default>
@@ -870,7 +876,7 @@ PLAYER DATA
 						</OnPaneInit>
 						
 						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
+							<Action id="actionLeave" default="1" cancel="1">
 								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
@@ -879,6 +885,27 @@ PLAYER DATA
 			</FlightDeck>
 
 		</DockScreens>
+
+		<Language>
+			<Text id="actionBridge">"[B]ridge"</Text>
+			<Text id="actionFlightDeck">"[F]light Deck"</Text>
+			<Text id="actionDockServices">"[D]ock Services"</Text>
+			<Text id="actionUndock">"[U]ndock"</Text>
+			<Text id="actionLeave">"[L]eave"</Text>
+			<Text id="actionTalk">"Talk to E[x]ecutive Officer"</Text>
+
+			<Text id="descWelcome">
+				(cat
+					"You are in the docking bay of the " (objGetName gSource) "."
+					)
+			</Text>
+
+			<Text id="descNoMissions">
+				(cat
+					"\"Sorry, there are no missions available for you.\""
+					)
+			</Text>
+		</Language>
 
 		<DockingPorts>
 			<Port x="0"		y="70" />
@@ -1054,40 +1081,35 @@ PLAYER DATA
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat "You are in the docking bay of the " (objGetName gSource) "."))
+							(scrSetDescTranslate gScreen 'descWelcome)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Bridge" key="B">
+							<Action id="actionBridge" default="1">
 								(block Nil
 									(scrShowScreen gScreen "Bridge")
 								
 									; If see if we got promoted
 									(if (intFleetPromotion)
-										(block Nil
-											(setq gName Nil)
-											(scrShowScreen gScreen "&dsFleetPromotion;")
-											)
+										(scrShowScreen gScreen "&dsFleetPromotion;")
 										)
 									)
 							</Action>
 
-							<Action name="Infirmary" key="I">
-								<Navigate screen="Infirmary"/>
+							<Action id="actionInfirmary">
+								(scrShowScreen gScreen "Infirmary")
 							</Action>
 
-							<Action name="Dock Services" key="D">
+							<Action id="actionDockServices">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 				</Panes>
 
@@ -1111,8 +1133,8 @@ PLAYER DATA
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Leave" cancel="1" key="L">
-								<Navigate screen="Main"/>
+							<Action id="actionLeave" default="1" cancel="1">
+								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
 					</Default>
@@ -1136,7 +1158,7 @@ PLAYER DATA
 							desc=	"You are in the main infirmary of a Commonwealth Star Carrier. Sleep-deprived technicians attend hundreds of patients in their rejuv tanks, mostly oblivious to the insistent medical alarms. The smell of blood, wounds, and antiseptics smother you.">
 
 						<Actions>
-							<Action name="Talk to Medical Officer" key="M">
+							<Action id="actionTalkMedical" default="1">
 								(block Nil
 									; See if the player has any medical supplies
 									(setq gItem (objGetItems gPlayerShip "*U +Meds; -questItem; -notForSale;"))
@@ -1153,20 +1175,18 @@ PLAYER DATA
 								</Action>
 								-->
 
-							<Action name="Leave" cancel="1" key="L">
-								<Navigate screen="Main"/>
+							<Action id="actionLeave" cancel="1">
+								(scrShowScreen gScreen "Main")
 							</Action>
-
 						</Actions>
-
 					</Default>
 
 					<NoMedicalItems
 							desc=	"The Medical Officer complains about how hard it is to get medical supplies this deep in space. &quot;We're getting killed out here fighting the Ares and this is how the Commonwealth thanks us&#x97;no supplies, no reinforcements, nothing!&quot;">
 
 						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
-								<ShowPane pane="Default"/>
+							<Action id="actionLeave" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
 
@@ -1217,7 +1237,7 @@ PLAYER DATA
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Sell Items" default="1" key="S">
+							<Action id="actionSell" default="1">
 								(block (medicalItem)
 									; Remove the items from the cargo hold
 									(enum gItem medicalItem
@@ -1237,7 +1257,7 @@ PLAYER DATA
 									)
 							</Action>
 
-							<Action name="Donate Items" key="D">
+							<Action id="actionDonate">
 								(block (medicalItems)
 									; Remove the items from the cargo hold
 									(enum gItem medicalItem
@@ -1252,8 +1272,8 @@ PLAYER DATA
 									)
 							</Action>
 
-							<Action name="Leave" cancel="1" key="L">
-								<ShowPane pane="Default"/>
+							<Action id="actionLeave" cancel="1">
+								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
 
@@ -1263,8 +1283,8 @@ PLAYER DATA
 							desc=	"&quot;Thank you, those supplies are really going to help these troopers.&quot;">
 
 						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
-								<ShowPane pane="Default"/>
+							<Action id="actionLeave" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
 
@@ -1329,8 +1349,8 @@ PLAYER DATA
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								<ShowPane pane="Default"/>
+							<Action id="actionDone" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
 					</Donate>
@@ -1340,6 +1360,23 @@ PLAYER DATA
 			</Infirmary>
 
 		</DockScreens>
+
+		<Language>
+			<Text id="actionBridge">"[B]ridge"</Text>
+			<Text id="actionInfirmary">"[I]nfirmary"</Text>
+			<Text id="actionDockServices">"[D]ock Services"</Text>
+			<Text id="actionUndock">"[U]ndock"</Text>
+			<Text id="actionLeave">"[L]eave"</Text>
+			<Text id="actionTalkMedical">"Talk to [M]edical Officer"</Text>
+			<Text id="actionSell">"[S]ell Items"</Text>
+			<Text id="actionDonate">"[D]onate Items"</Text>
+
+			<Text id="descWelcome">
+				(cat
+					"You are in the docking bay of the " (objGetName gSource) "."
+					)
+			</Text>
+		</Language>
 
 		<DockingPorts>
 			<Port x="0"		y="70" />
@@ -2461,6 +2498,21 @@ PLAYER DATA
 						)
 					)
 				))
+
+			(setq commFleet_GiveReward (lambda (missionObj)
+				(block Nil
+					;	Pay the player and record the award
+					(rpgMissionRewardPayment (msnGetData missionObj 'reward))
+					;	Increase XP
+					(objIncData gPlayerShip 'fleetXP (msnGetData missionObj 'missionXP))
+
+					;	dsRPGMission checks for a well-known data member in the mission
+					;	object to see if it should navigate to an additional screen.
+					(if (and missionObj (intFleetPromotion))
+						(msnSetData missionObj 'rewardNextScreen &dsFleetPromotion;)
+						)
+					)
+				))
 			)
 	</Globals>
 
@@ -2567,43 +2619,25 @@ PLAYER DATA
 		</Panes>
 	</DockScreen>
 
-	<!-- Fleet Promotion
+	<!-- Fleet Promotion -->
 
-		gName: Name of captain (or Nil)
-	-->
-
-	<DockScreen UNID="&dsFleetPromotion;"	nestedScreen="true">
+	<DockScreen UNID="&dsFleetPromotion;"
+			nestedScreen=	"true"
+			inherit=		"&dsDockScreenBase;"
+			>
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(block (newLevel captainName)
-						(setq newLevel (intFleetPromotion))
-
-						(if gName
-							(setq captainName gName)
-							(setq captainName (cat "the captain of " (objGetName gSource 4)))
-							)
+					(block (
+						(newLevel (intFleetPromotion))
+						)
+						(scrSetDescTranslate gScreen (cat "Promotion:" newLevel) {
+							captainName: (cat "the captain of " (objGetName gSource 4))
+							})
 
 						(switch
-							(eq newLevel 2)
-								(block Nil
-									(scrSetDesc gScreen (cat "In recognition of your service to the Fleet, " captainName " awards you the title of Privateer and bestows upon you the Ares Campaign Ribbon."))
-									(objAddItem gPlayerShip (itmCreate &itAresCampaignRibbon; 1))
-									)
-
-							(eq newLevel 3)
-								(scrSetDesc gScreen (cat "In recognition of your service, " captainName " awards you the rank of master sergeant in the Commonwealth Fleet."))
-
-							(eq newLevel 4)
-								(scrSetDesc gScreen (cat "In recognition of your service, " captainName " promotes you to the rank of Fleet lieutenant."))
-
-							(eq newLevel 5)
-								(scrSetDesc gScreen (cat "In recognition of your service, " captainName " promotes you to the rank of Fleet commander."))
-
-							(eq newLevel 6)
-								(scrSetDesc gScreen (cat "In recognition of your service, " captainName " promotes you to the rank of Fleet captain."))
-
-							(scrSetDesc gScreen (cat captainName " commends you for your service."))
+							(= newLevel 2)
+								(objAddItem gPlayerShip (itmCreate &itAresCampaignRibbon; 1))
 							)
 
 						(objSetData gPlayerShip "fleetLevel" newLevel)
@@ -2611,12 +2645,45 @@ PLAYER DATA
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
+					<Action id="actionContinue" default="1" cancel="1">
 						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
 		</Panes>
+
+		<Language>
+			<Text id="Promotion:2">
+				(cat
+					"In recognition of your service to the Fleet, " (@ gData 'captainName)
+					" awards you the title of Privateer and bestows upon you the Ares Campaign Ribbon."
+					)
+			</Text>
+			<Text id="Promotion:3">
+				(cat
+					"In recognition of your service to the Fleet, " (@ gData 'captainName)
+					" awards you the rank of master sergeant in the Commonwealth Fleet."
+					)
+			</Text>
+			<Text id="Promotion:4">
+				(cat
+					"In recognition of your service to the Fleet, " (@ gData 'captainName)
+					" promotes you to the rank of Fleet lieutenant."
+					)
+			</Text>
+			<Text id="Promotion:5">
+				(cat
+					"In recognition of your service to the Fleet, " (@ gData 'captainName)
+					" promotes you to the rank of Fleet commander."
+					)
+			</Text>
+			<Text id="Promotion:6">
+				(cat
+					"In recognition of your service to the Fleet, " (@ gData 'captainName)
+					" promotes you to the rank of Fleet captain."
+					)
+			</Text>
+		</Language>
 	</DockScreen>
 
 	<!-- Fleet Crime Warning -->
@@ -2752,25 +2819,21 @@ PLAYER DATA
 					; Rank
 					
 					(if (gr (objGetData gPlayerShip "fleetXP") 0)
-						(block (rank)
-							(setq rank (objGetData gPlayerShip "fleetLevel"))
+						(block (
+							(rank (objGetData gPlayerShip "fleetLevel"))
+							(successList (plyGetKeyEventStat gPlayer 'missionSuccess Nil "* +commonwealthFleet;"))
+							(failureList (plyGetKeyEventStat gPlayer 'missionFailure Nil "* +commonwealthFleet;"))
+							)
+
 							(setq theList (list
 								(list
 									"Commonwealth Fleet rank"
-									(switch
-										(eq rank 1) "Civilian"
-										(eq rank 2) "Privateer"
-										(eq rank 3) "Master sergeant"
-										(eq rank 4) "Fleet lieutenant"
-										(eq rank 5) "Fleet commander"
-										(eq rank 6) "Fleet captain"
-										(cat "ERROR: Fleet rank: " rank)
-										) 
+									(typTranslate &svCommonwealthFleet; 'PlayerRank)
 									)
 									
 								(list
 									"CSC missions"
-									(intMissionAchievementString (typGetGlobalData &scCSCTaskForce; "missionsCompleted") (typGetGlobalData &scCSCTaskForce; "missionsFailed"))
+									(rpgMissionAchievementString (count successList) (count failureList))
 									"missions &amp; activities"
 									)
 								))
@@ -2897,6 +2960,24 @@ PLAYER DATA
 					)
 			</OnGlobalUniverseCreated>
 		</Events>
+
+		<Language>
+			<Text id="PlayerRank">
+				(block (
+					(rank (objGetData gPlayerShip "fleetLevel"))
+					)
+					(switch
+						(= rank 1) "Civilian"
+						(= rank 2) "Privateer"
+						(= rank 3) "Master sergeant"
+						(= rank 4) "Fleet lieutenant"
+						(= rank 5) "Fleet commander"
+						(= rank 6) "Fleet captain"
+						(cat "ERROR: Fleet rank: " rank)
+						)
+					)
+			</Text>
+		</Language>
 	</Sovereign>
 	
 <!-- EFFECTS -->
