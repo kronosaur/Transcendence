@@ -1,0 +1,167 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Intercept Ares patrol ========================================
+
+	This mission seems very easy. In testing the CSC killed most of the targets
+	Consider:
+		Reducing the distance which the ares approch
+		More targets / a few heacy gunships
+		Assigning a lead ship, with the other ares escorting it
+		Stopping the CSC or escorts from helping so much
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	missionXP:		XP awarded for completing mission
+	targetID:		The target to recon
+
+	======================================================================== -->
+
+	<MissionType UNID="&msCFInterceptAresPatrol;"
+			name=			"Intercept Ares patrol"
+			attributes=		"commonwealthFleet, cscTaskForce, rank1"
+
+			level=			"1-8"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<Events>
+			<OnCreate>
+				(block Nil
+					;	Create the mission
+
+					(msnSetData gSource 'missionXP 100)
+					)
+			</OnCreate>
+
+			<OnStarted>
+				(block (
+					(missionLevel (sysGetLevel))
+					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(startPos (sysVectorRandom stationObj (random 100 120) 80))
+					shipIDs
+					)
+					(for i 1 8
+						(block (shipObj)
+							(setq shipObj
+								(sysCreateShip
+									&scSandstorm;
+									(sysVectorPolarOffset startPos (random 0 359) (random 1 6))
+									&svAres;
+									)
+								)
+							(shpOrder shipObj 'patrol stationObj 3)
+
+							;	Remember this ship
+							(objSetData shipObj 'cfMission04_patrol True)
+							(msnRegisterForEvents gSource shipObj)
+							(lnkAppend shipIDs (objGetID shipObj))
+							)
+						)
+					(msnSetData gSource 'shipIDs shipIDs)
+					(msnSetData gSource 'state 'inbound)
+					)
+			</OnStarted>
+
+			<OnUpdate>
+				(if (= (msnGetData gSource 'state) 'inbound)
+					(block (
+						(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+						(aresShips (map (msnGetData gSource 'shipIDs) theID (objGetObjByID theID)))
+						)
+						;	Are Ares ships in scan range?
+						(if (leq (map aresShips 'reduceMin theShip (objGetDistance theShip stationObj)) 12)
+							(block Nil
+								(enum aresShips theShip (shpOrderImmediate theShip 'gate))
+								(msnSetData gSource 'state 'outbound)
+								)
+							)
+						)
+					)
+			</OnUpdate>
+			
+			<OnObjDestroyed>
+				(switch
+					;	If one of the Ares escapes then fail
+					(= aDestroyReason 'enteredStargate)
+						(msnFailure gSource)
+
+					;	Patrol ship killed
+					(objGetData aObjDestroyed 'cfMission04_patrol)
+						(block (
+							(shipIDs (msnGetData gSource 'shipIDs))
+							)
+							(lnkRemove shipIDs (find shipIDs (objGetID aObjDestroyed)))
+							(msnSetData gSource 'shipIDs shipIDs)
+							(if shipIDs
+								;	If there are still ares ships left, then update target
+								(msnSetPlayerTarget gSource)
+
+								;	Otherwise mission is over
+								(msnSuccess gSource)
+								)
+							)
+					)
+			</OnObjDestroyed>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (random (msnGetData gSource 'shipIDs))) 'attack)
+			</OnSetPlayerTarget>
+
+			<OnReward>
+				(commFleet_GiveReward gSource)
+			</OnReward>
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Intercept Ares patrol"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"Intercept and destroy an Ares patrol before it can report "
+					(objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4)
+					"'s location.\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+			<Text id="Intro">
+				(cat
+					"The XO walks up to you.\n\n"
+
+					"\"Good to see you pilot. We've got a mission for you.\""
+					)
+			</Text>
+			<Text id="Briefing">
+				(cat
+					"\"There's an Ares patrol inbound that wants to take a peek at us. "
+					"Your mission is to intercept and destroy the entire flight before "
+					"it can gate out of the system and report our location. Understood?\""
+					)
+			</Text>
+			<Text id="AcceptReply">
+				"\"Good luck, %name%!\""
+			</Text>
+			<Text id="DeclineReply">
+				"\"Get the hell out of here then!\""
+			</Text>
+
+			<Text id="InProgress">
+				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+			</Text>
+			<Text id="FailureDebrief">
+				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
+			</Text>
+			<Text id="SuccessDebrief">
+				"\"Outstanding, pilot! That's the way to do it!\""
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>
