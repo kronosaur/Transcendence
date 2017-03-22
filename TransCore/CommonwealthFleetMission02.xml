@@ -41,7 +41,7 @@
 							(msnSetData gSource 'neededItem (random '(&itGradeAGrains; &itWaterIce; &itMedicalSupplies; &itSalmonite;)))
 
 							(msnSetData gSource 'destID (objGetID destObj))
-							(objRegisterForEvents gSource destObj)
+							(msnRegisterForEvents gSource destObj)
 
 							(msnSetData gSource 'missionXP 100)
 							)
@@ -89,8 +89,8 @@
 						)
 
 					;	Register events
-					(objRegisterForEvents gSource gPlayerShip)
-					(objRegisterForEvents gSource stationObj)
+					(msnRegisterForEvents gSource gPlayerShip)
+					(msnRegisterForEvents gSource stationObj)
 					)
 			</OnAccepted>
 

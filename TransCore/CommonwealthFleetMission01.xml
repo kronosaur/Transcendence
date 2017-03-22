@@ -33,7 +33,7 @@
 						;	Create the mission
 						(block Nil
 							(msnSetData gSource 'targetID (objGetID targetObj))
-							(objRegisterForEvents gSource targetObj)
+							(msnRegisterForEvents gSource targetObj)
 
 							(msnSetData gSource 'missionXP 100)
 							)
@@ -50,7 +50,7 @@
 					(staSetFireReconEvent targetObj)
 
 					;	Register events
-					(objRegisterForEvents gSource gPlayerShip)
+					(msnRegisterForEvents gSource gPlayerShip)
 					)
 			</OnAccepted>
 
