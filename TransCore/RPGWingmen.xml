@@ -427,4 +427,187 @@
 		</Events>
 	</ShipClass>
 
+<!-- Wingman encounter screen ==================================================
+	Screen for meeting wingmen. Just supports join/reject for now.
+
+	Code based on rpgPagePaneInit / dsRPGMission / dsRPGDialog.
+
+	Could add support for multiple encounters / leaving / rejoining etc.
+-->
+
+	<DockScreen UNID="&dsRPGWingmanEncounter;"
+		nestedScreen=	"true"
+		inherit=		"&dsDockScreenBase;"
+		>
+		<OnScreenInit>
+			(scrSetData gScreen 'wingman (@ gData 'wingman))
+		</OnScreenInit>
+
+		<InitialPane>
+			(switch
+				(not (typGetGlobalData (scrGetData gScreen 'wingman) 'status))
+					"Intro"
+
+				"AlreadyMeet"
+				)
+		</InitialPane>
+
+		<Panes>
+			<AlreadyMeet>
+				<OnPaneInit>
+					; Do nothing if already met
+					(scrExitScreen gScreen)
+				</OnPaneInit>
+			</AlreadyMeet>
+
+			<Intro>
+				<OnPaneInit>
+					(block (
+						(wingman (scrGetData gScreen 'wingman))
+						(textDesc (typTranslate wingman 'Intro))
+
+						(pageCount (rpgPageCount textDesc))
+						(pageNo (if (scrGetData gScreen 'curPage) (scrGetData gScreen 'curPage) 0))
+						(pageDesc (rpgPageDesc textDesc pageNo))
+
+						(actions (@ pageDesc 'actions))
+						(atLastPage (= pageNo (- pageCount 1)))
+
+						(nextActionID 0)
+						)
+
+						;	Set the page text
+						(scrSetDesc gScreen (@ pageDesc 'desc))
+
+						;	Add all the appropriate actions
+						(switch
+							;	If we're on the last page show the Accept/Decline actions.
+							atLastPage
+								(setq actions (list
+									{
+										label: (or (@ pageDesc 'acceptLabel)
+											(typTranslate wingman 'AcceptLabel)
+											(scrTranslate gScreen 'actionAccept)
+											)
+										code: (@ pageDesc 'acceptCode)
+										nextPage: 'wingmanAccept
+										}
+									{
+										label: (or (@ pageDesc 'declineLabel)
+											(typTranslate wingman 'DeclineLabel)
+											(scrTranslate gScreen 'actionDecline)
+											)
+										code: (@ pageDesc 'declineCode)
+										nextPage: 'wingmanDecline
+										}
+									))
+
+							;	If we don't have a list of actions, then we auto-generate
+							;	them based on variables on the page descriptor.
+							(!= (typeof actions) 'list)
+								(setq actions (list {
+									label: (or (@ pageDesc 'label) (@ pageDesc 'nextLabel) (scrTranslate gScreen 'actionContinue))
+									nextPage: (or (@ pageDesc 'nextPage) 'nextPage)
+									code: (or (@ pageDesc 'code) (@ pageDesc 'nextCode))
+									}))
+							)
+
+						(enum actions actionDesc
+							(block Nil
+								(scrAddAction
+									gScreen
+									(cat "action" nextActionID)
+									Nil
+									(@ actionDesc 'label)
+									Nil
+									(switch
+										(= (count (@ pageDesc 'actions)) 1)
+											(list "default" "cancel")
+										(= nextActionID 0)
+											"default"
+										(= nextActionID (- (count (@ pageDesc 'actions)) 1))
+											"cancel"
+										Nil
+										)
+									(lambda ()
+										(block (
+											(nextPage (or (@ actionDesc 'nextPage) (@ actionDesc 'nextPane)))
+											)
+											(if (@ actionDesc 'code)
+												((@ actionDesc 'code))
+												)
+
+											(switch
+												(not nextPage)
+													(scrExitScreen gScreen)
+
+												(= nextPage 'exitScreen)
+													(scrExitScreen gScreen)
+
+												(= nextPage 'forceUndock)
+													(scrExitScreen gScreen 'forceUndock)
+
+												(= nextPage 'wingmanAccept)
+													(scrShowPane gScreen "ReplyAccept")
+
+												(= nextPage 'wingmanDecline)
+													(scrShowPane gScreen "ReplyDecline")
+
+												(block Nil
+													(scrSetData gScreen 'curPage (if (= nextPage 'nextPage) (+ pageNo 1) (rpgFindIndexByID gData nextPage)))
+													(scrShowPane gScreen "Intro")
+													)
+												)
+											)
+										)
+									)
+								(setq nextActionID (add nextActionID 1))
+								)
+							)
+						)
+				</OnPaneInit>
+				<Actions>
+				</Actions>
+			</Intro>
+
+
+			<ReplyAccept>
+				<OnPaneInit>
+					(scrSetDesc gScreen (typTranslate (scrGetData gScreen 'wingman) 'AcceptReply))
+				</OnPaneInit>
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(block (
+							(theClass (scrGetData gScreen 'wingman))
+							(theSov (typGetProperty theClass 'defaultSovereign))
+							)
+							(objFireEvent (sysCreateShip theClass gSource theSov) "OrderJoinPlayer")
+							(scrExitScreen gScreen)
+							)
+					</Action>
+				</Actions>
+			</ReplyAccept>
+
+			<ReplyDecline>
+				<OnPaneInit>
+					(scrSetDesc gScreen (typTranslate (scrGetData gScreen 'wingman) 'DeclineReply))
+				</OnPaneInit>
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(block Nil
+							(typSetGlobalData (scrGetData gScreen 'wingman) "status" 'declined)
+							(scrExitScreen gScreen)
+							)
+					</Action>
+				</Actions>
+			</ReplyDecline>
+
+		</Panes>
+
+		<Language>
+			<Text id="actionAccept">"[A]ccept"</Text>
+			<Text id="actionDecline">"[D]ecline"</Text>
+		</Language>
+	</DockScreen>
+
 </TranscendenceModule>

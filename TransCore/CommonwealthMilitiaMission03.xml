@@ -1,0 +1,121 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Destroy Threat ==================================================
+
+	Basic
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	targetID:			Id of station to destroy
+
+	=========================================================================== -->
+
+	<MissionType UNID="&msCMDestroyThreat;"
+			name=			"Destroy Threat"
+			attributes=		"commonwealthMilitia, rank1"
+
+			level=			"1-7"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<Events>
+			<OnCreate>
+				(block (enemyStations)
+					(switch
+						;	Get a list of enemy stations in the region. If we cannot find any
+						;	suitable targets then we don't have a mission.
+						(not (setq enemyStations (sysFindObject aOwnerObj "TAE +populated; -uncharted; -outlawMiners; -penitents;"))) ;L:4-5
+							(msnDestroy gSource)
+
+						;	Create the mission
+						(block (targetObj)
+							; Pick a random enemy station to destroy
+							(setq targetObj (seededRandom (objGetDestiny aOwnerObj) enemyStations))
+
+							; Remember it
+							(msnSetData gSource 'targetID (objGetID targetObj))
+
+							; Register for events so we know when the target is destroyed
+							(msnRegisterForEvents gSource targetObj)
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnObjDestroyed>
+				(switch
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(msnSuccess gSource)
+					)
+			</OnObjDestroyed>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)))
+			</OnSetPlayerTarget>
+
+			<OnCompleted>
+				(milMissionCompleted gSource aReason gData)
+			</OnCompleted>
+
+			<OnReward>
+				(milGiveReward gSource)
+			</OnReward>
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Destroy Enemy Station"
+			</Text>
+
+			<Text id="Summary">
+				(cat
+					"Your mission is to destroy " (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x04) " "
+					"in " (sysGetName) ".\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+
+			<Text id="Intro">
+				(cat
+					"You are in the command center surrounded by wall maps and scanner displays. "
+					"The commanding officer of the fortress looks up from his charts and asks, "
+					"\"Are you looking for a mission, captain?\""
+					)
+			</Text>
+
+			<Text id="Briefing">
+				(cat
+					"\"" (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x05)
+					" in the system has been harassing traffic in the area. "
+					"We want you to take it out. Clear?\""
+					)
+			</Text>
+
+			<Text id="AcceptReply">
+				"\"Good luck, captain!\""
+			</Text>
+
+			<Text id="DeclineReply">
+				"\"Why don't you make yourself useful and get us some tea or something.\""
+			</Text>
+
+			<Text id="InProgress">
+				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+			</Text>
+			<Text id="FailureDebrief">
+				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
+			</Text>
+			<Text id="SuccessDebrief">
+				"\"Good work, captain! That was an outstanding mission.\""
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

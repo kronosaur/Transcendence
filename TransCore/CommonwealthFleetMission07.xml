@@ -1,0 +1,190 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Rescue Scientists ============================================
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	missionXP:		XP awarded for completing mission
+	targetID:		ID of the rogue base
+	rescueID:		ID of rescue ship
+
+	======================================================================== -->
+
+	<MissionType UNID="&msCSCRescueScientists;"
+			name=			"Rescue Scientists"
+			attributes=		"commonwealthFleet, cscTaskForce, rank3"
+
+			level=			"5-8"
+			maxAppearing=	"1"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<Events>
+			<OnCreate>
+				(block Nil
+
+					(msnSetData gSource 'missionXP 350)
+					)
+			</OnCreate>
+
+			<OnStarted>
+				(block (
+					(cscObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					targetObj
+					)
+					;	Create the rogue base. The base position must be at least
+					;	120 light-seconds away from anything else.
+					(setq targetObj
+					 	(sysCreateStation
+							&stRogueBaseRescue;
+							(sysVectorRandom cscObj (random 400 600) 120 "t")
+							)
+						)
+					(msnSetData gSource 'targetID (objGetID targetObj))
+					
+					;	Create the rescue ship
+					(setq rescueObj (sysCreateShip &scAurochs; cscObj &svCommonwealthFleet;))
+					(shpOrder rescueObj 'dock targetObj)
+					(shpOrder rescueObj 'wait (random 10 20))
+					(shpOrder rescueObj 'dock cscObj)
+					(shpOrder rescueObj 'wait 5)
+					(shpOrder rescueObj 'gate)
+					(msnSetData gSource 'rescueID (objGetID rescueObj))
+					(msnRegisterForEvents gSource rescueObj)
+					
+					;	Encounter
+					(if (leq (random 1 100) 60)
+						(sysAddEncounterEventAtDist (add 500 (random 0 100)) rescueObj &etRogueAmbush1; (random 120 200))
+						)
+					)
+			</OnStarted>
+			
+			<OnObjDestroyed>
+				(switch
+					;	Freighter destroyed
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'rescueID))
+						(msnFailure gSource)
+					)
+			</OnObjDestroyed>
+
+			<OnObjDocked>
+				(switch
+					;	Docked with target base
+					(and	(= (objGetID aObjDocked) (msnGetData gSource 'rescueID))
+							(= (objGetID aDockTarget) (msnGetData gSource 'targetID))
+							)
+						(block Nil
+							(plyMessage gPlayer "Extraction commencing")
+
+							;	Add some encounters
+							(sysAddEncounterEventAtDist (+ 500 (random 0 100)) aObjDocked &etRogueAmbush2; (random 120 200))
+							(sysAddEncounterEventAtDist (+ 1000 (random 0 100)) aObjDocked &etRogueAmbush1; (random 120 200))
+							)
+
+					;	Docked with CSC
+					(and	(= (objGetID aObjDocked) (msnGetData gSource 'rescueID))
+							(= (objGetID aDockTarget) (msnGetProperty gSource 'ownerID))
+							)
+						(msnSuccess gSource)
+					)
+			</OnObjDocked>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'rescueID)) 'escort)
+			</OnSetPlayerTarget>
+
+			<OnCompleted>
+				(switch
+					(= aReason 'failure)
+						(block Nil
+							;	Demote player
+							(objSetData gPlayerShip 'fleetXP 400)
+							(objSetData gPlayerShip 'fleetLevel 2)
+							)
+					)
+			</OnCompleted>
+
+			<OnReward>
+				(commFleet_GiveReward gSource)
+			</OnReward>
+
+			<GetGlobalAchievements>
+				(block (theList)
+					(if (msnFind "r +unid:&msCSCRescueScientists;; +property:isSuccess;")
+						(setq theList (list
+							(list 
+								"Rescued Project Lamplighter scientists"
+								Nil
+								"achievements &amp; regrets"
+								)
+							))
+						)
+					(if (msnFind "r +unid:&msCSCRescueScientists;; +property:isFailure;")
+						(setq theList (list
+							(list 
+								"Failed to rescue Project Lamplighter scientists"
+								Nil
+								"achievements &amp; regrets"
+								)
+							))
+						)
+
+					theList
+					)
+			</GetGlobalAchievements>
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Rescue Scientists"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"Escort a superfreighter carrying pteracnium ore from "
+					(objGetName (objGetObjByID (msnGetData gSource 'gateID)) 0)
+					"back to " (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4) ".\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+			<Text id="Intro">
+				(cat
+					"The XO walks up to you.\n\n"
+
+					"\"Good to see you pilot. We've got a mission for you.\""
+					)
+			</Text>
+			<Text id="Briefing">
+				(cat
+					"\"OK, this is a high-profile rescue mission, so I don't want any screw-ups!\"\n\n"
+					"\"Two of our weapons designers have been kidnapped by rogue fleet elements. "
+					"We're sending an Aurochs transport with an extraction team to rescue our Einsteins. "
+					"All you've got to do is protect the transport to the rogue base and back. Clear?\""
+					)
+			</Text>
+			<Text id="AcceptReply">
+				"\"Good luck, %name%!\""
+			</Text>
+			<Text id="DeclineReply">
+				"\"Get the hell out of here then!\""
+			</Text>
+
+			<Text id="InProgress">
+				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+			</Text>
+			<Text id="FailureDebrief">
+				"\"That's what I get for counting on you!\n\n\"You're demoted back to Privateer! Now get out of my sight!\""
+			</Text>
+			<Text id="SuccessDebrief">
+				"\"Outstanding mission! Now we can put those Einsteins back to work!\""
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

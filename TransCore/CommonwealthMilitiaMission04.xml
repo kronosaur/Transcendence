@@ -1,0 +1,171 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Escort Super Freighter ==========================================
+
+	Basic
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	freighterID:	Id of Freighter to escort
+
+	=========================================================================== -->
+
+	<MissionType UNID="&msCMEscortSuperFreighter;"
+			name=			"Escort Super Freighter"
+			attributes=		"commonwealthMilitia, rank2"
+
+			level=			"1-7"
+priority="10"
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<Events>
+			<OnCreate>
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					;	unit vector from origin to station
+					(vec1 (sysVectorDivide (objGetPos stationObj) (objGetDistance stationObj)))
+					;	position of freighter
+					(shipPos (sysVectorAdd (objGetPos stationObj) (sysVectorMultiply vec1 (random 450 500))))
+					shipObj
+					)
+
+					; Create the freighter with orders to dock at fortress
+					(setq shipObj (sysCreateShip &scScarabFreighter; shipPos &svCommonwealth;))
+					(objSetData shipObj "noPiracyCheck" True)
+					(shpOrder shipObj 'dock stationObj)
+					(shpOrder shipObj 'wait (random 10 60))
+					(shpOrder shipObj 'gate)
+
+					(msnSetData gSource 'freighterID (objGetID shipObj))
+					(msnRegisterForEvents gSource shipObj)
+					(objSetIdentified shipObj)
+
+					; Create an enemy ship that will attack the freighter
+					(for i 1 (random 2 3)
+						(block (enemy)
+							(setq enemy (sysCreateShip &scViking-II; (sysVectorPolarOffset shipObj (random 0 359) 300) &svMarauders;))
+							(shpOrder enemy 'attack shipObj)
+							)
+						)
+
+					; On timer, more enemies appear
+					(sysAddEncounterEventAtDist
+						(add 800 (random 0 600))
+						shipObj
+						&etMarauderAmbush1;
+						(random 120 200)
+						)
+
+					(sysAddEncounterEventAtDist
+						(add 1200 (random 0 500))
+						gPlayerShip
+						&etMarauderAmbush2;
+						(random 120 200)
+						)
+
+					(sysAddEncounterEventAtDist
+						(add 1800 (random 0 100))
+						gPlayerShip
+						&etMarauderAmbush2;
+						(random 120 200)
+						)
+
+					(sysAddEncounterEventAtDist
+						(add 1900 (random 0 100))
+						shipObj
+						&etMarauderAmbush2;
+						(random 120 200)
+						)
+					)
+			</OnAccepted>
+
+			<OnObjDestroyed>
+				(switch
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'freighterID))
+						(msnFailure gSource)
+					)
+			</OnObjDestroyed>
+
+			<OnObjDocked>
+				(switch
+					; If a freighter on a mission docked, then mission is successful
+					(and
+						(= (objGetID aObjDocked) (msnGetData gSource 'freighterID))
+						(= (objGetID aDockTarget) (msnGetProperty gSource 'ownerID))
+						)
+						(msnSuccess gSource)
+					)
+			</OnObjDocked>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'freighterID)) 'escort)
+			</OnSetPlayerTarget>
+
+			<OnCompleted>
+				(milMissionCompleted gSource aReason gData)
+			</OnCompleted>
+
+			<OnReward>
+				(milGiveReward gSource)
+			</OnReward>
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Escort Super Freighter"
+			</Text>
+
+			<Text id="Summary">
+				(cat
+					"Escort super-freighter back to Commonwealth Fortress.\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+
+			<Text id="Intro">
+				(cat
+					"You are in the command center surrounded by wall maps and scanner displays. "
+					"The commanding officer of the fortress looks up from his charts and asks, "
+					"\"Are you looking for a mission, captain?\""
+					)
+			</Text>
+
+			<Text id="Briefing">
+				(cat
+					"\"We're receiving a distress signal from a super-freighter at the edge of the system. "
+					"Check it out, and if necessary, escort the freighter back. We'll feed the coordinates "
+					"into your computer. What are standing around for? Get moving!\""
+					)
+			</Text>
+
+			<Text id="AcceptReply">
+				"\"Good luck, captain!\""
+			</Text>
+
+			<Text id="DeclineReply">
+				"\"Why don't you make yourself useful and get us some tea or something.\""
+			</Text>
+
+			<Text id="InProgress">
+				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+			</Text>
+			<Text id="FailureDebrief">
+				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
+			</Text>
+			<Text id="SuccessDebrief">
+				"\"Good work, captain! That was an outstanding mission.\""
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

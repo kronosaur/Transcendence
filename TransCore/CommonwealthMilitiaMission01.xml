@@ -1,0 +1,166 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Patrol Stargates ================================================
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	targetID:		The players current target to recon
+	waypoints:		List of remaining objID which player must recon
+
+	=========================================================================== -->
+
+	<MissionType UNID="&msCMGatePatrol;"
+			name=			"Patrol Orbital Lanes"
+			attributes=		"commonwealthMilitia, rank0"
+
+			level=			"1-7"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<Events>
+			<OnCreate>
+				(block (
+					(gateList (sysFindObject gSource "G -uncharted;"))
+					)
+					(switch
+						;	Check if player is experienced enough
+						;(not (milCanEnterCC))
+						;	(msnDestroy gSource)
+
+						;	Make sure there are at least 2 gates
+						(ls (count gateList) 2)
+							(msnDestroy gSource)
+
+						;	The two gates better be at least 50 light-seconds
+						;	away from each other
+						(ls (objGetDistance (@ gateList 0) (@ gateList 1)) 50)
+							(msnDestroy gSource)
+
+						(block Nil
+							(msnSetData gSource 'waypoints
+								(list
+									(objGetID (objGetObjRefData (@ gateList 0) "NavBeacon"))
+									(objGetID (@ gateList 0))
+									(objGetID (@ gateList 1))
+									(objGetID (objGetObjRefData (@ gateList 1) "NavBeacon"))
+									(objGetID aOwnerObj)
+									)
+								)
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(msnFireEvent gSource 'OnNextWaypoint)
+			</OnAccepted>
+
+			<OnObjReconned>
+				(if (= (objGetID aObj) (msnGetData gSource 'targetID))
+					(msnFireEvent gSource 'OnNextWaypoint)
+					)
+			</OnObjReconned>
+
+			<OnNextWaypoint>
+				(block (
+					(waypoints (msnGetData gSource 'waypoints))
+					)
+					(if waypoints
+						;	If we're not done, then prepare the next encounter
+						(block (
+							(nextWaypoint (objGetObjByID (@ waypoints 0)))
+							)
+							;	Prepare the station to be reconned
+							(staClearReconned nextWaypoint)
+							(staSetFireReconEvent nextWaypoint)
+							(msnRegisterForEvents gSource nextWaypoint)
+
+							;	Create some marauders at the waypoint and send them
+							;	towards the player
+							(if (leq (random 1 100) 60)
+								(sysAddEncounterEvent 0 gPlayerShip &etMarauderAmbush1; nextWaypoint)
+								)
+
+							;	Remember which waypoint we want
+							(msnSetData gSource 'targetID (@ waypoints 0))
+							(msnSetData gSource 'waypoints (lnkRemove waypoints 0))
+							(msnSetPlayerTarget gSource)
+							)
+
+						;	Otherwise, mission is done
+						(msnSuccess gSource)
+						)
+					)
+			</OnNextWaypoint>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'escort)
+			</OnSetPlayerTarget>
+
+			<OnCompleted>
+				(milMissionCompleted gSource aReason gData)
+			</OnCompleted>
+
+			<OnReward>
+				(milGiveReward gSource)
+			</OnReward>
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Patrol Orbital Lanes"
+			</Text>
+
+			<Text id="Summary">
+				(cat
+					"Your mission is to patrol the orbital lanes in " (sysGetName)
+					" and destroy and enemy ship.\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+
+			<Text id="Intro">
+				(cat
+					"You are in the command center surrounded by wall maps and scanner displays. "
+					"The commanding officer of the fortress looks up from his charts and asks, "
+					"\"Are you looking for a mission, captain?\""
+					)
+			</Text>
+
+			<Text id="Briefing">
+				(cat
+					"\"Your mission is to patrol the orbital lanes that access the major stargates. "
+					"Your patrol will take you in a circuit through the system that passes each "
+					"stargate and returns back here. Your orders are to destroy any enemy ships in "
+					"the lanes. Understood?\""
+					)
+			</Text>
+
+			<Text id="AcceptReply">
+				"\"Good luck, captain!\""
+			</Text>
+
+			<Text id="DeclineReply">
+				"\"Why don't you make yourself useful and get us some tea or something.\""
+			</Text>
+
+			<Text id="InProgress">
+				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+			</Text>
+			<Text id="FailureDebrief">
+				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
+			</Text>
+			<Text id="SuccessDebrief">
+				"\"Good work, captain! That was an outstanding mission.\""
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

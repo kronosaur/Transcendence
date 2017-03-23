@@ -1,0 +1,208 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Intercept Enemy Convoy ==========================================
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	entryGate:		Gate where enemy transport will arrive
+	exitGate:		Gate where transport will leave
+	enemy:			One of marauders or slavers
+	targetID:		Id of ship to destroy
+
+	=========================================================================== -->
+
+	<MissionType UNID="&msCMDestroyConvoy;"
+			name=			"Destroy Convoy"
+			attributes=		"commonwealthMilitia, rank1"
+
+			level=			"1-7"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="1800"
+			>
+
+		<Events>
+			<OnCreate>
+				(block (
+					(gateList (sysFindObject gSource "G -uncharted;"))
+					)
+					(switch
+						;	Make sure there are at least 2 gates
+						(ls (count gateList) 2)
+							(msnDestroy gSource)
+
+						;	The two gates better be at least 150 light-seconds
+						;	away from each other
+						(ls (objGetDistance (@ gateList 0) (@ gateList 1)) 150)
+							(msnDestroy gSource)
+
+						(block (
+							(gate1 (@ gateList 0))
+							(gate2 (@ gateList 1))
+							)
+							;	The nearest gate is the first gate
+							(if (ls (objGetDistance aOwnerObj gate1) (objGetDistance aOwnerObj gate2))
+								(block (swap)
+									(setq swap gate1)
+									(setq gate1 gate2)
+									(setq gate2 swap)
+									)
+								)
+							(msnSetData gSource 'entryGate (objGetID gate1))
+							(msnSetData gSource 'exitGate (objGetID gate2))
+							(msnSetData gSource 'enemy (random (list 'marauders 'slavers)))
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnStarted>
+				(block (
+					(stargateObj (objGetObjByID (msnGetData gSource 'entryGate)))
+					(timeToGate (sysCalcTravelTime (objGetDistance gPlayerShip stargateObj) (shpGetMaxSpeed gPlayerShip)))
+					)
+
+					;	Set a timer for when the freighter comes in
+					(msnAddTimerEvent gSource (+ (max timeToGate 600) (random 0 100)) "OnConvoyArrives")
+					)
+			</OnStarted>
+
+			<OnConvoyArrives>
+				(block (
+					(startGate (objGetObjByID (msnGetData gSource 'entryGate)))
+					(endGate (objGetObjByID (msnGetData gSource 'exitGate)))
+					targetObj
+					)
+					(switch
+						(= (msnGetData gSource 'enemy) 'marauders)
+							(block Nil
+								; create the main ship that will go from one stargate to the other
+								(setq targetObj (sysCreateShip &scDrake; startGate &svMarauders;))
+
+								; create the escorts
+								(for i 1 (random 3 6)
+									(block (escort)
+										(setq escort (sysCreateShip &scViking-II; startGate &svMarauders;))
+										(shpOrder escort 'escort targetObj)
+										)
+									)
+								)
+
+						(block Nil
+							; create the transport that will go from one stargate to the other
+							(setq targetObj (sysCreateShip &scSungTransport; startGate &svSung;))
+							(objAddItem targetObj (itmCreate &itSlaveCoffin; (random 10 20)))
+
+							; create the escorts
+							(for i 1 (random 6 9)
+								(block (escort)
+									(setq escort (sysCreateShip &scWindSlaver; startGate &svSung;))
+									(shpOrder escort 'escort targetObj)
+									)
+								)
+							)
+						)
+					(shpOrder targetObj 'gate endGate)
+					(msnRegisterForEvents gSource targetObj)
+					(msnSetData gSource 'targetID (objGetID targetObj))
+
+					;	Refresh the target
+					(msnSetPlayerTarget gSource)
+					)
+			</OnConvoyArrives>
+
+			<OnObjDestroyed>
+				(switch
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(msnSuccess gSource)
+					)
+			</OnObjDestroyed>
+
+			<OnObjEnteredGate>
+				(switch
+					(= (objGetID aObj) (msnGetData gSource 'targetID))
+						(msnFailure gSource)
+					)
+			</OnObjEnteredGate>
+
+			<OnSetPlayerTarget>
+				(switch
+					;	If we have a target ID, then attack it.
+				 	(msnGetData gSource 'targetID)
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'attack)
+
+					;	Otherwise, point to the stargate
+					(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'entryGate)) 'dock)
+					)
+			</OnSetPlayerTarget>
+
+			<OnCompleted>
+				(milMissionCompleted gSource aReason gData)
+			</OnCompleted>
+
+			<OnReward>
+				(milGiveReward gSource)
+			</OnReward>
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Destroy Enemy Convoy"
+			</Text>
+
+			<Text id="Summary">
+				(cat
+					"Your mission is to intercept and destroy an enemy convoy.\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+
+			<Text id="Intro">
+				(cat
+					"You are in the command center surrounded by wall maps and scanner displays. "
+					"The commanding officer of the fortress looks up from his charts and asks, "
+					"\"Are you looking for a mission, captain?\""
+					)
+			</Text>
+
+			<Text id="Briefing">
+				(cat
+					"\"We have received information that "
+					(switch
+						(= (msnGetData gSource 'enemy) 'marauders) "a marauder"
+						(= (msnGetData gSource 'enemy) 'slavers) "a slaver"
+						"an enemy"
+						)
+					" convoy will be entering the system at the "
+					(objGetName (objGetObjByID (msnGetData gSource 'entryGate)))
+					". Your mission is to destroy the convoy before it leaves the system.\""
+					)
+				)
+			</Text>
+
+			<Text id="AcceptReply">
+				"\"Good luck, captain!\""
+			</Text>
+
+			<Text id="DeclineReply">
+				"\"Why don't you make yourself useful and get us some tea or something.\""
+			</Text>
+
+			<Text id="InProgress">
+				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+			</Text>
+			<Text id="FailureDebrief">
+				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
+			</Text>
+			<Text id="SuccessDebrief">
+				"\"Good work, captain! That was an outstanding mission.\""
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

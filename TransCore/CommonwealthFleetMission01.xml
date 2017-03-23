@@ -1,0 +1,139 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Recon mission ================================================
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	missionXP:		XP awarded for completing mission
+	targetID:		The target to recon
+
+	======================================================================== -->
+
+	<MissionType UNID="&msCFRecon;"
+			name=			"Recon Ares station"
+			attributes=		"commonwealthFleet, cscTaskForce, rank1"
+
+			level=			"5-8"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<Events>
+			<OnCreate>
+				(block (targetObj)
+					(switch
+						;	Need a major Ares station in the system
+						(not (setq targetObj (random (sysFindObject aOwnerObj "ATE +ares; +majorStation;"))))
+							(msnDestroy gSource)
+
+						;	Create the mission
+						(block Nil
+							(msnSetData gSource 'targetID (objGetID targetObj))
+							(msnRegisterForEvents gSource targetObj)
+
+							(msnSetData gSource 'missionXP 100)
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					;	Prepare the station to be reconned
+					(staClearReconned targetObj)
+					(staSetFireReconEvent targetObj)
+
+					;	Register events
+					(msnRegisterForEvents gSource gPlayerShip)
+					)
+			</OnAccepted>
+
+			<OnObjReconned>
+				(if (= (objGetID aObj) (msnGetData gSource 'targetID))
+					(msnSuccess gSource)
+					)
+			</OnObjReconned>
+			
+			<OnObjDestroyed>
+				(switch
+					;	If the player dies, the mission fails.
+					(= aObjDestroyed gPlayerShip)
+						(msnFailure gSource)
+
+					;	Destroying target is an alternative way to win
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(msnSuccess gSource)
+					)
+			</OnObjDestroyed>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'escort)
+			</OnSetPlayerTarget>
+
+			<OnReward>
+				(commFleet_GiveReward gSource)
+			</OnReward>
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Recon Ares Station"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"Your mission is to fly within visual range of "
+					(objGetName (objGetObjByID (msnGetData gSource 'targetID)) 4) ".\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+			<Text id="Intro">
+				(cat
+					"The XO walks up to you.\n\n"
+
+					"\"Good to see you pilot. We've got a mission for you.\""
+					)
+			</Text>
+			<Text id="Briefing">
+				(cat
+					"\"We need you to do a recon mission on "
+					(objGetName (objGetObjByID (msnGetData gSource 'targetID)) 4)
+					" in this system. All you have to do is fly past it and make visual contact. "
+					"We'll enter the coordinates to your computer. What do you say?\""
+					)
+			</Text>
+			<Text id="AcceptReply">
+				"\"Good luck, %name%!\""
+			</Text>
+			<Text id="DeclineReply">
+				"\"Get the hell out of here then!\""
+			</Text>
+
+			<Text id="InProgress">
+				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+			</Text>
+			<Text id="FailureDebrief">
+				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
+			</Text>
+			<Text id="SuccessDebrief">
+				(switch
+					(gr (objGetVisibleDamage gPlayerShip) 75)
+						"\"Outstanding mission! You better report to Docking Services to have all that damage repaired!\""
+
+					(gr (objGetVisibleDamage gPlayerShip) 25)
+						"\"Outstanding mission! Looks like you got a little banged up out there.\""
+
+					"\"Outstanding mission! You made it look easy.\""
+					)
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

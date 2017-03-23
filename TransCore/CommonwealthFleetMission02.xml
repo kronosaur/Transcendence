@@ -1,0 +1,214 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Supply Delivery ==============================================
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	missionXP:		XP awarded for completing mission
+	destID:			The destination for the delivery
+	
+	playerCargo:	Cargo removed from player's ship
+	neededItem:		Cargo item needed at destination
+	missionCargo:	Delivery cargo
+
+	======================================================================== -->
+
+	<MissionType UNID="&msCFSupplyDelivery;"
+			name=			"Deliver supplies"
+			attributes=		"commonwealthFleet, cscTaskForce, rank1, deliveryMission"
+
+			level=			"5-8"
+
+			expireTime=		"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<Events>
+			<OnCreate>
+				(block (destObj)
+					(switch
+						;	Look for a major commonwealth station in the system that is at least
+						;	300 light-seconds from here.
+						(not (setq destObj (random (sysFindObject aOwnerObj "ATF +fleetDelivery; R:300;"))))
+							(msnDestroy gSource)
+
+						;	Create the mission
+						(block Nil
+							;	Pick a random item
+							(msnSetData gSource 'neededItem (random '(&itGradeAGrains; &itWaterIce; &itMedicalSupplies; &itSalmonite;)))
+
+							(msnSetData gSource 'destID (objGetID destObj))
+							(msnRegisterForEvents gSource destObj)
+
+							(msnSetData gSource 'missionXP 100)
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(playerCargo (objGetItems gPlayerShip "*U~m -ID;"))
+					(neededItem (msnGetData gSource 'neededItem))
+					fitCount enemyAmbush
+					)
+
+					;	Remove all uninstalled items from the player's ship (except missiles/ammo or IDs)
+					(msnSetData gSource 'playerCargo playerCargo)
+					(enum playerCargo theItem (objRemoveItem gPlayerShip theItem))
+
+					; Figure out how much cargo we can take (must be at least 1)
+					(setq fitCount (max 1 (objGetFitCount gPlayerShip (itmCreate neededItem 100000))))
+
+					; Add the items to the player ship (and remember)
+					(objAddItem gPlayerShip (itmSetData (itmCreate neededItem fitCount) "fleetMissionCargo" True))
+					(msnSetData gSource 'missionCargo (objGetItems gPlayerShip "*U~m -ID;"))
+
+					;	Figure out what kind of enemy will attack the player
+					(setq roll (random 1 100))
+					(switch
+						(leq roll 60)
+							(setq enemyAmbush &etKobolAmbush1;)
+
+						(leq roll 90)
+							(setq enemyAmbush &etRogueAmbush1;)
+
+						(setq enemyAmbush &etAresAmbush2;)
+						)
+
+					;	On timer, enemies attack player
+					(sysAddEncounterEventAtDist 
+						(add 300 (random 0 150)) 
+						gPlayerShip 
+						enemyAmbush 
+						(random 120 200)
+						)
+
+					;	Register events
+					(msnRegisterForEvents gSource gPlayerShip)
+					(msnRegisterForEvents gSource stationObj)
+					)
+			</OnAccepted>
+
+			<OnUpdate>
+				;	If we can't dock with the target, then we fail
+				(if (objIsAngryAt (objGetObjByID (msnGetData gSource 'destID)) gPlayerShip)
+					(msnFailure gSource)
+					)
+			</OnUpdate>
+
+			<OnObjDestroyed>
+				(switch
+					;	Destroying target is an alternative way to win
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'destID))
+						(msnFailure gSource)
+
+					;	IF the CSC is destroyed, then then put the player's stuff on the wreck
+					(= (objGetID aObjDestroyed) (msnGetProperty gSource 'ownerID))
+						(enum (msnGetData gSource 'playerCargo) theItem (objAddItem aObjDestroyed theItem))
+					)
+			</OnObjDestroyed>
+
+			<OnObjDocked>
+				(switch
+					(and	(msnGetProperty gSource 'isCompleted)
+							(= aObjDocked gPlayerShip)
+							(= (objGetID aDockTarget) (msnGetProperty gSource 'ownerID))
+							)
+						(block Nil
+							;	Remove any mission cargo the player still has.
+							(objEnumItems gPlayerShip "*U~m -ID;" theItem
+								(if (itmGetData theItem 'fleetMissionCargo) (objRemoveItem gPlayerShip theItem))
+								)
+
+							;	Restore the items that we took from the player
+							(enum (msnGetData gSource 'playerCargo) theItem (objAddItem gPlayerShip theItem))
+							)
+					)
+			</OnObjDocked>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'destID)) 'dock)
+			</OnSetPlayerTarget>
+
+			<OnDeliveryMissionCompleted>
+				(block (
+					(missionCargo (msnGetData gSource 'missionCargo))
+					;	See if the player has all the items that we expect
+					(haveCargo (apply and (map missionCargo theItem (objHasItem gPlayerShip theItem))))
+					)
+					(if haveCargo
+						(block Nil
+							(msnSuccess gSource)
+							(enum missionCargo theItem (objRemoveItem gPlayerShip theItem))
+							(msnTranslate gSource 'CargoDelivered)
+							)
+						(msnTranslate gSource 'CargoLost)
+						)
+					)
+			</OnDeliveryMissionCompleted>
+
+			<OnReward>
+				(commFleet_GiveReward gSource)
+			</OnReward>
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Deliver Supplies"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"Your mission is to deliver supplies to "
+					(objGetName (objGetObjByID (msnGetData gSource 'destID)) 4) ".\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+			<Text id="Intro">
+				(cat
+					"The XO walks up to you.\n\n"
+
+					"\"Good to see you pilot. We've got a mission for you.\""
+					)
+			</Text>
+			<Text id="Briefing">
+				(cat
+					"\"We need you to take much needed supplies to "
+					(objGetName (objGetObjByID (msnGetData gSource 'destID)) 4)
+					" in this system. We'll empty your cargo hold so that we can fit as much cargo "
+					"as possible (but don't worry, you'll get all your stuff back). "
+					"We'll program the delivery coordinates into your flight computer. What do you say?\""
+					)
+			</Text>
+			<Text id="AcceptReply">
+				"\"Good luck, %name%!\""
+			</Text>
+			<Text id="DeclineReply">
+				"\"Get the hell out of here then!\""
+			</Text>
+
+			<Text id="InProgress">
+				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+			</Text>
+			<Text id="FailureDebrief">
+				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
+			</Text>
+			<Text id="SuccessDebrief">
+				"\"Nice work! Those supplies will do some good.\""
+			</Text>
+			<Text id="CargoDelivered">
+				"The dockmaster meets you as you dock: \"Thank you for bringing these supplies&mdash;our situation is desperate.\""
+			</Text>
+			<Text id="CargoLost">
+				"The dockmaster meets you as you dock: \"Where are the supplies that you were supposed to be bringing? Those supplies are desperately needed!\""
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

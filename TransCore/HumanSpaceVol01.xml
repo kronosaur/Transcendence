@@ -2,6 +2,21 @@
 
 <!DOCTYPE CoreLibrary
 	[
+	<!-- MissionType Refactor - these types should be assigned an official unid -->
+	<!ENTITY unidKorolovShipping		"0xDDDEF001">
+	<!ENTITY evKorolovFreighterBehavior	"0xDDDEF002">
+	<!ENTITY dsKorolovPromotion			"0xDDDEF003">
+	<!ENTITY msKorolovEscort			"0xDDDEF004">
+	<!ENTITY msKorolovNewFreighter		"0xDDDEF005">
+	<!ENTITY tbKorolovEscortPirates		"0xDDDEF006">
+	<!ENTITY msKorolovKillStronghold	"0xDDDEF007">
+	<!ENTITY unidCommonwealthMilitia	"0xDDDEF008">
+	<!ENTITY msCMGatePatrol				"0xDDDEF009">
+	<!ENTITY msCMDestroyConvoy			"0xDDDEF00A">
+	<!ENTITY msCMDestroyThreat			"0xDDDEF00B">
+	<!ENTITY msCMEscortSuperFreighter	"0xDDDEF00C">
+
+
 	<!ENTITY ssEarthSpaceStandard		"0x00000001">
 	<!ENTITY ssEarthSpaceRedDwarf		"0x00000002">
 	<!ENTITY ssEarthSpaceAsteroids		"0x00000003">
@@ -745,7 +760,8 @@
 	<!ENTITY msDestroyThreatToSlums		"0x00101000">
 	<!ENTITY msSaveMiningShip			"0x00101001">
 	<!ENTITY msDestroyIllegalMiners		"0x00101002">
-	
+	<!ENTITY msCommAgriDefend			"0x00101003">
+
 	<!ENTITY stStartonEridani			"0x00102001">
 	<!ENTITY stCommonwealthSettlement	"0x00102002">
 	<!ENTITY stMiningColony				"0x00102003">
@@ -1815,6 +1831,10 @@
 	<Module filename="CommonwealthFleet.xml"/>
 	<Module filename="CommonwealthMetropolis.xml"/>
 	<Module filename="CommonwealthMilitia.xml"/>
+	<Module filename="CommonwealthMilitiaMission01.xml"/>
+	<Module filename="CommonwealthMilitiaMission02.xml"/>
+	<Module filename="CommonwealthMilitiaMission03.xml"/>
+	<Module filename="CommonwealthMilitiaMission04.xml"/>
 	<Module filename="CommonwealthMining.xml"/>
 	<Module filename="CommonwealthShips.xml"/>
 	<Module filename="CorporateHierarchy.xml"/>
@@ -1823,6 +1843,9 @@
 	<Module filename="Ferians.xml"/>
 	<Module filename="Iocrym.xml"/>
 	<Module filename="KorolovShipping.xml"/>
+	<Module filename="KSMission01.xml"/>
+	<Module filename="KSMission02.xml"/>
+	<Module filename="KSMission03.xml"/>
 	<Module filename="Luminous.xml"/>
 	<Module filename="OutlawMiners.xml"/>
 	<Module filename="Penitents.xml"/>
