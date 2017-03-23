@@ -1955,6 +1955,10 @@
 			
 				;	Options may contain the following fields
 				;
+				;		intervalPerStation: Time between mission given at this station
+				;
+				;		intervalPerType: Time between missions given by same station type
+				;
 				;		maxPerStation: Maximum number of missions that we give out at
 				;				this station.
 				;
@@ -1965,7 +1969,7 @@
 				
 				(block (
 					(noMissionTextID (@ options 'noMissionTextID))
-					theMission newMissions
+					theMission newMissions nextMissionTime
 					)
 
 					;	Show proper screen
@@ -1988,6 +1992,16 @@
 								)
 							(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
 
+						;	If it's not time for a new mission, then nothing
+
+						(and (setq nextMissionTime (objGetData gSource 'nextMissionTime))
+								(gr nextMissionTime (unvGetTick)))
+							(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
+
+						(and (setq nextMissionTime (objGetTypeData gSource 'nextMissionTime))
+								(gr nextMissionTime (unvGetTick)))
+							(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
+
 						;	Make a list of available missions. We filter out any missions
 						;	that are outside our system level. If we can't find anything, then we've got nothing.
 
@@ -1998,7 +2012,16 @@
 						;	screen.
 
 						(setq theMission (msnCreate newMissions gSource))
-							(scrShowScreen gScreen &dsRPGMission; { missionObj: theMission })
+							(block Nil
+								;	And set next mission times if required
+								(if (@ options 'intervalPerStation)
+									(objSetData gSource 'nextMissionTime (+ (unvGetTick) (@ options 'intervalPerStation)))
+									)
+								(if (@ options 'intervalPerType)
+									(objSetTypeData gSource 'nextMissionTime (+ (unvGetTick) (@ options 'intervalPerType)))
+									)
+								(scrShowScreen gScreen &dsRPGMission; { missionObj: theMission })
+								)
 
 						; Otherwise, nothing
 
