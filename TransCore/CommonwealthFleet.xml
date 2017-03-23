@@ -2556,7 +2556,7 @@ PLAYER DATA
 
 		<Events>
 			<GetGlobalAchievements>
-				(block (theList p262rescue p262prototype antarcticaStatus medsDonated)
+				(block (theList p262prototype antarcticaStatus medsDonated)
 
 					; Rank
 					
@@ -2580,23 +2580,6 @@ PLAYER DATA
 									)
 								))
 							)
-						)
-						
-					; Project262 rescue
-					
-					(setq p262rescue (typGetGlobalData &scCSCTerra; "p262scientists"))
-					(if p262rescue
-						(setq theList (append theList (list
-							(list
-								(switch
-									(eq p262rescue 'rescued) "Rescued Project Lamplighter scientists"
-									(eq p262rescue 'failed) "Failed to rescue Project Lamplighter scientists"
-									(cat "ERROR: p262scientists: " p262scientists)
-									)
-								Nil
-								"achievements &amp; regrets"
-								)
-							)))
 						)
 						
 					; Project262 prototype
