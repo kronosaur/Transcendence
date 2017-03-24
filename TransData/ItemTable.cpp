@@ -52,7 +52,10 @@ struct SItemTableCtx
 	{
 	SItemTableCtx (void) :
 			pUniverse(NULL),
-			pCmdLine(NULL)
+			pCmdLine(NULL),
+			bHasArmor(false),
+			bArmorBalanceStats(false),
+			bWeaponBalanceStats(false)
 		{ }
 
 	CUniverse *pUniverse;
@@ -62,6 +65,9 @@ struct SItemTableCtx
 	CDesignTypeStats TotalCount;
 
     CWeaponBenchmarkCtx WeaponBenchmarks;
+	bool bHasArmor;
+	bool bArmorBalanceStats;
+	bool bWeaponBalanceStats;
 	};
 
 typedef TSortMap<CString, CItemType *> SItemTypeList;
@@ -109,6 +115,16 @@ void GenerateItemTable (CUniverse &Universe, CXMLElement *pCmdLine)
 		{
 		printf("No entries match criteria.\n");
 		return;
+		}
+
+	//	Figure out if we're showing balance stats
+
+	if (pCmdLine->GetAttributeBool(FIELD_BALANCE_STATS))
+		{
+		if (Ctx.bHasArmor)
+			Ctx.bArmorBalanceStats = true;
+		else
+			Ctx.bWeaponBalanceStats = true;
 		}
 
 	//	Compute columns
@@ -465,33 +481,51 @@ void OutputHeader (SItemTableCtx &Ctx)
 
         if (strEquals(Ctx.Cols[i], FIELD_BENCHMARK))
             printf("averageTime\tbestArmor\tbestArmorTime\tworstArmor\tworstArmorTime");
-        else if (strEquals(Ctx.Cols[i], FIELD_BALANCE_STATS))
-            printf("balance\t"
-                    "balanceExcludeCost\t"
-                    "balDamage\t"
-                    "balDamageType\t"
-                    "balAmmo\t"
-                    "balOmni\t"
-                    "balTracking\t"
-                    "balRange\t"
-                    "balSpeed\t"
-                    "balWMD\t"
-                    "balRadiation\t"
-                    "balMining\t"
-                    "balShatter\t"
-                    "balDeviceDisrupt\t"
-                    "balDeviceDamage\t"
-                    "balDisintegrate\t"
-                    "balShieldPenetrate\t"
-                    "balArmorDamage\t"
-                    "balShieldDamage\t"
-                    "balProjectileHP\t"
-                    "balPower\t"
-                    "balCost\t"
-                    "balSlots\t"
-                    "balExternal\t"
-                    "balLinkedFire\t"
-                    "balRecoil");
+		else if (strEquals(Ctx.Cols[i], FIELD_BALANCE_STATS))
+			{
+			if (Ctx.bArmorBalanceStats)
+				printf("balance\t"
+					"balanceExcludeCost\t"
+					"balHP\t"
+					"balDamageAdj\t"
+					"balDamageEffectAdj\t"
+					"balRegen\t"
+					"balPower\t"
+					"balRepair\t"
+					"balArmorComplete\t"
+					"balStealth\t"
+					"balSpeedAdj\t"
+					"balDeviceBonus\t"
+					"balMass\t"
+					"balCost");
+			else
+				printf("balance\t"
+					"balanceExcludeCost\t"
+					"balDamage\t"
+					"balDamageType\t"
+					"balAmmo\t"
+					"balOmni\t"
+					"balTracking\t"
+					"balRange\t"
+					"balSpeed\t"
+					"balWMD\t"
+					"balRadiation\t"
+					"balMining\t"
+					"balShatter\t"
+					"balDeviceDisrupt\t"
+					"balDeviceDamage\t"
+					"balDisintegrate\t"
+					"balShieldPenetrate\t"
+					"balArmorDamage\t"
+					"balShieldDamage\t"
+					"balProjectileHP\t"
+					"balPower\t"
+					"balCost\t"
+					"balSlots\t"
+					"balExternal\t"
+					"balLinkedFire\t"
+					"balRecoil");
+			}
         else
 		    printf(Ctx.Cols[i].GetASCIIZPointer());
 		}
@@ -557,52 +591,82 @@ void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
 
             else if (strEquals(sField, FIELD_BALANCE_STATS))
                 {
-                CDeviceClass *pDevice = pType->GetDeviceClass();
-                CWeaponClass *pWeapon = NULL;
+				if (Ctx.bArmorBalanceStats)
+					{
+					CArmorClass *pArmor = pType->GetArmorClass();
+					if (pArmor)
+						{
+						CArmorClass::SBalance Balance;
+						pArmor->CalcBalance(ItemCtx, Balance);
+						printf("%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f",
+								Balance.rBalance,
+								Balance.rBalance - Balance.rCost,
+								Balance.rHPBalance,
+								Balance.rDamageAdj,
+								Balance.rDamageEffectAdj,
+								Balance.rRegen,
+								Balance.rPowerUse,
+								Balance.rRepairAdj,
+								Balance.rArmorComplete,
+								Balance.rStealth,
+								Balance.rSpeedAdj,
+								Balance.rDeviceBonus,
+								Balance.rMass,
+								Balance.rCost
+								);
+						}
+					else
+						printf("\t\t\t\t\t\t\t\t\t\t\t\t\t");
+					}
+				else
+					{
+					CDeviceClass *pDevice = pType->GetDeviceClass();
+					CWeaponClass *pWeapon = NULL;
 
-                if (pDevice)
-                    pWeapon = pDevice->AsWeaponClass();
-                else if (pType->IsMissile() && ItemCtx.ResolveVariant())
-                    {
-                    pDevice = ItemCtx.GetVariantDevice();
-                    pWeapon = pDevice->AsWeaponClass();
-                    }
+					if (pDevice)
+						pWeapon = pDevice->AsWeaponClass();
+					else if (pType->IsMissile() && ItemCtx.ResolveVariant())
+						{
+						pDevice = ItemCtx.GetVariantDevice();
+						pWeapon = pDevice->AsWeaponClass();
+						}
 
-                if (pWeapon)
-                    {
-                    CWeaponClass::SBalance Balance;
-                    pWeapon->CalcBalance(ItemCtx, Balance);
-                    printf("%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f",
-                            Balance.rBalance,
-                            Balance.rBalance - Balance.rCost,
-                            Balance.rDamage,
-                            Balance.rDamageType,
-                            Balance.rAmmo,
-                            Balance.rOmni,
-                            Balance.rTracking,
-                            Balance.rRange,
-                            Balance.rSpeed,
-                            Balance.rWMD,
-                            Balance.rRadiation,
-                            Balance.rMining,
-                            Balance.rShatter,
-                            Balance.rDeviceDisrupt,
-                            Balance.rDeviceDamage,
-                            Balance.rDisintegration,
-                            Balance.rShieldPenetrate,
-                            Balance.rArmor,
-                            Balance.rShield,
-                            Balance.rProjectileHP,
-                            Balance.rPower,
-                            Balance.rCost,
-                            Balance.rSlots,
-                            Balance.rExternal,
-                            Balance.rLinkedFire,
-                            Balance.rRecoil
-                            );
-                    }
-                else
-                    printf("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t");
+					if (pWeapon)
+						{
+						CWeaponClass::SBalance Balance;
+						pWeapon->CalcBalance(ItemCtx, Balance);
+						printf("%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f",
+								Balance.rBalance,
+								Balance.rBalance - Balance.rCost,
+								Balance.rDamage,
+								Balance.rDamageType,
+								Balance.rAmmo,
+								Balance.rOmni,
+								Balance.rTracking,
+								Balance.rRange,
+								Balance.rSpeed,
+								Balance.rWMD,
+								Balance.rRadiation,
+								Balance.rMining,
+								Balance.rShatter,
+								Balance.rDeviceDisrupt,
+								Balance.rDeviceDamage,
+								Balance.rDisintegration,
+								Balance.rShieldPenetrate,
+								Balance.rArmor,
+								Balance.rShield,
+								Balance.rProjectileHP,
+								Balance.rPower,
+								Balance.rCost,
+								Balance.rSlots,
+								Balance.rExternal,
+								Balance.rLinkedFire,
+								Balance.rRecoil
+								);
+						}
+					else
+						printf("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t");
+					}
                 }
 
 			//	Get the field value
@@ -637,6 +701,8 @@ void SelectByCriteria (SItemTableCtx &Ctx, const CString &sCriteria, TArray<CIte
 	{
 	int i;
 
+	Ctx.bHasArmor = false;
+
 	//	Compute the criteria
 
 	CItemCriteria Crit;
@@ -656,6 +722,13 @@ void SelectByCriteria (SItemTableCtx &Ctx, const CString &sCriteria, TArray<CIte
 
 		if (!Item.MatchesCriteria(Crit))
 			continue;
+
+		//	Keep track of whether we've selected any armor.
+
+		if (pType->GetArmorClass())
+			Ctx.bHasArmor = true;
+
+		//	Add
 
 		retList->Insert(pType);
 		}
