@@ -1,0 +1,301 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Destroy Ares Convoy ==========================================
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	missionXP:		XP awarded for completing mission
+	targetID:		The target to destroy
+
+	======================================================================== -->
+
+	<MissionType UNID="&msCSCDestroyAresConvoy;"
+			name=			"Destroy Ares Convoy"
+			attributes=		"commonwealthFleet, cscTaskForce, rank4"
+
+			level=			"5-9"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<StaticData>
+			<Data id="convoy">
+				(
+					{
+						id: "chasmEscort"
+						minLevel: 6
+						maxLevel: 10
+						chance: 60
+
+						ships: (
+							{	principalType: &scPolar;	escortTypes: (&scChasm;) }
+							{	principalType: &scPolar;	escortTypes: (&scChasm;) }
+							{	principalType: &scPolar;	escortTypes: (&scChasm;) }
+							{	principalType: &scPolar;	escortTypes: (&scChasm;) }
+							{	principalType: &scPolar;	escortTypes: (&scChasm;) }
+							)
+						}
+					{
+						id: "advancedPolar"
+						minLevel: 7
+						maxLevel: 10
+						chance: 30
+
+						ships: (
+							{	principalType: &scPolar2;	escortTypes: (&scSandstorm; &scSandstorm;) }
+							{	principalType: &scPolar2;	escortTypes: (&scSandstorm; &scSandstorm;) }
+							{	principalType: &scPolar2;	escortTypes: (&scSandstorm; &scSandstorm;) }
+							{	principalType: &scPolar2;	escortTypes: (&scSandstorm; &scSandstorm;) }
+							{	principalType: &scPolar2;	escortTypes: (&scSandstorm; &scSandstorm;) }
+							)
+						}
+					{
+						id: "deimosEscort"
+						minLevel: 8
+						maxLevel: 10
+						chance: 10
+
+						ships: (
+							{	principalType: &scPolar;	escortTypes: (&scDeimos;) }
+							{	principalType: &scPolar; }
+							{	principalType: &scPolar;	escortTypes: (&scDeimos;) }
+							{	principalType: &scPolar; }
+							{	principalType: &scPolar; }
+							)
+						}
+					)
+			</Data>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block (gate1 gate2 convoyDesc)
+					(switch
+						(not (setq gate1 (random (sysFindObject gSource "G -uncharted;"))))
+							(msnDestroy gSource)
+
+						;	Second gate must be at least 200 light-seconds from first
+						(not (setq gate2 (random (sysFindObject gate1 "GR:200; -uncharted;"))))
+							(msnDestroy gSource)
+
+						;	Do we have any valid variants for the current system level
+						(not (setq convoyDesc
+								(filter (msnGetStaticData gSource 'convoy) theDesc
+									(and (geq (sysGetLevel) (@ theDesc 'minLevel))
+										(leq (sysGetLevel) (@ theDesc 'maxLevel))
+										)
+									)
+								))
+							(msnDestroy gSource)
+
+						;	Choose mission variant
+						(block (
+							(theRoll (random 1 (+ (map convoyDesc theDesc (@ theDesc 'chance)))))
+							)
+							(msnSetData gSource 'convoyDesc (match convoyDesc theDesc
+							 	(ls (setq theRoll (- theRoll (@ theDesc 'chance))) 1)
+								))
+							(msnSetData gSource 'gate1ID (objGetID gate1))
+							(msnSetData gSource 'gate2ID (objGetID gate2))
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnStarted>
+				(block (
+					(cscObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(gateObj (objGetObjByID (msnGetData gSource 'gate1ID)))
+					(travelTime (sysCalcTravelTime (objGetDistance cscObj gateObj) (shpGetMaxSpeed gPlayerShip)))
+					)
+
+					(msnAddTimerEvent gSource (+ travelTime (random 200 300)) 'OnConvoyArrives)
+					)
+			</OnStarted>
+
+			<OnAcceptedUndock>
+				(intFleetCreateWingmen gSource 6 &scCenturion;)
+			</OnAcceptedUndock>
+
+			<OnConvoyArrives>
+				(block (
+					(cscObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(gate1 (objGetObjByID (msnGetData gSource 'gate1ID)))
+					(gate2 (objGetObjByID (msnGetData gSource 'gate2ID)))
+					(convoyDesc (msnGetData gSource 'convoyDesc))
+					targetID
+					)
+
+					;	Create the convoy
+					(enum (@ convoyDesc 'ships) convoyEntry
+						(block (shipObj)
+							(setq shipObj (sysCreateShip (@ convoyEntry 'principalType) gate1 &svAres;))
+							(shpOrder shipObj 'gate gate2)
+							(objSetData shipObj 'CSCMission12 (objGetID gSource))
+							(msnRegisterForEvents gSource shipObj)
+
+							;	Set initial target to the first ship
+							(if (not targetID) (setq targetID (objGetID shipObj)))
+
+							;	Create the escorts
+							(enum (@ convoyEntry 'escortTypes) theType
+								(block (escortObj)
+									(setq escortObj (sysCreateShip theType gate1 &svAres;))
+									(shpOrder escortObj 'escort shipObj)
+									)
+								)
+							)
+						)
+					
+					(msnSetData gSource 'targetID targetID)
+					(msnSetData gSource 'targetsLeft (count (@ convoyDesc 'ships)))
+					(msnSetPlayerTarget gSource)
+					)
+			</OnConvoyArrives>
+
+			<OnObjDestroyed>
+				(switch
+					;	Wingman destroyed
+					(objGetData aObjDestroyed (cat (objGetID gSource) "_wingman;"))
+						(msnIncData gSource 'wingmenLost)
+
+					;	Enemy destroyed
+					(= (objGetData aObjDestroyed 'CSCMission12) (objGetID gSource))
+						(block Nil
+							(if (= aDestroyReason 'enteredStargate)
+								(msnIncData gSource 'targetsEscaped)
+								(msnIncData gSource 'targetsDestroyed)
+								)
+
+							;	Check if this was the last target
+							(if (leq (msnIncData gSource 'targetsLeft -1) 0)
+								(block (
+									(escaped (msnGetData gSource 'targetsEscaped))
+									(destroyed (msnGetData gSource 'targetsDestroyed))
+									(lost (msnGetData gSource 'wingmenLost))
+									)
+									(if (or (= destroyed 0) (gr lost destroyed))
+										(msnFailure gSource)
+										(msnSuccess gSource)
+										)
+									)
+								)
+							)
+					)
+			</OnObjDestroyed>
+
+			<OnSetPlayerTarget>
+				(if (msnGetData gSource 'targetID)
+					(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'attack)
+					(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'gate1ID)) 'dock)
+					)
+			</OnSetPlayerTarget>
+
+			<OnCanDebrief>
+				(block (
+					(targetsDestroyed (msnGetData gSource 'targetsDestroyed))
+					wingmenLeft
+					)
+					;	Wingmen leave
+					(setq wingmenLeft (intFleetDisperseWingmen gSource))
+					(msnSetData gSource 'wingmenLeft wingmenLeft)
+
+					;	Calculate mission XP
+					(msnIncData gSource 'missionXP (* 100 targetsDestroyed))
+					(msnIncData gSource 'missionXP (* 50 wingmenLeft))
+
+					Nil
+					)
+			</OnCanDebrief>
+
+			<OnReward>
+				(commFleet_GiveReward gSource)
+			</OnReward>
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Intercept Ares Convoy"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"Intercept and destroy an Ares supply convoy before it can leave the system.\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+			<Text id="Intro">
+				(cat
+					"The XO walks up to you.\n\n"
+
+					"\"Good to see you pilot. We've got a mission for you.\""
+					)
+			</Text>
+			<Text id="Briefing">
+				(cat
+					"\"A large Ares convoy will enter the system at "
+					(objGetName (objGetObjByID (msnGetData gSource 'gate1ID)) 0)
+					". Take a flight of Centurions and destroy as many freighters "
+					"as you can before they leave the system. Any questions?\""
+					)
+			</Text>
+			<Text id="AcceptReply">
+				"\"Good luck, %name%!\""
+			</Text>
+			<Text id="DeclineReply">
+				"\"Get the hell out of here then!\""
+			</Text>
+
+			<Text id="InProgress">
+				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+			</Text>
+			<Text id="FailureDebrief">
+				(block (
+					(wingmenLeft (msnGetData gSource 'wingmenLeft))
+					(targetsDestroyed (msnGetData gSource 'targetsDestroyed))
+					)
+					(switch
+						(= wingmenLeft 0)
+							"\"What kind of a leader loses all %his% wingmen and dares to return alive! Next time do us all a favor and kill yourself!\""
+
+						; Lost more wingmen than targets
+						(gr (- 6 wingmenLeft) targetsDestroyed)
+							"\"You lost more wingmen against those freighters than most people do against an Ares dreadnought! Your leadership skills are pathetic. Get out of my sight!\""
+
+						;	No targets destroyed
+						(= targetsDestroyed 0)
+							"\"You didn't even destroy a single freighter! That wing of Centurions is wasted on you!\""
+
+						"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
+						)
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(block (
+					(wingmenLeft (msnGetData gSource 'wingmenLeft))
+					(shipsLeftText (@ (list 'zero 'one 'two 'three 'four 'five 'six) wingmenLeft))
+					)
+					(switch
+						(leq wingmenLeft 2)
+							"\"A tough mission. We can't afford to lose so many good pilots.\""
+
+						(leq wingmenLeft 4)
+							(cat
+								"\"Good mission! It's unfortunate that only " shipsLeftText " of your wingmen survived.\""
+								)
+
+						(cat 
+							"\"Outstanding mission! Looks like you came back with " shipsLeftText " wingmen.\""
+							)
+						)
+					)
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>
