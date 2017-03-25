@@ -2,19 +2,21 @@
 
 <TranscendenceModule>
 
-	<!-- Mission: Destroy Ares Station =========================================
+	<!-- Mission: Destroy Ares Target ==========================================
 
 	EXTRA DATA
 
 	reward:			Reward (in credits) for completing mission
 	missionXP:		XP awarded for completing mission
-	targetID:		The target to destroy
+	targetsLeft:	Number of targets left to destroy
+	targetID:		The current target
+	wingmenLeft:	Number of wingmen to survive mission
 
 	======================================================================== -->
 
-	<MissionType UNID="&msCSCDestroyAresStation;"
-			name=			"Destroy Ares Station"
-			attributes=		"commonwealthFleet, cscTaskForce, rank4"
+	<MissionType UNID="&msCSCDestroyAresTarget;"
+			name=			"Destroy Ares Convoy"
+			attributes=		"commonwealthFleet, cscTaskForce, rank5"
 
 			level=			"5-9"
 
@@ -24,28 +26,32 @@
 
 		<Events>
 			<OnCreate>
-				(block (targetObj)
-
-					;	Look for a suitable target
-					(setq targetObj (random
-						(sysFindObject aOwnerObj (cat "TAE +ares; +majorStation;"))
-						))
-
-					;	If no such station exists, then create one deep in the outer system.
-					;	NOTE: It is OK that this has side effects as long as the station that
-					;	we create is a major Ares station (so subsequent calls will find it).
-					(if (not targetObj)
-						(setq targetObj
-							(sysCreateStation &stAresCommune; (sysVectorRandom Nil (random 960 1500) 150))
-							)
-						)
-
-					;	Create the mission
-					(msnRegisterForEvents gSource targetObj)
-					(msnSetData gSource 'targetID (objGetID targetObj))
-					(msnSetData gSource 'missionXP 250)
+				(block Nil
+					(msnSetData gSource 'missionXP 1000)
 					)
 			</OnCreate>
+
+			<OnStarted>
+				(block (
+					(cscObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(targetPos (sysVectorRandom cscObj (random 300 600) 250))
+					targetID
+					)
+					(enum (sysCreateShip &tbCSCDestroyAresTarget; targetPos &svAres;) theShip
+						(block Nil
+							(shpOrder theShip 'waitForTarget gPlayerShip)
+							(shpOrder theShip 'attack gPlayerShip)
+							(shpOrder theShip 'attack cscObj)
+							(objSetData theShip 'CSCMission13 (objGetID gSource))
+							(msnRegisterForEvents gSource theShip)
+							(msnIncData gSource 'targetsLeft)
+							(if (not targetID) (setq targetID (objGetID theShip)))
+							)
+						)
+					(msnSetData gSource 'targetID targetID)
+					(msnSetPlayerTarget gSource)
+					)
+			</OnStarted>
 
 			<OnAcceptedUndock>
 				(intFleetCreateWingmen gSource 6 &scBritannia;)
@@ -54,8 +60,22 @@
 			<OnObjDestroyed>
 				(switch
 					;	Enemy destroyed
-					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
-						(msnSuccess gSource)
+					(= (objGetData aObjDestroyed 'CSCMission13) (objGetID gSource))
+						(block Nil
+							;	Do we need to update the players target
+							(if (= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+								(block Nil
+									;	LATER: check that these ships belog to this mission instance
+									(msnSetData gSource 'targetID (objGetID (sysFindObject gPlayerShip "sAND:CSCMission13;")))
+									(msnSetPlayerTarget gSource)
+									)
+								)
+
+							;	Check if this was the last target
+							(if (leq (msnIncData gSource 'targetsLeft -1) 0)
+								(msnSuccess gSource)
+								)
+							)
 					)
 			</OnObjDestroyed>
 
@@ -68,8 +88,6 @@
 					;	Wingmen leave
 					(setq wingmenLeft (intFleetDisperseWingmen gSource))
 					(msnSetData gSource 'wingmenLeft wingmenLeft)
-					;	XP bonus for each surviving wingman
-					(msnIncData gSource 'missionXP (* 100 wingmenLeft))
 
 					Nil
 					)
@@ -82,13 +100,11 @@
 
 		<Language>
 			<Text id="Name">
-				"Intercept Ares Squadron"
+				"Intercept Ares Target"
 			</Text>
 			<Text id="Summary">
 				(cat
-					"Intercept and destroy an Ares squadron before it can attack "
-					(objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4)
-					".\n\n"
+					"Intercept and destroy an unknown Ares target.\n\n"
 
 					"System: " (sysGetName) "\n"
 					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
@@ -103,10 +119,8 @@
 			</Text>
 			<Text id="Briefing">
 				(cat
-					"\"This mission is straight from Admiral Decker himself. "
-					"We want you to lead a flight of Britannias to destroy "
-					(objGetName (objGetObjByID (msnGetData gSource 'targetID)) 4)
-					" in this system. Any questions?\""
+					"\"Your orders are to lead a flight of Britannias and intercept and destroy an unknown hostile. "
+					"We'll enter the coordinates to your computer. What do you say?\""
 					)
 			</Text>
 			<Text id="AcceptReply">
@@ -125,21 +139,32 @@
 			<Text id="SuccessDebrief">
 				(block (
 					(wingmenLeft (msnGetData gSource 'wingmenLeft))
+					(shipsLeftText (@ (list 'zero 'one 'two 'three 'four 'five 'six) wingmenLeft))
 					)
 					(switch
-						(= wingmenLeft 0)
+						(leq wingmenLeft 2)
 							"\"A tough mission. We can't afford to lose so many good pilots.\""
 
-						(= wingmenLeft 1)
-							"\"Good mission! It's unfortunate that only one of your wingmen survived.\""
-						
+						(leq wingmenLeft 4)
+							(cat
+								"\"Good mission! It's unfortunate that only " shipsLeftText " of your wingmen survived.\""
+								)
+
 						(cat 
-							"\"Outstanding mission! Looks like you came back with " wingmenLeft " wingmen.\""
+							"\"Outstanding mission! Looks like you came back with " shipsLeftText " wingmen.\""
 							)
 						)
 					)
 			</Text>
 		</Language>
 	</MissionType>
+
+	<ShipTable UNID="&tbCSCDestroyAresTarget;">
+		<Table>
+			<Ship chance="60"	count="1"	class="&scPhobos;"		sovereign="&svAres;"/>
+			<Ship chance="30"	count="35"	class="&scSandstorm;"	sovereign="&svAres;"/>
+			<Ship chance="10"	count="3"	class="&scDeimos;"		sovereign="&svAres;"/>
+		</Table>
+	</ShipTable>
 
 </TranscendenceModule>

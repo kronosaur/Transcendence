@@ -2,204 +2,76 @@
 
 <TranscendenceModule>
 
-	<!-- Mission: Refugee Convoy ===============================================
+	<!-- Mission: Destroy Ares Station =========================================
 
 	EXTRA DATA
 
 	reward:			Reward (in credits) for completing mission
 	missionXP:		XP awarded for completing mission
-	freighterID:	The freighter to destroy
-	gate1ID:		ID of the entry gate
-	gate2ID:		ID of the exit gate
-	principleList:	IDs of the super-freighters
-	secondaryList:	IDs of the E-100 freighters
-	wingmenLeft:	Number of wingmen who survived the mission
-
-	status:			Mission status:
-		Nil:		Convoy has not arrived
-		inbound:	Convoy has arrived
+	targetID:		The target to destroy
+	wingmenLeft:	Number of wingmen to survive mission
 
 	======================================================================== -->
 
-	<MissionType UNID="&msCSCRefugeeConvoy;"
-			name=			"Refugee Convoy"
-			attributes=		"commonwealthFleet, cscTaskForce, rank3"
+	<MissionType UNID="&msCSCDestroyAresStation;"
+			name=			"Destroy Ares Station"
+			attributes=		"commonwealthFleet, cscTaskForce, rank4"
 
-			level=			"5-8"
+			level=			"5-9"
 
 			expireTime=			"5400"
 			failureAfterOutOfSystem="5400"
 			>
 
-		<StaticData>
-			<Data id="convoy">
-				(
-					{	principalType: &scScarabFreighter;	escortTypes: (&scEI100; &scEI100; &scEI100;) }
-					{	principalType: &scScarabFreighter;	escortTypes: (&scEI100; &scEI100; &scEI100;) }
-					{	principalType: &scScarabFreighter;	escortTypes: (&scEI100; &scEI100;) }
-					)
-			</Data>
-		</StaticData>
-
 		<Events>
 			<OnCreate>
-				(block (
-					(gate2 (intGetGateToSystem gSource "SK"))
-					(gate1 (sysFindObject gate2 "GR -uncharted;"))
-					)
+				(block (targetObj)
 
-					(switch
-						;	Stargates must be at least 150 light-seconds from each other
-						(ls (objGetDistance gate1 gate2) 150)
-							(msnDestroy gSource)
+					;	Look for a suitable target
+					(setq targetObj (random
+						(sysFindObject aOwnerObj (cat "TAE +ares; +majorStation;"))
+						))
 
-						;	Create the mission
-						(block Nil
-							(msnSetData gSource 'gate1ID (objGetID gate1))
-							(msnSetData gSource 'gate2ID (objGetID gate2))
-
-							(msnSetData gSource 'missionXP 250)
+					;	If no such station exists, then create one deep in the outer system.
+					;	NOTE: It is OK that this has side effects as long as the station that
+					;	we create is a major Ares station (so subsequent calls will find it).
+					(if (not targetObj)
+						(setq targetObj
+							(sysCreateStation &stAresCommune; (sysVectorRandom Nil (random 960 1500) 150))
 							)
 						)
+
+					;	Create the mission
+					(msnRegisterForEvents gSource targetObj)
+					(msnSetData gSource 'targetID (objGetID targetObj))
+					(msnSetData gSource 'missionXP 250)
 					)
 			</OnCreate>
 
-			<OnStarted>
-				(block (
-					(cscObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-					(gateObj (objGetObjByID (msnGetData gSource 'gate1ID)))
-					(travelTime (sysCalcTravelTime (objGetDistance cscObj gateObj) (shpGetMaxSpeed gPlayerShip)))
-					)
-
-					(msnAddTimerEvent gSource (+ travelTime (random 200 300)) 'OnConvoyArrives)
-					)
-			</OnStarted>
-
 			<OnAcceptedUndock>
-				(block Nil
-					(objSetIdentified (objGetObjByID (msnGetData gSource 'gate1ID)))
-					(objSetIdentified (objGetObjByID (msnGetData gSource 'gate2ID)))
-
-					;	Create wingmen for the mission
-					(intFleetCreateWingmen gSource 6 &scCenturion;)
-					)
+				(intFleetCreateWingmen gSource 6 &scBritannia;)
 			</OnAcceptedUndock>
 
 			<OnObjDestroyed>
-				(block (
-					(principleList (msnGetData gSource 'principleList))
-					(secondaryList (msnGetData gSource 'secondaryList))
-					(iPrinciple (find principleList (objGetID aObjDestroyed)))
-					(iSecondary (find secondaryList (objGetID aObjDestroyed)))
-					)
-
-					;	Update the escort lists
-					(msnSetData gSource 'principleList (lnkRemove principleList iPrinciple))
-					(msnSetData gSource 'secondaryList (lnkRemove secondaryList iSecondary))
-
-					(switch
-						(= aDestroyReason 'enteredStargate)
-							Nil
-
-						iPrinciple
-							(block Nil
-								(plyMessage gPlayer (objGetName aObjDestroyed 1) " destroyed")
-								(msnIncData gSource 'principleDestroyed)
-								(msnSetPlayerTarget gSource)
-								)
-
-						iSecondary
-							(block Nil
-								(plyMessage gPlayer (objGetName aObjDestroyed 1) " destroyed")
-								(msnIncData gSource 'secondaryDestroyed)
-								)
-						)
-
-					(switch
-						;	If we've lost too many ships then failure
-						(or	(gr (msnGetData gSource 'principleDestroyed) 1)
-							(gr (msnGetData gSource 'secondaryDestroyed) 4)
-							)
-							(msnFailure gSource)
-
-						;	Otherwise, if there are no ships left then success
-						(not (or principleList secondaryList))
-							(msnSuccess gSource)
-						)
+				(switch
+					;	Enemy destroyed
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(msnSuccess gSource)
 					)
 			</OnObjDestroyed>
 
-			<OnConvoyArrives>
-				(block (
-					(cscObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-					(gate1 (objGetObjByID (msnGetData gSource 'gate1ID)))
-					(gate2 (objGetObjByID (msnGetData gSource 'gate2ID)))
-					(convoyDesc (msnGetStaticData gSource 'convoy))
-					(countWaves (count convoyDesc))
-					principleList secondaryList travelTime timeStep
-					)
-					(plyMessage gPlayer "Convoy has arrived!")
-
-					;	Create the convoy
-					(enum convoyDesc convoyEntry
-						(block (shipObj)
-							(setq shipObj (sysCreateShip (@ convoyEntry 'principalType) gate1 &svCommonwealth;))
-							(objSetData shipObj 'noPiracyCheck True)
-							(shpOrder shipObj 'gate gate2)
-							(msnRegisterForEvents gSource shipObj)
-							(lnkAppend principleList shipObj)
-
-							;	Faster freighters escort the slower ones so they stay together
-							(enum (@ convoyEntry 'escortTypes) theType
-								(block (escortObj)
-									(setq escortObj (sysCreateShip theType gate1 &svCommonwealth;))
-									(objSetData escortObj 'noPiracyCheck True)
-									(shpOrder escortObj 'escort shipObj)
-									(shpOrder escortObj 'gate gate2)
-									(msnRegisterForEvents gSource escortObj)
-									(lnkAppend secondaryList escortObj)
-									)
-								)
-							)
-						)
-
-					;	Register for events from all freighters
-					(msnSetData gSource 'principleList (map principleList theShip (objGetID theShip)))
-					(msnSetData gSource 'secondaryList (map secondaryList theShip (objGetID theShip)))
-
-					;	Calculate travel time from first ship
-					(setq travelTime (sysCalcTravelTime (objGetDistance gate1 gate2) (shpGetMaxSpeed (@ principleList 0))))
-					(setq timeStep (/ travelTime (* countWaves 4)))
-
-					;	On timer, enemies attack
-					(for i 0 (- countWaves 1)
-						(sysAddEncounterEventAtDist 
-							(* timeStep (+ (* i 4) (random 1 3)))
-							(if (= (random 1 3) 1) gPlayerShip (@ principleList i))
-							&etAresAmbush1; 
-							(random 120 200)
-							)
-						)
-
-					;	Update status and player target
-					(msnSetData gSource 'status 'inbound)
-					(msnSetPlayerTarget gSource)
-					)
-			</OnConvoyArrives>
-
 			<OnSetPlayerTarget>
-				(switch
-					(not (msnGetData gSource 'status))
-						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'gate1ID)) 'dock)
-
-					(rpgSetTarget gSource aReason (objGetObjByID (@ (msnGetData gSource 'principleList) 0)) 'escort)
-					)
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'attack)
 			</OnSetPlayerTarget>
 
 			<OnCanDebrief>
-				(block Nil
+				(block (wingmenLeft)
 					;	Wingmen leave
-					(msnSetData gSource 'wingmenLeft (intFleetDisperseWingmen gSource))
+					(setq wingmenLeft (intFleetDisperseWingmen gSource))
+					(msnSetData gSource 'wingmenLeft wingmenLeft)
+					;	XP bonus for each surviving wingman
+					(msnIncData gSource 'missionXP (* 100 wingmenLeft))
+
 					Nil
 					)
 			</OnCanDebrief>
@@ -211,11 +83,13 @@
 
 		<Language>
 			<Text id="Name">
-				"Escort Refugee Convoy"
+				"Intercept Ares Squadron"
 			</Text>
 			<Text id="Summary">
 				(cat
-					"Escort a refugee convoy passing through the system.\n\n"
+					"Intercept and destroy an Ares squadron before it can attack "
+					(objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4)
+					".\n\n"
 
 					"System: " (sysGetName) "\n"
 					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
@@ -230,9 +104,10 @@
 			</Text>
 			<Text id="Briefing">
 				(cat
-					"\"A refugee convoy is passing through the system. Your mission is to "
-					"lead a small squadron and escort the convoy safely through the system. "
-					"Any questions?\""
+					"\"This mission is straight from Admiral Decker himself. "
+					"We want you to lead a flight of Britannias to destroy "
+					(objGetName (objGetObjByID (msnGetData gSource 'targetID)) 4)
+					" in this system. Any questions?\""
 					)
 			</Text>
 			<Text id="AcceptReply">
@@ -249,7 +124,21 @@
 				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
 			</Text>
 			<Text id="SuccessDebrief">
-				"\"Outstanding mission! Those refugees have a chance to start a new life away from the war zone.\""
+				(block (
+					(wingmenLeft (msnGetData gSource 'wingmenLeft))
+					)
+					(switch
+						(= wingmenLeft 0)
+							"\"A tough mission. We can't afford to lose so many good pilots.\""
+
+						(= wingmenLeft 1)
+							"\"Good mission! It's unfortunate that only one of your wingmen survived.\""
+						
+						(cat 
+							"\"Outstanding mission! Looks like you came back with " wingmenLeft " wingmen.\""
+							)
+						)
+					)
 			</Text>
 		</Language>
 	</MissionType>

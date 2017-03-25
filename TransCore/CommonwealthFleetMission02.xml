@@ -16,7 +16,7 @@
 
 	======================================================================== -->
 
-	<MissionType UNID="&msCFSupplyDelivery;"
+	<MissionType UNID="&msCSCSupplyDelivery;"
 			name=			"Deliver supplies"
 			attributes=		"commonwealthFleet, cscTaskForce, rank1, deliveryMission"
 

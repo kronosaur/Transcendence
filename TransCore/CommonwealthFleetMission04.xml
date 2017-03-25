@@ -2,26 +2,24 @@
 
 <TranscendenceModule>
 
-	<!-- Mission: Intercept Ares patrol ========================================
-
-	This mission seems very easy. In testing the CSC killed most of the targets
-	Consider:
-		Reducing the distance which the ares approch
-		More targets / a few heacy gunships
-		Assigning a lead ship, with the other ares escorting it
-		Stopping the CSC or escorts from helping so much
+	<!-- Mission: Destroy Ares Freighter =======================================
 
 	EXTRA DATA
 
 	reward:			Reward (in credits) for completing mission
 	missionXP:		XP awarded for completing mission
-	targetID:		The target to recon
+	targetID:		The freighter to destroy
+	gateID:			ID of the gate where freighter will arrive
+	aresID:			ID of the destination station
+	status:			Mission status:
+		Nil:		Freighter has not arrived
+		inbound:	Freighter travelling to station
 
 	======================================================================== -->
 
-	<MissionType UNID="&msCFInterceptAresPatrol;"
-			name=			"Intercept Ares patrol"
-			attributes=		"commonwealthFleet, cscTaskForce, rank1"
+	<MissionType UNID="&msCSCDestroyAresFreighter;"
+			name=			"Destroy Ares Freighter"
+			attributes=		"commonwealthFleet, cscTaskForce, rank2"
 
 			level=			"5-8"
 
@@ -31,85 +29,117 @@
 
 		<Events>
 			<OnCreate>
-				(block Nil
-					;	Create the mission
+				(block (stationList)
 
-					(msnSetData gSource 'missionXP 100)
+					(switch
+						;	Need an Ares station in the system which is at least
+						;	300 ls from a gate
+						(not (setq stationList (map
+								(sysFindObject aOwnerObj "ATE +ares;")
+								'excludeNil
+								theObj
+								(block (theGate)
+									(if (setq theGate (sysFindObject theObj "GNR:300; -uncharted;"))
+										(list theObj theGate)
+										)
+									)
+								)))
+							(msnDestroy gSource)
+
+						;	Create the mission
+						(block (
+							(bestPair (map
+							 		stationList
+									'(reduceMin original)
+									thePair
+									(objGetDistance (@ thePair 0) (@ thePair 1))
+									))
+							)
+							;	Register for events from the destination station
+							(msnRegisterForEvents gSource (@ bestPair 0))
+
+							(msnSetData gSource 'aresID (objGetID (@ bestPair 0)))
+							(msnSetData gSource 'gateID (objGetID (@ bestPair 1)))
+
+							(msnSetData gSource 'missionXP 150)
+							)
+						)
 					)
 			</OnCreate>
 
 			<OnStarted>
 				(block (
-					(missionLevel (sysGetLevel))
 					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-					(startPos (sysVectorRandom stationObj (random 100 120) 80))
-					shipIDs
+					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
+					(travelTime (-
+						(sysCalcTravelTime (objGetDistance stationObj gateObj) (shpGetMaxSpeed gPlayerShip))
+						(sysCalcTravelTime 100 (typGetDataField &scPolar; 'maxSpeed))
+						))
 					)
-					(for i 1 8
-						(block (shipObj)
-							(setq shipObj
-								(sysCreateShip
-									&scSandstorm;
-									(sysVectorPolarOffset startPos (random 0 359) (random 1 6))
-									&svAres;
-									)
-								)
-							(shpOrder shipObj 'patrol stationObj 3)
-
-							;	Remember this ship
-							(objSetData shipObj 'cfMission04_patrol True)
-							(msnRegisterForEvents gSource shipObj)
-							(lnkAppend shipIDs (objGetID shipObj))
-							)
-						)
-					(msnSetData gSource 'shipIDs shipIDs)
-					(msnSetData gSource 'state 'inbound)
+					(msnAddTimerEvent gSource travelTime 'OnFreighterArrives)
 					)
 			</OnStarted>
-
-			<OnUpdate>
-				(if (= (msnGetData gSource 'state) 'inbound)
-					(block (
-						(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-						(aresShips (map (msnGetData gSource 'shipIDs) theID (objGetObjByID theID)))
-						)
-						;	Are Ares ships in scan range?
-						(if (leq (map aresShips 'reduceMin theShip (objGetDistance theShip stationObj)) 12)
-							(block Nil
-								(enum aresShips theShip (shpOrderImmediate theShip 'gate))
-								(msnSetData gSource 'state 'outbound)
-								)
-							)
-						)
-					)
-			</OnUpdate>
 			
 			<OnObjDestroyed>
 				(switch
-					;	If one of the Ares escapes then fail
+					;	Should never get here as we fail when the freigher docks
 					(= aDestroyReason 'enteredStargate)
 						(msnFailure gSource)
 
-					;	Patrol ship killed
-					(objGetData aObjDestroyed 'cfMission04_patrol)
-						(block (
-							(shipIDs (msnGetData gSource 'shipIDs))
-							)
-							(lnkRemove shipIDs (find shipIDs (objGetID aObjDestroyed)))
-							(msnSetData gSource 'shipIDs shipIDs)
-							(if shipIDs
-								;	If there are still ares ships left, then update target
-								(msnSetPlayerTarget gSource)
+					;	Freighter destroyed
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(msnSuccess gSource)
 
-								;	Otherwise mission is over
-								(msnSuccess gSource)
-								)
+					;	Destroying the destination station is also OK
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'aresID))
+						(block (
+							(shipObj (objGetObjByID (msnGetData gSource 'targetID)))
+							)
+							;	If the freighter is still alive tell it to leave
+							(if shipObj (shpOrderImmediate shipObj 'gate))
+							(msnSuccess gSource)
 							)
 					)
 			</OnObjDestroyed>
 
+			<OnObjDocked>
+				(switch
+					;	If the freighter docks then fail the mission
+					(= (objGetID aObjDocked) (msnGetData gSource 'targetID))
+						(msnFailure gSource)
+					)
+			</OnObjDocked>
+
+			<OnFreighterArrives>
+				(block (
+					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
+					(aresObj (objGetObjByID (msnGetData gSource 'aresID)))
+					shipObj
+					)
+
+					;	Create the transport
+					(setq shipObj (sysCreateShip &tbCSCAresFreighter; gateObj &svAres;))
+					(shpOrder shipObj 'dock aresObj)
+					(shpOrder shipObj 'wait (random 10 15))
+					(shpOrder shipObj 'gate)
+
+					;	Register so we know when the freighter is destroyed
+					(msnSetData gSource 'targetID (objGetID shipObj))
+					(msnRegisterForEvents gSource shipObj)
+
+					;	Update state and player target
+					(msnSetData gSource 'state 'inbound)
+					(msnSetPlayerTarget gSource)
+					)
+			</OnFreighterArrives>
+
 			<OnSetPlayerTarget>
-				(rpgSetTarget gSource aReason (objGetObjByID (random (msnGetData gSource 'shipIDs))) 'attack)
+				(switch
+					(not (msnGetData gSource 'state))
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'gateID)) 'escort)
+
+					(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'attack)
+					)
 			</OnSetPlayerTarget>
 
 			<OnReward>
@@ -119,13 +149,12 @@
 
 		<Language>
 			<Text id="Name">
-				"Intercept Ares patrol"
+				"Intercept Ares freighter"
 			</Text>
 			<Text id="Summary">
 				(cat
-					"Intercept and destroy an Ares patrol before it can report "
-					(objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4)
-					"'s location.\n\n"
+					"Intercept and destroy an Ares freighter before it can deliver supplies to "
+					(objGetName (objGetObjByID (msnGetData gSource 'aresID)) 4) ".\n\n"
 
 					"System: " (sysGetName) "\n"
 					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
@@ -140,9 +169,9 @@
 			</Text>
 			<Text id="Briefing">
 				(cat
-					"\"There's an Ares patrol inbound that wants to take a peek at us. "
-					"Your mission is to intercept and destroy the entire flight before "
-					"it can gate out of the system and report our location. Understood?\""
+					"\"An Ares freighter is delivering supplies to "
+					(objGetName (objGetObjByID (msnGetData gSource 'aresID)) 4)
+					" in this system. Your orders are to intercept and destroy the freighter. Any questions?\""
 					)
 			</Text>
 			<Text id="AcceptReply">
@@ -159,9 +188,34 @@
 				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
 			</Text>
 			<Text id="SuccessDebrief">
-				"\"Outstanding, pilot! That's the way to do it!\""
+				"\"Outstanding mission! That's one less supply ship for the Martians&mdash;just a matter of time before this war is over.\""
 			</Text>
 		</Language>
 	</MissionType>
+
+	<ShipTable unid="&tbCSCAresFreighter;">
+		<LevelTable>
+			<Ship levelFrequency="vvurr ccurr" count="1" class="&scPolar;">
+				<Items>
+					<Item	count="5d6"	item="&itPteracniumOre;"/>
+					<Lookup	count="1d4"	table="&trConsumables6;"/>
+					<Lookup	count="1"	table="&trMinorItem6;"/>
+				</Items>
+				<Escorts>
+					<Ship	count="2d4"	 class="&scSandstorm;"	orders="escort"/>
+				</Escorts>
+			</Ship>
+			<Ship levelFrequency="----- rrucc" count="1" class="&scPolar2;">
+				<Items>
+					<Item	count="5d6"	item="&itPteracniumOre;"/>
+					<Lookup	count="1d4"	table="&trConsumables6;"/>
+					<Lookup	count="1"	table="&trMinorItem6;"/>
+				</Items>
+				<Escorts>
+					<Ship	count="2d4"	 class="&scSandstorm;"	orders="escort"/>
+				</Escorts>
+			</Ship>
+		</LevelTable>
+	</ShipTable>
 
 </TranscendenceModule>

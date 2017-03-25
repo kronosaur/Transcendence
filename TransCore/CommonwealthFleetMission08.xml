@@ -2,19 +2,22 @@
 
 <TranscendenceModule>
 
-	<!-- Mission: Escort Freighter 2 ===========================================
+	<!-- Mission: Intercept Ares Squadron ========================================
 
 	EXTRA DATA
 
 	reward:			Reward (in credits) for completing mission
 	missionXP:		XP awarded for completing mission
-	freighterID:	The freighter to destroy
-	gateID:			ID of the gate where freighter will arrive
+	targetID:		The target to recon
+	totalTargets:	The total number of enemy targets
+	targetsLeft:	The number of enemy targets left
+	targetsKilledByPlayer:	The number of enemies which the player destroyed
+	percentKilledByPlayer:	The fraction killed by the player
 
 	======================================================================== -->
 
-	<MissionType UNID="&msCSCEscortFreighter2;"
-			name=			"Escort Freighter"
+	<MissionType UNID="&msCSCInterceptAresAttack;"
+			name=			"Intercept Ares Squadron"
 			attributes=		"commonwealthFleet, cscTaskForce, rank3"
 
 			level=			"5-8"
@@ -25,109 +28,128 @@
 
 		<Events>
 			<OnCreate>
-				(block (gateList)
-
-					(switch
-						;	Find a stargate more than 400 light-seconds away
-						(not (setq gateList (sysFindObject aOwnerObj "GR:400; -uncharted;")))
-							(msnDestroy gSource)
-
-						;	Create the mission
-						(block Nil
-							(msnSetData gSource 'gateID (objGetID (random gateList)))
-
-							(msnSetData gSource 'missionXP 250)
-							)
-						)
+				(block Nil
+					;	Create the mission
 					)
 			</OnCreate>
 
 			<OnStarted>
 				(block (
+					(missionLevel (sysGetLevel))
 					(cscObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
-					(travelTime (sysCalcTravelTime (objGetDistance cscObj gateObj) (shpGetMaxSpeed gPlayerShip)))
+					(theRoll (random 1 100))
+					(startPos (sysVectorRandom cscObj (random 250 400) 60))
+					enemyFleet
 					)
 
-					;	Add some enemy ships patrolling around the stargate
-					(for i 1 (random 4 6)
-						(block (enemyObj)
-							(setq enemyObj (sysCreateShip &scSandstorm; gateObj &svAres;))
-							(shpOrder enemyObj 'patrol gateObj 20)
+					(switch
+						(leq theRoll 25)
+							; 16 Sandstorms
+							(setq enemyFleet '(&scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm;))
+
+						(leq theRoll 50)
+							; A Deimos plus 8 Sandstorms
+							(setq enemyFleet '(&scDeimos; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm;))
+
+						(leq theRoll 75)
+							; 3 Cometfalls
+							(setq enemyFleet '(&scCometfall; &scCometfall; &scCometfall;))
+
+						(leq theRoll 100)
+							; 8 Chasms
+							(setq enemyFleet '(&scChasm; &scChasm; &scChasm; &scChasm; &scChasm; &scChasm; &scChasm; &scChasm;))
+						)
+					
+					(enum enemyFleet theType
+						(block (shipObj)
+							(setq shipObj
+							 	(sysCreateShip
+							 		theType
+									(sysVectorPolarOffset startPos (random 0 359) (random 1 6))
+									&svAres;
+									)
+								)
+
+							;	Order to attack CSC
+							(shpOrder shipObj 'attack cscObj)
+							
+							;	Remember ship
+							(objSetData shipObj 'CSCMission10 (objGetID gSource))
+							(msnRegisterForEvents gSource shipObj)
+							
+							(msnSetData gSource 'targetID (objGetID shipObj))
 							)
 						)
-
-					(msnAddTimerEvent gSource (+ travelTime (random 0 200)) 'OnFreighterArrives)
+					(msnSetData gSource 'targetsLeft (count enemyFleet))
+					(msnSetData gSource 'totalTargets (count enemyFleet))
 					)
 			</OnStarted>
-			
+
+			<OnAcceptedUndock>
+				(block Nil
+					;	We let the player handle this (we don't scramble our own defenses)
+					(objSetData (objGetObjByID (msnGetProperty gSource 'ownerID)) 'disableDefense True)
+					)
+			</OnAcceptedUndock>
+
 			<OnObjDestroyed>
 				(switch
-					;	Freighter destroyed
-					(= (objGetID aObjDestroyed) (msnGetData gSource 'freighterID))
-						(msnFailure gSource)
+					;	Enemy ship killed
+					(= (objGetData aObjDestroyed 'CSCMission10) (objGetID gSource))
+						(block Nil
+
+							;	Check if player's current target was destroyed
+							(if (= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+								(msnSetData gSource 'targetID (objGetID
+									(sysFindObject (objGetObjByID (msnGetProperty gSource 'ownerID)) "sAEXNN:600;")
+									))
+								)
+
+							;	Remember if player killed the target
+							(if (= aOrderGiver gPlayerShip)
+								(msnIncData gSource 'targetsKilledByPlayer)
+								)
+
+							;	Check if we've destroyed all targets
+							(if (= (msnIncData gSource 'targetsLeft -1) 0)
+								(msnSuccess gSource)
+								(msnSetPlayerTarget gSource)
+								)
+							)
 					)
 			</OnObjDestroyed>
 
-			<OnObjDocked>
-				(switch
-					(= (objGetID aObjDocked) (msnGetData gSource 'freighterID))
-						(msnSuccess gSource)
-					)
-			</OnObjDocked>
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'attack)
+			</OnSetPlayerTarget>
 
-			<OnFreighterArrives>
+			<OnCompleted>
 				(block (
-					(cscObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
-					shipObj
+					(percentKilledByPlayer (/ (* 100 (msnGetData gSource 'targetsKilledByPlayer)) (msnGetData gSource 'totalTargets)))
 					)
-					(plyMessage gPlayer "Transport has arrived!")
+					;	Re-enable CSC defense
+					(objSetData (objGetObjByID (msnGetProperty gSource 'ownerID)) 'disableDefense Nil)
 
-					;	Create the transport
-					(setq shipObj (sysCreateShip &scAurochs; gateObj &svCommonwealthFleet;))
-					(objSetIdentified shipObj)
-					(shpOrder shipObj 'dock cscObj)
-					(shpOrder shipObj 'wait (random 6 18))
-					(shpOrder shipObj 'gate)
+					(msnSetData gSource 'percentKilledByPlayer percentKilledByPlayer)
 
-					;	Register for events
-					(msnSetData gSource 'freighterID (objGetID shipObj))
-					(msnRegisterForEvents gSource shipObj)
+					;	Calculate XP reward
+					(switch
+						(leq percentKilledByPlayer 10)
+							Nil
 
-					;	Update state and player target
-					(msnSetData gSource 'state 'inbound)
-					(msnSetPlayerTarget gSource)
-					
-					;	Calculate travel time for setting ambush
-					(setq travelTime (sysCalcTravelTime (objGetDistance cscObj gateObj) (shpGetMaxSpeed shipObj)))
+						(leq percentKilledByPlayer 25)
+							(msnSetData gSource 'missionXP 50)
 
-					(sysAddEncounterEventAtDist 
-						(/ (* travelTime (random 30 50)) 100)
-						(if (= (random 1 3) 1) gPlayerShip shipObj)
-						(random
-							(list
-								&etAresAmbush1;
-								&etAresAmbush2;
-								&etAresAmbush2;
-								&etRogueAmbush1;
-								&etRogueAmbush1;
-								&etRogueAmbush2;
-								)
-							)
-						(random 120 200)
+						(leq percentKilledByPlayer 50)
+							(msnSetData gSource 'missionXP 100)
+
+						(leq percentKilledByPlayer 80)
+							(msnSetData gSource 'missionXP 200)
+
+						(msnSetData gSource 'missionXP 300)
 						)
 					)
-			</OnFreighterArrives>
-
-			<OnSetPlayerTarget>
-				(switch
-					(not (msnGetData gSource 'state))
-						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'gateID)) 'dock)
-
-					(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'freighterID)) 'escort)
-					)
-			</OnSetPlayerTarget>
+			</OnCompleted>
 
 			<OnReward>
 				(commFleet_GiveReward gSource)
@@ -136,13 +158,13 @@
 
 		<Language>
 			<Text id="Name">
-				"Escort freighter"
+				"Intercept Ares Squadron"
 			</Text>
 			<Text id="Summary">
 				(cat
-					"Escort a supply ship from "
-					(objGetName (objGetObjByID (msnGetData gSource 'gateID)) 0)
-					"back to " (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4) ".\n\n"
+					"Intercept and destroy an Ares squadron before it can attack "
+					(objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4)
+					".\n\n"
 
 					"System: " (sysGetName) "\n"
 					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
@@ -157,11 +179,8 @@
 			</Text>
 			<Text id="Briefing">
 				(cat
-					"\"A supply ship is arriving at the "
-					(objGetName (objGetObjByID (msnGetData gSource 'gateID)))
-					". Your orders are to escort it back to "
-					(objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4)
-					" and defend it against all enemies. Carry On!\""
+					"\"There's an Ares squadron heading our way. "
+					"Your mission is to intercept and destroy it. Understood?\""
 					)
 			</Text>
 			<Text id="AcceptReply">
@@ -178,7 +197,25 @@
 				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
 			</Text>
 			<Text id="SuccessDebrief">
-				"\"Outstanding mission! Those supplies are desperately needed here.\""
+				(block (
+					(percentKilledByPlayer (msnGetData gSource 'percentKilledByPlayer))
+					)
+					(switch
+						(leq percentKilledByPlayer 10)
+							"\"What were you doing out there? Dancing? Next time try to hit the targets with your guns; that's what they're there for!\""
+
+						(leq percentKilledByPlayer 25)
+							"\"Those ships gave you a tough time. You're going to need to up your dogfighting skills!\""
+
+						(leq percentKilledByPlayer 50)
+							"\"That was a hard battle, but you managed to kill quite a few targets. Well done.\""
+
+						(leq percentKilledByPlayer 80)
+							"\"Outstanding, pilot! That's the way to do it!\""
+
+						"\"I haven't seen flying like that in years! You've made this ship proud!\""
+						)
+					)
 			</Text>
 		</Language>
 	</MissionType>
