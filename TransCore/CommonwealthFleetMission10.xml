@@ -1,0 +1,223 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Intercept Ares Squadron ========================================
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	missionXP:		XP awarded for completing mission
+	targetID:		The target to recon
+	totalTargets:	The total number of enemy targets
+	targetsLeft:	The number of enemy targets left
+	targetsKilledByPlayer:	The number of enemies which the player destroyed
+	percentKilledByPlayer:	The fraction killed by the player
+
+	======================================================================== -->
+
+	<MissionType UNID="&msCSCInterceptAresAttack;"
+			name=			"Intercept Ares Squadron"
+			attributes=		"commonwealthFleet, cscTaskForce, rank3"
+
+			level=			"5-8"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<Events>
+			<OnCreate>
+				(block Nil
+					;	Create the mission
+					)
+			</OnCreate>
+
+			<OnStarted>
+				(block (
+					(missionLevel (sysGetLevel))
+					(cscObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(theRoll (random 1 100))
+					(startPos (sysVectorRandom cscObj (random 250 400) 60))
+					enemyFleet
+					)
+
+					(switch
+						(leq theRoll 25)
+							; 16 Sandstorms
+							(setq enemyFleet '(&scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm;))
+
+						(leq theRoll 50)
+							; A Deimos plus 8 Sandstorms
+							(setq enemyFleet '(&scDeimos; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm;))
+
+						(leq theRoll 75)
+							; 3 Cometfalls
+							(setq enemyFleet '(&scCometfall; &scCometfall; &scCometfall;))
+
+						(leq theRoll 100)
+							; 8 Chasms
+							(setq enemyFleet '(&scChasm; &scChasm; &scChasm; &scChasm; &scChasm; &scChasm; &scChasm; &scChasm;))
+						)
+					
+					(enum enemyFleet theType
+						(block (shipObj)
+							(setq shipObj
+							 	(sysCreateShip
+							 		theType
+									(sysVectorPolarOffset startPos (random 0 359) (random 1 6))
+									&svAres;
+									)
+								)
+
+							;	Order to attack CSC
+							(shpOrder shipObj 'attack cscObj)
+							
+							;	Remember ship
+							(objSetData shipObj 'CSCMission10 (objGetID gSource))
+							(msnRegisterForEvents gSource shipObj)
+							
+							(msnSetData gSource 'targetID (objGetID shipObj))
+							)
+						)
+					(msnSetData gSource 'targetsLeft (count enemyFleet))
+					(msnSetData gSource 'totalTargets (count enemyFleet))
+					)
+			</OnStarted>
+
+			<OnAcceptedUndock>
+				(block Nil
+					;	We let the player handle this (we don't scramble our own defenses)
+					(objSetData (objGetObjByID (msnGetProperty gSource 'ownerID)) 'disableDefense True)
+					)
+			</OnAcceptedUndock>
+
+			<OnObjDestroyed>
+				(switch
+					;	Enemy ship killed
+					(= (objGetData aObjDestroyed 'CSCMission10) (objGetID gSource))
+						(block Nil
+
+							;	Check if player's current target was destroyed
+							(if (= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+								(msnSetData gSource 'targetID (objGetID
+									(sysFindObject (objGetObjByID (msnGetProperty gSource 'ownerID)) "sAEXNN:600;")
+									))
+								)
+
+							;	Remember if player killed the target
+							(if (= aOrderGiver gPlayerShip)
+								(msnIncData gSource 'targetsKilledByPlayer)
+								)
+
+							;	Check if we've destroyed all targets
+							(if (= (msnIncData gSource 'targetsLeft -1) 0)
+								(msnSuccess gSource)
+								(msnSetPlayerTarget gSource)
+								)
+							)
+					)
+			</OnObjDestroyed>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'attack)
+			</OnSetPlayerTarget>
+
+			<OnCompleted>
+				(block (
+					(percentKilledByPlayer (/ (* 100 (msnGetData gSource 'targetsKilledByPlayer)) (msnGetData gSource 'totalTargets)))
+					)
+					;	Re-enable CSC defense
+					(objSetData (objGetObjByID (msnGetProperty gSource 'ownerID)) 'disableDefense Nil)
+
+					(msnSetData gSource 'percentKilledByPlayer percentKilledByPlayer)
+
+					;	Calculate XP reward
+					(switch
+						(leq percentKilledByPlayer 10)
+							Nil
+
+						(leq percentKilledByPlayer 25)
+							(msnSetData gSource 'missionXP 50)
+
+						(leq percentKilledByPlayer 50)
+							(msnSetData gSource 'missionXP 100)
+
+						(leq percentKilledByPlayer 80)
+							(msnSetData gSource 'missionXP 200)
+
+						(msnSetData gSource 'missionXP 300)
+						)
+					)
+			</OnCompleted>
+
+			<OnReward>
+				(commFleet_GiveReward gSource)
+			</OnReward>
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Intercept Ares Squadron"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"Intercept and destroy an Ares squadron before it can attack "
+					(objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4)
+					".\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+			<Text id="Intro">
+				(cat
+					"The XO walks up to you.\n\n"
+
+					"\"Good to see you pilot. We've got a mission for you.\""
+					)
+			</Text>
+			<Text id="Briefing">
+				(cat
+					"\"There's an Ares squadron heading our way. "
+					"Your mission is to intercept and destroy it. Understood?\""
+					)
+			</Text>
+			<Text id="AcceptReply">
+				"\"Good luck, %name%!\""
+			</Text>
+			<Text id="DeclineReply">
+				"\"Get the hell out of here then!\""
+			</Text>
+
+			<Text id="InProgress">
+				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+			</Text>
+			<Text id="FailureDebrief">
+				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
+			</Text>
+			<Text id="SuccessDebrief">
+				(block (
+					(percentKilledByPlayer (msnGetData gSource 'percentKilledByPlayer))
+					)
+					(switch
+						(leq percentKilledByPlayer 10)
+							"\"What were you doing out there? Dancing? Next time try to hit the targets with your guns; that's what they're there for!\""
+
+						(leq percentKilledByPlayer 25)
+							"\"Those ships gave you a tough time. You're going to need to up your dogfighting skills!\""
+
+						(leq percentKilledByPlayer 50)
+							"\"That was a hard battle, but you managed to kill quite a few targets. Well done.\""
+
+						(leq percentKilledByPlayer 80)
+							"\"Outstanding, pilot! That's the way to do it!\""
+
+						"\"I haven't seen flying like that in years! You've made this ship proud!\""
+						)
+					)
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>
