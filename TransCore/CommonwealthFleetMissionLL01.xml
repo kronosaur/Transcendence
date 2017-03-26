@@ -60,7 +60,7 @@
 					(rpgCharacterSetScreen 
 						&unidJuanCarlos;
 						{	screen: &dsRPGDialog;
-							translateType: &msCFCollectDataROM;
+							translateType: &msCSCCollectDataROM;
 							translateID: 'JuanCarlosMeeting
 							}
 						)
@@ -128,7 +128,7 @@
 
 			<OnAresAttack>
 				(block (
-					(missionObj (@ (msnFind "a +unid:&msCFCollectDataROM;;") 0))
+					(missionObj (@ (msnFind "a +unid:&msCSCCollectDataROM;;") 0))
 					(juanObj (objGetObjByID (msnGetData missionObj 'juanID)))
 					)
 
@@ -148,7 +148,7 @@
 					(rpgCharacterSetScreen 
 						&unidJuanCarlos;
 						{	screen: &dsRPGDialog;
-							translateType: &msCFCollectDataROM;
+							translateType: &msCSCCollectDataROM;
 							translateID: 'JuanCarlosThanks
 							}
 						)
@@ -161,7 +161,7 @@
 
 			<OnJuanLeaves>
 				(block (
-					(missionObj (@ (msnFind "a +unid:&msCFCollectDataROM;;") 0))
+					(missionObj (@ (msnFind "a +unid:&msCSCCollectDataROM;;") 0))
 					(juanObj (objGetObjByID (msnGetData missionObj 'juanID)))
 					)
 					(rpgCharacterChangeRel &unidJuanCarlos; 'aid)
@@ -241,7 +241,7 @@
 							
 						nextCode: 
 							(lambda ()
-								(typFireEvent &msCFCollectDataROM; 'OnAresAttack)
+								(typFireEvent &msCSCCollectDataROM; 'OnAresAttack)
 								)
 						}
 					)
@@ -259,7 +259,7 @@
 							
 						nextCode: 
 							(lambda ()
-								(typFireEvent &msCFCollectDataROM; 'OnJuanLeaves)
+								(typFireEvent &msCSCCollectDataROM; 'OnJuanLeaves)
 								)
 						}
 					)
