@@ -54,7 +54,9 @@ struct SItemTableCtx
 			pUniverse(NULL),
 			pCmdLine(NULL),
 			bHasArmor(false),
+			bHasShields(false),
 			bArmorBalanceStats(false),
+			bShieldBalanceStats(false),
 			bWeaponBalanceStats(false)
 		{ }
 
@@ -66,7 +68,9 @@ struct SItemTableCtx
 
     CWeaponBenchmarkCtx WeaponBenchmarks;
 	bool bHasArmor;
+	bool bHasShields;
 	bool bArmorBalanceStats;
+	bool bShieldBalanceStats;
 	bool bWeaponBalanceStats;
 	};
 
@@ -123,6 +127,8 @@ void GenerateItemTable (CUniverse &Universe, CXMLElement *pCmdLine)
 		{
 		if (Ctx.bHasArmor)
 			Ctx.bArmorBalanceStats = true;
+		else if (Ctx.bHasShields)
+			Ctx.bShieldBalanceStats = true;
 		else
 			Ctx.bWeaponBalanceStats = true;
 		}
@@ -498,6 +504,16 @@ void OutputHeader (SItemTableCtx &Ctx)
 					"balDeviceBonus\t"
 					"balMass\t"
 					"balCost");
+			else if (Ctx.bShieldBalanceStats)
+				printf("balance\t"
+					"balanceExcludeCost\t"
+					"balHP\t"
+					"balRegen\t"
+					"balDamageAdj\t"
+					"balRecovery\t"
+					"balPower\t"
+					"balSlots\t"
+					"balCost");
 			else
 				printf("balance\t"
 					"balanceExcludeCost\t"
@@ -618,6 +634,30 @@ void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
 					else
 						printf("\t\t\t\t\t\t\t\t\t\t\t\t\t");
 					}
+				else if (Ctx.bShieldBalanceStats)
+					{
+					CDeviceClass *pDevice = pType->GetDeviceClass();
+					CShieldClass *pShields = (pDevice ? pDevice->AsShieldClass() : NULL);
+
+					if (pShields)
+						{
+						CShieldClass::SBalance Balance;
+						pShields->CalcBalance(ItemCtx, Balance);
+						printf("%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f",
+							Balance.rBalance,
+							Balance.rBalance - Balance.rCost,
+							Balance.rHPBalance,
+							Balance.rRegen,
+							Balance.rDamageAdj,
+							Balance.rRecoveryAdj,
+							Balance.rPowerUse,
+							Balance.rSlots,
+							Balance.rCost
+						);
+						}
+					else
+						printf("\t\t\t\t\t\t\t\t\t");
+					}
 				else
 					{
 					CDeviceClass *pDevice = pType->GetDeviceClass();
@@ -702,6 +742,7 @@ void SelectByCriteria (SItemTableCtx &Ctx, const CString &sCriteria, TArray<CIte
 	int i;
 
 	Ctx.bHasArmor = false;
+	Ctx.bHasShields = false;
 
 	//	Compute the criteria
 
@@ -723,10 +764,13 @@ void SelectByCriteria (SItemTableCtx &Ctx, const CString &sCriteria, TArray<CIte
 		if (!Item.MatchesCriteria(Crit))
 			continue;
 
-		//	Keep track of whether we've selected any armor.
+		//	Keep track of whether we've selected any armor or shields.
+		//	[We need this for balance stats.]
 
 		if (pType->GetArmorClass())
 			Ctx.bHasArmor = true;
+		else if (pType->GetDeviceClass() && pType->GetDeviceClass()->GetCategory() == itemcatShields)
+			Ctx.bHasShields = true;
 
 		//	Add
 

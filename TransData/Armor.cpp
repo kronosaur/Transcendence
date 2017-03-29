@@ -35,11 +35,11 @@ void GenerateStdShieldTable (CUniverse &Universe, CXMLElement *pCmdLine)
 	for (i = 1; i <= MAX_ITEM_LEVEL; i++)
 		{
 		char szBuffer[1024];
-		int iCost = CShieldClass::GetStdCost(i);
-		if (iCost > 0)
-			wsprintf(szBuffer, "%d", iCost);
+		Metric rCost = CShieldClass::GetStdCost(i);
+		if (rCost >= 1000000.0)
+			wsprintf(szBuffer, "%dM", mathRound(rCost / 1000000.0));
 		else
-			wsprintf(szBuffer, "%dM", -iCost);
+			wsprintf(szBuffer, "%d", (int)rCost);
 
 		printf("%d\t%d\t%d\t%s\t%d\t%d\n",
 				i,
