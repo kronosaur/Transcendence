@@ -33,7 +33,7 @@
 
 	EVENTS
 		
-	Derrived types may implement the following events:
+	Derived types may implement the following events:
 		
 	CreateFromItem: Create the auton ship. gData has the following fields:
 				

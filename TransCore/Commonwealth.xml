@@ -3068,7 +3068,7 @@
 	
 	<!-- Commonwealth Station Base Class
 	
-	USAGE: Commonwealth stations should inherit from this class. Derrived classes
+	USAGE: Commonwealth stations should inherit from this class. Derived classes
 		should manually call OnCreate and OnDestroy in case they need to override
 		those events.
 	

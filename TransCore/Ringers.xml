@@ -483,7 +483,7 @@
 	
 	<!-- Ringers Station Base Class
 	
-	USAGE: Ringers stations should inherit from this class. Derrived classes
+	USAGE: Ringers stations should inherit from this class. Derived classes
 		should manually call OnCreate and OnDestroy in case they need to override
 		those events.
 	
