@@ -145,9 +145,8 @@
 			</Text>
 			<Text id="Summary">
 				(cat
-					"Escort a superfreighter carrying pteracnium ore from "
-					(objGetName (objGetObjByID (msnGetData gSource 'gateID)) 0)
-					"back to " (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4) ".\n\n"
+					"Your mission is to resuce two weapons designers who have "
+					"been kidnapped by rogue fleet elements.\n\n"
 
 					"System: " (sysGetName) "\n"
 					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
