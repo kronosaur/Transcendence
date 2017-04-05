@@ -233,6 +233,7 @@
 		<Image imageID="&rsItems1;" imageX="96" imageY="384" imageWidth="96" imageHeight="96"/>
 
 		<DriveDevice
+				maxSpeedInc=	"2"
 				maxSpeed=		"20"
 				thrust=			"100"
 				powerUse=		"30"
@@ -606,6 +607,7 @@
 		<Image imageID="&rsItems1;" imageX="96" imageY="384" imageWidth="96" imageHeight="96"/>
 
 		<DriveDevice
+				maxSpeedInc=	"4"
 				maxSpeed=		"25"
 				thrust=			"300"
 				powerUse=		"280"
@@ -664,6 +666,7 @@
 		<Image imageID="&rsItems1;" imageX="96" imageY="384" imageWidth="96" imageHeight="96"/>
 
 		<DriveDevice
+				maxSpeedInc=	"4"
 				maxSpeed=		"25"
 				thrust=			"350"
 				powerUse=		"1000"
@@ -920,6 +923,7 @@
 		<Image imageID="&rsItems1;" imageX="96" imageY="384" imageWidth="96" imageHeight="96"/>
 
 		<DriveDevice
+				maxSpeedInc=	"8"
 				maxSpeed=		"30"
 				thrust=			"750"
 				powerUse=		"2000"
