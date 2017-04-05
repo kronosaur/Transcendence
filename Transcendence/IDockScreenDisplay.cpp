@@ -15,6 +15,7 @@
 #define HEIGHT_ATTRIB				CONSTLIT("height")
 #define INITIAL_ITEM_ATTRIB			CONSTLIT("initialItem")
 #define LIST_ATTRIB					CONSTLIT("list")
+#define NO_ARMOR_SPEED_DISPLAY_ATTRIB	CONSTLIT("noArmorSpeedDisplay")
 #define NO_EMPTY_SLOTS_ATTRIB		CONSTLIT("noEmptySlots")
 #define POS_X_ATTRIB				CONSTLIT("posX")
 #define POS_Y_ATTRIB				CONSTLIT("posY")
@@ -154,6 +155,10 @@ bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retO
 		pInitCode = pOptions;
 
 	retOptions->sCode = pInitCode->GetContentText(0);
+
+	//	List options
+
+	retOptions->bNoArmorSpeedDisplay = pOptions->GetAttributeBool(NO_ARMOR_SPEED_DISPLAY_ATTRIB);
 
     //  Selector options
 

@@ -125,6 +125,7 @@ class CGItemListArea : public AGArea
 		void SetList (CCodeChain &CC, ICCItem *pList);
 		void SetList (CSpaceObject *pSource);
 		void SetList (CItemList &ItemList);
+		inline void SetNoArmorSpeedDisplay (bool bValue = true) { m_bNoArmorSpeedDisplay = bValue; }
 		inline void SetRowHeight (int cyHeight) { m_cyRow = Max(1, cyHeight); }
 		inline void SetUIRes (const CUIResources *pUIRes) { m_pUIRes = pUIRes; }
 		inline void SyncCursor (void) { if (m_pListData) m_pListData->SyncCursor(); Invalidate(); }
@@ -192,6 +193,8 @@ class CGItemListArea : public AGArea
 		int m_iCurTab;							//	Current selected tab (-1 = none)
 		int m_iHoverTab;						//	Hover tab (-1 = none)
 		int m_cyTabHeight;						//	Height of tab row
+
+		bool m_bNoArmorSpeedDisplay;			//	Do not show armor bonus/penalty to speed
 	};
 
 class CGNeurohackArea : public AGArea

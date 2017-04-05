@@ -67,6 +67,7 @@ class IDockScreenDisplay
 			{
 			SDisplayOptions (void) :
 					pOptions(NULL),
+					bNoArmorSpeedDisplay(false),
                     bNoEmptySlots(false)
 				{
 				rcControl.left = 0;
@@ -86,6 +87,10 @@ class IDockScreenDisplay
 			CString sItemCriteria;			//	Criteria of items to show in list (may be a function)
 			CString sCode;					//	Code to generate list
 			CString sInitialItemCode;		//	Code to select initial item in list
+
+			//	Item lists
+
+			bool bNoArmorSpeedDisplay;		//	Do not show bonus/penalty to speed from armor
 
             //  Custom lists
 

@@ -53,7 +53,8 @@ CGItemListArea::CGItemListArea (const CVisualPalette &VI) :
 		m_cyRow(DEFAULT_ROW_HEIGHT),
 		m_iCurTab(-1),
 		m_iHoverTab(-1),
-		m_cyTabHeight(0)
+		m_cyTabHeight(0),
+		m_bNoArmorSpeedDisplay(false)
 
 //	CGItemListArea constructor
 
@@ -800,6 +801,8 @@ void CGItemListArea::PaintItem (CG32bitImage &Dest, const CItem &Item, const REC
 	DWORD dwOptions = 0;
 	if (bSelected)
 		dwOptions |= CUIHelper::OPTION_SELECTED;
+	if (m_bNoArmorSpeedDisplay)
+		dwOptions |= CUIHelper::OPTION_NO_ARMOR_SPEED_DISPLAY;
 
 	UIHelper.PaintItemEntry(Dest, m_pListData->GetSource(), Item, rcRect, m_rgbTextColor, dwOptions);
 	}
