@@ -361,7 +361,7 @@
 					)
 			</Text>
 			<Text id="SuccessDebrief">
-				(typTranslate &unidKorolovShipping; 'SuccessDebrief {reward:(msnGetData gSource 'reward)})
+				(typTranslate &unidKorolovShipping; 'SuccessDebrief {reward:(msnGetData gSource 'reward) missionObj:gSource})
 			</Text>
 			<Text id="msgBeginEscort">
 				(block (

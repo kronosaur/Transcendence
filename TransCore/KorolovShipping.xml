@@ -113,12 +113,9 @@
 						(= level 1)
 							(typTranslate &unidKorolovShipping; "SuccessDebrief:Apprentice:1" gData)
 
-						; If the player has destroyed 3 frigates, try deploying the Kronosaurus
-						(geq (typGetGlobalData &scCharonFrigateRaider; 'totalDestroyed) 3)
-							(if (chrDeployKronosaurus)
-								(typTranslate &unidKorolovShipping; "SuccessDebrief:Kronosaurus" gData)
-								(typTranslate &unidKorolovShipping; "SuccessDebrief:Default" gData)
-								)
+						; If the Kronosaurus has been deployed, warn player
+						(msnGetData (@ gData 'missionObj) 'kronosaurusWarning)
+							(typTranslate &unidKorolovShipping; "SuccessDebrief:Kronosaurus" gData)
 
 						; Standard text
 						(typTranslate &unidKorolovShipping; "SuccessDebrief:Default" gData)
@@ -1837,6 +1834,11 @@
 				(block (oldRank newRank)
 					(rpgMissionRewardPayment (msnGetData missionObj 'reward))
 					(typIncData &unidKorolovShipping; 'xp (msnGetData missionObj 'missionXP))
+
+					; If the player has destroyed 3 frigates, try deploying the Kronosaurus
+					(if (geq (typGetGlobalData &scCharonFrigateRaider; 'totalDestroyed) 3)
+						(msnSetData missionObj 'kronosaurusWarning (chrDeployKronosaurus))
+						)
 
 					; Check to see if we've been promoted
 					(setq oldRank (korGetPlayerLevel))
