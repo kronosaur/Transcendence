@@ -59,7 +59,7 @@
 			canAttack=			"true"
 
 			multiHull=			"true"
-			armorID=			"&itTitaniumPlate;"
+			armorID=			"&itLightTitaniumArmor;"
 			hitPoints=			"90"
 			regen=				"1"
 			fireRateAdj=		"40"
@@ -984,7 +984,7 @@
 		<!-- Configuration -->
 
 		<Armor
-			armorID=			"&itTitaniumPlate;"
+			armorID=			"&itLightTitaniumArmor;"
 			count=				"4"
 			/>
 
@@ -1041,7 +1041,7 @@
 			>
 
 		<Armor>
-			<ArmorSection start="0" span="360" armorID="&itUltraLightTitaniumPlate;"/>
+			<ArmorSection start="0" span="360" armorID="&itUltraLightTitaniumCasing;"/>
 		</Armor>
 
 		<Devices>
@@ -1076,7 +1076,7 @@
 			dockingPorts=		"4"
 			canAttack=			"true"
 
-			armorID=			"&itLightTitaniumPlate;"
+			armorID=			"&itUltraLightTitaniumArmor;"
 			hitPoints=			"50"
 			fireRateAdj=		"40"
 			explosionType=		"&vtKineticExplosion1;"
@@ -1138,7 +1138,7 @@
 			dockingPorts=		"4"
 			canAttack=			"true"
 
-			armorID=			"&itHeavyTitaniumPlate;"
+			armorID=			"&itTitaniumArmor;"
 			hitPoints=			"50"
 			fireRateAdj=		"40"
 			explosionType=		"&vtKineticExplosion1;"
@@ -1209,7 +1209,7 @@
 			noMapLabel=			"true"
 			canAttack=			"true"
 
-			armorID=			"&itHeavyTitaniumPlate;"
+			armorID=			"&itTitaniumArmor;"
 			hitPoints=			"50"
 			fireRateAdj=		"40"
 			explosionType=		"&vtKineticExplosion1;"
@@ -2026,8 +2026,8 @@
 			>
 
 		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itUltraLightTitaniumPlate;"/>
-			<ArmorSection start="90"  span="180" armorID="&itUltraLightTitaniumPlate;"/>
+			<ArmorSection start="270" span="180" armorID="&itUltraLightTitaniumCasing;"/>
+			<ArmorSection start="90"  span="180" armorID="&itUltraLightTitaniumCasing;"/>
 		</Armor>
 
 		<Devices>
@@ -3402,7 +3402,7 @@
 			canAttack=			"true"
 
 			multiHull=			"true"
-			armorID=			"&itLightTitaniumPlate;"
+			armorID=			"&itUltraLightTitaniumArmor;"
 			hitPoints=			"50"
 			explosionType=		"&vtKineticExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"

@@ -186,8 +186,8 @@
 			>
 
 		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itLightTitaniumPlate;" />
-			<ArmorSection start="90"  span="180" armorID="&itLightTitaniumPlate;" />
+			<ArmorSection start="270" span="180" armorID="&itUltraLightTitaniumArmor;" />
+			<ArmorSection start="90"  span="180" armorID="&itUltraLightTitaniumArmor;" />
 		</Armor>
 
 		<Devices>
@@ -307,10 +307,10 @@
 			>
 
 		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itTitaniumPlate;"/>
-			<ArmorSection start="225" span="90" armorID="&itTitaniumPlate;"/>
-			<ArmorSection start="135" span="90" armorID="&itTitaniumPlate;"/>
-			<ArmorSection start="45"  span="90" armorID="&itTitaniumPlate;"/>
+			<ArmorSection start="315" span="90" armorID="&itLightTitaniumArmor;"/>
+			<ArmorSection start="225" span="90" armorID="&itLightTitaniumArmor;"/>
+			<ArmorSection start="135" span="90" armorID="&itLightTitaniumArmor;"/>
+			<ArmorSection start="45"  span="90" armorID="&itLightTitaniumArmor;"/>
 		</Armor>
 
 		<Devices>
@@ -443,10 +443,10 @@
 			>
 
 		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itHeavyTitaniumPlate;"/>
-			<ArmorSection start="225" span="90" armorID="&itHeavyTitaniumPlate;"/>
-			<ArmorSection start="135" span="90" armorID="&itHeavyTitaniumPlate;"/>
-			<ArmorSection start="45"  span="90" armorID="&itHeavyTitaniumPlate;"/>
+			<ArmorSection start="315" span="90" armorID="&itTitaniumArmor;"/>
+			<ArmorSection start="225" span="90" armorID="&itTitaniumArmor;"/>
+			<ArmorSection start="135" span="90" armorID="&itTitaniumArmor;"/>
+			<ArmorSection start="45"  span="90" armorID="&itTitaniumArmor;"/>
 		</Armor>
 
 		<Devices>

@@ -298,12 +298,12 @@
 		<StaticData>
 			<CustomWork>
 				(
-					(&itTitaniumOre;		2	&itTitaniumPlate;)
-					(&itHeavyWater;			4	&itXMHArmor;)
+					(&itTitaniumOre;		2	&itLightTitaniumArmor;)
+					(&itHeavyWater;			4	&itLightXMHArmor;)
 					(&itSiliconArmorPatch;	4	&itPhotorepairArmor;)
 					(&itCarbonSpool;		2	&itHeavyCeramicPlate;)
 					(&itPlasteelOre;		4	&itPlasteelPlate;)
-					(&itHyperfiberRoll;		4	&itTevlarCompositeArmor;)
+					(&itHyperfiberRoll;		4	&itLightTevlarArmor;)
 					(&itDuralloyOre;		5	&itDuralloyArmor;)
 					(&itReactiveArmor;		4	&itAdvancedReactiveArmor;)
 					(&itCeralloyOre;		5	&itCeralloyArmor;)

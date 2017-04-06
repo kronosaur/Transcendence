@@ -181,8 +181,8 @@
 			>
 
 		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itHeavyTitaniumPlate;" />
-			<ArmorSection start="90"  span="180" armorID="&itHeavyTitaniumPlate;" />
+			<ArmorSection start="270" span="180" armorID="&itTitaniumArmor;" />
+			<ArmorSection start="90"  span="180" armorID="&itTitaniumArmor;" />
 		</Armor>
 
 		<Devices>

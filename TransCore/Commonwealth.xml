@@ -1684,7 +1684,7 @@
 			noMapLabel=			"true"
 
 			mass=				"5000"
-			armorID=			"&itLightTitaniumPlate;"
+			armorID=			"&itUltraLightTitaniumArmor;"
 			hitPoints=			"20"
 			>
 

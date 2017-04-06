@@ -24,9 +24,13 @@
 			reactorPower=		"150"
 			fuelCapacity=		"37500"
 			drivePowerUse=		"20"
-			maxArmor=			"6000"
 			maxCargoSpace=		"150"
 			maxDevices=			"8"
+
+			stdArmor=			"3000"
+			maxArmor=			"6000"
+			maxArmorSpeed=		"18"
+			minArmorSpeed=		"22"
 			>
 
 		<!-- Configuration -->
@@ -107,10 +111,14 @@
 			reactorPower=		"250"
 			fuelCapacity=		"60000"
 			drivePowerUse=		"20"
-			maxArmor=			"20000"
 			maxCargoSpace=		"200"
 			maxDevices=			"9"
 			maxWeapons=			"2"
+
+			stdArmor=			"5000"
+			maxArmor=			"20000"
+			maxArmorSpeed=		"16"
+			minArmorSpeed=		"19"
 			>
 
 		<!-- Configuration -->
@@ -205,10 +213,13 @@
 			reactorPower=		"100"
 			fuelCapacity=		"25000"
 			drivePowerUse=		"20"
-			maxArmor=			"12000"
 			maxCargoSpace=		"100"
 			maxDevices=			"8"
 			maxNonWeapons=		"4"
+
+			stdArmor=			"6000"
+			maxArmor=			"12000"
+			maxArmorSpeed=		"22"
 			>
 
 		<!-- Configuration -->

@@ -39,7 +39,7 @@
 			numberAppearing=	"1d4"
 			  
 			value=				"75"
-			mass=				"2100"
+			mass=				"2000"
 			  
 			description=		"This is a lighter and less powerful version of reactive armor."
 			>
@@ -52,10 +52,10 @@
 				/>
 	</ItemType>
 
-	<!-- Segment of Ultra Light Titanium Plate -->
+	<!-- Segment of Ultra-Light Titanium Casing  -->
 
-	<ItemType UNID="&itUltraLightTitaniumPlate;"
-			name=				"[segment(s) of ]ultra-light titanium armor"
+	<ItemType UNID="&itUltraLightTitaniumCasing;"
+			name=				"[segment(s) of ]ultra-light titanium casing"
 			attributes=			"commonwealth, minorItem, nami"
 			  
 			level=				"1"
@@ -65,7 +65,7 @@
 			value=				"10"
 			mass=				"350"
 			  
-			description=		"Ultra-light titanium armor is used on small and fast gunships."
+			description=		"A thin titanium case protects ship that cannot afford armor mass."
 			>
 
 		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -75,10 +75,10 @@
 				/>
 	</ItemType>
 
-	<!-- Segment of Light Titanium Plate -->
+	<!-- Segment of Ultra-Light Titanium Armor -->
 
-	<ItemType UNID="&itLightTitaniumPlate;"
-			name=				"[segment(s) of ]light titanium armor"
+	<ItemType UNID="&itUltraLightTitaniumArmor;"
+			name=				"[segment(s) of ]ultra-light titanium armor"
 			attributes=			"commonwealth, minorItem, nami"
 
 			level=				"1"
@@ -86,9 +86,9 @@
 			numberAppearing=	"1d4"
 
 			value=				"15"
-			mass=				"700"
+			mass=				"750"
 			  
-			description=		"Light titanium armor is used on small and fast gunships."
+			description=		"Ultra-light titanium armor is used on small and fast gunships."
 			>
 
 		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -99,10 +99,10 @@
 
 	</ItemType>
 
-	<!-- Segment of Titanium Plate -->
+	<!-- Segment of Light Titanium Armor -->
 
-	<ItemType UNID="&itTitaniumPlate;"
-			name=				"[segment(s) of ]titanium armor"
+	<ItemType UNID="&itLightTitaniumArmor;"
+			name=				"[segment(s) of ]light titanium armor"
 			attributes=			"commonwealth, minorItem, nami"
 			  
 			level=				"1"
@@ -112,7 +112,7 @@
 			value=				"30"
 			mass=				"1500"
 			  
-			description=		"Titanium is one of the weakest materials used for ship armor. Nevertheless, for ships that require little protection or when cost or mass are a factor, titanium plate is a good choice."
+			description=		"Titanium is one of the weakest materials used for ship armor. Nevertheless, for ships that require little protection or when cost or mass are a factor, light titanium armor is a good choice."
 			>
 
 		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -136,7 +136,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"150"
-			mass=				"2600"
+			mass=				"3000"
 			  
 			description=		"This armor consists of heat-resistant ceramic plate backed by a fiber-reinforced composite. Ceramic armor is ideal for absorbing laser and particle beam damage."
 			>
@@ -175,10 +175,10 @@
 
 	</ItemType>
 
-	<!-- Segment of Heavy Titanium Plate -->
+	<!-- Segment of Titanium Armor -->
 
-	<ItemType UNID="&itHeavyTitaniumPlate;"
-			name=				"[segment(s) of ]heavy titanium armor"
+	<ItemType UNID="&itTitaniumArmor;"
+			name=				"[segment(s) of ]titanium armor"
 			attributes=			"commonwealth, minorItem, nami"
 			  
 			level=				"2"
@@ -186,9 +186,9 @@
 			numberAppearing=	"1d4"
 
 			value=				"100"
-			mass=				"2500"
+			mass=				"3000"
 			  
-			description=		"Though not strong enough to be used in warships, heavy titanium plate is more than twice as strong as normal titanium plate. It is often used to protect freighters and scout ships."
+			description=		"Though not strong enough to be used in warships, this armor is more than twice as strong as light titanium armor. It is often used to protect freighters and scout ships."
 			>
 
 		<Image imageID="&rsItems2;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -199,17 +199,17 @@
 
 	</ItemType>
 
-	<!-- Segment of XMH Armor -->
+	<!-- Segment of Light XMH Armor -->
 
-	<ItemType UNID="&itXMHArmor;"
-			name=				"[segment(s) of ]XMH armor"
+	<ItemType UNID="&itLightXMHArmor;"
+			name=				"[segment(s) of ]light XMH armor"
 			attributes=			"commonwealth, minorItem, solon"
 			  
 			level=				"2"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
 
-			value=				"400"
+			value=				"200"
 			mass=				"2000"
 			  
 			description=		"Originally designed by Solon Industries, XMH armor uses an experimental metallic hydrogen alloy. Most stations do not have the technology to repair XMH armor."
@@ -240,7 +240,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"300"
-			mass=				"2500"
+			mass=				"4000"
 			  
 			description=		"An improved version of ceramic armor, this armor is very effective against laser and particle damage."
 			>
@@ -248,7 +248,7 @@
 		<Image imageID="&rsItems3;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"50"
+				hitPoints=	"60"
 				hpBonus=	"+100, -25, +50,  +0"
 				/>
 
@@ -295,7 +295,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"200"
-			mass=				"2800"
+			mass=				"2500"
 			  
 			description=		"This is a lighter and cheaper segment of plasteel than the standard armor."
 			>
@@ -354,7 +354,7 @@
 		<Image imageID="&rsItems3;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"50"
+				hitPoints=	"60"
 				hpBonus=	"  +0,+100,  +0, +50"
 				
 				blindingDamageAdj=	"0"
@@ -376,7 +376,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"300"
-			mass=				"3500"
+			mass=				"4000"
 			  
 			description=		"This heavier version of reactive armor can withstand more than 60 units of kinetic damage."
 			>
@@ -384,7 +384,7 @@
 		<Image imageID="&rsItems3;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"50"
+				hitPoints=	"60"
 				hpBonus=	"  +0,+100,  +0, +50"
 				/>
 
@@ -452,7 +452,7 @@
 			numberAppearing=	"1d6"
 
 			value=				"600"
-			mass=				"4000"
+			mass=				"3500"
 			  
 			description=		"This is a more sophisticated version of reactive armor. Advanced reactive armor is very resistant to blast and kinetic damage."
 			>
@@ -497,18 +497,18 @@
 
 	</ItemType>
 
-	<!-- Segment of Tevlar-Composite Armor -->
+	<!-- Segment of Light Tevlar Armor -->
 
-	<ItemType UNID="&itTevlarCompositeArmor;"
-			name=				"[segment(s) of ]Tevlar-composite armor"
+	<ItemType UNID="&itLightTevlarArmor;"
+			name=				"[segment(s) of ]light Tevlar armor"
 			attributes=			"commonwealth, minorItem, rasiermesser"
 			  
 			level=				"4"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
 
-			value=				"650"
-			mass=				"2500"
+			value=				"500"
+			mass=				"2000"
 			  
 			description=		"This armor is composed of woven carbon fibers in a plasteel matrix. Though not as strong as plasteel, this material is far lighter."
 			>
@@ -517,7 +517,7 @@
 
 		<Armor
 				hitPoints=	"70"
-				hpBonus=	" +50,  +0, +50,  +0"
+				hpBonus=	" +0,  +50,  +0, +50"
 
 				repairCostAdj=	"250"
 				installCostAdj=	"150"
@@ -567,7 +567,7 @@
 			numberAppearing=	"1d6"
 
 			value=				"1100"
-			mass=				"4000"
+			mass=				"2000"
 			  
 			description=		"Light blast plate is more effective against blast damage than advanced reactive armor."
 			>
@@ -575,7 +575,7 @@
 		<Image imageID="&rsItems5;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"90"
+				hitPoints=	"80"
 				hpBonus=	"  +0,  +0,  +0,+100,  +0, +25"
 				/>
 
@@ -649,7 +649,7 @@
 			numberAppearing=	"1d6"
 
 			value=				"800"
-			mass=				"3000"
+			mass=				"4000"
 			  
 			description=		"This is a stronger plate of the popular plasteel armor."
 			>
@@ -657,7 +657,7 @@
 		<Image imageID="&rsItems5;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"100"
+				hitPoints=	"120"
 				/>
 
 	</ItemType>
@@ -675,7 +675,7 @@
 			numberAppearing=	"1d6"
 
 			value=				"2000"
-			mass=				"5000"
+			mass=				"3500"
 			  
 			description=		"This armor is made out of a plasteel alloy designed to resist missile damage."
 			>
@@ -683,7 +683,7 @@
 		<Image imageID="&rsItems6;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"135"
+				hitPoints=	"125"
 				hpBonus=	"  +0,  +0,  +0,+100,  +0, +25"
 				
 				radiationImmune=	"true"
@@ -702,7 +702,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"2000"
-			mass=				"3000"
+			mass=				"4000"
 			  
 			description=		"This is a heavier version of the innovative ceramic-based alloy."
 			>
@@ -729,7 +729,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"2500"
-			mass=				"3200"
+			mass=				"3000"
 			  
 			description=		"A blend of plasteel and duranium infused with active nanomachines. Duralloy armor repairs itself slowly over time."
 			>
@@ -737,11 +737,11 @@
 		<Image imageID="&rsItems6;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"90"
+				hitPoints=	"135"
 
 				repairTech=	"8"
 
-				regen=		"1"
+				regen=		"2"
 				/>
 
 	</ItemType>
@@ -757,7 +757,7 @@
 			numberAppearing=	"1d6"
 
 			value=				"2000"
-			mass=				"4000"
+			mass=				"2500"
 			  
 			description=		"When installed on a ship with an Omsk deflector, this segment adds 25 hp strength to the shields."
 			>
@@ -784,7 +784,7 @@
 			numberAppearing=	"1d6"
 
 			value=				"1600"
-			mass=				"3200"
+			mass=				"3000"
 			  
 			description=		"Advanced plasteel is stronger by weight than normal plasteel."
 			>
@@ -838,7 +838,7 @@
 			numberAppearing=	"1d6"
 
 			value=				"5000"
-			mass=				"7000"
+			mass=				"4500"
 			  
 			description=		"This armor is made out of a plasteel alloy designed to resist missile damage."
 			>
@@ -846,7 +846,7 @@
 		<Image imageID="&rsItems7;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"180"
+				hitPoints=	"220"
 				hpBonus=	"  +0,  +0,  +0,+100,  +0, +25"
 				/>
 
@@ -863,7 +863,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"4000"
-			mass=				"3300"
+			mass=				"3000"
 			  
 			description=		"Though almost as effective as P150-grade Hexphase armor, advanced ceralloy is easier to obtain."
 			>
@@ -880,10 +880,10 @@
 
 	</ItemType>
 
-	<!-- Gusoku Armor -->
+	<!-- Light Gusoku Armor -->
 
-	<ItemType UNID="&itGusokuArmor;"
-			name=				"[segment(s) of ]Gusoku armor"
+	<ItemType UNID="&itLightGusokuArmor;"
+			name=				"[segment(s) of ]light Gusoku armor"
 			attributes=			"bushido, commonwealth, military, minorItem, specialty"
 			  
 			level=				"7"
@@ -891,7 +891,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"4000"
-			mass=				"2500"
+			mass=				"2000"
 			  
 			description=		"Designed by the Bushido Corporation, Gusoku armor is light yet resistant to particle beam and blast damage."
 			>
@@ -918,7 +918,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"3200"
-			mass=				"3500"
+			mass=				"3000"
 			  
 			description=		"Hexphase armor is used extensively by ships of the Commonwealth Fleet. P150-grade armor can withstand 150 units of thermonuclear damage before collapsing."
 			>
@@ -943,7 +943,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"3200"
-			mass=				"3300"
+			mass=				"2000"
 			  
 			description=		"Orthosteel, a variant of plasteel, was used extensively by the Commonwealth Fleet until the creation of Hexphase armor."
 			>
@@ -951,7 +951,7 @@
 		<Image imageID="&rsItems7;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"175"
+				hitPoints=	"145"
 				/>
 
 	</ItemType>
@@ -995,7 +995,7 @@
 			numberAppearing=	"1d6"
 
 			value=				"8000"
-			mass=				"6000"
+			mass=				"3500"
 			  
 			description=		"The embedded field projectors in this armor enhance the power of Omsk deflectors by 50 hp."
 			>
@@ -1011,7 +1011,7 @@
 		</StaticData>
 	</ItemType>
 
-	<!-- Segment of P210 Hexphase armor -->
+	<!-- Segment of P450 Hexphase armor -->
 
 	<ItemType UNID="&itP210HexphaseArmor;"
 			name=				"[segment(s) of ]P450 Hexphase armor"
@@ -1022,7 +1022,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"12000"
-			mass=				"12000"
+			mass=				"6000"
 			  
 			description=		"Hexphase armor is used extensively by capital ships of the Commonwealth Fleet. P450-grade armor can withstand 450 units of thermonuclear damage."
 			>
@@ -1047,7 +1047,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"9000"
-			mass=				"5000"
+			mass=				"2000"
 			  
 			description=		"Ithalium is a rare ore found on volcanic worlds. Alloys of ithalium are particularly resistant to thermonuclear damage."
 			>
@@ -1055,7 +1055,7 @@
 		<Image imageID="&rsItems8;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"250"
+				hitPoints=	"200"
 				hpBonus=	"  +0,  +0,  +0,  +0, -25,+100,  +0, +25"
 				/>
 
@@ -1072,7 +1072,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"6500"
-			mass=				"3500"
+			mass=				"3000"
 			  
 			description=		"Orthosteel is a well-balanced armor, effective against both particle and blast damage."
 			>
@@ -1096,7 +1096,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"7000"
-			mass=				"4000"
+			mass=				"5000"
 			  
 			description=		"Manufactured by the secretive Taikon corporation, quadrocarbide armor resists ion and positron damage."
 			>
@@ -1186,7 +1186,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"15000"
-			mass=				"4200"
+			mass=				"5000"
 			  
 			description=		"Stronger by weight than P450-grade Hexphase, the secret of hexacarbide is known only to the Taikon corporation."
 			>
@@ -1204,10 +1204,10 @@
 
 	</ItemType>
 
-	<!-- Segment of Heavy Omsk Armor -->
+	<!-- Segment of Massive Omsk Armor -->
 
-	<ItemType UNID="&itHeavyOmskArmor;"
-			name=				"[segment(s) of ]heavy Omsk armor"
+	<ItemType UNID="&itMassiveOmskArmor;"
+			name=				"[segment(s) of ]massive Omsk armor"
 			attributes=			"commonwealth, makayev, military, minorItem, omskArmor, omskDS, specialty"
 			  
 			level=				"9"
@@ -1269,7 +1269,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"16000"
-			mass=				"6000"
+			mass=				"3500"
 			  
 			description=		"Ithalium armor absorbs more than 800 units of thermonuclear damage. Unfortunately, it is not very resistant to ion damage."
 			>
@@ -1294,7 +1294,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"13000"
-			mass=				"3700"
+			mass=				"5000"
 			  
 			description=		"Heavy orthosteel is almost immune to particle and blast damage. Against ion damage, it is better than P150-grade Hexphase."
 			>
@@ -1302,7 +1302,7 @@
 		<Image imageID="&rsItems9;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"300"
+				hitPoints=	"360"
 				/>
 
 	</ItemType>
@@ -1320,7 +1320,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"24000"
-			mass=				"3500"
+			mass=				"3000"
 			  
 			description=		"The nanofacture towers of the Assembler Corporation can produce a pure diamond lattice in any configuration."
 			>
@@ -1333,10 +1333,10 @@
 
 	</ItemType>
 
-	<!-- Heavy Ithalium Armor -->
+	<!-- Super Heavy Ithalium Armor -->
 
-	<ItemType UNID="&itHeavyIthaliumArmor;"
-			name=				"[segment(s) of ]heavy ithalium armor"
+	<ItemType UNID="&itSuperHeavyIthaliumArmor;"
+			name=				"[segment(s) of ]superheavy ithalium armor"
 			attributes=			"commonwealth, minorItem, military, nami"
 			  
 			level=				"10"
@@ -1352,7 +1352,7 @@
 		<Image imageID="&rsItems10;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"500"
+				hitPoints=	"600"
 				hpBonus=	"  +0,  +0,  +0,  +0, -25,+100,  +0, +25"
 				/>
 

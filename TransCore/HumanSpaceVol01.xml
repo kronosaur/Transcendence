@@ -92,7 +92,8 @@
 	<!ENTITY scEI100XPlayer				"0x00003802">
 	<!ENTITY scWolfenPlayer				"0x00003803">
 	
-	<!ENTITY itLightTitaniumPlate		"0x00004001">
+	<!ENTITY itLightTitaniumPlate		"0x00004001">	<!--- itUltraLightTitaniumArmor synonym -->
+	<!ENTITY itUltraLightTitaniumArmor	"0x00004001">
 	<!ENTITY itHeavyReactiveArmor		"0x00004002">
 	<!ENTITY itReactiveArmor			"0x00004003">
 	<!ENTITY itDuralloyArmor			"0x00004004">
@@ -171,7 +172,8 @@
 	<!ENTITY itMartianNori				"0x00004054">
 	<!ENTITY itLaudanumAmpule			"0x00004055">
 	<!ENTITY itBlackMarketID			"0x00004056">
-	<!ENTITY itTitaniumPlate			"0x00004057">
+	<!ENTITY itTitaniumPlate			"0x00004057">	<!-- itLightTitaniumArmor synonym -->
+	<!ENTITY itLightTitaniumArmor		"0x00004057">
 	<!ENTITY itFragmentationMissile		"0x00004058">
 	<!ENTITY itTargetingComputerROM		"0x00004059">
 	<!ENTITY itLightPlasteelPlate		"0x0000405A">
@@ -182,16 +184,19 @@
 	<!ENTITY itKineticEnhancer			"0x0000405F">
 	<!ENTITY itUnknownBarrel			"0x00004060">
 	<!ENTITY itUnknownROM				"0x00004061">
-	<!ENTITY itHeavyTitaniumPlate		"0x00004062">
+	<!ENTITY itHeavyTitaniumPlate		"0x00004062">	<!-- itTitaniumArmor synonym -->
+	<!ENTITY itTitaniumArmor			"0x00004062">
 	<!ENTITY itTurbolaserCannon			"0x00004063">
 	<!ENTITY itDualParticleBeamWeapon	"0x00004064">
 	<!ENTITY itDragonflyMissileSystem	"0x00004065">
 	<!ENTITY itDragonflyCartridge		"0x00004066">
-	<!ENTITY itXMHArmor					"0x00004067">
+	<!ENTITY itLightXMHArmor			"0x00004067">
+	<!ENTITY itXMHArmor					"0x00004067">	<!-- itLightXMHArmor synonym-->
 	<!ENTITY itSolonShieldGenerator		"0x00004068">
 	<!ENTITY itFlenserCannon			"0x00004069">
 	<!ENTITY itPolyceramicPlate			"0x0000406A">
-	<!ENTITY itTevlarCompositeArmor		"0x0000406B">
+	<!ENTITY itLightTevlarArmor			"0x0000406B">
+	<!ENTITY itTevlarCompositeArmor		"0x0000406B">	<!-- itLightTevlarArmor synonym -->
 	<!ENTITY itSmallArmorPatch			"0x0000406C">
 	<!ENTITY itLargeArmorPatch			"0x0000406D">
 	<!ENTITY itMAGLauncher				"0x0000406E">
@@ -291,7 +296,8 @@
 	<!ENTITY itYoroiS100				"0x000040CD">
 	<!ENTITY itYoroiS500				"0x000040CE">
 	<!ENTITY itYoroiMX					"0x000040CF">
-	<!ENTITY itGusokuArmor				"0x000040D0">
+	<!ENTITY itLightGusokuArmor			"0x000040D0">
+	<!ENTITY itGusokuArmor				"0x000040D0">	<!-- itLightGusokuArmor synonym -->
 	<!ENTITY itSunflareCannon			"0x000040D1">
 	<!ENTITY itBlinderCannon			"0x000040D2">
 	<!ENTITY itMonopoleDeflector		"0x000040D3">
@@ -396,7 +402,8 @@
 	<!ENTITY itHeavyBlastPlate			"0x0000413B">
 	<!ENTITY itLightIthaliumArmor		"0x0000413C">
 	<!ENTITY itIthaliumArmor			"0x0000413D">
-	<!ENTITY itHeavyIthaliumArmor		"0x0000413E">
+	<!ENTITY itSuperHeavyIthaliumArmor	"0x0000413E">
+	<!ENTITY itHeavyIthaliumArmor		"0x0000413E">	<!-- itSuperHeavyIthatliumArmor synonym -->
 	<!ENTITY itNephrenP25				"0x00004142">
 	<!ENTITY itNephrenB700				"0x00004143">
 	<!ENTITY itNephrenX1				"0x00004144">
@@ -504,12 +511,14 @@
 	<!ENTITY itLightArmorRepair			"0x000041AD">
 	<!ENTITY itMediumArmorRepair		"0x000041AE">
 	<!ENTITY itHeavyArmorRepair			"0x000041AF">
-	<!ENTITY itUltraLightTitaniumPlate	"0x000041B0">
+	<!ENTITY itUltraLightTitaniumPlate	"0x000041B0">	<!-- itUltraLightTitaniumCasing synonym -->
+	<!ENTITY itUltraLightTitaniumCasing	"0x000041B0">
 	<!ENTITY itLightCeramicPlate		"0x000041B1">
 	<!ENTITY itLightReactiveArmor		"0x000041B2">
 	<!ENTITY itLightOmskArmor			"0x000041B3">
 	<!ENTITY itMediumOmskArmor			"0x000041B4">
-	<!ENTITY itHeavyOmskArmor			"0x000041B5">
+	<!ENTITY itMassiveOmskArmor			"0x000041B5">
+	<!ENTITY itHeavyOmskArmor			"0x000041B5">	<!-- itMassiveOmskArmor synonym -->
 	<!ENTITY itOmskDeflectorI			"0x000041B6">
 	<!ENTITY itOmskDeflectorII			"0x000041B7">
 	<!ENTITY itDepletedUraniumArmor		"0x000041B8">
@@ -1757,6 +1766,9 @@
 	<!ENTITY rsMiningColonyPrimordial	"0x00100252">
 	<!ENTITY rsMiningColonyRocky		"0x00100253">
 	<!ENTITY rsMiningColonyVolcanic		"0x00100254">
+
+	<!-- 0270-028F ADDITIONAL COMMONWEALTH ARMOR -->
+
 	
 	<!-- 1000-FFFF RESERVED -->
 	]>

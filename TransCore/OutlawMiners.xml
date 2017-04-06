@@ -184,8 +184,8 @@
 			>
 
 		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itLightTitaniumPlate;" areaSet="0,2,3,7" />
-			<ArmorSection start="90"  span="180" armorID="&itLightTitaniumPlate;" areaSet="1,4" />
+			<ArmorSection start="270" span="180" armorID="&itUltraLightTitaniumArmor;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itUltraLightTitaniumArmor;" areaSet="1,4" />
 		</Armor>
 
 		<Devices>
@@ -232,8 +232,8 @@
 			>
 
 		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itTitaniumPlate;" areaSet="0,2,3,7" />
-			<ArmorSection start="90"  span="180" armorID="&itTitaniumPlate;" areaSet="1,4" />
+			<ArmorSection start="270" span="180" armorID="&itLightTitaniumArmor;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itLightTitaniumArmor;" areaSet="1,4" />
 		</Armor>
 
 		<Devices>

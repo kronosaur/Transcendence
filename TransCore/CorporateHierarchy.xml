@@ -158,7 +158,7 @@
 			canAttack=			"true"
 
 			multiHull=			"true"
-			armorID=			"&itGusokuArmor;"
+			armorID=			"&itLightGusokuArmor;"
 			hitPoints=			"280"
 			regen=              "3"
 			fireRateAdj=		"15"
@@ -730,7 +730,7 @@
 			canAttack=			"true"
 
 			multiHull=			"true"
-			armorID=			"&itGusokuArmor;"
+			armorID=			"&itLightGusokuArmor;"
 			hitPoints=			"300"
 			regen=				"4"
 			fireRateAdj=		"20"
