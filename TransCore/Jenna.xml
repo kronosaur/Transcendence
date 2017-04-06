@@ -8,6 +8,7 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Ronin/C"
 			type=				"gunship"
+			defaultSovereign=	"&svCommonwealth;"
 
 			mass=				"60"
 			cargoSpace=			"50"

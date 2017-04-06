@@ -12,7 +12,7 @@
 
 	======================================================================== -->
 
-	<MissionType UNID="&msCFRecon;"
+	<MissionType UNID="&msCSCRecon;"
 			name=			"Recon Ares station"
 			attributes=		"commonwealthFleet, cscTaskForce, rank1"
 

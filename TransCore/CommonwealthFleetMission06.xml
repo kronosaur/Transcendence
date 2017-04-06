@@ -2,7 +2,7 @@
 
 <TranscendenceModule>
 
-	<!-- Mission: Escort Freighter =============================================
+	<!-- Mission: Escort Freighter 2 ===========================================
 
 	EXTRA DATA
 
@@ -13,9 +13,9 @@
 
 	======================================================================== -->
 
-	<MissionType UNID="&msCSCEscortFreighter;"
+	<MissionType UNID="&msCSCEscortFreighter2;"
 			name=			"Escort Freighter"
-			attributes=		"commonwealthFleet, cscTaskForce, rank2"
+			attributes=		"commonwealthFleet, cscTaskForce, rank3"
 
 			level=			"5-8"
 
@@ -28,15 +28,15 @@
 				(block (gateList)
 
 					(switch
-						;	Find a stargate more than 300 light-seconds away
-						(not (setq gateList (sysFindObject aOwnerObj "GR:300; -uncharted;")))
+						;	Find a stargate more than 400 light-seconds away
+						(not (setq gateList (sysFindObject aOwnerObj "GR:400; -uncharted;")))
 							(msnDestroy gSource)
 
 						;	Create the mission
 						(block Nil
 							(msnSetData gSource 'gateID (objGetID (random gateList)))
 
-							(msnSetData gSource 'missionXP 150)
+							(msnSetData gSource 'missionXP 250)
 							)
 						)
 					)
@@ -48,12 +48,16 @@
 					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
 					(travelTime (sysCalcTravelTime (objGetDistance cscObj gateObj) (shpGetMaxSpeed gPlayerShip)))
 					)
-					;	Pick a random situation
-					(msnSetData gSource 'variant (random (list
-						'ares 'ares 'ares 'ares 'ares 'ares 'rogue 'rogue 'rogue 'attack
-						)))
 
-					(msnAddTimerEvent gSource (+ travelTime (random 100 400)) 'OnFreighterArrives)
+					;	Add some enemy ships patrolling around the stargate
+					(for i 1 (random 4 6)
+						(block (enemyObj)
+							(setq enemyObj (sysCreateShip &scSandstorm; gateObj &svAres;))
+							(shpOrder enemyObj 'patrol gateObj 20)
+							)
+						)
+
+					(msnAddTimerEvent gSource (+ travelTime (random 0 200)) 'OnFreighterArrives)
 					)
 			</OnStarted>
 			
@@ -61,10 +65,7 @@
 				(switch
 					;	Freighter destroyed
 					(= (objGetID aObjDestroyed) (msnGetData gSource 'freighterID))
-						(if (= (msnGetData gSource 'status) 'kamikaze)
-							(msnSuccess gSource)
-							(msnFailure gSource)
-							)
+						(msnFailure gSource)
 					)
 			</OnObjDestroyed>
 
@@ -79,16 +80,13 @@
 				(block (
 					(cscObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
 					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
-					(variant (msnGetData gSource 'variant))
-					shipObj travelTime
+					shipObj
 					)
-					(plyMessage gPlayer "Freighter arrived!")
+					(plyMessage gPlayer "Transport has arrived!")
 
-					;	Create the superfreighter
-					(setq shipObj (sysCreateShip &scScarabFreighter; gateObj &svCommonwealth;))
-					(objSetData shipObj 'noPiracyCheck True)
+					;	Create the transport
+					(setq shipObj (sysCreateShip &scAurochs; gateObj &svCommonwealthFleet;))
 					(objSetIdentified shipObj)
-
 					(shpOrder shipObj 'dock cscObj)
 					(shpOrder shipObj 'wait (random 6 18))
 					(shpOrder shipObj 'gate)
@@ -103,142 +101,29 @@
 					
 					;	Calculate travel time for setting ambush
 					(setq travelTime (sysCalcTravelTime (objGetDistance cscObj gateObj) (shpGetMaxSpeed shipObj)))
-					(dbgOutput "trabvel time: " travelTime)
-					;	Variant specific setup
-					(switch
-						(= variant 'ares)
-							(block Nil
-								(sysAddEncounterEventAtDist 
-									(random 1000 1500) 
-									shipObj 
-									&etAresAmbush4; 
-									(random 120 200)
-									)
-								(if (leq (random 1 100) 90)
-									(sysAddEncounterEventAtDist 
-										(random 1000 1500) 
-										gPlayerShip 
-										&etAresAmbush2; 
-										(random 120 200)
-										)
-									)
-								(if (leq (random 1 100) 20)
-									(sysAddEncounterEventAtDist 
-										(random 1350 1900) 
-										shipObj 
-										&etAresAmbush2; 
-										(random 120 200)
-										)
-									)
-								)
-						(= variant 'rogue)
-							(block (
-								(pathPos (random 35 65))
-								ambushPos mineLayer waitPos
-								)
-								(setq ambushPos (sysGetNavPathPoint
-									&svCommonwealth;
-									gateObj
-									cscObj
-									pathPos
-									))
-								;	Create a rogue transport that will lay mines in the path
-								(setq mineLayer (sysCreateShip &scRogueMineLayer; ambushPos &svRogueFleet;))
-								(objSetData mineLayer 'MinePos ambushPos)
-								
-								;	Create a bunch of mines in addition
-								(for i 0 (random 10 20)
-									(sysCreateWeaponFire &itStaticMine; mineLayer (sysVectorPolarOffset ambushPos (random 0 359) (random 1 5)) 0 0 Nil)
-									)
 
-								;	Figure out where the centurions will wait
-								(setq waitPos (sysGetNavPathPoint
-									&svCommonwealth;
-									gateObj
-									cscObj
-									(+ pathPos 15)
-									))
-								(setq waitPos (sysCreateMarker "" waitPos &svRogueFleet;))
-
-								; Create some centurions that will attack once the freighter
-								; goes through the mines
-								(for i 0 (random 2 4)
-									(block (theShip thePos)
-										(setq thePos (sysVectorPolarOffset waitPos (random 0 359) (random 10 14)))
-										(setq theShip (sysCreateShip &scCenturion; thePos &svRogueFleet;))
-										(shpOrderPatrol theShip waitPos 7)
-										)
-									)
-
+					(sysAddEncounterEventAtDist 
+						(/ (* travelTime (random 30 50)) 100)
+						(if (= (random 1 3) 1) gPlayerShip shipObj)
+						(random
+							(list
+								&etAresAmbush1;
+								&etAresAmbush2;
+								&etAresAmbush2;
+								&etRogueAmbush1;
+								&etRogueAmbush1;
+								&etRogueAmbush2;
 								)
-						(= variant 'attack)
-							(block Nil
-								(objAddItem shipObj (itmCreate &itHydrogenGas; 500))
-								(msnAddRecurringTimerEvent gSource 31 'OnSuicideRunCheck)
-								)
+							)
+						(random 120 200)
 						)
 					)
 			</OnFreighterArrives>
-
-			<OnSuicideRunCheck>
-				(block (
-					(cscObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-					(shipObj (objGetObjByID (msnGetData gSource 'freighterID)))
-					(dist (objGetDistance cscObj shipObj))
-					)
-					(dbgOutput dist)
-					(switch
-						(not shipObj)
-							(msnCancelTimerEvent gSource 'OnSuicideRunCheck)
-						
-						(ls dist 5)
-							(block (
-								(thePos (objGetPos shipObj))
-								)
-								(msnFailure gSource)
-								(msnCancelTimerEvent gSource 'OnSuicideRunCheck)
-								(objDestroy shipObj shipObj)
-								(sysCreateWeaponFire &itM5Missile; Nil thePos 0 0 cscObj True)
-								)
-
-						(and (ls dist 40) (= (msnGetData gSource 'status) 'kamikaze))
-							(block Nil
-								(if (leq (random 1 100) 25)
-									(objSendMessage gPlayerShip cscObj (msnTranslate gSource 'msgHurry))
-									)
-								)
-						
-						(and (ls dist 60) (!= (msnGetData gSource 'status) 'kamikaze))
-							(block Nil
-								;	Freighter is on sucide run
-								(shpCancelOrders shipObj)
-								(shpOrder shipObj 'goto cscObj)
-								(shpOrder shipObj 'hold)
-								
-								;	Set the CSC to wait (so that it doesn't blast the freighter on its own)
-								;	we assume that the CSC is caught by surprise
-								;	Not needed as the freighter is still "friendly"
-								;(shpCancelOrders cscObj)
-								;(shpOrder cscObj 'wait 15)
-								;(shpOrder cscObj 'hold)
-
-								;	Player should destroy freighter
-								(objSendMessage gPlayerShip cscObj (msnTranslate gSource 'msgKamikaze))
-
-								(msnSetData gSource 'status 'kamikaze)
-								(msnSetPlayerTarget gSource)
-								)
-						)
-					)
-			</OnSuicideRunCheck>
 
 			<OnSetPlayerTarget>
 				(switch
 					(not (msnGetData gSource 'state))
 						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'gateID)) 'dock)
-
-					(= (msnGetData gSource 'state) 'kamikaze)
-						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'freighterID)) 'attack)
 
 					(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'freighterID)) 'escort)
 					)
@@ -255,7 +140,7 @@
 			</Text>
 			<Text id="Summary">
 				(cat
-					"Escort a superfreighter carrying pteracnium ore from "
+					"Escort a supply ship from "
 					(objGetName (objGetObjByID (msnGetData gSource 'gateID)) 0)
 					"back to " (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4) ".\n\n"
 
@@ -272,10 +157,11 @@
 			</Text>
 			<Text id="Briefing">
 				(cat
-					"\"A superfreighter carrying pteracnium ore will enter the system at "
-					(objGetName (objGetObjByID (msnGetData gSource 'gateID)) 0)
-					" and rendezvous with us here. Your mission is to escort it "
-					"safely from the gate to our location. Clear?\""
+					"\"A supply ship is arriving at the "
+					(objGetName (objGetObjByID (msnGetData gSource 'gateID)))
+					". Your orders are to escort it back to "
+					(objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4)
+					" and defend it against all enemies. Carry On!\""
 					)
 			</Text>
 			<Text id="AcceptReply">
@@ -292,28 +178,7 @@
 				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
 			</Text>
 			<Text id="SuccessDebrief">
-				(msnTranslate gSource (cat "SuccessDebrief:" (msnGetData gSource 'variant)))
-			</Text>
-			<Text id="SuccessDebrief:ares">
-				"\"Excellent mission! That pteracnium fuel is desperately needed!\""
-			</Text>
-			<Text id="SuccessDebrief:rogue">
-				"\"Excellent mission! That pteracnium fuel is desperately needed!\""
-			</Text>
-			<Text id="SuccessDebrief:attack">
-				"\"Excellent mission! Your quick reaction probably saved hundreds of lives on this ship!\""
-			</Text>
-			<Text id="msgHurry">
-				(random (list
-					"Destroy the freighter!"
-					"Blast the bloody freighter!"
-					"Do you copy? Destroy the freighter now!"
-					"%name%, destroy the freighter!"
-					"The freighter is on a suicide run! Destroy it!"
-					))
-			</Text>
-			<Text id="msgKamikaze">
-				"Freighter on suicide run! Destroy it now!"
+				"\"Outstanding mission! Those supplies are desperately needed here.\""
 			</Text>
 		</Language>
 	</MissionType>

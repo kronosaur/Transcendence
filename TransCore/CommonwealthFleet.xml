@@ -2058,20 +2058,27 @@ PLAYER DATA
 
 	<Globals>
 		(block Nil
-			(setq intFleetCreateWingmen (lambda (aStation aCount theClass)
-				(block Nil
+			(setq intFleetCreateWingmen (lambda (missionObj aCount theClass)
+				(block (
+					(baseObj (objGetObjByID (msnGetProperty missionObj 'ownerID)))
+					(missionID (msnGetProperty missionObj 'id))
+					)
 					(if (not theClass)
 						(setq theClass &scCenturion;)
 						)
-						
-					(for i 0 (subtract aCount 1)
-						(block (ship)
-							(setq ship (sysCreateShip theClass aStation &svCommonwealthFleet; "fleet"))
-							(shpOrderEscort ship gPlayerShip i)
+					(for i 0 (- aCount 1)
+						(block (wingmanObj)
+							(setq wingmanObj (sysCreateShip
+								theClass
+								baseObj
+								&svCommonwealthFleet;
+								'fleet
+								))
+							(shpOrder wingmanObj 'escort gPlayerShip i)
 
-							; Remember the escorts we assigned
-							(objSetObjRefData aStation (cat "Wingman" i) ship)
-							(objRegisterForEvents aStation ship)
+							;	Keep track of wingmen
+							(objSetData wingmanObj (cat missionID "_wingman") True)
+							(msnRegisterForEvents missionObj wingmanObj)
 							)
 						)
 					)
@@ -2086,23 +2093,20 @@ PLAYER DATA
 					)
 				))
 
-			(setq intFleetDisperseWingmen (lambda (aStation aCount)
-				(block (i shipsLeft)
-					(setq shipsLeft 0)
-					(for i 0 (subtract aCount 1)
-						(block (ship)
-							(setq ship (objGetObjRefData aStation (cat "Wingman" i)))
-							(if ship
-								(block Nil
-									(setq shipsLeft (add shipsLeft 1))
-									(shpCancelOrders ship)
-									(shpOrderDock ship aStation)
-									(shpOrderGate ship)
-									)
-								)
+			(setq intFleetDisperseWingmen (lambda (missionObj)
+				(block (
+					(baseObj (objGetObjByID (msnGetProperty missionObj 'ownerID)))
+					(missionID (msnGetProperty missionObj 'id))
+					(wingmen (sysFindObject Nil (cat "sA D:" missionID "_wingman;")))
+					)
+					(enum wingmen wingmanObj
+						(block Nil
+							(shpCancelOrders wingmanObj)
+							(shpOrder wingmanObj 'dock baseObj)
+							(shpOrder wingmanObj 'gate)
 							)
 						)
-					shipsLeft
+					(count wingmen)
 					)
 				))
 				

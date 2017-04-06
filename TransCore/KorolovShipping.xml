@@ -91,40 +91,6 @@
 						)
 					)
 			</Text>
-			<Text id="SuccessDebrief">
-				(block (
-					(level (korGetPlayerLevel))
-					(xp (typGetData &unidKorolovShipping; 'xp))
-					)
-					(switch
-						; Describe a bit the process after the player's first mission
-						(= (count (msnFind "r +korolov;")) 1)
-							(typTranslate &unidKorolovShipping; "SuccessDebrief:FirstMission" gData)
-
-						; At the next level
-						(and (= level 1) (geq xp 300))
-							(typTranslate &unidKorolovShipping; "SuccessDebrief:Apprentice:3" gData)
-
-						; If we're about to become a journeyman, tell the player
-						(and (= level 1) (geq xp 225))
-							(typTranslate &unidKorolovShipping; "SuccessDebrief:Apprentice:2" gData)
-
-						; At level 1, describe the things to look forward to
-						(= level 1)
-							(typTranslate &unidKorolovShipping; "SuccessDebrief:Apprentice:1" gData)
-
-						; If the player has destroyed 3 frigates, try deploying the Kronosaurus
-						(geq (typGetGlobalData &scCharonFrigateRaider; 'totalDestroyed) 3)
-							(if (chrDeployKronosaurus)
-								(typTranslate &unidKorolovShipping; "SuccessDebrief:Kronosaurus" gData)
-								(typTranslate &unidKorolovShipping; "SuccessDebrief:Default" gData)
-								)
-
-						; Standard text
-						(typTranslate &unidKorolovShipping; "SuccessDebrief:Default" gData)
-						)
-					)
-			</Text>
 			<Text id="SuccessDebrief:FirstMission">
 				(cat
 					"\"Excellent work, captain! You seem to have the aptitude to handle these missions. "
@@ -1833,10 +1799,47 @@
 					)
 				))
 
+			(setq korSuccessDebrief (lambda (missionObj)
+				(block (
+					(level (korGetPlayerLevel))
+					(xp (typGetData &unidKorolovShipping; 'xp))
+					)
+					(switch
+						; Describe a bit the process after the player's first mission
+						(= (count (msnFind "r +korolov;")) 1)
+							(typTranslate &unidKorolovShipping; "SuccessDebrief:FirstMission" {reward:(msnGetData gSource 'reward)})
+
+						; At the next level
+						(and (= level 1) (geq xp 300))
+							(typTranslate &unidKorolovShipping; "SuccessDebrief:Apprentice:3" {reward:(msnGetData gSource 'reward)})
+
+						; If we're about to become a journeyman, tell the player
+						(and (= level 1) (geq xp 225))
+							(typTranslate &unidKorolovShipping; "SuccessDebrief:Apprentice:2" {reward:(msnGetData gSource 'reward)})
+
+						; At level 1, describe the things to look forward to
+						(= level 1)
+							(typTranslate &unidKorolovShipping; "SuccessDebrief:Apprentice:1" {reward:(msnGetData gSource 'reward)})
+
+						; If the Kronosaurus has been deployed, warn player
+						(msnGetData missionObj 'kronosaurusWarning)
+							(typTranslate &unidKorolovShipping; "SuccessDebrief:Kronosaurus" {reward:(msnGetData gSource 'reward)})
+
+						; Standard text
+						(typTranslate &unidKorolovShipping; "SuccessDebrief:Default" {reward:(msnGetData gSource 'reward)})
+						)
+					)
+				))
+
 			(setq korGiveReward (lambda (missionObj)
 				(block (oldRank newRank)
 					(rpgMissionRewardPayment (msnGetData missionObj 'reward))
 					(typIncData &unidKorolovShipping; 'xp (msnGetData missionObj 'missionXP))
+
+					; If the player has destroyed 3 frigates, try deploying the Kronosaurus
+					(if (geq (typGetGlobalData &scCharonFrigateRaider; 'totalDestroyed) 3)
+						(msnSetData missionObj 'kronosaurusWarning (chrDeployKronosaurus))
+						)
 
 					; Check to see if we've been promoted
 					(setq oldRank (korGetPlayerLevel))
