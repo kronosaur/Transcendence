@@ -31,6 +31,8 @@
 	<!ENTITY msCSCDestroyAresConvoy		"0xDDDEF01A">
 	<!ENTITY msCSCDestroyAresTarget		"0xDDDEF01B">
 	<!ENTITY tbCSCDestroyAresTarget		"0xDDDEF01C">
+	<!ENTITY unidKronosaurus			"0xDDDEF01D">
+	<!ENTITY msKronosaurus				"0xDDDEF01E">
 
 	<!ENTITY ssEarthSpaceStandard		"0x00000001">
 	<!ENTITY ssEarthSpaceRedDwarf		"0x00000002">
@@ -1871,6 +1873,8 @@
 	<Module filename="Ferians.xml"/>
 	<Module filename="Iocrym.xml"/>
 	<Module filename="KorolovShipping.xml"/>
+	<Module filename="Kronosaurus.xml"/>
+	<Module filename="KronosaurusMission01.xml"/>
 	<Module filename="KSMission01.xml"/>
 	<Module filename="KSMission02.xml"/>
 	<Module filename="KSMission03.xml"/>
