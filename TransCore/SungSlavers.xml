@@ -1319,7 +1319,7 @@
 			dockScreen=			"&dsSungSlaveQuarters;"
 			noMapLabel=			"true"
 
-			armorID=			"&itLightTitaniumPlate;"
+			armorID=			"&itUltraLightTitaniumArmor;"
 			hitPoints=			"35"
 			structuralHitPoints="10"
 			ejectaType=			"&vtWreckEjecta;"
@@ -1362,7 +1362,7 @@
 			dockScreen=			"&dsSungSlaveQuarters;"
 			noMapLabel=			"true"
 
-			armorID=			"&itLightTitaniumPlate;"
+			armorID=			"&itUltraLightTitaniumArmor;"
 			hitPoints=			"20"
 			structuralHitPoints="10"
 			ejectaType=			"&vtWreckEjecta;"

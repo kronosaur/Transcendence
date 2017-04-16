@@ -212,7 +212,7 @@
 		<!-- Configuration -->
 		
 		<Armor
-			armorID=			"&itHeavyTitaniumPlate;"
+			armorID=			"&itTitaniumArmor;"
 			count=				"12"
 			/>
 		

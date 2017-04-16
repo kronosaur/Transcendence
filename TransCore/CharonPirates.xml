@@ -64,8 +64,8 @@
 			>
 
 		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itUltraLightTitaniumPlate;"/>
-			<ArmorSection start="90"  span="180" armorID="&itUltraLightTitaniumPlate;"/>
+			<ArmorSection start="270" span="180" armorID="&itUltraLightTitaniumCasing;"/>
+			<ArmorSection start="90"  span="180" armorID="&itUltraLightTitaniumCasing;"/>
 		</Armor>
 
 		<Devices>
@@ -113,7 +113,7 @@
 		<!-- Configuration -->
 		
 		<Armor
-			armorID=			"&itLightTitaniumPlate;"
+			armorID=			"&itUltraLightTitaniumArmor;"
 			count=				"2"
 			/>
 		
@@ -551,7 +551,7 @@
 			dockingPorts=		"8"
 			canAttack=			"true"
 
-			armorID=			"&itLightTitaniumPlate;"
+			armorID=			"&itUltraLightTitaniumArmor;"
 			hitPoints=			"70"
 			regen=				"1"
 			fireRateAdj=		"80"

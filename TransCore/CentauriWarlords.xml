@@ -577,8 +577,8 @@
 			>
 
 		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itLightTitaniumPlate;" />
-			<ArmorSection start="90"  span="180" armorID="&itLightTitaniumPlate;" />
+			<ArmorSection start="270" span="180" armorID="&itUltraLightTitaniumArmor;" />
+			<ArmorSection start="90"  span="180" armorID="&itUltraLightTitaniumArmor;" />
 		</Armor>
 
 		<Devices>

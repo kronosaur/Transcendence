@@ -1345,7 +1345,7 @@
 		<!-- Configuration -->
 
 		<Armor
-			armorID=			"&itLightTitaniumPlate;"
+			armorID=			"&itUltraLightTitaniumArmor;"
 			count=				"1"
 			/>
 
