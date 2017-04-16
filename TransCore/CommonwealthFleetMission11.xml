@@ -1,0 +1,170 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Destroy Ares Target ==========================================
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	missionXP:		XP awarded for completing mission
+	targetsLeft:	Number of targets left to destroy
+	targetID:		The current target
+	wingmenLeft:	Number of wingmen to survive mission
+
+	======================================================================== -->
+
+	<MissionType UNID="&msCSCDestroyAresTarget;"
+			name=			"Destroy Ares Convoy"
+			attributes=		"commonwealthFleet, cscTaskForce, rank5"
+
+			level=			"5-9"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<Events>
+			<OnCreate>
+				(block Nil
+					(msnSetData gSource 'missionXP 1000)
+					)
+			</OnCreate>
+
+			<OnStarted>
+				(block (
+					(cscObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(targetPos (sysVectorRandom cscObj (random 300 600) 250))
+					targetID
+					)
+					(enum (sysCreateShip &tbCSCDestroyAresTarget; targetPos &svAres;) theShip
+						(block Nil
+							(shpOrder theShip 'waitForTarget gPlayerShip)
+							(shpOrder theShip 'attack gPlayerShip)
+							(shpOrder theShip 'attack cscObj)
+							(objSetData theShip 'CSCMission13 (objGetID gSource))
+							(msnRegisterForEvents gSource theShip)
+							(msnIncData gSource 'targetsLeft)
+							(if (not targetID) (setq targetID (objGetID theShip)))
+							)
+						)
+					(msnSetData gSource 'targetID targetID)
+					(msnSetPlayerTarget gSource)
+					)
+			</OnStarted>
+
+			<OnAcceptedUndock>
+				(intFleetCreateWingmen gSource 6 &scBritannia;)
+			</OnAcceptedUndock>
+
+			<OnObjDestroyed>
+				(switch
+					;	Enemy destroyed
+					(= (objGetData aObjDestroyed 'CSCMission13) (objGetID gSource))
+						(block Nil
+							;	Do we need to update the players target
+							(if (= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+								(block Nil
+									;	LATER: check that these ships belog to this mission instance
+									(msnSetData gSource 'targetID (objGetID (sysFindObject gPlayerShip "sAND:CSCMission13;")))
+									(msnSetPlayerTarget gSource)
+									)
+								)
+
+							;	Check if this was the last target
+							(if (leq (msnIncData gSource 'targetsLeft -1) 0)
+								(msnSuccess gSource)
+								)
+							)
+					)
+			</OnObjDestroyed>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'attack)
+			</OnSetPlayerTarget>
+
+			<OnCanDebrief>
+				(block (wingmenLeft)
+					;	Wingmen leave
+					(setq wingmenLeft (intFleetDisperseWingmen gSource))
+					(msnSetData gSource 'wingmenLeft wingmenLeft)
+
+					Nil
+					)
+			</OnCanDebrief>
+
+			<OnReward>
+				(commFleet_GiveReward gSource)
+			</OnReward>
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Intercept Ares Target"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"Intercept and destroy an unknown Ares target.\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+			<Text id="Intro">
+				(cat
+					"The XO walks up to you.\n\n"
+
+					"\"Good to see you pilot. We've got a mission for you.\""
+					)
+			</Text>
+			<Text id="Briefing">
+				(cat
+					"\"Your orders are to lead a flight of Britannias and intercept and destroy an unknown hostile. "
+					"We'll enter the coordinates to your computer. What do you say?\""
+					)
+			</Text>
+			<Text id="AcceptReply">
+				"\"Good luck, %name%!\""
+			</Text>
+			<Text id="DeclineReply">
+				"\"Get the hell out of here then!\""
+			</Text>
+
+			<Text id="InProgress">
+				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+			</Text>
+			<Text id="FailureDebrief">
+				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
+			</Text>
+			<Text id="SuccessDebrief">
+				(block (
+					(wingmenLeft (msnGetData gSource 'wingmenLeft))
+					(shipsLeftText (@ (list 'zero 'one 'two 'three 'four 'five 'six) wingmenLeft))
+					)
+					(switch
+						(leq wingmenLeft 2)
+							"\"A tough mission. We can't afford to lose so many good pilots.\""
+
+						(leq wingmenLeft 4)
+							(cat
+								"\"Good mission! It's unfortunate that only " shipsLeftText " of your wingmen survived.\""
+								)
+
+						(cat 
+							"\"Outstanding mission! Looks like you came back with " shipsLeftText " wingmen.\""
+							)
+						)
+					)
+			</Text>
+		</Language>
+	</MissionType>
+
+	<ShipTable UNID="&tbCSCDestroyAresTarget;">
+		<Table>
+			<Ship chance="60"	count="1"	class="&scPhobos;"		sovereign="&svAres;"/>
+			<Ship chance="30"	count="35"	class="&scSandstorm;"	sovereign="&svAres;"/>
+			<Ship chance="10"	count="3"	class="&scDeimos;"		sovereign="&svAres;"/>
+		</Table>
+	</ShipTable>
+
+</TranscendenceModule>

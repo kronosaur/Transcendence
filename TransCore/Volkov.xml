@@ -12,6 +12,7 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Wolfen"
 			type=				"gunship"
+			defaultSovereign=	"&svCommonwealth;"
 
 			mass=				"30"
 			cargoSpace=			"35"
@@ -92,6 +93,34 @@
 			<Text id="WatchYourTargets">		"\"Blya! Watch your fire!\""</Text>
 			<Text id="WingmanJoined">			""</Text>
 			<Text id="WingmanKilled">			"\"Helena, I will join you now!\""</Text>
+
+			<Text id="Intro">
+				(if (= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+					(cat
+						"As the crowd breaks up, a tall man in a faded flight suit walks up to you:\n\n"
+						"\"My name is Volkov. You are going to the Core, is true? "
+						"I also want to go and I would fly with you, if you're willing.\""
+						)
+					(cat
+						"As the crowd breaks up, a tall man in a faded flight suit walks up to you:\n\n"
+						"\"My name is Volkov. You are leaving the system, is true? "
+						"I also want to go and I would fly with you, if you're willing.\""
+						)
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(cat
+					"Volkov nods his head, more in relief than in joy.\n\n"
+					"\"Good. I will see you out there!\""
+					)
+			</Text>
+			<Text id="DeclineReply">
+				(cat
+					"Volkov grimaces in disappointment and a profound grief fills his eyes. "
+					"He begins to plead, but then turns away in resignation. As he walks away he "
+					"whispers to himself: \"Helena...\" And then he is gone."
+					)
+			</Text>
 		</Language>
 		
 		<Events>

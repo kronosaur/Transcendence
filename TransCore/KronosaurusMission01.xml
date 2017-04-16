@@ -1,0 +1,217 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Kronosaurus ==================================================
+
+	The Kronosaurus hunts the player
+
+	EXTRA DATA
+
+	targetID:	ID of the Kronosaurus
+	destroyedByPlayer:	True if player destroyed the Kronosaurus
+	destroyedBy:		Name of ship which destroyed Kronosaurus
+
+	======================================================================== -->
+
+	<MissionType UNID="&msKronosaurus;"
+			name=			"The Kronosaurus"
+			attributes=		"special"
+
+			maxAppearing=		"1"
+			>
+	
+		<Events>
+			<OnCreate>
+				;	No mission if the Kronosaurus is unavailable
+				(if (not (rpgCharacterIsAliveAndWell &unidKronosaurus;))
+					(msnDestroy gSource)
+					)
+			</OnCreate>
+
+			<OnStarted>
+				(block (
+					(korolovObj (sysFindObject Nil "TN +korolovShipping;"))
+					kronosaurus
+					)
+
+					;	Create the Kronosaurus
+					(setq kronosaurus
+						(rpgCharacterCreateShip
+							&unidKronosaurus;
+							&scCharonFrigateKronosaurus;
+							(sysFindObject gPlayerShip "GR -uncharted;")
+							{ repairAll:True }
+							)
+						)
+
+					;	Order the Kronosaurus to attack the player
+					(shpCancelOrders kronosaurus)
+					(shpOrder kronosaurus 'attack gPlayerShip)
+					(objSetProperty kronosaurus 'dockingEnabled Nil)
+
+					(msnSetData gSource 'targetID (objGetID kronosaurus))
+					(msnRegisterForEvents gSource kronosaurus)
+					(msnRegisterForEvents gSource gPlayerShip)
+
+					;	We debrief at the nearest Korolov station
+					(if korolovObj
+						(msnSetProperty gSource 'debrieferID (objGetID korolovObj))
+						)
+					)
+			</OnStarted>
+
+			<OnObjDestroyed>
+				(switch
+					(or (= aDestroyReason 'enteredStargate) (= aDestroyReason 'ascended))
+						Nil
+
+					(= aObjDestroyed gPlayerShip)
+						(block Nil
+							(msnFailure gSource)
+							; suppress the debrief until we add a failure screen
+							; probably only possible if player has insurance
+							(msnSetProperty gSource 'isDebriefed True)
+							)
+
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(block Nil
+							(rpgCharacterSetStatus &unidKronosaurus; 'dead)
+							(msnSetData gSource 'destroyedByPlayer (= aOrderGiver gPlayerShip))
+							(msnSetData gSource 'destroyedBy (objGetName aOrderGiver 0x04))
+							(msnSuccess gSource)
+							)
+					)
+			</OnObjDestroyed>
+
+			<OnGetNextScreen>
+				(if (and (= aScreenType 'SuccessFollowUp) (msnGetData gSource 'destroyedByPlayer))
+					{
+						nextScreen: &dsRPGWingmanEncounter;
+						nextScreenData: {wingman: &scWolfenVolkov;}
+						}
+					)
+			</OnGetNextScreen>
+
+			<OnReward>
+				(if (msnGetData gSource 'destroyedByPlayer)
+					(block Nil
+						(typSetGlobalData &unidKorolovShipping; 'level 4)
+						(typSetGlobalData &unidKorolovShipping; 'xp 5000)
+						)
+					)
+			</OnReward>
+
+			<OnPlayerEnteredSystem>
+				(block (korolovObj)
+					;	If the Kronosaurus is here then restore the ship and attack player
+					(if (and (= (sysGetNode) (typGetData &unidKronosaurus; 'lastNodeID))
+							(rpgCharacterIsAliveAndWell &unidKronosaurus;)
+							)
+						(block (kronosaurus)
+							;	Note - this doesn't add the Kronosaurus until the player has arrived i.e.
+							;	if Kronosaurus is in SRS range it will appear on screen the same time as
+							;	player. We could move the rpgCharacterCreateShip to OnGlobalSystemStarted
+							;	but that requires extra checks, and we need to order the ship here
+							(setq kronosaurus (rpgCharacterCreateShip &unidKronosaurus; &scCharonFrigateKronosaurus;))
+							(objSetProperty kronosaurus 'dockingEnabled Nil)
+							(shpCancelOrders kronosaurus)
+							(shpOrder kronosaurus 'attack gPlayerShip)
+							)
+						)
+
+					;	We can debrief at any Korolov so reset debrieferID everytime we change system
+					;	Note - this means we can't have more than one Korolov station per system, but
+					;	we could use GetGlobalDockScreen instead
+					(if (setq korolovObj (sysFindObject Nil "TN +korolovShipping;"))
+						(msnSetProperty gSource 'debrieferID (objGetID korolovObj))
+						)
+					)
+			</OnPlayerEnteredSystem>
+
+			<GetGlobalAchievements>
+				(block (
+					(theMission (@ (msnFind "r +unid:&msKronosaurus;; +property:isCompleted;") 0))
+					)
+					(switch
+						(not theMission)
+							Nil
+
+						(msnGetProperty theMission 'isFailure)
+							(list (list
+								"Defeated by the Kronosaurus"
+								Nil
+								"achievements &amp; regrets"
+								))
+
+						(and (msnGetProperty theMission 'isSuccess) (msnGetData theMission 'destroyedByPlayer))
+							(list (list
+								"Defeated the Kronosaurus"
+								Nil
+								"achievements &amp; regrets"
+								))
+
+						(msnGetProperty theMission 'isSuccess)
+							(list (list
+								"Evaded the Kronosaurus"
+								Nil
+								"achievements &amp; regrets"
+								))
+
+						Nil
+						)
+					)
+			</GetGlobalAchievements>
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Defeat the Kronosaurus"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"By destroying several Charon frigates you have alarmed the pirates. "
+					"They're sending the Kronosaurus after you! It is the deadliest frigate "
+					"in the Charon fleet and it will not stop until you are destroyed.\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="InProgress">
+				(cat
+					"\"Sorry, captain, but the Kronosaurus is hunting you! No freighter crew "
+					"will dare to travel with you while that frigate is in system. Good Luck!\""
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+			<Text id="SuccessDebrief">
+				(if (msnGetData gSource 'destroyedByPlayer)
+					(msnTranslate gSource "SuccessDebrief:player")
+					(msnTranslate gSource "SuccessDebrief:other")
+					)
+			</Text>
+			<Text id="SuccessDebrief:player">
+				(cat
+					"A crowd gathers around you as you enter the docking bay. "
+					"Assistant Director "
+					(objGetData (objGetObjByID (msnGetProperty gSource 'debrieferID)) 'assistantDirector)
+					" shakes your hand:\n\n"
+					"\"I never thought I'd see the day! You've destroyed the Kronosaurus! The deadliest ship in the Charon fleet! "
+					"This day and your accomplishments will be remembered always.\""
+					)
+			</Text>
+			<Text id="SuccessDebrief:other">
+				(cat
+					"There is a crowd celebrating in the main hall. "
+					"One of the freighter captains approaches you:\n\n"
+					"\"Did you hear, the Kronosaurus has been destroyed by "
+					(msnGetData gSource 'destroyedBy) "!\""
+					)
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

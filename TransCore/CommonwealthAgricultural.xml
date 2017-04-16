@@ -2,15 +2,7 @@
 
 <TranscendenceModule>
 
-	<!-- Agricultural Station
-	
-	GLOBAL DATA
-
-	missionsAccepted:	Total missions accepted	
-	missionsCompleted:	Total successful missions
-	missionsFailed:		Total failed missions
-	
-	-->
+	<!-- Agricultural Station ============================================== -->
 
 	<StationType UNID="&stAgriculturalStation;"
 			name=				"Commonwealth agricultural colony"
@@ -105,236 +97,43 @@
 		
 		<DockScreens>
 			<Main>
-				<InitialPane>
-					(if (eq (objGetData gSource "State") "in-progress")
-						"MissionStatus"
-						"Default"
-						)
-				</InitialPane>
-
 				<Panes>
-					<Default
-							desc=	"You are inside a C9-class prefabricated agricultural station.">
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Meeting Hall" key="M" default="1">
-								(if (eq (objGetData gSource "State") "done")
-									(scrShowPane gScreen "MissionDone")
-									(scrShowPane gScreen "MeetingHall")
-									)
+							<Action id="actionMeetingHall" default="1">
+								(rpgMissionAssignment {
+									missionCriteria: (cat "n +commonwealthAgricultural; =" (sysGetLevel) ";")
+									noMissionTextID: 'descHallEmpty
+									maxPerStation: 1
+									})
 							</Action>
 
-							<Action name="Commodities Exchange" key="C">
+							<Action id="actionCommoditiesExchange">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Dock Services" key="D">
+							<Action id="actionDockServices">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
-
-					<MissionDone
-							desc=	"The hall is empty, but in the corner you can see a small Duralloy plaque commemorating a battle against pirates.">
-
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</MissionDone>
-
-					<MeetingHall>
-						<OnPaneInit>
-							(switch
-								; If the player hasn't accepted the mission yet...
-								(eq (objGetData gSource "State") "start")
-									(block Nil
-										(if (eq (objGetData gSource "Declined") 0)
-
-											; If this is the first time the player is here...
-											(scrSetDesc gScreen (cat 
-												"As you enter the meeting hall, you see about a dozen people talking excitedly. "
-												"One of them approaches you: \"Welcome to " (objGetName gSource) ", "
-												"captain. I hope you don't mind if we skip the tour of the "
-												"station and instead get right to the point: the truth is that we've received "
-												"good information that a small raiding party is heading for this station. "
-												"We saw your ship come in, and frankly, we thought that you might be able to help us...\""
-												))
-
-											; Else, if the player has declined before...
-											(scrSetDesc gScreen "\"You're back! Look, we're desperate. No one else has a powerful ship or the skills to fly it. Please reconsider our offer...\"")
-											)
-										)
-
-								; Else (if the mission is complete)...
-								(scrSetDesc gScreen "The hall is empty.")
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" key="C">
-								<ShowPane pane="Proposal"/>
-							</Action>
-						</Actions>
-
-					</MeetingHall>
-
-					<Proposal>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"\"If you can defend our station, we're prepared to offer you " (objGetStaticData gSource "Reward")
-								" credits in compensation (which is frankly all we've been able to collect on short notice). What do you say?\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Accept" default="1" key="A">
-								(block Nil
-									(objSetData gSource "State" "in-progress")
-									(typIncGlobalData &stAgriculturalStation; "missionsAccepted")
-									(scrShowPane gScreen "AcceptProposal")
-									)
-							</Action>
-
-							<Action name="Decline" cancel="1" key="D">
-								(block Nil
-									(objSetData gSource "Declined" 1)
-									(scrShowPane gScreen "DeclineProposal")
-									)
-							</Action>
-						</Actions>
-
-					</Proposal>
-
-					<AcceptProposal>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"\"Thank you, you won't regret it! We believe that the first wave is composed "
-								"mostly of gunships; the heavier ships won't show up til the end. You should "
-								"have no problem at all! Well, we better get to the shelters. Thanks again!\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
-								(block Nil
-									(objSetData gSource "WaveReady" Nil)
-									(sysAddObjTimerEvent (random 30 150) gSource "OnTimer")
-									(scrExitDock gScreen)
-									)
-							</Action>
-						</Actions>
-
-					</AcceptProposal>
-
-					<DeclineProposal>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"\"Well, I suppose I shouldn't have expected you to risk your life for us.\" He offers you his hand, "
-								"\"Thanks, anyways. And wish us luck.\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
-								<Exit/>
-							</Action>
-						</Actions>
-
-					</DeclineProposal>
-
-					<MissionStatus>
-						<OnPaneInit>
-							(switch
-								; If the station is actively under attack...
-								(objIsUnderAttack gSource)
-									(block Nil
-										(scrSetDesc gScreen "\"Whoa, what are you doing here!? The station is still under attack! Just get out there are finish the job, you've got them on the run now.\"")
-										(setq gState "under-attack")
-										)
-
-								; If the wave hasn't arrived yet...
-								(not (objGetData gSource "WaveReady"))
-									(block Nil
-										(scrSetDesc gScreen
-											(item (item (objGetStaticData gSource "WaveData") (objGetData gSource "Wave")) 1)
-											)
-										(setq gState "waiting")
-										)
-
-								; If we have more waves to go...
-								(gr (count (objGetStaticData gSource "WaveData")) (add (objGetData gSource "Wave") 1))
-									(block Nil
-										(scrSetDesc gScreen
-											(item (item (objGetStaticData gSource "WaveData") (add (objGetData gSource "Wave") 1)) 1)
-											)
-										(setq gState "next")
-										)
-
-								; Otherwise, we are done...
-								(block Nil
-									(scrSetDesc gScreen (cat
-										"\"You've done it! I haven't seen fighting like that since the videos of the Marineris War! "
-										" As promised, we've deposited " (objGetStaticData gSource "Reward") " credits into your account.\"")
-										)
-
-									(if (not (eq (objGetData gSource "State") "done"))
-										(block Nil
-											(intMissionRewardPayment (objGetStaticData gSource "Reward"))
-											(typIncGlobalData &stAgriculturalStation; "missionsCompleted")
-											)
-										)
-
-									(setq gState "done")
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Undock" cancel="1" default="1" key="U">
-								(block Nil
-									(switch
-										(eq gState "next")
-											(block Nil
-												(objSetData gSource "Wave" (add (objGetData gSource "Wave") 1))
-												(objSetData gSource "WaveReady" Nil)
-												(sysAddObjTimerEvent (random 30 150) gSource "OnTimer")
-												)
-										(eq gState "done")
-											(block Nil
-												(objSetData gSource "State" "done")
-												)
-										)
-
-									(scrExitDock gScreen)
-									)
-							</Action>
-
-						</Actions>
-
-					</MissionStatus>
 				</Panes>
 			</Main>
 		</DockScreens>
 
 		<!-- Events and Data -->
-		
-		<InitialData>
-			<State>		"start"		</State>
-			<Declined>	0			</Declined>
-			<Wave>		0			</Wave>
-		</InitialData>
 
 		<StaticData>
 			<NPCService>
@@ -342,89 +141,211 @@
 					(	'repairArmor			5		100		)
 					)
 			</NPCService>
-
-			<Reward>	5000		</Reward>
-
-			<WaveData>
-				(
-					("wave 1"
-						"\"The first wave will be mostly composed of light gunships, although there is a small chance that they'll include the more powerful Viking-class ships. Don't worry, you'll have no trouble.\""
-
-						(lambda (station)
-							(block Nil
-								(sysAddEncounterEventAtDist 0 station &etPirateAmbush1; 300)
-								(sysAddEncounterEventAtDist 30 station &etPirateAmbush2; 300)
-								)
-							)
-						)
-
-					("wave 2"
-						"\"If the pirates are following their usual strategy, the next wave should be a little larger, but will again be mostly gunships. Watch out for the leaders, though, they'll be using the heavy Viking gunships.\""
-
-						(lambda (station)
-							(block Nil
-								(sysAddEncounterEventAtDist 0 station &etPirateAmbush2; 300)
-								(sysAddEncounterEventAtDist 90 station &etPirateAmbush2; 300)
-								)
-							)
-						)
-
-					("wave 3"
-						"\"OK, this is it. If we can hold out through this last wave, they'll likely give up. Plan on heavy gunships with missiles.\""
-
-						(lambda (station)
-							(block Nil
-								(sysAddEncounterEventAtDist 0 station &etPirateAmbush3; 300)
-								(sysAddEncounterEventAtDist 300 station &etPirateAmbush3; 300)
-								)
-							)
-						)
-					)
-			</WaveData>
 		</StaticData>
 
 		<Events>
 			<GetGlobalAchievements>
-				(block (theList)
-					(if (gr (typGetGlobalData &stAgriculturalStation; "missionsAccepted") 0)
-						(setq theList (list
+				(block (
+					(successList (plyGetKeyEventStat gPlayer 'missionSuccess Nil "* +commonwealthAgricultural;"))
+					(failureList (plyGetKeyEventStat gPlayer 'missionFailure Nil "* +commonwealthAgricultural;"))
+					)
+					(if (or successList failureList)
+						(list
 							(list
-								"Agricultural colonies defended"
-								(intMissionAchievementString (typGetGlobalData &stAgriculturalStation; "missionsCompleted") (typGetGlobalData &stAgriculturalStation; "missionsFailed"))
+								"Agricultural colony missions"
+								(rpgMissionAchievementString (count successList) (count failureList))
 								"missions &amp; activities"
 								)
-							))
+							)
 						)
-						
-					theList
 					)
 			</GetGlobalAchievements>
+		</Events>
 
-			<OnTimer>
-				(block Nil
-					; Create the encounter
-					(apply 
-						(eval 
-							(item 
-								(item (objGetStaticData gSource "WaveData") (objGetData gSource "Wave"))
-								2
+        <Language>
+			<Text id="actionMeetingHall">"[M]eeting Hall"</Text>
+			<Text id="actionCommoditiesExchange">"[C]ommodities Exchange"</Text>
+			<Text id="actionDockServices">"[D]ock Services"</Text>
+			<Text id="actionUndock">"[U]ndock"</Text>
+
+			<Text id="descWelcome">"You are inside a C9-class prefabricated agricultural station."</Text>
+			<Text id="descHallEmpty">"The hall is empty, but in the corner you can see a small Duralloy plaque commemorating a battle against pirates."</Text>
+
+			<Text id="core.mapDesc">
+                "Refuels up to level 5 &mdash; Repairs/installs armor up to level 5 &mdash; Sells food &mdash; Buys luxuries and supplies"
+            </Text>
+        </Language>
+	</StationType>
+
+	<!-- Mission: Defend Agricultural Station ==================================
+
+	EXTRA DATA
+
+	attackDesc:			Attack descriptor
+	destID:				Id of station to defend
+	nextWave:			Next wave
+	reward:				Reward (in credits) for completing mission
+
+	======================================================================== -->
+
+	<MissionType UNID="&msCommAgriDefend;"
+			name=				"Defend Agricultural Station"
+			attributes=			"commonwealthAgricultural, deliveryMission"
+
+			level=				"1-4"
+
+			expireTime=			"5400"
+			noDebrief=			"true"
+			>
+
+		<StaticData>
+			<Attackers>
+				(
+					{	id: "pirate"
+						minLevel: 1
+						maxLevel: 4
+						reward: 5000
+
+						waves: (
+							; Wave 1
+							(
+								{ table: &etPirateAmbush1;	timer: 0   distance:300}
+								{ table: &etPirateAmbush2;	timer: 30  distance:300 }
+								)
+
+							; Wave 2
+							(
+								{ table: &etPirateAmbush2;	timer: 0   distance:300}
+								{ table: &etPirateAmbush2;	timer: 90  distance:300 }
+								)
+
+							; Wave 3
+							(
+								{ table: &etPirateAmbush3;	timer: 0   distance:300}
+								{ table: &etPirateAmbush3;	timer: 300 distance:300 }
 								)
 							)
-						gSource 
-						Nil
+						}
+					)
+			</Attackers>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block (attackDesc)
+					(switch
+
+						; Pick a random attack profile
+						(not (setq attackDesc
+								(random
+									(filter (typGetStaticData &msCommAgriDefend; 'Attackers) theDesc
+										(and (geq (sysGetLevel) (@ theDesc 'minLevel))
+											(leq (sysGetLevel) (@ theDesc 'maxLevel))
+											)
+										)
+									)
+								))
+							(msnDestroy gSource)
+
+						; Set up the mission
+
+						(block Nil
+
+							; Copy owner to destID so we can override dockscreens with deliveryMission
+							(msnSetData gSource 'destID (objGetID aOwnerObj))
+
+							; Remember the attack profile
+							(msnSetData gSource 'attackDesc attackDesc)
+
+							; Set the wave counter
+							(msnSetData gSource 'nextWave 0)
+
+							; Register for events
+							(msnRegisterForEvents aOwnerObj)
+
+							; Set the reward
+							(msnSetData gSource 'reward (@ attackDesc 'reward))
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAcceptedUndock>
+				(msnAddTimerEvent gSource (random 30 150) 'OnNextWave)
+			</OnAcceptedUndock>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'destID)) 'escort)
+			</OnSetPlayerTarget>
+
+			<OnNextWave>
+				(block (
+					(destObj (objGetObjByID (msnGetData gSource 'destID)))
+					(attackDesc (msnGetData gSource 'attackDesc))
+					(nextWave (msnGetData gSource 'nextWave))
+					(waveDesc (@ (@ attackDesc 'waves) nextWave))
+					(desc (msnTranslate gSource (cat (@ attackDesc 'id) ":Wave:" nextWave)))
+					)
+
+					; Cancel any timer event
+					(msnCancelTimerEvent gSource 'OnNextWave)
+
+					(enum waveDesc theEncounter
+						(sysAddEncounterEventAtDist (@ theEncounter 'timer) destObj (@ theEncounter 'table) (@ theEncounter 'distance))
 						)
 
-					; Mark WaveReady so that we know that we've already created the encounter
-					(objSetData gSource "WaveReady" True)
+					; Increment next wave
+					(setq nextWave (+ nextWave 1))
+					(if (@ (@ attackDesc 'waves) nextWave)
+						(msnSetData gSource 'nextWave nextWave)
+						(msnSetData gSource 'nextWave Nil)
+						)
+
+					; If the waves are on a timer then start the next one.
+					(if (and (msnGetData gSource 'nextWave) (@ attackDesc 'waveInterval))
+						(msnAddTimerEvent gSource (@ attackDesc 'waveInterval) 'OnNextWave)
+						)
 					)
-			</OnTimer>
+			</OnNextWave>
 
-			<OnDestroy>
-				(block (looter pirate)
-					(intCommonwealthOnDestroy)
+			<OnDeliveryMissionCompleted>
+				(switch
+					; If there are ships attacking the station, then we can't do anything yet.
+					(objGetProperty (objGetObjByID (msnGetData gSource 'destID)) 'underAttack)
+						{
+							desc: (msnTranslate gSource "InProgress")
+							forceUndock: True
+							}
 
-					(if (eq (objGetData gSource "State") "in-progress")
+					; If no more waves, then we've won
+					(not (msnGetData gSource 'nextWave))
 						(block Nil
+							(msnSuccess gSource)
+							(msnReward gSource)
+							{
+								desc: (msnTranslate gSource "SuccessDebrief")
+								forceUndock: Nil
+								}
+							)
+
+					; Otherwise, launch the next wave
+					(block (
+						(attackDesc (msnGetData gSource 'attackDesc))
+						(nextWave (msnGetData gSource 'nextWave))
+						)
+						(msnFireEvent gSource 'OnNextWave)
+						{
+							desc: (msnTranslate gSource (cat (@ attackDesc 'id) ":Wave:" nextWave))
+							forceUndock: True
+							}
+						)
+					)
+			</OnDeliveryMissionCompleted>
+
+			<OnObjDestroyed>
+				(switch
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'destID))
+						(block (looter)
 							; Create a transport to come and loot the remains
 							(setq looter 
 								(sysCreateShip 
@@ -434,24 +355,20 @@
 									)
 								)
 
-							(shpOrderLoot looter gSource)
-							(shpOrderGate looter)
+							(shpOrder looter 'loot aObjDestroyed)
+							(shpOrder looter 'gate)
 
-							; Assign some of the pirates to defend the transports and the
-							; rest to attack the player
-
-							(enum (sysFindObject gSource "sAE N:300;") pirate
-								(block (class)
-									(setq class (objGetType pirate))
-									(if (or (eq class &scCorsair;)
-											(eq class &scViking;)
-											(eq class &scCorsair-II;))
-										(block Nil
-											(shpCancelOrders pirate)
-											(if (eq (random 1 4) 1)
-												(shpOrderEscort pirate looter)
-												(shpOrderAttack pirate gPlayerShip)
-												)
+							; Assign some of the attackers to defend the transport and the rest to attack the player
+							(enum (sysFindObject aObjDestroyed "sAXE N:300; -capitalShip;") shipObj
+								(if (and
+										(!= shipObj looter)
+										(= (objGetSovereign shipObj) (objGetSovereign looter))
+										)
+									(block Nil
+										(shpCancelOrders shipObj)
+										(if (= (random 1 4) 1)
+											(shpOrder shipObj 'escort looter)
+											(shpOrder shipObj 'attack gPlayerShip)
 											)
 										)
 									)
@@ -459,21 +376,112 @@
 
 							; Send out more pirates to attack the player
 							(sysAddEncounterEventAtDist 0 gPlayerShip &etPirateAmbush4; 50)
-							
-							; Mission failed
-							(typIncGlobalData &stAgriculturalStation; "missionsFailed")
+
+							; And set failure
+							(msnFailure gSource)
 							)
-						)
 					)
-			</OnDestroy>
+			</OnObjDestroyed>
+
+			<OnReward>
+				(rpgMissionRewardPayment (msnGetData gSource 'reward))
+			</OnReward>
 		</Events>
 
-        <Language>
-            <Text id="core.mapDesc">
-                "Refuels up to level 5 &mdash; Repairs/installs armor up to level 5 &mdash; Sells food &mdash; Buys luxuries and supplies"
-            </Text>
-        </Language>
-	</StationType>
+		<Language>
+			<Text id="Name">
+				(cat "Defend " (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 0x04))
+			</Text>
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource (cat (@ (msnGetData gSource 'attackDesc) 'id) ":Summary"))
+					"Defend " (objGetName stationObj 0x04) " from a Pirate raid.\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+			<Text id="FirstIntro">
+				(cat
+					"As you enter the meeting hall, you see about a dozen people talking excitedly. "
+					"One of them approaches you:\n\n"
+
+					"\"Welcome to " (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					", captain. I hope you don't mind if we skip the tour of the "
+					"station and instead get right to the point: the truth is that we've received "
+					"good information that a small raiding party is heading for this station. "
+					"We saw your ship come in, and frankly, we thought that you might be able to help us...\""
+					)
+			</Text>
+			<Text id="Intro">
+				(cat
+					"\"You're back! Look, we're desperate. No one else has a powerful ship "
+					"or the skills to fly it. Please reconsider our offer...\""
+					)
+			</Text>
+			<Text id="Briefing">
+				(cat
+					"\"If you can defend our station, we're prepared to offer you " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					" in compensation (which is frankly all we've been able to collect on short notice). What do you say?\""
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(cat
+					"\"Thank you, you won't regret it! We believe that the first wave is composed "
+					"mostly of gunships; the heavier ships won't show up til the end. You should "
+					"have no problem at all! Well, we better get to the shelters. Thanks again!\""
+					)
+			</Text>
+			<Text id="DeclineReply">
+				(cat
+					"\"Well, I suppose I shouldn't have expected you to risk your life for us.\""
+					" He offers you his hand, \"Thanks, anyways. And wish us luck.\""
+					)
+			</Text>
+			<Text id="InProgress">
+				(cat
+					"\"Whoa, what are you doing here!? The station is still under attack! "
+					"Just get out there are finish the job, you've got them on the run now.\""
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(cat
+					"\"You've done it! I haven't seen fighting like that since the videos of the Marineris War! "
+					"As promised, we've deposited " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					" into your account.\""
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+			<Text id="pirate:Summary">
+				(cat
+					"Your mission is to defend " (objGetName (objGetObjByID (msnGetData gSource 'destID)) 0x04)
+					" from a Charon pirate raid."
+					)
+			</Text>
+			<Text id="pirate:Wave:0">
+				(cat
+					"\"The first wave will be mostly composed of light gunships, although there is a "
+					"small chance that they'll include the more powerful Viking-class ships. "
+					"Don't worry, you'll have no trouble.\""
+					)
+			</Text>
+			<Text id="pirate:Wave:1">
+				(cat
+					"\"If the pirates are following their usual strategy, the next wave should be a "
+					"little larger, but will again be mostly gunships. Watch out for the leaders, though, "
+					"they'll be using the heavy Viking gunships.\""
+					)
+			</Text>
+			<Text id="pirate:Wave:2">
+				(cat
+					"\"OK, this is it. If we can hold out through this last wave, they'll likely give up. "
+					"Plan on heavy gunships with missiles.\""
+					)
+			</Text>
+		</Language>
+	</MissionType>
 
 <!-- RESOURCES -->
 

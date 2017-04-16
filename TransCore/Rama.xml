@@ -8,6 +8,7 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Centurion/X"
 			type=				"heavy gunship"
+			defaultSovereign=	"&svCommonwealth;"
 
 			mass=				"90"
 			cargoSpace=			"50"
@@ -85,6 +86,42 @@
 			<Text id="WatchYourTargets">		""</Text>
 			<Text id="WingmanJoined">			"\"To hell with destiny!\""</Text>
 			<Text id="WingmanKilled">			"Rama has met his destiny"</Text>
+
+			<Text id="Intro">
+				(list
+					{
+						desc: (cat
+							"You talk to Rama, a silver-haired pilot who seems to be wearing blaster armor under his flight-suit. "
+							"You trade stories about flying and fighting, but when you mention your journey to the Core, "
+							"he grows quiet and stares off into space."
+							)
+						}
+					{
+						desc: (cat
+							"Rama talks about his ship instead: \"I've made a lot of modifications to her over the years. "
+							"You should see her in a fight: fast and tight as a lightship, but heavily armed. "
+							"She's saved my life a hundred times.\""
+							)
+						acceptLabel: "\"Why don't you travel with me to the [C]ore?\""
+						declineLabel: "\"Well, nice talking with you. [B]ye.\""
+						}
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(cat
+					"Rama pauses for a long time, and when he speaks it is in a whisper. "
+					"\"When I became a man, I went to see a monk about my future. "
+					"He told me that I was destined to die on a journey to the Core.\""
+					" And then, Rama laughs and dispatches the rest of his drink. "
+					"\"But I no longer fear my destiny. I will go with you\""
+					)
+			</Text>
+			<Text id="DeclineReply">
+				(cat
+					"As you get up to leave, Rama grabs your arm and says, "
+					"\"Perhaps we will see each other again.\""
+					)
+			</Text>
 		</Language>
 		
 		<Events>

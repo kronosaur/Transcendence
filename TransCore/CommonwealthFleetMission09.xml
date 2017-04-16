@@ -1,0 +1,146 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Destroy Ares Station =========================================
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	missionXP:		XP awarded for completing mission
+	targetID:		The target to destroy
+	wingmenLeft:	Number of wingmen to survive mission
+
+	======================================================================== -->
+
+	<MissionType UNID="&msCSCDestroyAresStation;"
+			name=			"Destroy Ares Station"
+			attributes=		"commonwealthFleet, cscTaskForce, rank4"
+
+			level=			"5-9"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<Events>
+			<OnCreate>
+				(block (targetObj)
+
+					;	Look for a suitable target
+					(setq targetObj (random
+						(sysFindObject aOwnerObj (cat "TAE +ares; +majorStation;"))
+						))
+
+					;	If no such station exists, then create one deep in the outer system.
+					;	NOTE: It is OK that this has side effects as long as the station that
+					;	we create is a major Ares station (so subsequent calls will find it).
+					(if (not targetObj)
+						(setq targetObj
+							(sysCreateStation &stAresCommune; (sysVectorRandom Nil (random 960 1500) 150))
+							)
+						)
+
+					;	Create the mission
+					(msnRegisterForEvents gSource targetObj)
+					(msnSetData gSource 'targetID (objGetID targetObj))
+					(msnSetData gSource 'missionXP 250)
+					)
+			</OnCreate>
+
+			<OnAcceptedUndock>
+				(intFleetCreateWingmen gSource 6 &scBritannia;)
+			</OnAcceptedUndock>
+
+			<OnObjDestroyed>
+				(switch
+					;	Enemy destroyed
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(msnSuccess gSource)
+					)
+			</OnObjDestroyed>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'attack)
+			</OnSetPlayerTarget>
+
+			<OnCanDebrief>
+				(block (wingmenLeft)
+					;	Wingmen leave
+					(setq wingmenLeft (intFleetDisperseWingmen gSource))
+					(msnSetData gSource 'wingmenLeft wingmenLeft)
+					;	XP bonus for each surviving wingman
+					(msnIncData gSource 'missionXP (* 100 wingmenLeft))
+
+					Nil
+					)
+			</OnCanDebrief>
+
+			<OnReward>
+				(commFleet_GiveReward gSource)
+			</OnReward>
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Intercept Ares Squadron"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"Intercept and destroy an Ares squadron before it can attack "
+					(objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4)
+					".\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+			<Text id="Intro">
+				(cat
+					"The XO walks up to you.\n\n"
+
+					"\"Good to see you pilot. We've got a mission for you.\""
+					)
+			</Text>
+			<Text id="Briefing">
+				(cat
+					"\"This mission is straight from Admiral Decker himself. "
+					"We want you to lead a flight of Britannias to destroy "
+					(objGetName (objGetObjByID (msnGetData gSource 'targetID)) 4)
+					" in this system. Any questions?\""
+					)
+			</Text>
+			<Text id="AcceptReply">
+				"\"Good luck, %name%!\""
+			</Text>
+			<Text id="DeclineReply">
+				"\"Get the hell out of here then!\""
+			</Text>
+
+			<Text id="InProgress">
+				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+			</Text>
+			<Text id="FailureDebrief">
+				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
+			</Text>
+			<Text id="SuccessDebrief">
+				(block (
+					(wingmenLeft (msnGetData gSource 'wingmenLeft))
+					)
+					(switch
+						(= wingmenLeft 0)
+							"\"A tough mission. We can't afford to lose so many good pilots.\""
+
+						(= wingmenLeft 1)
+							"\"Good mission! It's unfortunate that only one of your wingmen survived.\""
+						
+						(cat 
+							"\"Outstanding mission! Looks like you came back with " wingmenLeft " wingmen.\""
+							)
+						)
+					)
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

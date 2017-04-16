@@ -1,0 +1,679 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Kill Stronghold ==============================================
+
+	The standard Korolov kill stronghold mission rewritten using MissionType
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	missionXP:		XP awarded for completing mission
+
+	targetID:		Primary Charon stronghold
+	leaderID:		Leader of attack squadron
+
+	director:		Name of Korlov station director
+	dist:			Distance to stronghold
+
+	leaderLost:		True if the squadron leader is destroyed
+	betrayal:		True if the player kills the squadron leader
+	noHelp:			True if the player didnot help (more than 300 ls away when station destroyed)
+	commend:		True if the player destroyed the stronghold
+
+	alreadyDeclined:	True if the player has seen the initial DeclineReply
+
+	state:		One of the following:
+		Nil:
+		declined:	Player declined mission
+		catchup:	Player declined mission, then changed their mind
+		accepted:	Player accepted mission immediately
+
+	======================================================================== -->
+
+	<MissionType UNID="&msKorolovKillStronghold;"
+			name=			"Kill Stronghold"
+			attributes=		"korolov"
+
+			level=			"1-3"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<Events>
+			<OnCreate>
+				(block (targetObj)
+					(switch
+						; Player has to complete certain number of escort missions first
+						(gr (objGetData aOwnerObj 'remainingMissions) 0)
+							(msnDestroy gSource)
+
+						; Only offer to levels 1-3
+						(not (find '(1 2 3) (korGetPlayerLevel)))
+							(msnDestroy gSource)
+
+						; Only offer once per station
+						(msnFind aOwnerObj "*S +unid:&msKorolovKillStronghold;;")
+							(msnDestroy gSource)
+
+						; Find Charon stronghold
+						(not (setq targetObj (sysFindObject aOwnerObj "TAN +charonPirates; +primaryStronghold;")))
+							(msnDestroy gSource)
+
+						(block Nil
+							(msnSetData gSource 'targetID (objGetID targetObj))
+							(msnRegisterForEvents gSource targetObj)
+							(msnRegisterForEvents gSource gPlayerShip)
+							(msnSetData gSource 'missionXP 100)
+							(msnSetData gSource 'reward (@ '(0 1000 2000 4000 8000) (sysGetLevel)))
+							; Data for briefing
+							(msnSetData gSource 'director (objGetData aOwnerObj 'assistantDirector))
+							(msnSetData gSource 'dist (objGetDistance aOwnerObj targetObj))
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(if (msnGetData gSource 'state)
+					; If we've already sent out a squadron the player has to catch up
+					(block (
+						(leaderObj (objGetObjByID (msnGetData gSource 'leaderID)))
+						)
+						; Update the leader so we recieve messages
+						(objSetData leaderObj 'wingmanPlayer True)
+						; Reduce XP and reward
+						(msnIncData gSource 'missionXP -50)
+						(msnSetData gSource 'reward (multiply (sysGetLevel) 200))
+						(msnSetData gSource 'state 'catchup)
+						)
+
+					; Otherwise send out a squadron
+					(block (
+						(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+						(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+						leaderObj leaderClass
+						)
+						; If the player is slow, then we pick a slow leader
+						(setq leaderClass
+							(if (ls (shpGetMaxSpeed gPlayerShip) 20)
+								&scEI200CharonBuster;
+								&scRoninCharonBuster;
+							))
+						(setq leaderObj (sysCreateShip leaderClass stationObj &svCommonwealth;))
+						(msnSetData gSource 'leaderID (objGetID leaderObj))
+						(msnRegisterForEvents gSource leaderObj)
+
+						(setq aTargetObj targetObj)
+						(setq aBaseObj stationObj)
+						(setq aWingmanPlayer True)
+						(objFireEvent leaderObj "OrderDestroyStation")
+						(msnSetData gSource 'state 'accepted)
+						)
+					)
+			</OnAccepted>
+
+			<OnDeclined>
+				(if (msnGetData gSource 'state)
+					; If we've already sent out a squadron, just update the state so we can display a different message
+					(msnSetData gSource 'alreadyDeclined True)
+
+					; Otherwise send out the squadron
+					(block (
+						(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+						(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+						leaderObj
+						)
+						(setq leaderObj (sysCreateShip &scRoninCharonBuster; stationObj &svCommonwealth;))
+						(msnSetData gSource 'leaderID (objGetID leaderObj))
+						(msnRegisterForEvents gSource leaderObj)
+
+						(setq aTargetObj targetObj)
+						(setq aBaseObj stationObj)
+						(setq aWingmanPlayer Nil)
+						(objFireEvent leaderObj "OrderDestroyStation")
+						(msnSetData gSource 'state 'declined)
+						)
+					)
+			</OnDeclined>
+
+			<OnSetPlayerTarget>
+				(block (
+					(leaderObj (objGetObjByID (msnGetData gSource 'leaderID)))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					(switch
+						(and leaderObj (= (objGetData leaderObj 'status) 'attackingTarget))
+							(rpgSetTarget gSource aReason targetObj)
+
+						leaderObj
+							(rpgSetTarget gSource aReason leaderObj 'escort)
+
+						(rpgSetTarget gSource aReason targetObj)
+						)
+					)
+			</OnSetPlayerTarget>
+
+			<OnCompleted>
+				(block (
+					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					)
+					(if (= aReason 'failure)
+						(objSetData stationObj 'charonDominates True)
+						)
+					(switch
+						; Player is blacklisted if they fail the mission and kill the squadron
+						(and (= aReason 'failure) (msnGetData gSource 'betrayal))
+							(block Nil
+								(typSetData &unidKorolovShipping; 'level -1)
+								(typSetData &unidKorolovShipping; 'xp -1)
+								)
+						)
+					)
+			</OnCompleted>
+
+			<OnReward>
+				(korGiveReward gSource)
+			</OnReward>
+
+			<OnObjDestroyed>
+				(switch
+					(= aDestroyReason 'enteredStargate)
+						Nil
+
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'leaderID))
+						(block Nil
+							; If the squadron leader is destroyed we award less experience
+							(msnIncData gSource 'missionXP -50)
+							(msnSetData gSource 'leaderLost True)
+							(msnSetPlayerTarget gSource)
+							(switch
+								; Remember if player attacks squadron
+								(and gPlayerShip (= aOrderGiver gPlayerShip))
+									(msnSetData gSource 'betrayal True)
+
+								; Otherwise, if player was not participating then the mission is now over
+								(= (msnGetData gSource 'state) 'declined)
+									(msnFailure gSource)
+								)
+							)
+
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(switch
+							; Bonus if the player destroys the stronghold
+							(and gPlayerShip (= aOrderGiver gPlayerShip))
+								(block Nil
+									(msnIncData gSource 'missionXP 150)
+									(typIncData &unidKorolovShipping; 'recordStrongholds)
+									(msnSetData gSource 'commend True)
+									(msnSuccess gSource)
+									)
+
+							; Check if the player was anywhere near the action
+							(gr (objGetDistance aObjDestroyed gPlayerShip) 300)
+								(block Nil
+									(msnIncData gSource 'missionXP -50)
+									(msnSetData gSource 'noHelp True)
+									(msnSuccess gSource)
+									)
+
+							(msnSuccess gSource)
+							)
+					)
+			</OnObjDestroyed>
+
+			<OnObjDocked>
+				; If player docks with station after leader is destroyed then mission is failure
+				(if	(and
+						(and gPlayerShip (= aObjDocked gPlayerShip))
+						(= (objGetID aDockTarget) (msnGetProperty gSource 'ownerID))
+						(not (msnGetProperty gSource 'isSuccess))
+						(msnGetData gSource 'leaderLost)
+						)
+					(block Nil
+						; If the player hasn't accepted the mission yet then force now to display debrief screen
+						(if (= (msnGetData gSource 'state) 'declined)
+							(msnAccept gSource)
+							)
+						(msnFailure gSource)
+						)
+					)
+			</OnObjDocked>
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Destroy Pirate stronghold"
+			</Text>
+
+			<Text id="Summary">
+				(block Nil
+					(cat
+						"Destroy Pirate stronghold.\n\n"
+
+						"System: " (sysGetName) "\n"
+						"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward)) "\n"
+						)
+					)
+			</Text>
+
+			<Text id="Intro">
+				(cat
+					"As you enter the command center, you see several people gathered around a central display table.\n\n"
+
+					"Assistant Director " (msnGetData gSource 'director) " approaches you, "
+					"\"We're planning an operation to destroy the primary Charon stronghold in the system; we could use your help.\""
+					)
+			</Text>
+
+			<Text id="Briefing">
+				(if (msnGetProperty gSource 'isDeclined)
+					(list
+						{
+							desc:	"\"Sorry, all freighters are grounded for now; we've deployed a squadron to attack the Charon stronghold in the system.\""
+							acceptLabel: "\"[M]aybe I can help.\""
+							declineLabel: "\"[C]ontinue.\""
+							}
+						)
+					(cat
+						"\"The stronghold is located in the outer system " (msnGetData gSource 'dist) " light-minutes from here. "
+						"We're sending a squadron out to destroy it. We want you to join the squadron and follow them to the stronghold.\""
+						)
+					)
+			</Text>
+
+			<Text id="AcceptReply">
+				(if (msnGetProperty gSource 'isDeclined)
+					"\"Alright, we've uploaded the coordinates into your computer. The squadron will appreciate any help you can give them Good hunting!\""
+					"\"Alright, hit the pirates as hard as you can and get back here in one piece. Good hunting!\""
+					)
+			</Text>
+
+			<Text id="DeclineReply">
+				(if (msnGetData gSource 'alreadyDeclined)
+					"\"Why don't you help with the freighter maintenance until the combat pilots get back?\""
+					"\"That's not too surprising. This is a dangerous mission and only the best pilots attempt it. Take care of yourself.\""
+					)
+			</Text>
+
+			<Text id="InProgress">
+				(if (msnGetProperty gSource 'isDeclined)
+					"\"What are you doing here? Have you changed your mind again? Pull yourself together and go out there and fight!\""
+					"\"What are you doing here? How can you abandon your squadron? Pull yourself together and go out there and fight!\""
+					)
+			</Text>
+			<Text id="FailureDebrief">
+				(if (msnGetData gSource 'betrayal)
+					(cat "\"Either your poor marksmanship or deliberate malice destroyed the"
+						" squadron fighting the pirates! You will never work for us again, captain.\""
+						)
+					(cat
+						"\"What a disaster! If we can't shut down that Charon stronghold we're"
+						" going to have to cut down on freighter traffic&mdash;at least until we"
+						" can find some better pilots! You're dismissed.\""
+						)
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(switch
+					(msnGetData gSource 'betrayal)
+						(cat
+							"\"What happened out there? You're supposed to shoot at the pirates, not everything "
+							"that moves! At least the pirates are out of action for a while.\""
+							)
+					(msnGetData gSource 'noHelp)
+						(cat
+							"\"Welcome back captain. We managed to destroy the stronghold, but it appears you have some "
+							"problems with basic navigation. Perhaps you should get you ships computer checked out.\""
+							)
+					(msnGetData gSource 'leaderLost)
+						(cat
+							"\"Good work captain. It will take a while for the pirates to rebuild their stronghold. "
+							"But we lost some good people too.\""
+							)
+					(msnGetData gSource 'commend)
+						(cat
+							"\"Great flying, captain! It will take a while for the pirates to rebuild their stronghold. "
+							"The squadron leader sends " (random '("his" "her")) " thanks for your help. "
+							"We can all enjoy a bit of peace for a change.\""
+							)
+					(cat
+						"\"Great flying, captain! It will take a while for the pirates to rebuild their stronghold. "
+						"We can all enjoy a bit of peace for a change.\""
+						)
+					)
+			</Text>
+			<Text id="AlreadyDebriefed">
+				"\"Welcome back! Thanks for the great work last time.\""
+			</Text>
+		</Language>
+	</MissionType>
+
+<!-- SHIP CLASSES -->
+
+	<!-- Ronin C-class Leader 
+	
+	INHERITS from baCharonBuster
+
+	-->
+
+	<ShipClass UNID="&scRoninCharonBuster;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Ronin/C"
+			type=				"gunship"
+
+			mass=				"60"
+			cargoSpace=			"50"
+			thrustRatio=		"5.5"
+			maxSpeed=			"20"
+
+			inherit=			"&baCharonBuster;"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itCeramicPlate;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itCeramicPlate;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itCeramicPlate;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itCeramicPlate;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"/>
+			<Device deviceID="&itNAMIMissileLauncher;"/>
+			<Device deviceID="&itClass2Deflector;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Items>
+			<Item count="2d6" item="&itFragmentationMissile;"/>
+			<Item count="3d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Names definiteArticle="true">
+			gunship Ahab; gunship Bastille; gunship Centaurus Prime;
+			gunship Dharma Initiative; gunship Electra; gunship Fenris;
+			gunship Godzilla; gunship Hellspawn; gunship Indomitable;
+			gunship Joker; gunship Kestutis; gunship Leechwalker;
+			gunship Massive; gunship Nethersight; gunship Orcrist;
+			gunship Phoenix; gunship Quantum Mech; gunship Ragewind;
+			gunship Salamander; gunship Torchfire; gunship United Devils;
+			gunship Vampire; gunship Warbeast; gunship Xerxes;
+			gunship Yellow Emperor; gunship Zanzibar
+		</Names>
+
+		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+	</ShipClass>
+
+	<!-- EI200 Freighter Leader
+	
+	INHERITS from baCharonBuster
+	
+	-->
+
+	<ShipClass UNID="&scEI200CharonBuster;"
+			manufacturer=		"Earth Industries"
+			class=				"EI200"
+			type=				"freighter"
+
+			size=				"54"
+			mass=				"500"
+			cargoSpace=			"500"
+			thrustRatio=		"1.8"
+			maxSpeed=			"16"
+
+			attributes=			"commonwealth"
+			
+			inherit=			"&baCharonBuster;"
+			>
+
+		<Armor>
+			<ArmorSection start="330" span="60" armorID="&itHeavyReactiveArmor;" />
+			<ArmorSection start="270" span="60" armorID="&itHeavyReactiveArmor;" />
+			<ArmorSection start="210" span="60" armorID="&itHeavyReactiveArmor;" />
+			<ArmorSection start="150" span="60" armorID="&itHeavyReactiveArmor;" />
+			<ArmorSection start="90"  span="60" armorID="&itHeavyReactiveArmor;" />
+			<ArmorSection start="30"  span="60" armorID="&itHeavyReactiveArmor;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;" omnidirectional="true"/>
+			<Device deviceID="&itMonopoleDeflector;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"4.5"
+			rotationAccel=		"0.5"
+			/>
+
+		<Image imageID="&rsEI200Image;" imageWidth="90" imageHeight="90"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="42"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="42"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<Names definiteArticle="true">
+			attack ship Avatar; attack ship Bestiarum; attack ship Cervantes;
+			attack ship Don Quixote; attack ship España; attack ship Francisco Pizarro;
+			attack ship Guardian; attack ship Hunter; attack ship Indefatigable;
+			attack ship Jovana; attack ship Karter; attack ship Laurentian Abyss;
+			attack ship Montressor; attack ship Nocturn; attack ship Oviedo;
+			attack ship Preternatural; attack ship Rambaldi; attack ship Seville;
+			attack ship Toledo; attack ship Uruguay; attack ship Valencia;
+			attack ship Wellesley; attack ship Xenophon; attack ship Zerelda
+		</Names>
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+	</ShipClass>
+
+	<!-- Attack Leader 
+
+	EXTRA DATA
+
+	base:				Korolov station
+
+	rallyMarker:		Marker to go to
+
+	status:				Current ship status:
+							Nil						= just created
+							"waitForWingmen"		= 
+
+	target:				Station to destroyed
+
+	wingmanCount:		Number of wingmen
+	wingman{n}:			Pointer to wingman
+	wingmanPlayer:		True if player is a wingman
+
+	-->
+
+	<ShipClass UNID="&baCharonBuster;"
+			class=				"(charon buster base class)"
+			virtual=			"true" 
+			
+			attributes=			"baseClass"
+			>
+
+		<Events>
+			<OrderDestroyStation>
+				; aTargetObj = station to destroy
+				; aBaseObj = Korolov station
+				; aWingmanPlayer = True if player is a wingman too
+
+				(block (squadCount rallyPoint)
+					(objSetObjRefData gSource "target" aTargetObj)
+					(objSetObjRefData gSource "base" aBaseObj)
+					(objSetData gSource "wingmanPlayer" aWingmanPlayer)
+
+					; Create the squadron and set them to escort the leader
+					(setq squadCount 
+						(add
+							(item (list 0 2 (random 2 3) (random 3 5) (random 4 6) 6 6 6 6) (sysGetLevel))
+							(if aWingmanPlayer 0 2)
+							)
+						)
+					(objSetData gSource "WingmanCount" squadCount)
+
+					(for i 1 squadCount
+						(block (squadObj squadClass)
+							(setq squadClass (random '(&scRoninA; &scRoninA; &scRoninA; &scRoninB; &scRoninB; &scWolfen;)))
+							(setq squadObj (sysCreateShip squadClass aBaseObj (objGetSovereign gSource)))
+
+							(objSetObjRefData gSource (cat "Wingman" i) squadObj)
+							(shpOrder squadObj "escort" gSource)
+							)
+						)
+
+					; Register for events
+					(objRegisterForEvents gSource aTargetObj)
+
+					; Goto rally point
+					(setq rallyPoint (sysCreateMarker "rally" (sysVectorPolarOffset aBaseObj (random 0 359) (random 16 20)) &svCommonwealth;))
+					(objSetObjRefData gSource "rallyMarker" rallyPoint)
+					(shpOrder gSource "goto" rallyPoint)
+
+					(objSetData gSource "status" 'gotoRallyPoint)
+					)
+			</OrderDestroyStation>
+
+			<OnCreate>
+				(block Nil
+					; Register timer event to control behavior
+					(sysAddObjRecurringTimerEvent 60 gSource "OnBehaviorControl")
+					)
+			</OnCreate>
+
+			<OnOrdersCompleted>
+				(block (status wingmanPlayer)
+					(setq status (objGetData gSource "status"))
+					(setq wingmanPlayer (objGetData gSource "wingmanPlayer"))
+
+					(switch
+						(eq status 'gotoRallyPoint)
+							(block Nil
+								(objDestroy (objGetObjRefData gSource "rallyMarker"))
+								(shpOrder gSource "hold" Nil 6)
+								(objSetData gSource "status" 'waitForWingmen)
+
+								(if wingmanPlayer
+									(objSendMessage gPlayerShip gSource "Form up on my wing!")
+									)
+								)
+
+						(eq status 'waitForWingmen)
+							(block (targetPos bearing dist rallyPos rallyPoint)
+								; Pick a point near the target to rally at
+								(setq targetPos (sysVectorSubtract (objGetPos (objGetObjRefData gSource "target")) (objGetPos (objGetObjRefData gSource "base"))))
+								(setq bearing (sysVectorAngle targetPos))
+								(setq dist (sysVectorDistance targetPos))
+
+								; Pick a point that is 100 light-seconds from the target
+								(setq rallyPos (sysVectorPolarOffset (objGetObjRefData gSource "base") bearing (subtract dist 100)))
+								(setq rallyPoint (sysCreateMarker "rally" rallyPos &svCommonwealth;))
+
+								(objSetObjRefData gSource "rallyMarker" rallyPoint)
+								(shpOrder gSource "goto" rallyPoint)
+								(shpOrder gSource "hold" Nil 4)
+								(objSetData gSource "status" 'gotoAttackPoint)
+
+								(if wingmanPlayer
+									(objSendMessage gPlayerShip gSource "Go-code received! Follow my lead")
+									)
+								)
+
+						(eq status 'gotoAttackPoint)
+							(block Nil
+								; Done with marker
+								(objDestroy (objGetObjRefData gSource "rallyMarker"))
+
+								; Order wingmen to attack at will
+								(for i 1 (objGetData gSource "WingmanCount")
+									(block (wingmanObj)
+										(setq wingmanObj (ObjGetObjRefData gSource (cat "Wingman" i)))
+										(if wingmanObj
+											(if (leq (random 1 100) 50)
+												(shpOrder wingmanObj "attackNearestEnemy")
+												(shpOrder wingmanObj "attack" (objGetObjRefData gSource "target"))
+												)
+											)
+										)
+									)
+
+								(shpOrder gSource "attack" (objGetObjRefData gSource "target"))
+								(objSetData gSource "status" 'attackingTarget)
+
+								(if wingmanPlayer
+									(objSendMessage gPlayerShip gSource "We're in position! Attack at will!")
+									)
+								)
+
+						(eq status 'attackingTarget)
+							(block Nil
+								; Order wingmen to escort
+								(for i 1 (objGetData gSource "WingmanCount")
+									(block (wingmanObj)
+										(setq wingmanObj (ObjGetObjRefData gSource (cat "Wingman" i)))
+										(if wingmanObj
+											(shpOrder wingmanObj "escort" gSource)
+											)
+										)
+									)
+
+								(shpOrder gSource "dock" (objGetObjRefData gSource "base"))
+								(shpOrder gSource "wait" Nil 3)
+								(shpOrder gSource "gate")
+								(objSetData gSource "status" 'done)
+
+								(if wingmanPlayer
+									(objSendMessage gPlayerShip gSource "Nice work! Return to base, everyone")
+									)
+								)
+						)
+					)
+			</OnOrdersCompleted>
+
+			<OnObjDestroyed>
+				(block (status)
+					(setq status (objGetData gSource "status"))
+
+					(switch
+						; If the object is destroyed when we were not expecting it, return to base
+						(and (eq aObjDestroyed (objGetObjRefData gSource "target"))
+							(not (eq status 'attackingTarget))
+							)
+							(block Nil
+								(shpCancelOrders gSource)
+								(shpOrder gSource "dock" (objGetObjRefData gSource "base"))
+								(shpOrder gSource "wait" Nil 3)
+								(shpOrder gSource "gate")
+
+								(objSetData gSource "status" 'done)
+								)
+						)
+					)
+			</OnObjDestroyed>
+		</Events>
+
+	</ShipClass>
+
+</TranscendenceModule>

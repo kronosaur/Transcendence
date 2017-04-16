@@ -1,0 +1,310 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Escort =======================================================
+
+	The standard Korolov escort mission rewritten using MissionType
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	freighterID:	ID of freighter to escort
+	destID:			ID of destination (station or gate)
+	escortType:		Type of freighter being escorted
+	missionXP:		XP awarded for completing mission
+	cargoValue:		Value of cargo in freighter
+	playerDestroyedFreighter:	True if player destroyed the freighter (will be blacklisted)
+
+	======================================================================== -->
+
+	<MissionType UNID="&msKorolovEscort;"
+			name=			"Korolov Escort (standard)"
+			attributes=		"korolov, escort"
+
+			level=			"1-3"
+			>
+
+		<Events>
+			<OnCreate>
+				(block (
+					(playerLevel (korGetPlayerLevel))
+					dockedFreighters destList freighterObj destObj
+					)
+					; Filter down to the list of freighters that the player is
+					; qualified to escort (and that she hasn't already declined)
+					(setq dockedFreighters
+						(filter
+							(sysFindObject aOwnerObj "sHZ O:docked; +commonwealth; +freighter;")
+							theFreighter
+							(and
+								(not (objGetObjRefData theFreighter "korolovDest"))
+								(not (objGetData theFreighter "korolovPlayerEscort"))
+								(geq playerLevel (objGetStaticData theFreighter "korolovMinLevel"))
+								)
+							)
+						)
+
+					; Get the list of all stations that we might visit. Include stargates twice
+					; so thay they have more chances to be chosen
+					(setq destList
+						(filter
+							(append
+								(sysFindObject aOwnerObj "TAF +populated; -occupation; -uncharted;")
+								(sysFindObject aOwnerObj "G -uncharted;")
+								(sysFindObject aOwnerObj "G -uncharted;")
+								)
+							theDest
+							; The minimum travel distance depends on the player's level
+							(and
+								(geq (objGetDistance aOwnerObj theDest) (@ '(250 250 400 500 600) playerLevel))
+								(not (objGetData theDest 'noTraffic))
+								)
+							)
+						)
+
+					(switch
+						; Finite number of missions per station
+						(ls (objGetData aOwnerObj 'remainingMissions) 1)
+							(msnDestroy gSource)
+
+						; Only offer to new pilots and levels 1-3
+						(not (find '(0 1 2 3) playerLevel))
+							(msnDestroy gSource)
+
+						; No missions once the stronghold is destroyed
+						(objIsAbandoned (objGetObjRefData aOwnerObj 'charonStronghold))
+							(msnDestroy gSource)
+
+						; Pick a random freighter. If we can't find one there is no mission
+						(not (setq freighterObj (random dockedFreighters)))
+							(msnDestroy gSource)
+
+						; Pick a random destination. If we can't find one there is no mission
+						(not (setq destObj (random destList)))
+							(msnDestroy gSource)
+
+						; Otherwise setup mission
+						(block (
+							(gateMission (objMatches destObj Nil "G"))
+							pricePerContainer cargoValue escortRate escortFee
+							)
+							; Figure out the price per container of the cargo (This depends on the freighter class)
+							(setq pricePerContainer (eval (objGetStaticData freighterObj "korolovContainerPrice")))
+							(if (leq pricePerContainer 0) (setq pricePerContainer 200))
+
+							; Load the freighter with cargo
+							(korEmptyFreighter freighterObj)
+							(setq cargoValue (korFillFreighter freighterObj pricePerContainer))
+							;(dbgOutput "Cargo value: " cargoValue "; price per container: " pricePerContainer)
+
+							; Compute the fee that we will pay for escort based on the value of the
+							; cargo and the rate that the freighter will pay
+							(setq escortRate (objGetStaticData freighterObj "korolovEscortRate"))
+							(if (or (not escortRate) (= escortRate 0)) (setq escortRate 100))
+							(setq escortFee (/ (* escortRate cargoValue) 10000))
+
+							; Fee is not as high if we're just going to the stargate
+							(if gateMission
+								(setq escortFee (/ (* escortFee 65) 100))
+								)
+
+							; Adjust the fee randomly and round down to the nearest 50
+							(setq escortFee
+								(intRoundDown
+									(/ (* escortFee (random 75 125)) 100)
+									50
+									)
+								)
+
+							; Mission settings
+							(msnSetData gSource 'freighterID (objGetID freighterObj))
+							(msnSetData gSource 'destID (objGetID destObj))
+
+							(msnSetData gSource 'escortType (objGetType freighterObj))
+							(msnSetData gSource 'missionXP (if gateMission 75 100))
+							(msnSetData gSource 'cargoValue cargoValue)
+							(msnSetData gSource 'reward escortFee)
+
+							; Remember the destination for this transport, so we don't
+							; change it later.
+							(objSetObjRefData freighterObj "korolovDest" destObj)
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnDeclined>
+				(msnDestroy gSource)
+			</OnDeclined>
+
+			<OnAcceptedUndock>
+				(block (
+					(destObj (objGetObjByID (msnGetData gSource 'destID)))
+					(freighterObj (objGetObjByID (msnGetData gSource 'freighterID)))
+					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					)
+					(msnRegisterForEvents gSource freighterObj)
+					(objSetObjRefData freighterObj "korolovDest" Nil)
+					(objSetData freighterObj "korolovPlayerEscort" True)
+
+					; Order the freighter
+					(shpCancelOrders freighterObj)
+					(if (objMatches destObj Nil "G")
+						(shpOrder freighterObj 'gate destObj)
+						(block Nil
+							(shpOrder freighterObj 'dock destObj)
+							(shpOrder freighterObj 'wait Nil (random 3 6))
+							(shpOrder freighterObj 'dock stationObj)
+							)
+						)
+
+					(objSendMessage gPlayerShip freighterObj (msnTranslate gSource 'msgBeginEscort))
+					(objSetIdentified freighterObj)
+
+					; Order the pirates
+					(chrRaidTransport freighterObj stationObj destObj (msnGetData gSource 'cargoValue))
+					)
+			</OnAcceptedUndock>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'freighterID)) 'escort)
+			</OnSetPlayerTarget>
+
+			<OnCompleted>
+				(korEscortMissionCompleted gSource aReason gData)
+			</OnCompleted>
+
+			<OnReward>
+				(korGiveReward gSource)
+			</OnReward>
+
+			<OnObjDestroyed>
+				(switch
+					(= aDestroyReason 'enteredStargate)
+						Nil
+
+					; If the ship dies, mission fails
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'freighterID))
+						(block Nil
+							(msnSetData gSource 'playerDestroyedFreighter (and gPlayerShip (= aOrderGiver gPlayerShip)))
+							(msnFailure gSource)
+							)
+					)
+			</OnObjDestroyed>
+
+			<OnObjDocked>
+				(switch
+					; If a freighter on a mission docked, then mission is successful
+					(and
+						(= (objGetID aObjDocked) (msnGetData gSource 'freighterID))
+						(= (objGetID aDockTarget) (msnGetProperty gSource 'ownerID))
+						)
+						(block Nil
+							(objSetData aObjDocked "korolovPlayerEscort" Nil)
+							(msnSuccess gSource)
+							)
+					)
+			</OnObjDocked>
+
+			<OnObjEnteredGate>
+				(switch
+					; If a freighter on a mission, then mission is successful
+					(= (objGetID aObj) (msnGetData gSource 'freighterID))
+						(msnSuccess gSource)
+					)
+			</OnObjEnteredGate>
+
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Escort Korolov Freighter"
+			</Text>
+
+			<Text id="Summary">
+				(block (
+					(ship (objGetObjByID (msnGetData gSource 'freighterID)))
+					(dest (objGetObjByID (msnGetData gSource 'destID)))
+					)
+					(cat
+						"Your mission is to escort the " (objGetName ship 4)
+						" to " (objGetName dest 4) " and defend it from any attackers.\n\n"
+
+						"System: " (sysGetName) "\n"
+						"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward)) "\n"
+						)
+					)
+			</Text>
+
+			<Text id="Intro">
+				(cat
+					"The command center is filled with noise as freighter captains try to find "
+					"the best escort for thier missions. A manager walks over to you: "
+					"\"Hello %name%. Do you wish to hire yourself out as a freighter escort?\""
+					)
+			</Text>
+
+			<Text id="Briefing">
+				(block (
+					(ship (objGetObjByID (msnGetData gSource 'freighterID)))
+					(dest (objGetObjByID (msnGetData gSource 'destID)))
+					(cargoValue (intRoundUp (msnGetData gSource 'cargoValue) 1000))
+					)
+					(strCapitalize
+						(cat
+							(objGetName ship 4) " (" (shpGetClassName ship 4) ")"
+							" is transporting " (fmtCurrency 'credit cargoValue) " worth of cargo."
+							" She will pay " (fmtCurrency 'credit (msnGetData gSource 'reward))
+							" if you escort her safely to " (objGetName dest 4)
+							(if (not (objMatches dest Nil "G")) " and back again.")
+
+							"\n\nDo you wish to accept this assignment?"
+							)
+						)
+					)
+			</Text>
+
+			<Text id="AcceptReply">
+				"\"Great! Keep that freighter safe. Good luck!\""
+			</Text>
+
+			<Text id="DeclineReply">
+				"\"Oh well\""
+			</Text>
+
+			<Text id="InProgress">
+				"\"The freighter you're supposed to be escorting is already on its way!\""
+			</Text>
+			<Text id="FailureDebrief">
+				(if (msnGetData gSource 'playerDestroyedFreighter)
+					(cat "\"Either your poor marksmanship or deliberate malice destroyed the"
+						" freighter entrusted to your care! You will never work for us again, captain.\""
+						)
+					(cat "\"Your timidity under fire and your lack of skill doomed the poor crew"
+						" of your freighter and its cargo!\""
+						)
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(korSuccessDebrief gSource)
+			</Text>
+			<Text id="msgBeginEscort">
+				(block (
+					(ship (objGetName (objGetObjByID (msnGetData gSource 'freighterID)) 0))
+					(dest (objGetName (objGetObjByID (msnGetData gSource 'destID)) 0) )
+					)
+					(random (list
+						"Glad to have you with us, %name%"
+						(cat "On course for " dest)
+						(cat ship " reporting in")
+						"Nice to have you on our wing"
+						(cat ship " on course")
+						(cat ship " on course for " dest)
+						))
+					)
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>
