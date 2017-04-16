@@ -1452,6 +1452,12 @@ ALERROR CTranscendenceModel::LoadUniverse (const CString &sCollectionFolder, con
 		Ctx.bForceTDB = m_bForceTDB;
         Ctx.bNoCollectionLoad = m_bNoCollectionLoad;
 
+		//	Try to recover if loading the adventure or its extensions runs into
+		//	problems. We don't want to fail loading the game because of a probelm
+		//	with the last adventure.
+
+		Ctx.bRecoverAdventureError = true;
+
 		//	Add additional CodeChain primitives
 
 		SPrimitiveDefTable *pNewTable = Ctx.CCPrimitives.Insert();
