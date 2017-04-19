@@ -135,7 +135,7 @@
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
 
-			value=				"150"
+			value=				"120"
 			mass=				"3000"
 			  
 			description=		"This armor consists of heat-resistant ceramic plate backed by a fiber-reinforced composite. Ceramic armor is ideal for absorbing laser and particle beam damage."
@@ -160,7 +160,7 @@
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
 
-			value=				"150"
+			value=				"120"
 			mass=				"3000"
 			  
 			description=		"Reactive armor is laced with miniature explosive cells that mitigate against the impact of kinetic weapons and chemical explosives."
@@ -239,7 +239,7 @@
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
 
-			value=				"300"
+			value=				"260"
 			mass=				"4000"
 			  
 			description=		"An improved version of ceramic armor, this armor is very effective against laser and particle damage."
@@ -249,7 +249,7 @@
 
 		<Armor
 				hitPoints=	"60"
-				hpBonus=	"+100, -25, +50,  +0"
+				hpBonus=	"+100,  +0, +50,  +0"
 				/>
 
 	</ItemType>
@@ -375,7 +375,7 @@
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
 
-			value=				"300"
+			value=				"260"
 			mass=				"4000"
 			  
 			description=		"This heavier version of reactive armor can withstand more than 60 units of kinetic damage."
@@ -436,7 +436,7 @@
 
 		<Armor
 				hitPoints=	"70"
-				hpBonus=	"+100, -25, +50,  +0"
+				hpBonus=	"+100,  +0, +50,  +0"
 				/>
 
 	</ItemType>
@@ -451,7 +451,7 @@
 			frequency=			"uncommon"
 			numberAppearing=	"1d6"
 
-			value=				"600"
+			value=				"500"
 			mass=				"3500"
 			  
 			description=		"This is a more sophisticated version of reactive armor. Advanced reactive armor is very resistant to blast and kinetic damage."
@@ -466,33 +466,33 @@
 
 	</ItemType>
 
-	<!-- Solar Armor -->
+	<!-- Light Solar Armor -->
 
-	<ItemType UNID="&itSolarArmor;"
-			name=				"[segment(s) of ]solar armor"
+	<ItemType UNID="&itLightSolarArmor;"
+			name=				"[segment(s) of ]light solar armor"
 			attributes=			"commonwealth, minorItem, solon"
 			  
 			level=				"4"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
 
-			value=				"700"
-			mass=				"3000"
+			value=				"600"
+			mass=				"2000"
 			  
-			description=		"This armor combines honeycombed solar panels with a plasteel armor substrate. The armor will recharge the ship's reactor when near a sun."
+			description=		"One segment of light solar armor will provide 3 MWs of power when near a sun."
 			>
 
-		<Image imageID="&rsItems4;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems4;" imageX="192" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"75"
-				hpBonus=	"+100, -50, +25, -25, +25"
+				hitPoints=	"70"
+				hpBonus=	"+100, -50, +25, -50, +25, -25"
 
 				repairTech=	"5"
 				repairCostAdj=	"200"
 				installCostAdj=	"200"
 
-				photoRecharge="true"
+				photoRecharge="30"
 				/>
 
 	</ItemType>
@@ -538,7 +538,7 @@
 			value=				"700"
 			mass=				"3500"
 
-			description=		"Powered armor regenerates itself like an energy shield, though not nearly as quickly. The V10 consumes 1.5 MWs per segment."
+			description=		"Powered armor regenerates itself like an energy shield, though not nearly as quickly. The V10 consumes 0.5 MWs per segment."
 			>
 
 		<Image imageID="&rsItems4;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -548,8 +548,8 @@
 
 				installCostAdj=	"300"
 
-				regen=		"3"
-				powerUse=	"15"
+				regen=		"4"
+				powerUse=	"5"
 				/>
 
 	</ItemType>
@@ -618,7 +618,7 @@
 			frequency=			"rare"
 			numberAppearing=	"1d6"
 
-			value=				"1200"
+			value=				"1100"
 			mass=				"4000"
 			  
 			description=		"This segment of plasteel armor has been specially modified to resist radiation."
@@ -662,6 +662,36 @@
 
 	</ItemType>
 
+	<!-- Medium Solar Armor -->
+
+	<ItemType UNID="&itMediumSolarArmor;"
+			name=				"[segment(s) of ]medium solar armor"
+			attributes=			"commonwealth, minorItem, solon"
+			  
+			level=				"5"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			value=				"1200"
+			mass=				"3000"
+			  
+			description=		"This armor combines honeycombed solar panels with a plasteel armor substrate. One segment of solar armor will provide 5 MWs of power when near a sun."
+			>
+
+		<Image imageID="&rsItems5;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"100"
+				hpBonus=	"+50, -50, +25, -50, +25, -25"
+
+				repairCostAdj=	"200"
+				installCostAdj=	"200"
+
+				photoRecharge="50"
+				/>
+
+	</ItemType>
+
 <!-- LEVEL VI -->
 
 	<!-- Blast Plate -->
@@ -674,7 +704,7 @@
 			frequency=			"common"
 			numberAppearing=	"1d6"
 
-			value=				"2000"
+			value=				"2200"
 			mass=				"3500"
 			  
 			description=		"This armor is made out of a plasteel alloy designed to resist missile damage."
@@ -702,7 +732,7 @@
 			numberAppearing=	"1d4"
 
 			value=				"2000"
-			mass=				"4000"
+			mass=				"4500"
 			  
 			description=		"This is a heavier version of the innovative ceramic-based alloy."
 			>
@@ -710,7 +740,7 @@
 		<Image imageID="&rsItems6;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"120"
+				hitPoints=	"135"
 				hpBonus=	"  +0,  +0,+100, -25, +50"
 				
 				EMPDamageAdj=		"0"
@@ -728,7 +758,7 @@
 			frequency=			"rare"
 			numberAppearing=	"1d4"
 
-			value=				"2500"
+			value=				"1800"
 			mass=				"3000"
 			  
 			description=		"A blend of plasteel and duranium infused with active nanomachines. Duralloy armor repairs itself slowly over time."
@@ -793,6 +823,36 @@
 
 		<Armor
 				hitPoints=	"135"
+				/>
+
+	</ItemType>
+
+	<!-- Heavy Solar Armor -->
+
+	<ItemType UNID="&itHeavySolarArmor;"
+			name=				"[segment(s) of ]heavy solar armor"
+			attributes=			"commonwealth, minorItem, solon"
+			  
+			level=				"6"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			value=				"2400"
+			mass=				"5000"
+			  
+			description=		"Heavy solar armor is suitable for combat, while still providing free power. One segment will provide 8 MWs of power when near a sun."
+			>
+
+		<Image imageID="&rsItems6;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"150"
+				hpBonus=	"+50, -50, +25, -50, +25, -25"
+
+				repairCostAdj=	"200"
+				installCostAdj=	"200"
+
+				photoRecharge="80"
 				/>
 
 	</ItemType>
@@ -899,7 +959,7 @@
 		<Image imageID="&rsItems7;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"130"
+				hitPoints=	"145"
 				hpBonus=	"  +0,  +0,+100,+100"
 
 				repairTech=	"8"
@@ -1021,7 +1081,7 @@
 			frequency=			"rare"
 			numberAppearing=	"1d4"
 
-			value=				"12000"
+			value=				"10000"
 			mass=				"6000"
 			  
 			description=		"Hexphase armor is used extensively by capital ships of the Commonwealth Fleet. P450-grade armor can withstand 450 units of thermonuclear damage."
@@ -1104,7 +1164,7 @@
 		<Image imageID="&rsItems8;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"200"
+				hitPoints=	"180"
 				hpBonus=	"  +0,  +0,  +0,  +0,+100,  +0, +25,  +0"
 				
 				blindingDamageAdj=	"0"
@@ -1124,7 +1184,7 @@
 			frequency=			"rare"
 			numberAppearing=	"1d4"
 
-			value=				"12000"
+			value=				"9000"
 			mass=				"12000"
 			  
 			description=		"The strength of the material is almost unparalleled, but its properties fade as the elements decay into baser forms."
@@ -1133,7 +1193,7 @@
 		<Image imageID="&rsItems8;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"400"
+				hitPoints=	"500"
 				hpBonus=	"  +0,  +0, +50,+100, +25, +50"
 
 				repairTech=	"6"
@@ -1157,7 +1217,7 @@
 			value=				"8000"
 			mass=				"4000"
 			  
-			description=		"The V300 is a military version of Rasiermesser's powered armor. Each segment draws 6 MWs of power."
+			description=		"The V300 is a military version of Rasiermesser's powered armor. Each segment draws 2 MWs of power."
 			>
 
 		<Image imageID="&rsItems8;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -1168,7 +1228,7 @@
 				installCostAdj="200"
 
 				regen=		"9"
-				powerUse=	"60"
+				powerUse=	"20"
 				/>
 
 	</ItemType>
@@ -1302,7 +1362,7 @@
 		<Image imageID="&rsItems9;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"360"
+				hitPoints=	"400"
 				/>
 
 	</ItemType>
@@ -1377,7 +1437,7 @@
 		<Image imageID="&rsItems10;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"400"
+				hitPoints=	"450"
 				hpBonus=	"  +0,  +0,  +0,  +0,+100, -25, +25,  +0"
 				
 				blindingDamageAdj=	"0"

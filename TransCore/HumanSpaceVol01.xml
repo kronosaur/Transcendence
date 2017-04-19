@@ -245,7 +245,8 @@
 	<!ENTITY itCargoHoldExpansion		"0x00004079">
 	<!ENTITY itAdvancedReactiveArmor	"0x0000407A">
 	<!ENTITY itHardenedPlasteelPlate	"0x0000407B">
-	<!ENTITY itSolarArmor				"0x0000407C">
+	<!ENTITY itLightSolarArmor			"0x0000407C">
+	<!ENTITY itSolarArmor				"0x0000407C">	<!-- itLightSolarArmor synonym -->
 	<!ENTITY itSuperconductingShields	"0x0000407D">
 	<!ENTITY itSuperconductingCoil		"0x0000407E">
 	<!ENTITY itSolarPanelArray			"0x0000407F">
@@ -1802,9 +1803,11 @@
 	<!ENTITY rsMiningColonyRocky		"0x00100253">
 	<!ENTITY rsMiningColonyVolcanic		"0x00100254">
 
-	<!-- 0270-028F ADDITIONAL COMMONWEALTH ARMOR -->
+	<!-- 0270-028F SOLON CORPORATION -->
 
-	
+	<!ENTITY itMediumSolarArmor			"0x00100270">
+	<!ENTITY itHeavySolarArmor			"0x00100271">
+
 	<!-- 1000-FFFF RESERVED -->
 	]>
 	

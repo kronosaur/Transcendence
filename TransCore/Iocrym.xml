@@ -213,7 +213,7 @@
 			name=				"[segment(s) of ]light Iocrym armor"
 			level=				"11"
 			value=				"50000"
-			mass=				"1700"
+			mass=				"2000"
 			attributes=			"Alien; Iocrym; MinorItem"
 			frequency=			"common"
 			numberAppearing=	"1d4"

@@ -204,13 +204,13 @@
 			value=				"650"
 			mass=				"1000"
 			  
-			description=		"A solar panel array converts sunlight into energy usable by a ship's reactor."
+			description=		"A solar panel array can power a ship's devices, saving on fuel consumption. This array can generate a maximum of 15 MWs of power."
 			>
 
 		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<SolarDevice
-				refuel=			"60"
+				powerGen=	"150"
 				/>
 
 	</ItemType>

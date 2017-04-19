@@ -4095,7 +4095,7 @@
 	<ItemType UNID="&itDepletedUraniumArmor;"
 			name=				"[segment(s) of ]depleted uranium armor"
 			level=				"4"
-			value=				"600"
+			value=				"500"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
 			mass=				"5000"
@@ -4107,7 +4107,7 @@
 		<Image imageID="&rsItems4;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"75"
+				hitPoints=	"100"
 				hpBonus=	"  +0,  +0, +25, +25, +25, +25"
 
 				repairTech=	"6"
@@ -4225,13 +4225,11 @@
 			attributes=			"genericClass,ranx"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itDepletedUraniumArmor;"/>
-			<ArmorSection start="225" span="90" armorID="&itDepletedUraniumArmor;"/>
-			<ArmorSection start="135" span="90" armorID="&itDepletedUraniumArmor;"/>
-			<ArmorSection start="45"  span="90" armorID="&itDepletedUraniumArmor;"/>
-		</Armor>
-
+		<Armor
+			armorID=			"&itDepletedUraniumArmor;"
+			count=				"2"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itAkan30Cannon;"/>
 			<Device deviceID="&itMonopoleDeflector;"/>
