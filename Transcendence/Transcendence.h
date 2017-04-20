@@ -378,7 +378,7 @@ class CPlayerShipController : public IShipController
 	friend CObjectClass<CPlayerShipController>;
 	};
 
-class CMessageDisplay : public CObject
+class CMessageDisplay
 	{
 	public:
 		CMessageDisplay (void);

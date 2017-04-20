@@ -14,19 +14,10 @@
 
 //	Used by sim tables
 
-class EntryInfo : public CObject
+class ItemInfo
 	{
 	public:
-		EntryInfo (void) : CObject(NULL) { }
-
-		DWORD dwUNID;
-		double rTotalCount;
-	};
-
-class ItemInfo : public CObject
-	{
-	public:
-		ItemInfo (void) : CObject(NULL) { }
+		ItemInfo (void) { }
 
 		CItemType *pType;							//	Item type
 		int iTotalCount;							//	Total times this item type has appeared
@@ -35,10 +26,10 @@ class ItemInfo : public CObject
 
 const int MAX_FREQUENCY_COUNT = 12;
 
-class StationInfo : public CObject
+class StationInfo
 	{
 	public:
-		StationInfo (void) : CObject(NULL) { }
+		StationInfo (void) { }
 
 		CStationType *pType;
 		CString sCategory;

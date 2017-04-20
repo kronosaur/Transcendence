@@ -29,8 +29,8 @@ class SystemInfo : public CObject
 	public:
 		SystemInfo (void) : 
 				CObject(NULL),
-				Stations(TRUE, TRUE),
-				Items(TRUE, TRUE) { }
+				Stations(TRUE, TRUE)
+			{ }
 
 		CString sName;
 		int iLevel;
@@ -41,7 +41,7 @@ class SystemInfo : public CObject
 		CSymbolTable Stations;						//	All station types that have ever appeared
 													//	in this system instance.
 
-		CSymbolTable Items;							//	All items types that have ever appeared in
+		TSortMap<DWORD, ItemInfo> Items;			//	All items types that have ever appeared in
 													//	this system instance.
 		int iTotalLootValue;
 	};
@@ -236,7 +236,7 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		for (j = 0; j < pSystemEntry->Items.GetCount(); j++)
 			{
-			ItemInfo *pEntry = (ItemInfo *)pSystemEntry->Items.GetValue(j);
+			ItemInfo *pEntry = &pSystemEntry->Items[j];
 
 			printf("%d\t%s\t%s\t%.2f\t%.2f\n",
 					pSystemEntry->iLevel,
@@ -267,18 +267,12 @@ void AddItems (CSpaceObject *pObj, const CItemCriteria &Criteria, SystemInfo *pS
 
 		//	Add the item
 
-		CString sKey = strFromInt(Item.GetType()->GetUNID(), false);
-
-		//	Find the item type in the table
-
-		ItemInfo *pEntry;
-		if (error = pSystemEntry->Items.Lookup(sKey, (CObject **)&pEntry))
+		bool bNew;
+		ItemInfo *pEntry = pSystemEntry->Items.SetAt(Item.GetType()->GetUNID(), &bNew);
+		if (bNew)
 			{
-			pEntry = new ItemInfo;
 			pEntry->pType = Item.GetType();
 			pEntry->iTotalCount = Item.GetCount();
-
-			pSystemEntry->Items.AddEntry(sKey, pEntry);
 			}
 		else
 			pEntry->iTotalCount += Item.GetCount();

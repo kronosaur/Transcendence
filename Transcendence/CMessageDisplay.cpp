@@ -9,7 +9,7 @@
 #define AGE_FADE_OFFSET								4
 #define AGE_FADE_TOTAL								(MAX_AGE_FADE + AGE_FADE_OFFSET)
 
-CMessageDisplay::CMessageDisplay (void) : CObject(NULL),
+CMessageDisplay::CMessageDisplay (void) :
 		m_pFont(NULL),
 		m_iBlinkTime(0),
 		m_iSteadyTime(0),

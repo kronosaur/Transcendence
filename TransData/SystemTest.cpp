@@ -14,24 +14,19 @@ const int MAX_LEVEL = 26;
 #define NO_LOGO_SWITCH						CONSTLIT("nologo")
 #define FIELD_NAME							CONSTLIT("shortName")
 
-class SystemInfo : public CObject
+class SystemInfo
 	{
 	public:
-		SystemInfo (void) : 
-				CObject(NULL),
-				Stations(TRUE, TRUE),
-				Items(TRUE, TRUE) { }
-
 		CString sName;
 		int iLevel;
 		DWORD dwSystemType;
 		int iCount;									//	Number of times this system instance 
 													//	has appeared.
 
-		CSymbolTable Stations;						//	All station types that have ever appeared
+		TSortMap<CString, StationInfo> Stations;	//	All station types that have ever appeared
 													//	in this system instance.
 
-		CSymbolTable Items;							//	All items types that have ever appeared in
+		TSortMap<DWORD, ItemInfo> Items;			//	All items types that have ever appeared in
 													//	this system instace.
 	};
 
@@ -74,7 +69,7 @@ void OutputSystemStats (SystemInfo *pSystemEntry)
 
 	for (j = 0; j < pSystemEntry->Stations.GetCount(); j++)
 		{
-		StationInfo *pEntry = (StationInfo *)pSystemEntry->Stations.GetValue(j);
+		StationInfo *pEntry = &pSystemEntry->Stations[j];
 
 		printf("%s\t%s\t", 
 				pEntry->sCategory.GetASCIIZPointer(),
@@ -106,7 +101,7 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Generate systems for multiple games
 
-	CSymbolTable AllSystems(TRUE, TRUE);
+	TSortMap<CString, SystemInfo> AllSystems;
 	for (i = 0; i < iSystemSample; i++)
 		{
 		printf("pass %d...\n", i+1);
@@ -127,16 +122,14 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			//	Find this system in the table.
 
-			SystemInfo *pSystemEntry;
-			if (error = AllSystems.Lookup(pNode->GetSystemName(), (CObject **)&pSystemEntry))
+			bool bNew;
+			SystemInfo *pSystemEntry = AllSystems.SetAt(pNode->GetSystemName(), &bNew);
+			if (bNew)
 				{
-				pSystemEntry = new SystemInfo;
 				pSystemEntry->sName = pNode->GetSystemName();
 				pSystemEntry->iLevel = pNode->GetLevel();
 				pSystemEntry->dwSystemType = pNode->GetSystemTypeUNID();
 				pSystemEntry->iCount = 1;
-
-				AllSystems.AddEntry(pSystemEntry->sName, pSystemEntry);
 				}
 			else
 				pSystemEntry->iCount++;
@@ -145,7 +138,7 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			for (j = 0; j < pSystemEntry->Stations.GetCount(); j++)
 				{
-				StationInfo *pEntry = (StationInfo *)pSystemEntry->Stations.GetValue(j);
+				StationInfo *pEntry = &pSystemEntry->Stations[j];
 				pEntry->iTempCount = 0;
 				}
 
@@ -166,10 +159,10 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 					//	See if we have this type in the table
 
-					StationInfo *pEntry;
-					if (error = pSystemEntry->Stations.Lookup(sKey, (CObject **)&pEntry))
+					bool bNew;
+					StationInfo *pEntry = pSystemEntry->Stations.SetAt(sKey, &bNew);
+					if (bNew)
 						{
-						pEntry = new StationInfo;
 						pEntry->sCategory = sCategory;
 						pEntry->pType = pType;
 						pEntry->iSystemCount = 0;
@@ -179,8 +172,6 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 							pEntry->iFreqCount[k] = 0;
 
 						pEntry->iTempCount = 1;
-
-						pSystemEntry->Stations.AddEntry(sKey, pEntry);
 						}
 					else
 						pEntry->iTempCount++;
@@ -191,7 +182,7 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			for (j = 0; j < pSystemEntry->Stations.GetCount(); j++)
 				{
-				StationInfo *pEntry = (StationInfo *)pSystemEntry->Stations.GetValue(j);
+				StationInfo *pEntry = &pSystemEntry->Stations[j];
 
 				if (pEntry->iTempCount)
 					{
@@ -228,25 +219,23 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	for (i = 0; i < AllSystems.GetCount(); i++)
 		{
-		SystemInfo *pSystemEntry = (SystemInfo *)AllSystems.GetValue(i);
+		SystemInfo *pSystemEntry = &AllSystems[i];
 		OutputSystemStats(pSystemEntry);
 		}
 
 	//	Compute stats for stations by level
 
-	CSymbolTable *AllStations[MAX_LEVEL];
-	for (i = 0; i < MAX_LEVEL; i++)
-		AllStations[i] = new CSymbolTable(TRUE, TRUE);
+	TSortMap<CString, StationInfo> AllStations[MAX_LEVEL];
 
 	for (i = 0; i < AllSystems.GetCount(); i++)
 		{
-		SystemInfo *pSystemEntry = (SystemInfo *)AllSystems.GetValue(i);
+		SystemInfo *pSystemEntry = &AllSystems[i];
 
 		if (pSystemEntry->iCount > 0)
 			{
 			//	Get the destination
 
-			CSymbolTable *pDest = AllStations[pSystemEntry->iLevel];
+			TSortMap<CString, StationInfo> *pDest = &AllStations[pSystemEntry->iLevel];
 
 			//	Figure out the probability that this system will appear
 
@@ -256,7 +245,7 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			for (j = 0; j < pSystemEntry->Stations.GetCount(); j++)
 				{
-				StationInfo *pEntry = (StationInfo *)pSystemEntry->Stations.GetValue(j);
+				StationInfo *pEntry = &pSystemEntry->Stations[j];
 
 				//	Figure out the average number of stations of this type
 				//	in this system per game (in hundredths)
@@ -269,15 +258,13 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 				CString sCategory;
 				CString sKey = GenerateStationKey(pEntry->pType, pPlayer, &sCategory);
 
-				StationInfo *pDestEntry;
-				if (error = pDest->Lookup(sKey, (CObject **)&pDestEntry))
+				bool bNew;
+				StationInfo *pDestEntry = pDest->SetAt(sKey, &bNew);
+				if (bNew)
 					{
-					pDestEntry = new StationInfo;
 					pDestEntry->sCategory = sCategory;
 					pDestEntry->pType = pEntry->pType;
 					pDestEntry->iTotalCount = iCount;
-
-					pDest->AddEntry(sKey, pDestEntry);
 					}
 				else
 					pDestEntry->iTotalCount += iCount;
@@ -293,11 +280,11 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	for (i = 0; i < MAX_LEVEL; i++)
 		{
-		if (AllStations[i]->GetCount())
+		if (AllStations[i].GetCount())
 			{
-			for (j = 0; j < AllStations[i]->GetCount(); j++)
+			for (j = 0; j < AllStations[i].GetCount(); j++)
 				{
-				StationInfo *pEntry = (StationInfo *)AllStations[i]->GetValue(j);
+				StationInfo *pEntry = &AllStations[i].GetValue(j);
 
 				printf("%d\t%s\t%s\t%d.%02d\t%d\n", 
 						i,
@@ -309,11 +296,6 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 				}
 			}
 		}
-
-	//	Done
-
-	for (i = 0; i < MAX_LEVEL; i++)
-		delete AllStations[i];
 	}
 
 void GenerateItemFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine)
@@ -330,7 +312,7 @@ void GenerateItemFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Generate systems for multiple games
 
-	CSymbolTable AllSystems(TRUE, TRUE);
+	TSortMap<CString, SystemInfo> AllSystems;
 	for (i = 0; i < iSystemSample; i++)
 		{
 		if (bLogo)
@@ -351,16 +333,14 @@ void GenerateItemFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			//	Find this system in the table.
 
-			SystemInfo *pSystemEntry;
-			if (error = AllSystems.Lookup(pNode->GetSystemName(), (CObject **)&pSystemEntry))
+			bool bNew;
+			SystemInfo *pSystemEntry = AllSystems.SetAt(pNode->GetSystemName(), &bNew);
+			if (bNew)
 				{
-				pSystemEntry = new SystemInfo;
 				pSystemEntry->sName = pNode->GetSystemName();
 				pSystemEntry->iLevel = pNode->GetLevel();
 				pSystemEntry->dwSystemType = pNode->GetSystemTypeUNID();
 				pSystemEntry->iCount = 1;
-
-				AllSystems.AddEntry(pSystemEntry->sName, pSystemEntry);
 				}
 			else
 				pSystemEntry->iCount++;
@@ -383,18 +363,12 @@ void GenerateItemFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine)
 
 						if (!Item.IsInstalled() && !Item.IsDamaged())
 							{
-							CString sKey = strFromInt(Item.GetType()->GetUNID(), false);
-
-							//	Find the item type in the table
-
-							ItemInfo *pEntry;
-							if (error = pSystemEntry->Items.Lookup(sKey, (CObject **)&pEntry))
+							bool bNew;
+							ItemInfo *pEntry = pSystemEntry->Items.SetAt(Item.GetType()->GetUNID(), &bNew);
+							if (bNew)
 								{
-								pEntry = new ItemInfo;
 								pEntry->pType = Item.GetType();
 								pEntry->iTotalCount = Item.GetCount();
-
-								pSystemEntry->Items.AddEntry(sKey, pEntry);
 								}
 							else
 								pEntry->iTotalCount += Item.GetCount();
@@ -429,11 +403,11 @@ void GenerateItemFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	for (i = 0; i < AllSystems.GetCount(); i++)
 		{
-		SystemInfo *pSystemEntry = (SystemInfo *)AllSystems.GetValue(i);
+		SystemInfo *pSystemEntry = &AllSystems[i];
 
 		for (j = 0; j < pSystemEntry->Items.GetCount(); j++)
 			{
-			ItemInfo *pEntry = (ItemInfo *)pSystemEntry->Items.GetValue(j);
+			ItemInfo *pEntry = &pSystemEntry->Items[j];
 
 			printf("%d\t%s\t%s\t%.2f\n",
 					pSystemEntry->iLevel,
