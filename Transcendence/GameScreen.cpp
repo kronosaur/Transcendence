@@ -263,7 +263,7 @@ void CTranscendenceWnd::DoInvocation (CPower *pPower)
 		if (!sError.IsBlank())
 			{
 			DisplayMessage(sError);
-			kernelDebugLogMessage(sError);
+			kernelDebugLogString(sError);
 			}
 		}
 

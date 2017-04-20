@@ -73,7 +73,7 @@ void CDockScreenSubjugate::FireOnCompleted (const CString &sReason)
 
 	ICCItem *pResult = Ctx.Run(pCode);	//	LATER:Event
 	if (pResult->IsError())
-		::kernelDebugLogMessage("<OnCompleted>: %s", pResult->GetStringValue());
+		::kernelDebugLogPattern("<OnCompleted>: %s", pResult->GetStringValue());
 
 	Ctx.Discard(pResult);
 	}
@@ -162,7 +162,7 @@ ALERROR CDockScreenSubjugate::OnInit (SInitCtx &Ctx, const SDisplayOptions &Opti
 			CItemType *pItem = g_pUniverse->FindItemType(pUNID->GetIntegerValue());
 			if (pItem == NULL)
 				{
-				::kernelDebugLogMessage("Artifact Awaken: Unable to find item: %08x", pUNID->GetIntegerValue());
+				::kernelDebugLogPattern("Artifact Awaken: Unable to find item: %08x", pUNID->GetIntegerValue());
 				continue;
 				}
 
@@ -178,7 +178,7 @@ ALERROR CDockScreenSubjugate::OnInit (SInitCtx &Ctx, const SDisplayOptions &Opti
 			CItemType *pItem = g_pUniverse->FindItemType(pUNID->GetIntegerValue());
 			if (pItem == NULL)
 				{
-				::kernelDebugLogMessage("Artifact Awaken: Unable to find item: %08x", pUNID->GetIntegerValue());
+				::kernelDebugLogPattern("Artifact Awaken: Unable to find item: %08x", pUNID->GetIntegerValue());
 				continue;
 				}
 

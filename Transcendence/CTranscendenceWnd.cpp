@@ -270,7 +270,7 @@ void CTranscendenceWnd::PaintFrameRate (void)
 
 		if (m_iFrameCount > FRAME_RATE_COUNT
 				&& ((m_iFrameCount % 300) == 0))
-			kernelDebugLogMessage(szBuffer);
+			kernelDebugLogString(CString(szBuffer));
 
 		//	Next
 
@@ -542,7 +542,7 @@ void CTranscendenceWnd::ShowErrorMessage (const CString &sError)
 //	Shows an error message box
 
 	{
-	::kernelDebugLogMessage(sError);
+	::kernelDebugLogString(sError);
 
 	::MessageBox(m_hWnd, 
 			sError.GetASCIIZPointer(), 
@@ -634,7 +634,7 @@ LONG CTranscendenceWnd::WMCreate (CString *retsError)
 	fileGetVersionInfo(NULL_STR, &VerInfo);
 	m_sVersion = strPatternSubst(CONSTLIT("%s %s"), VerInfo.sProductName, VerInfo.sProductVersion);
 	m_sCopyright = VerInfo.sCopyright;
-	kernelDebugLogMessage(m_sVersion);
+	kernelDebugLogString(m_sVersion);
 	}
 
 	//	Compute screen size
@@ -690,10 +690,10 @@ LONG CTranscendenceWnd::WMCreate (CString *retsError)
 
 	if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
 		{
-		kernelDebugLogMessage("Small typeface: %s", m_Fonts.Small.GetTypeface());
-		kernelDebugLogMessage("Medium typeface: %s", m_Fonts.Large.GetTypeface());
-		kernelDebugLogMessage("Large typeface: %s", m_Fonts.Header.GetTypeface());
-		kernelDebugLogMessage("Console typeface: %s", m_Fonts.Console.GetTypeface());
+		kernelDebugLogPattern("Small typeface: %s", m_Fonts.Small.GetTypeface());
+		kernelDebugLogPattern("Medium typeface: %s", m_Fonts.Large.GetTypeface());
+		kernelDebugLogPattern("Large typeface: %s", m_Fonts.Header.GetTypeface());
+		kernelDebugLogPattern("Console typeface: %s", m_Fonts.Console.GetTypeface());
 		}
 
 	//	Set colors

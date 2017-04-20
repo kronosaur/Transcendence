@@ -179,11 +179,11 @@ void CTranscendenceController::CleanUpUpgrade (void)
 
 	TArray<CString> FilesToDelete;
 	if (!fileGetFileList(m_Settings.GetAppDataFolder(), NULL_STR, CONSTLIT("Delete_*.*"), 0, &FilesToDelete))
-		::kernelDebugLogMessage("Unable to list files to delete from previous upgrade.");
+		::kernelDebugLogPattern("Unable to list files to delete from previous upgrade.");
 
 	for (i = 0; i < FilesToDelete.GetCount(); i++)
 		if (!fileDelete(FilesToDelete[i]))
-			::kernelDebugLogMessage("Unable to delete file: %s.", FilesToDelete[i]);
+			::kernelDebugLogPattern("Unable to delete file: %s.", FilesToDelete[i]);
 	}
 
 bool CTranscendenceController::CheckAndRunUpgrade (void)
@@ -212,7 +212,7 @@ bool CTranscendenceController::CheckAndRunUpgrade (void)
 
 	if (!fileOpen(sExe))
 		{
-		::kernelDebugLogMessage("Unable to run upgraded Transcendence.exe");
+		::kernelDebugLogPattern("Unable to run upgraded Transcendence.exe");
 		return false;
 		}
 
@@ -321,7 +321,7 @@ bool CTranscendenceController::InstallUpgrade (CString *retsError)
 	if (!arcList(sUpgradeFile, &FileList, retsError))
 		{
 		fileDelete(sUpgradeFile);
-		::kernelDebugLogMessage(sError.GetASCIIZPointer());
+		::kernelDebugLogString(sError);
 		return false;
 		}
 
@@ -345,7 +345,7 @@ bool CTranscendenceController::InstallUpgrade (CString *retsError)
 			sRenameTo = pathAddComponent(sDestFolder, strPatternSubst(CONSTLIT("Delete_%s"), FileList[i]));
 			if (!fileMove(sFileToReplace, sRenameTo))
 				{
-				::kernelDebugLogMessage("Unable to rename %s to %s.", sFileToReplace, sRenameTo);
+				::kernelDebugLogPattern("Unable to rename %s to %s.", sFileToReplace, sRenameTo);
 				bAbort = true;
 				break;
 				}
@@ -371,7 +371,7 @@ bool CTranscendenceController::InstallUpgrade (CString *retsError)
 		{
 		if (!arcDecompressFile(sUpgradeFile, FileList[i], FilesToReplace[i], &sError))
 			{
-			::kernelDebugLogMessage(sError.GetASCIIZPointer());
+			::kernelDebugLogString(sError);
 			bAbort = true;
 			break;
 			}
@@ -398,7 +398,7 @@ bool CTranscendenceController::InstallUpgrade (CString *retsError)
 	//	Delete the original zip archive because we don't need it anymore.
 
 	if (!fileDelete(sUpgradeFile))
-		::kernelDebugLogMessage("Unable to delete upgrade file: %s.", sUpgradeFile);
+		::kernelDebugLogPattern("Unable to delete upgrade file: %s.", sUpgradeFile);
 
 	return true;
 	}
@@ -462,7 +462,7 @@ ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions *retO
 
 		//	Report to Debug.log but otherwise continue
 
-		kernelDebugLogMessage("Error loading %s: %s", SETTINGS_FILENAME, sError);
+		kernelDebugLogPattern("Error loading %s: %s", SETTINGS_FILENAME, sError);
 		}
 
 	//	Allow the command line to override some options
@@ -638,7 +638,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (pTask->GetResult(&sError))
 			{
-			kernelDebugLogMessage(sError);
+			kernelDebugLogString(sError);
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_LOAD_ERROR, sError, CMD_UI_EXIT));
 			return NOERROR;
 			}
@@ -745,7 +745,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (pTask->GetResult(&sError))
 			{
-			kernelDebugLogMessage(sError);
+			kernelDebugLogString(sError);
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_START_GAME, sError, CMD_UI_BACK_TO_INTRO));
 			return NOERROR;
 			}
@@ -782,7 +782,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (error = m_HI.ShowSession(new CNewGameSession(m_HI, m_Service, Defaults), &sError))
 			{
-			kernelDebugLogMessage(sError);
+			kernelDebugLogString(sError);
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_START_GAME, sError, CMD_UI_BACK_TO_INTRO));
 			return NOERROR;
 			}
@@ -812,7 +812,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		if (error = m_Model.StartNewGame(m_Service.GetUsername(), *pNewGame, &sError))
 			{
 			sError = strPatternSubst(CONSTLIT("Unable to begin new game: %s"), sError);
-			kernelDebugLogMessage(sError);
+			kernelDebugLogString(sError);
 
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_START_GAME, sError, CMD_UI_BACK_TO_INTRO));
 			return NOERROR;
@@ -834,7 +834,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Report creation
 
-		kernelDebugLogMessage("Created new game");
+		kernelDebugLogPattern("Created new game");
 
 		//	Kick-off background thread to finish up creating the game
 
@@ -888,7 +888,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		if (pTask->GetResult(&sError))
 			{
 			m_Model.StartNewGameAbort();
-			kernelDebugLogMessage(sError);
+			kernelDebugLogString(sError);
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_START_GAME, sError, CMD_UI_BACK_TO_INTRO));
 			return NOERROR;
 			}
@@ -980,7 +980,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 			else
 				{
-				kernelDebugLogMessage(sError);
+				kernelDebugLogString(sError);
 				m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_LOAD_GAME, sError, CMD_UI_BACK_TO_INTRO));
 				return NOERROR;
 				}
@@ -1460,7 +1460,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		CMultiverseCollection Collection;
 		if (m_Multiverse.GetCollection(&Collection) != NOERROR)
 			{
-			::kernelDebugLogMessage("Failed to GetCollection from Multiverse model.");
+			::kernelDebugLogPattern("Failed to GetCollection from Multiverse model.");
 			return NOERROR;
 			}
 
@@ -1548,14 +1548,14 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (pState)
 			{
-			::kernelDebugLogMessage(pState->GetASCIIZPointer());
+			::kernelDebugLogString(*pState);
 			m_Multiverse.SetServiceStatus(*pState);
 			DisplayMultiverseStatus(*pState, true);
 			delete pState;
 			}
 		else
 			{
-			::kernelDebugLogMessage("Unknown service error");
+			::kernelDebugLogPattern("Unknown service error");
 			m_Multiverse.SetServiceStatus(NULL_STR);
 			DisplayMultiverseStatus(NULL_STR, true);
 			}
@@ -1640,7 +1640,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			else
 				{
 				m_iBackgroundState = stateIdle;
-				::kernelDebugLogMessage("All resources downloaded.");
+				::kernelDebugLogPattern("All resources downloaded.");
 				}
 			}
 		}

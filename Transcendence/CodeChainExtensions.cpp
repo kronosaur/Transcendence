@@ -773,7 +773,7 @@ ICCItem *fnGameSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			if (g_pTrans->GetModel().EndGame(sReason, sEpitaph, iScoreBonus) != NOERROR)
 				{
-				::kernelDebugLogMessage("Unable to end game.");
+				::kernelDebugLogPattern("Unable to end game.");
 				return pCC->CreateNil();
 				}
 
@@ -795,7 +795,7 @@ ICCItem *fnGameSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			CString sError;
 			if (g_pTrans->GetModel().SaveGame(dwFlags, &sError) != NOERROR)
 				{
-				::kernelDebugLogMessage("Unable to save game: %s", sError);
+				::kernelDebugLogPattern("Unable to save game: %s", sError);
 				return pCC->CreateNil();
 				}
 

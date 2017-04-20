@@ -842,20 +842,20 @@ ALERROR CGameKeys::ReadFromXML (CXMLElement *pDesc)
 		DWORD dwVirtKey = GetKey(pMap->GetAttribute(KEY_ATTRIB));
 		if (dwVirtKey == INVALID_VIRT_KEY)
 			{
-			kernelDebugLogMessage("Unknown key: %s", pMap->GetAttribute(KEY_ATTRIB));
+			kernelDebugLogPattern("Unknown key: %s", pMap->GetAttribute(KEY_ATTRIB));
 			continue;
 			}
 
 		Keys iCommand = GetGameCommand(pMap->GetAttribute(COMMAND_ATTRIB));
 		if (iCommand == keyError)
 			{
-			kernelDebugLogMessage("Unknown game command: %s", pMap->GetAttribute(COMMAND_ATTRIB));
+			kernelDebugLogPattern("Unknown game command: %s", pMap->GetAttribute(COMMAND_ATTRIB));
 			continue;
 			}
 
 		if (iNewMap[dwVirtKey] != keyError)
 			{
-			kernelDebugLogMessage("Duplicate key mapping: %s", pMap->GetAttribute(COMMAND_ATTRIB));
+			kernelDebugLogPattern("Duplicate key mapping: %s", pMap->GetAttribute(COMMAND_ATTRIB));
 			continue;
 			}
 

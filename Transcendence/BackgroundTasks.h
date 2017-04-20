@@ -136,7 +136,7 @@ class CLoadNewsTask : public IHITask
 		//	IHITask virtuals
 		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult)
 			{
-			::kernelDebugLogMessage("Loading news.");
+			::kernelDebugLogPattern("Loading news.");
 			return m_Service.LoadNews(pProcessor, m_Multiverse, m_AppVersion, m_sCacheFilespec, retsResult); 
 			}
 
@@ -156,7 +156,7 @@ class CLoadUserCollectionTask : public IHITask
 		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult)
 			{
 			CSmartLock Lock(g_pUniverse->GetSem());
-			::kernelDebugLogMessage("Loading user collection.");
+			::kernelDebugLogPattern("Loading user collection.");
 			return m_Service.LoadUserCollection(pProcessor, m_Multiverse, retsResult); 
 			}
 
@@ -340,7 +340,7 @@ class CUpgradeProgram : public IHITask
 		//	IHITask virtuals
 		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) 
 			{
-			::kernelDebugLogMessage("Upgrading Transcendence.");
+			::kernelDebugLogPattern("Upgrading Transcendence.");
 			return m_Service.DownloadUpgrade(pProcessor, m_sUpgradeURL, retsResult); 
 			}
 

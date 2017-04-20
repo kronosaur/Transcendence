@@ -173,7 +173,7 @@ void CTranscendenceModel::AddSaveFileFolder (const CString &sFilespec)
 	if (!pathExists(sFilespec))
 		{
 		if (!pathCreate(sFilespec))
-			::kernelDebugLogMessage("Unable to create save file folder: %s", sFilespec);
+			::kernelDebugLogPattern("Unable to create save file folder: %s", sFilespec);
 		}
 	}
 
@@ -400,7 +400,7 @@ ALERROR CTranscendenceModel::CreateAllSystems (const CString &sStartNode, CSyste
 		CSystem *pNewSystem;
 		if (error = m_Universe.CreateStarSystem(pNode, &pNewSystem, &sError))
 			{
-			kernelDebugLogMessage("Error creating system %s: %s", pNode->GetSystemName(), sError);
+			kernelDebugLogPattern("Error creating system %s: %s", pNode->GetSystemName(), sError);
 			if (retsError)
 				*retsError = sError;
 			return error;
@@ -410,7 +410,7 @@ ALERROR CTranscendenceModel::CreateAllSystems (const CString &sStartNode, CSyste
 
 		if (error = m_GameFile.SaveSystem(pNewSystem->GetID(), pNewSystem, 0))
 			{
-			kernelDebugLogMessage("Error saving system '%s' to game file", pNewSystem->GetName());
+			kernelDebugLogPattern("Error saving system '%s' to game file", pNewSystem->GetName());
 			if (retsError)
 				*retsError = CONSTLIT("Unable to save system.");
 			return error;
@@ -443,11 +443,11 @@ ALERROR CTranscendenceModel::CreateAllSystems (const CString &sStartNode, CSyste
 			{
 			CStationEncounterCtx &EncounterRecord = pType->GetEncounterRecord();
 			if (EncounterRecord.GetTotalLimit() != -1 && EncounterRecord.GetTotalCount() > EncounterRecord.GetTotalLimit())
-				::kernelDebugLogMessage("%s (%08x): %d created. WARNING: Limit is %d", pType->GetName(), pType->GetUNID(), EncounterRecord.GetTotalCount(), EncounterRecord.GetTotalLimit());
+				::kernelDebugLogPattern("%s (%08x): %d created. WARNING: Limit is %d", pType->GetName(), pType->GetUNID(), EncounterRecord.GetTotalCount(), EncounterRecord.GetTotalLimit());
 			else if (EncounterRecord.GetTotalMinimum() > 0 && EncounterRecord.GetTotalCount() < EncounterRecord.GetTotalMinimum())
-				::kernelDebugLogMessage("%s (%08x): %d created. WARNING: Minimum is %d", pType->GetName(), pType->GetUNID(), EncounterRecord.GetTotalCount(), EncounterRecord.GetTotalMinimum());
+				::kernelDebugLogPattern("%s (%08x): %d created. WARNING: Minimum is %d", pType->GetName(), pType->GetUNID(), EncounterRecord.GetTotalCount(), EncounterRecord.GetTotalMinimum());
 			else
-				::kernelDebugLogMessage("%s (%08x): %d created.", pType->GetName(), pType->GetUNID(), EncounterRecord.GetTotalCount());
+				::kernelDebugLogPattern("%s (%08x): %d created.", pType->GetName(), pType->GetUNID(), EncounterRecord.GetTotalCount());
 			}
 		}
 #endif
@@ -625,7 +625,7 @@ ALERROR CTranscendenceModel::EndGameDestroyed (bool *retbResurrected)
 			if (m_pResurrectType->FireOnGlobalResurrect(&sError) != NOERROR)
 				{
 				g_pTrans->DisplayMessage(sError);
-				kernelDebugLogMessage(sError);
+				kernelDebugLogString(sError);
 				}
 			}
 
@@ -1124,7 +1124,7 @@ ALERROR CTranscendenceModel::InitBackground (const CGameSettings &Settings, cons
 	else
 		{
 		m_Universe.GetSFXOptions().SetSFXQualityAuto();
-		::kernelDebugLogMessage("Unknown graphics quality: %s.", sGraphics);
+		::kernelDebugLogPattern("Unknown graphics quality: %s.", sGraphics);
 		}
 
 	//	Now set some additional options that may override the default graphics
@@ -1170,7 +1170,7 @@ ALERROR CTranscendenceModel::InitAdventure (const SAdventureSettings &Settings, 
 	Ctx.dwAdventure = Settings.pAdventure->GetUNID();
 	Ctx.Extensions = Settings.Extensions;
 
-	::kernelDebugLogMessage("Initializing adventure: %s", Settings.pAdventure->GetFilespec());
+	::kernelDebugLogPattern("Initializing adventure: %s", Settings.pAdventure->GetFilespec());
 
 #ifdef DEBUG_RANDOM_SEED
 	mathSetSeed(100);
@@ -1384,7 +1384,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 
 		//	Log that we loaded a game
 
-		kernelDebugLogMessage("Loaded game file version: %x", m_GameFile.GetCreateVersion());
+		kernelDebugLogPattern("Loaded game file version: %x", m_GameFile.GetCreateVersion());
 
 		return NOERROR;
 		}
@@ -1655,7 +1655,7 @@ void CTranscendenceModel::OnPlayerDocked (CSpaceObject *pObj)
 		m_pDock = NULL;
 
 		g_pTrans->DisplayMessage(sError);
-		::kernelDebugLogMessage(sError);
+		::kernelDebugLogString(sError);
 		return;
 		}
 	}
@@ -1835,7 +1835,7 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 				{
 				SetProgramError(sError);
 				//g_pTrans->DisplayMessage(sError);
-				//kernelDebugLogMessage(sError);
+				//kernelDebugLogString(sError);
 				throw CException(ERR_FAIL);
 				}
 			}
@@ -1850,7 +1850,7 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 				sError = strPatternSubst(CONSTLIT("%s [%s (%x)]"), sError, m_pDestNode->GetSystemName(), dwSystemID);
 
 				g_pTrans->DisplayMessage(sError);
-				kernelDebugLogMessage(sError);
+				kernelDebugLogString(sError);
 				throw CException(ERR_FAIL);
 				}
 			}
@@ -1862,7 +1862,7 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 	CSpaceObject *pStart = pNewSystem->GetNamedObject(m_sDestEntryPoint);
 	if (pStart == NULL)
 		{
-		kernelDebugLogMessage("Unable to find destination stargate %s in destination system.", m_sDestEntryPoint);
+		kernelDebugLogPattern("Unable to find destination stargate %s in destination system.", m_sDestEntryPoint);
 		for (int i = 0; i < pNewSystem->GetObjectCount(); i++)
 			{
 			CSpaceObject *pObj = pNewSystem->GetObject(i);
@@ -1926,7 +1926,7 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 
 	SetProgramState(psStargateSavingSystem);
 	if (m_GameFile.SaveSystem(m_pOldSystem->GetID(), m_pOldSystem, CGameFile::FLAG_ENTER_GATE) != NOERROR)
-		kernelDebugLogMessage("Error saving system '%s' to game file", m_pOldSystem->GetName());
+		kernelDebugLogPattern("Error saving system '%s' to game file", m_pOldSystem->GetName());
 
 	//	Remove the old system
 
@@ -2076,7 +2076,7 @@ ALERROR CTranscendenceModel::SaveGame (DWORD dwFlags, CString *retsError)
 		{
 		if (retsError)
 			*retsError = CONSTLIT("Error saving game stats to game file");
-		kernelDebugLogMessage("Error saving game stats to game file");
+		kernelDebugLogPattern("Error saving game stats to game file");
 		return error;
 		}
 
@@ -2086,7 +2086,7 @@ ALERROR CTranscendenceModel::SaveGame (DWORD dwFlags, CString *retsError)
 		{
 		if (retsError)
 			*retsError = strPatternSubst(CONSTLIT("Error saving system '%s' to game file"), pSystem->GetName());
-		kernelDebugLogMessage("Error saving system '%s' to game file", pSystem->GetName());
+		kernelDebugLogPattern("Error saving system '%s' to game file", pSystem->GetName());
 		return error;
 		}
 
@@ -2096,7 +2096,7 @@ ALERROR CTranscendenceModel::SaveGame (DWORD dwFlags, CString *retsError)
 		{
 		if (retsError)
 			*retsError = CONSTLIT("Error saving universe to game file");
-		kernelDebugLogMessage("Error saving universe to game file");
+		kernelDebugLogPattern("Error saving universe to game file");
 		return error;
 		}
 
@@ -2360,7 +2360,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 			m_DockFrames.DiscardOldFrame(OldFrame);
 			}
 
-		::kernelDebugLogMessage("InitScreen: %s", sError);
+		::kernelDebugLogPattern("InitScreen: %s", sError);
 		if (retsError) *retsError = sError;
 		return error;
 		}
@@ -2409,7 +2409,7 @@ void CTranscendenceModel::ShowShipScreen (void)
 	if (!ShowShipScreen(NULL, pRoot, sScreen, NULL_STR, NULL, &sError))
 		{
 		g_pTrans->DisplayMessage(sError);
-		::kernelDebugLogMessage(sError);
+		::kernelDebugLogString(sError);
 		return;
 		}
 
@@ -2604,7 +2604,7 @@ ALERROR CTranscendenceModel::StartNewGameBackground (const SNewGameSettings &New
 	ASSERT(m_iState == stateCreatingNewGame);
 	ASSERT(m_pPlayer);
 
-	::kernelDebugLogMessage("Starting new game.");
+	::kernelDebugLogPattern("Starting new game.");
 
 	//	Figure out the ship class that we want
 
@@ -2899,7 +2899,7 @@ void CTranscendenceModel::UseItem (CItem &Item)
 		if (!sError.IsBlank())
 			{
 			pShip->SendMessage(NULL, sError);
-			::kernelDebugLogMessage(sError);
+			::kernelDebugLogString(sError);
 			}
 
 		pShip->OnComponentChanged(comCargo);
@@ -2921,7 +2921,7 @@ void CTranscendenceModel::UseItem (CItem &Item)
 		if (!ShowShipScreen(pType, UseDesc.pScreenRoot, UseDesc.sScreenName, NULL_STR, NULL, &sError))
 			{
 			pShip->SendMessage(NULL, sError);
-			::kernelDebugLogMessage(sError);
+			::kernelDebugLogString(sError);
 			}
 
 		pShip->OnComponentChanged(comCargo);

@@ -1202,7 +1202,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	CString sError;
 	if (error = FireOnScreenInit(m_pLocation, pData, &sError))
 		{
-		kernelDebugLogMessage(sError);
+		kernelDebugLogString(sError);
 		//	We do not fail because otherwise the screen would be invalid.
 		}
 
@@ -1393,7 +1393,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 		m_pOnScreenUpdate = Ctx.Link(pOnUpdate->GetContentText(0), 0, NULL);
 		if (m_pOnScreenUpdate->IsError())
 			{
-			kernelDebugLogMessage("Unable to parse OnScreenUpdate: %s.", m_pOnScreenUpdate->GetStringValue());
+			kernelDebugLogPattern("Unable to parse OnScreenUpdate: %s.", m_pOnScreenUpdate->GetStringValue());
 			Ctx.Discard(m_pOnScreenUpdate);
 			m_pOnScreenUpdate = NULL;
 			}
@@ -1445,7 +1445,7 @@ ALERROR CDockScreen::ReportError (const CString &sError)
 	//	Set the error on the pane description.
 
 	m_CurrentPane.SetDescriptionError(sNewError);
-	::kernelDebugLogMessage(sNewError);
+	::kernelDebugLogString(sNewError);
 
 	return ERR_FAIL;
 	}
@@ -1520,7 +1520,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 						{
 						if (!bAnimateOnly)
 							{
-							kernelDebugLogMessage(pResult->GetStringValue());
+							kernelDebugLogString(pResult->GetStringValue());
 							}
 						Ctx.Discard(pResult);
 						break;
@@ -1569,7 +1569,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 						{
 						if (!bAnimateOnly)
 							{
-							kernelDebugLogMessage(pResult->GetStringValue());
+							kernelDebugLogString(pResult->GetStringValue());
 							}
 
 						Ctx.Discard(pResult);
@@ -1603,7 +1603,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 						{
 						if (!bAnimateOnly)
 							{
-							kernelDebugLogMessage(pResult->GetStringValue());
+							kernelDebugLogString(pResult->GetStringValue());
 							}
 
 						Ctx.Discard(pResult);
@@ -1653,7 +1653,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 						{
 						if (!bAnimateOnly)
 							{
-							kernelDebugLogMessage(pResult->GetStringValue());
+							kernelDebugLogString(pResult->GetStringValue());
 							}
 						}
 
@@ -1986,7 +1986,7 @@ void CDockScreen::Update (int iTick)
 		ICCItem *pResult = Ctx.Run(pCode);
 
 		if (pResult->IsError())
-			kernelDebugLogMessage(CONSTLIT("<OnScreenUpdate>: %s"), pResult->GetStringValue());
+			kernelDebugLogPattern("<OnScreenUpdate>: %s", pResult->GetStringValue());
 
 		Ctx.Discard(pResult);
 		Ctx.Discard(pCode);
