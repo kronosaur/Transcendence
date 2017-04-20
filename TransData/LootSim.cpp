@@ -250,8 +250,6 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 
 void AddItems (CSpaceObject *pObj, const CItemCriteria &Criteria, SystemInfo *pSystemEntry)
 	{
-	ALERROR error;
-
 	CItemListManipulator ItemList(pObj->GetItemList());
 	ItemList.ResetCursor();
 	while (ItemList.MoveCursorForward())

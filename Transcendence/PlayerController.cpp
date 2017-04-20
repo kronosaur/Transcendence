@@ -353,7 +353,13 @@ void CPlayerShipController::Dock (void)
 		return;
 		}
 
-	//	Request docking
+	//	Request docking.
+	//
+	//	NOTE: The station will do a full check to see if we are allowed to dock
+	//	and if there is a screen available. Thus it is OK if we make a request
+	//	of a station that just lost a dock screen. This can happen because the
+	//	code that looks for a station to dock with uses a heuristic to determine
+	//	whether it has a docking screen. The heuristic can sometimes be stale.
 
 	if (!pStation->RequestDock(m_pShip, iDockPort))
 		return;
@@ -430,7 +436,7 @@ CSpaceObject *CPlayerShipController::FindDockTarget (void)
 
 //	FindDockTarget
 //
-//	Finds the closest dock target
+//	Finds the closest dock target.
 
 	{
 	int i;
@@ -444,8 +450,12 @@ CSpaceObject *CPlayerShipController::FindDockTarget (void)
 		{
 		CSpaceObject *pObj = pSystem->GetObject(i);
 
+		//	NOTE: SupportsDockingFast does not guarantee that the station has
+		//	a valid dock. Only that it did as of a several ticks ago. It might
+		//	have changed.
+
 		if (pObj 
-				&& pObj->SupportsDocking(true)
+				&& pObj->SupportsDockingFast()
 				&& !pObj->IsIntangible()
 				&& pObj != m_pShip)
 			{
@@ -835,7 +845,7 @@ void CPlayerShipController::InitTargetList (TargetTypes iTargetType, bool bUpdat
 					}
 				else
 					{
-					if (pObj->CanAttack() || pObj->SupportsDocking(true))
+					if (pObj->CanAttack() || pObj->SupportsDockingFast())
 						{
 						if (pObj->GetScale() == scaleShip || pObj->GetScale() == scaleStructure)
 							iMainKey = 0;
@@ -1898,7 +1908,7 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 
 	else if (m_pTarget 
 			&& m_pTarget != m_pShip 
-			&& m_pTarget->SupportsDocking(true)
+			&& m_pTarget->SupportsDockingFast()
 			&& (!m_pShip->IsEnemy(m_pTarget) || m_pTarget->IsAbandoned())
 			&& (m_pTarget->GetPos() - m_pShip->GetPos()).Length2() < MAX_DOCK_DISTANCE2)
 		{
