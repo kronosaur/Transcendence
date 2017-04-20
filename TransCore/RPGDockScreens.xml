@@ -1800,7 +1800,7 @@
 							(eq gCost 0)
 								(switch
 									(eq gMaxCount 0)
-										(scrSetDesc gScreen "Your ship is does not need any fuel.")
+										(scrSetDesc gScreen "Your ship does not need any fuel.")
 									(eq gMaxCount 1)
 										(scrSetDesc gScreen (cat "Your ship needs one " (itmGetName gItem 0) " to refuel. We can refuel you free of charge."))
 									(scrSetDesc gScreen (cat "Your ship needs " gMaxCount " " (itmGetName gItem 2) " to refuel. We can refuel you free of charge. How many do you wish to use?"))
@@ -1809,7 +1809,7 @@
 							(geq maxAfford gMaxCount)
 								(switch
 									(eq gMaxCount 0)
-										(scrSetDesc gScreen "Your ship is does not need any fuel.")
+										(scrSetDesc gScreen "Your ship does not need any fuel.")
 									(eq gMaxCount 1)
 										(scrSetDesc gScreen (cat "Your ship needs one " (itmGetName gItem 0) " to refuel for a total cost of " (fmtCurrency currencyUsed gCost) "."))
 									(scrSetDesc gScreen (cat "Your ship needs " gMaxCount " " (itmGetName gItem 2) " to refuel. Each " (itmGetName gItem 0) " costs " (fmtCurrency currencyUsed gCost) " (" (fmtCurrency currencyUsed (multiply gCost gMaxCount)) " total). How many do you wish to buy?"))
