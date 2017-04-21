@@ -71,7 +71,7 @@
 
 	<ShipClass UNID="&scCorporateCruiser;"
 			manufacturer=		"Rasiermesser"
-			class=				"Corporate cruiser"
+			class=				"corporate cruiser"
 			type=				""
 			defaultSovereign=	"&svCorporate;"
 
@@ -295,7 +295,7 @@
 	<!-- Armor Dealer -->
 
 	<StationType UNID="&stArmorDealer;"
-			name=				"Corporate armor dealer"
+			name=				"corporate armor dealer"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -448,7 +448,7 @@
 	<!-- Arms Dealer -->
 
 	<StationType UNID="&stArmsDealer;"
-			name=				"Corporate arms dealer"
+			name=				"corporate arms dealer"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -840,7 +840,7 @@
 	<!-- Auton Dealer -->
 
 	<StationType UNID="&stAutonDealer;"
-			name=				"Corporate auton dealer"
+			name=				"corporate auton dealer"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -1032,7 +1032,7 @@
 	<!-- Corporate Enclave -->
 
 	<StationType UNID="&stCorporateEnclave;"
-			name=				"Corporate enclave"
+			name=				"corporate enclave"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -1079,7 +1079,7 @@
 			<Main>
 				<Panes>
 					<Default
-							desc=	"You are in the docking level of a Corporate Enclave. The citizens of the station work for various members of the Corporate Hierarchy.">
+							desc=	"You are in the docking level of a corporate enclave. The citizens of the station work for various members of the Corporate Hierarchy.">
 
 						<Actions>
 							<Action name="Corporate Level" default="1" key="C">
@@ -1106,7 +1106,7 @@
 					</Default>
 
 					<Illegals
-							desc=	"You are in the maintenance level of a Corporate Enclave. The door to the maintenance shop is open and you hear voices inside.">
+							desc=	"You are in the maintenance level of a corporate enclave. The door to the maintenance shop is open and you hear voices inside.">
 
 						<Actions>
 							<Action name="Enter Maintenance Shop" default="1" key="E">
@@ -1120,7 +1120,7 @@
 					</Illegals>
 
 					<MaintenanceLevel
-							desc=	"You are in the maintenance level of a Corporate Enclave. The drone of the atmosphere processors and the waste converters drowns out all other noises. There is an empty maintenance shop here filled with various machines and drones; an empty laudanum ampule peeks out from under the workbench.">
+							desc=	"You are in the maintenance level of a corporate enclave. The drone of the atmosphere processors and the waste converters drowns out all other noises. There is an empty maintenance shop here filled with various machines and drones; an empty laudanum ampule peeks out from under the workbench.">
 
 						<Actions>
 							<Action name="Leave" default="1" cancel="1" key="L">
@@ -1164,7 +1164,7 @@
 					</MaintenanceShop>
 
 					<ResidentialLevel
-							desc=	"You are in the residential level of a Corporate Enclave. This level holds the apartments and dwelling units of mid-level corporate citizens. The units are small and somewhat homogenous, though everyone you meet seems happy.">
+							desc=	"You are in the residential level of a corporate enclave. This level holds the apartments and dwelling units of mid-level corporate citizens. The units are small and somewhat homogenous, though everyone you meet seems happy.">
 
 						<Actions>
 							<Action name="Leave" default="1" cancel="1" key="L">
@@ -1179,7 +1179,7 @@
 			<CorporateLevel>
 				<Panes>
 					<Default
-							desc=	"You are in the corporate level of a Corporate Enclave. The day-to-day services and manufacturing of the various corporations are carried-out on this level.">
+							desc=	"You are in the corporate level of a corporate enclave. The day-to-day services and manufacturing of the various corporations are carried-out on this level.">
 
 						<Actions>
 							<Action name="Sell Items" default="1" key="S">
@@ -1218,7 +1218,7 @@
 	<!-- Fuel Depot -->
 
 	<StationType UNID="&stFuelDepot;"
-			name=				"Corporate fuel depot"
+			name=				"corporate fuel depot"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -1544,7 +1544,7 @@
 	-->
 
 	<StationType UNID="&stManufacturingPlant;"
-			name=				"Corporate manufacturing plant"
+			name=				"corporate manufacturing plant"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -1678,7 +1678,7 @@
 					
 						<OnPaneInit>
 							(scrSetDesc gScreen
-								"You are in the docking level of a Corporate manufacturing plant. The station master greets you:\n\n"
+								"You are in the docking level of a corporate manufacturing plant. The station master greets you:\n\n"
 								"\"Welcome to our manufacturing facilities! "
 								(objGetData gSource "itemsConsumedDesc")
 								"\""
@@ -1738,7 +1738,7 @@
 	<!-- Merchant Prince Hotel -->
 
 	<StationType UNID="&stHotel;"
-			name=				"Corporate hotel"
+			name=				"corporate hotel"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -2043,7 +2043,7 @@
 	<!-- Ice Farm -->
 
 	<StationType UNID="&stIceFarm;"
-			name=				"Corporate ice farm"
+			name=				"corporate ice farm"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -2336,11 +2336,11 @@
 
 									(eq gCost 0)
 										(setq desc (cat desc 
-											"\"With your Corporate discount we can offer you full coverage for...let me see..."
+											"\"With your corporate discount we can offer you full coverage for...let me see..."
 											"wow, you must have some powerful friends! We can offer you full coverage free of charge! "
 											))
 										
-									(setq desc (cat desc "\"With your Corporate discount we can offer you full coverage for " gCost " credits. "))
+									(setq desc (cat desc "\"With your corporate discount we can offer you full coverage for " gCost " credits. "))
 									)
 
 								(switch
@@ -2556,7 +2556,7 @@
 	<!-- Trading Post -->
 
 	<StationType UNID="&stCorporateTradingPost;"
-			name=				"Corporate trading post"
+			name=				"corporate trading post"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -2576,8 +2576,6 @@
 			levelFrequency=		"---rc uur-- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
-
-			noArticle=			"true"
 			>
 
 		<Image			imageID="&rsStations4;" imageX="0" imageY="448" imageWidth="192" imageHeight="192"/>
@@ -2646,7 +2644,7 @@
 			<Main>
 				<Panes>
 					<Default
-							desc=	"You are docked at a Corporate Trading Post.">
+							desc=	"You are docked at a corporate trading post.">
 
 						<Actions>
 							<Action name="Order Items" key="O" default="1">
@@ -3263,7 +3261,7 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(scrSetDesc gScreen (cat "As you enter the station you are surrounded by heavily armed soldiers. A Corporate officer approaches you: \"You are under arrest for " (objGetData gPlayerShip "corpCrime") "\"" ))
+					(scrSetDesc gScreen (cat "As you enter the station you are surrounded by heavily armed soldiers. A corporate officer approaches you: \"You are under arrest for " (objGetData gPlayerShip "corpCrime") "\"" ))
 				</OnPaneInit>
 
 				<Actions>

@@ -793,7 +793,7 @@
 	-->
 
 	<ShipClass UNID="&scSvalbardExplorer;"
-			manufacturer=		"Corporate"
+			manufacturer=		"corporate"
 			class=				""
 			type=				"explorer"
 			defaultSovereign=	"&svCorporate;"

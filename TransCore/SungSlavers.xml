@@ -1590,7 +1590,7 @@
 			</Done>
 
 			<Empty
-					desc="You are docked at a station once used to house slaves of the Sung Empire. Now abandoned, these living quarters appear no worse than sub-standard Corporate quarters. But a closer look reveals surveillance sensors and discarded docility collars.">
+					desc="You are docked at a station once used to house slaves of the Sung Empire. Now abandoned, these living quarters appear no worse than sub-standard corporate quarters. But a closer look reveals surveillance sensors and discarded docility collars.">
 
 				<Actions>
 					<Action name="Undock" cancel="1" key="U">

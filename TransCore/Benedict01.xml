@@ -842,7 +842,7 @@
 					)
 					
 					(cat
-						"\"This system has many Commonwealth and Corporate stations "
+						"\"This system has many Commonwealth and corporate stations "
 						"providing various services, from refueling to commodity trading.\n\n"
 						
 						"\"You have found all but " (if (eq unexploredObjs 1) "one friendly station " (cat unexploredObjs " friendly stations "))

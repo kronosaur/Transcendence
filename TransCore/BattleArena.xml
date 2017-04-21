@@ -1291,7 +1291,7 @@
 											"You've done well, but don't get sloppy. To become Legendary Hero of the Arena you will need to defeat The Slicer, and he is fast, precise, and very deadly."
 											"Remember that it's not enough to kill quickly; you have to give the crowd a good show!"
 											"It's been a long time since I trained someone with your potential! Don't disappoint me!"
-											"The Arena is the one place where Corporate executives and small-time shareholders mix. Be sure to give them a good show!"
+											"The Arena is the one place where corporate executives and small-time shareholders mix. Be sure to give them a good show!"
 											"You remind me of my own victories! Once I was so popular I was invited to dine with Robert Morgental himself! It was exquisite."
 											"You're doing well! Always keep improving. When you fight The Slicer you will need every bit of training that I can give you."
 											"Years ago I trained Kate Morgental! You remind me of her a lot. You fight hard at every match, but you're always thinking about something bigger than the Arena."
@@ -1482,7 +1482,7 @@
 						<OnPaneInit>
 							(scrSetDesc gScreen (cat
 								"\"Katami was my old trainer and he means a lot to me. And the Black Market doesn't scare me; they're "
-								"just the parasites of the Corporate universe.\n\n"
+								"just the parasites of the corporate universe.\n\n"
 								"\"Help me to rescue him and you'll be able to defeat The Slicer without risking Katami's life.\""
 								))
 						</OnPaneInit>
@@ -2437,7 +2437,7 @@
 
 	<ShipClass UNID="&scKateMorgentalCruiserArena;"
 			manufacturer=		"Rasiermesser"
-			class=				"Corporate cruiser"
+			class=				"corporate cruiser"
 			type=				""
 
 			attributes=			"capitalShip, corporate, kateMorgental, majorShip"

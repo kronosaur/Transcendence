@@ -59,7 +59,7 @@
 
 	<ShipClass UNID="&scKateMorgentalCruiser;"
 			manufacturer=		"Rasiermesser"
-			class=				"Corporate cruiser"
+			class=				"corporate cruiser"
 			type=				""
 
 			attributes=			"capitalShip, corporate, kateMorgental, majorShip"
