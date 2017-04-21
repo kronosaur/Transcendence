@@ -449,6 +449,23 @@
     <Xml Include="Benedict08.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="CommonwealthFleetMission01.xml" />
+    <Xml Include="CommonwealthFleetMission02.xml" />
+    <Xml Include="CommonwealthFleetMission03.xml" />
+    <Xml Include="CommonwealthFleetMission04.xml" />
+    <Xml Include="CommonwealthFleetMission05.xml" />
+    <Xml Include="CommonwealthFleetMission06.xml" />
+    <Xml Include="CommonwealthFleetMission07.xml" />
+    <Xml Include="CommonwealthFleetMission08.xml" />
+    <Xml Include="CommonwealthFleetMission09.xml" />
+    <Xml Include="CommonwealthFleetMission10.xml" />
+    <Xml Include="CommonwealthFleetMission11.xml" />
+    <Xml Include="CommonwealthFleetMissionLL01.xml" />
+    <Xml Include="CommonwealthFleetMissionLL02.xml" />
+    <Xml Include="CommonwealthMilitiaMission01.xml" />
+    <Xml Include="CommonwealthMilitiaMission02.xml" />
+    <Xml Include="CommonwealthMilitiaMission03.xml" />
+    <Xml Include="CommonwealthMilitiaMission04.xml" />
     <Xml Include="CommonwealthShips.xml">
       <SubType>Designer</SubType>
     </Xml>
@@ -477,6 +494,10 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="Jenna.xml" />
+    <Xml Include="KronosaurusMission01.xml" />
+    <Xml Include="KSMission01.xml" />
+    <Xml Include="KSMission02.xml" />
+    <Xml Include="KSMission03.xml" />
     <Xml Include="Ore.xml" />
     <Xml Include="Penitents.xml">
       <SubType>Designer</SubType>

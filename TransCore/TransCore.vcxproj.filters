@@ -34,6 +34,15 @@
     <Filter Include="Human Space Library\Characters">
       <UniqueIdentifier>{dbe8cf34-7bb0-4df2-a8c4-5578f693ba9a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Human Space Library\Commonwealth Fleet">
+      <UniqueIdentifier>{2a2f1032-cd48-4b41-a38a-38b029905090}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Human Space Library\Commonwealth Militia">
+      <UniqueIdentifier>{dbfea604-ebb1-4f1c-a164-4f726aa728c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Human Space Library\Korolov Systems">
+      <UniqueIdentifier>{b04f8c8f-53ab-4024-b123-f5ee2b24f189}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Transcendence.xml" />
@@ -214,13 +223,7 @@
     <None Include="CommonwealthAgricultural.xml">
       <Filter>Human Space Library\Encounters</Filter>
     </None>
-    <None Include="CommonwealthFleet.xml">
-      <Filter>Human Space Library\Encounters</Filter>
-    </None>
     <None Include="CommonwealthMetropolis.xml">
-      <Filter>Human Space Library\Encounters</Filter>
-    </None>
-    <None Include="CommonwealthMilitia.xml">
       <Filter>Human Space Library\Encounters</Filter>
     </None>
     <None Include="CommonwealthMining.xml">
@@ -255,9 +258,6 @@
     </None>
     <None Include="KateMorgental.xml">
       <Filter>Human Space Library\Characters</Filter>
-    </None>
-    <None Include="KorolovShipping.xml">
-      <Filter>Human Space Library\Encounters</Filter>
     </None>
     <None Include="Luminous.xml">
       <Filter>Human Space Library\Encounters</Filter>
@@ -339,6 +339,15 @@
     </None>
     <None Include="UsefulItems.xml">
       <Filter>Human Space Library\Items</Filter>
+    </None>
+    <None Include="CommonwealthFleet.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </None>
+    <None Include="CommonwealthMilitia.xml">
+      <Filter>Human Space Library\Commonwealth Militia</Filter>
+    </None>
+    <None Include="KorolovShipping.xml">
+      <Filter>Human Space Library\Korolov Systems</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -431,6 +440,69 @@
     </Xml>
     <Xml Include="Volkov.xml">
       <Filter>Human Space Library\Characters</Filter>
+    </Xml>
+    <Xml Include="CommonwealthFleetMission01.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="CommonwealthFleetMission02.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="CommonwealthFleetMission03.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="CommonwealthFleetMission04.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="CommonwealthFleetMission05.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="CommonwealthFleetMission06.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="CommonwealthFleetMission07.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="CommonwealthFleetMission08.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="CommonwealthFleetMission09.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="CommonwealthFleetMission10.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="CommonwealthFleetMission11.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="CommonwealthFleetMissionLL01.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="CommonwealthFleetMissionLL02.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="CommonwealthMilitiaMission04.xml">
+      <Filter>Human Space Library\Commonwealth Militia</Filter>
+    </Xml>
+    <Xml Include="CommonwealthMilitiaMission01.xml">
+      <Filter>Human Space Library\Commonwealth Militia</Filter>
+    </Xml>
+    <Xml Include="CommonwealthMilitiaMission02.xml">
+      <Filter>Human Space Library\Commonwealth Militia</Filter>
+    </Xml>
+    <Xml Include="CommonwealthMilitiaMission03.xml">
+      <Filter>Human Space Library\Commonwealth Militia</Filter>
+    </Xml>
+    <Xml Include="KSMission03.xml">
+      <Filter>Human Space Library\Korolov Systems</Filter>
+    </Xml>
+    <Xml Include="KronosaurusMission01.xml">
+      <Filter>Human Space Library\Korolov Systems</Filter>
+    </Xml>
+    <Xml Include="KSMission01.xml">
+      <Filter>Human Space Library\Korolov Systems</Filter>
+    </Xml>
+    <Xml Include="KSMission02.xml">
+      <Filter>Human Space Library\Korolov Systems</Filter>
     </Xml>
   </ItemGroup>
 </Project>
