@@ -450,12 +450,8 @@ CSpaceObject *CPlayerShipController::FindDockTarget (void)
 		{
 		CSpaceObject *pObj = pSystem->GetObject(i);
 
-		//	NOTE: SupportsDockingFast does not guarantee that the station has
-		//	a valid dock. Only that it did as of a several ticks ago. It might
-		//	have changed.
-
 		if (pObj 
-				&& pObj->SupportsDockingFast()
+				&& pObj->GetDockingPortCount() > 0
 				&& !pObj->IsIntangible()
 				&& pObj != m_pShip)
 			{
@@ -464,6 +460,13 @@ CSpaceObject *CPlayerShipController::FindDockTarget (void)
 
 			if (rDist2 < rMaxDist2)
 				{
+				//	Skip if this station does not have a dock screen that we
+				//	can use. It is OK to use the full (expensive) check because
+				//	we've already weeded out most objects.
+
+				if (!pObj->SupportsDocking(true))
+					continue;
+
 				//	If the station is inside the dock distance, check
 				//	to see how close we are to a docking position.
 
