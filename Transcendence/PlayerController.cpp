@@ -939,15 +939,32 @@ void CPlayerShipController::InsuranceClaim (void)
 		}
 	}
 
-void CPlayerShipController::OnBlindnessChanged (bool bBlind, bool bNoMessage)
+void CPlayerShipController::OnAbilityChanged (Abilities iAbility, AbilityModifications iChange, bool bNoMessage)
 
-//	OnBlindnessChanged
+//	OnAbilityChanged
 //
-//	Player is blind or not blind
+//	Some ability has changed.
 
 	{
-	if (!bBlind && !bNoMessage)
-		m_pTrans->DisplayMessage(CONSTLIT("Visual display repaired"));
+	switch (iAbility)
+		{
+		case ablLongRangeScanner:
+			if (iChange == ablRepair && !bNoMessage)
+				{
+				//	If we're in a nebula, then we're still blind.
+
+				if (m_pShip->IsLRSBlind())
+					m_pTrans->DisplayMessage(CONSTLIT("Long-range scanner still inoperative"));
+				else
+					m_pTrans->DisplayMessage(CONSTLIT("Long-range scanner repaired"));
+				}
+			break;
+
+		case ablShortRangeScanner:
+			if (iChange == ablRepair && !bNoMessage)
+				m_pTrans->DisplayMessage(CONSTLIT("Visual display repaired"));
+			break;
+		}
 	}
 
 DWORD CPlayerShipController::OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2)

@@ -281,7 +281,7 @@ class CPlayerShipController : public IShipController
 
 		//	Events
 
-		virtual void OnBlindnessChanged (bool bBlind, bool bNoMessage = false) override;
+		virtual void OnAbilityChanged (Abilities iAbility, AbilityModifications iChange, bool bNoMessage = false) override;
 		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2) override;
 		virtual void OnComponentChanged (ObjectComponentTypes iComponent) override;
 		virtual void OnDamaged (const CDamageSource &Cause, CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage) override;

@@ -175,8 +175,8 @@ class CIntroShipController : public IShipController
 
 		//	Events
 
+		virtual void OnAbilityChanged (Abilities iAbility, AbilityModifications iChange, bool bNoMessage = false) override { m_pDelegate->OnAbilityChanged(iAbility, iChange, bNoMessage); }
 		virtual void OnAttacked (CSpaceObject *pAttacker, const SDamageCtx &Damage) override { m_pDelegate->OnAttacked(pAttacker, Damage); }
-		virtual void OnBlindnessChanged (bool bBlind, bool bNoMessage = false) override { m_pDelegate->OnBlindnessChanged(bBlind, bNoMessage); }
 		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2) override { return m_pDelegate->OnCommunicate(pSender, iMessage, pParam1, dwParam2); }
 		virtual void OnComponentChanged (ObjectComponentTypes iComponent) override { m_pDelegate->OnComponentChanged(iComponent); }
 		virtual void OnDamaged (const CDamageSource &Cause, CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage) override { m_pDelegate->OnDamaged(Cause, pArmor, Damage, iDamage); }
