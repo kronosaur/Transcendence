@@ -218,7 +218,7 @@
 						;	Page Down goes to the next page (either weapons or misc devices)
 						
 						(scrShowAction gScreen 'actionDonePgUp (and (@ gData 'doubleExit) (!= gSource gPlayerShip)))
-						(scrShowAction gScreen 'actionDonePgUpPlayer (and (@ gData 'doubleExit) (== gSource gPlayerShip)))
+						(scrShowAction gScreen 'actionDonePgUpPlayer (and (@ gData 'doubleExit) (= gSource gPlayerShip)))
 						(scrShowAction gScreen 'actionManageWeapons (@ gData 'manageWeapons))
 						(scrShowAction gScreen 'actionManageMiscDevices (and (@ gData 'manageMiscDevices) (not (@ gData 'manageWeapons))))
 						)
