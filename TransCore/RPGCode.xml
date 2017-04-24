@@ -308,7 +308,13 @@
 						;	the station requires an upgrade (purchase) then we show an error.
 					
 						(not (filter allItems theItemToInstall
-								(not (@ (objGetItemProperty dockObj theItemToInstall 'installItemStatus) 'upgradeInstallOnly))
+								(block (
+									(installItemStatus (objGetItemProperty dockObj theItemToInstall 'installItemStatus))
+									)
+									(and (@ installItemStatus 'canInstall)
+										(not (@ installItemStatus 'upgradeInstallOnly))
+										)
+									)
 								))
 							{
 								visible: True
@@ -983,14 +989,21 @@
 				
 								(not (isint itemStatus))
 									{
-										visible: Nil	;	If we cannot be removed, then the Remove action will show the error
+										visible: (@ dockStatus 'upgradeInstallOnly)	;	If we cannot be removed, then the Remove action will show the error
 										enabled: Nil
 										desc: itemStatus
 										}
 								
+								(= itemStatus 1)
+									{
+										visible: (@ dockStatus 'upgradeInstallOnly)	;	If we cannot be removed, then the Remove action will show the error
+										enabled: Nil
+										desc: (scrTranslate gScreen "actionRemove.noRoomForCargoHold" { item:theItem })
+										}
+								
 								(not (eq itemStatus 0))
 									{
-										visible: Nil	;	If we cannot be removed, then the Remove action will show the error
+										visible: (@ dockStatus 'upgradeInstallOnly)	;	If we cannot be removed, then the Remove action will show the error
 										enabled: Nil
 										desc: (or (scrTranslate gScreen "actionReplace.cannotReplace" { item:theItem })
                                                 (scrTranslate gScreen "actionReplace:cannotReplace" { item:theItem })
