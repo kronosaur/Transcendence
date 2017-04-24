@@ -803,6 +803,8 @@
 						"notPlayer" = Decker does not want the player to test weapon
 						"installed" = Installed on player ship
 
+	p262testCheck:	Dockmaster checked on player.
+
 	-->
 
 	<ShipClass UNID="&scCSCTerra;"
@@ -986,7 +988,10 @@
 										)
 										(scrShowPane gScreen "AssignTest")
 
-									(eq (objGetData gSource "MissionStatus") "testing")
+									(and (eq (objGetData gSource "MissionStatus") "testing")
+											(not (objGetGlobalData gSource 'p262testCheck))
+											(gr (- (unvGetTick) (objGetData gSource 'MissionTime)) 1800)
+											)
 										(scrShowPane gScreen "TestingStatus")
 
 									(rpgDockServices gPlayerShip {
@@ -1456,6 +1461,7 @@
 						<Actions>
 							<Action name="Continue" default="1" cancel="1" key="C">
 								(block Nil
+									(objSetGlobalData gSource 'p262testCheck True)
 									(scrShowScreen gScreen "Main")
 									(rpgDockServices gPlayerShip {
 										checkMilitaryID: True
