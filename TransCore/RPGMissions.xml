@@ -21,6 +21,10 @@
 	as a nextScreen parameter during debrief. This is used to implement things
 	like promotions.
 
+	We fire OnCanBrief just before the player receives a briefing (the first time 
+	and all subsequent times). The even may return Nil to continue with the briefing
+	or return a message to cancel the briefing.
+
 	We fire OnAcceptedUndock after the mission has been accepted and the player has
 	undocked.
 
@@ -46,6 +50,7 @@
 		<InitialPane>
 			(block (
 				(missionObj (scrGetData gScreen 'missionObj))
+				noBriefingMsg
 				delayDebriefMsg
 				)
 
@@ -55,6 +60,15 @@
 
 					(msnGetProperty missionObj 'isOpen)
 						(switch
+							;	If we cannot yet brief (or if something happened to invalidate
+							;	this mission), then we explain it here.
+
+							(setq noBriefingMsg (msnFireEvent missionObj "OnCanBrief"))
+								(block Nil
+									(scrSetData gScreen 'NoBriefingMsg noBriefingMsg)
+									"NoBriefing"
+									)
+
 							;	If we don't have FirstIntro, then we go to Intro for
 							;	the first and Briefing for subsequent times.
 							
@@ -78,6 +92,12 @@
 
 					(msnGetProperty missionObj 'isActive)
 						(switch
+							;	If the mission has not yet been completed (success or failure)
+							;	then we're in progress
+
+							(not (msnGetProperty missionObj 'isCompleted))
+								"InProgress"
+								
 							;	If cannot yet debrief, tell the player to wait
 
 							(setq delayDebriefMsg (msnFireEvent missionObj "OnCanDebrief"))
@@ -85,12 +105,16 @@
 									(scrSetData gScreen 'DelayDebriefMsg delayDebriefMsg)
 									"DelayDebrief"
 									)
+
+							;	Otherwise, we debrief success or failure.
 							
 							(msnGetProperty missionObj 'isSuccess)
 								"Success"
 
 							(msnGetProperty missionObj 'isFailure)
 								"Failure"
+
+							;	This should never happen
 
 							"InProgress"
 							)
@@ -204,6 +228,55 @@
 						)
 				</OnPaneInit>
 			</Briefing>
+
+			<NoBriefing>
+				<OnPaneInit>
+					(scrSetDesc gScreen (scrGetData gScreen 'NoBriefingMsg))
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(block (
+							(missionObj (scrGetData gScreen 'missionObj))
+							(screenOptions Nil)
+							)
+							
+							;	Ask the mission if it wants a different screen.
+							;	NOTE: The event could have destroyed the mission, so we check
+							;	here to make sure it is still valid.
+							
+							(if (not (msnGetProperty missionObj 'isCompleted))
+								(block Nil
+									(setq aScreenType 'NoBriefing)
+									(setq screenOptions (msnFireEvent missionObj "OnGetNextScreen"))
+									)
+								)
+							
+							(switch
+								(eq (@ screenOptions 'nextScreen) 'forceUndock)
+									(scrExitScreen gScreen 'forceUndock)
+									
+								(@ screenOptions 'nextScreen)
+									(block Nil
+										(scrExitScreen gScreen)
+										(scrShowScreen gScreen (@ screenOptions 'nextScreen) (@ screenOptions 'nextScreenData))
+										)
+										
+								(eq (@ gData 'nextScreen) 'forceUndock)
+									(scrExitScreen gScreen 'forceUndock)
+
+								(@ gData 'nextScreen)
+									(block Nil
+										(scrExitScreen gScreen)
+										(scrShowScreen gScreen (@ gData 'nextScreen) (@ gData 'nextScreenData))
+										)
+									
+								(scrExitScreen gScreen)
+								)
+							)
+					</Action>
+				</Actions>
+			</NoBriefing>
 
 			<ReplyAccept>
 				<OnPaneInit>
@@ -696,6 +769,130 @@
 		(block Nil
 			(setq rpgIsMissionActive (lambda (missionUNID)
 				(and missionUNID (msnFind (cat "a +unid:" missionUNID ";")))
+				))
+
+			(setq rpgMissionAssignment (lambda (options)
+			
+				;	Options may contain the following fields
+				;
+				;		intervalPerStation: Time between mission given at this station
+				;
+				;		intervalPerType: Time between missions given by same station type
+				;
+				;		maxPerStation: Maximum number of missions that we give out at
+				;				this station.
+				;
+				;		missionCriteria: Criteria used to create new missions. [Required]
+				;
+				;		noMissionTextID: Language ID to display if there is no mission
+				;				available at this station. [Required]
+				
+				(block (
+					(noMissionTextID (@ options 'noMissionTextID))
+					theMission newMissions nextMissionTime
+					)
+
+					;	Show proper screen
+
+					(switch
+						;	If we have an active mission from this station then we show it.
+
+						(setq theMission (@ (msnFind gSource "aS") 0))
+							(scrShowScreen gScreen &dsRPGMission; {	missionObj: theMission })
+
+						;	If we have an open mission available then display it.
+
+						(setq theMission (@ (msnFind gSource "oS") 0))
+							(scrShowScreen gScreen &dsRPGMission; {	missionObj: theMission })
+
+						;	Don't give out more than X mission per station
+								
+						(and (@ options 'maxPerStation) 
+								(geq (count (msnFind gSource "*S")) (@ options 'maxPerStation))
+								)
+							(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
+
+						;	If it's not time for a new mission, then nothing
+
+						(and (setq nextMissionTime (objGetData gSource 'nextMissionTime))
+								(gr nextMissionTime (unvGetTick)))
+							(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
+
+						(and (setq nextMissionTime (objGetTypeData gSource 'nextMissionTime))
+								(gr nextMissionTime (unvGetTick)))
+							(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
+
+						;	Make a list of available missions. We filter out any missions
+						;	that are outside our system level. If we can't find anything, then we've got nothing.
+
+						(not (setq newMissions (typFind (@ options 'missionCriteria))))
+							(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
+
+						;	Create a random mission from the list. If we succeed, then show the mission
+						;	screen.
+
+						(setq theMission (msnCreate newMissions gSource))
+							(block Nil
+								;	And set next mission times if required
+								(if (@ options 'intervalPerStation)
+									(objSetData gSource 'nextMissionTime (+ (unvGetTick) (@ options 'intervalPerStation)))
+									)
+								(if (@ options 'intervalPerType)
+									(objSetTypeData gSource 'nextMissionTime (+ (unvGetTick) (@ options 'intervalPerType)))
+									)
+								(scrShowScreen gScreen &dsRPGMission; { missionObj: theMission })
+								)
+
+						; Otherwise, nothing
+
+						(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
+						)
+					)
+				))
+
+			(setq rpgMissionAssignmentOnScreenInit (lambda (options)
+			
+				;	Options may contain the following fields
+				;
+				;		maxPerStation: Maximum number of missions that we give out at
+				;				this station.
+				;
+				;		missionCriteria: Criteria used to create new missions. [Required]
+				
+				(block (newMissions)
+					(switch
+						;	If we have an active/open mission from this station then nothing to
+						;	do. We go through the normal dock screen.
+
+						(@ (msnFind gSource "aoS") 0)
+							True
+
+						;	Don't give out more than X mission per station
+								
+						(and (@ options 'maxPerStation) 
+								(geq (count (msnFind gSource "*S")) (@ options 'maxPerStation))
+								)
+							True
+
+						;	See if there are any missions for the ship that we should show directly
+						;	when we dock (as opposed to when the player goes to the bridge).
+						;
+						;	If not, nothing to do.
+
+						(not (setq newMissions (typFind (cat (@ options 'missionCriteria) " +onDockMission;"))))
+							True
+
+						;	Create a random mission from the list. If we fail, then just continue
+						;	as normal.
+
+						(not (setq theMission (msnCreate newMissions gSource)))
+							True
+						
+						;	Otherwise, show the mission screen
+					
+						(scrShowScreen gScreen &dsRPGMission; { missionObj: theMission })
+						)
+					)
 				))
 
 			(setq rpgIsMissionDeclined (lambda (missionUNID)
