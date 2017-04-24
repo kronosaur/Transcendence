@@ -289,7 +289,7 @@ void CDockScreenActions::CreateButtons (const CDockScreenVisuals &DockScreenVisu
 		//	pass).
 
 		pButton->SetLabel(pAction->sLabelTmp);
-		pButton->SetLabelAccelerator(pAction->sKeyTmp);
+		pButton->SetLabelAccelerator(pAction->sKeyTmp, pAction->iKeyTmp);
 		pButton->SetDesc(pAction->sDescTmp);
 
 		//	Set common properties
@@ -704,7 +704,7 @@ int CDockScreenActions::Justify (CDesignType *pRoot, int cxJustify)
 				&& pRoot->TranslateText(NULL, pAction->sID, NULL, &sLabelDesc))
 			{
 			TArray<CDockScreenActions::SpecialAttribs> Special;
-			ParseLabelDesc(sLabelDesc, &pAction->sLabelTmp, &pAction->sKeyTmp, &Special);
+			ParseLabelDesc(sLabelDesc, &pAction->sLabelTmp, &pAction->sKeyTmp, &pAction->iKeyTmp, &Special);
 
 			//	We need to set the action key because we have to check for it
 			//	during input.
@@ -721,6 +721,9 @@ int CDockScreenActions::Justify (CDesignType *pRoot, int cxJustify)
 			{
 			pAction->sLabelTmp = pAction->sLabel;
 			pAction->sKeyTmp = pAction->sKey;
+
+			//	NOTE: pAction->iKey should already have been set up. We cannot
+			//	change it here.
 			}
 
 		//	If we've got a quoted label, then make it longer
@@ -812,7 +815,7 @@ int CDockScreenActions::Justify (CDesignType *pRoot, int cxJustify)
 	return m_cyTotalHeight;
 	}
 
-void CDockScreenActions::ParseLabelDesc (const CString &sLabelDesc, CString *retsLabel, CString *retsKey, TArray<SpecialAttribs> *retSpecial)
+void CDockScreenActions::ParseLabelDesc (const CString &sLabelDesc, CString *retsLabel, CString *retsKey, int *retiKey, TArray<SpecialAttribs> *retSpecial)
 
 //	ParseLabelDesc
 //
@@ -863,6 +866,7 @@ void CDockScreenActions::ParseLabelDesc (const CString &sLabelDesc, CString *ret
 
 	CString sLabel;
 	CString sKey;
+	int iKey = -1;
 
 	//	See if we have a multi-key accelerator label
 
@@ -968,6 +972,7 @@ void CDockScreenActions::ParseLabelDesc (const CString &sLabelDesc, CString *ret
 
 				if (*pPos != ']')
 					{
+					iKey = sLabel.GetLength();
 					sKey = CString(pPos, 1);
 					sLabel.Append(sKey);
 					pPos++;
@@ -994,6 +999,9 @@ void CDockScreenActions::ParseLabelDesc (const CString &sLabelDesc, CString *ret
 
 	if (retsKey)
 		*retsKey = sKey;
+
+	if (retiKey)
+		*retiKey = iKey;
 	}
 
 ALERROR CDockScreenActions::RemoveAction (int iAction)
@@ -1065,12 +1073,15 @@ void CDockScreenActions::SetLabelDesc (SActionDesc *pAction, const CString &sLab
 	{
 	CString sLabel;
 	CString sKey;
+	int iKey;
 	TArray<SpecialAttribs> Special;
 
-	ParseLabelDesc(sLabelDesc, &sLabel, &sKey, &Special);
+	ParseLabelDesc(sLabelDesc, &sLabel, &sKey, &iKey, &Special);
 
 	pAction->sLabel = sLabel;
 	pAction->sKey = sKey;
+	pAction->sKeyTmp = sKey;
+	pAction->iKeyTmp = iKey;
 
 	if (bOverrideSpecial || Special.GetCount() > 0)
 		SetSpecial(pAction, Special);

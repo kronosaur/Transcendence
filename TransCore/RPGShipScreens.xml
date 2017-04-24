@@ -13,7 +13,7 @@
 					desc=	"You are inside the main compartment of your ship. A hatch in front of you opens into the cargo hold. To the side there is a small ladder that leads to the reactor and the ship's engines.">
 
 				<Actions>
-					<Action name="Ship Configuration" key="S">
+					<Action name="[S]hip Configuration">
 						;	Show the appropriate dock services screen based on the ship
 						;	class.
 					
@@ -23,22 +23,22 @@
 							)
 					</Action>
 
-					<Action name="Missions" key="M">
+					<Action name="[M]issions">
 						(scrShowScreen gScreen &dsRPGMissionJournal;)
 					</Action>
 
-					<Action name="View Cargo Hold" key="V" >
+					<Action name="[V]iew Cargo Hold">
 						(block Nil
 							(setq gDest Nil)
 							(scrShowScreen gScreen &dsCargoHold;)
 							)
 					</Action>
 
-					<Action name="Refuel Reactor" key="R" >
+					<Action name="[R]efuel Reactor">
 						(scrShowScreen gScreen &dsManualRefuel;)
 					</Action>
 
-					<Action name="Back to Cockpit" cancel="1" key="B">
+					<Action name="[B]ack to Cockpit" cancel="1">
 						<Exit/>
 					</Action>
 				</Actions>

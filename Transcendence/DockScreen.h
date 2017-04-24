@@ -233,7 +233,9 @@ class CDockScreenActions
 					pCode(NULL),
 					bVisible(false),
 					bEnabled(false),
-					dwSpecial(0)
+					dwSpecial(0),
+					bMinor(false),
+					iKeyTmp(-1)
 				{ }
 
 			CString sID;
@@ -258,6 +260,7 @@ class CDockScreenActions
 
 			CString sLabelTmp;		//	Temporary cache (after justify)
 			CString sKeyTmp;
+			int iKeyTmp;
 			CString sDescTmp;
 			};
 
@@ -265,7 +268,7 @@ class CDockScreenActions
 		void ExecuteCode (CDockScreen *pScreen, const CString &sID, CExtension *pExtension, ICCItem *pCode);
 		SpecialAttribs GetSpecialFromName (const CString &sSpecialName);
 		int Justify (CDesignType *pRoot, int cxJustify);
-		void ParseLabelDesc (const CString &sLabelDesc, CString *retsLabel, CString *retsKey = NULL, TArray<SpecialAttribs> *retSpecial = NULL);
+		void ParseLabelDesc (const CString &sLabelDesc, CString *retsLabel, CString *retsKey = NULL, int *retiKey = NULL, TArray<SpecialAttribs> *retSpecial = NULL);
 		void SetLabelDesc (SActionDesc *pAction, const CString &sLabelDesc, bool bOverrideSpecial = true);
 		void SetSpecial (SActionDesc *pAction, const TArray<SpecialAttribs> &Special);
 		void SetSpecial (SActionDesc *pAction, SpecialAttribs iSpecial, bool bEnabled);
