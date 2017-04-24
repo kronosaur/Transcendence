@@ -146,7 +146,7 @@
 	<!-- Miner's Cargo Hold -->
 
 	<ItemType UNID="&itMinersCargoHold;"
-			name=				"miners's cargo hold"
+			name=				"miner's cargo hold"
 			attributes=			"commonwealth, majorItem, minersHold, miningEquipment"
 			  
 			level=				"3"
