@@ -196,9 +196,6 @@
     <None Include="RPGAnalyzers.xml">
       <Filter>RPG Library</Filter>
     </None>
-    <None Include="Antarctica.xml">
-      <Filter>Human Space Library\Star Systems</Filter>
-    </None>
     <None Include="AresOrthodoxy.xml">
       <Filter>Human Space Library\Encounters</Filter>
     </None>
@@ -353,7 +350,10 @@
       <Filter>Human Space Library\Commonwealth</Filter>
     </None>
     <None Include="PointJuno.xml">
-      <Filter>Human Space Library\Star Systems</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </None>
+    <None Include="Antarctica.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -2,38 +2,6 @@
 
 <!DOCTYPE CoreLibrary
 	[
-	<!-- MissionType Refactor - these types should be assigned an official unid -->
-	<!ENTITY unidKorolovShipping		"0xDDDEF001">
-	<!ENTITY evKorolovFreighterBehavior	"0xDDDEF002">
-	<!ENTITY dsKorolovPromotion			"0xDDDEF003">
-	<!ENTITY msKorolovEscort			"0xDDDEF004">
-	<!ENTITY msKorolovNewFreighter		"0xDDDEF005">
-	<!ENTITY tbKorolovEscortPirates		"0xDDDEF006">
-	<!ENTITY msKorolovKillStronghold	"0xDDDEF007">
-	<!ENTITY unidCommonwealthMilitia	"0xDDDEF008">
-	<!ENTITY msCMGatePatrol				"0xDDDEF009">
-	<!ENTITY msCMDestroyConvoy			"0xDDDEF00A">
-	<!ENTITY msCMDestroyThreat			"0xDDDEF00B">
-	<!ENTITY msCMEscortSuperFreighter	"0xDDDEF00C">
-	<!ENTITY msCSCRecon					"0xDDDEF00D">
-	<!ENTITY msCSCSupplyDelivery		"0xDDDEF00E">
-	<!ENTITY msCSCCollectDataROM		"0xDDDEF00F">
-	<!ENTITY unidJuanCarlos				"0xDDDEF010">
-	<!ENTITY msCSCInterceptAresPatrol	"0xDDDEF011">
-	<!ENTITY msCSCDestroyAresFreighter	"0xDDDEF012">
-	<!ENTITY tbCSCAresFreighter			"0xDDDEF013">
-	<!ENTITY msCSCEscortFreighter		"0xDDDEF014">
-	<!ENTITY msCSCRescueScientists		"0xDDDEF015">
-	<!ENTITY msCSCEscortFreighter2		"0xDDDEF016">
-	<!ENTITY msCSCRefugeeConvoy			"0xDDDEF017">
-	<!ENTITY msCSCInterceptAresAttack	"0xDDDEF018">
-	<!ENTITY msCSCDestroyAresStation	"0xDDDEF019">
-	<!ENTITY msCSCDestroyAresConvoy		"0xDDDEF01A">
-	<!ENTITY msCSCDestroyAresTarget		"0xDDDEF01B">
-	<!ENTITY tbCSCDestroyAresTarget		"0xDDDEF01C">
-	<!ENTITY unidKronosaurus			"0xDDDEF01D">
-	<!ENTITY msKronosaurus				"0xDDDEF01E">
-
 	<!ENTITY ssEarthSpaceStandard		"0x00000001">
 	<!ENTITY ssEarthSpaceRedDwarf		"0x00000002">
 	<!ENTITY ssEarthSpaceAsteroids		"0x00000003">
@@ -1634,6 +1602,22 @@
 	<!ENTITY rsAurochs					"0x00100065">
 	<!ENTITY efLamplighterProjectile	"0x00100066">
 	<!ENTITY rsAurochsHD				"0x00100067">
+	<!ENTITY msCSCRecon					"0x00100068">
+	<!ENTITY msCSCSupplyDelivery		"0x00100069">
+	<!ENTITY msCSCCollectDataROM		"0x0010006A">
+	<!ENTITY unidJuanCarlos				"0x0010006B">
+	<!ENTITY msCSCInterceptAresPatrol	"0x0010006C">
+	<!ENTITY msCSCDestroyAresFreighter	"0x0010006D">
+	<!ENTITY tbCSCAresFreighter			"0x0010006E">
+	<!ENTITY msCSCEscortFreighter		"0x0010006F">
+	<!ENTITY msCSCRescueScientists		"0x00100070">
+	<!ENTITY msCSCEscortFreighter2		"0x00100071">
+	<!ENTITY msCSCRefugeeConvoy			"0x00100072">
+	<!ENTITY msCSCInterceptAresAttack	"0x00100073">
+	<!ENTITY msCSCDestroyAresStation	"0x00100074">
+	<!ENTITY msCSCDestroyAresConvoy		"0x00100075">
+	<!ENTITY msCSCDestroyAresTarget		"0x00100076">
+	<!ENTITY tbCSCDestroyAresTarget		"0x00100077">
 	
 	<!-- 0080-009F COMMONWEALTH -->
 	
@@ -1693,7 +1677,9 @@
 	
 	<!ENTITY rsTripoli					"0x00100100">
 	<!ENTITY evCharonRaiderBehavior		"0x00100101">
-	
+	<!ENTITY unidKronosaurus			"0x00100102">
+	<!ENTITY msKronosaurus				"0x00100103">
+
 	<!-- 0120-013F SUNG SLAVERS -->
 	
 	<!ENTITY rsSungTransport			"0x00100120">
@@ -1807,6 +1793,24 @@
 
 	<!ENTITY itMediumSolarArmor			"0x00100270">
 	<!ENTITY itHeavySolarArmor			"0x00100271">
+
+	<!-- 0290-02AF KOROLOV SHIPPING -->
+
+	<!ENTITY unidKorolovShipping		"0x00100290">
+	<!ENTITY evKorolovFreighterBehavior	"0x00100291">
+	<!ENTITY dsKorolovPromotion			"0x00100292">
+	<!ENTITY msKorolovEscort			"0x00100293">
+	<!ENTITY msKorolovNewFreighter		"0x00100294">
+	<!ENTITY tbKorolovEscortPirates		"0x00100295">
+	<!ENTITY msKorolovKillStronghold	"0x00100296">
+
+	<!-- 02B0-02CF COMMONWEALTH MILITIA -->
+
+	<!ENTITY unidCommonwealthMilitia	"0x001002B0">
+	<!ENTITY msCMGatePatrol				"0x001002B1">
+	<!ENTITY msCMDestroyConvoy			"0x001002B2">
+	<!ENTITY msCMDestroyThreat			"0x001002B3">
+	<!ENTITY msCMEscortSuperFreighter	"0x001002B4">
 
 	<!-- 1000-FFFF RESERVED -->
 	]>
