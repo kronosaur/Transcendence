@@ -291,10 +291,22 @@
 						;	How many items can we fit?
 						
 						(fitCount (objGetFitCount gPlayerShip thisItem))
+
+						;	Military?
+
+						(militaryCount 
+							(if (and (@ gData 'checkMilitaryID)
+									(itmHasAttribute thisItem 'military)
+									(not (objGetItems gPlayerShip "* +militaryID;"))
+									)
+								0
+								(itmGetCount thisItem)
+								)
+							)
 						
 						;	Max items we can buy
 						
-						(maxCount (min availCount affordCount fitCount))
+						(maxCount (min availCount affordCount fitCount militaryCount))
 						
 						;	Can this item be installed?
 						
@@ -331,6 +343,9 @@
 								(switch
 									(eq itemCost 0)
 										(scrTranslate gScreen 'descNotForSale)
+
+									(eq militaryCount 0)
+										(scrTranslate gScreen 'descNoMilitaryID { theItem:thisItem })
 										
 									(eq affordCount 0)
 										(scrTranslate gScreen 'descNotEnoughMoney { currency: (fmtCurrency currencyUsed True) })
@@ -569,6 +584,9 @@
 			</Text>
 			<Text id="descNotForSale">
 				"This item is not for sale."
+			</Text>
+			<Text id="descNoMilitaryID">
+				"You need a military ID to buy this item."
 			</Text>
 			<Text id="descNotEnoughMoney">
 				(cat
