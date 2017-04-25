@@ -786,9 +786,14 @@
 				;
 				;		noMissionTextID: Language ID to display if there is no mission
 				;				available at this station. [Required]
+				;
+				;		displayCriteria: If non-Nil, then we show open/active missions 
+				;				that match this criteria. Otherwise, this is assumed to
+				;				be the same as missionCriteria.
 				
 				(block (
 					(noMissionTextID (@ options 'noMissionTextID))
+					(displayCriteria (or (@ options 'displayCriteria) (@ options 'missionCriteria)))
 					theMission newMissions nextMissionTime
 					)
 
@@ -797,12 +802,12 @@
 					(switch
 						;	If we have an active mission from this station then we show it.
 
-						(setq theMission (@ (msnFind gSource "aS") 0))
+						(setq theMission (@ (msnFind gSource (cat "aS " displayCriteria)) 0))
 							(scrShowScreen gScreen &dsRPGMission; {	missionObj: theMission })
 
 						;	If we have an open mission available then display it.
 
-						(setq theMission (@ (msnFind gSource "oS") 0))
+						(setq theMission (@ (msnFind gSource (cat "oS" displayCriteria)) 0))
 							(scrShowScreen gScreen &dsRPGMission; {	missionObj: theMission })
 
 						;	Don't give out more than X mission per station
