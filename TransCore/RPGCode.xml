@@ -2047,6 +2047,9 @@
 				;
 				;	We accept the following options:
 				;
+				;		actionDoneID: Action ID to use for the done button (defaults to
+				;				'actionDone).
+				;
 				;		missionObj: Required if 'onAcceptDecline is defined.
 				;
 				;		onAcceptDecline: (lambda (theScreen acceptDecline pageDesc options) ...)
@@ -2137,6 +2140,7 @@
 							(nextPage (@ actionDesc 'nextPage))
 							
 							(actionID (cat "action" nextActionID))
+							(actionDoneID (or (@ options 'actionDoneID) 'actionDone))
 							
 							;	Figure out the label, if we don't have one.
 							
@@ -2151,13 +2155,13 @@
 									(and (or (not nextPage) (= nextPage 'nextPage))
 											atLastPage
 											)
-										(or (scrTranslate theScreen 'actionDone) (typTranslate &dsDockScreenBase; 'actionDone))
+										(or (scrTranslate theScreen actionDoneID) (typTranslate &dsDockScreenBase; actionDoneID))
 										
 									;	If we've got an explicit exit, then use the [D]one
 									;	label.
 									
 									(or (= nextPage 'exitPane) (= nextPage 'exitScreen))
-										(or (scrTranslate theScreen 'actionDone) (typTranslate &dsDockScreenBase; 'actionDone))
+										(or (scrTranslate theScreen actionDoneID) (typTranslate &dsDockScreenBase; actionDoneID))
 										
 									;	If we've got an explicit undock, then use the [U]ndock
 									;	label.

@@ -140,6 +140,7 @@
 						(rpgPagePaneInit gScreen 
 							(msnTranslate (scrGetData gScreen 'missionObj) 'FirstIntro) 
 							{
+								actionDoneID: 'actionContinue
 								missionObj: missionObj
 								onExitPane: (lambda (theScreen pageDesc options)
 									(block Nil
@@ -162,6 +163,7 @@
 						(rpgPagePaneInit gScreen 
 							(msnTranslate (scrGetData gScreen 'missionObj) 'Intro)
 							{
+								actionDoneID: 'actionContinue
 								missionObj: missionObj
 								onExitPane: (lambda (theScreen pageDesc options)
 									(block Nil
@@ -286,6 +288,7 @@
 						(rpgPagePaneInit gScreen 
 							(msnTranslate (scrGetData gScreen 'missionObj) 'AcceptReply)
 							{
+								actionDoneID: 'actionDone
 								missionObj: missionObj
 								onExitPane: (lambda (theScreen pageDesc options)
 									(block (
@@ -336,6 +339,11 @@
 						(rpgPagePaneInit gScreen 
 							(msnTranslate (scrGetData gScreen 'missionObj) 'DeclineReply)
 							{
+								actionDoneID: 
+									(if (= (@ gData 'nextScreen) 'forceUndock)
+										'actionUndock
+										)
+
 								missionObj: missionObj
 								onExitPane: (lambda (theScreen pageDesc options)
 									(block (
@@ -392,6 +400,7 @@
 						(rpgPagePaneInit gScreen 
 							(msnTranslate (scrGetData gScreen 'missionObj) 'InProgress)
 							{
+								actionDoneID: 'actionUndock
 								missionObj: missionObj
 								onExitPane: (lambda (theScreen pageDesc options)
 									(block (
@@ -420,7 +429,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action id="actionContinue" default="1" cancel="1">
+					<Action id="actionUndock" default="1" cancel="1">
 						(scrExitScreen gScreen 'forceUndock)
 					</Action>
 				</Actions>
@@ -657,7 +666,6 @@
 		<Language>
 			<Text id="actionAccept">"[A]ccept"</Text>
 			<Text id="actionDecline">"[D]ecline"</Text>
-			<Text id="actionDone">"[C]ontinue"</Text>
 		</Language>
 	</DockScreen>
 
