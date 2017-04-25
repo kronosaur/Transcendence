@@ -403,7 +403,7 @@
 
 		<Language>
 			<Text id="actionCommandCenter">"[C]ommand Center"</Text>
-			<Text id="actionOfficersClub">"[O]fficer's Club"</Text>
+			<Text id="actionOfficersClub">"[O]fficers' Club"</Text>
 			<Text id="actionDockServices">"[D]ock Services"</Text>
 			<Text id="actionUndock">"[U]ndock"</Text>
 			<Text id="actionBar">"[S]it at the Bar"</Text>
@@ -543,7 +543,7 @@
 			</Text>
 			<Text id="descNoOfficersClubAccess">
 				(cat
-					"Two guards flank the door to the Officer's Club. One of them checks your ID against a computer list:\n\n"
+					"Two guards flank the door to the Officers' Club. One of them checks your ID against a computer list:\n\n"
 					"\"Sorry, %sir%, only officers are allowed in the club.\""
 					)
 			</Text>
@@ -555,7 +555,7 @@
 			</Text>
 			<Text id="descOfficersClub">
 				(cat
-					"The Officer's Club is packed with pilots and other officers having a "
+					"The Officers' Club is packed with pilots and other officers having a "
 					"few drinks to pass away the off-duty hours."
 					)
 			</Text>
