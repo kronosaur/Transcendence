@@ -1688,11 +1688,9 @@ PLAYER DATA
 
 	-->
 
-	<StationType UNID="&stCSCTaskForceEncounter;"
+	<EncounterType UNID="&stCSCTaskForceEncounter;"
 			name=				"(CSC Task Force)"
 			sovereign=			"&svCommonwealthFleet;"
-			shipEncounter=		"true"
-			scale=				"ship"
 
 			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
 			levelFrequency=		"----- -ucu- ----- ----- -----"
@@ -1778,80 +1776,13 @@ PLAYER DATA
 				</Escorts>
 			</Ship>
 		</Ships>
-	</StationType>
-
-	<!-- CSC America Encounter (DEPRECATED) -->
-
-	<StationType UNID="&stCSCAmericaEncounter;"
-			name=				"(CSC America)"
-			sovereign=			"&svCommonwealthFleet;"
-			shipEncounter=		"true"
-			scale=				"ship"
-
-			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
-			>
-
-		<Ships>
-			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">
-
-				<Names definiteArticle="true">CSC America</Names>
-
-				<InitialData>
-					<CSC>"america"</CSC>
-				</InitialData>
-
-				<Escorts>
-					<Ship					count="1"	class="&scCenturion;"	orders="guard" controller="fleetcommand">
-						<Escorts>
-							<Ship     count="6"	class="&scCenturion;"	orders="escort" controller="fleet"/>
-						</Escorts>
-					</Ship>
-					<Ship					count="1"	class="&scCenturion;"	orders="guard" controller="fleetcommand">
-						<Escorts>
-							<Ship     count="6"	class="&scCenturion;"	orders="escort" controller="fleet"/>
-						</Escorts>
-					</Ship>
-				</Escorts>
-			</Ship>
-		</Ships>
-
-	</StationType>
-
-	<!-- CSC Atlantica Encounter (DEPRECATED) -->
-
-	<StationType UNID="&stCSCAtlanticaEncounter;"
-			name=				"(CSC Atlantica)"
-			sovereign=			"&svCommonwealthFleet;"
-			shipEncounter=		"true"
-			scale=				"ship"
-
-			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
-			>
-
-		<Ships>
-			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">
-
-				<Names definiteArticle="true">CSC Atlantica</Names>
-
-				<InitialData>
-					<CSC>"atlantica"</CSC>
-				</InitialData>
-
-				<Escorts>
-					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
-				</Escorts>
-			</Ship>
-		</Ships>
-
-	</StationType>
+	</EncounterType>
 
 	<!-- CSC Arctica Encounter -->
 
-	<StationType UNID="&stCSCArcticaEncounter;"
+	<EncounterType UNID="&stCSCArcticaEncounter;"
 			name=				"(CSC Arctica)"
 			sovereign=			"&svCommonwealthFleet;"
-			shipEncounter=		"true"
-			scale=				"ship"
 
 			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
 			levelFrequency=		"----- ruu-- ----- ----- -----"
@@ -1878,100 +1809,13 @@ PLAYER DATA
 				</Escorts>
 			</Ship>
 		</Ships>
-
-	</StationType>
-
-	<!-- CSC Asia Encounter (DEPRECATED) -->
-
-	<StationType UNID="&stCSCAsiaEncounter;"
-			name=				"(CSC Asia)"
-			sovereign=			"&svCommonwealthFleet;"
-			shipEncounter=		"true"
-			scale=				"ship"
-
-			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
-			>
-
-		<Ships>
-			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">
-
-				<Names definiteArticle="true">CSC Asia</Names>
-
-				<InitialData>
-					<CSC>"asia"</CSC>
-				</InitialData>
-
-				<Escorts>
-					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
-				</Escorts>
-			</Ship>
-		</Ships>
-
-	</StationType>
-
-	<!-- CSC India Encounter (DEPRECATED) -->
-
-	<StationType UNID="&stCSCIndiaEncounter;"
-			name=				"(CSC India)"
-			sovereign=			"&svCommonwealthFleet;"
-			shipEncounter=		"true"
-			scale=				"ship"
-
-			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
-			>
-
-		<Ships>
-			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">
-
-				<Names definiteArticle="true">CSC India</Names>
-
-				<InitialData>
-					<CSC>"india"</CSC>
-				</InitialData>
-
-				<Escorts>
-					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
-				</Escorts>
-			</Ship>
-		</Ships>
-
-	</StationType>
-
-	<!-- CSC Pacifica Encounter (DEPRECATED) -->
-
-	<StationType UNID="&stCSCPacificaEncounter;"
-			name=				"(CSC Pacifica)"
-			sovereign=			"&svCommonwealthFleet;"
-			shipEncounter=		"true"
-			scale=				"ship"
-
-			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
-			>
-
-		<Ships>
-			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">
-
-				<Names definiteArticle="true">CSC Pacifica</Names>
-
-				<InitialData>
-					<CSC>"pacifica"</CSC>
-				</InitialData>
-
-				<Escorts>
-					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
-				</Escorts>
-			</Ship>
-		</Ships>
-
-	</StationType>
+	</EncounterType>
 
 	<!-- CSC Sahara Encounter -->
 
-	<StationType UNID="&stCSCSaharaEncounter;"
+	<EncounterType UNID="&stCSCSaharaEncounter;"
 			name=				"(CSC Sahara)"
 			sovereign=			"&svCommonwealthFleet;"
-			shipEncounter=		"true"
-			scale=				"ship"
 
 			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
 			levelFrequency=		"----- ruu-- ----- ----- -----"
@@ -1998,8 +1842,7 @@ PLAYER DATA
 				</Escorts>
 			</Ship>
 		</Ships>
-
-	</StationType>
+	</EncounterType>
 
 	<!-- Station used for scientist rescue mission -->
 
