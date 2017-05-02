@@ -36,6 +36,7 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	bool bGrid = pCmdLine->GetAttributeBool(CONSTLIT("grid"));
 	bool bDriveImages = pCmdLine->GetAttributeBool(CONSTLIT("driveimages"));
+	bool bPortPos = pCmdLine->GetAttributeBool(CONSTLIT("portPos"));
 	bool bWeaponPos = pCmdLine->GetAttributeBool(CONSTLIT("weaponpos"));
 
 	//	How many rotations do we need to output?
@@ -150,6 +151,13 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 						}
 					}
 				}
+			}
+
+		//	Docking ports
+
+		if (bPortPos)
+			{
+			pClass->PaintDockPortPositions(Output.GetImage(), x, y, Ctx.iRotation);
 			}
 
 		//	If requested, paint a polar grid
