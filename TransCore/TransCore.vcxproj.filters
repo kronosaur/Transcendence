@@ -510,5 +510,8 @@
     <Xml Include="CommonwealthShips.xml">
       <Filter>Human Space Library\Commonwealth</Filter>
     </Xml>
+    <Xml Include="RPGCommoditiesExchange.xml">
+      <Filter>RPG Library</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
