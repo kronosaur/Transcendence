@@ -1803,6 +1803,9 @@
 	<!ENTITY msKorolovNewFreighter		"0x00100294">
 	<!ENTITY tbKorolovEscortPirates		"0x00100295">
 	<!ENTITY msKorolovKillStronghold	"0x00100296">
+	<!ENTITY msKorolovAtCharon			"0x00100297">
+	<!ENTITY evKorolovAtCharon			"0x00100298">
+	<!ENTITY msKorolovAtCharonRevenge	"0x00100299">
 
 	<!-- 02B0-02CF COMMONWEALTH MILITIA -->
 
@@ -1897,6 +1900,8 @@
 	<Module filename="KSMission01.xml"/>
 	<Module filename="KSMission02.xml"/>
 	<Module filename="KSMission03.xml"/>
+	<Module filename="KSMissionC01.xml"/>
+	<Module filename="KSMissionC02.xml"/>
 	<Module filename="Luminous.xml"/>
 	<Module filename="OutlawMiners.xml"/>
 	<Module filename="Penitents.xml"/>

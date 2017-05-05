@@ -1,0 +1,227 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Korolov At Charon Revenge=====================================
+
+
+	EXTRA DATA
+
+	stationsLeft:			Number of Charon stations left to destroy
+	rewardItem:				Reward item
+
+	======================================================================== -->
+
+	<MissionType UNID="&msKorolovAtCharonRevenge;"
+			name=			"Korolov At Charon"
+			attributes=		"special"
+
+			maxAppearing=	"1"
+			noFailureOnOwnerDestroyed=	"true"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	Only in Charon system
+					(!= (sysGetNode) 'CP)
+						(msnDestroy gSource)
+
+					(block (
+						(pirateStations (sysFindObject gSource "TA +charonPirates;"))
+						)
+						(enum pirateStations theObj (msnRegisterForEvents gSource theObj))
+						(msnSetData gSource 'stationsLeft (count pirateStations))
+						(dbgOutput "creating mission")
+						
+						(msnSetData gSource 'reward 0)
+						(msnSetData gSource 'missionXP 500)
+						
+						;	Choose a random mission reward
+						(msnSetData gSource 'rewardItem (randomTable
+							25 (itmCreate &itTargetingComputerROM; 1)
+							25 (itmCreate &itMilitaryID; 1)
+							25 (itmCreate &itMuleAuton; 1)
+							15 (itmCreate &itGreenEtheriumCrystal; 1)
+							10 (itmCreate &itRegeneratingNanos; 4)
+							))
+						)
+					)
+			</OnCreate>
+
+			<OnObjDestroyed>
+				(switch
+					;	One of the Charon stations
+					(and (objHasAttribute aObjDestroyed 'charonPirates) (not (objIsShip aObjDestroyed)))
+						(if (= (msnIncData gSource 'stationsLeft -1) 0)
+							(msnSuccess gSource)
+							)
+					)
+			</OnObjDestroyed>
+
+			<OnCompleted>
+				(switch
+					(= aReason 'success)
+						(block (
+							(oldStation (objGetObjByID (msnGetProperty gSource 'ownerID)))
+							(newStation (sysCreateStation &stKorolovAtCharonCons; (objGetPos oldStation)))
+							)
+							;	Replace the destroyed korolov with new construction
+							(objSetKnown newStation)
+							(objDestroy oldStation)
+
+							;	Debrief at the new station
+							(msnSetProperty gSource 'debrieferID (objGetID newStation))
+							)
+					)
+			</OnCompleted>
+
+			<OnReward>
+				(block Nil
+					(objAddItem gPlayerShip (msnGetData gSource 'rewardItem))
+					(korGiveReward gSource)
+					)
+			</OnReward>
+
+			<GetGlobalAchievements>
+				(block (theList)
+					(if (msnFind "r +unid:&msKorolovAtCharon;; +property:isSuccess;")
+						(setq theList (list
+							(list 
+								"Cleared the Charon system for Korolov Shipping"
+								Nil
+								"achievements &amp; regrets"
+								)
+							))
+						)
+
+					theList
+					)
+			</GetGlobalAchievements>
+		</Events>
+
+		<Language>
+			<Text id="Name">
+				"Korolov at Charon"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"Korolov Shipping in the Charon system has been destroyed by a massive pirate attack. "
+					"Now you need to hunt down and destroy all Charon stations in the system.\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(list
+					{
+						desc: (cat
+							"You are docked at a station under construction. The manager"
+							"of the station walks up to you to shake your hand.\n\n"
+							
+							"\"What do you think? We'll have this old station rebuilt in a "
+							"few months. And we owe it all to you for destroying the pirates.\""
+							)
+						}
+					{
+						desc: (cat
+							"\"We don't have much in the way of rewards here. But I've got "
+							"something that might help in your travels.\"\n\n"
+							
+							"He hands you " (itmGetName (msnGetData gSource 'rewardItem) 0x08) "."
+							)
+						}
+					)
+			</Text>
+		</Language>
+	</MissionType>
+
+	<!-- Rebuilt Korolov -->
+
+	<StationType UNID="&stKorolovAtCharonCons;"
+			name=				"Korolov Shipping"
+			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+				 
+			attributes=			"corporate, corporateCustoms, corporateDecon, friendly, human, majorStation, populated, korolovShipping, underConstruction"
+				 
+            level=              "4"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+				 
+			size=				"390"
+			armorID=			"&itPlasteelPlate;"
+			maxHitPoints=		"470"
+			hitPoints=			"150"
+			multiHull=			"true"
+			regen=			    "2"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			noArticle=			"true"
+			>
+
+		<!-- Trade and Items -->
+		
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Lookup count="1d2" table="&tbCommDefenders;"/>
+			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
+			<Ship	count="2d6" class="&scRoninC;" orders="patrol" patrolDist="10"/>
+		</Ships>
+
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsKorolovShippingConstruction;" imageWidth="332" imageHeight="376"/>
+
+		<DockingPorts>
+			<Port x="-18"	y="128" />
+			<Port x="100"	y="127" />
+			<Port x="156"	y="31" />
+			<Port x="165"	y="-45" />
+			<Port x="98"	y="-75" />
+			<Port x="120"	y="-153" />
+
+			<Port x="0"		y="-162" />
+			<Port x="-90"	y="-165" />
+			<Port x="-103"	y="-82" />
+			<Port x="-178"	y="-46" />
+			<Port x="-113"	y="43" />
+			<Port x="-98"	y="122" />
+		</DockingPorts>
+
+		<!-- Dock Screen -->
+		
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionUndock" cancel="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+        <Language>
+			<Text id="actionUndock">"[U]ndock"</Text>
+
+			<Text id="descWelcome">"You are in the main hall of a Korolov Shipping Company station. The station is under construction."</Text>
+			<Text id="core.mapDesc">
+                "Under construction"
+            </Text>
+        </Language>
+	</StationType>
+
+</TranscendenceModule>
