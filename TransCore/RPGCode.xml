@@ -2044,7 +2044,10 @@
 					
 					;	Show the appropriate page
 
-					(scrSetDesc theScreen (@ pageDesc 'desc))
+					(if (@ pageDesc 'textID)
+						(scrSetDescTranslate theScreen (@ pageDesc 'textID))
+						(scrSetDesc theScreen (@ pageDesc 'desc))
+						)
 					
 					;	Make sure the actions list is properly initialized.
 					
@@ -2096,7 +2099,7 @@
 						
 						(!= (typeof actions) 'list)
 							(setq actions (list {
-								label: (or (@ pageDesc 'label) (@ pageDesc 'nextLabel))
+								label: (or (@ pageDesc 'label) (@ pageDesc 'nextLabel) (scrTranslate theScreen (@ pageDesc 'nextLabelID)))
 								nextPage: (@ pageDesc 'nextPage)
 								code: (or (@ pageDesc 'code) (@ pageDesc 'nextCode))
 								}))
