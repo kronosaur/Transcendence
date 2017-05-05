@@ -14,7 +14,7 @@
 	
 	<MissionType UNID="&msBenedictsDrones;"
 			name=				"Benedict&apos;s Autons"
-			attributes=			"benedictStoryArc"
+			attributes=			"benedictStoryArc, sistersMission"
 
 			level=				"1"
 

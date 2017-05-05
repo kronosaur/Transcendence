@@ -42,7 +42,7 @@
 	
 	<MissionType UNID="&msBenedictTraining;"
 			name=				"Benedict Training"
-			attributes=			"benedictStoryArc"
+			attributes=			"benedictStoryArc, sistersMission"
 
 			level=				"1"
 				 
