@@ -127,7 +127,7 @@
 						;	user-selectable filters.
 					
 						(not (@ gData 'showInstallables))
-							(rpgCreateBuyItemTags)
+							(rpgCreateBuyItemTabs)
 					
 						;	Otherwise, we sell everything listed in our Trade
 						;	directives.
@@ -870,7 +870,7 @@
 				(objGetSellPrice gSource thisItem)
 				))
 
-			(setq rpgCreateBuyItemTags (lambda ()
+			(setq rpgCreateBuyItemTabs (lambda ()
 				(block ()
 					(scrAddListFilter gScreen 'filterGeneral "General" (lambda (theItem)
 						(switch
