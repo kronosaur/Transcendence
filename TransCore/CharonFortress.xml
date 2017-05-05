@@ -351,10 +351,7 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(block (desc playerLevel)
-								(setq playerLevel (korInitialize))
-								(scrSetDesc gScreen (korMsgWelcome playerLevel))
-								)
+							(scrSetDesc gScreen (typTranslate &stKorolovShipping; 'descWelcome))
 						</OnPaneInit>
 
 						<Actions>
@@ -374,7 +371,7 @@
 										(eq missionStatus 'underAttack)
 											(scrShowPane gScreen "UnderAttack")
 
-										(leq (typGetGlobalData &stKorolovShipping; "xp") 0)
+										(leq (typGetData &unidKorolovShipping; 'xp) 0)
 											(scrShowPane gScreen "CantUseCommandCenter")
 
 										(scrShowPane gScreen "Defend")
@@ -384,7 +381,7 @@
 
 							<Action name="Dock Services" key="D">
 								(block (xp)
-									(setq xp (typGetGlobalData &stKorolovShipping; "xp"))
+									(setq xp (typGetData &unidKorolovShipping; 'xp))
 									(if (leq xp 0)
 										(scrShowPane gScreen "CantUseDockServices")
 										
@@ -745,9 +742,9 @@
 									(objSetData gSource "Reward" True)
 
 									; Player gains korolov xp
-									(setq xp (typGetGlobalData &stKorolovShipping; "xp"))
+									(setq xp (typGetData &unidKorolovShipping; 'xp))
 									(setq xp (add xp 500))
-									(typSetGlobalData &stKorolovShipping; "xp" xp)
+									(typSetData &unidKorolovShipping; 'xp xp)
 
 									; Give reward to player
 									(objAddItem gPlayerShip gItem)
