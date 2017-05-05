@@ -53,8 +53,11 @@
 						)
 						
 						;	Set the page text
-						
-						(scrSetDesc gScreen (@ pageDesc 'desc))
+
+						(if (@ pageDesc 'textID)
+							(scrSetDescTranslate gScreen (@ pageDesc 'textID))
+							(scrSetDesc gScreen (@ pageDesc 'desc))
+							)
 						
 						;	Add all the appropriate actions
 						
@@ -115,7 +118,7 @@
 							
 							(block (
 								(nextPage (or (@ pageDesc 'nextPage) (@ pageDesc 'nextPane)))
-								(label (or (@ pageDesc 'label) (@ pageDesc 'nextLabel)))
+								(label (or (@ pageDesc 'label) (@ pageDesc 'nextLabel) (scrTranslate gScreen (@ pageDesc 'nextLabelID))))
 								(code (or (@ pageDesc 'code) (@ pageDesc 'nextCode)))
 								)
 								(scrAddAction
