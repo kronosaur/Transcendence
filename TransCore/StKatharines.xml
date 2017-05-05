@@ -2177,6 +2177,8 @@
 	<StationType UNID="&stDallSphere;"
 			name=				"inert metal sphere"
 			sovereign=			"&svNeutral;"
+			inherit=			"&dsDockScreenBase;"
+			
 			dockScreen=			"Main"
 
 			scale=				"ship"
@@ -2192,15 +2194,32 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=		"You find an inert metal sphere floating in space.">
+					<Default>
+						<OnPaneInit>
+							(block (
+								(theItem (item (objGetItems gSource "*") 0))
+								)
+
+								(if theItem
+									(block nil
+										(scrSetData gScreen 'itemName (itmGetName theItem 0x08))
+										(scrSetDescTranslate gScreen 'descFindItem)
+									)
+
+									(block Nil
+										(scrSetDescTranslate gScreen 'descItemSecure)
+										(scrShowAction gScreen 'actionLoot Nil)
+										)
+									)
+								)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Loot" key="L" default="1" >
+							<Action id="actionLoot" default="1">
 								(scrShowScreen gScreen &dsRPGLoot;)
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1" default="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -2214,11 +2233,18 @@
 				portRadius=		"24"
 				maxDist=		"3"
 				/>
+				
+		<Language>
+			<Text id="descFindItem">(cat "You find " (@ gData 'itemName) " floating in space.")</Text>
+			<Text id="descItemSecure">"The item is secure aboard your ship."</Text>
+		</Language>
 	</StationType>
 
 	<StationType UNID="&stDallMissionWreck;"
 			name=				"Sung transport wreck"
 			sovereign=			"&svNeutral;"
+			inherit=			"&dsDockScreenBase;"
+			
 			dockScreen=			"Main"
 			scale=				"ship"
 			mobile=				"true"
@@ -2262,36 +2288,17 @@
 				</InitialPane>
 				
 				<Panes>
-					<Default
-							desc=		"You are docked with the wreck of a ship.">
-
-						<Actions>
-							<Action name="Loot" key="L" default="1" >
-								(scrShowScreen gScreen &dsRPGLoot;)
-							</Action>
-
-							<Action name="Jettison" key="J">
-								(scrShowScreen gScreen &dsRPGJettison;)
-							</Action>
-
-							<Action name="Undock" cancel="1" key="U">
-								<Exit/>
-							</Action>
-						</Actions>
+					<Default>
+						<OnPaneInit>
+							(scrShowScreen gScreen &dsAbandonedShip;)
+						</OnPaneInit>
 					</Default>
 					
-					<ContainmentVessel>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"You enter the cargo hold of the wrecked ship and see a massive containment vessel "
-								"with giant power couplings. Through a thick window in the containment vessel you "
-								"see a metal sphere with a complex series of etchings.\n\n"
-								"There is an emergency latch on one side that opens the containment vessel."
-								))
-						</OnPaneInit>
+					<ContainmentVessel
+						desc=	"=(scrTranslate gScreen 'descContainmentVessel)">
 
 						<Actions>
-							<Action name="Open Containment" key="O" default="1">
+							<Action id="actionOpenContainment" default="1">
 								(block (theSphere)
 									(setq theSphere (item (objGetItems gSource "* +unid:&itDallSphere;") 0))
 									
@@ -2305,23 +2312,17 @@
 									)
 							</Action>
 							
-							<Action name="Undock" key="U" cancel="1">
+							<Action id="actionUndock" cancel="1">
 								(scrExitDock gScreen)
 							</Action>
 						</Actions>
 					</ContainmentVessel>
 
-					<OpenContainment>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"The titanic doors of the containment vessel split open and air rushes into it. "
-								"The sphere is held in place by thin columns.\n\n"
-								"You take the sphere and put it in your cargo hold."
-								))
-						</OnPaneInit>
+					<OpenContainment
+						desc=	"=(scrTranslate gScreen 'descOpenContainment)">
 
 						<Actions>
-							<Action name="Undock" key="U" default="1" cancel="1">
+							<Action id="actionUndock" default="1" cancel="1">
 								(block Nil
 									(scrExitDock gScreen)
 									)
@@ -2337,6 +2338,21 @@
 				portRadius=		"48"
 				maxDist=		"3"
 				/>
+				
+		<Language>
+			<Text id="descContainmentVessel">
+				(cat "You enter the cargo hold of the wrecked ship and see a massive containment vessel "
+					"with giant power couplings. Through a thick window in the containment vessel you "
+					"see a metal sphere with a complex series of etchings.\n\n"
+					"There is an emergency latch on one side that opens the containment vessel.")
+			</Text>
+			<Text id="actionOpenContainment">"[O]pen Containment"</Text>
+			<Text id="descOpenContainment">
+				(cat "The titanic doors of the containment vessel split open and air rushes into it. "
+					"The sphere is held in place by thin columns.\n\n"
+					"You take the sphere and put it in your cargo hold.")
+			</Text>
+		</Language>
 	</StationType>
 
 <!-- St Katharine's Star System -->

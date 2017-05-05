@@ -616,7 +616,7 @@
 	<!ENTITY sfStrengthen				"0x00009102">
 	<!ENTITY adPart1Desc				"0x00009301">
 
-	<!ENTITY dsAbandonedStation			"0x0000A003">
+	<!ENTITY dsAbandonedStation			"0x00010032"> <!-- dsRPGAbandonedStation synonym -->
 	<!ENTITY dsDryDock					"0x0000A004">
 	<!ENTITY dsInstallDevice			"0x0000A005">
 	<!ENTITY dsRepairArmor				"0x0000A006">

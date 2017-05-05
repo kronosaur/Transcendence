@@ -336,29 +336,41 @@
 
 		<Language>
 			<Text id="DeployAck">"\"330M Mule online [v2.2a]\""</Text>
+			<Text id="actionUndock">"[U]ndock"</Text>
+			<Text id="actionJettison">"[J]ettison"</Text>
+			<Text id="actionLoot">"[L]oot"</Text>
+			<Text id="descDefault">"You are docked with a 330M mule auton."</Text>
+			<Text id="descNoItemsHere">"There are no items here."</Text>
 		</Language>
 		
 		<!-- Docking -->
 		
 		<DockScreens>
-			<Main
-				name=			"330M mule auton"
-				>
+			<Main>
 
 				<Panes>
 					<Default
-							desc="You are docked with a 330M mule auton.">
+						desc=	"=(scrTranslate gScreen 'descDefault)">
+							
+						<OnPaneInit>
+							(if (not (objGetItems gSource '*U))
+								(block nil
+									(scrEnableAction gScreen 'actionLoot nil)
+									(scrSetActionDesc gScreen 'actionLoot (scrTranslate gScreen 'descNoItemsHere))
+									)
+								)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Loot" key="L" default="1" >
+							<Action id="actionLoot" default="1">
 								(scrShowScreen gScreen &dsRPGLoot;)
 							</Action>
 
-							<Action name="Jettison" key="J">
+							<Action id="actionJettison">
 								(scrShowScreen gScreen &dsRPGJettison;)
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1" default="1">
 								<Exit/>
 							</Action>
 						</Actions>
