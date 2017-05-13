@@ -2057,7 +2057,7 @@
 				</OnPaneInit>
 				
 				<Actions>
-					<Action name="The Victorian Nightclub" key="V">
+					<Action name="The Victorian Nightclub" key="V" id="actionVictorianClub">
 						(scrShowScreen gScreen "&dsCommonwealthNightclub;")
 					</Action>
 

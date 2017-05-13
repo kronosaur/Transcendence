@@ -457,11 +457,6 @@
 
 		<InitialPane>
 			(switch
-				(and (eq (objGetData gPlayerShip "blackMarketMission") "StK")
-					(eq (sysGetName) "St. Katharine's Star")
-					(objGetItems gPlayerShip "*U +SealedContainer;"))
-					"DeliveryMission"
-
 				(objGetItems gPlayerShip "*NU +Illegal; -ID; &lt;=#25")
 					"Default"
 
@@ -550,36 +545,6 @@
 					</Action>
 				</Actions>
 			</Nothing>
-
-			<DeliveryMission
-				desc=	"You are in a large dance club where women and men dressed in leather and lace dance to classical music. A nondescript man dances next to you and whispers, &quot;I hope you have what I need.&quot;">
-
-				<Actions>
-					<Action name="&quot;Yes, I do.&quot;" key="Y">
-						(block Nil
-							(objRemoveItem gPlayerShip (itmCreate &itBlackMarketContainer; 1))
-							(objSetData gPlayerShip "blackMarketMission" Nil)
-							(objIncData gPlayerShip "blackMarketXP" 150)
-							(scrShowPane gScreen "DeliveryComplete")
-							)
-					</Action>
-
-					<Action name="&quot;I have no idea what you're talking about.&quot;" key="N">
-						(scrExitScreen gScreen)
-					</Action>
-				</Actions>
-
-			</DeliveryMission>
-
-			<DeliveryComplete
-				desc=	"The nondescript man follows you to your cargo hold and takes the sealed container. He smiles as he leaves, &quot;Say hello to Aubrey for me!&quot;">
-
-				<Actions>
-					<Action name="Leave" cancel="1" key="L">
-						(scrExitScreen gScreen)
-					</Action>
-				</Actions>
-			</DeliveryComplete>
 		</Panes>
 	</DockScreen>
 
@@ -667,7 +632,7 @@
 							)
 					</Action>
 
-					<Action name="The Victorian Nightclub" imageIndex="0" key="V">
+					<Action name="The Victorian Nightclub" imageIndex="0" key="V" id="actionVictorianClub">
 						(scrShowScreen gScreen &dsCommonwealthNightclub;)
 					</Action>
 

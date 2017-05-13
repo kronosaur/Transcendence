@@ -1755,7 +1755,9 @@
     
 	<!ENTITY svBlackMarketBountyHunter	"0x00100200">
     <!ENTITY baBlackMarketStation       "0x00100201">
-	
+	<!ENTITY msBlackMarketDelivery		"0x00100202">
+	<!ENTITY dsBlackMarketDelivery		"0x00100203">
+
 	<!-- 0210-022F PENITENTS -->
 	
 	<!ENTITY scExcruciatorDestroyer		"0x00100210">
@@ -1863,6 +1865,7 @@
 		
 	<Module filename="AresOrthodoxy.xml"/>
 	<Module filename="BlackMarket.xml"/>
+	<Module filename="BlackMarketMission01.xml"/>
 	<Module filename="CentauriWarlords.xml"/>
 	<Module filename="CharonPirates.xml"/>
 	<Module filename="Commonwealth.xml"/>
