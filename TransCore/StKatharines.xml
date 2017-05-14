@@ -173,13 +173,6 @@
 	
 	EXTRA DATA
 	
-	mission:			Current mission
-	missionStatus:		Current mission status:
-							Nil = No mission
-							'inProgress = Mission in progress
-							'success = Mission successful
-							'failure = Mission failed
-	missionTarget:		Current mission target
 	totalProduced:		Total number of items produced
 
 	-->
@@ -310,24 +303,6 @@
 					(sysAddObjRecurringTimerEvent 90 gSource "OnTrafficControl")
 					)
 			</OnCreate>
-			
-			<OnObjDestroyed>
-				(block (mission)
-					(setq mission (objGetData gSource "mission"))
-					(switch
-						(and (eq mission 'destroyStation)
-								(eq aObjDestroyed (objGetObjRefData gSource "missionTarget"))
-								)
-							(block Nil
-								(objSetData gSource "missionStatus" 'success)
-								(typIncGlobalData &stCommonwealthFortress; "missionsCompleted")
-								(plyMessage gPlayer "Mission complete!")
-								(shpCancelOrders gPlayerShip)
-								(objUnregisterForEvents gSource aObjDestroyed)
-								)
-						)
-					)
-			</OnObjDestroyed>
 
 			<OnProduceProduction>
 				(block Nil
@@ -1183,6 +1158,7 @@
 	
 	<DockScreen UNID="&dsStKatsArcologyParliament;"
 			backgroundID=		"none"
+			nestedScreen=		"true"
 			>
 
 		<Display>
@@ -1202,46 +1178,33 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(block Nil
-						(scrSetDesc gScreen
-							"You are in the Parliament Quarter. Well-dressed men and women walk along the wide avenues of the quarter, "
-							"making their way to jobs in Commonwealth government."
-							)
-						)
+					(scrSetDescTranslate gScreen 'descWelcome)
 				</OnPaneInit>
 				
 				<Actions>
-					<Action name="Parliament" default="1" key="P">
+					<Action id="actionParliament" default="1">
 						<ShowPane pane="Parliament"/>
 					</Action>
 					
-					<Action name="Militia Headquarters" key="M">
-						(block (mission status)
-							(setq mission (objGetData gSource "mission"))
-							(setq status (objGetData gSource "missionStatus"))
-							
-							(switch
-								(eq mission 'destroyStation)
-									(switch
-										(eq status 'success)
-											(scrShowPane gScreen "MissionDestroyStationSuccess")
+					<Action id="actionMilitia">
+						(switch
+							(not (milCanEnterCC))
+								(scrShowScreen gScreen &dsRPGMessage; { textID:'descAccessDenied })
 
-										(scrShowPane gScreen "MissionInProgress")
-										)
-										
-								mission
-									(scrShowPane gScreen "MissionInProgress")
-									
-								(milCanEnterCC)
-									(scrShowPane gScreen "MilitiaHQ")
-									
-								(scrShowPane gScreen "MilitiaAccessDenied")
-								)
+							(= (typGetData &unidCommonwealthMilitia; 'rank) -1)
+								(scrShowScreen gScreen &dsRPGMessage; { textID:'descTooManyFailures })
+
+							(rpgMissionAssignment {
+								missionCriteria: (cat "n +stKatsMilitia; =" (sysGetLevel) ";")
+								noMissionTextID: 'descNoMissions
+								maxPerStation: (+ 3 (modulo (objGetDestiny gSource) 3))
+								intervalPerStation: (random 3600 5400)
+								})
 							)
 					</Action>
 
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowScreen gScreen &dsStKatsArcology;)
+					<Action id="actionLeave" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
@@ -1256,197 +1219,34 @@
 				</OnPaneInit>
 				
 				<Actions>
-					<Action name="Leave" default="1" cancel="1" key="L">
+					<Action id="actionLeave" default="1" cancel="1">
 						<ShowPane pane="Default"/>
 					</Action>
 				</Actions>
 			</Parliament>
-			
-			<MilitiaHQ>
-				<OnPaneInit>
-					(block Nil
-						(milInit)
-					
-						(scrSetDesc gScreen
-							"You are at Commonwealth Militia Headquarters. "
-							"The officer of the watch looks up from his displays and asks,\n\n"
-							"\"Are you looking for a mission, captain?\""
-							)
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="&quot;Yes sir, I'm ready.&quot;" default="1" key="Y">
-						(block (playerRank allMissions allEnemyStations)
-							(setq playerRank (objGetData gPlayerShip "militiaRank"))
-							
-							; See if there are any enemy stations for the player to destroy
-							(setq allEnemyStations (append
-								(sysFindObject Nil "TAE +sapiensCompound;")
-								(sysFindObject Nil "TAE +sungSlaveCamp;")
-								(sysFindObject Nil "TAE +marauderCompound;")
-								))
-								
-							(if (and
-									(leq playerRank 1)
-									allEnemyStations
-									)
-								(setq allMissions (append allMissions 'destroyStation))
-								)
-							
-							; Pick a random mission
-							(setq theMission (random allMissions))
-							
-							(switch
-								(eq playerRank -1)
-									(scrShowPane gScreen "MilitiaTooManyFailures")
-									
-								(eq theMission 'destroyStation)
-									(block Nil
-										(objSetObjRefData gSource "missionTarget" (random allEnemyStations))
-										(scrShowPane gScreen "MissionDestroyStation")
-										)
-									
-								(scrShowPane gScreen "MilitiaNoMissions")
-								)
-							)
-					</Action>
-
-					<Action name="&quot;No sir, I'm just looking.&quot;" cancel="1" key="N">
-						<ShowPane pane="MilitiaGetOut"/>
-					</Action>
-				</Actions>
-			</MilitiaHQ>
-			
-			<MissionDestroyStation>
-				<OnPaneInit>
-					(scrSetDesc gScreen
-						"\"" (objGetName (objGetObjRefData gSource "missionTarget") 0x05) " is hiding among the outer asteroids. We want you to "
-						"go out there and destroy it. Clear?\""
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="Accept" default="1" key="A">
-						(block (theTarget)
-							(setq theTarget (objGetObjRefData gSource "missionTarget"))
-							
-							(objSetData gSource "mission" 'destroyStation)
-							(objSetData gSource "missionStatus" 'inProgress)
-							
-							(shpCancelOrders gPlayerShip)
-							(shpOrder gPlayerShip 'attack theTarget)
-							(objRegisterForEvents gSource theTarget)
-							
-							(scrShowPane gScreen "MissionDestroyStationAccept")
-							)
-					</Action>
-
-					<Action name="Decline" cancel="1" key="D">
-						<ShowPane pane="MilitiaGetOut"/>
-					</Action>
-				</Actions>
-			</MissionDestroyStation>
-			
-			<MissionDestroyStationAccept>
-				<OnPaneInit>
-					(scrSetDesc gScreen
-						"\"We've uploaded the coordinates of the target to your computer. Good luck, captain!\""
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="Undock" default="1" cancel="1" key="U">
-						<Exit/>
-					</Action>
-				</Actions>
-			</MissionDestroyStationAccept>
-			
-			<MissionDestroyStationSuccess>
-				<OnPaneInit>
-					(scrSetDesc gScreen
-						"\"Well done! You dealt with that threat expertly.\""
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
-						(block (promoted)
-							(objSetData gSource "mission" Nil)
-							(objSetData gSource "missionStatus" Nil)
-							
-							; Promotion?
-							(if (milMissionSuccess)
-								(milShowPromotionScreen &dsStKatsArcology; "ParliamentQuarter")
-								(scrShowPane gScreen "Default")
-								)
-							)
-					</Action>
-				</Actions>
-			</MissionDestroyStationSuccess>
-			
-			<MissionInProgress>
-				<OnPaneInit>
-					(scrSetDesc gScreen 
-						"\"You haven't completed your mission! Don't return until you have!\""
-						)
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Leave" default="1" cancel="1" key="L">
-						<ShowPane pane="Default"/>
-					</Action>
-				</Actions>
-			</MissionInProgress>
-			
-			<MilitiaAccessDenied>
-				<OnPaneInit>
-					(scrSetDesc gScreen 
-						"Two guards flank the door to the Headquarters. One of them checks your ID against a computer list:\n\n"
-						"\"Sorry, %sir%, only experienced captains are allowed inside.\"")
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Leave" default="1" cancel="1" key="L">
-						<ShowPane pane="Default"/>
-					</Action>
-				</Actions>
-			</MilitiaAccessDenied>
-			
-			<MilitiaGetOut
-					desc="&quot;Why don't you make yourself useful and get us some tea or something.&quot;">
-
-				<Actions>
-					<Action name="Leave" default="1" cancel="1" key="L">
-						<ShowPane pane="Default"/>
-					</Action>
-				</Actions>
-			</MilitiaGetOut>
-
-			<MilitiaNoMissions>
-				<OnPaneInit>
-					(scrSetDesc gScreen
-						"\"Sorry, there are no missions currently available.\""
-						)
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Leave" default="1" cancel="1" key="L">
-						<ShowPane pane="Default"/>
-					</Action>
-				</Actions>
-			</MilitiaNoMissions>
-
-			<MilitiaTooManyFailures
-					desc="&quot;How about getting us a cup of tea or something? That's probably a mission you could handle.&quot;">
-
-				<Actions>
-					<Action name="Leave" default="1" cancel="1" key="L">
-						<ShowPane pane="Default"/>
-					</Action>
-				</Actions>
-			</MilitiaTooManyFailures>
 		</Panes>
+
+		<Language>
+			<Text id="actionParliament">"Parliament"</Text>
+			<Text id="actionMilitia">"[M]ilitia Headquarters"</Text>
+			<Text id="actionLeave">"[L]eave"</Text>
+
+			<Text id="descWelcome">
+				(cat
+					"You are in the Parliament Quarter. Well-dressed men and women walk along the wide avenues of the quarter, "
+					"making their way to jobs in Commonwealth government."
+					)
+			</Text>
+			<Text id="descNoMissions">"\"Sorry, there are no missions currently available.\""</Text>
+			<Text id="descTooManyFailures">"\"How about getting us a cup of tea or something? That's probably a mission you could handle.\""</Text>
+			<Text id="descAccessDenied">
+				(cat
+					"Two guards flank the door to the Headquarters. One of them checks your ID against a computer list:\n\n"
+
+					"\"Sorry, %sir%, only experienced captains are allowed inside.\""
+					)
+			</Text>
+		</Language>
 	</DockScreen>
 	
 	<!-- Commerce Quarter -->

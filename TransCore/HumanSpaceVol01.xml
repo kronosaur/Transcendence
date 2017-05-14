@@ -1817,6 +1817,7 @@
 	<!ENTITY msCMDestroyConvoy			"0x001002B2">
 	<!ENTITY msCMDestroyThreat			"0x001002B3">
 	<!ENTITY msCMEscortSuperFreighter	"0x001002B4">
+	<!ENTITY msCMstKatsDestroyThreat	"0x001002B5">
 
 	<!-- 1000-FFFF RESERVED -->
 	]>
@@ -1891,6 +1892,7 @@
 	<Module filename="CommonwealthMilitiaMission02.xml"/>
 	<Module filename="CommonwealthMilitiaMission03.xml"/>
 	<Module filename="CommonwealthMilitiaMission04.xml"/>
+	<Module filename="CommonwealthMilitiaMissionSK01.xml"/>
 	<Module filename="CommonwealthMining.xml"/>
 	<Module filename="CommonwealthShips.xml"/>
 	<Module filename="CorporateHierarchy.xml"/>
