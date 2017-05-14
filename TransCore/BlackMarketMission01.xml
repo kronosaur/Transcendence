@@ -25,7 +25,7 @@
 			<OnCreate>
 				(switch
 					(!= (objGetData gPlayerShip 'blackMarketLevel) 2)
-						(msnDestroy gSource
+						(msnDestroy gSource)
 
 					;	Set up the mission
 					(block Nil
