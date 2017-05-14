@@ -917,24 +917,19 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You are docked with a massive crystalline monument commemorating the point of "
-								"first contact between humans and alien intelligent life in the universe.\n\n"
-								"Scores of tourists wander around the vast hall, chatting softly and pausing "
-								"randomly at various points of interest."
-								)
+							(scrSetDescTranslate gScreen 'descWelcome)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Information" default="1" key="I">
+							<Action id="actionInformation" default="1">
 								<ShowPane pane="Information"/>
 							</Action>
 							
-							<Action name="First Contact Pub" key="P">
+							<Action id="actionPub">
 								<ShowPane pane="Pub"/>
 							</Action>
 							
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -942,28 +937,23 @@
 					
 					<Information>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"A holoscreen flickers to life as you approach:\n\n"
-								"\"Here at this point, in the year 2363, members of the Human Race "
-								"first met with representatives of the Ancient Races of the Galaxy.\"\n\n"
-								"Do you want to know more?"
-								)
+							(scrSetDescTranslate gScreen 'descInformation)
 						</OnPaneInit>
 						
 						<Actions>
-							<Action name="What was it like?" key="W">
+							<Action id="actionInfoLike">
 								<ShowPane pane="Info1"/>
 							</Action>
 							
-							<Action name="What did we learn?" key="l">
+							<Action id="actionInfoLearn">
 								<ShowPane pane="Info2"/>
 							</Action>
 							
-							<Action name="Where are they now?" key="n">
+							<Action id="actionInfoWhere">
 								<ShowPane pane="Info3"/>
 							</Action>
 							
-							<Action name="Leave" cancel="1" key="v">
+							<Action id="actionLeave" cancel="1" key="v">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
@@ -971,19 +961,11 @@
 					
 					<Info1>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"With almost no warning six alien ships, blue and translucent like "
-								"flying glaciers, appeared out of the inner gate. Fear gripped the Commonwealth "
-								"at first, but as the attitude of the alien fleet remained peaceful, wonderment "
-								"took over.\n\n"
-								"Scientists from New Victoria immediately attempted to communicate, but it "
-								"took two frustrating weeks before the Iocrym (as they called themselves) were able "
-								"to learn our language."
-								)
+							(scrSetDescTranslate gScreen 'descInfo1)
 						</OnPaneInit>
 						
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								<ShowPane pane="Info1B"/>
 							</Action>
 						</Actions>
@@ -991,16 +973,11 @@
 					
 					<Info1B>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"Communication proceeded via computer processed code. The Iocrym told us that they "
-								"were one of the many Ancient Races in the Galaxy and that they were curious about "
-								"us and our development. They shared much scientific knowledge with us and then they "
-								"continued on their journey to Sol.\n\n"
-								)
+							(scrSetDescTranslate gScreen 'descInfo1b)
 						</OnPaneInit>
 						
 						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
+							<Action id="actionDone" default="1" cancel="1">
 								<ShowPane pane="Information"/>
 							</Action>
 						</Actions>
@@ -1008,17 +985,11 @@
 					
 					<Info2>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"The Iocrym gave us several hyperglyph rods encoded with scientific information. "
-								"While most of the knowledge has been classified by the Council of Lords because of "
-								"its military potential, much remains public.\n\nScientists are overjoyed at the insights "
-								"gained from this treasure trove. In particular, our knowledge of antimatter, zero-point "
-								"energy, and transpace have been revolutionized by the Iocrym's gift."
-								)
+							(scrSetDescTranslate gScreen 'descInfo2)
 						</OnPaneInit>
 						
 						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
+							<Action id="actionDone" default="1" cancel="1">
 								<ShowPane pane="Information"/>
 							</Action>
 						</Actions>
@@ -1026,28 +997,23 @@
 					
 					<Info3>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"The Iocrym promised to return, and why they have not remains a mystery. "
-								"Some scientists believe that the Ancient Races deal in "
-								"centuries and millennia, and thus will not return for many more years. Others believe "
-								"that their own alien morality prevents interference in the affairs of lesser species.\n\n"
-								"But regardless, the most important gift that the Iocrym left behind is "
-								"the knowledge that we are not alone in the Galaxy and that someday we will "
-								"join our alien brethren as equals."
-								)
+							(scrSetDescTranslate gScreen 'descInfo3)
 						</OnPaneInit>
 						
 						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
+							<Action id="actionDone" default="1" cancel="1">
 								<ShowPane pane="Information"/>
 							</Action>
 						</Actions>
 					</Info3>
 					
-					<Pub desc="You are in a large restaurant and bar filled with monument visitors.">
+					<Pub>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descPub)
+						</OnPaneInit>
 						
 						<Actions>
-							<Action name="Sit at the Bar" default="1" key="S">
+							<Action id="actionBar" default="1">
 								(if (geq (plyGetCredits gPlayer) 10)
 									(block Nil
 										(plyCharge gPlayer 10)
@@ -1057,7 +1023,7 @@
 									)
 							</Action>
 
-							<Action name="Leave" cancel="1" key="L">
+							<Action id="actionLeave" cancel="1">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
@@ -1073,15 +1039,19 @@
 						</OnPaneInit>
 						
 						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
+							<Action id="actionLeave" default="1" cancel="1">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
 					</Story>
 					
-					<NoMoney desc="You hang around for a while, but you have no money to buy drinks.">
+					<NoMoney>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descNoMoney)
+						</OnPaneInit>
+
 						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
+							<Action id="actionLeave" default="1" cancel="1">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
@@ -1103,7 +1073,87 @@
 		</DockingPorts>
         
         <Language>
-            <Text id="core.mapDesc">
+			<Text id="actionInformation">"[I]nformation"</Text>
+			<Text id="actionPub">"First Contact [P]ub"</Text>
+			<Text id="actionUndock">"[U]ndock"</Text>
+			<Text id="actionInfoLike">"[W]hat was it like?"</Text>
+			<Text id="actionInfoLearn">"What did we [l]earn?"</Text>
+			<Text id="actionInfoWhere">"Where are they [n]ow?"</Text>
+			<Text id="actionLeave">"[L]eave"</Text>
+			<Text id="actionContinue">"[C]ontinue"</Text>
+			<Text id="actionDone">"[D]one"</Text>
+			<Text id="actionBar">"[S]it at the Bar"</Text>
+
+            <Text id="descWelcome">
+				(cat
+					"You are docked with a massive crystalline monument commemorating the point of "
+					"first contact between humans and alien intelligent life in the universe.\n\n"
+
+					"Scores of tourists wander around the vast hall, chatting softly and pausing "
+					"randomly at various points of interest."
+					)
+			</Text>
+			<Text id="descInformation">
+				(cat
+					"A holoscreen flickers to life as you approach:\n\n"
+
+					"\"Here at this point, in the year 2363, members of the Human Race "
+					"first met with representatives of the Ancient Races of the Galaxy.\"\n\n"
+
+					"Do you want to know more?"
+					)
+			</Text>
+			<Text id="descInfo1">
+				(cat
+					"With almost no warning six alien ships, blue and translucent like "
+					"flying glaciers, appeared out of the inner gate. Fear gripped the Commonwealth "
+					"at first, but as the attitude of the alien fleet remained peaceful, wonderment "
+					"took over.\n\n"
+
+					"Scientists from New Victoria immediately attempted to communicate, but it "
+					"took two frustrating weeks before the Iocrym (as they called themselves) were able "
+					"to learn our language."
+					)
+			</Text>
+			<Text id="descInfo1b">
+				(cat
+					"Communication proceeded via computer processed code. The Iocrym told us that they "
+					"were one of the many Ancient Races in the Galaxy and that they were curious about "
+					"us and our development. They shared much scientific knowledge with us and then they "
+					"continued on their journey to Sol."
+					)
+			</Text>
+			<Text id="descInfo2">
+				(cat
+					"The Iocrym gave us several hyperglyph rods encoded with scientific information. "
+					"While most of the knowledge has been classified by the Council of Lords because of "
+					"its military potential, much remains public.\n\n"
+
+					"Scientists are overjoyed at the insights "
+					"gained from this treasure trove. In particular, our knowledge of antimatter, zero-point "
+					"energy, and transpace have been revolutionized by the Iocrym's gift."
+					)
+			</Text>
+			<Text id="descInfo3">
+				(cat
+					"The Iocrym promised to return, and why they have not remains a mystery. "
+					"Some scientists believe that the Ancient Races deal in "
+					"centuries and millennia, and thus will not return for many more years. Others believe "
+					"that their own alien morality prevents interference in the affairs of lesser species.\n\n"
+
+					"But regardless, the most important gift that the Iocrym left behind is "
+					"the knowledge that we are not alone in the Galaxy and that someday we will "
+					"join our alien brethren as equals."
+					)
+			</Text>
+			<Text id="descPub">
+				"You are in a large restaurant and bar filled with monument visitors."
+			</Text>
+			<Text id="descNoMoney">
+				"You hang around for a while, but you have no money to buy drinks."
+			</Text>
+
+			<Text id="core.mapDesc">
                 "Museum &mdash; Restaurant and bar"
             </Text>
         </Language>
@@ -1113,50 +1163,59 @@
 
 	<!-- Arcology -->
 
-	<DockScreen UNID="&dsStKatsArcology;">
+	<DockScreen UNID="&dsStKatsArcology;"
+			inherit=			"&dsDockScreenBase;"
+			>
 		
 		<Panes>
-			<Default
-					desc=	"Welcome to the Arcology of New Victoria!">
-					
+			<Default>
 				<OnPaneInit>
-					(objSetData gSource "schematic" Nil)
+					(scrSetDescTranslate gScreen 'descWelcome)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Parliament Quarter" key="P">
+					<Action id="actionParliament">
 						(scrShowScreen gScreen &dsStKatsArcologyParliament;)
 					</Action>
 
-					<Action name="Commerce Quarter" key="C">
+					<Action id="actionCommerce">
 						(scrShowScreen gScreen &dsStKatsArcologyCommerce;)
 					</Action>
 
-					<Action name="University Quarter" key="U">
+					<Action id="actionUniversity">
 						(scrShowScreen gScreen &dsStKatsArcologyUniversity;)
 					</Action>
 
-					<Action name="Arts Quarter" key="A">
+					<Action id="actionArts">
 						(scrShowScreen gScreen &dsStKatsArcologyArts;)
 					</Action>
 
-					<Action name="Dock Services" key="D">
+					<Action id="actionDockServices">
 						(rpgDockServices gPlayerShip {
 							checkMilitaryID: True
 							})
 					</Action>
 
-					<Action name="Undock" cancel="1" key="n">
+					<Action id="actionUndock" cancel="1">
 						<Exit/>
 					</Action>
 				</Actions>
 			</Default>
 		</Panes>
+		<Language>
+			<Text id="actionParliament">"[P]arliament Quarter"</Text>
+			<Text id="actionCommerce">"[C]ommerce Quarter"</Text>
+			<Text id="actionUniversity">"U[n]iversity Quarter"</Text>
+			<Text id="actionArts">"[A]rts Quarter"</Text>
+
+			<Text id="descWelcome">"Welcome to the Arcology of New Victoria!"</Text>
+		</Language>
 	</DockScreen>
 	
 	<!-- Parliament Quarter -->
 	
 	<DockScreen UNID="&dsStKatsArcologyParliament;"
+			inherit=			"&dsDockScreenBase;"
 			backgroundID=		"none"
 			nestedScreen=		"true"
 			>
@@ -1178,7 +1237,7 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descWelcome)
+					(scrSetDescTranslate gScreen 'descParliamentQuarter)
 				</OnPaneInit>
 				
 				<Actions>
@@ -1231,7 +1290,7 @@
 			<Text id="actionMilitia">"[M]ilitia Headquarters"</Text>
 			<Text id="actionLeave">"[L]eave"</Text>
 
-			<Text id="descWelcome">
+			<Text id="descParliamentQuarter">
 				(cat
 					"You are in the Parliament Quarter. Well-dressed men and women walk along the wide avenues of the quarter, "
 					"making their way to jobs in Commonwealth government."
@@ -1252,7 +1311,9 @@
 	<!-- Commerce Quarter -->
 	
 	<DockScreen UNID="&dsStKatsArcologyCommerce;"
+			inherit=			"&dsDockScreenBase;"
 			backgroundID=		"none"
+			nestedScreen=		"true"
 			>
 
 		<Display>
@@ -1273,37 +1334,29 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(scrSetDesc gScreen
-						"The Commerce Quarter is filled with sharp-dressed people and glowing "
-						"advertisements. A massive bioluminescent screen shows prices in front "
-						"of the Commodities Exchange, while smaller signs point to boutique "
-						"store fronts."
-						)
+					(scrSetDescTranslate gScreen 'descCommerceQuarter)
 				</OnPaneInit>
 				
 				<Actions>
-					<Action name="Commodities Exchange" default="1" key="C">
+					<Action id="actionCommoditiesExchange" default="1">
 						(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
 							checkMilitaryID: True
 							})
 					</Action>
 					
-					<Action name="Incandescent Exports" key="I">
+					<Action id="actionIncandescentExports">
 						<ShowPane pane="IncandescentExports"/>
 					</Action>
 					
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowScreen gScreen &dsStKatsArcology;)
+					<Action id="actionLeave" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
 			
 			<IncandescentExports>
 				<OnPaneInit>
-					(scrSetDesc gScreen
-						"Welcome to Incandescent Exports, specializing in selling unique items "
-						"up from the surface of the planet."
-						)
+					(scrSetDescTranslate gScreen 'descIncandescentExports)
 				</OnPaneInit>
 
 				<Actions>
@@ -1314,12 +1367,32 @@
 							})
 					</Action>
 
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowPane gScreen "Default")
+					<Action id="actionLeave" cancel="1">
+						(scrShowPane gScreen 'Default)
 					</Action>
 				</Actions>
 			</IncandescentExports>
 		</Panes>
+
+		<Language>
+			<Text id="actionIncandescentExports">"[I]ncandescent Exports"</Text>
+			<Text id="actionLeave">"[L]eave"</Text>
+
+			<Text id="descCommerceQuarter">
+				(cat
+					"The Commerce Quarter is filled with sharp-dressed people and glowing "
+					"advertisements. A massive bioluminescent screen shows prices in front "
+					"of the Commodities Exchange, while smaller signs point to boutique "
+					"store fronts."
+					)
+			</Text>
+			<Text id="descIncandescentExports">
+				(cat
+					"Welcome to Incandescent Exports, specializing in selling unique items "
+					"up from the surface of the planet."
+					)
+			</Text>
+		</Language>
 	</DockScreen>
 	
 	<!-- University Quarter
@@ -1329,6 +1402,7 @@
 	-->
 
 	<DockScreen UNID="&dsStKatsArcologyUniversity;"
+			inherit=			"&dsDockScreenBase;"
 			backgroundID=		"none"
 			nestedScreen=		"true"
 			>
@@ -1353,7 +1427,7 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descWelcome)
+					(scrSetDescTranslate gScreen 'descUniversityQuarter)
 				</OnPaneInit>
 
 				<Actions>
@@ -1503,7 +1577,7 @@
 			<Text id="actionUniversityTaikon">"[T]aikon School of Exploration"</Text>
 			<Text id="actionLeave">"[L]eave"</Text>
 			
-			<Text id="descWelcome">
+			<Text id="descUniversityQuarter">
 				(cat
 					"The schools that make up the University of New Victoria are strung along "
 					"the spine of the arcology. Students and professors make their way along "
@@ -1529,7 +1603,9 @@
 	<!-- Arts Quarter -->
 
 	<DockScreen UNID="&dsStKatsArcologyArts;"
+			inherit=			"&dsDockScreenBase;"
 			backgroundID=		"none"
+			nestedScreen=		"true"
 			>
 
 		<Display>
@@ -1551,23 +1627,32 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(scrSetDesc gScreen
-						"The innovative architecture of the Arts Quarter draws tourists from "
-						"all over Human Space."
-						)
+					(scrSetDescTranslate gScreen 'descArtsQuarter)
 				</OnPaneInit>
 				
 				<Actions>
-					<Action name="The Victorian Nightclub" key="V" id="actionVictorianClub">
+					<Action id="actionVictorianClub" default="1">
 						(scrShowScreen gScreen "&dsCommonwealthNightclub;")
 					</Action>
 
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowScreen gScreen &dsStKatsArcology;)
+					<Action id="actionLeave" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
 		</Panes>
+
+		<Language>
+			<Text id="actionVictorianClub">"The [V]ictorian Nightclub"</Text>
+			<Text id="actionLeave">"[L]eave"</Text>
+
+			<Text id="descArtsQuarter">
+				(cat
+					"The innovative architecture of the Arts Quarter draws tourists from "
+					"all over Human Space."
+					)
+			</Text>
+		</Language>
 	</DockScreen>
 
 <!-- St Katharine's Star System -->

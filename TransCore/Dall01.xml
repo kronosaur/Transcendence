@@ -458,47 +458,20 @@
 
 		<DockScreens>
 			<Main>
-				<InitialPane>
-					(switch
-						(and (objGetItems gSource "* +unid:&itDallSphere;") 
-								(eq (typGetData &itDallSphere; "status") 'onFreighter))
-							"ContainmentVessel"
-
-						"Default"
-						)
-				</InitialPane>
-				
 				<Panes>
-					<Default
-							desc=		"You are docked with the wreck of a ship.">
-
-						<Actions>
-							<Action name="Loot" key="L" default="1" >
-								(scrShowScreen gScreen &dsRPGLoot;)
-							</Action>
-
-							<Action name="Jettison" key="J">
-								(scrShowScreen gScreen &dsRPGJettison;)
-							</Action>
-
-							<Action name="Undock" cancel="1" key="U">
-								<Exit/>
-							</Action>
-						</Actions>
-					</Default>
-					
-					<ContainmentVessel>
+					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"You enter the cargo hold of the wrecked ship and see a massive containment vessel "
-								"with giant power couplings. Through a thick window in the containment vessel you "
-								"see a metal sphere with a complex series of etchings.\n\n"
-								"There is an emergency latch on one side that opens the containment vessel."
-								))
+							(if (and (objGetItems gSource "* +unid:&itDallSphere;")
+									(= (typGetData &itDallSphere; 'status) 'onFreighter))
+								(scrSetDescTranslate gScreen 'descContainment)
+
+								;	If the sphere has been moved, then use the default abandoned screen
+								(scrShowScreen gScreen &dsRPGAbandonedStation;)
+								)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Open Containment" key="O" default="1">
+							<Action id="actionOpen" default="1">
 								(block (
 									(theSphere (@ (objGetItems gSource "* +unid:&itDallSphere;") 0))
 									(theMission (@ (msnFind "a +unid:&msDallSphere;;") 0))
@@ -515,32 +488,48 @@
 									)
 							</Action>
 							
-							<Action name="Undock" key="U" cancel="1">
-								(scrExitDock gScreen)
+							<Action id="actionUndock" cancel="1">
+								(scrExitScreen gScreen)
 							</Action>
 						</Actions>
-					</ContainmentVessel>
+					</Default>
 
 					<OpenContainment>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"The titanic doors of the containment vessel split open and air rushes into it. "
-								"The sphere is held in place by thin columns.\n\n"
-								"You take the sphere and put it in your cargo hold."
-								))
+							(scrSetDescTranslate gScreen 'descOpen)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Undock" key="U" default="1" cancel="1">
-								(block Nil
-									(scrExitDock gScreen)
-									)
+							<Action id="actionUndock" default="1" cancel="1">
+								(scrExitScreen gScreen)
 							</Action>
 						</Actions>
 					</OpenContainment>
 				</Panes>
 			</Main>
 		</DockScreens>
+
+		<Language>
+			<Text id="actionOpen">"[O]pen Containment"</Text>
+			<Text id="actionUndock">"[U]ndock"</Text>
+			<Text id="descContainment">
+				(cat
+					"You enter the cargo hold of the wrecked ship and see a massive containment vessel "
+					"with giant power couplings. Through a thick window in the containment vessel you "
+					"see a metal sphere with a complex series of etchings.\n\n"
+
+					"There is an emergency latch on one side that opens the containment vessel."
+					)
+			</Text>
+			<Text id="descOpen">
+				(cat
+					"The titanic doors of the containment vessel split open and air rushes into it. "
+					"The sphere is held in place by thin columns.\n\n"
+
+					"You take the sphere and put it in your cargo hold."
+					)
+			</Text>
+		</Language>
 
 		<DockingPorts
 				portCount=		"2"
