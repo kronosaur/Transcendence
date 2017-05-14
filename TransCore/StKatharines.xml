@@ -1227,7 +1227,7 @@
 		</Panes>
 
 		<Language>
-			<Text id="actionParliament">"Parliament"</Text>
+			<Text id="actionParliament">"[P]arliament"</Text>
 			<Text id="actionMilitia">"[M]ilitia Headquarters"</Text>
 			<Text id="actionLeave">"[L]eave"</Text>
 
@@ -1330,6 +1330,7 @@
 
 	<DockScreen UNID="&dsStKatsArcologyUniversity;"
 			backgroundID=		"none"
+			nestedScreen=		"true"
 			>
 
 		<Display>
@@ -1352,15 +1353,11 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(scrSetDesc gScreen
-						"The schools that make up the University of New Victoria are strung along "
-						"the spine of the arcology. Students and professors make their way along "
-						"the wide avenues."
-						)
+					(scrSetDescTranslate gScreen 'descWelcome)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="School of Engineering" default="1" key="E">
+					<Action id="actionEngineering" default="1">
 						<ShowPane pane="Engineering"/>
 					</Action>
 					
@@ -1378,8 +1375,8 @@
 							})
 					</Action>
 
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowScreen gScreen &dsStKatsArcology;)
+					<Action id="actionLeave" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
@@ -1480,7 +1477,7 @@
 							)
 					</Action>
 					
-					<Action name="Leave" cancel="1" key="L">
+					<Action id="actionLeave" cancel="1">
 						<ShowPane pane="Default"/>
 					</Action>
 				</Actions>
@@ -1492,7 +1489,7 @@
 				</OnPaneInit>
 				
 				<Actions>
-					<Action name="Done" default="1" cancel="1" key="D">
+					<Action id="actionDone" default="1" cancel="1">
 						<ShowPane pane="Default"/>
 					</Action>
 				</Actions>
@@ -1500,9 +1497,25 @@
 		</Panes>
 		
 		<Language>
+			<Text id="actionDone">"[D]one"</Text>
+			<Text id="actionEngineering">"School of [E]ngineering"</Text>
 			<Text id="actionUniversityHospital">"[U]niversity Hospital"</Text>
 			<Text id="actionUniversityTaikon">"[T]aikon School of Exploration"</Text>
+			<Text id="actionLeave">"[L]eave"</Text>
 			
+			<Text id="descWelcome">
+				(cat
+					"The schools that make up the University of New Victoria are strung along "
+					"the spine of the arcology. Students and professors make their way along "
+					"the wide avenues."
+					)
+			</Text>
+			<Text id="descTaikonEmpty">
+				(cat
+					"You enter the Taikon School of Exploration. Several students are working "
+					"at various terminals, but no one appears interested in talking with you."
+					)
+			</Text>
 			<Text id="descHospitalEmpty">
 				(cat
 					"You enter the brightly lit central garden of the New Victoria University Hospital. "
