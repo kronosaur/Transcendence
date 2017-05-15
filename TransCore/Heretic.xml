@@ -1664,11 +1664,9 @@
 
 	<!-- Svalbard Explorer Encounter -->
 
-	<StationType UNID="&stSvalbardEncounter;"
+	<EncounterType UNID="&stSvalbardEncounter;"
 			name=				"(Svalbard Explorer)"
 			sovereign=			"&svCorporate;"
-			shipEncounter=		"true"
-			scale=				"ship"
 
 			level=				"10"
 			attributes=			"friendly"
@@ -1678,7 +1676,7 @@
 		<Ships>
 			<Ship	count="1"	class="&scSvalbardExplorer;" orders="hold"/>
 		</Ships>
-	</StationType>
+	</EncounterType>
 
 	<!-- Commonwealth Research Station
 

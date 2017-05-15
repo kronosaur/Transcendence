@@ -343,7 +343,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		{	"scrTranslate",					fnScrGet,		FN_SCR_TRANSLATE,
 			"(scrTranslate screen textID [data]) -> text or Nil",
-			"is*",	0,	},
+			"iv*",	0,	},
 
 		//	Player functions
 		//	----------------

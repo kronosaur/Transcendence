@@ -1807,6 +1807,144 @@
         </Language>
 	</StationType>
 
+	<!-- CSC America Encounter (DEPRECATED) -->
+
+	<EncounterType UNID="&stCSCAmericaEncounter;"
+			name=				"(CSC America)"
+			sovereign=			"&svCommonwealthFleet;"
+
+			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">
+
+				<Names definiteArticle="true">CSC America</Names>
+
+				<InitialData>
+					<CSC>"america"</CSC>
+				</InitialData>
+
+				<Escorts>
+					<Ship					count="1"	class="&scCenturion;"	orders="guard" controller="fleetcommand">
+						<Escorts>
+							<Ship     count="6"	class="&scCenturion;"	orders="escort" controller="fleet"/>
+						</Escorts>
+					</Ship>
+					<Ship					count="1"	class="&scCenturion;"	orders="guard" controller="fleetcommand">
+						<Escorts>
+							<Ship     count="6"	class="&scCenturion;"	orders="escort" controller="fleet"/>
+						</Escorts>
+					</Ship>
+				</Escorts>
+			</Ship>
+		</Ships>
+
+	</EncounterType>
+
+	<!-- CSC Atlantica Encounter (DEPRECATED) -->
+
+	<EncounterType UNID="&stCSCAtlanticaEncounter;"
+			name=				"(CSC Atlantica)"
+			sovereign=			"&svCommonwealthFleet;"
+
+			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">
+
+				<Names definiteArticle="true">CSC Atlantica</Names>
+
+				<InitialData>
+					<CSC>"atlantica"</CSC>
+				</InitialData>
+
+				<Escorts>
+					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
+				</Escorts>
+			</Ship>
+		</Ships>
+
+	</EncounterType>
+
+	<!-- CSC Asia Encounter (DEPRECATED) -->
+
+	<EncounterType UNID="&stCSCAsiaEncounter;"
+			name=				"(CSC Asia)"
+			sovereign=			"&svCommonwealthFleet;"
+
+			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">
+
+				<Names definiteArticle="true">CSC Asia</Names>
+
+				<InitialData>
+					<CSC>"asia"</CSC>
+				</InitialData>
+
+				<Escorts>
+					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
+				</Escorts>
+			</Ship>
+		</Ships>
+
+	</EncounterType>
+
+	<!-- CSC India Encounter (DEPRECATED) -->
+
+	<EncounterType UNID="&stCSCIndiaEncounter;"
+			name=				"(CSC India)"
+			sovereign=			"&svCommonwealthFleet;"
+
+			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">
+
+				<Names definiteArticle="true">CSC India</Names>
+
+				<InitialData>
+					<CSC>"india"</CSC>
+				</InitialData>
+
+				<Escorts>
+					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
+				</Escorts>
+			</Ship>
+		</Ships>
+
+	</EncounterType>
+
+	<!-- CSC Pacifica Encounter (DEPRECATED) -->
+
+	<EncounterType UNID="&stCSCPacificaEncounter;"
+			name=				"(CSC Pacifica)"
+			sovereign=			"&svCommonwealthFleet;"
+
+			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">
+
+				<Names definiteArticle="true">CSC Pacifica</Names>
+
+				<InitialData>
+					<CSC>"pacifica"</CSC>
+				</InitialData>
+
+				<Escorts>
+					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
+				</Escorts>
+			</Ship>
+		</Ships>
+
+	</EncounterType>
 
 	<Globals>
 		(block Nil

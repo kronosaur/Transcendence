@@ -503,6 +503,7 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="Rama.xml" />
+    <Xml Include="RPGCommoditiesExchange.xml" />
     <Xml Include="RPGComponents.xml">
       <SubType>Designer</SubType>
     </Xml>
