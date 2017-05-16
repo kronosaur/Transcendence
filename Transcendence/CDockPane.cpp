@@ -211,6 +211,8 @@ void CDockPane::CreateControl (EControlTypes iType, const CString &sID, const CS
 			pControl->cyMaxHeight = 0;
 
 			CGItemListDisplayArea *pItemDisplayArea = new CGItemListDisplayArea;
+            pItemDisplayArea->SetColor(DockScreenVisuals.GetTitleTextColor());
+            pItemDisplayArea->SetBackColor(DockScreenVisuals.GetTextBackgroundColor());
 
 			pControl->pArea = pItemDisplayArea;
 			m_pContainer->AddArea(pControl->pArea, rcPane, 0);
