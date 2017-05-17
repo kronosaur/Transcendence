@@ -78,7 +78,7 @@ void RunEncounterSim (CUniverse &Universe, CXMLElement *pCmdLine)
 		if (!pAttackerClass->MatchesCriteria(AttackerCriteria))
 			continue;
 
-		printf("\t%s", pAttackerClass->GetName().GetASCIIZPointer());
+		printf("\t%s", pAttackerClass->GetNounPhrase().GetASCIIZPointer());
 		}
 
 	printf("\n");
