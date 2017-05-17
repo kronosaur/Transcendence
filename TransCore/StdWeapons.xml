@@ -1451,7 +1451,6 @@
 			mass=				"1500"
 			  
 			description=		"A nuclear-powered laser source is the core of this weapon system."
-			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItemsBushido1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -2680,7 +2679,7 @@
 	<!-- XM300 Reaper Missile -->
 
 	<ItemType UNID="&itXM300Missile;"
-			name=				"XM300 Reaper missile"
+			name=				":an XM300 Reaper missile"
 			attributes=			"commonwealth, consumable, illegal, missile, NAMI, NAMILauncher, premiumAmmo"
 			  
 			level=				"4"
@@ -2691,7 +2690,6 @@
 			mass=				"15"
 			  
 			description=		"The XM300 warhead is jacketed with small amounts of plutonium&mdash;enough to fatally contaminate a target. This weapon is banned by treaty."
-			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItemsNAMI2;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -2745,7 +2743,7 @@
 	<!-- XM900 Lucifer Missile -->
 
 	<ItemType UNID="&itXM900Missile;"
-			name=				"XM900 Lucifer missile"
+			name=				":an XM900 Lucifer missile"
 			attributes=			"commonwealth, commonwealthFleet, consumable, military, missile, NAMI, NAMILauncher, premiumAmmo"
 			  
 			level=				"7"
@@ -2756,7 +2754,6 @@
 			mass=				"20"
 			  
 			description=		"An optical tracking missile carrying a 100-kiloton thermonuclear warhead. The XM900 is tightly controlled; only military vessels may carry them."
-			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItemsNAMI2;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
@@ -2861,7 +2858,7 @@
 	<!-- 800 Hexagene MAG -->
 
 	<ItemType UNID="&it800HexageneMAG;"
-			name=				"800F hexagene MAG"
+			name=				":an 800F hexagene MAG"
 			attributes=			"commonwealth, consumable, MAGLauncher, missile, rasiermesser"
 			  
 			level=				"5"
@@ -2872,7 +2869,6 @@
 			mass=				"30"
 			  
 			description=		"The largest MAG in common use, the 800 series packs twice as much hexagene as the 400 MAG and surrounds it with a fragmentation jacket."
-			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItemsRasiermesser2;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -3372,7 +3368,7 @@
 	<!-- M2 Vulcan missile -->
 
 	<ItemType UNID="&itM2Missile;"
-			name=				"M2 Vulcan missile"
+			name=				":an M2 Vulcan missile"
 			attributes=			"commonwealth, commonwealthFleet, consumable, military, missile, NAMI, NAMIHeavyLauncher, premiumAmmo"
 			  
 			level=				"9"
@@ -3383,7 +3379,6 @@
 			mass=				"50"
 			  
 			description=		"The M2 is a heavy siege weapon launched by the NAMI heavy launcher. It is designed to attack capital ships and stations."
-			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItemsNAMI4;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -3444,7 +3439,7 @@
 	<!-- S3 Medusa missile -->
 
 	<ItemType UNID="&itS3Missile;"
-			name=				"S3 Medusa missile"
+			name=				":an S3 Medusa missile"
 			attributes=			"commonwealth, commonwealthFleet, consumable, military, missile, NAMI, NAMIHeavyLauncher, premiumAmmo"
 			  
 			level=				"9"
@@ -3455,7 +3450,6 @@
 			mass=				"50"
 			  
 			description=		"Soon after launch, the S3 Medusa explodes to reveal a dozen independently-tracking thermonuclear missiles. The S3 requires the NAMI heavy launcher."
-			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItemsNAMI4;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -3539,7 +3533,7 @@
 	<!-- M5 Nemesis missile -->
 
 	<ItemType UNID="&itM5Missile;"
-			name=				"M5 Nemesis missile"
+			name=				":an M5 Nemesis missile"
 			attributes=			"commonwealth, commonwealthFleet, consumable, military, missile, NAMI, NAMIHeavyLauncher, premiumAmmo"
 			  
 			level=				"10"
@@ -3550,7 +3544,6 @@
 			mass=				"50"
 			  
 			description=		"The M5 Nemesis missile is an upgraded version of the M2. It requires the NAMI heavy launcher."
-			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItemsNAMI4;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>

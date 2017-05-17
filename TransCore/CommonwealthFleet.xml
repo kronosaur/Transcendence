@@ -74,7 +74,7 @@ PLAYER DATA
 	<!-- R5B deflector -->
 
 	<ItemType UNID="&itR5BDeflector;"
-			name=				"R5-B deflector"
+			name=				":an R5-B deflector"
 			level=				"7"
 			value=				"45000"
 			mass=				"3500"
@@ -82,8 +82,6 @@ PLAYER DATA
 			attributes=			"MajorItem; Military; Specialty"
 
 			description=		"Commonwealth Fleet labs created this variant of the R5 for its new Britannia-class gunships."
-
-			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>

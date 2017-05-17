@@ -148,7 +148,7 @@
 	<!-- Adventurer Outfitters -->
 
 	<StationType UNID="&stAdventurerOutfitters;"
-			name=				"Adventurer Outfitters|Adventurer Outfitters"
+			name=				": Adventurer Outfitters|Adventurer Outfitters"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -169,8 +169,6 @@
 			levelFrequency=		"---ru cu--- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
-
-			noArticle=			"true"
 			>
 
 		<Image			imageID="&rsStations6;" imageX="0" imageY="640" imageWidth="128" imageHeight="256"/>
@@ -595,7 +593,7 @@
 	<!-- Arms Dealer, Makayev -->
 
 	<StationType UNID="&stArmsDealerMakayev;"
-			name=				"Makayev-Energia Space Systems|Makayev-Energia Space Systems"
+			name=				": Makayev-Energia Space Systems|Makayev-Energia Space Systems"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -616,8 +614,6 @@
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
 			levelFrequency=		"--rur v---- ----- ----- -----"
 			locationCriteria=	"+planetary"
-
-			noArticle=			"true"
 			>
 
 		<Image			imageID="&rsStations1;" imageX="256" imageY="384" imageWidth="128" imageHeight="128"/>
@@ -1375,8 +1371,6 @@
 			unique=				"inSystem"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
-
-			definiteArticle=	"true"
 			>
 
 		<Image imageID="&rsMakayevFactory;" imageX="0" imageY="0" imageWidth="150" imageHeight="256"/>
@@ -2155,7 +2149,7 @@
 	-->
 
 	<StationType UNID="&stInsuranceCompany;"
-			name=				"Clavius Insurance Conglomerate|Clavius Insurance Conglomerate"
+			name=				":the Clavius Insurance Conglomerate|Clavius Insurance Conglomerate"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -2175,8 +2169,6 @@
 			levelFrequency=		"-rrru r---- ----- ----- -----"
 			unique=				"inSystem"
 			locationCriteria=	"+planetary"
-
-			definiteArticle=	"true"
 			>
 
 		<Image			imageID="&rsStations2;" imageX="0" imageY="0" imageWidth="128" imageHeight="256"/>
@@ -2416,7 +2408,7 @@
 	<!-- Taikon Ventures -->
 
 	<StationType UNID="&stTaikonVentures;"
-			name=				"Taikon Ventures|Taikon Ventures"
+			name=				": Taikon Ventures|Taikon Ventures"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -2437,8 +2429,6 @@
 			levelFrequency=		"----- -uur- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
-
-			noArticle=			"true"
 			>
 
 		<Image			imageID="&rsStations8;" imageX="0" imageY="448" imageWidth="128" imageHeight="192"/>
@@ -2993,7 +2983,7 @@
 	<!-- Wondrous Devices -->
 
 	<StationType UNID="&stWondrousDevices;"
-			name=				"Thor's Wondrous Devices|Thor's Wondrous Devices"
+			name=				": Thor's Wondrous Devices|Thor's Wondrous Devices"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -3013,8 +3003,6 @@
 			levelFrequency=		"---ru ur--- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
-
-			noArticle=			"true"
 			>
 
 		<Image			imageID="&rsStations5;" imageX="128" imageY="384" imageWidth="128" imageHeight="256"/>

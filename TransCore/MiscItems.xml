@@ -1253,7 +1253,7 @@
 	<!-- itUraniumRods -->
 
 	<ItemType UNID="&itUraniumRods;"
-			name=				"uranium fuel rod"
+			name=				":a uranium fuel rod"
 			level=				"3"
 			value=				"150"
 			mass=				"500"
@@ -1264,8 +1264,6 @@
 			data=				"5000"
 
 			description=		"Refined uranium fuel rods are used in old industrial reactors, but they can be adapted to starship use."
-
-			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItems1;" imageX="0" imageY="672" imageWidth="96" imageHeight="96"/>

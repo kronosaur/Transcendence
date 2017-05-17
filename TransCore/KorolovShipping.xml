@@ -884,7 +884,7 @@
 	-->
 
 	<StationType UNID="&stKorolovShipping;"
-			name=				"Korolov Shipping"
+			name=				": Korolov Shipping"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 				 
@@ -904,8 +904,6 @@
 			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			noArticle=			"true"
 			>
 
 		<!-- Encounter Info -->

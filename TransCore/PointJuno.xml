@@ -33,7 +33,7 @@
 	-->
 
 	<StationType UNID="&stPointJuno;"
-			name=				"Point Juno"
+			name=				": Point Juno"
 			sovereign=			"&svCommonwealthFleet;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
@@ -50,8 +50,6 @@
 
 			attributes=			"commonwealth, commonwealthFleet, commonwealthMilitary, fleetDelivery, fleetLaw, friendly, generic, human, majorStation, pointJuno, populated"
 			level=				"8"
-
-			noArticle=			"true"
 			>
 
 		<!-- Trade and Items -->
@@ -1070,7 +1068,7 @@
 	-->
 
 	<StationType UNID="&stCSCEuropaWreck;"
-			name=				"wreck of the CSC Europa"
+			name=				":the wreck of the CSC Europa"
 			sovereign=			"&svCommonwealthFleet;"
 			abandonedScreen=	"Main"
 			scale=				"ship"
@@ -1078,8 +1076,6 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"CSCEuropa, generic, locked, shipwreck, uncharted"
-
-			definiteArticle=	"true"
 			>
 
 		<Image			imageID="&rsCSCWreckage;" imageX="0" imageY="0" imageWidth="332" imageHeight="320"/>

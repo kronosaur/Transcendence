@@ -892,7 +892,7 @@
 	<!-- Arco Vaughn's Habitat -->
 
 	<StationType UNID="&stArcoVaughnHabitat;"
-			name=				"Arco Vaughn's container habitat"
+			name=				": Arco Vaughn's container habitat"
 			sovereign=			"&svCentauriWarlords;"
 			abandonedScreen=	"Main"
 			dockScreen=			"Main"
@@ -906,8 +906,6 @@
 
 			attributes=			"arcoVaughn, centauriWarlords, enemy, human, populated, uncharted, warlords"
 			maxAppearing=		"1"
-
-			noArticle=			"true"
 			>
 
 		<ImageVariants>

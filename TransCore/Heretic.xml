@@ -1386,7 +1386,7 @@
 	-->
 
 	<StationType UNID="&stHereticStation;"
-			name=				"Heretic Station"
+			name=				": Heretic Station"
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
@@ -1406,8 +1406,6 @@
 			fireRateAdj=		"40"
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			noArticle=			"true"
 			>
 		
 		<!-- Trade and Items -->
@@ -3061,7 +3059,7 @@
 	-->
 
 	<StationType UNID="&stTVX1Outpost;"
-			name=				"Taikon research outpost TVX-1"
+			name=				": Taikon research outpost TVX-1"
 			sovereign=			"&svCorporate;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
@@ -3078,8 +3076,6 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, friendly, hereticStation, human, independent, populated"
-
-			noArticle=			"true"
 			>
 
 		<Image			imageID="&rsStations8;" imageX="0" imageY="448" imageWidth="128" imageHeight="192"/>
