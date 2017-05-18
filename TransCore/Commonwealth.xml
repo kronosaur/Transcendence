@@ -2835,7 +2835,10 @@
 -->
 
 	<Sovereign UNID="&svCommonwealth;"
-			name="Commonwealth"
+			name=":the Commonwealth"
+			adjective="Commonwealth"
+			demonym=":a Commonwealth citizen(s)"
+
 			alignment="constructive chaos"
 			>
 

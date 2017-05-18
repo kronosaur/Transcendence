@@ -3,7 +3,11 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svOutlawMiners;"
-			name="Freeminer Union"
+			name=":the Freeminer Union"
+			shortName=":the Freeminers"
+			adjective="Freeminer"
+			demonym=":a Freeminer(s)"
+
 			alignment="destructive order"
 			/>
 

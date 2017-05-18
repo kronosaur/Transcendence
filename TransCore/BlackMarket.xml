@@ -1082,7 +1082,10 @@ PLAYER DATA
 <!-- THE BLACK MARKET -->
 
 	<Sovereign UNID="&svBlackMarket;"
-			name="Black Market"
+			name=":the Black Market"
+			adjective="Black Market"
+			demonym=":a Black Market member"
+
 			alignment="neutral"
 			>
 
@@ -1211,7 +1214,8 @@ PLAYER DATA
         Based on code by JohnBWatson. Thank you! -->
 	
     <Sovereign UNID="&svBlackMarketBountyHunter;"
-			name="Bounty Hunters"
+			name="bounty hunters"
+			demonym=":a bounty hunter(s)"
 			alignment="neutral"
 			>
 

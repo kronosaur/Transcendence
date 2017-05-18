@@ -3,7 +3,11 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svCSCAntarctica;"
-			name="CSC Antarctica"
+			name=":the CSC Antarctica"
+			shortName=":the Antarctica"
+			adjective="Antarctica"
+			demonym=":an Antarctica crewmember(s)"
+
 			alignment="constructive chaos"
 			>
 		<Language>
@@ -17,7 +21,11 @@
 	</Sovereign>
 
 	<Sovereign UNID="&svFleetAssassins;"
-			name="Commonwealth Fleet"
+			name=":the Commonwealth Fleet"
+			shortName=":the Fleet"
+			adjective="Fleet"
+			demonym=":a Fleet crewmember(s)"
+
 			alignment="constructive chaos"
 			>
 

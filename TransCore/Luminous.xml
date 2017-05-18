@@ -3,12 +3,17 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svLuminous;"
-			name="Luminous"
+			name=": Luminous"
+			adjective="Luminous"
+			demonym=":a Luminous drone(s)"
+
 			alignment="destructive order"
 			/>
 
 	<Sovereign UNID="&svFriendlyLuminous;"
-			name="Luminous drone"
+			name="Luminous drones"
+			demonym=":a Luminous drone(s)"
+
 			alignment="constructive chaos"
 			>
 		<Language>

@@ -3,7 +3,11 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svUrakWarlords;"
-			name="Urak Warlords"
+			name=": Urak Warlords"
+			shortName=":the Urak"
+			adjective="Urak"
+			demonym=":an Urak warlord(s)"
+
 			alignment="destructive order"
 			/>
 

@@ -514,7 +514,10 @@
 -->
 
 	<Sovereign UNID="&svRingers;"
-			name="Ringers"
+			name=": Ringers"
+			adjective="Ringer"
+			demonym=":a Ringer(s)"
+
 			alignment="constructive chaos"
 			>
 

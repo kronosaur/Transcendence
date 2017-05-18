@@ -7,7 +7,11 @@
 	-->
 	
 	<Sovereign UNID="&svTinkers;"
-			name="Tinkers Guild"
+			name=":the Tinkers Guild"
+			shortName=":the Tinkers"
+			adjective="Tinker"
+			demonym=":a Tinker(s)"
+
 			alignment="constructive chaos"
 			>
 		<GlobalData>

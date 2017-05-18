@@ -2395,7 +2395,11 @@ PLAYER DATA
 -->
 
 	<Sovereign UNID="&svCommonwealthFleet;"
-			name="Commonwealth Fleet"
+			name=":the Commonwealth Fleet"
+			shortName=":the Fleet"
+			adjective="Fleet"
+			demonym=":a Fleet crewmember(s)"
+
 			alignment="constructive chaos"
 			>
 

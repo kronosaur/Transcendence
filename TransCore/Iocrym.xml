@@ -3,7 +3,10 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svIocrym;"
-			name="Iocrym"
+			name=":the Iocrym"
+			adjective="Iocrym"
+			demonym=":an Iocrym(s)"
+
 			alignment="destructive order"
 			/>
 

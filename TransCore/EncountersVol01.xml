@@ -28,7 +28,11 @@
 <!-- Abbasid Survivalists ================================================= -->
 
 	<Sovereign UNID="&svAbbasid;"
-			name="Abbasid Survivalists"
+			name=": Abbasid Survivalists"
+			shortName=":the Abbasid"
+			adjective="Abbasid"
+			demonym=":an Abbasid survivalist(s)"
+
 			alignment="destructive order"
 			/>
 
@@ -102,7 +106,11 @@
 <!-- Bennin Xenophobes ==================================================== -->
 
 	<Sovereign UNID="&svXenophobes;"
-			name="Bennin Xenophobes"
+			name=": Bennin Xenophobes"
+			shortName=":the Xenophobes"
+			adjective="Xenophobe"
+			demonym=":a Xenophobe disciple(s)"
+
 			alignment="destructive chaos"
 			/>
 	
@@ -830,7 +838,10 @@
 <!-- Death Drugs Cartel =================================================== -->
 
 	<Sovereign UNID="&svDeathDrugsCartel;"
-			name="Death Drugs Cartel"
+			name=":the Death Drugs Cartel"
+			adjective="Death Drugs Cartel"
+			demonym=":a Death Drugs Cartel member(s)"
+
 			alignment="destructive order"
 			/>
 
@@ -1380,7 +1391,11 @@
 <!-- Gaian Terraformers =================================================== -->
 
 	<Sovereign UNID="&svGaianTerraformers;"
-			name="Gaian Terraformers"
+			name=": Gaian Terraformers"
+			shortName=":the Gaians"
+			adjective="Gaian"
+			demonym=":a Gaian(s)"
+
 			alignment="destructive order"
 			/>
 
@@ -1556,7 +1571,10 @@
 <!-- Heliotropes ========================================================== -->
 
 	<Sovereign UNID="&svHeliotropes;"
-			name="Heliotropes"
+			name=": Heliotropes"
+			adjective="Heliotrope"
+			demonym=":a Heliotropian(s)"
+
 			alignment="destructive order"
 			/>
 
@@ -2005,7 +2023,10 @@
 <!-- Himal Separatists ==================================================== -->
 
 	<Sovereign UNID="&svHimalSeparatists;"
-			name="Himal Separatists"
+			name=": Himal Separatists"
+			adjective="Himal"
+			demonym=":a Himalian(s)"
+
 			alignment="destructive order"
 			/>
 
@@ -2114,7 +2135,11 @@
 <!-- Huari Empire ========================================================= -->
 
 	<Sovereign UNID="&svHuariEmpire;"
-			name="Huari Empire"
+			name=":the Huari Empire"
+			shortName=":the Huari"
+			adjective="Huari"
+			demonym=":a Huarian(s)"
+
 			alignment="destructive order"
 			>
 		<Relationships>
@@ -2279,7 +2304,11 @@
 <!-- Kobol Syndicate ======================================================= -->
 
 	<Sovereign UNID="&svKobolWarlords;"
-			name="Kobol Syndicate"
+			name=":the Kobol Syndicate"
+			shortName=": Kobol"
+			adjective="Kobol"
+			demonym=":a Kobol warlord(s)"
+
 			alignment="destructive chaos"
 			/>
 
@@ -2499,7 +2528,11 @@
 <!-- Marauders ============================================================ -->
 
 	<Sovereign UNID="&svMarauders;"
-			name="Lombard Marauders"
+			name=": Lombard Marauders"
+			shortName=": Marauders"
+			adjective="Marauder"
+			demonym=":a Marauder(s)"
+
 			alignment="destructive order"
 			/>
 
@@ -3694,6 +3727,9 @@
 
 	<Sovereign UNID="&svPteravores;"
 			name="pteravores"
+			adjective="pteravore"
+			demonym=":a pteravore(s)"
+
 			alignment="destructive chaos"
 			/>
 
@@ -4086,7 +4122,11 @@
 <!-- Ranx Empire =========================================================== -->
 
 	<Sovereign UNID="&svRanxEmpire;"
-			name="Ranx Empire"
+			name=":the Ranx Empire"
+			shortName=":the Ranx"
+			adjective="Ranx"
+			demonym=":a Ranx citizen(s)"
+
 			alignment="destructive order"
 			/>
 
@@ -4662,7 +4702,11 @@
 <!-- Sapiens ============================================================== -->
 
 	<Sovereign UNID="&svSapiens;"
-			name="Sapiens Preservation Society"
+			name=":the Sapiens Preservation Society"
+			shortName=": Sapiens"
+			adjective="Sapient"
+			demonym=":a Sapient(s)"
+
 			alignment="destructive chaos"
 			/>
 
@@ -5263,7 +5307,11 @@
 <!-- Ventari Settlers ===================================================== -->
 
 	<Sovereign UNID="&svVentariSettlers;"
-			name="Ventari Settlers"
+			name=": Ventari Settlers"
+			shortName=":the Ventari"
+			adjective="Ventari"
+			demonym=":a Ventarian(s)"
+
 			alignment="destructive order"
 			/>
 

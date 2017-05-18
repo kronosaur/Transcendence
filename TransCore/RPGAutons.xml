@@ -3,7 +3,9 @@
 <TranscendenceModule>
 	
 	<Sovereign UNID="&svFriendlyAuton;"
-			name="auton"
+			name="autons"
+			demonym=":an auton(s)"
+
 			alignment="constructive chaos"
 			>
 		<Language>

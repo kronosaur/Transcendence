@@ -1210,7 +1210,11 @@
 -->
 
 	<Sovereign UNID="&svSistersOfDomina;"
-			name="Sisters of Domina"
+			name=":the Sisters of Domina"
+			shortName=":the Sisters"
+			adjective="Sister"
+			demonym=":a Sister(s)"
+
 			alignment="constructive chaos"
 			>
 
