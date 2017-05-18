@@ -9,6 +9,7 @@
 			shortName=":the Penitents"
 			adjective="Penitent"
 			demonym=":a Penitent(s)"
+			plural="true"
 
 			alignment="destructive order"
 			/>

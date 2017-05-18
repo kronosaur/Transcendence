@@ -1214,6 +1214,7 @@
 			shortName=":the Sisters"
 			adjective="Sister"
 			demonym=":a Sister(s)"
+			plural="true"
 
 			alignment="constructive chaos"
 			>

@@ -3,10 +3,11 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svCentauriWarlords;"
-			name=":the Centauri Clans"
+			name=":the Centauri coalition"
 			shortName=":the Centauri"
 			adjectice="Centauri"
 			demonym=":a Centauri warlord(s)"
+			plural="true"
 
 			alignment="destructive order"
 			/>

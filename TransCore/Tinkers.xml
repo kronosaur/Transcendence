@@ -11,6 +11,7 @@
 			shortName=":the Tinkers"
 			adjective="Tinker"
 			demonym=":a Tinker(s)"
+			plural="true"
 
 			alignment="constructive chaos"
 			>
