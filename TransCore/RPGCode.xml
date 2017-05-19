@@ -1934,7 +1934,15 @@
 				))
 
 			(setq rpgPageCount (lambda (textDesc)
-				(if (isatom textDesc) 1 (count textDesc))
+				(switch
+					(isatom textDesc) 
+						1
+
+					(= (typeOf textDesc) 'struct)
+						1
+						
+					(count textDesc)
+					)
 				))
 
 			(setq rpgPageDesc (lambda (textDesc pageNo)
@@ -2045,7 +2053,10 @@
 					;	Show the appropriate page
 
 					(if (@ pageDesc 'textID)
-						(scrSetDescTranslate theScreen (@ pageDesc 'textID) (or (@ pageDesc 'data) gData))
+						(scrSetDesc theScreen (or
+							(msnTranslate (@ options 'missionObj) (@ pageDesc 'textID) (or (@ pageDesc 'data) gData))
+							(scrTranslate theScreen (@ pageDesc 'textID) (or (@ pageDesc 'data) gData))
+							))
 						(scrSetDesc theScreen (@ pageDesc 'desc))
 						)
 					
@@ -2062,7 +2073,10 @@
 								)
 							(setq actions (list
 								{
-									label: (or (scrTranslate theScreen 'actionUndock) (typTranslate &dsDockScreenBase; 'actionUndock))
+									label: (or 
+										(scrTranslate theScreen 'actionUndock) 
+										(typTranslate &dsDockScreenBase; 'actionUndock)
+										)
 									code: (@ pageDesc 'acceptCode)
 									nextPage: 'missionAccept
 									}
@@ -2099,7 +2113,12 @@
 						
 						(!= (typeof actions) 'list)
 							(setq actions (list {
-								label: (or (@ pageDesc 'label) (@ pageDesc 'nextLabel) (scrTranslate theScreen (@ pageDesc 'labelID)))
+								label: (or 
+									(@ pageDesc 'label) 
+									(@ pageDesc 'nextLabel) 
+									(msnTranslate (@ options 'missionObj) (@ pageDesc 'labelID))
+									(scrTranslate theScreen (@ pageDesc 'labelID))
+									)
 								nextPage: (@ pageDesc 'nextPage)
 								code: (or (@ pageDesc 'code) (@ pageDesc 'nextCode))
 								}))
@@ -2120,6 +2139,11 @@
 								(switch
 									(@ actionDesc 'label)
 										(@ actionDesc 'label)
+
+									(@ actionDesc 'labelID)
+										(or (msnTranslate (@ options 'missionObj) (@ actionDesc 'labelID))
+												(scrTranslate theScreen (@ actionDesc 'labelID))
+												)
 										
 									;	If we're continuing, and at the last page, then we
 									;	use the [D]one label.
