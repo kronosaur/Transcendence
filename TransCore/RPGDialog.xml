@@ -55,7 +55,7 @@
 						;	Set the page text
 
 						(if (@ pageDesc 'textID)
-							(scrSetDescTranslate gScreen (@ pageDesc 'textID))
+							(scrSetDescTranslate gScreen (@ pageDesc 'textID) (or (@ pageDesc 'data) gData))
 							(scrSetDesc gScreen (@ pageDesc 'desc))
 							)
 						
@@ -118,7 +118,7 @@
 							
 							(block (
 								(nextPage (or (@ pageDesc 'nextPage) (@ pageDesc 'nextPane)))
-								(label (or (@ pageDesc 'label) (@ pageDesc 'nextLabel) (scrTranslate gScreen (@ pageDesc 'nextLabelID))))
+								(label (or (@ pageDesc 'label) (@ pageDesc 'nextLabel) (scrTranslate gScreen (@ pageDesc 'labelID))))
 								(code (or (@ pageDesc 'code) (@ pageDesc 'nextCode)))
 								)
 								(scrAddAction

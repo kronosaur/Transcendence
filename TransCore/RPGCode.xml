@@ -2045,7 +2045,7 @@
 					;	Show the appropriate page
 
 					(if (@ pageDesc 'textID)
-						(scrSetDescTranslate theScreen (@ pageDesc 'textID))
+						(scrSetDescTranslate theScreen (@ pageDesc 'textID) (or (@ pageDesc 'data) gData))
 						(scrSetDesc theScreen (@ pageDesc 'desc))
 						)
 					
@@ -2099,7 +2099,7 @@
 						
 						(!= (typeof actions) 'list)
 							(setq actions (list {
-								label: (or (@ pageDesc 'label) (@ pageDesc 'nextLabel) (scrTranslate theScreen (@ pageDesc 'nextLabelID)))
+								label: (or (@ pageDesc 'label) (@ pageDesc 'nextLabel) (scrTranslate theScreen (@ pageDesc 'labelID)))
 								nextPage: (@ pageDesc 'nextPage)
 								code: (or (@ pageDesc 'code) (@ pageDesc 'nextCode))
 								}))
