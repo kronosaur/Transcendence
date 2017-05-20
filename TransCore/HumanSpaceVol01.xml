@@ -1758,6 +1758,7 @@
     <!ENTITY baBlackMarketStation       "0x00100201">
 	<!ENTITY msBlackMarketDelivery		"0x00100202">
 	<!ENTITY dsBlackMarketDelivery		"0x00100203">
+	<!ENTITY msBlackMarketHotelMeet		"0x00100204">
 
 	<!-- 0210-022F PENITENTS -->
 	
@@ -1867,6 +1868,7 @@
 		
 	<Module filename="AresOrthodoxy.xml"/>
 	<Module filename="BlackMarket.xml"/>
+	<Module filename="BlackMarketMission00.xml"/>
 	<Module filename="BlackMarketMission01.xml"/>
 	<Module filename="CentauriWarlords.xml"/>
 	<Module filename="CharonPirates.xml"/>
