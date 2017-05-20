@@ -1360,7 +1360,7 @@
 	-->
 
 	<StationType UNID="&stKorolovAtCharon;"
-			name=				"Korolov Shipping"
+			name=				": Korolov Shipping"
 			sovereign=			"&svCorporate;"
 			dockScreen=			"Dispatch"
 			abandonedScreen=	"Destroyed"
@@ -1379,8 +1379,6 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, corporateDecon, friendly, human, populated, majorStation, korolovCharon, korolovShipping"
-
-			noArticle=			"true"
 			>
 
 		<!-- Image and Effects -->

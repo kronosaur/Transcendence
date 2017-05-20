@@ -140,7 +140,7 @@
 	<!-- Rebuilt Korolov -->
 
 	<StationType UNID="&stKorolovAtCharonCons;"
-			name=				"Korolov Shipping"
+			name=				": Korolov Shipping"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 				 
@@ -160,8 +160,6 @@
 			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			noArticle=			"true"
 			>
 
 		<!-- Trade and Items -->

@@ -1749,14 +1749,12 @@
 	<!-- Tan Ru Dorem -->
 
 	<StationType UNID="&stTanRuDorem;"
-			name=				"Tan&#x95;Ru&#x95;Dorem"
+			name=				": Tan&#x95;Ru&#x95;Dorem"
 			sovereign=			"&svNeutral;"
 			dockScreen=			"Main"
 
 			multiHull=			"true"
 			immutable=			"true"
-
-			noArticle=			"true"
 			>
 
 		<Image imageID="&rsStations7;" imageX="0" imageY="768" imageWidth="256" imageHeight="256"/>

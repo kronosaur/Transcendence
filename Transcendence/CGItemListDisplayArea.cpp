@@ -192,7 +192,7 @@ void CGItemListDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 			RectWidth(rcRect),
 			RectHeight(rcRect),
 			BORDER_RADIUS,
-			VI.GetColor(colorAreaDialogInputFocus));
+			m_rgbBackColor);
 
 	RECT rcInner = rcRect;
 	rcInner.left += PADDING;
@@ -206,9 +206,9 @@ void CGItemListDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 		{
 		const CG16bitFont &Large = VI.GetFont(fontLarge);
 		const CG16bitFont &Medium = VI.GetFont(fontMedium);
-		CG32bitPixel rgbColorTitle = VI.GetColor(colorTextHighlight);
-		CG32bitPixel rgbCountBox = VI.GetColor(colorAreaDeep);
-		CG32bitPixel rgbCount = VI.GetColor(colorTextHighlight);
+		CG32bitPixel rgbColorTitle = m_rgbTextColor;
+		CG32bitPixel rgbCountBox = CG32bitPixel::Darken(m_rgbBackColor, 0x80);
+		CG32bitPixel rgbCount = m_rgbTextColor;
 		DWORD dwNounPhraseFlags = nounShort;
 
 		//	Some metrics
@@ -277,7 +277,7 @@ void CGItemListDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 		{
 		const CG16bitFont &LargeBold = VI.GetFont(fontLargeBold);
 		const CG16bitFont &Medium = VI.GetFont(fontMedium);
-		CG32bitPixel rgbColorTitle = VI.GetColor(colorTextHighlight);
+		CG32bitPixel rgbColorTitle = m_rgbTextColor;
 		CG32bitPixel rgbColorDesc = CG32bitPixel(128,128,128);
 
 		RECT rcDrawRect = rcInner;

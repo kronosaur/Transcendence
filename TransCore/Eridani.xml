@@ -168,7 +168,7 @@
 	-->
 
 	<StationType UNID="&stRaisuStation;"
-			name=				"Raisu Station"
+			name=				": Raisu Station"
 			sovereign=			"&svCommonwealth;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
@@ -182,8 +182,6 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, occupation, populated, raisuStation"
-
-			noArticle=			"true"
 			>
 
 		<ImageVariants>
@@ -641,12 +639,11 @@
 	<!-- Bering Station -->
 
 	<StationType UNID="&stBeringStation;"
-			name=				"Commonwealth residentials|Commonwealth residentials"
+			name=				": Commonwealth residentials|Commonwealth residentials"
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, human, populated"
-			noArticle=			"true"
 				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
@@ -1070,12 +1067,12 @@
 
 									<!-- Industrial Center -->
 									<Siblings arcInc="+22">
-										<Station type="&stCorporateEnclave;" name="Greenwich Industries" noArticle="true" noMapLabel="true"/>
+										<Station type="&stCorporateEnclave;" name=": Greenwich Industries" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Dry Dock -->
 									<Siblings arcInc="-22">
-										<Station type="&stCommonwealthDryDock;" name="Starton Dry Dock" noArticle="true" noMapLabel="true"/>
+										<Station type="&stCommonwealthDryDock;" name=": Starton Dry Dock" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Metropolis Station -->
@@ -1124,12 +1121,12 @@
 
 									<!-- Slums -->
 									<Siblings arcInc="+55">
-										<Station type="&stCommonwealthSlums;" noArticle="true" noMapLabel="true"/>
+										<Station type="&stCommonwealthSlums;" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Slums -->
 									<Siblings arcInc="-55">
-										<Station type="&stCommonwealthSlums;" noArticle="true" noMapLabel="true"/>
+										<Station type="&stCommonwealthSlums;" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Peripheral nav beacons -->
@@ -1143,32 +1140,32 @@
 
 									<!-- Slums -->
 									<Siblings arcInc="+82">
-										<Station type="&stCommonwealthSlums;" noArticle="true" noMapLabel="true"/>
+										<Station type="&stCommonwealthSlums;" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Slums -->
 									<Siblings arcInc="-82">
-										<Station type="&stCommonwealthSlums;" noArticle="true" noMapLabel="true"/>
+										<Station type="&stCommonwealthSlums;" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Container Habitat -->
 									<Siblings arcInc="110-121">
-										<Station type="&stContainerHabitat;" name="Starton Residentials|Starton Residentials" noArticle="true" noMapLabel="true"/>
+										<Station type="&stContainerHabitat;" name=": Starton Residentials|Starton Residentials" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Container Habitat -->
 									<Siblings arcInc="-110--121">
-										<Station type="&stContainerHabitat;" name="Starton Residentials|Starton Residentials" noArticle="true" noMapLabel="true"/>
+										<Station type="&stContainerHabitat;" name=": Starton Residentials|Starton Residentials" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Container Habitat -->
 									<Siblings radiusInc="-11--14" arcInc="11-14">
-										<Station type="&stContainerHabitat;" name="Starton Residentials|Starton Residentials" noArticle="true" noMapLabel="true"/>
+										<Station type="&stContainerHabitat;" name=": Starton Residentials|Starton Residentials" noMapLabel="true"/>
 									</Siblings>
 
 									<!-- Container Habitat -->
 									<Siblings radiusInc="11-14" arcInc="-11--14">
-										<Station type="&stContainerHabitat;" name="Starton Residentials|Starton Residentials" noArticle="true" noMapLabel="true"/>
+										<Station type="&stContainerHabitat;" name=": Starton Residentials|Starton Residentials" noMapLabel="true"/>
 									</Siblings>
 
 								</Group>

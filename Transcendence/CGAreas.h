@@ -56,6 +56,8 @@ class CGItemListDisplayArea : public AGArea
 		CGItemListDisplayArea (void);
 
 		bool InitFromDesc (CCodeChain &CC, ICCItem *pDesc);
+        inline void SetBackColor (CG32bitPixel rgbColor) { m_rgbBackColor = rgbColor; }
+        inline void SetColor (CG32bitPixel rgbColor) { m_rgbTextColor = rgbColor; }
 		void SetItemList (CSpaceObject *pSource, const CItemList &ItemList);
 		inline void SetText (const CString &sTitle, const CString &sDesc) { m_sTitle = sTitle; m_sDesc = sDesc; m_ItemList.DeleteAll(); Invalidate(); }
 
@@ -82,6 +84,9 @@ class CGItemListDisplayArea : public AGArea
 
 		CString m_sTitle;					//	If no items
 		CString m_sDesc;					//	If no items
+
+		CG32bitPixel m_rgbTextColor;
+		CG32bitPixel m_rgbBackColor;
 
 		//	Initialized on Justify
 

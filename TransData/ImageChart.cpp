@@ -268,7 +268,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 				NewEntry.iSize = RectWidth(pClass->GetImage().GetImageRect());
 				NewEntry.pImage = &pClass->GetImage();
 				NewEntry.iRotation = pClass->Angle2Direction(iRotation);
-				NewEntry.sSovereignName = (pClass->GetDefaultSovereign() ? pClass->GetDefaultSovereign()->GetTypeNounPhrase() : NULL_STR);
+				NewEntry.sSovereignName = (pClass->GetDefaultSovereign() ? pClass->GetDefaultSovereign()->GetNounPhrase() : NULL_STR);
 				break;
 				}
 
@@ -284,7 +284,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 				NewEntry.pType = pType;
 				NewEntry.sName = pStationType->GetNounPhrase(0);
 				NewEntry.iSize = pStationType->GetSize();
-				NewEntry.sSovereignName = (pStationType->GetSovereign() ? pStationType->GetSovereign()->GetTypeNounPhrase() : NULL_STR);
+				NewEntry.sSovereignName = (pStationType->GetSovereign() ? pStationType->GetSovereign()->GetNounPhrase() : NULL_STR);
 
 				InitStationTypeImage(NewEntry, pStationType);
 

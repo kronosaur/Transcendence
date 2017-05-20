@@ -15,7 +15,7 @@
 	</Sovereign>
 
 	<Sovereign UNID="&svIndependent;"
-			name="independent merchant"
+			name="independent merchants"
 			alignment="constructive chaos"
 			/>
 
@@ -25,7 +25,7 @@
 			/>
 
 	<Sovereign UNID="&svUnknownEnemy;"
-			name="Unknown Enemy"
+			name="unknown enemy"
 			alignment="destructive order"
 			/>
 	

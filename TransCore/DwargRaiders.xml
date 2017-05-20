@@ -3,12 +3,19 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svDwargRaiders;"
-			name="Dwarg Raiders"
+			name=":the Dwarg civilization"
+			shortName=":the Dwarg"
+			adjective="Dwarg"
+			demonym=":a Dwarg master(s)"
+			plural="true"
+
 			alignment="destructive order"
 			/>
 
 	<Sovereign UNID="&svFriendlyZoanthrope;"
-			name="zoanthrope"
+			name="zoanthropes"
+			adjective="zoanthrope"
+			demonym=":a zoanthrope(s)"
 			alignment="constructive chaos"
 			>
 		<Language>

@@ -26,7 +26,7 @@ void GenerateArmorTable (CUniverse &Universe, CXMLElement *pCmdLine)
 			continue;
 
 		CItem Item(pItem, 1);
-		CString sName = pItem->GetName(NULL);
+		CString sName = pItem->GetNounPhrase();
 		int iHP = pArmor->GetMaxHP(CItemCtx(&Item));
 
 		printf("%d\t%s\t%d\t%d\t%d\t", 
@@ -59,7 +59,7 @@ void GenerateArmorTable (CUniverse &Universe, CXMLElement *pCmdLine)
 		if (pArmor == NULL)
 			continue;
 
-		CString sName = pItem->GetName(NULL);
+		CString sName = pItem->GetNounPhrase();
 		CItem Item(pItem, 1);
 		int iHP = pArmor->GetMaxHP(CItemCtx(&Item));
 
@@ -243,7 +243,7 @@ void GenerateStats (CUniverse &Universe, CXMLElement *pCmdLine)
 
 CString GetTypeDesc (CDesignType *pType)
 	{
-	CString sName = pType->GetTypeNounPhrase();
+	CString sName = pType->GetNounPhrase();
 	if (sName.IsBlank())
 		return strPatternSubst(CONSTLIT("%08x: [%s]"), pType->GetUNID(), pType->GetTypeClassName());
 	else

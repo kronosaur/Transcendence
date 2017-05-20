@@ -1996,6 +1996,11 @@ void CTranscendenceController::PaintDebugInfo (CG32bitImage &Dest, const RECT &r
 //	Paints debug info on top of the screen
 
 	{
+#ifdef DEBUG_ARRAY_STATS
+	const CG16bitFont &Font = m_HI.GetVisuals().GetFont(fontMedium);
+	Font.DrawText(Dest, rcScreen, CG32bitPixel(255, 255, 255), CArrayBase::DebugGetStats());
+#endif
+
 #ifdef DEBUG_SOUNDTRACK_STATE
 	m_Soundtrack.PaintDebugInfo(Dest, rcScreen);
 #endif

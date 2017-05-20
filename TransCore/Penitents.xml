@@ -5,7 +5,12 @@
 <!-- Order of Penitence =================================================== -->
 
 	<Sovereign UNID="&svPenitents;"
-			name="Order of Penitence"
+			name=":the Order of Penitence"
+			shortName=":the Penitents"
+			adjective="Penitent"
+			demonym=":a Penitent(s)"
+			plural="true"
+
 			alignment="destructive order"
 			/>
 	

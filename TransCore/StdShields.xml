@@ -308,7 +308,7 @@
 	<!-- R1 deflector -->
 
 	<ItemType UNID="&itR1Deflector;"
-			name=				"R1 deflector"
+			name=				":an R1 deflector"
 			level=				"4"
 			value=				"5000"
 			mass=				"3000"
@@ -316,8 +316,6 @@
 			attributes=			"commonwealth, majorItem, pacificDefense"
 
 			description=		"The R1 deflector was developed a few decades ago to protect Fleet ships against the powerful lightning cannons of the Ares Orthodoxy."
-
-			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
@@ -580,7 +578,7 @@
 	<!-- R5 deflector -->
 
 	<ItemType UNID="&itR5Deflector;"
-			name=				"R5 deflector"
+			name=				":an R5 deflector"
 			level=				"6"
 			value=				"20000"
 			mass=				"3500"
@@ -588,8 +586,6 @@
 			attributes=			"commonwealth, majorItem, military, pacificDefense"
 
 			description=		"This is an updated version of the R1 deflector, designed to resist the Ares Orthodoxy's lightning cannons."
-
-			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
