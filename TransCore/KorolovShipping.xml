@@ -1134,6 +1134,22 @@
 				name=			"Situation Screen"
 				backgroundID=	"none"
 				>
+				<OnScreenInit>
+					(block (
+						(shipList (map (korFreighterTypes) theType {
+								class:theType
+								name:(shpGetClassName theType 0x080)
+								level:(max (typGetStaticData theType 'korolovMinLevel) 1)
+								}))
+						(levelList (map (make 'sequence 3) level (filter shipList theShip (= (@ theShip 'level) level))))
+						)
+						(scrSetData gScreen 'nameList
+							(join (map levelList theList (join (map theList theShip (@ theShip 'name)) "\n")) "\n\n")
+							)
+						(scrSetData gScreen 'levelList levelList)
+						)
+				</OnScreenInit>
+
 				<Display>
 					<Text left="140" top="24" right="-24" height="28" font="SubTitle" color="255,210,152">
 						(plyComposeString gPlayer "%name%")
@@ -1176,29 +1192,14 @@
 					</Text>
 
 					<Text left="140" top="102" right="280" bottom="-120" font="LargeBold" color="200,206,199">
-						(cat
-							"EI100\n"
-							"EI200\n\n"
-
-							"EI7000\n"
-							"Antares II\n"
-							"Antares V\n\n"
-
-							"Antares I\n"
-							)
+						(scrGetData gScreen 'nameList)
 					</Text>
 
 					<Text left="280" top="102" right="-24" bottom="270" font="Large" color="149,153,148">
-						(cat
-							(korEscortRecord &scEI100;) "\n"
-							(korEscortRecord &scEI200;) "\n\n"
-
-							(korEscortRecord &scEI7000;) "\n"
-							(korEscortRecord &scAntaresII;) "\n"
-							(korEscortRecord &scAntaresV;) "\n\n"
-
-							(korEscortRecord &scAntaresI;) "\n"
-							)
+						(join (map (scrGetData gScreen 'levelList) theList
+								(join (map theList theShip (korEscortRecord (@ theShip 'class))) "\n")
+								)
+							"\n\n")
 					</Text>
 
 					<Text left="140" top="270" right="-24" height="18" font="MediumBold" color="255,210,152">
