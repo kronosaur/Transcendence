@@ -38,7 +38,7 @@
 			<OnCreate>
 				(block (
 					(playerLevel (korGetPlayerLevel))
-					dockedFreighters freighterCount qualifyCount gateObj
+					dockedFreighters freighterCount qualifyCount gateObj escortType
 					)
 
 					(setq dockedFreighters (sysFindObject aOwnerObj "sHZ O:docked; +commonwealth; +freighter;"))
@@ -47,7 +47,10 @@
 						(filter
 							dockedFreighters
 							theFreighter
-							(geq playerLevel (objGetStaticData theFreighter "korolovMinLevel"))
+							(and
+								(geq playerLevel (objGetStaticData theFreighter "korolovMinLevel"))
+								(geq (shpGetMaxSpeed gPlayerShip) (+ (shpGetMaxSpeed theFreighter) 2))
+								)
 							)
 						))
 
@@ -68,10 +71,17 @@
 						(not (setq gateObj (random (sysFindObject aOwnerObj "GR:300; -uncharted;"))))
 							(msnDestroy gSource)
 
+						; Only allow freighters which are slower than the player ship
+						(not (setq escortType (random (filter
+								(korFreighterTypes playerLevel)
+								theType
+								(geq (shpGetMaxSpeed gPlayerShip) (+ (typGetProperty theType 'maxSpeed) 2))
+								))))
+							(msnDestroy gSource)
+
 						; If there are no freighters we're qualified to escort, or only 1-2 total, then offer mission
 						(or (= qualifyCount 0) (ls freighterCount 2) (and (ls freighterCount 3) (= (random 1 3) 1)))
 							(block (
-								(escortType (random (korFreighterTypes playerLevel)))
 								(escortData (korCalculateCargo escortType playerLevel True))
 								)
 

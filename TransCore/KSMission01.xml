@@ -41,6 +41,7 @@
 								(not (objGetObjRefData theFreighter "korolovDest"))
 								(not (objGetData theFreighter "korolovPlayerEscort"))
 								(geq playerLevel (objGetStaticData theFreighter "korolovMinLevel"))
+								(geq (shpGetMaxSpeed gPlayerShip) (+ (shpGetMaxSpeed theFreighter) 2))
 								)
 							)
 						)
