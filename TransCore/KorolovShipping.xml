@@ -1092,7 +1092,7 @@
 									)
 									(scrShowScreen gScreen "ShipData" {
 										shipType: 'freighter
-										shipList: (map (sort shipList 'name) theEntry (@ theEntry 'ship))
+										shipList: (map (sort shipList 'ascending 'name) theEntry (@ theEntry 'ship))
 										})
 									)
 							</Action>
@@ -1118,11 +1118,12 @@
 				>
 				<OnScreenInit>
 					(block (
-						(shipList (map (korFreighterTypes) theType {
+						(shipList (sort (map (korFreighterTypes) theType {
 								class:theType
 								name:(shpGetClassName theType 0x080)
 								level:(max (typGetStaticData theType 'korolovMinLevel) 1)
-								}))
+								})
+							'ascending 'name))
 						(levelList (map (make 'sequence 3) level (filter shipList theShip (= (@ theShip 'level) level))))
 						)
 						(scrSetData gScreen 'nameList
@@ -1177,21 +1178,21 @@
 						(scrGetData gScreen 'nameList)
 					</Text>
 
-					<Text left="280" top="102" right="-24" bottom="270" font="Large" color="149,153,148">
+					<Text left="280" top="102" right="-24" bottom="-120" font="Large" color="149,153,148">
 						(join (map (scrGetData gScreen 'levelList) theList
 								(join (map theList theShip (korEscortRecord (@ theShip 'class))) "\n")
 								)
 							"\n\n")
 					</Text>
 
-					<Text left="140" top="270" right="-24" height="18" font="MediumBold" color="255,210,152">
+					<Text left="140" top="400" right="-24" height="18" font="MediumBold" color="255,210,152">
 						(block (showText)
 							(setq showText (gr (typGetData &unidKorolovShipping; 'recordStrongholds) 0))
 							(if showText "Commendations:" "")
 							)
 					</Text>
 
-					<Text left="140" top="286" right="-24" bottom="-12" font="Large" color="149,153,148">
+					<Text left="140" top="416" right="-24" bottom="-12" font="Large" color="149,153,148">
 						(block (
 							(strongholdsDestroyed (typGetData &unidKorolovShipping; 'recordStrongholds))
 							)
