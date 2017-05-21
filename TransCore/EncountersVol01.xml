@@ -5265,14 +5265,14 @@
 			<Text id="actionOpenSeal">"[O]pen Seal"</Text>
 			<Text id="descOpenedStart">"You are docked at an abandoned cargo container. "</Text>
 			<Text id="descOpenedRefugees">"There is a family of refugees living here."</Text>
-			<Text id="descOpenedOneItem">(cat "You see " (@ gData 'itemName) " here.")</Text>
+			<Text id="descOpenedOneItem">(cat "You see " (scrGetData gScreen 'itemName) " here.")</Text>
 			<Text id="descOpenedSeveralItems">"You see several items here."</Text>
 			<Text id="descContentsEmpty">"The cargo container is empty."</Text>
-			<Text id="descContents2OneItem">(cat "The cargo container has " (@ gData 'itemName) ".")</Text>
+			<Text id="descContents2OneItem">(cat "The cargo container has " (scrGetData gScreen 'itemName) ".")</Text>
 			<Text id="descContents2VariousItems">"The cargo container is filled with various items."</Text>
 			<Text id="descContents3Start">"The cargo container was filled with a powerful industrial solvent which has flooded your ship's cargo hold. "</Text>
 			<Text id="descContents3NothingDamaged">"Fortunately, nothing was damaged."</Text>
-			<Text id="descContents3ItemDestroyed">(cat "The solvent has destroyed " (@ gData 'itemName) ".")</Text>
+			<Text id="descContents3ItemDestroyed">(cat "The solvent has destroyed " (scrGetData gScreen 'itemName) ".")</Text>
 			<Text id="descContents4">"You open the cargo doors and see that a family of refugees is living inside. They are somewhat annoyed at being disturbed."</Text>
 			<Text id="descContents5">"This appears to be a makeshift base for a group of pirates. You see several enemy ships appear on your screen..."</Text>
 			

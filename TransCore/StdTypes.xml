@@ -1553,7 +1553,7 @@
 				/>
 				
 		<Language>
-			<Text id="descFindItem">(cat "You find " (@ gData 'itemName) " floating in space.")</Text>
+			<Text id="descFindItem">(cat "You find " (scrGetData gScreen 'itemName) " floating in space.")</Text>
 			<Text id="descItemSecure">"The item is secure aboard your ship."</Text>
 		</Language>
 	</StationType>
