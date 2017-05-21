@@ -87,44 +87,23 @@
 						; Otherwise setup mission
 						(block (
 							(gateMission (objMatches destObj Nil "G"))
-							pricePerContainer cargoValue escortRate escortFee
+							(escortType (objGetType freighterObj))
+							(escortData (korCalculateCargo escortType playerLevel gateMission))
+							cargoValue
 							)
-							; Figure out the price per container of the cargo (This depends on the freighter class)
-							(setq pricePerContainer (eval (objGetStaticData freighterObj "korolovContainerPrice")))
-							(if (leq pricePerContainer 0) (setq pricePerContainer 200))
 
 							; Load the freighter with cargo
 							(korEmptyFreighter freighterObj)
-							(setq cargoValue (korFillFreighter freighterObj pricePerContainer))
-							;(dbgOutput "Cargo value: " cargoValue "; price per container: " pricePerContainer)
-
-							; Compute the fee that we will pay for escort based on the value of the
-							; cargo and the rate that the freighter will pay
-							(setq escortRate (objGetStaticData freighterObj "korolovEscortRate"))
-							(if (or (not escortRate) (= escortRate 0)) (setq escortRate 100))
-							(setq escortFee (/ (* escortRate cargoValue) 10000))
-
-							; Fee is not as high if we're just going to the stargate
-							(if gateMission
-								(setq escortFee (/ (* escortFee 65) 100))
-								)
-
-							; Adjust the fee randomly and round down to the nearest 50
-							(setq escortFee
-								(intRoundDown
-									(/ (* escortFee (random 75 125)) 100)
-									50
-									)
-								)
+							(setq cargoValue (korFillFreighter freighterObj (@ escortData 'pricePerContainer)))
 
 							; Mission settings
 							(msnSetData gSource 'freighterID (objGetID freighterObj))
 							(msnSetData gSource 'destID (objGetID destObj))
 
-							(msnSetData gSource 'escortType (objGetType freighterObj))
+							(msnSetData gSource 'escortType escortType)
 							(msnSetData gSource 'missionXP (if gateMission 75 100))
-							(msnSetData gSource 'cargoValue cargoValue)
-							(msnSetData gSource 'reward escortFee)
+							(msnSetData gSource 'cargoValue (@ escortData 'cargoValue))
+							(msnSetData gSource 'reward (@ escortData 'escortFee))
 
 							; Remember the destination for this transport, so we don't
 							; change it later.

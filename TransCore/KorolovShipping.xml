@@ -276,22 +276,19 @@
 		/>
 
 		<StaticData>
-			<korolovContainerPrice>
-				(@
-					(list
-						0 ; new pilots cannot escort
-						0 ; apprentices cannot escort
-						0 ; journeymen cannot escort
+			<Data id="korolov.containerPrice">
+				(
+					0 ; new pilots cannot escort
+					0 ; apprentices cannot escort
+					0 ; journeymen cannot escort
 
-						; Masters: 30 - 150 credits per container
-						; 36,000 - 180,000 cargo value
-						(multiply 5 (add (random 2 10) (random 2 10) (random 2 10)))
+					; Masters: 30 - 150 credits per container
+					; 36,000 - 180,000 cargo value
+					(multiply 5 (add (random 2 10) (random 2 10) (random 2 10)))
 
-						150 ; legends don't escort, but add anyway
-						)
-					(korGetPlayerLevel)
+					150 ; legends don't escort, but add anyway
 					)
-			</korolovContainerPrice>
+			</Data>
 
 			<korolovEscortRate>350</korolovEscortRate>
 
@@ -402,25 +399,22 @@
 		/>
 
 		<StaticData>
-			<korolovContainerPrice>
-				(@
-					(list
-						0 ; new pilots cannot escort
-						0 ; apprentices cannot escort
+			<Data id="korolov.containerPrice">
+				(
+					0 ; new pilots cannot escort
+					0 ; apprentices cannot escort
 
-						; Journeymen: 60 - 240 credits per container
-						; 72,000 - 288,000
-						(multiply 2 (add (random 10 40) (random 10 40) (random 10 40)))
+					; Journeymen: 60 - 240 credits per container
+					; 72,000 - 288,000
+					(multiply 2 (add (random 10 40) (random 10 40) (random 10 40)))
 
-						; Masters: 200 - 400 credits per container
-						; 240,000 - 480,000
-						(multiply 2 (add (random 30 60) (random 30 60) (random 40 80)))
+					; Masters: 200 - 400 credits per container
+					; 240,000 - 480,000
+					(multiply 2 (add (random 30 60) (random 30 60) (random 40 80)))
 
-						400 ; legends don't escort, but add anyway
-						)
-					(korGetPlayerLevel)
+					400 ; legends don't escort, but add anyway
 					)
-			</korolovContainerPrice>
+			</Data>
 
 			<korolovEscortRate>100</korolovEscortRate>
 
@@ -531,25 +525,22 @@
 		/>
 
 		<StaticData>
-			<korolovContainerPrice>
-				(@
-					(list
-						0 ; new pilots cannot escort
-						0 ; apprentices cannot escort
+			<Data id="korolov.containerPrice">
+				(
+					0 ; new pilots cannot escort
+					0 ; apprentices cannot escort
 
-						; Journeymen: 40 - 160 credits
-						; 80,000 - 320,000 cargo value
-						(multiply 10 (add (random 1 4) (random 1 4) (random 1 4) (random 1 4)))
+					; Journeymen: 40 - 160 credits
+					; 80,000 - 320,000 cargo value
+					(multiply 10 (add (random 1 4) (random 1 4) (random 1 4) (random 1 4)))
 
-						; Masters: 160 - 400 credits
-						; 320,000 - 800,000 cargo value
-						(add (multiply 10 (add (random 4 10) (random 4 10))) (multiply 10 (add (random 4 10) (random 4 10))))
+					; Masters: 160 - 400 credits
+					; 320,000 - 800,000 cargo value
+					(add (multiply 10 (add (random 4 10) (random 4 10))) (multiply 10 (add (random 4 10) (random 4 10))))
 
-						400 ; legends don't escort, but add anyway
-						)
-					(korGetPlayerLevel)
+					400 ; legends don't escort, but add anyway
 					)
-			</korolovContainerPrice>
+			</Data>
 
 			<korolovEscortRate>50</korolovEscortRate>
 
@@ -635,30 +626,27 @@
 		/>
 
 		<StaticData>
-			<korolovContainerPrice>
-				(@
-					(list
-						; New pilot: 1500 - 4000 credits
-						; 15,000 - 40,000 cargo value
-						(multiply 100 (random 15 40))
+			<Data id="korolov.containerPrice">
+				(
+					; New pilot: 1500 - 4000 credits
+					; 15,000 - 40,000 cargo value
+					(multiply 100 (random 15 40))
 
-						; Apprentices: 1500 - 4000 credits
-						; 15,000 - 40,000 cargo value
-						(multiply 100 (random 15 40))
+					; Apprentices: 1500 - 4000 credits
+					; 15,000 - 40,000 cargo value
+					(multiply 100 (random 15 40))
 
-						; Journeymen: 2500 - 5000 credits
-						; 25,000 - 50,000 cargo value
-						(multiply 100 (random 25 50))
+					; Journeymen: 2500 - 5000 credits
+					; 25,000 - 50,000 cargo value
+					(multiply 100 (random 25 50))
 
-						; Masters: 3000 - 5000 credits
-						; 30,000 - 50,000 cargo value
-						(multiply 100 (random 30 50))
+					; Masters: 3000 - 5000 credits
+					; 30,000 - 50,000 cargo value
+					(multiply 100 (random 30 50))
 
-						5000 ; legends don't escort, but add anyway
-						)
-					(korGetPlayerLevel)
+					5000 ; legends don't escort, but add anyway
 					)
-			</korolovContainerPrice>
+			</Data>
 
 			<korolovEscortRate>200</korolovEscortRate>
 
@@ -746,30 +734,27 @@
 		/>
 
 		<StaticData>
-			<korolovContainerPrice>
-				(@
-					(list
-						; New pilot: 800 - 2000 credits
-						; 16,000 - 40,000 cargo value
-						(multiply 100 (random 8 20))
+			<Data id="korolov.containerPrice">
+				(
+					; New pilot: 800 - 2000 credits
+					; 16,000 - 40,000 cargo value
+					(multiply 100 (random 8 20))
 
-						; Apprentices: 1500 - 4000 credits
-						; 30,000 - 80,000 cargo value
-						(multiply 100 (random 15 40))
+					; Apprentices: 1500 - 4000 credits
+					; 30,000 - 80,000 cargo value
+					(multiply 100 (random 15 40))
 
-						; Journeymen: 1500 - 5000 credits
-						; 30,000 - 100,000 cargo value
-						(multiply 100 (random 15 50))
+					; Journeymen: 1500 - 5000 credits
+					; 30,000 - 100,000 cargo value
+					(multiply 100 (random 15 50))
 
-						; Masters: 3000 - 5000 credits
-						; 60,000 - 100,000 cargo value
-						(multiply 100 (random 30 50))
+					; Masters: 3000 - 5000 credits
+					; 60,000 - 100,000 cargo value
+					(multiply 100 (random 30 50))
 
-						5000 ; legends don't escort, but add anyway
-						)
-					(korGetPlayerLevel)
+					5000 ; legends don't escort, but add anyway
 					)
-			</korolovContainerPrice>
+			</Data>
 
 			<korolovEscortRate>150</korolovEscortRate>
 
@@ -884,25 +869,22 @@
 		/>
 
 		<StaticData>
-			<korolovContainerPrice>
-				(@
-					(list
-						0 ; new pilots cannot escort
-						0 ; apprentices cannot escort
+			<Data id="korolov.containerPrice">
+				(
+					0 ; new pilots cannot escort
+					0 ; apprentices cannot escort
 
-						; Journeymen: 2000 - 4000 credits
-						; 160,000 - 320,000 cargo value
-						(multiply 100 (add (random 10 20) (random 10 20)))
+					; Journeymen: 2000 - 4000 credits
+					; 160,000 - 320,000 cargo value
+					(multiply 100 (add (random 10 20) (random 10 20)))
 
-						; Masters: 4000 - 10000 credits
-						; 320,000 - 800,000 cargo value
-						(multiply 100 (add (random 20 50) (random 20 50)))
+					; Masters: 4000 - 10000 credits
+					; 320,000 - 800,000 cargo value
+					(multiply 100 (add (random 20 50) (random 20 50)))
 
-						5000 ; legends don't escort, but add anyway
-						)
-					(korGetPlayerLevel)
+					5000 ; legends don't escort, but add anyway
 					)
-			</korolovContainerPrice>
+			</Data>
 
 			<korolovEscortRate>50</korolovEscortRate>
 
@@ -2055,6 +2037,49 @@
 
 					; Return the total value of the cargo
 					(multiply fitCount (itmGetActualPrice container))
+					)
+				))
+
+			;	Calculate the cargo value and escort fees for a Korolov freighter
+			(setq korCalculateCargo (lambda (escortType escortLevel oneWay)
+				(block (
+					(escortRate (typGetStaticData escortType 'korolovEscortRate))
+					(fitCount (/ (typGetProperty escortType 'cargoSpace) 25))
+					pricePerContainer cargoValue escortFee
+					)
+
+					;	Figure out the price per container of the cargo
+					(setq pricePerContainer (or
+						;	New method
+						(eval (@ (typGetStaticData escortType 'korolov.containerPrice) escortLevel))
+
+						;	Legacy method (1.7 and before)
+						(block Nil
+							(typSetData &stKorolovShipping; 'level escortLevel)
+							(eval (typGetStaticData escortType 'korolovContainerPrice))
+							)
+
+						;	Otherwise aim for a suitable cargoValue
+						(/ (* (@ '(25 75 150 300 600) escortLevel) 1000) fitCount)
+						))
+
+					(setq cargoValue (* pricePerContainer fitCount))
+
+					;	Compute the fee that we will pay for escort based on the value of the
+					;	cargo and the rate that the freighter will pay
+					(setq escortFee (/ (* (if (gr escortRate 0) escortRate 100) cargoValue) 10000))
+
+					;	Reduce fee for one-way trip
+					(if oneWay (setq escortFee (/ (* escortFee 65) 100)))
+
+					;	Adjust the fee randomly and round down to the nearest 50
+					(setq escortFee (intRoundDown (/ (* escortFee (random 75 125)) 100) 50))
+
+					{
+						escortFee: escortFee
+						cargoValue: cargoValue
+						pricePerContainer: pricePerContainer
+						}
 					)
 				))
 
