@@ -45,7 +45,7 @@
 
 			<OnAccepted>
 				(switch
-					(ls (random 1 20) 11)
+					(ls (random 1 20) 20)
 						(msnSetData gSource 'status 'sale)
 
 					(geq (plyGetCredits gPlayer) 1000)
