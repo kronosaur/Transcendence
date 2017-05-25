@@ -126,6 +126,7 @@
 			<Text id="DeclineReply">
 				Finding nothing else to talk about, you finish eating in silence.
 			</Text>
+			<Text id="SuccessMsg"></Text>
 			<Text id="Illegals1">
 				(cat
 					"As you finish dinner one of the brothers says, "
