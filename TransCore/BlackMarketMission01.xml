@@ -7,7 +7,7 @@
 	EXTRA DATA
 
 	destNodeID:			The system where the station can be found.
-	destID:				ID of destination station.
+	paneID:				ID of destination station.
 	
 	======================================================================== -->
 	
@@ -49,13 +49,13 @@
 				;	unvFindObject does not include virtual objects, so need to
 				;	search for the Arcology when we enter the system
 				(if (= (sysGetNode) (msnGetData gSource 'destNodeID))
-					(msnSetData gSource 'destID (objGetID (sysFindObject Nil "TNV +stKatsArcology;")))
+					(msnSetData gSource 'paneID (objGetID (sysFindObject Nil "TNV +stKatsArcology;")))
 					)
 			</OnPlayerEnteredSystem>
 
 			<OnSetPlayerTarget>
 				(if (= (sysGetNode) (msnGetData gSource 'destNodeID))
-					(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'destID)) 'dock)
+					(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'paneID)) 'dock)
 					)
 			</OnSetPlayerTarget>
 

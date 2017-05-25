@@ -792,7 +792,7 @@
 				(enum (msnFind Nil "a +paneInitMission;") theMission
 					(if (and
 							(not (msnGetProperty theMission 'isCompleted))
-							(= (objGetID gSource) (msnGetData theMission 'destID))
+							(= (objGetID gSource) (msnGetData theMission 'paneID))
 							)
 						(msnFireEvent theMission 'OnPaneInit)
 						)
