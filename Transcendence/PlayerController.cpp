@@ -1224,6 +1224,10 @@ void CPlayerShipController::OnDeviceStatus (CInstalledDevice *pDev, CDeviceClass
 		case CDeviceClass::failDeviceOverheat:
 			m_pTrans->DisplayMessage(strCapitalize(strPatternSubst(CONSTLIT("%s damaged by overheating"), pDev->GetClass()->GetName())));
 			break;
+
+		case CDeviceClass::failDeviceDisabledByOverheat:
+			m_pTrans->DisplayMessage(strCapitalize(strPatternSubst(CONSTLIT("%s disabled by overheating"), pDev->GetClass()->GetName())));
+			break;
 		}
 	}
 
