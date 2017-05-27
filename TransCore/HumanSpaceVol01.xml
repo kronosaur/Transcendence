@@ -1669,7 +1669,9 @@
 	<!ENTITY rsBattleArenaSegments		"0x001000E0">
 	<!ENTITY baBattleArenaSegment		"0x001000E1">
 	<!ENTITY stBattleArenaStatic		"0x001000E2">
-	
+	<!ENTITY msBattleArenaMelee			"0x001000E3">
+	<!ENTITY msKatamiKidnapped			"0x001000E4">
+
 	<!-- 00F0-00FF HELIOTROPES -->
 	
 	<!ENTITY rsHeliotropeFrigate		"0x001000F0">
@@ -1844,6 +1846,8 @@
 	<Module filename="Antarctica.xml"/>
 	<Module filename="BattleArena.xml"/>
 	<Module filename="BattleArenaGladiators.xml"/>
+	<Module filename="BattleArenaMelee.xml"/>
+	<Module filename="BattleArenaKidnapped.xml"/>
 	<Module filename="CharonFortress.xml"/>
 	<Module filename="Eridani.xml"/>
 	<Module filename="EtaCeti.xml"/>

@@ -518,6 +518,10 @@
 					)
 				))
 
+			(setq rpgCharacterIsKnown (lambda (charType)
+				(typGetData charType 'firstPlayerMeetingTime)
+				))
+
 			(setq rpgCharacterSetScreen (lambda (charType screenData)
 				(typSetData charType 'screenData screenData)
 				))
