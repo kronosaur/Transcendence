@@ -258,20 +258,20 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Dock Services" key="D" default="1">
+							<Action id="actionDockServices" default="1">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									upgradeInstallOnly: True
 									})
 							</Action>
 
-							<Action name="Commodities Exchange" key="C">
+							<Action id="actionCommoditiesExchange">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -415,13 +415,13 @@
 									})
 							</Action>
 							
-							<Action name="Commodities Exchange" key="C">
+							<Action id="actionCommoditiesExchange">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 
@@ -559,13 +559,13 @@
 									})
 							</Action>
 
-							<Action name="Commodities Exchange" key="C">
+							<Action id="actionCommoditiesExchange">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 
@@ -936,7 +936,7 @@
 									)
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 
@@ -948,7 +948,7 @@
 							desc=	"A sales drone approaches you: &quot;You do not currently have any autons to repair, but I would be delighted to show you some of our newest models.&quot;">
 
 						<Actions>
-							<Action name="Leave" cancel="1" default="1" key="L">
+							<Action id="actionLeave" cancel="1" default="1">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
@@ -1002,7 +1002,7 @@
 									)
 							</Action>
 
-							<Action name="Leave" cancel="1" key="L">
+							<Action id="actionLeave" cancel="1">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
@@ -1096,7 +1096,7 @@
 									)
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 
@@ -1112,7 +1112,7 @@
 								<ShowPane pane="MaintenanceShop"/>
 							</Action>
 
-							<Action name="Leave" cancel="1" key="L">
+							<Action id="actionLeave" cancel="1">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
@@ -1122,7 +1122,7 @@
 							desc=	"You are in the maintenance level of a corporate enclave. The drone of the atmosphere processors and the waste converters drowns out all other noises. There is an empty maintenance shop here filled with various machines and drones; an empty laudanum ampule peeks out from under the workbench.">
 
 						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
+							<Action id="actionLeave" default="1" cancel="1">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
@@ -1166,7 +1166,7 @@
 							desc=	"You are in the residential level of a corporate enclave. This level holds the apartments and dwelling units of mid-level corporate citizens. The units are small and somewhat homogenous, though everyone you meet seems happy.">
 
 						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
+							<Action id="actionLeave" default="1" cancel="1">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
@@ -1181,12 +1181,12 @@
 							desc=	"You are in the corporate level of a corporate enclave. The day-to-day services and manufacturing of the various corporations are carried-out on this level.">
 
 						<Actions>
-							<Action name="Sell Items" default="1" key="S">
+							<Action id="actionSellItems" default="1">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
 									})
 							</Action>
 
-							<Action name="Leave" cancel="1" key="L">
+							<Action id="actionLeave" cancel="1">
 								<Navigate screen="Main" />
 							</Action>
 						</Actions>
@@ -1304,7 +1304,7 @@
 								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
-							<Action id="actionBuy">
+							<Action id="actionBuyItems">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: True
 									})
@@ -1331,10 +1331,6 @@
 		</DockingPorts>
 		
 		<Language>
-			<Text id="actionRefuel">"[R]efuel"</Text>
-			<Text id="actionBuy">"[B]uy Items"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
-			
 			<Text id="desc">
 				(cat 
 					"Welcome to " (objGetName gSource) ", your most reliable source of starship fuel and a member of the Earth Industries Conglomerate.\n\n"
@@ -1470,26 +1466,26 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Dock Services" key="D" default="1">
+							<Action id="actionDockServices" default="1">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Buy Items" key="B">
+							<Action id="actionBuyItems">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Repair Items" key="R">
+							<Action id="actionRepairItems">
 								(scrShowScreen gScreen "&dsRPGRepairItem;" {
 									criteria: "*~aD +Makayev;"
 									priceAdj: 65
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -1683,18 +1679,18 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy Items" default="1" key="B">
+							<Action id="actionBuyItems" default="1">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: True
 									})
 							</Action>
 							
-							<Action name="Sell Items" key="S">
+							<Action id="actionSellItems">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
 									})
 							</Action>
 							
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 
@@ -1827,12 +1823,12 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Sell Items" key="S" default="1">
+							<Action id="actionSellItems" default="1">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
 									})
 							</Action>
 
-							<Action name="Leave" cancel="1" key="L">
+							<Action id="actionLeave" cancel="1">
 								<Navigate screen="Main"/>
 							</Action>
 						</Actions>
@@ -1858,7 +1854,6 @@
         <Language>
 			<Text id="actionRestaurant">"[R]estaurant"</Text>
 			<Text id="actionLoadingDock">"[L]oading Dock"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
 
 			<Text id="descRestaurantRespect">
 				As you enter the restaurant the maitre d' welcomes you warmly and shows
@@ -1941,18 +1936,18 @@
 							desc=	"You are docked at an independent ice farm on a small asteroid. Cold and stale air blows out of a wheezing recycler and you hear the drone of struggling generators and pumps.">
 
 						<Actions>
-							<Action name="Buy Items" default="1" key="B">
+							<Action id="actionBuyItems" default="1">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Sell Items" key="S">
+							<Action id="actionSellItems">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 
@@ -2098,7 +2093,7 @@
 									)
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 
@@ -2110,7 +2105,7 @@
 							desc= "You are already insured by our conglomerate. Rest assured that you are protected against all losses by the most comprehensive insurance in the Commonwealth.">
 
 						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								<ShowPane pane="Default"/>
 							</Action>
 
@@ -2122,7 +2117,7 @@
 							desc= "Unfortunately, we do not have an insurance product suitable for the risky lifestyle that you lead.">
 
 						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								<ShowPane pane="Default"/>
 							</Action>
 
@@ -2204,7 +2199,7 @@
 									)
 							</Action>
 
-							<Action name="Cancel" cancel="1" key="C">
+							<Action id="actionCancel" cancel="1">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
@@ -2215,7 +2210,7 @@
 							desc= "&quot;Thank you for your purchase. We wish you a long and happy life, secure in the knowledge that the oldest and most powerful insurance conglomerate stands behind you.&quot;">
 
 						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								<ShowPane pane="Default"/>
 							</Action>
 
@@ -2348,19 +2343,19 @@
 							desc=	"You are docked at a Taikon Ventures station.">
 
 						<Actions>
-							<Action name="Dock Services" default="1" key="D">
+							<Action id="actionDockServices" default="1">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Buy Items" key="B">
+							<Action id="actionBuyItems">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 
@@ -2498,18 +2493,18 @@
 									)
 							</Action>
 
-							<Action name="Buy Items" key="B">
+							<Action id="actionBuyItems">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Sell Items" key="S">
+							<Action id="actionSellItems">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 
@@ -2563,7 +2558,7 @@
 									)
 							</Action>
 
-							<Action name="Cancel" cancel="1">
+							<Action id="actionCancel" cancel="1">
 								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
@@ -2595,7 +2590,7 @@
 									)
 							</Action>
 
-							<Action name="Cancel" cancel="1" key="C">
+							<Action id="actionCancel" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -2668,7 +2663,7 @@
 									)
 							</Action>
 
-							<Action name="Cancel" cancel="1" key="C">
+							<Action id="actionCancel" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -2679,7 +2674,7 @@
 							desc="Your order has been placed and will be ready as soon as it arrives. Please check back at this screen to see the status of your order.">
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
@@ -2690,7 +2685,7 @@
 							>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -2711,7 +2706,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
@@ -2742,7 +2737,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
 									(if gResult
 										(block Nil
@@ -2772,7 +2767,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
 									(objSetData gSource "MissionStatus" Nil)
 									(scrShowScreen gScreen "Main")
@@ -2794,7 +2789,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
@@ -2902,20 +2897,20 @@
 							desc=	"You are docked at a franchise of Thor's Wondrous Devices.">
 
 						<Actions>
-							<Action name="Dock Services" key="D" default="1">
+							<Action id="actionDockServices" default="1">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									upgradeInstallOnly: True
 									})
 							</Action>
 
-							<Action name="Commodities Exchange" key="C">
+							<Action id="actionCommoditiesExchange">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 
@@ -3062,19 +3057,19 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Dock Services" key="D" default="1">
+					<Action id="actionDockServices" default="1">
 						(rpgDockServices gPlayerShip {
 							checkMilitaryID: True
 							})
 					</Action>
 
-					<Action name="Buy Items" key="B">
+					<Action id="actionBuyItems">
 						(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 							checkMilitaryID: True
 							})
 					</Action>
 
-					<Action name="Undock" cancel="1" key="U">
+					<Action id="actionUndock" cancel="1">
 						<Exit/>
 					</Action>
 				</Actions>
@@ -3094,7 +3089,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
+					<Action id="actionContinue" default="1" cancel="1">
 						(block Nil
 							(plyDestroyed gPlayer (cat "was imprisoned for " (objGetData gPlayerShip "corpCrime")))
 							(scrExitScreen gScreen 'forceUndock)
@@ -3128,6 +3123,17 @@
 		</Events>
 		
 		<Language>
+			<Text id="actionBuyItems">"[B]uy Items"</Text>
+			<Text id="actionCancel">"[C]ancel"</Text>
+			<Text id="actionCommoditiesExchange">"[C]ommodities Exchange"</Text>
+			<Text id="actionContinue">"[C]ontinue"</Text>
+			<Text id="actionDockServices">"[D]ock Services"</Text>
+			<Text id="actionLeave">"[L]eave"</Text>
+			<Text id="actionRefuel">"[R]efuel"</Text>
+			<Text id="actionRepairItems">"[R]epair Items"</Text>
+			<Text id="actionSellItems">"[S]ell Items"</Text>
+			<Text id="actionUndock">"[U]ndock"</Text>
+
 			<Text id="customs.chargedForDecon">
 				(cat
 					"Corporate security stops your ship for decontamination. "
