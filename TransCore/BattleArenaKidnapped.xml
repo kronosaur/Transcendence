@@ -39,6 +39,10 @@
 						(!= (typGetData &stBattleArena; 'arenaRank) 'challenger)
 							(msnDestroy gSource)
 
+						;	Katami must still be the instructor
+						(!= (typGetData &stBattleArena; 'katamiStatus) 'instructor)
+							(msnDestroy gSource)
+
 						;	The black market station must still be alive
 						(not (setq destObj (sysFindObject gSource "TAN +katamiRescue")))
 							(msnDestroy gSource)
@@ -295,6 +299,15 @@
 		
 		<Language>
 			<Text id="Name">Katami Kidnapped</Text>
+			<Text id="Summary">
+				(cat
+					"Mr. Katami has been captured by the Black Market. "
+					"Help Kate Morgental rescue him.\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
 			<Text id="Intro">
 				(if (rpgCharacterIsKnown &unidKateMorgental;)
 					(msnTranslate gSource "Intro:knowKate")

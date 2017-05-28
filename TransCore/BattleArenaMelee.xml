@@ -190,7 +190,6 @@
 							(shpCancelOrders aObjDocked)
 							(shpOrderGate aObjDocked)
 							)
-						(dbgOutput (objGetName aObjDocked 0) " docked with " (objGetName aDockTarget 0))
 						)
 					)
 			</OnObjDocked>
@@ -246,6 +245,15 @@
 			<Text id="Name">
 				"Battle Arena Melee"
 			</Text>
+			<Text id="Summary">
+				(cat
+					"You have entered the Battle Arena Maximus as a contestant. "
+					"Prove your worth by surviving the Melee.\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: 25 credits per kill"
+					)
+			</Text>
 			<Text id="Briefing">
 				(block (
 					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
@@ -293,6 +301,7 @@
 			<Text id="AcceptLabel">[F]ight!</Text>
 			<Text id="DeclineLabel">[B]ack Out</Text>
 			<Text id="AcceptReply">
+				"\"Good Luck!\""
 			</Text>
 			<Text id="DeclineReply">
 				"\"This kind of challenge is not for the weak and fearful. You are wise to decline.\""
