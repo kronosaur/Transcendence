@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Huaramarca Attack Sung Base ===========================================
+
+	EXTRA DATA
+
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msHuaramarcaAttackBase;"
+			name=				"Huaramarca Attack Sung Base"
+			attributes=			"huariTemple, huariDreamChoice"
+
+			level=				"6"
+			maxAppearing=		"1"
+			priority=			"90"
+			
+			noDecline=			"True"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	Only one dream choice mission allowed
+					(msnFind "* +huariDreamChoice;")
+						(msnDestroy gSource)
+
+					;	Player must have completed the dream test
+					(not (msnFind "r +unid:&msHuaramarcaDreamTest;"))
+						(msnDestroy gSource)
+
+					;	Set up the mission
+					(block (
+						;	Look for a sung base. If not found, create one
+						(targetObj (or
+							(sysFindObject aOwnerObj "ATN +sungSlavers;")
+							(sysCreateStation &stSungFortressInHuaramarca; (sysVectorRandom aOwnerObj 100 30 "t"))
+							(sysCreateStation &stSungFortressInHuaramarca; (sysVectorRandom Nil 1000 300 "t"))
+							))
+						;	Look for some Hurin destroyers to help
+						(escorts (subset (sysFindObject aOwnerObj "sN:250; +huari;") 0 3))
+						)
+						;	Remember target
+						(msnSetData gSource 'targetID (objGetID targetObj))
+						(msnSetData gSource 'escorts (map escorts theObj (objGetID theObj)))
+						
+						;	No intro for this mission
+						(msnSetProperty gSource 'isIntroShown True)
+						
+						(msnRegisterForEvents gSource targetObj)
+						(msnRegisterForEvents gSource gPlayerShip)
+						)
+					)
+			</OnCreate>
+
+			<OnAccept>
+				(enum (msnGetData gSource 'escorts) theShip
+					(block Nil
+						(shpCancelOrders theShip)
+						(shpOrder theShip 'escort gPlayerShip)
+						)
+					)
+			</OnAccept>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'attack)
+			</OnSetPlayerTarget>
+
+			<OnObjDestroyed>
+				(switch
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(msnSuccess gSource)
+					)
+			</OnObjDestroyed>
+			
+			<OnCompleted>
+				(enum (msnGetData gSource 'escorts) theShip
+					(block Nil
+						(shpCancelOrders theShip)
+						(shpOrder theShip 'attackNearestEnemy)
+						(shpOrder theShip 'patrol (objGetObjByID (msnGetProperty gSource 'ownerID)))
+						)
+					)
+			</OnCompleted>
+
+			<OnGetNextScreen>
+				(if (= aScreenType 'SuccessFollowUp)
+					(block (
+						(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+						missionObj
+						)
+						(if (setq missionObj (msnCreate &msHuaramarcaArchcannon; stationObj))
+							{
+								nextScreen: &dsRPGMission;
+								nextScreenData: { missionObj: missionObj }
+								}
+							)
+						)
+					)
+			</OnGetNextScreen>
+		</Events>
+		
+		<Language>
+			<Text id="Name">
+				"Attack Sung Base"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"The Sung have established a base near the Huari temple. "
+					"Your mission is to destroy it.\n\n"
+					
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+			<Text id="Briefing">
+				(block (
+					(escortCount (count (msnGetData gSource 'escorts)))
+					)
+					(list
+						{
+							desc: (cat
+							(msnTranslate gSource 'Briefing.base)
+							"\n\n"
+							(switch
+								(= escortCount 1)
+									(msnTranslate gSource 'Briefing.1)
+								(gr escortCount 1)
+									(msnTranslate gSource 'Briefing.2 {escortCount:(strNumber escortCount)} )
+								"qwerty"
+								)
+							)
+							}
+						{
+							desc: (msnTranslate gSource 'GoodLuck)
+							}
+						)
+					)
+			</Text>
+			<Text id="Briefing.base">
+				"The Sung have established a base in this system, and once they build up
+				their forces they will destroy us. Our only chance is to strike them now,
+				before they are ready. Your dream spoke of battle; now is your chance!"
+			</Text>
+			<Text id="Briefing.1">
+				"We will send a Hurin destroyer with you. Strike the Sung with your mighty
+				weapons and make them regret ever finding this refuge!"
+			</Text>
+			<Text id="Briefing.2">
+				(cat
+					"\"We will send " (@ gData 'escortCount) " Hurin destroyers with you. "
+					"Strike the Sung base and drive the invaders back to the darkness "
+					"whence they came!\""
+					)
+			</Text>
+			<Text id="GoodLuck">
+				"\"Good luck to you and to us all. May the blessings of the Light fill our worlds again.\""
+			</Text>
+			<Text id="InProgress">
+				Apotamo talks to you:
+
+				"The Sung base casts a shadow over everything we have here. We will never
+				be safe until it is destroyed."
+			</Text>
+			<Text id="FailureDebrief">
+				"Your failure is also our doom. Maybe we were never meant to bask in the
+				Light's blessings; maybe the darkness of space will consume us after all."
+			</Text>
+			<Text id="SuccessDebrief">
+				Apotamo greets you as you enter.
+
+				"Thank you! You have given us new hope! Despite their great technology,
+				the Sung are not invincible. I wish you could stay with us and help us
+				to defeat them, but I know your path lies among the stars."
+			</Text>
+		</Language>
+	</MissionType>
+
+	<!-- Sung Fortress in Huaramarca -->
+
+	<StationType UNID="&stSungFortressInHuaramarca;"
+			name=				"Sung fortress(es)"
+			sovereign=			"&svSung;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itSungArmor;"
+			hitPoints=			"400"
+            regen=              "11"
+			explosionType=		"&vtBlastExplosion4;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, majorStation, populated, sungSlavers"
+			>
+
+		<Image			imageID="&rsStations4;" imageX="0" imageY="192" imageWidth="128" imageHeight="128"/>
+
+		<Ships>
+			<Ship					count="1"	class="&scDragonSlaver;"	orders="patrol" patrolDist="20"/>
+			<Ship					count="4"	class="&scEarthSlaver;"		orders="patrol" patrolDist="15"/>
+			<Ship					count="30"	class="&scWindSlaver;"		orders="patrol" patrolDist="10"/>
+
+			<Table>
+				<Ship chance="30"	count="2d3" class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
+				<Group chance="60">
+					<Ship			count="1"	class="&scSteelSlaver;"		orders="patrol" patrolDist="20"/>
+					<Ship			count="1d4"	class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scSteelSlaver;"		orders="patrol" patrolDist="20"/>
+			</Table>
+		</Ships>
+
+		<Items>
+			<Lookup					count="1d4"	table="&trStationSupplies;" />
+			<Lookup					count="1d2" table="&trConsumables5;"/>
+			<Lookup					count="1d2" table="&trMinorItem5;"/>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables6;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem6;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem6;"/>
+			</Table>
+		</Items>
+
+		<Satellites>
+			<Station type="&stSungNEWall;" xOffset="64" yOffset="64"/>
+			<Station type="&stSungNWWall;" xOffset="-64" yOffset="64"/>
+			<Station type="&stSungSWWall;" xOffset="-64" yOffset="-64"/>
+			<Station type="&stSungSEWall;" xOffset="64" yOffset="-64"/>
+		</Satellites>
+
+	</StationType>
+
+</TranscendenceModule>

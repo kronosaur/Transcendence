@@ -44,7 +44,14 @@
 	<!-- 0021xxxx HUARI ==================================================== -->
 	
 	<!ENTITY smHuariSpace				"0x00210001">
-	
+	<!ENTITY msHuaramarcaTuali			"0x00210002">
+	<!ENTITY msHuaramarcaDreamTest		"0x00210003">
+	<!ENTITY msHuaramarcaDefendTemple	"0x00210004">
+	<!ENTITY msHuaramarcaAttackBase		"0x00210005">
+	<!ENTITY msHuaramarcaDragonSlaver	"0x00210006">
+	<!ENTITY msHuaramarcaArchcannon		"0x00210007">
+	<!ENTITY msHuaramarcaRevelation		"0x00210008">
+
 	<!-- 0082xxxx PART I SOUNDTRACK ======================================== -->
 
 	<!ENTITY muDominaMainTheme			"0x00820020">
@@ -193,6 +200,13 @@
 	<Module filename="Benedict08.xml"/>
 	<Module filename="BenedictStoryArc.xml"/>
 	<Module filename="Elysium.xml"/>
+	<Module filename="Huaramarca.xml"/>
+	<Module filename="HuaramarcaMission01.xml"/>
+	<Module filename="HuaramarcaMission02.xml"/>
+	<Module filename="HuaramarcaMission04.xml"/>
+	<Module filename="HuaramarcaMission05.xml"/>
+	<Module filename="HuaramarcaMission06.xml"/>
+	<Module filename="HuaramarcaMission07.xml"/>
 	<Module filename="Huari.xml"/>
 	<Module filename="PlayerShips.xml"/>
 		

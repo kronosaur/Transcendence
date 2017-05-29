@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Huaramarca Dream Test =================================================
+
+	EXTRA DATA
+
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msHuaramarcaDreamTest;"
+			name=				"Huaramarca Dream Test"
+			attributes=			"huariTemple"
+
+			level=				"6"
+			maxAppearing=		"1"
+			priority=			"100"
+
+			noDebrief=			"true"
+			noStats=			"true"
+			>
+
+		<StaticData>
+			<Data id="nextMission">
+				{
+					defendHuari:	&msHuaramarcaDragonSlaver;
+					attackSungBase:	&msHuaramarcaAttackBase;
+					dragonSlaver:	&msHuaramarcaDragonSlaver;
+					}
+			</Data>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	Set up the mission
+					(block Nil
+						)
+					)
+			</OnCreate>
+
+			<OnGetNextScreen>
+				(if (= aScreenType 'AcceptFollowUp)
+					(block (
+						(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+						(nextMission (@ (msnGetStaticData gSource 'nextMission) (msnGetData gSource 'nextMission)))
+						missionObj
+						)
+						(msnSuccess gSource)
+						(if (setq missionObj (msnCreate nextMission stationObj))
+							{
+								nextScreen: &dsRPGMission;
+								nextScreenData: { missionObj: missionObj }
+								}
+							)
+						)
+					)
+			</OnGetNextScreen>
+		</Events>
+		
+		<Language>
+			<Text id="Name">
+				"Huaramarca Dream Test"
+			</Text>
+			<Text id="Summary">
+			</Text>
+			<Text id="Intro">
+				(list
+					{ desc:(msnTranslate gSource 'Intro.1) }
+					{ desc:(msnTranslate gSource 'Intro.2) }
+					{ desc:(msnTranslate gSource 'Intro.3) }
+					{ desc:(msnTranslate gSource 'Intro.4) }
+					{ desc:(msnTranslate gSource 'Intro.5) }
+					)
+			</Text>
+			<Text id="Intro.1">
+				The doors to the Grand Hall open and a short man approaches you.
+
+				"Welcome, friend, my name is Apotamo. You have journeyed long and rested
+				little. I fear I offer only more of the same."
+			</Text>
+			<Text id="Intro.2">
+				"After the Sung stole our worlds and after we retreated to our refuge,
+				the High Priest of this temple prophesied that all we had lost we would
+				one day regain. He said one day a %man% would appear and %he% would lead
+				us to our redemption in the realm of the Light."
+
+				"And now, when almost all hope is lost, you appear."
+			</Text>
+			<Text id="Intro.3">
+				"Our refuge has at last been discovered by the Sung and even now they
+				prepare to exterminate us. Is it possible you and your lonely ship have
+				been called here to finally deliver us?"
+
+				"There is one way to find out."
+			</Text>
+			<Text id="Intro.4">
+				"The Light speaks to us all. And if we don't always hear Him, it only is
+				because our minds are so busy talking."
+
+				Apotamo touches your shoulder and you feel a sharp pain. You see a small
+				needle in his hand.
+
+				"Don't worry, you will not be harmed. Let's see what the Light has to say to you."
+			</Text>
+			<Text id="Intro.5">
+				The temple walls glow and shift with amazing colors and you hear a distant
+				music so beautiful that you fall to your knees in gratitude. A profound
+				peace envelops you and your consciousness fades into a pinhole of light.
+				
+				Slowly you wake up and find yourself beneath the wide open skies of a beautiful
+				planet. Though you have never been to Earth you recognize it immediately.
+			</Text>
+
+			<Text id="Briefing">
+				(list
+					{
+						id: 'start
+						desc: "You are in a mountain valley beneath bright blue skies. A path in front of you climbs up the mountain face. Behind you a river flows along the valley floor."
+						actions: (list
+							{
+								nextPage: 'caveMouth
+								label: "[C]limb path"
+								}
+							{
+								nextPage: 'village
+								label: "[F]ollow river"
+								}
+							)
+						}
+					{
+						id: 'caveMouth
+						desc: "You are on a steep path climbing up the mountain. To your right you see the mouth of dark cave."
+						actions: (list
+							{
+								nextPage: 'ruinsGate
+								label: "[C]limb path"
+								}
+							{
+								nextPage: 'T1
+								label: "[E]nter cave"
+								}
+							)
+						}
+
+					{
+						id: 'ruinsGate
+						desc: "The mountain path levels out to a small plateau. To the left you see a stone archway leading to ancient ruins. In front of you the path continues to the peak."
+						actions: (list
+							{
+								nextPage: 'peak
+								label: "[C]limb peak"
+								}
+							{
+								nextPage: 'ruins
+								label: "[E]nter ruins"
+								}
+							)
+						}
+
+					{
+						id: 'peak
+						desc: "Lightheaded and winded, you reach the peak. From here you see a small village far below you, nestled in the valley floor. As you watch, an army of bandits appears and rides towards the defenseless village."
+						actions: (list
+							{
+								nextPage: 'missionAccept
+								code: (lambda Nil (msnSetData (scrGetData gScreen 'missionObj) 'nextMission 'defendHuari))
+								}
+							)
+						}
+					{
+						id: 'ruins
+						desc: "You are inside ancient stone ruins. A stone building is in front of you. To the right you see stairs leading into darkness."
+						actions: (list
+							{
+								nextPage: 'altar
+								label: "[E]nter building"
+								}
+							{
+								nextPage: 'catacombs
+								label: "[D]escend stairs"
+								}
+							)
+						}
+					{
+						id: 'altar
+						desc: "Inside the building you see a tall, robed man standing before a bound girl lying on a stone altar. The man holds up a golden knife and exclaims: \"God of the Sun, deliver us from the evil that threatens our village!\""
+						actions: (list
+							{
+								nextPage: 'missionAccept
+								code: (lambda Nil (msnSetData (scrGetData gScreen 'missionObj) 'nextMission 'defendHuari))
+								}
+							)
+						}
+
+					{
+						id: 'catacombs
+						desc: "You are inside a burial chamber for great war heroes. All are dressed in their finest armor. All are forgotten by the living. One of the faces looks familiar. He turns to you and says, \"Your turn!\""
+						actions: (list
+							{
+								nextPage: 'missionAccept
+								code: (lambda Nil (msnSetData (scrGetData gScreen 'missionObj) 'nextMission 'attackSungBase))
+								}
+							)
+						}
+
+					{
+						id: 'T1
+						desc: "You are in a damp and narrow cavern. A path leads to the left; another leads to the right."
+						actions: (list
+							{
+								nextPage: 'T2
+								label: "Go [l]eft"
+								}
+							{
+								nextPage: 'T3
+								label: "Go [r]ight"
+								}
+							)
+						}
+
+					{
+						id: 'T2
+						desc: "You are in great chamber of quartz. A path leads to the left; another leads to the right."
+						actions: (list
+							{
+								nextPage: 'T1
+								label: "Go [l]eft"
+								}
+							{
+								nextPage: 'precipice
+								label: "Go [r]ight"
+								}
+							)
+						}
+
+					{
+						id: 'T3
+						desc: "You are in a damp cavern dimly lit by glowing lichen. A path leads to the left; another leads to the right."
+						actions: (list
+							{
+								nextPage: 'precipice
+								label: "Go [l]eft"
+								}
+							{
+								nextPage: 'T4
+								label: "Go [r]ight"
+								}
+							)
+						}
+
+					{
+						id: 'T4
+						desc: "You are in a wide cavern filled with stalactites. A path leads to the left; another leads to the right."
+						actions: (list
+							{
+								nextPage: 'T5
+								label: "Go [l]eft"
+								}
+							{
+								nextPage: 'precipice
+								label: "Go [r]ight"
+								}
+							)
+						}
+
+					{
+						id: 'T5
+						desc: "You are in a small chamber with a cold and clear pool. A path leads to the left; another leads to the right."
+						actions: (list
+							{
+								nextPage: 'precipice
+								label: "Go [l]eft"
+								}
+							{
+								nextPage: 'lair
+								label: "Go [r]ight"
+								}
+							)
+						}
+
+					{
+						id: 'precipice
+						desc: "You stand before a deep pit. Inside you see the decomposed remains of hundreds of villagers. As you turn away, the ground gives way and you fall into the pit."
+						actions: (list
+							{
+								nextPage: 'missionAccept
+								code: (lambda Nil (msnSetData (scrGetData gScreen 'missionObj) 'nextMission 'defendHuari))
+								}
+							)
+						}
+
+					{
+						id: 'lair
+						desc: "You smell a foul stench and hear a deep growl.\n\nA roar startles you and pain grabs your body as steel claws rip your flesh. The last thing you see is the glowing maw of a titanic dragon."
+						actions: (list
+							{
+								nextPage: 'missionAccept
+								code: (lambda Nil (msnSetData (scrGetData gScreen 'missionObj) 'nextMission 'dragonSlaver))
+								}
+							)
+						}
+
+					{
+						id: 'village
+						desc: "The river path comes to a small village. The villagers ignore you as they hurriedly barricade their doors and close their windows. There is a temple in the center of the village. To the right a path leads to a fortress on a hill."
+						actions: (list
+							{
+								nextPage: 'temple
+								label: "Enter [t]emple"
+								}
+							{
+								nextPage: 'fortress
+								label: "Go to [f]ortress"
+								}
+							)
+						}
+
+					{
+						id: 'temple
+						desc: "You enter a stone temple. A door to the left leads to the Chamber of the Moon; the one to the right leads to the Chamber of the Sun."
+						actions: (list
+							{
+								nextPage: 'moonRoom
+								label: "Enter Chamber of the [M]oon"
+								}
+							{
+								nextPage: 'sunRoom
+								label: "Enter Chamber of the [S]un"
+								}
+							)
+						}
+
+					{
+						id: 'moonRoom
+						desc: "You are in a dark and silent chamber. Moonlight pours in through a window and illuminates the figure of a priest.\n\nThe priest is covered in blood and clutching a wooden shield tightly. He stares at you and says, \"They need your help.\""
+						actions: (list
+							{
+								nextPage: 'missionAccept
+								code: (lambda Nil (msnSetData (scrGetData gScreen 'missionObj) 'nextMission 'defendHuari))
+								}
+							)
+						}
+
+					{
+						id: 'sunRoom
+						desc: "You are in a bright chamber. Sunlight pours in through a window and illuminates the figure of a priest.\n\nThe priest is covered in blood and wielding a metal sword. He hands you the sword says, \"I left some for you!\""
+						actions: (list
+							{
+								nextPage: 'missionAccept
+								code: (lambda Nil (msnSetData (scrGetData gScreen 'missionObj) 'nextMission 'attackSungBase))
+								}
+							)
+						}
+
+					{
+						id: 'fortress
+						desc: "You enter the fortress; there are barracks in front of you. Behind you there is a look-out tower."
+						actions: (list
+							{
+								nextPage: 'barracks
+								label: "Enter [b]arracks"
+								}
+							{
+								nextPage: 'tower
+								label: "Climb look-out [t]ower"
+								}
+							)
+						}
+
+					{
+						id: 'barracks
+						desc: "The barracks are filled with soldiers sharpening their swords. One of them turns to you and says, \"Where's your sword, pilgrim? Did you leave it in the temple?\" The rest of the men laugh uproariously."
+						actions: (list
+							{
+								nextPage: 'missionAccept
+								code: (lambda Nil (msnSetData (scrGetData gScreen 'missionObj) 'nextMission 'attackSungBase))
+								}
+							)
+						}
+
+					{
+						id: 'tower
+						desc: "You climb the tower. Out the window you see an army of bandits riding towards the village. The lead bandit sees you and yells, \"You'll be the last to die, pilgrim, but the first to suffer!\""
+						actions: (list
+							{
+								nextPage: 'missionAccept
+								code: (lambda Nil (msnSetData (scrGetData gScreen 'missionObj) 'nextMission 'defendHuari))
+								}
+							)
+						}
+					)
+			</Text>
+			<Text id="AcceptReply">
+				You wake and find yourself on the floor of the Huari temple.
+				Apotamo looks down at you, a concerned look on his face.
+
+				"I'm sorry I had to put you through that, but I had to know. You are not
+				the Solti. Your worries are about this world, not the realm of the Light."
+
+				"But the Light did speak to you, did He not? Perhaps your destiny is
+				still intertwined with ours."
+			</Text>
+			<Text id="SuccessMsg"></Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

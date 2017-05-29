@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Huaramarca Dragon Slaver ==============================================
+
+	EXTRA DATA
+
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msHuaramarcaDragonSlaver;"
+			name=				"Huaramarca Dragon Slaver"
+			attributes=			"huariTemple, huariDreamChoice"
+
+			level=				"6"
+			maxAppearing=		"1"
+			priority=			"90"
+			
+			noDecline=			"True"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	Only one dream choice mission allowed
+					(msnFind "* +huariDreamChoice;")
+						(msnDestroy gSource)
+
+					;	Player must have completed the dream test
+					(not (msnFind "r +unid:&msHuaramarcaDreamTest;"))
+						(msnDestroy gSource)
+
+					;	Set up the mission
+					(block (targetObj)
+						;	Create dragon slaver
+						(setq targetObj (sysCreateShip &scDragonSlaver;
+								(sysVectorRandom Nil 1000 300 "t")
+								&svSung;
+								))
+
+						;	Remember target
+						(msnSetData gSource 'targetID (objGetID targetObj))
+						(shpOrder targetObj 'waitForTarget gPlayerShip)
+						(shpOrder targetObj 'attack gPlayerShip)
+						(shpOrder targetObj 'gate)
+
+						(msnRegisterForEvents gSource targetObj)
+						(msnRegisterForEvents gSource gPlayerShip)
+						)
+					)
+			</OnCreate>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'attack)
+			</OnSetPlayerTarget>
+
+			<OnObjDestroyed>
+				(switch
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(msnSuccess gSource)
+					)
+			</OnObjDestroyed>
+			
+			<OnGetNextScreen>
+				(if (= aScreenType 'SuccessFollowUp)
+					(block (
+						(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+						missionObj
+						)
+						(if (setq missionObj (msnCreate &msHuaramarcaArchcannon; stationObj))
+							{
+								nextScreen: &dsRPGMission;
+								nextScreenData: { missionObj: missionObj }
+								}
+							)
+						)
+					)
+			</OnGetNextScreen>
+		</Events>
+		
+		<Language>
+			<Text id="Name">
+				"Attack Sung Base"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"The Sung have established a base near the Huari temple. "
+					"Your mission is to destroy it.\n\n"
+					
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+			<Text id="Intro">
+				"As I said, the Sung have found us. A single Dragon slaver, the most
+				powerful of the Sung weapons, has entered the system and is hunting
+				for the location of our temple. You felt the Dragon's claw in your
+				dream, did you not? Stay and help us! I don't know what path the Light
+				has planned for you, but perhaps you will know after you have defeated
+				the invader."
+			</Text>
+			<Text id="Briefing">
+				"Good luck to you and to us all. May the blessings of the Light fill
+				our worlds again."
+			</Text>
+			<Text id="InProgress">
+				Apotamo talks to you:
+
+				"There is no need to be afraid. You are walking the only path you can.
+				Go now and destroy the dragon."
+			</Text>
+			<Text id="FailureDebrief">
+				"Your failure is also our doom. Maybe we were never meant to bask in the
+				Light's blessings; maybe the darkness of space will consume us after all."
+			</Text>
+			<Text id="SuccessDebrief">
+				Apotamo greets you as you enter.
+
+				"Thank you! Thank you for destroying the Dragon and preserving our refuge.
+				Though your destiny does not lie with us, I believe the task that awaits
+				you will decide the future of us all."
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>
