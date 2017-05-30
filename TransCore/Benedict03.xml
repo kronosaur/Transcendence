@@ -33,9 +33,9 @@
 				(block (korolovDesc)
 
 					(switch
-						;	This mission only works in Eridani
+						;	This mission only works in the starting system
 
-						(not (eq (sysGetNode) 'SE))
+						(not (eq (sysGetNode) (objGetProperty gPlayerShip 'startingSystem)))
 							(msnDestroy gSource)
 
 						;	Make sure there exists a Korolov station somewhere in the

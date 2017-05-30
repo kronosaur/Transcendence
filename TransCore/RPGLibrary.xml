@@ -88,6 +88,9 @@
 	<!-- 0050-006F BEHAVIORS -->
 	
 	<!ENTITY evStdMiningBehavior		"0x00010050">
+	
+	<!ENTITY unidRPGPaneInitMission		"0x00010070">
+
 	]>
 	
 <CoreLibrary

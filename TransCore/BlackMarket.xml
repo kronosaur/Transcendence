@@ -9,8 +9,6 @@ PLAYER DATA
 	blackMarketCrime: Description of player's offense against the Sindikat
 	blackMarketCrimeCost: Price that the player has to pay to stop bounty hunters
 	blackMarketLevel: Black market level (1-6)
-	blackMarketMission: Current black market mission
-						StK = deliver container to St. Katharine's
 	blackMarketShields: Level at which player got free shields
 	blackMarketWeapon: Level at which player got free weapon
 	blackMarketXP:	Black Market experience points
@@ -284,15 +282,11 @@ PLAYER DATA
 
 						<Actions>
 							<Action name="&quot;I want a mission.&quot;" default="1" key="M">
-								(switch
-									(objGetData gPlayerShip "blackMarketMission")
-										(scrShowPane gScreen "NoMissions")
-
-									(eq (objGetData gPlayerShip "blackMarketLevel") 2)
-										(scrShowPane gScreen "DeliveryMission")
-
-									(scrShowPane gScreen "NoMissions")
-									)
+								(rpgMissionAssignment {
+									missionCriteria: (cat "n +blackMarket; =" (sysGetLevel) ";")
+									noMissionTextID: 'descNoMissions
+									maxPerStation: 1
+									})
 							</Action>
 
 							<Action name="&quot;I need a better weapon.&quot;" default="1" key="W">
@@ -389,16 +383,6 @@ PLAYER DATA
 						</Actions>
 					</NoAccess>
 
-					<NoMissions
-							desc=	"The dark-haired woman frowns for a second, &quot;I'm sorry, but we don't have any use for you right now.&quot;">
-
-						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
-								(scrShowScreen gScreen "Main")
-							</Action>
-						</Actions>
-					</NoMissions>
-
 					<NoUpgrade
 							desc=	"The dark-haired woman rolls her eyes, &quot;I'm sorry, but you'll just have to do with what you've got.&quot;">
 
@@ -408,54 +392,6 @@ PLAYER DATA
 							</Action>
 						</Actions>
 					</NoUpgrade>
-
-					<DeliveryMission>
-						<OnPaneInit>
-							(block Nil
-								(setq gDest "StK")
-								(scrSetDesc gScreen "The dark-haired woman looks down at some papers and says, \"As a matter of fact, I was thinking of you. We need you to deliver some cargo to St. Katharine's. Do you think you could do that?\"")
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="&quot;Yes, absolutely!&quot;" default="1" key="Y">
-								(scrShowPane gScreen "AcceptDelivery")
-							</Action>
-
-							<Action name="&quot;No, sorry.&quot;" cancel="1" key="N">
-								(scrShowPane gScreen "DeclineMission")
-							</Action>
-						</Actions>
-					</DeliveryMission>
-
-					<AcceptDelivery>
-						<OnPaneInit>
-							(switch
-								(eq gDest "StK")
-									(scrSetDesc gScreen "\"Take this container to the Victorian at the Commonwealth station in St. Katharine's Star. Do not take it through customs, obviously. Be careful and good luck!\"")
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
-								(block Nil
-									(objSetData gPlayerShip "blackMarketMission" gDest)
-									(objAddItem gPlayerShip (itmCreate &itBlackMarketContainer; 1))
-									(scrExitDock gScreen)
-									)
-							</Action>
-						</Actions>
-					</AcceptDelivery>
-
-					<DeclineMission
-							desc=	"The dark-haired woman frowns for a second, &quot;I'm sorry you feel that way. I will inform Lord Mikho.&quot;">
-
-						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
-								(scrShowScreen gScreen "Main")
-							</Action>
-						</Actions>
-					</DeclineMission>
 
 					<UpgradeWeaponComplete>
 						<OnPaneInit>
@@ -514,6 +450,9 @@ PLAYER DATA
 		</StaticData>
 		
 		<Language>
+			<Text id="descNoMissions">
+				"The dark-haired woman frowns for a second, \"I'm sorry, but we don't have any use for you right now.\""
+			</Text>
 			<Text id="descNoInstall">
 				(cat
 					"We only install smuggler's equipment. "
@@ -1130,20 +1069,6 @@ PLAYER DATA
 					; has to repay the debt.
 					(objGetData gPlayerShip "blackMarketCrimeCost")
 						(list &dsBlackMarketPayDebt; 8)
-
-					; If the player is on a mission but lost the cargo then
-					; she's in trouble
-					(and (eq (objGetData gPlayerShip "blackMarketMission") "StK")
-						(not (objGetItems gPlayerShip "*U +SealedContainer;"))
-						)
-						(block Nil
-							; NOTE: This side-effect is OK because we will go back
-							; to dsBlackMarketPayDebt eventually.
-							(objIncData gPlayerShip "blackMarketCrimeCost" 50000)
-							(objSetData gPlayerShip "blackMarketCrime" "losing valuable cargo")
-							(objSetData gPlayerShip "blackMarketMission" Nil)
-							(list &dsBlackMarketPayDebt; 8)
-							)
 
 					; If the player does not have a black market ID, then
 					; refuse dock

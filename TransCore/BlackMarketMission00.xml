@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Black Market Hotel Encounter ==========================================
+
+	EXTRA DATA
+
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msBlackMarketHotelMeet;"
+			name=				"Black Market Hotel Encounter"
+			attributes=			"corporateHotel"
+
+			level=				"1-4"
+				 
+			maxAppearing=		"1"
+			noDebrief=			"true"
+			noStats=			"true"
+			>
+
+		<Events>
+			<OnCreate>
+				(block (theItem)
+					(switch
+						;	Only for players who have not joined the black market
+						(objGetItems gPlayerShip "* +BlackMarketID;")
+							(msnDestroy gSource)
+
+						;	Must have illegal consumer goods (i.e. not ID, weapons)
+						(not (setq theItem (random (objGetItems gPlayerShip "*NU +Illegal; +consumerGood; +property:known;"))))
+							(msnDestroy gSource)
+						
+						;	Set up the mission
+						(block Nil
+							(msnSetData gSource 'item theItem)
+							(msnSetData gSource 'itemName (itmGetName theItem 2))
+							(msnSetData gSource 'itemCountName (itmGetName theItem 8))
+							(msnSetData gSource 'itemCost (* (itmGetPrice theItem 'credit) (itmGetCount theItem)))
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(switch
+					(ls (random 1 20) 20)
+						(msnSetData gSource 'status 'sale)
+
+					(geq (plyGetCredits gPlayer) 1000)
+						(msnSetData gSource 'status 'fine)
+
+					(msnSetData gSource 'status 'prison)
+					)
+			</OnAccepted>
+
+			<OnDeclined>
+				(msnSetUnavailable gSource)
+			</OnDeclined>
+
+			<OnAcceptedUndock>
+				(switch
+					(= (msnGetData gSource 'status) 'sale)
+						(block (
+							(theItem (msnGetData gSource 'item))
+							(theCost (msnGetData gSource 'itemCost))
+							)
+							(plyCredit gPlayer theCost)
+							(plyRecordSellItem gPlayer theItem theCost)
+							(objRemoveItem gPlayerShip theItem)
+							(objAddItem gPlayerShip (itmCreate &itBlackMarketID; 1))
+							(itmSetKnown &itBlackMarketID;)
+							(msnSuccess gSource)
+							)
+
+					(= (msnGetData gSource 'status) 'fine)
+						(block Nil
+							(plyCharge gPlayer 1000)
+							(msnFailure gSource)
+							)
+
+					(block Nil
+						(plyDestroyed gPlayer "was imprisoned for smuggling")
+						(msnFailure gSource)
+						)
+					)
+			</OnAcceptedUndock>
+		</Events>
+		
+		<Language>
+			<Text id="Name">
+				"Black Market Encounter"
+			</Text>
+			<Text id="Summary">
+			</Text>
+			<Text id="Intro">
+				The maitre d' tells you that no tables are available and shows you to
+				the bar instead. At the bar you strike up a conversation with two brothers
+				from Eridani who seem to be a little evasive about their business.
+			</Text>
+			<Text id="Briefing">
+				(list
+					{	desc: (msnTranslate gSource 'Illegals1)
+						actions: (list
+							{	label: (msnTranslate gSource 'actionOffer)	}
+							{	label: (msnTranslate gSource 'actionSorry)
+								nextPage: 'missionDecline
+								}
+							)
+						}
+					{	desc: (msnTranslate gSource 'Illegals2)	}
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(switch
+					(= (msnGetData gSource 'status) 'sale)
+						(msnTranslate gSource 'IllegalsSale)
+
+					(= (msnGetData gSource 'status) 'fine)
+						(msnTranslate gSource 'IllegalsFine)
+
+					(msnTranslate gSource 'IllegalsPrison)
+					)
+			</Text>
+			<Text id="DeclineReply">
+				Finding nothing else to talk about, you finish eating in silence.
+			</Text>
+			<Text id="SuccessMsg"></Text>
+			<Text id="Illegals1">
+				(cat
+					"As you finish dinner one of the brothers says, "
+					"\"I wish I could get a hold of some " (msnGetData gSource 'itemName)
+					".\" You respond:"
+					)
+			</Text>
+			<Text id="Illegals2">
+				(cat
+					"The brothers offer you " (msnGetData gSource 'itemCost)
+					" credits for " (msnGetData gSource 'itemCountName) "."
+					)
+			</Text>
+			<Text id="IllegalsSale">
+				You exchange the merchandise for the money at the dock. As they
+				are about to leave, one of the brothers hands you an identification
+				chip and says:
+
+				"You probably won't find us here again, but use this at a black
+				market station if you want to do more business."
+			</Text>
+			<Text id="IllegalsFine">
+				The brothers pull out badges and guns.
+				"You are under arrest for the attempted sale of illegal merchandise.
+				Normally you could be imprisoned for your crimes, but we're going to
+				let you go with just a 1000 credit fine."
+			</Text>
+			<Text id="IllegalsPrison">
+				The brothers pull out badges and guns.
+				"You are under arrest for the attempted sale of illegal merchandise."
+			</Text>
+
+			<Text id="actionOffer">"\"[I] have some on my ship!\""</Text>
+			<Text id="actionSorry">"\"[S]orry, I can't help you.\""</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

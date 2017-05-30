@@ -276,22 +276,19 @@
 		/>
 
 		<StaticData>
-			<korolovContainerPrice>
-				(@
-					(list
-						0 ; new pilots cannot escort
-						0 ; apprentices cannot escort
-						0 ; journeymen cannot escort
+			<Data id="korolov.containerPrice">
+				(
+					0 ; new pilots cannot escort
+					0 ; apprentices cannot escort
+					0 ; journeymen cannot escort
 
-						; Masters: 30 - 150 credits per container
-						; 36,000 - 180,000 cargo value
-						(multiply 5 (add (random 2 10) (random 2 10) (random 2 10)))
+					; Masters: 30 - 150 credits per container
+					; 36,000 - 180,000 cargo value
+					(multiply 5 (add (random 2 10) (random 2 10) (random 2 10)))
 
-						150 ; legends don't escort, but add anyway
-						)
-					(korGetPlayerLevel)
+					150 ; legends don't escort, but add anyway
 					)
-			</korolovContainerPrice>
+			</Data>
 
 			<korolovEscortRate>350</korolovEscortRate>
 
@@ -303,6 +300,16 @@
 				(korOnShipDestroyed)
 			</OnDestroy>
 		</Events>
+		
+		<Language>
+			<Text id="korolov.shipDesc">
+				The Antares I design is more than a hundred years old, built originally
+				by the massive Polyarny Shipyards orbiting Ceres. Slow and unencumbered
+				by armor, the Antares I can haul 30 kilotons of cargo, but only the most
+				skilled pilots can protect it from pirate attack. Only Masters in the
+				Korolov Shipping Corporation are rated to escort the Antares I class.
+			</Text>
+		</Language>
 	</ShipClass>
 
 	<!-- Antares II Freighter -->
@@ -392,25 +399,22 @@
 		/>
 
 		<StaticData>
-			<korolovContainerPrice>
-				(@
-					(list
-						0 ; new pilots cannot escort
-						0 ; apprentices cannot escort
+			<Data id="korolov.containerPrice">
+				(
+					0 ; new pilots cannot escort
+					0 ; apprentices cannot escort
 
-						; Journeymen: 60 - 240 credits per container
-						; 72,000 - 288,000
-						(multiply 2 (add (random 10 40) (random 10 40) (random 10 40)))
+					; Journeymen: 60 - 240 credits per container
+					; 72,000 - 288,000
+					(multiply 2 (add (random 10 40) (random 10 40) (random 10 40)))
 
-						; Masters: 200 - 400 credits per container
-						; 240,000 - 480,000
-						(multiply 2 (add (random 30 60) (random 30 60) (random 40 80)))
+					; Masters: 200 - 400 credits per container
+					; 240,000 - 480,000
+					(multiply 2 (add (random 30 60) (random 30 60) (random 40 80)))
 
-						400 ; legends don't escort, but add anyway
-						)
-					(korGetPlayerLevel)
+					400 ; legends don't escort, but add anyway
 					)
-			</korolovContainerPrice>
+			</Data>
 
 			<korolovEscortRate>100</korolovEscortRate>
 
@@ -422,6 +426,14 @@
 				(korOnShipDestroyed)
 			</OnDestroy>
 		</Events>
+		
+		<Language>
+			<Text id="korolov.shipDesc">
+				While sacrificing none of its cargo capacity, the Antares II has a top
+				speed 50% higher than its predecessor. Escort pilots must have the rank
+				of Journeyman or Master to defend the Antares II class.
+			</Text>
+		</Language>
 	</ShipClass>
 
 	<!-- Antares V Freighter -->
@@ -513,25 +525,22 @@
 		/>
 
 		<StaticData>
-			<korolovContainerPrice>
-				(@
-					(list
-						0 ; new pilots cannot escort
-						0 ; apprentices cannot escort
+			<Data id="korolov.containerPrice">
+				(
+					0 ; new pilots cannot escort
+					0 ; apprentices cannot escort
 
-						; Journeymen: 40 - 160 credits
-						; 80,000 - 320,000 cargo value
-						(multiply 10 (add (random 1 4) (random 1 4) (random 1 4) (random 1 4)))
+					; Journeymen: 40 - 160 credits
+					; 80,000 - 320,000 cargo value
+					(multiply 10 (add (random 1 4) (random 1 4) (random 1 4) (random 1 4)))
 
-						; Masters: 160 - 400 credits
-						; 320,000 - 800,000 cargo value
-						(add (multiply 10 (add (random 4 10) (random 4 10))) (multiply 10 (add (random 4 10) (random 4 10))))
+					; Masters: 160 - 400 credits
+					; 320,000 - 800,000 cargo value
+					(add (multiply 10 (add (random 4 10) (random 4 10))) (multiply 10 (add (random 4 10) (random 4 10))))
 
-						400 ; legends don't escort, but add anyway
-						)
-					(korGetPlayerLevel)
+					400 ; legends don't escort, but add anyway
 					)
-			</korolovContainerPrice>
+			</Data>
 
 			<korolovEscortRate>50</korolovEscortRate>
 
@@ -543,6 +552,14 @@
 				(korOnShipDestroyed)
 			</OnDestroy>
 		</Events>
+		
+		<Language>
+			<Text id="korolov.shipDesc">
+				The Antares V is basically a stretched version of the earlier II series.
+				It has larger cargo capacity and upgraded weapons. Escort pilots must
+				have the rank of Journeyman or Master to escort the Antares V class.
+			</Text>
+		</Language>
 	</ShipClass>
 
 	<!-- EI100 Freighter -->
@@ -609,30 +626,27 @@
 		/>
 
 		<StaticData>
-			<korolovContainerPrice>
-				(@
-					(list
-						; New pilot: 1500 - 4000 credits
-						; 15,000 - 40,000 cargo value
-						(multiply 100 (random 15 40))
+			<Data id="korolov.containerPrice">
+				(
+					; New pilot: 1500 - 4000 credits
+					; 15,000 - 40,000 cargo value
+					(multiply 100 (random 15 40))
 
-						; Apprentices: 1500 - 4000 credits
-						; 15,000 - 40,000 cargo value
-						(multiply 100 (random 15 40))
+					; Apprentices: 1500 - 4000 credits
+					; 15,000 - 40,000 cargo value
+					(multiply 100 (random 15 40))
 
-						; Journeymen: 2500 - 5000 credits
-						; 25,000 - 50,000 cargo value
-						(multiply 100 (random 25 50))
+					; Journeymen: 2500 - 5000 credits
+					; 25,000 - 50,000 cargo value
+					(multiply 100 (random 25 50))
 
-						; Masters: 3000 - 5000 credits
-						; 30,000 - 50,000 cargo value
-						(multiply 100 (random 30 50))
+					; Masters: 3000 - 5000 credits
+					; 30,000 - 50,000 cargo value
+					(multiply 100 (random 30 50))
 
-						5000 ; legends don't escort, but add anyway
-						)
-					(korGetPlayerLevel)
+					5000 ; legends don't escort, but add anyway
 					)
-			</korolovContainerPrice>
+			</Data>
 
 			<korolovEscortRate>200</korolovEscortRate>
 
@@ -644,6 +658,15 @@
 				(korOnShipDestroyed)
 			</OnDestroy>
 		</Events>
+		
+		<Language>
+			<Text id="korolov.shipDesc">
+				The EI100 class freighter was designed for fast interplanetary transportation.
+				Early in its history, it even carried passengers, but today it carries light
+				commodities. Because of the relatively low value of its cargo, the EI100 is
+				often escorted by Apprentice pilots.
+			</Text>
+		</Language>
 	</ShipClass>
 
 	<!-- EI200 Freighter -->
@@ -711,30 +734,27 @@
 		/>
 
 		<StaticData>
-			<korolovContainerPrice>
-				(@
-					(list
-						; New pilot: 800 - 2000 credits
-						; 16,000 - 40,000 cargo value
-						(multiply 100 (random 8 20))
+			<Data id="korolov.containerPrice">
+				(
+					; New pilot: 800 - 2000 credits
+					; 16,000 - 40,000 cargo value
+					(multiply 100 (random 8 20))
 
-						; Apprentices: 1500 - 4000 credits
-						; 30,000 - 80,000 cargo value
-						(multiply 100 (random 15 40))
+					; Apprentices: 1500 - 4000 credits
+					; 30,000 - 80,000 cargo value
+					(multiply 100 (random 15 40))
 
-						; Journeymen: 1500 - 5000 credits
-						; 30,000 - 100,000 cargo value
-						(multiply 100 (random 15 50))
+					; Journeymen: 1500 - 5000 credits
+					; 30,000 - 100,000 cargo value
+					(multiply 100 (random 15 50))
 
-						; Masters: 3000 - 5000 credits
-						; 60,000 - 100,000 cargo value
-						(multiply 100 (random 30 50))
+					; Masters: 3000 - 5000 credits
+					; 60,000 - 100,000 cargo value
+					(multiply 100 (random 30 50))
 
-						5000 ; legends don't escort, but add anyway
-						)
-					(korGetPlayerLevel)
+					5000 ; legends don't escort, but add anyway
 					)
-			</korolovContainerPrice>
+			</Data>
 
 			<korolovEscortRate>150</korolovEscortRate>
 
@@ -746,6 +766,15 @@
 				(korOnShipDestroyed)
 			</OnDestroy>
 		</Events>
+		
+		<Language>
+			<Text id="korolov.shipDesc">
+				The EI200 class freighter is a larger and faster version of the 100 series.
+				It has double the cargo capacity and upgraded armor and weapons. It is
+				designed to transport small quantities of high-value cargo. The EI200 is
+				so well defended that even Apprentices are allowed to escort them.
+			</Text>
+		</Language>
 	</ShipClass>
 
 	<!-- EI7000 Freighter -->
@@ -840,25 +869,22 @@
 		/>
 
 		<StaticData>
-			<korolovContainerPrice>
-				(@
-					(list
-						0 ; new pilots cannot escort
-						0 ; apprentices cannot escort
+			<Data id="korolov.containerPrice">
+				(
+					0 ; new pilots cannot escort
+					0 ; apprentices cannot escort
 
-						; Journeymen: 2000 - 4000 credits
-						; 160,000 - 320,000 cargo value
-						(multiply 100 (add (random 10 20) (random 10 20)))
+					; Journeymen: 2000 - 4000 credits
+					; 160,000 - 320,000 cargo value
+					(multiply 100 (add (random 10 20) (random 10 20)))
 
-						; Masters: 4000 - 10000 credits
-						; 320,000 - 800,000 cargo value
-						(multiply 100 (add (random 20 50) (random 20 50)))
+					; Masters: 4000 - 10000 credits
+					; 320,000 - 800,000 cargo value
+					(multiply 100 (add (random 20 50) (random 20 50)))
 
-						5000 ; legends don't escort, but add anyway
-						)
-					(korGetPlayerLevel)
+					5000 ; legends don't escort, but add anyway
 					)
-			</korolovContainerPrice>
+			</Data>
 
 			<korolovEscortRate>50</korolovEscortRate>
 
@@ -870,6 +896,15 @@
 				(korOnShipDestroyed)
 			</OnDestroy>
 		</Events>
+		
+		<Language>
+			<Text id="korolov.shipDesc">
+				The 7000 is the most powerful member of the EI freighter series. With a
+				cargo capacity of 2 kilotons and heavy armor and weapons, the EI7000 is
+				ideal for high-value cargos. Only Journeymen and Masters are rated to
+				escort the EI7000 class.
+			</Text>
+		</Language>
 	</ShipClass>
 
 
@@ -1040,8 +1075,10 @@
 				</Display>
 
 				<Panes>
-					<Default
-						desc=	"Select an option:">
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descSelectOption)
+						</OnPaneInit>
 
 						<Actions>
 							<Action id="actionRecord">
@@ -1049,19 +1086,22 @@
 							</Action>
 
 							<Action id="actionFreighterData">
-								(block Nil
-									(setq gDataSet "freighterData")
-									(setq gFormat 'freighter)
-									(scrShowScreen gScreen "ShipData")
+								(block (
+									;	Get a list of freighter types and names so we can sort alphabetically
+									(shipList (map (korFreighterTypes) theType {ship:theType name:(shpGetClassName theType 1)}))
+									)
+									(scrShowScreen gScreen "ShipData" {
+										shipType: 'freighter
+										shipList: (map (sort shipList 'ascending 'name) theEntry (@ theEntry 'ship))
+										})
 									)
 							</Action>
 
 							<Action id="actionEnemyData">
-								(block Nil
-									(setq gDataSet "pirateData")
-									(setq gFormat 'warship)
-									(scrShowScreen gScreen "ShipData")
-									)
+								(scrShowScreen gScreen "ShipData" {
+									shipType: 'warship
+									shipList: (typGetStaticData &stKorolovShipping; 'pirateShips)
+									})
 							</Action>
 
 							<Action id="actionDone" cancel="1">
@@ -1076,6 +1116,23 @@
 				name=			"Situation Screen"
 				backgroundID=	"none"
 				>
+				<OnScreenInit>
+					(block (
+						(shipList (sort (map (korFreighterTypes) theType {
+								class:theType
+								name:(shpGetClassName theType 0x080)
+								level:(max (typGetStaticData theType 'korolovMinLevel) 1)
+								})
+							'ascending 'name))
+						(levelList (map (make 'sequence 3) level (filter shipList theShip (= (@ theShip 'level) level))))
+						)
+						(scrSetData gScreen 'nameList
+							(join (map levelList theList (join (map theList theShip (@ theShip 'name)) "\n")) "\n\n")
+							)
+						(scrSetData gScreen 'levelList levelList)
+						)
+				</OnScreenInit>
+
 				<Display>
 					<Text left="140" top="24" right="-24" height="28" font="SubTitle" color="255,210,152">
 						(plyComposeString gPlayer "%name%")
@@ -1118,39 +1175,24 @@
 					</Text>
 
 					<Text left="140" top="102" right="280" bottom="-120" font="LargeBold" color="200,206,199">
-						(cat
-							"EI100\n"
-							"EI200\n\n"
-
-							"EI7000\n"
-							"Antares II\n"
-							"Antares V\n\n"
-
-							"Antares I\n"
-							)
+						(scrGetData gScreen 'nameList)
 					</Text>
 
-					<Text left="280" top="102" right="-24" bottom="270" font="Large" color="149,153,148">
-						(cat
-							(korEscortRecord &scEI100;) "\n"
-							(korEscortRecord &scEI200;) "\n\n"
-
-							(korEscortRecord &scEI7000;) "\n"
-							(korEscortRecord &scAntaresII;) "\n"
-							(korEscortRecord &scAntaresV;) "\n\n"
-
-							(korEscortRecord &scAntaresI;) "\n"
-							)
+					<Text left="280" top="102" right="-24" bottom="-120" font="Large" color="149,153,148">
+						(join (map (scrGetData gScreen 'levelList) theList
+								(join (map theList theShip (korEscortRecord (@ theShip 'class))) "\n")
+								)
+							"\n\n")
 					</Text>
 
-					<Text left="140" top="270" right="-24" height="18" font="MediumBold" color="255,210,152">
+					<Text left="140" top="400" right="-24" height="18" font="MediumBold" color="255,210,152">
 						(block (showText)
 							(setq showText (gr (typGetData &unidKorolovShipping; 'recordStrongholds) 0))
 							(if showText "Commendations:" "")
 							)
 					</Text>
 
-					<Text left="140" top="286" right="-24" bottom="-12" font="Large" color="149,153,148">
+					<Text left="140" top="416" right="-24" bottom="-12" font="Large" color="149,153,148">
 						(block (
 							(strongholdsDestroyed (typGetData &unidKorolovShipping; 'recordStrongholds))
 							)
@@ -1197,23 +1239,25 @@
 				>
 				<OnScreenInit>
 					(block Nil
-						(setq gCursor 0)
-						(setq gSelect (@ (typGetStaticData &stKorolovShipping; gDataSet) 0))
+						(scrSetData gScreen 'shipList (@ gData 'shipList))
+						(scrSetData gScreen 'shipType (@ gData 'shipType))
+						(scrSetData gScreen 'selIndex 0)
+						(scrSetData gScreen 'selData (@ (@ gData 'shipList) 0))
 						)
 				</OnScreenInit>
 
 				<Display>
 					<Image left="12" right="-44" top="62" height="100" align="center" valign="center" transparent="true">
-						(shpGetImageDesc (item gSelect 0) 0)
+						(shpGetImageDesc (scrGetData gScreen 'selData) 0)
 					</Image>
 
 					<Text left="12" right="-44" top="150" height="40" align="center" font="SubTitle" color="255,210,152">
-						(shpGetClassName (item gSelect 0) 1)
+						(shpGetClassName (scrGetData gScreen 'selData) 1)
 					</Text>
 
 					<Text left="12" width="250" top="190" bottom="-140" align="right" font="MediumBold" color="200,206,199">
 						(switch
-							(= gFormat 'freighter)
+							(= (scrGetData gScreen 'shipType) 'freighter)
 								(cat
 									"cargo space:\n"
 									"max speed:\n"
@@ -1223,7 +1267,7 @@
 									"manufacturer:\n"
 									)
 
-							(= gFormat 'warship)
+							(= (scrGetData gScreen 'shipType) 'warship)
 								(cat
 									"max speed:\n"
 									"armor:\n"
@@ -1236,14 +1280,14 @@
 
 					<Text right="-44" width="250" top="190" bottom="-140" align="left" font="Medium" color="200,206,199">
 						(block (
-							(classUNID (@ gSelect 0))
+							(classUNID (scrGetData gScreen 'selData))
 							(armor (typGetProperty classUNID 'primaryArmor))
 							(shield (typGetProperty classUNID 'shield))
 							(weapon (typGetProperty classUNID 'primaryWeapon))
 							(launcher (typGetProperty classUNID 'launcher))
 							)
 							(switch
-								(= gFormat 'freighter)
+								(= (scrGetData gScreen 'shipType) 'freighter)
 									(cat
 										(typGetProperty classUNID "cargoSpace") " tons\n"
 										(typGetProperty classUNID "maxSpeed") "% lightspeed\n"
@@ -1253,7 +1297,7 @@
 										(typGetProperty classUNID "manufacturer") "\n"
 										)
 
-								(= gFormat 'warship)
+								(= (scrGetData gScreen 'shipType) 'warship)
 									(cat
 										(typGetProperty classUNID "maxSpeed") "% lightspeed\n"
 										(if armor (strCapitalize armor) "None") "\n"
@@ -1266,35 +1310,58 @@
 					</Text>
 
 					<Text left="52" right="-84" bottom="-32" height="120" align="center" font="Large" color="200,206,199">
-						(item gSelect 1)
+						(block (
+							(classUNID (scrGetData gScreen 'selData))
+							shipDesc
+							)
+							(switch
+								(setq shipDesc (typTranslate classUNID 'korolov.shipDesc))
+									shipDesc
+
+								(setq shipDesc (scrTranslate gScreen (cat "korolov.shipDesc." classUNID)))
+									shipDesc
+
+								""
+								)
+							)
 					</Text>
 				</Display>
 
 				<Panes>
-					<Default
-							desc=	"Select an option:"
-							>
+					<Default>
 						<OnPaneInit>
-							(block (shipData)
-								(setq shipData (typGetStaticData &stKorolovShipping; gDataSet))
-								(scrEnableAction gScreen 'actionNext (ls (add gCursor 1) (count shipData)))
-								(scrEnableAction gScreen 'actionPrev (gr gCursor 0))
+							(block (
+								(shipList (scrGetData gScreen 'shipList))
+								(selIndex (scrGetData gScreen 'selIndex))
+								)
+								(scrSetDescTranslate gScreen 'descSelectOption)
+
+								(scrEnableAction gScreen 'actionNext (ls (+ selIndex 1) (count shipList)))
+								(scrEnableAction gScreen 'actionPrev (gr selIndex 0))
 								)
 						</OnPaneInit>
 
 						<Actions>
 							<Action id="actionNext" default="1" nextKey="1">
-								(block Nil
-									(setq gCursor (+ gCursor 1))
-									(setq gSelect (@ (typGetStaticData &stKorolovShipping; gDataSet) gCursor))
+								(block (
+									(shipList (scrGetData gScreen 'shipList))
+									(selIndex (scrGetData gScreen 'selIndex))
+									)
+									(setq selIndex (+ selIndex 1))
+									(scrSetData gScreen 'selIndex selIndex)
+									(scrSetData gScreen 'selData (@ shipList selIndex))
 									(scrShowPane gScreen "Default")
 									)
 							</Action>
 
 							<Action id="actionPrev" prevKey="1">
-								(block Nil
-									(setq gCursor (- gCursor 1))
-									(setq gSelect (@ (typGetStaticData &stKorolovShipping; gDataSet) gCursor))
+								(block (
+									(shipList (scrGetData gScreen 'shipList))
+									(selIndex (scrGetData gScreen 'selIndex))
+									)
+									(setq selIndex (- selIndex 1))
+									(scrSetData gScreen 'selIndex selIndex)
+									(scrSetData gScreen 'selData (@ shipList selIndex))
 									(scrShowPane gScreen "Default")
 									)
 							</Action>
@@ -1311,27 +1378,9 @@
 		<!-- Events and Data -->
 		
 		<StaticData>
-			<freighterData>
-				(	; class			description
-					(&scAntaresI;	"The Antares I design is more than a hundred years old, built originally by the massive Polyarny Shipyards orbiting Ceres. Slow and unencumbered by armor, the Antares I can haul 30 kilotons of cargo, but only the most skilled pilots can protect it from pirate attack. Only Masters in the Korolov Shipping Corporation are rated to escort the Antares I class.")
-					(&scAntaresII;	"While sacrificing none of its cargo capacity, the Antares II has a top speed 50% higher than its predecessor. Escort pilots must have the rank of Journeyman or Master to defend the Antares II class.")
-					(&scAntaresV;	"The Antares V is basically a stretched version of the earlier II series. It has larger cargo capacity and upgraded weapons. Escort pilots must have the rank of Journeyman or Master to escort the Antares V class.")
-					(&scEI100;		"The EI100 class freighter was designed for fast interplanetary transportation. Early in its history, it even carried passengers, but today it carries light commodities. Because of the relatively low value of its cargo, the EI100 is often escorted by Apprentice pilots.")
-					(&scEI200;		"The EI200 class freighter is a larger and faster version of the 100 series. It has double the cargo capacity and upgraded armor and weapons. It is designed to transport small quantities of high-value cargo. The EI200 is so well defended that even Apprentices are allowed to escort them.")
-					(&scEI7000;		"The 7000 is the most powerful member of the EI freighter series. With a cargo capacity of 2 kilotons and heavy armor and weapons, the EI7000 is ideal for high-value cargos. Only Journeymen and Masters are rated to escort the EI7000 class.")
-					)
-			</freighterData>
-
-			<pirateData>
-				(	; class			description
-					(&scCorsair;	"The backbone of the Charon Pirate fleet consists of these fast and deadly gunships. Piloted by young and somewhat inexperienced pirates, they are nonetheless dangerous in large numbers.")
-					(&scViking;		"The Viking-class gunship is powerful and well-armored. It is slower than a Corsair, but more than fast enough to chase down a freighter.")
-					(&scCorsair-II;	"More than an upgrade, the Corsair-II sports shields and a missile launcher.")
-					(&scViking-II;	"The Viking-II is an upgraded version with shields and dual turbolasers.")
-					(&scDrake;		"The Drake is the pirates' mobile battering ram. Heavily armored and loaded with missiles, the Drake will pummel you to pieces from long range.")
-					(&scCharonFrigateRaider;	"The sight of these frigates brings fear to most freighter pilots. Fast, silent, and loaded with hurt, a Charon frigate can destroy a small fleet of escort ships. Do not challenge these ships unless you know what you're doing.")
-					)
-			</pirateData>
+			<Data id="pirateShips">
+				(&scCorsair; &scViking; &scCorsair-II; &scViking-II; &scDrake; &scCharonFrigateRaider;)
+			</Data>
 		</StaticData>
 
 		<Events>
@@ -1433,6 +1482,32 @@
 						"Sorry, there are no missions currently available."
 						)
 					)
+			</Text>
+			<Text id="descSelectOption">Select an option:</Text>
+
+			<Text id="korolov.shipDesc.1454081">
+				The backbone of the Charon Pirate fleet consists of these fast and
+				deadly gunships. Piloted by young and somewhat inexperienced pirates,
+				they are nonetheless dangerous in large numbers.
+			</Text>
+			<Text id="korolov.shipDesc.1454082">
+				The Viking-class gunship is powerful and well-armored. It is slower
+				than a Corsair, but more than fast enough to chase down a freighter.
+			</Text>
+			<Text id="korolov.shipDesc.1454083">
+				More than an upgrade, the Corsair-II sports shields and a missile launcher.
+			</Text>
+			<Text id="korolov.shipDesc.134414405">
+				The Viking-II is an upgraded version with shields and dual turbolasers.
+			</Text>
+			<Text id="korolov.shipDesc.134414404">
+				The Drake is the pirates' mobile battering ram. Heavily armored and loaded
+				with missiles, the Drake will pummel you to pieces from long range.
+			</Text>
+			<Text id="korolov.shipDesc.1454084">
+				The sight of these frigates brings fear to most freighter pilots. Fast,
+				silent, and loaded with hurt, a Charon frigate can destroy a small fleet of
+				escort ships. Do not challenge these ships unless you know what you're doing.
 			</Text>
 
             <Text id="core.mapDescMain">
@@ -1963,6 +2038,49 @@
 
 					; Return the total value of the cargo
 					(multiply fitCount (itmGetActualPrice container))
+					)
+				))
+
+			;	Calculate the cargo value and escort fees for a Korolov freighter
+			(setq korCalculateCargo (lambda (escortType escortLevel oneWay)
+				(block (
+					(escortRate (typGetStaticData escortType 'korolovEscortRate))
+					(fitCount (/ (typGetProperty escortType 'cargoSpace) 25))
+					pricePerContainer cargoValue escortFee
+					)
+
+					;	Figure out the price per container of the cargo
+					(setq pricePerContainer (or
+						;	New method
+						(eval (@ (typGetStaticData escortType 'korolov.containerPrice) escortLevel))
+
+						;	Legacy method (1.7 and before)
+						(block Nil
+							(typSetData &stKorolovShipping; 'level escortLevel)
+							(eval (typGetStaticData escortType 'korolovContainerPrice))
+							)
+
+						;	Otherwise aim for a suitable cargoValue
+						(/ (* (@ '(25 75 150 300 600) escortLevel) 1000) fitCount)
+						))
+
+					(setq cargoValue (* pricePerContainer fitCount))
+
+					;	Compute the fee that we will pay for escort based on the value of the
+					;	cargo and the rate that the freighter will pay
+					(setq escortFee (/ (* (if (gr escortRate 0) escortRate 100) cargoValue) 10000))
+
+					;	Reduce fee for one-way trip
+					(if oneWay (setq escortFee (/ (* escortFee 65) 100)))
+
+					;	Adjust the fee randomly and round down to the nearest 50
+					(setq escortFee (intRoundDown (/ (* escortFee (random 75 125)) 100) 50))
+
+					{
+						escortFee: escortFee
+						cargoValue: cargoValue
+						pricePerContainer: pricePerContainer
+						}
 					)
 				))
 
