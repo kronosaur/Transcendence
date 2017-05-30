@@ -173,13 +173,6 @@
 	
 	EXTRA DATA
 	
-	mission:			Current mission
-	missionStatus:		Current mission status:
-							Nil = No mission
-							'inProgress = Mission in progress
-							'success = Mission successful
-							'failure = Mission failed
-	missionTarget:		Current mission target
 	totalProduced:		Total number of items produced
 
 	-->
@@ -310,24 +303,6 @@
 					(sysAddObjRecurringTimerEvent 90 gSource "OnTrafficControl")
 					)
 			</OnCreate>
-			
-			<OnObjDestroyed>
-				(block (mission)
-					(setq mission (objGetData gSource "mission"))
-					(switch
-						(and (eq mission 'destroyStation)
-								(eq aObjDestroyed (objGetObjRefData gSource "missionTarget"))
-								)
-							(block Nil
-								(objSetData gSource "missionStatus" 'success)
-								(typIncGlobalData &stCommonwealthFortress; "missionsCompleted")
-								(plyMessage gPlayer "Mission complete!")
-								(shpCancelOrders gPlayerShip)
-								(objUnregisterForEvents gSource aObjDestroyed)
-								)
-						)
-					)
-			</OnObjDestroyed>
 
 			<OnProduceProduction>
 				(block Nil
@@ -942,24 +917,19 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You are docked with a massive crystalline monument commemorating the point of "
-								"first contact between humans and alien intelligent life in the universe.\n\n"
-								"Scores of tourists wander around the vast hall, chatting softly and pausing "
-								"randomly at various points of interest."
-								)
+							(scrSetDescTranslate gScreen 'descWelcome)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Information" default="1" key="I">
+							<Action id="actionInformation" default="1">
 								<ShowPane pane="Information"/>
 							</Action>
 							
-							<Action name="First Contact Pub" key="P">
+							<Action id="actionPub">
 								<ShowPane pane="Pub"/>
 							</Action>
 							
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -967,28 +937,23 @@
 					
 					<Information>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"A holoscreen flickers to life as you approach:\n\n"
-								"\"Here at this point, in the year 2363, members of the Human Race "
-								"first met with representatives of the Ancient Races of the Galaxy.\"\n\n"
-								"Do you want to know more?"
-								)
+							(scrSetDescTranslate gScreen 'descInformation)
 						</OnPaneInit>
 						
 						<Actions>
-							<Action name="What was it like?" key="W">
+							<Action id="actionInfoLike">
 								<ShowPane pane="Info1"/>
 							</Action>
 							
-							<Action name="What did we learn?" key="l">
+							<Action id="actionInfoLearn">
 								<ShowPane pane="Info2"/>
 							</Action>
 							
-							<Action name="Where are they now?" key="n">
+							<Action id="actionInfoWhere">
 								<ShowPane pane="Info3"/>
 							</Action>
 							
-							<Action name="Leave" cancel="1" key="v">
+							<Action id="actionLeave" cancel="1" key="v">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
@@ -996,19 +961,11 @@
 					
 					<Info1>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"With almost no warning six alien ships, blue and translucent like "
-								"flying glaciers, appeared out of the inner gate. Fear gripped the Commonwealth "
-								"at first, but as the attitude of the alien fleet remained peaceful, wonderment "
-								"took over.\n\n"
-								"Scientists from New Victoria immediately attempted to communicate, but it "
-								"took two frustrating weeks before the Iocrym (as they called themselves) were able "
-								"to learn our language."
-								)
+							(scrSetDescTranslate gScreen 'descInfo1)
 						</OnPaneInit>
 						
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								<ShowPane pane="Info1B"/>
 							</Action>
 						</Actions>
@@ -1016,16 +973,11 @@
 					
 					<Info1B>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"Communication proceeded via computer processed code. The Iocrym told us that they "
-								"were one of the many Ancient Races in the Galaxy and that they were curious about "
-								"us and our development. They shared much scientific knowledge with us and then they "
-								"continued on their journey to Sol.\n\n"
-								)
+							(scrSetDescTranslate gScreen 'descInfo1b)
 						</OnPaneInit>
 						
 						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
+							<Action id="actionDone" default="1" cancel="1">
 								<ShowPane pane="Information"/>
 							</Action>
 						</Actions>
@@ -1033,17 +985,11 @@
 					
 					<Info2>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"The Iocrym gave us several hyperglyph rods encoded with scientific information. "
-								"While most of the knowledge has been classified by the Council of Lords because of "
-								"its military potential, much remains public.\n\nScientists are overjoyed at the insights "
-								"gained from this treasure trove. In particular, our knowledge of antimatter, zero-point "
-								"energy, and transpace have been revolutionized by the Iocrym's gift."
-								)
+							(scrSetDescTranslate gScreen 'descInfo2)
 						</OnPaneInit>
 						
 						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
+							<Action id="actionDone" default="1" cancel="1">
 								<ShowPane pane="Information"/>
 							</Action>
 						</Actions>
@@ -1051,28 +997,23 @@
 					
 					<Info3>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"The Iocrym promised to return, and why they have not remains a mystery. "
-								"Some scientists believe that the Ancient Races deal in "
-								"centuries and millennia, and thus will not return for many more years. Others believe "
-								"that their own alien morality prevents interference in the affairs of lesser species.\n\n"
-								"But regardless, the most important gift that the Iocrym left behind is "
-								"the knowledge that we are not alone in the Galaxy and that someday we will "
-								"join our alien brethren as equals."
-								)
+							(scrSetDescTranslate gScreen 'descInfo3)
 						</OnPaneInit>
 						
 						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
+							<Action id="actionDone" default="1" cancel="1">
 								<ShowPane pane="Information"/>
 							</Action>
 						</Actions>
 					</Info3>
 					
-					<Pub desc="You are in a large restaurant and bar filled with monument visitors.">
+					<Pub>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descPub)
+						</OnPaneInit>
 						
 						<Actions>
-							<Action name="Sit at the Bar" default="1" key="S">
+							<Action id="actionBar" default="1">
 								(if (geq (plyGetCredits gPlayer) 10)
 									(block Nil
 										(plyCharge gPlayer 10)
@@ -1082,7 +1023,7 @@
 									)
 							</Action>
 
-							<Action name="Leave" cancel="1" key="L">
+							<Action id="actionLeave" cancel="1">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
@@ -1098,15 +1039,19 @@
 						</OnPaneInit>
 						
 						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
+							<Action id="actionLeave" default="1" cancel="1">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
 					</Story>
 					
-					<NoMoney desc="You hang around for a while, but you have no money to buy drinks.">
+					<NoMoney>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descNoMoney)
+						</OnPaneInit>
+
 						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
+							<Action id="actionLeave" default="1" cancel="1">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
@@ -1128,7 +1073,75 @@
 		</DockingPorts>
         
         <Language>
-            <Text id="core.mapDesc">
+			<Text id="actionInformation">[I]nformation</Text>
+			<Text id="actionPub">First Contact [P]ub</Text>
+			<Text id="actionUndock">[U]ndock</Text>
+			<Text id="actionInfoLike">[W]hat was it like?</Text>
+			<Text id="actionInfoLearn">What did we [l]earn?</Text>
+			<Text id="actionInfoWhere">Where are they [n]ow?</Text>
+			<Text id="actionLeave">[L]eave</Text>
+			<Text id="actionContinue">[C]ontinue</Text>
+			<Text id="actionDone">[D]one</Text>
+			<Text id="actionBar">[S]it at the Bar</Text>
+
+            <Text id="descWelcome">
+				You are docked with a massive crystalline monument commemorating the point of
+				first contact between humans and alien intelligent life in the universe.
+
+				Scores of tourists wander around the vast hall, chatting softly and pausing
+				randomly at various points of interest.
+			</Text>
+			<Text id="descInformation">
+				A holoscreen flickers to life as you approach:
+
+				"Here at this point, in the year 2363, members of the Human Race
+				first met with representatives of the Ancient Races of the Galaxy."
+
+				Do you want to know more?
+			</Text>
+			<Text id="descInfo1">
+				With almost no warning six alien ships, blue and translucent like
+				flying glaciers, appeared out of the inner gate. Fear gripped the Commonwealth
+				at first, but as the attitude of the alien fleet remained peaceful, wonderment
+				took over.
+
+				Scientists from New Victoria immediately attempted to communicate, but it
+				took two frustrating weeks before the Iocrym (as they called themselves) were able
+				to learn our language.
+			</Text>
+			<Text id="descInfo1b">
+				Communication proceeded via computer processed code. The Iocrym told us that they
+				were one of the many Ancient Races in the Galaxy and that they were curious about
+				us and our development. They shared much scientific knowledge with us and then they
+				continued on their journey to Sol.
+			</Text>
+			<Text id="descInfo2">
+				The Iocrym gave us several hyperglyph rods encoded with scientific information.
+				While most of the knowledge has been classified by the Council of Lords because of
+				its military potential, much remains public.
+
+				Scientists are overjoyed at the insights
+				gained from this treasure trove. In particular, our knowledge of antimatter, zero-point
+				energy, and transpace have been revolutionized by the Iocrym's gift.
+			</Text>
+			<Text id="descInfo3">
+				The Iocrym promised to return, and why they have not remains a mystery.
+				Some scientists believe that the Ancient Races deal in
+				centuries and millennia, and thus will not return for many more years. Others believe
+				that their own alien morality prevents interference in the affairs of lesser species.
+
+				But regardless, the most important gift that the Iocrym left behind is
+				the knowledge that we are not alone in the Galaxy and that someday we will
+				join our alien brethren as equals.
+			</Text>
+			<Text id="descPub">
+				You are in a large restaurant and bar filled with monument visitors.
+			</Text>
+			<Text id="descNoMoney">
+				You hang around for a while, but you have no money to buy drinks.
+			</Text>
+
+			<Text id="core.mapDesc">
                 "Museum &mdash; Restaurant and bar"
             </Text>
         </Language>
@@ -1138,51 +1151,61 @@
 
 	<!-- Arcology -->
 
-	<DockScreen UNID="&dsStKatsArcology;">
+	<DockScreen UNID="&dsStKatsArcology;"
+			inherit=			"&dsDockScreenBase;"
+			>
 		
 		<Panes>
-			<Default
-					desc=	"Welcome to the Arcology of New Victoria!">
-					
+			<Default>
 				<OnPaneInit>
-					(objSetData gSource "schematic" Nil)
+					(scrSetDescTranslate gScreen 'descWelcome)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Parliament Quarter" key="P">
+					<Action id="actionParliament">
 						(scrShowScreen gScreen &dsStKatsArcologyParliament;)
 					</Action>
 
-					<Action name="Commerce Quarter" key="C">
+					<Action id="actionCommerce">
 						(scrShowScreen gScreen &dsStKatsArcologyCommerce;)
 					</Action>
 
-					<Action name="University Quarter" key="U">
+					<Action id="actionUniversity">
 						(scrShowScreen gScreen &dsStKatsArcologyUniversity;)
 					</Action>
 
-					<Action name="Arts Quarter" key="A">
+					<Action id="actionArts">
 						(scrShowScreen gScreen &dsStKatsArcologyArts;)
 					</Action>
 
-					<Action name="Dock Services" key="D">
+					<Action id="actionDockServices">
 						(rpgDockServices gPlayerShip {
 							checkMilitaryID: True
 							})
 					</Action>
 
-					<Action name="Undock" cancel="1" key="n">
+					<Action id="actionUndock" cancel="1">
 						<Exit/>
 					</Action>
 				</Actions>
 			</Default>
 		</Panes>
+		<Language>
+			<Text id="actionParliament">[P]arliament Quarter</Text>
+			<Text id="actionCommerce">[C]ommerce Quarter</Text>
+			<Text id="actionUniversity">U[n]iversity Quarter</Text>
+			<Text id="actionArts">[A]rts Quarter</Text>
+
+			<Text id="descWelcome">Welcome to the Arcology of New Victoria!</Text>
+		</Language>
 	</DockScreen>
 	
 	<!-- Parliament Quarter -->
 	
 	<DockScreen UNID="&dsStKatsArcologyParliament;"
+			inherit=			"&dsDockScreenBase;"
 			backgroundID=		"none"
+			nestedScreen=		"true"
 			>
 
 		<Display>
@@ -1202,46 +1225,33 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(block Nil
-						(scrSetDesc gScreen
-							"You are in the Parliament Quarter. Well-dressed men and women walk along the wide avenues of the quarter, "
-							"making their way to jobs in Commonwealth government."
-							)
-						)
+					(scrSetDescTranslate gScreen 'descParliamentQuarter)
 				</OnPaneInit>
 				
 				<Actions>
-					<Action name="Parliament" default="1" key="P">
+					<Action id="actionParliament" default="1">
 						<ShowPane pane="Parliament"/>
 					</Action>
 					
-					<Action name="Militia Headquarters" key="M">
-						(block (mission status)
-							(setq mission (objGetData gSource "mission"))
-							(setq status (objGetData gSource "missionStatus"))
-							
-							(switch
-								(eq mission 'destroyStation)
-									(switch
-										(eq status 'success)
-											(scrShowPane gScreen "MissionDestroyStationSuccess")
+					<Action id="actionMilitia">
+						(switch
+							(not (milCanEnterCC))
+								(scrShowScreen gScreen &dsRPGMessage; { textID:'descAccessDenied })
 
-										(scrShowPane gScreen "MissionInProgress")
-										)
-										
-								mission
-									(scrShowPane gScreen "MissionInProgress")
-									
-								(milCanEnterCC)
-									(scrShowPane gScreen "MilitiaHQ")
-									
-								(scrShowPane gScreen "MilitiaAccessDenied")
-								)
+							(= (typGetData &unidCommonwealthMilitia; 'rank) -1)
+								(scrShowScreen gScreen &dsRPGMessage; { textID:'descTooManyFailures })
+
+							(rpgMissionAssignment {
+								missionCriteria: (cat "n +stKatsMilitia; =" (sysGetLevel) ";")
+								noMissionTextID: 'descNoMissions
+								maxPerStation: (+ 3 (modulo (objGetDestiny gSource) 3))
+								intervalPerStation: (random 3600 5400)
+								})
 							)
 					</Action>
 
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowScreen gScreen &dsStKatsArcology;)
+					<Action id="actionLeave" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
@@ -1256,203 +1266,38 @@
 				</OnPaneInit>
 				
 				<Actions>
-					<Action name="Leave" default="1" cancel="1" key="L">
+					<Action id="actionLeave" default="1" cancel="1">
 						<ShowPane pane="Default"/>
 					</Action>
 				</Actions>
 			</Parliament>
-			
-			<MilitiaHQ>
-				<OnPaneInit>
-					(block Nil
-						(milInit)
-					
-						(scrSetDesc gScreen
-							"You are at Commonwealth Militia Headquarters. "
-							"The officer of the watch looks up from his displays and asks,\n\n"
-							"\"Are you looking for a mission, captain?\""
-							)
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="&quot;Yes sir, I'm ready.&quot;" default="1" key="Y">
-						(block (playerRank allMissions allEnemyStations)
-							(setq playerRank (objGetData gPlayerShip "militiaRank"))
-							
-							; See if there are any enemy stations for the player to destroy
-							(setq allEnemyStations (append
-								(sysFindObject Nil "TAE +sapiensCompound;")
-								(sysFindObject Nil "TAE +sungSlaveCamp;")
-								(sysFindObject Nil "TAE +marauderCompound;")
-								))
-								
-							(if (and
-									(leq playerRank 1)
-									allEnemyStations
-									)
-								(setq allMissions (append allMissions 'destroyStation))
-								)
-							
-							; Pick a random mission
-							(setq theMission (random allMissions))
-							
-							(switch
-								(eq playerRank -1)
-									(scrShowPane gScreen "MilitiaTooManyFailures")
-									
-								(eq theMission 'destroyStation)
-									(block Nil
-										(objSetObjRefData gSource "missionTarget" (random allEnemyStations))
-										(scrShowPane gScreen "MissionDestroyStation")
-										)
-									
-								(scrShowPane gScreen "MilitiaNoMissions")
-								)
-							)
-					</Action>
-
-					<Action name="&quot;No sir, I'm just looking.&quot;" cancel="1" key="N">
-						<ShowPane pane="MilitiaGetOut"/>
-					</Action>
-				</Actions>
-			</MilitiaHQ>
-			
-			<MissionDestroyStation>
-				<OnPaneInit>
-					(scrSetDesc gScreen
-						"\"" (objGetName (objGetObjRefData gSource "missionTarget") 0x05) " is hiding among the outer asteroids. We want you to "
-						"go out there and destroy it. Clear?\""
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="Accept" default="1" key="A">
-						(block (theTarget)
-							(setq theTarget (objGetObjRefData gSource "missionTarget"))
-							
-							(objSetData gSource "mission" 'destroyStation)
-							(objSetData gSource "missionStatus" 'inProgress)
-							
-							(shpCancelOrders gPlayerShip)
-							(shpOrder gPlayerShip 'attack theTarget)
-							(objRegisterForEvents gSource theTarget)
-							
-							(scrShowPane gScreen "MissionDestroyStationAccept")
-							)
-					</Action>
-
-					<Action name="Decline" cancel="1" key="D">
-						<ShowPane pane="MilitiaGetOut"/>
-					</Action>
-				</Actions>
-			</MissionDestroyStation>
-			
-			<MissionDestroyStationAccept>
-				<OnPaneInit>
-					(scrSetDesc gScreen
-						"\"We've uploaded the coordinates of the target to your computer. Good luck, captain!\""
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="Undock" default="1" cancel="1" key="U">
-						<Exit/>
-					</Action>
-				</Actions>
-			</MissionDestroyStationAccept>
-			
-			<MissionDestroyStationSuccess>
-				<OnPaneInit>
-					(scrSetDesc gScreen
-						"\"Well done! You dealt with that threat expertly.\""
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
-						(block (promoted)
-							(objSetData gSource "mission" Nil)
-							(objSetData gSource "missionStatus" Nil)
-							
-							; Promotion?
-							(if (milMissionSuccess)
-								(milShowPromotionScreen &dsStKatsArcology; "ParliamentQuarter")
-								(scrShowPane gScreen "Default")
-								)
-							)
-					</Action>
-				</Actions>
-			</MissionDestroyStationSuccess>
-			
-			<MissionInProgress>
-				<OnPaneInit>
-					(scrSetDesc gScreen 
-						"\"You haven't completed your mission! Don't return until you have!\""
-						)
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Leave" default="1" cancel="1" key="L">
-						<ShowPane pane="Default"/>
-					</Action>
-				</Actions>
-			</MissionInProgress>
-			
-			<MilitiaAccessDenied>
-				<OnPaneInit>
-					(scrSetDesc gScreen 
-						"Two guards flank the door to the Headquarters. One of them checks your ID against a computer list:\n\n"
-						"\"Sorry, %sir%, only experienced captains are allowed inside.\"")
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Leave" default="1" cancel="1" key="L">
-						<ShowPane pane="Default"/>
-					</Action>
-				</Actions>
-			</MilitiaAccessDenied>
-			
-			<MilitiaGetOut
-					desc="&quot;Why don't you make yourself useful and get us some tea or something.&quot;">
-
-				<Actions>
-					<Action name="Leave" default="1" cancel="1" key="L">
-						<ShowPane pane="Default"/>
-					</Action>
-				</Actions>
-			</MilitiaGetOut>
-
-			<MilitiaNoMissions>
-				<OnPaneInit>
-					(scrSetDesc gScreen
-						"\"Sorry, there are no missions currently available.\""
-						)
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Leave" default="1" cancel="1" key="L">
-						<ShowPane pane="Default"/>
-					</Action>
-				</Actions>
-			</MilitiaNoMissions>
-
-			<MilitiaTooManyFailures
-					desc="&quot;How about getting us a cup of tea or something? That's probably a mission you could handle.&quot;">
-
-				<Actions>
-					<Action name="Leave" default="1" cancel="1" key="L">
-						<ShowPane pane="Default"/>
-					</Action>
-				</Actions>
-			</MilitiaTooManyFailures>
 		</Panes>
+
+		<Language>
+			<Text id="actionParliament">[P]arliament</Text>
+			<Text id="actionMilitia">[M]ilitia Headquarters</Text>
+			<Text id="actionLeave">[L]eave</Text>
+
+			<Text id="descParliamentQuarter">
+				You are in the Parliament Quarter. Well-dressed men and women walk along the wide avenues of the quarter,
+				making their way to jobs in Commonwealth government.
+			</Text>
+			<Text id="descNoMissions">"\"Sorry, there are no missions currently available.\""</Text>
+			<Text id="descTooManyFailures">"\"How about getting us a cup of tea or something? That's probably a mission you could handle.\""</Text>
+			<Text id="descAccessDenied">
+				Two guards flank the door to the Headquarters. One of them checks your ID against a computer list:
+
+				"Sorry, %sir%, only experienced captains are allowed inside."
+			</Text>
+		</Language>
 	</DockScreen>
 	
 	<!-- Commerce Quarter -->
 	
 	<DockScreen UNID="&dsStKatsArcologyCommerce;"
+			inherit=			"&dsDockScreenBase;"
 			backgroundID=		"none"
+			nestedScreen=		"true"
 			>
 
 		<Display>
@@ -1473,37 +1318,29 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(scrSetDesc gScreen
-						"The Commerce Quarter is filled with sharp-dressed people and glowing "
-						"advertisements. A massive bioluminescent screen shows prices in front "
-						"of the Commodities Exchange, while smaller signs point to boutique "
-						"store fronts."
-						)
+					(scrSetDescTranslate gScreen 'descCommerceQuarter)
 				</OnPaneInit>
 				
 				<Actions>
-					<Action name="Commodities Exchange" default="1" key="C">
+					<Action id="actionCommoditiesExchange" default="1">
 						(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
 							checkMilitaryID: True
 							})
 					</Action>
 					
-					<Action name="Incandescent Exports" key="I">
+					<Action id="actionIncandescentExports">
 						<ShowPane pane="IncandescentExports"/>
 					</Action>
 					
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowScreen gScreen &dsStKatsArcology;)
+					<Action id="actionLeave" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
 			
 			<IncandescentExports>
 				<OnPaneInit>
-					(scrSetDesc gScreen
-						"Welcome to Incandescent Exports, specializing in selling unique items "
-						"up from the surface of the planet."
-						)
+					(scrSetDescTranslate gScreen 'descIncandescentExports)
 				</OnPaneInit>
 
 				<Actions>
@@ -1514,29 +1351,40 @@
 							})
 					</Action>
 
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowPane gScreen "Default")
+					<Action id="actionLeave" cancel="1">
+						(scrShowPane gScreen 'Default)
 					</Action>
 				</Actions>
 			</IncandescentExports>
 		</Panes>
+
+		<Language>
+			<Text id="actionIncandescentExports">[I]ncandescent Exports</Text>
+			<Text id="actionLeave">[L]eave</Text>
+
+			<Text id="descCommerceQuarter">
+				The Commerce Quarter is filled with sharp-dressed people and glowing
+				advertisements. A massive bioluminescent screen shows prices in front
+				of the Commodities Exchange, while smaller signs point to boutique
+				store fronts.
+			</Text>
+			<Text id="descIncandescentExports">
+				Welcome to Incandescent Exports, specializing in selling unique items
+				up from the surface of the planet.
+			</Text>
+		</Language>
 	</DockScreen>
 	
 	<!-- University Quarter
 	
 	GLOBAL DATA (on stStKatsArcology)
 	
-	exploreStatus:		Status of School of Exploration mission
-							Nil = Never encountered
-							'declined = Player declined the mission
-							'needBetterShip = Player wants to upgrade first
-							'inProgress = Player is looking for the sphere
-							'success = Professor Dall got his artifact
-						
 	-->
 
 	<DockScreen UNID="&dsStKatsArcologyUniversity;"
+			inherit=			"&dsDockScreenBase;"
 			backgroundID=		"none"
+			nestedScreen=		"true"
 			>
 
 		<Display>
@@ -1559,40 +1407,19 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(scrSetDesc gScreen
-						"The schools that make up the University of New Victoria are strung along "
-						"the spine of the arcology. Students and professors make their way along "
-						"the wide avenues."
-						)
+					(scrSetDescTranslate gScreen 'descUniversityQuarter)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="School of Engineering" default="1" key="E">
+					<Action id="actionEngineering" default="1">
 						<ShowPane pane="Engineering"/>
 					</Action>
 					
-					<Action name="Taikon School of Exploration" key="T">
-						(block (status)
-							(setq status (objGetGlobalData gSource "exploreStatus"))
-							(switch
-								(not status)
-									(scrShowPane gScreen "ExploreIntro")
-									
-								(eq status 'inProgress)
-									(scrShowPane gScreen "ExploreReturned")
-									
-								(eq status 'declined)
-									(scrShowPane gScreen "ExploreMission")
-									
-								(eq status 'needBetterShip)
-									(if (objGetItems gPlayerShip "sIN &gt;=5")
-										(scrShowPane gScreen "ExploreBetterShip")
-										(scrShowPane gScreen "ExploreShieldCheck")
-										)
-									
-								(scrShowPane gScreen "ExploreAftermath")
-								)
-							)
+					<Action id="actionUniversityTaikon">
+						(rpgMissionAssignment {
+							missionCriteria: (cat "n +stKatsTaikon; =" (sysGetLevel) ";")
+							noMissionTextID: 'descTaikonEmpty
+							})
 					</Action>
 					
 					<Action id="actionUniversityHospital">
@@ -1602,8 +1429,8 @@
 							})
 					</Action>
 
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowScreen gScreen &dsStKatsArcology;)
+					<Action id="actionLeave" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
@@ -1704,7 +1531,7 @@
 							)
 					</Action>
 					
-					<Action name="Leave" cancel="1" key="L">
+					<Action id="actionLeave" cancel="1">
 						<ShowPane pane="Default"/>
 					</Action>
 				</Actions>
@@ -1716,311 +1543,33 @@
 				</OnPaneInit>
 				
 				<Actions>
-					<Action name="Done" default="1" cancel="1" key="D">
+					<Action id="actionDone" default="1" cancel="1">
 						<ShowPane pane="Default"/>
 					</Action>
 				</Actions>
 			</EnhanceSuccess>
-			
-			<ExploreIntro>
-				<OnPaneInit>
-					(switch
-						(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
-							(scrSetDesc gScreen (typTranslate &dsStKatsArcologyUniversity; 'DallWelcomePilgrim))
-							
-						(scrSetDesc gScreen (typTranslate &dsStKatsArcologyUniversity; 'DallWelcome))
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
-						(if (objGetItems gPlayerShip "sIN &gt;=5")	
-							(scrShowPane gScreen "ExploreMission")
-							(scrShowPane gScreen "ExploreShieldCheck")
-							)
-					</Action>
-				</Actions>
-			</ExploreIntro>
-			
-			<ExploreShieldCheck>
-				<OnPaneInit>
-					(block (desc)
-						(setq desc (plyComposeString gPlayer (cat
-							"\"You are ready for combat are you not? I mean, I don't want to trust this discovery "
-							"to an unready ship or captain.\n\n"
-							"I expect a ship to need level 5 shields or higher to survive the dangers at the "
-							"edge of the system. I hope you're prepared.\""
-							)))
-						
-						(scrSetDesc gScreen desc)
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="&quot;Don't worry about my ship!&quot;" default="1" key="D">
-						(scrShowPane gScreen "ExploreMission")
-					</Action>
-					
-					<Action name="&quot;I'll be back.&quot;" cancel="1" key="I">
-						(block Nil
-							(objSetGlobalData gSource "exploreStatus" 'needBetterShip)
-							(scrShowPane gScreen "ExploreComeBackWhenReady")
-							)
-					</Action>
-				</Actions>
-			</ExploreShieldCheck>
-			
-			<ExploreComebackWhenReady>
-				<OnPaneInit>
-					(block (desc)
-						(setq desc (cat
-							"\"I've waited for twenty years, I can wait a bit longer. "
-							"Come back when your ship is ready for the mission.\""
-							))
-							
-						(scrSetDesc gScreen desc)
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
-						(scrShowPane gScreen "Default")
-					</Action>
-				</Actions>
-			</ExploreComebackWhenReady>
-
-			<ExploreBetterShip>
-				<OnPaneInit>
-					(block (desc)
-						(setq desc (cat
-							"\"You're back! Hopefully you're ready for the mission now.\""
-							))
-
-						(scrSetDesc gScreen desc)
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
-						(scrShowPane gScreen "ExploreMission")
-					</Action>
-				</Actions>
-			</ExploreBetterShip>
-
-			<ExploreMission>
-				<OnPaneInit>
-					(block (desc status)
-						(setq status (objGetGlobalData gSource "exploreStatus"))
-						
-						(switch
-							(eq status 'declined)
-								(setq desc (cat
-									"Professor Dall greets you:\n\n"
-									"\"So you're back! Couldn't get stories of freighters carrying treasure out of your mind, am I right? "
-									"Well I'm still willing to help you if you fetch the artifact for me. Once they see what I've found they'll "
-									"have to pay attention!\n\n"
-									"\"What do you say?\""
-									))
-									
-							(setq desc (cat
-								"\"I'm looking for a very special cargo on a wrecked freighter out beyond Fulgent. "
-								"Two-hundred years ago the Huari found a magnificent object; an alien sphere left behind by who knows what race. "
-								"When the Sung arrived the Huari records were lost and with it the sphere. But according to a cryptic Sung memo, "
-								"it was found again; a freighter carrying the prize was dispatched to Jiang's Star, but it never arrived.\n\n"
-								"\"Now I'm the only one who knows where the freighter ended up. And I can tell you how to find it!\""
-								))
-							)
-						
-						(scrSetDesc gScreen desc)
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="Accept" default="1" key="A">
-						(block (theWreck)
-							; For now we create the wreck only when the mission
-							; starts (because we are too lazy to deal with the
-							; alternatives, such as the player finding the wreck
-							; before she talks to the professor).
-							
-							(setq theWreck (sysCreateStation 
-								&stDallMissionWreck;
-								(sysVectorRandom Nil (random 800 1200) 300)
-								))
-								
-							; The sphere is in the universe
-							(typSetGlobalData &itDallSphere; "status" 'onFreighter)
-							
-							; Point the player
-							(shpCancelOrders gPlayerShip)
-							(shpOrderDock gPlayerShip theWreck);
-							
-							; Start
-							(typSetGlobalData &stStKatsArcology; "exploreStatus" 'inProgress)
-							(scrShowPane gScreen "ExploreAccepted")
-							)
-					</Action>
-					
-					<Action name="Decline" cancel="1" key="D">
-						(block Nil
-							(objSetGlobalData gSource "exploreStatus" 'declined)
-							(scrShowPane gScreen "ExploreDecline")
-							)
-					</Action>
-				</Actions>
-			</ExploreMission>
-			
-			<ExploreAccepted>
-				<OnPaneInit>
-					(block (desc)
-						(setq desc (cat
-							"\"I've made the calculations dozens of times; I'm sure of it. I've programmed the "
-							"location of the freighter into your computer. All you have to do is bring back the "
-							"sphere. I'd go myself, but I wouldn't do well in combat.\n\n"
-							"\"Good luck!\""
-							))
-							
-						(scrSetDesc gScreen desc)
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="Undock" default="1" cancel="1" key="U">
-						(scrExitDock gScreen)
-					</Action>
-				</Actions>
-			</ExploreAccepted>
-			
-			<ExploreDecline>
-				<OnPaneInit>
-					(block (desc)
-						(setq desc (cat
-							"The professor looks down at his papers.\n\n"
-							"\"Well, I don't expect you to believe me. But I know it's out there. "
-							"It's out there and I'm going to find it. Twenty years I've spent looking; "
-							"twenty years of calculations and research! I won't stop now.\""
-							))
-							
-						(scrSetDesc gScreen desc)
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
-						(scrShowPane gScreen "Default")
-					</Action>
-				</Actions>
-			</ExploreDecline>
-			
-			<ExploreReturned>
-				<OnPaneInit>
-					(block (desc status)
-						(setq status (objGetGlobalData gSource "exploreStatus"))
-						
-						(switch
-							(objGetItems gPlayerShip "* +unid:&itDallSphere;")
-								(setq desc (cat
-									"\"It's beautiful! Twenty years of research and now I finally have proof! "
-									"Be careful with it! I've got a containment vessel ready for it. You didn't "
-									"damage it did you? Good!\n\n"
-									
-									"\"As promised, I have something to help you. I've created an "
-									"experimental auton that will explore an entire star system all "
-									"by itself. Go and try it out!\""
-									))
-									
-							(setq desc (cat
-								"\"Did you find it? I'm sure those are the right coordinates! "
-								"It has to be there. You have to go out there and keep looking!\""
-								))
-							)
-							
-						(scrSetDesc gScreen desc)
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
-						(block (theSphere)
-							(if (setq theSphere (item (objGetItems gPlayerShip "* +unid:&itDallSphere;") 0))
-								(block Nil
-									(objRemoveItem gPlayerShip theSphere)
-									(typSetGlobalData &stStKatsArcology; "exploreStatus" 'success)
-									(typSetGlobalData &itDallSphere; "status" 'withDall)
-									
-									;	Give the player an explorer auton
-									
-									(objAddItem gPlayerShip (itmCreate &itExplorerAuton; 1))
-									)
-								)
-								
-							(scrShowPane gScreen "Default")
-							)
-					</Action>
-				</Actions>
-			</ExploreReturned>
-
-			<ExploreAftermath>
-				<OnPaneInit>
-					(block (desc status)
-						(setq status (objGetGlobalData gSource "exploreStatus"))
-						
-						(switch
-							(eq status 'success)
-								(setq desc (cat
-									"You find Professor Dall working in his lab. The sphere is inside a massive "
-									"containment vessel connected through hundreds of wires to a bank of instruments. "
-									"The professor looks up for only a moment:\n\n"
-									"\"Yes, I'm making progress, but there are millions of pathways... "
-									"There is so much left to understand... and the power curves are immense; you "
-									"should see them...\""
-									))
-							)
-							
-						(scrSetDesc gScreen desc)
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
-						(scrShowPane gScreen "Default")
-					</Action>
-				</Actions>
-			</ExploreAftermath>
 		</Panes>
 		
 		<Language>
-			<Text id="actionUniversityHospital">"[U]niversity Hospital"</Text>
+			<Text id="actionDone">[D]one</Text>
+			<Text id="actionEngineering">School of [E]ngineering</Text>
+			<Text id="actionUniversityHospital">[U]niversity Hospital</Text>
+			<Text id="actionUniversityTaikon">[T]aikon School of Exploration</Text>
+			<Text id="actionLeave">[L]eave</Text>
 			
+			<Text id="descUniversityQuarter">
+				The schools that make up the University of New Victoria are strung along
+				the spine of the arcology. Students and professors make their way along
+				the wide avenues.
+			</Text>
+			<Text id="descTaikonEmpty">
+				You enter the Taikon School of Exploration. Several students are working
+				at various terminals, but no one appears interested in talking with you.
+			</Text>
 			<Text id="descHospitalEmpty">
-				(cat
-					"You enter the brightly lit central garden of the New Victoria University Hospital. "
-					"Recovering patients sit on articulated gurneys, while doctors and medtechs pass through, "
-					"heads buried in datapads."
-					)
-			</Text>
-			
-			<Text id="DallWelcome">
-				(cat
-					"You meet one of the faculty members of the Taikon School:\n\n"
-					
-					"\"I'm Professor Dall. Who are you? An explorer? A mercenary? Well, it doesn't matter to me.\n\n"
-					
-					"\"I need you to fetch something for me; something that's been lost for a long time but now I've found. "
-					"You may have to fight for it, of course, but I'm sure you're used to that, right?\""
-					)				
-			</Text>
-			<Text id="DallWelcomePilgrim">
-				(cat
-					"You meet one of the faculty members of the Taikon School:\n\n"
-					
-					"\"I'm Professor Dall. Who are you? Another pilgrim? Many pass through here, always searching but not finding. "
-					"But I can help you, if you help me in turn.\n\n"
-					
-					"\"I need you to fetch something for me; something that's been lost for a long time but now I've found. "
-					"You may have to fight for it, of course, but I'm sure you're used to that. "
-					"And it'll be nothing compared to what you're going to have to face, am I right?\""
-					)				
+				You enter the brightly lit central garden of the New Victoria University Hospital.
+				Recovering patients sit on articulated gurneys, while doctors and medtechs pass through,
+				heads buried in datapads.
 			</Text>
 		</Language>
 	</DockScreen>
@@ -2028,7 +1577,9 @@
 	<!-- Arts Quarter -->
 
 	<DockScreen UNID="&dsStKatsArcologyArts;"
+			inherit=			"&dsDockScreenBase;"
 			backgroundID=		"none"
+			nestedScreen=		"true"
 			>
 
 		<Display>
@@ -2050,294 +1601,31 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(scrSetDesc gScreen
-						"The innovative architecture of the Arts Quarter draws tourists from "
-						"all over Human Space."
-						)
+					(scrSetDescTranslate gScreen 'descArtsQuarter)
 				</OnPaneInit>
 				
 				<Actions>
-					<Action name="The Victorian Nightclub" key="V">
+					<Action id="actionVictorianClub" default="1">
 						(scrShowScreen gScreen "&dsCommonwealthNightclub;")
 					</Action>
 
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowScreen gScreen &dsStKatsArcology;)
+					<Action id="actionLeave" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
 		</Panes>
+
+		<Language>
+			<Text id="actionVictorianClub">The [V]ictorian Nightclub</Text>
+			<Text id="actionLeave">[L]eave</Text>
+
+			<Text id="descArtsQuarter">
+				The innovative architecture of the Arts Quarter draws tourists from
+				all over Human Space.
+			</Text>
+		</Language>
 	</DockScreen>
-	
-<!-- Professor Dall's Mission -->
-
-	<!-- Dall Sphere
-
-	GLOBAL DATA
-		
-	status:			Status of Dall's sphere
-						Nil = Never created
-						'onFreighter = On the Sung freighter (in containment vessel)
-						'found = Retrieved by the player (or otherwise loose in the world)
-						'withDall = Returned to Dall by player
-
-	-->
-
-	<ItemType UNID="&itDallSphere;"
-			name=				"inert metal sphere"
-			level=				"10"
-			value=				"0"
-			mass=				"1000"
-			frequency=			"notRandom"
-			attributes=			"alien, notForSale, questItem"
-
-			description=		"This is a one-meter sphere of a dark metal, etched with a network of thin lines and complex shapes."
-			>
-
-		<Image imageID="&rsDallSphere;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
-		
-		<StaticData>
-			<00182001_Donation>
-				;		attd	rel		text
-				'(Nil	-1		200		"This is a remarkable item! Domina will be very pleased!")
-			</00182001_Donation>
-		</StaticData>
-		
-		<Events>
-			<GetGlobalAchievements>
-				(block (theList theStatus)
-					(setq theStatus (typGetGlobalData &itDallSphere; "status"))
-					
-					(switch
-						(eq theStatus 'found)
-							(if (objGetItems gPlayerShip "* +unid:&itDallSphere;")
-								(setq theList (list (list "Found Professor Dall's alien sphere" Nil "achievements &amp; regrets")))
-								(setq theList (list (list "Found and lost Professor Dall's alien sphere" Nil "achievements &amp; regrets")))
-								)
-							
-						(eq theStatus 'withDall)
-							(setq theList (list (list "Found and delivered Professor Dall's alien sphere" Nil "achievements &amp; regrets")))
-						)
-					
-					theList
-					)
-			</GetGlobalAchievements>
-
-			<OnObjDestroyed>
-                (switch
-                    
-                    ;   If not our object, then nothing to do
-                    
-                    (!= gSource aObjDestroyed)
-                        Nil
-						
-					;	If the ship we're on got destroyed, but it left a wreck with the
-					;	sphere on it, then we're OK.
-					
-					(and aWreckObj (objGetItems aWreckObj "* +unid:&itDallSphere;"))
-						Nil
-						
-					;	If the ship got destroyed in a gravity well, then the sphere is
-					;	permanently destroyed. (Otherwise we would keep creating and
-					;	destroying the sphere.)
-					
-					(= aDestroyReason 'gravity)
-						Nil
-						
-					;	Otherwise, the object drops on its own
-                        
-					(block (theObj)
-						(setq theObj (sysCreateStation &stDallSphere; (objGetPos gSource)))
-						(objAddItem theObj (itmCreate &itDallSphere; 1))
-						(objIncVel theObj (sysVectorPolarVelocity (random 0 359) 5))
-						)
-                    )
-			</OnObjDestroyed>
-			
-			<OnUpdate>
-				(if (and (not (eq (sysGetNode) "SK")) (eq gSource gPlayerShip))
-					(block (roll)
-						(setq roll (random 1 100))
-						(switch
-							(leq roll 4)
-								(block Nil
-									(objMakeParalyzed gSource 150)
-									(objSendMessage gSource Nil "A power surge from the sphere disables your ship")
-									)
-									
-							(leq roll 10)
-								(objSendMessage gSource Nil "The sphere in your cargo hold pulses with power")
-							)
-						)
-					)
-			</OnUpdate>
-		</Events>
-	</ItemType>
-
-	<StationType UNID="&stDallSphere;"
-			name=				"inert metal sphere"
-			sovereign=			"&svNeutral;"
-			dockScreen=			"Main"
-
-			scale=				"ship"
-			mobile=				"true"
-			mass=				"1"
-			immutable=			"true" 
-			destroyWhenEmpty=	"true"
-			noMapIcon=			"true"
-			>
-
-		<Image imageID="&rsDallSphere;" imageX="96" imageY="0" imageWidth="32" imageHeight="32"/>
-
-		<DockScreens>
-			<Main>
-				<Panes>
-					<Default
-							desc=		"You find an inert metal sphere floating in space.">
-
-						<Actions>
-							<Action name="Loot" key="L" default="1" >
-								(scrShowScreen gScreen &dsRPGLoot;)
-							</Action>
-
-							<Action name="Undock" cancel="1" key="U">
-								<Exit/>
-							</Action>
-						</Actions>
-					</Default>
-				</Panes>
-			</Main>
-		</DockScreens>
-
-		<DockingPorts
-				portCount=		"2"
-				portRadius=		"24"
-				maxDist=		"3"
-				/>
-	</StationType>
-
-	<StationType UNID="&stDallMissionWreck;"
-			name=				"Sung transport wreck"
-			sovereign=			"&svNeutral;"
-			dockScreen=			"Main"
-			scale=				"ship"
-			mobile=				"true"
-			noMapIcon=			"true"
-
-			ejectaType=			"&vtWreckEjecta;"
-			
-			attributes=			"shipwreck"
-			>
-			
-		<Image shipwreckID="&scSungTransport;"/>
-		
-		<Items>
-			<Item item="&itDallSphere;" count="1"/>
-		</Items>
-
-		<Ships>
-			<Ship	count="4d4+4"	class="&scDwargRaider;"	sovereign="&svDwargRaiders;" orders="patrol"	patrolDist="5" controller="zoanthrope"/>
-		</Ships>
-		
-		<Events>
-			<GetExplosionType>
-				(intContainerGetExplosionType gSource)
-			</GetExplosionType>
-
-			<OnDamage>
-				(intContainerOnDamage gSource aDamageHP)
-			</OnDamage>
-		</Events>
-
-		<DockScreens>
-			<Main>
-				<InitialPane>
-					(switch
-						(and (objGetItems gSource "* +unid:&itDallSphere;") 
-								(eq (typGetGlobalData &itDallSphere; "status") 'onFreighter))
-							"ContainmentVessel"
-
-						"Default"
-						)
-				</InitialPane>
-				
-				<Panes>
-					<Default
-							desc=		"You are docked with the wreck of a ship.">
-
-						<Actions>
-							<Action name="Loot" key="L" default="1" >
-								(scrShowScreen gScreen &dsRPGLoot;)
-							</Action>
-
-							<Action name="Jettison" key="J">
-								(scrShowScreen gScreen &dsRPGJettison;)
-							</Action>
-
-							<Action name="Undock" cancel="1" key="U">
-								<Exit/>
-							</Action>
-						</Actions>
-					</Default>
-					
-					<ContainmentVessel>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"You enter the cargo hold of the wrecked ship and see a massive containment vessel "
-								"with giant power couplings. Through a thick window in the containment vessel you "
-								"see a metal sphere with a complex series of etchings.\n\n"
-								"There is an emergency latch on one side that opens the containment vessel."
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Open Containment" key="O" default="1">
-								(block (theSphere)
-									(setq theSphere (item (objGetItems gSource "* +unid:&itDallSphere;") 0))
-									
-									(objRemoveItem gSource theSphere)
-									(objAddItem gPlayerShip theSphere)
-									(typSetGlobalData &itDallSphere; "status" 'found)
-									
-									(shpCancelOrders gPlayerShip)
-									
-									(scrShowPane gScreen "OpenContainment")
-									)
-							</Action>
-							
-							<Action name="Undock" key="U" cancel="1">
-								(scrExitDock gScreen)
-							</Action>
-						</Actions>
-					</ContainmentVessel>
-
-					<OpenContainment>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"The titanic doors of the containment vessel split open and air rushes into it. "
-								"The sphere is held in place by thin columns.\n\n"
-								"You take the sphere and put it in your cargo hold."
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Undock" key="U" default="1" cancel="1">
-								(block Nil
-									(scrExitDock gScreen)
-									)
-							</Action>
-						</Actions>
-					</OpenContainment>
-				</Panes>
-			</Main>
-		</DockScreens>
-
-		<DockingPorts
-				portCount=		"2"
-				portRadius=		"48"
-				maxDist=		"3"
-				/>
-	</StationType>
 
 <!-- St Katharine's Star System -->
 
@@ -2962,7 +2250,5 @@
 	<Image UNID="&rsStKatsArcologyScreen;"		bitmap="Resources\StKatsArcologyScreen.jpg" loadOnUse="true"/>
 	<Image UNID="&rsStKatsArcologySchematic;"	bitmap="Resources\StKatsArcologySchematic.jpg" bitmask="Resources\StKatsArcologySchematicMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsIocrymMonumentScreen;"		bitmap="Resources\FirstContactMonumentScreen.jpg" loadOnUse="true"/>
-	
-	<Image UNID="&rsDallSphere;"		bitmap="Resources\DallSphere.jpg" bitmask="Resources\DallSphereMask.bmp" loadOnUse="true"/>
 
 </TranscendenceModule>

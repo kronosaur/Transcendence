@@ -769,6 +769,38 @@
 		</Events>
 	</DockScreen>
 
+
+<!-- PANE INIT MISSION =========================================================
+
+	MISSION OBJECT
+
+	In order to take advantage of this event, the mission object should have
+	the following characteristics:
+
+	1.	The mission type must have the "paneInitMission" attribute.
+
+	2.	The mission object must have data of "destID" with the ID of a station.
+
+	3.	The mission type should provide an event called "OnPaneInit"
+		which will be called when displaying dockscreens at the destination.
+
+-->
+
+	<Type UNID="&unidRPGPaneInitMission;">
+		<Events>
+			<OnGlobalPaneInit>
+				(enum (msnFind Nil "a +paneInitMission;") theMission
+					(if (and
+							(not (msnGetProperty theMission 'isCompleted))
+							(= (objGetID gSource) (msnGetData theMission 'paneID))
+							)
+						(msnFireEvent theMission 'OnPaneInit)
+						)
+					)
+			</OnGlobalPaneInit>
+		</Events>
+	</Type>
+
 <!-- GLOBAL FUNCTIONS ==========================================================
 
 -->
@@ -859,6 +891,78 @@
 						; Otherwise, nothing
 
 						(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
+						)
+					)
+				))
+
+			(setq rpgMissionGetAssignment (lambda (options)
+			
+				;	Options may contain the following fields
+				;
+				;		intervalPerStation: Time between mission given at this station
+				;
+				;		intervalPerType: Time between missions given by same station type
+				;
+				;		maxPerStation: Maximum number of missions that we give out at
+				;				this station.
+				;
+				;		missionCriteria: Criteria used to create new missions. [Required]
+				;
+				;		displayCriteria: If non-Nil, then we show open/active missions
+				;				that match this criteria. Otherwise, this is assumed to
+				;				be the same as missionCriteria.
+				
+				(block (
+					(displayCriteria (or (@ options 'displayCriteria) (@ options 'missionCriteria)))
+					theMission newMissions nextMissionTime
+					)
+
+					;	Show proper screen
+
+					(switch
+						;	If we have an active mission from this station then we return it.
+						(setq theMission (@ (msnFind gSource (cat "aS " displayCriteria)) 0))
+							theMission
+
+						;	If we have an open mission available then return it.
+						(setq theMission (@ (msnFind gSource (cat "oS" displayCriteria)) 0))
+							theMission
+
+						;	Don't give out more than X mission per station
+						(and (@ options 'maxPerStation)
+								(geq (count (msnFind gSource "*S")) (@ options 'maxPerStation))
+								)
+							Nil
+
+						;	If it's not time for a new mission, then nothing
+						(and (setq nextMissionTime (objGetData gSource 'nextMissionTime))
+								(gr nextMissionTime (unvGetTick)))
+							Nil
+
+						(and (setq nextMissionTime (objGetTypeData gSource 'nextMissionTime))
+								(gr nextMissionTime (unvGetTick)))
+							Nil
+
+						;	Make a list of available missions. We filter out any missions
+						;	that are outside our system level. If we can't find anything, then we've got nothing.
+						(not (setq newMissions (typFind (@ options 'missionCriteria))))
+							Nil
+
+						;	Create a random mission from the list. If we succeed, then return it
+						(setq theMission (msnCreate newMissions gSource))
+							(block Nil
+								;	And set next mission times if required
+								(if (@ options 'intervalPerStation)
+									(objSetData gSource 'nextMissionTime (+ (unvGetTick) (@ options 'intervalPerStation)))
+									)
+								(if (@ options 'intervalPerType)
+									(objSetTypeData gSource 'nextMissionTime (+ (unvGetTick) (@ options 'intervalPerType)))
+									)
+								theMission
+								)
+
+						; Otherwise, nothing
+						Nil
 						)
 					)
 				))

@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE TranscendenceModule
+	[
+	<!-- 0160-016F BATTLE ARENA TRACKS -->
+	
+	<!ENTITY muArenaSlicer					"0x00820160">
+	<!ENTITY muArenaSurvivor				"0x00820161">
+	<!ENTITY muArenaContender				"0x00820162">
+	]>
+
+
+<TranscendenceModule>
+
+	<!-- Battle Arena Melee ====================================================
+
+	EXTRA DATA
+
+	status: One of the following:
+		Nil:			Player is still alive
+		playerKilled	Player has been killed (mission will fail when melee is over)
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msBattleArenaMelee;"
+			name=				"Battle Arena Melee"
+			attributes=			"battleArena"
+
+			level=				"3"
+				 
+			maxAppearing=		"5"
+			>
+
+		<Events>
+			<OnCreate>
+				(block (destObj)
+
+					(switch
+						;	This mission only works in Rigel Aurelius
+						(not (objHasAttribute aOwnerObj "battleArenaMaximus"))
+							(msnDestroy gSource)
+							
+						;	Only for rookies
+						(!= (typGetData &stBattleArena; 'arenaRank) 'rookie)
+							(msnDestroy gSource)
+
+						;	Set up the mission
+						(block Nil
+							;	No intro available
+							(msnSetProperty gSource 'isIntroShown True)
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(rookieScore (objGetData arenaObj 'rookieScore))
+					(opponentCount (random 10 20))
+
+					;	Find the ship classes to fight
+					(melee1 (typFind "s +battleArena; +melee1"))
+					(melee2 (typFind "s +battleArena; +melee2"))
+					(meleeShips (map (make 'sequence opponentCount) i
+							(if (geq (random 1 20) rookieScore)
+								(random melee1)
+								(random melee2)
+								)
+							))
+					)
+					(msnSetData gSource 'meleeShips meleeShips)
+					
+					(msnIncData gSource 'shipsLeft)
+
+					(msnRegisterForEvents gSource gPlayerShip)
+					(objSetData gPlayerShip 'battleArenaCombatant True)
+					)
+			</OnAccepted>
+
+			<OnStarted>
+				(block (
+					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(targetPlayerChance 20)
+					(offset 0)
+					shipIDs
+					)
+					;	Create a bunch of ships and order them to attack
+					(setq shipIDs (map (msnGetData gSource 'meleeShips) theClass
+						(block (thisShip)
+							(setq thisShip (sysCreateShip 
+								theClass
+								(sysVectorPolarOffset arenaObj (random 204 336) (+ 15 (* (modulo (setq offset (+ offset 1)) 12) 2)))
+								&svGladiator;
+								))
+							(objSetData thisShip 'battleArenaCombatant True)
+
+							;	Some ships attack the player, others attack the nearest target
+							(if (leq (random 1 100) targetPlayerChance)
+								(block Nil
+									(shpOrder thisShip 'attack gPlayerShip)
+									(shpOrder thisShip 'dock arenaObj)
+									)
+
+								;	We add some command code to the ship so that it chooses a
+								;	random gladiator target
+								(shpSetCommandCode thisShip
+									(block (targetList theArena)
+										(setq theArena (sysFindObject gSource "TN +battleArena;"))
+										(setq targetList (sysFindObject gSource "sA N:150; D:battleArenaCombatant;"))
+
+										(if targetList
+											(shpOrder gSource 'attack (random targetList))
+											(shpOrder gSource 'dock theArena)
+											)
+										)
+									)
+								)
+
+							(msnRegisterForEvents gSource thisShip)
+							(msnIncData gSource 'shipsLeft)
+							(objSuspend thisShip)
+							(objGetID thisShip)
+							)
+						))
+					(msnSetData gSource 'meleeShips shipIDs)
+					)
+			</OnStarted>
+
+			<OnAcceptedUndock>
+				(block (
+					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					)
+					;	Resume ships
+					(enum (msnGetData gSource 'meleeShips) shipID (objResume (objGetObjByID shipID)))
+
+					;	Prepare arena
+					(bamDoorsClose arenaObj)
+					(objSetData arenaObj 'drawAllowed Nil)
+					(objSetData arenaObj 'Status 'inProgress)
+
+					;	Play Slicer track
+					(uiSetSoundtrackMode 'missionStart &muArenaSlicer;)
+					)
+			</OnAcceptedUndock>
+
+			<OnObjDestroyed>
+				(block Nil
+					;	Update the ship count
+					(msnIncData gSource 'shipsLeft -1)
+					
+					;	If the ship left a wreck, then trash the items because we
+					;	don't want the player to get too much loot from these wrecks
+					(if aWreckObj
+						(objEnumItems aWreckObj "dNU" theItem (block Nil
+							(objRemoveItem aWreckObj theItem)
+							(objAddItem aWreckObj (itmSetDamaged theItem True))
+							))
+						)
+
+					(if (= aObjDestroyed gPlayerShip)
+						(block Nil
+							(msnSetData gSource 'status 'playerKilled)
+							(objSetData gPlayerShip 'battleArenaCombatant Nil)
+							)
+						)
+
+					(if (and (msnGetProperty gSource 'isActive) gPlayerShip (= aOrderGiver gPlayerShip))
+						(msnIncData gSource 'score)
+						)
+
+					;	If only one ship is left, then the match is over
+					(if (leq (msnGetData gSource 'shipsLeft) 1)
+						(if (= (msnGetData gSource 'status) 'playerKilled)
+							(msnFailure gSource)
+							(msnSuccess gSource)
+							)
+						)
+					)
+			</OnObjDestroyed>
+
+			<OnObjDocked>
+				(block (
+					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					)
+					(if (and (= aDockTarget arenaObj) (not (= aObjDocked gPlayerShip)))
+						(block Nil
+							(objMoveTo aObjDocked (sysVectorPolarOffset arenaObj 270 80))
+							(msnUnregisterForEvents gSource aObjDocked)
+							(shpCancelOrders aObjDocked)
+							(shpOrderGate aObjDocked)
+							)
+						)
+					)
+			</OnObjDocked>
+
+
+			<OnCompleted>
+				(block (
+					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					)
+					(switch
+						(= aReason 'success)
+							(block Nil
+								(objIncData arenaObj 'meleeCount)
+								(objIncData arenaObj 'rookieScore (msnGetData gSource 'score))
+								(msnSetData gSource 'reward (* (msnGetData gSource 'score) 25))
+
+								;	Back to travel music (we're still technically in combat, because we
+								;	haven't detected that we're out yet, so we force travel mode).
+								(uiQueueSoundtrack (if (geq (objGetData arenaObj 'rookieScore) 20) &muArenaContender; &muArenaSurvivor;))
+								(uiSetSoundtrackMode 'missionEndTravel)
+								)
+						)
+					;	Open arena doors
+					(bamDoorsOpen arenaObj)
+					(objSetData arenaObj 'Status Nil)
+					)
+			</OnCompleted>
+
+			<OnReward>
+				(block (
+					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(totalScore (objGetData arenaObj 'rookieScore))
+					)
+					; Pay the player
+					(plyCredit gPlayer (msnGetData gSource 'reward))
+
+					; If the player has defeated enough enemies, then he is a gladiator
+					(if (geq totalScore 20)
+						(block Nil
+							(objSetGlobalData arenaObj 'arenaRank 'gladiator)
+							(objSetGlobalData arenaObj 'arenaRep 0)
+							(objSetGlobalData arenaObj 'arenaSkill 200)
+							(objSetData arenaObj 'matchCount 0)
+							(objSetData arenaObj 'results '(0 0 0 0))
+							)
+						)
+					)
+			</OnReward>
+
+		</Events>
+		
+		<Language>
+			<Text id="Name">
+				"Battle Arena Melee"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"You have entered the Battle Arena Maximus as a contestant. "
+					"Prove your worth by surviving the Melee.\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: 25 credits per kill"
+					)
+			</Text>
+			<Text id="Briefing">
+				(block (
+					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(totalScore (objGetData arenaObj 'rookieScore))
+					(shipsLeft (if (= totalScore 19)
+							"one more ship"
+							(cat (- 20 totalScore) " more ships")
+							))
+					)
+					(switch
+						(= (objGetData arenaObj "meleeCount") 5)
+							(msnTranslate gSource 'Briefing.lastChance { shipsLeft:shipsLeft })
+
+						(= totalScore 0)
+							(msnTranslate gSource 'Briefing.firstTime { shipsLeft:shipsLeft })
+
+						(leq totalScore 15)
+							(msnTranslate gSource 'Briefing.standard { shipsLeft:shipsLeft })
+
+						(msnTranslate gSource 'Briefing.nearlyThere { shipsLeft:shipsLeft })
+						)
+					)
+			</Text>
+			<Text id="Briefing.lastChance">
+				(cat
+					"\"I don't know if you have the killer instincts to be a gladiator. "
+					"I'll make you a deal: if you can destroy " (@ gdata 'shipsLeft)
+					" in this next melee then I'll make you a gladiator. OK?\""
+					)
+			</Text>
+			<Text id="Briefing.firstTime">
+				"A rookie from the provinces, eh? No sense in wasting a gladiator's time
+				on you. Prove yourself by surviving a melee and then we'll see. Deal?"
+			</Text>
+			<Text id="Briefing.standard">
+				"A little more practice won't hurt you. Survive a melee and we'll pay
+				you	25 credits for every opponent you kill."
+			</Text>
+			<Text id="Briefing.nearlyThere">
+				 (cat
+					"\"Your skills have improved greatly. Kill " (@ gdata 'shipsLeft)
+					" in a melee and you will become a gladiator!\""
+					)
+			</Text>
+			<Text id="AcceptLabel">[F]ight!</Text>
+			<Text id="DeclineLabel">[B]ack Out</Text>
+			<Text id="AcceptReply">
+				"\"Good Luck!\""
+			</Text>
+			<Text id="DeclineReply">
+				"\"This kind of challenge is not for the weak and fearful. You are wise to decline.\""
+			</Text>
+			<Text id="InProgress">
+				"\"We're still in the middle of a match! Come back later.\""
+			</Text>
+			<Text id="FailureDebrief">
+				"Are you sure you want to be a gladiator? You don't seem very good in the Arena.
+				Oh well, at least your death will be a good appetizer for the crowd."
+			</Text>
+			<Text id="SuccessDebrief">
+				(block (
+					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(totalScore (objGetData arenaObj 'rookieScore))
+					(meleeScore (msnGetData gSource 'score))
+					(subs { score:meleeScore reward:(fmtCurrency 'credit (msnGetData gSource 'reward))})
+					)
+					(switch
+						(geq totalScore 20)
+							(msnTranslate gSource 'Winner.gladiator subs)
+
+						(geq (objGetData arenaObj 'meleeCount) 6)
+							(msnTranslate gSource 'Winner.washout subs)
+
+						(eq meleeScore 0)
+							(msnTranslate gSource 'Winner.0 subs)
+
+						(eq meleeScore 1)
+							(msnTranslate gSource 'Winner.1 subs)
+
+						(and (leq meleeScore 3) (leq totalScore 8))
+							(msnTranslate gSource 'Winner.2 subs)
+
+						(leq meleeScore 8)
+							(msnTranslate gSource 'Winner.3 subs)
+
+						(leq meleeScore 11)
+							(msnTranslate gSource 'Winner.4 subs)
+
+						(msnTranslate gSource 'Winner.5 subs)
+						)
+					)
+			</Text>
+			<Text id="Winner.gladiator">
+				"\"Congratulations, you've proven yourself in the Arena. You may now call yourself a gladiator.\""
+			</Text>
+			<Text id="Winner.washout">
+				"\"Sorry, but you don't have the killer instinct to be a gladiator.\""
+			</Text>
+			<Text id="Winner.0">
+				"\"You didn't even kill a single opponent! You'll never be a gladiator at that rate!\""
+			</Text>
+			<Text id="Winner.1">
+				(cat
+					"\"Looks like you're better at running away than killing! "
+					"For killing a single opponent, we award you " (@ gData 'reward) ".\""
+					)
+			</Text>
+			<Text id="Winner.2">
+				(cat
+					"\"Hiding in a corner is not what the Arena is all about! "
+					"We've deposited " (@ gData 'reward) " in your account, but "
+					"you'll have to do better if you want to be a gladiator."
+					)
+			</Text>
+			<Text id="Winner.3">
+				(cat
+					"\"You fight well for a rookie! You survived the melee and destroyed "
+					(@ gData 'score) " opponents. We've deposited " (@ gData 'reward)
+					" in your account.\""
+					)
+			</Text>
+			<Text id="Winner.4">
+				(cat 
+					"\"Your skills are impressive! You will make a fine gladiator soon. "
+					"For killing " (@ gData 'score) " opponents we have deposited "
+					(@ gData 'reward) " in your account.\""
+					)
+			</Text>
+			<Text id="Winner.5">
+				(cat
+					"\"You are a killing machine! For slaughtering " (@ gData 'score)
+					" opponents, we award you " (@ gData 'reward) ".\""
+					)
+			</Text>
+
+			<Text id="SuccessMsg">Victory!</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>
