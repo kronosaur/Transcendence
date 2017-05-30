@@ -2184,7 +2184,7 @@
 									Nil
 									)
 								)
-								
+							(actionCode (@ actionDesc 'code))
 							(nextPageNo Nil)
 							)
 							
@@ -2220,9 +2220,7 @@
 									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
 										(lambda ()
 											(block Nil
-												(if (@ actionDesc 'code)
-													((@ actionDesc 'code))
-													)
+												(if actionCode (actionCode))
 													
 												(scrSetData theScreen 'curPage Nil)
 												(if (@ options 'onExitPane)
@@ -2239,9 +2237,7 @@
 									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
 										(lambda ()
 											(block Nil
-												(if (@ actionDesc 'code)
-													((@ actionDesc 'code))
-													)
+												(if actionCode (actionCode))
 													
 												(scrSetData theScreen 'curPage (+ pageNo 1))
 												(scrShowPane theScreen (@ (scrGetScreen theScreen) 'pane))
@@ -2253,9 +2249,7 @@
 									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
 										(lambda ()
 											(block Nil
-												(if (@ actionDesc 'code)
-													((@ actionDesc 'code))
-													)
+												(if actionCode (actionCode))
 													
 												(scrExitScreen theScreen)
 												)
@@ -2266,9 +2260,7 @@
 									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
 										(lambda ()
 											(block Nil
-												(if (@ actionDesc 'code)
-													((@ actionDesc 'code))
-													)
+												(if actionCode (actionCode))
 													
 												(scrExitScreen theScreen 'forceUndock)
 												)
@@ -2279,9 +2271,7 @@
 									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
 										(lambda ()
 											(block Nil
-												(if (@ actionDesc 'code)
-													((@ actionDesc 'code))
-													)
+												(if actionCode (actionCode))
 													
 												((@ options 'onAcceptDecline) theScreen 'accept pageDesc options)
 												)
@@ -2292,9 +2282,7 @@
 									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
 										(lambda ()
 											(block Nil
-												(if (@ actionDesc 'code)
-													((@ actionDesc 'code))
-													)
+												(if actionCode (actionCode))
 													
 												((@ options 'onAcceptDecline) theScreen 'decline pageDesc options)
 												)
@@ -2307,9 +2295,7 @@
 									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
 										(lambda ()
 											(block Nil
-												(if (@ actionDesc 'code)
-													((@ actionDesc 'code))
-													)
+												(if actionCode (actionCode))
 													
 												(scrSetData theScreen 'curPage nextPageNo)
 												(scrShowPane theScreen (@ (scrGetScreen theScreen) 'pane))
@@ -2323,9 +2309,7 @@
 									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
 										(lambda ()
 											(block Nil
-												(if (@ actionDesc 'code)
-													((@ actionDesc 'code))
-													)
+												(if actionCode (actionCode))
 													
 												((@ options 'onNavigate) theScreen nextPage pageDesc options)
 												)
