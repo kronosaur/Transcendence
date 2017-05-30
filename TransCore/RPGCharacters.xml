@@ -438,8 +438,7 @@
 				; This function returns the given character's relationship with 
 				; the player. The function returns one of the following values:
 				;
-				; Nil: The player and the character have never met (or the
-				;		character does not have an opinion).
+				; Nil: The player and the character have never met.
 				;
 				; 'favorable: The character is favorable towards the player.
 				;		(i.e., rel is neutral, likes, or loyalty)
@@ -451,7 +450,7 @@
 					(setq rel (rpgCharacterGetRel charType))
 
 					(switch
-						(not rel)
+						(not (typGetData charType 'firstPlayerMeetingTime))
 							Nil
 
 						(or (eq rel 'nemesis)
@@ -516,10 +515,6 @@
 						(typSetData charType 'firstPlayerMeetingTime (unvGetTick))
 						)
 					)
-				))
-
-			(setq rpgCharacterIsKnown (lambda (charType)
-				(typGetData charType 'firstPlayerMeetingTime)
 				))
 
 			(setq rpgCharacterSetScreen (lambda (charType screenData)

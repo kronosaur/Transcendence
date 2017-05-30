@@ -309,7 +309,7 @@
 					)
 			</Text>
 			<Text id="Intro">
-				(if (rpgCharacterIsKnown &unidKateMorgental;)
+				(if (rpgCharacterGetQuickRel &unidKateMorgental;)
 					(msnTranslate gSource "Intro:knowKate")
 					(msnTranslate gSource "Intro:meetKate")
 					)
