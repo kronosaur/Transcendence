@@ -1480,6 +1480,133 @@
 		</Ships>
 
 	</EncounterType>
+	
+	<!-- Abandoned crate looting screen (DEPRECATED) -->
+	
+	<DockScreen UNID="&dsAbandonedCrateObsolete;"
+		inherit=			"&dsDockScreenBase;"
+		>
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block nil
+						(scrSetDescTranslate gScreen 'descAbandonedCrate)
+						(if (not (objGetItems gSource '*U))
+							(block nil
+								(scrEnableAction gScreen 'actionLoot nil)
+								(scrSetActionDesc gScreen 'actionLoot (scrTranslate gScreen 'descNoItemsHere))
+								)
+							)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionLoot" default="1">
+						(scrShowScreen gScreen &dsRPGLoot;)
+					</Action>
+
+					<Action id="actionJettison">
+						(scrShowScreen gScreen &dsRPGJettison;)
+					</Action>
+
+					<Action id="actionUndock" cancel="1" default="1">
+						<Exit/>
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+		
+		<Language>
+			<Text id="descAbandonedCrate">"You are docked with an abandoned cargo crate."</Text>
+		</Language>
+	</DockScreen>
+	
+	<!-- Abandoned ship looting screen (DEPRECATED) -->
+	
+	<DockScreen UNID="&dsAbandonedShipObsolete;"
+		inherit=			"&dsDockScreenBase;"
+		>
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block nil
+						(scrSetDescTranslate gScreen 'descAbandonedShip)
+						(if (not (objGetItems gSource '*U))
+							(block nil
+								(scrEnableAction gScreen 'actionLoot nil)
+								(scrSetActionDesc gScreen 'actionLoot (scrTranslate gScreen 'descNoItemsHere))
+								)
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionLoot" default="1">
+						(scrShowScreen gScreen &dsRPGLoot;)
+					</Action>
+
+					<Action id="actionJettison">
+						(scrShowScreen gScreen &dsRPGJettison;)
+					</Action>
+
+					<Action id="actionUndock" cancel="1" default="1">
+						<Exit/>
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+		
+		<Language>
+			<Text id="descAbandonedShip">"You are docked with the wreck of a ship."</Text>
+		</Language>
+	</DockScreen>
+	
+	<!-- Abandoned station looting screen (DEPRECATED) -->
+
+	<DockScreen UNID="&dsAbandonedStationObsolete;">
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (desc extensionVersion)
+						; Get the abandoned screen description from the object.
+						(setq desc (objTranslate gSource 'AbandonedScreenDesc))
+						
+						; If the object doesn't have a description then come up with a good
+						; default
+						(if (not desc)
+							(setq desc (switch
+								; If not populated, then just a destroyed installation
+								(not (objHasAttribute gSource "populated"))
+									(cat "You are docked at a destroyed structure. "
+											"Leaking fluids and venting gases obscure the ruined machinery inside.")
+										
+								; Standard default
+								(cat "You are docked at the lifeless ruins of a destroyed station. "
+										"Wrecked machinery and smoldering bodies litter the silent, cavernous bay.")
+								))
+							)
+							
+						; Set it
+						(scrSetDesc gScreen desc);
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Loot" key="L" default="1" >
+						(scrShowScreen gScreen &dsRPGLoot;)
+					</Action>
+
+					<Action name="Jettison" key="J">
+						(scrShowScreen gScreen &dsRPGJettison;)
+					</Action>
+
+					<Action name="Undock" cancel="1" key="U">
+						<Exit/>
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
 
 	<Globals>
 		(block Nil

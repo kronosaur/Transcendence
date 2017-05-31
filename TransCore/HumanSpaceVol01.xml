@@ -617,6 +617,7 @@
 	<!ENTITY adPart1Desc				"0x00009301">
 
 	<!ENTITY dsAbandonedStation			"0x00010032"> <!-- dsRPGAbandonedStation synonym -->
+	<!ENTITY dsAbandonedStationObsolete	"0x0000A003"> 
 	<!ENTITY dsDryDock					"0x0000A004">
 	<!ENTITY dsInstallDevice			"0x0000A005">
 	<!ENTITY dsRepairArmor				"0x0000A006">
@@ -632,8 +633,10 @@
 	<!ENTITY dsUseArmorPatch			"0x0000A012">
 	<!ENTITY dsMission					"0x0000A014">
 	<!ENTITY dsRefuseContamination		"0x0000A015">
-	<!ENTITY dsAbandonedShip			"0x0000A017">
-	<!ENTITY dsAbandonedCrate			"0x0000A018">
+	<!ENTITY dsAbandonedShip			"0x00010032"> <!-- dsRPGAbandonedStation synonym -->
+	<!ENTITY dsAbandonedShipObsolete	"0x0000A017">
+	<!ENTITY dsAbandonedCrate			"0x00010032"> <!-- dsRPGAbandonedStation synonym -->
+	<!ENTITY dsAbandonedCrateObsolete	"0x0000A018">
 	<!ENTITY dsNavSign					"0x0000A019">
 	<!ENTITY dsAbandonedNavSign			"0x0000A01A">
 	<!ENTITY dsBarricade				"0x0000A01C">
