@@ -28,7 +28,12 @@
 <!-- Abbasid Survivalists ================================================= -->
 
 	<Sovereign UNID="&svAbbasid;"
-			name="Abbasid Survivalists"
+			name=":the Abbasid Caliphate"
+			shortName=":the Abbasid"
+			adjective="Abbasid"
+			demonym=":an Abbasid survivalist(s)"
+			plural="true"
+
 			alignment="destructive order"
 			/>
 
@@ -102,7 +107,12 @@
 <!-- Bennin Xenophobes ==================================================== -->
 
 	<Sovereign UNID="&svXenophobes;"
-			name="Bennin Xenophobes"
+			name=":the Bennin Conclave"
+			shortName=": Xenophobes"
+			adjective="Xenophobe"
+			demonym=":a Xenophobe disciple(s)"
+			plural="true"
+
 			alignment="destructive chaos"
 			/>
 	
@@ -810,7 +820,10 @@
 <!-- Death Drugs Cartel =================================================== -->
 
 	<Sovereign UNID="&svDeathDrugsCartel;"
-			name="Death Drugs Cartel"
+			name=":the Death Drugs Cartel"
+			adjective="Death Drugs Cartel"
+			demonym=":a Death Drugs Cartel member(s)"
+
 			alignment="destructive order"
 			/>
 
@@ -1360,7 +1373,12 @@
 <!-- Gaian Terraformers =================================================== -->
 
 	<Sovereign UNID="&svGaianTerraformers;"
-			name="Gaian Terraformers"
+			name=":the Gaian League"
+			shortName=": Gaians"
+			adjective="Gaian"
+			demonym=":a Gaian(s)"
+			plural="true"
+
 			alignment="destructive order"
 			/>
 
@@ -1536,7 +1554,12 @@
 <!-- Heliotropes ========================================================== -->
 
 	<Sovereign UNID="&svHeliotropes;"
-			name="Heliotropes"
+			name=":the Heliotrope kingdom"
+			shortName=": Heliotropes"
+			adjective="Heliotrope"
+			demonym=":a Heliotropian(s)"
+			plural="true"
+
 			alignment="destructive order"
 			/>
 
@@ -1985,7 +2008,12 @@
 <!-- Himal Separatists ==================================================== -->
 
 	<Sovereign UNID="&svHimalSeparatists;"
-			name="Himal Separatists"
+			name=":the Himal coalition"
+			shortName=":the Himal"
+			adjective="Himal"
+			demonym=":a Himalian(s)"
+			plural="true"
+
 			alignment="destructive order"
 			/>
 
@@ -2094,7 +2122,12 @@
 <!-- Huari Empire ========================================================= -->
 
 	<Sovereign UNID="&svHuariEmpire;"
-			name="Huari Empire"
+			name=":the Huari Empire"
+			shortName=":the Huari"
+			adjective="Huari"
+			demonym=":a Huari|Huari"
+			plural="true"
+
 			alignment="destructive order"
 			>
 		<Relationships>
@@ -2259,7 +2292,12 @@
 <!-- Kobol Syndicate ======================================================= -->
 
 	<Sovereign UNID="&svKobolWarlords;"
-			name="Kobol Syndicate"
+			name=":the Kobol Syndicate"
+			shortName=":the Kobol"
+			adjective="Kobol"
+			demonym=":a Kobol warlord(s)"
+			plural="true"
+
 			alignment="destructive chaos"
 			/>
 
@@ -2479,7 +2517,12 @@
 <!-- Marauders ============================================================ -->
 
 	<Sovereign UNID="&svMarauders;"
-			name="Lombard Marauders"
+			name=":the Marauder confederacy"
+			shortName=": Marauders"
+			adjective="Marauder"
+			demonym=":a Marauder(s)"
+			plural="true"
+
 			alignment="destructive order"
 			/>
 
@@ -3674,6 +3717,10 @@
 
 	<Sovereign UNID="&svPteravores;"
 			name="pteravores"
+			adjective="pteravore"
+			demonym=":a pteravore(s)"
+			plural="true"
+
 			alignment="destructive chaos"
 			/>
 
@@ -4066,7 +4113,12 @@
 <!-- Ranx Empire =========================================================== -->
 
 	<Sovereign UNID="&svRanxEmpire;"
-			name="Ranx Empire"
+			name=":the Ranx Empire"
+			shortName=":the Ranx"
+			adjective="Ranx"
+			demonym=":a Ranx citizen(s)"
+			plural="true"
+
 			alignment="destructive order"
 			/>
 
@@ -4642,7 +4694,12 @@
 <!-- Sapiens ============================================================== -->
 
 	<Sovereign UNID="&svSapiens;"
-			name="Sapiens Preservation Society"
+			name=":the Sapiens Preservation Society"
+			shortName=": Sapiens"
+			adjective="Sapient"
+			demonym=":a Sapient(s)"
+			plural="true"
+
 			alignment="destructive chaos"
 			/>
 
@@ -5282,7 +5339,12 @@
 <!-- Ventari Settlers ===================================================== -->
 
 	<Sovereign UNID="&svVentariSettlers;"
-			name="Ventari Settlers"
+			name=": Ventari coalition"
+			shortName=":the Ventari"
+			adjective="Ventari"
+			demonym=":a Ventarian(s)"
+			plural="true"
+
 			alignment="destructive order"
 			/>
 

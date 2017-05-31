@@ -3,7 +3,12 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svPirates;"
-			name="Charon Pirates"
+			name=":the Charon confederacy"
+			shortName=": Charon pirates"
+			adjective="Charon"
+			demonym=":a Charon pirate(s)"
+			plural="true"
+
 			alignment="destructive order"
 			/>
 

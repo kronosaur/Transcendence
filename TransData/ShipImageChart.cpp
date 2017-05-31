@@ -206,19 +206,19 @@ void GenerateShipImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 			case orderLargest:
 				wsprintf(szBuffer, "%04d%s%x",
 						2048 - RectWidth(pClass->GetImage().GetImageRect()),
-						pClass->GetName().GetASCIIZPointer(),
+						pClass->GetNounPhrase().GetASCIIZPointer(),
 						pClass);
 				break;
 
 			case orderSmallest:
 				wsprintf(szBuffer, "%04d%s%x",
 						RectWidth(pClass->GetImage().GetImageRect()),
-						pClass->GetName().GetASCIIZPointer(),
+						pClass->GetNounPhrase().GetASCIIZPointer(),
 						pClass);
 				break;
 
 			default:
-				wsprintf(szBuffer, "%s%x", pClass->GetName().GetASCIIZPointer(), pClass);
+				wsprintf(szBuffer, "%s%x", pClass->GetNounPhrase().GetASCIIZPointer(), pClass);
 				break;
 			}
 

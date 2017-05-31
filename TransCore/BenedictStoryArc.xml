@@ -65,8 +65,8 @@
 		</Events>
 		
 		<Language>
-			<Text id="actionTalkToAbbess">"*[M]atriarch's Chamber"</Text>
-			<Text id="actionTalkToBenedict">"*Talk to [B]enedict"</Text>
+			<Text id="actionTalkToAbbess">*[M]atriarch's Chamber</Text>
+			<Text id="actionTalkToBenedict">*Talk to [B]enedict</Text>
 		</Language>
 	</Type>
 	
@@ -272,85 +272,71 @@
 		</Panes>
 		
 		<Language>
-			<Text id="actionBenedict">"[C]ontinue"</Text>
-			<Text id="actionDone">"Do[n]e"</Text>
+			<Text id="actionBenedict">[C]ontinue</Text>
+			<Text id="actionDone">Do[n]e</Text>
 			
 			<Text id="IntroFirst">
-				(cat
-					"You are docked at an abbey of the Sisters of Domina. "
-					"A woman in a flowing cardinal robe approaches you.\n\n"
+				You are docked at an abbey of the Sisters of Domina.
+				A woman in a flowing cardinal robe approaches you.
 							
-					"\"Welcome, pilgrim! Your journey to the Galactic Core has just begun. "
-					"Your path will be filled with many obstacles, but do not worry: "
-					"Domina chooses only those who have the strength to succeed.\""
-					)
+				"Welcome, pilgrim! Your journey to the Galactic Core has just begun.
+				Your path will be filled with many obstacles, but do not worry:
+				Domina chooses only those who have the strength to succeed."
 			</Text>
 			<Text id="IntroReturning">
-				(cat
-					"The abbess greets you:\n\n"
+				The abbess greets you:
 					
-					"\"Welcome back, %name%! Your journey to the Galactic Core has just begun. "
-					"Whatever obstacles you've faced so far are nothing compared to what "
-					"awaits you. Take comfort in Domina's guidance.\""
-					)
+				"Welcome back, %name%! Your journey to the Galactic Core has just begun.
+				Whatever obstacles you've faced so far are nothing compared to what
+				awaits you. Take comfort in Domina's guidance."
 			</Text>
 			<Text id="IntroSkip">
-				(cat
-					"The abbess signals an unseen companion and a stout man emerges from "
-					"the shadows. He marches to the abbess's side, looking past you at "
-					"your ship.\n\n"
+				The abbess signals an unseen companion and a stout man emerges from
+				the shadows. He marches to the abbess's side, looking past you at
+				your ship.
 					
-					"The abbess continues: \"This is Benedict, our most valuable friend. "
-					"He will help you prepare for your journey.\""
-					)
+				The abbess continues: "This is Benedict, our most valuable friend.
+				He will help you prepare for your journey."
 			</Text>
 			
-			<Text id="q1:Label">"*\"Who is [D]omina?\""</Text>
+			<Text id="q1:Label">*"Who is [D]omina?"</Text>
 			<Text id="q1:Answer">
-				(cat
-					"\"Domina is the divine intelligence who brought you here!\n\n"
+				"Domina is the divine intelligence who brought you here!
 					
-					"\"You can feel her in your thoughts, can't you? She compels you "
-					"to make the long journey to the Core.\n\n"
+				"You can feel her in your thoughts, can't you? She compels you
+				to make the long journey to the Core.
 					
-					"\"I envy you! Very few are chosen by Domina, and though we see "
-					"only a fraction of her plan, we know she fights to defend all life "
-					"in the Galaxy. Whatever her plan, your journey will affect "
-					"all humanity.\n\n"
+				"I envy you! Very few are chosen by Domina, and though we see
+				only a fraction of her plan, we know she fights to defend all life
+				in the Galaxy. Whatever her plan, your journey will affect
+				all humanity.
 					
-					"\"Perhaps when you reach her you will understand.\""
-					)
+				"Perhaps when you reach her you will understand."
 			</Text>
 			
-			<Text id="q2:Label">"*\"How do I reach the [G]alactic Core?\""</Text>
+			<Text id="q2:Label">*"How do I reach the [G]alactic Core?"</Text>
 			<Text id="q2:Answer">
-				(cat
-					"\"The stargates will take you. Seek them out and enter. "
-					"But be prepared for many obstacles. You must grow stronger to reach the Core.\n\n"
+				"The stargates will take you. Seek them out and enter.
+				But be prepared for many obstacles. You must grow stronger to reach the Core.
 					
-					"\"You will upgrade your ship in your travels, and eventually you'll "
-					"command terrible energies, enough to defeat anyone who blocks your path.\""
-					)
+				"You will upgrade your ship in your travels, and eventually you'll
+				command terrible energies, enough to defeat anyone who blocks your path."
 			</Text>
 			
-			<Text id="q3:Label">"*\"[W]hat obstacles will I face?\""</Text>
+			<Text id="q3:Label">*"[W]hat obstacles will I face?"</Text>
 			<Text id="q3:Answer">
-				(cat
-					"\"Star travel is dangerous, even in the Commonwealth. "
-					"You'll face pirates, outlaws and worse before you reach the Core. "
-					"But we can prepare you.\""
-					)
+				"Star travel is dangerous, even in the Commonwealth.
+				You'll face pirates, outlaws and worse before you reach the Core.
+				But we can prepare you."
 			</Text>
 			
 			<Text id="BenedictMeeting">
-				(cat
-					"The abbess signals an unseen companion and a stout man emerges from "
-					"the shadows. He marches to the abbess's side, looking past you at "
-					"your ship.\n\n"
+				The abbess signals an unseen companion and a stout man emerges from
+				he shadows. He marches to the abbess's side, looking past you at
+				your ship.
 					
-					"The abbess continues: \"This is Benedict, our most valuable friend. "
-					"He will help you.\""
-					)
+				The abbess continues: "This is Benedict, our most valuable friend.
+				He will help you."
 			</Text>
 		</Language>
 	</DockScreen>

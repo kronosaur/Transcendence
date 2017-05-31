@@ -74,7 +74,7 @@
 	<!-- Arms Dealer, Rasiermesser -->
 
 	<StationType UNID="&stArmsDealerRasiermesser;"
-			name=				"Rasiermesser Arms &amp; Armor|Rasiermesser Arms &amp; Armor"
+			name=				": Rasiermesser Arms &amp; Armor|Rasiermesser Arms &amp; Armor"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
@@ -95,8 +95,6 @@
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, generic, human, independent, populated, rasiermesser"
 			levelFrequency=		"-rurv ----- ----- ----- -----"
 			locationCriteria=	"+planetary"
-
-			noArticle=			"true"
 			>
 
 		<Image			imageID="&rsStations1;" imageX="256" imageY="384" imageWidth="128" imageHeight="128"/>
@@ -230,8 +228,6 @@
 			unique=				"inSystem"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
-
-			definiteArticle=	"true"
 			>
 
 		<Image imageID="&rsRasiermesserFactory;" imageX="0" imageY="0" imageWidth="192" imageHeight="256"/>

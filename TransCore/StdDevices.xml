@@ -728,7 +728,7 @@
 	<!-- SN2500 reactor -->
 
 	<ItemType UNID="&it250MWReactor;"
-			name=				"SN2500 reactor"
+			name=				":an SN2500 reactor"
 			attributes=			"commonwealth, majorItem; military"
 			  
 			level=				"7"
@@ -738,7 +738,6 @@
 			mass=				"5000"
 
 			description=		"The SN2500 is a military reactor designed for the advanced Centurion/X heavy gunship."
-			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>

@@ -7,7 +7,12 @@
 	-->
 	
 	<Sovereign UNID="&svTinkers;"
-			name="Tinkers Guild"
+			name=":the Tinkers Guild"
+			shortName=":the Tinkers"
+			adjective="Tinker"
+			demonym=":a Tinker(s)"
+			plural="true"
+
 			alignment="constructive chaos"
 			>
 		<GlobalData>
@@ -367,7 +372,7 @@
 	<!-- Ammo Box, XM900 -->
 
 	<ItemType UNID="&itAmmoBoxXM900;"
-			name=				"XM900 ammunition box(es)"
+			name=				":an XM900 ammunition box(es)"
 			level=				"7"
 			value=				"2900"
 			mass=				"500"
@@ -375,7 +380,6 @@
 			attributes=			"ammoBox, consumable, military"
 
 			description=		"This box contains 24 XM900 Lucifer missiles."
-			reverseArticle=		"true"
 			>
 
 		<Image imageID="&rsItems1;" imageX="0" imageY="384" imageWidth="96" imageHeight="96"/>

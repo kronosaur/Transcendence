@@ -3,7 +3,11 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svAres;"
-			name="Ares Orthodoxy"
+			name=":the Ares Orthodoxy"
+			shortName=":the Ares"
+			adjective="Ares"
+			demonym="Arean(s)"
+
 			alignment="destructive order"
 			/>
 

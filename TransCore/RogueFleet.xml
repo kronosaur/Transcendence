@@ -3,7 +3,10 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svRogueFleet;"
-			name="rogue fleet"
+			name=":the Rogue Fleet"
+			adjective="Rogue Fleet"
+			demonym=":a Rogue Fleetmember(s)"
+
 			alignment="destructive chaos"
 			/>
 

@@ -3,7 +3,12 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svCentauriWarlords;"
-			name="Centauri Clans"
+			name=":the Centauri coalition"
+			shortName=":the Centauri"
+			adjectice="Centauri"
+			demonym=":a Centauri warlord(s)"
+			plural="true"
+
 			alignment="destructive order"
 			/>
 
@@ -892,7 +897,7 @@
 	<!-- Arco Vaughn's Habitat -->
 
 	<StationType UNID="&stArcoVaughnHabitat;"
-			name=				"Arco Vaughn's container habitat"
+			name=				": Arco Vaughn's container habitat"
 			sovereign=			"&svCentauriWarlords;"
 			
 			abandonedScreen=	"&dsRPGAbandonedStation;"
@@ -906,8 +911,6 @@
 
 			attributes=			"arcoVaughn, centauriWarlords, enemy, human, populated, uncharted, warlords"
 			maxAppearing=		"1"
-
-			noArticle=			"true"
 			>
 
 		<ImageVariants>

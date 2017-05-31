@@ -34,29 +34,6 @@
 					)
 				))
 
-			(setq rpgBuyItem (lambda (theObj theItem thePrice theCurrency options)
-				(block Nil
-					; Add to player ship
-                    (if (not (@ options 'noAddItem))
-					    (objAddItem gPlayerShip theItem)
-                        )
-					
-					; Record the transaction
-					(objRecordBuyItem gPlayerShip theObj theItem theCurrency thePrice)
-					
-					; Remember that we've bought something, for tutorial 
-					; purposes.
-					(typSetData &svPlayer; 'tutorialBought True)
-					)
-				))
-				
-			(setq rpgBuyItems (lambda (itemCount itemCost)
-				(block (itemsToBuy)
-					(setq itemsToBuy (scrRemoveItem gScreen itemCount))
-					(rpgBuyItem gSource itemsToBuy (multiply itemCount itemCost) (objGetDefaultCurrency gSource))
-					)
-				))
-
 			(setq rpgDockServices (lambda (targetObj options)
 				(block Nil
 				
@@ -214,10 +191,6 @@
 					)
 				))
 			
-			(setq rpgCalcBuyPrice (lambda (thisItem)
-				(objGetBuyPrice gSource thisItem)
-				))
-
 			(setq rpgCalcDockServiceBuyAmmo (lambda (dockObj shipObj theItem options)
 				(switch
 					(= dockObj shipObj)
@@ -1264,10 +1237,6 @@
 					)
 				))
 			
-			(setq rpgCalcSellPrice (lambda (thisItem)
-				(objGetSellPrice gSource thisItem)
-				))
-
 			;	rpgCalcToHit
 			;
 			;	This is a generic function useful for calculating probability of
@@ -2075,7 +2044,10 @@
 					
 					;	Show the appropriate page
 
-					(scrSetDesc theScreen (@ pageDesc 'desc))
+					(if (@ pageDesc 'textID)
+						(scrSetDescTranslate theScreen (@ pageDesc 'textID))
+						(scrSetDesc theScreen (@ pageDesc 'desc))
+						)
 					
 					;	Make sure the actions list is properly initialized.
 					
@@ -2127,7 +2099,7 @@
 						
 						(!= (typeof actions) 'list)
 							(setq actions (list {
-								label: (or (@ pageDesc 'label) (@ pageDesc 'nextLabel))
+								label: (or (@ pageDesc 'label) (@ pageDesc 'nextLabel) (scrTranslate theScreen (@ pageDesc 'nextLabelID)))
 								nextPage: (@ pageDesc 'nextPage)
 								code: (or (@ pageDesc 'code) (@ pageDesc 'nextCode))
 								}))
@@ -2440,22 +2412,6 @@
 					    )
 				    )            
                 ))
-                
-			(setq rpgSellItems (lambda (itemCount itemCost inventoryObj)
-				(block (itemsToSell)
-					(setq itemsToSell (scrRemoveItem gScreen itemCount))
-					
-					; Add to player ship
-					(objAddItem (or inventoryObj gSource) itemsToSell)
-					
-					; Record transaction
-					(objRecordBuyItem gSource gPlayerShip itemsToSell (objGetDefaultCurrency gSource) (* itemCount itemCost))
-					
-					; Remember that we've sold something, for tutorial 
-					; purposes.
-					(typSetData &svPlayer; 'tutorialSold True)
-					)
-				))
 			)
 	</Globals>
 

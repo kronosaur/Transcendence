@@ -3,7 +3,11 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svAresHeretic;"
-			name="Ares Sect"
+			name=":the Ares Orthodoxy"
+			shortName=":the Ares"
+			adjective="Ares"
+			demonym="Arean(s)"
+
 			alignment="destructive order"
 			>
 		<Relationships>
@@ -1386,7 +1390,7 @@
 	-->
 
 	<StationType UNID="&stHereticStation;"
-			name=				"Heretic Station"
+			name=				": Heretic Station"
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
@@ -1406,8 +1410,6 @@
 			fireRateAdj=		"40"
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			noArticle=			"true"
 			>
 		
 		<!-- Trade and Items -->
@@ -1664,11 +1666,9 @@
 
 	<!-- Svalbard Explorer Encounter -->
 
-	<StationType UNID="&stSvalbardEncounter;"
+	<EncounterType UNID="&stSvalbardEncounter;"
 			name=				"(Svalbard Explorer)"
 			sovereign=			"&svCorporate;"
-			shipEncounter=		"true"
-			scale=				"ship"
 
 			level=				"10"
 			attributes=			"friendly"
@@ -1678,7 +1678,7 @@
 		<Ships>
 			<Ship	count="1"	class="&scSvalbardExplorer;" orders="hold"/>
 		</Ships>
-	</StationType>
+	</EncounterType>
 
 	<!-- Commonwealth Research Station
 
@@ -3063,7 +3063,7 @@
 	-->
 
 	<StationType UNID="&stTVX1Outpost;"
-			name=				"Taikon research outpost TVX-1"
+			name=				": Taikon research outpost TVX-1"
 			sovereign=			"&svCorporate;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
@@ -3080,8 +3080,6 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, friendly, hereticStation, human, independent, populated"
-
-			noArticle=			"true"
 			>
 
 		<Image			imageID="&rsStations8;" imageX="0" imageY="448" imageWidth="128" imageHeight="192"/>

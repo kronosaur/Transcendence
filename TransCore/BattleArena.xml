@@ -14,7 +14,9 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svGladiator;"
-			name="gladiator"
+			name="gladiators"
+			demonym=":a gladiator(s)"
+
 			alignment="constructive chaos"
 			>
 		<Relationships>

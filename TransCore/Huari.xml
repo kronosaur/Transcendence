@@ -28,7 +28,11 @@
 	-->
 
 	<Sovereign UNID="&svHuariEmpire;"
-			name="Huari Empire"
+			name=":the Huari Empire"
+			shortName=":the Huari"
+			adjective="Huari"
+			demonym=":a Huarian(s)"
+
 			alignment="destructive order"
 			>
 		<Relationships>

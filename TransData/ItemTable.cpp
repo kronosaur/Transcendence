@@ -413,7 +413,7 @@ void OutputByShipClass (SItemTableCtx &Ctx, const SItemTypeList &ItemList, bool 
 
 			TArray<CShipClass *> *pList = ItemToShipClass.SetAt(pType->GetUNID());
 			for (j = 0; j < pList->GetCount(); j++)
-				printf("\t%s\n", (LPSTR)pList->GetAt(j)->GetName());
+				printf("\t%s\n", (LPSTR)pList->GetAt(j)->GetNounPhrase());
 
 			if (pList->GetCount() == 0)
 				printf("\t(none)\n");
@@ -439,7 +439,7 @@ void OutputByShipClass (SItemTableCtx &Ctx, const SItemTypeList &ItemList, bool 
 			TArray<CShipClass *> *pList = ItemToShipClass.SetAt(pType->GetUNID());
 			for (j = 0; j < pList->GetCount(); j++)
 				{
-				CString sClassName = pList->GetAt(j)->GetName();
+				CString sClassName = pList->GetAt(j)->GetNounPhrase();
 
 				bool bNew;
 				SShipClassEntry *pEntry = ByShipClassTable.SetAt(sClassName, &bNew);

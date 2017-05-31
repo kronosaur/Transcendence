@@ -3,7 +3,11 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svCSCAntarctica;"
-			name="CSC Antarctica"
+			name=":the CSC Antarctica"
+			shortName=":the Antarctica"
+			adjective="Antarctica"
+			demonym=":an Antarctica crewmember(s)"
+
 			alignment="constructive chaos"
 			>
 		<Language>
@@ -17,7 +21,11 @@
 	</Sovereign>
 
 	<Sovereign UNID="&svFleetAssassins;"
-			name="Commonwealth Fleet"
+			name=":the Commonwealth Fleet"
+			shortName=":the Fleet"
+			adjective="Fleet"
+			demonym=":a Fleet crewmember(s)"
+
 			alignment="constructive chaos"
 			>
 
@@ -1803,11 +1811,9 @@
 
 	<!-- CSC Antarctica Encounter -->
 
-	<StationType UNID="&stCSCAntarcticaEncounter;"
+	<EncounterType UNID="&stCSCAntarcticaEncounter;"
 			name=				"(CSC Antarctica)"
 			sovereign=			"&svCSCAntarctica;"
-			shipEncounter=		"true"
-			scale=				"ship"
 
 			level=				"9"
 			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
@@ -1823,16 +1829,13 @@
 				</InitialData>
 			</Ship>
 		</Ships>
-
-	</StationType>
+	</EncounterType>
 
 	<!-- CSC Terra Encounter -->
 
-	<StationType UNID="&stCSCTerraEncounter;"
+	<EncounterType UNID="&stCSCTerraEncounter;"
 			name=				"(CSC Terra)"
 			sovereign=			"&svCommonwealthFleet;"
-			shipEncounter=		"true"
-			scale=				"ship"
 
 			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
 			levelFrequency=		"----- ---c- ----- ----- -----"
@@ -1850,8 +1853,7 @@
 				</InitialData>
 			</Ship>
 		</Ships>
-
-	</StationType>
+	</EncounterType>
 
 	<!-- Dantalion star system -->
 

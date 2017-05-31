@@ -902,16 +902,12 @@ void CIntroSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 
 	try
 		{
+		SetProgramState(psAnimating);
+
 		//	Paint
 
-		SetProgramState(psAnimating);
 		Paint(Screen, bTopMost);
 		Update();
-
-		//	Flip
-
-		if (bTopMost)
-			m_HI.GetScreenMgr().Flip();
 
 		SetProgramState(psUnknown);
 		}
@@ -1280,6 +1276,7 @@ void CIntroSession::Paint (CG32bitImage &Screen, bool bTopMost)
 #ifdef DEBUG
 	g_pTrans->PaintDebugLines();
 #endif
+	g_pTrans->m_pTC->PaintDebugInfo(Screen, m_rcMain);
 
 	//	Update the screen
 

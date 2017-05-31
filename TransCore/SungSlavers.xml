@@ -3,12 +3,19 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svSung;"
-			name="Sung Slavers"
+			name=":the Sung civilization"
+			shortName=":the Sung"
+			adjective="Sung"
+			demonym=":a Sung Slaver(s)"
+			plural="true"
+
 			alignment="destructive order"
 			/>
 
 	<Sovereign UNID="&svSungSlaves;"
-			name="Slaves of Sung"
+			name="slaves of Sung"
+			demonym=":a slave(s) of Sung"
+
 			alignment="neutral"
 			/>
 

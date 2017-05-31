@@ -537,7 +537,7 @@ ALERROR CDockScreen::CreateBackgroundImage (const IDockScreenDisplay::SBackgroun
 			        && (pSpaceImage = g_pUniverse->GetLibraryBitmap(dwSpaceID)))
         		ObjImage.Blt(0, 0, ObjImage.GetWidth(), ObjImage.GetHeight(), *pSpaceImage, 0, 0);
 
-            //  Now paint the object
+            //  Prepare to paint the object
 
 			SViewportPaintCtx Ctx;
             Ctx.pCenter = Desc.pObj;
@@ -547,14 +547,32 @@ ALERROR CDockScreen::CreateBackgroundImage (const IDockScreenDisplay::SBackgroun
 			Ctx.fNoSelection = true;
             Ctx.fNoDockedShips = true;
             Ctx.fShowSatellites = true;
-			Ctx.pObj = Desc.pObj;
 
 	        Ctx.XForm = ViewportTransform(Ctx.vCenterPos, g_KlicksPerPixel, Ctx.xCenter, Ctx.yCenter);
 	        Ctx.XFormRel = Ctx.XForm;
 
-			Desc.pObj->Paint(ObjImage,
-					Ctx.xCenter,
-					Ctx.yCenter,
+			//	If we've docked with a satellite of a composite object, then we 
+			//	figure out the parent so that we can paint the entire composite.
+
+			CSpaceObject *pBase = Desc.pObj->GetBase();
+			int xPaint, yPaint;
+			if (pBase && Desc.pObj->IsSatelliteSegmentOf(pBase))
+				{
+				Ctx.pObj = pBase;
+				Ctx.XForm.Transform(pBase->GetPos(), &xPaint, &yPaint);
+				}
+			else
+				{
+				Ctx.pObj = Desc.pObj;
+				xPaint = Ctx.xCenter;
+				yPaint = Ctx.yCenter;
+				}
+
+            //  Now paint the object
+
+			Ctx.pObj->Paint(ObjImage,
+					xPaint,
+					yPaint,
 					Ctx);
 
             //  Blt using the appropriate mask

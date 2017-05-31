@@ -3,7 +3,11 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svTeratons;"
-			name="Teratons"
+			name=":the Teraton host"
+			adjective="Teraton"
+			demonym=":a Teraton(s)"
+			plural="true"
+
 			alignment="neutral"
 			/>
 

@@ -691,12 +691,11 @@
 	<!-- Commonwealth Residentials -->
 
 	<StationType UNID="&stCommonwealthResidentials;"
-			name=				"Commonwealth residentials|Commonwealth residentials"
+			name=				": Commonwealth residentials|Commonwealth residentials"
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, generic, human, populated"
-			noArticle=			"true"
 				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
@@ -2836,7 +2835,10 @@
 -->
 
 	<Sovereign UNID="&svCommonwealth;"
-			name="Commonwealth"
+			name=":the Commonwealth"
+			adjective="Commonwealth"
+			demonym=":a Commonwealth citizen(s)"
+
 			alignment="constructive chaos"
 			>
 
