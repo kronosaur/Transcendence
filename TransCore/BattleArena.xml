@@ -1535,7 +1535,7 @@
 
 							(cat
 								(shpGetClassName gSelect 1) "\n"
-								(objGetDataField gSelect "maxSpeed") "% lightspeed\n"
+								(fmtNumber 'speed (objGetDataField gSelect "maxSpeed")) "\n"
 								(if armorItem (itmGetName armorItem 0x181) "None") "\n"
 								(if shieldItem (itmGetName shieldItem 0x181) "None") "\n"
 								allWeapons
