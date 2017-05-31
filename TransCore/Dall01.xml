@@ -345,6 +345,7 @@
 	<StationType UNID="&stDallSphere;"
 			name=				"inert metal sphere"
 			sovereign=			"&svNeutral;"
+			inherit=			"&dsDockScreenBase;"
 			dockScreen=			"Main"
 
 			scale=				"ship"
@@ -378,7 +379,7 @@
 								(scrShowScreen gScreen &dsRPGLoot;)
 							</Action>
 
-							<Action id="actionUndock" cancel="1">
+							<Action id="actionUndock" cancel="1" default="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -388,9 +389,6 @@
 		</DockScreens>
 
 		<Language>
-			<Text id="actionLoot">[L]oot</Text>
-			<Text id="actionUndock">[U]ndock</Text>
-
 			<Text id="descFloating">You find an inert metal sphere floating in space.</Text>
 			<Text id="descSecure">The sphere is secure aboard your ship.</Text>
 		</Language>
@@ -405,6 +403,8 @@
 	<StationType UNID="&stDallMissionWreck;"
 			name=				"Sung transport wreck"
 			sovereign=			"&svNeutral;"
+			inherit=			"&dsDockScreenBase;"
+			
 			dockScreen=			"Main"
 			scale=				"ship"
 			mobile=				"true"
@@ -490,7 +490,6 @@
 
 		<Language>
 			<Text id="actionOpen">[O]pen Containment</Text>
-			<Text id="actionUndock">[U]ndock</Text>
 			<Text id="descContainment">
 				You enter the cargo hold of the wrecked ship and see a massive containment vessel
 				with giant power couplings. Through a thick window in the containment vessel you

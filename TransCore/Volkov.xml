@@ -197,6 +197,8 @@
 	<StationType UNID="&stHelenaVolkov;"
 			name=				"wreck of Helena Volkov's EI500 freighter"
 			sovereign=			"&svNeutral;"
+			inherit=			"&dsDockScreenBase;"
+			
 			dockScreen=			"Main"
 			scale=				"ship"
 			noMapIcon=			"true"
@@ -281,55 +283,25 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You are docked with the wreck of an EI500 freighter.\n\n"
-								"There is a makeshift memorial here honoring Helena Volkov."
-								)
+							(scrShowScreen gScreen &dsRPGAbandonedStation;)
 						</OnPaneInit>
-
-						<Actions>
-							<Action name="Loot" key="L" default="1" >
-								(scrShowScreen gScreen &dsRPGLoot;)
-							</Action>
-
-							<Action name="Jettison" key="J">
-								(scrShowScreen gScreen &dsRPGJettison;)
-							</Action>
-
-							<Action name="Undock" cancel="1" key="U">
-								<Exit/>
-							</Action>
-						</Actions>
 					</Default>
 					
-					<Helena>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You are docked with the wreck of an EI500 freighter.\n\n"
-								"You see the body of a woman still strapped to the command chair on the bridge."
-								)
-						</OnPaneInit>
+					<Helena
+						desc=	"=(scrTranslate gScreen 'descHelena)">
 						
 						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
+							<Action id="actionUndock" default="1" cancel="1">
 								(scrExitDock gScreen)
 							</Action>
 						</Actions>
 					</Helena>
 					
-					<VolkovGrieving>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You are docked with the wreck of an EI500 freighter. "
-								"You see Volkov on the deck cradling the body of his wife.\n\n"
-								"\"Helena was so beautiful and so loving! But Domina called her, "
-								"and now she is dead! Why? What reason?\"\n\n"
-								"You leave Volkov to his grief."
-								)
-						</OnPaneInit>
+					<VolkovGrieving
+						desc=	"=(scrTranslate gScreen 'descVolkovGrieving)">
 						
 						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
+							<Action id="actionUndock" default="1" cancel="1">
 								(block (volkov)
 									(setq volkov (objGetObjRefData gSource "volkov"))
 									(shpCancelOrders volkov)
@@ -343,16 +315,11 @@
 						</Actions>
 					</VolkovGrieving>
 					
-					<VolkovGrieving2>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You are docked with the wreck of an EI500 freighter.\n\n"
-								"You see Volkov tenderly carrying his wife's body to his ship."
-								)
-						</OnPaneInit>
+					<VolkovGrieving2
+						desc=	"=(scrTranslate gScreen 'descVolkovGrieving2)">
 						
 						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
+							<Action id="actionUndock" default="1" cancel="1">
 								(scrExitDock gScreen)
 							</Action>
 						</Actions>
@@ -366,6 +333,28 @@
 				portRadius=		"48"
 				maxDist=		"3"
 				/>
+				
+		<Language>
+			<Text id="descAbandonedStation">
+				(cat "You are docked with the wreck of an EI500 freighter.\n\n"
+					"There is a makeshift memorial here honoring Helena Volkov.")
+			</Text>
+			<Text id="descHelena">
+				(cat "You are docked with the wreck of an EI500 freighter.\n\n"
+					"You see the body of a woman still strapped to the command chair on the bridge.")
+			</Text>
+			<Text id="descVolkovGrieving">
+				(cat "You are docked with the wreck of an EI500 freighter. "
+					"You see Volkov on the deck cradling the body of his wife.\n\n"
+					"\"Helena was so beautiful and so loving! But Domina called her, "
+					"and now she is dead! Why? What reason?\"\n\n"
+					"You leave Volkov to his grief.")
+			</Text>
+			<Text id="descVolkovGrieving2">
+				(cat "You are docked with the wreck of an EI500 freighter.\n\n"
+					"You see Volkov tenderly carrying his wife's body to his ship.")
+			</Text>
+		</Language>
 	</StationType>
 	
 </TranscendenceModule>

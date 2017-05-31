@@ -899,8 +899,8 @@
 	<StationType UNID="&stArcoVaughnHabitat;"
 			name=				": Arco Vaughn's container habitat"
 			sovereign=			"&svCentauriWarlords;"
-			abandonedScreen=	"Main"
-			dockScreen=			"Main"
+			
+			abandonedScreen=	"&dsRPGAbandonedStation;"
 			canAttack=			"true"
 			noFriendlyTarget=	"true"
 
@@ -992,34 +992,6 @@
 			</OnAttacked>
 		</Events>
 
-		<DockScreens>
-			<Main>
-
-				<Panes>
-					<Default
-							desc=	"You are docked at the lifeless ruins of a container habitat. This makeshift station has been recently occupied by a band of Centauri warlords.">
-
-						<Actions>
-							<Action name="Loot" key="L" default="1" >
-								(scrShowScreen gScreen &dsRPGLoot;)
-							</Action>
-
-							<Action name="Jettison" key="J">
-								(scrShowScreen gScreen &dsRPGJettison;)
-							</Action>
-
-							<Action name="Undock" cancel="1" key="U">
-								<Exit/>
-							</Action>
-
-						</Actions>
-
-					</Default>
-				</Panes>
-			</Main>
-
-		</DockScreens>
-
 		<DockingPorts>
 			<Port x="0"		y="70" />
 			<Port x="61"	y="35" />
@@ -1028,6 +1000,12 @@
 			<Port x="-61"	y="-35" />
 			<Port x="-61"	y="35" />
 		</DockingPorts>
+		
+		<Language>
+			<Text id="descAbandonedStation">
+				"You are docked at the lifeless ruins of a container habitat. This makeshift station has been recently occupied by a band of Centauri warlords."
+			</Text>
+		</Language>
 
 	</StationType>
 	
