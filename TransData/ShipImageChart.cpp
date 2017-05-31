@@ -206,19 +206,19 @@ void GenerateShipImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 			case orderLargest:
 				wsprintf(szBuffer, "%04d%s%x",
 						2048 - RectWidth(pClass->GetImage().GetImageRect()),
-						pClass->GetNounPhrase().GetASCIIZPointer(),
+						pClass->GetNounPhrase(nounGeneric).GetASCIIZPointer(),
 						pClass);
 				break;
 
 			case orderSmallest:
 				wsprintf(szBuffer, "%04d%s%x",
 						RectWidth(pClass->GetImage().GetImageRect()),
-						pClass->GetNounPhrase().GetASCIIZPointer(),
+						pClass->GetNounPhrase(nounGeneric).GetASCIIZPointer(),
 						pClass);
 				break;
 
 			default:
-				wsprintf(szBuffer, "%s%x", pClass->GetNounPhrase().GetASCIIZPointer(), pClass);
+				wsprintf(szBuffer, "%s%x", pClass->GetNounPhrase(nounGeneric).GetASCIIZPointer(), pClass);
 				break;
 			}
 
@@ -290,7 +290,7 @@ void GenerateShipImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 								xText,
 								yText,
 								rgbNameColor,
-								pClass->GetNounPhrase(0));
+								pClass->GetNounPhrase(nounGeneric));
 						}
 					}
 				}
@@ -540,7 +540,7 @@ void ArrangeByRow (CSymbolTable &Table, SArrangeDesc &Desc, CPaintMap &Map)
 			//	Figure out the position of the text
 
 			int cyName;
-			int cxName = Desc.pHeader->MeasureText(pClass->GetNounPhrase(0), &cyName);
+			int cxName = Desc.pHeader->MeasureText(pClass->GetNounPhrase(nounGeneric), &cyName);
 			if (cxName <= cxSize)
 				{
 				int yText = y + yOffset + cxSize + cyNameSpacing;
