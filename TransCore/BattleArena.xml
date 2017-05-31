@@ -49,12 +49,9 @@
 	katamiStatus:	Status of Mr. Katami mission:
 						Nil						= Never met
 						'instructor				= Katami is instructing the player
-						'ransomNote				= Show ransom note to player
-						'morgentalHelp			= Morgental offers help
 						'kidnapped				= Katami is at the Black Market station
 						'betrayed				= Player ignores Katami
 						'rescued				= Katami has been rescued by the player
-						'instructionDone		= Katami has been rescued by the player
 						'returned				= Player dies against The Slicer
 						'dead					= Katami is dead
 
@@ -183,8 +180,11 @@
 
 		<Events>
 			<GetGlobalAchievements>
-				(block (theList arenaRank katamiStatus)
-					(setq arenaRank (typGetGlobalData &stBattleArena; "arenaRank"))
+				(block (
+					(arenaRank (typGetData &stBattleArena; 'arenaRank))
+					(katamiStatus (typGetData &stBattleArena; 'katamiStatus))
+					theList
+					)
 					
 					(if (and arenaRank (not (eq arenaRank 'rookie)))
 						(setq theList (list
@@ -202,13 +202,9 @@
 								)
 							))
 						)
-						
-					(setq katamiStatus (typGetGlobalData &stBattleArena; "katamiStatus"))
 					
 					(if (and katamiStatus 
 							(not (eq katamiStatus 'instructor))
-							(not (eq katamiStatus 'ransomNote))
-							(not (eq katamiStatus 'morgentalHelp))
 							(not (eq katamiStatus 'kidnapped))
 							)
 						(setq theList (append theList (list
@@ -216,7 +212,6 @@
 								(switch
 									(eq katamiStatus 'betrayed) "Betrayed Mr. Katami"
 									(eq katamiStatus 'rescued) "Rescued Mr. Katami from the Black Market"
-									(eq katamiStatus 'instructionDone) "Rescued Mr. Katami from the Black Market"
 									(eq katamiStatus 'dead) "Failed to save Mr. Katami"
 									(cat "ERROR: Mr. Katami status: " katamiStatus)
 									)
@@ -430,73 +425,6 @@
 						(not status)
 							Nil
 
-						(eq arenaRank 'rookie)
-							(block (shipsLeft)
-								(switch
-
-									; If the player was destroyed, set status
-									(eq aObjDestroyed gPlayerShip)
-										(block Nil
-											(if (eq status 'inProgress)
-												(setq status 'playerKilled)
-												)
-
-											(setq shipsLeft (objGetData gSource "OpponentCount"))
-											)
-
-									; Otherwise, decrement the opponent count
-									(block Nil
-										(if (eq aOrderGiver gPlayerShip)
-											(objIncData gSource "rookiePoints" 1)
-											)
-
-										; Decrement an enemy and compute how many fighting ships left
-										; (including the player)
-										(setq shipsLeft (objIncData gSource "OpponentCount" -1))
-										(if (eq status 'inProgress)
-											(setq shipsLeft (add shipsLeft 1))
-											)
-
-										; If the ship left a wreck, then trash the items because we
-										; don't want the player to get too much loot from these wrecks
-
-										(if aWreckObj
-											(block (theItems)
-												(setq theItems (objGetItems aWreckObj "dNU"))
-												(enum theItems theItem (objRemoveItem aWreckObj theItem))
-												(enum theItems theItem (objAddItem aWreckObj (itmSetDamaged theItem True)))
-												)
-											)
-										)
-									)
-
-								; If only one ship is left, then the match is over
-								(if (leq shipsLeft 1)
-									(block Nil
-										; Open arena doors
-										(bamDoorsOpen gSource)
-
-										; Player wins
-										(if (eq status 'inProgress)
-											(block Nil
-												(setq status 'destroyed)
-												(plyMessage gPlayer "Victory!")
-												)
-											)
-
-										(objIncData gSource "meleeCount" 1)
-										(objIncData gSource "rookieScore" (objGetData gSource "rookiePoints"))
-										(objSetData gSource "OpponentCount" Nil)
-										
-										; Back to travel music (we're still technically in combat, because we
-										; haven't detected that we're out yet, so we force travel mode).
-								
-										(uiQueueSoundtrack (if (geq (objGetData gSource "rookieScore") 20) &muArenaContender; &muArenaSurvivor;))
-										(uiSetSoundtrackMode 'missionEndTravel)
-										)
-									)
-								)
-
 						(eq arenaRank 'gladiator)
 							(block Nil
 								(switch
@@ -692,9 +620,6 @@
 						(setq arenaRank (objGetGlobalData gSource "arenaRank"))
 
 						(switch
-							(eq (objGetGlobalData gSource "katamiStatus") 'rescued)
-								"ChallengerRescued"
-
 							(not status)
 								"Default"
 
@@ -709,9 +634,6 @@
 
 							(eq status 'destroyed)
 								(switch
-									(eq arenaRank 'rookie)
-										"MeleeWinner"
-
 									(eq arenaRank 'gladiator)
 										"GladiatorWinner"
 
@@ -723,9 +645,6 @@
 
 							(eq status 'playerKilled)
 								(switch
-									(eq arenaRank 'rookie)
-										"MeleeLoser"
-
 									(eq arenaRank 'gladiator)
 										"GladiatorLoser"
 
@@ -745,8 +664,10 @@
 				</InitialPane>
 
 				<Panes>
-					<Default
-							desc=	"Welcome to Battle Arena Maximus! Prepare yourself for the greatest show in space! Watch as the best pilots in the Commonwealth compete in mortal combat. The action is so real you'll swear its faked! See your ticket agent for reservations. Enquire within to join the elite combatants.">
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
 
 						<Actions>
 						<!--
@@ -754,10 +675,17 @@
 							</Action>
 						-->
 
-							<Action name="Enter Combat" key="E">
-								(block (arenaRank)
+							<Action id="actionEnterCombat">
+								(block (theMission arenaRank)
 									(setq arenaRank (objGetGlobalData gSource "arenaRank"))
 									(switch
+										(setq theMission (rpgMissionGetAssignment {
+												missionCriteria: "n +battleArena;"
+												}))
+											(scrShowScreen gScreen &dsRPGMission; {
+												missionObj: theMission
+												})
+
 										(not arenaRank)
 											(scrShowPane gScreen "FirstFight")
 
@@ -765,9 +693,6 @@
 											(switch
 												(objGetData gSource "OpponentCount")
 													(scrShowPane gScreen "MeleeBusy")
-
-												(leq (objGetData gSource "meleeCount") 5)
-													(scrShowPane gScreen "Melee")
 
 												(scrShowPane gScreen "NoMoreMelees")
 												)
@@ -785,24 +710,7 @@
 												)
 
 										(eq arenaRank 'challenger)
-											(block (katamiStatus)
-												(setq katamiStatus (objGetGlobalData gSource "katamiStatus"))
-												(switch
-													(eq katamiStatus 'ransomNote)
-														(scrShowPane gScreen "ChallengerRansomNote")
-
-													(eq katamiStatus 'morgentalHelp)
-														(scrShowPane gScreen "ChallengerMorgentalHelp")
-
-													(eq katamiStatus 'kidnapped)
-														(scrShowPane gScreen "ChallengerKidnapped")
-
-													(eq katamiStatus 'betrayed)
-														(scrShowPane gScreen "Challenger")
-
-													(scrShowPane gScreen "Challenger")
-													)
-												)
+											(scrShowPane gScreen "Challenger")
 
 										(eq arenaRank 'champion)
 											(scrShowPane gScreen "Champion")
@@ -816,13 +724,13 @@
 									)
 							</Action>
 
-							<Action name="Dock Services" key="D">
+							<Action id="actionDockServices">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 
@@ -830,213 +738,13 @@
 
 					</Default>
 
-					<Chicken
-							desc=	"&quot;This kind of challenge is not for the weak and fearful. You are wise to decline.&quot;">
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</Chicken>
-
-					<Melee>
-						<OnPaneInit>
-							(block (desc rookieScore)
-								(setq rookieScore (objGetData gSource "rookieScore"))
-
-								(switch
-									(eq (objGetData gSource "meleeCount") 5)
-										(setq desc (cat
-											"\"I don't know if you have the killer instincts to be a gladiator. I'll make you a deal: "
-											"if you can destroy " (if (eq rookieScore 19) "one more ship" (cat (subtract 20 rookieScore) " more ships"))
-											" in this next melee then I'll make you a gladiator. OK?\""
-											))
-
-									(eq rookieScore 0)
-										(setq desc "\"A rookie from the provinces, eh? No sense in wasting a gladiator's time on you. Prove yourself by surviving a melee and then we'll see. Deal?\"")
-
-									(leq rookieScore 15)
-										(setq desc "\"A little more practice won't hurt you. Survive a melee and we'll pay you 25 credits for every opponent you kill.\"")
-
-									(setq desc (cat "\"Your skills have improved greatly. Kill " 
-										(if (eq rookieScore 19) "one more ship" (cat (subtract 20 rookieScore) " more ships"))
-										" in a melee and you will become a gladiator!\""
-										))
-									)
-
-								(scrSetDesc gScreen desc)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Fight!" default="1" key="F">
-								(block (opponentCount melee1 melee2)
-									(setq opponentCount (random 10 20))
-
-									; Find the ship classes to fight
-									(setq melee1 (typFind "s +battleArena; +melee1"))
-									(setq melee2 (typFind "s +battleArena; +melee2"))
-
-									; Create a bunch of ships and order them to attack each other
-									(bamCreateMeleeOpponents gSource opponentCount 20
-										(lambda Nil
-											(if (geq (random 1 20) (objGetData gSource "rookieScore"))
-												(random melee1)
-												(random melee2)
-												)
-											)
-										)
-
-									; Reset points
-									(objSetData gSource "rookiePoints" 0)
-									(objSetData gSource "prizeGain" 25)
-
-									; Done
-									(bamDoorsClose gSource)
-									(objRegisterForEvents gSource gPlayerShip)
-									(objSetData gSource "drawAllowed" Nil)
-									(objSetData gSource "Status" 'inProgress)
-
-									; Play Slicer track
-									(uiSetSoundtrackMode 'missionStart &muArenaSlicer;)
-
-									(scrExitDock gScreen)
-									)
-							</Action>
-
-							<Action name="Back Out" cancel="1" key="B">
-								(scrShowPane gScreen "Chicken")
-							</Action>
-						</Actions>
-					</Melee>
-
-					<MeleeWinner>
-						<OnPaneInit>
-							(block (desc prize rookieScore rookiePoints)
-								(setq rookiePoints (objGetData gSource "rookiePoints"))
-								(setq rookieScore (objGetData gSource "rookieScore"))
-								(setq prize (multiply rookiePoints (objGetData gSource "prizeGain")))
-
-								(switch
-									(geq rookieScore 20)
-										(setq desc (cat
-											"\"Congratulations, you've proven yourself in the Arena. You may now call yourself a gladiator.\""
-											))
-
-									(geq (objGetData gSource "meleeCount") 6)
-										(setq desc (cat
-											"\"Sorry, but you don't have the killer instinct to be a gladiator.\"
-											))
-
-									(eq rookiePoints 0)
-										(setq desc (cat
-											"\"You didn't even kill a single opponent! You'll never be a gladiator at that rate!\""
-											))
-
-									(eq rookiePoints 1)
-										(setq desc (cat
-											"\"Looks like you're better at running away than killing! "
-											"For killing a single opponent, we award you " (fmtCurrency 'credit prize) ".\""
-											))
-
-									(and (leq rookiePoints 3) (leq rookieScore 8))
-										(setq desc (cat
-											"\"Hiding in a corner is not what the Arena is all about! "
-											"We've deposited " (fmtCurrency 'credit prize) " in your account, but you'll have to do better "
-											"if you want to be a gladiator."
-											))
-
-									(leq rookiePoints 8)
-										(setq desc (cat 
-											"\"You fight well for a rookie! You survived the melee and destroyed "
-											rookiePoints " opponents. We've deposited " (fmtCurrency 'credit prize)
-											" in your account.\""
-											))
-
-									(leq rookiePoints 11)
-										(setq desc (cat 
-											"\"Your skills are impressive! You will make a fine gladiator soon. "
-											"For killing " rookiePoints " opponents we have deposited " (fmtCurrency 'credit prize)
-											" in your account.\""
-											))
-
-									(setq desc (cat 
-										"\"You are a killing machine! For slaughtering " rookiePoints
-										" opponents, we award you " (fmtCurrency 'credit prize) ".\""
-										))
-									)
-
-								(scrSetDesc gScreen desc)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block (rookiePoints rookieScore prize)
-									(setq rookiePoints (objGetData gSource "rookiePoints"))
-									(setq rookieScore (objGetData gSource "rookieScore"))
-									(setq prize (multiply rookiePoints (objGetData gSource "prizeGain")))
-
-									; Open arena doors
-									(bamDoorsOpen gSource)
-
-									; Unregister
-									(objUnregisterForEvents gSource gPlayerShip)
-
-									; Set status
-									(objSetData gSource "Status" Nil)
-									(objSetData gSource "OpponentCount" Nil)
-
-									; Pay the player
-									(plyCredit gPlayer prize)
-
-									; If the player has defeated enough enemies, then he is a gladiator
-									(if (geq rookieScore 20)
-										(block Nil
-											(objSetGlobalData gSource "arenaRank" 'gladiator)
-											(objSetGlobalData gSource "arenaRep" 0)
-											(objSetGlobalData gSource "arenaSkill" 200)
-											(objSetData gSource "matchCount" 0)
-											(objSetData gSource "results" '(0 0 0 0))
-											(scrShowPane gScreen "Default")
-											)
-										(scrShowPane gScreen "Default")
-										)
-									)
-							</Action>
-
-						</Actions>
-
-					</MeleeWinner>
-
-					<MeleeLoser>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"\"Are you sure you want to be a gladiator? You don't seem very good in the Arena. "
-								"Oh well, at least your death will be a good appetizer for the crowd.\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MeleeLoser>
-
 					<NoMoreMelees>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"\"I'm sorry, you don't have the killer spirit that we need in a gladiator. "
-								"I'm afraid you'll just have to watch the matches on the 3DV like everyone else.\""
-								))
+							(scrSetDescTranslate gScreen 'descNoMoreMelees)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -1050,7 +758,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -1058,36 +766,26 @@
 
 					<KatamiIntro>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"As you enter the gladiators' quarters, a short man wearing a simple suit approaches you:\n\n"
-								"\"My name is Mr. Katami and I am prepared to train you. I watched you in the arena. "
-								"You've got skills and a good ship, but that's not enough. You have to be smart, and I can teach you how.\n\n"
-								"\"Are you ready?\""
-								))
+							(scrSetDescTranslate gScreen 'descKatamiIntro1)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowPane gScreen "KatamiIntro2")
+							<Action id="actionContinue" default="1" cancel="1">
+								(scrShowPane gScreen 'KatamiIntro2)
 							</Action>
 						</Actions>
 					</KatamiIntro>
 
 					<KatamiIntro2>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"\"First you must be smart in choosing your opponent. Don't just pick someone "
-								"you can kill easily. Pick a fight the crowd wants to see. Win the crowd and you "
-								"will be a Legendary Hero.\n\n"
-								"\"Are you ready?\""
-								))
+							(scrSetDescTranslate gScreen 'descKatamiIntro2)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
-									(objSetGlobalData gSource "katamiStatus" 'instructor)
-									(scrShowScreen gScreen "ChooseOpponent")
+									(objSetTypeData gSource 'katamiStatus 'instructor)
+									(scrShowScreen gScreen 'ChooseOpponent)
 									)
 							</Action>
 						</Actions>
@@ -1349,7 +1047,6 @@
 										; Player can now challenge The Slicer
 										(block Nil
 											(objSetGlobalData gSource "arenaRank" 'challenger)
-											(objSetGlobalData gSource "katamiStatus" 'ransomNote)
 											(scrShowPane gScreen "ChallengerIntro")
 											)
 
@@ -1453,170 +1150,12 @@
 						</Actions>
 					</ChallengerIntro>
 
-					<ChallengerRansomNote>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"You enter the gladiators' quarters but there is no sign of Mr. Katami. "
-								(if (typGetGlobalData &svCorporate; "statusKateM")
-									(cat
-										"You see Kate Morgental in his office looking through his files. She turns to you:\n\n"
-										"\"%name%, Mr. Katami is gone! He's been taken by the Black Market. I found a message that says that "
-										"they will kill him if you go ahead with the fight with The Slicer!\""
-										)
-									(cat
-										"A woman in an expensive suit is looking through Katami's files. She turns to you:\n\n"
-										"\"You must be %name%; I'm glad you're here. "
-										"I'm Kate Morgental. I received a message from the Black Market: They have captured Katami and "
-										"they're threatening to kill him if you fight The Slicer!\""
-										)
-									)
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowPane gScreen "ChallengerRansomNote2")
-							</Action>
-						</Actions>
-					</ChallengerRansomNote>
-
-					<ChallengerRansomNote2>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"\"Katami was my old trainer and he means a lot to me. And the Black Market doesn't scare me; they're "
-								"just the parasites of the corporate universe.\n\n"
-								"\"Help me to rescue him and you'll be able to defeat The Slicer without risking Katami's life.\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="&quot;I'll help you.&quot;" default="1" key="H">
-								(block Nil
-									(objSetGlobalData gSource "katamiStatus" 'morgentalHelp)
-									(scrShowPane gScreen "ChallengerMorgentalHelp")
-									)
-							</Action>
-
-							<Action name="&quot;Katami can take care of himself.&quot;" key="T">
-								(block Nil
-									(objSetGlobalData gSource "katamiStatus" 'betrayed)
-									(scrShowPane gScreen "ChallengerBetrayed")
-									)
-							</Action>
-						</Actions>
-					</ChallengerRansomNote2>
-
-					<ChallengerMorgentalHelp>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"\"I knew you would agree! I will not forget this.\n\n"
-								"\"They're keeping Katami at the Black Market station in the outer asteroid field. Go to those "
-								"coordinates and destroy the Molotok guarding the base. When you've cleared the area I'll "
-								"blast the station and rescue Katami! Deal?\n\n"
-								"\"Alright, let's go!\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block (bmStation cruiserObj theAnchorObj)
-									; Kate status
-									(typSetGlobalData &svCorporate; "statusKateM" 'ally)
-									
-									; Find the black market station
-									(setq bmStation (sysFindObject gSource "TN +katamiRescue"))
-
-									; Order the player
-									(shpCancelOrders gPlayerShip)
-									(shpOrder gPlayerShip 'attack bmStation)
-									(objSetIdentified bmStation)
-
-									; Create a marker for the cruiser
-									(setq theAnchorObj (sysCreateMarker "Morgental cruiser anchor" (sysVectorPolarOffset gSource 270 20) &svCorporate;))
-
-									; Create Morgental's cruiser
-									(setq cruiserObj (sysCreateShip 
-										&scKateMorgentalCruiserArena; 
-										(objGetPos theAnchorObj)
-										&svCorporate;
-										))
-									(objSetObjRefData cruiserObj "anchorObj" theAnchorObj)
-									(objFireEvent cruiserObj "OrderKatamiRescue")
-
-									(objSetGlobalData gSource "katamiStatus" 'kidnapped)
-									(scrExitDock gScreen)
-									)
-							</Action>
-						</Actions>
-					</ChallengerMorgentalHelp>
-
-					<ChallengerKidnapped>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"You receive a message from Kate:\n\n"
-								"\"Are you on your way? Get to the Black Market station and clear out those defenders!\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									; Find the black market station
-									(setq bmStation (sysFindObject gSource "TN +katamiRescue"))
-
-									; Order the player
-									(shpCancelOrders gPlayerShip)
-									(shpOrder gPlayerShip 'attack bmStation)
-									(objSetIdentified bmStation)
-
-									(scrExitDock gScreen)
-									)
-							</Action>
-						</Actions>
-					</ChallengerKidnapped>
-
-					<ChallengerBetrayed>
-						<OnPaneInit>
-							(scrSetDesc gScreen 
-								"Kate looks deflated, but quickly composes herself. She gives you a sharp look.\n\n"
-								"\"Nothing in it for you, huh? I clearly misjudged you. Go take care of yourself! I don't need your help!\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(typSetGlobalData &svCorporate; "statusKateM" 'betrayedKatami)
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</ChallengerBetrayed>
-
-					<ChallengerRescued>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"Mr. Katami meets you at the docking bay.\n\n"
-								"\"I owe you my life! The only way I can begin to repay you is to help you to defeat The Slicer. "
-								"Here, take this ROM biosoft. It may save your life.\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(objSetGlobalData gSource "katamiStatus" 'instructionDone)
-									(itmSetKnown &itHiroShieldOptimizer;)
-									(objAddItem gPlayerShip (itmCreate &itHiroShieldOptimizer; 1))
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</ChallengerRescued>
-
 					<Challenger>
 						<OnPaneInit>
-							(if (eq (objGetGlobalData gSource "katamiStatus") 'instructionDone)
+							(if (or
+									(= (objGetTypeData gSource 'katamiStatus) 'instructor)
+									(= (objGetTypeData gSource 'katamiStatus) 'rescued)
+									)
 								(scrSetDesc gScreen (cat
 									"Mr. Katami bows his head:\n\n"
 									"\"I have nothing more to teach you. Remember everything I've said and fight with honor!\""
@@ -1690,12 +1229,18 @@
 
 					<ChallengerWinner>
 						<OnPaneInit>
-							(if (eq (objGetGlobalData gSource "katamiStatus") 'instructionDone)
-								(scrSetDesc gScreen (cat
-									"Pandemonium greets you as you enter the gladiators' quarters. Friends and partiers are celebrating your victory. "
-									"Mr. Katami hugs you like a long lost %son% and puts a drink in your hand. "
-									"At the edge of the room Kate Morgental shines her smile at you."
-									))
+							(switch
+								(= (objGetTypeData gSource 'katamiStatus) 'instructor)
+									(scrSetDesc gScreen (cat
+										"Pandemonium greets you as you enter the gladiators' quarters. Friends and partiers are celebrating your victory. "
+										"Mr. Katami hugs you like a long lost %son% and puts a drink in your hand. "
+										))
+								(= (objGetTypeData gSource 'katamiStatus) 'rescued)
+									(scrSetDesc gScreen (cat
+										"Pandemonium greets you as you enter the gladiators' quarters. Friends and partiers are celebrating your victory. "
+										"Mr. Katami hugs you like a long lost %son% and puts a drink in your hand. "
+										"At the edge of the room Kate Morgental shines her smile at you."
+										))
 								(scrSetDesc gScreen (cat
 									"Pandemonium greets you as you enter the gladiators' quarters. Partiers and hanger-ons celebrate your victory. "
 									"In the corner of the room you see a small memorial for Mr. Katami in danger of being trampled by the wild partying."
@@ -1733,7 +1278,9 @@
 
 					<Champion>
 						<OnPaneInit>
-							(if (eq (objGetGlobalData gSource "katamiStatus") 'instructionDone)
+							(if (or (= (objGetTypeData gSource 'katamiStatus) 'instructor)
+									(= (objGetTypeData gSource 'katamiStatus) 'rescued)
+									)
 								(scrSetDesc gScreen (cat
 									"Mr. Katami greets you:\n\n"
 									"\"It's wonderful to see you again! Let's talk about the old times at the Arena.\""
@@ -1754,7 +1301,7 @@
 					<Loser>
 						<OnPaneInit>
 							(if (or (eq (objGetGlobalData gSource "katamiStatus") 'instructor)
-									(eq (objGetGlobalData gSource "katamiStatus") 'instructionDone)
+									(eq (objGetGlobalData gSource "katamiStatus") 'rescued)
 									)
 								(scrSetDesc gScreen (cat
 									"Mr. Katami greets you:\n\n"
@@ -1773,23 +1320,30 @@
 						</Actions>
 					</Loser>
 
-					<FirstFight
-							desc=	"&quot;Welcome, citizen! You are about to join an elite group of men and women who have conquered their fears and proven their courage and skills in the ultimate test&#x97;mortal combat.\n\n&quot;All that remains is for you to sign this minor release indemnifying the Maximus Corporation against any liability in the event of harm, death, etc.&quot;">
+					<FirstFight>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descFirstFight)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Sign" key="S">
+							<Action id="actionSign">
 								(block Nil
 									(objSetGlobalData gSource "arenaRank" 'rookie)
 									(objSetData gSource "rookieScore" 0)
 									(objSetData gSource "meleeCount" 0)
-									(scrShowPane gScreen "Melee")
+									(scrShowPane gScreen 'Default)
+									(scrShowScreen gScreen &dsRPGMission; {
+										missionObj: (msnCreate &msBattleArenaMelee; gSource)
+										})
 									)
 							</Action>
 
-							<Action name="Back Out" cancel="1" key="B">
-								<ShowPane pane="Chicken"/>
+							<Action id="actionBackOut" cancel="1">
+								(scrShowScreen gScreen &dsRPGMessage; {
+									textID:'descChicken
+									nextScreen:'Main
+									})
 							</Action>
-
 						</Actions>
 
 					</FirstFight>
@@ -2090,10 +1644,21 @@
 		</DockScreens>
 		
 		<Language>
+			<Text id="actionEnterCombat">"[E]nter Combat"</Text>
+			<Text id="actionDockServices">"[D]ock Services"</Text>
+			<Text id="actionUndock">"[U]ndock"</Text>
 			<Text id="actionContinue">"[C]ontinue"</Text>
 			<Text id="actionDrawYes">"[A]ccept a Draw"</Text>
 			<Text id="actionDrawNo">"[C]ontinue Fighting"</Text>
+			<Text id="actionSign">"[S]ign"</Text>
+			<Text id="actionBackOut">"[B]ack Out"</Text>
 			
+			<Text id="descWelcome">
+				Welcome to Battle Arena Maximus! Prepare yourself for the greatest show in space!
+				Watch as the best pilots in the Commonwealth compete in mortal combat. The action
+				is so real you'll swear its faked! See your ticket agent for reservations.
+				Enquire within to join the elite combatants.
+			</Text>
 			<Text id="descDrawOrNot">
 				(cat
 					"An Arena official looks at the battle metrics:\n\n"
@@ -2110,6 +1675,37 @@
 					"But you survived and now we can learn from our mistake. Perhaps you need to "
 					"upgrade your weapons.\""
 					)
+			</Text>
+			<Text id="descFirstFight">
+				"Welcome, citizen! You are about to join an elite group of men and women who
+				have conquered their fears and proven their courage and skills in the ultimate
+				test&#x97;mortal combat."
+				
+				"All that remains is for you to sign this minor release indemnifying the
+				Maximus Corporation against any liability in the event of harm, death, etc."
+			</Text>
+			<Text id="descChicken">
+				"\"This kind of challenge is not for the weak and fearful. You are wise to decline.\""
+			</Text>
+			<Text id="descNoMoreMelees">
+				"I'm sorry, you don't have the killer spirit that we need in a gladiator.
+				I'm afraid you'll just have to watch the matches on the 3DV like everyone else."
+			</Text>
+			<Text id="descKatamiIntro1">
+				As you enter the gladiators' quarters, a short man wearing a simple suit approaches you:
+				
+				"My name is Mr. Katami and I am prepared to train you. I watched you in the arena.
+				You've got skills and a good ship, but that's not enough. You have to be smart, and
+				I can teach you how."
+				
+				"Are you ready?"
+			</Text>
+			<Text id="descKatamiIntro2">
+				"First you must be smart in choosing your opponent. Don't just pick someone
+				you can kill easily. Pick a fight the crowd wants to see. Win the crowd and you
+				will be a Legendary Hero."
+				
+				"Are you ready?"
 			</Text>
             
             <Text id="core.mapDescMain">
@@ -2174,7 +1770,7 @@
 			inherit=			"&baBlackMarketStation;"
 				 
 			dockScreen=			"Main"
-			abandonedScreen=	"KatamiRescue"
+			abandonedScreen=	"&dsRPGAbandonedStation;"
 			dockingPorts=		"8"
 			canAttack=			"true"
 
@@ -2268,31 +1864,31 @@
 							desc=	"The docking bay is guarded by two men with heavy weapons. They check you out and then step aside to let you in.">
 
 						<Actions>
-							<Action name="Talk to Station Boss" key="T">
+							<Action id="actionTalk">
 								(block Nil
 									(setq gPrevScreen "Main")
 									(scrShowScreen gScreen "Boss")
 									)
 							</Action>
 
-							<Action name="Buy Items" default="1" key="B">
+							<Action id="actionBuyItems" default="1">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: Nil
 									})
 							</Action>
 
-							<Action name="Sell Items" key="S">
+							<Action id="actionSellItems">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
 									})
 							</Action>
 
-							<Action name="Dock Services" key="D">
+							<Action id="actionDockServices">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: Nil
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 
@@ -2301,88 +1897,8 @@
 				</Panes>
 			</Main>
 
-			<KatamiRescue>
-
-				<InitialPane>
-					(block (katamiStatus)
-						(setq katamiStatus (typGetGlobalData &stBattleArena; "katamiStatus"))
-						(switch
-							(or (eq katamiStatus 'morgentalHelp) (eq katamiStatus 'kidnapped))
-								"Rescue"
-
-							"Default"
-							)
-						)
-				</InitialPane>
-
-				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDesc gScreen "You see nothing but the smoking remains of a Black Market station.")
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
-								(scrExitDock gScreen)
-							</Action>
-						</Actions>
-					</Default>
-
-					<Rescue>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"You enter the smoking remains of the station. You follow the sounds of gunfire and "
-								"find Kate Morgental leading a team of armored men. They are unbinding Mr. Katami, who seems to "
-								"be weak but otherwise unharmed.\n\n"
-								"Kate flashes you a thumbs up: \"Thanks for your help&#x97;we'll get him back safely! See you back at the Arena: "
-								"You've got a date with The Slicer!\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
-								(block Nil
-									(typSetGlobalData &stBattleArena; "katamiStatus" 'rescued)
-									(shpCancelOrders gPlayerShip)
-									(scrExitDock gScreen)
-									)
-							</Action>
-						</Actions>
-					</Rescue>
-				</Panes>
-			</KatamiRescue>
-
 			<Boss>
-
-				<InitialPane>
-					(block (katamiStatus)
-						(setq katamiStatus (typGetGlobalData &stBattleArena; "katamiStatus"))
-						(switch
-							(or (eq katamiStatus 'morgentalHelp) (eq katamiStatus 'kidnapped))
-								"WeGotHim"
-
-							"GetOut"
-							)
-						)
-				</InitialPane>
-
 				<Panes>
-					<WeGotHim>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"Men grab you and take you before the station boss:\n\n"
-								"\"There's no need to talk; you know what you need to do. Just stay out of the Arena and your friend will be fine.\""
-								"He turns towards his bodyguards, \"Get %him% out of here!\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowScreen gScreen "Main")
-							</Action>
-						</Actions>
-					</WeGotHim>
-
 					<GetOut>
 						<OnPaneInit>
 							(scrSetDesc gScreen "You ask to see the station boss. Everyone turns to stare at you for a second, but then they go about their business and continue to ignore you.")
@@ -2412,6 +1928,12 @@
 		</DockingPorts>
 
 		<Language>
+			<Text id="actionTalk">"[T]alk to Station Boss"</Text>
+			<Text id="actionBuyItems">"[B]uy Items"</Text>
+			<Text id="actionSellItems">"[S]ell Items"</Text>
+			<Text id="actionDockServices">"[D]ock Services"</Text>
+			<Text id="actionUndock">"[U]ndock"</Text>
+
 			<Text id="descNoInstall">
 				(cat
 					"We only install smuggler's equipment. "

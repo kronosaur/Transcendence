@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Black Market Delivery =================================================
+
+	EXTRA DATA
+
+	destNodeID:			The system where the station can be found.
+	paneID:				ID of destination station.
+	
+	======================================================================== -->
+	
+	<MissionType UNID="&msBlackMarketDelivery;"
+			name=				"Black Market Delivery"
+			attributes=			"paneInitMission, blackMarket"
+
+			level=				"1-4"
+				 
+			maxAppearing=		"1"
+			noDebrief=			"true"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					(!= (objGetData gPlayerShip 'blackMarketLevel) 2)
+						(msnDestroy gSource)
+
+					;	Set up the mission
+					(block Nil
+						; 	No intro for this mission
+						(msnSetProperty gSource 'isIntroShown True)
+
+						;	Remember the system and station ID
+						(msnSetData gSource 'destNodeID 'SK)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block Nil
+					(msnRegisterForEvents gSource gPlayerShip)
+					(objAddItem gPlayerShip (itmCreate &itBlackMarketContainer; 1))
+					)
+			</OnAccepted>
+
+			<OnPlayerEnteredSystem>
+				;	unvFindObject does not include virtual objects, so need to
+				;	search for the Arcology when we enter the system
+				(if (= (sysGetNode) (msnGetData gSource 'destNodeID))
+					(msnSetData gSource 'paneID (objGetID (sysFindObject Nil "TNV +stKatsArcology;")))
+					)
+			</OnPlayerEnteredSystem>
+
+			<OnSetPlayerTarget>
+				(if (= (sysGetNode) (msnGetData gSource 'destNodeID))
+					(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'paneID)) 'dock)
+					)
+			</OnSetPlayerTarget>
+
+			<OnObjDocked>
+				(switch
+					(and
+						(= aObjDocked gPlayerShip)
+						(objMatches aDockTarget Nil "sTAV +blackMarket;")
+						(not (objGetItems gPlayerShip "*U +SealedContainer;"))
+						)
+						(msnFailure gSource)
+					)
+			</OnObjDocked>
+
+			<OnCompleted>
+				(switch
+					(= aReason 'success)
+						(block Nil
+							(objRemoveItem gPlayerShip (itmCreate &itBlackMarketContainer; 1))
+							(objIncData gPlayerShip 'blackMarketXP 150)
+							)
+
+					(= aReason 'failure)
+						(block Nil
+							(objIncData gPlayerShip 'blackMarketCrimeCost 50000)
+							(objSetData gPlayerShip 'blackMarketCrime "losing valuable cargo")
+							)
+					)
+			</OnCompleted>
+
+			<OnPaneInit>
+				(if (and
+						(= aScreen &dsStKatsArcologyArts;)
+						(= aPane 'Default)
+						)
+					(block (
+						;	Need to create command this way so gSource is evaluated during this event
+						(actionCode (list scrShowScreen gScreen &dsBlackMarketDelivery; {missionObj:gSource}))
+						)
+						(scrShowAction gScreen 'actionVictorianClub Nil)
+						(scrAddAction gScreen 'newVictorianClub 0 "The Victorian Nightclub" "V" actionCode)
+						)
+					)
+			</OnPaneInit>
+		</Events>
+		
+		<Language>
+			<Text id="Name">
+				"Black Market Delivery"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"Deliver cargo to the Victorian at the Commonwealth station in the "
+					(sysGetName (msnGetData gSource 'destNodeID)) " system.\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+			<Text id="Briefing">
+				(cat
+					"The dark-haired woman looks down at some papers and says, "
+					"\"As a matter of fact, I was thinking of you. We need you to deliver "
+					"some cargo to St. Katharine's. Do you think you could do that?\""
+					)
+			</Text>
+			<Text id="AcceptLabel">"\"[Y]es, absolutely!\""</Text>
+			<Text id="DeclineLabel">"\"[N]o, sorry.\""</Text>
+			<Text id="AcceptReply">
+				(cat
+					"\"Take this container to the Victorian at the Commonwealth station in "
+					"St. Katharine's Star. Do not take it through customs, obviously. "
+					"Be careful and good luck!\""
+					)
+			</Text>
+			<Text id="DeclineReply">
+				(cat
+					"The dark-haired woman frowns for a second, \"I'm sorry you feel that way. "
+					"I will inform Lord Mikho.\""
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+		</Language>
+	</MissionType>
+
+
+	<DockScreen UNID="&dsBlackMarketDelivery;"
+			inherit=		"&dsDockScreenBase;"
+			nestedScreen=   "true"
+			>
+		<OnScreenInit>
+			(scrSetData gScreen 'missionObj (@ gData 'missionObj))
+		</OnScreenInit>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block Nil
+						(scrSetDescTranslate gScreen 'descDelivery)
+						(if (not (objGetItems gPlayerShip "*U +SealedContainer;"))
+							(scrShowAction gScreen 'actionYes Nil)
+							)
+						)
+				</OnPaneInit>
+				<Actions>
+					<Action id="actionYes" default="1">
+						(scrShowPane gScreen 'Done)
+					</Action>
+
+					<Action id="actionNo" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+			<Done>
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descDone)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionLeave" default="1" cancel="1">
+						(block Nil
+							(msnSuccess (scrGetData gScreen 'missionObj))
+							(scrExitScreen gScreen)
+							)
+					</Action>
+				</Actions>
+			</Done>
+		</Panes>
+
+		<Language>
+			<Text id="actionYes">"\"[Y]es, I do.\""</Text>
+			<Text id="actionNo">"\"I have [n]o idea what you're talking about.\""</Text>
+			<Text id="actionLeave">"[L]eave"</Text>
+
+			<Text id="descDelivery">
+				(cat
+					"You are in a large dance club where women and men dressed in leather "
+					"and lace dance to classical music. A nondescript man dances next to "
+					"you and whispers, \"I hope you have what I need.\""
+					)
+			</Text>
+			<Text id="descDone">
+				(cat
+					"The nondescript man follows you to your cargo hold and takes the sealed "
+					"container. He smiles as he leaves, \"Say hello to Aubrey for me!\""
+					)
+			</Text>
+		</Language>
+	</DockScreen>
+
+</TranscendenceModule>

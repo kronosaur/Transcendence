@@ -706,6 +706,62 @@
 		</Effect>
 	</EffectType>
 
+	<EffectType unid="&efNanoBlobDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Ray
+					style=			"smooth"
+					shape=			"oval"
+					intensity=		"60"
+					primaryColor=	"#e5fff2"
+					secondaryColor=	"#1d2420"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length: (mathScale damageHP 50 680 40 110 50)
+								width: (mathScale damageHP 50 680 24 48 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+
+			<ParticlePattern
+					style=				"jet"
+					spreadAngle=		"8"
+					particleSpeed=		"20"
+					>
+				<ParticleEffect>
+					<Particle
+							style=			"glitter"
+							minWidth=		"3"
+							maxWidth=		"3"
+							primaryColor=	"#1d2420"
+							secondaryColor=	"#e5fff2"
+							/>
+				</ParticleEffect>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								particleCount: (mathScale damageHP 50 680 250 800 50)
+								length: (mathScale damageHP 50 680 80 220 50)
+								width: (mathScale damageHP 50 680 12 24 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticlePattern>
+		</Effect>
+	</EffectType>
+
 	<EffectType UNID="&efGravitonBeamDefault;"
 			instance=			"owner"
 			>

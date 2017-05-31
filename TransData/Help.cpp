@@ -124,9 +124,11 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
 		printf("      [/devicePos]		    Shows device positions on stations.\n");
 		printf("      [/font:s]             Use given font for labels.\n");
+		printf("      [/hero]	            Use hero image for ships.\n");
 		printf("      [/itemCriteria:n]     Item criteria of images to show.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
 		printf("      [/portPos]            Show docking port positions.\n");
+		printf("      [/scale:n]            Show objects to scale (meters per pixel).\n");
 		printf("      [/sort:xxx]           Sort worlds in given order.\n");
 		printf("         largest               Larger objects first.\n");
 		printf("         level                 By level (ascending).\n");
@@ -136,8 +138,9 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("         sovereign             Categorize by sovereign.\n");
 		printf("      [/textBoxesOnly]      Output textboxes only.\n");
 		printf("      [/width:n]            Width of image in pixels.\n");
-		printf("      [/xMargin:n]          Margin around images.\n");
-		printf("      [/xSpacing:n]         Spacing between images.\n");
+		printf("      [/xImageMargin:n]     Margin around each image.\n");
+		printf("      [/xMargin:n]          Frame size in pixels.\n");
+		printf("      [/xSpacing:n]         Min spacing between images.\n");
 		}
 	else if (pCmdLine->GetAttributeBool(ITEM_FREQUENCY_SWITCH))
 		{

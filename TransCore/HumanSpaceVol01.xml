@@ -759,6 +759,7 @@
 	<!ENTITY msSaveMiningShip			"0x00101001">
 	<!ENTITY msDestroyIllegalMiners		"0x00101002">
 	<!ENTITY msCommAgriDefend			"0x00101003">
+	<!ENTITY msDallSphere				"0x00101004">
 
 	<!ENTITY stStartonEridani			"0x00102001">
 	<!ENTITY stCommonwealthSettlement	"0x00102002">
@@ -1671,7 +1672,9 @@
 	<!ENTITY rsBattleArenaSegments		"0x001000E0">
 	<!ENTITY baBattleArenaSegment		"0x001000E1">
 	<!ENTITY stBattleArenaStatic		"0x001000E2">
-	
+	<!ENTITY msBattleArenaMelee			"0x001000E3">
+	<!ENTITY msKatamiKidnapped			"0x001000E4">
+
 	<!-- 00F0-00FF HELIOTROPES -->
 	
 	<!ENTITY rsHeliotropeFrigate		"0x001000F0">
@@ -1758,7 +1761,10 @@
     
 	<!ENTITY svBlackMarketBountyHunter	"0x00100200">
     <!ENTITY baBlackMarketStation       "0x00100201">
-	
+	<!ENTITY msBlackMarketDelivery		"0x00100202">
+	<!ENTITY dsBlackMarketDelivery		"0x00100203">
+	<!ENTITY msBlackMarketHotelMeet		"0x00100204">
+
 	<!-- 0210-022F PENITENTS -->
 	
 	<!ENTITY scExcruciatorDestroyer		"0x00100210">
@@ -1806,6 +1812,9 @@
 	<!ENTITY msKorolovNewFreighter		"0x00100294">
 	<!ENTITY tbKorolovEscortPirates		"0x00100295">
 	<!ENTITY msKorolovKillStronghold	"0x00100296">
+	<!ENTITY msKorolovAtCharon			"0x00100297">
+	<!ENTITY evKorolovAtCharon			"0x00100298">
+	<!ENTITY msKorolovAtCharonRevenge	"0x00100299">
 
 	<!-- 02B0-02CF COMMONWEALTH MILITIA -->
 
@@ -1814,6 +1823,7 @@
 	<!ENTITY msCMDestroyConvoy			"0x001002B2">
 	<!ENTITY msCMDestroyThreat			"0x001002B3">
 	<!ENTITY msCMEscortSuperFreighter	"0x001002B4">
+	<!ENTITY msCMstKatsDestroyThreat	"0x001002B5">
 
 	<!-- 1000-FFFF RESERVED -->
 	]>
@@ -1839,6 +1849,8 @@
 	<Module filename="Antarctica.xml"/>
 	<Module filename="BattleArena.xml"/>
 	<Module filename="BattleArenaGladiators.xml"/>
+	<Module filename="BattleArenaMelee.xml"/>
+	<Module filename="BattleArenaKidnapped.xml"/>
 	<Module filename="CharonFortress.xml"/>
 	<Module filename="Eridani.xml"/>
 	<Module filename="EtaCeti.xml"/>
@@ -1863,6 +1875,8 @@
 		
 	<Module filename="AresOrthodoxy.xml"/>
 	<Module filename="BlackMarket.xml"/>
+	<Module filename="BlackMarketMission00.xml"/>
+	<Module filename="BlackMarketMission01.xml"/>
 	<Module filename="CentauriWarlords.xml"/>
 	<Module filename="CharonPirates.xml"/>
 	<Module filename="Commonwealth.xml"/>
@@ -1887,9 +1901,11 @@
 	<Module filename="CommonwealthMilitiaMission02.xml"/>
 	<Module filename="CommonwealthMilitiaMission03.xml"/>
 	<Module filename="CommonwealthMilitiaMission04.xml"/>
+	<Module filename="CommonwealthMilitiaMissionSK01.xml"/>
 	<Module filename="CommonwealthMining.xml"/>
 	<Module filename="CommonwealthShips.xml"/>
 	<Module filename="CorporateHierarchy.xml"/>
+	<Module filename="Dall01.xml"/>
 	<Module filename="DwargRaiders.xml"/>
 	<Module filename="EncountersVol01.xml"/>
 	<Module filename="Ferians.xml"/>
@@ -1900,6 +1916,8 @@
 	<Module filename="KSMission01.xml"/>
 	<Module filename="KSMission02.xml"/>
 	<Module filename="KSMission03.xml"/>
+	<Module filename="KSMissionC01.xml"/>
+	<Module filename="KSMissionC02.xml"/>
 	<Module filename="Luminous.xml"/>
 	<Module filename="OutlawMiners.xml"/>
 	<Module filename="Penitents.xml"/>

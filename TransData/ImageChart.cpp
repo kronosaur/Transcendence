@@ -24,6 +24,9 @@ struct SEntryDesc
 			iSize(0),
 			pImage(NULL),
 			iRotation(0),
+			cxWidth(0),
+			cyHeight(0),
+			bScaled(false),
 			pCompositeImageArray(NULL)
 		{ }
 
@@ -34,6 +37,9 @@ struct SEntryDesc
 			sCategorize(Src.sCategorize),
 			pImage(Src.pImage),
 			iRotation(Src.iRotation),
+			cxWidth(Src.cxWidth),
+			cyHeight(Src.cyHeight),
+			bScaled(Src.bScaled),
 			Selector(Src.Selector)
 		{
 		if (Src.pCompositeImageArray)
@@ -60,6 +66,9 @@ struct SEntryDesc
 		iSize = Src.iSize;
 		sCategorize = Src.sCategorize;
 		pImage = Src.pImage;
+		cxWidth = Src.cxWidth;
+		cyHeight = Src.cyHeight;
+		bScaled = Src.bScaled;
 		iRotation = Src.iRotation;
 		Selector = Src.Selector;
 
@@ -80,11 +89,15 @@ struct SEntryDesc
 
 	const CObjectImageArray *pImage;		//	Image
 	int iRotation;							//	Used by ships (0 for others)
+	int cxWidth;
+	int cyHeight;
+	bool bScaled;
 
 	CCompositeImageSelector Selector;		//	Used by station types
 	CObjectImageArray *pCompositeImageArray;
 	};
 
+void InitScaledImage (SEntryDesc &Entry, Metric rMetersPerPixel);
 void InitStationTypeImage (SEntryDesc &Entry, CStationType *pStationType);
 
 void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
@@ -142,6 +155,8 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	bool bTextBoxesOnly = pCmdLine->GetAttributeBool(CONSTLIT("textBoxesOnly"));
 	bool bFieldUNID = pCmdLine->GetAttributeBool(CONSTLIT("unid"));
+	bool bHeroImage = pCmdLine->GetAttributeBool(CONSTLIT("hero"));
+	Metric rMetersPerPixel = pCmdLine->GetAttributeDoubleBounded(CONSTLIT("scale"), 0.0, -1.0, 0.0);
 
 	//	Figure out what order we want
 
@@ -248,6 +263,8 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 				NewEntry.pType = pType;
 				NewEntry.sName = pItemType->GetNounPhrase(0);
 				NewEntry.pImage = &pItemType->GetImage();
+				NewEntry.cxWidth = NewEntry.pImage->GetImageWidth();
+				NewEntry.cyHeight = NewEntry.pImage->GetImageHeight();
 				NewEntry.iSize = RectWidth(NewEntry.pImage->GetImageRect());
 				break;
 				}
@@ -264,11 +281,30 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 				//	Initialize the entry
 
 				NewEntry.pType = pType;
-				NewEntry.sName = pClass->GetNounPhrase(0);
-				NewEntry.iSize = RectWidth(pClass->GetImage().GetImageRect());
-				NewEntry.pImage = &pClass->GetImage();
-				NewEntry.iRotation = pClass->Angle2Direction(iRotation);
+				NewEntry.sName = pClass->GetNounPhrase(nounGeneric);
+				NewEntry.iSize = pClass->GetSize();
+				NewEntry.iRotation = (bHeroImage ? 0 : pClass->Angle2Direction(iRotation));
 				NewEntry.sSovereignName = (pClass->GetDefaultSovereign() ? pClass->GetDefaultSovereign()->GetNounPhrase() : NULL_STR);
+
+				//	Image
+
+				if (bHeroImage)
+					{
+					NewEntry.pImage = &pClass->GetHeroImage();
+					if (pClass->GetImage().GetImageWidth() > NewEntry.pImage->GetImageWidth())
+						NewEntry.pImage = &pClass->GetImage();
+					}
+				else
+					NewEntry.pImage = &pClass->GetImage();
+
+				NewEntry.cxWidth = NewEntry.pImage->GetImageWidth();
+				NewEntry.cyHeight = NewEntry.pImage->GetImageHeight();
+
+				//	Scale, if necessary
+
+				if (rMetersPerPixel != 0.0)
+					InitScaledImage(NewEntry, rMetersPerPixel);
+
 				break;
 				}
 
@@ -287,6 +323,14 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 				NewEntry.sSovereignName = (pStationType->GetSovereign() ? pStationType->GetSovereign()->GetNounPhrase() : NULL_STR);
 
 				InitStationTypeImage(NewEntry, pStationType);
+
+				NewEntry.cxWidth = NewEntry.pImage->GetImageWidth();
+				NewEntry.cyHeight = NewEntry.pImage->GetImageHeight();
+
+				//	Scale, if necessary
+
+				if (rMetersPerPixel != 0.0)
+					InitScaledImage(NewEntry, rMetersPerPixel);
 
 				break;
 				}
@@ -375,8 +419,8 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 		SEntryDesc &Entry = Table[i];
 
 		CImageArranger::SCellDesc *pNewCell = Cells.Insert();
-		pNewCell->cxWidth = (Entry.pImage ? RectWidth(Entry.pImage->GetImageRect()) : 0) + cxImageMargin;
-		pNewCell->cyHeight = (Entry.pImage ? RectHeight(Entry.pImage->GetImageRect()) : 0) + cxImageMargin;
+		pNewCell->cxWidth = (Entry.pImage ? Entry.cxWidth : 0) + cxImageMargin;
+		pNewCell->cyHeight = (Entry.pImage ? Entry.cyHeight : 0) + cxImageMargin;
 		pNewCell->sText = Entry.sName;
 
 		if (!strEquals(sLastCategory, Entry.sCategorize))
@@ -417,18 +461,31 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 			int xOffset;
 			int yOffset;
 			Entry.pImage->GetImageOffset(0, Entry.iRotation, &xOffset, &yOffset);
-			int cxImage = RectWidth(Entry.pImage->GetImageRect());
-			int cyImage = RectHeight(Entry.pImage->GetImageRect());
+			int cxImage = Entry.cxWidth;
+			int cyImage = Entry.cyHeight;
 
 			//	Paint image
 
 			if (!bTextBoxesOnly && Entry.pImage)
 				{
-				Entry.pImage->PaintImageUL(Output,
-						x + (Arranger.GetWidth(i) - cxImage) / 2,
-						y + (Arranger.GetHeight(i) - cyImage) / 2,
-						0,
-						Entry.iRotation);
+				if (Entry.bScaled)
+					{
+					Entry.pImage->PaintScaledImage(Output,
+							xCenter,
+							yCenter,
+							0,
+							Entry.iRotation,
+							Entry.cxWidth,
+							Entry.cyHeight);
+					}
+				else
+					{
+					Entry.pImage->PaintImage(Output,
+							xCenter - xOffset,
+							yCenter - yOffset,
+							0,
+							Entry.iRotation);
+					}
 				}
 
 			//	Paint type specific stuff
@@ -519,6 +576,21 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 	//	Write to file or clipboard
 
 	OutputImage(Output, sFilespec);
+	}
+
+void InitScaledImage (SEntryDesc &Entry, Metric rMetersPerPixel)
+	{
+	if (Entry.pImage->GetImageWidth() == 0)
+		return;
+
+	Metric rNewSize = 1.1 * Entry.iSize * rMetersPerPixel;
+	int iNewSize = (int)mathRound(rNewSize);
+
+	//	Set the scaling params
+
+	Entry.cxWidth = iNewSize;
+	Entry.cyHeight = iNewSize;
+	Entry.bScaled = true;
 	}
 
 void InitStationTypeImage (SEntryDesc &Entry, CStationType *pStationType)

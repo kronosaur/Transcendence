@@ -15,7 +15,7 @@
 	
 	<MissionType UNID="&msBenedictAndFiona;"
 			name=				"Benedict and Fiona"
-			attributes=			"benedictStoryArc"
+			attributes=			"benedictStoryArc, sistersMission"
 
 			level=				"1"
 
@@ -32,6 +32,11 @@
 			<OnCreate>
 				(block Nil
 					(switch
+						;	This mission only works in the starting system
+
+						(not (eq (sysGetNode) (objGetProperty gPlayerShip 'startingSystem)))
+							(msnDestroy gSource)
+
 						;	Set up the mission
 
 						(block Nil

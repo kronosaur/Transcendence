@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Mr. Katami Kidnapped ==================================================
+
+	EXTRA DATA
+
+	stationID:			The objID of the station where Katami is held
+	destID:				Copy of stationID when deliveryMission is active
+	paneID:				Copy of stationID when paneInitMission is active
+	kateID:
+	
+	status: One of the following:
+		Nil:			Player travelling out to station
+		molotok:		Player has been told to attack the Molotok
+		station:		Kate is attacking station
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msKatamiKidnapped;"
+			name=				"Katami Kidnapped"
+			attributes=			"battleArena, paneInitMission, deliveryMission"
+
+			level=				"3"
+				 
+			maxAppearing=		"1"
+			>
+
+		<Events>
+			<OnCreate>
+				(block (destObj)
+					(switch
+						;	This mission only works in Rigel Aurelius
+						(!= (sysGetNode) 'BA)
+							(msnDestroy gSource)
+
+						;	Player must be ready to challenge The Slicer
+						(!= (typGetData &stBattleArena; 'arenaRank) 'challenger)
+							(msnDestroy gSource)
+
+						;	Katami must still be the instructor
+						(!= (typGetData &stBattleArena; 'katamiStatus) 'instructor)
+							(msnDestroy gSource)
+
+						;	The black market station must still be alive
+						(not (setq destObj (sysFindObject gSource "TAN +katamiRescue")))
+							(msnDestroy gSource)
+
+						;	Set up the mission
+						(block Nil
+							;	Remember the station where Katami is held
+							(msnSetData gSource 'stationID (objGetID destObj))
+
+							;	Need to override dockscreen action at destination
+							(msnSetData gSource 'paneID (objGetID destObj))
+
+							;	Register for events
+							(msnRegisterForEvents gSource destObj)
+							(msnRegisterForEvents gSource gPlayerShip)
+
+							;	Update Katami
+							(typSetData &stBattleArena; 'katamiStatus 'kidnapped)
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block Nil
+					;	Player has met Kate
+					(rpgCharacterSetMeeting &unidKateMorgental;)
+					;	Legacy Kate status (still used in Heretic)
+					(typSetData &svCorporate; 'statusKateM 'ally)
+					)
+			</OnAccepted>
+
+			<OnAcceptedUndock>
+				(block (
+					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(destObj (objGetObjByID (msnGetData gSource 'stationID)))
+					kateMorgentalObj anchorObj
+					)
+
+					;	Create a marker for the cruiser
+					(setq anchorObj (sysCreateMarker "Morgental cruiser anchor" (sysVectorPolarOffset arenaObj 270 20) &svCorporate;))
+					(msnSetData gSource 'anchorID (objGetID anchorObj))
+
+					;	Create Morgental's cruiser
+					(setq kateMorgentalObj
+						(rpgCharacterCreateShip
+							&unidKateMorgental;
+							&scKateMorgentalCruiser;
+							(objGetPos anchorObj)
+							)
+						)
+
+					;	Orbit the black market station waiting for the player
+					(shpCancelOrders kateMorgentalObj)
+					(shpOrder kateMorgentalObj 'approach destObj 180)
+					(shpOrder kateMorgentalObj 'fireEvent gSource 'OnKateInPosition)
+					(shpOrder kateMorgentalObj 'orbit destObj 180)
+
+					(msnRegisterForEvents gSource kateMorgentalObj)
+					(msnSetData gSource 'kateID (objGetID kateMorgentalObj))
+
+					;	Set status
+					(msnSetData gSource 'status 'outbound)
+					;	 Update player target
+					(msnSetPlayerTarget gSource)
+					)
+			</OnAcceptedUndock>
+			
+			<OnDeclined>
+				(block Nil
+					;	Player has met Kate
+					(rpgCharacterSetMeeting &unidKateMorgental;)
+					;	Player did not help Kate
+					(rpgCharacterChangeRel &unidKateMorgental; 'opposition)
+					;	Legacy Kate status (still used in Heretic)
+					(typSetData &svCorporate; 'statusKateM 'betrayedKatami)
+
+					;	Update Katami
+					(typSetData &stBattleArena; 'katamiStatus 'betrayed)
+
+					(msnDestroy gSource)
+					)
+			</OnDeclined>
+
+			<OnDebriefed>
+				;	Make sure Kate leaves the arena
+			</OnDebriefed>
+
+			<OnSetPlayerTarget>
+				(switch
+					(not (msnGetData gSource 'status))
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'kateID)) 'escort)
+
+					(= (msnGetData gSource 'status) 'molotok)
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'attack)
+
+					(= (msnGetData gSource 'status) 'station)
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'stationID)) 'dock)
+					)
+			</OnSetPlayerTarget>
+
+			<OnKateInPosition>
+				(block (
+					(destObj (objGetObjByID (msnGetData gSource 'stationID)))
+					(kateObj (objGetObjByID (msnGetData gSource 'kateID)))
+					(targetObj (sysFindObject destObj "sAN O:guard; +unid:&scMolotok;;"))
+					)
+					(if targetObj
+						(block Nil
+							(objSendMessage gPlayerShip kateObj (msnTranslate gSource 'msgKateInPosition))
+							(msnSetData gSource 'status 'molotok)
+							(msnSetData gSource 'targetID (objGetID targetObj))
+							(msnRegisterForEvents gSource targetObj)
+							(msnSetPlayerTarget gSource)
+							)
+						(block Nil
+							(objSendMessage gPlayerShip kateObj (msnTranslate gSource 'msgInBoundHot))
+							(msnSetData gSource 'status 'station)
+							(msnSetPlayerTarget gSource)
+							(shpCancelOrders kateObj)
+							(if (objIsAbandoned destObj)
+								(shpOrder kateObj 'dock destObj)
+								(shpOrder kateObj 'attack destObj)
+								)
+							)
+						)
+					)
+			</OnKateInPosition>
+
+			<OnObjDestroyed>
+				(switch
+					;	We don't care if an object ascends or enters a stargate
+					(or (= aDestroyReason 'ascended) (= aDestroyReason 'enteredStargate))
+						Nil
+
+					;	If Kate dies, the mission fails.
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'kateID))
+						(block Nil
+							(if (msnGetProperty gSource 'isCompleted)
+								(typSetData &stBattleArena; 'katamiStatus 'dead)
+								)
+
+							(dbgOutput "Kate killed")
+							(rpgCharacterSetStatus &unidKateMorgental; 'dead)
+							(msnFailure gSource)
+
+							;	If player destroyed Kate's ship, then she remembers
+							(if (and gPlayerShip (= aOrderGiver gPlayerShip))
+								(block Nil
+									(rpgCharacterChangeRel &unidKateMorgental; 'betrayal)
+									(typSetData &svCorporate; 'statusKateM 'destroyedByPlayer)
+									)
+								(typSetData &svCorporate; 'statusKateM 'destroyed)
+								)
+							)
+					
+					(and	(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+							(= (msnGetData gSource 'status) 'molotok))
+						(block (
+							(kateObj (objGetObjByID (msnGetData gSource 'kateID)))
+							(destObj (objGetObjByID (msnGetData gSource 'stationID)))
+							)
+							(objSendMessage gPlayerShip kateObj (msnTranslate gSource 'msgInBoundHot))
+							(msnSetData gSource 'status 'station)
+							(msnSetPlayerTarget gSource)
+							(shpCancelOrders kateObj)
+							(if (objIsAbandoned destObj)
+								(shpOrder kateObj 'dock destObj)
+								(shpOrder kateObj 'attack destObj)
+								)
+							)
+
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'stationID))
+						(block (
+							(kateObj (objGetObjByID (msnGetData gSource 'kateID)))
+							)
+							;	Disable action replacement, turn on dockscreen override
+							(msnSetData gSource 'paneID Nil)
+							(msnSetData gSource 'destID (objGetID aObjDestroyed))
+
+							(msnSetData gSource 'status 'station)
+							(shpCancelOrders kateObj)
+							(shpOrder kateObj 'dock aObjDestroyed)
+							)
+					)
+			</OnObjDestroyed>
+
+			<OnCompleted>
+				(switch
+					;	Katami rescued
+					(= aReason 'success)
+						(block (
+							(kateObj (objGetObjByID (msnGetData gSource 'kateID)))
+							(anchorObj (objGetObjByID (msnGetData gSource 'anchorID)))
+							)
+							(typSetData &stBattleArena; 'katamiStatus 'rescued)
+							(rpgCharacterChangeRel &unidKateMorgental; 'aid)
+							(shpCancelOrders kateObj)
+							(shpOrder kateObj 'goto anchorObj)
+							(shpOrder kateObj 'wait 5)
+							(shpOrder kateObj 'gate)
+							)
+
+					;	Rescue fail
+					(= aReason 'failure)
+						Nil
+					)
+			</OnCompleted>
+
+			<OnReward>
+				(block Nil
+					(itmSetKnown &itHiroShieldOptimizer;)
+					(objAddItem gPlayerShip (itmCreate &itHiroShieldOptimizer; 1))
+					)
+			</OnReward>
+
+			<OnPaneInit>
+				(if (and
+						(= aScreenUNID &stBlackMarketRigelAurelius;)
+						(= aPane 'Default)
+						)
+					(block (
+						(theMessage (msnTranslate gSource 'bmMsgWarning))
+						)
+						(scrShowAction gScreen 'actionTalk Nil)
+						(scrAddAction gScreen 'newTalk 0 "Talk to Station Boss" "T"
+							(lambda () (scrShowScreen gScreen &dsRPGMessage; {desc:theMessage}))
+							)
+						)
+					)
+			</OnPaneInit>
+
+			<OnDeliveryMissionCompleted>
+				(switch
+					(= (objGetProperty (objGetObjByID (msnGetData gSource 'kateID)) 'dockedAtID) (msnGetData gSource 'destID))
+						(block (
+							(kateObj (objGetObjByID (msnGetData gSource 'kateID)))
+							(anchorObj (objGetObjByID (msnGetData gSource 'anchorID)))
+							)
+							(msnSuccess gSource)
+							{
+								desc: (msnTranslate gSource 'bmMsgRescue)
+								forceUndock: True
+								}
+							)
+
+					{
+						desc: (msnTranslate gSource 'bmMsgWait)
+						forceUndock: True
+						}
+					)
+			</OnDeliveryMissionCompleted>
+		</Events>
+		
+		<Language>
+			<Text id="Name">Katami Kidnapped</Text>
+			<Text id="Summary">
+				(cat
+					"Mr. Katami has been captured by the Black Market. "
+					"Help Kate Morgental rescue him.\n\n"
+
+					"System: " (sysGetName) "\n"
+					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					)
+			</Text>
+			<Text id="Intro">
+				(if (rpgCharacterGetQuickRel &unidKateMorgental;)
+					(msnTranslate gSource "Intro:knowKate")
+					(msnTranslate gSource "Intro:meetKate")
+					)
+			</Text>
+			<Text id="Intro:knowKate">
+				You enter the gladiators' quarters but there is no sign of Mr. Katami.
+				You see Kate Morgental in his office looking through his files. She turns to you:
+
+				"%name%, Mr. Katami is gone! He's been taken by the Black Market. I found a message that says that
+				they will kill him if you go ahead with the fight with The Slicer!"
+			</Text>
+			<Text id="Intro:meetKate">
+				You enter the gladiators' quarters but there is no sign of Mr. Katami.
+				A woman in an expensive suit is looking through Katami's files. She turns to you:
+
+				"You must be %name%; I'm glad you're here. I'm Kate Morgental. I received a message from
+				the Black Market: They have captured Katami and they're threatening to kill him if you fight The Slicer!"
+			</Text>
+			<Text id="Briefing">
+				"Katami was my old trainer and he means a lot to me. And the Black Market doesn't scare me; they're
+				just the parasites of the Corporate universe."
+
+				"Help me to rescue him and you'll be able to defeat The Slicer without risking Katami's life."
+			</Text>
+			<Text id="AcceptLabel">"\"I'll [h]elp you.\""</Text>
+			<Text id="DeclineLabel">"\"Katami can [t]ake care of himself.\""</Text>
+			<Text id="AcceptReply">
+				"I knew you would agree! I will not forget this."
+
+				"They're keeping Katami at the Black Market station in the outer asteroid field. Go to those
+				coordinates and destroy the Molotok guarding the base. When you've cleared the area I'll
+				blast the station and rescue Katami! Deal?"
+
+				"Alright, let's go!"
+			</Text>
+			<Text id="DeclineReply">
+				Kate looks deflated, but quickly composes herself. She gives you a sharp look.
+
+				"Nothing in it for you, huh? I clearly misjudged you. Go take care of yourself! I don't need your help!"
+			</Text>
+			<Text id="InProgress">
+				You receive a message from Kate:
+
+				"Are you on your way? Get to the Black Market station and clear out those defenders!"
+			</Text>
+			<Text id="FailureDebrief">
+				LATER: Failure message
+			</Text>
+			<Text id="SuccessDebrief">
+				Mr. Katami meets you at the docking bay.
+
+				"I owe you my life! The only way I can begin to repay you is to help you to defeat The Slicer.
+				Here, take this ROM biosoft. It may save your life."
+			</Text>
+
+			<Text id="msgKateInPosition">
+				We're in position. Now destroy that Molotok.
+			</Text>
+			<Text id="msgInboundHot">
+				Nice work! Clear the area; we're inbound hot!
+			</Text>
+
+			<Text id="bmMsgWarning">
+				Men grab you and take you before the station boss:
+
+				"There's no need to talk; you know what you need to do.
+				Just stay out of the Arena and your friend will be fine."
+				He turns towards his bodyguards, "Get %him% out of here!"
+			</Text>
+			<Text id="bmMsgWait">
+				You see movement in the smoking remains of the station. Any survivors are
+				unlikely to want to talk first so you decide to wait for Kate.
+			</Text>
+			<Text id="bmMsgRescue">
+				You enter the smoking remains of the station. You follow the sounds of
+				gunfire and find Kate Morgental leading a team of armored men. They are
+				unbinding Mr. Katami, who seems to be weak but otherwise unharmed.
+
+				Kate flashes you a thumbs up: "Thanks for your help&mdash;we'll get him
+				back safely! See you back at the Arena: You've got a date with The Slicer!"
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>
