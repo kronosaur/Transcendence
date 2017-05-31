@@ -39,8 +39,10 @@
 					(block (desc)
 						(switch
 							;	If we have a description in the object, then use that.
+							;	NOTE: We also check AbandonedScreenDesc because that ID
+							;	was used by the (now deprecated) dsAbandonedStation.
 						
-							(setq desc (objTranslate gSource 'descAbandonedStation))
+							(setq desc (or (objTranslate gSource 'descAbandonedStation) (objTranslate gSource 'AbandonedScreenDesc)))
 								(scrSetDesc gScreen desc)
 								
 							;	If populated, then use a default.
