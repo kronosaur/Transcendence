@@ -3738,7 +3738,7 @@
 	<StationType UNID="&stPteravoreLair;"
 			name=				"pteravore lair"
 			sovereign=			"&svPteravores;"
-			abandonedScreen=	"&dsAbandonedStation;"
+			abandonedScreen=	"&dsRPGAbandonedStation;"
 			canAttack=			"true"
 
 			multiHull=			"true"
@@ -3770,10 +3770,9 @@
 		</Items>
 
 		<Language>
-			<Text id="AbandonedScreenDesc">
-				(cat "You are docked at the remains of a pteravore lair. "
-					"These fearsome silicon-based lifeforms live on refined pteracnium, extracted from unsuspecting vessels."
-					)
+			<Text id="descAbandonedStation">
+				You are docked at the remains of a pteravore lair. These fearsome silicon-based
+				lifeforms live on refined pteracnium, extracted from unsuspecting vessels.
 			</Text>
 		</Language>
 
