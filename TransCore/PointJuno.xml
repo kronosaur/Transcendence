@@ -1070,6 +1070,8 @@
 	<StationType UNID="&stCSCEuropaWreck;"
 			name=				":the wreck of the CSC Europa"
 			sovereign=			"&svCommonwealthFleet;"
+			inherit=			"&dsDockScreenBase;"
+			
 			abandonedScreen=	"Main"
 			scale=				"ship"
 
@@ -1145,23 +1147,23 @@
 						<OnPaneInit>
 							(block Nil
 								(shpCancelOrders gPlayerShip)
-								(scrSetDesc gScreen "You are docked with the hulking wreckage of the CSC Europa.")
+								(scrSetDescTranslate gScreen 'descDefault)
 								)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Bridge" key="B" default="1">
+							<Action id="actionBridge" default="1">
 								(scrShowPane gScreen "Bridge")
 							</Action>
 
-							<Action name="Weapons Vault" key="W">
+							<Action id="actionWeaponsVault">
 								(if (objGetData gSource "VaultOpened")
 									(scrShowPane gScreen "WeaponsVault")
 									(scrShowPane gScreen "WeaponsVaultLocked")
 									)
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 
@@ -1170,28 +1172,38 @@
 					</Default>
 
 					<Bridge
-							desc=		"The bridge is completely smashed. Bodies float around in zero-G amid the shredded remains of consoles and other electronic equipment.">
+						desc="=(scrTranslate gScreen 'descBridge)">
 
 						<Actions>
-							<Action name="Done" key="D" default="1" cancel="1">
+							<Action id="actionDone" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
 					</Bridge>
 
-					<WeaponsVault
-							desc=		"You are inside the CSC Europa's weapons vault.">
-
+					<WeaponsVault>
+						<OnPaneInit>
+							(block nil
+								(scrSetDescTranslate gScreen 'descWeaponsVault)
+								(if (not (objGetItems gSource '*U))
+									(block nil
+										(scrEnableAction gScreen 'actionLoot nil)
+										(scrSetActionDesc gScreen 'actionLoot (scrTranslate gScreen 'descNoItemsHere))
+										)
+									)
+								)
+						</OnPaneInit>
+						
 						<Actions>
-							<Action name="Loot" key="L" default="1" >
+							<Action id="actionLoot" default="1">
 								(scrShowScreen gScreen &dsRPGLoot;)
 							</Action>
 
-							<Action name="Jettison" key="J">
+							<Action id="actionJettison">
 								(scrShowScreen gScreen &dsRPGJettison;)
 							</Action>
 
-							<Action name="Done" cancel="1" key="D">
+							<Action id="actionDone" cancel="1" default="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -1199,11 +1211,11 @@
 					</WeaponsVault>
 
 					<WeaponsVaultLocked
-							desc=		"You are standing in front of the massive blast-proof doors of the ship's weapons vault. There is an alphabetic codepad on the door that requests an entry code."
+							desc=		"=(scrTranslate gScreen 'descWeaponsVaultLocked)"
 							showTextInput="true">
 
 						<Actions>
-							<Action name="Enter Code" key="E" default="1">
+							<Action id="actionEnterCode" default="1">
 								(block Nil
 									(if (eq (scrGetInputText gScreen) (typGetGlobalData &stCSCEuropaWreck; "VaultCode"))
 										(block Nil
@@ -1215,17 +1227,17 @@
 									)
 							</Action>
 
-							<Action name="Done" key="D" cancel="1">
+							<Action id="actionDone" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
 					</WeaponsVaultLocked>
 
 					<InvalidCode
-							desc=		"The code appears to be invalid. The vault doors remained closed.">
+							desc=		"=(scrTranslate gScreen 'descInvalidCode)">
 
 						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
+							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "WeaponsVaultLocked")
 							</Action>
 						</Actions>
@@ -1245,6 +1257,23 @@
 			<Port x="-80"	y="80" />
 			<Port x="-80"	y="-80" />
 		</DockingPorts>
+		
+		<Language>
+			<Text id="descDefault">
+				"You are docked with the hulking wreckage of the CSC Europa."
+			</Text>
+			<Text id="actionBridge">"[B]ridge"</Text>
+			<Text id="actionWeaponsVault">"[W]eapons Vault"</Text>
+			<Text id="descBridge">
+				"The bridge is completely smashed. Bodies float around in zero-G amid the shredded remains of consoles and other electronic equipment."
+			</Text>
+			<Text id="descWeaponsVault">"You are inside the CSC Europa's weapons vault."</Text>
+			<Text id="descWeaponsVaultLocked">
+				"You are standing in front of the massive blast-proof doors of the ship's weapons vault. There is an alphabetic codepad on the door that requests an entry code."
+			</Text>
+			<Text id="actionEnterCode">"[E]nter Code"</Text>
+			<Text id="descInvalidCode">"The code appears to be invalid. The vault doors remained closed."</Text>
+		</Language>
 
 	</StationType>
 

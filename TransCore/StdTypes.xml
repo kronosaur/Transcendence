@@ -1497,6 +1497,8 @@
 	<StationType UNID="&stFlotsam;"
 			name=				"(flotsam)"
 			sovereign=			"&svNeutral;"
+			inherit=			"&dsDockScreenBase;"
+			
 			dockScreen=			"Main"
 
 			scale=				"ship"
@@ -1517,22 +1519,25 @@
 								)
 
 								(if theItem
-									(scrSetDesc gScreen "You find " (itmGetName theItem 0x08) " floating in space.")
+									(block nil
+										(scrSetData gScreen 'itemName (itmGetName theItem 0x08))
+										(scrSetDescTranslate gScreen 'descFindItem)
+									)
 
 									(block Nil
-										(scrSetDesc gScreen "The item is secure aboard your ship.")
-										(scrEnableAction gScreen 0 Nil)
+										(scrSetDescTranslate gScreen 'descItemSecure)
+										(scrShowAction gScreen 'actionLoot Nil)
 										)
 									)
 								)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Loot" key="L" default="1" >
+							<Action id="actionLoot" default="1">
 								(scrShowScreen gScreen &dsRPGLoot;)
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1" default="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -1546,6 +1551,11 @@
 				portRadius=		"24"
 				maxDist=		"3"
 				/>
+				
+		<Language>
+			<Text id="descFindItem">(cat "You find " (scrGetData gScreen 'itemName) " floating in space.")</Text>
+			<Text id="descItemSecure">"The item is secure aboard your ship."</Text>
+		</Language>
 	</StationType>
 
 	<!-- Shipwreck 1 -->

@@ -683,7 +683,7 @@
 			name=				"(Xenophobe worldship)"
 			sovereign=			"&svCommonwealth;"
 			controllingSovereign="&svXenophobes;"
-			abandonedScreen=	"Main"
+			abandonedScreen=	"&dsRPGAbandonedStation;"
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
@@ -728,31 +728,11 @@
 			</Ship>
 		</Ships>
 
-		<DockScreens>
-			<Main>
-				<Panes>
-					<Default
-							desc=		"You are docked at the lifeless ruins of a destroyed station. A group of refugees, huddling in the cavernous bay, tell you that the station was destroyed by Xenophobes.">
-
-						<Actions>
-							<Action name="Loot" key="L" default="1" >
-								(scrShowScreen gScreen &dsRPGLoot;)
-							</Action>
-
-							<Action name="Jettison" key="J">
-								(scrShowScreen gScreen &dsRPGJettison;)
-							</Action>
-
-							<Action name="Undock" cancel="1" key="U">
-								<Exit/>
-							</Action>
-
-						</Actions>
-
-					</Default>
-				</Panes>
-			</Main>
-		</DockScreens>
+		<Language>
+			<Text id="descAbandonedStation">
+				"You are docked at the lifeless ruins of a destroyed station. A group of refugees, huddling in the cavernous bay, tell you that the station was destroyed by Xenophobes."
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- LEVEL VII ITEMS -->
@@ -3388,7 +3368,16 @@
 
 		<Names>abandoned cargo container</Names>
 
-		<Image			imageID="&rsStations1;" imageX="480" imageY="0" imageWidth="32" imageHeight="32" />
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="480" imageY="0" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="32" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="64" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="96" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="128" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="160" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="192" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="224" imageWidth="32" imageHeight="32" />
+		</ImageVariants>
 
 		<Ships>
 			<Ship	count="1"	class="&scT31ArmedTransport;" orders="trade route">
@@ -5078,6 +5067,8 @@
 	<StationType UNID="&stSealedCargoContainer;"
 			name=				"abandoned cargo container"
 			sovereign=			"&svNeutral;"
+			inherit=			"&dsDockScreenBase;"
+		
 			abandonedScreen=	"Main"
 			dockScreen=			"Main"
 
@@ -5131,10 +5122,10 @@
 
 				<Panes>
 					<Default
-							desc=	"You are docked at an abandoned cargo container. The hatch to the container is sealed. Do you wish to open it?">
+							desc=	"=(scrTranslate gScreen 'descDefault)">
 
 						<Actions>
-							<Action name="Open Seal" default="1" key="O">
+							<Action id="actionOpenSeal" default="1">
 								(block (contents roll)
 									(objSetData gSource "Opened" True)
 
@@ -5163,7 +5154,7 @@
 									)
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 
@@ -5172,31 +5163,43 @@
 
 					<Opened>
 						<OnPaneInit>
-							(switch
-								(eq (objGetData gSource "Contents") 4)
-									(scrSetDesc gScreen "You are docked at an abandoned cargo container. There is a family of refugees living here.")
-								(block (allItems itemCount)
-									(setq allItems (objGetItems gSource "*"))
-									(setq itemCount (count allItems))
+							(block nil
+								(scrSetDesc gScreen (cat
+									(scrTranslate gScreen 'descOpenedStart)
 									(switch
-										(eq itemCount 0)
-											(scrSetDesc gScreen "You are docked at an abandoned cargo container. There are no items here.")
-										(eq itemCount 1)
-											(scrSetDesc gScreen (cat "You are docked at an abandoned cargo container. You see " (itmGetName (item allItems 0) 8) " here."))
-										(scrSetDesc gScreen (cat "You are docked at an abandoned cargo container. You see several items here."))
+										(eq (objGetData gSource "Contents") 4)
+											(scrTranslate gScreen 'descOpenedRefugees)
+										(block (allItems itemCount)
+											(setq allItems (objGetItems gSource "*"))
+											(setq itemCount (count allItems))
+											(scrSetData gScreen 'itemName (itmGetName (@ allItems 0) 8))
+											(switch
+												(eq itemCount 0)
+													(scrTranslate gScreen 'descNoItemsHere)
+												(eq itemCount 1)
+													(scrTranslate gScreen 'descOpenedOneItem)
+												(scrTranslate gScreen 'descOpenedSeveralItems)
+												)
+											)
+										)
+									))
+								(if (not (objGetItems gSource '*U))
+									(block nil
+										(scrEnableAction gScreen 'actionLoot nil)
+										(scrSetActionDesc gScreen 'actionLoot (scrTranslate gScreen 'descNoItemsHere))
 										)
 									)
 								)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Loot" default="1" key="L">
+							<Action id="actionLoot" default="1">
 								(scrShowScreen gScreen &dsRPGLoot; {
 									nextScreen: "Main"
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1" default="1">
 								<Exit/>
 							</Action>
 
@@ -5206,10 +5209,10 @@
 					; Cargo container is empty
 
 					<Contents1
-							desc=	"The cargo container is empty.">
+							desc=	"=(scrTranslate gScreen 'descContentsEmpty)">
 
 						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
+							<Action id="actionUndock" default="1" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -5222,24 +5225,31 @@
 							(block (allItems itemCount)
 								(setq allItems (objGetItems gSource "*"))
 								(setq itemCount (count allItems))
+								(scrSetData gScreen 'itemName (itmGetName (@ allItems 0) 8))
 								(switch
 									(eq itemCount 0)
-										(scrSetDesc gScreen "The cargo container is empty.")
+										(scrSetDescTranslate gScreen 'descContentsEmpty)
 									(eq itemCount 1)
-										(scrSetDesc gScreen (cat "The cargo container has " (itmGetName (item allItems 0) 8) "."))
-									(scrSetDesc gScreen (cat "The cargo container is filled with various items."))
+										(scrSetDescTranslate gScreen 'descContents2OneItem)
+									(scrSetDescTranslate gScreen 'descContents2VariousItems)
+									)
+								(if (not (objGetItems gSource '*U))
+									(block nil
+										(scrEnableAction gScreen 'actionLoot nil)
+										(scrSetActionDesc gScreen 'actionLoot (scrTranslate gScreen 'descNoItemsHere))
+										)
 									)
 								)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Loot" default="1" key="L">
+							<Action id="actionLoot" default="1">
 								(scrShowScreen gScreen &dsRPGLoot; {
 									nextScreen: "Main"
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1" default="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -5250,17 +5260,18 @@
 					<Contents3>
 						<OnPaneInit>
 							(block (allItems desc)
-								(setq desc "The cargo container was filled with a powerful industrial solvent which has flooded your ship's cargo hold.")
+								(setq desc (scrTranslate gScreen 'descContents3Start))
 
 								; pick a random item in the ship's cargo hold to damage
 								(setq allItems (objGetItems gPlayerShip "*U -ID; -questItem;"))
 
 								; Destroy an item
 								(if (eq (count allItems) 0)
-									(setq desc (cat desc " Fortunately, nothing was damaged."))
+									(setq desc (cat desc (scrTranslate gScreen 'descContents3NothingDamaged)))
 									(block (itemDamaged)
 										(setq itemDamaged (random allItems))
-										(setq desc (cat desc " The solvent has destroyed " (itmGetName itemDamaged 8) "."))
+										(scrSetData gScreen 'itemName (itmGetName itemDamaged 8))
+										(setq desc (cat desc (scrTranslate gScreen 'descContents3ItemDestroyed)))
 										(objRemoveItem gPlayerShip itemDamaged)
 										)
 									)
@@ -5271,7 +5282,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
+							<Action id="actionUndock" default="1" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -5280,10 +5291,10 @@
 					; Cargo container is occupied by some refugees
 
 					<Contents4
-							desc="You open the cargo doors and see that a family of refugees is living inside. They are somewhat annoyed at being disturbed.">
+							desc=	"=(scrTranslate gScreen 'descContents4)">
 
 						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
+							<Action id="actionUndock" default="1" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -5292,10 +5303,10 @@
 					; Cargo container is a trap for some pirates
 
 					<Contents5
-							desc="This appears to be a makeshift base for a group of pirates. You see several enemy ships appear on your screen...">
+							desc=	"=(scrTranslate gScreen 'descContents5)">
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
 									(sysAddEncounterEventAtDist 0 gPlayerShip &etPirateAmbush1; 50)
 									(scrExitDock gScreen)
@@ -5314,7 +5325,24 @@
 				portRadius=		"24"
 				maxDist=		"3"
 				/>
-
+				
+		<Language>
+			<Text id="descDefault">"The hatch to the container is sealed. Do you wish to open it?"</Text>
+			<Text id="actionOpenSeal">"[O]pen Seal"</Text>
+			<Text id="descOpenedStart">"You are docked at an abandoned cargo container. "</Text>
+			<Text id="descOpenedRefugees">"There is a family of refugees living here."</Text>
+			<Text id="descOpenedOneItem">(cat "You see " (scrGetData gScreen 'itemName) " here.")</Text>
+			<Text id="descOpenedSeveralItems">"You see several items here."</Text>
+			<Text id="descContentsEmpty">"The cargo container is empty."</Text>
+			<Text id="descContents2OneItem">(cat "The cargo container has " (scrGetData gScreen 'itemName) ".")</Text>
+			<Text id="descContents2VariousItems">"The cargo container is filled with various items."</Text>
+			<Text id="descContents3Start">"The cargo container was filled with a powerful industrial solvent which has flooded your ship's cargo hold. "</Text>
+			<Text id="descContents3NothingDamaged">"Fortunately, nothing was damaged."</Text>
+			<Text id="descContents3ItemDestroyed">(cat "The solvent has destroyed " (scrGetData gScreen 'itemName) ".")</Text>
+			<Text id="descContents4">"You open the cargo doors and see that a family of refugees is living inside. They are somewhat annoyed at being disturbed."</Text>
+			<Text id="descContents5">"This appears to be a makeshift base for a group of pirates. You see several enemy ships appear on your screen..."</Text>
+			
+		</Language>
 	</StationType>
 
 <!-- Ventari Settlers ===================================================== -->
