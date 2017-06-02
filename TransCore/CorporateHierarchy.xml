@@ -3049,7 +3049,9 @@
 
 	<!-- Arms Dealer Screen -->
 
-	<DockScreen UNID="&dsArmsDealerSpecial;">
+	<DockScreen UNID="&dsArmsDealerSpecial;"
+			inherit="&dsDockScreenBase;"
+			>
 		<Panes>
 			<Default>
 				<OnPaneInit>
@@ -3080,8 +3082,10 @@
 
 	<!-- Corporate Imprison -->
 
-	<DockScreen UNID="&dsCorporateImprison;"	nestedScreen="true">
-
+	<DockScreen UNID="&dsCorporateImprison;"	
+			inherit="&dsDockScreenBase;"
+			nestedScreen="true"
+			>
 		<Panes>
 			<Default>
 				<OnPaneInit>
@@ -3096,7 +3100,6 @@
 							)
 					</Action>
 				</Actions>
-
 			</Default>
 		</Panes>
 	</DockScreen>
