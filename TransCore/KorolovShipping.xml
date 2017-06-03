@@ -1289,8 +1289,8 @@
 							(switch
 								(= (scrGetData gScreen 'shipType) 'freighter)
 									(cat
-										(typGetProperty classUNID "cargoSpace") " tons\n"
-										(typGetProperty classUNID "maxSpeed") "% lightspeed\n"
+										(fmtNumber (typGetProperty classUNID "cargoSpace")) " tons\n"
+										(fmtNumber 'speed (typGetProperty classUNID "maxSpeed")) "\n"
 										(if armor (strCapitalize armor) "None") "\n"
 										(if shield (strCapitalize shield) "None") "\n"
 										(if weapon (strCapitalize weapon) "None") "\n"
@@ -1299,7 +1299,7 @@
 
 								(= (scrGetData gScreen 'shipType) 'warship)
 									(cat
-										(typGetProperty classUNID "maxSpeed") "% lightspeed\n"
+										(fmtNumber 'speed (typGetProperty classUNID "maxSpeed")) "\n"
 										(if armor (strCapitalize armor) "None") "\n"
 										(if shield (strCapitalize shield) "None") "\n"
 										(if weapon (strCapitalize weapon) "None") "\n"

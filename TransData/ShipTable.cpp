@@ -103,7 +103,7 @@ void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine)
 		char szBuffer[1024];
 		wsprintf(szBuffer, "%04d%s%d", 
 				pClass->GetLevel(),
-				pClass->GetNounPhrase(0).GetASCIIZPointer(),
+				pClass->GetNounPhrase(nounGeneric).GetASCIIZPointer(),
 				pClass->GetUNID());
 		Table.AddEntry(CString(szBuffer), (CObject *)pClass);
 		}

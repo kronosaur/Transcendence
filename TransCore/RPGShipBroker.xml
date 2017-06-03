@@ -398,7 +398,7 @@
 								"{/f:MediumBold;/c:#79828c; fuel efficiency:} " reactorEfficiencyText "\n"
 								"\n"
 								"{/f:MediumBold;/c:#79828c; drive:} " driveText "\n"
-								"{/f:MediumBold;/c:#79828c; max. speed:} ." (objGetProperty shipObj 'maxSpeed) "c\n"
+								"{/f:MediumBold;/c:#79828c; max. speed:} " (fmtNumber 'speed (objGetProperty shipObj 'maxSpeed)) "\n"
 								"{/f:MediumBold;/c:#79828c; thrust//mass:} " (/ (objGetProperty shipObj 'thrustToWeight) 1000) "\n"
 								"{/f:MediumBold;/c:#79828c; maneuverability:} " (/ (objGetProperty shipObj 'maneuver) 1000) "\n"
 							"}"
@@ -411,7 +411,7 @@
 						(cat
 							"{/rtf "
 								(if cargoItem (cat "{/f:MediumBold;/c:#79828c; cargo:} " (itmGetName cargoItem 0x00) "\n"))
-								"{/f:MediumBold;/c:#79828c; cargo space:} " (objGetProperty shipObj 'cargoSpace) " tons\n"
+								"{/f:MediumBold;/c:#79828c; cargo space:} " (fmtNumber (objGetProperty shipObj 'cargoSpace)) " tons\n"
 								"{/f:MediumBold;/c:#79828c; max. expansion:} " (objGetProperty shipObj 'maxCargoSpace) " tons\n"
 								"\n"
 								"{/f:MediumBold;/c:#79828c; device slots:} " deviceSlots " (" availDeviceSlots " free)\n"

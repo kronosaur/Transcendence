@@ -4,19 +4,21 @@
 	
 	<Type unid="&dsDockScreenBase;">
 		<Language>
-			<Text id="actionCancel">"[C]ancel"</Text>
-			<Text id="actionCommoditiesExchange">"[C]ommodities Exchange"</Text>
-			<Text id="actionContinue">"[C]ontinue"</Text>
-			<Text id="actionDockServices">"[D]ock Services"</Text>
-			<Text id="actionDone">"[D]one"</Text>
-			<Text id="actionJettison">"[J]ettison"</Text>
-			<Text id="actionLoot">"[L]oot"</Text>
-			<Text id="actionRefuel">"[R]efuel"</Text>
-			<Text id="actionRepairArmor">"Repair [A]rmor"</Text>
-			<Text id="actionRepairReplaceArmor">"Repair or Replace [A]rmor"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
+			<Text id="actionBuyItems">[B]uy Items</Text>
+			<Text id="actionCancel">[C]ancel</Text>
+			<Text id="actionCommoditiesExchange">[C]ommodities Exchange</Text>
+			<Text id="actionContinue">[C]ontinue</Text>
+			<Text id="actionDockServices">[D]ock Services</Text>
+			<Text id="actionDone">[D]one</Text>
+			<Text id="actionJettison">[J]ettison</Text>
+			<Text id="actionLoot">[L]oot</Text>
+			<Text id="actionRefuel">[R]efuel</Text>
+			<Text id="actionRepairArmor">Repair [A]rmor</Text>
+			<Text id="actionRepairReplaceArmor">Repair or Replace [A]rmor</Text>
+			<Text id="actionSellItems">[S]ell Items</Text>
+			<Text id="actionUndock">[U]ndock</Text>
 			
-			<Text id="descNoItemsHere">"There are no items here."</Text>
+			<Text id="descNoItemsHere">There are no items here.</Text>
 		</Language>
 	</Type>
 	
@@ -39,8 +41,10 @@
 					(block (desc)
 						(switch
 							;	If we have a description in the object, then use that.
+							;	NOTE: We also check AbandonedScreenDesc because that ID
+							;	was used by the (now deprecated) dsAbandonedStation.
 						
-							(setq desc (objTranslate gSource 'descAbandonedStation))
+							(setq desc (or (objTranslate gSource 'descAbandonedStation) (objTranslate gSource 'AbandonedScreenDesc)))
 								(scrSetDesc gScreen desc)
 								
 							;	If populated, then use a default.

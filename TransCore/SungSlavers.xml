@@ -1322,7 +1322,7 @@
 	<StationType UNID="&stSungSlaveQuarters1;"
 			name=				"Sung slave quarters|Sung slave quarters"
 			sovereign=			"&svSungSlaves;"
-			abandonedScreen=	"&dsAbandonedStation;"
+			abandonedScreen=	"&dsRPGAbandonedStation;"
 			dockScreen=			"&dsSungSlaveQuarters;"
 			noMapLabel=			"true"
 
@@ -1341,10 +1341,9 @@
 		</ImageVariants>
 
 		<Language>
-			<Text id="AbandonedScreenDesc">
-				(cat "You are docked at a ruined structure once housing slaves. "
-					"Lifeless forms float around in zero-G amid the scraps and mementos they once owned."
-					)
+			<Text id="descAbandonedStation">
+				You are docked at a ruined structure once housing slaves.
+				Lifeless forms float around in zero-G amid the scraps and mementos they once owned.
 			</Text>
 		</Language>
 
@@ -1365,7 +1364,7 @@
 	<StationType UNID="&stSungSlaveQuarters2;"
 			name=				"Sung slave quarters|Sung slave quarters"
 			sovereign=			"&svSungSlaves;"
-			abandonedScreen=	"&dsAbandonedStation;"
+			abandonedScreen=	"&dsRPGAbandonedStation;"
 			dockScreen=			"&dsSungSlaveQuarters;"
 			noMapLabel=			"true"
 
@@ -1385,10 +1384,9 @@
 		</ImageVariants>
 
 		<Language>
-			<Text id="AbandonedScreenDesc">
-				(cat "You are docked at a ruined structure once housing slaves. "
-					"Lifeless forms float around in zero-G amid the scraps and mementos they once owned."
-					)
+			<Text id="descAbandonedStation">
+				You are docked at a ruined structure once housing slaves.
+				Lifeless forms float around in zero-G amid the scraps and mementos they once owned.
 			</Text>
 		</Language>
 

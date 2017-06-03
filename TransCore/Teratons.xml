@@ -178,10 +178,10 @@
 			>
 
 		<Language>
-			<Text id="AbandonedScreenDesc">
-				(cat "You are docked at the remains of a Teraton nest. "
-					"The sickly sweet smell of burnt flesh fills the air and mucusy discharges flow out of organic walls."
-					)
+			<Text id="descAbandonedStation">
+				You are docked at the remains of a Teraton nest.
+				The sickly sweet smell of burnt flesh fills the air and 
+				mucusy discharges flow out of organic walls.
 			</Text>
 		</Language>
 
@@ -256,7 +256,7 @@
 			name=				"Teraton chrysalis(es)"
 			sovereign=			"&svTeratons;"
 			dockScreen=			"Main"
-			abandonedScreen=	"&dsAbandonedStation;"
+			abandonedScreen=	"&dsRPGAbandonedStation;"
 			dockingPorts=		"4"
 			noMapLabel=			"true"
 			noFriendlyFire=		"true"
@@ -277,10 +277,9 @@
 		<Image	imageID="&rsTeratonChrysalis;" imageWidth="100" imageHeight="100"/>
 		
 		<Language>
-			<Text id="AbandonedScreenDesc">
-				(cat "You are docked at the dead remains of a Teraton chrysalis. "
-					"The bony, motionless mass at its center bleeds an ochre fluid."
-					)
+			<Text id="descAbandonedStation">
+				You are docked at the dead remains of a Teraton chrysalis.
+				The bony, motionless mass at its center bleeds an ochre fluid.
 			</Text>
 		</Language>
 		
@@ -348,7 +347,7 @@
 	<StationType UNID="&stTeratonDefender;"
 			name=				"Teraton Defender"
 			sovereign=			"&svTeratons;"
-			abandonedScreen=	"&dsAbandonedStation;"
+			abandonedScreen=	"&dsRPGAbandonedStation;"
 			dockingPorts=		"4"
 			noMapLabel=			"true"
 			noFriendlyFire=		"true"
@@ -372,10 +371,9 @@
 		</Devices>
 
 		<Language>
-			<Text id="AbandonedScreenDesc">
-				(cat "You are docked at the dead remains of a Teraton defender. "
-					"Wisps of high-energy plasma vent from holes along a bony central mass."
-					)
+			<Text id="descAbandonedStation">
+				You are docked at the dead remains of a Teraton defender.
+				Wisps of high-energy plasma vent from holes along a bony central mass.
 			</Text>
 		</Language>
 	</StationType>
@@ -386,7 +384,7 @@
 			name=				"Teraton fabricator"
 			sovereign=			"&svTeratons;"
 			dockScreen=			"Main"
-			abandonedScreen=	"&dsAbandonedStation;"
+			abandonedScreen=	"&dsRPGAbandonedStation;"
 			canAttack=			"true"
 
 			multiHull=			"true"
@@ -835,7 +833,7 @@
 			name=				"Teraton research center"
 			sovereign=			"&svTeratons;"
 			dockScreen=			"Main"
-			abandonedScreen=	"&dsAbandonedStation;"
+			abandonedScreen=	"&dsRPGAbandonedStation;"
 			canAttack=			"true"
 
 			multiHull=			"true"
@@ -1256,7 +1254,7 @@
 			name=				"Teraton trading post"
 			sovereign=			"&svTeratons;"
 			dockScreen=			"Main"
-			abandonedScreen=	"&dsAbandonedStation;"
+			abandonedScreen=	"&dsRPGAbandonedStation;"
 			canAttack=			"true"
 
 			multiHull=			"true"

@@ -552,7 +552,7 @@
 	<StationType UNID="&stIocrymOutpost;"
 			name=				"Iocrym outpost"
 			sovereign=			"&svIocrym;"
-			abandonedScreen=	"&dsAbandonedStation;"
+			abandonedScreen=	"&dsRPGAbandonedStation;"
 			canAttack=			"true"
 
 			multiHull=			"true"
@@ -576,11 +576,10 @@
 		</Ships>
 		
 		<Language>
-			<Text id="AbandonedScreenDesc">
-				(cat "You are docked at the remains of an alien outpost. "
-					"The crystalline walls of this structure are cracked and pitted; "
-					"it appears that the outpost was fully automated as you see no signs of alien bodies."
-					)
+			<Text id="descAbandonedStation">
+				You are docked at the remains of an alien outpost.
+				The crystalline walls of this structure are cracked and pitted; 
+				it appears that the outpost was fully automated as you see no signs of alien bodies.
 			</Text>
 		</Language>
 

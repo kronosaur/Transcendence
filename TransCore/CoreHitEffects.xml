@@ -112,9 +112,9 @@
 							)
 							
 							;	No particle jet if there is no damage or if
-							;	we've hit a world/star. Also, we don't skip 
+							;	we've hit a world/star. Also, we skip 
 							;	abandoned stations, since they create their own
-							;	ejacta.
+							;	ejecta.
 							
 							(if (or (= damageHP 0)
 									(= scale 'star)
