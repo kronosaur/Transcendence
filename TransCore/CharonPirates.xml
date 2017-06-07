@@ -1820,10 +1820,18 @@
 				))
 
 			(setq chrRaidTransport (lambda (transportObj originObj destObj cargoValue)
-				(block (travelTime roundTrip)
+				(block (distance lastNavPoint nextNavPoint travelTime roundTrip)
 					; Figure out how many ticks it will take for the transport to
 					; travel the distance
-					(setq travelTime (sysCalcTravelTime (objGetDistance originObj destObj) (shpGetMaxSpeed transportObj)))
+					(setq lastNavPoint originObj)
+					(for i 1 20
+						(block nil
+							(setq nextNavPoint (sysGetNavPathPoint &svCorporate; originObj destObj (* i 5)))
+							(setq distance (+ distance (sysVectorDistance lastNavPoint nextNavPoint)))
+							(setq lastNavPoint nextNavPoint)
+							)
+						)
+					(setq travelTime (sysCalcTravelTime distance (shpGetMaxSpeed transportObj)))
 					(setq roundTrip (not (objMatches destObj Nil "G")))
 					;(dbgOutput "Freighter travel time: " travelTime)
 
