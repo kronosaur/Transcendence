@@ -17,13 +17,27 @@
 			adjective="zoanthrope"
 			demonym=":a zoanthrope(s)"
 			alignment="constructive chaos"
-			>
+			/>
+
+	<!-- Zoanthrope base class -->
+	
+	<ShipClass UNID="&baZoanthropeBase;">
+		<Events>
+			<OnObjDestroyed>
+				(intZoanthropeOnObjDestroyed)
+			</OnObjDestroyed>
+
+			<OnOrderChanged>
+				(intZoanthropeOnOrderChanged)
+			</OnOrderChanged>
+		</Events>
+		
 		<Language>
 			<Text id="WatchYourTargets">"\"Grrr!\""</Text>
 			<Text id="NiceShooting">""</Text>
 		</Language>
-	</Sovereign>
-
+	</ShipClass>
+	
 	<!-- Dwarg Raider -->
 
 	<ShipClass UNID="&scDwargRaider;"
@@ -31,6 +45,7 @@
 			class=				"Zoanthrope raider"
 			type=				""
 			defaultSovereign=	"&svDwargRaiders;"
+			inherit=			"&baZoanthropeBase;"
 
 			mass=				"25"
 			cargoSpace=			"5"
@@ -59,16 +74,6 @@
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="4"	posZ="0"	rotation="180"/>
 		</Effects>
-		
-		<Events>
-			<OnObjDestroyed>
-				(intZoanthropeOnObjDestroyed)
-			</OnObjDestroyed>
-
-			<OnOrderChanged>
-				(intZoanthropeOnOrderChanged)
-			</OnOrderChanged>
-		</Events>
 
 		<AISettings
 			aggressor=			"true"
@@ -77,7 +82,7 @@
 			fireAccuracy=		"90"
 			perception=			"4"
 			/>
-
+			
 	</ShipClass>
 
 	<!-- Dwarg Master -->
@@ -142,6 +147,7 @@
 			class=				"Zoanthrope behemoth"
 			type=				""
 			defaultSovereign=	"&svDwargRaiders;"
+			inherit=			"&baZoanthropeBase;"
 
 			size=				"90"
 			mass=				"10000"
@@ -217,16 +223,6 @@
 			<Effect type="thrustMain"		posAngle="-176"	posRadius="57"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 			
-		<Events>
-			<OnObjDestroyed>
-				(intZoanthropeOnObjDestroyed)
-			</OnObjDestroyed>
-
-			<OnOrderChanged>
-				(intZoanthropeOnOrderChanged)
-			</OnOrderChanged>
-		</Events>
-
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"20"
