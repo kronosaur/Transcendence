@@ -350,7 +350,7 @@
 							(setq looter 
 								(sysCreateShip 
 									&scCharonFrigateRaider;
-									(sysVectorRandom gSource 110 100 'stAF)
+									(sysVectorRandom gSource 110 100 'ztAF)
 									&svPirates;
 									)
 								)
