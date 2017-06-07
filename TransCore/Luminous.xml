@@ -153,6 +153,7 @@
 						(block Nil
 							(objAddItem gSource choice)
 							(shpInstallDevice gSource choice)
+							(shpRechargeShield gSource (shpGetShieldDamage gSource))
 							)
 						)
 					)
