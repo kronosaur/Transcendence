@@ -2,7 +2,7 @@
 
 <TranscendenceModule>
 
-	<!-- Huari Empire
+<!-- Huari Empire
 
 	GLOBAL DATA
 
@@ -25,7 +25,7 @@
 	visitedTemple:		True if player visited the temple in Huaramarca
 	xp:					Total xp accumulated by the player
 
-	-->
+-->
 
 	<Sovereign UNID="&svHuariEmpire;"
 			name=":the Huari Empire"
@@ -91,6 +91,8 @@
 			</OnGlobalObjDestroyed>
 		</Events>
 	</Sovereign>
+
+<!-- ENCOUNTERS -->
 
 	<!-- Huari Temple -->
 
@@ -1266,7 +1268,94 @@
 
 	</StationType>
 
-<!-- GLOBALS -->
+<!-- SHIP CLASSES -->
+
+	<!-- Hurin Destroyer -->
+
+	<ShipClass UNID="&scHurinDestroyer;"
+			manufacturer=		"Huari"
+			class=				"Hurin"
+			type=				"destroyer"
+			defaultSovereign=	"&svHuariEmpire;"
+
+			attributes=			"capitalShip, genericClass, huari"
+
+			size=				"150"
+			mass=				"15000"
+			thrustRatio=		"1.5"
+			maxSpeed=			"8"
+			cargoSpace=			"1000"
+
+			explosionType=		"&vtBlastExplosion4;"
+			>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itDuralloyArmor;"
+			count=				"12"
+			/>
+
+		<Devices>
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="200"   posAngle="67"  posRadius="53" posZ="0"/>
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="170"   posAngle="35"  posRadius="71" posZ="0"/>
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="300" maxFireArc="170" posAngle="25"  posRadius="80" posZ="0"/>
+
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="160" maxFireArc="0"   posAngle="293" posRadius="53" posZ="0"/>
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="0"   posAngle="325" posRadius="71" posZ="0"/>
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="60"  posAngle="335" posRadius="80" posZ="0"/>
+
+			<Device deviceID="&itSuperconductingShields;"/>
+			<Device deviceID="&it250MWReactor;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"3"
+			rotationAccel=		"0.3"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"250"
+					/>
+
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"100"
+
+					posX=		"-35"
+					posY=		"0"
+					sizeX=		"46"
+					sizeY=		"42"
+					/>
+		</Interior>
+
+		<Items>
+			<Item count="2d12"	item="&itPteracniumFuelRod;"/>
+			<Item count="5d10" item="&itSuperconductingCoil;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsHurin;" imageWidth="164" imageHeight="164"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="165"	posRadius="76"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="74"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-165"	posRadius="76"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			combatStyle=		"standOff"
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"5"
+			/>
+	</ShipClass>
+
+<!-- CODE -->
 
 	<Globals>
 		(block Nil
@@ -1348,5 +1437,6 @@
 <!-- RESOURCES -->
 
 	<Image UNID="&rsHuariStationsImage;"		bitmap="Resources\HuariStations.jpg" bitmask="Resources\HuariStationsMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsHurin;"			bitmap="Resources\Hurin.jpg"		bitmask="Resources\HurinMask.bmp"  loadOnUse="true"/>
 
 </TranscendenceModule>
