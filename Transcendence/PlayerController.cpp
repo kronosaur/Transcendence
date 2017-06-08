@@ -829,6 +829,7 @@ void CPlayerShipController::InitTargetList (TargetTypes iTargetType, bool bUpdat
 				&& pObj->CanBeHit()
 				&& !pObj->IsDestroyed()
                 && (pObj->GetCategory() == CSpaceObject::catShip || pObj->GetCategory() == CSpaceObject::catStation)
+				&& !pObj->IsAttached()
 				&& pObj != m_pShip)
 			{
 			bool bInList = false;
