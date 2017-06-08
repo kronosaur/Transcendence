@@ -24,7 +24,7 @@
 		<StaticData>
 			<Data id="nextMission">
 				{
-					defendHuari:	&msHuaramarcaDragonSlaver;
+					defendHuari:	&msHuaramarcaDefendTemple;
 					attackSungBase:	&msHuaramarcaAttackBase;
 					dragonSlaver:	&msHuaramarcaDragonSlaver;
 					}

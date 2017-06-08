@@ -55,14 +55,14 @@
 					)
 			</OnCreate>
 
-			<OnAccept>
+			<OnAccepted>
 				(enum (msnGetData gSource 'escorts) theShip
 					(block Nil
 						(shpCancelOrders theShip)
 						(shpOrder theShip 'escort gPlayerShip)
 						)
 					)
-			</OnAccept>
+			</OnAccepted>
 
 			<OnSetPlayerTarget>
 				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'attack)

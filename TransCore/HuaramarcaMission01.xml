@@ -10,16 +10,23 @@
 	
 	<MissionType UNID="&msHuaramarcaTuali;"
 			name=				"Journey to Huaramarca"
-			attributes=			"corporateHotel, huariFortress"
+			attributes=			"huariFortress"
 
-			level=				"1-8"
+			level=				"4-8"
 			maxAppearing=		"1"
 			priority=			"100"
 			>
 
 		<Events>
 			<OnCreate>
-				(msnSetData gSource 'governor (objGetData aOwnerObj 'governor))
+				(switch
+					;	Must have enough experience
+					(leq (typGetData &svHuariEmpire; 'xp) 325)
+						(msnDestroy gSource)
+
+					;	Create mission
+					Nil
+					)
 			</OnCreate>
 
 			<OnAccepted>
@@ -170,11 +177,7 @@
 											(sysGetTopologyDistance (sysGetStargateDestinationNode theGate) "Huaramarca")
 											)
 										)
-(block Nil
-	(typSetGlobalData &svHuariEmpire; "status" 'friend)
-	(sovSetDisposition &svHuariEmpire; &svPlayer; 'friend)
-	(sovSetDisposition &svPlayer; &svHuariEmpire; 'friend)
-	)
+
 									; Set the coordinates
 									(if (and gateID (setq gateObj (sysFindObject gPlayerShip (cat "NG:" gateID))))
 										(block Nil
