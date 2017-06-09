@@ -1420,7 +1420,6 @@
 	<!ENTITY svFriendlyZoanthrope		"0x0802014D">
 	<!ENTITY itDwargCnidocystCannon		"0x0802014E">
 	<!ENTITY itDwargCnidocystNodule		"0x0802014F">
-	<!ENTITY baZoanthropeBase			"0xE127C000">
 
 	<!-- MISCELLANEOUS AIR ENCOUNTERS 0803 -->
 
@@ -1825,6 +1824,10 @@
 	<!ENTITY msCMDestroyThreat			"0x001002B3">
 	<!ENTITY msCMEscortSuperFreighter	"0x001002B4">
 	<!ENTITY msCMstKatsDestroyThreat	"0x001002B5">
+
+	<!-- 02D0-02EF DWARG RAIDERS -->
+
+	<!ENTITY baZoanthropeBase			"0x001002D0">
 
 	<!-- 1000-FFFF RESERVED -->
 	]>
