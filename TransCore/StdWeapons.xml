@@ -3948,8 +3948,8 @@
 			<Orb	style=			"flare"
 					animate=		"fade"
 					intensity=		"50"
-					primaryColor=	"#f0ffa0"
-					secondaryColor=	"#a9ff00"
+					primaryColor=	"#00d5ff"
+					secondaryColor=	"#006b80"
 					
 					lifetime=		"3"
 					>
@@ -3971,8 +3971,8 @@
 					shape=			"tapered"
 					intensity=		"50"
 					xformRotation=	"180"
-					primaryColor=	"#f0ffa0"
-					secondaryColor=	"#a9ff00"
+					primaryColor=	"#ff9500"
+					secondaryColor=	"#804a00"
 					
 					lifetime=		"3"
 					animate=        "fade"
@@ -3999,31 +3999,10 @@
 			>
 		<Effect>
 			<Ray
-					style=			"jagged"
-					shape=			"tapered"
-					primaryColor=	"#f0ffa0"
-					secondaryColor=	"#a9ff00"
-					>
-				<Events>
-					<GetParameters>
-						(block (damageHP primaryColor secondaryColor)
-							(setq damageHP (@ gData 'damageHP))
-
-							{
-								length: (mathScale damageHP 10 140 60 260 50)
-								width: (mathScale damageHP 10 140 20 40 50)
-								intensity: 60
-								}
-							)
-					</GetParameters>
-				</Events>
-			</Ray>
-			
-			<Ray
 					style=			"lightning"
 					shape=			"tapered"
-					primaryColor=	"#f0ffa0"
-					secondaryColor=	"#a9ff00"
+					primaryColor=	"#00d5ff"
+					secondaryColor=	"#006b80"
 					>
 				<Events>
 					<GetParameters>
@@ -4043,6 +4022,27 @@
 					</GetParameters>
 				</Events>
 			</Ray>
+			
+			<Ray
+					style=			"jagged"
+					shape=			"tapered"
+					primaryColor=	"#ff9500"
+					secondaryColor=	"#804a00"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length: (mathScale damageHP 10 140 60 260 50)
+								width: (mathScale damageHP 10 140 20 40 50)
+								intensity: 60
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
 		</Effect>
 	</EffectType>
 
@@ -4055,8 +4055,8 @@
 					intensity=		"50"
 					
 					blendMode=		"screen"
-					primaryColor=	"#f0ffa0"
-					secondaryColor=	"#a9ff00"
+					primaryColor=	"#00d5ff"
+					secondaryColor=	"#006b80"
 					>
 				<Events>
 					<GetParameters>
@@ -4083,8 +4083,8 @@
 							style=			"plain"
 							minWidth=		"1"
 							maxWidth=		"3"
-							primaryColor=	"#f0ffa0"
-							secondaryColor=	"#a9ff00"
+							primaryColor=	"#ff9500"
+							secondaryColor=	"#804a00"
 							/>
 				</ParticleEffect>
 				

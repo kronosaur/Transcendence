@@ -1420,6 +1420,7 @@
 	<!ENTITY svFriendlyZoanthrope		"0x0802014D">
 	<!ENTITY itDwargCnidocystCannon		"0x0802014E">
 	<!ENTITY itDwargCnidocystNodule		"0x0802014F">
+	<!ENTITY baZoanthropeBase			"0xE127C000">
 
 	<!-- MISCELLANEOUS AIR ENCOUNTERS 0803 -->
 

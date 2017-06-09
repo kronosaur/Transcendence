@@ -350,7 +350,7 @@
 							(setq looter 
 								(sysCreateShip 
 									&scCharonFrigateRaider;
-									(sysVectorPolarOffset gSource (random 0 359) 25)
+									(sysVectorRandom gSource 110 100 'ztAF)
 									&svPirates;
 									)
 								)
@@ -375,7 +375,7 @@
 								)
 
 							; Send out more pirates to attack the player
-							(sysAddEncounterEventAtDist 0 gPlayerShip &etPirateAmbush4; 50)
+							(sysAddEncounterEventAtDist 0 gPlayerShip &etPirateAmbush4; 101)
 
 							; And set failure
 							(msnFailure gSource)

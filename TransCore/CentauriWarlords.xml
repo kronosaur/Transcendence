@@ -615,7 +615,7 @@
 	<!-- Centauri Occupation -->
 
 	<StationType UNID="&stCentauriOccupation;"
-			name=				"occupied Commonwealth colony"
+			name=				"occupied Commonwealth habitat"
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
@@ -639,15 +639,20 @@
 			locationCriteria=	"+planetary"
 			>
 
-		<Names noArticle="true">Arenius Colony; Baja Colony; Clearspace Station; Durin Colony;
-				Earthnight Colony; Fairmoon Settlement; Greenfield Colony;
-				Hector Colony; Ionfalls Colony; Jovian Clouds Settlement; Keller Station;
-				Lama Colony; Murchenson Settlement; Nightfall Colony; Oort Settlement;
-				Pallas Station; Queequeg Colony; Radiant Settlement; Star's End Station;
-				Terra Ex Colony; Uriel Station; Venuslight Colony; Weathermoon Colony
+		<Names noArticle="true">Arenius Habitat; Baja Habitat; Clearspace Station; Durin Habitat;
+				Earthnight Habitat; Fairmoon Settlement; Greenfield Habitat;
+				Hector Habitat; Ionfalls Habitat; Jovian Clouds Settlement; Keller Station;
+				Lama Habitat; Murchenson Settlement; Nightfall Habitat; Oort Settlement;
+				Pallas Station; Queequeg Habitat; Radiant Settlement; Star's End Station;
+				Terra Ex Habitat; Uriel Station; Venuslight Habitat; Weathermoon Habitat
 		</Names>
 
-		<Image			imageID="&rsStations1;" imageX="256" imageY="256" imageWidth="128" imageHeight="128"/>
+		<ImageVariants>
+			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="0" imageY="0" imageWidth="64" imageHeight="128"/>
+			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="64" imageY="0" imageWidth="64" imageHeight="128"/>
+			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="128" imageY="0" imageWidth="64" imageHeight="128"/>
+			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="192" imageY="0" imageWidth="64" imageHeight="128"/>
+		</ImageVariants>
 
 		<Ships>
 			<Ship count="1d4+1"	class="&scCentauriRaider;"	orders="guard"	sovereign="&svCentauriWarlords;"/>
@@ -702,7 +707,7 @@
 
 				<Panes>
 					<Default
-							desc=	"You are docked at a small Commonwealth settlement. The people here are friendly and grateful to you, but they mostly go on with their business.">
+							desc=	"You are docked at a small Commonwealth habitat. The people here are friendly and grateful to you, but they mostly go on with their business.">
 
 						<Actions>
 							<Action name="Undock" default="1" cancel="1" key="U">
@@ -726,7 +731,7 @@
 					</Hiding>
 
 					<LiberatedByOther
-							desc=	"You are docked at a small Commonwealth settlement. The people here are friendly, but they mostly go on with their business.">
+							desc=	"You are docked at a small Commonwealth habitat. The people here are friendly, but they mostly go on with their business.">
 
 						<Actions>
 							<Action name="Undock" default="1" cancel="1" key="U">
