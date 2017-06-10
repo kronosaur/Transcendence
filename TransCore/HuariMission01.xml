@@ -22,7 +22,7 @@
 
 	<MissionType UNID="&msHuariAttackConvoy;"
 			name=			"Intercept Sung transport"
-			attributes=		"huariFortress"
+			attributes=		"huariEmpire, huariFortress"
 
 			level=			"4-8"
 
@@ -266,27 +266,54 @@
 			</OnSetPlayerTarget>
 
 			<OnReward>
-				(block Nil
-					(typIncData &svHuariEmpire; 'xp (msnGetData gSource 'missionXP))
-					(huaCheckExperience xp)
-					)
+				(typIncData &svHuariEmpire; 'xp (msnGetData gSource 'missionXP))
 			</OnReward>
+
+			<OnCompleted>
+				(switch
+					(and (= aReason 'failure)
+							(geq (count (msnFind "r +huariFortress; +property:isFailure;")) 2)
+							)
+						(typSetData &svHuariEmpire; 'status 'loser)
+					)
+			</OnCompleted>
+
+			<OnGetNextScreen>
+				(if (and (= aScreenType 'FailureFollowUp)
+						(= (typGetData &svHuariEmpire; 'status) 'loser)
+						)
+					{
+						nextScreen: &dsRPGMessage;
+						nextScreenData: {
+							desc: (typTranslate &stHuariFortress; 'missionBlacklisted)
+							}
+						}
+					)
+			</OnGetNextScreen>
 		</Events>
 
 		<Language>
-			<Text id="Name">
-				"Intercept Sung transport"
-			</Text>
+			<!-- Code Points -->
+
 			<Text id="Summary">
 				(cat
-					"Intercept a Sung transport and liberate the slaves held onboard.\n\n"
-
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					(msnTranslate gSource 'textSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
 					)
 			</Text>
 			<Text id="Intro">
 				(hua_calcIntro gSource)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">Intercept Sung transport</Text>
+			<Text id="textSummary">
+				Intercept a Sung transport and liberate the slaves held onboard.
 			</Text>
 			<Text id="Briefing">
 				"By the mercy of the Light we've learned the course and schedule of a slave
@@ -300,10 +327,12 @@
 				Go with the Light!"
 			</Text>
 			<Text id="DeclineReply">
-				"\"Let the will of the Light be done, though we cannot understand His methods.\""
+				"Let the will of the Light be done, though we cannot understand
+				His methods."
 			</Text>
 			<Text id="InProgress">
-				"\"By all the Light's mercy, what are you doing here? Your task remains uncompleted.\""
+				"By all the Light's mercy, what are you doing here?
+				Your task remains uncompleted."
 			</Text>
 			<Text id="FailureDebrief">
 				"Your failure is also our doom. Maybe we were never meant to bask in the

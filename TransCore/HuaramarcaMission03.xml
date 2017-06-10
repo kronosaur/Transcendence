@@ -11,7 +11,7 @@
 	
 	<MissionType UNID="&msHuaramarcaDefendTemple;"
 			name=				"Huaramarca Defend Huari Temple"
-			attributes=			"huariTemple, huariDreamChoice, deliveryMission"
+			attributes=			"huariEmpire, huariTemple, huariDreamChoice, deliveryMission"
 
 			level=				"6"
 			maxAppearing=		"1"
@@ -169,17 +169,27 @@
 		</Events>
 		
 		<Language>
-			<Text id="Name">
-				"Defend Huari Temple"
-			</Text>
+			<!-- Code Points -->
+
 			<Text id="Summary">
 				(cat
-					"The Sung are attacking the Huari Temple in Huaramarca. "
-					"Your mission is to defend it at all cost.\n\n"
-					
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					(msnTranslate gSource 'textSummary {
+						targetname: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x04)
+						})
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
 					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">Defend Huari Temple</Text>
+			<Text id="textSummary">
+				The Sung are attacking the Huari Temple in Huaramarca.
+				Your mission is to defend it at all cost.
 			</Text>
 			<Text id="Briefing">
 				"As I said, the Sung have found us, and they have massed a fleet for an
@@ -188,7 +198,8 @@
 				doesn't include letting us be exterminated!"
 			</Text>
 			<Text id="GoodLuck">
-				"\"Good luck to you and to us all. May the blessings of the Light fill our worlds again.\""
+				"Good luck to you and to us all. May the blessings of the
+				Light fill our worlds again."
 			</Text>
 			<Text id="InProgress.1">
 				Apotamo is inside the temple. One of his assistants talks to you. There

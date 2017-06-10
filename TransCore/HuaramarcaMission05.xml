@@ -11,7 +11,7 @@
 	
 	<MissionType UNID="&msHuaramarcaDragonSlaver;"
 			name=				"Huaramarca Dragon Slaver"
-			attributes=			"huariTemple, huariDreamChoice"
+			attributes=			"huariEmpire, huariTemple, huariDreamChoice"
 
 			level=				"6"
 			maxAppearing=		"1"
@@ -80,17 +80,27 @@
 		</Events>
 		
 		<Language>
-			<Text id="Name">
-				"Attack Sung Base"
-			</Text>
+			<!-- Code Points -->
+
 			<Text id="Summary">
 				(cat
-					"The Sung have established a base near the Huari temple. "
-					"Your mission is to destroy it.\n\n"
-					
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					(msnTranslate gSource 'textSummary {
+						targetname: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x04)
+						})
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
 					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">Kill the Dragon</Text>
+			<Text id="textSummary">
+				A Dragon slaver is hunting for the Huari Temple. Find the slaver
+				ship and destroy it.
 			</Text>
 			<Text id="Intro">
 				"As I said, the Sung have found us. A single Dragon slaver, the most

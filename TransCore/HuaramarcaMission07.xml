@@ -10,11 +10,12 @@
 	
 	<MissionType UNID="&msHuaramarcaRevelation;"
 			name=				"Huaramarca Revelation"
-			attributes=			"huariTemple"
+			attributes=			"huariEmpire, huariTemple"
 
 			level=				"6"
 			maxAppearing=		"1"
 			priority=			"70"
+			noStats=			"true"
 			>
 
 		<Events>
@@ -31,6 +32,8 @@
 		</Events>
 
 		<Language>
+			<!-- Code Points -->
+
 			<Text id="Briefing">
 				(if (msnGetProperty gSource 'isDeclined)
 					(list
@@ -80,6 +83,9 @@
 						)
 					)
 			</Text>
+
+			<!-- Text -->
+
 			<Text id="GoodBye">
 				Apotamo leads you to the airlock.
 

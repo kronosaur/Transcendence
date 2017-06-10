@@ -1,0 +1,177 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Defend Fortress ==============================================
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	missionXP:		XP awarded for completing mission
+
+	======================================================================== -->
+
+	<MissionType UNID="&msHuariDefendFortress;"
+			name=			"Defend Huari Fortress"
+			attributes=		"huariEmpire, huariFortress"
+
+			level=			"4-8"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	Must have befriended the Huari
+					(!= (typGetData &svHuariEmpire; 'status) 'friend)
+						(msnDestroy gSource)
+
+					;	If there are no active Sung stations, then only allow one attack per fortress
+					(and (not (sysFindObject Nil "AT +sungSlavers; +majorStation;"))
+							(msnFind aOwnerObj "*S +unid:&msHuariDefendFortress;;")
+							)
+						(msnDestroy gSource)
+
+					;	Create the mission
+					(block Nil
+						(msnSetData gSource 'missionXP 150)
+						)
+					)
+			</OnCreate>
+
+			<OnStarted>
+				(block (
+					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					angle defenders
+					)
+
+					;	Send Earth slavers against the station
+					(for i 1 3
+						(block (theSlaver)
+							(setq theSlaver (sysCreateShip 
+								&scEarthSlaver;
+								(sysVectorRandom stationObj 180 300 "AT -sungSlavers;")
+								&svSung;
+								))
+							(shpOrder theSlaver 'attack stationObj)
+							(shpOrder theSlaver 'gate)
+							(objSetData theSlaver 'huariMission (objGetID gSource))
+							(msnRegisterForEvents gSource theSlaver)
+							(msnIncData gSource 'attackerCount)
+							)
+						)
+
+					;	Pick a staging point
+					(setq angle (sysVectorAngle (sysVectorSubtract (sysVectorRandom stationObj 200 300 "AT -sungSlavers;") (objGetPos stationObj))))
+
+					(setq defenders (sysFindObject stationObj "s +huari; N:150;"))
+					(if (msnGetProperty gSource 'isActive )
+						(setq defenders (append defenders gPlayerShip))
+						)
+
+					;	Send slavers to attack all defenders
+					(enum defenders theTarget
+						(block (theSlaver rallyPos)
+							(setq rallyPos (sysVectorPolarOffset stationObj (+ angle (random -15 15)) 200))
+							(setq theSlaver (sysCreateShip &scSteelSlaver; rallyPos &svSung;))
+							(shpOrder theSlaver 'attack theTarget)
+							(shpOrder theSlaver 'attackNearestEnemy)
+							(shpOrder theSlaver 'gate)
+
+							(for i 1 12
+								(block Nil
+									(setq theSlaver (sysCreateShip &scWindSlaver; (sysVectorPolarOffset rallyPos (random 0 359) (random 15 20)) &svSung;))
+									(shpOrder theSlaver 'attack theTarget)
+									(shpOrder theSlaver 'attackNearestEnemy)
+									(shpOrder theSlaver 'gate)
+									)
+								)
+							)
+						)
+					)
+			</OnStarted>
+
+			<OnObjDestroyed>
+				(switch
+					;	Enemy destroyed
+					(= (objGetData aObjDestroyed 'huariMission) (objGetID gSource))
+						(block Nil
+							(if (= (msnIncData gSource 'attackerCount -1) 0)
+								(msnSuccess gSource)
+								)
+							)
+					)
+			</OnObjDestroyed>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetProperty gSource 'ownerID)))
+			</OnSetPlayerTarget>
+
+			<OnReward>
+				(typIncData &svHuariEmpire; 'xp (msnGetData gSource 'missionXP))
+			</OnReward>
+
+			<OnCompleted>
+				(switch
+					(and (= aReason 'failure)
+							(geq (count (msnFind "r +huariFortress; +property:isFailure;")) 2)
+							)
+						(typSetData &svHuariEmpire; 'status 'loser)
+					)
+			</OnCompleted>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+			<Text id="Intro">
+				(hua_calcIntro gSource)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">Defend Huari Fortress</Text>
+			<Text id="textSummary">Defend a Huari Fortress from a Sung attack.</Text>
+			<Text id="Briefing">
+				"The Sung have pursued us for hundreds of years. They took our
+				stations and our worlds. Now they come to this station and they
+				mean to wipe us out. A Sung fleet is on its way even now."
+
+				"If it's true what they say about you, then only you can save us.
+				By the blessings of the Light, fight with us!"
+			</Text>
+			<Text id="AcceptReply">
+				"Then let us face our persecutors once again."
+
+				"I dare not hope, but I will not give up either. No matter what
+				happens we will see each other again, either here in this dark
+				world or elsewhere bathed in the salvation of the Light!"
+			</Text>
+			<Text id="DeclineReply">
+				"Let the will of the Light be done, though we cannot understand
+				His methods."
+			</Text>
+			<Text id="InProgress">
+				"\"We're a little busy right now.\""
+			</Text>
+			<Text id="SuccessDebrief">
+				"By the Light's joy! It feels good to fight and win against the Sung for
+				a change! Maybe the revelations are right. If you are truly the Solti
+				then nothing is impossible!"
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

@@ -10,7 +10,7 @@
 	
 	<MissionType UNID="&msHuaramarcaTuali;"
 			name=				"Journey to Huaramarca"
-			attributes=			"huariFortress"
+			attributes=			"huariEmpire, huariFortress"
 
 			level=				"4-8"
 			maxAppearing=		"1"
@@ -25,7 +25,9 @@
 						(msnDestroy gSource)
 
 					;	Create mission
-					Nil
+					(block Nil
+						(msnSetData gSource 'governor (objGetData aOwnerObj 'governor))
+						)
 					)
 			</OnCreate>
 
@@ -43,17 +45,31 @@
 		</Events>
 
 		<Language>
-			<Text id="Name">
-				"Journey to Huaramarca"
-			</Text>
+			<!-- Code Points -->
+
 			<Text id="Summary">
 				(cat
-					"Go to the hidden system of Huaramarca and speak to Apotamo"
-					"in the Temple.\n\n"
-
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					(msnTranslate gSource 'textSummary {
+						targetname: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x04)
+						})
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
 					)
+			</Text>
+			<Text id="AcceptReply">
+				(msnTranslate gSource 'textAcceptReply {
+					governor: (msnGetData gSource 'governor)
+					})
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">Journey to Huaramarca</Text>
+			<Text id="textSummary">
+				Go to the hidden system of Huaramarca and speak to Apotamo in the Temple.
 			</Text>
 			<Text id="FirstIntro">
 				"After the Sung holocaust, our people fled these systems. We retreated
@@ -78,23 +94,22 @@
 				"Are you ready to implant the Tuali symbiotes and travel to the
 				Huaramarca system?"
 			</Text>
-			<Text id="AcceptReply">
-				(cat
-					"The Huari inject a milky substance into your brain. You feel a "
-					"slight headache and dizziness, but otherwise you feel nothing.\n\n"
+			<Text id="textAcceptReply">
+				The Huari inject a milky substance into your brain. You feel a
+				slight headache and dizziness, but otherwise you feel nothing.
 
-					"\"The symbiotes will stay dormant until you need them. To find your "
-					"way to Huaramarca, awaken the Tuali with this drug.\"\n\n"
+				"The symbiotes will stay dormant until you need them. To find your
+				way to Huaramarca, awaken the Tuali with this drug."
 
-					(msnGetData gSource "governor")	" hands you a vial containing a colorless liquid."
-					)
+				%governor% hands you a vial containing a colorless liquid.
 			</Text>
 			<Text id="DeclineReply">
-				"\"Let the will of the Light be done, though we cannot understand His methods.\""
+				"Let the will of the Light be done, though we cannot understand
+				His methods."
 			</Text>
 			<Text id="InProgress">
-				"You must awaken the symbiotes; they will reveal the location of Huaramarca.
-				Use the vial of thioseptal that we gave you."
+				"You must awaken the symbiotes; they will reveal the location of
+				Huaramarca. Use the vial of thioseptal that we gave you."
 			</Text>
 		</Language>
 	</MissionType>

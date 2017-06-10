@@ -1701,7 +1701,9 @@
 	
 	<!ENTITY rsHurin					"0x00100150">
 	<!ENTITY msHuariAttackConvoy		"0x00100151">
-	
+	<!ENTITY msHuariDefendFortress		"0x00100152">
+	<!ENTITY msHuariDestroyStation		"0x00100153">
+
 	<!-- 0160-017F MINING EQUIPMENT -->
 	
 	<!ENTITY baMiningPodItem			"0x00100160">
@@ -1912,6 +1914,8 @@
 	<Module filename="Ferians.xml"/>
 	<Module filename="Huari.xml"/>
 	<Module filename="HuariMission01.xml"/>
+	<Module filename="HuariMission02.xml"/>
+	<Module filename="HuariMission03.xml"/>
 	<Module filename="Iocrym.xml"/>
 	<Module filename="KorolovShipping.xml"/>
 	<Module filename="Kronosaurus.xml"/>

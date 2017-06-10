@@ -10,13 +10,14 @@
 	
 	<MissionType UNID="&msHuaramarcaArchcannon;"
 			name=				"Huaramarca Find Archcannon"
-			attributes=			"huariTemple"
+			attributes=			"huariEmpire, huariTemple"
 
 			level=				"6"
 			maxAppearing=		"1"
 			priority=			"80"
 			
 			noDecline=			"True"
+			noStats=			"true"
 			>
 
 		<Events>
@@ -71,26 +72,41 @@
 		</Events>
 
 		<Language>
-			<Text id="Name">
-				"Search the Dragon wreck"
-			</Text>
+			<!-- Code Points -->
+
 			<Text id="Summary">
 				(cat
-					"Look for a powerful weapon in the Dragon wreck.\n\n"
-
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					(msnTranslate gSource 'textSummary {
+						targetname: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x04)
+						})
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
 					)
-			</Text>
-			<Text id="Briefing">
-				"But perhaps there is a way we can make your path easier. Go to the wreck
-				of the Dragon and there you will find a sword your enemies will fear."
 			</Text>
 			<Text id="InProgress">
 				(if (msnGetProperty gSource 'isSuccess)
 					(msnTranslate gSource 'SuccessDebrief)
 					(msnTranslate gSource 'StillLooking)
 					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(list
+					{ desc: (msnTranslate gSource 'RepairArchcannon.1) }
+					{ desc: (msnTranslate gSource 'RepairArchcannon.2) }
+					{ desc: (msnTranslate gSource 'RepairArchcannon.3) }
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">Search the Dragon wreck</Text>
+			<Text id="textSummary">Look for a powerful weapon in the Dragon wreck.</Text>
+			<Text id="Briefing">
+				"But perhaps there is a way we can make your path easier. Go to the wreck
+				of the Dragon and there you will find a sword your enemies will fear."
 			</Text>
 			<Text id="StillLooking">
 				Apotamo greets you at the door of the Grand Hall.
@@ -99,13 +115,6 @@
 			</Text>
 			<Text id="FailureDebrief">
 				Mission Failed
-			</Text>
-			<Text id="SuccessDebrief">
-				(list
-					{ desc: (msnTranslate gSource 'RepairArchcannon.1) }
-					{ desc: (msnTranslate gSource 'RepairArchcannon.2) }
-					{ desc: (msnTranslate gSource 'RepairArchcannon.3) }
-					)
 			</Text>
 			<Text id="RepairArchcannon.1">
 				"I see you have found the Slaver's weapon. Perhaps there is a way in
