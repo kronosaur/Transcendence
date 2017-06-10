@@ -344,7 +344,23 @@
 					"The Grand Hall is abuzz with activity; " (objGetData gSource 'governor)
 					" is too busy to see you."
 					)
-				</Text>
+			</Text>
+
+			<Text id="missionFirstIntro">
+				Inside the Grand Hall you meet the governors of the fortress. A short,
+				balding man with a ceremonial scepter greets you.
+
+				"By all the mysteries of the Light! You come from a distant system to
+				help us. So was it revealed. My name is %governor%, and I govern this
+				fortress. If you have come to help us, then you are most welcome."
+			</Text>
+			<Text id="missionIntro">
+				%governor% is waiting for you:
+
+				"Welcome back, friend. By all the glory of the Light, I can see you are
+				confident and powerful. Will you use your powers to help us? If so, you
+				are truly a shining messenger."
+			</Text>
 		</Language>
 	</StationType>
 
@@ -547,6 +563,25 @@
 
 	<Globals>
 		(block Nil
+			;	hua_calcIntro
+			;
+			;	This function is used to determine which mission intro screen to
+			;	use at Huari Fortresses
+			(setq hua_calcIntro (lambda (missionObj)
+				(block (
+					(stationObj (objGetObjByID (msnGetProperty missionObj 'ownerID)))
+					)
+					(if (msnFind stationObj "Saru")
+						(objTranslate stationObj 'missionIntro {
+							governor: (objGetData stationObj 'governor)
+							})
+						(objTranslate stationObj 'missionFirstIntro {
+							governor: (objGetData stationObj 'governor)
+							})
+						)
+					)
+				))
+
 			(setq huaCheckExperience (lambda (xp)
 				(if (gr xp 325)
 					(block Nil

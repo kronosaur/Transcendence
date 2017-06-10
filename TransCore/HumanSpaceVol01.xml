@@ -1700,6 +1700,7 @@
 	<!-- 0150-015F HUARI EMPIRE -->
 	
 	<!ENTITY rsHurin					"0x00100150">
+	<!ENTITY msHuariAttackConvoy		"0x00100151">
 	
 	<!-- 0160-017F MINING EQUIPMENT -->
 	
@@ -1910,6 +1911,7 @@
 	<Module filename="EncountersVol01.xml"/>
 	<Module filename="Ferians.xml"/>
 	<Module filename="Huari.xml"/>
+	<Module filename="HuariMission01.xml"/>
 	<Module filename="Iocrym.xml"/>
 	<Module filename="KorolovShipping.xml"/>
 	<Module filename="Kronosaurus.xml"/>
