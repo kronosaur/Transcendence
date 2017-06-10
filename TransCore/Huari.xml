@@ -19,9 +19,6 @@
 	huariDestroyed:		Number of Huari stations destroyed by the player
 	sungDestroyed:		Number of Sung stations destroyed by the player
 
-	missionCount:		Total number of missions requested by the player
-	missionsFailed:		Total number of mission failed
-
 	visitedTemple:		True if player visited the temple in Huaramarca
 	xp:					Total xp accumulated by the player
 
@@ -340,10 +337,44 @@
 				long, colorful clothing swarm around you as you enter. They are curious but shy.
 			</Text>
 			<Text id="descNoMissions">
-				(cat
-					"The Grand Hall is abuzz with activity; " (objGetData gSource 'governor)
-					" is too busy to see you."
+				(block (
+					(status (typGetData &svHuariEmpire; 'status))
 					)
+					(switch
+						(= status 'defender)
+							(objTranslate gSource 'textNoMissionForDefender)
+
+						(= status 'loser)
+							(objTranslate gSource 'textNoMissionForLoser)
+
+						(= status 'templeDestroyed)
+							(objTranslate gSource 'textTempleDestroyed {
+								governor: (objGetData gSource 'governor)
+								})
+
+						(objTranslate gSource 'textNoMissionAvailable {
+							governor: (objGetData gSource 'governor)
+							})
+						)
+					)
+			</Text>
+
+			<Text id="textNoMissionAvailable">
+				The Grand Hall is abuzz with activity; %governor% is too busy to see you.
+			</Text>
+			<Text id="textNoMissionForDefender">
+				"Welcome back, %name%! Take your ease here before you continue
+				your long journey."
+			</Text>
+			<Text id="textNoMissionForLoser">
+				You enter the Grand Hall but the governors ignore your presence.
+				You feel out of place here.
+			</Text>
+			<Text id="textTempleDestroyed">
+				%governor% weeps alone in the Grand Hall.
+
+				"All hope is lost now that our refuge has been destroyed.
+				The Light has forsaken us and we are left with nothing."
 			</Text>
 
 			<Text id="missionFirstIntro">
@@ -360,6 +391,11 @@
 				"Welcome back, friend. By all the glory of the Light, I can see you are
 				confident and powerful. Will you use your powers to help us? If so, you
 				are truly a shining messenger."
+			</Text>
+			<Text id="missionBlacklisted">
+				"The blessings of the Light are not always visible, but there is a
+				streak of darkness within you that cannot be ignored. You are not
+				our defender; you are just a fool who seeks but doesn't learn."
 			</Text>
 		</Language>
 	</StationType>
