@@ -63,7 +63,7 @@
 			</OnGetNextScreen>
 
 			<GetGlobalAchievements>
-				(if (msnFind "r +huariDreamChoice; +property:isSuccess;)
+				(if (msnFind "r +huariDreamChoice; +property:isSuccess;")
 					(list
 						(list
 							(typTranslate &msHuaramarcaDreamTest; 'AchievementSuccess)
