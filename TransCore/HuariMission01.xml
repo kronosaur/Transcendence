@@ -157,9 +157,9 @@
 					(msnRegisterForEvents gSource targetObj)
 
 					;	Create escorts
-					(if (@ convoyDesc 'principleType)
+					(if (@ convoyDesc 'principalType)
 						(block (escortObj)
-							(setq escortObj (sysCreateShip (@ convoyDesc 'principleType) targetObj &svSung;))
+							(setq escortObj (sysCreateShip (@ convoyDesc 'principalType) targetObj &svSung;))
 							(shpOrder escortObj 'escort targetObj)
 							)
 						)
