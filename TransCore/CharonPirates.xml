@@ -1697,7 +1697,7 @@
 					)
 				))
 
-			(setq chrDeployFrigateRaid (lambda (transportObj originObj destObj cargoValue raiderType)
+			(setq chrDeployFrigateRaid (lambda (transportObj homeBaseObj travelObj cargoValue raiderType)
 				(block (raidMarker frigateList frigate)
 				
 					;	Default to Charon frigate
@@ -1708,7 +1708,7 @@
 					
 					(setq raidMarker (sysCreateMarker 
 						"temp" 
-						(sysGetNavPathPoint &svCorporate; originObj destObj 50)
+						(sysGetNavPathPoint &svCorporate; homeBaseObj travelObj 50)
 						&svPirates;
 						))
 
@@ -1739,8 +1739,8 @@
 					;	Order raid
 					
 					(setq aTargetObj transportObj)
-					(setq aOriginObj originObj)
-					(setq aDestObj destObj)
+					(setq aOriginObj homeBaseObj)
+					(setq aDestObj travelObj)
 					(setq aCargoValue cargoValue)
 					(objFireEvent frigate "OrderRaidTransport")
 
@@ -1819,21 +1819,21 @@
 					)
 				))
 
-			(setq chrRaidTransport (lambda (transportObj originObj destObj cargoValue)
+			(setq chrRaidTransport (lambda (transportObj homeBaseObj travelObj cargoValue)
 				(block (distance lastNavPoint nextNavPoint travelTime roundTrip)
 					; Figure out how many ticks it will take for the transport to
 					; travel the distance
-					(setq lastNavPoint originObj)
+					(setq lastNavPoint homeBaseObj)
 					(for i 1 20
 						(block nil
-							(setq nextNavPoint (sysGetNavPathPoint &svCorporate; originObj destObj (* i 5)))
+							(setq nextNavPoint (sysGetNavPathPoint &svCorporate; homeBaseObj travelObj (* i 5)))
 							(setq distance (+ distance (sysVectorDistance lastNavPoint nextNavPoint)))
 							(setq lastNavPoint nextNavPoint)
 							)
 						)
 					(setq travelTime (sysCalcTravelTime distance (shpGetMaxSpeed transportObj)))
-					(setq roundTrip (not (or (objMatches destObj Nil "G")
-											(objMatches originObj Nil "G")))
+					(setq roundTrip (not (or (objMatches travelObj Nil "G")
+											(objMatches homeBaseObj Nil "G")))
 						)
 					;(dbgOutput "Freighter travel time: " travelTime)
 
@@ -1864,7 +1864,7 @@
 							(block Nil
 								(if (leq (random 1 100) 50)
 									; 50% of the time we send out a Drake missileship
-									(chrDeployFrigateRaid transportObj originObj destObj cargoValue &scDrake;)
+									(chrDeployFrigateRaid transportObj homeBaseObj travelObj cargoValue &scDrake;)
 
 									; 50% of the time we send out two raiding parties
 									(block Nil
@@ -1902,8 +1902,8 @@
 
 								; Send out a Drake missileship or frigate depending on cargo value
 								(if (leq (random 100 200) (divide cargoValue 1000))
-									(chrDeployFrigateRaid transportObj originObj destObj cargoValue)
-									(chrDeployFrigateRaid transportObj originObj destObj cargoValue &scDrake;)
+									(chrDeployFrigateRaid transportObj homeBaseObj travelObj cargoValue)
+									(chrDeployFrigateRaid transportObj homeBaseObj travelObj cargoValue &scDrake;)
 									)
 
 								; 70% chance of a raiding party on the way back
@@ -1933,7 +1933,7 @@
 									)
 
 								; Send out a frigate
-								(chrDeployFrigateRaid transportObj originObj destObj cargoValue)
+								(chrDeployFrigateRaid transportObj homeBaseObj travelObj cargoValue)
 
 								; 80% chance of a raiding party on the way back
 								(if (and roundTrip (leq (random 1 100) 80))
@@ -1958,7 +1958,7 @@
 									)
 
 								; Send out a frigate
-								(chrDeployFrigateRaid transportObj originObj destObj cargoValue)
+								(chrDeployFrigateRaid transportObj homeBaseObj travelObj cargoValue)
 
 								; 90% chance of a raiding party on the way back
 								(if (and roundTrip (leq (random 1 100) 90))
@@ -1987,7 +1987,7 @@
 								)
 
 							; Send out a frigate
-							(chrDeployFrigateRaid transportObj originObj destObj cargoValue)
+							(chrDeployFrigateRaid transportObj homeBaseObj travelObj cargoValue)
 
 							; 100% chance of a raiding party on the way back
 							(sysAddEncounterEventAtDist 

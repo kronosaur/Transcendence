@@ -183,7 +183,7 @@
 			<OnFreighterArrives>
 				(block (
 					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
-					(destObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(homeBaseObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
 					freighterObj cargoValue
 					)
 					(plyMessage gPlayer "Freighter arrived!")
@@ -203,7 +203,7 @@
 						; 60% of the time we use the standard Charon transport raid
 						(= (msnGetData gSource 'attackRoll) 1)
 							(block Nil
-								(chrRaidTransport freighterObj gateObj destObj cargoValue)
+								(chrRaidTransport freighterObj homeBaseObj gateObj cargoValue)
 								(objSendMessage gPlayerShip freighterObj (msnTranslate gSource 'msgBeginEscort))
 								)
 
@@ -212,7 +212,7 @@
 							(block Nil
 								(sysAddObjTimerEvent 60 gSource 'OnPirateFollow)
 								(objSendMessage gPlayerShip freighterObj (msnTranslate gSource 'msgFollowed))
-								(chrRaidTransport freighterObj gateObj destObj (/ cargoValue 2))
+								(chrRaidTransport freighterObj homeBaseObj gateObj (/ cargoValue 2))
 								)
 
 						; 20% of time there are pirates waiting at the gate
@@ -222,7 +222,7 @@
 							(if (geq (msnGetData gSource 'attackersLeft) 5)
 								(objSendMessage gPlayerShip freighterObj (msnTranslate gSource 'msgAmbush)))
 							(objFireEvent gSource 'OrderAttackFreighter)
-							(chrRaidTransport freighterObj gateObj destObj (/ cargoValue 2))
+							(chrRaidTransport freighterObj homeBaseObj gateObj (/ cargoValue 2))
 							)
 						)
 					)
