@@ -36,7 +36,6 @@
 						;	Look for a sung base. If not found, create one
 						(targetObj (or
 							(sysFindObject aOwnerObj "ATN +sungSlavers;")
-							(sysCreateStation &stSungFortressInHuaramarca; (sysVectorRandom aOwnerObj 100 30 "t"))
 							(sysCreateStation &stSungFortressInHuaramarca; (sysVectorRandom Nil 1000 300 "t"))
 							))
 						;	Look for some Hurin destroyers to help
@@ -199,7 +198,7 @@
 			multiHull=			"true"
 			armorID=			"&itSungArmor;"
 			hitPoints=			"400"
-            regen=              "11"
+			regen=              "11"
 			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -224,7 +223,7 @@
 		</Ships>
 
 		<Items>
-			<Lookup					count="1d4"	table="&trStationSupplies;" />
+			<Lookup					count="1d4" table="&trStationSupplies;" />
 			<Lookup					count="1d2" table="&trConsumables5;"/>
 			<Lookup					count="1d2" table="&trMinorItem5;"/>
 			<Table>

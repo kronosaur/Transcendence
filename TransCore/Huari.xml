@@ -9,9 +9,6 @@
 	status:				Status of player with respect to Huari
 							Nil						= normal (enemy)
 							'friend					= Huari are friendly and player can do missions
-							'tualiIntro				= Give player the symbiote
-							'tuali					= Player has the symbiote
-							'tualiDeclined			= Player declined the symbiote
 							'defender				= Player is a defender of the Huari
 							'loser					= Player has failed too many missions
 							'templeDestroyed		= Huari temple has been destroyed
@@ -52,10 +49,6 @@
 									(= status 'templeDestroyed) "Failed to defend the Huari"
 									(= status 'loser) "Disappointed the Huari"
 									(= status 'defender) "Became Defender of the Huari"
-									(typGetData &svHuariEmpire; 'visitedTemple) "Visited the Huari temple in Huaramarca"
-									(= status 'tualiIntro) "Befriended the Huari"
-									(= status 'tuali) "Invited by the Huari to visit Huaramarca"
-									(= status 'tualiDeclined) "Declined invitation to visit Huaramarca"
 									(= status 'friend) "Befriended the Huari"
 									(cat "ERROR: Huari status: " status)
 									) 
@@ -155,10 +148,7 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(block Nil
-								(typSetData &svHuariEmpire; 'visitedTemple True)
-								(scrSetDescTranslate gScreen 'descWelcome)
-								)
+							(scrSetDescTranslate gScreen 'descWelcome)
 						</OnPaneInit>
 
 						<Actions>

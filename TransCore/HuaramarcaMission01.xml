@@ -14,34 +14,76 @@
 
 			level=				"4-8"
 			maxAppearing=		"1"
+			noDebrief=			"true"
+
 			priority=			"100"
 			>
 
 		<Events>
 			<OnCreate>
-				(switch
-					;	Must have enough experience
-					(leq (typGetData &svHuariEmpire; 'xp) 325)
-						(msnDestroy gSource)
+				(block (templeDesc)
+					(switch
+						;	Must have enough experience
+						(leq (typGetData &svHuariEmpire; 'xp) 325)
+							(msnDestroy gSource)
 
-					;	Create mission
-					(block Nil
-						(msnSetData gSource 'governor (objGetData aOwnerObj 'governor))
+						;	Make sure the Huari Temple exists somewhere
+						(not (setq templeDesc (@ (unvFindObj "t +huariTemple;") 0)))
+							(msnDestroy gSource)
+
+						;	Create mission
+						(block Nil
+							;	Remember the system and temple ID
+							(msnSetData gSource 'destNodeID (@ templeDesc 2))
+							(msnSetData gSource 'destID (@ templeDesc 0))
+
+							;	Remember the station governor
+							(msnSetData gSource 'governor (objGetData aOwnerObj 'governor))
+							)
 						)
 					)
 			</OnCreate>
 
 			<OnAccepted>
 				(block Nil
-					(typSetData &svHuariEmpire; 'status 'tuali)
+					(msnRegisterForEvents gSource gPlayerShip)
 					(objAddItem gPlayerShip (itmCreate &itTualiComaDrug; 1))
-					(objSetData gPlayerShip 'tualiSymbiote True)
+					(objSetData gPlayerShip 'tualiSymbiote {
+						destNodeID: (msnGetData gSource 'destNodeID)
+						destID: (msnGetData gSource 'destID)
+						})
 					)
 			</OnAccepted>
 			
-			<OnDeclined>
-				(typSetData &svHuariEmpire; 'status 'tualiDeclined)
-			</OnDeclined>
+			<OnObjDocked>
+				(switch
+					(and (= aObjDocked gPlayerShip)
+							(= (objGetID aDockTarget) (msnGetData gSource 'destID))
+							)
+						(msnSuccess gSource)
+					)
+			</OnObjDocked>
+
+			<GetGlobalAchievements>
+				(block (
+					(theMission (@ (msnFind "* +unid:&msHuaramarcaTuali;;") 0))
+					(achievementText (switch
+						(msnGetProperty theMission 'isSuccess)	'AchievementSuccess
+						(msnGetProperty theMission 'isFailure)	'AchievementFailure
+						(msnGetProperty theMission 'isActive)	'AchievementInvited
+						(msnGetProperty theMission 'isDeclined)	'AchievementDeclined
+						))
+					)
+					(if (and theMission achievementText)
+						(list
+							(list (msnTranslate theMission achievementText)
+								Nil
+								"achievements &amp; regrets"
+								)
+							)
+						)
+					)
+			</GetGlobalAchievements>
 		</Events>
 
 		<Language>
@@ -111,6 +153,11 @@
 				"You must awaken the symbiotes; they will reveal the location of
 				Huaramarca. Use the vial of thioseptal that we gave you."
 			</Text>
+
+			<Text id="AchievementSuccess">Visited the Huari temple in Huaramarca</Text>
+			<Text id="AchievementFailure">Failed to find the Huari temple</Text>
+			<Text id="AchievementInvited">Invited by the Huari to visit Huaramarca</Text>
+			<Text id="AchievementDeclined">Declined invitation to visit Huaramarca</Text>
 		</Language>
 	</MissionType>
 
@@ -182,23 +229,23 @@
 
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
-						(block Nil
-							(if (objGetData gSource 'tualiSymbiote)
-								(block (gateID gateObj)
-
-									; Figure out which gate in the system leads to Huaramarca
-									(setq gateID
-										(map (sysGetStargates (sysGetNode)) '(reduceMin original) theGate
-											(sysGetTopologyDistance (sysGetStargateDestinationNode theGate) "Huaramarca")
-											)
+						(block (
+							(tualiData (objGetData gSource 'tualiSymbiote))
+							)
+							(if tualiData
+								(block (destObj)
+									(if (= (sysGetNode) (@ tualiData 'destNodeID))
+										;	If we're in the right system, navigate to destination
+										(setq destObj (objGetObjByID (@ tualiData 'destID)))
+										;	Otherwise, figure out which gate leads to Huaramarca
+										(setq destObj (sysGetStargateLeadingToNode (@ tualiData 'destNodeID)))
 										)
 
-									; Set the coordinates
-									(if (and gateID (setq gateObj (sysFindObject gPlayerShip (cat "NG:" gateID))))
+									;	Set the coordinates
+									(if destObj
 										(block Nil
-											(objSetKnown gateObj)
-											(shpCancelOrders gPlayerShip)
-											(shpOrder gPlayerShip 'dock gateObj)
+											(objSetKnown destObj)
+											(objSetShowAsDestination destObj 'autoClear)
 											)
 										)
 									)
