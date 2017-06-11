@@ -119,7 +119,7 @@
 						; 20% of time there are pirates waiting at the gate
 						(block Nil
 							(msnSetData gSource 'attackRoll 3)
-							(objFireEvent gSource 'CreateGatePirates)
+							(msnFireEvent gSource 'CreateGatePirates)
 							)
 						)
 					(sysAddObjTimerEvent (add gateTime 300) gSource "OnFreighterArrives")
@@ -221,7 +221,7 @@
 								(objSendMessage gPlayerShip freighterObj (msnTranslate gSource 'msgBeginEscort)))
 							(if (geq (msnGetData gSource 'attackersLeft) 5)
 								(objSendMessage gPlayerShip freighterObj (msnTranslate gSource 'msgAmbush)))
-							(objFireEvent gSource 'OrderAttackFreighter)
+							(msnFireEvent gSource 'OrderAttackFreighter)
 							(chrRaidTransport freighterObj homeBaseObj gateObj (/ cargoValue 2))
 							)
 						)
@@ -230,8 +230,8 @@
 
 			<OnPirateFollow>
 				(block Nil
-					(objFireEvent gSource 'CreateGatePirates)
-					(objFireEvent gSource 'OrderAttackFreighter)
+					(msnFireEvent gSource 'CreateGatePirates)
+					(msnFireEvent gSource 'OrderAttackFreighter)
 					)
 			</OnPirateFollow>
 
