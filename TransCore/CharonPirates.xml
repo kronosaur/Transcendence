@@ -1832,7 +1832,9 @@
 							)
 						)
 					(setq travelTime (sysCalcTravelTime distance (shpGetMaxSpeed transportObj)))
-					(setq roundTrip (not (objMatches destObj Nil "G")))
+					(setq roundTrip (not (or (objMatches destObj Nil "G")
+											(objMatches originObj Nil "G")))
+						)
 					;(dbgOutput "Freighter travel time: " travelTime)
 
 					(switch
