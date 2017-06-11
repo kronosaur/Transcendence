@@ -76,108 +76,49 @@
 		</Events>
 		
 		<Language>
-			<Text id="Name">
-				"Huaramarca Dream Test"
-			</Text>
-			<Text id="Summary">
-			</Text>
+			<!-- Code Points -->
+
 			<Text id="Intro">
 				(list
-					{ desc:(msnTranslate gSource 'Intro.1) }
-					{ desc:(msnTranslate gSource 'Intro.2) }
-					{ desc:(msnTranslate gSource 'Intro.3) }
-					{ desc:(msnTranslate gSource 'Intro.4) }
-					{ desc:(msnTranslate gSource 'Intro.5) }
+					{ desc:(msnTranslate gSource 'Intro1) }
+					{ desc:(msnTranslate gSource 'Intro2) }
+					{ desc:(msnTranslate gSource 'Intro3) }
+					{ desc:(msnTranslate gSource 'Intro4) }
+					{ desc:(msnTranslate gSource 'Intro5) }
 					)
-			</Text>
-			<Text id="Intro.1">
-				The doors to the Grand Hall open and a short man approaches you.
-
-				"Welcome, friend, my name is Apotamo. You have journeyed long and rested
-				little. I fear I offer only more of the same."
-			</Text>
-			<Text id="Intro.2">
-				"After the Sung stole our worlds and after we retreated to our refuge,
-				the High Priest of this temple prophesied that all we had lost we would
-				one day regain. He said one day a %man% would appear and %he% would lead
-				us to our redemption in the realm of the Light."
-
-				"And now, when almost all hope is lost, you appear."
-			</Text>
-			<Text id="Intro.3">
-				"Our refuge has at last been discovered by the Sung and even now they
-				prepare to exterminate us. Is it possible you and your lonely ship have
-				been called here to finally deliver us?"
-
-				"There is one way to find out."
-			</Text>
-			<Text id="Intro.4">
-				"The Light speaks to us all. And if we don't always hear Him, it only is
-				because our minds are so busy talking."
-
-				Apotamo touches your shoulder and you feel a sharp pain. You see a small
-				needle in his hand.
-
-				"Don't worry, you will not be harmed. Let's see what the Light has to say to you."
-			</Text>
-			<Text id="Intro.5">
-				The temple walls glow and shift with amazing colors and you hear a distant
-				music so beautiful that you fall to your knees in gratitude. A profound
-				peace envelops you and your consciousness fades into a pinhole of light.
-				
-				Slowly you wake up and find yourself beneath the wide open skies of a beautiful
-				planet. Though you have never been to Earth you recognize it immediately.
 			</Text>
 
 			<Text id="Briefing">
 				(list
 					{
 						id: 'start
-						desc: "You are in a mountain valley beneath bright blue skies. A path in front of you climbs up the mountain face. Behind you a river flows along the valley floor."
+						textID: 'dreamStart
 						actions: (list
-							{
-								nextPage: 'caveMouth
-								label: "[C]limb path"
-								}
-							{
-								nextPage: 'village
-								label: "[F]ollow river"
-								}
+							{	nextPage: 'caveMouth	labelID: 'actionClimbPath	}
+							{	nextPage: 'village		labelID: 'actionFollowRiver	}
 							)
 						}
 					{
 						id: 'caveMouth
-						desc: "You are on a steep path climbing up the mountain. To your right you see the mouth of dark cave."
+						textID: 'dreamCaveMouth
 						actions: (list
-							{
-								nextPage: 'ruinsGate
-								label: "[C]limb path"
-								}
-							{
-								nextPage: 'T1
-								label: "[E]nter cave"
-								}
+							{	nextPage: 'ruinsGate	labelID: 'actionClimbPath	}
+							{	nextPage: 'T1			labelID: 'actionEnterCave	}
 							)
 						}
 
 					{
 						id: 'ruinsGate
-						desc: "The mountain path levels out to a small plateau. To the left you see a stone archway leading to ancient ruins. In front of you the path continues to the peak."
+						textID: 'dreamRuinsGate
 						actions: (list
-							{
-								nextPage: 'peak
-								label: "[C]limb peak"
-								}
-							{
-								nextPage: 'ruins
-								label: "[E]nter ruins"
-								}
+							{	nextPage: 'peak			labelID: 'actionClimbPeak	}
+							{	nextPage: 'ruins		labelID: 'actionEnterRuins	}
 							)
 						}
 
 					{
 						id: 'peak
-						desc: "Lightheaded and winded, you reach the peak. From here you see a small village far below you, nestled in the valley floor. As you watch, an army of bandits appears and rides towards the defenseless village."
+						textID: 'dreamPeak
 						actions: (list
 							{
 								nextPage: 'missionAccept
@@ -187,21 +128,15 @@
 						}
 					{
 						id: 'ruins
-						desc: "You are inside ancient stone ruins. A stone building is in front of you. To the right you see stairs leading into darkness."
+						textID: 'dreamRuins
 						actions: (list
-							{
-								nextPage: 'altar
-								label: "[E]nter building"
-								}
-							{
-								nextPage: 'catacombs
-								label: "[D]escend stairs"
-								}
+							{	nextPage: 'altar		labelID: 'actionEnterBuilding	}
+							{	nextPage: 'catacombs	labelID: 'actionDescendStairs	}
 							)
 						}
 					{
 						id: 'altar
-						desc: "Inside the building you see a tall, robed man standing before a bound girl lying on a stone altar. The man holds up a golden knife and exclaims: \"God of the Sun, deliver us from the evil that threatens our village!\""
+						textID: 'dreamAltar
 						actions: (list
 							{
 								nextPage: 'missionAccept
@@ -212,7 +147,7 @@
 
 					{
 						id: 'catacombs
-						desc: "You are inside a burial chamber for great war heroes. All are dressed in their finest armor. All are forgotten by the living. One of the faces looks familiar. He turns to you and says, \"Your turn!\""
+						textID: 'dreamCatacombs
 						actions: (list
 							{
 								nextPage: 'missionAccept
@@ -223,82 +158,52 @@
 
 					{
 						id: 'T1
-						desc: "You are in a damp and narrow cavern. A path leads to the left; another leads to the right."
+						textID: 'dreamT1
 						actions: (list
-							{
-								nextPage: 'T2
-								label: "Go [l]eft"
-								}
-							{
-								nextPage: 'T3
-								label: "Go [r]ight"
-								}
+							{	nextPage: 'T2			labelID: 'actionGoLeft	}
+							{	nextPage: 'T3			labelID: 'actionGoRight	}
 							)
 						}
 
 					{
 						id: 'T2
-						desc: "You are in great chamber of quartz. A path leads to the left; another leads to the right."
+						textID: 'dreamT2
 						actions: (list
-							{
-								nextPage: 'T1
-								label: "Go [l]eft"
-								}
-							{
-								nextPage: 'precipice
-								label: "Go [r]ight"
-								}
+							{	nextPage: 'T1			labelID: 'actionGoLeft	}
+							{	nextPage: 'precipice	labelID: 'actionGoRight	}
 							)
 						}
 
 					{
 						id: 'T3
-						desc: "You are in a damp cavern dimly lit by glowing lichen. A path leads to the left; another leads to the right."
+						textID: 'dreamT3
 						actions: (list
-							{
-								nextPage: 'precipice
-								label: "Go [l]eft"
-								}
-							{
-								nextPage: 'T4
-								label: "Go [r]ight"
-								}
+							{	nextPage: 'precipice	labelID: 'actionGoLeft	}
+							{	nextPage: 'T4			labelID: 'actionGoRight	}
 							)
 						}
 
 					{
 						id: 'T4
-						desc: "You are in a wide cavern filled with stalactites. A path leads to the left; another leads to the right."
+						textID: 'dreamT4
 						actions: (list
-							{
-								nextPage: 'T5
-								label: "Go [l]eft"
-								}
-							{
-								nextPage: 'precipice
-								label: "Go [r]ight"
-								}
+							{	nextPage: 'T5			labelID: 'actionGoLeft	}
+							{	nextPage: 'precipice	labelID: 'actionGoRight	}
 							)
 						}
 
 					{
 						id: 'T5
-						desc: "You are in a small chamber with a cold and clear pool. A path leads to the left; another leads to the right."
+						textID: 'dreamT5
 						actions: (list
-							{
-								nextPage: 'precipice
-								label: "Go [l]eft"
-								}
-							{
-								nextPage: 'lair
-								label: "Go [r]ight"
-								}
+							{	nextPage: 'precipice	labelID: 'actionGoLeft	}
+							{	nextPage: 'lair			labelID: 'actionGoRight	}
 							)
 						}
 
 					{
 						id: 'precipice
-						desc: "You stand before a deep pit. Inside you see the decomposed remains of hundreds of villagers. As you turn away, the ground gives way and you fall into the pit."
+						textID: 'dreamPrecipice
 						actions: (list
 							{
 								nextPage: 'missionAccept
@@ -309,7 +214,7 @@
 
 					{
 						id: 'lair
-						desc: "You smell a foul stench and hear a deep growl.\n\nA roar startles you and pain grabs your body as steel claws rip your flesh. The last thing you see is the glowing maw of a titanic dragon."
+						textID: 'dreamLair
 						actions: (list
 							{
 								nextPage: 'missionAccept
@@ -320,37 +225,25 @@
 
 					{
 						id: 'village
-						desc: "The river path comes to a small village. The villagers ignore you as they hurriedly barricade their doors and close their windows. There is a temple in the center of the village. To the right a path leads to a fortress on a hill."
+						textID: 'dreamVillage
 						actions: (list
-							{
-								nextPage: 'temple
-								label: "Enter [t]emple"
-								}
-							{
-								nextPage: 'fortress
-								label: "Go to [f]ortress"
-								}
+							{	nextPage: 'temple		labelID: 'actionEnterTemple	}
+							{	nextPage: 'fortress		labelID: 'actionGotoFortress	}
 							)
 						}
 
 					{
 						id: 'temple
-						desc: "You enter a stone temple. A door to the left leads to the Chamber of the Moon; the one to the right leads to the Chamber of the Sun."
+						textID: 'dreamTemple
 						actions: (list
-							{
-								nextPage: 'moonRoom
-								label: "Enter Chamber of the [M]oon"
-								}
-							{
-								nextPage: 'sunRoom
-								label: "Enter Chamber of the [S]un"
-								}
+							{	nextPage: 'moonRoom		labelID: 'actionEnterMoon	}
+							{	nextPage: 'sunRoom		labelID: 'actionEnterSun	}
 							)
 						}
 
 					{
 						id: 'moonRoom
-						desc: "You are in a dark and silent chamber. Moonlight pours in through a window and illuminates the figure of a priest.\n\nThe priest is covered in blood and clutching a wooden shield tightly. He stares at you and says, \"They need your help.\""
+						textID: 'dreamMoonRoom
 						actions: (list
 							{
 								nextPage: 'missionAccept
@@ -361,7 +254,7 @@
 
 					{
 						id: 'sunRoom
-						desc: "You are in a bright chamber. Sunlight pours in through a window and illuminates the figure of a priest.\n\nThe priest is covered in blood and wielding a metal sword. He hands you the sword says, \"I left some for you!\""
+						textID: 'dreamSunRoom
 						actions: (list
 							{
 								nextPage: 'missionAccept
@@ -372,22 +265,16 @@
 
 					{
 						id: 'fortress
-						desc: "You enter the fortress; there are barracks in front of you. Behind you there is a look-out tower."
+						textID: 'dreamFortress
 						actions: (list
-							{
-								nextPage: 'barracks
-								label: "Enter [b]arracks"
-								}
-							{
-								nextPage: 'tower
-								label: "Climb look-out [t]ower"
-								}
+							{	nextPage: 'barracks		labelID: 'actionEnterBarracks	}
+							{	nextPage: 'tower		labelID: 'actionClimbTower		}
 							)
 						}
 
 					{
 						id: 'barracks
-						desc: "The barracks are filled with soldiers sharpening their swords. One of them turns to you and says, \"Where's your sword, pilgrim? Did you leave it in the temple?\" The rest of the men laugh uproariously."
+						textID: 'dreamBarracks
 						actions: (list
 							{
 								nextPage: 'missionAccept
@@ -398,7 +285,7 @@
 
 					{
 						id: 'tower
-						desc: "You climb the tower. Out the window you see an army of bandits riding towards the village. The lead bandit sees you and yells, \"You'll be the last to die, pilgrim, but the first to suffer!\""
+						textID: 'dreamTower
 						actions: (list
 							{
 								nextPage: 'missionAccept
@@ -407,6 +294,52 @@
 							)
 						}
 					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">
+				"Huaramarca Dream Test"
+			</Text>
+			<Text id="Summary">
+			</Text>
+			<Text id="Intro1">
+				The doors to the Grand Hall open and a short man approaches you.
+
+				"Welcome, friend, my name is Apotamo. You have journeyed long and rested
+				little. I fear I offer only more of the same."
+			</Text>
+			<Text id="Intro2">
+				"After the Sung stole our worlds and after we retreated to our refuge,
+				the High Priest of this temple prophesied that all we had lost we would
+				one day regain. He said one day a %man% would appear and %he% would lead
+				us to our redemption in the realm of the Light."
+
+				"And now, when almost all hope is lost, you appear."
+			</Text>
+			<Text id="Intro3">
+				"Our refuge has at last been discovered by the Sung and even now they
+				prepare to exterminate us. Is it possible you and your lonely ship have
+				been called here to finally deliver us?"
+
+				"There is one way to find out."
+			</Text>
+			<Text id="Intro4">
+				"The Light speaks to us all. And if we don't always hear Him, it only is
+				because our minds are so busy talking."
+
+				Apotamo touches your shoulder and you feel a sharp pain. You see a small
+				needle in his hand.
+
+				"Don't worry, you will not be harmed. Let's see what the Light has to say to you."
+			</Text>
+			<Text id="Intro5">
+				The temple walls glow and shift with amazing colors and you hear a distant
+				music so beautiful that you fall to your knees in gratitude. A profound
+				peace envelops you and your consciousness fades into a pinhole of light.
+
+				Slowly you wake up and find yourself beneath the wide open skies of a beautiful
+				planet. Though you have never been to Earth you recognize it immediately.
 			</Text>
 			<Text id="AcceptReply">
 				You wake and find yourself on the floor of the Huari temple.
@@ -419,6 +352,129 @@
 				still intertwined with ours."
 			</Text>
 			<Text id="SuccessMsg"></Text>
+
+			<Text id="dreamStart">
+				You are in a mountain valley beneath bright blue skies. A path
+				in front of you climbs up the mountain face. Behind you a river
+				flows along the valley floor.
+			</Text>
+			<Text id="dreamCaveMouth">
+				You are on a steep path climbing up the mountain. To your right
+				you see the mouth of dark cave.
+			</Text>
+			<Text id="dreamRuinsGate">
+				The mountain path levels out to a small plateau. To the left you
+				see a stone archway leading to ancient ruins. In front of you
+				the path continues to the peak.
+			</Text>
+			<Text id="dreamPeak">
+				Lightheaded and winded, you reach the peak. From here you see a
+				small village far below you, nestled in the valley floor. As you
+				watch, an army of bandits appears and rides towards the
+				defenseless village.
+			</Text>
+			<Text id="dreamRuins">
+				You are inside ancient stone ruins. A stone building is in front
+				of you. To the right you see stairs leading into darkness.
+			</Text>
+			<Text id="dreamAltar">
+				Inside the building you see a tall, robed man standing before a
+				bound girl lying on a stone altar. The man holds up a golden
+				knife and exclaims: "God of the Sun, deliver us from the evil
+				that threatens our village!"
+			</Text>
+			<Text id="dreamCatacombs">
+				You are inside a burial chamber for great war heroes. All are
+				dressed in their finest armor. All are forgotten by the	living.
+				One of the faces looks familiar. He turns to you and says,
+				"Your turn!"
+			</Text>
+			<Text id="dreamT1">
+				You are in a damp and narrow cavern. A path leads to the left;
+				another leads to the right.
+			</Text>
+			<Text id="dreamT2">
+				You are in great chamber of quartz. A path leads to the left;
+				another leads to the right.
+			</Text>
+			<Text id="dreamT3">
+				You are in a damp cavern dimly lit by glowing lichen. A path
+				leads to the left; another leads to the right.
+			</Text>
+			<Text id="dreamT4">
+				You are in a wide cavern filled with stalactites. A path leads
+				to the left; another leads to the right.
+			</Text>
+			<Text id="dreamT5">
+				You are in a small chamber with a cold and clear pool. A path
+				leads to the left; another leads to the right.
+			</Text>
+			<Text id="dreamPrecipice">
+				You stand before a deep pit. Inside you see the decomposed remains
+				of hundreds of villagers. As you turn away, the ground gives way
+				and you fall into the pit.
+			</Text>
+			<Text id="dreamLair">
+				You smell a foul stench and hear a deep growl.
+
+				A roar startles you and pain grabs your body as steel claws rip
+				your flesh. The last thing you see is the glowing maw of a titanic
+				dragon.
+			</Text>
+			<Text id="dreamVillage">
+				The river path comes to a small village. The villagers ignore you
+				as they hurriedly barricade their doors and close their windows.
+				There is a temple in the center of the village. To the right a
+				path leads to a fortress on a hill.
+			</Text>
+			<Text id="dreamTemple">
+				You enter a stone temple. A door to the left leads to the Chamber
+				of the Moon; the one to the right leads to the Chamber of the Sun.
+			</Text>
+			<Text id="dreamMoonRoom">
+				You are in a dark and silent chamber. Moonlight pours in through a
+				window and illuminates the figure of a priest.
+
+				The priest is covered in blood and clutching a wooden shield
+				tightly. He stares at you and says, "They need your help."
+			</Text>
+			<Text id="dreamSunRoom">
+				You are in a bright chamber. Sunlight pours in through a window
+				and illuminates the figure of a priest.
+
+				The priest is covered in blood and wielding a metal sword. He
+				hands you the sword says, "I left some for you!"
+			</Text>
+			<Text id="dreamFortress">
+				You enter the fortress; there are barracks in front of you. Behind
+				you there is a look-out tower.
+			</Text>
+			<Text id="dreamBarracks">
+				The barracks are filled with soldiers sharpening their swords. One
+				of them turns to you and says, "Where's your sword, pilgrim? Did you
+				leave it in the temple?" The rest of the men laugh uproariously.
+			</Text>
+			<Text id="dreamTower">
+				You climb the tower. Out the window you see an army of bandits
+				riding towards the village. The lead bandit sees you and yells,
+				"You'll be the last to die, pilgrim, but the first to suffer!"
+			</Text>
+
+			<Text id="actionClimbPath">[C]limb path</Text>
+			<Text id="actionClimbPeak">[C]limb peak</Text>
+			<Text id="actionClimbTower">Climb look-out [t]ower</Text>
+			<Text id="actionDescendStairs">[D]escend stairs</Text>
+			<Text id="actionEnterBarracks">Enter [b]arracks</Text>
+			<Text id="actionEnterBuilding">[E]nter building</Text>
+			<Text id="actionEnterCave">[E]nter cave</Text>
+			<Text id="actionEnterMoon">Enter Chamber of the [M]oon</Text>
+			<Text id="actionEnterRuins">[E]nter ruins</Text>
+			<Text id="actionEnterSun">Enter Chamber of the [S]un</Text>
+			<Text id="actionEnterTemple">Enter [t]emple</Text>
+			<Text id="actionFollowRiver">[F]ollow river</Text>
+			<Text id="actionGoLeft">Go [l]eft</Text>
+			<Text id="actionGoRight">Go [r]ight</Text>
+			<Text id="actionGotoFortress">Go to [f]ortress</Text>
 
 			<Text id="AchievementSuccess">Became Defender of the Huari</Text>
 		</Language>

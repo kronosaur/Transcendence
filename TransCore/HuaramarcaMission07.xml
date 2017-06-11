@@ -38,11 +38,11 @@
 				(if (msnGetProperty gSource 'isDeclined)
 					(list
 						{
-							desc: (msnTranslate gSource 'Welcome)
+							textID: 'Welcome
 							actions: (list
 								{
 									nextPage: 'missionDecline
-									label: "[C]ontinue"
+									labelID: 'actionContinue
 									}
 								)
 							}
@@ -52,30 +52,30 @@
 					(list
 						{
 							id: 'goodbye
-							desc: (msnTranslate gSource 'GoodBye)
+							textID: 'GoodBye
 							actions: (list
 								{
-									nextPage: 'revelation
-									label: "\"[W]hat is my path?\""
+									nextPage: 'revelation1
+									labelID: 'actionPath
 									}
 								{
 									nextPage: 'missionDecline
-									label: "\"[G]oodbye\""
+									labelID: 'actionGoodbye
 									}
 								)
 							}
 						{
-							id: 'revelation
-							desc: (msnTranslate gSource 'Revelation)
-							label: "\"[W]ill that happen if I fail?\""
+							id: 'revelation1
+							textID: 'Revelation1
+							labelID: 'actionFail
 							}
 						{
 							id: 'revelation2
-							desc: (msnTranslate gSource 'Revelation2)
+							textID: 'Revelation2
 							actions: (list
 								{
 									nextPage: 'missionDecline
-									label: "[L]eave"
+									labelID: 'actionLeave
 									}
 								)
 							}
@@ -92,7 +92,7 @@
 				"Our debt to you is boundless. I regret we have not made your path any easier.
 				May the blessings of the Light shine before you!"
 			</Text>
-			<Text id="Revelation">
+			<Text id="Revelation1">
 				"The Light brought me a dream, not long after you arrived. I dreamt
 				that I floated above all the stars of Humanity. I saw the fortresses
 				of the Huari and the stations of the Commonwealth and the evil citadels
@@ -114,6 +114,12 @@
 				"Welcome back, %name%! Take your ease here before you continue on
 				your arduous journey."
 			</Text>
+
+			<String id="actionContinue">[C]ontinue</String>
+			<String id="actionPath">"[W]hat is my path?"</String>
+			<String id="actionGoodbye">"[G]oodbye"</String>
+			<String id="actionFail">"[W]ill that happen if I fail?"</String>
+			<String id="actionLeave">[L]eave</String>
 		</Language>
 	</MissionType>
 

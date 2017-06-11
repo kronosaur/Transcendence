@@ -185,8 +185,8 @@
 		</DockScreens>
 
 		<Language>
-			<Text id="actionGrandHall">"[G]rand Hall"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
+			<Text id="actionGrandHall">[G]rand Hall</Text>
+			<Text id="actionUndock">[U]ndock</Text>
 
 			<Text id="descWelcome">
 				The Huari temple is dark and cavernous. Huari men and women dressed in
@@ -326,8 +326,8 @@
 		</DockScreens>
 
 		<Language>
-			<Text id="actionGrandHall">"[G]rand Hall"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
+			<Text id="actionGrandHall">[G]rand Hall</Text>
+			<Text id="actionUndock">[U]ndock</Text>
 
 			<Text id="descWelcome">
 				The Huari fortress is dark and cavernous. Huari men and women dressed in
@@ -374,7 +374,7 @@
 				The Light has forsaken us and we are left with nothing."
 			</Text>
 
-			<Text id="missionFirstIntro">
+			<Text id="huari.FirstIntro">
 				Inside the Grand Hall you meet the governors of the fortress. A short,
 				balding man with a ceremonial scepter greets you.
 
@@ -382,14 +382,14 @@
 				help us. So was it revealed. My name is %governor%, and I govern this
 				fortress. If you have come to help us, then you are most welcome."
 			</Text>
-			<Text id="missionIntro">
+			<Text id="huari.Intro">
 				%governor% is waiting for you:
 
 				"Welcome back, friend. By all the glory of the Light, I can see you are
 				confident and powerful. Will you use your powers to help us? If so, you
 				are truly a shining messenger."
 			</Text>
-			<Text id="missionBlacklisted">
+			<Text id="huari.Blacklisted">
 				"The blessings of the Light are not always visible, but there is a
 				streak of darkness within you that cannot be ignored. You are not
 				our defender; you are just a fool who seeks but doesn't learn."
@@ -605,10 +605,10 @@
 					(stationObj (objGetObjByID (msnGetProperty missionObj 'ownerID)))
 					)
 					(if (msnFind stationObj "Saru")
-						(objTranslate stationObj 'missionIntro {
+						(objTranslate stationObj 'huari.Intro {
 							governor: (objGetData stationObj 'governor)
 							})
-						(objTranslate stationObj 'missionFirstIntro {
+						(objTranslate stationObj 'huari.FirstIntro {
 							governor: (objGetData stationObj 'governor)
 							})
 						)

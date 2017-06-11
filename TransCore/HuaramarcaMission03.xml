@@ -132,12 +132,12 @@
 			<OnDeliveryMissionCompleted>
 				(switch
 					(gr (msnGetData gSource 'enemyTargets) 8)
-						{desc: (msnTranslate gSource 'InProgress.1) forceUndock:True}
+						{desc: (msnTranslate gSource 'InProgress1) forceUndock:True}
 
 					(gr (msnGetData gSource 'enemyTargets) 4)
-						{desc: (msnTranslate gSource 'InProgress.2) forceUndock:True}
+						{desc: (msnTranslate gSource 'InProgress2) forceUndock:True}
 
-					{desc: (msnTranslate gSource 'InProgress.3) forceUndock:True}
+					{desc: (msnTranslate gSource 'InProgress3) forceUndock:True}
 					)
 			</OnDeliveryMissionCompleted>
 
@@ -201,19 +201,19 @@
 				"Good luck to you and to us all. May the blessings of the
 				Light fill our worlds again."
 			</Text>
-			<Text id="InProgress.1">
+			<Text id="InProgress1">
 				Apotamo is inside the temple. One of his assistants talks to you. There
 				is a hint of panic in his voice:
 
 				"Whether you are the Solti or not, please do what you can to help us!"
 			</Text>
-			<Text id="InProgress.2">
+			<Text id="InProgress2">
 				Apotamo is inside the temple. One of his assistants talks to you:
 
 				"we're not safe yet! Whether you are the Solti or not, please do what
 				you can to help us!"
 			</Text>
-			<Text id="InProgress.3">
+			<Text id="InProgress3">
 				Apotamo is inside the temple. One of his assistants talks to you:
 
 				"The Light has delivered us! But there are still a few enemies left.

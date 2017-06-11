@@ -123,14 +123,13 @@
 					(list
 						{
 							desc: (cat
-							(msnTranslate gSource 'Briefing.base)
+							(msnTranslate gSource 'Briefing1)
 							"\n\n"
 							(switch
 								(= escortCount 1)
-									(msnTranslate gSource 'Briefing.1)
+									(msnTranslate gSource 'Briefing2a)
 								(gr escortCount 1)
-									(msnTranslate gSource 'Briefing.2 {escortCount:(strNumber escortCount)} )
-								"qwerty"
+									(msnTranslate gSource 'Briefing2b {escortCount:(strNumber escortCount)} )
 								)
 							)
 							}
@@ -148,19 +147,18 @@
 				The Sung have established a base near the Huari temple.
 				Your mission is to destroy it.
 			</Text>
-			<Text id="Briefing.base">
+			<Text id="Briefing1">
 				"The Sung have established a base in this system, and once they build up
 				their forces they will destroy us. Our only chance is to strike them now,
 				before they are ready. Your dream spoke of battle; now is your chance!"
 			</Text>
-			<Text id="Briefing.1">
+			<Text id="Briefing2a">
 				"We will send a Hurin destroyer with you. Strike the Sung with your mighty
 				weapons and make them regret ever finding this refuge!"
 			</Text>
-			<Text id="Briefing.2">
+			<Text id="Briefing2b">
 				"We will send %escortCount% Hurin destroyers with you. Strike the Sung
 				base and drive the invaders back to the darkness whence they came"
-					)
 			</Text>
 			<Text id="GoodLuck">
 				"Good luck to you and to us all. May the blessings of the

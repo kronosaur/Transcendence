@@ -285,7 +285,7 @@
 					{
 						nextScreen: &dsRPGMessage;
 						nextScreenData: {
-							desc: (typTranslate &stHuariFortress; 'missionBlacklisted)
+							desc: (typTranslate &stHuariFortress; 'huari.Blacklisted)
 							}
 						}
 					)

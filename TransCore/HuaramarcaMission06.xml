@@ -94,9 +94,9 @@
 			</Text>
 			<Text id="SuccessDebrief">
 				(list
-					{ desc: (msnTranslate gSource 'RepairArchcannon.1) }
-					{ desc: (msnTranslate gSource 'RepairArchcannon.2) }
-					{ desc: (msnTranslate gSource 'RepairArchcannon.3) }
+					{ desc: (msnTranslate gSource 'RepairArchcannon1) }
+					{ desc: (msnTranslate gSource 'RepairArchcannon2) }
+					{ desc: (msnTranslate gSource 'RepairArchcannon3) }
 					)
 			</Text>
 
@@ -116,14 +116,14 @@
 			<Text id="FailureDebrief">
 				Mission Failed
 			</Text>
-			<Text id="RepairArchcannon.1">
+			<Text id="RepairArchcannon1">
 				"I see you have found the Slaver's weapon. Perhaps there is a way in
 				which we might repay the debt we owe you."
 				
 				Apotamo leads you to a chamber inside the temple. You see row upon row of slave
 				coffins, all connected together and to a vast array of optical computers.
 			</Text>
-			<Text id="RepairArchcannon.2">
+			<Text id="RepairArchcannon2">
 				"Not all slaves can be freed from the Sung's enslavement. Some are lost to us
 				forever; we keep them here so they can continue their work&mdash;it is the only
 				peace they know."
@@ -131,7 +131,7 @@
 				"The damaged archcannon you found on the slaver's wreck can be repaired by
 				these poor souls."
 			</Text>
-			<Text id="RepairArchcannon.3">
+			<Text id="RepairArchcannon3">
 				You bring the archcannon to the slave chamber. You hear a cacophony of voices
 				rise up from the slave coffins. A laser lattice envelops the archcannon and the
 				computer displays flash blueprints and diagnostics. Robot hands expertly repair
