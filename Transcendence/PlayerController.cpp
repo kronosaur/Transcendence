@@ -829,6 +829,7 @@ void CPlayerShipController::InitTargetList (TargetTypes iTargetType, bool bUpdat
 				&& pObj->CanBeHit()
 				&& !pObj->IsDestroyed()
                 && (pObj->GetCategory() == CSpaceObject::catShip || pObj->GetCategory() == CSpaceObject::catStation)
+				&& !pObj->IsAttached()
 				&& pObj != m_pShip)
 			{
 			bool bInList = false;
@@ -925,6 +926,7 @@ void CPlayerShipController::InsuranceClaim (void)
 	//	Place the ship back in the system
 
 	m_pShip->AddToSystem(pSystem);
+	m_pShip->OnNewSystem(pSystem);
 
 	//	Empty out the wreck
 

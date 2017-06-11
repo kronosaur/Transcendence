@@ -936,7 +936,7 @@ void CTranscendenceWnd::DestroyIntroShips (void)
 		CSpaceObject *pObj = pSystem->GetObject(i);
 		CShip *pShip;
 		if (pObj 
-				&& !pObj->IsIntangible()
+				&& pObj->CanAttack()
 				&& (pShip = pObj->AsShip()))
 			{
 			if (pShip->GetClass() == pClassToDestroy)
