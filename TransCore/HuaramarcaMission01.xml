@@ -76,7 +76,8 @@
 					)
 					(if (and theMission achievementText)
 						(list
-							(list (msnTranslate theMission achievementText)
+							(list
+								(msnTranslate theMission achievementText)
 								Nil
 								"achievements &amp; regrets"
 								)

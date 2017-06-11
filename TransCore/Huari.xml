@@ -9,14 +9,12 @@
 	status:				Status of player with respect to Huari
 							Nil						= normal (enemy)
 							'friend					= Huari are friendly and player can do missions
-							'defender				= Player is a defender of the Huari
 							'loser					= Player has failed too many missions
 							'templeDestroyed		= Huari temple has been destroyed
 
 	huariDestroyed:		Number of Huari stations destroyed by the player
 	sungDestroyed:		Number of Sung stations destroyed by the player
 
-	visitedTemple:		True if player visited the temple in Huaramarca
 	xp:					Total xp accumulated by the player
 
 -->
@@ -48,7 +46,6 @@
 								(switch
 									(= status 'templeDestroyed) "Failed to defend the Huari"
 									(= status 'loser) "Disappointed the Huari"
-									(= status 'defender) "Became Defender of the Huari"
 									(= status 'friend) "Befriended the Huari"
 									(cat "ERROR: Huari status: " status)
 									) 

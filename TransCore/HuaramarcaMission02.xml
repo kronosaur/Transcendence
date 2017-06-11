@@ -34,6 +34,10 @@
 		<Events>
 			<OnCreate>
 				(switch
+					;	Player must have been invited to Huaramarca
+					(not (msnFind "r +unid:&msHuaramarcaTuali;"))
+						(msnDestroy gSource)
+
 					;	Set up the mission
 					(block Nil
 						)
@@ -57,6 +61,18 @@
 						)
 					)
 			</OnGetNextScreen>
+
+			<GetGlobalAchievements>
+				(if (msnFind "r +huariDreamChoice; +property:isSuccess;)
+					(list
+						(list
+							(typTranslate &msHuaramarcaDreamTest; 'AchievementSuccess)
+							Nil
+							"achievements &amp; regrets"
+							)
+						)
+					)
+			</GetGlobalAchievements>
 		</Events>
 		
 		<Language>
@@ -403,6 +419,8 @@
 				still intertwined with ours."
 			</Text>
 			<Text id="SuccessMsg"></Text>
+
+			<Text id="AchievementSuccess">Became Defender of the Huari</Text>
 		</Language>
 	</MissionType>
 
