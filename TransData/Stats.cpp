@@ -235,6 +235,7 @@ void GenerateStats (CUniverse &Universe, CXMLElement *pCmdLine)
 	printf("\n");
 
 	printf((LPSTR)strPatternSubst(CONSTLIT("XML memory usage\t%,lld\n"), Stats.dwTotalXMLMemory));
+	printf((LPSTR)strPatternSubst(CONSTLIT("XML keyword count\t%,d\n"), CXMLElement::GetKeywordCount()));
 
 	printf("\n");
 

@@ -510,11 +510,6 @@ ALERROR InitUniverse (CUniverse &Universe, CHost &Host, const CString &sFilespec
 	else
 		Ctx.bNoResources = true;
 
-	//	If we want stats, then we need XML
-
-	if (pCmdLine->GetAttribute(STATS_SWITCH))
-		Ctx.bKeepXML = true;
-
 	//	Extension
 
 	CString sExtensionFolder = pCmdLine->GetAttribute(EXTENSION_FOLDER_ATTRIB);
