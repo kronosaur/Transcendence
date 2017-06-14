@@ -10,6 +10,7 @@
 			type=				"heavy gunship"
 			defaultSovereign=	"&svCommonwealth;"
 
+			attributes=			"rama"
 			mass=				"90"
 			cargoSpace=			"50"
 			thrustRatio=		"12.0"
