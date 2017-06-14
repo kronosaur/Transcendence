@@ -19,6 +19,7 @@
 	<DockScreen UNID="&dsRepairItem;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
+			obsolete=			"37"
 			>
 
 		<ListOptions
@@ -107,6 +108,7 @@
 	<DockScreen UNID="&dsJettison;"
 			name=				"Ship's Cargo Hold"
 			type=				"itemPicker"
+			obsolete=			"37"
 			>
 
 		<ListOptions
@@ -226,6 +228,7 @@
 
 	<DockScreen UNID="&dsLoot;"
 			type=				"itemPicker"
+			obsolete=			"37"
 			>
 
 		<ListOptions
@@ -353,6 +356,7 @@
 	<DockScreen unid="&dsRPGDockServicesCompatible;"
 			inherit=			"&dsDockScreenBase;"
 			nestedScreen=		"true"
+			obsolete=			"37"
 			>
 		<Panes>
 			<Default>
@@ -445,6 +449,7 @@
 	<DockScreen UNID="&dsRPGRemoveDevice;"
 			inherit=			"&dsDockScreenBase;"
 			nestedScreen=		"true"
+			obsolete=			"37"
 			>
 		<Panes>
 			<Default>
@@ -547,6 +552,7 @@
 	<DockScreen UNID="&dsRPGRepairArmor;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
+			obsolete=			"37"
 			>
 
 		<ListOptions

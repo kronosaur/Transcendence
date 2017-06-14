@@ -4,7 +4,9 @@
 
 <!-- SYSTEM PARTS -->
 
-	<SystemPartTable unid="&tbBasicSystemParts;">
+	<SystemPartTable unid="&tbBasicSystemParts;"
+			obsolete=			"37"
+			>
 
 		<!-- Planets and Planetoids -->
 
@@ -788,6 +790,7 @@
 	<!-- Small Asteroid -->
 
 	<StationType UNID="&stSmallAsteroid;"
+			obsolete=			"37"
 		name=				"(rocky asteroid)"
 		scale=				"world"
 		size=				"4"
@@ -821,6 +824,7 @@
 	<!-- Medium Asteroid -->
 
 	<StationType UNID="&stMediumAsteroid;"
+			obsolete=			"37"
 		name=				"(rocky asteroid)"
 		scale=				"world"
 		size=				"65"
@@ -856,6 +860,7 @@
 	 -->
 
 	<StationType UNID="&stLargeAsteroid;"
+			obsolete=			"37"
 		name=				"(rocky asteroid)"
 		scale=				"world"
 		size=				"250"
@@ -882,6 +887,7 @@
 	<!-- Planetoid -->
 
 	<StationType UNID="&stPlanetoid;"
+			obsolete=			"37"
 		name=				"(rocky planetoid)"
 		scale=				"world"
 		size=				"1150"
@@ -903,6 +909,7 @@
 	 -->
 
 	<StationType UNID="&stCrateredPlanet;"
+			obsolete=			"37"
 		name=				"(rocky terrestrial)"
 		scale=				"world"
 		size=				"1150"
@@ -920,6 +927,7 @@
 	<!-- Small Frost Asteroid -->
 
 	<StationType UNID="&stSmallFrostAsteroid;"
+			obsolete=			"37"
 		name=				"(frost asteroid)"
 		scale=				"world"
 		size=				"4"
@@ -951,6 +959,7 @@
 	<!-- Medium Frost Asteroid -->
 
 	<StationType UNID="&stMediumFrostAsteroid;"
+			obsolete=			"37"
 		name=				"(frost asteroid)"
 		scale=				"world"
 		size=				"65"
@@ -983,6 +992,7 @@
 	 -->
 
 	<StationType UNID="&stSmallIceAsteroid;"
+			obsolete=			"37"
 		name=				"(ice asteroid)"
 		scale=				"world"
 		size=				"4"
@@ -1016,6 +1026,7 @@
 	 -->
 
 	<StationType UNID="&stLargeIceAsteroid;"
+			obsolete=			"37"
 		name=				"(ice planetoid)"
 		scale=				"world"
 		size=				"1150"
@@ -1042,6 +1053,7 @@
 	<!-- Ice Planet -->
 
 	<StationType UNID="&stIcePlanet;"
+			obsolete=			"37"
 		name=				"(ice terrestrial)"
 		scale=				"world"
 		size=				"4700"
@@ -1059,6 +1071,7 @@
 	<!-- Small Metallic Asteroid -->
 
 	<StationType UNID="&stSmallMetallicAsteroid;"
+			obsolete=			"37"
 		name=				"(metallic asteroid)"
 		scale=				"world"
 		size=				"4"
@@ -1089,6 +1102,7 @@
 	<!-- Medium Metallic Asteroid -->
 
 	<StationType UNID="&stMediumMetallicAsteroid;"
+			obsolete=			"37"
 		name=				"(metallic asteroid)"
 		scale=				"world"
 		size=				"55"
@@ -1120,6 +1134,7 @@
 	<!-- Small Volcanic Asteroid -->
 
 	<StationType UNID="&stSmallVolcanicAsteroid;"
+			obsolete=			"37"
 		name=				"(volcanic asteroid)"
 		scale=				"world"
 		size=				"4"
@@ -1151,6 +1166,7 @@
 	<!-- Medium Volcanic Asteroid -->
 
 	<StationType UNID="&stMediumVolcanicAsteroid;"
+			obsolete=			"37"
 		name=				"(volcanic asteroid)"
 		scale=				"world"
 		size=				"70"
@@ -1182,6 +1198,7 @@
 	<!-- Volcanic Planet -->
 
 	<StationType UNID="&stVolcanicPlanet;"
+			obsolete=			"37"
 		name=				"(volcanic terrestrial)"
 		scale=				"world"
 		size=				"5000"
@@ -1199,6 +1216,7 @@
 	<!-- Biosphere -->
 
 	<StationType UNID="&stBiospherePlanet;"
+			obsolete=			"37"
 		name=				"(biosphere terrestrial)"
 		scale=				"world"
 		size=				"10000"
@@ -1216,6 +1234,7 @@
 	<!-- Desert Planet -->
 
 	<StationType UNID="&stDesertPlanet;"
+			obsolete=			"37"
 		name=				"(desert terrestrial)"
 		scale=				"world"
 		size=				"7000"
@@ -1233,6 +1252,7 @@
 	<!-- Greenhouse Planet -->
 
 	<StationType UNID="&stGreenhousePlanet;"
+			obsolete=			"37"
 		name=				"(greenhouse terrestrial)"
 		scale=				"world"
 		size=				"5000"
@@ -1250,6 +1270,7 @@
 	<!-- Hydrogen Gas Giant -->
 
 	<StationType UNID="&stHydrogenGasGiant;"
+			obsolete=			"37"
 		name=				"(hydrogen gas giant)"
 		scale=				"world"
 		size=				"140000"
@@ -1262,6 +1283,7 @@
 	<!-- Methane Gas Giant -->
 
 	<StationType UNID="&stMethaneGasGiant;"
+			obsolete=			"37"
 		name=				"(methane gas giant)"
 		scale=				"world"
 		size=				"50000"
@@ -1274,6 +1296,7 @@
 	<!-- Primordial Star -->
 
 	<StationType UNID="&stPrimordialStar;"
+			obsolete=			"37"
 		name=				"(primordial star)"
 		scale=				"star"
 		spaceColor=			"0x4d, 0x41, 0x0f"
@@ -1292,6 +1315,7 @@
 	<!-- O-Type Star -->
 
 	<StationType UNID="&stO-TypeStar;"
+			obsolete=			"37"
 		name=				"(star)"
 		scale=				"star"
 
@@ -1303,6 +1327,7 @@
 	<!-- A-Type Star -->
 
 	<StationType UNID="&stA-TypeStar;"
+			obsolete=			"37"
 		name=				"(A class star)"
 		scale=				"star"
 		spaceColor=			"0x12, 0x50, 0x79"
@@ -1321,6 +1346,7 @@
 	<!-- G-Type Star -->
 
 	<StationType UNID="&stG-TypeStar;"
+			obsolete=			"37"
 		name=				"(G class star)"
 		scale=				"star"
 		spaceColor=			"#656551"
@@ -1339,6 +1365,7 @@
 	<!-- K-Type Star -->
 
 	<StationType UNID="&stK-TypeStar;"
+			obsolete=			"37"
 		name=				"(K class star)"
 		scale=				"star"
 		spaceColor=			"0x70, 0x44, 0x1a"
@@ -1357,6 +1384,7 @@
 	<!-- M-Type Star -->
 
 	<StationType UNID="&stM-TypeStar;"
+			obsolete=			"37"
 		name=				"(star)"
 		scale=				"star"
 
@@ -1368,6 +1396,7 @@
 	<!-- Red Dwarf Star -->
 
 	<StationType UNID="&stRedDwarfStar;"
+			obsolete=			"37"
 		name=				"(red dwarf star)"
 		scale=				"star"
 		spaceColor=			"0x59, 0x0e, 0x00"
@@ -1381,6 +1410,7 @@
 	<!-- Blue Giant Star -->
 
 	<StationType UNID="&stBlueGiantStar;"
+			obsolete=			"37"
 		name=				"(star)"
 		scale=				"star"
 
@@ -1394,6 +1424,7 @@
 	<!-- Small Asteroid with Ore -->
 
 	<StationType UNID="&stOreSmallAsteroid;"
+			obsolete=			"37"
 			name=				"(small ore asteroid)"
 			scale=				"world"
 
@@ -1429,6 +1460,7 @@
 	<!-- Medium Asteroid with Ore -->
 
 	<StationType UNID="&stOreMediumAsteroid;"
+			obsolete=			"37"
 		name=				"(medium ore asteroid)"
 		scale=				"world"
 
@@ -1466,6 +1498,7 @@
 	<!-- Small Frost Asteroid with Ore -->
 
 	<StationType UNID="&stOreSmallFrostAsteroid;"
+			obsolete=			"37"
 		name=				"(small frost ore asteroid)"
 		scale=				"world"
 
@@ -1501,6 +1534,7 @@
 	<!-- Medium Frost Asteroid with Ore -->
 
 	<StationType UNID="&stOreMediumFrostAsteroid;"
+			obsolete=			"37"
 		name=				"(medium frost ore asteroid)"
 		scale=				"world"
 
@@ -1536,6 +1570,7 @@
 	<!-- Small Metallic Asteroid with Ore -->
 
 	<StationType UNID="&stOreSmallMetallicAsteroid;"
+			obsolete=			"37"
 		name=				"(asteroid)"
 		scale=				"world"
 
@@ -1570,6 +1605,7 @@
 	<!-- Medium Metallic Asteroid with Ore -->
 
 	<StationType UNID="&stOreMediumMetallicAsteroid;"
+			obsolete=			"37"
 		name=				"(asteroid)"
 		scale=				"world"
 
@@ -1605,6 +1641,7 @@
 	<!-- Small Volcanic Asteroid with Ore -->
 
 	<StationType UNID="&stOreSmallVolcanicAsteroid;"
+			obsolete=			"37"
 		name=				"(small volcanic ore asteroid)"
 		scale=				"world"
 
@@ -1640,6 +1677,7 @@
 	<!-- Medium Volcanic Asteroid with Ore -->
 
 	<StationType UNID="&stOreMediumVolcanicAsteroid;"
+			obsolete=			"37"
 		name=				"(medium volcanic ore asteroid)"
 		scale=				"world"
 
@@ -1674,7 +1712,9 @@
 
 <!-- TABLES -->
 
-	<ItemTable unid="&tbPrimordialAsteroidOre;">
+	<ItemTable unid="&tbPrimordialAsteroidOre;"
+			obsolete=			"37"
+			>
 		<LevelTable>
 			<Item levelFrequency="ccccc ccccc ccccc ccccc ccccc" count="45-60"	item="&itTitaniumOre;"/>
 			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPlasteelOre;"/>
@@ -1690,7 +1730,9 @@
 		</LevelTable>
 	</ItemTable>
 
-	<ItemTable unid="&tbMetallicAsteroidOre;">
+	<ItemTable unid="&tbMetallicAsteroidOre;"
+			obsolete=			"37"
+			>
 		<LevelTable>
 			<Item levelFrequency="uuuuu uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itUraniumOre;"/>
 			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-35"	item="&itPlasteelOre;"/>
@@ -1704,7 +1746,9 @@
 		</LevelTable>
 	</ItemTable>
 	
-	<ItemTable unid="&tbStoneAsteroidOre;">
+	<ItemTable unid="&tbStoneAsteroidOre;"
+			obsolete=			"37"
+			>
 		<LevelTable>
 			<Item levelFrequency="ccccc ccccc ccccc ccccc ccccc" count="45-60"	item="&itTitaniumOre;"/>
 			<Item levelFrequency="uuuuu uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itUraniumOre;"/>
@@ -1721,7 +1765,9 @@
 		</LevelTable>
 	</ItemTable>
 
-	<ItemTable unid="&tbFrostAsteroidOre;">
+	<ItemTable unid="&tbFrostAsteroidOre;"
+			obsolete=			"37"
+			>
 		<LevelTable>
 			<Item levelFrequency="uuuuu uuuuu uuuuu uuuuu uuuuu" count="1-5"	item="&itUraniumOre;"/>
 			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPlasteelOre;"/>
@@ -1736,7 +1782,9 @@
 		</LevelTable>
 	</ItemTable>
 
-	<ItemTable unid="&tbVolcanicAsteroidOre;">
+	<ItemTable unid="&tbVolcanicAsteroidOre;"
+			obsolete=			"37"
+			>
 		<LevelTable>
 			<Item levelFrequency="vrucc ccccc ccccc ccccc ccccc" count="5-10"	item="&itGoldOre;"/>
 			<Item levelFrequency="vrucc ccccc ccccc ccccc ccccc" count="1-35"	item="&itXenotiteOre;"/>
@@ -1755,21 +1803,9 @@
 	
 <!-- RESOURCES -->
 
-	<Image UNID="&rsWorlds1;"		bitmap="Resources\Worlds1.jpg"		bitmask="Resources\Worlds1Mask.bmp"  />
-	<Image UNID="&rsWorlds2;"		bitmap="Resources\Worlds2.jpg"		bitmask="Resources\Worlds2Mask.bmp"  />
-
-	<Image UNID="&rsWorldsRingedGiant1;"	bitmap="Resources\WorldsRingedGiant1.jpg"	bitmask="Resources\WorldsRingedGiant1Mask.bmp"	shadowMask="Resources\WorldsRingedGiant1ShadowMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant2;"	bitmap="Resources\WorldsRingedGiant2.jpg"	bitmask="Resources\WorldsRingedGiant2Mask.bmp"	shadowMask="Resources\WorldsRingedGiant2ShadowMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant3;"	bitmap="Resources\WorldsRingedGiant3.jpg"	bitmask="Resources\WorldsRingedGiant3Mask.bmp"	shadowMask="Resources\WorldsRingedGiant3ShadowMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant4;"	bitmap="Resources\WorldsRingedGiant4.jpg"	bitmask="Resources\WorldsRingedGiant4Mask.bmp"	shadowMask="Resources\WorldsRingedGiant4ShadowMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant5;"	bitmap="Resources\WorldsRingedGiant5.jpg"	bitmask="Resources\WorldsRingedGiant5Mask.bmp"	shadowMask="Resources\WorldsRingedGiant5ShadowMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant6;"	bitmap="Resources\WorldsRingedGiant6.jpg"	bitmask="Resources\WorldsRingedGiant6Mask.bmp"	shadowMask="Resources\WorldsRingedGiant6ShadowMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant7;"	bitmap="Resources\WorldsRingedGiant7.jpg"	bitmask="Resources\WorldsRingedGiant7Mask.bmp"	shadowMask="Resources\WorldsRingedGiant7ShadowMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant8;"	bitmap="Resources\WorldsRingedGiant8.jpg"	bitmask="Resources\WorldsRingedGiant8Mask.bmp"	shadowMask="Resources\WorldsRingedGiant8ShadowMask.bmp"  loadOnUse="true"/>
-
-	<Image UNID="&rsAStar;"					bitmap="Resources\AStar.jpg"				bitmask="Resources\Star1Mask.bmp"   loadOnUse="true"/>
-	<Image UNID="&rsStar1;"					bitmap="Resources\Star1.jpg"				bitmask="Resources\Star1Mask.bmp"   loadOnUse="true"/>
-	<Image UNID="&rsRedDwarfStar;"			bitmap="Resources\RedDwarfStar.jpg"			bitmask="Resources\RedDwarfStarMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsRedGiantStar;"			bitmap="Resources\RedGiantStar.jpg"			bitmask="Resources\RedGiantStarMask.bmp"  loadOnUse="true"/>
+	<Image obsolete="37" UNID="&rsAStar;"					bitmap="Resources\AStar.jpg"				bitmask="Resources\Star1Mask.bmp"   loadOnUse="true"/>
+	<Image obsolete="37" UNID="&rsStar1;"					bitmap="Resources\Star1.jpg"				bitmask="Resources\Star1Mask.bmp"   loadOnUse="true"/>
+	<Image obsolete="37" UNID="&rsRedDwarfStar;"			bitmap="Resources\RedDwarfStar.jpg"			bitmask="Resources\RedDwarfStarMask.bmp"  loadOnUse="true"/>
+	<Image obsolete="37" UNID="&rsRedGiantStar;"			bitmap="Resources\RedGiantStar.jpg"			bitmask="Resources\RedGiantStarMask.bmp"  loadOnUse="true"/>
 
 </TranscendenceModule>

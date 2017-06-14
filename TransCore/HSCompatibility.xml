@@ -19,6 +19,7 @@
 	<!-- Cargo Crate -->
 
 	<StationType UNID="&stCargoCrate;"
+			obsolete=			"37"
 			name=				"abandoned cargo crate"
 			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsAbandonedCrate;"
@@ -59,6 +60,7 @@
 	</StationType>
 
 	<StationType UNID="&stNavSign;"
+			obsolete=			"37"
 			name=				"(navigational beacon)"
 			sovereign=			"&svIndependent;"
 			dockScreen=			"&dsNavSign;"
@@ -81,7 +83,9 @@
 
 	<!-- Fleet Dock Services -->
 
-	<DockScreen UNID="&dsFleetDockServices;"	nestedScreen="true">
+	<DockScreen UNID="&dsFleetDockServices;"	nestedScreen="true"
+			obsolete=			"37"
+			>
 		<Panes>
 			<Default>
 				<OnPaneInit>
@@ -155,6 +159,7 @@
 	<!-- Battle Arena Wall -->
 
 	<StationType UNID="&stBattleArenaWall;"
+			obsolete=			"37"
 			name=				"(arena wall segment)"
 			sovereign=			"&svCommonwealth;"
 			attributes=			"battleArenaSegment"
@@ -202,8 +207,12 @@
 
 	</StationType>
 
-	<Image UNID="&rsBattleArena;"	bitmap="Resources\BattleArena.jpg"	bitmask="Resources\BattleArenaMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsBattleArenaExtra;"	bitmap="Resources\BattleArenaExtra.jpg" bitmask="Resources\BattleArenaExtraMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsBattleArena;"	bitmap="Resources\BattleArena.jpg"	bitmask="Resources\BattleArenaMask.bmp"  loadOnUse="true"
+			obsolete=			"37"
+			/>
+	<Image UNID="&rsBattleArenaExtra;"	bitmap="Resources\BattleArenaExtra.jpg" bitmask="Resources\BattleArenaExtraMask.bmp" loadOnUse="true"
+			obsolete=			"37"
+			/>
 	
 	<!-- Install weapon screen
 
@@ -217,6 +226,7 @@
 	<DockScreen UNID="&dsInstallWeapon;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
+			obsolete=			"37"
 			>
 
 		<ListOptions
@@ -282,6 +292,7 @@
 	<DockScreen UNID="&dsRemoveWeapon;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
+			obsolete=			"37"
 			>
 
 		<ListOptions
@@ -367,6 +378,7 @@
 	<DockScreen UNID="&dsExchangeBuy;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
+			obsolete=			"37"
 			>
 
 		<ListOptions
@@ -675,6 +687,7 @@
 	<DockScreen UNID="&dsInstallDevice;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
+			obsolete=			"37"
 			>
 
 		<ListOptions
@@ -749,6 +762,7 @@
 	<DockScreen UNID="&dsRepairArmor;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
+			obsolete=			"37"
 			>
 
 		<ListOptions
@@ -836,6 +850,7 @@
 	<DockScreen UNID="&dsReplaceArmor;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
+			obsolete=			"37"
 			>
 
 		<ListOptions
@@ -959,6 +974,7 @@
 
 	<DockScreen UNID="&dsSistersIntro;"
 			nestedScreen=	"true"
+			obsolete=			"37"
 			>
 
 		<Panes>
@@ -1172,7 +1188,9 @@
 
 		-->
 
-	<DockScreen UNID="&dsContemplateDomina;">
+	<DockScreen UNID="&dsContemplateDomina;"
+			obsolete=			"37"
+			>
 
 		<Panes>
 
@@ -1360,6 +1378,7 @@
 	-->
 
 	<StationType UNID="&stKorolovAtCharon;"
+			obsolete=			"37"
 			name=				": Korolov Shipping"
 			sovereign=			"&svCorporate;"
 			dockScreen=			"Dispatch"
@@ -1808,6 +1827,7 @@
 	<!-- CSC America Encounter (DEPRECATED) -->
 
 	<EncounterType UNID="&stCSCAmericaEncounter;"
+			obsolete=			"37"
 			name=				"(CSC America)"
 			sovereign=			"&svCommonwealthFleet;"
 
@@ -1843,6 +1863,7 @@
 	<!-- CSC Atlantica Encounter (DEPRECATED) -->
 
 	<EncounterType UNID="&stCSCAtlanticaEncounter;"
+			obsolete=			"37"
 			name=				"(CSC Atlantica)"
 			sovereign=			"&svCommonwealthFleet;"
 
@@ -1869,6 +1890,7 @@
 	<!-- CSC Asia Encounter (DEPRECATED) -->
 
 	<EncounterType UNID="&stCSCAsiaEncounter;"
+			obsolete=			"37"
 			name=				"(CSC Asia)"
 			sovereign=			"&svCommonwealthFleet;"
 
@@ -1895,6 +1917,7 @@
 	<!-- CSC India Encounter (DEPRECATED) -->
 
 	<EncounterType UNID="&stCSCIndiaEncounter;"
+			obsolete=			"37"
 			name=				"(CSC India)"
 			sovereign=			"&svCommonwealthFleet;"
 
@@ -1921,6 +1944,7 @@
 	<!-- CSC Pacifica Encounter (DEPRECATED) -->
 
 	<EncounterType UNID="&stCSCPacificaEncounter;"
+			obsolete=			"37"
 			name=				"(CSC Pacifica)"
 			sovereign=			"&svCommonwealthFleet;"
 
@@ -1947,8 +1971,9 @@
 	<!-- Abandoned crate looting screen (DEPRECATED) -->
 	
 	<DockScreen UNID="&dsAbandonedCrateObsolete;"
-		inherit=			"&dsDockScreenBase;"
-		>
+			obsolete=			"37"
+			inherit=			"&dsDockScreenBase;"
+			>
 		<Panes>
 			<Default>
 				<OnPaneInit>
@@ -1987,8 +2012,9 @@
 	<!-- Abandoned ship looting screen (DEPRECATED) -->
 	
 	<DockScreen UNID="&dsAbandonedShipObsolete;"
-		inherit=			"&dsDockScreenBase;"
-		>
+			obsolete=			"37"
+			inherit=			"&dsDockScreenBase;"
+			>
 		<Panes>
 			<Default>
 				<OnPaneInit>
@@ -2026,7 +2052,9 @@
 	
 	<!-- Abandoned station looting screen (DEPRECATED) -->
 
-	<DockScreen UNID="&dsAbandonedStationObsolete;">
+	<DockScreen UNID="&dsAbandonedStationObsolete;"
+			obsolete=			"37"
+			>
 		<Panes>
 			<Default>
 				<OnPaneInit>
