@@ -59,12 +59,7 @@
 								
 	-->
 
-	<ShipClass UNID="&baStdWingmanBase;"
-			class=				"(wingman base class)"
-			virtual=			"true"
-			
-			attributes=			"baseClass"
-			>
+	<Type UNID="&baStdWingmanBase;">
 
 		<Communications>
 			<Message name="Attack target" key="A">
@@ -443,7 +438,7 @@
 					)
 			</OrderLeavePlayer>
 		</Events>
-	</ShipClass>
+	</Type>
 
 <!-- Wingman encounter screen ==================================================
 	Screen for meeting wingmen. Just supports join/reject for now.

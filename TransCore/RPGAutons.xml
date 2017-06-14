@@ -74,13 +74,7 @@
 				
 	-->
 
-	<ShipClass UNID="&baStdAutonBase;"
-			class=				"(auton base class)"
-			virtual=			"true"
-
-			attributes=			"baseClass"
-			>
-
+	<Type UNID="&baStdAutonBase;">
 		<Communications>
 			<Message name="Attack target" key="A">
 				<OnShow>
@@ -462,7 +456,7 @@
 			<Text id="WatchYourTargets">""</Text>
 			<Text id="NiceShooting">""</Text>
 		</Language>
-	</ShipClass>
+	</Type>
 
 <!-- GLOBAL FUNCTIONS ==========================================================
 

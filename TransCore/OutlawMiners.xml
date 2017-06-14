@@ -1168,11 +1168,7 @@
 	
 <!-- BASE CLASSES -->
 	
-	<StationType unid="&baOutlawMine;"
-			name=			"(outlaw mine base class)"
-			virtual=		"true"
-			>
-		
+	<Type unid="&baOutlawMine;">
 		<Events>
 			<OnCreate>
 				(block (asteroidList)
@@ -1223,7 +1219,7 @@
 					)
 			</OnOreDepositFound>
 		</Events>
-	</StationType>
+	</Type>
 	
 <!-- RESOURCES -->
 

@@ -3076,17 +3076,13 @@
 	
 	-->
 	
-	<StationType unid="&baCommonwealthStation;"
-			name=			"(Commonwealth station base class)"
-			virtual=		"true"
-			>
-		
+	<Type unid="&baCommonwealthStation;">
 		<Events>
 			<OnDestroy>
 				(intCommonwealthOnDestroy)
 			</OnDestroy>
 		</Events>
-	</StationType>
+	</Type>
 
 <!-- RESOURCES -->
 

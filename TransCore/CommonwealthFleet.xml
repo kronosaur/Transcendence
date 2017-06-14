@@ -386,13 +386,7 @@ PLAYER DATA
 						
 	-->
 
-	<ShipClass UNID="&baCSCBase;"
-			class=				"(CSC base class)"
-			virtual=			"true"
-			
-			attributes=			"baseClass"
-			>
-
+	<Type UNID="&baCSCBase;">
 		<Events>
 			<OnAttackedByPlayer>
 				(block Nil
@@ -580,7 +574,7 @@ PLAYER DATA
 					)
 			</OnOrdersCompleted>
 		</Events>
-	</ShipClass>
+	</Type>
 
 	<!-- CSC Task Force
 	

@@ -509,13 +509,7 @@
 
 	-->
 
-	<ShipClass UNID="&baCharonBuster;"
-			class=				"(charon buster base class)"
-			virtual=			"true" 
-			
-			attributes=			"baseClass"
-			>
-
+	<Type UNID="&baCharonBuster;">
 		<Events>
 			<OrderDestroyStation>
 				; aTargetObj = station to destroy
@@ -676,6 +670,6 @@
 			</OnObjDestroyed>
 		</Events>
 
-	</ShipClass>
+	</Type>
 
 </TranscendenceModule>

@@ -1154,10 +1154,7 @@ PLAYER DATA
     
 <!-- BASE CLASSES -->
 
-	<StationType unid="&baBlackMarketStation;"
-			name=			"(Black Market base class)"
-			virtual=		"true"
-			>
+	<Type unid="&baBlackMarketStation;">
 		<Events>
 			<OnCreate>
 				(if (objGetStaticData gSource 'blackMarket.deployBountyHunters)
@@ -1227,7 +1224,7 @@ PLAYER DATA
 						)	
 			</OnBountyHunterCheck>
 		</Events>
-    </StationType>
+    </Type>
 
 <!-- TABLES -->
 

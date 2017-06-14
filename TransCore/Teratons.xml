@@ -172,11 +172,7 @@
 	
 	-->
 	
-	<StationType UNID="&baTeratonNestBase;"
-			name=				"(teraton nest base)"
-			virtual=			"true"
-			>
-
+	<Type UNID="&baTeratonNestBase;">
 		<Language>
 			<Text id="descAbandonedStation">
 				You are docked at the remains of a Teraton nest.
@@ -240,7 +236,7 @@
 					)
 			</OnDestroy>
 		</Events>
-	</StationType>
+	</Type>
 	
 	<!-- Teraton Chrysalis
 	
