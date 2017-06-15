@@ -793,12 +793,12 @@
 	<!ENTITY stStKatsArcology345		"0x0010201E">
 	<!ENTITY stStKatsArcology			"0x0010201F">
 	<!ENTITY stIocrymMonument			"0x00102020">
-	<!ENTITY baStKatsArcologyBase		"0x00102021">
+	<!ENTITY baStKatsArcologyBaseObsolete	"0x00102021">
 	<!ENTITY stDallMissionWreck			"0x00102022">
 	<!ENTITY stDallSphere				"0x00102023">
 	<!ENTITY stCommonwealthNavSign		"0x00102024">
 	<!ENTITY ovNavSignText				"0x00102025">
-	<!ENTITY baCommonwealthStation		"0x00102026">
+	<!ENTITY baCommonwealthStationObsolete	"0x00102026">
 
 	<!ENTITY scCenturion				"0x00103001">
 	<!ENTITY scScarabFreighter			"0x00103002">
@@ -927,7 +927,7 @@
 	<!ENTITY stManufacturingPlant		"0x00152012">
 	<!ENTITY stHelenaVolkov				"0x00152013">
 	<!ENTITY stMakayevFactory			"0x00152014">
-	<!ENTITY baCorporateStation			"0x00152015">
+	<!ENTITY baCorporateStationObsolete		"0x00152015">
 
 	<!ENTITY scCorporateCruiser			"0x00153001">
 	<!ENTITY scAntaresI					"0x00153002">
@@ -940,7 +940,7 @@
 	<!ENTITY scWolfenVolkov				"0x00153009">
 	<!ENTITY scRoninCharonBuster		"0x0015300A">
 	<!ENTITY scKateMorgentalCruiserArena	"0x0015300B">
-	<!ENTITY baCharonBuster				"0x0015300C">
+	<!ENTITY baCharonBusterObsolete		"0x0015300C">
 	<!ENTITY scEI200CharonBuster		"0x0015300D">
 
 	<!ENTITY itDvalinIon9Cannon			"0x00154001">
@@ -1108,7 +1108,7 @@
 	<!ENTITY scCSCAntarctica			"0x001A3005">
 	<!ENTITY scEI500JuanCarlos			"0x001A3006">
 	<!ENTITY scBritannia				"0x001A3007">
-	<!ENTITY baCSCBase					"0x001A3008">
+	<!ENTITY baCSCBaseObsolete			"0x001A3008">
 
 	<!ENTITY itAresCampaignRibbon		"0x001A4001">
 	<!ENTITY itLamplighterPrototype		"0x001A4002">
@@ -1237,7 +1237,7 @@
 
 	<!-- RINGERS 001D -->
 
-	<!ENTITY baRingersStation			"0x001D0001">
+	<!ENTITY baRingersStationObsolete	"0x001D0001">
 	
 	<!ENTITY stRingersCollective		"0x001D2001">
 	<!ENTITY stRingerShipyard			"0x001D2002">
@@ -1268,7 +1268,7 @@
 	<!ENTITY stTeratonResearch			"0x001F2003">
 	<!ENTITY stTeratonFactory			"0x001F2004">
 	<!ENTITY stTeratonChrysalis			"0x001F2005">
-	<!ENTITY baTeratonNestBase			"0x001F2006">
+	<!ENTITY baTeratonNestBaseObsolete	"0x001F2006">
 	
 	<!ENTITY efTeratonChrysalisOpen		"0x001F9001">
 
@@ -1595,6 +1595,7 @@
 	<!ENTITY rsRasiermesserFactoryHero	"0x00100040">
 	<!ENTITY rsKorolovShipping			"0x00100041">
 	<!ENTITY rsKorolovShippingConstruction	"0x00100042">
+	<!ENTITY baCorporateStation			"0x00100043">
 	
 	<!-- 0060-007F COMMONWEALTH FLEET -->
 	
@@ -1622,6 +1623,7 @@
 	<!ENTITY msCSCDestroyAresConvoy		"0x00100075">
 	<!ENTITY msCSCDestroyAresTarget		"0x00100076">
 	<!ENTITY tbCSCDestroyAresTarget		"0x00100077">
+	<!ENTITY baCSCBase					"0x00100078">
 	
 	<!-- 0080-009F COMMONWEALTH -->
 	
@@ -1652,6 +1654,8 @@
 	<!ENTITY rsEI7000Hero				"0x00100098">
 	<!ENTITY rsManticore120				"0x00100099">
 	<!ENTITY rsManticoreHero			"0x0010009A">
+	<!ENTITY baCommonwealthStation		"0x0010009B">
+	<!ENTITY baStKatsArcologyBase		"0x0010009C">
 	
 	<!-- 00A0-00BF ARES ORTHODOXY -->
 	
@@ -1670,10 +1674,11 @@
 	<!-- 00E0-00EF BATTLE ARENA MAXIMUS -->
 	
 	<!ENTITY rsBattleArenaSegments		"0x001000E0">
-	<!ENTITY baBattleArenaSegment		"0x001000E1">
+	<!ENTITY baBattleArenaSegmentObsolete	"0x001000E1">
 	<!ENTITY stBattleArenaStatic		"0x001000E2">
 	<!ENTITY msBattleArenaMelee			"0x001000E3">
 	<!ENTITY msKatamiKidnapped			"0x001000E4">
+	<!ENTITY baBattleArenaSegment		"0x001000E5">
 
 	<!-- 00F0-00FF HELIOTROPES -->
 	
@@ -1723,7 +1728,7 @@
 	
 	<!-- 0180-018F OUTLAWS -->
 	
-	<!ENTITY baOutlawMine				"0x00100180">
+	<!ENTITY baOutlawMineObsolete		"0x00100180">
 	<!ENTITY tbOutlawMinerProspector	"0x00100181">
 	<!ENTITY rsOutlawMineIce			"0x00100182">
 	<!ENTITY rsOutlawMineMetallic		"0x00100183">
@@ -1732,6 +1737,7 @@
 	<!ENTITY rsOutlawMineVolcanic		"0x00100186">
 	<!ENTITY rsSotho120					"0x00100187">
 	<!ENTITY rsSothoHero				"0x00100188">
+	<!ENTITY baOutlawMine				"0x00100189">
 	
 	<!-- 0190-019F VENTARI SETTLERS -->
 	
@@ -1760,10 +1766,11 @@
     <!-- 0200-020F BLACK MARKET -->
     
 	<!ENTITY svBlackMarketBountyHunter	"0x00100200">
-    <!ENTITY baBlackMarketStation       "0x00100201">
+    <!ENTITY baBlackMarketStationObsolete       "0x00100201">
 	<!ENTITY msBlackMarketDelivery		"0x00100202">
 	<!ENTITY dsBlackMarketDelivery		"0x00100203">
 	<!ENTITY msBlackMarketHotelMeet		"0x00100204">
+    <!ENTITY baBlackMarketStation       "0x00100205">
 
 	<!-- 0210-022F PENITENTS -->
 	
@@ -1815,6 +1822,7 @@
 	<!ENTITY msKorolovAtCharon			"0x00100297">
 	<!ENTITY evKorolovAtCharon			"0x00100298">
 	<!ENTITY msKorolovAtCharonRevenge	"0x00100299">
+	<!ENTITY baCharonBuster				"0x0010029A">
 
 	<!-- 02B0-02CF COMMONWEALTH MILITIA -->
 
@@ -1827,7 +1835,16 @@
 
 	<!-- 02D0-02EF DWARG RAIDERS -->
 
-	<!ENTITY baZoanthropeBase			"0x001002D0">
+	<!ENTITY baZoanthropeBaseObsolete	"0x001002D0">
+	<!ENTITY baZoanthropeBase			"0x001002D1">
+
+	<!-- 02F0-030F RINGERS -->
+
+	<!ENTITY baRingersStation			"0x001002F0">
+
+	<!-- 0310-032F TERATONS -->
+
+	<!ENTITY baTeratonNestBase			"0x00100310">
 
 	<!-- 1000-FFFF RESERVED -->
 	]>

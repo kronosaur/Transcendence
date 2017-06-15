@@ -655,4 +655,18 @@
 		</Panes>
 	</DockScreen>
 
+	<ShipClass UNID="&baStdAutonBaseObsolete;"
+			obsolete="1"
+			>
+	</ShipClass>
+
+	<ItemType UNID="&baStdAuxMountDeviceBaseObsolete;"
+			obsolete="1">
+	</ItemType>
+
+	<ShipClass UNID="&baStdWingmanBaseObsolete;"
+			obsolete="1"
+			>
+	</ShipClass>
+
 </TranscendenceModule>

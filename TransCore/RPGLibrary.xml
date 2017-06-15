@@ -7,8 +7,8 @@
 	
 	<!ENTITY svFriendlyAuton			"0x0000100F">
 	
-	<!ENTITY baStdWingmanBase			"0x00003012">
-	<!ENTITY baStdAutonBase				"0x00003013">
+	<!ENTITY baStdWingmanBaseObsolete	"0x00003012">
+	<!ENTITY baStdAutonBaseObsolete		"0x00003013">
 	<!ENTITY evStdPatrolEncounterBehavior	"0x00003014">
 	<!ENTITY evStdConvoyEncounterBehavior	"0x00003015">
 	<!ENTITY evStdZoneEncounterBehavior	"0x00003016">
@@ -50,7 +50,7 @@
 	<!ENTITY dsRPGMessage				"0x0001001A">
 	<!ENTITY dsRPGCharacterDefault		"0x0001001B">
 	<!ENTITY dsRPGAnalyzeItem			"0x0001001C">
-	<!ENTITY baStdAuxMountDeviceBase	"0x0001001D">
+	<!ENTITY baStdAuxMountDeviceBaseObsolete	"0x0001001D">
 	<!ENTITY ovAuxForwardLeftMount		"0x0001001E">
 	<!ENTITY ovAuxForwardRightMount		"0x0001001F">
 	<!ENTITY rsAuxMountOverlay			"0x00010020">
@@ -89,8 +89,21 @@
 	
 	<!ENTITY evStdMiningBehavior		"0x00010050">
 	
+	<!-- 0070-008F DOCK SCREENS -->
+
 	<!ENTITY unidRPGPaneInitMission		"0x00010070">
 
+	<!-- 0090-00AF AUTONS -->
+
+	<!ENTITY baStdAutonBase				"0x00010090">
+
+	<!-- 00B0-00CF ITEMS -->
+
+	<!ENTITY baStdAuxMountDeviceBase	"0x000100B0">
+
+	<!-- 00D0-00EF WINGMEN -->
+
+	<!ENTITY baStdWingmanBase			"0x000100D0">
 	]>
 	
 <CoreLibrary

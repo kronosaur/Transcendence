@@ -1971,7 +1971,7 @@
 	<!-- Abandoned crate looting screen (DEPRECATED) -->
 	
 	<DockScreen UNID="&dsAbandonedCrateObsolete;"
-			obsolete=			"37"
+			obsolete=			"1"
 			inherit=			"&dsDockScreenBase;"
 			>
 		<Panes>
@@ -2053,7 +2053,7 @@
 	<!-- Abandoned station looting screen (DEPRECATED) -->
 
 	<DockScreen UNID="&dsAbandonedStationObsolete;"
-			obsolete=			"37"
+			obsolete=			"1"
 			>
 		<Panes>
 			<Default>
@@ -2099,6 +2099,58 @@
 		</Panes>
 	</DockScreen>
 
+	<StationType unid="&baBattleArenaSegmentObsolete;"
+			obsolete="1">
+	</StationType>
+	
+	<StationType unid="&baBlackMarketStationObsolete;"
+			obsolete="1">
+    </StationType>
+
+	<StationType unid="&baCommonwealthStationObsolete;"
+			obsolete="1"
+			>
+	</StationType>
+
+	<ShipClass UNID="&baCSCBaseObsolete;"
+			obsolete="1">
+	</ShipClass>
+
+	<StationType unid="&baCorporateStationObsolete;"
+			obsolete="1"
+			>
+	</StationType>
+
+	<ShipClass UNID="&baZoanthropeBaseObsolete;"
+			obsolete="1"
+			>
+	</ShipClass>
+	
+	<ShipClass UNID="&baCharonBusterObsolete;"
+			obsolete="1"
+			>
+	</ShipClass>
+
+	<StationType unid="&baOutlawMineObsolete;"
+			obsolete="1"
+			>
+	</StationType>
+	
+	<StationType unid="&baRingersStationObsolete;"
+			obsolete="1"
+			>
+	</StationType>
+
+	<StationType UNID="&baStKatsArcologyBaseObsolete;"
+			obsolete="1"
+			>
+	</StationType>
+	
+	<StationType UNID="&baTeratonNestBaseObsolete;"
+			obsolete="1"
+			>
+	</StationType>
+	
 	<Globals>
 		(block Nil
 			(setq intBuyItems (lambda (itemCount itemCost)
