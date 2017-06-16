@@ -787,9 +787,11 @@
 					</Events>
 				</Ray>
 			
-				<ParticleComet
+				<ParticlePattern
+						style=			"comet"
 						particleCount=	"200"
 						primaryColor=	"#00d5ff"
+						jitterLength=	"80-150"
 						>
 					<Events>
 						<GetParameters>
@@ -805,7 +807,7 @@
 								)
 						</GetParameters>
 					</Events>
-				</ParticleComet>
+				</ParticlePattern>
 			</Effect>
 		</Weapon>
 

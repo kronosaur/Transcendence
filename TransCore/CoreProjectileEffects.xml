@@ -140,9 +140,11 @@
 			instance=			"owner"
 			>
 		<Effect>
-			<ParticleComet
+			<ParticlePattern
+					style=			"comet"
 					particleCount=	"200"
 					primaryColor=	"#65ff2c"
+					jitterLength=	"80-150"
 					>
 				<Events>
 					<GetParameters>
@@ -158,7 +160,7 @@
 							)
 					</GetParameters>
 				</Events>
-			</ParticleComet>
+			</ParticlePattern>
 			
 			<Ray
 					style=			"grainy"
@@ -358,9 +360,11 @@
 				</Events>
 			</Ray>
 			
-			<ParticleComet
+			<ParticlePattern
+					style=			"comet"
 					particleCount=	"200"
 					primaryColor=	"#00d5ff"
+					jitterLength=	"80-150"
 					>
 				<Events>
 					<GetParameters>
@@ -376,7 +380,7 @@
 							)
 					</GetParameters>
 				</Events>
-			</ParticleComet>
+			</ParticlePattern>
 		</Effect>
 	</EffectType>
 
@@ -472,9 +476,11 @@
 			>
 		<Effect>
 			
-			<ParticleComet
+			<ParticlePattern
+					style=			"comet"
 					particleCount=	"200"
 					primaryColor=	"#f9ffb3"
+					jitterLength=	"80-150"
 					>
 				<Events>
 					<GetParameters>
@@ -490,7 +496,7 @@
 							)
 					</GetParameters>
 				</Events>
-			</ParticleComet>
+			</ParticlePattern>
 			<Ray
 					style=			"smooth"
 					shape=			"oval"
