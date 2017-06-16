@@ -463,8 +463,14 @@ CSpaceObject *CPlayerShipController::FindDockTarget (void)
 				//	Skip if this station does not have a dock screen that we
 				//	can use. It is OK to use the full (expensive) check because
 				//	we've already weeded out most objects.
+				//
+				//	If the station is an enemy, then let it through because we
+				//	want the player to get a "docking denied" message. This is safe
+				//	because (a) we only check stations with ports and (b) we 
+				//	later do a full check to make sure the station has docking
+				//	screens.
 
-				if (!pObj->SupportsDocking(true))
+				if (!pObj->IsAngryAt(m_pShip) && !pObj->SupportsDocking(true))
 					continue;
 
 				//	If the station is inside the dock distance, check
