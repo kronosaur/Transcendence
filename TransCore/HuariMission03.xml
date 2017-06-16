@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Destroy Station ==============================================
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	missionXP:		XP awarded for completing mission
+	targetID:		ID of transport to destroy
+
+	======================================================================== -->
+
+	<MissionType UNID="&msHuariDestroyStation;"
+			name=			"Destroy Sung Station"
+			attributes=		"huariEmpire, huariFortress"
+
+			level=			"4-8"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<Events>
+			<OnCreate>
+				(block (sungStations)
+					(switch
+						;	Must have befriended the Huari
+						(!= (typGetData &svHuariEmpire; 'status) 'friend)
+							(msnDestroy gSource)
+
+						;	Must have a Sung station in the region
+						(not (setq sungStations (sysFindObject Nil "AT +sungSlavers; +majorStation;")))
+							(msnDestroy gSource)
+
+						;	Create the mission
+						(block (
+							(targetObj (random sungStations))
+							)
+							(msnSetData gSource 'targetID (objGetID targetObj))
+							(msnRegisterForEvents gSource targetObj)
+
+							;	Set the reward
+							(msnSetData gSource 'missionXP 125)
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+			</OnAccepted>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)))
+			</OnSetPlayerTarget>
+			
+			<OnObjDestroyed>
+				(switch
+					;	Target destroyed
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(msnSuccess gSource)
+					)
+			</OnObjDestroyed>
+
+			<OnReward>
+				(typIncData &svHuariEmpire; 'xp (msnGetData gSource 'missionXP))
+			</OnReward>
+
+			<OnCompleted>
+				(switch
+					(and (= aReason 'failure)
+							(geq (count (msnFind "r +huariFortress; +property:isFailure;")) 2)
+							)
+						(typSetData &svHuariEmpire; 'status 'loser)
+					)
+			</OnCompleted>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary {
+						targetname: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x04)
+						})
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+			<Text id="Intro">
+				(hua_calcIntro gSource)
+			</Text>
+			<Text id="Briefing">
+				(msnTranslate gSource 'textBriefing {
+					targetname: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x05)
+					})
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">Destroy Sung Station</Text>
+			<Text id="textSummary">Your mission is to destroy %targetname%.</Text>
+			<Text id="textBriefing">
+				"The Sung drove us from our homes; they enslaved our best minds;
+				and they hunt us still in every system save one."
+
+				"%targetname% in this system has been attacking us lately and
+				we would like you to destroy it. Will you help us to reclaim
+				our homes?"
+			</Text>
+			<Text id="AcceptReply">
+				"We've programmed the station's coordinates into your ship's
+				computer. Go with the Light!"
+			</Text>
+			<Text id="DeclineReply">
+				"Let the will of the Light be done, though we cannot understand
+				His methods."
+			</Text>
+			<Text id="InProgress">
+				"By all the Light's mercy, what are you doing here?
+				Your task remains uncompleted."
+			</Text>
+			<Text id="FailureDebrief">
+				"Your failure is also our doom. Maybe we were never meant to bask in the
+				Light's blessings; maybe the darkness of space will consume us after all."
+			</Text>
+			<Text id="SuccessDebrief">
+				"Even though the Sung are our mortal enemies, I mourn their
+				deaths too. May they find a place in the Light."
+
+				"You have shown us the way. In time, if the revelations hold,
+				we will show you the way too."
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

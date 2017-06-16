@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Journey to Huaramarca =================================================
+
+	EXTRA DATA
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msHuaramarcaTuali;"
+			name=				"Journey to Huaramarca"
+			attributes=			"huariEmpire, huariFortress"
+
+			level=				"4-8"
+			maxAppearing=		"1"
+			noDebrief=			"true"
+
+			priority=			"100"
+			>
+
+		<Events>
+			<OnCreate>
+				(block (templeDesc)
+					(switch
+						;	Must have enough experience
+						(leq (typGetData &svHuariEmpire; 'xp) 325)
+							(msnDestroy gSource)
+
+						;	Make sure the Huari Temple exists somewhere
+						(not (setq templeDesc (@ (unvFindObj "t +huariTemple;") 0)))
+							(msnDestroy gSource)
+
+						;	Create mission
+						(block Nil
+							;	Remember the system and temple ID
+							(msnSetData gSource 'destNodeID (@ templeDesc 2))
+							(msnSetData gSource 'destID (@ templeDesc 0))
+
+							;	Remember the station governor
+							(msnSetData gSource 'governor (objGetData aOwnerObj 'governor))
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block Nil
+					(msnRegisterForEvents gSource gPlayerShip)
+					(objAddItem gPlayerShip (itmCreate &itTualiComaDrug; 1))
+					(objSetData gPlayerShip 'tualiSymbiote {
+						destNodeID: (msnGetData gSource 'destNodeID)
+						destID: (msnGetData gSource 'destID)
+						})
+					)
+			</OnAccepted>
+			
+			<OnObjDocked>
+				(switch
+					(and (= aObjDocked gPlayerShip)
+							(= (objGetID aDockTarget) (msnGetData gSource 'destID))
+							)
+						(msnSuccess gSource)
+					)
+			</OnObjDocked>
+
+			<GetGlobalAchievements>
+				(block (
+					(theMission (@ (msnFind "* +unid:&msHuaramarcaTuali;;") 0))
+					(achievementText (switch
+						(msnGetProperty theMission 'isSuccess)	'AchievementSuccess
+						(msnGetProperty theMission 'isFailure)	'AchievementFailure
+						(msnGetProperty theMission 'isActive)	'AchievementInvited
+						(msnGetProperty theMission 'isDeclined)	'AchievementDeclined
+						))
+					)
+					(if (and theMission achievementText)
+						(list
+							(list
+								(msnTranslate theMission achievementText)
+								Nil
+								"achievements &amp; regrets"
+								)
+							)
+						)
+					)
+			</GetGlobalAchievements>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary {
+						targetname: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x04)
+						})
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(msnTranslate gSource 'textAcceptReply {
+					governor: (msnGetData gSource 'governor)
+					})
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">Journey to Huaramarca</Text>
+			<Text id="textSummary">
+				Go to the hidden system of Huaramarca and speak to Apotamo in the Temple.
+			</Text>
+			<Text id="FirstIntro">
+				"After the Sung holocaust, our people fled these systems. We retreated
+				to our hidden refuge of Huaramarca. There, our people cling to survival
+				and wait for the return of the Solti."
+
+				"Now that you have proven yourself, it is time for you to make the
+				journey to Huaramarca. Go there and speak to Apotamo at the Temple."
+			</Text>
+			<Text id="Intro">
+				"The Light works in mysterious ways! I knew your destiny would bring you
+				here again. It is time for you to make the journey to the Huaramarca
+				system. Go there and speak with Apotamo at the Temple."
+			</Text>
+			<Text id="Briefing">
+				"There are no files and no records of Huaramarca's position.
+				Even our conscious minds do not know its location. Instead, we have
+				Tuali symbiotes implanted in our brains. The symbiotes will direct
+				you when needed. But there is a risk: If you are a Sung spy or if you
+				mean us harm, the symbiotes will kill you when they are implanted."
+				
+				"Are you ready to implant the Tuali symbiotes and travel to the
+				Huaramarca system?"
+			</Text>
+			<Text id="textAcceptReply">
+				The Huari inject a milky substance into your brain. You feel a
+				slight headache and dizziness, but otherwise you feel nothing.
+
+				"The symbiotes will stay dormant until you need them. To find your
+				way to Huaramarca, awaken the Tuali with this drug."
+
+				%governor% hands you a vial containing a colorless liquid.
+			</Text>
+			<Text id="DeclineReply">
+				"Let the will of the Light be done, though we cannot understand
+				His methods."
+			</Text>
+			<Text id="InProgress">
+				"You must awaken the symbiotes; they will reveal the location of
+				Huaramarca. Use the vial of thioseptal that we gave you."
+			</Text>
+
+			<Text id="AchievementSuccess">Visited the Huari temple in Huaramarca</Text>
+			<Text id="AchievementFailure">Failed to find the Huari temple</Text>
+			<Text id="AchievementInvited">Invited by the Huari to visit Huaramarca</Text>
+			<Text id="AchievementDeclined">Declined invitation to visit Huaramarca</Text>
+		</Language>
+	</MissionType>
+
+	<!-- Tuali coma drug -->
+
+	<ItemType UNID="&itTualiComaDrug;"
+			name=				"vial(s) of thioseptal"
+			level=				"5"
+			value=				"48"
+			mass=				"1"
+			frequency=			"notrandom"
+			attributes=			"consumable, meds, notForSale, questItem"
+
+			description=		"Sodium thioseptal is a drug used to induce a temporary coma."
+			sortName=			"thioseptal, vial of"
+
+			charges=			"12"
+			valueCharges=		"true"
+			useScreen=			"&dsUseTualiComaDrug;"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="480" imageWidth="96" imageHeight="96"/>
+
+	</ItemType>
+
+	<!-- Use Tuali Coma Drug -->
+
+	<DockScreen UNID="&dsUseTualiComaDrug;"
+			name=			"Ship's Interior"
+			inherit=		"&dsDockScreenBase;"
+			nestedScreen=	"true"
+			>
+
+		<OnInit>
+			(scrSetData gScreen 'tualiItem gItem)
+		</OnInit>
+
+		<InitialPane>
+			(if (gr (itmGetCharges (scrGetData gScreen 'tualiItem)) 0)
+				"Default"
+				"Empty"
+				)
+		</InitialPane>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descInject)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(block Nil
+							; Use up a charge
+							(objIncItemCharges gSource (scrGetData gScreen 'tualiItem) -1)
+							(scrShowPane gScreen "Recover")
+							)
+					</Action>
+				</Actions>
+			</Default>
+
+			<Recover>
+				<OnPaneInit>
+					(if (objGetData gSource 'tualiSymbiote)
+						(scrSetDescTranslate gScreen 'descTuali)
+						(scrSetDescTranslate gScreen 'descNothing)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(block (
+							(tualiData (objGetData gSource 'tualiSymbiote))
+							)
+							(if tualiData
+								(block (destObj)
+									(if (= (sysGetNode) (@ tualiData 'destNodeID))
+										;	If we're in the right system, navigate to destination
+										(setq destObj (objGetObjByID (@ tualiData 'destID)))
+										;	Otherwise, figure out which gate leads to Huaramarca
+										(setq destObj (sysGetStargateLeadingToNode (@ tualiData 'destNodeID)))
+										)
+
+									;	Set the coordinates
+									(if destObj
+										(block Nil
+											(objSetKnown destObj)
+											(objSetShowAsDestination destObj 'autoClear)
+											)
+										)
+									)
+								)
+							(scrExitScreen gScreen)
+							)
+					</Action>
+				</Actions>
+			</Recover>
+
+			<Empty>
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descEmpty)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Empty>
+		</Panes>
+
+		<Language>
+			<Text id="descEmpty">The vial is empty.</Text>
+			<Text id="descInject">
+				You inject the drug into your neck.
+				The cabin spins around and you hear the distant thud of your head hitting the deck.
+			</Text>
+			<Text id="descTuali">
+				You wake up at the ship's cockpit. You feel refreshed, though a little confused.
+				Someone has programmed a set of coordinates into the ship's computers.
+			</Text>
+			<Text id="descNothing">You wake up with a headache.</Text>
+		</Language>
+	</DockScreen>
+
+</TranscendenceModule>

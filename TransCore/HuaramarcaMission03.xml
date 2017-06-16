@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Huaramarca Defend Temple ==============================================
+
+	EXTRA DATA
+
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msHuaramarcaDefendTemple;"
+			name=				"Huaramarca Defend Huari Temple"
+			attributes=			"huariEmpire, huariTemple, huariDreamChoice, deliveryMission"
+
+			level=				"6"
+			maxAppearing=		"1"
+			priority=			"90"
+			
+			noDecline=			"True"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	Only one dream choice mission allowed
+					(msnFind "* +huariDreamChoice;")
+						(msnDestroy gSource)
+
+					;	Player must have completed the dream test
+					(not (msnFind "r +unid:&msHuaramarcaDreamTest;"))
+						(msnDestroy gSource)
+
+					;	Set up the mission
+					(block Nil
+
+						;	No intro for this mission
+						(msnSetProperty gSource 'isIntroShown True)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					(baseObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(gateObj (sysFindObject baseObj "GN -uncharted;"))
+
+					;	Get list of all Huari fortresses
+					(huariTargets (sysFindObject baseObj "AT N:350; +huari; +populated; -huariTemple;"))
+
+					;	Find a point between here and the stargate
+					(startPos (sysVectorPolarOffset baseObj 
+						(sysVectorAngle (sysVectorSubtract (objGetPos gateObj) (objGetPos baseObj)))
+						1000
+						))
+					enemyObj
+					)
+					;	One to two ships attack each habitat
+					(enum huariTargets theTarget
+						(for i 1 (random 1 2)
+							(block Nil
+								(setq enemyObj (sysCreateShip &scCarrierEarthSlaver; startPos &svSung;))
+								;	Reduce the number of wind slavers
+								(objSetData enemyObj 'totalCount (random 5 8))
+								;	Point the player at this ship
+								(objSetShowAsDestination enemyObj)
+								;	Attack the bases
+								(setq aTargetObj theTarget)
+								(objFireEvent enemyObj 'OrderBombardTarget)
+								
+								;	Register for events
+								(msnRegisterForEvents gSource enemyObj)
+								(msnIncData gSource 'enemyTargets)
+								(objSetData enemyObj 'huariDefend (objGetID gSource))
+								)
+							)
+						)
+
+					;	Send more ships to attack temple
+					(for i 1 4
+						(block Nil
+							(setq enemyObj (sysCreateShip &scCarrierEarthSlaver; startPos &svSung;))
+							(objSetShowAsDestination enemyObj)
+							(setq aTargetObj baseObj)
+							(objFireEvent enemyObj 'OrderBombardTarget)
+
+							;	Register for events
+							(msnRegisterForEvents gSource enemyObj)
+							(msnIncData gSource 'enemyTargets)
+							(objSetData enemyObj 'huariDefend (objGetID gSource))
+							)
+						)
+
+					;	Send Dragon Slaver after the player
+					(setq enemyObj (sysCreateShip &scDragonSlaver; gateObj &svSung;))
+					(shpOrder enemyObj 'waitForThreat Nil 10)
+					(shpOrder enemyObj 'attack gPlayerShip)
+					(shpOrder enemyObj 'attack baseObj)
+
+					;	Register for events
+					(msnRegisterForEvents gSource enemyObj)
+					(msnIncData gSource 'enemyTargets)
+					(objSetData enemyObj 'huariDefend (objGetID gSource))
+
+					; Create a flock of Wind slavers to fight the Hurins at the gate
+					(for i 1 30
+						(block Nil
+							(setq enemyObj (sysCreateShip &scWindSlaver; gateObj &svSung;))
+							(shpOrder enemyObj 'attackNearestEnemy)
+							)
+						)
+					(msnSetData gSource 'destID (msnGetProperty gSource 'ownerID))
+					)
+			</OnAccepted>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'attack)
+			</OnSetPlayerTarget>
+
+			<OnObjDestroyed>
+				(switch
+					;	Enemy destroyed
+					(= (objGetData aObjDestroyed 'huariDefend) (objGetID gSource))
+						(block Nil
+							(if (= (msnIncData gSource 'enemyTargets -1) 0)
+								(msnSuccess gSource)
+								)
+							)
+					)
+			</OnObjDestroyed>
+
+			<OnDeliveryMissionCompleted>
+				(switch
+					(gr (msnGetData gSource 'enemyTargets) 8)
+						{desc: (msnTranslate gSource 'InProgress1) forceUndock:True}
+
+					(gr (msnGetData gSource 'enemyTargets) 4)
+						{desc: (msnTranslate gSource 'InProgress2) forceUndock:True}
+
+					{desc: (msnTranslate gSource 'InProgress3) forceUndock:True}
+					)
+			</OnDeliveryMissionCompleted>
+
+			<OnCompleted>
+				(enum (msnGetData gSource 'escorts) theShip
+					(block Nil
+						(shpCancelOrders theShip)
+						(shpOrder theShip 'attackNearestEnemy)
+						(shpOrder theShip 'patrol (objGetObjByID (msnGetProperty gSource 'ownerID)))
+						)
+					)
+			</OnCompleted>
+
+			<OnGetNextScreen>
+				(if (= aScreenType 'SuccessFollowUp)
+					(block (
+						(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+						missionObj
+						)
+						(if (setq missionObj (msnCreate &msHuaramarcaArchcannon; stationObj))
+							{
+								nextScreen: &dsRPGMission;
+								nextScreenData: { missionObj: missionObj }
+								}
+							)
+						)
+					)
+			</OnGetNextScreen>
+		</Events>
+		
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary {
+						targetname: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x04)
+						})
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">Defend Huari Temple</Text>
+			<Text id="textSummary">
+				The Sung are attacking the Huari Temple in Huaramarca.
+				Your mission is to defend it at all costs.
+			</Text>
+			<Text id="Briefing">
+				"As I said, the Sung have found us, and they have massed a fleet for an
+				assault on this system. You know that from your dream. Stay and help us!
+				I don't know what role the Light has planned for you, but I'm sure it
+				doesn't include letting us be exterminated!"
+			</Text>
+			<Text id="GoodLuck">
+				"Good luck to you and to us all. May the blessings of the
+				Light fill our worlds again."
+			</Text>
+			<Text id="InProgress1">
+				Apotamo is inside the temple. One of his assistants talks to you. There
+				is a hint of panic in his voice:
+
+				"Whether you are the Solti or not, please do what you can to help us!"
+			</Text>
+			<Text id="InProgress2">
+				Apotamo is inside the temple. One of his assistants talks to you:
+
+				"we're not safe yet! Whether you are the Solti or not, please do what
+				you can to help us!"
+			</Text>
+			<Text id="InProgress3">
+				Apotamo is inside the temple. One of his assistants talks to you:
+
+				"The Light has delivered us! But there are still a few enemies left.
+				Do what you can to end their suffering."
+			</Text>
+			<Text id="FailureDebrief">
+				You find Apotamo's broken body among the ruins of the temple. He struggles
+				to whisper in your ear:
+
+				"I was wrong. Only darkness awaits."
+			</Text>
+			<Text id="SuccessDebrief">
+				Apotamo greets you as you enter.
+
+				"Thank you! You have given us new hope! Despite their great technology,
+				the Sung are not invincible. I wish you could stay with us and help us
+				to defeat them, but I know your path lies among the stars."
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

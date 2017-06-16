@@ -1,0 +1,356 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Attack Sung transport and liberate slaves ====================
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	missionXP:		XP awarded for completing mission
+	targetID:		ID of transport to destroy
+	wreckID:		ID of wreck to dock with
+	gateID:			ID of the gate where transport will arrive
+
+	status:			Mission status:
+		Nil:		Mission not yet started
+		'intercept:	Player must intercept transport
+		'rescue:	Player must dock and rescue slaves
+		'returning:	Returning to station
+
+	======================================================================== -->
+
+	<MissionType UNID="&msHuariAttackConvoy;"
+			name=			"Intercept Sung transport"
+			attributes=		"huariEmpire, huariFortress"
+
+			level=			"4-8"
+
+			expireTime=			"5400"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<StaticData>
+			<Data id="convoy">
+				(
+					{
+						id: "windEscort"
+						minLevel: 4
+						maxLevel: 6
+						chance: 60
+
+						principalType: Nil
+						escortType: &scWindSlaver;
+						escortCount: (random 8 10)
+						}
+					{
+						id: "steelEscort"
+						minLevel: 5
+						maxLevel: 8
+						chance: 30
+
+						principalType: &scSteelSlaver;
+						escortType: &scWindSlaver;
+						escortCount: (random 3 6)
+						}
+					{
+						id: "earthEscort"
+						minLevel: 6
+						maxLevel: 8
+						chance: 10
+
+						principalType: &scEarthSlaver;
+						escortType: &scWindSlaver;
+						escortCount: (random 1 4)
+						}
+					)
+			</Data>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	Must have befriended the Huari
+					(!= (typGetData &svHuariEmpire; 'status) 'friend)
+						(msnDestroy gSource)
+
+					;	Create the mission
+					(block (
+						(stargates (sysFindObject Nil "G -uncharted;"))
+						(sungStations (sysFindObject Nil "AT +sungSlavers; +populated; -uncharted;"))
+						;	Get the list of valid mission variants
+						(convoyDesc
+							(filter (msnGetStaticData gSource 'convoy) theDesc
+								(and (geq (sysGetLevel) (@ theDesc 'minLevel))
+									(leq (sysGetLevel) (@ theDesc 'maxLevel))
+									)
+								)
+							)
+						(theRoll (random 1 (+ (map convoyDesc theDesc (@ theDesc 'chance)))))
+						theEntry startPos endGate
+						)
+						;	Filter out any stations that don't have valid gates
+						(setq sungStations (map sungStations 'excludeNil theObj
+								(block (
+									(gateList (filter stargates theGate 
+											(and
+												(geq (objGetDistance theObj theGate) 300)
+												(geq (objGetDistance theObj theGate) (objGetDistance aOwnerObj theGate))
+												)
+											))
+									)
+									(if gateList (list theObj gateList))
+									)
+								))
+
+						(if sungStations
+							(block Nil
+								(setq theEntry (random sungStations))
+								(setq startPos (@ theEntry 0))
+								(setq endGate (random (@ theEntry 1)))
+								)
+							(block Nil
+								(setq endGate (random stargates))
+								(setq startPos (sysVectorRandom 
+									endGate
+									(/ (* (random 110 150) (objGetDistance aOwnerObj endGate)) 100)
+									150
+									"AT -sungSlavers;"
+									))
+								)
+							)
+
+						(msnSetData gSource 'convoyDesc (match convoyDesc theDesc
+							(ls (setq theRoll (- theRoll (@ theDesc 'chance))) 1)
+							))
+						(msnSetData gSource 'startPos startPos)
+						(msnSetData gSource 'gateID (objGetID endGate))
+						(msnSetData gSource 'slaveCount 17)
+						(msnSetData gSource 'slaveCargo (itmSetData (itmCreate &itSlaveCoffin; 1) 'Huari True))
+
+						(msnSetData gSource 'missionXP 75)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(msnRegisterForEvents gSource gPlayerShip)
+			</OnAccepted>
+
+			<OnStarted>
+				(block (
+					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
+					(convoyDesc (msnGetData gSource 'convoyDesc))
+					(theRoll (random 1 100))
+					targetObj
+					)
+					;	Create the transport
+					(setq targetObj (sysCreateShip &scSungTransport; (msnGetData gSource 'startPos) &svSung;))
+					(objAddItem targetObj (msnGetData gSource 'slaveCargo) (msnGetData gSource 'slaveCount))
+					(objSetIdentified targetObj)
+					(objSetProperty targetObj 'alwaysLeaveWreck True)
+
+					(shpOrder targetObj 'wait Nil 5)
+					(shpOrder targetObj 'gate gateObj)
+					
+					(msnSetData gSource 'targetID (objGetID targetObj))
+					(msnRegisterForEvents gSource targetObj)
+
+					;	Create escorts
+					(if (@ convoyDesc 'principalType)
+						(block (escortObj)
+							(setq escortObj (sysCreateShip (@ convoyDesc 'principalType) targetObj &svSung;))
+							(shpOrder escortObj 'escort targetObj)
+							)
+						)
+
+					(for i 1 (eval (@ convoyDesc 'escortCount))
+						(block (escortObj)
+							(setq escortObj (sysCreateShip (@ convoyDesc 'escortType) targetObj &svSung;))
+							(shpOrder escortObj 'escort targetObj)
+							)
+						)
+
+					;	Intercept
+					(msnSetData gSource 'status 'intercept)
+					)
+			</OnStarted>
+
+			<OnObjDestroyed>
+				(switch
+					;	Transport destroyed
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(switch
+							;	If the target left no wreck, then we're done
+							(not aWreckObj)
+								(msnFailure gSource)
+
+							(block Nil
+								(msnSetData gSource 'wreckID (objGetID aWreckObj))
+								(msnRegisterForEvents gSource aWreckObj)
+								(msnSetData gSource 'status 'rescue)
+								(msnSetPlayerTarget gSource)
+								)
+							)
+
+					;	Wreck destroyed
+					(and
+						(= (objGetID aObjDestroyed) (msnGetData gSource 'wreckID))
+						(objHasItem aObjDestroyed (msnGetData gSource 'slaveCargo))
+						)
+						(msnFailure gSource)
+					)
+			</OnObjDestroyed>
+
+			<OnObjEnteredGate>
+				(switch
+					(= (objGetID aObj) (msnGetData gSource 'targetID))
+						(msnFailure gSource)
+					)
+			</OnObjEnteredGate>
+
+			<OnObjDocked>
+				(switch
+					;	Player docks with wreck
+					(and gPlayerShip (= aObjDocked gPlayerShip)
+						(= (objGetID aDockTarget) (msnGetData gSource 'wreckID))
+						)
+						(block Nil
+							(msnSetData gSource 'status 'returning)
+							(msnSetPlayerTarget gSource)
+							)
+
+					;	Player docks with station
+					(and gPlayerShip (= aObjDocked gPlayerShip)
+						(= (objGetID aDockTarget) (msnGetProperty gSource 'ownerID))
+						(= (msnGetData gSource 'status) 'returning)
+						)
+						(block (
+							(slaveCount (msnGetData gSource 'slaveCount))
+							(slaveCargo (msnGetData gSource 'slaveCargo))
+							(wreckObj (objGetObjByID (msnGetData gSource 'wreckID)))
+							)
+							(switch
+								;	Player returns with all slaves
+								(objHasItem gPlayerShip slaveCargo slaveCount)
+									(block Nil
+										(objRemoveItem gPlayerShip slaveCargo slaveCount)
+										(msnSuccess gSource)
+										)
+
+								;	Slaves are still on wreck
+								(and wreckObj (objHasItem wreckObj slaveCargo))
+									Nil	;	LATER: Remind the player to rescue the slaves
+
+								;	Otherwise failure
+								(msnFailure gSource)
+								)
+							)
+
+					;	If the transport docks then fail the mission
+					(= (objGetID aObjDocked) (msnGetData gSource 'targetID))
+						(msnFailure gSource)
+					)
+			</OnObjDocked>
+
+			<OnSetPlayerTarget>
+				(switch
+					(= (msnGetData gSource 'status) 'intercept)
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'attack)
+
+					(= (msnGetData gSource 'status) 'rescue)
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'wreckID)) 'dock)
+
+					(rpgSetTarget gSource aReason (objGetObjByID (msnGetProperty gSource 'ownerID)) 'dock)
+					)
+			</OnSetPlayerTarget>
+
+			<OnReward>
+				(typIncData &svHuariEmpire; 'xp (msnGetData gSource 'missionXP))
+			</OnReward>
+
+			<OnCompleted>
+				(switch
+					(and (= aReason 'failure)
+							(geq (count (msnFind "r +huariFortress; +property:isFailure;")) 2)
+							)
+						(typSetData &svHuariEmpire; 'status 'loser)
+					)
+			</OnCompleted>
+
+			<OnGetNextScreen>
+				(if (and (= aScreenType 'FailureFollowUp)
+						(= (typGetData &svHuariEmpire; 'status) 'loser)
+						)
+					{
+						nextScreen: &dsRPGMessage;
+						nextScreenData: {
+							desc: (typTranslate &stHuariFortress; 'huari.Blacklisted)
+							}
+						}
+					)
+			</OnGetNextScreen>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+			<Text id="Intro">
+				(hua_calcIntro gSource)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">Intercept Sung transport</Text>
+			<Text id="textSummary">
+				Intercept a Sung transport and liberate the slaves held onboard.
+			</Text>
+			<Text id="Briefing">
+				"By the mercy of the Light we've learned the course and schedule of a slave
+				ship carrying our brethren. You can free our citizens by attacking the
+				transport and returning its living cargo to us."
+
+				"Will you help us, %brother%?"
+			</Text>
+			<Text id="AcceptReply">
+				"We've programmed the slave ship's coordinates into your ship's computer.
+				Go with the Light!"
+			</Text>
+			<Text id="DeclineReply">
+				"Let the will of the Light be done, though we cannot understand
+				His methods."
+			</Text>
+			<Text id="InProgress">
+				"By all the Light's mercy, what are you doing here?
+				Your task remains uncompleted."
+			</Text>
+			<Text id="FailureDebrief">
+				"Your failure is also our doom. Maybe we were never meant to bask in the
+				Light's blessings; maybe the darkness of space will consume us after all."
+			</Text>
+			<Text id="SuccessDebrief">
+				"By the blessed Light, you have succeeded where none dared hope!
+				We are all grateful for rescuing our poor brothers and sisters.
+				The Sung use slaves to develop their technologies. Thousands and
+				thousands of human minds number-crunching inside their steel coffins.
+				You have saved them from a horrific experience."
+			</Text>
+			<Text id="textLeftSlaves">
+				"By the enduring Light, where are our brethren? You didn't leave
+				them on that slave ship, did you? There were %slaveCount% coffins
+				on that ship and you need to account for all of them"
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>
