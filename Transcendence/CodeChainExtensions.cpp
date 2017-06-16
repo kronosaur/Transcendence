@@ -278,7 +278,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			NULL,	PPFLAG_SIDEEFFECTS, },
 
 		{	"scrSetActionDesc",				fnScrSet,		FN_SCR_ACTION_DESC,
-			"(scrSetActionDesc screen actionID descID) -> True/Nil",
+			"(scrSetActionDesc screen actionID text) -> True/Nil",
 			"ivv",		PPFLAG_SIDEEFFECTS, },
 
 		{	"scrSetActionLabel",			fnScrSet,		FN_SCR_ACTION_LABEL,
