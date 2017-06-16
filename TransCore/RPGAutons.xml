@@ -174,7 +174,7 @@
 			<Message name="Return to ship" key="R">
 				<OnShow>
 					(and
-						(objGetItems gSender "cIN +AutonBay;")
+						(objGetItems gSender "*IN +AutonBay;")
 						(objGetData gSource 'autonItemType)
 						(or
 							(not (objGetData gSource 'behavior))
@@ -185,23 +185,48 @@
 				</OnShow>
 				
 				<Invoke>
-					(switch
+					(block (spaceLeft mass)
+					
+						;	Make sure there will be enough space to return, accounting for
+						;	autons that are already returning. Search the system if we haven't
+						;	done so yet this tick.
 						
-						;	Make sure that there is enough cargo space in the ship to
-						;	hold the auton.
+						(if (eq (unvGetTick) (objGetData gSender 'returningAutonMassCheckTick))
+							(setq spaceLeft (objGetData gSender 'spaceLeftAfterAutonsReturn))
+							(block nil
+								(setq spaceLeft (objGetCargoSpaceLeft gSender))
+								(enum (sysFindObject nil 's) theShip
+									(if (and (objGetData theShip 'autonItemType)
+											(eq (objGetData theShip 'behavior) 'returning)
+											(eq (shpGetOrderTarget theShip) gSender)
+											)
+										(setq spaceLeft (- spaceLeft (objFireEvent theShip "CalcMass")))
+										)
+									)
+								(objSetData gSender 'returningAutonMassCheckTick (unvGetTick))
+								)
+							)
 						
-						(gr (objFireEvent gSource "CalcMass") (objGetCargoSpaceLeft gSender))
+						(setq mass (objFireEvent gSource "CalcMass"))
+						(if (gr mass spaceLeft)
+						
+							;	Not enough space
 							(objSendMessage gSender gSource (objTranslate gSource 'ErrNoSpaceToReturn "\"Not enough space in cargo hold to return to ship\""))
 								
-						;	Return
+							;	Return
+							(block Nil
+								(shpCancelOrders gSource)
+								(shpOrder gSource 'gate gSender)
 							
-						(block Nil
-							(shpCancelOrders gSource)
-							(shpOrder gSource 'gate gSender)
-						
-							(objSetData gSource 'behavior 'returning)
-							(objSendMessage gSender gSource (objTranslate gSource 'ReturnAck "\"Auton order acknowledged\""))
+								(objSetData gSource 'behavior 'returning)
+								(objSendMessage gSender gSource (objTranslate gSource 'ReturnAck "\"Auton order acknowledged\""))
+								
+								(setq spaceLeft (- spaceLeft mass))
+								)
 							)
+							
+						;	Remember remaining space
+						(objSetData gSender 'spaceLeftAfterAutonsReturn spaceLeft)
 						)
 				</Invoke>
 			</Message>
@@ -362,9 +387,12 @@
 					(objSetData auton 'autonItem sourceItem)
 					(objSetData auton 'autonItemType (itmGetType sourceItem))
 					
-					;	Welcome message
+					;	Welcome or error message
 					
-					(objSendMessage sourceObj auton (objTranslate auton 'DeployAck (cat "\"" (objGetName auton 0x01) " online\"")))
+					(if (@ gData 'notEnoughSpace)
+						(objSendMessage sourceObj auton (objTranslate gSource 'ErrNoSpaceToReturn "\"Not enough space in cargo hold to return to ship\""))
+						(objSendMessage sourceObj auton (objTranslate auton 'DeployAck (cat "\"" (objGetName auton 0x01) " online\"")))
+						)
 					
 					;	Return the auton created, in case subclasses want to
 					;	modify it.
@@ -388,13 +416,23 @@
 			</OnCreate>
 			
 			<OnEnteredGate>
-				(switch
-					;	If we returned to the player, convert back to an item
-						
-					(and aGateObj (eq aGateObj gPlayerShip))
-						(block Nil
-							(objAddItem gPlayerShip (objFireEvent gSource "ConvertToItem"))
+				;	If we returned to a ship or non-gate station, convert back to an item
+				
+				(if (objMatches aGateObj nil "st -stargate")
+					(block ((autonItem (objFireEvent gSource "ConvertToItem"))
+							(autonShipClass (itmGetStaticData autonItem 'autonShipClass))
 							)
+						(if (gr (itmGetMass autonItem) (objGetCargoSpaceLeft aGateObj))
+						
+							; If there's not enough space, redeploy with an error message
+							(typFireEvent autonShipClass 'CreateFromItem
+								{ sourceObj:aGateObj type:autonShipClass item:autonItem notEnoughSpace:true }
+								)
+							
+							; Otherwise, add to cargo
+							(objAddItem aGateObj autonItem)
+							)
+						)
 					)
 			</OnEnteredGate>
 			
