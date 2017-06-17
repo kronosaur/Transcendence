@@ -176,7 +176,7 @@
 			inherit=			"&dsDockScreenBase;"
 			>
 		<Language>
-			<Text id="actionTradingChamber">[T]rading Chamber</Text>
+			<Text id="actionCommoditiesExchange">[T]rading Chamber</Text>
 
 			<Text id="descWelcome">
 				You are in the peripheral tunnel of a Teraton nest. The hard
@@ -541,40 +541,19 @@
 								<Navigate screen="Factory"/>
 							</Action>
 
-							<Action id="actionTradingChamber">
-								(intTeratonMugging "Exchange")
+							<Action id="actionCommoditiesExchange">
+								(if (not (intTeratonMugging))
+									(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+										checkMilitaryID: Nil
+										})
+									)
 							</Action>
 
 							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
-
 					</Default>
-
-					<Exchange>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'commoditiesExchangeScreenDesc)
-						</OnPaneInit>
-
-						<Actions>
-							<Action id="actionBuyItems" default="1">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
-									checkMilitaryID: Nil
-									})
-							</Action>
-
-							<Action id="actionSellItems">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
-							</Action>
-
-							<Action id="actionDone" cancel="1">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</Exchange>
 				</Panes>
 			</Main>
 
@@ -977,9 +956,14 @@
 									)
 							</Action>
 
-							<Action id="actionTradingChamber">
-								(intTeratonMugging "Exchange")
+							<Action id="actionCommoditiesExchange">
+								(if (not (intTeratonMugging))
+									(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+										checkMilitaryID: Nil
+										})
+									)
 							</Action>
+
 							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
@@ -1297,29 +1281,6 @@
 							</Action>
 						</Actions>
 					</ResearchDecline>
-
-					<Exchange>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'commoditiesExchangeScreenDesc)
-						</OnPaneInit>
-
-						<Actions>
-							<Action id="actionBuyItems" default="1">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
-									checkMilitaryID: Nil
-									})
-							</Action>
-
-							<Action id="actionSellItems">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
-									})
-							</Action>
-
-							<Action id="actionDone" cancel="1">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</Exchange>
 				</Panes>
 			</Main>
 
@@ -1464,8 +1425,12 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action id="actionTradingChamber" default="1">
-								(intTeratonMugging "Exchange")
+							<Action id="actionCommoditiesExchange">
+								(if (not (intTeratonMugging))
+									(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+										checkMilitaryID: Nil
+										})
+									)
 							</Action>
 
 							<Action id="actionUndock" cancel="1">
@@ -1474,29 +1439,6 @@
 						</Actions>
 
 					</Default>
-
-					<Exchange>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'commoditiesExchangeScreenDesc)
-						</OnPaneInit>
-
-						<Actions>
-							<Action id="actionBuyItems" default="1">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
-									checkMilitaryID: Nil
-									})
-							</Action>
-
-							<Action id="actionSellItems">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
-									})
-							</Action>
-
-							<Action id="actionDone" cancel="1">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</Exchange>
 				</Panes>
 			</Main>
 
@@ -1636,11 +1578,11 @@
 									(setq gItem bestItem)
 									(scrShowScreen gScreen "&dsTeratonMugging;")
 									)
-								(scrShowPane gScreen destination)
+								(if destination (scrShowPane gScreen destination))
 								)
 							)
 
-					(scrShowPane gScreen destination)
+					(if destination (scrShowPane gScreen destination))
 					)
 				))
 			)
