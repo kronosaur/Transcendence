@@ -59,9 +59,11 @@ class CIntroSession : public IHISession
 			isWaitingForHighScores,
 			};
 
-		CIntroSession (CHumanInterface &HI, CTranscendenceModel &Model, EStates iInitialState) : IHISession(HI),
+		CIntroSession (CHumanInterface &HI, CTranscendenceModel &Model, CGameSettings &Settings, EStates iInitialState) : IHISession(HI),
 				m_Model(Model),
-				m_iInitialState(iInitialState)
+				m_Settings(Settings),
+				m_iInitialState(iInitialState),
+				m_bShowAllShips(false)
 			{ }
 
 		~CIntroSession (void);
@@ -104,6 +106,7 @@ class CIntroSession : public IHISession
 		void Update (void);
 
 		CTranscendenceModel &m_Model;
+		CGameSettings &m_Settings;
 		EStates m_iInitialState;
 		EStates m_iState;					//	Current state
 
@@ -121,6 +124,7 @@ class CIntroSession : public IHISession
 		CHighScoreDisplay m_HighScoreDisplay;
 
 		TSortMap<int, CShipClass *> m_ShipList;
+		bool m_bShowAllShips;				//	If FALSE, we only show the lower half (by score)
 	};
 
 class CIntroShipController : public IShipController

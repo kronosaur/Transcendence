@@ -683,9 +683,9 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			m_HI.AddBackgroundTask(new CLoadNewsTask(m_HI, m_Service, m_Multiverse, m_Model.GetProgramVersion(), sDownloadsFolder), 0, this, CMD_SERVICE_NEWS_LOADED);
 			}
 
-		//	Legacy CTranscendenceWnd takes over
+		//	Launch intro session
 
-		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, CIntroSession::isOpeningTitles));
+		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, m_Settings, CIntroSession::isOpeningTitles));
 
 		//	Start the intro
 
@@ -794,7 +794,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_UI_BACK_TO_INTRO))
 		{
-		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, CIntroSession::isBlank));
+		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, m_Settings, CIntroSession::isBlank));
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1038,7 +1038,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
         m_pGameSession = NULL;
         if (m_Model.GetPlayer())
             m_Model.GetPlayer()->SetGameSession(NULL);
-		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, CIntroSession::isShipStats));
+		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, m_Settings, CIntroSession::isShipStats));
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1192,7 +1192,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			}
 		else
 			{
-			m_HI.ShowSession(new CIntroSession(m_HI, m_Model, CIntroSession::isEndGame));
+			m_HI.ShowSession(new CIntroSession(m_HI, m_Model, m_Settings, CIntroSession::isEndGame));
 			m_iState = stateIntro;
 			DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 			m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1208,7 +1208,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (m_iState == stateEndGameStats)
 			{
-			m_HI.ShowSession(new CIntroSession(m_HI, m_Model, CIntroSession::isEndGame));
+			m_HI.ShowSession(new CIntroSession(m_HI, m_Model, m_Settings, CIntroSession::isEndGame));
 			m_iState = stateIntro;
 			DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 			m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);

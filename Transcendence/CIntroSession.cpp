@@ -431,7 +431,7 @@ ALERROR CIntroSession::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSover
 		//	We only pick from the bottom half of the list, on the assumption that
 		//	we want the higher level ships to be a surprise for the player.
 
-		int iMax = m_ShipList.GetCount() / 2;
+		int iMax = (m_bShowAllShips ? m_ShipList.GetCount() - 1 : m_ShipList.GetCount() / 2);
 		pShipClass = m_ShipList[mathRandom(0, iMax)];
 		}
 
@@ -1041,6 +1041,10 @@ ALERROR CIntroSession::OnInit (CString *retsError)
 	const CVisualPalette &VI = m_HI.GetVisuals();
 
 	SetNoCursor(true);
+
+	//	Options
+
+	m_bShowAllShips = m_Settings.GetBoolean(CGameSettings::introSpoilers);
 
 	//	Metrics
 

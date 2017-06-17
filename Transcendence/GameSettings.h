@@ -248,9 +248,10 @@ class CGameSettings
 			noCollectionDownload,			//	Do not automatically download collection
 			noCollectionLoad,			    //	Do not load the collection directory (debug only)
 			debugSoundtrack,				//	Soundtrack debugging UI
+			introSpoilers,					//	Show high-level ships in intro
 
 			//	Constants
-			OPTIONS_COUNT = 38,
+			OPTIONS_COUNT = 39,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }
