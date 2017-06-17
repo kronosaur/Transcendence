@@ -172,8 +172,23 @@
 	
 	-->
 	
-	<Type UNID="&baTeratonNestBase;">
+	<Type UNID="&baTeratonNestBase;"
+			inherit=			"&dsDockScreenBase;"
+			>
 		<Language>
+			<Text id="actionTradingChamber">[T]rading Chamber</Text>
+
+			<Text id="descWelcome">
+				You are in the peripheral tunnel of a Teraton nest. The hard
+				walls are covered by a sinewy membrane and odd growths hang from
+				the ceiling. There is a foul smell of rot and bile in the air.
+			</Text>
+			<Text id="commoditiesExchangeScreenDesc">
+				The Trading Chamber is a vast, dark cavern where Teratons
+				trade with various human and neo-humans. From a distance the
+				Teratons look like abnormally tall humans, but up close you
+				notice their deformities and mutations.
+			</Text>
 			<Text id="descAbandonedStation">
 				You are docked at the remains of a Teraton nest.
 				The sickly sweet smell of burnt flesh fills the air and 
@@ -273,6 +288,13 @@
 		<Image	imageID="&rsTeratonChrysalis;" imageWidth="100" imageHeight="100"/>
 		
 		<Language>
+			<Text id="actionUndock">[U]ndock</Text>
+
+			<Text id="descWelcome">
+				You are docked with a Teraton chrysalis&mdash;a pulsing mass
+				of biomechanical systems. You see a bony structure taking
+				shape inside the large spherical structure.
+			</Text>
 			<Text id="descAbandonedStation">
 				You are docked at the dead remains of a Teraton chrysalis.
 				The bony, motionless mass at its center bleeds an ochre fluid.
@@ -320,14 +342,11 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You are docked with a Teraton chrysalis\x97a pulsing mass of biomechanical systems. "
-								"You see a bony structure taking shape inside the large spherical structure."
-								)
+							(scrSetDescTranslate gScreen 'descWelcome)
 						</OnPaneInit>
 						
 						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
+							<Action id="actionUndock" default="1" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -512,45 +531,48 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewy membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Fabricator Chamber" default="1" key="F">
+							<Action id="actionFabricatorChamber" default="1">
 								<Navigate screen="Factory"/>
 							</Action>
 
-							<Action name="Trading Chamber" key="T">
+							<Action id="actionTradingChamber">
 								(intTeratonMugging "Exchange")
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
 
 					</Default>
 
-					<Exchange
-							desc=	"The Trading Chamber is a vast, dark cavern where Teratons trade with various human and neo-humans. From a distance the Teratons look like abnormally tall humans, but up close you notice their deformities and mutations.">
+					<Exchange>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'commoditiesExchangeScreenDesc)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy Items" default="1" key="B">
+							<Action id="actionBuyItems" default="1">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: Nil
 									})
 							</Action>
 
-							<Action name="Sell Items" key="S">
+							<Action id="actionSellItems">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
 							</Action>
 
-							<Action name="Done" cancel="1" key="D">
+							<Action id="actionDone" cancel="1">
 								<ShowPane pane="Default"/>
 							</Action>
-
 						</Actions>
 					</Exchange>
 				</Panes>
@@ -566,7 +588,8 @@
 								(setq energy (objGetData gSource "energy"))
 								(setq material (objGetData gSource "material"))
 								(scrSetDesc gScreen
-									(cat "You are in the vast central chamber of the Teraton nest. A large pit in the center of the cavern is inhabited by a mass of tentacles, cilia, and grotesque organs.\n\n"
+									(cat (scrTranslate gScreen 'descFactory)
+										"\n\n"
 										(switch
 											(geq disposition 7)
 												"The organic mass purrs with contentment."
@@ -608,11 +631,11 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Drop Item in Pit" default="1" key="D">
+							<Action id="actionDropItem" default="1">
 								<Navigate screen="DropItem"/>
 							</Action>
 
-							<Action name="Leave" cancel="1" key="L">
+							<Action id="actionLeave" cancel="1">
 								<Navigate screen="Main"/>
 							</Action>
 						</Actions>
@@ -624,7 +647,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(if (and (ls (objGetData gSource "disposition") -9) (leq (random 1 100) 25))
 									(scrShowPane gScreen "AngryTentacles")
 									(scrShowPane gScreen "Default")
@@ -635,11 +658,11 @@
 
 					<AngryTentacles>
 						<OnPaneInit>
-							(scrSetDesc gScreen "Angered by your offerings, the tentacles of the pit reach out to grab you. Before you can run, they slip around your neck and waist and pull you down into the pit.\n\nYou are dissolved by the various acids and enzymes of the grotesque organic mass.")
+							(scrSetDescTranslate gScreen 'descAngryTentacles)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
 									(plyDestroyed gPlayer "was eaten by an angry Teraton fabricator")
 									(scrExitScreen gScreen 'forceUndock)
@@ -677,7 +700,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Drop this Item" default="1" key="D">
+							<Action id="actionDropThis" default="1">
 								(block (table entry criteria material energy disposition)
 									(setq gItem (scrGetItem gScreen))
 
@@ -773,24 +796,28 @@
 											; Compute the result description string
 											(switch
 												newItem
-													(setq gResult (cat "Tentacles reach out to accept your offering and the organic mass swallows it with a hiss. Organs gurgle and glow for a while, and then tentacles pull a slimy mass out of some orifice and deposit it at your feet.\n\nYou see " (itmGetName newItem 8) "."))
+													(setq gResult (scrTranslate gScreen 'descResultNewItem {
+														itemName: (itmGetName newItem 8)
+														}))
 
 												(gr incDisposition 0)
-													(setq gResult "Tentacles eagerly reach out to accept your offering and the organic mass swallows it with a hiss.\n\nThe organic mass spews a sweet, pleasant mist.")
+													(setq gResult (scrTranslate gScreen 'descResultLike))
 
 												(ls incDisposition 0)
-													(setq gResult "Tentacles reach out to accept your offering and the organic mass tentatively swallows it.\n\nWith a roar of anger, the organic mass spews a thick mist of bile. You are covered in a slimy broth of chemicals.")
+													(setq gResult (scrTranslate gScreen 'descResultDislike))
 
 												(or (gr incMaterial 0) (gr incEnergy 0))
-													(setq gResult (cat "Tentacles reach out to accept your offering and the organic mass swallows it.\n\nOrgans and bladders gurgle as they process the " (if (gr incEnergy 0) "energy" "material") " you have fed them."))
+													(setq gResult (scrTranslate gScreen 'descResultFeed {
+														food: (if (gr incEnergy 0) "energy" "material")
+														}))
 
-												(setq gResult "Tentacles reach out to accept your offering, but after a tentative taste they discard it through one of the many tunnels along the wall of the pit.")
+												(setq gResult (scrTranslate gScreen 'descResultDiscard))
 												)
 
 											; DEBUG
 											; (setq gResult (cat gResult "\n\nM=" (objGetData gSource "material") " E=" (objGetData gSource "energy") " D=" (objGetData gSource "disposition")))
 											)
-										(setq gResult "Tentacles reach out to accept your offering, but after a tentative taste, they crush it and discard it through one of the many tunnels along the wall of the pit.")
+										(setq gResult (scrTranslate gScreen 'descResultUnknown))
 										)
 
 									; Next
@@ -798,7 +825,7 @@
 									)
 							</Action>
 
-							<Action name="Cancel" cancel="1" key="C">
+							<Action id="actionCancel" cancel="1">
 								<Navigate screen="Factory"/>
 							</Action>
 						</Actions>
@@ -821,6 +848,63 @@
 			<Port x="-72"	y="0" />
 		</DockingPorts>
 
+		<Language>
+			<Text id="actionFabricatorChamber">[F]abricator Chamber</Text>
+			<Text id="actionDropItem">[D]rop Item in Pit</Text>
+			<Text id="actionDropThis">[D]rop this Item</Text>
+
+			<Text id="descFactory">
+				You are in the vast central chamber of the Teraton nest. A
+				large pit in the center of the cavern is inhabited by a mass
+				of tentacles, cilia, and grotesque organs.
+			</Text>
+			<Text id="descResultNewItem">
+				Tentacles reach out to accept your offering and the organic mass
+				swallows it with a hiss. Organs gurgle and glow for a while, and
+				then tentacles pull a slimy mass out of some orifice and deposit
+				it at your feet.
+
+				You see %itemName%.
+			</Text>
+			<Text id="descResultLike">
+				Tentacles eagerly reach out to accept your offering and the
+				organic mass swallows it with a hiss.
+
+				The organic mass spews a sweet, pleasant mist.
+			</Text>
+			<Text id="descResultDislike">
+				Tentacles reach out to accept your offering and the organic
+				mass tentatively swallows it.
+
+				With a roar of anger, the organic mass spews a thick mist of
+				bile. You are covered in a slimy broth of chemicals.
+			</Text>
+			<Text id="descResultFeed">
+				Tentacles reach out to accept your offering and the organic
+				mass swallows it.
+
+				Organs and bladders gurgle as they process the %food% you have
+				fed them.
+			</Text>
+			<Text id="descResultDiscard">
+				Tentacles reach out to accept your offering, but after a
+				tentative taste they discard it through one of the many tunnels
+				along the wall of the pit.
+			</Text>
+			<Text id="descResultUnknown">
+				Tentacles reach out to accept your offering, but after a
+				tentative taste, they crush it and discard it through one of
+				the many tunnels along the wall of the pit.
+			</Text>
+			<Text id="descAngryTentacles">
+				Angered by your offerings, the tentacles of the pit reach out
+				to grab you. Before you can run, they slip around your neck
+				and waist and pull you down into the pit.
+
+				You are dissolved by the various acids and enzymes of the
+				grotesque organic mass.
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Teraton Research Center -->
@@ -879,11 +963,13 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewy membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Research Chamber" default="1" key="R">
+							<Action id="actionResearchChamber" default="1">
 								(if (or (not (objGetData gSource "LastExperiment"))
 										(gr (subtract (unvGetTick) (objGetData gSource "LastExperiment")) 3600))
 									(scrShowPane gScreen "Research")
@@ -891,11 +977,10 @@
 									)
 							</Action>
 
-							<Action name="Trading Chamber" key="T">
+							<Action id="actionTradingChamber">
 								(intTeratonMugging "Exchange")
 							</Action>
-
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -904,13 +989,11 @@
 
 					<Research>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You enter a dim cavern filled with arcane equipment. Dozens of human subjects, wired, tubed, and in various stages of health and wholeness, lie on articulated beds.\n\nA tall Teraton with supernumerary fingers approaches you. \"Human! You desire to join the research? You will be compensated with gifts from beyond.\""
-								)
+							(scrSetDescTranslate gScreen 'descResearch)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="&quot;Sure&#x97;anything for the advancement of science.&quot;" default="1" key="S">
+							<Action id="actionAccept" default="1">
 								(block (dieRoll)
 									(setq dieRoll (random 1 100))
 									(switch
@@ -996,25 +1079,29 @@
 									)
 							</Action>
 
-							<Action name="&quot;No thanks.&quot;" cancel="1" key="N">
+							<Action id="actionDecline" cancel="1">
 								<ShowPane pane="ResearchDecline"/>
 							</Action>
 						</Actions>
 					</Research>
 
-					<ResearchNone
-							desc=	"You enter a dim cavern filled with arcane equipment. Dozens of human subjects, wired, tubed, and in various stages of health and wholeness, lie on articulated beds. A tall Teraton with supernumerary fingers tends to the patients with a mixture of curiosity and concern.">
+					<ResearchNone>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descResearchNone)
+						</OnPaneInit>
 						<Actions>
-							<Action name="Leave" cancel="1" default="1" key="L">
+							<Action id="actionLeave" cancel="1" default="1">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
 					</ResearchNone>
 
-					<ResearchMutilation
-							desc=	"The Teraton takes you to an empty bed and straps you down so that you cannot move. It then takes a scalpel and slices open both your forearms from the elbow to the wrist. You bleed profusely and mercifully pass out after a few minutes of screaming.">
+					<ResearchMutilation>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descResearchMutilation)
+						</OnPaneInit>
 						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								<ShowPane pane="ResearchMutilation2"/>
 							</Action>
 						</Actions>
@@ -1037,7 +1124,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								(if (eq gResult "death")
 									(block Nil
 										(plyDestroyed gPlayer (cat "was killed in a Teraton medical experiment"))
@@ -1049,10 +1136,12 @@
 						</Actions>
 					</ResearchMutilation2>
 
-					<ResearchFilovirus
-							desc=	"The Teraton takes you to an empty bed and straps you down so that you cannot move. It then takes a syringe and injects you with something. At first you feel OK, but after a few hours you ache all over and begin to vomit. After a couple of days you begin to bleed from every orifice and you mercifully fall into a coma.">
+					<ResearchFilovirus>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descResearchFilovirus)
+						</OnPaneInit>
 						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								<ShowPane pane="ResearchFilovirus2"/>
 							</Action>
 						</Actions>
@@ -1075,7 +1164,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								(if (eq gResult "death")
 									(block Nil
 										(plyDestroyed gPlayer (cat "was killed in a Teraton medical experiment"))
@@ -1087,10 +1176,12 @@
 						</Actions>
 					</ResearchFilovirus2>
 
-					<ResearchMutagen
-							desc=	"The Teraton takes you to an empty bed and straps you down so that you cannot move. It then opens up a large jar and carefully removes what looks like a cancerous growth. Slicing your chest with quick strokes, the Teraton implants the growth into your body. You pass out from the pain before it finishes.">
+					<ResearchMutagen>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descResearchMutagen)
+						</OnPaneInit>
 						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								<ShowPane pane="ResearchMutagen2"/>
 							</Action>
 						</Actions>
@@ -1113,7 +1204,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								(if (eq gResult "death")
 									(block Nil
 										(plyDestroyed gPlayer (cat "was killed in a Teraton medical experiment"))
@@ -1125,10 +1216,12 @@
 						</Actions>
 					</ResearchMutagen2>
 
-					<ResearchParasite
-							desc=	"The Teraton takes you to an empty bed and straps you down so that you cannot move. It then opens up a small jar and carefully removes a translucent and gelatinous eel of some sort. Holding your head steady, it guides the eel into your nasal passage. The eel seems undisturbed by your piercing screams.">
+					<ResearchParasite>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descResearchParasite)
+						</OnPaneInit>
 						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								<ShowPane pane="ResearchParasite2"/>
 							</Action>
 						</Actions>
@@ -1148,7 +1241,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								(if (eq gResult "death")
 									(block Nil
 										(plyDestroyed gPlayer (cat "was killed in a Teraton medical experiment"))
@@ -1184,7 +1277,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Leave" cancel="1" default="1" key="L">
+							<Action id="actionLeave" cancel="1" default="1">
 								(block Nil
 									(objAddItem gPlayerShip gItem)
 									(objSetData gSource "LastExperiment" (unvGetTick))
@@ -1194,35 +1287,37 @@
 						</Actions>
 					</ResearchGift>
 
-					<ResearchDecline
-							desc=	"The Teraton growls in disappointment. He turns away and continues his work on the human subjects.">
-
+					<ResearchDecline>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descResearchDecline)
+						</OnPaneInit>
 						<Actions>
-							<Action name="Leave" cancel="1" default="1" key="L">
+							<Action id="actionLeave" cancel="1" default="1">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
 					</ResearchDecline>
 
-					<Exchange
-							desc=	"The Trading Chamber is a vast, dark cavern where Teratons trade with various human and neo-humans. From a distance the Teratons look like abnormally tall humans, but up close you notice their deformities and mutations.">
+					<Exchange>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'commoditiesExchangeScreenDesc)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy Items" default="1" key="B">
+							<Action id="actionBuyItems" default="1">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: Nil
 									})
 							</Action>
 
-							<Action name="Sell Items" key="S">
+							<Action id="actionSellItems">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
 									})
 							</Action>
 
-							<Action name="Leave" cancel="1" key="L">
+							<Action id="actionDone" cancel="1">
 								<ShowPane pane="Default"/>
 							</Action>
-
 						</Actions>
 					</Exchange>
 				</Panes>
@@ -1242,6 +1337,59 @@
 			<Port x="-72"	y="0" />
 		</DockingPorts>
 
+		<Language>
+			<Text id="actionResearchChamber">[R]esearch Chamber</Text>
+			<String id="actionAccept">"[S]ure&mdash;anything for the advancement of science."</String>
+			<String id="actionDecline">"[N]o thanks."</String>
+
+			<Text id="descResearch">
+				You enter a dim cavern filled with arcane equipment. Dozens of
+				human subjects, wired, tubed, and in various stages of health
+				and wholeness, lie on articulated beds.
+
+				A tall Teraton with supernumerary fingers approaches you.
+				"Human! You desire to join the research? You will be compensated
+				with gifts from beyond."
+			</Text>
+			<Text id="descResearchNone">
+				You enter a dim cavern filled with arcane equipment. Dozens of
+				human subjects, wired, tubed, and in various stages of health
+				and wholeness, lie on articulated beds. A tall Teraton with
+				supernumerary fingers tends to the patients with a mixture of
+				curiosity and concern.
+			</Text>
+			<Text id="descResearchMutilation">
+				The Teraton takes you to an empty bed and straps you down so that
+				you cannot move. It then takes a scalpel and slices open both
+				your forearms from the elbow to the wrist. You bleed profusely
+				and mercifully pass out after a few minutes of screaming.
+			</Text>
+			<Text id="descResearchFilovirus">
+				The Teraton takes you to an empty bed and straps you down so that
+				you cannot move. It then takes a syringe and injects you with
+				something. At first you feel OK, but after a few hours you ache
+				all over and begin to vomit. After a couple of days you begin to
+				bleed from every orifice and you mercifully fall into a coma.
+			</Text>
+			<Text id="descResearchMutagen">
+				The Teraton takes you to an empty bed and straps you down so that
+				you cannot move. It then opens up a large jar and carefully
+				removes what looks like a cancerous growth. Slicing your chest
+				with quick strokes, the Teraton implants the growth into your
+				body. You pass out from the pain before it finishes.
+			</Text>
+			<Text id="descResearchParasite">
+				The Teraton takes you to an empty bed and straps you down so that
+				you cannot move. It then opens up a small jar and carefully
+				removes a translucent and gelatinous eel of some sort. Holding
+				your head steady, it guides the eel into your nasal passage. The
+				eel seems undisturbed by your piercing screams.
+			</Text>
+			<Text id="descResearchDecline">
+				The Teraton growls in disappointment. He turns away and continues
+				his work on the human subjects.
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Teraton Trading Post -->
@@ -1310,40 +1458,43 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewy membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Trading Chamber" default="1" key="T">
+							<Action id="actionTradingChamber" default="1">
 								(intTeratonMugging "Exchange")
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
 
 					</Default>
 
-					<Exchange
-							desc=	"The Trading Chamber is a vast, dark cavern where Teratons trade with various human and neo-humans. From a distance the Teratons look like abnormally tall humans, but up close you notice their deformities and mutations.">
+					<Exchange>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'commoditiesExchangeScreenDesc)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy Items" default="1" key="B">
+							<Action id="actionBuyItems" default="1">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: Nil
 									})
 							</Action>
 
-							<Action name="Sell Items" key="S">
+							<Action id="actionSellItems">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
 									})
 							</Action>
 
-							<Action name="Done" cancel="1" key="D">
+							<Action id="actionDone" cancel="1">
 								<ShowPane pane="Default"/>
 							</Action>
-
 						</Actions>
 					</Exchange>
 				</Panes>
@@ -1497,28 +1648,36 @@
 
 	<!-- Teraton Mugging Screen -->
 
-	<DockScreen UNID="&dsTeratonMugging;">
+	<DockScreen UNID="&dsTeratonMugging;"
+			inherit=			"&dsDockScreenBase;"
+			>
 
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(scrSetDesc gScreen
-						(cat 
-							"You try to enter the Trading Chamber but a group of Teratons grab you and drag you back to your ship. Snorting with contempt for your weak ship, they rummage through your cargo hold looking for valuable items.\n\nThey take "
-							(itmGetName gItem 8)
-							" and leave you in pain on the deck of your ship."
-							)
-						)
+					(scrSetDescTranslate gScreen 'descMugging {
+						itemName: (itmGetName gItem 8)
+						})
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
+					<Action id="actionContinue" default="1" cancel="1">
 						<Exit/>
 					</Action>
 				</Actions>
 			</Default>
 		</Panes>
 
+		<Language>
+			<Text id="descMugging">
+				You try to enter the Trading Chamber but a group of Teratons grab
+				you and drag you back to your ship. Snorting with contempt for
+				your weak ship, they rummage through your cargo hold looking for
+				valuable items.
+
+				They take %itemName% and leave you in pain on the deck of your ship.
+			</Text>
+		</Language>
 	</DockScreen>
 
 <!-- RESOURCES -->
