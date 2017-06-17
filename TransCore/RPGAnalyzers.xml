@@ -22,21 +22,18 @@
 			inherit=			"&dsDockScreenBase;"
 			>
 
-		<OnInit>
+		<OnScreenInit>
 			(scrSetData gScreen 'analyzer gItem)
-		</OnInit>
+		</OnScreenInit>
 
-		<Display type="itemPicker"
-				dataFrom=	"player"
-				list=		"*"
-				>
+		<Display type="customItemPicker">
 			<OnDisplayInit>
-				(scrSetListFilter gScreen (lambda (theItem)
+				(filter (objGetItems gSource "*") theItem
 					(or
 						(not (itmIsKnown theItem))
 						(objFireItemEvent gSource theItem 'GetIsAnalysisRequired)
 						)
-					))
+					)
 			</OnDisplayInit>
 		</Display>
 
@@ -80,7 +77,7 @@
 							;	Nothing to analyze
 							
 							(not itemToAnalyze)
-								(scrSetDescTranslate gScreen 'descNoCharges)
+								(scrSetDescTranslate gScreen 'descNoItemsHere)
 								
 							;	Check to see if this analyzer can handle this item
 							
