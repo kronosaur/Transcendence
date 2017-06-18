@@ -497,7 +497,6 @@ ALERROR InitUniverse (CUniverse &Universe, CHost &Host, const CString &sFilespec
 
 	//	See if we need to load images
 
-	DWORD dwInitFlags = 0;
 	if (pCmdLine->GetAttributeBool(EFFECT_IMAGE_SWITCH)
 			|| pCmdLine->GetAttributeBool(IMAGES_SWITCH)
 			|| pCmdLine->GetAttributeBool(SHIP_IMAGE_SWITCH) 
@@ -509,15 +508,7 @@ ALERROR InitUniverse (CUniverse &Universe, CHost &Host, const CString &sFilespec
 			|| pCmdLine->GetAttributeBool(WORLD_IMAGES_SWITCH))
 		;
 	else
-		dwInitFlags |= flagNoResources;
-
-	//	We don't need a version check
-
-	dwInitFlags |= flagNoVersionCheck;
-
-	//	We're not loading the game
-
-	dwInitFlags |= flagNewGame;
+		Ctx.bNoResources = true;
 
 	//	Extension
 
@@ -543,7 +534,6 @@ ALERROR InitUniverse (CUniverse &Universe, CHost &Host, const CString &sFilespec
 
 	//	Open the universe
 
-	Ctx.bNoResources = ((dwInitFlags & flagNoResources) == flagNoResources);
 	Ctx.bNoCollectionCheck = true;
 
 #ifdef DEBUG_PERFORMANCE

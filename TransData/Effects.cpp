@@ -112,7 +112,6 @@ void GenerateEffectImage (CUniverse &Universe, CXMLElement *pCmdLine)
 	SDesignLoadCtx LoadCtx;
 	LoadCtx.sResDb = Resources.GetFilespec();
 	LoadCtx.pResDb = &Resources;
-	LoadCtx.bNoVersionCheck = true;
 
 	for (i = 0; i < pRenderFile->GetContentElementCount(); i++)
 		{

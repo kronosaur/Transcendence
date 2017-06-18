@@ -11,11 +11,7 @@
 	
 	-->
 	
-	<ItemType UNID="&baStdAuxMountDeviceBase;"
-			name=				"(side-mounted device base class)"
-			virtual=			"true"
-			>
-
+	<Type UNID="&baStdAuxMountDeviceBase;">
 		<Events>
 			<CanBeInstalled>
 				(block (
@@ -97,7 +93,7 @@
 					)
 			</OnUninstall>
 		</Events>
-	</ItemType>
+	</Type>
 
 	<!-- Auxiliary forward weapon mounts -->
 

@@ -21,7 +21,7 @@
 
 	<!-- Zoanthrope base class -->
 	
-	<ShipClass UNID="&baZoanthropeBase;">
+	<Type UNID="&baZoanthropeBase;">
 		<Events>
 			<OnObjDestroyed>
 				(intZoanthropeOnObjDestroyed)
@@ -36,7 +36,7 @@
 			<Text id="WatchYourTargets">"\"Grrr!\""</Text>
 			<Text id="NiceShooting">""</Text>
 		</Language>
-	</ShipClass>
+	</Type>
 	
 	<!-- Dwarg Raider -->
 

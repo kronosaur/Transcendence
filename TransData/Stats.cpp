@@ -221,24 +221,31 @@ void GenerateStats (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
 	int i;
 
+	CDesignCollection::SStats Stats;
+	Universe.GetDesignCollection().GetStats(Stats);
+
 	printf("STATS\n\n");
 
-	int iItemTypes = 0;
-	for (i = 0; i < Universe.GetItemTypeCount(); i++)
+	printf((LPSTR)strPatternSubst(CONSTLIT("Total types\t%,d\n"), Stats.iAllTypes));
+	printf((LPSTR)strPatternSubst(CONSTLIT("Dynamic types\t%,d\n"), Stats.iDynamicTypes));
+	printf((LPSTR)strPatternSubst(CONSTLIT("Item types\t%,d\n"), Stats.iItemTypes));
+	printf((LPSTR)strPatternSubst(CONSTLIT("Ship classes\t%,d\n"), Stats.iShipClasses));
+	printf((LPSTR)strPatternSubst(CONSTLIT("Station types\t%,d\n"), Stats.iStationTypes));
+
+	printf("\n");
+
+	printf((LPSTR)strPatternSubst(CONSTLIT("XML memory usage\t%,lld\n"), Stats.dwTotalXMLMemory));
+	printf((LPSTR)strPatternSubst(CONSTLIT("XML keyword count\t%,d\n"), CXMLElement::GetKeywordCount()));
+
+	printf("\n");
+
+	for (i = 0; i < Stats.Extensions.GetCount(); i++)
 		{
-		CItemType *pType = Universe.GetItemType(i);
-
-		//	Do not count virtual items
-
-		if (pType->IsVirtual())
+		if (Stats.Extensions[i]->GetUNID() == 0)
 			continue;
 
-		iItemTypes++;
+		printf("%08x\t%s\n", Stats.Extensions[i]->GetUNID(), (LPSTR)Stats.Extensions[i]->GetName());
 		}
-
-	printf("Item types:\t\t%d\n", iItemTypes);
-	printf("Ship classes:\t\t%d\n", Universe.GetShipClassCount());
-	printf("Station types:\t\t%d\n", Universe.GetStationTypeCount());
 	}
 
 CString GetTypeDesc (CDesignType *pType)

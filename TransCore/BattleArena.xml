@@ -2953,11 +2953,8 @@
 
 <!-- BASE CLASSES -->
 	
-	<StationType unid="&baBattleArenaSegment;"
-			name=			"(Battle Arena segment)"
-			virtual=		"true"
-			>
-	</StationType>
+	<Type unid="&baBattleArenaSegment;">
+	</Type>
 
 <!-- RESOURCES -->
 

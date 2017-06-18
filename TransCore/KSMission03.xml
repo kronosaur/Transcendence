@@ -367,6 +367,8 @@
 			thrustRatio=		"5.5"
 			maxSpeed=			"20"
 
+			attributes=			"commonwealth"
+
 			inherit=			"&baCharonBuster;"
 			>
 
@@ -471,7 +473,7 @@
 
 		<Names definiteArticle="true">
 			attack ship Avatar; attack ship Bestiarum; attack ship Cervantes;
-			attack ship Don Quixote; attack ship España; attack ship Francisco Pizarro;
+			attack ship Don Quixote; attack ship EspaÃ±a; attack ship Francisco Pizarro;
 			attack ship Guardian; attack ship Hunter; attack ship Indefatigable;
 			attack ship Jovana; attack ship Karter; attack ship Laurentian Abyss;
 			attack ship Montressor; attack ship Nocturn; attack ship Oviedo;
@@ -507,13 +509,7 @@
 
 	-->
 
-	<ShipClass UNID="&baCharonBuster;"
-			class=				"(charon buster base class)"
-			virtual=			"true" 
-			
-			attributes=			"baseClass"
-			>
-
+	<Type UNID="&baCharonBuster;">
 		<Events>
 			<OrderDestroyStation>
 				; aTargetObj = station to destroy
@@ -674,6 +670,6 @@
 			</OnObjDestroyed>
 		</Events>
 
-	</ShipClass>
+	</Type>
 
 </TranscendenceModule>

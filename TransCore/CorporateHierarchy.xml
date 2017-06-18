@@ -3114,11 +3114,7 @@
 	
 	-->
 	
-	<StationType unid="&baCorporateStation;"
-			name=			"(Corporate station base class)"
-			virtual=		"true"
-			>
-		
+	<Type unid="&baCorporateStation;">
 		<Events>
 			<OnDestroy>
 				(intCorporateOnDestroy)
@@ -3150,7 +3146,7 @@
 					)
 			</Text>
 		</Language>
-	</StationType>
+	</Type>
 
 <!-- TABLES -->
 

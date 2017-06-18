@@ -489,17 +489,13 @@
 	
 	-->
 	
-	<StationType unid="&baRingersStation;"
-			name=			"(Ringers station base class)"
-			virtual=		"true"
-			>
-		
+	<Type unid="&baRingersStation;">
 		<Events>
 			<OnDestroy>
 				(intRingerOnDestroy)
 			</OnDestroy>
 		</Events>
-	</StationType>
+	</Type>
 
 <!-- RINGERS
 

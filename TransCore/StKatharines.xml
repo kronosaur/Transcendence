@@ -401,11 +401,7 @@
 	
 	<!-- Arcology Segment Base -->
 	
-	<StationType UNID="&baStKatsArcologyBase;"
-			name=				"(arcology base)"
-			virtual=			"true"
-			>
-
+	<Type UNID="&baStKatsArcologyBase;">
 		<StaticData>
 			<NPCService>
 				(	;	service					level	margin
@@ -426,7 +422,7 @@
 					)
 			</OnDockObjAdj>
 		</Events>
-	</StationType>
+	</Type>
 	
 	<!-- Arcology 15 -->
 	
