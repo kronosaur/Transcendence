@@ -426,6 +426,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='SteamRelease|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="TLisp.cpp" />
     <ClCompile Include="Topology.cpp" />
     <ClCompile Include="TopologyMap.cpp" />
     <ClCompile Include="TradeSim.cpp" />
@@ -470,6 +471,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Game\TLisp\ListUnitTest.tlisp" />
     <None Include="..\Game\TransData.xml">
       <SubType>Designer</SubType>
     </None>

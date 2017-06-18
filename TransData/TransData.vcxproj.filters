@@ -150,6 +150,9 @@
     <ClCompile Include="EffectPerformanceTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TLisp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -179,5 +182,8 @@
     </None>
     <None Include="..\Game\TransData.xml" />
     <None Include="Readme.htm" />
+    <None Include="..\Game\TLisp\ListUnitTest.tlisp">
+      <Filter>TLisp Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

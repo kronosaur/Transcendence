@@ -4,6 +4,7 @@ Game/Cache/
 Game/Collection/
 Game/Games/
 Game/Extensions/
+Game/_Extensions/
 Game/TDBs/
 Game/TransData/
 Game/Debug.log

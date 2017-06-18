@@ -256,7 +256,7 @@
 			(switch
 				(eq result (@ theTest 'result))
 					(block ()
-						(print "[" testNum "] PASS")
+						; (print "[" testNum "] PASS")
 						(setq successTests (add successTests 1))
 						)
 

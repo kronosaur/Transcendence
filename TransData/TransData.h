@@ -114,6 +114,7 @@ void HexarcTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void PerformanceTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void Run (CUniverse &Universe, CXMLElement *pCmdLine);
 void RunEncounterSim (CUniverse &Universe, CXMLElement *pCmdLine);
+void RunFile (const CString &sFilespec, bool bNoLogo);
 void WordGenerator (CXMLElement *pCmdLine);
 
 //	Don't care about warning of depecrated functions (e.g., sprintf)
