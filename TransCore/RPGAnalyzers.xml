@@ -23,11 +23,15 @@
 			>
 
 		<OnScreenInit>
-			(scrSetData gScreen 'analyzer gItem)
+			(if (scrIsFirstOnInit gScreen)
+				(scrSetData gScreen 'analyzer gItem)
+				)
 		</OnScreenInit>
 
 		<Display type="customItemPicker">
 			<OnDisplayInit>
+				;	Cache the item list in a customPicker so we aren't affected
+				;	by external updates to the item list (e.g. nanofac etc.)
 				(filter (objGetItems gSource "*") theItem
 					(or
 						(not (itmIsKnown theItem))
@@ -48,6 +52,15 @@
 						canAnalyze result
 						)
 						
+						;	If we have previously displayed an analysis
+						;	result, then restore the old cursor position
+						(if (scrGetData gScreen 'result)
+							(block Nil
+								(scrSetData gScreen 'result Nil)
+								(scrSetListCursor gScreen (scrGetData gScreen 'cursor))
+								)
+							)
+
 						;	Init skill level
 						(if (not skillLevel)
 							(block Nil
@@ -65,10 +78,6 @@
 						
 						(setq canAnalyze Nil)
 						(switch
-							;	Have we already analyzed an item
-							(setq result (scrGetData gScreen 'result))
-								(scrSetDesc gScreen result)
-
 							;	If no more charges then we cannot analyze anything
 							
 							(eq chargesLeft 0)
@@ -107,23 +116,7 @@
 							)
 						
 						;	Initialize actions
-
-						(if (scrGetData gScreen 'result)
-							(block Nil
-								(scrShowAction gScreen 'actionAnalyze Nil)
-								(scrShowAction gScreen 'actionCancel Nil)
-								(scrShowAction gScreen 'actionContinue True)
-								(scrShowAction gScreen 'actionDone True)
-								(scrEnableAction gScreen 'actionContinue (gr chargesLeft 0))
-								)
-							(block Nil
-								(scrShowAction gScreen 'actionAnalyze True)
-								(scrShowAction gScreen 'actionCancel True)
-								(scrShowAction gScreen 'actionContinue Nil)
-								(scrShowAction gScreen 'actionDone Nil)
-								(scrEnableAction gScreen 'actionAnalyze canAnalyze)
-								)
-							)
+						(scrEnableAction gScreen 'actionAnalyze canAnalyze)
 						)
 				</OnPaneInit>
 
@@ -142,8 +135,8 @@
 							(setq analyzerItem (objSetItemProperty gSource analyzerItem 'incCharges -1))
 							(scrSetData gScreen 'analyzer analyzerItem)
 							
-							;	Save the result
-							(scrSetData gScreen 'result (@ result 'desc))
+							;	Save the cursor
+							(scrSetData gScreen 'cursor (scrGetListCursor gScreen))
 							
 							;	Set the filter so we only select the modified item
 							(scrSetListFilter gScreen (lambda (theItem)
@@ -153,7 +146,11 @@
 									(itmIsEqual theItem (@ result 'modifiedItem))
 									)
 								))
-							(scrShowPane gScreen 'Default)
+							
+							;	Done
+
+							(scrSetData gScreen 'result (@ result 'desc))
+							(scrShowPane gScreen "Done")
 							)
 					</Action>
 
@@ -161,28 +158,41 @@
 						(scrExitScreen gScreen)
 					</Action>
 
-					<Action id="actionContinue" default="1">
-						(block Nil
-							;	Clear last result
-							(scrSetData gScreen 'result Nil)
+				</Actions>
+			</Default>
 
-							;	Reset filter to show all items again
-							(scrSetListFilter gScreen (lambda (theItem)
-								(or
-									(not (itmIsKnown theItem))
-									(objFireItemEvent gSource theItem 'GetIsAnalysisRequired)
-									)
-								))
+			<Done noListNavigation="true">
+				<OnPaneInit>
+					(block (
+						(analyzerItem (scrGetData gScreen 'analyzer))
+						(chargesLeft (itmGetProperty analyzerItem 'charges))
+						)
 
-							(scrShowPane gScreen 'Default)
+						;	Report the number of charges remaining
+						(scrSetControlValue gScreen 'chargesLeft
+							(scrTranslate gScreen 'descChargesLeft { charges:chargesLeft })
 							)
+
+						(scrSetDesc gScreen (scrGetData gScreen 'result))
+						(scrEnableAction gScreen 'actionContinue (gr chargesLeft 0))
+						)
+				</OnPaneInit>
+
+				<Controls>
+					<Text id="chargesLeft"/>
+				</Controls>
+
+				<Actions>
+					<Action id="actionContinue" default="1">
+						(scrRefreshScreen gScreen)
 					</Action>
 
 					<Action id="actionDone" cancel="1">
 						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
-			</Default>
+			</Done>
+
 		</Panes>
 
 		<Language>
