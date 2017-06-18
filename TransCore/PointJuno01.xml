@@ -1,0 +1,424 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission:  ========================================
+
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	missionXP:		XP awarded for completing mission
+
+	======================================================================== -->
+
+	<MissionType UNID="&msPointJunoAresAttack;"
+			name=			"Point Juno Ares Attack"
+			attributes=		"commonwealthFleet, cscPointJuno, rank1"
+
+			level=			"8"
+
+			maxAppearing=	"1"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	Only valid for Point Juno
+					(!= (objGetType aOwnerObj) &stPointJuno;)
+						(msnDestroy gSource)
+
+					;	Create the mission
+					(block (pos alphaLeader betaLeader markerObj)
+						;	Create Ares Alpha fleet
+						(setq pos (sysVectorPolarOffset aOwnerObj (random 80 100) 600))
+						(setq alphaLeader (sysCreateShip &scTundra; pos &svAres; 'fleetcommand))
+						(shpOrder alphaLeader 'wait)
+						(msnSetData gSource 'alphaID (objGetID alphaLeader))
+						(msnRegisterForEvents gSource alphaLeader)
+
+						(for i 0 35 (shpOrder
+							(sysCreateShip &scSandstorm; pos &svAres; 'fleet)
+							'escort alphaLeader i
+							))
+
+						(for i 0 5 (shpOrder
+							(sysCreateShip &scAresCannon; (sysVectorPolarOffset pos (* i 60) 20) &svAres;)
+							'hold
+							))
+
+						;	Create Ares Beta fleet
+						(setq pos (sysVectorPolarOffset aOwnerObj (random 10 40) (random 400 500)))
+						(setq betaLeader (sysCreateShip &scChasm; pos &svAres; 'fleetcommand))
+						(shpOrder betaLeader 'wait)
+						(msnSetData gSource 'betaID (objGetID betaLeader))
+						(msnRegisterForEvents gSource betaLeader)
+
+						(for i 0 35 (shpOrder
+							(sysCreateShip &scSandstorm; pos &svAres; 'fleet)
+							'escort betaLeader i
+							))
+						(for i 0 11 (shpOrder
+							(sysCreateShip &scAresCannon; (sysVectorPolarOffset pos (* i 30) 20) &svAres;)
+							'hold
+							))
+
+						;	Create a marker for the fleet position
+						;	stagingBeta marks the Anti Trojan asteroids
+						(setq pos (objGetPos (sysGetObjectByName 'stagingBeta)))
+						(setq markerObj (sysCreateMarker "Ares Fleet" (sysGetObjectByName 'stagingBeta) &svAres;))
+						(msnSetData gSource 'markerID (objGetID markerObj))
+						
+						(msnAddTimerEvent gSource 1600 'OnTimerDefaultAttack)
+						
+						;	Skip intro screen
+						(msnSetProperty gSource 'isIntroShown True)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(alphaLeader (objGetObjByID (msnGetData gSource 'alphaID)))
+					)
+					;	Need notification if/when player is destroyed
+					(msnRegisterForEvents gSource gPlayerShip)
+
+					(if (not (msnGetData gSource 'status))
+						;	Normal start
+						(block Nil
+							;	Orders to alpha fleet
+							(if alphaLeader
+								(block Nil
+									(shpCancelOrders alphaLeader)
+									(shpOrder alphaLeader 'attack stationObj)
+									)
+								)
+							;	Create some ships off-screen a bring them in
+							(intFleetCreateWingmen gSource 8 &scCenturion;)
+
+							;	Set a timer in case we don't find the fleet quickly enough
+							(msnAddTimerEvent gSource 3600 'OnTimerZeroHour)
+
+							(msnSetData gSource 'status 'findBeta)
+							)
+
+						;	Attack is underway when player started
+						Nil
+						)
+					)
+			</OnAccepted>
+
+			<OnUpdate>
+				(block (
+					(status (msnGetData gSource 'status))
+					(betaLeader (objGetObjByID (msnGetData gSource 'betaID)))
+					)
+					(dbgOutput status)
+					(switch
+						(and (= status 'findBeta)
+							(ls (objGetDistance gPlayerShip betaLeader) 100)
+							)
+							(block Nil
+								(msnSetData gSource 'status 'destroyBeta)
+								(msnSetPlayerTarget  gSource)
+								)
+						)
+					)
+			</OnUpdate>
+			
+			<OnObjDestroyed>
+				(block (
+					(status (msnGetData gSource 'status))
+					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(alphaLeader (objGetObjByID (msnGetData gSource 'alphaID)))
+					(betaLeader (objGetObjByID (msnGetData gSource 'betaID)))
+					)
+					(switch
+						;	Alpha leader destroyed
+						(= (objGetID aObjDestroyed) (msnGetData gSource 'alphaID))
+							(switch
+								;	Done with alpha and beta
+								(not betaLeader)
+									(block Nil
+										(objSendMessage gPlayerShip stationObj (msnTranslate gSource 'SuccessMsg))
+										(msnSetData gSource 'status 'oneLastAttack)
+										(msnSetPlayerTarget gSource)
+										)
+
+								;	If we haven't started the mission yet, then send beta fleet
+								;	to attack Point Juno
+								(or (not status) (= status 'defaultAttack))
+									(block Nil
+										(shpCancelOrders betaLeader)
+										(shpOrder betaLeader 'attack stationObj)
+										(objSendMessage gPlayerShip stationObj (msnTranslate gSource 'msgUnderAttack))
+										;(msnSetData gSource 'status 'destroyBeta)
+										;(msnSetPlayerTarget gSource)
+										)
+
+								;	If we're looking for beta fleet, then we're OK
+								(= status 'findBeta)
+									(block Nil
+										;(msnSetData gSource 'status 'destroyBeta)
+										;(msnSetPlayerTarget gSource)
+										)
+
+								(objSendMessage gPlayerShip stationObj (cat "ERROR: Alpha destroyed; status = " status))
+								)
+
+						(= (objGetID aObjDestroyed) (msnGetData gSource 'betaID))
+							(switch
+								;	Done with alpha and beta
+								(not alphaLeader)
+									(block Nil
+										(objSendMessage gPlayerShip stationObj (msnTranslate gSource 'SuccessMsg))
+										(msnSetData gSource 'status 'oneLastAttack)
+										(msnSetPlayerTarget gSource)
+										)
+
+								;	If we haven't started the mission yet, then send alpha fleet
+								;	to attack Point Juno
+								(or (not status) (= status 'defaultAttack))
+									(block Nil
+										(shpCancelOrders alphaLeader)
+										(shpOrder alphaLeader 'attack stationObj)
+										(objSendMessage gPlayerShip stationObj (msnTranslate gSource 'msgUnderAttack))
+										;(msnSetData gSource 'status 'destroyAlpha)
+										;(msnSetPlayerTarget gSource)
+										)
+
+								;	If we're looking for beta fleet, then defend point juno
+								(or (= status 'findBeta) (= status 'destroyBeta))
+									(block Nil
+										(objSendMessage gPlayerShip stationObj (msnTranslate gSource 'msgUnderAttack))
+										(msnSetData gSource 'status 'destroyAlpha)
+										(msnSetPlayerTarget gSource)
+										)
+
+								(objSendMessage gPlayerShip stationObj (cat "ERROR: Beta destroyed; status = " status))
+								)
+
+
+						)
+					)
+			</OnObjDestroyed>
+
+			<OnSetPlayerTarget>
+				(switch
+					(= (msnGetData gSource 'status) 'findBeta)
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'markerID)) 'attack)
+
+					(= (msnGetData gSource 'status) 'destroyAlpha)
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'alphaID)) 'attack)
+
+					(= (msnGetData gSource 'status) 'destroyBeta)
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'betaID)) 'attack)
+
+					(= (msnGetData gSource 'status) 'oneLastAttack)
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetProperty gSource 'ownerID)) 'dock)
+					)
+			</OnSetPlayerTarget>
+
+			<OnTimerDefaultAttack>
+				;	If the player never accepts the mission, we nevertheless send out
+				;	Alpha fleet to attack
+				(if (not (msnGetData gSource 'status))
+					(block (
+						(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+						(alphaLeader (objGetObjByID (msnGetData gSource 'alphaID)))
+						)
+
+						;	Orders to alpha fleet
+						(shpCancelOrders alphaLeader)
+						(shpOrder alphaLeader 'attack stationObj)
+
+						;	Set a timer for beta fleet
+						(msnAddTimerEvent gSource 3600 'OnTimerZeroHour)
+
+						(msnSetData gSource 'status 'defaultAttack)
+						)
+					)
+			</OnTimerDefaultAttack>
+
+			<OnTimerZeroHour>
+				(block (
+					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(alphaLeader (objGetObjByID (msnGetData gSource 'alphaID)))
+					(betaLeader (objGetObjByID (msnGetData gSource 'betaID)))
+					)
+					(if betaLeader
+						(block Nil
+							;	Order alpha fleet to fall-back
+							(shpCancelOrders alphaLeader)
+							(shpOrder alphaLeader 'gate)
+
+							;	Order the beta fleet to attack
+							(shpCancelOrders betaLeader)
+							(shpOrder betaLeader 'attack stationObj)
+
+							;	Recall player
+							(if (msnGetProperty gSource 'isActive)
+								(objSendMessage gPlayerShip stationObj (msnTranslate gSource 'msgReturn))
+								)
+							)
+						)
+					)
+			</OnTimerZeroHour>
+
+			<OnCanBrief>
+				(switch
+					;	If the mission started without the player, then show
+					;	busy message until first two waves are completed
+					
+					; Should call msnAccept here and point player at alpha
+					(= (msnGetData gSource 'status) 'defaultAttack)
+						(msnTranslate gSource 'textBusy)
+					)
+			</OnCanBrief>
+
+			<OnReward>
+				(commFleet_GiveReward gSource)
+			</OnReward>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+			<Text id="Briefing">
+				(list
+					{
+						textID: (if (= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+							'textBriefing1aPilgrim
+							'textBriefing1aNormal
+							)
+						actions: (list
+							{	labelID: 'actionWantToHelp	}
+							{	labelID: 'actionSorry
+								nextPage: 'missionDecline
+								}
+							)
+						}
+					{	textID: 'textBriefing1b	}
+					{	textID: 'textBriefing1c	}
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(if (= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+					{	textID: 'textSuccessDebriefPilgrim	}
+					{	textID: 'textSuccessDebriefNormal	}
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">Point Juno</Text>
+			<Text id="textSummary">Point Juno summary</Text>
+			<Text id="textBriefing1aPilgrim">
+				Officers and assistants rush around the room under the glow of
+				massive display screens. In the center, standing over a tactical
+				holomap, an older woman with three general's stars consults with
+				her officers.
+
+				She looks up as you approach. "My men tell me that you're one
+				of those pilgrims, heading off to the Core on a personal
+				invitation from the gods or whatever."
+
+				"Well, on your way to heaven, how about helping us mortals who
+				are not so eager to meet our makers?"
+			</Text>
+			<Text id="textBriefing1aNormal">
+				Officers and assistants rush around the room under the glow of
+				massive display screens. In the center, standing over a tactical
+				holomap, an older woman with three general's stars consults with
+				her officers.
+
+				She looks up as you approach. "My men tell me you're a merc or
+				something. I don't like mercs, particularly; but that's neither
+				here nor there."
+				
+				"I need your help."
+			</Text>
+			<String id="actionWantToHelp">"I want to [h]elp."</String>
+			<String id="actionSorry">"[S]orry, I can't"</String>
+			<Text id="textBriefing1b">
+				The general looks at you for a while, an enigmatic smile on her
+				face. You notice that her left arm is prosthetic.
+
+				"Good," she says, "we can use all the help we can get. I'm General
+				Verner and Point Juno is my stronghold. The Ares have hit us hard
+				in the last few months. We lost the CSC Europa in the last battle
+				and now I'm left with no carrier and precious few gunships."
+			</Text>
+			<Text id="textBriefing1c">
+				General Verner continues, "We've tracked a large Ares battle fleet
+				on the other side of the system and we know that it's going to hit
+				us soon. But what worries me is that there is a second battle fleet
+				somewhere around the asteroid field nearest Point Juno."
+
+				"I want you to scour the system looking for that second fleet. And
+				if you find it, I want you to destroy it. I can give you eight
+				Centurions&mdash;no more. Got it?"
+			</Text>
+			<String id="AcceptLabel">"[Y]es, ma'am!"</String>
+			<Text id="AcceptReply">
+				General Verner shakes your hand, "Good hunting, then! And may the
+				Gods take us all when we're ready&mdash;but not before!"
+
+				And at that the general laughs and turns back to her tactical displays.
+			</Text>
+			<String id="DeclineLabel">"On [s]econd thought, count me out."</String>
+			<Text id="DeclineReply">
+				General Verner holds your gaze for a second.
+				"Perhaps I had the wrong impression about you..."
+			</Text>
+
+			<Text id="InProgress">
+				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+			</Text>
+			<Text id="FailureDebrief">
+				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
+			</Text>
+			<Text id="textSuccessDebriefNormal">
+				As you enter, everyone in the command center stops to applaud.
+
+				General Verner walks over to you and offers her hand. "Well done!
+				I knew I could count on you. With the damage that we've inflicted,
+				I doubt that the Ares will be back anytime soon!"
+
+				"May your journey be equally successful!"
+			</Text>
+			<Text id="textSuccessDebriefPilgrim">
+				As you enter, everyone in the command center stops to applaud.
+
+				General Verner walks over to you and offers her hand. "Well done!
+				I knew I could count on you. With the damage that we've inflicted,
+				I doubt that the Ares will be back anytime soon!"
+
+				"May the Gods give you peace when you reach the Core!"
+			</Text>
+
+			<Text id="textBusy">
+				The Command Center is abuzz with activity. General Verner looks up
+				as you enter. "If you've come to help, stop standing around and
+				staring. Make yourself useful!"
+			</Text>
+
+			<Text id="msgReturn">Return to base! Return to base!</Text>
+			<Text id="msgUnderAttack">Point Juno under attack!</Text>
+			<Text id="SuccessMsg">Mission Accomplished!</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

@@ -2,35 +2,7 @@
 
 <TranscendenceModule>
 
-	<!-- Point Juno 
-	
-	GLOBAL DATA
-	
-	status:			Status of Point Juno
-						Nil					Unknown
-						'defended			Player saved Point Juno
-						'destroyed			Point Juno destroyed by Ares
-						'destroyedByPlayer	Point Juno destroyed by player
-
-	EXTRA DATA
-
-	AlphaFleet:		Alpha fleet leader
-	MissionIntro:	If True, then we've told the player about the mission
-	MissionStatus:	Status of the mission:
-						Nil					Mission has not started yet
-						"defaultAttack"		Player did not dock before attack started
-						"findBeta"			Player must find the hidden beta fleet and destroy it
-						"destroyBeta"		Alpha destroyed; player must destroy beta fleet
-						"destroyAlpha"		Beta destroyed; player must destroy alpha (which is attacking)
-						"oneLastAttack"		Alpha and beta destroyed; player must dock to get gamma mission
-						"destroyGamma"		Alpha and beta destroyed; player must destroy gamma
-						"celebrate"			Alpha, beta, and gamma destroyed
-						"europa"			Tell the player about Project lamplighter
-						"europaAccepted"	Player has accepted mission
-						"europaDeclined"	Player has declined mission
-						"complete"			Mission done
-						"PointJunoLost"		Point Juno destroyed
-	-->
+	<!-- Point Juno -->
 
 	<StationType UNID="&stPointJuno;"
 			name=				": Point Juno"
@@ -114,860 +86,49 @@
 		</Satellites>
 		
 		<Events>
-			<GetGlobalAchievements>
-				(block (theList status)
-					(setq status (typGetGlobalData &stPointJuno; "status"))
-
-					(if status
-						(setq theList (list
-							(list
-								(switch
-									(eq status 'defended) "Defended Point Juno"
-									(eq status 'destroyed) "Failed to defend Point Juno"
-									(eq status 'destroyedByPlayer) "Destroyed Point Juno"
-									(cat "ERROR: Point Juno status: " status)
-									) 
-								Nil
-								"achievements &amp; regrets"
-								)
-							))
-						)
-						
-					theList
-					)
-			</GetGlobalAchievements>
-
-			<OnCreate>
-				(block (pos aresAlphaLeader aresBetaLeader aresGammaLeader)
-
-					; Create Ares Alpha fleet
-
-					(setq pos (sysVectorPolarOffset gSource (random 80 100) 600))
-
-					(setq aresAlphaLeader (sysCreateShip &scTundra; pos &svAres; "fleetcommand"))
-					(shpOrderWait aresAlphaLeader 0)
-					(objSetObjRefData gSource "AlphaFleet" aresAlphaLeader)
-					(objRegisterForEvents gSource aresAlphaLeader)
-
-					(for i 0 35
-						(block (ship)
-							(setq ship (sysCreateShip &scSandstorm; pos &svAres; "fleet"))
-							(shpOrderEscort ship aresAlphaLeader i)
-							)
-						)
-
-					(for i 0 5
-						(block (ship)
-							(setq ship (sysCreateShip &scAresCannon; (sysVectorPolarOffset pos (multiply i 60) 20) &svAres;))
-							(shpOrderHold ship)
-							)
-						)
-
-					; Create Ares Beta fleet
-
-					(setq pos (sysVectorPolarOffset gSource (random 10 40) (random 400 500)))
-
-					(setq aresBetaLeader (sysCreateShip &scChasm; pos &svAres; "fleetcommand"))
-					(shpOrderWait aresBetaLeader 0)
-					(objSetObjRefData gSource "BetaFleet" aresBetaLeader)
-					(objRegisterForEvents gSource aresBetaLeader)
-
-					(for i 0 35
-						(block (ship)
-							(setq ship (sysCreateShip &scSandstorm; pos &svAres; "fleet"))
-							(shpOrderEscort ship aresBetaLeader i)
-							)
-						)
-
-					; Create some defenders for Ares Beta fleet
-
-					(for i 0 11
-						(block (ship)
-							(setq ship (sysCreateShip &scAresCannon; (sysVectorPolarOffset pos (multiply i 30) 20) &svAres;))
-							(shpOrderHold ship)
-							)
-						)
-
-					; Create a marker for the fleet position
-
-					(setq marker (sysCreateMarker "Ares Fleet" pos &svAres;))
-					(objSetObjRefData gSource "BetaFleetMarker" marker)
-					)
-			</OnCreate>
-
 			<OnDestroy>
-				(block (aresAlphaLeader aresBetaLeader aresGammaLeader)
-					(if (objGetData gSource "MissionStatus")
-						(objSendMessage gPlayerShip gSource "Point Juno destroyed!")
-						)
-
-					(setq aresAlphaLeader (objGetObjRefData gSource "AlphaFleet"))
-					(if aresAlphaLeader
-						(block Nil
-							(shpCancelOrders aresAlphaLeader)
-							(shpOrderGate aresAlphaLeader)
-							)
-						)
-					(setq aresBetaLeader (objGetObjRefData gSource "BetaFleet"))
-					(if aresBetaLeader
-						(block Nil
-							(shpCancelOrders aresBetaLeader)
-							(shpOrderGate aresBetaLeader)
-							)
-						)
-					(setq aresGammaLeader (objGetObjRefData gSource "GammaFleet"))
-					(if aresGammaLeader
-						(block Nil
-							(shpCancelOrders aresGammaLeader)
-							(shpOrderGate aresGammaLeader)
-							)
-						)
-
-					(objSetData gSource "MissionStatus" "PointJunoLost")
-					(objSetGlobalData gSource "status"
-						(if (and gPlayerShip (eq aOrderGiver gPlayerShip)) 'destroyedByPlayer 'destroyed)
-						)
-
+				(block Nil
 					(intCommonwealthOnDestroy)
 
 					; Military will execute the player
-
 					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
 						(intFleetCrime 3 (cat "the destruction of " (objGetName gSource 4)))
 						)
 					)
 			</OnDestroy>
-
-			<OnObjDestroyed>
-				(block (status)
-					(setq status (objGetData gSource "MissionStatus"))
-
-					(switch
-						; If the player was destroyed, stop the mission
-						(eq aObjDestroyed gPlayerShip)
-							(block Nil
-								(shpCancelOrders gPlayerShip)
-
-								; Disperse wingmen
-								(intFleetDisperseWingmen gSource 8)
-								)
-
-						; If Point Juno is already destroyed, then we don't care anymore
-						(eq (objGetData gSource "MissionStatus") "PointJunoLost")
-							Nil
-
-						(eq aObjDestroyed (objGetObjRefData gSource "AlphaFleet"))
-							(switch
-								; If we haven't started the mission yet, then send beta fleet
-								; to attack Point Juno
-								(or (not status) (eq status "defaultAttack"))
-									(block (aresBetaLeader)
-										(setq aresBetaLeader (objGetObjRefData gSource "BetaFleet"))
-
-										(shpCancelOrders aresBetaLeader)
-										(shpOrderAttack aresBetaLeader gSource)
-
-										(objSendMessage gPlayerShip gSource "Point Juno under attack!")
-										(shpOrderDock gPlayerShip gSource)
-
-										(objSetData gSource "MissionStatus" "destroyBeta")
-										)
-
-								; If we're looking for beta fleet, then we're OK
-								(eq status "findBeta")
-									(objSetData gSource "MissionStatus" "destroyBeta")
-
-								; Done with alpha and beta
-								(eq status "destroyAlpha")
-									(block Nil
-										(objSendMessage gPlayerShip gSource "Mission Accomplished!")
-										(objSetData gSource "MissionStatus" "oneLastAttack")
-										)
-
-								(objSendMessage gPlayerShip gSource (cat "ERROR: Alpha destroyed; status = " status))
-								)
-
-						(eq aObjDestroyed (objGetObjRefData gSource "BetaFleet"))
-							(switch
-								; If we haven't started the mission yet, then send alpha fleet
-								; to attack Point Juno
-								(or (not status) (eq status "defaultAttack"))
-									(block (aresAlphaLeader)
-										(setq aresAlphaLeader (objGetObjRefData gSource "AlphaFleet"))
-										(shpCancelOrders aresAlphaLeader)
-										(shpOrderAttack aresAlphaLeader gSource)
-
-										(objSendMessage gPlayerShip gSource "Point Juno under attack!")
-										(shpOrderDock gPlayerShip gSource)
-
-										(objSetData gSource "MissionStatus" "destroyAlpha")
-										)
-
-								; If we're looking for beta fleet, then defend point juno
-								(eq status "findBeta")
-									(block Nil
-										(objSendMessage gPlayerShip gSource "Point Juno under attack!")
-										(shpOrderDock gPlayerShip gSource)
-
-										(objSetData gSource "MissionStatus" "destroyAlpha")
-										)
-
-								; Done with alpha and beta
-								(eq status "destroyBeta")
-									(block Nil
-										(objSendMessage gPlayerShip gSource "Mission Accomplished!")
-										(objSetData gSource "MissionStatus" "oneLastAttack")
-										)
-
-								(objSendMessage gPlayerShip gSource (cat "ERROR: Beta destroyed; status = " status))
-								)
-
-						(eq (objGetData gSource "MissionStatus") "destroyGamma")
-							(block (gammaShips)
-								(setq gammaShips 0)
-								(for i 1 5
-									(block (ship)
-										(setq ship (objGetObjRefData gSource (cat "GammaFleet" i)))
-										(if (and ship (not (eq ship aObjDestroyed)))
-											(setq gammaShips (add gammaShips 1))
-											)
-										)
-									)
-
-								(if (eq gammaShips 0)
-									(block Nil
-										(objSendMessage gPlayerShip gSource "Mission Accomplished!")
-										(objSetData gSource "MissionStatus" "celebrate")
-										(objSetGlobalData gSource "status" 'defended)
-										)
-									)
-								)
-						)
-					)
-			</OnObjDestroyed>
-
-			<OnTimerDefaultAttack>
-				; If the player never accepts the mission, we nevertheless send out
-				; Alpha fleet to attack
-				(if (not (objGetData gSource "MissionStatus"))
-					(block (aresAlphaLeader)
-						(setq aresAlphaLeader (objGetObjRefData gSource "AlphaFleet"))
-
-						; Orders to alpha fleet
-						(if aresAlphaLeader
-							(block Nil
-								(shpCancelOrders aresAlphaLeader)
-								(shpOrderAttack aresAlphaLeader gSource)
-								)
-							)
-
-						; Set a timer for beta fleet
-						(sysAddObjTimerEvent 3600 gSource "OnTimerZeroHour")
-
-						(objSetData gSource "MissionStatus" "defaultAttack")
-						)
-					)
-			</OnTimerDefaultAttack>
-
-			<OnTimerZeroHour>
-				(block (aresAlphaLeader aresBetaLeader)
-					(setq aresAlphaLeader (objGetObjRefData gSource "AlphaFleet"))
-					(setq aresBetaLeader (objGetObjRefData gSource "BetaFleet"))
-
-					; Order alpha fleet to fall-back
-					(if aresAlphaLeader
-						(block Nil
-							(shpCancelOrders aresAlphaLeader)
-							(shpOrderGate aresAlphaLeader)
-							)
-						)
-
-					; Order the beta fleet to attack
-					(if aresBetaLeader
-						(block (status)
-    					(setq status (objGetData gSource "MissionStatus"))
-							(shpCancelOrders aresBetaLeader)
-							(shpOrderAttack aresBetaLeader gSource)
-
-							(if (not (or (not status) (eq status "defaultAttack")))
-								(block Nil
-									(objSendMessage gPlayerShip gSource "Return to base! Return to base!")
-									(shpOrderDock gPlayerShip gSource)
-									)
-								)
-							)
-						)
-					)
-			</OnTimerZeroHour>
 		</Events>
 
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"You are docked at Point Juno.">
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Central Command" default="1" key="C">
-								(block (missionStatus)
-									(setq missionStatus (objGetData gSource "MissionStatus"))
-
-									(switch
-										; Can't get in unless the player is Fleet Lieutenant or above
-										(ls (objGetData gPlayerShip "fleetLevel") 4)
-											(scrShowPane gScreen "AccessDenied")
-
-										(not missionStatus)
-											(scrShowPane gScreen "CCGetMission1")
-
-										(eq missionStatus "defaultAttack")
-											(scrShowPane gScreen "CCStatus")
-
-										(eq missionStatus "findBeta")
-											(scrShowPane gScreen "CCStatus")
-
-										(eq missionStatus "destroyBeta")
-											(scrShowPane gScreen "CCStatus")
-
-										(eq missionStatus "destroyAlpha")
-											(scrShowPane gScreen "CCStatus")
-
-										(eq missionStatus "oneLastAttack")
-											(if (objIsUnderAttack gSource)
-												(scrShowPane gScreen "CCStatus")
-												(scrShowPane gScreen "CCGetMission3")
-												)
-
-										(eq missionStatus "destroyGamma")
-											(scrShowPane gScreen "CCStatus3")
-
-										(eq missionStatus "celebrate")
-											(scrShowPane gScreen "CCMissionDone")
-
-										(objGetItems gPlayerShip "wU +LamplighterPrototype;")
-											(scrShowPane gScreen "CCPrototypeFound")
-
-										(eq missionStatus "europa")
-											(scrShowPane gScreen "CCEuropaMission")
-
-										(eq missionStatus "europaAccepted")
-											(scrShowPane gScreen "CCEuropaMission3")
-
-										(eq missionStatus "europaDeclined")
-											(scrShowPane gScreen "CCEuropaMission4")
-
-										(scrShowPane gScreen "BackToNormal")
-										)
+							<Action id="actionCentralCommand" default="1">
+								(block (
+									(rank (objGetData gPlayerShip 'fleetLevel))
+									)
+									(rpgMissionAssignment {
+										missionCriteria: (cat "n +cscPointJuno; +rank" (int rank) "; =" (sysGetLevel) ";")
+										noMissionTextID: 'descNoMissions
+										})
 									)
 							</Action>
 
-							<Action name="Dock Services" key="D">
+							<Action id="actionDockServices">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
-
-					<CCGetMission1>
-						<OnPaneInit>
-							(switch
-								(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
-									(scrSetDesc gScreen (typTranslate &stPointJuno; 'Mission1WelcomePilgrim))
-									
-								(scrSetDesc gScreen (typTranslate &stPointJuno; 'Mission1Welcome))
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="&quot;I want to help.&quot;" default="1" key="H">
-								<ShowPane pane="CCGetMission1a"/>
-							</Action>
-
-							<Action name="&quot;Sorry, I can't.&quot;" cancel="1" key="S">
-								<ShowPane pane="CCMissionDeclined"/>
-							</Action>
-						</Actions>
-					</CCGetMission1>
-
-					<CCGetMission1a>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat
-									"The general looks at you for a while, an enigmatic smile on her face. You notice that her left arm is prosthetic.\n\n"
-									"\"Good,\" she says, \"we can use all the help we can get. I'm General Verner and Point Juno is my stronghold. "
-									"The Ares have hit us hard in the last few months. We lost the CSC Europa in the last battle and now I'm left with "
-									"no carrier and precious few gunships.\""
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								<ShowPane pane="CCGetMission1b"/>
-							</Action>
-						</Actions>
-					</CCGetMission1a>
-
-					<CCGetMission1b>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat
-									"General Verner continues, \"We've tracked a large Ares battle fleet on the other side of the system and we know "
-									"that it's going to hit us soon. But what worries me is that there is a second battle fleet somewhere "
-									"around the asteroid field nearest Point Juno.\n\n\"I want you to scour the system looking for that second fleet. And if you find it, I want you to "
-									"destroy it. I can give you eight Centurions&#x97;no more. Got it?\""
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="&quot;Yes, ma'am!&quot;" default="1" key="Y">
-								<ShowPane pane="CCGetMission1c"/>
-							</Action>
-
-							<Action name="&quot;On second thought, count me out.&quot;" cancel="1" key="S">
-								<ShowPane pane="CCMissionDeclined"/>
-							</Action>
-						</Actions>
-					</CCGetMission1b>
-
-					<CCGetMission1c>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat
-									"General Verner shakes your hand, \"Good hunting, then! And may the Gods take us all when we're ready&#x97;but not before!\"\n\n"
-									"And at that the general laughs and turns back to her tactical displays."
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block (aresAlphaLeader)
-									(setq aresAlphaLeader (objGetObjRefData gSource "AlphaFleet"))
-
-									; Orders to alpha fleet
-									(if aresAlphaLeader
-										(block Nil
-											(shpCancelOrders aresAlphaLeader)
-											(shpOrderAttack aresAlphaLeader gSource)
-
-											;(shpCancelOrders gPlayerShip)
-											;(shpOrderAttack gPlayerShip aresAlphaLeader)
-											)
-										)
-
-									; Create some ships off-screen a bring them in
-									(intFleetCreateWingmen gSource 8 &scCenturion;)
-
-									; Need notification if/when player is destroyed
-									(objRegisterForEvents gSource gPlayerShip)
-
-									; Set a timer in case we don't find the fleet quickly enough
-									(sysAddObjTimerEvent 3600 gSource "OnTimerZeroHour")
-
-									; Give the position of the fleet to the player
-									(if (ls (objGetDistance (objGetObjRefData gSource "BetaFleet") (objGetObjRefData gSource "BetaFleetMarker"))
-											100)
-										(shpOrderAttack gPlayerShip (objGetObjRefData gSource "BetaFleetMarker"))
-										(block Nil
-											(shpOrderAttack gPlayerShip (objGetObjRefData gSource "BetaFleet"))
-											(objSetIdentified (objGetObjRefData gSource "BetaFleet"))
-											)
-										)
-
-									; Set status
-									(objSetData gSource "MissionIntro" True)
-									(objSetData gSource "MissionStatus" "findBeta")
-
-									(scrExitDock gScreen)
-									)
-							</Action>
-						</Actions>
-					</CCGetMission1c>
-
-					<CCGetMission3>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat
-									"The Command Center is celebrating as you walk in. General Verner appears visibly relieved. She approaches you. "
-									"\"Nice work! If I had a few more pilots like you, maybe we could end this war and all go home.\""
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								<ShowPane pane="CCGetMission3a"/>
-							</Action>
-						</Actions>
-					</CCGetMission3>
-
-					<CCGetMission3a>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat
-									"As the general shakes your hand, the XO interrupts: "
-									"\"General! We've got incoming! A Cometfall squadron with long-range nukes!\"\n\n"
-									"General Verner rushes to the tactical screens. \"Brace for impact! Deploy damage control teams and seal all sectors!\"\n\n"
-									"She turns to you and says, \"Looks like we're not out of this yet. Find the Cometfalls and destroy them! Go now!\""
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block (aresGammaLeader)
-									; Create Ares Gamma fleet
-
-									(setq pos (sysVectorPolarOffset gSource (random 120 240) 500))
-
-									(setq aresGammaLeader (sysCreateShip &scCometfall; pos &svAres; "fleetcommand"))
-									(objSetObjRefData gSource "GammaFleet1" aresGammaLeader)
-									(objRegisterForEvents gSource aresGammaLeader)
-
-									(for i 0 3
-										(block (ship)
-											(setq ship (sysCreateShip &scCometfall; pos &svAres; "fleet"))
-											(shpOrderEscort ship aresGammaLeader i)
-
-											(objSetObjRefData gSource (cat "GammaFleet" (add i 2)) ship)
-											(objRegisterForEvents gSource ship)
-											)
-										)
-
-									; Orders to gamma fleet
-									(shpCancelOrders aresGammaLeader)
-									(shpOrderAttack aresGammaLeader gSource)
-									(objSetData gSource "MissionStatus" "destroyGamma")
-
-									(shpOrderAttack gPlayerShip aresGammaLeader)
-									(objSetIdentified aresGammaLeader)
-
-									(scrExitDock gScreen)
-									)
-							</Action>
-						</Actions>
-					</CCGetMission3a>
-
-					<CCMissionDeclined>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat
-									"General Verner holds your gaze for a second. \"Perhaps I had the wrong impression about you...\""
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									; Set a default timer so that if the player never accepts the mission, the
-									; fleets still end up attacking
-
-									(sysAddObjTimerEvent 1600 gSource "OnTimerDefaultAttack")
-									
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</CCMissionDeclined>
-
-					<CCStatus>
-						<OnPaneInit>
-							(block (aresAlphaLeader aresBetaLeader desc)
-								(setq aresAlphaLeader (objGetObjRefData gSource "AlphaFleet"))
-								(setq aresBetaLeader (objGetObjRefData gSource "BetaFleet"))
-								(setq gTarget Nil)
-
-								(switch
-									; If we never got the original mission, just ask the player to help
-									(not (objGetData gSource "MissionIntro"))
-										(block Nil
-											(setq desc "The Command Center is abuzz with activity. General Verner looks up as you enter. \"If you've come to help, stop standing around and staring. Make yourself useful!\"")
-											)
-
-									; If beta fleet is attacking, then order the player to destroy it
-									(and aresBetaLeader (eq (shpGetOrder aresBetaLeader) 'attack))
-										(block (dist)
-											(setq dist (objGetDistance aresBetaLeader gSource))
-											(if (ls dist 50)
-												(setq desc "General Verner looks up only for a moment as you enter. \"What are you doing here? Go help destroy the Ares fleet!\"")
-												(setq desc "General Verner looks up only for a moment as you enter. \"What are you doing here? Go find and destroy that Ares fleet!\"")
-												)
-											(setq gTarget aresBetaLeader)
-											)
-
-									; If beta fleet is still out there...
-									aresBetaLeader
-										(block Nil
-											(setq desc "General Verner looks up only for a moment as you enter. \"What are you doing here? Aren't supposed to be out looking for that fleet?\"")
-											(setq gTarget aresBetaLeader)
-											)
-
-									; If alpha fleet is still out there, ask the player to destroy it
-									aresAlphaLeader
-										(block (dist)
-											(setq dist (objGetDistance aresAlphaLeader gSource))
-											(if (ls dist 50)
-												(setq desc "General Verner looks up only for a moment as you enter. \"We're a little busy right now...\"")
-												(block Nil
-													(setq desc
-														(cat
-															"The Command Center is abuzz with activity. General Verner looks up as you enter. "
-															"\"It looks like they're coming around for another run at us. Stay close and try to destroy as many of them as you can.\""
-															)
-														)
-													)
-												)
-											)
-
-									; If we're under attack by random forces
-									(objIsUnderAttack gSource)
-										(setq desc "General Verner looks up only for a moment as you enter. \"Both fleets have been disrupted...we just have to mop up now!\"")
-									)
-
-								; Set text	
-								(scrSetDesc gScreen desc)
-
-								; Set target
-								(if gTarget
-									(block Nil
-										(shpOrderAttack gPlayerShip gTarget)
-										(objSetIdentified gTarget)
-										)
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</CCStatus>
-
-					<CCStatus3>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat
-									"General Verner looks up only for a moment as you enter. \"What are you doing here? Aren't supposed to be out looking for those missileships?\""
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</CCStatus3>
-
-					<CCMissionDone>
-						<OnPaneInit>
-							(switch
-								(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
-									(scrSetDesc gScreen (typTranslate &stPointJuno; 'MissionsDonePilgrim))
-									
-								(scrSetDesc gScreen (typTranslate &stPointJuno; 'MissionsDone))
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(objSetData gSource "MissionStatus" "europa")
-									(intFleetDisperseWingmen gSource 8)
-									(objIncData gPlayerShip "fleetXP" 1200)
-									
-									; Got to Europa mission screen, either right away or after
-									; promotion screen exits.
-									(scrShowPane gScreen "CCEuropaMission")
-									
-									; Check promotion
-
-									(if (intFleetPromotion)
-										(block Nil
-											(setq gName "General Verner")
-											(scrShowScreen gScreen "&dsFleetPromotion;")
-											)
-										)
-									)
-							</Action>
-						</Actions>
-					</CCMissionDone>
-
-					<CCEuropaMission>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat
-									"\"Before you go, I have one more favor to ask you. When we lost the CSC Europa, she was "
-									"carrying an experimental weapon&#x97;a prototype for a project called 'Lamplighter.' "
-									"I want you to go to the wreck of the CSC Europa and retrieve this prototype."
-									"\n\nCan you do that?\""
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="&quot;Yes, it sounds important.&quot;" key="Y" default="1">
-								(scrShowPane gScreen "CCEuropaMission2")
-							</Action>
-
-							<Action name="&quot;No, I need to leave.&quot;" key="N" cancel="1">
-								(scrShowPane gScreen "CCEuropaMissionDeclined")
-							</Action>
-						</Actions>
-					</CCEuropaMission>
-
-					<CCEuropaMission2>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat
-									"\"Excellent! Maybe this weapon will make a difference, eh? "
-									"We'll enter the coordinates of the wreck into your computer, but you'll need a code "
-									"to enter the ship's weapons vault. The code is:"
-									"\n\n" (typGetGlobalData &stCSCEuropaWreck; "VaultCode")
-									"\n\n\"Good luck!\""
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
-								(block Nil
-									(shpOrderDock gPlayerShip (item (sysFindObject gSource "t:CSCEuropa") 0))
-									(objSetData gSource "MissionStatus" "europaAccepted")
-									(scrExitDock gScreen)
-									)
-							</Action>
-						</Actions>
-					</CCEuropaMission2>
-
-					<CCEuropaMission3>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat 
-									"\"Have you found the CSC Europa and the prototype? "
-									"Remember that the vault code is:"
-									"\n\n" (typGetGlobalData &stCSCEuropaWreck; "VaultCode")
-									"\n\n\"Good luck!\""
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
-								(block Nil
-									(shpOrderDock gPlayerShip (item (sysFindObject gSource "t:CSCEuropa") 0))
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</CCEuropaMission3>
-
-					<CCEuropaMission4>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat
-									"\"Will you help us retrieve the weapon prototype from the "
-									"wreckage of the CSC Europa?\""
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="&quot;Yes, I want to help.&quot;" key="Y" default="1">
-								(scrShowPane gScreen "CCEuropaMission2")
-							</Action>
-
-							<Action name="&quot;No.&quot;" key="N" cancel="1">
-								(scrShowPane gScreen "CCEuropaMissionDeclined")
-							</Action>
-						</Actions>
-					</CCEuropaMission4>
-
-					<CCEuropaMissionDeclined>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat
-									"\"I'm sorry to hear that. Please come back if you change your mind.\""
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
-								(block Nil
-									(objSetData gSource "MissionStatus" "europaDeclined")
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</CCEuropaMissionDeclined>
-
-					<CCPrototypeFound>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat
-									"\"Excellent work! We're very close to completing the research on this new weapon. "
-									"Who knows, maybe when you return from your visit to the Gods this war will be over!\""
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
-								(block (prototype)
-									(setq prototype (item (objGetItems gPlayerShip "wU +LamplighterPrototype;") 0))
-									(if prototype
-										(block Nil
-											(objRemoveItem gPlayerShip prototype)
-											(objSetData gSource "MissionStatus" "complete")
-											(typSetGlobalData &scCSCTerra; "p262prototype" "recovered")
-											(scrShowPane gScreen "Default")
-											)
-										)
-									)
-							</Action>
-						</Actions>
-					</CCPrototypeFound>
-
-					<BackToNormal>
-						<OnPaneInit>
-							(switch
-								(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
-									(scrSetDesc gScreen (typTranslate &stPointJuno; 'NormalWelcomePilgrim))
-									
-								(scrSetDesc gScreen (typTranslate &stPointJuno; 'NormalWelcome))
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</BackToNormal>
-
-					<AccessDenied>
-						<OnPaneInit>
-							(scrSetDesc gScreen "Two armed guards block your path, \"I'm sorry, %sir%, only Fleet Officers are allowed in Central Command.\"")
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</AccessDenied>
 				</Panes>
 			</Main>
 
@@ -988,72 +149,42 @@
 		</DockingPorts>
 
 		<Language>
-			<Text id="Mission1Welcome">
-				(cat 
-					"Officers and assistants rush around the room under the glow of "
-					"massive display screens. In the center, standing over a tactical "
-					"holomap, an older woman with three general's stars consults with "
-					"her officers.\n\n"
+			<!-- Code Points -->
+
+			<Text id="descNoMissions">
+				(switch
+					(ls (objGetData gPlayerShip 'fleetLevel) 4)
+						(objTranslate gSource 'descAccessDenied)
 					
-					"She looks up as you approach. \"My men tell me you're a merc or "
-					"something. I don't like mercs, particularly; but that's neither "
-					"here nor there."
+					(= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+						(objTranslate gSource 'descNoMissionsPilgrim)
 					
-					"\"I need your help.\""
+					(objTranslate gSource 'descNoMissionsNormal)
 					)
 			</Text>
-			<Text id="Mission1WelcomePilgrim">
-				(cat 
-					"Officers and assistants rush around the room under the glow of "
-					"massive display screens. In the center, standing over a tactical "
-					"holomap, an older woman with three general's stars consults with "
-					"her officers.\n\n"
-					
-					"She looks up as you approach. \"My men tell me that you're one "
-					"of those pilgrims, heading off to the Core on a personal "
-					"invitation from the gods or whatever.\n\n"
-					
-					"\"Well, on your way to heaven, how about helping us mortals who "
-					"are not so eager to meet our makers?\""
-					)
+
+			<!-- Text -->
+
+			<Text id="actionCentralCommand">[C]entral Command</Text>
+			<Text id="actionDockServices">[D]ock Services</Text>
+			<Text id="actionUndock">[U]ndock</Text>
+
+			<Text id="descWelcome">You are docked at Point Juno.</Text>
+			<Text id="descNoMissionsNormal">
+				General Verner welcomes you as you enter, "I'm glad you're in no
+				hurry. Rest here with us and continue your journey later."
 			</Text>
-			<Text id="MissionsDone">
-				(cat
-					"As you enter, everyone in the command center stops to applaud.\n\n"
-					
-					"General Verner walks over to you and offers her hand. \"Well done! "
-					"I knew I could count on you. With the damage that we've inflicted, "
-					"I doubt that the Ares will be back anytime soon!\n\n"
-					
-					"\"May your journey be equally successful!\""
-					)
+			<Text id="descNoMissionsPilgrim">
+				General Verner welcomes you as you enter, "I'm glad you're in no
+				hurry to go to the Core. Rest here with us and seek Domina later."
 			</Text>
-			<Text id="MissionsDonePilgrim">
-				(cat
-					"As you enter, everyone in the command center stops to applaud.\n\n"
-					
-					"General Verner walks over to you and offers her hand. \"Well done! "
-					"I knew I could count on you. With the damage that we've inflicted, "
-					"I doubt that the Ares will be back anytime soon!\n\n"
-					
-					"\"May the Gods give you peace when you reach the Core!\""
-					)
-			</Text>
-			<Text id="NormalWelcome">
-				(cat
-					"General Verner welcomes you as you enter, \"I'm glad you're in no "
-					"hurry. Rest here with us and continue your journey later.\""
-					)
-			</Text>
-			<Text id="NormalWelcomePilgrim">
-				(cat
-					"General Verner welcomes you as you enter, \"I'm glad you're in no "
-					"hurry to go to the Core. Rest here with us and seek Domina later.\""
-					)
+			<Text id="descAccessDenied">
+				Two armed guards block your path, "I'm sorry, %sir%, only Fleet
+				Officers are allowed in Central Command."
 			</Text>
             
             <Text id="core.mapDescMain">
-                "Commonwealth Fleet stronghold"
+                Commonwealth Fleet stronghold
             </Text>
 		</Language>
 	</StationType>
@@ -1145,10 +276,7 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(block Nil
-								(shpCancelOrders gPlayerShip)
-								(scrSetDescTranslate gScreen 'descDefault)
-								)
+							(scrSetDescTranslate gScreen 'descDefault)
 						</OnPaneInit>
 
 						<Actions>
@@ -1166,9 +294,7 @@
 							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 
 					<Bridge
@@ -1259,20 +385,28 @@
 		</DockingPorts>
 		
 		<Language>
+			<Text id="actionBridge">[B]ridge</Text>
+			<Text id="actionWeaponsVault">[W]eapons Vault</Text>
+			<Text id="actionEnterCode">[E]nter Code</Text>
+
 			<Text id="descDefault">
-				"You are docked with the hulking wreckage of the CSC Europa."
+				You are docked with the hulking wreckage of the CSC Europa.
 			</Text>
-			<Text id="actionBridge">"[B]ridge"</Text>
-			<Text id="actionWeaponsVault">"[W]eapons Vault"</Text>
 			<Text id="descBridge">
-				"The bridge is completely smashed. Bodies float around in zero-G amid the shredded remains of consoles and other electronic equipment."
+				The bridge is completely smashed. Bodies float around in zero-G amid
+				the shredded remains of consoles and other electronic equipment."
 			</Text>
-			<Text id="descWeaponsVault">"You are inside the CSC Europa's weapons vault."</Text>
+			<Text id="descWeaponsVault">
+				You are inside the CSC Europa's weapons vault.
+			</Text>
 			<Text id="descWeaponsVaultLocked">
-				"You are standing in front of the massive blast-proof doors of the ship's weapons vault. There is an alphabetic codepad on the door that requests an entry code."
+				You are standing in front of the massive blast-proof doors of the
+				ship's weapons vault. There is an alphabetic codepad on the door
+				that requests an entry code.
 			</Text>
-			<Text id="actionEnterCode">"[E]nter Code"</Text>
-			<Text id="descInvalidCode">"The code appears to be invalid. The vault doors remained closed."</Text>
+			<Text id="descInvalidCode">
+				The code appears to be invalid. The vault doors remained closed.
+			</Text>
 		</Language>
 
 	</StationType>
@@ -1509,6 +643,8 @@
 							<Orbitals count="1d6" distance="2d8+8" angle="random">
 								<Station type="&stRockyOuterAsteroidSizeB;" />
 							</Orbitals>
+
+							<Marker objName="stagingBeta"/>
 						</Group>
 					</AntiTrojan>
 
