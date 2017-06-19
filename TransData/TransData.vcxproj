@@ -310,6 +310,7 @@
     <ClCompile Include="COutputChart.cpp" />
     <ClCompile Include="CSimViewer.cpp" />
     <ClCompile Include="CWeaponBenchmarkCtx.cpp" />
+    <ClCompile Include="Diagnostics.cpp" />
     <ClCompile Include="EffectPerformanceTest.cpp" />
     <ClCompile Include="Effects.cpp" />
     <ClCompile Include="EncounterCount.cpp" />

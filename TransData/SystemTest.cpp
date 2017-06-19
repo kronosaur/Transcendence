@@ -14,7 +14,7 @@ const int MAX_LEVEL = 26;
 #define NO_LOGO_SWITCH						CONSTLIT("nologo")
 #define FIELD_NAME							CONSTLIT("shortName")
 
-class SystemInfo
+class SSystemInfo
 	{
 	public:
 		CString sName;
@@ -53,7 +53,7 @@ CString GenerateStationKey (CStationType *pType, CSovereign *pPlayer, CString *r
 	return CString(szBuffer);
 	}
 
-void OutputSystemStats (SystemInfo *pSystemEntry)
+void OutputSystemStats (SSystemInfo *pSystemEntry)
 	{
 	int j;
 
@@ -92,7 +92,7 @@ void OutputSystemStats (SystemInfo *pSystemEntry)
 void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
 	ALERROR error;
-	int i, j;
+	int i, j, iNode;
 	CSovereign *pPlayer = Universe.FindSovereign(g_PlayerSovereignUNID);
 
 	int iSystemSample = pCmdLine->GetAttributeInteger(CONSTLIT("count"));
@@ -101,15 +101,17 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Generate systems for multiple games
 
-	TSortMap<CString, SystemInfo> AllSystems;
+	TSortMap<CString, SSystemInfo> AllSystems;
 	for (i = 0; i < iSystemSample; i++)
 		{
 		printf("pass %d...\n", i+1);
 
-		CTopologyNode *pNode = Universe.GetFirstTopologyNode();
-
-		while (true)
+		for (iNode = 0; iNode < Universe.GetTopologyNodeCount(); iNode++)
 			{
+			CTopologyNode *pNode = Universe.GetTopologyNode(iNode);
+			if (pNode->IsEndGame())
+				continue;
+
 			//	Create the system
 
 			CSystem *pSystem;
@@ -123,7 +125,7 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 			//	Find this system in the table.
 
 			bool bNew;
-			SystemInfo *pSystemEntry = AllSystems.SetAt(pNode->GetSystemName(), &bNew);
+			SSystemInfo *pSystemEntry = AllSystems.SetAt(pNode->GetSystemName(), &bNew);
 			if (bNew)
 				{
 				pSystemEntry->sName = pNode->GetSystemName();
@@ -198,13 +200,6 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			//OutputSystemStats(pSystemEntry);
 
-			//	Get the next node
-
-			CString sEntryPoint;
-			pNode = pSystem->GetStargateDestination(CONSTLIT("Outbound"), &sEntryPoint);
-			if (pNode == NULL || pNode->IsEndGame())
-				break;
-
 			//	Done with old system
 
 			Universe.DestroySystem(pSystem);
@@ -219,7 +214,7 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	for (i = 0; i < AllSystems.GetCount(); i++)
 		{
-		SystemInfo *pSystemEntry = &AllSystems[i];
+		SSystemInfo *pSystemEntry = &AllSystems[i];
 		OutputSystemStats(pSystemEntry);
 		}
 
@@ -229,7 +224,7 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	for (i = 0; i < AllSystems.GetCount(); i++)
 		{
-		SystemInfo *pSystemEntry = &AllSystems[i];
+		SSystemInfo *pSystemEntry = &AllSystems[i];
 
 		if (pSystemEntry->iCount > 0)
 			{
@@ -312,7 +307,7 @@ void GenerateItemFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Generate systems for multiple games
 
-	TSortMap<CString, SystemInfo> AllSystems;
+	TSortMap<CString, SSystemInfo> AllSystems;
 	for (i = 0; i < iSystemSample; i++)
 		{
 		if (bLogo)
@@ -334,7 +329,7 @@ void GenerateItemFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine)
 			//	Find this system in the table.
 
 			bool bNew;
-			SystemInfo *pSystemEntry = AllSystems.SetAt(pNode->GetSystemName(), &bNew);
+			SSystemInfo *pSystemEntry = AllSystems.SetAt(pNode->GetSystemName(), &bNew);
 			if (bNew)
 				{
 				pSystemEntry->sName = pNode->GetSystemName();
@@ -403,7 +398,7 @@ void GenerateItemFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	for (i = 0; i < AllSystems.GetCount(); i++)
 		{
-		SystemInfo *pSystemEntry = &AllSystems[i];
+		SSystemInfo *pSystemEntry = &AllSystems[i];
 
 		for (j = 0; j < pSystemEntry->Items.GetCount(); j++)
 			{

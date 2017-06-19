@@ -25,6 +25,7 @@
 #define ATTRIBUTE_LIST_SWITCH				CONSTLIT("attributelist")
 #define DEBUG_SWITCH						CONSTLIT("debug")
 #define DECOMPILE_SWITCH					CONSTLIT("decompile")
+#define DIAGNOSTICS_SWITCH					CONSTLIT("diagnostics")
 #define EFFECT_IMAGE_SWITCH					CONSTLIT("effectImage")
 #define EFFECT_PERF_SWITCH					CONSTLIT("effectPerf")
 #define ENCOUNTER_COUNT_SWITCH				CONSTLIT("encountercount")
@@ -327,6 +328,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 
 	if (pCmdLine->GetAttributeBool(ARMOR_TABLE_SWITCH))
 		GenerateArmorTable(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(DIAGNOSTICS_SWITCH))
+		GenerateDiagnostics(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_COUNT_SWITCH))
 		GenerateEncounterCount(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_FREQ_SWITCH))

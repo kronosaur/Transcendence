@@ -153,6 +153,9 @@
     <ClCompile Include="TLisp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Diagnostics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
