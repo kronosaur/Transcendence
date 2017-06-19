@@ -80,9 +80,10 @@ class CHost : public CUniverse::IHost
 	public:
 		CHost (void) { m_DefaultFont.Create(CONSTLIT("Tahoma"), -13); }
 
-		virtual void ConsoleOutput (const CString &sLine) { printf("%s\n", sLine.GetASCIIZPointer()); }
-		virtual void DebugOutput (const CString &sLine) { printf("%s\n", sLine.GetASCIIZPointer()); }
-		virtual const CG16bitFont *GetFont (const CString &sFont) { return &m_DefaultFont; }
+		virtual void ConsoleOutput (const CString &sLine) override { printf("%s\n", sLine.GetASCIIZPointer()); }
+		virtual void DebugOutput (const CString &sLine) override { printf("%s\n", sLine.GetASCIIZPointer()); }
+		virtual const CG16bitFont *GetFont (const CString &sFont) override { return &m_DefaultFont; }
+		virtual void LogOutput (const CString &sLine) const override { printf("%s\n", (LPSTR)sLine); ::kernelDebugLogString(sLine); }
 
 	private:
 		CG16bitFont m_DefaultFont;
