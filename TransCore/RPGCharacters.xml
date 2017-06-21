@@ -205,6 +205,54 @@
 					)
 				))
 				
+			(setq rpgCharacterAssignRandom (lambda (sourceObj criteria role)
+				
+				;	This function assigns a random character to the given source object.
+				;	It should be called once when the object is created.
+				;
+				;	Use rpgCharacterTranslate to get text for the character.
+
+				(block (
+					(type (objGetType sourceObj))
+					(characterList (typGetData type 'rpgCharacter.list))
+					(next (typGetData type 'rpgCharacter.next))
+
+					(characterRole (or role "npc"))
+					(characterVar (cat "rpgCharacter." characterRole))
+
+					characterID
+					)
+
+					;	If we don't yet have a character list, then generate one.
+
+					(if (not characterList)
+						(block ()
+							(setq characterList (rpgCharacterGenerateList criteria))
+							(setq next 0)
+							(typSetData type 'rpgCharacter.list characterList)
+							(typSetData type 'rpgCharacter.next 0)
+							)
+						)
+
+					;	Pick a random character (the list has been shuffled, so we 
+					;	just pick the next character on the list).
+
+					(setq characterID (@ characterList (mod next (count characterList))))
+
+					;	Store this character with the object.
+
+					(objSetData sourceObj characterVar characterID)
+
+					;	Next character
+
+					(typIncData type 'rpgCharacter.next)
+
+					;	Done
+
+					characterID
+					)
+				))
+
 			(setq rpgCharacterChangeRel (lambda (charType event)
 			
 				; This function changes the character's relationship with the
@@ -433,6 +481,37 @@
 					)
 				))
 
+			(setq rpgCharacterGenerateList (lambda (criteria)
+				
+				;	This function returns a list of character identifiers for use
+				;	by minor characters, such as station masters. The result consists
+				;	of a list of character identifiers. Each identifier is a list
+				;	with two values: an UNID and an ID within that type.
+				;
+				;	The order in the list is randomized.
+
+				(shuffle
+					(apply append
+						(map (typFind criteria) 'excludeNil theType
+							(block (
+								(characterTable (typGetStaticData theType 'CharacterTable))
+								)
+								(if characterTable
+									(map characterTable theCharacter
+										(list theType (@ theCharacter 0))
+										)
+
+									;	If no character table, then the whole type is one
+									;	character.
+
+									(list (list theType Nil))
+									)
+								)
+							)
+						)
+					)
+				))
+
 			(setq rpgCharacterGetQuickRel (lambda (charType)
 
 				; This function returns the given character's relationship with 
@@ -600,6 +679,22 @@
 							desc: (objTranslate missionSource 'NoMissions)
 							nextScreen: 'forceUndock
 							})
+						)
+					)
+				))
+
+			(setq rpgCharacterTranslate (lambda (sourceObj role textID data)
+				(block (
+					(characterRole (or role "npc"))
+					(characterVar (cat "rpgCharacter." characterRole))
+					(characterID (objGetData sourceObj characterVar))
+
+					(type (@ characterID 0))
+					(id (@ characterID 1))
+					)
+					(if id
+						(typTranslate type (cat id "." textID) data)
+						(typTranslate type textID data)
 						)
 					)
 				))
