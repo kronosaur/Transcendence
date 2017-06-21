@@ -532,7 +532,12 @@ ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions *retO
 
 			//	Now compute the desired size
 
-			if (cyAvail - cyExtra >= 1024)
+			if (cyAvail - cyExtra >= 1080)
+				{
+				retOptions->m_cxScreenDesired = 1920;
+				retOptions->m_cyScreenDesired = 1080;
+				}
+			else if (cyAvail - cyExtra >= 1024)
 				{
 				retOptions->m_cxScreenDesired = 1280;
 				retOptions->m_cyScreenDesired = 1024;
