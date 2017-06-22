@@ -394,9 +394,37 @@
 						)
 					)
 				))
-				
+
 			; Math functions ---------------------------------------------------
 			
+			(setq mathPermutePairs (lambda (theList)
+
+			;	Given a list (a b c) we return a list of all possible pairs:
+			;
+			;	((a b) (a c) (b c))
+
+				(switch
+					(ls (count theList) 2)
+						Nil
+
+					(= (count theList) 2)
+						(list theList)
+
+					(block (
+						(first (@ theList 0))
+						i result
+						)
+						(for i 1 (- (count theList) 1)
+							(setq result (append result (list (list first (@ theList i)))))
+							)
+
+						;	Recurse
+
+						(append result (intPermutePairs (subset theList 1)))
+						)
+					)
+				))
+				
 			(setq mathProbTableLookup (lambda (probTable)
 			
 			; probTable is a table of probabilities of the following format:
