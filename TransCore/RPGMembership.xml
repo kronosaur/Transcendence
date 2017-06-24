@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- MEMBERSHIP
+
+	This module defines some helpers for implementing membership in an organization
+	with experience points and ranks.
+
+	REQUIREMENTS
+
+	The membership type (usually the sovereign) must have the following elements:
+
+	RankTable (StaticData): We expect this to be a struct of ranks, indexed by ranks
+		(starting at 1), and containing an xpNeeded field.
+
+	rpg.descPromotion: This series of language elements should define the
+		text shown to the player when they are promoted to a given rank (starting
+		at 2). The rank is passed in gData in the rank field.
+
+	DATA
+
+	rpg.rank: We store the player's current rank.
+
+	rpg.xp: This is the player's current XP.
+
+-->
+
+<!-- DOCK SCREENS -->
+
+	<DockScreen unid="&dsRPGPromotion;"
+			inherit=			"&dsDockScreenBase;"
+			nestedScreen=		"true"
+			>
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(membership (@ gData 'membership))
+						(newRank (rpgIsPromoted membership))
+						)
+						(scrSetDesc gScreen (typTranslate membership "rpg.descPromotion" {
+							sourceObj: gSource
+							membership: membership
+							rank: newRank
+							}))
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue">
+						(block (
+							(membership (@ gData 'membership))
+							(newRank (rpgIsPromoted membership))
+							)
+							(typSetData membership 'rpg.rank newRank)
+							(scrExitScreen gScreen)
+							)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
+
+<!-- GLOBALS -->
+
+	<Globals>
+	(block ()
+		(setq rpgIsPromoted (lambda (membership)
+			(block (
+				(rank (or (typGetData membership 'rpg.rank) 1))
+				(xp (or (typGetData membership 'rpg.xp) 0))
+				(rankTable (typGetStaticData membership 'RankTable))
+				(nextRankDesc (@ rankTable (+ rank 1)))
+				)
+				(switch
+					;	If no rank table of if we're already at the highest
+					;	rank, then no promotion.
+
+					(not nextRankDesc)
+						Nil
+
+					;	If we don't have enough XP, then no promotion.
+
+					(ls xp (@ nextRankDesc 'xpNeeded))
+						Nil
+
+					;	Promotion to the next rank.
+
+					(+ rank 1)
+					)
+				)
+			))
+
+		(setq rpgMissionRewardXP (lambda (membership xpReward missionObj)
+			(block (promotionScreen)
+
+				;	Increment XP
+
+				(typIncData membership 'rpg.xp xpReward)
+
+				;	If we're debriefing a mission, and we've been promoted,
+				;	then set the appropriate promotion screen.
+
+				(if (and missionObj 
+						(rpgIsPromoted membership)
+						)
+
+					;	dsRPGMission checks for a well-known data member in the mission
+					;	object to see if it should navigate to an additional screen.
+
+					(msnSetData missionObj 'rewardNextScreen &dsRPGPromotion; {
+						membership: membership
+						missionObj: missionObj
+						})
+					)
+				)
+			))
+		)
+	</Globals>
+
+</TranscendenceModule>

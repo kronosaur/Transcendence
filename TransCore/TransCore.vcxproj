@@ -511,6 +511,7 @@
     </Xml>
     <Xml Include="RPGLibrary.xml" />
     <Xml Include="GalaxyLibrary.xml" />
+    <Xml Include="RPGMembership.xml" />
     <Xml Include="RPGShipBroker.xml">
       <SubType>Designer</SubType>
     </Xml>
