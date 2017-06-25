@@ -425,4 +425,9 @@
 
 	<Image UNID="&rsRockyAsteroids;"	bitmap="Resources\RockyAsteroids.jpg"	bitmask="Resources\RockyAsteroidsMask.bmp"		loadOnUse="true"/>
 	
+<!-- RESOURCES -->
+
+	<Image UNID="&rsWorlds1;"		bitmap="Resources\Worlds1.jpg"		bitmask="Resources\Worlds1Mask.bmp"  />
+	<Image UNID="&rsWorlds2;"		bitmap="Resources\Worlds2.jpg"		bitmask="Resources\Worlds2Mask.bmp"  />
+
 </TranscendenceModule>

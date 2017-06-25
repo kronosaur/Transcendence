@@ -228,6 +228,7 @@ void GenerateStats (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	printf((LPSTR)strPatternSubst(CONSTLIT("Total types\t%,d\n"), Stats.iAllTypes));
 	printf((LPSTR)strPatternSubst(CONSTLIT("Dynamic types\t%,d\n"), Stats.iDynamicTypes));
+	printf((LPSTR)strPatternSubst(CONSTLIT("Merged types\t%,d\n"), Stats.iMergedTypes));
 	printf((LPSTR)strPatternSubst(CONSTLIT("Item types\t%,d\n"), Stats.iItemTypes));
 	printf((LPSTR)strPatternSubst(CONSTLIT("Ship classes\t%,d\n"), Stats.iShipClasses));
 	printf((LPSTR)strPatternSubst(CONSTLIT("Station types\t%,d\n"), Stats.iStationTypes));

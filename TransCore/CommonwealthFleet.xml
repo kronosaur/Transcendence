@@ -2554,8 +2554,10 @@ PLAYER DATA
 			instance=			"owner"
 			>
 		<Effect>
-			<ParticleComet
+			<ParticlePattern
+					style=			"comet"
 					primaryColor=	"#ffe566"
+					jitterLength=	"80-150"
 					>
 				<Events>
 					<GetParameters>
@@ -2570,7 +2572,7 @@ PLAYER DATA
 							)
 					</GetParameters>
 				</Events>
-			</ParticleComet>
+			</ParticlePattern>
 			
 			<Orb
 					style=				"smooth"

@@ -974,7 +974,7 @@
 			<Ship levelFrequency="ruuuu ur---" count="1"	class="&scT31ArmedTransport;" eventHandler="&evStdConvoyEncounterBehavior;">
 				<Items>
 					<Item chance="50"		count="8d20" item="&itSmartCannonShell;"/>
-					<Lookup					count="1d2"  table="&tbStoneAsteroidOre;"/>
+					<Lookup					count="1d2"  table="&tbAsteroidOre;"/>
 				</Items>
 
 				<Escorts>

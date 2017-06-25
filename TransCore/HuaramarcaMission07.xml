@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Huaramarca Revelation =================================================
+
+	EXTRA DATA
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msHuaramarcaRevelation;"
+			name=				"Huaramarca Revelation"
+			attributes=			"huariEmpire, huariTemple"
+
+			level=				"6"
+			maxAppearing=		"1"
+			priority=			"70"
+			noStats=			"true"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	 This mission is only available if we've completed the Huaramarca chain
+					(not (msnFind "r +huariDreamChoice; +property:isSuccess;"))
+						(msnDestroy gSource)
+
+					;	Otherwise skip intro screen
+					(msnSetProperty gSource 'isIntroShown True)
+					)
+			</OnCreate>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Briefing">
+				(if (msnGetProperty gSource 'isDeclined)
+					(list
+						{
+							textID: 'Welcome
+							actions: (list
+								{
+									nextPage: 'missionDecline
+									labelID: 'actionContinue
+									}
+								)
+							}
+						Nil
+						)
+
+					(list
+						{
+							id: 'goodbye
+							textID: 'GoodBye
+							actions: (list
+								{
+									nextPage: 'revelation1
+									labelID: 'actionPath
+									}
+								{
+									nextPage: 'missionDecline
+									labelID: 'actionGoodbye
+									}
+								)
+							}
+						{
+							id: 'revelation1
+							textID: 'Revelation1
+							labelID: 'actionFail
+							}
+						{
+							id: 'revelation2
+							textID: 'Revelation2
+							actions: (list
+								{
+									nextPage: 'missionDecline
+									labelID: 'actionLeave
+									}
+								)
+							}
+						Nil
+						)
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="GoodBye">
+				Apotamo leads you to the airlock.
+
+				"Our debt to you is boundless. I regret we have not made your path any easier.
+				May the blessings of the Light shine before you!"
+			</Text>
+			<Text id="Revelation1">
+				"The Light brought me a dream, not long after you arrived. I dreamt
+				that I floated above all the stars of Humanity. I saw the fortresses
+				of the Huari and the stations of the Commonwealth and the evil citadels
+				of the Sung. I even saw Earth and the red-green world of Ares Prime."
+
+				"But every world I saw and every place I looked was devoid of life. Only
+				the ruins and ashes of our lives remained. It was as if a blinding fire
+				had cleansed the universe of us and all our works."
+			</Text>
+			<Text id="Revelation2">
+				Apotamo looks directly in your eyes. You see in his face a mixture of
+				awe and horror.
+
+				"No," he says slowly, "That's what will happen if you succeed."
+			</Text>
+			<Text id="Welcome">
+				Apotamo greets you at the door of the Grand Hall.
+
+				"Welcome back, %name%! Take your ease here before you continue on
+				your arduous journey."
+			</Text>
+
+			<String id="actionContinue">[C]ontinue</String>
+			<String id="actionPath">"[W]hat is my path?"</String>
+			<String id="actionGoodbye">"[G]oodbye"</String>
+			<String id="actionFail">"[W]ill that happen if I fail?"</String>
+			<String id="actionLeave">[L]eave</String>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

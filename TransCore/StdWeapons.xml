@@ -3846,9 +3846,11 @@
 				</Events>
 			</Ray>
 			
-			<ParticleComet
+			<ParticlePattern
+					style=			"comet"
 					particleCount=	"200"
 					primaryColor=	"#ff9500"
+					jitterLength=	"80-150"
 					>
 				<Events>
 					<GetParameters>
@@ -3864,7 +3866,7 @@
 							)
 					</GetParameters>
 				</Events>
-			</ParticleComet>
+			</ParticlePattern>
 		</Effect>
 	</EffectType>
 
@@ -4493,9 +4495,11 @@
 				</Events>
 			</Ray>
 			
-			<ParticleComet
+			<ParticlePattern
+					style=			"comet"
 					particleCount=	"200"
 					primaryColor=	"#80c0ff"
+					jitterLength=	"80-150"
 					>
 				<Events>
 					<GetParameters>
@@ -4511,7 +4515,7 @@
 							)
 					</GetParameters>
 				</Events>
-			</ParticleComet>
+			</ParticlePattern>
 			
 			<Starburst
 					style=			"plain"

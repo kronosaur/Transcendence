@@ -961,12 +961,8 @@
 
 					<Trojan>
 						<Group probability="50">
-							<Orbitals count="2d4+4" distance="2d8+8" angle="random">
-								<Lookup table="AsteroidSmall"/>
-							</Orbitals>
-
-							<Orbitals count="1d6" distance="2d8+8" angle="random">
-								<Lookup table="AsteroidMedium"/>
+							<Orbitals count="3d4+4" distance="2d8+8" angle="random">
+								<Lookup table="AsteroidSingleton"/>
 							</Orbitals>
 
 							<Orbitals distance="1d8+6" angle="random">
@@ -985,12 +981,8 @@
 
 					<AntiTrojan>
 						<Group probability="50">
-							<Orbitals count="2d4+4" distance="2d8+8" angle="random">
-								<Lookup table="AsteroidSmall"/>
-							</Orbitals>
-
-							<Orbitals count="1d6" distance="2d8+8" angle="random">
-								<Lookup table="AsteroidMedium"/>
+							<Orbitals count="3d4+4" distance="2d8+8" angle="random">
+								<Lookup table="AsteroidSingleton"/>
 							</Orbitals>
 
 							<Orbitals distance="1d8+6" angle="random">

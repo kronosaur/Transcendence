@@ -500,9 +500,11 @@
 				>
 
 			<Effect>
-				<ParticleComet
+				<ParticlePattern
+						style=			"comet"
 						particleCount=	"160"
 						primaryColor=	"0x00, 0xd8, 0xc6"
+						jitterLength=	"80-150"
 
 						width=			"6"
 						length=			"80"

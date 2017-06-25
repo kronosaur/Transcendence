@@ -385,8 +385,10 @@
 				>
 
 			<Effect>
-				<ParticleComet
+				<ParticlePattern
+						style=			"comet"
 						length=			"80"
+						jitterLength=	"80-150"
 						
 						primaryColor=	"#f9ffb3"
 						>
@@ -403,7 +405,7 @@
 								)
 						</GetParameters>
 					</Events>
-				</ParticleComet>
+				</ParticlePattern>
 				<Ray
 						style=			"smooth"
 						shape=			"oval"

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Huaramarca Find Archcannon ============================================
+
+	EXTRA DATA
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msHuaramarcaArchcannon;"
+			name=				"Huaramarca Find Archcannon"
+			attributes=			"huariEmpire, huariTemple"
+
+			level=				"6"
+			maxAppearing=		"1"
+			priority=			"80"
+			
+			noDecline=			"True"
+			noStats=			"true"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	If the player already has a damaged archcannon, we want to
+					;	go straight to success status. But that is not possible so
+					;	just force-accept the mission and use the InProgress dialog
+					(objGetItems gPlayerShip "wD +qianlongArchcannon;")
+						(msnAccept gSource)
+
+					;	If the dragon slaver wreck still has an archcannon, we use
+					;	the briefing screen to tell the player about it (disable intro)
+					(filter (sysFindObject gSource "t") theObj (objGetItems theObj "w +qianlongArchcannon;"))
+						(block Nil
+							(msnSetProperty gSource 'isIntroShown True)
+							(msnRegisterForEvents gSource gPlayerShip)
+							)
+
+					;	Otherwise no mission
+					(msnDestroy gSource)
+					)
+			</OnCreate>
+
+			<OnInProgress>
+				(if (objGetItems gPlayerShip "wD +qianlongArchcannon;")
+					(block Nil
+						(msnSuccess gSource)
+						;	Using InProgress dialog to debrief, so disable normal screen
+						(msnSetProperty gSource 'isDebriefed True)
+						)
+					)
+			</OnInProgress>
+
+			<OnObjDocked>
+				(if (and
+						(= aObjDocked gPlayerShip)
+						(= (objGetID aDockTarget) (msnGetProperty gSource 'ownerID))
+						(objGetItems gPlayerShip "wD +qianlongArchcannon;")
+						)
+					(msnSuccess gSource)
+					)
+			</OnObjDocked>
+
+			<OnCompleted>
+				(if (= aReason 'success)
+					(objEnumItems gPlayerShip "wD +qianlongArchcannon;" theItem
+						(shpRepairItem gPlayerShip theItem)
+						)
+					)
+			</OnCompleted>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary {
+						targetname: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x04)
+						})
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+			<Text id="InProgress">
+				(if (msnGetProperty gSource 'isSuccess)
+					(msnTranslate gSource 'SuccessDebrief)
+					(msnTranslate gSource 'StillLooking)
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(list
+					{ desc: (msnTranslate gSource 'RepairArchcannon1) }
+					{ desc: (msnTranslate gSource 'RepairArchcannon2) }
+					{ desc: (msnTranslate gSource 'RepairArchcannon3) }
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">Search the Dragon wreck</Text>
+			<Text id="textSummary">Look for a powerful weapon in the Dragon wreck.</Text>
+			<Text id="Briefing">
+				"But perhaps there is a way we can make your path easier. Go to the wreck
+				of the Dragon and there you will find a sword your enemies will fear."
+			</Text>
+			<Text id="StillLooking">
+				Apotamo greets you at the door of the Grand Hall.
+				
+				"Welcome back, %name%! Take your ease here before you continue on your arduous journey."
+			</Text>
+			<Text id="FailureDebrief">
+				Mission Failed
+			</Text>
+			<Text id="RepairArchcannon1">
+				"I see you have found the Slaver's weapon. Perhaps there is a way in
+				which we might repay the debt we owe you."
+				
+				Apotamo leads you to a chamber inside the temple. You see row upon row of slave
+				coffins, all connected together and to a vast array of optical computers.
+			</Text>
+			<Text id="RepairArchcannon2">
+				"Not all slaves can be freed from the Sung's enslavement. Some are lost to us
+				forever; we keep them here so they can continue their work&mdash;it is the only
+				peace they know."
+				
+				"The damaged archcannon you found on the slaver's wreck can be repaired by
+				these poor souls."
+			</Text>
+			<Text id="RepairArchcannon3">
+				You bring the archcannon to the slave chamber. You hear a cacophony of voices
+				rise up from the slave coffins. A laser lattice envelops the archcannon and the
+				computer displays flash blueprints and diagnostics. Robot hands expertly repair
+				the device.
+				
+				When the work is finished, the voices die away in a bittersweet tone of satisfaction.
+			</Text>
+			<Text id="SuccessMsg"></Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

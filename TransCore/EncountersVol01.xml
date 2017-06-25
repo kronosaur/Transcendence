@@ -11,7 +11,6 @@
 	Gaian Terraformers
 	Heliotropes
 	Himal Separatists
-	Huari Empire
 	Kobol Syndicate
 	Marauders
 	Outlaws
@@ -787,9 +786,11 @@
 					</Events>
 				</Ray>
 			
-				<ParticleComet
+				<ParticlePattern
+						style=			"comet"
 						particleCount=	"200"
 						primaryColor=	"#00d5ff"
+						jitterLength=	"80-150"
 						>
 					<Events>
 						<GetParameters>
@@ -805,7 +806,7 @@
 								)
 						</GetParameters>
 					</Events>
-				</ParticleComet>
+				</ParticlePattern>
 			</Effect>
 		</Weapon>
 
@@ -2119,176 +2120,6 @@
 
 	</StationType>
 
-<!-- Huari Empire ========================================================= -->
-
-	<Sovereign UNID="&svHuariEmpire;"
-			name=":the Huari Empire"
-			shortName=":the Huari"
-			adjective="Huari"
-			demonym=":a Huari|Huari"
-			plural="true"
-
-			alignment="destructive order"
-			>
-		<Relationships>
-			<Relationship sovereign="&svSung;" disposition="enemy" mutual="true"/>
-		</Relationships>
-	</Sovereign>
-
-	<!-- Hurin Destroyer -->
-
-	<ShipClass UNID="&scHurinDestroyer;"
-			manufacturer=		"Huari"
-			class=				"Hurin"
-			type=				"destroyer"
-			defaultSovereign=	"&svHuariEmpire;"
-
-			attributes=			"capitalShip, genericClass, huari"
-			   
-			size=				"150"
-			mass=				"15000"
-			thrustRatio=		"1.5"
-			maxSpeed=			"8"
-			cargoSpace=			"1000"
-
-			explosionType=		"&vtBlastExplosion4;"
-			>
-
-		<!-- Configuration -->
-		
-		<Armor
-			armorID=			"&itDuralloyArmor;"
-			count=				"12"
-			/>
-		
-		<Devices>
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="200"   posAngle="67"  posRadius="53" posZ="0"/>
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="170"   posAngle="35"  posRadius="71" posZ="0"/>
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="300" maxFireArc="170" posAngle="25"  posRadius="80" posZ="0"/>
-
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="160" maxFireArc="0"   posAngle="293" posRadius="53" posZ="0"/>
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="0"   posAngle="325" posRadius="71" posZ="0"/>
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="60"  posAngle="335" posRadius="80" posZ="0"/>
-
-			<Device deviceID="&itSuperconductingShields;"/>
-			<Device deviceID="&it250MWReactor;"/>
-		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"3"
-			rotationAccel=		"0.3"
-			/>
-
-		<Interior>
-			<Compartment name="interior"
-					hitPoints=	"250"
-					/>
-			
-			<Compartment name="main drive"
-					type=		"mainDrive"
-					hitPoints=	"100"
-
-					posX=		"-35"
-					posY=		"0"
-					sizeX=		"46"
-					sizeY=		"42"
-					/>
-		</Interior>
-
-		<Items>
-			<Item count="2d12"	item="&itPteracniumFuelRod;"/>
-			<Item count="5d10" item="&itSuperconductingCoil;"/>
-		</Items>
-
-		<!-- Image and Effects -->
-
-		<Image imageID="&rsHurin;" imageWidth="164" imageHeight="164"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="165"	posRadius="76"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="74"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-165"	posRadius="76"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-		</Effects>
-
-		<!-- AI and Behavior -->
-
-		<AISettings
-			combatStyle=		"standOff"
-			fireRateAdj=		"20"
-			fireAccuracy=		"90"
-			perception=			"5"
-			/>
-	</ShipClass>
-
-	<StationType UNID="&stHuariFortress;"
-			name=				"Huari fortress(es)"
-			sovereign=			"&svHuariEmpire;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itAdvancedPlasteelPlate;"
-			hitPoints=			"1200"
-            regen=              "11"
-			fireRateAdj=		"20"
-			explosionType=		"&vtBlastExplosion4;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"enemy, envWater, envAvoidsEarth, generic, huari, human, majorStation, populated"
-			levelFrequency=		"---vu ur--- ----- ----- -----"
-			locationCriteria=	"-lifeZone, +planetary"
-			enemyExclusionRadius="100"
-			>
-
-		<Image			imageID="&rsStations6;" imageX="0" imageY="448" imageWidth="192" imageHeight="192"/>
-
-		<Devices>
-			<Device deviceID="&itMarkIIIHowitzer;"	omnidirectional="true" posAngle="60"  posRadius="85"/>
-			<Device deviceID="&itMarkIIIHowitzer;"	omnidirectional="true" posAngle="155" posRadius="90"/>
-			<Device deviceID="&itMarkIIIHowitzer;"	omnidirectional="true" posAngle="240" posRadius="100"/>
-			<Device deviceID="&itMarkIIIHowitzer;"	omnidirectional="true" posAngle="330" posRadius="110"/>
-		</Devices>
-
-		<Items>
-			<Item count="20d20" item="&itSuperconductingCoil;"/>
-			<Table count="1-3">
-				<Lookup chance="40" count="1" table="&trConsumables7;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem7;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem7;"/>
-			</Table>
-		</Items>
-
-		<Ships>
-			<Ship					count="1d2"	class="&scHurinDestroyer;"	orders="patrol" patrolDist="40"/>
-		</Ships>
-
-		<Reinforcements minShips="1">
-			<Ship					count="1d2"	class="&scHurinDestroyer;"	orders="patrol" patrolDist="40"/>
-		</Reinforcements>
-
-		<Encounters frequency="uncommon">
-			<Ship count="1"	class="&scHurinDestroyer;" orders="wander"	maxShips="4"/>
-		</Encounters>
-
-		<DockingPorts>
-			<Port x="-49"	y="91" />
-			<Port x="85"	y="63" />
-			<Port x="67"	y="-49" />
-			<Port x="43"	y="-72" />
-			<Port x="4"		y="-84" />
-
-			<Port x="-58"	y="-64" />
-			<Port x="-86"	y="-33" />
-			<Port x="-94"	y="3" />
-		</DockingPorts>
-
-	</StationType>
-
-	<!-- Resources -->
-
-	<Image UNID="&rsHurin;"			bitmap="Resources\Hurin.jpg"		bitmask="Resources\HurinMask.bmp"  loadOnUse="true"/>
-	
 <!-- Kobol Syndicate ======================================================= -->
 
 	<Sovereign UNID="&svKobolWarlords;"

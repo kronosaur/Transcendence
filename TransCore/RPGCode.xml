@@ -253,6 +253,15 @@
 								visible: Nil
 								}
 				
+						;	If the station only installs as part of upgrade, then say so.
+
+						(objGetProperty dockObj 'installDeviceUpgradeOnly)
+							{
+								visible: True
+								enabled: Nil
+								desc: (scrTranslate gScreen "actionInstall:upgradeInstallOnly" { category:(@ options 'category) })
+								}
+							
 						;	If no items to install, action is disabled
 					
 						(not (setq allItems (objGetItems shipObj (@ options 'criteria))))
@@ -276,25 +285,9 @@
 										(scrTranslate gScreen "actionInstall:noCompatibleItemInCargo" { category:(@ options 'category) })
 										)
 								}
-								
-						;	If none of the items in our cargo hold can be installed because
-						;	the station requires an upgrade (purchase) then we show an error.
-					
-						(not (filter allItems theItemToInstall
-								(block (
-									(installItemStatus (objGetItemProperty dockObj theItemToInstall 'installItemStatus))
-									)
-									(and (@ installItemStatus 'canInstall)
-										(not (@ installItemStatus 'upgradeInstallOnly))
-										)
-									)
-								))
-							{
-								visible: True
-								enabled: Nil
-								desc: (scrTranslate gScreen "actionInstall:upgradeInstallOnly" { category:(@ options 'category) })
-								}
 							
+						;	We might be able to install something
+
 						{
 							visible: True
 							enabled: True
