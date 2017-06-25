@@ -8,10 +8,6 @@
 
 			alignment="constructive chaos"
 			>
-		<Language>
-			<Text id="WatchYourTargets">""</Text>
-			<Text id="NiceShooting">""</Text>
-		</Language>
 	</Sovereign>
 
 	<!-- Auton Base Class
@@ -96,7 +92,7 @@
 						;	If no target, unable to compy
 						
 						(not (objGetTarget gSender))
-							(objSendMessage gSender gSource "\"Unable to comply\"")
+							(objSendMessage gSender gSource (objTranslate gSource 'UnableToComply))
 
 						;	Attack the target
 						
@@ -105,7 +101,7 @@
 							(shpOrder gSource 'attack (objGetTarget gSender))
 							
 							(objSetData gSource 'behavior 'attackingTarget)
-							(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck "\"Auton order acknowledged\""))
+							(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
 							)
 						)
 				</Invoke>
@@ -125,14 +121,14 @@
 							(or (not (setq theTarget (sysFindObject gPlayerShip "sTEAN")))
 									(gr (objGetDistance gPlayerShip theTarget) 100)
 									)
-								(objSendMessage gSender gSource (objTranslate gSource 'NoTargetInRange "\"No target in range\""))
+								(objSendMessage gSender gSource (objTranslate gSource 'NoTargetInRange))
 							
 							(block Nil
 								(shpCancelOrders gSource)
 								(shpOrder gSource 'attack theTarget)
 								
 								(objSetData gSource 'behavior 'attackingAtWill)
-								(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck "\"Auton order acknowledged\""))
+								(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
 								)
 							)
 						)
@@ -156,7 +152,7 @@
 							(or (not behavior) (eq behavior 'escorting))
 								(block Nil
 									(objCommunicate gSource gSender 'FormUp)
-									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck "\"Auton order acknowledged\""))
+									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
 									)
 
 							(block Nil
@@ -164,7 +160,7 @@
 								(shpOrder gSource 'escort gPlayerShip)
 								
 								(objSetData gSource 'behavior 'escorting)
-								(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck "\"Auton order acknowledged\""))
+								(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
 								)
 							)
 						)
@@ -211,7 +207,7 @@
 						(if (gr mass spaceLeft)
 						
 							;	Not enough space
-							(objSendMessage gSender gSource (objTranslate gSource 'ErrNoSpaceToReturn "\"Not enough space in cargo hold to return to ship\""))
+							(objSendMessage gSender gSource (objTranslate gSource 'ErrNoSpaceToReturn))
 								
 							;	Return
 							(block Nil
@@ -219,7 +215,7 @@
 								(shpOrder gSource 'gate gSender)
 							
 								(objSetData gSource 'behavior 'returning)
-								(objSendMessage gSender gSource (objTranslate gSource 'ReturnAck "\"Auton order acknowledged\""))
+								(objSendMessage gSender gSource (objTranslate gSource 'ReturnAck))
 								
 								(setq spaceLeft (- spaceLeft mass))
 								)
@@ -248,7 +244,7 @@
 						(shpOrder gSource 'hold)
 						
 						(objSetData gSource 'behavior 'waiting)
-						(objSendMessage gSender gSource (objTranslate gSource 'WaitAck "\"Auton order acknowledged\""))
+						(objSendMessage gSender gSource (objTranslate gSource 'WaitAck))
 						)
 				</Invoke>
 			</Message>
@@ -390,8 +386,8 @@
 					;	Welcome or error message
 					
 					(if (@ gData 'notEnoughSpace)
-						(objSendMessage sourceObj auton (objTranslate gSource 'ErrNoSpaceToReturn "\"Not enough space in cargo hold to return to ship\""))
-						(objSendMessage sourceObj auton (objTranslate auton 'DeployAck (cat "\"" (objGetName auton 0x01) " online\"")))
+						(objSendMessage sourceObj auton (objTranslate auton 'ErrNoSpaceToReturn))
+						(objSendMessage sourceObj auton (objTranslate auton 'DeployAck))
 						)
 					
 					;	Return the auton created, in case subclasses want to
@@ -486,13 +482,22 @@
 			</OnPlayerLeftSystem>
 			
 			<OrderAttackSelf>
-				(objSendMessage gSender gSource "\"Unable to comply\"")
+				(objSendMessage gSender gSource (objTranslate gSource 'UnableToComply))
 			</OrderAttackSelf>
 		</Events>
 		
 		<Language>
-			<Text id="WatchYourTargets">""</Text>
-			<Text id="NiceShooting">""</Text>
+			<String id="WatchYourTargets"></String>
+			<String id="NiceShooting"></String>
+			<String id="UnableToComply">"Unable to comply"</String>
+			<String id="AttackTargetAck">"Auton order acknowledged"</String>
+			<String id="NoTargetInRange">"No target in range"</String>
+			<String id="FormUpAck">"Auton order acknowledged"</String>
+			<String id="ErrNoSpaceToReturn">"Not enough space in cargo hold to return to ship"</String>
+			<String id="ReturnAck">"Auton order acknowledged"</String>
+			<String id="WaitAck">"Auton order acknowledged"</String>
+			<Text id="DeployAck">(objTranslate gSource 'DeployAckString { autonName:(objGetName auton 0x01) } )</Text>
+			<String id="DeployAckString">"%autonName% online"</String>
 		</Language>
 	</Type>
 

@@ -57,7 +57,7 @@
 			/>
 		
 		<Language>
-			<Text id="DeployAck">"\"AutoSentinel&#xae; v2.01 online\""</Text>
+			<String id="DeployAck">"AutoSentinel&#xae; v2.01 online"</String>
 		</Language>
 	</ShipClass>
 
@@ -141,7 +141,7 @@
 		</Events>
 		
 		<Language>
-			<Text id="DeployAck">"\"200A: AI.error.safety_module_failure\""</Text>
+			<String id="DeployAck">"200A: AI.error.safety_module_failure"</String>
 		</Language>
 	</ShipClass>
 
@@ -209,13 +209,14 @@
 					(shpCancelOrders gSource)
 					(shpOrder gSource 'attack gSender)
 					
-					(objSendMessage gSender gSource "300D: AI.error.safety_module_failure")
+					(objSendMessage gSender gSource (objTranslate gSource 'safetyFailure))
 					)
 			</OrderAttackSelf>
 		</Events>
 		
 		<Language>
-			<Text id="DeployAck">"\"300D Defender online [v2.1d]\""</Text>
+			<String id="safetyFailure">"300D: AI.error.safety_module_failure"</String>
+			<String id="DeployAck">"300D Defender online [v2.1d]"</String>
 		</Language>
 	</ShipClass>
 
@@ -275,7 +276,7 @@
 			/>
 
 		<Language>
-			<Text id="DeployAck">"\"310A Aegis online [v1.0f]\""</Text>
+			<String id="DeployAck">"310A Aegis online [v1.0f]"</String>
 		</Language>
 	</ShipClass>
 
@@ -335,12 +336,12 @@
 			/>
 
 		<Language>
-			<Text id="DeployAck">"\"330M Mule online [v2.2a]\""</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
-			<Text id="actionJettison">"[J]ettison"</Text>
-			<Text id="actionLoot">"[L]oot"</Text>
-			<Text id="descDefault">"You are docked with a 330M mule auton."</Text>
-			<Text id="descNoItemsHere">"There are no items here."</Text>
+			<String id="DeployAck">"330M Mule online [v2.2a]"</String>
+			<Text id="actionUndock">[U]ndock</Text>
+			<Text id="actionJettison">[J]ettison</Text>
+			<Text id="actionLoot">[L]oot</Text>
+			<Text id="descDefault">You are docked with a 330M mule auton.</Text>
+			<Text id="descNoItemsHere">There are no items here.</Text>
 		</Language>
 		
 		<!-- Docking -->
@@ -446,7 +447,7 @@
 			<OrderAttackSelf>
 				(block Nil
 					(objCommunicate gSource gSender 14)
-					(objSendMessage gSender gSource "1M self-destruct activated")
+					(objSendMessage gSender gSource (objTranslate gSource 'selfDestructActivated))
 					(sysAddObjTimerEvent 90 gSource "OrderSelfDestruct")
 					)
 			</OrderAttackSelf>
@@ -455,7 +456,7 @@
 				(block Nil
 					(sysCreateWeaponFire 
 						&vtBlastExplosion4; 
-						(list Nil 'explosion Nil "self-destructing 1M battle auton" 0x00)
+						(list Nil 'explosion Nil (objTranslate gSource 'deathCause) 0x00)
 						(objGetPos gSource) 
 						0
 						0
@@ -469,7 +470,9 @@
 		</Events>
 		
 		<Language>
-			<Text id="DeployAck">"\"Auton series 1M online\""</Text>
+			<String id="selfDestructActivated">"1M self-destruct activated"</String>
+			<String id="DeployAck">"Auton series 1M online"</String>
+			<Text id="deathCause">self-destructing 1M battle auton</Text>
 		</Language>
 	</ShipClass>
 
@@ -528,7 +531,7 @@
 			/>
 
 		<Language>
-			<Text id="DeployAck">"\"Auton series 1M/i online\""</Text>
+			<String id="DeployAck">"Auton series 1M/i online"</String>
 		</Language>
 	</ShipClass>
 	
@@ -648,7 +651,7 @@
 							(or (not behavior) (eq behavior 'escorting))
 								(block Nil
 									(objCommunicate gSource gSender 'FormUp)
-									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck "\"Auton order acknowledged\""))
+									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
 									)
 
 							(block Nil
@@ -658,7 +661,7 @@
 								(shpOrder gSource 'escort gPlayerShip)
 								
 								(objSetData gSource 'behavior 'escorting)
-								(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck "\"Auton order acknowledged\""))
+								(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
 								)
 							)
 						)
@@ -695,7 +698,7 @@
 								(if exploredObj
 									(block Nil
 										(objSetKnown exploredObj)
-										(objSendMessage gPlayerShip gSource (objTranslate gSource 'ObjectExplored))
+										(objSendMessage gPlayerShip gSource (objTranslate gSource 'ObjectExplored { objectName:(objGetName exploredObj 0x01) } ))
 										
 										(objClearShowAsDestination exploredObj)
 										)
@@ -733,20 +736,11 @@
 		</Events>
 		
 		<Language>
-			<Text id="DeployAck">"\"Tx3 explorer online\""</Text>
-			<Text id="ExplorationDone">"\"Exploration complete\""</Text>
-			<Text id="ExploreAck">"\"Commencing exploration\""</Text>
-			<Text id="NoExploreTarget">"\"No unexplored objects in system.\""</Text>
-			<Text id="ObjectExplored">
-				(block (
-					(exploredObj (objGetObjByID (objGetData gSource 'targetID)))
-					)
-					
-					(cat
-						"\"" (objGetName exploredObj 0x01) " explored\""
-						)
-					)
-			</Text>
+			<String id="DeployAck">"Tx3 explorer online"</String>
+			<String id="ExplorationDone">"Exploration complete"</String>
+			<String id="ExploreAck">"Commencing exploration"</String>
+			<String id="NoExploreTarget">"No unexplored objects in system."</String>
+			<String id="ObjectExplored">"%objectName% explored"</String>
 		</Language>
 	</ShipClass>
 
