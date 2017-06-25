@@ -616,11 +616,6 @@
 			</ReplyDecline>
 
 		</Panes>
-
-		<Language>
-			<Text id="actionAccept">"[A]ccept"</Text>
-			<Text id="actionDecline">"[D]ecline"</Text>
-		</Language>
 	</DockScreen>
 
 </TranscendenceModule>

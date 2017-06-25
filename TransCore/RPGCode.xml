@@ -2086,7 +2086,7 @@
 								{
 									label: (or (@ pageDesc 'acceptLabel)
 										(msnTranslate (@ options 'missionObj) 'AcceptLabel)
-										(typTranslate &dsRPGMission; 'actionAccept)
+										(typTranslate &dsDockScreenBase; 'actionAccept)
 										)
 									code: (@ pageDesc 'acceptCode)
 									nextPage: 'missionAccept
@@ -2094,7 +2094,7 @@
 								{
 									label: (or (@ pageDesc 'declineLabel)
 										(msnTranslate (@ options 'missionObj) 'DeclineLabel)
-										(typTranslate &dsRPGMission; 'actionDecline)
+										(typTranslate &dsDockScreenBase; 'actionDecline)
 										)
 									code: (@ pageDesc 'declineCode)
 									nextPage: 'missionDecline
