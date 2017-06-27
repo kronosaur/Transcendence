@@ -102,61 +102,47 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"You are docked at a Ringers Collective. Ringer neo-humans float through the vast volume of the station, perfectly adapted to zero-gravity and space.">
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Exchange" default="1" key="E">
-								(if (gr (objGetBalance gPlayerShip 'rin) 0)
-									(scrShowPane gScreen "Exchange")
-									(scrShowPane gScreen "ExchangeIntro")
+							<Action id="actionCommoditiesExchange" default="1">
+								(switch
+									(= (objGetBalance gPlayerShip 'rin) 0)
+										(scrShowPane gScreen 'ExchangeIntro)
+
+									(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+										checkMilitaryID: Nil
+										})
 									)
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 
-					<Exchange
-							desc=	"The central structure of the Ringers Collective is a large marketplace containing sophisticated and rare devices from all over Human Space. Commonwealth credits are not accepted here.">
+					<ExchangeIntro>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descExchangeIntro)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
-									checkMilitaryID: Nil
-									})
+							<Action id="actionContinue" cancel="1" default="1">
+								(block Nil
+									(scrShowPane gScreen 'Default)
+									(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+										checkMilitaryID: Nil
+										})
+									)
 							</Action>
-
-							<Action name="Sell Items" key="S">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
-									})
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-					</Exchange>
-
-					<ExchangeIntro
-							desc=	"As you enter the main Exchange, a greeter scans you and says,\n\n&quot;Earthican, welcome. Your account balance is 0 rin. Collective does not seek Commonwealth credits. Collective seeks rare and powerful ores and substances. Bring here.&quot;">
-
-						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
-								(scrShowPane gScreen "Exchange")
-							</Action>
-
 						</Actions>
 					</ExchangeIntro>
-
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
 		<DockingPorts>
@@ -169,6 +155,19 @@
 			<Port x="39"	y="-72" />
 			<Port x="-39"	y="-72" />
 		</DockingPorts>
+
+		<Language>
+			<Text id="descWelcome">
+				You are docked at a Ringers Collective. Ringer neo-humans float
+				through the vast volume of the station, perfectly adapted to
+				zero-gravity and space.
+			</Text>
+			<Text id="commoditiesExchangeScreenDesc">
+				The central structure of the Ringers Collective is a large marketplace
+				containing sophisticated and rare devices from all over Human Space.
+				Commonwealth credits are not accepted here.
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Ringer Shipyard -->
@@ -261,80 +260,72 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"You are docked at a Ringer Shipyard. Ringer neo-humans float through the vast volume of the station, perfectly adapted to zero-gravity and space.">
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Exchange" default="1" key="E">
-								(if (gr (objGetBalance gPlayerShip 'rin) 0)
-									(scrShowPane gScreen "Exchange")
-									(scrShowPane gScreen "ExchangeIntro")
+							<Action id="actionCommoditiesExchange" default="1">
+								(switch
+									(= (objGetBalance gPlayerShip 'rin) 0)
+										(scrShowPane gScreen 'ExchangeIntro)
+
+									(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+										checkMilitaryID: Nil
+										})
 									)
 							</Action>
 
-							<Action name="Dock Services" default="1" key="D">
-								(if (gr (objGetBalance gPlayerShip 'rin) 0)
+							<Action id="actionDockServices">
+								(switch
+									(= (objGetBalance gPlayerShip 'rin) 0)
+										(scrShowPane gScreen 'DockServicesGreeter)
+
 									(rpgDockServices gPlayerShip {
 										checkMilitaryID: Nil
 										})
-									(scrShowPane gScreen "DockServicesGreeter")
 									)
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
 					</Default>
 
-					<Exchange
-							desc=	"The central structure of the Ringer Shipyard is a large marketplace containing sophisticated and rare devices from all over Human Space. Commonwealth credits are not accepted here.">
+					<ExchangeIntro>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descExchangeIntro)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
-									checkMilitaryID: Nil
-									})
+							<Action id="actionContinue" cancel="1" default="1">
+								(block Nil
+									(scrShowPane gScreen 'Default)
+									(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+										checkMilitaryID: Nil
+										})
+									)
 							</Action>
-
-							<Action name="Sell Items" key="S">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
-									})
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-					</Exchange>
-
-					<ExchangeIntro
-							desc=	"As you enter the main Exchange, a greeter scans you and says,\n\n&quot;Earthican, welcome. Your account balance is 0 rin. Collective does not seek Commonwealth credits. Collective seeks rare and powerful ores and substances. Bring here.&quot;">
-
-						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
-								(scrShowPane gScreen "Exchange")
-							</Action>
-
 						</Actions>
 					</ExchangeIntro>
 
-					<DockServicesGreeter
-							desc=	"As you enter the shipyard, a greeter scans you and says,\n\n&quot;Earthican, welcome. Your account balance is 0 rin. Collective does not seek Commonwealth money.&quot;">
+					<DockServicesGreeter>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descDockServicesGreeter)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								(block Nil
-									(scrShowPane gScreen "Default")
+									(scrShowPane gScreen 'Default)
 									
 									(rpgDockServices gPlayerShip {
 										checkMilitaryID: Nil
 										})
 									)
 							</Action>
-
 						</Actions>
 					</DockServicesGreeter>
 				</Panes>
@@ -353,6 +344,25 @@
 			<Port x="58"	y="-138" />
 			<Port x="-58"	y="-138" />
 		</DockingPorts>
+
+		<Language>
+			<Text id="descWelcome">
+				You are docked at a Ringer Shipyard. Ringer neo-humans float
+				through the vast volume of the station, perfectly adapted to
+				zero-gravity and space.
+			</Text>
+			<Text id="descDockServicesGreeter">
+				As you enter the shipyard, a greeter scans you and says,
+
+				"Earthican, welcome. Your account balance is 0 rin. Collective
+				does not seek Commonwealth money."
+			</Text>
+			<Text id="commoditiesExchangeScreenDesc">
+				The central structure of the Ringers Shipyard is a large marketplace
+				containing sophisticated and rare devices from all over Human Space.
+				Commonwealth credits are not accepted here.
+			</Text>
+		</Language>
 	</StationType>
 
 <!-- LEVEL X ITEMS -->
@@ -491,7 +501,21 @@
 	
 	-->
 	
-	<Type unid="&baRingersStation;">
+	<Type unid="&baRingersStation;"
+			inherit=			"&dsDockScreenBase;"
+			>
+		<Language>
+			<Text id="actionCommoditiesExchange">[E]xchange</Text>
+
+			<Text id="descExchangeIntro">
+				As you enter the main Exchange, a greeter scans you and says,
+
+				"Earthican, welcome. Your account balance is 0 rin. Collective
+				does not seek Commonwealth credits. Collective seeks rare and
+				powerful ores and substances. Bring here."
+			</Text>
+		</Language>
+
 		<Events>
 			<OnDestroy>
 				(intRingerOnDestroy)
