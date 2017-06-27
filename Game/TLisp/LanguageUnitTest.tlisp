@@ -1,0 +1,14 @@
+;	LanguageUnitTest.tlisp
+;
+;	Regression tests for language operations
+;	Copyright (c) 2017 by Kronosaur Productions, LLC. All Rights Reserved
+
+(setq TEST_SUITE (list
+
+	;	fmtCompose
+
+	{	code: '(fmtCompose "Test")							result: "Test"	}
+	))
+
+(debugUnitTest "Language Unit Test" TEST_SUITE)
+
