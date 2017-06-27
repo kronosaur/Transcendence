@@ -22,6 +22,7 @@
 	{	code: '(fmtCompose "TEST %")						result: "TEST %"	}
 	{	code: '(fmtCompose "%")								result: "%"	}
 	{	code: '(fmtCompose "%test%%" { test:'foo })			result: "foo%"	}
+	{	code: '(fmtCompose "%%test%%" { test:'foo })		result: "%test%"	}
 
 	;	For backwards compatibility, a double percent is translated to a single
 	;	percent. But in practice, you should use a single percent where needed.
