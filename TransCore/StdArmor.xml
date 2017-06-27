@@ -65,7 +65,7 @@
 			value=				"10"
 			mass=				"350"
 			  
-			description=		"A thin titanium case protects ship that cannot afford armor mass."
+			description=		"A thin titanium case protects ships that cannot afford too much armor mass."
 			>
 
 		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
