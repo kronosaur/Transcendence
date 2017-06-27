@@ -472,6 +472,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Game\TLisp\LanguageUnitTest.tlisp" />
     <None Include="..\Game\TLisp\ListUnitTest.tlisp" />
     <None Include="..\Game\TransData.xml">
       <SubType>Designer</SubType>

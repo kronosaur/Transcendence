@@ -675,6 +675,54 @@
 					)
 				))
 
+			; Debug functions -------------------------------------------------
+
+			(setq debugUnitTest (lambda (title testSuite)
+				(block (
+					(testNum 0)
+					(successTests 0)
+					(failedTests 0)
+					)
+					(print title)
+
+					(enum testSuite theTest
+						(errblock (errorResult result)
+							(setq testNum (add testNum 1))
+							(setq result (eval (@ theTest 'code)))
+							(switch
+								(eq result (@ theTest 'result))
+									(block ()
+										; (print "[" testNum "] PASS")
+										(setq successTests (add successTests 1))
+										)
+
+								(block ()
+									(print "[" testNum "] FAIL: " (@ theTest 'code) " -&gt; " result " (expected " (@ theTest 'result) ")")
+									(setq failedTests (add failedTests 1))
+									)
+								)
+
+							;	Error
+
+							(block ()
+								(print "[" testNum "] ERROR: " errorResult)
+								(setq failedTests (add failedTests 1))
+								)
+							)
+						)
+
+					;	Print final results
+
+					(if (eq testNum successTests)
+						(print "COMPLETED " testNum " " (if (eq testNum 1) "test" "tests") " successfully.")
+						(print "FAILED " failedTests " " (if (eq failedTests 1) "test" "tests") " out of " testNum ".")
+						)
+
+					;	Return empty string
+
+					""
+					)
+				))
 			)
 	</Globals>
 </TranscendenceModule>

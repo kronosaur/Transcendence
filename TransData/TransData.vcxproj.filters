@@ -188,5 +188,8 @@
     <None Include="..\Game\TLisp\ListUnitTest.tlisp">
       <Filter>TLisp Files</Filter>
     </None>
+    <None Include="..\Game\TLisp\LanguageUnitTest.tlisp">
+      <Filter>TLisp Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
