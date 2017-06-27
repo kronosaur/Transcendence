@@ -8,6 +8,25 @@
 	;	fmtCompose
 
 	{	code: '(fmtCompose "Test")							result: "Test"	}
+
+	{	code: '(fmtCompose "%test%")						result: "%test%"	}
+	{	code: '(fmtCompose "Test %test%")					result: "Test %test%"	}
+	{	code: '(fmtCompose "Test %test% TEST")				result: "Test %test% TEST"	}
+	{	code: '(fmtCompose "Test%test%TEST")				result: "Test%test%TEST"	}
+	{	code: '(fmtCompose "%test%" { test:'foo })			result: "foo"	}
+	{	code: '(fmtCompose "Test %test%" { test:'foo })		result: "Test foo"	}
+	{	code: '(fmtCompose "Test%test%TEST" { test:'foo })	result: "TestfooTEST"	}
+
+	{	code: '(fmtCompose "Test % TEST")					result: "Test % TEST"	}
+	{	code: '(fmtCompose "% TEST")						result: "% TEST"	}
+	{	code: '(fmtCompose "TEST %")						result: "TEST %"	}
+	{	code: '(fmtCompose "%")								result: "%"	}
+	{	code: '(fmtCompose "%test%%" { test:'foo })			result: "foo%"	}
+
+	;	For backwards compatibility, a double percent is translated to a single
+	;	percent. But in practice, you should use a single percent where needed.
+
+	{	code: '(fmtCompose "%%")							result: "%"	}
 	))
 
 (debugUnitTest "Language Unit Test" TEST_SUITE)
