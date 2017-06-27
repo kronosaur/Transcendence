@@ -23,21 +23,20 @@
 			>
 
 		<OnScreenInit>
-			(if (scrIsFirstOnInit gScreen)
-				(scrSetData gScreen 'analyzer gItem)
-				)
+			(scrSetData gScreen 'analyzer gItem)
 		</OnScreenInit>
 
-		<Display type="customItemPicker">
+		<Display type="itemPicker"
+				dataFrom=	"player"
+				list=		"*"
+				>
 			<OnDisplayInit>
-				;	Cache the item list in a customPicker so we aren't affected
-				;	by external updates to the item list (e.g. nanofac etc.)
-				(filter (objGetItems gSource "*") theItem
+				(scrSetListFilter gScreen (lambda (theItem)
 					(or
 						(not (itmIsKnown theItem))
 						(objFireItemEvent gSource theItem 'GetIsAnalysisRequired)
 						)
-					)
+					))
 			</OnDisplayInit>
 		</Display>
 
@@ -52,15 +51,6 @@
 						canAnalyze result
 						)
 						
-						;	If we have previously displayed an analysis
-						;	result, then restore the old cursor position
-						(if (scrGetData gScreen 'result)
-							(block Nil
-								(scrSetData gScreen 'result Nil)
-								(scrSetListCursor gScreen (scrGetData gScreen 'cursor))
-								)
-							)
-
 						;	Init skill level
 						(if (not skillLevel)
 							(block Nil
@@ -150,14 +140,13 @@
 							;	Done
 
 							(scrSetData gScreen 'result (@ result 'desc))
-							(scrShowPane gScreen "Done")
+							(scrShowPane gScreen 'Done)
 							)
 					</Action>
 
 					<Action id="actionCancel" cancel="1">
 						(scrExitScreen gScreen)
 					</Action>
-
 				</Actions>
 			</Default>
 
@@ -184,7 +173,20 @@
 
 				<Actions>
 					<Action id="actionContinue" default="1">
-						(scrRefreshScreen gScreen)
+						(block Nil
+							;	Reset filter to show all items again
+							(scrSetListFilter gScreen (lambda (theItem)
+								(or
+									(not (itmIsKnown theItem))
+									(objFireItemEvent gSource theItem 'GetIsAnalysisRequired)
+									)
+								))
+							
+							;	Restore cursor position
+							(scrSetListCursor gScreen (scrGetData gScreen 'cursor))
+							
+							(scrShowPane gScreen 'Default)
+							)
 					</Action>
 
 					<Action id="actionDone" cancel="1">
@@ -192,7 +194,6 @@
 					</Action>
 				</Actions>
 			</Done>
-
 		</Panes>
 
 		<Language>
