@@ -916,7 +916,14 @@
 					(markUp (@ theRecipe 'markUp))
 					(workPrice
 						(switch
-							;	Recipe specifies a mark up relative to the component prices
+							;	If markUp is an integer, assume it is the cost of the work
+							;	as a percent of the component cost. E.g., 10 = 10% of component
+							;	cost.
+							(and markUp (= (typeof markUp) 'int32))
+								(int (round (* componentPrice (/ markUp 100))))
+
+							;	Otherwise, we expect a double such that 1.1 = 10% of component
+							;	cost.
 							markUp
 								(int (round (* componentPrice (- markUp 1))))
 
