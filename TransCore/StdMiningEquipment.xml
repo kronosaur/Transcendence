@@ -36,7 +36,7 @@
 		</ImageVariants>
 		
 		<Communications>
-			<Message name="Detonate" key="A">
+			<Message id="msgDetonate" name="Detonate" key="A">
 				<OnShow>
 					(and (= (objGetID gSender) (objGetData gSource 'ownerID))
 						(not (objGetData gSource 'status))

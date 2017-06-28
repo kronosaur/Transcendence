@@ -1607,7 +1607,7 @@
 
 	<Type UNID="&evKorolovFreighterBehavior;">
 		<Communications>
-			<Message name="Status" key="S">
+			<Message id="msgStatus" name="Status" key="S">
 				<OnShow>
 					(objGetData gSource 'korolovPlayerEscort)
 				</OnShow>

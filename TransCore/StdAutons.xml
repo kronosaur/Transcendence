@@ -587,7 +587,7 @@
 			/>
 		
 		<Communications>
-			<Message name="Explore" key="E">
+			<Message id="msgExplore" name="Explore" key="E">
 				<OnShow>
 					(and (eq (objGetData gSource "behavior") 'escorting)
 						(objGetProperty gSource 'playerWingman)
@@ -630,7 +630,7 @@
 				</Invoke>
 			</Message>
 			
-			<Message name="Form up" key="F">
+			<Message id="msgFormUp" name="Form up" key="F">
 				<OnShow>
 					(and
 						(objGetProperty gSource 'playerWingman)

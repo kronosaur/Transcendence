@@ -169,7 +169,7 @@ void CTranscendenceWnd::DoCommsSquadronMenu (const CString &sName, MessageTypes 
 			//	First try to send as a comms message
 
 			int iIndex;
-			if ((iIndex = pObj->FindCommsMessage(sName)) != -1
+			if ((iIndex = pObj->FindCommsMessageByName(sName)) != -1
 					&& pObj->IsCommsMessageValidFrom(pShip, iIndex))
 				pObj->CommsMessageFrom(pShip, iIndex);
 
@@ -347,31 +347,31 @@ DWORD CTranscendenceWnd::GetCommsStatus (void)
 				&& pObj != pShip)
 			{
 			int iIndex;
-			if ((iIndex = pObj->FindCommsMessage(SO_ATTACK_IN_FORMATION)) != -1
+			if ((iIndex = pObj->FindCommsMessageByName(SO_ATTACK_IN_FORMATION)) != -1
 					&& pObj->IsCommsMessageValidFrom(pShip, iIndex))
 				dwStatus |= resCanAttackInFormation;
 
-			if ((iIndex = pObj->FindCommsMessage(SO_BREAK_AND_ATTACK)) != -1
+			if ((iIndex = pObj->FindCommsMessageByName(SO_BREAK_AND_ATTACK)) != -1
 					&& pObj->IsCommsMessageValidFrom(pShip, iIndex))
 				dwStatus |= resCanBreakAndAttack;
 
-			if ((iIndex = pObj->FindCommsMessage(SO_FORM_UP)) != -1
+			if ((iIndex = pObj->FindCommsMessageByName(SO_FORM_UP)) != -1
 					&& pObj->IsCommsMessageValidFrom(pShip, iIndex))
 				dwStatus |= resCanFormUp;
 
-			if ((iIndex = pObj->FindCommsMessage(SO_ATTACK_TARGET)) != -1
+			if ((iIndex = pObj->FindCommsMessageByName(SO_ATTACK_TARGET)) != -1
 					&& pObj->IsCommsMessageValidFrom(pShip, iIndex))
 				dwStatus |= resCanAttack;
 
-			if ((iIndex = pObj->FindCommsMessage(SO_WAIT)) != -1
+			if ((iIndex = pObj->FindCommsMessageByName(SO_WAIT)) != -1
 					&& pObj->IsCommsMessageValidFrom(pShip, iIndex))
 				dwStatus |= resCanWait;
 
-			if ((iIndex = pObj->FindCommsMessage(SO_CANCEL_ATTACK)) != -1
+			if ((iIndex = pObj->FindCommsMessageByName(SO_CANCEL_ATTACK)) != -1
 					&& pObj->IsCommsMessageValidFrom(pShip, iIndex))
 				dwStatus |= resCanAbortAttack;
 
-			if ((iIndex = pObj->FindCommsMessage(SO_ALPHA_FORMATION)) != -1
+			if ((iIndex = pObj->FindCommsMessageByName(SO_ALPHA_FORMATION)) != -1
 					&& pObj->IsCommsMessageValidFrom(pShip, iIndex))
 				dwStatus |= resCanBeInFormation;
 			}
