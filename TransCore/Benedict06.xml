@@ -89,6 +89,38 @@
 					;	Remember the player's old ship.
 					
 					(msnSetData gSource 'playerShipID (objGetID gPlayerShip))
+
+					;	Deal with all of the player's wingmen
+
+					(enum (sysFindObject gPlayerShip "sA +property:playerWingman;") theWingman
+						(block (
+							(targetSov (objGetProperty theWingman 'sovereign))
+							(curOrders (shpGetOrder theWingman))
+							)
+							;	If our wingman is not currently escorting us, then order them
+							;	to return (if they ARE escorting us, then they will stay with the
+							;	old player ship).
+
+							(if (and (!= curOrders 'escort)
+									(!= curOrders 'follow)
+									(!= curOrders 'hold)
+									)
+								(objCommunicate theWingman gPlayerShip 'msgFormUp)
+								)
+
+							;	Set the sovereign so that it is friends with the new infiltration
+							;	sovereign.
+
+							(if (and (!= targetSov &svBenedict06Infiltrate;)
+									(!= targetSov &svCommonwealth;)
+									)
+								(block ()
+									(sovSetDisposition &svBenedict06Infiltrate; targetSov 'friend)
+									(sovSetDisposition targetSov &svBenedict06Infiltrate; 'friend)
+									)
+								)
+							)
+						)
 					
 					;	Create a Penitent ship for the player
 					
@@ -119,7 +151,7 @@
 					;	the default player sovereign.
 					
 					(objSetSovereign newShipObj &svBenedict06Infiltrate;)
-					
+
 					;	Set the old player ship to dock at the station (and wait)
 					
 					(shpCancelOrders oldShipObj)
