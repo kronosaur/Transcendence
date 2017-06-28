@@ -20,6 +20,7 @@
 
 			expireTime=			"5400"
 			failureAfterOutOfSystem="5400"
+			noFailureOnOwnerDestroyed="true"
 			>
 
 		<StaticData>
@@ -142,6 +143,16 @@
 					
 					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
 						(msnFailure gSource)
+
+					;	If the Sisters station was destroyed then we remember that
+					;	fact (though the mission can continue).
+
+					(= (objGetID aObjDestroyed) (msnGetProperty gSource 'ownerID))
+						
+						(if (and gPlayerShip (= gPlayerShip aOrderGiver))
+							(msnSetData gSource 'sourceDestroyed 'byPlayer)
+							(msnSetData gSource 'sourceDestroyed 'byEnemy)
+							)
 					)
 			</OnObjDestroyed>
 			
@@ -330,7 +341,7 @@
 			<Text id="descIntro3">
 
 				"I've got an idea, but I need your help. Have you ever flown a
-				"Penitent ship?"
+				Penitent ship?"
 
 			</Text>
 			<String id="actionIntro3">"[I] don't like where this is going..."</String>
@@ -374,14 +385,41 @@
 			<!-- Success -->
 
 			<Text id="SuccessDebrief">
-				(list
-					{	textID: 'descSuccess1	}
-					{	textID: 'descSuccess2	}
-					{	textID: 'descSuccess3		labelID: 'actionSuccess3	}
-					{	textID: 'descSuccess4		labelID: 'actionSuccess4	}
+				(switch
+					;	If the Sisters station was destroyed by the player...
+
+					(= (msnGetData gSource 'sourceDestroyed) 'byPlayer)
+						(list
+							{	textID: 'descSuccess1C	}
+							{	textID: 'descSuccess2	}
+							{	textID: 'descSuccess3		labelID: 'actionSuccess3	}
+							{	textID: 'descSuccess4		labelID: 'actionSuccess4	}
+							)
+
+					;	If the Sisters station was destroyed by someone else...
+
+					(msnGetData gSource 'sourceDestroyed)
+						(list
+							{	textID: 'descSuccess1B	}
+							{	textID: 'descSuccess2	}
+							{	textID: 'descSuccess3		labelID: 'actionSuccess3	}
+							{	textID: 'descSuccess4		labelID: 'actionSuccess4	}
+							)
+
+					;	Otherwise, normal debrief
+
+					(list
+						{	textID: 'descSuccess1A	}
+						{	textID: 'descSuccess2	}
+						{	textID: 'descSuccess3		labelID: 'actionSuccess3	}
+						{	textID: 'descSuccess4		labelID: 'actionSuccess4	}
+						)
 					)
 			</Text>
-			<Text id="descSuccess1">
+
+			<!-- BRANCH A: Normal debrief -->
+
+			<Text id="descSuccess1A">
 
 				Fiona and Sandoval meet you at the airlock.
 							
@@ -389,6 +427,35 @@
 				He told us to meet him here."
 
 			</Text>
+
+			<!-- BRANCH B: Sisters destroyed by enemy -->
+
+			<Text id="descSuccess1B">
+
+				You dock with the ruined station and see Fiona and Sandoval helping
+				injured Sisters. Fiona walks towards you:
+
+				"It was an attack! You and Benedict are playing with fire and we're
+				getting burned!"
+
+				She looks past you at the ship, "Where is he?"
+			</Text>
+
+			<!-- BRANCH C: Sisters destroyed by player -->
+
+			<Text id="descSuccess1C">
+				
+				You dock with the ruined station and see Fiona and Sandoval helping
+				injured Sisters. Sandoval grabs you as you enter:
+
+				"What are you playing at! You deliberately attacked us!"
+
+				But Fiona interrupts him, "%He% didn't mean it, Sandoval! It was an 
+				accident.
+
+				"Where's Benedict?"
+			</Text>
+
 			<Text id="descSuccess2">
 
 				You give Fiona the video data ROM and tell her about Benedict 
@@ -431,9 +498,101 @@
 
 			</Text>
 
-			<!-- Penitent Infiltration -->
-			
-			<Text id="AtPenitents">
+			<String id="msgStopThatShip">"Destroy that ship!"</String>
+		</Language>
+	</MissionType>
+	
+<!-- OVERLAYS -->
+	
+	<OverlayType UNID="&ovBenedict06Disarm;"
+            attributes=         "effect"
+			disarm=		"true"
+			>
+		<Events>
+			<OnDestroy>
+				(block Nil
+					;	Player gets attacked by Penitent ships
+					
+					(sovSetDisposition &svPenitents; &svBenedict06Infiltrate; 'enemy)
+					(sovSetDisposition &svBenedict06Infiltrate; &svPenitents; 'enemy)
+					
+					;	Tell the station to attack the player
+					
+					(objCommunicate gSource gSource 'deterTarget gPlayerShip)
+					)
+			</OnDestroy>
+		</Events>
+	</OverlayType>
+	
+<!-- BEHAVIORS -->
+	
+	<Type unid="&evBenedict06PenitentShip;">
+		<Events>
+			<OnInsuranceClaim>
+				(block (
+					(missionObj (@ (msnFind "* +unid:&msInfiltratePenitents;;") 0))
+					(originalShipObj (objGetObjByID (msnGetData missionObj 'playerShipID)))
+					(penitentShipObj (objGetObjByID (msnGetData missionObj 'penitentShipID)))
+					)
+					
+					;	If the mission is still active, we fail it.
+					
+					(if (msnGetProperty missionObj 'isActive)
+						(msnFailure missionObj)
+						)
+					
+					;	Switch back to the original player ship.
+					
+					(switch
+						;	If we're not in the Penitent ship, or if our original ship is
+						;	destroyed, then go through the normal resurrection.
+						
+						(or (not originalShipObj)
+								(!= penitentShipObj gPlayerShip)
+								)
+							Nil
+							
+						;	Otherwise, we switch back to the original player ship
+						
+						(block Nil
+							;	Restore the player's ship
+					
+							(plyChangeShip gPlayer originalShipObj)
+							
+							;	Destroy the old penitent ship
+							
+							(objDestroy penitentShipObj)
+							
+							;	Return True to indicate that we handled this claim.
+							
+							True
+							)
+						)
+					)
+			</OnInsuranceClaim>
+		</Events>
+	</Type>
+
+	<Type UNID="&evBenedict06PenitentBase;">
+		<Events>
+			<GetDockScreen>
+				(block (missionObj)
+				
+					;	Screen when we dock
+				
+					(if (and
+							(not (objGetProperty gSource 'abandoned))
+							(setq missionObj (@ (msnFind "a +unid:&msInfiltratePenitents;;") 0))
+							(not (msnGetProperty missionObj 'isCompleted))
+							)
+						(list &dsRPGDialog; (objTranslate gSource 'benedict06.atPenitents) 10)
+						)
+					)
+			</GetDockScreen>
+		</Events>
+
+		<Language>
+			<Text id="benedict06.atPenitents">
 				(list
 					{						textID: 'descPenitents1	}
 					{						textID: 'descPenitents2
@@ -605,99 +764,7 @@
 				You hear deafening shots behind you as you make your way to the ship.
 
 			</Text>
-			
-			<String id="msgStopThatShip">"Destroy that ship!"</String>
 		</Language>
-	</MissionType>
-	
-<!-- OVERLAYS -->
-	
-	<OverlayType UNID="&ovBenedict06Disarm;"
-            attributes=         "effect"
-			disarm=		"true"
-			>
-		<Events>
-			<OnDestroy>
-				(block Nil
-					;	Player gets attacked by Penitent ships
-					
-					(sovSetDisposition &svPenitents; &svBenedict06Infiltrate; 'enemy)
-					(sovSetDisposition &svBenedict06Infiltrate; &svPenitents; 'enemy)
-					
-					;	Tell the station to attack the player
-					
-					(objCommunicate gSource gSource 'deterTarget gPlayerShip)
-					)
-			</OnDestroy>
-		</Events>
-	</OverlayType>
-	
-<!-- BEHAVIORS -->
-	
-	<Type unid="&evBenedict06PenitentShip;">
-		<Events>
-			<OnInsuranceClaim>
-				(block (
-					(missionObj (@ (msnFind "* +unid:&msInfiltratePenitents;;") 0))
-					(originalShipObj (objGetObjByID (msnGetData missionObj 'playerShipID)))
-					(penitentShipObj (objGetObjByID (msnGetData missionObj 'penitentShipID)))
-					)
-					
-					;	If the mission is still active, we fail it.
-					
-					(if (msnGetProperty missionObj 'isActive)
-						(msnFailure missionObj)
-						)
-					
-					;	Switch back to the original player ship.
-					
-					(switch
-						;	If we're not in the Penitent ship, or if our original ship is
-						;	destroyed, then go through the normal resurrection.
-						
-						(or (not originalShipObj)
-								(!= penitentShipObj gPlayerShip)
-								)
-							Nil
-							
-						;	Otherwise, we switch back to the original player ship
-						
-						(block Nil
-							;	Restore the player's ship
-					
-							(plyChangeShip gPlayer originalShipObj)
-							
-							;	Destroy the old penitent ship
-							
-							(objDestroy penitentShipObj)
-							
-							;	Return True to indicate that we handled this claim.
-							
-							True
-							)
-						)
-					)
-			</OnInsuranceClaim>
-		</Events>
-	</Type>
-
-	<Type UNID="&evBenedict06PenitentBase;">
-		<Events>
-			<GetDockScreen>
-				(block (missionObj)
-				
-					;	Screen when we dock
-				
-					(if (and
-							(not (objGetProperty gSource 'abandoned))
-							(setq missionObj (@ (msnFind "a +unid:&msInfiltratePenitents;;") 0))
-							(not (msnGetProperty missionObj 'isCompleted))
-							)
-						(list &dsRPGDialog; (typTranslate &msInfiltratePenitents; 'AtPenitents) 10)
-						)
-					)
-			</GetDockScreen>
-		</Events>
 	</Type>
 
 <!-- TABLES AND RESOURCES -->
