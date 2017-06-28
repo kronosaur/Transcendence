@@ -105,9 +105,13 @@
 					(objChangeEquipmentStatus newShipObj 'TargetingComputer 'install)
 					
 					;	Switch ships
+					;
+					;	We set the old ship to wait, which means autons stay with the old ship,
+					;	but any enemies abort (otherwise, random encounters would attack the old
+					;	ship).
 					
 					(plyChangeShip gPlayer newShipObj {
-						noOrderTransfer: True
+						oldShipWaits: True
 						})
 					
 					;	Set the sovereign because plyChangeShip always sets it to
