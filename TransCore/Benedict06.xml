@@ -309,29 +309,36 @@
 					)
 			</Text>
 			<Text id="descIntro1">
+
 				Benedict greets you as you enter:
 							
 				"%name%! I'm glad you're here! I've reconstructed the drive data
 				from the medical ship. They deviated from their scheduled course
 				to dock at a Penitent station in this system!"
+
 			</Text>
 			<String id="actionIntro1">"[H]umanitarian mission, maybe?"</String>
 			<Text id="descIntro2">
+
 				"Not likely! Maybe Stormhound is right. I think Sister Elana Ston
 				is hiding something. Whatever she was doing with the Penitents, maybe
 				she got caught and had to scuttle the medical ship to erase the
 				evidence."
+
 			</Text>
 			<String id="actionIntro2">"[W]hat are you going to do?"</String>
 			<Text id="descIntro3">
+
 				"I've got an idea, but I need your help. Have you ever flown a
 				"Penitent ship?"
+
 			</Text>
 			<String id="actionIntro3">"[I] don't like where this is going..."</String>
 
 			<!-- Briefing -->
 
 			<Text id="Briefing">
+
 				Benedict takes you around to another docking bay.
 							
 				"I've had the Sisters refurbish a Penitent ship that 
@@ -339,22 +346,29 @@
 				Sanctum and find out what the medical ship was doing there.
 							
 				"I really need you on this. Are you in?"
+
 			</Text>
 			<String id="AcceptLabel">"[S]ure, let's go."</String>
 			<String id="DeclineLabel">"[M]aybe. Let me prepare first."</String>
 			<Text id="AcceptReply">
+
 				"Alright. Just get us to the Penitent station and I'll take care 
 				of the rest."
+
 			</Text>
 			<Text id="DeclineReply">
+
 				"OK, but don't take too long."
+
 			</Text>
 
 			<!-- In Progress -->
 
 			<Text id="InProgress">
+
 				"What are we doing back here? We need to go to the Penitent
 				station!"
+
 			</Text>
 
 			<!-- Success -->
@@ -368,12 +382,15 @@
 					)
 			</Text>
 			<Text id="descSuccess1">
+
 				Fiona and Sandoval meet you at the airlock.
 							
 				Fiona looks past you at the ship, "Where's Benedict?
 				He told us to meet him here."
+
 			</Text>
 			<Text id="descSuccess2">
+
 				You give Fiona the video data ROM and tell her about Benedict 
 				staying behind.
 							
@@ -383,30 +400,35 @@
 				But Fiona shakes her head, "How? Even if he's not dead already
 				we'd have to blow the station to get him, and that could kill 
 				him too!"
+
 			</Text>
 			<Text id="descSuccess3">
+
 				Fiona continues, "And we don't know what's going on! Why is 
 				Sister Ston working with Penitents? Who were those children?
 							
 				"Maybe if we figure it out we'll have some leverage to get 
 				Benedict out."
+
 			</Text>
 			<String id="actionSuccess3">"[W]hat's your plan?"</String>
 			<Text id="descSuccess4">
+
 				"We're going to Sanctuary. I've got enough to make Sister Ston 
 				talk.
 							
 				"Meet us there and by then we might have a plan to rescue Benedict!"
+
 			</Text>
 			<String id="actionSuccess4">"[B]e careful!"</String>
-			<Text id="SuccessMsg">
-				"Mission complete!"
-			</Text>
+			<Text id="SuccessMsg">Mission complete!</Text>
 
 			<!-- Failure -->
 
 			<Text id="FailureDebrief">
+
 				"What a shame! Now we'll never know why the medical ship was docking at the Penitents!"
+
 			</Text>
 
 			<!-- Penitent Infiltration -->
@@ -454,6 +476,7 @@
 					)
 			</Text>
 			<Text id="descPenitents1">
+
 				You enter the Penitent docking bay with Benedict at your side. 
 				Dock workers in vacuum suits prep a handful of ships.
 							
@@ -462,37 +485,52 @@
 							
 				Gray-garbed Penitents pass you as you head for the elevator. None 
 				look up from their datapads.
+
 			</Text>
 			<Text id="descPenitents2">
+
 				The door to the elevated level slides open into a control room. 
 				A tall, middle-aged man in a simple gray outfit looks up from his 
 				console as you enter.
 
 				"Who are you, please?"
+
 			</Text>
+
+			<!-- BRANCH A -->
+
 			<String id="actionPenitents2A">"[W]e're here to relieve you."</String>
-			<String id="actionPenitents2B">"[G]ot called about a malfunction."</String>
-			<String id="actionPenitents2C">"[P]risoner transfer from cell block 1138."</String>
 			<Text id="descPenitents3">
+
 				The controller appears confused, "I just started my shift."
+
 			</Text>
 			<String id="actionPenitents3">"[Y]eah, but...you look tired."</String>
 			<Text id="descPenitents4">
+
 				"Why aren't you wearing your wristband? Why are there two of you? 
 				And why haven't I seen you before..."
 							
 				The Penitent suddenly heads towards a panel on the opposite wall, 
 				but Benedict intercepts him. He bashes the Penitent with his arm 
 				cannon, leaving him motionless on the floor.
+
 			</Text>
+
+			<!-- BRANCH B -->
+
+			<String id="actionPenitents2B">"[G]ot called about a malfunction."</String>
 			<Text id="descPenitents5">
+
 				The controller stares at both of you without speaking. Then he 
 				calmly looks down at his screen:
 							
 				"Our scanner has been ionized. You'll need to depolarize the dish."
+
 			</Text>
 			<String id="actionPenitents5">"[Y]eah, that's why we're here."</String>
 			<Text id="descPenitents6">
+
 				"Great!"
 							
 				"Of course, you're in the wrong place. Everyone knows the 
@@ -501,16 +539,25 @@
 				The Penitent suddenly heads towards a panel on the opposite wall, 
 				but Benedict intercepts him. He bashes the Penitent with his arm 
 				cannon, leaving him motionless on the floor.
+
 			</Text>
+
+			<!-- BRANCH C -->
+
+			<String id="actionPenitents2C">"[P]risoner transfer from cell block 1138."</String>
 			<Text id="descPenitents7">
+
 				"Where have I heard that before..."
 							
 				The Penitent suddenly heads towards a panel on the opposite wall, 
 				but Benedict intercepts him. He bashes the Penitent with his arm 
 				cannon, leaving him motionless on the floor.
+
 			</Text>
+
 			<String id="actionNowWhat">"[N]ow what?"</String>
 			<Text id="descPenitents8">
+
 				"We only have a few minutes," says Benedict, as he swipes around 
 				on the console. "Here it is! Docking bay video of when the medical 
 				ship docked."
@@ -519,8 +566,10 @@
 				You see Sister Elana Ston step out of the medical ship. There is no 
 				sound, but you see her talking with a couple of Penitents in their 
 				monochrome suits.
+
 			</Text>
 			<Text id="descPenitents9">
+
 				Sister Ston walks back to her ship, and for several 
 				minutes nothing more happens. But then a dozen medtechs come out of 
 				the ship, each escorting a small gurney. They take the gurneys into 
@@ -528,16 +577,20 @@
 							
 				Each gurney carries a small infant, wrapped in blankets, and hooked 
 				up to a monitoring pad.
+
 			</Text>
 			<Text id="descPenitents10">
+
 				Just then, you hear shouts from below and see a group of Penitents, 
 				weapons out, enter the docking bay.
 							
 				Benedict hands you a data ROM, "Take this video back to Fiona! 
 				Don't trust anyone else. Go now!"
+
 			</Text>
 			<String id="actionPenitents10">"[W]here are you going?"</String>
 			<Text id="descPenitents11">
+
 				"I'll buy you some time. Don't argue! I've got a plan to leave in 
 				one piece.
 							
@@ -545,9 +598,12 @@
 							
 				A blast hits above your head, and you scramble towards the door.
 				Benedict powers up his arm cannon and waves you through.
+
 			</Text>
 			<Text id="descPenitents12">
+
 				You hear deafening shots behind you as you make your way to the ship.
+
 			</Text>
 			
 			<String id="msgStopThatShip">"Destroy that ship!"</String>
