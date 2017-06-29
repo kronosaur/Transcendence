@@ -2862,6 +2862,10 @@
 					(not (objMatches gSource Nil "sTAV +commonwealthCustoms;"))
 						Nil
 
+					; If customs is temporarily disabled, then we don't do anything.
+					(= (objFireEvent gSource 'GetCommonwealthCustomsStatus) 'disabled)
+						Nil
+
 					; If the player ship is radioactive, then we need to
 					; decontaminate.
 					(shpIsRadioactive gPlayerShip)

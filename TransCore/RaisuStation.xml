@@ -104,6 +104,24 @@
 					)
 			</OnObjDestroyed>
 
+			<GetCommonwealthCustomsStatus>
+				(switch
+					;	If the player declined the mission, then everyone is still in fear, so
+					;	there are no customs agents.
+
+					(= (objGetData gSource "missionStatus") 'declined)
+						'disabled
+
+					;	If there are Centauri raiders in range, then everyone is hinding, so
+					;	no customs
+
+					(sysFindObject gSource "s +centauriWarlords; N:100;")
+						'disabled
+
+					;	Otherwise, Nil means normal status
+					)
+			</GetCommonwealthCustomsStatus>
+
 			<OnTimer>
 				(block (arcoVaughnStatus)
 					(setq arcoVaughnStatus (typGetGlobalData &scArcoVaughnHeavyRaider; "status"))
