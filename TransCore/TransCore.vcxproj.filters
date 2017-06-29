@@ -49,6 +49,9 @@
     <Filter Include="Human Space Library\Korolov Shipping">
       <UniqueIdentifier>{b04f8c8f-53ab-4024-b123-f5ee2b24f189}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Human Space Library\Eridani">
+      <UniqueIdentifier>{94156faf-ceb4-48b0-a89b-172afb19a909}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Transcendence.xml" />
@@ -229,9 +232,6 @@
     <None Include="EncountersVol01.xml">
       <Filter>Human Space Library\Encounters</Filter>
     </None>
-    <None Include="Eridani.xml">
-      <Filter>Human Space Library\Star Systems</Filter>
-    </None>
     <None Include="Heretic.xml">
       <Filter>Human Space Library\Star Systems</Filter>
     </None>
@@ -354,6 +354,9 @@
     </None>
     <None Include="Antarctica.xml">
       <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </None>
+    <None Include="Eridani.xml">
+      <Filter>Human Space Library\Eridani</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
