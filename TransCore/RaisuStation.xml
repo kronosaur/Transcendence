@@ -61,12 +61,9 @@
 					(if theStatus
 						(setq theList (list
 							(list 
-								(switch
-									(eq theStatus 'liberated) "Liberated Raisu station"
-									(eq theStatus 'destroyed) "Allowed Raisu station to be destroyed"
-									(eq theStatus 'destroyedByPlayer) "Destroyed Raisu station"
+								(or (typTranslate &stRaisuStation; (cat "achievement." theStatus))
 									(cat "ERROR: Raisu station status: " theStatus)
-									) 
+									)
 								Nil 
 								"achievements &amp; regrets"
 								)
@@ -105,20 +102,24 @@
 			</OnObjDestroyed>
 
 			<GetCommonwealthCustomsStatus>
-				(switch
-					;	If the player declined the mission, then everyone is still in fear, so
-					;	there are no customs agents.
+				(block (
+					(status (objGetData gSource 'missionStatus))
+					)
+					(switch
+						;	If the mission is in progress or declined, then everyone is hiding,
+						;	so no customs.
 
-					(= (objGetData gSource "missionStatus") 'declined)
-						'disabled
+						(or (= status 'declined) (= status 'inProgress))
+							'disabled
 
-					;	If there are Centauri raiders in range, then everyone is hinding, so
-					;	no customs
+						;	If there are Centauri raiders in range, then everyone is hiding, so
+						;	no customs
 
-					(sysFindObject gSource "s +centauriWarlords; N:100;")
-						'disabled
+						(sysFindObject gSource "s +centauriWarlords; N:100;")
+							'disabled
 
-					;	Otherwise, Nil means normal status
+						;	Otherwise, Nil means normal status
+						)
 					)
 			</GetCommonwealthCustomsStatus>
 
@@ -202,15 +203,11 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"The loud voices of a packed multitude bounce off every bulkhead and corridor in the station. "
-								"Old air scrubbers pump a thin, odorous breeze out of rusty vents. Discarded packets of Salmonite and Red Nebula beer huddle in the corner.\n\n"
-								"Welcome to " (objGetName gSource) "!"
-								))
+							(scrSetDescTranslate gScreen 'descNormal)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Meeting Hall" key="M" default="1">
+							<Action id="actionMeetingHall" default="1">
 								(block (missionStatus)
 									; Get some status
 									(setq missionStatus (objGetData gSource "missionStatus"))
@@ -249,24 +246,19 @@
 									)
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 
 					<MissionIntro>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"The station master stands at her console. She runs towards you tearfully:\n\n"
-								"\"Is it true? Have you fought the Centauri warlords? It's been so long since anyone stood up to them. Will you finish what you've begun? If you don't kill the rest of them now, we will be the ones who suffer. Arco Vaughn is the key. Kill him and the rest will leave us alone.\""
-								))
+							(scrSetDescTranslate gScreen 'descMissionIntro)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
+							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Mission")
 							</Action>
 						</Actions>
@@ -274,13 +266,11 @@
 
 					<Mission>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"\"I can help you; I'm not afraid anymore. Arco Vaughn lives deep in the outer belt&#x97;I can give you the coordinates. Kill him and we will all be free. Will you help us?\""
-								))
+							(scrSetDescTranslate gScreen 'descMissionBriefing)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Accept" key="A" default="1">
+							<Action id="actionAccept" default="1">
 								(block (arcoVaughn target launcherItem missileTypes bestType)
 									; Track Arco Vaughn
 									(setq arcoVaughn (sysFindObject gSource "sN +arcoVaughn;"))
@@ -339,7 +329,7 @@
 									)
 							</Action>
 
-							<Action name="Decline" key="D" cancel="1">
+							<Action id="actionDecline" cancel="1">
 								(block Nil
 									(objSetData gSource "missionStatus" 'declined)
 									(scrShowPane gScreen "MissionDecline")
@@ -350,20 +340,14 @@
 
 					<MissionAccept>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"\"You will need all the power you can to kill him. "
-								(if (gr (itmGetCount gItem) 1)
-									(cat "I have some hidden " (itmGetName gItem 0x02) 
-										" that the warlords never found. They belonged to my husband...many years ago. Take them! Take them and good luck!\"")
-									(cat "I have a hidden " (itmGetName gItem 0x00) 
-										" that the warlords never found. It belonged to my husband...many years ago. Take it! Take it and good luck!\"")
-									)
-								"\n\nShe hugs you quickly and runs off."
-								))
+							(if (gr (itmGetCount gItem) 1)
+								(scrSetDescTranslate gScreen 'descMissionAcceptPlural { itemName:(itmGetName gItem 0x02) })
+								(scrSetDescTranslate gScreen 'descMissionAcceptSingular { itemName:(itmGetName gItem 0x00) })
+								)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
+							<Action id="actionContinue" default="1" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -371,14 +355,11 @@
 
 					<MissionDecline>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"The station master stares at you in shock and then begins to weep.\n\n"
-								"\"Why did you start this war if you won't finish it! You've doomed us all!\""
-								))
+							(scrSetDescTranslate gScreen 'descMissionDecline)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
+							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -386,18 +367,14 @@
 
 					<MissionSuccess>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"The station master runs towards you; she puts her arms around you as the rest of the citizens come out of hiding.\n\n"
-								"\"You did it! I never thought I would live to see it! You've freed us from the warlords!\"\n\n"
-								(if (eq (plyGetGenome gPlayer) 'humanMale)
-									"She hugs you again and whispers her name in your ear."
-									"She beams a smile and hugs you again."
-									)
-								))
+							(if (= (plyGetGenome gPlayer) 'humanMale)
+								(scrSetDescTranslate gScreen 'descMissionSuccessWhisper)
+								(scrSetDescTranslate gScreen 'descMissionSuccessHug)
+								)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
+							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
 									(shpCancelOrders gPlayerShip)
 									(objSetData gSource "missionStatus" 'complete)
@@ -410,15 +387,11 @@
 
 					<MissionInProgress>
 						<OnPaneInit>
-							(block Nil
-								(scrSetDesc gScreen
-									"The station master's console is empty. Everyone on the station is hiding in the central hub."
-									)
-								)
+							(scrSetDescTranslate gScreen 'descMissionHiding)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
+							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
 									(shpCancelOrders gPlayerShip)
 									(shpOrder gPlayerShip 'attack (sysFindObject gSource "TN +arcoVaughn;"))
@@ -430,15 +403,11 @@
 
 					<MeetingHallHiding>
 						<OnPaneInit>
-							(block Nil
-								(scrSetDesc gScreen
-									"The station master's console is empty. Everyone on the station is hiding in the central hub."
-									)
-								)
+							(scrSetDescTranslate gScreen 'descMissionHiding)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
+							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -446,36 +415,27 @@
 
 					<MeetingHallFearful>
 						<OnPaneInit>
-							(block (desc centauriStations centauriStationsDestroyed)
-								; Count the number of destroyed Centauri stations
+							(block (centauriStations centauriStationsDestroyed)
+
+								;	Count the number of destroyed Centauri stations
+
 								(setq centauriStations (sysFindObject gSource "T +centauriWarlords; +populated; -occupation; -uncharted;"))
 								(setq centauriStationsDestroyed (filter centauriStations theStation (objIsAbandoned theStation)))
 
-								(setq desc "The station master stands at her console. She turns her attention towards you:\n\n")
 								(switch
 									(eq (count centauriStationsDestroyed) 0)
-										(setq desc (cat desc
-											"\"You'd better leave before the warlords return. If they see an armed ship here they will kill you; and we will be punished. Go now!\""
-											))
-											
-									(eq (count centauriStationsDestroyed) 1)
-										(setq desc (cat desc
-											"\"The Centauri warlords are furious that you've blown up one of their stations! "
-											"Do you really think you're strong enough to stand up to them?! Please leave before you get us all killed!\""
-											))
-											
-									(setq desc (cat desc
-										"\"Please leave! You know what will happen if you try to destroy more Centauri bases? You'll be killed and we'll be punished! "
-										"And if Arco Vaughn sees you here, we're all dead!\""
-										))
-									)
+										(scrSetDescScreenTranslate gScreen 'descStationFearful0)
 
-								(scrSetDesc gScreen desc)
+									(eq (count centauriStationsDestroyed) 1)
+										(scrSetDescScreenTranslate gScreen 'descStationFearful1)
+
+									(scrSetDescScreenTranslate gScreen 'descStationFearful2)
+									)
 								)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Leave" key="L" default="1" cancel="1">
+							<Action id="actionLeave" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -483,21 +443,17 @@
 
 					<MeetingHallHappy>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"The meeting hall is busy with commercial activity; everyone goes about their business, sometimes stopping to say hello to you."
-								))
+							(scrSetDescTranslate gScreen 'descMeetingHallHappy)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Leave" key="L" default="1" cancel="1">
+							<Action id="actionLeave" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
 					</MeetingHallHappy>
-
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
 		<DockingPorts>
@@ -510,6 +466,134 @@
 			<Port x="-43"	y="56" />
 		</DockingPorts>
 
+		<Language>
+			<Text id="actionAccept">[A]ccept</Text>
+			<Text id="actionContinue">[C]ontinue</Text>
+			<Text id="actionDecline">[D]ecline</Text>
+			<Text id="actionLeave">[L]eave</Text>
+			<Text id="actionMeetingHall">[M]eeting Hall</Text>
+			<Text id="actionUndock">[U]ndock</Text>
+
+			<Text id="descNormal">
+
+				The loud voices of a packed multitude bounce off every bulkhead and corridor in the station.
+				Old air scrubbers pump a thin, odorous breeze out of rusty vents. Discarded packets of 
+				Salmonite and Red Nebula beer huddle in the corner.
+
+				Welcome to Raisu Station!
+
+			</Text>
+
+			<Text id="descStationFearful0">
+
+				The station master stands at her console. She turns her attention towards you:
+
+				"You'd better leave before the warlords return. If they see an armed ship here they will 
+				kill you; and we will be punished. Go now!"
+
+			</Text>
+			<Text id="descStationFearful1">
+
+				The station master stands at her console. She turns her attention towards you:
+
+				"The Centauri warlords are furious that you've blown up one of their stations! 
+				Do you really think you're strong enough to stand up to them?! Please leave before 
+				you get us all killed!"
+
+			</Text>
+			<Text id="descStationFearful2">
+
+				The station master stands at her console. She turns her attention towards you:
+
+				"Please leave! You know what will happen if you try to destroy more Centauri 
+				bases? You'll be killed and we'll be punished! And if Arco Vaughn sees you here, 
+				we're all dead!"
+
+			</Text>
+			<Text id="descMeetingHallHappy">
+
+				The meeting hall is busy with commercial activity; everyone goes about their 
+				business, sometimes stopping to say hello to you.
+
+			</Text>
+
+			<Text id="descMissionIntro">
+
+				The station master stands at her console. She runs towards you tearfully:
+
+				"Is it true? Have you fought the Centauri warlords? It's been so long since 
+				anyone stood up to them. Will you finish what you've begun? If you don't 
+				kill the rest of them now, we'll be the ones who suffer.
+				
+				"Arco Vaughn is the key. Kill him and the rest will leave us alone."
+
+			</Text>
+			<Text id="descMissionBriefing">
+
+				"I can help you; I'm not afraid anymore. Arco Vaughn lives deep in the outer
+				belt&#x97;I can give you the coordinates. Kill him and we will all be free.
+
+				"Will you help us?"
+
+			</Text>
+			<Text id="descMissionAcceptSingular">
+
+				"You will need all the power you can to kill him. I have a hidden %itemName%
+				that the warlords never found. It belonged to my husband...many years ago.
+				Take it! Take it and good luck!"
+
+				She hugs you quickly and runs off.
+
+			</Text>
+			<Text id="descMissionAcceptPlural">
+
+				"You will need all the power you can to kill him. I have some hidden %itemName%
+				that the warlords never found. They belonged to my husband...many years ago.
+				Take them! Take them and good luck!"
+
+				She hugs you quickly and runs off.
+
+			</Text>
+			<Text id="descMissionDecline">
+
+				The station master stares at you in shock and then begins to weep.
+
+				"Why did you start this war if you won't finish it! You've doomed us all!"
+
+			</Text>
+			<Text id="descMissionHiding">
+
+				The station master's console is empty. Everyone on the station is hiding in 
+				the central hub.
+
+			</Text>
+			<Text id="descMissionSuccessWhisper">
+
+				The station master runs towards you; she puts her arms around you as the rest 
+				of the citizens come out of hiding.
+
+				"You did it! I never thought I would live to see it! You've freed us from the 
+				warlords!"
+
+				She hugs you again and whispers her name in your ear.
+
+			</Text>
+			<Text id="descMissionSuccessHug">
+
+				The station master runs towards you; she puts her arms around you as the rest 
+				of the citizens come out of hiding.
+
+				"You did it! I never thought I would live to see it! You've freed us from the
+				warlords!"
+
+				She beams a smile and hugs you again.
+
+			</Text>
+
+			<Text id="achievement.liberated">Liberated Raisu station</Text>
+			<Text id="achievement.destroyed">Allowed Raisu station to be destroyed</Text>
+			<Text id="achievement.destroyedByPlayer">Destroyed Raisu station</Text>
+		</Language>
 	</StationType>
 
 </TranscendenceModule>
