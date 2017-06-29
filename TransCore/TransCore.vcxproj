@@ -504,6 +504,7 @@
     <Xml Include="Penitents.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="RaisuStation.xml" />
     <Xml Include="Rama.xml" />
     <Xml Include="RPGCommoditiesExchange.xml" />
     <Xml Include="RPGComponents.xml">

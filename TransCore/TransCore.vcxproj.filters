@@ -519,5 +519,8 @@
     <Xml Include="RPGMembership.xml">
       <Filter>RPG Library</Filter>
     </Xml>
+    <Xml Include="RaisuStation.xml">
+      <Filter>Human Space Library\Eridani</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

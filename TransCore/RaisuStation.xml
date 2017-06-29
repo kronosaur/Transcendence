@@ -102,24 +102,16 @@
 			</OnObjDestroyed>
 
 			<GetCommonwealthCustomsStatus>
-				(block (
-					(status (objGetData gSource 'missionStatus))
-					)
-					(switch
-						;	If the mission is in progress or declined, then everyone is hiding,
-						;	so no customs.
+				(switch
 
-						(or (= status 'declined) (= status 'inProgress))
-							'disabled
+					;	No customs if the station is not liberated
 
-						;	If there are Centauri raiders in range, then everyone is hiding, so
-						;	no customs
+					(!= (objGetGlobalData gSource 'status) 'liberated)
+						'disabled
 
-						(sysFindObject gSource "s +centauriWarlords; N:100;")
-							'disabled
+					;	Otherwise, Nil means normal customs
 
-						;	Otherwise, Nil means normal status
-						)
+					Nil
 					)
 			</GetCommonwealthCustomsStatus>
 
@@ -203,7 +195,25 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descNormal)
+							(block (
+								(missionStatus (objGetData gSource 'missionStatus))
+								)
+								(switch
+									;	If we're in the middle of a mission, everyone is hiding
+
+									(or (= missionStatus 'inProgress) (= missionStatus 'declined))
+										(scrSetDescTranslate gScreen 'descHiding)
+
+									;	If there are Centauri raiders in range, then everyone is hiding
+
+									(sysFindObject gSource "s +centauriWarlords; N:100;")
+										(scrSetDescTranslate gScreen 'descHiding)
+
+									;	Otherwise, normal
+
+									(scrSetDescTranslate gScreen 'descNormal)
+									)
+								)
 						</OnPaneInit>
 
 						<Actions>
@@ -424,12 +434,12 @@
 
 								(switch
 									(eq (count centauriStationsDestroyed) 0)
-										(scrSetDescScreenTranslate gScreen 'descStationFearful0)
+										(scrSetDescTranslate gScreen 'descStationFearful0)
 
 									(eq (count centauriStationsDestroyed) 1)
-										(scrSetDescScreenTranslate gScreen 'descStationFearful1)
+										(scrSetDescTranslate gScreen 'descStationFearful1)
 
-									(scrSetDescScreenTranslate gScreen 'descStationFearful2)
+									(scrSetDescTranslate gScreen 'descStationFearful2)
 									)
 								)
 						</OnPaneInit>
@@ -481,6 +491,12 @@
 				Salmonite and Red Nebula beer huddle in the corner.
 
 				Welcome to Raisu Station!
+
+			</Text>
+			<Text id="descHiding">
+
+				The docking bay is completely empty. Old air scrubbers pump a thin, odorous breeze out of
+				rusty vents. Discarded packets of Salmonite and Red Nebula beer huddle in the corner.
 
 			</Text>
 
