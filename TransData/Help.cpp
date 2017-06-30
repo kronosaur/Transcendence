@@ -229,6 +229,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/driveimages]		Show all rotations with exhaust images.\n");
 		printf("      [/grid]               Show a grid centered on ship.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
+		printf("      [/portPos]            Show docking port positions.\n");
 		printf("      [/weaponpos]          Show all rotations with weapon positions.\n");
 		}
 	else if (pCmdLine->GetAttributeBool(SHIP_IMAGES_SWITCH))
