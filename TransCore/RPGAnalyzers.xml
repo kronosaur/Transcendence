@@ -19,29 +19,39 @@
 -->
 
 	<DockScreen UNID="&dsRPGAnalyzeItem;"
-			type=				"itemPicker"
+			inherit=			"&dsDockScreenBase;"
 			>
 
-		<ListOptions
-			dataFrom=	"player"
-			list=		"*"
-			>
-			(scrSetListFilter gScreen (lambda (theItem)
-				(or
-					(not (itmIsKnown theItem))
-					(objFireItemEvent gSource theItem 'GetIsAnalysisRequired)
-					)
-				))
-		</ListOptions>
-			
+		<OnScreenInit>
+			(scrSetData gScreen 'analyzer gItem)
+		</OnScreenInit>
+
+		<Display type="itemPicker"
+				dataFrom=	"player"
+				list=		"*"
+				>
+			<OnDisplayInit>
+				(scrSetListFilter gScreen (lambda (theItem)
+					(or
+						(not (itmIsKnown theItem))
+						(objFireItemEvent gSource theItem 'GetIsAnalysisRequired)
+						)
+					))
+			</OnDisplayInit>
+		</Display>
+
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(block (desc skillLevel chargesLeft itemToAnalyze canAnalyze result)
-					
-						;	Init skill level
+					(block (
+						(analyzerItem (scrGetData gScreen 'analyzer))
+						(skillLevel (typGetData &dsRPGAnalyzeItem; 'skillLevel))
+						(chargesLeft (itmGetProperty analyzerItem 'charges))
+						(itemToAnalyze (scrGetItem gScreen))
+						canAnalyze result
+						)
 						
-						(setq skillLevel (typGetData &dsRPGAnalyzeItem; 'skillLevel))
+						;	Init skill level
 						(if (not skillLevel)
 							(block Nil
 								(typSetData &dsRPGAnalyzeItem; 'skillLevel 0)
@@ -50,15 +60,9 @@
 							)
 							
 						;	Report the number of charges remaining
-
-						(setq chargesLeft (itmGetProperty gItem 'charges))
-						(setq desc (cat
-							"Charges Left: " chargesLeft "\n\n"
-							))
-						
-						;	Item to analyze
-							
-						(setq itemToAnalyze (scrGetItem gScreen))
+						(scrSetControlValue gScreen 'chargesLeft
+							(scrTranslate gScreen 'descChargesLeft { charges:chargesLeft })
+							)
 						
 						;	Continue with description
 						
@@ -67,77 +71,63 @@
 							;	If no more charges then we cannot analyze anything
 							
 							(eq chargesLeft 0)
-								(setq desc (cat desc "Unfortunately, " (itmGetName gItem 0x40) " is out of charge and cannot function."))
+								(scrSetDescTranslate gScreen 'descNoCharges { name:(itmGetName analyzerItem 0x40) })
 								
 							;	Nothing to analyze
 							
 							(not itemToAnalyze)
-								(setq desc (cat desc "There are no items here requiring analysis."))
+								(scrSetDescTranslate gScreen 'descNoItemsHere)
 								
 							;	Check to see if this analyzer can handle this item
 							
-							(and (setq result (objFireItemEvent gSource gItem 'CanAnalyzeItem { itemToAnalyze: itemToAnalyze }))
+							(and (setq result (objFireItemEvent gSource analyzerItem 'CanAnalyzeItem { itemToAnalyze: itemToAnalyze }))
 									(not (@ result 'canAnalyzeItem))
 									)
-								(setq desc (cat desc (@ result 'message)))
+								(scrSetDesc gScreen (@ result 'message))
 								
 							;	OK
 							
 							(block Nil
-								(setq desc (cat desc
-									"You can analyze " (itmGetName itemToAnalyze 0x804)
-									))
-									
 								(switch
 									(ls skillLevel 2)
-										(setq desc (cat desc
-											", though you do not have much experience analyzing items."
-											))
+										(scrSetDescTranslate gScreen 'descAnalyze1 { name:(itmGetName itemToAnalyze 0x804) })
 									
 									(ls skillLevel 5)
-										(setq desc (cat desc
-											"; you have some experience analyzing items."
-											))
+										(scrSetDescTranslate gScreen 'descAnalyze2 { name:(itmGetName itemToAnalyze 0x804) })
 									
 									(ls skillLevel 10)
-										(setq desc (cat desc
-											"; you are proficient at analyzing items."
-											))
+										(scrSetDescTranslate gScreen 'descAnalyze3 { name:(itmGetName itemToAnalyze 0x804) })
 									
-									(setq desc (cat desc
-										"; you are an expert at analyzing items."
-										))
+									(scrSetDescTranslate gScreen 'descAnalyze4 { name:(itmGetName itemToAnalyze 0x804) })
 									)
 								
 								(setq canAnalyze True)
 								)
 							)
 						
-						;	Initialize
-						
-						(scrSetDesc gScreen desc)
-						(scrEnableAction gScreen 0 canAnalyze)
+						;	Initialize actions
+						(scrEnableAction gScreen 'actionAnalyze canAnalyze)
 						)
 				</OnPaneInit>
 
+				<Controls>
+					<Text id="chargesLeft"/>
+				</Controls>
+
 				<Actions>
-					<Action name="Analyze Item" key="A" default="1">
-						(block (result)
-						
-							;	Analyze the item
-							(setq result (rpgAnalyzeItem gSource (scrGetItem gScreen)))
+					<Action id="actionAnalyze" default="1">
+						(block (
+							(analyzerItem (scrGetData gScreen 'analyzer))
+							(result (rpgAnalyzeItem gSource (scrGetItem gScreen)))
+							)
 						
 							;	Consume a charge on the analyzer
-							(setq gItem (objSetItemProperty gSource gItem 'incCharges -1))
+							(setq analyzerItem (objSetItemProperty gSource analyzerItem 'incCharges -1))
+							(scrSetData gScreen 'analyzer analyzerItem)
 							
-							;	Set the title (for the next pane)
-							(setq gTitle (cat 
-								"Charges Left: " (itmGetProperty gItem 'charges) "\n\n"
-								(@ result 'desc)
-								))
-								
-							;(dbgOutput "Analyze:")
-								
+							;	Save the cursor
+							(scrSetData gScreen 'cursor (scrGetListCursor gScreen))
+							
 							;	Set the filter so we only select the modified item
 							(scrSetListFilter gScreen (lambda (theItem)
 								(block Nil
@@ -148,30 +138,87 @@
 								))
 							
 							;	Done
-							
-							(scrShowPane gScreen "Done")
+
+							(scrSetData gScreen 'result (@ result 'desc))
+							(scrShowPane gScreen 'Done)
 							)
 					</Action>
 
-					<Action name="Cancel" cancel="1" key="C">
-						<Exit/>
+					<Action id="actionCancel" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
-					
 				</Actions>
 			</Default>
-			
-			<Done 
-					desc="=gTitle"
-					noListNavigation="true"
-					>
+
+			<Done noListNavigation="true">
+				<OnPaneInit>
+					(block (
+						(analyzerItem (scrGetData gScreen 'analyzer))
+						(chargesLeft (itmGetProperty analyzerItem 'charges))
+						)
+
+						;	Report the number of charges remaining
+						(scrSetControlValue gScreen 'chargesLeft
+							(scrTranslate gScreen 'descChargesLeft { charges:chargesLeft })
+							)
+
+						(scrSetDesc gScreen (scrGetData gScreen 'result))
+						(scrEnableAction gScreen 'actionContinue (gr chargesLeft 0))
+						)
+				</OnPaneInit>
+
+				<Controls>
+					<Text id="chargesLeft"/>
+				</Controls>
 
 				<Actions>
-					<Action name="Done" cancel="1" default="1" key="D">
-						<Exit/>
+					<Action id="actionContinue" default="1">
+						(block Nil
+							;	Reset filter to show all items again
+							(scrSetListFilter gScreen (lambda (theItem)
+								(or
+									(not (itmIsKnown theItem))
+									(objFireItemEvent gSource theItem 'GetIsAnalysisRequired)
+									)
+								))
+							
+							;	Restore cursor position
+							(scrSetListCursor gScreen (scrGetData gScreen 'cursor))
+							
+							(scrShowPane gScreen 'Default)
+							)
+					</Action>
+
+					<Action id="actionDone" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Done>
 		</Panes>
+
+		<Language>
+			<Text id="actionAnalyze">[A]nalyze Item</Text>
+
+			<Text id="descChargesLeft">Charges Left: %charges%</Text>
+			<Text id="descNoCharges">
+				Unfortunately, %name% is out of charge and cannot function.
+			</Text>
+			<Text id="descNoItemsHere">
+				There are no items here requiring analysis.
+			</Text>
+			<Text id="descAnalyze1">
+				You can analyze %name%, though you do not have much experience analyzing items.
+			</Text>
+			<Text id="descAnalyze2">
+				You can analyze %name%; you have some experience analyzing items.
+			</Text>
+			<Text id="descAnalyze3">
+				You can analyze %name%; you are proficient at analyzing items.
+			</Text>
+			<Text id="descAnalyze4">
+				You can analyze %name%; you are an expert at analyzing items.
+			</Text>
+		</Language>
 	</DockScreen>
 
 <!-- GLOBAL FUNCTIONS ==========================================================
