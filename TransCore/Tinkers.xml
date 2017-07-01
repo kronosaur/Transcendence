@@ -922,10 +922,10 @@
 							(and markUp (= (typeof markUp) 'int32))
 								(int (round (* componentPrice (/ markUp 100))))
 
-							;	Otherwise, we expect a double such that 1.1 = 10% of component
+							;	Otherwise, we expect a double such that 0.1 = 10% of component
 							;	cost.
 							markUp
-								(int (round (* componentPrice (- markUp 1))))
+								(int (round (* componentPrice markUp)))
 
 							;	Otherwise default tinker calculation where  total cost of the work
 							;	compensates for any difference between the input and output prices.
