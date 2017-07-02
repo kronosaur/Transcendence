@@ -72,7 +72,7 @@
 
 	<Type UNID="&baStdAutonBase;">
 		<Communications>
-			<Message name="Attack target" key="A">
+			<Message id="msgAttackTarget" name="Attack target" key="A">
 				<OnShow>
 					(and (objGetTarget gSender)
 						(not (eq (objGetTarget gSender) (objGetTarget gSource)))
@@ -107,7 +107,7 @@
 				</Invoke>
 			</Message>
 
-			<Message name="Break &amp; attack" key="B">
+			<Message id="msgBreakAndAttack" name="Break &amp; attack" key="B">
 				<OnShow>
 					(and (eq (objGetData gSource 'behavior) 'escorting)
 						(not (shpGetAISetting gSource 'nonCombatant))
@@ -135,7 +135,7 @@
 				</Invoke>
 			</Message>
 
-			<Message name="Form up" key="F">
+			<Message id="msgFormUp" name="Form up" key="F">
 				<OnShow>
 					(and
 						(or (eq (objGetData gSource 'behavior) 'waiting)
@@ -167,7 +167,7 @@
 				</Invoke>
 			</Message>
 			
-			<Message name="Return to ship" key="R">
+			<Message id="msgReturnToShip" name="Return to ship" key="R">
 				<OnShow>
 					(and
 						(objGetItems gSender "*IN +AutonBay;")
@@ -227,7 +227,7 @@
 				</Invoke>
 			</Message>
 
-			<Message name="Wait" key="W">
+			<Message id="msgWait" name="Wait" key="W">
 				<OnShow>
 					(and
 						(or

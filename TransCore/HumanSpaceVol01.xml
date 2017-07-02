@@ -1848,6 +1848,7 @@
 	<!-- 0310-032F TERATONS -->
 
 	<!ENTITY baTeratonNestBase			"0x00100310">
+	<!ENTITY msTeratonResearch			"0x00100311">
 
 	<!-- 1000-FFFF RESERVED -->
 	]>
@@ -1949,11 +1950,13 @@
 	<Module filename="Luminous.xml"/>
 	<Module filename="OutlawMiners.xml"/>
 	<Module filename="Penitents.xml"/>
+	<Module filename="RaisuStation.xml"/>
 	<Module filename="Rasiermesser.xml"/>
 	<Module filename="Ringers.xml"/>
 	<Module filename="RogueFleet.xml"/>
 	<Module filename="SistersOfDomina.xml"/>
 	<Module filename="SungSlavers.xml"/>
+	<Module filename="TeratonResearch.xml"/>
 	<Module filename="Teratons.xml"/>
 	<Module filename="Tinkers.xml"/>
 	<Module filename="UrakWarlords.xml"/>

@@ -13,6 +13,7 @@
 			<Text id="actionDockServices">[D]ock Services</Text>
 			<Text id="actionDone">[D]one</Text>
 			<Text id="actionJettison">[J]ettison</Text>
+			<Text id="actionLeave">[L]eave</Text>
 			<Text id="actionLoot">[L]oot</Text>
 			<Text id="actionRefuel">[R]efuel</Text>
 			<Text id="actionRepairArmor">Repair [A]rmor</Text>

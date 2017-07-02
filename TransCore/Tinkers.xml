@@ -150,9 +150,9 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(block (actionStatus)
-							
-								(setq actionStatus (rpgCalcDockServiceArmorAction gSource gPlayerShip { }))
+							(block (
+								(actionStatus (rpgCalcDockServiceArmorAction gSource gPlayerShip { }))
+								)
 								(scrShowAction gScreen 'actionRepairArmor (@ actionStatus 'visible))
 								(scrEnableAction gScreen 'actionRepairArmor (@ actionStatus 'enabled))
 								(scrSetActionDesc gScreen 'actionRepairArmor (@ actionStatus 'desc))
@@ -175,7 +175,9 @@
 
 							<Action id="actionCustomWork">
 								(if (objGetData gSource 'customIntroDone)
-									(scrShowScreen gScreen &dsTinkerCustomWork;)
+									(scrShowScreen gScreen &dsTinkerCustomWork; {
+										criteria: "* +hasComponents:true; +tinkers;"
+										})
 									(scrShowPane gScreen "CustomWorkIntro")
 									)
 							</Action>
@@ -194,15 +196,11 @@
 						
 					<CustomWorkIntro>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You're in a machine shop surrounded by moving autowelders and cutters. A dark-skinned woman stands amid the chaos holding a datapad.\n\n"
-								
-								"\"We have a list of items we can fabricate for you. You'll need to provide the required scrap items or raw materials plus fabrication cost.\""
-								)
+							(scrSetDescTranslate gScreen 'descCustomWorkIntro)
 						</OnPaneInit>
 				
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
 									(objSetData gSource 'customIntroDone True)
 									(scrShowPane gScreen "Default")
@@ -218,38 +216,31 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(block Nil
+							(block (
 								; Figure out how much it would cost to make the ship immune to radiation
-								(setq gCost (multiply 400 (shpGetArmorCount gPlayerShip)))
+								(cost (* 400 (shpGetArmorCount gPlayerShip)))
+								)
 
-								(switch
-									; If the player has it, then we can do it
-									(geq (plyGetCredits gPlayer) gCost)
-										(block Nil
-											(scrSetDesc gScreen (cat "A woman in a hazmat suit meets you at the airlock.\n\n\"Seriously, your ship is pretty toxic. Do you want us to take care of it? We can fix it for " gCost " credits.\""))
-											(setq gResult 'immune)
-											)
-
-									; Otherwise, no luck
-									(block Nil
-										(scrSetDesc gScreen (cat "A woman in a hazmat suit meets you at the airlock.\n\n\"Ugh, your ship is pretty toxic. Please come back after you've deconned!\""))
-										(setq gResult Nil)
-										)
+								(if (geq (plyGetCredits gPlayer) cost)
+									(scrSetDescTranslate gScreen 'descDecon { cost:(fmtCurrency 'credit cost) })
+									(scrSetDescTranslate gScreen 'descDeconCantAfford)
 									)
-
-								(scrEnableAction gScreen 0 gResult)
+								(scrSetData gScreen 'deconCost cost)
+								(scrEnableAction gScreen 'actionDecon (geq (plyGetCredits gPlayer) cost))
 								)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Decontaminate" default="1" key="D">
-								(block (armorEnhanced)
-									; Decontaminate
-									(plyCharge gPlayer gCost)
+							<Action id="actionDecon" default="1">
+								(block (
+									(cost (scrGetData gScreen 'deconCost))
+									(armorEnhanced 0)
+									)
+									;	Decontaminate
+									(plyCharge gPlayer cost)
 									(shpDecontaminate gPlayerShip)
 
-									; Make immune
-									(setq armorEnhanced 0)
+									;	Make immune
 									(objEnumItems gPlayerShip "aI" theItem
 										(block (result)
 											(setq result (shpEnhanceItem gPlayerShip theItem 0x0b00))
@@ -260,24 +251,23 @@
 											)
 										)
 
-									; Compose the result
-									(setq gDesc "The woman in the hazmat suit decontaminates your ship with various robots. She applies borocarbide paste to your ship.\n\n")
+									;	Compose the result
 									(switch
-										(eq armorEnhanced (shpGetArmorCount gPlayerShip))
-											(setq gDesc (cat gDesc "\"The new borocarbide coating will make your ship immune to radiation.\""))
+										(= armorEnhanced (shpGetArmorCount gPlayerShip))
+											(scrSetData gScreen 'deconResult 'descDeconImmune)
 
-										(eq armorEnhanced 0)
-											(setq gDesc (cat gDesc "\"I tried to make your ship immune to further contamination, but it didn't take. You must have some other coatings on your armor.\""))
+										(= armorEnhanced 0)
+											(scrSetData gScreen 'deconResult 'descDeconNotImmune)
 
-										(setq gDesc (cat gDesc "\"I tried to make your ship immune to radiation, but it didn't fully work. You must have some other coatings on your armor.\""))
+										(scrSetData gScreen 'deconResult 'descDeconPartialImmune)
 										)
 
 									(scrShowPane gScreen "DeconDone")
 									)
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
-								<Exit/>
+							<Action id="actionUndock" cancel="1">
+								(scrExitScreen gScreen 'forceUndock)
 							</Action>
 						</Actions>
 
@@ -285,11 +275,11 @@
 
 					<DeconDone>
 						<OnPaneInit>
-							(scrSetDesc gScreen gDesc)
+							(scrSetDescTranslate gScreen (scrGetData gScreen 'deconResult))
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
@@ -349,20 +339,65 @@
 		</Events>
 		
 		<Language>
-			<Text id="actionBuyScrap">"[B]uy Scrap"</Text>
-			<Text id="actionCustomWork">"[C]ustom Work"</Text>
-			<Text id="actionRepairArmor">"[A]rmor and Shields"</Text>
-			<Text id="actionSellScrap">"[S]ell Scrap"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
+			<Text id="actionBuyScrap">[B]uy Scrap</Text>
+			<Text id="actionCustomWork">[C]ustom Work</Text>
+			<Text id="actionRepairArmor">[A]rmor and Shields</Text>
+			<Text id="actionSellScrap">[S]ell Scrap</Text>
+			<Text id="actionDecon">[D]econtaminate</Text>
+			<Text id="actionContinue">[C]ontinue</Text>
+			<Text id="actionUndock">[U]ndock</Text>
 			
 			<Text id="descWelcome">
-				(cat
-					"You are docked at a station belonging to the Tinkers Guild. "
-					"The docking bay is decorated with various ancient devices of unknown origin and purpose."
-					)
+				You are docked at a station belonging to the Tinkers Guild.
+				The docking bay is decorated with various ancient devices of
+				unknown origin and purpose.
 			</Text>
+			<Text id="descCustomWorkIntro">
+				You're in a machine shop surrounded by moving autowelders and
+				cutters. A dark-skinned woman stands amid the chaos holding a
+				datapad.
+
+				"We have a list of items we can fabricate for you. You'll need
+				to provide the required scrap items or raw materials plus
+				fabrication cost."
+			</Text>
+
+			<Text id="descDecon">
+				A woman in a hazmat suit meets you at the airlock.
+
+				"Seriously, your ship is pretty toxic. Do you want us to take
+				care of it? We can fix it for %cost%."
+			</Text>
+			<Text id="descDeconCantAfford">
+				A woman in a hazmat suit meets you at the airlock.
+
+				"Ugh, your ship is pretty toxic. Please come back after you've
+				deconned!"
+			</Text>
+			<Text id="descDeconImmune">
+				The woman in the hazmat suit decontaminates your ship with
+				various robots. She applies borocarbide paste to your ship.
+
+				"The new borocarbide coating will make your ship immune to
+				radiation."
+			</Text>
+			<Text id="descDeconPartialImmune">
+				The woman in the hazmat suit decontaminates your ship with
+				various robots. She applies borocarbide paste to your ship.
+
+				"I tried to make your ship immune to radiation, but it didn't
+				fully work. You must have some other coatings on your armor."
+			</Text>
+			<Text id="descDeconNotImmune">
+				The woman in the hazmat suit decontaminates your ship with
+				various robots. She applies borocarbide paste to your ship.
+
+				"I tried to make your ship immune to further contamination, but
+				it didn't take. You must have some other coatings on your armor."
+			</Text>
+
             <Text id="core.mapDesc">
-                "Fabricates special items &mdash; Repairs/installs armor up to level 8 &mdash; Buys and sells scrap"
+                Fabricates special items &mdash; Repairs/installs armor up to level 8 &mdash; Buys and sells scrap
             </Text>
 		</Language>
 	</StationType>
@@ -459,101 +494,162 @@
 	
 	<DockScreen UNID="&dsTinkerCustomWork;"
 			type=           "customItemPicker"
+			inherit=		"&dsDockScreenBase;"
 			nestedScreen=   "true"
 			>
 		<List>
-			(map (typGetData &svTinkers; 'Recipes) 'excludeNil theRecipe
-				(tinkerCreateItem theRecipe 1)
+			(block (
+				(criteria (or (@ gData 'criteria) "* +hasComponents:true;"))
+				)
+				(append
+					;	Items with component definitions
+					(map (itmGetTypes criteria) 'excludeNil theType
+						(itmCreate theType 1)
+						)
+
+					;	Global Tinker recipes
+					(map (typGetData &svTinkers; 'Recipes) 'excludeNil theRecipe
+						(itmSetData (tinkerCreateItem theRecipe 1) 'recipe theRecipe)
+						)
+					)
 				)
 		</List>
 		
+		<OnScreenInit>
+			(block (
+				(unknownItems (filter (itmGetTypes "*") theType (not (itmIsKnown theType))))
+				)
+				;	Remember the list of unknown items
+				(scrSetData gScreen 'unknownItems unknownItems)
+				;	Set all items known so component list displays correctly
+				(enum unknownItems theType (itmSetKnown theType True))
+				)
+		</OnScreenInit>
+
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(block (theItem theRecipe fabInfo desc errorDesc)
-						(setq theItem (scrGetItem gScreen))
-						
-						;	Find the recipe for this item
-						
-						(setq theRecipe (tinkerFindRecipe (typGetData &svTinkers; 'Recipes) (itmGetType theItem)))
-						
-						;	Calculate various elements of the fabrication
-						
-						(setq fabInfo (tinkerCalcFabrication theRecipe))
-							
-						;	Generate an error descriptor, if we can't fabricate even a single item
-						
-						(switch
-							(@ fabInfo 'componentsMissing)
-								(setq errorDesc (typTranslate &dsTinkerCustomWork; 'errorComponentMissing { item:(@ (@ fabInfo 'componentsMissing) 0) }))
-								
-							(@ fabInfo 'componentsLacking)
-								(setq errorDesc (typTranslate &dsTinkerCustomWork; 'errorComponentLacking { item:(@ (@ fabInfo 'componentsLacking) 0) }))
-								
-							(leq (plyGetCredits gPlayer) (@ fabInfo 'workCost))
-								(setq errorDesc (typTranslate &dsTinkerCustomWork; 'errorMoneyLacking))
+					(block (
+						(theItem (scrGetItem gScreen))
+						(theRecipe (itmGetData theItem 'recipe))
+						(fabInfo (if theRecipe
+							(tinkerCalcFabrication theRecipe)
+							(rpgCalcCreateFromComponents theItem gPlayerShip gSource)
+							))
+						(workCost (@ fabInfo 'workCost))
+						(currencyUsed (@ fabInfo 'currencyUsed))
+						(maxCount (@ fabInfo 'maxCount))
 
-							(block Nil
-								(setq errorDesc "")
-								)
-							)
-						
-						;	Set the description
+						;	Data for error conditions
+						(itemNeeded (or (@ (@ fabInfo 'componentsMissing) 0) (@ (@ fabInfo 'componentsLacking) 0)))
+						(errorDesc {
+							item: itemNeeded
+							itemCount: (itmGetCount itemNeeded)
+							itemName: (itmGetName itemNeeded 0x100)
+							itemNames: (itmGetName itemNeeded 0x102)
+							})
+						desc
+						)
+
+						;	Set the description of the selected item
 						
 						(switch
+							(not theItem)
+								(scrSetDescTranslate gScreen 'descFabricateNoItems)
+							
 							(not (@ fabInfo 'componentsNeededDesc))
-								(scrSetDesc gScreen
-									"\"To fabricate " (itmGetName theItem 0x0108) " we charge " (fmtCurrency 'credit (@ fabInfo 'workCost)) "."
-									errorDesc
-									"\""
-									)
-								
-							(scrSetDesc gScreen
-								"\"To fabricate " (itmGetName theItem 0x0108) " we need "
-								(@ fabInfo 'componentsNeededDesc)
-								" plus " (fmtCurrency 'credit (@ fabInfo 'workCost)) "."
-								errorDesc
-								"\""
-								)
+								(scrSetDescTranslate gScreen 'descFabricateItemNoComponents {
+									itemName: (itmGetName theItem 0x0108)
+									cost: (fmtCurrency currencyUsed workCost)
+									})
+
+							(scrSetDescTranslate gScreen 'descFabricateItem {
+								itemName: (itmGetName theItem 0x0108)
+								cost: (fmtCurrency currencyUsed workCost)
+								})
 							)
-							
+
+						;	Set the list of components
+
+						(scrSetControlValue gScreen 'componentsNeeded (@ fabInfo 'itemListDisplay))
+
+						;	Generate an error descriptor, if we can't fabricate even a single item
+
+						(switch
+							(not theItem)
+								Nil
+
+							(@ fabInfo 'componentsMissing)
+								(scrSetControlValue gScreen 'descError
+									(scrTranslate gScreen 'errorComponentMissing errorDesc)
+									)
+
+							(and (@ fabInfo 'componentsLacking) (= (@ errorDesc 'itemCount) 1))
+								(scrSetControlValue gScreen 'descError
+									(scrTranslate gScreen 'errorComponentLacking errorDesc)
+									)
+
+							(@ fabInfo 'componentsLacking)
+								(scrSetControlValue gScreen 'descError
+									(scrTranslate gScreen 'errorComponentsLacking errorDesc)
+									)
+
+							(leq (plyGetCredits gPlayer) (@ fabInfo 'workCost))
+								(scrSetControlValue gScreen 'descError
+									(scrTranslate gScreen 'errorMoneyLacking)
+									)
+
+							(@ fabInfo 'noCargoSpace)
+								(scrSetControlValue gScreen 'descError
+									(scrTranslate gScreen 'errorCargoSpace)
+									)
+							)
+
 						;	Remember the recipe, the components, and the cost for later
-						
-						(scrSetData gScreen 'recipe theRecipe)
-						(scrSetData gScreen 'components (@ fabInfo 'componentsNeeded))
-						(scrSetData gScreen 'cost (@ fabInfo 'workCost))
-						(scrSetData gScreen 'maxCount (@ fabInfo 'maxFabCount))
-							
+						(scrSetData gScreen 'fabInfo fabInfo)
+
 						;	Disable Fabricate action if we can't do it
 						
-						(scrEnableAction gScreen 0 (gr (@ fabInfo 'maxFabCount) 0))
+						(scrEnableAction gScreen 'actionFabricate (gr maxCount 0))
+						(scrEnableAction gScreen 'actionReminder theItem)
 						)
 				</OnPaneInit>
-				
+
+				<Controls>
+					<Text id="desc"/>
+					<ItemListDisplay id="componentsNeeded"/>
+					<Text id="descError"/>
+				</Controls>
+
 				<Actions>
-					<Action name="Fabricate" default="1" key="F">
-						(if (gr (scrGetData gScreen 'maxCount) 1)
-							(scrShowPane gScreen "FabricateCount")
-							
-							(block Nil
-								(scrSetData gScreen 'result 
-									(tinkerFabricate 
-										(scrGetData gScreen 'recipe)
-										(scrGetData gScreen 'cost)
-										1
+					<Action id="actionFabricate" default="1">
+						(block (
+							(fabInfo (scrGetData gScreen 'fabInfo))
+							)
+
+							(if (gr (@ fabInfo 'maxCount) 1)
+								(scrShowPane gScreen "FabricateCount")
+
+								(block Nil
+									(scrSetData gScreen 'result
+										(rpgCreateFromComponents fabInfo gPlayerShip gSource 1 {
+											reminderCriteria: "aS +unid:&msTinkerReminder;;"
+											})
 										)
+									(scrShowPane gScreen "FabricateResult")
 									)
-								(scrShowPane gScreen "FabricateResult")
 								)
 							)
 					</Action>
 					
-					<Action name="Remember for Later" key="R">
-						(block (theMission)
+					<Action id="actionReminder">
+						(block (
+							(fabInfo (scrGetData gScreen 'fabInfo))
+							theMission
+							)
+
 							(setq theMission (msnCreate &msTinkerReminder; gSource {
-								recipe: (scrGetData gScreen 'recipe)
-								components: (scrGetData gScreen 'components)
-								cost: (scrGetData gScreen 'cost)
+								fabInfo: fabInfo
 								destID: (objGetID gSource)
 								}))
 								
@@ -565,8 +661,11 @@
 							)
 					</Action>
 					
-					<Action name="Done" cancel="1" key="D">
-						(scrExitScreen gScreen)
+					<Action id="actionDone" cancel="1">
+						(block Nil
+							(enum (scrGetData gScreen 'unknownItems) theType (itmSetKnown theType Nil))
+							(scrExitScreen gScreen)
+							)
 					</Action>
 				</Actions>
 			</Default>
@@ -575,25 +674,32 @@
 					showCounter=	"true"
 					>
 				<OnPaneInit>
-					(block Nil
-						(scrSetDesc gScreen (cat "How many items do you wish to fabricate?"))
-						(scrSetCounter gScreen (scrGetData gScreen 'maxCount))
+					(block (
+						(fabInfo (scrGetData gScreen 'fabInfo))
+						)
+						(scrSetDescTranslate gScreen 'descFabricateCount)
+						(scrSetCounter gScreen (@ fabInfo 'maxCount))
 						)
 				</OnPaneInit>
 			
 				<Actions>
-					<Action name="Fabricate" default="1" key="F">
-						(block (count)
-							(setq count (scrGetCounter gScreen))
-							(if (gr count (scrGetData gScreen 'maxCount))
-								(scrSetCounter gScreen (scrGetData gScreen 'maxCount))
+					<Action id="actionFabricate" default="1">
+						(block (
+							(fabInfo (scrGetData gScreen 'fabInfo))
+							(count (scrGetCounter gScreen))
+							)
+							(switch
+								(gr count (@ fabInfo 'maxCount))
+									(scrSetCounter gScreen (@ fabInfo 'maxCount))
+
+								(leq count 0)
+									(scrShowPane gScreen "Default")
+
 								(block Nil
-									(scrSetData gScreen 'result 
-										(tinkerFabricate 
-											(scrGetData gScreen 'recipe)
-											(scrGetData gScreen 'cost)
-											count
-											)
+									(scrSetData gScreen 'result
+										(rpgCreateFromComponents fabInfo gPlayerShip gSource count {
+											reminderCriteria: "aS +unid:&msTinkerReminder;;"
+											})
 										)
 									(scrShowPane gScreen "FabricateResult")
 									)
@@ -601,7 +707,7 @@
 							)
 					</Action>
 					
-					<Action name="Cancel" cancel="1" key="C">
+					<Action id="actionCancel" cancel="1">
 						(scrShowPane gScreen "Default")
 					</Action>
 				</Actions>
@@ -611,22 +717,23 @@
 					noListNavigation="true"
 					>
 				<OnPaneInit>
-					(block (theResult)
-						(setq theResult (scrGetData gScreen 'result))
-						(scrSetDesc gScreen 
-							"After much work with the robots the woman returns with her creation: "
-							"\"Nothing to it once you know how these machines work.\"\n\n"
-							
-							"Fabricated: " (itmGetName (@ theResult 'itemsCreated) 0x08) ".\n"
-							(if (@ theResult 'itemsConsumed) (cat "Consumed: " (strItemList (@ theResult 'itemsConsumed) 0x08) ".\n"))
-							"Total Cost: " (fmtCurrency 'credit (@ theResult 'totalCost)) "."
-							)
+					(block (
+						(theResult (scrGetData gScreen 'result))
+						)
+						(scrSetDescTranslate gScreen 'descFabricateResult {
+							itemCreated: (itmGetName (@ theResult 'itemsCreated) 0x08)
+							itemsConsumed: (or (strItemList (@ theResult 'itemsConsumed) 0x08) "None")
+							totalCost: (fmtCurrency (@ theResult 'currencyUsed) (@ theResult 'totalCost))
+							})
 						)
 				</OnPaneInit>
 			
 				<Actions>
-					<Action name="Done" default="1" cancel="1" key="D">
-						(scrExitScreen gScreen)
+					<Action id="actionDone" default="1" cancel="1">
+						(block Nil
+							(enum (scrGetData gScreen 'unknownItems) theType (itmSetKnown theType Nil))
+							(scrExitScreen gScreen)
+							)
 					</Action>
 				</Actions>
 			</FabricateResult>
@@ -635,34 +742,70 @@
 					noListNavigation="true"
 					>
 				<OnPaneInit>
-					(scrSetDesc gScreen
-						"A reminder has been added to your mission computer. Once you obtain the necessary items "
-						"you may return here to fabricate "
-						(itmGetName (tinkerCreateItem (scrGetData gScreen 'recipe) 1) 0x108)
-						"."
+					(block (
+						(fabInfo (scrGetData gScreen 'fabInfo))
+						)
+
+						(scrSetDescTranslate gScreen 'descFabricateReminderAdded {
+							itemName: (itmGetName (@ fabInfo 'item) 0x108)
+							})
 						)
 				</OnPaneInit>
 				
 				<Actions>
-					<Action name="Done" default="1" cancel="1" key="D">
-						(scrExitScreen gScreen)
+					<Action id="actionDone" default="1" cancel="1">
+						(block Nil
+							(enum (scrGetData gScreen 'unknownItems) theType (itmSetKnown theType Nil))
+							(scrExitScreen gScreen)
+							)
 					</Action>
 				</Actions>
 			</MissionAdded>
 		</Panes>
 		
 		<Language>
+			<Text id="actionFabricate">[F]abricate</Text>
+			<Text id="actionReminder">[R]emember for Later</Text>
+
+			<Text id="descFabricateNoItems">
+				Unfortunately, you do not have any required components.
+			</Text>
+			<Text id="descFabricateItem">
+				To fabricate %itemName% we need %cost% plus the following components:
+			</Text>
+			<Text id="descFabricateItemNoComponents">
+				To fabricate %itemName% we charge %cost%.
+			</Text>
+			<Text id="descFabricateReminderAdded">
+				A reminder has been added to your mission computer. Once you obtain
+				the necessary items you may return here to fabricate %itemName%.
+			</Text>
+			<Text id="descFabricateCount">
+				How many items do you wish to fabricate?
+			</Text>
+			<Text id="descFabricateResult">
+				After much work with the robots the woman returns with her creation:
+				"Nothing to it once you know how these machines work."
+
+				Fabricated: %itemCreated%.\n
+				Consumed: %itemsConsumed%.\n
+				Total Cost: %totalCost%.
+			</Text>
+
 			<Text id="errorComponentLacking">
-				(if (eq (itmGetCount (@ gData 'item)) 1)
-					(cat "\n\nUnfortunately, you need one more " (itmGetName (@ gData 'item) 0x100) ".")
-					(cat "\n\nUnfortunately, you need " (itmGetCount (@ gData 'item)) " more " (itmGetName (@ gData 'item) 0x102) ".")
-					)
+				Unfortunately, you need one more %itemName%.
+			</Text>
+			<Text id="errorComponentsLacking">
+				Unfortunately, you need %itemCount% more %itemNames%.
 			</Text>
 			<Text id="errorComponentMissing">
-				(cat "\n\nUnfortunately, you do not have any " (itmGetName (@ gData 'item) 0x102) ".")
+				Unfortunately, you do not have any %itemNames%.
 			</Text>
 			<Text id="errorMoneyLacking">
-				"\n\nUnfortunately, you do not have enough credits."
+				Unfortunately, you do not have enough credits.
+			</Text>
+			<Text id="errorCargoSpace">
+				Unfortunately, you do not have enough cargo space.
 			</Text>
 		</Language>
 	</DockScreen>
@@ -695,9 +838,7 @@
 				(block Nil
 					;	Store the parameters of the mission
 					
-					(msnSetData gSource 'recipe (@ gData 'recipe))
-					(msnSetData gSource 'components (@ gData 'components))
-					(msnSetData gSource 'cost (@ gData 'cost))
+					(msnSetData gSource 'forgeInfo (@ gData 'fabInfo))
 					
 					;	Remember the current system and the station that offered
 					;	the mission.
@@ -712,18 +853,31 @@
 		</Events>
 		
 		<Language>
-			<Text id="Name">
-				"Find components for Tinker fabrication"
-			</Text>
+			<!-- Code Points -->
+
 			<Text id="Summary">
-				(cat
-					"Acquire "
-					(strItemList (msnGetData gSource 'components) 0x0108)
-					" to have the Tinkers fabricate "
-					(itmGetName (tinkerCreateItem (msnGetData gSource 'recipe) 1) 0x108) ".\n\n"
-					
-					"System: " (sysGetName (msnGetData gSource 'destSystem))
+				(block (
+					(forgeInfo (msnGetData gSource 'forgeInfo))
 					)
+					(cat
+						(msnTranslate gSource 'textSummary {
+							itemsNeeded: (@ forgeInfo 'componentsNeededDesc)
+							item: (itmGetName (@ forgeInfo 'item) 0x108)
+							})
+						"\n\n"
+
+						"System: " (sysGetName (msnGetData gSource 'destSystem))
+						)
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">
+				Find components for Tinker fabrication
+			</Text>
+			<Text id="textSummary">
+				Acquire %itemsNeeded% to have the Tinkers fabricate %item%.
 			</Text>
 		</Language>
 	</MissionType>
@@ -734,48 +888,64 @@
 
 	<Globals>
 		(block Nil
-			(setq tinkerCalcFabrication (lambda (theRecipe)
-				(block (theItem theComponents componentPrice workCost availableComponents maxCount)
-					(setq theItem (tinkerCreateItem theRecipe 1))
-				
+			(setq tinkerCalcFabrication (lambda (theRecipe theSource theFoundry)
+				(block (
+					(theItem (tinkerCreateItem theRecipe 1))
+					(currencyUsed (objGetProperty (or theFoundry gSource) 'currency))
+
 					;	Describe the components needed
-						
-					(setq theComponents 
+					(theComponents
 						(map (@ theRecipe 'components) theDesc
 							(itmCreate (@ theDesc 'item) (@ theDesc 'count))
 							)
 						)
 
-					;	Compute the total price of the components and compare to the
-					;	price of the result.
+					;	Compute the total price of the components
 						
-					(setq componentPrice 
-						(map theComponents 'reduceSum theComponent 
+					(componentPrice
+						(map theComponents 'reduceSum theComponent
 							;	For devices we assume a damaged device
 							(if (itmMatches theComponent "d")
-								(multiply (itmGetCount theComponent) (itmGetPrice (itmSetProperty theComponent 'damaged True)))
-								(multiply (itmGetCount theComponent) (itmGetPrice theComponent))
+								(* (itmGetCount theComponent) (itmGetPrice (itmSetProperty theComponent 'damaged True) currencyUsed))
+								(* (itmGetCount theComponent) (itmGetPrice theComponent currencyUsed))
 								)
 							)
 						)
 						
-					;	The total cost of the work compensates for any difference between
-					;	the input and output prices.
-						
-					(setq workCost 
-						(add
-							(max 
-								50
-								(intRoundUp (subtract (itmGetPrice theItem) componentPrice) 25)
-								)
-							(@ theRecipe 'extraCost)
+
+					(markUp (@ theRecipe 'markUp))
+					(workPrice
+						(switch
+							;	If markUp is an integer, assume it is the cost of the work
+							;	as a percent of the component cost. E.g., 10 = 10% of component
+							;	cost.
+							(and markUp (= (typeof markUp) 'int32))
+								(int (round (* componentPrice (/ markUp 100))))
+
+							;	Otherwise, we expect a double such that 0.1 = 10% of component
+							;	cost.
+							markUp
+								(int (round (* componentPrice markUp)))
+
+							;	Otherwise default tinker calculation where  total cost of the work
+							;	compensates for any difference between the input and output prices.
+							(max 50 (intRoundUp (- (itmGetPrice theItem) componentPrice) 25))
+							)
+						)
+					(workCost
+						(or
+							;	Recipe totalCost will override any other calculations
+							(@ theRecipe 'totalCost)
+
+							;	Otherwise add extraCost to the calculated price
+							(+ workPrice (@ theRecipe 'extraCost))
 							)
 						)
 						
 					;	For each required component, add up the number of items the player
 					;	actually has. Note that we accept damaged items.
 						
-					(setq availableComponents
+					(availableComponents
 						(map theComponents theComponent
 							(block (countAvailable)
 								(setq countAvailable 0)
@@ -783,13 +953,13 @@
 								;	Add the number of non-damaged items we have
 								
 								(setq countAvailable (add countAvailable
-									(objHasItem gPlayerShip theComponent 1)
+									(objHasItem (or theSource gPlayerShip) theComponent 1)
 									))
 										
 								;	Now add damaged items
 									
 								(setq countAvailable (add countAvailable
-									(objHasItem gPlayerShip (itmSetProperty theComponent 'damaged True) 1)
+									(objHasItem (or theSource gPlayerShip) (itmSetProperty theComponent 'damaged True) 1)
 									))
 										
 								;	Compose entry
@@ -800,25 +970,50 @@
 								)
 							)
 						)
-						
-					;	Figure out the maximum number of items we could create
-						
-					(setq maxCount 
-						(if (gr workCost 0) 
-							(divide (plyGetCredits gPlayer) workCost)
+
+					;	Figure out how much cargo space we need for each item
+					(spaceNeeded
+						(-
+							(* (itmGetMass theItem) (itmGetCount theItem))
+							(map theComponents theComponent
+								(* (itmGetMass (@ theComponent 'item)) (@ theComponent 'count))
+								)
+							)
+						)
+					(maxCountSpace
+						(if (gr spaceNeeded 0)
+							(int (/ (objGetCargoSpaceLeft (or theSource gPlayerShip)) spaceNeeded))
 							1000
 							)
 						)
-					(enum availableComponents theEntry
-						(setq maxCount (min
-							maxCount
-							(divide (@ theEntry 'available) (itmGetCount (@ theEntry 'item)))
-							))
-						)
+
+					;	Figure out the maximum number of items we could create
 						
+					(maxCountPrice
+						(if (gr workCost 0)
+							(int (/ (objGetBalance (or theSource gPlayerShip) currencyUsed) workCost))
+							1000
+							)
+						)
+
+					;	Now compute the max count based on component availability
+
+					(maxCount
+						(min maxCountSpace maxCountPrice
+							(if availableComponents
+								(map availableComponents 'reduceMin theEntry
+									(int (/ (@ theEntry 'available) (itmGetCount (@ theEntry 'item))))
+									)
+								1000
+								)
+							)
+						)
+					)
+
 					;	Return a structure describing various aspects of the fabrication
 					
 					{
+						item: theItem
 						recipe: theRecipe
 						
 						;	This is a list of items (with counts) required to fabricate.
@@ -829,6 +1024,7 @@
 						;	These fields determine various prices
 						
 						componentCost: componentPrice
+						currencyUsed: currencyUsed
 						workCost: workCost
 						
 						;	This is a list of structures describing what components the
@@ -840,9 +1036,20 @@
 						
 						componentsAvail: availableComponents
 						
+						;	This is a structure suitable for an ItemListDisplay control
+
+						itemListDisplay:
+							(map availableComponents 'excludeNil theEntry
+								{
+									item: (@ theEntry 'item)
+									enabled: (geq (@ theEntry 'available) (itmGetCount (@ theEntry 'item)))
+									}
+								)
+
 						;	Maximum number of items we can fabricate
 						
 						maxFabCount: maxCount
+						maxCount: maxCount
 						
 						;	Missing components
 						
@@ -861,14 +1068,16 @@
 										) 
 									)
 								)
+
+						noCargoSpace: (= maxCountSpace 0)
 						}
 					)
 				))
 			
 			(setq tinkerCreateItem (lambda (theRecipe theCount)
 				(if (@ theRecipe 'enhancement)
-					(itmSetCount (itmSetEnhanced (itmCreate (@ theRecipe 'item) 1) (@ theRecipe 'enhancement)) theCount)
-					(itmCreate (@ theRecipe 'item) theCount)
+					(itmSetCount (itmSetEnhanced (itmCreate (@ theRecipe 'item) 1) (@ theRecipe 'enhancement)) (or (@ theRecipe 'itemCount) theCount))
+					(itmCreate (@ theRecipe 'item) (or (@ theRecipe 'itemCount) theCount))
 					)
 				))
 				

@@ -18,8 +18,8 @@
 			maxAppearing=		"1"
 			priority=			"100"
 
-			expireTime=			"5400"
 			failureAfterOutOfSystem="5400"
+			noFailureOnOwnerDestroyed="true"
 			>
 
 		<StaticData>
@@ -88,6 +88,38 @@
 					;	Remember the player's old ship.
 					
 					(msnSetData gSource 'playerShipID (objGetID gPlayerShip))
+
+					;	Deal with all of the player's wingmen
+
+					(enum (sysFindObject gPlayerShip "sA +property:playerWingman;") theWingman
+						(block (
+							(targetSov (objGetProperty theWingman 'sovereign))
+							(curOrders (shpGetOrder theWingman))
+							)
+							;	If our wingman is not currently escorting us, then order them
+							;	to return (if they ARE escorting us, then they will stay with the
+							;	old player ship).
+
+							(if (and (!= curOrders 'escort)
+									(!= curOrders 'follow)
+									(!= curOrders 'hold)
+									)
+								(objCommunicate theWingman gPlayerShip 'msgFormUp)
+								)
+
+							;	Set the sovereign so that it is friends with the new infiltration
+							;	sovereign.
+
+							(if (and (!= targetSov &svBenedict06Infiltrate;)
+									(!= targetSov &svCommonwealth;)
+									)
+								(block ()
+									(sovSetDisposition &svBenedict06Infiltrate; targetSov 'friend)
+									(sovSetDisposition targetSov &svBenedict06Infiltrate; 'friend)
+									)
+								)
+							)
+						)
 					
 					;	Create a Penitent ship for the player
 					
@@ -105,16 +137,20 @@
 					(objChangeEquipmentStatus newShipObj 'TargetingComputer 'install)
 					
 					;	Switch ships
+					;
+					;	We set the old ship to wait, which means autons stay with the old ship,
+					;	but any enemies abort (otherwise, random encounters would attack the old
+					;	ship).
 					
 					(plyChangeShip gPlayer newShipObj {
-						noOrderTransfer: True
+						oldShipWaits: True
 						})
 					
 					;	Set the sovereign because plyChangeShip always sets it to
 					;	the default player sovereign.
 					
 					(objSetSovereign newShipObj &svBenedict06Infiltrate;)
-					
+
 					;	Set the old player ship to dock at the station (and wait)
 					
 					(shpCancelOrders oldShipObj)
@@ -138,6 +174,16 @@
 					
 					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
 						(msnFailure gSource)
+
+					;	If the Sisters station was destroyed then we remember that
+					;	fact (though the mission can continue).
+
+					(= (objGetID aObjDestroyed) (msnGetProperty gSource 'ownerID))
+						
+						(if (and gPlayerShip (= gPlayerShip aOrderGiver))
+							(msnSetData gSource 'sourceDestroyed 'byPlayer)
+							(msnSetData gSource 'sourceDestroyed 'byEnemy)
+							)
 					)
 			</OnObjDestroyed>
 			
@@ -280,289 +326,210 @@
 		</Events>
 		
 		<Language>
-			<Text id="Name">"Infiltrate a Penitent Sanctum"</Text>
+			<!-- Mission Summary -->
+
+			<Text id="Name">Infiltrate a Penitent Sanctum</Text>
 			<Text id="Summary">
-				(cat
-					"Help Benedict to infiltrate a Penitent Sanctum.\n\n"
-					"System: " (sysGetName) "\n"
-					"Payment: None"
-					)
+				(msnTranslate gSource 'descSummary {
+					systemName: (sysGetName)
+					})
 			</Text>
+			<Text id="descSummary">
+				Help Benedict to infiltrate a Penitent Sanctum.
+
+				System: %systemName%\n
+				Payment: None
+			</Text>
+
+			<!-- Intro -->
+
 			<Text id="Intro">
 				(list
-					{
-						desc: (cat
-							"Benedict greets you as you enter:\n\n"
-							
-							"\"%name%! I'm glad you're here! I've reconstructed the drive data "
-							"from the medical ship. They deviated from their scheduled course "
-							"to dock at a Penitent station in this system!\""
-							)
-						label: "\"[H]umanitarian mission, maybe?\""
-						}
-					{
-						desc: (cat
-							"\"Not likely! Maybe Stormhound is right. I think Sister Elana Ston "
-							"is hiding something. Whatever she was doing with the Penitents, maybe "
-							"she got caught and had to scuttle the medical ship to erase the "
-							"evidence.\""
-							)
-						label: "\"[W]hat are you going to do?\""
-						}
-					{
-						desc: (cat
-							"\"I've got an idea, but I need your help. Have you ever flown a "
-							"Penitent ship?\""
-							)
-						label: "\"[I] don't like where this is going...\""
-						}
+					{	textID: 'descIntro1			labelID: 'actionIntro1	}
+					{	textID: 'descIntro2			labelID: 'actionIntro2	}
+					{	textID: 'descIntro3			labelID: 'actionIntro3	}
 					)
 			</Text>
+			<Text id="descIntro1">
+
+				Benedict greets you as you enter:
+							
+				"%name%! I'm glad you're here! I've reconstructed the drive data
+				from the medical ship. They deviated from their scheduled course
+				to dock at a Penitent station in this system!"
+
+			</Text>
+			<String id="actionIntro1">"[H]umanitarian mission, maybe?"</String>
+			<Text id="descIntro2">
+
+				"Not likely! Maybe Stormhound is right. I think Sister Elana Ston
+				is hiding something. Whatever she was doing with the Penitents, maybe
+				she got caught and had to scuttle the medical ship to erase the
+				evidence."
+
+			</Text>
+			<String id="actionIntro2">"[W]hat are you going to do?"</String>
+			<Text id="descIntro3">
+
+				"I've got an idea, but I need your help. Have you ever flown a
+				Penitent ship?"
+
+			</Text>
+			<String id="actionIntro3">"[I] don't like where this is going..."</String>
+
+			<!-- Briefing -->
+
 			<Text id="Briefing">
-				(list
-					{
-						desc: (cat
-							"Benedict takes you around to another docking bay.\n\n"
+
+				Benedict takes you around to another docking bay.
 							
-							"\"I've had the Sisters refurbish a Penitent ship that "
-							"we destroyed recently. We can use it to enter the Penitent "
-							"Sanctum and find out what the medical ship was doing there.\n\n"
+				"I've had the Sisters refurbish a Penitent ship that 
+				we destroyed recently. We can use it to enter the Penitent 
+				Sanctum and find out what the medical ship was doing there.
 							
-							"\"I really need you on this. Are you in?\""
-							)
-						acceptLabel: "\"[S]ure, let's go.\""
-						declineLabel: "\"[M]aybe. Let me prepare first.\""
-						}
-					)
+				"I really need you on this. Are you in?"
+
 			</Text>
+			<String id="AcceptLabel">"[S]ure, let's go."</String>
+			<String id="DeclineLabel">"[M]aybe. Let me prepare first."</String>
 			<Text id="AcceptReply">
-				(cat
-					"\"Alright. Just get us to the Penitent station and I'll take care "
-					"of the rest.\""
-					)
+
+				"Alright. Just get us to the Penitent station and I'll take care 
+				of the rest."
+
 			</Text>
 			<Text id="DeclineReply">
-				(cat
-					"\"OK, but don't take too long.\""
-					)
+
+				"OK, but don't take too long."
+
 			</Text>
+
+			<!-- In Progress -->
+
 			<Text id="InProgress">
-				(cat
-					"\"What are we doing back here? We need to go to the Penitent "
-					"station!\""
-					)
+
+				"What are we doing back here? We need to go to the Penitent
+				station!"
+
 			</Text>
+
+			<!-- Success -->
+
 			<Text id="SuccessDebrief">
-				(list
-					{
-						desc: (cat
-							"Fiona and Sandoval meet you at the airlock.\n\n"
-							
-							"Fiona looks past you at the ship, \"Where's Benedict? "
-							"He told us to meet him here.\""
+				(switch
+					;	If the Sisters station was destroyed by the player...
+
+					(= (msnGetData gSource 'sourceDestroyed) 'byPlayer)
+						(list
+							{	textID: 'descSuccess1C	}
+							{	textID: 'descSuccess2	}
+							{	textID: 'descSuccess3		labelID: 'actionSuccess3	}
+							{	textID: 'descSuccess4		labelID: 'actionSuccess4	}
 							)
-						}
-					{
-						desc: (cat
-							"You give Fiona the video data ROM and tell her about Benedict "
-							"staying behind.\n\n"
-							
-							"Sandoval interrupts you, \"If we leave now maybe we can get him "
-							"out of there!\"\n\n"
-							
-							"But Fiona shakes her head, \"How? Even if he's not dead already "
-							"we'd have to blow the station to get him, and that could kill "
-							"him too!\""
+
+					;	If the Sisters station was destroyed by someone else...
+
+					(msnGetData gSource 'sourceDestroyed)
+						(list
+							{	textID: 'descSuccess1B	}
+							{	textID: 'descSuccess2	}
+							{	textID: 'descSuccess3		labelID: 'actionSuccess3	}
+							{	textID: 'descSuccess4		labelID: 'actionSuccess4	}
 							)
-						}
-					{
-						desc: (cat
-							"Fiona continues, \"And we don't know what's going on! Why is "
-							"Sister Ston working with Penitents? Who were those children?\n\n"
-							
-							"\"Maybe if we figure it out we'll have some leverage to get "
-							"Benedict out.\""
-							)
-						label: "\"[W]hat's your plan?\""
-						}
-					{
-						desc: (cat
-							"\"We're going to Sanctuary. I've got enough to make Sister Ston "
-							"talk.\n\n"
-							
-							"\"Meet us there and by then we might have a plan to rescue Benedict!\""
-							)
-						label: "\"[B]e careful!\""
-						}
+
+					;	Otherwise, normal debrief
+
+					(list
+						{	textID: 'descSuccess1A	}
+						{	textID: 'descSuccess2	}
+						{	textID: 'descSuccess3		labelID: 'actionSuccess3	}
+						{	textID: 'descSuccess4		labelID: 'actionSuccess4	}
+						)
 					)
 			</Text>
-			<Text id="SuccessMsg">
-				"Mission complete!"
+
+			<!-- BRANCH A: Normal debrief -->
+
+			<Text id="descSuccess1A">
+
+				Fiona and Sandoval meet you at the airlock.
+							
+				Fiona looks past you at the ship, "Where's Benedict?
+				He told us to meet him here."
+
 			</Text>
+
+			<!-- BRANCH B: Sisters destroyed by enemy -->
+
+			<Text id="descSuccess1B">
+
+				You dock with the ruined station and see Fiona and Sandoval helping
+				injured Sisters. Fiona walks towards you:
+
+				"It was an attack! You and Benedict are playing with fire and we're
+				getting burned!"
+
+				She looks past you at the ship, "Where is he?"
+			</Text>
+
+			<!-- BRANCH C: Sisters destroyed by player -->
+
+			<Text id="descSuccess1C">
+				
+				You dock with the ruined station and see Fiona and Sandoval helping
+				injured Sisters. Sandoval grabs you as you enter:
+
+				"What are you playing at! You deliberately attacked us!"
+
+				But Fiona interrupts him, "%He% didn't mean it, Sandoval! It was an 
+				accident.
+
+				"Where's Benedict?"
+			</Text>
+
+			<Text id="descSuccess2">
+
+				You give Fiona the video data ROM and tell her about Benedict 
+				staying behind.
+							
+				Sandoval interrupts you, "If we leave now maybe we can get him
+				out of there!"
+							
+				But Fiona shakes her head, "How? Even if he's not dead already
+				we'd have to blow the station to get him, and that could kill 
+				him too!"
+
+			</Text>
+			<Text id="descSuccess3">
+
+				Fiona continues, "And we don't know what's going on! Why is 
+				Sister Ston working with Penitents? Who were those children?
+							
+				"Maybe if we figure it out we'll have some leverage to get 
+				Benedict out."
+
+			</Text>
+			<String id="actionSuccess3">"[W]hat's your plan?"</String>
+			<Text id="descSuccess4">
+
+				"We're going to Sanctuary. I've got enough to make Sister Ston 
+				talk.
+							
+				"Meet us there and by then we might have a plan to rescue Benedict!"
+
+			</Text>
+			<String id="actionSuccess4">"[B]e careful!"</String>
+			<Text id="SuccessMsg">Mission complete!</Text>
+
+			<!-- Failure -->
+
 			<Text id="FailureDebrief">
-				(cat
-					"\"What a shame! Now we'll never know why the medical ship was docking at the Penitents!\""
-					)
+
+				"What a shame! Now we'll never know why the medical ship was docking at the Penitents!"
+
 			</Text>
-			
-			<Text id="AtPenitents">
-				(list
-					{
-						desc: (cat
-							"You enter the Penitent docking bay with Benedict at your side. "
-							"Dock workers in vacuum suits prep a handful of ships.\n\n"
-							
-							"Benedict points to an elevated level that overlooks the entire bay, "
-							"\"That's where we're going.\"\n\n"
-							
-							"Gray-garbed Penitents pass you as you head for the elevator. None "
-							"look up from their datapads."
-							)
-						}
-					{
-						desc: (cat
-							"The door to the elevated level slides open into a control room. "
-							"A tall, middle-aged man in a simple gray outfit looks up from his "
-							"console as you enter.\n\n"
-							
-							"\"Who are you, please?\""
-							)
-						actions: (list
-							{
-								;	BRANCH A
-								label: "\"[W]e're here to relieve you.\""
-								nextPage: 'bluffRelieve
-								}
-							{
-								;	BRANCH B
-								label: "\"[G]ot called about a malfunction.\""
-								nextPage: 'bluffRepair
-								}
-							{
-								;	BRANCH C
-								label: "\"[P]risoner transfer from cell block 1138.\""
-								nextPage: 'bluff1138
-								}
-							)
-						}
-					{
-						id: 'bluffRelieve
-						desc: (cat
-							"The controller appears confused, \"I just started my shift.\""
-							)
-						label: "\"[Y]eah, but...you look tired.\""
-						}
-					{
-						desc: (cat
-							"\"Why aren't you wearing your wristband? Why are there two of you? "
-							"And why haven't I seen you before...\"\n\n"
-							
-							"The Penitent suddenly heads towards a panel on the opposite wall, "
-							"but Benedict intercepts him. He bashes the Penitent with his arm "
-							"cannon, leaving him motionless on the floor."
-							)
-						label: "\"[N]ow what?\""
-						nextPage: 'videoReview
-						}
-					{
-						id: 'bluffRepair
-						desc: (cat
-							"The controller stares at both of you without speaking. Then he "
-							"calmly looks down at his screen:\n\n"
-							
-							"\"Our scanner has been ionized. You'll need to depolarize the dish.\""
-							)
-						label: "\"[Y]eah, that's why we're here.\""
-						}
-					{
-						desc: (cat
-							"\"Great!\n\n"
-							
-							"\"Of course, you're in the wrong place. Everyone knows the "
-							"scanner dish is in the central hub.\"\n\n"
-							
-							"The Penitent suddenly heads towards a panel on the opposite wall, "
-							"but Benedict intercepts him. He bashes the Penitent with his arm "
-							"cannon, leaving him motionless on the floor."
-							)
-						label: "\"[N]ow what?\""
-						nextPage: 'videoReview
-						}
-					{
-						id: 'bluff1138
-						desc: (cat
-							"\"Where have I heard that before...\"\n\n"
-							
-							"The Penitent suddenly heads towards a panel on the opposite wall, "
-							"but Benedict intercepts him. He bashes the Penitent with his arm "
-							"cannon, leaving him motionless on the floor."
-							)
-						label: "\"[N]ow what?\""
-						nextPage: 'videoReview
-						}
-					{
-						id: 'videoReview
-						desc: (cat
-							"\"We only have a few minutes,\" says Benedict, as he swipes around "
-							"on the console. \"Here it is! Docking bay video of when the medical "
-							"ship docked.\"\n\n"
-							
-							"The screen flickers to a recorded view of the docking bay. "
-							"You see Sister Elana Ston step out of the medical ship. There is no "
-							"sound, but you see her talking with a couple of Penitents in their "
-							"monochrome suits."
-							)
-						}
-					{
-						desc: (cat
-							"Sister Ston walks back to her ship, and for several "
-							"minutes nothing more happens. But then a dozen medtechs come out of "
-							"the ship, each escorting a small gurney. They take the gurneys into "
-							"the halls of the Penitent station and out of the camera frame.\n\n"
-							
-							"Each gurney carries a small infant, wrapped in blankets, and hooked "
-							"up to a monitoring pad."
-							)
-						}
-					{
-						desc: (cat
-							"Just then, you hear shouts from below and see a group of Penitents, "
-							"weapons out, enter the docking bay.\n\n"
-							
-							"Benedict hands you a data ROM, \"Take this video back to Fiona! "
-							"Don't trust anyone else. Go now!\""
-							)
-						label: "\"[W]here are you going?\""
-						}
-					{
-						desc: (cat
-							"\"I'll buy you some time. Don't argue! I've got a plan to leave in "
-							"one piece.\n\n"
-							
-							"\"But just in case, tell Fiona that...\"\n\n"
-							
-							"A blast hits above your head, and you scramble towards the door. "
-							"Benedict powers up his arm cannon and waves you through."
-							)
-						}
-					{
-						desc: (cat
-							"You hear deafening shots behind you as you make your way to the ship."
-							)
-						nextPage: 'forceUndock
-						
-						code: (lambda ()
-							(block (
-								(missionObj (@ (msnFind "a +unid:&msInfiltratePenitents;;") 0))
-								)
-								(msnFireEvent missionObj 'OnInfiltrateDone)
-								)
-							)
-						}
-					)
-			</Text>
-			
-			<Text id="msgStopThatShip">"Destroy that ship!"</Text>
+
+			<String id="msgStopThatShip">"Destroy that ship!"</String>
 		</Language>
 	</MissionType>
 	
@@ -649,11 +616,186 @@
 							(setq missionObj (@ (msnFind "a +unid:&msInfiltratePenitents;;") 0))
 							(not (msnGetProperty missionObj 'isCompleted))
 							)
-						(list &dsRPGDialog; (typTranslate &msInfiltratePenitents; 'AtPenitents) 10)
+						(list &dsRPGDialog; (objTranslate gSource 'benedict06.atPenitents) 10)
 						)
 					)
 			</GetDockScreen>
 		</Events>
+
+		<Language>
+			<Text id="benedict06.atPenitents">
+				(list
+					{						textID: 'descPenitents1	}
+					{						textID: 'descPenitents2
+						actions: (list
+							{
+								;	BRANCH A
+								labelID: 'actionPenitents2A
+								nextPage: 'bluffRelieve
+								}
+							{
+								;	BRANCH B
+								labelID: 'actionPenitents2B
+								nextPage: 'bluffRepair
+								}
+							{
+								;	BRANCH C
+								labelID: 'actionPenitents2C
+								nextPage: 'bluff1138
+								}
+							)
+						}
+					{	id: 'bluffRelieve	textID: 'descPenitents3			labelID: 'actionPenitents3	}
+					{						textID: 'descPenitents4			labelID: 'actionNowWhat			nextPage: 'videoReview		}
+					{	id: 'bluffRepair	textID: 'descPenitents5			labelID: 'actionPenitents5	}
+					{						textID: 'descPenitents6			labelID: 'actionNowWhat			nextPage: 'videoReview		}
+					{	id: 'bluff1138		textID: 'descPenitents7			labelID: 'actionNowWhat			nextPage: 'videoReview		}
+					{	id: 'videoReview	textID: 'descPenitents8	}
+					{						textID: 'descPenitents9	}
+					{						textID: 'descPenitents10		labelID: 'actionPenitents10	}
+					{						textID: 'descPenitents11	}
+					{						textID: 'descPenitents12										nextPage: 'forceUndock
+						code: (lambda ()
+							(block (
+								(missionObj (@ (msnFind "a +unid:&msInfiltratePenitents;;") 0))
+								)
+								(msnFireEvent missionObj 'OnInfiltrateDone)
+								)
+							)
+						}
+					)
+			</Text>
+			<Text id="descPenitents1">
+
+				You enter the Penitent docking bay with Benedict at your side. 
+				Dock workers in vacuum suits prep a handful of ships.
+							
+				Benedict points to an elevated level that overlooks the entire bay, 
+				"That's where we're going."
+							
+				Gray-garbed Penitents pass you as you head for the elevator. None 
+				look up from their datapads.
+
+			</Text>
+			<Text id="descPenitents2">
+
+				The door to the elevated level slides open into a control room. 
+				A tall, middle-aged man in a simple gray outfit looks up from his 
+				console as you enter.
+
+				"Who are you, please?"
+
+			</Text>
+
+			<!-- BRANCH A -->
+
+			<String id="actionPenitents2A">"[W]e're here to relieve you."</String>
+			<Text id="descPenitents3">
+
+				The controller appears confused, "I just started my shift."
+
+			</Text>
+			<String id="actionPenitents3">"[Y]eah, but...you look tired."</String>
+			<Text id="descPenitents4">
+
+				"Why aren't you wearing your wristband? Why are there two of you? 
+				And why haven't I seen you before..."
+							
+				The Penitent suddenly heads towards a panel on the opposite wall, 
+				but Benedict intercepts him. He bashes the Penitent with his arm 
+				cannon, leaving him motionless on the floor.
+
+			</Text>
+
+			<!-- BRANCH B -->
+
+			<String id="actionPenitents2B">"[G]ot called about a malfunction."</String>
+			<Text id="descPenitents5">
+
+				The controller stares at both of you without speaking. Then he 
+				calmly looks down at his screen:
+							
+				"Our scanner has been ionized. You'll need to depolarize the dish."
+
+			</Text>
+			<String id="actionPenitents5">"[Y]eah, that's why we're here."</String>
+			<Text id="descPenitents6">
+
+				"Great!"
+							
+				"Of course, you're in the wrong place. Everyone knows the 
+				scanner dish is in the central hub."
+							
+				The Penitent suddenly heads towards a panel on the opposite wall, 
+				but Benedict intercepts him. He bashes the Penitent with his arm 
+				cannon, leaving him motionless on the floor.
+
+			</Text>
+
+			<!-- BRANCH C -->
+
+			<String id="actionPenitents2C">"[P]risoner transfer from cell block 1138."</String>
+			<Text id="descPenitents7">
+
+				"Where have I heard that before..."
+							
+				The Penitent suddenly heads towards a panel on the opposite wall, 
+				but Benedict intercepts him. He bashes the Penitent with his arm 
+				cannon, leaving him motionless on the floor.
+
+			</Text>
+
+			<String id="actionNowWhat">"[N]ow what?"</String>
+			<Text id="descPenitents8">
+
+				"We only have a few minutes," says Benedict, as he swipes around 
+				on the console. "Here it is! Docking bay video of when the medical 
+				ship docked."
+							
+				The screen flickers to a recorded view of the docking bay. 
+				You see Sister Elana Ston step out of the medical ship. There is no 
+				sound, but you see her talking with a couple of Penitents in their 
+				monochrome suits.
+
+			</Text>
+			<Text id="descPenitents9">
+
+				Sister Ston walks back to her ship, and for several 
+				minutes nothing more happens. But then a dozen medtechs come out of 
+				the ship, each escorting a small gurney. They take the gurneys into 
+				the halls of the Penitent station and out of the camera frame.
+							
+				Each gurney carries a small infant, wrapped in blankets, and hooked 
+				up to a monitoring pad.
+
+			</Text>
+			<Text id="descPenitents10">
+
+				Just then, you hear shouts from below and see a group of Penitents, 
+				weapons out, enter the docking bay.
+							
+				Benedict hands you a data ROM, "Take this video back to Fiona! 
+				Don't trust anyone else. Go now!"
+
+			</Text>
+			<String id="actionPenitents10">"[W]here are you going?"</String>
+			<Text id="descPenitents11">
+
+				"I'll buy you some time. Don't argue! I've got a plan to leave in 
+				one piece.
+							
+				"But just in case, tell Fiona that..."
+							
+				A blast hits above your head, and you scramble towards the door.
+				Benedict powers up his arm cannon and waves you through.
+
+			</Text>
+			<Text id="descPenitents12">
+
+				You hear deafening shots behind you as you make your way to the ship.
+
+			</Text>
+		</Language>
 	</Type>
 
 <!-- TABLES AND RESOURCES -->

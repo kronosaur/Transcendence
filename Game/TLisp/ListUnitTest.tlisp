@@ -1,0 +1,29 @@
+;	ListUnitTest.tlisp
+;
+;	Regression tests for list operations
+;	Copyright (c) 2017 by Kronosaur Productions, LLC. All Rights Reserved
+
+(setq TEST_SUITE (list
+
+	;	Map
+
+	{	code: '(map Nil theEntry theEntry)							result: Nil	}
+	{	code: '(map (list 1 2 3) theEntry (+ 1 theEntry))			result: '(2 3 4)	}
+
+	;	Map of structs
+
+	{	code: '(map { a:1 b:2 c:3 } theEntry theEntry)			result: '((a 1) (b 2) (c 3))	}
+
+	;	Reduce unique
+
+	{	code: '(map (list 3 1 2 3 3 5) 'reduceUnique theEntry theEntry)
+		result: '(1 2 3 5)	}
+
+	{	code: '(map (list { a:1 } { a:2 } { a:3 } { a:1 }) 'reduceUnique theEntry (@ theEntry 'a))
+		result: '(1 2 3)	}
+
+	{	code: '(map (list { a:1 } { a:2 } { a:3 } { a:1 }) '(reduceUnique original) theEntry (@ theEntry 'a))
+		result: '({ a:1 } { a:2} { a: 3})	}
+	))
+
+(debugUnitTest "List Unit Test" TEST_SUITE)

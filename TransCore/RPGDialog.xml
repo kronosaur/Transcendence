@@ -72,7 +72,9 @@
 											gScreen 
 											(cat "action" nextActionID)
 											Nil
-											(@ actionDesc 'label)
+											(or (@ actionDesc 'label)
+												(scrTranslate gScreen (@ actionDesc 'labelID))
+												)
 											Nil
 											(switch
 												(eq (count (@ pageDesc 'actions)) 1)

@@ -684,6 +684,16 @@ PLAYER DATA
 			<Effect type="thrustMain"		posAngle="-166"	posRadius="116"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 			
+		<DockingPorts>
+			<Port posAngle="90"   posRadius="105"  posZ="0" />
+			<Port posAngle="-90"  posRadius="105"  posZ="0" />
+
+			<Port posAngle="45"   posRadius="105"  posZ="0"	bringToFront="*"/>
+			<Port posAngle="135"  posRadius="105"  posZ="0"	bringToFront="*"/>
+			<Port posAngle="225"  posRadius="105"  posZ="0"	bringToFront="*"/>
+			<Port posAngle="315"  posRadius="105"  posZ="0"	bringToFront="*"/>
+		</DockingPorts>
+
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -898,17 +908,6 @@ PLAYER DATA
 			</Text>
 		</Language>
 
-		<DockingPorts>
-			<Port x="0"		y="70" />
-			<Port x="0"		y="-70" />
-			<Port x="50"	y="50" />
-			<Port x="50"	y="-50" />
-			<Port x="70"	y="0" />
-			<Port x="-70"	y="0" />
-			<Port x="-50"	y="50" />
-			<Port x="-50"	y="-50" />
-		</DockingPorts>
-
 	</ShipClass>
 
 	<!-- CSC Hospital -->
@@ -992,6 +991,16 @@ PLAYER DATA
 			<Effect type="thrustMain"		posAngle="-166"	posRadius="116"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 			
+		<DockingPorts>
+			<Port posAngle="90"   posRadius="105"  posZ="0" />
+			<Port posAngle="-90"  posRadius="105"  posZ="0" />
+
+			<Port posAngle="45"   posRadius="105"  posZ="0"	bringToFront="*"/>
+			<Port posAngle="135"  posRadius="105"  posZ="0"	bringToFront="*"/>
+			<Port posAngle="225"  posRadius="105"  posZ="0"	bringToFront="*"/>
+			<Port posAngle="315"  posRadius="105"  posZ="0"	bringToFront="*"/>
+		</DockingPorts>
+
 		<AISettings
 			fireRateAdj=		"15"
 			fireAccuracy=		"95"
@@ -1368,17 +1377,6 @@ PLAYER DATA
 					)
 			</Text>
 		</Language>
-
-		<DockingPorts>
-			<Port x="0"		y="70" />
-			<Port x="0"		y="-70" />
-			<Port x="50"	y="50" />
-			<Port x="50"	y="-50" />
-			<Port x="70"	y="0" />
-			<Port x="-70"	y="0" />
-			<Port x="-50"	y="50" />
-			<Port x="-50"	y="-50" />
-		</DockingPorts>
 
 	</ShipClass>
 

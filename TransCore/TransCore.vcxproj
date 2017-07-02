@@ -504,6 +504,7 @@
     <Xml Include="Penitents.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="RaisuStation.xml" />
     <Xml Include="Rama.xml" />
     <Xml Include="RPGCommoditiesExchange.xml" />
     <Xml Include="RPGComponents.xml">
@@ -511,6 +512,7 @@
     </Xml>
     <Xml Include="RPGLibrary.xml" />
     <Xml Include="GalaxyLibrary.xml" />
+    <Xml Include="RPGMembership.xml" />
     <Xml Include="RPGShipBroker.xml">
       <SubType>Designer</SubType>
     </Xml>

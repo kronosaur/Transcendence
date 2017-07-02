@@ -830,12 +830,12 @@
 				;				available at this station. [Required]
 				;
 				;		displayCriteria: If non-Nil, then we show open/active missions 
-				;				that match this criteria. Otherwise, this is assumed to
-				;				be the same as missionCriteria.
+				;				that match this criteria. Otherwise, we show all missions
+				;				for the mission source (gSource)
 				
 				(block (
 					(noMissionTextID (@ options 'noMissionTextID))
-					(displayCriteria (or (@ options 'displayCriteria) (@ options 'missionCriteria)))
+					(displayCriteria (@ options 'displayCriteria))
 					theMission newMissions nextMissionTime
 					)
 
@@ -849,7 +849,7 @@
 
 						;	If we have an open mission available then display it.
 
-						(setq theMission (@ (msnFind gSource (cat "oS" displayCriteria)) 0))
+						(setq theMission (@ (msnFind gSource (cat "oS " displayCriteria)) 0))
 							(scrShowScreen gScreen &dsRPGMission; {	missionObj: theMission })
 
 						;	Don't give out more than X mission per station
@@ -910,12 +910,12 @@
 				;
 				;		missionCriteria: Criteria used to create new missions. [Required]
 				;
-				;		displayCriteria: If non-Nil, then we show open/active missions
-				;				that match this criteria. Otherwise, this is assumed to
-				;				be the same as missionCriteria.
+				;		displayCriteria: If non-Nil, then we show open/active missions 
+				;				that match this criteria. Otherwise, we show all missions
+				;				for the mission source (gSource)
 				
 				(block (
-					(displayCriteria (or (@ options 'displayCriteria) (@ options 'missionCriteria)))
+					(displayCriteria (@ options 'displayCriteria))
 					theMission newMissions nextMissionTime
 					)
 
@@ -927,7 +927,7 @@
 							theMission
 
 						;	If we have an open mission available then return it.
-						(setq theMission (@ (msnFind gSource (cat "oS" displayCriteria)) 0))
+						(setq theMission (@ (msnFind gSource (cat "oS " displayCriteria)) 0))
 							theMission
 
 						;	Don't give out more than X mission per station

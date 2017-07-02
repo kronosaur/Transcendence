@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Teraton Research ======================================================
+
+	EXTRA DATA
+
+	research:		Medical experiment
+	outcome:		Result of experiment
+	rewardItem:		Reward if player survives
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msTeratonResearch;"
+			name=				"Teraton Research"
+			attributes=			"teratonResearch"
+
+			level=				"8-9"
+				 
+			noDebrief=			"true"
+			noStats=			"true"
+			>
+
+		<Events>
+			<OnCreate>
+				(block (
+					;	Choose a medical experiment
+					(researchRoll (random 1 100))
+					(research (switch
+						(leq researchRoll 15)	'mutilation
+						(leq researchRoll 50)	'filovirus
+						(leq researchRoll 85)	'mutagens
+												'parasite
+						))
+					;	Choose a reward
+					(rewardRoll (random 1 100))
+					(reward (switch
+						(leq rewardRoll 40)	(itmCreate &itPromethiumCrystal; 1)
+						(leq rewardRoll 75)	(itmCreateRandom "* +Res;" "----- -ccur")
+											(itmCreateRandom "wsd +MajorItem;" "----- -c---")
+						))
+					)
+					(msnSetData gSource 'research research)
+					(msnSetData gSource 'rewardItem reward)
+
+					;	No intro for this mission
+					(msnSetProperty gSource 'isIntroShown True)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					(research (msnGetData gSource 'research))
+					(dieRoll (random 1 100))
+					outcome
+					)
+
+					(setq outcome (switch
+						(= research 'mutilation)
+							(switch
+								(leq dieRoll 95)
+									'success
+								(intConsumeItem gPlayerShip (itmCreate &itArtificialPlasma; 1))
+									'plasma
+								(objHasItem gPlayerShip (itmCreate &itPortableAutodoc; 1))
+									'autodoc
+								'death
+								)
+						(= research 'filovirus)
+							(switch
+								(leq dieRoll 85)
+									'success
+								(intConsumeItem gPlayerShip (itmCreate &itCyanavir; 1))
+									'cyanavir
+								(objHasItem gPlayerShip (itmCreate &itPortableAutodoc; 1))
+									'autodoc
+								'death
+								)
+						(= research 'mutagens)
+							(switch
+								(leq dieRoll 67)
+									'success
+								(intConsumeItem gPlayerShip (itmCreate &itDeathDrugs; 1))
+									'deathdrugs
+								(objHasItem gPlayerShip (itmCreate &itPortableAutodoc; 1))
+									'autodoc
+								'death
+								)
+						(= research 'parasite)
+							(switch
+								(intConsumeItem gPlayerShip (itmCreate &itHypermycin; 1))
+									(if (leq dieRoll 95)
+										'hypermycin
+										'death
+										)
+								(objHasItem gPlayerShip (itmCreate &itPortableAutodoc; 1))
+									(if (leq dieRoll 80)
+										'autodoc
+										'death
+										)
+								'death
+								)
+						))
+					(msnSetData gSource 'outcome outcome)
+					)
+			</OnAccepted>
+
+			<OnGetNextScreen>
+				(if (and (= aScreenType 'AcceptFollowUp)
+						(!= (msnGetData gSource 'outcome) 'death)
+						)
+					(block Nil
+						(msnSuccess gSource)
+						{
+							nextScreen: &dsRPGMessage;
+							nextScreenData: {
+								desc: (msnTranslate gSource 'msgReward {
+									itemName: (itmGetName (msnGetData gSource 'rewardItem) 8)
+									})
+								}
+							}
+						)
+					)
+			</OnGetNextScreen>
+
+			<OnAcceptedUndock>
+				(if	(= (msnGetData gSource 'outcome) 'death)
+					(msnFailure gSource)
+					)
+			</OnAcceptedUndock>
+			
+			<OnCompleted>
+				(switch
+					(= aReason 'success)
+						(objAddItem gPlayerShip (msnGetData gSource 'rewardItem))
+					
+					(= aReason 'failure)
+						(plyDestroyed gPlayer (msnTranslate gSource 'msgKilled))
+					)
+			</OnCompleted>
+		</Events>
+		
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="AcceptReply">
+				(list
+					{ textID: (cat (msnGetData gSource 'research) ":start") }
+					{ textID: (cat (msnGetData gSource 'research) ":" (msnGetData gSource 'outcome)) }
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">Teraton Research</Text>
+			<Text id="Briefing">
+				You enter a dim cavern filled with arcane equipment. Dozens of
+				human subjects, wired, tubed, and in various stages of health
+				and wholeness, lie on articulated beds.
+
+				A tall Teraton with supernumerary fingers approaches you.
+				"Human! You desire to join the research? You will be compensated
+				with gifts from beyond."
+			</Text>
+			<String id="AcceptLabel">"[S]ure&mdash;anything for the advancement of science."</String>
+			<String id="DeclineLabel">"[N]o thanks."</String>
+			<Text id="DeclineReply">
+				The Teraton growls in disappointment. He turns away and continues
+				his work on the human subjects.
+			</Text>
+			<Text id="SuccessMsg"></Text>
+			<Text id="mutilation:start">
+				The Teraton takes you to an empty bed and straps you down so that
+				you cannot move. It then takes a scalpel and slices open both
+				your forearms from the elbow to the wrist. You bleed profusely
+				and mercifully pass out after a few minutes of screaming.
+			</Text>
+			<Text id="mutilation:success">
+				You wake up in the nightmarish chamber and notice that both your
+				arms are bandaged up.
+
+				The Teraton attempts a smile and says, "Human! Your body is weak
+				and easily killed. We have repaired as best as possible. For your
+				pains we will reward you."
+			</Text>
+			<Text id="mutilation:plasma">
+				You wake up in your ship with bloody bandages over both your arms.
+				You open a case of artificial plasma and set up a transfusion.
+
+				You start to feel better after an hour.
+			</Text>
+			<Text id="mutilation:autodoc">
+				You wake up in your ship with bloody bandages over both your arms.
+				You activate your portable autodoc and it drips a concoction of
+				fluids and growth stims into your arm.
+
+				You start to feel better immediately.
+			</Text>
+			<Text id="mutilation:death">
+				Overnight your blood pressure drops as the bleeding continues.
+
+				In the morning, the Teraton takes your lifeless body and dumps
+				it into space.
+			</Text>
+			<Text id="filovirus:start">
+				The Teraton takes you to an empty bed and straps you down so that
+				you cannot move. It then takes a syringe and injects you with
+				something. At first you feel OK, but after a few hours you ache
+				all over and begin to vomit. After a couple of days you begin to
+				bleed from every orifice and you mercifully fall into a coma.
+			</Text>
+			<Text id="filovirus:success">
+				You wake up in the nightmarish chamber, a taste of vomit in your
+				mouth, but otherwise OK.
+
+				The Teraton attempts a smile and says, "Human! Your body is weak
+				and easily killed. We have repaired as best as possible. For your
+				pains we will reward you."
+			</Text>
+			<Text id="filovirus:cyanavir">
+				You wake up in your ship covered in blood and vomit. You dose
+				yourself with a course of cyanavir and try to sleep it off.
+
+				After several days you recover enough to be able to eat again.
+			</Text>
+			<Text id="filovirus:autodoc">
+				You wake up in your ship covered in blood and vomit. You activate
+				your portable autodoc and it drips a concoction of antivirals into
+				your arm.
+
+				You start to feel better after a few days.
+			</Text>
+			<Text id="filovirus:death">
+				Overnight you crash out as your organs liquify from the viral load.
+
+				In the morning, the Teraton carefully places your lifeless form
+				into a body bag and dumps it into space.
+			</Text>
+			<Text id="mutagens:start">
+				The Teraton takes you to an empty bed and straps you down so that
+				you cannot move. It then opens up a large jar and carefully
+				removes what looks like a cancerous growth. Slicing your chest
+				with quick strokes, the Teraton implants the growth into your
+				body. You pass out from the pain before it finishes.
+			</Text>
+			<Text id="mutagens:success">
+				You wake up in the nightmarish chamber, a large bandage covering
+				your chest.
+
+				The Teraton attempts a smile and says, "Human! Your body is weak
+				and easily killed. We have repaired as best as possible. For your
+				pains we will reward you."
+			</Text>
+			<Text id="mutagens:deathdrugs">
+				You wake up in your ship covered in blood. You dose yourself with
+				a course of cancer dust and try to sleep it off.
+
+				After several days you recover enough to be able to eat again.
+			</Text>
+			<Text id="mutagens:autodoc">
+				You wake up in your ship covered in blood. You activate your
+				portable autodoc and it drips a concoction of oncokillers into
+				your arm.
+
+				You start to feel better after a few days.
+			</Text>
+			<Text id="mutagens:death">
+				For days, the growth inside your chest gets bigger, feeding on
+				your blood supply. After a month, the cancer metastasizes to your
+				eyes and mouth.
+
+				After two months, the Teraton dumps your lifeless body into space.
+			</Text>
+			<Text id="parasite:start">
+				The Teraton takes you to an empty bed and straps you down so that
+				you cannot move. It then opens up a small jar and carefully
+				removes a translucent and gelatinous eel of some sort. Holding
+				your head steady, it guides the eel into your nasal passage. The
+				eel seems undisturbed by your piercing screams.
+			</Text>
+			<Text id="parasite:hypermycin">
+				You wake up in your ship with a splitting headache and a nasty nose
+				bleed. You dose yourself with a course of hypermycin and try to
+				sleep it off.
+
+				One morning you find a shriveled and desiccated eel by your pillow,
+				and after that the headaches disappear.
+			</Text>
+			<Text id="parasite:autodoc">
+				You wake up in your ship with a splitting headache and a nasty nose
+				bleed. You activate your portable autodoc and it drips a concoction
+				of antibiotics into your arm.
+
+				One morning you find a shriveled and desiccated eel by your pillow,
+				and after that the headaches disappear.
+			</Text>
+			<Text id="parasite:death">
+				For days the eel grows inside your head, eating everything before
+				it. Fortunately, the damage to your brain slips you into a deep
+				catatonia and you feel nothing.
+
+				After a month, the Teraton takes your lifeless body and dumps it
+				into space.
+			</Text>
+			<Text id="msgReward">
+				Once you've recovered, the Teraton comes to your ship, "Human! This
+				payment compensates for your damage."
+
+				It drops off %itemName% and leaves without another word.
+			</Text>
+			<Text id="msgKilled">was killed in a Teraton medical experiment</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

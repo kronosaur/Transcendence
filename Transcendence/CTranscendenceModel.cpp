@@ -2045,6 +2045,13 @@ ALERROR CTranscendenceModel::SaveGame (DWORD dwFlags, CString *retsError)
 	{
 	ALERROR error;
 
+	//	We never save on mission check point in debug mode. [Otherwise it's hard
+	//	to debug a mission.]
+
+	if ((dwFlags & CGameFile::FLAG_ACCEPT_MISSION) 
+			&& m_Universe.InDebugMode())
+		return NOERROR;
+
 	//	If this is a mission check point and we've already quit the game, then
 	//	we can stop. This can happen if we end the game inside of <OnAcceptedUndock>
 

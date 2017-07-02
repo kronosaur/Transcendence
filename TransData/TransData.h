@@ -77,6 +77,7 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void DoTradeSim (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateArmorTable (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateAttributeList (CUniverse &Universe, CXMLElement *pCmdLine);
+void GenerateDiagnostics (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateEffectImage (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateEncounterCount (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateEncounterFrequency (CUniverse &Universe, CXMLElement *pCmdLine);
@@ -114,6 +115,7 @@ void HexarcTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void PerformanceTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void Run (CUniverse &Universe, CXMLElement *pCmdLine);
 void RunEncounterSim (CUniverse &Universe, CXMLElement *pCmdLine);
+void RunFile (const CString &sFilespec, bool bNoLogo);
 void WordGenerator (CXMLElement *pCmdLine);
 
 //	Don't care about warning of depecrated functions (e.g., sprintf)

@@ -229,12 +229,19 @@ void GenerateStats (CUniverse &Universe, CXMLElement *pCmdLine)
 	printf((LPSTR)strPatternSubst(CONSTLIT("Total types\t%,d\n"), Stats.iAllTypes));
 	printf((LPSTR)strPatternSubst(CONSTLIT("Dynamic types\t%,d\n"), Stats.iDynamicTypes));
 	printf((LPSTR)strPatternSubst(CONSTLIT("Merged types\t%,d\n"), Stats.iMergedTypes));
-	printf((LPSTR)strPatternSubst(CONSTLIT("Item types\t%,d\n"), Stats.iItemTypes));
-	printf((LPSTR)strPatternSubst(CONSTLIT("Ship classes\t%,d\n"), Stats.iShipClasses));
-	printf((LPSTR)strPatternSubst(CONSTLIT("Station types\t%,d\n"), Stats.iStationTypes));
-
 	printf("\n");
-
+	printf((LPSTR)strPatternSubst(CONSTLIT("Dock screens\t%,d\n"), Stats.iDockScreens));
+	printf((LPSTR)strPatternSubst(CONSTLIT("Effect types\t%,d\n"), Stats.iEffectTypes));
+	printf((LPSTR)strPatternSubst(CONSTLIT("Item types\t%,d\n"), Stats.iItemTypes));
+	printf((LPSTR)strPatternSubst(CONSTLIT("Mission types\t%,d\n"), Stats.iMissionTypes));
+	printf((LPSTR)strPatternSubst(CONSTLIT("Overlay types\t%,d\n"), Stats.iOverlayTypes));
+	printf((LPSTR)strPatternSubst(CONSTLIT("Resources\t%,d\n"), Stats.iResourceTypes));
+	printf((LPSTR)strPatternSubst(CONSTLIT("Ship classes\t%,d\n"), Stats.iShipClasses));
+	printf((LPSTR)strPatternSubst(CONSTLIT("Sovereigns\t%,d\n"), Stats.iSovereigns));
+	printf((LPSTR)strPatternSubst(CONSTLIT("Station types\t%,d\n"), Stats.iStationTypes));
+	printf((LPSTR)strPatternSubst(CONSTLIT("Support types\t%,d\n"), Stats.iSupportTypes));
+	printf((LPSTR)strPatternSubst(CONSTLIT("System types\t%,d\n"), Stats.iSystemTypes));
+	printf("\n");
 	printf((LPSTR)strPatternSubst(CONSTLIT("XML memory usage\t%,lld\n"), Stats.dwTotalXMLMemory));
 	printf((LPSTR)strPatternSubst(CONSTLIT("XML keyword count\t%,d\n"), CXMLElement::GetKeywordCount()));
 

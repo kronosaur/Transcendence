@@ -97,6 +97,7 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"noCollectionDownload",		optionBoolean,	"false",	0	},
 		{	"noCollectionLoad",		    optionBoolean,	"false",	0	},
 		{	"debugSoundtrack",			optionBoolean,	"false",	0	},
+		{	"introSpoilers",			optionBoolean,	"false",	0	},
 	};
 
 SCommandLineData g_CommandLineData[] =

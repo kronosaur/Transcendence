@@ -40,7 +40,7 @@ void CMenuData::AddMenuItem (const CString &sKey,
 		iPos = 0;
 		while (iPos < m_iCount 
 				&& !m_List[iPos].sKey.IsBlank()
-				&& strCompare(sKey, m_List[iPos].sKey) > 0)
+				&& strCompareAbsolute(sKey, m_List[iPos].sKey) > 0)
 			iPos++;
 
 		//	Move other items up

@@ -142,6 +142,16 @@
 			<Effect type="thrustMain"		posAngle="-166"	posRadius="116"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 			
+		<DockingPorts>
+			<Port posAngle="90"   posRadius="105"  posZ="0" />
+			<Port posAngle="-90"  posRadius="105"  posZ="0" />
+
+			<Port posAngle="45"   posRadius="105"  posZ="0"	bringToFront="*"/>
+			<Port posAngle="135"  posRadius="105"  posZ="0"	bringToFront="*"/>
+			<Port posAngle="225"  posRadius="105"  posZ="0"	bringToFront="*"/>
+			<Port posAngle="315"  posRadius="105"  posZ="0"	bringToFront="*"/>
+		</DockingPorts>
+
 		<AISettings
 			fireRateAdj=		"15"
 			fireAccuracy=		"95"
@@ -762,17 +772,6 @@
 
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="70" />
-			<Port x="0"		y="-70" />
-			<Port x="50"	y="50" />
-			<Port x="50"	y="-50" />
-			<Port x="70"	y="0" />
-			<Port x="-70"	y="0" />
-			<Port x="-50"	y="50" />
-			<Port x="-50"	y="-50" />
-		</DockingPorts>
-
 	</ShipClass>
 
 	<!-- CSC Terra
@@ -898,6 +897,16 @@
 			<Effect type="thrustMain"		posAngle="-166"	posRadius="116"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 			
+		<DockingPorts>
+			<Port posAngle="90"   posRadius="105"  posZ="0" />
+			<Port posAngle="-90"  posRadius="105"  posZ="0" />
+
+			<Port posAngle="45"   posRadius="105"  posZ="0"	bringToFront="*"/>
+			<Port posAngle="135"  posRadius="105"  posZ="0"	bringToFront="*"/>
+			<Port posAngle="225"  posRadius="105"  posZ="0"	bringToFront="*"/>
+			<Port posAngle="315"  posRadius="105"  posZ="0"	bringToFront="*"/>
+		</DockingPorts>
+
 		<AISettings
 			fireRateAdj=		"15"
 			fireAccuracy=		"95"
@@ -1481,17 +1490,6 @@
 				</Panes>
 			</Main>
 		</DockScreens>
-
-		<DockingPorts>
-			<Port x="0"		y="70" />
-			<Port x="0"		y="-70" />
-			<Port x="50"	y="50" />
-			<Port x="50"	y="-50" />
-			<Port x="70"	y="0" />
-			<Port x="-70"	y="0" />
-			<Port x="-50"	y="50" />
-			<Port x="-50"	y="-50" />
-		</DockingPorts>
 
 		<Language>
 			<Text id="Mission3Intro">

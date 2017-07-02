@@ -154,7 +154,7 @@
 				
 			(setq rpgCreateFromComponents (lambda (createCtx theSource theFoundry theCount options)
 				(block (
-					(itemToCreate (itmSetCount (@ createCtx 'item) theCount))
+					(itemToCreate (itmSetCount (@ createCtx 'item) (* (itmGetCount (@ createCtx 'item)) theCount)))
 					(totalCost (* (@ createCtx 'workCost) theCount))
 					(currencyUsed (@ createCtx 'currencyUsed))
 					itemsConsumed

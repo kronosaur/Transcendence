@@ -104,6 +104,10 @@
 	<!-- 00D0-00EF WINGMEN -->
 
 	<!ENTITY baStdWingmanBase			"0x000100D0">
+
+	<!-- 00F0-010F MEMBERSHIP -->
+
+	<!ENTITY dsRPGPromotion				"0x000100F0">
 	]>
 	
 <CoreLibrary
@@ -117,6 +121,7 @@
 	
 	<Module filename="HUD.xml"/>
 	<Module filename="RPGAnalyzers.xml"/>
+	<Module filename="RPGArmorDockScreens.xml"/>
 	<Module filename="RPGAutons.xml"/>
 	<Module filename="RPGAuxDevices.xml"/>
 	<Module filename="RPGBehaviors.xml"/>
@@ -126,10 +131,10 @@
 	<Module filename="RPGCommoditiesExchange.xml"/>
 	<Module filename="RPGCompatibility.xml"/>
 	<Module filename="RPGComponents.xml"/>
-	<Module filename="RPGArmorDockScreens.xml"/>
 	<Module filename="RPGDeviceDockScreens.xml"/>
 	<Module filename="RPGDialog.xml"/>
 	<Module filename="RPGDockScreens.xml"/>
+	<Module filename="RPGMembership.xml"/>
 	<Module filename="RPGMissions.xml"/>
 	<Module filename="RPGPlayer.xml"/>
 	<Module filename="RPGShipBroker.xml"/>

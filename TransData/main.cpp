@@ -25,6 +25,7 @@
 #define ATTRIBUTE_LIST_SWITCH				CONSTLIT("attributelist")
 #define DEBUG_SWITCH						CONSTLIT("debug")
 #define DECOMPILE_SWITCH					CONSTLIT("decompile")
+#define DIAGNOSTICS_SWITCH					CONSTLIT("diagnostics")
 #define EFFECT_IMAGE_SWITCH					CONSTLIT("effectImage")
 #define EFFECT_PERF_SWITCH					CONSTLIT("effectPerf")
 #define ENCOUNTER_COUNT_SWITCH				CONSTLIT("encountercount")
@@ -79,9 +80,10 @@ class CHost : public CUniverse::IHost
 	public:
 		CHost (void) { m_DefaultFont.Create(CONSTLIT("Tahoma"), -13); }
 
-		virtual void ConsoleOutput (const CString &sLine) { printf("%s\n", sLine.GetASCIIZPointer()); }
-		virtual void DebugOutput (const CString &sLine) { printf("%s\n", sLine.GetASCIIZPointer()); }
-		virtual const CG16bitFont *GetFont (const CString &sFont) { return &m_DefaultFont; }
+		virtual void ConsoleOutput (const CString &sLine) override { printf("%s\n", sLine.GetASCIIZPointer()); }
+		virtual void DebugOutput (const CString &sLine) override { printf("%s\n", sLine.GetASCIIZPointer()); }
+		virtual const CG16bitFont *GetFont (const CString &sFont) override { return &m_DefaultFont; }
+		virtual void LogOutput (const CString &sLine) const override { printf("%s\n", (LPSTR)sLine); ::kernelDebugLogString(sLine); }
 
 	private:
 		CG16bitFont m_DefaultFont;
@@ -327,6 +329,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 
 	if (pCmdLine->GetAttributeBool(ARMOR_TABLE_SWITCH))
 		GenerateArmorTable(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(DIAGNOSTICS_SWITCH))
+		GenerateDiagnostics(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_COUNT_SWITCH))
 		GenerateEncounterCount(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_FREQ_SWITCH))
@@ -578,202 +582,6 @@ void MarkItemsKnown (CUniverse &Universe)
 		CItemType *pItem = Universe.GetItemType(i);
 		pItem->SetKnown();
 		pItem->SetShowReference();
-		}
-	}
-
-void Run (CUniverse &Universe, CXMLElement *pCmdLine)
-	{
-	ALERROR error;
-	CCodeChain &CC = g_pUniverse->GetCC();
-	bool bNoLogo = pCmdLine->GetAttributeBool(NO_LOGO_SWITCH);
-
-	//	Prepare the universe
-
-	CTopologyNode *pNode = g_pUniverse->GetFirstTopologyNode();
-	if (pNode == NULL)
-		{
-		printf("ERROR: No topology node found.\n");
-		return;
-		}
-
-	CSystem *pSystem;
-	if (error = g_pUniverse->CreateStarSystem(pNode, &pSystem))
-		{
-		printf("ERROR: Unable to create star system.\n");
-		return;
-		}
-
-	//	Set the POV
-
-	CSpaceObject *pPOV = pSystem->GetObject(0);
-	g_pUniverse->SetPOV(pPOV);
-	pSystem->SetPOVLRS(pPOV);
-
-	//	Prepare system
-
-	g_pUniverse->UpdateExtended();
-	g_pUniverse->GarbageCollectLibraryBitmaps();
-
-	CString sCommand = pCmdLine->GetAttribute(RUN_SWITCH);
-	CString sRunFile = pCmdLine->GetAttribute(RUN_FILE_SWITCH);
-
-	//	If this is a run file, then we parse it and run it
-
-	if (!sRunFile.IsBlank() && !strEquals(sRunFile, CONSTLIT("true")))
-		{
-		CCodeChainCtx Ctx;
-
-		//	Verify the file
-
-		if (!strEndsWith(sRunFile, CONSTLIT("."))
-				&& pathGetExtension(sRunFile).IsBlank())
-			sRunFile.Append(CONSTLIT(".tlisp"));
-
-		//	Open the file
-
-		CFileReadBlock InputFile(sRunFile);
-		if (error = InputFile.Open())
-			{
-			printf("error : Unable to open file '%s'.\n", sRunFile.GetASCIIZPointer());
-			return;
-			}
-
-		if (!bNoLogo)
-			printf("%s\n", sRunFile.GetASCIIZPointer());
-
-		//	Parse
-
-		CString sInputFile(InputFile.GetPointer(0), InputFile.GetLength(), TRUE);
-		CString sOutput;
-		int iOffset = 0;
-
-		while (true)
-			{
-			int iCharCount;
-			ICCItem *pCode = Ctx.Link(sInputFile, iOffset, &iCharCount);
-			if (pCode->IsNil())
-				break;
-			else if (pCode->IsError())
-				{
-				printf("error : %s\n", pCode->GetStringValue().GetASCIIZPointer());
-				Ctx.Discard(pCode);
-				return;
-				}
-
-			iOffset += iCharCount;
-
-			//	Execute
-
-			ICCItem *pResult = Ctx.Run(pCode);
-
-			//	Compose output
-
-			if (pResult->IsIdentifier())
-				sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
-			else
-				sOutput = CC.Unlink(pResult);
-
-			//	Free
-
-			Ctx.Discard(pResult);
-			Ctx.Discard(pCode);
-			}
-
-		//	Output result
-
-		printf("%s\n", sOutput.GetASCIIZPointer());
-		}
-
-	//	If we have a command, invoke it
-
-	else if (!sCommand.IsBlank() && !strEquals(sCommand, CONSTLIT("True")))
-		{
-		CCodeChainCtx Ctx;
-		ICCItem *pCode = Ctx.Link(sCommand, 0, NULL);
-		ICCItem *pResult = Ctx.Run(pCode);
-
-		CString sOutput;
-		if (pResult->IsIdentifier())
-			sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
-		else
-			sOutput = CC.Unlink(pResult);
-
-		Ctx.Discard(pResult);
-		Ctx.Discard(pCode);
-
-		//	Output result
-
-		printf("%s\n", sOutput.GetASCIIZPointer());
-		}
-
-	//	Otherwise, we enter a command loop
-
-	else
-		{
-		//	Welcome
-
-		if (!bNoLogo)
-			{
-			printf("(help) for function help.\n");
-			printf("\\q to quit.\n\n");
-			}
-
-		//	Loop
-
-		while (true)
-			{
-			char szBuffer[1024];
-			if (!bNoLogo)
-				printf(": ");
-			gets_s(szBuffer, sizeof(szBuffer)-1);
-			CString sCommand(szBuffer);
-
-			//	Escape codes
-
-			if (*sCommand.GetASCIIZPointer() == '\\')
-				{
-				//	Quit command
-
-				if (strStartsWith(sCommand, CONSTLIT("\\q")))
-					break;
-				else if (strStartsWith(sCommand, CONSTLIT("\\?"))
-						|| strStartsWith(sCommand, CONSTLIT("\\h")))
-					{
-					printf("TLisp Shell\n\n");
-					printf("\\h      Show this help\n");
-					printf("\\q      Quit\n");
-
-					printf("\n(help) for function help.\n");
-					}
-				}
-
-			//	Null command
-
-			else if (sCommand.IsBlank())
-				NULL;
-
-			//	Command
-
-			else
-				{
-				CCodeChainCtx Ctx;
-				ICCItem *pCode = Ctx.Link(sCommand, 0, NULL);
-				ICCItem *pResult = Ctx.Run(pCode);
-
-				CString sOutput;
-				if (pResult->IsIdentifier())
-					sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
-				else
-					sOutput = CC.Unlink(pResult);
-
-				Ctx.Discard(pResult);
-				Ctx.Discard(pCode);
-
-				//	Output result
-
-				printf("%s\n", sOutput.GetASCIIZPointer());
-				}
-			}
 		}
 	}
 
