@@ -592,7 +592,7 @@
 		<Communications>
 			<Message id="msgExplore" name="Explore" key="E">
 				<OnShow>
-					(and (eq (objGetData gSource "behavior") 'escorting)
+					(and (neq (objGetData gSource 'behavior) 'exploring)
 						(objGetProperty gSource 'playerWingman)
 						)
 				</OnShow>
@@ -624,7 +624,7 @@
 								(shpOrder gSource 'approach targetObj 75)
 								(objSetShowAsDestination gSource)
 								
-								(objSetData gSource 'behavior 'custom)
+								(objSetData gSource 'behavior 'exploring)
 								(objSetData gSource 'targetID (objGetID targetObj))
 								(objSendMessage gSender gSource (objTranslate gSource 'ExploreAck))
 								)
@@ -635,12 +635,8 @@
 			
 			<Message id="msgFormUp" name="Form up" key="F">
 				<OnShow>
-					(and
+					(and (neq (objGetData gSource 'behavior) 'escorting)
 						(objGetProperty gSource 'playerWingman)
-						(or (eq (objGetData gSource 'behavior) 'waiting)
-							(eq (objGetData gSource 'behavior) 'custom)
-							(objCommunicate gSource gSender 'QueryAttackStatus)
-							)
 						)
 				</OnShow>
 
@@ -677,7 +673,7 @@
 					(switch
 						;	If we're exploring, then pick a new target
 						
-						(eq behavior 'custom)
+						(eq behavior 'exploring)
 							(block (
 								(exploredObj (objGetObjByID (objGetData gSource 'targetID)))
 								
@@ -739,7 +735,7 @@
 			<String id="DeployAck">"Tx3 explorer online"</String>
 			<String id="ExplorationDone">"Exploration complete"</String>
 			<String id="ExploreAck">"Commencing exploration"</String>
-			<String id="NoExploreTarget">"No unexplored objects in system."</String>
+			<String id="NoExploreTarget">"No unexplored objects in system"</String>
 			<String id="ObjectExplored">"%objectName% explored"</String>
 		</Language>
 	</ShipClass>

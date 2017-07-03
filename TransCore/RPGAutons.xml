@@ -109,27 +109,58 @@
 
 			<Message id="msgBreakAndAttack" name="Break &amp; attack" key="B">
 				<OnShow>
-					(and (eq (objGetData gSource 'behavior) 'escorting)
+					(and (neq (objGetData gSource 'behavior) 'attackingAtWill)
 						(not (shpGetAISetting gSource 'nonCombatant))
+						(objGetItems gSource "wI")
 						(objGetProperty gSource 'playerWingman)
 						)
 				</OnShow>
 				
 				<Invoke>
 					(block (theTarget)
-						(switch
-							(or (not (setq theTarget (sysFindObject gPlayerShip "sTEAN")))
-									(gr (objGetDistance gPlayerShip theTarget) 100)
-									)
-								(objSendMessage gSender gSource (objTranslate gSource 'NoTargetInRange))
+					
+						;	Get the closest angry target to the sender that the sender can detect.
+						;	Store the result so we only have to check once each tick.
+						(if (eq (unvGetTick) (objGetData gSender 'closestTargetCheckTick))
+						
+							(setq theTarget (objGetData gSender 'closestBreakAndAttackTarget))
 							
-							(block Nil
-								(shpCancelOrders gSource)
-								(shpOrder gSource 'attack theTarget)
-								
-								(objSetData gSource 'behavior 'attackingAtWill)
-								(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+							(block nil
+								(setq theTarget (sysFindObject gSender "sTYAPN N:100;"))
+								(objSetData gSender 'closestBreakAndAttackTarget theTarget)
+								(objSetData gSender 'closestTargetCheckTick (unvGetTick))
 								)
+							)
+							
+						(switch
+						
+							;	Attack the closest target to the sender if we have one.
+							theTarget
+								(block nil
+									(shpCancelOrders gSource)
+									(shpOrder gSource 'attack theTarget)
+									(objSetData gSource 'behavior 'attackingAtWill)
+									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+									)
+							
+							;	If we're already attacking something, don't change target, but switch behavior.
+							(eq (objGetData gSource 'behavior) 'attackingTarget)
+								(block nil
+									(objSetData gSource 'behavior 'attackingAtWill)
+									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+									)
+									
+							;	Attack the closest target to ourself that we can detect, if any.
+							(setq theTarget (sysFindObject gSource "sTYAPN N:100;"))
+								(block nil
+									(shpCancelOrders gSource)
+									(shpOrder gSource 'attack theTarget)
+									(objSetData gSource 'behavior 'attackingAtWill)
+									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+									)
+									
+							;	Nothing to attack.	
+							(objSendMessage gSender gSource (objTranslate gSource 'NoTargetInRange))
 							)
 						)
 				</Invoke>
@@ -137,10 +168,7 @@
 
 			<Message id="msgFormUp" name="Form up" key="F">
 				<OnShow>
-					(and
-						(or (eq (objGetData gSource 'behavior) 'waiting)
-							(objCommunicate gSource gSender 'QueryAttackStatus)
-							)
+					(and (neq (objGetData gSource 'behavior) 'escorting)
 						(objGetProperty gSource 'playerWingman)
 						)
 				</OnShow>
@@ -172,10 +200,7 @@
 					(and
 						(objGetItems gSender "*IN +AutonBay;")
 						(objGetData gSource 'autonItemType)
-						(or
-							(not (objGetData gSource 'behavior))
-							(eq (objGetData gSource 'behavior) 'escorting)
-							)
+						(neq (objGetData gSource 'behavior) 'returning)
 						(objGetProperty gSource 'playerWingman)
 						)
 				</OnShow>
@@ -229,11 +254,7 @@
 
 			<Message id="msgWait" name="Wait" key="W">
 				<OnShow>
-					(and
-						(or
-							(not (objGetData gSource 'behavior))
-							(eq (objGetData gSource 'behavior) 'escorting)
-							)
+					(and (neq (objGetData gSource 'behavior) 'waiting)
 						(objGetProperty gSource 'playerWingman)
 						)
 				</OnShow>
@@ -433,31 +454,56 @@
 			</OnEnteredGate>
 			
 			<OnOrdersCompleted>
-				(block (behavior theTarget)
-					(setq behavior (objGetData gSource 'behavior))
-					
-					; Set orders and state
-					
+				(block (theTarget)
 					(switch
 						(not (objGetProperty gSource 'playerWingman))
 							Nil
-							
-						(and (eq behavior 'attackingAtWill)
-								(setq theTarget (sysFindObject gPlayerShip "sTEAN"))
-								(leq (objGetDistance gPlayerShip theTarget) 100)
-								)
-							(shpOrder gSource 'attack theTarget)
-							
-						gPlayerShip
+						
+						(not gPlayerShip)
 							(block Nil
-								(shpOrder gSource 'escort gPlayerShip)
-								(objSetData gSource 'behavior 'escorting)
+								(shpOrder gSource 'hold)
+								(objSetData gSource 'behavior 'waiting)
 								)
-
+							
+						(eq (objGetData gSource 'behavior) 'attackingAtWill)
+							(block nil
+								;	Get the closest angry target to the player that they can detect.
+								;	Store the result so we only have to check once each tick.
+								(if (eq (unvGetTick) (objGetData gPlayerShip 'closestTargetCheckTick))
+						
+									(setq theTarget (objGetData gPlayerShip 'closestBreakAndAttackTarget))
+									
+									(block nil
+										(setq theTarget (sysFindObject gPlayerShip "sTYAPN N:100;"))
+										(objSetData gPlayerShip 'closestBreakAndAttackTarget theTarget)
+										(objSetData gPlayerShip 'closestTargetCheckTick (unvGetTick))
+										)
+									)
+								
+								(switch
+						
+									;	Attack the closest target to the player if we have one.
+									theTarget
+										(shpOrder gSource 'attack theTarget)
+											
+									;	Attack the closest target to ourself that we can detect, if any.
+									(setq theTarget (sysFindObject gSource "sTYAPN N:100;"))
+										(shpOrder gSource 'attack theTarget)
+										
+									;	Nothing to attack, return to formation.
+									(block Nil
+										(shpOrder gSource 'escort gPlayerShip)
+										(objSetData gSource 'behavior 'escorting)
+										)
+									)
+								)
+								
+						;	Default: return to formation.
 						(block Nil
-							(shpOrder gSource 'hold)
-							(objSetData gSource 'behavior 'waiting)
+							(shpOrder gSource 'escort gPlayerShip)
+							(objSetData gSource 'behavior 'escorting)
 							)
+							
 						)
 					)
 			</OnOrdersCompleted>

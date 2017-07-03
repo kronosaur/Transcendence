@@ -93,24 +93,54 @@
 			
 			<Message id="msgBreakAndAttack" name="Break &amp; attack" key="B">
 				<OnShow>
-					(eq (objGetData gSource "behavior") 'escorting)
+					(not (find '('goingHome 'attackingAtWill) (objGetData gSource 'behavior)))
 				</OnShow>
 				
 				<Invoke>
 					(block (theTarget)
-						(switch
-							(or (not (setq theTarget (sysFindObject gPlayerShip "sTYAN")))
-									(gr (objGetDistance gPlayerShip theTarget) 100)
-									)
-								(objSendMessage gSender gSource (objTranslate gSource 'NoTargetInRange))
+					
+						;	Get the closest angry target to the sender that the sender can detect.
+						;	Store the result so we only have to check once each tick.
+						(if (eq (unvGetTick) (objGetData gSender 'closestTargetCheckTick))
+						
+							(setq theTarget (objGetData gSender 'closestBreakAndAttackTarget))
 							
-							(block Nil
-								(shpCancelOrders gSource)
-								(shpOrder gSource 'attack theTarget)
-								
-								(objSetData gSource "behavior" 'attackingAtWill)
-								(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+							(block nil
+								(setq theTarget (sysFindObject gSender "sTYAPN N:100;"))
+								(objSetData gSender 'closestBreakAndAttackTarget theTarget)
+								(objSetData gSender 'closestTargetCheckTick (unvGetTick))
 								)
+							)
+							
+						(switch
+						
+							;	Attack the closest target to the sender if we have one.
+							theTarget
+								(block nil
+									(shpCancelOrders gSource)
+									(shpOrder gSource 'attack theTarget)
+									(objSetData gSource 'behavior 'attackingAtWill)
+									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+									)
+							
+							;	If we're already attacking something, don't change target, but switch behavior.
+							(eq (objGetData gSource 'behavior) 'attackingTarget)
+								(block nil
+									(objSetData gSource 'behavior 'attackingAtWill)
+									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+									)
+									
+							;	Attack the closest target to ourself that we can detect, if any.
+							(setq theTarget (sysFindObject gSource "sTYAPN N:100;"))
+								(block nil
+									(shpCancelOrders gSource)
+									(shpOrder gSource 'attack theTarget)
+									(objSetData gSource 'behavior 'attackingAtWill)
+									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+									)
+									
+							;	Nothing to attack.	
+							(objSendMessage gSender gSource (objTranslate gSource 'NoTargetInRange))
 							)
 						)
 				</Invoke>
@@ -118,12 +148,7 @@
 
 			<Message id="msgFormUp" name="Form up" key="F">
 				<OnShow>
-					(and 
-						(or (eq (objGetData gSource "behavior") 'waiting)
-							(objCommunicate gSource gSender 'QueryAttackStatus)
-							)
-						(not (eq (objGetData gSource "behavior") 'goingHome))
-						)
+					(not (find '('escorting 'goingHome) (objGetData gSource 'behavior)))
 				</OnShow>
 
 				<Invoke>
@@ -193,7 +218,7 @@
 
 			<Message id="msgWait" name="Wait" key="W">
 				<OnShow>
-					(eq (objGetData gSource "behavior") 'escorting)
+					(not (find '('waiting 'goingHome) (objGetData gSource 'behavior)))
 				</OnShow>
 
 				<Invoke>
@@ -295,7 +320,6 @@
 										(objSetData gSource "nextArmorRepairMsg" (add (unvGetTick) 3600))
 										)
 								)
-						)
 						
 						; If we're attempting to repair at a station that doesn't have enough free ports, go back to normal behavior.
 						(and (eq behavior 'repairingArmor)
@@ -303,7 +327,6 @@
 							(ls (objGetOpenDockingPortCount theTarget) 2)
 							(not (find (staGetDockedShips theTarget) gSource)) ; Have to check this way because the station knows the ship is docking
 																			   ; once the port is reserved, but the ship doesn't know it's docked yet.
-
 							gPlayerShip
 							)
 							(block nil
@@ -311,7 +334,7 @@
 								(shpOrder gSource 'follow gPlayerShip)
 								(objSetData gSource 'behavior 'escorting)
 								)
-							
+						)
 					)
 			</OnBehavior>
 
@@ -365,32 +388,60 @@
 			<OnOrdersCompleted>
 				(block (behavior theTarget)
 					(setq behavior (objGetData gSource "behavior"))
-					(switch
-						(eq behavior 'repairingArmor)
-							(block Nil
-								(intArmorRepairAll gSource 25 'alwaysRepair)
-								(objSendMessage gPlayerShip gSource (objTranslate gSource 'ArmorRepaired))
-								)
+					
+					(if (eq behavior 'repairingArmor)
+						(block Nil
+							(intArmorRepairAll gSource 25 'alwaysRepair)
+							(objSendMessage gPlayerShip gSource (objTranslate gSource 'ArmorRepaired))
+							)
 						)
 					
 					; Set orders and state
 					
 					(switch
-						(and (eq behavior 'attackingAtWill)
-								(setq theTarget (sysFindObject gPlayerShip "sTYAN"))
-								(leq (objGetDistance gPlayerShip theTarget) 100)
-								)
-							(shpOrder gSource 'attack theTarget)
-								
-						gPlayerShip
+						(not gPlayerShip)
 							(block Nil
-								(shpOrder gSource 'follow gPlayerShip)
-								(objSetData gSource "behavior" 'escorting)
+								(shpOrder gSource 'hold)
+								(objSetData gSource 'behavior 'waiting)
 								)
-
+							
+						(eq behavior 'attackingAtWill)
+							(block nil
+								;	Get the closest angry target to the player that they can detect.
+								;	Store the result so we only have to check once each tick.
+								(if (eq (unvGetTick) (objGetData gPlayerShip 'closestTargetCheckTick))
+						
+									(setq theTarget (objGetData gPlayerShip 'closestBreakAndAttackTarget))
+									
+									(block nil
+										(setq theTarget (sysFindObject gPlayerShip "sTYAPN N:100;"))
+										(objSetData gPlayerShip 'closestBreakAndAttackTarget theTarget)
+										(objSetData gPlayerShip 'closestTargetCheckTick (unvGetTick))
+										)
+									)
+								
+								(switch
+						
+									;	Attack the closest target to the player if we have one.
+									theTarget
+										(shpOrder gSource 'attack theTarget)
+											
+									;	Attack the closest target to ourself that we can detect, if any.
+									(setq theTarget (sysFindObject gSource "sTYAPN N:100;"))
+										(shpOrder gSource 'attack theTarget)
+										
+									;	Nothing to attack, return to formation.
+									(block Nil
+										(shpOrder gSource 'escort gPlayerShip)
+										(objSetData gSource 'behavior 'escorting)
+										)
+									)
+								)
+								
+						;	Default: return to formation.
 						(block Nil
-							(shpOrder gSource 'hold)
-							(objSetData gSource "behavior" 'waiting)
+							(shpOrder gSource 'escort gPlayerShip)
+							(objSetData gSource 'behavior 'escorting)
 							)
 						)
 					)
