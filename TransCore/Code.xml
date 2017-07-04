@@ -469,6 +469,7 @@
 					(random
 						(filter (sysFindObject theSource (cat "sTAFN:" maxDist)) theObj
 							(and
+								(gr (objGetOpenDockingPortCount theObj) 0)
 								(not (objIsAngryAt theObj gPlayerShip))
 								(or
 									(and

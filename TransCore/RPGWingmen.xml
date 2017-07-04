@@ -297,9 +297,7 @@
 										)
 								
 								; If there is a station that can repair armor, dock with it
-								(and (setq theTarget (srvFindRepairArmor gSource 60 (itmGetLevel (shpGetArmor gSource 0))))
-									(gr (objGetOpenDockingPortCount theTarget) 1)
-									)
+								(setq theTarget (srvFindRepairArmor gSource 60 (itmGetLevel (shpGetArmor gSource 0))))
 									(block Nil
 										(shpCancelOrders gSource)
 										(shpOrder gSource 'dock theTarget)
@@ -324,7 +322,7 @@
 						; If we're attempting to repair at a station that doesn't have enough free ports, go back to normal behavior.
 						(and (eq behavior 'repairingArmor)
 							(setq theTarget (shpGetOrderTarget gSource))
-							(ls (objGetOpenDockingPortCount theTarget) 2)
+							(ls (objGetOpenDockingPortCount theTarget) 1)
 							(not (find (staGetDockedShips theTarget) gSource)) ; Have to check this way because the station knows the ship is docking
 																			   ; once the port is reserved, but the ship doesn't know it's docked yet.
 							gPlayerShip
