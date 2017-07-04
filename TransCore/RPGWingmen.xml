@@ -430,7 +430,7 @@
 										
 									;	Nothing to attack, return to formation.
 									(block Nil
-										(shpOrder gSource 'escort gPlayerShip)
+										(shpOrder gSource 'follow gPlayerShip)
 										(objSetData gSource 'behavior 'escorting)
 										)
 									)
@@ -438,7 +438,7 @@
 								
 						;	Default: return to formation.
 						(block Nil
-							(shpOrder gSource 'escort gPlayerShip)
+							(shpOrder gSource 'follow gPlayerShip)
 							(objSetData gSource 'behavior 'escorting)
 							)
 						)
