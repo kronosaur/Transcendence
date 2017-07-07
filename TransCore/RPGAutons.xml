@@ -308,6 +308,10 @@
 							})
 							
 						cargo: (objGetItems gSource "*U")
+						
+						name: (if (neq (objGetName gSource) (objGetProperty gSource 'name))
+									(objGetName gSource)
+									)
 						}))
 						
 					;	Add one charge on the item for every ton of cargo inside the auton
@@ -390,6 +394,13 @@
 							(enum (@ autonConfig 'cargo) theItem
 								(objAddItem auton theItem)
 								)
+							
+							;	Set name
+							
+							(if (@ autonConfig 'name)
+								(objSetName auton (@ autonConfig 'name))
+								)
+								
 							)
 						)
 						
