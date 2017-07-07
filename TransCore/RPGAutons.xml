@@ -10,6 +10,31 @@
 			>
 	</Sovereign>
 
+	<ItemType UNID="&baAutonItemBase;"
+		name=		"(auton item base)"
+		virtual=	"true"
+		>
+		
+		<Invoke key="A">
+			(rpgDeployAutonFromItem gSource (itmGetStaticData gItem 'autonShipClass) gItem)
+		</Invoke>
+		
+		<Events>
+			<GetName>
+				(block (name)
+					(if (setq name (@ (itmGetData gItem 'autonConfig) 'name))
+						(typTranslate &baAutonItemBase; 'nameText { name:name class:(itmGetName gItem 0) pluralClass:(itmGetName gItem 0x02) } )
+						(cat (itmGetName gItem 0) "|" (itmGetName gItem 0x02))
+						)
+					)
+			</GetName>
+		</Events>
+		
+		<Language>
+			<Text id="nameText">%class% named "%name%"|%pluralClass% named "%name%"</Text>
+		</Language>
+	</Type>
+	
 	<!-- Auton Base Class
 	
 	Do not rely on the implementation of this class across versions. If you wish
