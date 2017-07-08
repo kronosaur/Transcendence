@@ -598,12 +598,11 @@
 
 				<Actions>
 					<Action id="actionName" default="1">
-						(block (theName (theAuton (@ gData 'autonObject)))
-							(setq theName (apply cat (split (scrGetInputText gScreen) "\\|[]();\"%")))
-							(setq theName (strCapitalize (subset theName 0 17)))
-							(if (eq "" (apply cat (split theName " "))) (setq theName nil))
-							
+						(block ((theName (rpgSanitizeAutonName (scrGetInputText gScreen)))
+								(theAuton (@ gData 'autonObject))
+								)
 							(objSetName theAuton (or theName (objGetProperty theAuton 'name)))
+							(scrExitScreen gScreen)
 							)
 					</Action>
 					
@@ -739,6 +738,15 @@
 
 						Nil
 						)
+					)
+				))
+				
+			(setq rpgSanitizeAutonName (lambda (theName)
+				(block nil
+					(setq theName (apply cat (split theName "\\|[]();\"%")))
+					(setq theName (subset (strCapitalize theName) 0 17))
+					(if (eq "" (apply cat (split theName " "))) (setq theName nil))
+					theName
 					)
 				))
 			)
