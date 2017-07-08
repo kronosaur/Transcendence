@@ -569,19 +569,57 @@
 		</Events>
 		
 		<Language>
-			<String id="WatchYourTargets"></String>
-			<String id="NiceShooting"></String>
-			<String id="UnableToComply">"Unable to comply"</String>
 			<String id="AttackTargetAck">"Auton order acknowledged"</String>
-			<String id="NoTargetInRange">"No target in range"</String>
-			<String id="FormUpAck">"Auton order acknowledged"</String>
-			<String id="ErrNoSpaceToReturn">"Not enough space in cargo hold to return to ship"</String>
-			<String id="ReturnAck">"Auton order acknowledged"</String>
-			<String id="WaitAck">"Auton order acknowledged"</String>
 			<Text id="DeployAck">(objTranslate gSource 'DeployAckString { autonName:(objGetName auton 0x01) } )</Text>
 			<String id="DeployAckString">"%autonName% online"</String>
+			<String id="ErrNoSpaceToReturn">"Not enough space in cargo hold to return to ship"</String>
+			<String id="FormUpAck">"Auton order acknowledged"</String>
+			<String id="NiceShooting"></String>
+			<String id="NoTargetInRange">"No target in range"</String>
+			<String id="ReturnAck">"Auton order acknowledged"</String>
+			<String id="UnableToComply">"Unable to comply"</String>
+			<String id="WaitAck">"Auton order acknowledged"</String>
+			<String id="WatchYourTargets"></String>
 		</Language>
 	</Type>
+	
+	<DockScreen UNID="&dsNameAuton;"
+		nestedScreen= 	"true"
+		>
+		<Panes>
+			<Default
+				showTextInput=	"true"
+			>
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descName 
+						{ autonName:(itmGetName (typFireEvent (objGetType (@ gData 'autonObject)) 'ConvertToItem) 0) }
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionName" default="1">
+						(block (theName (theAuton (@ gData 'autonObject)))
+							(setq theName (apply cat (split (scrGetInputText gScreen) "\\|[]();\"%")))
+							(setq theName (strCapitalize (subset theName 0 17)))
+							(if (eq "" (apply cat (split theName " "))) (setq theName nil))
+							
+							(objSetName theAuton (or theName (objGetProperty theAuton 'name)))
+							)
+					</Action>
+					
+					<Action id="actionCancel" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+		
+		<Language>
+			<Text id="actionName">[Enter] Name</Text>
+			<Text id="actionCancel">[Esc] Cancel</Text>
+			<Text id="descName">What would you like to name this %autonName%?</Text>
+		</Language>
+	</DockScreen>
 
 <!-- GLOBAL FUNCTIONS ==========================================================
 

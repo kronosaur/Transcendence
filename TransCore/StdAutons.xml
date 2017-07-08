@@ -340,6 +340,7 @@
 			<Text id="actionUndock">[U]ndock</Text>
 			<Text id="actionJettison">[J]ettison</Text>
 			<Text id="actionLoot">[L]oot</Text>
+			<Text id="actionNameAuton">[N]ame Auton</Text>
 			<Text id="descDefault">You are docked with a 330M mule auton.</Text>
 			<Text id="descNoItemsHere">There are no items here.</Text>
 		</Language>
@@ -369,6 +370,10 @@
 
 							<Action id="actionJettison">
 								(scrShowScreen gScreen &dsRPGJettison;)
+							</Action>
+
+							<Action id="actionNameAuton">
+								(scrShowScreen gScreen &dsNameAuton; { autonObject:gSource } )
 							</Action>
 
 							<Action id="actionUndock" cancel="1" default="1">
