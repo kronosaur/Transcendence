@@ -10,6 +10,8 @@ const int STARGATE_HEIGHT =						128;
 
 const int Y_COPYRIGHT_TEXT =					392;
 
+const CG32bitPixel RGB_IMAGE_BACKGROUND =		CG32bitPixel(0, 0, 0);
+
 ALERROR CLoadingSession::OnInit (CString *retsError)
 
 //	OnInit
@@ -93,7 +95,7 @@ void CLoadingSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 	const CG16bitFont &SubTitleFont = VI.GetFont(fontSubTitle);
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, m_TitleImage, 0, &rcCenter);
+	VI.DrawSessionBackground(Screen, m_TitleImage, RGB_IMAGE_BACKGROUND, 0, &rcCenter);
 
 	//	Paint copyright text
 

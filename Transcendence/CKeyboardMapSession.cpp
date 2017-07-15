@@ -835,7 +835,7 @@ void CKeyboardMapSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
     CG32bitPixel rgbSelected = VI.GetColor(colorAreaDialogHighlight);
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, CG32bitImage(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
+	VI.DrawSessionBackground(Screen, CG32bitImage(), CG32bitPixel(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
 
     //  Paint all keys
 

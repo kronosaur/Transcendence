@@ -233,7 +233,7 @@ void CTextCrawlSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 	if (m_pImage)
 		{
 		RECT rcCenter;
-		VI.DrawSessionBackground(Screen, *m_pImage, 0, &rcCenter);
+		VI.DrawSessionBackground(Screen, *m_pImage, VI.GetColor(colorAreaDeep), 0, &rcCenter);
 		}
 	}
 
