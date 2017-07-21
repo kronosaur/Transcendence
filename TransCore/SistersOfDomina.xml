@@ -1344,7 +1344,7 @@
 					
 						;	First check to see if the item itself has a donation entry
 						
-						(setq entry (eval (itmGetStaticData theItem "SistersOfDominaDonation")))
+						(setq entry (eval (itmGetStaticData theItem "00182001_Donation")))
 							entry
 						
 						;	If the item doesn't tell us anything then look for an entry
