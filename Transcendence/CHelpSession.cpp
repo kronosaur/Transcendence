@@ -50,6 +50,7 @@ static SHelpLine g_szHelp[] =
 #define HELP_LINE_COUNT						(sizeof(g_szHelp) / sizeof(g_szHelp[0]))
 const CG32bitPixel RGB_SUBTITLE_TEXT =		CG32bitPixel(128,128,128);
 const CG32bitPixel RGB_MORE_HELP_TEXT =		CG32bitPixel(160,160,160);
+const CG32bitPixel RGB_IMAGE_BACKGROUND =	CG32bitPixel(35, 41, 37);
 
 const int SECTION_SPACING_Y =				16;
 
@@ -137,7 +138,7 @@ void CHelpSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 	const CVisualPalette &VI = m_HI.GetVisuals();
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, m_HelpImage, 0, &rcCenter);
+	VI.DrawSessionBackground(Screen, m_HelpImage, RGB_IMAGE_BACKGROUND, 0, &rcCenter);
 
 	//	Paint help page
 

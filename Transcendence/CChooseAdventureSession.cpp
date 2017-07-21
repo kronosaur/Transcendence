@@ -419,7 +419,7 @@ void CChooseAdventureSession::OnPaint (CG32bitImage &Screen, const RECT &rcInval
 	const CVisualPalette &VI = m_HI.GetVisuals();
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, CG32bitImage(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
+	VI.DrawSessionBackground(Screen, CG32bitImage(), CG32bitPixel(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
 
 	//	Paint the background image
 

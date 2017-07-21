@@ -198,7 +198,7 @@ void CProfileSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 	const CVisualPalette &VI = m_HI.GetVisuals();
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, CG32bitImage(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
+	VI.DrawSessionBackground(Screen, CG32bitImage(), CG32bitPixel(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
 	}
 
 void CProfileSession::OnReportHardCrash (CString *retsMessage)

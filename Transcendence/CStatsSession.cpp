@@ -19,6 +19,8 @@
 #define STR_HELP_LINE1							CONSTLIT("[Arrows] to scroll")
 #define STR_HELP_LINE2							CONSTLIT("[Ctrl+C] to copy to clipboard")
 
+const CG32bitPixel RGB_IMAGE_BACKGROUND =		CG32bitPixel(15, 12, 10);
+
 void CStatsSession::CreateCopyAnimation (const RECT &rcRect, int iDuration, IAnimatron **retpAni)
 
 //	CreateCopyAnimation
@@ -239,7 +241,7 @@ void CStatsSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 	const CG16bitFont &MediumFont = VI.GetFont(fontMedium);
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, m_BackgroundImage, 0, &rcCenter);
+	VI.DrawSessionBackground(Screen, m_BackgroundImage, RGB_IMAGE_BACKGROUND, 0, &rcCenter);
 
 	//	Paint some help text
 

@@ -294,6 +294,25 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 					if (pClass->GetImage().GetImageWidth() > NewEntry.pImage->GetImageWidth())
 						NewEntry.pImage = &pClass->GetImage();
 					}
+				else if (pClass->GetInteriorDesc().HasAttached())
+					{
+					CG32bitImage *pImage = new CG32bitImage;
+					pClass->CreateImage(*pImage, 0, iRotation);
+
+					RECT rcImage;
+					rcImage.left = 0;
+					rcImage.top = 0;
+					rcImage.right = pImage->GetWidth();
+					rcImage.bottom = pImage->GetHeight();
+
+					NewEntry.pCompositeImageArray = new CObjectImageArray;
+					NewEntry.pCompositeImageArray->Init(pImage, rcImage, 0, 0, true);
+
+					//	Done
+
+					NewEntry.pImage = NewEntry.pCompositeImageArray;
+					NewEntry.iRotation = 0;
+					}
 				else
 					NewEntry.pImage = &pClass->GetImage();
 
