@@ -176,6 +176,8 @@
     <None Include="Antarctica.xml">
       <SubType>Designer</SubType>
     </None>
+    <Xml Include="BattleArenaKidnapped.xml" />
+    <Xml Include="BattleArenaMelee.xml" />
     <Xml Include="Benedict.xml">
       <SubType>Designer</SubType>
     </Xml>
@@ -451,6 +453,8 @@
     <Xml Include="Benedict08.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="BlackMarketMission00.xml" />
+    <Xml Include="BlackMarketMission01.xml" />
     <Xml Include="CommonwealthFleetMission01.xml" />
     <Xml Include="CommonwealthFleetMission02.xml" />
     <Xml Include="CommonwealthFleetMission03.xml" />
@@ -468,6 +472,7 @@
     <Xml Include="CommonwealthMilitiaMission02.xml" />
     <Xml Include="CommonwealthMilitiaMission03.xml" />
     <Xml Include="CommonwealthMilitiaMission04.xml" />
+    <Xml Include="CommonwealthMilitiaMissionSK01.xml" />
     <Xml Include="CommonwealthShips.xml">
       <SubType>Designer</SubType>
     </Xml>
@@ -482,6 +487,7 @@
     <Xml Include="CoreProjectileEffects.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="Dall01.xml" />
     <Xml Include="EtaCeti.xml" />
     <Xml Include="Ferians.xml">
       <SubType>Designer</SubType>
@@ -489,6 +495,17 @@
     <Xml Include="Fiona.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="Huaramarca.xml" />
+    <Xml Include="HuaramarcaMission01.xml" />
+    <Xml Include="HuaramarcaMission02.xml" />
+    <Xml Include="HuaramarcaMission03.xml" />
+    <Xml Include="HuaramarcaMission04.xml" />
+    <Xml Include="HuaramarcaMission05.xml" />
+    <Xml Include="HuaramarcaMission06.xml" />
+    <Xml Include="HuaramarcaMission07.xml" />
+    <Xml Include="HuariMission01.xml" />
+    <Xml Include="HuariMission02.xml" />
+    <Xml Include="HuariMission03.xml" />
     <Xml Include="HugoSandoval.xml">
       <SubType>Designer</SubType>
     </Xml>
@@ -496,10 +513,13 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="Jenna.xml" />
+    <Xml Include="Kronosaurus.xml" />
     <Xml Include="KronosaurusMission01.xml" />
     <Xml Include="KSMission01.xml" />
     <Xml Include="KSMission02.xml" />
     <Xml Include="KSMission03.xml" />
+    <Xml Include="KSMissionC01.xml" />
+    <Xml Include="KSMissionC02.xml" />
     <Xml Include="Ore.xml" />
     <Xml Include="Penitents.xml">
       <SubType>Designer</SubType>
@@ -523,6 +543,7 @@
     <Xml Include="Stormhound.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="TeratonResearch.xml" />
     <Xml Include="Volkov.xml">
       <SubType>Designer</SubType>
     </Xml>
