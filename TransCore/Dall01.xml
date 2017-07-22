@@ -265,7 +265,7 @@
 		<Image imageID="&rsDallSphere;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 		
 		<StaticData>
-			<Data id="SistersOfDominaDonation">
+			<Data id="sisters.donation">
 				;		attd	rel		text
 				'(Nil	-1		200		"This is a remarkable item! Domina will be very pleased!")
 			</Data>
