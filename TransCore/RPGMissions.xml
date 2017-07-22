@@ -664,9 +664,6 @@
 		</Events>
 		
 		<Language>
-			<Text id="actionAccept">"[A]ccept"</Text>
-			<Text id="actionDecline">"[D]ecline"</Text>
-
 			<Text id="mission.rewardSummary">
 				System: %systemName%\n
 				Payment: %payment%

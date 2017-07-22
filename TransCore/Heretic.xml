@@ -8,15 +8,10 @@
 			adjective="Ares"
 			demonym="Arean(s)"
 
-			alignment="destructive order"
+			alignment="neutral"
 			>
 		<Relationships>
 			<Relationship sovereign="&svAres;" disposition="friend" mutual="true"/>
-			<Relationship sovereign="&svPlayer;" disposition="neutral" mutual="true"/>
-			<Relationship sovereign="&svFriendlyAuton;" disposition="neutral" mutual="true"/>
-			<Relationship sovereign="&svCommonwealth;" disposition="neutral" mutual="true"/>
-			<Relationship sovereign="&svCorporate;" disposition="neutral" mutual="true"/>
-			<Relationship sovereign="&svIndependent;" disposition="neutral" mutual="true"/>
 			<Relationship sovereign="&svIocrym;" disposition="enemy" mutual="true"/>
 		</Relationships>
 	</Sovereign>

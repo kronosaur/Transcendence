@@ -96,6 +96,8 @@
 	<!-- 0090-00AF AUTONS -->
 
 	<!ENTITY baStdAutonBase				"0x00010090">
+	<!ENTITY baAutonItemBase			"0x00010091">
+	<!ENTITY dsNameAuton				"0x00010092">
 
 	<!-- 00B0-00CF ITEMS -->
 

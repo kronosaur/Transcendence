@@ -658,22 +658,19 @@
 
 				<ListOptions
 					dataFrom=	"player"
-					list=		"*U"
+					list=		"*U -ID; -questItem;"
 					/>
 
 				<Panes>
-					<Default
-							desc=	"There are no items here.">
-
+					<Default>
 						<OnPaneInit>
-							(block (enableDrop)
-								(setq gItem (scrGetItem gScreen))
-								(if gItem
-									(block Nil
-										(scrSetDesc gScreen "What item do you wish to drop into the Teraton pit?")
-										(scrEnableAction gScreen 0 True)
+							(block nil
+								(scrSetDescTranslate gScreen 'descDropItem)
+								(if (not (scrGetItem gScreen))
+									(block nil
+										(scrSetActionDesc gScreen 'actionDropThis (scrTranslate gScreen 'descNoItemsHere))
+										(scrEnableAction gScreen 'actionDropThis Nil)
 										)
-									(scrEnableAction gScreen 0 Nil)
 									)
 								)
 						</OnPaneInit>
@@ -831,7 +828,7 @@
 			<Text id="actionFabricatorChamber">[F]abricator Chamber</Text>
 			<Text id="actionDropItem">[D]rop Item in Pit</Text>
 			<Text id="actionDropThis">[D]rop this Item</Text>
-
+			<Text id="descDropItem">What item do you wish to drop into the Teraton pit?</Text>
 			<Text id="descFactory">
 				You are in the vast central chamber of the Teraton nest. A
 				large pit in the center of the cavern is inhabited by a mass

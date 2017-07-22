@@ -8,12 +8,33 @@
 
 			alignment="constructive chaos"
 			>
-		<Language>
-			<Text id="WatchYourTargets">""</Text>
-			<Text id="NiceShooting">""</Text>
-		</Language>
 	</Sovereign>
 
+	<ItemType UNID="&baAutonItemBase;"
+		name=		"(auton item base)"
+		virtual=	"true"
+		>
+		
+		<Invoke key="A">
+			(rpgDeployAutonFromItem gSource (itmGetStaticData gItem 'autonShipClass) gItem)
+		</Invoke>
+		
+		<Events>
+			<GetName>
+				(block (name)
+					(if (setq name (@ (itmGetData gItem 'autonConfig) 'name))
+						(typTranslate &baAutonItemBase; 'nameText { name:name class:(itmGetName gItem 0) pluralClass:(itmGetName gItem 0x02) } )
+						(cat (itmGetName gItem 0) "|" (itmGetName gItem 0x02))
+						)
+					)
+			</GetName>
+		</Events>
+		
+		<Language>
+			<Text id="nameText">%class% named "%name%"|%pluralClass% named "%name%"</Text>
+		</Language>
+	</Type>
+	
 	<!-- Auton Base Class
 	
 	Do not rely on the implementation of this class across versions. If you wish
@@ -96,7 +117,7 @@
 						;	If no target, unable to compy
 						
 						(not (objGetTarget gSender))
-							(objSendMessage gSender gSource "\"Unable to comply\"")
+							(objSendMessage gSender gSource (objTranslate gSource 'UnableToComply))
 
 						;	Attack the target
 						
@@ -105,7 +126,7 @@
 							(shpOrder gSource 'attack (objGetTarget gSender))
 							
 							(objSetData gSource 'behavior 'attackingTarget)
-							(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck "\"Auton order acknowledged\""))
+							(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
 							)
 						)
 				</Invoke>
@@ -113,27 +134,58 @@
 
 			<Message id="msgBreakAndAttack" name="Break &amp; attack" key="B">
 				<OnShow>
-					(and (eq (objGetData gSource 'behavior) 'escorting)
+					(and (neq (objGetData gSource 'behavior) 'attackingAtWill)
 						(not (shpGetAISetting gSource 'nonCombatant))
+						(objGetItems gSource "wI")
 						(objGetProperty gSource 'playerWingman)
 						)
 				</OnShow>
 				
 				<Invoke>
 					(block (theTarget)
-						(switch
-							(or (not (setq theTarget (sysFindObject gPlayerShip "sTEAN")))
-									(gr (objGetDistance gPlayerShip theTarget) 100)
-									)
-								(objSendMessage gSender gSource (objTranslate gSource 'NoTargetInRange "\"No target in range\""))
+					
+						;	Get the closest angry target to the sender that the sender can detect.
+						;	Store the result so we only have to check once each tick.
+						(if (eq (unvGetTick) (objGetData gSender 'closestTargetCheckTick))
+						
+							(setq theTarget (objGetData gSender 'closestBreakAndAttackTarget))
 							
-							(block Nil
-								(shpCancelOrders gSource)
-								(shpOrder gSource 'attack theTarget)
-								
-								(objSetData gSource 'behavior 'attackingAtWill)
-								(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck "\"Auton order acknowledged\""))
+							(block nil
+								(setq theTarget (sysFindObject gSender "sTYAPN N:100;"))
+								(objSetData gSender 'closestBreakAndAttackTarget theTarget)
+								(objSetData gSender 'closestTargetCheckTick (unvGetTick))
 								)
+							)
+							
+						(switch
+						
+							;	Attack the closest target to the sender if we have one.
+							theTarget
+								(block nil
+									(shpCancelOrders gSource)
+									(shpOrder gSource 'attack theTarget)
+									(objSetData gSource 'behavior 'attackingAtWill)
+									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+									)
+							
+							;	If we're already attacking something, don't change target, but switch behavior.
+							(eq (objGetData gSource 'behavior) 'attackingTarget)
+								(block nil
+									(objSetData gSource 'behavior 'attackingAtWill)
+									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+									)
+									
+							;	Attack the closest target to ourself that we can detect, if any.
+							(setq theTarget (sysFindObject gSource "sTYAPN N:100;"))
+								(block nil
+									(shpCancelOrders gSource)
+									(shpOrder gSource 'attack theTarget)
+									(objSetData gSource 'behavior 'attackingAtWill)
+									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+									)
+									
+							;	Nothing to attack.	
+							(objSendMessage gSender gSource (objTranslate gSource 'NoTargetInRange))
 							)
 						)
 				</Invoke>
@@ -141,10 +193,7 @@
 
 			<Message id="msgFormUp" name="Form up" key="F">
 				<OnShow>
-					(and
-						(or (eq (objGetData gSource 'behavior) 'waiting)
-							(objCommunicate gSource gSender 'QueryAttackStatus)
-							)
+					(and (neq (objGetData gSource 'behavior) 'escorting)
 						(objGetProperty gSource 'playerWingman)
 						)
 				</OnShow>
@@ -156,7 +205,7 @@
 							(or (not behavior) (eq behavior 'escorting))
 								(block Nil
 									(objCommunicate gSource gSender 'FormUp)
-									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck "\"Auton order acknowledged\""))
+									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
 									)
 
 							(block Nil
@@ -164,7 +213,7 @@
 								(shpOrder gSource 'escort gPlayerShip)
 								
 								(objSetData gSource 'behavior 'escorting)
-								(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck "\"Auton order acknowledged\""))
+								(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
 								)
 							)
 						)
@@ -176,10 +225,7 @@
 					(and
 						(objGetItems gSender "*IN +AutonBay;")
 						(objGetData gSource 'autonItemType)
-						(or
-							(not (objGetData gSource 'behavior))
-							(eq (objGetData gSource 'behavior) 'escorting)
-							)
+						(neq (objGetData gSource 'behavior) 'returning)
 						(objGetProperty gSource 'playerWingman)
 						)
 				</OnShow>
@@ -211,7 +257,7 @@
 						(if (gr mass spaceLeft)
 						
 							;	Not enough space
-							(objSendMessage gSender gSource (objTranslate gSource 'ErrNoSpaceToReturn "\"Not enough space in cargo hold to return to ship\""))
+							(objSendMessage gSender gSource (objTranslate gSource 'ErrNoSpaceToReturn))
 								
 							;	Return
 							(block Nil
@@ -219,7 +265,7 @@
 								(shpOrder gSource 'gate gSender)
 							
 								(objSetData gSource 'behavior 'returning)
-								(objSendMessage gSender gSource (objTranslate gSource 'ReturnAck "\"Auton order acknowledged\""))
+								(objSendMessage gSender gSource (objTranslate gSource 'ReturnAck))
 								
 								(setq spaceLeft (- spaceLeft mass))
 								)
@@ -233,11 +279,7 @@
 
 			<Message id="msgWait" name="Wait" key="W">
 				<OnShow>
-					(and
-						(or
-							(not (objGetData gSource 'behavior))
-							(eq (objGetData gSource 'behavior) 'escorting)
-							)
+					(and (neq (objGetData gSource 'behavior) 'waiting)
 						(objGetProperty gSource 'playerWingman)
 						)
 				</OnShow>
@@ -248,7 +290,7 @@
 						(shpOrder gSource 'hold)
 						
 						(objSetData gSource 'behavior 'waiting)
-						(objSendMessage gSender gSource (objTranslate gSource 'WaitAck "\"Auton order acknowledged\""))
+						(objSendMessage gSender gSource (objTranslate gSource 'WaitAck))
 						)
 				</Invoke>
 			</Message>
@@ -291,6 +333,10 @@
 							})
 							
 						cargo: (objGetItems gSource "*U")
+						
+						name: (if (neq (objGetName gSource) (objGetProperty gSource 'name))
+									(objGetName gSource)
+									)
 						}))
 						
 					;	Add one charge on the item for every ton of cargo inside the auton
@@ -373,6 +419,13 @@
 							(enum (@ autonConfig 'cargo) theItem
 								(objAddItem auton theItem)
 								)
+							
+							;	Set name
+							
+							(if (@ autonConfig 'name)
+								(objSetName auton (@ autonConfig 'name))
+								)
+								
 							)
 						)
 						
@@ -390,8 +443,8 @@
 					;	Welcome or error message
 					
 					(if (@ gData 'notEnoughSpace)
-						(objSendMessage sourceObj auton (objTranslate gSource 'ErrNoSpaceToReturn "\"Not enough space in cargo hold to return to ship\""))
-						(objSendMessage sourceObj auton (objTranslate auton 'DeployAck (cat "\"" (objGetName auton 0x01) " online\"")))
+						(objSendMessage sourceObj auton (objTranslate auton 'ErrNoSpaceToReturn))
+						(objSendMessage sourceObj auton (objTranslate auton 'DeployAck))
 						)
 					
 					;	Return the auton created, in case subclasses want to
@@ -437,31 +490,56 @@
 			</OnEnteredGate>
 			
 			<OnOrdersCompleted>
-				(block (behavior theTarget)
-					(setq behavior (objGetData gSource 'behavior))
-					
-					; Set orders and state
-					
+				(block (theTarget)
 					(switch
 						(not (objGetProperty gSource 'playerWingman))
 							Nil
-							
-						(and (eq behavior 'attackingAtWill)
-								(setq theTarget (sysFindObject gPlayerShip "sTEAN"))
-								(leq (objGetDistance gPlayerShip theTarget) 100)
-								)
-							(shpOrder gSource 'attack theTarget)
-							
-						gPlayerShip
+						
+						(not gPlayerShip)
 							(block Nil
-								(shpOrder gSource 'escort gPlayerShip)
-								(objSetData gSource 'behavior 'escorting)
+								(shpOrder gSource 'hold)
+								(objSetData gSource 'behavior 'waiting)
 								)
-
+							
+						(eq (objGetData gSource 'behavior) 'attackingAtWill)
+							(block nil
+								;	Get the closest angry target to the player that they can detect.
+								;	Store the result so we only have to check once each tick.
+								(if (eq (unvGetTick) (objGetData gPlayerShip 'closestTargetCheckTick))
+						
+									(setq theTarget (objGetData gPlayerShip 'closestBreakAndAttackTarget))
+									
+									(block nil
+										(setq theTarget (sysFindObject gPlayerShip "sTYAPN N:100;"))
+										(objSetData gPlayerShip 'closestBreakAndAttackTarget theTarget)
+										(objSetData gPlayerShip 'closestTargetCheckTick (unvGetTick))
+										)
+									)
+								
+								(switch
+						
+									;	Attack the closest target to the player if we have one.
+									theTarget
+										(shpOrder gSource 'attack theTarget)
+											
+									;	Attack the closest target to ourself that we can detect, if any.
+									(setq theTarget (sysFindObject gSource "sTYAPN N:100;"))
+										(shpOrder gSource 'attack theTarget)
+										
+									;	Nothing to attack, return to formation.
+									(block Nil
+										(shpOrder gSource 'escort gPlayerShip)
+										(objSetData gSource 'behavior 'escorting)
+										)
+									)
+								)
+								
+						;	Default: return to formation.
 						(block Nil
-							(shpOrder gSource 'hold)
-							(objSetData gSource 'behavior 'waiting)
+							(shpOrder gSource 'escort gPlayerShip)
+							(objSetData gSource 'behavior 'escorting)
 							)
+							
 						)
 					)
 			</OnOrdersCompleted>
@@ -486,15 +564,61 @@
 			</OnPlayerLeftSystem>
 			
 			<OrderAttackSelf>
-				(objSendMessage gSender gSource "\"Unable to comply\"")
+				(objSendMessage gSender gSource (objTranslate gSource 'UnableToComply))
 			</OrderAttackSelf>
 		</Events>
 		
 		<Language>
-			<Text id="WatchYourTargets">""</Text>
-			<Text id="NiceShooting">""</Text>
+			<String id="AttackTargetAck">"Auton order acknowledged"</String>
+			<Text id="DeployAck">(objTranslate gSource 'DeployAckString { autonName:(objGetName auton 0x01) } )</Text>
+			<String id="DeployAckString">"%autonName% online"</String>
+			<String id="ErrNoSpaceToReturn">"Not enough space in cargo hold to return to ship"</String>
+			<String id="FormUpAck">"Auton order acknowledged"</String>
+			<String id="NiceShooting"></String>
+			<String id="NoTargetInRange">"No target in range"</String>
+			<String id="ReturnAck">"Auton order acknowledged"</String>
+			<String id="UnableToComply">"Unable to comply"</String>
+			<String id="WaitAck">"Auton order acknowledged"</String>
+			<String id="WatchYourTargets"></String>
 		</Language>
 	</Type>
+	
+	<DockScreen UNID="&dsNameAuton;"
+		nestedScreen= 	"true"
+		>
+		<Panes>
+			<Default
+				showTextInput=	"true"
+			>
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descName 
+						{ autonName:(itmGetName (typFireEvent (objGetType (@ gData 'autonObject)) 'ConvertToItem) 0) }
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionName" default="1">
+						(block ((theName (rpgSanitizeAutonName (scrGetInputText gScreen)))
+								(theAuton (@ gData 'autonObject))
+								)
+							(objSetName theAuton (or theName (objGetProperty theAuton 'name)))
+							(scrExitScreen gScreen)
+							)
+					</Action>
+					
+					<Action id="actionCancel" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+		
+		<Language>
+			<Text id="actionName">[Enter] Name</Text>
+			<Text id="actionCancel">[Esc] Cancel</Text>
+			<Text id="descName">What would you like to name this %autonName%?</Text>
+		</Language>
+	</DockScreen>
 
 <!-- GLOBAL FUNCTIONS ==========================================================
 
@@ -614,6 +738,15 @@
 
 						Nil
 						)
+					)
+				))
+				
+			(setq rpgSanitizeAutonName (lambda (theName)
+				(block nil
+					(setq theName (apply cat (split theName "\\|[]();:\"%")))
+					(setq theName (subset (strCapitalize theName) 0 17))
+					(if (eq "" (apply cat (split theName " "))) (setq theName nil))
+					theName
 					)
 				))
 			)

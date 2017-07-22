@@ -4,10 +4,12 @@
 	
 	<Type unid="&dsDockScreenBase;">
 		<Language>
+			<Text id="actionAccept">[A]ccept</Text>
 			<Text id="actionBuyItems">[B]uy Items</Text>
 			<Text id="actionCancel">[C]ancel</Text>
 			<Text id="actionCommoditiesExchange">[C]ommodities Exchange</Text>
 			<Text id="actionContinue">[C]ontinue</Text>
+			<Text id="actionDecline">[D]ecline</Text>
 			<Text id="actionDockServices">[D]ock Services</Text>
 			<Text id="actionDone">[D]one</Text>
 			<Text id="actionJettison">[J]ettison</Text>
