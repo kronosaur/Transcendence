@@ -33,7 +33,7 @@
 		<Language>
 			<Text id="nameText">%class% named "%name%"|%pluralClass% named "%name%"</Text>
 		</Language>
-	</Type>
+	</ItemType>
 	
 	<!-- Auton Base Class
 	
