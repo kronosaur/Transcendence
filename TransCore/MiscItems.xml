@@ -545,10 +545,10 @@
 		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<StaticData>
-			<00182001_Donation>
+			<Data id="SistersOfDominaDonation">
 				;			attd	rel		text
 				'(Nil		-1		135		"This empty vessel may nevertheless possess a connection to the soul it once housed. Domina will use it to gather her flock.")
-			</00182001_Donation>
+			</Data>
 		</StaticData>
 	</ItemType>
 
@@ -1193,7 +1193,7 @@
 		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<StaticData>
-			<00182001_Donation>
+			<Data id="SistersOfDominaDonation">
 				;				attd	rel
 				(list	Nil		0		0
 
@@ -1206,7 +1206,7 @@
 						"We thank you for your good intentions; may Domina be with you. Always."
 						))
 					)
-			</00182001_Donation>
+			</Data>
 		</StaticData>
 	</ItemType>
 
