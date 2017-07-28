@@ -513,6 +513,7 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="Jenna.xml" />
+    <Xml Include="KorolovFreighters.xml" />
     <Xml Include="Kronosaurus.xml" />
     <Xml Include="KronosaurusMission01.xml" />
     <Xml Include="KSMission01.xml" />

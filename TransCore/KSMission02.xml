@@ -92,6 +92,11 @@
 								(msnSetData gSource 'pricePerContainer (@ escortData 'pricePerContainer))
 								(msnSetData gSource 'cargoValue (@ escortData 'cargoValue))
 								(msnSetData gSource 'reward (@ escortData 'escortFee))
+								
+								; Remember the minimum player level to escort and the minimum
+								; player speed.
+								(msnSetData gSource 'minPlayerLevel (typGetStaticData escortType "korolovMinLevel"))
+								(msnSetData gSource 'minPlayerSpeed (+ (typGetProperty escortType 'maxSpeed) 2))
 								)
 
 						; No mission available
@@ -299,13 +304,24 @@
 						)
 					)
 			</Text>
-
-			<Text id="Intro">
-				(cat
-					"The command center is quiet as you enter. Most of the freighter captains "
-					"appear to be out on missions. A manager walks over to you: "
-					"\"Hello %name%. Do you wish to hire yourself out as a freighter escort?\""
+			<Text id="listSummary">
+				(block (
+					(gate (objGetObjByID (msnGetData gSource 'gateID)))
+					(destName (objGetName gate 'article))
+					(paymentValue (msnGetData gSource 'reward))
+					(payment 
+						(if (= paymentValue 0)
+							(msnTranslate gSource 'listSummary.noPayment)
+							(fmtCurrency 'credit paymentValue)
+							)
+						)
 					)
+					(msnTranslate gSource 'listSummary.fromGate { destName:destName payment:payment })
+					)
+			</Text>
+			<Text id="listSummary.fromGate">
+				From %destName% to Korolov Shipping\n
+				Payment: %payment%
 			</Text>
 
 			<Text id="Briefing">
@@ -326,7 +342,7 @@
 			</Text>
 
 			<Text id="AcceptReply">
-				"\"Great! The freighter will be arriving in system shorted so don't delay. Good luck!\""
+				"\"Great! The freighter will be arriving in system shortly so don't delay. Good luck!\""
 			</Text>
 
 			<Text id="DeclineReply">
@@ -367,7 +383,7 @@
 					)
 					(random (list
 						"Help! The pirates are right behind us"
-						(cat "Mayday, Mayday, Mayday. " ship " under attack by pirates")
+						(cat "Mayday mayday mayday. " ship " under attack by pirates")
 						))
 					)
 			</Text>

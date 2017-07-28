@@ -259,7 +259,7 @@
 
 			<Text id="Intro">
 				(cat
-					"As you enter the command center, you see several people gathered around a central display table.\n\n"
+					"As you enter the operations level, you see several people gathered around a central display table.\n\n"
 
 					"Assistant Director " (msnGetData gSource 'director) " approaches you, "
 					"\"We're planning an operation to destroy the primary Charon stronghold in the system; we could use your help.\""
@@ -272,11 +272,11 @@
 						{
 							desc:	"\"Sorry, all freighters are grounded for now; we've deployed a squadron to attack the Charon stronghold in the system.\""
 							acceptLabel: "\"[M]aybe I can help.\""
-							declineLabel: "\"[C]ontinue.\""
+							declineLabel: "\"[S]ounds dangerous.\""
 							}
 						)
 					(cat
-						"\"The stronghold is located in the outer system " (msnGetData gSource 'dist) " light-minutes from here. "
+						"\"The stronghold is located in the outer system " (msnGetData gSource 'dist) " light-seconds from here. "
 						"We're sending a squadron out to destroy it. We want you to join the squadron and follow them to the stronghold.\""
 						)
 					)

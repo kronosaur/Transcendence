@@ -55,6 +55,9 @@
 				)
 
 				(switch
+					(= (@ gData 'status) 'accept)
+						"ReplyAccept"
+						
 					; If mission is available and player has not previously been
 					; briefed, then start with intro...
 
@@ -68,6 +71,11 @@
 									(scrSetData gScreen 'NoBriefingMsg noBriefingMsg)
 									"NoBriefing"
 									)
+									
+							;	If no Intro, then go straight to briefing
+							
+							(not (msnTranslate missionObj 'Intro))
+								"Briefing"
 
 							;	If we don't have FirstIntro, then we go to Intro for
 							;	the first and Briefing for subsequent times.

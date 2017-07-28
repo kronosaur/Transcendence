@@ -45,12 +45,26 @@
 			<Default>
 				<OnPaneInit>
 					(block (
-						(pageCount (count gData))
+						(isText (= (typeof gData) 'string))
+						(hasPages (= (typeof gData) 'list))
+						(pageCount (if hasPages (count gData) 1))
 						(pageNo (if (scrGetData gScreen 'curPage) (scrGetData gScreen 'curPage) 0))
-						(pageDesc (@ gData pageNo))
+						(pageDesc (switch
+							hasPages
+								(@ gData pageNo)
+								
+							isText
+								{ desc:gData }
+								
+							gData
+							))
 						
 						(nextActionID 0)
 						)
+						
+						(dbgOutput pageDesc)
+						(dbgOutput "isText: " isText)
+						(dbgOutput "hasPages: " hasPages)
 						
 						;	Set the page text
 

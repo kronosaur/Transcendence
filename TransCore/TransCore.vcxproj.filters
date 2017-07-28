@@ -606,5 +606,8 @@
     <Xml Include="TeratonResearch.xml">
       <Filter>Human Space Library\Encounters\Teratons</Filter>
     </Xml>
+    <Xml Include="KorolovFreighters.xml">
+      <Filter>Human Space Library\Encounters\Korolov Shipping</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

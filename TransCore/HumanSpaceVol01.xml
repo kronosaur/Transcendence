@@ -1826,6 +1826,7 @@
 	<!ENTITY evKorolovAtCharon			"0x00100298">
 	<!ENTITY msKorolovAtCharonRevenge	"0x00100299">
 	<!ENTITY baCharonBuster				"0x0010029A">
+	<!ENTITY dsKorolovEscortList		"0x0010029B">
 
 	<!-- 02B0-02CF COMMONWEALTH MILITIA -->
 
@@ -1939,6 +1940,7 @@
 	<Module filename="HuariMission02.xml"/>
 	<Module filename="HuariMission03.xml"/>
 	<Module filename="Iocrym.xml"/>
+	<Module filename="KorolovFreighters.xml"/>
 	<Module filename="KorolovShipping.xml"/>
 	<Module filename="Kronosaurus.xml"/>
 	<Module filename="KronosaurusMission01.xml"/>
