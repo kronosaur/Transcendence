@@ -29,6 +29,10 @@ ALERROR CDockScreenCustomList::OnInitList (SInitCtx &Ctx, const SDisplayOptions 
 			m_pItemListControl->SetRowHeight(cyRow);
 		}
 
+	m_pItemListControl->SetIconHeight(Options.cyIcon);
+	m_pItemListControl->SetIconWidth(Options.cxIcon);
+	m_pItemListControl->SetIconScale(Options.rIconScale);
+
 	//	Get the list to show
 
 	CCodeChain &CC = g_pUniverse->GetCC();

@@ -116,7 +116,7 @@ class CGItemListArea : public AGArea
 		bool GetNextTab (DWORD *retdwID) const;
 		bool GetPrevTab (DWORD *retdwID) const;
 		inline CSpaceObject *GetSource (void) { return (m_pListData ? m_pListData->GetSource() : NULL); }
-		inline bool IsCursorValid (void) { return (m_pListData ? m_pListData->IsCursorValid() : false); }
+		inline bool IsCursorValid (void) const { return (m_pListData ? m_pListData->IsCursorValid() : false); }
 		bool MoveCursorBack (void);
 		bool MoveCursorForward (void);
 		void MoveTabToFront (DWORD dwID);
@@ -127,6 +127,9 @@ class CGItemListArea : public AGArea
 		inline void SetCursor (int iIndex) { if (m_pListData) m_pListData->SetCursor(iIndex); Invalidate(); }
 		inline void SetFilter (const CItemCriteria &Filter) { if (m_pListData) m_pListData->SetFilter(Filter); InitRowDesc(); Invalidate(); }
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
+		inline void SetIconHeight (int cyHeight) { m_cyIcon = cyHeight; }
+		inline void SetIconScale (Metric rScale) { m_rIconScale = rScale; }
+		inline void SetIconWidth (int cxWidth) { m_cxIcon = cxWidth; }
 		void SetList (CCodeChain &CC, ICCItem *pList);
 		void SetList (CSpaceObject *pSource);
 		void SetList (CItemList &ItemList);
@@ -190,6 +193,9 @@ class CGItemListArea : public AGArea
 		int m_yOffset;							//	Painting offset for smooth scroll
 		int m_yFirst;							//	coord of first row relative to list rect
 		int m_cyRow;							//	Row height
+		int m_cxIcon;							//	Icon width
+		int m_cyIcon;							//	Icon height
+		Metric m_rIconScale;					//	Icon scale
 
 		int m_cyTotalHeight;					//	Total heigh of all rows
 		TArray<SRowDesc> m_Rows;
@@ -306,7 +312,7 @@ class CGSelectorArea : public AGArea
 		const CItem &GetItemAtCursor (void);
 		inline IListData *GetList (void) const { return NULL; }
 		inline CSpaceObject *GetSource (void) { return m_pSource; }
-		inline bool IsCursorValid (void) { return (m_iCursor != -1); }
+		inline bool IsCursorValid (void) const { return (m_iCursor != -1); }
 		bool MoveCursor (EDirections iDir);
 		inline void ResetCursor (void) { m_iCursor = -1; Invalidate(); }
         inline void SetBackColor (CG32bitPixel rgbColor) { m_rgbBackColor = rgbColor; }

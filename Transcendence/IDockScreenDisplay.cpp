@@ -13,6 +13,9 @@
 #define CRITERIA_ATTRIB				CONSTLIT("criteria")
 #define DATA_FROM_ATTRIB			CONSTLIT("dataFrom")
 #define HEIGHT_ATTRIB				CONSTLIT("height")
+#define ICON_HEIGHT_ATTRIB			CONSTLIT("iconHeight")
+#define ICON_SCALE_ATTRIB			CONSTLIT("iconScale")
+#define ICON_WIDTH_ATTRIB			CONSTLIT("iconWidth")
 #define INITIAL_ITEM_ATTRIB			CONSTLIT("initialItem")
 #define LIST_ATTRIB					CONSTLIT("list")
 #define NO_ARMOR_SPEED_DISPLAY_ATTRIB	CONSTLIT("noArmorSpeedDisplay")
@@ -37,6 +40,9 @@
 #define TYPE_NONE					CONSTLIT("none")
 #define TYPE_OBJECT					CONSTLIT("object")
 #define TYPE_SCHEMATIC				CONSTLIT("schematic")
+
+const int ICON_WIDTH =				96;
+const int ICON_HEIGHT =				96;
 
 bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retOptions, CString *retsError)
 
@@ -159,6 +165,9 @@ bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retO
 	//	List options
 
 	retOptions->bNoArmorSpeedDisplay = pOptions->GetAttributeBool(NO_ARMOR_SPEED_DISPLAY_ATTRIB);
+	retOptions->cxIcon = pOptions->GetAttributeIntegerBounded(ICON_WIDTH_ATTRIB, 0, -1, ICON_WIDTH);
+	retOptions->cyIcon = pOptions->GetAttributeIntegerBounded(ICON_HEIGHT_ATTRIB, 0, -1, ICON_HEIGHT);
+	retOptions->rIconScale = pOptions->GetAttributeDoubleBounded(ICON_SCALE_ATTRIB, 0.0, -1.0, 1.0);
 
     //  Selector options
 

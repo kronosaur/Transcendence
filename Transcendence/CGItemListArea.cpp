@@ -51,6 +51,9 @@ CGItemListArea::CGItemListArea (const CVisualPalette &VI) :
 		m_yOffset(0),
 		m_yFirst(0),
 		m_cyRow(DEFAULT_ROW_HEIGHT),
+		m_cxIcon(ICON_WIDTH),
+		m_cyIcon(ICON_HEIGHT),
+		m_rIconScale(1.0),
 		m_iCurTab(-1),
 		m_iHoverTab(-1),
 		m_cyTabHeight(0),
@@ -755,19 +758,32 @@ void CGItemListArea::PaintCustom (CG32bitImage &Dest, const RECT &rcRect, bool b
 	{
 	//	Paint the image
 
-	m_pListData->PaintImageAtCursor(Dest, rcRect.left, rcRect.top);
+	m_pListData->PaintImageAtCursor(Dest, rcRect.left, rcRect.top, m_cxIcon, m_cyIcon, m_rIconScale);
 
 	RECT rcDrawRect = rcRect;
-	rcDrawRect.left += ICON_WIDTH + ITEM_TEXT_MARGIN_X;
+	rcDrawRect.left += m_cxIcon + ITEM_TEXT_MARGIN_X;
 	rcDrawRect.right -= ITEM_TEXT_MARGIN_X;
 	rcDrawRect.top += ITEM_TEXT_MARGIN_Y;
+
+	//	Measure the title and description
+
+	CString sTitle = m_pListData->GetTitleAtCursor();
+	int cyText = m_pFonts->LargeBold.GetHeight();
+
+	CString sDesc = m_pListData->GetDescAtCursor();
+	int iLines = m_pFonts->Medium.BreakText(sDesc, RectWidth(rcDrawRect), NULL, 0);
+	cyText += iLines * m_pFonts->Medium.GetHeight();
+
+	//	Text is vertically centered.
+
+	int yOffset = Max(0, (RectHeight(rcDrawRect) - cyText) / 2);
 
 	//	Paint the title
 
 	int cyHeight;
-	RECT rcTitle = rcDrawRect;
+	rcDrawRect.top += yOffset;
 	m_pFonts->LargeBold.DrawText(Dest,
-			rcTitle,
+			rcDrawRect,
 			m_pFonts->rgbItemTitle,
 			m_pListData->GetTitleAtCursor(),
 			0,

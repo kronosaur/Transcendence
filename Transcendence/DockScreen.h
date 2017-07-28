@@ -67,6 +67,9 @@ class IDockScreenDisplay
 			{
 			SDisplayOptions (void) :
 					pOptions(NULL),
+					cxIcon(96),
+					cyIcon(96),
+					rIconScale(1.0),
 					bNoArmorSpeedDisplay(false),
                     bNoEmptySlots(false)
 				{
@@ -95,6 +98,9 @@ class IDockScreenDisplay
             //  Custom lists
 
 			CString sRowHeightCode;			//	For custom lists
+			int cxIcon;						//	Icon size
+			int cyIcon;						//	Icon size
+			Metric rIconScale;				//	Icon scale
 
             //  Selectors
 
