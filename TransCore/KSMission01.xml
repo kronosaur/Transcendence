@@ -59,7 +59,7 @@
 					(destList
 						(filter
 							(append
-								(sysFindObject aOwnerObj "TAF +populated; -occupation; -uncharted;")
+								(sysFindObject aOwnerObj "TAF +populated; -occupation; -uncharted; -outlaws;")
 								(sysFindObject aOwnerObj "G -uncharted;")
 								(sysFindObject aOwnerObj "G -uncharted;")
 								)

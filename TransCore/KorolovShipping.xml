@@ -1111,7 +1111,7 @@
 					(homeObj (objGetObjByID (objGetData gSource 'home)))
 					(theEscort (random (sysFindObject homeObj "sHZ O:guard;")))
 					(dest (objGetObjRefData gSource 'korolovDest))
-					(altDest (random (sysFindObject homeObj "TAF +populated; -occupation; -uncharted;")))
+					(altDest (random (sysFindObject homeObj "TAF +populated; -occupation; -uncharted; -outlaws;")))
 					(missionObj (objGetObjByID (objGetData gSource 'missionID)))
 					)
 					(switch
