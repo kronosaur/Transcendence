@@ -909,24 +909,26 @@
 				</Actions>
 			</Default>
 			
-			<EscortIntro
-					noListNavigation="true"
-					>
+			<EscortIntro>
 				<OnPaneInit>
-					(scrSetDescTranslate gScreen
-						(if (scrGetListEntry gScreen)
-							'descOperationsIntro
-							'descOperationsNoFreighters
+					(block ()
+						(scrSetDescTranslate gScreen
+							(if (scrGetListEntry gScreen)
+								'descOperationsIntro
+								'descOperationsIntroNoFreighters
+								)
 							)
+
+						;	Set the intro flag. We do this in case the player clicks on some
+						;	freighter during EscortIntro.
+
+						(typSetData &unidKorolovShipping; 'opsIntroDone True)
 						)
 				</OnPaneInit>
 				
 				<Actions>
 					<Action id="actionContinue">
-						(block ()
-							(typSetData &unidKorolovShipping; 'opsIntroDone True)
-							(scrShowPane gScreen 'Default)
-							)
+						(scrShowPane gScreen 'Default)
 					</Action>
 				</Actions>
 			</EscortIntro>
@@ -942,9 +944,19 @@
 				A manager walks over to you: "There are some freighters looking for escorts. Check
 				the display to your left."
 			</Text>
+			<Text id="descOperationsIntroNoFreighters">
+				The operations level is filled with traffic controllers and ship captains
+				coordinating freighter shipments across the system.
+				
+				A manager walks over to you: "All our freighters are out, but if you come back 
+				later perhaps some will have returned."
+			</Text>
 
 			<Text id="descNoMissions">
-				There are no freighters currently looking for an escort.
+				A manager walks over to you:
+
+				"All our freighters are out, but if you come back later perhaps some will have
+				returned."
 			</Text>
 			<Text id="descNotRated">
 				You are not rated to escort this class of freighter.
