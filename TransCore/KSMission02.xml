@@ -32,18 +32,18 @@
 			attributes=		"korolov, escort"
 
 			level=			"1-3"
+
+			expireTime=		"3600"
 			>
 
 		<Events>
 			<OnCreate>
 				(block (
 					(playerLevel (korGetPlayerLevel))
-					dockedFreighters freighterCount qualifyCount gateObj escortType
-					)
 
-					(setq dockedFreighters (sysFindObject aOwnerObj "sHZ O:docked; +commonwealth; +freighter;"))
-					(setq freighterCount (count dockedFreighters))
-					(setq qualifyCount (count
+					(dockedFreighters (sysFindObject aOwnerObj "sHZ O:docked; +commonwealth; +freighter;"))
+					(freighterCount (count dockedFreighters))
+					(qualifyCount (count
 						(filter
 							dockedFreighters
 							theFreighter
@@ -53,6 +53,12 @@
 								)
 							)
 						))
+
+					(validDestinations (sysFindObject aOwnerObj "TAF +populated; -occupation; -uncharted; -outlaws;"))
+
+					gateObj escortType
+					)
+
 
 					(switch
 						; Finite number of missions per station
@@ -80,7 +86,7 @@
 							(msnDestroy gSource)
 
 						; If there are no freighters we're qualified to escort, or only 1-2 total, then offer mission
-						(or (= qualifyCount 0) (ls freighterCount 2) (and (ls freighterCount 3) (= (random 1 3) 1)))
+						(or (= qualifyCount 0) (ls freighterCount 2) (and (ls freighterCount 3) (= (random 1 3) 1)) (not validDestinations))
 							(block (
 								(escortData (korCalculateCargo escortType playerLevel True))
 								)
