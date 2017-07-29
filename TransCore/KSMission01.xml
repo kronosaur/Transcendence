@@ -117,7 +117,7 @@
 							(msnSetData gSource 'missionXP (if gateMission 75 100))
 							(msnSetData gSource 'cargoValue (@ escortData 'cargoValue))
 							(msnSetData gSource 'reward (@ escortData 'escortFee))
-							
+
 							; Remember the minimum player level to escort and the minimum
 							; player speed.
 							(msnSetData gSource 'minPlayerLevel (objGetStaticData freighterObj "korolovMinLevel"))
@@ -127,6 +127,11 @@
 							; change it later.
 							(objSetData freighterObj 'missionID (objGetID gSource))
 							(objSetObjRefData freighterObj "korolovDest" destObj)
+
+							; Remember freighter and destination, in case they get destroyed
+							
+							(msnRegisterForEvents gSource destObj)
+							(msnRegisterForEvents gSource freighterObj)
 							)
 						)
 					)
@@ -148,7 +153,6 @@
 					(freighterObj (objGetObjByID (msnGetData gSource 'freighterID)))
 					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
 					)
-					(msnRegisterForEvents gSource freighterObj)
 					(objSetObjRefData freighterObj "korolovDest" Nil)
 					(objSetData freighterObj "korolovPlayerEscort" True)
 
@@ -196,10 +200,23 @@
 
 			<OnObjDestroyed>
 				(switch
+					;	If the mission hasn't started yet, and either the freighter or the destination
+					;	have been destroyed, then we cancel the mission.
+
+					(and (msnGetProperty gSource 'isOpen)
+							(or (= (objGetID aObjDestroyed) (msnGetData gSource 'freighterID))
+									(= (objGetID aObjDestroyed) (msnGetData gSource 'destID))
+									)
+							)
+						(msnDestroy gSource)
+
+					;	If the freighter entered a stargate, then nothing to do.
+
 					(= aDestroyReason 'enteredStargate)
 						Nil
 
-					; If the ship dies, mission fails
+					;	If the freighter has been destroyed, then the mission fails
+
 					(= (objGetID aObjDestroyed) (msnGetData gSource 'freighterID))
 						(block Nil
 							(msnSetData gSource 'playerDestroyedFreighter (and gPlayerShip (= aOrderGiver gPlayerShip)))
