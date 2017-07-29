@@ -7,7 +7,7 @@
 	Type holds all global data associated with Korolov Escort missions
 
 	GLOBAL DATA
-
+	
 	level:				Player's level:
 							Nil	= Not yet initialized
 							-1	= Blacklisted
@@ -15,6 +15,8 @@
 							2	= Journeyman
 							3	= Master
 							4	= Legend
+
+	opsIntroDone:		If True, no need for ops intro.
 
 	record{shipUNID}:	Escort record for given freighter
 							({successful} {unsuccessful})
@@ -845,9 +847,10 @@
 		
 		<InitialPane>
 			(switch
-				(= (korGetPlayerLevel) 0)
-					"EscortIntro"
-				"Default"
+				(typGetData &unidKorolovShipping; 'opsIntroDone)
+					"Default"
+				
+				"EscortIntro"
 				)
 		</InitialPane>
 		
@@ -905,14 +908,24 @@
 				</Actions>
 			</Default>
 			
-			<EscortIntro>
+			<EscortIntro
+					noListNavigation="true"
+					>
 				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descOperationsIntro)
+					(scrSetDescTranslate gScreen
+						(if (scrGetListEntry gScreen)
+							'descOperationsIntro
+							'descOperationsNoFreighters
+							)
+						)
 				</OnPaneInit>
 				
 				<Actions>
 					<Action id="actionContinue">
-						(scrShowPane gScreen 'Default)
+						(block ()
+							(typSetData &unidKorolovShipping; 'opsIntroDone True)
+							(scrShowPane gScreen 'Default)
+							)
 					</Action>
 				</Actions>
 			</EscortIntro>
@@ -922,11 +935,11 @@
 			<Text id="actionEscortFreighter">[E]scort Freighter</Text>
 			
 			<Text id="descOperationsIntro">
-				The operations level is filled with noise as traffic controllers and ship captains
-				coordinate shipping operations.
+				The operations level is filled with traffic controllers and ship captains
+				coordinating freighter shipments across the system.
 				
-				A manager walks over to you: "There's some freighters looking for escorts. Check
-				out that display over there."
+				A manager walks over to you: "There are some freighters looking for escorts. Check
+				the display to your left."
 			</Text>
 
 			<Text id="descNoMissions">
