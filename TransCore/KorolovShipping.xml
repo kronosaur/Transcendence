@@ -52,8 +52,8 @@
 				(block (theList)
 					(if (typGetData &unidKorolovShipping; 'level)
 						(block (
-							(successList (plyGetKeyEventStat gPlayer 'missionSuccess Nil "* +korolov;"))
-							(failureList (plyGetKeyEventStat gPlayer 'missionFailure Nil "* +korolov;"))
+							(successList (plyGetKeyEventStat gPlayer 'missionSuccess Nil "* +korolov; +escort;"))
+							(failureList (plyGetKeyEventStat gPlayer 'missionFailure Nil "* +korolov; +escort;"))
 							)
 
 							(setq theList (list
