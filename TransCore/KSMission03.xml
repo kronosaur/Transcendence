@@ -65,8 +65,14 @@
 							(msnRegisterForEvents gSource targetObj)
 							(msnRegisterForEvents gSource gPlayerShip)
 							(msnSetData gSource 'missionXP 100)
-							(msnSetData gSource 'reward (@ '(0 1000 2000 4000 8000) (sysGetLevel)))
-							; Data for briefing
+
+							;	There are three types of strongholds, one for levels 1, 2, and 3.
+							;	Korolov doesn't show up after level 3, but we add it anyway.
+
+							(msnSetData gSource 'reward (@ '(0 1000 2000 4000 4000 4000) (sysGetLevel)))
+
+							;	Data for briefing
+
 							(msnSetData gSource 'director (objGetData aOwnerObj 'assistantDirector))
 							(msnSetData gSource 'dist (objGetDistance aOwnerObj targetObj))
 							)
@@ -84,7 +90,7 @@
 						(objSetData leaderObj 'wingmanPlayer True)
 						; Reduce XP and reward
 						(msnIncData gSource 'missionXP -50)
-						(msnSetData gSource 'reward (multiply (sysGetLevel) 200))
+						(msnSetData gSource 'reward (divide (msnGetData gSource 'reward) 2))
 						(msnSetData gSource 'state 'catchup)
 						)
 
@@ -190,7 +196,11 @@
 							(switch
 								; Remember if player attacks squadron
 								(and gPlayerShip (= aOrderGiver gPlayerShip))
-									(msnSetData gSource 'betrayal True)
+									(block ()
+										(msnSetData gSource 'betrayal True)
+										;	No reward
+										(msnSetData gSource 'reward 0)
+										)
 
 								; Otherwise, if player was not participating then the mission is now over
 								(= (msnGetData gSource 'state) 'declined)
@@ -213,6 +223,7 @@
 							(gr (objGetDistance aObjDestroyed gPlayerShip) 300)
 								(block Nil
 									(msnIncData gSource 'missionXP -50)
+									(msnSetData gSource (divide (msnGetData gSource 'reward) 2))
 									(msnSetData gSource 'noHelp True)
 									(msnSuccess gSource)
 									)
@@ -315,37 +326,76 @@
 					)
 			</Text>
 			<Text id="SuccessDebrief">
-				(switch
-					(msnGetData gSource 'betrayal)
-						(cat
-							"\"What happened out there? You're supposed to shoot at the pirates, not everything "
-							"that moves! At least the pirates are out of action for a while.\""
-							)
-					(msnGetData gSource 'noHelp)
-						(cat
-							"\"Welcome back captain. We managed to destroy the stronghold, but it appears you have some "
-							"problems with basic navigation. Perhaps you should get you ships computer checked out.\""
-							)
-					(msnGetData gSource 'leaderLost)
-						(cat
-							"\"Good work captain. It will take a while for the pirates to rebuild their stronghold. "
-							"But we lost some good people too.\""
-							)
-					(msnGetData gSource 'commend)
-						(cat
-							"\"Great flying, captain! It will take a while for the pirates to rebuild their stronghold. "
-							"The squadron leader sends " (random '("his" "her")) " thanks for your help. "
-							"We can all enjoy a bit of peace for a change.\""
-							)
-					(cat
-						"\"Great flying, captain! It will take a while for the pirates to rebuild their stronghold. "
-						"We can all enjoy a bit of peace for a change.\""
+				(block (
+					(data {
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						leaderPronoun: (random (list (msnTranslate gSource 'pronounHis) (msnTranslate gSource 'pronounHer)))
+						})
+					)
+					(switch
+						(msnGetData gSource 'betrayal)
+							(msnTranslate gSource 'successDebrief.betrayal data)
+
+						(msnGetData gSource 'noHelp)
+							(msnTranslate gSource 'successDebrief.noHelp data)
+
+						(msnGetData gSource 'leaderLost)
+							(msnTranslate gSource 'successDebrief.leaderLost data)
+
+						(msnGetData gSource 'commend)
+							(msnTranslate gSource 'successDebrief.commend data)
+
+						(msnTranslate gSource 'successDebrief.default data)
 						)
 					)
 			</Text>
-			<Text id="AlreadyDebriefed">
-				"\"Welcome back! Thanks for the great work last time.\""
+			<Text id="successDebrief.betrayal">
+
+				"What happened out there? You're supposed to shoot at the pirates, not everything
+				that moves! In light of the damage you caused, you will forfeit the mission payment.
+				
+				"At least the pirates are out of action for a while."
+
 			</Text>
+			<Text id="successDebrief.noHelp">
+
+				"Welcome back, captain. We managed to destroy the stronghold, but it appears you have some
+				problems with basic navigation. Perhaps you should get you ships computer checked out.
+
+				"Since you did not contribute much to the mission, your share of the bounty is %payment%."
+
+			</Text>
+			<Text id="successDebrief.leaderLost">
+
+				"Good work, captain. It will take a while for the pirates to rebuild their stronghold.
+				But we lost some good people too.
+
+				"Your share of the bounty is %payment%."
+
+			</Text>
+			<Text id="successDebrief.commend">
+
+				"Great flying, captain! It will take a while for the pirates to rebuild their stronghold. 
+				The squadron leader sends %leaderPronoun% thanks for your help. We can all enjoy a bit 
+				of peace for a change.
+
+				"Your share of the bounty is %payment%."
+
+			</Text>
+			<Text id="successDebrief.default">
+
+				"Great flying, captain! It will take a while for the pirates to rebuild their stronghold.
+				We can all enjoy a bit of peace for a change.
+
+				"Your share of the bounty is %payment%."
+
+			</Text>
+			<Text id="pronounHer">her</Text>
+			<Text id="pronounHis">his</Text>
+
+			<String id="AlreadyDebriefed">
+				"Welcome back! Thanks for the great work last time."
+			</String>
 		</Language>
 	</MissionType>
 
