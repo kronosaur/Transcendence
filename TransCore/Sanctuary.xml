@@ -89,7 +89,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action id="actionCentralChamber">
+							<Action id="actionCentralChamber" default="1">
 								(rpgMissionAssignment {
 									missionCriteria: (cat "n +cathedralOfDominaMission; =5;")
 									noMissionTextID: 'descNothingToTalkAbout
@@ -98,7 +98,7 @@
 							<Action id="actionSanctum">
 								(scrShowScreen gScreen &dsSistersSanctum;)
 							</Action>
-							<Action id="actionPilgrimsAid" default="1">
+							<Action id="actionPilgrimsAid">
 								(scrShowScreen gScreen &dsSistersDockServices;)
 							</Action>
 							<Action id="actionDonate">

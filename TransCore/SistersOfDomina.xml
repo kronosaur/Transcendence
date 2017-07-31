@@ -156,7 +156,7 @@
 							<Action id="actionSanctum">
 								(scrShowScreen gScreen &dsSistersSanctum;)
 							</Action>
-							<Action id="actionPilgrimsAid" default="1">
+							<Action id="actionPilgrimsAid">
 								(scrShowScreen gScreen &dsSistersDockServices;)
 							</Action>
 							<Action id="actionDonate">
