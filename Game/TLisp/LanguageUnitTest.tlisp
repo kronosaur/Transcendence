@@ -28,6 +28,14 @@
 	;	percent. But in practice, you should use a single percent where needed.
 
 	{	code: '(fmtCompose "%%")							result: "%"	}
+
+	;	strCapitalize
+
+	{	code: '(strCapitalize "test")						result: "Test"	}
+	{	code: '(strCapitalize "this is a test")				result: "This is a test"	}
+	{	code: '(strCapitalize "")							result: ""	}
+	{	code: '(strCapitalize Nil)							result: ""	}
+
 	))
 
 (debugUnitTest "Language Unit Test" TEST_SUITE)
