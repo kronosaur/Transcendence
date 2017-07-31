@@ -1316,7 +1316,7 @@
 					; the transport's path
 					(if (and (leq (random 1 100) 30)
 							(geq aCargoValue 100000))
-						(setq ambushPos (sysGetNavPathPoint &svCorporate; aOriginObj aDestObj (random 40 60)))
+						(setq ambushPos (sysGetNavPathPoint &svCorporate; aOriginObj aDestObj (random 40 50)))
 						(setq ambushPos (chrComputeAmbushPos aOriginObj aDestObj))
 						)
 
@@ -1441,6 +1441,39 @@
 					(sysAddObjRecurringTimerEvent 60 gSource "OnBehaviorControl")
 					)
 			</OnCreate>
+
+			<OnAttacked>
+				(if (and aOrderGiver
+						(objCanAttack aOrderGiver)
+						(not (eq (objGetDisposition gSource aOrderGiver) 'friend))
+						)
+					(block (
+						(status (objGetData gSource 'status))
+						)
+						(switch
+							;	If we're waiting for a transport to show up and we get attacked, then
+							;	attack back.
+
+							(= status 'waitForTransport)
+								(if (!= (shpGetOrder gSource) 'attack)
+									(shpOrderImmediate gSource 'attack aOrderGiver (random 10 30))
+									)
+
+							;	If we're already attacking the transport with raiders, then engage 
+							;	directly.
+
+							(= status 'waitForRaiders)
+								(block (
+									(targetObj (objGetObjRefData gSource 'target))
+									)
+									(objSetData gSource 'status 'attackTransport)
+									(shpCancelOrders gSource)
+									(shpOrder gSource 'attack targetObj)
+									)
+							)
+						)
+					)
+			</OnAttacked>
 
 			<OnObjDestroyed>
 				(block (status)
@@ -1728,11 +1761,11 @@
 					(if frigateList
 						(block Nil
 							(setq frigate (random frigateList))
-							(dbgOutput "Found frigate: " (objGetID frigate))
+							;(dbgOutput "Found frigate: " (objGetID frigate))
 							)
 						(block Nil
 							(setq frigate (sysCreateShip raiderType (objGetPos raidMarker) &svPirates; &evCharonRaiderBehavior;))
-							(dbgOutput "Created " (objGetName frigate 0x00) ": " (objGetID frigate))
+							;(dbgOutput "Created " (objGetName frigate 0x00) ": " (objGetID frigate))
 							)
 						)
 
