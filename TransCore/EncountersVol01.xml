@@ -4690,7 +4690,7 @@
 
 		<Devices>
 			<Device deviceID="&itNAMIMissileLauncher;" minFireArc="300" maxFireArc="60" posAngle="0" posRadius="16"/>
-			<Device deviceID="&itFlenserCannon;" secondaryWeapon="true" omnidirectional="true"/>
+			<Device deviceID="&itOmniPartisanCannon;" secondaryWeapon="true"/>
 		</Devices>
 
 		<Maneuver
