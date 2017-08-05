@@ -176,6 +176,8 @@
 				powerUse=			"500"
 				canHitSource=		"true"
 				
+				passthrough=		"100"
+				
 				sound=				"&snArmorHit1;"
 				>
 
@@ -250,6 +252,8 @@
 				lifetime=			"20"
 				powerUse=			"500"
 				canHitSource=		"true"
+				
+				passthrough=		"100"
 				>
 
 			<FireEffect
@@ -333,6 +337,8 @@
 				lifetime=			"25"
 				powerUse=			"500"
 				canHitSource=		"true"
+				
+				passthrough=		"100"
 				>
 
 			<FireEffect
@@ -418,6 +424,8 @@
 				lifetime=			"38"
 				powerUse=			"500"
 				canHitSource=		"true"
+				
+				passthrough=		"100"
 				
 				sound=				"&snArmorHit1;"
 				>
@@ -534,6 +542,8 @@
 				lifetime=			"38"
 				powerUse=			"500"
 				canHitSource=		"true"
+				
+				passthrough=		"100"
 				>
 
 			<FireEffect
