@@ -138,17 +138,8 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 					{
 					case itemcatWeapon:
 					case itemcatLauncher:
-						{
-						int xPos;
-						int yPos;
-						if (Desc.b3DPosition)
-							C3DConversion::CalcCoord(iScale, iRotation + Desc.iPosAngle, Desc.iPosRadius, Desc.iPosZ, &xPos, &yPos);
-						else
-							C3DConversion::CalcCoordCompatible(iRotation + Desc.iPosAngle, Desc.iPosRadius, &xPos, &yPos);
-
-						Output.GetImage().DrawDot(x + xPos, y + yPos, CG32bitPixel(255, 255, 0), markerMediumCross);
+						CInstalledDevice::PaintDevicePos(Desc, Output.GetImage(), x, y, iScale, iRotation);
 						break;
-						}
 					}
 				}
 			}
