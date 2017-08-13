@@ -13,6 +13,7 @@ CGameSession::CGameSession (CHumanInterface &HI,
 		m_Settings(Settings),
         m_Model(Model),
 		m_Soundtrack(Soundtrack),
+		m_iUI(uiNone),
         m_HUD(HI, Model),
         m_bShowingSystemMap(false),
         m_SystemMap(HI, Model, m_HUD),
@@ -106,6 +107,38 @@ void CGameSession::HideMenu (void)
 	DismissMenu();
 	}
 
+void CGameSession::InitUI (void)
+
+//	InitUI
+//
+//	Initializes the primary UI based on the player ship
+
+	{
+	//	Default to none
+
+	m_iUI = uiNone;
+
+	//	Get the player ship settings.
+	//
+	//	NOTE: For now we get the UI settings from the class, but in the future we
+	//	could get it from the ship, if we want to allow switching UIs without
+	//	switching ship classes.
+
+	CPlayerShipController *pPlayer = m_Model.GetPlayer();
+	if (pPlayer == NULL)
+		return;
+
+	CShip *pPlayerShip = pPlayer->GetShip();
+	if (pPlayerShip == NULL)
+		return;
+
+	const CPlayerSettings *pPlayerSettings = pPlayerShip->GetClass()->GetPlayerSettings();
+	if (pPlayerSettings == NULL)
+		return;
+
+	m_iUI = pPlayerSettings->GetDefaultUI();
+	}
+
 void CGameSession::OnCleanUp (void)
 
 //  OnCleanUp
@@ -125,6 +158,7 @@ ALERROR CGameSession::OnInit (CString *retsError)
     {
     m_rcScreen = g_pTrans->m_rcScreen;
     SetNoCursor(true);
+	InitUI();
     m_HUD.Init(m_rcScreen);
     m_SystemMap.Init(m_rcScreen);
 

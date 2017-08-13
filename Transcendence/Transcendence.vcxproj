@@ -720,6 +720,7 @@
     <ClInclude Include="GameSettings.h" />
     <ClInclude Include="IntroSession.h" />
     <ClInclude Include="KeyboardMapData.h" />
+    <ClInclude Include="PlayerShip.h" />
     <ClInclude Include="PreComp.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sessions.h" />

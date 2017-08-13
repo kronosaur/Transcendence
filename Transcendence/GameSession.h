@@ -38,7 +38,7 @@ class CGameSession : public IHISession
         inline void OnArmorSelected (int iSelection) { m_HUD.SetArmorSelection(iSelection); }
 		inline void OnDamageFlash (void) { m_iDamageFlash = Min(2, m_iDamageFlash + 2); }
 		void OnObjDestroyed (const SDestroyCtx &Ctx);
-        inline void OnPlayerChangedShips (CSpaceObject *pOldShip) { m_HUD.Init(m_rcScreen); g_pTrans->InitDisplays(); }
+        inline void OnPlayerChangedShips (CSpaceObject *pOldShip) { InitUI(); m_HUD.Init(m_rcScreen); g_pTrans->InitDisplays(); }
         void OnPlayerDestroyed (SDestroyCtx &Ctx, const CString &sEpitaph);
         void OnPlayerEnteredStargate (CTopologyNode *pNode);
         void OnShowDockScreen (bool bShow);
@@ -82,6 +82,7 @@ class CGameSession : public IHISession
 	private:
 		void DismissMenu (void);
 		void HideMenu (void);
+		void InitUI (void);
 		void PaintSRS (CG32bitImage &Screen);
 		bool ShowMenu (EMenuTypes iMenu);
 		void SyncMouseToPlayerShip (void);
@@ -90,6 +91,10 @@ class CGameSession : public IHISession
         CTranscendenceModel &m_Model;
 		CSoundtrackManager &m_Soundtrack;
 		RECT m_rcScreen;					//	RECT of main screen within window.
+
+		//	UI state
+
+		EUITypes m_iUI;						//	Basic flying UI
 
 		//	HUD state
 
