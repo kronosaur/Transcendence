@@ -148,6 +148,16 @@ bool CPlayerShipController::AreAllDevicesEnabled (void)
 	return true;
 	}
 
+void CPlayerShipController::Behavior (SUpdateCtx &Ctx)
+
+//	Behavior
+//
+//	Update the behavior of the ship.
+
+	{
+	m_ManeuverController.Update(Ctx, m_pShip);
+	}
+
 bool CPlayerShipController::CanShowShipStatus (void)
 
 //	CanShowShowStatus
@@ -1658,22 +1668,18 @@ bool CPlayerShipController::ToggleEnableDevice (int iDeviceIndex)
 
 EManeuverTypes CPlayerShipController::GetManeuver (void)
 	{
-    if (m_bMouseAim)
-        {
-        if (m_iMouseAimAngle == -1
-				|| m_pShip->IsOutOfPower()
-				|| m_pShip->IsTimeStopped())
-            return NoRotation;
-        else
-            return m_pShip->GetManeuverToFace(m_iMouseAimAngle);
-        }
+	if (m_ManeuverController.IsManeuverActive())
+		return m_ManeuverController.GetManeuver(m_pShip);
     else
 	    return m_iManeuver;
 	}
 
 bool CPlayerShipController::GetThrust (void)
 	{
-    return m_bThrust;
+	if (m_ManeuverController.IsThrustActive())
+		return m_ManeuverController.GetThrust(m_pShip);
+	else
+		return m_bThrust;
 	}
 
 bool CPlayerShipController::GetReverseThrust (void)
@@ -1683,7 +1689,10 @@ bool CPlayerShipController::GetReverseThrust (void)
 
 bool CPlayerShipController::GetStopThrust (void)
 	{
-	return m_bStopThrust;
+	if (m_ManeuverController.IsThrustActive())
+		return false;
+	else
+		return m_bStopThrust;
 	}
 
 bool CPlayerShipController::GetDeviceActivate (void)
@@ -2054,6 +2063,8 @@ void CPlayerShipController::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
 //	CPlayerGameStats m_Stats
 //	DWORD		UNUSED (m_iInsuranceClaims)
 //	DWORD		flags
+//	CUIMessageController
+//	CManeuverController
 
 	{
 	int i;
@@ -2132,7 +2143,12 @@ void CPlayerShipController::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
 		m_UIMsgs.SetEnabled(uimsgCommsHint,			((dwLoad & 0x00008000) ? true : false));
 		}
 
-	//	Deities
+	//	Maneuver controller
+
+	if (Ctx.dwVersion >= 150)
+		m_ManeuverController.ReadFromStream(Ctx);
+
+	//	OLD: Deities
 
 	if (Ctx.dwVersion < 25)
 		{
@@ -2150,7 +2166,7 @@ void CPlayerShipController::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
 			}
 		}
 
-	//	Deferred destruction string
+	//	OLD: Deferred destruction string
 
 	if (Ctx.dwVersion >= 3 && Ctx.dwVersion < 50)
 		{
@@ -2158,7 +2174,7 @@ void CPlayerShipController::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
 		sDummy.ReadFromStream(Ctx.pStream);
 		}
 
-	//	For backwards compatibility we move rin from object data to
+	//	OLD: For backwards compatibility we move rin from object data to
 	//	the dedicated currency block structure
 
 	if (Ctx.dwVersion < 62)
@@ -2833,6 +2849,8 @@ void CPlayerShipController::WriteToStream (IWriteStream *pStream)
 //	CPlayerGameStats m_Stats
 //	DWORD		UNUSED (m_iInsuranceClaims)
 //	DWORD		flags
+//	CUIMessageController
+//	CManeuverController
 
 	{
 	DWORD dwSave;
@@ -2879,4 +2897,8 @@ void CPlayerShipController::WriteToStream (IWriteStream *pStream)
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	m_UIMsgs.WriteToStream(pStream);
+
+	//	Maneuver controller
+
+	m_ManeuverController.WriteToStream(*pStream, m_pShip->GetSystem());
 	}

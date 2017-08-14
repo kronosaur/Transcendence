@@ -281,6 +281,9 @@
     <ClCompile Include="CArtifactMessagePainter.cpp">
       <Filter>Source Files\Artifact Awakening</Filter>
     </ClCompile>
+    <ClCompile Include="CManeuverController.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundTasks.h">

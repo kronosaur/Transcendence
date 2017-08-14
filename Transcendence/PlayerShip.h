@@ -52,6 +52,46 @@ class CUIMessageController
 		bool m_bMsgEnabled[uimsgCount];
 	};
 
+class CManeuverController
+	{
+	public:
+		enum ECommands
+			{
+			cmdNone =				0,
+
+			cmdMouseAim =			1,	//	Turn to m_iAngle (used for mouse aiming)
+			cmdMoveTo =				2,	//	Move to m_vPos
+			cmdDockWith =			3,	//	Dock with m_pTarget
+			};
+
+		CManeuverController (void);
+
+		bool CmdCancel (void);
+		bool CmdMouseAim (int iAngle);
+		bool CmdMoveTo (const CVector &vPos);
+		EManeuverTypes GetManeuver (CShip *pShip) const;
+		bool GetThrust (CShip *pShip) const;
+		inline bool IsActive (void) const { return m_iCommand != cmdNone; }
+		inline bool IsManeuverActive (void) const { return m_iCommand != cmdNone; }
+		bool IsThrustActive (void) const;
+		void ReadFromStream (SLoadCtx &Ctx);
+		void Update (SUpdateCtx &Ctx, CShip *pShip);
+		void WriteToStream (IWriteStream &Stream, CSystem *pSystem);
+
+	private:
+		void UpdateMoveTo (SUpdateCtx &Ctx, CShip *pShip);
+
+		ECommands m_iCommand;
+		int m_iAngle;
+		CVector m_vPos;
+		CSpaceObject *m_pTarget;
+
+		//	Temporary variables during update (no need to save)
+
+		EManeuverTypes m_iManeuver;
+		bool m_bThrust;
+	};
+
 class CPlayerShipController : public IShipController
 	{
 	public:
@@ -108,8 +148,8 @@ class CPlayerShipController : public IShipController
         inline void SetGameSession (CGameSession *pSession) { m_pSession = pSession; }
 		inline void SetGenome (GenomeTypes iGenome) { m_iGenome = iGenome; }
 		inline void SetMapHUD (bool bActive) { m_bMapHUD = bActive; }
-        inline void SetMouseAimAngle (int iAngle) { m_iMouseAimAngle = iAngle; }
-        inline void SetMouseAimEnabled (bool bEnabled = true) { m_bMouseAim = bEnabled; }
+        inline void SetMouseAimAngle (int iAngle) { m_ManeuverController.CmdMouseAim(iAngle); }
+        inline void SetMouseAimEnabled (bool bEnabled = true) { m_bMouseAim = bEnabled; if (!m_bMouseAim) m_ManeuverController.CmdCancel(); }
 		inline void SetName (const CString &sName) { m_sName = sName; }
 		inline void SetResurrectCount (int iCount) { m_Stats.SetStat(CONSTLIT("resurrectCount"), ::strFromInt(iCount)); }
 		inline void SetStartingShipClass (DWORD dwUNID) { m_dwStartingShipClass = dwUNID; }
@@ -139,6 +179,7 @@ class CPlayerShipController : public IShipController
 		//	IShipController virtuals
 
 		virtual void AddOrder (OrderTypes Order, CSpaceObject *pTarget, const IShipController::SData &Data, bool bAddBefore = false) override;
+		virtual void Behavior (SUpdateCtx &Ctx) override;
 		virtual void CancelAllOrders (void) override;
 		virtual void CancelCurrentOrder (void) override;
 		virtual void CancelDocking (void) override;
@@ -228,6 +269,7 @@ class CPlayerShipController : public IShipController
 		int m_iLastHelpUseTick;
 		int m_iLastHelpFireMissileTick;
 
+		CManeuverController m_ManeuverController;
 		EManeuverTypes m_iManeuver;
 		bool m_bThrust;
 		bool m_bActivate;
