@@ -711,6 +711,27 @@
 			<OnTrafficControl>
 				(korTrafficControl gSource)
 			</OnTrafficControl>
+			
+			<OnObjDocked>
+				(if (and (eq aDockTarget gSource)
+						(not (objGetProperty gSource 'abandoned))
+						(objGetData aObjDocked 'korolov_traffic)
+						)
+					(block (theEscort)
+						(if (setq theEscort (objGetObjRefData aObjDocked 'escortID))
+							(block Nil
+								(shpCancelOrders theEscort)
+								(if (gr (objGetOpenDockingPortCount gSource) 1)
+									(shpOrder theEscort 'guard gSource)
+									(shpOrder theEscort 'gate)
+									)
+								(objSetData theEscort 'korolovEscort Nil)
+								)
+							)
+						(objSetObjRefData aObjDocked 'escortID Nil)
+						)
+					)
+			</OnObjDocked>
 		</Events>
 
 		<Language>
@@ -1186,6 +1207,8 @@
 							(shpCancelOrders theEscort)
 							(shpOrder theEscort 'escort gSource)
 							(objSetData theEscort 'korolovEscort True)
+							(objSetObjRefData gSource 'escortID theEscort)
+							(objRegisterForEvents homeObj gSource)
 							)
 						; If we have no escorts, then we need some
 						(objSetData homeObj 'needEscorts True)
@@ -1254,18 +1277,6 @@
 					(escortCount (+ (count escorts) (count escortsInFlight)))
 					(portsLeft (gr (objGetOpenDockingPortCount homeObj) 0))
 					)
-
-					; Check that no one is escorting a docked freighter
-					(enum dockedFreighters theFreighter
-						(enum (sysFindObject theFreighter "sZ O:escort") theEscort
-							(block Nil
-								; We send excess escorts away below so skip check on docking ports
-								(shpCancelOrders theEscort)
-								(shpOrder theEscort 'guard homeObj)
-								(objSetData theEscort 'korolovEscort Nil)
-								)
-							)
-						)
 
 					; Exclude freighters being escorted by the player
 					(setq dockedFreighters (filter dockedFreighters theFreighter
