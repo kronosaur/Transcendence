@@ -522,8 +522,8 @@
 				>
 
 			<Missiles>
-				<Missile ammoID="&itFragmentationMissile;"/>
 				<Missile ammoID="&itKM100Missile;"/>
+				<Missile ammoID="&itFragmentationMissile;"/>
 				<Missile ammoID="&itKM120Missile;"/>
 				<Missile ammoID="&itKM500Missile;"/>
 				<Missile ammoID="&itKM550Missile;"/>
