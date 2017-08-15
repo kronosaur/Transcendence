@@ -329,17 +329,12 @@
 
 		<Image			imageID="&rsStations1;" imageX="256" imageY="256" imageWidth="128" imageHeight="128"/>
 
-		<Ships>
-			<Lookup count="2" table="&tbCorpDefenders;"/>
-			<Lookup count="1d2" table="&tbCommPrivateCrafts;"/>
-		</Ships>
-
-		<Reinforcements minShips="4">
+		<Ships standingCount="3">
 			<Table>
 				<Lookup chance="75" table="&tbCorpDefenders;"/>
 				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
 			</Table>
-		</Reinforcements>
+		</Ships>
 
 		<Items>
 			<RandomItem count="8-12" 
