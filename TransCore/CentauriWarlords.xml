@@ -1007,8 +1007,11 @@
 		</DockingPorts>
 		
 		<Language>
-			<Text id="descAbandonedStation">
-				"You are docked at the lifeless ruins of a container habitat. This makeshift station has been recently occupied by a band of Centauri warlords."
+			<Text id="core.abandonedStationDesc">
+
+				You are docked at the lifeless ruins of a container habitat. 
+				This makeshift station has been recently occupied by a band of Centauri warlords.
+
 			</Text>
 		</Language>
 

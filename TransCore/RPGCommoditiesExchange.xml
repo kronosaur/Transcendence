@@ -25,7 +25,10 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'commoditiesExchangeScreenDesc)
+					(scrSetDesc gScreen (or
+						(scrTranslate gScreen 'core.commoditiesExchangeDesc { stationName:(objGetName gSource) })
+						(scrTranslate gScreen 'commoditiesExchangeScreenDesc { stationName:(objGetName gSource) })
+						))
 				</OnPaneInit>
 				
 				<Actions>
@@ -51,13 +54,13 @@
 		</Panes>
 		
 		<Language>
-			<Text id="actionBuyItems">"[B]uy Items"</Text>
-			<Text id="actionSellItems">"[S]ell Items"</Text>
+			<Text id="actionBuyItems">[B]uy Items</Text>
+			<Text id="actionSellItems">[S]ell Items</Text>
 			
-			<Text id="commoditiesExchangeScreenDesc">
-				(cat 
-					"Welcome to the " (objGetName gSource) " Commodities Exchange Market."
-					)
+			<Text id="core.commoditiesExchangeDesc">
+
+				Welcome to the %stationName% Commodities Exchange Market.
+
 			</Text>
 		</Language>
 	</DockScreen>

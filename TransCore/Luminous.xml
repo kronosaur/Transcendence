@@ -479,10 +479,12 @@
 		</Encounters>
 
 		<Language>
-			<Text id="descAbandonedStation">
+			<Text id="core.abandonedStationDesc">
+
 				You are docked at the remains of a Luminous assembler.
 				This automated factory churned out drones controlled by 
 				the mysterious sentient entity known as Luminous.
+
 			</Text>
 		</Language>
 	</StationType>

@@ -335,9 +335,12 @@
 				/>
 				
 		<Language>
-			<Text id="descAbandonedStation">
-				(cat "You are docked with the wreck of an EI500 freighter.\n\n"
-					"There is a makeshift memorial here honoring Helena Volkov.")
+			<Text id="core.abandonedStationDesc">
+
+				You are docked with the wreck of an EI500 freighter.
+
+				There is a makeshift memorial here honoring Helena Volkov.
+
 			</Text>
 			<Text id="descHelena">
 				(cat "You are docked with the wreck of an EI500 freighter.\n\n"

@@ -1341,9 +1341,11 @@
 		</ImageVariants>
 
 		<Language>
-			<Text id="descAbandonedStation">
+			<Text id="core.abandonedStationDesc">
+
 				You are docked at a ruined structure once housing slaves.
 				Lifeless forms float around in zero-G amid the scraps and mementos they once owned.
+
 			</Text>
 		</Language>
 
@@ -1384,9 +1386,11 @@
 		</ImageVariants>
 
 		<Language>
-			<Text id="descAbandonedStation">
+			<Text id="core.abandonedStationDesc">
+
 				You are docked at a ruined structure once housing slaves.
 				Lifeless forms float around in zero-G amid the scraps and mementos they once owned.
+
 			</Text>
 		</Language>
 

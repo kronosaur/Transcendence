@@ -728,8 +728,12 @@
 		</Ships>
 
 		<Language>
-			<Text id="descAbandonedStation">
-				"You are docked at the lifeless ruins of a destroyed station. A group of refugees, huddling in the cavernous bay, tell you that the station was destroyed by Xenophobes."
+			<Text id="core.abandonedStationDesc">
+
+				You are docked at the lifeless ruins of a destroyed station. 
+				A group of refugees, huddling in the cavernous bay, tell you 
+				that the station was destroyed by Xenophobes.
+
 			</Text>
 		</Language>
 	</StationType>
@@ -3601,9 +3605,11 @@
 		</Items>
 
 		<Language>
-			<Text id="descAbandonedStation">
+			<Text id="core.abandonedStationDesc">
+
 				You are docked at the remains of a pteravore lair. These fearsome silicon-based
 				lifeforms live on refined pteracnium, extracted from unsuspecting vessels.
+
 			</Text>
 		</Language>
 

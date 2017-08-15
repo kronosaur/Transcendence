@@ -576,10 +576,12 @@
 		</Ships>
 		
 		<Language>
-			<Text id="descAbandonedStation">
+			<Text id="core.abandonedStationDesc">
+
 				You are docked at the remains of an alien outpost.
 				The crystalline walls of this structure are cracked and pitted; 
 				it appears that the outpost was fully automated as you see no signs of alien bodies.
+
 			</Text>
 		</Language>
 

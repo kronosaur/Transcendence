@@ -183,16 +183,20 @@
 				walls are covered by a sinewy membrane and odd growths hang from
 				the ceiling. There is a foul smell of rot and bile in the air.
 			</Text>
-			<Text id="commoditiesExchangeScreenDesc">
+			<Text id="core.commoditiesExchangeDesc">
+
 				The Trading Chamber is a vast, dark cavern where Teratons
 				trade with various human and neo-humans. From a distance the
 				Teratons look like abnormally tall humans, but up close you
 				notice their deformities and mutations.
+
 			</Text>
-			<Text id="descAbandonedStation">
+			<Text id="core.abandonedStationDesc">
+
 				You are docked at the remains of a Teraton nest.
 				The sickly sweet smell of burnt flesh fills the air and 
 				mucusy discharges flow out of organic walls.
+
 			</Text>
 		</Language>
 
@@ -295,9 +299,11 @@
 				of biomechanical systems. You see a bony structure taking
 				shape inside the large spherical structure.
 			</Text>
-			<Text id="descAbandonedStation">
+			<Text id="core.abandonedStationDesc">
+
 				You are docked at the dead remains of a Teraton chrysalis.
 				The bony, motionless mass at its center bleeds an ochre fluid.
+
 			</Text>
 		</Language>
 		
@@ -386,9 +392,11 @@
 		</Devices>
 
 		<Language>
-			<Text id="descAbandonedStation">
+			<Text id="core.abandonedStationDesc">
+
 				You are docked at the dead remains of a Teraton defender.
 				Wisps of high-energy plasma vent from holes along a bony central mass.
+
 			</Text>
 		</Language>
 	</StationType>

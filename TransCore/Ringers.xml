@@ -162,10 +162,12 @@
 				through the vast volume of the station, perfectly adapted to
 				zero-gravity and space.
 			</Text>
-			<Text id="commoditiesExchangeScreenDesc">
+			<Text id="core.commoditiesExchangeDesc">
+
 				The central structure of the Ringers Collective is a large marketplace
 				containing sophisticated and rare devices from all over Human Space.
 				Commonwealth credits are not accepted here.
+
 			</Text>
 		</Language>
 	</StationType>
@@ -357,10 +359,12 @@
 				"Earthican, welcome. Your account balance is 0 rin. Collective
 				does not seek Commonwealth money."
 			</Text>
-			<Text id="commoditiesExchangeScreenDesc">
+			<Text id="core.commoditiesExchangeDesc">
+
 				The central structure of the Ringers Shipyard is a large marketplace
 				containing sophisticated and rare devices from all over Human Space.
 				Commonwealth credits are not accepted here.
+
 			</Text>
 		</Language>
 	</StationType>
