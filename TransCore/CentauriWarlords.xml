@@ -485,7 +485,7 @@
 
 			mass=				"100"
 			cargoSpace=			"50"
-			thrust=				"200"
+			thrust=				"400"
 			maxSpeed=			"10"
 
 			attributes=			"centauriWarlords"

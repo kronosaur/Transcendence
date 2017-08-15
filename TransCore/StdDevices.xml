@@ -235,7 +235,7 @@
 		<DriveDevice
 				maxSpeedInc=	"2"
 				maxSpeed=		"20"
-				thrust=			"100"
+				thrust=			"200"
 				powerUse=		"30"
 				/>
 	</ItemType>
@@ -609,7 +609,7 @@
 		<DriveDevice
 				maxSpeedInc=	"4"
 				maxSpeed=		"25"
-				thrust=			"300"
+				thrust=			"600"
 				powerUse=		"280"
 				/>
 
@@ -668,7 +668,7 @@
 		<DriveDevice
 				maxSpeedInc=	"4"
 				maxSpeed=		"25"
-				thrust=			"350"
+				thrust=			"700"
 				powerUse=		"1000"
 				inertialessDrive="true"
 				/>
@@ -924,7 +924,7 @@
 		<DriveDevice
 				maxSpeedInc=	"8"
 				maxSpeed=		"30"
-				thrust=			"750"
+				thrust=			"1500"
 				powerUse=		"2000"
 				/>
 

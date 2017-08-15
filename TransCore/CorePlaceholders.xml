@@ -47,7 +47,7 @@
 
 			mass=				"5000"
 			cargoSpace=			"500"
-			thrust=				"2000"
+			thrustRatio=		"1.5"
 			maxSpeed=			"12"
 
 			leavesWreck=		"100"

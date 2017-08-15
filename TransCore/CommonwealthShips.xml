@@ -115,7 +115,7 @@
 
 			mass=				"30"
 			cargoSpace=			"50"
-			thrust=				"150"
+			thrustRatio=		"6.6"
 			maxSpeed=			"20"
 
 			attributes=			"commonwealth, genericClass"
@@ -417,7 +417,7 @@
 
 			mass=				"20"
 			cargoSpace=			"35"
-			thrust=				"200"
+			thrustRatio=		"13"
 			maxSpeed=			"25"
 
 			attributes=			"commonwealth, genericClass"

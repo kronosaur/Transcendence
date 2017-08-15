@@ -1435,7 +1435,7 @@
 			size=				"80"
 			mass=				"40000"
 			cargoSpace=			"25000"
-			thrust=				"50000"
+			thrustRatio=		"2.5"
 			maxSpeed=			"6"
 
 			cyberDefenseLevel=	"8"

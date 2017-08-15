@@ -385,7 +385,7 @@
 			size=				"350"
 			mass=				"150000"
 			cargoSpace=			"50000"
-			thrust=				"100000"
+			thrustRatio=		"2"
 			maxSpeed=			"6"
 
 			cyberDefenseLevel=	"12"
@@ -505,7 +505,7 @@
 			size=				"98"
 			mass=				"2500"
 			cargoSpace=			"1000"
-			thrust=				"4000"
+			thrustRatio=		"8"
 			maxSpeed=			"12"
 
 			explosionType=		"&vtPlasmaExplosion1;"

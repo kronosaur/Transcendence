@@ -1284,7 +1284,7 @@
 
 			mass=				"250"
 			cargoSpace=			"150"
-			thrust=				"200"
+			thrustRatio=		"2"
 			maxSpeed=			"12"
 
 			attributes=			""
