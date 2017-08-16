@@ -866,17 +866,16 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 
 		//	Modifiers
 
-		if (pArmor->GetMods().IsNotEmpty())
+		TArray<SDisplayAttribute> Attribs;
+		if (Entry.pItemCtx->GetEnhancementDisplayAttributes(&Attribs))
 			{
-			CString sMods = Item.GetEnhancedDesc(pSource);
-			if (!sMods.IsBlank())
-				{
-				bool bIsDisadvantage = *sMods.GetASCIIZPointer() == '-';
-				CG32bitPixel rgbBackColor = (bIsDisadvantage ? m_VI.GetColor(colorAreaDisadvantage) : m_VI.GetColor(colorAreaAdvantage));
-				CG32bitPixel rgbTextColor = (bIsDisadvantage ? m_VI.GetColor(colorTextDisadvantage) : m_VI.GetColor(colorTextAdvantage));
+			const CString &sMods = Attribs[0].sText;
+			bool bIsDisadvantage = (Attribs[0].iType == attribWeakness);
 
-				PaintModifier(Dest, x, y, sMods, rgbTextColor, rgbBackColor, &y);
-				}
+			CG32bitPixel rgbBackColor = (bIsDisadvantage ? m_VI.GetColor(colorAreaDisadvantage) : m_VI.GetColor(colorAreaAdvantage));
+			CG32bitPixel rgbTextColor = (bIsDisadvantage ? m_VI.GetColor(colorTextDisadvantage) : m_VI.GetColor(colorTextAdvantage));
+
+			PaintModifier(Dest, x, y, sMods, rgbTextColor, rgbBackColor, &y);
 			}
 		}
 
@@ -945,7 +944,7 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 
 		//	Modifiers
 
-		if (pDevice->GetEnhancements() != NULL)
+		if (pDevice->GetEnhancementStack())
 			{
 			CString sMods = pDevice->GetEnhancedDesc(pSource, &Item);
 			if (!sMods.IsBlank())
