@@ -729,8 +729,8 @@
 							(setq damageHP (@ gData 'damageHP))
 
 							{
-								length: (mathScale damageHP 50 680 40 110 50)
-								width: (mathScale damageHP 50 680 24 48 50)
+								length: (mathScale damageHP 50 680 30 80 50)
+								width: (mathScale damageHP 50 680 18 36 50)
 								}
 							)
 					</GetParameters>
@@ -739,7 +739,7 @@
 
 			<ParticlePattern
 					style=				"jet"
-					spreadAngle=		"8"
+					spreadAngle=		"5"
 					particleSpeed=		"20"
 					>
 				<ParticleEffect>
@@ -757,9 +757,9 @@
 							(damageHP (@ gData 'damageHP))
 							)
 							{
-								particleCount: (mathScale damageHP 50 680 250 800 50)
-								length: (mathScale damageHP 50 680 80 220 50)
-								width: (mathScale damageHP 50 680 12 24 50)
+								particleCount: (mathScale damageHP 50 680 125 400 50)
+								length: (mathScale damageHP 50 680 50 138 50)
+								width: (mathScale damageHP 50 680 8 16 50)
 								}
 							)
 					</GetParameters>
