@@ -32,6 +32,14 @@
 						 />
 			</EnhancementAbilities>
 		</MiscellaneousDevice>
+
+		<Language>
+			<Text id="core.reference">
+				
+				+75% damage from laser weapons
+
+			</Text>
+		</Language>
 	</ItemType>
 
 	<!-- Nova-10 reactor -->
@@ -90,6 +98,14 @@
 						 />
 			</EnhancementAbilities>
 		</MiscellaneousDevice>
+
+		<Language>
+			<Text id="core.reference">
+				
+				+50% damage from kinetic weapons
+
+			</Text>
+		</Language>
 	</ItemType>
 
 	<!-- Cargo Hold Expansion -->
@@ -270,6 +286,14 @@
 						 />
 			</EnhancementAbilities>
 		</MiscellaneousDevice>
+
+		<Language>
+			<Text id="core.reference">
+				
+				+50% damage from particle energy weapons
+
+			</Text>
+		</Language>
 	</ItemType>
 
 	<!-- Smuggler's Cargo Hold -->
@@ -443,6 +467,14 @@
 						 />
 			</EnhancementAbilities>
 		</MiscellaneousDevice>
+
+		<Language>
+			<Text id="core.reference">
+				
+				+75% damage from Makayev blast weapons
+
+			</Text>
+		</Language>
 	</ItemType>
 
 	<!-- Nova-100 reactor -->
@@ -501,6 +533,14 @@
 						 />
 			</EnhancementAbilities>
 		</MiscellaneousDevice>
+
+		<Language>
+			<Text id="core.reference">
+				
+				+40% fire rate for howitzers
+
+			</Text>
+		</Language>
 	</ItemType>
 
 	<!-- Patch Spider -->
@@ -561,6 +601,14 @@
 						 />
 			</EnhancementAbilities>
 		</MiscellaneousDevice>
+
+		<Language>
+			<Text id="core.reference">
+				
+				+75% damage from Rasiermesser kinetic and blast weapons
+
+			</Text>
+		</Language>
 	</ItemType>
 
 	<!-- 150NX reactor -->
@@ -645,6 +693,14 @@
 						 />
 			</EnhancementAbilities>
 		</MiscellaneousDevice>
+
+		<Language>
+			<Text id="core.reference">
+				
+				+75% damage from Bushido energy weapons
+
+			</Text>
+		</Language>
 	</ItemType>
 
 	<!-- Inertialess drive -->
