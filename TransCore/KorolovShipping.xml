@@ -264,12 +264,29 @@
 									(playerLevel (korGetPlayerLevel))
 									theMission
 									)
+									;	If we've done enough escort missions we need to destroy any
+									;	remaining open escort missions.
+
+									(if (= (objGetData gSource 'remainingMissions) 0)
+										(enum (msnFind gSource "oS +korolov; +escort;") theMission
+											(msnDestroy theMission)
+											)
+										)
+
 									(switch
 										;	If we have an active mission from this station then we show it.
 
 										(setq theMission (@ (msnFind gSource "aS +korolov;") 0))
 											(scrShowScreen gScreen &dsRPGMission; {	missionObj: theMission })
-											
+
+										;	Check if we have any special (non-escort) missions
+
+										(setq theMission (rpgMissionGetAssignment {
+												missionCriteria: "n +korolov; -escort;"
+												displayCriteria: "n +korolov; -escort;"
+												}))
+											(scrShowScreen gScreen &dsRPGMission; {	missionObj: theMission })
+
 										;	Too many failures
 										
 										(= playerLevel -1)
@@ -304,23 +321,9 @@
 												)
 											(scrShowScreen gScreen &dsKorolovEscortList;)
 												
-										;	Otherwise, show special (non-escort) missions.
+										;	Otherwise, nothing
 
-										(block ()
-											;	If we get this far we need to destroy any remaining open escort
-											;	missions.
-
-											(enum (msnFind gSource "oS +korolov; +escort;") theMission
-												(msnDestroy theMission)
-												)
-
-											;	Assign special missions
-											
-											(rpgMissionAssignment {
-												missionCriteria: "n +korolov; -escort;"
-												noMissionTextID: 'descNoMissions
-												})
-											)
+										(scrShowScreen gScreen &dsRPGDialog; { desc:(scrTranslate gScreen 'descNoMissions) })
 										)
 									)
 							</Action>

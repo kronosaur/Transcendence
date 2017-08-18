@@ -254,7 +254,7 @@
 			</Text>
 
 			<Text id="Summary">
-				(block (,
+				(block (
 					(ship (objGetObjByID (msnGetData gSource 'freighterID)))
 					(dest (objGetObjByID (msnGetData gSource 'destID)))
 					)
