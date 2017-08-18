@@ -245,6 +245,11 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 					{
 					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					HideMenu();
+
+					//	Remember that we processed this key so that we don't handle it again in
+					//	OnChar.
+
+					g_pTrans->m_chKeyDown = iVirtKey;
 					}
 				else
 					g_pTrans->m_DebugConsole.OnKeyDown(iVirtKey, dwKeyData);
