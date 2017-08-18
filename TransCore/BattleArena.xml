@@ -113,6 +113,7 @@
 			attributes=			"battleArena, battleArenaMaximus, battleArenaSegment, corporate, corporateCustoms, corporateDecon, friendly, generic, human, majorStation, populated"
 				 
 			dockScreen=			"Main"
+			inherit=			"&dsDockScreenBase;"
 			defaultBackgroundID="&rsBattleArenaBkgnd;"
 				 
 			barrier=			"true"
@@ -675,7 +676,7 @@
 							</Action>
 						-->
 
-							<Action id="actionEnterCombat">
+							<Action id="actionGladiatorsQuarters" default="1">
 								(block (theMission arenaRank)
 									(setq arenaRank (objGetGlobalData gSource "arenaRank"))
 									(switch
@@ -752,9 +753,7 @@
 
 					<MeleeBusy>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"\"We're still in the middle of a match! Come back later.\""
-								))
+							(scrSetDescTranslate gScreen 'descMeleeBusy)
 						</OnPaneInit>
 
 						<Actions>
@@ -884,7 +883,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Fight!" default="1" key="F">
+							<Action id="actionFight" default="1">
 								(block (theShip)
 									(setq theShip (objGetObjRefData gSource "Opponent1"))
 
@@ -938,7 +937,7 @@
 									)
 							</Action>
 
-							<Action name="Back Out" cancel="1" key="B">
+							<Action id="actionBackOut" cancel="1">
 								(scrShowScreen gScreen "ChooseOpponent")
 							</Action>
 						</Actions>
@@ -1008,7 +1007,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(block (resultList repGain)
 									; Open arena doors
 									(bamDoorsOpen gSource)
@@ -1081,7 +1080,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
 									(objSetData gSource "Status" Nil)
 									(objSetData gSource "OpponentCount" Nil)
@@ -1102,7 +1101,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
 									(scrShowPane gScreen "Default")
 									(objSetGlobalData gSource "arenaRank" 'washout)
@@ -1121,7 +1120,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
 									(objSetData gSource "Status" Nil)
 									(objSetData gSource "OpponentCount" Nil)
@@ -1144,7 +1143,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -1168,7 +1167,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Fight!" default="1" key="F">
+							<Action id="actionFight" default="1">
 								(block (theShip)
 									(setq theShip (sysCreateShip &scTheSlicerManticore; (objGetPos gSource) &svGladiator;))
 									(objSetObjRefData gSource "Opponent1" theShip)
@@ -1221,7 +1220,7 @@
 									)
 							</Action>
 
-							<Action name="Back Out" cancel="1" key="B">
+							<Action id="actionBackOut" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -1249,7 +1248,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
 									; Open arena doors
 									(bamDoorsOpen gSource)
@@ -1292,7 +1291,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -1314,7 +1313,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -1352,7 +1351,7 @@
 							desc=	"&quot;You'll get no help here. Fight your own battles!&quot;">
 
 						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
+							<Action id="actionUndock" default="1" cancel="1">
 								<Exit/>
 							</Action>
 
@@ -1438,7 +1437,7 @@
 							desc=	"&quot;You're banned from the games for leaving the arena in the middle of battle!&quot;">
 
 						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
+							<Action id="actionUndock" default="1" cancel="1">
 								<Exit/>
 							</Action>
 
@@ -1450,7 +1449,6 @@
 			</Main>
 
 			<ChooseOpponent
-				name=			"Battle Arena Maximus"
 				backgroundID=	"none"
 				>
 
@@ -1598,19 +1596,18 @@
 				</Display>
 
 				<Panes>
-					<Default
-						desc=	"Choose an opponent:"
-						>
+					<Default>
 
 						<OnPaneInit>
 							(block Nil
-								(scrEnableAction gScreen 1 (ls (add gCursor 1) (count gList)))
-								(scrEnableAction gScreen 2 (gr gCursor 0))
+								(scrSetDescTranslate gScreen 'descChooseOpponent)
+								(scrEnableAction gScreen 'actionNextOpponent (ls (add gCursor 1) (count gList)))
+								(scrEnableAction gScreen 'actionPreviousOpponent (gr gCursor 0))
 								)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Challenge!" default="1" key="C">
+							<Action id="actionChallenge" default="1">
 								(block Nil
 									(objSetData gSource "OpponentCount" 1)
 									(objSetObjRefData gSource "Opponent1" gSelect)
@@ -1618,7 +1615,7 @@
 									)
 							</Action>
 
-							<Action name="Next Opponent" key="N" nextKey="1">
+							<Action id="actionNextOpponent" nextKey="1">
 								(block Nil
 									(setq gCursor (add gCursor 1))
 									(setq gSelect (item gList gCursor))
@@ -1626,7 +1623,7 @@
 									)
 							</Action>
 
-							<Action name="Previous Opponent" key="P" prevKey="1">
+							<Action id="actionPreviousOpponent" prevKey="1">
 								(block Nil
 									(setq gCursor (subtract gCursor 1))
 									(setq gSelect (item gList gCursor))
@@ -1634,7 +1631,7 @@
 									)
 							</Action>
 
-							<Action name="Cancel" cancel="1" key="L">
+							<Action id="actionCancelSpecial" cancel="1">
 								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
@@ -1644,14 +1641,16 @@
 		</DockScreens>
 		
 		<Language>
-			<Text id="actionEnterCombat">"[E]nter Combat"</Text>
-			<Text id="actionDockServices">"[D]ock Services"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
-			<Text id="actionContinue">"[C]ontinue"</Text>
-			<Text id="actionDrawYes">"[A]ccept a Draw"</Text>
-			<Text id="actionDrawNo">"[C]ontinue Fighting"</Text>
-			<Text id="actionSign">"[S]ign"</Text>
-			<Text id="actionBackOut">"[B]ack Out"</Text>
+			<Text id="actionGladiatorsQuarters">[G]ladiators' Quarters</Text>
+			<Text id="actionDrawYes">[A]ccept a Draw</Text>
+			<Text id="actionDrawNo">[C]ontinue Fighting</Text>
+			<Text id="actionSign">[S]ign</Text>
+			<Text id="actionBackOut">[B]ack Out</Text>
+			<Text id="actionFight">[F]ight!</Text>
+			<Text id="actionChallenge">[C]hallenge!</Text>
+			<Text id="actionNextOpponent">[N]ext Opponent</Text>
+			<Text id="actionPreviousOpponent">[P]revious Opponent</Text>
+			<Text id="actionCancelSpecial">Cance[l]</Text>
 			
 			<Text id="descWelcome">
 				Welcome to Battle Arena Maximus! Prepare yourself for the greatest show in space!
@@ -1659,22 +1658,20 @@
 				is so real you'll swear its faked! See your ticket agent for reservations.
 				Enquire within to join the elite combatants.
 			</Text>
+			<String id="descMeleeBusy">"We're still in the middle of a match! Come back later."</String>
+			<Text id="descChooseOpponent">Choose an opponent:</Text>
 			<Text id="descDrawOrNot">
-				(cat
-					"An Arena official looks at the battle metrics:\n\n"
+				An Arena official looks at the battle metrics:
 					
-					"\"The crowd is bored and you've officially passed the minimum battle time. "
-					"Do you want to declare a draw?\""
-					)
+				"The crowd is bored and you've officially passed the minimum battle time.
+				Do you want to declare a draw?"
 			</Text>
 			<Text id="descGladiatorDraw">
-				(cat
-					"Mr. Katami looks disappointed:\n\n"
+				Mr. Katami looks disappointed:
 					
-					"\"I knew that opponent would be hard to defeat! "
-					"But you survived and now we can learn from our mistake. Perhaps you need to "
-					"upgrade your weapons.\""
-					)
+				"I knew that opponent would be hard to defeat!
+				But you survived and now we can learn from our mistake. Perhaps you need to
+				upgrade your weapons."
 			</Text>
 			<Text id="descFirstFight">
 				"Welcome, citizen! You are about to join an elite group of men and women who
@@ -1684,9 +1681,9 @@
 				"All that remains is for you to sign this minor release indemnifying the
 				Maximus Corporation against any liability in the event of harm, death, etc."
 			</Text>
-			<Text id="descChicken">
-				"\"This kind of challenge is not for the weak and fearful. You are wise to decline.\""
-			</Text>
+			<String id="descChicken">
+				"This kind of challenge is not for the weak and fearful. You are wise to decline."
+			</String>
 			<Text id="descNoMoreMelees">
 				"I'm sorry, you don't have the killer spirit that we need in a gladiator.
 				I'm afraid you'll just have to watch the matches on the 3DV like everyone else."
@@ -1709,7 +1706,7 @@
 			</Text>
             
             <Text id="core.mapDescMain">
-                "Gladiatorial combat"
+                Gladiatorial combat
             </Text>
 		</Language>
 	</StationType>

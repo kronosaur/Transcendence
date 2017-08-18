@@ -144,7 +144,7 @@
 							)
 					</Action>
 
-					<Action id="actionCancel" cancel="1">
+					<Action id="actionCancel" cancel="1" default="1">
 						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
@@ -189,7 +189,7 @@
 							)
 					</Action>
 
-					<Action id="actionDone" cancel="1">
+					<Action id="actionDone" cancel="1" default="1">
 						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
@@ -217,6 +217,21 @@
 			</Text>
 			<Text id="descAnalyze4">
 				You can analyze %name%; you are an expert at analyzing items.
+			</Text>
+			<Text id="descBotched">
+				Unfortunately, you botched the analysis and got no results.
+			</Text>
+			<Text id="descDamaged">
+				You attempt to analyze %name% but accidentally short out a major component, damaging it.
+			</Text>
+			<Text id="descDestroyed">
+				You attempt to analyze %name% but accidentally destroy it with a burst of high-energy ions.
+			</Text>
+			<Text id="descIdentified">
+				Your analysis reveals it to be %name%.
+			</Text>
+			<Text id="descNoEffect">
+				You run the analyzer but are unable to reveal any additional information about %name%.
 			</Text>
 		</Language>
 	</DockScreen>
@@ -269,7 +284,7 @@
 									;	Analysis failed, but the original item is intact
 									
 									(gr (random 1 100) (divide failureChance 2))
-										(setq desc (cat "Unfortunately, you botched the analysis and got no results."))
+										(setq desc (typTranslate &dsRPGAnalyzeItem; 'descBotched))
 										
 									;	If this is an undamaged device then it got damaged by
 									;	the analysis.
