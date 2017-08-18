@@ -240,7 +240,8 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
 			if (g_pTrans->m_bDebugConsole)
 				{
-				if (iVirtKey == VK_ESCAPE)
+				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(dwTVirtKey);
+				if (iVirtKey == VK_ESCAPE || iCommand == CGameKeys::keyShowConsole)
 					{
 					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					HideMenu();
@@ -428,7 +429,8 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
 			if (g_pTrans->m_bDebugConsole)
 				{
-				if (iVirtKey == VK_ESCAPE)
+				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(dwTVirtKey);
+				if (iVirtKey == VK_ESCAPE || iCommand == CGameKeys::keyShowConsole)
 					HideMenu();
 				else
 					g_pTrans->m_DebugConsole.OnKeyDown(iVirtKey, dwKeyData);
