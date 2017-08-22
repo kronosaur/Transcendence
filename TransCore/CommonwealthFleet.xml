@@ -256,12 +256,12 @@ PLAYER DATA
 			attributes=			"unknown"
 			>
 
-		<Names>weapon prototype marked "Alpha"; weapon prototype marked "Beta"; weapon prototype marked "Gamma";
-			weapon prototype marked "Delta"; weapon prototype marked "Epsilon"; weapon prototype marked "Omega";
-			weapon prototype marked "0.1"; weapon prototype marked "X17"; weapon prototype marked "Trinity";
-			weapon prototype marked "Halifax"; weapon prototype marked "Test No. 6"; weapon prototype marked "596";
-			weapon prototype marked "Hurricane"; weapon prototype marked "Ivy Mike"; weapon prototype marked "Castle Bravo";
-			weapon prototype marked "Tsar Bomba"; weapon prototype marked "Smiling Buddha"; weapon prototype marked "RDS-37"
+		<Names>weapon prototype(s) marked "Alpha"; weapon prototype(s) marked "Beta"; weapon prototype(s) marked "Gamma";
+			weapon prototype(s) marked "Delta"; weapon prototype(s) marked "Epsilon"; weapon prototype(s) marked "Omega";
+			weapon prototype(s) marked "0.1"; weapon prototype(s) marked "X17"; weapon prototype(s) marked "Trinity";
+			weapon prototype(s) marked "Halifax"; weapon prototype(s) marked "Test No. 6"; weapon prototype(s) marked "596";
+			weapon prototype(s) marked "Hurricane"; weapon prototype(s) marked "Ivy Mike"; weapon prototype(s) marked "Castle Bravo";
+			weapon prototype(s) marked "Tsar Bomba"; weapon prototype(s) marked "Smiling Buddha"; weapon prototype(s) marked "RDS-37"
 		</Names>
 
 	</ItemType>
