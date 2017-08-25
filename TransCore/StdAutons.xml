@@ -625,44 +625,12 @@
 							;	Otherwise, send the auton to the nearest object
 							
 							(block Nil
-								(shpCancelOrders gSource)
-								(shpOrder gSource 'approach targetObj 75)
-								(objSetShowAsDestination gSource)
-								
 								(objSetData gSource 'behavior 'exploring)
 								(objSetData gSource 'targetID (objGetID targetObj))
 								(objSendMessage gSender gSource (objTranslate gSource 'ExploreAck))
-								)
-							)
-						)
-				</Invoke>
-			</Message>
-			
-			<Message id="msgFormUp" name="Form up" key="F">
-				<OnShow>
-					(and (neq (objGetData gSource 'behavior) 'escorting)
-						(objGetProperty gSource 'playerWingman)
-						)
-				</OnShow>
-
-				<Invoke>
-					(block (behavior)
-						(setq behavior (objGetData gSource 'behavior))
-						(switch
-							(or (not behavior) (eq behavior 'escorting))
-								(block Nil
-									(objCommunicate gSource gSender 'FormUp)
-									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
-									)
-
-							(block Nil
-								(objClearShowAsDestination gSource)
 								
 								(shpCancelOrders gSource)
-								(shpOrder gSource 'escort gPlayerShip)
-								
-								(objSetData gSource 'behavior 'escorting)
-								(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
+								(shpOrder gSource 'approach targetObj 75)
 								)
 							)
 						)
@@ -712,18 +680,17 @@
 									
 									(not targetObj)
 										(block Nil
-											(shpOrder gSource 'escort gPlayerShip)
-											(objClearShowAsDestination gSource)
-								
 											(objSetData gSource 'behavior 'escorting)
 											(objSendMessage gPlayerShip gSource (objTranslate gSource 'ExplorationDone))
+											
+											(shpOrder gSource 'escort gPlayerShip)
 											)
 											
 									;	Otherwise, go to new object
 									
 									(block Nil
-										(shpOrder gSource 'approach targetObj 75)
 										(objSetData gSource 'targetID (objGetID targetObj))
+										(shpOrder gSource 'approach targetObj 75)
 										)
 									)
 								)
@@ -734,6 +701,19 @@
 						)
 					)
 			</OnOrdersCompleted>
+			
+			<OnOrderChanged>
+				(block nil
+					;	Show indicator while exploring, not otherwise.
+					(if (eq (objGetData gSource 'behavior) 'exploring)
+						(objSetShowAsDestination gSource)
+						(objClearShowAsDestination gSource)
+						)
+					
+					;	Fire base class event, just in case.
+					(typFireEvent &baStdAutonBase; 'OnOrderChanged)
+					)
+			</OnOrderChanged>
 		</Events>
 		
 		<Language>
