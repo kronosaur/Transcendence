@@ -1625,6 +1625,9 @@
 	<!ENTITY tbCSCDestroyAresTarget		"0x00100077">
 	<!ENTITY baCSCBase					"0x00100078">
 	<!ENTITY msPointJunoAresAttack		"0x00100079">
+	<!ENTITY tbPointJunoAlphaFleet		"0x0010007A">
+	<!ENTITY tbPointJunoBetaFleet		"0x0010007B">
+	<!ENTITY tbPointJunoGammaFleet		"0x0010007C">
 	
 	<!-- 0080-009F COMMONWEALTH -->
 	
