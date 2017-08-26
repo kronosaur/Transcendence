@@ -342,6 +342,7 @@
 								;	Update mission state
 								(msnSetData gSource 'status 'destroyGamma)
 								(msnSetData gSource 'briefGamma True)
+								(msnSetProperty gSource 'summary (msnTranslate gSource 'Summary))
 
 								;	This is a risky mission, so save the game
 								(msnSetData gSource 'missionCheckpoint True)
@@ -405,7 +406,7 @@
 
 			<Text id="Summary">
 				(cat
-					(msnTranslate gSource 'textSummary)
+					(msnTranslate gSource (cat "textSummary." (or (msnGetData gSource 'status) "default")))
 					"\n\n"
 					(typTranslate &dsRPGMission; 'mission.rewardSummary {
 						systemName: (sysGetName)
@@ -484,8 +485,19 @@
 
 			<!-- Text -->
 
-			<Text id="Name">Point Juno</Text>
-			<Text id="textSummary">Point Juno summary</Text>
+			<Text id="Name">Defend Point Juno</Text>
+			<Text id="textSummary.default">
+				Defend Point Juno.
+			</Text>
+			<Text id="textSummary.findBeta">
+				The Ares are preparing to attack Point Juno. Your mission is to
+				locate and destroy an Ares fleet hiding around the nearest
+				asteroid field.
+			</Text>
+			<Text id="textSummary.destroyGamma">
+				A Cometfall squadron is attacking Point Juno. Intercept the fleet
+				before it can destroy Point Juno.
+			</Text>
 			<Text id="textBriefing1aPilgrim">
 				Officers and assistants rush around the room under the glow of
 				massive display screens. In the center, standing over a tactical
