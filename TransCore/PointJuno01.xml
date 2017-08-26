@@ -90,8 +90,6 @@
 
 						;	Set reward
 						(msnSetData gSource 'missionXP 1200)
-						;	Skip intro screen
-						(msnSetProperty gSource 'isIntroShown True)
 						)
 					)
 			</OnCreate>
