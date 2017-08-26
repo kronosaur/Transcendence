@@ -4,6 +4,18 @@
 
 	<!-- Mission:  ========================================
 
+	TODO
+		Improve behavior if mission starts before player accepts:
+			some messages (success etc.) should only be sent if mission active
+			need alternate briefing if player docks after alpha/beta waves
+
+		Handle player death or leaving system
+
+		Handle player helping to defend while rank < 4
+			player not allowed in command centre, so consider putting
+			cometfalls on timer & force-accept (so we can display an alternate
+			success screen)
+
 	Alpha	Tundra and 36 Sandstorms
 		Will start attack on Point Juno when mission is started (either
 		when accepted by the player or 1600 ticks after creation)
@@ -41,7 +53,7 @@
 
 	<MissionType UNID="&msPointJunoAresAttack;"
 			name=			"Point Juno Ares Attack"
-			attributes=		"commonwealthFleet, cscPointJuno, rank1"
+			attributes=		"commonwealthFleet, cscPointJuno, rank4, rank5, rank6"
 
 			level=			"8"
 
@@ -93,6 +105,17 @@
 						)
 					)
 			</OnCreate>
+
+			<OnGlobalSystemStarted>
+				(switch
+					;	If not in PJ, then nothing to do
+					(!= (sysGetNode) 'PJ)
+						Nil
+
+					;	Create the mission
+					(msnCreate &msPointJunoAresAttack; (sysFindObject Nil "TAN +pointJuno;"))
+					)
+			</OnGlobalSystemStarted>
 
 			<OnAccepted>
 				(block (

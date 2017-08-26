@@ -111,10 +111,17 @@
 								(block (
 									(rank (objGetData gPlayerShip 'fleetLevel))
 									)
-									(rpgMissionAssignment {
-										missionCriteria: (cat "n +cscPointJuno; +rank" (int rank) "; =" (sysGetLevel) ";")
-										noMissionTextID: 'descNoMissions
-										})
+									(switch
+										;	Can't get in unless the player is Fleet Lieutenant or above
+										(ls rank 4)
+											(scrShowScreen gScreen &dsRPGMessage; { textID:'descAccessDenied })
+
+										;	Otherwise show missions
+										(rpgMissionAssignment {
+											missionCriteria: (cat "n +cscPointJuno; +rank" (int rank) "; =" (sysGetLevel) ";")
+											noMissionTextID: 'descNoMissions
+											})
+										)
 									)
 							</Action>
 
@@ -153,9 +160,6 @@
 
 			<Text id="descNoMissions">
 				(switch
-					(ls (objGetData gPlayerShip 'fleetLevel) 4)
-						(objTranslate gSource 'descAccessDenied)
-					
 					(= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
 						(objTranslate gSource 'descNoMissionsPilgrim)
 					
