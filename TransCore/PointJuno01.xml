@@ -380,6 +380,26 @@
 			<OnReward>
 				(commFleet_GiveReward gSource)
 			</OnReward>
+
+			<GetGlobalAchievements>
+				(block (
+					(theMission (@ (msnFind "* +unid:&msPointJunoAresAttack;;") 0))
+					(achievementText (switch
+						(msnGetProperty theMission 'isSuccess)	'AchievementSuccess
+						(msnGetProperty theMission 'isFailure)	'AchievementFailure
+						))
+					)
+					(if (and theMission achievementText)
+						(list
+							(list
+								(msnTranslate theMission achievementText)
+								Nil
+								"achievements &amp; regrets"
+								)
+							)
+						)
+					)
+			</GetGlobalAchievements>
 		</Events>
 
 		<Language>
@@ -600,6 +620,9 @@
 			<Text id="msgReturn">Return to base! Return to base!</Text>
 			<Text id="msgUnderAttack">Point Juno under attack!</Text>
 			<Text id="SuccessMsg">Mission Accomplished!</Text>
+
+			<Text id="AchievementSuccess">Defended Point Juno</Text>
+			<Text id="AchievementFailure">Failed to defend Point Juno</Text>
 		</Language>
 	</MissionType>
 
