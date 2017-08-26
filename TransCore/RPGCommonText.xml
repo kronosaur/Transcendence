@@ -2,9 +2,9 @@
 
 <TranscendenceModule>
 	
-	<Type unid="&unidCommonText;">
+	<Type UNID="&unidCommonText;">
 		<Language>
-			<Text id="achievmentsAndRegrets">achievements &amp; regrets</Text>
+			<Text id="achievementsAndRegrets">achievements &amp; regrets</Text>
 		</Language>
 	</Type>
 
