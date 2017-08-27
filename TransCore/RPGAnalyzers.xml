@@ -32,12 +32,9 @@
 				dataFrom=	"player"
 				list=		"*"
 				initialItem="=
-					(or
-						(not (scrGetData gScreen 'selectedItem))
-						(and (itmIsKnown (scrGetData gScreen 'selectedItem))
-							(not (objFireItemEvent gSource (scrGetData gScreen 'selectedItem) 'GetIsAnalysisRequired))
-							)
-						(itmIsEqual (scrGetItem gScreen) (scrGetData gScreen 'selectedItem))
+					(if (scrGetData gScreen 'modifiedItem)
+						(itmIsEqual (scrGetItem gScreen) (scrGetData gScreen 'modifiedItem))
+						(eq (scrGetListCursor gScreen) (scrGetData gScreen 'cursor))
 						)"
 				>
 			<OnDisplayInit>
@@ -127,20 +124,31 @@
 				<Actions>
 					<Action id="actionAnalyze" default="1">
 						(block (
-							(analyzerItem (scrGetData gScreen 'analyzer))
-							(result (rpgAnalyzeItem gSource (scrGetItem gScreen)))
-							)
+								(analyzerItem (scrGetData gScreen 'analyzer))
+								(result (rpgAnalyzeItem gSource (scrGetItem gScreen)))
+								(modifiedItem (@ result 'modifiedItem))
+								)
 						
 							;	Consume a charge on the analyzer
 							(setq analyzerItem (objSetItemProperty gSource analyzerItem 'incCharges -1))
 							(scrSetData gScreen 'analyzer analyzerItem)
 							
-							;	Save the selected item
-							(scrSetData gScreen 'selectedItem (@ result 'modifiedItem))
+							;	Save the modified item if it still needs analysis
+							(if (and modifiedItem
+									(or (not (itmIsKnown modifiedItem))
+										(objFireItemEvent gSource modifiedItem 'GetIsAnalysisRequired)
+										)
+									)
+								(scrSetData gScreen 'modifiedItem modifiedItem)
+								(scrSetData gScreen 'modifiedItem Nil)
+								)
+							
+							;	Save the cursor
+							(scrSetData gScreen 'cursor (scrGetListCursor gScreen))
 							
 							;	Set the filter so we only select the modified item
 							(scrSetListFilter gScreen (lambda (theItem)
-								(itmIsEqual theItem (@ result 'modifiedItem))
+								(itmIsEqual theItem modifiedItem)
 								))
 							
 							;	Done
