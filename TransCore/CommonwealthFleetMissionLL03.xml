@@ -59,6 +59,9 @@
 
 			<OnAccepted>
 				(block Nil
+					;	Add CSC Europa to map
+					(objSetKnown (objGetObjByID (msnGetData gSource 'destID)))
+
 					;	Track the player
 					(msnRegisterForEvents gSource gPlayerShip)
 					)
