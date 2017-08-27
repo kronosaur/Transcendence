@@ -403,6 +403,22 @@
 				(commFleet_GiveReward gSource)
 			</OnReward>
 
+			<OnGetNextScreen>
+				(if (= aScreenType 'SuccessFollowUp)
+					(block (
+						(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+						missionObj
+						)
+						(if (setq missionObj (msnCreate &msCSCLamplighterPrototype; stationObj))
+							{
+								nextScreen: &dsRPGMission;
+								nextScreenData: { missionObj: missionObj }
+								}
+							)
+						)
+					)
+			</OnGetNextScreen>
+
 			<GetGlobalAchievements>
 				(block (
 					(theMission (@ (msnFind "* +unid:&msCSCPointJunoAresAttack;;") 0))
