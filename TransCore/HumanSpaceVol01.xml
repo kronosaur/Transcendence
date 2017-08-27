@@ -1628,6 +1628,7 @@
 	<!ENTITY tbPointJunoAlphaFleet		"0x0010007A">
 	<!ENTITY tbPointJunoBetaFleet		"0x0010007B">
 	<!ENTITY tbPointJunoGammaFleet		"0x0010007C">
+	<!ENTITY msCSCLamplighterPrototype	"0x0010007D">
 	
 	<!-- 0080-009F COMMONWEALTH -->
 	
@@ -1926,6 +1927,7 @@
 	<Module filename="CommonwealthFleetMission11.xml"/>
 	<Module filename="CommonwealthFleetMissionLL01.xml"/>
 	<Module filename="CommonwealthFleetMissionLL02.xml"/>
+	<Module filename="CommonwealthFleetMissionLL03.xml"/>
 	<Module filename="CommonwealthMetropolis.xml"/>
 	<Module filename="CommonwealthMilitia.xml"/>
 	<Module filename="CommonwealthMilitiaMission01.xml"/>

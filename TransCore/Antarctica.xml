@@ -794,15 +794,6 @@
 						"escaped" = Escaped Dantalion system (towards St. Katharines)
 						"betrayed" = Destroyed by player after she promised otherwise
 
-	p262scientists:	Status of scientists who defected to rogue fleet:
-						Nil = Mission not started
-						"rescued" = Scientists have been rescued
-						"failed" = Mission to rescue scientists has failed.
-
-	p262prototype:	Status of equipment in CSC Europa
-						Nil = Mission not started
-						"recovered" = Equipment recovered
-
 	p262test:		Who will test the weapon?
 						Nil = Unknown
 						"player" = Decker wants player to test weapon
@@ -957,7 +948,7 @@
 										; If the Lamplighter prototype has not been returned
 										; to Point Juno, then the Admiral has more important
 										; things to worry about.
-										(not (eq (objGetGlobalData gSource "p262prototype") "recovered"))
+										(not (msnFind "r +unid:&msCSCLamplighterPrototype;; +property:isSuccess;"))
 											(scrShowPane gScreen "PrototypeNotFound")
 											
 										; No mission if the player has met the Antarctica
