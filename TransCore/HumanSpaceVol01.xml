@@ -1624,10 +1624,10 @@
 	<!ENTITY msCSCDestroyAresTarget		"0x00100076">
 	<!ENTITY tbCSCDestroyAresTarget		"0x00100077">
 	<!ENTITY baCSCBase					"0x00100078">
-	<!ENTITY msPointJunoAresAttack		"0x00100079">
-	<!ENTITY tbPointJunoAlphaFleet		"0x0010007A">
-	<!ENTITY tbPointJunoBetaFleet		"0x0010007B">
-	<!ENTITY tbPointJunoGammaFleet		"0x0010007C">
+	<!ENTITY msCSCPointJunoAresAttack	"0x00100079">
+	<!ENTITY tbCSCPointJunoAlphaFleet	"0x0010007A">
+	<!ENTITY tbCSCPointJunoBetaFleet	"0x0010007B">
+	<!ENTITY tbCSCPointJunoGammaFleet	"0x0010007C">
 	<!ENTITY msCSCLamplighterPrototype	"0x0010007D">
 	
 	<!-- 0080-009F COMMONWEALTH -->
@@ -1887,7 +1887,6 @@
 	<Module filename="EtaCeti.xml"/>
 	<Module filename="Heretic.xml"/>
 	<Module filename="PointJuno.xml"/>
-	<Module filename="PointJuno01.xml"/>
 	<Module filename="Sanctuary.xml"/>
 	<Module filename="StKatharines.xml"/>
 	
@@ -1928,6 +1927,7 @@
 	<Module filename="CommonwealthFleetMissionLL01.xml"/>
 	<Module filename="CommonwealthFleetMissionLL02.xml"/>
 	<Module filename="CommonwealthFleetMissionLL03.xml"/>
+	<Module filename="CommonwealthFleetMissionPJ01.xml"/>
 	<Module filename="CommonwealthMetropolis.xml"/>
 	<Module filename="CommonwealthMilitia.xml"/>
 	<Module filename="CommonwealthMilitiaMission01.xml"/>

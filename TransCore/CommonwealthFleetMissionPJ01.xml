@@ -51,7 +51,7 @@
 
 	======================================================================== -->
 
-	<MissionType UNID="&msPointJunoAresAttack;"
+	<MissionType UNID="&msCSCPointJunoAresAttack;"
 			name=			"Point Juno Ares Attack"
 			attributes=		"commonwealthFleet, cscPointJuno, rank4, rank5, rank6"
 
@@ -72,7 +72,7 @@
 						;	Create Ares Alpha fleet
 						(setq pos (sysVectorPolarOffset aOwnerObj (random 80 100) 600))
 
-						(setq alphaLeader (sysCreateShip &tbPointJunoAlphaFleet; pos &svAres;))
+						(setq alphaLeader (sysCreateShip &tbCSCPointJunoAlphaFleet; pos &svAres;))
 						(msnSetData gSource 'alphaID (objGetID alphaLeader))
 						(msnRegisterForEvents gSource alphaLeader)
 
@@ -83,7 +83,7 @@
 
 						;	Create Ares Beta fleet
 						(setq pos (sysVectorPolarOffset aOwnerObj (random 10 40) (random 400 500)))
-						(setq betaLeader (sysCreateShip &tbPointJunoBetaFleet; pos &svAres;))
+						(setq betaLeader (sysCreateShip &tbCSCPointJunoBetaFleet; pos &svAres;))
 						(msnSetData gSource 'betaID (objGetID betaLeader))
 						(msnRegisterForEvents gSource betaLeader)
 
@@ -113,7 +113,7 @@
 						Nil
 
 					;	Create the mission
-					(msnCreate &msPointJunoAresAttack; (sysFindObject Nil "TAN +pointJuno;"))
+					(msnCreate &msCSCPointJunoAresAttack; (sysFindObject Nil "TAN +pointJuno;"))
 					)
 			</OnGlobalSystemStarted>
 
@@ -349,7 +349,7 @@
 								gammaID
 								)
 								;	Create Ares Gamma fleet
-								(enum (sysCreateShip &tbPointJunoGammaFleet; pos &svAres;) theShip
+								(enum (sysCreateShip &tbCSCPointJunoGammaFleet; pos &svAres;) theShip
 									(block Nil
 										(shpOrder theShip 'attack stationObj)
 										(objSetIdentified theShip)
@@ -405,7 +405,7 @@
 
 			<GetGlobalAchievements>
 				(block (
-					(theMission (@ (msnFind "* +unid:&msPointJunoAresAttack;;") 0))
+					(theMission (@ (msnFind "* +unid:&msCSCPointJunoAresAttack;;") 0))
 					(achievementText (switch
 						(msnGetProperty theMission 'isSuccess)	'AchievementSuccess
 						(msnGetProperty theMission 'isFailure)	'AchievementFailure
@@ -659,7 +659,7 @@
 		</Language>
 	</MissionType>
 
-	<ShipTable unid="&tbPointJunoAlphaFleet;">
+	<ShipTable unid="&tbCSCPointJunoAlphaFleet;">
 		<Ship count="1" class="&scTundra;" orders="hold" controller="fleetcommand">
 			<Escorts>
 				<Ship count="36" class="&scSandstorm;" orders="escort" controller="fleet"/>
@@ -667,7 +667,7 @@
 		</Ship>
 	</ShipTable>
 
-	<ShipTable unid="&tbPointJunoBetaFleet;">
+	<ShipTable unid="&tbCSCPointJunoBetaFleet;">
 		<Ship count="1" class="&scChasm;" orders="hold" controller="fleetcommand">
 			<Escorts>
 				<Ship count="36" class="&scSandstorm;" orders="escort" controller="fleet"/>
@@ -675,7 +675,7 @@
 		</Ship>
 	</ShipTable>
 
-	<ShipTable unid="&tbPointJunoGammaFleet;">
+	<ShipTable unid="&tbCSCPointJunoGammaFleet;">
 		<Ship count="5" class="&scCometfall;"/>
 	</ShipTable>
 
