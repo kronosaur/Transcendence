@@ -1227,7 +1227,7 @@
 									)
 							</Action>
 
-							<Action id="actionDone" cancel="1">
+							<Action id="actionDoneSpecial" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -1260,19 +1260,20 @@
 		
 		<Language>
 			<Text id="descDefault">
-				"You are docked with the hulking wreckage of the CSC Europa."
+				You are docked with the hulking wreckage of the CSC Europa.
 			</Text>
-			<Text id="actionBridge">"[B]ridge"</Text>
-			<Text id="actionWeaponsVault">"[W]eapons Vault"</Text>
+			<Text id="actionBridge">[B]ridge</Text>
+			<Text id="actionWeaponsVault">[W]eapons Vault</Text>
 			<Text id="descBridge">
-				"The bridge is completely smashed. Bodies float around in zero-G amid the shredded remains of consoles and other electronic equipment."
+				The bridge is completely smashed. Bodies float around in zero-G amid the shredded remains of consoles and other electronic equipment.
 			</Text>
-			<Text id="descWeaponsVault">"You are inside the CSC Europa's weapons vault."</Text>
+			<Text id="descWeaponsVault">You are inside the CSC Europa's weapons vault.</Text>
 			<Text id="descWeaponsVaultLocked">
-				"You are standing in front of the massive blast-proof doors of the ship's weapons vault. There is an alphabetic codepad on the door that requests an entry code."
+				You are standing in front of the massive blast-proof doors of the ship's weapons vault. There is an alphabetic codepad on the door that requests an entry code.
 			</Text>
-			<Text id="actionEnterCode">"[E]nter Code"</Text>
-			<Text id="descInvalidCode">"The code appears to be invalid. The vault doors remained closed."</Text>
+			<Text id="actionEnterCode">[Enter] Enter Code</Text>
+			<Text id="actionDoneSpecial">[Esc] Done</Text>
+			<Text id="descInvalidCode">The code appears to be invalid. The vault doors remained closed.</Text>
 		</Language>
 
 	</StationType>
