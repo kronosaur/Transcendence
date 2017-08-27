@@ -34,7 +34,7 @@
 				initialItem="=
 					(if (scrGetData gScreen 'modifiedItem)
 						(itmIsEqual (scrGetItem gScreen) (scrGetData gScreen 'modifiedItem))
-						(eq (scrGetListCursor gScreen) (scrGetData gScreen 'cursor))
+						(scrSetListCursor gScreen (scrGetData gScreen 'cursor))
 						)"
 				>
 			<OnDisplayInit>
