@@ -2465,10 +2465,10 @@
 			<Main>
 				<Panes>
 					<Default
-							desc=	"You are docked at a corporate trading post.">
+							desc=	"=(scrTranslate gScreen 'descMain)">
 
 						<Actions>
-							<Action name="Order Items" key="O" default="1">
+							<Action id="actionOrderItems" default="1">
 								(switch
 									(eq (objGetData gSource "MissionStatus") "intransit")
 										(scrShowScreen gScreen "OrderInTransit")
@@ -2495,65 +2495,68 @@
 							</Action>
 
 							<Action id="actionSellItems">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
-									})
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell;)
 							</Action>
 
 							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 				</Panes>
 			</Main>
 
 			<OrderItem>
-
 				<Panes>
 					<Default
-							desc="Please enter an item to search for in our catalog database:"
+							desc="=(scrTranslate gScreen 'descOrderDefault)"
 							showTextInput="true">
 
 						<Actions>
-							<Action name="Order" default="1">
-								(block Nil
-									(setq gItem (itmCreateByName "* -Illegal; -Military; -Alien; -ID; -CannotOrder; -NotForSale; &lt;10" (scrGetInputText gScreen) 1))
+							<Action id="actionSearch" default="1">
+								(block (theItem)
+									(setq theItem (itmCreateByName "* -Illegal; -Military; -Alien; -ID; -CannotOrder; -NotForSale; &lt;10" (scrGetInputText gScreen) 1))
 
 									(switch
 										; If we couldn't understand, say so
-										(not gItem)
+										(not theItem)
 											(scrShowPane gScreen "UnknownItem")
 
 										; Otherwise, ask for a count
-										(block Nil
-											(setq gCost (itmGetActualPrice gItem))
+										(block (theCost maxCount)
+											(setq theCost (itmGetActualPrice theItem))
 
 											; Add 40% markup
-											(setq gCost (divide (multiply gCost 140) 100))
+											(setq theCost (divide (multiply theCost 140) 100))
 
 											; Compute max count
 											(switch
-												(leq (itmGetFrequency gItem) 1)
-													(setq gMaxCount 1)
+												(leq (itmGetFrequency theItem) 1)
+													(setq maxCount 1)
 
-												(leq (itmGetFrequency gItem) 4)
-													(setq gMaxCount (itmGetMaxAppearing gItem))
+												(leq (itmGetFrequency theItem) 4)
+													(setq maxCount (itmGetMaxAppearing theItem))
 
-												(leq (itmGetFrequency gItem) 10)
-													(setq gMaxCount (multiply 3 (itmGetMaxAppearing gItem)))
+												(leq (itmGetFrequency theItem) 10)
+													(setq maxCount (multiply 3 (itmGetMaxAppearing theItem)))
 
-												(setq gMaxCount (multiply 10 (itmGetMaxAppearing gItem)))
+												(setq maxCount (multiply 10 (itmGetMaxAppearing theItem)))
 												)
-
-											(scrShowPane gScreen "GetCount")
+												
+											(scrSetData gScreen 'orderItem theItem)
+											(scrSetData gScreen 'unitCost theCost)
+											(scrSetData gScreen 'maxCount maxCount)
+											(scrSetData gScreen 'pluralName (itmGetName theItem 0x102))
+											(if (gr maxCount 1)
+												(scrShowPane gScreen "GetCount")
+												(scrShowPane gScreen "OneAvailable")
+												)
 											)
 										)
 									)
 							</Action>
 
-							<Action id="actionCancel" cancel="1">
+							<Action id="actionCancelSpecial" cancel="1">
 								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
@@ -2563,23 +2566,21 @@
 							showCounter="true">
 
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat "The catalog contains a listing for " (itmGetName gItem 0x102) ". "
-									(if (eq gMaxCount 1) "There is one left in the warehouse." (cat "There are " gMaxCount " left in the warehouse."))
-									"\n\nHow many do you wish to order?"
-									)
-								)
+							(scrSetDescTranslate gScreen 'descGetCount {
+								pluralName:(scrGetData gScreen 'pluralName)
+								maxCount:(scrGetData gScreen 'maxCount)
+								})
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Order" default="1" key="O">
+							<Action id="actionGetPrice" default="1">
 								(switch
-									(gr (scrGetCounter gScreen) gMaxCount)
-										(scrSetCounter gScreen gMaxCount)
+									(gr (scrGetCounter gScreen) (scrGetData gScreen 'maxCount))
+										(scrSetCounter gScreen (scrGetData gScreen 'maxCount))
 
 									(gr (scrGetCounter gScreen) 0)
 										(block Nil
-											(setq gItem (itmCreate (itmGetType gItem) (scrGetCounter gScreen)))
+											(scrSetData gScreen 'orderItem (itmSetCount (scrGetData gScreen 'orderItem) (scrGetCounter gScreen)))
 											(scrShowPane gScreen "ConfirmOrder")
 											)
 									)
@@ -2590,49 +2591,70 @@
 							</Action>
 						</Actions>
 					</GetCount>
+					
+					<OneAvailable>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descOneAvailable { pluralName:(scrGetData gScreen 'pluralName) })
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionGetPrice" default="1">
+								(scrShowPane gScreen "ConfirmOrder")
+							</Action>
+
+							<Action id="actionCancel" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</OneAvailable>
 
 					<ConfirmOrder>
-
 						<OnPaneInit>
-							(block (desc shippingCost eachItem)
+							(block (
+								(theItem (scrGetData gScreen 'orderItem))
+								(itemCount (itmGetCount theItem))
+								(unitCost (scrGetData gScreen 'unitCost))
+								(itemsCost (multiply itemCount unitCost))
 								; Shipping cost 500 credits per ton
-								(setq shippingCost (multiply 500 (divide (add (multiply (itmGetMass gItem) (itmGetCount gItem)) 999) 1000)))
-
-								; Compute price of each item
-								(setq eachItem (itmGetActualPrice gItem))
-
-								; Charge a 40% markup
-								(setq eachItem (divide (multiply eachItem 140) 100))
-
-								; Compute total cost
-								(setq gCost (add (multiply (itmGetCount gItem) eachItem) shippingCost))
-
-								(setq desc
-									(cat "Order: " (itmGetName gItem 0x108) "\n"
-										"Unit price: " eachItem
-											(if (gr (itmGetCount gItem) 1) (cat " (" (itmGetCount gItem) " for " (multiply eachItem (itmGetCount gItem)) ")") "")
-											"\n"
-										"Shipping &amp; Handling: " shippingCost "\n"
-										"Total: " gCost "\n\n"
+								(shippingCost (multiply 500 (divide (add (multiply (itmGetMass theItem) itemCount) 999) 1000)))
+								(totalCost (add itemsCost shippingCost))
+								multipleItems finalString
+								)
+									
+								(if (gr itemCount 1)
+									(setq multipleItems (scrTranslate gScreen 'priceForMultiple { itemCount:itemCount itemsCost:itemsCost } ))
+									(setq multipleItems " ")
+									)
+								(if (gr totalCost (plyGetCredits gPlayer))
+									(block Nil
+										(setq finalString (scrTranslate gScreen 'notEnoughCredits))
+										(scrEnableAction gScreen 'actionPlaceOrder Nil)
 										)
+									(setq finalString (scrTranslate gScreen 'confirmOrderQuery))
 									)
-
-								(if (gr gCost (plyGetCredits gPlayer))
-									(setq desc (cat desc "Unfortunately, you do not have enough credits to complete the order."))
-									(setq desc (cat desc "Do you wish to place the order?"))
-									)
-
-								(scrSetDesc gScreen desc)
-								(scrEnableAction gScreen 0 (leq gCost (plyGetCredits gPlayer)))
+									
+								(scrSetData gScreen 'totalCost totalCost)
+								(scrSetDescTranslate gScreen 'descConfirmOrder {
+									itemName:(itmGetName theItem 0x108)
+									unitCost:unitCost
+									multipleItems:multipleItems
+									shippingCost:shippingCost
+									totalCost:totalCost
+									finalString:finalString
+									})
 								)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Place Order" default="1" key="P">
-								(block (transport)
-									; Create a transport at the nearest gate and put the item on it
-									(setq transport (sysCreateShip &scEI100; (objGetNearestStargate gSource) &svCorporate;))
-									(objAddItem transport gItem)
+							<Action id="actionPlaceOrder" default="1">
+								(block (
+										; Create a transport at the nearest gate and put the item on it
+										(transport (sysCreateShip &scEI100; (objGetNearestStargate gSource) &svCorporate;))
+										(theItem (scrGetData gScreen 'orderItem))
+										(theCost (scrGetData gScreen 'totalCost))
+										)
+										
+									(objAddItem transport theItem)
 
 									; Order the transport to dock with the station and then gate out
 									(shpOrderDock transport gSource)
@@ -2643,15 +2665,15 @@
 									(objRegisterForEvents gSource transport)
 
 									; Remember the item and the transport
-									(objSetData gSource "Order" gItem)
+									(objSetData gSource "Order" theItem)
 									(objSetObjRefData gSource "Transport" transport)
 
 									; Set the mission status
 									(objSetData gSource "MissionStatus" "intransit")
 
 									; Charge the player
-									(plyCharge gPlayer gCost)
-									(plyRecordBuyItem gPlayer gItem gCost)
+									(plyCharge gPlayer theCost)
+									(plyRecordBuyItem gPlayer theItem theCost)
 									(objIncData gSource "OrderCount" 1)
 
 									(scrShowPane gScreen "ThankYou")
@@ -2662,11 +2684,10 @@
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
-
 					</ConfirmOrder>
 
 					<ThankYou
-							desc="Your order has been placed and will be ready as soon as it arrives. Please check back at this screen to see the status of your order.">
+							desc="=(scrTranslate gScreen 'descThankYou)">
 
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
@@ -2676,7 +2697,7 @@
 					</ThankYou>
 
 					<UnknownItem
-							desc="Sorry, there are no items in the catalog matching that description."
+							desc="=(scrTranslate gScreen 'descUnknownItem)"
 							>
 
 						<Actions>
@@ -2689,15 +2710,13 @@
 			</OrderItem>
 
 			<OrderInTransit>
-
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat "Your order for " (itmGetName (objGetData gSource "Order") 0x108) " has been placed and is in route. "
-									"The transport holding your order is currently " (objGetDistance gSource (objGetObjRefData gSource "Transport")) " light-seconds away."
-									)
-								)
+							(scrSetDescTranslate gScreen 'descInTransit {
+								itemName:(itmGetName (objGetData gSource "Order") 0x108)
+								distance:(objGetDistance gSource (objGetObjRefData gSource "Transport"))
+								})
 						</OnPaneInit>
 
 						<Actions>
@@ -2710,22 +2729,22 @@
 			</OrderInTransit>
 
 			<OrderReady>
-
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(block (spaceNeeded)
-								(setq gItem (objGetData gSource "Order"))
-								(setq spaceNeeded (multiply (itmGetMass gItem) (itmGetCount gItem)))
+							(block (
+								(theItem (objGetData gSource "Order"))
+								(spaceNeeded (multiply (itmGetMass theItem) (itmGetCount theItem)))
+								)
 
 								(if (geq (objGetCargoSpaceLeft gPlayerShip) spaceNeeded)
 									(block Nil
-										(scrSetDesc gScreen (cat "Your order for " (itmGetName gItem 0x108) " has arrived and has been placed in your cargo hold.\n\nThank you for your business!"))
-										(setq gResult True)
+										(scrSetDescTranslate gScreen 'descOrderReady { itemName:(itmGetName theItem 0x108) })
+										(scrSetData gScreen 'canTakeItem True)
 										)
 									(block Nil
-										(scrSetDesc gScreen (cat "Your order for " (itmGetName gItem 0x108) " is ready. Unfortunately, you do not have enough room in your cargo hold. Please return when you have freed up enough room."))
-										(setq gResult Nil)
+										(scrSetDescTranslate gScreen 'descNoSpace { itemName:(itmGetName theItem 0x108) })
+										(scrSetData gScreen 'canTakeItem Nil)
 										)
 									)
 								)
@@ -2734,10 +2753,10 @@
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
-									(if gResult
+									(if (scrGetData gScreen 'canTakeItem)
 										(block Nil
-											(itmSetKnown gItem)
-											(objAddItem gPlayerShip gItem)
+											(itmSetKnown (objGetData gSource "Order"))
+											(objAddItem gPlayerShip (objGetData gSource "Order"))
 											(objSetData gSource "MissionStatus" Nil)
 											)
 										)
@@ -2750,15 +2769,10 @@
 			</OrderReady>
 
 			<OrderFailed>
-
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat "We regret to inform you that your order for " (itmGetName (objGetData gSource "Order") 0x108) " has been destroyed in transit. "
-									"As we are not liable for losses due to external events, we respectfully recommend that you pursue the matter with your insurance company, if any."
-									)
-								)
+							(scrSetDescTranslate gScreen 'descOrderFailed { itemName:(itmGetName (objGetData gSource "Order") 0x108) })
 						</OnPaneInit>
 
 						<Actions>
@@ -2774,13 +2788,10 @@
 			</OrderFailed>
 
 			<QuotaExceeded>
-
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat "Sorry, only one order per customer!\n\nPlease buy our in-stock items or visit another Trading Post at a system near you.")
-								)
+							(scrSetDescTranslate gScreen 'descQuotaExceeded)
 						</OnPaneInit>
 
 						<Actions>
@@ -2807,7 +2818,73 @@
 		</DockingPorts>
 
         <Language>
-            <Text id="core.mapDescMain">"Catalog ordering available"</Text>
+			<Text id="actionOrderItems">[O]rder Items</Text>
+			<Text id="actionSearch">[Enter] Search</Text>
+			<Text id="actionCancelSpecial">[Esc] Cancel</Text>
+			<Text id="actionGetPrice">[G]et Price Quote</Text>
+			<Text id="actionPlaceOrder">[P]lace Order</Text>
+			
+			<Text id="descMain">
+				You are docked at a corporate trading post.
+			</Text>
+			<Text id="descOrderDefault">
+				Please enter an item to search for in our catalog database:
+			</Text>
+			<Text id="descOneAvailable">
+				The catalog contains a listing for %pluralName%.
+				There is one left in the warehouse.
+				
+				Do you wish to order it?
+			</Text>
+			<Text id="descGetCount">
+				The catalog contains a listing for %pluralName%.
+				There are %maxCount% left in the warehouse.
+				
+				How many do you wish to order?
+			</Text>
+			<Text id="descConfirmOrder">
+				Order: %itemName%\n
+				Unit price: %unitCost% %multipleItems%\n
+				Shipping &amp; Handling: %shippingCost%\n
+				Total: %totalCost%
+				
+				%finalString%
+			</Text>
+			<String id="priceForMultiple">(%itemCount% for %itemsCost%)</String>
+			<Text id="notEnoughCredits">
+				Unfortunately, you do not have enough credits to complete the order.
+			</Text>
+			<Text id="confirmOrderQuery">
+				Do you wish to place the order?
+			</Text>
+			<Text id="descThankYou">
+				Your order has been placed and will be ready as soon as it arrives. Please check back at this screen to see the status of your order.
+			</Text>
+			<Text id="descUnknownItem">
+				Sorry, there are no items in the catalog matching that description.
+			</Text>
+			<Text id="descInTransit">
+				Your order for %itemName% has been placed and is in route.
+				The transport holding your order is currently %distance% light-seconds away.
+			</Text>
+			<Text id="descOrderReady">
+				Your order for %itemName% has arrived and has been placed in your cargo hold.
+				
+				Thank you for your business!
+			</Text>
+			<Text id="descNoSpace">
+				Your order for %itemName% is ready. Unfortunately, you do not have enough room in your cargo hold. Please return when you have freed up enough room.
+			</Text>
+			<Text id="descOrderFailed">
+				We regret to inform you that your order for %itemName% has been destroyed in transit.
+				As we are not liable for losses due to external events, we respectfully recommend that you pursue the matter with your insurance company, if any.
+			</Text>
+			<Text id="descQuotaExceeded">
+				Sorry, only one order per customer!
+				
+				Please buy our in-stock items or visit another Trading Post at a system near you.
+			</Text>
+            <Text id="core.mapDescMain">Catalog ordering available</Text>
         </Language>
 	</StationType>
 
@@ -3117,28 +3194,24 @@
 		</Events>
 		
 		<Language>
-			<Text id="actionBuyItems">"[B]uy Items"</Text>
-			<Text id="actionCancel">"[C]ancel"</Text>
-			<Text id="actionCommoditiesExchange">"[C]ommodities Exchange"</Text>
-			<Text id="actionContinue">"[C]ontinue"</Text>
-			<Text id="actionDockServices">"[D]ock Services"</Text>
-			<Text id="actionLeave">"[L]eave"</Text>
-			<Text id="actionRefuel">"[R]efuel"</Text>
-			<Text id="actionRepairItems">"[R]epair Items"</Text>
-			<Text id="actionSellItems">"[S]ell Items"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
+			<Text id="actionBuyItems">[B]uy Items</Text>
+			<Text id="actionCancel">[C]ancel</Text>
+			<Text id="actionCommoditiesExchange">[C]ommodities Exchange</Text>
+			<Text id="actionContinue">[C]ontinue</Text>
+			<Text id="actionDockServices">[D]ock Services</Text>
+			<Text id="actionLeave">[L]eave</Text>
+			<Text id="actionRefuel">[R]efuel</Text>
+			<Text id="actionRepairItems">[R]epair Items</Text>
+			<Text id="actionSellItems">[S]ell Items</Text>
+			<Text id="actionUndock">[U]ndock</Text>
 
 			<Text id="customs.chargedForDecon">
-				(cat
-					"Corporate security stops your ship for decontamination. "
-					"You are automatically charged " (@ gData 'cost) " for decontaminating your ship."
-					)
+				Corporate security stops your ship for decontamination.
+				You are automatically charged %cost% for decontaminating your ship.
 			</Text>
 			<Text id="customs.cantAffordDecon">
-				(cat
-					"Corporate security stops your ship for decontamination. "
-					"Unfortunately, you do not have " (@ gData 'cost) " to pay for decontamination."
-					)
+				Corporate security stops your ship for decontamination.
+				Unfortunately, you do not have %cost% to pay for decontamination.
 			</Text>
 		</Language>
 	</Type>
