@@ -1397,7 +1397,7 @@
 			</OnBehaviorControl>
 
 			<OnCreate>
-				(block Nil
+				(block (i)
 					;	Call the base class so that it can create raiders or
 					;	whatever.
 					;
@@ -1418,7 +1418,6 @@
 						(setq roll (random 1 100))
 						)
 
-					(setq i 0)
 					(loop (gr roll (item (item tableIndex i) 0))
 						(setq i (add i 1))
 						)
@@ -1696,7 +1695,6 @@
 
 					; Pick a random class for the raider
 					(setq roll (random 1 100))
-					(setq i 0)
 					(loop (gr roll (item (item classTable i) 0))
 						(setq i (add i 1))
 						)

@@ -550,9 +550,8 @@
 				(block ((behavior (objGetData gSource "behavior")))
 					(switch
 						(not behavior)
-							(block ()
+							(block (i)
 								; Find all of our Defender escorts
-								(setq i 0)
 								(enum (sysFindObject gSource "sA O:escort; +capitalShip;") theEscort
 									(block ()
 										(setq i (add i 1))
