@@ -1856,6 +1856,13 @@
 	<!ENTITY baTeratonNestBase			"0x00100310">
 	<!ENTITY msTeratonResearch			"0x00100311">
 
+	<!-- 0330-034F CSC ANTARCTICA -->
+
+	<!ENTITY unidCaptainHelios			"0x00100330">
+	<!ENTITY msDantalionInformant		"0x00100331">
+	<!ENTITY msEscapeFromDantalion		"0x00100332">
+	<!ENTITY evEscapeFromDantalion		"0x00100333">
+
 	<!-- 1000-FFFF RESERVED -->
 	]>
 	
@@ -1877,12 +1884,12 @@
 	<!-- These modules implement specific system. We need to make these more
 		generic and move the adventure-specific behavior to Part I -->
 		
-	<Module filename="Antarctica.xml"/>
 	<Module filename="BattleArena.xml"/>
 	<Module filename="BattleArenaGladiators.xml"/>
 	<Module filename="BattleArenaMelee.xml"/>
 	<Module filename="BattleArenaKidnapped.xml"/>
 	<Module filename="CharonFortress.xml"/>
+	<Module filename="Dantalion.xml"/>
 	<Module filename="Eridani.xml"/>
 	<Module filename="EtaCeti.xml"/>
 	<Module filename="Heretic.xml"/>
@@ -1892,6 +1899,7 @@
 	
 	<!-- Characters -->
 		
+	<Module filename="Antarctica.xml"/>
 	<Module filename="Benedict.xml"/>
 	<Module filename="Fiona.xml"/>
 	<Module filename="HugoSandoval.xml"/>
@@ -1904,6 +1912,8 @@
 	<!-- These modules implement encounters. They should be clean, for the
 		most part. -->
 		
+	<Module filename="Antarctica01.xml"/>
+	<Module filename="Antarctica02.xml"/>
 	<Module filename="AresOrthodoxy.xml"/>
 	<Module filename="BlackMarket.xml"/>
 	<Module filename="BlackMarketMission00.xml"/>
@@ -1938,6 +1948,7 @@
 	<Module filename="CommonwealthMining.xml"/>
 	<Module filename="CommonwealthShips.xml"/>
 	<Module filename="CorporateHierarchy.xml"/>
+	<Module filename="CSCTerra.xml"/>
 	<Module filename="Dall01.xml"/>
 	<Module filename="DwargRaiders.xml"/>
 	<Module filename="EncountersVol01.xml"/>
