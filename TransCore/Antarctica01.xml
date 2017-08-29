@@ -58,61 +58,61 @@
 			<!-- Code Points -->
 
 			<Text id="Briefing">
-				(block (
-					(status (typGetData &scCSCTerra; 'antarctica))
-					(inform (not (or status (typGetData &msEscapeFromDantalion; 'status) (msnGetData gSource 'status))))
-					)
-					(list
+				(list
+					(switch
+						(msnFind "r +unid:&msEscapeFromDantalion;; +property:isSuccess;")
+							{
+								textID: 'textBriefingEscaped
+								nextPage: 'missionDecline
+								}
+
+						(rpgCharacterGetStatus &unidCaptainHelios;)
+							{
+								textID: 'textBriefingDestroyed
+								nextPage: 'missionDecline
+								}
+
 						{
-							textID: (switch
-								(not status)
-									'textBriefing1a
-								(= status 'escaped)
-									'textBriefing1b
-
-								'textBriefing1c
-								)
-							nextPage: (switch
-								inform
-									'informant
-
+							textID: 'textBriefingSighting
+							nextPage: (if (or (typGetData &msEscapeFromDantalion; 'status) (msnGetData gSource 'status))
 								'missionDecline
+								'informant
 								)
 							}
-						{
-							id: 'informant
-							textID: (if (msnGetProperty gSource 'isDeclined)
-								'textInformant
-								'textInformantFirst
-								)
-							actions: (list
-								{
-									labelID: 'actionDeal
-									nextPage: (if (ls (objGetBalance gPlayerShip 'rin) 10000)
-										'noRin
-										'deal
-										)
-									}
-								{
-									labelID: 'actionNoThanks
-									nextPage: 'missionDecline
-									}
-								)
-							}
-						{
-							id: 'noRin
-							textID: 'textNoRin
-							nextPage: 'missionDecline
-							}
-						{
-							id: 'deal
-							textID: 'textAccept
-							nextPage: 'missionDecline
-							nextCode: (lambda () (msnFireEvent (scrGetData gScreen 'missionObj) 'OnPayInformant))
-							}
-
-						Nil	;	Blank entry to prevent forced accept/decline options
 						)
+					{
+						id: 'informant
+						textID: (if (msnGetProperty gSource 'isDeclined)
+							'textInformant
+							'textInformantFirst
+							)
+						actions: (list
+							{
+								labelID: 'actionDeal
+								nextPage: (if (ls (objGetBalance gPlayerShip 'rin) 10000)
+									'noRin
+									'deal
+									)
+								}
+							{
+								labelID: 'actionNoThanks
+								nextPage: 'missionDecline
+								}
+							)
+						}
+					{
+						id: 'noRin
+						textID: 'textNoRin
+						nextPage: 'missionDecline
+						}
+					{
+						id: 'deal
+						textID: 'textAccept
+						nextPage: 'missionDecline
+						nextCode: (lambda () (msnFireEvent (scrGetData gScreen 'missionObj) 'OnPayInformant))
+						}
+
+					Nil	;	Blank entry to prevent forced accept/decline options
 					)
 			</Text>
 
@@ -121,7 +121,7 @@
 			<Text id="Name">
 				CSC Antarctica
 			</Text>
-			<Text id="textBriefing1a">
+			<Text id="textBriefingSighting">
 				The Meeting Hall is filled with worried-looking residents. Many
 				are talking amongst themselves in low voices. The station master
 				is addressing the group from the front of the hall:
@@ -131,7 +131,7 @@
 				The Fleet has been informed of the sighting, but we do not know
 				when or if they will arrive."
 			</Text>
-			<Text id="textBriefing1b">
+			<Text id="textBriefingEscaped">
 				The Meeting Hall is filled with people. Most look happy and are
 				talking amongst themselves. The station master addresses the crowd:
 
@@ -139,7 +139,7 @@
 				We believe that it is heading for St. Katharine's, where the Fleet
 				will no doubt deal with her."
 			</Text>
-			<Text id="textBriefing1c">
+			<Text id="textBriefingDestroyed">
 				The Meeting Hall is filled with people. Most look happy and are
 				talking amongst themselves. The station master addresses the crowd:
 

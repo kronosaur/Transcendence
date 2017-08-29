@@ -210,21 +210,17 @@ changing sys will unregister from owner
 					;	Antarctica escapes
 					(= aReason 'success)
 						(block Nil
-							(typSetData &scCSCTerra; 'antarctica 'escaped)
 							)
 					
 					(= aReason 'failure)
-						(block Nil
-							(rpgCharacterSetStatus &unidCaptainHelios; 'dead)
-							(switch
-								(@ gData 'destroyedByPlayer)
-									(if (msnGetData gSource 'playerRewarded)
-										(typSetData &scCSCTerra; 'antarctica 'betrayed)
-										(typSetData &scCSCTerra; 'antarctica 'destroyedByPlayer)
-										)
+						(switch
+							(not (@ gData 'destroyedByPlayer))
+								(rpgCharacterSetStatus &unidCaptainHelios; 'destroyed)
 
-								(typSetData &scCSCTerra; 'antarctica 'destroyed)
-								)
+							(msnGetData gSource 'playerRewarded)
+								(rpgCharacterSetStatus &unidCaptainHelios; 'betrayed)
+
+							(rpgCharacterSetStatus &unidCaptainHelios; 'destroyedByPlayer)
 							)
 					)
 			</OnCompleted>
@@ -269,6 +265,30 @@ changing sys will unregister from owner
 			</OnGlobalSystemStarted>
 
 			<GetGlobalAchievements>
+				(block (
+					(status (rpgCharacterGetStatus &unidCaptainHelios;))
+					(achievementText (switch
+						(= status 'destroyed)
+							'AchievementFailure
+						(= status 'betrayed)
+							'AchievementBetrayed
+						(= status 'destroyedByPlayer)
+							'AchievementDestroyedByPlayer
+						(msnFind "r +unid:&msEscapeFromDantalion;; +property:isSuccess;")
+							'AchievementSuccess
+						))
+					)
+					(if achievementText
+						(list
+							(list
+								(msnTranslate theMission achievementText)
+								Nil
+								"achievements &amp; regrets"
+								)
+							)
+						)
+					)
+
 			</GetGlobalAchievements>
 		</Events>
 		
@@ -474,6 +494,11 @@ changing sys will unregister from owner
 				As you exit the docking ramp, troopers train their weapons on you:
 				"The captain wants you off her ship."
 			</Text>
+
+			<Text id="AchievementSuccess">Defended the CSC Antarctica</Text>
+			<Text id="AchievementFailure">Failed to defend the CSC Antarctica</Text>
+			<Text id="AchievementDestroyedByPlayer">Destroyed the CSC Antarctica</Text>
+			<Text id="AchievementBetrayed">Betrayed the CSC Antarctica</Text>
 		</Language>
 	</MissionType>
 

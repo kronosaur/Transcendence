@@ -3561,7 +3561,7 @@
 				
 				<InitialPane>
 					; If the player saves the Antarctica, then the Ares will be friendly
-					(if (not (eq (typGetGlobalData &scCSCTerra; "antarctica") "escaped"))
+					(if (not (msnFind "r +unid:&msEscapeFromDantalion;; +property:isSuccess;"))
 						"GetOut"
 						"Default"
 						)

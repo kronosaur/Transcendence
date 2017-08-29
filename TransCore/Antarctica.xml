@@ -38,6 +38,13 @@
 
 	GLOBAL DATA
 
+	status: Antarctica's current status. One of the following:
+
+		Nil:					Alive
+		'destroyed:				Destroyed by others
+		'destroyedByPlayer:		The player destroyed the Antarctica
+		'betrayed:				Destroyed by player after she promised otherwise
+
 	-->
 
 	<Type UNID="&unidCaptainHelios;">

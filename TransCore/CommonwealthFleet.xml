@@ -2430,26 +2430,7 @@ PLAYER DATA
 							(list "Acquired Lamplighter archcannon" Nil "achievements &amp; regrets")
 							)))
 						)
-						
-					; Antarctica
-					
-					(setq antarcticaStatus (typGetGlobalData &scCSCTerra; "antarctica"))
-					(if antarcticaStatus
-						(setq theList (append theList (list
-							(list
-								(switch
-									(eq antarcticaStatus 'escaped) "Defended the CSC Antarctica"
-									(eq antarcticaStatus 'destroyed) "Failed to defend the CSC Antarctica"
-									(eq antarcticaStatus 'destroyedByPlayer) "Destroyed the CSC Antarctica"
-									(eq antarcticaStatus 'betrayed) "Betrayed the CSC Antarctica"
-									(cat "ERROR: antarctica: " antarcticaStatus)
-									)
-								Nil
-								"achievements &amp; regrets"
-								)
-							)))
-						)
-						
+
 					; Meds donated
 					
 					(if (setq medsDonated (typGetGlobalData &svCommonwealthFleet; "medsDonated"))

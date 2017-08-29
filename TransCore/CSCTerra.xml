@@ -15,13 +15,6 @@
 
 	GLOBAL DATA
 
-	antarctica:		Status of CSC Antarctica
-						Nil = Unknown state
-						"destroyedByPlayer" = Player destroyed antarctica
-						"destroyed" = Destroyed by others
-						"escaped" = Escaped Dantalion system (towards St. Katharines)
-						"betrayed" = Destroyed by player after she promised otherwise
-
 	p262test:		Who will test the weapon?
 						Nil = Unknown
 						"player" = Decker wants player to test weapon
@@ -161,7 +154,11 @@
 							<Action name="Bridge" key="B">
 								(block (antarcticaStatus missionStatus behavior)
 									(setq behavior (objGetData gSource "behavior"))
-									(setq antarcticaStatus (objGetGlobalData gSource "antarctica"))
+									(setq antarcticaStatus
+										(if (msnFind "r +unid:&msEscapeFromDantalion;; +property:isSuccess;")
+											'escaped
+											(rpgCharacterGetStatus &unidCaptainHelios;)
+											))
 									(setq missionStatus (objGetData gSource "MissionStatus"))
 
 									(switch
@@ -386,7 +383,11 @@
 					<AntarcticaDispatched>
 						<OnPaneInit>
 							(block (antarcticaStatus desc)
-								(setq antarcticaStatus (objGetGlobalData gSource "antarctica"))
+								(setq antarcticaStatus
+									(if (msnFind "r +unid:&msEscapeFromDantalion;; +property:isSuccess;")
+										'escaped
+										(rpgCharacterGetStatus &unidCaptainHelios;)
+										))
 								(switch
 									(eq antarcticaStatus "destroyedByPlayer")
 										(setq desc "As you enter the bridge all the officers rise and applaud. Admiral Decker stands next to you and says,\n\n\"The Fleet owes you a great debt. The valor and heroism that you showed in defeating the Antarctica will stand as a beacon of hope in this bloody war!\"\n\nAfter much cheering and congratulations, the Admiral leads you to his quarters for a private conversation.")
@@ -415,7 +416,11 @@
 					<AntarcticaDispatched2>
 						<OnPaneInit>
 							(block (antarcticaStatus desc)
-								(setq antarcticaStatus (objGetGlobalData gSource "antarctica"))
+								(setq antarcticaStatus
+									(if (msnFind "r +unid:&msEscapeFromDantalion;; +property:isSuccess;")
+										'escaped
+										(rpgCharacterGetStatus &unidCaptainHelios;)
+										))
 								(switch
 									(eq antarcticaStatus "destroyedByPlayer")
 										(setq desc "\"You've done your part of the bargain, now let me help you with your journey. For the last few years we've been working on a new weapon&#x97;something that can hurt the Ares and win this war. I want you to test this new weapon. The dockmaster will install it. Good luck!\"")
@@ -440,7 +445,11 @@
 						<Actions>
 							<Action name="Continue" default="1" cancel="1" key="C">
 								(block (antarcticaStatus)
-									(setq antarcticaStatus (objGetGlobalData gSource "antarctica"))
+									(setq antarcticaStatus
+										(if (msnFind "r +unid:&msEscapeFromDantalion;; +property:isSuccess;")
+											'escaped
+											(rpgCharacterGetStatus &unidCaptainHelios;)
+											))
 									(switch
 										(eq antarcticaStatus "destroyedByPlayer")
 											(objSetGlobalData gSource "p262test" "player")
