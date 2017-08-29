@@ -188,9 +188,7 @@ CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 	ASSERT(Ctx.pObj == (CSpaceObject *)pShip);
 	ASSERT(pShip->GetSystem());
 	CString sSystemName = pShip->GetSystem()->GetName();
-
 	//	Figure out who killed us
-
 	CString sCause;
 	CSpaceObject *pAttacker = Ctx.Attacker.GetObj();
 	if (pAttacker)
@@ -214,8 +212,34 @@ CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 	else
 		sCause = CONSTLIT("by unknown forces");
 
-	//	Generat based on cause
+	//Let's mention any extra conditions that the player had before dying
+	CString sEffects;
+	TArray<CString> Effects;
+	
+	if (pShip->IsRadioactive())
+		Effects.Insert("radioactive"); //Doesn't seem to work for some reason
+	if (pShip->IsBlind())
+		Effects.Insert("blind");
+	if (pShip->IsParalyzed())
+		Effects.Insert("paralyzed");
+	if (pShip->IsDisarmed())
+		Effects.Insert("disarmed");
 
+	if (Effects.GetCount() == 1)
+		sEffects = Effects.GetAt(0);
+	else if (Effects.GetCount() == 2)
+		sEffects = strPatternSubst(CONSTLIT("%s and %s"), Effects.GetAt(0), Effects.GetAt(1));
+	else {
+		sEffects = Effects.GetAt(0);
+		for (int i = 1; i < Effects.GetCount() - 1; i++) {
+			sEffects = strPatternSubst(CONSTLIT("%s, %s"), sEffects, Effects.GetAt(i));
+		}
+		sEffects = strPatternSubst(CONSTLIT("%s, and %s"), sEffects, Effects.GetAt(Effects.GetCount() - 1));
+	}
+	sCause = strPatternSubst(CONSTLIT("%s while %s"), sCause, sEffects);
+
+	//	Generate based on cause
+	
 	CString sText;
 	switch (Ctx.iCause)
 		{
@@ -1591,7 +1615,6 @@ void CTranscendenceModel::OnPlayerDestroyed (SDestroyCtx &Ctx, CString *retsEpit
 	Ctx.bResurrectPending = (m_pResurrectType != NULL);
 
 	//	Generate epitaph
-
 	CString sText = CalcEpitaph(Ctx);
 	if (retsEpitaph)
 		*retsEpitaph = sText;
