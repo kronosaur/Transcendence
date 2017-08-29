@@ -870,10 +870,10 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 		if (Entry.pItemCtx->GetEnhancementDisplayAttributes(&Attribs))
 			{
 			const CString &sMods = Attribs[0].sText;
-			bool bIsDisadvantage = (Attribs[0].iType == attribWeakness);
+			bool bIsDisadvantage = (Attribs[0].iType == attribDegradation);
 
-			CG32bitPixel rgbBackColor = (bIsDisadvantage ? m_VI.GetColor(colorAreaDisadvantage) : m_VI.GetColor(colorAreaAdvantage));
-			CG32bitPixel rgbTextColor = (bIsDisadvantage ? m_VI.GetColor(colorTextDisadvantage) : m_VI.GetColor(colorTextAdvantage));
+			CG32bitPixel rgbBackColor = (bIsDisadvantage ? m_VI.GetColor(colorAreaDegradation) : m_VI.GetColor(colorAreaEnhancement));
+			CG32bitPixel rgbTextColor = (bIsDisadvantage ? m_VI.GetColor(colorAreaDegradation) : m_VI.GetColor(colorAreaEnhancement));
 
 			PaintModifier(Dest, x, y, sMods, rgbTextColor, rgbBackColor, &y);
 			}
@@ -937,10 +937,10 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 		//	Damaged
 
 		if (pDevice->IsDamaged())
-			PaintModifier(Dest, x, y, CONSTLIT("damaged"), m_VI.GetColor(colorTextDisadvantage), m_VI.GetColor(colorAreaDisadvantage), &y);
+			PaintModifier(Dest, x, y, CONSTLIT("damaged"), m_VI.GetColor(colorTextDisadvantage), m_VI.GetColor(colorAreaDegradation), &y);
 
 		if (pDevice->IsDisrupted())
-			PaintModifier(Dest, x, y, CONSTLIT("ionized"), m_VI.GetColor(colorTextDisadvantage), m_VI.GetColor(colorAreaDisadvantage), &y);
+			PaintModifier(Dest, x, y, CONSTLIT("ionized"), m_VI.GetColor(colorTextDisadvantage), m_VI.GetColor(colorAreaDegradation), &y);
 
 		//	Modifiers
 
@@ -950,8 +950,8 @@ void CGSelectorArea::PaintInstalledItem (CG32bitImage &Dest, const RECT &rcRect,
 			if (!sMods.IsBlank())
 				{
 				bool bIsDisadvantage = *sMods.GetASCIIZPointer() == '-';
-				CG32bitPixel rgbBackColor = (bIsDisadvantage ? m_VI.GetColor(colorAreaDisadvantage) : m_VI.GetColor(colorAreaAdvantage));
-				CG32bitPixel rgbTextColor = (bIsDisadvantage ? m_VI.GetColor(colorTextDisadvantage) : m_VI.GetColor(colorTextAdvantage));
+				CG32bitPixel rgbBackColor = (bIsDisadvantage ? m_VI.GetColor(colorAreaDegradation) : m_VI.GetColor(colorAreaEnhancement));
+				CG32bitPixel rgbTextColor = (bIsDisadvantage ? m_VI.GetColor(colorAreaDegradation) : m_VI.GetColor(colorAreaEnhancement));
 
 				PaintModifier(Dest, x, y, sMods, rgbTextColor, rgbBackColor, &y);
 				}
