@@ -55,7 +55,9 @@ changing sys will unregister from owner
 					(antarcticaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
 					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
 					)
-					
+					;	Player has met Captain Helios
+					(rpgCharacterSetMeeting &unidCaptainHelios;)
+
 					(typSetData &msEscapeFromDantalion; 'status 'underAttack)
 
 					;	Send a battlefleet to attack the Antarctica
@@ -89,6 +91,9 @@ changing sys will unregister from owner
 					(antarcticaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
 					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
 					)
+					;	Player has met Captain Helios
+					(rpgCharacterSetMeeting &unidCaptainHelios;)
+
 					(msnSetUnavailable gSource)
 					(typSetData &msEscapeFromDantalion; 'status 'enemy)
 
@@ -296,6 +301,14 @@ changing sys will unregister from owner
 			<!-- Code Points -->
 
 			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
 			</Text>
 			<Text id="Briefing">
 				(list
@@ -372,6 +385,11 @@ changing sys will unregister from owner
 
 			<Text id="Name">
 				Antarctica escape
+			</Text>
+			<Text id="textSummary">
+				Captain Helios has met with the Ares to discuss a possible truce.
+				She is now carrying a message back to St. Katharine's, but only
+				if the Antarctica can escape from this system.
 			</Text>
 			<Text id="Intro">
 				As you enter the docking bay you are surrounded by heavily armed soldiers.

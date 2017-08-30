@@ -2,29 +2,7 @@
 
 <TranscendenceModule>
 
-	<!-- CSC Terra
-
-	EXTRA DATA
-
-	MissionStatus:	Status of mission to destroy CSC Antarctica
-						Nil = mission not assigned
-						"assigned" = mission assigned, not yet complete
-						"complete" = mission complete (one way or the other)
-						"testing" = player has Lamplighter
-	MissionTime:	Tick on which mission was assigned.
-
-	GLOBAL DATA
-
-	p262test:		Who will test the weapon?
-						Nil = Unknown
-						"player" = Decker wants player to test weapon
-						"fleetCaptain" = Decker wants a Fleet Captain to test weapon
-						"notPlayer" = Decker does not want the player to test weapon
-						"installed" = Installed on player ship
-
-	p262testCheck:	Dockmaster checked on player.
-
-	-->
+	<!-- CSC Terra -->
 
 	<ShipClass UNID="&scCSCTerra;"
 			manufacturer=		"Earth Industries"
@@ -134,6 +112,8 @@
 			<ReplaceArmor	criteria="a L:1-10;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-9;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
+			<InstallDevice	criteria="d +unid:&itLamplighter;;" priceAdj="100"/>
+			<RemoveDevice	criteria="d +unid:&itLamplighter;;" priceAdj="100"/>
 		</Trade>
 
 		<DockScreens>
@@ -143,602 +123,76 @@
 						(resCreateImageDesc &rsFleetEmblems; 960 480 320 240)
 					</Image>
 				</Display>
+
+				<OnScreenInit>
+					(rpgMissionAssignmentOnScreenInit {
+						missionCriteria: (cat "n +cscTerra; =" (sysGetLevel) ";")
+						})
+				</OnScreenInit>
 				
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat "You are in the docking bay of the " (objGetName gSource) "."))
+							(scrSetDescTranslate gScreen 'descWelcome {objName: (objGetName gSource)})
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Bridge" key="B">
-								(block (antarcticaStatus missionStatus behavior)
-									(setq behavior (objGetData gSource "behavior"))
-									(setq antarcticaStatus
-										(if (msnFind "r +unid:&msEscapeFromDantalion;; +property:isSuccess;")
-											'escaped
-											(rpgCharacterGetStatus &unidCaptainHelios;)
-											))
-									(setq missionStatus (objGetData gSource "MissionStatus"))
-
+							<Action id="actionBridge" default="1">
+								(block (
+									(rank (objGetData gPlayerShip 'fleetLevel))
+									(behavior (objGetData gSource 'behavior))
+									)
 									(switch
-										; If not a Fleet Commander, cannot enter
-										(ls (objGetData gPlayerShip "fleetLevel") 5)
-											(scrShowPane gScreen "AccessDenied")
-											
-										; If on maneuvers, then too busy
-										(eq behavior 'moving)
-											(scrShowPane gScreen "ShipMoving")
+										;	Can't get in unless the player is Fleet Commander or above
+										(ls rank 5)
+											(scrShowScreen gScreen &dsRPGMessage; { textID:'descAccessDenied })
 
-										; If the Lamplighter prototype has not been returned
-										; to Point Juno, then the Admiral has more important
-										; things to worry about.
-										(not (msnFind "r +unid:&msCSCLamplighterPrototype;; +property:isSuccess;"))
-											(scrShowPane gScreen "PrototypeNotFound")
-											
-										; No mission if the player has met the Antarctica
-										(and (not missionStatus)
-												(not antarcticaStatus)
-												(or (eq (typGetData &msEscapeFromDantalion; 'status) "underAttack")
-													(eq (typGetData &msEscapeFromDantalion; 'status) "friend")
-													)
-												)
-											(scrShowPane gScreen "PlayerMetAntarctica")
+										;	If on maneuvers, then too busy
+										(= behavior 'moving)
+											(scrShowScreen gScreen &dsRPGMessage; { textID:'descShipMoving })
 
-										; Antarctica mission
-										(not missionStatus)
-											(if antarcticaStatus
-												(scrShowPane gScreen "AntarcticaDispatched")
-												(scrShowPane gScreen "AssignMission")
-												)
-
-										(eq missionStatus "assigned")
-											(if antarcticaStatus
-												(scrShowPane gScreen "AntarcticaDispatched")
-												(scrShowPane gScreen "RecapMission")
-												)
-
-										(eq missionStatus "complete")
-											(scrShowPane gScreen "MissionComplete")
-
-										(eq missionStatus "testing")
-											(scrShowPane gScreen "MissionTesting")
+										;	Otherwise show missions
+										(rpgMissionAssignment {
+											missionCriteria: (cat "n +cscTerra; +rank" (int rank) "; =" (sysGetLevel) ";")
+											noMissionTextID: 'descNoMissions
+											})
 										)
 									)
 							</Action>
 
-							<Action name="Dock Services" key="D">
-								(switch
-									(and 
-										(eq (objGetData gSource "MissionStatus") "complete")
-										(or 
-											(eq (objGetGlobalData gSource "p262test") "player")
-											(and
-												(eq (objGetGlobalData gSource "p262test") "fleetCaptain")
-												(geq (objGetData gPlayerShip "fleetLevel") 6)
-												)
-											)
-										)
-										(scrShowPane gScreen "AssignTest")
-
-									(and (eq (objGetData gSource "MissionStatus") "testing")
-											(not (objGetGlobalData gSource 'p262testCheck))
-											(gr (- (unvGetTick) (objGetData gSource 'MissionTime)) 1800)
-											)
-										(scrShowPane gScreen "TestingStatus")
-
-									(rpgDockServices gPlayerShip {
-										checkMilitaryID: True
-										})
-									)
+							<Action id="actionDockServices">
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
-
-					<AssignMission>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat "As you enter the bridge, you see Admiral Conrad Decker talking with his XO. "
-									"A guard approaches you and says,\n\n\"The admiral would like you to wait for him at his quarters.\"")
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowPane gScreen "AssignMission2")
-							</Action>
-						</Actions>
-					</AssignMission>
-
-					<AssignMission2>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat "Waiting in the admiral's quarters you see the artifacts of his life scattered around the room&#x97;"
-									"charts, papers, and empty glasses are randomly distributed. Pictures of the men and women that he's lost judge from the walls.\n\n"
-									"Fifteen minutes later, the admiral walks in.")
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowPane gScreen "AssignMission3")
-							</Action>
-						</Actions>
-					</AssignMission2>
-
-					<AssignMission3>
-						<OnPaneInit>
-							(switch
-								(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
-									(scrSetDesc gScreen (typTranslate &scCSCTerra; 'Mission3IntroPilgrim))
-									
-								(scrSetDesc gScreen (typTranslate &scCSCTerra; 'Mission3Intro))
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowPane gScreen "AssignMission4")
-							</Action>
-						</Actions>
-					</AssignMission3>
-
-					<AssignMission4>
-						<OnPaneInit>
-							(scrSetDesc gScreen 
-								"\"My problem is Captain Helios and the CSC Antarctica. Two months ago we were on joint operations against an Ares stronghold. "
-								"Four carriers; hundreds of Centurions; one of the most complicated operations of the war.\n\n"
-								"\"A light-minute out, she breaks formation and recalls her wing. She left us out there at the most critical point!\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowPane gScreen "AssignMission5")
-							</Action>
-						</Actions>
-					</AssignMission4>
-
-					<AssignMission5>
-						<OnPaneInit>
-							(scrSetDesc gScreen 
-								"\"She's gone rogue. Or worse. And with a carrier. And with the secrets she knows... I really don't have a choice.\"\n\n"
-								"The admiral looks away, out the porthole. He looks tired. And old."
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowPane gScreen "AssignMission6")
-							</Action>
-						</Actions>
-					</AssignMission5>
-
-					<AssignMission6>
-						<OnPaneInit>
-							(scrSetDesc gScreen 
-								"When the admiral turns back to you there is a new intensity in his eyes and as he stands up his fists are clenched.\n\n"
-								"\"Your mission is to hunt down the Antarctica. And to destroy her, if you can.\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(objSetData gSource "MissionStatus" "assigned")
-									(objSetData gSource "MissionTime" (unvGetTick))
-									(ScrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</AssignMission6>
-
-					<RecapMission>
-						<OnPaneInit>
-							(block (lastVisit)
-								(setq lastVisit (subtract (unvGetTick) (objGetData gSource "MissionTime")))
-								(switch
-									; If the antactica is in the system, then we might have a clue
-									(sysFindObject gSource "sA +cscAntarctica;")
-										(scrSetDesc gScreen
-											"Admiral Decker talks with his XO at his center console. "
-											"They see you enter, and the admiral comes up to you quietly:\n\n"
-											"\"We've had a sighting of the Antarctica somewhere in this system! You know what to do. Return here when you've accomplished your mission.\""
-											)
-									
-									(ls lastVisit 300)
-										(scrSetDesc gScreen 
-											"The bridge of the CSC Terra is chaotic, but efficient. "
-											"Various officers discuss issues at their panels, raising their voice above the chatter of comm traffic. "
-											"The admiral is not on the bridge, but the XO approaches you:\n\n"
-											"\"I don't envy your mission. We don't have fresh intel on the Antarctica; you'll have to search system by system, I'm afraid.\""
-											)
-
-									(ls lastVisit 1800)
-										(scrSetDesc gScreen 
-											"Admiral Decker talks with his XO at the center of a chaotic, but efficient bridge. "
-											"The Admiral sees you come in, but he seems too busy to be able to talk to you."
-											)
-
-									(scrSetDesc gScreen 
-										"Admiral Decker talks with his XO at his center console. "
-										"They see you enter, and the XO comes up to you quietly:\n\n"
-										"\"Still no sign of the Antarctica. We've had reports that it might be in the Dantalion system.\""
-										)
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</RecapMission>
-
-					<AntarcticaDispatched>
-						<OnPaneInit>
-							(block (antarcticaStatus desc)
-								(setq antarcticaStatus
-									(if (msnFind "r +unid:&msEscapeFromDantalion;; +property:isSuccess;")
-										'escaped
-										(rpgCharacterGetStatus &unidCaptainHelios;)
-										))
-								(switch
-									(eq antarcticaStatus "destroyedByPlayer")
-										(setq desc "As you enter the bridge all the officers rise and applaud. Admiral Decker stands next to you and says,\n\n\"The Fleet owes you a great debt. The valor and heroism that you showed in defeating the Antarctica will stand as a beacon of hope in this bloody war!\"\n\nAfter much cheering and congratulations, the Admiral leads you to his quarters for a private conversation.")
-
-									(eq antarcticaStatus "destroyed")
-										(setq desc "As you enter the bridge all the officers cheer. Admiral Decker stands next to you and announces,\n\n\"I can now confirm that the rogue ship Antarctica has been destroyed!\"\n\nAfter much cheering, the Admiral leads you to his quarters for a private conversation.")
-
-									(eq antarcticaStatus "escaped")
-										(setq desc "The bridge grows quiet as you enter. All the officers stare at you, some with disgust, others with pity. The XO walks up to you: \"The admiral is waiting for you in his quarters.\"")
-
-									(eq antarcticaStatus "betrayed")
-										(setq desc "The bridge grows quiet as you enter. All the officers stare at you, some with disgust, others with pity. The XO walks up to you: \"The admiral is waiting for you in his quarters.\"")
-									)
-
-								(scrSetDesc gScreen desc)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowPane gScreen "AntarcticaDispatched2")
-							</Action>
-						</Actions>
-					</AntarcticaDispatched>
-
-					<AntarcticaDispatched2>
-						<OnPaneInit>
-							(block (antarcticaStatus desc)
-								(setq antarcticaStatus
-									(if (msnFind "r +unid:&msEscapeFromDantalion;; +property:isSuccess;")
-										'escaped
-										(rpgCharacterGetStatus &unidCaptainHelios;)
-										))
-								(switch
-									(eq antarcticaStatus "destroyedByPlayer")
-										(setq desc "\"You've done your part of the bargain, now let me help you with your journey. For the last few years we've been working on a new weapon&#x97;something that can hurt the Ares and win this war. I want you to test this new weapon. The dockmaster will install it. Good luck!\"")
-
-									(and (eq antarcticaStatus "destroyed") (geq (objGetData gPlayerShip "fleetLevel") 6))
-										(setq desc "\"Thanks for tracking down the Antarctica&#x97;we couldn't have done it without you. Now it's my turn to help you.\n\n\"For the last few years we've been working on a new weapon&#x97;something that will win this war. I want you to test it. Report to the dockmaster and he will explain. Good luck!\"")
-
-									(eq antarcticaStatus "destroyed")
-										(setq desc "\"Thanks for tracking down the Antarctica&#x97;we couldn't have done it without you. I know you're on your way to the Core, but if you stay with the Fleet and make captain, I guarantee that I'll remember your service. Good luck, and remember what I said.\"")
-
-									(eq antarcticaStatus "escaped")
-										(setq desc "The admiral broods in his chambers. He stares at you coldly:\n\n\"What happened out there? How did the Antarctica escape? If I ever find out that you helped them, I will make sure that you hang as a traitor! Until then, you are demoted to Master Sergeant. Now get the hell out of here.\"")
-
-									(eq antarcticaStatus "betrayed")
-										(setq desc "The admiral sits at his desk quietly studying you. He says,\n\n\"You're a cold-blooded killer, do you know that? I heard how you betrayed Captain Helios. I know she deserved it, but I'm glad that you're leaving Human Space. I'll see you in hell.\"")
-									)
-
-								(scrSetDesc gScreen desc)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block (antarcticaStatus)
-									(setq antarcticaStatus
-										(if (msnFind "r +unid:&msEscapeFromDantalion;; +property:isSuccess;")
-											'escaped
-											(rpgCharacterGetStatus &unidCaptainHelios;)
-											))
-									(switch
-										(eq antarcticaStatus "destroyedByPlayer")
-											(objSetGlobalData gSource "p262test" "player")
-
-										(eq antarcticaStatus "destroyed")
-											(objSetGlobalData gSource "p262test" "fleetCaptain")
-
-										(eq antarcticaStatus "escaped")
-											(block Nil
-												(objSetData gPlayerShip "fleetXP" 600)
-												(objSetData gPlayerShip "fleetLevel" 3)
-												(objSetGlobalData gSource "p262test" "notPlayer")
-												)
-
-										(eq antarcticaStatus "betrayed")
-											(objSetGlobalData gSource "p262test" "notPlayer")
-
-										(objSetGlobalData gSource "p262test" "fleetCaptain")
-										)
-
-									(objSetData gSource "MissionStatus" "complete")
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</AntarcticaDispatched2>
-
-					<MissionComplete>
-						<OnPaneInit>
-							(block (testStatus desc)
-								(setq testStatus (objGetGlobalData gSource "p262test"))
-								(switch
-									(eq testStatus "player")
-										(setq desc "The bridge is chaotic as usual. The admiral looks at you as you enter:\n\n\"Have you talked to the dockmaster yet?\"")
-
-									(and (eq testStatus "fleetCaptain") (geq (objGetData gPlayerShip "fleetLevel") 6))
-										(setq desc "The bridge is chaotic as usual. The admiral looks at you as you enter:\n\n\"I'm glad you're back. We've made a lot of progress since your last visit and now I'm ready to show you Project Lamplighter. Report to the dockmaster and he'll explain.\"")
-
-									(eq testStatus "fleetCaptain")
-										(setq desc "The bridge is chaotic as usual. The admiral looks at you as you enter:\n\n\"Remember what I said. Come back when you're a Fleet captain.\"")
-
-									(eq testStatus "notPlayer")
-										(setq desc "The bridge is chaotic as usual. The admiral and the XO confer privately about their latest operation. The officers and crew try hard to ignore you. You are not welcome here.")
-									)
-
-								(scrSetDesc gScreen desc)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MissionComplete>
-
-					<MissionTesting>
-						<OnPaneInit>
-							(block (desc lastVisit)
-								(setq lastVisit (subtract (unvGetTick) (objGetData gSource "MissionTime")))
-								(switch
-									(ls lastVisit 1800)
-										(setq desc (cat "The bridge of the CSC Terra is busy with activity. Admiral Decker and his XO are discussing the results of the last operation."))
-
-									(setq desc (cat "As you enter the bridge, Admiral Decker approaches you. He is beaming with excitement:\n\n\"How's the testing going? It's a beautiful weapon, isn't it? "
-											"We're starting to produce them in higher quantities and equipping our Aquilas with them. We finally have a chance to end this war on our terms!\"")
-										)
-									)
-								(scrSetDesc gScreen desc)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MissionTesting>
-
-					<AccessDenied>
-						<OnPaneInit>
-							(scrSetDesc gScreen "Two armed guards block your path, \"I'm sorry, %sir%, the admiral does not like to be disturbed by junior officers.\"")
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</AccessDenied>
-					
-					<ShipMoving>
-						<OnPaneInit>
-							(scrSetDesc gScreen 
-								"The bridge of the CSC Terra is busy with activity. Admiral Decker is leaning over a "
-								"holochart as the massive ship maneuvers through the system."
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</ShipMoving>
-
-					<PrototypeNotFound>
-						<OnPaneInit>
-							(scrSetDesc gScreen 
-								(cat "The bridge of the CSC Terra is busy with activity. You overhear Admiral Decker talking with his XO:\n\n"
-									"\"We need that prototype, Jack. I don't care how you do it, we need to get it back!\""
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</PrototypeNotFound>
-
-					<PlayerMetAntarctica>
-						<OnPaneInit>
-							(scrSetDesc gScreen 
-								(cat "The bridge of the CSC Terra is busy with activity. You overhear Admiral Decker talking with his XO:\n\n"
-									"\"I want an update on the Antarctica. Has the squadron made contact yet?\""
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</PlayerMetAntarctica>
-
-					<AssignTest>
-						<OnPaneInit>
-							(block (desc)
-								(setq desc (cat "The dockmaster approaches as you enter:\n\n\"Seems like it's your lucky day! "
-										"I got orders from the admiral to put you on our testing program for Lamplighter. You're gonna like it&#x97;"
-										"it's got a pure antimatter blast that'll cut through almost anything.\"")
-									)
-
-								(scrSetDesc gScreen desc)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
-								(scrShowPane gScreen "AssignTest2")
-							</Action>
-						</Actions>
-					</AssignTest>
-
-					<AssignTest2>
-						<OnPaneInit>
-							(block (desc okToInstall theResult)
-								(setq gItem (itmCreate &itLamplighter; 1))
-								
-								(setq theResult
-									(intInstallDevicePrepEx
-										gItem								; item to install
-										0									; Free to install
-										Nil									; install cost margin
-										(objGetDefaultCurrency gSource)		; currency to use
-										25									; max tech level
-										Nil									; install criteria
-										Nil									; check military ID
-										Nil									; item is in cargo
-										Nil)								; buy and install
-									)
-									
-								(setq gCanInstall (item theResult 0))
-								(scrSetDesc gScreen (item theResult 2))
-
-								; Enable/disable buttons
-								(scrEnableAction gScreen 0 gCanInstall)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Install" key="I" default="1">
-								(if gCanInstall
-									(block Nil
-										; Install the item
-										(objAddItem gPlayerShip gItem)
-										(shpInstallDevice gPlayerShip gItem)
-										(typSetData &svPlayer; 'tutorialInstalled True)
-
-										(objSetData gSource "MissionStatus" "testing")
-										(objSetData gSource "MissionTime" (unvGetTick))
-										(objSetGlobalData gSource "p262test" "installed")
-
-										(scrShowPane gScreen "AssignTestSuccess")
-										)
-									)
-							</Action>
-
-							<Action name="Cancel" key="C" cancel="1">
-								<ShowPane pane="AssignTestDeclined"/>
-							</Action>
-						</Actions>
-					</AssignTest2>
-
-					<AssignTestSuccess>
-						<OnPaneInit>
-							(block (desc)
-								(setq desc "\"All the numbers look good. This rig is ready for some action! Take her out and let us know how many Ares you blast!\"")
-
-								(scrSetDesc gScreen desc)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</AssignTestSuccess>
-
-					<AssignTestDeclined>
-						<OnPaneInit>
-							(block (desc)
-								(setq desc "\"Anytime you're ready, just come back and I'll fix you up.\"")
-
-								(scrSetDesc gScreen desc)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(scrShowScreen gScreen "Main")
-									(rpgDockServices gPlayerShip {
-										checkMilitaryID: True
-										})
-									)
-							</Action>
-						</Actions>
-					</AssignTestDeclined>
-
-					<TestingStatus>
-						<OnPaneInit>
-							(block (desc)
-								(setq desc "The dockmaster approaches you as you enter:\n\n\"How's the testing going? I bet you got ten thousand stories about that Lamplighter!\"")
-
-								(scrSetDesc gScreen desc)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(objSetGlobalData gSource 'p262testCheck True)
-									(scrShowScreen gScreen "Main")
-									(rpgDockServices gPlayerShip {
-										checkMilitaryID: True
-										})
-									)
-							</Action>
-						</Actions>
-					</TestingStatus>
 				</Panes>
 			</Main>
 		</DockScreens>
 
 		<Language>
-			<Text id="Mission3Intro">
-				(cat 
-					"\"" (objGetName gPlayerShip 0x05) " armed like a battleship "
-					"out here at the edge. What are you looking for?\n\n"
-					
-					"\"I'll make a deal with you. Help me with my problem and "
-					"I'll give you something that will help you.\""
-					)
+			<Text id="actionBridge">[B]ridge</Text>
+			<Text id="actionDockServices">[D]ock Services</Text>
+			<Text id="actionUndock">[U]ndock</Text>
+
+			<Text id="descWelcome">You are in the docking bay of the %objName%.</Text>
+			<Text id="descAccessDenied">
+				Two armed guards block your path, "I'm sorry, %sir%, only Fleet
+				the admiral does not like to be disturbed by junior officers."
 			</Text>
-			<Text id="Mission3IntroPilgrim">
-				(cat 
-					"\"" (objGetName gPlayerShip 0x05) " armed like a battleship "
-					"and a lonely pilot heading for the Core. Another plaything "
-					"for the Gods. What a waste.\n\n"
-					
-					"\"I'll make a deal with you. Help me with my problem and "
-					"I'll give you something you're going to need out there.\""
-					)
+			<Text id="descShipMoving">
+				The bridge of the CSC Terra is busy with activity. Admiral Decker
+				is leaning over a holochart as the massive ship maneuvers through
+				the system.
 			</Text>
+			<String id="descNoMissions">
+				"Sorry, there are no missions available for you."
+			</String>
 		</Language>
 	</ShipClass>
 

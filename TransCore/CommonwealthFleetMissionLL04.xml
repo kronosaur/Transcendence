@@ -1,0 +1,265 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission:  ========================================
+
+	EXTRA DATA
+
+	GLOBAL DATA
+
+	status:	Who will test the weapon
+		Nil				Unknown
+		'player			Decker wants player to test weapon
+		'fleetCaptain	Decker wants a Fleet Captain to test weapon
+		'fleetPlayer		Player is now a captain and can test the weapon
+		'notPlayer		Decker does not want the player to test weapon
+		'installed		Installed on player ship
+
+	======================================================================== -->
+
+	<MissionType UNID="&msCSCLamplighterTesting;"
+			name=			"Lamplighter testing"
+			attributes=		"commonwealthFleet, cscTerra, rank5, rank6, paneInitMission, lamplighter"
+
+			level=			"9"
+			maxAppearing=	"1"
+			priority="100"
+			>
+
+		<Events>
+			<OnCreate>
+				(msnSetData gSource 'paneID (objGetID aOwnerObj))
+			</OnCreate>
+
+			<OnCanBrief>
+				(block (
+					(status (typGetData &msCSCLamplighterTesting; 'status))
+					(rank (objGetData gPlayerShip 'fleetLevel))
+					)
+					;	If we were waiting to be captain then update status
+					(if (and (= status 'fleetCaptain) (geq rank 6))
+						(typSetData &msCSCLamplighterTesting; 'status 'fleetPlayer)
+						)
+					;	Return Nil as we want to display the normal briefing screen
+					Nil
+					)
+			</OnCanBrief>
+
+			<OnDeclined>
+				(block (
+					(status (typGetData &msCSCLamplighterTesting; 'status))
+					)
+					;	Actually we wanted to accept the mission. But used the "decline"
+					;	option so we could skip ReplyAccept and forceUndock
+					(if (or (= status 'player) (= status 'fleetPlayer))
+						(msnAccept gSource)
+						)
+					)
+			</OnDeclined>
+
+			<OnAccepted>
+				(block (
+					(cscObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					)
+					;	Add the Lamplighter to the CSC so the player can install it
+					(objAddItem cscObj (itmCreate &itLamplighter; 1))
+					)
+			</OnAccepted>
+
+			<OnPaneInit>
+				(if (and (= aScreenUNID &scCSCTerra;) (= aPane 'Default))
+					(block (
+						(status (typGetData &msCSCLamplighterTesting; 'status))
+						theMessage
+						)
+						;	If we have the Lamplighter then update status to 'testing
+						(if (and
+								(or (= status 'player) (= status 'fleetPlayer))
+								(objGetItems gPlayerShip "w +unid:&itLamplighter;;")
+								)
+							(block Nil
+								(typSetData &msCSCLamplighterTesting; 'status 'testing)
+								(msnSetData gSource 'installTime (unvGetTick))
+								)
+							)
+
+						;	Check if we have a message to display
+						(switch
+							(or (= status 'player) (= status 'fleetPlayer))
+								(setq theMessage (msnTranslate gSource 'textDockmaster1))
+
+							(and (= status 'testing) True)
+								(setq theMessage (msnTranslate gSource 'textDockmaster2))
+							; (- (unvGetTick) (msnGetData gSource 'installTime))
+							)
+
+						;	If we have a messge then replace actionDockServices with an action
+						;	to display the message before proceeding to dockservices
+						(if theMessage
+							(block Nil
+								(scrShowAction gScreen 'actionDockServices Nil)
+								(scrAddAction gScreen 'altDockServices 1 "Dock Services" "D" (lambda () (block Nil
+									(rpgDockServices gPlayerShip {
+											checkMilitaryID: True
+											})
+									(scrShowScreen gScreen &dsRPGMessage; { desc:theMessage })
+									)))
+								)
+							)
+						)
+					)
+			</OnPaneInit>
+
+			<GetGlobalPlayerPriceAdj>
+				(block (
+					(status (typGetData &msCSCLamplighterTesting; 'status))
+					)
+					(switch
+						;	Only at CSC Terra
+						(!= (objGetType aProviderObj) &scCSCTerra;)
+							Nil
+
+						(and (or (= status 'player) (= status 'fleetPlayer))
+							(= (itmGetType gItem) &itLamplighter;)
+							)
+							1
+
+						;	Otherwise nothing
+						Nil
+						)
+					)
+			</GetGlobalPlayerPriceAdj>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+			<Text id="Briefing">
+				(block (
+					(status (typGetData &msCSCLamplighterTesting; 'status))
+					(rank (objGetData gPlayerShip 'fleetLevel))
+					)
+					(list
+						(switch
+							(= status 'player)
+								{
+									textID: 'textBriefingPlayer
+									nextPage: 'missionDecline
+									}
+
+							(= status 'fleetPlayer)
+								{
+									textID: 'textBriefingCaptain
+									nextPage: 'missionDecline
+									}
+
+							(= status 'fleetCaptain)
+								{
+									textID: 'textBriefingNotYet
+									nextPage: 'missionDecline
+									}
+
+							(= status 'notPlayer)
+								{
+									textID: 'textBriefingNotPlayer
+									nextPage: 'missionDecline
+									}
+
+							;	Unknown status so just display a generic message
+							{
+								textID: 'textProgress1
+								nextPage: 'missionDecline
+								}
+							)
+
+						Nil	;	Blank entry to prevent forced accept/decline options
+						)
+					)
+			</Text>
+
+			<Text id="InProgress">
+				(block (
+					(lastVisit (- (unvGetTick) (msnGetData gSource 'installTime)))
+					)
+					(list
+						{
+							textID: (switch
+								(ls lastVisit 1800)
+									'textProgress1
+								
+								'textProgress2
+								)
+							}
+						)
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">Lamplighter testing</Text>
+
+			<Text id="textBriefingPlayer">
+				The bridge is chaotic as usual. The admiral looks at you as you enter:
+
+				"Have you talked to the dockmaster yet?"
+			</Text>
+			<Text id="textBriefingCaptain">
+				The bridge is chaotic as usual. The admiral looks at you as you enter:
+
+				"I'm glad you're back. We've made a lot of progress since your last
+				visit and now I'm ready to show you Project Lamplighter. Report to
+				the dockmaster and he'll explain."
+			</Text>
+			<Text id="textBriefingNotYet">
+				The bridge is chaotic as usual. The admiral looks at you as you enter:
+
+				"Remember what I said. Come back when you're a Fleet captain."
+			</Text>
+			<Text id="textBriefingNotPlayer">
+				The bridge is chaotic as usual. The admiral and the XO confer
+				privately about their latest operation. The officers and crew try
+				hard to ignore you. You are not welcome here.
+			</Text>
+			<Text id="textProgress1">
+				The bridge of the CSC Terra is busy with activity. Admiral Decker
+				and his XO are discussing the results of the last operation.
+			</Text>
+			<Text id="textProgress2">
+				As you enter the bridge, Admiral Decker approaches you. He is
+				beaming with excitement:
+
+				"How's the testing going? It's a beautiful weapon, isn't it? We're
+				starting to produce them in higher quantities and equipping our
+				Aquilas with them. We finally have a chance to end this war on our
+				terms!"
+			</Text>
+			<Text id="textDockmaster1">
+				The dockmaster approaches as you enter:
+
+				"Seems like it's your lucky day! I got orders from the admiral to
+				put you on our testing program for Lamplighter. You're gonna like
+				it&#x97;it's got a pure antimatter blast that'll cut through
+				almost anything."
+			</Text>
+			<Text id="textDockmaster2">
+				"All the numbers look good. This rig is ready for some action!
+				Take her out and let us know how many Ares you blast!"
+			</Text>
+
+			<Text id="AchievementSuccess">Recovered Project Lamplighter prototype</Text>
+			<Text id="AchievementFailure">Lost the Project Lamplighter prototype</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

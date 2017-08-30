@@ -780,7 +780,7 @@
 
 	1.	The mission type must have the "paneInitMission" attribute.
 
-	2.	The mission object must have data of "destID" with the ID of a station.
+	2.	The mission object must have data of "paneID" with the ID of a station.
 
 	3.	The mission type should provide an event called "OnPaneInit"
 		which will be called when displaying dockscreens at the destination.

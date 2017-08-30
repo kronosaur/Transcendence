@@ -1629,6 +1629,8 @@
 	<!ENTITY tbCSCPointJunoBetaFleet	"0x0010007B">
 	<!ENTITY tbCSCPointJunoGammaFleet	"0x0010007C">
 	<!ENTITY msCSCLamplighterPrototype	"0x0010007D">
+	<!ENTITY msCSCLamplighterTesting	"0x0010007E">
+	<!ENTITY msCSCLamplighterLost		"0x0010007F">
 	
 	<!-- 0080-009F COMMONWEALTH -->
 	
@@ -1862,6 +1864,7 @@
 	<!ENTITY msDantalionInformant		"0x00100331">
 	<!ENTITY msEscapeFromDantalion		"0x00100332">
 	<!ENTITY evEscapeFromDantalion		"0x00100333">
+	<!ENTITY msHuntForAntarctica		"0x00100334">
 
 	<!-- 1000-FFFF RESERVED -->
 	]>
@@ -1914,6 +1917,7 @@
 		
 	<Module filename="Antarctica01.xml"/>
 	<Module filename="Antarctica02.xml"/>
+	<Module filename="AntarcticaD01.xml"/>
 	<Module filename="AresOrthodoxy.xml"/>
 	<Module filename="BlackMarket.xml"/>
 	<Module filename="BlackMarketMission00.xml"/>
@@ -1937,6 +1941,7 @@
 	<Module filename="CommonwealthFleetMissionLL01.xml"/>
 	<Module filename="CommonwealthFleetMissionLL02.xml"/>
 	<Module filename="CommonwealthFleetMissionLL03.xml"/>
+	<Module filename="CommonwealthFleetMissionLL04.xml"/>
 	<Module filename="CommonwealthFleetMissionPJ01.xml"/>
 	<Module filename="CommonwealthMetropolis.xml"/>
 	<Module filename="CommonwealthMilitia.xml"/>
