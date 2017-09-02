@@ -5,6 +5,7 @@
 	<Type UNID="&unidCommonText;">
 		<Language>
 			<Text id="achievementsAndRegrets">achievements &amp; regrets</Text>
+			<Text id="elipsis">...</Text>
 		</Language>
 	</Type>
 

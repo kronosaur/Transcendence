@@ -570,10 +570,31 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(block (disposition energy material)
+							(block (disposition energy material lastItemDrop numberLeft)
 								(setq disposition (add (objGetData gSource "disposition") (objGetData gSource "bias")))
 								(setq energy (objGetData gSource "energy"))
 								(setq material (objGetData gSource "material"))
+								(setq lastItemDrop (objGetData gSource 'lastItemDrop))
+								(setq numberLeft (objHasItem gPlayerShip lastItemDrop 1))
+								
+								;	Set the item as screen data because gSource isn't defined in Language elements.
+								(scrSetData gScreen 'lastItemDrop lastItemDrop)
+								
+								;	Make the action backgrounds max. width.
+								(scrSetActionDesc gScreen 'actionDummy "This text needs to be loooooooooooooooooooooooooooooooooooooooooooooong.")
+								(scrShowAction gScreen 'actionDummy Nil)
+								
+								(switch
+									(not lastItemDrop)
+										(scrShowAction gScreen 'actionDropAnother Nil)
+									numberLeft
+										(scrSetActionDesc gScreen 'actionDropAnother (scrTranslate gScreen 'actionDescDropAnother { number:numberLeft }))
+									(block nil
+										(scrEnableAction gScreen 'actionDropAnother Nil)
+										(scrSetActionDesc gScreen 'actionDropAnother (scrTranslate gScreen 'actionDescNoneLeft))
+										)
+									)
+									
 								(scrSetDesc gScreen
 									(cat (scrTranslate gScreen 'descFactory)
 										"\n\n"
@@ -621,6 +642,12 @@
 							<Action id="actionDropItem" default="1">
 								<Navigate screen="DropItem"/>
 							</Action>
+							
+							<Action id="actionDropAnother">
+								(intFabricatorDropItem (objGetData gSource 'lastItemDrop))
+							</Action>
+							
+							<Action id="actionDummy"/>
 
 							<Action id="actionLeave" cancel="1">
 								<Navigate screen="Main"/>
@@ -630,7 +657,7 @@
 
 					<Result>
 						<OnPaneInit>
-							(scrSetDesc gScreen gResult)
+							(scrSetDesc gScreen (scrGetData gScreen 'dropResult))
 						</OnPaneInit>
 
 						<Actions>
@@ -685,128 +712,7 @@
 
 						<Actions>
 							<Action id="actionDropThis" default="1">
-								(block (table entry criteria material energy disposition)
-									(setq gItem (scrGetItem gScreen))
-
-									; Load some variables
-									(setq energy (objGetData gSource "energy"))
-									(setq material (objGetData gSource "material"))
-									(setq disposition (objGetData gSource "disposition"))
-
-									(switch
-										; If this is the creature's favorite food, then we have a special entry
-										; +5 disposition
-
-										(find (objGetData gSource "love") (itmGetType gItem))
-											(setq entry (list Nil Nil Nil Nil 0 0 +5 Nil Nil))
-
-										; If this is the creature's least favorite food, then we have a special
-										; entry: -5 to -8 disposition.
-
-										(find (objGetData gSource "hate") (itmGetType gItem))
-											(setq entry (list Nil Nil Nil Nil 0 0 (random -8 -5) Nil Nil))
-
-										; Otherwise, look for the item in the table
-
-										(setq entry Nil)
-										)
-
-									; Look for the entry in the table
-									(setq table (objGetStaticData gSource "FactoryTable"))
-									(enumwhile table (not entry) thisEntry
-										(switch
-											; Skip if not enough material
-											(ls material (intTeratonGetValue (item thisEntry 1) gItem))
-												Nil
-
-											; Skip if not enough energy
-											(ls energy (intTeratonGetValue (item thisEntry 2) gItem))
-												Nil
-
-											; Skip if not enough disposition
-											(ls disposition (intTeratonGetValue (item thisEntry 3) gItem))
-												Nil
-
-											; If the criteria in the table is Nil, then we always match. This
-											; is for the last (default) entry.
-											(not (setq criteria (item thisEntry 0)))
-												(setq entry thisEntry)
-
-											; If the criteria is an integer, then we see if this is the UNID
-											; of the item.
-											(isint criteria)
-												(if (eq (itmGetType gItem) criteria)
-													(setq entry thisEntry)
-													)
-
-											; If the criteria matches, then we have an entry
-											(itmMatches gItem criteria)
-												(setq entry thisEntry)
-											)
-										)
-
-									; Consume the item	
-									(objRemoveItem gPlayerShip gItem 1)
-
-									; Figure out the result
-									(if entry
-										(block (incEnergy incMaterial incDisposition output newItem)
-											(setq incMaterial (intTeratonGetValue (item entry 4) gItem))
-											(setq incEnergy (intTeratonGetValue (item entry 5) gItem))
-											(setq incDisposition (intTeratonGetValue (item entry 6) gItem))
-
-											(setq output (item entry 7))
-											(switch
-												(not output)
-													(setq newItem Nil)
-
-												(eq output "replicate")
-													(setq newItem (itmCreate (itmGetType gItem) (random 8 12)))
-
-												(isint output)
-													(setq newItem (itmCreate output 1))
-
-												(setq newItem (itmCreateRandom output (intTeratonGetLevelCurve (item entry 8) gItem)))
-												)
-
-											; State changes
-											(objIncData gSource "material" incMaterial)
-											(objIncData gSource "energy" incEnergy)
-											(objIncData gSource "disposition" incDisposition)
-											(if newItem
-												(objAddItem gPlayerShip newItem)
-												)
-
-											; Compute the result description string
-											(switch
-												newItem
-													(setq gResult (scrTranslate gScreen 'descResultNewItem {
-														itemName: (itmGetName newItem 8)
-														}))
-
-												(gr incDisposition 0)
-													(setq gResult (scrTranslate gScreen 'descResultLike))
-
-												(ls incDisposition 0)
-													(setq gResult (scrTranslate gScreen 'descResultDislike))
-
-												(or (gr incMaterial 0) (gr incEnergy 0))
-													(setq gResult (scrTranslate gScreen 'descResultFeed {
-														food: (if (gr incEnergy 0) "energy" "material")
-														}))
-
-												(setq gResult (scrTranslate gScreen 'descResultDiscard))
-												)
-
-											; DEBUG
-											; (setq gResult (cat gResult "\n\nM=" (objGetData gSource "material") " E=" (objGetData gSource "energy") " D=" (objGetData gSource "disposition")))
-											)
-										(setq gResult (scrTranslate gScreen 'descResultUnknown))
-										)
-
-									; Next
-									(scrShowScreen gScreen "Factory" "Result")
-									)
+								(intFabricatorDropItem (scrGetItem gScreen))
 							</Action>
 
 							<Action id="actionCancel" cancel="1">
@@ -836,6 +742,27 @@
 			<Text id="actionFabricatorChamber">[F]abricator Chamber</Text>
 			<Text id="actionDropItem">[D]rop Item in Pit</Text>
 			<Text id="actionDropThis">[D]rop this Item</Text>
+			<Text id="actionDropAnother">
+				(block (text)
+					(setq text (scrTranslate gScreen 'actionDropAnotherText {
+						itemName:(itmGetName (scrGetData gScreen 'lastItemDrop) 0x400)
+						}))
+					(if (gr (count text) 46)
+						(setq text (cat (subset text 0 45)
+										(typTranslate &unidCommonText; 'elipsis)
+							))
+						)
+					text
+					)
+			</Text>
+			<Text id="actionDropAnotherText">Drop [A]nother %itemName%</Text>
+			<Text id="actionDescDropAnother">
+				"You have %number% left."
+			</Text>
+			<Text id="actionDescNoneLeft">
+				"You have none left."
+			</Text>
+			
 			<Text id="descDropItem">What item do you wish to drop into the Teraton pit?</Text>
 			<Text id="descFactory">
 				You are in the vast central chamber of the Teraton nest. A
@@ -1236,6 +1163,134 @@
 					(if destination (scrShowPane gScreen destination))
 					)
 				))
+				
+			(setq intFabricatorDropItem (lambda (theItem)
+				(block (
+					(energy (objGetData gSource "energy"))
+					(material (objGetData gSource "material"))
+					(disposition (objGetData gSource "disposition"))
+					(table (objGetStaticData gSource "FactoryTable"))
+					entry criteria result
+					)
+
+					(switch
+						; If this is the creature's favorite food, then we have a special entry
+						; +5 disposition
+
+						(find (objGetData gSource "love") (itmGetType theItem))
+							(setq entry (list Nil Nil Nil Nil 0 0 +5 Nil Nil))
+
+						; If this is the creature's least favorite food, then we have a special
+						; entry: -5 to -8 disposition.
+
+						(find (objGetData gSource "hate") (itmGetType theItem))
+							(setq entry (list Nil Nil Nil Nil 0 0 (random -8 -5) Nil Nil))
+
+						; Otherwise, look for the item in the table
+
+						(setq entry Nil)
+						)
+
+					; Look for the entry in the table
+					(enumwhile table (not entry) thisEntry
+						(switch
+							; Skip if not enough material
+							(ls material (intTeratonGetValue (item thisEntry 1) theItem))
+								Nil
+
+							; Skip if not enough energy
+							(ls energy (intTeratonGetValue (item thisEntry 2) theItem))
+								Nil
+
+							; Skip if not enough disposition
+							(ls disposition (intTeratonGetValue (item thisEntry 3) theItem))
+								Nil
+
+							; If the criteria in the table is Nil, then we always match. This
+							; is for the last (default) entry.
+							(not (setq criteria (item thisEntry 0)))
+								(setq entry thisEntry)
+
+							; If the criteria is an integer, then we see if this is the UNID
+							; of the item.
+							(isint criteria)
+								(if (eq (itmGetType theItem) criteria)
+									(setq entry thisEntry)
+									)
+
+							; If the criteria matches, then we have an entry
+							(itmMatches theItem criteria)
+								(setq entry thisEntry)
+							)
+						)
+					
+					; Remember the item
+					(objSetData gSource 'lastItemDrop theItem)
+
+					; Consume the item	
+					(objRemoveItem gPlayerShip theItem 1)
+
+					; Figure out the result
+					(if entry
+						(block (incEnergy incMaterial incDisposition output newItem)
+							(setq incMaterial (intTeratonGetValue (item entry 4) theItem))
+							(setq incEnergy (intTeratonGetValue (item entry 5) theItem))
+							(setq incDisposition (intTeratonGetValue (item entry 6) theItem))
+
+							(setq output (item entry 7))
+							(switch
+								(not output)
+									(setq newItem Nil)
+
+								(eq output "replicate")
+									(setq newItem (itmCreate (itmGetType theItem) (random 8 12)))
+
+								(isint output)
+									(setq newItem (itmCreate output 1))
+
+								(setq newItem (itmCreateRandom output (intTeratonGetLevelCurve (item entry 8) theItem)))
+								)
+
+							; State changes
+							(objIncData gSource "material" incMaterial)
+							(objIncData gSource "energy" incEnergy)
+							(objIncData gSource "disposition" incDisposition)
+							(if newItem
+								(objAddItem gPlayerShip newItem)
+								)
+
+							; Compute the result description string
+							(switch
+								newItem
+									(setq result (scrTranslate gScreen 'descResultNewItem {
+										itemName: (itmGetName newItem 8)
+										}))
+
+								(gr incDisposition 0)
+									(setq result (scrTranslate gScreen 'descResultLike))
+
+								(ls incDisposition 0)
+									(setq result (scrTranslate gScreen 'descResultDislike))
+
+								(or (gr incMaterial 0) (gr incEnergy 0))
+									(setq result (scrTranslate gScreen 'descResultFeed {
+										food: (if (gr incEnergy 0) "energy" "material")
+										}))
+
+								(setq result (scrTranslate gScreen 'descResultDiscard))
+								)
+
+							; DEBUG
+							; (setq result (cat result "\n\nM=" (objGetData gSource "material") " E=" (objGetData gSource "energy") " D=" (objGetData gSource "disposition")))
+							)
+						(setq result (scrTranslate gScreen 'descResultUnknown))
+						)
+
+					; Next
+					(scrShowScreen gScreen "Factory" "Result" { dropResult:result })
+					)
+				))
+				
 			)
 	</Globals>
 
