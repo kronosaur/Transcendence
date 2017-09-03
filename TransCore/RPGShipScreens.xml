@@ -113,6 +113,13 @@
 			<Default>
 				<OnPaneInit>
 					(block (thisItem maxCount)
+						(if (scrGetData gScreen 'cursor)
+							(block Nil
+								(scrSetListCursor gScreen (scrGetData gScreen 'cursor))
+								(scrSetData gScreen 'cursor Nil)
+								)
+							)
+
 						(setq thisItem (scrGetItem gScreen))
 						(setq maxCount (itmGetCount thisItem))
 
@@ -137,6 +144,7 @@
 
 						;	Enable/disable actions
 						(scrEnableAction gScreen 'actionJettisonItem (gr maxCount 0))
+						(scrEnableAction gScreen 'actionUse (or (itmMatches thisItem 'u) (itmHasAttribute thisItem 'Usable)))
 						)
 				</OnPaneInit>
 
@@ -161,6 +169,15 @@
 									(scrShowPane gScreen "Default")
 									)
 								)
+							)
+					</Action>
+
+					<Action id="actionUse" default="1">
+						(block Nil
+							(scrSetData gScreen 'cursor (scrGetListCursor gScreen))
+							(scrShowScreen gScreen &dsRPGUseItem; {
+								useItem: (scrGetItem gScreen)
+								})
 							)
 					</Action>
 
@@ -221,6 +238,7 @@
 		<Language>
 			<Text id="actionJettisonItem">[J]ettison this Item</Text>
 			<Text id="actionJettison">[J]ettison</Text>
+			<Text id="actionUse">[U]se this Item</Text>
 
 			<Text id="descCargoEmpty">You are in your ship's cargo hold.</Text>
 			<Text id="descCargoItem">Unit mass: %unitMass%</Text>
