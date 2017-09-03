@@ -94,8 +94,11 @@ void GenerateEffectImage (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Parse the file
 
+	CXMLElement::SParseOptions Options;
+	Options.pController = pEntities;
+
 	CXMLElement *pRenderFile;
-	if (CXMLElement::ParseXML(&InputFile, pEntities, &pRenderFile, &sError) != NOERROR)
+	if (CXMLElement::ParseXML(InputFile, Options, &pRenderFile, &sError) != NOERROR)
 		{
 		printf("%s\n", sError.GetASCIIZPointer());
 		return;
