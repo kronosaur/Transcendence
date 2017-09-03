@@ -391,10 +391,6 @@
 		<StaticData>
 			<RepairHP>10</RepairHP>
 		</StaticData>
-		
-		<Events>
-			<CanRepairItem>True</CanRepairItem>
-		</Events>
 	</ItemType>
 
 	<!-- Large Armor Patch -->
@@ -421,10 +417,6 @@
 		<StaticData>
 			<RepairHP>30</RepairHP>
 		</StaticData>
-		
-		<Events>
-			<CanRepairItem>True</CanRepairItem>
-		</Events>
 	</ItemType>
 
 	<!-- Light Armor Repair Kit -->
@@ -451,10 +443,6 @@
 		<StaticData>
 			<RepairHP>70</RepairHP>
 		</StaticData>
-		
-		<Events>
-			<CanRepairItem>True</CanRepairItem>
-		</Events>
 	</ItemType>
 
 	<!-- Medium Armor Repair Kit -->
@@ -481,10 +469,6 @@
 		<StaticData>
 			<RepairHP>120</RepairHP>
 		</StaticData>
-		
-		<Events>
-			<CanRepairItem>True</CanRepairItem>
-		</Events>
 	</ItemType>
 
 	<!-- Heavy Armor Repair Kit -->
@@ -511,10 +495,6 @@
 		<StaticData>
 			<RepairHP>200</RepairHP>
 		</StaticData>
-		
-		<Events>
-			<CanRepairItem>True</CanRepairItem>
-		</Events>
 	</ItemType>
 
 <!-- BARRELS -->
@@ -567,10 +547,6 @@
 		<StaticData>
 			<RepairHP>(rollDice 6 6 0)</RepairHP>
 		</StaticData>
-		
-		<Events>
-			<CanRepairItem>True</CanRepairItem>
-		</Events>
 
 		<Language>
 			<Text id="descResultIntro">The paste is a silicon-based compound that patches damaged sections of your armor.</Text>
@@ -970,10 +946,6 @@
 		<StaticData>
 			<RepairHP>(rollDice 8 12 0)</RepairHP>
 		</StaticData>
-
-		<Events>
-			<CanRepairItem>True</CanRepairItem>
-		</Events>
 
 		<Language>
 			<Text id="descResultIntro">The paste contains a colony of nanomachines that can repair your armor.</Text>

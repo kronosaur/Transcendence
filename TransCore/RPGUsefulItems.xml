@@ -400,9 +400,23 @@
 
 <!-- BASE CLASSES -->
 
+	<!-- Armor Repair Item Base Class
+
+	Armor repair items should inherit from this class. Typically they should
+	set useScreen to dsRPGUseItemOnArmor.
+
+	EVENTS
+		CanRepairItem - override this event to limit which types of armor can be repaired
+
+	STATIC DATA
+		RepairHP - number of HP repaired in a typical use of this item
+
+    -->
 
 	<Type UNID="&baStdArmorRepair;">
 		<Events>
+			<CanRepairItem>True</CanRepairItem>
+
 			<CanUseOnItem>
 				(block (
 					(dstItem (@ gData 'itemToUseOn))
