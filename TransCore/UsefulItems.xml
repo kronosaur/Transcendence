@@ -389,7 +389,7 @@
 		<Image imageID="&rsItems1;" imageX="288" imageY="576" imageWidth="96" imageHeight="96"/>
 		
 		<StaticData>
-			<RepairHP>10</RepairHP>
+			<Data id="RepairHP">10</Data>
 		</StaticData>
 	</ItemType>
 
@@ -415,7 +415,7 @@
 		<Image imageID="&rsItems1;" imageX="288" imageY="576" imageWidth="96" imageHeight="96"/>
 
 		<StaticData>
-			<RepairHP>30</RepairHP>
+			<Data id="RepairHP">30</Data>
 		</StaticData>
 	</ItemType>
 
@@ -441,7 +441,7 @@
 		<Image imageID="&rsItems1;" imageX="288" imageY="576" imageWidth="96" imageHeight="96"/>
 
 		<StaticData>
-			<RepairHP>70</RepairHP>
+			<Data id="RepairHP">70</Data>
 		</StaticData>
 	</ItemType>
 
@@ -467,7 +467,7 @@
 		<Image imageID="&rsItems1;" imageX="288" imageY="576" imageWidth="96" imageHeight="96"/>
 
 		<StaticData>
-			<RepairHP>120</RepairHP>
+			<Data id="RepairHP">120</Data>
 		</StaticData>
 	</ItemType>
 
@@ -493,7 +493,7 @@
 		<Image imageID="&rsItems1;" imageX="288" imageY="576" imageWidth="96" imageHeight="96"/>
 
 		<StaticData>
-			<RepairHP>200</RepairHP>
+			<Data id="RepairHP">200</Data>
 		</StaticData>
 	</ItemType>
 
@@ -545,7 +545,7 @@
 		<Image imageID="&rsItems1;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
 		
 		<StaticData>
-			<RepairHP>(rollDice 6 6 0)</RepairHP>
+			<Data id="RepairHP">(rollDice 6 6 0)</Data>
 		</StaticData>
 
 		<Language>
@@ -944,7 +944,7 @@
 		<Image imageID="&rsItems1;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
 		
 		<StaticData>
-			<RepairHP>(rollDice 8 12 0)</RepairHP>
+			<Data id="RepairHP">(rollDice 8 12 0)</Data>
 		</StaticData>
 
 		<Language>

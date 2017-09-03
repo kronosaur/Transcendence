@@ -118,7 +118,7 @@
 				/>
 
 		<StaticData>
-			<RepairHP>125</RepairHP>
+			<Data id="RepairHP">125</Data>
 		</StaticData>
 
 		<Events>
@@ -283,7 +283,7 @@
 				/>
 
 		<StaticData>
-			<RepairHP>90</RepairHP>
+			<Data id="RepairHP">90</Data>
 		</StaticData>
 
 		<Events>
@@ -387,7 +387,7 @@
 				/>
 
 		<StaticData>
-			<RepairHP>35</RepairHP>
+			<Data id="RepairHP">35</Data>
 		</StaticData>
 
 		<Events>
@@ -436,7 +436,7 @@
 				/>
 
 		<StaticData>
-			<RepairHP>12</RepairHP>
+			<Data id="RepairHP">12</Data>
 		</StaticData>
 		
 		<Events>
