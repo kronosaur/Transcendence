@@ -79,6 +79,11 @@
 	<!ENTITY dsRPGCommoditiesExchangeSell	"0x00010034">
 	<!ENTITY dsRPGShipBroker			"0x00010035">
 	<!ENTITY dsRPGWingmanEncounter		"0x00010036">
+	<!ENTITY dsRPGUseItem				"0x00010037">
+	<!ENTITY dsRPGUseItemBase			"0x00010038">
+	<!ENTITY dsRPGUseItemOnArmor		"0x00010039">
+	<!ENTITY dsRPGUseItemOnDevice		"0x0001003A">
+	<!ENTITY dsRPGUseItemOnCargo		"0x0001003B">
 	
 	<!-- 0040-004F CARGO CRATE -->
 	
@@ -102,6 +107,7 @@
 	<!-- 00B0-00CF ITEMS -->
 
 	<!ENTITY baStdAuxMountDeviceBase	"0x000100B0">
+	<!ENTITY baStdArmorRepair			"0x000100B1">
 
 	<!-- 00D0-00EF WINGMEN -->
 
@@ -142,6 +148,7 @@
 	<Module filename="RPGShipBroker.xml"/>
 	<Module filename="RPGShipScreens.xml"/>
 	<Module filename="RPGTypes.xml"/>
+	<Module filename="RPGUsefulItems.xml"/>
 	<Module filename="RPGWingmen.xml"/>
 
 </CoreLibrary>

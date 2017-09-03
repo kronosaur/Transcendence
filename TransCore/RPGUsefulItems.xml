@@ -1,0 +1,628 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+<!-- RPG USE ITEM ==============================================================
+
+	This screen allows the player to use an item on another item or device.
+
+	gData uses the following fields:
+
+		useItem:	The item being used. If not specifed we check gItem instead
+
+-->
+
+	<DockScreen UNID="&dsRPGUseItem;"
+			inherit=			"&dsDockScreenBase;"
+			nestedScreen=		"true"
+			name=				"=(itmGetName (or (@ gData 'useItem) gItem) 'capitalize)"
+			>
+
+		<OnScreenInit>
+			(scrSetData gScreen 'useItem (or (@ gData 'useItem) gItem))
+		</OnScreenInit>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(useItem (scrGetData gScreen 'useItem))
+						(theShip gPlayerShip)
+
+						(screenSet (list
+							{
+								screen: &dsRPGUseItem;
+								label: (scrTranslate gScreen 'screenSetUseItem)
+								mainScreen: True
+								}
+							{
+								screen: &dsRPGUseItemOnArmor;
+								label: (scrTranslate gScreen 'screenSetUseItemOnArmor)
+								data: { useItem: useItem }
+								}
+							{
+								screen: &dsRPGUseItemOnDevice;
+								label: (scrTranslate gScreen 'screenSetUseItemOnDevice)
+								data: { useItem: useItem }
+								}
+							{
+								screen: &dsRPGUseItemOnCargo;
+								label: (scrTranslate gScreen 'screenSetUseItemOnCargo)
+								data: { useItem: useItem }
+								}
+							))
+						)
+
+						(scrSetControlValue gScreen 'useItem {
+							source: theShip
+							item: useItem
+							})
+
+						(scrSetDescTranslate gScreen 'descUseItem)
+
+						;   Define the screen set
+						(scrSetData gScreen 'screenSet screenSet)
+						(rpgInitScreenSet screenSet)
+						)
+				</OnPaneInit>
+
+				<Controls>
+					<ItemDisplay id="useItem"/>
+				</Controls>
+
+				<Actions>
+					<Action id="actionArmor">
+						(scrShowScreen gScreen &dsRPGUseItemOnArmor; {
+							useItem: (scrGetData gScreen 'useItem)
+							screenSet: (scrGetData gScreen 'screenSet)
+							})
+					</Action>
+					<Action id="actionDevice">
+						(scrShowScreen gScreen &dsRPGUseItemOnDevice; {
+							useItem: (scrGetData gScreen 'useItem)
+							screenSet: (scrGetData gScreen 'screenSet)
+							})
+					</Action>
+					<Action id="actionCargo">
+						(scrShowScreen gScreen &dsRPGUseItemOnCargo; {
+							useItem: (scrGetData gScreen 'useItem)
+							screenSet: (scrGetData gScreen 'screenSet)
+							})
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+
+		<Language>
+			<Text id="actionArmor">Use on [A]rmor</Text>
+			<Text id="actionDevice">Use on D[e]vice</Text>
+			<Text id="actionCargo">Use on [C]argo item</Text>
+
+			<Text id="descUseItem">How do you want to use this item?</Text>
+
+			<Text id="screenSetUseItem">Main page</Text>
+			<Text id="screenSetUseItemOnArmor">Armor page</Text>
+			<Text id="screenSetUseItemOnDevice">Device page</Text>
+			<Text id="screenSetUseItemOnCargo">Cargo page</Text>
+		</Language>
+	</DockScreen>
+
+<!-- RPG USE ITEM ON ARMOR =====================================================
+
+	This screen allows the player to use an item on an armor segment.
+
+	gData uses the following fields:
+
+		useItem:	The item being used. If not specifed we check gItem instead
+
+		screenSet:	An RPG Screen Set structure (if we've been called from the
+					primary use item screen
+
+-->
+
+	<DockScreen UNID="&dsRPGUseItemOnArmor;"
+			inherit=			"&dsRPGUseItemBase;"
+			nestedScreen=		"true"
+			>
+
+		<Display type="armorSelector"
+				dataFrom=	"player"
+				list=		"aI"
+				noEmptySlots="true"
+				/>
+
+		<Panes>
+		</Panes>
+
+		<Language>
+			<Text id="actionUse">[U]se on this Armor Segment</Text>
+		</Language>
+	</DockScreen>
+
+<!-- RPG USE ITEM ON DEVICE ====================================================
+
+	This screen allows the player to use an item on an installed device.
+
+	gData uses the following fields:
+
+		useItem:	The item being used. If not specifed we check gItem instead
+
+		screenSet:	An RPG Screen Set structure (if we've been called from the
+					primary use item screen
+
+-->
+
+	<DockScreen UNID="&dsRPGUseItemOnDevice;"
+			inherit=			"&dsRPGUseItemBase;"
+			nestedScreen=		"true"
+			>
+
+		<Display type="deviceSelector"
+				dataFrom=	"player"
+				list=		"dI"
+				noEmptySlots="true"
+				/>
+
+		<Panes>
+		</Panes>
+
+		<Language>
+			<Text id="actionUse">[U]se on this Device</Text>
+		</Language>
+	</DockScreen>
+
+<!-- RPG USE ITEM ON CARGO =====================================================
+
+	This screen allows the player to use an item on an item in the cargo bay.
+
+	gData uses the following fields:
+
+		useItem:	The item being used. If not specifed we check gItem instead
+
+		screenSet:	An RPG Screen Set structure (if we've been called from the
+					primary use item screen
+
+-->
+
+	<DockScreen UNID="&dsRPGUseItemOnCargo;"
+			inherit=			"&dsRPGUseItemBase;"
+			nestedScreen=		"true"
+			>
+
+		<Display type="itemPicker"
+				dataFrom=	"player"
+				list=		"*U"
+				>
+			<OnDisplayInit>
+				(block (
+					(useItem (scrGetData gScreen 'useItem))
+					)
+					(scrAddListFilter gScreen 'filterAll "All" (lambda (theItem)
+							(and (itmMatches theItem "*U") (not (itmIsEqual theItem useItem)))
+							))
+					(scrAddListFilter gScreen 'filterInstallable "Devices &amp; Armor" (lambda (theItem)
+							(and (itmMatches theItem "adUN") (not (itmIsEqual theItem useItem)))
+							))
+					(scrAddListFilter gScreen 'filterInstallable "Damaged Items" (lambda (theItem)
+							(and (itmMatches theItem "adUD") (not (itmIsEqual theItem useItem)))
+							))
+					(scrAddListFilter gScreen 'filterGeneral "General" (lambda (theItem)
+							(and (itmMatches theItem "*~admU") (not (itmIsEqual theItem useItem)))
+							))
+					(scrAddListFilter gScreen 'filterAmmo "Ammo" (lambda (theItem)
+							(and (itmMatches theItem "mU") (not (itmIsEqual theItem useItem)))
+							))
+
+					;	Do not need to reproduce details shown in itemPicker list
+					(scrSetData gScreen 'hideCurrent True)
+					)
+			</OnDisplayInit>
+		</Display>
+
+		<Panes>
+		</Panes>
+
+		<Language>
+		</Language>
+	</DockScreen>
+
+<!-- RPG USE ITEM BASE =========================================================
+
+	Base class for the various Use Item on XYZ dockscreens.
+
+	gData uses the following fields:
+
+		useItem:	The item being used. If not specifed we check gItem instead
+
+		screenSet:	An RPG Screen Set structure (if we've been called from the
+					primary use item screen
+
+-->
+
+	<DockScreen UNID="&dsRPGUseItemBase;"
+			inherit=			"&dsDockScreenBase;"
+			nestedScreen=		"true"
+			name=				"=(itmGetName (or (@ gData 'useItem) gItem) 'capitalize)"
+			>
+
+		<OnScreenInit>
+			(scrSetData gScreen 'useItem (or (@ gData 'useItem) gItem 1))
+		</OnScreenInit>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(useItem (scrGetData gScreen 'useItem))
+						(theShip gPlayerShip)
+						(dstItem (scrGetItem gScreen))
+						(useInfo (itmFireEvent useItem 'CanUseOnItem {
+								itemToUseOn: dstItem
+								shipObj: theShip
+								} ))
+						)
+
+						;	Set the description
+						(scrSetControlValue gScreen 'useItem {
+							title: (itmGetName useItem 'capitalize)
+							desc: (itmGetProperty useItem 'description)
+							})
+
+						(if (not (scrGetData gScreen 'hideCurrent))
+							(scrSetControlValue gScreen 'currentItem {
+								source: theShip
+								item: dstItem
+								})
+							)
+
+						(switch
+							(@ useInfo 'desc)
+								(scrSetDesc gScreen (@ useInfo 'desc))
+
+							(not dstItem)
+								(scrSetDescTranslate gScreen 'descNoItemsHere)
+
+							(scrSetDescTranslate gScreen 'descCanNotUse {
+								useItem: (itmGetName useItem 'article)
+								dstItem: (itmGetName dstItem 'article)
+								})
+							)
+						(scrEnableAction gScreen 'actionUse (@ useInfo 'canUse))
+
+						(rpgInitScreenSet (@ gData 'screenSet))
+						)
+				</OnPaneInit>
+
+				<Controls>
+					<ItemDisplay id="useItem"/>
+					<ItemDisplay id="currentItem"/>
+				</Controls>
+
+				<Actions>
+					<Action id="actionUse" default="1">
+						(block (
+							(useItem (scrGetData gScreen 'useItem))
+							(theShip gPlayerShip)
+							(dstItem (scrGetItem gScreen))
+							(theCursor (scrGetListCursor gScreen))
+							result
+							)
+							;	Use the item
+							(setq result (itmFireEvent useItem 'OnUseOnItem {
+								itemToUseOn: dstItem
+								shipObj: theShip
+								}))
+
+							;	Restore the cursor position
+							(scrSetListCursor gScreen theCursor)
+
+							;	Store result and display it
+							(scrSetData gScreen 'usageResult result)
+							(scrShowPane gScreen 'ShowResult)
+							)
+					</Action>
+				</Actions>
+			</Default>
+
+			<ShowResult noListNavigation="true">
+				<OnPaneInit>
+					(block (
+						(useItem (scrGetData gScreen 'useItem))
+						(dstItem (scrGetItem gScreen))
+						(theShip gPlayerShip)
+						(result (scrGetData gScreen 'usageResult))
+						)
+						(scrSetControlValue gScreen 'useItem {
+							title: (itmGetName useItem 'capitalize)
+							desc: (itmGetProperty useItem 'description)
+							})
+
+						(if (not (scrGetData gScreen 'hideCurrent))
+							(scrSetControlValue gScreen 'currentItem {
+								source: theShip
+								item: dstItem
+								})
+							)
+
+						(scrSetDesc gScreen (@ result 'desc))
+
+						(if (and (objHasItem theShip useItem 1) (not (@ result 'nextScreen)))
+							(scrShowAction gScreen 'actionDone Nil)
+							(scrShowAction gScreen 'actionContinue Nil)
+							)
+						)
+				</OnPaneInit>
+
+				<Controls>
+					<ItemDisplay id="useItem"/>
+					<ItemDisplay id="currentItem"/>
+				</Controls>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrShowPane gScreen 'Default)
+					</Action>
+					<Action id="actionDone" default="1" cancel="1">
+						(block (
+							(result (scrGetData gScreen 'usageResult))
+							)
+							(if (@ gData 'screenSet)
+								(scrExitScreen gScreen)
+								)
+							(switch
+								(= (@ result 'nextScreen) 'forceUndock)
+									(scrExitScreen gScreen 'forceUndock)
+
+								(= (@ result 'nextScreen) 'forceExit)
+									(scrExitScreen gScreen)
+
+								(@ result 'nextScreen)
+									(block Nil
+										(scrExitScreen gScreen)
+										(scrShowScreen gScreen (@ result 'nextScreen) (@ result 'nextScreenData))
+										)
+
+								(scrExitScreen gScreen)
+								)
+							)
+					</Action>
+				</Actions>
+			</ShowResult>
+		</Panes>
+
+		<Language>
+			<Text id="actionUse">[U]se on this Item</Text>
+
+			<Text id="descCanNotUse">You cannot use %useItem% on %dstItem%.</Text>
+		</Language>
+	</DockScreen>
+
+
+<!-- BASE CLASSES -->
+
+
+	<Type UNID="&baStdArmorRepair;">
+		<Events>
+			<CanUseOnItem>
+				(block (
+					(dstItem (@ gData 'itemToUseOn))
+					(shipObj (@ gData 'shipObj))
+					(armorNoun (cat (objGetArmorName shipObj dstItem) " " (itmGetName dstItem 'noModifiers)))
+					(skillLevel (typGetData &baStdArmorRepair; 'skillLevel))
+					(skillDesc (switch
+						(ls skillLevel 2)	(itmTranslate gItem 'descUsageExperience1)
+						(ls skillLevel 5)	(itmTranslate gItem 'descUsageExperience2)
+						(ls skillLevel 10)	(itmTranslate gItem 'descUsageExperience3)
+											(itmTranslate gItem 'descUsageExperience4)
+						))
+					)
+					(switch
+						;	Armor repair items only work on armor
+						(not (itmMatches dstItem "a"))
+							{
+								canUse: Nil
+								desc: (itmTranslate gItem 'descUsageNotArmor {
+									useItem: (itmGetName gItem 'plural)
+									dstItem: (itmGetName dstItem 'article)
+									})
+								}
+
+						;	Disallow uninstalled armor as it does not record HP
+						(not (itmIsInstalled dstItem))
+							{
+								canUse: Nil
+								desc: (itmTranslate gItem 'descUsageInstalledOnly {
+									useItem: (itmGetName gItem)
+									dstItem: (itmGetName dstItem 'article)
+									})
+								}
+
+						;	Item is unidentified (assume it is a barrel for now)
+						(not (itmIsKnown gItem))
+							{
+								canUse: True
+								desc: (itmTranslate gItem 'descUsageUnknown {
+									useItem: (itmGetName gItem)
+									dstItem: (itmGetName dstItem 'demonstrative)
+									})
+								}
+
+						;	Armor segment is not damaged
+						(= (objGetArmorDamage shipObj dstItem) 0)
+							{
+								canUse: Nil
+								desc: (itmTranslate gItem 'descUsageArmorNotDamaged {
+									useItem: (itmGetName gItem)
+									dstItem: (itmGetName dstItem)
+									armorNoun: armorNoun
+									})
+								}
+
+						;	Check if we can repair armor with the given item
+						(not (and (setq aItemToRepair dstItem)
+								(objFireItemEvent shipObj gItem 'CanRepairItem)
+								))
+							{
+								canUse: Nil
+								desc: (itmTranslate gItem 'descUsageCanNotRepair {
+									useItem: (itmGetName gItem)
+									dstItem: (itmGetName dstItem)
+									})
+								}
+
+						;	Otherwise OK
+						{
+							canUse: True
+							desc: (itmTranslate gItem 'descUsageOK {
+								useItem: (itmGetName gItem 'article)
+								dstItem: (itmGetName dstItem)
+								experience: skillDesc
+								})
+							}
+						)
+					)
+			</CanUseOnItem>
+
+			<OnUseOnItem>
+				(block (
+					(dstItem (@ gData 'itemToUseOn))
+					(shipObj (@ gData 'shipObj))
+					(repair (eval (itmGetStaticData gItem 'RepairHP)))
+					(descIntro (itmTranslate gItem 'descResultIntro))
+					status hpRepaired
+					)
+
+					(switch
+						(not (itmMatches dstItem "a"))
+							(setq status 'NotArmor)
+
+						(= (objGetArmorDamage shipObj dstItem) 0)
+							(setq status 'NotDamaged)
+
+						(not repair)
+							(setq status 'ItemError)
+
+						(block (
+							(armorSeg (itmGetArmorInstalledLocation dstItem))
+							(skillLevel (typGetData &baStdArmorRepair; 'skillLevel))
+
+							;	As skill level increased, the player's failure chance
+							;	decreases. Also the amount of hp repaired increased.
+							(failureChance (switch
+								(ls skillLevel 2)	20
+								(ls skillLevel 5)	10
+								(ls skillLevel 10)	5
+													0
+								))
+							(repairScale (switch
+								(ls skillLevel 2)	80
+								(ls skillLevel 5)	100
+								(ls skillLevel 10)	110
+									(min (+ 70 (* skillLevel 5)) 200)
+								))
+							(usedUp 100)
+							)
+							;	If the repairing item is damaged armor, then we don't repair as much
+							(if (itmMatches theItem "aD")
+								(setq repair (/ repair 2))
+								)
+
+							;	Scale repair HP with skill level
+							(setq repair (/ (* repair repairScale) 100))
+
+							;	Do the repairs
+							(switch
+								(leq (random 1 100) failureChance)
+									(if (= (random 1 2) 1)
+										;	Sometimes we fail and damage the armor
+										(block Nil
+											(shpDamageArmor shipObj armorSeg 7 (/ (* repair (random 20 100)) 100))
+											(setq status 'DamagedMore)
+											)
+
+										;	Sometimes we fail without damaging further
+										(setq status 'Failed)
+										)
+
+								(block ()
+									(setq hpRepaired (objRepairArmor shipObj dstItem repair))
+									(setq status 'Repaired)
+										
+									;	How much of the kit did we use?
+									(if (gr repair 0)
+										(setq usedUp (/ (* 100 hpRepaired) repair))
+										)
+
+									;	Skill level increases
+									(typIncData &baStdArmorRepair; 'skillLevel)
+									)
+								)
+
+							;	Use up the item
+							(if (or (ls skillLevel 10)
+									(geq usedUp 20)
+									(leq (random 1 100) (add usedUp 20))
+									)
+								(objRemoveItem shipObj gItem 1)
+
+								; Item is not used up
+								(setq status 'Reusable)
+								)
+							)
+						)
+
+					;	Identify the item
+					(itmSetKnown gItem)
+
+					{
+						desc: (cat
+							descIntro (if descIntro " ")
+							(itmTranslate gItem (cat "descResult" status) {
+								useItem: (itmGetName gItem 'demonstrative)
+								hpRepaired: hpRepaired
+								})
+							)
+						}
+					)
+			</OnUseOnItem>
+		</Events>
+
+		<Language>
+			<Text id="descUsageArmorNotDamaged">The ship's %armorNoun% is not damaged.</Text>
+			<Text id="descUsageCanNotRepair">Unfortunately, you cannot repair %dstItem% with %useItem%.</Text>
+			<Text id="descUsageInstalledOnly">%useItem% can only be used on installed armor segments.</Text>
+			<Text id="descUsageNotArmor">%UseItem% are used for repairing armor and will not function on %dstItem%.</Text>
+			<Text id="descUsageOK">You can attempt to repair this %dstItem% with %useItem%; %experience%</Text>
+			<Text id="descUsageUnknown">The barrel seems to contain some kind of armor paste. You can use it on %dstItem%.</Text>
+
+			<Text id="descUsageExperience1">though you do not have much experience repairing armor.</Text>
+			<Text id="descUsageExperience2">you have some experience repairing armor.</Text>
+			<Text id="descUsageExperience3">you are proficient at repairing armor.</Text>
+			<Text id="descUsageExperience4">you are an expert at repairing armor.</Text>
+
+			<Text id="descResultDamagedMore">Unfortunately, your attempt to repair the armor has only damaged it further.</Text>
+			<Text id="descResultFailed">Unfortunately, your attempt to repair the armor was unsuccessful and %useItem% was ruined in the process.</Text>
+			<Text id="descResultItemError">ERROR: &lt;RepairHP&gt; static data not found.</Text>
+			<Text id="descResultNotArmor">That is not an armor segment</Text>
+			<Text id="descResultNotDamaged">That armor segment is not damaged. There is no need to attempt repairs.</Text>
+			<Text id="descResultRepaired">You have successfully repaired %hpRepaired% hit points of damage to your armor.</Text>
+			<Text id="descResultReusable">
+				You have successfully repaired %hpRepaired% hit points of damage to your armor.
+
+				There is still enough of the %useItem% left to repair other segments.
+			</Text>
+		</Language>
+	</Type>
+
+<!-- CODE -->
+
+	<Globals>
+		(block Nil
+			;	Just a wrapper to save some typing
+			(setq itmTranslate (lambda (theItem textID data default)
+				(typTranslate (itmGetType theItem) textID data default)
+				))
+			)
+	</Globals>
+
+</TranscendenceModule>
