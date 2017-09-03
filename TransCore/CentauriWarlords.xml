@@ -135,6 +135,7 @@
 	<!-- Barrel of Centauri Nanos -->
 
 	<ItemType UNID="&itCentauriNanos;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"[barrel(s) of ]Centauri nanos"
 			level=				"3"
 			value=				"250"
@@ -146,13 +147,30 @@
 
 			description=		"These nanomachines weave a diamond matrix through the target material. Armor that has been treated in this way will be more resistant to laser and impact damage."
 
-			useScreen=			"&dsUseArmorCoating;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 			data=				"centauriNanos"
 
 			sortName=			"Centauri nanos, barrel of"
 			>
 
 		<Image imageID="&rsItems1;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<StaticData>
+			<Data id="enhancementTable">
+				(
+					{	criteria:"a &lt;=3"	enhancement:0x0808	}
+					{	criteria:"a &lt;=5"	enhancement:0x0805	}
+					{	criteria:"a &lt;=6"	enhancement:0x0803	}
+					{	criteria:"a &gt;10"	enhancement:Nil	descID:'TooAdvanced	}
+					)
+			</Data>
+		</StaticData>
+
+		<Language>
+			<Text id="descResultIntro">
+				The coating is composed of nanomachines that strengthen your armor against laser and impact damage.
+			</Text>
+		</Language>
 	</ItemType>
 	
 <!-- SHIP CLASSES -->
