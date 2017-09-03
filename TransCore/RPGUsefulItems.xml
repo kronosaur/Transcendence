@@ -628,6 +628,102 @@
 		</Language>
 	</Type>
 
+	<!-- Paste Barrel Item Base Class
+
+	Armor coating barrels should inherit from this class. Typically they should
+	set useScreen to dsRPGUseItemOnArmor.
+
+	STATIC DATA
+		enhancement - enhancement to apply to armor
+		enhancementTable - table of criteria and enhancements for different armor types / levels
+
+    -->
+
+	<Type UNID="&baStdPasteBarrel;">
+		<Events>
+			<CanUseOnItem>
+				(block (
+					(dstItem (@ gData 'itemToUseOn))
+					)
+					(switch
+						(not (itmMatches dstItem "a"))
+							Nil
+
+						(itmIsKnown gItem)
+							{
+								canUse: True
+								desc: (itmTranslate gItem 'descUsageOK {
+									useItem: (itmGetName gItem)
+									dstItem: (itmGetName dstItem 'demonstrative)
+									})
+								}
+						{
+							canUse: True
+							desc: (itmTranslate gItem 'descUsageUnknown {
+								useItem: (itmGetName gItem)
+								dstItem: (itmGetName dstItem 'demonstrative)
+								})
+							}
+						)
+					)
+			</CanUseOnItem>
+
+			<OnUseOnItem>
+				(block (
+					(dstItem (@ gData 'itemToUseOn))
+					(enhancement (itmGetStaticData gItem 'enhancement))
+					(enhancementTable (itmGetStaticData gItem 'enhancementTable))
+					enhancementInfo
+					)
+					;	Search the enhancementTable for first matching entry
+					(enumWhile enhancementTable (not enhancementInfo) theEntry
+						(if (and (@ theEntry 'criteria) (itmMatches dstItem (@ theEntry 'criteria)))
+							(setq enhancementInfo theEntry)
+							))
+
+					;	General enhancement has higher priority than table
+					(if enhancement (set@ enhancementInfo 'enhancement enhancement))
+
+					(switch
+						(not (itmMatches dstItem "aI"))
+							"only installed armor for now"
+
+						(not enhancementInfo)
+							"ERROR: not implemented yet"
+
+						(block (result)
+							;	Apply enhancement
+							(setq result (shpEnhanceItem gPlayerShip dstItem (@ enhancementInfo 'enhancement)))
+
+							;	Remove the armor paste from the player's cargo
+							(objRemoveItem gPlayerShip gItem 1)
+
+							;	Identify the item
+							(itmSetKnown gItem)
+
+							{
+								desc: (cat
+									(itmTranslate gItem 'descResultIntro)
+									(intArmorEnhanceStatus result)
+									(if (@ enhancementInfo 'descID) " ")
+									(itmTranslate gItem (cat "descResult" (@ enhancementInfo 'descID)))
+									)
+								}
+							)
+						)
+					)
+			</OnUseOnItem>
+		</Events>
+
+		<Language>
+			<Text id="descUsageOK">You can use the %useItem% on %dstItem%.</Text>
+			<Text id="descUsageUnknown">The barrel seems to contain some kind of armor paste. You can use it on %dstItem%.</Text>
+
+			<Text id="descResultTooAdvanced">Unfortunately, your armor is too strong for the nanomachines.</Text>
+			<Text id="descResultTooPrimitive">Unfortunately, your armor is too primitive for the nanomachines.</Text>
+		</Language>
+	</Type>
+
 <!-- CODE -->
 
 	<Globals>

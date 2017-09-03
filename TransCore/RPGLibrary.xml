@@ -108,6 +108,7 @@
 
 	<!ENTITY baStdAuxMountDeviceBase	"0x000100B0">
 	<!ENTITY baStdArmorRepair			"0x000100B1">
+	<!ENTITY baStdPasteBarrel			"0x000100B2">
 
 	<!-- 00D0-00EF WINGMEN -->
 
