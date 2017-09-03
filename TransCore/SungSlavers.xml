@@ -86,6 +86,7 @@
 	<!-- Segment of Dragon Armor -->
 
 	<ItemType UNID="&itDragonArmor;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"[segment(s) of ]Dragon armor"
 			level=				"7"
 			value=				"5000"
@@ -96,7 +97,7 @@
 
 			description=		"This is a heavier version of the Sung's innovative armor, used on its Dragon slavers."
 
-			useScreen=			"&dsUseArmorPatch;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 			useUninstalledOnly=	"true"
 
 			sortName=			"Sung armor.10"
@@ -253,6 +254,7 @@
 	<!-- Segment of Heavy Sung Armor -->
 
 	<ItemType UNID="&itHeavySungArmor;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"[segment(s) of ]heavy Sung armor"
 			level=				"6"
 			value=				"2300"
@@ -263,7 +265,7 @@
 
 			description=		"This is a heavier version of the Sung's innovative armor, generally used on its Earth slavers."
 
-			useScreen=			"&dsUseArmorPatch;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 			useUninstalledOnly=	"true"
 
 			sortName=			"Sung armor.20"
@@ -354,6 +356,7 @@
 	<!-- Segment of Sung Armor -->
 
 	<ItemType UNID="&itSungArmor;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"[segment(s) of ]Sung armor"
 			level=				"5"
 			value=				"600"
@@ -364,7 +367,7 @@
 
 			description=		"This blast-resistant tiled armor can be cannibalized to repair other Sung armor segments."
 
-			useScreen=			"&dsUseArmorPatch;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 			useUninstalledOnly=	"true"
 
 			sortName=			"Sung armor.30"
@@ -403,6 +406,7 @@
 	<!-- Segment of Light Sung Armor -->
 
 	<ItemType UNID="&itLightSungArmor;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"[segment(s) of ]light Sung armor"
 			level=				"2"
 			value=				"60"
@@ -413,7 +417,7 @@
 
 			description=		"The Sung created this blast-resistant tiled armor for their Wind slavers. The tiles can be cannibalized to repair other Sung armor segments."
 
-			useScreen=			"&dsUseArmorPatch;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 			useUninstalledOnly=	"true"
 
 			sortName=			"Sung armor.40"

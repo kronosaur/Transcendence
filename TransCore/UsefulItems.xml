@@ -370,6 +370,7 @@
 	<!-- Small Armor Patch -->
 
 	<ItemType UNID="&itSmallArmorPatch;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"small armor patch(es)"
 			level=				"1"
 			value=				"25"
@@ -380,7 +381,7 @@
 
 			description=		"This is a small armor plate that can be welded to your ship's armor to repair damage."
 
-			useScreen=			"&dsUseArmorPatch;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 
 			sortName=			"armor patch, small"
 			>
@@ -399,6 +400,7 @@
 	<!-- Large Armor Patch -->
 
 	<ItemType UNID="&itLargeArmorPatch;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"large armor patch(es)"
 			level=				"3"
 			value=				"150"
@@ -409,7 +411,7 @@
 
 			description=		"This is a large armor plate that can be welded to your ship's armor to repair damage."
 
-			useScreen=			"&dsUseArmorPatch;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 
 			sortName=			"armor patch, large"
 			>
@@ -428,6 +430,7 @@
 	<!-- Light Armor Repair Kit -->
 
 	<ItemType UNID="&itLightArmorRepair;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"light armor repair kit"
 			level=				"5"
 			value=				"700"
@@ -438,7 +441,7 @@
 
 			description=		"This kit can be used in the field to repair damaged armor. It will repair up to 70 hp of damage."
 
-			useScreen=			"&dsUseArmorPatch;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 
 			sortName=			"armor repair kit, 50"
 			>
@@ -457,6 +460,7 @@
 	<!-- Medium Armor Repair Kit -->
 
 	<ItemType UNID="&itMediumArmorRepair;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"medium armor repair kit"
 			level=				"7"
 			value=				"4000"
@@ -467,7 +471,7 @@
 
 			description=		"This kit can be used in the field to repair damaged armor. It will repair up to 120 hp of damage."
 
-			useScreen=			"&dsUseArmorPatch;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 
 			sortName=			"armor repair kit, 30"
 			>
@@ -486,6 +490,7 @@
 	<!-- Heavy Armor Repair Kit -->
 
 	<ItemType UNID="&itHeavyArmorRepair;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"heavy armor repair kit"
 			level=				"9"
 			value=				"10000"
@@ -496,7 +501,7 @@
 
 			description=		"This kit can be used in the field to repair damaged armor. It will repair up to 200 hp of damage."
 
-			useScreen=			"&dsUseArmorPatch;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 
 			sortName=			"armor repair kit, 10"
 			>
@@ -540,6 +545,7 @@
 	<!-- Barrel of Armor Repair Paste -->
 
 	<ItemType UNID="&itSiliconArmorPatch;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"[barrel(s) of ]armor repair paste"
 			level=				"1"
 			value=				"50"
@@ -551,7 +557,7 @@
 
 			description=		"Apply this paste to an armor segment to repair light to moderate damage."
 
-			useScreen=			"&dsUseArmorPatch;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 
 			sortName=			"armor repair paste, barrel of"
 			>
@@ -559,13 +565,16 @@
 		<Image imageID="&rsItems1;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
 		
 		<StaticData>
-			<BarrelDesc>"The paste is a silicon-based compound that patches damaged sections of your armor."</BarrelDesc>
 			<RepairHP>(rollDice 6 6 0)</RepairHP>
 		</StaticData>
 		
 		<Events>
 			<CanRepairItem>True</CanRepairItem>
 		</Events>
+
+		<Language>
+			<Text id="descResultIntro">The paste is a silicon-based compound that patches damaged sections of your armor.</Text>
+		</Language>
 	</ItemType>
 
 	<!-- Barrel of Carbon-Weaver Nanos -->
@@ -939,6 +948,7 @@
 	<!-- Barrel of Repairing Nanos -->
 
 	<ItemType UNID="&itRepairingNanos;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"[barrel(s) of ]repairing nanos"
 			level=				"3"
 			value=				"260"
@@ -950,7 +960,7 @@
 
 			description=		"Apply this paste to an armor segment to repair moderate to heavy damage."
 
-			useScreen=			"&dsUseArmorPatch;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 
 			sortName=			"repairing nanos, barrel of"
 			>
@@ -958,13 +968,16 @@
 		<Image imageID="&rsItems1;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
 		
 		<StaticData>
-			<BarrelDesc>"The paste contains a colony of nanomachines that can repair your armor."</BarrelDesc>
 			<RepairHP>(rollDice 8 12 0)</RepairHP>
 		</StaticData>
 
 		<Events>
 			<CanRepairItem>True</CanRepairItem>
 		</Events>
+
+		<Language>
+			<Text id="descResultIntro">The paste contains a colony of nanomachines that can repair your armor.</Text>
+		</Language>
 	</ItemType>
 
 	<!-- Unknown Barrels -->
