@@ -22,9 +22,6 @@
     <Filter Include="Human Space Library\Star Systems">
       <UniqueIdentifier>{d4cb7273-3da3-4275-9fc5-78295e095dc5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Human Space Library\Encounters">
-      <UniqueIdentifier>{b33ac3ac-3346-4d8b-b1b3-ef7b253a1f89}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Human Space Library\Items">
       <UniqueIdentifier>{36ba9821-7ac3-48a5-b32c-77fbe79b8a73}</UniqueIdentifier>
     </Filter>
@@ -37,41 +34,44 @@
     <Filter Include="Human Space Library\Eridani">
       <UniqueIdentifier>{94156faf-ceb4-48b0-a89b-172afb19a909}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Human Space Library\Encounters\Black Market">
-      <UniqueIdentifier>{5e1c42af-292d-430e-bb05-b469c331a8e7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Human Space Library\Encounters\Korolov Shipping">
-      <UniqueIdentifier>{b04f8c8f-53ab-4024-b123-f5ee2b24f189}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Human Space Library\Encounters\Commonwealth Fleet">
-      <UniqueIdentifier>{2a2f1032-cd48-4b41-a38a-38b029905090}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Human Space Library\Encounters\Commonwealth">
-      <UniqueIdentifier>{4841bfd2-a67e-44c5-b420-8578299339e6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Human Space Library\Encounters\Commonwealth Militia">
-      <UniqueIdentifier>{dbfea604-ebb1-4f1c-a164-4f726aa728c2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Human Space Library\Encounters\Corporate Hierarchy">
-      <UniqueIdentifier>{8f38a4f7-d0dc-4b9d-9a73-26d59d9defe9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Human Space Library\Encounters\Battle Arena">
+    <Filter Include="Human Space Library\Battle Arena">
       <UniqueIdentifier>{17b55370-2fac-4749-99d5-6e4d8bb6ef01}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Human Space Library\Encounters\Charon Pirates">
+    <Filter Include="Human Space Library\Black Market">
+      <UniqueIdentifier>{5e1c42af-292d-430e-bb05-b469c331a8e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Human Space Library\Charon Pirates">
       <UniqueIdentifier>{1236f70a-8cee-4f37-bb66-3ffdd7be825e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Human Space Library\Encounters\St Katharines">
-      <UniqueIdentifier>{5c5bdacd-627e-4c19-8a98-3e14216c61ef}</UniqueIdentifier>
+    <Filter Include="Human Space Library\Commonwealth">
+      <UniqueIdentifier>{4841bfd2-a67e-44c5-b420-8578299339e6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Human Space Library\Encounters\Sisters">
-      <UniqueIdentifier>{2dee5eed-6a06-4261-a4c4-87d876d17953}</UniqueIdentifier>
+    <Filter Include="Human Space Library\Commonwealth Fleet">
+      <UniqueIdentifier>{2a2f1032-cd48-4b41-a38a-38b029905090}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Human Space Library\Encounters\Huari">
+    <Filter Include="Human Space Library\Commonwealth Militia">
+      <UniqueIdentifier>{dbfea604-ebb1-4f1c-a164-4f726aa728c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Human Space Library\Corporate Hierarchy">
+      <UniqueIdentifier>{8f38a4f7-d0dc-4b9d-9a73-26d59d9defe9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Human Space Library\Huari">
       <UniqueIdentifier>{ccad0110-f465-40d2-874f-409983752c4b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Human Space Library\Encounters\Teratons">
+    <Filter Include="Human Space Library\Korolov Shipping">
+      <UniqueIdentifier>{b04f8c8f-53ab-4024-b123-f5ee2b24f189}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Human Space Library\Sisters">
+      <UniqueIdentifier>{2dee5eed-6a06-4261-a4c4-87d876d17953}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Human Space Library\St Katharines">
+      <UniqueIdentifier>{5c5bdacd-627e-4c19-8a98-3e14216c61ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Human Space Library\Teratons">
       <UniqueIdentifier>{95e56c36-5b2d-4c56-95f4-a524716c4ce5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Human Space Library\Misc Encounters">
+      <UniqueIdentifier>{b33ac3ac-3346-4d8b-b1b3-ef7b253a1f89}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -218,10 +218,10 @@
       <Filter>RPG Library</Filter>
     </None>
     <None Include="AresOrthodoxy.xml">
-      <Filter>Human Space Library\Encounters</Filter>
+      <Filter>Human Space Library\Misc Encounters</Filter>
     </None>
     <None Include="CentauriWarlords.xml">
-      <Filter>Human Space Library\Encounters</Filter>
+      <Filter>Human Space Library\Misc Encounters</Filter>
     </None>
     <None Include="Code.xml">
       <Filter>Human Space Library\Miscellaneous</Filter>
@@ -230,10 +230,10 @@
       <Filter>Human Space Library\Miscellaneous</Filter>
     </None>
     <None Include="DwargRaiders.xml">
-      <Filter>Human Space Library\Encounters</Filter>
+      <Filter>Human Space Library\Misc Encounters</Filter>
     </None>
     <None Include="EncountersVol01.xml">
-      <Filter>Human Space Library\Encounters</Filter>
+      <Filter>Human Space Library\Misc Encounters</Filter>
     </None>
     <None Include="Heretic.xml">
       <Filter>Human Space Library\Star Systems</Filter>
@@ -245,25 +245,25 @@
       <Filter>Human Space Library\Star Systems</Filter>
     </None>
     <None Include="Iocrym.xml">
-      <Filter>Human Space Library\Encounters</Filter>
+      <Filter>Human Space Library\Misc Encounters</Filter>
     </None>
     <None Include="KateMorgental.xml">
       <Filter>Human Space Library\Characters</Filter>
     </None>
     <None Include="Luminous.xml">
-      <Filter>Human Space Library\Encounters</Filter>
+      <Filter>Human Space Library\Misc Encounters</Filter>
     </None>
     <None Include="MiscItems.xml">
       <Filter>Human Space Library\Items</Filter>
     </None>
     <None Include="OutlawMiners.xml">
-      <Filter>Human Space Library\Encounters</Filter>
+      <Filter>Human Space Library\Misc Encounters</Filter>
     </None>
     <None Include="Ringers.xml">
-      <Filter>Human Space Library\Encounters</Filter>
+      <Filter>Human Space Library\Misc Encounters</Filter>
     </None>
     <None Include="RogueFleet.xml">
-      <Filter>Human Space Library\Encounters</Filter>
+      <Filter>Human Space Library\Misc Encounters</Filter>
     </None>
     <None Include="StdArmor.xml">
       <Filter>Human Space Library\Items</Filter>
@@ -305,79 +305,79 @@
       <Filter>Human Space Library\Items</Filter>
     </None>
     <None Include="SungSlavers.xml">
-      <Filter>Human Space Library\Encounters</Filter>
+      <Filter>Human Space Library\Misc Encounters</Filter>
     </None>
     <None Include="Tinkers.xml">
-      <Filter>Human Space Library\Encounters</Filter>
+      <Filter>Human Space Library\Misc Encounters</Filter>
     </None>
     <None Include="UrakWarlords.xml">
-      <Filter>Human Space Library\Encounters</Filter>
+      <Filter>Human Space Library\Misc Encounters</Filter>
     </None>
     <None Include="UsefulItems.xml">
       <Filter>Human Space Library\Items</Filter>
     </None>
     <None Include="CommonwealthFleet.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Fleet</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </None>
     <None Include="CommonwealthMilitia.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Militia</Filter>
+      <Filter>Human Space Library\Commonwealth Militia</Filter>
     </None>
     <None Include="KorolovShipping.xml">
-      <Filter>Human Space Library\Encounters\Korolov Shipping</Filter>
+      <Filter>Human Space Library\Korolov Shipping</Filter>
     </None>
     <None Include="CorporateHierarchy.xml">
-      <Filter>Human Space Library\Encounters\Corporate Hierarchy</Filter>
+      <Filter>Human Space Library\Corporate Hierarchy</Filter>
     </None>
     <None Include="Rasiermesser.xml">
-      <Filter>Human Space Library\Encounters\Corporate Hierarchy</Filter>
+      <Filter>Human Space Library\Corporate Hierarchy</Filter>
     </None>
     <None Include="Commonwealth.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth</Filter>
+      <Filter>Human Space Library\Commonwealth</Filter>
     </None>
     <None Include="CommonwealthAgricultural.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth</Filter>
+      <Filter>Human Space Library\Commonwealth</Filter>
     </None>
     <None Include="CommonwealthMetropolis.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth</Filter>
+      <Filter>Human Space Library\Commonwealth</Filter>
     </None>
     <None Include="CommonwealthMining.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth</Filter>
+      <Filter>Human Space Library\Commonwealth</Filter>
     </None>
     <None Include="PointJuno.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Fleet</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </None>
     <None Include="Antarctica.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Fleet</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </None>
     <None Include="Eridani.xml">
       <Filter>Human Space Library\Eridani</Filter>
     </None>
     <None Include="BlackMarket.xml">
-      <Filter>Human Space Library\Encounters\Black Market</Filter>
+      <Filter>Human Space Library\Black Market</Filter>
     </None>
     <None Include="BattleArena.xml">
-      <Filter>Human Space Library\Encounters\Battle Arena</Filter>
+      <Filter>Human Space Library\Battle Arena</Filter>
     </None>
     <None Include="BattleArenaGladiators.xml">
-      <Filter>Human Space Library\Encounters\Battle Arena</Filter>
+      <Filter>Human Space Library\Battle Arena</Filter>
     </None>
     <None Include="CharonFortress.xml">
-      <Filter>Human Space Library\Encounters\Charon Pirates</Filter>
+      <Filter>Human Space Library\Charon Pirates</Filter>
     </None>
     <None Include="CharonPirates.xml">
-      <Filter>Human Space Library\Encounters\Charon Pirates</Filter>
+      <Filter>Human Space Library\Charon Pirates</Filter>
     </None>
     <None Include="StKatharines.xml">
-      <Filter>Human Space Library\Encounters\St Katharines</Filter>
+      <Filter>Human Space Library\St Katharines</Filter>
     </None>
     <None Include="SistersOfDomina.xml">
-      <Filter>Human Space Library\Encounters\Sisters</Filter>
+      <Filter>Human Space Library\Sisters</Filter>
     </None>
     <None Include="Huari.xml">
-      <Filter>Human Space Library\Encounters\Huari</Filter>
+      <Filter>Human Space Library\Huari</Filter>
     </None>
     <None Include="Teratons.xml">
-      <Filter>Human Space Library\Encounters\Teratons</Filter>
+      <Filter>Human Space Library\Teratons</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -439,7 +439,7 @@
       <Filter>Human Space Library\Star Systems</Filter>
     </Xml>
     <Xml Include="Ferians.xml">
-      <Filter>Human Space Library\Encounters</Filter>
+      <Filter>Human Space Library\Misc Encounters</Filter>
     </Xml>
     <Xml Include="Fiona.xml">
       <Filter>Human Space Library\Characters</Filter>
@@ -448,7 +448,7 @@
       <Filter>Human Space Library\Characters</Filter>
     </Xml>
     <Xml Include="Penitents.xml">
-      <Filter>Human Space Library\Encounters</Filter>
+      <Filter>Human Space Library\Misc Encounters</Filter>
     </Xml>
     <Xml Include="StdMiningEquipment.xml">
       <Filter>Human Space Library\Items</Filter>
@@ -466,70 +466,70 @@
       <Filter>Human Space Library\Characters</Filter>
     </Xml>
     <Xml Include="CommonwealthFleetMission01.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Fleet</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
     <Xml Include="CommonwealthFleetMission02.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Fleet</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
     <Xml Include="CommonwealthFleetMission03.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Fleet</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
     <Xml Include="CommonwealthFleetMission04.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Fleet</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
     <Xml Include="CommonwealthFleetMission05.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Fleet</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
     <Xml Include="CommonwealthFleetMission06.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Fleet</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
     <Xml Include="CommonwealthFleetMission07.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Fleet</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
     <Xml Include="CommonwealthFleetMission08.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Fleet</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
     <Xml Include="CommonwealthFleetMission09.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Fleet</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
     <Xml Include="CommonwealthFleetMission10.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Fleet</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
     <Xml Include="CommonwealthFleetMission11.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Fleet</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
     <Xml Include="CommonwealthFleetMissionLL01.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Fleet</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
     <Xml Include="CommonwealthFleetMissionLL02.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Fleet</Filter>
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
     <Xml Include="CommonwealthMilitiaMission04.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Militia</Filter>
+      <Filter>Human Space Library\Commonwealth Militia</Filter>
     </Xml>
     <Xml Include="CommonwealthMilitiaMission01.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Militia</Filter>
+      <Filter>Human Space Library\Commonwealth Militia</Filter>
     </Xml>
     <Xml Include="CommonwealthMilitiaMission02.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Militia</Filter>
+      <Filter>Human Space Library\Commonwealth Militia</Filter>
     </Xml>
     <Xml Include="CommonwealthMilitiaMission03.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Militia</Filter>
+      <Filter>Human Space Library\Commonwealth Militia</Filter>
     </Xml>
     <Xml Include="KSMission03.xml">
-      <Filter>Human Space Library\Encounters\Korolov Shipping</Filter>
+      <Filter>Human Space Library\Korolov Shipping</Filter>
     </Xml>
     <Xml Include="KronosaurusMission01.xml">
-      <Filter>Human Space Library\Encounters\Korolov Shipping</Filter>
+      <Filter>Human Space Library\Korolov Shipping</Filter>
     </Xml>
     <Xml Include="KSMission01.xml">
-      <Filter>Human Space Library\Encounters\Korolov Shipping</Filter>
+      <Filter>Human Space Library\Korolov Shipping</Filter>
     </Xml>
     <Xml Include="KSMission02.xml">
-      <Filter>Human Space Library\Encounters\Korolov Shipping</Filter>
+      <Filter>Human Space Library\Korolov Shipping</Filter>
     </Xml>
     <Xml Include="CommonwealthShips.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth</Filter>
+      <Filter>Human Space Library\Commonwealth</Filter>
     </Xml>
     <Xml Include="RPGCommoditiesExchange.xml">
       <Filter>RPG Library</Filter>
@@ -541,34 +541,34 @@
       <Filter>Human Space Library\Eridani</Filter>
     </Xml>
     <Xml Include="BlackMarketMission00.xml">
-      <Filter>Human Space Library\Encounters\Black Market</Filter>
+      <Filter>Human Space Library\Black Market</Filter>
     </Xml>
     <Xml Include="BlackMarketMission01.xml">
-      <Filter>Human Space Library\Encounters\Black Market</Filter>
+      <Filter>Human Space Library\Black Market</Filter>
     </Xml>
     <Xml Include="CommonwealthMilitiaMissionSK01.xml">
-      <Filter>Human Space Library\Encounters\Commonwealth Militia</Filter>
+      <Filter>Human Space Library\Commonwealth Militia</Filter>
     </Xml>
     <Xml Include="BattleArenaKidnapped.xml">
-      <Filter>Human Space Library\Encounters\Battle Arena</Filter>
+      <Filter>Human Space Library\Battle Arena</Filter>
     </Xml>
     <Xml Include="BattleArenaMelee.xml">
-      <Filter>Human Space Library\Encounters\Battle Arena</Filter>
+      <Filter>Human Space Library\Battle Arena</Filter>
     </Xml>
     <Xml Include="Dall01.xml">
-      <Filter>Human Space Library\Encounters\St Katharines</Filter>
+      <Filter>Human Space Library\St Katharines</Filter>
     </Xml>
     <Xml Include="Sanctuary.xml">
-      <Filter>Human Space Library\Encounters\Sisters</Filter>
+      <Filter>Human Space Library\Sisters</Filter>
     </Xml>
     <Xml Include="HuariMission01.xml">
-      <Filter>Human Space Library\Encounters\Huari</Filter>
+      <Filter>Human Space Library\Huari</Filter>
     </Xml>
     <Xml Include="HuariMission02.xml">
-      <Filter>Human Space Library\Encounters\Huari</Filter>
+      <Filter>Human Space Library\Huari</Filter>
     </Xml>
     <Xml Include="HuariMission03.xml">
-      <Filter>Human Space Library\Encounters\Huari</Filter>
+      <Filter>Human Space Library\Huari</Filter>
     </Xml>
     <Xml Include="HuaramarcaMission07.xml">
       <Filter>Part I</Filter>
@@ -595,19 +595,19 @@
       <Filter>Part I</Filter>
     </Xml>
     <Xml Include="Kronosaurus.xml">
-      <Filter>Human Space Library\Encounters\Charon Pirates</Filter>
+      <Filter>Human Space Library\Charon Pirates</Filter>
     </Xml>
     <Xml Include="KSMissionC01.xml">
-      <Filter>Human Space Library\Encounters\Korolov Shipping</Filter>
+      <Filter>Human Space Library\Korolov Shipping</Filter>
     </Xml>
     <Xml Include="KSMissionC02.xml">
-      <Filter>Human Space Library\Encounters\Korolov Shipping</Filter>
+      <Filter>Human Space Library\Korolov Shipping</Filter>
     </Xml>
     <Xml Include="TeratonResearch.xml">
-      <Filter>Human Space Library\Encounters\Teratons</Filter>
+      <Filter>Human Space Library\Teratons</Filter>
     </Xml>
     <Xml Include="KorolovFreighters.xml">
-      <Filter>Human Space Library\Encounters\Korolov Shipping</Filter>
+      <Filter>Human Space Library\Korolov Shipping</Filter>
     </Xml>
   </ItemGroup>
 </Project>
