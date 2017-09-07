@@ -768,6 +768,20 @@
 		</Effect>
 	</EffectType>
 
+	<EffectType unid="&efNanoParticleDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Particle
+					style=			"glitter"
+					minWidth=		"3"
+					maxWidth=		"3"
+					primaryColor=	"#1d2420"
+					secondaryColor=	"#e5fff2"
+					/>
+		</Effect>
+	</EffectType>
+	
 	<EffectType UNID="&efGravitonBeamDefault;"
 			instance=			"owner"
 			>
