@@ -317,7 +317,8 @@
 						;	Description
 						
 						(scrSetDesc gScreen
-							(or (objTranslate gPlayerShip "dockServices:shipDesc")
+							(or (objTranslate gSource 'core.dockServicesDesc)
+									(objTranslate gPlayerShip "dockServices:shipDesc")
 									(objGetProperty gPlayerShip 'playerDesc)
 									(scrTranslate gScreen 'shipConfigScreenDesc)
 									)
