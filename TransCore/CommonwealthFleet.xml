@@ -1522,7 +1522,7 @@ PLAYER DATA
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsBritannia;" imageWidth="80" imageHeight="80"/>
+		<Image imageID="&rsBritanniaHD;" imageX="0" imageY="0" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="154"	posRadius="26"	posZ="0"	rotation="180"/>
@@ -1591,7 +1591,7 @@ PLAYER DATA
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="320" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsCenturionHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
@@ -1649,7 +1649,7 @@ PLAYER DATA
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="320" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsCenturionHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
@@ -2605,6 +2605,8 @@ PLAYER DATA
 	<Image UNID="&rsAquila;"		bitmap="Resources\Aquila.jpg" bitmask="Resources\AquilaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsBritannia;"		bitmap="Resources\Britannia.jpg" bitmask="Resources\BritanniaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsCSC;"			bitmap="Resources\CSC.jpg" bitmask="Resources\CSCMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsBritanniaHD;"	bitmap="Resources\BritanniaHD.jpg" bitmask="Resources\BritanniaHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsCenturionHD;"	bitmap="Resources\CenturionHD.jpg"	bitmask="Resources\CenturionHDMask.bmp" 	loadOnUse="true" />
 	
 	<Image UNID="&rsCSCBkgnd;"		bitmap="Resources\CSCScreen.jpg" loadOnUse="true" />
 	<Image UNID="&rsFleetEmblems;"	bitmap="Resources\FleetEmblems.jpg" bitmask="Resources\FleetEmblemsMask.bmp" loadOnUse="true" />

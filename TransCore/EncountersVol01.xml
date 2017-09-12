@@ -244,7 +244,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips1;" imageX="528" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsXenophobeFighterHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="10"	posZ="0"	rotation="180"/>
@@ -817,9 +817,10 @@
 
 	<!-- Resources -->
 
-	<Image UNID="&rsXenophobeArk;"				bitmap="Resources\XenophobeArk.jpg"		bitmask="Resources\XenophobeArkMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsXenophobeDefender;"			bitmap="Resources\XenophobeDefender.jpg"		bitmask="Resources\XenophobeDefenderMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsXenophobeArk;"				bitmap="Resources\XenophobeArk.jpg"				bitmask="Resources\XenophobeArkMask.bmp"  		loadOnUse="true"/>
+	<Image UNID="&rsXenophobeDefender;"			bitmap="Resources\XenophobeDefender.jpg"		bitmask="Resources\XenophobeDefenderMask.bmp"	loadOnUse="true"/>
 	<Image UNID="&rsXenophobeWorldship;"		bitmap="Resources\XenophobeWorldship.jpg"		bitmask="Resources\XenophobeWorldshipMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsXenophobeFighterHD;"		bitmap="Resources\XenophobeFighterHD.jpg"		bitmask="Resources\XenophobeFighterHDMask.bmp"  loadOnUse="true"/>
 
 <!-- Death Drugs Cartel =================================================== -->
 
@@ -866,7 +867,7 @@
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="192" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsMethEnforcerHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="18"	posZ="0"	rotation="180"/>
@@ -958,6 +959,10 @@
 			</Table>
 		</Encounters>
 	</StationType>
+	
+	<!-- RESOURCES -->
+
+	<Image UNID="&rsMethEnforcerHD;"				bitmap="Resources\MethEnforcerHD.jpg"		bitmask="Resources\MethEnforcerHDMask.bmp"  loadOnUse="true"/>
 
 <!-- Freeworld Anarchists ================================================= -->
 
@@ -1001,7 +1006,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips1;" imageX="192" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsEarthzoneHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="158"	posRadius="18"	posZ="0"	rotation="180"	sendToBack="*"/>
@@ -1050,7 +1055,7 @@
 			rotationAccel=		"6.0"
 			/>
 
-		<Image imageID="&rsSmallShips1;" imageX="128" imageY="0" imageWidth="32" imageHeight="32"/>
+		<Image imageID="&rsHornetHD;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="8"	posZ="0"	rotation="180"/>
@@ -1372,7 +1377,9 @@
 	
 	<!-- RESOURCES -->
 
-	<Image UNID="&rsAnarchistStations;"				bitmap="Resources\AnarchistStations.jpg"		bitmask="Resources\AnarchistStationsMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsAnarchistStations;"				bitmap="Resources\AnarchistStations.jpg"		bitmask="Resources\AnarchistStationsMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsEarthzoneHD;"					bitmap="Resources\EarthzoneHD.jpg"				bitmask="Resources\EarthzoneHDMask.bmp"  		loadOnUse="true"/>
+	<Image UNID="&rsHornetHD;"						bitmap="Resources\HornetHD.jpg"					bitmask="Resources\HornetHDMask.bmp"  			loadOnUse="true"/>
 	
 <!-- Gaian Terraformers =================================================== -->
 
@@ -1810,7 +1817,7 @@
 			rotationAccel=		"2.0"
 			/>
 
-		<Image imageID="&rsSmallShips1;" imageX="224" imageY="0" imageWidth="32" imageHeight="32"/>
+		<Image imageID="&rsHeliotropeGunshipHD;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="10"	posZ="0"	rotation="180"/>
@@ -2008,6 +2015,7 @@
 	<!-- Resources -->
 
 	<Image UNID="&rsHeliotropeFrigate;"				bitmap="Resources\HeliotropeFrigate.jpg"		bitmask="Resources\HeliotropeFrigateMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsHeliotropeGunshipHD;"			bitmap="Resources\HeliotropeGunshipHD.jpg"		bitmask="Resources\HeliotropeGunshipHDMask.bmp"  loadOnUse="true"/>
 	
 <!-- Himal Separatists ==================================================== -->
 
@@ -2051,7 +2059,7 @@
 			rotationAccel=		"2.0"
 			/>
 
-		<Image imageID="&rsMediumShips1;" imageX="720" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="5"/>
+		<Image imageID="&rsHimalInterceptorHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" rotationOffset="5" />
 
 		<AISettings
 			fireRateAdj=		"40"
@@ -2123,6 +2131,10 @@
 
 	</StationType>
 
+	<!-- Resources -->
+
+	<Image UNID="&rsHimalInterceptorHD;"		bitmap="Resources\HimalInterceptorHD.jpg"		bitmask="Resources\HimalInterceptorHDMask.bmp"  loadOnUse="true"/>
+
 <!-- Kobol Syndicate ======================================================= -->
 
 	<Sovereign UNID="&svKobolWarlords;"
@@ -2169,7 +2181,7 @@
 			<Item count="2d6" item="&itXenotiteFuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="832" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsKobolGunshipOmniHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="158"	posRadius="26"	posZ="0"	rotation="180"/>
@@ -2220,7 +2232,7 @@
 			<Item count="2d6" item="&itXenotiteFuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="896" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsKobolGunshipDualHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="158"	posRadius="26"	posZ="0"	rotation="180"/>
@@ -2274,7 +2286,7 @@
 			<Item count="4d12" item="&itGotha10Missile;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="960" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsKobolGunshipMissilesHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="158"	posRadius="26"	posZ="0"	rotation="180"/>
@@ -2348,6 +2360,12 @@
 
 	</StationType>
 
+	<!-- Resources -->
+
+	<Image UNID="&rsKobolGunshipDualHD;"		bitmap="Resources\KobolGunshipDualHD.jpg"		bitmask="Resources\KobolGunshipDualHDMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsKobolGunshipMissilesHD;"	bitmap="Resources\KobolGunshipMissilesHD.jpg"	bitmask="Resources\KobolGunshipMissilesHDMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsKobolGunshipOmniHD;"		bitmap="Resources\KobolGunshipOmniHD.jpg"		bitmask="Resources\KobolGunshipOmniHDMask.bmp"  	loadOnUse="true"/>
+
 <!-- Marauders ============================================================ -->
 
 	<Sovereign UNID="&svMarauders;"
@@ -2400,7 +2418,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips1;" imageX="432" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-9"/>
+		<Image imageID="&rsBarbaryHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" rotationOffset="-9" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="155"	posRadius="10"	posZ="0"	rotation="180"/>
@@ -2831,7 +2849,8 @@
 
 	<!-- Resources -->
 
-	<Image UNID="&rsTripoli;"			bitmap="Resources\Tripoli.jpg"		bitmask="Resources\TripoliMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsTripoli;"			bitmap="Resources\Tripoli.jpg"		bitmask="Resources\TripoliMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsBarbaryHD;"			bitmap="Resources\BarbaryHD.jpg"	bitmask="Resources\BarbaryHDMask.bmp"	loadOnUse="true"/>
 	
 <!-- Outlaws ============================================================== -->
 
@@ -4125,7 +4144,7 @@
 			</Table>
 		</Items>
 
-		<Image imageID="&rsMediumShips1;" imageX="624" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsRanxGunshipHD;"	imageWidth="48"	imageHeight="48"	rotationCount="120"	rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="130"	posRadius="12"	posZ="8"	rotation="180"	bringToFront="*"/>
@@ -4375,7 +4394,8 @@
 
 	<!-- Resources -->
 
-	<Image UNID="&rsRanxDreadnought;"			bitmap="Resources\RanxDreadnought.jpg"		bitmask="Resources\RanxDreadnoughtMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsRanxDreadnought;"			bitmap="Resources\RanxDreadnought.jpg"		bitmask="Resources\RanxDreadnoughtMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsRanxGunshipHD;"				bitmap="Resources\RanxGunshipHD.jpg"		bitmask="Resources\RanxGunshipHDMask.bmp"  	loadOnUse="true"/>
 
 <!-- Salvagers ============================================================ -->
 
@@ -4649,7 +4669,7 @@
 			rotationAccel=		"1.0"
 			/>
 
-		<Image imageID="&rsMediumShips1;" imageX="384" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsPlagueHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="18"	posZ="0"	rotation="180"	sendToBack="*"/>
@@ -4708,7 +4728,7 @@
 			<Item count="4d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="128" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsRevelationsHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="158"	posRadius="22"	posZ="0"	rotation="180"	sendToBack="*"/>
@@ -4894,6 +4914,11 @@
 			</Ship>
 		</LevelTable>
 	</ShipTable>
+
+	<!-- Resources -->
+
+	<Image UNID="&rsPlagueHD;"				bitmap="Resources\PlagueHD.jpg"			bitmask="Resources\PlagueHDMask.bmp"		loadOnUse="true"/>
+	<Image UNID="&rsRevelationsHD;"			bitmap="Resources\RevelationsHD.jpg"	bitmask="Resources\RevelationsHDMask.bmp"	loadOnUse="true"/>
 
 <!-- Sealed Cargo Container =============================================== -->
 

@@ -43,7 +43,7 @@
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="320" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsCenturionHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>

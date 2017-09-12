@@ -45,7 +45,7 @@
 		<Items>
 		</Items>
 
-		<Image imageID="&rsMediumShips1;" imageX="816" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsUrakSentinelHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<AISettings
 			fireRateAdj=		"20"
@@ -527,6 +527,7 @@
 
 <!-- RESOURCES -->
 
-	<Image UNID="&rsUrakDestroyer;"		bitmap="Resources\UrakDestroyer.jpg" bitmask="Resources\UrakDestroyerMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsUrakDestroyer;"		bitmap="Resources\UrakDestroyer.jpg" 	bitmask="Resources\UrakDestroyerMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsUrakSentinelHD;"	bitmap="Resources\UrakSentinelHD.jpg" 	bitmask="Resources\UrakSentinelHDMask.bmp" loadOnUse="true"/>
 
 </TranscendenceModule>

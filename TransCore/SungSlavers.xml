@@ -484,7 +484,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips1;" imageX="480" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsWindSlaverHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="141"	posRadius="7"	posZ="0"	rotation="180"/>
@@ -544,7 +544,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips2;" imageX="512" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsSteelSlaverHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="166"	posRadius="25"	posZ="0"	rotation="180"/>
@@ -2063,7 +2063,9 @@
 	
 <!-- RESOURCES -->
 
-	<Image UNID="&rsDragonSlaverImage;"	bitmap="Resources\DragonSlaver.jpg"	bitmask="Resources\DragonSlaverMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsDragonSlaverImage;"	bitmap="Resources\DragonSlaver.jpg"		bitmask="Resources\DragonSlaverMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsSungTransport;"		bitmap="Resources\SungTransport.jpg"	bitmask="Resources\SungTransportMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsWindSlaverHD;"		bitmap="Resources\WindSlaverHD.jpg"		bitmask="Resources\WindSlaverHDMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsSteelSlaverHD;"		bitmap="Resources\SteelSlaverHD.jpg"	bitmask="Resources\SteelSlaverHDMask.bmp"  loadOnUse="true"/>
 
 </TranscendenceModule>
