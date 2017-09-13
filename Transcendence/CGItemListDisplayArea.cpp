@@ -110,6 +110,7 @@ int CGItemListDisplayArea::Justify (const RECT &rcRect)
 //	Figure out how big we are.
 
 	{
+	int i;
 	const CVisualPalette &VI = g_pHI->GetVisuals();
 
 	RECT rcInner = rcRect;
@@ -127,7 +128,19 @@ int CGItemListDisplayArea::Justify (const RECT &rcRect)
 		//	Compute the size of each box (where each item will paint).
 
 		m_cxBox = BOX_WIDTH;
-		m_cyBox = ICON_HEIGHT + 2 * Medium.GetHeight();
+
+		//	See how many lines we need for the items
+
+		int iMaxLines = 0;
+		for (i = 0; i < m_ItemList.GetCount(); i++)
+			{
+			const CItem &Item = m_ItemList[i].Item;
+			int iLinesNeeded = Medium.BreakText(Item.GetNounPhrase(CItemCtx(), nounShort), m_cxBox);
+			if (iLinesNeeded > iMaxLines)
+				iMaxLines = iLinesNeeded;
+			}
+
+		m_cyBox = ICON_HEIGHT + Max(1, iMaxLines) * Medium.GetHeight();
 
 		//	Figure out how many boxes fit in our space
 
