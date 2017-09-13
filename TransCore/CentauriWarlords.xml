@@ -247,7 +247,7 @@
 			</Table>
 		</Items>
 
-		<Image imageID="&rsCentauriHeavyRaiderImage;" imageX="0" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsCentauriHeavyRaiderHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -550,7 +550,7 @@
 			rotationAccel=		"1.0"
 			/>
 
-		<Image imageID="&rsCentauriHeavyRaiderImage;" imageX="0" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsCentauriHeavyRaiderHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -595,7 +595,7 @@
 			rotationAccel=		"1.0"
 			/>
 
-		<Image imageID="&rsCentauriRaiderImage;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsCentauriRaiderHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -1046,5 +1046,7 @@
 	<Image UNID="&rsCentauriHeavyRaiderImage;"	bitmap="Resources\CentauriHeavyRaider.jpg" bitmask="Resources\CentauriHeavyRaiderMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsCentauriRaiderImage;"		bitmap="Resources\CentauriRaider.jpg" bitmask="Resources\CentauriRaiderMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsCentauriStationsImage;"		bitmap="Resources\CentauriStations.jpg" bitmask="Resources\CentauriStationsMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsCentauriHeavyRaiderHD;"		bitmap="Resources\CentauriHeavyRaiderHD.jpg" bitmask="Resources\CentauriHeavyRaiderHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsCentauriRaiderHD;"			bitmap="Resources\CentauriRaiderHD.jpg" bitmask="Resources\CentauriRaiderHDMask.bmp"  loadOnUse="true"/>
 
 </TranscendenceModule>

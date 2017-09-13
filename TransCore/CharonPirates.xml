@@ -82,7 +82,7 @@
 			rotationAccel=		"2.0"
 			/>
 
-		<Image imageID="&rsMediumShips1;" imageX="288" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-10"/>
+		<Image imageID="&rsCorsairHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" rotationOffset="-10" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="10"	posZ="10"	rotation="180"/>
@@ -139,7 +139,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips1;" imageX="288" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-10"/>
+		<Image imageID="&rsCorsairHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" rotationOffset="-10" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="10"	posZ="10"	rotation="180"/>
@@ -282,7 +282,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips1;" imageX="336" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsVikingHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="155"	posRadius="10"	posZ="0"	rotation="180"/>
@@ -341,7 +341,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips1;" imageX="336" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsVikingHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="155"	posRadius="10"	posZ="0"	rotation="180"/>
@@ -1397,7 +1397,7 @@
 			</OnBehaviorControl>
 
 			<OnCreate>
-				(block Nil
+				(block (i)
 					;	Call the base class so that it can create raiders or
 					;	whatever.
 					;
@@ -1418,7 +1418,6 @@
 						(setq roll (random 1 100))
 						)
 
-					(setq i 0)
 					(loop (gr roll (item (item tableIndex i) 0))
 						(setq i (add i 1))
 						)
@@ -1696,7 +1695,6 @@
 
 					; Pick a random class for the raider
 					(setq roll (random 1 100))
-					(setq i 0)
 					(loop (gr roll (item (item classTable i) 0))
 						(setq i (add i 1))
 						)
@@ -2037,5 +2035,7 @@
 <!-- RESOURCES -->
 
 	<Image UNID="&rsCharonFrigateImage;"	bitmap="Resources\CharonFrigate.jpg" bitmask="Resources\CharonFrigateMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsCorsairHD;"	bitmap="Resources\CorsairHD.jpg" bitmask="Resources\CorsairHDMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsVikingHD;"	bitmap="Resources\VikingHD.jpg" bitmask="Resources\VikingHD.bmp"  loadOnUse="true"/>
 
 </TranscendenceModule>

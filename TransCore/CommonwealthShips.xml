@@ -34,7 +34,7 @@
 			rotationAccel=		"1.0"
 			/>
 
-		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsRoninHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -88,7 +88,7 @@
 			<Item count="3d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsRoninHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -198,7 +198,7 @@
 			rotationAccel=		"1.0"
 			/>
 
-		<Image imageID="&rsIAVLight;" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsIAVLightHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="160"	posRadius="22"	posZ="0"	rotation="180"/>
@@ -390,7 +390,7 @@
 			<Item count="3d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsRoninHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -503,7 +503,7 @@
 			rotationAccel=		"0.5"
 			/>
 
-		<Image imageID="&rsIAVMedium;" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsIAVMediumHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="168"	posRadius="30"	posZ="0"	rotation="180"/>
@@ -831,7 +831,7 @@
 			rotationAccel=		"0.5"
 			/>
 
-		<Image imageID="&rsIAVHeavy;" imageWidth="72" imageHeight="72"/>
+		<Image imageID="&rsIAVHeavyHD;" imageX="0" imageY="0" imageWidth="72" imageHeight="72" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="151"	posRadius="31"	posZ="0"	rotation="180"/>
@@ -1038,6 +1038,10 @@
 	<Image UNID="&rsManticoreHero;"				bitmap="Resources\ManticoreLarge.jpg" bitmask="Resources\ManticoreLargeMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsScorpionGunship;"			bitmap="Resources\ScorpionGunship.jpg" bitmask="Resources\ScorpionGunshipMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsScorpionGunshipHero;"		bitmap="Resources\ScorpionGunshipLarge.jpg" bitmask="Resources\ScorpionGunshipLargeMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsIAVLightHD;"				bitmap="Resources\IAVLightHD.jpg" bitmask="Resources\IAVLightHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsIAVMediumHD;"				bitmap="Resources\IAVMediumHD.jpg" bitmask="Resources\IAVMediumHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsIAVHeavyHD;"				bitmap="Resources\IAVHeavyHD.jpg" bitmask="Resources\IAVHeavyHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsRoninHD;"					bitmap="Resources\RoninHD.jpg" bitmask="Resources\RoninHDMask.bmp" loadOnUse="true"/>
 
 	<Image UNID="&rsManticore;"					bitmap="Resources\Manticore.jpg" bitmask="Resources\ManticoreMask.bmp" loadOnUse="true"/>
 </TranscendenceModule>

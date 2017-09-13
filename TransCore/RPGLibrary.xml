@@ -110,6 +110,10 @@
 	<!-- 00F0-010F MEMBERSHIP -->
 
 	<!ENTITY dsRPGPromotion				"0x000100F0">
+	
+	<!-- Here looks good, I guess? -->
+	
+	<!ENTITY unidCommonText				"0x00010110">
 	]>
 	
 <CoreLibrary
@@ -131,6 +135,7 @@
 	<Module filename="RPGCharacters.xml"/>
 	<Module filename="RPGCode.xml"/>
 	<Module filename="RPGCommoditiesExchange.xml"/>
+	<Module filename="RPGCommonText.xml"/>
 	<Module filename="RPGCompatibility.xml"/>
 	<Module filename="RPGComponents.xml"/>
 	<Module filename="RPGDeviceDockScreens.xml"/>

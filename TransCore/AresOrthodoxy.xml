@@ -626,7 +626,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips1;" imageX="576" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-15"/>
+		<Image imageID="&rsAresSentryHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" rotationOffset="-15" />
 
 		<!-- AI and Behavior -->
 
@@ -679,7 +679,7 @@
 		
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips2;" imageX="1024" imageY="0" imageWidth="64" imageHeight="64" rotationOffset="-8"/>
+		<Image imageID="&rsChasmHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" rotationOffset="-8" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="160"	posRadius="16"	posZ="0"	rotation="180"/>
@@ -1067,7 +1067,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips1;" imageX="144" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsSandstormHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="150"	posRadius="8"	posZ="0"	rotation="180"/>
@@ -1131,7 +1131,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips2;" imageX="576" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsTundraHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="40"	posRadius="8"	posZ="0"	rotation="180"/>
@@ -1510,5 +1510,9 @@
 	<Image UNID="&rsCometfall;" bitmap="Resources\Cometfall.jpg" bitmask="Resources\CometfallMask.bmp" loadOnUse="true" />
 	<Image UNID="&rsDeimos;" bitmap="Resources\Deimos.jpg" bitmask="Resources\DeimosMask.bmp" loadOnUse="true" />
 	<Image UNID="&rsPolarFreighter;" bitmap="Resources\PolarFreighter.jpg" bitmask="Resources\PolarFreighterMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsAresSentryHD;" bitmap="Resources\AresSentryHD.jpg" bitmask="Resources\AresSentryHDMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsChasmHD;" bitmap="Resources\ChasmHD.jpg" bitmask="Resources\ChasmHDMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsSandstormHD;" bitmap="Resources\SandstormHD.jpg" bitmask="Resources\SandstormHDMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsTundraHD;" bitmap="Resources\TundraHD.jpg" bitmask="Resources\TundraHDMask.bmp" loadOnUse="true" />
 	
 </TranscendenceModule>

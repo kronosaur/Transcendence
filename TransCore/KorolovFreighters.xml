@@ -425,7 +425,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsEI100Image;" imageX="0" imageY="0" imageWidth="70" imageHeight="70"/>
+		<Image imageID="&rsEI100HD;" imageX="0" imageY="0" imageWidth="70" imageHeight="70" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="29"	posZ="8"	rotation="180"/>

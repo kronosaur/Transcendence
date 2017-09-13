@@ -43,7 +43,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsSmallShips1;" imageX="256" imageY="0" imageWidth="32" imageHeight="32"/>
+		<Image imageID="&rsAutosentinelHD;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="120" rotationColumns="12" />
 
 		<!-- AI and Behavior -->
 
@@ -102,7 +102,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsSmallShips1;" imageX="288" imageY="0" imageWidth="32" imageHeight="32"/>
+		<Image imageID="&rsMediumAutonHD;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="120" rotationColumns="12" />
 
 		<!-- AI and Behavior -->
 
@@ -186,7 +186,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsSmallShips1;" imageX="288" imageY="0" imageWidth="32" imageHeight="32"/>
+		<Image imageID="&rsMediumAutonHD;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="120" rotationColumns="12" />
 
 		<!-- AI and Behavior -->
 
@@ -262,7 +262,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsSmallShips1;" imageX="288" imageY="0" imageWidth="32" imageHeight="32"/>
+		<Image imageID="&rsMediumAutonHD;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="120" rotationColumns="12" />
 
 		<!-- AI and Behavior -->
 
@@ -322,7 +322,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips1;" imageX="672" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsMuleHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<!-- AI and Behavior -->
 
@@ -435,7 +435,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsSmallShips1;" imageX="320" imageY="0" imageWidth="32" imageHeight="32"/>
+		<Image imageID="&rs1MAutonHD;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="120" rotationColumns="12" />
 
 		<!-- AI and Behavior -->
 
@@ -522,7 +522,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsSmallShips1;" imageX="320" imageY="0" imageWidth="32" imageHeight="32"/>
+		<Image imageID="&rs1MAutonHD;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="120" rotationColumns="12" />
 
 		<!-- AI and Behavior -->
 
@@ -625,44 +625,12 @@
 							;	Otherwise, send the auton to the nearest object
 							
 							(block Nil
-								(shpCancelOrders gSource)
-								(shpOrder gSource 'approach targetObj 75)
-								(objSetShowAsDestination gSource)
-								
 								(objSetData gSource 'behavior 'exploring)
 								(objSetData gSource 'targetID (objGetID targetObj))
 								(objSendMessage gSender gSource (objTranslate gSource 'ExploreAck))
-								)
-							)
-						)
-				</Invoke>
-			</Message>
-			
-			<Message id="msgFormUp" name="Form up" key="F">
-				<OnShow>
-					(and (neq (objGetData gSource 'behavior) 'escorting)
-						(objGetProperty gSource 'playerWingman)
-						)
-				</OnShow>
-
-				<Invoke>
-					(block (behavior)
-						(setq behavior (objGetData gSource 'behavior))
-						(switch
-							(or (not behavior) (eq behavior 'escorting))
-								(block Nil
-									(objCommunicate gSource gSender 'FormUp)
-									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
-									)
-
-							(block Nil
-								(objClearShowAsDestination gSource)
 								
 								(shpCancelOrders gSource)
-								(shpOrder gSource 'escort gPlayerShip)
-								
-								(objSetData gSource 'behavior 'escorting)
-								(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
+								(shpOrder gSource 'approach targetObj 75)
 								)
 							)
 						)
@@ -712,18 +680,17 @@
 									
 									(not targetObj)
 										(block Nil
-											(shpOrder gSource 'escort gPlayerShip)
-											(objClearShowAsDestination gSource)
-								
 											(objSetData gSource 'behavior 'escorting)
 											(objSendMessage gPlayerShip gSource (objTranslate gSource 'ExplorationDone))
+											
+											(shpOrder gSource 'escort gPlayerShip)
 											)
 											
 									;	Otherwise, go to new object
 									
 									(block Nil
-										(shpOrder gSource 'approach targetObj 75)
 										(objSetData gSource 'targetID (objGetID targetObj))
+										(shpOrder gSource 'approach targetObj 75)
 										)
 									)
 								)
@@ -734,6 +701,19 @@
 						)
 					)
 			</OnOrdersCompleted>
+			
+			<OnOrderChanged>
+				(block nil
+					;	Show indicator while exploring, not otherwise.
+					(if (eq (objGetData gSource 'behavior) 'exploring)
+						(objSetShowAsDestination gSource)
+						(objClearShowAsDestination gSource)
+						)
+					
+					;	Fire base class event, just in case.
+					(typFireEvent &baStdAutonBase; 'OnOrderChanged)
+					)
+			</OnOrderChanged>
 		</Events>
 		
 		<Language>
@@ -957,6 +937,9 @@
 	
 <!-- RESOURCES -->
 
-	<Image UNID="&rsExplorerAuton;" bitmap="Resources\ExplorerAuton.jpg" bitmask="Resources\ExplorerAutonMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsExplorerAuton;"		bitmap="Resources\ExplorerAuton.jpg"	bitmask="Resources\ExplorerAutonMask.bmp"	loadOnUse="true" />
+	<Image UNID="&rsAutosentinelHD;"	bitmap="Resources\AutosentinelHD.jpg"	bitmask="Resources\AutosentinelHDMask.bmp"	loadOnUse="true" />
+	<Image UNID="&rsMediumAutonHD;"		bitmap="Resources\MediumAutonHD.jpg"	bitmask="Resources\MediumAutonHDMask.bmp"	loadOnUse="true" />
+	<Image UNID="&rs1MAutonHD;"			bitmap="Resources\1MAutonHD.jpg"		bitmask="Resources\1MAutonHDMask.bmp"		loadOnUse="true" />
 
 </TranscendenceModule>

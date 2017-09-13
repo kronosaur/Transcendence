@@ -256,12 +256,12 @@ PLAYER DATA
 			attributes=			"unknown"
 			>
 
-		<Names>weapon prototype marked "Alpha"; weapon prototype marked "Beta"; weapon prototype marked "Gamma";
-			weapon prototype marked "Delta"; weapon prototype marked "Epsilon"; weapon prototype marked "Omega";
-			weapon prototype marked "0.1"; weapon prototype marked "X17"; weapon prototype marked "Trinity";
-			weapon prototype marked "Halifax"; weapon prototype marked "Test No. 6"; weapon prototype marked "596";
-			weapon prototype marked "Hurricane"; weapon prototype marked "Ivy Mike"; weapon prototype marked "Castle Bravo";
-			weapon prototype marked "Tsar Bomba"; weapon prototype marked "Smiling Buddha"; weapon prototype marked "RDS-37"
+		<Names>weapon prototype(s) marked "Alpha"; weapon prototype(s) marked "Beta"; weapon prototype(s) marked "Gamma";
+			weapon prototype(s) marked "Delta"; weapon prototype(s) marked "Epsilon"; weapon prototype(s) marked "Omega";
+			weapon prototype(s) marked "0.1"; weapon prototype(s) marked "X17"; weapon prototype(s) marked "Trinity";
+			weapon prototype(s) marked "Halifax"; weapon prototype(s) marked "Test No. 6"; weapon prototype(s) marked "596";
+			weapon prototype(s) marked "Hurricane"; weapon prototype(s) marked "Ivy Mike"; weapon prototype(s) marked "Castle Bravo";
+			weapon prototype(s) marked "Tsar Bomba"; weapon prototype(s) marked "Smiling Buddha"; weapon prototype(s) marked "RDS-37"
 		</Names>
 
 	</ItemType>
@@ -1522,7 +1522,7 @@ PLAYER DATA
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsBritannia;" imageWidth="80" imageHeight="80"/>
+		<Image imageID="&rsBritanniaHD;" imageX="0" imageY="0" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="154"	posRadius="26"	posZ="0"	rotation="180"/>
@@ -1591,7 +1591,7 @@ PLAYER DATA
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="320" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsCenturionHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
@@ -1649,7 +1649,7 @@ PLAYER DATA
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="320" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsCenturionHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
@@ -2605,6 +2605,8 @@ PLAYER DATA
 	<Image UNID="&rsAquila;"		bitmap="Resources\Aquila.jpg" bitmask="Resources\AquilaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsBritannia;"		bitmap="Resources\Britannia.jpg" bitmask="Resources\BritanniaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsCSC;"			bitmap="Resources\CSC.jpg" bitmask="Resources\CSCMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsBritanniaHD;"	bitmap="Resources\BritanniaHD.jpg" bitmask="Resources\BritanniaHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsCenturionHD;"	bitmap="Resources\CenturionHD.jpg"	bitmask="Resources\CenturionHDMask.bmp" 	loadOnUse="true" />
 	
 	<Image UNID="&rsCSCBkgnd;"		bitmap="Resources\CSCScreen.jpg" loadOnUse="true" />
 	<Image UNID="&rsFleetEmblems;"	bitmap="Resources\FleetEmblems.jpg" bitmask="Resources\FleetEmblemsMask.bmp" loadOnUse="true" />

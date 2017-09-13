@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<Type UNID="&unidCommonText;">
+		<Language>
+			<Text id="achievementsAndRegrets">achievements &amp; regrets</Text>
+			<Text id="elipsis">...</Text>
+		</Language>
+	</Type>
+
+</TranscendenceModule>

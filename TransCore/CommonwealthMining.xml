@@ -50,7 +50,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsBorer;" imageX="0" imageY="0" imageWidth="72" imageHeight="72"/>
+		<Image imageID="&rsBorerHD;" imageX="0" imageY="0" imageWidth="72" imageHeight="72" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="14"	posZ="-25"	rotation="180"/>
