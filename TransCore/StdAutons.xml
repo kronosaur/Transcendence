@@ -322,7 +322,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMuleHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
+		<Image imageID="&rsMuleAutonHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<!-- AI and Behavior -->
 
@@ -941,5 +941,6 @@
 	<Image UNID="&rsAutosentinelHD;"	bitmap="Resources\AutosentinelHD.jpg"	bitmask="Resources\AutosentinelHDMask.bmp"	loadOnUse="true" />
 	<Image UNID="&rsMediumAutonHD;"		bitmap="Resources\MediumAutonHD.jpg"	bitmask="Resources\MediumAutonHDMask.bmp"	loadOnUse="true" />
 	<Image UNID="&rs1MAutonHD;"			bitmap="Resources\1MAutonHD.jpg"		bitmask="Resources\1MAutonHDMask.bmp"		loadOnUse="true" />
+	<Image UNID="&rsMuleAutonHD;"		bitmap="Resources\MuleHD.jpg"			bitmask="Resources\MuleHDMask.bmp"		loadOnUse="true" />
 
 </TranscendenceModule>

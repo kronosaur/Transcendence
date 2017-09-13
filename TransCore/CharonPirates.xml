@@ -2036,6 +2036,6 @@
 
 	<Image UNID="&rsCharonFrigateImage;"	bitmap="Resources\CharonFrigate.jpg" bitmask="Resources\CharonFrigateMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsCorsairHD;"	bitmap="Resources\CorsairHD.jpg" bitmask="Resources\CorsairHDMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsVikingHD;"	bitmap="Resources\VikingHD.jpg" bitmask="Resources\VikingHD.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsVikingHD;"	bitmap="Resources\VikingHD.jpg" bitmask="Resources\VikingHDMask.bmp"  loadOnUse="true"/>
 
 </TranscendenceModule>

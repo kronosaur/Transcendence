@@ -97,6 +97,7 @@
 	<!-- 0070-008F DOCK SCREENS -->
 
 	<!ENTITY unidRPGPaneInitMission		"0x00010070">
+	<!ENTITY unidCommonText				"0x00010071">
 
 	<!-- 0090-00AF AUTONS -->
 
@@ -117,10 +118,6 @@
 	<!-- 00F0-010F MEMBERSHIP -->
 
 	<!ENTITY dsRPGPromotion				"0x000100F0">
-	
-	<!-- Here looks good, I guess? -->
-	
-	<!ENTITY unidCommonText				"0x00010110">
 	]>
 	
 <CoreLibrary
