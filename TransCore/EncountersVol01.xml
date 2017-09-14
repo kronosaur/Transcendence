@@ -1515,7 +1515,7 @@
 
 	<StationType UNID="&stGaianProcessorEncounter;"
 			name=				"(Gaian processor)"
-			sovereign=			"&svIndependentTrader;"
+			sovereign=			"&svUnknownEnemy;"
 			controllingSovereign="&svGaianTerraformers;"
 			dockScreen=			"&dsAbandonedShip;"
 
@@ -3233,7 +3233,7 @@
 		</ImageVariants>
 
 		<Ships>
-			<Ship	count="1"	class="&scT31ArmedTransport;" orders="trade route">
+			<Ship	count="1"	class="&scT31ArmedTransport;" orders="trade route"	sovereign="&svBlackMarket;">
 				<Items>
 					<Item chance="50"		count="8d20" item="&itSmartCannonShell;"/>
 					<Lookup					count="1d2+1" table="&trIllegalItems2;"/>
@@ -4399,13 +4399,23 @@
 
 <!-- Salvagers ============================================================ -->
 
+	<Sovereign UNID="&svSalvagers;"
+			name=":the Salvagers"
+			shortName=": Salvagers"
+			adjective="Salvager"
+			demonym=":a Salvager(s)"
+			plural="true"
+
+			alignment="neutral"
+			/>
+
 	<!-- Salvager Nomad -->
 
 	<ShipClass UNID="&scSalvagerNomad;"
 			manufacturer=		"Salvager"
 			class=				""
 			type=				"Nomad"
-			defaultSovereign=	"&svIndependentTrader;"
+			defaultSovereign=	"&svSalvagers;"
 
 			attributes=			"capitalShip, genericClass, salvagers"
 			   
@@ -4504,8 +4514,8 @@
 	<!-- Salvager Encounter -->
 
 	<StationType UNID="&stSalvagerEncounter;"
-			name=				"(salvager)"
-			sovereign=			"&svIndependentTrader;"
+			name=				"(salvager encounter)"
+			sovereign=			"&svUnknownEnemy;"
 			dockScreen=			"&dsAbandonedShip;"
 
 			scale=				"ship"
@@ -4514,14 +4524,14 @@
 
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"debris, friendly, salvagers, shipwreck"
+			attributes=			"debris, friendly, shipwreck"
 			levelFrequency=		"ruurv ----- ----- ----- -----"
 			locationCriteria=	"--planetary"
 			>
 		<Image shipwreckID="&scBorer;, &scEarthzone;, &scRoninA;"/>
 
 		<Ships>
-			<Ship	count="1"	class="&scSalvagerNomad;" orders="scavenge"/>
+			<Ship	count="1"	class="&scSalvagerNomad;" orders="scavenge"		sovereign="&svSalvagers;"/>
 		</Ships>
 
 		<Items>
