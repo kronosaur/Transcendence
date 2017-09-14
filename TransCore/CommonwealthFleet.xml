@@ -386,7 +386,9 @@ PLAYER DATA
 						
 	-->
 
-	<Type UNID="&baCSCBase;">
+	<Type UNID="&baCSCBase;"
+			inherit="&unidCommonText;"
+			>
 		<Events>
 			<OnAttackedByPlayer>
 				(block Nil
@@ -478,7 +480,7 @@ PLAYER DATA
 
 					; Military will execute the player
 					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
-						(intFleetCrime 3 (cat "the destruction of " (objGetName gSource 4)))
+						(intFleetCrime 3 (cat "the destruction of " (objGetName gSource 'article)))
 						)
 					)
 			</OnDestroy>
@@ -734,7 +736,7 @@ PLAYER DATA
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
+							(scrSetDescTranslate gScreen 'descWelcome { shipName:(objGetName gSource 'article) })
 						</OnPaneInit>
 
 						<Actions>
@@ -825,19 +827,19 @@ PLAYER DATA
 								(switch
 									(eq behavior 'moving)
 										(scrSetDesc gScreen
-											"You are on the flight deck of " (objGetName gSource 0x04) ". "
+											"You are on the flight deck of " (objGetName gSource 'article) ". "
 											"The ship is on maneuvers and the XO is giving orders to the astrogator and the sensor chief."
 											)
 											
 									(eq rank 1)
 										(scrSetDesc gScreen
-											"The flight deck of " (objGetName gSource 0x04) 
+											"The flight deck of " (objGetName gSource 'article) 
 											" hums with the activity of men and women working at terminals and holocharts. "
 											"The XO is giving orders to a squadron out on a mission."
 											)
 
 									(scrSetDesc gScreen
-										"You are on the flight deck of " (objGetName gSource 0x04) ". "
+										"You are on the flight deck of " (objGetName gSource 'article) ". "
 										"Men and women work at terminals planning missions and communicating with squadrons on patrol. "
 										"The XO is near a holochart, listening to a report."
 										)
@@ -888,23 +890,20 @@ PLAYER DATA
 		</DockScreens>
 
 		<Language>
-			<Text id="actionBridge">"[B]ridge"</Text>
-			<Text id="actionFlightDeck">"[F]light Deck"</Text>
-			<Text id="actionDockServices">"[D]ock Services"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
-			<Text id="actionLeave">"[L]eave"</Text>
-			<Text id="actionTalk">"Talk to E[x]ecutive Officer"</Text>
+			<Text id="actionBridge">[B]ridge</Text>
+			<Text id="actionFlightDeck">[F]light Deck</Text>
+			<Text id="actionTalk">Talk to E[x]ecutive Officer</Text>
 
 			<Text id="descWelcome">
-				(cat
-					"You are in the docking bay of the " (objGetName gSource) "."
-					)
+
+				You are in the docking bay of %shipName%.
+
 			</Text>
 
 			<Text id="descNoMissions">
-				(cat
-					"\"Sorry, there are no missions available for you.\""
-					)
+
+				"Sorry, there are no missions available for you."
+
 			</Text>
 		</Language>
 
@@ -1081,7 +1080,7 @@ PLAYER DATA
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
+							(scrSetDescTranslate gScreen 'descWelcome { shipName:(objGetName gSource 'article) })
 						</OnPaneInit>
 
 						<Actions>
@@ -1237,7 +1236,7 @@ PLAYER DATA
 						</OnPaneInit>
 
 						<Actions>
-							<Action id="actionSell" default="1">
+							<Action id="actionSellItems" default="1">
 								(block (medicalItem)
 									; Remove the items from the cargo hold
 									(enum gItem medicalItem
@@ -1362,19 +1361,15 @@ PLAYER DATA
 		</DockScreens>
 
 		<Language>
-			<Text id="actionBridge">"[B]ridge"</Text>
-			<Text id="actionInfirmary">"[I]nfirmary"</Text>
-			<Text id="actionDockServices">"[D]ock Services"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
-			<Text id="actionLeave">"[L]eave"</Text>
-			<Text id="actionTalkMedical">"Talk to [M]edical Officer"</Text>
-			<Text id="actionSell">"[S]ell Items"</Text>
-			<Text id="actionDonate">"[D]onate Items"</Text>
+			<Text id="actionBridge">[B]ridge</Text>
+			<Text id="actionInfirmary">[I]nfirmary</Text>
+			<Text id="actionTalkMedical">Talk to [M]edical Officer</Text>
+			<Text id="actionDonate">[D]onate Items</Text>
 
 			<Text id="descWelcome">
-				(cat
-					"You are in the docking bay of the " (objGetName gSource) "."
-					)
+
+				You are in the docking bay of %shipName%.
+
 			</Text>
 		</Language>
 
@@ -2211,7 +2206,7 @@ PLAYER DATA
 						(newLevel (intFleetPromotion))
 						)
 						(scrSetDescTranslate gScreen (cat "Promotion:" newLevel) {
-							captainName: (cat "the captain of " (objGetName gSource 4))
+							captainName: (cat "the captain of " (objGetName gSource 'article))
 							})
 
 						(switch

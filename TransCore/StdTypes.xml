@@ -1499,7 +1499,7 @@
 	<StationType UNID="&stFlotsam;"
 			name=				"(flotsam)"
 			sovereign=			"&svNeutral;"
-			inherit=			"&dsDockScreenBase;"
+			inherit=			"&unidCommonText;"
 			
 			dockScreen=			"Main"
 

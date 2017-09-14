@@ -173,7 +173,7 @@
 	-->
 	
 	<Type UNID="&baTeratonNestBase;"
-			inherit=			"&dsDockScreenBase;"
+			inherit=			"&unidCommonText;"
 			>
 		<Language>
 			<Text id="actionCommoditiesExchange">[T]rading Chamber</Text>

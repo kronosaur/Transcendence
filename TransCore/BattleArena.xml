@@ -113,7 +113,7 @@
 			attributes=			"battleArena, battleArenaMaximus, battleArenaSegment, corporate, corporateCustoms, corporateDecon, friendly, generic, human, majorStation, populated"
 				 
 			dockScreen=			"Main"
-			inherit=			"&dsDockScreenBase;"
+			inherit=			"&unidCommonText;"
 			defaultBackgroundID="&rsBattleArenaBkgnd;"
 				 
 			barrier=			"true"

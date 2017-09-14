@@ -345,7 +345,7 @@
 	<StationType UNID="&stDallSphere;"
 			name=				"inert metal sphere"
 			sovereign=			"&svNeutral;"
-			inherit=			"&dsDockScreenBase;"
+			inherit=			"&unidCommonText;"
 			dockScreen=			"Main"
 
 			scale=				"ship"
@@ -403,7 +403,7 @@
 	<StationType UNID="&stDallMissionWreck;"
 			name=				"Sung transport wreck"
 			sovereign=			"&svNeutral;"
-			inherit=			"&dsDockScreenBase;"
+			inherit=			"&unidCommonText;"
 			
 			dockScreen=			"Main"
 			scale=				"ship"

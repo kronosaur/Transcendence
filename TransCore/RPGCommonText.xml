@@ -4,7 +4,35 @@
 	
 	<Type UNID="&unidCommonText;">
 		<Language>
+			<!-- Dock Screen Actions -->
+
+			<Text id="actionAccept">[A]ccept</Text>
+			<Text id="actionBuyItems">[B]uy Items</Text>
+			<Text id="actionCancel">[C]ancel</Text>
+			<Text id="actionCommoditiesExchange">[C]ommodities Exchange</Text>
+			<Text id="actionContinue">[C]ontinue</Text>
+			<Text id="actionDecline">[D]ecline</Text>
+			<Text id="actionDockServices">[D]ock Services</Text>
+			<Text id="actionDone">[D]one</Text>
+			<Text id="actionJettison">[J]ettison</Text>
+			<Text id="actionLeave">[L]eave</Text>
+			<Text id="actionLoot">[L]oot</Text>
+			<Text id="actionRefuel">[R]efuel</Text>
+			<Text id="actionRepairArmor">Repair [A]rmor</Text>
+			<Text id="actionRepairReplaceArmor">Repair or Replace [A]rmor</Text>
+			<Text id="actionSellItems">[S]ell Items</Text>
+			<Text id="actionUndock">[U]ndock</Text>
+
+			<!-- Dock Screen Text -->
+			
+			<Text id="descNoItemsHere">There are no items here.</Text>
+
+			<!-- Achievements -->
+
 			<Text id="achievementsAndRegrets">achievements &amp; regrets</Text>
+
+			<!-- Basic -->
+
 			<Text id="elipsis">...</Text>
 		</Language>
 	</Type>

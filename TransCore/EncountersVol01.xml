@@ -4927,7 +4927,7 @@
 	<StationType UNID="&stSealedCargoContainer;"
 			name=				"abandoned cargo container"
 			sovereign=			"&svNeutral;"
-			inherit=			"&dsDockScreenBase;"
+			inherit=			"&unidCommonText;"
 		
 			abandonedScreen=	"Main"
 			dockScreen=			"Main"
