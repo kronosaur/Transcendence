@@ -609,5 +609,11 @@
     <Xml Include="KorolovFreighters.xml">
       <Filter>Human Space Library\Korolov Shipping</Filter>
     </Xml>
+    <Xml Include="RPGCommonText.xml">
+      <Filter>RPG Library</Filter>
+    </Xml>
+    <Xml Include="RPGUsefulItems.xml">
+      <Filter>RPG Library</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
