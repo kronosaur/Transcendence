@@ -1266,7 +1266,7 @@
 					; Generate a list of the items that are left
 					(setq remainingItems Nil)
 					(enum allItems theItem
-						(block (damagedItemCount undamgedItemCount)
+						(block (damagedItemCount undamagedItemCount)
 							(setq undamagedItemCount 0)
 							(setq damagedItemCount 0)
 							(switch
