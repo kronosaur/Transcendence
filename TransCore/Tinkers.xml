@@ -78,11 +78,17 @@
 				enemyExclusionRadius="50"
 				/>
 
-		<Names noArticle="true">Tinker Alvarez; Tinker Bell; Tinker Cray; Tinker Draper;
-				Tinker Edison; Tinker Fermi; Tinker Goddard; Tinker Hale;
-				Tinker Julian; Tinker Kroll; Tinker Lawrence; Tinker Mazor;
-				Tinker Noyce; Tinker Olsen; Tinker Plank; Tinker Rohrer;
-				Tinker Sikorsky; Tinker Tesla; Tinker Wang
+		<Names noArticle="true">
+
+			Tinker Alvarez; Tinker Anand; Tinker Bell; Tinker Brill; 
+			Tinker Curie; Tinker Cray; Tinker Draper; Tinker Edison; 
+			Tinker Fermi; Tinker Goddard; Tinker Hale; Tinker Hopper; 
+			Tinker Hypatia; Tinker Julian; Tinker Kroll; Tinker Kwolek; 
+			Tinker Lawrence; Tinker Lovelace; Tinker Mazor; Tinker Noyce; 
+			Tinker Olsen; Tinker Orban; Tinker Plank; Tinker Rohrer; 
+			Tinker Sikorsky; Tinker Telkes; Tinker Tesla; 
+			Tinker Tsiolkovsky; Tinker Vorster; Tinker Wang;
+
 		</Names>
 		
 		<!-- Trade and Items -->
