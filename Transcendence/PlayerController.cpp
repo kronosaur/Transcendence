@@ -2659,7 +2659,7 @@ void CPlayerShipController::Update (int iTick)
 		ASSERT(pObj->GetType());
 
 		if ((iTick % 30) == 0)
-			::kernelDebugLogPattern("Target %d: %s (%x)", i, pObj->GetName(), (DWORD)pObj);
+			::kernelDebugLogPattern("Target %d: %s (%x)", i, pObj->GetNounPhrase(), (DWORD)pObj);
 		}
 #endif
 	}

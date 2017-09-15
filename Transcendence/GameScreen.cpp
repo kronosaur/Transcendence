@@ -579,7 +579,7 @@ void CTranscendenceWnd::ShowCommsMenu (CSpaceObject *pObj)
 		CSpaceObject *pShip = GetPlayer()->GetShip();
 		m_pMenuObj = pObj;
 
-		m_MenuData.SetTitle(m_pMenuObj->GetName());
+		m_MenuData.SetTitle(m_pMenuObj->GetNounPhrase());
 		m_MenuData.RemoveAll();
 
 		int iMsgCount = m_pMenuObj->GetCommsMessageCount();
@@ -698,7 +698,7 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 					if (!sKey.IsBlank())
 						{
 						m_MenuData.AddMenuItem(sKey,
-								pObj->GetName(),
+								pObj->GetNounPhrase(),
 								CMenuData::FLAG_SORT_BY_KEY,
 								(DWORD)pObj);
 
@@ -729,7 +729,7 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 					if (!sKey.IsBlank())
 						{
 						m_MenuData.AddMenuItem(sKey,
-								pObj->GetName(),
+								pObj->GetNounPhrase(),
 								CMenuData::FLAG_SORT_BY_KEY,
 								(DWORD)pObj);
 

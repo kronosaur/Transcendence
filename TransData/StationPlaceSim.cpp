@@ -131,9 +131,9 @@ void GenerateStationPlaceSim (CUniverse &Universe, CXMLElement *pCmdLine)
 									{
 									printf("%s: %s (%x) and %s (%x) within %d ls\n",
 											pSystem->GetName().GetASCIIZPointer(),
-											pObj->GetName().GetASCIIZPointer(),
+											pObj->GetNounPhrase().GetASCIIZPointer(),
 											pObj->GetID(),
-											pEnemy->GetName().GetASCIIZPointer(),
+											pEnemy->GetNounPhrase().GetASCIIZPointer(),
 											pEnemy->GetID(),
 											iLSDist);
 									}
