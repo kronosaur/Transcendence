@@ -384,9 +384,9 @@
 
 					(switch
 						(= (objGetType gPlayerShip) &scEI100XPlayer;)
-							"\"That is a nice ship you've got, friend. I am Juan Carlos Uribe y V&#xE1;zquez, at your service, and the Forking Paths is my ship; she is not so well armed as yours, maybe, but you are going to more dangerous places, no?\""
+							"\"That is a nice ship you've got, friend. I am Juan Carlos Uribe y V&aacute;zquez, at your service, and the Forking Paths is my ship; she is not so well armed as yours, maybe, but you are going to more dangerous places, no?\""
 
-						"\"Welcome, friend. My name is Juan Carlos Uribe y V&#xE1;zquez and the Forking Paths is my ship.\""
+						"\"Welcome, friend. My name is Juan Carlos Uribe y V&aacute;zquez and the Forking Paths is my ship.\""
 						)
 					)
 			</Text>
