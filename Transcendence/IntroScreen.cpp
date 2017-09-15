@@ -693,7 +693,7 @@ void CTranscendenceWnd::CreateShipDescAnimation (CShip *pShip, IAnimatron **retp
 
 	//	Show the ship class
 
-	CString sClassName = strToLower(pShip->GetName());
+	CString sClassName = strToLower(pShip->GetNounPhrase());
 	int cyClassName;
 	int cxClassName = m_Fonts.SubTitle.MeasureText(sClassName, &cyClassName);
 	int cySectionSpacing = cyClassName / 6;

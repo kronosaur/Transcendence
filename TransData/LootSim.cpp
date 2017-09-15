@@ -162,7 +162,7 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 
 					CSpaceObject *pWreck;
 					if (pObj->GetCategory() == CSpaceObject::catShip)
-						pObj->Destroy(killedByDamage, CDamageSource(NULL, killedByDamage), &pWreck);
+						pObj->Destroy(killedByDamage, CDamageSource(NULL, killedByDamage), NULL, &pWreck);
 					else
 						pWreck = pObj;
 

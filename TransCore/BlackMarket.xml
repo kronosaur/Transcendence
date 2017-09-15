@@ -842,17 +842,19 @@ PLAYER DATA
 
 					; Player is tracked
 					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
-						(block Nil
-							(objIncData gPlayerShip "blackMarketCrimeCost" cost)
+						(block (totalCrimeCost)
+							(setq totalCrimeCost (objIncData gPlayerShip "blackMarketCrimeCost" cost))
 							(if (objGetData gPlayerShip "blackMarketCrime")
 								(objSetData gPlayerShip "blackMarketCrime" "multiple offenses against the Sindikat")
 								(objSetData gPlayerShip "blackMarketCrime" (cat "the destruction of " (objGetName gSource 4)))
 								)
 								
-							; If the player is not part of the Black Market, then she is 
-							; treated as an enemy.
+							; If the cost of the player's crime is more than the equivalent
+							; current experience level, then the Black Market becomes an enemy.
+							; [I.e., the better the relationship with the BM, the greater the
+							; chance that the BM will allow the player to pay back her debts.]
                     
-							(if (eq (objGetData gPlayerShip "blackMarketXP") 0)
+							(if (gr (/ totalCrimeCost 100) (objGetData gPlayerShip "blackMarketXP"))
 								(block Nil
 									(sovSetDisposition &svBlackMarket; &svPlayer; 'enemy)
 									(sovSetDisposition &svPlayer; &svBlackMarket; 'enemy)

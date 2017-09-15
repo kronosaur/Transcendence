@@ -1056,11 +1056,19 @@
 						; owner station.
 
 						(msnGetProperty missionObj 'isCompleted)
-							(if (setq newTargetObj (objGetObjByID (msnGetProperty missionObj 'ownerID)))
-								(block Nil
-									(shpCancelOrders gPlayerShip)
-									(shpOrder gPlayerShip 'dock newTargetObj)
-									)
+							(switch
+								;	If there is no debrief, then no need to point.
+
+								(not (msnGetProperty missionObj 'hasDebrief))
+									Nil
+
+								;	If we still have a mission giver, point back to it for a debrief.
+									
+								(setq newTargetObj (objGetObjByID (msnGetProperty missionObj 'ownerID)))
+									(block Nil
+										(shpCancelOrders gPlayerShip)
+										(shpOrder gPlayerShip 'dock newTargetObj)
+										)
 								)
 
 						; Otherwise, we point towards the target

@@ -65,7 +65,12 @@
 						(canBuy Nil)
 						)
 						
-						(rpgSetShipStatsDisplay selObj { })
+						;	Set the stats. We let the ship class handle it, but if it doesn't, we set
+						;	up a default.
+
+						(if (not (objFireEvent selObj 'OnSetShipStatusDisplay { }))
+							(rpgSetShipStatsDisplay selObj { })
+							)
 						
 						;	Set the description
 						

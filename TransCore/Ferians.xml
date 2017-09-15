@@ -392,7 +392,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips2;" imageX="704" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsFerianMinerHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 		
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="23"	posZ="0"	rotation="180"/>
@@ -547,5 +547,6 @@
 <!-- RESOURCES & EFFECTS -->
 	
 	<Image UNID="&rsFerianWarrior;"	bitmap="Resources\FerianWarrior.jpg"	bitmask="Resources\FerianWarriorMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsFerianMinerHD;"	bitmap="Resources\FerianMinerHD.jpg"	bitmask="Resources\FerianMinerHDMask.bmp"	loadOnUse="true"/>
 
 </TranscendenceModule>

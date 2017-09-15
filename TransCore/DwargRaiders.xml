@@ -69,7 +69,7 @@
 			rotationAccel=		"2.0"
 			/>
 
-		<Image imageID="&rsMediumShips1;" imageX="864" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsZoanthropeRaiderHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="4"	posZ="0"	rotation="180"/>
@@ -823,5 +823,9 @@
 				))
 			)
 	</Globals>
+	
+<!-- RESOURCES -->
+	
+	<Image UNID="&rsZoanthropeRaiderHD;"	bitmap="Resources\ZoanthropeRaiderHD.jpg"	bitmask="Resources\ZoanthropeRaiderHDMask.bmp" 	loadOnUse="true" />
 
 </TranscendenceModule>

@@ -2139,7 +2139,7 @@
 
 	<StationType UNID="&stRingersResearchHeretic;"
 			name=				"Ringers research outpost"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svRingers;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"

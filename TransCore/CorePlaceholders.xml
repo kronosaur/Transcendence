@@ -133,6 +133,9 @@
 	These types are often used by core functions and subroutines. Adventures are
 	free to override them.
 	
+	These are all set to be notRandom and notStandard, so they don't show up on
+	random table. Libraries should override to change this behavior.
+
 -->
 	
 	<!-- itHelium3FuelRod -->
@@ -142,9 +145,9 @@
 			level=				"1"
 			value=				"25"
 			mass=				"100"
-			frequency=			"common"
+			frequency=			"notRandom"
 			numberAppearing=	"3d6"
-			attributes=			"BasicFuel; Consumable; Fuel"
+			attributes=			"basicFuel, consumable, fuel, notStandard"
 
 			data=				"2500"
 
@@ -163,7 +166,7 @@
 			value=				"250"
 			mass=				"1000"
 			frequency=			"notRandom"
-			attributes=			"EnergyWeapon; MajorItem; NotForSale"
+			attributes=			"energyWeapon, majorItem, notStandard"
 
 			description=		"A popular weapon for light freighters and fast gunships. This weapon is manufactured by the Earth Industries Conglomerate."
 			>
@@ -192,7 +195,7 @@
 			value=				"3500"
 			mass=				"6000"
 			frequency=			"notRandom"
-			attributes=			"MajorItem; NotForSale"
+			attributes=			"majorItem, notStandard"
 
 			description=		"The largest kinetic mass driver created by NAMI, the Ballista cannon can pummel a medium-sized station."
 			>
@@ -223,7 +226,7 @@
 			level=				"5"
 			value=				"800"
 			mass=				"3000"
-			attributes=			"MinorItem; Makayev; NotForSale"
+			attributes=			"minorItem, notStandard"
 			frequency=			"notRandom"
 			numberAppearing=	"1d4"
 

@@ -2,6 +2,15 @@
 
 <!DOCTYPE CoreLibrary
 	[
+	<!-- LEGACY UNIDS
+
+		All UNIDs in this section are for backwards compatibility.
+		Do not allocated new UNIDs in this section.
+		
+		Scroll down to HUMAN SPACE VOL 01 for a place to add new UNIDs.
+		
+	-->
+
 	<!ENTITY ssEarthSpaceStandard		"0x00000001">
 	<!ENTITY ssEarthSpaceRedDwarf		"0x00000002">
 	<!ENTITY ssEarthSpaceAsteroids		"0x00000003">
@@ -753,8 +762,6 @@
 	<!ENTITY stSalvagerEncounter		"0x000F1000">
 	<!ENTITY scSalvagerNomad			"0x000F1001">
 	
-	<!-- COMMONWEALTH 0010 -->
-	
 	<!ENTITY msDestroyThreatToSlums		"0x00101000">
 	<!ENTITY msSaveMiningShip			"0x00101001">
 	<!ENTITY msDestroyIllegalMiners		"0x00101002">
@@ -855,12 +862,10 @@
 	<!ENTITY rsIocrymMonumentScreen		"0x0010F00A">
 	<!ENTITY rsDallSphere				"0x0010F00B">
 
-	<!-- RESERVED 0011 -->
-	<!-- RESERVED 0012 -->
-	<!-- RESERVED 0013 -->
+	<!-- RESERVED 0011 XXXX -->
+	<!-- RESERVED 0012 XXXX -->
+	<!-- RESERVED 0013 XXXX -->
 	
-	<!-- BATTLE ARENA 0014 -->
-
 	<!ENTITY ssBattleArena				"0x00140001">
 
 	<!ENTITY svGladiator				"0x00141001">
@@ -904,8 +909,6 @@
 
 	<!ENTITY rsBattleArenaBkgnd			"0x0014F001">
 	<!ENTITY rsBattleArenaExtra			"0x0014F002">
-
-	<!-- CORPORATE HIERARCHY 0015 -->
 
 	<!ENTITY stAutonDealer				"0x00152001">
 	<!ENTITY stArmsDealerRasiermesser	"0x00152002">
@@ -970,8 +973,6 @@
 	<!ENTITY rsMakayevFactory			"0x0015F00E">
 	<!ENTITY rsCorporateCruiser			"0x0015F00F">
 
-	<!-- CHARON PIRATES 0016 -->
-
 	<!ENTITY ssCharonPirateFortress		"0x00160001">
 
 	<!ENTITY stCharonPirateOutpost		"0x00162001">
@@ -995,8 +996,6 @@
 
 	<!ENTITY rsCharonFrigateImage		"0x0016F001">
 
-	<!-- BLACK MARKET 0017 -->
-
 	<!ENTITY stBlackMarketStation		"0x00172001">
 	<!ENTITY stTempusLab				"0x00172002">
 	<!ENTITY stBlackMarketShipyard		"0x00172003">
@@ -1012,8 +1011,6 @@
 	<!ENTITY dsBlackMarketPromotion		"0x0017A003">
 
 	<!ENTITY rsMolotok					"0x0017F001">
-
-	<!-- SISTERS OF DOMINA 0018 -->
 
 	<!ENTITY svSistersOfDomina			"0x00181001">
 	<!ENTITY stSistersOfDomina			"0x00182001">
@@ -1034,8 +1031,6 @@
 	<!ENTITY dsSistersDonate			"0x0018A008">
 
 	<!ENTITY rsSistersShrineBkgnd		"0x0018F001">
-
-	<!-- SUNG SLAVERS 0019 -->
 
 	<!ENTITY stSungFortress				"0x00192001">
 	<!ENTITY stSungNWWall				"0x00192002">
@@ -1073,8 +1068,6 @@
 	<!ENTITY dsSungSlaveQuarters		"0x0019A002">
 
 	<!ENTITY rsDragonSlaverImage		"0x0019F001">
-
-	<!-- COMMONWEALTH FLEET 001A -->
 
 	<!ENTITY unidCommonwealthFleet		"0x001A0000">
 	<!ENTITY ssPointJuno				"0x001A0001">
@@ -1137,8 +1130,6 @@
 	<!ENTITY rsStationsPointJuno		"0x001AF003">
 	<!ENTITY rsBritannia				"0x001AF004">
 
-	<!-- ARES ORTHODOXY 001B -->
-
 	<!ENTITY stAresCommune				"0x001B2001">
 	<!ENTITY stAresRedoubt				"0x001B2002">
 	<!ENTITY stAresOutpost				"0x001B2003">
@@ -1176,8 +1167,6 @@
 	<!ENTITY etAresAmbush3				"0x001B8003">
 	<!ENTITY etAresAmbush4				"0x001B8004">
 	<!ENTITY tbAresEncounters			"0x001B8005">
-
-	<!-- IOCRYM AND HERETIC 001C -->
 
 	<!ENTITY ssHeretic					"0x001C0001">
 
@@ -1235,8 +1224,6 @@
 	<!ENTITY rsHereticItems				"0x001CF009">
 	<!ENTITY rsMRADProbe				"0x001CF00A">
 
-	<!-- RINGERS 001D -->
-
 	<!ENTITY baRingersStationObsolete	"0x001D0001">
 	
 	<!ENTITY stRingersCollective		"0x001D2001">
@@ -1255,13 +1242,9 @@
 	<!ENTITY dsRingerBuy				"0x001DA008">
 	<!ENTITY dsRingerSell				"0x001DA009">
 
-	<!-- ELYSIUM 001E -->
-
 	<!ENTITY ssElysium					"0x001E0001">
 
 	<!ENTITY stTanRuDorem				"0x001E2002">
-
-	<!-- TERATONS 001F -->
 
 	<!ENTITY stTeratonTradingPost		"0x001F2001">
 	<!ENTITY stTeratonDefender			"0x001F2002">
@@ -1276,36 +1259,22 @@
 	
 	<!ENTITY rsTeratonChrysalis			"0x001FF001">
 	
-	<!-- MAP 0020 0xxx -->
-
 	<!ENTITY smHumanSpace				"0x00200001">
 	<!ENTITY rsHumanSpace				"0x00200002">
 	<!ENTITY smElysium					"0x00200003">
-	
-	<!-- DOMINA 0020 1xxx -->
 	
 	<!ENTITY svDomina					"0x00201001">
 	<!ENTITY unidPilgrimClass			"0x00201002">
 	<!ENTITY dsPilgrimBeringStation		"0x00201003">
 	
-	<!-- 0020 2xxx -->
-	
 	<!ENTITY stDomina					"0x00202001">
 
-	<!-- DOMINA POWERS 0020 4xxx -->
-	
 	<!ENTITY itCircleOfWrathPower		"0x00204001">
 	<!ENTITY itShatterPower				"0x00204002">
 	
-	<!-- 0020 9xxx -->
-
 	<!ENTITY sfDefend					"0x00209001">
 	
-	<!-- 0020 Fxxx -->
-
 	<!ENTITY rsShatterShockwave			"0x0020F001">
-	
-	<!-- MISCELLANEOUS FIRE ENCOUNTERS 0801 -->
 	
 	<!ENTITY stTerroristCamp			"0x08010000">
 	<!ENTITY stTerroristCompound		"0x08010001">
@@ -1349,8 +1318,6 @@
 	<!ENTITY vtPteravoreBite			"0x08010146">
 	<!ENTITY rsPteravoreLair			"0x08010147">
 	<!ENTITY rsPteravoreClawOverlayHD	"0x08010148">
-
-	<!-- MISCELLANEOUS WATER ENCOUNTERS 0802 -->
 
 	<!ENTITY stDrugCartelOutpost		"0x08020000">
 	<!ENTITY scMethEnforcer				"0x08020001">
@@ -1421,8 +1388,6 @@
 	<!ENTITY itDwargCnidocystCannon		"0x0802014E">
 	<!ENTITY itDwargCnidocystNodule		"0x0802014F">
 
-	<!-- MISCELLANEOUS AIR ENCOUNTERS 0803 -->
-
 	<!ENTITY stOutlawConvoyEncounter	"0x08030000">
 	<!ENTITY stOutlawHaven				"0x08030001">
 	<!ENTITY stOutlawBase				"0x08030002">
@@ -1477,8 +1442,6 @@
 	<!ENTITY itUrakHowitzer				"0x08030149">
 	<!ENTITY itUrakMassDriverAdvanced	"0x0803014A">
 
-	<!-- MISCELLANEOUS EARTH ENCOUNTERS 0804 -->
-
 	<!ENTITY stAsteroidMineTitanium		"0x08040000">
 	<!ENTITY stAsteroidMineDuralloy		"0x08040001">
 	<!ENTITY stAsteroidMinePteracnium	"0x08040002">
@@ -1532,7 +1495,12 @@
 	<!ENTITY unidRPGLibrary				"0x00010000">
 	<!ENTITY unidGalaxyLibrary			"0x00020000">
 	
-	<!-- 0010 0000-FFFF HUMAN SPACE VOL 01 -->
+	<!-- 0010 0000-FFFF HUMAN SPACE VOL 01
+
+		All new UNIDs for Human Space should be allocated in this
+		section.
+	
+	-->
 	
 	<!ENTITY unidHumanSpaceLibrary		"0x00100000">
 	
@@ -1624,13 +1592,13 @@
 	<!ENTITY msCSCDestroyAresTarget		"0x00100076">
 	<!ENTITY tbCSCDestroyAresTarget		"0x00100077">
 	<!ENTITY baCSCBase					"0x00100078">
-	<!ENTITY msCSCPointJunoAresAttack	"0x00100079">
-	<!ENTITY tbCSCPointJunoAlphaFleet	"0x0010007A">
-	<!ENTITY tbCSCPointJunoBetaFleet	"0x0010007B">
-	<!ENTITY tbCSCPointJunoGammaFleet	"0x0010007C">
-	<!ENTITY msCSCLamplighterPrototype	"0x0010007D">
-	<!ENTITY msCSCLamplighterTesting	"0x0010007E">
-	<!ENTITY msCSCLamplighterLost		"0x0010007F">
+	<!ENTITY rsBritanniaHD				"0x00100079">
+	<!ENTITY rsCenturionHD				"0x0010007A">
+	<!ENTITY msCSCPointJunoAresAttack	"0x0010007B">
+	<!ENTITY tbCSCPointJunoAlphaFleet	"0x0010007C">
+	<!ENTITY tbCSCPointJunoBetaFleet	"0x0010007D">
+	<!ENTITY tbCSCPointJunoGammaFleet	"0x0010007E">
+	<!ENTITY msCSCLamplighterPrototype	"0x0010007F">
 	
 	<!-- 0080-009F COMMONWEALTH -->
 	
@@ -1663,20 +1631,29 @@
 	<!ENTITY rsManticoreHero			"0x0010009A">
 	<!ENTITY baCommonwealthStation		"0x0010009B">
 	<!ENTITY baStKatsArcologyBase		"0x0010009C">
+	<!ENTITY rsIAVLightHD				"0x0010009D">
+	<!ENTITY rsIAVMediumHD				"0x0010009E">
+	<!ENTITY rsIAVHeavyHD				"0x0010009F">
 	
 	<!-- 00A0-00BF ARES ORTHODOXY -->
 	
 	<!ENTITY rsCometfall				"0x001000A0">
 	<!ENTITY rsDeimos					"0x001000A1">
 	<!ENTITY rsPolarFreighter			"0x001000A2">
+	<!ENTITY rsAresSentryHD				"0x001000A3">
+	<!ENTITY rsChasmHD					"0x001000A4">
+	<!ENTITY rsSandstormHD				"0x001000A5">
+	<!ENTITY rsTundraHD					"0x001000A6">
 	
 	<!-- 00C0-00CF SALVAGERS -->
 	
 	<!ENTITY rsSalvagerNomad			"0x001000C0">
+	<!ENTITY svSalvagers				"0x001000C1">
 	
 	<!-- 00D0-00DF URAK WARLORDS -->
 	
 	<!ENTITY rsUrakDestroyer			"0x001000D0">
+	<!ENTITY rsUrakSentinelHD			"0x001000D1">
 	
 	<!-- 00E0-00EF BATTLE ARENA MAXIMUS -->
 	
@@ -1690,6 +1667,7 @@
 	<!-- 00F0-00FF HELIOTROPES -->
 	
 	<!ENTITY rsHeliotropeFrigate		"0x001000F0">
+	<!ENTITY rsHeliotropeGunshipHD		"0x001000F1">
 	
 	<!-- 0100-011F CHARON PIRATES AND MARAUDERS -->
 	
@@ -1697,6 +1675,9 @@
 	<!ENTITY evCharonRaiderBehavior		"0x00100101">
 	<!ENTITY unidKronosaurus			"0x00100102">
 	<!ENTITY msKronosaurus				"0x00100103">
+	<!ENTITY rsBarbaryHD				"0x00100104">
+	<!ENTITY rsCorsairHD				"0x00100105">
+	<!ENTITY rsVikingHD					"0x00100106">
 
 	<!-- 0120-013F SUNG SLAVERS -->
 	
@@ -1704,10 +1685,13 @@
 	<!ENTITY efQianlongProjectile		"0x00100121">
 	<!ENTITY efQianlongFire				"0x00100122">
 	<!ENTITY efQianlongHit				"0x00100123">
+	<!ENTITY rsWindSlaverHD				"0x00100124">
+	<!ENTITY rsSteelSlaverHD			"0x00100125">
 	
 	<!-- 0140-014F XENOPHOBES -->
 	
 	<!ENTITY rsXenophobeDefender		"0x00100140">
+	<!ENTITY rsXenophobeFighterHD		"0x00100141">
 	
 	<!-- 0150-015F HUARI EMPIRE -->
 	
@@ -1748,6 +1732,9 @@
 	<!ENTITY rsSotho120					"0x00100187">
 	<!ENTITY rsSothoHero				"0x00100188">
 	<!ENTITY baOutlawMine				"0x00100189">
+	<!ENTITY rsBorerHD					"0x0010018A">
+	<!ENTITY rsHammerheadHD				"0x0010018B">
+	<!ENTITY rsHammerhead2HD			"0x0010018C">
 	
 	<!-- 0190-019F VENTARI SETTLERS -->
 	
@@ -1806,6 +1793,7 @@
 	<!ENTITY unidFiona					"0x00100235">
 	<!ENTITY scFionaScorpion			"0x00100236">
 	<!ENTITY scStormhoundAquila			"0x00100237">
+	<!ENTITY unidCaptainHelios			"0x00100238">
 	
 	<!-- 0250-026F COMMONWEALTH MINING -->
 	
@@ -1834,6 +1822,7 @@
 	<!ENTITY msKorolovAtCharonRevenge	"0x00100299">
 	<!ENTITY baCharonBuster				"0x0010029A">
 	<!ENTITY dsKorolovEscortList		"0x0010029B">
+	<!ENTITY rsEI100HD					"0x0010029C">
 
 	<!-- 02B0-02CF COMMONWEALTH MILITIA -->
 
@@ -1848,6 +1837,7 @@
 
 	<!ENTITY baZoanthropeBaseObsolete	"0x001002D0">
 	<!ENTITY baZoanthropeBase			"0x001002D1">
+	<!ENTITY rsZoanthropeRaiderHD		"0x001002D2">
 
 	<!-- 02F0-030F RINGERS -->
 
@@ -1858,15 +1848,66 @@
 	<!ENTITY baTeratonNestBase			"0x00100310">
 	<!ENTITY msTeratonResearch			"0x00100311">
 
-	<!-- 0330-034F CSC ANTARCTICA -->
+	<!-- 0330-036F OUTLAWS II -->
 
-	<!ENTITY unidCaptainHelios			"0x00100330">
-	<!ENTITY msDantalionInformant		"0x00100331">
-	<!ENTITY msEscapeFromDantalion		"0x00100332">
-	<!ENTITY evEscapeFromDantalion		"0x00100333">
-	<!ENTITY msHuntForAntarctica		"0x00100334">
+	<!-- 0370-038F AUTONS -->
 
-	<!-- 1000-FFFF RESERVED -->
+	<!ENTITY rsAutosentinelHD			"0x00100370">
+	<!ENTITY rsMediumAutonHD			"0x00100371">
+	<!ENTITY rs1MAutonHD				"0x00100372">
+	<!ENTITY rsMuleAutonHD				"0x00100373">
+
+	<!-- 0390-03AF COMMONWEALTH II -->
+
+	<!ENTITY rsRoninHD					"0x00100390">
+	<!ENTITY rsTenhoveHD				"0x00100391">
+
+	<!-- 03B0-03CF SAPIENS -->
+
+	<!ENTITY rsPlagueHD					"0x001003B0">
+	<!ENTITY rsRevelationsHD			"0x001003B1">
+
+	<!-- 03D0-03EF DEATH DRUGS CARTEL -->
+
+	<!ENTITY rsMethEnforcerHD			"0x001003D0">
+
+	<!-- 03F0-040F CENTAURI WARLORDS -->
+
+	<!ENTITY rsCentauriHeavyRaiderHD	"0x001003F0">
+	<!ENTITY rsCentauriRaiderHD			"0x001003F1">
+
+	<!-- 0410-042F KOBOL WARLORDS -->
+
+	<!ENTITY rsKobolGunshipDualHD		"0x00100410">
+	<!ENTITY rsKobolGunshipMissilesHD	"0x00100411">
+	<!ENTITY rsKobolGunshipOmniHD		"0x00100412">
+
+	<!-- 0430-044F ANARCHISTS -->
+
+	<!ENTITY rsEarthzoneHD				"0x00100430">
+	<!ENTITY rsHornetHD					"0x00100431">
+
+	<!-- 0450-046F RANX EMPIRE -->
+
+	<!ENTITY rsRanxGunshipHD			"0x00100450">
+
+	<!-- 0470-048F FERIANS -->
+
+	<!ENTITY rsFerianMinerHD			"0x00100470">
+
+	<!-- 0490-04AF HIMAL SEPERATISTS -->
+
+	<!ENTITY rsHimalInterceptorHD		"0x00100490">
+
+	<!-- 04B0-04CF COMMONWEALTH FLEET II -->
+
+	<!ENTITY msDantalionInformant		"0x001004B0">
+	<!ENTITY msEscapeFromDantalion		"0x001004B1">
+	<!ENTITY evEscapeFromDantalion		"0x001004B2">
+	<!ENTITY msHuntForAntarctica		"0x001004B3">
+	<!ENTITY msCSCLamplighterTesting	"0x001004B4">
+
+	<!-- 1000-FFFF RESERVED: DO NOT USE -->
 	]>
 	
 <CoreLibrary

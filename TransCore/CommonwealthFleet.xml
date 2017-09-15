@@ -256,12 +256,12 @@ PLAYER DATA
 			attributes=			"unknown"
 			>
 
-		<Names>weapon prototype marked "Alpha"; weapon prototype marked "Beta"; weapon prototype marked "Gamma";
-			weapon prototype marked "Delta"; weapon prototype marked "Epsilon"; weapon prototype marked "Omega";
-			weapon prototype marked "0.1"; weapon prototype marked "X17"; weapon prototype marked "Trinity";
-			weapon prototype marked "Halifax"; weapon prototype marked "Test No. 6"; weapon prototype marked "596";
-			weapon prototype marked "Hurricane"; weapon prototype marked "Ivy Mike"; weapon prototype marked "Castle Bravo";
-			weapon prototype marked "Tsar Bomba"; weapon prototype marked "Smiling Buddha"; weapon prototype marked "RDS-37"
+		<Names>weapon prototype(s) marked "Alpha"; weapon prototype(s) marked "Beta"; weapon prototype(s) marked "Gamma";
+			weapon prototype(s) marked "Delta"; weapon prototype(s) marked "Epsilon"; weapon prototype(s) marked "Omega";
+			weapon prototype(s) marked "0.1"; weapon prototype(s) marked "X17"; weapon prototype(s) marked "Trinity";
+			weapon prototype(s) marked "Halifax"; weapon prototype(s) marked "Test No. 6"; weapon prototype(s) marked "596";
+			weapon prototype(s) marked "Hurricane"; weapon prototype(s) marked "Ivy Mike"; weapon prototype(s) marked "Castle Bravo";
+			weapon prototype(s) marked "Tsar Bomba"; weapon prototype(s) marked "Smiling Buddha"; weapon prototype(s) marked "RDS-37"
 		</Names>
 
 	</ItemType>
@@ -386,7 +386,9 @@ PLAYER DATA
 						
 	-->
 
-	<Type UNID="&baCSCBase;">
+	<Type UNID="&baCSCBase;"
+			inherit="&unidCommonText;"
+			>
 		<Events>
 			<OnAttackedByPlayer>
 				(block Nil
@@ -478,7 +480,7 @@ PLAYER DATA
 
 					; Military will execute the player
 					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
-						(intFleetCrime 3 (cat "the destruction of " (objGetName gSource 4)))
+						(intFleetCrime 3 (cat "the destruction of " (objGetName gSource 'article)))
 						)
 					)
 			</OnDestroy>
@@ -734,7 +736,7 @@ PLAYER DATA
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
+							(scrSetDescTranslate gScreen 'descWelcome { shipName:(objGetName gSource 'article) })
 						</OnPaneInit>
 
 						<Actions>
@@ -825,19 +827,19 @@ PLAYER DATA
 								(switch
 									(eq behavior 'moving)
 										(scrSetDesc gScreen
-											"You are on the flight deck of " (objGetName gSource 0x04) ". "
+											"You are on the flight deck of " (objGetName gSource 'article) ". "
 											"The ship is on maneuvers and the XO is giving orders to the astrogator and the sensor chief."
 											)
 											
 									(eq rank 1)
 										(scrSetDesc gScreen
-											"The flight deck of " (objGetName gSource 0x04) 
+											"The flight deck of " (objGetName gSource 'article) 
 											" hums with the activity of men and women working at terminals and holocharts. "
 											"The XO is giving orders to a squadron out on a mission."
 											)
 
 									(scrSetDesc gScreen
-										"You are on the flight deck of " (objGetName gSource 0x04) ". "
+										"You are on the flight deck of " (objGetName gSource 'article) ". "
 										"Men and women work at terminals planning missions and communicating with squadrons on patrol. "
 										"The XO is near a holochart, listening to a report."
 										)
@@ -888,23 +890,20 @@ PLAYER DATA
 		</DockScreens>
 
 		<Language>
-			<Text id="actionBridge">"[B]ridge"</Text>
-			<Text id="actionFlightDeck">"[F]light Deck"</Text>
-			<Text id="actionDockServices">"[D]ock Services"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
-			<Text id="actionLeave">"[L]eave"</Text>
-			<Text id="actionTalk">"Talk to E[x]ecutive Officer"</Text>
+			<Text id="actionBridge">[B]ridge</Text>
+			<Text id="actionFlightDeck">[F]light Deck</Text>
+			<Text id="actionTalk">Talk to E[x]ecutive Officer</Text>
 
 			<Text id="descWelcome">
-				(cat
-					"You are in the docking bay of the " (objGetName gSource) "."
-					)
+
+				You are in the docking bay of %shipName%.
+
 			</Text>
 
 			<Text id="descNoMissions">
-				(cat
-					"\"Sorry, there are no missions available for you.\""
-					)
+
+				"Sorry, there are no missions available for you."
+
 			</Text>
 		</Language>
 
@@ -1081,7 +1080,7 @@ PLAYER DATA
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
+							(scrSetDescTranslate gScreen 'descWelcome { shipName:(objGetName gSource 'article) })
 						</OnPaneInit>
 
 						<Actions>
@@ -1237,7 +1236,7 @@ PLAYER DATA
 						</OnPaneInit>
 
 						<Actions>
-							<Action id="actionSell" default="1">
+							<Action id="actionSellItems" default="1">
 								(block (medicalItem)
 									; Remove the items from the cargo hold
 									(enum gItem medicalItem
@@ -1362,19 +1361,15 @@ PLAYER DATA
 		</DockScreens>
 
 		<Language>
-			<Text id="actionBridge">"[B]ridge"</Text>
-			<Text id="actionInfirmary">"[I]nfirmary"</Text>
-			<Text id="actionDockServices">"[D]ock Services"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
-			<Text id="actionLeave">"[L]eave"</Text>
-			<Text id="actionTalkMedical">"Talk to [M]edical Officer"</Text>
-			<Text id="actionSell">"[S]ell Items"</Text>
-			<Text id="actionDonate">"[D]onate Items"</Text>
+			<Text id="actionBridge">[B]ridge</Text>
+			<Text id="actionInfirmary">[I]nfirmary</Text>
+			<Text id="actionTalkMedical">Talk to [M]edical Officer</Text>
+			<Text id="actionDonate">[D]onate Items</Text>
 
 			<Text id="descWelcome">
-				(cat
-					"You are in the docking bay of the " (objGetName gSource) "."
-					)
+
+				You are in the docking bay of %shipName%.
+
 			</Text>
 		</Language>
 
@@ -1522,7 +1517,7 @@ PLAYER DATA
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsBritannia;" imageWidth="80" imageHeight="80"/>
+		<Image imageID="&rsBritanniaHD;" imageX="0" imageY="0" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="154"	posRadius="26"	posZ="0"	rotation="180"/>
@@ -1591,7 +1586,7 @@ PLAYER DATA
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="320" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsCenturionHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
@@ -1649,7 +1644,7 @@ PLAYER DATA
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="320" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsCenturionHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
@@ -2211,7 +2206,7 @@ PLAYER DATA
 						(newLevel (intFleetPromotion))
 						)
 						(scrSetDescTranslate gScreen (cat "Promotion:" newLevel) {
-							captainName: (cat "the captain of " (objGetName gSource 4))
+							captainName: (cat "the captain of " (objGetName gSource 'article))
 							})
 
 						(switch
@@ -2570,6 +2565,8 @@ PLAYER DATA
 	<Image UNID="&rsAquila;"		bitmap="Resources\Aquila.jpg" bitmask="Resources\AquilaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsBritannia;"		bitmap="Resources\Britannia.jpg" bitmask="Resources\BritanniaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsCSC;"			bitmap="Resources\CSC.jpg" bitmask="Resources\CSCMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsBritanniaHD;"	bitmap="Resources\BritanniaHD.jpg" bitmask="Resources\BritanniaHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsCenturionHD;"	bitmap="Resources\CenturionHD.jpg"	bitmask="Resources\CenturionHDMask.bmp" 	loadOnUse="true" />
 	
 	<Image UNID="&rsCSCBkgnd;"		bitmap="Resources\CSCScreen.jpg" loadOnUse="true" />
 	<Image UNID="&rsFleetEmblems;"	bitmap="Resources\FleetEmblems.jpg" bitmask="Resources\FleetEmblemsMask.bmp" loadOnUse="true" />

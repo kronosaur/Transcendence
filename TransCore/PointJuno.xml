@@ -205,7 +205,7 @@
 	<StationType UNID="&stCSCEuropaWreck;"
 			name=				":the wreck of the CSC Europa"
 			sovereign=			"&svCommonwealthFleet;"
-			inherit=			"&dsDockScreenBase;"
+			inherit=			"&unidCommonText;"
 			
 			abandonedScreen=	"Main"
 			scale=				"ship"

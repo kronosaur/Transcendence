@@ -22,7 +22,8 @@
 
 			attributes=			"genericClass, outlawMiners"
 			   
-			mass=				"200"
+			size=				"31"
+			mass=				"800"
 			thrustRatio=		"4"
 			maxSpeed=			"10"
 			cargoSpace=			"25"
@@ -46,7 +47,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsBorer;" imageX="0" imageY="0" imageWidth="72" imageHeight="72"/>
+		<Image imageID="&rsBorerHD;" imageX="0" imageY="0" imageWidth="72" imageHeight="72" rotationCount="120" rotationColumns="12" viewportRatio="0.005625" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="14"	posZ="-25"	rotation="180"/>
@@ -96,8 +97,9 @@
 			defaultSovereign=	"&svOutlawMiners;"
 
 			attributes=			"genericClass, outlawMiners"
-			   
-			mass=				"200"
+		
+			size=				"31"
+			mass=				"800"
 			thrustRatio=		"6"
 			maxSpeed=			"10"
 			cargoSpace=			"25"
@@ -126,7 +128,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsBorer;" imageX="0" imageY="0" imageWidth="72" imageHeight="72"/>
+		<Image imageID="&rsBorerHD;" imageX="0" imageY="0" imageWidth="72" imageHeight="72" rotationCount="120" rotationColumns="12" viewportRatio="0.005625" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="14"	posZ="-25"	rotation="180"/>
@@ -203,7 +205,7 @@
 			rotationAccel=		"2.0"
 			/>
 
-		<Image imageID="&rsSmallShips1;" imageX="32" imageY="0" imageWidth="32" imageHeight="32"/>
+		<Image imageID="&rsHammerheadHD;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="10"	posZ="0"	rotation="180"/>
@@ -251,7 +253,7 @@
 			rotationAccel=		"2.0"
 			/>
 
-		<Image imageID="&rsSmallShips1;" imageX="64" imageY="0" imageWidth="32" imageHeight="32"/>
+		<Image imageID="&rsHammerhead2HD;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="167"	posRadius="15"	posZ="3"	rotation="180"/>
@@ -1229,5 +1231,8 @@
 	<Image UNID="&rsOutlawMinePrimordial;"	bitmap="Resources\OutlawMinePrimordial.jpg" bitmask="Resources\OutlawMinePrimordialMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsOutlawMineRocky;"		bitmap="Resources\OutlawMineRocky.jpg" bitmask="Resources\OutlawMineRockyMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsOutlawMineVolcanic;"	bitmap="Resources\OutlawMineVolcanic.jpg" bitmask="Resources\OutlawMineVolcanicMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsBorerHD;"				bitmap="Resources\BorerHD.jpg" bitmask="Resources\BorerHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsHammerheadHD;"			bitmap="Resources\HammerheadHD.jpg" bitmask="Resources\HammerheadHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsHammerhead2HD;"			bitmap="Resources\Hammerhead2HD.jpg" bitmask="Resources\Hammerhead2HDMask.bmp" loadOnUse="true"/>
 
 </TranscendenceModule>

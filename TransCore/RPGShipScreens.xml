@@ -100,6 +100,7 @@
 			name=				"Ship's Cargo Hold"
 			desc=				"Interior of Ship"
 			type=				"itemPicker"
+			inherit=			"&dsDockScreenBase;"
 			nestedScreen=		"true"
 			>
 
@@ -109,89 +110,116 @@
 			/>
 
 		<Panes>
-			<Default
-					desc=	"You are in your ship's cargo hold.">
-
+			<Default>
 				<OnPaneInit>
-					(block (thisItem desc)
-						(setq thisItem (scrGetItem gScreen))
-						(switch
-							(not thisItem)
-								(setq gMaxCount 0)
-
-							(itmIsInstalled thisItem)
-								(setq gMaxCount 0)
-
-							(setq gMaxCount (itmGetCount thisItem))
-							)
-
-						(if thisItem
+					(block (thisItem maxCount)
+						(if (scrGetData gScreen 'cursor)
 							(block Nil
-								(setq desc (cat "Unit mass: " (strMassString (itmGetMass thisItem))))
-								(if (gr gMaxCount 1)
-									(setq desc (cat desc " (" gMaxCount " at " (strMassString (multiply (itmGetMass thisItem) gMaxCount)) ")"))
-									)
-								(scrSetDesc gScreen desc)
+								(scrSetListCursor gScreen (scrGetData gScreen 'cursor))
+								(scrSetData gScreen 'cursor Nil)
 								)
 							)
 
-						; Enable/disable actions
-						(scrEnableAction gScreen 0 (gr gMaxCount 0))
+						(setq thisItem (scrGetItem gScreen))
+						(setq maxCount (itmGetCount thisItem))
+
+						(switch
+							(not thisItem)
+								(scrSetDescTranslate gScreen 'descCargoEmpty)
+
+							(= maxCount 1)
+								(scrSetDescTranslate gScreen 'descCargoItem {
+									unitMass: (strMassString (itmGetMass thisItem))
+									})
+
+							(scrSetDescTranslate gScreen 'descCargoItems {
+								unitMass: (strMassString (itmGetMass thisItem))
+								count: maxCount
+								totalMass: (strMassString (* (itmGetMass thisItem) maxCount))
+								})
+							)
+
+						;	Remember some calculations for later
+						(scrSetData gScreen 'maxCount maxCount)
+
+						;	Enable/disable actions
+						(scrEnableAction gScreen 'actionJettisonItem (gr maxCount 0))
+						(scrEnableAction gScreen 'actionUse (or (itmMatches thisItem 'u) (itmHasAttribute thisItem 'Usable)))
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Jettison this Item" key="J" >
-						(switch
-							(gr gMaxCount 1)
-								(scrShowPane gScreen "JettisonQuantity")
+					<Action id="actionJettisonItem">
+						(block (
+							(maxCount (scrGetData gScreen 'maxCount))
+							)
+							(switch
+								(gr maxCount 1)
+									(scrShowPane gScreen "JettisonQuantity")
 
-							(eq gMaxCount 1)
 								(block (itemsToJettison)
-									; Create cargo crate
+									;	Create cargo crate
 									(if (not gDest)
 										(setq gDest (sysCreateStation &stGenericCargoCrate; (sysVectorPolarOffset gPlayerShip 0 0)))
 										)
 
-									; Dump items
+									;	Dump items
 									(setq itemsToJettison (scrRemoveItem gScreen 1))
 									(rpgJettisonItem gDest itemsToJettison)
 									(scrShowPane gScreen "Default")
 									)
+								)
 							)
 					</Action>
 
-					<Action name="Done" cancel="1" key="D">
-						<Exit/>
+					<Action id="actionUse" default="1">
+						(block Nil
+							(scrSetData gScreen 'cursor (scrGetListCursor gScreen))
+							(scrShowScreen gScreen &dsRPGUseItem; {
+								useItem: (scrGetItem gScreen)
+								})
+							)
 					</Action>
 
+					<Action id="actionDone" cancel="1">
+						<Exit/>
+					</Action>
 				</Actions>
-
 			</Default>
 
 			<JettisonQuantity
 					showCounter=	"true">
 
 				<OnPaneInit>
-					(block Nil
-						(scrSetDesc gScreen (cat "How many items do you wish to jettison?"))
-						(scrSetCounter gScreen gMaxCount)
+					(block (
+						(maxCount (scrGetData gScreen 'maxCount))
+						)
+						(scrSetDescTranslate gScreen 'descHowMany)
+						(scrSetCounter gScreen maxCount)
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Jettison" default="1" key="J">
-						(block (count)
-							(setq count (scrGetCounter gScreen))
-							(if (gr count gMaxCount)
-								(scrSetCounter gScreen gMaxCount)
+					<Action id="actionJettison" default="1">
+						(block (
+							(useCount (scrGetCounter gScreen))
+							(maxCount (scrGetData gScreen 'maxCount))
+							)
+
+							(switch
+								(= useCount 0)
+									(scrShowPane gScreen "Default")
+
+								(gr useCount maxCount)
+									(scrSetCounter gScreen maxCount)
+
 								(block (itemsToJettison)
-									; Create cargo crate
+									;	Create cargo crate
 									(if (not gDest)
 										(setq gDest (sysCreateStation &stGenericCargoCrate; (sysVectorPolarOffset gPlayerShip 0 0)))
 										)
 
-									; Dump items
+									;	Dump items
 									(setq itemsToJettison (scrRemoveItem gScreen count))
 									(rpgJettisonItem gDest itemsToJettison)
 									(scrShowPane gScreen "Default")
@@ -200,15 +228,23 @@
 							)
 					</Action>
 
-					<Action name="Cancel" cancel="1" key="C">
-						<ShowPane pane="Default"/>
+					<Action id="actionCancel" cancel="1">
+						(scrShowPane gScreen "Default")
 					</Action>
-
 				</Actions>
-
 			</JettisonQuantity>
 		</Panes>
 
+		<Language>
+			<Text id="actionJettisonItem">[J]ettison this Item</Text>
+			<Text id="actionJettison">[J]ettison</Text>
+			<Text id="actionUse">[U]se this Item</Text>
+
+			<Text id="descCargoEmpty">You are in your ship's cargo hold.</Text>
+			<Text id="descCargoItem">Unit mass: %unitMass%</Text>
+			<Text id="descCargoItems">Unit mass: %unitMass% (%count% at %totalMass%)</Text>
+			<Text id="descHowMany">How many items do you wish to jettison?</Text>
+		</Language>
 	</DockScreen>
 
 	<!-- Refuel ship screen -->

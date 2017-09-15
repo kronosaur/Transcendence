@@ -23,12 +23,19 @@
 			>
 
 		<OnScreenInit>
-			(scrSetData gScreen 'analyzer gItem)
+			(if (not (scrGetData gScreen 'analyzer))
+				(scrSetData gScreen 'analyzer gItem)
+				)
 		</OnScreenInit>
 
 		<Display type="itemPicker"
 				dataFrom=	"player"
 				list=		"*"
+				initialItem="=
+					(if (scrGetData gScreen 'modifiedItem)
+						(itmIsEqual (scrGetItem gScreen) (scrGetData gScreen 'modifiedItem))
+						(scrSetListCursor gScreen (scrGetData gScreen 'cursor))
+						)"
 				>
 			<OnDisplayInit>
 				(scrSetListFilter gScreen (lambda (theItem)
@@ -66,12 +73,11 @@
 						
 						;	Continue with description
 						
-						(setq canAnalyze Nil)
 						(switch
 							;	If no more charges then we cannot analyze anything
 							
 							(eq chargesLeft 0)
-								(scrSetDescTranslate gScreen 'descNoCharges { name:(itmGetName analyzerItem 0x40) })
+								(scrSetDescTranslate gScreen 'descNoCharges { itemName:(itmGetName analyzerItem 0) })
 								
 							;	Nothing to analyze
 							
@@ -87,18 +93,19 @@
 								
 							;	OK
 							
-							(block Nil
+							(block (theName)
+								(setq theName (itmGetName itemToAnalyze (if (eq (itmGetCount itemToAnalyze) 1) 0x840 0x804)))
 								(switch
 									(ls skillLevel 2)
-										(scrSetDescTranslate gScreen 'descAnalyze1 { name:(itmGetName itemToAnalyze 0x804) })
+										(scrSetDescTranslate gScreen 'descAnalyze1 { itemName:theName })
 									
 									(ls skillLevel 5)
-										(scrSetDescTranslate gScreen 'descAnalyze2 { name:(itmGetName itemToAnalyze 0x804) })
+										(scrSetDescTranslate gScreen 'descAnalyze2 { itemName:theName })
 									
 									(ls skillLevel 10)
-										(scrSetDescTranslate gScreen 'descAnalyze3 { name:(itmGetName itemToAnalyze 0x804) })
+										(scrSetDescTranslate gScreen 'descAnalyze3 { itemName:theName })
 									
-									(scrSetDescTranslate gScreen 'descAnalyze4 { name:(itmGetName itemToAnalyze 0x804) })
+									(scrSetDescTranslate gScreen 'descAnalyze4 { itemName:theName })
 									)
 								
 								(setq canAnalyze True)
@@ -119,22 +126,29 @@
 						(block (
 							(analyzerItem (scrGetData gScreen 'analyzer))
 							(result (rpgAnalyzeItem gSource (scrGetItem gScreen)))
+							(modifiedItem (@ result 'modifiedItem))
 							)
 						
 							;	Consume a charge on the analyzer
 							(setq analyzerItem (objSetItemProperty gSource analyzerItem 'incCharges -1))
 							(scrSetData gScreen 'analyzer analyzerItem)
 							
+							;	Save the modified item if it still needs analysis
+							(if (and modifiedItem
+									(or (not (itmIsKnown modifiedItem))
+										(objFireItemEvent gSource modifiedItem 'GetIsAnalysisRequired)
+										)
+									)
+								(scrSetData gScreen 'modifiedItem modifiedItem)
+								(scrSetData gScreen 'modifiedItem Nil)
+								)
+							
 							;	Save the cursor
 							(scrSetData gScreen 'cursor (scrGetListCursor gScreen))
 							
 							;	Set the filter so we only select the modified item
 							(scrSetListFilter gScreen (lambda (theItem)
-								(block Nil
-									;(dbgOutput "item1: " (itmGetName theItem 0))
-									;(dbgOutput "item2: " (itmGetName (@ result 'modifiedItem) 0))
-									(itmIsEqual theItem (@ result 'modifiedItem))
-									)
+								(itmIsEqual theItem modifiedItem)
 								))
 							
 							;	Done
@@ -182,8 +196,8 @@
 									)
 								))
 							
-							;	Restore cursor position
-							(scrSetListCursor gScreen (scrGetData gScreen 'cursor))
+							;	Refresh to make sure items are in the right order, since damaged items may have been added
+							(scrRefreshScreen gScreen)
 							
 							(scrShowPane gScreen 'Default)
 							)
@@ -201,37 +215,37 @@
 
 			<Text id="descChargesLeft">Charges Left: %charges%</Text>
 			<Text id="descNoCharges">
-				Unfortunately, %name% is out of charge and cannot function.
+				Unfortunately, this %itemName% is out of charge and cannot function.
 			</Text>
 			<Text id="descNoItemsHere">
 				There are no items here requiring analysis.
 			</Text>
 			<Text id="descAnalyze1">
-				You can analyze %name%, though you do not have much experience analyzing items.
+				You can analyze %itemName%, though you do not have much experience analyzing items.
 			</Text>
 			<Text id="descAnalyze2">
-				You can analyze %name%; you have some experience analyzing items.
+				You can analyze %itemName%; you have some experience analyzing items.
 			</Text>
 			<Text id="descAnalyze3">
-				You can analyze %name%; you are proficient at analyzing items.
+				You can analyze %itemName%; you are proficient at analyzing items.
 			</Text>
 			<Text id="descAnalyze4">
-				You can analyze %name%; you are an expert at analyzing items.
+				You can analyze %itemName%; you are an expert at analyzing items.
 			</Text>
 			<Text id="descBotched">
 				Unfortunately, you botched the analysis and got no results.
 			</Text>
 			<Text id="descDamaged">
-				You attempt to analyze %name% but accidentally short out a major component, damaging it.
+				You attempt to analyze %itemName% but accidentally short out a major component, damaging it.
 			</Text>
 			<Text id="descDestroyed">
-				You attempt to analyze %name% but accidentally destroy it with a burst of high-energy ions.
+				You attempt to analyze %itemName% but accidentally destroy it with a burst of high-energy ions.
 			</Text>
 			<Text id="descIdentified">
-				Your analysis reveals it to be %name%.
+				Your analysis reveals it to be %itemName%.
 			</Text>
 			<Text id="descNoEffect">
-				You run the analyzer but are unable to reveal any additional information about %name%.
+				You run the analyzer but are unable to reveal any additional information about %itemName%.
 			</Text>
 		</Language>
 	</DockScreen>
@@ -242,13 +256,14 @@
 
 	<Globals>
 		(block Nil
-			(setq rpgAnalyzeItem (lambda (sourceObj itemToAnalyze desc modifiedItem)
+			(setq rpgAnalyzeItem (lambda (sourceObj itemToAnalyze)
 			
 				;	We return a struct with the following elements:
 				;
 				;		desc: The description of the result.
+				;		modifiedItem: The item to show, if any.
 				
-				(block (skillLevel failureChance result)
+				(block (skillLevel failureChance result desc modifiedItem)
 					
 					;	Compute the chance of failure based on skillLevel
 					
@@ -269,6 +284,8 @@
 					;	Our skill level increases
 					
 					(typIncData &dsRPGAnalyzeItem; 'skillLevel 1)
+					
+					(setq modifiedItem itemToAnalyze)
 						
 					;	Analyze
 					
@@ -291,10 +308,10 @@
 									
 									(itmMatches itemToAnalyze "dN")
 										(block Nil
-											(setq desc (cat
-												"You attempt to analyze " (itmGetName itemToAnalyze 0x40) " but accidentally short out a major component. "
-												"The " (itmGetName itemToAnalyze 0x80) " has been damaged."
-												))
+											(setq desc (typTranslate &dsRPGAnalyzeItem; 'descDamaged {
+															 itemName:(itmGetName itemToAnalyze (if (eq (itmGetCount itemToAnalyze) 1) 0x840 0x804))
+															})
+												)
 											(setq modifiedItem (objSetItemProperty sourceObj itemToAnalyze 'damaged True))
 											)
 											
@@ -302,21 +319,18 @@
 									
 									(itmMatches itemToAnalyze "ut~ad -Res;")
 										(block Nil
-											(setq desc (cat
-												"You attempt to analyze " (itmGetName itemToAnalyze 0x40) " but accidentally destroy " 
-												(if (gr (itmGetCount itemToAnalyze) 1) "them" "it")
-												" with a burst of high-energy ions. "
-												))
-											(objRemoveItem sourceObj itemToAnalyze)
-											(setq modifiedItem Nil)
+											(setq desc (typTranslate &dsRPGAnalyzeItem; 'descDestroyed {
+															itemName:(itmGetName itemToAnalyze (if (eq (itmGetCount itemToAnalyze) 1) 0x840 0x804))
+															})
+												)
+											(if (eq (itmGetCount itemToAnalyze) 1) (setq modifiedItem Nil))
+											(objRemoveItem sourceObj itemToAnalyze 1)
 											)
 									
 									;	Otherwise, failure.
 									
-									(block Nil
-										(setq desc (cat "Unfortunately, you botched the analysis and got no results."))
-										(setq modifiedItem itemToAnalyze)
-										)
+									(setq desc (typTranslate &dsRPGAnalyzeItem; 'descBotched))
+									
 									)
 								)
 					
@@ -334,19 +348,17 @@
 						(not (itmIsKnown itemToAnalyze))
 							(block Nil
 								(itmSetKnown itemToAnalyze)
-								(setq desc (cat
-									"Your analysis reveals it to be " (itmGetName itemToAnalyze 0x04) "."
-									))
-								(setq modifiedItem itemToAnalyze)
+								(setq desc (typTranslate &dsRPGAnalyzeItem; 'descIdentified {
+												itemName:(itmGetName itemToAnalyze 0x04)
+												})
+									)
 								)
 								
 						;	Otherwise, nothing
 						
-						(block Nil
-							(setq desc (cat
-								"You run the analyzer but are unable to reveal any additional information on the item."
-								))
-							(setq modifiedItem itemToAnalyze)
+						(setq desc (typTranslate &dsRPGAnalyzeItem; 'descNoEffect {
+										itemName:(itmGetName itemToAnalyze (if (eq (itmGetCount itemToAnalyze) 1) 0x40 0x04))
+										})
 							)
 						)
 						
@@ -354,7 +366,7 @@
 					
 					{
 						desc: desc
-						modifiedItem: itemToAnalyze
+						modifiedItem: modifiedItem
 						}
 					)
 				))

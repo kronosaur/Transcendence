@@ -122,11 +122,11 @@
 						;	Attack the target
 						
 						(block Nil
-							(shpCancelOrders gSource)
-							(shpOrder gSource 'attack (objGetTarget gSender))
-							
 							(objSetData gSource 'behavior 'attackingTarget)
 							(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+							
+							(shpCancelOrders gSource)
+							(shpOrder gSource 'attack (objGetTarget gSender))
 							)
 						)
 				</Invoke>
@@ -162,10 +162,10 @@
 							;	Attack the closest target to the sender if we have one.
 							theTarget
 								(block nil
-									(shpCancelOrders gSource)
-									(shpOrder gSource 'attack theTarget)
 									(objSetData gSource 'behavior 'attackingAtWill)
 									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+									(shpCancelOrders gSource)
+									(shpOrder gSource 'attack theTarget)
 									)
 							
 							;	If we're already attacking something, don't change target, but switch behavior.
@@ -178,10 +178,10 @@
 							;	Attack the closest target to ourself that we can detect, if any.
 							(setq theTarget (sysFindObject gSource "sTYAPN N:100;"))
 								(block nil
-									(shpCancelOrders gSource)
-									(shpOrder gSource 'attack theTarget)
 									(objSetData gSource 'behavior 'attackingAtWill)
 									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+									(shpCancelOrders gSource)
+									(shpOrder gSource 'attack theTarget)
 									)
 									
 							;	Nothing to attack.	
@@ -209,11 +209,11 @@
 									)
 
 							(block Nil
-								(shpCancelOrders gSource)
-								(shpOrder gSource 'escort gPlayerShip)
-								
 								(objSetData gSource 'behavior 'escorting)
 								(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
+								
+								(shpCancelOrders gSource)
+								(shpOrder gSource 'escort gPlayerShip)
 								)
 							)
 						)
@@ -261,13 +261,13 @@
 								
 							;	Return
 							(block Nil
-								(shpCancelOrders gSource)
-								(shpOrder gSource 'gate gSender)
-							
 								(objSetData gSource 'behavior 'returning)
 								(objSendMessage gSender gSource (objTranslate gSource 'ReturnAck))
 								
 								(setq spaceLeft (- spaceLeft mass))
+								
+								(shpCancelOrders gSource)
+								(shpOrder gSource 'gate gSender)
 								)
 							)
 							
@@ -286,11 +286,11 @@
 
 				<Invoke>
 					(block Nil
-						(shpCancelOrders gSource)
-						(shpOrder gSource 'hold)
-						
 						(objSetData gSource 'behavior 'waiting)
 						(objSendMessage gSender gSource (objTranslate gSource 'WaitAck))
+						
+						(shpCancelOrders gSource)
+						(shpOrder gSource 'hold)
 						)
 				</Invoke>
 			</Message>
@@ -431,8 +431,8 @@
 						
 					;	Order the auton to escort the source
 					
-					(shpOrder auton 'escort sourceObj)
 					(objSetData auton 'behavior 'escorting)
+					(shpOrder auton 'escort sourceObj)
 					
 					;	Store the item type in the auton object so that we can
 					;	convert it back later.
@@ -497,8 +497,8 @@
 						
 						(not gPlayerShip)
 							(block Nil
-								(shpOrder gSource 'hold)
 								(objSetData gSource 'behavior 'waiting)
+								(shpOrder gSource 'hold)
 								)
 							
 						(eq (objGetData gSource 'behavior) 'attackingAtWill)
@@ -528,16 +528,16 @@
 										
 									;	Nothing to attack, return to formation.
 									(block Nil
-										(shpOrder gSource 'escort gPlayerShip)
 										(objSetData gSource 'behavior 'escorting)
+										(shpOrder gSource 'escort gPlayerShip)
 										)
 									)
 								)
 								
 						;	Default: return to formation.
 						(block Nil
-							(shpOrder gSource 'escort gPlayerShip)
 							(objSetData gSource 'behavior 'escorting)
+							(shpOrder gSource 'escort gPlayerShip)
 							)
 							
 						)

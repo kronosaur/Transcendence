@@ -528,6 +528,7 @@
     <Xml Include="RaisuStation.xml" />
     <Xml Include="Rama.xml" />
     <Xml Include="RPGCommoditiesExchange.xml" />
+    <Xml Include="RPGCommonText.xml" />
     <Xml Include="RPGComponents.xml">
       <SubType>Designer</SubType>
     </Xml>
@@ -537,6 +538,7 @@
     <Xml Include="RPGShipBroker.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="RPGUsefulItems.xml" />
     <Xml Include="Sanctuary.xml" />
     <Xml Include="StdMiningEquipment.xml">
       <SubType>Designer</SubType>

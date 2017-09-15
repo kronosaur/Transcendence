@@ -412,7 +412,7 @@
 
 					(block (
 						(first (@ theList 0))
-						i result
+						result
 						)
 						(for i 1 (- (count theList) 1)
 							(setq result (append result (list (list first (@ theList i)))))
@@ -563,10 +563,9 @@
 			;	"a ton of titanium ore, 2 segments of reactive armor, and
 			;	a slave coffin"
 			
-				(block (result lastItem)
+				(block (i result lastItem)
 				
 					(if (not nameFlags)	(setq nameFlags 0x08))
-					(setq i 0)
 					(setq lastItem (subtract (count itemList) 1))
 					
 					(enum itemList theItem

@@ -506,7 +506,7 @@
 	-->
 	
 	<Type unid="&baRingersStation;"
-			inherit=			"&dsDockScreenBase;"
+			inherit=			"&unidCommonText;"
 			>
 		<Language>
 			<Text id="actionCommoditiesExchange">[E]xchange</Text>

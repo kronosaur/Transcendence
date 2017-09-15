@@ -135,6 +135,7 @@
 	<!-- Barrel of Centauri Nanos -->
 
 	<ItemType UNID="&itCentauriNanos;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"[barrel(s) of ]Centauri nanos"
 			level=				"3"
 			value=				"250"
@@ -146,13 +147,30 @@
 
 			description=		"These nanomachines weave a diamond matrix through the target material. Armor that has been treated in this way will be more resistant to laser and impact damage."
 
-			useScreen=			"&dsUseArmorCoating;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 			data=				"centauriNanos"
 
 			sortName=			"Centauri nanos, barrel of"
 			>
 
 		<Image imageID="&rsItems1;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<StaticData>
+			<Data id="enhancementTable">
+				(
+					{	criteria:"a &lt;=3"	enhancement:0x0808	}
+					{	criteria:"a &lt;=5"	enhancement:0x0805	}
+					{	criteria:"a &lt;=6"	enhancement:0x0803	}
+					{	criteria:"a &gt;10"	enhancement:Nil	descID:'TooAdvanced	}
+					)
+			</Data>
+		</StaticData>
+
+		<Language>
+			<Text id="descResultIntro">
+				The coating is composed of nanomachines that strengthen your armor against laser and impact damage.
+			</Text>
+		</Language>
 	</ItemType>
 	
 <!-- SHIP CLASSES -->
@@ -247,7 +265,7 @@
 			</Table>
 		</Items>
 
-		<Image imageID="&rsCentauriHeavyRaiderImage;" imageX="0" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsCentauriHeavyRaiderHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -550,7 +568,7 @@
 			rotationAccel=		"1.0"
 			/>
 
-		<Image imageID="&rsCentauriHeavyRaiderImage;" imageX="0" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsCentauriHeavyRaiderHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -595,7 +613,7 @@
 			rotationAccel=		"1.0"
 			/>
 
-		<Image imageID="&rsCentauriRaiderImage;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsCentauriRaiderHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -1046,5 +1064,7 @@
 	<Image UNID="&rsCentauriHeavyRaiderImage;"	bitmap="Resources\CentauriHeavyRaider.jpg" bitmask="Resources\CentauriHeavyRaiderMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsCentauriRaiderImage;"		bitmap="Resources\CentauriRaider.jpg" bitmask="Resources\CentauriRaiderMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsCentauriStationsImage;"		bitmap="Resources\CentauriStations.jpg" bitmask="Resources\CentauriStationsMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsCentauriHeavyRaiderHD;"		bitmap="Resources\CentauriHeavyRaiderHD.jpg" bitmask="Resources\CentauriHeavyRaiderHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsCentauriRaiderHD;"			bitmap="Resources\CentauriRaiderHD.jpg" bitmask="Resources\CentauriRaiderHDMask.bmp"  loadOnUse="true"/>
 
 </TranscendenceModule>

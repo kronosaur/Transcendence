@@ -86,6 +86,7 @@
 	<!-- Segment of Dragon Armor -->
 
 	<ItemType UNID="&itDragonArmor;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"[segment(s) of ]Dragon armor"
 			level=				"7"
 			value=				"5000"
@@ -96,7 +97,7 @@
 
 			description=		"This is a heavier version of the Sung's innovative armor, used on its Dragon slavers."
 
-			useScreen=			"&dsUseArmorPatch;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 			useUninstalledOnly=	"true"
 
 			sortName=			"Sung armor.10"
@@ -117,7 +118,7 @@
 				/>
 
 		<StaticData>
-			<RepairHP>125</RepairHP>
+			<Data id="RepairHP">125</Data>
 		</StaticData>
 
 		<Events>
@@ -253,6 +254,7 @@
 	<!-- Segment of Heavy Sung Armor -->
 
 	<ItemType UNID="&itHeavySungArmor;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"[segment(s) of ]heavy Sung armor"
 			level=				"6"
 			value=				"2300"
@@ -263,7 +265,7 @@
 
 			description=		"This is a heavier version of the Sung's innovative armor, generally used on its Earth slavers."
 
-			useScreen=			"&dsUseArmorPatch;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 			useUninstalledOnly=	"true"
 
 			sortName=			"Sung armor.20"
@@ -281,7 +283,7 @@
 				/>
 
 		<StaticData>
-			<RepairHP>90</RepairHP>
+			<Data id="RepairHP">90</Data>
 		</StaticData>
 
 		<Events>
@@ -354,6 +356,7 @@
 	<!-- Segment of Sung Armor -->
 
 	<ItemType UNID="&itSungArmor;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"[segment(s) of ]Sung armor"
 			level=				"5"
 			value=				"600"
@@ -364,7 +367,7 @@
 
 			description=		"This blast-resistant tiled armor can be cannibalized to repair other Sung armor segments."
 
-			useScreen=			"&dsUseArmorPatch;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 			useUninstalledOnly=	"true"
 
 			sortName=			"Sung armor.30"
@@ -384,7 +387,7 @@
 				/>
 
 		<StaticData>
-			<RepairHP>35</RepairHP>
+			<Data id="RepairHP">35</Data>
 		</StaticData>
 
 		<Events>
@@ -403,6 +406,7 @@
 	<!-- Segment of Light Sung Armor -->
 
 	<ItemType UNID="&itLightSungArmor;"
+			inherit=			"&baStdArmorRepair;"
 			name=				"[segment(s) of ]light Sung armor"
 			level=				"2"
 			value=				"60"
@@ -413,7 +417,7 @@
 
 			description=		"The Sung created this blast-resistant tiled armor for their Wind slavers. The tiles can be cannibalized to repair other Sung armor segments."
 
-			useScreen=			"&dsUseArmorPatch;"
+			useScreen=			"&dsRPGUseItemOnArmor;"
 			useUninstalledOnly=	"true"
 
 			sortName=			"Sung armor.40"
@@ -432,7 +436,7 @@
 				/>
 
 		<StaticData>
-			<RepairHP>12</RepairHP>
+			<Data id="RepairHP">12</Data>
 		</StaticData>
 		
 		<Events>
@@ -484,7 +488,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips1;" imageX="480" imageY="0" imageWidth="48" imageHeight="48"/>
+		<Image imageID="&rsWindSlaverHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="141"	posRadius="7"	posZ="0"	rotation="180"/>
@@ -544,7 +548,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsMediumShips2;" imageX="512" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsSteelSlaverHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="166"	posRadius="25"	posZ="0"	rotation="180"/>
@@ -2063,7 +2067,9 @@
 	
 <!-- RESOURCES -->
 
-	<Image UNID="&rsDragonSlaverImage;"	bitmap="Resources\DragonSlaver.jpg"	bitmask="Resources\DragonSlaverMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsDragonSlaverImage;"	bitmap="Resources\DragonSlaver.jpg"		bitmask="Resources\DragonSlaverMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsSungTransport;"		bitmap="Resources\SungTransport.jpg"	bitmask="Resources\SungTransportMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsWindSlaverHD;"		bitmap="Resources\WindSlaverHD.jpg"		bitmask="Resources\WindSlaverHDMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsSteelSlaverHD;"		bitmap="Resources\SteelSlaverHD.jpg"	bitmask="Resources\SteelSlaverHDMask.bmp"  loadOnUse="true"/>
 
 </TranscendenceModule>

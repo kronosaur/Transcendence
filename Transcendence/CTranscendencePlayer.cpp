@@ -40,7 +40,10 @@ void CTranscendencePlayer::OnMessageFromObj (CSpaceObject *pSender, const CStrin
 //	Receive a message.
 
 	{
-	if (pSender && !pSender->IsVirtual() && !pSender->IsMission())
+	if (pSender 
+			&& !pSender->IsVirtual() 
+			&& !pSender->IsMission()
+			&& !pSender->IsDestroyed())
 		pSender->Highlight(sMessage);
 	else
 		g_pTrans->DisplayMessage(sMessage);
