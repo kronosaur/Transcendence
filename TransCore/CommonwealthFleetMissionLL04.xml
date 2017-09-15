@@ -12,7 +12,7 @@
 		Nil				Unknown
 		'player			Decker wants player to test weapon
 		'fleetCaptain	Decker wants a Fleet Captain to test weapon
-		'fleetPlayer		Player is now a captain and can test the weapon
+		'fleetPlayer	Player is now a captain and can test the weapon
 		'notPlayer		Decker does not want the player to test weapon
 		'installed		Installed on player ship
 
@@ -24,12 +24,16 @@
 
 			level=			"9"
 			maxAppearing=	"1"
-			priority="100"
 			>
 
 		<Events>
 			<OnCreate>
-				(msnSetData gSource 'paneID (objGetID aOwnerObj))
+				(switch
+					(not (typGetData &msCSCLamplighterTesting; 'status))
+						(msnDestroy gSource)
+
+					(msnSetData gSource 'paneID (objGetID aOwnerObj))
+					)
 			</OnCreate>
 
 			<OnCanBrief>
@@ -91,7 +95,9 @@
 
 							(and (= status 'testing) True)
 								(setq theMessage (msnTranslate gSource 'textDockmaster2))
+
 							; (- (unvGetTick) (msnGetData gSource 'installTime))
+							;	LATER: TestingStatus
 							)
 
 						;	If we have a messge then replace actionDockServices with an action
