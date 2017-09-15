@@ -357,7 +357,7 @@
 									)
 							</Action>
 
-							<Action id="actionDone" cancel="1">
+							<Action id="actionDoneSpecial" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -391,7 +391,8 @@
 		<Language>
 			<Text id="actionBridge">[B]ridge</Text>
 			<Text id="actionWeaponsVault">[W]eapons Vault</Text>
-			<Text id="actionEnterCode">[E]nter Code</Text>
+			<Text id="actionEnterCode">[Enter] Enter Code</Text>
+			<Text id="actionDoneSpecial">[Esc] Done</Text>
 
 			<Text id="descDefault">
 				You are docked with the hulking wreckage of the CSC Europa.
