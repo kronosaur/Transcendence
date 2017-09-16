@@ -188,7 +188,9 @@ CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 	ASSERT(Ctx.pObj == (CSpaceObject *)pShip);
 	ASSERT(pShip->GetSystem());
 	CString sSystemName = pShip->GetSystem()->GetName();
+
 	//	Figure out who killed us
+
 	CString sCause;
 	CSpaceObject *pAttacker = Ctx.Attacker.GetObj();
 	if (pAttacker)
@@ -212,31 +214,21 @@ CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 	else
 		sCause = CONSTLIT("by unknown forces");
 
-	//Let's mention any extra conditions that the player had before dying
-	CString sEffects;
-	TArray<CString> Effects;
-	
-	if (pShip->IsRadioactive())
-		Effects.Insert("radioactive"); //Doesn't seem to work for some reason
-	if (pShip->IsBlind())
-		Effects.Insert("blind");
-	if (pShip->IsParalyzed())
-		Effects.Insert("paralyzed");
-	if (pShip->IsDisarmed())
-		Effects.Insert("disarmed");
+	//	Mention any extra conditions that the player had before dying
 
-	if (Effects.GetCount() == 1)
-		sEffects = Effects.GetAt(0);
-	else if (Effects.GetCount() == 2)
-		sEffects = strPatternSubst(CONSTLIT("%s and %s"), Effects.GetAt(0), Effects.GetAt(1));
-	else {
-		sEffects = Effects.GetAt(0);
-		for (int i = 1; i < Effects.GetCount() - 1; i++) {
-			sEffects = strPatternSubst(CONSTLIT("%s, %s"), sEffects, Effects.GetAt(i));
-		}
-		sEffects = strPatternSubst(CONSTLIT("%s, and %s"), sEffects, Effects.GetAt(Effects.GetCount() - 1));
-	}
-	sCause = strPatternSubst(CONSTLIT("%s while %s"), sCause, sEffects);
+	TArray<CString> Effects;
+	if (pShip->IsRadioactive() && Ctx.iCause != killedByRadiationPoisoning)
+		Effects.Insert(CONSTLIT("radioactive"));
+	if (pShip->IsBlind())
+		Effects.Insert(CONSTLIT("blind"));
+	if (pShip->IsParalyzed())
+		Effects.Insert(CONSTLIT("paralyzed by EMP"));
+	if (pShip->IsDisarmed())
+		Effects.Insert(CONSTLIT("disarmed"));
+
+	CString sEffects = strJoin(Effects, CONSTLIT("oxfordComma"));
+	if (!sEffects.IsBlank())
+		sEffects = strPatternSubst(CONSTLIT(" while %s"), sEffects);
 
 	//	Generate based on cause
 	
@@ -244,54 +236,54 @@ CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 	switch (Ctx.iCause)
 		{
 		case killedByDamage:
-			sText = strPatternSubst(CONSTLIT("was destroyed %s"), sCause);
+			sText = strPatternSubst(CONSTLIT("was destroyed %s%s"), sCause, sEffects);
 			break;
 
 		case killedByDisintegration:
-			sText = strPatternSubst(CONSTLIT("was disintegrated %s"), sCause);
+			sText = strPatternSubst(CONSTLIT("was disintegrated %s%s"), sCause, sEffects);
 			break;
 
 		case killedByPowerFailure:
-			sText = CONSTLIT("lost all reactor power");
+			sText = strPatternSubst(CONSTLIT("lost all reactor power%s"), sEffects);
 			break;
 
 		case killedByRunningOutOfFuel:
-			sText = CONSTLIT("ran out of fuel");
+			sText = strPatternSubst(CONSTLIT("ran out of fuel%s"), sEffects);
 			break;
 
 		case killedByRadiationPoisoning:
-			sText = CONSTLIT("was killed by radiation poisoning");
+			sText = strPatternSubst(CONSTLIT("was killed by radiation poisoning%s"), sEffects);
 			break;
 
 		case killedBySelf:
-			sText = CONSTLIT("self-destructed");
+			sText = strPatternSubst(CONSTLIT("self-destructed%s"), sEffects);
 			break;
 
 		case killedByWeaponMalfunction:
-			sText = CONSTLIT("was destroyed by a malfunctioning weapon");
+			sText = strPatternSubst(CONSTLIT("was destroyed by a malfunctioning weapon%s"), sEffects);
 			break;
 
 		case killedByEjecta:
 			if (Ctx.Attacker.HasDamageCause())
-				sText = strPatternSubst(CONSTLIT("was destroyed by exploding debris from %s"), Ctx.Attacker.GetDamageCauseNounPhrase(nounArticle));
+				sText = strPatternSubst(CONSTLIT("was destroyed by exploding debris from %s%s"), Ctx.Attacker.GetDamageCauseNounPhrase(nounArticle), sEffects);
 			else
-				sText = CONSTLIT("was destroyed by exploding debris");
+				sText = strPatternSubst(CONSTLIT("was destroyed by exploding debris%s"), sEffects);
 			break;
 
 		case killedByExplosion:
 		case killedByPlayerCreatedExplosion:
 			if (Ctx.Attacker.HasDamageCause())
-				sText = strPatternSubst(CONSTLIT("was destroyed by the explosion of %s"), Ctx.Attacker.GetDamageCauseNounPhrase(nounArticle));
+				sText = strPatternSubst(CONSTLIT("was destroyed by the explosion of %s%s"), Ctx.Attacker.GetDamageCauseNounPhrase(nounArticle), sEffects);
 			else
-				sText = CONSTLIT("was destroyed by exploding debris");
+				sText = strPatternSubst(CONSTLIT("was destroyed by exploding debris%s"), sEffects);
 			break;
 
 		case killedByShatter:
-			sText = strPatternSubst(CONSTLIT("was shattered %s"), sCause);
+			sText = strPatternSubst(CONSTLIT("was shattered %s%s"), sCause, sEffects);
 			break;
 
 		case killedByGravity:
-			sText = strPatternSubst(CONSTLIT("was ripped apart %s"), sCause);
+			sText = strPatternSubst(CONSTLIT("was ripped apart %s%s"), sCause, sEffects);
 			break;
 
 		case killedByOther:
