@@ -2418,14 +2418,6 @@ PLAYER DATA
 							)
 						)
 						
-					; Lamplighter
-					
-					(if (eq (typGetGlobalData &scCSCTerra; "p262test") 'installed)
-						(setq theList (append theList (list
-							(list "Acquired Lamplighter archcannon" Nil "achievements &amp; regrets")
-							)))
-						)
-
 					; Meds donated
 					
 					(if (setq medsDonated (typGetGlobalData &svCommonwealthFleet; "medsDonated"))

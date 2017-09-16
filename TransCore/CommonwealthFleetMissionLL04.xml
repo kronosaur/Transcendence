@@ -1,8 +1,60 @@
 <?xml version="1.0" ?>
 
 <TranscendenceModule>
+	<!-- Mission: Lamplighter Prototype Lost ===================================
 
-	<!-- Mission:  ========================================
+	If the Lamplighter prototype has not been returned to Point Juno, then the
+	Admiral has more important things to worry about, so block other missions.
+
+	Uses a short expire time so we don't have to worry about checking if the
+	player has backtracked and recovered the prototype.
+
+	======================================================================== -->
+
+	<MissionType UNID="&msCSCLamplighterLost;"
+			name=			"Lamplighter Lost"
+			attributes=		"commonwealthFleet, cscTerra, rank5, rank6, lamplighter"
+
+			expireTime=		"1800"
+			noStats=		"true"
+			level=			"9"
+			priority=		"100"
+			>
+
+		<Events>
+			<OnCreate>
+				;	If the prototype is recovered then nothing to do
+				(if (msnFind "r +unid:&msCSCLamplighterPrototype;; +property:isSuccess;")
+					(msnDestroy gSource)
+					)
+			</OnCreate>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+			<Text id="Briefing">
+				(list
+					{
+						textID: 'textBriefing
+						nextPage: 'missionDecline
+						}
+
+					Nil	;	Blank entry to prevent forced accept/decline options
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="textBriefing">
+				The bridge of the CSC Terra is busy with activity. You overhear Admiral Decker talking with his XO:
+
+				"We need that prototype, Jack. I don't care how you do it, we need to get it back!"
+			</Text>
+		</Language>
+	</MissionType>
+
+
+	<!-- Mission: Lamplighter Testing ==========================================
 
 	EXTRA DATA
 
@@ -116,6 +168,22 @@
 						)
 					)
 			</OnPaneInit>
+
+			<GetGlobalAchievements>
+				(block (
+					(status (typGetData &msCSCLamplighterTesting; 'status))
+					)
+					(if (= status 'installed)
+						(list
+							(list
+								(msnTranslate &msCSCLamplighterTesting; 'AchievementSuccess)
+								Nil
+								(typTranslate &unidCommonText; 'achievementsAndRegrets)
+								)
+							)
+						)
+					)
+			</GetGlobalAchievements>
 
 			<GetGlobalPlayerPriceAdj>
 				(block (
@@ -263,8 +331,7 @@
 				Take her out and let us know how many Ares you blast!"
 			</Text>
 
-			<Text id="AchievementSuccess">Recovered Project Lamplighter prototype</Text>
-			<Text id="AchievementFailure">Lost the Project Lamplighter prototype</Text>
+			<Text id="AchievementSuccess">Acquired Lamplighter archcannon</Text>
 		</Language>
 	</MissionType>
 

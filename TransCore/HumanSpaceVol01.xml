@@ -1906,6 +1906,7 @@
 	<!ENTITY evEscapeFromDantalion		"0x001004B2">
 	<!ENTITY msHuntForAntarctica		"0x001004B3">
 	<!ENTITY msCSCLamplighterTesting	"0x001004B4">
+	<!ENTITY msCSCLamplighterLost		"0x001004B5">
 
 	<!-- 1000-FFFF RESERVED: DO NOT USE -->
 	]>
