@@ -209,7 +209,7 @@
 			</Text>
 			<Text id="textIntro2">
 				Waiting in the admiral's quarters you see the artifacts of his
-				life scattered around the room&#x97;charts, papers, and empty
+				life scattered around the room&mdash;charts, papers, and empty
 				glasses are randomly distributed. Pictures of the men and women
 				that he's lost judge from the walls.
 
@@ -308,7 +308,7 @@
 			<Text id="textSuccessPlayer2">
 				"You've done your part of the bargain, now let me help you with
 				your journey. For the last few years we've been working on a new
-				weapon&#x97;something that can hurt the Ares and win this war. I
+				weapon&mdash;something that can hurt the Ares and win this war. I
 				want you to test this new weapon. The dockmaster will install it.
 				Good luck!"
 			</Text>
@@ -322,15 +322,15 @@
 				private conversation.
 			</Text>
 			<Text id="textSuccessCaptain2">
-				"Thanks for tracking down the Antarctica&#x97;we couldn't have
+				"Thanks for tracking down the Antarctica&mdash;we couldn't have
 				done it without you. Now it's my turn to help you."
 				
 				"For the last few years we've been working on a new
-				weapon&#x97;something that will win this war. I want you to test
+				weapon&mdash;something that will win this war. I want you to test
 				it. Report to the dockmaster and he will explain. Good luck!"
 			</Text>
 			<Text id="textSuccess2">
-				"Thanks for tracking down the Antarctica&#x97;we couldn't have
+				"Thanks for tracking down the Antarctica&mdash;we couldn't have
 				done it without you. I know you're on your way to the Core,	but
 				if you stay with the Fleet and make captain, I guarantee that
 				I'll remember your service. Good luck, and remember what I said."

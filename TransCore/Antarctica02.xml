@@ -406,13 +406,13 @@ changing sys will unregister from owner
 
 				"Has Admiral Decker sent you to kill us?"
 			</Text>
-			<String id="actionDeckerSent">"[Y]es&#x97;He says you betrayed the Fleet."</String>
+			<String id="actionDeckerSent">"[Y]es&mdash;He says you betrayed the Fleet."</String>
 			<String id="actionNoIdea">"I have [n]o idea what you're talking about."</String>
 			<Text id="textBriefing2a">
 				She looks away for a moment and then dismisses the Fleet officer
 				and the troops. She continues after they're gone:
 
-				"I did betray the Fleet. And I'll never be forgiven&#x97;I know that.
+				"I did betray the Fleet. And I'll never be forgiven&mdash;I know that.
 				You of all people must know what it's like to betray those you love
 				for a greater calling."
 			</Text>
@@ -428,7 +428,7 @@ changing sys will unregister from owner
 				Or at least from some faction of the Ares. They offered to negotiate
 				a truce with us."
 
-				"Decker refused&#x97;he thought it was a trap. But I wasn't so sure."
+				"Decker refused&mdash;he thought it was a trap. But I wasn't so sure."
 			</Text>
 			<Text id="textBriefing4">
 				She pauses for a long while. Then she continues:
