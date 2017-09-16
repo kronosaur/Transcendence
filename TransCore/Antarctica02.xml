@@ -256,7 +256,16 @@ changing sys will unregister from owner
 								(sysVectorRandom (sysGetStargateLeadingToNode 'SK) (random 210 220) 10)
 								)
 							)
-						
+
+						;	If the Terra has not been encountered yet, create it on the other side
+						;	of the system.
+						(if (not (staIsEncountered &stCSCTerraEncounter;))
+							(block (terra terraPos)
+								(setq terraPos (sysVectorRandom (sysVectorMultiply (objGetPos antarcticaObj) -1) (random 40 60) 20))
+								(setq terra (sysCreateStation &stCSCTerraEncounter; terraPos))
+								)
+							)
+
 						;	Ascending rpgCharacters will unregister any event handlers, so fix them
 						(enum (msnFind antarcticaObj "aouS") theMission
 							(msnRegisterForEvents theMission antarcticaObj)
