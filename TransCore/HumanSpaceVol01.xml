@@ -1901,6 +1901,15 @@
 	<!-- 04B0-04CF LUMINOUS -->
 
 	<!ENTITY rsLuminousDroneHD			"0x001004B0">
+
+	<!-- 04D0-04EF NAMI CORPORATION -->
+
+	<!ENTITY rsMissileNAMIHeavyHD		"0x001004D0">
+
+	<!-- 04F0-050F TAIKON CORPORATION -->
+
+	<!ENTITY rsWeaponTM7HD				"0x001004F0">
+	<!ENTITY rsWeaponTM7FragmentHD		"0x001004F1">
 	
 
 	<!-- 1000-FFFF RESERVED: DO NOT USE -->
