@@ -58,7 +58,7 @@ PLAYER DATA
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsMolotok;" imageX="0" imageY="0" imageWidth="68" imageHeight="68"/>
+		<Image imageID="&rsMolotokHD;" imageX="0" imageY="0" imageWidth="68" imageHeight="68" rotationCount="120" rotationColumns="12"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="155"	posRadius="22"	posZ="0"	rotation="180"/>
@@ -1271,5 +1271,6 @@ PLAYER DATA
 <!-- RESOURCES -->
 
 	<Image UNID="&rsMolotok;"	bitmap="Resources\Molotok.jpg" bitmask="Resources\MolotokMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsMolotokHD;"	bitmap="Resources\MolotokHD.jpg" bitmask="Resources\MolotokHDMask.bmp" loadOnUse="true"/>
 
 </TranscendenceModule>

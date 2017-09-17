@@ -1730,6 +1730,9 @@
 	<!ENTITY rsBorerHD					"0x0010018A">
 	<!ENTITY rsHammerheadHD				"0x0010018B">
 	<!ENTITY rsHammerhead2HD			"0x0010018C">
+	<!ENTITY rsOromoHD					"0x0010018D">
+	<!ENTITY rsZuluHD					"0x0010018E">
+	<!ENTITY rsZulu2HD					"0x0010018F">
 	
 	<!-- 0190-019F VENTARI SETTLERS -->
 	
@@ -1763,6 +1766,7 @@
 	<!ENTITY dsBlackMarketDelivery		"0x00100203">
 	<!ENTITY msBlackMarketHotelMeet		"0x00100204">
     <!ENTITY baBlackMarketStation       "0x00100205">
+    <!ENTITY rsMolotokHD			    "0x00100206">
 
 	<!-- 0210-022F PENITENTS -->
 	
@@ -1850,6 +1854,7 @@
 	<!ENTITY rsMediumAutonHD			"0x00100371">
 	<!ENTITY rs1MAutonHD				"0x00100372">
 	<!ENTITY rsMuleAutonHD				"0x00100373">
+	<!ENTITY rsExplorerAutonHD			"0x00100374">
 
 	<!-- 0390-03AF COMMONWEALTH II -->
 
@@ -1892,6 +1897,11 @@
 	<!-- 0490-04AF HIMAL SEPERATISTS -->
 
 	<!ENTITY rsHimalInterceptorHD		"0x00100490">
+
+	<!-- 04B0-04CF LUMINOUS -->
+
+	<!ENTITY rsLuminousDroneHD			"0x001004B0">
+	
 
 	<!-- 1000-FFFF RESERVED: DO NOT USE -->
 	]>
