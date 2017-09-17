@@ -59,6 +59,7 @@
 				(block (
 					(status (rpgCharacterGetStatus &unidCaptainHelios;))
 					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					missionObj
 					)
 					(switch
 						(msnGetProperty gSource 'isFailure)
@@ -73,8 +74,11 @@
 						(= status 'destroyedByPlayer)
 							(block Nil
 								(typSetData &msCSCLamplighterTesting; 'status 'player)
-								;	Create the mission now so player can go straigh to dockmaster
-								(msnCreate &msCSCLamplighterTesting; stationObj)
+
+								;	Create the mission now so player can go straight to dockmaster
+								(if (setq missionObj (msnCreate &msCSCLamplighterTesting; stationObj))
+									(msnAccept missionObj)
+									)
 								)
 
 						(= status 'destroyed)

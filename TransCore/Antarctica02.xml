@@ -97,8 +97,8 @@ changing sys will unregister from owner
 					(msnSetUnavailable gSource)
 					(typSetData &msEscapeFromDantalion; 'status 'enemy)
 
-					;(sovSetDisposition &svCSCAntarctica; &svPlayer; 'enemy)
-					;(sovSetDisposition &svPlayer; &svCSCAntarctica; 'enemy)
+					(sovSetDisposition &svCSCAntarctica; &svPlayer; 'enemy)
+					(sovSetDisposition &svPlayer; &svCSCAntarctica; 'enemy)
 
 					(shpCancelOrders antarcticaObj)
 					(shpOrder antarcticaObj 'hold (random 15 60))
@@ -230,6 +230,14 @@ changing sys will unregister from owner
 					)
 			</OnCompleted>
 
+			<OnGetNextScreen>
+				(switch
+					(= aScreenType 'DeclineFollowUp)
+						{
+							nextScreen: 'forceUndock
+							}
+					)
+			</OnGetNextScreen>
 
 			<OnGlobalSystemStarted>
 				(switch

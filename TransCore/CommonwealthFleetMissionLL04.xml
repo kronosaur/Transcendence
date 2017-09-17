@@ -136,6 +136,7 @@
 								)
 							(block Nil
 								(typSetData &msCSCLamplighterTesting; 'status 'testing)
+								(setq status 'testing)
 								(msnSetData gSource 'installTime (unvGetTick))
 								)
 							)

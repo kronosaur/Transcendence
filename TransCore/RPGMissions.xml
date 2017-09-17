@@ -231,7 +231,7 @@
 											(scrSetData gScreen 'curPage Nil)
 
 											;	If no ReplyDecline, then we're done
-											(if (msnTranslate missionObj 'ReplyDecline)
+											(if (msnTranslate missionObj 'DeclineReply)
 												(scrShowPane gScreen "ReplyDecline")
 												(scrExitScreen gScreen)
 												)
