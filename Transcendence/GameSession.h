@@ -83,7 +83,9 @@ class CGameSession : public IHISession
 		void DismissMenu (void);
 		void HideMenu (void);
 		void InitUI (void);
+        inline bool IsMouseAimEnabled (void) const { return m_bMouseAim; }
 		void PaintSRS (CG32bitImage &Screen);
+        void SetMouseAimEnabled (bool bEnabled = true);
 		bool ShowMenu (EMenuTypes iMenu);
 		void SyncMouseToPlayerShip (void);
 
@@ -95,6 +97,7 @@ class CGameSession : public IHISession
 		//	UI state
 
 		EUITypes m_iUI;						//	Basic flying UI
+		bool m_bMouseAim;					//	Player aims with the mouse
 
 		//	HUD state
 

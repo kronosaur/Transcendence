@@ -874,8 +874,11 @@ LONG CTranscendenceWnd::WMRButtonDown (int x, int y, DWORD dwFlags)
 	switch (m_State)
 		{
         case gsInGame:
+#if 0
+
             if (GetPlayer() && GetPlayer()->IsMouseAimEnabled())
     			Autopilot(false);
+#endif
             break;
 		}
 

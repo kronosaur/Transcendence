@@ -105,7 +105,7 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 
                 if (g_pTrans->GetPlayer() 
 						&& !InMenu()
-						&& g_pTrans->GetPlayer()->IsMouseAimEnabled())
+						&& IsMouseAimEnabled())
                     {
                     int iMouseAimAngle;
                     int xMouse, yMouse;

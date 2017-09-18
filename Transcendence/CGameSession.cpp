@@ -14,6 +14,7 @@ CGameSession::CGameSession (CHumanInterface &HI,
         m_Model(Model),
 		m_Soundtrack(Soundtrack),
 		m_iUI(uiNone),
+		m_bMouseAim(true),
         m_HUD(HI, Model),
         m_bShowingSystemMap(false),
         m_SystemMap(HI, Model, m_HUD),
@@ -137,6 +138,29 @@ void CGameSession::InitUI (void)
 		return;
 
 	m_iUI = pPlayerSettings->GetDefaultUI();
+
+	//	Initialize some variables based on UI
+
+	switch (m_iUI)
+		{
+		case uiPilot:
+			m_bMouseAim = !m_Settings.GetBoolean(CGameSettings::noMouseAim);
+			break;
+
+		case uiCommand:
+			m_bMouseAim = false;
+			break;
+
+		default:
+			ASSERT(false);
+			break;
+		}
+
+	//	Mouse aim setting might have changed since the last time we loaded the game,
+	//	but since the player controller keeps its own state, we need to tell it
+	//	about our current state.
+
+	pPlayer->OnMouseAimSetting(m_bMouseAim);
 	}
 
 void CGameSession::OnCleanUp (void)
@@ -491,7 +515,7 @@ void CGameSession::SyncMouseToPlayerShip (void)
 	//	If we're not using the mouse to move the ship, then we don't need to
 	//	do this.
 
-	if (!pPlayer->IsMouseAimEnabled())
+	if (!IsMouseAimEnabled())
 		return;
 
 	//	Create a vector that points to where the mouse should be relative to the

@@ -55,7 +55,6 @@ CPlayerShipController::CPlayerShipController (void) :
 		m_iLastHelpFireMissileTick(0),
 		m_bMapHUD(true),
 		m_bDockPortIndicators(true),
-        m_bMouseAim(true),
         m_iMouseAimAngle(-1),
 		m_pCharacterClass(NULL),
 		m_bUnderAttack(false),

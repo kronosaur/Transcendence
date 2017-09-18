@@ -213,6 +213,7 @@ class CGameSettings
 			showManeuverEffects,			//	Shows maneuvering effects
 			noMissionCheckpoint,			//	Do not save on mission accept
 			defaultBuyTab,					//	Default tab when buying items
+			noMouseAim,						//	Disable mouse aiming
 
 			//	Installation options
 			useTDB,							//	Force use of .TDB
@@ -251,7 +252,7 @@ class CGameSettings
 			introSpoilers,					//	Show high-level ships in intro
 
 			//	Constants
-			OPTIONS_COUNT = 39,
+			OPTIONS_COUNT = 40,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }

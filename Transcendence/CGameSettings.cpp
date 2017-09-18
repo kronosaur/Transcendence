@@ -61,6 +61,7 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"showManeuverEffects",		optionBoolean,	"false",	0	},
 		{	"noMissionCheckpoint",		optionBoolean,	"false",	0	},
 		{	"defaultBuyTab",			optionString,	"filterGeneral",	0	},
+		{	"noMouseAim",				optionBoolean,	"false",	0	},
 
 		//	Installation options
 

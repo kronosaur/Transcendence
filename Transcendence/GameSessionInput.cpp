@@ -410,7 +410,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
 					case CGameKeys::keyRotateLeft:
 					case CGameKeys::keyRotateRight:
-		                pPlayer->SetMouseAimEnabled(false);
+		                SetMouseAimEnabled(false);
 						break;
 
 					//	We need to debounce the dock key so that it does not 
@@ -648,7 +648,7 @@ void CGameSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture
 
 			//	If mouse aiming not enabled, nothing to do
 
-			else if (!pPlayer->IsMouseAimEnabled())
+			else if (!IsMouseAimEnabled())
 				{
 				}
 
@@ -704,7 +704,7 @@ void CGameSession::OnLButtonUp (int x, int y, DWORD dwFlags)
 
 			//	If mouse aiming not enabled, nothing to do
 
-			else if (!pPlayer->IsMouseAimEnabled())
+			else if (!IsMouseAimEnabled())
 				{
 				}
 
@@ -748,7 +748,7 @@ void CGameSession::OnMButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture
 
 			//	If mouse aiming not enabled, nothing to do
 
-			else if (!pPlayer->IsMouseAimEnabled())
+			else if (!IsMouseAimEnabled())
 				{
 				}
 
@@ -792,7 +792,7 @@ void CGameSession::OnMButtonUp (int x, int y, DWORD dwFlags)
 
 			//	If mouse aiming not enabled, nothing to do
 
-			else if (!pPlayer->IsMouseAimEnabled())
+			else if (!IsMouseAimEnabled())
 				{
 				}
 
@@ -844,7 +844,7 @@ void CGameSession::OnMouseMove (int x, int y, DWORD dwFlags)
 			//	Otherwise, enable mouse aim
 
             else if (g_pHI->HasMouseMoved(x, y))
-                pPlayer->SetMouseAimEnabled(true);
+                SetMouseAimEnabled(true);
 
             break;
 			}
@@ -890,7 +890,7 @@ void CGameSession::OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
 
 			//	If mouse aiming not enabled, nothing to do
 
-			else if (!pPlayer->IsMouseAimEnabled())
+			else if (!IsMouseAimEnabled())
 				{
 				}
 
@@ -1008,7 +1008,7 @@ void CGameSession::OnRButtonDown (int x, int y, DWORD dwFlags)
 
 			//	If mouse aiming not enabled, nothing to do
 
-			else if (!pPlayer->IsMouseAimEnabled())
+			else if (!IsMouseAimEnabled())
 				{
 				}
 
@@ -1052,7 +1052,7 @@ void CGameSession::OnRButtonUp (int x, int y, DWORD dwFlags)
 
 			//	If mouse aiming not enabled, nothing to do
 
-			else if (!pPlayer->IsMouseAimEnabled())
+			else if (!IsMouseAimEnabled())
 				{
 				}
 
@@ -1066,4 +1066,28 @@ void CGameSession::OnRButtonUp (int x, int y, DWORD dwFlags)
             break;
 			}
 		}
+	}
+
+void CGameSession::SetMouseAimEnabled (bool bEnabled)
+
+//	SetMouseAimEnabled
+//
+//	User has taken some action (such as moving the mouse) which tells us that they 
+//	want mouse aiming to be either enabled or disabled.
+
+	{
+	//	If settings has disabled mouse aim, then nothing to do.
+
+	if (m_Settings.GetBoolean(CGameSettings::noMouseAim))
+		return;
+
+	//	Set it
+
+	m_bMouseAim = bEnabled;
+
+	//	Tell the player ship controller
+
+	CPlayerShipController *pPlayer = m_Model.GetPlayer();
+	if (pPlayer)
+		pPlayer->OnMouseAimSetting(m_bMouseAim);
 	}
