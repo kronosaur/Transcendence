@@ -16,6 +16,22 @@
 
 	-->
 
+<!-- RPG USE ITEM ==============================================================
+
+	This screen allows the player to use an item on another item or device.
+
+	gData uses the following fields:
+
+		useItem:	The item being used. If not specifed we check gItem instead
+
+-->
+
+	<DockScreen UNID="&dsRPGUseItem;"
+			obsolete=			"38"
+			>
+	</DockScreen>
+
+
 	<!-- Cargo Crate -->
 
 	<StationType UNID="&stCargoCrate;"
