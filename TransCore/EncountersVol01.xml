@@ -2893,7 +2893,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsOromo;" imageX="0" imageY="0" imageWidth="80" imageHeight="80"/>
+		<Image imageID="&rsOromoHD;" imageX="0" imageY="0" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="12"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="37"	posZ="0"	rotation="180"	sendToBack="3,4,16,17"/>
@@ -3124,7 +3124,7 @@
 
 		<!-- Image and Effects -->
 		
-		<Image imageID="&rsZulu;" imageX="0" imageY="0" imageWidth="55" imageHeight="55"/>
+		<Image imageID="&rsZuluHD;" imageX="0" imageY="0" imageWidth="55" imageHeight="55" rotationCount="120" rotationColumns="12"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="150"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -3179,7 +3179,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsZulu;" imageX="55" imageY="0" imageWidth="55" imageHeight="55"/>
+		<Image imageID="&rsZulu2HD;" imageX="0" imageY="0" imageWidth="55" imageHeight="55" rotationCount="120" rotationColumns="12"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="150"	posRadius="20"	posZ="0"	rotation="180"/>
@@ -3573,7 +3573,10 @@
 	<Image UNID="&rsSothoHero;"			bitmap="Resources\SothoLarge.jpg"		bitmask="Resources\SothoLargeMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsT31ArmedTransport;"	bitmap="Resources\T31Transport.jpg"		bitmask="Resources\T31TransportMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsT55ArmedTransport;"	bitmap="Resources\T55Transport.jpg"		bitmask="Resources\T55TransportMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsZulu;"				bitmap="Resources\Zulu.jpg"		bitmask="Resources\ZuluMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsZulu;"				bitmap="Resources\Zulu.jpg"				bitmask="Resources\ZuluMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsOromoHD;"			bitmap="Resources\OromoHD.jpg"			bitmask="Resources\OromoHDMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsZuluHD;"			bitmap="Resources\ZuluHD.jpg"			bitmask="Resources\ZuluHDMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsZulu2HD;"			bitmap="Resources\Zulu2HD.jpg"			bitmask="Resources\Zulu2HDMask.bmp"  loadOnUse="true"/>
 	
 <!-- Pteravores =========================================================== -->
 

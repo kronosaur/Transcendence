@@ -23,7 +23,7 @@
 			<GetName>
 				(block (name)
 					(if (setq name (@ (itmGetData gItem 'autonConfig) 'name))
-						(typTranslate &baAutonItemBase; 'nameText { name:name class:(itmGetName gItem 0) pluralClass:(itmGetName gItem 0x02) } )
+						(typTranslate &baAutonItemBase; 'nameText { name:name class:(itmGetName gItem 0x80000) pluralClass:(itmGetName gItem 0x80002) } )
 						(cat (itmGetName gItem 0) "|" (itmGetName gItem 0x02))
 						)
 					)
@@ -743,7 +743,7 @@
 				
 			(setq rpgSanitizeAutonName (lambda (theName)
 				(block nil
-					(setq theName (apply cat (split theName "\\|[]();:\"%")))
+					(setq theName (apply cat (split theName "\\|[]();:%")))
 					(setq theName (subset (strCapitalize theName) 0 17))
 					(if (eq "" (apply cat (split theName " "))) (setq theName nil))
 					theName

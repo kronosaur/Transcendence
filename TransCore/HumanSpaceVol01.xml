@@ -1735,6 +1735,9 @@
 	<!ENTITY rsBorerHD					"0x0010018A">
 	<!ENTITY rsHammerheadHD				"0x0010018B">
 	<!ENTITY rsHammerhead2HD			"0x0010018C">
+	<!ENTITY rsOromoHD					"0x0010018D">
+	<!ENTITY rsZuluHD					"0x0010018E">
+	<!ENTITY rsZulu2HD					"0x0010018F">
 	
 	<!-- 0190-019F VENTARI SETTLERS -->
 	
@@ -1768,6 +1771,7 @@
 	<!ENTITY dsBlackMarketDelivery		"0x00100203">
 	<!ENTITY msBlackMarketHotelMeet		"0x00100204">
     <!ENTITY baBlackMarketStation       "0x00100205">
+    <!ENTITY rsMolotokHD			    "0x00100206">
 
 	<!-- 0210-022F PENITENTS -->
 	
@@ -1856,6 +1860,7 @@
 	<!ENTITY rsMediumAutonHD			"0x00100371">
 	<!ENTITY rs1MAutonHD				"0x00100372">
 	<!ENTITY rsMuleAutonHD				"0x00100373">
+	<!ENTITY rsExplorerAutonHD			"0x00100374">
 
 	<!-- 0390-03AF COMMONWEALTH II -->
 
@@ -1908,7 +1913,20 @@
 	<!ENTITY msCSCLamplighterTesting	"0x001004B4">
 	<!ENTITY msCSCLamplighterLost		"0x001004B5">
 
-	<!-- 1000-FFFF RESERVED: DO NOT USE -->
+	<!-- 04D0-04EF NAMI CORPORATION -->
+
+	<!ENTITY rsMissileNAMIHeavyHD		"0x001004D0">
+
+	<!-- 04F0-050F TAIKON CORPORATION -->
+
+	<!ENTITY rsWeaponTM7HD				"0x001004F0">
+	<!ENTITY rsWeaponTM7FragmentHD		"0x001004F1">
+
+	<!-- 0510-052F LUMINOUS -->
+
+	<!ENTITY rsLuminousDroneHD			"0x00100510">
+
+    <!-- 1000-FFFF RESERVED: DO NOT USE -->
 	]>
 	
 <CoreLibrary

@@ -580,7 +580,7 @@
 		
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsExplorerAuton;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="20"/>
+		<Image imageID="&rsExplorerAutonHD;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="120" rotationColumns="12"/>
 
 		<!-- AI and Behavior -->
 
@@ -941,6 +941,7 @@
 	<Image UNID="&rsAutosentinelHD;"	bitmap="Resources\AutosentinelHD.jpg"	bitmask="Resources\AutosentinelHDMask.bmp"	loadOnUse="true" />
 	<Image UNID="&rsMediumAutonHD;"		bitmap="Resources\MediumAutonHD.jpg"	bitmask="Resources\MediumAutonHDMask.bmp"	loadOnUse="true" />
 	<Image UNID="&rs1MAutonHD;"			bitmap="Resources\1MAutonHD.jpg"		bitmask="Resources\1MAutonHDMask.bmp"		loadOnUse="true" />
-	<Image UNID="&rsMuleAutonHD;"		bitmap="Resources\MuleHD.jpg"			bitmask="Resources\MuleHDMask.bmp"		loadOnUse="true" />
+	<Image UNID="&rsMuleAutonHD;"		bitmap="Resources\MuleHD.jpg"			bitmask="Resources\MuleHDMask.bmp"			loadOnUse="true" />
+	<Image UNID="&rsExplorerAutonHD;"	bitmap="Resources\ExplorerAutonHD.jpg"	bitmask="Resources\ExplorerAutonHDMask.bmp"	loadOnUse="true" />
 
 </TranscendenceModule>

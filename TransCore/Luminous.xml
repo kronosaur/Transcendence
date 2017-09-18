@@ -99,7 +99,7 @@
 			<Item chance="5"  count="1"	  item="&itOpticalKnowledgeArray;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips3;" imageX="384" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsLuminousDroneHD;" imageX="0" imageY="0" imageWidth="96" imageHeight="96" rotationCount="120" rotationColumns="12"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="20"	posZ="0"	rotation="180"	sendToBack="*"/>
@@ -488,5 +488,9 @@
 			</Text>
 		</Language>
 	</StationType>
+	
+<!-- RESOURCES -->
+	
+	<Image UNID="&rsLuminousDroneHD;"	bitmap="Resources\LuminousDroneHD.jpg"	bitmask="Resources\LuminousDroneHDMask.bmp" 	loadOnUse="true" />
 
 </TranscendenceModule>

@@ -2219,7 +2219,7 @@
 						>
 
 					<Effect>
-						<Image imageID="&rsWeapons8DB32;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="20"/>
+						<Image imageID="&rsWeaponTM7HD;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="120" rotationColumns="12"/>
 						
 						<Group angleOffset="180" radiusOffset="8">
 							<ParticleSystem
@@ -2279,7 +2279,7 @@
 							>
 
 						<Effect>
-							<Image imageID="&rsMissiles3;" imageX="48" imageY="0" imageWidth="16" imageHeight="16" rotationCount="20"/>
+							<Image imageID="&rsWeaponTM7FragmentHD;" imageX="0" imageY="0" imageWidth="16" imageHeight="16" rotationCount="120" rotationColumns="12"/>
 						</Effect>
 					</Fragment>
 				</Missile>
@@ -4209,12 +4209,13 @@
 			>
 		
 		<Effect>
-			<Image	imageID=		"&rsWeapons9DB32;"
+			<Image	imageID=		"&rsMissileNAMIHeavyHD;"
 					imageX=			"0"
 					imageY=			"0"
 					imageWidth=		"32"
 					imageHeight=	"32"
-					rotationCount=	"20"
+					rotationCount=	"120"
+					rotationColumns="12"
 					/>
 			
 			<Group angleOffset="180" radiusOffset="10">
@@ -4667,7 +4668,10 @@
 	<Image UNID="&rsMissiles6;"				bitmap="Resources\Missiles6.jpg" bitmask="Resources\Missiles6Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsStdMissile1;"			bitmap="Resources\StdMissile1.jpg" bitmask="Resources\StdMissile1Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsWeapons8DB32;"			bitmap="Resources\Weapons-8-DB32.jpg" bitmask="Resources\Weapons-8-DB32Mask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsWeapons9DB32;"		bitmap="Resources\Weapons-9-DB32.jpg"		bitmask="Resources\Weapons-9-DB32Mask.bmp"	/>
+	<Image UNID="&rsWeapons9DB32;"			bitmap="Resources\Weapons-9-DB32.jpg" bitmask="Resources\Weapons-9-DB32Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsMissileNAMIHeavyHD;"	bitmap="Resources\MissileNAMIHeavyHD.jpg" bitmask="Resources\MissileNAMIHeavyHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsWeaponTM7HD;"			bitmap="Resources\WeaponTM7HD.jpg" bitmask="Resources\WeaponTM7HDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsWeaponTM7FragmentHD;"	bitmap="Resources\WeaponTM7FragmentHD.jpg" bitmask="Resources\WeaponTM7FragmentHDMask.bmp" loadOnUse="true"/>
 
 	
 	<Image UNID="&rsDebris1;"				bitmap="Resources\Debris1.bmp" />
