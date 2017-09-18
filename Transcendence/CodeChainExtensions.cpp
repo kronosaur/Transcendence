@@ -85,6 +85,7 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_ADD_MINOR_ACTION		28
 #define FN_SCR_INC_DATA				29
 #define FN_SCR_ADD_LIST_FILTER		30
+#define FN_SCR_SHOW_ITEM_SCREEN		31
 
 ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -338,8 +339,12 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			NULL,	PPFLAG_SIDEEFFECTS, },
 
 		{	"scrShowScreen",				fnScrShowScreen,	0,
-			"(scrShowScreen screenGlobal screen [pane] [data]) -> True/Nil",
+			"(scrShowScreen screen screen [pane] [data]) -> True/Nil",
 			"vv*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"scrShowItemUseScreen",				fnScrSet,	FN_SCR_SHOW_ITEM_SCREEN,
+			"(scrShowItemUseScreen screen item) -> True/Nil",
+			"vv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrTranslate",					fnScrGet,		FN_SCR_TRANSLATE,
 			"(scrTranslate screen textID [data]) -> text or Nil",
@@ -1857,6 +1862,16 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			//	Done
 
+			return pCC->CreateTrue();
+			}
+
+		case FN_SCR_SHOW_ITEM_SCREEN:
+			{
+			CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
+			if (!Item.HasUseItemScreen())
+				return pCC->CreateNil();
+
+			g_pTrans->GetModel().UseItem(Item);
 			return pCC->CreateTrue();
 			}
 

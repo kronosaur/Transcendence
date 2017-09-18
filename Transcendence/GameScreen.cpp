@@ -1002,50 +1002,17 @@ void CTranscendenceWnd::ShowUsePicker (void)
 			{
 			CItem &Item = List.GetItem(i);
 			CItemType *pType = Item.GetType();
+			CItemCtx ItemCtx(&Item, pShip);
 
-			//	Make sure we should show this entry
+			//	See if we can use this item, and get the use key
 
-			CItemType::SUseDesc UseDesc;
-			if (!pType->GetUseDesc(&UseDesc))
+			CString sUseKey;
+			if (!Item.CanBeUsed(ItemCtx, &sUseKey))
 				continue;
-
-			if (UseDesc.bOnlyIfInstalled && !Item.IsInstalled())
-				continue;
-
-			if (UseDesc.bOnlyIfUninstalled && Item.IsInstalled())
-				continue;
-
-			if (UseDesc.bOnlyIfEnabled)
-				{
-				CInstalledDevice *pDevice = pShip->FindDevice(Item);
-				if (pDevice == NULL || !pDevice->IsEnabled())
-					continue;
-				}
-
-			//	Some options only trigger if item is installed. This allows 
-			//	items that can be used BOTH when uninstalled and when complete.
-			//	That is, bOnlyIfInstalled and bOnlyIfCompleteArmor are
-			//	orthogonal.
-
-			if (Item.IsInstalled())
-				{
-				if (UseDesc.bOnlyIfCompleteArmor)
-					{
-					CInstalledArmor *pArmor = pShip->FindArmor(Item);
-					if (pArmor == NULL || !pArmor->IsComplete() || !pArmor->IsPrime())
-						continue;
-					}
-				else if (UseDesc.bAsArmorSet)
-					{
-					CInstalledArmor *pArmor = pShip->FindArmor(Item);
-					if (pArmor == NULL || !pArmor->IsPrime())
-						continue;
-					}
-				}
 
 			//	Add to the list
 
-			bool bHasUseKey = (pType->IsKnown() && !UseDesc.sUseKey.IsBlank() && (*UseDesc.sUseKey.GetASCIIZPointer() != chUseKey));
+			bool bHasUseKey = (pType->IsKnown() && !sUseKey.IsBlank() && (*sUseKey.GetASCIIZPointer() != chUseKey));
 
 			//	Any items without use keys sort first (so that they are easier
 			//	to access).
@@ -1056,7 +1023,7 @@ void CTranscendenceWnd::ShowUsePicker (void)
 
 			SortedList.Insert(strPatternSubst(CONSTLIT("%d%s%04d"),
 						(bHasUseKey ? 1 : 0),
-						(bHasUseKey ? strPatternSubst(CONSTLIT("%s0"), UseDesc.sUseKey) : strPatternSubst(CONSTLIT("%02d"), MAX_ITEM_LEVEL - Item.GetLevel())),
+						(bHasUseKey ? strPatternSubst(CONSTLIT("%s0"), sUseKey) : strPatternSubst(CONSTLIT("%02d"), MAX_ITEM_LEVEL - Item.GetLevel())),
 						i),
 					i);
 			}

@@ -86,7 +86,7 @@
 	<!-- Segment of Dragon Armor -->
 
 	<ItemType UNID="&itDragonArmor;"
-			inherit=			"&baStdArmorRepair;"
+			inherit=			"&baSungArmor;"
 			name=				"[segment(s) of ]Dragon armor"
 			level=				"7"
 			value=				"5000"
@@ -120,16 +120,6 @@
 		<StaticData>
 			<Data id="RepairHP">125</Data>
 		</StaticData>
-
-		<Events>
-			<CanRepairItem>
-				(itmMatches aItemToRepair "a +TiledArmor")
-			</CanRepairItem>
-			
-			<GetRepairItemIntro>
-				"You can use tiles from the Sung armor to repair other tiled Sung armor.\n\n"
-			</GetRepairItemIntro>
-		</Events>
 	</ItemType>
 
 	<!-- Dragon Shields -->
@@ -254,7 +244,7 @@
 	<!-- Segment of Heavy Sung Armor -->
 
 	<ItemType UNID="&itHeavySungArmor;"
-			inherit=			"&baStdArmorRepair;"
+			inherit=			"&baSungArmor;"
 			name=				"[segment(s) of ]heavy Sung armor"
 			level=				"6"
 			value=				"2300"
@@ -285,16 +275,6 @@
 		<StaticData>
 			<Data id="RepairHP">90</Data>
 		</StaticData>
-
-		<Events>
-			<CanRepairItem>
-				(itmMatches aItemToRepair "a +TiledArmor")
-			</CanRepairItem>
-			
-			<GetRepairItemIntro>
-				"You can use tiles from the Sung armor to repair other tiled Sung armor.\n\n"
-			</GetRepairItemIntro>
-		</Events>
 	</ItemType>
 
 <!-- LEVEL V ITEMS -->
@@ -356,7 +336,7 @@
 	<!-- Segment of Sung Armor -->
 
 	<ItemType UNID="&itSungArmor;"
-			inherit=			"&baStdArmorRepair;"
+			inherit=			"&baSungArmor;"
 			name=				"[segment(s) of ]Sung armor"
 			level=				"5"
 			value=				"600"
@@ -389,16 +369,6 @@
 		<StaticData>
 			<Data id="RepairHP">35</Data>
 		</StaticData>
-
-		<Events>
-			<CanRepairItem>
-				(itmMatches aItemToRepair "a +TiledArmor")
-			</CanRepairItem>
-			
-			<GetRepairItemIntro>
-				"You can use tiles from the Sung armor to repair other tiled Sung armor.\n\n"
-			</GetRepairItemIntro>
-		</Events>
 	</ItemType>
 	
 <!-- LEVEL II ITEMS -->
@@ -406,7 +376,7 @@
 	<!-- Segment of Light Sung Armor -->
 
 	<ItemType UNID="&itLightSungArmor;"
-			inherit=			"&baStdArmorRepair;"
+			inherit=			"&baSungArmor;"
 			name=				"[segment(s) of ]light Sung armor"
 			level=				"2"
 			value=				"60"
@@ -438,16 +408,6 @@
 		<StaticData>
 			<Data id="RepairHP">12</Data>
 		</StaticData>
-		
-		<Events>
-			<CanRepairItem>
-				(itmMatches aItemToRepair "a +TiledArmor")
-			</CanRepairItem>
-			
-			<GetRepairItemIntro>
-				"You can use tiles from the Sung armor to repair other tiled Sung armor.\n\n"
-			</GetRepairItemIntro>
-		</Events>
 	</ItemType>
 
 <!-- SHIP CLASSES -->
@@ -1873,6 +1833,18 @@
 				))
 			)
 	</Globals>
+
+<!-- BASE CLASSES -->
+
+	<Type unid="&baSungArmor;"
+			inherit=			"&baStdArmorRepair;"
+			>
+		<Events>
+			<CanRepairItem>
+				(itmMatches aItemToRepair "a +TiledArmor")
+			</CanRepairItem>
+		</Events>
+	</Type>
 	
 <!-- EFFECTS -->
 	

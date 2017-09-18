@@ -135,7 +135,7 @@
 	<!-- Barrel of Centauri Nanos -->
 
 	<ItemType UNID="&itCentauriNanos;"
-			inherit=			"&baStdArmorRepair;"
+			inherit=			"&baStdPasteBarrel;"
 			name=				"[barrel(s) of ]Centauri nanos"
 			level=				"3"
 			value=				"250"

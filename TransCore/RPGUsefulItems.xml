@@ -2,111 +2,6 @@
 
 <TranscendenceModule>
 	
-<!-- RPG USE ITEM ==============================================================
-
-	This screen allows the player to use an item on another item or device.
-
-	gData uses the following fields:
-
-		useItem:	The item being used. If not specifed we check gItem instead
-
--->
-
-	<DockScreen UNID="&dsRPGUseItem;"
-			inherit=			"&dsDockScreenBase;"
-			nestedScreen=		"true"
-			name=				"=(itmGetName (or (@ gData 'useItem) gItem) 'capitalize)"
-			>
-
-		<OnScreenInit>
-			(scrSetData gScreen 'useItem (or (@ gData 'useItem) gItem))
-		</OnScreenInit>
-
-		<Panes>
-			<Default>
-				<OnPaneInit>
-					(block (
-						(useItem (scrGetData gScreen 'useItem))
-						(theShip gPlayerShip)
-
-						(screenSet (list
-							{
-								screen: &dsRPGUseItem;
-								label: (scrTranslate gScreen 'screenSetUseItem)
-								mainScreen: True
-								}
-							{
-								screen: &dsRPGUseItemOnArmor;
-								label: (scrTranslate gScreen 'screenSetUseItemOnArmor)
-								data: { useItem: useItem }
-								}
-							{
-								screen: &dsRPGUseItemOnDevice;
-								label: (scrTranslate gScreen 'screenSetUseItemOnDevice)
-								data: { useItem: useItem }
-								}
-							{
-								screen: &dsRPGUseItemOnCargo;
-								label: (scrTranslate gScreen 'screenSetUseItemOnCargo)
-								data: { useItem: useItem }
-								}
-							))
-						)
-
-						(scrSetControlValue gScreen 'useItem {
-							source: theShip
-							item: useItem
-							})
-
-						(scrSetDescTranslate gScreen 'descUseItem)
-
-						;   Define the screen set
-						(scrSetData gScreen 'screenSet screenSet)
-						(rpgInitScreenSet screenSet)
-						)
-				</OnPaneInit>
-
-				<Controls>
-					<ItemDisplay id="useItem"/>
-				</Controls>
-
-				<Actions>
-					<Action id="actionArmor">
-						(scrShowScreen gScreen &dsRPGUseItemOnArmor; {
-							useItem: (scrGetData gScreen 'useItem)
-							screenSet: (scrGetData gScreen 'screenSet)
-							})
-					</Action>
-					<Action id="actionDevice">
-						(scrShowScreen gScreen &dsRPGUseItemOnDevice; {
-							useItem: (scrGetData gScreen 'useItem)
-							screenSet: (scrGetData gScreen 'screenSet)
-							})
-					</Action>
-					<Action id="actionCargo">
-						(scrShowScreen gScreen &dsRPGUseItemOnCargo; {
-							useItem: (scrGetData gScreen 'useItem)
-							screenSet: (scrGetData gScreen 'screenSet)
-							})
-					</Action>
-				</Actions>
-			</Default>
-		</Panes>
-
-		<Language>
-			<Text id="actionArmor">Use on [A]rmor</Text>
-			<Text id="actionDevice">Use on D[e]vice</Text>
-			<Text id="actionCargo">Use on [C]argo item</Text>
-
-			<Text id="descUseItem">How do you want to use this item?</Text>
-
-			<Text id="screenSetUseItem">Main page</Text>
-			<Text id="screenSetUseItemOnArmor">Armor page</Text>
-			<Text id="screenSetUseItemOnDevice">Device page</Text>
-			<Text id="screenSetUseItemOnCargo">Cargo page</Text>
-		</Language>
-	</DockScreen>
-
 <!-- RPG USE ITEM ON ARMOR =====================================================
 
 	This screen allows the player to use an item on an armor segment.
@@ -276,11 +171,11 @@
 							)
 
 						(switch
-							(@ useInfo 'desc)
-								(scrSetDesc gScreen (@ useInfo 'desc))
-
 							(not dstItem)
 								(scrSetDescTranslate gScreen 'descNoItemsHere)
+
+							(@ useInfo 'desc)
+								(scrSetDesc gScreen (@ useInfo 'desc))
 
 							(scrSetDescTranslate gScreen 'descCanNotUse {
 								useItem: (itmGetName useItem 'article)
@@ -457,7 +352,7 @@
 								canUse: True
 								desc: (itmTranslate gItem 'descUsageUnknown {
 									useItem: (itmGetName gItem)
-									dstItem: (itmGetName dstItem 'demonstrative)
+									dstItem: (itmGetName dstItem '(demonstrative noModifiers))
 									})
 								}
 
@@ -479,8 +374,8 @@
 							{
 								canUse: Nil
 								desc: (itmTranslate gItem 'descUsageCanNotRepair {
-									useItem: (itmGetName gItem)
-									dstItem: (itmGetName dstItem)
+									useItem: (itmGetName gItem 'article)
+									dstItem: (itmGetName dstItem '(demonstrative noModifiers))
 									})
 								}
 
@@ -489,7 +384,7 @@
 							canUse: True
 							desc: (itmTranslate gItem 'descUsageOK {
 								useItem: (itmGetName gItem 'article)
-								dstItem: (itmGetName dstItem)
+								dstItem: (itmGetName dstItem '(demonstrative noModifiers))
 								experience: skillDesc
 								})
 							}
@@ -606,7 +501,7 @@
 			<Text id="descUsageCanNotRepair">Unfortunately, you cannot repair %dstItem% with %useItem%.</Text>
 			<Text id="descUsageInstalledOnly">%useItem% can only be used on installed armor segments.</Text>
 			<Text id="descUsageNotArmor">%UseItem% are used for repairing armor and will not function on %dstItem%.</Text>
-			<Text id="descUsageOK">You can attempt to repair this %dstItem% with %useItem%; %experience%</Text>
+			<Text id="descUsageOK">You can attempt to repair %dstItem% with %useItem%; %experience%</Text>
 			<Text id="descUsageUnknown">The barrel seems to contain some kind of armor paste. You can use it on %dstItem%.</Text>
 
 			<Text id="descUsageExperience1">though you do not have much experience repairing armor.</Text>
@@ -654,14 +549,14 @@
 								canUse: True
 								desc: (itmTranslate gItem 'descUsageOK {
 									useItem: (itmGetName gItem)
-									dstItem: (itmGetName dstItem 'demonstrative)
+									dstItem: (itmGetName dstItem '(demonstrative noModifiers))
 									})
 								}
 						{
 							canUse: True
 							desc: (itmTranslate gItem 'descUsageUnknown {
 								useItem: (itmGetName gItem)
-								dstItem: (itmGetName dstItem 'demonstrative)
+								dstItem: (itmGetName dstItem '(demonstrative noModifiers))
 								})
 							}
 						)

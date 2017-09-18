@@ -143,12 +143,26 @@
 						(scrSetData gScreen 'maxCount maxCount)
 
 						;	Enable/disable actions
+						(scrShowAction gScreen 'actionUse 
+							(and
+								(objGetItemProperty gPlayerShip thisItem 'canBeUsed)
+								(objGetItemProperty gPlayerShip thisItem 'hasUseScreen)
+								)
+							)
 						(scrEnableAction gScreen 'actionJettisonItem (gr maxCount 0))
-						(scrEnableAction gScreen 'actionUse (or (itmMatches thisItem 'u) (itmHasAttribute thisItem 'Usable)))
 						)
 				</OnPaneInit>
 
 				<Actions>
+					<Action id="actionUse" default="1">
+						(block (
+							(thisItem (scrGetItem gScreen))
+							)
+							(scrSetData gScreen 'cursor (scrGetListCursor gScreen))
+							(scrShowItemUseScreen gScreen thisItem)
+							)
+					</Action>
+
 					<Action id="actionJettisonItem">
 						(block (
 							(maxCount (scrGetData gScreen 'maxCount))
@@ -169,15 +183,6 @@
 									(scrShowPane gScreen "Default")
 									)
 								)
-							)
-					</Action>
-
-					<Action id="actionUse" default="1">
-						(block Nil
-							(scrSetData gScreen 'cursor (scrGetListCursor gScreen))
-							(scrShowScreen gScreen &dsRPGUseItem; {
-								useItem: (scrGetItem gScreen)
-								})
 							)
 					</Action>
 
@@ -220,7 +225,7 @@
 										)
 
 									;	Dump items
-									(setq itemsToJettison (scrRemoveItem gScreen count))
+									(setq itemsToJettison (scrRemoveItem gScreen useCount))
 									(rpgJettisonItem gDest itemsToJettison)
 									(scrShowPane gScreen "Default")
 									)
