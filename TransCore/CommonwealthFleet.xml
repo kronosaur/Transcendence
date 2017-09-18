@@ -2392,7 +2392,7 @@ PLAYER DATA
 
 		<Events>
 			<GetGlobalAchievements>
-				(block (theList p262prototype antarcticaStatus medsDonated)
+				(block (theList antarcticaStatus medsDonated)
 
 					; Rank
 					
@@ -2416,49 +2416,6 @@ PLAYER DATA
 									)
 								))
 							)
-						)
-						
-					; Project262 prototype
-					
-					(setq p262prototype (typGetGlobalData &scCSCTerra; "p262protoype"))
-					(if p262prototype
-						(setq theList (append theList (list
-							(list
-								(switch
-									(eq p262prototype 'recovered) "Recovered Project Lamplighter prototype"
-									(cat "ERROR: p262prototype: " p262prototype)
-									)
-								Nil
-								"achievements &amp; regrets"
-								)
-							)))
-						)
-						
-					; Lamplighter
-					
-					(if (eq (typGetGlobalData &scCSCTerra; "p262test") 'installed)
-						(setq theList (append theList (list
-							(list "Acquired Lamplighter archcannon" Nil "achievements &amp; regrets")
-							)))
-						)
-						
-					; Antarctica
-					
-					(setq antarcticaStatus (typGetGlobalData &scCSCTerra; "antarctica"))
-					(if antarcticaStatus
-						(setq theList (append theList (list
-							(list
-								(switch
-									(eq antarcticaStatus 'escaped) "Defended the CSC Antarctica"
-									(eq antarcticaStatus 'destroyed) "Failed to defend the CSC Antarctica"
-									(eq antarcticaStatus 'destroyedByPlayer) "Destroyed the CSC Antarctica"
-									(eq antarcticaStatus 'betrayed) "Betrayed the CSC Antarctica"
-									(cat "ERROR: antarctica: " antarcticaStatus)
-									)
-								Nil
-								"achievements &amp; regrets"
-								)
-							)))
 						)
 						
 					; Meds donated

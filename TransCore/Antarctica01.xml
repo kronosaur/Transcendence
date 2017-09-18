@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Dantalion Informant ===================================================
+
+	This mission provides the encounter as the Dantalion Settlement. It cannot
+	be accepted (or completed), but behaves as a rumor and lets the player learn
+	the location of the CSC Antarctica.
+
+	EXTRA DATA
+		status:
+			Nil		Have not paid informant
+			paid	Have got the location of the Antarctica
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msDantalionInformant;"
+			name=				"Dantalion Informant"
+			attributes=			"commonwealthSettlement"
+
+			level=				"9"
+
+			maxAppearing=		"1"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	This mission only works in Dantalion
+					(!= (sysGetNode) 'A7)
+						(msnDestroy gSource)
+
+					;	Prevent duplicates (maxAppearing only counts accepted missions)
+					(msnFind "* +unid:&msDantalionInformant;;")
+						(msnDestroy gSource)
+
+					;	Set up the mission
+					(block Nil
+						)
+					)
+			</OnCreate>
+
+			<OnPayInformant>
+				(block (
+					(antarcticaObj (sysFindObject gPlayerShip "sN +cscAntarctica;"))
+					)
+					(msnSetData gSource 'status 'paid)
+					(objCharge gPlayerShip 'rin 10000)
+					(objSetKnown antarcticaObj)
+					(objSetIdentified antarcticaObj)
+					(objSetShowAsDestination antarcticaObj 'autoClear)
+					)
+			</OnPayInformant>
+		</Events>
+		
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Briefing">
+				(list
+					(switch
+						(msnFind "r +unid:&msEscapeFromDantalion;; +property:isSuccess;")
+							{
+								textID: 'textBriefingEscaped
+								nextPage: 'missionDecline
+								}
+
+						(rpgCharacterGetStatus &unidCaptainHelios;)
+							{
+								textID: 'textBriefingDestroyed
+								nextPage: 'missionDecline
+								}
+
+						{
+							textID: 'textBriefingSighting
+							nextPage: (if (or (typGetData &msEscapeFromDantalion; 'status) (msnGetData gSource 'status))
+								'missionDecline
+								'informant
+								)
+							}
+						)
+					{
+						id: 'informant
+						textID: (if (msnGetProperty gSource 'isDeclined)
+							'textInformant
+							'textInformantFirst
+							)
+						actions: (list
+							{
+								labelID: 'actionDeal
+								nextPage: (if (ls (objGetBalance gPlayerShip 'rin) 10000)
+									'noRin
+									'deal
+									)
+								}
+							{
+								labelID: 'actionNoThanks
+								nextPage: 'missionDecline
+								}
+							)
+						}
+					{
+						id: 'noRin
+						textID: 'textNoRin
+						nextPage: 'missionDecline
+						}
+					{
+						id: 'deal
+						textID: 'textAccept
+						nextPage: 'missionDecline
+						nextCode: (lambda () (msnFireEvent (scrGetData gScreen 'missionObj) 'OnPayInformant))
+						}
+
+					Nil	;	Blank entry to prevent forced accept/decline options
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">
+				CSC Antarctica
+			</Text>
+			<Text id="textBriefingSighting">
+				The Meeting Hall is filled with worried-looking residents. Many
+				are talking amongst themselves in low voices. The station master
+				is addressing the group from the front of the hall:
+
+				"Once again, I urge everyone to remain calm! We have no reason
+				to believe that the Antarctica will approach this settlement.
+				The Fleet has been informed of the sighting, but we do not know
+				when or if they will arrive."
+			</Text>
+			<Text id="textBriefingEscaped">
+				The Meeting Hall is filled with people. Most look happy and are
+				talking amongst themselves. The station master addresses the crowd:
+
+				"Our latest information is that the Antarctica has left the system.
+				We believe that it is heading for St. Katharine's, where the Fleet
+				will no doubt deal with her."
+			</Text>
+			<Text id="textBriefingDestroyed">
+				The Meeting Hall is filled with people. Most look happy and are
+				talking amongst themselves. The station master addresses the crowd:
+
+				"Our latest information is that the Antarctica was destroyed. We
+				don't have any more information at this point, but we believe that
+				the danger is over."
+			</Text>
+			<Text id="textInformantFirst">
+				A woman wearing a ragged Fleet jacket with torn patches stops you
+				as you leave.
+
+				"I know where the Antarctica is. It will cost you 10,000 rin if you
+				want to know too."
+			</Text>
+			<Text id="textInformant">
+				The woman wearing the ragged Fleet jacket stops you again.
+
+				"I know you're still looking for the Antarctica. For 10,000 rin
+				I will tell you her location."
+			</Text>
+			<String id="actionDeal">"[O]K, you have a deal."</String>
+			<String id="actionNoThanks">"[N]o thanks, I'll find her myself."</String>
+			<Text id="textAccept">
+				You transfer 10,000 rin to the woman's account. When she is
+				satisfied, she takes your arm and whispers the coordinates in
+				your ear. You memorize them and enter them into your computer.
+			</Text>
+			<Text id="textNoRin">
+				Unfortunately, you do not have enough rin.
+
+				The woman smiles at you and says,
+				"Come back when you have something to deal with."
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

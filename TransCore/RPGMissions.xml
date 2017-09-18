@@ -229,7 +229,12 @@
 										(block Nil
 											(msnDecline (@ options 'missionObj))
 											(scrSetData gScreen 'curPage Nil)
-											(scrShowPane gScreen "ReplyDecline")
+
+											;	If no ReplyDecline, then we're done
+											(if (msnTranslate missionObj 'DeclineReply)
+												(scrShowPane gScreen "ReplyDecline")
+												(scrExitScreen gScreen)
+												)
 											)
 										)
 									)
@@ -628,29 +633,15 @@
 				<OnPaneInit>
 					(block (
 						(missionObj (scrGetData gScreen 'missionObj))
-						(descText (msnTranslate missionObj 'Unavailable "\"Sorry, there are no missions available.\""))
 						)
-
-						(scrSetDesc gScreen descText)
+						(rpgPagePaneInit gScreen
+							(msnTranslate (scrGetData gScreen 'missionObj) 'Unavailable)
+							{
+								missionObj: missionObj
+								}
+							)
 						)
 				</OnPaneInit>
-
-				<Actions>
-					<Action id="actionContinue" default="1" cancel="1">
-						(switch
-							(not (@ gData 'nextScreen))
-								(scrExitScreen gScreen)
-
-							(eq (@ gData 'nextScreen) 'forceUndock)
-								(scrExitScreen gScreen 'forceUndock)
-
-							(block Nil
-								(scrExitScreen gScreen)
-								(scrShowScreen gScreen (@ gData 'nextScreen))
-								)
-							)
-					</Action>
-				</Actions>
 			</Unavailable>
 		</Panes>
 
@@ -789,7 +780,7 @@
 
 	1.	The mission type must have the "paneInitMission" attribute.
 
-	2.	The mission object must have data of "destID" with the ID of a station.
+	2.	The mission object must have data of "paneID" with the ID of a station.
 
 	3.	The mission type should provide an event called "OnPaneInit"
 		which will be called when displaying dockscreens at the destination.

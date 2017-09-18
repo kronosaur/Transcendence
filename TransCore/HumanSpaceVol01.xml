@@ -1594,6 +1594,11 @@
 	<!ENTITY baCSCBase					"0x00100078">
 	<!ENTITY rsBritanniaHD				"0x00100079">
 	<!ENTITY rsCenturionHD				"0x0010007A">
+	<!ENTITY msCSCPointJunoAresAttack	"0x0010007B">
+	<!ENTITY tbCSCPointJunoAlphaFleet	"0x0010007C">
+	<!ENTITY tbCSCPointJunoBetaFleet	"0x0010007D">
+	<!ENTITY tbCSCPointJunoGammaFleet	"0x0010007E">
+	<!ENTITY msCSCLamplighterPrototype	"0x0010007F">
 	
 	<!-- 0080-009F COMMONWEALTH -->
 	
@@ -1788,6 +1793,7 @@
 	<!ENTITY unidFiona					"0x00100235">
 	<!ENTITY scFionaScorpion			"0x00100236">
 	<!ENTITY scStormhoundAquila			"0x00100237">
+	<!ENTITY unidCaptainHelios			"0x00100238">
 	
 	<!-- 0250-026F COMMONWEALTH MINING -->
 	
@@ -1893,6 +1899,15 @@
 
 	<!ENTITY rsHimalInterceptorHD		"0x00100490">
 
+	<!-- 04B0-04CF COMMONWEALTH FLEET II -->
+
+	<!ENTITY msDantalionInformant		"0x001004B0">
+	<!ENTITY msEscapeFromDantalion		"0x001004B1">
+	<!ENTITY evEscapeFromDantalion		"0x001004B2">
+	<!ENTITY msHuntForAntarctica		"0x001004B3">
+	<!ENTITY msCSCLamplighterTesting	"0x001004B4">
+	<!ENTITY msCSCLamplighterLost		"0x001004B5">
+
 	<!-- 1000-FFFF RESERVED: DO NOT USE -->
 	]>
 	
@@ -1914,12 +1929,12 @@
 	<!-- These modules implement specific system. We need to make these more
 		generic and move the adventure-specific behavior to Part I -->
 		
-	<Module filename="Antarctica.xml"/>
 	<Module filename="BattleArena.xml"/>
 	<Module filename="BattleArenaGladiators.xml"/>
 	<Module filename="BattleArenaMelee.xml"/>
 	<Module filename="BattleArenaKidnapped.xml"/>
 	<Module filename="CharonFortress.xml"/>
+	<Module filename="Dantalion.xml"/>
 	<Module filename="Eridani.xml"/>
 	<Module filename="EtaCeti.xml"/>
 	<Module filename="Heretic.xml"/>
@@ -1929,6 +1944,7 @@
 	
 	<!-- Characters -->
 		
+	<Module filename="Antarctica.xml"/>
 	<Module filename="Benedict.xml"/>
 	<Module filename="Fiona.xml"/>
 	<Module filename="HugoSandoval.xml"/>
@@ -1941,6 +1957,9 @@
 	<!-- These modules implement encounters. They should be clean, for the
 		most part. -->
 		
+	<Module filename="Antarctica01.xml"/>
+	<Module filename="Antarctica02.xml"/>
+	<Module filename="AntarcticaD01.xml"/>
 	<Module filename="AresOrthodoxy.xml"/>
 	<Module filename="BlackMarket.xml"/>
 	<Module filename="BlackMarketMission00.xml"/>
@@ -1963,6 +1982,9 @@
 	<Module filename="CommonwealthFleetMission11.xml"/>
 	<Module filename="CommonwealthFleetMissionLL01.xml"/>
 	<Module filename="CommonwealthFleetMissionLL02.xml"/>
+	<Module filename="CommonwealthFleetMissionLL03.xml"/>
+	<Module filename="CommonwealthFleetMissionLL04.xml"/>
+	<Module filename="CommonwealthFleetMissionPJ01.xml"/>
 	<Module filename="CommonwealthMetropolis.xml"/>
 	<Module filename="CommonwealthMilitia.xml"/>
 	<Module filename="CommonwealthMilitiaMission01.xml"/>
@@ -1973,6 +1995,7 @@
 	<Module filename="CommonwealthMining.xml"/>
 	<Module filename="CommonwealthShips.xml"/>
 	<Module filename="CorporateHierarchy.xml"/>
+	<Module filename="CSCTerra.xml"/>
 	<Module filename="Dall01.xml"/>
 	<Module filename="DwargRaiders.xml"/>
 	<Module filename="EncountersVol01.xml"/>

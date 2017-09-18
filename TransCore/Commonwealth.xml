@@ -176,24 +176,12 @@
 		</Events>
 		
 		<Language>
-			<Text id="actionCommoditiesExchange">"[C]ommodities Exchange"</Text>
-			<Text id="actionDockServices">"[D]ock Services"</Text>
-			<Text id="actionMainHall">"[M]eeting Hall"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
-			
 			<Text id="descWelcome">
-				(cat
-					"You are in the docking bay of a Commonwealth colony. Except for a few shuttles, "
-					"the docking bay of this station is deserted. A loose hose spills dirty "
-					"water onto the landing pad; elsewhere, an automatic load-lifter moves forward "
-					"and back again as it unloads a ship's cargo hold. The air smells of liquid fuel "
-					"and exhaust."
-					)
-			</Text>
-			<Text id="descHallEmpty">
-				(cat
-					"The meeting hall is busy with commercial activity; everyone goes about their business."
-					)
+				You are in the docking bay of a Commonwealth colony. Except for a few shuttles,
+				the docking bay of this station is deserted. A loose hose spills dirty
+				water onto the landing pad; elsewhere, an automatic load-lifter moves forward
+				and back again as it unloads a ship's cargo hold. The air smells of liquid fuel
+				and exhaust.
 			</Text>
 		</Language>
 	</StationType>
@@ -203,6 +191,8 @@
 	<StationType UNID="&stCommonwealthTurret;"
 			name=				"Commonwealth defense turret"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&dsDockScreenBase;"
+
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"Main"
 			noMapLabel=			"true"
@@ -230,18 +220,17 @@
 
 		<DockScreens>
 			<Main>
-
 				<Panes>
-					<Default
-							desc=	"You are docked at a Commonwealth Defense Turret. These armed and armored turrets are used to defend Commonwealth stations and settlements in the Ungoverned Territories beyond St. Katharine's Star.">
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 				</Panes>
 			</Main>
@@ -253,6 +242,13 @@
 				maxDist=		"3"
 				/>
 
+		<Language>
+			<Text id="descWelcome">
+				You are docked at a Commonwealth Defense Turret. These armed and armored
+				turrets are used to defend Commonwealth stations and settlements in the
+				Ungoverned Territories beyond St. Katharine's Star.
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Commonwealth Colony, Armed -->
@@ -443,24 +439,12 @@
 		</Events>
 		
 		<Language>
-			<Text id="actionCommoditiesExchange">"[C]ommodities Exchange"</Text>
-			<Text id="actionDockServices">"[D]ock Services"</Text>
-			<Text id="actionMainHall">"[M]eeting Hall"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
-			
 			<Text id="descWelcome">
-				(cat
-					"You are in the docking bay of a Commonwealth colony. Except for a few shuttles, "
-					"the docking bay of this station is deserted. A loose hose spills dirty "
-					"water onto the landing pad; elsewhere, an automatic load-lifter moves forward "
-					"and back again as it unloads a ship's cargo hold. The air smells of liquid fuel "
-					"and exhaust."
-					)
-			</Text>
-			<Text id="descHallEmpty">
-				(cat
-					"The meeting hall is busy with commercial activity; everyone goes about their business."
-					)
+				You are in the docking bay of a Commonwealth colony. Except for a few shuttles,
+				the docking bay of this station is deserted. A loose hose spills dirty
+				water onto the landing pad; elsewhere, an automatic load-lifter moves forward
+				and back again as it unloads a ship's cargo hold. The air smells of liquid fuel
+				and exhaust.
 			</Text>
 		</Language>
 	</StationType>
@@ -650,24 +634,20 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"You are in the docking bay of " (objGetName gSource) ". Medical professionals live and work on this station, doing everything from research, to drug manufacturing, to remote medicine."
-								))
+							(scrSetDescTranslate gScreen 'descWelcome {objName: (objGetName gSource)})
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Commodities Exchange" default="1" key="C">
+							<Action id="actionCommoditiesExchange">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 				</Panes>
 			</Main>
@@ -684,6 +664,12 @@
 		</Events>
 
         <Language>
+			<Text id="descWelcome">
+				You are in the docking bay of %objName%. Medical professionals
+				live and work on this station, doing everything from research,
+				to drug manufacturing, to remote medicine.
+			</Text>
+
             <Text id="core.mapDesc">"Sells meds &mdash; Buys food and luxuries"</Text>
         </Language>
 	</StationType>
@@ -734,11 +720,13 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"Welcome to Commonwealth Residentials.">
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -755,7 +743,13 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-		</Events>			
+		</Events>
+
+		<Language>
+			<Text id="descWelcome">
+				Welcome to Commonwealth Residentials.
+			</Text>
+		</Language>
 	</StationType>
 	
 	<!-- Mission: Destroy Threat to Commonwealth Habitat
@@ -1167,17 +1161,12 @@
 			<Main>
 				<Panes>
 					<Default>
-
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"The loud voices of a packed multitude bounce off every bulkhead and corridor in the station. "
-								"Old air scrubbers pump a thin, odorous breeze out of rusty vents. Discarded packets of Salmonite and Red Nebula beer huddle in the corner.\n\n"
-								"Welcome to " (objGetName gSource) "!"
-								))
+							(scrSetDescTranslate gScreen 'descWelcome {objName: (objGetName gSource)})
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Meeting Hall" key="M" default="1">
+							<Action id="actionMainHall" default="1">
 								(block (lastMissionTime missionInterval theMission)
 									; Figure out the last time that a habitat gave out a mission
 									(setq lastMissionTime (objGetGlobalData gSource "lastMissionTime"))
@@ -1226,12 +1215,10 @@
 									)
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 
 					<Rumors>
@@ -1256,7 +1243,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
+							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -1277,6 +1264,16 @@
 			<Port x="-43"	y="56" />
 		</DockingPorts>
 
+        <Language>
+			<Text id="descWelcome">
+				The loud voices of a packed multitude bounce off every bulkhead and
+				corridor in the station. Old air scrubbers pump a thin, odorous
+				breeze out of rusty vents. Discarded packets of Salmonite and Red
+				Nebula beer huddle in the corner.
+
+				Welcome to %objName%!
+			</Text>
+        </Language>
 	</StationType>
 
 	<!-- Container Habitat
@@ -1439,9 +1436,9 @@
 						<OnPaneInit>
 							(switch
 								(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
-									(scrSetDesc gScreen (typTranslate &stContainerHabitat; 'WelcomePilgrim))
+									(scrSetDescTranslate gScreen 'descWelcomePilgrim)
 									
-								(scrSetDesc gScreen (typTranslate &stContainerHabitat; 'Welcome))
+								(scrSetDescTranslate gScreen 'descWelcome)
 								)
 						</OnPaneInit>
 
@@ -1454,12 +1451,10 @@
 									)
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 				</Panes>
 			</Main>
@@ -1477,25 +1472,23 @@
 		</DockingPorts>
 		
 		<Language>
-			<Text id="Welcome">
-				(cat
-					"You are docked at a habitat made out of shipping containers. Children bounce off the bulkheads in zero-G while "
-					"maintenance workers repair leaky seals and balky machinery. The station master approaches you:\n\n"
-					
-					"\"Traveling the universe, yeah? Why don't you spare some items for us!\""
-					)
+			<Text id="descWelcome">
+				You are docked at a habitat made out of shipping containers. Children
+				bounce off the bulkheads in zero-G while maintenance workers repair
+				leaky seals and balky machinery. The station master approaches you:
+
+				"Traveling the universe, yeah? Why don't you spare some items for us!"
 			</Text>
-			<Text id="WelcomePilgrim">
-				(cat
-					"You are docked at a habitat made out of shipping containers. Children bounce off the bulkheads in zero-G while "
-					"maintenance workers repair leaky seals and balky machinery. The station master approaches you:\n\n"
-					
-					"\"We don't get many pilgrims visiting around here. Why don't you give us some of your worldly possessions; "
-					"they won't do you much good at the Core, or wherever you're trying to get.\""
-					)
+			<Text id="descWelcomePilgrim">
+				You are docked at a habitat made out of shipping containers. Children
+				bounce off the bulkheads in zero-G while maintenance workers repair
+				leaky seals and balky machinery. The station master approaches you:
+
+				"We don't get many pilgrims visiting around here. Why don't you give
+				us some of your worldly possessions; they won't do you much good at
+				the Core, or wherever you're trying to get."
 			</Text>
 		</Language>
-
 	</StationType>
 
 	<!-- Commonwealth Settlement -->
@@ -1617,32 +1610,39 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"You are in the docking bay of a Commonwealth settlement. Except for a few shuttles, the docking bay of this station is deserted. A loose hose is spilling dirty water onto the landing pad; elsewhere, an automatic load-lifter moves forward and back again as it unloads a ship's cargo hold. The air smells of liquid fuel and exhaust.">
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Commodities Exchange" default="1" key="C">
+							<Action id="actionMainHall" default="1">
+								(rpgMissionAssignment {
+									missionCriteria: (cat "n +commonwealthSettlement; =" (sysGetLevel) ";")
+									noMissionTextID: 'descHallEmpty
+									maxPerStation: 1
+									})
+							</Action>
+
+							<Action id="actionCommoditiesExchange">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Dock Services" key="D">
+							<Action id="actionDockServices">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 		
 		<!-- Events and Data -->
@@ -1662,6 +1662,16 @@
 
 			<OnContractQuery>True</OnContractQuery>
 		</Events>
+
+		<Language>
+			<Text id="descWelcome">
+				You are in the docking bay of a Commonwealth settlement. Except for a few shuttles,
+				the docking bay of this station is deserted. A loose hose is spilling dirty
+				water onto the landing pad; elsewhere, an automatic load-lifter moves forward
+				and back again as it unloads a ship's cargo hold. The air smells of liquid fuel
+				and exhaust.
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- NavSign
@@ -2816,7 +2826,7 @@
 		</Panes>
 		
 		<Language>
-			<Text id="descWelcome">"Your ship is in dry dock."</Text>
+			<Text id="descWelcome">Your ship is in dry dock.</Text>
 		</Language>
 	</DockScreen>
 	
@@ -3080,12 +3090,22 @@
 	
 	-->
 	
-	<Type unid="&baCommonwealthStation;">
+	<Type unid="&baCommonwealthStation;"
+			inherit=			"&dsDockScreenBase;"
+			>
 		<Events>
 			<OnDestroy>
 				(intCommonwealthOnDestroy)
 			</OnDestroy>
 		</Events>
+
+		<Language>
+			<Text id="actionMainHall">[M]eeting Hall</Text>
+
+			<Text id="descHallEmpty">
+				The meeting hall is busy with commercial activity; everyone goes about their business.
+			</Text>
+		</Language>
 	</Type>
 
 <!-- RESOURCES -->
