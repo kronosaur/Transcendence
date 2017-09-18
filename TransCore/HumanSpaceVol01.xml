@@ -1898,10 +1898,6 @@
 
 	<!ENTITY rsHimalInterceptorHD		"0x00100490">
 
-	<!-- 04B0-04CF LUMINOUS -->
-
-	<!ENTITY rsLuminousDroneHD			"0x001004B0">
-
 	<!-- 04D0-04EF NAMI CORPORATION -->
 
 	<!ENTITY rsMissileNAMIHeavyHD		"0x001004D0">
@@ -1910,6 +1906,10 @@
 
 	<!ENTITY rsWeaponTM7HD				"0x001004F0">
 	<!ENTITY rsWeaponTM7FragmentHD		"0x001004F1">
+
+	<!-- 0510-052F LUMINOUS -->
+
+	<!ENTITY rsLuminousDroneHD			"0x00100510">
 	
 
 	<!-- 1000-FFFF RESERVED: DO NOT USE -->
