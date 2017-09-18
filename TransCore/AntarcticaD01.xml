@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Hunt for Antarctica ===================================================
+
+	EXTRA DATA
+		targetID:		ID of the CSC Antarctica
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msHuntForAntarctica;"
+			name=				"Hunt for CSC Antarctica"
+			attributes=			"commonwealthFleet, cscTerra, rank5, rank6"
+
+			level=				"9"
+
+			maxAppearing=		"1"
+			noDecline=			"true"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	No mission if we've already meet Antarctica
+					(rpgCharacterGetQuickRel &unidCaptainHelios;)
+						(msnDestroy gSource)
+
+					;	Or if the Antarctica is destroyed
+					(rpgCharacterGetStatus &unidCaptainHelios;)
+						(msnDestroy gSource)
+
+					;	Set up the mission
+					(block (
+						(targetObj (sysFindObject Nil "sN +cscAntarctica;"))
+						)
+						(if targetObj
+							(block Nil
+								(msnSetData gSource 'targetID (objGetID targetObj))
+								(msnRegisterForEvents gSource targetObj)
+								)
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnObjDestroyed>
+				(switch
+					;	Antarctica destroyed
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(if (or (= aDestroyReason 'ascended) (= aDestroyReason 'enteredStargate))
+							(msnFailure gSource)
+							(msnSuccess gSource)
+							)
+					)
+			</OnObjDestroyed>
+
+			<OnDebriefed>
+				(block (
+					(status (rpgCharacterGetStatus &unidCaptainHelios;))
+					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					missionObj
+					)
+					(switch
+						(msnGetProperty gSource 'isFailure)
+							(block Nil
+								(objSetData gPlayerShip 'fleetXP 600)
+								(objSetData gPlayerShip 'fleetLevel 3)
+								(typSetData &msCSCLamplighterTesting; 'status 'notPlayer)
+								)
+						(= status 'betrayed)
+							(typSetData &msCSCLamplighterTesting; 'status 'notPlayer)
+
+						(= status 'destroyedByPlayer)
+							(block Nil
+								(typSetData &msCSCLamplighterTesting; 'status 'player)
+
+								;	Create the mission now so player can go straight to dockmaster
+								(if (setq missionObj (msnCreate &msCSCLamplighterTesting; stationObj))
+									(msnAccept missionObj)
+									)
+								)
+
+						(= status 'destroyed)
+							(typSetData &msCSCLamplighterTesting; 'status 'fleetCaptain)
+						)
+					)
+			</OnDebriefed>
+
+			<OnGlobalSystemStarted>
+				(enum (msnFind "a +unid:&msHuntForAntarctica;;") theMission
+					(if (not (msnGetData gSource 'targetID))
+						(block (
+							(targetObj (sysFindObject Nil "sN +cscAntarctica;"))
+							)
+							(if targetObj
+								(block Nil
+									(msnSetData theMission 'targetID (objGetID targetObj))
+									(msnRegisterForEvents theMission targetObj)
+									)
+								)
+							)
+						)
+					)
+			</OnGlobalSystemStarted>
+		</Events>
+		
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+			<Text id="Intro">
+				(list
+					{	textID: 'textIntro1	}
+					{	textID: 'textIntro2	}
+					{	textID: (if (= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+							'textIntro3Pilgrim
+							'textIntro3
+							)
+						data: { shipName:(objGetName gPlayerShip 0x05) }
+						}
+					)
+			</Text>
+			<Text id="Briefing">
+				(list
+					{	textID: 'textBriefing1	}
+					{	textID: 'textBriefing2	}
+					{	textID: 'textBriefing3	}
+					)
+			</Text>
+			<Text id="InProgress">
+				(block (
+					(missionTime (- (unvGetTick) (msnGetProperty gSource 'acceptedOn)))
+					)
+					(list
+						{
+							textID: (switch
+								(sysFindObject Nil "sA +cscAntarctica;")
+									'textProgressInSystem
+
+								(ls missionTime 300)
+									'textProgress1
+
+								(ls missionTime 1800)
+									'textProgress2
+
+								'textProgress3
+								)
+							}
+						)
+					)
+			</Text>
+			<Text id="FailureDebrief">
+				(list
+					{ textID: 'textFailure1 }
+					{ textID: 'textFailure2 }
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(block (
+					(status (rpgCharacterGetStatus &unidCaptainHelios;))
+					)
+					(switch
+						(= status 'betrayed)
+							(list
+								{ textID: 'textBetrayed1 }
+								{ textID: 'textBetrayed2 }
+								)
+
+						(= status 'destroyedByPlayer)
+							(list
+								{ textID: 'textSuccessPlayer1 }
+								{ textID: 'textSuccessPlayer2 }
+								)
+
+						(= status 'destroyed)
+							(list
+								{ textID: 'textSuccess1 }
+								{ textID: (if (geq (objGetData gPlayerShip 'fleetLevel) 6)
+									'textSuccessCaptain2
+									'textSuccess2
+									)}
+								)
+
+						(cat "ERROR: Antarctica status: " status)
+						)
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">
+				Hunt for the CSC Antarctica
+			</Text>
+			<Text id="textSummary">
+				The CSC Antarctica has gone rogue. Admiral Decker has ordered
+				you to locate and destroy the carrier.
+			</Text>
+			<Text id="textIntro1">
+				As you enter the bridge, you see Admiral Conrad Decker talking
+				with his XO. A guard approaches you and says,
+
+				"The admiral would like you to wait for him at his quarters."
+			</Text>
+			<Text id="textIntro2">
+				Waiting in the admiral's quarters you see the artifacts of his
+				life scattered around the room&mdash;charts, papers, and empty
+				glasses are randomly distributed. Pictures of the men and women
+				that he's lost judge from the walls.
+
+				Fifteen minutes later, the admiral walks in.
+			</Text>
+			<Text id="textIntro3">
+				"%shipName% armed like a battleship out here at the edge. What
+				are you looking for?"
+
+				"I'll make a deal with you. Help me with my problem and I'll
+				give you something that will help you."
+			</Text>
+			<Text id="textIntro3Pilgrim">
+				"%shipName% armed like a battleship and a lonely pilot heading
+				for the Core. Another plaything for the Gods. What a waste.
+
+				"I'll make a deal with you. Help me with my problem and I'll
+				give you something you're going to need out there."
+			</Text>
+			<Text id="textBriefing1">
+				"My problem is Captain Helios and the CSC Antarctica. Two months
+				ago we were on joint operations against an Ares stronghold. Four
+				carriers; hundreds of Centurions; one of the most complicated
+				operations of the war."
+
+				"A light-minute out, she breaks formation and recalls her wing.
+				She left us out there at the most critical point!"
+			</Text>
+			<Text id="textBriefing2">
+				"She's gone rogue. Or worse. And with a carrier. And with the
+				secrets she knows... I really don't have a choice."
+
+				The admiral looks away, out the porthole. He looks tired. And
+				old.
+			</Text>
+			<Text id="textBriefing3">
+				When the admiral turns back to you there is a new intensity in
+				his eyes and as he stands up his fists are clenched.
+
+				"Your mission is to hunt down the Antarctica. And to destroy
+				her, if you can."
+			</Text>
+			<Text id="textProgressInSystem">
+				Admiral Decker talks with his XO at his center console. They see
+				you enter, and the admiral comes up to you quietly:
+
+				"We've had a sighting of the Antarctica somewhere in this system!
+				You know what to do. Return here when you've accomplished your
+				mission."
+			</Text>
+			<Text id="textProgress1">
+				The bridge of the CSC Terra is chaotic, but efficient. Various
+				officers discuss issues at their panels, raising their voice
+				above the chatter of comm traffic. The admiral is not on the
+				bridge, but the XO approaches you:
+
+				"I don't envy your mission. We don't have fresh intel on the
+				Antarctica; you'll have to search system by system, I'm afraid."
+			</Text>
+			<Text id="textProgress2">
+				Admiral Decker talks with his XO at the center of a chaotic, but
+				efficient bridge. The Admiral sees you come in, but he seems too
+				busy to be able to talk to you.
+			</Text>
+			<Text id="textProgress3">
+				Admiral Decker talks with his XO at his center console. They see
+				you enter, and the XO comes up to you quietly:
+
+				"Still no sign of the Antarctica. We've had reports that it
+				might be in the Dantalion system."
+			</Text>
+			<Text id="textFailure1">
+				The bridge grows quiet as you enter. All the officers stare at
+				you, some with disgust, others with pity. The XO walks up to you:
+				"The admiral is waiting for you in his quarters."
+			</Text>
+			<Text id="textFailure2">
+				The admiral broods in his chambers. He stares at you coldly:
+				
+				"What happened out there? How did the Antarctica escape? If I
+				ever find out that you helped them, I will make sure that you
+				hang as a traitor! Until then, you are demoted to Master
+				Sergeant. Now get the hell out of here."
+			</Text>
+			<Text id="textSuccessPlayer1">
+				As you enter the bridge all the officers rise and applaud.
+				Admiral Decker stands next to you and says,
+
+				"The Fleet owes you a great debt. The valor and heroism that you
+				showed in defeating the Antarctica will stand as a beacon of
+				hope in this bloody war!"
+
+				After much cheering and congratulations, the Admiral leads you
+				to his quarters for a private conversation.
+			</Text>
+			<Text id="textSuccessPlayer2">
+				"You've done your part of the bargain, now let me help you with
+				your journey. For the last few years we've been working on a new
+				weapon&mdash;something that can hurt the Ares and win this war. I
+				want you to test this new weapon. The dockmaster will install it.
+				Good luck!"
+			</Text>
+			<Text id="textSuccess1">
+				As you enter the bridge all the officers cheer. Admiral Decker
+				stands next to you and announces,
+
+				"I can now confirm that the rogue ship Antarctica has been destroyed!"
+
+				After much cheering, the Admiral leads you to his quarters for a
+				private conversation.
+			</Text>
+			<Text id="textSuccessCaptain2">
+				"Thanks for tracking down the Antarctica&mdash;we couldn't have
+				done it without you. Now it's my turn to help you."
+				
+				"For the last few years we've been working on a new
+				weapon&mdash;something that will win this war. I want you to test
+				it. Report to the dockmaster and he will explain. Good luck!"
+			</Text>
+			<Text id="textSuccess2">
+				"Thanks for tracking down the Antarctica&mdash;we couldn't have
+				done it without you. I know you're on your way to the Core,	but
+				if you stay with the Fleet and make captain, I guarantee that
+				I'll remember your service. Good luck, and remember what I said."
+			</Text>
+			<Text id="textBetrayed1">
+				The bridge grows quiet as you enter. All the officers stare at
+				you, some with disgust, others with pity. The XO walks up to you:
+				"The admiral is waiting for you in his quarters."
+			</Text>
+			<Text id="textBetrayed2">
+				The admiral sits at his desk quietly studying you. He says,
+				
+				"You're a cold-blooded killer, do you know that? I heard how you
+				betrayed Captain Helios. I know she deserved it, but I'm glad
+				that you're leaving Human Space. I'll see you in hell."
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

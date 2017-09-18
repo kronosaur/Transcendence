@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Antarctica mission ====================================================
+
+changing sys will unregister from owner
+	EXTRA DATA
+
+	gateID:			ID of gate leading to SK
+	onDockScreen:	If true then show mission screen on docking
+
+	GLOBAL DATA
+	
+	status:
+		Nil
+		underAttack
+		enemy
+		friend
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msEscapeFromDantalion;"
+			name=				"CSC Antarctica"
+			attributes=			"antarcticaMission, onDockMission"
+
+			level=				"9"
+
+			maxAppearing=		"1"
+			>
+
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	This mission only works in Dantalion
+					(!= (sysGetNode) 'A7)
+						(msnDestroy gSource)
+
+					;	Prevent duplicates (maxAppearing only counts accepted missions)
+					(typGetData &msEscapeFromDantalion; 'status)
+						(msnDestroy gSource)
+
+					;	Set up the mission
+					(block Nil
+						(msnSetData gSource 'gateID (objGetID (sysGetStargateLeadingToNode 'SK)))
+						(msnRegisterForEvents gSource gPlayerShip)
+						)
+					)
+			</OnCreate>
+
+
+			<OnAccepted>
+				(block (
+					(antarcticaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
+					)
+					;	Player has met Captain Helios
+					(rpgCharacterSetMeeting &unidCaptainHelios;)
+
+					(typSetData &msEscapeFromDantalion; 'status 'underAttack)
+
+					;	Send a battlefleet to attack the Antarctica
+					(for i 1 4
+						(block (theShip)
+							(setq theShip (sysCreateShip &scAquilaCruiser; gateObj &svFleetAssassins;))
+							(shpOrder theShip 'attack antarcticaObj)
+							(objSetData theShip 'Antarctica (objGetID gSource))
+							(msnRegisterForEvents gSource theShip)
+							(msnIncData gSource 'cruisersLeft)
+							)
+						)
+					)
+			</OnAccepted>
+
+			<OnAcceptedUndock>
+				(block (
+					(antarcticaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
+					)
+
+					;	CSC heads for gate
+					(shpCancelOrders antarcticaObj)
+					(shpOrder antarcticaObj 'gate gateObj)
+					(msnSetData gSource 'onDockScreen True)
+					)
+			</OnAcceptedUndock>
+
+			<OnDeclined>
+				(block (
+					(antarcticaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
+					)
+					;	Player has met Captain Helios
+					(rpgCharacterSetMeeting &unidCaptainHelios;)
+
+					(msnSetUnavailable gSource)
+					(typSetData &msEscapeFromDantalion; 'status 'enemy)
+
+					(sovSetDisposition &svCSCAntarctica; &svPlayer; 'enemy)
+					(sovSetDisposition &svPlayer; &svCSCAntarctica; 'enemy)
+
+					(shpCancelOrders antarcticaObj)
+					(shpOrder antarcticaObj 'hold (random 15 60))
+					(shpOrder antarcticaObj 'gate gateObj)
+					(objSetData antarcticaObj 'behavior 'leaving)
+					
+					(msnSetData gSource 'onDockScreen True)
+					)
+			</OnDeclined>
+
+			<OnObjEnteredGate>
+				(switch
+					;	aGateObj will be Nil when ascending
+					(and aGateObj (= (objGetID aObj) (msnGetProperty gSource 'ownerID)))
+						(msnSuccess gSource)
+					
+					;	Player leaving system
+					(and gPlayerShip (= aObj gPlayerShip))
+						Nil
+					)
+			</OnObjEnteredGate>
+
+			<OnObjDestroyed>
+				(switch
+					;	Cruiser destroyed
+					(= (objGetData aObjDestroyed 'Antarctica) (objGetID gSource))
+						(block Nil
+							(msnIncData gSource 'cruisersLeft -1)
+
+							;	If the player destroyed one, then keep track
+							(if (and gPlayerShip (= aOrderGiver gPlayerShip))
+								(block Nil
+									(msnIncData gSource 'playerHelp 1)
+									(sovSetDisposition &svFleetAssassins; &svPlayer; 'enemy)
+									(sovSetDisposition &svPlayer; &svFleetAssassins; 'enemy)
+									)
+								)
+
+							;	Check if this was the last target
+							(if (and (leq (msnGetData gSource 'cruisersLeft) 0)
+									(= (typGetData &msEscapeFromDantalion; 'status) 'underAttack))
+								(block (
+									(antarcticaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+									(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
+									)
+									(typSetData &msEscapeFromDantalion; 'status 'friend)
+
+									(if (msnGetData gSource 'playerHelp)
+										(rpgCharacterChangeRel &unidCaptainHelios; 'rescue)
+										(rpgCharacterChangeRel &unidCaptainHelios; 'aid)
+										)
+									
+									;	Hold for a while until the player can dock with us again
+									(shpCancelOrders antarcticaObj)
+									(shpOrder antarcticaObj 'hold 120)
+									(shpOrder antarcticaObj 'gate gateObj)
+									(objSetData antarcticaObj 'behavior 'leaving)
+									(msnSetData gSource 'onDockScreen True)
+									)
+								)
+							)
+					
+					;	Antarctica destroyed
+					(= (objGetID aObjDestroyed) (msnGetProperty gSource 'ownerID))
+						(switch
+							(or (= aDestroyReason 'ascended) (= aDestroyReason 'enteredStargate))
+								Nil
+
+							(msnFailure gSource {
+								destroyedByPlayer: (and gPlayerShip (= aOrderGiver gPlayerShip))
+								})
+							)
+					)
+			</OnObjDestroyed>
+
+			<OnInProgress>
+				(block (
+					(antarcticaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					)
+					(switch
+						(= (objGetData antarcticaObj 'behavior) 'moving)
+							(msnSetData gSource 'msgProgress 'shipMoving)
+
+						(= (typGetData &msEscapeFromDantalion; 'status) 'underAttack)
+							(msnSetData gSource 'msgProgress 'underAttack)
+							
+						(= (typGetData &msEscapeFromDantalion; 'status) 'friend)
+							(if (msnGetData gSource 'playerRewarded)
+								(msnSetData gSource 'msgProgress 'alreadyDebriefed)
+								(msnSetData gSource 'msgProgress 'success)
+								)
+
+						(msnSetData gSource 'msgProgress Nil)
+						)
+					)
+			</OnInProgress>
+
+			<OnInProgressUndock>
+				(block Nil
+					(switch
+						(= (msnGetData gSource 'msgProgress) 'success)
+							(block Nil
+								(objAddItem gPlayerShip (itmCreate &itGemOfSacrifice; 1))
+								(msnSetData gSource 'playerRewarded True)
+								(msnSetData gSource 'onDockScreen Nil)
+								)
+						)
+					(msnSetData gSource 'msgProgress Nil)
+					)
+			</OnInProgressUndock>
+
+			<OnCompleted>
+				(switch
+					;	Antarctica escapes
+					(= aReason 'success)
+						(block Nil
+							)
+					
+					(= aReason 'failure)
+						(switch
+							(not (@ gData 'destroyedByPlayer))
+								(rpgCharacterSetStatus &unidCaptainHelios; 'destroyed)
+
+							(msnGetData gSource 'playerRewarded)
+								(rpgCharacterSetStatus &unidCaptainHelios; 'betrayed)
+
+							(rpgCharacterSetStatus &unidCaptainHelios; 'destroyedByPlayer)
+							)
+					)
+			</OnCompleted>
+
+			<OnGetNextScreen>
+				(switch
+					(= aScreenType 'DeclineFollowUp)
+						{
+							nextScreen: 'forceUndock
+							}
+					)
+			</OnGetNextScreen>
+
+			<OnGlobalSystemStarted>
+				(switch
+					;	If not in Dantalion, then nothing to do
+					(!= (sysGetNode) 'A7)
+						Nil
+
+					;	If we've already completed this mission, then nothing else to do.
+					(msnFind "r +unid:&msEscapeFromDantalion;;")
+						Nil
+
+					(typGetData &msEscapeFromDantalion; 'skipped)
+						Nil
+
+					;	Create the Antarctica
+					(block (antarcticaObj)
+
+						;	The Antarctica is 210-220 light-seconds away from the gate so
+						;	that it takes ~3 minutes (real time) to get to the gate
+						(setq antarcticaObj
+							(rpgCharacterCreateShip
+								&unidCaptainHelios;
+								&scCSCAntarctica;
+								(sysVectorRandom (sysGetStargateLeadingToNode 'SK) (random 210 220) 10)
+								)
+							)
+
+						;	If the Terra has not been encountered yet, create it on the other side
+						;	of the system.
+						(if (not (staIsEncountered &stCSCTerraEncounter;))
+							(block (terra terraPos)
+								(setq terraPos (sysVectorRandom (sysVectorMultiply (objGetPos antarcticaObj) -1) (random 40 60) 20))
+								(setq terra (sysCreateStation &stCSCTerraEncounter; terraPos))
+								)
+							)
+
+						;	Ascending rpgCharacters will unregister any event handlers, so fix them
+						(enum (msnFind antarcticaObj "aouS") theMission
+							(msnRegisterForEvents theMission antarcticaObj)
+							)
+
+						;	Order appropriately
+						(objSetEventHandler antarcticaObj &evEscapeFromDantalion;)
+						(objFireEvent antarcticaObj 'OnBehaviorStart)
+						)
+					)
+			</OnGlobalSystemStarted>
+
+			<GetGlobalAchievements>
+				(block (
+					(status (rpgCharacterGetStatus &unidCaptainHelios;))
+					(achievementText (switch
+						(= status 'destroyed)
+							'AchievementFailure
+						(= status 'betrayed)
+							'AchievementBetrayed
+						(= status 'destroyedByPlayer)
+							'AchievementDestroyedByPlayer
+						(msnFind "r +unid:&msEscapeFromDantalion;; +property:isSuccess;")
+							'AchievementSuccess
+						))
+					)
+					(if achievementText
+						(list
+							(list
+								(msnTranslate theMission achievementText)
+								Nil
+								"achievements &amp; regrets"
+								)
+							)
+						)
+					)
+
+			</GetGlobalAchievements>
+		</Events>
+		
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+			<Text id="Briefing">
+				(list
+					{
+						textID: 'textBriefing1
+						actions: (list
+							{
+								labelID: 'actionDeckerSent
+								nextPage: 'branchA
+								}
+							{
+								labelID: 'actionNoIdea
+								nextPage: 'branchB
+								}
+							)
+						}
+					{
+						id: 'branchA
+						textID: 'textBriefing2a
+						nextPage: 'common
+						}
+					{
+						id: 'branchB
+						textID: 'textBriefing2b
+						nextPage: 'common
+						}
+					{
+						id: 'common
+						textID: 'textBriefing3
+						}
+					{
+						textID: 'textBriefing4
+						}
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(list
+					{	textID: 'textAccept1	}
+					{	textID: 'textAccept2	}
+					{	textID:	'textAccept3	}
+					{	textID:	'textAccept4	}
+					)
+			</Text>
+
+			<Text id="InProgress">
+				(switch
+					(= (msnGetData gSource 'msgProgress) 'shipMoving)
+						(list { textID: 'textShipMoving } )
+
+					(= (msnGetData gSource 'msgProgress) 'underAttack)
+						(list { textID: 'textUnderAttack } )
+
+					(= (msnGetData gSource 'msgProgress) 'alreadyDebriefed)
+						(list { textID: 'AlreadyDebriefed } )
+
+					(= (msnGetData gSource 'msgProgress) 'success)
+						(list
+							{ textID: 'textSuccessDebrief1 }
+							{ textID: 'textSuccessDebrief2 }
+							{ textID: 'textSuccessDebrief3 }
+							)
+					)
+			</Text>
+			<Text id="Unavailable">
+				(list
+					{
+						textID: 'textRefuseDock
+						nextPage: 'forceUndock
+						}
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">
+				Antarctica escape
+			</Text>
+			<Text id="textSummary">
+				Captain Helios has met with the Ares to discuss a possible truce.
+				She is now carrying a message back to St. Katharine's, but only
+				if the Antarctica can escape from this system.
+			</Text>
+			<Text id="Intro">
+				As you enter the docking bay you are surrounded by heavily armed soldiers.
+				A Fleet officer approaches you and motions to the troops:
+
+				"Take %him% to the captain."
+
+				Across the landing bay you see the insignia of the CSC Antarctica.
+			</Text>
+			<Text id="textBriefing1">
+				You enter the captain's chambers and stand before a striking woman with
+				silver hair and dark eyes. She looks up from a holochart as you enter
+				and frowns:
+
+				"Has Admiral Decker sent you to kill us?"
+			</Text>
+			<String id="actionDeckerSent">"[Y]es&mdash;He says you betrayed the Fleet."</String>
+			<String id="actionNoIdea">"I have [n]o idea what you're talking about."</String>
+			<Text id="textBriefing2a">
+				She looks away for a moment and then dismisses the Fleet officer
+				and the troops. She continues after they're gone:
+
+				"I did betray the Fleet. And I'll never be forgiven&mdash;I know that.
+				You of all people must know what it's like to betray those you love
+				for a greater calling."
+			</Text>
+			<Text id="textBriefing2b">
+				She dismisses the troops. Then:
+
+				"You're a Fleet officer! Are you trying to tell me that you've never
+				heard of the Antarctica? You're either here to help or to kill us all!
+				Maybe it doesn't matter either way..."
+			</Text>
+			<Text id="textBriefing3">
+				"Three months ago we received a coded signal. It was from the Ares.
+				Or at least from some faction of the Ares. They offered to negotiate
+				a truce with us."
+
+				"Decker refused&mdash;he thought it was a trap. But I wasn't so sure."
+			</Text>
+			<Text id="textBriefing4">
+				She pauses for a long while. Then she continues:
+
+				"After we left the Fleet, I met the Ares here in the Dantalion system.
+				I have a message to take back with me to St. Katharine's. Unless, of
+				course, you want to try to stop us."
+			</Text>
+			<String id="AcceptLabel">"[I] won't try to stop you."</String>
+			<Text id="textAccept1">
+				The captain looks at you intently and you meet her gaze.
+				She smiles warmly and gets up:
+
+				"Good. I'm glad. There's enough madness going on right now."
+			</Text>
+			<Text id="textAccept2">
+				Just as you're about to say something, the Fleet officer barges in:
+
+				"Forgive me, captain, we've picked up new sensor readings.
+				Captain, they've found us!"
+			</Text>
+			<Text id="textAccept3">
+				Calmly, the captain turns to the Fleet officer:
+
+				"Go to condition 1 and set a direct course for the stargate."
+			</Text>
+			<Text id="textAccept4">
+				Then, putting a hand on your shoulder, the captain says:
+
+				"I know this isn't your fight, but we can use all the help we can get."
+
+				And with that, the captain heads for the bridge, leaving you alone
+				with your thoughts.
+			</Text>
+			<String id="DeclineLabel">"I have my [o]rders."</String>
+			<Text id="DeclineReply">
+				A look of disgust crosses the captain's face.
+				She calls the troopers back into her chambers:
+
+				"Get %him% out of my sight!"
+			</Text>
+
+			<Text id="textSuccessDebrief1">
+				Captain Helios and her officers meet you at the dock:
+
+				"We did it! When we get back to St. Katharine's we will
+				bring the Ares peace plan to the Commonwealth!"
+			</Text>
+			<Text id="textSuccessDebrief2">
+				"I know that your path lies elsewhere and that your journey
+				is just beginning. Thank you for helping us in our need.
+				In return, I want you to have this. It may help you someday."
+
+				And with that, Captain Helios places a small glowing gem in your hand.
+			</Text>
+			<Text id="textSuccessDebrief3">
+				"Goodbye! May we meet again some day."
+			</Text>
+
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+
+			<Text id="textShipMoving">
+				As you exit the docking ramp you are met by a Fleet lieutenant:
+
+				"Sorry, %sir%, we're on maneuvers and the captain has ordered
+				that we keep the landing deck clear. Follow us to our
+				destination and you can dock with us then."
+			</Text>
+			<Text id="textUnderAttack">
+				The captain is on the bridge directing the battle. She looks at you only briefly.
+			</Text>
+			<Text id="AlreadyDebriefed">
+				The captain of the CSC Antarctica welcomes you aboard:
+
+				"%Name%! It's good to see you again. We're heading back to St. Katharine's.
+				I know your journey is just beginning, but maybe we'll see each other there someday."
+			</Text>
+			<Text id="textRefuseDock">
+				As you exit the docking ramp, troopers train their weapons on you:
+				"The captain wants you off her ship."
+			</Text>
+
+			<Text id="AchievementSuccess">Defended the CSC Antarctica</Text>
+			<Text id="AchievementFailure">Failed to defend the CSC Antarctica</Text>
+			<Text id="AchievementDestroyedByPlayer">Destroyed the CSC Antarctica</Text>
+			<Text id="AchievementBetrayed">Betrayed the CSC Antarctica</Text>
+		</Language>
+	</MissionType>
+
+<!-- EVENT HANDLERS -->
+
+	<!-- Antarctica Event Handler
+
+		status:
+
+			Nil: 
+
+	-->
+
+	<Type unid="&evEscapeFromDantalion;">
+		<Events>
+			<OnBehaviorStart>
+				(block ()
+					(dbgOutput "OnBehaviorStart status: " (typGetData &msEscapeFromDantalion; 'status) " behavior: " (objGetData gSource 'behavior))
+					(shpCancelOrders gSource)
+					(shpOrder gSource 'hold)
+
+					;	Are we in a good spot? If not, then we give orders to move
+					(fltOrderCheckPosition gSource)
+
+					;	Every once in a while we send out a patrol
+					(sysAddObjRecurringTimerEvent 450 gSource 'OnLaunchPatrol)
+					)
+			</OnBehaviorStart>
+
+			<OnAttackedByPlayer>
+				(block Nil
+					;	Message
+					(if (find '('underAttack 'friend) (typGetData &msEscapeFromDantalion; 'status))
+						(objSendMessage gPlayerShip gSource (typTranslate &evEscapeFromDantalion; 'msgPlayerBetrayal))
+						(objSendMessage gPlayerShip gSource (typTranslate &evEscapeFromDantalion; 'msgAttackPlayer))
+						)
+
+					;	If we don't have a mission yet the create one
+					(if (not (msnFind gSource "*S +unid:&msEscapeFromDantalion;"))
+						(msnSetUnavailable (msnCreate &msEscapeFromDantalion; gSource))
+						)
+
+					;	We turn against the player.
+					(sovSetDisposition &svCSCAntarctica; &svPlayer; 'enemy)
+					(sovSetDisposition &svPlayer; &svCSCAntarctica; 'enemy)
+					(typSetData &msEscapeFromDantalion; 'status 'enemy)
+
+					;	If we're currently holding, escape
+					(if (or (= (shpGetOrder gSource) 'hold)
+							(= (objGetData gSource 'behavior) 'moving)
+							)
+						(block Nil
+							(shpCancelOrders gSource)
+							(shpOrder gSource 'gate (sysGetStargateLeadingToNode 'SK))
+							(objSetData gSource 'behavior 'leaving)
+							)
+						)
+					)
+			</OnAttackedByPlayer>
+
+			<OnOrdersCompleted>
+				(block Nil
+					(shpOrder gSource 'hold)
+					(objSetData gSource 'behavior Nil)
+					)
+			</OnOrdersCompleted>
+
+			<OnLaunchPatrol>
+				(switch
+					;	If there is a patrol out there, recall it
+					(and (objGetObjRefData gSource "patrolLead")
+							(eq (random 1 5) 1))
+						(block (leadShip)
+							(setq leadShip (objGetObjRefData gSource "patrolLead"))
+							(shpCancelOrders leadShip)
+							(shpOrderGate leadShip gSource)
+							(objSetObjRefData gSource "patrolLead" Nil)
+							)
+
+					;	Launch patrol
+					(and (not (typGetData &msEscapeFromDantalion; 'status))
+							(not (objGetObjRefData gSource "patrolLead"))
+							(eq (random 1 3) 1))
+						(block (leadShip)
+							;	Create the lead ship
+							(setq leadShip (sysCreateShip &scCenturion; gSource (objGetSovereign gSource)))
+
+							;	Create wingmen
+							(for i 0 3
+								(block (ship)
+									(setq ship (sysCreateShip &scCenturion; gSource (objGetSovereign gSource) "fleet"))
+									(shpOrderEscort ship leadShip i)
+									)
+								)
+
+							;	Patrol
+							(shpOrderPatrol leadShip gSource 100)
+							(objSetObjRefData gSource "patrolLead" leadShip)
+							)
+					)
+			</OnLaunchPatrol>
+
+			<GetDockScreen>
+				(block (missionObj)
+					(switch
+						;	If the Antarctica mission is active then go to dsRPGMission on dock
+						(setq missionObj (@ (filter (msnFind gSource "auS") theMission (msnGetData theMission 'onDockScreen)) 0))
+							(list &dsRPGMission; { missionObj: missionObj } 4)
+						)
+					)
+			</GetDockScreen>
+		</Events>
+
+		<Language>
+			<String id="msgAttackPlayer">"So be it!"</String>
+			<String id="msgPlayerBetrayal">"We will never forget your betrayal!"</String>
+		</Language>
+	</Type>
+
+</TranscendenceModule>

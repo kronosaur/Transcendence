@@ -1824,6 +1824,303 @@
         </Language>
 	</StationType>
 
+
+	<!-- Dantalion Settlement (DEPRECATED)
+
+	NOTE: Deprecated in 1.8, use standard Commonwealth Settlement instead
+
+	EXTRA DATA
+
+	informant:		Status of informant
+						Nil = never encountered
+						"offered" = informant has offered to reveal location of Antarctica
+						"paid" = informant has been paid
+
+	-->
+
+	<StationType UNID="&stDantalionSettlement;"
+			obsolete=			"38"
+			name=				"Commonwealth settlement"
+			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
+			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, human, majorStation, populated"
+				 
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+				 
+			size=				"390"
+			armorID=			"&itP120HexphaseArmor;"
+			hitPoints=			"740"
+			multiHull=			"true"
+			regen=			    "15"
+			shipRegen=			"6"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtThermoExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+			fireRateAdj=		"80"
+
+			enemyExclusionRadius="40"
+			>
+
+		<Names noArticle="true">Commonwealth Settlement %1%0%0%0</Names>
+
+		<!-- Trade and Items -->
+		
+		<Trade currency="credit" max="50000" replenish="2500">
+			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Buy	criteria="amswNU -Illegal; -NotForSale;"	priceAdj="50"/>
+			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
+			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="94"/>
+			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
+		</Trade>
+
+		<Items>
+			<RandomItem count="10" 
+					criteria=		"ad L:1-8; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|crv"
+					/>
+			<RandomItem count="10" 
+					criteria=		"*~ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:ru|c|cur"
+					/>
+
+			<Item count="4d12"	item="&itPteracniumFuelRod;" />
+		</Items>
+
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true"/>
+		</Devices>
+
+		<!-- Satellites -->
+		
+		<Satellites overlapCheck="asteroids">
+			<Orbitals distance="12" angle="45">
+				<Station type="&stCommonwealthTurret;" imageVariant="2"/>
+			</Orbitals>
+
+			<Orbitals distance="12" angle="135">
+				<Station type="&stCommonwealthTurret;" imageVariant="1"/>
+			</Orbitals>
+
+			<Orbitals distance="12" angle="225">
+				<Station type="&stCommonwealthTurret;" imageVariant="0"/>
+			</Orbitals>
+
+			<Orbitals distance="12" angle="315">
+				<Station type="&stCommonwealthTurret;" imageVariant="3"/>
+			</Orbitals>
+		</Satellites>
+
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Lookup count="2" table="&tbCommDefenders;"/>
+			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
+		</Ships>
+
+		<Reinforcements minShips="5">
+			<Table>
+				<Lookup chance="75" table="&tbCommDefenders;"/>
+				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
+			</Table>
+		</Reinforcements>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsCommonwealthSettlement;" imageWidth="320" imageHeight="290" viewportRatio="0.05"/>
+
+		<DockingPorts
+				portCount=		"10"
+				portRadius=		"175"
+				>
+		</DockingPorts>
+		
+		<!-- Dock Screens -->
+		
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default
+							desc=	"You are in the docking bay of a Commonwealth settlement. Except for a few shuttles, the docking bay of this station is deserted. A loose hose is spilling dirty water onto the landing pad; elsewhere, an automatic load-lifter moves forward and back again as it unloads a ship's cargo hold. The air smells of liquid fuel and exhaust.">
+
+						<Actions>
+							<Action name="Meeting Hall" key="M" default="1">
+								<ShowPane pane="MeetingHall"/>
+							</Action>
+
+							<Action name="Commodities Exchange" key="C">
+								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+									checkMilitaryID: True
+									})
+							</Action>
+
+							<Action name="Dock Services" key="D">
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+
+					<MeetingHall>
+						<OnPaneInit>
+							(block (desc)
+								(switch
+									; Antarctica not yet encountered
+									(not (typGetGlobalData &scCSCTerra; "antarctica"))
+										(setq desc (cat "The Meeting Hall is filled with worried-looking residents. Many are talking amongst themselves in low voices. The station master is addressing the group from the front of the hall:\n\n"
+												"\"Once again, I urge everyone to remain calm! We have no reason to believe that the Antarctica will approach this settlement. The Fleet has been informed of the sighting, but we do not know when or if they will arrive.\""
+												)
+											)
+
+									; Antarctica escaped
+									(eq (typGetGlobalData &scCSCTerra; "antarctica") "escaped")
+										(setq desc (cat "The Meeting Hall is filled with people. Most look happy and are talking amongst themselves. The station master addresses the crowd:\n\n"
+												"\"Our latest information is that the Antarctica has left the system. We believe that it is heading for St. Katharine's, where the Fleet will no doubt deal with her.\""
+												)
+											)
+
+									; Antarctica destroyed
+									(setq desc (cat "The Meeting Hall is filled with people. Most look happy and are talking amongst themselves. The station master addresses the crowd:\n\n"
+											"\"Our latest information is that the Antarctica was destroyed. We don't have any more information at this point, but we believe that the danger is over.\""
+											)
+										)
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(switch
+									(and (not (typGetGlobalData &scCSCTerra; "antarctica"))
+											(not (typGetGlobalData &scCSCAntarctica; "status"))
+											(not (eq (objGetData gSource "informant") 'paid))
+											)
+										(scrShowPane gScreen "Informant")
+
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</MeetingHall>
+
+					<Informant>
+						<OnPaneInit>
+							(switch
+								(not (objGetData gSource "informant"))
+									(scrSetDesc gScreen "A woman wearing a ragged Fleet jacket with torn patches stops you as you leave.\n\n\"I know where the Antarctica is. It will cost you 10,000 rin if you want to know too.\"")
+
+								(scrSetDesc gScreen "The woman wearing the ragged Fleet jacket stops you again.\n\n\"I know you're still looking for the Antarctica. For 10,000 rin I will tell you her location.\"")
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="&quot;OK, you have a deal.&quot;" key="O">
+								(block Nil
+									(objSetData gSource "informant" 'offered)
+									(switch
+										(ls (objGetBalance gPlayerShip 'rin) 10000)
+											(scrShowPane gScreen "NotEnoughRin")
+
+										(scrShowPane gScreen "Informant2")
+										)
+									)
+							</Action>
+
+							<Action name="&quot;No thanks, I'll find her myself.&quot;" key="N" cancel="1">
+								(block Nil
+									(objSetData gSource "informant" 'offered)
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</Informant>
+
+					<Informant2>
+						<OnPaneInit>
+							(scrSetDesc gScreen "You transfer 10,000 rin to the woman's account. When she is satisfied, she takes your arm and whispers the coordinates in your ear. You memorize them and enter them into your computer.")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(block (theAntarctica)
+									(objSetData gSource "informant" 'paid)
+									(objCharge gPlayerShip 'rin 10000)
+
+									(enum (sysFindObject gSource "s D:CSC;") theObj
+										(if (eq (objGetData theObj "CSC") 'antarctica)
+											(setq theAntarctica theObj)
+											)
+										)
+
+									(if theAntarctica
+										(block Nil
+											(shpCancelOrders gPlayerShip)
+											(shpOrder gPlayerShip 'attack theAntarctica)
+											(objSetIdentified theAntarctica)
+											)
+										)
+
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</Informant2>
+
+					<NotEnoughRin>
+						<OnPaneInit>
+							(scrSetDesc gScreen 
+								(cat "Unfortunately, you "
+									(switch
+										(eq (objGetBalance gPlayerShip 'rin) 0)
+											"do not have any rin."
+										(eq (objGetBalance gPlayerShip 'rin) 1)
+											"only have a single rin."
+										(cat "only have " (objGetBalance gPlayerShip 'rin) " rin.")
+										)
+									"\n\nThe woman smiles at you and says, \"Come back when you have something to deal with.\""
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</NotEnoughRin>
+				</Panes>
+			</Main>
+
+		</DockScreens>
+
+		<!-- Events and Data -->
+		
+		<StaticData>
+			<NPCService>
+				(	;	service					level	margin
+					(	'repairArmor			8		100		)
+					)
+			</NPCService>
+		</StaticData>
+	</StationType>
+
 	<!-- CSC America Encounter (DEPRECATED) -->
 
 	<EncounterType UNID="&stCSCAmericaEncounter;"
@@ -1966,6 +2263,29 @@
 			</Ship>
 		</Ships>
 
+	</EncounterType>
+
+	<!-- CSC Antarctica Encounter (DEPRECATED) -->
+
+	<EncounterType UNID="&stCSCAntarcticaEncounter;"
+			obsolete=			"38"
+			name=				"(CSC Antarctica)"
+			sovereign=			"&svCSCAntarctica;"
+
+			level=				"9"
+			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
+			maxAppearing=		"1"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCAntarctica;" orders="hold">
+				<Names definiteArticle="true">CSC Antarctica</Names>
+				
+				<InitialData>
+					<CSC>"antarctica"</CSC>
+				</InitialData>
+			</Ship>
+		</Ships>
 	</EncounterType>
 	
 	<!-- Abandoned crate looting screen (DEPRECATED) -->

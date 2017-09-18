@@ -2,81 +2,15 @@
 
 <TranscendenceModule>
 
-	<Sovereign UNID="&svCSCAntarctica;"
-			name=":the CSC Antarctica"
-			shortName=":the Antarctica"
-			adjective="Antarctica"
-			demonym=":an Antarctica crewmember(s)"
+	<!-- CSC Terra -->
 
-			alignment="constructive chaos"
-			>
-		<Language>
-			<Text id="WatchYourTargets">"\"Cease fire! Cease fire or we will engage\""</Text>
-		</Language>
-
-		<Relationships>
-			<Relationship sovereign="&svAres;" disposition="neutral" mutual="true"/>
-			<Relationship sovereign="&svGaianTerraformers;" disposition="neutral" mutual="true"/>
-		</Relationships>
-	</Sovereign>
-
-	<Sovereign UNID="&svFleetAssassins;"
-			name=":the Commonwealth Fleet"
-			shortName=":the Fleet"
-			adjective="Fleet"
-			demonym=":a Fleet crewmember(s)"
-
-			alignment="constructive chaos"
-			>
-
-		<Relationships>
-			<Relationship sovereign="&svCSCAntarctica;" disposition="enemy" mutual="true"/>
-		</Relationships>
-	</Sovereign>
-
-	<!-- Captain Helios
-
-	GLOBAL DATA
-
-	status: Antarctica's current status. One of the following:
-
-		Nil:					Alive
-		'destroyed:				Destroyed by others
-		'destroyedByPlayer:		The player destroyed the Antarctica
-		'betrayed:				Destroyed by player after she promised otherwise
-
-	-->
-
-	<Type UNID="&unidCaptainHelios;">
-		<StaticData>
-			<MissionAttribute>"captainHeliosMission"</MissionAttribute>
-			<Name>"Captain Helios"</Name>
-			<Sovereign>&svCSCAntarctica;</Sovereign>
-		</StaticData>
-
-		<Events>
-			<OnCharacterCanBeMet>
-				True
-			</OnCharacterCanBeMet>
-
-			<OnGlobalSystemStopped>
-				(rpgCharacterAscend &unidCaptainHelios;)
-			</OnGlobalSystemStopped>
-		</Events>
-
-		<Language>
-		</Language>
-	</Type>
-
-	<!-- CSC Antarctica -->
-
-	<ShipClass UNID="&scCSCAntarctica;"
+	<ShipClass UNID="&scCSCTerra;"
 			manufacturer=		"Earth Industries"
 			class=				"Commonwealth Star Carrier"
 			type=				""
 
-			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, cscAntarctica, majorShip, uncharted, captainHelios"
-			character=			"&unidCaptainHelios;"
+			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, fleetLaw, majorShip, cscTerra"
+			inherit=			"&baCSCBase;"
 			   
 			size=				"400"
 			mass=				"200000"
@@ -90,8 +24,6 @@
 			dockScreen=			"Main"
 			>
 
-		<Names definiteArticle="true">CSC Antarctica</Names>
-
 		<!-- Configuration -->
 		
 		<Armor
@@ -100,12 +32,12 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="98" posZ="-5"/>
-			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="98" posZ="-5"/>
-			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="90" posRadius="98" posZ="-5"/>
-			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="270" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" omnidirectional="true" posAngle="90" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" omnidirectional="true" posAngle="270" posRadius="98" posZ="-5"/>
 			<Device deviceID="&itNAMIHeavyLauncher;" omnidirectional="true"/>
-			
+
 			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
 			<Device deviceID="&vtDamageControlParty;"/>
 		</Devices>
@@ -132,12 +64,12 @@
 		</Interior>
 		
 		<Items>
-			<Item				count="100"		item="&itM2Missile;"/>
+			<Item				count="300"		item="&itM2Missile;"/>
 			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
 			
 			<!-- Some upgrades for sale -->
 			
-			<RandomItem count="1d3" criteria="r -illegal; -notForSale; -notStandard; L:6-9;"		levelFrequency="systemLevel:ru|c|curv"/>
+			<RandomItem count="1d6" criteria="r -illegal; -notForSale; -notStandard; L:6-9;"		levelFrequency="systemLevel:ru|c|curv"/>
 			
 			<Item count="3d4"	item="&itBlastPlate;"/>
 			<Item count="3d4"	item="&itP120HexphaseArmor;"/>
@@ -154,7 +86,7 @@
 			<Effect type="thrustMain"		posAngle="180"	posRadius="114"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 			<Effect type="thrustMain"		posAngle="-166"	posRadius="116"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
-
+			
 		<DockingPorts>
 			<Port posAngle="90"   posRadius="105"  posZ="0" />
 			<Port posAngle="-90"  posRadius="105"  posZ="0" />
@@ -180,40 +112,52 @@
 			<ReplaceArmor	criteria="a L:1-10;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-9;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
+			<InstallDevice	criteria="d +unid:&itLamplighter;;" priceAdj="100"/>
+			<RemoveDevice	criteria="d +unid:&itLamplighter;;" priceAdj="100"/>
 		</Trade>
-
-		<Events>
-			<OnDestroy>
-				(rpgDestroyItems gSource)
-			</OnDestroy>
-		</Events>
 
 		<DockScreens>
 			<Main backgroundID="none">
 				<Display>
 					<Image left="140" top="144" width="320" height="240" transparent="true">
-						(resCreateImageDesc &rsFleetEmblems; 640 0 320 240)
+						(resCreateImageDesc &rsFleetEmblems; 960 480 320 240)
 					</Image>
 				</Display>
 
 				<OnScreenInit>
 					(rpgMissionAssignmentOnScreenInit {
-						missionCriteria: (cat "n +antarcticaMission; =" (sysGetLevel) ";")
+						missionCriteria: (cat "n +cscTerra; =" (sysGetLevel) ";")
 						})
 				</OnScreenInit>
-
+				
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
+							(scrSetDescTranslate gScreen 'descWelcome {objName: (objGetName gSource)})
 						</OnPaneInit>
 
 						<Actions>
 							<Action id="actionBridge" default="1">
-								(rpgMissionAssignment {
-									missionCriteria: (cat "n +antarcticaMission; =" (sysGetLevel) ";")
-									noMissionTextID: 'descNoMissions
-									})
+								(block (
+									(rank (objGetData gPlayerShip 'fleetLevel))
+									(behavior (objGetData gSource 'behavior))
+									)
+									(switch
+										;	Can't get in unless the player is Fleet Commander or above
+										(ls rank 5)
+											(scrShowScreen gScreen &dsRPGMessage; { textID:'descAccessDenied })
+
+										;	If on maneuvers, then too busy
+										(= behavior 'moving)
+											(scrShowScreen gScreen &dsRPGMessage; { textID:'descShipMoving })
+
+										;	Otherwise show missions
+										(rpgMissionAssignment {
+											missionCriteria: (cat "n +cscTerra; +rank" (int rank) "; =" (sysGetLevel) ";")
+											noMissionTextID: 'descNoMissions
+											})
+										)
+									)
 							</Action>
 
 							<Action id="actionDockServices">
@@ -236,11 +180,44 @@
 			<Text id="actionDockServices">[D]ock Services</Text>
 			<Text id="actionUndock">[U]ndock</Text>
 
-			<Text id="descWelcome">You are in the docking bay of the CSC Antarctica.</Text>
-			<Text id="descNoMissions">
-				LATER: No missions available.
+			<Text id="descWelcome">You are in the docking bay of the %objName%.</Text>
+			<Text id="descAccessDenied">
+				Two armed guards block your path, "I'm sorry, %sir%, only Fleet
+				the admiral does not like to be disturbed by junior officers."
 			</Text>
+			<Text id="descShipMoving">
+				The bridge of the CSC Terra is busy with activity. Admiral Decker
+				is leaning over a holochart as the massive ship maneuvers through
+				the system.
+			</Text>
+			<String id="descNoMissions">
+				"Sorry, there are no missions available for you."
+			</String>
 		</Language>
 	</ShipClass>
+
+	<!-- CSC Terra Encounter -->
+
+	<EncounterType UNID="&stCSCTerraEncounter;"
+			name=				"(CSC Terra)"
+			sovereign=			"&svCommonwealthFleet;"
+
+			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
+			levelFrequency=		"----- ---c- ----- ----- -----"
+			maxAppearing=		"1"
+			locationCriteria=	"+outerSystem, -planetary"
+			enemyExclusionRadius="50"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCTerra;" orders="hold">
+				<Names definiteArticle="true">CSC Terra</Names>
+				
+				<InitialData>
+					<CSC>"terra"</CSC>
+				</InitialData>
+			</Ship>
+		</Ships>
+	</EncounterType>
 
 </TranscendenceModule>
