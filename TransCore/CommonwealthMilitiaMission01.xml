@@ -29,8 +29,8 @@
 					)
 					(switch
 						;	Check if player is experienced enough
-						;(not (milCanEnterCC))
-						;	(msnDestroy gSource)
+						(not (milCanEnterCC))
+							(msnDestroy gSource)
 
 						;	Make sure there are at least 2 gates
 						(ls (count gateList) 2)
