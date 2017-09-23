@@ -16,7 +16,7 @@
 
 	<MissionType UNID="&msKronosaurus;"
 			name=			"The Kronosaurus"
-			attributes=		"special"
+			attributes=		"korolov, special"
 
 			maxAppearing=		"1"
 			>
@@ -117,6 +117,8 @@
 							(objSetProperty kronosaurus 'dockingEnabled Nil)
 							(shpCancelOrders kronosaurus)
 							(shpOrder kronosaurus 'attack gPlayerShip)
+							(msnSetData gSource 'targetID (objGetID kronosaurus))
+							(msnRegisterForEvents gSource kronosaurus)
 							)
 						)
 
