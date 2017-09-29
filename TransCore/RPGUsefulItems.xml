@@ -546,7 +546,7 @@
 							{
 								canUse: True
 								desc: (itmTranslate gItem 'descUsageOK {
-									useItem: (itmGetName gItem)
+									useItem: (itmGetName gItem 'article)
 									dstItem: (itmGetName dstItem '(demonstrative noModifiers))
 									})
 								}
@@ -609,7 +609,7 @@
 		</Events>
 
 		<Language>
-			<Text id="descUsageOK">You can use the %useItem% on %dstItem%.</Text>
+			<Text id="descUsageOK">You can use %useItem% on %dstItem%.</Text>
 			<Text id="descUsageUnknown">The barrel seems to contain some kind of armor paste. You can use it on %dstItem%.</Text>
 
 			<Text id="descResultTooAdvanced">Unfortunately, your armor is too strong for the nanomachines.</Text>
