@@ -104,7 +104,11 @@
 							;	then we're in progress
 
 							(not (msnGetProperty missionObj 'isCompleted))
-								"InProgress"
+								(block Nil
+									;	Let the mission get a chance to set some state.
+									(msnFireEvent missionObj "OnInProgress")
+									"InProgress"
+									)
 								
 							;	If cannot yet debrief, tell the player to wait
 
@@ -403,13 +407,6 @@
 					(block (
 						(missionObj (scrGetData gScreen 'missionObj))
 						)
-						
-						;	Let the mission get a chance to set some state.
-						
-						(msnFireEvent missionObj "OnInProgress")
-						
-						;	Now set the text
-						
 						(rpgPagePaneInit gScreen 
 							(msnTranslate (scrGetData gScreen 'missionObj) 'InProgress)
 							{
