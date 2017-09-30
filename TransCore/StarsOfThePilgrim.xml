@@ -47,6 +47,8 @@
 	<!ENTITY msHereticIocrymAttackMsg	"0x00200061">
 	<!ENTITY msHereticSvalbard			"0x00200062">
 	<!ENTITY dsHereticSvalbardDonate	"0x00200063">
+	<!ENTITY msHereticControlPoint		"0x00200064">
+	<!ENTITY msHereticFurtherResearch	"0x00200065">
 
 	<!-- 0021xxxx HUARI ==================================================== -->
 	
@@ -209,6 +211,7 @@
 	<Module filename="Elysium.xml"/>
 	<Module filename="Heretic00.xml"/>
 	<Module filename="Heretic01.xml"/>
+	<Module filename="Heretic02.xml"/>
 	<Module filename="Huaramarca.xml"/>
 	<Module filename="HuaramarcaMission01.xml"/>
 	<Module filename="HuaramarcaMission02.xml"/>

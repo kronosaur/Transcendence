@@ -131,7 +131,14 @@
 			<OnCompleted>
 				(switch
 					(= aReason 'success)
-						(block (theMission)
+						(block (
+							(controlPoint (sysFindObject gSource "TN +hereticControlPoint"))
+							theMission
+							)
+							;	Kate is now in the control point
+							(objSetData controlPoint 'stationMaster 'kateMorgental)
+
+							;	Start the Iocrym attacks
 							(if (setq theMission (msnFind "Po +unid:&msHereticIocrymAttack;;"))
 								(msnSetUnavailable theMission)
 								)

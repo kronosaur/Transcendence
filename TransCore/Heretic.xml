@@ -4001,31 +4001,18 @@
 	<!-- Iocrym Control Point
 
 	EXTRA DATA
-	
-	attackStatus:		Status of sentinel attack
-							Nil						= No attack in progress
-							'inProgress				= Sentinels dispatched to target
-							'distressSignal			= Station has sent distress signal to player
-							'waiting				= Waiting for attackTimer before next attack
-							
-	attackTimer:		Counter used by attackStatus
-							
-	dockTarget:			Player needs to dock with wreck
-	
-	squadronSize:		Size of sentinel squadron
-	sentinelCount:		Number of sentinels currently attacking
-	target:				Target being attacked
-	
-	status:				Current state
-							Nil						= Player has never been here
-							'introComplete			= Player has been told about this facility
-							'disabled				= Player has disabled the quarantine field
 
-	-->
+	stationMaster:		Current station master
+		Nil:			Station deserted
+		'researcher:	Human researchers present
+
+-->
 
 	<StationType UNID="&stHereticControlCenter;"
 			name=				"Iocrym control point"
 			sovereign=			"&svNeutral;"
+			inherit=			"&unidCommonText;"
+
 			dockScreen=			"Main"
 
 			multiHull=			"true"
@@ -4038,464 +4025,38 @@
 
 		<Image imageID="&rsIocrymOutpost;" imageWidth="162" imageHeight="218"/>
 		
-		<Events>
-			<OnObjDocked>
-				(if (and (eq aObjDocked gPlayerShip) 
-						(eq aDockTarget (objGetObjRefData gSource "dockTarget")))
-					(block Nil
-						(shpCancelOrders gPlayerShip)
-						(objUnregisterForEvents gSource gPlayerShip)
-						(objSetObjRefData gSource "dockTarget" Nil)
-						)
-					)
-			</OnObjDocked>
-		</Events>
-
 		<DockScreens>
 			<Main>
-
-				<InitialPane>
-					(switch
-						(typGetGlobalData &scSvalbardExplorer; "inTransfer")
-							"TransferSvalbardCrew"
-
-						"Default"
-						)
-				</InitialPane>
-
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You are docked at a massive alien structure. The walls appear to be made of a "
-								"blue-green crystalline substance that looks fragile but is actually immensely strong."
-								(if (herStatus 'controlPointCamp)
-									(cat
-										"\n\nCables and equipment run through the dock area into a large central chamber "
-										"in front of you. You see researchers working in the distance."
-										)
-									""
-									)
+							(if (objGetData gSource 'stationMaster)
+								(scrSetDescTranslate gScreen 'descWelcomeCamp)
+								(scrSetDescTranslate gScreen 'descWelcome)
 								)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Central Chamber" default="1" key="C">
-								(block (status)
-									(setq status (objGetData gSource "status"))
-									(switch
-										(eq status 'disabled)
-											(if (objGetItems gPlayerShip "* +HereticROM; -LesserData;")
-												(scrShowPane gScreen "GetSentinelVirus")
-												(scrShowPane gScreen "Disabled")
-												)
+							<Action id="actionCentralChamber" default="1">
+								(rpgMissionAssignment {
+									missionCriteria: (cat "n +hereticControlPoint; =" (sysGetLevel) ";")
+									noMissionTextID: (switch
+										(not (objGetData gSource 'stationMaster))
+											'descChamberEmpty
 
-										(not (herStatus 'controlPointCamp))
-											(scrShowPane gScreen "Deserted")
+										(sysGetData 'quarantineLifted)
+											'descDisabled
 
-										(geq (typGetGlobalData &scSvalbardExplorer; "researchStatus") 3)
-											(scrShowPane gScreen "DisableManipulators")
-
-										(not status)
-											(scrShowPane gScreen "Intro")
-
-										(objGetItems gPlayerShip "* +HereticROM;")
-											(scrShowPane gScreen "Research")
-											
-										(and (not (objGetObjRefData gSource "dockTarget")) 
-												(filter (sysFindObject Nil "TF") theObj	(objGetItems theObj "* +HereticROM;"))
-												)
-											(scrShowPane gScreen "FindResearch")
-											
-										(and (herStatus 'missionMRAD)
-												(herStatus 'missionMaryamsArchive)
-												(herStatus 'missionHuygensExplorer)
-												(herStatus 'missionTaikon)
-												)
-											(scrShowPane gScreen "WaitForResearch")
-
-										(scrShowPane gScreen "MoreResearchNeeded")
+										'descNoMissions
 										)
-									)
+									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
-
-					<Deserted>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"The central chamber is deserted, but the entire structure seems to hum with power. "
-								"Built in to the walls of the chamber you see banks of alien machines covered in "
-								"glowing symbols."
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</Deserted>
-
-					<Disabled>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"Researchers have connected their scanners and computers to the alien machines "
-								"in the chamber. A researcher talks to you:\n\n"
-								"\"Now that we've disabled the Iocrym manipulators we have a little more time "
-								"to study this technology. We're going to make some amazing discoveries here! "
-								"Maybe someday soon we'll be as advanced as the Iocrym!\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</Disabled>
-
-					<Intro>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"Kate Morgental and her team from the Svalbard Explorer are setting up "
-								"a research base here. Their goal is to understand how to break the Iocrym "
-								"quarantine."
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(objSetData gSource "status" 'introComplete)
-									(switch
-										(not (herStatus 'sentinelAttack))
-											(scrShowPane gScreen "SentinelAttack")
-											
-										(objGetItems gPlayerShip "* +HereticROM;")
-											(scrShowPane gScreen "Research")
-
-										(scrShowPane gScreen "Default")
-										)
-									)
-							</Action>
-						</Actions>
-					</Intro>
-					
-					<SentinelAttack>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"Kate Morgental approaches you:\n\n"
-								"\"It looks like the Iocrym know that we're here. We've been monitoring the outer "
-								"system and we've detected Iocrym activity. We think they are planning to attack us\x97"
-								"but we don't know what their target will be. Stay sharp: we'll send a message out "
-								"to you if anything happens.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(herStatusSet 'sentinelAttack)
-									
-									(switch
-										(objGetItems gPlayerShip "* +HereticROM;")
-											(scrShowPane gScreen "Research")
-
-										(scrShowPane gScreen "Default")
-										)
-									)
-							</Action>
-						</Actions>
-					</SentinelAttack>
-
-					<Research>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"You tell Kate Morgental that you have research data on the Iocrym. She and her "
-								"team are happy:\n\n"
-								"\"That's wonderful\x97we'll analyze the data and see if it can help us to "
-								"break the Iocrym quarantine. Wait here while we take a look.\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block (research romsNeeded)
-									(setq research (typGetGlobalData &scSvalbardExplorer; "researchStatus"))
-									
-									; Count the number of research ROMs
-									(setq romsNeeded (subtract QUARANTINE_RESEARCH_NEEDED research))
-									
-									(enum (objGetItems gPlayerShip "* +HereticROM;") theROM
-										(block (romsUsed)
-											(setq romsUsed (min romsNeeded (itmGetCount theROM)))
-											(if (gr romsUsed 0)
-												(block Nil
-													(setq research (add research romsUsed))
-													(setq romsNeeded (subtract romsNeeded romsUsed))
-													(objRemoveItem gPlayerShip theROM romsUsed)
-													)
-												)
-											)
-										)
-
-									; Update
-									(typSetGlobalData &scSvalbardExplorer; "researchStatus" research)
-
-									; Result
-									(if (geq research QUARANTINE_RESEARCH_NEEDED)
-										(scrShowPane gScreen "ResearchComplete")
-										(scrShowPane gScreen "ResearchThanks")
-										)
-									)
-							</Action>
-						</Actions>
-					</Research>
-
-					<ResearchThanks>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"\"Thank you! The data that your provided is very useful. We are closer to "
-								"understanding how the quarantine works, but we still don't know how to disable it. "
-								"If you can get us more data, that would help a lot.\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</ResearchThanks>
-
-					<ResearchComplete>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"\"That's it! That's the missing piece! With all the data you've gathered we "
-								"now understand how the Iocrym have created the quarantine. The event horizon that "
-								"keeps us from leaving will collapse as soon as we disable the Iocrym manipulators "
-								"deployed around the Heretic sun.\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowPane gScreen "DisableManipulators")
-							</Action>
-						</Actions>
-					</ResearchComplete>
-
-					<DisableManipulators>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"\"All of the Iocrym manipulators are controlled from this position. We should be able "
-								"to order the manipulators to shut down\x97that will break the quarantine! Stand by...\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowPane gScreen "DisableManipulators2")
-							</Action>
-						</Actions>
-					</DisableManipulators>
-
-					<DisableManipulators2>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"Kate Morgental's team connects their equipment to the alien machinery. They issue commands "
-								"and the alien symbols around the chamber begin to flash in unison. Suddenly, the omnipresent "
-								"hum of gigantic machinery changes pitch and begins to die down."
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowPane gScreen "DisableManipulators3")
-							</Action>
-						</Actions>
-					</DisableManipulators2>
-
-					<DisableManipulators3>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"\"We've done it! The quarantine is broken! I'll get a message to St. Kat's\x97this "
-								"is a historic moment for the human race!\n\n"
-								"\"Now you're free to continue your journey to the Core. Thanks for your help, %name%. "
-								"We couldn't have done it without you. I hope to see you again someday.\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(objSetData gSource "status" 'disabled)
-									(herStatusSet 'quarantineLifted)
-									
-									(if (objGetItems gPlayerShip "* +HereticROM; -LesserData;")
-										(scrShowPane gScreen "GetSentinelVirus")
-										(scrShowPane gScreen "Default")
-										)
-									)
-							</Action>
-						</Actions>
-					</DisableManipulators3>
-					
-					<FindResearch>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"Kate Morgental approaches you:\n\n"
-								"\"Good to see you again! We're making progress, but we need more data. Fortunately, "
-								"we've identified a wreck in the system that has the research data we need. "
-								"Will you go retrieve it?\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="&quot;Tell me how to find it.&quot;" default="1" key="T">
-								(block (theWreck)
-									(setq theWreck
-										(random 
-											(filter (sysFindObject Nil "TF") theObj	(objGetItems theObj "* +HereticROM;"))
-											)
-										)
-									
-									(shpCancelOrders gPlayerShip)
-									(shpOrder gPlayerShip 'dock theWreck)
-									
-									(objSetObjRefData gSource "dockTarget" theWreck)
-									(objRegisterForEvents gSource gPlayerShip)
-									
-									(scrShowPane gScreen "FindResearch2")
-									)
-							</Action>
-							
-							<Action name="&quot;Sorry, I'm busy.&quot;" cancel="1" key="S">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</FindResearch>
-					
-					<FindResearch2>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"Thanks. We've programmed the location of the wreck into your computer. "
-								"Find the wreck and bring the data it contains back to us.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								<Exit/>
-							</Action>
-						</Actions>
-					</FindResearch2>
-					
-					<WaitForResearch>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"Kate Morgental approaches you. She looks tired and frustrated:\n\n"
-								"\"It's no use! We don't have enough data to figure out how to disable the quarantine. "
-								"And the other research stations have either been destroyed or come up with nothing. "
-								"Our only hope is to catch a break from some Iocrym hardware. Maybe we can "
-								"salvage some data out of the wreck of an Iocrym sentinel.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</WaitForResearch>
-					
-					<MoreResearchNeeded>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"Kate Morgental and her researchers are studying the alien machinery. She approaches:\n\n"
-								"\"We're slowly making progress, but we need more data. Go talk to the other stations "
-								"in the system and see if they have any research data that might help us.\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MoreResearchNeeded>
-					
-					<GetSentinelVirus>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You tell Kate's scientists that you have additional data on the Iocrym. The scientists analyze the data:\n\n"
-								"\"With this research data we have been able to create an infiltration virus that can disable the "
-								"Iocrym sentinels that have been attacking us. Take these mnemonic cubes and use them "
-								"if your ship has a quantum CPU.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block (romCount cubeCount)
-									; Count the number of research ROMs
-									(setq romCount 0)
-									(enum (objGetItems gPlayerShip "* +HereticROM;") theROM
-										(block Nil
-											(setq romCount (add romCount (itmGetCount theROM)))
-											(objRemoveItem gPlayerShip theROM)
-											)
-										)
-
-									(setq cubeCount 0)
-									(for i 1 romCount
-										(setq cubeCount (add cubeCount (random 2 4)))
-										)
-
-									; Create mnemonic cubes
-									(objAddItem gPlayerShip (itmCreate &itIocrymSentinelVirus; cubeCount))
-									
-									; Done
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</GetSentinelVirus>
-
-					<TransferSvalbardCrew>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"Kate Morgental disembarks with her research team:\n\n"
-								"\"Thanks for bringing us here; our whole mission would have failed without you. "
-								"Fortunately we were able to salvage a lot of our equipment from the Svalbard.\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(shpCancelOrders gPlayerShip)
-									(typSetGlobalData &scSvalbardExplorer; "inTransfer" Nil)
-									(herStatusSet 'controlPointCamp)
-
-									(objSetData gSource "status" 'introComplete)
-									(switch
-										(objGetItems gPlayerShip "* +HereticROM;")
-											(scrShowPane gScreen "Research")
-
-										(scrShowPane gScreen "MoreResearchNeeded")
-										)
-									)
-							</Action>
-						</Actions>
-					</TransferSvalbardCrew>
 				</Panes>
 			</Main>
 
@@ -4513,6 +4074,41 @@
 		</DockingPorts>
         
         <Language>
+			<Text id="actionCentralChamber">[C]entral Chamber</Text>
+
+			<Text id="descWelcome">
+				You are docked at a massive alien structure. The walls appear to be made of a
+				blue-green crystalline substance that looks fragile but is actually immensely strong.
+			</Text>
+			<Text id="descWelcomeCamp">
+				You are docked at a massive alien structure. The walls appear to be made of a
+				blue-green crystalline substance that looks fragile but is actually immensely strong.
+
+				Cables and equipment run through the dock area into a large central chamber
+				in front of you. You see researchers working in the distance.
+			</Text>
+
+			<Text id="descChamberEmpty">
+				The central chamber is deserted, but the entire structure seems to hum with power.
+				Built in to the walls of the chamber you see banks of alien machines covered in
+				glowing symbols.
+			</Text>
+			<Text id="descNoMissions">
+				The central chamber is full of both familiar human equipment and strange
+				alien machines.	One of the researchers talks to you:
+
+				"The technology here is incredible. It may take years, but one day we'll
+				understand it!"
+			</Text>
+			<Text id="descDisabled">
+				Researchers have connected their scanners and computers to the alien
+				machines in the chamber. A researcher talks to you:
+
+				"Now that we've disabled the Iocrym manipulators we have a little more time
+				to study this technology. We're going to make some amazing discoveries here!
+				Maybe someday soon we'll be as advanced as the Iocrym!"
+			</Text>
+
             <Text id="core.mapDesc">
                 "Alien structure"
             </Text>
@@ -4530,6 +4126,8 @@
 	<StationType UNID="&stIocrymManipulator;"
 			name=				"Iocrym manipulator"
 			sovereign=			"&svNeutral;"
+			inherit=			"&unidCommonText;"
+
 			dockScreen=			"Main"
 			dockingPorts=		"4"
 				 
@@ -4567,37 +4165,25 @@
 
 		<DockScreens>
 			<Main>
-
 				<Panes>
 					<Default>
 						<OnPaneInit>
 							(switch
-								(herStatus 'quarantineLifted)
-									(scrSetDesc gScreen
-										"You are docked at an Iocrym structure of immense size. "
-										"Though it has fortunately been deactivated, its purpose was to warp the gravity well around the Heretic sun "
-										"and prevent anyone from leaving the inner system."
-										)
-										
-								(scrSetDesc gScreen
-									"You are docked at an alien structure of immense size. "
-									"Vast energies pulse through its core and a massive beam of incredible power erupts regularly out of one end. "
-									"You feel a dizzying vertigo just being near it."
-									)
+								(sysGetData 'quarantineLifted)
+									(scrSetDescTranslate gScreen 'descInactive)
+
+								(scrSetDescTranslate gScreen 'descWelcome)
 								)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1" default="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
 		<Events>
@@ -4606,7 +4192,7 @@
 			</OnCreate>
 
 			<OnFirePulse>
-				(if (not (herStatus 'quarantineLifted))
+				(if (not (sysGetData 'quarantineLifted))
 					(sysCreateWeaponFire
 						&itIocrymManipulator;
 						gSource
@@ -4619,6 +4205,18 @@
 			</OnFirePulse>
 		</Events>
 
+		<Language>
+			<Text id="descWelcome">
+				You are docked at an alien structure of immense size. Vast energies pulse
+				through its core and a massive beam of incredible power erupts regularly
+				out of one end. You feel a dizzying vertigo just being near it.
+			</Text>
+			<Text id="descInactive">
+				You are docked at an Iocrym structure of immense size. Though it has
+				fortunately been deactivated, its purpose was to warp the gravity well
+				around the Heretic sun and prevent anyone from leaving the inner system.
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Heretic Sun -->
@@ -4649,7 +4247,7 @@
 			</OnCreate>
 
 			<OnEffect>
-				(if (not (herStatus 'quarantineLifted))
+				(if (not (sysGetData 'quarantineLifted))
 					(sysCreateEffect &efIocrymManipulatorWaves; gSource Nil)
 					)
 			</OnEffect>
@@ -4689,13 +4287,16 @@
 
 		<Events>
 			<OnObjUpdate>
-				(block (thePos theAngle theRadius)
-					(setq thePos (objGetPos aObj))
-					(setq theRadius (sysVectorDistance thePos))
-					(if (and (gr theRadius QUARANTINE_RADIUS)	(not (herStatus 'quarantineLifted)))
-						(block Nil
-							(setq theAngle (sysVectorAngle thePos))
-							(objSetPos aObj (sysVectorPolarOffset Nil (add theAngle 180) (subtract QUARANTINE_RADIUS 10)))
+				(block (
+					(thePos (objGetPos aObj))
+					(theRadius (sysVectorDistance thePos))
+					(theLimit (sysGetData 'quarantineRadius))
+					)
+					(if (and (gr theRadius theLimit) (not (sysGetData 'quarantineLifted)))
+						(block (
+							(theAngle (sysVectorAngle thePos))
+							)
+							(objSetPos aObj (sysVectorPolarOffset Nil (+ theAngle 180) (- theLimit 10)))
 							)
 						)
 					)
@@ -4703,7 +4304,14 @@
 		</Events>
 	</SpaceEnvironmentType>
 
-	<!-- Heretic System -->
+	<!-- Heretic System
+
+	EXTRA DATA
+
+	quarantineLifted:			Quarantine field disabled
+	quarantineRadius:			Quarantine field radius
+
+	-->
 
 	<SystemType UNID="&ssHeretic;" 
 			backgroundID=		"&rsLightNebulaSpace;"
@@ -4921,18 +4529,17 @@
 
 		<Events>
 			<OnCreate>
-				(block (objCount angularSep radius theAngle varCount varOffset varAngle)
+				(block (
+					(angularSep 18)
+					(radius 60)
 
-					; Create manipulators around central star
-					(setq angularSep 18)
-					(setq radius 60)
-
-					(setq varCount 20)
-					(setq varOffset (multiply (divide varCount 4) 3))
-					(setq varAngle (divide 360 varCount))
-					(setq objCount (divide 360 angularSep))
-
-					(setq theAngle 0)
+					(varCount 20)
+					(varOffset (multiply (divide varCount 4) 3))
+					(varAngle (divide 360 varCount))
+					(objCount (divide 360 angularSep))
+					(theAngle 0)
+					)
+					;	Create manipulators around central star
 					(for i 1 objCount
 						(block (theObj)
 							(setq theObj 
@@ -4956,6 +4563,9 @@
 							(setq theAngle (add theAngle angularSep))
 							)
 						)
+
+					;	Set the quarantine radius
+					(sysSetData 'quarantineRadius 940)
 					)
 			</OnCreate>
 			
@@ -4963,11 +4573,13 @@
 				(block Nil
 					; Do not allow the player to jump outside of the quarantine
 					
-					(if (not (herStatus 'quarantineLifted))
-						(block (theRadius)
-							(setq theRadius (sysVectorDistance aJumpPos))
-							(if (gr theRadius QUARANTINE_RADIUS)
-								(setq aJumpPos (sysVectorPolarOffset Nil (add (sysVectorAngle aJumpPos) 180) (subtract (add QUARANTINE_RADIUS QUARANTINE_RADIUS -10) theRadius)))
+					(if (not (sysGetData 'quarantineLifted))
+						(block (
+							(theRadius (sysVectorDistance aJumpPos))
+							(theLimit (sysGetData 'quarantineRadius))
+							)
+							(if (gr theRadius theLimit)
+								(setq aJumpPos (sysVectorPolarOffset Nil (+ (sysVectorAngle aJumpPos) 180) (- (+ theLimit theLimit -10) theRadius)))
 								)
 							)
 						)
@@ -4998,29 +4610,23 @@
 			</Text>
 			
 			<Text id="descRevealHereticGateActive">
-				(cat
-					"A connection with Domina is denied to you, but your brief attempt "
-					"points the way to your destiny's end.\n\n"
-						
-					"A vision of the Heretic Gate appears in your mind, prompting feelings "
-					"of excitement mixed with dread."
-					)
+				A connection with Domina is denied to you, but your brief attempt
+				points the way to your destiny's end.
+
+				A vision of the Heretic Gate appears in your mind, prompting feelings
+				of excitement mixed with dread.
 			</Text>
 			<Text id="descRevealHereticGateInactive">
-				(cat
-					"A connection with Domina is denied to you, but your brief attempt "
-					"reveals a future vision of the Heretic Gate.\n\n"
-						
-					"You see it pulsing with ancient energies and spinning up to full working order."
-					)
+				A connection with Domina is denied to you, but your brief attempt
+				reveals a future vision of the Heretic Gate.
+
+				You see it pulsing with ancient energies and spinning up to full working order.
 			</Text>
 			<Text id="descRevealHereticGateUnknown">
-				(cat
-					"A connection with Domina is denied to you, but your brief attempt "
-					"points the way forward.\n\n"
-						
-					"You see an ancient stargate at the edge of the system, guarded by a crystalline monster."
-					)
+				A connection with Domina is denied to you, but your brief attempt
+				points the way forward.
+
+				You see an ancient stargate at the edge of the system, guarded by a crystalline monster.
 			</Text>
 		</Language>
 	</SystemType>
@@ -5029,9 +4635,6 @@
 
 	<Globals>
 		(block Nil
-			(setq QUARANTINE_RADIUS 940)
-			(setq QUARANTINE_RESEARCH_NEEDED 3)
-			
 			(setq arcQuestionHandler (lambda (qIndex)
 				(block (theQ)
 					(setq theQ (item gQuestions qIndex))
@@ -5068,7 +4671,6 @@
 			; missionMRAD:				MRAD experiment successfull
 			; missionSvalbardExplorer:	Svalbard Explorer completed its run
 			; missionTaikon:			Iocrym cybernetic tower found
-			; quarantineLifted:			Quarantine field enabled
 			; sentinelAttack:			Sentinels are attacking stations
 
 			(setq herStatus (lambda (statusField)

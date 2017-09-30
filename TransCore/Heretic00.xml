@@ -65,10 +65,13 @@
 						(!= (sysGetNode) 'G2)
 							Nil
 
+						;	If the quarantine is lifted then we're all done
+						(sysGetData 'quarantineLifted)
+							(msnSuccess gSource)
+
 						;	If we're not doing anything then start attack
-						(if (not status)
+						(not status)
 							(msnFireEvent gSource 'OnSentinelAttack)
-							)
 
 						(= status 'inProgress)
 							(block (
@@ -83,7 +86,7 @@
 											}))
 										(objSetShowAsDestination theTarget Nil 'autoclear)
 										(msnSetData gSource 'status 'distressSignal)
-										(msnCreate theTarget &msHereticIocrymAttackMsg;)
+										(msnCreate &msHereticIocrymAttackMsg; theTarget)
 										)
 									)
 								)
@@ -120,14 +123,14 @@
 							)
 							(for i 1 theCount
 								(block (attackerObj)
-									(setq attackerObj (sysCreateShip &scIocrymSentinel; theBase &svIocrym;))
+									(setq attackerObj (sysCreateShip &scIocrymSentinel; baseObj &svIocrym;))
 									;	Small chance that a sentinel has some useful research data
 									;	(we do this so there is always some hope of getting enough data)
 									(if (leq (random 1 100) 5)
 										(objAddItem attackerObj (itmCreate &itIocrymSentinelData; 1))
 										)
 									
-									(objSetData attackerObj "heretic.iocrymAttack" (objGetID gSource))
+									(objSetData attackerObj 'heretic.iocrymAttack (objGetID gSource))
 									(msnRegisterForEvents gSource attackerObj)
 									(lnkAppend theSentinels attackerObj)
 									)
@@ -168,6 +171,9 @@
 								station: (objGetName aObjDestroyed 'capitalize)
 								}))
 
+							;	Clear the destination target
+							(objClearShowAsDestination aObjDestroyed)
+
 							;	Orbit for a bit to give the player a chance
 							(enum (sysFindObject Nil "sD:heretic.iocrymAttack") attackerObj
 								(shpOrder attackerObj 'orbit theStar 360 delayTime)
@@ -192,6 +198,7 @@
 									)
 
 								;	Clear the destination target
+								(objClearShowAsDestination targetObj)
 								(msnSetData gSource 'targetID Nil)
 
 								;	Increase the squadron size
