@@ -2303,7 +2303,24 @@
 			</Ship>
 		</Ships>
 	</EncounterType>
-	
+
+	<!-- Svalbard Explorer Encounter (DEPRECATED) -->
+
+	<EncounterType UNID="&stSvalbardEncounter;"
+			obsolete=			"39"
+			name=				"(Svalbard Explorer)"
+			sovereign=			"&svCorporate;"
+
+			level=				"10"
+			attributes=			"friendly"
+			maxAppearing=		"1"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scSvalbardExplorer;" orders="hold"/>
+		</Ships>
+	</EncounterType>
+
 	<!-- Abandoned crate looting screen (DEPRECATED) -->
 	
 	<DockScreen UNID="&dsAbandonedCrateObsolete;"

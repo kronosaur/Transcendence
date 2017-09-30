@@ -176,4 +176,135 @@
 		</Language>
 	</ShipClass>
 
+	<!-- Kate Morgental's Corporate Explorer
+
+	-->
+
+	<ShipClass UNID="&scSvalbardExplorer;"
+			manufacturer=		"corporate"
+			class=				""
+			type=				"explorer"
+
+			attributes=			"capitalShip, corporate, kateMorgental, majorShip, svalbardExplorer"
+			character=			"&unidKateMorgental;"
+
+			size=				"195"
+			mass=				"4000"
+			thrustRatio=		"1.2"
+			maxSpeed=			"10"
+			cargoSpace=			"1000"
+			cyberDefenseLevel=	"8"
+
+			leavesWreck=		"100"
+			explosionType=		"&vtThermoExplosion2;"
+
+			dockingPorts=		"4"
+			dockScreen=			"Main"
+			>
+
+		<Names definiteArticle="true">Svalbard Explorer</Names>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itQuadroCarbideArmor;"
+			count=				"24"
+			/>
+
+		<Devices>
+			<Device deviceID="&itPlasmaShieldGenerator;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"3"
+			rotationAccel=		"0.5"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"120"
+					/>
+
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"80"
+
+					posX=		"-61"
+					posY=		"0"
+					sizeX=		"60"
+					sizeY=		"40"
+					/>
+		</Interior>
+
+		<Items>
+			<Item count="2d12" item="&itPteracniumFuelRod;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsCorporateExplorer;" imageWidth="192" imageHeight="192" />
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="176"	posRadius="88"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-176"	posRadius="88"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"25"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+
+		<DockScreens>
+			<Main>
+				<OnScreenInit>
+					(rpgMissionAssignmentOnScreenInit {
+						missionCriteria: (cat "n +svalbardMission; =" (sysGetLevel) ";")
+						})
+				</OnScreenInit>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionBridge" default="1">
+								(rpgMissionAssignment {
+									missionCriteria: (cat "n +svalbardMission; =" (sysGetLevel) ";")
+									noMissionTextID: 'descNoMissions
+									})
+							</Action>
+
+							<Action id="actionUndock" cancel="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+		<!-- Language -->
+
+		<Language>
+			<Text id="actionBridge">[B]ridge</Text>
+			<Text id="actionUndock">[U]ndock</Text>
+
+			<Text id="descWelcome">You are docked with the Svalbard Explorer.</Text>
+
+			<Text id="descNoMissions">
+				"LATER: Everything's quiet today, %name%. But something's always happening
+				in this crazy universe so come back later for the next crisis."
+			</Text>
+
+            <Text id="core.mapDesc">
+                Corporate research vessel
+            </Text>
+		</Language>
+	</ShipClass>
+
 </TranscendenceModule>

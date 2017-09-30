@@ -1,0 +1,510 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Svalbard Explorer mission =====================================
+
+	EXTRA DATA
+
+	reward:			Reward (in credits) for completing mission
+	missionXP:		XP awarded for completing mission
+	timer:			Decrementing timer
+
+	status:			Mission status:
+		Nil:				Mission not yet started
+		'goingToExplore:	Svalbard moving into position
+		'exploring			Svalbard is exploring the manipulators
+		'doneExploring		Svalbard has successfully scanned the manipulators
+		'dockAtControlPoint	Svalbard is on its way to control point
+		'campEstablished	Svalbard has docked at control point
+		'outOfFuel			Svalbard ran out of fuel (old status saved in prevStatus)
+
+	======================================================================== -->
+
+	<MissionType UNID="&msHereticSvalbard;"
+			name=			"Svalbard"
+			attributes=		"svalbardMission"
+
+			level=			"10"
+
+			noDecline=		"true"
+			noDebrief=		"true"
+			>
+
+
+		<Events>
+			<OnCreate>
+			</OnCreate>
+
+			<OnAcceptedUndock>
+				(block (
+					(kateObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					)
+
+					;	Order the ship to go to the orbit of the manipulators
+					(shpCancelOrders kateObj)
+					(shpOrder kateObj 'orbit (sysFindObject Nil "tN +star;") 63)
+
+					;	Exploring
+					(msnSetData gSource 'status 'goingToExplore)
+					(objSendMessage gPlayerShip kateObj (msnTranslate gSource 'msgFollow))
+					)
+			</OnAcceptedUndock>
+
+			<OnUpdate>
+				(block (
+					(status (msnGetData gSource 'status))
+					(kateObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					)
+					(switch
+						(= status 'outOfFuel)
+							;	If we have fuel, then go resume previous status
+							(if (objGetItems kateObj "f")
+								(block (
+									(prevStatus (msnGetData gSource 'prevStatus))
+									)
+									(shpCancelOrders kateObj)
+									(switch
+										(= prevStatus 'exploring)
+											(shpOrder kateObj 'orbit (sysFindObject Nil "tN +star;") 63)
+
+										(= prevStatus 'dockAtControlPoint)
+											(shpOrder kateObj 'dock (sysFindObject gSource "TN +hereticControlPoint;"))
+										)
+									(msnSetData gSource 'status prevStatus)
+									(objSendMessage gPlayerShip kateObj (msnTranslate gSource 'msgRefueled))
+									)
+								)
+
+						(not (objGetItems kateObj "f"))
+							(block Nil
+								;	Remember our current status
+								(msnSetData gSource 'prevStatus status)
+								(shpCancelOrders kateObj)
+								(shpOrder kateObj 'hold)
+								(msnSetData gSource 'status 'outOfFuel)
+								(objSendMessage gPlayerShip kateObj (msnTranslate gSource 'msgOutOfFuel))
+								)
+
+						(= status 'goingToExplore)
+							(if (leq (sysVectorDistance (objGetPos kateObj)) 65)
+								(block Nil
+									(objSendMessage gPlayerShip kateObj (msnTranslate gSource 'msgInPosition))
+									(msnSetData gSource 'status 'exploring)
+									(msnSetData gSource 'timer 120)
+									)
+								)
+
+						(= status 'exploring)
+							(switch
+								(leq (msnIncData gSource 'timer -1) 0)
+									(block Nil
+										(shpCancelOrders kateObj)
+										(shpOrder kateObj 'hold)
+										(msnSetData gSource 'status 'doneExploring)
+
+										(objSendMessage gPlayerShip kateObj (msnTranslate gSource 'msgSuccess))
+										)
+								(= (modulo (msnGetData gSource 'timer) 9) 0)
+									(objSendMessage gPlayerShip kateObj (msnTranslate gSource 'msgScanning))
+								)
+
+						(= status 'dockAtControlPoint)
+							(if (objIsDockedAt kateObj (sysFindObject gSource "TN +hereticControlPoint"))
+								(block Nil
+									(msnSetData gSource 'status 'campEstablished)
+									(msnSuccess gSource)
+									)
+								)
+
+						)
+					)
+			</OnUpdate>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetProperty gSource 'ownerID)) 'dock)
+			</OnSetPlayerTarget>
+
+			<OnReward>
+			</OnReward>
+
+			<OnCompleted>
+				(switch
+					(= aReason 'success)
+						(block (theMission)
+							(if (setq theMission (msnFind "Po +unid:&msHereticIocrymAttack;;"))
+								(msnSetUnavailable theMission)
+								)
+							)
+					)
+			</OnCompleted>
+
+			<OnGetNextScreen>
+				(switch
+					(= aScreenType 'InProgressFollowUp)
+						;	In the InProgress dialog we set the gScreen 'nextScreen data
+						;	if we want to proceed to another dockscreen
+						(switch
+							(= (scrGetData gScreen 'nextScreen) 'offerFuel)
+								(block Nil
+									(scrSetData gScreen 'nextScreen Nil)
+									{
+										nextScreen: &dsHereticSvalbardDonate;
+										}
+									)
+							)
+					)
+			</OnGetNextScreen>
+
+			<OnInProgressUndock>
+				(block (
+					(status (msnGetData gSource 'status))
+					(kateObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					)
+					(switch
+						(= status 'doneExploring)
+							(block Nil
+								(shpCancelOrders kateObj)
+								(shpOrder kateObj 'dock (sysFindObject gSource "TN +hereticControlPoint"))
+								(msnSetData gSource 'status 'dockAtControlPoint)
+								)
+						)
+					)
+			</OnInProgressUndock>
+
+			<OnGlobalSystemStarted>
+				(switch
+					;	If not in Heretic, then nothing to do
+					(!= (sysGetNode) 'G2)
+						Nil
+
+					;	Create the mission
+					(block (kateMorgentalObj)
+						; Create Kate
+
+						(setq kateMorgentalObj
+							(rpgCharacterCreateShip
+								&unidKateMorgental;
+								&scSvalbardExplorer;
+								(objGetPos (sysGetObjectByName 'svalbardMarker))
+								)
+							)
+
+						(shpOrder kateMorgentalObj 'wait)
+						)
+					)
+			</OnGlobalSystemStarted>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+
+			<Text id="Intro">
+				(block (
+					(rel (rpgCharacterGetQuickRel &unidKateMorgental;))
+					)
+					(switch
+						(= rel 'favorable)
+							{	textID: 'textIntroAlly	}
+
+						(= rel 'unfavorable)
+							{	textID: 'textIntroHostile	}
+
+						{	textID:	'textIntroFirst	}
+						)
+					)
+			</Text>
+			<Text id="Briefing">
+				(block (
+					(rel (rpgCharacterGetQuickRel &unidKateMorgental;))
+					)
+					(list
+						{
+							textID: 'textBriefing1
+							labelID: 'actionHelp
+							}
+						{
+							textID: (if (= rel 'unfavorable) 'textBriefing2Hostile 'textBriefing2)
+							}
+						)
+					)
+			</Text>
+			<Text id="InProgress">
+				(block (
+					(status (msnGetData gSource 'status))
+					)
+					(switch
+						(or (= status 'goingToExplore) (= status 'exploring))
+							(list
+								{
+									textID: 'textExploring
+									}
+								)
+
+						(= status 'outOfFuel)
+							(list
+								{
+									textID: 'textOutOfFuel
+									actions: (list
+										{
+											nextPage: 'exitPane
+											labelID: 'actionOfferFuel
+											code: (lambda Nil (scrSetData gScreen 'nextScreen 'offerFuel))
+											}
+										{
+											labelID: 'actionNoFuel
+											}
+										)
+									}
+								{
+									textID: 'textGetFuel
+									}
+								)
+
+						(= status 'doneExploring)
+							(list
+								{
+									textID: 'textDoneExploring
+									}
+								)
+
+						(= status 'dockAtControlPoint)
+							(list
+								{
+									textID: 'textEnRouteToControlPoint
+									}
+								)
+						)
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="textSummary">
+				Help Kate
+			</Text>
+
+			<Text id="textIntroFirst">
+				The bridge of the Svalbard hums with activity. An elegant woman
+				is giving orders as you walk in. She turns to you:
+
+				"Welcome to the Svalbard! My name is Kate Morgental and I'm in charge
+				of this research expedition. My father is gathering intelligence about
+				the Iocrym and trying to understand why they have blocked our access
+				to the rest of the galaxy. He's asked me to study them here in the
+				Heretic system."
+			</Text>
+
+			<Text id="textIntroAlly">
+				The bridge of the Svalbard hums with activity and you see a familiar face
+				giving orders as you walk in. Kate Morgental is excited to see you:
+
+				"Hello, %name%! It's great to see you again. Welcome to the Svalbard!
+				I knew that our paths would cross again. My father is gathering
+				intelligence about the Iocrym and trying to understand why they have
+				blocked our access to the rest of the galaxy. He's asked me to study
+				them here in the Heretic system."
+			</Text>
+
+			<Text id="textIntroHostile">
+				The bridge of the Svalbard hums with activity. You see Kate Morgental at
+				the center of the bridge giving orders. A ripple of contempt flashes
+				across her face as she sees you:
+
+				"%name%. I haven't forgotten what you did! But our work is too important to
+				let emotions get in the way. My father wants to learn more about the Iocrym
+				and he's asked me to study their technology here in the Heretic system."
+			</Text>
+
+			<Text id="textBriefing1">
+				"The truth is that we need help. We want to scan the Iocrym structures that
+				are surrounding the Heretic sun, but the area is infested with pteravores and
+				we don't dare get too close without protection."
+			</Text>
+			<String id="actionHelp">"I'll [h]elp you."</String>
+			<Text id="textBriefing2">
+				"I was hoping you'd say that! We're going to orbit around the Heretic sun to
+				study the Iocrym devices. Follow us and protect us from pteravores. If they
+				attach to our ship they will drain our reactor and we'll be helpless."
+
+				"Good luck!"
+			</Text>
+			<Text id="textBriefing2Hostile">
+				"Well, we don't have a choice; we'll have to trust you."
+
+				"Escort us while we do our scan and maybe your good deed will salve
+				your conscience."
+			</Text>
+
+			<String id="textExploring">
+				"We're still scanning the Iocrym devices. No definitive results yet."
+			</String>
+			<Text id="textOutOfFuel">
+				The bridge is dim and almost silent. Kate Morgental approaches you:
+
+				"Pteravores have eaten all our fuel! We can't continue our research
+				unless we get some pteracnium or even xenotite. Can you help us?"
+			</Text>
+			<String id="actionOfferFuel">"I can [h]elp"</String>
+			<String id="actionNoFuel">"[S]orry, I don't have any fuel."</String>			
+			<Text id="textGetFuel">
+				"We can last for a while on emergency power, but if you can find some
+				fuel and bring it here we will be able to continue our research."
+			</Text>
+			<Text id="textDoneExploring">
+				Kate looks exhausted, but pleased:
+
+				"Great work! We've finished our scan. The Iocrym devices are manipulating
+				the graviton flux of the Heretic star. They have created an event horizon
+				that prevents us from leaving the inner system."
+
+				"All of the Iocrym devices are controlled from a central point. If we set
+				up a research base there we may be able to disable them! Follows us there
+				and we'll see!"
+			</Text>
+			<Text id="textEnRouteToControlPoint">
+				"Follow us to the Iocrym control point and maybe we can figure out a way
+				to disable the Iocrym quarantine."
+			</Text>
+
+			<String id="msgFollow">Follow us!</String>
+			<String id="msgInPosition">The Iocrym are altering the Heretic sun!</String>
+			<String id="msgScanning">Scanning...</String>
+			<String id="msgOutOfFuel">Pteravores have devoured our fuel!</String>
+			<String id="msgRefueled">Fueled up and ready!</String>
+			<String id="msgSuccess">Mission complete!</String>
+		</Language>
+	</MissionType>
+
+
+	<DockScreen UNID="&dsHereticSvalbardDonate;"
+			type=				"itemPicker"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			>
+
+		<ListOptions
+			dataFrom=	"player"
+			list=		"fNU"
+			/>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descDonate)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionDonateThisItem" default="1">
+						(block (
+							(theItem (scrGetItem gScreen))
+							(maxCount (itmGetCount theItem))
+							)
+							(switch
+								(gr maxCount 1)
+									(scrShowPane gScreen "Quantity")
+
+								(= gMaxCount 1)
+									(block Nil
+										(objAddItem gSource (scrRemoveItem gScreen 1))
+										(scrShowPane gScreen "Donate")
+										)
+								)
+							)
+					</Action>
+
+					<Action id="actionLeave" cancel="1">
+						(scrShowPane gScreen "GetFuel")
+					</Action>
+				</Actions>					
+			</Default>
+
+			<Quantity
+					showCounter=	"true">
+
+				<OnPaneInit>
+					(block (
+						(theItem (scrGetItem gScreen))
+						(maxCount (itmGetCount theItem))
+						)
+						(scrSetCounter gScreen maxCount)
+						(scrSetDescTranslate gScreen 'descDonateQuantity {
+							itmName: (itmGetName theItem 'plural)
+							})
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionDonate" default="1">
+						(block (
+							(useCount (scrGetCounter gScreen))
+							(maxCount (itmGetCount (scrGetItem gScreen)))
+							)
+							(switch
+								(= useCount 0)
+									(scrShowPane gScreen "Default")
+
+								(gr useCount maxCount)
+									(scrSetCounter gScreen maxCount)
+
+								(block Nil
+									(objAddItem gSource (scrRemoveItem gScreen useCount))
+									(scrShowPane gScreen "Donate")
+									)
+								)
+							)
+					</Action>
+
+					<Action id="actionCancel" cancel="1">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</Quantity>
+
+			<Donate noListNavigation="true">
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descThanks)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionUndock" default="1" cancel="1">
+						(scrExitScreen gScreen 'forceUndock)
+					</Action>
+				</Actions>
+			</Donate>
+
+			<GetFuel noListNavigation="true">
+				<OnPaneInit>
+					(scrSetDesc gScreen (typTranslate &msHereticSvalbard; 'textGetFuel))
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionUndock" default="1" cancel="1">
+						(scrExitScreen gScreen 'forceUndock)
+					</Action>
+				</Actions>
+			</GetFuel>
+		</Panes>
+
+		<Language>
+			<Text id="descDonate">Select the fuel that you wish to donate to the Svalbard.</Text>
+			<Text id="descDonateQuantity">How many %itmName% do you wish to donate?</Text>
+			<Text id="descThanks">
+				"Thanks, %name%! I knew we could count on you. My father will
+				be very pleased that we can continue our research."
+			</Text>
+		</Language>
+	</DockScreen>
+
+</TranscendenceModule>
