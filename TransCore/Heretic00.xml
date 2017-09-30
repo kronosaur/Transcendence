@@ -41,10 +41,6 @@
 							(msnRegisterForEvents gSource theOutpost)
 							)
 
-						(enum (sysFindObject Nil "TA +iocrymOutpost;") theOutpost
-							(objSetKnown theOutpost)
-							)
-
 						;	Set the initial squadron size
 						(msnSetData gSource 'squadronSize 1)
 						)
