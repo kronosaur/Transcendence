@@ -418,16 +418,35 @@
 								onExitPane: (lambda (theScreen pageDesc options)
 									(block (
 										(missionObj (@ options 'missionObj))
+										(screenOptions Nil)
 										)
 							
 										(msnSetPlayerTarget missionObj)
+										;	Ask the mission if it wants a different screen
 							
-										;	Exit screen before OnInProgressUndock because in some cases
-										;	we want to be able to save the game.
+										(setq aScreenType 'InProgressFollowUp)
+										(setq screenOptions (msnFireEvent missionObj "OnGetNextScreen"))
+
+										(switch
 							
-										(scrExitScreen gScreen 'forceUndock)
-										(setq aDockTarget gSource)
-										(msnFireEvent missionObj "OnInProgressUndock")
+											;	If so, navigate to that screen
+
+											(@ screenOptions 'nextScreen)
+												(block Nil
+													(scrExitScreen gScreen)
+													(scrShowScreen gScreen (@ screenOptions 'nextScreen) (@ screenOptions 'nextScreenData))
+													)
+
+											;	Otherwise, undock
+											(block Nil
+												;	Exit screen before OnInProgressUndock because in some cases
+												;	we want to be able to save the game.
+
+												(scrExitScreen gScreen 'forceUndock)
+												(setq aDockTarget gSource)
+												(msnFireEvent missionObj "OnInProgressUndock")
+												)
+											)
 										)
 									)
 								}
