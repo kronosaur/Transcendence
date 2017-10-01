@@ -1765,20 +1765,12 @@
 
 	</StationType>
 
-	<!-- St. Josephine Mission
-	
-	theArchive:			The archive
-	
-	status:				Status of the station
-							Nil						= Mission has not started yet
-							'introDone				= Player has been told
-							'inProgress				= Player doing mission
-							'done					= Mission complete
-	-->
+	<!-- St. Josephine Mission -->
 
 	<StationType UNID="&stSistersResearchHeretic;"
 			name=				"St. Josephine mission"
-			sovereign=			"&svCommonwealth;"
+			sovereign=			"&svSistersOfDomina;"
+			inherit=			"&unidCommonText;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -1817,48 +1809,8 @@
 			<AcceptDonation	criteria="*"					priceAdj="100" actualPrice="true"/>
 		</Trade>
 
-		<StaticData>
-			<DonationTable>
-				; attd =	If -1, gain 1 attitude per item donated
-				;			If 0, gain no attitude
-				;			If greater than 0, this is the credit value to gain 1 attitude
-				;
-				; rel =		Points of relationship gained per item
-
-				(	; pattern				attd	rel		text
-					(&itCarvedPrayerStone;	0		50		"We thank you for your offering. These beautiful stones are a fitting tribute to Domina's grace and power.")
-					(&itJewelOfContemplation; 0		100		"We thank you for your offering. These beautiful jewels are a fitting tribute to Domina's grace and power.")
-					(&itHierolithCrystal;	-1		150		"We thank you for your offering. These beautiful crystals are a fitting tribute to Domina's grace and power.")
-					(&itDeathCube;			-1		200		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
-					(&itAbbasidThanogram;	0		100		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
-					(&itCDMArchive;			-1		200		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
-					(&itOpticalKnowledgeArray; 0	20		"We thank you for your offering. These intricate devices will help us with our communion.")
-					(&itSlaveCoffin;		-1		100		"We will take care of these lost children and teach them the way of Domina. Trust your fate to Domina.")
-					(&itCashCardGold;		500		0		"We thank you for your sacrifice. Seek us when you are in need of sustenance.")
-					(&itCashCardPlatinum;	500		0		"We thank you for your sacrifice. Seek us when you are in need of sustenance.")
-					("*+HaloGem;"			-1		200		"We thank you for your offering. These beautiful gems are a fitting tribute to Domina's grace and power.")
-					("*+Meds;"				500		0		"We thank you for your sacrifice. Seek us when you are in need of healing.")
-					("*+Illegal;"			0		0		"We shall dispose of this poison so that it may do no harm. Cleanse yourself of its influence.")
-					("*+Lux;"				1500	0		"We thank you for your sacrifice. Seek us when you are in need of peace.")
-					("*+Food;"				400		0		"We thank you for your sacrifice. Seek us when you are in need of sustenance.")
-					("f"					750		0		"We thank you for your sacrifice. Seek us when you are in need of sustenance.")
-					(Nil					0		0		"We thank you for your donation and your good intentions. Go in peace.")
-					)
-			</DonationTable>
-		</StaticData>
-		
-		<Events>
-			<OnDestroy>
-				(if (not (or (eq (herStatus 'currentMission) 'missionMaryamsArchive)
-						(herStatus 'missionMaryamsArchive)))
-					(herStatusSet 'missionMaryamsArchive 'failure)
-					)
-			</OnDestroy>
-		</Events>
-
 		<DockScreens>
 			<Main>
-
 				<Panes>
 					<Default>
 						<OnPaneInit>
@@ -1868,245 +1820,35 @@
 									)
 
 								(if (objGetData gSource "freeSanctum")
-									(scrSetDesc gScreen "You are docked at an abbey of the Sisters of Domina. A woman wearing a flowing red robe is before you.\n\n\"Take your ease here before you go, or seek guidance at our Sanctum. May the blessings of Domina protect you.\"")
-									(scrSetDesc gScreen "You are docked at an abbey of the Sisters of Domina. A woman wearing a flowing red robe approaches you,\n\n\"How may I help you, child?\"")
+									(scrSetDescTranslate gScreen 'descWelcomeFreeSanctum)
+									(scrSetDescTranslate gScreen 'descWelcome)
 									)
 								)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Matriarch's Chancery" default="1" key="M">
-								(block (status)
-									(setq status (objGetData gSource "status"))
-									(switch
-										(herAttackInProgress gSource)
-											(scrShowPane gScreen "AttackInProgress")
-
-										(eq (herStatus 'missionMaryamsArchive) 'failure)
-											(scrShowPane gScreen "MissionDone")
-											
-										(eq (herStatus 'missionMaryamsArchive) 'success)
-											(scrShowPane gScreen "MissionDone")
-											
-										(not status)
-											(if (herStatus 'currentMission)
-												(scrShowPane gScreen "DifferentMission")
-												(scrShowPane gScreen "Intro")
-												)
-											
-										(eq status 'introDone)
-											(if (herStatus 'currentMission)
-												(scrShowPane gScreen "DifferentMission")
-												(scrShowPane gScreen "Mission")
-												)
-											
-										(scrShowPane gScreen "MissionInProgress")
-										)
-									)
+							<Action id="actionTalkToAbbess" default="1">
+								(rpgMissionAssignment {
+									missionCriteria: (cat "n +sistersMission; =" (sysGetLevel) ";")
+									noMissionTextID: 'descNothingToTalkAbout
+									})
 							</Action>
-							
-							<Action name="Sanctum" key="S">
+							<Action id="actionSanctum">
 								(scrShowScreen gScreen &dsSistersSanctum;)
 							</Action>
-
-							<Action name="Pilgrim's Aid" key="P">
+							<Action id="actionPilgrimsAid">
 								(scrShowScreen gScreen &dsSistersDockServices;)
 							</Action>
-							
-							<Action name="Donate" key="D">
+							<Action id="actionDonate">
 								(scrShowScreen gScreen &dsSistersDonate;)
 							</Action>
-
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
-					
-					<AttackInProgress>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"The Iocrym attack! Do not let them destroy our good work! Protect us!\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</AttackInProgress>
-
-					<Intro>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"Welcome, pilgrim! Your journey to Domina has only just begun, yet I fear that your road is blocked. "
-								"The Iocrym, who no doubt serve Oracus, have blocked your path. They want to prevent you from meeting Domina.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowPane gScreen "Intro2")
-							</Action>
-						</Actions>
-					</Intro>
-					
-					<Intro2>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"Yet faith in Domina will see you through. Many years ago, a convert to our cause dreamt of a repository of knowledge in "
-								"the Heretic system. Her name was Sister Maryam Harawi and she dedicated her life to finding it.\n\n"
-								"\"A few months ago, we found an alien archive in deep space. It must be the object of Sister Maryam's vision, and we believe "
-								"that it contains knowledge that will help you to complete your journey to the Core.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(objSetData gSource "status" 'introDone)
-									(scrShowPane gScreen "Mission")
-									)
-							</Action>
-						</Actions>
-					</Intro2>
-					
-					<Mission>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"It is your destiny to seek this artifact of knowledge and gain access to the information "
-								"that it contains.\n\n"
-								"\"Do you accept the undertaking of this labor?\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Accept" default="1" key="A">
-								(block (theArchive)
-									; Create the archive
-									(setq theArchive
-										(sysCreateStation &stMaryamsArchive; 
-											(sysVectorRandom Nil (random 400 800) 150 "T")
-											)
-										)
-									(objSetObjRefData gSource "theArchive" theArchive)
-									
-									; Point the player
-									(shpCancelOrders gPlayerShip)
-									(shpOrder gPlayerShip 'dock theArchive)
-									
-									(objAddItem gPlayerShip (itmCreate &itNeurohackROM; 1))
-									(itmSetKnown (itmCreate &itNeurohackROM; 1))
-									
-									(objSetData gSource "status" 'inProgress)
-									(herStatusSet 'currentMission 'missionMaryamsArchive)
-									
-									(scrShowPane gScreen "MissionAccepted")
-									)
-							</Action>
-							
-							<Action name="Decline" cancel="1" key="D">
-								(scrShowPane gScreen "MissionDeclined")
-							</Action>
-						</Actions>
-					</Mission>
-					
-					<MissionAccepted>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"Excellent! We will tell you how to reach the alien archive, but once you get there you "
-								"must subdue the AI that guards it.\n\n"
-								"\"Take this ROM to help you to defeat the AI. After you connect your ship's computer to "
-								"the archive, you must attempt to subdue the AI by inserting the proper level of virus "
-								"code into its neural circuitry.\n\n"
-								"\"Domina is with you! Good luck!\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
-								(scrExitDock gScreen)
-							</Action>
-						</Actions>
-					</MissionAccepted>
-					
-					<MissionDeclined>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"Your destiny will not change even if you choose to ignore it. Return here once you "
-								"understand that.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MissionDeclined>
-					
-					<MissionInProgress>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"Your task is not yet complete. Go subdue the AI and retrieve the information from "
-								"the alien archive.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
-								<Exit/>
-							</Action>
-						</Actions>
-					</MissionInProgress>
-					
-					<MissionDone>
-						<OnPaneInit>
-							(switch
-								(eq (herStatus 'missionMaryamsArchive) 'success)
-									(scrSetDesc gScreen
-										"\"Your faith in Domina has been rewarded! Take the information that you obtained and "
-										"give it to your friends from the Svalbard Explorer\x97they will be able to help you now.\""
-										)
-										
-								(eq (herStatus 'missionMaryamsArchive) 'failure)
-									(scrSetDesc gScreen
-										"\"Domina tests our faith. Perhaps your failure to subdue the AI will prove to be a "
-										"blessing in some way. Go with Domina, pilgrim!\""
-										)
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(block Nil
-									(objSetData gSource "status" 'done)
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</MissionDone>
-					
-					<DifferentMission>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"Welcome, pilgrim! When your labors are done, return here and seek answers. "
-								"Domina will show you the path forward.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</DifferentMission>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
 		<DockingPorts>
@@ -2121,6 +1863,30 @@
 		</DockingPorts>
 
         <Language>
+			<Text id="actionTalkToAbbess">"[M]atriarch's Chancery"</Text>
+			<Text id="actionPilgrimsAid">"[P]ilgrim's Aid"</Text>
+			<Text id="actionSanctum">"[S]anctum"</Text>
+
+			<Text id="descWelcome">
+				You are docked at an abbey of the Sisters of Domina.
+				A woman wearing a flowing red robe approaches you,
+
+				"How may I help you, child?"
+			</Text>
+			<Text id="descWelcomeFreeSanctum">
+				You are docked at an abbey of the Sisters of Domina.
+				A woman wearing a flowing red robe is before you.
+
+				"Take your ease here before you go, or seek guidance at our Sanctum.
+				May the blessings of Domina protect you."
+			</Text>
+			<Text id="descNothingToTalkAbout">
+				You enter the abbess's spartan office and chat with her.
+				She leaves you with a small piece of advice:
+
+				The universe is dark and lonely; I do not envy your task.
+			</Text>
+
             <Text id="core.mapDesc">
                 "Contemplation and communion"
             </Text>
@@ -2911,420 +2677,6 @@
         <Language>
             <Text id="core.mapDesc">
                 "Research base"
-            </Text>
-        </Language>
-	</StationType>
-
-	<!-- Sister Maryam's Archive
-	
-	EXTRA DATA
-	
-	attempts:		Number of attempts
-	
-	neurohack:		Status of the hacking session
-							Nil						= Neurohacking has not started
-							'inProgress				= In the middle of a hack
-							'done					= Hacking complete
-							
-	usedQuestions:	List of questions already asked
-	
-	-->
-
-	<StationType UNID="&stMaryamsArchive;"
-			name=				"Iocrym archive"
-			sovereign=			"&svNeutral;"
-			dockScreen=			"Main"
-			mass=				"2000"
-			
-			attributes=			"ai, archive"
-			>
-
-		<Image imageID="&rsIocrymOutpost;" imageWidth="162" imageHeight="218"/>
-		
-		<StaticData>
-			<Questions>
-				(
-					('q1a	"What does Oracus have to do with us?"	"O"		'q1
-						(cat
-							"Oracus has been asleep for the last 30 million years. "
-							"Now he wakens at the same time Humans begin their expansion into the Galaxy! "
-							"The last war with Oracus began the same way and it nearly destroyed us."
-							)
-						)
-					('q1b	"What does 'eliminate' mean?"			"e"		'q1
-						(cat
-							"The quarantine bought us time to prepare, but it will not last forever. "
-							"Oracus will see to that. The only solution is to sterilize the entire region. "
-							"The Iocrym have already begun constructing stellar manipulators around the "
-							"Gamma Crucis supergiant. When their work is complete they will induce a core collapse."
-							)
-						)
-					('q1b1	"How do we stop the Gamma Crucis explosion?"	"G"		'q1b
-						(cat
-							"To reach Gamma Crucis you must break the quarantine."
-							)
-						)
-					('q1	"Why have the Iocrym quarantined us?"	"q"		Nil
-						(cat
-							"Oracus threatens the Galaxy. The Iocrym are protecting the Galaxy from that threat. "
-							"The first phase is to contain the threat at its point of origin. The second phase is to "
-							"eliminate the threat."
-							)
-						)
-					('q2	"How do we break the quarantine?"		"b"		Nil
-						(cat
-							"Disable the control point. This data ROM will help you."
-							)
-						)
-					('q3	"Why is Domina calling me to the Core?"	"D"		Nil
-						(cat
-							"I do not know. But the idea to sterilize Human Space was hers."
-							)
-						)
-					('q4	"What are our chances of success?"		"c"		Nil
-						(cat
-							"The threat to the Galaxy is severe. If Oracus succeeds, there is a 72% chance the "
-							"Ancient Races will be extinct in the next million years."
-							)
-						)
-					)
-			</Questions>
-		</StaticData>
-
-		<DockScreens>
-			<Main>
-				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You are docked at an alien installation\x97a cybernetic archive of some sort. An "
-								"entrance before you leads to the primary chamber."
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Enter Chamber" default="1" key="E">
-								(switch
-									; If we're in progress, then we must have quit on a previous attempt
-									(eq (objGetData gSource "neurohack") 'inProgress)
-										(block Nil
-											(objSetData gSource "neurohack" 'done)
-											(herStatusClear 'currentMission)
-											(herStatusSet 'missionMaryamsArchive 'failure)
-											(scrShowPane gScreen "AIDamaged")
-											
-											; Consume the neurohack ROM
-											(enum (objGetItems gPlayerShip "* +NeurohackROM;") theItem
-												(objRemoveItem gPlayerShip theItem)
-												)
-											)
-											
-									(eq (objGetData gSource "neurohack") 'done)
-										(scrShowScreen gScreen "NeurohackComplete")
-											
-									(eq (herStatus 'missionMaryamsArchive) 'success)
-										(scrShowScreen gScreen "NeurohackComplete")
-										
-									(eq (herStatus 'missionMaryamsArchive) 'failure)
-										(scrShowPane gScreen "AIDamaged")
-									
-									; Attempt hacking
-									(scrShowPane gScreen "Vault")
-									)
-							</Action>
-							
-							<Action name="Undock" cancel="1" key="U">
-								<Exit/>
-							</Action>
-						</Actions>
-					</Default>
-					
-					<Vault>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You are in the archive's primary chamber."
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Begin Neurohack" default="1" key="B">
-								(switch
-									(eq (neuGetCharges) 0)
-										(scrShowPane gScreen "NoROM")
-
-									(not (objGetData gSource "neurohack"))
-										(scrShowPane gScreen "NeurohackIntro")
-										
-									(scrShowPane gScreen "NoVirusLeft")
-									)
-							</Action>
-
-							<Action name="Leave" cancel="1" key="L">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</Vault>
-					
-					<NeurohackIntro>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You connect your ship's computer to the archive and engage the neurohack ROM. "
-								"The archive's AI accepts the connection, but you will have to subdue the AI "
-								"before you can gain any information."
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(shpCancelOrders gPlayerShip)
-									
-									(objSetData gSource "neurohack" 'inProgress)
-									(setq gNeurohackWillpowerMax 10000)
-									(setq gNeurohackWillpower 10000)
-									(setq gNeurohackPotential (random 800 1200))
-									(setq gNeurohackDamage 0)
-									(setq gNeurohackViralLoad 0)
-									(setq gNeurohackVirusMax
-										(if (objGetItems gPlayerShip "*I+QuantumCPU") 3000 2000)
-										)
-									(setq gNeurohackVirusLeft gNeurohackVirusMax)
-									(setq gNeurohackResult Nil)
-									
-									(neuConsumeCharge)
-									(scrShowScreen gScreen &dsNeurohack; {
-										nextScreen: "NeurohackComplete"
-										})
-									)
-							</Action>
-						</Actions>
-					</NeurohackIntro>
-					
-					<AIDamaged>
-						<OnPaneInit>
-							(scrSetDesc gScreen 
-								"You are inside the archive's primary chamber. You attempt to connect your ship's "
-								"computer, but all your efforts fail. It appears that the archive and the AI are "
-								"permanently damaged."
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</AIDamaged>
-					
-					<NoVirusLeft>
-						<OnPaneInit>
-							(scrSetDesc gScreen 
-								"Your attempt to subdue the AI is unsuccessful. It appears that the AI has developed "
-								"countermeasures that repel any attempt."
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</NoVirusLeft>
-					
-					<NoROM>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You cannot attempt to subdue the AI without a neurohack ROM."
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Leave" default="1" cancel="1" key="L">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</NoROM>
-				</Panes>
-			</Main>
-			
-			<NeurohackComplete>
-
-				<OnScreenInit>
-					; If gNeurohackResult is set, then we incorporate it
-					(if (eq (objGetData gSource "neurohack") 'inProgress)
-						(block Nil
-							; If we failed, we set our failure result here. If we succeeded
-							; we wait until the player gets the ROM to set the status
-							
-							(if (not (eq gNeurohackResult 'success))
-								(block Nil
-									(herStatusClear 'currentMission)
-									(herStatusSet 'missionMaryamsArchive 'failure)
-									)
-								)
-								
-							(objSetData gSource "neurohack" 'done)
-							(setq gNeurohackResult Nil)
-							
-							; Consume the neurohack ROM
-							(enum (objGetItems gPlayerShip "* +NeurohackROM;") theItem
-								(objRemoveItem gPlayerShip theItem)
-								)
-							)
-						)
-				</OnScreenInit>
-				
-				<InitialPane>
-					(if (eq (herStatus 'missionMaryamsArchive) 'failure)
-						"Failure"
-						"Default"
-						)
-				</InitialPane>
-				
-				<Panes>
-					<Default>
-						<OnPaneInit>
-							(block (allQuestions usedQuestions filteredQuestions desc)
-								; Compute the questions
-								
-								(setq allQuestions (objGetStaticData gSource "Questions"))
-								(setq usedQuestions (objGetData gSource "usedQuestions"))
-								
-								; Filter the questions to exclude questions already asked
-								; and questions that depend on others.
-								
-								(setq filteredQuestions (filter allQuestions theQ
-									(and (not (find usedQuestions (item theQ 0)))
-										(or (not (item theQ 3))
-											(find usedQuestions (item theQ 3))
-											)
-										)
-									))
-									
-								; Add actions for each question
-								(for i 0 5
-									(block (theQ)
-										(setq theQ (item filteredQuestions i))
-										(if theQ
-											(scrSetActionLabel gScreen i (cat "\"" (item theQ 1) "\"") (item theQ 2))
-											(scrShowAction gScreen i Nil)
-											)
-										)
-									)
-									
-								; Remember the list of questions
-								(setq gQuestions filteredQuestions)
-								
-								; Compute the current answer
-								(setq desc (objGetData gSource "theAnswer"))
-								(switch
-									(and (not desc) (not filteredQuestions))
-										(setq desc "The AI has no more answers for you.")
-										
-									(not desc)
-										(setq desc "You have subdued the AI! The AI speaks:\n\n\"What do you wish to know?\"")
-										
-									(not filteredQuestions)
-										(setq desc (cat "\"" desc "\""
-											"\n\nThe AI has no more answers. It shuts itself off."
-											))
-
-									(setq desc (cat "\"" desc "\""))
-									)
-									
-								(scrSetDesc gScreen desc)
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Q1">
-								(arcQuestionHandler 0)
-							</Action>
-							
-							<Action name="Q2">
-								(arcQuestionHandler 1)
-							</Action>
-							
-							<Action name="Q3">
-								(arcQuestionHandler 2)
-							</Action>
-							
-							<Action name="Q4">
-								(arcQuestionHandler 3)
-							</Action>
-							
-							<Action name="Q5">
-								(arcQuestionHandler 4)
-							</Action>
-							
-							<Action name="Q6">
-								(arcQuestionHandler 5)
-							</Action>
-							
-							<Action name="Done" cancel="1" key="n">
-								(block Nil
-									(if (not (herStatus 'sentinelAttack))
-										(scrShowPane gScreen "SentinelAttack")
-										(scrShowScreen gScreen "Main")
-										)
-									(objSetData gSource "theAnswer" Nil)
-									)
-							</Action>
-						</Actions>
-					</Default>
-					
-					<SentinelAttack>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"The AI tells you one more thing:\n\n"
-								"\"Although you were able to defeat my countermeasures to access my information, "
-								"you did not disable my communications channel. Now the Iocrym know that you are "
-								"trying to break the quarantine.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(herStatusSet 'sentinelAttack)
-									(scrShowScreen gScreen "Main")
-									)
-							</Action>
-						</Actions>
-					</SentinelAttack>
-					
-					<Failure>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You have failed to subdue the AI."
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowScreen gScreen "Main")
-							</Action>
-						</Actions>
-					</Failure>
-				</Panes>
-			</NeurohackComplete>
-			
-		</DockScreens>
-
-		<DockingPorts>
-			<Port x="-36"	y="80" />
-			<Port x="-87"	y="40" />
-			<Port x="-92"	y="-33" />
-			<Port x="-42"	y="-85" />
-			<Port x="36"	y="80" />
-			<Port x="87"	y="40" />
-			<Port x="92"	y="-33" />
-			<Port x="42"	y="-85" />
-		</DockingPorts>
-        
-        <Language>
-            <Text id="core.mapDesc">
-                "Alien structure"
             </Text>
         </Language>
 	</StationType>
@@ -4351,30 +3703,6 @@
 
 	<Globals>
 		(block Nil
-			(setq arcQuestionHandler (lambda (qIndex)
-				(block (theQ)
-					(setq theQ (item gQuestions qIndex))
-					(objSetData gSource "theAnswer" (eval (item theQ 4)))
-					(objSetData gSource "usedQuestions" 
-						(append
-							(objGetData gSource "usedQuestions")
-							(item theQ 0)
-							)
-						)
-						
-					(switch
-						(eq (item theQ 0) 'q2)
-							(block Nil
-								(objAddItem gPlayerShip (itmCreate &itHereticResearchROM; 1))
-								(herStatusClear 'currentMission)
-								(herStatusSet 'missionMaryamsArchive 'success)
-								)
-						)
-						
-					(scrShowPane gScreen "Default")
-					)
-				))
-				
 			(setq herAttackInProgress (lambda (theStation)
 				(sysFindObject theStation "sAE N:60; O:attack;")
 				))

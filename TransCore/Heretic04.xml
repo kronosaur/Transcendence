@@ -1,0 +1,555 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Maryams Archive ==============================================
+
+
+	EXTRA DATA
+
+	======================================================================== -->
+
+	<MissionType UNID="&msHereticMaryamsArchive;"
+			name=			"Sister Maryam's Archive"
+			attributes=		"sistersMission"
+
+			level=			"10"
+
+			maxAppearing=	"1"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	This mission only works in Heretic
+					(!= (sysGetNode) 'G2)
+						(msnDestroy gSource)
+
+					;	Set up the mission
+					(block Nil
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (theArchive)
+					;	Create the archive
+					(setq theArchive
+						(sysCreateStation &stMaryamsArchive; 
+							(sysVectorRandom Nil (random 400 800) 150 "T")
+							)
+						)
+
+					;	Remember it
+					(msnSetData gSource 'targetID (objGetID theArchive))
+
+					;	Give the player the Neurohack ROM
+					(objAddItem gPlayerShip (itmCreate &itNeurohackROM; 1))
+					(itmSetKnown (itmCreate &itNeurohackROM; 1))
+					)
+			</OnAccepted>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)))
+			</OnSetPlayerTarget>
+		
+			<OnGiveROM>
+				(block Nil
+					(objAddItem gPlayerShip (itmCreate &itHereticResearchROM; 1))
+					(msnSuccess gSource)
+					)
+			</OnGiveROM>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+
+			<Text id="Intro">
+				(list
+					{	textID: 'textIntro1	}
+					{	textID: 'textIntro2	}
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="textSummary">
+				The matriarch of St. Josephine Mission has asked you to go to
+				an alien archive and subdue the AI that guards it.
+			</Text>
+
+			<Text id="textIntro1">
+				"Welcome, pilgrim! Your journey to Domina has only just begun,
+				yet I fear that your road is blocked. The Iocrym, who no doubt
+				serve Oracus, have blocked your path. They want to prevent you
+				from meeting Domina."
+			</Text>
+			<Text id="textIntro2">
+				"Yet faith in Domina will see you through. Many years ago, a
+				convert to our cause dreamt of a repository of knowledge in the
+				Heretic system. Her name was Sister Maryam Harawi and she
+				dedicated her life to finding it."
+
+				"A few months ago, we found an alien archive in deep space. It
+				must be the object of Sister Maryam's vision, and we believe
+				that it contains knowledge that will help you to complete your
+				journey to the Core."
+			</Text>
+			<Text id="Briefing">
+				"It is your destiny to seek this artifact of knowledge and gain
+				access to the information that it contains."
+
+				"Do you accept the undertaking of this labor?"
+			</Text>
+			<Text id="AcceptReply">
+				"Excellent! We will tell you how to reach the alien archive,
+				but once you get there you must subdue the AI that guards it."
+
+				"Take this ROM to help you to defeat the AI. After you connect
+				your ship's computer to the archive, you must attempt to subdue
+				the AI by inserting the proper level of virus code into its
+				neural circuitry."
+
+				"Domina is with you! Good luck!"
+			</Text>
+			<Text id="DeclineReply">
+				"Your destiny will not change even if you choose to ignore it.
+				Return here once you understand that."
+			</Text>
+			<Text id="InProgress">
+				"Your task is not yet complete. Go subdue the AI and retrieve
+				the information from the alien archive."
+			</Text>
+			<Text id="SuccessDebrief">
+				"Your faith in Domina has been rewarded! Take the information
+				that you obtained and give it to your friends from the Svalbard
+				Explorer&mdash;they will be able to help you now."
+			</Text>
+			<Text id="FailureDebrief">
+				"Domina tests our faith. Perhaps your failure to subdue the AI
+				will prove to be a blessing in some way. Go with Domina, pilgrim!"
+			</Text>
+			<Text id="textBusy">
+				"Welcome, pilgrim! When your labors are done, return here and
+				seek answers. Domina will show you the path forward."
+			</Text>
+		</Language>
+	</MissionType>
+
+
+	<!-- Sister Maryam's Archive
+	
+	EXTRA DATA
+	
+	attempts:		Number of attempts
+	
+	neurohack:		Status of the hacking session
+							Nil						= Neurohacking has not started
+							'inProgress				= In the middle of a hack
+							'done					= Hacking complete
+							
+	usedQuestions:	List of questions already asked
+	
+	-->
+
+	<StationType UNID="&stMaryamsArchive;"
+			name=				"Iocrym archive"
+			sovereign=			"&svNeutral;"
+			inherit=			"&unidCommonText;"
+
+			attributes=			"ai, archive"
+
+			dockScreen=			"Main"
+			mass=				"2000"
+			>
+
+		<Image imageID="&rsIocrymOutpost;" imageWidth="162" imageHeight="218"/>
+
+		<StaticData>
+			<Data id="Questions">
+				(
+					{ id:'q1a	dependsOn:'q1	}
+					{ id:'q1b	dependsOn:'q1	}
+					{ id:'q1b1	dependsOn:'q1b	}
+					{ id:'q1	}
+					{ id:'q2	code: (lambda () (msnFireEvent (msnFind "Pa +unid:&msHereticMaryamsArchive;;") 'OnGiveROM))	}
+					{ id:'q3	}
+					{ id:'q4	}
+					)
+			</Data>
+		</StaticData>
+
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionEnter" default="1">
+								(switch
+									; If we're in progress, then we must have quit on a previous attempt
+									(eq (objGetData gSource "neurohack") 'inProgress)
+										(block Nil
+											(dbgOutput "how do we get here")
+											(objSetData gSource "neurohack" 'done)
+											(herStatusClear 'currentMission)
+											(herStatusSet 'missionMaryamsArchive 'failure)
+											(scrShowPane gScreen "AIDamaged")
+											
+											; Consume the neurohack ROM
+											(enum (objGetItems gPlayerShip "* +NeurohackROM;") theItem
+												(objRemoveItem gPlayerShip theItem)
+												)
+											)
+
+									(eq (objGetData gSource "neurohack") 'done)
+										(scrShowScreen gScreen "NeurohackComplete")
+
+									(msnFind "* +unid:&msHereticMaryamsArchive;; +property:isSuccess;")
+										(scrShowScreen gScreen "NeurohackComplete")
+
+									(msnFind "* +unid:&msHereticMaryamsArchive;; +property:isFailure;")
+										(scrShowPane gScreen "AIDamaged")
+
+									;	Attempt hacking
+									(scrShowPane gScreen "Vault")
+									)
+							</Action>
+
+							<Action id="actionUndock" cancel="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+
+					<Vault>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descVault)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionBegin" default="1">
+								(switch
+									(eq (neuGetCharges) 0)
+										(scrShowPane gScreen "NoROM")
+
+									(not (objGetData gSource "neurohack"))
+										(scrShowPane gScreen "NeurohackIntro")
+
+									(scrShowPane gScreen "NoVirusLeft")
+									)
+							</Action>
+
+							<Action id="actionLeave" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</Vault>
+
+					<NeurohackIntro>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descNeurohackIntro)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionContinue" default="1" cancel="1">
+								(block Nil
+									(objSetData gSource "neurohack" 'inProgress)
+									(setq gNeurohackWillpowerMax 10000)
+									(setq gNeurohackWillpower 10000)
+									(setq gNeurohackPotential (random 800 1200))
+									(setq gNeurohackDamage 0)
+									(setq gNeurohackViralLoad 0)
+									(setq gNeurohackVirusMax
+										(if (objGetItems gPlayerShip "*I+QuantumCPU") 3000 2000)
+										)
+									(setq gNeurohackVirusLeft gNeurohackVirusMax)
+									(setq gNeurohackResult Nil)
+									
+									(neuConsumeCharge)
+									(scrShowScreen gScreen &dsNeurohack; {
+										nextScreen: "NeurohackComplete"
+										})
+									)
+							</Action>
+						</Actions>
+					</NeurohackIntro>
+
+					<AIDamaged>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descAIDamaged)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionLeave" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</AIDamaged>
+
+					<NoVirusLeft>
+						<OnPaneInit>
+							(scrSetDesc gScreen 
+								"Your attempt to subdue the AI is unsuccessful. It appears that the AI has developed "
+								"countermeasures that repel any attempt."
+								)
+						</OnPaneInit>
+						
+						<Actions>
+							<Action id="actionLeave" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</NoVirusLeft>
+					
+					<NoROM>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"You cannot attempt to subdue the AI without a neurohack ROM."
+								)
+						</OnPaneInit>
+						
+						<Actions>
+							<Action id="actionLeave" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</NoROM>
+				</Panes>
+			</Main>
+			
+			<NeurohackComplete>
+				<OnScreenInit>
+					; If gNeurohackResult is set, then we incorporate it
+					(if (eq (objGetData gSource "neurohack") 'inProgress)
+						(block Nil
+							; If we failed, we set our failure result here. If we succeeded
+							; we wait until the player gets the ROM to set the status
+							
+							(if (not (eq gNeurohackResult 'success))
+								(msnFailure (msnFind "Pa +unid:&msHereticMaryamsArchive;;"))
+								)
+								
+							(objSetData gSource "neurohack" 'done)
+							(setq gNeurohackResult Nil)
+							
+							; Consume the neurohack ROM
+							(enum (objGetItems gPlayerShip "* +NeurohackROM;") theItem
+								(objRemoveItem gPlayerShip theItem)
+								)
+							)
+						)
+				</OnScreenInit>
+				
+				<InitialPane>
+					(if (msnFind "* +unid:&msHereticMaryamsArchive;; +property:isFailure;")
+						"Failure"
+						"Default"
+						)
+				</InitialPane>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(block (
+								;	Get the question lists
+								(allQuestions (objGetStaticData gSource 'Questions))
+								(usedQuestions (objGetData gSource 'usedQuestions))
+
+								;	Filter the questions to exclude questions already asked
+								;	and questions that depend on others.
+								(filteredQuestions (map allQuestions 'excludeNil theQ
+									(if (and
+											(not (find usedQuestions (@ theQ 'id)))
+											(or (not (@ theQ 'dependsOn)) (find usedQuestions (@ theQ 'dependsOn)))
+											)
+										(@ theQ 'id)
+										)
+									))
+
+								;	Get the current answer if we have one.
+								(curAnswer (scrGetData gScreen 'theAnswer))
+								)
+
+								;	Add actions for each question
+								(enum filteredQuestions theQ
+									(scrAddAction gScreen theQ Nil (scrTranslate gScreen (cat "textQuestion:" theQ)) Nil 'default
+										(lambda ()
+											(block Nil
+												(scrSetData gScreen 'theAnswer theQ)
+												(objSetData gSource 'usedQuestions (append theQ usedQuestions))
+												(scrShowPane gScreen 'Default)
+												)
+											)
+										)
+									)
+
+								;	Add the done action at the end
+								(scrAddAction gScreen 'actionDoneSpecial Nil (scrTranslate gScreen 'actionDoneSpecial) Nil 'cancel
+									(if (msnFind "o +unid:&msHereticIocrymAttack;;")
+										(scrShowPane gScreen 'SentinelAttack)
+										(scrShowScreen gScreen 'Main)
+										)
+									)
+
+								;	Compute the current answer
+								(switch
+									(and (not curAnswer) (not filteredQuestions))
+										(scrSetDescTranslate gScreen 'descNoMoreAnswers)
+
+									(not curAnswer)
+										(scrSetDescTranslate gScreen 'descSubdued)
+
+									(not filteredQuestions)
+										(scrSetDesc gScreen (cat
+											(scrTranslate gScreen (cat "textAnswer:" curAnswer))
+											"\n\n"
+											(scrTranslate gScreen 'descNoMoreAnswers)
+											))
+
+									(scrSetDescTranslate gScreen (cat "textAnswer:" curAnswer))
+									)
+								)
+						</OnPaneInit>
+					</Default>
+
+					<SentinelAttack>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descSentinelAttack)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionContinue" default="1" cancel="1">
+								(block Nil
+									(msnSetUnavailable (msnFind "Po +unid:&msHereticIocrymAttack;;"))
+									(scrShowScreen gScreen "Main")
+									)
+							</Action>
+						</Actions>
+					</SentinelAttack>
+
+					<Failure>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descFailed)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionDone" default="1" cancel="1">
+								(scrShowScreen gScreen "Main")
+							</Action>
+						</Actions>
+					</Failure>
+				</Panes>
+			</NeurohackComplete>
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="-36"	y="80" />
+			<Port x="-87"	y="40" />
+			<Port x="-92"	y="-33" />
+			<Port x="-42"	y="-85" />
+			<Port x="36"	y="80" />
+			<Port x="87"	y="40" />
+			<Port x="92"	y="-33" />
+			<Port x="42"	y="-85" />
+		</DockingPorts>
+        
+        <Language>
+			<Text id="actionBegin">[B]egin Neurohack</Text>
+			<Text id="actionDoneSpecial">Do[n]e</Text>
+			<Text id="actionEnter">[E]nter Chamber</Text>
+
+			<Text id="descWelcome">
+				You are docked at an alien installation&mdash;a cybernetic archive of some sort.
+				An entrance before you leads to the primary chamber.
+			</Text>
+			<Text id="descVault">
+				You are in the archive's primary chamber.
+			</Text>
+			<Text id="descNeurohackIntro">
+				You connect your ship's computer to the archive and engage the neurohack ROM.
+				The archive's AI accepts the connection, but you will have to subdue the AI
+				before you can gain any information.
+			</Text>
+			<Text id="descAIDamaged">
+				You are inside the archive's primary chamber. You attempt to connect your ship's
+				computer, but all your efforts fail. It appears that the archive and the AI are
+				permanently damaged.
+			</Text>
+			<Text id="descSubdued">
+				You have subdued the AI! The AI speaks:
+
+				"What do you wish to know?"
+			</Text>
+			<Text id="descNoMoreAnswers">
+				The AI has no more answers. It shuts itself off.
+			</Text>
+			<Text id="descSentinelAttack">
+				The AI tells you one more thing:
+
+				"Although you were able to defeat my countermeasures to access my information,
+				you did not disable my communications channel. Now the Iocrym know that you are
+				trying to break the quarantine."
+			</Text>
+			<Text id="descFailed">
+				You have failed to subdue the AI.
+			</Text>
+
+			<Text id="textQuestion:q1">Why have the Iocrym [q]uarantined us?</Text>
+			<Text id="textAnswer:q1">
+				"Oracus threatens the Galaxy. The Iocrym are protecting the Galaxy from that threat.
+				The first phase is to contain the threat at its point of origin. The second phase is to
+				eliminate the threat."
+			</Text>
+			<Text id="textQuestion:q1a">What does [O]racus have to do with us?</Text>
+			<Text id="textAnswer:q1a">
+				"Oracus has been asleep for the last 30 million years.
+				Now he wakens at the same time Humans begin their expansion into the Galaxy!
+				The last war with Oracus began the same way and it nearly destroyed us."
+			</Text>
+			<Text id="textQuestion:q1b">What does '[e]liminate' mean?</Text>
+			<Text id="textAnswer:q1b">
+				"The quarantine bought us time to prepare, but it will not last forever.
+				Oracus will see to that. The only solution is to sterilize the entire region.
+				The Iocrym have already begun constructing stellar manipulators around the
+				Gamma Crucis supergiant. When their work is complete they will induce a core collapse."
+			</Text>
+			<Text id="textQuestion:q1b1">How do we stop the [G]amma Crucis explosion?</Text>
+			<String id="textAnswer:q1b1">
+				"To reach Gamma Crucis you must break the quarantine."
+			</String>
+			<Text id="textQuestion:q2">How do we [b]reak the quarantine?</Text>
+			<String id="textAnswer:q2">
+				"Disable the control point. This data ROM will help you."
+			</String>
+			<Text id="textQuestion:q3">Why is [D]omina calling me to the Core?</Text>
+			<String id="textAnswer:q3">
+				"I do not know. But the idea to sterilize Human Space was hers."
+			</String>
+			<Text id="textQuestion:q4">What are our [c]hances of success?</Text>
+			<Text id="textAnswer:q4">
+				"The threat to the Galaxy is severe. If Oracus succeeds, there is a 72% chance the
+				Ancient Races will be extinct in the next million years."
+			</Text>
+
+			<Text id="core.mapDesc">
+                "Alien structure"
+            </Text>
+        </Language>
+	</StationType>
+
+</TranscendenceModule>

@@ -2321,6 +2321,12 @@
 		</Ships>
 	</EncounterType>
 
+	<!-- Sister Maryam's Archive (moved to StarsOfThePilgrim in 1.8) -->
+
+	<StationType unid="&stMaryamsArchiveObsolete;"
+			obsolete="39">
+	</StationType>
+
 	<!-- Abandoned crate looting screen (DEPRECATED) -->
 	
 	<DockScreen UNID="&dsAbandonedCrateObsolete;"
