@@ -1,0 +1,181 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Heretic Settlement ===========================================
+
+	This mission provides the rumors and directions from the Commonwealth
+	settlement in Heretic
+
+	EXTRA DATA
+
+	======================================================================== -->
+
+	<MissionType UNID="&msHereticSettlement;"
+			name=			"Heretic Settlement"
+			attributes=		"commonwealthSettlement"
+
+			level=			"10"
+
+			maxAppearing=	"1"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	This mission only works in Heretic
+					(!= (sysGetNode) 'G2)
+						(msnDestroy gSource)
+
+					;	Prevent duplicates (maxAppearing only counts accepted missions)
+					(msnFind "* +unid:&msDantalionInformant;;")
+						(msnDestroy gSource)
+
+					;	Set up the mission
+					(block Nil
+						)
+					)
+			</OnCreate>
+
+			<OnDirections>
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					(objSetKnown targetObj)
+					(objSetIdentified targetObj)
+					(objSetShowAsDestination targetObj 'autoClearOnDock)
+					)
+			</OnDirections>
+
+			<OnCanBrief>
+				(block (
+					(theSE (sysFindObject Nil "sAN +svalbardExplorer;"))
+
+					;	Find all stations which have not yet given a mission
+					(researchStations (filter (sysFindObject Nil "TA +hereticStation;") theStation
+						(not (msnFind theStation "Sar"))
+						))
+
+					(controlPoint (sysFindObject gSource "TN +hereticControlPoint"))
+					)
+
+					;	Set up mission state
+					(switch
+						(not (msnFind theSE "Sar"))
+							(block Nil
+								(msnSetData gSource 'targetID (objGetID theSE))
+								(msnSetData gSource 'state 'svalbard)
+								)
+
+						researchStations
+							(block (
+								(targetObj (@ researchStations (modulo (divide (unvGetTick) 3600) (count researchStations))))
+								)
+								(msnSetData gSource 'targetID (objGetID targetObj))
+								(msnSetData gSource 'targetName (objGetName targetObj 'article))
+								(msnSetData gSource 'state 'stations)
+								)
+
+						(objGetData controlPoint 'stationMaster)
+							(block Nil
+								(msnSetData gSource 'targetID (objGetID controlPoint))
+								(msnSetData gSource 'state 'controlPoint)
+								)
+
+						(block Nil
+							(msnSetData gSource 'targetID Nil)
+							(msnSetData gSource 'state 'allDead)
+							)
+						)
+					
+					;	Return Nil so normal briefing resumes
+					Nil
+					)
+			</OnCanBrief>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Briefing">
+				(block (
+					(state (msnGetData gSource 'state))
+					)
+					(list
+						{
+							textID: (switch
+								(= state 'svalbard)		'textSvalbard
+								(= state 'stations)		'textStations
+								(= state 'controlPoint)	'textControlPoint
+														'textAllDead
+								)
+							
+							actions: (if (msnGetData gSource 'targetID)
+								(list
+									{	labelID: 'actionTell	nextPage: 'directions	}
+									{	labelID: 'actionDone	nextPage: 'missionDecline	}
+									)
+								(list
+									{	labelID: 'actionDone	nextPage: 'missionDecline	}
+									)
+								)
+
+							data: {
+								stationName: (msnGetData gSource 'targetName)
+								}
+							}
+
+						{
+							id: 'directions
+							textID: 'textDirect
+							nextPage: 'missionDecline
+							nextCode: (lambda () (msnFireEvent (scrGetData gScreen 'missionObj) 'OnDirections))
+							}
+
+						Nil	;	Blank entry to prevent forced accept/decline options
+						)
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Intro">
+				The station master greets you:
+
+				"Welcome to the Heretic Archipelago! Are you a researcher? We get all kinds
+				of scientists here&mdash;this is the Edge of Human Space, after all&mdash;so
+				if you are a researcher, you've come to the right place, certainly!"
+			</Text>
+			<Text id="textSvalbard">
+				"In fact, the Svalbard Explorer just arrived here all the way from St. Kats.
+				They're studying the Iocrym and their confounded quarantine, but I think
+				they might need some help."
+			</Text>
+			<Text id="textStations">
+				"There are lots of scientific outposts here in the archipelago, but if you're
+				looking to help, you could visit %stationName%, certainly. They're always
+				asking for help!"
+			</Text>
+			<Text id="textControlPoint">
+				"Matter of fact, I hear that some scientists even set up a base on an Iocrym
+				station! Can you believe that? I'd like to know what the Iocrym think of
+				that, certainly!"
+			</Text>
+			<Text id="textAllDead">
+				"'Course I don't really know what those scientists are up to. Come to think
+				of it, I haven't seen any of them around here lately. I wonder if they poked
+				their telescopes into something they weren't supposed to. I don't think the
+				Iocrym like to be spied on, certainly! I don't think they like it at all!"
+			</Text>
+			<Text id="textDirect">
+				"Well, I'm sure I've got their coordinates here somewhere..."
+
+				"Here they are! I knew I had them! I'll program them into your ship's
+				computer and you should be able to find them, certainly."
+			</Text>
+
+			<String id="actionTell">"[T]ell me how to find it."</String>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

@@ -49,6 +49,7 @@
 	<!ENTITY dsHereticSvalbardDonate	"0x00200063">
 	<!ENTITY msHereticControlPoint		"0x00200064">
 	<!ENTITY msHereticFurtherResearch	"0x00200065">
+	<!ENTITY msHereticSettlement		"0x00200066">
 
 	<!-- 0021xxxx HUARI ==================================================== -->
 	
@@ -212,6 +213,7 @@
 	<Module filename="Heretic00.xml"/>
 	<Module filename="Heretic01.xml"/>
 	<Module filename="Heretic02.xml"/>
+	<Module filename="Heretic03.xml"/>
 	<Module filename="Huaramarca.xml"/>
 	<Module filename="HuaramarcaMission01.xml"/>
 	<Module filename="HuaramarcaMission02.xml"/>
