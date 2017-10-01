@@ -49,6 +49,7 @@ ICCItem *fnScrItem (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 #define FN_PLY_USE_ITEM				21
 #define FN_PLY_IS_MESSAGE_ENABLED	22
 #define FN_PLY_INC_SCORE			23
+#define FN_PLY_INVOKE_POWER			24
 
 ICCItem *fnPlyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnPlyGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -485,6 +486,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"plyIncScore",					fnPlySet,			FN_PLY_INC_SCORE,
 			"(plyIncScore player scoreInc) -> score",
 			"ii",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"plyInvokePower",					fnPlySet,			FN_PLY_INVOKE_POWER,
+			"(plyInvokePower player power [target]) -> True/Nil",
+			"ii*",	PPFLAG_SIDEEFFECTS, },
 
 		{	"plyMessage",					fnPlySetOld,		FN_PLY_MESSAGE,
 			"(plyMessage player message) -> True/Nil",
@@ -1196,6 +1201,32 @@ ICCItem *fnPlySet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			{
 			int iNewScore = pPlayer->GetGameStats().IncScore(pArgs->GetElement(1)->GetIntegerValue());
 			pResult = pCC->CreateInteger(iNewScore);
+			break;
+			}
+
+		case FN_PLY_INVOKE_POWER:
+			{
+			DWORD dwPowerUNID = pArgs->GetElement(1)->GetIntegerValue();
+			CPower *pPower = g_pUniverse->FindPower(dwPowerUNID);
+
+			if (pPower == NULL)
+				return pCC->CreateError(CONSTLIT("Invalid power type"), pArgs->GetElement(1));
+
+
+			CSpaceObject *pTarget;
+			if (pArgs->GetElement(2))
+				pTarget = CreateObjFromItem(*pCC, pArgs->GetElement(2));
+			else
+				pTarget = pPlayer->GetTarget(CItemCtx(), true);
+
+			CString sError;
+
+			pPower->InvokeByPlayer(pPlayer->GetShip(), pTarget, &sError);
+
+			if (!sError.IsBlank())
+				pResult = pCC->CreateError(sError);
+			else
+				pResult = pCC->CreateTrue();
 			break;
 			}
 
