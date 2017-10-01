@@ -26,11 +26,12 @@
 			attributes=		"svalbardMission"
 
 			level=			"10"
+			scope=			"system"
 
+			maxAppearing=	"1"
 			noDecline=		"true"
 			noDebrief=		"true"
 			>
-
 
 		<Events>
 			<OnCreate>
@@ -122,7 +123,13 @@
 			</OnUpdate>
 
 			<OnSetPlayerTarget>
-				(rpgSetTarget gSource aReason (objGetObjByID (msnGetProperty gSource 'ownerID)) 'dock)
+				(switch
+					;	Need to check if we're in the right system as our owner will ascend
+					(!= (msnGetProperty gSource 'nodeID) (sysGetNode))
+						Nil
+
+					(rpgSetTarget gSource aReason (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					)
 			</OnSetPlayerTarget>
 
 			<OnReward>
@@ -136,6 +143,7 @@
 							theMission
 							)
 							;	Kate is now in the control point
+							(typSetData &unidKateMorgental; 'lastShipClass Nil)
 							(objSetData controlPoint 'stationMaster 'kateMorgental)
 
 							;	Start the Iocrym attacks
@@ -185,7 +193,24 @@
 					(!= (sysGetNode) 'G2)
 						Nil
 
-					;	Create the mission
+					;	Nothing if we've already completed
+					(msnFind "r +unid:&msHereticSvalbard;;")
+						Nil
+
+					;	If mission is already active then we need to restore previous orders
+					(rpgIsMissionActive &msHereticSvalbard;)
+						(block (kateMorgentalObj)
+							(setq kateMorgentalObj (rpgCharacterCreateShip &unidKateMorgental;))
+							(enum (typGetData &unidKateMorgental; 'lastOrders) order
+								(block (cmd)
+									(setq cmd (append kateMorgentalObj (@ order 'desc)))
+									(if (@ order 'objID) (set@ cmd 2 (objGetObjByID (@ order 'objID))))
+									(apply shpOrder cmd)
+									)
+								)
+							)
+
+					;	Set up
 					(block (kateMorgentalObj)
 						; Create Kate
 

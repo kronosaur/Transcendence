@@ -195,7 +195,20 @@
 							
 						;	Otherwise, ascend the object
 						
-						(block Nil
+						(block (orders)
+							;	Save the current order stack
+							(for i 1 (shpGetOrderCount shipObj)
+								(block Nil
+									(lnkAppend orders
+										{
+											desc: (shpGetOrderDesc shipObj)
+											objID: (objGetID (shpGetOrderTarget shipObj))
+											}
+										)
+									(shpCancelOrder shipObj)
+									)
+								)
+							(typSetData charType 'lastOrders orders)
 							(typSetData charType 'lastSystemPos (objGetPos shipObj))
 							(typSetData charType 'lastKnown (objGetProperty shipObj 'known))
 							(sysAscendObject shipObj)
@@ -385,6 +398,7 @@
 								(objSetProperty shipObj 'known (@ options 'setKnown))
 								(typSetData charType 'lastNodeID (sysGetNode))
 								(typSetData charType 'lastShipClass shipClassValue)
+								(typSetData charType 'lastOrders Nil)
 								(typSetData charType shipIDVar (objGetId shipObj))
 								(typSetData charType 'screenData Nil)
 								
@@ -402,6 +416,7 @@
 								(objSetProperty shipObj 'known (@ options 'setKnown))
 								(typSetData charType 'lastNodeID (sysGetNode))
 								(typSetData charType 'lastShipClass shipClassValue)
+								(typSetData charType 'lastOrders Nil)
 								(typSetData charType shipIDVar (objGetId shipObj))
 								(typSetData charType 'screenData Nil)
 								
@@ -424,7 +439,10 @@
 									
 									;	If he was not here last, then we honor options
 
-									(setq isKnown (@ options 'setKnown))
+									(block Nil
+										(setq isKnown (@ options 'setKnown))
+										(typSetData charType 'lastOrders Nil)
+										)
 									)
 
 								;	Descend him back to the system
