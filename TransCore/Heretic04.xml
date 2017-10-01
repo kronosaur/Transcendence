@@ -152,13 +152,10 @@
 	
 	EXTRA DATA
 	
-	attempts:		Number of attempts
+	neurohack.success:		True if the player has successfully subdued the AI
+	neurohack.failure:		Number of times the player failed to subdue the AI
+	neurohack.damaged:		Number of times the player has damaged the AI
 	
-	neurohack:		Status of the hacking session
-							Nil						= Neurohacking has not started
-							'inProgress				= In the middle of a hack
-							'done					= Hacking complete
-							
 	usedQuestions:	List of questions already asked
 	
 	-->
@@ -201,28 +198,10 @@
 						<Actions>
 							<Action id="actionEnter" default="1">
 								(switch
-									; If we're in progress, then we must have quit on a previous attempt
-									(eq (objGetData gSource "neurohack") 'inProgress)
-										(block Nil
-											(dbgOutput "how do we get here")
-											(objSetData gSource "neurohack" 'done)
-											(herStatusClear 'currentMission)
-											(herStatusSet 'missionMaryamsArchive 'failure)
-											(scrShowPane gScreen "AIDamaged")
-											
-											; Consume the neurohack ROM
-											(enum (objGetItems gPlayerShip "* +NeurohackROM;") theItem
-												(objRemoveItem gPlayerShip theItem)
-												)
-											)
-
-									(eq (objGetData gSource "neurohack") 'done)
+									(objGetData gSource 'neurohack.success)
 										(scrShowScreen gScreen "NeurohackComplete")
 
-									(msnFind "* +unid:&msHereticMaryamsArchive;; +property:isSuccess;")
-										(scrShowScreen gScreen "NeurohackComplete")
-
-									(msnFind "* +unid:&msHereticMaryamsArchive;; +property:isFailure;")
+									(geq (objGetData gSource 'neurohack.damaged) 3)
 										(scrShowPane gScreen "AIDamaged")
 
 									;	Attempt hacking
@@ -244,13 +223,12 @@
 						<Actions>
 							<Action id="actionBegin" default="1">
 								(switch
-									(eq (neuGetCharges) 0)
+									(not (objGetItems gPlayerShip "*N +NeurohackROM;"))
 										(scrShowPane gScreen "NoROM")
 
-									(not (objGetData gSource "neurohack"))
-										(scrShowPane gScreen "NeurohackIntro")
+									(scrShowPane gScreen "NeurohackIntro")
 
-									(scrShowPane gScreen "NoVirusLeft")
+									;(scrShowPane gScreen "NoVirusLeft")
 									)
 							</Action>
 
@@ -268,21 +246,16 @@
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
-									(objSetData gSource "neurohack" 'inProgress)
-									(setq gNeurohackWillpowerMax 10000)
-									(setq gNeurohackWillpower 10000)
-									(setq gNeurohackPotential (random 800 1200))
-									(setq gNeurohackDamage 0)
-									(setq gNeurohackViralLoad 0)
-									(setq gNeurohackVirusMax
-										(if (objGetItems gPlayerShip "*I+QuantumCPU") 3000 2000)
-										)
-									(setq gNeurohackVirusLeft gNeurohackVirusMax)
-									(setq gNeurohackResult Nil)
-									
-									(neuConsumeCharge)
 									(scrShowScreen gScreen &dsNeurohack; {
-										nextScreen: "NeurohackComplete"
+										neurohackRom: (@ (objGetItems gPlayerShip "*N +NeurohackROM;") 0)
+										willpower: 10000
+										potential: (random 800 1200)
+										maxDamage: 10
+										nextScreen: 'NeurohackComplete
+
+										onSuccess: (lambda () (objSetData gSource 'neurohack.success True))
+										onFailure: (lambda () (objIncData gSource 'neurohack.failure))
+										onDamaged: (lambda () (objIncData gSource 'neurohack.damaged))
 										})
 									)
 							</Action>
@@ -334,31 +307,17 @@
 			
 			<NeurohackComplete>
 				<OnScreenInit>
-					; If gNeurohackResult is set, then we incorporate it
-					(if (eq (objGetData gSource "neurohack") 'inProgress)
-						(block Nil
-							; If we failed, we set our failure result here. If we succeeded
-							; we wait until the player gets the ROM to set the status
-							
-							(if (not (eq gNeurohackResult 'success))
-								(msnFailure (msnFind "Pa +unid:&msHereticMaryamsArchive;;"))
-								)
-								
-							(objSetData gSource "neurohack" 'done)
-							(setq gNeurohackResult Nil)
-							
-							; Consume the neurohack ROM
-							(enum (objGetItems gPlayerShip "* +NeurohackROM;") theItem
-								(objRemoveItem gPlayerShip theItem)
-								)
-							)
+					;	If we failed, we set our failure result here. If we succeeded
+					;	we wait until the player gets the ROM to set the status
+					(if (geq (+ (objGetData gSource 'neurohack.failure) (objGetData gSource 'neurohack.damaged)) 3)
+						(msnFailure (msnFind "Pa +unid:&msHereticMaryamsArchive;;"))
 						)
 				</OnScreenInit>
-				
+
 				<InitialPane>
-					(if (msnFind "* +unid:&msHereticMaryamsArchive;; +property:isFailure;")
-						"Failure"
+					(if (objGetData gSource 'neurohack.success)
 						"Default"
+						"Failure"
 						)
 				</InitialPane>
 
@@ -383,7 +342,13 @@
 
 								;	Get the current answer if we have one.
 								(curAnswer (scrGetData gScreen 'theAnswer))
+								(curCode (@ (map allQuestions 'excludeNil theQ (if (= (@ theQ 'id) curAnswer) (@ theQ 'code))) 0))
 								)
+
+								;	Execute current answer code if available
+								(if curCode
+									((eval curCode))
+									)
 
 								;	Add actions for each question
 								(enum filteredQuestions theQ
@@ -449,7 +414,13 @@
 
 						<Actions>
 							<Action id="actionDone" default="1" cancel="1">
-								(scrShowScreen gScreen "Main")
+								(block (missionObj)
+									;	If we fail for any reason the Iocrym attacks start
+									(if (setq missionObj (msnFind "Po +unid:&msHereticIocrymAttack;;"))
+										(msnSetUnavailable missionObj)
+										)
+									(scrShowScreen gScreen "Main")
+									)
 							</Action>
 						</Actions>
 					</Failure>

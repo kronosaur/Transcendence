@@ -2,56 +2,97 @@
 
 <TranscendenceModule>
 
-<!-- NEUROHACK SCREEN ==========================================================
+	<!-- NEUROHACK SCREEN ======================================================
 
 	This screen allows the player to break into an AI.
 
 	gData uses the following fields:
 
+	neurohackRom:		This is the neurohackRom item to use
 	nextScreen:			If specified, we navigate to the given screen when we're
 						done. This may also be a list consisting of a screen and
 						a pane.
--->
+
+	maxDamage:			Target maximum damage
+	potential:			Target potential
+	willpower:			Target willpower
+
+	-->
+
 	<DockScreen unid="&dsNeurohack;"
+			inherit=		"&dsDockScreenBase;"
 			backgroundID=	"none"
 			nestedScreen=	"true"
 			>
+
+		<OnScreenInit>
+			(if (!= (scrGetData gScreen 'status) 'inProgress)
+				(block (
+					(theRom (or (scrGetData gScreen 'neurohackRom) (@ gData 'neurohackRom)))
+					(baseVirus 2000)
+					(bonusVirus (if (objGetItems gPlayerShip "*IN +QuantumCPU;") (divide baseVirus 2)))
+					)
+
+					;	Consume a charge
+					(setq theRom (objSetItemProperty gPlayerShip theRom 'incCharges -1))
+					(scrSetData gScreen 'neurohackRom theRom)
+					(if (= (itmGetProperty theRom 'charges) 0)
+						(objRemoveItem gPlayerShip theRom)
+						)
+
+					;	Setup Neurohack
+					(scrSetData gScreen 'willpower (@ gData 'willpower))
+					(scrSetData gScreen 'damage 0)
+					(scrSetData gScreen 'viralLoad 0)
+					(scrSetData gScreen 'neurohackG 0)
+					(scrSetData gScreen 'virusLeft (+ baseVirus bonusVirus))
+					(scrSetData gScreen 'status 'inProgress)
+					)
+				)
+		</OnScreenInit>
 			
 		<Display>
 			<OnDisplayInit>
-				(if (not gNeurohackResult)
-					(block Nil
-						; Update sim
-						(setq gNeurohackG (divide (subtract gNeurohackWillpower gNeurohackWillpowerMax) gNeurohackPotential))
-						(setq gNeurohackWillpower (max 0 (subtract gNeurohackWillpower gNeurohackDamage)))
-						(setq gNeurohackDamage (add gNeurohackDamage gNeurohackG gNeurohackViralLoad))
-						(setq gNeurohackVirusLeft (max 0 (subtract gNeurohackVirusLeft gNeurohackViralLoad)))
+				(if (= (scrGetData gScreen 'status) 'inProgress)
+					(block (
+						;	Update sim
+						(neurohackG (/ (- (scrGetData gScreen 'willpower) (@ gData 'willpower)) (@ gData 'potential)))
+						(willpower (scrIncData gScreen 'willPower (- (scrGetData gScreen 'damage))))
+						(viralLoad (scrGetData gScreen 'viralLoad))
+						(damage (scrIncData gScreen 'damage (+ neurohackG viralLoad)))
+						(virusLeft (scrIncData gScreen 'virusLeft (- viralLoad)))
+						)
 						
-						(if (gr gNeurohackWillpower gNeurohackWillpowerMax)
+						(scrSetData gScreen 'neurohackG neurohackG)
+						
+						(if (gr willpower (@ gData 'willpower))
 							(block Nil
-								(setq gNeurohackWillpower gNeurohackWillpowerMax)
-								(setq gNeurohackDamage 0)
+								(scrSetData gScreen 'willpower (@ gData 'willpower))
+								(scrSetData gScreen 'damage 0)
 								)
 							)
 						
-						; Check end conditions
+						;	Check end conditions
 						(switch
-							(and (leq gNeurohackWillpower 0) (leq gNeurohackDamage 10))
+							(and (leq willpower 0) (leq damage (@ gData 'maxDamage)))
 								(block Nil
-									(setq gNeurohackResult 'success)
+									(scrSetData gScreen 'willpower 0)
+									(scrSetData gScreen 'status 'success)
 									(scrShowPane gScreen "Success")
 									)
 							
-							(leq gNeurohackWillpower 0)
+							(leq willpower 0)
 								(block Nil
-									(setq gNeurohackResult 'failDamaged)
+									(scrSetData gScreen 'willpower 0)
+									(scrSetData gScreen 'status 'failDamaged)
 									(scrShowPane gScreen "Failure")
 									)
 									
-							(leq gNeurohackVirusLeft 0)
+							(leq virusLeft 0)
 								(block Nil
-									(setq gNeurohackResult 'failVirusExpended)
-									(setq gNeurohackViralLoad 0)
+									(scrSetData gScreen 'status 'failVirusExpended)
+									(scrSetData gScreen 'viralLeft 0)
+									(scrSetData gScreen 'viralLoad 0)
 									(scrShowPane gScreen "Failure")
 									)
 							)
@@ -60,72 +101,68 @@
 			</OnDisplayInit>
 			
 			<Neurohack left="36" right="-36" top="30" bottom="370">
-				(list gNeurohackWillpower gNeurohackDamage)
+				(list (scrGetData gScreen 'willpower) (scrGetData gScreen 'damage))
 			</Neurohack>
 			
 			<Canvas left="36" right="-36" top="100" bottom="-100">
 				(switch
-					(not gNeurohackResult)
-						(block (frameWidth)
-							(setq frameWidth 528)
+					(= (scrGetData gScreen 'status) 'inProgress)
+						(block (
+							(willpower (scrGetData gScreen 'willpower))
+							(damage (scrGetData gScreen 'damage))
+							(viralLoad (scrGetData gScreen 'viralLoad))
+							(frameWidth 528)
+							)
 							
-							; Draw the willpower bar
+							;	Draw the willpower bar
 							
-							(if (leq gNeurohackWillpower 2000)
-								(block (barX barWidth theColor theAccColor)
-									(setq barWidth (divide (multiply frameWidth gNeurohackWillpower) 2000))
-									(setq barX (divide (subtract frameWidth barWidth) 2))
-									
-									(switch
-										(leq gNeurohackDamage 10)
-											(setq theColor 0)
-											
-										(setq theColor 70)
-										)
-
-									(cnvDrawImage (subtract barX 70) 65 (list &rsNeurohackControls; 210 theColor 70 70))
-									(cnvDrawImage (add barX barWidth) 65 (list &rsNeurohackControls; 70 theColor 70 70))
+							(if (leq willpower 2000)
+								(block (theColor
+									(barWidth (divide (* frameWidth willpower) 2000))
+									(barX (divide (- frameWidth barWidth) 2))
+									(theColor (if (leq damage (@ gData 'maxDamage)) 0 70))
+									)
+									(cnvDrawImage (- barX 70) 65 (list &rsNeurohackControls; 210 theColor 70 70))
+									(cnvDrawImage (+ barX barWidth) 65 (list &rsNeurohackControls; 70 theColor 70 70))
 									)
 								)
 							
-							; Draw the acceleration signals
+							;	Draw the acceleration signals
 
-							(if (not (eq gNeurohackDamage 0))
-								(block (controlX)
-									(setq controlX (divide (subtract frameWidth 70) 2))
+							(if (!= damage 0)
+								(block (
+									(neurohackG (scrGetData gScreen 'neurohackG))
+									(controlX (divide (- frameWidth 70) 2))
+									(theAccColor (if (and (= (abs neurohackG) viralLoad) (leq damage (@ gData 'maxDamage))) 0 70))
+									)
 									
-									(if (and (eq (abs gNeurohackG) gNeurohackViralLoad) (leq gNeurohackDamage 10))
-										(setq theAccColor 0)
-										(setq theAccColor 70)
-										)
-									
-									(if (geq (abs gNeurohackG) gNeurohackViralLoad)
+									(if (geq (abs neurohackG) viralLoad)
 										(cnvDrawImage controlX 100 (list &rsNeurohackControls; 140 theAccColor 70 70))
 										)
 										
-									(if (leq (abs gNeurohackG) gNeurohackViralLoad)
+									(if (leq (abs neurohackG) viralLoad)
 										(cnvDrawImage controlX 30 (list &rsNeurohackControls; 0 theAccColor 70 70))
 										)
 									)
 								)
 							)
 
-					(eq gNeurohackResult 'success)
+					(= (scrGetData gScreen 'status) 'success)
 						(block Nil
 							(cnvDrawRect 0 60 528 80 '(74 71 95))
-							(cnvDrawText 264 80 "Neurohack Successful!" 'SubTitleBold '(54 176 72) 'center)
+							(cnvDrawText 264 80 (scrTranslate gScreen 'msgSuccess) 'SubTitleBold '(54 176 72) 'center)
 							)
 						
-					(eq gNeurohackResult 'failDamaged)
+					(= (scrGetData gScreen 'status) 'failDamaged)
 						(block Nil
 							(cnvDrawRect 0 60 528 80 '(74 71 95))
-							(cnvDrawText 264 80 "Connection Destroyed" 'SubTitleBold '(204 54 30) 'center)
+							(cnvDrawText 264 80 (scrTranslate gScreen 'msgDamaged) 'SubTitleBold '(204 54 30) 'center)
 							)
 						
-					(eq gNeurohackResult 'failVirusExpended)
+					(= (scrGetData gScreen 'status) 'failVirusExpended)
 						(block Nil
 							(cnvDrawRect 0 60 528 80 '(74 71 95))
-							(cnvDrawText 264 80 "Virus Depleted" 'SubTitleBold '(204 54 30) 'center)
+							(cnvDrawText 264 80 (scrTranslate gScreen 'msgFailure) 'SubTitleBold '(204 54 30) 'center)
 							)
 					)
 			</Canvas>
@@ -135,52 +172,49 @@
 			</Image>
 
 			<Text left="198" top="4" width="90" font="HeaderBold" color="255,255,255" align="right">
-				gNeurohackWillpower
+				(int (scrGetData gScreen 'willpower))
 			</Text>
 			
 			<Text left="312" top="4" width="90" font="HeaderBold" color="255,255,255" align="left">
-				(if (geq gNeurohackDamage 0) gNeurohackDamage "Repairing")
+				(block (
+					(damage (scrGetData gScreen 'damage))
+					)
+					(if (geq damage 0) (int damage) (scrTranslate gScreen 'msgRepairing))
+					)
 			</Text>
 			
 			<Text left="312" top="370" width="90" font="HeaderBold" color="255,255,255" align="left">
-				gNeurohackViralLoad
+				(scrGetData gScreen 'viralLoad)
 			</Text>
 
 			<Text left="198" top="370" width="90" font="HeaderBold" color="255,255,255" align="right">
-				gNeurohackVirusLeft
+				(scrGetData gScreen 'virusLeft)
 			</Text>
 		</Display>
 		
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(block Nil
-						(scrSetDesc gScreen
-							"Increase viral load to cause neural damage and break down the AI's resistance.\n\n"
-							"You will succeed if resistance is 0 and neural damage is 10 or less.\n\n"
-							"You will fail if resistance is 0 and neural damage is greater than 10 or if you run out of virus."
-							)
-						)
+					(scrSetDescTranslate gScreen 'neurohack.welcome gData)
 				</OnPaneInit>
 			
 				<Actions>
-					<Action name="Increase Virus" prevKey="1" key="I">
-						(setq gNeurohackViralLoad (add gNeurohackViralLoad 1))
+					<Action id="actionIncrease" prevKey="1">
+						(scrIncData gScreen 'viralLoad)
 					</Action>
 					
-					<Action name="Decrease Virus" nextKey="1" key="D">
-						(if (gr gNeurohackViralLoad 0)
-							(setq gNeurohackViralLoad (subtract gNeurohackViralLoad 1))
+					<Action id="actionDecrease" nextKey="1">
+						(if (gr (scrGetData gScreen 'viralLoad) 0)
+							(scrIncData gScreen 'viralLoad -1)
 							)
 					</Action>
 					
-					<Action name="Help" key="H">
-						(scrShowScreen gScreen &dsNeurohackHelp;)
+					<Action id="actionHelp">
+						(scrShowScreen gScreen &dsNeurohackHelp; gData)
 					</Action>
 					
-					<Action name="Disconnect" cancel="1" key="n">
+					<Action id="actionDisconnect" cancel="1">
 						(block Nil
-							(setq gNeurohackResult 'failDisconnect)
 	                        (scrExitScreen gScreen)
 
 							(if (@ gData 'nextScreen)
@@ -193,16 +227,17 @@
 			
 			<Success>
 				<OnPaneInit>
-					(scrSetDesc gScreen 
-						"The AI has been subdued!")
-						)
+					(scrSetDescTranslate gScreen 'neurohack.success)
 				</OnPaneInit>
 				
 				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
+					<Action id="actionContinue" default="1" cancel="1">
 						(block Nil
-							(scrExitScreen gScreen)
+							(if (@ gData 'onSuccess)
+								((@ gData 'onSuccess))
+								)
 
+							(scrExitScreen gScreen)
 							(if (@ gData 'nextScreen)
 								(scrShowScreen gScreen (@ gData 'nextScreen))
 								)
@@ -213,39 +248,42 @@
 
 			<Failure>
 				<OnPaneInit>
-					(block Nil
-						(switch
-							(eq gNeurohackResult 'failDamaged)
-								(scrSetDesc gScreen 
-									"Neural damage was too high. The connection port has been destroyed."
+					(block (
+						(status (scrGetData gScreen 'status))
+						(chargesLeft (itmGetProperty (scrGetData gScreen 'neurohackRom) 'charges))
+						)
+						(if (= status 'failDamaged)
+							(block Nil
+								(if (@ gData 'onDamaged)
+									((@ gData 'onDamaged))
 									)
-									
-							(eq gNeurohackResult 'failVirusExpended)
-								(scrSetDesc gScreen
-									"No more cyber-virus available for this connection port."
+
+								(scrSetDescTranslate gScreen 'neurohack.damaged)
+								)
+
+							(block Nil
+								(if (@ gData 'onFailure)
+									((@ gData 'onFailure))
 									)
+
+								(scrSetDescTranslate gScreen 'neurohack.failure)
+								)
 							)
 							
-						; If this was our last attempt, then we're done
-						(scrEnableAction gScreen 0 (geq (neuGetCharges) 1))
+						;	If this was our last attempt, then we're done
+						(scrEnableAction gScreen 'actionTryAgain (gr chargesLeft 0))
 						)
 				</OnPaneInit>
 				
 				<Actions>
-					<Action name="Try Again" default="1" key="T">
+					<Action id="actionTryAgain" default="1">
 						(block Nil
-							(setq gNeurohackWillpower gNeurohackWillpowerMax)
-							(setq gNeurohackDamage 0)
-							(setq gNeurohackViralLoad 0)
-							(setq gNeurohackVirusLeft gNeurohackVirusMax)
-							(setq gNeurohackResult Nil)
-							
-							(neuConsumeCharge)
+							(scrRefreshScreen gScreen)
 							(scrShowPane gScreen "Default")
 							)
 					</Action>
 					
-					<Action name="Disconnect" cancel="1" key="n">
+					<Action id="actionDisconnect" cancel="1">
 						(block Nil
 							(scrExitScreen gScreen)
 
@@ -257,9 +295,34 @@
 				</Actions>
 			</Failure>
 		</Panes>
+
+		<Language>
+			<Text id="actionDecrease">[D]ecrease Virus</Text>
+			<Text id="actionDisconnect">Disco[n]nect</Text>
+			<Text id="actionHelp">[H]elp</Text>
+			<Text id="actionIncrease">[I]ncrease Virus</Text>
+			<Text id="actionTryAgain">[T]ry Again</Text>
+
+			<Text id="msgDamaged">Connection Destroyed</Text>
+			<Text id="msgFailure">Virus Depleted</Text>
+			<Text id="msgRepairing">Repairing</Text>
+			<Text id="msgSuccess">Neurohack Successful!</Text>
+
+			<Text id="neurohack.damaged">Neural damage was too high. The connection port has been destroyed.</Text>
+			<Text id="neurohack.failure">No more cyber-virus available for this connection port.</Text>
+			<Text id="neurohack.success">The AI has been subdued!</Text>
+			<Text id="neurohack.welcome">
+				Increase viral load to cause neural damage and break down the AI's resistance.
+
+				You will succeed if resistance is 0 and neural damage is %maxDamage% or less.
+
+				You will fail if resistance is 0 and neural damage is greater than %maxDamage% or if you run out of virus.
+			</Text>
+		</Language>
 	</DockScreen>
 	
 	<DockScreen unid="&dsNeurohackHelp;"
+			inherit=		"&dsDockScreenBase;"
 			backgroundID=	"none"
 			nestedScreen=	"true"
 			>
@@ -269,21 +332,21 @@
 				(block Nil
 					(cnvDrawImage 120   0 (list &rsNeurohackControls;   0   0 70 70))
 					(cnvDrawImage 120  70 (list &rsNeurohackControls; 140   0 70 70))
-					(cnvDrawText 155 140 "Neural damage steady" 'Large '(255 255 255) 'center)
-					(cnvDrawText 155 160 "(10 or less\x97acceptable level)" 'Large '(255 255 255) 'center)
+					(cnvDrawText 155 140 (scrTranslate gScreen 'textNeurohackSteady) 'Large '(255 255 255) 'center)
+					(cnvDrawText 155 160 (scrTranslate gScreen 'textNeurohackHelp1 gData) 'Large '(255 255 255) 'center)
 					
 					(cnvDrawImage 400   0 (list &rsNeurohackControls;   0  70 70 70))
 					(cnvDrawImage 400  70 (list &rsNeurohackControls; 140  70 70 70))
-					(cnvDrawText 435 140 "Neural damage steady" 'Large '(255 255 255) 'center)
-					(cnvDrawText 435 160 "(greater than 10\x97unacceptable)" 'Large '(255 255 255) 'center)
+					(cnvDrawText 435 140 (scrTranslate gScreen 'textNeurohackSteady) 'Large '(255 255 255) 'center)
+					(cnvDrawText 435 160 (scrTranslate gScreen 'textNeurohackHelp2 gData) 'Large '(255 255 255) 'center)
 					
 					(cnvDrawImage 120 270 (list &rsNeurohackControls; 140  70 70 70))
-					(cnvDrawText 155 340 "Neural damage decreasing" 'Large '(255 255 255) 'center)
-					(cnvDrawText 155 360 "(increase viral load)" 'Large '(255 255 255) 'center)
+					(cnvDrawText 155 340 (scrTranslate gScreen 'textNeurohackDecreasing) 'Large '(255 255 255) 'center)
+					(cnvDrawText 155 360 (scrTranslate gScreen 'textNeurohackHelp3) 'Large '(255 255 255) 'center)
 					
 					(cnvDrawImage 400 200 (list &rsNeurohackControls;   0  70 70 70))
-					(cnvDrawText 435 340 "Neural damage increasing" 'Large '(255 255 255) 'center)
-					(cnvDrawText 435 360 "(decrease viral load)" 'Large '(255 255 255) 'center)
+					(cnvDrawText 435 340 (scrTranslate gScreen 'textNeurohackIncreasing) 'Large '(255 255 255) 'center)
+					(cnvDrawText 435 360 (scrTranslate gScreen 'textNeurohackHelp4) 'Large '(255 255 255) 'center)
 					)
 			</Canvas>
 		</Display>
@@ -291,20 +354,35 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(scrSetDesc gScreen
-						"Increase viral load to cause neural damage and break down the AI's resistance.\n\n"
-						"You will succeed if resistance is 0 and neural damage is 10 or less.\n\n"
-						"You will fail if resistance is 0 and neural damage is greater than 10 or if you run out of virus."
-						)
+					(scrSetDescTranslate gScreen 'descNeurohackWelcome gData)
 				</OnPaneInit>
 				
 				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
+					<Action id="actionContinue" default="1" cancel="1">
 						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
 		</Panes>
+
+		<Language>
+			<Text id="descNeurohackWelcome">
+				Increase viral load to cause neural damage and break down the AI's resistance.
+
+				You will succeed if resistance is 0 and neural damage is %maxDamage% or less.
+
+				You will fail if resistance is 0 and neural damage is greater than %maxDamage% or if you run out of virus.
+			</Text>
+
+			<Text id="textNeurohackDecreasing">Neural damage decreasing</Text>
+			<Text id="textNeurohackIncreasing">Neural damage increasing</Text>
+			<Text id="textNeurohackSteady">Neural damage steady</Text>
+
+			<String id="textNeurohackHelp1">(%maxDamage% or less&mdash;acceptable level)</String>
+			<String id="textNeurohackHelp2">(greater than %maxDamage%&mdash;unacceptable)</String>
+			<String id="textNeurohackHelp3">(increase viral load)</String>
+			<String id="textNeurohackHelp4">(decrease viral load)</String>
+		</Language>
 	</DockScreen>
 	
 <!-- RESOURCES -->
