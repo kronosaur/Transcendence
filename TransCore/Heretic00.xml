@@ -25,7 +25,6 @@
 			noDebrief=		"true"
 			>
 
-
 		<Events>
 			<OnCreate>
 				(switch

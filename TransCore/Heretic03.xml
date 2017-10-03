@@ -28,7 +28,7 @@
 						(msnDestroy gSource)
 
 					;	Prevent duplicates (maxAppearing only counts accepted missions)
-					(msnFind "* +unid:&msDantalionInformant;;")
+					(msnFind "* +unid:&msHereticSettlement;;")
 						(msnDestroy gSource)
 
 					;	Set up the mission

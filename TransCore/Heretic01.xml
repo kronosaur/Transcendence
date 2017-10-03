@@ -23,7 +23,7 @@
 
 	<MissionType UNID="&msHereticSvalbard;"
 			name=			"Svalbard"
-			attributes=		"svalbardMission"
+			attributes=		"svalbardMission, hereticMission"
 
 			level=			"10"
 			scope=			"system"
