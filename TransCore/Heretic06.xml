@@ -1,0 +1,240 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Iocrym Artifact ==============================================
+
+
+	EXTRA DATA
+
+	targetID:			ID of Xenophobe Ark
+	itemRequired:		Iocrym Cybernetic Tower item to recover
+
+	status:
+		Nil:				Mission not yet started
+
+	======================================================================== -->
+
+	<MissionType UNID="&msHereticIocrymArtifact;"
+			name=			"Iocrym Artifact"
+			attributes=		"taikonResearch, hereticMission"
+
+			level=			"10"
+
+			maxAppearing=	"1"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	This mission only works in Heretic
+					(!= (sysGetNode) 'G2)
+						(msnDestroy gSource)
+
+					;	Set up the mission
+					(block Nil
+						)
+					)
+			</OnCreate>
+
+			<OnStarted>
+				(block (
+					(orbitRadius (random 840 900))
+					(escortCount (random 6 8))
+					(angleInc (divide 360 escortCount))
+					(theAngle 0)
+					theTarget theItem
+					)
+					;	Create the Xenophobe Ark
+					(setq theTarget
+						(sysCreateShip &scXenophobeArk;
+							(sysVectorRandom Nil orbitRadius 150 "TA")
+							&svXenophobes;
+							))
+					(shpOrder theTarget 'orbit (sysFindObject Nil "tN +star") orbitRadius)
+
+					;	Remember and register for events
+					(msnRegisterForEvents gSource theTarget)
+					(msnSetData gSource 'targetID (objGetID theTarget))
+
+					;	Add the MacGuffin
+					(setq theItem (itmCreate &itIocrymCyberneticTower; 1))
+					(objAddItem theTarget theItem)
+					(msnSetData gSource 'itemRequired theItem)
+
+					;	Create some defenders
+					(for i 1 escortCount
+						(block (theEscort)
+							(setq theEscort (sysCreateShip &scXenophobeDefender; (objGetPos theTarget) &svXenophobes;))
+							(shpOrder theEscort 'escort theTarget theAngle 150)
+							(setq theAngle (+ theAngle angleInc))
+							(for j 1 20
+								(block (theFighter)
+									(setq theFighter (sysCreateShip &scXenophobeFighter; (objGetPos theEscort) &svXenophobes;))
+									(shpOrder theFighter 'patrol theEscort 15)
+									)
+								)
+							)
+						)
+					)
+			</OnStarted>
+
+			<OnAcceptedUndock>
+				(block Nil
+					(msnRegisterForEvents gSource gPlayerShip)
+					)
+			</OnAcceptedUndock>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)))
+			</OnSetPlayerTarget>
+
+			<OnObjDestroyed>
+				(switch
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						Nil
+					)
+			</OnObjDestroyed>
+
+			<OnObjDocked>
+				(switch
+					;	Only care about the player docking with owner while mission is active,
+					;	so ignore anything else
+					(or (!= aObjDocked gPlayerShip)
+							(!= (objGetID aDockTarget) (msnGetProperty gSource 'ownerID))
+							(not (msnGetProperty gSource 'isActive))
+							)
+						Nil
+
+					;	If the player has docked with the Taikon station, and 
+					;	if they have the necessary item, then the mission 
+					;	succeeds.
+					(objHasItem gPlayerShip (msnGetData gSource 'itemRequired))
+						(block Nil
+							(objRemoveItem gPlayerShip (msnGetData gSource 'itemRequired))
+							(msnSuccess gSource)
+							)
+
+					;	If no object in the system has the tower, then the wreck must
+					;	have been destroyed (or the player took it out system), so
+					;	mission fails
+					(not (filter (sysFindObject Nil "ts") theObj (objHasItem theObj (msnGetData gSource 'itemRequired))))
+						(msnFailure gSource)
+					)
+			</OnObjDocked>
+
+			<OnCanBrief>
+				(if (msnFind "a +hereticMission;")
+					(msnTranslate gSource 'textBusy)
+					)
+			</OnCanBrief>
+
+			<OnReward>
+				(objAddItem gPlayerShip (itmCreate &itHereticResearchROM; 1))
+			</OnReward>
+
+			<OnGetNextScreen>
+				(block (missionObj)
+					(if (and (= aScreenType 'SuccessFollowUp)
+							(setq missionObj (msnFind "Po +unid:&msHereticIocrymAttack;;"))
+							)
+						(block Nil
+							(msnSetUnavailable missionObj)
+							{
+								nextScreen: &dsRPGMessage;
+								nextScreenData: {
+									desc: (msnTranslate gSource 'textSentinelAttack)
+									}
+								}
+							)
+						)
+					)
+			</OnGetNextScreen>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="textSummary">
+			</Text>
+			<Text id="Intro">
+				A tall man in a corporate suit approaches you:
+
+				"Welcome to TVX-1! Taikon Ventures is out here in the Heretic system
+				studying Iocrym technology. If you're interested, we could use your
+				help. All your discoveries will be placed in the public domain through
+				our Free Knowledge Foundation\x99."
+			</Text>
+			<Text id="Briefing">
+				"There is an Iocrym artifact in the system that could help us to
+				learn much more about their technology. Unfortunately, a Xenophobe
+				fleet found it before we could study it and now they are refusing
+				to share it."
+				
+				"The Xenophobes are a pest here in the Outer Realm&mdash;I don't
+				think anyone will miss them if you destroy them and take the
+				artifact back. Will you help us?"
+			</Text>
+			<Text id="AcceptReply">
+				"Wonderful! We'll give you the coordinates of the fleet. There are
+				quite a lot of them, but you should be able to handle them with
+				your weapons. I'm pretty sure."
+			</Text>
+			<Text id="DeclineReply">
+				"I understand. Killing a Xenophobe fleet is no small thing. But
+				look at it this way: they would have no problem killing us. And
+				ultimately, out here at the edge of Human Space, we're all alone.
+				Think about it and come back when you change your mind."
+			</Text>
+			<String id="InProgress">
+				"Have you found the Iocrym artifact yet?"
+			</String>
+			<Text id="SuccessDebrief">
+				A group of Taikon scientists marvel over the Iocrym cybernetic tower.
+				They immediately begin taking readings. The man in the corporate suit
+				congratulates you:
+
+				"Thank you for helping us&mdash;this is the first close look we've
+				had at this kind of Iocrym technology. I have no doubt that it will
+				help us. We've recorded our scans on to this ROM, take it to Kate
+				Morgental aboard the Svalbard Explorer."
+			</Text>
+			<Text id="textSentinelAttack">
+				As you turn to leave, the Iocrym cybernetic tower begins to emit a
+				piercing high-pitched tone. Over the deafening screech you hear one
+				of the scientists yell:
+
+				"It's sending out a high-frequency signal of some sort! I think it's
+				a communications signal aimed at the outer system. My guess is that
+				the Iocrym now know that we've got it!"
+			</Text>
+			<Text id="FailureDebrief">
+				The man in the corporate suit holds his head in his hands:
+
+				"Without that cybernetic tower to study we've got nothing!
+				How am I going to explain this to my VP?"
+			</Text>
+
+			<Text id="textBusy">
+				A tall man in a corporate suit approaches you:
+
+				"Welcome! When your current mission is complete, visit us again.
+				We have a mutually beneficial proposition for you."
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

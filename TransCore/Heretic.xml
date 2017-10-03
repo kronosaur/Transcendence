@@ -1439,21 +1439,13 @@
         </Language>
 	</StationType>
 
-	<!-- TVX-1
-
-	EXTRA DATA
-
-	status:				Status of the station
-							Nil						= Mission has not started yet
-							'introDone				= Player has been told about mission
-							'inProgress				= Mission in progress
-							'complete				= Mission is complete (successfully)
-							'failed					= Mission failed
-	-->
+	<!-- TVX-1 -->
 
 	<StationType UNID="&stTVX1Outpost;"
 			name=				": Taikon research outpost TVX-1"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1508,349 +1500,37 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(block Nil
-					(intCorporateOnDestroy)
-					
-					(if (eq (herStatus 'currentMission) 'missionTaikon)
-						(herStatusClear 'currentMission)
-						)
-
-					(if (not (herStatus 'missionTaikon))
-						(herStatusSet 'missionTaikon 'failure)
-						)
-					)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"You are docked at a Taikon research station.">
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Research Lab" default="1" key="R">
-								(block (status)
-									(setq status (objGetData gSource "status"))
-									(switch
-										(herAttackInProgress gSource)
-											(scrShowPane gScreen "AttackInProgress")
-
-										(objGetItems gPlayerShip "* +IocrymCyberneticTower")
-											(scrShowPane gScreen "TowerFound")
-
-										(not status)
-											(if (herStatus 'currentMission)
-												(scrShowPane gScreen "DifferentMission")
-												(scrShowPane gScreen "MissionIntro")
-												)
-
-										(eq status 'introDone)
-											(if (herStatus 'currentMission)
-												(scrShowPane gScreen "DifferentMission")
-												(scrShowPane gScreen "Mission")
-												)
-												
-										(or (eq status 'complete) (eq status 'failed))
-											(scrShowPane gScreen "MissionComplete")
-											
-										; If no item in the system has the tower, then the wreck
-										; must have been destroyed
-										(not (filter (sysFindObject Nil "ts") theObj (objGetItems theObj "* +IocrymCyberneticTower")))
-											(scrShowPane gScreen "MissionFailure")
-
-										(eq status 'inProgress)
-											(scrShowPane gScreen "MissionInProgress")
-										)
-									)
+							<Action id="actionResearchLab" default="1">
+								(rpgMissionAssignment {
+									missionCriteria: (cat "n +taikonResearch; =" (sysGetLevel) ";")
+									noMissionTextID: 'descNoMissions
+									})
 							</Action>
 
-							<Action name="Dock Services" key="D">
+							<Action id="actionDockServices">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
 					</Default>
-
-					<AttackInProgress>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"A tall man in corporate suit approaches you:\n\n"
-								"\"We're under attack! The Iocrym have finally decided to kick us out of the system. "
-								"Help us! The longer we can survive, the better chance we have of discovering how to "
-								"defeat them!\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</AttackInProgress>
-
-					<MissionIntro>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"A tall man in a corporate suit approaches you:\n\n"
-								"\"Welcome to TVX-1! Taikon Ventures is out here in the Heretic system studying Iocrym technology. "
-								"If you're interested, we could use your help. All your discoveries will be placed in the public domain "
-								"through our Free Knowledge Foundation\x99.\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(objSetData gSource "status" 'introDone)
-									(scrShowPane gScreen "Mission")
-									)
-							</Action>
-						</Actions>
-					</MissionIntro>
-
-					<Mission>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"There is an Iocrym artifact in the system that could help us to learn much more about their technology. "
-								"Unfortunately, a Xenophobe fleet found it before we could study it and now they are refusing to share it.\n\n"
-								"\"The Xenophobes are a pest here in the Outer Realm\x97I don't think anyone will miss them if you destroy them "
-								"and take the artifact back. Will you help us?\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Accept" default="1" key="A">
-								(scrShowPane gScreen "MissionDesc")
-							</Action>
-
-							<Action name="Decline" cancel="1" key="D">
-								(scrShowPane gScreen "MissionDeclined")
-							</Action>
-						</Actions>
-					</Mission>
-
-					<MissionDesc>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"Wonderful! We'll give you the coordinates of the fleet. There are quite a lot of them, but you should "
-								"be able to handle them with your weapons. I'm pretty sure.\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(block (theTarget orbitRadius escortCount theAngle angleInc)
-									; Create the Xenophobe
-									(setq orbitRadius (random 840 900))
-									(setq theTarget
-										(sysCreateShip &scXenophobeArk;
-											(sysVectorRandom Nil orbitRadius 150 "TA")
-											&svXenophobes;
-											))
-									(shpOrder theTarget 'orbit (sysFindObject Nil "tN +star") orbitRadius)
-
-									; Add the MacGuffin
-									(objAddItem theTarget (itmCreate &itIocrymCyberneticTower; 1))
-
-									; Create some defenders
-									(setq escortCount (random 6 8))
-									(setq theAngle 0)
-									(setq angleInc (divide 360 escortCount))
-									(for i 1 escortCount
-										(block (theEscort)
-											(setq theEscort (sysCreateShip &scXenophobeDefender; (objGetPos theTarget) &svXenophobes;))
-											(shpOrder theEscort 'escort theTarget theAngle 150)
-											(setq theAngle (add theAngle angleInc))
-											(for j 1 20
-												(block (theFighter)
-													(setq theFighter (sysCreateShip &scXenophobeFighter; (objGetPos theTarget) &svXenophobes;))
-													(shpOrder theFighter 'patrol theEscort 15)
-													)
-												)
-											)
-										)
-
-									; Point the player
-									(shpCancelOrders gPlayerShip)
-									(shpOrder gPlayerShip 'attack theTarget)
-
-									; Remember this object
-									(objRegisterForEvents gSource theTarget)
-									(objSetObjRefData gSource "target" theTarget)
-
-									; Done
-									(objSetData gSource "status" 'inProgress)
-									(herStatusSet 'currentMission 'missionTaikon)
-									
-									(scrExitDock gScreen)
-									)
-							</Action>
-						</Actions>
-					</MissionDesc>
-
-					<MissionInProgress>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"Have you found the Iocrym artifact yet?\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(block (theTarget)
-									(setq theTarget (objGetObjRefData gSource "target"))
-									
-									; Add pointer to ship again
-									(if theTarget
-										(block Nil
-											(shpCancelOrders gPlayerShip)
-											(shpOrder gPlayerShip 'attack theTarget)
-											)
-										)
-										
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</MissionInProgress>
-
-					<TowerFound>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"A group of Taikon scientists marvel over the Iocrym cybernetic tower. They immediately "
-								"begin taking readings. The man in the corporate suit congratulates you:\n\n"
-								"\"Thank you for helping us\x97this is the first close look we've had at this kind of Iocrym "
-								"technology. I have no doubt that it will help us. We've recorded our scans on to this ROM. "
-								"take it to Kate Morgental aboard the Svalbard Explorer.\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(objRemoveItem gPlayerShip (item (objGetItems gPlayerShip "* +IocrymCyberneticTower") 0))
-									(objAddItem gPlayerShip (itmCreate &itHereticResearchROM; 1))
-									
-									(herStatusClear 'currentMission)
-									(herStatusSet 'missionTaikon 'success)
-
-									(objSetData gSource "status" 'complete)
-									
-									(if (not (herStatus 'sentinelAttack))
-										(scrShowPane gScreen "SentinelAttack")
-										(scrShowPane gScreen "Default")
-										)
-									)
-							</Action>
-						</Actions>
-					</TowerFound>
-
-					<MissionFailure>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"The man in the corporate suit holds his head in his hands:\n\n"
-								"\"Without that cybernetic tower to study we've got nothing! "
-								"How am I going to explain this to my VP?\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(herStatusClear 'currentMission)
-									(herStatusSet 'missionTaikon 'failure)
-									
-									(objSetData gSource "status" 'failed)
-
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</MissionFailure>
-					
-					<SentinelAttack>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"As you turn to leave, the Iocrym cybernetic tower begins to emit a piercing high-pitched tone. "
-								"Over the deafening screech you hear one of the scientists yell:\n\n"
-								"\"It's sending out a high-frequency signal of some sort! I think it's a communications signal "
-								"aimed at the outer system. My guess is that the Iocrym now know that we've got it!\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(block Nil
-									(herStatusSet 'sentinelAttack)
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</SentinelAttack>
-
-					<MissionComplete>
-						<OnPaneInit>
-							(if (eq (objGetData gSource "status") 'complete)
-								(scrSetDesc gScreen
-									"\"Thanks for helping us. We've been studying the Iocrym cybernetic tower.\""
-									)
-								(scrSetDesc gScreen
-									"\"It's a shame we don't have that Iocrym cybernetic tower to study. "
-									"Maybe some of the other research stations will have better luck.\""
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MissionComplete>
-
-					<MissionDeclined>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"I understand. Killing a Xenophobe fleet is no small thing. But look at it this way: "
-								"they would have no problem killing us. And ultimately, out here at the edge of Human Space, "
-								"we're all alone. Think about it and come back when you change your mind.\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MissionDeclined>
-
-					<DifferentMission>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"A tall man in a corporate suit approaches you:\n\n"
-								"\"Welcome! When your current mission is complete, visit us again. We have a mutually "
-								"beneficial proposition for you.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</DifferentMission>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
 		<DockingPorts>
@@ -1864,6 +1544,19 @@
 			<Port x="36"	y="88" />
 		</DockingPorts>
 
+		<Language>
+			<Text id="actionResearchLab">[R]esearch Lab</Text>
+
+			<Text id="descWelcome">
+				You are docked at a Taikon research station.
+			</Text>
+			<Text id="descNoMissions">
+				A tall man in a corporate suit approaches you:
+
+				"Welcome to TVX-1! Taikon Ventures is out here in the Heretic
+				system studying Iocrym technology."
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Ares Research Outpost
