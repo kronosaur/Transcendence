@@ -1,0 +1,432 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Huygens Explorer =============================================
+
+
+	EXTRA DATA
+
+	destID:				ID of the Huygens Explorer
+	targetID:			ID of current mission target
+	targetIDs:			List of all target IDs (buoys and Huygens)
+
+	status:
+		Nil:				Mission not yet started
+		'searching			Player is still searching for the Huygens
+		'foundHuygens		Player has docked with the Huygens
+		'foundRom			Player has returned to Ringers with the research ROM
+
+	======================================================================== -->
+
+	<MissionType UNID="&msHereticHuygensExplorer;"
+			name=			"Huygens Explorer"
+			attributes=		"ringersResearch, hereticMission, deliveryMission"
+
+			level=			"10"
+
+			maxAppearing=	"1"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	This mission only works in Heretic
+					(!= (sysGetNode) 'G2)
+						(msnDestroy gSource)
+
+					;	Set up the mission
+					(block Nil
+						)
+					)
+			</OnCreate>
+
+			<OnStarted>
+				(block (
+					(baseObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					curObj prevObj thePos theRom targetIDs
+					)
+					;	Create the Heretic research ROM
+					(setq theRom (itmSetData (itmCreate &itHereticResearchROM; 1) 'missionID (objGetID gSource)))
+					(msnSetData gSource 'researchROM theRom)
+
+					(for i 1 6
+						(block Nil
+							(if (not thePos)
+								;	First buoy should be close to station and system center
+								(loop (or (not thePos) (gr (sysVectorDistance buoyPos) 400))
+									(setq thePos (sysVectorRandom baseObj 200 90 "TA"))
+									)
+								;	Remaining buoys spiral outwards
+								(block (
+									(angle (modulo (+ (sysVectorAngle thePos) (random 30 90)) 360))
+									(radius (min (+ -60 (* i 150) (random 15 60)) 900))
+									)
+									(setq thePos (sysVectorRandom
+										(sysVectorPolarOffset Nil angle radius)
+										(lambda Nil (random 5 60))
+										50
+										"TA"
+										))
+									)
+								)
+
+							(if (= i 6)
+								;	Final location is the Huygens
+								(block Nil
+									(setq curObj (sysCreateShip &scHuygensExplorer; thePos &svSentinelAI;))
+									(objSetEventHandler curObj &evHereticHuygensExplorer;)
+									(objFireEvent curObj 'OnBehaviorStart)
+
+									(objAddItem curObj theRom)
+									(msnRegisterForEvents gSource curObj)
+									(msnSetData gSource 'destID (objGetID curObj))
+									)
+
+								;	Otherwise create a buoy
+								(block (
+									(theDay (+ 3 (* i 2) (random 0 1)))
+									(theHour (random 0 23))
+									(theMinute (random 0 59))
+									(theSecond (random 0 59))
+									(logTime (cat "2419-01-"
+										(if (ls theDay 10) "0" "") theDay " "
+										(if (ls theHour 10) "0" "") theHour ":"
+										(if (ls theMinute 10) "0" "") theMinute ":"
+										(if (ls theSecond 10) "0" "") theSecond
+										))
+									(logText (cat
+										(msnTranslate gSource 'textLog)
+										"\n" logTime "\n\n"
+										(msnTranslate gSource (cat "textLog" i))
+										))
+									)
+									(setq curObj (sysCreateStation &stLogBuoy; thePos))
+									(objSetData curObj 'logText logText)
+									)
+								)
+
+							;	Create some additional objects at each point
+							(switch
+								; If we're at the first buoy, create some wrecks around the area
+								(= i 1)
+									(block Nil
+										(sysCreateShipwreck &scIocrymSentinel; (sysVectorPolarOffset thePos (random 0 359) 4) &svNeutral;)
+										(for j 1 (random 3 4)
+											(sysCreateShipwreck &scLuminousDrone; (sysVectorPolarOffset thePos (random 0 359) (random 5 12)) &svNeutral;)
+											)
+										)
+
+								;	At the 5th buoy, create a centurion wreck
+								(= i 5)
+									(block (theWreck theMessage)
+										(setq theWreck (sysCreateShipwreck &scCenturion; (sysVectorPolarOffset thePos (random 0 359) (random 4 12)) &svNeutral;))
+										(setq theMessage (itmCreate &itDataROM; 1))
+										(setq theMessage (itmSetData theMessage 'Text (msnTranslate gSource 'textWarning)))
+										(objAddItem theWreck theMessage)
+										)
+								)
+
+							(lnkAppend targetIDs (objGetID curObj))
+
+							;	The previous buoy should point to this one
+							;(if prevObj (objSetObjRefData prevObj 'nextObj curObj))
+							;(setq prevObj curObj)
+							)
+						)
+					;	Save the list of all target IDs
+					(msnSetData gSource 'targetIDs targetIDs)
+					(msnSetData gSource 'targetID (@ targetIDs 0))
+					)
+			</OnStarted>
+
+			<OnAcceptedUndock>
+				(block Nil
+					(msnSetData gSource 'status 'searching)
+					(msnRegisterForEvents gSource gPlayerShip)
+					)
+			</OnAcceptedUndock>
+
+			<OnObjDocked>
+				(block (
+					(targetIDs (msnGetData gSource 'targetIDs))
+					targetNum
+					)
+					(switch
+						(!= aObjDocked gPlayerShip)
+							Nil
+
+						(= (objGetID aDockTarget) (msnGetProperty gSource 'ownerID))
+							(if (objHasItem gPlayerShip (msnGetData gSource 'researchROM))
+								(msnSetData gSource 'status 'foundROM)
+								)
+
+						;	Huygens is handled by delivery mission code
+						(= (objGetID aDockTarget) (msnGetData gSource 'destID))
+							Nil
+
+						;	If we've docked with a buoy then point player to the next one
+						(setq targetNum (find targetIDs (objGetID aDockTarget)))
+							(block Nil
+								(msnSetData gSource 'targetID (@ targetIDs (+ targetNum 1)))
+								(msnSetPlayerTarget gSource)
+								)
+								
+						)
+					)
+			</OnObjDocked>
+
+			<OnDeliveryMissionCompleted>
+				(block (
+					(huygensObj (objGetObjByID (msnGetData gSource 'destID)))
+					)
+					(sovSetDisposition &svSentinelAI; &svPlayer; 'enemy)
+					(sovSetDisposition &svPlayer; &svSentinelAI; 'enemy)
+
+					(shpCancelOrders huygensObj)
+					(shpOrder huygensObj 'wait 5)
+					(shpOrder huygensObj 'attack gPlayerShip)
+
+					(msnSetData gSource 'status 'foundHuygens)
+
+					{desc: (msnTranslate gSource 'textDockHuygens) forceUndock:True}
+					)
+			</OnDeliveryMissionCompleted>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)))
+			</OnSetPlayerTarget>
+
+			<OnObjDestroyed>
+				(switch
+					;	If Huygens is destroyed then mission succeeds
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'destID))
+						(msnSuccess gSource)
+					)
+			</OnObjDestroyed>
+
+			<OnCanBrief>
+				(if (msnFind "a +hereticMission;")
+					(msnTranslate gSource 'textBusy)
+					)
+			</OnCanBrief>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+
+			<Text id="SuccessDebrief">
+				(list
+					(if (= (msnGetData gSource 'status) 'foundROM)
+						{	textID: 'textSuccessFoundROM	}
+						{	textID: 'textSuccessSeekROM		}
+						)
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="textSummary">
+				The Ringers have lost communications with the Huygens Explorer.
+				Your mission is to investigate and provide any assistance they
+				may require.
+			</Text>
+			<Text id="Intro">
+				A young ringer greets you as you enter the lab. His melodic
+				voice is translated through a device on his neck:
+
+				"Earthican, welcome! We seek answers to questions related to Iocrym.
+				We seek answers to questions related to their intentions. All
+				human-descendents are interested. Ringer and Earthican are united."
+			</Text>
+			<Text id="Briefing">
+				"The Earthican vessel Huygens Explorer seeks answers to questions.
+				We help the vessel to seek answers throughout the system. But the
+				vessel does not communicate. We fear the vessel struggles with
+				danger. We fear the vessel ceases to exist."
+				
+				"The Earthican vessel Huygens Explorer needs help. Do you seek
+				to journey to help them?"
+			</Text>
+			<String id="AcceptLabel">"[Y]es, I will help."</String>
+			<Text id="AcceptReply">
+				"We express relief. You will help the Huygens Explorer.
+
+				"We give you coordinates to begin your search. The Earthican
+				vessel is not there, but possible answers are there. We seek
+				answers. Ringer and Earthican are united."
+			</Text>
+			<String id="DeclineLabel">"[N]o, I don't have time."</String>
+			<Text id="DeclineReply">
+				"We express surprise. We express sadness. The Earthican vessel
+				Huygens Explorer needs help. Ringer and Earthican are opposed."
+			</Text>
+			<Text id="InProgress">
+				The young ringer greets you:
+
+				"We express surprise. Answers are not here. Answers exist out there."
+			</Text>
+			<Text id="textSuccessFoundROM">
+				A group of ringers greet you. The young ringer is among them
+				and he speaks through a translator:
+
+				"We express sadness. The Earthican vessel Huygens Explorer
+				ceases to exist. The collective diminishes. But answers exist.
+				Information ROM exists that contains possible answers to Iocrym
+				intentions. The sacrifice achieves purpose."
+			</Text>
+			<Text id="textSuccessSeekROM">
+				A group of ringers greet you. The young ringer is among them
+				and he speaks through a translator:
+
+				"We express sadness. The Earthican vessel Huygens Explorer
+				ceases to exist. The collective diminishes. But answers exist.
+				Information ROM in wreckage contains possible answers to Iocrym
+				intentions. Seek to retrieve the ROM and the answers."
+			</Text>
+			<Text id="textBusy">
+				A young ringer greets you as you enter the lab:
+
+				"Earthican, welcome! We seek answers to questions related to Iocrym.
+				Return here once your other task is done and seek answers with us."
+			</Text>
+			<Text id="SuccessMsg">Huygens Explorer destroyed!</Text>
+
+			<Text id="textLog">
+				Huygens Explorer\n
+				Captain's Log
+			</Text>
+			<Text id="textLog1">
+				The signal that we were tracking led us to an interesting discovery:
+				the wreck of an Iocrym sentinel with an intact AI core. It must have
+				been destroyed in a battle because we found several Luminous drone
+				wrecks nearby.
+
+				We've taken the sentinel's AI core onboard in hopes that it will 
+				help us to understand the Iocrym and what they are doing.
+
+				We've deployed a log buoy marking this location and attached the
+				coordinates of our next destination.
+			</Text>
+			<Text id="textLog2">
+				In studying the sentinel's AI core we have learned a lot more about
+				the Iocrym. They are an ancient race bred to be guardians and
+				defenders. Their role is to protect other civilizations from
+				(unspecified) threats originating at the periphery of the galactic
+				disk. Is it possible that they consider us to be a threat? It seems
+				hard to believe considering how advanced their technology is.
+
+				Chief Scientist Masud is eager to learn more from the AI. We have
+				decided to connect it to the Huygens' mainframe in order analyze the
+				information more quickly. Of course we have followed the standard
+				quarantine procedures to ensure the AI cannot compromise our systems.
+			</Text>
+			<Text id="textLog3">
+				In the last few days we have learned much from the sentinel's AI.
+				Masud has made progress interpreting some of the Iocrym symbols and
+				language. Much of the information that we're finding is actually
+				about us (human beings, that is). It seems they are as curious about
+				us as we are about them. More than curious, actually. They are almost
+				obsessed; they are frantic to learn quickly, which is unnerving for
+				an ancient race used to dealing in eons.
+
+				The only problem we have to report is a fault in our communications
+				array. The Huygen's mainframe indicates that we will be unable to
+				send or receive for the next seven hours, but the outage will not
+				affect our investigations.
+			</Text>
+			<Text id="textLog4">
+				The sentinel's AI has shut down for unknown reasons. We have tried
+				several times to re-establish a connection but to no avail. Masud
+				is puzzled and he has begun an analysis of all data traffic between
+				our mainframe and the AI.
+
+				More worrying to us is a newly discovered fault in our main drive.
+				The Huygens' mainframe believes the drive is damaged, but that it
+				can be repaired. The onboard nanofacs are creating the necessary
+				parts under computer control.
+
+				Computer checksums and diagnostics reveal no mainframe problems;
+				other manual checks show that the mainframe is correct in its
+				diagnosis and repairs of the main drive. Nevertheless, the crew is
+				uneasy, particularly since communications is still inoperative.
+			</Text>
+			<Text id="textLog5">
+				The sentinel's AI has control of the ship! It must have exploited a
+				vulnerability in the mainframe kernel or perhaps gained physical
+				access to the databanks. We don't even know when the AI gained
+				control...it could have happened the second we connected. We are
+				going to try to disable the main drive, but if everything else fails
+				we will attempt to overload the reactor.
+
+				We have attached tracking signatures to this buoy that will lead to
+				our current location. Whoever finds this log, please come and help us!
+			</Text>
+			<Text id="textWarning">
+				RECORDED from astrokor.masud.9277huygens_explorer.rinc
+
+				MESSAGE BEGINS\n
+				Save yourselves... the buoy message is not from us...
+				crew is already dead... Save yourselves: Destroy the Huygens!
+
+				MESSAGE ENDS
+			</Text>
+			<Text id="textDockHuygens">
+				You dock with the Huygens Explorer, but the airlock reports zero
+				pressure inside. Peering in through the airlock window you see
+				floating bodies and debris.
+
+				Suddenly you feel the Huygens's engines kick into action.
+				Your stomach fills with dread...
+			</Text>
+		</Language>
+	</MissionType>
+
+
+<!-- EVENT HANDLERS -->
+
+	<!-- Huygens Explorer Event Handler	-->
+
+	<Type unid="&evHereticHuygensExplorer;">
+		<Events>
+			<OnBehaviorStart>
+				(block Nil
+					(shpCancelOrders gSource)
+					(shpOrder gSource 'hold)
+					)
+			</OnBehaviorStart>
+
+			<OnAttacked>
+				(if (and gPlayerShip (= aOrderGiver gPlayerShip)
+						(= (shpGetOrder gSource) 'hold))
+					(block Nil
+						(sovSetDisposition &svSentinelAI; &svPlayer; 'enemy)
+						(sovSetDisposition &svPlayer; &svSentinelAI; 'enemy)
+
+						(shpCancelOrders gSource)
+						(shpOrder gSource 'attack gPlayerShip)
+						)
+					)
+			</OnAttacked>
+
+			<OnOrdersCompleted>
+				(block Nil
+					(shpOrder gSource 'waitForEnemy)
+					(shpOrder gSource 'attackNearestEnemy)
+					)
+			</OnOrdersCompleted>
+		</Events>
+	</Type>
+
+</TranscendenceModule>

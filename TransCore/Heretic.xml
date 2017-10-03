@@ -641,7 +641,7 @@
 			attributes=			"capitalShip, genericClass, huygensExplorer, majorShip, ringers"
 
 			dockingPorts=		"4"
-			dockScreen=			"Main"
+			dockScreen=			"&dsRPGAbandonedStation;"
 			>
 
 		<Armor
@@ -676,10 +676,6 @@
 					sizeY=		"40"
 					/>
 		</Interior>
-		
-		<Items>
-			<Item count="1" item="&itHereticResearchROM;"/>
-		</Items>
 
 		<Image imageID="&rsCorporateExplorer;" imageWidth="192" imageHeight="192" />
 
@@ -689,63 +685,6 @@
 		</Effects>
 		
 		<Names definiteArticle="true">Huygens Explorer</Names>
-
-		<Events>
-			<OnAttacked>
-				(if (and (eq aOrderGiver gPlayerShip)
-						(eq (shpGetOrder gSource) 'hold))
-					(block Nil
-						(sovSetDisposition &svSentinelAI; &svPlayer; 0)
-						(sovSetDisposition &svPlayer; &svSentinelAI; 0)
-
-						(shpCancelOrders gSource)
-						(shpOrder gSource 'attack gPlayerShip)
-						)
-					)
-			</OnAttacked>
-			
-			<OnDestroy>
-				(shpCancelOrders gPlayerShip)
-			</OnDestroy>
-
-			<OnOrdersCompleted>
-				(block Nil
-					(shpOrder gSource 'waitForEnemy)
-					(shpOrder gSource 'attackNearestEnemy)
-					)
-			</OnOrdersCompleted>
-		</Events>
-
-		<DockScreens>
-			<Main>
-				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDesc gScreen 
-								"You dock with the Huygens Explorer, but the airlock reports zero pressure "
-								"inside. Peering in through the airlock window you see floating bodies and debris.\n\n"
-								"Suddenly you feel the Huygens's engines kick into action. "
-								"Your stomach fills with dread..."
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
-								(block Nil
-									(sovSetDisposition &svSentinelAI; &svPlayer; 0)
-									(sovSetDisposition &svPlayer; &svSentinelAI; 0)
-
-									(shpCancelOrders gSource)
-									(shpOrder gSource 'attack gPlayerShip)
-
-									(scrExitDock gScreen)
-									)
-							</Action>
-						</Actions>
-					</Default>
-				</Panes>
-			</Main>
-		</DockScreens>
 
 		<AISettings
 			fireRateAdj=		"15"
@@ -1205,23 +1144,13 @@
 		</Events>
 	</StationType>
 
-	<!-- Ringers Research Outpost
-
-	EXTRA DATA
-
-	huygensExplorer:	Pointer to the Huygens Explorer
-
-	status:				Status of the station
-							Nil						= Mission has not started yet
-							'introDone				= Player has been told
-							'inProgress				= Player doing mission
-							'huygensDestroyed		= The Huygens has been destroyed
-							'complete				= Player has completed the mission
-	-->
+	<!-- Ringers Research Outpost -->
 
 	<StationType UNID="&stRingersResearchHeretic;"
 			name=				"Ringers research outpost"
 			sovereign=			"&svRingers;"
+			inherit=			"&baRingersStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -1291,465 +1220,57 @@
 			</Table>
 		</Reinforcements>
 
-		<StaticData>
-			<logData>
-				(
-					("The signal that we were tracking led us to an interesting discovery: "
-					 "the wreck of an Iocrym sentinel with an intact AI core. It must have been destroyed in "
-					 "a battle because we found several Luminous drone wrecks nearby.\n\n"
-					 "We've taken the sentinel's AI core onboard in hopes that it will help us to understand "
-					 "the Iocrym and what they are doing.\n\n"
-					 "We've deployed a log buoy marking this location and attached the coordinates of "
-					 "our next destination.")
-
-					("In studying the sentinel's AI core we have learned a lot more about the Iocrym. "
-					 "They are an ancient race bred to be guardians and defenders. Their role is to "
-					 "protect other civilizations from (unspecified) threats originating at the periphery "
-					 "of the galactic disk. Is it possible that they consider us to be a threat? It seems "
-					 "hard to believe considering how advanced their technology is.\n\n"
-					 "Chief Scientist Masud is eager to learn more from the AI. We have decided to connect it "
-					 "to the Huygens' mainframe in order analyze the information more quickly. Of course we have followed "
-					 "the standard quarantine procedures to ensure the AI cannot compromise our systems.")
-
-					("In the last few days we have learned much from the sentinel's AI. Masud has made progress "
-					 "interpreting some of the Iocrym symbols and language. Much of the information that we're finding "
-					 "is actually about us (human beings, that is). It seems they are as curious about us as we "
-					 "are about them. More than curious, actually. They are almost obsessed; they are frantic to learn "
-					 "quickly, which is unnerving for an ancient race used to dealing in eons.\n\n"
-					 "The only problem we have to report is a fault in our communications array. The Huygen's mainframe "
-					 "indicates that we will be unable to send or receive for the next seven hours, but the outage will "
-					 "not affect our investigations.")
-
-					("The sentinel's AI has shut down for unknown reasons. We have tried several times "
-					 "to re-establish a connection but to no avail. "
-					 "Masud is puzzled and he has begun an analysis of all data traffic between our mainframe and the AI.\n\n"
-					 "More worrying to us is a newly discovered fault in our main drive. The Huygens' mainframe believes the drive is damaged, "
-					 "but that it can be repaired. The onboard nanofacs are creating the necessary parts under computer control.\n\n"
-					 "Computer checksums and diagnostics reveal no mainframe problems; other manual checks show that the "
-					 "mainframe is correct in its diagnosis and repairs of the main drive. Nevertheless, "
-					 "the crew is uneasy, particularly since communications is still inoperative.")
-
-					("The sentinel's AI has control of the ship! It must have exploited a vulnerability "
-					 "in the mainframe kernel or perhaps gained physical access to the databanks. We don't even know "
-					 "when the AI gained control...it could have happened the second we connected. "
-					 "We are going to try to disable the main drive, but if everything else fails we will "
-					 "attempt to overload the reactor.\n\n"
-					 "We have attached tracking signatures to this buoy that will lead to our current location. "
-					 "Whoever finds this log, please come and help us!")
-					)
-			</logData>
-		</StaticData>
-
-		<Events>
-			<OnCreateBuoy>
-				(block (prevObjPos newAngle newRadius newObjPos theBuoy)
-
-					; Figure out the position of the buoy
-					(if (not aPrevObj)
-						(loop (or (not newObjPos) (gr (sysVectorDistance newObjPos) 400))
-							(setq newObjPos (sysVectorRandom gSource 200 90 "TA"))
-							)
-
-						(block Nil
-							; Figure out the position of the next buoy. First we compute
-							; the position of the previous buoy relative to the system center
-
-							(setq prevObjPos (objGetPos aPrevObj))
-							(setq newAngle (modulo (add (sysVectorAngle prevObjPos) (random 30 90)) 360))
-							(setq newRadius (min (add 90 (multiply aPathPoint 150) (random 15 60)) 900))
-
-							; Next we generate a new position around the solar orbit
-
-							(setq newObjPos
-								(sysVectorRandom
-									(sysVectorPolarOffset Nil newAngle newRadius)
-									(lambda Nil (random 5 60))
-									50
-									"TA"
-									)
-								)
-							)
-						)
-
-					; Create the buoy
-					(switch
-						(eq aPathPoint (count (objGetStaticData gSource "logData")))
-							(block Nil
-								; Create the Huygens
-								(setq theBuoy (sysCreateShip &scHuygensExplorer; newObjPos &svSentinelAI;))
-								(shpOrder theBuoy 'hold)
-								)
-
-						(block (theHour theMinute theSecond logTime logText)
-							; Generate the message time
-							(setq theDay (add 5 (multiply aPathPoint 2) (random 0 1)))
-							(setq theHour (random 0 23))
-							(setq theMinute (random 0 59))
-							(setq theSecond (random 0 59))
-							(setq logTime (cat
-								"2419-01-" (if (ls theDay 10) "0" "") theDay " "
-								(if (ls theHour 10) "0" "") theHour ":"
-								(if (ls theMinute 10) "0" "") theMinute ":"
-								(if (ls theSecond 10) "0" "") theSecond
-								))
-
-							; Generate the message text
-							(setq logText (cat
-								"Huygens Explorer\nCaptain's Log\n" logTime "\n\n"
-								(apply cat
-									(item (objGetStaticData gSource "logData") aPathPoint)
-									)
-								))
-
-							(setq theBuoy (sysCreateStation &stLogBuoy; newObjPos))
-							(objSetData theBuoy "pathPoint" aPathPoint)
-							(objSetData theBuoy "logText" logText)
-							(objSetObjRefData theBuoy "rootObj" gSource)
-							)
-						)
-
-					; Create some additional objects at each point
-					(switch
-						; If we're at the first buoy, create some wrecks around the area
-						(eq aPathPoint 0)
-							(block Nil
-								(sysCreateShipwreck &scIocrymSentinel; (sysVectorPolarOffset newObjPos (random 0 359) 4) &svNeutral;)
-								(for i 1 (random 3 4)
-									(sysCreateShipwreck &scLuminousDrone; (sysVectorPolarOffset newObjPos (random 0 359) (random 5 12)) &svNeutral;)
-									)
-								)
-
-						; At the 4th buoy, create a centurion wreck
-						(eq aPathPoint 4)
-							(block (theWreck theMessage)
-								(setq theWreck (sysCreateShipwreck &scCenturion; (sysVectorPolarOffset newObjPos (random 0 359) (random 4 12)) &svNeutral;))
-								(setq theMessage (itmCreate &itDataROM; 1))
-								(setq theMessage (itmSetData theMessage "Text" (cat
-									"RECORDED from astrokor.masud.9277huygens_explorer.rinc\n\n"
-									"MESSAGE BEGINS\n"
-									"Save yourselves... the buoy message is not from us... crew is already dead... "
-									"Save yourselves: Destroy the Huygens!\n\n"
-									"MESSAGE ENDS"
-									)))
-								(objAddItem theWreck theMessage)
-								)
-						)
-
-					; The previous buoy should point to this one
-					(if aPrevObj
-						(objSetObjRefData aPrevObj "nextObj" theBuoy)
-						)
-
-					; Done
-					theBuoy
-					)
-			</OnCreateBuoy>
-
-			<OnDestroy>
-				(block Nil
-					(intRingerOnDestroy)
-					
-					(if (not (or (eq (herStatus 'currentMission) 'missionHuygensExplorer)
-							(herStatus 'missionHuygensExplorer)))
-						(herStatusSet 'missionHuygensExplorer 'failure)
-						)
-					)
-			</OnDestroy>
-
-			<OnObjDestroyed>
-				(if (eq aObjDestroyed (objGetObjRefData gSource "huygensExplorer"))
-					(block Nil
-						(objSetData gSource "status" 'huygensDestroyed)
-						
-						(herStatusClear 'currentMission)
-						(herStatusSet 'missionHuygensExplorer 'success)
-						(herStatusSet 'sentinelAttack)
-						
-						(shpCancelOrders gPlayerShip)
-						(plyMessage gPlayer "Huygens Explorer destroyed!")
-						)
-					)
-			</OnObjDestroyed>
-		</Events>
-
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"You are docked at a Ringers Collective. Ringer neo-humans float through the vast volume of the station, perfectly adapted to zero-gravity and space.">
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
 
 						<Actions>
-							<Action name="Research Lab" default="1" key="R">
-								(block (status)
-									(setq status (objGetData gSource "status"))
-									(switch
-										(herAttackInProgress gSource)
-											(scrShowPane gScreen "AttackInProgress")
-											
-										(not status)
-											(if (herStatus 'currentMission)
-												(scrShowPane gScreen "DifferentMission")
-												(scrShowPane gScreen "Intro")
-												)
+							<Action id="actionResearchLab" default="1">
+								(rpgMissionAssignment {
+									missionCriteria: (cat "n +ringersResearch; =" (sysGetLevel) ";")
+									noMissionTextID: 'descNoMissions
+									})
+							</Action>
 
-										(eq status 'introDone)
-											(if (herStatus 'currentMission)
-												(scrShowPane gScreen "DifferentMission")
-												(scrShowPane gScreen "Mission")
-												)
+							<Action id="actionCommoditiesExchange">
+								(switch
+									(= (objGetBalance gPlayerShip 'rin) 0)
+										(scrShowPane gScreen 'ExchangeIntro)
 
-										(eq status 'inProgress)
-											(scrShowPane gScreen "MissionInProgress")
-
-										(eq status 'huygensDestroyed)
-											(scrShowPane gScreen "HuygensDestroyed")
-
-										(eq status 'complete)
-											(scrShowPane gScreen "MissionComplete")
-										)
+									(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+										checkMilitaryID: Nil
+										})
 									)
 							</Action>
 
-							<Action name="Supplies" key="S">
-								(if (gr (objGetBalance gPlayerShip 'rin) 0)
-									(scrShowPane gScreen "Exchange")
-									(scrShowPane gScreen "ExchangeIntro")
-									)
-							</Action>
-
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
-					
-					<AttackInProgress>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"A young ringer approaches you as you enter:\n\n"
-								"\"Earthican! Iocrym sentinels attack our home. We seek safety and protection from "
-								"their attacks!\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</AttackInProgress>
 
-					<Intro>
+					<ExchangeIntro>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"A young ringer greets you as you enter the lab. His melodic voice is translated through a device on his neck:\n\n"
-								"\"Earthican, welcome! We seek answers to questions related to Iocrym. We seek answers to questions related to their intentions. "
-								"All human-descendents are interested. Ringer and Earthican are united.\""
-								)
+							(scrSetDescTranslate gScreen 'descExchangeIntro)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								(block Nil
-									(objSetData gSource "status" 'introDone)
-									(scrShowPane gScreen "Mission")
+									(scrShowPane gScreen 'Default)
+									(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+										checkMilitaryID: Nil
+										})
 									)
 							</Action>
-						</Actions>
-					</Intro>
-
-					<Mission>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"The Earthican vessel Huygens Explorer seeks answers to questions. We help the vessel to seek answers throughout the system. "
-								"But the vessel does not communicate. We fear the vessel struggles with danger. We fear the vessel ceases to exist.\n\n"
-								"\"The Earthican vessel Huygens Explorer needs help. Do you seek to journey to help them?\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="&quot;Yes, I will help.&quot;" default="1" key="Y">
-								(block (theFirstBuoy prevBuoy theHuygens)
-
-									; Create all the buoys (and the Huygens)
-									(setq prevBuoy Nil)
-									(for i 0 (count (objGetStaticData gSource "logData"))
-										(block (theBuoy)
-
-											(setq aPathPoint i)
-											(setq aPrevObj prevBuoy)
-											(setq theBuoy (objFireEvent gSource "OnCreateBuoy"))
-
-											(if (not theFirstBuoy)
-												(setq theFirstBuoy theBuoy)
-												)
-
-											(setq prevBuoy theBuoy)
-											)
-										)
-
-									; Point the player at the first buoy
-									(shpCancelOrders gPlayerShip)
-									(shpOrder gPlayerShip 'dock theFirstBuoy)
-
-									; Track the fate of the Huygens
-									(setq theHuygens (sysFindObject gSource "sN +huygensExplorer"))
-									(objSetObjRefData gSource "huygensExplorer" theHuygens)
-									(objRegisterForEvents gSource theHuygens)
-
-									(objSetData gSource "status" 'inProgress)
-									(herStatusSet 'currentMission 'missionHuygensExplorer)
-									
-									(scrShowPane gScreen "MissionAccepted")
-									)
-							</Action>
-
-							<Action name="&quot;No, I don't have time.&quot;" cancel="1" key="N">
-								(scrShowPane gScreen "MissionDeclined")
-							</Action>
-						</Actions>
-					</Mission>
-
-					<MissionAccepted>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"We express relief. You will help the Huygens Explorer.\n\n"
-								"\"We give you coordinates to begin your search. The Earthican vessel is not there, but "
-								"possible answers are there. We seek answers. Ringer and Earthican are united.\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								<Exit/>
-							</Action>
-						</Actions>
-					</MissionAccepted>
-
-					<MissionDeclined>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"We express surprise. We express sadness. The Earthican vessel Huygens Explorer needs help. "
-								"Ringer and Earthican are opposed.\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MissionDeclined>
-
-					<MissionInProgress>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"The young ringer greets you:\n\n"
-								"\"We express surprise. Answers are not here. Answers exist out there.\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MissionInProgress>
-
-					<HuygensDestroyed>
-						<OnPaneInit>
-							(block Nil
-								(scrSetDesc gScreen
-									"A group of ringers greet you. The young ringer is among them and he speaks through a translator:\n\n"
-									"\"We express sadness. The Earthican vessel Huygens Explorer ceases to exist. The collective diminishes. "
-
-									(if (objGetItems gPlayerShip "* +HereticROM")
-										"But answers exist. Information ROM exists that contains possible answers to Iocrym intentions. The sacrifice achieves purpose.\""
-										"But answers exist. Information ROM in wreckage contains possible answers to Iocrym intentions. Seek to retrieve the ROM and the answers.\""
-										)
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(block Nil
-									(objSetData gSource "status" 'complete)
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</HuygensDestroyed>
-
-					<MissionComplete>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"The young ringer greets you. He seems pleased to see you:\n\n"
-								"\"We express joy. Ringer and Earthican are united in seeking answers to Iocrym intentions.\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MissionComplete>
-
-					<DifferentMission>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"A young ringer greets you as you enter the lab:\n\n"
-								"\"Earthican, welcome! We seek answers to questions related to Iocrym. "
-								"Return here once your other task is done and seek answers with us.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</DifferentMission>
-
-					<Exchange
-							desc=	"The central structure of the Ringers Collective is a large marketplace containing sophisticated and rare devices from all over Human Space. Commonwealth credits are not accepted here.">
-
-						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
-									checkMilitaryID: Nil
-									})
-							</Action>
-
-							<Action name="Sell Items" key="S">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
-									})
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-					</Exchange>
-
-					<ExchangeIntro
-							desc=	"As you enter the main Exchange, a greeter scans you and says, &quot;Earthican, welcome. Your account balance is 0 rin. Collective does not seek Commonwealth credits. Collective seeks rare and powerful ores and substances. Bring here.&quot;">
-
-						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
-								(scrShowPane gScreen "Exchange")
-							</Action>
-
 						</Actions>
 					</ExchangeIntro>
-
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
 		<DockingPorts>
@@ -1763,6 +1284,31 @@
 			<Port x="-39"	y="-72" />
 		</DockingPorts>
 
+		<Language>
+			<Text id="actionCommoditiesExchange">[S]upplies</Text>
+			<Text id="actionResearchLab">[R]esearch Lab</Text>
+
+			<Text id="descWelcome">
+				You are docked at a Ringers Collective. Ringer neo-humans float
+				through the vast volume of the station, perfectly adapted to
+				zero-gravity and space.
+			</Text>
+			<Text id="descNoMissions">
+				A young ringer greets you as you enter the lab. His melodic
+				voice is translated through a device on his neck:
+
+				"Earthican, welcome! We seek answers to questions unrelated to
+				Earthicans. Return here later and perhaps we have questions for
+				all human-descendents."
+			</Text>
+			<Text id="core.commoditiesExchangeDesc">
+
+				The central structure of the Ringers Collective is a large marketplace
+				containing sophisticated and rare devices from all over Human Space.
+				Commonwealth credits are not accepted here.
+
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- St. Josephine Mission -->
@@ -2736,11 +2282,6 @@
 	logText:			Text to display.
 
 	nextObj:			Next object in the series (if Nil, then we haven't created it yet)
-
-	pathPoint:			The path point number starting with 0.
-
-	rootObj:			Points to the first object in the path. This object must implement
-						an OnCreateBuoy event.
 
 	-->
 
