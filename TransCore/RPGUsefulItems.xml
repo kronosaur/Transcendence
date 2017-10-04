@@ -318,11 +318,11 @@
 					(shipObj (@ gData 'shipObj))
 					(armorNoun (cat (objGetArmorName shipObj dstItem) " " (itmGetName dstItem 'noModifiers)))
 					(skillLevel (typGetData &baStdArmorRepair; 'skillLevel))
-					(skillDesc (switch
-						(ls skillLevel 2)	(itmTranslate gItem 'descUsageExperience1)
-						(ls skillLevel 5)	(itmTranslate gItem 'descUsageExperience2)
-						(ls skillLevel 10)	(itmTranslate gItem 'descUsageExperience3)
-											(itmTranslate gItem 'descUsageExperience4)
+					(useDesc (switch
+						(ls skillLevel 2)	'descUsageOK1
+						(ls skillLevel 5)	'descUsageOK2
+						(ls skillLevel 10)	'descUsageOK3
+											'descUsageOK4
 						))
 					)
 					(switch
@@ -341,7 +341,7 @@
 							{
 								canUse: Nil
 								desc: (itmTranslate gItem 'descUsageInstalledOnly {
-									useItem: (itmGetName gItem)
+									useItem: (itmGetName gItem 'plural)
 									dstItem: (itmGetName dstItem 'article)
 									})
 								}
@@ -382,10 +382,9 @@
 						;	Otherwise OK
 						{
 							canUse: True
-							desc: (itmTranslate gItem 'descUsageOK {
+							desc: (itmTranslate gItem useDesc {
 								useItem: (itmGetName gItem 'article)
 								dstItem: (itmGetName dstItem '(demonstrative noModifiers))
-								experience: skillDesc
 								})
 							}
 						)
@@ -398,18 +397,18 @@
 					(shipObj (@ gData 'shipObj))
 					(repair (eval (itmGetStaticData gItem 'RepairHP)))
 					(descIntro (itmTranslate gItem 'descResultIntro))
-					status hpRepaired
+					resultDesc hpRepaired
 					)
 
 					(switch
 						(not (itmMatches dstItem "a"))
-							(setq status 'NotArmor)
+							(setq resultDesc 'descResultNotArmor)
 
 						(= (objGetArmorDamage shipObj dstItem) 0)
-							(setq status 'NotDamaged)
+							(setq resultDesc 'descResultNotDamaged)
 
 						(not repair)
-							(setq status 'ItemError)
+							(setq resultDesc 'descResultItemError)
 
 						(block (
 							(armorSeg (itmGetArmorInstalledLocation dstItem))
@@ -446,16 +445,16 @@
 										;	Sometimes we fail and damage the armor
 										(block Nil
 											(shpDamageArmor shipObj armorSeg 7 (/ (* repair (random 20 100)) 100))
-											(setq status 'DamagedMore)
+											(setq resultDesc 'descResultDamagedMore)
 											)
 
 										;	Sometimes we fail without damaging further
-										(setq status 'Failed)
+										(setq resultDesc 'descResultFailed)
 										)
 
 								(block ()
 									(setq hpRepaired (objRepairArmor shipObj dstItem repair))
-									(setq status 'Repaired)
+									(setq resultDesc 'descResultRepaired)
 										
 									;	How much of the kit did we use?
 									(if (gr repair 0)
@@ -475,7 +474,7 @@
 								(objRemoveItem shipObj gItem 1)
 
 								; Item is not used up
-								(setq status 'Reusable)
+								(setq resultDesc 'descResultReusable)
 								)
 							)
 						)
@@ -486,8 +485,8 @@
 					{
 						desc: (cat
 							descIntro (if descIntro " ")
-							(itmTranslate gItem (cat "descResult" status) {
-								useItem: (itmGetName gItem 'demonstrative)
+							(itmTranslate gItem resultDesc {
+								useItem: (itmGetName gItem)
 								hpRepaired: hpRepaired
 								})
 							)
@@ -499,20 +498,19 @@
 		<Language>
 			<Text id="descUsageArmorNotDamaged">The ship's %armorNoun% is not damaged.</Text>
 			<Text id="descUsageCanNotRepair">Unfortunately, you cannot repair %dstItem% with %useItem%.</Text>
-			<Text id="descUsageInstalledOnly">%useItem% can only be used on installed armor segments.</Text>
+			<Text id="descUsageInstalledOnly">%UseItem% can only be used on installed armor segments.</Text>
 			<Text id="descUsageNotArmor">%UseItem% are used for repairing armor and will not function on %dstItem%.</Text>
-			<Text id="descUsageOK">You can attempt to repair %dstItem% with %useItem%; %experience%</Text>
 			<Text id="descUsageUnknown">The barrel seems to contain some kind of armor paste. You can use it on %dstItem%.</Text>
 
-			<Text id="descUsageExperience1">though you do not have much experience repairing armor.</Text>
-			<Text id="descUsageExperience2">you have some experience repairing armor.</Text>
-			<Text id="descUsageExperience3">you are proficient at repairing armor.</Text>
-			<Text id="descUsageExperience4">you are an expert at repairing armor.</Text>
+			<Text id="descUsageOK1">You can attempt to repair %dstItem% with %useItem%, though you do not have much experience repairing armor.</Text>
+			<Text id="descUsageOK2">You can attempt to repair %dstItem% with %useItem%; you have some experience repairing armor.</Text>
+			<Text id="descUsageOK3">You can attempt to repair %dstItem% with %useItem%; you are proficient at repairing armor.</Text>
+			<Text id="descUsageOK4">You can attempt to repair %dstItem% with %useItem%; you are an expert at repairing armor.</Text>
 
 			<Text id="descResultDamagedMore">Unfortunately, your attempt to repair the armor has only damaged it further.</Text>
-			<Text id="descResultFailed">Unfortunately, your attempt to repair the armor was unsuccessful and %useItem% was ruined in the process.</Text>
+			<Text id="descResultFailed">Unfortunately, your attempt to repair the armor was unsuccessful and the %useItem% was ruined in the process.</Text>
 			<Text id="descResultItemError">ERROR: &lt;RepairHP&gt; static data not found.</Text>
-			<Text id="descResultNotArmor">That is not an armor segment</Text>
+			<Text id="descResultNotArmor">That is not an armor segment.</Text>
 			<Text id="descResultNotDamaged">That armor segment is not damaged. There is no need to attempt repairs.</Text>
 			<Text id="descResultRepaired">You have successfully repaired %hpRepaired% hit points of damage to your armor.</Text>
 			<Text id="descResultReusable">
@@ -548,7 +546,7 @@
 							{
 								canUse: True
 								desc: (itmTranslate gItem 'descUsageOK {
-									useItem: (itmGetName gItem)
+									useItem: (itmGetName gItem 'article)
 									dstItem: (itmGetName dstItem '(demonstrative noModifiers))
 									})
 								}
@@ -611,7 +609,7 @@
 		</Events>
 
 		<Language>
-			<Text id="descUsageOK">You can use the %useItem% on %dstItem%.</Text>
+			<Text id="descUsageOK">You can use %useItem% on %dstItem%.</Text>
 			<Text id="descUsageUnknown">The barrel seems to contain some kind of armor paste. You can use it on %dstItem%.</Text>
 
 			<Text id="descResultTooAdvanced">Unfortunately, your armor is too strong for the nanomachines.</Text>
