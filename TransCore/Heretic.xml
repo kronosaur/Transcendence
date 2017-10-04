@@ -1559,20 +1559,13 @@
 		</Language>
 	</StationType>
 
-	<!-- Ares Research Outpost
-	
-	EXTRA DATA
-
-	status:				Status of the station
-							Nil						= Mission has not started yet
-							'introDone				= Player has been told about mission
-							'inProgress				= Mission in progress
-							'complete				= Mission is complete
-	-->
+	<!-- Ares Research Outpost -->
 
 	<StationType UNID="&stAresResearchHeretic;"
 			name=				"Ares research outpost"
 			sovereign=			"&svAresHeretic;"
+			inherit=			"&unidCommonText;"
+
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"Main"
 			dockingPorts=		"8"
@@ -1616,36 +1609,8 @@
 			</Table>
 		</Items>
 
-		<Events>
-			<OnDestroy>
-				(block Nil
-					(if (eq (herStatus 'currentMission) 'missionAres)
-						(herStatusClear 'currentMission)
-						)
-
-					(if (not (herStatus 'missionAres))
-						(herStatusSet 'missionAres 'failure)
-						)
-					)
-			</OnDestroy>
-			
-			<OnObjDestroyed>
-				(if (eq aObjDestroyed (objGetObjRefData gSource "theTarget"))
-					(block Nil
-						(objSetData gSource "status" 'complete)
-						
-						(shpCancelOrders gPlayerShip)
-						(shpOrder gPlayerShip 'dock gSource)
-						
-						(plyMessage gPlayer "Mission complete!")
-						)
-					)
-			</OnObjDestroyed>
-		</Events>
-
 		<DockScreens>
 			<Main>
-				
 				<InitialPane>
 					; If the player saves the Antarctica, then the Ares will be friendly
 					(if (not (msnFind "r +unid:&msEscapeFromDantalion;; +property:isSuccess;"))
@@ -1657,254 +1622,30 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You are docked at an Ares research outpost. Ares warriors stare at you as you enter "
-								"the station."
-								)
+							(scrSetDescTranslate gScreen 'descWelcome)
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Command Center" default="1" key="C">
-								(block (status)
-									(setq status (objGetData gSource "status"))
-									
-									(switch
-										(herAttackInProgress gSource)
-											(scrShowPane gScreen "AttackInProgress")
-
-										(eq (herStatus 'missionAres) 'success)
-											(scrShowPane gScreen "MissionDone")
-											
-										(eq status 'complete)
-											(scrShowPane gScreen "MissionSucceeded")
-											
-										(not (sysFindObject Nil "TA +iocrymOutpost;"))
-											(scrShowPane gScreen "NothingToDo")
-											
-										(not status)
-											(if (herStatus 'currentMission)
-												(scrShowPane gScreen "DifferentMission")
-												(scrShowPane gScreen "Intro")
-												)
-											
-										(eq status 'introDone)
-											(if (herStatus 'currentMission)
-												(scrShowPane gScreen "DifferentMission")
-												(scrShowPane gScreen "Mission")
-												)
-											
-										(eq status 'inProgress)
-											(scrShowPane gScreen "MissionInProgress")
-										)
-									)
+							<Action id="actionCommandCenter" default="1">
+								(rpgMissionAssignment {
+									missionCriteria: (cat "n +aresResearch; =" (sysGetLevel) ";")
+									noMissionTextID: 'descNoMissions
+									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
 					</Default>
-					
-					<AttackInProgress>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"An Ares scientist approaches you:\n\n"
-								"\"Help us, Human! The Iocrym are our common enemy! Defend us from their sentinels.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</AttackInProgress>
-
-					<Intro>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"An Ares scientist comes forward:"
-								"\"Welcome, Human! It is good that we can meet under peaceful circumstances. "
-								"Like you, we are studying the Iocrym, for they are as much a threat to us as they "
-								"are to you.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(block Nil
-									(objSetData gSource "status" 'introDone)
-									(scrShowPane gScreen "Mission")
-									)
-							</Action>
-						</Actions>
-					</Intro>
-					
-					<Mission>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"Our forescouts have detected a hidden Iocrym outpost inside the quarantine zone. "
-								"We ask that you destroy it so that we may understand its strengths and weaknesses. "
-								"Do you wish to accept this request?\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Accept" default="1" key="A">
-								(block (theTarget)
-									; Find the Iocrym outpost to destroy
-									(setq theTarget (random (sysFindObject Nil "TA +iocrymOutpost;")))
-									
-									; Point the player
-									(shpCancelOrders gPlayerShip)
-									(shpOrder gPlayerShip 'attack theTarget)
-									
-									; Remember the target
-									(objSetObjRefData gSource "theTarget" theTarget)
-									(objRegisterForEvents gSource theTarget)
-									
-									; Give the player some help
-									
-									; Done
-									(objSetData gSource "status" 'inProgress)
-									(herStatusSet 'currentMission 'missionAres)
-									
-									(scrShowPane gScreen "MissionAccepted")
-									)
-							</Action>
-							
-							<Action name="Decline" cancel="1" key="D">
-								(scrShowPane gScreen "MissionDeclined")
-							</Action>
-						</Actions>
-					</Mission>
-					
-					<MissionAccepted>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"You are strong, Human! We will repay your efforts by sharing all data that we "
-								"collect.\n\n"
-								"\"On Ares we would say, 'May you find water,' but in your honor, Human, we say 'Good luck'\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
-								<Exit/>
-							</Action>
-						</Actions>
-					</MissionAccepted>
-					
-					<MissionDeclined>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"Your weakness discredits your race! Return later if you wish to reclaim your honor.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
-								<Exit/>
-							</Action>
-						</Actions>
-					</MissionDeclined>
-					
-					<MissionInProgress>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"Human! What are you doing here? Your task is out in deep space!\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
-								<Exit/>
-							</Action>
-						</Actions>
-					</MissionInProgress>
-					
-					<MissionSucceeded>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"Good fortune, Human! Based on your encounter with the Iocrym outpost we have "
-								"analyzed their defenses. Although their technology is far beyond ours, they are not "
-								"invincible. They are particularly vulnerable to antimatter weapons.\n\n"
-								"\"As promised, here is a ROM that contains the data we've gathered.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(block Nil
-									(objAddItem gPlayerShip (itmCreate &itHereticResearchROM; 1))
-									(herStatusClear 'currentMission)
-									(herStatusSet 'missionAres 'success)
-									
-									(shpCancelOrders gPlayerShip)
-									
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</MissionSucceeded>
-					
-					<MissionDone>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"Welcome back, Human! Perhaps someday our two races will become friends.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MissionDone>
-
-					<NothingToDo>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"An Ares scientist comes forward:\n\n"
-								"\"Welcome, Human! It is good that we can meet under peaceful circumstances. "
-								"We are studying the Iocrym, but unfortunately, there are no Iocrym stations in "
-								"the system for us to probe. Perhaps you will have better luck elsewhere.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</NothingToDo>
-
-					<DifferentMission>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"An Ares scientist comes forward:\n\n"
-								"\"Welcome, Human! We are studying the Iocrym just as you are now. Return "
-								"here when your task is complete and perhaps we can help each other.\""
-								)
-						</OnPaneInit>
-						
-						<Actions>
-							<Action name="Done" default="1" cancel="1" key="D">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</DifferentMission>
 
 					<GetOut>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								"Ares warriors meet you at the airlock. Their weapons are pointed at you:\n\n"
-								"\"We don't want conflict, Human. Leave now and don't disturb our research.\""
-								)
+							(scrSetDescTranslate gScreen 'descGetOut)
 						</OnPaneInit>
-						
+
 						<Actions>
-							<Action name="Undock" default="1" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -1914,6 +1655,25 @@
 		</DockScreens>
 
         <Language>
+			<Text id="actionCommandCenter">[C]ommand Center</Text>
+
+			<Text id="descWelcome">
+				You are docked at an Ares research outpost. Ares warriors stare
+				at you as you enter the station.
+			</Text>
+			<Text id="descGetOut">
+				Ares warriors meet you at the airlock. Their weapons are pointed at you:
+
+				"We don't want conflict, Human. Leave now and don't disturb our research."
+			</Text>
+			<Text id="descNoMissions">
+				An Ares scientist comes forward:
+
+				"Welcome, Human! It is good that we can meet under peaceful circumstances.
+				We are studying the Iocrym, but unfortunately, there are no Iocrym stations in
+				the system for us to probe. Perhaps you will have better luck elsewhere."
+			</Text>
+
             <Text id="core.mapDesc">
                 "Research base"
             </Text>
