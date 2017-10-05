@@ -1416,14 +1416,16 @@
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
 			
-			<Refuel			criteria="f +BasicFuel; L:1-8;" priceAdj="100"/>
-			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-10;" priceAdj="120"/>
+			<ReplaceArmor	criteria="a L:1-10;" priceAdj="120"/>
+			<InstallDevice	criteria="d L:1-10;" priceAdj="120"/>
+			<RemoveDevice	criteria="d L:1-10;" priceAdj="100"/>
 		</Trade>
 
 		<Items>
 			<RandomItem count="10" 
-					criteria=		"ad L:1-8; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					criteria=		"ad L:1-10; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:u|c|crv"
 					/>
 			<RandomItem count="10" 
@@ -1722,7 +1724,7 @@
 		<!-- Trade and Items -->
 		
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
+			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-10;" priceAdj="120"/>
 			<ReplaceArmor	criteria="a L:1-10;" priceAdj="120"/>
 			<InstallDevice	criteria="d L:1-10;" priceAdj="120"/>
@@ -3102,9 +3104,9 @@
 		<Trade currency="rin" max="50000" replenish="2500">
 			<Refuel			criteria="f +unid:&itPteracniumFuelRod;;" priceAdj="85"/>
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
-			<RepairArmor	criteria="a L:1-11;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-11;" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-11;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-11;" priceAdj="120"/>
+			<ReplaceArmor	criteria="a L:1-11;" priceAdj="120"/>
+			<InstallDevice	criteria="d L:1-11;" priceAdj="120"/>
 			<RemoveDevice	criteria="d L:1-11;" priceAdj="100"/>
 		</Trade>
 
