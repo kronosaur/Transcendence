@@ -229,12 +229,11 @@ void CTextCrawlSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 	{
 	const CVisualPalette &VI = m_HI.GetVisuals();
+	CG32bitImage Blank;
+	const CG32bitImage *pImage = (m_pImage ? m_pImage : &Blank);
 
-	if (m_pImage)
-		{
-		RECT rcCenter;
-		VI.DrawSessionBackground(Screen, *m_pImage, VI.GetColor(colorAreaDeep), 0, &rcCenter);
-		}
+	RECT rcCenter;
+	VI.DrawSessionBackground(Screen, *pImage, VI.GetColor(colorAreaDeep), 0, &rcCenter);
 	}
 
 void CTextCrawlSession::OnReportHardCrash (CString *retsMessage)
