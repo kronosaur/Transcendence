@@ -194,36 +194,36 @@
 
 		<Items>
 			<RandomItem count="1d12" 
-					criteria=		"a L:1-10; -Specialty; -NotStandard; -NotForSale;"
+					criteria=		"a L:1-10; -illegal; -Specialty; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:u|c|crv"
 					enhanced=		"5"
 					enhancement=	"=(intHPEnhancement1)"
 					/>
 			<RandomItem count="1d12" 
-					criteria=		"w L:1-10; -Specialty; -NotStandard; -NotForSale;"
+					criteria=		"w L:1-10; -illegal; -Specialty; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:u|c|crv"
 					enhanced=		"5"
 					enhancement=	"=(intHPEnhancement1)"
 					/>
 			<RandomItem count="1d12" 
-					criteria=		"d~w L:1-10; -Specialty; -NotStandard; -NotForSale;"
+					criteria=		"d~w L:1-10; -illegal; -Specialty; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:u|c|crv"
 					enhanced=		"5"
 					enhancement=	"=(intCorporateGenerateEnhancement gItem)"
 					/>
 
 			<RandomItem count="1d12" 
-					criteria=		"u -Specialty; -NotStandard; -NotForSale;"
+					criteria=		"u -Specialty; -illegal; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:ru|c|cur"
 					/>
 
 			<RandomItem count="2d12" 
-					criteria=		"m -Specialty; -NotStandard; -NotForSale;"
+					criteria=		"m -Specialty; -illegal; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:ru|c|cur"
 					/>
 
 			<RandomItem count="1d6" 
-					criteria=		"adu L:1-10; -Specialty; -NotStandard; -NotForSale;"
+					criteria=		"adu L:1-10; -illegal; -Specialty; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:-|r|cur"
 					/>
 		</Items>
@@ -2291,19 +2291,19 @@
 					levelFrequency=	"systemLevel:ru|c|ur"
 					/>
 			<RandomItem count="3d6" 
-					criteria=		"m +Taikon; -NotStandard; -NotForSale"
+					criteria=		"m +Taikon; -illegal; -NotStandard; -NotForSale"
 					levelFrequency=	"systemLevel:ru|c|ur"
 					/>
 			<RandomItem count="1d6" 
-					criteria=		"* L:1-11; -NotStandard; -NotForSale;"
+					criteria=		"* L:1-11; -illegal; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:ru|c|u"
 					/>
 			<RandomItem count="2d6" 
-					criteria=		"*~ad -Alien; -NotStandard; -NotForSale;"
+					criteria=		"*~ad -Alien; -illegal; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:ru|c|u"
 					/>
 			<RandomItem count="1d3" 
-					criteria=		"* L:1-11; +Alien; -NotStandard; -NotForSale;"
+					criteria=		"* L:1-11; +Alien; -illegal; -NotStandard; -NotForSale;"
 					levelFrequency=	"systemLevel:u|c|ur"
 					/>
 			<Item	count="6d12" item="&itPteracniumFuelRod;"/>
