@@ -754,6 +754,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 			};
 
 		void CreateCreditsAnimation (IAnimatron **retpAnimatron);
+		void CreateIntroHelpAnimation (IAnimatron **retpAnimatron);
 		void CreateLongCreditsAnimation (int x, int y, int cyHeight, IAnimatron **retpAnimatron);
 		void CreateNewsAnimation (CMultiverseNewsEntry *pEntry, IAnimatron **retpAnimatron);
 		void CreatePlayerBarAnimation (IAnimatron **retpAni);

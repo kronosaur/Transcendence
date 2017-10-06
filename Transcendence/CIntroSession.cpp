@@ -44,6 +44,7 @@
 #define ID_CREDITS_PERFORMANCE					CONSTLIT("idCredits")
 #define ID_END_GAME_PERFORMANCE					CONSTLIT("idEndGame")
 #define ID_HIGH_SCORES_PERFORMANCE				CONSTLIT("idHighScores")
+#define ID_INTRO_HELP_PERFORMANCE				CONSTLIT("idIntroHelp")
 #define ID_PLAYER_BAR_PERFORMANCE				CONSTLIT("idPlayerBar")
 #define ID_SHIP_DESC_PERFORMANCE				CONSTLIT("idShipDescPerformance")
 #define ID_TITLES_PERFORMANCE					CONSTLIT("idTitles")
@@ -79,6 +80,7 @@ void CIntroSession::CancelCurrentState (void)
 	{
 	switch (GetState())
 		{
+		case isIntroHelp:
 		case isCredits:
 		case isHighScores:
 		case isBlankThenRandom:
@@ -696,6 +698,8 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			}
 
 		case 'h':
+			SetState(isIntroHelp);
+			break;
 		case 'H':
 			CmdShowHighScoreList();
 			break;
@@ -1382,7 +1386,16 @@ void CIntroSession::SetState (EStates iState)
 			StopAnimations();
 			m_HighScoreDisplay.StartPerformance(Reanimator, ID_HIGH_SCORES_PERFORMANCE, g_pTrans->m_rcIntroMain);
 			break;
+		case isIntroHelp:
+			{
+			StopAnimations();
 
+			IAnimatron *pAni;
+			g_pTrans->CreateIntroHelpAnimation(&pAni);
+			DWORD dwPerformance = Reanimator.AddPerformance(pAni, ID_INTRO_HELP_PERFORMANCE);
+			Reanimator.StartPerformance(dwPerformance, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+			break;
+			}
 		case isNews:
 			{
 			CMultiverseNewsEntry *pNews = g_pTrans->m_pTC->GetMultiverse().GetNextNewsEntry();
@@ -1471,6 +1484,7 @@ void CIntroSession::StopAnimations (void)
 
 	Reanimator.StopPerformance(ID_CREDITS_PERFORMANCE);
 	Reanimator.StopPerformance(ID_END_GAME_PERFORMANCE);
+	Reanimator.StopPerformance(ID_INTRO_HELP_PERFORMANCE);
 	Reanimator.StopPerformance(ID_SHIP_DESC_PERFORMANCE);
 	Reanimator.StopPerformance(ID_TITLES_PERFORMANCE);
 	Reanimator.StopPerformance(ID_NEWS_PERFORMANCE);
@@ -1617,6 +1631,11 @@ void CIntroSession::Update (void)
 		case isHighScoresEndGame:
 			if (!m_HighScoreDisplay.IsPerformanceRunning())
 				SetState(isCredits);
+			break;
+
+		case isIntroHelp:
+			if (!Reanimator.IsPerformanceRunning(ID_INTRO_HELP_PERFORMANCE))
+				SetState(isShipStats);
 			break;
 
 		case isOpeningTitles:
