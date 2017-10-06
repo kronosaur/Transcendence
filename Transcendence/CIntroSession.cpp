@@ -350,6 +350,10 @@ void CIntroSession::CreateIntroSystem (void)
 	g_pTrans->m_iTick = 0;
 	g_pTrans->m_iLastShipCreated = g_pTrans->m_iTick;
 
+	//	Let types control what happens on the intro screen
+
+	g_pUniverse->FireOnGlobalIntroStarted();
+
 	//	Initialize the system
 
 	g_pUniverse->MarkLibraryBitmaps();
