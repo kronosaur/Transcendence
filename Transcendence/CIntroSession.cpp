@@ -611,6 +611,11 @@ bool CIntroSession::HandleCommandBoxChar (char chChar, DWORD dwKeyData)
 
 		case '\015':
 			{
+			if(strStartsWith(g_pTrans->m_sCommand, CONSTLIT("~")))
+				{
+				g_pUniverse->FireOnGlobalIntroCommand(g_pTrans->m_sCommand);
+				break;
+				}
 			CShip *pShip = g_pUniverse->GetPOV()->AsShip();
 			DWORD dwSovereign = (pShip ? pShip->GetSovereign()->GetUNID() : 0);
 
