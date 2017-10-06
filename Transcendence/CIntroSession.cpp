@@ -729,21 +729,25 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			if (pShip == NULL)
 				break;
 
-			//	Get the UNID of the next ship class in order
-
 			DWORD dwNewShipClass = 0;
-			if (chChar == 'n' || chChar == 'N')
-				{
-				DWORD dwClass = pShip->GetClassUNID();
-				int iIndex = -1;
-				for (i = 0; i < g_pUniverse->GetShipClassCount(); i++)
-					if (g_pUniverse->GetShipClass(i)->GetUNID() == dwClass)
-						{
-						iIndex = i;
-						break;
-						}
 
-				CShipClass *pShipClass;
+			//	Find the index of the current ship class
+
+			DWORD dwClass = pShip->GetClassUNID();
+			int iIndex = -1;
+			for (i = 0; i < g_pUniverse->GetShipClassCount(); i++)
+				if (g_pUniverse->GetShipClass(i)->GetUNID() == dwClass)
+				{
+					iIndex = i;
+					break;
+				}
+
+			CShipClass *pNewShipClass;
+
+			if (chChar == 'n')
+				{
+				//	Get the UNID of the next ship class in order
+
 				do
 					{
 					if (iIndex == -1 || (iIndex + 1) == g_pUniverse->GetShipClassCount())
@@ -751,19 +755,37 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 					else
 						iIndex++;
 
-					pShipClass = g_pUniverse->GetShipClass(iIndex);
+					pNewShipClass = g_pUniverse->GetShipClass(iIndex);
 					}
-				while (pShipClass->IsVirtual());
+				while (pNewShipClass->IsVirtual());
 
 				//	Set the variable so that the next ship created will
 				//	have the given class
 
-				dwNewShipClass = pShipClass->GetUNID();
+				dwNewShipClass = pNewShipClass->GetUNID();
 				}
+			else if(chChar == 'N')
+				{
+				//	Get the UNID of the previous ship class in order
 
+				do
+				{
+					if ((iIndex - 1) < 0)
+						iIndex = g_pUniverse->GetShipClassCount()-1;
+					else
+						iIndex--;
+
+					pNewShipClass = g_pUniverse->GetShipClass(iIndex);
+				} while (pNewShipClass->IsVirtual());
+
+				//	Set the variable so that the next ship created will
+				//	have the given class
+
+				dwNewShipClass = pNewShipClass->GetUNID();
+				}
 			//	Destroy all ships of the current class
 
-			g_pTrans->DestroyIntroShips();
+			g_pTrans->DestroyPOVIntroShips();
 
 			//	Create a new ship
 
