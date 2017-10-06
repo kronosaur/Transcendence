@@ -980,9 +980,36 @@ void CTranscendenceWnd::CreateTitleAnimation (IAnimatron **retpAnimatron)
 	*retpAnimatron = pSeq;
 	}
 
-void CTranscendenceWnd::DestroyIntroShips (void)
+void CTranscendenceWnd::DestroyAllIntroShips(void)
 
-//	DestroyIntroShips
+//	DestroyAllIntroShips
+//
+//	Destroys all ships in the intro screen
+
+{
+	int i;
+
+	CShip *pShip = g_pUniverse->GetPOV()->AsShip();
+	if (pShip == NULL)
+		return;
+
+	CSystem *pSystem = pShip->GetSystem();
+	for (i = 0; i < pSystem->GetObjectCount(); i++)
+	{
+		CSpaceObject *pObj = pSystem->GetObject(i);
+		CShip *pShip;
+		if (pObj
+			&& pObj->CanAttack()
+			&& (pShip = pObj->AsShip()))
+		{
+			pShip->Destroy(removedFromSystem, CDamageSource());
+		}
+	}
+}
+
+void CTranscendenceWnd::DestroyPOVIntroShips (void)
+
+//	DestroyPOVIntroShips
 //
 //	Destroys all ships of the same class as the POV
 

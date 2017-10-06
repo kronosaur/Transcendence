@@ -762,7 +762,8 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void CreateShipDescAnimation (CShip *pShip, IAnimatron **retpAnimatron);
 		void CreateTitleAnimation (IAnimatron **retpAnimatron);
 		DWORD GetIntroShipClass (void) { return m_dwIntroShipClass; }
-		void DestroyIntroShips (void);
+		void DestroyAllIntroShips(void);
+		void DestroyPOVIntroShips (void);
 		void OnAccountChanged (const CMultiverseModel &Multiverse);
 		void OnCommandIntro (const CString &sCmd, void *pData);
 		void OnDblClickIntro (int x, int y, DWORD dwFlags);

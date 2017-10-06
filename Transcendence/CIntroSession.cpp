@@ -621,7 +621,7 @@ bool CIntroSession::HandleCommandBoxChar (char chChar, DWORD dwKeyData)
 
 			//	Destroy and create
 
-			g_pTrans->DestroyIntroShips();
+			g_pTrans->DestroyPOVIntroShips();
 			CreateIntroShips(pClass->GetUNID(), dwSovereign);
 			CancelCurrentState();
 			break;
@@ -707,8 +707,11 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			break;
 
 		case 'K':
+			g_pTrans->DestroyAllIntroShips();
+			CreateIntroShips();
+			break;
 		case 'k':
-			g_pTrans->DestroyIntroShips();
+			g_pTrans->DestroyPOVIntroShips();
 			CreateIntroShips();
 			break;
 
