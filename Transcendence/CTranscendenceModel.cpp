@@ -1050,6 +1050,16 @@ void CTranscendenceModel::GenerateGameStats (CGameStats *retStats, bool bGameOve
 
 			m_sEpitaph = NULL_STR;
 			}
+		//	Add previous fates below
+		for (int iIndex = 0; iIndex < m_GameRecord.GetPreviousEpitaphCount() - 1; iIndex++)
+			{
+			CString sPrevFate = m_GameRecord.GetPreviousEpitaph(iIndex);
+
+			if (strEquals(strWord(sPrevFate, 0), CONSTLIT("was")))
+				sPrevFate = strSubString(sPrevFate, 4, -1);
+
+			retStats->Insert(sPrevFate, NULL_STR, CONSTLIT("Previous Fates"));
+			}
 		}
 
 	//	Generate
@@ -1991,6 +2001,7 @@ void CTranscendenceModel::RecordFinalScore (const CString &sEpitaph, const CStri
 
 	m_GameRecord.SetEndGameReason(sEndGameReason);
 	m_GameRecord.SetEndGameEpitaph(sEpitaph);
+	m_GameRecord.AddEpitaph(sEpitaph);
 	m_GameRecord.SetPlayTime(m_Universe.StopGameTime());
 
 	m_GameRecord.SetRegistered(m_Universe.IsRegistered());
