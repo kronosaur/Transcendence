@@ -51,6 +51,8 @@
 #define ID_NEWS_PERFORMANCE						CONSTLIT("idNews")
 #define ID_SOUNDTRACK_TITLE_PERFORMANCE			CONSTLIT("idSoundtrackTitle")
 
+#define OBJ_DATA_INTRO_CONTROLLER				CONSTLIT("IntroController")
+
 #define PROP_POSITION							CONSTLIT("position")
 
 #define PROPERTY_PRIMARY_WEAPON					CONSTLIT("primaryWeapon")
@@ -188,7 +190,7 @@ void CIntroSession::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereign, C
 				&& !pObj->IsDestroyed()
 				&& pObj != pShipDestroyed
 				&& pObj->CanAttack()
-				&& !pObj->GetData(CONSTLIT("IntroController")).IsBlank())
+				&& !pObj->GetData(OBJ_DATA_INTRO_CONTROLLER).IsBlank())
 			{
 			if (pObj->GetSovereign() == pSovereign1)
 				{
@@ -324,7 +326,7 @@ void CIntroSession::CreateIntroSystem (void)
 		if (pObj
 				&& pObj->GetCategory() == CSpaceObject::catShip
 				&& pObj->CanAttack()
-				&& !pObj->GetData(CONSTLIT("IntroController")).IsBlank())
+				&& !pObj->GetData(OBJ_DATA_INTRO_CONTROLLER).IsBlank())
 			{
 			CShip *pShip = pObj->AsShip();
 			if (pShip)
