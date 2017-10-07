@@ -56,6 +56,7 @@
 	<!ENTITY evHereticHuygensExplorer	"0x0020006A">
 	<!ENTITY msHereticIocrymArtifact	"0x0020006B">
 	<!ENTITY msHereticIocrymOutpost		"0x0020006C">
+	<!ENTITY msHereticMRADExperiment	"0x0020006D">
 
 	<!-- 0021xxxx HUARI ==================================================== -->
 	
@@ -224,6 +225,7 @@
 	<Module filename="Heretic05.xml"/>
 	<Module filename="Heretic06.xml"/>
 	<Module filename="Heretic07.xml"/>
+	<Module filename="Heretic08.xml"/>
 	<Module filename="Huaramarca.xml"/>
 	<Module filename="HuaramarcaMission01.xml"/>
 	<Module filename="HuaramarcaMission02.xml"/>

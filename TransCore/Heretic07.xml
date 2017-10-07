@@ -51,7 +51,6 @@
 					)
 			</OnAcceptedUndock>
 
-
 			<OnSetPlayerTarget>
 				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)))
 			</OnSetPlayerTarget>
