@@ -98,7 +98,7 @@ void CIntroSession::CancelCurrentState (void)
 				SetState(isCredits);
 			break;
 
-		case isEnterShipClass:
+		case isEnterCommand:
 			SetState(isShipStats);
 			break;
 
@@ -599,7 +599,7 @@ bool CIntroSession::HandleCommandBoxChar (char chChar, DWORD dwKeyData)
 	{
 	//	If not in command mode, then we're done
 
-	if (GetState() != isEnterShipClass)
+	if (GetState() != isEnterCommand)
 		return false;
 
 	//	Handle it
@@ -671,7 +671,7 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			break;
 
 		case '!':
-			SetState(isEnterShipClass);
+			SetState(isEnterCommand);
 			break;
 
 		case 'C':
@@ -1156,7 +1156,7 @@ void CIntroSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 	if (g_pTrans->m_ButtonBarDisplay.OnKeyDown(iVirtKey))
 		NULL;
 
-	else if (GetState() == isEnterShipClass)
+	else if (GetState() == isEnterCommand)
 		NULL;
 
 	else if (Reanimator.IsPaused())
@@ -1285,7 +1285,7 @@ void CIntroSession::Paint (CG32bitImage &Screen, bool bTopMost)
 
 	switch (GetState())
 		{
-		case isEnterShipClass:
+		case isEnterCommand:
 			{
 			int xMidCenter = g_pTrans->m_rcIntroMain.left + RectWidth(g_pTrans->m_rcIntroMain) / 2;
 			int yMidCenter = g_pTrans->m_rcIntroMain.bottom - RectHeight(g_pTrans->m_rcIntroMain) / 3;
@@ -1420,7 +1420,7 @@ void CIntroSession::SetState (EStates iState)
 			break;
 			}
 
-		case isEnterShipClass:
+		case isEnterCommand:
 			StopAnimations();
 			g_pTrans->m_sCommand = NULL_STR;
 			break;

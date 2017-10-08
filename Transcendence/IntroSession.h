@@ -55,7 +55,7 @@ class CIntroSession : public IHISession
 			isEndGame,
 			isShipStats,
 			isBlankThenRandom,
-			isEnterShipClass,
+			isEnterCommand,
 			isNews,
 			isWaitingForHighScores,
 			};
