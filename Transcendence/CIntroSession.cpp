@@ -304,55 +304,61 @@ void CIntroSession::CreateIntroSystem (void)
 
 	g_pUniverse->SetCurrentSystem(g_pTrans->m_pIntroSystem);
 
-	CSovereign *pSovereign1 = g_pUniverse->FindSovereign(g_PlayerSovereignUNID);
-	CSovereign *pSovereign2 = g_pUniverse->FindSovereign(UNID_UNKNOWN_ENEMY);
+	//	Let types control what happens on the intro screen
 
-	//	Create a couple of random enemy ships
+	g_pUniverse->FireOnGlobalIntroStarted();
 
-	CShip *pShip1;
-	CShip *pShip2;
-	if (error = CreateRandomShip(g_pTrans->m_pIntroSystem, 0, pSovereign1, &pShip1))
-		return;
-
-	if (error = CreateRandomShip(g_pTrans->m_pIntroSystem, 0, pSovereign2, &pShip2))
-		return;
-
-	//	Make the ships attack each other
-
-	for (i = 0; i < g_pTrans->m_pIntroSystem->GetObjectCount(); i++)
+	//	If the POV was set during OnGlobalIntroStarted, then we are done. Otherwise, initialize as normal
+	
+	if (!g_pUniverse->GetPOV())
 		{
-		CSpaceObject *pObj = g_pTrans->m_pIntroSystem->GetObject(i);
+		CSovereign *pSovereign1 = g_pUniverse->FindSovereign(g_PlayerSovereignUNID);
+		CSovereign *pSovereign2 = g_pUniverse->FindSovereign(UNID_UNKNOWN_ENEMY);
 
-		if (pObj
-				&& pObj->GetCategory() == CSpaceObject::catShip
-				&& pObj->CanAttack()
-				&& !pObj->GetData(OBJ_DATA_INTRO_CONTROLLER).IsBlank())
+		//	Create a couple of random enemy ships
+
+		CShip *pShip1;
+		CShip *pShip2;
+		if (error = CreateRandomShip(g_pTrans->m_pIntroSystem, 0, pSovereign1, &pShip1))
+			return;
+
+		if (error = CreateRandomShip(g_pTrans->m_pIntroSystem, 0, pSovereign2, &pShip2))
+			return;
+
+		//	Make the ships attack each other
+
+		for (i = 0; i < g_pTrans->m_pIntroSystem->GetObjectCount(); i++)
 			{
-			CShip *pShip = pObj->AsShip();
-			if (pShip)
+			CSpaceObject *pObj = g_pTrans->m_pIntroSystem->GetObject(i);
+
+			if (pObj
+					&& pObj->GetCategory() == CSpaceObject::catShip
+					&& pObj->CanAttack()
+					&& !pObj->GetData(OBJ_DATA_INTRO_CONTROLLER).IsBlank())
 				{
-				IShipController *pController = pShip->GetController();
-				if (pShip->GetSovereign() == pSovereign1)
-					pController->AddOrder(IShipController::orderDestroyTarget, pShip2, IShipController::SData());
-				else
-					pController->AddOrder(IShipController::orderDestroyTarget, pShip1, IShipController::SData());
+				CShip *pShip = pObj->AsShip();
+				if (pShip)
+					{
+					IShipController *pController = pShip->GetController();
+					if (pShip->GetSovereign() == pSovereign1)
+						pController->AddOrder(IShipController::orderDestroyTarget, pShip2, IShipController::SData());
+					else
+						pController->AddOrder(IShipController::orderDestroyTarget, pShip1, IShipController::SData());
+					}
 				}
 			}
+
+		//	Set the POV to one of them
+
+		g_pUniverse->SetPOV(pShip1);
 		}
 
 	//	No sound
 
 	g_pUniverse->SetSound(false);
 
-	//	Set the POV to one of them
-
-	g_pUniverse->SetPOV(pShip1);
 	g_pTrans->m_iTick = 0;
 	g_pTrans->m_iLastShipCreated = g_pTrans->m_iTick;
-
-	//	Let types control what happens on the intro screen
-
-	g_pUniverse->FireOnGlobalIntroStarted();
 
 	//	Initialize the system
 
