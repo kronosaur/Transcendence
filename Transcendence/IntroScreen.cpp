@@ -119,11 +119,11 @@ static char *INTRO_HELP_TEXT[INTRO_HELP_TEXT_COUNT] =
 	"[D], [d]: Duplicate current ship",
 	"[H], [h]: Show high scores",
 	"[I], [i]: Show this display",
-	"[K[: Destroy current ship class",
-	"[k]: Destroy all ships",
+	"[K[: Destroy all ships",
+	"[k]: Destroy current ship class",
 	"[L], [l]: Load Game",
-	"[N]: Spawn next ship class",
-	"[n]: Spawn previous ship class",
+	"[N]: Spawn previous ship class",
+	"[n]: Spawn next ship class",
 	"[O], [o]: View opposing ship",
 	"[P]: View next ship",
 	"[p]: View previous ship",
@@ -238,27 +238,27 @@ void CTranscendenceWnd::CreateIntroHelpAnimation(IAnimatron **retpAnimatron)
 	IAnimatron *pText;
 	CAniText::Create(CONSTLIT("Intro Key Commands"),
 		CVector((Metric)x, (Metric)y),
-		&m_Fonts.Header,
+		&m_Fonts.SubTitle,
 		0,
-		m_Fonts.rgbTitleColor,
+		m_Fonts.rgbLightTitleColor,
 		&pText);
 	pText->AnimateLinearFade(iDuration, 15, 30);
 	pSeq->AddTrack(pText, 5);
 
-	y += m_Fonts.Header.GetHeight() + (m_Fonts.Header.GetHeight() / 6);
+	y += m_Fonts.SubTitle.GetHeight() + (m_Fonts.SubTitle.GetHeight() / 6);
 
 	for(int i = 0; i < INTRO_HELP_TEXT_COUNT; i++)
 		{
 		CAniText::Create(INTRO_HELP_TEXT[i],
 			CVector((Metric)x, (Metric)y),
-			&m_Fonts.Medium,
+			&m_Fonts.Header,
 			0,
-			m_Fonts.rgbLightTitleColor,
+			m_Fonts.rgbTitleColor,
 			&pText);
 		pText->AnimateLinearFade(iDuration, 15, 30);
 		pSeq->AddTrack(pText, 5);
 
-		y += m_Fonts.Medium.GetHeight() + (m_Fonts.Medium.GetHeight() / 6);
+		y += m_Fonts.Header.GetHeight() + (m_Fonts.Header.GetHeight() / 6);
 		}
 
 	*retpAnimatron = pSeq;

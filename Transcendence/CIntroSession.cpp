@@ -500,7 +500,7 @@ ALERROR CIntroSession::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSover
 		CIntroShipController *pNewController = new CIntroShipController(pShip->GetController());
 		pShip->SetController(pNewController, false);
 		pNewController->SetShip(pShip);
-		pShip->SetData(CONSTLIT("IntroController"), CONSTLIT("True"));
+		pShip->SetData(OBJ_DATA_INTRO_CONTROLLER, CONSTLIT("True"));
 
 		*retpShip = pShip;
 		}
@@ -619,7 +619,8 @@ bool CIntroSession::HandleCommandBoxChar (char chChar, DWORD dwKeyData)
 			{
 			if(strStartsWith(g_pTrans->m_sCommand, CONSTLIT("~")))
 				{
-				g_pUniverse->FireOnGlobalIntroCommand(g_pTrans->m_sCommand);
+				g_pUniverse->FireOnGlobalIntroCommand(strSubString(g_pTrans->m_sCommand, 1));
+				CancelCurrentState();
 				break;
 				}
 			CShip *pShip = g_pUniverse->GetPOV()->AsShip();
