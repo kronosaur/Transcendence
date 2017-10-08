@@ -109,7 +109,7 @@ const int NEWS_PANE_INNER_SPACING_Y =			8;
 #define STYLE_TEXT								CONSTLIT("text")
 
 //Not sure where to put this
-const static int INTRO_HELP_TEXT_COUNT = 19;
+const int INTRO_HELP_TEXT_COUNT = (sizeof(INTRO_HELP_TEXT) / sizeof(INTRO_HELP_TEXT[0]));;
 static char *INTRO_HELP_TEXT[INTRO_HELP_TEXT_COUNT] =
 {
 	"[Space]: Cancel current display",
@@ -117,8 +117,8 @@ static char *INTRO_HELP_TEXT[INTRO_HELP_TEXT_COUNT] =
 	"[!]: Enter a ~ command or spawn ship by name",
 	"[C], [c]: Credits",
 	"[D], [d]: Duplicate current ship",
-	"[H]: Show high scores",
-	"[h]: Show this display",
+	"[H], [h]: Show high scores",
+	"[I], [i]: Show this display",
 	"[K[: Destroy current ship class",
 	"[k]: Destroy all ships",
 	"[L], [l]: Load Game",

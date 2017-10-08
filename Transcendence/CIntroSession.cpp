@@ -715,10 +715,13 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			}
 
 		case 'h':
-			SetState(isIntroHelp);
-			break;
 		case 'H':
 			CmdShowHighScoreList();
+			break;
+
+		case 'I':
+		case 'i':
+			SetState(isIntroHelp);
 			break;
 
 		case 'K':
