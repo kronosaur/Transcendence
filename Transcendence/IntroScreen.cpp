@@ -108,9 +108,10 @@ const int NEWS_PANE_INNER_SPACING_Y =			8;
 #define STYLE_NORMAL							CONSTLIT("normal")
 #define STYLE_TEXT								CONSTLIT("text")
 
+
 //Not sure where to put this
-const int INTRO_HELP_TEXT_COUNT = (sizeof(INTRO_HELP_TEXT) / sizeof(INTRO_HELP_TEXT[0]));;
-static char *INTRO_HELP_TEXT[INTRO_HELP_TEXT_COUNT] =
+const int INTRO_HELP_TEXT_COUNT = 19;
+const char *INTRO_HELP_TEXT[INTRO_HELP_TEXT_COUNT] =
 {
 	"[Space]: Cancel current display",
 	"[F11]: Hide intro menu",
@@ -130,7 +131,7 @@ static char *INTRO_HELP_TEXT[INTRO_HELP_TEXT_COUNT] =
 	"[Q], [q]: Quit game",
 	"[S]: Toggle intro ship sounds",
 	"[s]: View ship stats",
-	"[V], [v]: Title"
+	"[V], [v]: Title",
 };
 
 void CTranscendenceWnd::CreateCreditsAnimation (IAnimatron **retpAnimatron)
