@@ -1884,7 +1884,7 @@
 			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtIceAsteroidEjecta;"
 
-			attributes=			"corporate, corporateCustoms, envAir, envAvoidsFire, friendly, independent, generic, human, populated"
+			attributes=			"asteroidBase, corporate, corporateCustoms, envAir, envAvoidsFire, friendly, independent, generic, human, populated"
 			levelFrequency=		"rccuu rv--- ----- ----- -----"
 			locationCriteria=	"++outerSystem"
 			>

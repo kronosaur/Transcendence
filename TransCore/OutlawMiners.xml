@@ -280,7 +280,7 @@
 			sovereign=			"&svOutlawMiners;"
 			inherit=			"&baOutlawMine;"
 				 
-			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
+			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
 				 
 			abandonedScreen=	"&dsAbandonedStation;"
 				 
@@ -399,7 +399,7 @@
 			sovereign=			"&svOutlawMiners;"
 			inherit=			"&baOutlawMine;"
 				 
-			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
+			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
 				 
 			abandonedScreen=	"&dsAbandonedStation;"
 				 
@@ -514,7 +514,7 @@
 			sovereign=			"&svOutlawMiners;"
 			inherit=			"&baOutlawMine;"
 				 
-			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
+			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
 				 
 			abandonedScreen=	"&dsAbandonedStation;"
 				 
@@ -625,7 +625,7 @@
 			sovereign=			"&svOutlawMiners;"
 			inherit=			"&baOutlawMine;"
 				 
-			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
+			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
 				 
 			abandonedScreen=	"&dsAbandonedStation;"
 				 
@@ -753,7 +753,7 @@
 			sovereign=			"&svOutlawMiners;"
 			inherit=			"&baOutlawMine;"
 				 
-			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
+			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
 				 
 			abandonedScreen=	"&dsAbandonedStation;"
 				 
