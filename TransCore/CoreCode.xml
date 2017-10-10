@@ -646,6 +646,32 @@
 					)
 				))
 				
+			(setq substitute (lambda (source old new)
+			
+			; Replaces all instances of one item in a list or one substring in a string with another.
+			; ------------------------------------------------------------------
+
+				(block (done result oldLength position joinFunction)
+					(setq oldLength (count old))
+					(setq joinFunction (if (eq (typeOf source) 'string) cat append))
+					(loop (not done)
+						(if (setq position (find source old))
+							(block Nil
+								(setq result (apply joinFunction (list result (subset source 0 position) new)))
+								(setq source (subset source (+ position oldLength)))
+								)
+							(block Nil
+								(setq result (apply joinFunction (list result source)))
+								(setq done True)
+								)
+							)
+						)
+					result
+					)
+				))
+				
+			; Topology functions -------------------------------------------------
+			
 			(setq sysGetStargateLeadingToCore (lambda ()
 				(block (
 					(corewardNode (typGetStaticData (@ (typFind "a") 0) 'defaultCorewardNode))
