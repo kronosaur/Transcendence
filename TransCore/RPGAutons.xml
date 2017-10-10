@@ -23,15 +23,19 @@
 			<GetName>
 				(block (name)
 					(if (setq name (@ (itmGetData gItem 'autonConfig) 'name))
-						(typTranslate &baAutonItemBase; 'nameText { name:name class:(itmGetName gItem 0x80000) pluralClass:(itmGetName gItem 0x80002) } )
-						(cat (itmGetName gItem 0) "|" (itmGetName gItem 0x02))
+						(typTranslate &baAutonItemBase; 'nameText {
+							autonName:(substitute name "\"" "'")
+							class:(itmGetName gItem 'noEvent)
+							pluralClass:(itmGetName gItem '(plural noEvent))
+							})
+						(cat (itmGetName gItem 'noEvent) "|" (itmGetName gItem '(plural noEvent)))
 						)
 					)
 			</GetName>
 		</Events>
 		
 		<Language>
-			<Text id="nameText">%class% named "%name%"|%pluralClass% named "%name%"</Text>
+			<Text id="nameText">%class% named "%autonName%"|%pluralClass% named "%autonName%"</Text>
 		</Language>
 	</ItemType>
 	
@@ -335,7 +339,7 @@
 						cargo: (objGetItems gSource "*U")
 						
 						name: (if (neq (objGetName gSource) (objGetProperty gSource 'name))
-									(objGetName gSource)
+									(rpgSanitizeAutonName (objGetName gSource))
 									)
 						}))
 						
@@ -742,11 +746,39 @@
 				))
 				
 			(setq rpgSanitizeAutonName (lambda (theName)
-				(block nil
-					(setq theName (apply cat (split theName "\\|[]();:%")))
-					(setq theName (subset (strCapitalize theName) 0 17))
-					(if (eq "" (apply cat (split theName " "))) (setq theName nil))
-					theName
+				(block (newName)
+					(setq theName (strCapitalize theName))
+					(for i 0 (min 16 (- (count theName) 1))
+						(switch
+							(eq (subset theName i 1) "\\")
+								(setq newName (cat newName "\\\\"))
+							(eq (subset theName i 1) "|")
+								(setq newName (cat newName "\\|"))
+							(eq (subset theName i 1) "[")
+								(setq newName (cat newName "\\["))
+							(eq (subset theName i 1) "]")
+								(setq newName (cat newName "\\]"))
+							(eq (subset theName i 1) "&#40;")
+								(setq newName (cat newName "\\&#40;"))
+							(eq (subset theName i 1) "&#41;")
+								(setq newName (cat newName "\\&#41;"))
+							(eq (subset theName i 1) ";")
+								(setq newName (cat newName "\\;"))
+							(eq (subset theName i 1) ":")
+								(setq newName (cat newName "\\:"))
+							(and (eq (subset theName i 1) "%")
+								(gr (strFind (subset theName (+ i 1)) "%") 0)
+								(or (not (strFind (subset theName (+ i 1)) " "))
+									(ls (strFind (subset theName (+ i 1)) "%") (strFind (subset theName (+ i 1)) " "))
+									)
+								)
+								(setq newName (cat newName "% "))
+							(setq newName (cat newName (subset theName i 1)))
+							)
+						)
+					
+					(setq newName (subset newName 0 17))	
+					(if (eq "" (apply cat (split newName " "))) Nil newName)
 					)
 				))
 			)
