@@ -24,7 +24,9 @@
 		<Events>
 			<OnCreate>
 				;	No mission if the Kronosaurus is unavailable
-				(if (not (rpgCharacterIsAliveAndWell &unidKronosaurus;))
+				(if (not (and (rpgCharacterIsAliveAndWell &unidKronosaurus;)
+							(typGetData &unidKronosaurus; 'hasDeployed)
+						))
 					(msnDestroy gSource)
 					)
 			</OnCreate>
