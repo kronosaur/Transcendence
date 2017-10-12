@@ -871,7 +871,7 @@
 						;	Make a list of available missions. We filter out any missions
 						;	that are outside our system level. If we can't find anything, then we've got nothing.
 
-						(not (setq newMissions (typFind (@ options 'missionCriteria))))
+						(not (setq newMissions (typFind (cat (@ options 'missionCriteria) " -special;"))))
 							(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
 
 						;	Create a random mission from the list. If we succeed, then show the mission
@@ -946,7 +946,7 @@
 
 						;	Make a list of available missions. We filter out any missions
 						;	that are outside our system level. If we can't find anything, then we've got nothing.
-						(not (setq newMissions (typFind (@ options 'missionCriteria))))
+						(not (setq newMissions (typFind (cat (@ options 'missionCriteria) " -special;"))))
 							Nil
 
 						;	Create a random mission from the list. If we succeed, then return it
