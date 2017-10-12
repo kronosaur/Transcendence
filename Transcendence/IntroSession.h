@@ -47,6 +47,7 @@ class CIntroSession : public IHISession
 		enum EStates
 			{
 			isBlank,
+			isIntroHelp,
 			isCredits,
 			isHighScores,
 			isHighScoresEndGame,
@@ -54,7 +55,7 @@ class CIntroSession : public IHISession
 			isEndGame,
 			isShipStats,
 			isBlankThenRandom,
-			isEnterShipClass,
+			isEnterCommand,
 			isNews,
 			isWaitingForHighScores,
 			};
