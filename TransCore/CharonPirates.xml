@@ -1784,13 +1784,13 @@
 				))
 
 			(setq chrDeployKronosaurus (lambda ()
-			(block (
-				(theStation (sysFindObject Nil "ATN +korolovShipping;"))
-				(theMission (msnCreate &msKronosaurus; theStation))
-				)
-				(if theMission (msnAccept theMission))
-				)
-			))
+				(block (
+					(theStation (sysFindObject Nil "ATN +korolovShipping;"))
+					(theMission (msnCreate &msKronosaurus; theStation))
+					)
+					(if theMission (msnAccept theMission))
+					)
+				))
 
 			(setq chrGetPrimaryStronghold (lambda (sourceObj)
 				(block (primaryObj)
