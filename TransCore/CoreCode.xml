@@ -566,6 +566,7 @@
 				(block (i result lastItem)
 				
 					(if (not nameFlags)	(setq nameFlags 0x08))
+					(setq i 0)
 					(setq lastItem (subtract (count itemList) 1))
 					
 					(enum itemList theItem
