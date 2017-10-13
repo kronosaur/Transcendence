@@ -877,11 +877,11 @@
 
 					(switch
 						;	If we have an active mission from this station then we return it.
-						(setq theMission (@ (msnFind gSource (cat "aS " displayCriteria)) 0))
+						(setq theMission (msnFind gSource (cat "aSP " displayCriteria)))
 							theMission
 
 						;	If we have an open mission available then return it.
-						(setq theMission (@ (msnFind gSource (cat "oS " displayCriteria)) 0))
+						(setq theMission (msnFind gSource (cat "oSP " displayCriteria)))
 							theMission
 
 						;	Don't give out more than X mission per station
