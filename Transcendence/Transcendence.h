@@ -984,6 +984,7 @@ class CTranscendenceModel
 		ALERROR EndGame (void);
 		ALERROR EndGame (const CString &sReason, const CString &sEpitaph, int iScoreChange = 0);
 		ALERROR EndGameClose (CString *retsError = NULL);
+		ALERROR EndGameDelete (CString *retsError = NULL);
 		ALERROR EndGameDestroyed (bool *retbResurrected = NULL);
 		ALERROR EndGameSave (CString *retsError = NULL);
 		ALERROR EndGameStargate (void);

@@ -73,6 +73,7 @@
 
 #define CMD_GAME_ADVENTURE						CONSTLIT("gameAdventure")
 #define CMD_GAME_CREATE							CONSTLIT("gameCreate")
+#define CMD_GAME_END_DELETE						CONSTLIT("gameEndDelete")
 #define CMD_GAME_END_DESTROYED					CONSTLIT("gameEndDestroyed")
 #define CMD_GAME_END_GAME						CONSTLIT("gameEndGame")
 #define CMD_GAME_END_SAVE						CONSTLIT("gameEndSave")
@@ -1011,6 +1012,24 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Epilogue
 
 		HICommand(CMD_UI_START_EPILOGUE);
+		}
+
+	//	Quit the game and delete the save file
+
+	else if (strEquals(sCmd, CMD_GAME_END_DELETE))
+		{
+		if (error = m_Model.EndGameDelete(&sError))
+			g_pTrans->DisplayMessage(sError);
+
+		//	Back to intro screen
+
+		m_pGameSession = NULL;
+		if (m_Model.GetPlayer())
+			m_Model.GetPlayer()->SetGameSession(NULL);
+		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, m_Settings, CIntroSession::isShipStats));
+		m_iState = stateIntro;
+		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
+		m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
 		}
 
 	//	End destroyed state. We either go to the epilog or we
