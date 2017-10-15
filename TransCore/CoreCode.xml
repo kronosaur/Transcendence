@@ -652,8 +652,17 @@
 			; ------------------------------------------------------------------
 
 				(block (done result oldLength position joinFunction)
-					(setq oldLength (count old))
-					(setq joinFunction (if (eq (typeOf source) 'string) cat append))
+					(if (eq (typeOf source) 'string)
+						(block Nil
+							(setq joinFunction cat)
+							(setq oldLength (count old))
+							)
+						(block Nil
+							(setq joinFunction append)
+							(setq oldLength 1)
+							(setq new (list new))
+							)
+						)
 					(loop (not done)
 						(if (setq position (find source old))
 							(block Nil
