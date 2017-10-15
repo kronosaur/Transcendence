@@ -39,6 +39,7 @@
 #define CMD_SAVE							101
 #define CMD_SELF_DESTRUCT					103
 #define CMD_DELETE							104
+#define CMD_REVERT							105
 
 #define CMD_CONFIRM							110
 #define CMD_CANCEL							111
@@ -229,6 +230,11 @@ bool CTranscendenceWnd::DoGameMenuCommand (DWORD dwCmd)
 			g_pHI->HICommand(CONSTLIT("uiShowHelp"));
 			return true;
 
+		case CMD_REVERT:
+			m_CurrentMenu = menuNone;
+			g_pHI->HICommand(CONSTLIT("gameRevert"));
+			return false;
+
 		case CMD_SAVE:
 			m_CurrentMenu = menuNone;
 			g_pHI->HICommand(CONSTLIT("gameEndSave"));
@@ -251,7 +257,6 @@ bool CTranscendenceWnd::DoGameMenuCommand (DWORD dwCmd)
 			//	We return FALSE because we're putting up a new menu.
 
 			return false;
-
 		default:
 			m_CurrentMenu = menuNone;
 			return true;
@@ -984,6 +989,7 @@ void CTranscendenceWnd::ShowGameMenu (void)
 
 	if (g_pUniverse->InDebugMode())
 		{
+		m_MenuData.AddMenuItem(CONSTLIT("9"), CONSTLIT("Revert"), 0, CMD_REVERT);
 		m_MenuData.AddMenuItem(CONSTLIT("0"), CONSTLIT("Delete & Quit"), 0, CMD_DELETE);
 		}
 	m_MenuDisplay.Invalidate();

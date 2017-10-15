@@ -986,6 +986,7 @@ class CTranscendenceModel
 		ALERROR EndGameClose (CString *retsError = NULL);
 		ALERROR EndGameDelete (CString *retsError = NULL);
 		ALERROR EndGameDestroyed (bool *retbResurrected = NULL);
+		ALERROR EndGameNoSave (CString * retsError = NULL);
 		ALERROR EndGameSave (CString *retsError = NULL);
 		ALERROR EndGameStargate (void);
 		ALERROR EnterScreenSession (CSpaceObject *pLocation, CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError = NULL);

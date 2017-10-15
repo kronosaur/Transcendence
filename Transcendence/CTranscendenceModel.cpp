@@ -724,6 +724,35 @@ ALERROR CTranscendenceModel::EndGameDestroyed (bool *retbResurrected)
 	return NOERROR;
 	}
 
+ALERROR CTranscendenceModel::EndGameNoSave (CString *retsError)
+
+//	EndGameNoSave
+//
+//	Ends the current game without saving. Does not activate Resurrection.
+
+	{
+	ASSERT(m_iState == stateInGame);
+
+	//	Clear resurrection flag
+
+	m_GameFile.ClearGameResurrect();
+
+	//	Clean up
+
+	m_pPlayer = NULL;
+
+	//	Close the game file
+
+	m_GameFile.Close();
+	m_Universe.Reinit();
+
+	//	Done
+
+	m_iState = stateGameOver;
+
+	return NOERROR;
+	}
+
 ALERROR CTranscendenceModel::EndGameSave (CString *retsError)
 
 //	EndGameSave
