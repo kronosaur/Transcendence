@@ -820,6 +820,9 @@
 				;
 				;		intervalPerType: Time between missions given by same station type
 				;
+				;		maxActive: Maximum number of missions (meeting missionCriteria) which can
+				;				be active at the same time
+				;
 				;		maxPerStation: Maximum number of missions that we give out at
 				;				this station.
 				;
@@ -859,6 +862,9 @@
 				;
 				;		intervalPerType: Time between missions given by same station type
 				;
+				;		maxActive: Maximum number of missions (meeting missionCriteria) which can
+				;				be active at the same time
+				;
 				;		maxPerStation: Maximum number of missions that we give out at
 				;				this station.
 				;
@@ -883,6 +889,12 @@
 						;	If we have an open mission available then return it.
 						(setq theMission (msnFind gSource (cat "oSP " displayCriteria)))
 							theMission
+
+						;	If the player has too many active missions from other stations, then no new mission
+						(and (@ options 'maxActive)
+								(geq (count (msnFind Nil (cat "a" (@ options 'missionCriteria)))) (@ options 'maxActive))
+								)
+							Nil
 
 						;	Don't give out more than X mission per station
 						(and (@ options 'maxPerStation)
