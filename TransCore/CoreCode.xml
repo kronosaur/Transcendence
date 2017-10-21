@@ -648,34 +648,52 @@
 				
 			(setq substitute (lambda (source old new)
 			
-			; Replaces all instances of one item in a list or one substring in a string with another.
+			; Replaces all instances of one substring in a string, one series of items in a list, or one value in a struct with another.
 			; ------------------------------------------------------------------
 
-				(block (done result oldLength position joinFunction)
-					(if (eq (typeOf source) 'string)
-						(block Nil
-							(setq joinFunction cat)
-							(setq oldLength (count old))
-							)
-						(block Nil
-							(setq joinFunction append)
-							(setq oldLength 1)
-							(setq new (list new))
-							)
-						)
-					(loop (not done)
-						(if (setq position (find source old))
+				(block (result oldLength position)
+					(switch
+						(eq (typeOf source) 'string)
 							(block Nil
-								(setq result (apply joinFunction (list result (subset source 0 position) new)))
-								(setq source (subset source (+ position oldLength)))
+								(setq oldLength (count old))
+								(loop (setq position (find source old))
+									(block Nil
+										(setq result (cat result (subset source 0 position) new))
+										(setq source (subset source (+ position oldLength)))
+										)
+									)
+								(cat result source)
 								)
+								
+						(eq (typeOf source) 'list)
 							(block Nil
-								(setq result (apply joinFunction (list result source)))
-								(setq done True)
+								(setq oldLength (count old))
+								(loop (setq position (find source (@ old 0)))
+									(if (eq old (subset source position oldLength))
+										(block Nil
+											(setq result (append result (subset source 0 position) new))
+											(setq source (subset source (+ position oldLength)))
+											)
+										(block Nil
+											(setq result (append result (subset source 0 (+ position 1))))
+											(setq source (subset source (+ position 1)))
+											)
+										)
+									)
+								(append result source)
 								)
-							)
+								
+						(eq (typeOf source) 'struct)
+							(apply struct (map source theItem
+											(if (eq (@ theItem 1) old)
+												(set@ theItem 1 new)
+												theItem
+												)
+											)
+								)
+							
+						source
 						)
-					result
 					)
 				))
 				
