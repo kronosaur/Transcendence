@@ -141,14 +141,14 @@
 			>
 
 		<OnScreenInit>
-			(scrSetData gScreen 'useItem (or (@ gData 'useItem) gItem 1))
+			(scrSetData gScreen 'useItem (or (@ gData 'useItem) gItem))
 		</OnScreenInit>
 
 		<Panes>
 			<Default>
 				<OnPaneInit>
 					(block (
-						(useItem (scrGetData gScreen 'useItem))
+						(useItem (@ (filter (objGetItems gPlayerShip '*) theItem (itmIsEqual theItem (scrGetData gScreen 'useItem))) 0))
 						(theShip gPlayerShip)
 						(dstItem (scrGetItem gScreen))
 						(useInfo (itmFireEvent useItem 'CanUseOnItem {
@@ -159,7 +159,7 @@
 
 						;	Set the description
 						(scrSetControlValue gScreen 'useItem {
-							title: (itmGetName useItem 'capitalize)
+							title: (itmGetName useItem '(capitalize count))
 							desc: (itmGetProperty useItem 'description)
 							})
 
@@ -184,7 +184,7 @@
 							)
 						(scrEnableAction gScreen 'actionUse (@ useInfo 'canUse))
 
-						(rpgInitScreenSet (@ gData 'screenSet))
+						;(rpgInitScreenSet (@ gData 'screenSet))
 						)
 				</OnPaneInit>
 
@@ -215,6 +215,9 @@
 							(scrSetData gScreen 'usageResult result)
 							(scrShowPane gScreen 'ShowResult)
 							)
+					</Action>
+					<Action id="actionDone" default="1" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
