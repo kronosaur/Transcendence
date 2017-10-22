@@ -255,6 +255,24 @@
 				<Stargate name="G2" to="G2:Inbound"/>
 			</Stargates>
 		</Node>
+
+		<Events>
+			<OnGlobalUniverseCreated>
+				(block Nil
+					;	Several well-known sites are known to the player at the beginning
+					;	of the game. This will hopefully give the player various landmarks
+					;	to try to reach.
+
+					(unvSetObjectKnown 'SE "t +unid:&stStartonEridani;;")
+					(unvSetObjectKnown 'BA "t +unid:&stBattleArena;;")
+					(unvSetObjectKnown 'SK "tV +unid:&stStKatsArcology;;")
+					(unvSetObjectKnown 'CD "t +unid:&stCathedralOfDomina;;")
+					;	LATER: Add Jiang's Star
+					(unvSetObjectKnown 'PJ "t +unid:&stPointJuno;;")
+					(unvSetObjectKnown 'A7 "t +unid:&stCommonwealthSettlement;;")
+					)
+			</OnGlobalUniverseCreated>
+		</Events>
 	</SystemMap>
 
 <!-- SPECIAL MISSIONS -->

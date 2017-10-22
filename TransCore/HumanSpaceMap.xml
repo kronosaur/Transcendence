@@ -5,6 +5,7 @@
 	<SystemMap UNID="&smHumanSpace;"
 			name=				"Human Space" 
 			backgroundImage=	"&rsHumanSpace;"
+			backgroundImageScale="200"
 			initialScale=		"200"
 			minScale=			"100" 
 			maxScale=			"250" 
@@ -12,6 +13,78 @@
                
             stargateLineColor=  "#6b8299"
 			>
+
+		<MapEffect>
+			<!-- New Beyond -->
+
+			<Group xOffset="179" yOffset="-163">
+				<Text text=				"New Beyond" 
+						font=			"Title"
+						primaryColor=	"0xff, 0xff, 0xff"
+						opacity=		"20"
+						/>
+			</Group>
+			
+			<Group xOffset="324" yOffset="-61">
+				<Text text=				"Charon Pirates" 
+						font=			"SubTitle"
+						primaryColor=	"0xff, 0xff, 0xff"
+						opacity=		"20"
+						/>
+			</Group>
+
+			<Group xOffset="-160" yOffset="420">
+				<Text text=				"Huari Empire" 
+						font=			"SubTitle"
+						primaryColor=	"0xff, 0xff, 0xff"
+						opacity=		"20"
+						/>
+			</Group>
+
+			<!-- Ungoverned Territories -->
+
+			<Group xOffset="-33" yOffset="347">
+				<Text text=				"Ungoverned Territories" 
+						font=			"Title"
+						primaryColor=	"0xff, 0xff, 0xff"
+						opacity=		"20"
+						/>
+			</Group>
+				
+			<Group xOffset="-38" yOffset="292">
+				<Text text=				"Sung Slavers" 
+						font=			"SubTitle"
+						primaryColor=	"0xff, 0xff, 0xff"
+						opacity=		"20"
+						/>
+			</Group>
+
+			<!-- Outer Realm -->
+
+			<Group xOffset="-224" yOffset="-44">
+				<Text text=				"Outer\nRealm" 
+						font=			"Title"
+						primaryColor=	"0xff, 0xff, 0xff"
+						opacity=		"20"
+						/>
+			</Group>
+				
+			<Group xOffset="-384" yOffset="36">
+				<Text text=				"Ranx\nEmpire" 
+						font=			"SubTitle"
+						primaryColor=	"0xff, 0xff, 0xff"
+						opacity=		"20"
+						/>
+			</Group>
+
+			<Group xOffset="-383" yOffset="-176">
+				<Text text=				"Ares\nSpace" 
+						font=			"SubTitle"
+						primaryColor=	"0xff, 0xff, 0xff"
+						opacity=		"20"
+						/>
+			</Group>
+		</MapEffect>
 
 		<!-- NEW BEYOND ==================================================== -->
 		
@@ -32,7 +105,7 @@
 		
 		<!-- ERIDANI -->
 		
-		<Node ID="SE" x="-15" y="-66">
+		<Node ID="SE" x="-15" y="-66" initialState="known">
 			<System 
 					name=			"Eridani"
 					level=			"1"
@@ -40,21 +113,11 @@
 					>
 				<System UNID="&ssStartonEridani;"/>
 			</System>
-
-			<MapEffect>
-				<Group xOffset="194" yOffset="-97">
-					<Text text=				"New Beyond" 
-							font=			"Title"
-							primaryColor=	"0xff, 0xff, 0xff"
-							opacity=		"20"
-							/>
-				</Group>
-			</MapEffect>
 		</Node>
 		
 		<!-- RIGEL AURELIUS -->
 
-		<Node ID="BA" x="207" y="-205">
+		<Node ID="BA" x="207" y="-205" initialState="known">
 			<System
 					name=			"Rigel Aurelius"
 					level=			"3"
@@ -66,7 +129,7 @@
 
 		<!-- CHARON -->
 		
-		<Node ID="CP" x="267" y="-40">
+		<Node ID="CP" x="267" y="-40" initialState="positionKnown">
 			<System
 					name="Charon"
 					level=			"3"
@@ -74,21 +137,11 @@
 					>
 				<System UNID="&ssCharonPirateFortress;"/>
 			</System>
-
-			<MapEffect>
-				<Group xOffset="-172" yOffset="-58">
-					<Text text=				"Charon Pirates" 
-							font=			"SubTitle"
-							primaryColor=	"0xff, 0xff, 0xff"
-							opacity=		"20"
-							/>
-				</Group>
-			</MapEffect>
 		</Node>
 
 		<!-- SAINT KATHARINE'S STAR -->
 
-		<Node ID="SK" x="228" y="20">
+		<Node ID="SK" x="228" y="20" initialState="known">
 			<System
 					name=			"St. Katharine's Star"
 					level=			"4"
@@ -100,7 +153,7 @@
 		
 		<!-- MINOR NEW BEYOND SYSTEMS -->
 
-		<Node ID="C1" x="18" y="-139">
+		<Node ID="C1" x="18" y="-139" initialState="positionKnown">
 			<System
 					level=			"1"
 					attributes=		"humanSpace, mainline, newBeyond"
@@ -114,7 +167,7 @@
 			</System>
 		</Node>
 
-		<Node ID="C3" x="71" y="-189">
+		<Node ID="C3" x="71" y="-189" initialState="positionKnown">
 			<System
 					level=			"2"
 					attributes=		"humanSpace, mainline, newBeyond"
@@ -128,7 +181,7 @@
 			</System>
 		</Node>
 
-		<Node ID="C3A" x="143" y="-219">
+		<Node ID="C3A" x="143" y="-219" initialState="positionKnown">
 			<System
 					level=			"2"
 					attributes=		"humanSpace, mainline, newBeyond"
@@ -140,7 +193,7 @@
 			</System>
 		</Node>
 		
-		<Node ID="C4" x="266" y="-172">
+		<Node ID="C4" x="266" y="-172" initialState="positionKnown">
 			<System
 					level=			"3"
 					attributes=		"humanSpace, mainline, newBeyond"
@@ -155,7 +208,7 @@
 			</System>
 		</Node>
 
-		<Node ID="C4A" x="284" y="-96">
+		<Node ID="C4A" x="284" y="-96" initialState="unknown">
 			<System
 					level=			"3"
 					attributes=		"humanSpace, mainline, newBeyond"
@@ -196,7 +249,7 @@
 
 		<!-- SANCTUARY -->
 		
-		<Node ID="CD" x="0" y="260">
+		<Node ID="CD" x="0" y="260" initialState="known">
 			<System
 					name=			"Sanctuary"
 					level=			"5"
@@ -204,21 +257,11 @@
 					>
 				<System UNID="&ssSanctuary;"/>
 			</System>
-
-			<MapEffect>
-				<Group xOffset="-160" yOffset="160">
-					<Text text=				"Huari Empire" 
-							font=			"SubTitle"
-							primaryColor=	"0xff, 0xff, 0xff"
-							opacity=		"20"
-							/>
-				</Group>
-			</MapEffect>
 		</Node>
 		
 		<!-- JIANG'S STAR -->
 		
-		<Node ID="C9" x="-273" y="222">
+		<Node ID="C9" x="-273" y="222" initialState="known">
 			<System
 					name=				"Jiang's Star"
 					level=				"6"
@@ -226,29 +269,11 @@
 					>
 				<System UNID="&ssEarthSpaceVolcanic;"/>
 			</System>
-
-			<MapEffect>
-				<Group xOffset="240" yOffset="125">
-					<Text text=				"Ungoverned Territories" 
-							font=			"Title"
-							primaryColor=	"0xff, 0xff, 0xff"
-							opacity=		"20"
-							/>
-				</Group>
-				
-				<Group xOffset="180" yOffset="40">
-					<Text text=				"Sung Slavers" 
-							font=			"SubTitle"
-							primaryColor=	"0xff, 0xff, 0xff"
-							opacity=		"20"
-							/>
-				</Group>
-			</MapEffect>
 		</Node>
 
 		<!-- MINOR UNGOVERNED TERRITORIES SYSTEMS -->
 
-		<Node ID="C5A" x="196" y="79">
+		<Node ID="C5A" x="196" y="79" initialState="positionKnown">
 			<System
 					level=			"4"
 					attributes=		"humanSpace, mainline, ungoverned"
@@ -260,7 +285,7 @@
 			</System>
 		</Node>
 
-		<Node ID="C5" x="162" y="130">
+		<Node ID="C5" x="162" y="130" initialState="positionKnown">
 			<System		
 					level=			"4"
 					attributes=		"humanSpace, mainline, ungoverned"
@@ -275,7 +300,7 @@
 			</System>
 		</Node>
 
-		<Node ID="C6" x="106" y="191">
+		<Node ID="C6" x="106" y="191" initialState="positionKnown">
 			<System				
 					level=			"5"
 					attributes=		"huaramarcaGate, humanSpace, mainline, ungoverned"
@@ -293,7 +318,7 @@
 			</System>
 		</Node>
 
-		<Node ID="C6A" x="44" y="239">
+		<Node ID="C6A" x="44" y="239" initialState="unknown">
 			<System
 					level=			"5"
 					attributes=		"huaramarcaGate, humanSpace, mainline, ungoverned"
@@ -311,7 +336,7 @@
 			</System>
 		</Node>
 
-		<Node ID="C7" x="-94" y="295">
+		<Node ID="C7" x="-94" y="295" initialState="positionKnown">
 			<System
 					level=			"5"
 					attributes=		"huaramarcaGate, humanSpace, mainline, ungoverned"
@@ -329,7 +354,7 @@
 			</System>
 		</Node>
 
-		<Node ID="C8" x="-191" y="292">
+		<Node ID="C8" x="-191" y="292" initialState="positionKnown">
 			<System
 					level=			"6"
 					attributes=		"huaramarcaGate, humanSpace, mainline, ungoverned"
@@ -347,7 +372,7 @@
 			</System>
 		</Node>
 
-		<Node ID="C8A" x="-238" y="268">
+		<Node ID="C8A" x="-238" y="268" initialState="unknown">
 			<System
 					level=				"6"
 					attributes=			"huaramarcaGate, humanSpace, mainline, ungoverned"
@@ -379,7 +404,7 @@
 		
 		<!-- ETA CETI -->
 		
-		<Node ID="EC" x="-284" y="36">
+		<Node ID="EC" x="-284" y="36" initialState="positionKnown">
 			<System
 					name=				"Eta Ceti"
 					level=				"7"
@@ -387,29 +412,11 @@
 					>
 				<System UNID="&ssEtaCeti;"/>
 			</System>
-
-			<MapEffect>
-				<Group xOffset="60" yOffset="-80">
-					<Text text=				"Outer\nRealm" 
-							font=			"Title"
-							primaryColor=	"0xff, 0xff, 0xff"
-							opacity=		"20"
-							/>
-				</Group>
-				
-				<Group xOffset="-100" yOffset="0">
-					<Text text=				"Ranx\nEmpire" 
-							font=			"SubTitle"
-							primaryColor=	"0xff, 0xff, 0xff"
-							opacity=		"20"
-							/>
-				</Group>
-			</MapEffect>
 		</Node>
 		
 		<!-- POINT JUNO -->
 		
-		<Node ID="PJ" x="-203" y="-136">
+		<Node ID="PJ" x="-203" y="-136" initialState="known">
 			<System
 					name=				"Point Juno"
 					level=				"8"
@@ -417,21 +424,11 @@
 					>
 				<System UNID="&ssPointJuno;"/>
 			</System>
-
-			<MapEffect>
-				<Group xOffset="-180" yOffset="-40">
-					<Text text=				"Ares\nSpace" 
-							font=			"SubTitle"
-							primaryColor=	"0xff, 0xff, 0xff"
-							opacity=		"20"
-							/>
-				</Group>
-			</MapEffect>
 		</Node>
 		
 		<!-- DANTALION -->
 		
-		<Node ID="A7" x="-288" y="-269">
+		<Node ID="A7" x="-288" y="-269" initialState="known">
 			<System
 					name=				"Dantalion"
 					level=				"9"
@@ -443,7 +440,7 @@
 
 		<!-- HERETIC -->
 		
-		<Node ID="G2" x="-382" y="-388">
+		<Node ID="G2" x="-382" y="-388" initialState="positionKnown">
 			<System
 					UNID=				"&ssHeretic;"
 					name=				"Heretic"
@@ -454,7 +451,7 @@
 		
 		<!-- MINOR OUTER REALM SYSTEMS -->
 
-		<Node ID="A1" x="-292" y="149">
+		<Node ID="A1" x="-292" y="149" initialState="positionKnown">
 			<System
 					level=				"7"
 					attributes=			"humanSpace, mainline, outerRealm"
@@ -469,7 +466,7 @@
 			</System>
 		</Node>
 
-		<Node ID="A2" x="-293" y="95">
+		<Node ID="A2" x="-293" y="95" initialState="positionKnown">
 			<System
 					level=				"7"
 					attributes=			"humanSpace, mainline, outerRealm"
@@ -484,7 +481,7 @@
 			</System>
 		</Node>
 
-		<Node ID="A3" x="-253" y="-23">
+		<Node ID="A3" x="-253" y="-23" initialState="positionKnown">
 			<System
 					level=				"8"
 					attributes=			"humanSpace, mainline, outerRealm"
@@ -499,7 +496,7 @@
 			</System>
 		</Node>
 
-		<Node ID="A3A" x="-205" y="-66">
+		<Node ID="A3A" x="-205" y="-66" initialState="unknown">
 			<System
 					level=				"8"
 					attributes=			"humanSpace, mainline, outerRealm"
@@ -513,7 +510,7 @@
 			</System>
 		</Node>
 
-		<Node ID="A5" x="-216" y="-188">
+		<Node ID="A5" x="-216" y="-188" initialState="positionKnown">
 			<System
 					level=				"9"
 					attributes=			"humanSpace, mainline, outerRealm"
@@ -527,7 +524,7 @@
 			</System>
 		</Node>
 
-		<Node ID="A6" x="-254" y="-234">
+		<Node ID="A6" x="-254" y="-234" initialState="positionKnown">
 			<System
 					level=				"9"
 					attributes=			"humanSpace, mainline, outerRealm"
@@ -543,7 +540,7 @@
 
 		<!-- LEVEL X -->
 
-		<Node ID="G1" x="-346" y="-331">
+		<Node ID="G1" x="-346" y="-331" initialState="positionKnown">
 			<System
 					level=				"10"
 					attributes=			"humanSpace, mainline, outerRealm"

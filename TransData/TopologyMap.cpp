@@ -71,8 +71,11 @@ void GenerateTopologyMap (CUniverse &Universe, CXMLElement *pCmdLine)
 		}
 
 	//	Create a background image
+	//
+	//	LATER: In some cases we need to resize the background image.
 
-	CG32bitImage *pImage = Ctx.pMap->CreateBackgroundImage();
+	Metric rScale;
+	CG32bitImage *pImage = Ctx.pMap->CreateBackgroundImage(&rScale);
 
 	//	Create the output
 
