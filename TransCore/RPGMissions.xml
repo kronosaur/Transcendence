@@ -820,6 +820,9 @@
 				;
 				;		intervalPerType: Time between missions given by same station type
 				;
+				;		maxActive: Maximum number of missions (meeting missionCriteria) which can
+				;				be active at the same time
+				;
 				;		maxPerStation: Maximum number of missions that we give out at
 				;				this station.
 				;
@@ -834,60 +837,15 @@
 				
 				(block (
 					(noMissionTextID (@ options 'noMissionTextID))
-					(displayCriteria (@ options 'displayCriteria))
-					theMission newMissions nextMissionTime
+					theMission
 					)
 
 					;	Show proper screen
 
 					(switch
-						;	If we have an active mission from this station then we show it.
-
-						(setq theMission (@ (msnFind gSource (cat "aS " displayCriteria)) 0))
+						;	Call rpgMissionGetAssignment to see if we have a mission.
+						(setq theMission (rpgMissionGetAssignment options))
 							(scrShowScreen gScreen &dsRPGMission; {	missionObj: theMission })
-
-						;	If we have an open mission available then display it.
-
-						(setq theMission (@ (msnFind gSource (cat "oS " displayCriteria)) 0))
-							(scrShowScreen gScreen &dsRPGMission; {	missionObj: theMission })
-
-						;	Don't give out more than X mission per station
-								
-						(and (@ options 'maxPerStation) 
-								(geq (count (msnFind gSource "*S")) (@ options 'maxPerStation))
-								)
-							(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
-
-						;	If it's not time for a new mission, then nothing
-
-						(and (setq nextMissionTime (objGetData gSource 'nextMissionTime))
-								(gr nextMissionTime (unvGetTick)))
-							(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
-
-						(and (setq nextMissionTime (objGetTypeData gSource 'nextMissionTime))
-								(gr nextMissionTime (unvGetTick)))
-							(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
-
-						;	Make a list of available missions. We filter out any missions
-						;	that are outside our system level. If we can't find anything, then we've got nothing.
-
-						(not (setq newMissions (typFind (@ options 'missionCriteria))))
-							(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
-
-						;	Create a random mission from the list. If we succeed, then show the mission
-						;	screen.
-
-						(setq theMission (msnCreate newMissions gSource))
-							(block Nil
-								;	And set next mission times if required
-								(if (@ options 'intervalPerStation)
-									(objSetData gSource 'nextMissionTime (+ (unvGetTick) (@ options 'intervalPerStation)))
-									)
-								(if (@ options 'intervalPerType)
-									(objSetTypeData gSource 'nextMissionTime (+ (unvGetTick) (@ options 'intervalPerType)))
-									)
-								(scrShowScreen gScreen &dsRPGMission; { missionObj: theMission })
-								)
 
 						; Otherwise, nothing
 
@@ -903,6 +861,9 @@
 				;		intervalPerStation: Time between mission given at this station
 				;
 				;		intervalPerType: Time between missions given by same station type
+				;
+				;		maxActive: Maximum number of missions (meeting missionCriteria) which can
+				;				be active at the same time
 				;
 				;		maxPerStation: Maximum number of missions that we give out at
 				;				this station.
@@ -922,12 +883,18 @@
 
 					(switch
 						;	If we have an active mission from this station then we return it.
-						(setq theMission (@ (msnFind gSource (cat "aS " displayCriteria)) 0))
+						(setq theMission (msnFind gSource (cat "aSP " displayCriteria)))
 							theMission
 
 						;	If we have an open mission available then return it.
-						(setq theMission (@ (msnFind gSource (cat "oS " displayCriteria)) 0))
+						(setq theMission (msnFind gSource (cat "oSP " displayCriteria)))
 							theMission
+
+						;	If the player has too many active missions from other stations, then no new mission
+						(and (@ options 'maxActive)
+								(geq (count (msnFind Nil (cat "a" (@ options 'missionCriteria)))) (@ options 'maxActive))
+								)
+							Nil
 
 						;	Don't give out more than X mission per station
 						(and (@ options 'maxPerStation)
@@ -946,7 +913,7 @@
 
 						;	Make a list of available missions. We filter out any missions
 						;	that are outside our system level. If we can't find anything, then we've got nothing.
-						(not (setq newMissions (typFind (@ options 'missionCriteria))))
+						(not (setq newMissions (typFind (cat (@ options 'missionCriteria) " -special;"))))
 							Nil
 
 						;	Create a random mission from the list. If we succeed, then return it
