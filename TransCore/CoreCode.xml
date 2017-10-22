@@ -420,7 +420,7 @@
 
 						;	Recurse
 
-						(append result (intPermutePairs (subset theList 1)))
+						(append result (mathPermutePairs (subset theList 1)))
 						)
 					)
 				))
@@ -496,6 +496,40 @@
 						(subtract toMin result)
 						(add result toMin)
 						)
+					)
+				))
+				
+			(setq mathDecToHex (lambda (decimal)
+				(block (tokens result negative)
+					(setq tokens '(0 1 2 3 4 5 6 7 8 9 A B C D E F))
+					(setq decimal (convertTo 'int32 decimal))
+					(if (ls decimal 0)
+						(block Nil
+							(setq decimal (- decimal 0x80000000))
+							(setq negative True)
+							)
+						)
+					(if (eq decimal 0)
+						(setq result 0)
+						(loop (gr decimal 0)
+							(block Nil
+								(setq result (cat (@ tokens (modulo decimal 16)) result))
+								(setq decimal (divide decimal 16))
+								)
+							)
+						)
+					(if negative
+						(block Nil
+							(for i 1 (- 8 (count result))
+								(setq result (cat 0 result))
+								)
+							(setq result (cat (@ tokens (+ (subset result 0 1) 8))
+											(subset result 1)
+											)
+								)
+							)
+						)
+					(cat "0x" result)
 					)
 				))
 				
@@ -646,6 +680,59 @@
 					)
 				))
 				
+			(setq substitute (lambda (source old new)
+			
+			; Replaces all instances of one substring in a string, one series of items in a list, or one value in a struct with another.
+			; ------------------------------------------------------------------
+
+				(block (result oldLength position)
+					(switch
+						(eq (typeOf source) 'string)
+							(block Nil
+								(setq oldLength (count old))
+								(loop (setq position (find source old))
+									(block Nil
+										(setq result (cat result (subset source 0 position) new))
+										(setq source (subset source (+ position oldLength)))
+										)
+									)
+								(cat result source)
+								)
+								
+						(eq (typeOf source) 'list)
+							(block Nil
+								(setq oldLength (count old))
+								(loop (setq position (find source (@ old 0)))
+									(if (eq old (subset source position oldLength))
+										(block Nil
+											(setq result (append result (subset source 0 position) new))
+											(setq source (subset source (+ position oldLength)))
+											)
+										(block Nil
+											(setq result (append result (subset source 0 (+ position 1))))
+											(setq source (subset source (+ position 1)))
+											)
+										)
+									)
+								(append result source)
+								)
+								
+						(eq (typeOf source) 'struct)
+							(apply struct (map source theItem
+											(if (eq (@ theItem 1) old)
+												(set@ theItem 1 new)
+												theItem
+												)
+											)
+								)
+							
+						source
+						)
+					)
+				))
+				
+			; Topology functions -------------------------------------------------
+			
 			(setq sysGetStargateLeadingToCore (lambda ()
 				(block (
 					(corewardNode (typGetStaticData (@ (typFind "a") 0) 'defaultCorewardNode))

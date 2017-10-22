@@ -751,70 +751,85 @@
 	<DockScreen UNID="&dsRPGLoot;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
 			>
 
 		<ListOptions
-			dataFrom=	"=(if (@ gData 'sourceObj) (@ gData 'sourceObj) 'station)"
+			dataFrom=	"=(or (@ gData 'sourceObj) 'station)"
 			list=		"*U"
 			/>
 
 		<Panes>
-			<Default
-					desc=		"There are no items here.">
-
+			<Default>
 				<OnPaneInit>
 					(block (thisItem)
 						(setq thisItem (scrGetItem gScreen))
 						(if thisItem
-							(block (fitCount availCount desc)
-								(setq availCount (itmGetCount thisItem))
-								(setq fitCount (objGetFitCount gPlayerShip thisItem))
+							(block (
+								(availCount (itmGetCount thisItem))
+								(fitCount (objGetFitCount gPlayerShip thisItem))
+								(maxCount (min availCount fitCount))
+								totalMassString spaceString
+								)
 								
-								(setq gMaxCount (min availCount fitCount))
-
-								(setq desc (cat "Unit mass: " (strMassString (itmGetMass thisItem))))
-								(if (gr gMaxCount 1)
-									(setq desc (cat desc " (" gMaxCount " at " (strMassString (multiply (itmGetMass thisItem) gMaxCount)) ")"))
+								(scrSetData gScreen 'maxCount maxCount)
+								(setq totalMassString (if (gr maxCount 1)
+															(scrTranslate gScreen 'totalMassString {
+																quantity:maxCount
+																mass:(strMassString (* (itmGetMass thisItem) maxCount))
+																})
+															" "
+															)
 									)
-
-								(setq desc (cat desc "\n\n"))
 
 								(switch
-									(eq gMaxCount 0)
-										(setq desc (cat desc "You do not have enough space to carry " (itmGetName thisItem 4) "."))
-									(eq gMaxCount 1)
-										(setq desc (cat desc "You have enough room to carry one " (itmGetName thisItem 0) "."))
+									(eq maxCount 0)
+										(block Nil
+											(setq spaceString (scrTranslate gScreen 'spaceStringNone { itemName:(itmGetName thisItem 'article) }))
+											(scrEnableAction gScreen 'actionLootThis Nil)
+											)
+									(eq maxCount 1)
+										(setq spaceString (scrTranslate gScreen 'spaceStringOne { itemName:(itmGetName thisItem) }))
 									(gr availCount fitCount)
-										(setq desc (cat desc "You have enough room to carry only " fitCount " " (itmGetName thisItem 2) "."))
-									(setq desc (cat desc "You have enough room to carry all " (itmGetName thisItem 8) "."))
+										(setq spaceString (scrTranslate gScreen 'spaceStringSome {
+																count:fitCount
+																itemName:(itmGetName thisItem 'plural)
+																})
+											)
+									(setq spaceString (scrTranslate gScreen 'spaceStringAll { itemName:(itmGetName thisItem 'count) }))
 									)
 
-								(scrSetDesc gScreen desc)
+								(scrSetDescTranslate gScreen 'descDefault {
+									unitMass:(strMassString (itmGetMass thisItem))
+									totalMassString:totalMassString
+									spaceString:spaceString
+									})
 								)
-							(setq gMaxCount 0)
+							
+							(block Nil
+								(scrSetData gScreen 'maxCount 0)
+								(scrSetDescTranslate gScreen 'descNoItemsHere)
+								(scrEnableAction gScreen 'actionLootThis Nil)
+								(scrSetActionLabel gScreen 'actionDone Nil Nil '(default cancel))
+								)
 							)
-
-						; Enable/disable actions
-						(scrEnableAction gScreen 0 (gr gMaxCount 0))
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Loot this Item" key="L" default="1" >
-						(if (gr gMaxCount 1)
+					<Action id="actionLootThis" default="1">
+						(if (gr (scrGetData gScreen 'maxCount) 1)
 							(scrShowPane gScreen "LootQuantity")
-							(if (eq gMaxCount 1)
-								(block (itemsToLoot)
-									(setq itemsToLoot (scrRemoveItem gScreen 1))
-									(objAddItem gPlayerShip itemsToLoot)
-									(typSetData &svPlayer; 'tutorialLooted True)
-									(scrShowPane gScreen "Default")
-									)
+							(block (itemsToLoot)
+								(setq itemsToLoot (scrRemoveItem gScreen 1))
+								(objAddItem gPlayerShip itemsToLoot)
+								(typSetData &svPlayer; 'tutorialLooted True)
+								(scrShowPane gScreen "Default")
 								)
 							)
 					</Action>
 
-					<Action name="Done" cancel="1" default="1" key="D">
+					<Action id="actionDone" cancel="1">
 						(block Nil
 							(scrExitScreen gScreen (@ gData 'forceUndock))
 
@@ -823,7 +838,6 @@
 								)
 							)
 					</Action>
-
 				</Actions>
 			</Default>
 
@@ -832,17 +846,19 @@
 
 				<OnPaneInit>
 					(block Nil
-						(scrSetDesc gScreen (cat "How many items do you wish to loot?"))
-						(scrSetCounter gScreen gMaxCount)
+						(scrSetDescTranslate gScreen 'descLootQuantity)
+						(scrSetCounter gScreen (scrGetData gScreen 'maxCount))
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Loot" default="1" key="L">
-						(block (count)
-							(setq count (scrGetCounter gScreen))
-							(if (gr count gMaxCount)
-								(scrSetCounter gScreen gMaxCount)
+					<Action id="actionLoot" default="1">
+						(block (
+							(count (scrGetCounter gScreen))
+							(maxCount (scrGetData gScreen 'maxCount))
+							)
+							(if (gr count maxCount)
+								(scrSetCounter gScreen maxCount)
 								(block (itemsToLoot)
 									(setq itemsToLoot (scrRemoveItem gScreen count))
 									(objAddItem gPlayerShip itemsToLoot)
@@ -853,14 +869,27 @@
 							)
 					</Action>
 
-					<Action name="Cancel" cancel="1" key="C">
+					<Action id="actionCancel" cancel="1">
 						<ShowPane pane="Default"/>
 					</Action>
-
 				</Actions>
-
 			</LootQuantity>
 		</Panes>
+		
+		<Language>
+			<Text id="descDefault">
+				Unit mass: %unitMass%%totalMassString%
+				
+				%spaceString%
+			</Text>
+			<Text id="totalMassString">" (%quantity% at %mass%)"</Text>
+			<Text id="spaceStringNone">You do not have enough space to carry %itemName%.</Text>
+			<Text id="spaceStringOne">You have enough room to carry one %itemName%.</Text>
+			<Text id="spaceStringSome">You have enough room to carry only %count% %itemName%.</Text>
+			<Text id="spaceStringAll">You have enough room to carry all %itemName%.</Text>
+			<Text id="actionLootThis">[L]oot this Item</Text>
+			<Text id="descLootQuantity">How many items do you wish to loot?</Text>
+		</Language>
 
 	</DockScreen>
 
