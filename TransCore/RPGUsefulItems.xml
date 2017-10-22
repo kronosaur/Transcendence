@@ -184,7 +184,7 @@
 							)
 						(scrEnableAction gScreen 'actionUse (@ useInfo 'canUse))
 
-						;(rpgInitScreenSet (@ gData 'screenSet))
+						(rpgInitScreenSet (@ gData 'screenSet))
 						)
 				</OnPaneInit>
 
@@ -215,9 +215,6 @@
 							(scrSetData gScreen 'usageResult result)
 							(scrShowPane gScreen 'ShowResult)
 							)
-					</Action>
-					<Action id="actionDone" default="1" cancel="1">
-						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
