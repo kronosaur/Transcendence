@@ -410,7 +410,7 @@
 			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated, urakWarlords"
+			attributes=			"asteroidBase, enemy, envAir, envAvoidsFire, generic, human, populated, urakWarlords"
 			levelFrequency=		"--cuv ----- ----- ----- -----"
 			locationCriteria=	"+outerSystem"
 			>

@@ -285,6 +285,167 @@
 
 <!-- STATIONS -->
 
+	<!-- Heretic Station -->
+
+	<StationType UNID="&stHereticStation;"
+			name=				": Heretic Station"
+			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
+			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, populated"
+				 
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			
+			size=				"390"
+			armorID=			"&itP120HexphaseArmor;"
+			hitPoints=			"740"
+			multiHull=			"true"
+			regen=              "15"
+			shipRegen=			"6"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtThermoExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+			fireRateAdj=		"40"
+			>
+
+		<!-- Trade and Items -->
+		
+		<Trade currency="credit" max="50000" replenish="2500">
+			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
+			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-10;" priceAdj="120"/>
+			<ReplaceArmor	criteria="a L:1-10;" priceAdj="120"/>
+			<InstallDevice	criteria="d L:1-10;" priceAdj="120"/>
+			<RemoveDevice	criteria="d L:1-10;" priceAdj="100"/>
+		</Trade>
+
+		<Items>
+			<RandomItem count="10" 
+					criteria=		"ad L:1-10; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:u|c|crv"
+					/>
+			<RandomItem count="10" 
+					criteria=		"*~ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					levelFrequency=	"systemLevel:ru|c|cur"
+					/>
+
+			<Item count="4d12"	item="&itPteracniumFuelRod;" />
+		</Items>
+
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true"/>
+		</Devices>
+
+		<!-- Satellites -->
+		
+		<Satellites overlapCheck="asteroids">
+			<Orbitals distance="12" angle="45">
+				<Station type="&stCommonwealthTurret;" imageVariant="2"/>
+			</Orbitals>
+
+			<Orbitals distance="12" angle="135">
+				<Station type="&stCommonwealthTurret;" imageVariant="1"/>
+			</Orbitals>
+
+			<Orbitals distance="12" angle="225">
+				<Station type="&stCommonwealthTurret;" imageVariant="0"/>
+			</Orbitals>
+
+			<Orbitals distance="12" angle="315">
+				<Station type="&stCommonwealthTurret;" imageVariant="3"/>
+			</Orbitals>
+		</Satellites>
+
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Lookup count="2" table="&tbCommDefenders;"/>
+			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
+		</Ships>
+
+		<Reinforcements minShips="5">
+			<Table>
+				<Lookup chance="75" table="&tbCommDefenders;"/>
+				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
+			</Table>
+		</Reinforcements>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsCommonwealthSettlement;" imageWidth="320" imageHeight="290" viewportRatio="0.05"/>
+
+		<DockingPorts
+				portCount=		"10"
+				portRadius=		"175"
+				>
+		</DockingPorts>
+		
+		<!-- Dock Screens -->
+		
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionMainHall" default="1">
+								(rpgMissionAssignment {
+									missionCriteria: (cat "n +commonwealthSettlement; =" (sysGetLevel) ";")
+									noMissionTextID: 'descHallEmpty
+									maxPerStation: 1
+									})
+							</Action>
+
+							<Action id="actionCommoditiesExchange">
+								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+									checkMilitaryID: True
+									})
+							</Action>
+
+							<Action id="actionDockServices">
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
+							</Action>
+
+							<Action id="actionUndock" cancel="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+		
+		<!-- Events and Data -->
+
+		<StaticData>
+			<NPCService>
+				(	;	service					level	margin
+					(	'repairArmor			8		100		)
+					)
+			</NPCService>
+		</StaticData>
+
+		<Language>
+			<Text id="descWelcome">
+				You are in the docking bay of a Commonwealth colony.
+			</Text>
+		</Language>
+	</StationType>
+
 	<!-- Commonwealth Research Station -->
 
 	<StationType UNID="&stCommonwealthResearchHeretic;"
@@ -316,7 +477,7 @@
 		<!-- Trade and Items -->
 		
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
+			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-10;" priceAdj="120"/>
 			<ReplaceArmor	criteria="a L:1-10;" priceAdj="120"/>
 			<InstallDevice	criteria="d L:1-10;" priceAdj="120"/>
@@ -747,9 +908,9 @@
 		<Trade currency="rin" max="50000" replenish="2500">
 			<Refuel			criteria="f +unid:&itPteracniumFuelRod;;" priceAdj="85"/>
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
-			<RepairArmor	criteria="a L:1-11;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-11;" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-11;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-11;" priceAdj="120"/>
+			<ReplaceArmor	criteria="a L:1-11;" priceAdj="120"/>
+			<InstallDevice	criteria="d L:1-11;" priceAdj="120"/>
 			<RemoveDevice	criteria="d L:1-11;" priceAdj="100"/>
 		</Trade>
 
@@ -1696,7 +1857,7 @@
 				<Group>
 					<Lookup table="StargateInbound"/>
 					<Orbitals distance="24-36" angle="random">
-						<Station type="&stCommonwealthSettlement;" name=": Heretic Station"/>
+						<Station type="&stHereticStation;"/>
 					</Orbitals>
 				</Group>
 				<Station type="&stCommonwealthResearchHeretic;"/>

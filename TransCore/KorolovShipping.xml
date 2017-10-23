@@ -1224,7 +1224,7 @@
 			<String id="msgArmorDamage">
 				"Armor integrity at %armorIntegrity%%"
 			</String>
-			<String id="msgShieldlDamage">
+			<String id="msgShieldDamage">
 				"Shields at %shieldLevel%%"
 			</String>
 			<String id="msgHullDamage">

@@ -108,6 +108,32 @@ const int NEWS_PANE_INNER_SPACING_Y =			8;
 #define STYLE_NORMAL							CONSTLIT("normal")
 #define STYLE_TEXT								CONSTLIT("text")
 
+
+//Not sure where to put this
+const int INTRO_HELP_TEXT_COUNT = 19;
+const char *INTRO_HELP_TEXT[INTRO_HELP_TEXT_COUNT] =
+{
+	"[Space]: Cancel current display",
+	"[F11]: Hide intro menu",
+	"[!]: Enter a ~ command or spawn ship by name",
+	"[C], [c]: Credits",
+	"[D], [d]: Duplicate current ship",
+	"[H], [h]: Show high scores",
+	"[I], [i]: Show this display",
+	"[K[: Destroy all ships",
+	"[k]: Destroy current ship class",
+	"[L], [l]: Load Game",
+	"[N]: Spawn previous ship class",
+	"[n]: Spawn next ship class",
+	"[O], [o]: View opposing ship",
+	"[P]: View next ship",
+	"[p]: View previous ship",
+	"[Q], [q]: Quit game",
+	"[S]: Toggle intro ship sounds",
+	"[s]: View ship stats",
+	"[V], [v]: Title",
+};
+
 void CTranscendenceWnd::CreateCreditsAnimation (IAnimatron **retpAnimatron)
 
 //	CreateCreditsAnimation
@@ -195,6 +221,49 @@ void CTranscendenceWnd::CreateCreditsAnimation (IAnimatron **retpAnimatron)
 
 	*retpAnimatron = pSeq;
 	}
+
+void CTranscendenceWnd::CreateIntroHelpAnimation(IAnimatron **retpAnimatron)
+
+//	CreateHelpAnimation
+//
+//	Creates an animation showing help text for the intro screen keys
+
+{
+	int iDuration = 300;
+	int x = m_rcIntroMain.left + (RectWidth(m_rcIntroMain) / 2) + (RectWidth(m_rcIntroMain) / 6);
+	int y = m_rcIntroMain.bottom - RectHeight(m_rcIntroMain) / 2 - RectHeight(m_rcIntroMain) / 4;
+
+	//	Create sequencer to hold everything
+
+	CAniSequencer *pSeq = new CAniSequencer;
+	IAnimatron *pText;
+	CAniText::Create(CONSTLIT("Intro Key Commands"),
+		CVector((Metric)x, (Metric)y),
+		&m_Fonts.SubTitle,
+		0,
+		m_Fonts.rgbLightTitleColor,
+		&pText);
+	pText->AnimateLinearFade(iDuration, 15, 30);
+	pSeq->AddTrack(pText, 5);
+
+	y += m_Fonts.SubTitle.GetHeight() + (m_Fonts.SubTitle.GetHeight() / 6);
+
+	for(int i = 0; i < INTRO_HELP_TEXT_COUNT; i++)
+		{
+		CAniText::Create(INTRO_HELP_TEXT[i],
+			CVector((Metric)x, (Metric)y),
+			&m_Fonts.Header,
+			0,
+			m_Fonts.rgbTitleColor,
+			&pText);
+		pText->AnimateLinearFade(iDuration, 15, 30);
+		pSeq->AddTrack(pText, 5);
+
+		y += m_Fonts.Header.GetHeight() + (m_Fonts.Header.GetHeight() / 6);
+		}
+
+	*retpAnimatron = pSeq;
+}
 
 void CTranscendenceWnd::CreateLongCreditsAnimation (int x, int y, int cyHeight, IAnimatron **retpAnimatron)
 
@@ -912,9 +981,36 @@ void CTranscendenceWnd::CreateTitleAnimation (IAnimatron **retpAnimatron)
 	*retpAnimatron = pSeq;
 	}
 
-void CTranscendenceWnd::DestroyIntroShips (void)
+void CTranscendenceWnd::DestroyAllIntroShips(void)
 
-//	DestroyIntroShips
+//	DestroyAllIntroShips
+//
+//	Destroys all ships in the intro screen
+
+{
+	int i;
+
+	CShip *pShip = g_pUniverse->GetPOV()->AsShip();
+	if (pShip == NULL)
+		return;
+
+	CSystem *pSystem = pShip->GetSystem();
+	for (i = 0; i < pSystem->GetObjectCount(); i++)
+	{
+		CSpaceObject *pObj = pSystem->GetObject(i);
+		CShip *pShip;
+		if (pObj
+			&& pObj->CanAttack()
+			&& (pShip = pObj->AsShip()))
+		{
+			pShip->Destroy(removedFromSystem, CDamageSource());
+		}
+	}
+}
+
+void CTranscendenceWnd::DestroyPOVIntroShips (void)
+
+//	DestroyPOVIntroShips
 //
 //	Destroys all ships of the same class as the POV
 

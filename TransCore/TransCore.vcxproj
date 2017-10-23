@@ -488,6 +488,7 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="Dall01.xml" />
+    <Xml Include="Dantalion.xml" />
     <Xml Include="EtaCeti.xml" />
     <Xml Include="Ferians.xml">
       <SubType>Designer</SubType>

@@ -153,7 +153,7 @@
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
-			attributes=			"commonwealth, commonwealthCustoms, envEarth, envAvoidsAir, friendly, generic, human, mining, populated"
+			attributes=			"asteroidBase, commonwealth, commonwealthCustoms, envEarth, envAvoidsAir, friendly, generic, human, mining, populated"
 				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"

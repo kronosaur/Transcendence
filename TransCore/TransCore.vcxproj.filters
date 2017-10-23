@@ -615,5 +615,8 @@
     <Xml Include="RPGUsefulItems.xml">
       <Filter>RPG Library</Filter>
     </Xml>
+    <Xml Include="Dantalion.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

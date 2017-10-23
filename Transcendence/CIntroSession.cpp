@@ -44,11 +44,14 @@
 #define ID_CREDITS_PERFORMANCE					CONSTLIT("idCredits")
 #define ID_END_GAME_PERFORMANCE					CONSTLIT("idEndGame")
 #define ID_HIGH_SCORES_PERFORMANCE				CONSTLIT("idHighScores")
+#define ID_INTRO_HELP_PERFORMANCE				CONSTLIT("idIntroHelp")
 #define ID_PLAYER_BAR_PERFORMANCE				CONSTLIT("idPlayerBar")
 #define ID_SHIP_DESC_PERFORMANCE				CONSTLIT("idShipDescPerformance")
 #define ID_TITLES_PERFORMANCE					CONSTLIT("idTitles")
 #define ID_NEWS_PERFORMANCE						CONSTLIT("idNews")
 #define ID_SOUNDTRACK_TITLE_PERFORMANCE			CONSTLIT("idSoundtrackTitle")
+
+#define OBJ_DATA_INTRO_CONTROLLER				CONSTLIT("IntroController")
 
 #define PROP_POSITION							CONSTLIT("position")
 
@@ -79,6 +82,7 @@ void CIntroSession::CancelCurrentState (void)
 	{
 	switch (GetState())
 		{
+		case isIntroHelp:
 		case isCredits:
 		case isHighScores:
 		case isBlankThenRandom:
@@ -94,7 +98,7 @@ void CIntroSession::CancelCurrentState (void)
 				SetState(isCredits);
 			break;
 
-		case isEnterShipClass:
+		case isEnterCommand:
 			SetState(isShipStats);
 			break;
 
@@ -186,7 +190,7 @@ void CIntroSession::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereign, C
 				&& !pObj->IsDestroyed()
 				&& pObj != pShipDestroyed
 				&& pObj->CanAttack()
-				&& !pObj->GetData(CONSTLIT("IntroController")).IsBlank())
+				&& !pObj->GetData(OBJ_DATA_INTRO_CONTROLLER).IsBlank())
 			{
 			if (pObj->GetSovereign() == pSovereign1)
 				{
@@ -300,49 +304,59 @@ void CIntroSession::CreateIntroSystem (void)
 
 	g_pUniverse->SetCurrentSystem(g_pTrans->m_pIntroSystem);
 
-	CSovereign *pSovereign1 = g_pUniverse->FindSovereign(g_PlayerSovereignUNID);
-	CSovereign *pSovereign2 = g_pUniverse->FindSovereign(UNID_UNKNOWN_ENEMY);
+	//	Let types control what happens on the intro screen
 
-	//	Create a couple of random enemy ships
+	g_pUniverse->FireOnGlobalIntroStarted();
 
-	CShip *pShip1;
-	CShip *pShip2;
-	if (error = CreateRandomShip(g_pTrans->m_pIntroSystem, 0, pSovereign1, &pShip1))
-		return;
-
-	if (error = CreateRandomShip(g_pTrans->m_pIntroSystem, 0, pSovereign2, &pShip2))
-		return;
-
-	//	Make the ships attack each other
-
-	for (i = 0; i < g_pTrans->m_pIntroSystem->GetObjectCount(); i++)
+	//	If the POV was set during OnGlobalIntroStarted, then we are done. Otherwise, initialize as normal
+	
+	if (!g_pUniverse->GetPOV())
 		{
-		CSpaceObject *pObj = g_pTrans->m_pIntroSystem->GetObject(i);
+		CSovereign *pSovereign1 = g_pUniverse->FindSovereign(g_PlayerSovereignUNID);
+		CSovereign *pSovereign2 = g_pUniverse->FindSovereign(UNID_UNKNOWN_ENEMY);
 
-		if (pObj
-				&& pObj->GetCategory() == CSpaceObject::catShip
-				&& pObj->CanAttack()
-				&& !pObj->GetData(CONSTLIT("IntroController")).IsBlank())
+		//	Create a couple of random enemy ships
+
+		CShip *pShip1;
+		CShip *pShip2;
+		if (error = CreateRandomShip(g_pTrans->m_pIntroSystem, 0, pSovereign1, &pShip1))
+			return;
+
+		if (error = CreateRandomShip(g_pTrans->m_pIntroSystem, 0, pSovereign2, &pShip2))
+			return;
+
+		//	Make the ships attack each other
+
+		for (i = 0; i < g_pTrans->m_pIntroSystem->GetObjectCount(); i++)
 			{
-			CShip *pShip = pObj->AsShip();
-			if (pShip)
+			CSpaceObject *pObj = g_pTrans->m_pIntroSystem->GetObject(i);
+
+			if (pObj
+					&& pObj->GetCategory() == CSpaceObject::catShip
+					&& pObj->CanAttack()
+					&& !pObj->GetData(OBJ_DATA_INTRO_CONTROLLER).IsBlank())
 				{
-				IShipController *pController = pShip->GetController();
-				if (pShip->GetSovereign() == pSovereign1)
-					pController->AddOrder(IShipController::orderDestroyTarget, pShip2, IShipController::SData());
-				else
-					pController->AddOrder(IShipController::orderDestroyTarget, pShip1, IShipController::SData());
+				CShip *pShip = pObj->AsShip();
+				if (pShip)
+					{
+					IShipController *pController = pShip->GetController();
+					if (pShip->GetSovereign() == pSovereign1)
+						pController->AddOrder(IShipController::orderDestroyTarget, pShip2, IShipController::SData());
+					else
+						pController->AddOrder(IShipController::orderDestroyTarget, pShip1, IShipController::SData());
+					}
 				}
 			}
+
+		//	Set the POV to one of them
+
+		g_pUniverse->SetPOV(pShip1);
 		}
 
 	//	No sound
 
 	g_pUniverse->SetSound(false);
 
-	//	Set the POV to one of them
-
-	g_pUniverse->SetPOV(pShip1);
 	g_pTrans->m_iTick = 0;
 	g_pTrans->m_iLastShipCreated = g_pTrans->m_iTick;
 
@@ -486,7 +500,7 @@ ALERROR CIntroSession::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSover
 		CIntroShipController *pNewController = new CIntroShipController(pShip->GetController());
 		pShip->SetController(pNewController, false);
 		pNewController->SetShip(pShip);
-		pShip->SetData(CONSTLIT("IntroController"), CONSTLIT("True"));
+		pShip->SetData(OBJ_DATA_INTRO_CONTROLLER, CONSTLIT("True"));
 
 		*retpShip = pShip;
 		}
@@ -585,7 +599,7 @@ bool CIntroSession::HandleCommandBoxChar (char chChar, DWORD dwKeyData)
 	{
 	//	If not in command mode, then we're done
 
-	if (GetState() != isEnterShipClass)
+	if (GetState() != isEnterCommand)
 		return false;
 
 	//	Handle it
@@ -603,6 +617,12 @@ bool CIntroSession::HandleCommandBoxChar (char chChar, DWORD dwKeyData)
 
 		case '\015':
 			{
+			if(strStartsWith(g_pTrans->m_sCommand, CONSTLIT("~")))
+				{
+				g_pUniverse->FireOnGlobalIntroCommand(strSubString(g_pTrans->m_sCommand, 1));
+				CancelCurrentState();
+				break;
+				}
 			CShip *pShip = g_pUniverse->GetPOV()->AsShip();
 			DWORD dwSovereign = (pShip ? pShip->GetSovereign()->GetUNID() : 0);
 
@@ -617,7 +637,7 @@ bool CIntroSession::HandleCommandBoxChar (char chChar, DWORD dwKeyData)
 
 			//	Destroy and create
 
-			g_pTrans->DestroyIntroShips();
+			g_pTrans->DestroyPOVIntroShips();
 			CreateIntroShips(pClass->GetUNID(), dwSovereign);
 			CancelCurrentState();
 			break;
@@ -652,7 +672,7 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			break;
 
 		case '!':
-			SetState(isEnterShipClass);
+			SetState(isEnterCommand);
 			break;
 
 		case 'C':
@@ -700,9 +720,17 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			CmdShowHighScoreList();
 			break;
 
+		case 'I':
+		case 'i':
+			SetState(isIntroHelp);
+			break;
+
 		case 'K':
+			g_pTrans->DestroyAllIntroShips();
+			CreateIntroShips();
+			break;
 		case 'k':
-			g_pTrans->DestroyIntroShips();
+			g_pTrans->DestroyPOVIntroShips();
 			CreateIntroShips();
 			break;
 
@@ -720,21 +748,25 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			if (pShip == NULL)
 				break;
 
-			//	Get the UNID of the next ship class in order
-
 			DWORD dwNewShipClass = 0;
-			if (chChar == 'n' || chChar == 'N')
-				{
-				DWORD dwClass = pShip->GetClassUNID();
-				int iIndex = -1;
-				for (i = 0; i < g_pUniverse->GetShipClassCount(); i++)
-					if (g_pUniverse->GetShipClass(i)->GetUNID() == dwClass)
-						{
-						iIndex = i;
-						break;
-						}
 
-				CShipClass *pShipClass;
+			//	Find the index of the current ship class
+
+			DWORD dwClass = pShip->GetClassUNID();
+			int iIndex = -1;
+			for (i = 0; i < g_pUniverse->GetShipClassCount(); i++)
+				if (g_pUniverse->GetShipClass(i)->GetUNID() == dwClass)
+				{
+					iIndex = i;
+					break;
+				}
+
+			CShipClass *pNewShipClass;
+
+			if (chChar == 'n')
+				{
+				//	Get the UNID of the next ship class in order
+
 				do
 					{
 					if (iIndex == -1 || (iIndex + 1) == g_pUniverse->GetShipClassCount())
@@ -742,19 +774,37 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 					else
 						iIndex++;
 
-					pShipClass = g_pUniverse->GetShipClass(iIndex);
+					pNewShipClass = g_pUniverse->GetShipClass(iIndex);
 					}
-				while (pShipClass->IsVirtual());
+				while (pNewShipClass->IsVirtual());
 
 				//	Set the variable so that the next ship created will
 				//	have the given class
 
-				dwNewShipClass = pShipClass->GetUNID();
+				dwNewShipClass = pNewShipClass->GetUNID();
 				}
+			else if(chChar == 'N')
+				{
+				//	Get the UNID of the previous ship class in order
 
+				do
+				{
+					if ((iIndex - 1) < 0)
+						iIndex = g_pUniverse->GetShipClassCount()-1;
+					else
+						iIndex--;
+
+					pNewShipClass = g_pUniverse->GetShipClass(iIndex);
+				} while (pNewShipClass->IsVirtual());
+
+				//	Set the variable so that the next ship created will
+				//	have the given class
+
+				dwNewShipClass = pNewShipClass->GetUNID();
+				}
 			//	Destroy all ships of the current class
 
-			g_pTrans->DestroyIntroShips();
+			g_pTrans->DestroyPOVIntroShips();
 
 			//	Create a new ship
 
@@ -864,6 +914,8 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			break;
 
 		case 'S':
+			g_pUniverse->SetSound(!g_pUniverse->GetSound());
+			break;
 		case 's':
 			if (GetState() == isShipStats)
 				SetState(isBlank);
@@ -1108,7 +1160,7 @@ void CIntroSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 	if (g_pTrans->m_ButtonBarDisplay.OnKeyDown(iVirtKey))
 		NULL;
 
-	else if (GetState() == isEnterShipClass)
+	else if (GetState() == isEnterCommand)
 		NULL;
 
 	else if (Reanimator.IsPaused())
@@ -1237,7 +1289,7 @@ void CIntroSession::Paint (CG32bitImage &Screen, bool bTopMost)
 
 	switch (GetState())
 		{
-		case isEnterShipClass:
+		case isEnterCommand:
 			{
 			int xMidCenter = g_pTrans->m_rcIntroMain.left + RectWidth(g_pTrans->m_rcIntroMain) / 2;
 			int yMidCenter = g_pTrans->m_rcIntroMain.bottom - RectHeight(g_pTrans->m_rcIntroMain) / 3;
@@ -1372,7 +1424,7 @@ void CIntroSession::SetState (EStates iState)
 			break;
 			}
 
-		case isEnterShipClass:
+		case isEnterCommand:
 			StopAnimations();
 			g_pTrans->m_sCommand = NULL_STR;
 			break;
@@ -1382,7 +1434,16 @@ void CIntroSession::SetState (EStates iState)
 			StopAnimations();
 			m_HighScoreDisplay.StartPerformance(Reanimator, ID_HIGH_SCORES_PERFORMANCE, g_pTrans->m_rcIntroMain);
 			break;
+		case isIntroHelp:
+			{
+			StopAnimations();
 
+			IAnimatron *pAni;
+			g_pTrans->CreateIntroHelpAnimation(&pAni);
+			DWORD dwPerformance = Reanimator.AddPerformance(pAni, ID_INTRO_HELP_PERFORMANCE);
+			Reanimator.StartPerformance(dwPerformance, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+			break;
+			}
 		case isNews:
 			{
 			CMultiverseNewsEntry *pNews = g_pTrans->m_pTC->GetMultiverse().GetNextNewsEntry();
@@ -1471,6 +1532,7 @@ void CIntroSession::StopAnimations (void)
 
 	Reanimator.StopPerformance(ID_CREDITS_PERFORMANCE);
 	Reanimator.StopPerformance(ID_END_GAME_PERFORMANCE);
+	Reanimator.StopPerformance(ID_INTRO_HELP_PERFORMANCE);
 	Reanimator.StopPerformance(ID_SHIP_DESC_PERFORMANCE);
 	Reanimator.StopPerformance(ID_TITLES_PERFORMANCE);
 	Reanimator.StopPerformance(ID_NEWS_PERFORMANCE);
@@ -1617,6 +1679,11 @@ void CIntroSession::Update (void)
 		case isHighScoresEndGame:
 			if (!m_HighScoreDisplay.IsPerformanceRunning())
 				SetState(isCredits);
+			break;
+
+		case isIntroHelp:
+			if (!Reanimator.IsPerformanceRunning(ID_INTRO_HELP_PERFORMANCE))
+				SetState(isShipStats);
 			break;
 
 		case isOpeningTitles:

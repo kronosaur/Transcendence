@@ -303,7 +303,7 @@ changing sys will unregister from owner
 					(if achievementText
 						(list
 							(list
-								(msnTranslate theMission achievementText)
+								(typTranslate &msEscapeFromDantalion; achievementText)
 								Nil
 								"achievements &amp; regrets"
 								)

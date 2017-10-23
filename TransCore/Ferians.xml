@@ -59,7 +59,7 @@
 			name=				"Ferian colony|Ferian colonies"
 			sovereign=			"&svFerianMiners;"
 				 
-			attributes=			"enemy, envEarth, envAvoidsAir, ferian, generic, neoHuman, miners, populated, zoanthrope"
+			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, ferian, generic, neoHuman, miners, populated, zoanthrope"
 				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"

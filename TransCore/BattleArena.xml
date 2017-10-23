@@ -1896,7 +1896,7 @@
 
 			<Boss>
 				<Panes>
-					<GetOut>
+					<Default>
 						<OnPaneInit>
 							(scrSetDesc gScreen "You ask to see the station boss. Everyone turns to stare at you for a second, but then they go about their business and continue to ignore you.")
 						</OnPaneInit>
@@ -1906,7 +1906,7 @@
 								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
-					</GetOut>
+					</Default>
 				</Panes>
 			</Boss>
 

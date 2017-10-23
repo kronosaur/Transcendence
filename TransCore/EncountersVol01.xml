@@ -552,6 +552,7 @@
 						(not behavior)
 							(block (i)
 								; Find all of our Defender escorts
+								(setq i 0)
 								(enum (sysFindObject gSource "sA O:escort; +capitalShip;") theEscort
 									(block ()
 										(setq i (add i 1))
@@ -2093,7 +2094,7 @@
 			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtIceAsteroidEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated"
+			attributes=			"asteroidBase, enemy, envAir, envAvoidsFire, generic, human, populated"
 			levelFrequency=		"curv- ----- ----- ----- -----"
 			locationCriteria=	"+outerSystem, -planetary"
 			>
@@ -2640,7 +2641,7 @@
 			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, pirates, populated"
+			attributes=			"asteroidBase, enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, pirates, populated"
 			levelFrequency=		"--uu- ----- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			enemyExclusionRadius="100"
@@ -2687,7 +2688,7 @@
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, marauderCompound, pirates, populated"
+			attributes=			"asteroidBase, enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, marauderCompound, pirates, populated"
 			levelFrequency=		"--vcr ----- ----- ----- -----"
 			locationCriteria=	"+asteroids"
 			enemyExclusionRadius="100"
@@ -2755,7 +2756,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, marauderStronghold, pirates,populated"
+			attributes=			"asteroidBase, enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, marauderStronghold, pirates,populated"
 			levelFrequency=		"---ru v---- ----- ----- -----"
 			locationCriteria=	"+lifeZone, -planetary"
 			enemyExclusionRadius="100"
@@ -3606,7 +3607,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"chitometallicEco, enemy, envFire, envAvoidsWater, galacticCreature, generic, pteravore, score"
+			attributes=			"asteroidBase, chitometallicEco, enemy, envFire, envAvoidsWater, galacticCreature, generic, pteravore, score"
 			levelFrequency=		"----- ----r cur-- ----- -----"
 			locationCriteria=	"++asteroids, +++chitometallicEco"
 			>
