@@ -109,10 +109,13 @@
 					;	dsRPGMission checks for a well-known data member in the mission
 					;	object to see if it should navigate to an additional screen.
 
-					(msnSetData missionObj 'rewardNextScreen &dsRPGPromotion; {
-						membership: membership
-						missionObj: missionObj
-						})
+					(block Nil
+						(msnSetData missionObj 'rewardNextScreen &dsRPGPromotion;)
+						(msnSetData missionObj 'rewardNextScreenData {
+							membership: membership
+							missionObj: missionObj
+							})
+						)
 					)
 				)
 			))
