@@ -41,7 +41,8 @@
 			/>
 		
 		<Devices>
-			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
+			<DeviceSlot criteria="w +property:omnidirectional;" posAngle="0" posRadius="13"/>
+			<DeviceSlot criteria="w" posAngle="0" posRadius="22"/>
 			
 			<Device deviceID="&itRecoillessCannon;"/>
 			<Device deviceID="&itClass1Deflector;"/>
@@ -129,6 +130,7 @@
 			/>
 		
 		<Devices>
+			<DeviceSlot criteria="w +property:omnidirectional;" posAngle="0" posRadius="0"/>
 			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
 			<DeviceSlot criteria="c" cannotBeEmpty="true"/>
 			
@@ -232,6 +234,7 @@
 			/>
 		
 		<Devices>
+			<DeviceSlot criteria="p +property:omnidirectional;" posAngle="180" posRadius="4"/>
 			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
 			
 			<Device deviceID="&itDualLaserCannon;"/>
