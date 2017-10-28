@@ -29,7 +29,11 @@ class SystemInfo : public CObject
 	public:
 		SystemInfo (void) : 
 				CObject(NULL),
-				Stations(TRUE, TRUE)
+				Stations(TRUE, TRUE),
+				iTotalLootValue(0),
+				iTotalDeviceValue(0),
+				iTotalArmorValue(0),
+				iTotalOtherValue(0)
 			{ }
 
 		CString sName;
@@ -44,6 +48,9 @@ class SystemInfo : public CObject
 		TSortMap<DWORD, ItemInfo> Items;			//	All items types that have ever appeared in
 													//	this system instance.
 		int iTotalLootValue;
+		int iTotalDeviceValue;
+		int iTotalArmorValue;
+		int iTotalOtherValue;
 	};
 
 void AddItems (CSpaceObject *pObj, const CItemCriteria &Criteria, SystemInfo *pSystemEntry);
@@ -125,7 +132,6 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 				pSystemEntry->iLevel = pNode->GetLevel();
 				pSystemEntry->dwSystemType = pNode->GetSystemTypeUNID();
 				pSystemEntry->iCount = 1;
-				pSystemEntry->iTotalLootValue = 0;
 
 				AllSystems.AddEntry(pSystemEntry->sName, pSystemEntry);
 				}
@@ -209,16 +215,20 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Output total value stats
 
-	printf("Level\tSystem\tLoot\n");
+	printf("Level\tSystem\tLoot\tDevices\tArmor\tTreasure\n");
 
 	for (i = 0; i < AllSystems.GetCount(); i++)
 		{
 		SystemInfo *pSystemEntry = (SystemInfo *)AllSystems.GetValue(i);
 
-		printf("%d\t%s\t%.2f\n",
+		printf("%d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\n",
 				pSystemEntry->iLevel,
 				pSystemEntry->sName.GetASCIIZPointer(),
-				(double)pSystemEntry->iTotalLootValue / (double)iSystemSample);
+				(double)pSystemEntry->iTotalLootValue / (double)iSystemSample,
+				(double)pSystemEntry->iTotalDeviceValue / (double)iSystemSample,
+				(double)pSystemEntry->iTotalArmorValue / (double)iSystemSample,
+				(double)pSystemEntry->iTotalOtherValue / (double)iSystemSample
+				);
 		}
 
 	printf("\n");
@@ -277,6 +287,14 @@ void AddItems (CSpaceObject *pObj, const CItemCriteria &Criteria, SystemInfo *pS
 
 		//	Increment value
 
-		pSystemEntry->iTotalLootValue += Item.GetTradePrice(NULL, true) * Item.GetCount();
+		int iValue = Item.GetTradePrice(NULL, true) * Item.GetCount();
+		pSystemEntry->iTotalLootValue += iValue;
+
+		if (Item.IsDevice())
+			pSystemEntry->iTotalDeviceValue += iValue;
+		else if (Item.IsArmor())
+			pSystemEntry->iTotalArmorValue += iValue;
+		else
+			pSystemEntry->iTotalOtherValue += iValue;
 		}
 	}
