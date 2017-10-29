@@ -371,7 +371,7 @@
 						(sysCreateShip 
 							(@ gData 'type)
 							(objGetPos sourceObj)
-							&svFriendlyAuton;
+							(if (eq sourceObj gPlayerShip) &svFriendlyAuton; (objGetProperty sourceObj 'sovereign))
 							)
 						)
 						
@@ -475,7 +475,7 @@
 			<OnEnteredGate>
 				;	If we returned to a ship or non-gate station, convert back to an item
 				
-				(if (objMatches aGateObj nil "st -stargate")
+				(if (objMatches aGateObj nil "st -stargate;")
 					(block ((autonItem (objFireEvent gSource "ConvertToItem"))
 							(autonShipClass (itmGetStaticData autonItem 'autonShipClass))
 							)
