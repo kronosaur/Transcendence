@@ -63,6 +63,7 @@
 #define TOPOLOGY_SWITCH						CONSTLIT("topology")
 #define TOPOLOGY_MAP_SWITCH					CONSTLIT("topologyMap")
 #define TRADE_SIM_SWITCH					CONSTLIT("tradeSim")
+#define TRADE_TABLE_SWITCH					CONSTLIT("tradeTable")
 #define TYPE_DEPENDENCIES_SWITCH			CONSTLIT("typeDependencies")
 #define IMAGES_SWITCH						CONSTLIT("typeImages")
 #define TYPE_ISLANDS_SWITCH					CONSTLIT("typeIslands")
@@ -408,6 +409,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		HexarcTest(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(TRADE_SIM_SWITCH))
 		DoTradeSim(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(TRADE_TABLE_SWITCH))
+		GenerateTradeTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(WEAPON_IMAGES_SWITCH))
 		GenerateWeaponEffectChart(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(WORLD_IMAGES_SWITCH))
