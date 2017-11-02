@@ -65,6 +65,12 @@
 			<ReplaceArmor	criteria="a L:1-5;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-5;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-5;" priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{humanBasicFood}"	impact="5"/>
+			<ConsumeTrade	criteria="{humanMeds}"		impact="5"/>
+			<ConsumeTrade	criteria="{humanLux}"		impact="2"/>
+			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="1"/>
 		</Trade>
 
 		<Items>
@@ -307,6 +313,12 @@
 			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{humanBasicFood}"	impact="5"/>
+			<ConsumeTrade	criteria="{humanMeds}"		impact="5"/>
+			<ConsumeTrade	criteria="{humanLux}"		impact="2"/>
+			<ConsumeTrade	criteria="{humanRes}"		impact="3"/>
+			<ConsumeTrade	criteria="{antimatterFuel}"	impact="2"/>
 		</Trade>
 
 		<Items>
@@ -486,6 +498,9 @@
 			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{humanRes}"		impact="5"/>
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="5"/>
 		</Trade>
 		
 		<Items>
@@ -588,6 +603,13 @@
 			<Sell	criteria="*NU +Meds; -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			<Buy	criteria="*NU +Food; -Illegal;"	priceAdj="110"/>
 			<Buy	criteria="*NU +Lux; -Illegal;"	priceAdj="120"/>
+
+			<ConsumeTrade	criteria="{humanBasicFood}"	impact="5"/>
+			<ConsumeTrade	criteria="{humanLux}"		impact="5"/>
+			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="1"/>
+
+			<ProduceTrade	criteria="{humanMeds}"		impact="10"/>
 		</Trade>
 
 		<Items>
@@ -697,6 +719,16 @@
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 			>
+
+		<!-- Trade and Items -->
+
+		<Trade>
+			<ConsumeTrade	criteria="{humanBasicFood}"	impact="5"/>
+			<ConsumeTrade	criteria="{humanMeds}"		impact="5"/>
+			<ConsumeTrade	criteria="{humanLux}"		impact="2"/>
+			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="1"/>
+		</Trade>
 		
 		<!-- Ships and Defenses -->
 
@@ -1032,6 +1064,13 @@
 
 		<Names noArticle="true">Habitat Alpha %1%0; Habitat Beta %1%0; Habitat Gamma %1%0; Habitat Delta %1%0;
 				Habitat Epsilon %1%0; Habitat Zeta %1%0</Names>
+
+		<Trade>
+			<ConsumeTrade	criteria="{humanBasicFood}"	impact="2"/>
+			<ConsumeTrade	criteria="{humanMeds}"		impact="2"/>
+			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="1"/>
+		</Trade>
 
 		<ImageVariants>
 			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="0" imageY="0" imageWidth="64" imageHeight="128"/>
@@ -2851,6 +2890,20 @@
 
 			alignment="constructive chaos"
 			>
+
+		<AttributeDesc>
+			<!-- These item attributes are used across all Human Space (not just for
+				Commonwealth). -->
+
+			<ItemAttribute id="antimatterFuel"	label="antimatter fuel"		criteriaLabel="antimatter fuels"		criteria="f L:5-8;"/>
+			<ItemAttribute id="humanBasicFood"	label="basic food"			criteriaLabel="basic foods"				criteria="* +food; -lux; -illegal;"/>
+			<ItemAttribute id="humanRes"		label="industrial resource"	criteriaLabel="industrial resources"	criteria="*~f +res; -ore; -illegal;"/>
+			<ItemAttribute id="humanLux"		label="luxury good"			criteriaLabel="luxury goods"			criteria="* +lux; -illegal;"/>
+			<ItemAttribute id="humanMeds"		label="medical supplies"	criteriaLabel="medical supplies"		criteria="* +meds;"/>
+			<ItemAttribute id="fusionFuel"		label="fusion fuel"			criteriaLabel="fusion fuels"			criteria="f L:1-4;"/>
+			<ItemAttribute id="ore"				label="ore"					criteriaLabel="ores"					criteria="* +ore; -illegal;"/>
+			<ItemAttribute id="zeroPointFuel"	label="zero-point fuel"		criteriaLabel="zero-point fuel"			criteria="f L:9-12;"/>
+		</AttributeDesc>
 
 		<Events>
 			<GetGlobalDockScreen>
