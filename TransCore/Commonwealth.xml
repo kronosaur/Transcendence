@@ -581,6 +581,7 @@
 		<Encounter
 				levelFrequency=		"uuurr ----- ----- ----- -----"
 				locationCriteria=	"-outerSystem, +planetary"
+				unique=				"inSystem"
 				enemyExclusionRadius="50"
 				/>
 
@@ -3156,7 +3157,22 @@
 			<Text id="actionMainHall">[M]eeting Hall</Text>
 
 			<Text id="descHallEmpty">
+				(block (
+					(commemorationText (objGetData gSource 'core.missionCommemoration))
+					)
+					(switch
+						commemorationText
+							(objTranslate gSource 'descHallCommemoration { text:commemorationText })
+
+						(objTranslate gSource 'descHallBusy)
+						)
+					)
+			</Text>
+			<Text id="descHallBusy">
 				The meeting hall is busy with commercial activity; everyone goes about their business.
+			</Text>
+			<Text id="descHallCommemoration">
+				The hall is empty, but in the corner you can see %text%.
 			</Text>
 		</Language>
 	</Type>

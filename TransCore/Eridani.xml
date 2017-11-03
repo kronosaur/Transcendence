@@ -308,10 +308,11 @@
 
 			<MetropolisStation>
 				<Table>
+					<Station chance="25"	type="&stCommonwealthResidentials;"	noMapLabel="true"/>
 					<Station chance="20"	type="&stArmorDealer;"	noMapLabel="true"/>
-					<Station chance="15"	type="&stArmsDealer;"	noMapLabel="true"/>
 					<Station chance="20"	type="&stFuelDepot;"	noMapLabel="true"/>
-					<Station chance="35"	type="&stCommonwealthResidentials;"	noMapLabel="true"/>
+					<Station chance="15"	type="&stArmsDealer;"	noMapLabel="true"/>
+					<Station chance="10"	type="&stAgriculturalStation;"	noMapLabel="true"/>
 					<Station chance="10"	type="&stMedicalSuburb;"	noMapLabel="true"/>
 				</Table>
 			</MetropolisStation>
