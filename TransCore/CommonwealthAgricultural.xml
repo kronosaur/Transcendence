@@ -63,6 +63,13 @@
 			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="94"/>
 			<RepairArmor	criteria="a L:1-5;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-5;" priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="2"/>
+			<ConsumeTrade	criteria="{humanLux}"		impact="1"/>
+			<ConsumeTrade	criteria="{humanMeds}"		impact="2"/>
+			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
+
+			<ProduceTrade	criteria="{humanBasicFood}"	impact="20"/>
 		</Trade>
 
 		<Items>

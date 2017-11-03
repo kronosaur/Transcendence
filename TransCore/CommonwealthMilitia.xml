@@ -176,6 +176,8 @@
 			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-8;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="3"/>
 		</Trade>
 
 		<Items>

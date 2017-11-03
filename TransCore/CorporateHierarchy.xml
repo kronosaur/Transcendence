@@ -1059,6 +1059,12 @@
 			<Buy	criteria="*NU +Meds; -Illegal;"	priceAdj="120"/>
 			<Buy	criteria="*NU +Food; -Illegal;"	priceAdj="110"/>
 			<Buy	criteria="*NU +Res; -Illegal;"	priceAdj="105"/>
+
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="5"/>
+			<ConsumeTrade	criteria="{humanRes}"		impact="3"/>
+			<ConsumeTrade	criteria="{ore}"			impact="3"/>
+
+			<ProduceTrade	criteria="{humanLux}"		impact="5"/>
 		</Trade>
 
 		<Events>
@@ -1277,6 +1283,8 @@
 
 			<Refuel			criteria="f +BasicFuel; L:1-3;" priceAdj="80"/>
 			<Refuel			criteria="f +BasicFuel; L:4-10;" priceAdj="90"/>
+
+			<ProduceTrade	criteria="{fusionFuel}"		impact="20"/>
 		</Trade>
 
 		<DockScreens>
@@ -1434,6 +1442,10 @@
 			
 			<ReplaceArmor	criteria="a L:1-10;" priceAdj="unavailable"	messageID="descNoInstall"/>
 			<InstallDevice	criteria="d L:1-10;" priceAdj="unavailable"	messageID="descNoInstall"/>
+
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="3"/>
+			<ConsumeTrade	criteria="{humanRes}"		impact="3"/>
+			<ConsumeTrade	criteria="{ore}"			impact="3"/>
 		</Trade>
 
 		<StaticData>
@@ -1766,6 +1778,9 @@
 			<Buy	criteria="*NU" item="&itMedicalSupplies;"		priceAdj="110"/>
 			<Buy	criteria="*NU" item="&itBiofactorPaste;"		priceAdj="110"/>
 			<Buy	criteria="*NU" item="&itHypermycin;"		priceAdj="110"/>
+
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="2"/>
+			<ConsumeTrade	criteria="{humanLux}"		impact="5"/>
 		</Trade>
 
 		<Events>
@@ -1911,6 +1926,11 @@
 			<Buy	criteria="*NU" item="&itMedicalSupplies;"	priceAdj="200"/>
 			<Buy	criteria="*NU" item="&itHyperfiberRoll;"	priceAdj="200"/>
 			<Buy	criteria="*NU" item="&itBiofactorPaste;"	priceAdj="200"/>
+
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="1"/>
+			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
+
+			<ProduceTrade	criteria="{humanBasicFood}"	impact="10"/>
 		</Trade>
 
 		<Events>

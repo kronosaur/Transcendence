@@ -198,6 +198,12 @@
 			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-6;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="5"/>
+
+			<ProduceTrade	criteria="{humanBasicFood}"	impact="5"/>
+			<ProduceTrade	criteria="{humanLux}"		impact="5"/>
+			<ProduceTrade	criteria="{humanRes}"		impact="5"/>
 		</Trade>
 		
 		<Items>

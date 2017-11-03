@@ -203,6 +203,14 @@
 			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
 			
 			<InstallDevice	criteria="d L:1-6;" priceAdj="unavailable"	messageID="descNoInstall"/>
+
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="2"/>
+			<ConsumeTrade	criteria="{humanBasicFood}"	impact="3"/>
+			<ConsumeTrade	criteria="{humanLux}"		impact="1"/>
+			<ConsumeTrade	criteria="{humanMeds}"		impact="2"/>
+			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
+
+			<ProduceTrade	criteria="{ore}"			impact="20"/>
 		</Trade>
 
 		<Items>

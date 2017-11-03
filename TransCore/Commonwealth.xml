@@ -66,11 +66,12 @@
 			<InstallDevice	criteria="d L:1-5;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-5;" priceAdj="100"/>
 
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="2"/>
 			<ConsumeTrade	criteria="{humanBasicFood}"	impact="5"/>
-			<ConsumeTrade	criteria="{humanMeds}"		impact="5"/>
-			<ConsumeTrade	criteria="{humanLux}"		impact="2"/>
+			<ConsumeTrade	criteria="{humanLux}"		impact="3"/>
+			<ConsumeTrade	criteria="{humanMeds}"		impact="2"/>
 			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
-			<ConsumeTrade	criteria="{fusionFuel}"		impact="1"/>
+			<ConsumeTrade	criteria="{ore}"			impact="2"/>
 		</Trade>
 
 		<Items>
@@ -314,11 +315,12 @@
 			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="2"/>
 			<ConsumeTrade	criteria="{humanBasicFood}"	impact="5"/>
-			<ConsumeTrade	criteria="{humanMeds}"		impact="5"/>
-			<ConsumeTrade	criteria="{humanLux}"		impact="2"/>
-			<ConsumeTrade	criteria="{humanRes}"		impact="3"/>
-			<ConsumeTrade	criteria="{antimatterFuel}"	impact="2"/>
+			<ConsumeTrade	criteria="{humanLux}"		impact="3"/>
+			<ConsumeTrade	criteria="{humanMeds}"		impact="2"/>
+			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
+			<ConsumeTrade	criteria="{ore}"			impact="2"/>
 		</Trade>
 
 		<Items>
@@ -499,8 +501,7 @@
 			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 
-			<ConsumeTrade	criteria="{humanRes}"		impact="5"/>
-			<ConsumeTrade	criteria="{fusionFuel}"		impact="5"/>
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="3"/>
 		</Trade>
 		
 		<Items>
@@ -605,12 +606,12 @@
 			<Buy	criteria="*NU +Food; -Illegal;"	priceAdj="110"/>
 			<Buy	criteria="*NU +Lux; -Illegal;"	priceAdj="120"/>
 
-			<ConsumeTrade	criteria="{humanBasicFood}"	impact="5"/>
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="2"/>
+			<ConsumeTrade	criteria="{humanBasicFood}"	impact="3"/>
 			<ConsumeTrade	criteria="{humanLux}"		impact="5"/>
 			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
-			<ConsumeTrade	criteria="{fusionFuel}"		impact="1"/>
 
-			<ProduceTrade	criteria="{humanMeds}"		impact="10"/>
+			<ProduceTrade	criteria="{humanMeds}"		impact="20"/>
 		</Trade>
 
 		<Items>
@@ -723,12 +724,12 @@
 
 		<!-- Trade and Items -->
 
-		<Trade>
-			<ConsumeTrade	criteria="{humanBasicFood}"	impact="5"/>
-			<ConsumeTrade	criteria="{humanMeds}"		impact="5"/>
-			<ConsumeTrade	criteria="{humanLux}"		impact="2"/>
-			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
+		<Trade currency="credit" max="50000" replenish="2500">
 			<ConsumeTrade	criteria="{fusionFuel}"		impact="1"/>
+			<ConsumeTrade	criteria="{humanBasicFood}"	impact="5"/>
+			<ConsumeTrade	criteria="{humanLux}"		impact="2"/>
+			<ConsumeTrade	criteria="{humanMeds}"		impact="5"/>
+			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
 		</Trade>
 		
 		<!-- Ships and Defenses -->
@@ -1067,10 +1068,10 @@
 				Habitat Epsilon %1%0; Habitat Zeta %1%0</Names>
 
 		<Trade>
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="1"/>
 			<ConsumeTrade	criteria="{humanBasicFood}"	impact="2"/>
 			<ConsumeTrade	criteria="{humanMeds}"		impact="2"/>
 			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
-			<ConsumeTrade	criteria="{fusionFuel}"		impact="1"/>
 		</Trade>
 
 		<ImageVariants>
@@ -1358,6 +1359,10 @@
 
 		<Trade currency="credit" max="50000" replenish="2500">
 			<AcceptDonation	criteria="*"					priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="1"/>
+			<ConsumeTrade	criteria="{humanBasicFood}"	impact="1"/>
+			<ConsumeTrade	criteria="{ore}"			impact="1"/>
 		</Trade>
 
 		<StaticData>
@@ -1580,6 +1585,13 @@
 			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-8;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="2"/>
+			<ConsumeTrade	criteria="{humanBasicFood}"	impact="5"/>
+			<ConsumeTrade	criteria="{humanLux}"		impact="3"/>
+			<ConsumeTrade	criteria="{humanMeds}"		impact="2"/>
+			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
+			<ConsumeTrade	criteria="{ore}"			impact="2"/>
 		</Trade>
 
 		<Items>

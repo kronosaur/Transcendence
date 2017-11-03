@@ -53,6 +53,13 @@
 			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-6;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="5"/>
+			<ConsumeTrade	criteria="{humanBasicFood}"	impact="10"/>
+			<ConsumeTrade	criteria="{humanLux}"		impact="10"/>
+			<ConsumeTrade	criteria="{humanMeds}"		impact="4"/>
+			<ConsumeTrade	criteria="{humanRes}"		impact="2"/>
+			<ConsumeTrade	criteria="{ore}"			impact="4"/>
 		</Trade>
 
 		<Items>
@@ -192,6 +199,13 @@
 			<ReplaceArmor	criteria="a L:1-9;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-8;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{fusionFuel}"		impact="5"/>
+			<ConsumeTrade	criteria="{humanBasicFood}"	impact="10"/>
+			<ConsumeTrade	criteria="{humanLux}"		impact="10"/>
+			<ConsumeTrade	criteria="{humanMeds}"		impact="4"/>
+			<ConsumeTrade	criteria="{humanRes}"		impact="2"/>
+			<ConsumeTrade	criteria="{ore}"			impact="4"/>
 		</Trade>
 		
 		<Items>
