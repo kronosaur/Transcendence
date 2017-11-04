@@ -45,6 +45,12 @@
 			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-6;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
+
+			<BalanceTrade	criteria="{fusionFuel}"		impact="20"/>
+			<BalanceTrade	criteria="{humanBasicFood}"	impact="20"/>
+			<BalanceTrade	criteria="{humanLux}"		impact="20"/>
+			<BalanceTrade	criteria="{humanMeds}"		impact="20"/>
+			<BalanceTrade	criteria="{humanRes}"		impact="20"/>
 		</Trade>
 
 		<Items>
