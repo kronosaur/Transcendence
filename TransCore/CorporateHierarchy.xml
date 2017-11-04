@@ -1592,13 +1592,54 @@
 			<OnContractQuery>True</OnContractQuery>
 			
 			<OnCreate>
-				(block (allItems itemsCreated itemsConsumed buyDesc totalItems)
-					; Compute the max to create per item
-					(setq maxInventory (multiply (random 1000 2000) (sysGetLevel)))
-					(objSetData gSource "maxInventory" maxInventory)
-					
-					; Pick the items that we manufacture
-					(setq allItems (shuffle (itmGetTypes "t -Res; -Fuel; -ID; -Illegal; -Art; -Antique; -Alien; -NotForSale; F:curv; &gt;$0 &lt;=$500 &lt;=6")))
+				(block (
+					;	We have different kinds of manufacturing plants
+
+					(allTypes (list
+
+						;	Food Manufacturing
+
+						{
+							produces: "t +food; -lux; -res; -fuel; -ID; -illegal; -art; -antique; -alien; -notForSale; F:curv; &gt;$0 &lt;=$500 &lt;=6"
+							consumes: "t +res; -ore; -illegal; -notForSale; F:curv; &lt;=$250"
+
+							tradeProd: "{humanBasicFood}"
+							tradeCons: "{humanRes}"
+							}
+
+						;	Luxury Manufacturing
+
+						{
+							produces: "t +lux; -res; -fuel; -ID; -illegal; -art; -antique; -alien; -notForSale; F:curv; &gt;$0 &lt;=$500 &lt;=6"
+							consumes: "t +res; -ore; -illegal; -notForSale; F:curv; &lt;=$500"
+
+							tradeProd: "{humanLux}"
+							tradeCons: "{humanRes}"
+							}
+
+						;	Industrial Resource Manufacturing
+
+						{
+							produces: "t +res; -ore; -fuel; -ID; -illegal; -art; -antique; -alien; -notForSale; F:curv; &gt;$0 &lt;=$500 &lt;=6"
+							consumes: "t +ore; -illegal; -notForSale; F:cu; &lt;=$250"
+
+							tradeProd: "{humanRes}"
+							tradeCons: "{ore}"
+							}
+						))
+
+					;	Pick a random type
+
+					(facDesc (random allTypes))
+
+					(maxInventory (multiply (random 1000 2000) (sysGetLevel)))
+
+					allItems itemsCreated itemsConsumed buyDesc totalItems
+					)
+
+					;	Pick the items that we manufacture
+
+					(setq allItems (shuffle (itmGetTypes (@ facDest 'produces))))
 					(setq totalItems (min (random 3 5) (count allItems)))
 					(for i 1 totalItems
 						(block (theType thePrice theCount)
@@ -1615,8 +1656,9 @@
 						)
 					(objSetData gSource "itemsCreated" itemsCreated)
 						
-					; Pick the items that we consume
-					(setq allItems (shuffle (itmGetTypes "t +Res; -Illegal; -NotForSale; F:curv; &lt;=$250")))
+					;	Pick the items that we consume
+
+					(setq allItems (shuffle (itmGetTypes (@ facDest 'consumes))))
 					(setq totalItems (min (random 2 4) (count allItems)))
 					(for i 1 totalItems
 						(block (theType)
@@ -1637,10 +1679,20 @@
 								)
 							)
 						)
+
+					;	Add trade orders for system-wide price impacts
+
+					(objAddTradeOrder gSource 'produceTrade (@ facDesc 'tradeProd) 10)
+					(objAddTradeOrder gSource 'consumeTrade (@ facDesc 'tradeCons) 10)
+
+					;	Remember some values
+
 					(objSetData gSource "itemsConsumed" itemsConsumed)
 					(objSetData gSource "itemsConsumedDesc" buyDesc)
+					(objSetData gSource "maxInventory" maxInventory)
 					
-					; Register a timer so that we can resupply
+					;	Register a timer so that we can resupply
+
 					(sysAddObjRecurringTimerEvent 9000 gSource "OnManufacture")
 					)
 			</OnCreate>
@@ -2451,6 +2503,10 @@
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"	priceAdj="45"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="85"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+
+			<BalanceTrade	criteria="{humanBasicFood}"	impact="10"/>
+			<BalanceTrade	criteria="{humanLux}"		impact="10"/>
+			<BalanceTrade	criteria="{humanRes}"		impact="5"/>
 		</Trade>
 
 		<Events>
