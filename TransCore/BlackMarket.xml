@@ -157,7 +157,7 @@ PLAYER DATA
 			<Buy	criteria="*NU +Illegal; -ID;"				priceAdj="10"/>
 			<Buy	criteria="*NU +military; -ID;"				priceAdj="10"/>
 			
-			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="92"/>
+			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-6;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-6;" priceAdj="100"/>
 			<InstallDevice	criteria="c +Illegal; L:1-8" priceAdj="100"	upgradeInstallOnly="true"/>
@@ -513,11 +513,11 @@ PLAYER DATA
 			<Buy	criteria="*NU +Illegal; -ID;"				priceAdj="10"/>
 			<Buy	criteria="*NU +military; -ID;"				priceAdj="10"/>
 			
-			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="94"/>
-			<RepairArmor	criteria="a L:1-9;" priceAdj="110"/>
-			<ReplaceArmor	criteria="a L:1-9;" priceAdj="110"/>
-			<InstallDevice	criteria="d L:1-9;" priceAdj="120"/>
-			<RemoveDevice	criteria="d L:1-9;" priceAdj="120"/>
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-9;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-9;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
 		</Trade>
 			
 		<Items>

@@ -446,12 +446,12 @@
 		<Trade currency="rin" max="50000" replenish="2500">
 			<Sell	criteria="*NU +Soul;"							priceAdj="unavailable"/>
 			<Sell	criteria="*NU +RingerValuable;"					priceAdj="400"/>
-			<Sell	criteria="*NU +Alien;"							priceAdj="125"/>
+			<Sell	criteria="*NU +Alien;"							priceAdj="120"/>
 			<Sell	criteria="*NU -ID;"								priceAdj="100"/>
 			<Buy	criteria="*NU +Soul;"							priceAdj="constant:1000"/>
 			<Buy	criteria="*NU +Alien;"							priceAdj="50"/>
-			<Buy	criteria="*NU +Res; &gt;=6;"					priceAdj="42"/>
-			<Buy	criteria="wmNU &gt;=5;"							priceAdj="25"/>
+			<Buy	criteria="*NU +Res; &gt;=6;"					priceAdj="90"/>
+			<Buy	criteria="wmNU &gt;=5;"							priceAdj="50"/>
 		</Trade>
 		
 		<StaticData>
@@ -863,12 +863,12 @@
 		<Trade currency="rin" max="50000" replenish="2500">
 			<Sell	criteria="*NU +Soul;"							priceAdj="unavailable"/>
 			<Sell	criteria="*NU +RingerValuable;"					priceAdj="400"/>
-			<Sell	criteria="*NU +Alien;"							priceAdj="125"/>
+			<Sell	criteria="*NU +Alien;"							priceAdj="120"/>
 			<Sell	criteria="*NU -ID;"								priceAdj="100"/>
 			<Buy	criteria="*NU +Soul;"							priceAdj="constant:1000"/>
 			<Buy	criteria="*NU +Alien;"							priceAdj="50"/>
-			<Buy	criteria="*NU +Res; &gt;=6;"					priceAdj="42"/>
-			<Buy	criteria="wmNU &gt;=5;"							priceAdj="25"/>
+			<Buy	criteria="*NU +Res; &gt;=6;"					priceAdj="90"/>
+			<Buy	criteria="wmNU &gt;=5;"							priceAdj="50"/>
 		</Trade>
 		
 		<DockScreens>
@@ -986,12 +986,12 @@
 		<Trade currency="rin" max="50000" replenish="2500">
 			<Sell	criteria="*NU +Soul;"							priceAdj="unavailable"/>
 			<Sell	criteria="*NU +RingerValuable;"					priceAdj="400"/>
-			<Sell	criteria="*NU +Alien;"							priceAdj="125"/>
+			<Sell	criteria="*NU +Alien;"							priceAdj="120"/>
 			<Sell	criteria="*NU -ID;"								priceAdj="100"/>
 			<Buy	criteria="*NU +Soul;"							priceAdj="constant:1000"/>
 			<Buy	criteria="*NU +Alien;"							priceAdj="50"/>
-			<Buy	criteria="*NU +Res; &gt;=6;"					priceAdj="42"/>
-			<Buy	criteria="wmNU &gt;=5;"							priceAdj="25"/>
+			<Buy	criteria="*NU +Res; &gt;=6;"					priceAdj="90"/>
+			<Buy	criteria="wmNU &gt;=5;"							priceAdj="50"/>
 		</Trade>
 		
 		<DockScreens>

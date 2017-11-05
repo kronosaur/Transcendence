@@ -1410,8 +1410,8 @@
 		<!-- Trade and Items -->
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
@@ -2196,10 +2196,10 @@
 		</Items>
 
 		<Trade currency="rin" max="100000" replenish="5000">
-			<Sell	criteria="*NU +RingerValuable;"		priceAdj="550"/>
+			<Sell	criteria="*NU +RingerValuable;"		priceAdj="500"/>
 			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
-			<Buy	criteria="*NU +RingerValuable;"		priceAdj="500"/>
-			<Buy	criteria="*NU +Res; &gt;=4;"		priceAdj="65"/>
+			<Buy	criteria="*NU +RingerValuable;"		priceAdj="450"/>
+			<Buy	criteria="*NU +Res; &gt;=4;"		priceAdj="90"/>
 		</Trade>
 
 		<Reinforcements minShips="3">
@@ -3102,7 +3102,7 @@
 		</Items>
 
 		<Trade currency="rin" max="50000" replenish="2500">
-			<Refuel			criteria="f +unid:&itPteracniumFuelRod;;" priceAdj="85"/>
+			<Refuel			criteria="f +unid:&itPteracniumFuelRod;;" priceAdj="100"/>
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-11;" priceAdj="120"/>
 			<ReplaceArmor	criteria="a L:1-11;" priceAdj="120"/>

@@ -85,10 +85,10 @@
 		</Items>
 		
 		<Trade currency="rin" max="100000" replenish="5000">
-			<Sell	criteria="*NU +RingerValuable;"		priceAdj="550"/>
+			<Sell	criteria="*NU +RingerValuable;"		priceAdj="500"/>
 			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
-			<Buy	criteria="*NU +RingerValuable;"		priceAdj="500"/>
-			<Buy	criteria="*NU +Res; &gt;=4;"		priceAdj="65"/>
+			<Buy	criteria="*NU +RingerValuable;"		priceAdj="450"/>
+			<Buy	criteria="*NU +Res; &gt;=4;"		priceAdj="90"/>
 		</Trade>
 
 		<Reinforcements minShips="3">
@@ -238,12 +238,12 @@
 		</Items>
 
 		<Trade currency="rin" max="100000" replenish="5000">
-			<Sell	criteria="*NU +RingerValuable;"		priceAdj="550"/>
+			<Sell	criteria="*NU +RingerValuable;"		priceAdj="500"/>
 			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
-			<Buy	criteria="*NU +RingerValuable;"		priceAdj="500"/>
-			<Buy	criteria="*NU +Res; &gt;=4;"		priceAdj="65"/>
+			<Buy	criteria="*NU +RingerValuable;"		priceAdj="450"/>
+			<Buy	criteria="*NU +Res; &gt;=4;"		priceAdj="90"/>
 			
-			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="85"/>
+			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-12;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-12;" priceAdj="100"/>
 			<InstallDevice	criteria="w L:1-10" priceAdj="200"/>

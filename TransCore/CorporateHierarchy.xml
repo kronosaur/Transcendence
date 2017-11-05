@@ -229,8 +229,8 @@
 		</Items>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="115"/>
+			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			<Buy	criteria="adumfNU -Illegal; -ID; -NotForSale;"	priceAdj="50"/>
 			<Buy	criteria="adumfNU -Illegal; -ID;"				priceAdj="10"/>
 
@@ -370,8 +370,8 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Buy	criteria="asU -Illegal; -NotForSale;"	priceAdj="90"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="asU -Illegal; -NotForSale;"	priceAdj="50"/>
 			<Buy	criteria="asU -Illegal; -ID;"				priceAdj="10"/>
 			
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
@@ -516,9 +516,9 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +commonwealth; +basicAmmo; -illegal; -notForSale; -notStandard;" priceAdj="110" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Buy	criteria="mwU -Illegal; -NotForSale;"	priceAdj="60"/>
+			<Sell	criteria="m +commonwealth; +basicAmmo; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="mwU -Illegal; -NotForSale;"	priceAdj="50"/>
 			<Buy	criteria="mwU -Illegal; -ID;"				priceAdj="10"/>
 			
 			<InstallDevice	criteria="w L:1-5;" priceAdj="100"	upgradeInstallOnly="true"/>
@@ -659,8 +659,8 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +makayev; -military; -illegal; -notForSale;" priceAdj="120" inventoryAdj="500" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
+			<Sell	criteria="m +makayev; -military; -illegal; -notForSale;" priceAdj="100" inventoryAdj="500" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a +makayev; L:1-7;" priceAdj="100"/>
@@ -786,8 +786,8 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +bushido; -illegal; -notForSale;" priceAdj="120" inventoryAdj="300" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
+			<Sell	criteria="m +bushido; -illegal; -notForSale;" priceAdj="100" inventoryAdj="300" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 
 			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a +bushido; L:1-10;" priceAdj="100"/>
@@ -890,7 +890,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			<Buy	criteria="*NU +Auton; -Illegal; -NotForSale;"	priceAdj="90"/>
 		</Trade>
 
@@ -1055,9 +1055,9 @@
 		</Ships>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Buy	criteria="*NU +Lux; -Illegal;"	priceAdj="120"/>
-			<Buy	criteria="*NU +Meds; -Illegal;"	priceAdj="120"/>
-			<Buy	criteria="*NU +Food; -Illegal;"	priceAdj="110"/>
+			<Buy	criteria="*NU +Lux; -Illegal;"	priceAdj="105"/>
+			<Buy	criteria="*NU +Meds; -Illegal;"	priceAdj="105"/>
+			<Buy	criteria="*NU +Food; -Illegal;"	priceAdj="105"/>
 			<Buy	criteria="*NU +Res; -Illegal;"	priceAdj="105"/>
 
 			<ConsumeTrade	criteria="{fusionFuel}"		impact="5"/>
@@ -1279,10 +1279,11 @@
 		</Items>
 
 		<Trade currency="credit" max="5000" replenish="250">
+			<Sell	criteria="fNU +basicFuel; L:1-4; -illegal; -ID; -notForSale;"	priceAdj="90"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 
-			<Refuel			criteria="f +BasicFuel; L:1-3;" priceAdj="80"/>
-			<Refuel			criteria="f +BasicFuel; L:4-10;" priceAdj="90"/>
+			<Refuel			criteria="f +BasicFuel; L:1-4;" priceAdj="90"/>
+			<Refuel			criteria="f +BasicFuel; L:5-10;" priceAdj="100"/>
 
 			<ProduceTrade	criteria="{fusionFuel}"		impact="20"/>
 		</Trade>
@@ -1431,8 +1432,8 @@
 		</Items>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +makayev; -illegal; -notForSale;" priceAdj="110" inventoryAdj="800" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU +makayev; -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="m +makayev; -illegal; -notForSale;" priceAdj="100" inventoryAdj="800" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU +makayev; -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
@@ -1823,13 +1824,13 @@
 		</Ships>
 
 		<Trade currency="credit" max="25000" replenish="1250">
-			<Buy	criteria="*NU +Lux; -Illegal;"	priceAdj="125"/>
-			<Buy	criteria="*NU +Food; -Illegal;"	priceAdj="110"/>
-			<Buy	criteria="*NU" item="&itWaterIce;"		priceAdj="110"/>
-			<Buy	criteria="*NU" item="&itStimuzine;"		priceAdj="110"/>
-			<Buy	criteria="*NU" item="&itMedicalSupplies;"		priceAdj="110"/>
-			<Buy	criteria="*NU" item="&itBiofactorPaste;"		priceAdj="110"/>
-			<Buy	criteria="*NU" item="&itHypermycin;"		priceAdj="110"/>
+			<Buy	criteria="*NU +Lux; -Illegal;"	priceAdj="105"/>
+			<Buy	criteria="*NU +Food; -Illegal;"	priceAdj="105"/>
+			<Buy	criteria="*NU" item="&itWaterIce;"		priceAdj="105"/>
+			<Buy	criteria="*NU" item="&itStimuzine;"		priceAdj="105"/>
+			<Buy	criteria="*NU" item="&itMedicalSupplies;"		priceAdj="105"/>
+			<Buy	criteria="*NU" item="&itBiofactorPaste;"		priceAdj="105"/>
+			<Buy	criteria="*NU" item="&itHypermycin;"		priceAdj="105"/>
 
 			<ConsumeTrade	criteria="{fusionFuel}"		impact="2"/>
 			<ConsumeTrade	criteria="{humanLux}"		impact="5"/>
@@ -1969,15 +1970,15 @@
 		</Items>
 
 		<Trade currency="credit" max="10000" replenish="500">
-			<Sell	criteria="*NU +Lux; -NotForSale;"	priceAdj="75"/>
+			<Sell	criteria="*NU +Lux; -NotForSale;"	priceAdj="100"/>
 
-			<Buy	criteria="*NU +Food; -Illegal; &lt;=$100 -NotForSale;"	priceAdj="150"/>
-			<Buy	criteria="*NU" item="&itHydrocarbons;"		priceAdj="200"/>
-			<Buy	criteria="*NU" item="&itHelium3FuelRod;"	priceAdj="200"/>
-			<Buy	criteria="*NU" item="&itOrganicAcid;"		priceAdj="200"/>
-			<Buy	criteria="*NU" item="&itMedicalSupplies;"	priceAdj="200"/>
-			<Buy	criteria="*NU" item="&itHyperfiberRoll;"	priceAdj="200"/>
-			<Buy	criteria="*NU" item="&itBiofactorPaste;"	priceAdj="200"/>
+			<Buy	criteria="*NU +Food; -Illegal; &lt;=$100 -NotForSale;"	priceAdj="105"/>
+			<Buy	criteria="*NU" item="&itHydrocarbons;"		priceAdj="105"/>
+			<Buy	criteria="*NU" item="&itHelium3FuelRod;"	priceAdj="105"/>
+			<Buy	criteria="*NU" item="&itOrganicAcid;"		priceAdj="105"/>
+			<Buy	criteria="*NU" item="&itMedicalSupplies;"	priceAdj="105"/>
+			<Buy	criteria="*NU" item="&itHyperfiberRoll;"	priceAdj="105"/>
+			<Buy	criteria="*NU" item="&itBiofactorPaste;"	priceAdj="105"/>
 
 			<ConsumeTrade	criteria="{fusionFuel}"		impact="1"/>
 			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
@@ -2382,12 +2383,12 @@
 		</Items>
 
 		<Trade currency="rin" max="100000" replenish="5000">
-			<Sell	criteria="*NU +Taikon;"				priceAdj="85"/>
-			<Sell	criteria="*NU +RingerValuable;"		priceAdj="510"/>
-			<Sell	criteria="*NU +Alien;"				priceAdj="125"/>
+			<Sell	criteria="*NU +Taikon;"				priceAdj="100"/>
+			<Sell	criteria="*NU +RingerValuable;"		priceAdj="500"/>
+			<Sell	criteria="*NU +Alien;"				priceAdj="120"/>
 			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
 
-			<Refuel			criteria="f +unid:&itPteracniumFuelRod;;" priceAdj="85"/>
+			<Refuel			criteria="f +unid:&itPteracniumFuelRod;;" priceAdj="100"/>
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-11;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-11;" priceAdj="100"/>
@@ -2499,9 +2500,9 @@
 		</Items>
 
 		<Trade currency="credit" max="250000" replenish="12500">
-			<Sell	criteria="*NU -Illegal; -NotForSale; -ID;"	priceAdj="110"/>
-			<Buy	criteria="amswNU -Illegal; -NotForSale;"	priceAdj="45"/>
-			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="85"/>
+			<Sell	criteria="*NU -Illegal; -NotForSale; -ID;"	priceAdj="100"/>
+			<Buy	criteria="amswNU -Illegal; -NotForSale;"	priceAdj="50"/>
+			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
 
 			<BalanceTrade	criteria="{humanBasicFood}"	impact="10"/>
@@ -3019,7 +3020,7 @@
 		</Items>
 
 		<Trade currency="credit" max="250000" replenish="12500">
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			<Buy	criteria="admuNU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="admuNU -Illegal; -ID;"				priceAdj="10"/>
 			

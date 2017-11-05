@@ -50,17 +50,17 @@
 		<!-- Trade and Items -->
 		
 		<Trade currency="credit" max="10000" replenish="500">
-			<Sell	criteria="*NU +Food; -Illegal; -Lux; -NotForSale;"		priceAdj="75"/>
+			<Sell	criteria="*NU +food; -illegal; -lux; -notForSale;"		priceAdj="100"/>
 
-			<Buy	criteria="*NU +Lux; -Illegal; -NotForSale; &lt;=$250;"	priceAdj="125"/>
-			<Buy	criteria="*NU" item="&itHydrocarbons;"		priceAdj="150"/>
-			<Buy	criteria="*NU" item="&itHelium3FuelRod;"	priceAdj="150"/>
-			<Buy	criteria="*NU" item="&itOrganicAcid;"		priceAdj="150"/>
-			<Buy	criteria="*NU" item="&itMedicalSupplies;"	priceAdj="150"/>
-			<Buy	criteria="*NU" item="&itHyperfiberRoll;"	priceAdj="150"/>
-			<Buy	criteria="*NU" item="&itBiofactorPaste;"	priceAdj="150"/>
+			<Buy	criteria="*NU +lux; -Illegal; -notForSale; &lt;=$250;"	priceAdj="100"/>
+			<Buy	criteria="*NU" item="&itHydrocarbons;"		priceAdj="100"/>
+			<Buy	criteria="*NU" item="&itHelium3FuelRod;"	priceAdj="100"/>
+			<Buy	criteria="*NU" item="&itOrganicAcid;"		priceAdj="100"/>
+			<Buy	criteria="*NU" item="&itMedicalSupplies;"	priceAdj="100"/>
+			<Buy	criteria="*NU" item="&itHyperfiberRoll;"	priceAdj="100"/>
+			<Buy	criteria="*NU" item="&itBiofactorPaste;"	priceAdj="100"/>
 		
-			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="94"/>
+			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-5;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-5;" priceAdj="100"/>
 
@@ -257,7 +257,6 @@
 							)
 						)
 					)
-					(dbgOutput stationList)
 
 					;	Pick a random station to be the one that gets attacked by pirates.
 					;	This mission only shows up once, so we only need to pick one.

@@ -1437,9 +1437,9 @@
 		</DockingPorts>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="*NU -illegal; -notForSale; -notStandard;"	priceAdj="110" noDescription="true"/>
+			<Sell	criteria="*NU -illegal; -notForSale; -notStandard;"	priceAdj="100" noDescription="true"/>
 			
-			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="90"/>
+			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
@@ -1885,13 +1885,13 @@
 		<!-- Trade and Items -->
 		
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"	priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
 			
-			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="94"/>
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
 		</Trade>
