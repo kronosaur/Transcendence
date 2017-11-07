@@ -56,7 +56,7 @@
 		<Trade currency="credit" max="50000" replenish="2500">
 			<Sell	criteria="m +commonwealth; +basicAmmo; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
-			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Buy	criteria="amdNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
 			
@@ -305,7 +305,7 @@
 		<Trade currency="credit" max="50000" replenish="2500">
 			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
-			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Buy	criteria="amdNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
 			
@@ -315,7 +315,7 @@
 			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 
-			<ConsumeTrade	criteria="{fusionFuel}"		impact="2"/>
+			<ConsumeTrade	criteria="{antimatterFuel}"	impact="2"/>
 			<ConsumeTrade	criteria="{humanBasicFood}"	impact="5"/>
 			<ConsumeTrade	criteria="{humanLux}"		impact="3"/>
 			<ConsumeTrade	criteria="{humanMeds}"		impact="2"/>
@@ -1576,7 +1576,7 @@
 		<Trade currency="credit" max="50000" replenish="2500">
 			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
-			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Buy	criteria="amdNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
 			
@@ -1586,7 +1586,7 @@
 			<InstallDevice	criteria="d L:1-8;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
 
-			<ConsumeTrade	criteria="{fusionFuel}"		impact="2"/>
+			<ConsumeTrade	criteria="{antimatterFuel}"	impact="2"/>
 			<ConsumeTrade	criteria="{humanBasicFood}"	impact="5"/>
 			<ConsumeTrade	criteria="{humanLux}"		impact="3"/>
 			<ConsumeTrade	criteria="{humanMeds}"		impact="2"/>

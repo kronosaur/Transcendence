@@ -85,10 +85,13 @@
 		</Items>
 		
 		<Trade currency="rin" max="100000" replenish="5000">
-			<Sell	criteria="*NU +RingerValuable;"		priceAdj="500"/>
+			<Sell	criteria="*NU +ringerValuable;"		priceAdj="250"/>
 			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
-			<Buy	criteria="*NU +RingerValuable;"		priceAdj="450"/>
-			<Buy	criteria="*NU +Res; &gt;=4;"		priceAdj="90"/>
+			<Buy	criteria="*NU +ringerValuable;"		priceAdj="200"/>
+			<Buy	criteria="*NU +res; &gt;=4;"		priceAdj="90"/>
+
+			<ConsumeTrade	criteria="{humanRes}"		impact="2"/>
+			<ConsumeTrade	criteria="{ore}"			impact="5"/>
 		</Trade>
 
 		<Reinforcements minShips="3">
@@ -238,10 +241,10 @@
 		</Items>
 
 		<Trade currency="rin" max="100000" replenish="5000">
-			<Sell	criteria="*NU +RingerValuable;"		priceAdj="500"/>
+			<Sell	criteria="*NU +ringerValuable;"		priceAdj="250"/>
 			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
-			<Buy	criteria="*NU +RingerValuable;"		priceAdj="450"/>
-			<Buy	criteria="*NU +Res; &gt;=4;"		priceAdj="90"/>
+			<Buy	criteria="*NU +ringerValuable;"		priceAdj="200"/>
+			<Buy	criteria="*NU +res; &gt;=4;"		priceAdj="90"/>
 			
 			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-12;" priceAdj="100"/>
@@ -249,6 +252,9 @@
 			<InstallDevice	criteria="w L:1-10" priceAdj="200"/>
 			<InstallDevice	criteria="d~w L:1-10;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-10;" priceAdj="100"/>
+
+			<BalanceTrade	criteria="{humanRes}"		impact="4"/>
+			<BalanceTrade	criteria="{ore}"			impact="10"/>
 		</Trade>
 
 		<Reinforcements minShips="3">
@@ -547,6 +553,10 @@
 
 			alignment="constructive chaos"
 			>
+
+		<AttributeDesc>
+			<ItemAttribute id="ringerValuable"	label="Ringer valuable"		criteriaLabel="Ringer valuables"		criteria="* +ringerValuable;"/>
+		</AttributeDesc>
 
 		<Events>
 			<GetGlobalDockScreen>

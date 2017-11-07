@@ -444,13 +444,13 @@
 		</Items>
 
 		<Trade currency="rin" max="50000" replenish="2500">
-			<Sell	criteria="*NU +Soul;"							priceAdj="unavailable"/>
-			<Sell	criteria="*NU +RingerValuable;"					priceAdj="400"/>
-			<Sell	criteria="*NU +Alien;"							priceAdj="120"/>
+			<Sell	criteria="*NU +soul;"							priceAdj="unavailable"/>
+			<Sell	criteria="*NU +ringerValuable;"					priceAdj="250"/>
+			<Sell	criteria="*NU +alien;"							priceAdj="120"/>
 			<Sell	criteria="*NU -ID;"								priceAdj="100"/>
-			<Buy	criteria="*NU +Soul;"							priceAdj="constant:1000"/>
-			<Buy	criteria="*NU +Alien;"							priceAdj="50"/>
-			<Buy	criteria="*NU +Res; &gt;=6;"					priceAdj="90"/>
+			<Buy	criteria="*NU +soul;"							priceAdj="constant:1000"/>
+			<Buy	criteria="*NU +alien;"							priceAdj="50"/>
+			<Buy	criteria="*NU +res; &gt;=6;"					priceAdj="90"/>
 			<Buy	criteria="wmNU &gt;=5;"							priceAdj="50"/>
 		</Trade>
 		
@@ -861,13 +861,13 @@
 		</Items>
 
 		<Trade currency="rin" max="50000" replenish="2500">
-			<Sell	criteria="*NU +Soul;"							priceAdj="unavailable"/>
-			<Sell	criteria="*NU +RingerValuable;"					priceAdj="400"/>
-			<Sell	criteria="*NU +Alien;"							priceAdj="120"/>
+			<Sell	criteria="*NU +soul;"							priceAdj="unavailable"/>
+			<Sell	criteria="*NU +ringerValuable;"					priceAdj="250"/>
+			<Sell	criteria="*NU +alien;"							priceAdj="120"/>
 			<Sell	criteria="*NU -ID;"								priceAdj="100"/>
-			<Buy	criteria="*NU +Soul;"							priceAdj="constant:1000"/>
-			<Buy	criteria="*NU +Alien;"							priceAdj="50"/>
-			<Buy	criteria="*NU +Res; &gt;=6;"					priceAdj="90"/>
+			<Buy	criteria="*NU +soul;"							priceAdj="constant:1000"/>
+			<Buy	criteria="*NU +alien;"							priceAdj="50"/>
+			<Buy	criteria="*NU +res; &gt;=6;"					priceAdj="90"/>
 			<Buy	criteria="wmNU &gt;=5;"							priceAdj="50"/>
 		</Trade>
 		
@@ -984,13 +984,13 @@
 		</Items>
 
 		<Trade currency="rin" max="50000" replenish="2500">
-			<Sell	criteria="*NU +Soul;"							priceAdj="unavailable"/>
-			<Sell	criteria="*NU +RingerValuable;"					priceAdj="400"/>
-			<Sell	criteria="*NU +Alien;"							priceAdj="120"/>
+			<Sell	criteria="*NU +soul;"							priceAdj="unavailable"/>
+			<Sell	criteria="*NU +ringerValuable;"					priceAdj="250"/>
+			<Sell	criteria="*NU +alien;"							priceAdj="120"/>
 			<Sell	criteria="*NU -ID;"								priceAdj="100"/>
-			<Buy	criteria="*NU +Soul;"							priceAdj="constant:1000"/>
-			<Buy	criteria="*NU +Alien;"							priceAdj="50"/>
-			<Buy	criteria="*NU +Res; &gt;=6;"					priceAdj="90"/>
+			<Buy	criteria="*NU +soul;"							priceAdj="constant:1000"/>
+			<Buy	criteria="*NU +alien;"							priceAdj="50"/>
+			<Buy	criteria="*NU +res; &gt;=6;"					priceAdj="90"/>
 			<Buy	criteria="wmNU &gt;=5;"							priceAdj="50"/>
 		</Trade>
 		
