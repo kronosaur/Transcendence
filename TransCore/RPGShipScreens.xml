@@ -139,8 +139,6 @@
 							(maxCount (itmGetCount thisItem))
 							(unitPrice (itmGetPrice thisItem))
 							(itemCurrency (itmGetProperty thisItem 'currency))
-							;(hasTradeComputer (= (objGetEquipmentStatus gPlayerShip 'TradingComputer) 'ready))
-							(hasTradeComputer true)
 
 							;	Compose text that describes the item
 
@@ -162,27 +160,13 @@
 
 							;	Compute trade compute text
 
-							(tradeData (if hasTradeComputer (rpgItemTradeComputer thisItem)))
-							(tradeText (if (= maxCount 1)
-
-								(scrTranslate gScreen 'descTradeData {
-									sellRecommendation: (@ tradeData 'sellRecommendation)
-									price: (fmtCurrency itemCurrency (@ tradeData 'sellPrice))
-									})
-
-								(scrTranslate gScreen 'descTradeDataMultiple {
-									sellRecommendation: (@ tradeData 'sellRecommendation)
-									price: (fmtCurrency itemCurrency (@ tradeData 'sellPrice))
-									count: maxCount
-									totalPrice: (fmtCurrency itemCurrency (* (@ tradeData 'sellPrice) maxCount))
-									})
-								))
+							(tradeData (rpgItemTradeComputer thisItem))
 							)
 
 							;	Set the text
 
-							(if (and hasTradeComputer (@ tradeData 'sellRecommendation))
-								(scrSetDesc gScreen (cat itemText "\n\n" tradeText))
+							(if tradeData
+								(scrSetDesc gScreen itemText "\n\n" (@ tradeData 'sellRecommendation))
 								(scrSetDesc gScreen itemText)
 								)
 
@@ -587,94 +571,6 @@
 		</Panes>
 	</DockScreen>
 
-<!-- CODE -->
-
-	<Globals>
-		(block Nil
-			(setq rpgItemTradeComputer (lambda (theItem)
-				(switch
-					;	If this is a damaged item, no recommendations
-
-					(itmGetProperty theItem 'damaged)
-						Nil
-
-					;	If this item is unknown, then no recommendation
-
-					(not (itmIsKnown theItem))
-						Nil
-
-					;	Make a recommendation
-
-					(block (
-						(knownNodes (filter (sysGetNodes) theNode (sysIsKnown theNode)))
-						(priceData
-							(map knownNodes theNode {
-								nodeID: theNode
-								price: (sysGetItemBuyPrice theNode theItem)
-								})
-							)
-
-						(bestPriceToSellAt (map priceData 'reduceMax theData (@ theData 'price)))
-						(bestNodesToSellAt 
-							(map priceData 'excludeNil theData 
-								(if (= (@ theData 'price) bestPriceToSellAt) 
-									(@ theData 'nodeID)
-									)
-								)
-							)
-						(nearestNodeToSellAt
-							(map bestNodesToSellAt '(reduceMin original) theNode
-								(sysGetTopologyDistance (sysGetNode) theNode)
-								)
-							)
-
-						(knownObjs (sysFindObject gPlayerShip "TAFV +property:known;"))
-						(localPriceData
-							(map knownObjs theObj {
-								theObj: theObj
-								price: (objGetBuyPrice theObj theItem 'noDonations)
-								})
-							)
-						(localBestPriceToSellAt (map localPriceData 'reduceMax theData (@ theData 'price)))
-						(localBestObjsToSellAt
-							(map localPriceData 'excludeNil theData
-								(if (= (@ theData 'price) localBestPriceToSellAt)
-									(@ theData 'theObj)
-									)
-								)
-							)
-						(bestObjToSellAt (@ localBestObjsToSellAt 0))
-						)
-						{
-							sellBestSystem: nearestNodeToSellAt
-							sellBestSystemPrice: bestPriceToSellAt
-
-							sellRecommendation:
-								(switch
-									(and (gr localBestPriceToSellAt 0) (geq localBestPriceToSellAt bestPriceToSellAt))
-										(typTranslate &dsCargoHold; 'tradeComputer.sellToObj {
-											objName:(objGetName bestObjToSellAt 0)
-											})
-
-									(gr bestPriceToSellAt 0)
-										(typTranslate &dsCargoHold; 'tradeComputer.sellInSystem { systemName:(sysGetName nearestNodeToSellAt) })
-									)
-
-							sellPrice: 
-								(switch
-									(and (gr localBestPriceToSellAt 0) (geq localBestPriceToSellAt bestPriceToSellAt))
-										localBestPriceToSellAt
-
-									(gr bestPriceToSellAt 0) 
-										bestPriceToSellAt
-									)
-							}
-						)
-					)
-				))
-			)		
-	</Globals>
-	
 <!-- RESOURCES -->
 
 	<Image UNID="&rsItemListScreen;"	bitmap="Resources\ItemListScreen.jpg"		bitmask="Resources\ItemListScreenMask.bmp"		loadOnUse="true" />

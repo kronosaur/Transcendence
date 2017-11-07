@@ -118,6 +118,10 @@
 	<!-- 00F0-010F MEMBERSHIP -->
 
 	<!ENTITY dsRPGPromotion				"0x000100F0">
+
+	<!-- 0110-011F TRADING COMPUTER -->
+
+	<!ENTITY unidTradingComputer		"0x00010110">
 	]>
 	
 <CoreLibrary
@@ -150,6 +154,7 @@
 	<Module filename="RPGPlayer.xml"/>
 	<Module filename="RPGShipBroker.xml"/>
 	<Module filename="RPGShipScreens.xml"/>
+	<Module filename="RPGTradingComputer.xml"/>
 	<Module filename="RPGTypes.xml"/>
 	<Module filename="RPGUsefulItems.xml"/>
 	<Module filename="RPGWingmen.xml"/>

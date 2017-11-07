@@ -621,5 +621,8 @@
     <Xml Include="CoreItems.xml">
       <Filter>Core Types</Filter>
     </Xml>
+    <Xml Include="RPGTradingComputer.xml">
+      <Filter>RPG Library</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

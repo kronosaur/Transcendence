@@ -540,6 +540,7 @@
     <Xml Include="RPGShipBroker.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="RPGTradingComputer.xml" />
     <Xml Include="RPGUsefulItems.xml" />
     <Xml Include="Sanctuary.xml" />
     <Xml Include="StdMiningEquipment.xml">

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<Type unid="&unidTradingComputer;">
+		<Language>
+			<Text id="descTradeData">
+				Trade computer: %sellRecommendation% for %price%.
+			</Text>
+			<Text id="sellInSystem">
+				Sell in the %systemName% System
+			</Text>
+			<Text id="sellToObj">
+				Sell to %objName% in this system
+			</Text>
+		</Language>
+	</Type>
+
+<!-- CODE -->
+
+	<Globals>
+		(block Nil
+			(setq rpgItemTradeComputer (lambda (theItem)
+				(switch
+					;	If we don't have a trade computer, then nothing to do
+
+					;(!= (objGetEquipmentStatus gPlayerShip 'TradingComputer) 'ready)
+					;	Nil
+
+					;	If this is a damaged item, no recommendations
+
+					(itmGetProperty theItem 'damaged)
+						Nil
+
+					;	If this item is unknown, then no recommendation
+
+					(not (itmIsKnown theItem))
+						Nil
+
+					;	Make a recommendation
+
+					(block (
+						(knownNodes (filter (sysGetNodes) theNode (sysIsKnown theNode)))
+						(priceData
+							(map knownNodes theNode {
+								nodeID: theNode
+								price: (sysGetItemBuyPrice theNode theItem)
+								})
+							)
+
+						(bestPriceToSellAt (map priceData 'reduceMax theData (@ theData 'price)))
+						(bestNodesToSellAt 
+							(map priceData 'excludeNil theData 
+								(if (= (@ theData 'price) bestPriceToSellAt) 
+									(@ theData 'nodeID)
+									)
+								)
+							)
+						(nearestNodeToSellAt
+							(map bestNodesToSellAt '(reduceMin original) theNode
+								(sysGetTopologyDistance (sysGetNode) theNode)
+								)
+							)
+
+						(knownObjs (sysFindObject gPlayerShip "TAFV +property:known;"))
+						(localPriceData
+							(map knownObjs theObj {
+								theObj: theObj
+								price: (objGetBuyPrice theObj theItem 'noDonations)
+								})
+							)
+						(localBestPriceToSellAt (map localPriceData 'reduceMax theData (@ theData 'price)))
+						(localBestObjsToSellAt
+							(map localPriceData 'excludeNil theData
+								(if (= (@ theData 'price) localBestPriceToSellAt)
+									(@ theData 'theObj)
+									)
+								)
+							)
+						(bestObjToSellAt (@ localBestObjsToSellAt 0))
+
+						;	Sell recommendation
+
+						(sellRecommendation
+							(switch
+								(and (gr localBestPriceToSellAt 0) (geq localBestPriceToSellAt bestPriceToSellAt))
+									'sellToLocalStation
+
+								(gr bestPriceToSellAt 0)
+									'sellInOtherSystem
+								)
+							)
+
+						(sellRecommendationText
+							(switch
+								(= sellRecommendation 'sellToLocalStation)
+									(typTranslate &unidTradingComputer; 'sellToObj {
+										objName:(objGetName bestObjToSellAt 0)
+										})
+
+								(= sellRecommendation 'sellInOtherSystem)
+									(typTranslate &unidTradingComputer; 'sellInSystem {
+										systemName:(sysGetName nearestNodeToSellAt)
+										})
+								)
+							)
+
+						(sellCurrency
+							(switch
+								(= sellRecommendation 'sellToLocalStation)
+									(objGetProperty bestObjToSellAt 'currency)
+
+								(= sellRecommendation 'sellInOtherSystem)
+									(itmGetProperty theItem 'currency)
+								)
+							)
+
+						(sellPrice
+							(switch
+								(= sellRecommendation 'sellToLocalStation)
+									(ecoExchange localBestPriceToSellAt (itmGetProperty theItem 'currency) sellCurrency)
+
+								(= sellRecommendation 'sellInOtherSystem)
+									(ecoExchange bestPriceToSellAt (itmGetProperty theItem 'currency) sellCurrency)
+								)
+							)
+						)
+						(switch
+							(not sellRecommendation)
+								Nil
+
+							{
+								sellBestSystem: nearestNodeToSellAt
+								sellBestSystemPrice: bestPriceToSellAt
+
+								sellRecommendation:
+									(typTranslate &unidTradingComputer; 'descTradeData {
+										sellRecommendation: sellRecommendationText
+										price: (fmtCurrency sellCurrency sellPrice)
+										})
+
+								sellPrice: sellPrice
+								sellCurrency: sellCurrency
+								}
+							)
+						)
+					)
+				))
+			)		
+	</Globals>
+	
+</TranscendenceModule>
