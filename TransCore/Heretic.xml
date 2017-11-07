@@ -2201,8 +2201,8 @@
 			<Buy	criteria="*NU +ringerValuable;"		priceAdj="200"/>
 			<Buy	criteria="*NU +res; &gt;=4;"		priceAdj="90"/>
 
-			<ConsumeTrade	criteria="{humanRes}"		impact="2"/>
-			<ConsumeTrade	criteria="{ore}"			impact="5"/>
+			<ConsumeTrade	criteria="{human.res}"		impact="2"/>
+			<ConsumeTrade	criteria="{core.ore}"			impact="5"/>
 		</Trade>
 
 		<Reinforcements minShips="3">

@@ -46,11 +46,11 @@
 			<InstallDevice	criteria="d L:1-6;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
 
-			<BalanceTrade	criteria="{fusionFuel}"		impact="20"/>
-			<BalanceTrade	criteria="{humanBasicFood}"	impact="20"/>
-			<BalanceTrade	criteria="{humanLux}"		impact="20"/>
-			<BalanceTrade	criteria="{humanMeds}"		impact="20"/>
-			<BalanceTrade	criteria="{humanRes}"		impact="20"/>
+			<BalanceTrade	criteria="{core.fusionFuel}"		impact="20"/>
+			<BalanceTrade	criteria="{human.basicFood}"	impact="20"/>
+			<BalanceTrade	criteria="{human.lux}"		impact="20"/>
+			<BalanceTrade	criteria="{human.meds}"		impact="20"/>
+			<BalanceTrade	criteria="{human.res}"		impact="20"/>
 		</Trade>
 
 		<Items>

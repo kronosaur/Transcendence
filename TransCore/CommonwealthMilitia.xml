@@ -177,7 +177,7 @@
 			<InstallDevice	criteria="d L:1-8;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
 
-			<ConsumeTrade	criteria="{antimatterFuel}"		impact="3"/>
+			<ConsumeTrade	criteria="{core.antimatterFuel}"		impact="3"/>
 		</Trade>
 
 		<Items>

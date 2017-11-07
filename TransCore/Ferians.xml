@@ -85,7 +85,7 @@
 		<!-- Trade and Items -->
 
 		<Trade currency="rin" max="50000" replenish="2500">
-			<BalanceTrade	criteria="{ore}"			impact="10"/>
+			<BalanceTrade	criteria="{core.ore}"			impact="10"/>
 		</Trade>
 
 		<Items>

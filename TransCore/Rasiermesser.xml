@@ -298,9 +298,9 @@
 			<ReplaceArmor	criteria="a L:1-10;" priceAdj="unavailable"	messageID="descNoInstall"/>
 			<InstallDevice	criteria="d L:1-10;" priceAdj="unavailable"	messageID="descNoInstall"/>
 
-			<ConsumeTrade	criteria="{antimatterFuel}"	impact="3"/>
-			<ConsumeTrade	criteria="{humanRes}"		impact="3"/>
-			<ConsumeTrade	criteria="{ore}"			impact="4"/>
+			<ConsumeTrade	criteria="{core.antimatterFuel}"	impact="3"/>
+			<ConsumeTrade	criteria="{human.res}"		impact="3"/>
+			<ConsumeTrade	criteria="{core.ore}"			impact="4"/>
 		</Trade>
 
 		<StaticData>

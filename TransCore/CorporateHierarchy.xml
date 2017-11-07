@@ -1061,11 +1061,11 @@
 			<Buy	criteria="*NU +Food; -Illegal;"	priceAdj="105"/>
 			<Buy	criteria="*NU +Res; -Illegal;"	priceAdj="105"/>
 
-			<ConsumeTrade	criteria="{fusionFuel}"		impact="5"/>
-			<ConsumeTrade	criteria="{humanRes}"		impact="3"/>
-			<ConsumeTrade	criteria="{ore}"			impact="3"/>
+			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="5"/>
+			<ConsumeTrade	criteria="{human.res}"		impact="3"/>
+			<ConsumeTrade	criteria="{core.ore}"			impact="3"/>
 
-			<ProduceTrade	criteria="{humanLux}"		impact="5"/>
+			<ProduceTrade	criteria="{human.lux}"		impact="5"/>
 		</Trade>
 
 		<Events>
@@ -1286,7 +1286,7 @@
 			<Refuel			criteria="f +BasicFuel; L:1-4;" priceAdj="90"/>
 			<Refuel			criteria="f +BasicFuel; L:5-10;" priceAdj="100"/>
 
-			<ProduceTrade	criteria="{fusionFuel}"		impact="20"/>
+			<ProduceTrade	criteria="{core.fusionFuel}"		impact="20"/>
 		</Trade>
 
 		<DockScreens>
@@ -1445,9 +1445,9 @@
 			<ReplaceArmor	criteria="a L:1-10;" priceAdj="unavailable"	messageID="descNoInstall"/>
 			<InstallDevice	criteria="d L:1-10;" priceAdj="unavailable"	messageID="descNoInstall"/>
 
-			<ConsumeTrade	criteria="{antimatterFuel}"	impact="3"/>
-			<ConsumeTrade	criteria="{humanRes}"		impact="3"/>
-			<ConsumeTrade	criteria="{ore}"			impact="3"/>
+			<ConsumeTrade	criteria="{core.antimatterFuel}"	impact="3"/>
+			<ConsumeTrade	criteria="{human.res}"		impact="3"/>
+			<ConsumeTrade	criteria="{core.ore}"			impact="3"/>
 		</Trade>
 
 		<StaticData>
@@ -1605,8 +1605,8 @@
 							produces: "t +food; -lux; -res; -fuel; -ID; -illegal; -art; -antique; -alien; -notForSale; F:curv; &gt;$0 &lt;=$500 &lt;=6"
 							consumes: "t +res; -ore; -illegal; -notForSale; F:curv; &lt;=$250"
 
-							tradeProd: "{humanBasicFood}"
-							tradeCons: "{humanRes}"
+							tradeProd: "{human.basicFood}"
+							tradeCons: "{human.res}"
 							}
 
 						;	Luxury Manufacturing
@@ -1615,8 +1615,8 @@
 							produces: "t +lux; -res; -fuel; -ID; -illegal; -art; -antique; -alien; -notForSale; F:curv; &gt;$0 &lt;=$500 &lt;=6"
 							consumes: "t +res; -ore; -illegal; -notForSale; F:curv; &lt;=$500"
 
-							tradeProd: "{humanLux}"
-							tradeCons: "{humanRes}"
+							tradeProd: "{human.lux}"
+							tradeCons: "{human.res}"
 							}
 
 						;	Industrial Resource Manufacturing
@@ -1625,8 +1625,8 @@
 							produces: "t +res; -ore; -fuel; -ID; -illegal; -art; -antique; -alien; -notForSale; F:curv; &gt;$0 &lt;=$500 &lt;=6"
 							consumes: "t +ore; -illegal; -notForSale; F:cu; &lt;=$250"
 
-							tradeProd: "{humanRes}"
-							tradeCons: "{ore}"
+							tradeProd: "{human.res}"
+							tradeCons: "{core.ore}"
 							}
 						))
 
@@ -1833,8 +1833,8 @@
 			<Buy	criteria="*NU" item="&itBiofactorPaste;"		priceAdj="105"/>
 			<Buy	criteria="*NU" item="&itHypermycin;"		priceAdj="105"/>
 
-			<ConsumeTrade	criteria="{fusionFuel}"		impact="2"/>
-			<ConsumeTrade	criteria="{humanLux}"		impact="5"/>
+			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="2"/>
+			<ConsumeTrade	criteria="{human.lux}"		impact="5"/>
 		</Trade>
 
 		<Events>
@@ -1981,10 +1981,10 @@
 			<Buy	criteria="*NU" item="&itHyperfiberRoll;"	priceAdj="105"/>
 			<Buy	criteria="*NU" item="&itBiofactorPaste;"	priceAdj="105"/>
 
-			<ConsumeTrade	criteria="{fusionFuel}"		impact="1"/>
-			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
+			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="1"/>
+			<ConsumeTrade	criteria="{human.res}"		impact="1"/>
 
-			<ProduceTrade	criteria="{humanBasicFood}"	impact="10"/>
+			<ProduceTrade	criteria="{human.basicFood}"	impact="10"/>
 		</Trade>
 
 		<Events>
@@ -2506,9 +2506,9 @@
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
 
-			<BalanceTrade	criteria="{humanBasicFood}"	impact="10"/>
-			<BalanceTrade	criteria="{humanLux}"		impact="10"/>
-			<BalanceTrade	criteria="{humanRes}"		impact="5"/>
+			<BalanceTrade	criteria="{human.basicFood}"	impact="10"/>
+			<BalanceTrade	criteria="{human.lux}"		impact="10"/>
+			<BalanceTrade	criteria="{human.res}"		impact="5"/>
 		</Trade>
 
 		<Events>

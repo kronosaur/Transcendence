@@ -199,12 +199,12 @@
 			<InstallDevice	criteria="d L:1-6;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
 
-			<BalanceTrade	criteria="{humanBasicFood}"	impact="10"/>
-			<BalanceTrade	criteria="{humanLux}"		impact="10"/>
-			<BalanceTrade	criteria="{humanRes}"		impact="10"/>
-			<BalanceTrade	criteria="{ore}"			impact="5"/>
+			<BalanceTrade	criteria="{human.basicFood}"	impact="10"/>
+			<BalanceTrade	criteria="{human.lux}"		impact="10"/>
+			<BalanceTrade	criteria="{human.res}"		impact="10"/>
+			<BalanceTrade	criteria="{core.ore}"			impact="5"/>
 
-			<ConsumeTrade	criteria="{fusionFuel}"		impact="5"/>
+			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="5"/>
 		</Trade>
 		
 		<Items>

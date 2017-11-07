@@ -204,13 +204,13 @@
 			
 			<InstallDevice	criteria="d L:1-6;" priceAdj="unavailable"	messageID="descNoInstall"/>
 
-			<ConsumeTrade	criteria="{fusionFuel}"		impact="2"/>
-			<ConsumeTrade	criteria="{humanBasicFood}"	impact="3"/>
-			<ConsumeTrade	criteria="{humanLux}"		impact="1"/>
-			<ConsumeTrade	criteria="{humanMeds}"		impact="2"/>
-			<ConsumeTrade	criteria="{humanRes}"		impact="1"/>
+			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="2"/>
+			<ConsumeTrade	criteria="{human.basicFood}"	impact="3"/>
+			<ConsumeTrade	criteria="{human.lux}"		impact="1"/>
+			<ConsumeTrade	criteria="{human.meds}"		impact="2"/>
+			<ConsumeTrade	criteria="{human.res}"		impact="1"/>
 
-			<ProduceTrade	criteria="{ore}"			impact="20"/>
+			<ProduceTrade	criteria="{core.ore}"			impact="20"/>
 		</Trade>
 
 		<Items>

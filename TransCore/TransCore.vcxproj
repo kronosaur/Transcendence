@@ -481,6 +481,7 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="CoreHitEffects.xml" />
+    <Xml Include="CoreItems.xml" />
     <Xml Include="CorePlaceholders.xml">
       <SubType>Designer</SubType>
     </Xml>
