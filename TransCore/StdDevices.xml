@@ -111,7 +111,7 @@
 	<!-- Cargo Hold Expansion -->
 
 	<ItemType UNID="&itCargoHoldExpansion;"
-			name=				"cargo hold expansion"
+			name=				"trader's cargo hold"
 			attributes=			"commonwealth, majorItem"
 			  
 			level=				"2"
@@ -121,13 +121,13 @@
 			value=				"1000"
 			mass=				"1000"
 			  
-			description=		"This is a pressurized hold that can be attached to a ship to increase the amount of cargo it can carry."
+			description=		"This pressurized cargo hold is popular with independent merchants and comes with a built-in trading computer."
 			>
 
 		<Image imageID="&rsItems1;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<CargoHoldDevice
-				cargoSpace=		"100"
+				cargoSpace=		"150"
 				>
 			<Equipment>
 				<Install equipment="tradingComputer"/>
@@ -181,7 +181,7 @@
 		<Image imageID="&rsItems1;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<CargoHoldDevice
-				cargoSpace=		"80"
+				cargoSpace=		"150"
 				/>
 
 	</ItemType>
