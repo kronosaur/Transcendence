@@ -93,7 +93,7 @@
 			
 			<Message id="msgBreakAndAttack" name="Break &amp; attack" key="B">
 				<OnShow>
-					(not (find '('goingHome 'attackingAtWill) (objGetData gSource 'behavior)))
+					(not (find '(goingHome attackingAtWill) (objGetData gSource 'behavior)))
 				</OnShow>
 				
 				<Invoke>
@@ -148,7 +148,7 @@
 
 			<Message id="msgFormUp" name="Form up" key="F">
 				<OnShow>
-					(not (find '('escorting 'goingHome) (objGetData gSource 'behavior)))
+					(not (find '(escorting goingHome) (objGetData gSource 'behavior)))
 				</OnShow>
 
 				<Invoke>
@@ -218,7 +218,7 @@
 
 			<Message id="msgWait" name="Wait" key="W">
 				<OnShow>
-					(not (find '('waiting 'goingHome) (objGetData gSource 'behavior)))
+					(not (find '(waiting goingHome) (objGetData gSource 'behavior)))
 				</OnShow>
 
 				<Invoke>

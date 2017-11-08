@@ -566,7 +566,7 @@ changing sys will unregister from owner
 			<OnAttackedByPlayer>
 				(block Nil
 					;	Message
-					(if (find '('underAttack 'friend) (typGetData &msEscapeFromDantalion; 'status))
+					(if (find '(underAttack friend) (typGetData &msEscapeFromDantalion; 'status))
 						(objSendMessage gPlayerShip gSource (typTranslate &evEscapeFromDantalion; 'msgPlayerBetrayal))
 						(objSendMessage gPlayerShip gSource (typTranslate &evEscapeFromDantalion; 'msgAttackPlayer))
 						)
