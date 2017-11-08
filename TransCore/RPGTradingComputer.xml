@@ -40,6 +40,8 @@
 					;	Make a recommendation
 
 					(block (
+						(itemCurrency (itmGetProperty theItem 'currency))
+
 						(knownNodes (filter (sysGetNodes) theNode (sysIsKnown theNode)))
 						(priceData
 							(map knownNodes theNode {
@@ -105,25 +107,27 @@
 								)
 							)
 
+						(sellPriceItemCurrency
+							(switch
+								(= sellRecommendation 'sellToLocalStation)
+									localBestPriceToSellAt
+
+								(= sellRecommendation 'sellInOtherSystem)
+									bestPriceToSellAt
+								)
+							)
+
 						(sellCurrency
 							(switch
 								(= sellRecommendation 'sellToLocalStation)
 									(objGetProperty bestObjToSellAt 'currency)
 
 								(= sellRecommendation 'sellInOtherSystem)
-									(itmGetProperty theItem 'currency)
+									itemCurrency
 								)
 							)
 
-						(sellPrice
-							(switch
-								(= sellRecommendation 'sellToLocalStation)
-									(ecoExchange localBestPriceToSellAt (itmGetProperty theItem 'currency) sellCurrency)
-
-								(= sellRecommendation 'sellInOtherSystem)
-									(ecoExchange bestPriceToSellAt (itmGetProperty theItem 'currency) sellCurrency)
-								)
-							)
+						(sellPrice (ecoExchange sellPriceItemCurrency itemCurrency sellCurrency))
 						)
 						(switch
 							(not sellRecommendation)
@@ -136,7 +140,11 @@
 								sellRecommendation:
 									(typTranslate &unidTradingComputer; 'descTradeData {
 										sellRecommendation: sellRecommendationText
-										price: (fmtCurrency sellCurrency sellPrice)
+										price: 
+											(if (= itemCurrency sellCurrency)
+												(fmtCurrency sellCurrency sellPrice)
+												(cat (fmtCurrency sellCurrency sellPrice) " (" (fmtCurrency itemCurrency sellPriceItemCurrency) ")")
+												)
 										})
 
 								sellPrice: sellPrice

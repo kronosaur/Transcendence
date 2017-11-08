@@ -762,55 +762,81 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(block (thisItem)
-						(setq thisItem (scrGetItem gScreen))
-						(if thisItem
+					(block (
+						(thisItem (scrGetItem gScreen))
+						)
+						(switch
+							(not thisItem)
+								(block Nil
+									(scrSetData gScreen 'maxCount 0)
+									(scrSetDescTranslate gScreen 'descNoItemsHere)
+									(scrEnableAction gScreen 'actionLootThis Nil)
+									(scrSetActionLabel gScreen 'actionDone Nil Nil '(default cancel))
+									)
+
 							(block (
 								(availCount (itmGetCount thisItem))
 								(fitCount (objGetFitCount gPlayerShip thisItem))
 								(maxCount (min availCount fitCount))
-								totalMassString spaceString
+
+								(itemCurrency (itmGetProperty thisItem 'currency))
+								(itemPrice (itmGetPrice thisItem))
+
+								(totalMassString 
+									(if (gr maxCount 1)
+										(scrTranslate gScreen 'totalMassString {
+											quantity:maxCount
+											mass:(strMassString (* (itmGetMass thisItem) maxCount))
+											})
+										""
+										)
+									)
+
+								(totalPriceString
+									(if (gr maxCount 1)
+										(scrTranslate gScreen 'totalPriceString {
+											count:maxCount
+											price:(fmtCurrency itemCurrency (* maxCount itemPrice))
+											})
+										""
+										)
+									)
+
+								(itemText
+									(scrTranslate gScreen 'descDefault {
+										unitMass:(strMassString (itmGetMass thisItem))
+										unitPrice:(fmtCurrency itemCurrency itemPrice)
+										totalMassString:totalMassString
+										totalPriceString:totalPriceString
+										})
+									)
+
+								(spaceString
+									(switch
+										(eq maxCount 0)
+											(scrTranslate gScreen 'spaceStringNone { itemName:(itmGetName thisItem 'article) })
+
+										(gr availCount fitCount)
+											(scrTranslate gScreen 'spaceStringSome {
+												count:fitCount
+												itemName:(itmGetName thisItem 'plural)
+												})
+
+										;(scrTranslate gScreen 'spaceStringAll { itemName:(itmGetName thisItem 'count) })
+										)
+									)
+
+								(tradeData (rpgItemTradeComputer thisItem))
 								)
-								
+								(scrSetDesc gScreen
+									itemText
+									(if spaceString (cat "\n\n" spaceString))
+									(if tradeData (cat "\n\n" (@ tradeData 'sellRecommendation)))
+									)
+
 								(scrSetData gScreen 'maxCount maxCount)
-								(setq totalMassString (if (gr maxCount 1)
-															(scrTranslate gScreen 'totalMassString {
-																quantity:maxCount
-																mass:(strMassString (* (itmGetMass thisItem) maxCount))
-																})
-															" "
-															)
-									)
 
-								(switch
-									(eq maxCount 0)
-										(block Nil
-											(setq spaceString (scrTranslate gScreen 'spaceStringNone { itemName:(itmGetName thisItem 'article) }))
-											(scrEnableAction gScreen 'actionLootThis Nil)
-											)
-									(eq maxCount 1)
-										(setq spaceString (scrTranslate gScreen 'spaceStringOne { itemName:(itmGetName thisItem) }))
-									(gr availCount fitCount)
-										(setq spaceString (scrTranslate gScreen 'spaceStringSome {
-																count:fitCount
-																itemName:(itmGetName thisItem 'plural)
-																})
-											)
-									(setq spaceString (scrTranslate gScreen 'spaceStringAll { itemName:(itmGetName thisItem 'count) }))
-									)
-
-								(scrSetDescTranslate gScreen 'descDefault {
-									unitMass:(strMassString (itmGetMass thisItem))
-									totalMassString:totalMassString
-									spaceString:spaceString
-									})
-								)
-							
-							(block Nil
-								(scrSetData gScreen 'maxCount 0)
-								(scrSetDescTranslate gScreen 'descNoItemsHere)
-								(scrEnableAction gScreen 'actionLootThis Nil)
-								(scrSetActionLabel gScreen 'actionDone Nil Nil '(default cancel))
+								(scrEnableAction gScreen 'actionLootThis (gr maxCount 0))
 								)
 							)
 						)
@@ -878,11 +904,11 @@
 		
 		<Language>
 			<Text id="descDefault">
-				Unit mass: %unitMass%%totalMassString%
-				
-				%spaceString%
+				Unit mass: %unitMass% %totalMassString%\n
+				Unit price: %unitPrice% %totalPriceString%
 			</Text>
-			<Text id="totalMassString">" (%quantity% at %mass%)"</Text>
+			<String id="totalMassString">(%quantity% at %mass%)</String>
+			<String id="totalPriceString">(%count% for %price%)</String>
 			<Text id="spaceStringNone">You do not have enough space to carry %itemName%.</Text>
 			<Text id="spaceStringOne">You have enough room to carry one %itemName%.</Text>
 			<Text id="spaceStringSome">You have enough room to carry only %count% %itemName%.</Text>
