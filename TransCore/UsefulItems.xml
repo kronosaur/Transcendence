@@ -1686,178 +1686,6 @@
 		</Invoke>
 	</ItemType>
 
-	<!-- Rowena's Weapons and Armor: Vol 1 -->
-
-	<ItemType UNID="&itRowenaVol1;"
-			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume I"
-			level=				"1"
-			value=				"50"
-			mass=				"1"
-			frequency=			"notrandom"
-			unknownType=		"&itUnknownROM;"
-			attributes=			"cannotOrder, Info; MinorItem"
-
-			description=		"The definitive guide to starship weapons and armor. This ROM contains specification for commercially available weapons and armor of the Commonwealth."
-			>
-
-		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
-
-		<Invoke>
-			(block Nil
-				(objSendMessage gSource Nil "\"Rowena's Weapons and Armor (Volume I)\" installed")
-				(itmEnumTypes "adsw" itemType
-					(if (and (geq (itmGetLevel itemType) 1) (leq (itmGetLevel itemType) 5))
-						(itmSetReference itemType)
-						)
-					)
-
-				; Identify the item
-				(itmSetKnown gItem)
-
-				; Remove ROM
-				(objRemoveItem gSource gItem 1)
-				)
-		</Invoke>
-	</ItemType>
-
-	<!-- Rowena's Weapons and Armor: Vol 2 -->
-
-	<ItemType UNID="&itRowenaVol2;"
-			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume II"
-			level=				"4"
-			value=				"500"
-			mass=				"1"
-			frequency=			"notrandom"
-			unknownType=		"&itUnknownROM;"
-			attributes=			"cannotOrder, Info; MinorItem"
-
-			description=		"The definitive guide to starship weapons and armor. This ROM contains specification for military weapons and armor used in the Commonwealth."
-			>
-
-		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
-
-		<Invoke>
-			(block Nil
-				(objSendMessage gSource Nil "\"Rowena's Weapons and Armor (Volume II)\" installed")
-				(itmEnumTypes "adsw" itemType
-					(if (and (geq (itmGetLevel itemType) 6) (leq (itmGetLevel itemType) 10))
-						(itmSetReference itemType)
-						)
-					)
-
-				; Identify the item
-				(itmSetKnown gItem)
-
-				; Remove ROM
-				(objRemoveItem gSource gItem 1)
-				)
-		</Invoke>
-	</ItemType>
-
-	<!-- Rowena's Weapons and Armor: Vol 3 -->
-
-	<ItemType UNID="&itRowenaVol3;"
-			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume III"
-			level=				"8"
-			value=				"2500"
-			mass=				"1"
-			frequency=			"notrandom"
-			unknownType=		"&itUnknownROM;"
-			attributes=			"cannotOrder, Info; MinorItem"
-
-			description=		"The definitive guide to starship weapons and armor. This ROM contains specification for weapons and armor used by the Ancient Races."
-			>
-
-		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
-
-		<Invoke>
-			(block Nil
-				(objSendMessage gSource Nil "\"Rowena's Weapons and Armor (Volume III)\" installed")
-				(itmEnumTypes "adsw" itemType
-					(if (and (geq (itmGetLevel itemType) 11) (leq (itmGetLevel itemType) 15))
-						(itmSetReference itemType)
-						)
-					)
-
-				; Identify the item
-				(itmSetKnown gItem)
-
-				; Remove ROM
-				(objRemoveItem gSource gItem 1)
-				)
-		</Invoke>
-	</ItemType>
-
-	<!-- Rowena's Weapons and Armor: Vol 4 -->
-
-	<ItemType UNID="&itRowenaVol4;"
-			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume IV"
-			level=				"12"
-			value=				"10000"
-			mass=				"1"
-			frequency=			"notrandom"
-			unknownType=		"&itUnknownROM;"
-			attributes=			"cannotOrder, Info; MinorItem"
-
-			description=		"The definitive guide to starship weapons and armor. This ROM contains specification for weapons and armor developed by the Halo Races."
-
-			>
-
-		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
-
-		<Invoke>
-			(block Nil
-				(objSendMessage gSource Nil "\"Rowena's Weapons and Armor (Volume IV)\" installed")
-				(itmEnumTypes "adsw" itemType
-					(if (and (geq (itmGetLevel itemType) 16) (leq (itmGetLevel itemType) 20))
-						(itmSetReference itemType)
-						)
-					)
-
-				; Identify the item
-				(itmSetKnown gItem)
-
-				; Remove ROM
-				(objRemoveItem gSource gItem 1)
-				)
-		</Invoke>
-	</ItemType>
-
-	<!-- Rowena's Weapons and Armor: Vol 5 -->
-
-	<ItemType UNID="&itRowenaVol5;"
-			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume V"
-			level=				"16"
-			value=				"30000"
-			mass=				"1"
-			frequency=			"notrandom"
-			unknownType=		"&itUnknownROM;"
-			attributes=			"cannotOrder, Info; MinorItem"
-
-			description=		"The definitive guide to starship weapons and armor. This ROM contains specification for weapons and armor used by the Hierodules and the entities Oracus and Domina."
-
-			>
-
-		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
-
-		<Invoke>
-			(block Nil
-				(objSendMessage gSource Nil "\"Rowena's Weapons and Armor (Volume V)\" installed")
-				(itmEnumTypes "adsw" itemType
-					(if (and (geq (itmGetLevel itemType) 21) (leq (itmGetLevel itemType) 25))
-						(itmSetReference itemType)
-						)
-					)
-
-				; Identify the item
-				(itmSetKnown gItem)
-
-				; Remove ROM
-				(objRemoveItem gSource gItem 1)
-				)
-		</Invoke>
-	</ItemType>
-
 	<!-- System Map ROM -->
 
 	<ItemType UNID="&itSystemMapROM;"
@@ -1990,6 +1818,57 @@
 				(itmSetKnown gItem)
 
 				; Remove ROM
+				(objRemoveItem gSource gItem 1)
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Trading Computer ROM -->
+
+	<ItemType UNID="&itTradingComputerROM;"
+			name=				"trading computer ROM"
+			level=				"2"
+			value=				"300"
+			mass=				"1"
+			frequency=			"rare"
+			unknownType=		"&itUnknownROM;"
+			attributes=			"info, minorItem, shipEquipment"
+
+			description=		"A trading computer tracks prices for known stations and suggests the best place to sell commodities."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(block (
+				(hasTradingComputer (= (objGetEquipmentStatus gPlayerShip 'TradingComputer) 'ready))
+				)
+				;	Handle each of the cases
+
+				(switch
+					;	Try to install the trading computer. If it fails, then it means
+					;	that we already have a trading computer installed on the ship.
+
+					(not (objChangeEquipmentStatus gPlayerShip 'TradingComputer 'install))
+						(objSendMessage gSource Nil "Ship already has a trading computer")
+						
+					;	If we didn't have a trading computer before, and installation
+					;	succeeds, then we've succeeded.
+
+					(not hasTradingComputer)
+						(objSendMessage gSource Nil "Targeting computer installed")
+
+					;	If we DID have a trading computer before and installation succeeded
+					;	anyway, then it means we have a trading computer on some device
+					;	(e.g., a cargo hold) and now we have a redundant one installed on
+					;	the ship.
+
+					(objSendMessage gSource Nil "Redundant targeting computer installed")
+					)
+
+				;	Identify and remove
+
+				(itmSetKnown gItem)
 				(objRemoveItem gSource gItem 1)
 				)
 		</Invoke>

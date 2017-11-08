@@ -1564,6 +1564,7 @@
 	<!ENTITY rsKorolovShipping			"0x00100041">
 	<!ENTITY rsKorolovShippingConstruction	"0x00100042">
 	<!ENTITY baCorporateStation			"0x00100043">
+	<!ENTITY itTradingComputerROM		"0x00100044">
 	
 	<!-- 0060-007F COMMONWEALTH FLEET -->
 	
