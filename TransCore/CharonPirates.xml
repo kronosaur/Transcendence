@@ -613,7 +613,7 @@
 			armorID=			"&itReactiveArmor;"
 			hitPoints=			"90"
 			regen=				"1"
-			fireRateAdj=		"60"
+			fireRateAdj=		"50"
 			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -630,14 +630,14 @@
 
 		<Ships>
 			<Table>
-				<Ship chance="35"	count="2d3"	class="&scCorsair;"		orders="guard"/>
+				<Ship chance="35"	count="2d4"	class="&scCorsair;"		orders="guard"/>
 				<Group chance="30">
-					<Ship			count="1d4"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1d4+1"	class="&scCorsair;"		orders="guard"/>
 					<Ship			count="1"	class="&scViking;"		orders="guard"/>
 				</Group>
 				<Ship chance="15"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
 				<Group chance="10">
-					<Ship			count="1d2"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1d3"	class="&scCorsair;"		orders="guard"/>
 					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
 				</Group>
 				<Ship chance="10"	count="1d4"	class="&scViking;"		orders="guard"/>
@@ -645,9 +645,9 @@
 		</Ships>
 
 		<Items>
-			<Group	levelValue="0, 1000, 1500, 2000, 0">
+			<Group	value="1000">
 				<Item	count="2d8"	item="&itKM100Missile;" />
-				<Lookup				table="&trStdLevelTreasure;"/>
+				<Lookup				table="&trStdTreasure;"/>
 			</Group>
 		</Items>
 
@@ -710,7 +710,9 @@
 		</Ships>
 
 		<Items>
-			<Lookup	chance="60"		table="&trStdLevelTreasure;"/>
+			<Group value="750">
+				<Lookup	table="&trStdTreasure;"/>
+			</Group>
 		</Items>
 
 		<Encounters frequency="common">
@@ -811,9 +813,9 @@
 		</Reinforcements>
 
 		<Items>
-			<Group	levelValue="0, 2000, 3000, 4000, 0">
+			<Group	value="4000">
 				<Item	count="2d8"	item="&itKM100Missile;" />
-				<Lookup				table="&trStdLevelTreasure;"/>
+				<Lookup				table="&trStdTreasure;"/>
 			</Group>
 		</Items>
 

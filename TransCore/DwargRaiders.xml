@@ -497,11 +497,9 @@
 		</Reinforcements>
 
 		<Items>
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables5;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
-			</Table>
+			<Group value="4000">
+				<Lookup table="&trStdTreasure;"/>
+			</Group>
 		</Items>
 
 		<DockingPorts>
@@ -560,11 +558,9 @@
 		</Reinforcements>
 
 		<Items>
-			<Table count="1d4">
-				<Lookup chance="40" count="1" table="&trConsumables5;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
-			</Table>
+			<Group value="8000">
+				<Lookup table="&trStdTreasure;"/>
+			</Group>
 		</Items>
 
 		<Satellites overlapCheck="planetoids">
@@ -646,11 +642,9 @@
 		</Reinforcements>
 
 		<Items>
-			<Table count="1d2">
-				<Lookup chance="40" count="1" table="&trConsumables5;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
-			</Table>
+			<Group value="8000">
+				<Lookup table="&trStdTreasure;"/>
+			</Group>
 		</Items>
 
 		<DockingPorts>
@@ -676,7 +670,7 @@
 			armorID=			"&itDwargHolochroalArmor;"
 			hitPoints=			"1400"
 			regen=              "11"
-			fireRateAdj=		"20"
+			fireRateAdj=		"40"
 			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -722,11 +716,9 @@
 		</Reinforcements>
 
 		<Items>
-			<Table count="2-6">
-				<Lookup chance="40" count="1" table="&trConsumables7;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem7;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem7;"/>
-			</Table>
+			<Group value="35000">
+				<Lookup table="&trStdTreasure;"/>
+			</Group>
 		</Items>
 
 		<DockingPorts>

@@ -368,17 +368,19 @@
 		</Reinforcements>
 
 		<Items>
-			<Table count="1d3">
-				<Lookup chance="30" count="1" table="&trConsumables3;"/>
-				<RandomItem chance="30"
-						criteria=			"* +Res; -NotStandard;"
-						levelFrequency=		"rucur"
-						/>
-				<Item chance="15" count="1d4" item="&itUrakArmorLight;"/>
-				<Item chance="10" count="1" item="&itUrakMassDriver;"/>
-				<Lookup chance="10" count="1" table="&trMinorItem3;"/>
-				<Lookup chance="5" count="1" table="&trMajorItem3;"/>
-			</Table>
+			<Group value="2000">
+				<Table>
+					<Lookup chance="30" count="1" table="&trConsumables3;"/>
+					<RandomItem chance="30"
+							criteria=			"* +Res; -NotStandard;"
+							levelFrequency=		"rucur"
+							/>
+					<Item chance="15" count="1d4" item="&itUrakArmorLight;"/>
+					<Item chance="10" count="1" item="&itUrakMassDriver;"/>
+					<Lookup chance="10" count="1" table="&trMinorItem3;"/>
+					<Lookup chance="5" count="1" table="&trMajorItem3;"/>
+				</Table>
+			</Group>
 		</Items>
 
 		<DockingPorts>
@@ -391,7 +393,6 @@
 			<Port x="-60"	y="11" />
 			<Port x="-50"	y="74" />
 		</DockingPorts>
-
 	</StationType>
 
 	<!-- Urak Mine -->
@@ -504,23 +505,25 @@
 		</Reinforcements>
 
 		<Items>
-			<RandomItem
-					criteria=			"* +Res; -NotStandard;"
-					levelFrequency=		"-uccu"
-					/>
-			<RandomItem chance="10"
-					criteria=			"* +Res; -NotStandard;"
-					levelFrequency=		"---uc cu---"
-					/>
-			<Table count="1-4">
-				<Lookup chance="15" count="1" table="&trConsumables5;"/>
-				<Item chance="20" count="1d4" item="&itUrakArmorLight;"/>
-				<Item chance="20" count="1" item="&itUrakMassDriver;"/>
-				<Item chance="15" count="1d4" item="&itUrakArmorHeavy;"/>
-				<Item chance="15" count="1" item="&itUrakHowitzer;"/>
-				<Lookup chance="10" count="1" table="&trMinorItem5;"/>
-				<Lookup chance="5" count="1" table="&trMajorItem5;"/>
-			</Table>
+			<Group value="7000">
+				<RandomItem
+						criteria=			"* +Res; -NotStandard;"
+						levelFrequency=		"-uccu"
+						/>
+				<RandomItem chance="10"
+						criteria=			"* +Res; -NotStandard;"
+						levelFrequency=		"---uc cu---"
+						/>
+				<Table count="1-4">
+					<Lookup chance="15" count="1" table="&trConsumables5;"/>
+					<Item chance="20" count="1d4" item="&itUrakArmorLight;"/>
+					<Item chance="20" count="1" item="&itUrakMassDriver;"/>
+					<Item chance="15" count="1d4" item="&itUrakArmorHeavy;"/>
+					<Item chance="15" count="1" item="&itUrakHowitzer;"/>
+					<Lookup chance="10" count="1" table="&trMinorItem5;"/>
+					<Lookup chance="5" count="1" table="&trMajorItem5;"/>
+				</Table>
+			</Group>
 		</Items>
 
 	</StationType>

@@ -307,13 +307,11 @@
 		<!-- Trade and Items -->
 		
 		<Items>
-			<Item count="3d12" item="&itHelium3FuelRod;"/>
-			<Item count="3d12" item="&itHeliotropeFuel;"/>
-			<Table chance="50">
-				<Lookup chance="40" count="1" table="&trConsumables5;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
-			</Table>
+			<Group value="5200">
+				<Item count="3d12" item="&itHelium3FuelRod;"/>
+				<Item count="3d12" item="&itHeliotropeFuel;"/>
+				<Lookup chance="50" table="&trStdTreasure;"/>
+			</Group>
 		</Items>
 
 		<!-- Configuration -->

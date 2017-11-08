@@ -2664,6 +2664,48 @@
 		</Invoke>
 	</ItemType>
 
+	<!-- Centauri Commandship (Obsolete) -->
+
+	<ShipClass UNID="&scCentauriCommandShip;"
+			obsolete=			"39"
+			manufacturer=		"Centauri"
+			class=				""
+			type=				"command ship"
+
+			mass=				"100"
+			cargoSpace=			"50"
+			thrust=				"400"
+			maxSpeed=			"10"
+
+			attributes=			"centauriWarlords"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itLightPlasteelPlate;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itLightPlasteelPlate;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itLightPlasteelPlate;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itLightPlasteelPlate;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itPartisanCannon;" secondaryWeapon="true" omnidirectional="true"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"4.5"
+			rotationAccel=		"1.0"
+			/>
+
+		<Image imageID="&rsMediumShips2;" imageX="384" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"70"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
 	<Globals>
 		(block Nil
 			(setq intBuyItems (lambda (itemCount itemCost)

@@ -155,11 +155,7 @@
 					criteria=			"* +Info; -Alien; -NotStandard;"
 					levelFrequency=		"c----"
 					/>
-			<Table chance="60">
-				<Lookup chance="40" count="1" table="&trConsumables2;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem2;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem2;"/>
-			</Table>
+			<Lookup chance="60" table="&trStdTreasure;"/>
 		</Items>
 
 		<Encounters frequency="common">
@@ -217,12 +213,7 @@
 					criteria=			"* +Info; -Alien; -NotStandard;"
 					levelFrequency=		"cu---"
 					/>
-			<Table>
-				<Null chance="50"/>
-				<Lookup chance="20" count="1" table="&trConsumables3;"/>
-				<Lookup chance="20" count="1" table="&trMinorItem3;"/>
-				<Lookup chance="10" count="1" table="&trMajorItem3;"/>
-			</Table>
+			<Lookup chance="50" table="&trStdTreasure;"/>
 		</Items>
 
 		<Satellites overlapCheck="asteroids">
@@ -285,12 +276,7 @@
 					criteria=			"* +Info; -Alien; -NotStandard; "
 					levelFrequency=		"cu---"
 					/>
-			<Table>
-				<Null chance="75"/>
-				<Lookup chance="10" count="1" table="&trConsumables3;"/>
-				<Lookup chance="10" count="1" table="&trMinorItem3;"/>
-				<Lookup chance="5"  count="1" table="&trMajorItem3;"/>
-			</Table>
+			<Lookup chance="25" table="&trStdTreasure;"/>
 		</Items>
 
 		<Encounters frequency="common">
@@ -358,11 +344,7 @@
 					criteria=			"* +Info; -Alien; -NotStandard;"
 					levelFrequency=		"ucur-"
 					/>
-			<Table count="1d4">
-				<Lookup chance="40" count="1" table="&trConsumables4;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem4;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem4;"/>
-			</Table>
+			<Lookup count="1d3" table="&trStdTreasure;"/>
 		</Items>
 
 		<Encounters frequency="common">

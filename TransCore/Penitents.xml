@@ -48,13 +48,13 @@
 		<!-- Trade and Items -->
 		
 		<Items>
-			<Lookup					count="1d4"	table="&trStationSupplies;" />
-			<Table>
-				<Lookup chance="50"	count="1" table="&trHaloGems;"/>
-				<Lookup chance="20" count="1" table="&trConsumables6;"/>
-				<Lookup chance="20" count="1" table="&trMinorItem6;"/>
-				<Lookup chance="10" count="1" table="&trMajorItem6;"/>
-			</Table>
+			<Group value="4000">
+				<Table>
+					<Lookup	chance="20" count="1d4"	table="&trStationSupplies;" />
+					<Lookup chance="40"	count="1" table="&trHaloGems;"/>
+					<Lookup chance="40" count="1" table="&trStdTreasure;"/>
+				</Table>
+			</Group>
 		</Items>
 
 		<!-- Configuration -->

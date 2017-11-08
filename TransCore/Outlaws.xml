@@ -595,13 +595,11 @@
 
 			<Ship class="&scT31ArmedTransport;" count="1d2" orders="gateOnThreat">
 				<Items>
-					<Item chance="50"		count="8d20" item="&itSmartCannonShell;"/>
-					<Lookup					count="1d2+1" table="&trIllegalItems2;"/>
-					<Table>
-						<Lookup chance="40" count="1" table="&trConsumables4;"/>
-						<Lookup chance="40" count="1" table="&trMinorItem4;"/>
-						<Lookup chance="20" count="1" table="&trMajorItem4;"/>
-					</Table>
+					<Item chance="50"	count="6d20" item="&itSmartCannonShell;"/>
+					<Group value="2000">
+						<Lookup				count="1d2+1" table="&trIllegalItems2;"/>
+						<Lookup chance="50"	count="1"	table="&trStdTreasure;"/>
+					</Group>
 				</Items>
 			</Ship>
 		</Ships>

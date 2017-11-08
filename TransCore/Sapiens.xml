@@ -235,13 +235,11 @@
 		</Ships>
 
 		<Items>
-			<Item		chance="50"	count="1d4"	  item="&itFusionTrigger;"/>
-			<Item		chance="50"	count="1d6"	  item="&itRadioactiveWaste;"/>
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables4;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem4;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem4;"/>
-			</Table>
+			<Group value="1800">
+				<Item		chance="50"	count="1d4"	  item="&itFusionTrigger;"/>
+				<Item		chance="50"	count="1d6"	  item="&itRadioactiveWaste;"/>
+				<Lookup table="&trStdTreasure;"/>
+			</Group>
 		</Items>
 
 		<Encounters frequency="common">
@@ -290,14 +288,12 @@
 		</Ships>
 
 		<Items>
-			<Item chance="60"		count="2d8"	  item="&itXM300Missile;"/>
-			<Item chance="70"		count="4d8"	  item="&itFusionTrigger;"/>
-			<Item chance="60"		count="2d6"   item="&itRadioactiveWaste;"/>
-			<Table chance="50">
-				<Lookup chance="40" count="1" table="&trConsumables5;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
-			</Table>
+			<Group value="4000">
+				<Item chance="60"		count="2d8"	  item="&itXM300Missile;"/>
+				<Item chance="70"		count="4d8"	  item="&itFusionTrigger;"/>
+				<Item chance="60"		count="2d6"   item="&itRadioactiveWaste;"/>
+				<Lookup chance="50"						table="&trStdTreasure;"/>
+			</Group>
 		</Items>
 
 		<Encounters frequency="common">

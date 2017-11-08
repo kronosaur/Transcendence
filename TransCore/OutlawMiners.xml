@@ -311,12 +311,10 @@
 		<!-- Trade and Items -->
 		
 		<Items>
-			<Item count="2d6"	item="&itTitaniumOre;"/>
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables3;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem3;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem3;"/>
-			</Table>
+			<Group value="1100">
+				<Item count="2d6"	item="&itTitaniumOre;"/>
+				<Lookup chance="80"	table="&trStdTreasure;"/>
+			</Group>
 		</Items>
 
 		<!-- Ships and Defenses -->
@@ -429,12 +427,10 @@
 		<!-- Trade and Items -->
 		
 		<Items>
-			<Item count="2d6"	item="&itPalladiumOre;"/>
-			<Table chance="50">
-				<Lookup chance="40" count="1" table="&trConsumables4;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem4;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem4;"/>
-			</Table>
+			<Group value="1300">
+				<Item count="2d6"	item="&itPalladiumOre;"/>
+				<Lookup chance="50"	table="&trStdTreasure;"/>
+			</Group>
 		</Items>
 
 		<!-- Ships and Defenses -->
@@ -544,12 +540,10 @@
 		<!-- Trade and Items -->
 		
 		<Items>
-			<Item count="2d6"	item="&itCeralloyOre;"/>
-			<Table chance="25">
-				<Lookup chance="40" count="1" table="&trConsumables5;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
-			</Table>
+			<Group value="1800">
+				<Item count="2d6"	item="&itCeralloyOre;"/>
+				<Lookup chance="25"	table="&trStdTreasure;"/>
+			</Group>
 		</Items>
 
 		<!-- Ships and Defenses -->
@@ -656,12 +650,10 @@
 		<!-- Trade and Items -->
 		
 		<Items>
-			<Item count="3d8"	item="&itDuralloyOre;"/>
-			<Table chance="25">
-				<Lookup chance="40" count="1" table="&trConsumables5;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
-			</Table>
+			<Group value="4000">
+				<Item count="3d8"	item="&itDuralloyOre;"/>
+				<Lookup chance="25"	table="&trStdTreasure;"/>
+			</Group>
 		</Items>
 		
 		<!-- Satellites -->
@@ -784,12 +776,10 @@
 		<!-- Trade and Items -->
 		
 		<Items>
-			<Item count="2d6"	item="&itPteracniumOre;"/>
-			<Table chance="50">
-				<Lookup chance="40" count="1" table="&trConsumables6;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem6;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem6;"/>
-			</Table>
+			<Group value="7600">
+				<Item count="2d6"	item="&itPteracniumOre;"/>
+				<Lookup chance="50"	table="&trStdTreasure;"/>
+			</Group>
 		</Items>
 			
 		<!-- Satellites -->

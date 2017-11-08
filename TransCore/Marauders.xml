@@ -430,11 +430,9 @@
 
 		<Items>
 			<Lookup count="1d3" table="&trStationSupplies;"/>
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables7;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem7;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem7;"/>
-			</Table>
+			<Group value="10000">
+				<Lookup table="&trStdTreasure;"/>
+			</Group>
 		</Items>
 
 		<Reinforcements minShips="6">
