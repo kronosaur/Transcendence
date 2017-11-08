@@ -2490,7 +2490,7 @@
 	<!-- Rowena's Weapons and Armor: Vol 1 -->
 
 	<ItemType UNID="&itRowenaVol1;"
-			obsolete=			"39"
+			obsolete=			"1"
 			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume I"
 			level=				"1"
 			value=				"50"
@@ -2525,7 +2525,7 @@
 	<!-- Rowena's Weapons and Armor: Vol 2 -->
 
 	<ItemType UNID="&itRowenaVol2;"
-			obsolete=			"39"
+			obsolete=			"1"
 			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume II"
 			level=				"4"
 			value=				"500"
@@ -2560,7 +2560,7 @@
 	<!-- Rowena's Weapons and Armor: Vol 3 -->
 
 	<ItemType UNID="&itRowenaVol3;"
-			obsolete=			"39"
+			obsolete=			"1"
 			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume III"
 			level=				"8"
 			value=				"2500"
@@ -2595,7 +2595,7 @@
 	<!-- Rowena's Weapons and Armor: Vol 4 -->
 
 	<ItemType UNID="&itRowenaVol4;"
-			obsolete=			"39"
+			obsolete=			"1"
 			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume IV"
 			level=				"12"
 			value=				"10000"
@@ -2631,7 +2631,7 @@
 	<!-- Rowena's Weapons and Armor: Vol 5 -->
 
 	<ItemType UNID="&itRowenaVol5;"
-			obsolete=			"39"
+			obsolete=			"1"
 			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume V"
 			level=				"16"
 			value=				"30000"
