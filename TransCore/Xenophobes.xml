@@ -1,0 +1,725 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- Bennin Xenophobes ==================================================== -->
+
+	<Sovereign UNID="&svXenophobes;"
+			name=":the Bennin Conclave"
+			shortName=": Xenophobes"
+			adjective="Xenophobe"
+			demonym=":a Xenophobe disciple(s)"
+			plural="true"
+
+			alignment="destructive chaos"
+			/>
+	
+	<!-- Segment of light meteorsteel -->
+
+	<ItemType UNID="&itLightMeteorsteel;"
+			name=				"[segment(s) of ]light meteorsteel"
+			attributes=			"benninXenophobes, minorItem, notStandard, specialty"
+			  
+			level=				"4"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			value=				"600"
+			mass=				"2500"
+			  
+			description=		"A rare alloy invented by the Bennin Xenophobes, meteorsteel interferes with most shield generators."
+			>
+
+		<Image imageID="&rsItems4;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"100"
+				hpBonus=	" +50, +50,+100,+100"
+
+				repairTech=	"5"
+
+				shieldInterference=	"true"
+				blindingDamageAdj=	"0"
+				radiationImmune=	"true"
+				deviceDamageAdj=	"50"
+				EMPDamageAdj=		"50"
+				/>
+
+	</ItemType>
+
+	<!-- Segment of heavy meteorsteel -->
+
+	<ItemType UNID="&itHeavyMeteorsteel;"
+			name=				"[segment(s) of ]heavy meteorsteel"
+			attributes=			"benninXenophobes, minorItem, notStandard, specialty"
+			  
+			level=				"5"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			value=				"1300"
+			mass=				"5000"
+			  
+			description=		"A rare alloy invented by the Bennin Xenophobes, meteorsteel interferes with most shield generators."
+			>
+
+		<Image imageID="&rsItems4;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"150"
+				hpBonus=	" ***, ***,+200,+200"
+
+				shieldInterference=	"true"
+				blindingDamageAdj=	"0"
+				radiationImmune=	"true"
+				EMPDamageAdj=		"0"
+				deviceDamageAdj=	"0"
+				/>
+
+	</ItemType>
+
+	<!-- Worldship Armor Plate -->
+
+	<ItemType UNID="&itWorldshipArmorPlate;"
+			name=				"worldship armor plate"
+			attributes=			"benninXenophobes, military, minorItem, notForSale, notStandard"
+			  
+			level=				"8"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			value=				"8000"
+			mass=				"15000"
+			  
+			description=		"Like other meteorsteel armors, this plate interferes with shield generators."
+			>
+
+		<Image imageID="&rsItems4;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"250"
+				hpBonus=	" ***, ***, ***, ***,+400,+400,+100,+100"
+
+				shieldInterference=	"true"
+				blindingDamageAdj=	"0"
+				radiationImmune=	"true"
+				deviceDamageAdj=	"0"
+				EMPDamageAdj=		"0"
+				/>
+
+	</ItemType>
+
+	<!-- Xenophobe Fighter -->
+
+	<ShipClass UNID="&scXenophobeFighter;"
+			manufacturer=		"Xenophobe"
+			class=				""
+			type=				"fighter"
+			defaultSovereign=	"&svXenophobes;"
+
+			attributes=			"benninXenophobes, genericClass"
+			   
+			mass=				"40"
+			thrustRatio=		"14"
+			maxSpeed=			"25"
+			cargoSpace=			"0"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightMeteorsteel;"
+			count=				"1"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itLancerCannon;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"2.0"
+			/>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsXenophobeFighterHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="10"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Xenophobe Defender -->
+
+	<ShipClass UNID="&scXenophobeDefender;"
+			manufacturer=		"Xenophobe"
+			class=				""
+			type=				"defender"
+			defaultSovereign=	"&svXenophobes;"
+
+			attributes=			"benninXenophobes, capitalShip, genericClass"
+
+			size=				"165"
+			mass=				"15000"
+			cargoSpace=			"500"
+			thrustRatio=		"1"
+			maxSpeed=			"12"
+
+			cyberDefenseLevel=	"5"
+
+			explosionType=		"&vtBlastExplosion4;"
+
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itHeavyMeteorsteel;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itMarkIIIHowitzer;" omnidirectional="true" posAngle="180" posRadius="6" posZ="7"/>
+			<Device deviceID="&itLancerCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="180" posAngle="130" posRadius="36" posZ="7"/>
+			<Device deviceID="&itLancerCannon;" secondaryWeapon="true" minFireArc="180" maxFireArc="20" posAngle="230" posRadius="36" posZ="7"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"4"
+			rotationAccel=		"0.5"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"120"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"80"
+
+					posX=		"-40"
+					posY=		"0"
+					sizeX=		"36"
+					sizeY=		"36"
+					/>
+		</Interior>
+
+		<Items>
+			<Item				count="1d12"	item="&itHeliumAssembly;"/>
+			<Table>
+				<Lookup	chance="40"	count="1d4"		table="&trConsumables7;"/>
+				<Lookup	chance="40"	count="1"		table="&trMinorItem7;"/>
+				<Lookup	chance="20"	count="1"		table="&trMajorItem6;"/>
+			</Table>
+		</Items>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsXenophobeDefender;" imageWidth="180" imageHeight="180"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="168"	posRadius="75"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="74"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-168"	posRadius="75"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"40"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Xenophobe Worldship -->
+
+	<ShipClass UNID="&scXenophobeWorldship;"
+			manufacturer=		"Xenophobe"
+			class=				""
+			type=				"worldship"
+			defaultSovereign=	"&svXenophobes;"
+
+			attributes=			"benninXenophobes, capitalShip, genericClass, majorShip"
+			   
+			size=				"300"
+			mass=				"70000"
+			cargoSpace=			"25000"
+			thrustRatio=		"0.5"
+			maxSpeed=			"6"
+
+			cyberDefenseLevel=	"8"
+
+			explosionType=		"&vtThermoExplosion3;"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itWorldshipArmorPlate;"
+			count=				"16"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itMarkVHowitzer;" omnidirectional="true" posAngle="0" posRadius="24" posZ="0"/>
+
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true" minFireArc="345" maxFireArc="165" posAngle="30" posRadius="75" posZ="0"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true" minFireArc="345" maxFireArc="135" posAngle="15" posRadius="84" posZ="0"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true" minFireArc="225" maxFireArc="15"  posAngle="345" posRadius="84" posZ="0"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true" minFireArc="195" maxFireArc="15"  posAngle="330" posRadius="75" posZ="0"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true" minFireArc="180" maxFireArc="285" posAngle="220" posRadius="52" posZ="0"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true" minFireArc="75"  maxFireArc="180" posAngle="140" posRadius="52" posZ="0"/>
+
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
+			<Device deviceID="&it500MWReactor;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"2"
+			rotationAccel=		"0.25"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"320"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"80"
+
+					posX=		"-96"
+					posY=		"0"
+					sizeX=		"50"
+					sizeY=		"66"
+					/>
+		</Interior>
+
+		<Items>
+			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
+			<Table>
+				<Lookup chance="40"	count="1d6"		table="&trConsumables8;"/>
+				<Lookup	chance="30"	count="1d2"		table="&trMinorItem8;"/>
+				<Lookup	chance="30"	count="1"		table="&trMajorItem8;"/>
+			</Table>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsXenophobeWorldship;" imageX="0" imageY="0" imageWidth="250" imageHeight="250"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="175"	posRadius="99"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="-175"	posRadius="99"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="168"	posRadius="93"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-168"	posRadius="93"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="175"	posRadius="99"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"	bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="-175"	posRadius="99"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"	bringToFront="*"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"40"
+			fireAccuracy=		"90"
+			perception=			"6"
+			combatStyle=		"standOff"
+			/>
+
+	</ShipClass>
+
+	<!-- Xenophobe Ark
+
+	behavior:			Current behavior
+							Nil						= not yet set up
+							'cruising				= We are just cruising
+
+	escort{n}:			Obj pointer to capital ship escort
+
+	escortCount:		Number of escorts
+
+	target:				Current target
+
+	tick:				Incremented on behavior
+
+	-->
+
+	<ShipClass UNID="&scXenophobeArk;"
+			manufacturer=		"Xenophobe"
+			class=				""
+			type=				"ark"
+			defaultSovereign=	"&svXenophobes;"
+
+			attributes=			"benninXenophobes, capitalShip, genericClass, majorShip"
+			
+			size=				"200"
+			mass=				"150000"
+			thrustRatio=		"0.5"
+			maxSpeed=			"6"
+			cargoSpace=			"50000"
+
+			cyberDefenseLevel=	"8"
+
+			explosionType=		"&vtThermoExplosion4;"
+			>
+
+		<Names definiteArticle="true">Ark of Bennin; Ark of Certitude; Ark of Justice &amp; Retribution; Ark of Purity;
+			Ark of the Seven Paths; Ark of Zoahatra;
+		</Names>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itWorldshipArmorPlate;"
+			count=				"20"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itFusionfireHowitzer;" secondaryWeapon="true"	minFireArc="280" maxFireArc="80"  posAngle="0"   posRadius="90" posZ="0"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true"		minFireArc="280" maxFireArc="80"  posAngle="15"  posRadius="90" posZ="0"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true"		minFireArc="280" maxFireArc="80"  posAngle="345" posRadius="90" posZ="0"/>
+
+			<Device deviceID="&itFusionfireHowitzer;" secondaryWeapon="true"	minFireArc="10"  maxFireArc="170" posAngle="90"  posRadius="90" posZ="0"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true"		minFireArc="10"  maxFireArc="170" posAngle="105" posRadius="90" posZ="0"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true"		minFireArc="10"  maxFireArc="170" posAngle="75"  posRadius="90"/>
+
+			<Device deviceID="&itFusionfireHowitzer;" secondaryWeapon="true"	minFireArc="100" maxFireArc="260" posAngle="180" posRadius="90" posZ="0"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true"		minFireArc="100" maxFireArc="260" posAngle="165" posRadius="90" posZ="0"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true"		minFireArc="100" maxFireArc="260" posAngle="195" posRadius="90" posZ="0"/>
+
+			<Device deviceID="&itFusionfireHowitzer;" secondaryWeapon="true"	minFireArc="190" maxFireArc="350" posAngle="270" posRadius="90" posZ="0"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true"		minFireArc="190" maxFireArc="350" posAngle="285" posRadius="90" posZ="0"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true"		minFireArc="190" maxFireArc="350" posAngle="255" posRadius="90" posZ="0"/>
+
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
+			<Device deviceID="&it1GWReactor;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"2"
+			rotationAccel=		"0.25"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"450"
+					/>
+		</Interior>
+
+		<Items>
+			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
+			<Table>
+				<Lookup chance="40"	count="1d6"		table="&trConsumables9;"/>
+				<Lookup	chance="30"	count="1d2"		table="&trMinorItem9;"/>
+				<Lookup	chance="30"	count="1"		table="&trMajorItem9;"/>
+			</Table>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsXenophobeArk;" imageWidth="256" imageHeight="256"/>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"48"
+			fireAccuracy=		"90"
+			perception=			"6"
+			combatStyle=		"standOff"
+			/>
+
+		<!-- AI and Behavior -->
+
+		<Events>
+			<OnBehavior>
+				(block ((behavior (objGetData gSource "behavior")))
+					(switch
+						(not behavior)
+							(block (i)
+								; Find all of our Defender escorts
+								(setq i 0)
+								(enum (sysFindObject gSource "sA O:escort; +capitalShip;") theEscort
+									(block ()
+										(setq i (add i 1))
+										(objSetObjRefData gSource (cat "escort" i) theEscort)
+										)
+									)
+								(objSetData gSource "escortCount" i)
+								(objSetData gSource "behavior" 'cruising)
+								)
+
+						(eq behavior 'cruising)
+							(block ()
+								; Look for threats
+								(if (eq (modulo (objGetData gSource "tick") 10) 7)
+									(block (threatList)
+										(setq threatList (filter (sysFindObject gSource "sAEN:400") theTarget
+											(or (gr (objGetCombatPower theTarget) 30) (eq theTarget gPlayerShip))
+											))
+
+										(if threatList
+											(block ()
+												(setq aTargetObj (random threatList))
+												(objFireEvent gSource "OrderDeter")
+												)
+											)
+										)
+									)
+								)
+
+						(eq behavior 'deterring)
+							(block ()
+								)
+						)
+
+					(objIncData gSource "tick")
+					)
+			</OnBehavior>
+
+			<OnCreate>
+				(block ()
+					; Set a timer so that we can do some custom behavior
+					(sysAddObjRecurringTimerEvent 10 gSource "OnBehavior")
+					(objSetData gSource "tick" 0)
+					)
+			</OnCreate>
+
+			<OnObjDestroyed>
+				(block (
+					(behavior (objGetData gSource "behavior"))
+					(target (objGetObjRefData gSource "target"))
+					)
+					(switch
+						(and (eq behavior 'deterring) (eq target aObjDestroyed))
+							(objSetData gSource "behavior" 'cruising)
+						)
+					)
+			</OnObjDestroyed>
+
+			<OrderDeter>
+				(block ()
+					; Send some of the escorts to attack the threat
+					(for i 1 (objGetData gSource "escortCount")
+						(block (theEscort)
+							(setq theEscort (objGetObjRefData gSource (cat "escort" i)))
+							(if (leq (objGetDestiny theEscort) 180)
+								(objCommunicate theEscort gSource 1 aTargetObj)
+								)
+							)
+						)
+
+					; Remember state
+					(objSetObjRefData gSource "target" aTargetObj)
+					(objRegisterForEvents gSource aTargetObj)
+					(objSetData gSource "behavior" 'deterring)
+					)
+			</OrderDeter>
+		</Events>
+
+	</ShipClass>
+
+	<!-- Xenophobe Fleet Encounter -->
+
+	<StationType UNID="&stXenophobeFleet;"
+			name=				"(Xenophobe fleet)"
+			scale=				"world"
+			sovereign=			"&svIndependent;"
+			controllingSovereign="&svXenophobes;"
+
+			ejectaType=			"&vtStoneAsteroidEjecta;"
+
+			attributes=			"asteroid,enemy,envFire,envAvoidsWater"
+			levelFrequency=		"----v cuv-- ----- ----- -----"
+			locationCriteria=	"*"
+			>
+
+		<ImageVariants>
+			<Image imageID="&rsWorlds1;" imageX="128" imageY="0"   imageWidth="64" imageHeight="64"/>
+			<Image imageID="&rsWorlds1;" imageX="128" imageY="64"  imageWidth="64" imageHeight="64"/>
+			<Image imageID="&rsWorlds1;" imageX="128" imageY="128" imageWidth="64" imageHeight="64"/>
+			<Image imageID="&rsWorlds1;" imageX="128" imageY="192" imageWidth="64" imageHeight="64"/>
+			<Image imageID="&rsWorlds1;" imageX="128" imageY="256" imageWidth="64" imageHeight="64"/>
+
+			<Image imageID="&rsWorlds1;" imageX="128" imageY="320" imageWidth="64" imageHeight="64"/>
+			<Image imageID="&rsWorlds1;" imageX="128" imageY="384" imageWidth="64" imageHeight="64"/>
+			<Image imageID="&rsWorlds1;" imageX="128" imageY="448" imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+
+		<Ships>
+			<Ship	count="1"	class="&scXenophobeDefender;" orders="wander" sovereign="&svXenophobes;" >
+				<Escorts>
+					<Ship		count="1d4+1"	class="&scXenophobeFighter;"	orders="escort"/>
+				</Escorts>
+			</Ship>
+		</Ships>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 100)
+			</OnMining>
+		</Events>
+
+	</StationType>
+
+	<!-- Xenophobe Worldship Encounter -->
+
+	<StationType UNID="&stXenophobeWorldship;"
+			name=				"(Xenophobe worldship)"
+			sovereign=			"&svCommonwealth;"
+			controllingSovereign="&svXenophobes;"
+			abandonedScreen=	"&dsRPGAbandonedStation;"
+
+			multiHull=			"true"
+			armorID=			"&itPlasteelPlate;"
+			maxHitPoints=		"100"
+			hitPoints=			"0"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envFire, envAvoidsWater, human, populated"
+			levelFrequency=		"----- -vuv- ----- ----- -----"
+			locationCriteria=	"*"
+			>
+
+		<Names noArticle="true">Agricola Station; Britannia Station; Canterbury Station;
+				Devonshire Colony; Enterprise Station; Farsend Station;
+				Grenoble Colony; Hellas Station; Independence Station;
+				Janus Colony; Koran Station; Lexington Colony; Massachusetts Colony;
+				Nakura Colony; Ontario Station; Paduan Station; Qatar Station;
+				Ryad Colony; Santiago Station; Tango Colony; Umber Station;
+				Victory Colony; Winchell Station; %s Colony; %s Alpha Station;
+				%s Beta Station; %s Gamma Station; %s Epsilon Station;
+				Anacreon Colony %1%0%0%0; Anacreon Colony %1%0%0; Anacreon Colony %1%0%0;
+				Anacreon Colony %1%0%0; Anacreon Colony %1%0%0
+		</Names>
+
+		<Image imageID="&rsCommonwealthSettlement;" imageWidth="320" imageHeight="290" viewportRatio="0.05"/>
+
+		<DockingPorts
+				portCount=		"10"
+				portRadius=		"175"
+				>
+		</DockingPorts>
+		
+		<Ships>
+			<Ship	count="1"	class="&scXenophobeWorldship;" orders="wander" sovereign="&svXenophobes;" >
+				<Escorts>
+					<Ship		count="1d3+1"	class="&scXenophobeDefender;"	orders="escort">
+						<Escorts>
+							<Ship		count="1d4+1"	class="&scXenophobeFighter;"	orders="escort"/>
+						</Escorts>
+					</Ship>
+				</Escorts>
+			</Ship>
+		</Ships>
+
+		<Language>
+			<Text id="core.abandonedStationDesc">
+
+				You are docked at the lifeless ruins of a destroyed station. 
+				A group of refugees, huddling in the cavernous bay, tell you 
+				that the station was destroyed by Xenophobes.
+
+			</Text>
+		</Language>
+	</StationType>
+
+	<!-- LEVEL VII ITEMS -->
+
+	<!-- Xenophobe lancer -->
+
+	<ItemType UNID="&itXenophobeLancer;"
+			name=				"Xenophobe ion lancer"
+			level=				"7"
+			value=				"55000"
+			mass=				"4500"
+			frequency=			"rare"
+			attributes=			"EnergyWeapon; Military; MajorItem; NotForSale; NotStandard"
+
+			description=		"The Xenophobes developed this powerful ion weapon for their Worldships."
+			>
+
+		<Image imageID="&rsItems7;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"beam"
+
+				repeating=			"4"
+				damage=				"ion:1d8"
+				fireRate=			"16"
+				lifetime=			"60"
+				powerUse=			"650"
+
+				sound=				"&snLaserCannon;"
+				>
+
+			<Effect>
+				<Ray
+						style=			"jagged"
+						shape=			"straight"
+						length=			"72"
+						
+						primaryColor=	"#00d5ff"
+						secondaryColor=	"#006b80"
+						>
+					<Events>
+						<GetParameters>
+							(block (
+								(damageHP (@ gData 'damageHP))
+								)
+								{
+									width: (mathScale damageHP 10 140 20 40 50)
+									intensity: 80
+									}
+								)
+						</GetParameters>
+					</Events>
+				</Ray>
+			
+				<ParticlePattern
+						style=			"comet"
+						particleCount=	"200"
+						primaryColor=	"#00d5ff"
+						jitterLength=	"80-150"
+						>
+					<Events>
+						<GetParameters>
+							(block (
+								(damageHP (@ gData 'damageHP))
+								)
+
+								{
+									particleCount: (mathScale damageHP 10 140 100 300 50)
+									length: 72 ;(mathScale damageHP 10 140 60 220 50)
+									width: 9
+									}
+								)
+						</GetParameters>
+					</Events>
+				</ParticlePattern>
+			</Effect>
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Resources -->
+
+	<Image UNID="&rsXenophobeArk;"				bitmap="Resources\XenophobeArk.jpg"				bitmask="Resources\XenophobeArkMask.bmp"  		loadOnUse="true"/>
+	<Image UNID="&rsXenophobeDefender;"			bitmap="Resources\XenophobeDefender.jpg"		bitmask="Resources\XenophobeDefenderMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsXenophobeWorldship;"		bitmap="Resources\XenophobeWorldship.jpg"		bitmask="Resources\XenophobeWorldshipMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsXenophobeFighterHD;"		bitmap="Resources\XenophobeFighterHD.jpg"		bitmask="Resources\XenophobeFighterHDMask.bmp"  loadOnUse="true"/>
+
+</TranscendenceModule>

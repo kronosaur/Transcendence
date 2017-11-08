@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- Himal Separatists ==================================================== -->
+
+	<Sovereign UNID="&svHimalSeparatists;"
+			name=":the Himal coalition"
+			shortName=":the Himal"
+			adjective="Himal"
+			demonym=":a Himalian(s)"
+			plural="true"
+
+			alignment="destructive order"
+			/>
+
+	<!-- Himal Interceptor -->
+
+	<ShipClass UNID="&scHimalInterceptor;"
+			manufacturer=		"Himal"
+			class=				""
+			type=				"interceptor"
+			defaultSovereign=	"&svHimalSeparatists;"
+
+			mass=				"20"
+			cargoSpace=			"5"
+			thrustRatio=		"11"
+			maxSpeed=			"30"
+
+			attributes=			"genericClass,himalSettlers"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itUltraLightTitaniumCasing;"/>
+			<ArmorSection start="90"  span="180" armorID="&itUltraLightTitaniumCasing;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itBlaster;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"2.0"
+			/>
+
+		<Image imageID="&rsHimalInterceptorHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" rotationOffset="5" />
+
+		<AISettings
+			fireRateAdj=		"40"
+			fireRangeAdj=		"40"
+			fireAccuracy=		"75"
+			perception=			"4"
+			
+			combatStyle=		"flyby"
+			/>
+		
+		<Effects>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="16"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="16"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+	</ShipClass>
+
+	<!-- Himal Refuge -->
+
+	<StationType UNID="&stHimalRefuge;"
+			name=				"Himal refuge"
+			sovereign=			"&svHimalSeparatists;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itLightPlasteelPlate;"
+			hitPoints=			"40"
+			fireRateAdj=		"30"
+			explosionType=		"&vtKineticExplosion2;"
+			ejectaType=			"&vtIceAsteroidEjecta;"
+
+			attributes=			"asteroidBase, enemy, envAir, envAvoidsFire, generic, human, populated"
+			levelFrequency=		"curv- ----- ----- ----- -----"
+			locationCriteria=	"+outerSystem, -planetary"
+			>
+
+		<Image			imageID="&rsStations1;" imageX="384" imageY="256" imageWidth="96" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itBlaster;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Ship			count="1d3"	class="&scHimalInterceptor;"	orders="patrol" patrolDist="15"/>
+		</Ships>
+
+		<Items>
+			<Table count="1d6">
+				<Item   chance="20"	count="1d6"		item="&itHelium3FuelRod;" />
+				<Item   chance="20"	count="1d12"	item="&itWaterIce;" />
+				<Item   chance="20"	count="1d4"		item="&itMartianNori;" />
+				<Lookup chance="15" count="1"		table="&trConsumables1;"/>
+				<Lookup chance="15" count="1"		table="&trMinorItem1;"/>
+				<Lookup chance="10"	count="1"		table="&trMajorItem1;"/>
+			</Table>
+		</Items>
+
+		<Encounters frequency="common">
+			<LevelTable>
+				<Ship levelFrequency="ccccc ccccc" count="1"	class="&scHimalInterceptor;" eventHandler="&evStdZoneEncounterBehavior;">
+					<Escorts>
+						<Ship					   count="1d2"	class="&scHimalInterceptor;" orders="escort"/>
+					</Escorts>
+				</Ship>
+			</LevelTable>
+		</Encounters>
+
+	</StationType>
+
+	<!-- Resources -->
+
+	<Image UNID="&rsHimalInterceptorHD;"		bitmap="Resources\HimalInterceptorHD.jpg"		bitmask="Resources\HimalInterceptorHDMask.bmp"  loadOnUse="true"/>
+
+</TranscendenceModule>

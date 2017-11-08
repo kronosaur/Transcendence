@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- Salvagers ============================================================ -->
+
+	<Sovereign UNID="&svSalvagers;"
+			name=":the Salvagers"
+			shortName=": Salvagers"
+			adjective="Salvager"
+			demonym=":a Salvager(s)"
+			plural="true"
+
+			alignment="neutral"
+			/>
+
+	<!-- Salvager Nomad -->
+
+	<ShipClass UNID="&scSalvagerNomad;"
+			manufacturer=		"Salvager"
+			class=				""
+			type=				"Nomad"
+			defaultSovereign=	"&svSalvagers;"
+
+			attributes=			"capitalShip, genericClass, salvagers"
+			   
+			size=				"100"
+			mass=				"16000"
+			reactorPower=		"5000"
+			thrustRatio=		"0.5"
+			maxSpeed=			"6"
+			maxDevices=			"8"
+			cargoSpace=			"500"
+			cyberDefenseLevel=	"4"
+
+			explosionType=		"&vtKineticExplosion3;"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itReinforcedTitanium2;"
+			count=				"16"
+			/>
+		
+		<Devices>
+			<DeviceSlot criteria="w" secondaryWeapon="true" omnidirectional="true"/>
+			
+			<Device deviceID="&itTurbolaserCannon;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"1"
+			rotationAccel=		"0.1"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"40"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"25"
+
+					posX=		"-15"
+					posY=		"39"
+					sizeX=		"54"
+					sizeY=		"30"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"25"
+
+					posX=		"-15"
+					posY=		"-39"
+					sizeX=		"54"
+					sizeY=		"30"
+					/>
+		</Interior>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsSalvagerNomad;" imageWidth="184" imageHeight="184"	viewportSize="230"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="140"	posRadius="70"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="134"	posRadius="76"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-140"	posRadius="70"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-134"	posRadius="76"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			
+			<Effect type="thrustMain"		posAngle="140"	posRadius="70"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="134"	posRadius="76"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-140"	posRadius="70"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-134"	posRadius="76"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			
+			<Effect type="thrustMain"		posAngle="132"	posRadius="66"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="128"	posRadius="74"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-132"	posRadius="66"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-128"	posRadius="74"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			
+			<Effect type="thrustMain"		posAngle="132"	posRadius="66"	posZ="20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="128"	posRadius="74"	posZ="20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-132"	posRadius="66"	posZ="20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-128"	posRadius="74"	posZ="20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Salvager Encounter -->
+
+	<StationType UNID="&stSalvagerEncounter;"
+			name=				"(salvager encounter)"
+			sovereign=			"&svUnknownEnemy;"
+			dockScreen=			"&dsAbandonedShip;"
+
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"debris, friendly, shipwreck"
+			levelFrequency=		"ruurv ----- ----- ----- -----"
+			locationCriteria=	"--planetary"
+			>
+		<Image shipwreckID="&scBorer;, &scEarthzone;, &scRoninA;"/>
+
+		<Ships>
+			<Ship	count="1"	class="&scSalvagerNomad;" orders="scavenge"		sovereign="&svSalvagers;"/>
+		</Ships>
+
+		<Items>
+			<Table>
+				<Null	chance="20"/>
+				<Lookup chance="30" count="1d3" table="&trConsumables1;"/>
+				<Lookup chance="15" count="1"	table="&trConsumables2;"/>
+				<Lookup chance="25" count="1"	table="&trMinorItem1;"/>
+				<Lookup chance="10" count="1"	table="&trMajorItem1;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+	<!-- Resources -->
+
+	<Image UNID="&rsSalvagerNomad;"				bitmap="Resources\SalvagerNomad.jpg"		bitmask="Resources\SalvagerNomadMask.bmp"  loadOnUse="true"/>
+	
+</TranscendenceModule>

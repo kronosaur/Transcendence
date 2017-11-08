@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- Abbasid Survivalists ================================================= -->
+
+	<Sovereign UNID="&svAbbasid;"
+			name=":the Abbasid Caliphate"
+			shortName=":the Abbasid"
+			adjective="Abbasid"
+			demonym=":an Abbasid survivalist(s)"
+			plural="true"
+
+			alignment="destructive order"
+			/>
+
+	<!-- Abbasid Thanogram -->
+
+	<ItemType UNID="&itAbbasidThanogram;"
+			name=				"Abbasid thanogram"
+			level=				"3"
+			value=				"500"
+			mass=				"5"
+			frequency=			"veryrare"
+			attributes=			"Consumable; Info; Soul; NotForSale"
+
+			description=		"This is a neural network initialized from the cerebral patterns of one or more Scholars of Abbasid. The legal, ethical, and moral knowledge of the Abbasid is contained and interpreted by these constructs."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
+
+	</ItemType>
+
+	<!-- Abbasid Outpost -->
+
+	<StationType UNID="&stAbbasidOutpost;"
+			name=				"Abbasid outpost"
+			sovereign=			"&svAbbasid;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itLightTitaniumArmor;"
+			hitPoints=			"90"
+			regen=				"1"
+			fireRateAdj=		"40"
+			explosionType=		"&vtBlastExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated"
+			levelFrequency=		"ccur- ----- ----- ----- -----"
+			locationCriteria=	"+outerSystem, -planetary"
+			enemyExclusionRadius="100"
+			>
+
+		<Image			imageID="&rsStations1;" imageX="256" imageY="512" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itLaserArray;"	omnidirectional="true"/>
+		</Devices>
+
+		<Items>
+			<Item chance="10"	count="1"		item="&itAbbasidThanogram;" />
+
+			<Item chance="60"	count="1d12"	item="&itHelium3FuelRod;" />
+			<Item chance="20"	count="1d12"	item="&itWaterIce;" />
+			<Item chance="30"	count="1d12"	item="&itFrozenSupplies;" />
+			<Table chance="30">
+				<Lookup chance="20" count="1" table="&trConsumables2;"/>
+				<Lookup chance="20" count="1" table="&trMinorItem2;"/>
+				<Lookup chance="10" count="1" table="&trMajorItem2;"/>
+				<Item   chance="50" count="1" item="&itLaserArray;" />
+			</Table>
+		</Items>
+
+		<Satellites>
+			<Orbitals count="1d4" distance="2d8+6" angle="random">
+				<Station type="&stShipwreck1;"/>
+			</Orbitals>
+		</Satellites>
+	</StationType>
+
+</TranscendenceModule>

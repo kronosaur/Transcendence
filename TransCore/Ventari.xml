@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- Ventari Settlers ===================================================== -->
+
+	<Sovereign UNID="&svVentariSettlers;"
+			name=": Ventari coalition"
+			shortName=":the Ventari"
+			adjective="Ventari"
+			demonym=":a Ventarian(s)"
+			plural="true"
+
+			alignment="destructive order"
+			/>
+
+	<!-- Ventari Destroyer -->
+
+	<ShipClass UNID="&scVentariDestroyer;"
+			manufacturer=		"Ventari"
+			class=				""
+			type=				"destroyer"
+			defaultSovereign=	"&svVentariSettlers;"
+
+			attributes=			"capitalShip, genericClass, ventari"
+
+			size=				"120"
+			mass=				"17000"
+			thrustRatio=		"1.0"
+			maxSpeed=			"13"
+			cargoSpace=			"1000"
+
+			explosionType=		"&vtThermoExplosion2;"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itOrthoSteel;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itIonDisruptor;" omnidirectional="true"									 posAngle="180" posRadius="10"  posZ="60"/>
+			<Device deviceID="&itTeV9Blaster;"	secondaryWeapon="true" minFireArc="350" maxFireArc="190" posAngle="110" posRadius="60" posZ="5"/>
+			<Device deviceID="&itTeV9Blaster;"	secondaryWeapon="true" minFireArc="170" maxFireArc="10"  posAngle="250" posRadius="60" posZ="5"/>
+			<Device deviceID="&itYoroiS500;"/>
+			<Device deviceID="&it250MWReactor;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"3.0"
+			rotationAccel=		"0.5"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"300"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"100"
+
+					posX=		"-31"
+					posY=		"0"
+					sizeX=		"20"
+					sizeY=		"46"
+					/>
+		</Interior>
+
+		<Items>
+			<Item				count="2d12"	item="&itPteracniumFuelRod;"/>
+			<Item chance="20"	count="1d4"		item="&itIonResistCoating;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsVentariDestroyer;" imageWidth="150" imageHeight="150"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="165"	posRadius="61"	posZ="-20"	rotation="180"	sendToBack="*"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="59"	posZ="-20"	rotation="180"	sendToBack="*"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-165"	posRadius="61"	posZ="-20"	rotation="180"	sendToBack="*"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"6"
+			
+			combatStyle=		"standoff"
+			/>
+
+	</ShipClass>
+
+	<!-- Ventari Colony -->
+
+	<StationType UNID="&stVentariColony;"
+			name=				"Ventari colony|Ventari colonies"
+			sovereign=			"&svVentariSettlers;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itOrthoSteel;"
+			hitPoints=			"740"
+            regen=              "15"
+			fireRateAdj=		"40"
+			explosionType=		"&vtThermoExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, majorStation, populated"
+			levelFrequency=		"----- ucur- ----- ----- -----"
+			locationCriteria=	"+outerSystem, -planetary"
+			enemyExclusionRadius="100"
+			>
+
+		<Image			imageID="&rsStations7;" imageX="0" imageY="448" imageWidth="192" imageHeight="192"/>
+
+		<Devices>
+			<Device deviceID="&itIonCannon;"	omnidirectional="true" posAngle="60"  posRadius="85"/>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="155" posRadius="90"/>
+			<Device deviceID="&itIonCannon;"	omnidirectional="true" posAngle="240" posRadius="100"/>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="330" posRadius="110"/>
+		</Devices>
+
+		<Items>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables8;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem8;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem8;"/>
+			</Table>
+		</Items>
+
+		<Ships>
+			<Ship					count="1d2"	class="&scVentariDestroyer;"	orders="patrol" patrolDist="40"/>
+		</Ships>
+
+		<Reinforcements minShips="1">
+			<Ship					count="1d2"	class="&scVentariDestroyer;"	orders="patrol" patrolDist="40"/>
+		</Reinforcements>
+
+		<Encounters frequency="common">
+			<Ship count="1"	class="&scVentariDestroyer;" orders="wander"	maxShips="6"/>
+		</Encounters>
+
+	</StationType>
+
+	<Image UNID="&rsVentariDestroyer;"	bitmap="Resources\VentariDestroyer.jpg" bitmask="Resources\VentariDestroyerMask.bmp" loadOnUse="true"/>
+	
+</TranscendenceModule>
