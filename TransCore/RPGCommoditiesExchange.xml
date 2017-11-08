@@ -652,6 +652,8 @@
 							)
 
 						(offerCount (min affordCount maxBuyCount))
+
+						(tradeData (rpgItemTradeComputer thisItem))
 						)
 						
 						;	Set the description
@@ -696,6 +698,12 @@
 										(scrTranslate gScreen 'descBuySomeItems { title:title itemName:(itmGetName thisItem 0) currency:(fmtCurrency currencyUsed offerPrice) offerCount:offerCount availCount:availCount })
 										
 									(scrTranslate gScreen 'descBuyAllItems { title:title itemName:(itmGetName thisItem 0) currency:(fmtCurrency currencyUsed offerPrice) })
+									)
+
+								(if (and tradeData
+										(gr (ecoExchange (@ tradeData 'sellPrice) (@ tradeData 'sellCurrency) currencyUsed) offerPrice)
+										)
+									(cat "\n\n" (@ tradeData 'sellRecommendation))
 									)
 								)
 							)
