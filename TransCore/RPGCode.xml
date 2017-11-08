@@ -545,6 +545,13 @@
 										enabled: Nil
 										desc: (scrTranslate gScreen "actionRemove.noRoomForCargoHold" { item:theItem })
 										}
+
+								(= itemStatus 3)
+									{
+										visible: True
+										enabled: Nil
+										desc: (scrTranslate gScreen 'actionRemove.canOnlyBeReplaced { itemName:(itmGetName theItem '(noModifiers short)) })
+										}
 								
 								(not (eq itemStatus 0))
 									{
@@ -749,11 +756,15 @@
 										desc: itemStatus
 										}
 								
-								(not (eq itemStatus 0))
+								;	NOTE: We allow replace even if we get itemStatus=1 (too much cargo) because
+								;	the new cargo hold might be big enough to hold all the cargo (and if not, 
+								;	we'll get an error when we pick something to replace with).
+								
+								(and (!= itemStatus 0) (!= itemStatus 1) (!= itemStatus 3))
 									{
 										;	If we cannot be removed, then the Remove action will show the error,
 										;	unless it's a reactor, in which case we have to show it here (because
-										;	Remove action never shows reactors).
+										;	Remove action never shows for reactors).
 										
 										visible: (itmMatches theItem "r")
 										enabled: Nil
@@ -960,14 +971,11 @@
 										desc: itemStatus
 										}
 								
-								(= itemStatus 1)
-									{
-										visible: (@ dockStatus 'upgradeInstallOnly)	;	If we cannot be removed, then the Remove action will show the error
-										enabled: Nil
-										desc: (scrTranslate gScreen "actionRemove.noRoomForCargoHold" { item:theItem })
-										}
-								
-								(not (eq itemStatus 0))
+								;	NOTE: We allow replace even if we get itemStatus=1 (too much cargo) because
+								;	the new cargo hold might be big enough to hold all the cargo (and if not, 
+								;	we'll get an error when we pick something to replace with).
+
+								(and (!= itemStatus 0) (!= itemStatus 1) (!= itemStatus 3))
 									{
 										visible: (@ dockStatus 'upgradeInstallOnly)	;	If we cannot be removed, then the Remove action will show the error
 										enabled: Nil
@@ -1003,22 +1011,6 @@
                                                 )
 										}
 										
-								(not (isint itemStatus))
-									{
-										visible: True
-										enabled: Nil
-										desc: itemStatus
-										}
-								
-								(not (eq itemStatus 0))
-									{
-										visible: True
-										enabled: Nil
-										desc: (or (scrTranslate gScreen "actionUpgrade.cannotUpgrade" { item:theItem })
-                                                (scrTranslate gScreen "actionUpgrade:cannotUpgrade" { item:theItem })
-                                                )
-										}
-								
 								{
 									visible: True
 									enabled: True
@@ -1742,6 +1734,13 @@
 											)
 										))
 
+								(eq resultCode 'tooMuchCargo)
+									(setq desc (or
+										(objTranslate installerObj 'rpg.cannotInstallBecauseTooMuchCargo { item:thisItem targetObj:targetObj })
+										(scrTranslate gScreen 'rpg.cannotInstallBecauseTooMuchCargo { item:thisItem targetObj:targetObj })
+										(cat "The new cargo hold does not have enough space for your items.")
+										))
+
 								(and (eq resultCode 'replacementRequired)
 										(eq (itmGetType thisItem) (itmGetType itemToReplace))
 										(eq (itmGetLevel thisItem) (itmGetLevel itemToReplace))
@@ -1809,7 +1808,9 @@
 							; See if we are allowed to remove the device
 
 							(if (and canInstall itemToReplace
-									(neq (setq removeStatus (shpCanRemoveDevice targetObj itemToReplace)) 0)
+									(!= (setq removeStatus (shpCanRemoveDevice targetObj itemToReplace)) 0)
+									(!= removeStatus 1)
+									(!= removeStatus 3)
 									)
 								(block Nil
 									(setq desc (or

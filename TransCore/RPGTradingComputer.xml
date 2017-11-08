@@ -24,8 +24,8 @@
 				(switch
 					;	If we don't have a trade computer, then nothing to do
 
-					;(!= (objGetEquipmentStatus gPlayerShip 'TradingComputer) 'ready)
-					;	Nil
+					(!= (objGetEquipmentStatus gPlayerShip 'TradingComputer) 'ready)
+						Nil
 
 					;	If this is a damaged item, no recommendations
 
