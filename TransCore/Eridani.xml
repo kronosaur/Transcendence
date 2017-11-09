@@ -71,6 +71,8 @@
 					criteria=		"*~ad -alien; -illegal; -military; -notForSale; -notStandard; -specialty;"
 					levelFrequency=	"systemLevel:ru|c|cur"
 					/>
+
+			<Item count="2d8" item="&itEridaniWater;"/>
 		</Items>
 
 		<!-- Ships and Defenses -->
