@@ -80,6 +80,7 @@
 								)
 							)
 						(bestObjToSellAt (@ localBestObjsToSellAt 0))
+						(sellLocalCurrency (objGetProperty bestObjToSellAt 'currency))
 
 						;	Sell recommendation
 
@@ -107,7 +108,7 @@
 								)
 							)
 
-						(sellPriceItemCurrency
+						(sellPrice
 							(switch
 								(= sellRecommendation 'sellToLocalStation)
 									localBestPriceToSellAt
@@ -120,14 +121,15 @@
 						(sellCurrency
 							(switch
 								(= sellRecommendation 'sellToLocalStation)
-									(objGetProperty bestObjToSellAt 'currency)
+									sellLocalCurrency
 
 								(= sellRecommendation 'sellInOtherSystem)
 									itemCurrency
 								)
 							)
 
-						(sellPrice (ecoExchange sellPriceItemCurrency itemCurrency sellCurrency))
+						(sellPriceItemCurrency (ecoExchange sellPrice sellCurrency itemCurrency))
+						(sellLocalPriceItemCurrency (ecoExchange bestPriceToSellAt sellLocalCurrency itemCurrency))
 						)
 						(switch
 							(not sellRecommendation)
@@ -136,6 +138,22 @@
 							{
 								sellBestSystem: nearestNodeToSellAt
 								sellBestSystemPrice: bestPriceToSellAt
+
+								sellLocalRecommendation:
+									(typTranslate &unidTradingComputer; 'descTradeData {
+										sellRecommendation: (typTranslate &unidTradingComputer; 'sellToObj {
+											objName:(objGetName bestObjToSellAt 0)
+											})
+										price: 
+											(if (= itemCurrency sellLocalCurrency)
+												(fmtCurrency sellLocalCurrency localBestPriceToSellAt)
+												(cat (fmtCurrency sellLocalCurrency localBestPriceToSellAt) " (" (fmtCurrency itemCurrency sellLocalPriceItemCurrency) ")")
+												)
+										})
+
+								sellLocalObj: bestObjToSellAt
+								sellLocalPrice: localBestPriceToSellAt
+								sellLocalCurrency: sellLocalCurrency
 
 								sellRecommendation:
 									(typTranslate &unidTradingComputer; 'descTradeData {

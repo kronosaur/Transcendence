@@ -607,7 +607,22 @@
 
 						(existingCount (objHasItem gSource thisItem 1))
 						(averageCount (itmGetAverageAppearing thisItem))
-						(maxExistingCount (* averageCount 5))
+						(maxExistingCount 
+							(switch
+								(itmMatches thisItem "amdu")
+									(* averageCount 5)
+
+								;	For most commodities, the limit is from 5 to 21 times the
+								;	average count.
+
+								(* averageCount
+									(seededRandom 
+										(* (itmGetType thisItem) (objGetProperty gSource 'destiny)) 
+										15 30
+										)
+									)
+								)
+							)
 						(maxBuyCount 
 							(min availCount
 								(max 0 (- maxExistingCount existingCount))
@@ -700,10 +715,14 @@
 									(scrTranslate gScreen 'descBuyAllItems { title:title itemName:(itmGetName thisItem 0) currency:(fmtCurrency currencyUsed offerPrice) })
 									)
 
-								(if (and tradeData
+								(if tradeData
+									(switch
+										(gr (ecoExchange (@ tradeData 'sellLocalPrice) (@ tradeData 'sellLocalCurrency) currencyUsed) offerPrice)
+											(cat "\n\n" (@ tradeData 'sellLocalRecommendation))
+
 										(gr (ecoExchange (@ tradeData 'sellPrice) (@ tradeData 'sellCurrency) currencyUsed) offerPrice)
+											(cat "\n\n" (@ tradeData 'sellRecommendation))
 										)
-									(cat "\n\n" (@ tradeData 'sellRecommendation))
 									)
 								)
 							)
