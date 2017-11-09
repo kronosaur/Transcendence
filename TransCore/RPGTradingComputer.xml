@@ -42,27 +42,41 @@
 					(block (
 						(itemCurrency (itmGetProperty theItem 'currency))
 
-						(knownNodes (filter (sysGetNodes) theNode (sysIsKnown theNode)))
+						(knownNodes 
+							(filter (sysGetNodes) theNode 
+								(and (sysIsKnown theNode)
+									(!= theNode (sysGetNode))
+									)
+								)
+							)
 						(priceData
 							(map knownNodes theNode {
 								nodeID: theNode
 								price: (sysGetItemBuyPrice theNode theItem)
+								distance: (sysGetTopologyDistance (sysGetNode) theNode)
 								})
 							)
 
-						(bestPriceToSellAt (map priceData 'reduceMax theData (@ theData 'price)))
-						(bestNodesToSellAt 
-							(map priceData 'excludeNil theData 
-								(if (= (@ theData 'price) bestPriceToSellAt) 
-									(@ theData 'nodeID)
+						(bestPriceToSellAt 
+							(map priceData '(reduceMax excludeNil) theData 
+								(if (leq (@ theData 'distance) 3)
+									(@ theData 'price)
 									)
 								)
 							)
-						(nearestNodeToSellAt
-							(map bestNodesToSellAt '(reduceMin original) theNode
-								(sysGetTopologyDistance (sysGetNode) theNode)
+						(bestNodesToSellAt 
+							(map priceData 'excludeNil theData 
+								(if (= (@ theData 'price) bestPriceToSellAt) 
+									theData
+									)
 								)
 							)
+						(nearestNodeToSellAt (@
+							(map bestNodesToSellAt '(reduceMin original) theData
+								(@ theData 'distance)
+								)
+							'nodeID
+							))
 
 						(knownObjs (sysFindObject gPlayerShip "TAFV +property:known;"))
 						(localPriceData

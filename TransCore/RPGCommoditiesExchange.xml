@@ -839,7 +839,7 @@
 				Unit mass: %mass%
 			</Text>
 			<Text id="descMarkup">
-				Unit mark: %markup% (%markupPercent%%)
+				Unit markup: %markup% (%markupPercent%%)
 			</Text>
 			<Text id="descDiscount">
 				Unit discount: %discount% (%markupPercent%%)
