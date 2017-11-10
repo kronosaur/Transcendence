@@ -758,8 +758,10 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			break;
 			}
 
-		case 'N':
-		case 'n':
+		case '<':
+		case ',':
+		case '>':
+		case '.':
 			{
 			int i;
 
@@ -782,7 +784,7 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 
 			CShipClass *pNewShipClass;
 
-			if (chChar == 'n')
+			if (chChar == '>' || chChar == '.')
 				{
 				//	Get the UNID of the next ship class in order
 
@@ -802,7 +804,7 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 
 				dwNewShipClass = pNewShipClass->GetUNID();
 				}
-			else if(chChar == 'N')
+			else if(chChar == '<' || chChar == ',')
 				{
 				//	Get the UNID of the previous ship class in order
 
