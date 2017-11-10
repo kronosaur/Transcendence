@@ -691,24 +691,69 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			if (iUpdateRate < 10)
 				iUpdateRate++;
 			break;
+
+		case '{':
+		case '[':
 			{
 			int i;
 
+			CSpaceObject *pPOV = g_pUniverse->GetPOV();
+			if (pPOV->GetCategory() != CSpaceObject::catShip)
 				break;
 
+			CSystem *pSystem = pPOV->GetSystem();
+			CSovereign *pCurSovereign = pPOV->GetSovereign();
 
+			//	Find the previous POV in the list
+
+			int iTotalCount = pSystem->GetObjectCount();
+			for (i = 0; i < iTotalCount; i++)
 				{
+				CSpaceObject *pObj = pSystem->GetObject((pPOV->GetIndex() + i + 1) % iTotalCount);
+				if (pObj
+					&& pObj->GetCategory() == CSpaceObject::catShip
+					&& pObj->CanAttack())
+					{
+					g_pUniverse->SetPOV(pObj);
+					SetState(isShipStats);
+					break;
+					}
 				}
 
 			break;
 			}
 
+		case '}':
+		case ']':
+			{
+			int i;
 
 		case 'I':
 		case 'i':
 			SetState(isIntroHelp);
 			break;
+			CSpaceObject *pPOV = g_pUniverse->GetPOV();
+			if (pPOV->GetCategory() != CSpaceObject::catShip)
+				break;
 
+			CSystem *pSystem = pPOV->GetSystem();
+			CSovereign *pCurSovereign = pPOV->GetSovereign();
+
+			//	Find the next POV in the list
+
+			int iTotalCount = pSystem->GetObjectCount();
+			for (i = 0; i < iTotalCount; i++)
+				{
+				CSpaceObject *pObj = pSystem->GetObject((pPOV->GetIndex() + iTotalCount - (i + 1)) % iTotalCount);
+				if (pObj 
+						&& pObj->GetCategory() == CSpaceObject::catShip
+						&& pObj->CanAttack())
+					{
+					g_pUniverse->SetPOV(pObj);
+					SetState(isShipStats);
+					break;
+					}
+				}
 
 			break;
 			}
