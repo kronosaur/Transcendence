@@ -709,14 +709,6 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			SetState(isIntroHelp);
 			break;
 
-		case 'K':
-			g_pTrans->DestroyAllIntroShips();
-			CreateIntroShips();
-			break;
-		case 'k':
-			g_pTrans->DestroyPOVIntroShips();
-			CreateIntroShips();
-			break;
 
 			break;
 			}
@@ -793,6 +785,12 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			CreateIntroShips(dwNewShipClass, pShip->GetSovereign()->GetUNID());
 			break;
 			}
+		case 'A':
+		case 'a':
+			g_pTrans->DestroyAllIntroShips();
+			CreateIntroShips();
+			break;
+
 		case 'C':
 		case 'c':
 			SetState(isCredits);
@@ -840,6 +838,13 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			CmdShowHighScoreList();
 			break;
 		case 'P':
+		case 'K':
+		case 'k':
+			{
+			g_pTrans->DestroyPOVIntroShips();
+			CreateIntroShips();
+			break;
+			}
 		case 'L':
 		case 'l':
 			g_pTrans->DoCommand(CMD_CONTINUE_OLD_GAME);
