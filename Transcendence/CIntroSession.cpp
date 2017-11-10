@@ -671,6 +671,7 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			CancelCurrentState();
 			break;
 
+		case '1':
 		case '!':
 			SetState(isEnterCommand);
 			break;
