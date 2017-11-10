@@ -680,6 +680,17 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			SetState(isCredits);
 			break;
 
+		case '_':
+		case '-':
+			if (iUpdateRate > 0)
+				iUpdateRate--;
+			break;
+
+		case '+':
+		case '=':
+			if (iUpdateRate < 10)
+				iUpdateRate++;
+			break;
 		case 'D':
 		case 'd':
 			{
@@ -1612,7 +1623,8 @@ void CIntroSession::Update (void)
 	Ctx.bForceEventFiring = true;
 	if (!g_pTrans->m_bPaused)
 		{
-		g_pUniverse->Update(Ctx);
+		for(int i = 0; i < iUpdateRate; i++)
+			g_pUniverse->Update(Ctx);
 		g_pTrans->m_iTick++;
 		}
 
