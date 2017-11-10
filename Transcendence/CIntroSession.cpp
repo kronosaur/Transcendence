@@ -678,9 +678,6 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 		case '*':
 		case '8':
 			g_pUniverse->SetSound(!g_pUniverse->GetSound());
-		case 'C':
-		case 'c':
-			SetState(isCredits);
 			break;
 
 		case '_':
@@ -694,45 +691,18 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			if (iUpdateRate < 10)
 				iUpdateRate++;
 			break;
-		case 'D':
-		case 'd':
 			{
 			int i;
 
-			//	Get the UNID of the current ship
-
-			CShip *pShip = g_pUniverse->GetPOV()->AsShip();
-			if (pShip == NULL)
 				break;
 
-			//	Count the number of ships in the system
 
-			CSystem *pSystem = pShip->GetSystem();
-			int iCount = 0;
-			for (i = 0; i < pSystem->GetObjectCount(); i++)
 				{
-				CSpaceObject *pObj = pSystem->GetObject(i);
-				if (pObj 
-						&& pObj->GetCategory() == CSpaceObject::catShip
-						&& pObj->CanAttack())
-					iCount++;
 				}
 
-			//	If we already have too many, we don't do anything
-
-			if (iCount > MAX_INTRO_SHIPS)
-				break;
-
-			//	Create a duplicate
-
-			CreateIntroShips(pShip->GetClassUNID(), pShip->GetSovereign()->GetUNID());
 			break;
 			}
 
-		case 'h':
-		case 'H':
-			CmdShowHighScoreList();
-			break;
 
 		case 'I':
 		case 'i':
@@ -748,10 +718,8 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			CreateIntroShips();
 			break;
 
-		case 'L':
-		case 'l':
-			g_pTrans->DoCommand(CMD_CONTINUE_OLD_GAME);
 			break;
+			}
 
 		case 'N':
 		case 'n':
@@ -825,44 +793,57 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			CreateIntroShips(dwNewShipClass, pShip->GetSovereign()->GetUNID());
 			break;
 			}
+		case 'C':
+		case 'c':
+			SetState(isCredits);
+			break;
 
 		case 'O':
 		case 'o':
+		case 'D':
+		case 'd':
 			{
 			int i;
 
-			CSpaceObject *pPOV = g_pUniverse->GetPOV();
-			if (pPOV->GetCategory() != CSpaceObject::catShip)
+			//	Get the UNID of the current ship
+
+			CShip *pShip = g_pUniverse->GetPOV()->AsShip();
+			if (pShip == NULL)
 				break;
 
-			CSystem *pSystem = pPOV->GetSystem();
-			CSovereign *pCurSovereign = pPOV->GetSovereign();
+			//	Count the number of ships in the system
 
-			//	Make a list of all opponents
-
-			TArray<CSpaceObject *> Opponents;
+			CSystem *pSystem = pShip->GetSystem();
+			int iCount = 0;
 			for (i = 0; i < pSystem->GetObjectCount(); i++)
 				{
 				CSpaceObject *pObj = pSystem->GetObject(i);
 				if (pObj 
 						&& pObj->GetCategory() == CSpaceObject::catShip
-						&& pObj->GetSovereign() != pCurSovereign
 						&& pObj->CanAttack())
-					Opponents.Insert(pObj);
+					iCount++;
 				}
 
-			//	Pick a random opponent and set the POV
+			//	If we already have too many, we don't do anything
 
-			if (Opponents.GetCount() > 0)
-				{
-				g_pUniverse->SetPOV(Opponents[mathRandom(0, Opponents.GetCount() - 1)]);
-				SetState(isShipStats);
-				}
+			if (iCount > MAX_INTRO_SHIPS)
+				break;
 
+			//	Create a duplicate
+
+			CreateIntroShips(pShip->GetClassUNID(), pShip->GetSovereign()->GetUNID());
 			break;
 			}
 
+		case 'h':
+		case 'H':
+			CmdShowHighScoreList();
+			break;
 		case 'P':
+		case 'L':
+		case 'l':
+			g_pTrans->DoCommand(CMD_CONTINUE_OLD_GAME);
+			break;
 			{
 			int i;
 
@@ -888,7 +869,6 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 					break;
 					}
 				}
-
 			break;
 			}
 
