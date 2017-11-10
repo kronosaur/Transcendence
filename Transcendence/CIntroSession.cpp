@@ -995,6 +995,19 @@ void CIntroSession::OnChar (char chChar, DWORD dwKeyData)
 //	Handle keystrokes
 	
 	{
+
+	//	Handle debug console
+
+	if (g_pTrans->m_bDebugConsole)
+	{
+		if (chChar >= ' ')
+		{
+			CString sKey = CString(&chChar, 1);
+			g_pTrans->m_DebugConsole.Input(sKey);
+		}
+		return;
+	}
+
 	CReanimator &Reanimator = GetReanimator();
 
     m_iIdleTicks = 0;
@@ -1168,7 +1181,26 @@ void CIntroSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
     m_iIdleTicks = 0;
 
-	if (g_pTrans->m_ButtonBarDisplay.OnKeyDown(iVirtKey))
+	//	Deal with console
+
+	if (g_pTrans->m_bDebugConsole)
+	{
+		DWORD dwTVirtKey = CGameKeys::TranslateVirtKey(iVirtKey, dwKeyData);
+		CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(dwTVirtKey);
+		if (iVirtKey == VK_ESCAPE || iCommand == CGameKeys::keyShowConsole)
+		{
+			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+			g_pTrans->m_bDebugConsole = false;
+
+			//	Remember that we processed this key so that we don't handle it again in
+			//	OnChar.
+
+			g_pTrans->m_chKeyDown = iVirtKey;
+		}
+		else
+			g_pTrans->m_DebugConsole.OnKeyDown(iVirtKey, dwKeyData);
+	}
+	else if (g_pTrans->m_ButtonBarDisplay.OnKeyDown(iVirtKey))
 		NULL;
 
 	else if (GetState() == isEnterCommand)
@@ -1218,6 +1250,10 @@ void CIntroSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
 			case VK_F2:
 				m_HI.HICommand(CONSTLIT("uiShowGameStats"));
+				break;
+
+			case VK_F9:
+				g_pTrans->m_bDebugConsole = true;
 				break;
 
             case VK_F11:
@@ -1325,7 +1361,10 @@ void CIntroSession::Paint (CG32bitImage &Screen, bool bTopMost)
 			break;
 			}
 		}
+	//	Debug console
 
+	if (g_pTrans->m_bDebugConsole)
+		g_pTrans->m_DebugConsole.Paint(Screen);
 	//	Figure out how long it took to paint
 
 	if (g_pTrans->m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
