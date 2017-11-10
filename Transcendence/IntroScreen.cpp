@@ -123,7 +123,7 @@ const char *INTRO_HELP_TEXT[INTRO_HELP_TEXT_COUNT] =
 	"Up          Select previous high score (if showing scores list)",
 	"Down        Select next high score (if showing scores list)",
 	"Space       Cancel current display",
-	"!           Enter ~ command or spawn ship by name",
+	"!           Enter # command or spawn ship by name",
 	"?           Show this help text",
 	"*           Toggle intro ship sounds",
 	"+           Speed up time",

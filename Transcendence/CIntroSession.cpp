@@ -617,7 +617,7 @@ bool CIntroSession::HandleCommandBoxChar (char chChar, DWORD dwKeyData)
 
 		case '\015':
 			{
-			if(strStartsWith(g_pTrans->m_sCommand, CONSTLIT("~")))
+			if (strStartsWith(g_pTrans->m_sCommand, CONSTLIT("#")))
 				{
 				g_pUniverse->FireOnGlobalIntroCommand(strSubString(g_pTrans->m_sCommand, 1));
 				CancelCurrentState();
