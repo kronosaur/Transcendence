@@ -110,28 +110,41 @@ const int NEWS_PANE_INNER_SPACING_Y =			8;
 
 
 //Not sure where to put this
-const int INTRO_HELP_TEXT_COUNT = 19;
+const int INTRO_HELP_TEXT_COUNT = 31;
 const char *INTRO_HELP_TEXT[INTRO_HELP_TEXT_COUNT] =
 {
-	"[Space]: Cancel current display",
-	"[F11]: Hide intro menu",
-	"[!]: Enter a ~ command or spawn ship by name",
-	"[C], [c]: Credits",
-	"[D], [d]: Duplicate current ship",
-	"[H], [h]: Show high scores",
-	"[I], [i]: Show this display",
-	"[K[: Destroy all ships",
-	"[k]: Destroy current ship class",
-	"[L], [l]: Load Game",
-	"[N]: Spawn previous ship class",
-	"[n]: Spawn next ship class",
-	"[O], [o]: View opposing ship",
-	"[P]: View next ship",
-	"[p]: View previous ship",
-	"[Q], [q]: Quit game",
-	"[S]: Toggle intro ship sounds",
-	"[s]: View ship stats",
-	"[V], [v]: Title",
+	
+	"F1          Show game help menu",
+	"F2          Show game stats",
+	"F9          Debug Console",
+	"F11         Hide intro menu",
+	"Page Up     Rewind animation",
+	"Page Down   Fast-forward animation",
+	"Up          Select previous high score (if showing scores list)",
+	"Down        Select next high score (if showing scores list)",
+	"Space       Cancel current display",
+	"!           Enter ~ command or spawn ship by name",
+	"?           Show this help text",
+	"*           Toggle intro ship sounds",
+	"+           Speed up time",
+	"-           Slow down time",
+	"{           View previous ship",
+	"}           View next ship",
+	"<           Spawn previous ship class",
+	">           Spawn next ship class",
+	"A           Destroy all ships",
+	"C           Credits",
+	"D           Duplicate current ship",
+	"H           Show high scores",
+	"K           Destroy current ship class",
+	"L           Load Game",
+	"O           View next opposing ship",
+	"o           View previous opposing ship",
+	"P           View next allied ship",
+	"p           View previous allied ship",
+	"Q           Quit game",
+	"S           View ship stats",
+	"V           Show opening title",
 };
 
 void CTranscendenceWnd::CreateCreditsAnimation (IAnimatron **retpAnimatron)
@@ -228,42 +241,38 @@ void CTranscendenceWnd::CreateIntroHelpAnimation(IAnimatron **retpAnimatron)
 //
 //	Creates an animation showing help text for the intro screen keys
 
-{
-	int iDuration = 300;
-	int x = m_rcIntroMain.left + (RectWidth(m_rcIntroMain) / 2) + (RectWidth(m_rcIntroMain) / 6);
-	int y = m_rcIntroMain.bottom - RectHeight(m_rcIntroMain) / 2 - RectHeight(m_rcIntroMain) / 4;
+	{
 
-	//	Create sequencer to hold everything
+	int i;
+	CAniVScroller *pAni = new CAniVScroller;
 
-	CAniSequencer *pSeq = new CAniSequencer;
-	IAnimatron *pText;
-	CAniText::Create(CONSTLIT("Intro Key Commands"),
-		CVector((Metric)x, (Metric)y),
-		&m_Fonts.SubTitle,
-		0,
-		m_Fonts.rgbLightTitleColor,
-		&pText);
-	pText->AnimateLinearFade(iDuration, 15, 30);
-	pSeq->AddTrack(pText, 5);
+	int xMidCenter = m_rcIntroMain.left + RectWidth(m_rcIntroMain) / 2;
+	int x = xMidCenter + RectWidth(m_rcIntroMain) / 6;
+	int yStart = m_rcIntroMain.top;
+	int yEnd = m_rcIntroMain.bottom - m_Fonts.Header.GetHeight();
+	int cyHeight = yEnd - yStart;
 
-	y += m_Fonts.SubTitle.GetHeight() + (m_Fonts.SubTitle.GetHeight() / 6);
+	pAni->SetPropertyVector(CONSTLIT("position"), CVector((Metric)x, (Metric)yStart));
+	pAni->SetPropertyMetric(CONSTLIT("viewportHeight"), (Metric)cyHeight);
+	pAni->SetPropertyMetric(CONSTLIT("fadeEdgeHeight"), (Metric)(cyHeight / 8));
 
-	for(int i = 0; i < INTRO_HELP_TEXT_COUNT; i++)
-		{
-		CAniText::Create(INTRO_HELP_TEXT[i],
-			CVector((Metric)x, (Metric)y),
-			&m_Fonts.Header,
-			0,
-			m_Fonts.rgbTitleColor,
-			&pText);
-		pText->AnimateLinearFade(iDuration, 15, 30);
-		pSeq->AddTrack(pText, 5);
+	pAni->AddTextLine(CONSTLIT("intro screen controls"), &m_Fonts.SubTitle, m_Fonts.rgbLightTitleColor, CG16bitFont::AlignCenter);
 
-		y += m_Fonts.Header.GetHeight() + (m_Fonts.Header.GetHeight() / 6);
-		}
+	for (i = 0; i < INTRO_HELP_TEXT_COUNT; i++)
+		pAni->AddTextLine(CString(INTRO_HELP_TEXT[i]),
+				&m_Fonts.Console, 
+				m_Fonts.rgbTitleColor, 
+				0,
+				(i == 0 ? m_Fonts.Header.GetHeight() : 0));
 
-	*retpAnimatron = pSeq;
-}
+	//	Animate
+
+	pAni->AnimateLinearScroll(1.0f);
+
+	//	Done
+
+	*retpAnimatron = pAni;
+	}
 
 void CTranscendenceWnd::CreateLongCreditsAnimation (int x, int y, int cyHeight, IAnimatron **retpAnimatron)
 
