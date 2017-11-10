@@ -675,6 +675,9 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			SetState(isEnterCommand);
 			break;
 
+		case '*':
+		case '8':
+			g_pUniverse->SetSound(!g_pUniverse->GetSound());
 		case 'C':
 		case 'c':
 			SetState(isCredits);
@@ -925,15 +928,14 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			break;
 
 		case 'S':
-			g_pUniverse->SetSound(!g_pUniverse->GetSound());
-			break;
 		case 's':
+			{
 			if (GetState() == isShipStats)
 				SetState(isBlank);
 			else
 				SetState(isShipStats);
 			break;
-
+			}
 		case 'V':
 		case 'v':
 			SetState(isOpeningTitles);
