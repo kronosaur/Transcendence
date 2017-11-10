@@ -729,10 +729,6 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			{
 			int i;
 
-		case 'I':
-		case 'i':
-			SetState(isIntroHelp);
-			break;
 			CSpaceObject *pPOV = g_pUniverse->GetPOV();
 			if (pPOV->GetCategory() != CSpaceObject::catShip)
 				break;
@@ -833,6 +829,10 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			CreateIntroShips(dwNewShipClass, pShip->GetSovereign()->GetUNID());
 			break;
 			}
+		case '?':
+		case '/':
+			SetState(isIntroHelp);
+			break;
 		case 'A':
 		case 'a':
 			g_pTrans->DestroyAllIntroShips();
@@ -844,8 +844,6 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			SetState(isCredits);
 			break;
 
-		case 'O':
-		case 'o':
 		case 'D':
 		case 'd':
 			{
@@ -883,9 +881,10 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 
 		case 'h':
 		case 'H':
+			{
 			CmdShowHighScoreList();
 			break;
-		case 'P':
+			}
 		case 'K':
 		case 'k':
 			{
