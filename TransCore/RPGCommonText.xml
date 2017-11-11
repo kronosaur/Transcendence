@@ -27,9 +27,10 @@
 			
 			<Text id="descNoItemsHere">There are no items here.</Text>
 
-			<!-- Achievements -->
+			<!-- Statistics -->
 
 			<Text id="achievementsAndRegrets">achievements &amp; regrets</Text>
+			<Text id="missionsAndActivities">missions &amp; activities</Text>
 
 			<!-- Basic -->
 

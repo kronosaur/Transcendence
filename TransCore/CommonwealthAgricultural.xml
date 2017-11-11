@@ -160,9 +160,9 @@
 					(if (or successList failureList)
 						(list
 							(list
-								"Agricultural colony missions"
+								(typTranslate &stAgriculturalStation; 'missions)
 								(rpgMissionAchievementString (count successList) (count failureList))
-								"missions &amp; activities"
+								(typTranslate &unidCommonText; 'missionsAndActivities)
 								)
 							)
 						)
@@ -175,6 +175,7 @@
 			<Text id="actionCommoditiesExchange">[C]ommodities Exchange</Text>
 			<Text id="actionDockServices">[D]ock Services</Text>
 			<Text id="actionUndock">[U]ndock</Text>
+			<Text id="missions">Agricultural colony missions</Text>
 
 			<Text id="descWelcome">
 				You are inside a C9-class prefabricated agricultural station.
@@ -214,7 +215,7 @@
 						minLevel: 1
 						maxLevel: 4
 						reward: 5000
-						waveInterval: 1200
+						waveInterval: 900
 
 						waves: (
 							; Wave 1
@@ -336,7 +337,7 @@
 
 					(enum waveDesc theEncounter
 						;(sysAddEncounterEventAtDist (@ theEncounter 'timer) destObj (@ theEncounter 'table) (@ theEncounter 'distance))
-						(sysAddEncounterEvent 0 destObj (@ theEncounter 'table) (sysCreateMarker 'temp (sysVectorRandom destObj (@ theEncounter 'distance) 100 'ztAF) &svNeutral;))
+						(sysCreateShip (@ theEncounter 'table) (sysVectorRandom destObj (@ theEncounter 'distance) 100 'ztAF) &svPirates; { target:destObj })
 						)
 
 					; Increment next wave
@@ -378,7 +379,6 @@
 						(attackDesc (msnGetData gSource 'attackDesc))
 						(nextWave (msnGetData gSource 'nextWave))
 						)
-						(msnCancelTimerEvent gSource 'OnNextWave)
 						(msnAddTimerEvent gSource (random 90 180) 'OnNextWave)
 						{
 							desc: (msnTranslate gSource (cat (@ attackDesc 'id) ":Wave:" nextWave))
@@ -421,7 +421,7 @@
 								)
 
 							; Send out more pirates to attack the player
-							(sysAddEncounterEvent 0 gPlayerShip &etPirateAmbush3; (sysCreateMarker 'temp (sysVectorRandom gPlayerShip 105 100 'ztAF) &svNeutral;))
+							(sysCreateShip &etPirateAmbush3; (sysVectorRandom gPlayerShip 105 100 'ztAF) &svPirates; { target:gPlayerShip })
 
 							; And set failure
 							(msnFailure gSource)
