@@ -746,7 +746,7 @@
 				))
 				
 			(setq rpgSanitizeAutonName (lambda (theName)
-				(block (newName)
+				(block (tempName newName)
 					;	Pairs of % signs with another character and no spaces between them could be parameters that will be replaced.
 					;	We can't control the text parsing code or escape them, so break them up by inserting a space.
 					
@@ -757,26 +757,23 @@
 									(ls (strFind (subset theName (+ i 1)) "%") (strFind (subset theName (+ i 1)) " "))
 									)
 								)
-							(setq newName (cat newName "% "))
-							(setq newName (cat newName (subset theName i 1)))
+							(setq tempName (cat tempName "% "))
+							(setq tempName (cat tempName (subset theName i 1)))
 							)
 						)
-					(setq newName (subset (strCapitalize newName) 0 17))
 					
 					;	Escape characters with special function in item names with \
 					
-					(setq newName (substitute newName "\\" "\\\\"))
-					(setq newName (substitute newName "|" "\\|"))
-					(setq newName (substitute newName "[" "\\["))
-					(setq newName (substitute newName "]" "\\]"))
-					(setq newName (substitute newName "&#40;" "\\&#40;"))
-					(setq newName (substitute newName "&#41;" "\\&#41;"))
-					(setq newName (substitute newName ";" "\\;"))
-					(setq newName (substitute newName ":" "\\:"))
+					(for i 0 (min 16 (- (count tempName) 1))
+						(if (find "\\|[]();:" (subset tempName i 1))
+							(setq newName (cat newName "\\" (subset tempName i 1)))
+							(setq newName (cat newName (subset tempName i 1)))
+							)
+						)
 				
 					;	Replace empty string with Nil to reset to default name, otherwise return new name.
 					
-					(if (eq "" (apply cat (split newName " "))) Nil newName)
+					(if (eq "" (apply cat (split newName " "))) Nil (strCapitalize newName))
 					)
 				))
 			)
