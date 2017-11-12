@@ -16,6 +16,8 @@ struct SSysNodeDesc
 	int iLevel;
 	CString sNodeID;
 	CSystemTypeTable Table;
+
+	CString sTradeDesc;
 	};
 
 void GenerateSystemCount (CUniverse &Universe, CXMLElement *pCmdLine)
@@ -27,6 +29,7 @@ void GenerateSystemCount (CUniverse &Universe, CXMLElement *pCmdLine)
 	int iSystemSample = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("count"), 1, -1, 1);
 	bool bLogo = !pCmdLine->GetAttributeBool(CONSTLIT("noLogo"));
 	bool bAll = pCmdLine->GetAttributeBool(CONSTLIT("all"));
+	bool bCreateSystem = false;
 
 	//	Additional columns
 
@@ -44,7 +47,12 @@ void GenerateSystemCount (CUniverse &Universe, CXMLElement *pCmdLine)
 			if (!strEquals(sValue, CONSTLIT("true")))
 				Cols.Insert(strPatternSubst(CONSTLIT("%s:%s"), sAttrib, sValue));
 			else
+				{
 				Cols.Insert(sAttrib);
+
+				if (strEquals(sAttrib, CONSTLIT("trade")))
+					bCreateSystem = true;
+				}
 			}
 		}
 
@@ -76,6 +84,19 @@ void GenerateSystemCount (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			CString sSort = strPatternSubst(CONSTLIT("%02d-%s"), pNode->GetLevel(), pNode->GetID());
 
+			//	Create the system, if necessary
+
+			CSystem *pSystem = NULL;
+			if (bCreateSystem)
+				{
+				CString sError;
+				if (Universe.CreateStarSystem(pNode, &pSystem, &sError) != NOERROR)
+					{
+					printf("ERROR: %s\n", sError.GetASCIIZPointer());
+					return;
+					}
+				}
+
 			//	Get the table
 
 			bool bNew;
@@ -84,6 +105,7 @@ void GenerateSystemCount (CUniverse &Universe, CXMLElement *pCmdLine)
 				{
 				pResult->iLevel = pNode->GetLevel();
 				pResult->sNodeID = pNode->GetID();
+				pResult->sTradeDesc = pNode->GetTradingEconomy().GetDescription();
 				}
 
 			//	Add the entry
@@ -93,6 +115,11 @@ void GenerateSystemCount (CUniverse &Universe, CXMLElement *pCmdLine)
 				*pCount = 1;
 			else
 				*pCount += 1;
+
+			//	Done
+
+			if (pSystem)
+				Universe.DestroySystem(pSystem);
 			}
 
 		Universe.Reinit();
@@ -127,8 +154,15 @@ void GenerateSystemCount (CUniverse &Universe, CXMLElement *pCmdLine)
 				{
 				for (k = 0; k < Cols.GetCount(); k++)
 					{
-					CString sValue = pSystemType->GetDataField(Cols[k]);
-					printf("\t%s", sValue.GetASCIIZPointer());
+					if (strEquals(Cols[k], CONSTLIT("trade")))
+						{
+						printf("\t%s", (LPSTR)NodeTable[i].sTradeDesc);
+						}
+					else
+						{
+						CString sValue = pSystemType->GetDataField(Cols[k]);
+						printf("\t%s", sValue.GetASCIIZPointer());
+						}
 					}
 				}
 

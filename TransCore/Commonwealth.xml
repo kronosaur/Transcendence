@@ -54,17 +54,24 @@
 		<!-- Trade and Items -->
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +commonwealth; +basicAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Sell	criteria="m +commonwealth; +basicAmmo; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="amdNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
 			
-			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="93"/>
+			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-5;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-5;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-5;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-5;" priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="2"/>
+			<ConsumeTrade	criteria="{human.basicFood}"	impact="5"/>
+			<ConsumeTrade	criteria="{human.lux}"		impact="3"/>
+			<ConsumeTrade	criteria="{human.meds}"		impact="2"/>
+			<ConsumeTrade	criteria="{human.res}"		impact="1"/>
+			<ConsumeTrade	criteria="{core.ore}"			impact="2"/>
 		</Trade>
 
 		<Items>
@@ -296,17 +303,24 @@
 		<!-- Trade and Items -->
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="amdNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
 			
-			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="93"/>
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{core.antimatterFuel}"	impact="2"/>
+			<ConsumeTrade	criteria="{human.basicFood}"	impact="5"/>
+			<ConsumeTrade	criteria="{human.lux}"		impact="3"/>
+			<ConsumeTrade	criteria="{human.meds}"		impact="2"/>
+			<ConsumeTrade	criteria="{human.res}"		impact="1"/>
+			<ConsumeTrade	criteria="{core.ore}"			impact="2"/>
 		</Trade>
 
 		<Items>
@@ -479,13 +493,15 @@
 		<Image			imageID="&rsStations1;" imageX="256" imageY="0" imageWidth="224" imageHeight="224"/>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="*NU -illegal; -ID; -notForSale;"	priceAdj="110"  noDescription="true"/>
+			<Sell	criteria="*NU -illegal; -ID; -notForSale;"	priceAdj="100"  noDescription="true"/>
 			
-			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="95"/>
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="3"/>
 		</Trade>
 		
 		<Items>
@@ -566,6 +582,7 @@
 		<Encounter
 				levelFrequency=		"uuurr ----- ----- ----- -----"
 				locationCriteria=	"-outerSystem, +planetary"
+				unique=				"inSystem"
 				enemyExclusionRadius="50"
 				/>
 
@@ -586,8 +603,15 @@
 		
 		<Trade currency="credit" max="50000" replenish="2500">
 			<Sell	criteria="*NU +Meds; -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
-			<Buy	criteria="*NU +Food; -Illegal;"	priceAdj="110"/>
-			<Buy	criteria="*NU +Lux; -Illegal;"	priceAdj="120"/>
+			<Buy	criteria="*NU +Food; -Illegal;"	priceAdj="100"/>
+			<Buy	criteria="*NU +Lux; -Illegal;"	priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="2"/>
+			<ConsumeTrade	criteria="{human.basicFood}"	impact="3"/>
+			<ConsumeTrade	criteria="{human.lux}"		impact="5"/>
+			<ConsumeTrade	criteria="{human.res}"		impact="1"/>
+
+			<ProduceTrade	criteria="{human.meds}"		impact="20"/>
 		</Trade>
 
 		<Items>
@@ -697,6 +721,16 @@
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 			>
+
+		<!-- Trade and Items -->
+
+		<Trade currency="credit" max="50000" replenish="2500">
+			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="1"/>
+			<ConsumeTrade	criteria="{human.basicFood}"	impact="5"/>
+			<ConsumeTrade	criteria="{human.lux}"		impact="2"/>
+			<ConsumeTrade	criteria="{human.meds}"		impact="5"/>
+			<ConsumeTrade	criteria="{human.res}"		impact="1"/>
+		</Trade>
 		
 		<!-- Ships and Defenses -->
 
@@ -1033,6 +1067,13 @@
 		<Names noArticle="true">Habitat Alpha %1%0; Habitat Beta %1%0; Habitat Gamma %1%0; Habitat Delta %1%0;
 				Habitat Epsilon %1%0; Habitat Zeta %1%0</Names>
 
+		<Trade>
+			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="1"/>
+			<ConsumeTrade	criteria="{human.basicFood}"	impact="2"/>
+			<ConsumeTrade	criteria="{human.meds}"		impact="2"/>
+			<ConsumeTrade	criteria="{human.res}"		impact="1"/>
+		</Trade>
+
 		<ImageVariants>
 			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="0" imageY="0" imageWidth="64" imageHeight="128"/>
 			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="64" imageY="0" imageWidth="64" imageHeight="128"/>
@@ -1318,6 +1359,10 @@
 
 		<Trade currency="credit" max="50000" replenish="2500">
 			<AcceptDonation	criteria="*"					priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="1"/>
+			<ConsumeTrade	criteria="{human.basicFood}"	impact="1"/>
+			<ConsumeTrade	criteria="{core.ore}"			impact="1"/>
 		</Trade>
 
 		<StaticData>
@@ -1529,17 +1574,24 @@
 		<!-- Trade and Items -->
 		
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="amdNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
 			
-			<Refuel			criteria="f +BasicFuel; L:1-8;" priceAdj="94"/>
+			<Refuel			criteria="f +BasicFuel; L:1-8;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-8;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{core.antimatterFuel}"	impact="2"/>
+			<ConsumeTrade	criteria="{human.basicFood}"	impact="5"/>
+			<ConsumeTrade	criteria="{human.lux}"		impact="3"/>
+			<ConsumeTrade	criteria="{human.meds}"		impact="2"/>
+			<ConsumeTrade	criteria="{human.res}"		impact="1"/>
+			<ConsumeTrade	criteria="{core.ore}"			impact="2"/>
 		</Trade>
 
 		<Items>
@@ -2852,6 +2904,16 @@
 			alignment="constructive chaos"
 			>
 
+		<AttributeDesc>
+			<!-- These item attributes are used across all Human Space (not just for
+				Commonwealth). -->
+
+			<ItemAttribute id="human.basicFood"	label="basic food"			criteriaLabel="basic foods"				criteria="* +food; -lux; -illegal;"/>
+			<ItemAttribute id="human.lux"		label="luxury good"			criteriaLabel="luxury goods"			criteria="* +lux; -illegal;"/>
+			<ItemAttribute id="human.meds"		label="medical supplies"	criteriaLabel="medical supplies"		criteria="* +meds;"/>
+			<ItemAttribute id="human.res"		label="industrial resource"	criteriaLabel="industrial resources"	criteria="*~f +res; -ore; -illegal;"/>
+		</AttributeDesc>
+
 		<Events>
 			<GetGlobalDockScreen>
 				; If the player has docked with an active commonwealth station
@@ -3103,7 +3165,22 @@
 			<Text id="actionMainHall">[M]eeting Hall</Text>
 
 			<Text id="descHallEmpty">
+				(block (
+					(commemorationText (objGetData gSource 'core.missionCommemoration))
+					)
+					(switch
+						commemorationText
+							(objTranslate gSource 'descHallCommemoration { text:commemorationText })
+
+						(objTranslate gSource 'descHallBusy)
+						)
+					)
+			</Text>
+			<Text id="descHallBusy">
 				The meeting hall is busy with commercial activity; everyone goes about their business.
+			</Text>
+			<Text id="descHallCommemoration">
+				The hall is empty, but in the corner you can see %text%.
 			</Text>
 		</Language>
 	</Type>

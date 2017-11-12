@@ -193,16 +193,24 @@
 			<Sell	criteria="wNU +unid:&itMiningLaser;;" priceAdj="100"	inventoryAdj="100"/>
 			<Sell	criteria="cNU +unid:&itMinersCargoHold;;" priceAdj="100"	inventoryAdj="100"/>
 			<Sell	criteria="*NU +miningEquipment; -Illegal; -NotForSale; -notStandard;" priceAdj="100" inventoryAdj="100" levelFrequency="systemLevel:ru|c|cur"/>
-			<Sell	criteria="*NU +Ore; -NotForSale;"	priceAdj="90"/>
-			<Buy	criteria="*NU +Food; -Illegal; -NotForSale;"	priceAdj="90"/>
+			<Sell	criteria="*NU +Ore; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="*NU +Food; -Illegal; -NotForSale;"	priceAdj="100"/>
 			
-			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="94"/>
+			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-5;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-5;" priceAdj="100"/>
 			<InstallDevice	criteria="d +miningEquipment; -Illegal; L:1-6;" priceAdj="50"/>
 			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
 			
 			<InstallDevice	criteria="d L:1-6;" priceAdj="unavailable"	messageID="descNoInstall"/>
+
+			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="2"/>
+			<ConsumeTrade	criteria="{human.basicFood}"	impact="3"/>
+			<ConsumeTrade	criteria="{human.lux}"		impact="1"/>
+			<ConsumeTrade	criteria="{human.meds}"		impact="2"/>
+			<ConsumeTrade	criteria="{human.res}"		impact="1"/>
+
+			<ProduceTrade	criteria="{core.ore}"			impact="20"/>
 		</Trade>
 
 		<Items>

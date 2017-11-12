@@ -149,6 +149,16 @@
 				backgroundID=		"&rsLightNebulaSpace;"
 				spaceEnvironmentTileSize=	"large"
 				>
+		<Tables>
+			<MajorStation>
+				<Table>
+					<Station chance="60" type="&stCommonwealthResidentials;" noMapLabel="true"/>
+					<Station chance="30" type="&stAgriculturalStation;" noMapLabel="true"/>
+					<Station chance="10" type="&stMedicalSuburb;" noMapLabel="true"/>
+				</Table>
+			</MajorStation>
+		</Tables>
+
 		<SystemGroup>
 			<Lookup table="LightNebulaSystem"/>
 
@@ -164,10 +174,10 @@
 						<Station type="&stCathedralOfDomina;"/>
 					
 						<Siblings arcInc="+30">
-							<Station type="&stCommonwealthResidentials;" noMapLabel="true"/>
+							<Lookup table="MajorStation"/>
 						</Siblings>
 						<Siblings arcInc="-30">
-							<Station type="&stCommonwealthResidentials;" noMapLabel="true"/>
+							<Lookup table="MajorStation"/>
 						</Siblings>
 						<Siblings arcInc="+48">
 							<Station type="&stCommonwealthSlums;" noMapLabel="true"/>

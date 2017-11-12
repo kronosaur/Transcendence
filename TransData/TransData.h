@@ -105,6 +105,7 @@ void GenerateSystemLabelCount (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateTopology (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateTopologyMap (CUniverse &Universe, CXMLElement *pCmdLine);
+void GenerateTradeTable (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateTypeDependencies (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateTypeIslands (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateTypeTable (CUniverse &Universe, CXMLElement *pCmdLine);

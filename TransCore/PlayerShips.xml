@@ -106,13 +106,13 @@
 			mass=				"150"
 			thrustRatio=		"1.5"
 			maxSpeed=			"18"
-			cargoSpace=			"200"
+			cargoSpace=			"50"
 
 			reactorPower=		"250"
 			fuelCapacity=		"60000"
 			drivePowerUse=		"20"
 			maxCargoSpace=		"200"
-			maxDevices=			"9"
+			maxDevices=			"10"
 			maxWeapons=			"2"
 
 			stdArmor=			"5000"
@@ -130,10 +130,12 @@
 		
 		<Devices>
 			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
+			<DeviceSlot criteria="c" cannotBeEmpty="true"/>
 			
 			<Device deviceID="&itOmniLaserCannon;"/>
 			<Device deviceID="&itClass1Deflector;"/>
 			<Device deviceID="&it25MWReactor;"/>
+			<Device deviceID="&itCargoHoldExpansion;"/>
 		</Devices>
 
 		<Maneuver

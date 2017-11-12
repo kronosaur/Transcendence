@@ -524,6 +524,12 @@
 
 		listFilter: If non-nil, this is a function to use as a filter of items
 				for the player to sell.
+
+		maxPrice: If non-nil, this is the maximum price we will pay for a single
+				item.
+
+		priceCalc: If non-nil, then use this function to compute the price to
+				pay. Otherwise, we use the normal Trade descriptors
 				
 		sourceObj: If non-nil, get items from this object. NOTE: This is just
 				for the list of items; the <Trade> descriptors (and other stuff
@@ -586,14 +592,43 @@
 						;	Compute the cost of this item
 						
 						(currencyUsed (objGetDefaultCurrency gSource))
-						(itemCost (objGetBuyPrice gSource thisItem))
+						(itemCost
+							(switch
+								(@ gData 'priceCalc)
+									(apply (@ gData 'priceCalc) thisItem Nil)
+
+								(objGetBuyPrice gSource thisItem)
+								)
+							)
 						
 						;	Get some counts
 						
-						(existingCount (objHasItem gSource thisItem))
-						(averageCount (itmGetAverageAppearing thisItem))
 						(availCount (itmGetCount thisItem))
-						
+
+						(existingCount (objHasItem gSource thisItem 1))
+						(averageCount (itmGetAverageAppearing thisItem))
+						(maxExistingCount 
+							(switch
+								(itmMatches thisItem "amdu")
+									(* averageCount 5)
+
+								;	For most commodities, the limit is from 5 to 21 times the
+								;	average count.
+
+								(* averageCount
+									(seededRandom 
+										(* (itmGetType thisItem) (objGetProperty gSource 'destiny)) 
+										15 30
+										)
+									)
+								)
+							)
+						(maxBuyCount 
+							(min availCount
+								(max 0 (- maxExistingCount existingCount))
+								)
+							)
+
 						;	Calc the price offered by the station
 						
 						(offerPrice
@@ -603,21 +638,6 @@
 									
 								(not (itmIsKnown thisItem))
 									(divide itemCost 10)
-									
-								(not existingCount)
-									itemCost
-									
-								(geq existingCount (multiply averageCount 5))
-									0
-
-								(geq existingCount (multiply averageCount 4))
-									(divide (multiply itemCost 25) 100)
-
-								(geq existingCount (multiply averageCount 3))
-									(divide (multiply itemCost 50) 100)
-
-								(geq existingCount (multiply averageCount 2))
-									(divide (multiply itemCost 75) 100)
 									
 								itemCost
 								)
@@ -632,9 +652,12 @@
 						;	Compute the number of items the station is willing
 						;	to buy.
 						
-						(offerCount
+						(affordCount
 							(switch
 								(= offerPrice 0)
+									0
+
+								(and (@ gData 'maxPrice) (gr offerPrice (@ gData 'maxPrice)))
 									0
 									
 								(min availCount 
@@ -642,6 +665,10 @@
 									)
 								)
 							)
+
+						(offerCount (min affordCount maxBuyCount))
+
+						(tradeData (rpgItemTradeComputer thisItem))
 						)
 						
 						;	Set the description
@@ -653,7 +680,7 @@
 							(scrSetDesc gScreen
 								;	The first part describes the item
 								
-								(if (gr offerCount 0)
+								(if (gr offerPrice 0)
 									(scrTranslate gScreen 'descItemStats {
 										value: (if (gr offerPrice 0) (fmtCurrency currencyUsed offerPrice))
 										markup: (if (geq itemMarkup 0) (fmtCurrency currencyUsed itemMarkup))
@@ -665,24 +692,37 @@
 										maxMass: (strMassString (multiply (itmGetMass thisItem) offerCount))
 										})
 									)
-									
+
 								(switch
 									(= offerPrice 0)
-										(scrTranslate gScreen 'descNotForSale { title:title item:thisItem })
+										(scrTranslate gScreen 'descNotForSale { title:title itemName:(itmGetName thisItem 'plural) })
 										
-									(= offerCount 0)
-										(scrTranslate gScreen 'descNotEnoughMoney { title:title item:thisItem currency:(fmtCurrency currencyUsed True) })
-										
+									(= affordCount 0)
+										(scrTranslate gScreen 'descNotEnoughMoney { title:title itemName:(itmGetName thisItem 'article) })
+
+									(= maxBuyCount 0)
+										(scrTranslate gScreen 'descNotInterested { title:title itemName:(itmGetName thisItem 'plural) })
+
 									(= availCount 1)
-										(scrTranslate gScreen 'descBuyOnlyItem { title:title item:thisItem currency:(fmtCurrency currencyUsed offerPrice) })
+										(scrTranslate gScreen 'descBuyOnlyItem { title:title itemName:(itmGetName thisItem 0) currency:(fmtCurrency currencyUsed offerPrice) })
 										
 									(= offerCount 1)
-										(scrTranslate gScreen 'descBuySingleItem { title:title item:thisItem currency:(fmtCurrency currencyUsed offerPrice) })
+										(scrTranslate gScreen 'descBuySingleItem { title:title itemName:(itmGetName thisItem 0) currency:(fmtCurrency currencyUsed offerPrice) })
 										
 									(ls offerCount availCount)
-										(scrTranslate gScreen 'descBuySomeItems { title:title item:thisItem currency:(fmtCurrency currencyUsed offerPrice) offerCount:offerCount availCount:availCount })
+										(scrTranslate gScreen 'descBuySomeItems { title:title itemName:(itmGetName thisItem 0) currency:(fmtCurrency currencyUsed offerPrice) offerCount:offerCount availCount:availCount })
 										
-									(scrTranslate gScreen 'descBuyAllItems { title:title item:thisItem currency:(fmtCurrency currencyUsed offerPrice) })
+									(scrTranslate gScreen 'descBuyAllItems { title:title itemName:(itmGetName thisItem 0) currency:(fmtCurrency currencyUsed offerPrice) })
+									)
+
+								(if tradeData
+									(switch
+										(gr (ecoExchange (@ tradeData 'sellLocalPrice) (@ tradeData 'sellLocalCurrency) currencyUsed) offerPrice)
+											(cat "\n\n" (@ tradeData 'sellLocalRecommendation))
+
+										(gr (ecoExchange (@ tradeData 'sellPrice) (@ tradeData 'sellCurrency) currencyUsed) offerPrice)
+											(cat "\n\n" (@ tradeData 'sellRecommendation))
+										)
 									)
 								)
 							)
@@ -773,67 +813,64 @@
 		</Panes>
 
 		<Language>
-			<Text id="actionSell">"[S]ell"</Text>
+			<Text id="actionSell">[S]ell</Text>
 			
 			<Text id="descItemStats">
-				(if (@ gData 'max)
-					(cat
-						"Unit price: " (@ gData 'value) " (" (@ gData 'max) " for " (@ gData 'maxValue) ")\n"
-						"Unit mass: " (@ gData 'mass) " (" (@ gData 'max) " for " (@ gData 'maxMass) ")\n"
-						(if (@ gData 'markup) 
-							(cat "Unit markup: " (@ gData 'markup) " (" (@ gData 'markupPercent) "%)\n")
-							(cat "Unit discount: " (@ gData 'discount) " (" (@ gData 'markupPercent) "%)\n")
-							)
-						"\n"
+				(cat
+					(if (@ gData 'max)
+						(scrTranslate gScreen 'descItemStatsMultiple gData)
+						(scrTranslate gScreen 'descItemStatsSingle gData)
 						)
-					(cat
-						"Unit price: " (@ gData 'value) "\n"
-						"Unit mass: " (@ gData 'mass) "\n"
-						(if (@ gData 'markup) 
-							(cat "Unit markup: " (@ gData 'markup) " (" (@ gData 'markupPercent) "%)\n")
-							(cat "Unit discount: " (@ gData 'discount) " (" (@ gData 'markupPercent) "%)\n")
-							)
-						"\n"
+					"\n"
+					(if (@ gData 'markup) 
+						(scrTranslate gScreen 'descMarkup gData)
+						(scrTranslate gScreen 'descDiscount gData)
 						)
+					"\n\n"
 					)
 			</Text>
+
+			<Text id="descItemStatsMultiple">
+				Unit price: %value% (%max% for %maxValue%)\n
+				Unit mass: %mass% (%max% for %maxMass%)
+			</Text>
+			<Text id="descItemStatsSingle">
+				Unit price: %value%\n
+				Unit mass: %mass%
+			</Text>
+			<Text id="descMarkup">
+				Unit markup: %markup% (%markupPercent%%)
+			</Text>
+			<Text id="descDiscount">
+				Unit discount: %discount% (%markupPercent%%)
+			</Text>
+
 			<Text id="errorNoItemsToSell">
-				"You have no items to sell to the station."
+				You have no items to sell to the station.
 			</Text>
 			<Text id="descNotForSale">
-				(cat
-					(@ gData 'title) " is not interested in buying " (itmGetName (@ gData 'item) 0x02) "."
-					)
+				%title% is not interested in buying %itemName%.
 			</Text>
 			<Text id="descNotEnoughMoney">
-				(cat
-					(@ gData 'title) " cannot afford to buy " (itmGetName (@ gData 'item) 0x04) "."
-					)
+				%title% cannot afford to buy %itemName%.
+			</Text>
+			<Text id="descNotInterested">
+				%title% is not interested in buying more %itemName%.
 			</Text>
 			<Text id="descBuyOnlyItem">
-				(cat
-					(@ gData 'title) " offers " (@ gData 'currency) " for your " (itmGetName (@ gData 'item) 0x00) "."
-					)
+				%title% offers %currency% for your %itemName%.
 			</Text>
 			<Text id="descBuySingleItem">
-				(cat
-					(@ gData 'title) " offers " (@ gData 'currency) " for a single " (itmGetName (@ gData 'item) 0x00) "."
-					)
+				%title% offers %currency% for a single %itemName%.
 			</Text>
 			<Text id="descBuySomeItems">
-				(cat
-					(@ gData 'title) " offers " (@ gData 'currency) " for each " (itmGetName (@ gData 'item) 0x00) " (up to a maximum of " (@ gData 'offerCount) ")."
-					)
+				%title% offers %currency% for each %itemName% (up to a maximum of %offerCount%).
 			</Text>
 			<Text id="descBuyAllItems">
-				(cat
-					(@ gData 'title) " offers " (@ gData 'currency) " for each " (itmGetName (@ gData 'item) 0x00) "."
-					)
+				%title% offers %currency% for each %itemName%.
 			</Text>
 			<Text id="descSellQuantity">
-				(cat
-					"How many items do you wish to sell at " (@ gData 'value) " each?"
-					)
+				How many items do you wish to sell at %value% each?
 			</Text>
 		</Language>
 	</DockScreen>

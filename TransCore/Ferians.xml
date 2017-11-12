@@ -83,7 +83,11 @@
 				/>
 
 		<!-- Trade and Items -->
-		
+
+		<Trade currency="rin" max="50000" replenish="2500">
+			<BalanceTrade	criteria="{core.ore}"			impact="10"/>
+		</Trade>
+
 		<Items>
 			<Lookup count="4d8"	table="&tbAsteroidOre;"/>
 			<Item count="4d12"	item="&itChronimiumGas;" />

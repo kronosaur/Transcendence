@@ -42,9 +42,9 @@
 		<!-- Trade and Items -->
 		
 		<Trade currency="credit" max="200000" replenish="5000">
-			<Sell	criteria="m +commonwealth; -military; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Sell	criteria="m +commonwealth; -military; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="amdNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
 			
@@ -53,6 +53,13 @@
 			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-6;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="5"/>
+			<ConsumeTrade	criteria="{human.basicFood}"	impact="10"/>
+			<ConsumeTrade	criteria="{human.lux}"		impact="10"/>
+			<ConsumeTrade	criteria="{human.meds}"		impact="4"/>
+			<ConsumeTrade	criteria="{human.res}"		impact="2"/>
+			<ConsumeTrade	criteria="{core.ore}"			impact="4"/>
 		</Trade>
 
 		<Items>
@@ -181,9 +188,9 @@
 		<!-- Trade and Items -->
 		
 		<Trade currency="credit" max="200000" replenish="5000">
-			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="amdNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
 			
@@ -192,6 +199,13 @@
 			<ReplaceArmor	criteria="a L:1-9;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-8;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
+
+			<ConsumeTrade	criteria="{core.antimatterFuel}"	impact="5"/>
+			<ConsumeTrade	criteria="{human.basicFood}"	impact="10"/>
+			<ConsumeTrade	criteria="{human.lux}"		impact="10"/>
+			<ConsumeTrade	criteria="{human.meds}"		impact="4"/>
+			<ConsumeTrade	criteria="{human.res}"		impact="2"/>
+			<ConsumeTrade	criteria="{core.ore}"			impact="4"/>
 		</Trade>
 		
 		<Items>

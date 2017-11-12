@@ -1547,6 +1547,7 @@
 	<!ENTITY rsItems8					"0x00100029">
 	<!ENTITY rsItems9					"0x0010002A">
 	<!ENTITY rsItems10					"0x0010002B">
+	<!ENTITY trStdTreasure				"0x0010002C">
 	
 	<!-- 0030-003F SISTERS OF DOMINA -->
 	
@@ -1564,6 +1565,7 @@
 	<!ENTITY rsKorolovShipping			"0x00100041">
 	<!ENTITY rsKorolovShippingConstruction	"0x00100042">
 	<!ENTITY baCorporateStation			"0x00100043">
+	<!ENTITY itTradingComputerROM		"0x00100044">
 	
 	<!-- 0060-007F COMMONWEALTH FLEET -->
 	
@@ -1976,6 +1978,8 @@
 	<!-- These modules implement encounters. They should be clean, for the
 		most part. -->
 		
+	<Module filename="Abbasid.xml"/>
+	<Module filename="Anarchists.xml"/>
 	<Module filename="Antarctica01.xml"/>
 	<Module filename="Antarctica02.xml"/>
 	<Module filename="AntarcticaD01.xml"/>
@@ -2016,14 +2020,19 @@
 	<Module filename="CorporateHierarchy.xml"/>
 	<Module filename="CSCTerra.xml"/>
 	<Module filename="Dall01.xml"/>
+	<Module filename="DeathDrugsCartel.xml"/>
+	<Module filename="Debris.xml"/>
 	<Module filename="DwargRaiders.xml"/>
-	<Module filename="EncountersVol01.xml"/>
 	<Module filename="Ferians.xml"/>
+	<Module filename="Gaians.xml"/>
+	<Module filename="Heliotropes.xml"/>
+	<Module filename="Himal.xml"/>
 	<Module filename="Huari.xml"/>
 	<Module filename="HuariMission01.xml"/>
 	<Module filename="HuariMission02.xml"/>
 	<Module filename="HuariMission03.xml"/>
 	<Module filename="Iocrym.xml"/>
+	<Module filename="KobolWarlords.xml"/>
 	<Module filename="KorolovFreighters.xml"/>
 	<Module filename="KorolovShipping.xml"/>
 	<Module filename="Kronosaurus.xml"/>
@@ -2034,18 +2043,26 @@
 	<Module filename="KSMissionC01.xml"/>
 	<Module filename="KSMissionC02.xml"/>
 	<Module filename="Luminous.xml"/>
+	<Module filename="Marauders.xml"/>
 	<Module filename="OutlawMiners.xml"/>
+	<Module filename="Outlaws.xml"/>
 	<Module filename="Penitents.xml"/>
+	<Module filename="Pteravores.xml"/>
 	<Module filename="RaisuStation.xml"/>
+	<Module filename="RanxEmpire.xml"/>
 	<Module filename="Rasiermesser.xml"/>
 	<Module filename="Ringers.xml"/>
 	<Module filename="RogueFleet.xml"/>
+	<Module filename="Salvagers.xml"/>
+	<Module filename="Sapiens.xml"/>
 	<Module filename="SistersOfDomina.xml"/>
 	<Module filename="SungSlavers.xml"/>
 	<Module filename="TeratonResearch.xml"/>
 	<Module filename="Teratons.xml"/>
 	<Module filename="Tinkers.xml"/>
 	<Module filename="UrakWarlords.xml"/>
+	<Module filename="Ventari.xml"/>
+	<Module filename="Xenophobes.xml"/>
 		
 	<!-- These modules implement items. They should be clean, for the most
 		part. -->

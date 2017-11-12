@@ -174,7 +174,7 @@
 							
 							;	Consume damaged items first
 							
-							(setq available (min leftToConsume (objHasItem theSource damagedItem)))
+							(setq available (min leftToConsume (objHasItem theSource damagedItem 1)))
 							(if (gr available 0)
 								(block Nil
 									(objRemoveItem theSource damagedItem available)
@@ -185,7 +185,7 @@
 								
 							;	Consume good items
 							
-							(setq available (min leftToConsume (objHasItem theSource goodItem)))
+							(setq available (min leftToConsume (objHasItem theSource goodItem 1)))
 							(if (gr available 0)
 								(block Nil
 									(objRemoveItem theSource goodItem available)

@@ -423,6 +423,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		if (bDebug)
 			printf("  /systemtest           Generates sample of all systems.\n");
 		printf("  /tradesim             Generates statistics of item trading.\n");
+		printf("  /tradetable           Generates table of trading descriptors.\n");
 		if (bDebug)
 			printf("  /typeDependencies     Show a list of all types and their dependencies.\n");
 		printf("  /typeImages           Generates chart of images.\n");

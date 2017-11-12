@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- Kobol Syndicate ======================================================= -->
+
+	<Sovereign UNID="&svKobolWarlords;"
+			name=":the Kobol Syndicate"
+			shortName=":the Kobol"
+			adjective="Kobol"
+			demonym=":a Kobol warlord(s)"
+			plural="true"
+
+			alignment="destructive chaos"
+			/>
+
+	<ShipClass UNID="&scKobolGunshipOmniTeV9;"
+			manufacturer=		""
+			class=				"Kobol gunship"
+			type=				""
+			defaultSovereign=	"&svKobolWarlords;"
+
+			mass=				"90"
+			cargoSpace=			"100"
+			thrustRatio=		"9"
+			maxSpeed=			"20"
+
+			attributes=			"genericClass,kobolWarlords"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="225" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="135" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="45"  span="90" armorID="&itAdvancedCeralloyArmor;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itOmniTeV9Blaster;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Items>
+			<Item count="2d6" item="&itXenotiteFuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsKobolGunshipOmniHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="26"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="26"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<AISettings
+			fireRateAdj=		"15"
+			fireAccuracy=		"85"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+	</ShipClass>
+
+	<ShipClass UNID="&scKobolGunshipDualTeV9;"
+			manufacturer=		""
+			class=				"Kobol gunship"
+			type=				""
+			defaultSovereign=	"&svKobolWarlords;"
+
+			mass=				"90"
+			cargoSpace=			"100"
+			thrustRatio=		"9"
+			maxSpeed=			"20"
+
+			attributes=			"genericClass,kobolWarlords"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="225" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="135" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="45"  span="90" armorID="&itAdvancedCeralloyArmor;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itDualTeV9Blaster;" />
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Items>
+			<Item count="2d6" item="&itXenotiteFuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsKobolGunshipDualHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="26"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="26"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<AISettings
+			fireRateAdj=		"15"
+			fireRangeAdj=		"40"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+	</ShipClass>
+
+	<ShipClass UNID="&scKobolGunshipMissiles;"
+			manufacturer=		""
+			class=				"Kobol gunship"
+			type=				""
+			defaultSovereign=	"&svKobolWarlords;"
+
+			mass=				"90"
+			cargoSpace=			"100"
+			thrustRatio=		"9"
+			maxSpeed=			"20"
+
+			attributes=			"genericClass,kobolWarlords"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="225" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="135" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="45"  span="90" armorID="&itAdvancedCeralloyArmor;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itRasiermesserLauncher;" posAngle="90" posRadius="20"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Items>
+			<Item count="2d6" item="&itXenotiteFuelRod;"/>
+			<Item chance="50" count="1d12" item="&itGotha400Seeker;"/>
+			<Item count="4d12" item="&itGotha10Missile;"/>
+		</Items>
+
+		<Image imageID="&rsKobolGunshipMissilesHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="26"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="26"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+	</ShipClass>
+
+	<!-- Kobol Warlord Camp -->
+
+	<StationType UNID="&stKobolWarlordCamp;"
+			name=				"Kobol warlord camp"
+			sovereign=			"&svKobolWarlords;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itAdvancedCeralloyArmor;"
+			hitPoints=			"450"
+            regen=              "4"
+			fireRateAdj=		"20"
+			explosionType=		"&vtThermoExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envWater, envAvoidsEarth, generic, human, kobol, populated, warlords"
+			levelFrequency=		"----- -cur- ----- ----- -----"
+			locationCriteria=	"+planetary"
+			enemyExclusionRadius="50"
+			>
+
+		<Image			imageID="&rsStations8;" imageX="0" imageY="896" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="45" posRadius="49"/>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="130" posRadius="50"/>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="215" posRadius="50"/>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="325" posRadius="50"/>
+		</Devices>
+
+		<Ships>
+			<Table count="1d3">
+				<Ship	chance="40"	class="&scKobolGunshipDualTeV9;" orders="patrol" patrolDist="20"/>
+				<Ship	chance="40"	class="&scKobolGunshipOmniTeV9;" orders="patrol" patrolDist="20"/>
+				<Ship	chance="20"	class="&scKobolGunshipMissiles;" orders="patrol" patrolDist="20"/>
+			</Table>
+			<Table count="1d3">
+				<Ship	chance="40"	class="&scKobolGunshipDualTeV9;" orders="guard" />
+				<Ship	chance="40"	class="&scKobolGunshipOmniTeV9;" orders="guard" />
+				<Ship	chance="20"	class="&scKobolGunshipMissiles;" orders="guard" />
+			</Table>
+		</Ships>
+
+		<Items>
+			<Item count="1d12"	  item="&itGotha400Seeker;"/>
+			<Item count="4d12"	  item="&itGotha10Missile;"/>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables8;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem8;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem8;"/>
+			</Table>
+		</Items>
+
+	</StationType>
+
+	<!-- Resources -->
+
+	<Image UNID="&rsKobolGunshipDualHD;"		bitmap="Resources\KobolGunshipDualHD.jpg"		bitmask="Resources\KobolGunshipDualHDMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsKobolGunshipMissilesHD;"	bitmap="Resources\KobolGunshipMissilesHD.jpg"	bitmask="Resources\KobolGunshipMissilesHDMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsKobolGunshipOmniHD;"		bitmap="Resources\KobolGunshipOmniHD.jpg"		bitmask="Resources\KobolGunshipOmniHDMask.bmp"  	loadOnUse="true"/>
+
+</TranscendenceModule>

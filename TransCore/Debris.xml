@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- Sealed Cargo Container =============================================== -->
+
+	<!-- Cargo Container (Sealed) -->
+
+	<StationType UNID="&stSealedCargoContainer;"
+			name=				"abandoned cargo container"
+			sovereign=			"&svNeutral;"
+			inherit=			"&unidCommonText;"
+		
+			abandonedScreen=	"Main"
+			dockScreen=			"Main"
+
+			structuralHitPoints="20"
+			ejectaType=			"&vtWreckEjecta;"
+
+			scale=				"ship"
+			mobile=				"true"
+			mass=				"50"
+			noMapIcon=			"true"
+
+			attributes=			"debris,friendly"
+			levelFrequency=		"ucccu rrvv- ----- ----- -----"
+			locationCriteria=	"+asteroids"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="480" imageY="0" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="32" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="64" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="96" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="128" imageWidth="32" imageHeight="32" />
+
+			<Image			imageID="&rsStations1;" imageX="480" imageY="160" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="192" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="224" imageWidth="32" imageHeight="32" />
+		</ImageVariants>
+
+		<InitialData>
+			<Opened		data="Nil"/>
+		</InitialData>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockScreens>
+			<Main>
+				<InitialPane>
+					(if (objGetData gSource "Opened")
+						"Opened"
+						"Default"
+						)
+				</InitialPane>
+
+				<Panes>
+					<Default
+							desc=	"=(scrTranslate gScreen 'descDefault)">
+
+						<Actions>
+							<Action id="actionOpenSeal" default="1">
+								(block (contents roll)
+									(objSetData gSource "Opened" True)
+
+									; Pick contents randomly
+									(setq roll (random 1 100))
+									(switch
+										(ls roll 15)
+											(setq contents 1)	; 15% empty
+
+										(ls roll 45)
+											(block Nil			; 30% random items
+												(objAddRandomItems gSource &trCargoContainer; 1)
+												(setq contents 2)
+												)
+
+										(ls roll 55)
+											(setq contents 3)	; 10% acid
+										(ls roll 75)
+											(setq contents 4)	; 20% refugees
+										(setq contents 5)		; 25% pirate attack
+										)
+
+									; Set the pane and contents
+									(scrShowPane gScreen (cat "Contents" contents))
+									(objSetData gSource "Contents" contents)
+									)
+							</Action>
+
+							<Action id="actionUndock" cancel="1">
+								<Exit/>
+							</Action>
+
+						</Actions>
+					</Default>
+
+					<Opened>
+						<OnPaneInit>
+							(block nil
+								(scrSetDesc gScreen (cat
+									(scrTranslate gScreen 'descOpenedStart)
+									(switch
+										(eq (objGetData gSource "Contents") 4)
+											(scrTranslate gScreen 'descOpenedRefugees)
+										(block (allItems itemCount)
+											(setq allItems (objGetItems gSource "*"))
+											(setq itemCount (count allItems))
+											(scrSetData gScreen 'itemName (itmGetName (@ allItems 0) 8))
+											(switch
+												(eq itemCount 0)
+													(scrTranslate gScreen 'descNoItemsHere)
+												(eq itemCount 1)
+													(scrTranslate gScreen 'descOpenedOneItem)
+												(scrTranslate gScreen 'descOpenedSeveralItems)
+												)
+											)
+										)
+									))
+								(if (not (objGetItems gSource '*U))
+									(block nil
+										(scrEnableAction gScreen 'actionLoot nil)
+										(scrSetActionDesc gScreen 'actionLoot (scrTranslate gScreen 'descNoItemsHere))
+										)
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionLoot" default="1">
+								(scrShowScreen gScreen &dsRPGLoot; {
+									nextScreen: "Main"
+									})
+							</Action>
+
+							<Action id="actionUndock" cancel="1" default="1">
+								<Exit/>
+							</Action>
+
+						</Actions>
+					</Opened>
+
+					; Cargo container is empty
+
+					<Contents1
+							desc=	"=(scrTranslate gScreen 'descContentsEmpty)">
+
+						<Actions>
+							<Action id="actionUndock" default="1" cancel="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Contents1>
+
+					; Cargo container has some random junk
+
+					<Contents2>
+						<OnPaneInit>
+							(block (allItems itemCount)
+								(setq allItems (objGetItems gSource "*"))
+								(setq itemCount (count allItems))
+								(scrSetData gScreen 'itemName (itmGetName (@ allItems 0) 8))
+								(switch
+									(eq itemCount 0)
+										(scrSetDescTranslate gScreen 'descContentsEmpty)
+									(eq itemCount 1)
+										(scrSetDescTranslate gScreen 'descContents2OneItem)
+									(scrSetDescTranslate gScreen 'descContents2VariousItems)
+									)
+								(if (not (objGetItems gSource '*U))
+									(block nil
+										(scrEnableAction gScreen 'actionLoot nil)
+										(scrSetActionDesc gScreen 'actionLoot (scrTranslate gScreen 'descNoItemsHere))
+										)
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionLoot" default="1">
+								(scrShowScreen gScreen &dsRPGLoot; {
+									nextScreen: "Main"
+									})
+							</Action>
+
+							<Action id="actionUndock" cancel="1" default="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Contents2>
+
+					; Cargo container is filled with a powerful acid
+
+					<Contents3>
+						<OnPaneInit>
+							(block (allItems desc)
+								(setq desc (scrTranslate gScreen 'descContents3Start))
+
+								; pick a random item in the ship's cargo hold to damage
+								(setq allItems (objGetItems gPlayerShip "*U -ID; -questItem;"))
+
+								; Destroy an item
+								(if (eq (count allItems) 0)
+									(setq desc (cat desc (scrTranslate gScreen 'descContents3NothingDamaged)))
+									(block (itemDamaged)
+										(setq itemDamaged (random allItems))
+										(scrSetData gScreen 'itemName (itmGetName itemDamaged 8))
+										(setq desc (cat desc (scrTranslate gScreen 'descContents3ItemDestroyed)))
+										(objRemoveItem gPlayerShip itemDamaged)
+										)
+									)
+
+								; set the desc
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionUndock" default="1" cancel="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Contents3>
+
+					; Cargo container is occupied by some refugees
+
+					<Contents4
+							desc=	"=(scrTranslate gScreen 'descContents4)">
+
+						<Actions>
+							<Action id="actionUndock" default="1" cancel="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Contents4>
+
+					; Cargo container is a trap for some pirates
+
+					<Contents5
+							desc=	"=(scrTranslate gScreen 'descContents5)">
+
+						<Actions>
+							<Action id="actionContinue" default="1" cancel="1">
+								(block Nil
+									(sysAddEncounterEventAtDist 0 gPlayerShip &etPirateAmbush1; 50)
+									(scrExitDock gScreen)
+									)
+							</Action>
+						</Actions>
+					</Contents5>
+
+				</Panes>
+			</Main>
+
+		</DockScreens>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
+				
+		<Language>
+			<Text id="descDefault">"The hatch to the container is sealed. Do you wish to open it?"</Text>
+			<Text id="actionOpenSeal">"[O]pen Seal"</Text>
+			<Text id="descOpenedStart">"You are docked at an abandoned cargo container. "</Text>
+			<Text id="descOpenedRefugees">"There is a family of refugees living here."</Text>
+			<Text id="descOpenedOneItem">(cat "You see " (scrGetData gScreen 'itemName) " here.")</Text>
+			<Text id="descOpenedSeveralItems">"You see several items here."</Text>
+			<Text id="descContentsEmpty">"The cargo container is empty."</Text>
+			<Text id="descContents2OneItem">(cat "The cargo container has " (scrGetData gScreen 'itemName) ".")</Text>
+			<Text id="descContents2VariousItems">"The cargo container is filled with various items."</Text>
+			<Text id="descContents3Start">"The cargo container was filled with a powerful industrial solvent which has flooded your ship's cargo hold. "</Text>
+			<Text id="descContents3NothingDamaged">"Fortunately, nothing was damaged."</Text>
+			<Text id="descContents3ItemDestroyed">(cat "The solvent has destroyed " (scrGetData gScreen 'itemName) ".")</Text>
+			<Text id="descContents4">"You open the cargo doors and see that a family of refugees is living inside. They are somewhat annoyed at being disturbed."</Text>
+			<Text id="descContents5">"This appears to be a makeshift base for a group of pirates. You see several enemy ships appear on your screen..."</Text>
+			
+		</Language>
+	</StationType>
+
+<!-- Ship Wrecks ========================================================== -->
+
+	<!-- Centurion wreck -->
+
+	<StationType UNID="&stCenturionWreck;"
+			name=				"(Centurion wreck)"
+			sovereign=			"&svCommonwealthFleet;"
+			dockScreen=			"&dsAbandonedShip;"
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"debris, friendly, shipwreck"
+			levelFrequency=		"----- rucur ----- ----- -----"
+			locationCriteria=	"-planetary"
+			>
+		<Image shipwreckID="&scCenturion;"/>
+
+		<Items>
+			<Table>
+				<Null	chance="20"/>
+				<Item	chance="30" count="2d6" item="&itHeliumAssembly;"/>
+				<Item	chance="20" count="1d4" item="&itBlastPlate;"/>
+				<Item	chance="5"  count="1"	item="&itTeV9Blaster;"/>
+				<Item	chance="5"  count="1"	item="&itR1Deflector;"/>
+				<Lookup chance="10" count="1"	table="&trConsumables7;"/>
+				<Lookup chance="5"  count="1"	table="&trMinorItem7;"/>
+				<Lookup chance="5"  count="1"	table="&trMajorItem7;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+	<!-- Sandstorm wreck -->
+
+	<StationType UNID="&stSandstormWreck;"
+			name=				"(Sandstorm wreck)"
+			sovereign=			"&svAres;"
+			dockScreen=			"&dsAbandonedShip;"
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"debris, friendly, shipwreck"
+			levelFrequency=		"----- rucur ----- ----- -----"
+			locationCriteria=	"-planetary"
+			>
+		<Image shipwreckID="&scSandstorm;"/>
+
+		<Items>
+			<Table>
+				<Null	chance="40"/>
+				<Item	chance="15" count="2d6" item="&itHeliumAssembly;"/>
+				<Item	chance="10" count="1d4" item="&itLightTharsisPlate;"/>
+				<Item	chance="5"  count="1"	item="&itLightningCannon;"/>
+				<Lookup chance="15" count="1"	table="&trConsumables7;"/>
+				<Lookup chance="10" count="1"	table="&trMinorItem7;"/>
+				<Lookup chance="5"  count="1"	table="&trMajorItem7;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+<!-- Weapons Cache ======================================================== -->
+
+	<!-- Weapons Cache -->
+
+	<StationType UNID="&stWeaponsCache;"
+			name=				"(weapons cache)"
+			sovereign=			"&svOutlaw;"
+			dockScreen=			"&dsAbandonedCrate;"
+
+			structuralHitPoints="15"
+			ejectaType=			"&vtWreckEjecta;"
+
+			scale=				"ship"
+			mobile=				"true"
+			mass=				"50"
+			noMapIcon=			"true"
+			destroyWhenEmpty=	"true"
+
+			attributes=			"enemy, envEarth, envAvoidsAir"
+			levelFrequency=		"-ruuv ----- ----- ----- -----"
+			locationCriteria=	"--planetary"
+			enemyExclusionRadius="80"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="480" imageY="256" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="288" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="320" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="352" imageWidth="32" imageHeight="32" />
+		</ImageVariants>
+
+		<Names>abandoned cargo crate</Names>
+
+		<Ships>
+			<Table>
+				<Ship chance="50"	count="1d2"	class="&scRoninB;" orders="patrol" patrolDist="5" />
+				<Ship chance="50"	count="1"	class="&scRoninC;" orders="patrol" patrolDist="5"/>
+			</Table>
+		</Ships>
+
+		<Items>
+			<RandomItem				count="1d4+1" 
+					criteria=		"m -Illegal; -Military; -NotStandard; "
+					level=			"3"
+					levelCurve=		"2"
+					/>
+			<RandomItem chance="50"	count="1" 
+					criteria=		"w -Illegal; -Military; -NotStandard; "
+					level=			"2"
+					levelCurve=		"2"
+					/>
+		</Items>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
+
+		<Satellites>
+			<Orbitals count="1d4" distance="1d8+6" angle="random">
+				<Station type="&stWeaponsCrate;"/>
+			</Orbitals>
+		</Satellites>
+
+	</StationType>
+
+	<!-- Weapons Crate -->
+
+	<StationType UNID="&stWeaponsCrate;"
+			name=				"(weapons cache)"
+			sovereign=			"&svOutlaw;"
+			dockScreen=			"&dsAbandonedCrate;"
+
+			structuralHitPoints="15"
+			ejectaType=			"&vtWreckEjecta;"
+
+			scale=				"ship"
+			mobile=				"true"
+			mass=				"100"
+			noMapIcon=			"true"
+			destroyWhenEmpty=	"true"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="480" imageY="256" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="288" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="320" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="352" imageWidth="32" imageHeight="32" />
+		</ImageVariants>
+
+		<Names>abandoned cargo crate</Names>
+
+		<Ships>
+			<Table>
+				<Null chance="20"/>
+				<Ship chance="50"	count="1"	class="&scRoninB;" orders="guard"/>
+				<Ship chance="30"	count="1"	class="&scRoninC;" orders="guard"/>
+			</Table>
+		</Ships>
+
+		<Items>
+			<RandomItem				count="1d3-1" 
+					criteria=		"m -Illegal; -Military; -NotStandard; "
+					level=			"3"
+					levelCurve=		"2"
+					/>
+			<RandomItem chance="20"	count="1" 
+					criteria=		"w -Illegal; -Military; -NotStandard; "
+					level=			"2"
+					levelCurve=		"2"
+					/>
+		</Items>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
+
+	</StationType>
+
+</TranscendenceModule>

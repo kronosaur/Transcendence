@@ -232,9 +232,6 @@
     <None Include="DwargRaiders.xml">
       <Filter>Human Space Library\Misc Encounters</Filter>
     </None>
-    <None Include="EncountersVol01.xml">
-      <Filter>Human Space Library\Misc Encounters</Filter>
-    </None>
     <None Include="Heretic.xml">
       <Filter>Human Space Library\Star Systems</Filter>
     </None>
@@ -617,6 +614,60 @@
     </Xml>
     <Xml Include="Dantalion.xml">
       <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="CoreItems.xml">
+      <Filter>Core Types</Filter>
+    </Xml>
+    <Xml Include="RPGTradingComputer.xml">
+      <Filter>RPG Library</Filter>
+    </Xml>
+    <Xml Include="Abbasid.xml">
+      <Filter>Human Space Library\Misc Encounters</Filter>
+    </Xml>
+    <Xml Include="Xenophobes.xml">
+      <Filter>Human Space Library\Misc Encounters</Filter>
+    </Xml>
+    <Xml Include="DeathDrugsCartel.xml">
+      <Filter>Human Space Library\Misc Encounters</Filter>
+    </Xml>
+    <Xml Include="Anarchists.xml">
+      <Filter>Human Space Library\Misc Encounters</Filter>
+    </Xml>
+    <Xml Include="Gaians.xml">
+      <Filter>Human Space Library\Misc Encounters</Filter>
+    </Xml>
+    <Xml Include="Heliotropes.xml">
+      <Filter>Human Space Library\Misc Encounters</Filter>
+    </Xml>
+    <Xml Include="Himal.xml">
+      <Filter>Human Space Library\Misc Encounters</Filter>
+    </Xml>
+    <Xml Include="KobolWarlords.xml">
+      <Filter>Human Space Library\Misc Encounters</Filter>
+    </Xml>
+    <Xml Include="Marauders.xml">
+      <Filter>Human Space Library\Misc Encounters</Filter>
+    </Xml>
+    <Xml Include="Outlaws.xml">
+      <Filter>Human Space Library\Misc Encounters</Filter>
+    </Xml>
+    <Xml Include="Pteravores.xml">
+      <Filter>Human Space Library\Misc Encounters</Filter>
+    </Xml>
+    <Xml Include="RanxEmpire.xml">
+      <Filter>Human Space Library\Misc Encounters</Filter>
+    </Xml>
+    <Xml Include="Salvagers.xml">
+      <Filter>Human Space Library\Misc Encounters</Filter>
+    </Xml>
+    <Xml Include="Sapiens.xml">
+      <Filter>Human Space Library\Misc Encounters</Filter>
+    </Xml>
+    <Xml Include="Debris.xml">
+      <Filter>Human Space Library\Misc Encounters</Filter>
+    </Xml>
+    <Xml Include="Ventari.xml">
+      <Filter>Human Space Library\Misc Encounters</Filter>
     </Xml>
   </ItemGroup>
 </Project>

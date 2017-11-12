@@ -112,44 +112,78 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(block (thisItem maxCount)
-						(if (scrGetData gScreen 'cursor)
+					(switch
+
+						;	If we want to select a specific item, then do it (this will
+						;	cause a refresh of the pane).
+
+						(scrGetData gScreen 'cursor)
 							(block Nil
 								(scrSetListCursor gScreen (scrGetData gScreen 'cursor))
 								(scrSetData gScreen 'cursor Nil)
 								)
-							)
 
-						(setq thisItem (scrGetItem gScreen))
-						(setq maxCount (itmGetCount thisItem))
+						;	If we have no items, then nothing to do
 
-						(switch
-							(not thisItem)
+						(not (scrGetItem gScreen))
+							(block Nil
 								(scrSetDescTranslate gScreen 'descCargoEmpty)
+								(scrShowAction gScreen 'actionUse Nil)
+								(scrEnableAction gScreen 'actionJettisonItem Nil)
+								)
 
-							(= maxCount 1)
-								(scrSetDescTranslate gScreen 'descCargoItem {
+						;	Otherwise, initialize the pane
+
+						(block (
+							(thisItem (scrGetItem gScreen))
+							(maxCount (itmGetCount thisItem))
+							(unitPrice (itmGetPrice thisItem))
+							(itemCurrency (itmGetProperty thisItem 'currency))
+
+							;	Compose text that describes the item
+
+							(itemText (if (= maxCount 1)
+
+								(scrTranslate gScreen 'descCargoItem {
 									unitMass: (strMassString (itmGetMass thisItem))
+									unitPrice: (fmtCurrency  itemCurrency unitPrice)
 									})
 
-							(scrSetDescTranslate gScreen 'descCargoItems {
-								unitMass: (strMassString (itmGetMass thisItem))
-								count: maxCount
-								totalMass: (strMassString (* (itmGetMass thisItem) maxCount))
-								})
+								(scrTranslate gScreen 'descCargoItems {
+									unitMass: (strMassString (itmGetMass thisItem))
+									unitPrice: (fmtCurrency itemCurrency unitPrice)
+									count: maxCount
+									totalMass: (strMassString (* (itmGetMass thisItem) maxCount))
+									totalPrice: (fmtCurrency itemCurrency (* unitPrice maxCount))
+									})
+								))
+
+							;	Compute trade compute text
+
+							(tradeData (rpgItemTradeComputer thisItem))
 							)
 
-						;	Remember some calculations for later
-						(scrSetData gScreen 'maxCount maxCount)
+							;	Set the text
 
-						;	Enable/disable actions
-						(scrShowAction gScreen 'actionUse 
-							(and
-								(objGetItemProperty gPlayerShip thisItem 'canBeUsed)
-								(objGetItemProperty gPlayerShip thisItem 'hasUseScreen)
+							(if tradeData
+								(scrSetDesc gScreen itemText "\n\n" (@ tradeData 'sellRecommendation))
+								(scrSetDesc gScreen itemText)
 								)
+
+							;	Remember some calculations for later
+
+							(scrSetData gScreen 'maxCount maxCount)
+
+							;	Enable/disable actions
+
+							(scrShowAction gScreen 'actionUse 
+								(and
+									(objGetItemProperty gPlayerShip thisItem 'canBeUsed)
+									(objGetItemProperty gPlayerShip thisItem 'hasUseScreen)
+									)
+								)
+							(scrEnableAction gScreen 'actionJettisonItem (gr maxCount 0))
 							)
-						(scrEnableAction gScreen 'actionJettisonItem (gr maxCount 0))
 						)
 				</OnPaneInit>
 
@@ -246,9 +280,28 @@
 			<Text id="actionUse">[U]se this Item</Text>
 
 			<Text id="descCargoEmpty">You are in your ship's cargo hold.</Text>
-			<Text id="descCargoItem">Unit mass: %unitMass%</Text>
-			<Text id="descCargoItems">Unit mass: %unitMass% (%count% at %totalMass%)</Text>
+			<Text id="descCargoItem">
+				Unit mass: %unitMass%\n
+				Unit price: %unitPrice%
+			</Text>
+			<Text id="descCargoItems">
+				Unit mass: %unitMass% (%count% at %totalMass%)\n
+				Unit price: %unitPrice% (%count% for %totalPrice%)
+			</Text>
+			<Text id="descTradeData">
+				Trade computer: %sellRecommendation% for %price%.
+			</Text>
+			<Text id="descTradeDataMultiple">
+				Trade computer: %sellRecommendation% for %price% (%count% for %totalPrice%).
+			</Text>
 			<Text id="descHowMany">How many items do you wish to jettison?</Text>
+
+			<Text id="tradeComputer.sellInSystem">
+				Sell in the %systemName% System
+			</Text>
+			<Text id="tradeComputer.sellToObj">
+				Sell to %objName% in this system
+			</Text>
 		</Language>
 	</DockScreen>
 
@@ -517,7 +570,7 @@
 			</Default>
 		</Panes>
 	</DockScreen>
-	
+
 <!-- RESOURCES -->
 
 	<Image UNID="&rsItemListScreen;"	bitmap="Resources\ItemListScreen.jpg"		bitmask="Resources\ItemListScreenMask.bmp"		loadOnUse="true" />

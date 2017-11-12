@@ -540,16 +540,16 @@
 			; 0) The title to use for the sell screen.
 			; 1) The maximum price that the station will offer.
 			; ------------------------------------------------------------------
-			
-				(block Nil
-					; Generate the function that computes price and availability
-					(switch
-						(isfunction itemsToBuy)
-							(setq gMargin itemsToBuy)
+
+				(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
+					title: (@ screenOptions 0)
+					listFilter: 
+						(switch
+							(isfunction itemsToBuy)
+								itemsToBuy
 							
-						; If itemsToBuy is set, then combine with station's Trade descriptors
-						(and itemsToBuy (not (eq itemsToBuy "*")))
-							(setq gMargin 
+							; If itemsToBuy is set, then combine with station's Trade descriptors
+							(and itemsToBuy (not (eq itemsToBuy "*")))
 								(lambda (theItem)
 									(switch
 										(not (itmMatches theItem itemsToBuy))
@@ -558,22 +558,16 @@
 										(objGetBuyPrice gSource theItem)
 										)
 									)
-								)
-							
-						; Otherwise, rely on station's Trade descriptors
-						(setq gMargin intComputeBuyPrice)
-						)
+							)
 
-					; Handle some options (Nil is OK)
-					(setq gTitle (item screenOptions 0))
-					(setq gMaxPrice (item screenOptions 1))
-					
-					; Result
-					(setq gResult 0)
+					priceCalc:
+						(switch
+							(isfunction itemsToBuy)
+								itemsToBuy
+							)
 
-					; Show the screen
-					(scrShowScreen gScreen "&dsExchangeSell;")
-					)
+					maxPrice: (@ screenOptions 1)
+					})
 				))
 			
 			; Star system functions  -------------------------------------------

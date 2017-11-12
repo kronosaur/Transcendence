@@ -208,9 +208,9 @@
 		</Items>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +commonwealth; -military; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="400" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Sell	criteria="m +commonwealth; -military; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="400" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="amdNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
 			
@@ -219,6 +219,13 @@
 			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
+
+			<BalanceTrade	criteria="{core.fusionFuel}"		impact="20"/>
+			<BalanceTrade	criteria="{human.basicFood}"	impact="20"/>
+			<BalanceTrade	criteria="{human.lux}"		impact="20"/>
+			<BalanceTrade	criteria="{human.meds}"		impact="20"/>
+			<BalanceTrade	criteria="{human.res}"		impact="20"/>
+			<BalanceTrade	criteria="{core.ore}"			impact="10"/>
 		</Trade>
 		
 		<!-- Satellites -->

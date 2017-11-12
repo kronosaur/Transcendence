@@ -1437,9 +1437,9 @@
 		</DockingPorts>
 
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="*NU -illegal; -notForSale; -notStandard;"	priceAdj="110" noDescription="true"/>
+			<Sell	criteria="*NU -illegal; -notForSale; -notStandard;"	priceAdj="100" noDescription="true"/>
 			
-			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="90"/>
+			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
@@ -1885,13 +1885,13 @@
 		<!-- Trade and Items -->
 		
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Buy	criteria="amswNU -Illegal; -NotForSale;"	priceAdj="50"/>
+			<Sell	criteria="m +commonwealth; -premiumAmmo; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="amdNU -Illegal; -NotForSale;"	priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
 			
-			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="94"/>
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-8;" priceAdj="100"/>
 		</Trade>
@@ -2510,6 +2510,225 @@
 			>
 	</StationType>
 	
+	<!-- Rowena's Weapons and Armor: Vol 1 -->
+
+	<ItemType UNID="&itRowenaVol1;"
+			obsolete=			"1"
+			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume I"
+			level=				"1"
+			value=				"50"
+			mass=				"1"
+			frequency=			"notrandom"
+			unknownType=		"&itUnknownROM;"
+			attributes=			"cannotOrder, Info; MinorItem"
+
+			description=		"The definitive guide to starship weapons and armor. This ROM contains specification for commercially available weapons and armor of the Commonwealth."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(block Nil
+				(objSendMessage gSource Nil "\"Rowena's Weapons and Armor (Volume I)\" installed")
+				(itmEnumTypes "adsw" itemType
+					(if (and (geq (itmGetLevel itemType) 1) (leq (itmGetLevel itemType) 5))
+						(itmSetReference itemType)
+						)
+					)
+
+				; Identify the item
+				(itmSetKnown gItem)
+
+				; Remove ROM
+				(objRemoveItem gSource gItem 1)
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Rowena's Weapons and Armor: Vol 2 -->
+
+	<ItemType UNID="&itRowenaVol2;"
+			obsolete=			"1"
+			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume II"
+			level=				"4"
+			value=				"500"
+			mass=				"1"
+			frequency=			"notrandom"
+			unknownType=		"&itUnknownROM;"
+			attributes=			"cannotOrder, Info; MinorItem"
+
+			description=		"The definitive guide to starship weapons and armor. This ROM contains specification for military weapons and armor used in the Commonwealth."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(block Nil
+				(objSendMessage gSource Nil "\"Rowena's Weapons and Armor (Volume II)\" installed")
+				(itmEnumTypes "adsw" itemType
+					(if (and (geq (itmGetLevel itemType) 6) (leq (itmGetLevel itemType) 10))
+						(itmSetReference itemType)
+						)
+					)
+
+				; Identify the item
+				(itmSetKnown gItem)
+
+				; Remove ROM
+				(objRemoveItem gSource gItem 1)
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Rowena's Weapons and Armor: Vol 3 -->
+
+	<ItemType UNID="&itRowenaVol3;"
+			obsolete=			"1"
+			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume III"
+			level=				"8"
+			value=				"2500"
+			mass=				"1"
+			frequency=			"notrandom"
+			unknownType=		"&itUnknownROM;"
+			attributes=			"cannotOrder, Info; MinorItem"
+
+			description=		"The definitive guide to starship weapons and armor. This ROM contains specification for weapons and armor used by the Ancient Races."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(block Nil
+				(objSendMessage gSource Nil "\"Rowena's Weapons and Armor (Volume III)\" installed")
+				(itmEnumTypes "adsw" itemType
+					(if (and (geq (itmGetLevel itemType) 11) (leq (itmGetLevel itemType) 15))
+						(itmSetReference itemType)
+						)
+					)
+
+				; Identify the item
+				(itmSetKnown gItem)
+
+				; Remove ROM
+				(objRemoveItem gSource gItem 1)
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Rowena's Weapons and Armor: Vol 4 -->
+
+	<ItemType UNID="&itRowenaVol4;"
+			obsolete=			"1"
+			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume IV"
+			level=				"12"
+			value=				"10000"
+			mass=				"1"
+			frequency=			"notrandom"
+			unknownType=		"&itUnknownROM;"
+			attributes=			"cannotOrder, Info; MinorItem"
+
+			description=		"The definitive guide to starship weapons and armor. This ROM contains specification for weapons and armor developed by the Halo Races."
+
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(block Nil
+				(objSendMessage gSource Nil "\"Rowena's Weapons and Armor (Volume IV)\" installed")
+				(itmEnumTypes "adsw" itemType
+					(if (and (geq (itmGetLevel itemType) 16) (leq (itmGetLevel itemType) 20))
+						(itmSetReference itemType)
+						)
+					)
+
+				; Identify the item
+				(itmSetKnown gItem)
+
+				; Remove ROM
+				(objRemoveItem gSource gItem 1)
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Rowena's Weapons and Armor: Vol 5 -->
+
+	<ItemType UNID="&itRowenaVol5;"
+			obsolete=			"1"
+			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume V"
+			level=				"16"
+			value=				"30000"
+			mass=				"1"
+			frequency=			"notrandom"
+			unknownType=		"&itUnknownROM;"
+			attributes=			"cannotOrder, Info; MinorItem"
+
+			description=		"The definitive guide to starship weapons and armor. This ROM contains specification for weapons and armor used by the Hierodules and the entities Oracus and Domina."
+
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(block Nil
+				(objSendMessage gSource Nil "\"Rowena's Weapons and Armor (Volume V)\" installed")
+				(itmEnumTypes "adsw" itemType
+					(if (and (geq (itmGetLevel itemType) 21) (leq (itmGetLevel itemType) 25))
+						(itmSetReference itemType)
+						)
+					)
+
+				; Identify the item
+				(itmSetKnown gItem)
+
+				; Remove ROM
+				(objRemoveItem gSource gItem 1)
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Centauri Commandship (Obsolete) -->
+
+	<ShipClass UNID="&scCentauriCommandShip;"
+			obsolete=			"39"
+			manufacturer=		"Centauri"
+			class=				""
+			type=				"command ship"
+
+			mass=				"100"
+			cargoSpace=			"50"
+			thrust=				"400"
+			maxSpeed=			"10"
+
+			attributes=			"centauriWarlords"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itLightPlasteelPlate;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itLightPlasteelPlate;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itLightPlasteelPlate;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itLightPlasteelPlate;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itPartisanCannon;" secondaryWeapon="true" omnidirectional="true"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"4.5"
+			rotationAccel=		"1.0"
+			/>
+
+		<Image imageID="&rsMediumShips2;" imageX="384" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"70"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
 	<Globals>
 		(block Nil
 			(setq intBuyItems (lambda (itemCount itemCost)

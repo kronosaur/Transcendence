@@ -176,6 +176,8 @@
     <None Include="Antarctica.xml">
       <SubType>Designer</SubType>
     </None>
+    <Xml Include="Abbasid.xml" />
+    <Xml Include="Anarchists.xml" />
     <Xml Include="BattleArenaKidnapped.xml" />
     <Xml Include="BattleArenaMelee.xml" />
     <Xml Include="Benedict.xml">
@@ -218,9 +220,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="DwargRaiders.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="EncountersVol01.xml">
       <SubType>Designer</SubType>
     </None>
     <None Include="Eridani.xml">
@@ -481,6 +480,7 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="CoreHitEffects.xml" />
+    <Xml Include="CoreItems.xml" />
     <Xml Include="CorePlaceholders.xml">
       <SubType>Designer</SubType>
     </Xml>
@@ -489,6 +489,8 @@
     </Xml>
     <Xml Include="Dall01.xml" />
     <Xml Include="Dantalion.xml" />
+    <Xml Include="DeathDrugsCartel.xml" />
+    <Xml Include="Debris.xml" />
     <Xml Include="EtaCeti.xml" />
     <Xml Include="Ferians.xml">
       <SubType>Designer</SubType>
@@ -496,6 +498,9 @@
     <Xml Include="Fiona.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="Gaians.xml" />
+    <Xml Include="Heliotropes.xml" />
+    <Xml Include="Himal.xml" />
     <Xml Include="Huaramarca.xml" />
     <Xml Include="HuaramarcaMission01.xml" />
     <Xml Include="HuaramarcaMission02.xml" />
@@ -514,6 +519,7 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="Jenna.xml" />
+    <Xml Include="KobolWarlords.xml" />
     <Xml Include="KorolovFreighters.xml" />
     <Xml Include="Kronosaurus.xml" />
     <Xml Include="KronosaurusMission01.xml" />
@@ -522,12 +528,16 @@
     <Xml Include="KSMission03.xml" />
     <Xml Include="KSMissionC01.xml" />
     <Xml Include="KSMissionC02.xml" />
+    <Xml Include="Marauders.xml" />
     <Xml Include="Ore.xml" />
+    <Xml Include="Outlaws.xml" />
     <Xml Include="Penitents.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="Pteravores.xml" />
     <Xml Include="RaisuStation.xml" />
     <Xml Include="Rama.xml" />
+    <Xml Include="RanxEmpire.xml" />
     <Xml Include="RPGCommoditiesExchange.xml" />
     <Xml Include="RPGCommonText.xml" />
     <Xml Include="RPGComponents.xml">
@@ -539,8 +549,11 @@
     <Xml Include="RPGShipBroker.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="RPGTradingComputer.xml" />
     <Xml Include="RPGUsefulItems.xml" />
+    <Xml Include="Salvagers.xml" />
     <Xml Include="Sanctuary.xml" />
+    <Xml Include="Sapiens.xml" />
     <Xml Include="StdMiningEquipment.xml">
       <SubType>Designer</SubType>
     </Xml>
@@ -548,9 +561,11 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="TeratonResearch.xml" />
+    <Xml Include="Ventari.xml" />
     <Xml Include="Volkov.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="Xenophobes.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

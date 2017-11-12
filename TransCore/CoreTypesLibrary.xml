@@ -149,6 +149,7 @@
 	
 	<!ENTITY unidCoreTypesLibrary		"0x00030000">
 	<!ENTITY rsDeepSpace				"0x00030001">
+	<!ENTITY unidCoreCriteria			"0x00030002">
 	
 	<!-- 0020-002F PROJECTILE EFFECTS -->
 	
@@ -194,6 +195,7 @@
 	<Module filename="CoreExplosions.xml"/>
 	<Module filename="CoreFireEffects.xml"/>
 	<Module filename="CoreHitEffects.xml"/>
+	<Module filename="CoreItems.xml"/>
 	<Module filename="CorePlaceholders.xml"/>
 	<Module filename="CoreProjectileEffects.xml"/>
 

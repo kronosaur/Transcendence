@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- Gaian Terraformers =================================================== -->
+
+	<Sovereign UNID="&svGaianTerraformers;"
+			name=":the Gaian League"
+			shortName=": Gaians"
+			adjective="Gaian"
+			demonym=":a Gaian(s)"
+			plural="true"
+
+			alignment="destructive order"
+			/>
+
+	<!-- Gaian Demolition Cannon -->
+
+	<ItemType UNID="&itGaianDemolitionCannon;"
+			name=				"Gaian demolition cannon"
+			level=				"9"
+			value=				"150000"
+			mass=				"20000"
+			frequency=			"veryrare"
+			numberAppearing=	"1"
+			attributes=			"EnergyWeapon; Military; MajorItem; NotForSale; NotStandard;"
+
+			description=		"Gaians use these cannons for their vast engineering projects. The technology to power the cannon is known only to the Gaians."
+
+			charges=			"8"
+			>
+
+		<Image imageID="&rsItems9;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"beam"
+				deviceSlots=		"2"
+
+				damage=				"thermo:24d20; WMD:7"
+				fireRate=			"60"
+				lifetime=			"30"
+                missileSpeed=       "50"
+				hitPoints=			"20"
+				powerUse=			"200"
+				charges=			"true"
+
+				effect=				"&efThermoShellDefault;"
+				sound=				"&snRecoillessCannon;"
+				>
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Gaian Processor -->
+
+	<ShipClass UNID="&scGaianProcessor;"
+			manufacturer=		"Gaian"
+			class=				""
+			type=				"processor"
+			defaultSovereign=	"&svGaianTerraformers;"
+
+			size=				"80"
+			mass=				"40000"
+			cargoSpace=			"25000"
+			thrustRatio=		"2.5"
+			maxSpeed=			"6"
+
+			cyberDefenseLevel=	"8"
+
+			explosionType=		"&vtThermoExplosion3;"
+
+			attributes=			"capitalShip, gaianTerraformers, genericClass"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itWorldshipArmorPlate;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itGaianDemolitionCannon;" omnidirectional="true" />
+			<Device deviceID="&itThermoCannon;" secondaryWeapon="true" minFireArc="315" maxFireArc="45" posAngle="0" posRadius="40"/>
+			<Device deviceID="&itThermoCannon;" secondaryWeapon="true" minFireArc="45"  maxFireArc="135" posAngle="90" posRadius="30"/>
+			<Device deviceID="&itThermoCannon;" secondaryWeapon="true" minFireArc="135" maxFireArc="225" posAngle="180" posRadius="40"/>
+			<Device deviceID="&itThermoCannon;" secondaryWeapon="true" minFireArc="225" maxFireArc="315" posAngle="270" posRadius="30"/>
+
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"2"
+			rotationAccel=		"0.25"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"300"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"100"
+
+					posX=		"0"
+					posY=		"0"
+					sizeX=		"50"
+					sizeY=		"50"
+					/>
+		</Interior>
+		
+		<Items>
+			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
+			<Item				count="100"		item="&itThermoCannonShell;"/>
+			<Table>
+				<Lookup chance="50"	count="1d4"		table="&trConsumables8;"/>
+				<Lookup chance="35"	count="1"		table="&trMinorItem8;"/>
+				<Lookup chance="15"	count="1"		table="&trMajorItem8;"/>
+			</Table>
+		</Items>
+
+		<Image imageID="&rsLargeShips1;" imageX="1536" imageY="0" imageWidth="192" imageHeight="192"/>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"6"
+			combatStyle=		"standOff"
+			/>
+
+	</ShipClass>
+
+	<!-- Gaian Processor Encounter -->
+
+	<StationType UNID="&stGaianProcessorEncounter;"
+			name=				"(Gaian processor)"
+			sovereign=			"&svUnknownEnemy;"
+			controllingSovereign="&svGaianTerraformers;"
+			dockScreen=			"&dsAbandonedShip;"
+
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envEarth, envAvoidsAir, shipwreck"
+			levelFrequency=		"----- --vuu r----- ----- -----"
+			locationCriteria=	"+asteroids"
+			>
+		<Image shipwreckID="&scTundra;, &scCenturion;, &scSandstorm;"/>
+
+		<Ships>
+			<Ship	count="1"	class="&scGaianProcessor;" controller="gaianprocessor" sovereign="&svGaianTerraformers;" />
+		</Ships>
+
+		<Items>
+			<Table>
+				<Null	chance="20"/>
+				<Lookup chance="30" count="1d3" table="&trConsumables6;"/>
+				<Lookup chance="15" count="1"	table="&trConsumables7;"/>
+				<Lookup chance="25" count="1"	table="&trMinorItem6;"/>
+				<Lookup chance="10" count="1"	table="&trMajorItem6;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+</TranscendenceModule>

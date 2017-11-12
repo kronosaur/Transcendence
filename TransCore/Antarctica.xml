@@ -175,7 +175,7 @@
 			<Sell	criteria="m +commonwealth; +military; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="500" levelFrequency="systemLevel:ruc|c|cur"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			
-			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="90"/>
+			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-10;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a L:1-10;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-9;" priceAdj="100"/>

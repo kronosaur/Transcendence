@@ -242,6 +242,8 @@ void GenerateStats (CUniverse &Universe, CXMLElement *pCmdLine)
 	printf((LPSTR)strPatternSubst(CONSTLIT("Support types\t%,d\n"), Stats.iSupportTypes));
 	printf((LPSTR)strPatternSubst(CONSTLIT("System types\t%,d\n"), Stats.iSystemTypes));
 	printf("\n");
+	printf((LPSTR)strPatternSubst(CONSTLIT("CDesignType memory usage\t%,lld\n"), Stats.dwBaseTypeMemory));
+	printf("\n");
 	printf((LPSTR)strPatternSubst(CONSTLIT("XML memory usage\t%,lld\n"), Stats.dwTotalXMLMemory));
 	printf((LPSTR)strPatternSubst(CONSTLIT("XML keyword count\t%,d\n"), CXMLElement::GetKeywordCount()));
 

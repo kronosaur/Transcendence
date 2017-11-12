@@ -34,9 +34,9 @@
 		<!-- Trade and Items -->
 		
 		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +commonwealth; -illegal; -military; -notForSale; -notStandard;" priceAdj="115" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Sell	criteria="m +commonwealth; -illegal; -military; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="amdNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
 			
@@ -45,6 +45,12 @@
 			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-6;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-6;" priceAdj="100"/>
+
+			<BalanceTrade	criteria="{core.fusionFuel}"		impact="20"/>
+			<BalanceTrade	criteria="{human.basicFood}"	impact="20"/>
+			<BalanceTrade	criteria="{human.lux}"		impact="20"/>
+			<BalanceTrade	criteria="{human.meds}"		impact="20"/>
+			<BalanceTrade	criteria="{human.res}"		impact="20"/>
 		</Trade>
 
 		<Items>
@@ -65,6 +71,8 @@
 					criteria=		"*~ad -alien; -illegal; -military; -notForSale; -notStandard; -specialty;"
 					levelFrequency=	"systemLevel:ru|c|cur"
 					/>
+
+			<Item count="2d8" item="&itEridaniWater;"/>
 		</Items>
 
 		<!-- Ships and Defenses -->
@@ -308,10 +316,11 @@
 
 			<MetropolisStation>
 				<Table>
+					<Station chance="25"	type="&stCommonwealthResidentials;"	noMapLabel="true"/>
 					<Station chance="20"	type="&stArmorDealer;"	noMapLabel="true"/>
-					<Station chance="15"	type="&stArmsDealer;"	noMapLabel="true"/>
 					<Station chance="20"	type="&stFuelDepot;"	noMapLabel="true"/>
-					<Station chance="35"	type="&stCommonwealthResidentials;"	noMapLabel="true"/>
+					<Station chance="15"	type="&stArmsDealer;"	noMapLabel="true"/>
+					<Station chance="10"	type="&stAgriculturalStation;"	noMapLabel="true"/>
 					<Station chance="10"	type="&stMedicalSuburb;"	noMapLabel="true"/>
 				</Table>
 			</MetropolisStation>

@@ -494,47 +494,6 @@
 
 	</ShipClass>
 
-	<!-- Centauri Commandship (Obsolete) -->
-
-	<ShipClass UNID="&scCentauriCommandShip;"
-			manufacturer=		"Centauri"
-			class=				""
-			type=				"command ship"
-
-			mass=				"100"
-			cargoSpace=			"50"
-			thrust=				"400"
-			maxSpeed=			"10"
-
-			attributes=			"centauriWarlords"
-			>
-
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itLightPlasteelPlate;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itLightPlasteelPlate;" areaSet="3,4" />
-			<ArmorSection start="135" span="90" armorID="&itLightPlasteelPlate;" areaSet="1,6" />
-			<ArmorSection start="45"  span="90" armorID="&itLightPlasteelPlate;" areaSet="7,13" />
-		</Armor>
-
-		<Devices>
-			<Device deviceID="&itPartisanCannon;" secondaryWeapon="true" omnidirectional="true"/>
-		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"4.5"
-			rotationAccel=		"1.0"
-			/>
-
-		<Image imageID="&rsMediumShips2;" imageX="384" imageY="0" imageWidth="64" imageHeight="64"/>
-
-		<AISettings
-			fireRateAdj=		"30"
-			fireAccuracy=		"70"
-			perception=			"4"
-			/>
-
-	</ShipClass>
-
 	<!-- Centauri Heavy Raider -->
 
 	<ShipClass UNID="&scCentauriHeavyRaider;"
@@ -855,9 +814,9 @@
 		</Ships>
 
 		<Items>
-			<Group	levelValue="750, 1000, 1500, 2000, 4000, 8000, 16000, 32000, 64000, 128000">
+			<Group	value="600">
 				<Item	chance="80" count="1d6" item="&itCentauriRice;"/>
-				<Lookup	chance="50"				table="&trStdLevelTreasure;"/>
+				<Lookup	chance="50"				table="&trStdTreasure;"/>
 			</Group>
 		</Items>
 
@@ -906,9 +865,9 @@
 		</Ships>
 
 		<Items>
-			<Group	levelValue="750, 1000, 1500, 2000, 4000, 8000, 16000, 32000, 64000, 128000">
-				<Item	chance="80" count="1d6" item="&itCentauriRice;"/>
-				<Lookup							table="&trStdLevelTreasure;"/>
+			<Group	value="1300">
+				<Item	chance="80" count="2d6" item="&itCentauriRice;"/>
+				<Lookup							table="&trStdTreasure;"/>
 			</Group>
 		</Items>
 

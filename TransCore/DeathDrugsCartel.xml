@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- Death Drugs Cartel =================================================== -->
+
+	<Sovereign UNID="&svDeathDrugsCartel;"
+			name=":the Death Drugs Cartel"
+			adjective="Death Drugs Cartel"
+			demonym=":a Death Drugs Cartel member(s)"
+
+			alignment="destructive order"
+			/>
+
+	<!-- Meth Enforcer -->
+
+	<ShipClass UNID="&scMethEnforcer;"
+			manufacturer=		"Meth"
+			class=				""
+			type=				"enforcer"
+			defaultSovereign=	"&svDeathDrugsCartel;"
+
+			mass=				"70"
+			cargoSpace=			"10"
+			thrustRatio=		"7"
+			maxSpeed=			"20"
+
+			attributes=			"deathDrugsCartel,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itPolyceramicPlate;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itPolyceramicPlate;" areaSet="1,4" />
+		</Armor>
+
+		<Devices>
+			<!-- <Device deviceID="&itSlamCannon;" minFireArc="345" maxFireArc="15"/>-->
+			<Device deviceID="&itSlamCannon;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Items>
+			<Item count="2d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMethEnforcerHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="18"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<AISettings
+			fireRateAdj=		"20"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"95"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+	</ShipClass>
+
+	<!-- Death Drug Cartel Outpost -->
+
+	<StationType UNID="&stDrugCartelOutpost;"
+			name=				"Death Drug Cartel outpost"
+			sovereign=			"&svDeathDrugsCartel;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"160"
+            regen=              "2"
+			fireRateAdj=		"20"
+			explosionType=		"&vtBlastExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"drugcartel, enemy, envWater, envAvoidsEarth, generic, human, outlaws, populated"
+			levelFrequency=		"--ucu r---- ----- ----- -----"
+			locationCriteria=	"-innerSystem, +planetary"
+			>
+
+		<Image			imageID="&rsStations4;" imageX="0" imageY="320" imageWidth="96" imageHeight="96"/>
+
+		<Devices>
+			<Device deviceID="&itSlamCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Table>
+				<Ship chance="50"	count="1d4"	class="&scMethEnforcer;" orders="guard"/>
+				<Group chance="50">
+					<Ship			count="1d2"	class="&scMethEnforcer;" orders="guard"/>
+					<Ship			count="1"	class="&scMethEnforcer;" orders="guard"/>
+				</Group>
+			</Table>
+		</Ships>
+
+		<Items>
+			<Group value="1500">
+				<Lookup chance="30" count="1d2" table="&trStationSupplies;"/>
+				<Lookup chance="30" count="1d4" table="&trMedicalItem;"/>
+				<Item chance="50"	count="1d4"	item="&itDeathDrugs;" />
+			</Group>
+		</Items>
+
+		<Encounters frequency="uncommon">
+			<Table>
+				<Ship chance="60" count="1" class="&scMethEnforcer;"  eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<LevelTable>
+							<Null levelFrequency="uuu-- -----" />
+							<Ship levelFrequency="ccc-- -----"   count="1"		class="&scMethEnforcer;" orders="escort"/>
+							<Ship levelFrequency="---c- -----"   count="1d2"	class="&scMethEnforcer;" orders="escort"/>
+							<Ship levelFrequency="----c -----"   count="1d2+1"	class="&scMethEnforcer;" orders="escort"/>
+							<Ship levelFrequency="----- c----"   count="1d4"	class="&scMethEnforcer;" orders="escort"/>
+							<Ship levelFrequency="----- -cccc"   count="1d4+1"	class="&scMethEnforcer;" orders="escort"/>
+						</LevelTable>
+					</Escorts>
+				</Ship>
+				<Ship chance="40" count="1" class="&scT55ArmedTransport;"  eventHandler="&evStdConvoyEncounterBehavior;">
+					<Items>
+						<Lookup chance="50" count="1d2" table="&trStationSupplies;"/>
+						<Item	chance="90"	count="1d8"	item="&itDeathDrugs;"/>
+					</Items>
+					<Escorts>
+						<LevelTable>
+							<Ship levelFrequency="ccc-- -----"   count="1d4"	class="&scMethEnforcer;" orders="escort"/>
+							<Ship levelFrequency="---c- -----"   count="1d6"	class="&scMethEnforcer;" orders="escort"/>
+							<Ship levelFrequency="----c -----"   count="1d6+1"	class="&scMethEnforcer;" orders="escort"/>
+							<Ship levelFrequency="----- c----"   count="1d8"	class="&scMethEnforcer;" orders="escort"/>
+							<Ship levelFrequency="----- -cccc"   count="1d10"	class="&scMethEnforcer;" orders="escort"/>
+						</LevelTable>
+					</Escorts>
+				</Ship>
+			</Table>
+		</Encounters>
+	</StationType>
+	
+	<!-- RESOURCES -->
+
+	<Image UNID="&rsMethEnforcerHD;"				bitmap="Resources\MethEnforcerHD.jpg"		bitmask="Resources\MethEnforcerHDMask.bmp"  loadOnUse="true"/>
+
+</TranscendenceModule>

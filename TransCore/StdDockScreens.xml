@@ -534,7 +534,7 @@
 									)
 
 								; If the station already has lots of these, lower the price
-								(setq existingCount (objHasItem gSource thisItem))
+								(setq existingCount (objHasItem gSource thisItem 1))
 								(setq averageCount (itmGetAverageAppearing thisItem))
 								(switch
 									(not existingCount)

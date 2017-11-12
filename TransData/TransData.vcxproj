@@ -436,6 +436,7 @@
     <ClCompile Include="Topology.cpp" />
     <ClCompile Include="TopologyMap.cpp" />
     <ClCompile Include="TradeSim.cpp" />
+    <ClCompile Include="TradeTable.cpp" />
     <ClCompile Include="TypeTable.cpp" />
     <ClCompile Include="WeaponEffectChart.cpp" />
     <ClCompile Include="Words.cpp" />

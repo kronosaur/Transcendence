@@ -154,6 +154,23 @@
 
 -->
 	
+	<ItemTable UNID="&trStdTreasure;">
+		<Table>
+			<RandomItem chance="15"
+					criteria=			"* +MajorItem; -NotStandard;"
+					levelFrequency=		"systemLevel:vu|c|uv"
+					/>
+			<RandomItem chance="30"
+					criteria=			"* +MinorItem; -NotStandard;"
+					levelFrequency=		"systemLevel:vu|c|uv"
+					/>
+			<RandomItem chance="55"
+					criteria=			"* +Consumable; -NotStandard;"
+					levelFrequency=		"systemLevel:vu|c|uv"
+					/>
+		</Table>
+	</ItemTable>
+	
 	<ItemTable UNID="&trStdLevelTreasure;">
 		<Group	levelValue="
 				  	750,     1000,     1500,     2000,      4000,

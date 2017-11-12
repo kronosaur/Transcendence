@@ -94,7 +94,7 @@
 		<!-- Trade and Items -->
 		
 		<Trade currency="credit" max="15000" replenish="1250">
-			<Sell	criteria="*U -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="*U -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			<Buy	criteria="*DU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			<Buy	criteria="*DU -Illegal; -ID;"				priceAdj="50"/>
 			
@@ -1102,7 +1102,7 @@
 							;	Consume damaged items first
 							
 							(setq damagedItem (itmSetProperty (itmCreate (@ theEntry 'item) 1) 'damaged True))
-							(setq available (min leftToConsume (objHasItem gPlayerShip damagedItem)))
+							(setq available (min leftToConsume (objHasItem gPlayerShip damagedItem 1)))
 							(if (gr available 0)
 								(block Nil
 									(objRemoveItem gPlayerShip damagedItem available)
@@ -1114,7 +1114,7 @@
 							;	Consume good items
 							
 							(setq goodItem (itmCreate (@ theEntry 'item) 1))
-							(setq available (min leftToConsume (objHasItem gPlayerShip goodItem)))
+							(setq available (min leftToConsume (objHasItem gPlayerShip goodItem 1)))
 							(if (gr available 0)
 								(block Nil
 									(objRemoveItem gPlayerShip goodItem available)

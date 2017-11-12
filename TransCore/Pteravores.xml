@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- Pteravores =========================================================== -->
+
+	<Sovereign UNID="&svPteravores;"
+			name="pteravores"
+			adjective="pteravore"
+			demonym=":a pteravore(s)"
+			plural="true"
+
+			alignment="destructive chaos"
+			/>
+
+	<!-- Pteravore Lair -->
+
+	<StationType UNID="&stPteravoreLair;"
+			name=				"pteravore lair"
+			sovereign=			"&svPteravores;"
+			abandonedScreen=	"&dsRPGAbandonedStation;"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itAdvancedPlasteelPlate;"
+			hitPoints=			"500"
+            regen=              "1.5"
+			stealth=			"10" 
+			fireRateAdj=		"80"
+			explosionType=		"&vtThermoExplosion1;"
+			ejectaType=			"&vtStoneAsteroidEjecta;"
+
+			attributes=			"asteroidBase, chitometallicEco, enemy, envFire, envAvoidsWater, galacticCreature, generic, pteravore, score"
+			levelFrequency=		"----- ----r cur-- ----- -----"
+			locationCriteria=	"++asteroids, +++chitometallicEco"
+			>
+
+		<ImageVariants>
+			<Image	imageID="&rsPteravoreLair;" imageX="0"	 imageY="0" imageWidth="150" imageHeight="150"/>
+			<Image	imageID="&rsPteravoreLair;" imageX="150" imageY="0" imageWidth="120" imageHeight="150"/>
+			<Image	imageID="&rsPteravoreLair;" imageX="270" imageY="0" imageWidth="120" imageHeight="150"/>
+		</ImageVariants>
+
+		<Devices>
+			<Device deviceID="&vtPteravoreSporeLauncher;"	omnidirectional="true"/>
+		</Devices>
+
+		<Items>
+			<Item count="5d12"	item="&itPteracniumOre;" />
+		</Items>
+
+		<Language>
+			<Text id="core.abandonedStationDesc">
+
+				You are docked at the remains of a pteravore lair. These fearsome silicon-based
+				lifeforms live on refined pteracnium, extracted from unsuspecting vessels.
+
+			</Text>
+		</Language>
+
+		<Events>
+			<OnDestroy>
+				(if (and aOrderGiver
+						(objCanAttack aOrderGiver)
+						)
+					(block Nil
+						; Remember who killed us
+						(objSetObjRefData gSource "destroyer" aOrderGiver)
+
+						; Start a timer
+						(sysAddObjRecurringTimerEvent 17 gSource "OnRevenge")
+						)
+					)
+			</OnDestroy>
+
+			<OnRevenge>
+				(block (theDestroyer)
+					(switch
+						; If the destroyer was destroyed, then we're done
+						(not (setq theDestroyer (objGetObjRefData gSource "destroyer")))
+							(sysCancelTimerEvent gSource "OnRevenge")
+
+						; If the destroyer is far away, then wait
+						(gr (objGetDistance gSource theDestroyer) 30)
+							Nil
+
+						; Otherwise, send out streams of pteravores at the destroyer
+						(block Nil
+							(for i 1 (random 2 4)
+								(sysCreateWeaponFire
+									&vtPteravoreSporeLauncher;
+									gSource
+									(objGetPos gSource)
+									(random 0 359)
+									12
+									theDestroyer
+									)
+								)
+
+							; Chance that we stop
+							(if (leq (random 1 100) 5)
+								(sysCancelTimerEvent gSource "OnRevenge")
+								)
+							)
+						)
+					)
+			</OnRevenge>
+		</Events>
+
+		<DockingPorts>
+			<Port x="0"		y="90" />
+			<Port x="0"		y="-90" />
+			<Port x="60"	y="60" />
+			<Port x="60"	y="-60" />
+			<Port x="90"	y="0" />
+			<Port x="-90"	y="0" />
+			<Port x="-60"	y="60" />
+			<Port x="-60"	y="-60" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Pteravore Spore Launcher -->
+
+	<ItemType UNID="&vtPteravoreSporeLauncher;"
+			name=				"pteravore spore launcher"
+			level=				"10"
+			virtual=			"true"
+			>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"kinetic:4d6"
+				missileSpeed=		"12"
+				fireRate=			"30"
+				maneuverRate=		"9"
+				lifetime=			"360"
+				powerUse=			"100"
+
+				hitPoints=			"20"
+				interaction=		"100"
+
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Effect>
+				<Image imageID="&rsPteravoreClaw;" imageWidth="32" imageHeight="32" rotationCount="20"/>
+			</Effect>
+		</Weapon>
+
+		<Events>
+			<OnDamageArmor>
+				(block Nil
+					; Add the pteravore overlay, but only if we don't already
+					; have too many overlays. Note also that for now we only
+					; affect ships.
+
+					(if (and (objMatches gSource Nil "s")
+							(leq (count (objGetOverlays gSource)) 12)
+							)
+						(objAddOverlay 
+							gSource 
+							&ovPteravoreFuelDrain; 
+							aHitPos 
+							(modulo (add aHitDir 180) 360)
+							)
+						)
+
+					; Return full damage
+					aDamageHP
+					)
+			</OnDamageArmor>
+
+			<OnDamageShields>
+				(block (probTable)
+					; Chance of passing through the shield is based on level
+					(setq probTable
+						'(100
+							100		; Level I
+							100		; Level II
+							100		; Level III
+							100		; Level IV
+							100		; Level V
+							100		; Level VI
+							100		; Level VII
+							100		; Level VIII
+							95		; Level IX
+							85		; Level X
+							65		; Level XI
+							30		; Level XII
+							5		; Level XIII
+							0		; Level XIV and higher
+							)
+						)
+
+					(if (leq (random 1 100) (item probTable (min 14 (itmGetLevel aDeviceItem))))
+
+						; If we penetrate shields, then return full damage
+						aDamageHP
+
+						; Otherwise, we return Nil to indicate that normal shield handling applies
+						Nil
+						)
+					)
+			</OnDamageShields>
+		</Events>
+	</ItemType>
+
+	<!-- Pteravore Bite -->
+
+	<ItemType UNID="&vtPteravoreBite;"
+			name=				"pteravore bite"
+			level=				"8"
+			virtual=			"true"
+			>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"plasma:4d12"
+				missileSpeed=		"20-30"
+				lifetime=			"20"
+				>
+		</Weapon>
+
+		<Events>
+			<OnDamageOverlay>
+				; Ignore any overlays
+
+				aDamageHP
+			</OnDamageOverlay>
+
+			<OnDamageShields>
+				; The pteravore is attached to the armor, so we always skip shields
+
+				aDamageHP
+			</OnDamageShields>
+		</Events>
+	</ItemType>
+
+	<!-- Pteravore Spore Overlay
+
+	EXTRA DATA
+
+	fuelConsumed:		Total amount of fuel consumed
+	hp:					Hit points left on overlay
+	timer:				If set, we wait until the timer expires
+
+	-->
+
+	<OverlayType UNID="&ovPteravoreFuelDrain;"
+            attributes=         "attached, galacticCreature, pteravore"
+			>
+		<Effect>
+			<Image imageID="&rsPteravoreClawOverlayHD;" imageWidth="32" imageHeight="32" rotationCount="120"/>
+		</Effect>
+
+		<HitEffect 
+				sound=	"&snArmorHit1;"
+				>
+			<ParticleExplosion
+					particleCount=		"2d4"
+					particleSpeed=		"25"
+					particleLifetime=	"20"
+					>
+				<Image imageID="&rsPteravoreDebris;" imageWidth="12" imageHeight="12" imageFrameCount="8" imageTicksPerFrame="3"/>
+			</ParticleExplosion>
+		</HitEffect>
+
+		<Events>
+			<OnCreate>
+				(objSetOverlayData gSource aOverlayID "hp" 60)
+			</OnCreate>
+
+			<OnDamage>
+				(switch
+					; Skip if we are hit by a pteravore
+					(eq aWeaponType &vtPteravoreSporeLauncher;)
+						Nil
+
+					; Overlay gets damaged
+					(block Nil
+						(if (leq (objIncOverlayData gSource aOverlayID "hp" (subtract 0 aDamageHP)) 0)
+							(objRemoveOverlay gSource aOverlayID)
+							)
+
+						; We take all the damage
+						0
+						)
+					)
+			</OnDamage>
+
+			<OnInsuranceClaim>
+				; Insurance cleans up pteravores
+				(objRemoveOverlay gSource aOverlayID)
+			</OnInsuranceClaim>
+
+			<OnRemoveAtDockServices>
+				(objRemoveOverlay gSource aOverlayID)
+			</OnRemoveAtDockServices>
+			
+			<OnUpdate>
+				(block Nil
+
+					; Consume some fuel
+					(switch
+						; If we've already consumed enough, then we detach
+						(gr (objGetOverlayData gSource aOverlayID "fuelConsumed") 500000)
+							(block Nil
+								(sysCreateWeaponFire &vtPteravoreSporeLauncher;
+									gSource
+									(objGetPos gSource)
+									(random 0 359)
+									12
+									(sysFindObject gSource "TN +pteravore;")
+									)
+								(objRemoveOverlay gSource aOverlayID)
+								)
+
+						; For the player ship, consume fuel
+						; (about 1 pteracnium rod every 2 seconds
+						(eq gSource gPlayerShip)
+							(block Nil
+								(shpConsumeFuel gPlayerShip 12500 'drain)
+								(objIncOverlayData gSource aOverlayID "fuelConsumed" 12500)
+								)
+
+						; If we have the timer on, then wait
+						(objGetOverlayData gSource aOverlayID "timer")
+							(if (leq (objIncOverlayData gSource aOverlayID "timer" -1) 0)
+								(objSetOverlayData gSource aOverlayID "timer" Nil)
+								)
+
+						; For other ships, consume fuel out of cargo space
+						(block (theItem)
+							; Choose a random fuel item
+							(setq theItem (random (objGetItems gSource "f")))
+
+							(if theItem
+								(block (fuelPerItem)
+									(setq fuelPerItem (max 2500 (itmGetTypeData theItem)))
+
+									; Consume one pteracnium rod worth
+									(setq consumeCount (max 1 (min (itmGetCount theItem) (divide 50000 fuelPerItem))))
+
+									; Consume the item
+									(objRemoveItem gSource theItem consumeCount)
+									(objIncOverlayData gSource aOverlayID "fuelConsumed" (multiply consumeCount fuelPerItem))
+
+									; Wait a while before consuming more
+									(objSetOverlayData gSource aOverlayID "timer" 
+										(max 1 (divide (multiply consumeCount fuelPerItem) 12500))
+										)
+									)
+
+								; If no fuel is found, wait a while before we try again
+								(objSetOverlayData gSource aOverlayID "timer" 101)
+								)
+							)
+						)
+
+					; There is a chance that the pteravore will do some damage
+					; (But only on ships)
+					(if (and (leq (random 1 100) 5) (objIsShip gSource))
+						(block (result)
+
+							; Do damage
+							(setq result (objDamage 
+								gSource 
+								&vtPteravoreBite; 
+								'("pteravores" 0x40) 
+								(objGetOverlayPos gSource aOverlayID)
+								))
+
+							(switch
+								; If the source was destroyed by the damage, then
+								; we don't do anything else (gSource is invalid)
+
+								(eq result 'destroyed)
+									Nil
+									
+								(eq result 'noDamage)
+									Nil
+									
+								; Otherwise, tell the player what happened
+
+								(objSendMessage gSource gSource "Pteravores have damaged the ship!")
+								)
+							)
+						)
+					)
+			</OnUpdate>
+		</Events>
+	</OverlayType>
+
+	<Image UNID="&rsPteravoreClaw;"				bitmap="Resources\PteravoreClaw.jpg"	bitmask="Resources\PteravoreClawMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsPteravoreLair;"				bitmap="Resources\PteravoreLair.jpg"	bitmask="Resources\PteravoreLairMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsPteravoreClawOverlayHD;"	bitmap="Resources\PteravoreClawOverlayHD.jpg"	bitmask="Resources\PteravoreClawOverlayHDMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsPteravoreClawOverlay;"		bitmap="Resources\PteravoreClawOverlay.jpg"	bitmask="Resources\PteravoreClawOverlayMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsPteravoreDebris;"			bitmap="Resources\PteravoreDebris.jpg"	bitmask="Resources\PteravoreDebrisMask.bmp"	loadOnUse="true"/>
+
+</TranscendenceModule>
