@@ -773,7 +773,7 @@
 				
 					;	Replace empty string with Nil to reset to default name, otherwise return new name.
 					
-					(if (eq "" (apply cat (split newName " "))) Nil (strCapitalize newName))
+					(if (or (not newName) (eq "" (apply cat (split newName " ")))) Nil (strCapitalize newName))
 					)
 				))
 			)
