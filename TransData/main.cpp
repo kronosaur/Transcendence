@@ -76,20 +76,6 @@
 #define CLEAR_REGISTERED_SWITCH				CONSTLIT("clearRegistered")
 #define GAME_FILE_SWITCH					CONSTLIT("gameFile")
 
-class CHost : public CUniverse::IHost
-	{
-	public:
-		CHost (void) { m_DefaultFont.Create(CONSTLIT("Tahoma"), -13); }
-
-		virtual void ConsoleOutput (const CString &sLine) override { printf("%s\n", sLine.GetASCIIZPointer()); }
-		virtual void DebugOutput (const CString &sLine) override { printf("%s\n", sLine.GetASCIIZPointer()); }
-		virtual const CG16bitFont *GetFont (const CString &sFont) override { return &m_DefaultFont; }
-		virtual void LogOutput (const CString &sLine) const override { printf("%s\n", (LPSTR)sLine); ::kernelDebugLogString(sLine); }
-
-	private:
-		CG16bitFont m_DefaultFont;
-	};
-
 void AlchemyMain (CXMLElement *pCmdLine);
 ALERROR CreateXMLElementFromDataFile (const CString &sFilespec, CXMLElement **retpDataFile, CString *retsError);
 ALERROR InitUniverse (CUniverse &Universe, CHost &Host, const CString &sFilespec, CXMLElement *pCmdLine, CString *retsError);
@@ -587,4 +573,3 @@ void MarkItemsKnown (CUniverse &Universe)
 		pItem->SetShowReference();
 		}
 	}
-

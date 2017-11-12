@@ -12,6 +12,20 @@
 #include "ItemBenchmarks.h"
 #include "Utilities.h"
 
+class CHost : public CUniverse::IHost
+	{
+	public:
+		virtual void ConsoleOutput (const CString &sLine) override { printf("%s\n", sLine.GetASCIIZPointer()); }
+		virtual void DebugOutput (const CString &sLine) override { printf("%s\n", sLine.GetASCIIZPointer()); }
+		virtual bool FindFont (const CString &sFont, const CG16bitFont **retpFont = NULL) const;
+		virtual void LogOutput (const CString &sLine) const override { printf("%s\n", (LPSTR)sLine); ::kernelDebugLogString(sLine); }
+
+	private:
+		void InitFonts (void) const;
+
+		mutable TArray<CG16bitFont> m_Fonts;
+	};
+
 //	Used by sim tables
 
 class ItemInfo

@@ -32,6 +32,24 @@ void CTranscendenceWnd::DebugOutput (const CString &sLine)
 #endif
 	}
 
+bool CTranscendenceWnd::FindFont (const CString &sFont, const CG16bitFont **retpFont) const
+
+//	FindFont
+//
+//	Returns the given font (or FALSE if not found)
+
+	{
+	bool bFound;
+	const CG16bitFont &TheFont = g_pHI->GetVisuals().GetFont(sFont, &bFound);
+	if (!bFound)
+		return false;
+
+	if (retpFont)
+		*retpFont = &TheFont;
+
+	return true;
+	}
+
 void CTranscendenceWnd::GameOutput (const CString &sLine)
 
 //	GameOutput
@@ -41,18 +59,22 @@ void CTranscendenceWnd::GameOutput (const CString &sLine)
 	{
 	}
 
-const CG16bitFont *CTranscendenceWnd::GetFont (const CString &sFont)
+CG32bitPixel CTranscendenceWnd::GetColor (const CString &sColor) const
+
+//	GetColor
+//
+//	Returns the given named color. Returns a default color if not found.
+
+	{
+	return g_pHI->GetVisuals().GetColor(sColor);
+	}
+
+const CG16bitFont &CTranscendenceWnd::GetFont (const CString &sFont) const
 
 //	GetFont
 //
-//	Returns the given font (or NULL if not found)
+//	Returns the given named font (returns a default font if not found).
 
 	{
-	bool bFound;
-
-	const CG16bitFont &TheFont = g_pHI->GetVisuals().GetFont(sFont, &bFound);
-	if (!bFound)
-		return NULL;
-
-	return &TheFont;
+	return g_pHI->GetVisuals().GetFont(sFont);
 	}

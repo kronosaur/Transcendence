@@ -157,7 +157,7 @@ ALERROR CGalacticMapSession::OnInit (CString *retsError)
 
 	//	Create a painter
 
-	m_pPainter = new CGalacticMapPainter(m_HI.GetVisuals(), m_pMap, m_SystemMapThumbnails);
+	m_pPainter = new CGalacticMapPainter(*g_pUniverse, m_pMap, m_SystemMapThumbnails);
     m_pPainter->SetViewport(m_rcView);
     m_pPainter->SetScale(m_Scale.GetScale());
 

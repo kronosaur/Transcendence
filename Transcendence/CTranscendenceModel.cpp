@@ -123,9 +123,6 @@
 
 #define DEFAULT_SCREEN_NAME						CONSTLIT("[DefaultScreen]")
 
-const int SYSTEM_MAP_THUMB_WIDTH =              320;
-const int SYSTEM_MAP_THUMB_HEIGHT =             320;
-
 CTranscendenceModel::CTranscendenceModel (CHumanInterface &HI) : 
 		m_HI(HI), 
 		m_iState(stateUnknown),
@@ -2517,7 +2514,7 @@ ALERROR CTranscendenceModel::StartGame (bool bNewGame)
 
     //  Initialize some thumbnails
 
-    m_SystemMapThumbnails.Init(m_Universe.GetGlobalObjects(), SYSTEM_MAP_THUMB_WIDTH, SYSTEM_MAP_THUMB_HEIGHT);
+    m_SystemMapThumbnails.Init(m_Universe.GetGlobalObjects());
 
 	//	Done
 

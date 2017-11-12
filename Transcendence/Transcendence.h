@@ -697,12 +697,14 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		inline void UpdateDeviceCounterDisplay (void) { m_DeviceDisplay.Invalidate(); }
 
 		//	CUniverse::IHost
-		virtual void ConsoleOutput (const CString &sLine);
-		virtual IPlayerController *CreatePlayerController (void);
-		virtual IShipController *CreateShipController (const CString &sController);
-		virtual void DebugOutput (const CString &sLine);
-		virtual void GameOutput (const CString &sLine);
-		virtual const CG16bitFont *GetFont (const CString &sFont);
+		virtual void ConsoleOutput (const CString &sLine) override;
+		virtual IPlayerController *CreatePlayerController (void) override;
+		virtual IShipController *CreateShipController (const CString &sController) override;
+		virtual void DebugOutput (const CString &sLine) override;
+		virtual bool FindFont (const CString &sFont, const CG16bitFont **retpFont = NULL) const override;
+		virtual void GameOutput (const CString &sLine) override;
+		virtual CG32bitPixel GetColor (const CString &sColor) const override;
+		virtual const CG16bitFont &GetFont (const CString &sFont) const override;
 
 		//	IAniCommand
 		virtual void OnAniCommand (const CString &sID, const CString &sEvent, const CString &sCmd, DWORD dwData);
