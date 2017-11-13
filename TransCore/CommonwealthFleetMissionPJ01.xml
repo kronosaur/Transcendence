@@ -112,6 +112,10 @@
 					(!= (sysGetNode) 'PJ)
 						Nil
 
+					;	If we've already created this mission, then nothing to do
+					(msnFind "* +unid:&msCSCPointJunoAresAttack;;")
+						Nil
+
 					;	Create the mission
 					(msnCreate &msCSCPointJunoAresAttack; (sysFindObject Nil "TAN +pointJuno;"))
 					)
