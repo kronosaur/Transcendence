@@ -95,7 +95,7 @@
 						;	Create a marker for the fleet position
 						;	stagingBeta marks the Anti Trojan asteroids
 						(setq pos (objGetPos (sysGetObjectByName 'stagingBeta)))
-						(setq markerObj (sysCreateMarker "Ares Fleet" (sysGetObjectByName 'stagingBeta) &svAres;))
+						(setq markerObj (sysCreateMarker "Asteroid Field" (sysGetObjectByName 'stagingBeta) &svAres;))
 						(msnSetData gSource 'markerID (objGetID markerObj))
 
 						;	Set reward
