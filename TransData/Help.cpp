@@ -36,6 +36,7 @@
 #define STATS_SWITCH						CONSTLIT("stats")
 #define SYSTEM_LABELS_SWITCH				CONSTLIT("systemlabels")
 #define SYSTEM_TEST_SWITCH					CONSTLIT("systemtest")
+#define TOPOLOGY_MAP_SWITCH					CONSTLIT("topologyMap")
 #define TRADE_SIM_SWITCH					CONSTLIT("tradeSim")
 #define IMAGES_SWITCH						CONSTLIT("typeImages")
 #define TYPE_TABLE_SWITCH					CONSTLIT("typeTable")
@@ -324,6 +325,13 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
 		printf("       /count:n             n iterations.\n");
 		}
+	else if (pCmdLine->GetAttributeBool(TOPOLOGY_MAP_SWITCH))
+		{
+		printf("  /topologyMap          Generates galactic map image.\n");
+		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/output:file]        Saves image to given filespec.\n");
+		printf("      [/scale:n]		    100 = 1 pixel per galactic coord unit.\n");
+		}
 	else if (pCmdLine->GetAttributeBool(TYPE_TABLE_SWITCH))
 		{
 		printf("  /typeTable            Generates sample of all systems.\n");
@@ -422,6 +430,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /systemlabels         Generate counts for all labels.\n");
 		if (bDebug)
 			printf("  /systemtest           Generates sample of all systems.\n");
+		printf("  /topologyMap          Generates galactic map image.\n");
 		printf("  /tradesim             Generates statistics of item trading.\n");
 		printf("  /tradetable           Generates table of trading descriptors.\n");
 		if (bDebug)
