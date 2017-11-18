@@ -16,10 +16,10 @@
 				 
 			level=				"3"
 			size=				"390"
-			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"250"
-			regen=				"5"
-			multiHull=			"true"
+			armorID=			"&itHeavyPlasteelPlate;"
+			hitPoints=			"350"
+			regen=				"2"
+			multiHull=			"Nil"
 				 
 			canAttack=			"true"
 			noBlacklist=		"true"
@@ -33,7 +33,7 @@
 				levelFrequency=		"uuurr ----- ----- ----- -----"
 				locationCriteria=	"-asteroids, +lifeZone"
 				unique=				"inSystem"
-				enemyExclusionRadius="50"
+				exclusionRadius="80"
 				/>
 
 		<Names noArticle="true">
@@ -160,9 +160,9 @@
 					(if (or successList failureList)
 						(list
 							(list
-								"Agricultural colony missions"
+								(typTranslate &stAgriculturalStation; 'missions)
 								(rpgMissionAchievementString (count successList) (count failureList))
-								"missions &amp; activities"
+								(typTranslate &unidCommonText; 'missionsAndActivities)
 								)
 							)
 						)
@@ -175,6 +175,7 @@
 			<Text id="actionCommoditiesExchange">[C]ommodities Exchange</Text>
 			<Text id="actionDockServices">[D]ock Services</Text>
 			<Text id="actionUndock">[U]ndock</Text>
+			<Text id="missions">Agricultural colony missions</Text>
 
 			<Text id="descWelcome">
 				You are inside a C9-class prefabricated agricultural station.
@@ -214,24 +215,25 @@
 						minLevel: 1
 						maxLevel: 4
 						reward: 5000
+						waveInterval: 900
 
 						waves: (
 							; Wave 1
 							(
-								{ table: &etPirateAmbush1;	timer: 0   distance:300 }
-								{ table: &etPirateAmbush2;	timer: 30  distance:300 }
+								{ table: &etPirateAmbush1;	timer: 0   distance:120 }
+								{ table: &etPirateAmbush2;	timer: 30  distance:135 }
 								)
 
 							; Wave 2
 							(
-								{ table: &etPirateAmbush2;	timer: 0   distance:300 }
-								{ table: &etPirateAmbush2;	timer: 90  distance:300 }
+								{ table: &etPirateAmbush2;	timer: 0   distance:120 }
+								{ table: &etPirateAmbush2;	timer: 90  distance:165 }
 								)
 
 							; Wave 3
 							(
-								{ table: &etPirateAmbush3;	timer: 0   distance:300 }
-								{ table: &etPirateAmbush3;	timer: 300 distance:300 }
+								{ table: &etPirateAmbush3;	timer: 0   distance:120 }
+								{ table: &etPirateAmbush3;	timer: 300 distance:270 }
 								)
 							)
 						}
@@ -314,7 +316,7 @@
 			</OnCreate>
 
 			<OnAcceptedUndock>
-				(msnAddTimerEvent gSource (random 30 150) 'OnNextWave)
+				(msnAddTimerEvent gSource (random 120 270) 'OnNextWave)
 			</OnAcceptedUndock>
 
 			<OnSetPlayerTarget>
@@ -334,7 +336,8 @@
 					(msnCancelTimerEvent gSource 'OnNextWave)
 
 					(enum waveDesc theEncounter
-						(sysAddEncounterEventAtDist (@ theEncounter 'timer) destObj (@ theEncounter 'table) (@ theEncounter 'distance))
+						;(sysAddEncounterEventAtDist (@ theEncounter 'timer) destObj (@ theEncounter 'table) (@ theEncounter 'distance))
+						(sysCreateShip (@ theEncounter 'table) (sysVectorRandom destObj (@ theEncounter 'distance) 100 'ztAF) &svPirates; { target:destObj })
 						)
 
 					; Increment next wave
@@ -376,7 +379,7 @@
 						(attackDesc (msnGetData gSource 'attackDesc))
 						(nextWave (msnGetData gSource 'nextWave))
 						)
-						(msnFireEvent gSource 'OnNextWave)
+						(msnAddTimerEvent gSource (random 90 180) 'OnNextWave)
 						{
 							desc: (msnTranslate gSource (cat (@ attackDesc 'id) ":Wave:" nextWave))
 							forceUndock: True
@@ -393,7 +396,7 @@
 							(setq looter 
 								(sysCreateShip 
 									&scCharonFrigateRaider;
-									(sysVectorRandom gSource 110 100 'ztAF)
+									(sysVectorRandom aObjDestroyed 110 100 'ztAF)
 									&svPirates;
 									)
 								)
@@ -409,7 +412,7 @@
 										)
 									(block Nil
 										(shpCancelOrders shipObj)
-										(if (= (random 1 4) 1)
+										(if (= (random 1 2) 1)
 											(shpOrder shipObj 'escort looter)
 											(shpOrder shipObj 'attack gPlayerShip)
 											)
@@ -418,7 +421,7 @@
 								)
 
 							; Send out more pirates to attack the player
-							(sysAddEncounterEventAtDist 0 gPlayerShip &etPirateAmbush4; 101)
+							(sysCreateShip &etPirateAmbush3; (sysVectorRandom gPlayerShip 105 100 'ztAF) &svPirates; { target:gPlayerShip })
 
 							; And set failure
 							(msnFailure gSource)

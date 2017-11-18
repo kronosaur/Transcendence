@@ -19,7 +19,7 @@
 
 	If the mission object has a data value named "rewardNextScreen" then it is used
 	as a nextScreen parameter during debrief. This is used to implement things
-	like promotions.
+	like promotions. If it has data "rewardNextScreenData", it's passed as data to that screen.
 
 	We fire OnCanBrief just before the player receives a briefing (the first time 
 	and all subsequent times). The even may return Nil to continue with the briefing
@@ -525,7 +525,7 @@
 											(msnGetData missionObj 'rewardNextScreen)
 												(block Nil
 													(scrExitScreen gScreen)
-													(scrShowScreen gScreen (msnGetData missionObj 'rewardNextScreen))
+													(scrShowScreen gScreen (msnGetData missionObj 'rewardNextScreen) (msnGetData missionObj 'rewardNextScreenData))
 													)
 
 											(scrExitScreen gScreen)

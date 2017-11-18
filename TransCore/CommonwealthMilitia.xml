@@ -388,7 +388,7 @@
 							; Name the nav beacons
 							(if (ls count 5)
 								(objSetName beacon
-									(cat "NavBeacon " (item '('Alpha 'Beta 'Gamma 'Delta 'Epsilon) count))
+									(cat "NavBeacon " (item '(Alpha Beta Gamma Delta Epsilon) count))
 									)
 								)
 
