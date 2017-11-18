@@ -42,7 +42,7 @@
 
 	status:			Mission status:
 		Nil				Mission had not started yet
-		defaultAttack	Player did not dock before attack started
+		defaultAttack	Player declined mission and attack starts without them
 		findBeta		Player must find the hidden beta fleet
 		destroyBeta		Player has found the hidden fleet and must destroy it
 		destroyAlpha	Beta destroyed; player must destroy alpha (which is attacking)
@@ -95,10 +95,8 @@
 						;	Create a marker for the fleet position
 						;	stagingBeta marks the Anti Trojan asteroids
 						(setq pos (objGetPos (sysGetObjectByName 'stagingBeta)))
-						(setq markerObj (sysCreateMarker "Ares Fleet" (sysGetObjectByName 'stagingBeta) &svAres;))
+						(setq markerObj (sysCreateMarker "Asteroid Field" (sysGetObjectByName 'stagingBeta) &svAres;))
 						(msnSetData gSource 'markerID (objGetID markerObj))
-						
-						(msnAddTimerEvent gSource 1600 'OnTimerDefaultAttack)
 
 						;	Set reward
 						(msnSetData gSource 'missionXP 1200)
@@ -110,6 +108,10 @@
 				(switch
 					;	If not in PJ, then nothing to do
 					(!= (sysGetNode) 'PJ)
+						Nil
+
+					;	If we've already created this mission, then nothing to do
+					(msnFind "* +unid:&msCSCPointJunoAresAttack;;")
 						Nil
 
 					;	Create the mission
@@ -149,6 +151,10 @@
 						)
 					)
 			</OnAccepted>
+
+			<OnDeclined>
+				(msnAddTimerEvent gSource 1600 'OnTimerDefaultAttack)
+			</OnDeclined>
 
 			<OnUpdate>
 				(block (
@@ -283,7 +289,7 @@
 			<OnTimerDefaultAttack>
 				;	If the player never accepts the mission, we nevertheless send out
 				;	Alpha fleet to attack
-				(if (not (msnGetData gSource 'status))
+				(if (not (msnGetProperty gSource 'isActive))
 					(block (
 						(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
 						(alphaLeader (objGetObjByID (msnGetData gSource 'alphaID)))
@@ -432,7 +438,7 @@
 							(list
 								(msnTranslate theMission achievementText)
 								Nil
-								"achievements &amp; regrets"
+								(typTranslate &unidCommonText; 'achievementsAndRegrets)
 								)
 							)
 						)
