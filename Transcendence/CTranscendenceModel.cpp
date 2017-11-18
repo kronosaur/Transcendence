@@ -612,6 +612,34 @@ ALERROR CTranscendenceModel::EndGameClose (CString *retsError)
 	return NOERROR;
 	}
 
+ALERROR CTranscendenceModel::EndGameDelete (CString *retsError)
+
+//	EndGameDelete
+//
+//	End the game, save the file, and then delete it
+
+	{
+	ASSERT(m_iState == stateInGame);
+
+	//	Clean up
+
+	m_pPlayer = NULL;
+
+	//	Close the game file and delete it
+
+	CString sFileSpec = m_GameFile.GetFilespec();
+	m_GameFile.Close();
+	fileDelete(sFileSpec);
+
+	m_Universe.Reinit();
+
+	//	Done
+
+	m_iState = stateGameOver;
+
+	return NOERROR;
+	}
+
 ALERROR CTranscendenceModel::EndGameDestroyed (bool *retbResurrected)
 
 //	EndGameDestroyed
@@ -689,6 +717,35 @@ ALERROR CTranscendenceModel::EndGameDestroyed (bool *retbResurrected)
 		}
 	else
 		ASSERT(false);
+
+	return NOERROR;
+	}
+
+ALERROR CTranscendenceModel::EndGameNoSave (CString *retsError)
+
+//	EndGameNoSave
+//
+//	Ends the current game without saving. Does not activate Resurrection.
+
+	{
+	ASSERT(m_iState == stateInGame);
+
+	//	Clear resurrection flag
+
+	m_GameFile.ClearGameResurrect();
+
+	//	Clean up
+
+	m_pPlayer = NULL;
+
+	//	Close the game file
+
+	m_GameFile.Close();
+	m_Universe.Reinit();
+
+	//	Done
+
+	m_iState = stateGameOver;
 
 	return NOERROR;
 	}

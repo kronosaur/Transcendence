@@ -73,6 +73,7 @@
 
 #define CMD_GAME_ADVENTURE						CONSTLIT("gameAdventure")
 #define CMD_GAME_CREATE							CONSTLIT("gameCreate")
+#define CMD_GAME_END_DELETE						CONSTLIT("gameEndDelete")
 #define CMD_GAME_END_DESTROYED					CONSTLIT("gameEndDestroyed")
 #define CMD_GAME_END_GAME						CONSTLIT("gameEndGame")
 #define CMD_GAME_END_SAVE						CONSTLIT("gameEndSave")
@@ -84,6 +85,7 @@
 #define CMD_GAME_LOAD_DONE						CONSTLIT("gameLoadDone")
 #define CMD_GAME_PAUSE							CONSTLIT("gamePause")
 #define CMD_GAME_READY							CONSTLIT("gameReady")
+#define CMD_GAME_REVERT							CONSTLIT("gameRevert")
 #define CMD_GAME_SELECT_ADVENTURE				CONSTLIT("gameSelectAdventure")
 #define CMD_GAME_SELECT_SAVE_FILE				CONSTLIT("gameSelectSaveFile")
 #define CMD_GAME_STARGATE_SYSTEM_READY			CONSTLIT("gameStargateSystemReady")
@@ -1013,6 +1015,24 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		HICommand(CMD_UI_START_EPILOGUE);
 		}
 
+	//	Quit the game and delete the save file
+
+	else if (strEquals(sCmd, CMD_GAME_END_DELETE))
+		{
+		if (error = m_Model.EndGameDelete(&sError))
+			g_pTrans->DisplayMessage(sError);
+
+		//	Back to intro screen
+
+		m_pGameSession = NULL;
+		if (m_Model.GetPlayer())
+			m_Model.GetPlayer()->SetGameSession(NULL);
+		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, m_Settings, CIntroSession::isShipStats));
+		m_iState = stateIntro;
+		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
+		m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
+		}
+
 	//	End destroyed state. We either go to the epilog or we
 	//	resurrect back to the game.
 
@@ -1064,6 +1084,27 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		m_Soundtrack.NotifyGameStart();
 		m_Soundtrack.NotifyEnterSystem();
+		}
+
+	else if (strEquals(sCmd, CMD_GAME_REVERT))
+		{
+		CString sFilename = m_Model.GetGameFile().GetFilespec();
+		if (error = m_Model.EndGameNoSave(&sError))
+			g_pTrans->DisplayMessage(sError);
+
+        //	Back to intro screen
+
+		m_pGameSession = NULL;
+		if (m_Model.GetPlayer())
+			m_Model.GetPlayer()->SetGameSession(NULL);
+		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, m_Settings, CIntroSession::isShipStats));
+		m_iState = stateIntro;
+		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
+		m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
+
+		//	Load
+
+		HICommand(CMD_GAME_LOAD, &sFilename);
 		}
 
 	//	Player notifications
