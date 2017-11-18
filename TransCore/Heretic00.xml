@@ -1,0 +1,346 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Iocrym in Heretic =============================================
+
+	EXTRA DATA
+
+	squadronSize:		Size of sentinel squadron
+	sentinelCount:		Number of sentinels currently attacking
+	attackTimer:		Timer for sentinel attacks
+	targetID:			ID of current target
+
+	status:				Status of sentinel attack:
+
+	======================================================================== -->
+
+	<MissionType UNID="&msHereticIocrymAttack;"
+			name=			"Iocrym in Heretic"
+			attributes=		""
+
+			level=			"10"
+
+			noDecline=		"true"
+			noDebrief=		"true"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	Only in Heretic
+					(!= (sysGetNode) 'G2)
+						(msnDestroy gSource)
+
+					(block Nil
+
+						;	Register events for all Iocrym outposts (so that we know if
+						;	the player destroys them)
+						(enum (sysFindObject Nil "TA +iocrymOutpost;") theOutpost
+							(msnRegisterForEvents gSource theOutpost)
+							)
+
+						;	Set the initial squadron size
+						(msnSetData gSource 'squadronSize 1)
+						)
+					)
+			</OnCreate>
+
+			<OnStarted>
+				;	We're not a player mission so need to register our own event
+				(msnAddRecurringTimerEvent gSource 90 'OnTimer)
+			</OnStarted>
+
+			<OnTimer>
+				(block (
+					(status (msnGetData gSource 'status))
+					)
+					(switch
+						;	If not in Heretic, then nothing to do
+						(!= (sysGetNode) 'G2)
+							Nil
+
+						;	If the quarantine is lifted then we're all done
+						(sysGetData 'quarantineLifted)
+							(msnSuccess gSource)
+
+						;	If we're not doing anything then start attack
+						(not status)
+							(msnFireEvent gSource 'OnSentinelAttack)
+
+						(= status 'inProgress)
+							(block (
+								(theTarget (objGetObjByID (msnGetData gSource 'targetID)))
+								)
+								(if (and (not (= theTarget gPlayerShip))
+										(sysFindObject theTarget "s N:300; D:heretic.iocrymAttack")
+										)
+									(block Nil
+										(plyMessage gPlayer (msnTranslate gSource 'msgUnderAttack {
+											station: (objGetName theTarget 'capitalize)
+											}))
+										(objSetShowAsDestination theTarget Nil 'autoclear)
+										(msnSetData gSource 'status 'distressSignal)
+										(msnCreate &msHereticIocrymAttackMsg; theTarget)
+										)
+									)
+								)
+								
+						(= status 'waiting)
+							(if (= (msnIncData gSource 'attackTimer -1) 0)
+								(msnFireEvent gSource 'OnSentinelAttack)
+								)
+						)
+					)
+			</OnTimer>
+
+			<OnSentinelAttack>
+				(block (
+					(theSentinels (sysFindObject Nil "sD:heretic.iocrymAttack"))
+
+					;	Pick a random base (if none is left, attack the player)
+					(theTarget (or
+						(random (sysFindObject Nil "TA +hereticStation;"))
+						gPlayerShip
+						))
+					)
+
+					;	Check if we need to create a new attack force
+					(if (not theSentinels)
+						(block (
+							;	Pick a random Iocrym outpost (if none is left, start from commandship)
+							(baseObj (or
+								(random (sysFindObject Nil "TA +iocrymOutpost;"))
+								(sysFindObject Nil "sN +iocrymCommandShip;")
+								))
+							;	Figure out how many sentinels we should send
+							(theCount (+ (msnGetData gSource 'squadronSize) (random 0 1)))
+							)
+							(for i 1 theCount
+								(block (attackerObj)
+									(setq attackerObj (sysCreateShip &scIocrymSentinel; baseObj &svIocrym;))
+									;	Small chance that a sentinel has some useful research data
+									;	(we do this so there is always some hope of getting enough data)
+									(if (leq (random 1 100) 5)
+										(objAddItem attackerObj (itmCreate &itIocrymSentinelData; 1))
+										)
+									
+									(objSetData attackerObj 'heretic.iocrymAttack (objGetID gSource))
+									(msnRegisterForEvents gSource attackerObj)
+									(lnkAppend theSentinels attackerObj)
+									)
+								)
+							;	Set the count
+							(msnSetData gSource 'sentinelCount theCount)
+							)
+						)
+
+					;	Send the sentinels to attack
+					(enum theSentinels attackerObj (shpOrder attackerObj 'attack theTarget))
+
+					;	Register the target
+					(msnRegisterForEvents gSource theTarget)
+					(msnSetData gSource 'targetID (objGetID theTarget))
+					(msnSetData gSource 'status 'inProgress)
+
+					;(dbgOutput "Deploying " (count theSentinels) " sentinels to " (objGetName theTarget))
+					)
+			</OnSentinelAttack>
+
+			<OnObjDestroyed>
+				(switch
+					;	If an Iocrym outpost was destroyed, then begin attack
+					(objMatches aObjDestroyed Nil "T +iocrymOutpost;")
+						(if (msnGetProperty gSource 'isOpen)
+							(msnSetUnavailable gSource)
+							)
+
+					;	If sentinels destroyed the target, then go to another target
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(block (
+							(delayTime (random 20 60))
+							(theStar (sysFindObject Nil "tN +star;"))
+							)
+							;	Tell the player
+							(plyMessage gPlayer (msnTranslate gSource 'msgDestroyed {
+								station: (objGetName aObjDestroyed 'capitalize)
+								}))
+
+							;	Clear the destination target
+							(objClearShowAsDestination aObjDestroyed)
+
+							;	Orbit for a bit to give the player a chance
+							(enum (sysFindObject Nil "sD:heretic.iocrymAttack") attackerObj
+								(shpOrder attackerObj 'orbit theStar 360 delayTime)
+								)
+
+							;	Attack next target
+							(msnFireEvent gSource 'OnSentinelAttack)
+							)
+
+					;	If a sentinel was destroyed, then decrement the count
+					;	If all sentinels destroyed, wait a bit before next attack
+					(= (objGetData aObjDestroyed 'heretic.iocrymAttack) (objGetID gSource))
+						(if (= (msnIncData gSource 'sentinelCount -1) 0)
+							(block (
+								(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+								)
+								;	Remove any blocker missions
+								(if targetObj
+									(enum (msnFind targetObj "S +unid:&msHereticIocrymAttackMsg;;") theMission
+										(msnDestroy theMission)
+										)
+									)
+
+								;	Clear the destination target
+								(objClearShowAsDestination targetObj)
+								(msnSetData gSource 'targetID Nil)
+
+								;	Increase the squadron size
+								(if (leq (random 1 100) 25)
+									(msnIncData gSource 'squadronSize)
+									)
+
+								;	Wait a bit before the next attack. 
+								(msnSetData gSource 'status 'waiting)
+
+								;	We wait ~40 * 90 ticks (2 minutes) or 80 * 90 ticks
+								;	if all iocrym outposts are destroyed
+								(msnSetData gSource 'attackTimer
+									(if (sysFindObject Nil "TA +iocrymOutpost;")
+										(random 34 46)
+										(random 68 92)
+										)
+									)
+
+								;(dbgOutput "All sentinels destroyed")
+								)
+							)
+					)
+			</OnObjDestroyed>
+
+			<OnGlobalSystemStarted>
+				(switch
+					;	If not in Heretic, then nothing to do
+					(!= (sysGetNode) 'G2)
+						Nil
+
+					;	If mission has already been created then nothing to do
+					(msnFind "* +unid:&msHereticIocrymAttack;;")
+						Nil
+
+					;	Create the mission
+					(msnCreate &msHereticIocrymAttack; Nil)
+					)
+			</OnGlobalSystemStarted>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<!-- Text -->
+			<Text id="msgUnderAttack">%station% is under attack!</Text>
+			<Text id="msgDestroyed">%station% destroyed!</Text>
+		</Language>
+	</MissionType>
+
+
+	<!-- Mission: Iocrym in Heretic =============================================
+
+	Display the AttackInProgress message at the target station
+
+	EXTRA DATA
+
+	======================================================================== -->
+
+	<MissionType UNID="&msHereticIocrymAttackMsg;"
+			name=			"Iocrym Attack"
+			attributes=		""
+
+			level=			"10"
+
+			priority=		"100"
+			noDecline=		"true"
+			>
+
+
+		<Events>
+			<OnCreate>
+				(msnSetData gSource 'briefingID (switch
+					(objHasAttribute aOwnerObj 'commonResearch)
+						'textBriefingCommonwealth
+
+					(objHasAttribute aOwnerObj 'ringers)
+						'textBriefingRingers
+
+					(objHasAttribute aOwnerObj 'sistersOfDomina)
+						'textBriefingSisters
+
+					(objHasAttribute aOwnerObj 'corporate)
+						'textBriefingTaikon
+
+					(objHasAttribute aOwnerObj 'ares)
+						'textBriefingAres
+
+					'textBriefing
+					))
+			</OnCreate>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Briefing">
+				(list
+					{
+						textID: (msnGetData gSource 'briefingID)
+						nextPage: 'missionDecline
+						}
+
+					Nil	;	Blank entry to prevent forced accept/decline options
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">
+				Iocrym Attack
+			</Text>
+			<Text id="textBriefingCommonwealth">
+				Nervous scientists approach you as you enter:
+
+				"We're being attacked by Iocrym sentinels! You must stop them before they
+				destroy all our work!"
+			</Text>
+			<Text id="textBriefingRingers">
+				A young ringer approaches you as you enter:
+
+				"Earthican! Iocrym sentinels attack our home. We seek safety and protection from
+				their attacks!"
+			</Text>
+			<Text id="textBriefingSisters">
+				"The Iocrym attack! Do not let them destroy our good work!
+				Protect us!"
+			</Text>
+			<Text id="textBriefingTaikon">
+				A tall man in corporate suit approaches you:
+
+				"We're under attack! The Iocrym have finally decided to kick us out of the system.
+				Help us! The longer we can survive, the better chance we have of discovering how to
+				defeat them!"
+			</Text>
+			<Text id="textBriefingAres">
+				An Ares scientist approaches you:
+
+				"Help us, Human! The Iocrym are our common enemy! Defend us from their sentinels."
+			</Text>
+			<Text id="textBriefing">
+				The station master approaches you:
+
+				"We're being attacked by Iocrym sentinels! You must stop them before they
+				destroy us!"
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

@@ -13,6 +13,8 @@
 			<Text id="actionContinue">[C]ontinue</Text>
 			<Text id="actionDecline">[D]ecline</Text>
 			<Text id="actionDockServices">[D]ock Services</Text>
+			<Text id="actionDonate">[D]onate</Text>
+			<Text id="actionDonateThisItem">[D]onate this Item</Text>
 			<Text id="actionDone">[D]one</Text>
 			<Text id="actionJettison">[J]ettison</Text>
 			<Text id="actionLeave">[L]eave</Text>

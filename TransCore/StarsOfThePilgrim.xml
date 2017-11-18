@@ -40,7 +40,24 @@
 	<!ENTITY evBenedict07FionaWreck		"0x0020001F">
 	<!ENTITY evBenedict06PenitentShip	"0x00200020">
 	<!ENTITY evBenedict07Wingman		"0x00200021">
+
+	<!-- 0060-007F HERETIC MISSION ARC -->
 	
+	<!ENTITY msHereticIocrymAttack		"0x00200060">
+	<!ENTITY msHereticIocrymAttackMsg	"0x00200061">
+	<!ENTITY msHereticSvalbard			"0x00200062">
+	<!ENTITY dsHereticSvalbardDonate	"0x00200063">
+	<!ENTITY msHereticControlPoint		"0x00200064">
+	<!ENTITY msHereticFurtherResearch	"0x00200065">
+	<!ENTITY msHereticSettlement		"0x00200066">
+	<!ENTITY msHereticMaryamsArchive	"0x00200067">
+	<!ENTITY stMaryamsArchive			"0x00200068">
+	<!ENTITY msHereticHuygensExplorer	"0x00200069">
+	<!ENTITY evHereticHuygensExplorer	"0x0020006A">
+	<!ENTITY msHereticIocrymArtifact	"0x0020006B">
+	<!ENTITY msHereticIocrymOutpost		"0x0020006C">
+	<!ENTITY msHereticMRADExperiment	"0x0020006D">
+
 	<!-- 0021xxxx HUARI ==================================================== -->
 	
 	<!ENTITY smHuariSpace				"0x00210001">
@@ -200,6 +217,15 @@
 	<Module filename="Benedict08.xml"/>
 	<Module filename="BenedictStoryArc.xml"/>
 	<Module filename="Elysium.xml"/>
+	<Module filename="Heretic00.xml"/>
+	<Module filename="Heretic01.xml"/>
+	<Module filename="Heretic02.xml"/>
+	<Module filename="Heretic03.xml"/>
+	<Module filename="Heretic04.xml"/>
+	<Module filename="Heretic05.xml"/>
+	<Module filename="Heretic06.xml"/>
+	<Module filename="Heretic07.xml"/>
+	<Module filename="Heretic08.xml"/>
 	<Module filename="Huaramarca.xml"/>
 	<Module filename="HuaramarcaMission01.xml"/>
 	<Module filename="HuaramarcaMission02.xml"/>

@@ -1186,7 +1186,7 @@
 	<!ENTITY stSvalbardEncounter		"0x001C200A">
 	<!ENTITY stMRADSensor				"0x001C200B">
 	<!ENTITY stSvalbardWreck			"0x001C200C">
-	<!ENTITY stMaryamsArchive			"0x001C200D">
+	<!ENTITY stMaryamsArchiveObsolete	"0x001C200D">
 	<!ENTITY stHereticStation			"0x001C200E">
 	<!ENTITY stHereticSun				"0x001C200F">
 
@@ -2068,6 +2068,7 @@
 		part. -->
 
 	<Module filename="MiscItems.xml"/>
+	<Module filename="MRAD.xml"/>
 	<Module filename="StdArmor.xml"/>
 	<Module filename="StdAutons.xml"/>
 	<Module filename="StdDevices.xml"/>

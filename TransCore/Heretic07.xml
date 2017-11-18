@@ -1,0 +1,140 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Iocrym Outpost ===============================================
+
+
+	EXTRA DATA
+
+	targetID:			ID of Iocrym Outpost
+
+	status:
+		Nil:				Mission not yet started
+
+	======================================================================== -->
+
+	<MissionType UNID="&msHereticIocrymOutpost;"
+			name=			"Iocrym Outpost"
+			attributes=		"aresResearch, hereticMission"
+
+			level=			"10"
+
+			maxAppearing=	"1"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	This mission only works in Heretic
+					(!= (sysGetNode) 'G2)
+						(msnDestroy gSource)
+
+					;	Must have an outpost to attack
+					(not (sysFindObject Nil "TA +iocrymOutpost;"))
+						(msnDestroy gSource)
+
+					;	Set up the mission
+					(block (
+						(targetObj (random (sysFindObject Nil "TA +iocrymOutpost;")))
+						)
+						;	Remember and register for events
+						(msnRegisterForEvents gSource targetObj)
+						(msnSetData gSource 'targetID (objGetID targetObj))
+						)
+					)
+			</OnCreate>
+
+			<OnAcceptedUndock>
+				(block Nil
+					(msnRegisterForEvents gSource gPlayerShip)
+					)
+			</OnAcceptedUndock>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)))
+			</OnSetPlayerTarget>
+
+			<OnObjDestroyed>
+				(switch
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(msnSuccess gSource)
+					)
+			</OnObjDestroyed>
+
+			<OnCanBrief>
+				(if (msnFind "a +hereticMission;")
+					(msnTranslate gSource 'textBusy)
+					)
+			</OnCanBrief>
+
+			<OnReward>
+				(objAddItem gPlayerShip (itmCreate &itHereticResearchROM; 1))
+			</OnReward>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="textSummary">
+				The Ares has asked you to test the Iocrym strengths and weaknesses by
+				destroying one of their outposts.
+			</Text>
+			<Text id="Intro">
+				An Ares scientist comes forward:
+
+				"Welcome, Human! It is good that we can meet under peaceful circumstances.
+				Like you, we are studying the Iocrym, for they are as much a threat to us
+				as they are to you."
+			</Text>
+			<Text id="Briefing">
+				"Our forescouts have detected a hidden Iocrym outpost inside the
+				quarantine zone. We ask that you destroy it so that we may understand
+				its strengths and weaknesses. Do you wish to accept this request?"
+			</Text>
+			<Text id="AcceptReply">
+				"You are strong, Human! We will repay your efforts by sharing all data
+				that we collect."
+
+				"On Ares we would say, 'May you find water,' but in your honor, Human,
+				we say 'Good luck'"
+			</Text>
+			<Text id="DeclineReply">
+				"Your weakness discredits your race! Return later if you wish to
+				reclaim your honor."
+			</Text>
+			<String id="InProgress">
+				"Human! What are you doing here? Your task is out in deep space!"
+			</String>
+			<Text id="SuccessDebrief">
+				"Good fortune, Human! Based on your encounter with the Iocrym outpost we
+				have analyzed their defenses. Although their technology is far beyond
+				ours, they are not invincible. They are particularly vulnerable to
+				antimatter weapons."
+				
+				"As promised, here is a ROM that contains the data we've gathered."
+			</Text>
+
+			<Text id="textBusy">
+				An Ares scientist comes forward:
+
+				"Welcome, Human! We are studying the Iocrym just as you are now. Return
+				here when your task is complete and perhaps we can help each other."
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

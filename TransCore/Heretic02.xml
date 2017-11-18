@@ -1,0 +1,358 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission: Heretic Control Point mission ================================
+
+	EXTRA DATA
+
+	researchNeeded:		This is a counter that is decremented each time that we
+						discover some important information. When the counter
+						reaches zero then we can disable the Iocrym manipulators.
+
+	state:		Current mission state determining InProgress message
+		'researchThanks
+		'researchComplete
+		'findResearch
+		'waitForResearch
+		'moreResearchNeeded
+
+	======================================================================== -->
+
+	<MissionType UNID="&msHereticControlPoint;"
+			name=			"Svalbard"
+			attributes=		"hereticControlPoint"
+
+			level=			"10"
+
+			maxAppearing=	"1"
+			noDecline=		"true"
+			noDebrief=		"true"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	Only if Kate is present at the Iocrym Control Point
+					(!= (objGetData aOwnerObj 'stationMaster) 'kateMorgental)
+						(msnDestroy gSource)
+
+					;	And only if the quarantine is still active
+					(sysGetData 'G2 'quarantineLifted)
+						(msnDestroy gSource)
+
+					(block Nil
+						;	Initial research requirement
+						(msnSetData gSource 'researchNeeded 3)
+
+						;	If player completed the Svalbard mission then they
+						;	get one free research point.
+						(if (msnFind "r +unid:&msHereticSvalbard;; +property:isSuccess;")
+							(msnIncData gSource 'researchNeeded -1)
+							)
+
+						(msnRegisterForEvents gSource gPlayerShip)
+						)
+					)
+			</OnCreate>
+
+			<OnSetPlayerTarget>
+				(switch
+					(msnGetData gSource 'targetID)
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)) 'dock)
+					)
+			</OnSetPlayerTarget>
+
+			<OnObjDocked>
+				(if (and (= aObjDocked gPlayerShip) 
+						(= (objGetID aDockTarget) (msnGetData gSource 'targetID)))
+					(block Nil
+						(msnSetData gSource 'targetID Nil)
+						(msnSetPlayerTarget gSource)
+						)
+					)
+			</OnObjDocked>
+
+			<OnInProgress>
+				(switch
+					(objGetItems gPlayerShip "* +HereticROM;")
+						(block Nil
+							;	Count the number of research ROMs
+							(enum (objGetItems gPlayerShip "* +HereticROM;") theROM
+								(block (
+									(romsUsed (min (msnGetData gSource 'researchNeeded) (itmGetCount theROM)))
+									)
+									(if (gr romsUsed 0)
+										(block Nil
+											(msnIncData gSource 'researchNeeded (- romsUsed))
+											(objRemoveItem gPlayerShip theROM romsUsed)
+											)
+										)
+									)
+								)
+							
+							(if (gr (msnGetData gSource 'researchNeeded) 0)
+								(msnSetData gSource 'state 'researchThanks)
+								(msnSetData gSource 'state 'researchComplete)
+								)
+							)
+
+					(filter (sysFindObject Nil "TF") theObj	(objGetItems theObj "* +HereticROM;"))
+						(msnSetData gSource 'state 'findResearch)
+					
+					(and (herStatus 'missionMRAD)
+							(herStatus 'missionMaryamsArchive)
+							(herStatus 'missionHuygensExplorer)
+							(herStatus 'missionTaikon)
+							)
+						(msnSetData gSource 'state 'waitForResearch)
+
+					(msnSetData gSource 'state 'moreResearchNeeded)
+					)
+			</OnInProgress>
+
+			<OnInProgressUndock>
+				(block (
+					(state (msnGetData gSource 'state))
+					)
+					(switch
+						(= state 'researchComplete)
+							(msnSuccess gSource)
+
+						(and (= state 'findResearch) (not (msnGetData gSource 'targetID)))
+							(block (theWreck)
+								(setq theWreck
+									(random 
+										(filter (sysFindObject Nil "TF") theObj	(objGetItems theObj "* +HereticROM;"))
+										)
+									)
+								(msnSetData gSource 'targetID (objGetID theWreck))
+								(msnSetPlayerTarget gSource)
+								)
+						)
+					)
+			</OnInProgressUndock>
+
+			<OnCompleted>
+				(switch
+					(= aReason 'success)
+						(block Nil
+							;	Lift the quarantine
+							(sysSetData 'G2 'quarantineLifted True)
+							;	Kate leaves
+							(objSetData aOwnerObj 'stationMaster 'hereticResearcher)
+							)
+					)
+			</OnCompleted>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+
+			<Text id="InProgress">
+				(block (
+					(state (msnGetData gSource 'state))
+					)
+					(switch
+						(= state 'researchThanks)
+							(list
+								{	textID: 'textResearch			}
+								{	textID: 'textResearchThanks		}
+								)
+
+						(= state 'researchComplete)
+							(list
+								{	textID: 'textResearch				}
+								{	textID: 'textResearchComplete		}
+								{	textID: 'textDisableManipulators1	}
+								{	textID: 'textDisableManipulators2	}
+								{	textID: 'textDisableManipulators3	}
+								)
+
+						(= state 'findResearch)
+							(list
+								{	textID: 'textFindResearch1		}
+								{	textID: 'textFindResearch2		}
+								)
+
+						(= state 'waitForResearch)
+							(list
+								{	textID: 'textWaitForResearch	}
+								)
+
+						(list
+							{	textID: 'textMoreResearchNeeded		}
+							)
+						)
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="textSummary">
+				Help Kate
+			</Text>
+
+			<Text id="Intro">
+				Kate Morgental and her team from the Svalbard Explorer are setting up
+				a research base here. Their goal is to understand how to break the Iocrym
+				quarantine.
+			</Text>
+			<Text id="Briefing">
+				Kate Morgental approaches you:
+
+				"It looks like the Iocrym know that we're here. We've been monitoring the
+				outer system and we've detected Iocrym activity. We think they are
+				planning to attack us&mdash;but we don't know what their target will be.
+				Stay sharp: we'll send a message out to you if anything happens."
+			</Text>
+			<Text id="textResearch">
+				You tell Kate Morgental that you have research data on the Iocrym. She
+				and her team are happy:
+
+				"That's wonderful&mdash;we'll analyze the data and see if it can help us
+				to break the Iocrym quarantine. Wait here while we take a look."
+			</Text>
+			<Text id="textResearchThanks">
+				"Thank you! The data that your provided is very useful. We are closer to
+				understanding how the quarantine works, but we still don't know how to
+				disable it. If you can get us more data, that would help a lot."
+			</Text>
+			<Text id="textResearchComplete">
+				"That's it! That's the missing piece! With all the data you've gathered
+				we now understand how the Iocrym have created the quarantine. The event
+				horizon that keeps us from leaving will collapse as soon as we disable
+				the Iocrym manipulators deployed around the Heretic sun."
+			</Text>
+			<Text id="textDisableManipulators1">
+				"All of the Iocrym manipulators are controlled from this position. We
+				should be able to order the manipulators to shut down&mdash;that will
+				break the quarantine! Stand by..."
+			</Text>
+			<Text id="textDisableManipulators2">
+				Kate Morgental's team connects their equipment to the alien machinery.
+				They issue commands and the alien symbols around the chamber begin to
+				flash in unison. Suddenly, the omnipresent hum of gigantic machinery
+				changes pitch and begins to die down."
+			</Text>
+			<Text id="textDisableManipulators3">
+				"We've done it! The quarantine is broken! I'll get a message to St.
+				Kat's&mdash;this is a historic moment for the human race!"
+
+				"Now you're free to continue your journey to the Core. Thanks for your
+				help, %name%. We couldn't have done it without you. I hope to see you
+				again someday."
+			</Text>
+			<Text id="textFindResearch1">
+				Kate Morgental approaches you:
+
+				"Good to see you again! We're making progress, but we need more data.
+				Fortunately, we've identified a wreck in the system that has the research
+				data we need. Will you go retrieve it?"
+			</Text>
+			<Text id="textFindResearch2">
+				"Thanks. We've programmed the location of the wreck into your computer.
+				Find the wreck and bring the data it contains back to us."
+			</Text>
+			<Text id="textWaitForResearch">
+				Kate Morgental approaches you. She looks tired and frustrated:
+
+				"It's no use! We don't have enough data to figure out how to disable the
+				quarantine. And the other research stations have either been destroyed or
+				come up with nothing. Our only hope is to catch a break from some Iocrym
+				hardware. Maybe we can salvage some data out of the wreck of an Iocrym
+				sentinel."
+			</Text>
+			<Text id="textMoreResearchNeeded">
+				Kate Morgental and her researchers are studying the alien machinery.
+				She approaches:
+
+				"We're slowly making progress, but we need more data. Go talk to the
+				other stations in the system and see if they have any research data that
+				might help us."
+			</Text>
+		</Language>
+	</MissionType>
+
+
+	<!-- Mission: Heretic Sentinel Virus =======================================
+	
+	After the quarantine is lifted, any extra research ROMs can be exchanged
+	for Iocrym paralysis cubes.
+
+	======================================================================== -->
+
+	<MissionType UNID="&msHereticFurtherResearch;"
+			name=			"Sentinel Virus"
+			attributes=		"hereticControlPoint"
+
+			level=			"10"
+			noDecline=		"true"
+			noDebrief=		"true"
+			noStats=		"true"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	Only if the quarantine has been lifted
+					(not (sysGetData 'G2 'quarantineLifted))
+						(msnDestroy gSource)
+
+					;	Player must have found some more research ROMs
+					(not (objGetItems gPlayerShip "* +HereticROM; -LesserData;"))
+						(msnDestroy gSource)
+
+					;	Set up the mission
+					(block Nil
+						)
+					)
+			</OnCreate>
+			
+			<OnAccepted>
+				(block (romCount cubeCount)
+					;	Count the number of research ROMs
+					(enum (objGetItems gPlayerShip "* +HereticROM;") theROM
+						(block Nil
+							(setq romCount (add romCount (itmGetCount theROM)))
+							(objRemoveItem gPlayerShip theROM)
+							)
+						)
+
+					(for i 1 romCount
+						(setq cubeCount (add cubeCount (random 2 4)))
+						)
+
+					;	Create mnemonic cubes
+					(objAddItem gPlayerShip (itmCreate &itIocrymSentinelVirus; cubeCount))
+					
+					(msnDestroy gSource)
+					)
+			</OnAccepted>
+		</Events>
+
+		<Language>
+			<Text id="Briefing">
+				You tell Kate's scientists that you have additional data on the Iocrym.
+				The scientists analyze the data:
+
+				"With this research data we have been able to create an infiltration
+				virus that can disable the Iocrym sentinels that have been attacking us.
+				Take these mnemonic cubes and use them if your ship has a quantum CPU."
+			</Text>
+			<Text id="SuccessMsg"></Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

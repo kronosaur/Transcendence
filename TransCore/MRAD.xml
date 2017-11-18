@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- MRAD experiment
+
+	EXTRA DATA
+
+	mradID:			ID used to identify our probes (also our mission ID)
+	anomalyID:		ID of the anomaly found (should match mradID)
+
+	-->
+
+	<ItemType UNID="&itMRADExperiment;"
+			inherit=			"&unidCommonText;"
+			name=				"MRAD experiment"
+			level=				"5"
+			value=				"15000"
+			mass=				"2000"
+			frequency=			"notrandom"
+			attributes=			"majorItem, MRADExperiment, notForSale, questItem"
+
+			charges=			"6"
+
+			description=		"The MRAD device is designed to detect and study magnetic energy."
+
+			useScreen=			"Main"
+			useKey=				"X"
+			useInstalledOnly=	"true"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<MiscellaneousDevice
+				powerUse=		"500"
+				/>
+
+		<Events>
+			<OnInstall>
+				;	If we're reinstalling then restore any probe markers
+				(enum (sysFindObject Nil "T +mradProbe;") probeObj
+					(if (= (objGetData probeObj 'mradID) (itmGetData gItem 'mradID))
+						(objSetShowAsDestination probeObj 'showDistance)
+						)
+					)
+			</OnInstall>
+			
+			<OnUninstall>
+				;	Remove any probe markers
+				(enum (sysFindObject Nil "T +mradProbe;") probeObj
+					(if (= (objGetData probeObj 'mradID) (itmGetData gItem 'mradID))
+						(objClearShowAsDestination probeObj)
+						)
+					)
+			</OnUninstall>
+		</Events>
+
+		<DockScreens>
+			<Main 
+				name=			"MRAD Experiment"
+				backgroundID=	"none"
+				>
+				<OnScreenInit>
+					(block ()
+						;	Find all probes belonging to this MRAD device
+						(enum (sysFindObject Nil "T +mradProbe;") probeObj
+							(if (= (objGetData probeObj 'mradID) (itmGetData gItem 'mradID))
+								(scrSetData gScreen (objGetData probeObj 'probeID) probeObj)
+								)
+							)
+						)
+				</OnScreenInit>
+
+				<Display>
+					<OnDisplayInit>
+					</OnDisplayInit>
+
+					<Group left="12" top="12" width="182" height="172">
+						<Image transparent="true">
+							(mradDisplay 1 'displayImage)
+						</Image>
+
+						<Text left="10" top="4" font="LargeBold" color="0,0,0">
+							(mradDisplay 1 'displayName)
+						</Text>
+
+						<Text left="12" top="50" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 1 'shipDistance)
+						</Text>
+
+						<Text left="12" top="84" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 1 'shipBearing)
+						</Text>
+
+						<Text right="-12" top="50" align="right" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 1 'anomalyDistance)
+						</Text>
+
+						<Text right="-12" top="84" align="right" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 1 'anomalyBearing)
+						</Text>
+
+						<Text right="-12" top="118" align="right" font="LargeBold" color="242,101,34">
+							(mradDisplay 1 'dataDownload)
+						</Text>
+					</Group>
+
+					<Group center="0" top="12" width="182" height="172">
+						<Image transparent="true">
+							(mradDisplay 2 'displayImage)
+						</Image>
+
+						<Text left="10" top="4" font="LargeBold" color="0,0,0">
+							(mradDisplay 2 'displayName)
+						</Text>
+
+						<Text left="12" top="50" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 2 'shipDistance)
+						</Text>
+
+						<Text left="12" top="84" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 2 'shipBearing)
+						</Text>
+
+						<Text right="-12" top="50" align="right" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 2 'anomalyDistance)
+						</Text>
+
+						<Text right="-12" top="84" align="right" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 2 'anomalyBearing)
+						</Text>
+
+						<Text right="-12" top="118" align="right" font="LargeBold" color="242,101,34">
+							(mradDisplay 2 'dataDownload)
+						</Text>
+					</Group>
+
+					<Group right="-12" top="12" width="182" height="172">
+						<Image transparent="true">
+							(mradDisplay 3 'displayImage)
+						</Image>
+
+						<Text left="10" top="4" font="LargeBold" color="0,0,0">
+							(mradDisplay 3 'displayName)
+						</Text>
+
+						<Text left="12" top="50" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 3 'shipDistance)
+						</Text>
+
+						<Text left="12" top="84" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 3 'shipBearing)
+						</Text>
+
+						<Text right="-12" top="50" align="right" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 3 'anomalyDistance)
+						</Text>
+
+						<Text right="-12" top="84" align="right" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 3 'anomalyBearing)
+						</Text>
+
+						<Text right="-12" top="118" align="right" font="LargeBold" color="242,101,34">
+							(mradDisplay 3 'dataDownload)
+						</Text>
+					</Group>
+
+					<Group left="12" top="200" width="182" height="172">
+						<Image transparent="true">
+							(mradDisplay 4 'displayImage)
+						</Image>
+
+						<Text left="10" top="4" font="LargeBold" color="0,0,0">
+							(mradDisplay 4 'displayName)
+						</Text>
+
+						<Text left="12" top="50" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 4 'shipDistance)
+						</Text>
+
+						<Text left="12" top="84" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 4 'shipBearing)
+						</Text>
+
+						<Text right="-12" top="50" align="right" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 4 'anomalyDistance)
+						</Text>
+
+						<Text right="-12" top="84" align="right" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 4 'anomalyBearing)
+						</Text>
+
+						<Text right="-12" top="118" align="right" font="LargeBold" color="242,101,34">
+							(mradDisplay 4 'dataDownload)
+						</Text>
+					</Group>
+
+					<Group center="0" top="200" width="182" height="172">
+						<Image transparent="true">
+							(mradDisplay 5 'displayImage)
+						</Image>
+
+						<Text left="10" top="4" font="LargeBold" color="0,0,0">
+							(mradDisplay 5 'displayName)
+						</Text>
+
+						<Text left="12" top="50" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 5 'shipDistance)
+						</Text>
+
+						<Text left="12" top="84" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 5 'shipBearing)
+						</Text>
+
+						<Text right="-12" top="50" align="right" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 5 'anomalyDistance)
+						</Text>
+
+						<Text right="-12" top="84" align="right" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 5 'anomalyBearing)
+						</Text>
+
+						<Text right="-12" top="118" align="right" font="LargeBold" color="242,101,34">
+							(mradDisplay 5 'dataDownload)
+						</Text>
+					</Group>
+
+					<Group right="-12" top="200" width="182" height="172">
+						<Image transparent="true">
+							(mradDisplay 6 'displayImage)
+						</Image>
+
+						<Text left="10" top="4" font="LargeBold" color="0,0,0">
+							(mradDisplay 6 'displayName)
+						</Text>
+
+						<Text left="12" top="50" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 6 'shipDistance)
+						</Text>
+
+						<Text left="12" top="84" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 6 'shipBearing)
+						</Text>
+
+						<Text right="-12" top="50" align="right" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 6 'anomalyDistance)
+						</Text>
+
+						<Text right="-12" top="84" align="right" font="MediumHeavyBold" color="255,255,255">
+							(mradDisplay 6 'anomalyBearing)
+						</Text>
+
+						<Text right="-12" top="118" align="right" font="LargeBold" color="242,101,34">
+							(mradDisplay 6 'dataDownload)
+						</Text>
+					</Group>
+				</Display>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(block (
+								(charges (itmGetProperty gItem 'charges))
+								(status (itmGetData gItem 'anomalyID))
+								)
+								(switch
+									status
+										(scrSetDescTranslate gScreen 'descDefaultFound)
+
+									(= charges 0)
+										(scrSetDescTranslate gScreen 'descDefaultFailed)
+
+									(scrSetDesc gScreen (cat
+										(scrTranslate gScreen 'descDefault)
+										"\n\n"
+										(switch
+											(= charges 1)
+												(scrTranslate gScreen 'descLastProbe)
+											(= charges 6)
+												(scrTranslate gScreen 'descFirstProbe {number: charges})
+
+											(scrTranslate gScreen 'descProbesLeft {number: charges})
+											)
+										))
+									)
+
+								;	Deploy probe command only available if probes left
+								(scrEnableAction gScreen 'actionDeployProbe (and (not status) (gr charges 0)))
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionDeployProbe" default="1">
+								(block (
+									(probeNumber (- 7 (itmGetProperty gItem 'charges)))
+									(anomalyObj (sysFindObject gPlayerShip "kND:mradID;"))
+									theProbe probeDist
+									)
+
+									;	Deploy the probe
+									(setq theProbe (sysCreateStation &stMRADSensor; (sysVectorPolarOffset gSource (random 0 359) 1)))
+									(objSetData theProbe 'mradID (itmGetData gItem 'mradID))
+									(objSetData theProbe 'probeID (cat "MRADProbe" probeNumber))
+									(objSetName theProbe (cat "MRAD Probe " probeNumber) 0x40)
+									(objSetKnown theProbe)
+									(objSetShowAsDestination theProbe 'showDistance)
+
+									;	Remember the probe for the next pane
+									(scrSetData gScreen 'currentProbe (objGetID theProbe))
+
+									;	Consume charges
+									(setq gItem (objSetItemProperty gPlayerShip gItem 'incCharges -1))
+
+									;	How far are we from the anomaly?
+									(setq probeDist (sysVectorDistance anomalyObj theProbe))
+
+									(scrRefreshScreen gScreen)
+
+									; Determine result
+									(switch
+										;	If we're close, then we found it
+										(leq probeDist 10)
+											(block (
+												(missionObj (objGetObjByID (itmGetData gItem 'mradID)))
+												)
+												;	Record which anomaly we've found
+												(setq gItem (objSetItemData gPlayerShip gItem 'anomalyID (objGetData anomalyObj 'mradID)))
+												;	Let the mission know 
+												(if missionObj (msnFireEvent missionObj 'OnAnomalyFound))
+												(scrShowPane gScreen "ProbeLaunchedFound")
+												)
+
+										;	If this was our last probe, then we fail
+										(= (itmGetProperty gItem 'charges) 0)
+											(block (
+												(missionObj (objGetObjByID (itmGetData gItem 'mradID)))
+												)
+												;	Let the mission know 
+												(if missionObj (msnFireEvent missionObj 'OnAllProbesUsed))
+												(scrShowPane gScreen "Default")
+												)
+
+										;	Otherwise keep looking
+										(scrShowPane gScreen "ProbeLaunched")
+										)
+									)
+							</Action>
+
+							<Action id="actionDoneSpecial" cancel="1">
+								(scrExitDock gScreen)
+							</Action>
+						</Actions>
+					</Default>
+
+					<ProbeLaunched>
+						<OnPaneInit>
+							(block (
+								(probeObj (objGetObjByID (scrGetData gScreen 'currentProbe)))
+								(anomalyObj (sysFindObject probeObj "kND:mradID;"))
+								(probeDist (sysVectorDistance anomalyObj probeObj))
+								(probeAngle (modulo (+ 90 (- 360 (sysVectorAngle (sysVectorSubtract anomalyObj probeObj)))) 360))
+								)
+								(scrSetDescTranslate gScreen
+									(switch
+										(not probeObj)		'descProbeLaunchedFailed
+										(leq probeDist 75)	'descProbeLaunchedClose 
+										(leq probeDist 500)	'descProbeLaunchedDistance
+															'descProbeLaunchedNoAnomaly
+										)
+									{
+										distance: probeDist
+										bearing: probeAngle
+										}
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionContinue" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</ProbeLaunched>
+
+					<ProbeLaunchedFound>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descProbeLaunchedFound)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionContinue" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</ProbeLaunchedFound>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+		<Language>
+			<Text id="actionDeployProbe">[D]eploy Probe</Text>
+			<Text id="actionDoneSpecial">Do[n]e</Text>
+
+			<Text id="descDefaultFound">
+				Anomaly located.\n
+				MRAD probe data download complete.\n
+				MRAD experiment complete.
+
+				Return to base station for data analysis.
+			</Text>
+			<Text id="descDefaultFailed">
+				All MRAD probes launched.\n
+				Anomaly not located.\n
+				MRAD experiment failed.
+			</Text>
+			<Text id="descDefault">
+				MRAD experiment online.
+
+				You must deploy a probe within 10 light-seconds of the anomaly to gather data 
+				and to successfully complete the experiment.
+			</Text>
+			<Text id="descLastProbe">You have 1 probe left.</Text>
+			<Text id="descProbesLeft">You have %number% probes left. Deploy a probe to continue the experiment.</Text>
+			<Text id="descFirstProbe">You have %number% probes left. Deploy a probe to begin the experiment.</Text>
+
+			<Text id="descProbeLaunchedFailed">
+				Probe destroyed.
+			</Text>
+			<Text id="descProbeLaunchedFound">
+				Probe launched.
+
+				Graviton anomaly detected within 10 light-seconds.\n
+				Downloading data from probe...
+			</Text>
+			<Text id="descProbeLaunchedClose">
+				Probe launched.
+
+				Anomaly detected %distance% light-seconds away. Bearing to
+				anomaly established at %bearing% degrees from probe.
+
+				Move ship to proper position relative to probe and drop another probe.
+			</Text>
+			<Text id="descProbeLaunchedDistance">
+				Probe launched.
+
+				Anomaly detected %distance% light-seconds away from probe.\n
+				Move ship to new position at given distance and drop another probe.
+			</Text>
+			<Text id="descProbeLaunchedNoAnomaly">
+				Probe launched.
+
+				No anomaly detected within 500 light-seconds of probe.\n
+				Move ship to a new position and drop another probe.
+			</Text>
+
+			<Text id="textProbe">Probe %number%</Text>
+		</Language>
+	</ItemType>
+
+
+	<!-- MRAD sensor -->
+
+	<StationType UNID="&stMRADSensor;"
+			name=				"(MRAD sensor)"
+			sovereign=			"&svNeutral;"
+			inherit=			"&unidCommonText;"
+
+			dockScreen=			"Main"
+			mass=				"2000"
+            noMapDetails=       "true"
+			
+			attributes=			"mradProbe"
+			>
+
+		<ImageVariants>
+			<Image imageID="&rsMRADProbe;" imageX="0"   imageY="0"   imageWidth="48" imageHeight="48"/>
+			<Image imageID="&rsMRADProbe;" imageX="48"  imageY="0"   imageWidth="48" imageHeight="48"/>
+			<Image imageID="&rsMRADProbe;" imageX="96"  imageY="0"   imageWidth="48" imageHeight="48"/>
+			<Image imageID="&rsMRADProbe;" imageX="144" imageY="0"   imageWidth="48" imageHeight="48"/>
+		</ImageVariants>
+		
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionUndock" default="1" cancel="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="24" />
+			<Port x="0"		y="-24" />
+			<Port x="24"	y="0" />
+			<Port x="-24"	y="0" />
+		</DockingPorts>
+
+		<Language>
+			<Text id="descWelcome">
+				You are docked with an MRAD graviton probe. Use the MRAD experiment
+				device to access this probe.
+			</Text>
+		</Language>
+	</StationType>
+
+	<!-- Globals -->
+
+	<Globals>
+		(block Nil
+			(setq mradDisplay (lambda (probeID displayField)
+				(block (
+					(probeObj (scrGetData gScreen (cat "MRADProbe" probeID )))
+					(anomalyObj (sysFindObject probeObj "kND:mradID;"))
+					(dist (sysVectorDistance anomalyObj probeObj))
+					)
+					(switch
+						(= displayField 'displayName)
+							(typTranslate &itMRADExperiment; 'textProbe { number: probeID })
+
+						(= displayField 'displayImage)
+							(list &rsMRADConsole; 0 (if probeObj 0 172) 182 172)
+
+						(not probeObj)
+							""
+
+						(= displayField 'shipDistance)
+							(sysVectorDistance gPlayerShip probeObj)
+
+						(= displayField 'shipBearing)
+							(modulo (+ 90 (- 360 (sysVectorAngle (sysVectorSubtract gPlayerShip probeObj)))) 360)
+
+						(= displayField 'anomalyDistance)
+							(switch
+								(leq dist 500)
+									dist
+								"???"
+								)
+
+						(= displayField 'anomalyBearing)
+							(switch
+								(leq dist 75)
+									(modulo (+ 90 (- 360 (sysVectorAngle (sysVectorSubtract anomalyObj probeObj)))) 360)
+								"???"
+								)
+
+						(= displayField 'dataDownload)
+							(switch
+								(leq dist 10)
+									(random 75 99)
+								"0"
+								)
+
+						""
+						)
+					)
+				))
+			)
+	</Globals>
+
+<!-- Resources -->
+
+	<Image UNID="&rsMRADProbe;"			bitmap="Resources\MRADProbe.jpg" bitmask="Resources\MRADProbeMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsMRADConsole;"		bitmap="Resources\MRADConsole.jpg" bitmask="Resources\MRADConsoleMask.bmp" loadOnUse="true"/>
+
+</TranscendenceModule>

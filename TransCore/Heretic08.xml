@@ -1,0 +1,268 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Mission:  =============================================
+
+
+	EXTRA DATA
+
+	status:
+		Nil:				No results yet
+		'found:				Anomaly found
+		'failed:				All probes used, anomaly not found
+
+	======================================================================== -->
+
+	<MissionType UNID="&msHereticMRADExperiment;"
+			name=			"MRAD Experiment"
+			attributes=		"commonwealthResearch, hereticMission"
+
+			level=			"10"
+
+			maxAppearing=	"1"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	This mission only works in Heretic
+					(!= (sysGetNode) 'G2)
+						(msnDestroy gSource)
+
+					;	Set up the mission
+					(block (anomalyPos anomalyObj)
+						;	Create the anomaly
+						(setq anomalyPos (sysVectorPolarOffset Nil (random 0 359) (random 100 450)))
+						(setq anomalyObj (sysCreateMarker "anomaly" anomalyPos &svNeutral;))
+						(objSetData anomalyObj 'mradID (objGetID gSource))
+						)
+					)
+			</OnCreate>
+
+			<OnStarted>
+			</OnStarted>
+
+			<OnAccepted>
+				(block (theItem)
+					(setq theItem (itmCreate &itMRADExperiment; 1))
+					(setq theItem (itmSetData theItem 'mradID (objGetID gSource)))
+					(objAddItem gPlayerShip theItem)
+					(shpInstallDevice gPlayerShip theItem) 
+					)
+			</OnAccepted>
+
+			<OnAcceptedUndock>
+				(msnRegisterForEvents gSource gPlayerShip)
+			</OnAcceptedUndock>
+
+			<OnAnomalyFound>
+				(msnSetData gSource 'status 'found)
+			</OnAnomalyFound>
+
+			<OnAllProbesUsed>
+				(msnSetData gSource 'status 'failed)
+			</OnAllProbesUsed>
+
+			<OnObjDocked>
+				(switch
+					;	Only care about the player docking with owner while mission is active,
+					;	so ignore anything else
+					(or (!= aObjDocked gPlayerShip)
+							(!= (objGetID aDockTarget) (msnGetProperty gSource 'ownerID))
+							(not (msnGetProperty gSource 'isActive))
+							)
+						Nil
+
+					(= (msnGetData gSource 'status) 'found)
+						(objEnumItems gPlayerShip "d +MRADExperiment;" theItem
+							(if (= (itmGetData theItem 'mradID) (objGetID gSource))
+								(msnSuccess gSource)
+								(msnFailure gSource)
+								)
+							)
+
+					(= (msnGetData gSource 'status) 'failed)
+						(msnFailure gSource)
+					)
+			</OnObjDocked>
+
+			<OnCanBrief>
+				(block (installResult)
+					;	Check if we can install the MRAD experiment
+					(setq installResult (rpgInstallDevicePrep {
+							item: (itmCreate &itMRADExperiment; 1)
+							totalPrice: 0
+							checkTotalPower: True
+							installerObj: (objGetObjByID (msnGetProperty gSource 'ownerID))
+							itemInCargo: Nil
+							}))
+					(msnSetData gSource 'canInstall (@ installResult 'canInstall))
+					(msnSetData gSource 'installDesc (@ installResult 'desc))
+
+					(if (msnFind "a +hereticMission;")
+						(msnTranslate gSource 'textBusy)
+						)
+					)
+			</OnCanBrief>
+
+			<OnDebriefed>
+				(block Nil
+					;	Remove the MRAD device
+					(enum (objGetItems gPlayerShip "d +MRADExperiment;") theItem
+						(if (= (itmGetData theItem 'mradID) (objGetID gSource))
+							(if (itmGetProperty theItem 'installed)
+								(objRemoveItem gPlayerShip (shpRemoveDevice gPlayerShip theItem))
+								(objRemoveItem gPlayerShip theItem)
+								)
+							)
+						)
+
+					;	Destroy all probes
+					(enum (sysFindObject Nil "T +mradProbe") theProbe
+						(objDestroy theProbe)
+						)
+					)
+			</OnDebriefed>
+
+			<OnReward>
+				(objAddItem gPlayerShip (itmCreate &itHereticResearchROM; 1))
+			</OnReward>
+
+			<OnGetNextScreen>
+				(block (missionObj)
+					(if (and (= aScreenType 'SuccessFollowUp)
+							(setq missionObj (msnFind "Po +unid:&msHereticIocrymAttack;;"))
+							)
+						(block Nil
+							(msnSetUnavailable missionObj)
+							{
+								nextScreen: &dsRPGMessage;
+								nextScreenData: {
+									desc: (msnTranslate gSource 'textSentinelAttack)
+									}
+								}
+							)
+						)
+					)
+			</OnGetNextScreen>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'textSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+
+			<Text id="Briefing">
+				(if (msnGetData gSource 'canInstall)
+					(list
+						{
+							textID: 'textBriefing
+							}
+						)
+					(list
+						{
+							textID: 'textBriefing
+							actions: (list
+								{	labelID: 'AcceptLabel	nextPage: 'tryAgain	}
+								{	labelID: 'DeclineLabel	nextPage: 'missionDecline	}
+								)
+							}
+						{
+							id: 'tryAgain
+							textID: 'textCantInstall
+							data: { installDesc: (msnGetData gSource 'installDesc)}
+							nextPage: 'missionDecline
+							}
+
+						Nil	;	Blank entry to prevent forced accept/decline options
+						)
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="textSummary">
+			</Text>
+			<Text id="Intro">
+				The chief scientist meets you at the entrance:
+
+				"Are you interested in helping us to learn more about the Iocrym?
+				We're studying the spacetime distortion that the Iocrym are
+				generating around the Heretic sun. Our only lead is a weak graviton
+				anomaly coming from somewhere in the system."
+
+				"Will you help us find it?"
+			</Text>
+			<Text id="textBriefing">
+				"We need you to deploy a series of probes to pinpoint the graviton
+				anomaly. Each probe that you deploy will tell you something about
+				the position of the anomaly. Use that information to deploy the
+				next probe as close as possible to the anomaly. You must deploy one
+				probe within 10 light-seconds of the anomaly in order for us to
+				get any useful data."
+
+				"Will you help us?"
+			</Text>
+			<String id="AcceptLabel">"[Y]es, I will help."</String>
+			<Text id="AcceptReply">
+				"Use the MRAD experiment device to deploy probes around the system.
+				Remember that you need to deploy a probe within 10 light-seconds of
+				the anomaly for us to get useful data."
+			</Text>
+			<Text id="textCantInstall">
+				%installDesc%
+
+				"Thanks anyways, come back later when you can help us."
+			</Text>
+			<String id="DeclineLabel">"[N]o, I don't have time."</String>
+			<Text id="DeclineReply">
+				"I'm almost positive that the graviton anomaly is related to the
+				quarantine. If we could just study it, perhaps we could find a way
+				to break out of this trap and into the rest of the galaxy."
+			</Text>
+			<Text id="InProgress">
+				"You haven't found the anomaly yet and you still have probes left!"
+
+				"Remember, each probe tells you something about the position of the
+				anomaly. Use that information to figure out where the anomaly is."
+			</Text>
+			<Text id="SuccessDebrief">
+				The chief scientist greets your as you enter:
+
+				"The data you gathered on the graviton anomaly is amazing. It looks
+				like the Iocrym can affect the core of a star!"
+
+				"Take this data ROM and share it with the Svalbard Explorer; they
+				may be able to use it."
+			</Text>
+			<Text id="textSentinelAttack">
+				"There's one more thing: we've detected recent energy readings at the
+				edge of the system. Starships of some sort are entering the system.
+				If I had to guess, I'd say that the Iocrym are back. Be careful."
+			</Text>
+			<Text id="FailureDebrief">
+				"The MRAD experiment was the only way to study the graviton anomaly.
+				You've just wasted five years of research!"
+			</Text>
+
+			<Text id="textBusy">
+				The chief scientist meets you at the entrance:
+
+				"We're studying the distortion that the Iocrym are generating around
+				the Heretic sun. Come back when you're done with your current project
+				and you can help us."
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>
