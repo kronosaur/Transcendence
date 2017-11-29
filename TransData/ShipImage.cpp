@@ -14,7 +14,7 @@ const int Y_MARGIN = 50;
 
 void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
-	int i, j;
+	int i;
 
 	//	Ship to output
 
@@ -38,6 +38,15 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 	bool bDriveImages = pCmdLine->GetAttributeBool(CONSTLIT("driveimages"));
 	bool bPortPos = pCmdLine->GetAttributeBool(CONSTLIT("portPos"));
 	bool bWeaponPos = pCmdLine->GetAttributeBool(CONSTLIT("weaponpos"));
+	bool bInterior = pCmdLine->GetAttributeBool(CONSTLIT("interior"));
+
+	if (pCmdLine->GetAttributeBool(CONSTLIT("debug")))
+		{
+		bDriveImages = true;
+		bPortPos = true;
+		bWeaponPos = true;
+		bInterior = true;
+		}
 
 	//	How many rotations do we need to output?
 
@@ -120,28 +129,21 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		Output.GetImage().DrawDot(x, y, CG32bitPixel(0, 255, 255), markerMediumCross);
 
+		//	Internal compartments
+
+		if (bInterior)
+			{
+			pClass->PaintInteriorCompartments(Output.GetImage(), x, y, Ctx.iRotation);
+			}
+
 		//	Paint weapon positions
 
 		if (bWeaponPos)
 			{
-			int iScale = pClass->GetImage().GetImageViewportSize();
-			int iRotation = Direction2Angle(i, iRotationCount);
-
 			CDeviceDescList Devices;
 			pClass->GenerateDevices(pClass->GetLevel(), Devices);
 
-			for (j = 0; j < Devices.GetCount(); j++)
-				{
-				const SDeviceDesc &Desc = Devices.GetDeviceDesc(j);
-
-				switch (Desc.Item.GetType()->GetCategory())
-					{
-					case itemcatWeapon:
-					case itemcatLauncher:
-						CInstalledDevice::PaintDevicePos(Desc, Output.GetImage(), x, y, iScale, iRotation);
-						break;
-					}
-				}
+			pClass->PaintDevicePositions(Output.GetImage(), x, y, Devices, Ctx.iRotation);
 			}
 
 		//	Docking ports

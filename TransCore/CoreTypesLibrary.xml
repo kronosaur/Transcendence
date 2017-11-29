@@ -181,6 +181,7 @@
     <!ENTITY efThermoExplosion          "0x00030040">
     <!ENTITY efPlasmaExplosion          "0x00030041">
     <!ENTITY efAntimatterExplosion      "0x00030042">
+    <!ENTITY efGravitonExplosion		"0x00030043">
 	]>
 	
 <CoreLibrary
