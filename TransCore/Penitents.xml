@@ -48,7 +48,7 @@
 		<!-- Trade and Items -->
 		
 		<Items>
-			<Group value="4000">
+			<Group value="standard:level=5">
 				<Table>
 					<Lookup	chance="20" count="1d4"	table="&trStationSupplies;" />
 					<Lookup chance="40"	count="1" table="&trHaloGems;"/>

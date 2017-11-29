@@ -251,7 +251,7 @@
 
 		<Items>
 			<Item count="20d20" item="&itSuperconductingCoil;"/>
-			<Group value="20000">
+			<Group value="standard:level=6:x=2.5">
 				<Lookup table="&trStdTreasure;"/>
 			</Group>
 		</Items>

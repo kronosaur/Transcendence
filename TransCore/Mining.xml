@@ -49,40 +49,16 @@
 
 	<ItemTable unid="&tbAsteroidOre;">
 		<LocationCriteriaTable>
-			<Group criteria="*metallicComp"
-				   levelValue="
-				  		100,      160,      250,      500,      1000,
-					   2000,     4000,     8000,    16000,     32000,
-					  64000,   128000,   256000,   512000,   1000000,
-					2000000,  4100000,  8200000, 16400000,	32800000"
-					>
+			<Group criteria="*metallicComp"		value="standard:x=0.30">
 				<RandomItem criteria="* +ore; -notStandard; +metallicComp;" levelFrequency="systemLevel:vruuc|c|cuurv" />
 			</Group>
-			<Group criteria="*organicComp"
-				   levelValue="
-				  		100,      160,      250,      500,      1000,
-					   1750,     3000,     5300,     9250,     16500,
-					  30000,    53000,    96000,   175000,    315000,
-					 580000,  1100000,  2000000,  3800000,	 7200000"
-					>
+			<Group criteria="*organicComp"		value="standard:x=0.20">
 				<RandomItem criteria="* +ore; -notStandard; +organicComp;" levelFrequency="systemLevel:vruuc|c|cuurv" />
 			</Group>
-			<Group criteria="*rockyComp"
-				   levelValue="
-				  		100,      160,      250,      500,      1000,
-					   2000,     4000,     8000,    16000,     32000,
-					  64000,   128000,   256000,   512000,   1000000,
-					2000000,  4100000,  8200000, 16400000,	32800000"
-					>
+			<Group criteria="*rockyComp"		value="standard:x=0.30">
 				<RandomItem criteria="* +ore; -notStandard; +rockyComp;" levelFrequency="systemLevel:vruuc|c|cuurv" />
 			</Group>
-			<Group criteria="*waterComp"
-				   levelValue="
-				  		100,      160,      250,      500,      1000,
-					   1750,     3000,     5300,     9250,     16500,
-					  30000,    53000,    96000,   175000,    315000,
-					 580000,  1100000,  2000000,  3800000,	 7200000"
-					>
+			<Group criteria="*waterComp"		value="standard:x=0.20">
 				<RandomItem criteria="* +ore; -notStandard; +waterComp;" levelFrequency="systemLevel:vruuc|c|cuurv" />
 			</Group>
 		</LocationCriteriaTable>

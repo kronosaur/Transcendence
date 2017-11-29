@@ -645,7 +645,7 @@
 		</Ships>
 
 		<Items>
-			<Group	value="1000">
+			<Group	value="standard:level=2">
 				<Item	count="2d8"	item="&itKM100Missile;" />
 				<Lookup				table="&trStdTreasure;"/>
 			</Group>
@@ -710,7 +710,7 @@
 		</Ships>
 
 		<Items>
-			<Group value="750">
+			<Group value="standard:level=1">
 				<Lookup	table="&trStdTreasure;"/>
 			</Group>
 		</Items>
@@ -813,7 +813,7 @@
 		</Reinforcements>
 
 		<Items>
-			<Group	value="4000">
+			<Group	value="standard:level=3:x=2.5">
 				<Item	count="2d8"	item="&itKM100Missile;" />
 				<Lookup				table="&trStdTreasure;"/>
 			</Group>
@@ -914,7 +914,7 @@
 		</Ships>
 
 		<Items>
-			<Group	levelValue="750, 1000, 1500, 2000, 4000, 8000, 16000, 32000, 64000, 128000">
+			<Group	value="standard">
 				<Item	count="2d8"	item="&itKM100Missile;" />
 				<Lookup				table="&trStdLevelTreasure;"/>
 			</Group>
@@ -1009,7 +1009,7 @@
 		</Reinforcements>
 
 		<Items>
-			<Group	levelValue="750, 1000, 1500, 2000, 4000, 8000, 16000, 32000, 64000, 128000">
+			<Group	value="standard">
 				<Item	count="2d8"	item="&itKM100Missile;" />
 				<Lookup				table="&trStdLevelTreasure;"/>
 			</Group>
@@ -1104,7 +1104,7 @@
 		</Reinforcements>
 
 		<Items>
-			<Group	levelValue="750, 1000, 1500, 2000, 4000, 8000, 16000, 32000, 64000, 128000">
+			<Group	value="standard">
 				<Item	count="2d8"	item="&itKM100Missile;" />
 				<Lookup				table="&trStdLevelTreasure;"/>
 			</Group>

@@ -368,7 +368,7 @@
 		</Reinforcements>
 
 		<Items>
-			<Group value="2000">
+			<Group value="standard:level=2:x=2.0">
 				<Table>
 					<Lookup chance="30" count="1" table="&trConsumables3;"/>
 					<RandomItem chance="30"
@@ -505,7 +505,7 @@
 		</Reinforcements>
 
 		<Items>
-			<Group value="7000">
+			<Group value="standard:level=4:x=3.5">
 				<RandomItem
 						criteria=			"* +Res; -NotStandard;"
 						levelFrequency=		"-uccu"

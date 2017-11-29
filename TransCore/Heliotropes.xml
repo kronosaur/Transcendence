@@ -307,7 +307,7 @@
 		<!-- Trade and Items -->
 		
 		<Items>
-			<Group value="5200">
+			<Group value="standard:level=4:x=2.5">
 				<Item count="3d12" item="&itHelium3FuelRod;"/>
 				<Item count="3d12" item="&itHeliotropeFuel;"/>
 				<Lookup chance="50" table="&trStdTreasure;"/>

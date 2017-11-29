@@ -430,7 +430,7 @@
 
 		<Items>
 			<Lookup count="1d3" table="&trStationSupplies;"/>
-			<Group value="10000">
+			<Group value="standard:level=5:x=2.5">
 				<Lookup table="&trStdTreasure;"/>
 			</Group>
 		</Items>

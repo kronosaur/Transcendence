@@ -172,12 +172,7 @@
 	</ItemTable>
 	
 	<ItemTable UNID="&trStdLevelTreasure;">
-		<Group	levelValue="
-				  	750,     1000,     1500,     2000,      4000,
-				   8000,    16000,    32000,    64000,    128000,
-				 256000,   512000,  1000000,  2000000,   4100000,
-				8200000, 16400000, 32800000, 65500000, 131000000"
-				>
+		<Group	value="standard">
 			<Table>
 				<RandomItem chance="15"
 						criteria=			"* +MajorItem; -NotStandard;"
@@ -196,7 +191,7 @@
 	</ItemTable>
 	
 	<ItemTable unid="&trStdTreasureLevel1;">
-		<Group	value="750">
+		<Group value="standard:level=1">
 			<Table>
 				<RandomItem chance="15"
 						criteria=			"* +MajorItem; -NotStandard;"
@@ -215,7 +210,7 @@
 	</ItemTable>
 
 	<ItemTable unid="&trStdTreasureLevel2;">
-		<Group	value="1000">
+		<Group value="standard:level=2">
 			<Table>
 				<RandomItem chance="15"
 						criteria=			"* +MajorItem; -NotStandard;"
@@ -234,7 +229,7 @@
 	</ItemTable>
 
 	<ItemTable unid="&trStdTreasureLevel3;">
-		<Group	value="1500">
+		<Group value="standard:level=3">
 			<Table>
 				<RandomItem chance="15"
 						criteria=			"* +MajorItem; -NotStandard;"
@@ -253,7 +248,7 @@
 	</ItemTable>
 
 	<ItemTable unid="&trStdTreasureLevel4;">
-		<Group	value="2000">
+		<Group value="standard:level=4">
 			<Table>
 				<RandomItem chance="15"
 						criteria=			"* +MajorItem; -NotStandard;"
@@ -272,7 +267,7 @@
 	</ItemTable>
 
 	<ItemTable unid="&trStdTreasureLevel5;">
-		<Group	value="4000">
+		<Group value="standard:level=5">
 			<Table>
 				<RandomItem chance="15"
 						criteria=			"* +MajorItem; -NotStandard;"
@@ -291,7 +286,7 @@
 	</ItemTable>
 
 	<ItemTable unid="&trStdTreasureLevel6;">
-		<Group	value="8000">
+		<Group value="standard:level=6">
 			<Table>
 				<RandomItem chance="15"
 						criteria=			"* +MajorItem; -NotStandard;"
@@ -310,7 +305,7 @@
 	</ItemTable>
 
 	<ItemTable unid="&trStdTreasureLevel7;">
-		<Group	value="16000">
+		<Group value="standard:level=7">
 			<Table>
 				<RandomItem chance="15"
 						criteria=			"* +MajorItem; -NotStandard;"
@@ -329,7 +324,7 @@
 	</ItemTable>
 
 	<ItemTable unid="&trStdTreasureLevel8;">
-		<Group	value="32000">
+		<Group value="standard:level=8">
 			<Table>
 				<RandomItem chance="15"
 						criteria=			"* +MajorItem; -NotStandard;"
@@ -348,7 +343,7 @@
 	</ItemTable>
 
 	<ItemTable unid="&trStdTreasureLevel9;">
-		<Group	value="64000">
+		<Group value="standard:level=9">
 			<Table>
 				<RandomItem chance="15"
 						criteria=			"* +MajorItem; -NotStandard;"
@@ -367,7 +362,7 @@
 	</ItemTable>
 
 	<ItemTable unid="&trStdTreasureLevel10;">
-		<Group	value="128000">
+		<Group value="standard:level=10">
 			<Table>
 				<RandomItem chance="15"
 						criteria=			"* +MajorItem; -NotStandard;"

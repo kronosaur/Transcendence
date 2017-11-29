@@ -814,7 +814,7 @@
 		</Ships>
 
 		<Items>
-			<Group	value="600">
+			<Group	value="standard:level=1:x=0.8">
 				<Item	chance="80" count="1d6" item="&itCentauriRice;"/>
 				<Lookup	chance="50"				table="&trStdTreasure;"/>
 			</Group>
@@ -865,7 +865,7 @@
 		</Ships>
 
 		<Items>
-			<Group	value="1300">
+			<Group	value="standard:level=2:x=1.3">
 				<Item	chance="80" count="2d6" item="&itCentauriRice;"/>
 				<Lookup							table="&trStdTreasure;"/>
 			</Group>

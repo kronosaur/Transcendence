@@ -311,7 +311,7 @@
 		<!-- Trade and Items -->
 		
 		<Items>
-			<Group value="1100">
+			<Group value="standard:level=2">
 				<Item count="2d6"	item="&itTitaniumOre;"/>
 				<Lookup chance="80"	table="&trStdTreasure;"/>
 			</Group>
@@ -427,7 +427,7 @@
 		<!-- Trade and Items -->
 		
 		<Items>
-			<Group value="1300">
+			<Group value="standard:level=3">
 				<Item count="2d6"	item="&itPalladiumOre;"/>
 				<Lookup chance="50"	table="&trStdTreasure;"/>
 			</Group>
@@ -540,7 +540,7 @@
 		<!-- Trade and Items -->
 		
 		<Items>
-			<Group value="1800">
+			<Group value="standard:level=4">
 				<Item count="2d6"	item="&itCeralloyOre;"/>
 				<Lookup chance="25"	table="&trStdTreasure;"/>
 			</Group>
@@ -650,7 +650,7 @@
 		<!-- Trade and Items -->
 		
 		<Items>
-			<Group value="4000">
+			<Group value="standard:level=5">
 				<Item count="3d8"	item="&itDuralloyOre;"/>
 				<Lookup chance="25"	table="&trStdTreasure;"/>
 			</Group>
@@ -776,7 +776,7 @@
 		<!-- Trade and Items -->
 		
 		<Items>
-			<Group value="7600">
+			<Group value="standard:level=6">
 				<Item count="2d6"	item="&itPteracniumOre;"/>
 				<Lookup chance="50"	table="&trStdTreasure;"/>
 			</Group>
