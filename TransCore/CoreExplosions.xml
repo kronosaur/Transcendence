@@ -1623,6 +1623,291 @@
 		</Weapon>
 	</ItemType>
     
+	<!-- Graviton Explosion I -->
+
+	<ItemType UNID="&vtGravitonExplosion1;"
+			name=				"graviton explosion 1"
+			attributes=			"explosion"
+			virtual=			"true"
+			  
+			level=				"16"
+			>
+
+		<Weapon
+				type=				"radius"
+				>
+
+			<Fragment
+					count=			"1"
+					type=			"radius"
+					
+					damage=			"graviton:2d60; WMD:4"
+					minRadius=		"1"
+					maxRadius=		"5"
+					/>
+			
+			<Fragment
+					count=			"1"
+					type=			"area"
+
+					damage=			"graviton:1d12; momentum:2; WMD:2"
+					expansionSpeed=	"25"
+					missileSpeed=	"0"
+					lifetime=		"21"
+					hitPoints=		"50"
+					>
+
+				<Effect>
+					<Shockwave
+							instance=		"owner"
+							style=			"cloud"
+							width=			"60"
+							intensity=		"20"
+							fadeStart=		"70"
+							
+							blendMode=		"screen"
+							primaryColor=	"#ded7ff"
+							secondaryColor=	"#9580ff"
+						/>
+				</Effect>
+			</Fragment>
+			
+			<Effect effect="&efGravitonExplosion;">
+                <Data>
+                    <Field id="explosionSize">1</Field>
+                </Data>
+			</Effect>
+		</Weapon>
+	</ItemType>
+
+	<!-- Graviton Explosion II -->
+
+	<ItemType UNID="&vtGravitonExplosion2;"
+			name=				"graviton explosion 2"
+			attributes=			"explosion"
+			virtual=			"true"
+			  
+			level=				"17"
+			>
+
+		<Weapon
+				type=				"radius"
+				>
+
+			<Fragment
+					count=			"1"
+					type=			"radius"
+					
+					damage=			"graviton:12d60; WMD:4"
+					minRadius=		"2"
+					maxRadius=		"7"
+					/>
+			
+			<Fragment
+					count=			"1"
+					type=			"area"
+
+					damage=			"graviton:4d23; momentum:2; WMD:2"
+					expansionSpeed=	"25"
+					missileSpeed=	"0"
+					lifetime=		"31"
+					hitPoints=		"50"
+					>
+
+				<Effect>
+					<Shockwave
+							instance=		"owner"
+							style=			"cloud"
+							width=			"90"
+							intensity=		"20"
+							fadeStart=		"70"
+							
+							blendMode=		"screen"
+							primaryColor=	"#ded7ff"
+							secondaryColor=	"#9580ff"
+						/>
+				</Effect>
+			</Fragment>
+			
+			<Effect effect="&efGravitonExplosion;">
+                <Data>
+                    <Field id="explosionSize">2</Field>
+                </Data>
+			</Effect>
+		</Weapon>
+	</ItemType>
+
+	<!-- Graviton Explosion III -->
+
+	<ItemType UNID="&vtGravitonExplosion3;"
+			name=				"graviton explosion 3"
+			attributes=			"explosion"
+			virtual=			"true"
+			  
+			level=				"18"
+			>
+
+		<Weapon
+				type=				"radius"
+				>
+
+			<Fragment
+					count=			"1"
+					type=			"radius"
+					
+					damage=			"graviton:24d60; WMD:4"
+					minRadius=		"3"
+					maxRadius=		"11"
+					/>
+			
+			<Fragment
+					count=			"1"
+					type=			"area"
+
+					damage=			"graviton:10d20; momentum:2; WMD:2"
+					expansionSpeed=	"25"
+					missileSpeed=	"0"
+					lifetime=		"47"
+					hitPoints=		"50"
+					>
+
+				<Effect>
+					<Shockwave
+							instance=		"owner"
+							style=			"cloud"
+							width=			"90"
+							intensity=		"20"
+							fadeStart=		"70"
+							
+							blendMode=		"screen"
+							primaryColor=	"#ded7ff"
+							secondaryColor=	"#9580ff"
+						/>
+				</Effect>
+			</Fragment>
+			
+			<Effect effect="&efGravitonExplosion;">
+                <Data>
+                    <Field id="explosionSize">3</Field>
+                </Data>
+			</Effect>
+		</Weapon>
+	</ItemType>
+
+	<!-- Graviton Explosion IV -->
+
+	<ItemType UNID="&vtGravitonExplosion4;"
+			name=				"graviton explosion 4"
+			attributes=			"explosion"
+			virtual=			"true"
+			  
+			level=				"19"
+			>
+
+		<Weapon
+				type=				"radius"
+				>
+
+			<Fragment
+					count=			"1"
+					type=			"radius"
+					
+					damage=			"graviton:36d60; WMD:4"
+					minRadius=		"3"
+					maxRadius=		"13"
+					/>
+			
+			<Fragment
+					count=			"1"
+					type=			"area"
+
+					damage=			"graviton:14d20; momentum:2; WMD:2"
+					expansionSpeed=	"25"
+					missileSpeed=	"0"
+					lifetime=		"57"
+					hitPoints=		"50"
+					>
+
+				<Effect>
+					<Shockwave
+							instance=		"owner"
+							style=			"cloud"
+							width=			"120"
+							intensity=		"20"
+							fadeStart=		"70"
+							
+							blendMode=		"screen"
+							primaryColor=	"#ded7ff"
+							secondaryColor=	"#9580ff"
+						/>
+				</Effect>
+			</Fragment>
+			
+			<Effect effect="&efGravitonExplosion;">
+                <Data>
+                    <Field id="explosionSize">4</Field>
+                </Data>
+			</Effect>
+		</Weapon>
+	</ItemType>
+    
+	<!-- Graviton Explosion V -->
+
+	<ItemType UNID="&vtGravitonExplosion5;"
+			name=				"graviton explosion 5"
+			attributes=			"explosion"
+			virtual=			"true"
+			  
+			level=				"20"
+			>
+
+		<Weapon
+				type=				"radius"
+				>
+
+			<Fragment
+					count=			"1"
+					type=			"radius"
+					
+					damage=			"graviton:56d60; WMD:4"
+					minRadius=		"4"
+					maxRadius=		"17"
+					/>
+			
+			<Fragment
+					count=			"1"
+					type=			"area"
+
+					damage=			"graviton:22d20; momentum:2; WMD:2"
+					expansionSpeed=	"25"
+					missileSpeed=	"0"
+					lifetime=		"57"
+					hitPoints=		"50"
+					>
+
+				<Effect>
+					<Shockwave
+							instance=		"owner"
+							style=			"cloud"
+							width=			"120"
+							intensity=		"20"
+							fadeStart=		"70"
+							
+							blendMode=		"screen"
+							primaryColor=	"#ded7ff"
+							secondaryColor=	"#9580ff"
+						/>
+				</Effect>
+			</Fragment>
+			
+			<Effect effect="&efGravitonExplosion;">
+                <Data>
+                    <Field id="explosionSize">5</Field>
+                </Data>
+			</Effect>
+		</Weapon>
+	</ItemType>
+    
 <!-- EFFECTS -->
     
 	<EffectType UNID="&efKineticExplosion;"
@@ -1920,6 +2205,70 @@
 					blendMode=		"screen"
 					primaryColor=	"#fbffcc"
 					secondaryColor=	"#ffe566"
+					>
+                <Events>
+                    <GetParameters>
+                        (block (
+                            (explosionSize (@ gData 'explosionSize))
+                            )
+                            {
+                                radius: (@ '(0 101 152 228 279 355) explosionSize)
+                                lifetime: (@ '(0 31 47 70 86 109) explosionSize)
+                                }
+                            )
+                    </GetParameters>
+                </Events>
+            </Orb>
+        </Effect>
+    </EffectType>
+
+	<EffectType UNID="&efGravitonExplosion;"
+			>
+		<Effect>
+			<ParticleSystem
+					style=				"radiate"
+					emitLifetime=		"1"
+					emitSpeed=			"10-30"
+					particleLifetime=	"40"
+					>
+				<ParticleEffect>
+					<Orb
+							instance=			"owner"
+						
+							style=				"smooth"
+							animate=			"fade"
+							radius=				"10"
+							intensity=			"50"
+							lifetime=			"40"
+						
+							blendMode=			"screen"
+							primaryColor=		"#9580ff"
+							secondaryColor=		"#2a00ff"
+							>
+					</Orb>
+				</ParticleEffect>
+                
+                <Events>
+                    <GetParameters>
+                        (block (
+                            (explosionSize (@ gData 'explosionSize))
+                            )
+                            {
+                                emitRate: (@ '(0 40 60 90 110 140) explosionSize)
+                                }
+                            )
+                    </GetParameters>
+                </Events>
+			</ParticleSystem>
+				
+			<Orb	instance=		"owner"
+					style=			"cloud"
+					animate=		"fade"
+					intensity=		"30"
+					
+					blendMode=		"screen"
+					primaryColor=	"#9580ff"
+					secondaryColor=	"#2a00ff"
 					>
                 <Events>
                     <GetParameters>
