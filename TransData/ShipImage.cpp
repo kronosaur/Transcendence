@@ -39,6 +39,7 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 	bool bPortPos = pCmdLine->GetAttributeBool(CONSTLIT("portPos"));
 	bool bWeaponPos = pCmdLine->GetAttributeBool(CONSTLIT("weaponpos"));
 	bool bInterior = pCmdLine->GetAttributeBool(CONSTLIT("interior"));
+	bool bAngles = pCmdLine->GetAttributeBool(CONSTLIT("angles"));
 
 	if (pCmdLine->GetAttributeBool(CONSTLIT("debug")))
 		{
@@ -47,6 +48,29 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 		bWeaponPos = true;
 		bInterior = true;
 		}
+
+	//	Font for text
+
+	CString sTypeface;
+	int iSize;
+	bool bBold;
+	bool bItalic;
+
+	if (!CG16bitFont::ParseFontDesc(pCmdLine->GetAttribute(CONSTLIT("font")),
+			&sTypeface,
+			&iSize,
+			&bBold,
+			&bItalic))
+		{
+		sTypeface = CONSTLIT("Arial");
+		iSize = 10;
+		bBold = false;
+		bItalic = false;
+		}
+
+	CG16bitFont TextFont;
+	TextFont.Create(sTypeface, -PointsToPixels(iSize), bBold, bItalic);
+	CG32bitPixel rgbNameColor = CG32bitPixel(255, 255, 255);
 
 	//	How many rotations do we need to output?
 
@@ -191,6 +215,23 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 
 				Output.GetImage().DrawLine(x, y, x + xPos, y + yPos, 1, CG32bitPixel(255, 255, 0));
 				}
+			}
+
+		//	If we're painting angles do that now
+
+		if (bAngles)
+			{
+			Metric rHalfFacingArc = 180.0 / (Metric)iRotationCount;
+			int iMid = Ctx.iRotation;
+			int iHigh = iMid + (int)floor(rHalfFacingArc);
+			int iLow = iHigh - (int)floor(rHalfFacingArc * 2.0) + 1;
+
+			TextFont.DrawText(Output.GetImage(),
+					x,
+					y + (cyHeight / 2) - TextFont.GetHeight(),
+					rgbNameColor,
+					strPatternSubst(CONSTLIT("%d [%d - %d]"), iMid, iLow, iHigh),
+					CG16bitFont::AlignCenter);
 			}
 		}
 
