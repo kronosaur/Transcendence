@@ -227,6 +227,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
 		printf("       /unid:n              unid of ship.\n");
 		printf("\n");
+		printf("      [/angles]	            Show angles for each frame.\n");
 		printf("      [/driveimages]		Show all rotations with exhaust images.\n");
 		printf("      [/grid]               Show a grid centered on ship.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
