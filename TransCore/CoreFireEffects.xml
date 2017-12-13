@@ -422,4 +422,33 @@
 		</Effect>
 	</EffectType>
 
+	<EffectType UNID="&efSingularityFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"smooth"
+					animate=		"fade"
+					lifetime=		"9"
+					spikeCount=		"6"
+					
+					primaryColor=	"#f4efff"
+					secondaryColor=	"#ccb2ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (mathScale damageHP 110 1500 30 80 50)
+								intensity: (random 20 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+
 </TranscendenceModule>

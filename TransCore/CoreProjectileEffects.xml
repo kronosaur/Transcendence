@@ -809,4 +809,53 @@
 		</Events>
 	</EffectType>
 
+	<EffectType UNID="&efSingularityMassDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<ParticlePattern
+					style=			"comet"
+					particleCount=	"200"
+					primaryColor=	"#ccb2ff"
+					jitterLength=	"80-150"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+
+							{
+								particleCount: (mathScale damageHP 110 1500 200 300 50)
+								length: (mathScale damageHP 110 1500 60 260 50)
+								width: (mathScale damageHP 110 1500 8 12 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticlePattern>
+
+			<Orb
+					style=				"blackHole"
+					animate=			"flicker"
+						
+					primaryColor=		"#f4efff"
+					secondaryColor=		"#ccb2ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (mathScale damageHP 110 1500 20 60 50)
+								intensity: (mathScale damageHP 110 1500 20 30 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+
 </TranscendenceModule>

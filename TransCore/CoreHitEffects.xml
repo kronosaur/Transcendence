@@ -722,6 +722,160 @@
 		</Effect>
 	</EffectType>
 	
+	<EffectType UNID="&efGravitonHitDefault;"
+			sound=			"&snArmorHit1;"
+			>
+		<Effect>
+			<Shockwave
+					style=			"glowRing"
+					speed=			"30"
+				
+					width=			"1"
+					glowSize=		"8"
+					fadeStart=		"0"
+					waveInterval=	"2"
+					primaryColor=	"#9580ff"
+					secondaryColor=	"#2a00ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								waveCount: (if (= damageHP 0) 1 (mathScale damageHP 110 1500 3 9 50))
+								waveLifetime: (mathScale damageHP 110 1500 5 12 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Shockwave>
+
+			<Orb
+					style=				"smooth"
+					animate=			"fade"
+					intensity=			"30"
+
+					spikeCount=			"6"
+					blendMode=			"screen"
+					primaryColor=		"#beb1ff"
+					secondaryColor=		"#9580ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 110 1500 50 120 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 110 1500 24 60 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+		
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+					{
+						noSound: (= damageHP 0)
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
+
+	<EffectType UNID="&efSingularityHitDefault;"
+			sound="&snArmorHit1;"
+			>
+		<Effect>
+			<Orb	style=			"smooth"
+					animate=		"fade"
+					intensity=		"30"
+					
+					blendMode=		"screen"
+					primaryColor=	"#f4efff"
+					secondaryColor=	"#ccb2ff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 110 1500 50 120 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 110 1500 24 60 50))
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+			
+			<ParticleSystem
+					style=				"radiate"
+					emitLifetime=		"1"
+					emitSpeed=			"10-20"
+					>
+				<ParticleEffect>
+					<Orb
+							instance=			"owner"
+						
+							style=				"smooth"
+							animate=			"fade"
+							radius=				"10"
+							intensity=			"20"
+						
+							blendMode=			"screen"
+							primaryColor=		"#f4efff"
+							secondaryColor=		"#ccb2ff"
+							>
+						<Events>
+							<GetParameters>
+								(block (
+									(damageHP (@ gData 'damageHP))
+									)
+									{
+										lifetime: (mathScale damageHP 110 1500 12 30 50)
+										}
+									)
+							</GetParameters>
+						</Events>
+					</Orb>
+				</ParticleEffect>
+				
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								emitRate: (mathScale damageHP 110 1500 30 100 50)
+								particleLifetime: (mathScale damageHP 110 1500 12 30 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticleSystem>
+		</Effect>
+		
+		<Events>
+			<GetParameters>
+				(block (
+					(damageHP (@ gData 'damageHP))
+					)
+					{
+						noSound: (= damageHP 0)
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
+	
 <!-- GLOBALS -->
 
 	<Globals>
