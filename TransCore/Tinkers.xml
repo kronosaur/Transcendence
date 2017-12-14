@@ -210,7 +210,9 @@
 								(block Nil
 									(objSetData gSource 'customIntroDone True)
 									(scrShowPane gScreen "Default")
-									(scrShowScreen gScreen &dsTinkerCustomWork;)
+									(scrShowScreen gScreen &dsTinkerCustomWork; {
+										criteria: "* +hasComponents:true; +tinkers;"
+										})
 									)
 							</Action>
 						</Actions>
