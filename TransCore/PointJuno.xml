@@ -7,21 +7,24 @@
 	<StationType UNID="&stPointJuno;"
 			name=				": Point Juno"
 			sovereign=			"&svCommonwealthFleet;"
-			dockScreen=			"Main"
-			abandonedScreen=	"&dsAbandonedStation;"
-			canAttack=			"true"
-			noBlacklist=		"true"
-
-			multiHull=			"true"
-			armorID=			"&itP1000HexphaseArmor;"
-			hitPoints=			"2400"
-			regen=              "20"
-			shipRegen=			"20"
-			explosionType=		"&vtThermoExplosion3;"
-			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthFleet, commonwealthMilitary, fleetDelivery, fleetLaw, friendly, generic, human, majorStation, pointJuno, populated"
+
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+
 			level=				"8"
+			size=				"590"
+			armorID=			"&itP1000HexphaseArmor;"
+			hitPoints=			"2400"
+			multiHull=			"true"
+			regen=              "20"
+			shipRegen=			"20"
+
+			canAttack=			"true"
+			noBlacklist=		"true"
+			explosionType=		"&vtThermoExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
 			>
 
 		<!-- Trade and Items -->
@@ -50,8 +53,21 @@
 			<Item count="1d4"	item="&itR5BDeflector;"/>
 		</Items>
 		
-		<Image			imageID="&rsStationsPointJuno;" imageX="0" imageY="0" imageWidth="208" imageHeight="256"/>
-		<HeroImage		imageID="&rsPointJunoHero;" imageWidth="712" imageHeight="528"/>
+		<!-- Configuration -->
+
+		<!-- Satellites -->
+
+		<Satellites>
+			<Orbitals distance="12" angle="90">
+				<Station type="&stNavBeacon;" imageVariant="1"/>
+			</Orbitals>
+
+			<Orbitals distance="12" angle="270">
+				<Station type="&stNavBeacon;" imageVariant="1"/>
+			</Orbitals>
+		</Satellites>
+		
+		<!-- Ships and Defenses -->
 
 		<Ships>
 			<Ship					count="1"	class="&scBritannia;"	orders="guard" controller="fleetcommand">
@@ -75,28 +91,18 @@
 			</Table>
 		</Reinforcements>
 
-		<Satellites>
-			<Orbitals distance="8" angle="90">
-				<Station type="&stNavBeacon;" imageVariant="1"/>
-			</Orbitals>
+		<!-- Image and Effects -->
 
-			<Orbitals distance="8" angle="270">
-				<Station type="&stNavBeacon;" imageVariant="1"/>
-			</Orbitals>
-		</Satellites>
+		<Image			imageID="&rsPointJuno;"		imageWidth="420" imageHeight="460" viewportRatio="0.0425"/>
+		<HeroImage		imageID="&rsPointJunoHero;" imageWidth="712" imageHeight="528"/>
+
+		<DockingPorts
+				portCount=		"10"
+				portRadius=		"210"
+				>
+		</DockingPorts>
 		
-		<Events>
-			<OnDestroy>
-				(block Nil
-					(intCommonwealthOnDestroy)
-
-					; Military will execute the player
-					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
-						(intFleetCrime 3 (cat "the destruction of " (objGetName gSource 4)))
-						)
-					)
-			</OnDestroy>
-		</Events>
+		<!-- Dock Screen -->
 
 		<DockScreens>
 			<Main>
@@ -141,19 +147,20 @@
 
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="100" />
-			<Port x="-80"	y="40" />
-			<Port x="80"	y="40" />
-			<Port x="-60"	y="-40" />
-			<Port x="60"	y="-40" />
+		<!-- Events and Data -->
 
-			<Port x="0"		y="-105" />
-			<Port x="-130"	y="-17" />
-			<Port x="130"	y="-17" />
-			<Port x="-70"	y="105" />
-			<Port x="70"	y="105" />
-		</DockingPorts>
+		<Events>
+			<OnDestroy>
+				(block Nil
+					(intCommonwealthOnDestroy)
+
+					; Military will execute the player
+					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
+						(intFleetCrime 3 (cat "the destruction of " (objGetName gSource 4)))
+						)
+					)
+			</OnDestroy>
+		</Events>
 
 		<Language>
 			<!-- Code Points -->
@@ -627,9 +634,11 @@
 
 	<!-- Resources -->
 
-	<Image UNID="&rsStationsPointJuno;"	bitmap="Resources\StationsPointJuno.jpg" bitmask="Resources\StationsPointJunoMask.bmp" />
-	<Image UNID="&rsPointJunoBkgnd;"	bitmap="Resources\PointJuno.jpg" loadOnUse="true" />
+	<Image UNID="&rsPointJuno;"			bitmap="Resources\PointJuno.jpg" bitmask="Resources\PointJunoMask.bmp" />
 	<Image UNID="&rsPointJunoHero;"		bitmap="Resources\PointJunoHero.jpg" bitmask="Resources\PointJunoHeroMask.bmp" loadOnUse="true" />
 	<Image UNID="&rsCSCWreckage;"		bitmap="Resources\CSCWreckage.jpg" bitmask="Resources\CSCWreckageMask.bmp" loadOnUse="true" />
+
+	<Image UNID="&rsStationsPointJuno;"	obsolete="39" bitmap="Resources\StationsPointJuno.jpg" bitmask="Resources\StationsPointJunoMask.bmp" />
+	<Image UNID="&rsPointJunoBkgnd;"	obsolete="39" bitmap="Resources\PointJunoBack.jpg" loadOnUse="true" />
 
 </TranscendenceModule>

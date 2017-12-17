@@ -1915,6 +1915,7 @@
 	<!ENTITY msHuntForAntarctica		"0x001004B3">
 	<!ENTITY msCSCLamplighterTesting	"0x001004B4">
 	<!ENTITY msCSCLamplighterLost		"0x001004B5">
+	<!ENTITY rsPointJuno				"0x001004B6">
 
 	<!-- 04D0-04EF NAMI CORPORATION -->
 

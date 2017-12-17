@@ -467,6 +467,9 @@
     <Xml Include="CommonwealthFleetMission11.xml" />
     <Xml Include="CommonwealthFleetMissionLL01.xml" />
     <Xml Include="CommonwealthFleetMissionLL02.xml" />
+    <Xml Include="CommonwealthFleetMissionLL03.xml" />
+    <Xml Include="CommonwealthFleetMissionLL04.xml" />
+    <Xml Include="CommonwealthFleetMissionPJ01.xml" />
     <Xml Include="CommonwealthMilitiaMission01.xml" />
     <Xml Include="CommonwealthMilitiaMission02.xml" />
     <Xml Include="CommonwealthMilitiaMission03.xml" />

@@ -669,5 +669,14 @@
     <Xml Include="Ventari.xml">
       <Filter>Human Space Library\Misc Encounters</Filter>
     </Xml>
+    <Xml Include="CommonwealthFleetMissionLL03.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="CommonwealthFleetMissionLL04.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="CommonwealthFleetMissionPJ01.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
