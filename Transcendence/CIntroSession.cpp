@@ -238,16 +238,11 @@ void CIntroSession::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereign, C
 			if (pShip)
 				{
 				IShipController *pController = pShip->GetController();
-
-				CSpaceObject *pTarget;
-				IShipController::OrderTypes iOrder = pController->GetCurrentOrderEx(&pTarget);
-				if ((pShipDestroyed && pTarget == pShipDestroyed) || iOrder == IShipController::orderNone)
+				IShipController::OrderTypes iOrder = pController->GetCurrentOrderEx();
+				if (iOrder == IShipController::orderNone)
 					{
 					pController->CancelAllOrders();
-					if (pShip->GetSovereign() == pSovereign1)
-						pController->AddOrder(IShipController::orderDestroyTarget, pShip2, IShipController::SData());
-					else
-						pController->AddOrder(IShipController::orderDestroyTarget, pShip1, IShipController::SData());
+					pController->AddOrder(IShipController::orderAttackNearestEnemy, NULL, IShipController::SData());
 					}
 				}
 			}
@@ -617,29 +612,51 @@ bool CIntroSession::HandleCommandBoxChar (char chChar, DWORD dwKeyData)
 
 		case '\015':
 			{
-			if (strStartsWith(g_pTrans->m_sCommand, CONSTLIT("#")))
+			if (strStartsWith(g_pTrans->m_sCommand, CONSTLIT("update")))
+				{
+				CString sArg = strSubString(g_pTrans->m_sCommand, 7);
+				int iTicks = strParseInt(sArg.GetASCIIZPointer(), 0);
+				for (int i = 0; i < iTicks; i++)
+					{
+					g_pUniverse->Update(SSystemUpdateCtx());
+					}
+				break;
+				}
+			else if (strStartsWith(g_pTrans->m_sCommand, CONSTLIT("time")))
+				{
+				CString sArg = strSubString(g_pTrans->m_sCommand, 5);
+				int iNewUpdateRate = strParseInt(sArg.GetASCIIZPointer(), 1);
+				if (iNewUpdateRate > -1)
+					{
+					iUpdateRate = iNewUpdateRate;
+					}
+				}
+			else if (strStartsWith(g_pTrans->m_sCommand, CONSTLIT("ship")))
+				{
+				CShip *pShip = g_pUniverse->GetPOV()->AsShip();
+				DWORD dwSovereign = (pShip ? pShip->GetSovereign()->GetUNID() : 0);
+
+				//	Parse the string into a ship class
+
+				CShipClass *pClass = g_pUniverse->FindShipClassByName(strSubString(g_pTrans->m_sCommand, 5));
+				if (pClass == NULL)
+					{
+					SetState(isShipStats);
+					break;
+					}
+
+				//	Destroy and create
+
+				g_pTrans->DestroyPOVIntroShips();
+				CreateIntroShips(pClass->GetUNID(), dwSovereign);
+				CancelCurrentState();
+				}
+			else
 				{
 				g_pUniverse->FireOnGlobalIntroCommand(strSubString(g_pTrans->m_sCommand, 1));
 				CancelCurrentState();
 				break;
 				}
-			CShip *pShip = g_pUniverse->GetPOV()->AsShip();
-			DWORD dwSovereign = (pShip ? pShip->GetSovereign()->GetUNID() : 0);
-
-			//	Parse the string into a ship class
-
-			CShipClass *pClass = g_pUniverse->FindShipClassByName(g_pTrans->m_sCommand);
-			if (pClass == NULL)
-				{
-				SetState(isShipStats);
-				break;
-				}
-
-			//	Destroy and create
-
-			g_pTrans->DestroyPOVIntroShips();
-			CreateIntroShips(pClass->GetUNID(), dwSovereign);
-			CancelCurrentState();
 			break;
 			}
 
