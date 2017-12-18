@@ -204,7 +204,7 @@
 										)
 
 								;	If we're looking for beta fleet, then we're OK
-								(= status 'findBeta)
+								(or (= status 'findBeta) (= status 'destroyBeta))
 									(block Nil
 										;(msnSetData gSource 'status 'destroyBeta)
 										;(msnSetPlayerTarget gSource)
