@@ -89,7 +89,7 @@
 			<Text id="Name">Professor Dall's sphere</Text>
 			<Text id="Summary">
 				(cat
-					"Professor Dall has asked you to search for an alien sphere on a Sung freighter lost the outer system.\n\n"
+					"Professor Dall has asked you to search for an alien sphere on a Sung freighter lost in the outer system.\n\n"
 
 					"System: " (sysGetName) "\n"
 					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
