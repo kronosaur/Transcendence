@@ -678,5 +678,14 @@
     <Xml Include="CommonwealthFleetMissionPJ01.xml">
       <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
+    <Xml Include="Antarctica01.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="Antarctica02.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
+    <Xml Include="AntarcticaD01.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

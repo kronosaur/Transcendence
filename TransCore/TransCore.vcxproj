@@ -178,6 +178,9 @@
     </None>
     <Xml Include="Abbasid.xml" />
     <Xml Include="Anarchists.xml" />
+    <Xml Include="Antarctica01.xml" />
+    <Xml Include="Antarctica02.xml" />
+    <Xml Include="AntarcticaD01.xml" />
     <Xml Include="BattleArenaKidnapped.xml" />
     <Xml Include="BattleArenaMelee.xml" />
     <Xml Include="Benedict.xml">
