@@ -27,6 +27,7 @@
 
 			<!-- Dock Screen Text -->
 			
+			<Text id="core.noItemsHereDesc">There are no items here.</Text>
 			<Text id="descNoItemsHere">There are no items here.</Text>
 
 			<!-- Statistics -->

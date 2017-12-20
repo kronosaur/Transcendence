@@ -2414,6 +2414,19 @@
 					    )
 				    )            
                 ))
+
+			(setq rpgSetLootAction (lambda (sourceObj actionIDArg)
+				(block (
+					(actionID (or actionIDArg 'actionLoot))
+					)
+					(if (not (objGetItems sourceObj "*U"))
+						(block ()
+							(scrEnableAction gScreen actionID Nil)
+							(scrSetActionDesc gScreen actionID (scrTranslate gScreen 'core.noItemsHereDesc))
+							)
+						)
+					)
+				))
 			)
 	</Globals>
 

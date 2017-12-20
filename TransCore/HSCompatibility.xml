@@ -2338,12 +2338,7 @@
 				<OnPaneInit>
 					(block nil
 						(scrSetDescTranslate gScreen 'descAbandonedCrate)
-						(if (not (objGetItems gSource '*U))
-							(block nil
-								(scrEnableAction gScreen 'actionLoot nil)
-								(scrSetActionDesc gScreen 'actionLoot (scrTranslate gScreen 'descNoItemsHere))
-								)
-							)
+						(rpgSetLootAction gSource)
 						)
 				</OnPaneInit>
 				
@@ -2379,12 +2374,7 @@
 				<OnPaneInit>
 					(block nil
 						(scrSetDescTranslate gScreen 'descAbandonedShip)
-						(if (not (objGetItems gSource '*U))
-							(block nil
-								(scrEnableAction gScreen 'actionLoot nil)
-								(scrSetActionDesc gScreen 'actionLoot (scrTranslate gScreen 'descNoItemsHere))
-								)
-							)
+						(rpgSetLootAction gSource)
 						)
 				</OnPaneInit>
 

@@ -117,7 +117,7 @@
 											(scrSetData gScreen 'itemName (itmGetName (@ allItems 0) 8))
 											(switch
 												(eq itemCount 0)
-													(scrTranslate gScreen 'descNoItemsHere)
+													(scrTranslate gScreen 'core.noItemsHereDesc)
 												(eq itemCount 1)
 													(scrTranslate gScreen 'descOpenedOneItem)
 												(scrTranslate gScreen 'descOpenedSeveralItems)
@@ -125,12 +125,7 @@
 											)
 										)
 									))
-								(if (not (objGetItems gSource '*U))
-									(block nil
-										(scrEnableAction gScreen 'actionLoot nil)
-										(scrSetActionDesc gScreen 'actionLoot (scrTranslate gScreen 'descNoItemsHere))
-										)
-									)
+								(rpgSetLootAction gSource)
 								)
 						</OnPaneInit>
 
@@ -175,12 +170,7 @@
 										(scrSetDescTranslate gScreen 'descContents2OneItem)
 									(scrSetDescTranslate gScreen 'descContents2VariousItems)
 									)
-								(if (not (objGetItems gSource '*U))
-									(block nil
-										(scrEnableAction gScreen 'actionLoot nil)
-										(scrSetActionDesc gScreen 'actionLoot (scrTranslate gScreen 'descNoItemsHere))
-										)
-									)
+								(rpgSetLootAction gSource)
 								)
 						</OnPaneInit>
 

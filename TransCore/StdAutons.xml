@@ -342,7 +342,7 @@
 			<Text id="actionLoot">[L]oot</Text>
 			<Text id="actionNameAuton">[N]ame Auton</Text>
 			<Text id="descDefault">You are docked with a 330M mule auton.</Text>
-			<Text id="descNoItemsHere">There are no items here.</Text>
+			<Text id="core.noItemsHereDesc">There are no items here.</Text>
 		</Language>
 		
 		<!-- Docking -->
@@ -355,12 +355,7 @@
 						desc=	"=(scrTranslate gScreen 'descDefault)">
 							
 						<OnPaneInit>
-							(if (not (objGetItems gSource '*U))
-								(block nil
-									(scrEnableAction gScreen 'actionLoot nil)
-									(scrSetActionDesc gScreen 'actionLoot (scrTranslate gScreen 'descNoItemsHere))
-									)
-								)
+							(rpgSetLootAction gSource)
 						</OnPaneInit>
 
 						<Actions>
