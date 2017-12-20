@@ -1136,7 +1136,8 @@
 	<!ENTITY stAresShipyard				"0x001B2004">
 
 	<!ENTITY scSandstorm				"0x001B3001">
-	<!ENTITY scAresCannon				"0x001B3002">
+	<!ENTITY scAresAdvancedSentry		"0x001B3002">
+	<!ENTITY scAresCannon				"0x001B3002">	<!-- Duplicate for backwards compatibility -->
 	<!ENTITY scPolar					"0x001B3003">
 	<!ENTITY scTundra					"0x001B3004">
 	<!ENTITY scCometfall				"0x001B3005">
@@ -1646,6 +1647,15 @@
 	<!ENTITY rsChasmHD					"0x001000A4">
 	<!ENTITY rsSandstormHD				"0x001000A5">
 	<!ENTITY rsTundraHD					"0x001000A6">
+	<!ENTITY rsAresSentry				"0x001000A7">
+	<!ENTITY rsAresSentryHero			"0x001000A8">
+
+	<!ENTITY scAresSentry				"0x001000A9">
+	<!ENTITY scAresDualSentry			"0x001000AA">
+	<!ENTITY rsAresDualSentry			"0x001000AB">
+	<!ENTITY rsAresDualSentryHero		"0x001000AC">
+	<!ENTITY rsAresAdvancedSentry		"0x001000AD">
+	<!ENTITY rsAresAdvancedSentryHero	"0x001000AE">
 	
 	<!-- 00C0-00CF SALVAGERS -->
 	

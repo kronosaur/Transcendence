@@ -592,17 +592,18 @@
 		</Weapon>
 	</ItemType>
 
-	<!-- Ares Cannon -->
+	<!-- Ares Sentry -->
 
-	<ShipClass UNID="&scAresCannon;"
+	<ShipClass UNID="&scAresSentry;"
 			manufacturer=		"Ares Orthodoxy"
 			class=				"Ares sentry"
 			type=				""
 			defaultSovereign=	"&svAres;"
 
 			attributes=			"ares, genericClass"
-			   
-			mass=				"400"
+
+			size=				"21"			   
+			mass=				"100"
 			thrustRatio=		"0"
 			maxSpeed=			"0"
 			cargoSpace=			"0"
@@ -616,7 +617,7 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itAresArchcannon;" minFireArc="350" maxFireArc="10" />
+			<Device deviceID="&itLightningCannon;" posAngle="0" posRadius="18" posZ="16" minFireArc="350" maxFireArc="10" />
 		</Devices>
 
 		<Maneuver
@@ -626,12 +627,114 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsAresSentryHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" rotationOffset="-15" />
+		<Image imageID="&rsAresSentry;" imageWidth="52" imageHeight="52" rotationCount="120" rotationColumns="12" viewportRatio="0.00375" />
+		<HeroImage imageID="&rsAresSentryHero;" imageWidth="320" imageHeight="320"/>
 
 		<!-- AI and Behavior -->
 
 		<AISettings
-			fireRateAdj=		"40"
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+
+			noFriendlyFire=		"true"
+			/>
+
+	</ShipClass>
+
+	<!-- Ares Dual Sentry -->
+
+	<ShipClass UNID="&scAresDualSentry;"
+			manufacturer=		"Ares Orthodoxy"
+			class=				"Ares dual sentry"
+			type=				""
+			defaultSovereign=	"&svAres;"
+
+			attributes=			"ares, genericClass"
+
+			size=				"21"			   
+			mass=				"100"
+			thrustRatio=		"0"
+			maxSpeed=			"0"
+			cargoSpace=			"0"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itTharsisPlate;"
+			count=				"2"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itLightningCannon;" posAngle="16" posRadius="19" posZ="18"/>
+			<Device deviceID="&itLightningCannon;" posAngle="-16" posRadius="19" posZ="18"	linkedFire="always"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"3.0"
+			/>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsAresDualSentry;" imageWidth="52" imageHeight="52" rotationCount="120" rotationColumns="12" viewportRatio="0.00375" />
+		<HeroImage imageID="&rsAresDualSentryHero;" imageWidth="320" imageHeight="320"/>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+
+			noFriendlyFire=		"true"
+			/>
+
+	</ShipClass>
+
+	<!-- Ares Advanced Sentry -->
+
+	<ShipClass UNID="&scAresAdvancedSentry;"
+			manufacturer=		"Ares Orthodoxy"
+			class=				"Ares advanced sentry"
+			type=				""
+			defaultSovereign=	"&svAres;"
+
+			attributes=			"ares, genericClass"
+
+			size=				"20"			   
+			mass=				"100"
+			thrustRatio=		"0"
+			maxSpeed=			"0"
+			cargoSpace=			"0"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itTharsisPlate;"
+			count=				"2"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itAresArchcannon;" posAngle="0" posRadius="18" posZ="16" minFireArc="350" maxFireArc="10" />
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"3.0"
+			/>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsAresAdvancedSentry;" imageWidth="52" imageHeight="52" rotationCount="120" rotationColumns="12" viewportRatio="0.00375" />
+		<HeroImage imageID="&rsAresAdvancedSentryHero;" imageWidth="320" imageHeight="320"/>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"20"
 			fireAccuracy=		"90"
 			perception=			"4"
 
@@ -1337,9 +1440,17 @@
 		</Items>
 
 		<Satellites overlapCheck="asteroids">
-			<Orbitals count="2d4" distance="12" angle="equidistant">
-				<Ship class="&scAresCannon;" count="1" sovereign="&svAres;" orders="sentry"/>
-			</Orbitals>
+			<LevelTable>
+				<Orbitals levelFrequency="----- cccur ----- -----" count="2d4" distance="12" angle="equidistant">
+					<Ship class="&scAresSentry;" count="1" sovereign="&svAres;" orders="sentry"/>
+				</Orbitals>
+				<Orbitals levelFrequency="----- --rcu r---- -----" count="2d4" distance="12" angle="equidistant">
+					<Ship class="&scAresDualSentry;" count="1" sovereign="&svAres;" orders="sentry"/>
+				</Orbitals>
+				<Orbitals levelFrequency="----- ---rc ur--- -----" count="2d4" distance="12" angle="equidistant">
+					<Ship class="&scAresAdvancedSentry;" count="1" sovereign="&svAres;" orders="sentry"/>
+				</Orbitals>
+			</LevelTable>
 		</Satellites>
 
 		<Encounters frequency="common">
@@ -1405,9 +1516,17 @@
 		</Items>
 
 		<Satellites overlapCheck="asteroids">
-			<Orbitals id="test" count="2d6" distance="12" angle="equidistant">
-				<Ship class="&scAresCannon;" count="1" sovereign="&svAres;" orders="sentry"/>
-			</Orbitals>
+			<LevelTable>
+				<Orbitals levelFrequency="----- cccur ----- -----" count="2d6" distance="12" angle="equidistant">
+					<Ship class="&scAresSentry;" count="1" sovereign="&svAres;" orders="sentry"/>
+				</Orbitals>
+				<Orbitals levelFrequency="----- -rcur ----- -----" count="2d6" distance="12" angle="equidistant">
+					<Ship class="&scAresDualSentry;" count="1" sovereign="&svAres;" orders="sentry"/>
+				</Orbitals>
+				<Orbitals levelFrequency="----- --rcc ur--- -----" count="2d6" distance="12" angle="equidistant">
+					<Ship class="&scAresAdvancedSentry;" count="1" sovereign="&svAres;" orders="sentry"/>
+				</Orbitals>
+			</LevelTable>
 		</Satellites>
 
 		<Encounters frequency="common">
@@ -1507,12 +1626,22 @@
 	
 <!-- RESOURCES -->
 	
-	<Image UNID="&rsCometfall;" bitmap="Resources\Cometfall.jpg" bitmask="Resources\CometfallMask.bmp" loadOnUse="true" />
-	<Image UNID="&rsDeimos;" bitmap="Resources\Deimos.jpg" bitmask="Resources\DeimosMask.bmp" loadOnUse="true" />
-	<Image UNID="&rsPolarFreighter;" bitmap="Resources\PolarFreighter.jpg" bitmask="Resources\PolarFreighterMask.bmp" loadOnUse="true" />
-	<Image UNID="&rsAresSentryHD;" bitmap="Resources\AresSentryHD.jpg" bitmask="Resources\AresSentryHDMask.bmp" loadOnUse="true" />
-	<Image UNID="&rsChasmHD;" bitmap="Resources\ChasmHD.jpg" bitmask="Resources\ChasmHDMask.bmp" loadOnUse="true" />
-	<Image UNID="&rsSandstormHD;" bitmap="Resources\SandstormHD.jpg" bitmask="Resources\SandstormHDMask.bmp" loadOnUse="true" />
-	<Image UNID="&rsTundraHD;" bitmap="Resources\TundraHD.jpg" bitmask="Resources\TundraHDMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsAresAdvancedSentry;"		bitmap="Resources\AresAdvancedSentry.jpg" bitmask="Resources\AresAdvancedSentryMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsAresAdvancedSentryHero;"	bitmap="Resources\AresAdvancedSentryLarge.jpg" bitmask="Resources\AresAdvancedSentryLargeMask.bmp" loadOnUse="true" />
+
+	<Image UNID="&rsAresDualSentry;"			bitmap="Resources\AresDualSentry.jpg" bitmask="Resources\AresDualSentryMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsAresDualSentryHero;"		bitmap="Resources\AresDualSentryLarge.jpg" bitmask="Resources\AresDualSentryLargeMask.bmp" loadOnUse="true" />
+
+	<Image UNID="&rsAresSentry;"				bitmap="Resources\AresSentry.jpg" bitmask="Resources\AresSentryMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsAresSentryHero;"			bitmap="Resources\AresSentryLarge.jpg" bitmask="Resources\AresSentryLargeMask.bmp" loadOnUse="true" />
+
+	<Image UNID="&rsChasmHD;"					bitmap="Resources\ChasmHD.jpg" bitmask="Resources\ChasmHDMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsCometfall;"					bitmap="Resources\Cometfall.jpg" bitmask="Resources\CometfallMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsDeimos;"					bitmap="Resources\Deimos.jpg" bitmask="Resources\DeimosMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsPolarFreighter;"			bitmap="Resources\PolarFreighter.jpg" bitmask="Resources\PolarFreighterMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsSandstormHD;"				bitmap="Resources\SandstormHD.jpg" bitmask="Resources\SandstormHDMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsTundraHD;"					bitmap="Resources\TundraHD.jpg" bitmask="Resources\TundraHDMask.bmp" loadOnUse="true" />
 	
+	<Image UNID="&rsAresSentryHD;" obsolete="39" bitmap="Resources\AresSentryHD.jpg" bitmask="Resources\AresSentryHDMask.bmp" loadOnUse="true" />
+
 </TranscendenceModule>

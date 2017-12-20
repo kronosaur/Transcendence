@@ -76,9 +76,11 @@
 						(msnSetData gSource 'alphaID (objGetID alphaLeader))
 						(msnRegisterForEvents gSource alphaLeader)
 
-						(for i 0 5 (shpOrder
-							(sysCreateShip &scAresCannon; (sysVectorPolarOffset pos (* i 60) 20) &svAres;)
-							'hold
+						(for i 0 5 (block (sentryObj)
+							(setq sentryObj (sysCreateShip &scAresSentry; (sysVectorPolarOffset pos (* i 60) 20) &svAres;))
+							(shpOrder sentryObj 'hold)
+							;	Aggressor setting means the sentry will attack without provocation
+							(shpSetAISetting sentryObj 'aggressor True)
 							))
 
 						;	Create Ares Beta fleet
@@ -87,9 +89,10 @@
 						(msnSetData gSource 'betaID (objGetID betaLeader))
 						(msnRegisterForEvents gSource betaLeader)
 
-						(for i 0 11 (shpOrder
-							(sysCreateShip &scAresCannon; (sysVectorPolarOffset pos (* i 30) 20) &svAres;)
-							'hold
+						(for i 0 11 (block (sentryObj)
+							(setq sentryObj (sysCreateShip &scAresSentry; (sysVectorPolarOffset pos (* i 30) 20) &svAres;))
+							(shpOrder sentryObj 'hold)
+							(shpSetAISetting sentryObj 'aggressor True)
 							))
 
 						;	Create a marker for the fleet position
