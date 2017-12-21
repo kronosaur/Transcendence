@@ -138,7 +138,7 @@
 	<!-- Segment of heavy Tharsis plate -->
 
 	<ItemType UNID="&itHeavyTharsisPlate;"
-			name=				"[segment(s) of ]heavy Tharsis plate"
+			name=				"[segment(s) of ]massive Tharsis plate"
 			level=				"9"
 			value=				"18000"
 			mass=				"10000"
@@ -164,7 +164,7 @@
 	<!-- Segment of massive Tharsis plate -->
 
 	<ItemType UNID="&itMassiveTharsisPlate;"
-			name=				"[segment(s) of ]massive Tharsis plate"
+			name=				"[segment(s) of ]dreadnought Tharsis plate"
 			level=				"10"
 			value=				"50000"
 			mass=				"25000"
@@ -172,7 +172,7 @@
 			frequency=			"veryrare"
 			numberAppearing=	"1d4"
 
-			description=		"The capital ships of the Ares Orthodoxy use this massive armor."
+			description=		"The capital ships of the Ares Orthodoxy use this armor."
 
 			sortName=			"Tharsis plate, massive, segment of"
 			>

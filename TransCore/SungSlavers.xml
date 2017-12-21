@@ -245,7 +245,7 @@
 
 	<ItemType UNID="&itHeavySungArmor;"
 			inherit=			"&baSungArmor;"
-			name=				"[segment(s) of ]heavy Sung armor"
+			name=				"[segment(s) of ]super-heavy Sung armor"
 			level=				"6"
 			value=				"2300"
 			frequency=			"rare"

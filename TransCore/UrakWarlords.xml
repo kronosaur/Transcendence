@@ -211,7 +211,7 @@
 	<!-- Urak Armor, Heavy -->
 
 	<ItemType UNID="&itUrakArmorHeavy;"
-			name=				"[segment(s) of ]heavy Urak armor"
+			name=				"[segment(s) of ]super-heavy Urak armor"
 			level=				"4"
 			value=				"700"
 			mass=				"7000"

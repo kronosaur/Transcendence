@@ -1396,7 +1396,7 @@
 	<!-- Super Heavy Ithalium Armor -->
 
 	<ItemType UNID="&itSuperHeavyIthaliumArmor;"
-			name=				"[segment(s) of ]superheavy ithalium armor"
+			name=				"[segment(s) of ]super-heavy ithalium armor"
 			attributes=			"commonwealth, minorItem, military, nami"
 			  
 			level=				"10"
