@@ -332,15 +332,7 @@
 					
 					(reactorItem (@ (objGetItems shipObj "rI") 0))
 					(reactorText (if reactorItem (itmGetName reactorItem 0x00) (cat (objGetName shipObj 0x80) " reactor")))
-					(reactorPower (divide (objGetProperty shipObj 'power) 1000))
-					(reactorPowerText
-						(switch
-							(gr reactorPower 1000)
-								(cat (divide reactorPower 1000) "." (divide (modulo reactorPower 1000) 100) " GW")
-								
-							(cat reactorPower " MW")
-							)
-						)
+					(reactorPowerText (fmtNumber 'power (objGetProperty shipObj 'power)))
 					(reactorEfficiency (objGetProperty shipObj 'fuelEfficiencyBonus))
 					(reactorEfficiencyText
 						(switch
