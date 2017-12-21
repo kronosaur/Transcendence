@@ -251,7 +251,7 @@
 										(rpgMissionAssignment {
 											missionCriteria: commonCriteria
 											noMissionTextID: 'descNoMissions
-											maxPerStation: (+ 3 (modulo (objGetDestiny gSource) 3))
+											maxPerStation: (+ 6 (modulo (objGetDestiny gSource) 3))
 											intervalPerStation: (random 3600 5400)
 											})
 
@@ -301,7 +301,7 @@
 									(scrShowScreen gScreen &dsRPGMessage; { textID:'descBarNoMoney })
 
 									(block (
-										rank (typGetData &unidCommonwealthMilitia; 'rank)
+										(rank (typGetData &unidCommonwealthMilitia; 'rank))
 										)
 										(plyCharge gPlayer 5)
 										(switch
