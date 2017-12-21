@@ -95,14 +95,17 @@ int CCommandLineDisplay::GetOutputCount (void)
 		return ((m_iOutputEnd + MAX_LINES + 1 - m_iOutputStart) % (MAX_LINES + 1));
 	}
 
-void CCommandLineDisplay::AppendHistory(const CString &sLine)
+void CCommandLineDisplay::AppendHistory (const CString &sLine)
 
 //	AppendHistory
 //
 //	Append a line of input to the history buffer
 
 	{
-	if (!(sLine == GetHistory(0)))
+	//	Use case-sensitive compare because sometimes commands differ only
+	//	by case.
+
+	if (!strEqualsCase(sLine, GetHistory(0)))
 		{
 		m_iHistoryStart = (m_iHistoryStart + (MAX_LINES + 1) - 1) % (MAX_LINES + 1);
 		if (m_iHistoryStart == m_iHistoryEnd)
@@ -110,10 +113,11 @@ void CCommandLineDisplay::AppendHistory(const CString &sLine)
 
 		m_History[m_iHistoryStart] = sLine;
 		}
+
 	m_iHistoryIndex = -1;
 	}
 
-const CString &CCommandLineDisplay::GetHistory(int iLine)
+const CString &CCommandLineDisplay::GetHistory (int iLine)
 
 //	GetHistory
 //
@@ -123,7 +127,7 @@ const CString &CCommandLineDisplay::GetHistory(int iLine)
 	return m_History[(m_iHistoryStart + iLine) % (MAX_LINES + 1)];
 	}
 
-int CCommandLineDisplay::GetHistoryCount(void)
+int CCommandLineDisplay::GetHistoryCount (void)
 
 //	GetHistoryCount
 //
@@ -136,7 +140,7 @@ int CCommandLineDisplay::GetHistoryCount(void)
 		return ((m_iHistoryEnd + MAX_LINES + 1 - m_iHistoryStart) % (MAX_LINES + 1));
 	}
 
-const CString CCommandLineDisplay::GetCurrentCmd(void)
+const CString CCommandLineDisplay::GetCurrentCmd (void)
 
 //	GetCurrentCmd
 //
@@ -163,7 +167,7 @@ const CString CCommandLineDisplay::GetCurrentCmd(void)
 	return strSubString(m_sInput, iPos, m_iCursorPos - iPos);
 	}
 
-void CCommandLineDisplay::AutoCompleteSearch(void)
+void CCommandLineDisplay::AutoCompleteSearch (void)
 
 //	AutocompleteSearch
 //
@@ -303,7 +307,7 @@ void CCommandLineDisplay::InputBackspace (void)
 		}
 	}
 
-void CCommandLineDisplay::InputDelete(void)
+void CCommandLineDisplay::InputDelete (void)
 
 //	InputDelete
 //
@@ -349,7 +353,7 @@ void CCommandLineDisplay::InputHistoryUp (void)
 		}
 	}
 
-void CCommandLineDisplay::InputHistoryDown(void)
+void CCommandLineDisplay::InputHistoryDown (void)
 
 //	InputHistoryDown
 //
