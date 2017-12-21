@@ -46,7 +46,7 @@
 		<Image imageID="&rsOromoHD;" imageX="0" imageY="0" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="12"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="37"	posZ="0"	rotation="180"	sendToBack="3,4,16,17"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="37"	posZ="0"	rotation="180"	sendToBack="angles:0-60, angles:120-180"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
