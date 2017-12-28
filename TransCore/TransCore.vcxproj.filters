@@ -687,5 +687,8 @@
     <Xml Include="AntarcticaD01.xml">
       <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
+    <Xml Include="RPGDockManagement.xml">
+      <Filter>RPG Library</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

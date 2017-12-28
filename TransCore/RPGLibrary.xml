@@ -84,6 +84,7 @@
 	<!ENTITY dsRPGUseItemOnArmor		"0x00010039">
 	<!ENTITY dsRPGUseItemOnDevice		"0x0001003A">
 	<!ENTITY dsRPGUseItemOnCargo		"0x0001003B">
+	<!ENTITY dsRPGDockManagement		"0x0001003C">
 	
 	<!-- 0040-004F CARGO CRATE -->
 	
@@ -148,6 +149,7 @@
 	<Module filename="RPGComponents.xml"/>
 	<Module filename="RPGDeviceDockScreens.xml"/>
 	<Module filename="RPGDialog.xml"/>
+	<Module filename="RPGDockManagement.xml"/>
 	<Module filename="RPGDockScreens.xml"/>
 	<Module filename="RPGMembership.xml"/>
 	<Module filename="RPGMissions.xml"/>

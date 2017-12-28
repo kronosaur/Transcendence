@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<DockScreen unid="&dsRPGDockManagement;"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			>
+		
+		<Display type="customPicker"
+				rowHeight="80"
+				iconWidth="128"
+				iconHeight="80"
+				iconScale="0.7"
+				>
+			<OnDisplayInit>
+				(block (
+					(storedShips (objGetData gSource 'rpg.playerShips))
+					)
+					;	We return a list of ships controlled by the player.
+					
+					(append
+						;	We start with the player's current ship.
+						
+						(list {
+							title: (objGetName gPlayerShip 'generic)
+							icon: (shpGetImageDesc (objGetType gPlayerShip) 0)
+							desc: (scrTranslate gScreen 'descPlayerShip)
+							
+							type: 'currentShip
+							})
+							
+						;	Make a list of the player's ships here at this station.
+						
+						(map storedShips theShipID
+							(block (
+								(theObj (objGetObjByID theShipID))
+								)
+								
+								{
+								title: (objGetName theObj 'generic)
+								icon: (shpGetImageDesc (objGetType theObj) 0)
+								desc: "stored ship"
+								
+								type: 'storedShip
+								}
+								)
+							)
+						)
+					)
+			</OnDisplayInit>
+		</Display>
+		
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(theEntry (scrGetListEntry gScreen))
+						(theType (@ theEntry 'type))
+						)
+						(switch
+							;	This is the current player ship.
+							
+							(= theType 'currentShip)
+								(block ()
+									)
+									
+							;	This is a stored ship
+							
+							(= theType 'storedShip)
+								(block ()
+									)
+							)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionEscortFreighter" default="1">
+						(block (
+							(theEntry (scrGetListEntry gScreen))
+							(theMission (@ theEntry 'missionObj))
+							)
+							(msnAccept theMission)
+							(scrShowScreen gScreen &dsRPGMission; { missionObj:theMission status:'accept })
+							)
+					</Action>
+					
+					<Action id="actionCancel" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
+	
+</TranscendenceModule>

@@ -106,14 +106,14 @@
 						
 						;	Initialize actions
 						
-						(scrEnableAction gScreen 'actionBuyShip canBuy)
+						(scrEnableAction gScreen 'actionTradeShip canBuy)
 						(scrShowAction gScreen 'actionNextShip (ls selIndex (- (count shipIDList) 1)))
 						(scrShowAction gScreen 'actionPrevShip (!= selIndex 0))
 						)
 				</OnPaneInit>
 				
 				<Actions>
-					<Action id="actionBuyShip">
+					<Action id="actionTradeShip">
 						(block (
 							(currency (objGetProperty gSource 'currency))
 							(tradeInPrice (scrGetData gScreen 'tradeInPrice))
@@ -230,30 +230,22 @@
 		</Panes>
 		
 		<Language>
-			<Text id="actionBuyShip">"[B]uy Ship"</Text>
+			<Text id="actionTradeShip">[T]rade Ship</Text>
 			<Text id="actionNextShip">"&gt;[RightArrow] Next Ship"</Text>
 			<Text id="actionPrevShip">"&lt;[LeftArrow] Previous Ship"</Text>
 			
 			<Text id="descTradeIn">
-				(cat
-					"\"You can trade in your ship and purchase " (@ gData 'name) " for " (@ gData 'price) ".\""
-					)
+				You can trade in your ship and purchase %name% for %price%.
 			</Text>
 			<Text id="descTradeInRefund">
-				(cat
-					"\"This ship is not as good as yours, but if you want to trade yours in, we'll pay you " (@ gData 'price) ".\""
-					)
+				This ship is not as good as yours, but if you want to trade yours in, we'll pay you %price%.
 			</Text>
 			<Text id="descNoTradeIn">
-				(cat
-					"\"Unfortunately, we cannot offer you a trade-in because your ship is worthless to us.\""
-					)
+				Unfortunately, we cannot offer you a trade-in because your ship is worthless to us.
 			</Text>
 			<Text id="descCantAfford">
-				(cat
-					"\"You can trade in your ship and purchase " (@ gData 'name) " for " (@ gData 'price) ". "
-					"Unfortunately, you cannot afford the cost.\""
-					)
+				You can trade in your ship and purchase %name% for %price%.
+				Unfortunately, you cannot afford the cost.
 			</Text>
 		</Language>
 	</DockScreen>
