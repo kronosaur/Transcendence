@@ -113,34 +113,64 @@
 			type=				"yacht"
 			defaultSovereign=	"&svCommonwealth;"
 
-			mass=				"30"
-			cargoSpace=			"50"
-			thrustRatio=		"6.6"
-			maxSpeed=			"20"
-
 			attributes=			"commonwealth, genericClass"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itReactiveArmor;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itReactiveArmor;" areaSet="3,4" />
-			<ArmorSection start="135" span="90" armorID="&itReactiveArmor;" areaSet="1,6" />
-			<ArmorSection start="45"  span="90" armorID="&itReactiveArmor;" areaSet="7,13" />
-		</Armor>
+		<!-- Hull -->
 
-		<Devices>
-			<Device deviceID="&itRecoillessCannon;"/>
-			<Device deviceID="&itClass1Deflector;"/>
-		</Devices>
+		<Hull
+			size=				"31"
+			mass=				"30"
+			cargoSpace=			"50"
+
+			maxCargoSpace=		"150"
+			maxDevices=			"8"
+
+			stdArmor=			"3000"
+			maxArmor=			"6000"
+			maxArmorSpeed=		"18"
+			minArmorSpeed=		"22"
+			/>
+
+		<Drive
+			maxSpeed=			"20"
+			thrust=				"300"
+			powerUse=			"20"
+			/>
 
 		<Maneuver
 			maxRotationRate=	"9.0"
 			rotationAccel=		"2.0"
 			/>
 
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itReactiveArmor;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itRecoillessCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<!-- Treasure -->
+
 		<Items>
 			<Item count="4d6" item="&itHelium3FuelRod;"/>
 		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsSapphireYachtHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"	rotationCount="120"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"30"
@@ -149,18 +179,6 @@
 			
 			combatStyle=		"advanced"
 			/>
-
-		<Image imageID="&rsSapphireYachtHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"	rotationCount="120"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
-			<Effect type="thrustMain"		posAngle="-160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
-			<Effect type="rotateRight"		posAngle="12"	posRadius="20"	posZ="0"	rotation="90"/>
-			<Effect type="rotateRight"		posAngle="-130"	posRadius="18"	posZ="0"	rotation="270"/>
-			<Effect type="rotateLeft"		posAngle="-12"	posRadius="20"	posZ="0"	rotation="270"/>
-			<Effect type="rotateLeft"		posAngle="130"	posRadius="18"	posZ="0"	rotation="90"/>
-		</Effects>
-
 	</ShipClass>
 
 	<!-- Level 3: Light IAV -->
@@ -279,6 +297,72 @@
 	
 	<!-- Level 4: EI500 Freighter -->
 
+	<ShipClass UNID="&scEI500Stock;"
+			manufacturer=		"Earth Industries"
+			class=				"EI500"
+			type=				"freighter"
+			>
+
+		<!-- Hull -->
+
+		<Hull
+			size=				"27"
+			mass=				"150"
+			cargoSpace=			"50"
+
+			maxCargoSpace=		"200"
+			maxDevices=			"10"
+			maxWeapons=			"2"
+
+			stdArmor=			"5000"
+			maxArmor=			"20000"
+			maxArmorSpeed=		"16"
+			minArmorSpeed=		"19"
+			/>
+
+		<Drive
+			maxSpeed=			"18"
+			thrust=				"250"
+			powerUse=			"20"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"4.5"
+			rotationAccel=		"3.0"
+			/>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itOmniTurbolaserCannon;"/>
+			<Device deviceID="&itClass3Deflector;"/>
+			<Device deviceID="&itCargoHoldExpansion;"/>
+		</Devices>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsEI500FreighterHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-144"	posRadius="28"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"120"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+	
 	<ShipClass UNID="&scEI500;"
 			manufacturer=		"Earth Industries"
 			class=				"EI500"
@@ -286,12 +370,7 @@
 			defaultSovereign=	"&svCommonwealth;"
 
 			attributes=			"commonwealth, freighter, genericClass"
-			 
-			size=				"27"
-			mass=				"150"
-			thrustRatio=		"2.0"
-			maxSpeed=			"18"
-			cargoSpace=			"200"
+			inherit=			"&scEI500Stock;"
 			>
 
 		<Names definiteArticle="true">
@@ -306,41 +385,11 @@
 			freighter Yonder Star; freighter Zorro
 		</Names>
 
-		<!-- Configuration -->
-		
-		<Armor
-			armorID=			"&itAdvancedReactiveArmor;"
-			count=				"4"
-			/>
-		
-		<Devices>
-			<Device deviceID="&itOmniTurbolaserCannon;"/>
-			<Device deviceID="&itClass3Deflector;"/>
-		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"4.5"
-			rotationAccel=		"0.5"
-			/>
+		<!-- Treasure -->
 
 		<Items>
 			<Item count="1d6" item="&itHelium3FuelRod;"/>
 		</Items>
-
-		<!-- Image and Effects -->
-		
-		<Image imageID="&rsEI500FreighterHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-144"	posRadius="28"	posZ="0"	rotation="180"/>
-		</Effects>
-
-		<AISettings
-			fireRateAdj=		"120"
-			fireAccuracy=		"85"
-			perception=			"4"
-			/>
 
 		<!-- AI and Behavior -->
 
@@ -349,6 +398,7 @@
 				(korOnShipDestroyed)
 			</OnDestroy>
 		</Events>
+
 	</ShipClass>
 	
 	<!-- Level 4: Ronin C-class Gunship -->
@@ -415,36 +465,71 @@
 			type=				"gunship"
 			defaultSovereign=	"&svCommonwealth;"
 
-			mass=				"20"
-			cargoSpace=			"35"
-			thrustRatio=		"13"
-			maxSpeed=			"25"
-
 			attributes=			"commonwealth, genericClass"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itPolyceramicPlate;"/>
-			<ArmorSection start="225" span="90" armorID="&itPolyceramicPlate;"/>
-			<ArmorSection start="135" span="90" armorID="&itPolyceramicPlate;"/>
-			<ArmorSection start="45"  span="90" armorID="&itPolyceramicPlate;"/>
-		</Armor>
+		<!-- Hull -->
 
-		<Devices>
-			<Device deviceID="&itDualTurbolaserCannon;"/>
-			<Device deviceID="&itNAMIMissileLauncher;"/>
-			<Device deviceID="&itMonopoleDeflector;"/>
-		</Devices>
+		<Hull
+			size=				"26"
+			mass=				"30"
+			cargoSpace=			"35"
+
+			maxCargoSpace=		"100"
+			maxDevices=			"8"
+			maxNonWeapons=		"4"
+
+			stdArmor=			"6000"
+			maxArmor=			"12000"
+			maxArmorSpeed=		"22"
+			/>
+
+		<Drive
+			thrust=				"600"
+			maxSpeed=			"25"
+			powerUse=			"20"
+			/>
 
 		<Maneuver
 			maxRotationRate=	"12.0"
-			rotationAccel=		"2.0"
+			rotationAccel=		"3.0"
+			rotationStopAccel=	"12.0"
 			/>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightPlasteelPlate;"
+			count=				"4"
+			/>
+
+		<Devices>
+			<Device deviceID="&itDualTurbolaserCannon;"/>
+			<Device deviceID="&itNAMIMissileLauncher;">
+				<Items>
+					<Item count="4d6" item="&itKM500Missile;"/>
+				</Items>
+			</Device>
+			<Device deviceID="&itMonopoleDeflector;"/>
+		</Devices>
+
+		<!-- Treasure -->
 
 		<Items>
 			<Item count="1d6" item="&itHelium3FuelRod;"/>
-			<Item count="4d6" item="&itKM500Missile;"/>
 		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsWolfenGunshipHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-180"	posRadius="18"	posZ="-5"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"30"
@@ -453,18 +538,6 @@
 			
 			combatStyle=		"advanced"
 			/>
-
-		<Image imageID="&rsWolfenGunshipHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="158"	posRadius="20"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-180"	posRadius="18"	posZ="-5"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-158"	posRadius="20"	posZ="0"	rotation="180"/>
-			<Effect type="rotateRight"		posAngle="45"	posRadius="20"	posZ="0"	rotation="135"/>
-			<Effect type="rotateRight"		posAngle="-110"	posRadius="16"	posZ="0"	rotation="315"/>
-			<Effect type="rotateLeft"		posAngle="-45"	posRadius="20"	posZ="0"	rotation="225"/>
-			<Effect type="rotateLeft"		posAngle="110"	posRadius="16"	posZ="0"	rotation="45"/>
-		</Effects>
 
 	</ShipClass>
 	
