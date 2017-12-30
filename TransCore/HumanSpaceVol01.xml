@@ -1940,6 +1940,9 @@
 
 	<!ENTITY rsLuminousDroneHD			"0x00100510">
 
+	<!-- 0530-057F PLAYER SHIP UPGRADES -->
+
+	<!ENTITY scEI500Stock				"0x00100530">
 	<!ENTITY scEI500PlayerL4			"0x00100531">
 	<!ENTITY scEI500PlayerL5			"0x00100532">
 	<!ENTITY scEI500PlayerL6			"0x00100533">
@@ -1949,6 +1952,7 @@
 	<!ENTITY scWolfenPlayerL4			"0x00100537">
 	<!ENTITY scWolfenPlayerL5			"0x00100538">
 	<!ENTITY scWolfenPlayerL6			"0x00100539">
+
     <!-- 1000-FFFF RESERVED: DO NOT USE -->
 	]>
 	

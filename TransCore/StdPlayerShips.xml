@@ -2,7 +2,203 @@
 
 <TranscendenceModule>
 
-	<!-- Player Ship: Sapphire-class Yacht Base Class -->
+<!-- EI500-CLASS FREIGHTER -->
+
+	<!-- EI500-class Freighter (Level 4) -->
+
+	<ShipClass UNID="&scEI500PlayerL4;"
+			manufacturer=		"Earth Industries"
+			class=				"EI500"
+			type=				"freighter"
+
+			attributes=			"commonwealth"
+			inherit=			"&scPlayerEI500Base;"
+
+			size=				"27"
+			mass=				"150"
+			thrustRatio=		"1.5"
+			maxSpeed=			"18"
+			cargoSpace=			"50"
+
+			drivePowerUse=		"20"
+			maxCargoSpace=		"200"
+			maxDevices=			"10"
+			maxWeapons=			"2"
+
+			stdArmor=			"5000"
+			maxArmor=			"20000"
+			maxArmorSpeed=		"16"
+			minArmorSpeed=		"19"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<DeviceSlot criteria="w +property:omnidirectional;" posAngle="0" posRadius="0"/>
+			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
+			<DeviceSlot criteria="c" cannotBeEmpty="true"/>
+			
+			<Table>
+				<Group chance="40">
+					<Device deviceID="&itOmniTurbolaserCannon;"/>
+					<Device deviceID="&itMAGLauncher;">
+						<Items>
+							<Item			  count="50-100" item="&it600HexageneMAG;"/>
+							<Item chance="40" count="50-100" item="&it800HexageneMAG;"/>
+						</Items>
+					</Device>
+					<Device chance="50" deviceID="&itLaserEnhancer;"/>
+				</Group>
+				<Group chance="30">
+					<Device deviceID="&itOmniTurbolaserCannon;"/>
+					<Device deviceID="&itNAMIMissileLauncher;">
+						<Items>
+							<Item			  count="50-100" item="&itFragmentationMissile;"/>
+							<Item chance="80" count="50-100" item="&itKM500Missile;"/>
+							<Item chance="40" count="25-50" item="&itKM550Missile;"/>
+						</Items>
+					</Device>
+					<Device chance="50" deviceID="&itLaserEnhancer;"/>
+				</Group>
+				<Group chance="20">
+					<Device deviceID="&itOmniTurbolaserCannon;"/>
+					<Device deviceID="&itSlamCannon;"/>
+					<Device chance="50" deviceID="&itLaserEnhancer;"/>
+				</Group>
+				<Group chance="10">
+					<Device deviceID="&itOmniPartisanCannon;"/>
+					<Device deviceID="&itFlenserCannon;"/>
+					<Device chance="50" deviceID="&itKineticEnhancer;"/>
+				</Group>
+			</Table>
+
+			<Table>
+				<Device chance="40" deviceID="&itClass3Deflector;"/>
+				<Device chance="30" deviceID="&itCeratopsQuasiArmor1;"/>
+				<Device chance="30" deviceID="&itR1Deflector;"/>
+			</Table>
+
+			<Device deviceID="&it100MWReactor;"/>
+			<Device deviceID="&itCargoHoldExpansion;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"4.5"
+			rotationAccel=		"3.0"
+			/>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsEI500FreighterHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120"/>
+		
+		<Effects>
+			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-144"	posRadius="28"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<!-- Player Settings -->
+		
+		<PlayerSettings
+			desc=				"The EI500 is slow and ungraceful, but its large cargo hold and capacity for upgrades makes it a favorite among independent pilots."
+			sortOrder=			"10"
+			largeImage=			"&rsEI100XLarge;"
+			initialClass=		"true"
+			startingCredits=	"5d20+200"
+			/>
+		
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+		
+	</ShipClass>
+
+	<!-- EI500-class Freighter Base Class -->
+
+	<ShipClass UNID="&scPlayerEI500Base;"
+			class=				"(player EI500 base class)"
+			virtual=			"true" 
+			
+			attributes=			"baseClass" 
+			>
+
+		<PlayerSettings
+			desc=				"The EI500 is slow and ungraceful, but its omnidirectional laser can hit even the fastest gunships. Six open slots for devices give you lots of upgrade flexibility."
+			largeImage=			"&rsEI100XLarge;"
+			initialClass=		"true"
+			startingCredits=	"5d20+200"
+			>
+
+			<ArmorDisplay>
+				<ShipImage imageID="&rsArmorHUDShip_EI500;" imageWidth="136" imageHeight="136"/>
+				
+				<ArmorSection name="forward"
+						segment="0"
+						imageID="&rsEI100XArmor;" 
+						imageX="0" imageY="0" imageWidth="90" imageHeight="9"
+						destX="23" destY="32" hpX="55" hpY="27"
+						nameY="8" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
+
+				<ArmorSection name="starboard"
+						segment="3"
+						imageID="&rsEI100XArmor;" 
+						imageX="90" imageY="0" imageWidth="9" imageHeight="56"
+						destX="104" destY="41" hpX="98" hpY="60"
+						nameY="30" nameBreakWidth="275" nameDestX="0" nameDestY="8" />
+
+				<ArmorSection name="port"
+						segment="1"
+						imageID="&rsEI100XArmor;" 
+						imageX="189" imageY="0" imageWidth="9" imageHeight="56"
+						destX="23" destY="41" hpX="12" hpY="60"
+						nameY="52" nameBreakWidth="200" nameDestX="0" nameDestY="8" />
+
+				<ArmorSection name="aft"
+						segment="2"
+						imageID="&rsEI100XArmor;" 
+						imageX="99" imageY="0" imageWidth="90" imageHeight="9"
+						destX="23" destY="97" hpX="55" hpY="97"
+						nameY="74" nameBreakWidth="200" nameDestX="0" nameDestY="8" />
+			</ArmorDisplay>
+
+			<ShieldDisplay shieldLevelEffect="&efShieldHUDDefault;">
+			</ShieldDisplay>
+
+			<ReactorDisplay>
+				<Image imageID="&rsZubrinReactor;" 
+						imageX="0" imageY="0" imageWidth="256" imageHeight="60"/>
+
+				<PowerLevelImage imageID="&rsZubrinReactor;"
+						imageX="0" imageY="60" imageWidth="202" imageHeight="14"
+						destX="54" destY="9"/>
+
+				<FuelLevelImage imageID="&rsZubrinReactor;"
+						imageX="0" imageY="74" imageWidth="194" imageHeight="14"
+						destX="54" destY="37"/>
+
+				<FuelLowLevelImage imageID="&rsZubrinReactor;"
+						imageX="0" imageY="88" imageWidth="194" imageHeight="14"/>
+
+				<ReactorText x="62" y="22" width="154" height="14"/>
+				<PowerLevelText x="62" y="0" width="154" height="9"/>
+				<FuelLevelText x="62" y="51" width="154" height="9"/>
+			</ReactorDisplay>
+
+		</PlayerSettings>
+
+	</ShipClass>
+
+<!-- SAPPHIRE-CLASS YACHT -->
+
+	<!-- Sapphire-class Yacht Base Class -->
 
 	<ShipClass UNID="&scPlayerSapphireBase;"
 			class=				"(player Sapphire base class)"
@@ -80,82 +276,9 @@
 		
 	</ShipClass>
 
-	<!-- Player Ship: EI500 Freighter Base Class -->
+<!-- WOLFEN-CLASS GUNSHIP -->
 
-	<ShipClass UNID="&scPlayerEI500Base;"
-			class=				"(player EI500 base class)"
-			virtual=			"true" 
-			
-			attributes=			"baseClass" 
-			>
-
-		<PlayerSettings
-			desc=				"The EI500 is slow and ungraceful, but its omnidirectional laser can hit even the fastest gunships. Six open slots for devices give you lots of upgrade flexibility."
-			largeImage=			"&rsEI100XLarge;"
-			initialClass=		"true"
-			startingCredits=	"5d20+200"
-			>
-
-			<ArmorDisplay>
-				<ShipImage imageID="&rsArmorHUDShip_EI500;" imageWidth="136" imageHeight="136"/>
-				
-				<ArmorSection name="forward"
-						segment="0"
-						imageID="&rsEI100XArmor;" 
-						imageX="0" imageY="0" imageWidth="90" imageHeight="9"
-						destX="23" destY="32" hpX="55" hpY="27"
-						nameY="8" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
-
-				<ArmorSection name="starboard"
-						segment="3"
-						imageID="&rsEI100XArmor;" 
-						imageX="90" imageY="0" imageWidth="9" imageHeight="56"
-						destX="104" destY="41" hpX="98" hpY="60"
-						nameY="30" nameBreakWidth="275" nameDestX="0" nameDestY="8" />
-
-				<ArmorSection name="port"
-						segment="1"
-						imageID="&rsEI100XArmor;" 
-						imageX="189" imageY="0" imageWidth="9" imageHeight="56"
-						destX="23" destY="41" hpX="12" hpY="60"
-						nameY="52" nameBreakWidth="200" nameDestX="0" nameDestY="8" />
-
-				<ArmorSection name="aft"
-						segment="2"
-						imageID="&rsEI100XArmor;" 
-						imageX="99" imageY="0" imageWidth="90" imageHeight="9"
-						destX="23" destY="97" hpX="55" hpY="97"
-						nameY="74" nameBreakWidth="200" nameDestX="0" nameDestY="8" />
-			</ArmorDisplay>
-
-			<ShieldDisplay shieldLevelEffect="&efShieldHUDDefault;">
-			</ShieldDisplay>
-
-			<ReactorDisplay>
-				<Image imageID="&rsZubrinReactor;" 
-						imageX="0" imageY="0" imageWidth="256" imageHeight="60"/>
-
-				<PowerLevelImage imageID="&rsZubrinReactor;"
-						imageX="0" imageY="60" imageWidth="202" imageHeight="14"
-						destX="54" destY="9"/>
-
-				<FuelLevelImage imageID="&rsZubrinReactor;"
-						imageX="0" imageY="74" imageWidth="194" imageHeight="14"
-						destX="54" destY="37"/>
-
-				<FuelLowLevelImage imageID="&rsZubrinReactor;"
-						imageX="0" imageY="88" imageWidth="194" imageHeight="14"/>
-
-				<ReactorText x="62" y="22" width="154" height="14"/>
-				<PowerLevelText x="62" y="0" width="154" height="9"/>
-				<FuelLevelText x="62" y="51" width="154" height="9"/>
-			</ReactorDisplay>
-
-		</PlayerSettings>
-
-	</ShipClass>
-
-	<!-- Player Ship: Wolfen-class Gunship Base Class -->
+	<!-- Wolfen-class Gunship Base Class -->
 
 	<ShipClass UNID="&scPlayerWolfenBase;"
 			class=				"(player Wolfen base class)"

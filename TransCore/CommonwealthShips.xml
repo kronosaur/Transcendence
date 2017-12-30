@@ -143,6 +143,11 @@
 			rotationAccel=		"2.0"
 			/>
 
+		<DeviceSlots>
+			<DeviceSlot criteria="w +property:omnidirectional;" posAngle="0" posRadius="13"/>
+			<DeviceSlot criteria="w" posAngle="0" posRadius="22"/>
+		</DeviceSlots>
+
 		<!-- Configuration -->
 
 		<Armor
@@ -179,6 +184,7 @@
 			
 			combatStyle=		"advanced"
 			/>
+
 	</ShipClass>
 
 	<!-- Level 3: Light IAV -->
@@ -330,6 +336,12 @@
 			maxRotationRate=	"4.5"
 			rotationAccel=		"3.0"
 			/>
+
+		<DeviceSlots>
+			<DeviceSlot criteria="w +property:omnidirectional;" posAngle="0" posRadius="0"/>
+			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
+			<DeviceSlot criteria="c" cannotBeEmpty="true"/>
+		</DeviceSlots>
 
 		<!-- Configuration -->
 		
@@ -495,6 +507,11 @@
 			rotationAccel=		"3.0"
 			rotationStopAccel=	"12.0"
 			/>
+
+		<DeviceSlots>
+			<DeviceSlot criteria="p +property:omnidirectional;" posAngle="180" posRadius="4"/>
+			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
+		</DeviceSlots>
 
 		<!-- Configuration -->
 		

@@ -11,7 +11,7 @@
 			class=				"Sapphire"
 			type=				"yacht"
 
-			attributes=			"00200000_PlayerShip"
+			attributes=			"00200000_PlayerShip, notStandard"
 			inherit=			"&scPlayerSapphireBase;"
 			characterClass=		"&unidPilgrimClass;"
 			   
@@ -21,9 +21,6 @@
 			maxSpeed=			"20"
 			cargoSpace=			"50"
 
-			reactorPower=		"150"
-			fuelCapacity=		"37500"
-			drivePowerUse=		"20"
 			maxCargoSpace=		"150"
 			maxDevices=			"8"
 
@@ -99,7 +96,7 @@
 			class=				"EI500"
 			type=				"freighter"
 
-			attributes=			"00200000_PlayerShip"
+			attributes=			"00200000_PlayerShip, notStandard"
 			inherit=			"&scPlayerEI500Base;"
 			characterClass=		"&unidPilgrimClass;"
 
@@ -180,7 +177,7 @@
 		<!-- AI and Behavior -->
 		
 		<AISettings
-			fireRateAdj=		"120"
+			fireRateAdj=		"20"
 			fireAccuracy=		"85"
 			perception=			"4"
 			/>
@@ -204,7 +201,7 @@
 			class=				"Wolfen"
 			type=				"gunship"
 
-			attributes=			"00200000_PlayerShip"
+			attributes=			"00200000_PlayerShip, notStandard"
 			inherit=			"&scPlayerWolfenBase;"
 			characterClass=		"&unidPilgrimClass;"
 			   
@@ -214,8 +211,6 @@
 			maxSpeed=			"25"
 			cargoSpace=			"35"
 
-			reactorPower=		"100"
-			fuelCapacity=		"25000"
 			drivePowerUse=		"20"
 			maxCargoSpace=		"100"
 			maxDevices=			"8"
