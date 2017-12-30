@@ -456,9 +456,9 @@ ALERROR CIntroSession::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSover
 
 	//	Adjust the roll for capital ships
 
-	if (pShipClass->GetHullMass() >= 10000)
+	if (pShipClass->GetHullDesc().GetMass() >= 10000)
 		iRoll -= 9;
-	else if (pShipClass->GetHullMass() >= 1000)
+	else if (pShipClass->GetHullDesc().GetMass() >= 1000)
 		iRoll -= 6;
 
 	if (iRoll == 100)

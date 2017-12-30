@@ -282,7 +282,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 				NewEntry.pType = pType;
 				NewEntry.sName = pClass->GetNounPhrase(nounGeneric);
-				NewEntry.iSize = pClass->GetSize();
+				NewEntry.iSize = pClass->GetHullDesc().GetSize();
 				NewEntry.iRotation = (bHeroImage ? 0 : pClass->Angle2Direction(iRotation));
 				NewEntry.sSovereignName = (pClass->GetDefaultSovereign() ? pClass->GetDefaultSovereign()->GetNounPhrase() : NULL_STR);
 
