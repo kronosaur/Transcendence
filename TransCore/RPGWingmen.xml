@@ -345,14 +345,14 @@
 
 			<OnDestroy>
 				(switch
-					(eq (objGetGlobalData gSource "status") 'returnedHome)
+					(eq (objGetCharacterData gSource 'status) 'returnedHome)
 						Nil
 
 					(and gPlayerShip (eq aOrderGiver gPlayerShip))
-						(objSetGlobalData gSource "status" 'destroyedByPlayer)
+						(objSetCharacterData gSource 'status 'destroyedByPlayer)
 
 					(block Nil
-						(objSetGlobalData gSource "status" 'destroyed)
+						(objSetCharacterData gSource 'status 'destroyed)
 						(plyMessage gPlayer (objTranslate gSource 'WingmanKilled))
 						)
 					)
@@ -360,7 +360,7 @@
 			
 			<OnEnteredGate>
 				(if (eq (objGetData gSource "behavior") 'goingHome)
-					(objSetGlobalData gSource "status" 'returnedHome)
+					(objSetCharacterData gSource 'status 'returnedHome)
 					)
 			</OnEnteredGate>
 			
@@ -490,7 +490,7 @@
 			<OrderJoinPlayer>
 				(block Nil
 					(objSetProperty gSource 'playerWingman True)
-					(objSetGlobalData gSource "status" 'joined)
+					(objSetCharacterData gSource 'status 'joined)
 					(objFireEvent gSource "OnWingmanJoinedPlayer")
 					)
 			</OrderJoinPlayer>
@@ -511,11 +511,19 @@
 	</Type>
 
 <!-- Wingman encounter screen ==================================================
-	Screen for meeting wingmen. Just supports join/reject for now.
 
-	Code based on rpgPagePaneInit / dsRPGMission / dsRPGDialog.
+	Screen for meeting wingmen. 
 
-	Could add support for multiple encounters / leaving / rejoining etc.
+	DATA
+		wingman: The UNID of the wingman character (or, for backwards 
+				compatibility, the type of the wingman ship).
+	
+	NOTES:
+
+	*	Just supports join/reject for now.
+	*	Code based on rpgPagePaneInit / dsRPGMission / dsRPGDialog.
+	*	Could add support for multiple encounters / leaving / rejoining etc.
+
 -->
 
 	<DockScreen UNID="&dsRPGWingmanEncounter;"
@@ -661,10 +669,29 @@
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
 						(block (
-							(theClass (scrGetData gScreen 'wingman))
-							(theSov (typGetProperty theClass 'defaultSovereign))
+							(wingman (scrGetData gScreen 'wingman))
+
+							wingmanObj
 							)
-							(objFireEvent (sysCreateShip theClass gSource theSov) "OrderJoinPlayer")
+							;	Create the wingman
+
+							(switch
+								;	First ask the type to create it.
+
+								(setq wingmanObj (typFireEvent wingman 'OrderCreateShip { pos:(objGetPos gSource) status:'wingman }))
+									Nil
+
+								;	Otherwise, we assume the type is a ship class
+
+								(setq wingmanObj (sysCreateShip wingman gSource (typGetProperty wingman 'defaultSovereign)))
+								)
+
+							;	Order them to follow the player
+
+							(objFireEvent wingmanObj 'OrderJoinPlayer)
+
+							;	Done
+
 							(scrExitScreen gScreen)
 							)
 					</Action>
@@ -678,7 +705,7 @@
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
 						(block Nil
-							(typSetGlobalData (scrGetData gScreen 'wingman) "status" 'declined)
+							(typSetGlobalData (scrGetData gScreen 'wingman) 'status 'declined)
 							(scrExitScreen gScreen)
 							)
 					</Action>

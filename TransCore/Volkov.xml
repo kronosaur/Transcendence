@@ -4,8 +4,6 @@
 	
 	<!-- Volkov's Wolfen-class Gunship
 
-	INHERITS from baStdWingmanBase
-
 	-->
 
 	<ShipClass UNID="&scWolfenVolkov;"
@@ -14,24 +12,22 @@
 			type=				"gunship"
 			defaultSovereign=	"&svCommonwealth;"
 
-			mass=				"30"
-			cargoSpace=			"35"
-			thrustRatio=		"13"
-			maxSpeed=			"25"
+			attributes=			"volkov"
+			inherit=			"&scWolfen;"
+			character=			"&chVolkov;"
+			eventHandler=		"&chVolkov;"
 
 			leavesWreck=		"25"
-			
-			attributes=			"volkov"
-
-			inherit=			"&baStdWingmanBase;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="225" span="90" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="135" span="90" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="45"  span="90" armorID="&itAdvancedReactiveArmor;" />
-		</Armor>
+		<Names noArticle="true" personalName="true">Volkov</Names>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"4"
+			/>
 
 		<Devices>
 			<Device deviceID="&itXRayLaserCannon;"/>
@@ -39,16 +35,7 @@
 			<Device deviceID="&it100MWReactor;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"3.0"
-			/>
-
-		<Items>
-			<Item count="2d6" item="&itHeliumAssembly;"/>
-		</Items>
-
-		<Names noArticle="true" personalName="true">Volkov</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"10"
@@ -58,128 +45,6 @@
 			combatStyle=		"advanced"
 			/>
 
-		<Image imageID="&rsWolfenGunshipHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="158"	posRadius="20"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-180"	posRadius="18"	posZ="-5"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-158"	posRadius="20"	posZ="0"	rotation="180"/>
-			<Effect type="rotateRight"		posAngle="45"	posRadius="20"	posZ="0"	rotation="135"/>
-			<Effect type="rotateRight"		posAngle="-110"	posRadius="16"	posZ="0"	rotation="315"/>
-			<Effect type="rotateLeft"		posAngle="-45"	posRadius="20"	posZ="0"	rotation="225"/>
-			<Effect type="rotateLeft"		posAngle="110"	posRadius="16"	posZ="0"	rotation="45"/>
-		</Effects>
-
-		<Language>
-			<Text id="ArmorRepaired">			"\"Good! Armor is repaired\""</Text>
-			<Text id="AttackTargetAck">			"\"Da! Target acquired\""</Text>
-			<Text id="CancelAttackAck">			"\"Da! Returning now\""</Text>
-			<Text id="FormUpAck">				"\"Da! Returning now\""</Text>
-			<Text id="IcantAttackFriends">		"\"Helena would not want me to\""</Text>
-			<Text id="IcantAttackMyself">		"\"Is joke?\""</Text>
-			<Text id="ImFarFromHome">			""</Text>
-			<Text id="ImTooFarFromHome">		""</Text>
-			<Text id="ImGoingHome">				"\"Noooooo!\""</Text>
-			<Text id="ImRepairingArmor">		"Volkov docks to repair his armor"</Text>
-			<Text id="MyArmorNeedsRepair">		"\"Please, my armor needs repair\""</Text>
-			<Text id="NiceShooting">			"\"Spasibo!\""</Text>
-			<Text id="NoTargetInRange">			"\"No targets!\""</Text>
-			<Text id="Status100Percent">		"\"No damage\""</Text>
-			<Text id="StatusAttackingTarget">	"\"Target acquired\""</Text>
-			<Text id="StatusGoingHome">			"\"Leave me alone!\""</Text>
-			<Text id="StatusRepairingArmor">	"\"Repairs almost finished\""</Text>
-			<Text id="StatusWaiting">			"\"Waiting, as ordered\""</Text>
-			<Text id="WaitAck">					"\"I will wait\""</Text>
-			<Text id="WatchYourTargets">		"\"Blya! Watch your fire!\""</Text>
-			<Text id="WingmanJoined">			""</Text>
-			<Text id="WingmanKilled">			"\"Helena, I will join you now!\""</Text>
-
-			<Text id="Intro">
-				(if (= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
-					(cat
-						"As the crowd breaks up, a tall man in a faded flight suit walks up to you:\n\n"
-						"\"My name is Volkov. You are going to the Core, is true? "
-						"I also want to go and I would fly with you, if you're willing.\""
-						)
-					(cat
-						"As the crowd breaks up, a tall man in a faded flight suit walks up to you:\n\n"
-						"\"My name is Volkov. You are leaving the system, is true? "
-						"I also want to go and I would fly with you, if you're willing.\""
-						)
-					)
-			</Text>
-			<Text id="AcceptReply">
-				(cat
-					"Volkov nods his head, more in relief than in joy.\n\n"
-					"\"Good. I will see you out there!\""
-					)
-			</Text>
-			<Text id="DeclineReply">
-				(cat
-					"Volkov grimaces in disappointment and a profound grief fills his eyes. "
-					"He begins to plead, but then turns away in resignation. As he walks away he "
-					"whispers to himself: \"Helena...\" And then he is gone."
-					)
-			</Text>
-		</Language>
-		
-		<Events>
-			<GetGlobalAchievements>
-				(block (theList status)
-				(setq status (typGetGlobalData &scWolfenVolkov; "status"))
-
-					(if status
-						(setq theList (list
-							(list
-								(switch
-									(eq status 'joined) "Joined by Volkov"
-									(eq status 'declined) "Declined Volkov's company"
-									(eq status 'destroyed) "Lost Volkov"
-									(eq status 'destroyedByPlayer) "Killed Volkov"
-									(eq status 'returnedHome) "Allowed Volkov to find his wife"
-									(cat "ERROR: Volkov status: " status)
-									)
-								Nil
-								"achievements &amp; regrets"
-								)
-							))
-						)
-						
-					theList
-					)
-			</GetGlobalAchievements>
-			
-			<OnCreate>
-				(block (shieldEnhance armorEnhance)
-					; Call base class
-					(typFireObjEvent &baStdWingmanBase; gSource "OnCreate")
-					
-					; Add a random enhancements to Volkov's stuff
-					(setq shieldEnhance (random '(0x0102 0x0105 0x0A28 0x0A38)))
-					(setq armorEnhance (random '(0x0103 0x0104 0x0105 0x0200 0x0705)))
-					(objEnumItems gSource "aswI" theItem
-						(switch
-							(eq (itmGetType theItem) &itClass5Deflector;)
-								(shpEnhanceItem gSource theItem shieldEnhance)
-
-							(eq (itmGetType theItem) &itAdvancedReactiveArmor;)
-								(shpEnhanceItem gSource theItem armorEnhance)
-							)
-						)
-					)
-			</OnCreate>
-			
-			<OrderJoinHelena>
-				(block Nil
-					(shpCancelOrders gSource)
-					(shpOrder gSource 'dock aTargetObj)
-					(shpOrder gSource 'wait)
-
-					(objSetData gSource "behavior" 'goingHome)
-					(objSendMessage gPlayerShip gSource (objTranslate gSource 'ImGoingHome))
-					)
-			</OrderJoinHelena>
-		</Events>
 	</ShipClass>
 
 	<!-- Helena Volkov
@@ -191,6 +56,10 @@
 							'volkovLeft				= Volkov has left with Helena's body
 
 	volkov:				Volkov's ship
+
+	LATER: This assumes that Volkov's ship has the "volkov" attribute, but if
+		Volkov changes ships, then this is not guaranteed. A better method would
+		be to search of the character (chVolkov).
 	
 	-->
 
@@ -359,5 +228,126 @@
 			</Text>
 		</Language>
 	</StationType>
+
+<!-- BEHAVIOR -->
+
+	<Type unid="&chVolkov;"
+			inherit=	"&baStdWingmanBase;">
+
+		<Language>
+			<Text id="ArmorRepaired">			"\"Good! Armor is repaired\""</Text>
+			<Text id="AttackTargetAck">			"\"Da! Target acquired\""</Text>
+			<Text id="CancelAttackAck">			"\"Da! Returning now\""</Text>
+			<Text id="FormUpAck">				"\"Da! Returning now\""</Text>
+			<Text id="IcantAttackFriends">		"\"Helena would not want me to\""</Text>
+			<Text id="IcantAttackMyself">		"\"Is joke?\""</Text>
+			<Text id="ImFarFromHome">			""</Text>
+			<Text id="ImTooFarFromHome">		""</Text>
+			<Text id="ImGoingHome">				"\"Noooooo!\""</Text>
+			<Text id="ImRepairingArmor">		"Volkov docks to repair his armor"</Text>
+			<Text id="MyArmorNeedsRepair">		"\"Please, my armor needs repair\""</Text>
+			<Text id="NiceShooting">			"\"Spasibo!\""</Text>
+			<Text id="NoTargetInRange">			"\"No targets!\""</Text>
+			<Text id="Status100Percent">		"\"No damage\""</Text>
+			<Text id="StatusAttackingTarget">	"\"Target acquired\""</Text>
+			<Text id="StatusGoingHome">			"\"Leave me alone!\""</Text>
+			<Text id="StatusRepairingArmor">	"\"Repairs almost finished\""</Text>
+			<Text id="StatusWaiting">			"\"Waiting, as ordered\""</Text>
+			<Text id="WaitAck">					"\"I will wait\""</Text>
+			<Text id="WatchYourTargets">		"\"Blya! Watch your fire!\""</Text>
+			<Text id="WingmanJoined">			""</Text>
+			<Text id="WingmanKilled">			"\"Helena, I will join you now!\""</Text>
+
+			<Text id="Intro">
+				(if (= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+					(cat
+						"As the crowd breaks up, a tall man in a faded flight suit walks up to you:\n\n"
+						"\"My name is Volkov. You are going to the Core, is true? "
+						"I also want to go and I would fly with you, if you're willing.\""
+						)
+					(cat
+						"As the crowd breaks up, a tall man in a faded flight suit walks up to you:\n\n"
+						"\"My name is Volkov. You are leaving the system, is true? "
+						"I also want to go and I would fly with you, if you're willing.\""
+						)
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(cat
+					"Volkov nods his head, more in relief than in joy.\n\n"
+					"\"Good. I will see you out there!\""
+					)
+			</Text>
+			<Text id="DeclineReply">
+				(cat
+					"Volkov grimaces in disappointment and a profound grief fills his eyes. "
+					"He begins to plead, but then turns away in resignation. As he walks away he "
+					"whispers to himself: \"Helena...\" And then he is gone."
+					)
+			</Text>
+		</Language>
+		
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList status)
+				(setq status (typGetGlobalData &chVolkov; "status"))
+
+					(if status
+						(setq theList (list
+							(list
+								(switch
+									(eq status 'joined) "Joined by Volkov"
+									(eq status 'declined) "Declined Volkov's company"
+									(eq status 'destroyed) "Lost Volkov"
+									(eq status 'destroyedByPlayer) "Killed Volkov"
+									(eq status 'returnedHome) "Allowed Volkov to find his wife"
+									(cat "ERROR: Volkov status: " status)
+									)
+								Nil
+								"achievements &amp; regrets"
+								)
+							))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+			
+			<OnCreate>
+				(block (shieldEnhance armorEnhance)
+					; Call base class
+					(typFireObjEvent &baStdWingmanBase; gSource "OnCreate")
+					
+					; Add a random enhancements to Volkov's stuff
+					(setq shieldEnhance (random '(0x0102 0x0105 0x0A28 0x0A38)))
+					(setq armorEnhance (random '(0x0103 0x0104 0x0105 0x0200 0x0705)))
+					(objEnumItems gSource "aswI" theItem
+						(switch
+							(eq (itmGetType theItem) &itClass5Deflector;)
+								(shpEnhanceItem gSource theItem shieldEnhance)
+
+							(eq (itmGetType theItem) &itAdvancedReactiveArmor;)
+								(shpEnhanceItem gSource theItem armorEnhance)
+							)
+						)
+					)
+			</OnCreate>
+
+			<OrderCreateShip>
+				(sysCreateShip &scWolfenVolkov; (@ gData 'pos) &svCommonwealth;)
+			</OrderCreateShip>
+			
+			<OrderJoinHelena>
+				(block Nil
+					(shpCancelOrders gSource)
+					(shpOrder gSource 'dock aTargetObj)
+					(shpOrder gSource 'wait)
+
+					(objSetData gSource "behavior" 'goingHome)
+					(objSendMessage gPlayerShip gSource (objTranslate gSource 'ImGoingHome))
+					)
+			</OrderJoinHelena>
+		</Events>
+	</Type>
 	
 </TranscendenceModule>

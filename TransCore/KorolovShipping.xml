@@ -1053,8 +1053,8 @@
 							(if reward (objAddItem gPlayerShip reward))
 							(scrExitScreen gScreen)
 
-							(if (and (= 4 level) (not (typGetGlobalData &scWolfenVolkov; 'status)))
-								(scrShowScreen gScreen &dsRPGWingmanEncounter; {wingman: &scWolfenVolkov;})
+							(if (and (= 4 level) (not (typGetGlobalData &chVolkov; 'status)))
+								(scrShowScreen gScreen &dsRPGWingmanEncounter; {wingman: &chVolkov;})
 								)
 							)
 					</Action>
