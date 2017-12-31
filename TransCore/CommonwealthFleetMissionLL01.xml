@@ -320,26 +320,23 @@
 			type=				"freighter"
 
 			attributes=			"juanCarlos"
+			inherit=			"&scEI500Stock;"
 			character=			"&unidJuanCarlos;"
-
-			mass=				"150"
-			cargoSpace=			"200"
-			thrustRatio=		"2.0"
-			maxSpeed=			"18"
-
-			leavesWreck=		"75"
 
 			dockingPorts=		"4"			
 			dockScreen=			"&dsRPGCharacterDefault;"
+			leavesWreck=		"75"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itAdvancedCeralloyArmor;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itAdvancedCeralloyArmor;" areaSet="3,4" />
-			<ArmorSection start="135" span="90" armorID="&itAdvancedCeralloyArmor;" areaSet="1,6" />
-			<ArmorSection start="45"  span="90" armorID="&itAdvancedCeralloyArmor;" areaSet="7,13" />
-		</Armor>
+		<Names definiteArticle="true">freighter Forking Paths</Names>
 
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itAdvancedCeralloyArmor;"
+			count=				"4"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itOmniParticleCannon;"/>
 			<Device deviceID="&itR1Deflector;"/>
@@ -349,25 +346,13 @@
 			<Device deviceID="&it100MWReactor;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"4.5"
-			rotationAccel=		"0.5"
-			/>
-
 		<Items>
 			<Item count="5d12" item="&itHeliumAssembly;"/>
 			<Lookup count="1d3" table="&trConsumables2;"/>
 			<Lookup count="1"	table="&trMinorItem2;"/>
 		</Items>
 
-		<Image imageID="&rsEI500FreighterHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-144"	posRadius="28"	posZ="0"	rotation="180"/>
-		</Effects>
-
-		<Names definiteArticle="true">freighter Forking Paths</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"10"
