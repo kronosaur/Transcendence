@@ -524,6 +524,7 @@
     <Xml Include="HumanSpaceVol01.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="HumanTech.xml" />
     <Xml Include="Jenna.xml" />
     <Xml Include="KobolWarlords.xml" />
     <Xml Include="KorolovFreighters.xml" />

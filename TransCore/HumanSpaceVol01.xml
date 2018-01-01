@@ -1549,6 +1549,7 @@
 	<!ENTITY rsItems9					"0x0010002A">
 	<!ENTITY rsItems10					"0x0010002B">
 	<!ENTITY trStdTreasure				"0x0010002C">
+	<!ENTITY baHumanTechShip			"0x0010002D">
 	
 	<!-- 0030-003F SISTERS OF DOMINA -->
 	
@@ -1811,6 +1812,7 @@
 	<!ENTITY scFionaScorpion			"0x00100236">
 	<!ENTITY scStormhoundAquila			"0x00100237">
 	<!ENTITY unidCaptainHelios			"0x00100238">
+	<!ENTITY chVolkov					"0x00100239">
 	
 	<!-- 0250-026F COMMONWEALTH MINING -->
 	
@@ -1840,7 +1842,6 @@
 	<!ENTITY baCharonBuster				"0x0010029A">
 	<!ENTITY dsKorolovEscortList		"0x0010029B">
 	<!ENTITY rsEI100HD					"0x0010029C">
-	<!ENTITY chVolkov					"0x0010029D">
 
 	<!-- 02B0-02CF COMMONWEALTH MILITIA -->
 
@@ -2056,6 +2057,7 @@
 	<Module filename="HuariMission01.xml"/>
 	<Module filename="HuariMission02.xml"/>
 	<Module filename="HuariMission03.xml"/>
+	<Module filename="HumanTech.xml"/>
 	<Module filename="Iocrym.xml"/>
 	<Module filename="KobolWarlords.xml"/>
 	<Module filename="KorolovFreighters.xml"/>

@@ -114,6 +114,7 @@
 			defaultSovereign=	"&svCommonwealth;"
 
 			attributes=			"commonwealth, genericClass"
+			inherit=			"&baHumanTechShip;"
 			>
 
 		<!-- Hull -->
@@ -169,11 +170,48 @@
 		<!-- Image and Effects -->
 
 		<Image imageID="&rsSapphireYachtHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"	rotationCount="120"/>
+		<HeroImage imageID="&rsZubrinLarge;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
 			<Effect type="thrustMain"		posAngle="-160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
 		</Effects>
+
+		<!-- Player Settings -->
+
+		<PlayerSettings>
+			<ArmorDisplay>
+				<ShipImage imageID="&rsArmorHUDShip_Sapphire;" imageWidth="136" imageHeight="136"/>
+				
+				<ArmorSection name="forward"
+						segment="0"
+						imageID="&rsZubrinArmor;" 
+						imageX="0" imageY="0" imageWidth="52" imageHeight="29"
+						destX="42" destY="15" hpX="55" hpY="14"
+						nameY="8" nameBreakWidth="200" nameDestX="0" nameDestY="10" />
+
+				<ArmorSection name="starboard"
+						segment="3"
+						imageID="&rsZubrinArmor;" 
+						imageX="52" imageY="0" imageWidth="22" imageHeight="59"
+						destX="92" destY="45" hpX="95" hpY="60"
+						nameY="30" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
+
+				<ArmorSection name="port"
+						segment="1"
+						imageID="&rsZubrinArmor;" 
+						imageX="142" imageY="0" imageWidth="22" imageHeight="59"
+						destX="22" destY="45" hpX="15" hpY="60"
+						nameY="52" nameBreakWidth="200" nameDestX="0" nameDestY="8" />
+
+				<ArmorSection name="aft"
+						segment="2"
+						imageID="&rsZubrinArmor;" 
+						imageX="74" imageY="0" imageWidth="68" imageHeight="14"
+						destX="34" destY="103" hpX="55" hpY="105"
+						nameY="74" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
+			</ArmorDisplay>
+		</PlayerSettings>
 
 		<!-- AI and Behavior -->
 
@@ -307,6 +345,8 @@
 			manufacturer=		"Earth Industries"
 			class=				"EI500"
 			type=				"freighter"
+
+			inherit=			"&baHumanTechShip;"
 			>
 
 		<!-- Hull -->
@@ -359,11 +399,48 @@
 		<!-- Image and Effects -->
 		
 		<Image imageID="&rsEI500FreighterHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120"/>
+		<HeroImage imageID="&rsEI100XLarge;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"/>
 			<Effect type="thrustMain"		posAngle="-144"	posRadius="28"	posZ="0"	rotation="180"/>
 		</Effects>
+
+		<!-- Player Settings -->
+
+		<PlayerSettings>
+			<ArmorDisplay>
+				<ShipImage imageID="&rsArmorHUDShip_EI500;" imageWidth="136" imageHeight="136"/>
+				
+				<ArmorSection name="forward"
+						segment="0"
+						imageID="&rsEI100XArmor;" 
+						imageX="0" imageY="0" imageWidth="90" imageHeight="9"
+						destX="23" destY="32" hpX="55" hpY="27"
+						nameY="8" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
+
+				<ArmorSection name="starboard"
+						segment="3"
+						imageID="&rsEI100XArmor;" 
+						imageX="90" imageY="0" imageWidth="9" imageHeight="56"
+						destX="104" destY="41" hpX="98" hpY="60"
+						nameY="30" nameBreakWidth="275" nameDestX="0" nameDestY="8" />
+
+				<ArmorSection name="port"
+						segment="1"
+						imageID="&rsEI100XArmor;" 
+						imageX="189" imageY="0" imageWidth="9" imageHeight="56"
+						destX="23" destY="41" hpX="12" hpY="60"
+						nameY="52" nameBreakWidth="200" nameDestX="0" nameDestY="8" />
+
+				<ArmorSection name="aft"
+						segment="2"
+						imageID="&rsEI100XArmor;" 
+						imageX="99" imageY="0" imageWidth="90" imageHeight="9"
+						destX="23" destY="97" hpX="55" hpY="97"
+						nameY="74" nameBreakWidth="200" nameDestX="0" nameDestY="8" />
+			</ArmorDisplay>
+		</PlayerSettings>
 
 		<!-- AI and Behavior -->
 
@@ -478,6 +555,7 @@
 			defaultSovereign=	"&svCommonwealth;"
 
 			attributes=			"commonwealth, genericClass"
+			inherit=			"&baHumanTechShip;"
 			>
 
 		<!-- Hull -->
@@ -539,12 +617,49 @@
 		<!-- Image and Effects -->
 
 		<Image imageID="&rsWolfenGunshipHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120"/>
+		<HeroImage imageID="&rsWolfenLarge;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="158"	posRadius="20"	posZ="0"	rotation="180"/>
 			<Effect type="thrustMain"		posAngle="-180"	posRadius="18"	posZ="-5"	rotation="180"/>
 			<Effect type="thrustMain"		posAngle="-158"	posRadius="20"	posZ="0"	rotation="180"/>
 		</Effects>
+
+		<!-- Player Settings -->
+
+		<PlayerSettings>
+			<ArmorDisplay>
+				<ShipImage imageID="&rsArmorHUDShip_Wolfen;" imageWidth="136" imageHeight="136"/>
+				
+				<ArmorSection name="forward"
+						segment="0"
+						imageID="&rsWolfenArmor;" 
+						imageX="0" imageY="0" imageWidth="52" imageHeight="15"
+						destX="42" destY="19" hpX="55" hpY="18"
+						nameY="8" nameBreakWidth="200" nameDestX="0" nameDestY="10" />
+
+				<ArmorSection name="starboard"
+						segment="3"
+						imageID="&rsWolfenArmor;" 
+						imageX="75" imageY="0" imageWidth="23" imageHeight="69"
+						destX="94" destY="34" hpX="97" hpY="60"
+						nameY="30" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
+
+				<ArmorSection name="port"
+						segment="1"
+						imageID="&rsWolfenArmor;" 
+						imageX="52" imageY="0" imageWidth="23" imageHeight="69"
+						destX="19" destY="34" hpX="13" hpY="60"
+						nameY="52" nameBreakWidth="200" nameDestX="0" nameDestY="8" />
+
+				<ArmorSection name="aft"
+						segment="2"
+						imageID="&rsWolfenArmor;" 
+						imageX="0" imageY="75" imageWidth="52" imageHeight="16"
+						destX="42" destY="103" hpX="55" hpY="107"
+						nameY="74" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
+			</ArmorDisplay>
+		</PlayerSettings>
 
 		<!-- AI and Behavior -->
 

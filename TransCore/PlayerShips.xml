@@ -12,22 +12,8 @@
 			type=				"yacht"
 
 			attributes=			"00200000_PlayerShip, notStandard"
-			inherit=			"&scPlayerSapphireBase;"
+			inherit=			"&scSapphireYacht;"
 			characterClass=		"&unidPilgrimClass;"
-			   
-			size=				"31"
-			mass=				"30"
-			thrustRatio=		"6.6"
-			maxSpeed=			"20"
-			cargoSpace=			"50"
-
-			maxCargoSpace=		"150"
-			maxDevices=			"8"
-
-			stdArmor=			"3000"
-			maxArmor=			"6000"
-			maxArmorSpeed=		"18"
-			minArmorSpeed=		"22"
 			>
 
 		<!-- Configuration -->
@@ -38,55 +24,24 @@
 			/>
 		
 		<Devices>
-			<DeviceSlot criteria="w +property:omnidirectional;" posAngle="0" posRadius="13"/>
-			<DeviceSlot criteria="w" posAngle="0" posRadius="22"/>
-			
 			<Device deviceID="&itRecoillessCannon;"/>
 			<Device deviceID="&itClass1Deflector;"/>
 			<Device deviceID="&it15MWReactor;"/>
 		</Devices>
 		
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"1.5"
-			rotationStopAccel=	"9.0"
-			/>
-
 		<Items>
 			<Item count="4d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<!-- Image and Effects -->
-		
-		<Image imageID="&rsSapphireYachtHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"	rotationCount="120"/>
-		
-		<Effects>
-			<Effect type="thrustMain"		posAngle="160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
-			<Effect type="thrustMain"		posAngle="-160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
-			<Effect type="rotateRight"		posAngle="12"	posRadius="20"	posZ="0"	rotation="90"/>
-			<Effect type="rotateRight"		posAngle="-130"	posRadius="18"	posZ="0"	rotation="270"/>
-			<Effect type="rotateLeft"		posAngle="-12"	posRadius="20"	posZ="0"	rotation="270"/>
-			<Effect type="rotateLeft"		posAngle="130"	posRadius="18"	posZ="0"	rotation="90"/>
-		</Effects>
-	
-		<!-- AI and Behavior -->
-		
-		<AISettings
-			fireRateAdj=		"30"
-			fireAccuracy=		"90"
-			perception=			"4"
-			/>
-		
 		<!-- Player Settings -->
 		
 		<PlayerSettings
 			desc=				"The versatile Sapphire yacht strikes a good balance between a gunship and a freighter."
 			sortOrder=			"10"
-			largeImage=			"&rsZubrinLarge;"
 			initialClass=		"true"
 			startingCredits=	"10d100+1500"
 			/>
-			
+		
 	</ShipClass>
 
 	<!-- Player Ship: EI500 Freighter -->
@@ -97,26 +52,8 @@
 			type=				"freighter"
 
 			attributes=			"00200000_PlayerShip, notStandard"
-			inherit=			"&scPlayerEI500Base;"
+			inherit=			"&scEI500Stock;"
 			characterClass=		"&unidPilgrimClass;"
-
-			size=				"27"
-			mass=				"150"
-			thrustRatio=		"1.5"
-			maxSpeed=			"18"
-			cargoSpace=			"50"
-
-			reactorPower=		"250"
-			fuelCapacity=		"60000"
-			drivePowerUse=		"20"
-			maxCargoSpace=		"200"
-			maxDevices=			"10"
-			maxWeapons=			"2"
-
-			stdArmor=			"5000"
-			maxArmor=			"20000"
-			maxArmorSpeed=		"16"
-			minArmorSpeed=		"19"
 			>
 
 		<!-- Configuration -->
@@ -127,20 +64,11 @@
 			/>
 		
 		<Devices>
-			<DeviceSlot criteria="w +property:omnidirectional;" posAngle="0" posRadius="0"/>
-			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
-			<DeviceSlot criteria="c" cannotBeEmpty="true"/>
-			
 			<Device deviceID="&itOmniLaserCannon;"/>
 			<Device deviceID="&itClass1Deflector;"/>
 			<Device deviceID="&it25MWReactor;"/>
 			<Device deviceID="&itCargoHoldExpansion;"/>
 		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"4.5"
-			rotationAccel=		"3.0"
-			/>
 
 		<Items>
 			<Item count="6d6" item="&itHelium3FuelRod;"/>
@@ -157,37 +85,11 @@
 			</Table>
 		</Items>
 
-		<!-- Image and Effects -->
-		
-		<Image imageID="&rsEI500FreighterHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120"/>
-		
-		<Effects>
-			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-144"	posRadius="28"	posZ="0"	rotation="180"/>
-			<Effect type="rotateRight"		posAngle="60"	posRadius="20"	posZ="0"	rotation="120"/>
-			<Effect type="rotateRight"		posAngle="40"	posRadius="18"	posZ="0"	rotation="90"	sendToBack="*"/>
-			<Effect type="rotateRight"		posAngle="-130"	posRadius="28"	posZ="0"	rotation="270"	sendToBack="*"/>
-			<Effect type="rotateRight"		posAngle="-120"	posRadius="28"	posZ="0"	rotation="300"/>
-			<Effect type="rotateLeft"		posAngle="-60"	posRadius="20"	posZ="0"	rotation="240"/>
-			<Effect type="rotateLeft"		posAngle="-40"	posRadius="18"	posZ="0"	rotation="270"	sendToBack="*"/>
-			<Effect type="rotateLeft"		posAngle="130"	posRadius="28"	posZ="0"	rotation="90"	sendToBack="*"/>
-			<Effect type="rotateLeft"		posAngle="120"	posRadius="28"	posZ="0"	rotation="60"/>
-		</Effects>
-
-		<!-- AI and Behavior -->
-		
-		<AISettings
-			fireRateAdj=		"20"
-			fireAccuracy=		"85"
-			perception=			"4"
-			/>
-		
 		<!-- Player Settings -->
 		
 		<PlayerSettings
 			desc=				"The EI500 is slow and ungraceful, but its omnidirectional laser can hit even the fastest gunships. Six open slots for devices give you lots of upgrade flexibility."
 			sortOrder=			"10"
-			largeImage=			"&rsEI100XLarge;"
 			initialClass=		"true"
 			startingCredits=	"5d20+200"
 			/>
@@ -202,23 +104,8 @@
 			type=				"gunship"
 
 			attributes=			"00200000_PlayerShip, notStandard"
-			inherit=			"&scPlayerWolfenBase;"
+			inherit=			"&scWolfen;"
 			characterClass=		"&unidPilgrimClass;"
-			   
-			size=				"26"
-			mass=				"30"
-			thrustRatio=		"13"
-			maxSpeed=			"25"
-			cargoSpace=			"35"
-
-			drivePowerUse=		"20"
-			maxCargoSpace=		"100"
-			maxDevices=			"8"
-			maxNonWeapons=		"4"
-
-			stdArmor=			"6000"
-			maxArmor=			"12000"
-			maxArmorSpeed=		"22"
 			>
 
 		<!-- Configuration -->
@@ -229,54 +116,25 @@
 			/>
 		
 		<Devices>
-			<DeviceSlot criteria="p +property:omnidirectional;" posAngle="180" posRadius="4"/>
-			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
-			
 			<Device deviceID="&itDualLaserCannon;"/>
-			<Device deviceID="&itNAMIMissileLauncher;"/>
+			<Device deviceID="&itNAMIMissileLauncher;">
+				<Items>
+					<Item count="4d6" item="&itKM500Missile;"/>
+				</Items>
+			</Device>
 			<Device deviceID="&itClass2Deflector;"/>
 			<Device deviceID="&it10MWReactor;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"12.0"
-			rotationAccel=		"3.0"
-			rotationStopAccel=	"12.0"
-			/>
-
 		<Items>
 			<Item count="4d6" item="&itHelium3FuelRod;"/>
-			<Item count="4d6" item="&itKM100Missile;"/>
 		</Items>
-
-		<!-- Image and Effects -->
-		
-		<Image imageID="&rsWolfenGunshipHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120"/>
-		
-		<Effects>
-			<Effect type="thrustMain"		posAngle="158"	posRadius="20"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-180"	posRadius="18"	posZ="-5"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-158"	posRadius="20"	posZ="0"	rotation="180"/>
-			<Effect type="rotateRight"		posAngle="45"	posRadius="20"	posZ="0"	rotation="135"/>
-			<Effect type="rotateRight"		posAngle="-110"	posRadius="16"	posZ="0"	rotation="315"/>
-			<Effect type="rotateLeft"		posAngle="-45"	posRadius="20"	posZ="0"	rotation="225"/>
-			<Effect type="rotateLeft"		posAngle="110"	posRadius="16"	posZ="0"	rotation="45"/>
-		</Effects>
-
-		<!-- AI and Behavior -->
-		
-		<AISettings
-			fireRateAdj=		"30"
-			fireAccuracy=		"90"
-			perception=			"4"
-			/>
 
 		<!-- Player Settings -->
 		
 		<PlayerSettings
 			desc=				"Fast and deadly, the Wolfen is designed for combat. Though limited in cargo capacity, it has lots of room for more weapons."
 			sortOrder=			"20"
-			largeImage=			"&rsWolfenLarge;"
 			initialClass=		"true"
 			startingCredits=	"5d20+200"
 			/>

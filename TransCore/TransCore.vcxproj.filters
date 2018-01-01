@@ -690,5 +690,8 @@
     <Xml Include="RPGDockManagement.xml">
       <Filter>RPG Library</Filter>
     </Xml>
+    <Xml Include="HumanTech.xml">
+      <Filter>Human Space Library\Miscellaneous</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
