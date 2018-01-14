@@ -470,27 +470,34 @@
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
 				 
-			dockScreen=			"&dsDryDock;"
+			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, majorStation, populated"
+
+			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			canAttack=			"true"
 
 			level=				"5"
-			multiHull=			"true"
+			size=				"511"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"800"
+			multiHull=			"true"
 			regen=              "8"
 			shipRegen=			"8"
+
+			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, generic, human, majorStation, populated"
-			levelFrequency=		"uucuu r---- ----- ----- -----"
-			unique=				"inSystem"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="75"
 			>
 
-		<Image			imageID="&rsStations1;" imageX="256" imageY="0" imageWidth="224" imageHeight="224"/>
+		<!-- Encounter Info -->
+
+		<Encounter
+				levelFrequency=		"uucuu r---- ----- ----- -----"
+				locationCriteria=	"+planetary"
+				unique=				"inSystem"
+				enemyExclusionRadius="75"
+				/>
+
+		<!-- Trade and Items -->
 
 		<Trade currency="credit" max="50000" replenish="2500">
 			<Sell	criteria="*NU -illegal; -ID; -notForSale;"	priceAdj="100"  noDescription="true"/>
@@ -501,12 +508,17 @@
 			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 
+			<SellShip		criteria="s +commonwealth; L:3-7; +shipBroker; -military; -notStandard; -notForSale;" priceAdj="100"/>
+			<BuyShip		criteria="s L:1-7; -notForSale;" priceAdj="80"/>
+
 			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="3"/>
 		</Trade>
 		
 		<Items>
 			<RandomItem count="1d6" criteria="r -illegal; -military; -notForSale; -notStandard; L:3-7;"		levelFrequency="systemLevel:ru|c|curv"/>
 		</Items>
+
+		<!-- Ships and Defenses -->
 
 		<Ships>
 			<Lookup count="1d3" table="&tbCommDefenders;"/>
@@ -519,6 +531,49 @@
 				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
 			</Table>
 		</Reinforcements>
+
+		<!-- Image and Effects -->
+
+		<Image			imageID="&rsCommonwealthDryDock;" imageWidth="360" imageHeight="360" viewportRatio="0.065"/>
+
+		<DockingPorts
+				portCount="8"
+				portRadius="205"
+				portAngle="15"
+				/>
+
+		<!-- Dock Screens -->
+
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDescTranslate gScreen 'descWelcome)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionDockServices" default="1">
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
+							</Action>
+					
+							<Action id="actionBuyShip">
+								(scrShowScreen gScreen &dsRPGShipBroker; {
+									})
+							</Action>
+
+							<Action id="actionUndock" cancel="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+		<!-- Behavior & Language -->
 
 		<StaticData>
 			<NPCService>
@@ -536,19 +591,10 @@
 			<OnContractQuery>True</OnContractQuery>
 		</Events>
 
-		<DockingPorts>
-			<Port x="0"		y="100" />
-			<Port x="-80"	y="40" />
-			<Port x="80"	y="40" />
-			<Port x="-60"	y="-40" />
-			<Port x="60"	y="-40" />
+		<Language>
+			<Text id="descWelcome">Your ship is in dry dock.</Text>
+		</Language>
 
-			<Port x="0"		y="-105" />
-			<Port x="-130"	y="-17" />
-			<Port x="130"	y="-17" />
-			<Port x="-70"	y="105" />
-			<Port x="70"	y="105" />
-		</DockingPorts>
 	</StationType>
 
 	<!-- Commonwealth Medical Suburb -->
@@ -2851,37 +2897,6 @@
 		</Panes>
 	</DockScreen>
 
-	<!-- Dry dock screen -->
-
-	<DockScreen UNID="&dsDryDock;"
-			inherit=			"&dsDockScreenBase;"
-			>
-		
-		<Panes>
-			<Default>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descWelcome)
-				</OnPaneInit>
-
-				<Actions>
-					<Action id="actionDockServices" default="1">
-						(rpgDockServices gPlayerShip {
-							checkMilitaryID: True
-							})
-					</Action>
-					
-					<Action id="actionUndock" cancel="1">
-						<Exit/>
-					</Action>
-				</Actions>
-			</Default>
-		</Panes>
-		
-		<Language>
-			<Text id="descWelcome">Your ship is in dry dock.</Text>
-		</Language>
-	</DockScreen>
-	
 <!-- BASIC COMMONWEALTH RULES
 
 	PLAYER DATA
@@ -3153,7 +3168,7 @@
 	-->
 	
 	<Type unid="&baCommonwealthStation;"
-			inherit=			"&dsDockScreenBase;"
+			inherit=			"&unidCommonText;"
 			>
 		<Events>
 			<OnDestroy>
@@ -3189,6 +3204,7 @@
 
 	<Image UNID="&rsCommonwealthArmoredColony;"	bitmap="Resources\CommonwealthColonyArmored.jpg" bitmask="Resources\CommonwealthColonyArmoredMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsCommonwealthColony;"		bitmap="Resources\CommonwealthColony.jpg" bitmask="Resources\CommonwealthColonyMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsCommonwealthDryDock;"		bitmap="Resources\CommonwealthDryDock.jpg" bitmask="Resources\CommonwealthDryDockMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsCommonwealthMedicalColony;"	bitmap="Resources\CommonwealthMedicalColony.jpg" bitmask="Resources\CommonwealthMedicalColonyMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsCommonwealthResidentials;"	bitmap="Resources\CommonwealthResidentials.jpg" bitmask="Resources\CommonwealthResidentialsMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsCommonwealthSettlement;"	bitmap="Resources\CommonwealthSettlement.jpg" bitmask="Resources\CommonwealthSettlementMask.bmp"  loadOnUse="true"/>

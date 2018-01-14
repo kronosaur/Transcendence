@@ -260,12 +260,16 @@
 					(shipList Nil)
 					(extraList Nil)
 					(shipIDList Nil)
+
+					;	Make a list of all possible ship classes that we sell.
+
+					(allClasses (typFind "s +shipBroker; +isPlayerClass:true;"))
 					)
 					
 					;	Create a list of ships to sell
 					
 					(setq shipList
-						(map (typFind "s +isPlayerClass:true;") 'excludeNil theClass
+						(map allClasses 'excludeNil theClass
 							(switch
 						
 								;	Create a ship of this class

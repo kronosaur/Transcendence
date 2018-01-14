@@ -2950,6 +2950,38 @@
 
 	</ShipClass>
 
+	<!-- Dry dock screen -->
+
+	<DockScreen UNID="&dsDryDock;"
+			obsolete=			"40"
+			inherit=			"&dsDockScreenBase;"
+			>
+		
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descWelcome)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionDockServices" default="1">
+						(rpgDockServices gPlayerShip {
+							checkMilitaryID: True
+							})
+					</Action>
+					
+					<Action id="actionUndock" cancel="1">
+						<Exit/>
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+		
+		<Language>
+			<Text id="descWelcome">Your ship is in dry dock.</Text>
+		</Language>
+	</DockScreen>
+	
 	<Globals>
 		(block Nil
 			(setq intBuyItems (lambda (itemCount itemCost)

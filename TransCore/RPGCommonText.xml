@@ -8,6 +8,7 @@
 
 			<Text id="actionAccept">[A]ccept</Text>
 			<Text id="actionBuyItems">[B]uy Items</Text>
+			<Text id="actionBuyShip">[S]hip Broker</Text>
 			<Text id="actionCancel">[C]ancel</Text>
 			<Text id="actionCommoditiesExchange">[C]ommodities Exchange</Text>
 			<Text id="actionContinue">[C]ontinue</Text>

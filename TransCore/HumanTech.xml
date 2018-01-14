@@ -2,7 +2,8 @@
 
 <TranscendenceModule>
 
-	<ShipClass unid="&baHumanTechShip;">
+	<ShipClass unid="&baHumanTechShip;"
+			virtual="true">
 
 		<PlayerSettings>
 
