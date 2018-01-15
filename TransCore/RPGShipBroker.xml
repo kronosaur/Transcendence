@@ -263,13 +263,17 @@
 
 					;	Make a list of all possible ship classes that we sell.
 
-					(allClasses (typFind "s +shipBroker; +isPlayerClass:true;"))
+					(allClasses (typFind "s +shipBroker;"))
+
+					;	Filter out any ship classes that we do not sell
+
+					(classesForSale (filter allClasses theClass (objGetShipSellPrice sellerObj { shipClass:theClass })))
 					)
 					
 					;	Create a list of ships to sell
 					
 					(setq shipList
-						(map allClasses 'excludeNil theClass
+						(map classesForSale 'excludeNil theClass
 							(switch
 						
 								;	Create a ship of this class
