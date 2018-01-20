@@ -173,7 +173,7 @@
 	
 	<DockScreen unid="&dsRPGDockServices;"
 			inherit=			"&dsRPGDockServicesBase;"
-			backgroundID=		"none"
+			XbackgroundID=		"none"
 			nestedScreen=		"true"
 			>
 		<InitialPane>
@@ -205,18 +205,32 @@
 				)
 		</InitialPane>
 		
-		<OnScreenInit>
-			(block ()
-				;	Background
-						
-				(rpgSetShipStatsDisplay gPlayerShip { })
-				)
-		</OnScreenInit>
-		
+		<Display type="detailsPane"
+				>
+			<OnDisplayInit>
+				(block (
+					(shipObj gPlayerShip)
+					(shipClass (objGetType shipObj))
+					)
+					{
+					largeIcon: (shpGetImageDesc shipClass { type:'schematic })
+					details: 
+						(or (objFireEvent shipObj 'GetShipDetails { })
+							(rpgGetShipDetails shipObj { noDevices:True })
+							)
+
+					shipObj: shipObj
+					}
+					)
+			</OnDisplayInit>
+		</Display>
+
+		<!--
 		<Display>
 			<Text id="leftCol"	left="0" right="0" top="280" bottom="0" align="left" font="Medium" color="#daebff"/>
 			<Text id="rightCol"	left="0" right="0" top="280" bottom="0" align="right" font="Medium" color="#daebff"/>
 		</Display>
+		-->
 		
 		<Panes>
 			<Default>

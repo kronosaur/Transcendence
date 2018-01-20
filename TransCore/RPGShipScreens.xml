@@ -8,6 +8,26 @@
 			name=				"Ship's Interior"
 			>
 
+		<Display type="detailsPane"
+				>
+			<OnDisplayInit>
+				(block (
+					(shipObj gPlayerShip)
+					(shipClass (objGetType shipObj))
+					)
+					{
+					largeIcon: (shpGetImageDesc shipClass { type:'schematic })
+					details: 
+						(or (objFireEvent shipObj 'GetShipDetails { })
+							(rpgGetShipDetails shipObj { noDevices:True })
+							)
+
+					shipObj: shipObj
+					}
+					)
+			</OnDisplayInit>
+		</Display>
+
 		<Panes>
 			<Default
 					desc=	"You are inside the main compartment of your ship. A hatch in front of you opens into the cargo hold. To the side there is a small ladder that leads to the reactor and the ship's engines.">

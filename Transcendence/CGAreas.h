@@ -6,6 +6,146 @@
 #define ITEM_LIST_AREA_PAGE_UP_ACTION			(0xffff0001)
 #define ITEM_LIST_AREA_PAGE_DOWN_ACTION			(0xffff0002)
 
+class CDetailList
+	{
+	public:
+		CDetailList (const CVisualPalette &VI) : m_VI(VI)
+			{ }
+
+		void Format (const RECT &rcRect, int *retcyHeight = NULL);
+		void Load (ICCItem *pDetails);
+		void Paint (CG32bitImage &Dest) const;
+        inline void SetColor (CG32bitPixel rgbColor) { m_rgbTextColor = rgbColor; }
+		
+	private:
+		struct SDetailEntry
+			{
+			CString sTitle;
+			CG32bitImage *pIcon = NULL;
+			RECT rcIcon = { 0, 0, 0, 0 };
+			CRTFText Desc;
+
+			bool bAlignRight = false;
+			RECT rcRect = { 0, 0, 0, 0 };
+			int cyText = 0;
+			int cyRect = 0;
+			};
+
+		static const int DETAIL_ICON_HEIGHT = 48;
+		static const int DETAIL_ICON_WIDTH = 48;
+		static const int SPACING_X = 8;
+		static const int SPACING_Y = 8;
+
+		const CVisualPalette &m_VI;
+        CG32bitPixel m_rgbTextColor = CG32bitPixel(255, 255, 255);
+		TArray<SDetailEntry> m_List;
+	};
+
+class CGCarouselArea : public AGArea
+	{
+	public:
+		CGCarouselArea (const CVisualPalette &VI);
+
+		void CleanUp (void);
+		inline int GetCursor (void) { return (m_pListData ? m_pListData->GetCursor() : -1); }
+		ICCItem *GetEntryAtCursor (void);
+		inline IListData *GetList (void) const { return m_pListData; }
+		inline CSpaceObject *GetSource (void) { return (m_pListData ? m_pListData->GetSource() : NULL); }
+		inline bool IsCursorValid (void) const { return (m_pListData ? m_pListData->IsCursorValid() : false); }
+		bool MoveCursorBack (void);
+		bool MoveCursorForward (void);
+		inline void ResetCursor (void) { if (m_pListData) m_pListData->ResetCursor(); Invalidate(); }
+        inline void SetBackColor (CG32bitPixel rgbColor) { m_rgbBackColor = rgbColor; }
+        inline void SetColor (CG32bitPixel rgbColor) { m_rgbTextColor = rgbColor; }
+		inline void SetCursor (int iIndex) { if (m_pListData) m_pListData->SetCursor(iIndex); Invalidate(); }
+		void SetList (CCodeChain &CC, ICCItem *pList);
+		inline void SyncCursor (void) { if (m_pListData) m_pListData->SyncCursor(); Invalidate(); }
+
+		//	AGArea virtuals
+
+		virtual bool LButtonDown (int x, int y) override;
+		virtual void MouseLeave (void) override;
+		virtual void MouseMove (int x, int y) override;
+		virtual void MouseWheel (int iDelta, int x, int y, DWORD dwFlags) override;
+		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect) override;
+		virtual void Update (void) override;
+
+	private:
+		static const int BORDER_RADIUS = 4;
+		static const int DEFAULT_ICON_HEIGHT = 64;
+		static const int DEFAULT_ICON_WIDTH = 64;
+		static const int SPACING_X = 8;
+		static const int SPACING_Y = 8;
+		static const int SELECTION_WIDTH = 2;
+		static const int SELECTOR_HEIGHT = DEFAULT_ICON_HEIGHT + 40;
+		static const int SELECTOR_WIDTH = 140;
+		static const int SELECTOR_AREA_HEIGHT = SELECTOR_HEIGHT + SPACING_Y;
+		static const int MOUSE_SCROLL_SENSITIVITY =	30;
+		static const int SELECTOR_PADDING_TOP =	2;
+		static const int SELECTOR_PADDING_LEFT = 4;
+		static const int SELECTOR_PADDING_RIGHT = 4;
+		static const int LARGE_ICON_HEIGHT = 320;
+		static const int LARGE_ICON_WIDTH = 320;
+		static const int DETAIL_ICON_HEIGHT = 48;
+		static const int DETAIL_ICON_WIDTH = 48;
+
+		int FindSelector (int x) const;
+		void PaintContent (CG32bitImage &Dest, const RECT &rcRect) const;
+		void PaintSelector (CG32bitImage &Dest, const RECT &rcRect, bool bSelected) const;
+
+		TUniquePtr<IListData> m_pListData;
+		int m_iOldCursor = -1;							//	Cursor pos
+
+		const CVisualPalette &m_VI;
+        CG32bitPixel m_rgbTextColor = CG32bitPixel(255, 255, 255);
+        CG32bitPixel m_rgbBackColor = CG32bitPixel(0, 0, 0);
+		CG32bitPixel m_rgbDisabledText = CG32bitPixel(128,128,128);
+		int m_xOffset = 0;								//	Painting offset for smooth scroll
+		int m_xFirst = 0;								//	coord of first row relative to list rect
+		int m_cxSelector = SELECTOR_WIDTH;				//	Width of selector cell
+		int m_cySelector = SELECTOR_HEIGHT;				//	Height of selector cell
+		int m_cySelectorArea = SELECTOR_AREA_HEIGHT;	//	Height of selector area
+		int m_cxIcon = DEFAULT_ICON_WIDTH;				//	Icon width
+		int m_cyIcon = DEFAULT_ICON_HEIGHT;				//	Icon height
+		int m_cxLargeIcon = LARGE_ICON_WIDTH;			//	Large content icon
+		int m_cyLargeIcon = LARGE_ICON_HEIGHT;			//	Large content icon
+		Metric m_rIconScale = 1.0;						//	Icon scale
+	};
+
+class CGDetailsArea : public AGArea
+	{
+	public:
+		CGDetailsArea (const CVisualPalette &VI);
+
+		void CleanUp (void);
+		inline ICCItem *GetData (void) const { return m_pData; }
+        inline void SetBackColor (CG32bitPixel rgbColor) { m_rgbBackColor = rgbColor; }
+        inline void SetColor (CG32bitPixel rgbColor) { m_rgbTextColor = rgbColor; }
+		inline void SetData (CCodeChain &CC, ICCItem *pList) { m_pData = pList; }
+
+		//	AGArea virtuals
+
+		virtual void Paint (CG32bitImage &Dest, const RECT &rcRect) override;
+
+	private:
+		static const int BORDER_RADIUS = 4;
+		static const int SPACING_X = 8;
+		static const int SPACING_Y = 8;
+		static const int LARGE_ICON_HEIGHT = 320;
+		static const int LARGE_ICON_WIDTH = 320;
+		static const int DETAIL_ICON_HEIGHT = 48;
+		static const int DETAIL_ICON_WIDTH = 48;
+
+		ICCItemPtr m_pData;
+
+		const CVisualPalette &m_VI;
+        CG32bitPixel m_rgbTextColor = CG32bitPixel(255, 255, 255);
+        CG32bitPixel m_rgbBackColor = CG32bitPixel(0, 0, 0);
+		CG32bitPixel m_rgbDisabledText = CG32bitPixel(128,128,128);
+		int m_cxLargeIcon = LARGE_ICON_WIDTH;			//	Large content icon
+		int m_cyLargeIcon = LARGE_ICON_HEIGHT;			//	Large content icon
+	};
+
 class CGDrawArea : public AGArea
 	{
 	public:

@@ -35,19 +35,37 @@
 				)
 		</OnScreenInit>
 		
-		<Display>
-			<Text id="leftCol"	left="0" right="0" top="280" bottom="0" align="left" font="Medium" color="#daebff"/>
-			<Text id="rightCol"	left="0" right="0" top="280" bottom="0" align="right" font="Medium" color="#daebff"/>
+		<Display type="carouselSelector"
+				>
+			<OnDisplayInit>
+				(map (objGetData gSource "shipBroker:list") shipID
+					(block (
+						(shipObj (objGetObjByID shipID))
+						(shipClass (objGetType shipObj))
+						)
+						{
+						title: (objGetName shipObj 'generic)
+						icon: (shpGetImageDesc shipClass { rotation:0 })
+
+						largeIcon: (shpGetImageDesc shipClass { type:'schematic })
+						details: 
+							(or (objFireEvent shipObj 'GetShipDetails { })
+								(rpgGetShipDetails shipObj { })
+								)
+
+						shipObj: shipObj
+						}
+						)
+					)
+			</OnDisplayInit>
 		</Display>
-		
+
 		<Panes>
 			<Default>
 				<OnPaneInit>
 					(block (
-						(shipIDList (objGetData gSource "shipBroker:list"))
-						(selIndex (scrGetData gScreen 'selIndex))
-						(selData (scrGetData gScreen 'selData))
-						(selObj (objGetObjByID selData))
+						(theEntry (scrGetListEntry gScreen))
+						(selObj (@ theEntry 'shipObj))
 						(currency (objGetProperty gSource 'currency))
 						
 						;	Compute some prices
@@ -64,13 +82,6 @@
 						
 						(canBuy Nil)
 						)
-						
-						;	Set the stats. We let the ship class handle it, but if it doesn't, we set
-						;	up a default.
-
-						(if (not (objFireEvent selObj 'OnSetShipStatusDisplay { }))
-							(rpgSetShipStatsDisplay selObj { })
-							)
 						
 						;	Set the description
 						
@@ -107,8 +118,6 @@
 						;	Initialize actions
 						
 						(scrEnableAction gScreen 'actionTradeShip canBuy)
-						(scrShowAction gScreen 'actionNextShip (ls selIndex (- (count shipIDList) 1)))
-						(scrShowAction gScreen 'actionPrevShip (!= selIndex 0))
 						)
 				</OnPaneInit>
 				
@@ -186,42 +195,6 @@
 							(scrExitScreen gScreen)
 							)
 					</Action>
-					<Action id="actionNextShip"	minor="true">
-						(block (
-							(shipIDList (objGetData gSource "shipBroker:list"))
-							(selIndex (scrGetData gScreen 'selIndex))
-							(selData (scrGetData gScreen 'selData))
-							)
-						
-							(if (ls selIndex (- (count shipIDList) 1))
-								(block ()
-									(setq selIndex (+ selIndex 1))
-									(scrSetData gScreen 'selIndex selIndex)
-									(scrSetData gScreen 'selData (@ shipIDList selIndex))
-									
-									(scrShowPane gScreen "Default")
-									)
-								)
-							)
-					</Action>
-					<Action id="actionPrevShip" minor="true">
-						(block (
-							(shipIDList (objGetData gSource "shipBroker:list"))
-							(selIndex (scrGetData gScreen 'selIndex))
-							(selData (scrGetData gScreen 'selData))
-							)
-						
-							(if (gr selIndex 0)
-								(block ()
-									(setq selIndex (- selIndex 1))
-									(scrSetData gScreen 'selIndex selIndex)
-									(scrSetData gScreen 'selData (@ shipIDList selIndex))
-									
-									(scrShowPane gScreen "Default")
-									)
-								)
-							)
-					</Action>
 					<Action id="actionDone">
 						(scrExitScreen gScreen)
 					</Action>
@@ -231,8 +204,6 @@
 		
 		<Language>
 			<Text id="actionTradeShip">[T]rade Ship</Text>
-			<Text id="actionNextShip">"&gt;[RightArrow] Next Ship"</Text>
-			<Text id="actionPrevShip">"&lt;[LeftArrow] Previous Ship"</Text>
 			
 			<Text id="descTradeIn">
 				You can trade in your ship and purchase %name% for %price%.
@@ -323,6 +294,217 @@
 					;	Return it
 					
 					shipIDList
+					)
+				))
+
+			(setq rpgGetShipDetails (lambda (shipObj options)
+				(block (
+					(showDevices (not (@ options 'noDevices)))
+
+					;	Reactor stats
+					
+					(reactorItem (@ (objGetItems shipObj "rI") 0))
+					(reactorText (if reactorItem (itmGetName reactorItem 0x00) (cat (objGetName shipObj 0x80) " reactor")))
+					(reactorIcon (if reactorItem (itmGetImageDesc reactorItem) (resCreateImageDesc &rsItems1; 288 288 96 96)))
+					(reactorPowerText (fmtNumber 'power (objGetProperty shipObj 'power)))
+					(reactorEfficiency (objGetProperty shipObj 'fuelEfficiencyBonus))
+					(reactorEfficiencyText
+						(switch
+							(gr reactorEfficiency 0)
+								(cat "+" reactorEfficiency "%")
+										
+							(ls reactorEfficiency 0)
+								(cat reactorEfficiency "%")
+										
+							"standard"
+							)
+						)
+					(reactorFuel
+						(map 
+							(map (itmGetTypes "f -notForSale; -notStandardFuel; -notStandard;") 'excludeNil fuelType 
+								(if (shpIsFuelCompatible shipObj (itmCreate fuelType 1))
+									(itmCreate fuelType 1)
+									)
+								)
+							(list 'reduceMin 'original)
+							fuelItem
+							(itmGetLevel fuelItem)
+							)
+						)
+						
+					;	Drive Stats
+					
+					(driveItem (@ (objGetItems shipObj "vI") 0))
+					(driveText (if driveItem (itmGetName driveItem 0x00) (cat (objGetName shipObj 0x80) " drive")))
+					(driveIcon (if driveItem (itmGetImageDesc driveItem) (resCreateImageDesc &rsItems1; 96 384 96 96)))
+					
+					;	Cargo Stats
+					
+					(cargoItem (@ (objGetItems shipObj "cI") 0))
+					(cargoIcon (if cargoItem (itmGetImageDesc cargoItem) (resCreateImageDesc &rsItems1; 96 192 96 96)))
+
+					;	Armor
+
+					(armorItem (@ (objGetItems shipObj "aI") 0))
+
+					;	Shields
+
+					(shieldItem (@ (objGetItems shipObj "sI") 0))
+
+					;	Weapons
+
+					(allWeapons (objGetItems shipObj "w~lI"))
+					(weaponItem1 (@ allWeapons 0))
+					(weaponItem2 (@ allWeapons 1))
+
+					;	Launcher
+
+					(launcherItem (@ (objGetItems shipObj "lI") 0))
+					
+					;	Slots
+					
+					(deviceSlots (objGetProperty shipObj 'deviceSlots))
+					(maxWeaponSlots (objGetProperty shipObj 'deviceSlotsWeapons))
+					(maxNonWeaponSlots (objGetProperty shipObj 'deviceSlotsNonWeapons))
+					(availDeviceSlots (objGetProperty shipObj 'availableDeviceSlots))
+					(availWeaponSlots (objGetProperty shipObj 'availableWeaponSlots))
+					(availNonWeaponSlots (objGetProperty shipObj 'availableNonWeaponSlots))
+					)
+
+					(list 
+						{
+						icon: (shpGetImageDesc (objGetType shipObj) 0)
+						desc:
+							(cat
+								"{/rtf "
+									"{/f:MediumBold;/c:#79828c; manufacturer:} " (objGetProperty shipObj 'manufacturer) "\n"
+									"{/f:MediumBold;/c:#79828c; size:} " (objGetProperty shipObj 'size) " meters\n"
+									"{/f:MediumBold;/c:#79828c; mass:} " (objGetProperty shipObj 'hullMass) " tons\n"
+								"}"
+								)
+						}
+
+						{
+						icon: reactorIcon
+						title: reactorText
+						desc: 
+							(cat
+								"{/rtf "
+									"{/f:MediumBold;/c:#79828c; max. output:} " reactorPowerText "\n"
+									"{/f:MediumBold;/c:#79828c; fuel:} " (itmGetName reactorFuel 0x02) "\n"
+									"{/f:MediumBold;/c:#79828c; fuel efficiency:} " reactorEfficiencyText "\n"
+								"}"
+								)
+						}
+						
+						{
+						icon: driveIcon
+						title: driveText
+						desc:
+							(cat
+								"{/rtf "
+									"{/f:MediumBold;/c:#79828c; max. speed:} " (fmtNumber 'speed (objGetProperty shipObj 'maxSpeed)) "\n"
+									"{/f:MediumBold;/c:#79828c; thrust//mass:} " (/ (objGetProperty shipObj 'thrustToWeight) 1000) "\n"
+									"{/f:MediumBold;/c:#79828c; maneuverability:} " (/ (objGetProperty shipObj 'maneuver) 1000) "\n"
+								"}"
+								)
+						}
+
+						{
+						icon: cargoIcon
+						title: (if cargoItem (itmGetName cargoItem 0))
+						desc:
+							(cat
+								"{/rtf "
+									"{/f:MediumBold;/c:#79828c; cargo space:} " (fmtNumber (objGetProperty shipObj 'cargoSpace)) " tons\n"
+									"{/f:MediumBold;/c:#79828c; max. expansion:} " (objGetProperty shipObj 'maxCargoSpace) " tons\n"
+								"}"
+								)
+						}
+						
+						(if showDevices
+							{
+							icon: (itmGetImageDesc armorItem)
+							title: (itmGetName armorItem 'short)
+							desc:
+								(cat
+									"{/rtf "
+										"{/f:MediumBold;/c:#79828c; level:} " (itmGetLevel armorItem) "\n"
+										"{/f:MediumBold;/c:#79828c; max. armor:} " (/ (objGetProperty shipObj 'maxArmorMass) 1000) " tons\n"
+									"}"
+									)
+							}
+							{
+							icon: (itmGetImageDesc armorItem)
+							desc:
+								(cat
+									"{/rtf "
+										"{/f:MediumBold;/c:#79828c; max. armor:} " (/ (objGetProperty shipObj 'maxArmorMass) 1000) " tons\n"
+									"}"
+									)
+							}
+							)
+
+						(if (and shieldItem showDevices) {
+							icon: (itmGetImageDesc shieldItem)
+							title: (itmGetName shieldItem 'short)
+							desc:
+								(cat
+									"{/rtf "
+										"{/f:MediumBold;/c:#79828c; level:} " (itmGetLevel shieldItem) "\n"
+									"}"
+									)
+							})
+
+						(if (and weaponItem1 showDevices) {
+							icon: (itmGetImageDesc weaponItem1)
+							title: (itmGetName weaponItem1 'short)
+							desc:
+								(cat
+									"{/rtf "
+										"{/f:MediumBold;/c:#79828c; level:} " (itmGetLevel weaponItem1) "\n"
+									"}"
+									)
+							})
+
+						(if (and weaponItem2 showDevices) {
+							icon: (itmGetImageDesc weaponItem2)
+							title: (itmGetName weaponItem2 'short)
+							desc:
+								(cat
+									"{/rtf "
+										"{/f:MediumBold;/c:#79828c; level:} " (itmGetLevel weaponItem2) "\n"
+									"}"
+									)
+							})
+
+						(if (and launcherItem showDevices) {
+							icon: (itmGetImageDesc launcherItem)
+							title: (itmGetName launcherItem 'short)
+							desc:
+								(cat
+									"{/rtf "
+										"{/f:MediumBold;/c:#79828c; level:} " (itmGetLevel launcherItem) "\n"
+									"}"
+									)
+							})
+
+						{
+						icon: (resCreateImageDesc &rsItems1; 96 768 96 96)
+						desc:
+							(cat
+								"{/rtf "
+									"{/f:MediumBold;/c:#79828c; device slots:} " deviceSlots " (" availDeviceSlots " free)\n"
+							
+									(if (!= deviceSlots maxWeaponSlots)
+										(cat "{/f:MediumBold;/c:#79828c; for weapons:} " maxWeaponSlots " (" availWeaponSlots " free)\n")
+										)
+									(if (!= deviceSlots maxNonWeaponSlots)
+										(cat "{/f:MediumBold;/c:#79828c; for non-weapons:} " maxNonWeaponSlots " (" availNonWeaponSlots " free)\n") 
+										)
+								"}"
+								)
+						})
 					)
 				))
 				

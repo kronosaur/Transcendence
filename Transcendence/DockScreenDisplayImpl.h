@@ -3,6 +3,66 @@
 //	Dock Screen display classes
 //	Copyright (c) 2014 by Kronosaur Productions, LLC. All Rights Reserved.
 
+//	CDockScreenCarousel --------------------------------------------------------
+
+class CDockScreenCarousel : public IDockScreenDisplay
+	{
+	public:
+		CDockScreenCarousel (CDockScreen &DockScreen) : IDockScreenDisplay(DockScreen)
+			{ }
+
+	protected:
+
+		//	IDockScreenDisplay
+
+		virtual ICCItem *OnGetCurrentListEntry (void) const override;
+		virtual bool OnGetDefaultBackground (SBackgroundDesc *retDesc) override { retDesc->iType = backgroundNone; return true; }
+		virtual int OnGetListCursor (void) override { return m_pControl->GetCursor(); }
+		virtual IListData *OnGetListData (void) override { return m_pControl->GetList(); }
+		virtual CSpaceObject *OnGetSource (void) override { return m_pControl->GetSource(); }
+		virtual EResults OnHandleAction (DWORD dwTag, DWORD dwData) override;
+		virtual EResults OnHandleKeyDown (int iVirtKey) override;
+		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) override;
+		virtual bool OnIsCurrentItemValid (void) const override;
+		virtual EResults OnResetList (CSpaceObject *pLocation) override;
+		virtual EResults OnSetListCursor (int iCursor) override;
+		virtual EResults OnSetLocation (CSpaceObject *pLocation) override;
+		virtual bool OnSelectNextItem (void) override;
+		virtual bool OnSelectPrevItem (void) override;
+		virtual void OnShowItem (void) override;
+		virtual void OnShowPane (bool bNoListNavigation) override;
+
+	private:
+		CGCarouselArea *m_pControl = NULL;
+		DWORD m_dwID = 0;
+		bool m_bNoListNavigation = false;
+	};
+
+//	CDockScreenDetailsPane -----------------------------------------------------
+
+class CDockScreenDetailsPane : public IDockScreenDisplay
+	{
+	public:
+		CDockScreenDetailsPane (CDockScreen &DockScreen) : IDockScreenDisplay(DockScreen)
+			{ }
+
+	protected:
+
+		//	IDockScreenDisplay
+
+		virtual ICCItem *OnGetCurrentListEntry (void) const override;
+		virtual bool OnGetDefaultBackground (SBackgroundDesc *retDesc) override { retDesc->iType = backgroundNone; return true; }
+		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) override;
+		virtual void OnShowItem (void) override;
+		virtual void OnShowPane (bool bNoListNavigation) override;
+
+	private:
+		CGDetailsArea *m_pControl = NULL;
+		DWORD m_dwID = 0;
+	};
+
+//	CDockScreenList and descendants --------------------------------------------
+
 class CDockScreenList : public IDockScreenDisplay
 	{
 	public:
@@ -117,12 +177,16 @@ class CDockScreenItemList : public CDockScreenList
 		CItemCriteria m_ItemCriteria;
 	};
 
+//	CDockScreenNullDisplay -----------------------------------------------------
+
 class CDockScreenNullDisplay : public IDockScreenDisplay
 	{
 	public:
 		CDockScreenNullDisplay (CDockScreen &DockScreen) : IDockScreenDisplay(DockScreen)
 			{ }
 	};
+
+//	CDockScreenSelector --------------------------------------------------------
 
 class CDockScreenSelector : public IDockScreenDisplay
 	{

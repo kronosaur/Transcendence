@@ -89,8 +89,10 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 
 #define SCREEN_TYPE_ARMOR_SELECTOR		CONSTLIT("armorSelector")
 #define SCREEN_TYPE_CANVAS				CONSTLIT("canvas")
+#define SCREEN_TYPE_CAROUSEL_SELECTOR	CONSTLIT("carouselSelector")
 #define SCREEN_TYPE_CUSTOM_PICKER		CONSTLIT("customPicker")
 #define SCREEN_TYPE_CUSTOM_ITEM_PICKER	CONSTLIT("customItemPicker")
+#define SCREEN_TYPE_DETAILS_PANE		CONSTLIT("detailsPane")
 #define SCREEN_TYPE_DEVICE_SELECTOR		CONSTLIT("deviceSelector")
 #define SCREEN_TYPE_ITEM_PICKER			CONSTLIT("itemPicker")
 #define SCREEN_TYPE_MISC_SELECTOR		CONSTLIT("miscSelector")
@@ -1329,11 +1331,17 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_ITEM_PICKER))
 		m_pDisplay = new CDockScreenItemList(*this);
 
+	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_CAROUSEL_SELECTOR))
+		m_pDisplay = new CDockScreenCarousel(*this);
+
 	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_CUSTOM_PICKER))
 		m_pDisplay = new CDockScreenCustomList(*this);
 
 	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_CUSTOM_ITEM_PICKER))
 		m_pDisplay = new CDockScreenCustomItemList(*this);
+
+	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_DETAILS_PANE))
+		m_pDisplay = new CDockScreenDetailsPane(*this);
 
 	else if (strEquals(DisplayOptions.sType, SCREEN_TYPE_ARMOR_SELECTOR))
 		m_pDisplay = new CDockScreenSelector(*this, CGSelectorArea::configArmor);
