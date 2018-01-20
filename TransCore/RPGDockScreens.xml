@@ -173,7 +173,6 @@
 	
 	<DockScreen unid="&dsRPGDockServices;"
 			inherit=			"&dsRPGDockServicesBase;"
-			XbackgroundID=		"none"
 			nestedScreen=		"true"
 			>
 		<InitialPane>
