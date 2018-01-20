@@ -239,12 +239,28 @@
 					;	Filter out any ship classes that we do not sell
 
 					(classesForSale (filter allClasses theClass (objGetShipSellPrice sellerObj { shipClass:theClass })))
+
+					;	Now create a list of types to create. Some types are duplicated if
+					;	the class has variants (i.e., different device load-outs).
+
+					(shipsToCreate 
+						(apply append
+							(map classesForSale theClass
+								(if (typGetProperty theClass 'hasVariants)
+									(map (make 'sequence (random 1 3)) i theClass)
+									(list theClass)
+									)
+								)
+							)
+						)
 					)
+
+					(dbgOutput shipsToCreate)
 					
 					;	Create a list of ships to sell
 					
 					(setq shipList
-						(map classesForSale 'excludeNil theClass
+						(map shipsToCreate 'excludeNil theClass
 							(switch
 						
 								;	Create a ship of this class
