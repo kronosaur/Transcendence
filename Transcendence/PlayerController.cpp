@@ -370,7 +370,7 @@ void CPlayerShipController::Dock (void)
 	//	code that looks for a station to dock with uses a heuristic to determine
 	//	whether it has a docking screen. The heuristic can sometimes be stale.
 
-	if (!pStation->RequestDock(m_pShip, iDockPort))
+	if (!pStation->ObjRequestDock(m_pShip, iDockPort))
 		return;
 
 	//	Station has agreed to allow dock...
@@ -479,7 +479,9 @@ CSpaceObject *CPlayerShipController::FindDockTarget (void)
 				//	later do a full check to make sure the station has docking
 				//	screens.
 
-				if (!pObj->IsAngryAt(m_pShip) && !pObj->SupportsDocking(true))
+				CSpaceObject::RequestDockResults iResult = pObj->CanObjRequestDock(m_pShip);
+				if (iResult != CSpaceObject::dockingOK 
+						&& iResult != CSpaceObject::dockingDenied)
 					continue;
 
 				//	If the station is inside the dock distance, check
