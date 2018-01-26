@@ -115,6 +115,8 @@
 	<!-- 00D0-00EF WINGMEN -->
 
 	<!ENTITY baStdWingmanBase			"0x000100D0">
+	<!ENTITY evStdFollowerBehavior		"0x000100D1">
+	<!ENTITY dsStdFollowerScreen		"0x000100D2">
 
 	<!-- 00F0-010F MEMBERSHIP -->
 

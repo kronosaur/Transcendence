@@ -70,6 +70,7 @@
 						
 						;	Compute some prices
 						
+						(playerBalance (objGetBalance gPlayerShip currency))
 						(playerShipPrice (objGetShipBuyPrice gSource gPlayerShip))
 						(newShipPrice (objGetShipSellPrice gSource selObj))
 						(tradeInPrice (- newShipPrice playerShipPrice))
@@ -86,38 +87,90 @@
 						;	Set the description
 						
 						(scrSetDesc gScreen
-							newShipDesc
-							
-							"\r\n"
-							"\r\n"
-						
 							(switch
 								(not playerShipPrice)
-									(scrTranslate gScreen 'descNoTradeIn)
-									
-								(gr tradeInPrice (objGetBalance gPlayerShip currency))
-									(scrTranslate gScreen 'descCantAfford { name:(objGetName selObj 0x04) price:(fmtCurrency currency tradeInPrice) })
-									
+									(scrTranslate gScreen 'descPricesNoTradeIn {
+										fullPrice: (fmtCurrency currency newShipPrice)
+										})
+
 								(ls tradeInPrice 0)
-									(block Nil
-										(setq canBuy True)
-										(scrTranslate gScreen 'descTradeInRefund { name:(objGetName selObj 0x04) price:(fmtCurrency currency (- tradeInPrice)) })
-										)
+									(scrTranslate gScreen 'descPricesRefund {
+										fullPrice: (fmtCurrency currency newShipPrice)
+										playerShipPrice: (if playerShipPrice (fmtCurrency currency playerShipPrice) "N/A")
+										tradeInPrice: (if playerShipPrice (fmtCurrency currency tradeInPrice) "N/A")
+										})
 									
-								(block Nil
-									(setq canBuy True)
-									(scrTranslate gScreen 'descTradeIn { name:(objGetName selObj 0x04) price:(fmtCurrency currency tradeInPrice) })
+								(scrTranslate gScreen 'descPrices {
+									fullPrice: (fmtCurrency currency newShipPrice)
+									playerShipPrice: (if playerShipPrice (fmtCurrency currency playerShipPrice) "N/A")
+									tradeInPrice: (if playerShipPrice (fmtCurrency currency tradeInPrice) "N/A")
+									})
+								)
+
+							"\n"
+							"\n"
+
+							newShipDesc
+							)
+
+						;	Can we trade-in the ship?
+
+						(switch
+							;	If the station does not buy our ship...
+
+							(not playerShipPrice)
+								(block ()
+									(scrEnableAction gScreen 'actionTradeShip Nil)
+									(scrSetActionDesc gScreen 'actionTradeShip (scrTranslate gScreen 'descCantTradeIn))
 									)
+
+							;	If we cannot afford a trade in
+
+							(ls playerBalance tradeInPrice)
+								(block ()
+									(scrEnableAction gScreen 'actionTradeShip Nil)
+									(scrSetActionDesc gScreen 'actionTradeShip (scrTranslate gScreen 'descCantAffordTradeIn))
+									)
+
+							;	Refund
+
+							(ls tradeInPrice 0)
+								(block ()
+									(scrEnableAction gScreen 'actionTradeShip True)
+									(scrSetActionDesc gScreen 'actionTradeShip (scrTranslate gScreen 'descTradeInShipRefund { price:(fmtCurrency currency (- tradeInPrice)) }))
+									)
+
+							;	Pay
+
+							(block ()
+								(scrEnableAction gScreen 'actionTradeShip True)
+								(scrSetActionDesc gScreen 'actionTradeShip (scrTranslate gScreen 'descTradeInShip { price:(fmtCurrency currency tradeInPrice) }))
+								)
+							)
+
+						;	Can we buy the ship?
+
+						(switch
+							;	If we cannot afford it...
+
+							(ls playerBalance newShipPrice)
+								(block ()
+									(scrEnableAction gScreen 'actionBuyShip Nil)
+									(scrSetActionDesc gScreen 'actionBuyShip (scrTranslate gScreen 'descCantAffordToBuy))
+									)
+
+							;	We can buy the ship
+
+							(block ()
+								(scrEnableAction gScreen 'actionBuyShip True)
+								(scrSetActionDesc gScreen 'actionBuyShip (scrTranslate gScreen 'descBuyShip { price:(fmtCurrency currency newShipPrice) }))
 								)
 							)
 							
 						;	Remember some calculations
 						
+						(scrSetData gScreen 'buyPrice newShipPrice)
 						(scrSetData gScreen 'tradeInPrice tradeInPrice)
-						
-						;	Initialize actions
-						
-						(scrEnableAction gScreen 'actionTradeShip canBuy)
 						)
 				</OnPaneInit>
 				
@@ -195,7 +248,57 @@
 							(scrExitScreen gScreen)
 							)
 					</Action>
-					<Action id="actionDone">
+					<Action id="actionBuyShip">
+						(block (
+							(currency (objGetProperty gSource 'currency))
+							(buyPrice (scrGetData gScreen 'tradeInPrice))
+							
+							(shipIDList (objGetData gSource "shipBroker:list"))
+							(selData (scrGetData gScreen 'selData))
+							(selObj (objGetObjByID selData))
+							
+							(portPos nil)
+							)
+							
+							;	Remove the ship from our list of ships to sell
+							
+							(setq shipIDList (filter shipIDList theID (!= theID (objGetID selObj))))
+							(objSetData gSource "shipBroker:list" shipIDList)
+							
+							;	Charge the player
+							
+							(objCharge gPlayerShip currency buyPrice)
+								
+							;	Give ship to player
+							
+							(objResume selObj)
+							
+							;	Position the new ship near a docking port
+							
+							(setq portPos
+								(@	(random
+										(filter (objGetProperty gSource 'dockingPorts) portDesc
+											(= (@ portDesc 'status) 'empty)
+											)
+										)
+									'pos
+									)
+								)
+							(if portPos
+								(objSetPos selObj portPos)
+								)
+
+							;	Set behavior
+
+							(objSetProperty selObj 'sovereign &svFriendlyAuton;)
+							(objSetEventHandler selObj &evStdFollowerBehavior;)
+
+							;	Done
+
+							(scrExitScreen gScreen)
+							)
+					</Action>
+					<Action id="actionDone" cancel="1">
 						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
@@ -203,23 +306,239 @@
 		</Panes>
 		
 		<Language>
+			<Text id="actionBuyShip">[B]uy Ship</Text>
 			<Text id="actionTradeShip">[T]rade Ship</Text>
 			
-			<Text id="descTradeIn">
-				You can trade in your ship and purchase %name% for %price%.
+			<Text id="descPrices">
+				Full price: %fullPrice%\n
+				Value of your ship: %playerShipPrice%\n
+				Trade-in price: %tradeInPrice%
 			</Text>
-			<Text id="descTradeInRefund">
-				This ship is not as good as yours, but if you want to trade yours in, we'll pay you %price%.
+			<Text id="descPricesRefund">
+				Full price: %fullPrice%\n
+				Value of your ship: %playerShipPrice%\n
+				Trade-in refund: %tradeInPrice%
 			</Text>
-			<Text id="descNoTradeIn">
-				Unfortunately, we cannot offer you a trade-in because your ship is worthless to us.
+			<Text id="descPricesNoTradeIn">
+				Full price: %fullPrice%\n
+				Value of your ship: N/A\n
+				Trade-in price: N/A
 			</Text>
-			<Text id="descCantAfford">
-				You can trade in your ship and purchase %name% for %price%.
-				Unfortunately, you cannot afford the cost.
+
+			<Text id="descBuyShip">
+				Buy this ship for %price%.
+			</Text>
+			<Text id="descTradeInShip">
+				Pay %price% to trade in your ship.
+			</Text>
+			<Text id="descTradeInShipRefund">
+				Get %price% refund when you trade in your ship.
+			</Text>
+
+			<Text id="descCantTradeIn">
+				Your ship is worthless to us.
+			</Text>
+			<Text id="descCantAffordTradeIn">
+				You cannot afford to trade in for this ship.
+			</Text>
+			<Text id="descCantAffordToBuy">
+				You cannot afford to buy this ship.
 			</Text>
 		</Language>
 	</DockScreen>
+
+	<DockScreen unid="&dsStdFollowerScreen;"
+			inherit=			"&dsDockScreenBase;"
+			>
+		<Display type="detailsPane"
+				>
+			<OnDisplayInit>
+				(block (
+					(shipObj gSource)
+					(shipClass (objGetType shipObj))
+					)
+					{
+					largeIcon: (shpGetImageDesc shipClass { type:'schematic })
+					details: 
+						(or (objFireEvent shipObj 'GetShipDetails { })
+							(rpgGetShipDetails shipObj { noDevices:True })
+							)
+
+					shipObj: shipObj
+					}
+					)
+			</OnDisplayInit>
+		</Display>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionPilot" default="1">
+						(block (
+							(newShipObj gSource)
+							(oldShipObj gPlayerShip)
+							)
+							;	Exit dock screen so that we don't try to change ships
+							;	while we're docked.
+
+							(scrExitScreen gScreen)
+
+							;	Prepare the new ship
+
+							(objSetEventHandler newShipObj Nil)
+
+							;	Switch
+
+							(plyChangeShip gPlayer newShipObj)
+
+							;	Turn the old ship into a follower
+
+							(objSetProperty oldShipObj 'sovereign &svFriendlyAuton;)
+							(objSetEventHandler oldShipObj &evStdFollowerBehavior;)
+							)
+					</Action>
+
+					<Action id="actionLoot">
+						(scrShowScreen gScreen &dsRPGLoot;)
+					</Action>
+
+					<Action id="actionJettison">
+						(scrShowScreen gScreen &dsRPGJettison;)
+					</Action>
+
+					<Action id="actionUndock" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+
+		<Language>
+			<Text id="actionPilot">[P]ilot</Text>
+		</Language>
+	</DockScreen>
+
+<!-- BEHAVIOR -->
+
+	<Type unid="&evStdFollowerBehavior;">
+		<Communications>
+			<Message id="msgFormUp" name="Form up" key="F">
+				<OnShow>
+					(and (neq (objGetData gSource 'behavior) 'escorting)
+						(objGetProperty gSource 'playerWingman)
+						)
+				</OnShow>
+
+				<Invoke>
+					(block (behavior)
+						(setq behavior (objGetData gSource 'behavior))
+						(switch
+							(or (not behavior) (eq behavior 'escorting))
+								(block Nil
+									(objCommunicate gSource gSender 'FormUp)
+									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
+									)
+
+							(block Nil
+								(objSetData gSource 'behavior 'escorting)
+								(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
+								
+								(shpCancelOrders gSource)
+								(shpOrder gSource 'follow gPlayerShip)
+								)
+							)
+						)
+				</Invoke>
+			</Message>
+			
+			<Message id="msgWait" name="Wait" key="W">
+				<OnShow>
+					(and (neq (objGetData gSource 'behavior) 'waiting)
+						(objGetProperty gSource 'playerWingman)
+						)
+				</OnShow>
+
+				<Invoke>
+					(block Nil
+						(objSetData gSource 'behavior 'waiting)
+						(objSendMessage gSender gSource (objTranslate gSource 'WaitAck))
+						
+						(shpCancelOrders gSource)
+						(shpOrder gSource 'hold)
+						)
+				</Invoke>
+			</Message>
+		</Communications>
+
+		<Events>
+			<OnEventHandlerInit>
+				(block ()
+					(objSetProperty gSource 'playerWingman True)
+					(objSetData gSource 'behavior 'escorting)
+
+					;	Set some AI settings to true, but remember the previous values 
+					;	so we can restore them.
+
+					(enum (list 'noAttackOnThreat 'nonCombatant 'noNavPaths) theSetting
+						(block ()
+							(objSetData gSource (cat "rpg.saved." theSetting) (shpGetAISetting gSource theSetting))
+							(shpSetAISetting gSource theSetting True)
+							)
+						)
+
+					(shpCancelOrders gSource)
+					(shpOrder gSource 'follow gPlayerShip)
+					)
+			</OnEventHandlerInit>
+
+			<OnEventHandlerTerm>
+				(block ()
+					(objSetProperty gSource 'playerWingman Nil)
+					(objSetData gSource 'behavior Nil)
+
+					;	Restore AI settings.
+
+					(enum (list 'noAttackOnThreat 'nonCombatant 'noNavPaths) theSetting
+						(shpSetAISetting gSource theSetting (objGetData gSource (cat "rpg.saved." theSetting)))
+						)
+					)
+			</OnEventHandlerTerm>
+
+			<OnPlayerLeftSystem>
+				(block (behavior)
+					(setq behavior (objGetData gSource 'behavior))
+					(switch
+						(not (objGetProperty gSource 'playerWingman))
+							Nil
+							
+						; If we're waiting, stay in this system and wait for the player
+						
+						(eq behavior 'waiting)
+							'waitForPlayer
+
+						; Otherwise, follow the player through the gate
+						
+						'followPlayer
+						)
+					)
+			</OnPlayerLeftSystem>
+
+			<GetDockScreen>
+				(list &dsStdFollowerScreen; { } 4)
+			</GetDockScreen>
+		</Events>
+
+		<Language>
+			<String id="FormUpAck">"Order acknowledged"</String>
+			<String id="NiceShooting"></String>
+			<String id="UnableToComply">"Unable to comply"</String>
+			<String id="WaitAck">"Order acknowledged"</String>
+			<String id="WatchYourTargets"></String>
+		</Language>
+	</Type>
 	
 <!-- GLOBALS -->
 	
