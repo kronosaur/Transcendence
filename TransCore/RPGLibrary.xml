@@ -85,6 +85,8 @@
 	<!ENTITY dsRPGUseItemOnDevice		"0x0001003A">
 	<!ENTITY dsRPGUseItemOnCargo		"0x0001003B">
 	<!ENTITY dsRPGDockManagement		"0x0001003C">
+	<!ENTITY dsRPGShipBrokerWingman		"0x0001003D">
+	<!ENTITY dsRPGShipBrokerConfirm		"0x0001003E">
 	
 	<!-- 0040-004F CARGO CRATE -->
 	

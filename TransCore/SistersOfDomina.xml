@@ -1248,7 +1248,7 @@
 			level=				"5"
 			defaultSovereign=	"&svSistersOfDomina;"
 			   
-			attributes=			"commonwealth, genericClass, sistersOfDomina"
+			attributes=			"commonwealth, genericClass, EI, sistersOfDomina"
 
 			size=				"75"
 			mass=				"2100"

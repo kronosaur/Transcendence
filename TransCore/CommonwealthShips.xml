@@ -15,7 +15,7 @@
 			thrustRatio=		"5.5"
 			maxSpeed=			"20"
 
-			attributes=			"commonwealth, genericClass"
+			attributes=			"commonwealth, genericClass, pacificDefense"
 			>
 
 		<Armor>
@@ -62,7 +62,7 @@
 			thrustRatio=		"5.5"
 			maxSpeed=			"20"
 
-			attributes=			"commonwealth, genericClass"
+			attributes=			"commonwealth, genericClass, pacificDefense"
 			>
 
 		<Armor>
@@ -113,7 +113,7 @@
 			type=				"yacht"
 			defaultSovereign=	"&svCommonwealth;"
 
-			attributes=			"commonwealth, genericClass"
+			attributes=			"commonwealth, genericClass, zubrin"
 			inherit=			"&baHumanTechShip;"
 			>
 
@@ -286,7 +286,7 @@
 			type=				"heavy gunship"
 			defaultSovereign=	"&svCommonwealth;"
 
-			attributes=			"commonwealth, genericClass"
+			attributes=			"commonwealth, genericClass, NAMI"
 
 			size=				"44"
 			mass=				"200"
@@ -458,7 +458,7 @@
 			type=				"freighter"
 			defaultSovereign=	"&svCommonwealth;"
 
-			attributes=			"commonwealth, freighter, genericClass"
+			attributes=			"commonwealth, EI, freighter, genericClass"
 			inherit=			"&scEI500Stock;"
 			>
 
@@ -503,7 +503,7 @@
 			thrustRatio=		"5.5"
 			maxSpeed=			"20"
 
-			attributes=			"commonwealth,genericClass"
+			attributes=			"commonwealth, genericClass, pacificDefense"
 			>
 
 		<Armor>
@@ -554,7 +554,7 @@
 			type=				"gunship"
 			defaultSovereign=	"&svCommonwealth;"
 
-			attributes=			"commonwealth, genericClass"
+			attributes=			"commonwealth, genericClass, pacificDefense"
 			inherit=			"&baHumanTechShip;"
 			>
 
@@ -733,7 +733,7 @@
 			type=				"transport"
 			defaultSovereign=	"&svCommonwealth;"
 			   
-			attributes=			"commonwealth, freighter, genericClass"
+			attributes=			"commonwealth, freighter, genericClass, NAMI"
 
 			size=				"58"
 			mass=				"500"
@@ -804,7 +804,7 @@
 			level=				"6"
 			defaultSovereign=	"&svCommonwealth;"
 			   
-			attributes=			"commonwealth, genericClass"
+			attributes=			"commonwealth, genericClass, zubrin"
 
 			size=				"140"
 			mass=				"3000"
@@ -899,7 +899,7 @@
 			level=				"6"
 			defaultSovereign=	"&svCommonwealth;"
 			   
-			attributes=			"commonwealth, freighter, genericClass"
+			attributes=			"commonwealth, freighter, genericClass, NAMI"
 
 			size=				"175"
 			mass=				"15000"
@@ -1066,7 +1066,7 @@
 			thrustRatio=		"2.0"
 			maxSpeed=			"18"
 
-			attributes=			"commonwealth, genericClass"
+			attributes=			"commonwealth, genericClass, makayev"
 			>
 
 		<Armor>

@@ -187,7 +187,7 @@
 			thrustRatio=		"7"
 			maxSpeed=			"17"
 
-			attributes=			"genericClass, outlawMiners"
+			attributes=			"EI, genericClass, outlawMiners"
 			>
 
 		<Armor>
@@ -235,7 +235,7 @@
 			thrustRatio=		"10"
 			maxSpeed=			"16"
 
-			attributes=			"genericClass, outlawMiners"
+			attributes=			"EI, genericClass, outlawMiners"
 			>
 
 		<Armor>

@@ -12,7 +12,7 @@
 			type=				"freighter"
 			defaultSovereign=	"&svCorporate;"
 
-			attributes=			"commonwealth,freighter,genericClass"
+			attributes=			"commonwealth, freighter, genericClass, makayev"
 			   
 			size=				"135"
 			mass=				"5000"
@@ -134,7 +134,7 @@
 			type=				"freighter"
 			defaultSovereign=	"&svCorporate;"
 
-			attributes=			"commonwealth,freighter,genericClass"
+			attributes=			"commonwealth, freighter, genericClass, makayev"
 			   
 			size=				"135"
 			mass=				"6000"
@@ -259,7 +259,7 @@
 			level=				"4"
 			defaultSovereign=	"&svCorporate;"
 
-			attributes=			"commonwealth,freighter,genericClass"
+			attributes=			"commonwealth, freighter, genericClass, makayev"
 
 			size=				"180"
 			mass=				"10000"
@@ -385,7 +385,7 @@
 			level=				"2"
 			defaultSovereign=	"&svCorporate;"
 
-			attributes=			"commonwealth,freighter,genericClass"
+			attributes=			"commonwealth, EI, freighter, genericClass"
 			   
 			size=				"40"
 			mass=				"100"
@@ -492,7 +492,7 @@
 			level=				"3"
 			defaultSovereign=	"&svCorporate;"
 
-			attributes=			"commonwealth,freighter,genericClass"
+			attributes=			"commonwealth, EI, freighter, genericClass"
 			   
 			size=				"54"
 			mass=				"500"
@@ -600,7 +600,7 @@
 			level=				"5"
 			defaultSovereign=	"&svCorporate;"
 
-			attributes=			"commonwealth,freighter,genericClass"
+			attributes=			"commonwealth, EI, freighter, genericClass"
 			
 			size=				"75"
 			mass=				"2100"

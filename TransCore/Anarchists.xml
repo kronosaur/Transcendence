@@ -77,7 +77,7 @@
 			thrustRatio=		"16"
 			maxSpeed=			"35"
 
-			attributes=			"anarchists,genericClass"
+			attributes=			"anarchists, EI, genericClass"
 			>
 
 		<Armor>

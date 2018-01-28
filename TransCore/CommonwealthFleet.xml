@@ -300,7 +300,7 @@ PLAYER DATA
 			cyberDefenseLevel=	"8"
 			explosionType=		"&vtThermoExplosion3;"
 
-			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, genericClass"
+			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, genericClass, pacificDefense"
 			>
 
 		<!-- Configuration -->
@@ -608,7 +608,7 @@ PLAYER DATA
 			type=				""
 			defaultSovereign=	"&svCommonwealthFleet;"
 
-			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, genericClass, fleetLaw, majorShip"
+			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, genericClass, fleetLaw, majorShip, pacificDefense"
 			inherit=			"&baCSCBase;"
 			   
 			size=				"400"
@@ -916,7 +916,7 @@ PLAYER DATA
 			class=				"Commonwealth Star Carrier"
 			type=				""
 
-			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, fleetLaw, majorShip"
+			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, fleetLaw, majorShip, pacificDefense"
 			inherit=			"&baCSCBase;"
 			   
 			size=				"400"
@@ -1391,7 +1391,7 @@ PLAYER DATA
 
 			explosionType=		"&vtBlastExplosion3;"
 
-			attributes=			"freighter, genericClass"
+			attributes=			"commonwealth, freighter, genericClass, pacificDefense"
 			>
 
 		<Armor>
@@ -1492,7 +1492,7 @@ PLAYER DATA
 			thrustRatio=		"9.0"
 			maxSpeed=			"22"
 
-			attributes=			"commonwealth, commonwealthMilitary, commonMilitary, genericClass"
+			attributes=			"commonwealth, commonwealthMilitary, commonMilitary, genericClass, pacificDefense"
 			>
 
 		<Armor>
@@ -1562,7 +1562,7 @@ PLAYER DATA
 			thrustRatio=		"9.0"
 			maxSpeed=			"20"
 
-			attributes=			"commonwealth, commonwealthMilitary, commonMilitary, genericClass"
+			attributes=			"commonwealth, commonwealthMilitary, commonMilitary, genericClass, pacificDefense"
 			>
 
 		<Armor>
@@ -1620,7 +1620,7 @@ PLAYER DATA
 			thrustRatio=		"12.0"
 			maxSpeed=			"22"
 
-			attributes=			"commonwealth, commonwealthMilitary, commonMilitary, genericClass"
+			attributes=			"commonwealth, commonwealthMilitary, commonMilitary, genericClass, pacificDefense"
 			>
 
 		<Armor>
