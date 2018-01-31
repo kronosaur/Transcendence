@@ -817,7 +817,7 @@
 
 		<ListOptions
 			dataFrom=	"player"
-			list=		"*U"
+			list=		"*U -ID; -questItem;"
 			/>
 
 		<Panes>

@@ -1641,7 +1641,7 @@
 
 					;	Pick the items that we manufacture
 
-					(setq allItems (shuffle (itmGetTypes (@ facDest 'produces))))
+					(setq allItems (shuffle (itmGetTypes (@ facDesc 'produces))))
 					(setq totalItems (min (random 3 5) (count allItems)))
 					(for i 1 totalItems
 						(block (theType thePrice theCount)
@@ -1660,7 +1660,7 @@
 						
 					;	Pick the items that we consume
 
-					(setq allItems (shuffle (itmGetTypes (@ facDest 'consumes))))
+					(setq allItems (shuffle (itmGetTypes (@ facDesc 'consumes))))
 					(setq totalItems (min (random 2 4) (count allItems)))
 					(for i 1 totalItems
 						(block (theType)
