@@ -493,16 +493,21 @@
 					<Action id="actionBuyFor" default="1">
 						(block (
 							(theEntry (scrGetListEntry gScreen))
-							)
-							;	Confirm
-
-							(scrShowScreen gScreen &dsRPGShipBrokerConfirm; {
+							(confirmData {
 								newShipID: (@ gData 'newShipID)
 								newShipPrice: (@ gData 'price)
 								oldShipID: (@ theEntry 'wingmanID)
 								oldShipPrice: (@ theEntry 'wingmanPrice)
 								price: (- (@ gData 'price) (@ theEntry 'wingmanPrice))
 								})
+							)
+							;	Exit this screen because we don't want to come back to it.
+
+							(scrExitScreen gScreen)
+
+							;	Confirm
+
+							(scrShowScreen gScreen &dsRPGShipBrokerConfirm; confirmData)
 							)
 					</Action>
 					<Action id="actionCancel" cancel="1">
@@ -725,15 +730,18 @@
 		(block Nil
 			(setq rpgChangeWingmanShip (lambda (oldShipObj newShipObj)
 				(block (
-					(wingmanEventHandler (objGetEventHandler oldShipObj))
+					namePattern
 					)
-					;	Set the new ship with an event handler
+					;	Transfer the event handler to the new ship
 
-					(objSetEventHandler newShipObj wingmanEventHandler)
-
-					;	Remove event handler from old ship
-
+					(objSetEventHandler newShipObj (objGetEventHandler oldShipObj))
 					(objSetEventHandler oldShipObj Nil)
+
+					;	Transfer the name
+
+					(setq namePattern (objGetProperty oldShipObj 'namePattern))
+					(objSetName newShipObj (@ namePattern 'pattern) (@ namePattern 'flags))
+					(objSetName oldShipObj Nil)
 					)
 				))
 			(setq rpgCreateShipsToSell (lambda (sellerObj maxCount)
