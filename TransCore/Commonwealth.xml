@@ -508,7 +508,7 @@
 			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 
-			<SellShip		criteria="s +commonwealth; L:3-7; +shipBroker; -military; -notStandard; -notForSale;" priceAdj="100"/>
+			<SellShip		criteria="s +commonwealth; L:3-7; -military; -notStandard; -notForSale;" priceAdj="100"/>
 			<BuyShip		criteria="s L:1-7; -notForSale;" priceAdj="80"/>
 
 			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="3"/>

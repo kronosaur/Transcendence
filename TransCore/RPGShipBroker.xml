@@ -19,7 +19,7 @@
 		<OnScreenInit>
 			(block (
 				(maxCount (if (@ gData 'maxCount) (@ gData 'maxCount) (random 3 5)))
-				(shipIDList (objGetData gSource "shipBroker:list"))
+				(shipIDList (objGetData gSource 'shipBroker.list))
 				)
 				
 				;	If there are no ships in our list, then we need to create some
@@ -34,7 +34,7 @@
 				style="shipList"
 				>
 			<OnDisplayInit>
-				(map (objGetData gSource "shipBroker:list") shipID
+				(map (objGetData gSource 'shipBroker.list) shipID
 					(block (
 						(shipObj (objGetObjByID shipID))
 						(shipClass (objGetType shipObj))
@@ -325,7 +325,7 @@
 							(currency (objGetProperty gSource 'currency))
 							(tradeInPrice (@ gData 'price))
 							
-							(shipIDList (objGetData gSource "shipBroker:list"))
+							(shipIDList (objGetData gSource 'shipBroker.list))
 							
 							(oldShip (objGetObjByID (@ gData 'oldShipID)))
 							(portPos nil)
@@ -343,7 +343,7 @@
 							;	Remove the ship from our list of ships to sell
 							
 							(setq shipIDList (filter shipIDList theID (!= theID (objGetID selObj))))
-							(objSetData gSource "shipBroker:list" shipIDList)
+							(objSetData gSource 'shipBroker.list shipIDList)
 							
 							;	Charge the player
 							
@@ -366,7 +366,12 @@
 							;	(But only if we can sell it).
 							
 							(if (objGetShipSellPrice gSource oldShip)
-								(objSuspend oldShip)
+								(block ()
+									(setq shipIDList (append shipIDList (objGetID oldShip)))
+									(objSetData gSource 'shipBroker.list shipIDList)
+									(shpCancelOrders oldShip)
+									(objSuspend oldShip)
+									)
 									
 								;	Otherwise, we temporarily dock here and eventually leave.
 								
@@ -393,7 +398,7 @@
 								(objSetPos selObj portPos)
 								)
 								
-							(scrExitScreen gScreen)
+							(scrExitScreen gScreen 'forceUndock)
 							)
 					</Action>
 
@@ -737,6 +742,16 @@
 					(objSetEventHandler newShipObj (objGetEventHandler oldShipObj))
 					(objSetEventHandler oldShipObj Nil)
 
+					;	Transfer wingman flag
+
+					(objSetProperty newShipObj 'playerWingman (objGetProperty oldShipObj 'playerWingman))
+					(objSetProperty oldShipObj 'playerWingman Nil)
+
+					;	Transfer the character
+
+					(objSetProperty newShipObj 'character (objGetProperty oldShipObj 'character))
+					(objSetProperty oldShipObj 'character Nil)
+
 					;	Transfer the name
 
 					(setq namePattern (objGetProperty oldShipObj 'namePattern))
@@ -744,6 +759,7 @@
 					(objSetName oldShipObj Nil)
 					)
 				))
+
 			(setq rpgCreateShipsToSell (lambda (sellerObj maxCount)
 				(block (
 					(shipObj Nil)
@@ -824,7 +840,7 @@
 					;	Store the list of ID with the seller object
 					
 					(setq shipIDList (map shipList shipObj (objGetID shipObj)))
-					(objSetData sellerObj "shipBroker:list" shipIDList)
+					(objSetData sellerObj 'shipBroker.list shipIDList)
 					
 					;	Return it
 					

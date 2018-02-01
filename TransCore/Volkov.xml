@@ -12,7 +12,7 @@
 			type=				"gunship"
 			defaultSovereign=	"&svCommonwealth;"
 
-			attributes=			"volkov"
+			attributes=			"commonwealth, pacificDefense"
 			inherit=			"&scWolfen;"
 			character=			"&chVolkov;"
 			eventHandler=		"&chVolkov;"
@@ -120,7 +120,7 @@
 			
 			<OnSearchForVolkov>
 				(block (volkov)
-					(if (and (setq volkov (item (sysFindObject gSource "sAN:100; +volkov") 0))
+					(if (and (setq volkov (@ (sysFindObject gSource "sAN:100; +character:chVolkov;") 0))
 							(not (eq (objGetData volkov "behavior") 'goingHome))
 							)
 						(block Nil
