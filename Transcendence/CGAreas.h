@@ -44,6 +44,14 @@ class CDetailList
 class CGCarouselArea : public AGArea
 	{
 	public:
+		enum EStyles
+			{
+			styleNone,
+
+			styleShipList,					//	Optimized for list of ship classes
+			styleShipCompare,				//	Compare two ship classes
+			};
+
 		CGCarouselArea (const CVisualPalette &VI);
 
 		void CleanUp (void);
@@ -59,6 +67,7 @@ class CGCarouselArea : public AGArea
         inline void SetColor (CG32bitPixel rgbColor) { m_rgbTextColor = rgbColor; }
 		inline void SetCursor (int iIndex) { if (m_pListData) m_pListData->SetCursor(iIndex); Invalidate(); }
 		void SetList (CCodeChain &CC, ICCItem *pList);
+		bool SetStyle (const CString &sStyle);
 		inline void SyncCursor (void) { if (m_pListData) m_pListData->SyncCursor(); Invalidate(); }
 
 		//	AGArea virtuals
@@ -91,9 +100,12 @@ class CGCarouselArea : public AGArea
 
 		int FindSelector (int x) const;
 		void PaintContent (CG32bitImage &Dest, const RECT &rcRect) const;
+		void PaintList (CG32bitImage &Dest, const RECT &rcRect);
+		void PaintListShipCompare (CG32bitImage &Dest, const RECT &rcRect);
 		void PaintSelector (CG32bitImage &Dest, const RECT &rcRect, bool bSelected) const;
 
 		TUniquePtr<IListData> m_pListData;
+		EStyles m_iStyle = styleNone;
 		int m_iOldCursor = -1;							//	Cursor pos
 
 		const CVisualPalette &m_VI;

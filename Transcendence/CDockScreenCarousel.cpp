@@ -6,6 +6,8 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
+#define STYLE_ATTRIB						CONSTLIT("style")
+
 ICCItem *CDockScreenCarousel::OnGetCurrentListEntry (void) const
 
 //	OnGetCurrentListEntry
@@ -146,6 +148,20 @@ ALERROR CDockScreenCarousel::OnInit (SInitCtx &Ctx, const SDisplayOptions &Optio
 		*retsError = CONSTLIT("Out of memory.");
 		return ERR_MEMORY;
 		}
+
+	//	Style
+
+	CString sStyle = Options.pOptions->GetAttribute(STYLE_ATTRIB);
+	if (!sStyle.IsBlank())
+		{
+		if (!m_pControl->SetStyle(sStyle))
+			{
+			*retsError = strPatternSubst(CONSTLIT("Unknown style: %s"), sStyle);
+			return ERR_FAIL;
+			}
+		}
+
+	//	Other options
 
     m_pControl->SetColor(DockScreenVisuals.GetTitleTextColor());
     m_pControl->SetBackColor(DockScreenVisuals.GetTextBackgroundColor());
