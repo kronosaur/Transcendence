@@ -13,6 +13,7 @@
 #define FIELD_TITLE							CONSTLIT("title")
 
 #define STR_NO_ITEMS						CONSTLIT("There are no items here")
+#define STR_NO_SHIPS						CONSTLIT("There are no ships here")
 
 static TStaticStringTable<TStaticStringEntry<CGCarouselArea::EStyles>, 2> STYLE_TABLE = {
 	"shipCompare",			CGCarouselArea::styleShipCompare,
@@ -202,13 +203,30 @@ void CGCarouselArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 
 	if (!m_pListData || !m_pListData->IsCursorValid())
 		{
-		int x = rcList.left + (RectWidth(rcList) - LargeBold.MeasureText(STR_NO_ITEMS)) / 2;
+		//	Pick text based on style
+
+		CString sText;
+		switch (m_iStyle)
+			{
+			case styleShipCompare:
+			case styleShipList:
+				sText = STR_NO_SHIPS;
+				break;
+
+			default:
+				sText = STR_NO_ITEMS;
+				break;
+			}
+
+		//	Paint
+
+		int x = rcList.left + (RectWidth(rcList) - LargeBold.MeasureText(sText)) / 2;
 		int y = rcList.top + (RectHeight(rcList) - LargeBold.GetHeight()) / 2;
 
 		Dest.DrawText(x, y,
 				LargeBold,
 				m_rgbDisabledText,
-				STR_NO_ITEMS);
+				sText);
 
 		m_iOldCursor = -1;
 		}
