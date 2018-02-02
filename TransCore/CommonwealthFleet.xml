@@ -1607,7 +1607,7 @@ PLAYER DATA
 
 	</ShipClass>
 
-	<!-- Centurion/X-class Heavy Gunship -->
+	<!-- Level 7: Centurion/X-class Heavy Gunship -->
 
 	<ShipClass UNID="&scCenturionX;"
 			manufacturer=		"Pacific Defense Corporation"
@@ -1615,34 +1615,57 @@ PLAYER DATA
 			type=				"heavy gunship"
 			defaultSovereign=	"&svCommonwealthFleet;"
 
-			mass=				"90"
-			cargoSpace=			"50"
-			thrustRatio=		"12.0"
-			maxSpeed=			"22"
-
 			attributes=			"commonwealth, commonwealthMilitary, commonMilitary, genericClass, pacificDefense"
+			inherit=			"&baHumanTechShip;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itP120HexphaseArmor;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itP120HexphaseArmor;" areaSet="3,4" />
-			<ArmorSection start="135" span="90" armorID="&itP120HexphaseArmor;" areaSet="1,6" />
-			<ArmorSection start="45"  span="90" armorID="&itP120HexphaseArmor;" areaSet="7,13" />
-		</Armor>
+		<!-- Hull -->
 
-		<Devices>
-			<Device deviceID="&itStarCannon;"/>
-			<Device deviceID="&itR5Deflector;"/>
-		</Devices>
+		<Hull
+			size=				"30"
+			mass=				"90"
+			cargoSpace=			"50"
+
+			maxCargoSpace=		"200"
+			maxDevice=			"8"
+			maxNonWeapons=		"4"
+
+			stdArmor=			"6000"
+			maxArmor=			"12000"
+			maxArmorSpeed=		"20"
+			minArmorSpeed=		"24"
+			/>
+
+		<Drive
+			maxSpeed=			"22"
+			thrust=				"1350"
+			powerUse=			"90"
+			/>
 
 		<Maneuver
 			maxRotationRate=	"12.0"
 			rotationAccel=		"1.0"
 			/>
 
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itP120HexphaseArmor;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itStarCannon;"/>
+			<Device deviceID="&itR5Deflector;"/>
+		</Devices>
+
+		<!-- Treasure -->
+
 		<Items>
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
+
+		<!-- Image and Effects -->
 
 		<Image imageID="&rsCenturionHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
@@ -1654,6 +1677,8 @@ PLAYER DATA
 			<Effect type="rotateLeft"		posAngle="-82"	posRadius="23"	posZ="0"	rotation="0"/>
 			<Effect type="rotateLeft"		posAngle="98"	posRadius="23"	posZ="0"	rotation="180"/>
 		</Effects>
+
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"15"

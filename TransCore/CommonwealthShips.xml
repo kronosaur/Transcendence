@@ -498,36 +498,61 @@
 			type=				"gunship"
 			defaultSovereign=	"&svCommonwealth;"
 
-			mass=				"60"
-			cargoSpace=			"50"
-			thrustRatio=		"5.5"
-			maxSpeed=			"20"
-
 			attributes=			"commonwealth, genericClass, pacificDefense"
+			inherit=			"&baHumanTechShip;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itHeavyCeramicPlate;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itHeavyCeramicPlate;" areaSet="3,4" />
-			<ArmorSection start="135" span="90" armorID="&itHeavyCeramicPlate;" areaSet="1,6" />
-			<ArmorSection start="45"  span="90" armorID="&itHeavyCeramicPlate;" areaSet="7,13" />
-		</Armor>
+		<!-- Hull -->
 
-		<Devices>
-			<Device deviceID="&itParticleBeamWeapon;"/>
-			<Device deviceID="&itNAMIMissileLauncher;"/>
-			<Device deviceID="&itClass2Deflector;"/>
-		</Devices>
+		<Hull
+			size=				"22"
+			mass=				"60"
+			cargoSpace=			"50"
+
+			maxCargoSpace=		"50"
+			maxDevices=			"6"
+
+			stdArmor=			"3000"
+			maxArmor=			"6000"
+			maxArmorSpeed=		"18"
+			minArmorSpeed=		"22"
+			/>
+
+		<Drive
+			maxSpeed=			"20"
+			thrust=				"450"
+			powerUse=			"30"
+			/>
 
 		<Maneuver
 			maxRotationRate=	"9.0"
 			rotationAccel=		"1.0"
 			/>
 
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itHeavyCeramicPlate;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"/>
+			<Device deviceID="&itNAMIMissileLauncher;">
+				<Items>
+					<Item count="2d6" item="&itFragmentationMissile;"/>
+				</Items>
+			</Device>
+			<Device deviceID="&itClass2Deflector;"/>
+		</Devices>
+
+		<!-- Treasure -->
+
 		<Items>
-			<Item count="2d6" item="&itFragmentationMissile;"/>
 			<Item count="3d6" item="&itHelium3FuelRod;"/>
 		</Items>
+
+		<!-- Image and Effects -->
 
 		<Image imageID="&rsRoninHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
@@ -535,7 +560,11 @@
 			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
 			<Effect type="thrustMain"		posAngle="-148"	posRadius="20"	posZ="0"	rotation="180"/>
 		</Effects>
+
+		<!-- Player Settings -->
 		
+		<!-- AI and Behavior -->
+
 		<AISettings
 			fireRateAdj=		"20"
 			fireAccuracy=		"90"

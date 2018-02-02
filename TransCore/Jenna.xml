@@ -10,48 +10,30 @@
 			type=				"gunship"
 			defaultSovereign=	"&svCommonwealth;"
 
-			mass=				"60"
-			cargoSpace=			"50"
-			thrustRatio=		"5.5"
-			maxSpeed=			"20"
+			attributes=			"commonwealth"
+			inherit=			"&scRoninC;"
+			character=			"&chJenna;"
+			eventHandler=		"&chJenna;"
 
 			leavesWreck=		"50"
-
-			attributes=			"commonwealth"
-			
-			inherit=			"&baStdWingmanBase;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itCeralloyArmor;"/>
-			<ArmorSection start="225" span="90" armorID="&itCeralloyArmor;"/>
-			<ArmorSection start="135" span="90" armorID="&itCeralloyArmor;"/>
-			<ArmorSection start="45"  span="90" armorID="&itCeralloyArmor;"/>
-		</Armor>
+		<Names noArticle="true" personalName="true">Jenna</Names>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itCeralloyArmor;"
+			count=				"4"
+			/>
 
 		<Devices>
 			<Device deviceID="&itDualParticleBeamWeapon;"/>
 			<Device deviceID="&itCyclotronDeflectorIV;"/>
-			<Device deviceID="&it25MWReactor;"/>
+			<Device deviceID="&it50MWReactor;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<Items>
-			<Item count="3d6" item="&itHelium3FuelRod;"/>
-		</Items>
-
-		<Image imageID="&rsRoninHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-148"	posRadius="20"	posZ="0"	rotation="180"/>
-		</Effects>
-		
-		<Names noArticle="true" personalName="true">Jenna</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"15"
@@ -61,6 +43,13 @@
 			combatStyle=		"advanced"
 			/>
 			
+	</ShipClass>
+
+<!-- BEHAVIOR -->
+
+	<Type unid="&chJenna;"
+			inherit=	"&baStdWingmanBase;">
+
 		<StaticData>
 			<!-- This is an optional field. If present, the wingman
 				will leave the player beyond a certain point. -->
@@ -123,7 +112,7 @@
 		<Events>
 			<GetGlobalAchievements>
 				(block (theList status)
-					(setq status (typGetGlobalData &scRoninJenna; "status"))
+					(setq status (typGetData &chJenna; "status"))
 
 					(if status
 						(setq theList (list
@@ -145,7 +134,11 @@
 					theList
 					)
 			</GetGlobalAchievements>
+
+			<OrderCreateShip>
+				(sysCreateShip &scRoninJenna; (@ gData 'pos) &svCommonwealth;)
+			</OrderCreateShip>
 		</Events>
-	</ShipClass>
+	</Type>
 
 </TranscendenceModule>

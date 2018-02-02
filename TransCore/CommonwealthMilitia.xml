@@ -316,17 +316,17 @@
 
 											;	If the player is a major, they can meet Jenna
 											(and (= rank 2)
-												(not (typGetGlobalData &scRoninJenna; 'status))
+												(not (typGetGlobalData &chJenna; 'status))
 												(leq (random 1 100) 60)
 												)
-												(scrShowScreen gScreen &dsRPGWingmanEncounter; {wingman: &scRoninJenna;})
+												(scrShowScreen gScreen &dsRPGWingmanEncounter; {wingman: &chJenna;})
 
 											;	If the player is a colonel, then another chance for a henchman
 											(and (= rank 3)
-												(not (typGetGlobalData &scCenturionRama; 'status))
+												(not (typGetGlobalData &chRama; 'status))
 												(leq (random 1 100) 80)
 												)
-												(scrShowScreen gScreen &dsRPGWingmanEncounter; {wingman: &scCenturionRama;})
+												(scrShowScreen gScreen &dsRPGWingmanEncounter; {wingman: &chRama;})
 
 											;	Otherwise, we get rumors
 											(block Nil
