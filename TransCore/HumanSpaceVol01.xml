@@ -1948,15 +1948,15 @@
 	<!-- 0530-057F PLAYER SHIP UPGRADES -->
 
 	<!ENTITY scEI500Stock				"0x00100530">
-	<!ENTITY scEI500PlayerL4			"0x00100531">
-	<!ENTITY scEI500PlayerL5			"0x00100532">
-	<!ENTITY scEI500PlayerL6			"0x00100533">
-	<!ENTITY scSapphirePlayerL4			"0x00100534">
-	<!ENTITY scSapphirePlayerL5			"0x00100535">
-	<!ENTITY scSapphirePlayerL6			"0x00100536">
-	<!ENTITY scWolfenPlayerL4			"0x00100537">
-	<!ENTITY scWolfenPlayerL5			"0x00100538">
-	<!ENTITY scWolfenPlayerL6			"0x00100539">
+	<!ENTITY scEI500PlayerL4A			"0x00100531">
+	<!ENTITY scEI500PlayerL4B			"0x00100532">
+	<!ENTITY scEI500PlayerL4C			"0x00100533">
+	<!ENTITY scSapphirePlayerL5A		"0x00100534">
+	<!ENTITY scSapphirePlayerL5B		"0x00100535">
+	<!ENTITY scSapphirePlayerL5C		"0x00100536">
+	<!ENTITY scWolfenPlayerL6A			"0x00100537">
+	<!ENTITY scWolfenPlayerL6B			"0x00100538">
+	<!ENTITY scWolfenPlayerL6C			"0x00100539">
 
     <!-- 1000-FFFF RESERVED: DO NOT USE -->
 	]>

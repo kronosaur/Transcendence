@@ -964,8 +964,6 @@
 						)
 					)
 
-					(dbgOutput shipsToCreate)
-					
 					;	Create a list of ships to sell
 					
 					(setq shipList
@@ -995,8 +993,8 @@
 						
 					;	Shuffle them
 					
-					(shuffle shipList)
-					
+					(setq shipList (shuffle shipList))
+
 					;	Split the list in two, with the second list being extra
 					;	ships that we don't need.
 					
