@@ -74,7 +74,12 @@
 						;	Compute some descriptions
 						
 						(newShipDesc (objGetProperty selObj 'playerDesc))
+
+						;	Wingmen
 						
+						(allWingmen (sysFindObject gPlayerShip "s +property:playerWingman; +property:character;"))
+						(validWingmen Nil)
+
 						;	Vars
 						
 						(canBuy Nil)
@@ -93,14 +98,67 @@
 							newShipDesc
 							)
 
+						;	See if the player can upgrade to this ship.
+
+						(switch
+
+							;	If the player cannot afford the ship, then say so
+
+							(gr tradeInPrice (objGetBalance gPlayerShip currency))
+								(block ()
+									(scrEnableAction gScreen 'actionBuyShip Nil)
+									(scrSetActionDesc gScreen 'actionBuyShip (scrTranslate gScreen 'descCantAffordToBuy))
+									)
+
+							;	If we get a rebate
+
+							(ls tradeInPrice 0)
+								(scrSetActionDesc gScreen 'actionBuyShip (scrTranslate gScreen 'descBuyShipRebate { price: (fmtCurrency currency (- tradeInPrice)) }))
+
+							;	Allow buy
+
+							(block ()
+								(scrSetActionDesc gScreen 'actionBuyShip (scrTranslate gScreen 'descBuyShip { price: (fmtCurrency currency tradeInPrice) }))
+								)
+							)
+
 						;	If we have wingmen, then enable the button to buy a ship for wingmen
 
 						(switch
-							(not (sysFindObject gPlayerShip "s +property:playerWingman; +property:character;"))
+							(not allWingmen)
 								(scrShowAction gScreen 'actionBuyForWingman Nil)
+
+							;	If none of the wingmen want this ship
+
+							(not (setq validWingmen
+									(filter allWingmen wingmanObj
+										(and (= (objFireEvent wingmanObj 'CanUpgradeTo { newShipObj:selObj }) True)
+											(= (objFireEvent selObj 'CanUpgradeFrom { oldShipObj:wingmanObj }) True)
+											)
+										)
+									))
+								(block ()
+									(scrEnableAction gScreen 'actionBuyForWingman Nil)
+									(scrSetActionDesc gScreen 'actionBuyForWingman (scrTranslate gScreen 'descAllWingmenRefuse))
+									)
+
+							;	See if we can afford it
+
+							(not (filter validWingmen wingmanObj
+									(geq (objGetBalance gPlayerShip currency)
+										(- newShipPrice (or (objGetShipBuyPrice gSource wingmanObj) 0))
+										)
+									))
+								(block ()
+									(scrEnableAction gScreen 'actionBuyForWingman Nil)
+									(scrSetActionDesc gScreen 'actionBuyForWingman (scrTranslate gScreen 'descCantAffordForWingmen))
+									)
+
+							;	OK
 
 							(block ()
 								(scrShowAction gScreen 'actionBuyForWingman True)
+								(scrSetActionDesc gScreen 'actionBuyForWingman (scrTranslate gScreen 'descBuyForWingman))
 								)
 							)
 
@@ -132,11 +190,30 @@
 						(block (
 							(theEntry (scrGetListEntry gScreen))
 							(selObj (@ theEntry 'shipObj))
+							(allWingmen (sysFindObject gPlayerShip "s +property:playerWingman; +property:character;"))
+							(wingmanObj (if (= (count allWingmen) 1) (@ allWingmen 0)))
+							(wingmanPrice (or (objGetShipBuyPrice gSource wingmanObj) 0))
 							)
-							(scrShowScreen gScreen &dsRPGShipBrokerWingman; {
-								newShipID: (objGetID selObj)
-								price: (scrGetData gScreen 'buyPrice)
-								})
+							(switch
+								;	If we only have a single wingman, then go directly to the
+								;	confirm screen.
+
+								wingmanObj
+									(scrShowScreen gScreen &dsRPGShipBrokerConfirm; {
+										newShipID: (objGetID selObj)
+										newShipPrice: (scrGetData gScreen 'buyPrice)
+										oldShipID: (objGetID (objGetID wingmanObj))
+										oldShipPrice: wingmanPrice
+										price: (- (scrGetData gScreen 'buyPrice) wingmanPrice)
+										})
+
+								;	Otherwise, we need to select a wingman
+
+								(scrShowScreen gScreen &dsRPGShipBrokerWingman; {
+									newShipID: (objGetID selObj)
+									price: (scrGetData gScreen 'buyPrice)
+									})
+								)
 							)
 					</Action>
 
@@ -156,13 +233,23 @@
 				Price: %fullPrice%
 			</Text>
 
-			<Text id="descCantTradeIn">
-				Your ship is worthless to us.
+			<Text id="descBuyShip">
+				Trade in your ship for %price%.
 			</Text>
-			<Text id="descCantAffordTradeIn">
-				You cannot afford to trade in for this ship.
+			<Text id="descBuyShipRebate">
+				Receive %price% when you trade in your ship.
 			</Text>
 			<Text id="descCantAffordToBuy">
+				You cannot afford to buy this ship.
+			</Text>
+
+			<Text id="descBuyForWingman">
+				Trade in a wingman's ship.
+			</Text>
+			<Text id="descAllWingmenRefuse">
+				Your wingmen do not want this ship.
+			</Text>
+			<Text id="descCantAffordForWingmen">
 				You cannot afford to buy this ship.
 			</Text>
 		</Language>
@@ -502,7 +589,63 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descChooseWingman)
+					(block (
+						(theEntry (scrGetListEntry gScreen))
+						(oldShipObj (objGetObjByID (@ theEntry 'wingmanID)))
+						(newShipObj (objGetObjByID (@ gData 'newShipID)))
+						(tradeInPrice (- (@ gData 'price) (@ theEntry 'wingmanPrice)))
+						(currency (objGetProperty gSource 'currency))
+
+						(introDesc (scrTranslate gScreen 'descOffer {
+							wingmanName: (objGetName oldShipObj 0)
+							newShipName: (objGetName newShipObj '(article generic))
+							currency: currency
+							price: tradeInPrice
+							}))
+
+						(result Nil)
+						)
+						(switch
+							;	Ask the wingman if they want the trade. If not, then we fail
+
+							(!= (setq result (objFireEvent oldShipObj 'CanUpgradeTo { newShipObj:newShipObj })) True)
+								(block ()
+									(scrEnableAction gScreen 'actionBuyFor Nil)
+									(scrSetDesc gScreen introDesc
+										"\n\n"
+										result
+										)
+									)
+
+							;	Ask the new class if it is allowed to replace the wingman
+
+							(!= (setq result (objFireEvent newShipObj 'CanUpgradeFrom { oldShipObj:oldShipObj })) True)
+								(block ()
+									(scrEnableAction gScreen 'actionBuyFor Nil)
+									(scrSetDesc gScreen introDesc
+										"\n\n"
+										result
+										)
+									)
+
+							;	If we cannot afford it
+
+							(ls (objGetBalance gPlayerShip currency) tradeInPrice)
+								(block ()
+									(scrEnableAction gScreen 'actionBuyFor Nil)
+									(scrSetDesc gScreen introDesc
+										"\n\n"
+										(scrTranslate gScreen 'descCantAfford)
+										)
+									)
+
+							;	OK
+
+							(block ()
+								(scrSetDesc gScreen introDesc)
+								)
+							)
+						)
 				</OnPaneInit>
 
 				<Actions>
@@ -536,8 +679,28 @@
 		<Language>
 			<Text id="actionBuyFor">[B]uy for this Wingman</Text>
 
-			<Text id="descChooseWingman">
-				Which of your wingmen would you like to buy a ship for?
+			<Text id="descOffer">
+				(if (ls (@ gData 'price) 0)
+					(scrTranslate gScreen 'descOfferRebate {
+						wingmanName:(@ gData 'wingmanName) 
+						newShipName:(@ gData 'newShipName) 
+						price:(fmtCurrency (@ gData 'currency) (- (@ gData 'price)))
+						})
+					(scrTranslate gScreen 'descOfferPay {
+						wingmanName:(@ gData 'wingmanName) 
+						newShipName:(@ gData 'newShipName) 
+						price:(fmtCurrency (@ gData 'currency) (@ gData 'price))
+						})
+					)
+			</Text>
+			<Text id="descOfferPay">
+				You offer to trade in %wingmanName%'s ship for %newShipName% at a cost of %price%.
+			</Text>
+			<Text id="descOfferRebate">
+				You offer to trade in %wingmanName%'s ship for %newShipName% and get %price% back.
+			</Text>
+			<Text id="descCantAfford">
+				Unfortunately, you cannot afford the cost.
 			</Text>
 
 			<Text id="descWingmanPrice">
