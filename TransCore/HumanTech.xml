@@ -35,6 +35,30 @@
 			</ReactorDisplay>
 		</PlayerSettings>
 
+		<Events>
+			<CanUpgradeTo>
+				;	This event is called when the player upgrades either their
+				;	ship or a wingman's ship. This event is called on the OLD
+				;	ship, and is asking we should allow an upgrade to 'newShipObj.
+				;
+				;	By default, we allow it. Derived types should override this
+				;	event if they want to return a different answer.
+
+				True
+			</CanUpgradeTo>
+
+			<CanUpgradeFrom>
+				;	This event is called when the player upgrades either their
+				;	ship or a wingman's ship. This event is called on the NEW
+				;	ship, and is asking if 'oldShipObj is allowed to upgrade to
+				;	this ship (gSource).
+				;
+				;	By default, we allow it. Derived types should override this
+				;	event if they want to return a different answer.
+
+				True
+			</CanUpgradeFrom>
+		</Events>
 	</ShipClass>
 
 </TranscendenceModule>

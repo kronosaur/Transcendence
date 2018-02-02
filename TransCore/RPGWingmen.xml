@@ -267,6 +267,12 @@
 			<String id="WatchYourTargets">"Watch your targets!"</String>
 			<String id="WingmanJoined">"Ready"</String>
 			<String id="WingmanKilled">Wingman killed</String>
+
+			<Text id="msgRefusesToDowngradeShip">
+
+				%name% refuses to switch to an inferior ship.
+
+			</Text>
 		</Language>
 		
 		<Events>
@@ -507,6 +513,27 @@
 					(objFireEvent gSource "OnWingmanLeftPlayer")
 					)
 			</OrderLeavePlayer>
+
+			<CanUpgradeTo>
+				;	This event is called when the player wants to give the wingman
+				;	a new ship. By default, we only accept if the new ship is
+				;	better (cost more) than the old one.
+
+				(switch
+
+					;	If the new ship is cheaper than this ship, then we do not
+					;	allow the upgrade.
+
+					(leq (objGetProperty (@ gData 'newShipObj) 'price) (objGetProperty gSource 'price))
+						(objTranslate gSource 'msgRefusesToDowngradeShip {
+							name: (objGetName gSource 0)
+							})
+
+					;	Otherwise, we allow it.
+
+					True
+					)
+			</CanUpgradeTo>
 		</Events>
 	</Type>
 

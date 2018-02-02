@@ -232,6 +232,7 @@
 
 						(canTrade Nil)
 						(confirmDesc Nil)
+						(result Nil)
 						)
 
 						;	See if we can trade this ship
@@ -256,7 +257,17 @@
 
 							;	Ask the wingman if they want the trade. If not, then we fail
 
+							(!= (setq result (objFireEvent oldShipObj 'CanUpgradeTo { newShipObj:newShipObj })) True)
+								(block ()
+									(setq confirmDesc result)
+									)
 
+							;	Ask the new class if it is allowed to replace the wingman
+
+							(!= (setq result (objFireEvent newShipObj 'CanUpgradeFrom { oldShipObj:oldShipObj })) True)
+								(block ()
+									(setq confirmDesc result)
+									)
 
 							;	Otherwise, we're trading one of our wingmen...
 
