@@ -1300,7 +1300,7 @@
 						(block (newShip)
 							(setq newShip
 								(sysCreateShip
-									(random '(&scRoninB; &scRoninB; &scRoninC; &scRoninC; &scRoninC; &scWolfen; &scCenturion;))
+									(random '(&scRoninB; &scRoninB; &scRoninC; &scRoninC; &scRoninC; &scWolfen; &scCenturionBlock1;))
 									(objGetNearestStargate homeObj)
 									&svCorporate;
 									)

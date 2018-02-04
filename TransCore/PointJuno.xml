@@ -72,12 +72,12 @@
 		<Ships>
 			<Ship					count="1"	class="&scBritannia;"	orders="guard" controller="fleetcommand">
 				<Escorts>
-					<Ship			count="12"	class="&scCenturion;"	orders="escort" controller="fleet"/>
+					<Ship			count="12"	class="&scCenturionM;"	orders="escort" controller="fleet"/>
 				</Escorts>
 			</Ship>
 			<Ship					count="1"	class="&scBritannia;"	orders="guard" controller="fleetcommand">
 				<Escorts>
-					<Ship			count="12"	class="&scCenturion;"	orders="escort" controller="fleet"/>
+					<Ship			count="12"	class="&scCenturionM;"	orders="escort" controller="fleet"/>
 				</Escorts>
 			</Ship>
 		</Ships>
@@ -87,7 +87,7 @@
 				<Ship chance="25" count="1" class="&scEI500;" orders="gateOnThreat"/>
 				<Ship chance="10" count="1" class="&scWolfen;" orders="gateOnThreat"/>
 				<Ship chance="15" count="1" class="&scRoninC;" orders="guard"/>
-				<Ship chance="50" count="1" class="&scCenturion;" orders="guard"/>
+				<Ship chance="50" count="1" class="&scCenturionM;" orders="guard"/>
 			</Table>
 		</Reinforcements>
 

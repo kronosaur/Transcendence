@@ -807,7 +807,8 @@
 	<!ENTITY ovNavSignText				"0x00102025">
 	<!ENTITY baCommonwealthStationObsolete	"0x00102026">
 
-	<!ENTITY scCenturion				"0x00103001">
+	<!ENTITY scCenturionBlock2			"0x00103001">
+	<!ENTITY scCenturion				"0x00103001">	<!-- Backwards compatibility -->
 	<!ENTITY scScarabFreighter			"0x00103002">
 	<!ENTITY scCenturionRama			"0x00103003">
 	<!ENTITY scCenturionX				"0x00103004">
@@ -1931,6 +1932,18 @@
 	<!ENTITY msCSCLamplighterTesting	"0x001004B4">
 	<!ENTITY msCSCLamplighterLost		"0x001004B5">
 	<!ENTITY rsPointJuno				"0x001004B6">
+	<!ENTITY scCenturionBlock1			"0x001004B7">
+	<!ENTITY rsCenturionBlock1			"0x001004B8">
+	<!ENTITY rsCenturionBlock1Hero		"0x001004B9">
+	<!ENTITY rsCenturionBlock2			"0x001004BA">
+	<!ENTITY rsCenturionBlock2Hero		"0x001004BB">
+	<!ENTITY scCenturionM				"0x001004BC">
+	<!ENTITY rsCenturionM				"0x001004BD">
+	<!ENTITY rsCenturionMHero			"0x001004BE">
+	<!ENTITY rsCenturionMDual			"0x001004BF">
+	<!ENTITY rsCenturionMDualHero		"0x001004C0">
+	<!ENTITY rsCenturionX				"0x001004C1">
+	<!ENTITY rsCenturionXHero			"0x001004C2">
 
 	<!-- 04D0-04EF NAMI CORPORATION -->
 
@@ -2020,6 +2033,7 @@
 	<Module filename="CharonPirates.xml"/>
 	<Module filename="Commonwealth.xml"/>
 	<Module filename="CommonwealthAgricultural.xml"/>
+	<Module filename="CommonwealthCenturions.xml"/>
 	<Module filename="CommonwealthFleet.xml"/>
 	<Module filename="CommonwealthFleetMission01.xml"/>
 	<Module filename="CommonwealthFleetMission02.xml"/>

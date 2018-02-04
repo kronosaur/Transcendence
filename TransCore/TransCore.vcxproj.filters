@@ -693,5 +693,8 @@
     <Xml Include="HumanTech.xml">
       <Filter>Human Space Library\Miscellaneous</Filter>
     </Xml>
+    <Xml Include="CommonwealthCenturions.xml">
+      <Filter>Human Space Library\Commonwealth</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

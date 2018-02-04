@@ -1549,147 +1549,6 @@ PLAYER DATA
 			/>
 	</ShipClass>
 
-	<!-- Centurion-class Heavy Gunship -->
-
-	<ShipClass UNID="&scCenturion;"
-			manufacturer=		"Pacific Defense Corporation"
-			class=				"Centurion"
-			type=				"heavy gunship"
-			defaultSovereign=	"&svCommonwealthFleet;"
-
-			mass=				"90"
-			cargoSpace=			"50"
-			thrustRatio=		"9.0"
-			maxSpeed=			"20"
-
-			attributes=			"commonwealth, commonwealthMilitary, commonMilitary, genericClass, pacificDefense"
-			>
-
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itBlastPlate;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itBlastPlate;" areaSet="3,4" />
-			<ArmorSection start="135" span="90" armorID="&itBlastPlate;" areaSet="1,6" />
-			<ArmorSection start="45"  span="90" armorID="&itBlastPlate;" areaSet="7,13" />
-		</Armor>
-
-		<Devices>
-			<Device deviceID="&itTeV9Blaster;"/>
-			<Device deviceID="&itR1Deflector;"/>
-		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<Items>
-			<Item count="2d6" item="&itHeliumAssembly;"/>
-		</Items>
-
-		<Image imageID="&rsCenturionHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-141"	posRadius="27"	posZ="0"	rotation="180"/>
-			<Effect type="rotateRight"		posAngle="82"	posRadius="23"	posZ="0"	rotation="0"/>
-			<Effect type="rotateRight"		posAngle="-98"	posRadius="23"	posZ="0"	rotation="180"/>
-			<Effect type="rotateLeft"		posAngle="-82"	posRadius="23"	posZ="0"	rotation="0"/>
-			<Effect type="rotateLeft"		posAngle="98"	posRadius="23"	posZ="0"	rotation="180"/>
-		</Effects>
-
-		<AISettings
-			fireRateAdj=		"20"
-			fireAccuracy=		"85"
-			perception=			"4"
-			
-			combatStyle=		"advanced"
-			/>
-
-	</ShipClass>
-
-	<!-- Level 7: Centurion/X-class Heavy Gunship -->
-
-	<ShipClass UNID="&scCenturionX;"
-			manufacturer=		"Pacific Defense Corporation"
-			class=				"Centurion/X"
-			type=				"heavy gunship"
-			defaultSovereign=	"&svCommonwealthFleet;"
-
-			attributes=			"commonwealth, commonwealthMilitary, commonMilitary, genericClass, pacificDefense"
-			inherit=			"&baHumanTechShip;"
-			>
-
-		<!-- Hull -->
-
-		<Hull
-			size=				"30"
-			mass=				"90"
-			cargoSpace=			"50"
-
-			maxCargoSpace=		"200"
-			maxDevice=			"8"
-			maxNonWeapons=		"4"
-
-			stdArmor=			"6000"
-			maxArmor=			"12000"
-			maxArmorSpeed=		"20"
-			minArmorSpeed=		"24"
-			/>
-
-		<Drive
-			maxSpeed=			"22"
-			thrust=				"1350"
-			powerUse=			"90"
-			/>
-
-		<Maneuver
-			maxRotationRate=	"12.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<!-- Configuration -->
-
-		<Armor
-			armorID=			"&itP120HexphaseArmor;"
-			count=				"4"
-			/>
-		
-		<Devices>
-			<Device deviceID="&itStarCannon;"/>
-			<Device deviceID="&itR5Deflector;"/>
-		</Devices>
-
-		<!-- Treasure -->
-
-		<Items>
-			<Item count="2d6" item="&itHeliumAssembly;"/>
-		</Items>
-
-		<!-- Image and Effects -->
-
-		<Image imageID="&rsCenturionHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-141"	posRadius="27"	posZ="0"	rotation="180"/>
-			<Effect type="rotateRight"		posAngle="82"	posRadius="23"	posZ="0"	rotation="0"/>
-			<Effect type="rotateRight"		posAngle="-98"	posRadius="23"	posZ="0"	rotation="180"/>
-			<Effect type="rotateLeft"		posAngle="-82"	posRadius="23"	posZ="0"	rotation="0"/>
-			<Effect type="rotateLeft"		posAngle="98"	posRadius="23"	posZ="0"	rotation="180"/>
-		</Effects>
-
-		<!-- AI and Behavior -->
-
-		<AISettings
-			fireRateAdj=		"15"
-			fireAccuracy=		"90"
-			perception=			"4"
-			
-			combatStyle=		"advanced"
-			/>
-
-	</ShipClass>
-
 	<!-- CSC Task Force Encounter
 	
 	GLOBAL DATA
@@ -1773,14 +1632,14 @@ PLAYER DATA
 				</OnCreate>
 
 				<Escorts>
-					<Ship					count="1"	class="&scCenturion;"	orders="guard" controller="fleetcommand">
+					<Ship					count="1"	class="&scCenturionM;"	orders="guard" controller="fleetcommand">
 						<Escorts>
-							<Ship     count="6"	class="&scCenturion;"	orders="escort" controller="fleet"/>
+							<Ship     count="6"	class="&scCenturionM;"	orders="escort" controller="fleet"/>
 						</Escorts>
 					</Ship>
-					<Ship					count="1"	class="&scCenturion;"	orders="guard" controller="fleetcommand">
+					<Ship					count="1"	class="&scCenturionM;"	orders="guard" controller="fleetcommand">
 						<Escorts>
-							<Ship     count="6"	class="&scCenturion;"	orders="escort" controller="fleet"/>
+							<Ship     count="6"	class="&scCenturionM;"	orders="escort" controller="fleet"/>
 						</Escorts>
 					</Ship>
 				</Escorts>
@@ -1815,7 +1674,7 @@ PLAYER DATA
 				</OnCreate>
 
 				<Escorts>
-					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
+					<Ship     count="2d6"	class="&scCenturionM;"	orders="patrol" patrolDist="15"/>
 				</Escorts>
 			</Ship>
 		</Ships>
@@ -1848,7 +1707,7 @@ PLAYER DATA
 				</OnCreate>
 
 				<Escorts>
-					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
+					<Ship     count="2d6"	class="&scCenturionM;"	orders="patrol" patrolDist="15"/>
 				</Escorts>
 			</Ship>
 		</Ships>
@@ -1917,7 +1776,7 @@ PLAYER DATA
 					(missionID (msnGetProperty missionObj 'id))
 					)
 					(if (not theClass)
-						(setq theClass &scCenturion;)
+						(setq theClass &scCenturionM;)
 						)
 					(for i 0 (- aCount 1)
 						(block (wingmanObj)
@@ -2576,15 +2435,15 @@ PLAYER DATA
 
 <!-- RESOURCES -->
 
-	<Image UNID="&rsAurochs;"		bitmap="Resources\Aurochs.jpg" bitmask="Resources\AurochsMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsAurochsHD;"		bitmap="Resources\AurochsHD.jpg"	bitmask="Resources\AurochsHDMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsAurochs;"				bitmap="Resources\Aurochs.jpg" bitmask="Resources\AurochsMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsAurochsHD;"				bitmap="Resources\AurochsHD.jpg"	bitmask="Resources\AurochsHDMask.bmp" 	loadOnUse="true" />
 	
-	<Image UNID="&rsAquila;"		bitmap="Resources\Aquila.jpg" bitmask="Resources\AquilaMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsBritannia;"		bitmap="Resources\Britannia.jpg" bitmask="Resources\BritanniaMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsCSC;"			bitmap="Resources\CSC.jpg" bitmask="Resources\CSCMask.bmp" loadOnUse="true" />
-	<Image UNID="&rsBritanniaHD;"	bitmap="Resources\BritanniaHD.jpg" bitmask="Resources\BritanniaHDMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsCenturionHD;"	bitmap="Resources\CenturionHD.jpg"	bitmask="Resources\CenturionHDMask.bmp" 	loadOnUse="true" />
-	
+	<Image UNID="&rsAquila;"				bitmap="Resources\Aquila.jpg" bitmask="Resources\AquilaMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsBritannia;"				bitmap="Resources\Britannia.jpg" bitmask="Resources\BritanniaMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsCSC;"					bitmap="Resources\CSC.jpg" bitmask="Resources\CSCMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsBritanniaHD;"			bitmap="Resources\BritanniaHD.jpg" bitmask="Resources\BritanniaHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsCenturionHD;"			bitmap="Resources\CenturionHD.jpg"	bitmask="Resources\CenturionHDMask.bmp" 	loadOnUse="true" />
+
 	<Image UNID="&rsCSCBkgnd;"		bitmap="Resources\CSCScreen.jpg" loadOnUse="true" />
 	<Image UNID="&rsFleetEmblems;"	bitmap="Resources\FleetEmblems.jpg" bitmask="Resources\FleetEmblemsMask.bmp" loadOnUse="true" />
 

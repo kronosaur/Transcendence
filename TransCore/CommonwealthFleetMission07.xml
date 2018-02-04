@@ -81,7 +81,7 @@
 					(objSetIdentified (objGetObjByID (msnGetData gSource 'gate2ID)))
 
 					;	Create wingmen for the mission
-					(intFleetCreateWingmen gSource 6 &scCenturion;)
+					(intFleetCreateWingmen gSource 6 &scCenturionM;)
 					)
 			</OnAcceptedUndock>
 

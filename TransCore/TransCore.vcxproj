@@ -457,11 +457,14 @@
     </Xml>
     <Xml Include="BlackMarketMission00.xml" />
     <Xml Include="BlackMarketMission01.xml" />
+    <Xml Include="CommonwealthCenturions.xml" />
     <Xml Include="CommonwealthFleetMission01.xml" />
     <Xml Include="CommonwealthFleetMission02.xml" />
     <Xml Include="CommonwealthFleetMission03.xml" />
     <Xml Include="CommonwealthFleetMission04.xml" />
-    <Xml Include="CommonwealthFleetMission05.xml" />
+    <Xml Include="CommonwealthFleetMission05.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="CommonwealthFleetMission06.xml" />
     <Xml Include="CommonwealthFleetMission07.xml" />
     <Xml Include="CommonwealthFleetMission08.xml" />
@@ -472,7 +475,9 @@
     <Xml Include="CommonwealthFleetMissionLL02.xml" />
     <Xml Include="CommonwealthFleetMissionLL03.xml" />
     <Xml Include="CommonwealthFleetMissionLL04.xml" />
-    <Xml Include="CommonwealthFleetMissionPJ01.xml" />
+    <Xml Include="CommonwealthFleetMissionPJ01.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="CommonwealthMilitiaMission01.xml" />
     <Xml Include="CommonwealthMilitiaMission02.xml" />
     <Xml Include="CommonwealthMilitiaMission03.xml" />
@@ -496,7 +501,9 @@
     <Xml Include="Dall01.xml" />
     <Xml Include="Dantalion.xml" />
     <Xml Include="DeathDrugsCartel.xml" />
-    <Xml Include="Debris.xml" />
+    <Xml Include="Debris.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="EtaCeti.xml" />
     <Xml Include="Ferians.xml">
       <SubType>Designer</SubType>
@@ -504,7 +511,9 @@
     <Xml Include="Fiona.xml">
       <SubType>Designer</SubType>
     </Xml>
-    <Xml Include="Gaians.xml" />
+    <Xml Include="Gaians.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="Heliotropes.xml" />
     <Xml Include="Himal.xml" />
     <Xml Include="Huaramarca.xml" />

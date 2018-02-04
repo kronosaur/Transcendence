@@ -1185,15 +1185,14 @@
 	<ShipTable unid="&tbCommDefenders;">
 		<LevelTable>
 			<Ship levelFrequency="cccr- -----" count="1" class="&scRoninA;" orders="guard"/>
-			<Ship levelFrequency="cccrr -----" count="1" class="&scIAVLight;" orders="guard"/>
-			<Ship levelFrequency="ruucc cr---" count="1" class="&scRoninB;" orders="guard"/>
-			<Ship levelFrequency="uuucc cur--" count="1" class="&scWolfen;" orders="guard"/>
-			<Ship levelFrequency="---uu ccccu" count="1" class="&scRoninC;" orders="guard"/>
+			<Ship levelFrequency="uccrv -----" count="1" class="&scRoninB;" orders="guard"/>
+			<Ship levelFrequency="-ccur -----" count="1" class="&scIAVLight;" orders="guard"/>
+			<Ship levelFrequency="ruucu r----" count="1" class="&scRoninC;" orders="guard"/>
+			<Ship levelFrequency="rrucc rv---" count="1" class="&scWolfen;" orders="guard"/>
 			<Ship levelFrequency="-rrcc crr--" count="1" class="&scIAVMedium;" orders="guard"/>
-			<Ship levelFrequency="uuucc ccccc" count="1" class="&scCenturion;" orders="guard"/>
-			<Ship levelFrequency="--ruu ucccc" count="1" class="&scIAVHeavy;" orders="guard"/>
-			<Ship levelFrequency="--ruc cuuuu" count="1" class="&scManticore;" orders="guard"/>
-			<Ship levelFrequency="----- -uuuu" count="1" class="&scBritannia;" orders="guard"/>
+			<Ship levelFrequency="-ruuc curr-" count="1" class="&scCenturionBlock1;" orders="guard"/>
+			<Ship levelFrequency="--vru ccurr" count="1" class="&scCenturionBlock2;" orders="guard"/>
+
 		</LevelTable>
 	</ShipTable>
 	
@@ -1201,14 +1200,16 @@
 
 	<ShipTable unid="&tbCommEliteDefenders;">
 		<LevelTable>
-			<Ship levelFrequency="cccr- -----" count="1" class="&scRoninB;" orders="guard"/>
-			<Ship levelFrequency="cccuu ur---" count="1" class="&scWolfen;" orders="guard"/>
-			<Ship levelFrequency="cccuu rr---" count="1" class="&scIAVMedium;" orders="guard"/>
-			<Ship levelFrequency="uuccc uur--" count="1" class="&scRoninC;" orders="guard"/>
-			<Ship levelFrequency="ccccc ccuur" count="1" class="&scCenturion;" orders="guard"/>
-			<Ship levelFrequency="uuucc ccccc" count="1" class="&scIAVHeavy;" orders="guard"/>
-			<Ship levelFrequency="ruuuc ccccc" count="1" class="&scManticore;" orders="guard"/>
-			<Ship levelFrequency="---ru uuuuu" count="1" class="&scBritannia;" orders="guard"/>
+			<Ship levelFrequency="uccrv -----" count="1" class="&scRoninB;" orders="guard"/>
+			<Ship levelFrequency="ruucu r----" count="1" class="&scRoninC;" orders="guard"/>
+			<Ship levelFrequency="rrucc rv---" count="1" class="&scWolfen;" orders="guard"/>
+			<Ship levelFrequency="-rrcc crr--" count="1" class="&scIAVMedium;" orders="guard"/>
+			<Ship levelFrequency="-ruuc curr-" count="1" class="&scCenturionBlock1;" orders="guard"/>
+			<Ship levelFrequency="--vru ccurr" count="1" class="&scCenturionBlock2;" orders="guard"/>
+			<Ship levelFrequency="---vr uccur" count="1" class="&scIAVHeavy;" orders="guard"/>
+			<Ship levelFrequency="---vr uccur" count="1" class="&scManticore;" orders="guard"/>
+			<Ship levelFrequency="---vr ucurv" count="1" class="&scCenturionM;" orders="guard"/>
+			<Ship levelFrequency="----v ruuuu" count="1" class="&scBritannia;" orders="guard"/>
 		</LevelTable>
 	</ShipTable>
 

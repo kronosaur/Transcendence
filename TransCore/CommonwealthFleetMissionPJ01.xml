@@ -141,7 +141,7 @@
 									)
 								)
 							;	Create some ships off-screen a bring them in
-							(intFleetCreateWingmen gSource 8 &scCenturion;)
+							(intFleetCreateWingmen gSource 8 &scCenturionM;)
 
 							;	Set a timer in case we don't find the fleet quickly enough
 							(msnAddTimerEvent gSource 3600 'OnTimerZeroHour)

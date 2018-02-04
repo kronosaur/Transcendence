@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- SHIP CLASSES -->
+
+	<!-- Level 5: Centurion-class Heavy Gunship Block 1 -->
+
+	<ShipClass UNID="&scCenturionBlock1;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Centurion"
+			type=				"heavy gunship"
+			defaultSovereign=	"&svCommonwealthFleet;"
+
+			attributes=			"commonwealth, genericClass, pacificDefense"
+			>
+
+		<!-- Hull -->
+
+		<Hull
+			size=				"28"
+			mass=				"90"
+			cargoSpace=			"50"
+
+			maxCargoSpace=		"200"
+			maxDevice=			"8"
+			maxNonWeapons=		"4"
+
+			stdArmor=			"6000"
+			maxArmor=			"12000"
+			maxArmorSpeed=		"18"
+			minArmorSpeed=		"22"
+			/>
+
+		<Drive
+			maxSpeed=			"20"
+			thrust=				"1000"
+			powerUse=			"90"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itHeavyPlasteelPlate;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itNeutronBlaster;"/>
+			<Device deviceID="&itR1Deflector;"/>
+		</Devices>
+
+		<!-- Treasure -->
+
+		<Items>
+			<Item count="2d6" item="&itHeliumAssembly;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsCenturionBlock1;" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" viewportRatio="0.005"/>
+		<HeroImage imageID="&rsCenturionBlock1Hero;" imageWidth="320" imageHeight="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-141"	posRadius="27"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"85"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+	</ShipClass>
+
+	<!-- Level 6: Centurion-class Heavy Gunship Block 2 -->
+
+	<ShipClass UNID="&scCenturionBlock2;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Centurion"
+			type=				"heavy gunship"
+			defaultSovereign=	"&svCommonwealthFleet;"
+
+			attributes=			"commonwealth, genericClass, military, pacificDefense"
+			>
+
+		<!-- Hull -->
+
+		<Hull
+			size=				"28"
+			mass=				"90"
+			cargoSpace=			"50"
+
+			maxCargoSpace=		"200"
+			maxDevice=			"8"
+			maxNonWeapons=		"4"
+
+			stdArmor=			"6000"
+			maxArmor=			"12000"
+			maxArmorSpeed=		"18"
+			minArmorSpeed=		"22"
+			/>
+
+		<Drive
+			maxSpeed=			"20"
+			thrust=				"1000"
+			powerUse=			"90"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itBlastPlate;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;"/>
+			<Device deviceID="&itR1Deflector;"/>
+		</Devices>
+
+		<!-- Treasure -->
+
+		<Items>
+			<Item count="2d6" item="&itHeliumAssembly;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsCenturionBlock2;" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" viewportRatio="0.005"/>
+		<HeroImage imageID="&rsCenturionBlock2Hero;" imageWidth="320" imageHeight="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-141"	posRadius="27"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"85"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+	</ShipClass>
+
+	<!-- Level 7: Centurion/M-class Heavy Gunship -->
+
+	<ShipClass UNID="&scCenturionM;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Centurion/M"
+			type=				"heavy gunship"
+			defaultSovereign=	"&svCommonwealthFleet;"
+
+			attributes=			"commonwealth, genericClass, military, pacificDefense"
+			>
+
+		<!-- Hull -->
+
+		<Hull
+			size=				"28"
+			mass=				"90"
+			cargoSpace=			"50"
+
+			maxCargoSpace=		"200"
+			maxDevice=			"8"
+			maxNonWeapons=		"4"
+
+			stdArmor=			"6000"
+			maxArmor=			"12000"
+			maxArmorSpeed=		"18"
+			minArmorSpeed=		"22"
+			/>
+
+		<Drive
+			maxSpeed=			"20"
+			thrust=				"1000"
+			powerUse=			"90"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itAdvancedCeralloyArmor;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itDualTeV9Blaster;"/>
+			<Device deviceID="&itR5Deflector;"/>
+		</Devices>
+
+		<!-- Treasure -->
+
+		<Items>
+			<Item count="2d6" item="&itHeliumAssembly;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsCenturionMDual;" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" viewportRatio="0.005"/>
+		<HeroImage imageID="&rsCenturionMDualHero;" imageWidth="320" imageHeight="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-141"	posRadius="27"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"15"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+	</ShipClass>
+
+	<!-- Level 7: Centurion/X-class Heavy Gunship -->
+
+	<ShipClass UNID="&scCenturionX;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Centurion/X"
+			type=				"heavy gunship"
+			defaultSovereign=	"&svCommonwealthFleet;"
+
+			attributes=			"commonwealth, commonwealthMilitary, commonMilitary, genericClass, pacificDefense"
+			inherit=			"&baHumanTechShip;"
+			>
+
+		<!-- Hull -->
+
+		<Hull
+			size=				"28"
+			mass=				"90"
+			cargoSpace=			"50"
+
+			maxCargoSpace=		"200"
+			maxDevice=			"8"
+			maxNonWeapons=		"4"
+
+			stdArmor=			"6000"
+			maxArmor=			"12000"
+			maxArmorSpeed=		"20"
+			minArmorSpeed=		"24"
+			/>
+
+		<Drive
+			maxSpeed=			"22"
+			thrust=				"1500"
+			powerUse=			"90"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"12.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itP120HexphaseArmor;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itStarCannon;"/>
+			<Device deviceID="&itR5Deflector;"/>
+		</Devices>
+
+		<!-- Treasure -->
+
+		<Items>
+			<Item count="2d6" item="&itHeliumAssembly;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsCenturionX;" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" viewportRatio="0.005"/>
+		<HeroImage imageID="&rsCenturionXHero;" imageWidth="320" imageHeight="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-141"	posRadius="27"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"15"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+	</ShipClass>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsCenturionBlock1;"		bitmap="Resources\CenturionBlock1.jpg"	bitmask="Resources\CenturionBlock1Mask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsCenturionBlock1Hero;"	bitmap="Resources\CenturionBlock1Large.jpg"	bitmask="Resources\CenturionBlock1LargeMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsCenturionBlock2;"		bitmap="Resources\CenturionBlock2.jpg"	bitmask="Resources\CenturionBlock2Mask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsCenturionBlock2Hero;"	bitmap="Resources\CenturionBlock2Large.jpg"	bitmask="Resources\CenturionBlock2LargeMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsCenturionM;"			bitmap="Resources\CenturionM.jpg"	bitmask="Resources\CenturionMMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsCenturionMHero;"		bitmap="Resources\CenturionMLarge.jpg"	bitmask="Resources\CenturionMLargeMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsCenturionMDual;"		bitmap="Resources\CenturionMDual.jpg"	bitmask="Resources\CenturionMDualMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsCenturionMDualHero;"	bitmap="Resources\CenturionMDualLarge.jpg"	bitmask="Resources\CenturionMDualLargeMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsCenturionX;"			bitmap="Resources\CenturionX.jpg"	bitmask="Resources\CenturionXMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsCenturionXHero;"		bitmap="Resources\CenturionXLarge.jpg"	bitmask="Resources\CenturionXLargeMask.bmp" 	loadOnUse="true" />
+
+</TranscendenceModule>
