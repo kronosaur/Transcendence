@@ -427,7 +427,7 @@
 							;	Set name
 							
 							(if (@ autonConfig 'name)
-								(objSetName auton (@ autonConfig 'name))
+								(objSetName auton (@ autonConfig 'name) 0xC0) ; Personal and no article
 								)
 								
 							)
