@@ -13,6 +13,7 @@
 			defaultSovereign=	"&svCommonwealthFleet;"
 
 			attributes=			"commonwealth, genericClass, pacificDefense"
+			inherit=			"&baHumanTechShip;"
 			>
 
 		<!-- Hull -->
@@ -92,6 +93,7 @@
 			defaultSovereign=	"&svCommonwealthFleet;"
 
 			attributes=			"commonwealth, genericClass, military, pacificDefense"
+			inherit=			"&baHumanTechShip;"
 			>
 
 		<!-- Hull -->
@@ -171,6 +173,7 @@
 			defaultSovereign=	"&svCommonwealthFleet;"
 
 			attributes=			"commonwealth, genericClass, military, pacificDefense"
+			inherit=			"&baHumanTechShip;"
 			>
 
 		<!-- Hull -->

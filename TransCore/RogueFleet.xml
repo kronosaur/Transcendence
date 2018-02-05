@@ -2,6 +2,8 @@
 
 <TranscendenceModule>
 
+<!-- ROGUE FLEET -->
+
 	<Sovereign UNID="&svRogueFleet;"
 			name=":the Rogue Fleet"
 			adjective="Rogue Fleet"
@@ -10,118 +12,7 @@
 			alignment="destructive chaos"
 			/>
 
-	<!-- Rogue Mine Layer -->
-
-	<ShipClass UNID="&scRogueMineLayer;"
-			manufacturer=		"Pacific Defense Corporation"
-			class=				"Aurochs"
-			type=				"mine layer"
-			defaultSovereign=	"&svRogueFleet;"
-
-			size=				"65"
-			mass=				"2000"
-			cargoSpace=			"5600"
-			thrustRatio=		"0.8"
-			maxSpeed=			"15"
-
-			explosionType=		"&vtBlastExplosion3;"
-			leavesWreck=		"80"
-
-			attributes=			""
-			>
-
-		<Armor>
-			<ArmorSection start="345" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="315" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="285" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="255" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="225" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="195" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="165" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="135" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="105" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="75"  span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="45"  span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="15"  span="30" armorID="&itP120HexphaseArmor;" />
-		</Armor>
-
-		<Devices>
-			<Device deviceID="&itNAMIMineLauncher;"/>
-			<Device deviceID="&itR5Deflector;"/>
-		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"4.0"
-			rotationAccel=		"0.5"
-			/>
-
-		<Image imageID="&rsAurochsHD;" imageWidth="96" imageHeight="96"		rotationCount="120" rotationColumns="12"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="157"	posRadius="43"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="42"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-157"	posRadius="43"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-		</Effects>
-
-		<Items>
-			<Item count="3d12" item="&itStaticMine;"/>
-			<Item count="1d12" item="&itXenotiteFuelRod;"/>
-		</Items>
-
-		<Events>
-			<OnOrdersCompleted>
-				; GLOBALS
-				; "MinePos" are the coordinates of the center of the area to mine
-				;
-				; "DropMine" is True if the ship should drop a mine at next point
-				; "Target" is the marker for the next destination
-				(block (minePos mineItem)
-					(setq minePos (objGetData gSource "MinePos"))
-					(setq mineItem (itmCreate &itStaticMine; 1))
-
-					; We only do something if we've got mines and a place to go
-					(if (and minePos (objHasItem gSource mineItem))
-						(block (destPos)
-
-							; Drop a mine if we are ready
-							(if (objGetData gSource "DropMine")
-								(block Nil
-									(sysCreateWeaponFire &itStaticMine; gSource (objGetPos gSource) 0 0 Nil)
-									(objRemoveItem gSource mineItem)
-									)
-								)
-
-							; Delete the marker, if it exists
-							(if (objGetObjRefData gSource "Target")
-								(objDestroy (objGetObjRefData gSource "Target"))
-								)
-
-							; Pick a position to go to 
-							(setq destPos (sysCreateMarker 
-								""
-								(sysVectorPolarOffset minePos (random 0 359) (random 1 4))
-								(objGetSovereign gSource)
-								))
-							(objSetObjRefData gSource "Target" destPos)
-							(shpOrderGoto gSource destPos)
-
-							; Drop a mine when we reach the destination
-							(objSetData gSource "DropMine" True)
-							)
-						)
-					)
-			</OnOrdersCompleted>
-		</Events>
-
-		<AISettings
-			fireRateAdj=		"20"
-			fireAccuracy=		"90"
-			perception=			"4"
-			
-			combatStyle=		"standOff"
-			/>
-
-	</ShipClass>
+<!-- ENCOUNTERS -->
 
 	<!-- Rogue Fleet Cache -->
 
@@ -268,5 +159,218 @@
 			<Ship chance="20"	count="1d2"	class="&scCenturionX;"	orders="attack" sovereign="&svRogueFleet;"/>
 		</Table>
 	</EncounterTable>
+
+<!-- SHIP CLASSES -->
+
+	<!-- Level 6: Centurion-class Heavy Gunship -->
+
+	<ShipClass UNID="&scCenturionRogue;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Centurion"
+			type=				"heavy gunship"
+			defaultSovereign=	"&svRogueFleet;"
+
+			attributes=			"genericClass, rogueFleet"
+			inherit=			"&scCenturionBlock2;"
+			>
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itBlastPlate;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;"/>
+			<Device deviceID="&itR1Deflector;"/>
+		</Devices>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsCenturionRogue;" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" viewportRatio="0.005"/>
+		<HeroImage imageID="&rsCenturionRogueHero;" imageWidth="320" imageHeight="320"/>
+
+	</ShipClass>
+
+	<!-- Level 7: Centurion/X-class Heavy Gunship -->
+
+	<ShipClass UNID="&scCenturionXRogue;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Centurion/X"
+			type=				"heavy gunship"
+			defaultSovereign=	"&svRogueFleet;"
+
+			attributes=			"genericClass, rogueFLeet"
+			inherit=			"&scCenturionX;"
+			>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsCenturionXRogue;" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" viewportRatio="0.005"/>
+		<HeroImage imageID="&rsCenturionXRogueHero;" imageWidth="320" imageHeight="320"/>
+
+	</ShipClass>
+
+	<!-- Levle 7: Rogue Mine Layer -->
+
+	<ShipClass UNID="&scRogueMineLayer;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Aurochs"
+			type=				"mine layer"
+			defaultSovereign=	"&svRogueFleet;"
+
+			attributes=			"genericClass, rogueFleet"
+			inherit=			"&baHumanTechShip;"
+
+			explosionType=		"&vtBlastExplosion3;"
+			leavesWreck=		"80"
+			>
+
+		<!-- Hull -->
+
+		<Hull
+			size=				"65"
+			mass=				"2000"
+			cargoSpace=			"2000"
+
+			maxCargoSpace=		"2000"
+			maxDevice=			"8"
+			maxWeapons=			"3"
+			/>
+
+		<Drive
+			maxSpeed=			"15"
+			thrust=				"1800"
+			powerUse=			"120"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"4.0"
+			rotationAccel=		"0.5"
+			/>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itP120HexphaseArmor;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itNAMIMineLauncher;">
+				<Items>
+					<Item count="3d12" item="&itStaticMine;"/>
+				</Items>
+			</Device>
+			<Device deviceID="&itR5Deflector;"/>
+		</Devices>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"30"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"70"
+
+					posX=		"-31"
+					posY=		"0"
+					sizeX=		"28"
+					sizeY=		"42"
+					/>
+			
+			<Compartment name="cargo containers"
+					type=		"cargo"
+					hitPoints=	"50"
+
+					posX=		"10"
+					posY=		"0"
+					sizeX=		"40"
+					sizeY=		"40"
+					/>
+		</Interior>
+		 
+		<!-- Treasure -->
+
+		<Items>
+			<Item count="1d12" item="&itXenotiteFuelRod;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsAurochsRogue;" imageWidth="98" imageHeight="98"		rotationCount="120" rotationColumns="12" viewportRatio="0.009375"/>
+		<HeroImage imageID="&rsAurochsRogueHero;" imageWidth="320" imageHeight="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="157"	posRadius="43"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="42"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-157"	posRadius="43"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"standOff"
+			/>
+
+		<Events>
+			<OnOrdersCompleted>
+				; GLOBALS
+				; "MinePos" are the coordinates of the center of the area to mine
+				;
+				; "DropMine" is True if the ship should drop a mine at next point
+				; "Target" is the marker for the next destination
+				(block (minePos mineItem)
+					(setq minePos (objGetData gSource "MinePos"))
+					(setq mineItem (itmCreate &itStaticMine; 1))
+
+					; We only do something if we've got mines and a place to go
+					(if (and minePos (objHasItem gSource mineItem))
+						(block (destPos)
+
+							; Drop a mine if we are ready
+							(if (objGetData gSource "DropMine")
+								(block Nil
+									(sysCreateWeaponFire &itStaticMine; gSource (objGetPos gSource) 0 0 Nil)
+									(objRemoveItem gSource mineItem)
+									)
+								)
+
+							; Delete the marker, if it exists
+							(if (objGetObjRefData gSource "Target")
+								(objDestroy (objGetObjRefData gSource "Target"))
+								)
+
+							; Pick a position to go to 
+							(setq destPos (sysCreateMarker 
+								""
+								(sysVectorPolarOffset minePos (random 0 359) (random 1 4))
+								(objGetSovereign gSource)
+								))
+							(objSetObjRefData gSource "Target" destPos)
+							(shpOrderGoto gSource destPos)
+
+							; Drop a mine when we reach the destination
+							(objSetData gSource "DropMine" True)
+							)
+						)
+					)
+			</OnOrdersCompleted>
+		</Events>
+	</ShipClass>
+
+<!-- RESOURCE -->
+
+	<Image UNID="&rsAurochsRogue;"			bitmap="Resources\AurochsRogue.jpg"	bitmask="Resources\AurochsRogueMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsAurochsRogueHero;"		bitmap="Resources\AurochsRogueLarge.jpg"	bitmask="Resources\AurochsRogueLargeMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsCenturionRogue;"		bitmap="Resources\CenturionRogue.jpg"	bitmask="Resources\CenturionRogueMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsCenturionRogueHero;"	bitmap="Resources\CenturionRogueLarge.jpg"	bitmask="Resources\CenturionRogueLargeMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsCenturionXRogue;"		bitmap="Resources\CenturionXRogue.jpg"	bitmask="Resources\CenturionXRogueMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsCenturionXRogueHero;"	bitmap="Resources\CenturionXRogueLarge.jpg"	bitmask="Resources\CenturionXRogueLargeMask.bmp" 	loadOnUse="true" />
 
 </TranscendenceModule>

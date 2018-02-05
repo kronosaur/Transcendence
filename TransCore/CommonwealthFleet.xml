@@ -1375,7 +1375,7 @@ PLAYER DATA
 
 	</ShipClass>
 
-	<!-- Aurochs Transport -->
+	<!-- Level 7: Aurochs Transport -->
 
 	<ShipClass UNID="&scAurochs;"
 			manufacturer=		"Pacific Defense Corporation"
@@ -1383,41 +1383,57 @@ PLAYER DATA
 			type=				"transport"
 			defaultSovereign=	"&svCommonwealthFleet;"
 
-			size=				"65"
-			mass=				"2000"
-			cargoSpace=			"5600"
-			thrustRatio=		"0.8"
-			maxSpeed=			"15"
+			attributes=			"commonwealth, freighter, genericClass, pacificDefense"
+			inherit=			"&baHumanTechShip;"
 
 			explosionType=		"&vtBlastExplosion3;"
-
-			attributes=			"commonwealth, freighter, genericClass, pacificDefense"
 			>
 
-		<Armor>
-			<ArmorSection start="345" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="315" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="285" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="255" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="225" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="195" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="165" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="135" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="105" span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="75"  span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="45"  span="30" armorID="&itP120HexphaseArmor;" />
-			<ArmorSection start="15"  span="30" armorID="&itP120HexphaseArmor;" />
-		</Armor>
+		<Names noArticle="true">
+			Aurochs Alpha-%0%0; Aurochs Beta-%0%0; Aurochs Gamma-%0%0;
+			Aurochs Delta-%0%0; Aurochs Epsilon-%0%0; Aurochs Zeta-%0%0;
+			Aurochs Eta-%0%0; Aurochs Theta-%0%0; Aurochs Iota-%0%0;
+			Aurochs Kappa-%0%0; Aurochs Lambda-%0%0; Aurochs Mu-%0%0;
+			Aurochs Nu-%0%0; Aurochs Xi-%0%0; Aurochs Omicron-%0%0;
+			Aurochs Pi-%0%0; Aurochs Rho-%0%0; Aurochs Sigma-%0%0;
+			Aurochs Tau-%0%0; Aurochs Upsilon-%0%0; Aurochs Phi-%0%0;
+			Aurochs Chi-%0%0; Aurochs Psi-%0%0; Aurochs Omega-%0%0
+		</Names>
 
-		<Devices>
-			<Device deviceID="&itTeV9Blaster;" omnidirectional="true" posAngle="180" posRadius="12" posZ="10"/>
-			<Device deviceID="&itR5Deflector;"/>
-		</Devices>
+		<!-- Hull -->
+
+		<Hull
+			size=				"65"
+			mass=				"2000"
+			cargoSpace=			"2000"
+
+			maxCargoSpace=		"2000"
+			maxDevice=			"8"
+			maxWeapons=			"3"
+			/>
+
+		<Drive
+			maxSpeed=			"15"
+			thrust=				"1800"
+			powerUse=			"120"
+			/>
 
 		<Maneuver
 			maxRotationRate=	"4.0"
 			rotationAccel=		"0.5"
 			/>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itP120HexphaseArmor;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;" omnidirectional="true" posAngle="180" posRadius="12" posZ="10"/>
+			<Device deviceID="&itR5Deflector;"/>
+		</Devices>
 
 		<Interior>
 			<Compartment name="interior"
@@ -1445,7 +1461,16 @@ PLAYER DATA
 					/>
 		</Interior>
 		 
-		<Image imageID="&rsAurochsHD;" imageWidth="96" imageHeight="96"		rotationCount="120" rotationColumns="12"/>
+		<!-- Treasure -->
+
+		<Items>
+			<Item count="1d12" item="&itXenotiteFuelRod;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsAurochsHD;" imageWidth="98" imageHeight="98"		rotationCount="120" rotationColumns="12" viewportRatio="0.009375"/>
+		<HeroImage imageID="&rsAurochsHero;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="157"	posRadius="43"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -1453,20 +1478,7 @@ PLAYER DATA
 			<Effect type="thrustMain"		posAngle="-157"	posRadius="43"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
 		</Effects>
 
-		<Items>
-			<Item count="1d12" item="&itXenotiteFuelRod;"/>
-		</Items>
-
-		<Names noArticle="true">
-			Aurochs Alpha-%0%0; Aurochs Beta-%0%0; Aurochs Gamma-%0%0;
-			Aurochs Delta-%0%0; Aurochs Epsilon-%0%0; Aurochs Zeta-%0%0;
-			Aurochs Eta-%0%0; Aurochs Theta-%0%0; Aurochs Iota-%0%0;
-			Aurochs Kappa-%0%0; Aurochs Lambda-%0%0; Aurochs Mu-%0%0;
-			Aurochs Nu-%0%0; Aurochs Xi-%0%0; Aurochs Omicron-%0%0;
-			Aurochs Pi-%0%0; Aurochs Rho-%0%0; Aurochs Sigma-%0%0;
-			Aurochs Tau-%0%0; Aurochs Upsilon-%0%0; Aurochs Phi-%0%0;
-			Aurochs Chi-%0%0; Aurochs Psi-%0%0; Aurochs Omega-%0%0
-		</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"20"
@@ -2437,6 +2449,7 @@ PLAYER DATA
 
 	<Image UNID="&rsAurochs;"				bitmap="Resources\Aurochs.jpg" bitmask="Resources\AurochsMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsAurochsHD;"				bitmap="Resources\AurochsHD.jpg"	bitmask="Resources\AurochsHDMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsAurochsHero;"			bitmap="Resources\AurochsLarge.jpg"	bitmask="Resources\AurochsLargeMask.bmp" 	loadOnUse="true" />
 	
 	<Image UNID="&rsAquila;"				bitmap="Resources\Aquila.jpg" bitmask="Resources\AquilaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsBritannia;"				bitmap="Resources\Britannia.jpg" bitmask="Resources\BritanniaMask.bmp" loadOnUse="true"/>

@@ -1944,6 +1944,7 @@
 	<!ENTITY rsCenturionMDualHero		"0x001004C0">
 	<!ENTITY rsCenturionX				"0x001004C1">
 	<!ENTITY rsCenturionXHero			"0x001004C2">
+	<!ENTITY rsAurochsHero				"0x001004C3">
 
 	<!-- 04D0-04EF NAMI CORPORATION -->
 
@@ -1970,6 +1971,17 @@
 	<!ENTITY scWolfenPlayerL6A			"0x00100537">
 	<!ENTITY scWolfenPlayerL6B			"0x00100538">
 	<!ENTITY scWolfenPlayerL6C			"0x00100539">
+
+	<!-- 0580-059F ROGUE FLEET -->
+
+	<!ENTITY scCenturionRogue			"0x00100580">
+	<!ENTITY rsCenturionRogue			"0x00100581">
+	<!ENTITY rsCenturionRogueHero		"0x00100582">
+	<!ENTITY scCenturionXRogue			"0x00100583">
+	<!ENTITY rsCenturionXRogue			"0x00100584">
+	<!ENTITY rsCenturionXRogueHero		"0x00100585">
+	<!ENTITY rsAurochsRogue				"0x00100586">
+	<!ENTITY rsAurochsRogueHero			"0x00100587">
 
     <!-- 1000-FFFF RESERVED: DO NOT USE -->
 	]>
