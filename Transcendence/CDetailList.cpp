@@ -43,6 +43,11 @@ void CDetailList::Format (const RECT &rcRect, int *retcyHeight)
 	rcColumn.top = 0;
 	rcColumn.bottom = RectHeight(rcRect);
 
+	//	The text area is smaller because of the icon.
+
+	RECT rcText = rcColumn;
+	rcText.right -= SPACING_X + DETAIL_ICON_WIDTH;
+
 	//	First we measure the height of each detail entry.
 
 	for (i = 0; i < m_List.GetCount(); i++)
@@ -52,7 +57,7 @@ void CDetailList::Format (const RECT &rcRect, int *retcyHeight)
 		//	Compute height of description
 
 		RECT rcBounds;
-		m_List[i].Desc.GetBounds(rcColumn, &rcBounds);
+		m_List[i].Desc.GetBounds(rcText, &rcBounds);
 		cyDetails += RectHeight(rcBounds);
 
 		//	Remember the text height separately.
