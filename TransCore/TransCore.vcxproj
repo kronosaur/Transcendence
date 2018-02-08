@@ -461,7 +461,9 @@
     <Xml Include="CommonwealthFleetMission01.xml" />
     <Xml Include="CommonwealthFleetMission02.xml" />
     <Xml Include="CommonwealthFleetMission03.xml" />
-    <Xml Include="CommonwealthFleetMission04.xml" />
+    <Xml Include="CommonwealthFleetMission04.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="CommonwealthFleetMission05.xml">
       <SubType>Designer</SubType>
     </Xml>

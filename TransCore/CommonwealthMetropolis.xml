@@ -200,6 +200,9 @@
 			<InstallDevice	criteria="d L:1-8;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
 
+			<SellShip		criteria="s +commonwealth; +systemLevel:0-2; -notStandard; -notForSale;" priceAdj="100"/>
+			<BuyShip		criteria="s L:1-8; -notForSale;" priceAdj="80"/>
+
 			<ConsumeTrade	criteria="{core.antimatterFuel}"	impact="5"/>
 			<ConsumeTrade	criteria="{human.basicFood}"	impact="10"/>
 			<ConsumeTrade	criteria="{human.lux}"		impact="10"/>
@@ -564,7 +567,8 @@
 
 	<!-- Commonwealth Station -->
 
-	<DockScreen UNID="&dsCommonwealthStation;">
+	<DockScreen UNID="&dsCommonwealthStation;"
+			inherit="&dsDockScreenBase;">
 
 		<InitialPane>
 			(if (objGetStaticData gSource "Info")
@@ -576,6 +580,12 @@
 		<Panes>
 			<Default
 					desc=	"You are in the outer docking level of a large station of the Commonwealth. A monorail terminal provides access to various points around the station.">
+
+				<OnPaneInit>
+					(block ()
+						(scrShowAction gScreen 'actionBuyShip (objHasTradeService gSource 'priceOfShipForSale))
+						)
+				</OnPaneInit>
 
 				<Actions>
 					<Action name="Commodities Exchange" default="1" key="C">
@@ -594,6 +604,12 @@
 						<ShowPane pane="CentralPlaza"/>
 					</Action>
 
+					<Action id="actionBuyShip">
+						(scrShowScreen gScreen &dsRPGShipBroker; {
+							checkMilitaryID: True
+							})
+					</Action>
+
 					<Action name="Undock" cancel="1" key="U">
 						<Exit/>
 					</Action>
@@ -604,6 +620,12 @@
 
 			<DefaultWithInfo
 					desc=	"You are in the outer docking level of a large station of the Commonwealth. A monorail terminal provides access to various points around the station.">
+
+				<OnPaneInit>
+					(block ()
+						(scrShowAction gScreen 'actionBuyShip (objHasTradeService gSource 'priceOfShipForSale))
+						)
+				</OnPaneInit>
 
 				<Actions>
 					<Action name="Information" key="I">
@@ -624,6 +646,12 @@
 
 					<Action name="Central Plaza" key="P">
 						<ShowPane pane="CentralPlaza"/>
+					</Action>
+
+					<Action id="actionBuyShip">
+						(scrShowScreen gScreen &dsRPGShipBroker; {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Undock" cancel="1" key="U">

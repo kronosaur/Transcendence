@@ -177,6 +177,9 @@
 			<InstallDevice	criteria="d L:1-8;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
 
+			<SellShip		criteria="s +commonwealth; +military; +systemLevel:0-2; -notStandard; -notForSale;" priceAdj="100"/>
+			<BuyShip		criteria="s L:1-7; -notForSale;" priceAdj="80"/>
+
 			<ConsumeTrade	criteria="{core.antimatterFuel}"		impact="3"/>
 		</Trade>
 
@@ -280,6 +283,15 @@
 										checkMilitaryID: True
 										})
 									(scrShowScreen gScreen &dsRPGMessage; { textID:'descNoDockServicesAccess })
+									)
+							</Action>
+
+							<Action id="actionBuyShip">
+								(if (gr (typGetData &unidCommonwealthMilitia; 'rank) 0)
+									(scrShowScreen gScreen &dsRPGShipBroker; {
+										checkMilitaryID: True
+										})
+									(scrShowScreen gScreen &dsRPGMessage; { textID:'descNoShipBrokerAccess })
 									)
 							</Action>
 
@@ -404,12 +416,12 @@
 		</Events>
 
 		<Language>
-			<Text id="actionCommandCenter">"[C]ommand Center"</Text>
-			<Text id="actionOfficersClub">"[O]fficers' Club"</Text>
-			<Text id="actionDockServices">"[D]ock Services"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
-			<Text id="actionBar">"[S]it at the Bar"</Text>
-			<Text id="actionLeave">"[L]eave"</Text>
+			<Text id="actionCommandCenter">[C]ommand Center</Text>
+			<Text id="actionOfficersClub">[O]fficers' Club</Text>
+			<Text id="actionDockServices">[D]ock Services</Text>
+			<Text id="actionUndock">[U]ndock</Text>
+			<Text id="actionBar">[S]it at the Bar</Text>
+			<Text id="actionLeave">[L]eave</Text>
 
 			<Text id="Rumors">
 				(random (list
@@ -502,40 +514,47 @@
 					))
 			</Text>
 			<Text id="descWelcome:New">
-				(cat
-					"You are in the main hall of a Commonwealth Militia Fortress. "
-					"Squadron captains rush through the hall reading mission briefings and weapons manifests. You feel out of place here."
-					)
+
+				You are in the main hall of a Commonwealth Militia Fortress. 
+				Squadron captains rush through the hall reading mission 
+				briefings and weapons manifests. You feel out of place here.
+
 			</Text>
 			<Text id="descWelcome:Blacklisted">
-				(cat
-					"You are in the main hall of a Commonwealth Militia Fortress. "
-					"Squadron captains rush through the hall reading mission briefings and weapons manifests. You feel out of place here."
-					)
+
+				You are in the main hall of a Commonwealth Militia Fortress.
+				Squadron captains rush through the hall reading mission 
+				briefings and weapons manifests. You feel out of place here.
+
 			</Text>
 			<Text id="descWelcome:1">
-				(cat
-					"You are in the main hall of a Commonwealth Militia Fortress. "
-					"Squadron captains rush through the hall reading mission briefings and weapons manifests."
-					)
+
+				You are in the main hall of a Commonwealth Militia Fortress.
+				Squadron captains rush through the hall reading mission 
+				briefings and weapons manifests.
+
 			</Text>
 			<Text id="descWelcome:2">
-				(cat
-					"You are in the main hall of a Commonwealth Militia Fortress. "
-					"Squadron captains rush through the hall on various missions; several stop to say hello to you. You feel like you belong."
-					)
+
+				You are in the main hall of a Commonwealth Militia Fortress.
+				Squadron captains rush through the hall on various missions; 
+				several stop to say hello to you. You feel like you belong.
+
 			</Text>
 			<Text id="descWelcome:3">
-				(cat
-					"You are in the main hall of a Commonwealth Militia Fortress. "
-					"Squadron captains rush through the hall on various missions, each one stops to salute you as you pass."
-					)
+
+				You are in the main hall of a Commonwealth Militia Fortress.
+				Squadron captains rush through the hall on various missions, 
+				each one stops to salute you as you pass.
+
 			</Text>
 			<Text id="descNoCommandCenterAccess">
-				(cat
-					"Two guards flank the door to the Command Center. One of them checks your ID against a computer list:\n\n"
-					"\"Sorry, %sir%, only experienced captains are allowed inside.\""
-					)
+
+				Two guards flank the door to the Command Center. One of them 
+				checks your ID against a computer list:
+
+				"Sorry, %sir%, only experienced captains are allowed inside."
+
 			</Text>
 			<Text id="descNoMissions">
 				(if (= (typGetData &unidCommonwealthMilitia; 'rank) -1)
@@ -544,22 +563,33 @@
 					)
 			</Text>
 			<Text id="descNoOfficersClubAccess">
-				(cat
-					"Two guards flank the door to the Officers' Club. One of them checks your ID against a computer list:\n\n"
-					"\"Sorry, %sir%, only officers are allowed in the club.\""
-					)
+
+				Two guards flank the door to the Officers' Club. One of them 
+				checks your ID against a computer list:
+
+				"Sorry, %sir%, only officers are allowed in the club."
+
 			</Text>
 			<Text id="descNoDockServicesAccess">
-				(cat
-					"Two guards flank the door to Dock Services. One of them checks your ID against a computer list:\n\n"
-					"\"Sorry, %sir%, only militia members are allowed in.\""
-					)
+
+				Two guards flank the door to Dock Services. One of them checks 
+				your ID against a computer list:
+
+				"Sorry, %sir%, only militia members are allowed in."
+
+			</Text>
+			<Text id="descNoShipBrokerAccess">
+
+				Two guards flank the door checking IDs:
+
+				"Sorry, %sir%, only militia members are allowed in."
+
 			</Text>
 			<Text id="descOfficersClub">
-				(cat
-					"The Officers' Club is packed with pilots and other officers having a "
-					"few drinks to pass away the off-duty hours."
-					)
+
+				The Officers' Club is packed with pilots and other officers having a
+				few drinks to pass away the off-duty hours.
+
 			</Text>
 			<Text id="descBarNoMoney">"You sit at the bar, but you don't even have enough money to buy a drink. You feel out of place."</Text>
 			<Text id="descBarBlacklisted">"You spend 5 credits on drinks, but everyone avoids you. You feel out of place here."</Text>
