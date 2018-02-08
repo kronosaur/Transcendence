@@ -220,6 +220,9 @@
 			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 
+			<SellShip		criteria="s +commonwealth; +systemLevel:0-2; -notStandard; -notForSale;" priceAdj="100"/>
+			<BuyShip		criteria="s L:1-8; -notForSale;" priceAdj="80"/>
+
 			<BalanceTrade	criteria="{core.fusionFuel}"		impact="20"/>
 			<BalanceTrade	criteria="{human.basicFood}"	impact="20"/>
 			<BalanceTrade	criteria="{human.lux}"		impact="20"/>
@@ -1366,6 +1369,12 @@
 						<ShowPane pane="IncandescentExports"/>
 					</Action>
 					
+					<Action id="actionBuyShip">
+						(scrShowScreen gScreen &dsRPGShipBroker; {
+							checkMilitaryID: True
+							})
+					</Action>
+
 					<Action id="actionLeave" cancel="1">
 						(scrExitScreen gScreen)
 					</Action>
