@@ -2,9 +2,49 @@
 
 <TranscendenceModule>
 
+<!-- CENTURION-CLASS HEAVY GUNSHIP -->
+
+	<!-- Level 6: Centurion-class Heavy Gunship Block 2 -->
+
+	<ShipClass UNID="&scCenturionBlock2PlayerL6;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Centurion"
+			type=				"heavy gunship"
+
+			attributes=			"commonwealth, military, pacificDefense, shipBroker"
+			inherit=			"&scCenturionBlock2;"
+			>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itBlastPlate;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;"/>
+			<Device deviceID="&itR1Deflector;"/>
+
+			<Device deviceID="&it150MWReactor;"/>
+		</Devices>
+
+		<!-- No Treasure -->
+
+		<Items>
+		</Items>
+
+		<!-- Player Settings -->
+		
+		<PlayerSettings
+			desc=				"The venerable, though versatile, Centurion is the backbone of the Commonwealth military."
+			/>
+		
+	</ShipClass>
+
 <!-- EI500-CLASS FREIGHTER -->
 
-	<!-- EI500-class Freighter (Level 4) -->
+	<!-- Level 4: EI500-class Freighter (Variant A) -->
 
 	<ShipClass UNID="&scEI500PlayerL4A;"
 			manufacturer=		"Earth Industries"
@@ -65,7 +105,7 @@
 		
 	</ShipClass>
 
-	<!-- EI500-class Freighter (Level 4) -->
+	<!-- Level 4: EI500-class Freighter (Variant B) -->
 
 	<ShipClass UNID="&scEI500PlayerL4B;"
 			manufacturer=		"Earth Industries"
@@ -102,7 +142,7 @@
 		
 	</ShipClass>
 
-	<!-- EI500-class Freighter (Level 4) -->
+	<!-- Level 4: EI500-class Freighter (Variant C) -->
 
 	<ShipClass UNID="&scEI500PlayerL4C;"
 			manufacturer=		"Earth Industries"
@@ -147,7 +187,7 @@
 
 <!-- SAPPHIRE-CLASS YACHT -->
 
-	<!-- Level 5: Sapphire Yacht -->
+	<!-- Level 5: Sapphire Yacht (Variant A) -->
 
 	<ShipClass UNID="&scSapphirePlayerL5A;"
 			manufacturer=		"Zubrin Systems"
@@ -182,7 +222,7 @@
 
 	</ShipClass>
 
-	<!-- Level 5: Sapphire Yacht -->
+	<!-- Level 5: Sapphire Yacht (Variant B) -->
 
 	<ShipClass UNID="&scSapphirePlayerL5B;"
 			manufacturer=		"Zubrin Systems"
@@ -221,7 +261,7 @@
 
 	</ShipClass>
 
-	<!-- Level 5: Sapphire Yacht -->
+	<!-- Level 5: Sapphire Yacht (Variant C) -->
 
 	<ShipClass UNID="&scSapphirePlayerL5C;"
 			manufacturer=		"Zubrin Systems"
@@ -262,7 +302,7 @@
 
 <!-- WOLFEN-CLASS GUNSHIP -->
 
-	<!-- Level 6: Wolfen-class Gunship -->
+	<!-- Level 6: Wolfen-class Gunship (Variant A) -->
 
 	<ShipClass UNID="&scWolfenPlayerL6A;"
 			manufacturer=		"Pacific Defense Corporation"
@@ -302,7 +342,7 @@
 		
 	</ShipClass>
 
-	<!-- Level 6: Wolfen-class Gunship -->
+	<!-- Level 6: Wolfen-class Gunship (Variant B) -->
 
 	<ShipClass UNID="&scWolfenPlayerL6B;"
 			manufacturer=		"Pacific Defense Corporation"
@@ -342,7 +382,7 @@
 		
 	</ShipClass>
 
-	<!-- Level 6: Wolfen-class Gunship -->
+	<!-- Level 6: Wolfen-class Gunship (Variant C) -->
 
 	<ShipClass UNID="&scWolfenPlayerL6C;"
 			manufacturer=		"Pacific Defense Corporation"
