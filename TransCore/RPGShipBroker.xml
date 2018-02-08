@@ -8,7 +8,9 @@
 	
 	gData uses the following fields:
 	
+		checkMilitaryID: If True, we don't sell military ships without an ID.
 		maxCount: Maximum number of ships to create.
+
 -->
 	
 	<DockScreen unid="&dsRPGShipBroker;"
@@ -115,6 +117,17 @@
 
 							(switch
 
+								;	If a military ID is required, check
+
+								(and (@ gData 'checkMilitaryID)
+										(objHasAttribute selObj 'military)
+										(not (objGetItems gPlayerShip "* +militaryID;"))
+										)
+									(block ()
+										(scrEnableAction gScreen 'actionBuyShip Nil)
+										(scrSetActionDesc gScreen 'actionBuyShip (scrTranslate gScreen 'descNeedMilitaryID))
+										)
+
 								;	If the player cannot afford the ship, then say so
 
 								(gr tradeInPrice (objGetBalance gPlayerShip currency))
@@ -140,6 +153,17 @@
 							(switch
 								(not allWingmen)
 									(scrShowAction gScreen 'actionBuyForWingman Nil)
+
+								;	If a military ID is required, check
+
+								(and (@ gData 'checkMilitaryID)
+										(objHasAttribute selObj 'military)
+										(not (objGetItems gPlayerShip "* +militaryID;"))
+										)
+									(block ()
+										(scrEnableAction gScreen 'actionBuyForWingman Nil)
+										(scrSetActionDesc gScreen 'actionBuyForWingman (scrTranslate gScreen 'descNeedMilitaryID))
+										)
 
 								;	If none of the wingmen want this ship
 
@@ -268,6 +292,9 @@
 			</Text>
 			<Text id="descCantAffordForWingmen">
 				You cannot afford to buy this ship.
+			</Text>
+			<Text id="descNeedMilitaryID">
+				Requires a military ID
 			</Text>
 		</Language>
 	</DockScreen>
@@ -475,6 +502,12 @@
 									(plyChangeShip gPlayer selObj)
 
 								(rpgChangeWingmanShip oldShip selObj)
+								)
+
+							;	Identify all the installed devices on the new ship
+
+							(enum (objGetItems selObj "adI") theItem
+								(itmSetKnown theItem)
 								)
 							
 							;	The old ship is suspended and possibly available for sale
@@ -1100,6 +1133,11 @@
 					;	Launcher
 
 					(launcherItem (@ (objGetItems shipObj "lI") 0))
+
+					;	Misc devices
+
+					(allMisc (objGetItems shipObj "d~wsrvc"))
+					(miscItem1 (@ allMisc 0))
 					
 					;	Slots
 					
@@ -1165,7 +1203,7 @@
 						(if showDevices
 							{
 							icon: (itmGetImageDesc armorItem)
-							title: (itmGetName armorItem 'short)
+							title: (itmGetName armorItem '(short actual))
 							desc:
 								(cat
 									"{/rtf "
@@ -1187,7 +1225,7 @@
 
 						(if (and shieldItem showDevices) {
 							icon: (itmGetImageDesc shieldItem)
-							title: (itmGetName shieldItem 'short)
+							title: (itmGetName shieldItem '(short actual))
 							desc:
 								(cat
 									"{/rtf "
@@ -1198,7 +1236,7 @@
 
 						(if (and weaponItem1 showDevices) {
 							icon: (itmGetImageDesc weaponItem1)
-							title: (itmGetName weaponItem1 'short)
+							title: (itmGetName weaponItem1 '(short actual))
 							desc:
 								(cat
 									"{/rtf "
@@ -1209,7 +1247,7 @@
 
 						(if (and weaponItem2 showDevices) {
 							icon: (itmGetImageDesc weaponItem2)
-							title: (itmGetName weaponItem2 'short)
+							title: (itmGetName weaponItem2 '(short actual))
 							desc:
 								(cat
 									"{/rtf "
@@ -1220,11 +1258,22 @@
 
 						(if (and launcherItem showDevices) {
 							icon: (itmGetImageDesc launcherItem)
-							title: (itmGetName launcherItem 'short)
+							title: (itmGetName launcherItem '(short actual))
 							desc:
 								(cat
 									"{/rtf "
 										"{/f:MediumBold;/c:#79828c; level:} " (itmGetLevel launcherItem) "\n"
+									"}"
+									)
+							})
+
+						(if (and miscItem1 showDevices) {
+							icon: (itmGetImageDesc miscItem1)
+							title: (itmGetName miscItem1 '(short actual))
+							desc:
+								(cat
+									"{/rtf "
+										"{/f:MediumBold;/c:#79828c; level:} " (itmGetLevel miscItem1) "\n"
 									"}"
 									)
 							})
