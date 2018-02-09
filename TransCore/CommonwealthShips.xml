@@ -41,7 +41,7 @@
 			/>
 
 		<DeviceSlots>
-			<DeviceSlot criteria="w +property:omnidirectional;" posAngle="0" posRadius="0"/>
+			<DeviceSlot criteria="w +property:omnidirectional;" posAngle="0" posRadius="3" posZ="14"/>
 			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
 			<DeviceSlot criteria="c" cannotBeEmpty="true"/>
 		</DeviceSlots>
@@ -340,7 +340,7 @@
 			/>
 
 		<DeviceSlots>
-			<DeviceSlot criteria="w +property:omnidirectional;" posAngle="0" posRadius="0"/>
+			<DeviceSlot criteria="w +property:omnidirectional;" posAngle="0" posRadius="3" posZ="14"/>
 			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
 			<DeviceSlot criteria="c" cannotBeEmpty="true"/>
 		</DeviceSlots>

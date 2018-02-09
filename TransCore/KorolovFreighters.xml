@@ -500,7 +500,7 @@
 			/>
 
 		<Devices>
-			<Device deviceID="&itBlaster;" omnidirectional="true"/>
+			<Device deviceID="&itBlaster;" omnidirectional="true" posAngle="0" posRadius="3" posZ="14"/>
 			<Device deviceID="&itClass1Deflector;"/>
 			<Device deviceID="&itCargoHoldExpansion;"/>
 		</Devices>

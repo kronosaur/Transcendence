@@ -688,10 +688,10 @@
 		
 		<Devices>
 			<Table>
-				<Device chance="25" item="&itArbalestCannon;" omnidirectional="true"/>
-				<Device chance="25" item="&itTurbolaserCannon;" omnidirectional="true"/>
-				<Device chance="25" item="&itPartisanCannon;" omnidirectional="true"/>
-				<Device chance="25" item="&itLaserArray;" omnidirectional="true"/>
+				<Device chance="25" item="&itArbalestCannon;" omnidirectional="true" posAngle="0" posRadius="3" posZ="14"/>
+				<Device chance="25" item="&itTurbolaserCannon;" omnidirectional="true" posAngle="0" posRadius="3" posZ="14"/>
+				<Device chance="25" item="&itPartisanCannon;" omnidirectional="true" posAngle="0" posRadius="3" posZ="14"/>
+				<Device chance="25" item="&itLaserArray;" omnidirectional="true" posAngle="0" posRadius="3" posZ="14"/>
 			</Table>
 
 			<Device item="&itMonopoleDeflector;"/>
