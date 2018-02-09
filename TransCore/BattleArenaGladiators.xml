@@ -111,24 +111,18 @@
 			class=				"EI100"
 			type=				"freighter"
 
-			mass=				"100"
-			cargoSpace=			"250"
-			thrustRatio=		"2.2"
-			maxSpeed=			"12"
-
 			attributes=			"battleArena, melee1"
+			inherit=			"&scEI100Stock;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itLightReactiveArmor;"/>
-			<ArmorSection start="225" span="90" armorID="&itLightReactiveArmor;"/>
-			<ArmorSection start="135" span="90" armorID="&itLightReactiveArmor;"/>
-			<ArmorSection start="45"  span="90" armorID="&itLightReactiveArmor;"/>
-		</Armor>
+		<Armor
+			armorID=			"&itLightReactiveArmor;"
+			count=				"4"
+			/>
 
 		<Devices>
 			<Table>
-				<Device chance="40" item="&itLaserCannon;" omnidirectional="true"/>
+				<Device chance="40" item="&itOmniLaserCannon;"/>
 				<Device chance="20" item="&itRecoillessCannon;" omnidirectional="true"/>
 				<Device chance="20" item="&itLightRecoillessCannon;" omnidirectional="true"/>
 
@@ -145,23 +139,12 @@
 			<Device item="&itClass1Deflector;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"4.5"
-			rotationAccel=		"0.5"
-			/>
-
-		<Image imageID="&rsEI100HD;" imageX="0" imageY="0" imageWidth="70" imageHeight="70" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="29"	posZ="8"	rotation="180"/>
-		</Effects>
-		
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"30"
 			fireAccuracy=		"80"
 			perception=			"4"
-		/>
+			/>
 
 		<StaticData>
 			<arenaSkillBase>
@@ -367,20 +350,14 @@
 			class=				"EI100"
 			type=				"freighter"
 
-			mass=				"100"
-			cargoSpace=			"250"
-			thrustRatio=		"2.2"
-			maxSpeed=			"12"
-
 			attributes=			"battleArena, melee2"
+			inherit=			"&scEI100Stock;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itReactiveArmor;"/>
-			<ArmorSection start="225" span="90" armorID="&itReactiveArmor;"/>
-			<ArmorSection start="135" span="90" armorID="&itReactiveArmor;"/>
-			<ArmorSection start="45"  span="90" armorID="&itReactiveArmor;"/>
-		</Armor>
+		<Armor
+			armorID=			"&itReactiveArmor;"
+			count=				"4"
+			/>
 
 		<Devices>
 			<Table>
@@ -401,23 +378,12 @@
 			<Device item="&itClass1Deflector;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"4.5"
-			rotationAccel=		"0.5"
-			/>
-
-		<Image imageID="&rsEI100HD;" imageX="0" imageY="0" imageWidth="70" imageHeight="70" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="29"	posZ="8"	rotation="180"/>
-		</Effects>
-		
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"20"
 			fireAccuracy=		"90"
 			perception=			"4"
-		/>
+			/>
 
 		<StaticData>
 			<arenaSkillBase>
@@ -706,24 +672,20 @@
 			class=				"EI200"
 			type=				"freighter"
 
-			size=				"54"
-			mass=				"500"
-			cargoSpace=			"500"
-			thrustRatio=		"1.8"
-			maxSpeed=			"16"
-
 			attributes=			"battleArena, gladiator"
+			inherit=			"&scEI200Stock;"
 			>
 
-		<Armor>
-			<ArmorSection start="330" span="60" armorID="&itHeavyReactiveArmor;" />
-			<ArmorSection start="270" span="60" armorID="&itHeavyReactiveArmor;" />
-			<ArmorSection start="210" span="60" armorID="&itHeavyReactiveArmor;" />
-			<ArmorSection start="150" span="60" armorID="&itHeavyReactiveArmor;" />
-			<ArmorSection start="90"  span="60" armorID="&itHeavyReactiveArmor;" />
-			<ArmorSection start="30"  span="60" armorID="&itHeavyReactiveArmor;" />
-		</Armor>
+		<Names noArticle="true" personalName="true">
+			Anton Malik; Ed Somme; Irina Bolstov; Mila Czech; Rene Arms;
+			Walsh Gordon; Katrina Feodor; Viktor Kovalenko
+		</Names>
 
+		<Armor
+			armorID=			"&itHeavyReactiveArmor;"
+			count=				"6"
+			/>
+		
 		<Devices>
 			<Table>
 				<Device chance="25" item="&itArbalestCannon;" omnidirectional="true"/>
@@ -735,29 +697,12 @@
 			<Device item="&itMonopoleDeflector;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"4.5"
-			rotationAccel=		"0.5"
-			/>
-
-		<Image imageID="&rsEI200Image;" imageWidth="90" imageHeight="90"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="158"	posRadius="42"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-158"	posRadius="42"	posZ="0"	rotation="180"/>
-		</Effects>
-
-		<Names noArticle="true" personalName="true">
-			Anton Malik; Ed Somme; Irina Bolstov; Mila Czech; Rene Arms;
-			Walsh Gordon; Katrina Feodor; Viktor Kovalenko
-		</Names>
-
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"15"
 			fireAccuracy=		"90"
 			perception=			"4"
-		/>
+			/>
 
 		<StaticData>
 			<arenaSkillBase>300</arenaSkillBase>

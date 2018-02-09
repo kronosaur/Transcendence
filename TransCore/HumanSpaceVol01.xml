@@ -1885,6 +1885,12 @@
 	<!ENTITY rsRoninHD					"0x00100390">
 	<!ENTITY rsTenhoveHD				"0x00100391">
 	<!ENTITY rsCommonwealthDryDock		"0x00100392">
+	<!ENTITY scEI200Stock				"0x00100593">
+	<!ENTITY rsEI200HD					"0x00100394">
+	<!ENTITY rsEI200Hero				"0x00100395">
+	<!ENTITY scEI100Stock				"0x00100396">
+	<!ENTITY rsEI100HD					"0x00100397">
+	<!ENTITY rsEI100Hero				"0x00100398">
 
 	<!-- 03B0-03CF SAPIENS -->
 

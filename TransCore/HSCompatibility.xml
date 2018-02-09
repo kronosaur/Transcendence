@@ -3066,4 +3066,8 @@
 				))
 			)
 	</Globals>
+
+	<Image UNID="&rsEI100Image;"	obsolete="40" bitmap="Resources\EI100.jpg" 		bitmask="Resources\EI100Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsEI200Image;"		obsolete="40" bitmap="Resources\EI200.jpg" bitmask="Resources\EI200Mask.bmp" loadOnUse="true"/>
+
 </TranscendenceModule>

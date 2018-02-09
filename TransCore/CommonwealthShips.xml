@@ -2,6 +2,82 @@
 
 <TranscendenceModule>
 	
+	<!-- Level 2: EI100 Freighter -->
+
+	<ShipClass UNID="&scEI100Stock;"
+			manufacturer=		"Earth Industries"
+			class=				"EI100"
+			type=				"freighter"
+
+			inherit=			"&baHumanTechShip;"
+			>
+
+		<!-- Hull -->
+
+		<Hull
+			size=				"40"
+			mass=				"100"
+			cargoSpace=			"250"
+
+			maxCargoSpace=		"250"
+			maxDevices=			"8"
+			maxWeapons=			"1"
+
+			stdArmor=			"4000"
+			maxArmor=			"20000"
+			maxArmorSpeed=		"10"
+			minArmorSpeed=		"13"
+			/>
+
+		<Drive
+			maxSpeed=			"12"
+			thrust=				"250"
+			powerUse=			"20"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"4.5"
+			rotationAccel=		"0.5"
+			/>
+
+		<DeviceSlots>
+			<DeviceSlot criteria="w +property:omnidirectional;" posAngle="0" posRadius="0"/>
+			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
+			<DeviceSlot criteria="c" cannotBeEmpty="true"/>
+		</DeviceSlots>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itLightReactiveArmor;"
+			count=				"4"
+			/>
+
+		<Devices>
+			<Device deviceID="&itOmniLaserCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+			<Device deviceID="&itCargoHoldExpansion;"/>
+		</Devices>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsEI100HD;" imageWidth="70" imageHeight="70" rotationCount="120" rotationColumns="12" viewportRatio="0.00625"/>
+		<HeroImage imageID="&rsEI100Hero;" imageWidth="320" imageHeight="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="29"	posZ="8"	rotation="180"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"80"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
 	<!-- Level 2: Ronin A-class Gunship -->
 
 	<ShipClass UNID="&scRoninA;"
@@ -222,6 +298,83 @@
 			
 			combatStyle=		"advanced"
 			/>
+
+	</ShipClass>
+
+	<!-- Level 3: EI200 Freighter -->
+
+	<ShipClass UNID="&scEI200Stock;"
+			manufacturer=		"Earth Industries"
+			class=				"EI200"
+			type=				"freighter"
+
+			inherit=			"&baHumanTechShip;"
+			>
+
+		<!-- Hull -->
+
+		<Hull
+			size=				"54"
+			mass=				"500"
+			cargoSpace=			"500"
+
+			maxCargoSpace=		"500"
+			maxDevices=			"9"
+			maxWeapons=			"2"
+
+			stdArmor=			"5000"
+			maxArmor=			"20000"
+			maxArmorSpeed=		"14"
+			minArmorSpeed=		"17"
+			/>
+
+		<Drive
+			maxSpeed=			"16"
+			thrust=				"800"
+			powerUse=			"100"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"4.5"
+			rotationAccel=		"0.5"
+			/>
+
+		<DeviceSlots>
+			<DeviceSlot criteria="w +property:omnidirectional;" posAngle="0" posRadius="0"/>
+			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
+			<DeviceSlot criteria="c" cannotBeEmpty="true"/>
+		</DeviceSlots>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itReactiveArmor;"
+			count=				"6"
+			/>
+
+		<Devices>
+			<Device deviceID="&itOmniTurbolaserCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+			<Device deviceID="&itCargoHoldExpansion;"/>
+		</Devices>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsEI200HD;" imageWidth="90" imageHeight="90" rotationCount="120" rotationColumns="12" viewportRatio="0.0075"/>
+		<HeroImage imageID="&rsEI200Hero;" imageWidth="320" imageHeight="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="42"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="42"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"90"
+			fireAccuracy=		"85"
+			perception=			"4"
+		/>
 
 	</ShipClass>
 
@@ -1264,6 +1417,10 @@
 	<Image UNID="&rsArmstrongTransportHero;"	bitmap="Resources\ArmstrongTransportLarge.jpg" bitmask="Resources\ArmstrongTransportLargeMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsAsterionHeavyGunship;"		bitmap="Resources\AsterionHeavyGunship.jpg" bitmask="Resources\AsterionHeavyGunshipMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsAsterionHeavyGunshipHero;"	bitmap="Resources\AsterionHeavyGunshipLarge.jpg" bitmask="Resources\AsterionHeavyGunshipLargeMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsEI100HD;"					bitmap="Resources\EI100HD.jpg" bitmask="Resources\EI100HDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsEI100Hero;"					bitmap="Resources\EI100Large.jpg" bitmask="Resources\EI100LargeMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsEI200HD;"					bitmap="Resources\EI200HD.jpg" bitmask="Resources\EI200HDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsEI200Hero;"					bitmap="Resources\EI200Large.jpg" bitmask="Resources\EI200LargeMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsElixirMegayacht;"			bitmap="Resources\ElixirMegayacht.jpg" bitmask="Resources\ElixirMegayachtMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsElixirMegayachtHero;"		bitmap="Resources\ElixirMegayachtLarge.jpg" bitmask="Resources\ElixirMegayachtLargeMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsIAVLight;"					bitmap="Resources\IAVLight.jpg" bitmask="Resources\IAVLightMask.bmp" loadOnUse="true"/>

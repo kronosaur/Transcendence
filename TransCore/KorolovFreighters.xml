@@ -386,12 +386,7 @@
 			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"commonwealth, EI, freighter, genericClass"
-			   
-			size=				"40"
-			mass=				"100"
-			thrustRatio=		"2.2"
-			maxSpeed=			"12"
-			cargoSpace=			"250"
+			inherit=			"&scEI100Stock;"
 			>
 
 		<Names definiteArticle="true">
@@ -414,30 +409,18 @@
 			/>
 
 		<Devices>
-			<Device deviceID="&itLaserCannon;" omnidirectional="true"/>
+			<Device deviceID="&itOmniLaserCannon;"/>
 			<Device deviceID="&itClass1Deflector;"/>
+			<Device deviceID="&itCargoHoldExpansion;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"4.5"
-			rotationAccel=		"0.5"
-			/>
-
-		<!-- Image and Effects -->
-
-		<Image imageID="&rsEI100HD;" imageX="0" imageY="0" imageWidth="70" imageHeight="70" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="29"	posZ="8"	rotation="180"/>
-		</Effects>
-		
 		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"80"
 			fireAccuracy=		"85"
 			perception=			"4"
-		/>
+			/>
 
 		<StaticData>
 			<Data id="korolov.containerPrice">
@@ -481,6 +464,7 @@
 				often escorted by Apprentice pilots.
 			</Text>
 		</Language>
+
 	</ShipClass>
 
 	<!-- EI200 Freighter -->
@@ -489,16 +473,11 @@
 			manufacturer=		"Earth Industries"
 			class=				"EI200"
 			type=				"freighter"
-			level=				"3"
 			defaultSovereign=	"&svCorporate;"
 
+			level=				"3"
 			attributes=			"commonwealth, EI, freighter, genericClass"
-			   
-			size=				"54"
-			mass=				"500"
-			thrustRatio=		"1.8"
-			maxSpeed=			"16"
-			cargoSpace=			"500"
+			inherit=			"&scEI200Stock;"
 			>
 
 		<Names definiteArticle="true">
@@ -523,21 +502,8 @@
 		<Devices>
 			<Device deviceID="&itBlaster;" omnidirectional="true"/>
 			<Device deviceID="&itClass1Deflector;"/>
+			<Device deviceID="&itCargoHoldExpansion;"/>
 		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"4.5"
-			rotationAccel=		"0.5"
-			/>
-
-		<!-- Image and Effects -->
-		
-		<Image imageID="&rsEI200Image;" imageWidth="90" imageHeight="90"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="158"	posRadius="42"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-158"	posRadius="42"	posZ="0"	rotation="180"/>
-		</Effects>
 
 		<!-- AI and Behavior -->
 
@@ -776,7 +742,6 @@
 	<Image UNID="&rsAntaresIImage;"		bitmap="Resources\AntaresI.jpg" bitmask="Resources\AntaresIMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsAntaresIIImage;"	bitmap="Resources\AntaresII.jpg" bitmask="Resources\AntaresIIMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsAntaresVImage;"		bitmap="Resources\AntaresV.jpg" bitmask="Resources\AntaresVMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsEI200Image;"		bitmap="Resources\EI200.jpg" bitmask="Resources\EI200Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsEI7000Image;"		bitmap="Resources\EI7000.jpg" bitmask="Resources\EI7000Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsEI7000Hero;"		bitmap="Resources\EI7000Large.jpg" bitmask="Resources\EI7000LargeMask.bmp" loadOnUse="true"/>
 	

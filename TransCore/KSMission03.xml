@@ -484,42 +484,10 @@
 			class=				"EI200"
 			type=				"freighter"
 
-			size=				"54"
-			mass=				"500"
-			cargoSpace=			"500"
-			thrustRatio=		"1.8"
-			maxSpeed=			"16"
-
 			attributes=			"commonwealth"
-			
-			inherit=			"&baCharonBuster;"
+			inherit=			"&scEI200Stock;"
+			eventHandler=		"&baCharonBuster;"
 			>
-
-		<Armor>
-			<ArmorSection start="330" span="60" armorID="&itHeavyReactiveArmor;" />
-			<ArmorSection start="270" span="60" armorID="&itHeavyReactiveArmor;" />
-			<ArmorSection start="210" span="60" armorID="&itHeavyReactiveArmor;" />
-			<ArmorSection start="150" span="60" armorID="&itHeavyReactiveArmor;" />
-			<ArmorSection start="90"  span="60" armorID="&itHeavyReactiveArmor;" />
-			<ArmorSection start="30"  span="60" armorID="&itHeavyReactiveArmor;" />
-		</Armor>
-
-		<Devices>
-			<Device deviceID="&itTurbolaserCannon;" omnidirectional="true"/>
-			<Device deviceID="&itMonopoleDeflector;"/>
-		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"4.5"
-			rotationAccel=		"0.5"
-			/>
-
-		<Image imageID="&rsEI200Image;" imageWidth="90" imageHeight="90"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="158"	posRadius="42"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-158"	posRadius="42"	posZ="0"	rotation="180"/>
-		</Effects>
 
 		<Names definiteArticle="true">
 			attack ship Avatar; attack ship Bestiarum; attack ship Cervantes;
@@ -531,6 +499,16 @@
 			attack ship Toledo; attack ship Uruguay; attack ship Valencia;
 			attack ship Wellesley; attack ship Xenophon; attack ship Zerelda
 		</Names>
+
+		<Armor
+			armorID=			"&itHeavyReactiveArmor;"
+			count=				"6"
+			/>
+
+		<Devices>
+			<Device deviceID="&itOmniTurbolaserCannon;"/>
+			<Device deviceID="&itMonopoleDeflector;"/>
+		</Devices>
 
 		<AISettings
 			fireRateAdj=		"20"

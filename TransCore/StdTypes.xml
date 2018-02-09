@@ -100,8 +100,6 @@
 	<Image UNID="&rsMediumShips4;"	bitmap="Resources\MediumShips4.jpg"	bitmask="Resources\MediumShips4Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsLargeShips1;"	bitmap="Resources\LargeShips1.jpg"	bitmask="Resources\LargeShips1Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsLargeShips2;"	bitmap="Resources\LargeShips2.jpg"	bitmask="Resources\LargeShips2Mask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsEI100Image;"	bitmap="Resources\EI100.jpg" 		bitmask="Resources\EI100Mask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsEI100HD;"		bitmap="Resources\EI100HD.jpg" 		bitmask="Resources\EI100HDMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsTenhoveHD;"		bitmap="Resources\TenhoveHD.jpg" 	bitmask="Resources\TenhoveHDMask.bmp" loadOnUse="true"/>
 
 	<Image UNID="&rsLargeExplosions;" bitmap="Resources\LargeExplosions.jpg" bitmask="Resources\LargeExplosionsMask.bmp" loadOnUse="true"/>
@@ -1296,38 +1294,28 @@
 			class=				"EI100/M"
 			type=				"missileship"
 
-			mass=				"250"
-			cargoSpace=			"150"
-			thrustRatio=		"2"
-			maxSpeed=			"12"
-
 			attributes=			""
+			inherit=			"&scEI100Stock;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itReactiveArmor;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itReactiveArmor;" areaSet="3,4" />
-			<ArmorSection start="135" span="90" armorID="&itReactiveArmor;" areaSet="1,6" />
-			<ArmorSection start="45"  span="90" armorID="&itReactiveArmor;" areaSet="7,13" />
-		</Armor>
+		<Armor
+			armorID=			"&itReactiveArmor;"
+			count=				"4"
+			/>
 
 		<Devices>
 			<Device deviceID="&itOmniLaserCannon;"/>
-			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true" />
+			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true" >
+				<Items>
+					<Item count="2d6" item="&itKM500Missile;"/>
+				</Items>
+			</Device>
 			<Device deviceID="&itClass1Deflector;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"6.0"
-			rotationAccel=		"2.0"
-			/>
-
 		<Items>
-			<Item count="2d6" item="&itKM500Missile;"/>
 			<Item count="4d6" item="&itHelium3FuelRod;"/>
 		</Items>
-
-		<Image imageID="&rsEI100HD;" imageX="0" imageY="0" imageWidth="70" imageHeight="70" rotationCount="120" rotationColumns="12" />
 
 		<AISettings
 			fireRateAdj=		"60"
