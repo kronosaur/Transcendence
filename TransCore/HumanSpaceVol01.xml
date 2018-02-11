@@ -1951,6 +1951,12 @@
 	<!ENTITY rsCenturionX				"0x001004C1">
 	<!ENTITY rsCenturionXHero			"0x001004C2">
 	<!ENTITY rsAurochsHero				"0x001004C3">
+	<!ENTITY scMinotaur					"0x001004C4">
+	<!ENTITY rsMinotaur					"0x001004C5">
+	<!ENTITY rsMinotaurHero				"0x001004C6">
+	<!ENTITY scMinotaurM				"0x001004C7">
+	<!ENTITY rsMinotaurM				"0x001004C8">
+	<!ENTITY rsMinotaurMHero			"0x001004C9">
 
 	<!-- 04D0-04EF NAMI CORPORATION -->
 
@@ -2080,6 +2086,7 @@
 	<Module filename="CommonwealthMilitiaMissionSK01.xml"/>
 	<Module filename="CommonwealthMining.xml"/>
 	<Module filename="CommonwealthShips.xml"/>
+	<Module filename="CommonwealthStarCarrier.xml"/>
 	<Module filename="CorporateHierarchy.xml"/>
 	<Module filename="CSCTerra.xml"/>
 	<Module filename="Dall01.xml"/>

@@ -186,4 +186,59 @@
 		</Language>
 	</MissionType>
 
+<!-- STATION TYPES -->
+
+	<StationType UNID="&stRogueBaseRescue;"
+			name=				"Rogue Fleet settlement"
+			sovereign=			"&svRogueFleet;"
+			abandonedScreen=	"Main"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itP120HexphaseArmor;"
+			maxHitPoints=		"250"
+			hitPoints=			"0"
+			regen=				"6"
+			shipRegen=			"6"
+			fireRateAdj=		"20"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envAir, envAvoidsFire, human, populated, rogue"
+			>
+
+		<Image			imageID="&rsStations8;" imageX="128" imageY="896" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itStarCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Ship		count="1"		class="&scCenturionX;" orders="patrol" patrolDist="20"/>
+			<Ship		count="1d2+1"	class="&scCenturion;" orders="patrol" patrolDist="20"/>
+			<Ship		count="1d2"		class="&scCenturion;" orders="guard"/>
+		</Ships>
+
+		<DockScreens>
+			<Main>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen "Smoke, debris, and blast marks remain after a ferocious battle. No one is left alive.")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Undock" cancel="1" default="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+	</StationType>
+
 </TranscendenceModule>

@@ -488,6 +488,7 @@
     <Xml Include="CommonwealthShips.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="CommonwealthStarCarrier.xml" />
     <Xml Include="CompatibilityLibrary.xml" />
     <Xml Include="CoreFireEffects.xml">
       <SubType>Designer</SubType>

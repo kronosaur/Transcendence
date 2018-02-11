@@ -696,5 +696,8 @@
     <Xml Include="CommonwealthCenturions.xml">
       <Filter>Human Space Library\Commonwealth</Filter>
     </Xml>
+    <Xml Include="CommonwealthStarCarrier.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
