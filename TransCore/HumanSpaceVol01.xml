@@ -1978,6 +1978,7 @@
 	<!ENTITY scWolfenPlayerL6B			"0x00100538">
 	<!ENTITY scWolfenPlayerL6C			"0x00100539">
 	<!ENTITY scCenturionBlock2PlayerL6	"0x0010053A">
+	<!ENTITY scEI200PlayerL4			"0x0010053B">
 
 	<!-- 0580-059F ROGUE FLEET -->
 

@@ -42,6 +42,69 @@
 		
 	</ShipClass>
 
+<!-- EI200-CLASS FREIGHTER -->
+
+	<!-- Level 4: EI200-class Freighter -->
+
+	<ShipClass UNID="&scEI200PlayerL4;"
+			manufacturer=		"Earth Industries"
+			class=				"EI200"
+			type=				"freighter"
+
+			level=				"4"
+			attributes=			"commonwealth, EI, shipBroker"
+			inherit=			"&scEI200Stock;"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"6"
+			/>
+		
+		<Devices>
+			<Table>
+				<Group chance="40">
+					<Device deviceID="&itOmniTurbolaserCannon;"/>
+					<Device deviceID="&itMAGLauncher;">
+						<Items>
+							<Item			  count="50-100" item="&it600HexageneMAG;"/>
+							<Item chance="40" count="50-100" item="&it800HexageneMAG;"/>
+						</Items>
+					</Device>
+					<Device chance="50" deviceID="&itLaserEnhancer;"/>
+				</Group>
+				<Group chance="40">
+					<Device deviceID="&itOmniPartisanCannon;"/>
+					<Device deviceID="&itFlenserCannon;"/>
+					<Device deviceID="&itKineticEnhancer;"/>
+				</Group>
+				<Group chance="20">
+					<Device deviceID="&itOmniTurbolaserCannon;"/>
+					<Device deviceID="&itSlamCannon;"/>
+					<Device deviceID="&itLaserEnhancer;"/>
+				</Group>
+			</Table>
+
+			<Table>
+				<Device chance="40" deviceID="&itClass3Deflector;"/>
+				<Device chance="30" deviceID="&itCeratopsQuasiArmor1;"/>
+				<Device chance="30" deviceID="&itR1Deflector;"/>
+			</Table>
+
+			<Device deviceID="&itCargoHoldExpansion;"/>
+			<Device deviceID="&it100MWReactor;"/>
+		</Devices>
+
+		<!-- Player Settings -->
+		
+		<PlayerSettings
+			desc=				"The EI200 has more than double the cargo capacity of the EI500."
+			/>
+		
+	</ShipClass>
+
 <!-- EI500-CLASS FREIGHTER -->
 
 	<!-- Level 4: EI500-class Freighter (Variant A) -->
