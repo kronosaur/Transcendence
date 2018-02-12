@@ -248,6 +248,84 @@
 		
 	</ShipClass>
 
+<!-- MINOTAUR-CLASS CORVETTE -->
+
+	<!-- Level 7: Minotaur-class Corvette -->
+
+	<ShipClass UNID="&scMinotaurPlayerL7;"
+			manufacturer=		"NAMI"
+			class=				"Minotaur"
+			type=				"corvette"
+
+			attributes=			"commonwealth, military, nami, shipBroker"
+			inherit=			"&scMinotaur;"
+			>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itLightOrthoSteel;"
+			count=				"6"
+			/>
+
+		<Devices>
+			<Device deviceID="&itMarkVHowitzer;"/>
+			<Device deviceID="&itOmniTeV9Blaster;"/>
+			<Device deviceID="&itNAMIMissileLauncher;">
+				<Items>
+					<Item count="2d6" item="&itXM900Missile;"/>
+				</Items>
+			</Device>
+			<Device deviceID="&itR5Deflector;"/>
+			<Device deviceID="&it250MWReactor;"/>
+		</Devices>
+		
+		<!-- Player Settings -->
+		
+		<PlayerSettings
+			desc=				"The Minotaur corvette spots a secondary omnidirectional blaster linked to the main fire control."
+			/>
+
+	</ShipClass>
+
+	<!-- Level 8: Minotaur/M-class Corvette -->
+
+	<ShipClass UNID="&scMinotaurPlayerL8;"
+			manufacturer=		"NAMI"
+			class=				"Minotaur/M"
+			type=				"corvette"
+
+			attributes=			"commonwealth, military, nami, shipBroker"
+			inherit=			"&scMinotaurM;"
+			>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itP210HexphaseArmor;"
+			count=				"6"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itFusionfireHowitzer;"/>
+			<Device deviceID="&itOmniTeV9Blaster;"/>
+			<Device deviceID="&itNAMIMissileLauncher;">
+				<Items>
+					<Item count="2d6" item="&itXM900Missile;"/>
+				</Items>
+			</Device>
+			<Device deviceID="&itR9Deflector;"/>
+			<Device deviceID="&it500MWReactor;"/>
+		</Devices>
+		
+		<!-- Player Settings -->
+		
+		<PlayerSettings
+			desc=				"The Minotaur corvette spots a secondary omnidirectional blaster linked to the main fire control."
+			/>
+
+	</ShipClass>
+
 <!-- SAPPHIRE-CLASS YACHT -->
 
 	<!-- Level 5: Sapphire Yacht (Variant A) -->
