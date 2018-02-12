@@ -378,7 +378,7 @@ PLAYER DATA
 			cargoSpace=			"2000"
 
 			maxCargoSpace=		"2000"
-			maxDevice=			"8"
+			maxDevices=			"8"
 			maxWeapons=			"3"
 			/>
 
@@ -550,22 +550,27 @@ PLAYER DATA
 			cargoSpace=			"100"
 
 			maxCargoSpace=		"200"
-			maxDevice=			"10"
+			maxDevices=			"8"
+
+			stdArmor=			"6000"
+			maxArmor=			"20000"
+			maxArmorSpeed=		"18"
+			minArmorSpeed=		"20"
 			/>
 
 		<Drive
-			maxSpeed=			"16"
+			maxSpeed=			"20"
 			thrust=				"1200"
 			powerUse=			"100"
 			/>
 
 		<Maneuver
-			maxRotationRate=	"4.5"
-			rotationAccel=		"1.5"
+			maxRotationRate=	"4.0"
+			rotationAccel=		"1.0"
 			/>
 
 		<DeviceSlots>
-			<DeviceSlot id="topturret" criteria="w +property:omnidirectional;"	posAngle="180" posRadius="18" posZ="10"/>
+			<DeviceSlot id="topturret" criteria="w +property:omnidirectional;" 	linkedFire="whenInFireArc"	posAngle="180" posRadius="18" posZ="10"/>
 			<DeviceSlot criteria="w~l" posAngle="32"  posRadius="20" posZ="0"/>
 			<DeviceSlot criteria="l"   posAngle="-32" posRadius="20" posZ="0"/>
 		</DeviceSlots>

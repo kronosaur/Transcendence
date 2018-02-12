@@ -24,7 +24,7 @@
 			cargoSpace=			"50"
 
 			maxCargoSpace=		"200"
-			maxDevice=			"8"
+			maxDevices=			"8"
 			maxNonWeapons=		"4"
 
 			stdArmor=			"6000"
@@ -104,7 +104,7 @@
 			cargoSpace=			"50"
 
 			maxCargoSpace=		"200"
-			maxDevice=			"8"
+			maxDevices=			"8"
 			maxNonWeapons=		"4"
 
 			stdArmor=			"6000"
@@ -185,7 +185,7 @@
 			cargoSpace=			"50"
 
 			maxCargoSpace=		"200"
-			maxDevice=			"8"
+			maxDevices=			"8"
 			maxNonWeapons=		"4"
 
 			stdArmor=			"6000"
@@ -265,7 +265,7 @@
 			cargoSpace=			"50"
 
 			maxCargoSpace=		"200"
-			maxDevice=			"8"
+			maxDevices=			"8"
 			maxNonWeapons=		"4"
 
 			stdArmor=			"6000"

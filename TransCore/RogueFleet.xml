@@ -234,7 +234,7 @@
 			cargoSpace=			"2000"
 
 			maxCargoSpace=		"2000"
-			maxDevice=			"8"
+			maxDevices=			"8"
 			maxWeapons=			"3"
 			/>
 
