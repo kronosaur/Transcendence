@@ -1596,7 +1596,7 @@ void CGSelectorArea::SetRegionsFromWeapons (CSpaceObject *pSource)
                 pEntry->iType = typeEmptySlot;
                 pEntry->iSlotType = devPrimaryWeapon;
 
-                pEntry->iSlotPosIndex = iIndex;
+                pEntry->iSlotPosIndex = -1;
                 pEntry->rcRect.left = pLayout->xLeft;
                 pEntry->rcRect.top = pLayout->yTop;
                 pEntry->rcRect.right = pEntry->rcRect.left + ITEM_ENTRY_WIDTH;
