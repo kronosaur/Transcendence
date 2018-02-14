@@ -233,6 +233,7 @@
 			mass=				"2000"
 			cargoSpace=			"2000"
 
+			maxReactorPower=	"10000"
 			maxCargoSpace=		"2000"
 			maxDevices=			"8"
 			maxWeapons=			"3"

@@ -377,6 +377,7 @@ PLAYER DATA
 			mass=				"2000"
 			cargoSpace=			"2000"
 
+			maxReactorPower=	"10000"
 			maxCargoSpace=		"2000"
 			maxDevices=			"8"
 			maxWeapons=			"3"
@@ -549,6 +550,7 @@ PLAYER DATA
 			mass=				"800"
 			cargoSpace=			"100"
 
+			maxReactorPower=	"10000"
 			maxCargoSpace=		"200"
 			maxDevices=			"8"
 
@@ -556,6 +558,8 @@ PLAYER DATA
 			maxArmor=			"20000"
 			maxArmorSpeed=		"18"
 			minArmorSpeed=		"20"
+
+			valueAdj=			"+2.0"
 			/>
 
 		<Drive

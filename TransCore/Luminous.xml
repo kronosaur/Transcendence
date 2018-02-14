@@ -70,6 +70,7 @@
 			thrustRatio=		"8"
 			maxSpeed=			"20"
 
+			maxReactorPower=	"1000"
 			maxDevices=			"2"
 			cyberDefenseLevel=	"10"
 			explosionType=		"&vtBlastExplosion2;"

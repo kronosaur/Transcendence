@@ -320,9 +320,11 @@
 			maxSpeed=			"20"
 			cargoSpace=			"500"
 
-			maxArmor=			"20000"
+			maxReactorPower=	"10000"
 			maxCargoSpace=		"500"
 			maxDevices=			"6"
+
+			maxArmor=			"20000"
 			>
 
 		<!-- Configuration -->

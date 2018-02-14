@@ -19,6 +19,7 @@
 			mass=				"100"
 			cargoSpace=			"250"
 
+			maxReactorPower=	"10000"
 			maxCargoSpace=		"250"
 			maxDevices=			"8"
 			maxWeapons=			"1"
@@ -200,6 +201,7 @@
 			mass=				"30"
 			cargoSpace=			"50"
 
+			maxReactorPower=	"10000"
 			maxCargoSpace=		"150"
 			maxDevices=			"8"
 
@@ -318,8 +320,9 @@
 			mass=				"500"
 			cargoSpace=			"500"
 
+			maxReactorPower=	"10000"
 			maxCargoSpace=		"500"
-			maxDevices=			"9"
+			maxDevices=			"8"
 			maxWeapons=			"2"
 
 			stdArmor=			"5000"
@@ -509,6 +512,7 @@
 			mass=				"150"
 			cargoSpace=			"50"
 
+			maxReactorPower=	"10000"
 			maxCargoSpace=		"200"
 			maxDevices=			"10"
 			maxWeapons=			"2"
@@ -662,6 +666,7 @@
 			mass=				"60"
 			cargoSpace=			"50"
 
+			maxReactorPower=	"10000"
 			maxCargoSpace=		"50"
 			maxDevices=			"6"
 
@@ -747,6 +752,7 @@
 			mass=				"30"
 			cargoSpace=			"35"
 
+			maxReactorPower=	"10000"
 			maxCargoSpace=		"100"
 			maxDevices=			"8"
 			maxNonWeapons=		"4"

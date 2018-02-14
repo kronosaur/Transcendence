@@ -26,6 +26,7 @@
 			   
 			size=				"100"
 			mass=				"16000"
+			maxReactorPower=	"10000"
 			reactorPower=		"5000"
 			thrustRatio=		"0.5"
 			maxSpeed=			"6"
