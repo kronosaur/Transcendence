@@ -166,35 +166,11 @@
 			/>
 		
 		<Devices>
-			<Table>
-				<Group chance="40">
-					<Device deviceID="&itOmniTurbolaserCannon;"/>
-					<Device deviceID="&itMAGLauncher;">
-						<Items>
-							<Item			  count="50-100" item="&it600HexageneMAG;"/>
-							<Item chance="40" count="50-100" item="&it800HexageneMAG;"/>
-						</Items>
-					</Device>
-					<Device chance="50" deviceID="&itLaserEnhancer;"/>
-				</Group>
-				<Group chance="40">
-					<Device deviceID="&itOmniPartisanCannon;"/>
-					<Device deviceID="&itFlenserCannon;"/>
-					<Device deviceID="&itKineticEnhancer;"/>
-				</Group>
-				<Group chance="20">
-					<Device deviceID="&itOmniTurbolaserCannon;"/>
-					<Device deviceID="&itSlamCannon;"/>
-					<Device deviceID="&itLaserEnhancer;"/>
-				</Group>
-			</Table>
+			<Device deviceID="&itOmniPartisanCannon;"/>
+			<Device deviceID="&itFlenserCannon;"/>
+			<Device deviceID="&itR1Deflector;"/>
 
-			<Table>
-				<Device chance="40" deviceID="&itClass3Deflector;"/>
-				<Device chance="30" deviceID="&itCeratopsQuasiArmor1;"/>
-				<Device chance="30" deviceID="&itR1Deflector;"/>
-			</Table>
-
+			<Device deviceID="&itKineticEnhancer;"/>
 			<Device deviceID="&itCargoHoldExpansion;"/>
 			<Device deviceID="&it100MWReactor;"/>
 		</Devices>
