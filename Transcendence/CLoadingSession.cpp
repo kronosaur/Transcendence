@@ -118,7 +118,7 @@ void CLoadingSession::OnPaint (CG32bitImage &Screen, const RECT &rcInvalid)
 
 	//	Paint the stargate
 
-	Screen.Blt(STARGATE_WIDTH * ((m_iTick / 2) % 12),
+	Screen.Blt(STARGATE_WIDTH * (m_iTick % 48),
 			0,
 			STARGATE_WIDTH,
 			STARGATE_HEIGHT,
