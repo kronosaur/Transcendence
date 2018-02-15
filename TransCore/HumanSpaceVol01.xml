@@ -1987,6 +1987,9 @@
 	<!ENTITY scEI200PlayerL4			"0x0010053B">
 	<!ENTITY scMinotaurPlayerL7			"0x0010053C">
 	<!ENTITY scMinotaurPlayerL8			"0x0010053D">
+	<!ENTITY rsManticoreArmorHUD		"0x0010053E">
+	<!ENTITY rsManticoreArmorHUDSegments	"0x0010053F">
+	<!ENTITY scCenturionXPlayerL7		"0x00100540">
 
 	<!-- 0580-059F ROGUE FLEET -->
 

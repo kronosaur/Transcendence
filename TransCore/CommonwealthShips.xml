@@ -1248,60 +1248,89 @@
 			type=				"heavy gunship"
 			defaultSovereign=	"&svCommonwealth;"
 
+			attributes=			"commonwealth, genericClass, makayev"
+			inherit=			"&baHumanTechShip;"
+			>
+
+		<!-- Hull -->
+
+		<Hull
 			size=				"33"
 			mass=				"120"
 			cargoSpace=			"50"
-			thrustRatio=		"2.0"
+
+			maxReactorPower=	"10000"
+			maxCargoSpace=		"200"
+			maxDevices=			"8"
+
+			stdArmor=			"5000"
+			maxArmor=			"20000"
+			maxArmorSpeed=		"16"
+			minArmorSpeed=		"20"
+
+			valueAdj=			"-2.0"
+			/>
+
+		<Drive
 			maxSpeed=			"18"
+			thrust=				"300"
+			powerUse=			"20"
+			/>
 
-			attributes=			"commonwealth, genericClass, makayev"
-			>
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"2.0"
+			/>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itBlastPlate;"/>
-			<ArmorSection start="225" span="90" armorID="&itBlastPlate;"/>
-			<ArmorSection start="135" span="90" armorID="&itBlastPlate;"/>
-			<ArmorSection start="45"  span="90" armorID="&itBlastPlate;"/>
-		</Armor>
+		<DeviceSlots>
+			<DeviceSlot criteria="w  +property:omnidirectional;" posAngle="0" posRadius="5" posZ="10"/>
+			<DeviceSlot criteria="w  +property:multiShot;" posAngle="0" posRadius="20" posZ="0"/>
+			<DeviceSlot criteria="p" posAngle="40" posRadius="37" posZ="0"/>
+			<DeviceSlot criteria="l" posAngle="-40" posRadius="37" posZ="0"/>
+			<DeviceSlot criteria="s -nonEnergyShields;" hpBonus="-20"/>
+		</DeviceSlots>
 
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itBlastPlate;"
+			startAt=			"0"
+			count=				"6"
+			/>
+		
 		<Devices>
 			<Table>
 				<Group chance="25">
-					<Device item="&itMarkIIIHowitzer;"	posAngle="40"	posRadius="37"	posZ="0"/>
-					<Device item="&itCyclotronDeflectorIV;"/>
+					<Device item="&itMarkIIIHowitzer;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itAkan600Turret;"	posAngle="0"	posRadius="5"	posZ="10">
+					<Device item="&itAkan600Turret;">
 						<Items>
 							<Item count="500" item="&itAkan30CannonShell;"/>
 						</Items>
 					</Device>
-
-					<Device item="&itCyclotronDeflectorIV;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itMarkVHowitzer;"	posAngle="40"	posRadius="37"	posZ="0"/>
-					<Device item="&itCyclotronDeflectorIII;"/>
+					<Device item="&itMarkVHowitzer;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itMoskvaLightTurret;" posAngle="0"	posRadius="5"	posZ="10" secondaryWeapon="true"/>
+					<Device item="&itMoskvaLightTurret;" secondaryWeapon="true"/>
 					<Device item="&itArmorRepairDevice;"/>
-					<Device item="&itCyclotronDeflectorIV;"/>
 				</Group>
 			</Table>
 
 			<Table>
-				<Device chance="50" item="&itMakayevLauncher;"	posAngle="0"	posRadius="20"	posZ="0">
+				<Device chance="50" item="&itMakayevLauncher;">
 					<Items>
 						<Item count="50" item="&itStrelkaRed;"/>
 						<Item count="250" item="&itStrelkaGreen;"/>
 					</Items>
 				</Device>
 
-				<Device chance="50" item="&itMAGLauncher;"	posAngle="-40"	posRadius="37"	posZ="0">
+				<Device chance="50" item="&itMAGLauncher;">
 					<Items>
 						<Item count="30-50" item="&it800HexageneMAG;"/>
 						<Item count="20-30" item="&itZG24ClusterMAG;"/>
@@ -1310,14 +1339,13 @@
 			</Table>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"2.0"
-			/>
+		<!-- Treasure -->
 
 		<Items>
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
+
+		<!-- Image and Effects -->
 
 		<Image imageID="&rsManticore120;" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="12" viewportRatio="0.00625"/>
 		<HeroImage imageID="&rsManticoreHero;" imageWidth="320" imageHeight="320"/>
@@ -1326,6 +1354,58 @@
 			<Effect type="thrustMain"		posAngle="157"	posRadius="29"	posZ="0"	rotation="180"/>
 			<Effect type="thrustMain"		posAngle="-157"	posRadius="29"	posZ="0"	rotation="180"/>
 		</Effects>
+
+		<!-- Player Settings -->
+
+		<PlayerSettings>
+			<ArmorDisplay>
+				<ShipImage imageID="&rsManticoreArmorHUD;" imageWidth="136" imageHeight="136"/>
+				
+				<ArmorSection name="fore-starboard"
+						segment="5"
+						imageID="&rsManticoreArmorHUDSegments;" 
+						imageX="66" imageY="0" imageWidth="42" imageHeight="25"
+						destX="70" destY="21" hpX="106" hpY="28"
+						nameY="0" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
+
+				<ArmorSection name="fore-port"
+						segment="0"
+						imageID="&rsManticoreArmorHUDSegments;" 
+						imageX="24" imageY="0" imageWidth="42" imageHeight="25"
+						destX="24" destY="21" hpX="4" hpY="28"
+						nameY="18" nameBreakWidth="360" nameDestX="0" nameDestY="0" />
+
+				<ArmorSection name="starboard"
+						segment="4"
+						imageID="&rsManticoreArmorHUDSegments;" 
+						imageX="12" imageY="0" imageWidth="12" imageHeight="36"
+						destX="100" destY="50" hpX="110" hpY="61"
+						nameY="40" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
+
+				<ArmorSection name="port"
+						segment="1"
+						imageID="&rsManticoreArmorHUDSegments;" 
+						imageX="0" imageY="0" imageWidth="12" imageHeight="36"
+						destX="24" destY="50" hpX="0" hpY="61"
+						nameY="58" nameBreakWidth="200" nameDestX="0" nameDestY="7" />
+
+				<ArmorSection name="aft-starboard"
+						segment="3"
+						imageID="&rsManticoreArmorHUDSegments;" 
+						imageX="150" imageY="0" imageWidth="42" imageHeight="25"
+						destX="70" destY="90" hpX="106" hpY="102"
+						nameY="80" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
+
+				<ArmorSection name="aft-port"
+						segment="2"
+						imageID="&rsManticoreArmorHUDSegments;" 
+						imageX="108" imageY="0" imageWidth="42" imageHeight="25"
+						destX="24" destY="90" hpX="4" hpY="102"
+						nameY="98" nameBreakWidth="200" nameDestX="0" nameDestY="7" />
+			</ArmorDisplay>
+		</PlayerSettings>
+
+		<!-- AI and Behavior -->
 
 		<AISettings
 			aggressor=			"true"
@@ -1432,8 +1512,6 @@
 	<Image UNID="&rsIAVLight;"					bitmap="Resources\IAVLight.jpg" bitmask="Resources\IAVLightMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsIAVMedium;"					bitmap="Resources\IAVMedium.jpg" bitmask="Resources\IAVMediumMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsIAVHeavy;"					bitmap="Resources\IAVHeavy.jpg" bitmask="Resources\IAVHeavyMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsManticore120;"				bitmap="Resources\Manticore120.jpg" bitmask="Resources\Manticore120Mask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsManticoreHero;"				bitmap="Resources\ManticoreLarge.jpg" bitmask="Resources\ManticoreLargeMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsScorpionGunship;"			bitmap="Resources\ScorpionGunship.jpg" bitmask="Resources\ScorpionGunshipMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsScorpionGunshipHero;"		bitmap="Resources\ScorpionGunshipLarge.jpg" bitmask="Resources\ScorpionGunshipLargeMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsIAVLightHD;"				bitmap="Resources\IAVLightHD.jpg" bitmask="Resources\IAVLightHDMask.bmp" loadOnUse="true"/>
@@ -1442,4 +1520,9 @@
 	<Image UNID="&rsRoninHD;"					bitmap="Resources\RoninHD.jpg" bitmask="Resources\RoninHDMask.bmp" loadOnUse="true"/>
 
 	<Image UNID="&rsManticore;"					bitmap="Resources\Manticore.jpg" bitmask="Resources\ManticoreMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsManticore120;"				bitmap="Resources\Manticore120.jpg" bitmask="Resources\Manticore120Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsManticoreHero;"				bitmap="Resources\ManticoreLarge.jpg" bitmask="Resources\ManticoreLargeMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsManticoreArmorHUD;"			bitmap="Resources\ManticoreArmorHUD.jpg"	bitmask="Resources\ManticoreArmorHUDMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsManticoreArmorHUDSegments;"	bitmap="Resources\ManticoreArmorHUDSegments.bmp"	loadOnUse="true" />
+
 </TranscendenceModule>

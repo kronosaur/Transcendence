@@ -1086,46 +1086,47 @@
 			class=				"Manticore"
 			type=				"heavy gunship"
 
-			size=				"33"
-			mass=				"120"
-			cargoSpace=			"50"
-			thrustRatio=		"2.0"
-			maxSpeed=			"18"
-
 			attributes=			"battleArena, gladiator"
+			inherit=			"&scManticore;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itAdvancedReactiveArmor;"/>
-			<ArmorSection start="225" span="90" armorID="&itAdvancedReactiveArmor;"/>
-			<ArmorSection start="135" span="90" armorID="&itAdvancedReactiveArmor;"/>
-			<ArmorSection start="45"  span="90" armorID="&itAdvancedReactiveArmor;"/>
-		</Armor>
+		<Names noArticle="true" personalName="true">
+			Domo; The Journeyman; Roc; Xantic Mage; Typhoon Tom;
+			The Reaver; The Beast; Andromalius
+		</Names>
 
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			startAt=			"0"
+			count=				"6"
+			/>
+		
 		<Devices>
 			<Table>
 				<Group chance="25">
-					<Device item="&itBallistaCannon;"	posAngle="40"	posRadius="37"	posZ="0"/>
+					<Device item="&itBallistaCannon;"/>
 					<Device item="&itClass2Deflector;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itArbalestCannon;" enhanced="100"	posAngle="40"	posRadius="37"	posZ="0"/>
+					<Device item="&itArbalestCannon;" enhanced="100"/>
 					<Device item="&itMonopoleDeflector;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itParticleBeamWeapon;"	posAngle="40"	posRadius="37"	posZ="0"/>
+					<Device item="&itParticleBeamWeapon;"/>
 					<Device item="&itHullPlateIonizer;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itSlamCannon;"	posAngle="40"	posRadius="37"	posZ="0"/>
+					<Device item="&itSlamCannon;"/>
 					<Device item="&itClass2Deflector;"/>
 				</Group>
 			</Table>
 
-			<Device item="&itMAGLauncher;"	posAngle="-40"	posRadius="37"	posZ="0">
+			<Device item="&itMAGLauncher;">
 				<Items>
 					<Item			  count="15-25" item="&it600HexageneMAG;"/>
 					<Item chance="50" count="5-10" item="&it800HexageneMAG;"/>
@@ -1133,27 +1134,7 @@
 			</Device>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<Items>
-			<Item count="2d6" item="&itHeliumAssembly;"/>
-		</Items>
-
-		<Image imageID="&rsManticore120;" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="12" viewportRatio="0.00625"/>
-		<HeroImage imageID="&rsManticoreHero;" imageWidth="320" imageHeight="320"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="157"	posRadius="29"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-157"	posRadius="29"	posZ="0"	rotation="180"/>
-		</Effects>
-
-		<Names noArticle="true" personalName="true">
-			Domo; The Journeyman; Roc; Xantic Mage; Typhoon Tom;
-			The Reaver; The Beast; Andromalius
-		</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			aggressor=			"true"
@@ -1507,46 +1488,47 @@
 			class=				"Manticore"
 			type=				"heavy gunship"
 
-			size=				"33"
-			mass=				"120"
-			cargoSpace=			"50"
-			thrustRatio=		"2.0"
-			maxSpeed=			"18"
-
 			attributes=			"battleArena, gladiator"
+			inherit=			"&scManticore;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itLightBlastPlate;"/>
-			<ArmorSection start="225" span="90" armorID="&itLightBlastPlate;"/>
-			<ArmorSection start="135" span="90" armorID="&itLightBlastPlate;"/>
-			<ArmorSection start="45"  span="90" armorID="&itLightBlastPlate;"/>
-		</Armor>
+		<Names noArticle="true" personalName="true">
+			Erin Starton; Kondor; Stormbringer; Ytrix; Xander Mal;
+			Remora Khan; Ravleen; Charum
+		</Names>
 
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itLightBlastPlate;"
+			startAt=			"0"
+			count=				"6"
+			/>
+		
 		<Devices>
 			<Table>
 				<Group chance="25">
-					<Device item="&itBallistaCannon;"	posAngle="40"	posRadius="37"	posZ="0"/>
+					<Device item="&itBallistaCannon;"/>
 					<Device item="&itMonopoleDeflector;" enhancement="0x0105"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itHeavySlamCannon;"	posAngle="40"	posRadius="37"	posZ="0"/>
+					<Device item="&itHeavySlamCannon;"/>
 					<Device item="&itMonopoleDeflector;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itParticleBeamWeapon;"	posAngle="40"	posRadius="37"	posZ="0"/>
+					<Device item="&itParticleBeamWeapon;"/>
 					<Device item="&itCyclotronDeflectorIII;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itSlamCannon;"	posAngle="40"	posRadius="37"	posZ="0"/>
+					<Device item="&itSlamCannon;"/>
 					<Device item="&itCyclotronDeflectorIII;"/>
 				</Group>
 			</Table>
 
-			<Device item="&itMAGLauncher;"	posAngle="-40"	posRadius="37"	posZ="0">
+			<Device item="&itMAGLauncher;">
 				<Items>
 					<Item count="15-25" item="&it800HexageneMAG;"/>
 					<Item count="15-25" item="&it600HexageneMAG;"/>
@@ -1554,27 +1536,7 @@
 			</Device>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<Items>
-			<Item count="2d6" item="&itHeliumAssembly;"/>
-		</Items>
-
-		<Image imageID="&rsManticore120;" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="12" viewportRatio="0.00625"/>
-		<HeroImage imageID="&rsManticoreHero;" imageWidth="320" imageHeight="320"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="157"	posRadius="29"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-157"	posRadius="29"	posZ="0"	rotation="180"/>
-		</Effects>
-
-		<Names noArticle="true" personalName="true">
-			Erin Starton; Kondor; Stormbringer; Ytrix; Xander Mal;
-			Remora Khan; Ravleen; Charum
-		</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			aggressor=			"true"
@@ -1730,31 +1692,32 @@
 			class=				"Manticore"
 			type=				"heavy gunship"
 
-			size=				"33"
-			mass=				"120"
-			cargoSpace=			"50"
-			thrustRatio=		"2.0"
-			maxSpeed=			"18"
-
 			attributes=			"battleArena, gladiator"
+			inherit=			"&scManticore;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itBlastPlate;"/>
-			<ArmorSection start="225" span="90" armorID="&itBlastPlate;"/>
-			<ArmorSection start="135" span="90" armorID="&itBlastPlate;"/>
-			<ArmorSection start="45"  span="90" armorID="&itBlastPlate;"/>
-		</Armor>
+		<Names noArticle="true" personalName="true">
+			Fenris; Luna Mal; Talisman; Dimachaeri; Quartinus;
+			Tannin; Orobas
+		</Names>
 
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itBlastPlate;"
+			startAt=			"0"
+			count=				"6"
+			/>
+		
 		<Devices>
 			<Table>
 				<Group chance="25">
-					<Device item="&itMarkIHowitzer;"	posAngle="40"	posRadius="37"	posZ="0"/>
+					<Device item="&itMarkIHowitzer;"/>
 					<Device item="&itCyclotronDeflectorIII;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itAkan30Cannon;"		posAngle="40"	posRadius="37"	posZ="0">
+					<Device item="&itAkan30Cannon;">
 						<Items>
 							<Item count="500" item="&itAkan30CannonShell;"/>
 						</Items>
@@ -1764,26 +1727,26 @@
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itUrakHowitzer;"	posAngle="40"	posRadius="37"	posZ="0"/>
+					<Device item="&itUrakHowitzer;"/>
 					<Device item="&itCyclotronDeflectorIV;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itMoskvaLightTurret;"  posAngle="0"	posRadius="5"	posZ="10" secondaryWeapon="true"/>
+					<Device item="&itMoskvaLightTurret;" secondaryWeapon="true"/>
 					<Device item="&itArmorRepairDevice;"/>
 					<Device item="&itCyclotronDeflectorIV;"/>
 				</Group>
 			</Table>
 
 			<Table>
-				<Device chance="50" item="&itMakayevLauncher;"	posAngle="0"	posRadius="20"	posZ="0">
+				<Device chance="50" item="&itMakayevLauncher;">
 					<Items>
 						<Item count="50" item="&itStrelkaGreen;"/>
 						<Item count="250" item="&itStrelkaWhite;"/>
 					</Items>
 				</Device>
 
-				<Device chance="50" item="&itMAGLauncher;"	posAngle="-40"	posRadius="37"	posZ="0">
+				<Device chance="50" item="&itMAGLauncher;">
 					<Items>
 						<Item count="20-30" item="&itZG24ClusterMAG;"/>
 						<Item count="30-50" item="&it800HexageneMAG;"/>
@@ -1792,27 +1755,7 @@
 			</Table>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<Items>
-			<Item count="2d6" item="&itHeliumAssembly;"/>
-		</Items>
-
-		<Image imageID="&rsManticore120;" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="12" viewportRatio="0.00625"/>
-		<HeroImage imageID="&rsManticoreHero;" imageWidth="320" imageHeight="320"/>
-		
-		<Effects>
-			<Effect type="thrustMain"		posAngle="157"	posRadius="29"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-157"	posRadius="29"	posZ="0"	rotation="180"/>
-		</Effects>
-
-		<Names noArticle="true" personalName="true">
-			Fenris; Luna Mal; Talisman; Dimachaeri; Quartinus;
-			Tannin; Orobas
-		</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			aggressor=			"true"
@@ -1890,42 +1833,42 @@
 			class=				"Manticore"
 			type=				"heavy gunship"
 
-			size=				"33"
-			mass=				"120"
-			cargoSpace=			"50"
-			thrustRatio=		"4.0"
-			maxSpeed=			"22"
-
 			attributes=			"battleArena, theSlicer"
+			inherit=			"&scManticore;"
 			>
+
+		<Names noArticle="true" personalName="true">The Slicer</Names>
+
+		<!-- Configuration -->
 
 		<Armor
 			armorID=			"&itBlastPlate;"
+			startAt=			"0"
 			count=				"6"
 			/>
 		
 		<Devices>
-			<Device item="&itSlicerCannon;"	posAngle="0"	posRadius="20"	posZ="0"/>
+			<Device item="&itSlicerCannon;"/>
 
 			<Table>
 				<Group chance="25">
-					<Device item="&itOmniPartisanCannon;"  posAngle="0"	posRadius="5"	posZ="10" secondaryWeapon="true"/>
+					<Device item="&itOmniPartisanCannon;" secondaryWeapon="true"/>
 					<Device item="&itR1Deflector;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itOmniPartisanCannon;" enhanced="100"  posAngle="0"	posRadius="5"	posZ="10" secondaryWeapon="true"/>
+					<Device item="&itOmniPartisanCannon;" enhanced="100" secondaryWeapon="true"/>
 					<Device item="&itCyclotronDeflectorIV;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itOmniPartisanCannon;"  posAngle="0"	posRadius="5"	posZ="10" secondaryWeapon="true"/>
+					<Device item="&itOmniPartisanCannon;" secondaryWeapon="true"/>
 					<Device item="&itArmorRepairDevice;"/>
 					<Device item="&itCyclotronDeflectorIV;"/>
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itMakayevLauncher;"	posAngle="0"	posRadius="20"	posZ="0">
+					<Device item="&itMakayevLauncher;">
 						<Items>
 							<Table>
 								<Item chance="60" count="250" item="&itStrelkaWhite;"/>
@@ -1938,26 +1881,11 @@
 					<Device item="&itCeratopsQuasiArmor1;"/>
 				</Group>
 			</Table>
+
+			<Device item="&itTritiumPropulsionUpgrade;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"2.0"
-			/>
-
-		<Items>
-			<Item count="2d6" item="&itHeliumAssembly;"/>
-		</Items>
-
-		<Image imageID="&rsManticore120;" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="12" viewportRatio="0.00625"/>
-		<HeroImage imageID="&rsManticoreHero;" imageWidth="320" imageHeight="320"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="157"	posRadius="29"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-157"	posRadius="29"	posZ="0"	rotation="180"/>
-		</Effects>
-
-		<Names noArticle="true" personalName="true">The Slicer</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			aggressor=			"true"
