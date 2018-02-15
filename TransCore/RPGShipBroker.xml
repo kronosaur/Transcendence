@@ -105,6 +105,8 @@
 							(scrSetDesc gScreen
 								(scrTranslate gScreen 'descPrices {
 									fullPrice: (fmtCurrency currency newShipPrice)
+									playerShipPrice: (fmtCurrency currency playerShipPrice)
+									tradeInPrice: (fmtCurrency currency tradeInPrice)
 									})
 
 								"\n"
@@ -268,7 +270,8 @@
 			<Text id="actionTradeShip">[T]rade Ship</Text>
 			
 			<Text id="descPrices">
-				Price: %fullPrice%
+				Price: %fullPrice%\n
+				Trade-in Price: %tradeInPrice%
 			</Text>
 
 			<Text id="descBuyShip">
