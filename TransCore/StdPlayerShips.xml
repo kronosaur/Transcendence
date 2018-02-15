@@ -42,6 +42,45 @@
 		
 	</ShipClass>
 
+	<!-- Level 7: Centurion/X-class Heavy Gunship -->
+
+	<ShipClass UNID="&scCenturionXPlayerL7;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Centurion/X"
+			type=				"heavy gunship"
+			defaultSovereign=	"&svCommonwealth;"
+
+			attributes=			"commonwealth, military, pacificDefense, shipBroker"
+			inherit=			"&scCenturionX;"
+			>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itP120HexphaseArmor;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itStarCannon;"/>
+			<Device deviceID="&itNAMIMissileLauncher;">
+				<Items>
+					<Item count="2d6" item="&itXM900Missile;"/>
+				</Items>
+			</Device>
+			<Device deviceID="&itYoroiMX;"/>
+
+			<Device deviceID="&it250MWReactor;"/>
+		</Devices>
+
+		<!-- Player Settings -->
+		
+		<PlayerSettings
+			desc=				"The updated Centurion/X was never produced in large numbers due to the introduction of the Britannia class."
+			/>
+		
+	</ShipClass>
+	
 <!-- EI200-CLASS FREIGHTER -->
 
 	<!-- Level 4: EI200-class Freighter -->
