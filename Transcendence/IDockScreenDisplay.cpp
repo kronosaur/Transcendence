@@ -12,6 +12,7 @@
 #define BACKGROUND_ID_ATTRIB		CONSTLIT("backgroundID")
 #define CRITERIA_ATTRIB				CONSTLIT("criteria")
 #define DATA_FROM_ATTRIB			CONSTLIT("dataFrom")
+#define DISPLAY_ACTUAL_ATTRIB		CONSTLIT("displayActual")
 #define HEIGHT_ATTRIB				CONSTLIT("height")
 #define ICON_HEIGHT_ATTRIB			CONSTLIT("iconHeight")
 #define ICON_SCALE_ATTRIB			CONSTLIT("iconScale")
@@ -165,6 +166,7 @@ bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retO
 	//	List options
 
 	retOptions->bNoArmorSpeedDisplay = pOptions->GetAttributeBool(NO_ARMOR_SPEED_DISPLAY_ATTRIB);
+	retOptions->bActualItems = pOptions->GetAttributeBool(DISPLAY_ACTUAL_ATTRIB);
 	retOptions->cxIcon = pOptions->GetAttributeIntegerBounded(ICON_WIDTH_ATTRIB, 0, -1, ICON_WIDTH);
 	retOptions->cyIcon = pOptions->GetAttributeIntegerBounded(ICON_HEIGHT_ATTRIB, 0, -1, ICON_HEIGHT);
 	retOptions->rIconScale = pOptions->GetAttributeDoubleBounded(ICON_SCALE_ATTRIB, 0.0, -1.0, 1.0);

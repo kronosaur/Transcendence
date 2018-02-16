@@ -34,78 +34,59 @@ class IDockScreenDisplay
 
 		struct SInitCtx
 			{
-			CPlayerShipController *pPlayer;
-			CDockScreen *pDockScreen;
-			CDesignType *pRoot;
-			CXMLElement *pDesc;
-			CXMLElement *pDisplayDesc;		//	<Display> element
-			AGScreen *pScreen;
-			RECT rcScreen;					//	Entire screen
-			RECT rcRect;					//	Standard area
-			DWORD dwFirstID;
-			const CVisualPalette *pVI;
-			const SFontTable *pFontTable;
+			CPlayerShipController *pPlayer = NULL;
+			CDockScreen *pDockScreen = NULL;
+			CDesignType *pRoot = NULL;
+			CXMLElement *pDesc = NULL;
+			CXMLElement *pDisplayDesc = NULL;	//	<Display> element
+			AGScreen *pScreen = NULL;
+			RECT rcScreen = { 0, 0, 0, 0};		//	Entire screen
+			RECT rcRect = { 0, 0, 0, 0 };		//	Standard area
+			DWORD dwFirstID = 0;
+			const CVisualPalette *pVI = NULL;
+			const SFontTable *pFontTable = NULL;
 
-			CSpaceObject *pLocation;
-			ICCItem *pData;
+			CSpaceObject *pLocation = NULL;
+			ICCItem *pData = NULL;
 			};
 
 		struct SBackgroundDesc
 			{
-			SBackgroundDesc (void) :
-					iType(backgroundDefault),
-					dwImageID(0),
-					pObj(NULL)
-				{ }
-
-			EBackgroundTypes iType;			//	Type of image defined
-			DWORD dwImageID;				//	UNID to use (if iType == backgroundImage)
-			CSpaceObject *pObj;				//	Object to query (if iType == backgroundObjXXX)
+			EBackgroundTypes iType = backgroundDefault;		//	Type of image defined
+			DWORD dwImageID = 0;				//	UNID to use (if iType == backgroundImage)
+			CSpaceObject *pObj = NULL;			//	Object to query (if iType == backgroundObjXXX)
 			};
 
 		struct SDisplayOptions
 			{
-			SDisplayOptions (void) :
-					pOptions(NULL),
-					cxIcon(96),
-					cyIcon(96),
-					rIconScale(1.0),
-					bNoArmorSpeedDisplay(false),
-                    bNoEmptySlots(false)
-				{
-				rcControl.left = 0;
-				rcControl.top = 0;
-				rcControl.right = 0;
-				rcControl.bottom = 0;
-				}
+			SBackgroundDesc BackgroundDesc;		//	Background specified by screen
 
-			SBackgroundDesc BackgroundDesc;	//	Background specified by screen
+			RECT rcControl = { 0, 0, 0, 0 };	//	Position of main control
 
-			RECT rcControl;					//	Position of main control
-
-			CString sType;					//	Display type
-			CXMLElement *pOptions;			//	Element containing options (<List> or <ListOptions> or <Display>)
-											//		May be NULL.
-			CString sDataFrom;				//	Source of display data (may be a function)
-			CString sItemCriteria;			//	Criteria of items to show in list (may be a function)
-			CString sCode;					//	Code to generate list
-			CString sInitialItemCode;		//	Code to select initial item in list
+			CString sType;						//	Display type
+			CXMLElement *pOptions = NULL;		//	Element containing options (<List> or <ListOptions> or <Display>)
+												//		May be NULL.
+			CString sDataFrom;					//	Source of display data (may be a function)
+			CString sItemCriteria;				//	Criteria of items to show in list (may be a function)
+			CString sCode;						//	Code to generate list
+			CString sInitialItemCode;			//	Code to select initial item in list
 
 			//	Item lists
 
-			bool bNoArmorSpeedDisplay;		//	Do not show bonus/penalty to speed from armor
+			bool bNoArmorSpeedDisplay = false;	//	Do not show bonus/penalty to speed from armor
+			bool bActualItems = false;			//	Show actual items, even if unknown
 
             //  Custom lists
 
-			CString sRowHeightCode;			//	For custom lists
-			int cxIcon;						//	Icon size
-			int cyIcon;						//	Icon size
-			Metric rIconScale;				//	Icon scale
+			CString sRowHeightCode;				//	For custom lists
+			int cxIcon = 96;					//	Icon size
+			int cyIcon = 96;					//	Icon size
+			Metric rIconScale = 1.0;			//	Icon scale
 
             //  Selectors
 
-            CString sSlotNameCode;          //  Code to name each slot
-            bool bNoEmptySlots;             //  If TRUE, don't show empty slots
+            CString sSlotNameCode;				//  Code to name each slot
+            bool bNoEmptySlots = false;			//  If TRUE, don't show empty slots
 			};
 
 		IDockScreenDisplay (CDockScreen &DockScreen) :

@@ -277,6 +277,7 @@ class CGItemListArea : public AGArea
         inline void SetBackColor (CG32bitPixel rgbColor) { m_rgbBackColor = rgbColor; }
         inline void SetColor (CG32bitPixel rgbColor) { m_rgbTextColor = rgbColor; }
 		inline void SetCursor (int iIndex) { if (m_pListData) m_pListData->SetCursor(iIndex); Invalidate(); }
+		inline void SetDisplayAsKnown (bool bValue = true) { m_bActualItems = bValue; }
 		inline void SetFilter (const CItemCriteria &Filter) { if (m_pListData) m_pListData->SetFilter(Filter); InitRowDesc(); Invalidate(); }
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 		inline void SetIconHeight (int cyHeight) { m_cyIcon = cyHeight; }
@@ -324,6 +325,11 @@ class CGItemListArea : public AGArea
 			bool bDisabled;
 			};
 
+		static const int DEFAULT_ROW_HEIGHT =				96;
+		static const int ICON_WIDTH =						96;
+		static const int ICON_HEIGHT =						96;
+
+
 		int CalcRowHeight (int iRow);
 		void InitRowDesc (void);
 		int FindRow (int y);
@@ -333,31 +339,32 @@ class CGItemListArea : public AGArea
 		void PaintItem (CG32bitImage &Dest, const CItem &Item, const RECT &rcRect, bool bSelected);
 		void PaintTab (CG32bitImage &Dest, const STabDesc &Tab, const RECT &rcRect, bool bSelected, bool bHover);
 
-		IListData *m_pListData;
-		ListTypes m_iType;
+		IListData *m_pListData = NULL;
+		ListTypes m_iType = listNone;
 
 		const CVisualPalette &m_VI;
-		const CUIResources *m_pUIRes;
-		const SFontTable *m_pFonts;
-        CG32bitPixel m_rgbTextColor;
-        CG32bitPixel m_rgbBackColor;
-		int m_iOldCursor;						//	Cursor pos
-		int m_yOffset;							//	Painting offset for smooth scroll
-		int m_yFirst;							//	coord of first row relative to list rect
-		int m_cyRow;							//	Row height
-		int m_cxIcon;							//	Icon width
-		int m_cyIcon;							//	Icon height
-		Metric m_rIconScale;					//	Icon scale
+		const CUIResources *m_pUIRes = NULL;
+		const SFontTable *m_pFonts = NULL;
+        CG32bitPixel m_rgbTextColor = CG32bitPixel(255, 255, 255);
+        CG32bitPixel m_rgbBackColor = CG32bitPixel(0, 0, 0);
+		int m_iOldCursor = -1;					//	Cursor pos
+		int m_yOffset = 0;						//	Painting offset for smooth scroll
+		int m_yFirst = 0;						//	coord of first row relative to list rect
+		int m_cyRow = DEFAULT_ROW_HEIGHT;		//	Row height
+		int m_cxIcon = ICON_WIDTH;				//	Icon width
+		int m_cyIcon = ICON_HEIGHT;				//	Icon height
+		Metric m_rIconScale = 1.0;				//	Icon scale
 
-		int m_cyTotalHeight;					//	Total heigh of all rows
+		int m_cyTotalHeight = 0;				//	Total heigh of all rows
 		TArray<SRowDesc> m_Rows;
 
 		TArray<STabDesc> m_Tabs;
-		int m_iCurTab;							//	Current selected tab (-1 = none)
-		int m_iHoverTab;						//	Hover tab (-1 = none)
-		int m_cyTabHeight;						//	Height of tab row
+		int m_iCurTab = -1;						//	Current selected tab (-1 = none)
+		int m_iHoverTab = -1;					//	Hover tab (-1 = none)
+		int m_cyTabHeight = 0;					//	Height of tab row
 
-		bool m_bNoArmorSpeedDisplay;			//	Do not show armor bonus/penalty to speed
+		bool m_bNoArmorSpeedDisplay = false;	//	Do not show armor bonus/penalty to speed
+		bool m_bActualItems = false;			//	Show actual items, even if unknown
 	};
 
 class CGNeurohackArea : public AGArea

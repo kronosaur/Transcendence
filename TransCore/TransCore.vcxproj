@@ -519,7 +519,9 @@
     </Xml>
     <Xml Include="Heliotropes.xml" />
     <Xml Include="Himal.xml" />
-    <Xml Include="Huaramarca.xml" />
+    <Xml Include="Huaramarca.xml">
+      <SubType>Designer</SubType>
+    </Xml>
     <Xml Include="HuaramarcaMission01.xml" />
     <Xml Include="HuaramarcaMission02.xml" />
     <Xml Include="HuaramarcaMission03.xml" />

@@ -5,10 +5,6 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-const int DEFAULT_ROW_HEIGHT =				96;
-const int ICON_WIDTH =						96;
-const int ICON_HEIGHT =						96;
-
 const int ITEM_TEXT_MARGIN_Y =				4;
 const int ITEM_TEXT_MARGIN_X =				4;
 const int ITEM_TEXT_MARGIN_BOTTOM =			10;
@@ -41,23 +37,7 @@ const int TAB_HEIGHT =						24;
 #define STR_NO_ITEMS						CONSTLIT("There are no items here")
 
 CGItemListArea::CGItemListArea (const CVisualPalette &VI) :
-		m_VI(VI),
-		m_pListData(NULL),
-		m_iType(listNone),
-		m_pUIRes(NULL),
-		m_pFonts(NULL),
-        m_rgbTextColor(255, 255, 255),
-		m_iOldCursor(-1),
-		m_yOffset(0),
-		m_yFirst(0),
-		m_cyRow(DEFAULT_ROW_HEIGHT),
-		m_cxIcon(ICON_WIDTH),
-		m_cyIcon(ICON_HEIGHT),
-		m_rIconScale(1.0),
-		m_iCurTab(-1),
-		m_iHoverTab(-1),
-		m_cyTabHeight(0),
-		m_bNoArmorSpeedDisplay(false)
+		m_VI(VI)
 
 //	CGItemListArea constructor
 
@@ -121,11 +101,20 @@ int CGItemListArea::CalcRowHeight (int iRow)
 			if (!m_pListData->IsCursorValid())
 				{
 				cyHeight = DEFAULT_ROW_HEIGHT;
-				break;
+				}
+			else
+				{
+				CUIHelper UIHelper(*g_pHI);
+
+				DWORD dwOptions = 0;
+				if (m_bNoArmorSpeedDisplay)
+					dwOptions |= CUIHelper::OPTION_NO_ARMOR_SPEED_DISPLAY;
+				if (m_bActualItems)
+					dwOptions |= CUIHelper::OPTION_KNOWN;
+
+				cyHeight = UIHelper.CalcItemEntryHeight(m_pListData->GetSource(), m_pListData->GetItemAtCursor(), rcRect, dwOptions);
 				}
 
-			CUIHelper UIHelper(*g_pHI);
-			cyHeight = UIHelper.CalcItemEntryHeight(m_pListData->GetSource(), m_pListData->GetItemAtCursor(), rcRect, 0);
 			break;
 			}
 
@@ -819,6 +808,8 @@ void CGItemListArea::PaintItem (CG32bitImage &Dest, const CItem &Item, const REC
 		dwOptions |= CUIHelper::OPTION_SELECTED;
 	if (m_bNoArmorSpeedDisplay)
 		dwOptions |= CUIHelper::OPTION_NO_ARMOR_SPEED_DISPLAY;
+	if (m_bActualItems)
+		dwOptions |= CUIHelper::OPTION_KNOWN;
 
 	UIHelper.PaintItemEntry(Dest, m_pListData->GetSource(), Item, rcRect, m_rgbTextColor, dwOptions);
 	}
