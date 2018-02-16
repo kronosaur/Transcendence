@@ -505,7 +505,9 @@
 			inherit=		"&dsDockScreenBase;"
 			nestedScreen=   "true"
 			>
-		<List>
+		<Display type="customItemPicker"
+				displayActual="true"
+				>
 			(block (
 				(criteria (or (@ gData 'criteria) "* +hasComponents:true;"))
 				)
@@ -521,19 +523,8 @@
 						)
 					)
 				)
-		</List>
+		</Display>
 		
-		<OnScreenInit>
-			(block (
-				(unknownItems (filter (itmGetTypes "*") theType (not (itmIsKnown theType))))
-				)
-				;	Remember the list of unknown items
-				(scrSetData gScreen 'unknownItems unknownItems)
-				;	Set all items known so component list displays correctly
-				(enum unknownItems theType (itmSetKnown theType True))
-				)
-		</OnScreenInit>
-
 		<Panes>
 			<Default>
 				<OnPaneInit>
@@ -553,8 +544,8 @@
 						(errorDesc {
 							item: itemNeeded
 							itemCount: (itmGetCount itemNeeded)
-							itemName: (itmGetName itemNeeded 0x100)
-							itemNames: (itmGetName itemNeeded 0x102)
+							itemName: (itmGetName itemNeeded 'actual)
+							itemNames: (itmGetName itemNeeded '(actual plural))
 							})
 						desc
 						)
@@ -567,12 +558,12 @@
 							
 							(not (@ fabInfo 'componentsNeededDesc))
 								(scrSetDescTranslate gScreen 'descFabricateItemNoComponents {
-									itemName: (itmGetName theItem 0x0108)
+									itemName: (itmGetName theItem '(actual count))
 									cost: (fmtCurrency currencyUsed workCost)
 									})
 
 							(scrSetDescTranslate gScreen 'descFabricateItem {
-								itemName: (itmGetName theItem 0x0108)
+								itemName: (itmGetName theItem '(actual count))
 								cost: (fmtCurrency currencyUsed workCost)
 								})
 							)
@@ -670,10 +661,7 @@
 					</Action>
 					
 					<Action id="actionDone" cancel="1">
-						(block Nil
-							(enum (scrGetData gScreen 'unknownItems) theType (itmSetKnown theType Nil))
-							(scrExitScreen gScreen)
-							)
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
@@ -738,10 +726,7 @@
 			
 				<Actions>
 					<Action id="actionDone" default="1" cancel="1">
-						(block Nil
-							(enum (scrGetData gScreen 'unknownItems) theType (itmSetKnown theType Nil))
-							(scrExitScreen gScreen)
-							)
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</FabricateResult>
@@ -755,17 +740,14 @@
 						)
 
 						(scrSetDescTranslate gScreen 'descFabricateReminderAdded {
-							itemName: (itmGetName (@ fabInfo 'item) 0x108)
+							itemName: (itmGetName (@ fabInfo 'item) '(actual count))
 							})
 						)
 				</OnPaneInit>
 				
 				<Actions>
 					<Action id="actionDone" default="1" cancel="1">
-						(block Nil
-							(enum (scrGetData gScreen 'unknownItems) theType (itmSetKnown theType Nil))
-							(scrExitScreen gScreen)
-							)
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</MissionAdded>
@@ -1133,6 +1115,7 @@
 					
 					;	Create the resulting item
 					
+					(itmSetKnown itemToCreate True)
 					(objAddItem gPlayerShip itemToCreate)
 					
 					;	Loop over player missions and see if we've accomplished any of them
