@@ -1306,7 +1306,7 @@
 	<!-- Omni Particle Cannon -->
 
 	<ItemType UNID="&itOmniParticleCannon;"
-			name=				"omnidirectional particle cannon"
+			name=				"particle beam turret"
 			attributes=			"commonwealth, EI, energyWeapon, majorItem"
 			  
 			level=				"5"
@@ -1315,7 +1315,7 @@
 			value=				"12000"
 			mass=				"2000"
 			  
-			description=		"A single particle beam weapon with an automated targeting system."
+			description=		"A single particle beam weapon mounted on an automated turret."
 			>
 
 		<Image imageID="&rsItemsBushido1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
