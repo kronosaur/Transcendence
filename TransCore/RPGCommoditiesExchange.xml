@@ -190,6 +190,10 @@
 						;	Max items we can buy
 						
 						(maxCount (min availCount affordCount fitCount militaryCount))
+
+						;	How many of this item do we already have?
+
+						(countInCargo (objHasItem gPlayerShip thisItem 1))
 						
 						;	Can this item be installed?
 						
@@ -222,6 +226,16 @@
 									mass: (strMassString (itmGetMass thisItem))
 									maxMass: (strMassString (multiply (itmGetMass thisItem) maxCount))
 									})
+
+								;	If the player has some in their cargo hold, then say so here.
+
+								(switch
+									countInCargo
+										(scrTranslate gScreen 'descInCargo { itemName:(itmGetName (itmSetCount thisItem countInCargo) '(count short)) })
+									)
+
+								;	If there is some restriction (not enough money, etc.) then explain it
+								;	here.
 									
 								(switch
 									(eq itemCost 0)
@@ -456,6 +470,9 @@
 						"\n"
 						)
 					)
+			</Text>
+			<Text id="descInCargo">
+				"You have %itemName% in your cargo hold. "
 			</Text>
 			<Text id="descBuyOrInstall">
 				(cat
