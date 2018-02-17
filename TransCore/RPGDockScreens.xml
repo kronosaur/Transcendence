@@ -826,8 +826,7 @@
 
 										(gr availCount fitCount)
 											(scrTranslate gScreen 'spaceStringSome {
-												count:fitCount
-												itemName:(itmGetName thisItem 'plural)
+												itemName:(itmGetName (itmSetCount thisItem fitCount) 'countAlways)
 												})
 
 										;(scrTranslate gScreen 'spaceStringAll { itemName:(itmGetName thisItem 'count) })
@@ -918,8 +917,7 @@
 			<String id="totalMassString">(%quantity% at %mass%)</String>
 			<String id="totalPriceString">(%count% for %price%)</String>
 			<Text id="spaceStringNone">You do not have enough space to carry %itemName%.</Text>
-			<Text id="spaceStringOne">You have enough room to carry one %itemName%.</Text>
-			<Text id="spaceStringSome">You have enough room to carry only %count% %itemName%.</Text>
+			<Text id="spaceStringSome">You only have enough room to carry %itemName%.</Text>
 			<Text id="spaceStringAll">You have enough room to carry all %itemName%.</Text>
 			<Text id="actionLootThis">[L]oot this Item</Text>
 			<Text id="descLootQuantity">How many items do you wish to loot?</Text>
