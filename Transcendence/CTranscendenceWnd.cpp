@@ -13,8 +13,8 @@
 #define TEXT_CRAWL_HEIGHT					320
 #define TEXT_CRAWL_WIDTH					384
 
-#define DEBUG_CONSOLE_WIDTH					512
-#define DEBUG_CONSOLE_HEIGHT				600
+#define DEBUG_CONSOLE_WIDTH					0.5
+#define DEBUG_CONSOLE_HEIGHT				0.8
 
 int g_cxScreen = 0;
 int g_cyScreen = 0;
@@ -729,12 +729,13 @@ LONG CTranscendenceWnd::WMCreate (CString *retsError)
 		}
 
 	//	Initialize debug console
-
 	RECT rcRect;
-	rcRect.left = m_rcScreen.right - (DEBUG_CONSOLE_WIDTH + 4);
-	rcRect.top = (RectHeight(m_rcScreen) - DEBUG_CONSOLE_HEIGHT) / 2;
-	rcRect.right = rcRect.left + DEBUG_CONSOLE_WIDTH;
-	rcRect.bottom = rcRect.top + DEBUG_CONSOLE_HEIGHT;
+	int cxDebugWin = int(RectWidth(m_rcScreen) * DEBUG_CONSOLE_WIDTH);
+	int cyDebugWin = int(RectHeight(m_rcScreen) * DEBUG_CONSOLE_HEIGHT);
+	rcRect.left = m_rcScreen.right - (cxDebugWin + 4);
+	rcRect.top = (RectHeight(m_rcScreen) - cyDebugWin) / 2;
+	rcRect.right = rcRect.left + cxDebugWin;
+	rcRect.bottom = rcRect.top + cyDebugWin;
 	m_DebugConsole.SetFontTable(&m_Fonts);
 	m_DebugConsole.Init(this, rcRect);
 
