@@ -1856,14 +1856,14 @@
 					;	succeeds, then we've succeeded.
 
 					(not hasTradingComputer)
-						(objSendMessage gSource Nil "Targeting computer installed")
+						(objSendMessage gSource Nil "Trading computer installed")
 
 					;	If we DID have a trading computer before and installation succeeded
 					;	anyway, then it means we have a trading computer on some device
 					;	(e.g., a cargo hold) and now we have a redundant one installed on
 					;	the ship.
 
-					(objSendMessage gSource Nil "Redundant targeting computer installed")
+					(objSendMessage gSource Nil "Redundant trading computer installed")
 					)
 
 				;	Identify and remove
