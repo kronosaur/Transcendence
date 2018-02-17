@@ -592,7 +592,7 @@ class CCommandLineDisplay
 	private:
 		enum Constants
 			{
-			MAX_LINES = 80,
+			MAX_LINES = 200,
 			};
 
 		void AppendOutput (const CString &sLine, CG32bitPixel rgbColor);
