@@ -699,5 +699,8 @@
     <Xml Include="CommonwealthStarCarrier.xml">
       <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
+    <Xml Include="CSCTerra.xml">
+      <Filter>Human Space Library\Commonwealth Fleet</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

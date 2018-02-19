@@ -501,6 +501,7 @@
     <Xml Include="CoreProjectileEffects.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="CSCTerra.xml" />
     <Xml Include="Dall01.xml" />
     <Xml Include="Dantalion.xml" />
     <Xml Include="DeathDrugsCartel.xml" />

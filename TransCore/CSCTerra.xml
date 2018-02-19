@@ -191,7 +191,10 @@
 				the system.
 			</Text>
 			<String id="descNoMissions">
-				"Sorry, there are no missions available for you."
+
+				The bridge of the CSC Terra is busy with activity. Admiral Decker
+				and his XO are discussing the results of the last operation.
+
 			</String>
 		</Language>
 	</ShipClass>

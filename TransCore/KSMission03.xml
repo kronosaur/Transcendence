@@ -295,7 +295,7 @@
 
 			<Text id="AcceptReply">
 				(if (msnGetProperty gSource 'isDeclined)
-					"\"Alright, we've uploaded the coordinates into your computer. The squadron will appreciate any help you can give them Good hunting!\""
+					"\"Alright, we've uploaded the coordinates into your computer. The squadron will appreciate any help you can give them. Good hunting!\""
 					"\"Alright, hit the pirates as hard as you can and get back here in one piece. Good hunting!\""
 					)
 			</Text>

@@ -28,20 +28,22 @@
 
 		<Events>
 			<OnCreate>
-				(switch
-					;	Only valid for Point Juno
-					(!= (objGetType aOwnerObj) &stPointJuno;)
-						(msnDestroy gSource)
+				(block (destObj)
+					(switch
+						;	CSC Europa wreck must exist here
 
-					;	Create the mission
-					(block (destObj)
-						(setq destObj (sysFindObject aOwnerObj "NT +CSCEuropa;"))
-						
-						(msnSetData gSource 'destID (objGetID destObj))
-						(msnSetData gSource 'vaultCode (typGetData &stCSCEuropaWreck; 'VaultCode))
+						(not (setq destObj (sysFindObject aOwnerObj "NT +CSCEuropa;")))
+							(msnDestroy gSource)
 
-						;	Set reward
-						(msnSetData gSource 'missionXP 0)
+						;	Create the mission
+
+						(block ()
+							(msnSetData gSource 'destID (objGetID destObj))
+							(msnSetData gSource 'vaultCode (typGetData &stCSCEuropaWreck; 'VaultCode))
+
+							;	Set reward
+							(msnSetData gSource 'missionXP 0)
+							)
 						)
 					)
 			</OnCreate>

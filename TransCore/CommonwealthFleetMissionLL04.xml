@@ -115,57 +115,30 @@
 			</OnDeclined>
 
 			<OnAccepted>
-				(block (
-					(cscObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-					)
-					;	Add the Lamplighter to the CSC so the player can install it
-					(objAddItem cscObj (itmCreate &itLamplighter; 1))
-					)
 			</OnAccepted>
 
 			<OnPaneInit>
-				(if (and (= aScreenUNID &scCSCTerra;) (= aPane 'Default))
-					(block (
-						(status (typGetData &msCSCLamplighterTesting; 'status))
-						theMessage
-						)
-						;	If we have the Lamplighter then update status to 'testing
-						(if (and
-								(or (= status 'player) (= status 'fleetPlayer))
-								(objGetItems gPlayerShip "w +unid:&itLamplighter;;")
-								)
-							(block Nil
-								(typSetData &msCSCLamplighterTesting; 'status 'testing)
-								(setq status 'testing)
-								(msnSetData gSource 'installTime (unvGetTick))
-								)
-							)
+				(block (
+					(status (typGetData &msCSCLamplighterTesting; 'status))
+					)
+					(switch
+						;	If we're not on the CSC Terra, then skip
 
-						;	Check if we have a message to display
-						(switch
-							(or (= status 'player) (= status 'fleetPlayer))
-								(setq theMessage (msnTranslate gSource 'textDockmaster1))
+						(not (and (= aScreenUNID &scCSCTerra;) (= aPane 'Default)))
+							Nil
 
-							(and (= status 'testing) True)
-								(setq theMessage (msnTranslate gSource 'textDockmaster2))
+						;	If we need to install the Lamplighter, override the Dock Services
+						;	button to go to a special screen.
 
-							; (- (unvGetTick) (msnGetData gSource 'installTime))
-							;	LATER: TestingStatus
-							)
-
-						;	If we have a messge then replace actionDockServices with an action
-						;	to display the message before proceeding to dockservices
-						(if theMessage
-							(block Nil
+						(or (= status 'player) (= status 'fleetPlayer))
+							(block ()
 								(scrShowAction gScreen 'actionDockServices Nil)
 								(scrAddAction gScreen 'altDockServices 1 "Dock Services" "D" (lambda () (block Nil
-									(rpgDockServices gPlayerShip {
-											checkMilitaryID: True
-											})
-									(scrShowScreen gScreen &dsRPGMessage; { desc:theMessage })
+									(scrShowScreen gScreen &dsLamplighterInstall;)
 									)))
 								)
-							)
+
+						;	Otherwise, nothing
 						)
 					)
 			</OnPaneInit>
@@ -264,53 +237,14 @@
 			</Text>
 
 			<Text id="InProgress">
-				(block (
-					(lastVisit (- (unvGetTick) (msnGetData gSource 'installTime)))
-					)
-					(list
-						{
-							textID: (switch
-								(ls lastVisit 1800)
-									'textProgress1
-								
-								'textProgress2
-								)
-							}
-						)
+				(list
+					{
+					textID: 'textBriefingPlayer
+					}
 					)
 			</Text>
+			<Text id="SuccessDebrief">
 
-			<!-- Text -->
-
-			<Text id="Name">Lamplighter testing</Text>
-
-			<Text id="textBriefingPlayer">
-				The bridge is chaotic as usual. The admiral looks at you as you enter:
-
-				"Have you talked to the dockmaster yet?"
-			</Text>
-			<Text id="textBriefingCaptain">
-				The bridge is chaotic as usual. The admiral looks at you as you enter:
-
-				"I'm glad you're back. We've made a lot of progress since your last
-				visit and now I'm ready to show you Project Lamplighter. Report to
-				the dockmaster and he'll explain."
-			</Text>
-			<Text id="textBriefingNotYet">
-				The bridge is chaotic as usual. The admiral looks at you as you enter:
-
-				"Remember what I said. Come back when you're a Fleet captain."
-			</Text>
-			<Text id="textBriefingNotPlayer">
-				The bridge is chaotic as usual. The admiral and the XO confer
-				privately about their latest operation. The officers and crew try
-				hard to ignore you. You are not welcome here.
-			</Text>
-			<Text id="textProgress1">
-				The bridge of the CSC Terra is busy with activity. Admiral Decker
-				and his XO are discussing the results of the last operation.
-			</Text>
-			<Text id="textProgress2">
 				As you enter the bridge, Admiral Decker approaches you. He is
 				beaming with excitement:
 
@@ -318,22 +252,181 @@
 				starting to produce them in higher quantities and equipping our
 				Aquilas with them. We finally have a chance to end this war on our
 				terms!"
+
 			</Text>
-			<Text id="textDockmaster1">
+
+			<!-- Text -->
+
+			<Text id="Name">Lamplighter testing</Text>
+			<Text id="textSummary">
+
+				Report to the dockmaster on the CSC Terra to test the Lamplighter.
+
+			</Text>
+
+			<Text id="textBriefingPlayer">
+
+				The bridge is chaotic as usual. The admiral looks at you as you enter:
+
+				"Have you talked to the dockmaster yet?"
+
+			</Text>
+			<Text id="textBriefingCaptain">
+
+				The bridge is chaotic as usual. The admiral looks at you as you enter:
+
+				"I'm glad you're back. We've made a lot of progress since your last
+				visit and now I'm ready to show you Project Lamplighter. Report to
+				the dockmaster and he'll explain."
+
+			</Text>
+			<Text id="textBriefingNotYet">
+
+				The bridge is chaotic as usual. The admiral looks at you as you enter:
+
+				"Remember what I said. Come back when you're a Fleet captain."
+
+			</Text>
+			<Text id="textBriefingNotPlayer">
+
+				The bridge is chaotic as usual. The admiral and the XO confer
+				privately about their latest operation. The officers and crew try
+				hard to ignore you. You are not welcome here.
+
+			</Text>
+			<Text id="textProgress1">
+
+				The bridge of the CSC Terra is busy with activity. Admiral Decker
+				and his XO are discussing the results of the last operation.
+
+			</Text>
+			<Text id="textProgress2">
+
+				As you enter the bridge, Admiral Decker approaches you. He is
+				beaming with excitement:
+
+				"How's the testing going? It's a beautiful weapon, isn't it? We're
+				starting to produce them in higher quantities and equipping our
+				Aquilas with them. We finally have a chance to end this war on our
+				terms!"
+
+			</Text>
+
+			<Text id="AchievementSuccess">Acquired Lamplighter archcannon</Text>
+		</Language>
+	</MissionType>
+
+<!-- DOCK SCREENS -->
+
+	<DockScreen unid="&dsLamplighterInstall;"
+			inherit="&dsDockScreenBase;"
+			nestedScreen="true"
+			>
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descIntro)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrShowPane gScreen 'Install)
+					</Action>
+				</Actions>
+			</Default>
+
+			<Install>
+				<OnPaneInit>
+					(block (
+						(result (rpgInstallDevicePrep {
+							item: (itmCreate &itLamplighter; 1)
+							totalPrice: 0
+							currencyUsed: (objGetDefaultCurrency gSource)
+							maxTechLevel: 25
+							}))
+						)
+						(scrSetDesc gScreen (@ result 'desc))
+						(scrEnableAction gScreen 'actionInstall (@ result 'canInstall))
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionInstall" default="1">
+						(block (
+							(lamplighterItem (itmCreate &itLamplighter; 1))
+							(theMission (@ (msnFind "* +unid:&msCSCLamplighterTesting;;") 0))
+							)
+							(objAddItem gPlayerShip lamplighterItem)
+							(shpInstallDevice gPlayerShip lamplighterItem)
+							(typSetData &svPlayer; 'tutorialInstalled True)
+
+							(typSetData &msCSCLamplighterTesting; 'status 'installed)
+							(msnSuccess theMission)
+
+							(scrShowPane gScreen 'InstallSuccess)
+							)
+					</Action>
+					<Action id="actionCancel" cancel="1">
+						(scrShowPane gScreen 'InstallDeclined)
+					</Action>
+				</Actions>
+			</Install>
+
+			<InstallSuccess>
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descInstallComplete)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrExitScreen gScreen 'forceUndock)
+					</Action>
+				</Actions>
+			</InstallSuccess>
+
+			<InstallDeclined>
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descComeBackLater)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(block ()
+							(scrExitScreen gScreen)
+							(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
+							)
+					</Action>
+				</Actions>
+			</InstallDeclined>
+		</Panes>
+
+		<Language>
+			<Text id="actionInstall">[I]nstall</Text>
+
+			<Text id="descIntro">
+
 				The dockmaster approaches as you enter:
 
 				"Seems like it's your lucky day! I got orders from the admiral to
 				put you on our testing program for Lamplighter. You're gonna like
 				it&#x97;it's got a pure antimatter blast that'll cut through
 				almost anything."
+
 			</Text>
-			<Text id="textDockmaster2">
+			<Text id="descInstallComplete">
+
 				"All the numbers look good. This rig is ready for some action!
 				Take her out and let us know how many Ares you blast!"
-			</Text>
 
-			<Text id="AchievementSuccess">Acquired Lamplighter archcannon</Text>
+			</Text>
+			<String id="descComeBackLater">
+
+				"Anytime you're ready, just come back and I'll fix you up."
+
+			</String>
 		</Language>
-	</MissionType>
+	</DockScreen>
 
 </TranscendenceModule>
