@@ -4,7 +4,6 @@
 	
 	<!-- Antarctica mission ====================================================
 
-changing sys will unregister from owner
 	EXTRA DATA
 
 	gateID:			ID of gate leading to SK
@@ -13,20 +12,67 @@ changing sys will unregister from owner
 	GLOBAL DATA
 	
 	status:
-		Nil
-		underAttack
-		enemy
-		friend
+
+		Nil: mission has not started yet.
+
+		'underAttack: The Antarctica is under attack by the Aquilas.
+
+		'enemy: The player has attacked the Antarctica (before, during, or 
+				after the Aquala attack).
+
+		'friend: The Aquilas have been destroyed. 
+		
+				NOTE: For now we reach this state whether or not the player 
+				actually helped. In the future we might want to have a different
+				state if the player doesn't actually help. [Or maybe not: we
+				should design the mission so that the Antarctica only survives
+				if the player helps.]
+
+	NOTES
+
+	There are multiple variables holding state for this particular mission:
+
+	1.	The mission itself has a global variable called status, which tracks the
+		current state of the mission. This status variable is only used while
+		the mission is active.
+
+	2.	The CSC Antarctica object has a data variable called behavior, which
+		tracks the ship's current behavior. This variable is independent of the
+		mission status. For example, the behavior might be 'leaving, which means
+		the Antarctica is heading for a gate, but the mission status explains
+		WHY the ship is leaving.
+
+	3.	The character object (unidCaptainHelios) tracks the character status
+		relationship with respect to the player. This state variable records 
+		what happened to the Antarctica at the end:
+
+		'destroyed: The Antarctica was destroyed by the Aquilas (not the player).
+
+		'destroyedByPlayer: The Antarctica was destroyed by the player after the
+				player sided with Admiral Decker.
+
+		'betrayed: The player helped the Antarctica, got the reward, and then
+				destroyed the Antarctica anyway.
+
+
+	Outside of this mission, you may use the following checks to determine what
+	happened:
+
+		If the mission was completed successfully, then it means the Antarctica
+		has escaped.
+
+		Otherwise, the character object describes what happened.
 
 	======================================================================== -->
 	
 	<MissionType UNID="&msEscapeFromDantalion;"
-			name=				"CSC Antarctica"
+			name=				"Escape from Dantalion"
 			attributes=			"antarcticaMission, onDockMission"
 
 			level=				"9"
 
 			maxAppearing=		"1"
+			noDebrief=			"true"
 			>
 
 
@@ -94,7 +140,6 @@ changing sys will unregister from owner
 					;	Player has met Captain Helios
 					(rpgCharacterSetMeeting &unidCaptainHelios;)
 
-					(msnSetUnavailable gSource)
 					(typSetData &msEscapeFromDantalion; 'status 'enemy)
 
 					(sovSetDisposition &svCSCAntarctica; &svPlayer; 'enemy)
@@ -167,9 +212,7 @@ changing sys will unregister from owner
 							(or (= aDestroyReason 'ascended) (= aDestroyReason 'enteredStargate))
 								Nil
 
-							(msnFailure gSource {
-								destroyedByPlayer: (and gPlayerShip (= aOrderGiver gPlayerShip))
-								})
+							(msnFailure gSource)
 							)
 					)
 			</OnObjDestroyed>
@@ -210,26 +253,6 @@ changing sys will unregister from owner
 					)
 			</OnInProgressUndock>
 
-			<OnCompleted>
-				(switch
-					;	Antarctica escapes
-					(= aReason 'success)
-						(block Nil
-							)
-					
-					(= aReason 'failure)
-						(switch
-							(not (@ gData 'destroyedByPlayer))
-								(rpgCharacterSetStatus &unidCaptainHelios; 'destroyed)
-
-							(msnGetData gSource 'playerRewarded)
-								(rpgCharacterSetStatus &unidCaptainHelios; 'betrayed)
-
-							(rpgCharacterSetStatus &unidCaptainHelios; 'destroyedByPlayer)
-							)
-					)
-			</OnCompleted>
-
 			<OnGetNextScreen>
 				(switch
 					(= aScreenType 'DeclineFollowUp)
@@ -250,6 +273,10 @@ changing sys will unregister from owner
 						Nil
 
 					(typGetData &msEscapeFromDantalion; 'skipped)
+						Nil
+
+					;	Or if the Antarctica is destroyed
+					(rpgCharacterGetStatus &unidCaptainHelios;)
 						Nil
 
 					;	Create the Antarctica
@@ -285,6 +312,33 @@ changing sys will unregister from owner
 						)
 					)
 			</OnGlobalSystemStarted>
+
+			<OnGlobalSystemStopped>
+				(block (missionObj)
+					(switch
+						;	If this mission isn't active, then we don't need to do 
+						;	anything.
+
+						(not (setq missionObj (@ (msnFind "a +unid:&msEscapeFromDantalion;;") 0)))
+							Nil
+
+						;	If the Antarctica is currently being attacked by Aquilas, then
+						;	the mission fails and we assume the Antarctica was destroyed.
+
+						(gr (msnGetData missionObj 'cruisersLeft) 0)
+							(block ()
+								(rpgCharacterSetStatus &unidCaptainHelios; 'destroyed)
+								(msnFailure missionObj)
+								)
+
+						;	Otherwise, the Antarctica can escape (this happens regardless of
+						;	whether the player is a friend or enemy; success in this mission
+						;	DOES NOT mean the player helped out).
+
+						(msnSuccess missionObj)
+						)
+					)
+			</OnGlobalSystemStopped>
 
 			<GetGlobalAchievements>
 				(block (
@@ -562,6 +616,46 @@ changing sys will unregister from owner
 					(sysAddObjRecurringTimerEvent 450 gSource 'OnLaunchPatrol)
 					)
 			</OnBehaviorStart>
+
+			<OnDestroy>
+				;	NOTE: This is handled here instead of in the mission because we
+				;	need to set up variables even if the Dantalion escape mission
+				;	is never accepted.
+
+				(block (
+					(missionObj (@ (msnFind "* +unid:&msEscapeFromDantalion;;") 0))
+					)
+					(switch
+						;	If we entered a stargate, then that's OK
+
+						(= aDestroyReason 'enteredStargate)
+							Nil
+
+						;	If the player destroyed us...
+
+						(and gPlayerShip (= aOrderGiver gPlayerShip))
+							(switch
+								;	If the player destroyed us after we rewarded her, then
+								;	we're betrayed.
+
+								(and missionObj (msnGetData gSource 'playerRewarded))
+									(rpgCharacterSetStatus &unidCaptainHelios; 'betrayed)
+
+								;	Otherwise, the player just destroyed us.
+
+								(rpgCharacterSetStatus &unidCaptainHelios; 'destroyedByPlayer)
+								)
+
+						;	Otherwise, we were destroyed by the Aquilas
+
+						(rpgCharacterSetStatus &unidCaptainHelios; 'destroyed)
+						)
+
+					;	Chain to the main class
+
+					(typFireEvent (objGetType gSource) 'OnDestroy)
+					)
+			</OnDestroy>
 
 			<OnAttackedByPlayer>
 				(block Nil

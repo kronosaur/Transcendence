@@ -47,9 +47,51 @@
 			<OnObjDestroyed>
 				(switch
 					;	Antarctica destroyed
+
 					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
-						(if (or (= aDestroyReason 'ascended) (= aDestroyReason 'enteredStargate))
-							(msnFailure gSource)
+						(switch
+							;	If the Antarctica entered a stargate, then this mission
+							;	failed.
+
+							(= aDestroyReason 'enteredStargate)
+								(msnFailure gSource)
+
+							;	If the Antarctica ascended, then it just means the player 
+							;	left the system. We figure out whether or not it was
+							;	able to escape.
+
+							(= aDestroyReason 'ascended)
+								(block (
+									(missionObj (@ (msnFind "ao +unid:&msEscapeFromDantalion;;") 0))
+									)
+									(switch
+
+										;	If the mission is not accepted, then we skip. If the
+										;	player goes back, they can continue the mission.
+
+										(not missionObj)
+											Nil
+
+										;	If the mission was declined, and the Antarctica 
+										;	ascended, then it means that she escaped.
+
+										(msnGetProperty missionObj 'isDeclined)
+											(msnFailure gSource)
+
+										;	If there are cruisers left, then we assume that the
+										;	Antarctica was destroyed.
+
+										(gr (msnGetData missionObj 'cruisersLeft) 0)
+											(msnSuccess gSource)
+
+										;	Otherwise, we assume the Antarctica survived.
+
+										(msnFailure gSource)
+										)
+									)
+
+							;	Otherwise, the Antarctica was destroyed.
+
 							(msnSuccess gSource)
 							)
 					)
