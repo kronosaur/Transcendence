@@ -638,7 +638,7 @@
 								;	If the player destroyed us after we rewarded her, then
 								;	we're betrayed.
 
-								(and missionObj (msnGetData gSource 'playerRewarded))
+								(and missionObj (msnGetData missionObj 'playerRewarded))
 									(rpgCharacterSetStatus &unidCaptainHelios; 'betrayed)
 
 								;	Otherwise, the player just destroyed us.
@@ -653,7 +653,7 @@
 
 					;	Chain to the main class
 
-					(typFireEvent (objGetType gSource) 'OnDestroy)
+					(typFireObjEvent (objGetType gSource) gSource 'OnDestroy)
 					)
 			</OnDestroy>
 
