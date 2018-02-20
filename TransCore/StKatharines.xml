@@ -1083,7 +1083,7 @@
 			<Text id="actionPub">First Contact [P]ub</Text>
 			<Text id="actionUndock">[U]ndock</Text>
 			<Text id="actionInfoLike">[W]hat was it like?</Text>
-			<Text id="actionInfoLearn">What did we [l]earn?</Text>
+			<Text id="actionInfoLearn">What [d]id we learn?</Text>
 			<Text id="actionInfoWhere">Where are they [n]ow?</Text>
 			<Text id="actionLeave">[L]eave</Text>
 			<Text id="actionContinue">[C]ontinue</Text>
