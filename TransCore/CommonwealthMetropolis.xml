@@ -396,7 +396,7 @@
 
 								(eq bestMessage 3)
 									(block (xp)
-										(setq rank (typGetGlobalData &stKorolovShipping; "xp"))
+										(setq rank (typGetData &unidKorolovShipping; "xp"))
 										(switch
 											(or (not rank) (eq rank 0))
 												"You spend 5 credits on drinks. You talk to a couple of freighter pilots who try to convince you to fly escort missions for Korolov Shipping."

@@ -674,8 +674,8 @@
 			(setq milCanEnterCC (lambda ()
 				(or
 					(gr (typGetData &unidCommonwealthMilitia; 'rank) 0)
-					(gr (typGetGlobalData &stBattleArena; "arenaSkill") 200)
-					(gr (typGetGlobalData &stKorolovShipping; "xp") 0)
+					(gr (typGetData &stBattleArena; "arenaSkill") 200)
+					(gr (typGetData &unidKorolovShipping; "xp") 0)
 					(objGetItems gPlayerShip "*+MilitaryID")
 					)
 				))
