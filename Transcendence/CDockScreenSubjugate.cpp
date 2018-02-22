@@ -156,33 +156,39 @@ ALERROR CDockScreenSubjugate::OnInit (SInitCtx &Ctx, const SDisplayOptions &Opti
 		//	Add all countermeasures
 
 		pValue = m_pData->GetElement(FIELD_COUNTERMEASURES);
-		for (i = 0; i < pValue->GetCount(); i++)
+		if (pValue)
 			{
-			ICCItem *pUNID = pValue->GetElement(i);
-			CItemType *pItem = g_pUniverse->FindItemType(pUNID->GetIntegerValue());
-			if (pItem == NULL)
+			for (i = 0; i < pValue->GetCount(); i++)
 				{
-				::kernelDebugLogPattern("Artifact Awaken: Unable to find item: %08x", pUNID->GetIntegerValue());
-				continue;
-				}
+				ICCItem *pUNID = pValue->GetElement(i);
+				CItemType *pItem = g_pUniverse->FindItemType(pUNID->GetIntegerValue());
+				if (pItem == NULL)
+					{
+					::kernelDebugLogPattern("Artifact Awaken: Unable to find item: %08x", pUNID->GetIntegerValue());
+					continue;
+					}
 
-			CreateDesc.Countermeasures.Insert(pItem);
+				CreateDesc.Countermeasures.Insert(pItem);
+				}
 			}
 
 		//	Add all daimons
 
 		pValue = m_pData->GetElement(FIELD_DAIMONS);
-		for (i = 0; i < pValue->GetCount(); i++)
+		if (pValue)
 			{
-			ICCItem *pUNID = pValue->GetElement(i);
-			CItemType *pItem = g_pUniverse->FindItemType(pUNID->GetIntegerValue());
-			if (pItem == NULL)
+			for (i = 0; i < pValue->GetCount(); i++)
 				{
-				::kernelDebugLogPattern("Artifact Awaken: Unable to find item: %08x", pUNID->GetIntegerValue());
-				continue;
-				}
+				ICCItem *pUNID = pValue->GetElement(i);
+				CItemType *pItem = g_pUniverse->FindItemType(pUNID->GetIntegerValue());
+				if (pItem == NULL)
+					{
+					::kernelDebugLogPattern("Artifact Awaken: Unable to find item: %08x", pUNID->GetIntegerValue());
+					continue;
+					}
 
-			CreateDesc.Daimons.Insert(pItem);
+				CreateDesc.Daimons.Insert(pItem);
+				}
 			}
 
 		//	Initialize
