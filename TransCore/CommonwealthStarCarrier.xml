@@ -908,18 +908,28 @@
 			</OnCreate>
 
 			<OnDestroy>
-				(block (squadronList)
+				(block (
+					;	Remeber original wreck obj because it might get
+					;	wiped by a call to objDestroy
+
+					(wreckObj aWreckObj)
+					(squadronList (objGetData gSource "squadron"))
+					)
 					; Destroy our squadron
-					(setq squadronList (objGetData gSource "squadron"))
 					(objSetData gSource "squadron" Nil)
 					(enum squadronList theEntry
 						(if (eq (item theEntry 2) 'home)
 							(objDestroy (objGetObjByID (item theEntry 0)))
 							)
 						)
-					
+
 					; Commonwealth is mad too
 					(intCommonwealthOnDestroy)
+
+					; Destroy items on the wreck, because we don't want too much loot
+					(if wreckObj
+						(rpgDestroyItems wreckObj)
+						)
 
 					; Military will execute the player
 					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))

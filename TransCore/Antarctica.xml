@@ -184,7 +184,9 @@
 
 		<Events>
 			<OnDestroy>
-				(rpgDestroyItems gSource)
+				(if aWreckObj
+					(rpgDestroyItems aWreckObj)
+					)
 			</OnDestroy>
 		</Events>
 
