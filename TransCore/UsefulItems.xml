@@ -389,7 +389,7 @@
 		<Image imageID="&rsItems1;" imageX="288" imageY="576" imageWidth="96" imageHeight="96"/>
 		
 		<StaticData>
-			<Data id="RepairHP">10</Data>
+			<Data id="RepairHP">35</Data>
 		</StaticData>
 	</ItemType>
 
@@ -399,7 +399,7 @@
 			inherit=			"&baStdArmorRepair;"
 			name=				"large armor patch(es)"
 			level=				"3"
-			value=				"150"
+			value=				"100"
 			mass=				"1000"
 			frequency=			"common"
 			numberAppearing=	"1d4"
@@ -415,7 +415,7 @@
 		<Image imageID="&rsItems1;" imageX="288" imageY="576" imageWidth="96" imageHeight="96"/>
 
 		<StaticData>
-			<Data id="RepairHP">30</Data>
+			<Data id="RepairHP">60</Data>
 		</StaticData>
 	</ItemType>
 
@@ -425,13 +425,13 @@
 			inherit=			"&baStdArmorRepair;"
 			name=				"light armor repair kit"
 			level=				"5"
-			value=				"700"
-			mass=				"1500"
+			value=				"400"
+			mass=				"1000"
 			frequency=			"common"
 			numberAppearing=	"1d4"
 			attributes=			"ArmorRepair; Consumable"
 
-			description=		"This kit can be used in the field to repair damaged armor. It will repair up to 70 hp of damage."
+			description=		"This kit can be used in the field to repair damaged armor. It will repair up to 100 hp of damage."
 
 			useScreen=			"&dsRPGUseItemOnArmor;"
 
@@ -441,7 +441,7 @@
 		<Image imageID="&rsItems1;" imageX="288" imageY="576" imageWidth="96" imageHeight="96"/>
 
 		<StaticData>
-			<Data id="RepairHP">70</Data>
+			<Data id="RepairHP">100</Data>
 		</StaticData>
 	</ItemType>
 
@@ -451,13 +451,13 @@
 			inherit=			"&baStdArmorRepair;"
 			name=				"medium armor repair kit"
 			level=				"7"
-			value=				"4000"
-			mass=				"1500"
+			value=				"1600"
+			mass=				"1000"
 			frequency=			"common"
 			numberAppearing=	"1d4"
 			attributes=			"ArmorRepair; Consumable"
 
-			description=		"This kit can be used in the field to repair damaged armor. It will repair up to 120 hp of damage."
+			description=		"This kit can be used in the field to repair damaged armor. It will repair up to 175 hp of damage."
 
 			useScreen=			"&dsRPGUseItemOnArmor;"
 
@@ -467,7 +467,7 @@
 		<Image imageID="&rsItems1;" imageX="288" imageY="576" imageWidth="96" imageHeight="96"/>
 
 		<StaticData>
-			<Data id="RepairHP">120</Data>
+			<Data id="RepairHP">175</Data>
 		</StaticData>
 	</ItemType>
 
@@ -477,13 +477,13 @@
 			inherit=			"&baStdArmorRepair;"
 			name=				"heavy armor repair kit"
 			level=				"9"
-			value=				"10000"
-			mass=				"1500"
+			value=				"6500"
+			mass=				"1000"
 			frequency=			"common"
 			numberAppearing=	"1d4"
 			attributes=			"ArmorRepair; Consumable"
 
-			description=		"This kit can be used in the field to repair damaged armor. It will repair up to 200 hp of damage."
+			description=		"This kit can be used in the field to repair damaged armor. It will repair up to 300 hp of damage."
 
 			useScreen=			"&dsRPGUseItemOnArmor;"
 
@@ -493,7 +493,7 @@
 		<Image imageID="&rsItems1;" imageX="288" imageY="576" imageWidth="96" imageHeight="96"/>
 
 		<StaticData>
-			<Data id="RepairHP">200</Data>
+			<Data id="RepairHP">300</Data>
 		</StaticData>
 	</ItemType>
 
@@ -539,7 +539,7 @@
 			inherit=			"&baStdArmorRepair;"
 			name=				"[barrel(s) of ]armor repair paste"
 			level=				"1"
-			value=				"50"
+			value=				"25"
 			mass=				"1000"
 			frequency=			"common"
 			numberAppearing=	"1d4"
@@ -556,7 +556,7 @@
 		<Image imageID="&rsItems1;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
 		
 		<StaticData>
-			<Data id="RepairHP">(rollDice 6 6 0)</Data>
+			<Data id="RepairHP">(rollDice 10 6 0)</Data>
 		</StaticData>
 
 		<Language>
@@ -1223,7 +1223,7 @@
 			inherit=			"&baStdArmorRepair;"
 			name=				"[barrel(s) of ]repairing nanos"
 			level=				"3"
-			value=				"260"
+			value=				"100"
 			mass=				"1000"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
@@ -1240,7 +1240,7 @@
 		<Image imageID="&rsItems1;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
 		
 		<StaticData>
-			<Data id="RepairHP">(rollDice 8 12 0)</Data>
+			<Data id="RepairHP">(rollDice 9 12 0)</Data>
 		</StaticData>
 
 		<Language>
