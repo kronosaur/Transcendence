@@ -1637,7 +1637,12 @@
 										(scrShowPane gScreen "Used")
 										)
 
-								(itmMatches gItem "s L:1-10;")
+								;	If this is a shield generator and it has HPs (as opposed to a non-field 
+								;	repair device) then we can enhance it.
+
+								(and (itmMatches gItem "s L:1-10;")	
+										(gr (itmGetProperty gItem 'maxHP) 0)
+										)
 									(block Nil
 										(switch
 											(itmIsDamaged gItem)
@@ -1665,7 +1670,9 @@
 										(scrShowPane gScreen "Used")
 										)
 
-								(itmMatches gItem "w L:1-10; +EnergyWeapon;")
+								;	Any device that acts like an energyWeapon can be enhanced.
+
+								(itmMatches gItem "d L:1-10; +EnergyWeapon;")
 									(block Nil
 										(switch
 											(itmIsDamaged gItem)
@@ -1692,6 +1699,8 @@
 										(objRemoveItem gPlayerShip (itmCreate &itLongzhuSphere; 1))
 										(scrShowPane gScreen "Used")
 										)
+
+								;	Drives can also be enhanced.
 
 								(itmMatches gItem "v L:1-10; -Alien")
 									(block Nil
