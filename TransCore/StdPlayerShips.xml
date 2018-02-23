@@ -91,7 +91,7 @@
 			type=				"freighter"
 
 			level=				"4"
-			attributes=			"commonwealth, EI, shipBroker"
+			attributes=			"commonwealth, corporate, EI, shipBroker"
 			inherit=			"&scEI200Stock;"
 			>
 
@@ -154,7 +154,7 @@
 			type=				"freighter"
 
 			level=				"4"
-			attributes=			"commonwealth, EI, shipBroker"
+			attributes=			"commonwealth, corporate, EI, shipBroker"
 			inherit=			"&scEI500Stock;"
 			>
 
@@ -191,7 +191,7 @@
 			type=				"freighter"
 
 			level=				"4"
-			attributes=			"commonwealth, EI, shipBroker"
+			attributes=			"commonwealth, corporate, EI, shipBroker"
 			inherit=			"&scEI500Stock;"
 			>
 
@@ -228,7 +228,7 @@
 			type=				"freighter"
 
 			level=				"4"
-			attributes=			"commonwealth, EI, shipBroker"
+			attributes=			"commonwealth, corporate, EI, shipBroker"
 			inherit=			"&scEI500Stock;"
 			>
 
@@ -350,7 +350,7 @@
 			class=				"Sapphire"
 			type=				"yacht"
 
-			attributes=			"commonwealth, shipBroker, zubrin"
+			attributes=			"commonwealth, corporate, shipBroker, zubrin"
 			inherit=			"&scSapphireYacht;"
 			>
 
@@ -385,7 +385,7 @@
 			class=				"Sapphire"
 			type=				"yacht"
 
-			attributes=			"commonwealth, shipBroker, zubrin"
+			attributes=			"commonwealth, corporate, shipBroker, zubrin"
 			inherit=			"&scSapphireYacht;"
 			>
 
@@ -424,7 +424,7 @@
 			class=				"Sapphire"
 			type=				"yacht"
 
-			attributes=			"commonwealth, shipBroker, zubrin"
+			attributes=			"commonwealth, corporate, shipBroker, zubrin"
 			inherit=			"&scSapphireYacht;"
 			>
 
@@ -465,7 +465,7 @@
 			class=				"Wolfen"
 			type=				"gunship"
 
-			attributes=			"commonwealth, pacificDefense, shipBroker"
+			attributes=			"commonwealth, corporate, pacificDefense, shipBroker"
 			inherit=			"&scWolfen;"
 			>
 
@@ -505,7 +505,7 @@
 			class=				"Wolfen"
 			type=				"gunship"
 
-			attributes=			"commonwealth, pacificDefense, shipBroker"
+			attributes=			"commonwealth, corporate, pacificDefense, shipBroker"
 			inherit=			"&scWolfen;"
 			>
 
@@ -545,7 +545,7 @@
 			class=				"Wolfen"
 			type=				"gunship"
 
-			attributes=			"commonwealth, pacificDefense, shipBroker"
+			attributes=			"commonwealth, corporate, pacificDefense, shipBroker"
 			inherit=			"&scWolfen;"
 			>
 
