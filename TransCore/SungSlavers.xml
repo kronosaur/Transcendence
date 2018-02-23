@@ -1607,7 +1607,7 @@
 
 		<ListOptions
 			dataFrom=	"player"
-			list=		"* -LongzhuSphere;"
+			list=		"d -LongzhuSphere;"
 			/>
 
 		<Panes>
