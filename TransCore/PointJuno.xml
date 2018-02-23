@@ -9,6 +9,7 @@
 			sovereign=			"&svCommonwealthFleet;"
 
 			attributes=			"commonwealth, commonwealthFleet, commonwealthMilitary, fleetDelivery, fleetLaw, friendly, generic, human, majorStation, pointJuno, populated"
+			inherit=			"&baCommonwealthStation;"
 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
@@ -38,6 +39,9 @@
 			<ReplaceArmor	criteria="a L:1-10;" priceAdj="100"/>
 			<InstallDevice	criteria="d L:1-9;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
+
+			<SellShip		criteria="s L:7-9; +commonwealth; +military; -notStandard; -notForSale;" priceAdj="100"/>
+			<BuyShip		criteria="s L:1-9; -notForSale;" priceAdj="80"/>
 		</Trade>
 
 		<Items>
@@ -137,6 +141,12 @@
 									})
 							</Action>
 
+							<Action id="actionBuyShip">
+								(scrShowScreen gScreen &dsRPGShipBroker; {
+									checkMilitaryID: True
+									})
+							</Action>
+
 							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
@@ -182,16 +192,25 @@
 
 			<Text id="descWelcome">You are docked at Point Juno.</Text>
 			<Text id="descNoMissionsNormal">
-				General Verner welcomes you as you enter, "I'm glad you're in no
-				hurry. Rest here with us and continue your journey later."
+
+				General Verner welcomes you as you enter:
+				
+				"I'm glad you're in no hurry. Rest here with us and continue your journey later."
+
 			</Text>
 			<Text id="descNoMissionsPilgrim">
-				General Verner welcomes you as you enter, "I'm glad you're in no
-				hurry to go to the Core. Rest here with us and seek Domina later."
+
+				General Verner welcomes you as you enter:
+				
+				"I'm glad you're in no hurry to go to the Core. Rest here with us and seek Domina later."
+
 			</Text>
 			<Text id="descAccessDenied">
-				Two armed guards block your path, "I'm sorry, %sir%, only Fleet
-				Officers are allowed in Central Command."
+
+				Two armed guards block your path:
+				
+				"I'm sorry, %sir%, only Fleet Officers are allowed in Central Command."
+
 			</Text>
             
             <Text id="core.mapDescMain">
