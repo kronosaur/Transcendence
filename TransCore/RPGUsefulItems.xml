@@ -324,6 +324,9 @@
 						(ls skillLevel 10)	'descUsageOK3
 											'descUsageOK4
 						))
+					(minArmorLevel (max 1 (- (itmGetLevel gItem) 3)))
+					(maxArmorLevel (+ (itmGetLevel gItem) 4))
+					(armorLevel (itmGetProperty dstItem 'repairLevel))
 					)
 					(switch
 						;	Armor repair items only work on armor
@@ -369,11 +372,31 @@
 
 						;	Check if we can repair armor with the given item
 						(not (and (setq aItemToRepair dstItem)
-								(objFireItemEvent shipObj gItem 'CanRepairItem)
+								(objFireItemEvent shipObj gItem 'CanRepairItem { itemToRepair:dstItem })
 								))
 							{
 								canUse: Nil
 								desc: (itmTranslate gItem 'descUsageCanNotRepair {
+									useItem: (itmGetName gItem 'article)
+									dstItem: (itmGetName dstItem '(demonstrative noModifiers))
+									})
+								}
+
+						;	We cannot repair armor that is too low level
+						(ls armorLevel minArmorLevel)
+							{
+								canUse: Nil
+								desc: (itmTranslate gItem 'descArmorTooPrimitive {
+									useItem: (itmGetName gItem 'article)
+									dstItem: (itmGetName dstItem '(demonstrative noModifiers))
+									})
+								}
+
+						;	We cannot repair armor that is too high level
+						(gr armorLevel maxArmorLevel)
+							{
+								canUse: Nil
+								desc: (itmTranslate gItem 'descArmorTooAdvanced {
 									useItem: (itmGetName gItem 'article)
 									dstItem: (itmGetName dstItem '(demonstrative noModifiers))
 									})
@@ -397,6 +420,9 @@
 					(shipObj (@ gData 'shipObj))
 					(repair (eval (itmGetStaticData gItem 'RepairHP)))
 					(descIntro (itmTranslate gItem 'descResultIntro))
+					(minArmorLevel (max 1 (- (itmGetLevel gItem) 3)))
+					(maxArmorLevel (+ (itmGetLevel gItem) 4))
+					(armorLevel (itmGetProperty dstItem 'repairLevel))
 					resultDesc hpRepaired
 					)
 
@@ -404,8 +430,22 @@
 						(not (itmMatches dstItem "a"))
 							(setq resultDesc 'descResultNotArmor)
 
+						;	NOTE: We need to check some of these conditions again because if this
+						;	was an unknown item, we don't know that it won't work until we try it.
+
 						(= (objGetArmorDamage shipObj dstItem) 0)
 							(setq resultDesc 'descResultNotDamaged)
+
+						(not (objFireItemEvent shipObj gItem 'CanRepairItem { itemToRepair:dstItem }))
+							(setq resultDesc 'descResultCannotRepair)
+
+						;	We cannot repair armor that is too low level
+						(ls armorLevel minArmorLevel)
+							(setq resultDesc 'descResultArmorTooPrimitive)
+
+						;	We cannot repair armor that is too high level
+						(gr armorLevel maxArmorLevel)
+							(setq resultDesc 'descResultArmorTooAdvanced)
 
 						(not repair)
 							(setq resultDesc 'descResultItemError)
@@ -487,6 +527,7 @@
 							descIntro (if descIntro " ")
 							(itmTranslate gItem resultDesc {
 								useItem: (itmGetName gItem)
+								dstItem: (itmGetName dstItem '(demonstrative noModifiers))
 								hpRepaired: hpRepaired
 								})
 							)
@@ -501,18 +542,23 @@
 			<Text id="descUsageInstalledOnly">%UseItem% can only be used on installed armor segments.</Text>
 			<Text id="descUsageNotArmor">%UseItem% are used for repairing armor and will not function on %dstItem%.</Text>
 			<Text id="descUsageUnknown">The barrel seems to contain some kind of armor paste. You can use it on %dstItem%.</Text>
+			<Text id="descArmorTooPrimitive">Unfortunately, %dstItem% is too primitive to be repaired with %useItem%.</Text>
+			<Text id="descArmorTooAdvanced">Unfortunately, %dstItem% is too advanced to be repaired with %useItem%.</Text>
 
 			<Text id="descUsageOK1">You can attempt to repair %dstItem% with %useItem%, though you do not have much experience repairing armor.</Text>
 			<Text id="descUsageOK2">You can attempt to repair %dstItem% with %useItem%; you have some experience repairing armor.</Text>
 			<Text id="descUsageOK3">You can attempt to repair %dstItem% with %useItem%; you are proficient at repairing armor.</Text>
 			<Text id="descUsageOK4">You can attempt to repair %dstItem% with %useItem%; you are an expert at repairing armor.</Text>
 
+			<Text id="descResultCanNotRepair">Unfortunately, you cannot repair %dstItem% with it.</Text>
 			<Text id="descResultDamagedMore">Unfortunately, your attempt to repair the armor has only damaged it further.</Text>
 			<Text id="descResultFailed">Unfortunately, your attempt to repair the armor was unsuccessful and the %useItem% was ruined in the process.</Text>
 			<Text id="descResultItemError">ERROR: &lt;RepairHP&gt; static data not found.</Text>
 			<Text id="descResultNotArmor">That is not an armor segment.</Text>
 			<Text id="descResultNotDamaged">That armor segment is not damaged. There is no need to attempt repairs.</Text>
 			<Text id="descResultRepaired">You have successfully repaired %hpRepaired% hit points of damage to your armor.</Text>
+			<Text id="descResultArmorTooPrimitive">Unfortunately, %dstItem% is too primitive to be repaired with it.</Text>
+			<Text id="descResultArmorTooAdvanced">Unfortunately, %dstItem% is too advanced to be repaired with it.</Text>
 			<Text id="descResultReusable">
 				You have successfully repaired %hpRepaired% hit points of damage to your armor.
 
