@@ -1642,7 +1642,7 @@
 			value=				"23000"
 			mass=				"4000"
 			  
-			description=		"This versatile weapon, developed by Earth Industries, has been adopted by the Commonwealth Fleet."
+			description=		"This versatile weapon, developed by Earth Industries, was used in early Centurion heavy gunship designs."
 			>
 
 		<Image imageID="&rsItemsEI2;" imageX="0" imageY="288" imageWidth="96" imageHeight="96"/>
@@ -1921,6 +1921,73 @@
 
 				effect=				"&efParticleBeamDefault;"
 				sound=				"&snLaserCannon;"
+				>
+		</Weapon>
+	</ItemType>
+
+	<!-- Level 7: Dual SAR/10 Cannon -->
+
+	<ItemType UNID="&itDualSAR10Cannon;"
+			name=				"dual SAR/10 cannon"
+			attributes=			"commonwealth, majorItem, military, pacificDefense"
+			  
+			level=				"7"
+			frequency=			"common"
+
+			value=				"65000"
+			mass=				"5000"
+			  
+			description=		"After the Ares onslaught of 2372, the Fleet upgraded its Centurion gunships to this thermonuclear cannon."
+			>
+
+		<Image imageID="&rsItemsNAMI3;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+				configuration=		"dual"
+
+				damage=				"thermo:2d10; momentum:1; WMD:1"
+				fireRate=			"12"
+				missileSpeed=		"70"
+				hitPoints=			"5"
+				lifetime=			"60"
+				powerUse=			"500"
+
+				effect=				"&efThermoShellDefault;"
+				sound=				"&snRecoillessCannon;"
+				>
+		</Weapon>
+	</ItemType>
+
+	<!-- Level 7: SAR/40 Cannon -->
+
+	<ItemType UNID="&itSAR40Cannon;"
+			name=				"SAR/40 cannon"
+			attributes=			"commonwealth, majorItem, military, pacificDefense"
+			  
+			level=				"7"
+			frequency=			"uncommon"
+
+			value=				"65000"
+			mass=				"5000"
+			  
+			description=		"This is a heavier version of the SAR/10 thermonuclear cannon."
+			>
+
+		<Image imageID="&rsItemsNAMI3;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"thermo:3d12; momentum:1; WMD:2"
+				fireRate=			"12"
+				missileSpeed=		"70"
+				hitPoints=			"10"
+				lifetime=			"60"
+				powerUse=			"500"
+
+				effect=				"&efThermoShellDefault;"
+				sound=				"&snRecoillessCannon;"
 				>
 		</Weapon>
 	</ItemType>
@@ -2384,6 +2451,40 @@
 				fireEffect=			"&efEIBlasterFire;"
 				hitEffect=			"&efEIBlasterHit;" 
 				sound=				"&snLaserCannon;"
+				>
+		</Weapon>
+	</ItemType>
+
+	<!-- Level 9: SAR/200 Advanced Cannon -->
+
+	<ItemType UNID="&itSAR200AdvancedCannon;"
+			name=				"SAR/200 advanced cannon"
+			attributes=			"commonwealth, majorItem, military, pacificDefense"
+			  
+			level=				"9"
+			frequency=			"rare"
+
+			value=				"160000"
+			mass=				"15000"
+			  
+			description=		"The recently introduced SAR/200 cannon is designed to defend carriers against Ares gunships."
+			>
+
+		<Image imageID="&rsItemsNAMI3;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"thermo:7d12; momentum:2; WMD:2"
+				fireRate=			"12"
+				missileSpeed=		"70"
+				hitPoints=			"25"
+				lifetime=			"60"
+				powerUse=			"500"
+				deviceSlots=		"2"
+
+				effect=				"&efThermoShellDefault;"
+				sound=				"&snRecoillessCannon;"
 				>
 		</Weapon>
 	</ItemType>

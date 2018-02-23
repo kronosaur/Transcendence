@@ -24,6 +24,8 @@
 			dockScreen=			"Main"
 			>
 
+		<Names definiteArticle="true">CSC Terra</Names>
+
 		<!-- Configuration -->
 		
 		<Armor
@@ -32,10 +34,10 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="98" posZ="-5"/>
-			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="98" posZ="-5"/>
-			<Device deviceID="&itStarCannon;" secondaryWeapon="true" omnidirectional="true" posAngle="90" posRadius="98" posZ="-5"/>
-			<Device deviceID="&itStarCannon;" secondaryWeapon="true" omnidirectional="true" posAngle="270" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itSAR200AdvancedCannon;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itSAR200AdvancedCannon;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itSAR200AdvancedCannon;" secondaryWeapon="true" omnidirectional="true" posAngle="90" posRadius="98" posZ="-5"/>
+			<Device deviceID="&itSAR200AdvancedCannon;" secondaryWeapon="true" omnidirectional="true" posAngle="270" posRadius="98" posZ="-5"/>
 			<Device deviceID="&itNAMIHeavyLauncher;" omnidirectional="true"/>
 
 			<Device deviceID="&itMissileDefense;" omnidirectional="true" />

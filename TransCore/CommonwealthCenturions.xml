@@ -216,7 +216,7 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itDualTeV9Blaster;"/>
+			<Device deviceID="&itDualSAR10Cannon;"/>
 			<Device deviceID="&itR5Deflector;"/>
 		</Devices>
 
@@ -297,7 +297,7 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itStarCannon;"/>
+			<Device deviceID="&itSAR40Cannon;"/>
 			<Device deviceID="&itR5Deflector;"/>
 		</Devices>
 

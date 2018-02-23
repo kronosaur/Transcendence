@@ -2003,6 +2003,12 @@
 	<!ENTITY rsAurochsRogue				"0x00100586">
 	<!ENTITY rsAurochsRogueHero			"0x00100587">
 
+	<!-- 05A0-05BF PACIFIC DEFENCE CORPORATION -->
+
+	<!ENTITY itDualSAR10Cannon			"0x001005A0">
+	<!ENTITY itSAR40Cannon				"0x001005A1">
+	<!ENTITY itSAR200AdvancedCannon		"0x001005A2">
+
     <!-- 1000-FFFF RESERVED: DO NOT USE -->
 	]>
 	
