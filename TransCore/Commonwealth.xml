@@ -500,7 +500,11 @@
 		<!-- Trade and Items -->
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="*NU -illegal; -ID; -notForSale;"	priceAdj="100"  noDescription="true"/>
+			<Sell	criteria="m +commonwealth; +basicAmmo; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="amdNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
+			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
 			
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
@@ -515,7 +519,14 @@
 		</Trade>
 		
 		<Items>
-			<RandomItem count="1d6" criteria="r -illegal; -military; -notForSale; -notStandard; L:3-7;"		levelFrequency="systemLevel:ru|c|curv"/>
+			<RandomItem count="1d6" 
+				criteria="r -illegal; -military; -notForSale; -notStandard; L:3-7;"
+				levelFrequency="systemLevel:ru|c|curv"
+				/>
+			<RandomItem count="1d8"
+				criteria="u +armorRepair; -illegal; -military; -notForSale; -notStandard;"
+				levelFrequency="systemLevel:ru|c|curv"
+				/>
 		</Items>
 
 		<!-- Ships and Defenses -->
@@ -553,6 +564,12 @@
 						</OnPaneInit>
 
 						<Actions>
+							<Action id="actionCommoditiesExchange">
+								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+									checkMilitaryID: True
+									})
+							</Action>
+
 							<Action id="actionDockServices" default="1">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
@@ -561,6 +578,7 @@
 					
 							<Action id="actionBuyShip">
 								(scrShowScreen gScreen &dsRPGShipBroker; {
+									checkMilitaryID: True
 									})
 							</Action>
 
