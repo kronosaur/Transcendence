@@ -103,11 +103,18 @@
 							;	Set the description
 						
 							(scrSetDesc gScreen
-								(scrTranslate gScreen 'descPrices {
-									fullPrice: (fmtCurrency currency newShipPrice)
-									playerShipPrice: (fmtCurrency currency playerShipPrice)
-									tradeInPrice: (fmtCurrency currency tradeInPrice)
-									})
+								(if (geq tradeInPrice 0)
+									(scrTranslate gScreen 'descPrices {
+										fullPrice: (fmtCurrency currency newShipPrice)
+										playerShipPrice: (fmtCurrency currency playerShipPrice)
+										tradeInPrice: (fmtCurrency currency tradeInPrice)
+										})
+									(scrTranslate gScreen 'descPricesRebate {
+										fullPrice: (fmtCurrency currency newShipPrice)
+										playerShipPrice: (fmtCurrency currency playerShipPrice)
+										tradeInRebate: (fmtCurrency currency (- tradeInPrice))
+										})
+									)
 
 								"\n"
 								"\n"
@@ -272,6 +279,10 @@
 			<Text id="descPrices">
 				Price: %fullPrice%\n
 				Trade-in Price: %tradeInPrice%
+			</Text>
+			<Text id="descPricesRebate">
+				Price: %fullPrice%\n
+				Trade-in Rebate: %tradeInRebate%
 			</Text>
 
 			<Text id="descBuyShip">
