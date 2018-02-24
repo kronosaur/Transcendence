@@ -16,7 +16,7 @@
 			name=			"Recon Ares station"
 			attributes=		"commonwealthFleet, cscTaskForce, rank1"
 
-			level=			"5-8"
+			level=			"5-9"
 
 			expireTime=			"5400"
 			failureAfterOutOfSystem="5400"

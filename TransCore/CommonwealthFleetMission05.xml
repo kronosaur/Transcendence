@@ -17,7 +17,7 @@
 			name=			"Escort Freighter"
 			attributes=		"commonwealthFleet, cscTaskForce, rank2"
 
-			level=			"5-8"
+			level=			"5-9"
 
 			expireTime=			"5400"
 			failureAfterOutOfSystem="5400"

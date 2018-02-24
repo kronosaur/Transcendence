@@ -17,7 +17,7 @@
 			name=			"Destroy Ares Station"
 			attributes=		"commonwealthFleet, cscTaskForce, rank4"
 
-			level=			"5-9"
+			level=			"5-10"
 
 			expireTime=			"5400"
 			failureAfterOutOfSystem="5400"

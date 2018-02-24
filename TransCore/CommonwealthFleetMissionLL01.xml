@@ -21,7 +21,7 @@
 			name=			"Collect Lamplighter ROM"
 			attributes=		"commonwealthFleet, cscTaskForce, rank1, lamplighter"
 
-			level=			"5-8"
+			level=			"5-9"
 			maxAppearing=	"1"
 
 			expireTime=		"5400"
