@@ -260,6 +260,7 @@ ALERROR CCommandLineDisplay::Init (CTranscendenceWnd *pTrans, const RECT &rcRect
 	m_iHistoryEnd = 0;
 	m_iHistoryIndex = -1;
 	m_iCursorPos = 0;
+	m_iScrollPos = 0;
 	m_sInput = NULL_STR;
 	m_bInvalid = true;
 
@@ -451,6 +452,16 @@ void CCommandLineDisplay::OnKeyDown (int iVirtKey, DWORD dwKeyState)
 			m_iCursorPos = m_sInput.GetLength();
 			m_bInvalid = true;
 			break;
+
+		case VK_PRIOR:
+			if (m_iScrollPos < 2*MAX_LINES) m_iScrollPos++;
+			m_bInvalid = true;
+			break;
+
+		case VK_NEXT:
+			if (m_iScrollPos > 0) m_iScrollPos--;
+			m_bInvalid = true;
+			break;
 		}
 	}
 
@@ -625,13 +636,23 @@ void CCommandLineDisplay::Update (void)
 		iRemainderText = iCols;
 		}
 
+	//	Work out how much we can scroll the display
+	
+	m_iScrollPos = Min(m_iScrollPos, iInputLines+iHintLines+iOutputLines - iTotalLines);
+	int iScroll = m_iScrollPos;
+
 	//	Paint the hint line
 
 	while (y >= yMin && iHintLines > 0)
 		{
-		m_Buffer.DrawText(x, y, m_pFonts->Console, HINT_COLOR, HintLines[iHintLines - 1]);
+		if (iScroll <= 0)
+			{
+			m_Buffer.DrawText(x, y, m_pFonts->Console, HINT_COLOR, HintLines[iHintLines - 1]);
+			y -= cyLine;
+			}
+		else
+			iScroll--;
 
-		y -= cyLine;
 		iHintLines--;
 		}
 
@@ -640,9 +661,14 @@ void CCommandLineDisplay::Update (void)
 	int iLine = 0;
 	while (y >= yMin && iLine < GetOutputCount())
 		{
-		m_Buffer.DrawText(x, y, m_pFonts->Console, GetOutputColor(iLine), GetOutput(iLine));
+		if (iScroll <= 0)
+			{
+			m_Buffer.DrawText(x, y, m_pFonts->Console, GetOutputColor(iLine), GetOutput(iLine));
+			y -= cyLine;
+			}
+		else
+			iScroll--;
 
-		y -= cyLine;
 		iLine++;
 		}
 

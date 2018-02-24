@@ -573,7 +573,7 @@ class CCommandLineDisplay
 
 		void CleanUp (void);
 		inline void ClearInput (void) { m_sInput = NULL_STR; m_iCursorPos = 0; m_bInvalid = true; }
-		inline void ClearHint (void) { m_sHint = NULL_STR; m_bInvalid = true; }
+		inline void ClearHint (void) { m_sHint = NULL_STR; m_iScrollPos = 0; m_bInvalid = true; }
 		inline const CString &GetInput (void) { return m_sInput; }
 		inline int GetOutputLineCount (void) { return GetOutputCount(); }
 		inline const RECT &GetRect (void) { return m_rcRect; }
@@ -592,7 +592,7 @@ class CCommandLineDisplay
 	private:
 		enum Constants
 			{
-			MAX_LINES = 80,
+			MAX_LINES = 200,
 			};
 
 		void AppendOutput (const CString &sLine, CG32bitPixel rgbColor);
@@ -621,7 +621,7 @@ class CCommandLineDisplay
 		int m_iHistoryEnd;
 		int m_iHistoryIndex;
 		int m_iCursorPos;
-
+		int m_iScrollPos;
 
 		CG32bitImage m_Buffer;
 		bool m_bInvalid;
