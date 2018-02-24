@@ -1934,7 +1934,7 @@
 			level=				"7"
 			frequency=			"common"
 
-			value=				"65000"
+			value=				"50000"
 			mass=				"5000"
 			  
 			description=		"After the Ares onslaught of 2372, the Fleet upgraded its Centurion gunships to this thermonuclear cannon."
@@ -1946,12 +1946,12 @@
 				type=				"missile"
 				configuration=		"dual"
 
-				damage=				"thermo:2d10; momentum:1; WMD:1"
+				damage=				"thermo:2d8; momentum:1; WMD:1"
 				fireRate=			"12"
 				missileSpeed=		"70"
 				hitPoints=			"5"
 				lifetime=			"60"
-				powerUse=			"500"
+				powerUse=			"600"
 
 				effect=				"&efThermoShellDefault;"
 				sound=				"&snRecoillessCannon;"
@@ -1968,7 +1968,7 @@
 			level=				"7"
 			frequency=			"uncommon"
 
-			value=				"65000"
+			value=				"55000"
 			mass=				"5000"
 			  
 			description=		"This is a heavier version of the SAR/10 thermonuclear cannon."
@@ -1979,12 +1979,12 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:3d12; momentum:1; WMD:2"
+				damage=				"thermo:3d10; momentum:1; WMD:4"
 				fireRate=			"12"
 				missileSpeed=		"70"
 				hitPoints=			"10"
 				lifetime=			"60"
-				powerUse=			"500"
+				powerUse=			"600"
 
 				effect=				"&efThermoShellDefault;"
 				sound=				"&snRecoillessCannon;"
@@ -2480,7 +2480,7 @@
 				missileSpeed=		"70"
 				hitPoints=			"25"
 				lifetime=			"60"
-				powerUse=			"500"
+				powerUse=			"2000"
 				deviceSlots=		"2"
 
 				effect=				"&efThermoShellDefault;"
@@ -2755,8 +2755,8 @@
 			frequency=			"common"
 			numberAppearing=	"48-72"
 
-			value=				"15"
-			mass=				"15"
+			value=				"20"
+			mass=				"20"
 			  
 			description=		"A powerful optical and infrared tracking module allows this missile to home in on its target."
 			>
@@ -2788,7 +2788,7 @@
 			numberAppearing=	"24-36"
 
 			value=				"30"
-			mass=				"15"
+			mass=				"20"
 			  
 			description=		"The XM300 warhead is jacketed with small amounts of plutonium&mdash;enough to fatally contaminate a target. This weapon is banned by treaty."
 			>
@@ -2820,7 +2820,7 @@
 			numberAppearing=	"48-72"
 
 			value=				"50"
-			mass=				"20"
+			mass=				"40"
 			  
 			description=		"The Broadsword missile is a heavier version of the tracking KM500 series."
 			>
@@ -2851,8 +2851,8 @@
 			frequency=			"uncommon"
 			numberAppearing=	"24-36"
 
-			value=				"120"
-			mass=				"20"
+			value=				"150"
+			mass=				"40"
 			  
 			description=		"An optical tracking missile carrying a 100-kiloton thermonuclear warhead. The XM900 is tightly controlled; only military vessels may carry them."
 			>
@@ -2877,7 +2877,7 @@
 					count=			"1"
 					type=			"radius"
 
-					damage=			"thermo:7d24; momentum6; WMD7"
+					damage=			"thermo:6d24; momentum:6; WMD:7"
 					minRadius=		"1"
 					maxRadius=		"4"
 					missileSpeed=	"0"
@@ -3547,8 +3547,8 @@
 			frequency=			"uncommon"
 			numberAppearing=	"36-54"
 
-			value=				"300"
-			mass=				"50"
+			value=				"400"
+			mass=				"120"
 			  
 			description=		"Soon after launch, the S3 Medusa explodes to reveal a dozen independently-tracking thermonuclear missiles. The S3 requires the NAMI heavy launcher."
 			>
@@ -3584,7 +3584,7 @@
 					count=				"12"
 					type=				"missile"
 
-					damage=				"thermo:6d12; momentum3; WMD3"
+					damage=				"thermo:5d12; momentum:2; WMD:1"
 					missileSpeed=		"50"
 					lifetime=			"120"
 

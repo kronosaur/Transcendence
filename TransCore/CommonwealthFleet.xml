@@ -809,7 +809,7 @@ PLAYER DATA
 
 			charges=			"36"
 			massBonusPerCharge=	"40" 
-			valueBonusPerCharge="120"
+			valueBonusPerCharge="150"
 
 			description=		"This external pod is loaded with thirty-six XM900 nuclear missiles and can be installed without the aid of a station."
 			>
@@ -840,7 +840,7 @@ PLAYER DATA
 					count=			"1"
 					type=			"radius"
 
-					damage=			"thermo:7d24; momentum6; WMD7"
+					damage=			"thermo:6d24; momentum:6; WMD:7"
 					minRadius=		"1"
 					maxRadius=		"4"
 					missileSpeed=	"0"
