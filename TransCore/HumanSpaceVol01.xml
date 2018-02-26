@@ -1651,13 +1651,13 @@
 	<!ENTITY rsTundraHD					"0x001000A6">
 	<!ENTITY rsAresSentry				"0x001000A7">
 	<!ENTITY rsAresSentryHero			"0x001000A8">
-
 	<!ENTITY scAresSentry				"0x001000A9">
 	<!ENTITY scAresDualSentry			"0x001000AA">
 	<!ENTITY rsAresDualSentry			"0x001000AB">
 	<!ENTITY rsAresDualSentryHero		"0x001000AC">
 	<!ENTITY rsAresAdvancedSentry		"0x001000AD">
 	<!ENTITY rsAresAdvancedSentryHero	"0x001000AE">
+	<!ENTITY tbAresFreighterTreasure	"0x001000AF">
 	
 	<!-- 00C0-00CF SALVAGERS -->
 	
@@ -1958,6 +1958,7 @@
 	<!ENTITY rsMinotaurM				"0x001004C8">
 	<!ENTITY rsMinotaurMHero			"0x001004C9">
 	<!ENTITY dsLamplighterInstall		"0x001004CA">
+	<!ENTITY tbCSCAresAttack			"0x001004CB">
 
 	<!-- 04D0-04EF NAMI CORPORATION -->
 

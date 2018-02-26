@@ -42,44 +42,23 @@
 					enemyFleet
 					)
 
-					(switch
-						(leq theRoll 25)
-							; 16 Sandstorms
-							(setq enemyFleet '(&scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm;))
+					(setq enemyFleet (sysCreateShip &tbCSCAresAttack; startPos &svAres; { 
+						target:cscObj 
+						returnEscorts:True 
+						}))
 
-						(leq theRoll 50)
-							; A Deimos plus 8 Sandstorms
-							(setq enemyFleet '(&scDeimos; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm;))
+					(enum enemyFleet theObj
+						(block ()
+							;	Remember the ship
+							(objSetData theObj 'CSCMission10 (objGetID gSource))
+							(msnRegisterForEvents gSource theObj)
 
-						(leq theRoll 75)
-							; 3 Cometfalls
-							(setq enemyFleet '(&scCometfall; &scCometfall; &scCometfall;))
-
-						(leq theRoll 100)
-							; 8 Chasms
-							(setq enemyFleet '(&scChasm; &scChasm; &scChasm; &scChasm; &scChasm; &scChasm; &scChasm; &scChasm;))
-						)
-					
-					(enum enemyFleet theType
-						(block (shipObj)
-							(setq shipObj
-							 	(sysCreateShip
-							 		theType
-									(sysVectorPolarOffset startPos (random 0 359) (random 1 6))
-									&svAres;
-									)
+							(if (not (msnGetData gSource 'targetID))
+								(msnSetData gSource 'targetID (objGetID theObj))
 								)
-
-							;	Order to attack CSC
-							(shpOrder shipObj 'attack cscObj)
-							
-							;	Remember ship
-							(objSetData shipObj 'CSCMission10 (objGetID gSource))
-							(msnRegisterForEvents gSource shipObj)
-							
-							(msnSetData gSource 'targetID (objGetID shipObj))
 							)
 						)
+
 					(msnSetData gSource 'targetsLeft (count enemyFleet))
 					(msnSetData gSource 'totalTargets (count enemyFleet))
 					)
@@ -219,5 +198,41 @@
 			</Text>
 		</Language>
 	</MissionType>
+
+	<ShipTable unid="&tbCSCAresAttack;">
+		<LevelTable>
+			<Group levelFrequency="---vr ucurr">
+				<Ship count="1"		class="&scCometfall;"	orders="attack"	sovereign="&svAres;">
+					<Escorts>
+						<Ship count="4d6"	class="&scSandstorm;"	orders="escort"/>
+					</Escorts>
+				</Ship>
+			</Group>
+			<Group levelFrequency="----v rucur">
+				<Ship count="1d2"		class="&scCometfall;"	orders="attack"	sovereign="&svAres;">
+					<Escorts>
+						<Ship count="3d6"	class="&scSandstorm;"	orders="escort"/>
+					</Escorts>
+				</Ship>
+			</Group>
+			<Group levelFrequency="----- vrucu">
+				<Ship count="3"		class="&scCometfall;"	orders="attack"	sovereign="&svAres;">
+					<Escorts>
+						<Ship count="3d6"	class="&scSandstorm;"	orders="escort"/>
+					</Escorts>
+				</Ship>
+			</Group>
+			<Group levelFrequency="----- -vruc">
+				<Ship count="1"		class="&scDeimos;"	orders="attack"	sovereign="&svAres;">
+					<Escorts>
+						<Ship count="6d6"	class="&scSandstorm;"	orders="escort"/>
+					</Escorts>
+				</Ship>
+			</Group>
+			<Group levelFrequency="----- -vruc">
+				<Ship count="2d8"	class="&scChasm;"	orders="attack"	sovereign="&svAres;"/>
+			</Group>
+		</LevelTable>
+	</ShipTable>
 
 </TranscendenceModule>

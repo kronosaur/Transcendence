@@ -31,10 +31,24 @@
 			<Data id="convoy">
 				(
 					{
-						id: "chasmEscort"
+						id: "standardEscort"
 						minLevel: 6
+						maxLevel: 8
+						chance: 40
+
+						ships: (
+							{	principalType: &scPolar;	escortTypes: (&scTundra; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm;) }
+							{	principalType: &scPolar;	escortTypes: (&scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm;) }
+							{	principalType: &scPolar;	escortTypes: (&scTundra; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm;) }
+							{	principalType: &scPolar;	escortTypes: (&scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm;) }
+							{	principalType: &scPolar;	escortTypes: (&scTundra; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm;) }
+							)
+						}
+					{
+						id: "chasmEscort"
+						minLevel: 8
 						maxLevel: 10
-						chance: 60
+						chance: 30
 
 						ships: (
 							{	principalType: &scPolar;	escortTypes: (&scChasm;) }
@@ -46,23 +60,21 @@
 						}
 					{
 						id: "advancedPolar"
-						minLevel: 7
+						minLevel: 8
 						maxLevel: 10
-						chance: 30
+						chance: 20
 
 						ships: (
-							{	principalType: &scPolar2;	escortTypes: (&scSandstorm; &scSandstorm;) }
-							{	principalType: &scPolar2;	escortTypes: (&scSandstorm; &scSandstorm;) }
-							{	principalType: &scPolar2;	escortTypes: (&scSandstorm; &scSandstorm;) }
-							{	principalType: &scPolar2;	escortTypes: (&scSandstorm; &scSandstorm;) }
-							{	principalType: &scPolar2;	escortTypes: (&scSandstorm; &scSandstorm;) }
+							{	principalType: &scPolar2;	escortTypes: (&scSandstorm; &scSandstorm; &scSandstorm;) }
+							{	principalType: &scPolar2;	escortTypes: (&scSandstorm; &scSandstorm; &scSandstorm;) }
+							{	principalType: &scPolar2;	escortTypes: (&scSandstorm; &scSandstorm; &scSandstorm;) }
 							)
 						}
 					{
 						id: "deimosEscort"
-						minLevel: 8
+						minLevel: 9
 						maxLevel: 10
-						chance: 10
+						chance: 20
 
 						ships: (
 							{	principalType: &scPolar;	escortTypes: (&scDeimos;) }
@@ -142,6 +154,9 @@
 							(shpOrder shipObj 'gate gate2)
 							(objSetData shipObj 'CSCMission12 (objGetID gSource))
 							(msnRegisterForEvents gSource shipObj)
+
+							;	Add treasure
+							(objAddRandomItems shipObj &tbAresFreighterTreasure; 1)
 
 							;	Set initial target to the first ship
 							(if (not targetID) (setq targetID (objGetID shipObj)))

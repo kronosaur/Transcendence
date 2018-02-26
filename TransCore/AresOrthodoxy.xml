@@ -1537,6 +1537,19 @@
 	
 <!-- MISCELLANEOUS -->
 
+	<!-- Freighter Treasure -->
+
+	<ItemTable unid="&tbAresFreighterTreasure;">
+		<Group value="standard">
+			<Table>
+				<Item chance="35"	count="5d6"	item="&itPteracniumOre;"/>
+				<Item chance="25"	count="8d6"	item="&itOrthoSteelOre;"/>
+				<Item chance="20"	count="5d6"	item="&itIthaliumOre;"/>
+				<Lookup	chance="20" count="1"	table="&trStdTreasure;"/>
+			</Table>
+		</Group>
+	</ItemTable>
+
 	<!-- Encounters -->
 
 	<ShipTable UNID="&etAresAmbush1;">
