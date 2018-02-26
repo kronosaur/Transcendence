@@ -442,6 +442,18 @@ PLAYER DATA
 
 		<!-- Events and Data -->
 		
+		<Events>
+			<GetRumors>
+				{
+					attributes: "commonwealthPub"
+					priority: 31
+					sourceObj: gSource
+					textID: 'rumor.pub
+					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
+					}
+			</GetRumors>
+		</Events>
+		
 		<StaticData>
 			<Data id="blackMarket.deployBountyHunters">True</Data>
 			
@@ -462,7 +474,16 @@ PLAYER DATA
 			<Text id="dockServices:installAbility">
 				(cat "We install smuggler's equipment up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
 			</Text>
-            
+
+			<Text id="rumor.pub">
+				A woman dressed in a fancy neolinen suit talks to you:
+
+				"Do you know how to get a contact at the black market station?
+				You look like you might know."
+
+				You spend 5 credits on drinks.
+			</Text>
+
             <Text id="core.mapDesc">
                 "Refuels up to level 6 &mdash; Repairs/installs armor up to level 6 &mdash; Installs purchased devices up to level 6 &mdash; Buys and sells illegal and military items"
             </Text>
@@ -741,15 +762,35 @@ PLAYER DATA
 
 		<!-- Events and Data -->
 
+		<Events>
+			<GetRumors>
+				{
+					attributes: "commonwealthPub"
+					priority: 23
+					sourceObj: gSource
+					textID: 'rumor.pub
+					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
+					}
+			</GetRumors>
+		</Events>
+
 		<StaticData>
 			<Data id="blackMarket.destroyPenalty">150000</Data>
 		</StaticData>
 		
-        <Language>
-            <Text id="core.mapDesc">
-                "Sells illegal items"
-            </Text>
-        </Language>
+		<Language>
+			<Text id="rumor.pub">
+				A man dressed in an expensive suit talks to you:
+
+				"You look like you need some Tempus."
+
+				You ignore him and spend 5 credits buying your own drinks.
+			</Text>
+
+			<Text id="core.mapDesc">
+				"Sells illegal items"
+			</Text>
+		</Language>
 	</StationType>
     
 <!-- CODE -->

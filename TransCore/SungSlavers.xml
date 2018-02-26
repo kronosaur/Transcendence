@@ -1091,8 +1091,26 @@
 					(count (sysFindObject gSource "T:sungSlaveQuarters; N:8;"))
 					)
 			</OnCreate>
+
+			<GetRumors>
+				{
+					attributes: "commonwealthPub"
+					priority: 41
+					sourceObj: gSource
+					textID: 'rumor.pub
+					}
+			</GetRumors>
 		</Events>
 
+		<Language>
+			<Text id="rumor.pub">
+				You spend 5 credits while listening to a drunk woman:
+
+				"My sister-in-law was abducted by those filthy Sung. We finally
+				got her released by buying her contract. I can't believe they
+				allow slavery to exist. Hey, can you buy me a drink?"
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Sung Fortress -->

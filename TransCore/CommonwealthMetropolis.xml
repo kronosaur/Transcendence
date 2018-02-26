@@ -298,170 +298,69 @@
 		</Events>
 	</StationType>
 
-	<!-- Commonwealth Pub
+	<!-- Commonwealth Pub -->
 
-		gPrevScreen: Must be set to the name/UNID of the screen to
-				navigate to when done.
-		gPrevPane: Must be set to name of pane to return to.
-
-		-->
-
-	<DockScreen UNID="&dsCommonwealthPub;">
+	<DockScreen UNID="&dsCommonwealthPub;"
+			nestedScreen=	"true"
+			inherit=		"&dsDockScreenBase;"
+			>
 
 		<Panes>
-			<Default desc="You are in a large and crowded spacer bar.">
+			<Default>
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descWelcome)
+				</OnPaneInit>
 
 				<Actions>
-					<Action name="Sit at the Bar" default="1" key="S">
+					<Action id="actionBar" default="1">
 						(if (geq (plyGetCredits gPlayer) 5)
 							(block Nil
 								(plyCharge gPlayer 5)
-								(scrShowPane gScreen "Story")
+								(rpgMissionAssignment {
+									missionCriteria: (cat "n +commonwealthPub; =" (sysGetLevel) ";")
+									noMissionTextID: 'descNoRumors
+									maxPerStation: 1
+									})
 								)
 							(scrShowPane gScreen "NoMoney")
 							)
 					</Action>
 
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionLeave" cancel="1">
+						<Exit/>
 					</Action>
-
 				</Actions>
-
 			</Default>
 
-			<Story>
+			<NoMoney>
 				<OnPaneInit>
-					(block (allEnemies bestStation bestLevel bestMessage allStories scanStation)
-						; Define list of stations that we know about
-						(setq allStories '(
-							(1	&stCentauriOccupation;	10	'scan)
-							(2	&stOutlawBase;			11	Nil)
-							(3	&stKorolovShipping;		21	'scan)
-							(4	&stHotel;				24	'scan)
-							(5	&stTerroristCamp;		30	'scan)
-							(6	&stBlackMarketStation;	31	'scan)
-							(7	&stDrugCartelOutpost;	40	Nil)
-							(8	&stSungSlaveCamp;		41	Nil)
-							(9	&stPenitentShrine;		50	Nil)
-							(10	&stXenophobeFleet;		60	Nil)
-							(11 &stTempusLab;			23	'scan)
-							(12 &stMiningColony;		20	'scan)
-							(13 &stAbbasidOutpost;		22	'scan)
-							))
-
-						; Find the best station to tell a story about
-						(setq bestLevel 0)
-						(setq bestMessage 0)
-						(setq scanStation Nil)
-
-						; Look for enemy station in the system
-						(setq allEnemies (sysFindObject gPlayerShip "tAM"))
-						(enum allEnemies station
-							(block (type)
-								(setq type (objGetType station))
-
-								; Figure out if there is a story for this station
-								(enum allStories story
-									(if (eq (item story 1) type)
-										(if (gr (item story 2) bestLevel)
-											(block Nil
-												(setq bestStation station)
-												(setq bestLevel (item story 2))
-												(setq bestMessage (item story 0))
-												(setq scanStation (item story 3))
-												)
-											)
-										)
-									)
-								)
-							)
-
-						; Scan the station
-						(if (and scanStation bestStation)
-							(objSetKnown bestStation)
-							)
-
-						; Tell the story
-						(scrSetDesc gScreen
-							(switch
-								(eq bestMessage 0)
-									"You spend 5 credits on drinks; everyone else around you seems to be having a good time."
-
-								(eq bestMessage 1)
-									(cat "You listen to a refugee from " (objGetName bestStation) ": \"Centauri warlords took over our station last month. Whatever&#x97;I like this place better.\" You spend 5 credits and buy him a few drinks.")
-
-								(eq bestMessage 2)
-									"You spend 5 credits on drinks. A young stationer next to you comments that its a lot easier to get laudanum now that the Outlaw base is in the system."
-
-								(eq bestMessage 3)
-									(block (xp)
-										(setq rank (typGetData &unidKorolovShipping; "xp"))
-										(switch
-											(or (not rank) (eq rank 0))
-												"You spend 5 credits on drinks. You talk to a couple of freighter pilots who try to convince you to fly escort missions for Korolov Shipping."
-
-											(ls rank 0)
-												"A group of freighter pilots point in your direction, talking about how you blew your escort mission. You settle up a 5 credit tab and get ready to leave."
-
-											"A group of freighter pilots welcome you into their group. You tell various stories about your run-ins with the Charon pirates, but in the end you still get stuck with the 5 credit tab."
-											)
-										)
-
-								(eq bestMessage 4)
-									(cat "You talk to a corporate woman staying at the " (objGetName bestStation) ". She drones on about the excellent service. You spend 5 credits on drinks.")
-
-								(eq bestMessage 5)
-									"You spend 5 credits and listen to a nuclear technician: \"I just got paid ten kilocreds to install a radiation room at the Sapiens camp! Those flippers scare me&#x97;with all their talk about 'human purity' they seem a little short on the brain scale.\""
-
-								(eq bestMessage 6)
-									"A woman dressed in a fancy neolinen suit talks to you: \"Do you know how to get a contact at the black market station? You look like you might know.\" You spend 5 credits on drinks."
-
-								(eq bestMessage 7)
-									"An old man talks to you: \"I don't trust the corporate medlabs&#x97;they talk about drug shortages while they munch on oncokillers and antigens! I'm going to the Death Labs&#x97;what's the worst they can do? Kill me?\" You spend 5 credits to buy him a drink."
-
-								(eq bestMessage 8)
-									"You spend 5 credits while listening to a drunk woman: \"My sister-in-law was abducted by those filthy Sung. We finally got her released by buying her contract. I can't believe they allow slavery to exist. Hey, can you buy me a drink?\""
-
-								(eq bestMessage 9)
-									"You drink through 5 credits while talking to an attractive Sister: \"The Sisters of Domina believe in the power of transcendence, but we worship Domina because she brings life and beauty. Say, you're not a Penitent, are you? Good! The Penitents only care about power and death&#x97;Oracus controls them, you know.\""
-
-								(eq bestMessage 10)
-									"You spend 5 credits buying drinks for a mercenary. He talk about his encounters with the Xenophobes: \"The minute I see their green ships I turn tail&#x97;I'm not proud. And you shouldn't be either!\""
-
-								(eq bestMessage 11)
-									"A man dressed in an expensive suit talks to you: \"You look like you need some Tempus.\" You ignore him and spend 5 credits buying your own drinks."
-
-								(eq bestMessage 12)
-									(cat "You talk to a group of miners from " (objGetName bestStation) " who try to impress you with their knowledge of helium regolith market prices. You spend 5 credits on drinks.")
-
-								(eq bestMessage 13)
-									"A woman weeps softly as she tells her story: \"Our freighter strayed near an Abbasid outpost by mistake. They had no mercy&#x97;they just kept firing on us&#x97;the captain begged them to stop, but the blasts kept coming! Then our cabin got hit and my husband...\" She stares into space and says no more. You leave 5 credits for her drinks."
-
-								"You spend 5 credits, but the drinks are weak."
-								)
-							)
-						)
+					(scrSetDescTranslate gScreen 'descNoMoney)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
-					</Action>
-				</Actions>
-
-			</Story>
-
-			<NoMoney desc="You hang around for a while, but you have no money to buy drinks.">
-				<Actions>
-					<Action name="Leave" cancel="1" key="L">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionLeave" default="1" cancel="1">
+						<Exit/>
 					</Action>
 				</Actions>
 
 			</NoMoney>
 
 		</Panes>
+
+		<Language>
+			<Text id="actionBar">[S]it at the Bar</Text>
+
+			<Text id="descWelcome">
+				You are in a large and crowded spacer bar.
+			</Text>
+			<Text id="descNoMoney">
+				You hang around for a while, but you have no money to buy drinks.
+			</Text>
+			<Text id="descNoRumors">
+				You spend 5 credits on drinks; everyone else around you seems to
+				be having a good time.
+			</Text>
+		</Language>
 
 	</DockScreen>
 
@@ -667,11 +566,7 @@
 
 				<Actions>
 					<Action name="Trafalgar Pub" key="P">
-						(block Nil
-							(setq gPrevScreen &dsCommonwealthStation;)
-							(setq gPrevPane "CentralPlaza")
-							(scrShowScreen gScreen &dsCommonwealthPub;)
-							)
+						(scrShowScreen gScreen &dsCommonwealthPub;)
 					</Action>
 
 					<Action name="The Victorian Nightclub" imageIndex="0" key="V" id="actionVictorianClub">

@@ -369,6 +369,17 @@
 					)
 			</GetGlobalAchievements>
 
+			<GetRumors>
+				{
+					attributes: "commonwealthPub"
+					priority: 20
+					sourceObj: gSource
+					textID: 'rumor.pub
+					data: {station: (objGetName gSource)}
+					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
+					}
+			</GetRumors>
+
 			<OnContractGenerate>
 				(intGenerateMiningRequestContract1)
 			</OnContractGenerate>
@@ -576,6 +587,12 @@
 							)
 						)
 					)
+			</Text>
+
+			<Text id="rumor.pub">
+				You talk to a group of miners from %station% who try to impress
+				you with their knowledge of helium regolith market prices.
+				You spend 5 credits on drinks.
 			</Text>
 
             <Text id="core.mapDesc">

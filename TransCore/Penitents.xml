@@ -85,6 +85,28 @@
 				portRadius=		"64"
 				>
 		</DockingPorts>
+
+		<Events>
+			<GetRumors>
+				{
+					attributes: "commonwealthPub"
+					priority: 50
+					sourceObj: gSource
+					textID: 'rumor.pub
+					}
+			</GetRumors>
+		</Events>
+
+		<Language>
+			<Text id="rumor.pub">
+				You drink through 5 credits while talking to an attractive Sister:
+
+				"The Sisters of Domina believe in the power of transcendence, but
+				we worship Domina because she brings life and beauty. Say, you're
+				not a Penitent, are you? Good! The Penitents only care about power
+				and death&mdash;Oracus controls them, you know."
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Level 6: Penitent Sanctum -->
