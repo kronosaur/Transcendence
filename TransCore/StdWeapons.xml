@@ -3570,12 +3570,12 @@
 
 			<HitEffect
 					sound=	"&snArmorHit1;"
-							>
+					>
 				<ParticleExplosion
 						particleCount=		"2d4"
 						particleSpeed=		"25"
 						particleLifetime=	"20"
-								>
+						>
 					<Image imageID="&rsDebris1;" imageX="0" imageY="0" imageWidth="4" imageHeight="4" imageFrameCount="8" imageTicksPerFrame="3"/>
 				</ParticleExplosion>
 			</HitEffect>
@@ -3604,7 +3604,7 @@
 								tangentSpeed=		"3d2-3"
 								particleLifetime=	"15-45"
 								XformTime=			"20"
-										>
+								>
 							<ParticleEffect>
 								<Particle
 										style=			"plain"
@@ -3612,7 +3612,7 @@
 										maxWidth=		"4"
 										primaryColor=	"#ffffc0"
 										secondaryColor=	"#7e7e74"
-												/>
+										/>
 							</ParticleEffect>
 						</ParticleSystem>
 
@@ -3624,7 +3624,7 @@
 								intensity=		"40"
 								primaryColor=	"#ffffc0"
 								secondaryColor=	"#7e7e74"
-										/>
+								/>
 					</Group>
 				</Effect>
 			</Fragment>
