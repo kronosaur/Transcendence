@@ -165,7 +165,7 @@
 								(for i 0 (random 2 4)
 									(block (theShip thePos)
 										(setq thePos (sysVectorPolarOffset waitPos (random 0 359) (random 10 14)))
-										(setq theShip (sysCreateShip &scCenturion; thePos &svRogueFleet;))
+										(setq theShip (sysCreateShip &scCenturionRogue; thePos &svRogueFleet;))
 										(shpOrderPatrol theShip waitPos 7)
 										)
 									)
