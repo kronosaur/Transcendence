@@ -853,7 +853,7 @@
 				
 				(block (
 					(noMissionTextID (@ options 'noMissionTextID))
-					theMission
+					theMission theRumor
 					)
 
 					;	Show proper screen
@@ -862,6 +862,10 @@
 						;	Call rpgMissionGetAssignment to see if we have a mission.
 						(setq theMission (rpgMissionGetAssignment options))
 							(scrShowScreen gScreen &dsRPGMission; {	missionObj: theMission })
+
+						;	Check if we can show a rumor instead
+						(setq theRumor (rpgGetRumor options))
+							(scrShowScreen gScreen &dsRPGRumor; theRumor)
 
 						; Otherwise, nothing
 
