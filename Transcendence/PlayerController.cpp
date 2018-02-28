@@ -1311,37 +1311,22 @@ void CPlayerShipController::OnPaintSRSEnhancements (CG32bitImage &Dest, SViewpor
 			|| m_pShip->IsDestroyed())
 		return;
 
+	//	Paint friendly-fire debugging
+
+	if (g_pUniverse->GetDebugOptions().IsShowLineOfFireEnabled())
+		{
+		if (m_pTarget == NULL)
+			PaintDebugLineOfFire(Ctx, Dest);
+		else if (m_pTarget->GetCategory() == CSpaceObject::catShip)
+			PaintDebugLineOfFire(Ctx, Dest, m_pTarget);
+		}
+
 	//	Paint the docking target, if necessary
 
 	if (m_bDockPortIndicators
 			&& m_pAutoDock 
 			&& (m_vAutoDockPort - m_pShip->GetPos()).Length2() > MIN_PORT_ANIMATION_DIST2)
-		{
-		int x, y;
-		Ctx.XForm.Transform(m_vAutoDockPort, &x, &y);
-
-		int iSpeed = 3;
-		int iRange = 10;
-		int iMin = 3;
-
-		int iPos = (iRange - 1) - ((g_pUniverse->GetPaintTick() / iSpeed) % iRange);
-		int iSize = iMin + iPos;
-		DWORD dwOpacity = 255 - (iPos * 20);
-
-		CG32bitPixel rgbColor = CG32bitPixel(m_pAutoDock->GetSymbolColor(), (BYTE)dwOpacity);
-
-		//	Draw animating brackets
-
-		Dest.FillColumn(x - iSize, y - iSize, iPos + 1, rgbColor);
-		Dest.FillColumn(x + iSize - 1, y - iSize, iPos + 1, rgbColor);
-		Dest.FillColumn(x - iSize, y + iMin - 1, iPos + 1, rgbColor);
-		Dest.FillColumn(x + iSize - 1, y + iMin - 1, iPos + 1, rgbColor);
-
-		Dest.FillLine(x - iSize + 1, y - iSize, iPos, rgbColor);
-		Dest.FillLine(x - iSize + 1, y + iSize - 1, iPos, rgbColor);
-		Dest.FillLine(x + 2, y - iSize, iPos, rgbColor);
-		Dest.FillLine(x + 2, y + iSize - 1, iPos, rgbColor);
-		}
+		PaintDockingPortIndicators(Ctx, Dest);
 
 	//	If we have a target, then paint a target reticle.
 	//	NOTE: We do this even if friendly because weapons will still aim at them.
@@ -1597,6 +1582,151 @@ void CPlayerShipController::OnWreckCreated (CSpaceObject *pWreck)
 	//	(since the player ship has been taken out of the system)
 
 	m_dwWreckObjID = pWreck->GetID();
+	}
+
+void CPlayerShipController::PaintDebugLineOfFire (SViewportPaintCtx &Ctx, CG32bitImage &Dest) const
+
+//	PaintDebugLineOfFire
+//
+//	Paints line of fire for all ships.
+
+	{
+	int i;
+
+	static const Metric DIST = 50.0 * LIGHT_SECOND;
+	static const Metric DIST2 = DIST * DIST;
+
+	CSystem *pSystem = g_pUniverse->GetCurrentSystem();
+	for (i = 0; i < pSystem->GetObjectCount(); i++)
+		{
+		CSpaceObject *pObj = pSystem->GetObject(i);
+
+		if (pObj 
+				&& pObj->GetCategory() == CSpaceObject::catShip
+				&& pObj != m_pShip)
+			{
+			CVector vDist = pObj->GetPos() - m_pShip->GetPos();
+			Metric rDist2 = vDist.Length2();
+
+			if (rDist2 < DIST2)
+				{
+				PaintDebugLineOfFire(Ctx, Dest, pObj);
+				}
+			}
+		}
+	}
+
+void CPlayerShipController::PaintDebugLineOfFire (SViewportPaintCtx &Ctx, CG32bitImage &Dest, CSpaceObject *pTarget) const
+
+//	PaintDebugLineOfFire
+//
+//	Paints debug info for pTarget's line of fire.
+
+	{
+	int i;
+
+	static const Metric DEFAULT_DIST_CHECK = 700.0 * g_KlicksPerPixel;
+	static const CG32bitPixel RGB_BLOCKED(255, 0, 0);
+	static const CG32bitPixel RGB_CLEAR(0, 255, 255);
+
+	CShip *pShip = pTarget->AsShip();
+	if (pShip == NULL)
+		return;
+
+	CInstalledDevice *pDevice = pShip->GetNamedDevice(devPrimaryWeapon);
+	if (pDevice == NULL)
+		return;
+
+	CWeaponClass *pWeapon = pDevice->GetClass()->AsWeaponClass();
+	if (pWeapon == NULL)
+		return;
+
+	CWeaponFireDesc *pShot = pWeapon->GetWeaponFireDesc(CItemCtx(pShip, pDevice));
+	if (pShot == NULL)
+		return;
+
+	//	First, we compute the line of fire algorithm and highlight the first 
+	//	object that blocks us.
+
+	int iDir = pShip->GetRotation();
+	CSpaceObject *pBlock = NULL;
+	if (!pShip->IsLineOfFireClear(pDevice, NULL, iDir, Max(pDevice->GetMaxEffectiveRange(pShip), DEFAULT_DIST_CHECK), &pBlock))
+		{
+		int x, y;
+		Ctx.XForm.Transform(pBlock->GetPos(), &x, &y);
+
+		CGDraw::Arc(Dest, x, y, 60, 0, 0, 1, RGB_BLOCKED);
+		}
+
+	//	Paint the line of fire that we're testing.
+
+	CVector vStart = pDevice->GetPos(pShip);
+	int xStart, yStart;
+	Ctx.XForm.Transform(vStart, &xStart, &yStart);
+
+	CVector vEnd = vStart + PolarToVector(iDir, DEFAULT_DIST_CHECK);
+	int xEnd, yEnd;
+	Ctx.XForm.Transform(vEnd, &xEnd, &yEnd);
+
+	CGDraw::LineDotted(Dest, xStart, yStart, xEnd, yEnd, CG32bitPixel(255, 255, 0, 128));
+
+	//	Paint the path that a shot would take if fired right now.
+
+	Metric rSpeed = pShot->GetInitialSpeed();
+	CVector vVel = pShip->GetVel() + PolarToVector(iDir, rSpeed);
+	CVector vPos = vStart;
+
+	CG32bitPixel rgbPath = (pBlock ? RGB_BLOCKED : RGB_CLEAR);
+
+	int xPrev, yPrev;
+	Ctx.XForm.Transform(vStart, &xPrev, &yPrev);
+	for (i = 0; i < 10; i++)
+		{
+		vPos = vPos + (g_SecondsPerUpdate * vVel);
+
+		int xPath, yPath;
+		Ctx.XForm.Transform(vPos, &xPath, &yPath);
+
+		CGDraw::LineHD(Dest, xPrev, yPrev, xPath, yPath, 1, rgbPath);
+
+		Dest.DrawDot(xPath, yPath, rgbPath, markerTinyCircle);
+
+		xPrev = xPath;
+		yPrev = yPath;
+		}
+	}
+
+void CPlayerShipController::PaintDockingPortIndicators (SViewportPaintCtx &Ctx, CG32bitImage &Dest) const
+
+//	PaintDockingPortIndicators
+//
+//	Paints docking port indicators
+
+	{
+	int x, y;
+	Ctx.XForm.Transform(m_vAutoDockPort, &x, &y);
+
+	int iSpeed = 3;
+	int iRange = 10;
+	int iMin = 3;
+
+	int iPos = (iRange - 1) - ((g_pUniverse->GetPaintTick() / iSpeed) % iRange);
+	int iSize = iMin + iPos;
+	DWORD dwOpacity = 255 - (iPos * 20);
+
+	CG32bitPixel rgbColor = CG32bitPixel(m_pAutoDock->GetSymbolColor(), (BYTE)dwOpacity);
+
+	//	Draw animating brackets
+
+	Dest.FillColumn(x - iSize, y - iSize, iPos + 1, rgbColor);
+	Dest.FillColumn(x + iSize - 1, y - iSize, iPos + 1, rgbColor);
+	Dest.FillColumn(x - iSize, y + iMin - 1, iPos + 1, rgbColor);
+	Dest.FillColumn(x + iSize - 1, y + iMin - 1, iPos + 1, rgbColor);
+
+	Dest.FillLine(x - iSize + 1, y - iSize, iPos, rgbColor);
+	Dest.FillLine(x - iSize + 1, y + iSize - 1, iPos, rgbColor);
+	Dest.FillLine(x + 2, y - iSize, iPos, rgbColor);
+	Dest.FillLine(x + 2, y + iSize - 1, iPos, rgbColor);
 	}
 
 void CPlayerShipController::PaintTargetingReticle (SViewportPaintCtx &Ctx, CG32bitImage &Dest, CSpaceObject *pTarget)

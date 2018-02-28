@@ -246,6 +246,9 @@ class CPlayerShipController : public IShipController
 		CSpaceObject *FindDockTarget (void);
 		bool HasCommsTarget (void);
 		void InitTargetList (TargetTypes iTargetType, bool bUpdate = false);
+		void PaintDebugLineOfFire (SViewportPaintCtx &Ctx, CG32bitImage &Dest) const;
+		void PaintDebugLineOfFire (SViewportPaintCtx &Ctx, CG32bitImage &Dest, CSpaceObject *pTarget) const;
+		void PaintDockingPortIndicators (SViewportPaintCtx &Ctx, CG32bitImage &Dest) const;
 		void PaintTargetingReticle (SViewportPaintCtx &Ctx, CG32bitImage &Dest, CSpaceObject *pTarget);
 		void Reset (void);
 		void UpdateHelp (int iTick);
