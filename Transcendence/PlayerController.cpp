@@ -1637,14 +1637,6 @@ void CPlayerShipController::PaintDebugLineOfFire (SViewportPaintCtx &Ctx, CG32bi
 	if (pDevice == NULL)
 		return;
 
-	CWeaponClass *pWeapon = pDevice->GetClass()->AsWeaponClass();
-	if (pWeapon == NULL)
-		return;
-
-	CWeaponFireDesc *pShot = pWeapon->GetWeaponFireDesc(CItemCtx(pShip, pDevice));
-	if (pShot == NULL)
-		return;
-
 	//	First, we compute the line of fire algorithm and highlight the first 
 	//	object that blocks us.
 
@@ -1672,7 +1664,7 @@ void CPlayerShipController::PaintDebugLineOfFire (SViewportPaintCtx &Ctx, CG32bi
 
 	//	Paint the path that a shot would take if fired right now.
 
-	Metric rSpeed = pShot->GetInitialSpeed();
+	Metric rSpeed = pDevice->GetShotSpeed(CItemCtx(pShip, pDevice));
 	CVector vVel = pShip->GetVel() + PolarToVector(iDir, rSpeed);
 	CVector vPos = vStart;
 
