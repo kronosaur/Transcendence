@@ -370,14 +370,16 @@
 			</GetGlobalAchievements>
 
 			<GetRumors>
-				{
-					attributes: "commonwealthPub"
-					priority: 20
-					sourceObj: gSource
-					textID: 'rumor.pub
-					data: {station: (objGetName gSource)}
-					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
-					}
+				(append
+					(rpgRumorAdd 'commonwealthPub 1 20 'scan {station: (objGetName gSource)})
+
+					(rpgRumorAdd 'commonwealthMining (make 'sequence 15))
+
+					(if (= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+						(rpgRumorAdd 'commonwealthMining 'pilgrim)
+						(rpgRumorAdd 'commonwealthMining 'freelancer)
+						)
+					)
 			</GetRumors>
 
 			<OnContractGenerate>
@@ -442,10 +444,10 @@
 					)
 			</Text>
 			<Text id="descNoMissions">
-				(cat
-					"The colony supervisor is working at his station. The comms channels are quiet and he stops to chat:\n\n"
-					(typTranslate &stMiningColony; 'Rumors)
-					)
+				The colony supervisor is working at his station. The comms channels
+				are quiet and he stops to chat:
+
+				"It's calm now, but I've been hearing a lot of military chatter lately."
 			</Text>
 			<Text id="descNoInstall">
 				(cat
@@ -459,106 +461,7 @@
 			<Text id="dockServices:weaponsAbility">
 				(cat "We sell mining equipment up to tech level " (@ gData 'maxLevel) ".")
 			</Text>
-			<Text id="Rumors">
-				(random (list
-					(cat
-						"\"It's calm now, but I've been hearing a lot of military chatter lately.\""
-						)
-						
-					(cat
-						"\"Most people don't care where their metals come from, but let me "
-						"tell you: plasteel doesn't grow in greenhouses! We have to struggle "
-						"to mine enough for everyone.\""
-						)
-						
-					(cat
-						"\"Charon pirates have always been a problem here. They're getting "
-						"stronger every year. One of these days we're going to have to do "
-						"something about them.\""
-						)
-						
-					(cat
-						"\"The Korolov folks are good people; they're a little uptight about "
-						"schedules and they're big on pomp and medals, but we get along pretty well.\""
-						)
-						
-					(cat
-						"\"We've had a lot of trouble with the warlords. They come through "
-						"in gangs and shoot up the place; they take what they need and then leave.\""
-						)
-						
-					(if (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
-						(cat
-							"\"So you're going to the Core, huh? Good luck with that! I've known "
-							"a lot of people heading towards the Core. My best friend's wife left "
-							"about a year ago. Can't say that anyone's ever returned, though.\""
-							)
-						(cat
-							"\"So you're a freelancer, huh? Good luck with that! I've known "
-							"a lot of freelancers and mercs. My best friend's husband was "
-							"a freelancer for a while. Caught a missile out in Heilong Xing.\""
-							)
-						)
-						
-					(cat
-						"\"I don't know much about weapons; not as much as you do, anyway. "
-						"But I know a lot of people who favor the AK15 Partisan. Of course, "
-						"if you can get your hands on a slam cannon, you're styling.\""
-						)
-						
-					(cat
-						"\"Heavy metal armor is the best, in my opinion. Ceramic is nice for "
-						"my dishes, but it will do kack-all against a slam cannon. Ithalium "
-						"is the best; orthosteel is pretty awesome too. Duralloy lasts almost "
-						"forever, though.\""
-						)
-						
-					(cat
-						"\"Have you ever been to the Outer Realm? Out beyond the Sung Slavers, "
-						"where the Ringers live? It's miner heaven, I bet. I'd like to go out "
-						"there some day. Just me and a souped-up Borer. The Ferians are there "
-						"too; I hear they've got mining techniques like you've never seen.\""
-						)
-						
-					(cat
-						"\"It's not too dangerous from Eridani to St. Kat's. Mostly just pirates "
-						"to worry about. But deeper in the Ungoverned Territories there are "
-						"dangers that you cannot imagine. Slavers will jump you out in deep "
-						"space and boost your body for their slave farms.\""
-						)
-						
-					(cat
-						"\"The Charon pirates are nasty, but you can handle their gunships. "
-						"Stay away from their frigates, though.\""
-						)
-						
-					(cat
-						"\"When a Charon frigate is out hunting you'd best get away. They'll "
-						"take you down fast without so much as a warning.\""
-						)
-						
-					(cat
-						"\"Titanium ore is as common as suit-rash. Palladium and plasteel "
-						"are kack too. If you want a good payday, find an asteroid with cerallox "
-						"or helium regolith.\""
-						)
-						
-					(cat
-						"\"Every chump with a mining laser thinks he can mine. But if you want "
-						"to be a serious miner you need a miner's cargo hold.\""
-						)
-						
-					(cat
-						"\"Volcanic asteroids are the best for mining. I once found 30 tons "
-						"of ithalium ore on one! Kept me in vodka and cunnu for a couple of years!\""
-						)
-						
-					(cat
-						"\"Ice asteroids are filthy with cerallox. Lots of palladium and "
-						"plasteel too, though, so they're not always worth the effort.\""
-						)
-					))
-			</Text>
+
 			<Text id="Intro:New">
 				(cat
 					"The meeting hall is carved deep below the asteroid's surface. The colony supervisor stands "
@@ -589,7 +492,92 @@
 					)
 			</Text>
 
-			<Text id="rumor.pub">
+			<Text id="rumor.intro">
+				The colony supervisor is working at his station. The comms channels
+				are quiet and he stops to chat:\n\n
+			</Text>
+
+			<String id="rumor.commonwealthMining.1">
+				"It's calm now, but I've been hearing a lot of military chatter lately."
+			</String>
+			<Text id="rumor.commonwealthMining.2">
+				"Most people don't care where their metals come from, but let me
+				tell you: plasteel doesn't grow in greenhouses! We have to struggle
+				to mine enough for everyone."
+			</Text>
+			<Text id="rumor.commonwealthMining.3">
+				"Charon pirates have always been a problem here. They're getting
+				stronger every year. One of these days we're going to have to do
+				something about them."
+			</Text>
+			<Text id="rumor.commonwealthMining.4">
+				"The Korolov folks are good people; they're a little uptight about
+				schedules and they're big on pomp and medals, but we get along pretty well."
+			</Text>
+			<Text id="rumor.commonwealthMining.5">
+				"We've had a lot of trouble with the warlords. They come through
+				in gangs and shoot up the place; they take what they need and then leave."
+			</Text>
+			<Text id="rumor.commonwealthMining.6">
+				"I don't know much about weapons; not as much as you do, anyway.
+				But I know a lot of people who favor the AK15 Partisan. Of course,
+				if you can get your hands on a slam cannon, you're styling."
+			</Text>
+			<Text id="rumor.commonwealthMining.7">
+				"Heavy metal armor is the best, in my opinion. Ceramic is nice for
+				my dishes, but it will do kack-all against a slam cannon. Ithalium
+				is the best; orthosteel is pretty awesome too. Duralloy lasts almost
+				forever, though."
+			</Text>
+			<Text id="rumor.commonwealthMining.8">
+				"Have you ever been to the Outer Realm? Out beyond the Sung Slavers,
+				where the Ringers live? It's miner heaven, I bet. I'd like to go out
+				there some day. Just me and a souped-up Borer. The Ferians are there
+				too; I hear they've got mining techniques like you've never seen."
+			</Text>
+			<Text id="rumor.commonwealthMining.9">
+				"It's not too dangerous from Eridani to St. Kat's. Mostly just pirates
+				to worry about. But deeper in the Ungoverned Territories there are
+				dangers that you cannot imagine. Slavers will jump you out in deep
+				space and boost your body for their slave farms."
+			</Text>
+			<Text id="rumor.commonwealthMining.10">
+				"The Charon pirates are nasty, but you can handle their gunships.
+				Stay away from their frigates, though."
+			</Text>
+			<Text id="rumor.commonwealthMining.11">
+				"When a Charon frigate is out hunting you'd best get away. They'll
+				take you down fast without so much as a warning."
+			</Text>
+			<Text id="rumor.commonwealthMining.12">
+				"Titanium ore is as common as suit-rash. Palladium and plasteel
+				are kack too. If you want a good payday, find an asteroid with cerallox
+				or helium regolith."
+			</Text>
+			<Text id="rumor.commonwealthMining.13">
+				"Every chump with a mining laser thinks he can mine. But if you want
+				to be a serious miner you need a miner's cargo hold."
+			</Text>
+			<Text id="rumor.commonwealthMining.14">
+				"Volcanic asteroids are the best for mining. I once found 30 tons
+				of ithalium ore on one! Kept me in vodka and cunnu for a couple of years!"
+			</Text>
+			<Text id="rumor.commonwealthMining.15">
+				"Ice asteroids are filthy with cerallox. Lots of palladium and
+				plasteel too, though, so they're not always worth the effort."
+			</Text>
+			<Text id="rumor.commonwealthMining.pilgrim">
+				"So you're going to the Core, huh? Good luck with that! I've known
+				a lot of people heading towards the Core. My best friend's wife left
+				about a year ago. Can't say that anyone's ever returned, though."
+			</Text>
+			<Text id="rumor.commonwealthMining.freelancer">
+				"So you're a freelancer, huh? Good luck with that! I've known
+				a lot of freelancers and mercs. My best friend's husband was
+				a freelancer for a while. Caught a missile out in Heilong Xing."
+			</Text>
+
+			<Text id="rumor.commonwealthPub.1">
 				You talk to a group of miners from %station% who try to impress
 				you with their knowledge of helium regolith market prices.
 				You spend 5 credits on drinks.
