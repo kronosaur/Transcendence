@@ -757,7 +757,7 @@
 			maxDevices=			"8"
 			maxNonWeapons=		"4"
 
-			stdArmor=			"6000"
+			stdArmor=			"4000"
 			maxArmor=			"12000"
 			maxArmorSpeed=		"22"
 			/>
