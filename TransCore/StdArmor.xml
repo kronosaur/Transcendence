@@ -894,10 +894,10 @@
 			attributes=			"commonwealth, makayev, military, minorItem"
 			  
 			level=				"7"
-			frequency=			"uncommon"
+			frequency=			"common"
 			numberAppearing=	"1d6"
 
-			value=				"5000"
+			value=				"4500"
 			mass=				"4500"
 			  
 			description=		"This armor is made out of a plasteel alloy designed to resist missile damage."
@@ -907,6 +907,31 @@
 
 		<Armor
 				hitPoints=	"220"
+				hpBonus=	"  +0,  +0,  +0,+100,  +0, +25"
+				/>
+
+	</ItemType>
+
+	<!-- Super-Heavy Blast Plate -->
+
+	<ItemType UNID="&itSuperHeavyBlastPlate;"
+			name=				"[segment(s) of ]super-heavy blast plate"
+			attributes=			"commonwealth, makayev, military, minorItem"
+			  
+			level=				"7"
+			frequency=			"uncommon"
+			numberAppearing=	"1d6"
+
+			value=				"5500"
+			mass=				"9000"
+			  
+			description=		"This armor is made out of a plasteel alloy designed to resist missile damage."
+			>
+
+		<Image imageID="&rsItems7;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"400"
 				hpBonus=	"  +0,  +0,  +0,+100,  +0, +25"
 				/>
 
@@ -1106,7 +1131,7 @@
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
 
-			value=				"9000"
+			value=				"6500"
 			mass=				"2000"
 			  
 			description=		"Ithalium is a rare ore found on volcanic worlds. Alloys of ithalium are particularly resistant to thermonuclear damage."
@@ -1115,7 +1140,57 @@
 		<Image imageID="&rsItems8;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"200"
+				hitPoints=	"170"
+				hpBonus=	"  +0,  +0,  +0,  +0, -25,+100,  +0, +25"
+				/>
+
+	</ItemType>
+
+	<!-- Medium Ithalium Armor -->
+
+	<ItemType UNID="&itMediumIthaliumArmor;"
+			name=				"[segment(s) of ]medium ithalium armor"
+			attributes=			"commonwealth, minorItem, military, nami"
+			  
+			level=				"8"
+			frequency=			"common"
+			numberAppearing=	"1d4"
+
+			value=				"8000"
+			mass=				"3500"
+			  
+			description=		"Ithalium is a rare ore found on volcanic worlds. Alloys of ithalium are particularly resistant to thermonuclear damage."
+			>
+
+		<Image imageID="&rsItems8;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"240"
+				hpBonus=	"  +0,  +0,  +0,  +0, -25,+100,  +0, +25"
+				/>
+
+	</ItemType>
+
+	<!-- Massive Ithalium Armor -->
+
+	<ItemType UNID="&itMassiveIthaliumArmor;"
+			name=				"[segment(s) of ]massive ithalium armor"
+			attributes=			"commonwealth, minorItem, military, nami"
+			  
+			level=				"8"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+
+			value=				"10000"
+			mass=				"10000"
+			  
+			description=		"Ithalium is a rare ore found on volcanic worlds. Alloys of ithalium are particularly resistant to thermonuclear damage."
+			>
+
+		<Image imageID="&rsItems8;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"540"
 				hpBonus=	"  +0,  +0,  +0,  +0, -25,+100,  +0, +25"
 				/>
 
@@ -1165,6 +1240,35 @@
 
 		<Armor
 				hitPoints=	"180"
+				hpBonus=	"  +0,  +0,  +0,  +0,+100,  +0, +25,  +0"
+				
+				blindingDamageAdj=	"0"
+				EMPDamageAdj=		"0"
+				deviceDamageAdj=	"0"
+				/>
+
+	</ItemType>
+
+	<!-- Segment of Massive Quadrocarbide Armor -->
+
+	<ItemType UNID="&itMassiveQuadroCarbideArmor;"
+			name=				"[segment(s) of ]massive quadrocarbide armor"
+			attributes=			"commonwealth, minorItem, military, taikon"
+			  
+			level=				"8"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			value=				"10500"
+			mass=				"10000"
+			  
+			description=		"Manufactured by the secretive Taikon corporation, quadrocarbide armor resists ion and positron damage."
+			>
+
+		<Image imageID="&rsItems8;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"360"
 				hpBonus=	"  +0,  +0,  +0,  +0,+100,  +0, +25,  +0"
 				
 				blindingDamageAdj=	"0"
@@ -1245,7 +1349,7 @@
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
 
-			value=				"15000"
+			value=				"14000"
 			mass=				"5000"
 			  
 			description=		"Stronger by weight than P450-grade Hexphase, the secret of hexacarbide is known only to the Taikon corporation."
@@ -1255,6 +1359,35 @@
 
 		<Armor
 				hitPoints=	"300"
+				hpBonus=	"  +0,  +0, +50,  +0, +50,  +0, +25,  +0"
+				
+				blindingDamageAdj=	"0"
+				EMPDamageAdj=		"0"
+				deviceDamageAdj=	"0"
+				/>
+
+	</ItemType>
+
+	<!-- Segment of Massive Hexacarbide Armor -->
+
+	<ItemType UNID="&itMassiveHexaCarbideArmor;"
+			name=				"[segment(s) of ]massive hexacarbide armor"
+			attributes=			"commonwealth, minorItem, military, taikon"
+			  
+			level=				"9"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			value=				"21000"
+			mass=				"10000"
+			  
+			description=		"This massive segment of hexacarbide is used to protect large ships."
+			>
+
+		<Image imageID="&rsItems9;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"600"
 				hpBonus=	"  +0,  +0, +50,  +0, +50,  +0, +25,  +0"
 				
 				blindingDamageAdj=	"0"
@@ -1318,10 +1451,10 @@
 
 	</ItemType>
 
-	<!-- Ithalium Armor -->
+	<!-- Advanced Ithalium Armor -->
 
-	<ItemType UNID="&itIthaliumArmor;"
-			name=				"[segment(s) of ]ithalium armor"
+	<ItemType UNID="&itAdvancedIthaliumArmor;"
+			name=				"[segment(s) of ]advanced ithalium armor"
 			attributes=			"commonwealth, minorItem, military, nami"
 			  
 			level=				"9"
@@ -1331,14 +1464,14 @@
 			value=				"16000"
 			mass=				"3500"
 			  
-			description=		"Ithalium armor absorbs more than 800 units of thermonuclear damage. Unfortunately, it is not very resistant to ion damage."
+			description=		"Ithalium armor absorbs more than 800 units of thermonuclear damage."
 			>
 
 		<Image imageID="&rsItems9;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"300"
-				hpBonus=	"  +0,  +0,  +0,  +0, -25,+100,  +0, +25"
+				hpBonus=	"  +0,  +0,  +0,  +0,  +0,+100,  +0, +25"
 				/>
 
 	</ItemType>
@@ -1393,27 +1526,27 @@
 
 	</ItemType>
 
-	<!-- Super Heavy Ithalium Armor -->
+	<!-- Experimental Ithalium Armor -->
 
-	<ItemType UNID="&itSuperHeavyIthaliumArmor;"
-			name=				"[segment(s) of ]super-heavy ithalium armor"
+	<ItemType UNID="&itExperimentalIthaliumArmor;"
+			name=				"[segment(s) of ]experimental ithalium armor"
 			attributes=			"commonwealth, minorItem, military, nami"
 			  
 			level=				"10"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
 
-			value=				"40000"
+			value=				"25000"
 			mass=				"8000"
 			  
-			description=		"Like other ithalium-based armors, this heavy armor resists thermonuclear and plasma damage."
+			description=		"This super-heavy armor is denser and more damage resistant than earlier ithalium armors."
 			>
 
 		<Image imageID="&rsItems10;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"600"
-				hpBonus=	"  +0,  +0,  +0,  +0, -25,+100,  +0, +25"
+				hpBonus=	"  +0,  +0,  +0,  +0,  +0,+150,  +0, +50"
 				/>
 
 	</ItemType>
@@ -1438,6 +1571,35 @@
 
 		<Armor
 				hitPoints=	"450"
+				hpBonus=	"  +0,  +0,  +0,  +0,+100, -25, +25,  +0"
+				
+				blindingDamageAdj=	"0"
+				EMPDamageAdj=		"0"
+				deviceDamageAdj=	"0"
+				/>
+
+	</ItemType>
+
+	<!-- Segment of Massive Octocarbide Armor -->
+
+	<ItemType UNID="&itMassiveOctoCarbideArmor;"
+			name=				"[segment(s) of ]massive octocarbide armor"
+			attributes=			"commonwealth, minorItem, military, taikon"
+			  
+			level=				"10"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			value=				"52500"
+			mass=				"10000"
+			  
+			description=		"A double layer of octocarbide armor, suitable for large ships."
+			>
+
+		<Image imageID="&rsItems10;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"900"
 				hpBonus=	"  +0,  +0,  +0,  +0,+100, -25, +25,  +0"
 				
 				blindingDamageAdj=	"0"

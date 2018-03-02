@@ -411,9 +411,11 @@
 	<!ENTITY itLightBlastPlate			"0x0000413A">
 	<!ENTITY itHeavyBlastPlate			"0x0000413B">
 	<!ENTITY itLightIthaliumArmor		"0x0000413C">
-	<!ENTITY itIthaliumArmor			"0x0000413D">
-	<!ENTITY itSuperHeavyIthaliumArmor	"0x0000413E">
-	<!ENTITY itHeavyIthaliumArmor		"0x0000413E">	<!-- itSuperHeavyIthatliumArmor synonym -->
+	<!ENTITY itAdvancedIthaliumArmor	"0x0000413D">
+	<!ENTITY itIthaliumArmor			"0x0000413D">	<!-- itAdvancedIthaliumArmor synonym -->
+	<!ENTITY itExperimentalIthaliumArmor	"0x0000413E">
+	<!ENTITY itHeavyIthaliumArmor		"0x0000413E">	<!-- itExperimentalIthaliumArmor synonym -->
+	<!ENTITY itSuperHeavyIthaliumArmor	"0x0000413E">	<!-- itExperimentalIthaliumArmor synonym -->
 	<!ENTITY itNephrenP25				"0x00004142">
 	<!ENTITY itNephrenB700				"0x00004143">
 	<!ENTITY itNephrenX1				"0x00004144">
@@ -1963,11 +1965,16 @@
 	<!-- 04D0-04EF NAMI CORPORATION -->
 
 	<!ENTITY rsMissileNAMIHeavyHD		"0x001004D0">
+	<!ENTITY itMediumIthaliumArmor		"0x001004D1">
+	<!ENTITY itMassiveIthaliumArmor		"0x001004D2">
 
 	<!-- 04F0-050F TAIKON CORPORATION -->
 
 	<!ENTITY rsWeaponTM7HD				"0x001004F0">
 	<!ENTITY rsWeaponTM7FragmentHD		"0x001004F1">
+	<!ENTITY itMassiveQuadrocarbideArmor	"0x001004F2">
+	<!ENTITY itMassiveHexacarbideArmor	"0x001004F3">
+	<!ENTITY itMassiveOctocarbideArmor	"0x001004F4">
 
 	<!-- 0510-052F LUMINOUS -->
 
@@ -2009,6 +2016,10 @@
 	<!ENTITY itDualSAR10Cannon			"0x001005A0">
 	<!ENTITY itSAR40Cannon				"0x001005A1">
 	<!ENTITY itSAR200AdvancedCannon		"0x001005A2">
+
+	<!-- 05C0-05DF MAKAYEV CORPORATION -->
+
+	<!ENTITY itSuperHeavyBlastPlate		"0x001005C0">
 
     <!-- 1000-FFFF RESERVED: DO NOT USE -->
 	]>
