@@ -279,7 +279,7 @@
 		<!-- Configuration -->
 
 		<Armor
-			armorID=			"&itLightOrthoSteel;"
+			armorID=			"&itSuperHeavyBlastPlate;"
 			count=				"6"
 			/>
 
@@ -317,7 +317,7 @@
 		<!-- Configuration -->
 
 		<Armor
-			armorID=			"&itP210HexphaseArmor;"
+			armorID=			"&itMassiveIthaliumArmor;"
 			count=				"6"
 			/>
 		

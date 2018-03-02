@@ -554,10 +554,10 @@ PLAYER DATA
 			maxCargoSpace=		"200"
 			maxDevices=			"8"
 
-			stdArmor=			"6000"
+			stdArmor=			"10000"
 			maxArmor=			"20000"
 			maxArmorSpeed=		"18"
-			minArmorSpeed=		"20"
+			minArmorSpeed=		"21"
 
 			valueAdj=			"+2.0"
 			/>
@@ -582,7 +582,7 @@ PLAYER DATA
 		<!-- Configuration -->
 
 		<Armor
-			armorID=			"&itLightOrthoSteel;"
+			armorID=			"&itSuperHeavyBlastPlate;"
 			count=				"6"
 			/>
 		
@@ -642,7 +642,7 @@ PLAYER DATA
 		<!-- Configuration -->
 
 		<Armor
-			armorID=			"&itP210HexphaseArmor;"
+			armorID=			"&itMassiveIthaliumArmor;"
 			count=				"6"
 			/>
 		
