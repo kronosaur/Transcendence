@@ -1603,6 +1603,7 @@ void CPlayerShipController::PaintDebugLineOfFire (SViewportPaintCtx &Ctx, CG32bi
 
 		if (pObj 
 				&& pObj->GetCategory() == CSpaceObject::catShip
+				&& !pObj->IsIntangible()
 				&& pObj != m_pShip)
 			{
 			CVector vDist = pObj->GetPos() - m_pShip->GetPos();
