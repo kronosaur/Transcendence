@@ -1448,11 +1448,11 @@ ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			if (pArgs->GetCount() > 2)
 				pData = pArgs->GetElement(2);
 
-			ICCItem *pResult;
-			if (!pScreen->Translate(sText, pData, &pResult))
+			ICCItemPtr pResult;
+			if (!pScreen->Translate(sText, pData, pResult))
 				return pCC->CreateNil();
 
-			return pResult;
+			return pResult->Reference();
 			}
 
 		default:
@@ -1696,8 +1696,8 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			if (pArgs->GetCount() > 3)
 				pData = pArgs->GetElement(3);
 
-			ICCItem *pResult;
-			if (!pScreen->Translate(sText, pData, &pResult))
+			ICCItemPtr pResult;
+			if (!pScreen->Translate(sText, pData, pResult))
 				{
 				pScreen->SetDescription(strPatternSubst(CONSTLIT("Unknown Language ID: %s"), sText));
 				return pCC->CreateNil();
@@ -1706,7 +1706,6 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Set the screen descriptor
 
             bool bSuccess = pScreen->SetControlValue(sID, pResult);
-			pResult->Discard(pCC);
 
 			return pCC->CreateBool(bSuccess);
             }
@@ -1755,8 +1754,8 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			if (pArgs->GetCount() > 2)
 				pData = pArgs->GetElement(2);
 
-			ICCItem *pResult;
-			if (!pScreen->Translate(sText, pData, &pResult))
+			ICCItemPtr pResult;
+			if (!pScreen->Translate(sText, pData, pResult))
 				{
 				pScreen->SetDescription(strPatternSubst(CONSTLIT("Unknown Language ID: %s"), sText));
 				return pCC->CreateNil();
@@ -1765,7 +1764,6 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Set the screen descriptor
 
 			pScreen->SetDescription(g_pTrans->ComposePlayerNameString(pResult->GetStringValue()));
-			pResult->Discard(pCC);
 
 			return pCC->CreateTrue();
 			}
