@@ -671,11 +671,7 @@
 				</InitialPane>
 
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 						<!--
 							<Action name="Purchase Tickets" default="1" key="P">
@@ -1353,16 +1349,12 @@
 
 					</FirstFight>
 
-					<StillFighting
-							desc=	"&quot;You'll get no help here. Fight your own battles!&quot;">
-
+					<StillFighting descID="descStillFighting">
 						<Actions>
 							<Action id="actionUndock" default="1" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</StillFighting>
 					
 					<CheckDraw>
@@ -1439,16 +1431,13 @@
 						</Actions>
 					</CheckDraw>
 
-					<PlayerLeft
-							desc=	"&quot;You're banned from the games for leaving the arena in the middle of battle!&quot;">
-
+					<PlayerLeft descID="descPlayerLeft">
 						<Actions>
 							<Action id="actionUndock" default="1" cancel="1">
 								<Exit/>
 							</Action>
 
 						</Actions>
-
 					</PlayerLeft>
 
 				</Panes>
@@ -1659,42 +1648,55 @@
 			<Text id="actionCancelSpecial">Cance[l]</Text>
 			
 			<Text id="descWelcome">
+
 				Welcome to Battle Arena Maximus! Prepare yourself for the greatest show in space!
 				Watch as the best pilots in the Commonwealth compete in mortal combat. The action
 				is so real you'll swear its faked! See your ticket agent for reservations.
 				Enquire within to join the elite combatants.
+
 			</Text>
 			<String id="descMeleeBusy">"We're still in the middle of a match! Come back later."</String>
 			<Text id="descChooseOpponent">Choose an opponent:</Text>
 			<Text id="descDrawOrNot">
+
 				An Arena official looks at the battle metrics:
 					
 				"The crowd is bored and you've officially passed the minimum battle time.
 				Do you want to declare a draw?"
+
 			</Text>
 			<Text id="descGladiatorDraw">
+
 				Mr. Katami looks disappointed:
 					
 				"I knew that opponent would be hard to defeat!
 				But you survived and now we can learn from our mistake. Perhaps you need to
 				upgrade your weapons."
+
 			</Text>
 			<Text id="descFirstFight">
+
 				"Welcome, citizen! You are about to join an elite group of men and women who
 				have conquered their fears and proven their courage and skills in the ultimate
 				test&#x97;mortal combat."
 				
 				"All that remains is for you to sign this minor release indemnifying the
 				Maximus Corporation against any liability in the event of harm, death, etc."
+
 			</Text>
 			<String id="descChicken">
+
 				"This kind of challenge is not for the weak and fearful. You are wise to decline."
+
 			</String>
 			<Text id="descNoMoreMelees">
+
 				"I'm sorry, you don't have the killer spirit that we need in a gladiator.
 				I'm afraid you'll just have to watch the matches on the 3DV like everyone else."
+
 			</Text>
 			<Text id="descKatamiIntro1">
+
 				As you enter the gladiators' quarters, a short man wearing a simple suit approaches you:
 				
 				"My name is Mr. Katami and I am prepared to train you. I watched you in the arena.
@@ -1702,14 +1704,27 @@
 				I can teach you how."
 				
 				"Are you ready?"
+
 			</Text>
 			<Text id="descKatamiIntro2">
+
 				"First you must be smart in choosing your opponent. Don't just pick someone
 				you can kill easily. Pick a fight the crowd wants to see. Win the crowd and you
 				will be a Legendary Hero."
 				
 				"Are you ready?"
+
 			</Text>
+			<String id="descStillFighting">
+
+				"You'll get no help here. Fight your own battles!"
+
+			</String>
+			<String id="descPlayerLeft">
+
+				"You're banned from the games for leaving the arena in the middle of battle!"
+			
+			</String>
             
             <Text id="core.mapDescMain">
                 Gladiatorial combat
@@ -1863,9 +1878,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"The docking bay is guarded by two men with heavy weapons. They check you out and then step aside to let you in.">
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionTalk">
 								(block Nil
@@ -1894,7 +1907,6 @@
 							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
 					</Default>
 				</Panes>
@@ -1902,11 +1914,7 @@
 
 			<Boss>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDesc gScreen "You ask to see the station boss. Everyone turns to stare at you for a second, but then they go about their business and continue to ignore you.")
-						</OnPaneInit>
-
+					<Default descID="descNoBoss">
 						<Actions>
 							<Action name="Continue" default="1" cancel="1" key="C">
 								(scrShowScreen gScreen "Main")
@@ -1931,11 +1939,11 @@
 		</DockingPorts>
 
 		<Language>
-			<Text id="actionTalk">"[T]alk to Station Boss"</Text>
-			<Text id="actionBuyItems">"[B]uy Items"</Text>
-			<Text id="actionSellItems">"[S]ell Items"</Text>
-			<Text id="actionDockServices">"[D]ock Services"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
+			<Text id="actionTalk">[T]alk to Station Boss</Text>
+			<Text id="actionBuyItems">[B]uy Items</Text>
+			<Text id="actionSellItems">[S]ell Items</Text>
+			<Text id="actionDockServices">[D]ock Services</Text>
+			<Text id="actionUndock">[U]ndock</Text>
 
 			<Text id="descNoInstall">
 				(cat

@@ -226,9 +226,7 @@ PLAYER DATA
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"The docking bay is guarded by two men with heavy weapons. They check you out and then step aside to let you in.">
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action name="Talk to Station Boss" key="T">
 								(block Nil
@@ -277,9 +275,7 @@ PLAYER DATA
 				</InitialPane>
 
 				<Panes>
-					<MemberBoss
-							desc=	"You are escorted to Lord Mikho's outer office. But instead of finding him there, you see a young, dark-haired woman sitting at the desk. She looks at you slowly, perhaps trying to remember your name, &quot;What can I do for you?&quot;">
-
+					<MemberBoss descID="descMemberBoss">
 						<Actions>
 							<Action name="&quot;I want a mission.&quot;" default="1" key="M">
 								(rpgMissionAssignment {
@@ -363,9 +359,7 @@ PLAYER DATA
 						</Actions>
 					</MemberBoss>
 
-					<LordBoss
-							desc=	"You try to see Lord Mikho, but he is indisposed.">
-
+					<LordBoss descID="descLordBoss">
 						<Actions>
 							<Action name="Leave" cancel="1" key="L">
 								(scrShowScreen gScreen "Main")
@@ -373,9 +367,7 @@ PLAYER DATA
 						</Actions>
 					</LordBoss>
 
-					<NoAccess
-							desc=	"You ask to see the station boss. Everyone turns to stare at you for a second, but then they go about their business and continue to ignore you.">
-
+					<NoAccess descID="descNoBoss">
 						<Actions>
 							<Action name="Continue" cancel="1" default="1" key="C">
 								(scrShowScreen gScreen "Main")
@@ -383,9 +375,7 @@ PLAYER DATA
 						</Actions>
 					</NoAccess>
 
-					<NoUpgrade
-							desc=	"The dark-haired woman rolls her eyes, &quot;I'm sorry, but you'll just have to do with what you've got.&quot;">
-
+					<NoUpgrade descID="descNoUpgrade">
 						<Actions>
 							<Action name="Continue" cancel="1" default="1" key="C">
 								(scrShowScreen gScreen "Main")
@@ -461,6 +451,29 @@ PLAYER DATA
 			</Text>
 			<Text id="dockServices:installAbility">
 				(cat "We install smuggler's equipment up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
+			</Text>
+
+			<Text id="descMemberBoss">
+
+				You are escorted to Lord Mikho's outer office. But instead of 
+				finding him there, you see a young, dark-haired woman sitting 
+				at the desk. She looks at you slowly, perhaps trying to 
+				remember your name.
+				
+				"What can I do for you?"
+
+			</Text>
+			<Text id="descLordBoss">
+
+				You try to see Lord Mikho, but he is indisposed.
+
+			</Text>
+			<Text id="descNoUpgrade">
+
+				The dark-haired woman rolls her eyes.
+				
+				"I'm sorry, but you'll just have to do with what you've got."
+
 			</Text>
             
             <Text id="core.mapDesc">
@@ -593,9 +606,7 @@ PLAYER DATA
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"The docking bay is guarded by two men with heavy weapons. They check you out and then step aside to let you in.">
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
@@ -718,9 +729,7 @@ PLAYER DATA
 				name=			"Tempus Lab"
 				>
 				<Panes>
-					<Default
-							desc=	"You are docked at a Tempus manufacturing lab. The docking bay is guarded by two men with heavy weapons. They check you out and then step aside to let you in.">
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
@@ -731,9 +740,7 @@ PLAYER DATA
 							<Action name="Undock" cancel="1" key="U">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 				</Panes>
 			</Main>
@@ -746,6 +753,14 @@ PLAYER DATA
 		</StaticData>
 		
         <Language>
+			<Text id="descWelcome">
+			
+				You are docked at a Tempus manufacturing lab.
+				
+				The docking bay is guarded by two men with heavy weapons.
+				They check you out and then step aside to let you in.
+
+			</Text>
             <Text id="core.mapDesc">
                 "Sells illegal items"
             </Text>
@@ -937,9 +952,7 @@ PLAYER DATA
 	<DockScreen UNID="&dsBlackMarketPayDebt;"	nestedScreen="true">
 
 		<Panes>
-			<Default
-					desc=	"Two men with heavy weapons grab you as soon as you come out the airlock: &quot;The boss wants to see you!&quot; They take you inside the station to see Lord Mikho.">
-
+			<Default descID="descTakeThemToBoss">
 				<Actions>
 					<Action name="Continue" default="1" cancel="1" key="C">
 						(if (geq (plyGetCredits gPlayer) (objGetData gPlayerShip "blackMarketCrimeCost"))
@@ -972,9 +985,7 @@ PLAYER DATA
 				</Actions>
 			</PaymentInFull>
 
-			<PaymentInFull2
-					desc=	"After paying your debt, Lord Mikho assures you that the bounty hunters will be called off. The armed guards lead you back to your ship.">
-
+			<PaymentInFull2 descID="descPaymentInFull2">
 				<Actions>
 					<Action name="Undock" cancel="1" key="U">
 						(scrExitScreen gScreen)
@@ -1002,15 +1013,31 @@ PLAYER DATA
 				</Actions>
 			</Killed>
 		</Panes>
+
+		<Language>
+			<Text id="descTakeThemToBoss">
+
+				Two men with heavy weapons grab you as soon as you come out the airlock.
+				
+				"The boss wants to see you!"
+				
+				They take you inside the station to see Lord Mikho.
+
+			</Text>
+			<Text id="descPaymentInFull2">
+
+				After paying your debt, Lord Mikho assures you that the bounty hunters 
+				will be called off. The armed guards lead you back to your ship.
+
+			</Text>
+		</Language>
 	</DockScreen>
 
 	<!-- Black market only allows docking with ID -->
 
 	<DockScreen UNID="&dsBlackMarketRefuseDock;"	nestedScreen="true">
 		<Panes>
-			<Default
-					desc=	"Two men with heavy weapons stand guard in the docking bay. As you approach, they stop you. &quot;No one is interested in doing business with you. Get lost!&quot;">
-
+			<Default descID="descRefuse">
 				<Actions>
 					<Action name="Undock" default="1" cancel="1" key="U">
 						(scrExitScreen gScreen 'forceUndock)
@@ -1018,6 +1045,17 @@ PLAYER DATA
 				</Actions>
 			</Default>
 		</Panes>
+
+		<Language>
+			<Text id="descRefuse">
+
+				Two men with heavy weapons stand guard in the docking bay. As 
+				you approach, they stop you.
+				
+				"No one is interested in doing business with you. Get lost!"
+
+			</Text>
+		</Language>
 	</DockScreen>
 	
 <!-- THE BLACK MARKET -->
@@ -1226,6 +1264,22 @@ PLAYER DATA
 						)	
 			</OnBountyHunterCheck>
 		</Events>
+
+		<Language>
+			<Text id="descWelcome">
+
+				The docking bay is guarded by two men with heavy weapons.
+				They scan you and then step aside to let you in.
+
+			</Text>
+			<Text id="descNoBoss">
+
+				You ask to see the station boss. Everyone turns to stare at you
+				for a second, but then they go about their business and 
+				continue to ignore you.
+
+			</Text>
+		</Language>
     </Type>
 
 <!-- TABLES -->
