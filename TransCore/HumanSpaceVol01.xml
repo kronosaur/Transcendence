@@ -411,9 +411,11 @@
 	<!ENTITY itLightBlastPlate			"0x0000413A">
 	<!ENTITY itHeavyBlastPlate			"0x0000413B">
 	<!ENTITY itLightIthaliumArmor		"0x0000413C">
-	<!ENTITY itIthaliumArmor			"0x0000413D">
-	<!ENTITY itSuperHeavyIthaliumArmor	"0x0000413E">
-	<!ENTITY itHeavyIthaliumArmor		"0x0000413E">	<!-- itSuperHeavyIthatliumArmor synonym -->
+	<!ENTITY itAdvancedIthaliumArmor	"0x0000413D">
+	<!ENTITY itIthaliumArmor			"0x0000413D">	<!-- itAdvancedIthaliumArmor synonym -->
+	<!ENTITY itExperimentalIthaliumArmor	"0x0000413E">
+	<!ENTITY itHeavyIthaliumArmor		"0x0000413E">	<!-- itExperimentalIthaliumArmor synonym -->
+	<!ENTITY itSuperHeavyIthaliumArmor	"0x0000413E">	<!-- itExperimentalIthaliumArmor synonym -->
 	<!ENTITY itNephrenP25				"0x00004142">
 	<!ENTITY itNephrenB700				"0x00004143">
 	<!ENTITY itNephrenX1				"0x00004144">
@@ -1651,13 +1653,13 @@
 	<!ENTITY rsTundraHD					"0x001000A6">
 	<!ENTITY rsAresSentry				"0x001000A7">
 	<!ENTITY rsAresSentryHero			"0x001000A8">
-
 	<!ENTITY scAresSentry				"0x001000A9">
 	<!ENTITY scAresDualSentry			"0x001000AA">
 	<!ENTITY rsAresDualSentry			"0x001000AB">
 	<!ENTITY rsAresDualSentryHero		"0x001000AC">
 	<!ENTITY rsAresAdvancedSentry		"0x001000AD">
 	<!ENTITY rsAresAdvancedSentryHero	"0x001000AE">
+	<!ENTITY tbAresFreighterTreasure	"0x001000AF">
 	
 	<!-- 00C0-00CF SALVAGERS -->
 	
@@ -1958,15 +1960,21 @@
 	<!ENTITY rsMinotaurM				"0x001004C8">
 	<!ENTITY rsMinotaurMHero			"0x001004C9">
 	<!ENTITY dsLamplighterInstall		"0x001004CA">
+	<!ENTITY tbCSCAresAttack			"0x001004CB">
 
 	<!-- 04D0-04EF NAMI CORPORATION -->
 
 	<!ENTITY rsMissileNAMIHeavyHD		"0x001004D0">
+	<!ENTITY itMediumIthaliumArmor		"0x001004D1">
+	<!ENTITY itMassiveIthaliumArmor		"0x001004D2">
 
 	<!-- 04F0-050F TAIKON CORPORATION -->
 
 	<!ENTITY rsWeaponTM7HD				"0x001004F0">
 	<!ENTITY rsWeaponTM7FragmentHD		"0x001004F1">
+	<!ENTITY itMassiveQuadrocarbideArmor	"0x001004F2">
+	<!ENTITY itMassiveHexacarbideArmor	"0x001004F3">
+	<!ENTITY itMassiveOctocarbideArmor	"0x001004F4">
 
 	<!-- 0510-052F LUMINOUS -->
 
@@ -2008,6 +2016,10 @@
 	<!ENTITY itDualSAR10Cannon			"0x001005A0">
 	<!ENTITY itSAR40Cannon				"0x001005A1">
 	<!ENTITY itSAR200AdvancedCannon		"0x001005A2">
+
+	<!-- 05C0-05DF MAKAYEV CORPORATION -->
+
+	<!ENTITY itSuperHeavyBlastPlate		"0x001005C0">
 
     <!-- 1000-FFFF RESERVED: DO NOT USE -->
 	]>

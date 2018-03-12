@@ -17,6 +17,7 @@
 #define TEXT_INPUT_TAG				CONSTLIT("TextInput")
 
 #define DESC_ATTRIB					CONSTLIT("desc")
+#define DESC_ID_ATTRIB				CONSTLIT("descID")
 #define ID_ATTRIB					CONSTLIT("id")
 #define LAYOUT_ATTRIB				CONSTLIT("layout")
 #define SHOW_COUNTER_ATTRIB			CONSTLIT("showCounter")
@@ -888,11 +889,23 @@ ALERROR CDockPane::InitPane (CDockScreen *pDockScreen, CXMLElement *pPaneDesc, c
 
 	//	Set the description text
 
-	CString sDesc;
-	if (!m_pDockScreen->EvalString(m_pPaneDesc->GetAttribute(DESC_ATTRIB), pData, false, eventNone, &sDesc))
-		ReportError(strPatternSubst(CONSTLIT("Error evaluating desc param: %s"), sDesc));
-	else
-		SetDescription(sDesc);
+	CString sValue;
+	if (m_pPaneDesc->FindAttribute(DESC_ATTRIB, &sValue))
+		{
+		CString sDesc;
+		if (!m_pDockScreen->EvalString(sValue, pData, false, eventNone, &sDesc))
+			ReportError(strPatternSubst(CONSTLIT("Error evaluating desc param: %s"), sValue));
+		else
+			SetDescription(sDesc);
+		}
+	else if (m_pPaneDesc->FindAttribute(DESC_ID_ATTRIB, &sValue))
+		{
+		ICCItemPtr pResult;
+		if (!m_pDockScreen->Translate(sValue, pData, pResult))
+			ReportError(strPatternSubst(CONSTLIT("Unknown language ID: %s"), sValue));
+		else
+			SetDescription(pResult->GetStringValue());
+		}
 
 	//	Evaluate the initialize element
 	//	

@@ -135,7 +135,6 @@
 
 		<DockScreens>
 			<Main>
-
 				<InitialPane>
 					(if (objIsDockedAt (objGetObjRefData gSource "volkov") gSource)
 						(if (not (objGetData gSource "status"))
@@ -156,9 +155,7 @@
 						</OnPaneInit>
 					</Default>
 					
-					<Helena
-						desc=	"=(scrTranslate gScreen 'descHelena)">
-						
+					<Helena	descID="descHelena">
 						<Actions>
 							<Action id="actionUndock" default="1" cancel="1">
 								(scrExitDock gScreen)
@@ -166,9 +163,7 @@
 						</Actions>
 					</Helena>
 					
-					<VolkovGrieving
-						desc=	"=(scrTranslate gScreen 'descVolkovGrieving)">
-						
+					<VolkovGrieving descID="descVolkovGrieving">
 						<Actions>
 							<Action id="actionUndock" default="1" cancel="1">
 								(block (volkov)
@@ -184,9 +179,7 @@
 						</Actions>
 					</VolkovGrieving>
 					
-					<VolkovGrieving2
-						desc=	"=(scrTranslate gScreen 'descVolkovGrieving2)">
-						
+					<VolkovGrieving2 descID="descVolkovGrieving2">
 						<Actions>
 							<Action id="actionUndock" default="1" cancel="1">
 								(scrExitDock gScreen)

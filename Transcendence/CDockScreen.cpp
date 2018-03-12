@@ -1952,23 +1952,31 @@ void CDockScreen::SelectPrevItem (bool *retbMore)
 		*retbMore = bMore;
 	}
 
-bool CDockScreen::Translate (const CString &sTextID, ICCItem *pData, ICCItem **retpResult)
+bool CDockScreen::Translate (const CString &sTextID, ICCItem *pData, ICCItemPtr &pResult)
 
 //	Translate
 //
 //	Translate text
 
 	{
+	ICCItem *pRawResult;
+
 	//	First ask the object to translate for us
 
-	if (m_pLocation && m_pLocation->Translate(sTextID, pData, retpResult))
+	if (m_pLocation && m_pLocation->Translate(sTextID, pData, &pRawResult))
+		{
+		pResult = ICCItemPtr(pRawResult);
 		return true;
+		}
 
 	//	Otherwise, let the screen translate
 
 	CDesignType *pRoot = GetResolvedRoot();
-	if (pRoot && pRoot->Translate(m_pLocation, sTextID, pData, retpResult))
+	if (pRoot && pRoot->Translate(m_pLocation, sTextID, pData, &pRawResult))
+		{
+		pResult = ICCItemPtr(pRawResult);
 		return true;
+		}
 
 	//	Otherwise, we have no translation
 

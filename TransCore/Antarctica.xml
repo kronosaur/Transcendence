@@ -166,7 +166,7 @@
 		</DockingPorts>
 
 		<AISettings
-			fireRateAdj=		"15"
+			fireRateAdj=		"20"
 			fireAccuracy=		"95"
 			perception=			"4"
 			/>

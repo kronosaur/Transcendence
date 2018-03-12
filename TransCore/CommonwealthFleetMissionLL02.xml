@@ -17,7 +17,7 @@
 			name=			"Rescue Scientists"
 			attributes=		"commonwealthFleet, cscTaskForce, rank3, lamplighter"
 
-			level=			"5-8"
+			level=			"5-10"
 			maxAppearing=	"1"
 
 			expireTime=			"5400"
@@ -145,43 +145,58 @@
 			</Text>
 			<Text id="Summary">
 				(cat
-					"Your mission is to resuce two weapons designers who have "
-					"been kidnapped by rogue fleet elements.\n\n"
-
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					(msnTranslate gSource 'textSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
 					)
 			</Text>
 			<Text id="Intro">
-				(cat
-					"The XO walks up to you.\n\n"
 
-					"\"Good to see you pilot. We've got a mission for you.\""
-					)
+				The XO walks up to you.
+
+				"Good to see you pilot. We've got a mission for you."
+
 			</Text>
 			<Text id="Briefing">
-				(cat
-					"\"OK, this is a high-profile rescue mission, so I don't want any screw-ups!\"\n\n"
-					"\"Two of our weapons designers have been kidnapped by rogue fleet elements. "
-					"We're sending an Aurochs transport with an extraction team to rescue our Einsteins. "
-					"All you've got to do is protect the transport to the rogue base and back. Clear?\""
-					)
+
+				"OK, this is a high-profile rescue mission, so I don't want any screw-ups!
+
+				"Two of our weapons designers have been kidnapped by rogue fleet elements. 
+				We're sending an Aurochs transport with an extraction team to rescue our Einsteins. 
+				All you've got to do is protect the transport to the rogue base and back.
+				
+				"Clear?"
+
 			</Text>
 			<Text id="AcceptReply">
-				"\"Good luck, %name%!\""
+				"Good luck, %name%!"
 			</Text>
 			<Text id="DeclineReply">
-				"\"Get the hell out of here then!\""
+				"Get the hell out of here then!"
 			</Text>
 
 			<Text id="InProgress">
-				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+				"What is your major malfunction!? Get back out there and complete your mission!"
 			</Text>
 			<Text id="FailureDebrief">
-				"\"That's what I get for counting on you!\n\n\"You're demoted back to Privateer! Now get out of my sight!\""
+
+				"That's what I get for counting on you!
+				
+				"You're demoted back to Privateer! Now get out of my sight!"
+
 			</Text>
 			<Text id="SuccessDebrief">
-				"\"Outstanding mission! Now we can put those Einsteins back to work!\""
+				"Outstanding mission! Now we can put those Einsteins back to work!"
+			</Text>
+
+			<Text id="textSummary">
+
+				Your mission is to protect an Aurochs transport carrying an extraction team
+				to rescue the weapons designers.
+
 			</Text>
 		</Language>
 	</MissionType>

@@ -46,8 +46,8 @@
 		</Devices>
 
 		<Ships>
-			<Ship		count="1d3"		class="&scCenturion;" orders="patrol" patrolDist="20"/>
-			<Ship		count="1d3"		class="&scCenturion;" orders="guard"/>
+			<Ship		count="1d3"		class="&scCenturionRogue;" orders="patrol" patrolDist="20"/>
+			<Ship		count="1d3"		class="&scCenturionRogue;" orders="guard"/>
 		</Ships>
 
 		<Items>
@@ -116,13 +116,13 @@
 		<!-- Ships and Defenses -->
 		
 		<Ships>
-			<Ship		count="1"		class="&scCenturionX;" orders="patrol" patrolDist="20">
+			<Ship		count="1"		class="&scCenturionXRogue;" orders="patrol" patrolDist="20">
 				<Escorts>
-					<Ship		count="1d3"		class="&scCenturion;" orders="escort"/>
+					<Ship		count="1d3"		class="&scCenturionRogue;" orders="escort"/>
 				</Escorts>
 			</Ship>
-			<Ship		count="1"		class="&scCenturionX;" orders="guard"/>
-			<Ship		count="1d3"		class="&scCenturion;" orders="guard"/>
+			<Ship		count="1"		class="&scCenturionXRogue;" orders="guard"/>
+			<Ship		count="1d3"		class="&scCenturionRogue;" orders="guard"/>
 		</Ships>
 
 		<!-- Image and Effects -->
@@ -138,25 +138,25 @@
 
 	<EncounterTable UNID="&etRogueAmbush1;">
 		<Table>
-			<Ship chance="30"	count="1d3"	class="&scCenturion;"	orders="attack" sovereign="&svRogueFleet;"/>
-			<Ship chance="50"	count="1"	class="&scCenturion;"	orders="attack"	sovereign="&svRogueFleet;">
+			<Ship chance="30"	count="1d3"	class="&scCenturionRogue;"	orders="attack" sovereign="&svRogueFleet;"/>
+			<Ship chance="50"	count="1"	class="&scCenturionRogue;"	orders="attack"	sovereign="&svRogueFleet;">
 				<Escorts>
-					<Ship count="2"	class="&scCenturion;" orders="escort"/>
+					<Ship count="2"	class="&scCenturionRogue;" orders="escort"/>
 				</Escorts>
 			</Ship>
-			<Ship chance="20"	count="1"	class="&scCenturionX;"	orders="attack" sovereign="&svRogueFleet;"/>
+			<Ship chance="20"	count="1"	class="&scCenturionXRogue;"	orders="attack" sovereign="&svRogueFleet;"/>
 		</Table>
 	</EncounterTable>
 
 	<EncounterTable UNID="&etRogueAmbush2;">
 		<Table>
-			<Ship chance="50"	count="1"	class="&scCenturionX;"	orders="attack"	sovereign="&svRogueFleet;">
+			<Ship chance="50"	count="1"	class="&scCenturionXRogue;"	orders="attack"	sovereign="&svRogueFleet;">
 				<Escorts>
-					<Ship count="2"	class="&scCenturion;" orders="escort"/>
+					<Ship count="2"	class="&scCenturionRogue;" orders="escort"/>
 				</Escorts>
 			</Ship>
-			<Ship chance="30"	count="2d2"	class="&scCenturion;"	orders="attack" sovereign="&svRogueFleet;"/>
-			<Ship chance="20"	count="1d2"	class="&scCenturionX;"	orders="attack" sovereign="&svRogueFleet;"/>
+			<Ship chance="30"	count="2d2"	class="&scCenturionRogue;"	orders="attack" sovereign="&svRogueFleet;"/>
+			<Ship chance="20"	count="1d2"	class="&scCenturionXRogue;"	orders="attack" sovereign="&svRogueFleet;"/>
 		</Table>
 	</EncounterTable>
 

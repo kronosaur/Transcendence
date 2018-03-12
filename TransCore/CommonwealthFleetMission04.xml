@@ -21,7 +21,7 @@
 			name=			"Destroy Ares Freighter"
 			attributes=		"commonwealthFleet, cscTaskForce, rank2"
 
-			level=			"5-8"
+			level=			"5-9"
 
 			expireTime=			"5400"
 			failureAfterOutOfSystem="5400"
@@ -153,66 +153,105 @@
 			</Text>
 			<Text id="Summary">
 				(cat
-					"Intercept and destroy an Ares freighter before it can deliver supplies to "
-					(objGetName (objGetObjByID (msnGetData gSource 'aresID)) 4) ".\n\n"
-
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+					(msnTranslate gSource 'textSummary) {
+						destName: (objGetName (objGetObjByID (msnGetData gSource 'aresID)) 'article)
+						}) 
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
 					)
 			</Text>
 			<Text id="Intro">
-				(cat
-					"The XO walks up to you.\n\n"
 
-					"\"Good to see you pilot. We've got a mission for you.\""
-					)
+				The XO walks up to you.
+
+				"Good to see you pilot. We've got a mission for you."
+
 			</Text>
 			<Text id="Briefing">
-				(cat
-					"\"An Ares freighter is delivering supplies to "
-					(objGetName (objGetObjByID (msnGetData gSource 'aresID)) 4)
-					" in this system. Your orders are to intercept and destroy the freighter. Any questions?\""
-					)
+				(msnTranslate gSource 'textBriefing {
+					destName: (objGetName (objGetObjByID (msnGetData gSource 'aresID)) 'article)
+					})
 			</Text>
 			<Text id="AcceptReply">
-				"\"Good luck, %name%!\""
+				"Good luck, %name%!"
 			</Text>
 			<Text id="DeclineReply">
-				"\"Get the hell out of here then!\""
+				"Get the hell out of here then!"
 			</Text>
 
 			<Text id="InProgress">
-				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+				"What is your major malfunction!? Get back out there and complete your mission!"
 			</Text>
 			<Text id="FailureDebrief">
-				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
+				"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!"
 			</Text>
 			<Text id="SuccessDebrief">
-				"\"Outstanding mission! That's one less supply ship for the Martians&mdash;just a matter of time before this war is over.\""
+
+				"Outstanding mission! That's one less supply ship for the 
+				Martians&mdash;just a matter of time before this war is over."
+
+			</Text>
+
+			<Text id="textSummary">
+				Intercept and destroy an Ares freighter before it can deliver supplies to %destName%.
+			</Text>
+			<Text id="textBriefing">
+
+				"An Ares freighter is delivering supplies to %destName% in this system.
+				Your orders are to intercept and destroy the freighter.
+
+				"Any questions?"
+
 			</Text>
 		</Language>
 	</MissionType>
 
 	<ShipTable unid="&tbCSCAresFreighter;">
 		<LevelTable>
-			<Ship levelFrequency="vvurr ccurr" count="1" class="&scPolar;">
+			<Ship levelFrequency="vvvrr ccurr" count="1" class="&scPolar;">
 				<Items>
-					<Item	count="5d6"	item="&itPteracniumOre;"/>
-					<Lookup	count="1d4"	table="&trConsumables6;"/>
-					<Lookup	count="1"	table="&trMinorItem6;"/>
+					<Lookup table="&tbAresFreighterTreasure;"/>
 				</Items>
 				<Escorts>
 					<Ship	count="2d4"	 class="&scSandstorm;"	orders="escort"/>
 				</Escorts>
 			</Ship>
-			<Ship levelFrequency="----- rrucc" count="1" class="&scPolar2;">
+			<Ship levelFrequency="-vvvr rccur" count="1" class="&scPolar;">
 				<Items>
-					<Item	count="5d6"	item="&itPteracniumOre;"/>
-					<Lookup	count="1d4"	table="&trConsumables6;"/>
-					<Lookup	count="1"	table="&trMinorItem6;"/>
+					<Lookup table="&tbAresFreighterTreasure;"/>
 				</Items>
 				<Escorts>
-					<Ship	count="2d4"	 class="&scSandstorm;"	orders="escort"/>
+					<Ship	count="3d4"	 class="&scSandstorm;"	orders="escort"/>
+				</Escorts>
+			</Ship>
+			<Ship levelFrequency="--vvv rrccu" count="1" class="&scPolar;">
+				<Items>
+					<Lookup table="&tbAresFreighterTreasure;"/>
+				</Items>
+				<Escorts>
+					<Ship	count="3d4"	 class="&scSandstorm;"	orders="escort"/>
+					<Ship	count="1d2"	 class="&scTundra;"		orders="escort"/>
+				</Escorts>
+			</Ship>
+			<Ship levelFrequency="---vv vrrcc" count="1" class="&scPolar;">
+				<Items>
+					<Lookup table="&tbAresFreighterTreasure;"/>
+				</Items>
+				<Escorts>
+					<Ship	count="3d4"	 class="&scSandstorm;"	orders="escort"/>
+					<Ship	count="1d2"	 class="&scChasm;"		orders="escort"/>
+				</Escorts>
+			</Ship>
+			<Ship levelFrequency="----v vvrrc" count="1" class="&scPolar2;">
+				<Items>
+					<Lookup table="&tbAresFreighterTreasure;"/>
+				</Items>
+				<Escorts>
+					<Ship	count="3d4"	 class="&scSandstorm;"	orders="escort"/>
+					<Ship	count="1d2"	 class="&scTundra;"	orders="escort"/>
 				</Escorts>
 			</Ship>
 		</LevelTable>

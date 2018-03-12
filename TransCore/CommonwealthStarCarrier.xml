@@ -591,7 +591,7 @@
 		<!-- AI and Behavior -->
 
 		<AISettings
-			fireRateAdj=		"10"
+			fireRateAdj=		"20"
 			fireAccuracy=		"95"
 			perception=			"6"
 			/>

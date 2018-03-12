@@ -447,7 +447,7 @@ class CDockScreen : public IScreenController
 		void SetListCursor (int iCursor);
 		inline void SetTextInput (const CString &sText) { m_CurrentPane.SetTextInputValue(sText); }
 		void ShowPane (const CString &sName);
-		bool Translate (const CString &sTextID, ICCItem *pData, ICCItem **retpResult);
+		bool Translate (const CString &sTextID, ICCItem *pData, ICCItemPtr &pResult);
 
 		//	IScreenController virtuals
 		virtual void Action (DWORD dwTag, DWORD dwData = 0);

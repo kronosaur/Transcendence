@@ -256,8 +256,8 @@
 					<Ship	count="1d6"	class="&scKobolGunshipMissiles;"	orders="guard" sovereign="&svKobolWarlords;"/>
 				</Group>
 				<Group chance="10">
-					<Ship	count="2d8"	class="&scCenturion;"	orders="patrol"	patrolDist="5" sovereign="&svRogueFleet;"/>
-					<Ship	count="1d8"	class="&scCenturionX;"	orders="guard" sovereign="&svRogueFleet;"/>
+					<Ship	count="2d8"	class="&scCenturionRogue;"	orders="patrol"	patrolDist="5" sovereign="&svRogueFleet;"/>
+					<Ship	count="1d8"	class="&scCenturionXRogue;"	orders="guard" sovereign="&svRogueFleet;"/>
 				</Group>
 			</Table>
 		</Ships>
