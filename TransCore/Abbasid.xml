@@ -79,6 +79,31 @@
 				<Station type="&stShipwreck1;"/>
 			</Orbitals>
 		</Satellites>
+
+		<Events>
+			<GetRumors>
+				{
+					attributes: "commonwealthPub"
+					priority: 22
+					sourceObj: gSource
+					textID: 'rumor.pub
+					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
+					}
+			</GetRumors>
+		</Events>
+
+		<Language>
+			<Text id="rumor.pub">
+				A woman weeps softly as she tells her story:
+
+				"Our freighter strayed near an Abbasid outpost by mistake.
+				They had no mercy&mdash;they just kept firing on us&mdash;the
+				captain begged them to stop, but the blasts kept coming! Then
+				our cabin got hit and my husband..."
+
+				She stares into space and says no more. You leave 5 credits for her drinks.
+			</Text>
+		</Language>
 	</StationType>
 
 </TranscendenceModule>

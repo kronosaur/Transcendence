@@ -245,6 +245,29 @@
 		<Encounters frequency="common">
 			<Lookup table="&tbSapiensEncounters;"/>
 		</Encounters>
+
+		<Events>
+			<GetRumors>
+				{
+					attributes: "commonwealthPub"
+					priority: 30
+					sourceObj: gSource
+					textID: 'rumor.pub
+					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
+					}
+			</GetRumors>
+		</Events>
+
+		<Language>
+			<Text id="rumor.pub">
+				You spend 5 credits and listen to a nuclear technician:
+
+				"I just got paid ten kilocreds to install a radiation room at
+				the Sapiens camp! Those flippers scare me&mdash;with all their
+				talk about 'human purity' they seem a little short on the
+				brain scale."
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Terrorist Compound -->

@@ -739,6 +739,25 @@
 						)
 					)
 			</OnObjDocked>
+
+			<GetRumors>
+				(block (
+					(level (korGetPlayerLevel))
+					)
+					{
+						attributes: "commonwealthPub"
+						priority: 21
+						sourceObj: gSource
+						textID: (switch
+							(or (not rank) (= rank 0))	'rumor.pub.norank
+							(ls rank 0)					'rumor.pub.blacklisted
+														'rumor.pub.member
+							)
+						data: {station: (objGetName gSource)}
+						onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
+						}
+					)
+			</GetRumors>
 		</Events>
 
 		<Language>
@@ -831,6 +850,21 @@
 				The sight of these frigates brings fear to most freighter pilots. Fast,
 				silent, and loaded with hurt, a Charon frigate can destroy a small fleet of
 				escort ships. Do not challenge these ships unless you know what you're doing.
+			</Text>
+
+			<Text id="rumor.pub.norank">
+				You spend 5 credits on drinks. You talk to a couple of freighter pilots
+				who try to convince you to fly escort missions for Korolov Shipping.
+			</Text>
+			<Text id="rumor.pub.blacklisted">
+				A group of freighter pilots point in your direction, talking about how
+				you blew your escort mission. You settle up a 5 credit tab and get ready
+				to leave.
+			</Text>
+			<Text id="rumor.pub.member">
+				A group of freighter pilots welcome you into their group. You tell various
+				stories about your run-ins with the Charon pirates, but in the end you still
+				get stuck with the 5 credit tab.
 			</Text>
 
             <Text id="core.mapDescMain">

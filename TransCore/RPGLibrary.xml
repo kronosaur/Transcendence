@@ -87,6 +87,7 @@
 	<!ENTITY dsRPGDockManagement		"0x0001003C">
 	<!ENTITY dsRPGShipBrokerWingman		"0x0001003D">
 	<!ENTITY dsRPGShipBrokerConfirm		"0x0001003E">
+	<!ENTITY dsRPGRumor					"0x0001003F">
 	
 	<!-- 0040-004F CARGO CRATE -->
 	
@@ -158,6 +159,7 @@
 	<Module filename="RPGMembership.xml"/>
 	<Module filename="RPGMissions.xml"/>
 	<Module filename="RPGPlayer.xml"/>
+	<Module filename="RPGRumors.xml"/>
 	<Module filename="RPGShipBroker.xml"/>
 	<Module filename="RPGShipScreens.xml"/>
 	<Module filename="RPGTradingComputer.xml"/>

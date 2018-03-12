@@ -140,6 +140,28 @@
 				</Ship>
 			</Table>
 		</Encounters>
+		<Events>
+			<GetRumors>
+				{
+					attributes: "commonwealthPub"
+					priority: 40
+					sourceObj: gSource
+					textID: 'rumor.pub
+					}
+			</GetRumors>
+		</Events>
+
+		<Language>
+			<Text id="rumor.pub">
+				An old man talks to you:
+
+				"I don't trust the corporate medlabs&mdash;they talk about drug
+				shortages while they munch on oncokillers and antigens! I'm going
+				to the Death Labs&mdash;what's the worst they can do? Kill me?"
+
+				You spend 5 credits to buy him a drink.
+			</Text>
+		</Language>
 	</StationType>
 	
 	<!-- RESOURCES -->

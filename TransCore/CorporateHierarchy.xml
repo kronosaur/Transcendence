@@ -1843,6 +1843,17 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
+
+			<GetRumors>
+				{
+					attributes: "commonwealthPub"
+					priority: 24
+					sourceObj: gSource
+					textID: 'rumor.pub
+					data: {station: (objGetName gSource)}
+					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
+					}
+			</GetRumors>
 		</Events>
 
 		<DockScreens>
@@ -1928,6 +1939,11 @@
 				The maitre d' leaves you waiting for several minutes. When he finally
 				turns to you he coldly tells you that there are no tables available.
 				You feel out of place here.
+			</Text>
+
+			<Text id="rumor.pub">
+				You talk to a corporate woman staying at the %station%. She drones on
+				about the excellent service. You spend 5 credits on drinks.
 			</Text>
 
             <Text id="core.mapDesc">"Buys food, luxuries, and meds"</Text>

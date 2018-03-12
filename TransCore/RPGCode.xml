@@ -2035,7 +2035,7 @@
 				
 				(block (
 					(pageCount (rpgPageCount textDesc))
-					(pageNo (if (scrGetData theScreen 'curPage) (scrGetData theScreen 'curPage) 0))
+					(pageNo (or (scrGetData theScreen 'curPage) 0))
 					(pageDesc (rpgPageDesc textDesc pageNo))
 					
 					(actions (@ pageDesc 'actions))
@@ -2113,7 +2113,7 @@
 									(msnTranslate (@ options 'missionObj) (@ pageDesc 'labelID))
 									(scrTranslate theScreen (@ pageDesc 'labelID))
 									)
-								nextPage: (@ pageDesc 'nextPage)
+								nextPage: (or (@ pageDesc 'nextPage) (@ pageDesc 'nextPane))
 								code: (or (@ pageDesc 'code) (@ pageDesc 'nextCode))
 								}))
 						)
@@ -2122,7 +2122,7 @@
 					
 					(enum actions actionDesc
 						(block (
-							(nextPage (@ actionDesc 'nextPage))
+							(nextPage (or (@ actionDesc 'nextPage) (@ actionDesc 'nextPane)))
 							
 							(actionID (cat "action" nextActionID))
 							(actionDoneID (or (@ options 'actionDoneID) 'actionDone))

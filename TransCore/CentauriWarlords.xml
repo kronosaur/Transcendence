@@ -662,6 +662,17 @@
 					(objSetData gSource "LiberatedByPlayer" True)
 					)
 			</OnObjDestroyed>
+
+			<GetRumors>
+				{
+					attributes: "commonwealthPub"
+					priority: 10
+					sourceObj: gSource
+					textID: 'rumor.pub
+					data: {station: (objGetName gSource)}
+					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
+					}
+			</GetRumors>
 		</Events>
 
 		<DockScreens>
@@ -774,6 +785,16 @@
 			<Port x="90"	y="20" />
 		</DockingPorts>
 
+		<Language>
+			<Text id="rumor.pub">
+				You listen to a refugee from %station%:
+
+				"Centauri warlords took over our station last month.
+				Whatever&mdash;I like this place better."
+
+				You spend 5 credits and buy him a few drinks.
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Centauri Camp -->

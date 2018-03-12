@@ -571,8 +571,26 @@
 			<OnMining>
 				(intAsteroidOnMining 100)
 			</OnMining>
+
+			<GetRumors>
+				{
+					attributes: "commonwealthPub"
+					priority: 60
+					sourceObj: gSource
+					textID: 'rumor.pub
+					}
+			</GetRumors>
 		</Events>
 
+		<Language>
+			<Text id="rumor.pub">
+				You spend 5 credits buying drinks for a mercenary. He talk about
+				his encounters with the Xenophobes:
+
+				"The minute I see their green ships I turn tail&mdash;I'm not
+				proud. And you shouldn't be either!"
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Xenophobe Worldship Encounter -->
