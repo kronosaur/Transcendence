@@ -400,9 +400,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"You are docked at an armor dealer station.">
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action name="Armor and Shields" key="A" default="1">
 								(scrShowScreen gScreen &dsRPGManageArmor; {
@@ -438,6 +436,10 @@
 		</DockingPorts>
 
         <Language>
+			<Text id="descWelcome">
+				You are docked at an armor dealer station.
+			</Text>
+
             <Text id="core.mapDesc">"Buys and sells armor and shields &mdash; Installs purchased items &mdash; Buys damaged armor and shields"</Text>
         </Language>
 	</StationType>
@@ -906,9 +908,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"You are docked at an auton dealer.">
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action name="Buy Autons" default="1" key="B">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
@@ -940,9 +940,7 @@
 
 					</Default>
 
-					<NoAutons
-							desc=	"A sales drone approaches you: &quot;You do not currently have any autons to repair, but I would be delighted to show you some of our newest models.&quot;">
-
+					<NoAutons descID="descNoAutons">
 						<Actions>
 							<Action id="actionLeave" cancel="1" default="1">
 								<ShowPane pane="Default"/>
@@ -1020,6 +1018,17 @@
 		</DockingPorts>
 
         <Language>
+			<Text id="descWelcome">
+				You are docked at an auton dealer.
+			</Text>
+			<Text id="descNoAutons">
+
+				A sales drone approaches you:
+				
+				"You do not currently have any autons to repair, but I would be 
+				delighted to show you some of our newest models."
+
+			</Text>
             <Text id="core.mapDesc">"Buys and sells autons"</Text>
         </Language>
 	</StationType>
@@ -1079,9 +1088,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"You are in the docking level of a corporate enclave. The citizens of the station work for various members of the Corporate Hierarchy.">
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action name="Corporate Level" default="1" key="C">
 								<Navigate screen="CorporateLevel" />
@@ -1106,9 +1113,7 @@
 
 					</Default>
 
-					<Illegals
-							desc=	"You are in the maintenance level of a corporate enclave. The door to the maintenance shop is open and you hear voices inside.">
-
+					<Illegals descID="descIllegals">
 						<Actions>
 							<Action name="Enter Maintenance Shop" default="1" key="E">
 								<ShowPane pane="MaintenanceShop"/>
@@ -1120,9 +1125,7 @@
 						</Actions>
 					</Illegals>
 
-					<MaintenanceLevel
-							desc=	"You are in the maintenance level of a corporate enclave. The drone of the atmosphere processors and the waste converters drowns out all other noises. There is an empty maintenance shop here filled with various machines and drones; an empty laudanum ampule peeks out from under the workbench.">
-
+					<MaintenanceLevel descID="descMaintenanceLevel">
 						<Actions>
 							<Action id="actionLeave" default="1" cancel="1">
 								<ShowPane pane="Default"/>
@@ -1130,9 +1133,7 @@
 						</Actions>
 					</MaintenanceLevel>
 
-					<MaintenanceShop
-							desc=	"You are in the maintenance shop surrounded by various machines and drones. There are four men in the room repairing various items. One of the men walks towards you and says, &quot;You must be the new delivery person. Show me what you've got to sell.&quot;">
-
+					<MaintenanceShop descID="descMaintenanceShop">
 						<Actions>
 							<Action name="&quot;Sorry, you have me confused with someone else.&quot;" cancel="1" key="S">
 								<ShowPane pane="Illegals"/>
@@ -1164,9 +1165,7 @@
 						</Actions>
 					</MaintenanceShop>
 
-					<ResidentialLevel
-							desc=	"You are in the residential level of a corporate enclave. This level holds the apartments and dwelling units of mid-level corporate citizens. The units are small and somewhat homogenous, though everyone you meet seems happy.">
-
+					<ResidentialLevel descID="descResidentialLevel">
 						<Actions>
 							<Action id="actionLeave" default="1" cancel="1">
 								<ShowPane pane="Default"/>
@@ -1179,9 +1178,7 @@
 
 			<CorporateLevel>
 				<Panes>
-					<Default
-							desc=	"You are in the corporate level of a corporate enclave. The day-to-day services and manufacturing of the various corporations are carried-out on this level.">
-
+					<Default descID="descCorporateLevel">
 						<Actions>
 							<Action id="actionSellItems" default="1">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
@@ -1212,6 +1209,55 @@
 		</DockingPorts>
 
         <Language>
+			<Text id="descWelcome">
+
+				You are in the docking level of a corporate enclave. The 
+				citizens of the station work for various members of the 
+				Corporate Hierarchy.
+
+			</Text>
+			<Text id="descMaintenanceLevel">
+
+				You are in the maintenance level of a corporate enclave. The 
+				drone of the atmosphere processors and the waste converters 
+				drowns out all other noises.
+				
+				There is an empty maintenance shop here filled with various 
+				machines and drones; an empty laudanum ampule peeks out from 
+				under the workbench.
+
+			</Text>
+			<Text id="descIllegals">
+
+				You are in the maintenance level of a corporate enclave. The 
+				door to the maintenance shop is open and you hear voices inside.
+
+			</Text>
+			<Text id="descMaintenanceShop">
+				
+				You are in the maintenance shop surrounded by various machines 
+				and drones. There are four men in the room repairing various 
+				items.
+				
+				One of the men walks towards you and says, "You must be the new 
+				delivery person. Show me what you've got to sell."
+
+			</Text>
+			<Text id="descResidentialLevel">
+
+				You are in the residential level of a corporate enclave. This 
+				level holds the apartments and dwelling units of mid-level 
+				corporate citizens. The units are small and somewhat homogenous,
+				though everyone you meet seems happy.
+
+			</Text>
+			<Text id="descCorporateLevel">
+
+				You are in the corporate level of a corporate enclave. The 
+				day-to-day services and manufacturing of the various 
+				corporations are carried-out on this level.
+
+			</Text>
             <Text id="core.mapDesc">"Buys food, luxuries, meds, and resources"</Text>
         </Language>
 	</StationType>
@@ -2017,9 +2063,7 @@
 				>
 
 				<Panes>
-					<Default
-							desc=	"You are docked at an independent ice farm on a small asteroid. Cold and stale air blows out of a wheezing recycler and you hear the drone of struggling generators and pumps.">
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionBuyItems" default="1">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
@@ -2056,6 +2100,13 @@
 		</DockingPorts>
 
         <Language>
+			<Text id="descWelcome">
+
+				You are docked at an independent ice farm on a small asteroid. 
+				Cold and stale air blows out of a wheezing recycler and you 
+				hear the drone of struggling generators and pumps.
+
+			</Text>
             <Text id="core.mapDesc">"Sells luxuries &mdash; Buys food and supplies"</Text>
         </Language>
 	</StationType>
@@ -2186,9 +2237,7 @@
 
 					</Default>
 
-					<AlreadyInsured
-							desc= "You are already insured by our conglomerate. Rest assured that you are protected against all losses by the most comprehensive insurance in the Commonwealth.">
-
+					<AlreadyInsured descID="descAlreadyInsured">
 						<Actions>
 							<Action id="actionContinue" cancel="1" default="1">
 								<ShowPane pane="Default"/>
@@ -2198,9 +2247,7 @@
 
 					</AlreadyInsured>
 
-					<TooRisky
-							desc= "Unfortunately, we do not have an insurance product suitable for the risky lifestyle that you lead.">
-
+					<TooRisky descID="descTooRisky">
 						<Actions>
 							<Action id="actionContinue" cancel="1" default="1">
 								<ShowPane pane="Default"/>
@@ -2291,18 +2338,13 @@
 
 					</BuyInsurance>
 
-					<Done
-							desc= "&quot;Thank you for your purchase. We wish you a long and happy life, secure in the knowledge that the oldest and most powerful insurance conglomerate stands behind you.&quot;">
-
+					<Done descID="descThankYou">
 						<Actions>
 							<Action id="actionContinue" cancel="1" default="1">
 								<ShowPane pane="Default"/>
 							</Action>
-
 						</Actions>
-
 					</Done>
-
 				</Panes>
 			</Main>
 
@@ -2320,6 +2362,26 @@
 		</DockingPorts>
 
         <Language>
+			<Text id="descAlreadyInsured">
+
+				You are already insured by our conglomerate. Rest assured that 
+				you are protected against all losses by the most comprehensive 
+				insurance in the Commonwealth.
+
+			</Text>
+			<Text id="descTooRisky">
+
+				Unfortunately, we do not have an insurance product suitable for 
+				the risky lifestyle that you lead.
+
+			</Text>
+			<Text id="descThankYou">
+
+				"Thank you for your purchase. We wish you a long and happy life, 
+				secure in the knowledge that the oldest and most powerful 
+				insurance conglomerate stands behind you."
+
+			</Text>
             <Text id="core.mapDesc">
                 "Life insurance policies"
             </Text>
@@ -2424,9 +2486,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"You are docked at a Taikon Ventures station.">
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionDockServices" default="1">
 								(rpgDockServices gPlayerShip {
@@ -2462,6 +2522,11 @@
 			<Port x="36"	y="88" />
 		</DockingPorts>
 
+		<Language>
+			<Text id="descWelcome">
+				You are docked at a Taikon Ventures station.
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Trading Post -->
@@ -2558,9 +2623,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"=(scrTranslate gScreen 'descMain)">
-
+					<Default descID="descMain">
 						<Actions>
 							<Action id="actionOrderItems" default="1">
 								(switch
@@ -2603,7 +2666,7 @@
 			<OrderItem>
 				<Panes>
 					<Default
-							desc="=(scrTranslate gScreen 'descOrderDefault)"
+							descID="descOrderDefault"
 							showTextInput="true">
 
 						<Actions>
@@ -2780,9 +2843,7 @@
 						</Actions>
 					</ConfirmOrder>
 
-					<ThankYou
-							desc="=(scrTranslate gScreen 'descThankYou)">
-
+					<ThankYou descID="descThankYou">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowScreen gScreen "Main")
@@ -2790,10 +2851,7 @@
 						</Actions>
 					</ThankYou>
 
-					<UnknownItem
-							desc="=(scrTranslate gScreen 'descUnknownItem)"
-							>
-
+					<UnknownItem descID="descUnknownItem">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
@@ -3060,9 +3118,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"You are docked at a franchise of Thor's Wondrous Devices.">
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionDockServices" default="1">
 								(rpgDockServices gPlayerShip {
@@ -3100,6 +3156,12 @@
 			<Port x="0"		y="-50" />
 			<Port x="0"		y="130" />
 		</DockingPorts>
+
+		<Language>
+			<Text id="descWelcome">
+				You are docked at a franchise of Thor's Wondrous Devices.
+			</Text>
+		</Language>
 	</StationType>
 
 	<Globals>

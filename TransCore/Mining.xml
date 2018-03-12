@@ -288,9 +288,7 @@
 		</InitialPane>
 
 		<Panes>
-			<Default
-					desc=	"You are floating next to boulders of mined ore.">
-
+			<Default descID="descDefault">
 				<Actions>
 					<Action name="Bring Aboard" key="B" default="1" >
 						(block Nil
@@ -307,14 +305,9 @@
 						<Exit/>
 					</Action>
 				</Actions>
-
 			</Default>
 
-			<NoMinersHold>
-				<OnPaneInit>
-					(scrSetDesc gScreen "Without a miner's cargo hold you find it difficult to bring aboard all the ore. You will only be able to recover part of the ore. Continue?")
-				</OnPaneInit>
-
+			<NoMinersHold descID="descNoMinersHold">
 				<Actions>
 					<Action name="Continue" key="C" default="1">
 						(block (oreToRemove)
@@ -346,9 +339,7 @@
 				</Actions>
 			</NoMinersHold>
 
-			<Empty
-					desc=	"You are floating next to boulders of mined ore.">
-
+			<Empty descID="descEmpty">
 				<Actions>
 					<Action name="Leave" default="1" cancel="1" key="L">
 						<Exit/>
@@ -356,6 +347,24 @@
 				</Actions>
 			</Empty>
 		</Panes>
+
+		<Language>
+			<Text id="descDefault">
+				You are floating next to boulders of mined ore.
+			</Text>
+			<Text id="descEmpty">
+				You are floating next to boulders of mined ore.
+			</Text>
+			<Text id="descNoMinersHold">
+
+				Without a miner's cargo hold you find it difficult to bring 
+				aboard all the ore. You will only be able to recover part of 
+				the ore.
+				
+				Continue anyway?
+
+			</Text>
+		</Language>
 	</DockScreen>
 	
 <!-- OVERLAYS -->

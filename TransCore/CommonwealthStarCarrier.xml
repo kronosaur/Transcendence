@@ -248,9 +248,7 @@
 				</Display>
 				
 				<Panes>
-					<Default
-							desc=	"You are in the main infirmary of a Commonwealth Star Carrier. Sleep-deprived technicians attend hundreds of patients in their rejuv tanks, mostly oblivious to the insistent medical alarms. The smell of blood, wounds, and antiseptics smother you.">
-
+					<Default descID="descInfirmary">
 						<Actions>
 							<Action id="actionTalkMedical" default="1">
 								(block Nil
@@ -275,9 +273,7 @@
 						</Actions>
 					</Default>
 
-					<NoMedicalItems
-							desc=	"The Medical Officer complains about how hard it is to get medical supplies this deep in space. &quot;We're getting killed out here fighting the Ares and this is how the Commonwealth thanks us&#x97;no supplies, no reinforcements, nothing!&quot;">
-
+					<NoMedicalItems descID="descNoMedicalItems">
 						<Actions>
 							<Action id="actionLeave" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
@@ -373,9 +369,7 @@
 
 					</SellMedicalItems>
 
-					<DoneSelling
-							desc=	"&quot;Thank you, those supplies are really going to help these troopers.&quot;">
-
+					<DoneSelling descID="descDoneSelling">
 						<Actions>
 							<Action id="actionLeave" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
@@ -466,6 +460,30 @@
 				You are in the docking bay of %shipName%.
 
 			</Text>
+			<Text id="descInfirmary">
+
+				You are in the main infirmary of a Commonwealth Star Carrier. 
+				Sleep-deprived technicians attend hundreds of patients in their 
+				rejuv tanks, mostly oblivious to the insistent medical alarms. 
+				
+				The smell of blood, wounds, and antiseptics smother you.
+
+			</Text>
+			<Text id="descNoMedicalItems">
+
+				The Medical Officer complains about how hard it is to get 
+				medical supplies this deep in space.
+				
+				"We're getting killed out here fighting the Ares and this is 
+				how the Commonwealth thanks us&mdash;no supplies, no 
+				reinforcements, nothing!"
+
+			</Text>
+			<String id="descDoneSelling">
+
+				"Thank you, those supplies are really going to help these troopers."
+
+			</String>
 		</Language>
 
 	</ShipClass>

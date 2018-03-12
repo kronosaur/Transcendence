@@ -198,9 +198,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default
-							desc=	"Welcome to Commonwealth Residentials.">
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action name="Undock" cancel="1" key="U">
 								<Exit/>
@@ -220,6 +218,12 @@
 
 			<OnContractQuery>True</OnContractQuery>
 		</Events>			
+
+		<Language>
+			<Text id="descWelcome">
+				Welcome to Commonwealth Residentials.
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Eridani System -->

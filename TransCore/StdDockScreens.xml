@@ -96,18 +96,20 @@
 
 			</Default>
 
-			<OrientDone
-					desc=	"You have successfully oriented the titanium barricade.">
-
+			<OrientDone descID="descOrientDone">
 				<Actions>
 					<Action name="Undock" cancel="1" key="U">
 						<Exit/>
 					</Action>
 				</Actions>
 			</OrientDone>
-
 		</Panes>
 
+		<Language>
+			<Text id="descOrientDone">
+				You have successfully oriented the titanium barricade.
+			</Text>
+		</Language>
 	</DockScreen>
 
 	<!-- Install a specific device
@@ -202,9 +204,7 @@
 			/>
 
 		<Panes>
-			<Default
-					desc=	"Pick a device to remove.">
-
+			<Default descID="descDefault">
 				<OnPaneInit>
 					(block (thisItem currencyUsed)
 						(setq thisItem (scrGetItem gScreen))
@@ -286,6 +286,12 @@
 				</Actions>
 			</Default>
 		</Panes>
+
+		<Language>
+			<Text id="descDefault">
+				Pick a device to remove.
+			</Text>
+		</Language>
 	</DockScreen>
 
 	<!-- Mission Screen
@@ -495,9 +501,7 @@
 		</ListOptions>
 
 		<Panes>
-			<Default
-					desc=			"There are no items here.">
-
+			<Default descID="descNoItems">
 				<OnPaneInit>
 					(block (thisItem)
 						(setq thisItem (scrGetItem gScreen))
@@ -676,16 +680,18 @@
 			</SellQuantity>
 		</Panes>
 
+		<Language>
+			<Text id="descNoItems">
+				There are no items here.
+			</Text>
+		</Language>
 	</DockScreen>
 
 	<!-- Refuse dock with contaminated ships -->
 
 	<DockScreen UNID="&dsRefuseContamination;"	nestedScreen="true">
-
 		<Panes>
-			<Default
-					desc=	"The dockmaster stops you as you disembark: &quot;Hey! Get that contaminated ship off my dock!&quot;">
-
+			<Default descID="descUnwelcome">
 				<Actions>
 					<Action name="Undock" default="1" cancel="1" key="U">
 						(scrExitScreen gScreen 'forceUndock)
@@ -693,27 +699,41 @@
 				</Actions>
 			</Default>
 		</Panes>
+
+		<Language>
+			<Text id="descUnwelcome">
+
+				The dockmaster stops you as you disembark:
+				
+				"Hey! Get that contaminated ship off my dock!"
+
+			</Text>
+		</Language>
 	</DockScreen>
 
 	<!-- NavBeacon -->
 
 	<DockScreen UNID="&dsNavBeacon;">
-
 		<Panes>
-			<Default
-					desc=	"You are docked at a navigational beacon. These automated stations are used as traffic control centers and navigational aids.">
-
+			<Default descID="descWelcome">
 				<Actions>
 					<Action name="Undock" cancel="1" key="U">
 						<Exit/>
 					</Action>
 
 				</Actions>
-
 			</Default>
-
 		</Panes>
 
+		<Language>
+			<Text id="descWelcome">
+
+				You are docked at a navigational beacon. These automated 
+				stations are used as traffic control centers and navigational 
+				aids.
+
+			</Text>
+		</Language>
 	</DockScreen>
 
 	<!-- NavSign -->
@@ -754,19 +774,21 @@
 	<DockScreen UNID="&dsAbandonedNavSign;"
 			name=				"Information"
 			>
-
 		<Panes>
-			<Default desc="You are docked at a destroyed information sign.">
+			<Default descID="descWelcome">
 				<Actions>
 					<Action name="Undock" cancel="1" key="U">
 						<Exit/>
 					</Action>
-
 				</Actions>
-
 			</Default>
 		</Panes>
 
+		<Language>
+			<Text id="descWelcome">
+				You are docked at a destroyed information sign.
+			</Text>
+		</Language>
 	</DockScreen>
 
 	<!-- Refuel

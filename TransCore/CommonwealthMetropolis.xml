@@ -452,9 +452,7 @@
 				</Actions>
 			</DealComplete>
 
-			<Nothing
-				desc=	"You are in a large dance club where women and men dressed in leather and latex dance to classical music. Almost everyone here has the doe-eyed look common to those with an impaired nervous system. The heat and noise are oppressive and you choose not to stay long.">
-
+			<Nothing descID="descNothing">
 				<Actions>
 					<Action name="Leave" cancel="1" key="L">
 						(scrExitScreen gScreen)
@@ -462,6 +460,18 @@
 				</Actions>
 			</Nothing>
 		</Panes>
+
+		<Language>
+			<Text id="descNothing">
+
+				You are in a large dance club where women and men dressed in leather and 
+				latex dance to classical music. Almost everyone here has the doe-eyed 
+				look common to those with an impaired nervous system.
+				
+				The heat and noise are oppressive and you choose not to stay long.
+
+			</Text>
+		</Language>
 	</DockScreen>
 
 	<!-- Commonwealth Station -->
@@ -477,9 +487,7 @@
 		</InitialPane>
 
 		<Panes>
-			<Default
-					desc=	"You are in the outer docking level of a large station of the Commonwealth. A monorail terminal provides access to various points around the station.">
-
+			<Default descID="descWelcome">
 				<OnPaneInit>
 					(block ()
 						(scrShowAction gScreen 'actionBuyShip (objHasTradeService gSource 'priceOfShipForSale))
@@ -517,9 +525,7 @@
 
 			</Default>
 
-			<DefaultWithInfo
-					desc=	"You are in the outer docking level of a large station of the Commonwealth. A monorail terminal provides access to various points around the station.">
-
+			<DefaultWithInfo descID="descWelcome">
 				<OnPaneInit>
 					(block ()
 						(scrShowAction gScreen 'actionBuyShip (objHasTradeService gSource 'priceOfShipForSale))
@@ -561,9 +567,7 @@
 
 			</DefaultWithInfo>
 
-			<CentralPlaza
-					desc=	"You are in the central hub of this station, a busy area where trendy shops mix with high-end residences.">
-
+			<CentralPlaza descID="descCentralPlaza">
 				<Actions>
 					<Action name="Trafalgar Pub" key="P">
 						(scrShowScreen gScreen &dsCommonwealthPub;)
@@ -669,6 +673,21 @@
 
 		</Panes>
 
+		<Language>
+			<Text id="descWelcome">
+
+				You are in the outer docking level of a large station of the 
+				Commonwealth. A monorail terminal provides access to various 
+				points around the station.
+
+			</Text>
+			<Text id="descCentralPlaza">
+
+				You are in the central hub of this station, a busy area where 
+				trendy shops mix with high-end residences.
+
+			</Text>
+		</Language>
 	</DockScreen>
 
 <!-- RESOURCES -->

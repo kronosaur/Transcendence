@@ -640,9 +640,7 @@
 
 			<SecondaryLab>
 				<Panes>
-					<Default
-						desc=	"The lab is filled with racks of equipment and testing structures. A small number of researchers are testing the quality and reliability of various items."
-						>
+					<Default descID="descSecondaryLab">
 						<Actions>
 							<Action name="Leave" default="1" cancel="1" key="L">
 								(scrShowScreen gScreen "Main")
@@ -671,6 +669,12 @@
 					"We only install Rasiermesser items. "
 					"We cannot install " (itmGetName (@ gData 'item) 0x04) " on your ship."
 					)
+			</Text>
+			<Text id="descSecondaryLab">
+
+				The lab is filled with racks of equipment and testing structures. A small 
+				number of researchers are testing the quality and reliability of various items.
+
 			</Text>
 			<Text id="dockServices:installAbility">
 				(cat "We install Rasiermesser items up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")

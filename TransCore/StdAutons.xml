@@ -356,9 +356,7 @@
 			<Main>
 
 				<Panes>
-					<Default
-						desc=	"=(scrTranslate gScreen 'descDefault)">
-							
+					<Default descID="descDefault">
 						<OnPaneInit>
 							(rpgSetLootAction gSource)
 						</OnPaneInit>

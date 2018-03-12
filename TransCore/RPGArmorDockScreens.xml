@@ -1171,9 +1171,7 @@
 		</ListOptions>
 
 		<Panes>
-			<Default
-					desc=	"Pick an armor segment to install.">
-
+			<Default descID="descDefault">
 				<OnPaneInit>
 					(block (
 						(armorSeg (@ gData 'armorSeg))
@@ -1343,6 +1341,12 @@
 				</Actions>
 			</Default>
 		</Panes>
+
+		<Language>
+			<Text id="descDefault">
+				Pick an armor segment to install.
+			</Text>
+		</Language>
 	</DockScreen>
 
 <!-- UPGRADE ARMOR SCREEN ======================================================

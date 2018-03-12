@@ -636,9 +636,7 @@
 			/>
 
 		<Panes>
-			<Default
-					desc=	"There are no items in your cargo hold that can be jettisoned.">
-
+			<Default descID="descNoItems">
 				<OnPaneInit>
 					(block (
 						(thisItem (scrGetItem gScreen))
@@ -740,6 +738,12 @@
 				</Actions>
 			</JettisonQuantity>
 		</Panes>
+
+		<Language>
+			<Text id="descNoItems">
+				There are no items in your cargo hold that can be jettisoned.
+			</Text>
+		</Language>
 	</DockScreen>
 
 <!-- LOOT SCREEN ===============================================================
@@ -1111,9 +1115,7 @@
 		</ListOptions>
 
 		<Panes>
-			<Default
-					desc=	"You do not have any items that we can repair.">
-
+			<Default descID="descNoItems">
 				<OnPaneInit>
 					(block (thisItem currencyUsed)
 						(setq thisItem (scrGetItem gScreen))
@@ -1180,6 +1182,11 @@
 			</Success>
 		</Panes>
 
+		<Language>
+			<Text id="descNoItems">
+				You do not have any items that we can repair.
+			</Text>
+		</Language>
 	</DockScreen>
 
 </TranscendenceModule>

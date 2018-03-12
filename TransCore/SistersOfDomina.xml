@@ -1142,9 +1142,7 @@
 				</Actions>
 			</Default>
 
-			<Thanks
-					desc="&quot;Thank you for your generous contribution. Your faithful support enables us to help the truly needy. May the blessings of Domina illuminate your way.&quot;">
-
+			<Thanks descID="descThanks">
 				<Actions>
 					<Action name="Continue" default="1" key="C" cancel="1">
 						(scrExitScreen gScreen)
@@ -1152,9 +1150,7 @@
 				</Actions>
 			</Thanks>
 
-			<NotEnough
-					desc="&quot;Thank you for your token contribution. May Domina's influence open your heart.&quot;">
-
+			<NotEnough descID="descNotEnough">
 				<Actions>
 					<Action name="Continue" default="1" key="C" cancel="1">
 						(scrExitScreen gScreen)
@@ -1164,6 +1160,19 @@
 		</Panes>
 		
 		<Language>
+			<Text id="descThanks">
+
+				"Thank you for your generous contribution. Your faithful 
+				support enables us to help the truly needy. May the blessings 
+				of Domina illuminate your way."
+
+			</Text>
+			<Text id="descNotEnough">
+
+				"Thank you for your token contribution. May Domina's influence 
+				open your heart."
+
+			</Text>
 		</Language>
 	</DockScreen>
 

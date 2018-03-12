@@ -30,9 +30,7 @@
 		</ListOptions>
 
 		<Panes>
-			<Default
-					desc=	"You do not have any items that we can repair.">
-
+			<Default descID="descDefault">
 				<OnPaneInit>
 					(block (thisItem currencyUsed)
 						(setq thisItem (scrGetItem gScreen))
@@ -96,6 +94,11 @@
 			</Success>
 		</Panes>
 
+		<Language>
+			<Text id="descDefault">
+				You do not have any items that we can repair.
+			</Text>
+		</Language>
 	</DockScreen>
 
 	<!-- Jettison
@@ -117,9 +120,7 @@
 			/>
 
 		<Panes>
-			<Default
-					desc=	"There are no items in your cargo hold that can be jettisoned.">
-
+			<Default descID="descNoItems">
 				<OnPaneInit>
 					(block (thisItem)
 						(setq thisItem (scrGetItem gScreen))
@@ -217,6 +218,12 @@
 
 			</JettisonQuantity>
 		</Panes>
+
+		<Language>
+			<Text id="descNoItems">
+				There are no items in your cargo hold that can be jettisoned.
+			</Text>
+		</Language>
 	</DockScreen>
 
 	<!-- Loot 
@@ -237,9 +244,7 @@
 			/>
 
 		<Panes>
-			<Default
-					desc=		"There are no items here.">
-
+			<Default descID="descNoItems">
 				<OnPaneInit>
 					(block (thisItem)
 						(setq thisItem (scrGetItem gScreen))
@@ -334,6 +339,11 @@
 			</LootQuantity>
 		</Panes>
 
+		<Language>
+			<Text id="descNoItems">
+				There are no items here.
+			</Text>
+		</Language>
 	</DockScreen>
 
 <!-- DOCK SERVICES =============================================================

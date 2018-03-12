@@ -1772,24 +1772,17 @@
 		<Image imageID="&rsStations7;" imageX="0" imageY="768" imageWidth="256" imageHeight="256"/>
 
 		<DockScreens>
-
 			<Main>
-
 				<Panes>
-					<Default
-							desc=	"You are docked at a strange station, apparently devoid of inhabitants. The immense docking bay is built out of a metal engraved with faintly luminous hieroglyphics. The walls are warm to the touch and hum with power.">
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action name="Undock" cancel="1" key="U">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
 		<DockingPorts>
@@ -1802,6 +1795,18 @@
 			<Port x="82"	y="-82" />
 			<Port x="109"	y="8" />
 		</DockingPorts>
+
+		<Language>
+			<Text id="descWelcome">
+
+				You are docked at a strange station, apparently devoid of inhabitants. The 
+				immense docking bay is built out of a metal engraved with faintly luminous 
+				hieroglyphics.
+				
+				The walls are warm to the touch and hum with power.
+
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- SPECIAL STATIONS -->

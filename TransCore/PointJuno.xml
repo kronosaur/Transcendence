@@ -327,9 +327,7 @@
 						</Actions>
 					</Default>
 
-					<Bridge
-						desc="=(scrTranslate gScreen 'descBridge)">
-
+					<Bridge descID="descBridge">
 						<Actions>
 							<Action id="actionDone" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
@@ -362,7 +360,7 @@
 					</WeaponsVault>
 
 					<WeaponsVaultLocked
-							desc=		"=(scrTranslate gScreen 'descWeaponsVaultLocked)"
+							descID=		"descWeaponsVaultLocked"
 							showTextInput="true">
 
 						<Actions>
@@ -384,9 +382,7 @@
 						</Actions>
 					</WeaponsVaultLocked>
 
-					<InvalidCode
-							desc=		"=(scrTranslate gScreen 'descInvalidCode)">
-
+					<InvalidCode descID="descInvalidCode">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "WeaponsVaultLocked")

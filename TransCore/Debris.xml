@@ -63,9 +63,7 @@
 				</InitialPane>
 
 				<Panes>
-					<Default
-							desc=	"=(scrTranslate gScreen 'descDefault)">
-
+					<Default descID="descDefault">
 						<Actions>
 							<Action id="actionOpenSeal" default="1">
 								(block (contents roll)
@@ -145,9 +143,7 @@
 
 					; Cargo container is empty
 
-					<Contents1
-							desc=	"=(scrTranslate gScreen 'descContentsEmpty)">
-
+					<Contents1 descID="descContentsEmpty">
 						<Actions>
 							<Action id="actionUndock" default="1" cancel="1">
 								<Exit/>
@@ -222,9 +218,7 @@
 
 					; Cargo container is occupied by some refugees
 
-					<Contents4
-							desc=	"=(scrTranslate gScreen 'descContents4)">
-
+					<Contents4 descID="descContents4">
 						<Actions>
 							<Action id="actionUndock" default="1" cancel="1">
 								<Exit/>
@@ -234,9 +228,7 @@
 
 					; Cargo container is a trap for some pirates
 
-					<Contents5
-							desc=	"=(scrTranslate gScreen 'descContents5)">
-
+					<Contents5 descID="descContents5">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil

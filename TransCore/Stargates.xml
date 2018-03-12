@@ -25,24 +25,31 @@
 		</DockingPorts>
 		
 		<DockScreens>
-
 			<Main>
-
 				<Panes>
-					<Default
-							desc=	"You are docked at an alien stargate. These giant structures are used by the Ancient Races to move their starships across the Galaxy. Stargates are the best mode of faster-than-light travel and they are the only method known to humans.">
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action name="Undock" cancel="1" key="U">
 								<Exit/>
 							</Action>
-
 						</Actions>
 					</Default>
 				</Panes>
 			</Main>
-
 		</DockScreens>
+
+		<Language>
+			<Text id="descWelcome">
+
+				You are docked at an alien stargate. These giant structures are 
+				used by the Ancient Races to move their starships across the 
+				Galaxy.
+				
+				Stargates are the best mode of faster-than-light travel and 
+				they are the only method known to humans.
+
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Stargate beacon -->
@@ -82,26 +89,31 @@
 		</DockingPorts>
 		
 		<DockScreens>
-
 			<Main>
-
 				<Panes>
-					<Default
-							desc=	"You are docked at an alien stargate. These giant structures are used by the Ancient Races to move their starships across the Galaxy. Stargates are the best mode of faster-than-light travel and they are the only method known to humans.">
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action name="Undock" cancel="1" key="U">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
+		<Language>
+			<Text id="descWelcome">
+
+				You are docked at an alien stargate. These giant structures are 
+				used by the Ancient Races to move their starships across the 
+				Galaxy.
+				
+				Stargates are the best mode of faster-than-light travel and 
+				they are the only method known to humans.
+
+			</Text>
+		</Language>
 	</StationType>
 
 	<StationType UNID="&stUnchartedMajellenStargate;"
@@ -125,26 +137,31 @@
 		</DockingPorts>
 		
 		<DockScreens>
-
 			<Main>
-
 				<Panes>
-					<Default
-							desc=	"You are docked at an alien stargate. These giant structures are used by the Ancient Races to move their starships across the Galaxy. Stargates are the best mode of faster-than-light travel and they are the only method known to humans.">
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action name="Undock" cancel="1" key="U">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
+		<Language>
+			<Text id="descWelcome">
+
+				You are docked at an alien stargate. These giant structures are 
+				used by the Ancient Races to move their starships across the 
+				Galaxy.
+				
+				Stargates are the best mode of faster-than-light travel and 
+				they are the only method known to humans.
+
+			</Text>
+		</Language>
 	</StationType>
 
 <!-- STARGATE EFFECTS -->

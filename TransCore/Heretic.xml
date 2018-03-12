@@ -1330,9 +1330,7 @@
 				</InitialPane>
 
 				<Panes>
-					<Activate
-							desc=	"You are docked at the Heretic Gate. This gate has been deactivated ever since the Ancient Races of the Galaxy quarantined Human Space. The Heretic Gate is the only barrier that stands between humanity and the rest of the Galaxy. It is also the only way to get to the Galactic Core.">
-
+					<Activate descID="descActivate">
 						<Actions>
 							<Action name="Activate Stargate" default="1" key="A">
 								<Navigate screen="PickItem"/>
@@ -1346,9 +1344,7 @@
 
 					</Activate>
 
-					<Default
-							desc=	"You are docked at the Heretic Gate. This gate leads out of the Human Quarantine Zone and into the rest of the Galaxy. Your journey to the Galactic Core continues here...">
-
+					<Default descID="descDefault">
 						<Actions>
 							<Action name="Undock" cancel="1" key="U">
 								<Exit/>
@@ -1371,9 +1367,7 @@
 					/>
 
 				<Panes>
-					<Default
-							desc=	"You are in the alien control room of the Heretic Gate. Pick an item to use to attempt to activate the stargate.">
-
+					<Default descID="descControlRoom">
 						<Actions>
 							<Action name="Use this Item" default="1" key="U">
 								(block Nil
@@ -1416,9 +1410,7 @@
 
 					</Failure>
 
-					<Success
-							desc=	"As you install the alien hyperglyph rod the machines in the control room hum with energy. The stargate spins slowly to life.">
-
+					<Success descID="descSuccess">
 						<Actions>
 							<Action name="Done" default="1" cancel="1" key="D">
 								<Navigate screen="Main"/>
@@ -1432,6 +1424,38 @@
 
 		</DockScreens>
 
+		<Language>
+			<Text id="descActivate">
+
+				You are docked at the Heretic Gate. This gate has been 
+				deactivated ever since the Ancient Races of the Galaxy 
+				quarantined Human Space. The Heretic Gate is the only barrier 
+				that stands between humanity and the rest of the Galaxy.
+				
+				It is also the only way to get to the Galactic Core.
+
+			</Text>
+			<Text id="descDefault">
+
+				You are docked at the Heretic Gate. This gate leads out of the 
+				Human Quarantine Zone and into the rest of the Galaxy.
+				
+				Your journey to the Galactic Core continues here...
+
+			</Text>
+			<Text id="descControlRoom">
+
+				You are in the alien control room of the Heretic Gate. Pick an 
+				item to use to attempt to activate the stargate.
+
+			</Text>
+			<Text id="descSuccess">
+
+				As you install the alien hyperglyph rod the machines in the 
+				control room hum with energy. The stargate spins slowly to life.
+
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Iocrym Control Point

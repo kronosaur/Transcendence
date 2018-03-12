@@ -694,52 +694,36 @@
 				</InitialPane>
 
 				<Panes>
-					<Default
-							desc=	"You are docked at a small Commonwealth habitat. The people here are friendly and grateful to you, but they mostly go on with their business.">
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action name="Undock" default="1" cancel="1" key="U">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 
-					<Hiding
-							desc=	"The docks and corridors of this station are deserted. The men and women of the station hide in their apartments and refuse to talk with you.">
-
+					<Hiding descID="descHiding">
 						<Actions>
 							<Action name="Undock" default="1" cancel="1" key="U">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Hiding>
 
-					<LiberatedByOther
-							desc=	"You are docked at a small Commonwealth habitat. The people here are friendly, but they mostly go on with their business.">
-
+					<LiberatedByOther descID="descLiberatedByOther">
 						<Actions>
 							<Action name="Undock" default="1" cancel="1" key="U">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</LiberatedByOther>
 
-					<Welcome1
-							desc=	"As you exit the airlock dozens of men and women cheer for you. The leader approaches you: &quot;Thank you for killing the warlords! We've been hiding ourselves ever since they took over the station.&quot;">
-
+					<Welcome1 descID="descWelcome1">
 						<Actions>
 							<Action name="Continue" default="1" cancel="1" key="C">
 								<ShowPane pane="Welcome2"/>
 							</Action>
-
 						</Actions>
-
 					</Welcome1>
 
 					<Welcome2>
@@ -786,6 +770,36 @@
 		</DockingPorts>
 
 		<Language>
+			<Text id="descWelcome">
+
+				You are docked at a small Commonwealth habitat. The people here 
+				are friendly and grateful to you, but they mostly go on with 
+				their business.
+
+			</Text>
+			<Text id="descHiding">
+
+				The docks and corridors of this station are deserted. The men 
+				and women of the station hide in their apartments and refuse to 
+				talk with you.
+
+			</Text>
+			<Text id="descLiberatedByOther">
+
+				You are docked at a small Commonwealth habitat. The people here 
+				are friendly, but they mostly go on with their business.
+
+			</Text>
+			<Text id="descWelcome1">
+
+				As you exit the airlock dozens of men and women cheer for you. 
+				The leader approaches you:
+				
+				"Thank you for killing the warlords! We've been hiding ourselves
+				ever since they took over the station."
+
+			</Text>
+
 			<Text id="rumor.pub">
 				You listen to a refugee from %station%:
 
