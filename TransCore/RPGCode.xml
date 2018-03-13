@@ -2037,6 +2037,7 @@
 					(pageCount (rpgPageCount textDesc))
 					(pageNo (or (scrGetData theScreen 'curPage) 0))
 					(pageDesc (rpgPageDesc textDesc pageNo))
+					(descID (or (@ pageDesc 'descID) (@ pageDesc 'textID)))
 					
 					(actions (@ pageDesc 'actions))
 					(atLastPage (= pageNo (- pageCount 1)))
@@ -2046,10 +2047,10 @@
 					
 					;	Show the appropriate page
 
-					(if (@ pageDesc 'textID)
+					(if descID
 						(scrSetDesc theScreen (or
-							(msnTranslate (@ options 'missionObj) (@ pageDesc 'textID) (or (@ pageDesc 'data) gData))
-							(scrTranslate theScreen (@ pageDesc 'textID) (or (@ pageDesc 'data) gData))
+							(msnTranslate (@ options 'missionObj) descID (or (@ pageDesc 'data) gData))
+							(scrTranslate theScreen descID (or (@ pageDesc 'data) gData))
 							))
 						(scrSetDesc theScreen (@ pageDesc 'desc))
 						)

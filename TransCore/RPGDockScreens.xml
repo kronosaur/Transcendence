@@ -955,6 +955,9 @@
 			<Default>
 				<OnPaneInit>
 					(switch
+						(@ gData 'descID)
+							(scrSetDesc gScreen (objTranslate gSource (@ gData 'descID)))
+
 						(@ gData 'textID)
 							(scrSetDesc gScreen (objTranslate gSource (@ gData 'textID)))
 
