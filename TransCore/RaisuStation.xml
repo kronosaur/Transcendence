@@ -262,11 +262,7 @@
 						</Actions>
 					</Default>
 
-					<MissionIntro>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descMissionIntro)
-						</OnPaneInit>
-
+					<MissionIntro descID="descMissionIntro">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Mission")
@@ -274,11 +270,7 @@
 						</Actions>
 					</MissionIntro>
 
-					<Mission>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descMissionBriefing)
-						</OnPaneInit>
-
+					<Mission descID="descMissionBriefing">
 						<Actions>
 							<Action id="actionAccept" default="1">
 								(block (arcoVaughn target launcherItem missileTypes bestType)
@@ -363,11 +355,7 @@
 						</Actions>
 					</MissionAccept>
 
-					<MissionDecline>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descMissionDecline)
-						</OnPaneInit>
-
+					<MissionDecline descID="descMissionDecline">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
@@ -395,11 +383,7 @@
 						</Actions>
 					</MissionSuccess>
 
-					<MissionInProgress>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descMissionHiding)
-						</OnPaneInit>
-
+					<MissionInProgress descID="descMissionHiding">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
@@ -411,11 +395,7 @@
 						</Actions>
 					</MissionInProgress>
 
-					<MeetingHallHiding>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descMissionHiding)
-						</OnPaneInit>
-
+					<MeetingHallHiding descID="descMissionHiding">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
@@ -451,11 +431,7 @@
 						</Actions>
 					</MeetingHallFearful>
 
-					<MeetingHallHappy>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descMeetingHallHappy)
-						</OnPaneInit>
-
+					<MeetingHallHappy descID="descMeetingHallHappy">
 						<Actions>
 							<Action id="actionLeave" default="1" cancel="1">
 								(scrShowPane gScreen "Default")

@@ -172,11 +172,8 @@
 					</Action>
 				</Actions>
 			</Default>
-			<Done>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descDone)
-				</OnPaneInit>
 
+			<Done descID="descDone">
 				<Actions>
 					<Action id="actionLeave" default="1" cancel="1">
 						(block Nil

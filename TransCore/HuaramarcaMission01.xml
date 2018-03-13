@@ -204,11 +204,7 @@
 		</InitialPane>
 
 		<Panes>
-			<Default>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descInject)
-				</OnPaneInit>
-
+			<Default descID="descInject">
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
 						(block Nil
@@ -257,11 +253,7 @@
 				</Actions>
 			</Recover>
 
-			<Empty>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descEmpty)
-				</OnPaneInit>
-
+			<Empty descID="descEmpty">
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
 						(scrExitScreen gScreen)

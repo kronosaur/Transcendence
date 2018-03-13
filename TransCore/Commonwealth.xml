@@ -121,11 +121,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionMainHall" default="1">
 								(rpgMissionAssignment {
@@ -228,11 +224,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionUndock" cancel="1">
 								<Exit/>
@@ -390,11 +382,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionMainHall" default="1">
 								(rpgMissionAssignment {
@@ -558,11 +546,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionCommoditiesExchange">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
@@ -818,11 +802,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionUndock" cancel="1">
 								<Exit/>
@@ -1726,11 +1706,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionMainHall" default="1">
 								(rpgMissionAssignment {

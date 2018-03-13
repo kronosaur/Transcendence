@@ -111,11 +111,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionCentralCommand" default="1">
 								(block (
@@ -304,11 +300,7 @@
 			<Main>
 
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descDefault)
-						</OnPaneInit>
-
+					<Default descID="descDefault">
 						<Actions>
 							<Action id="actionBridge" default="1">
 								(scrShowPane gScreen "Bridge")

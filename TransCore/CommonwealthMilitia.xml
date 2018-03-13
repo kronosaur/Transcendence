@@ -302,11 +302,7 @@
 
 					</Default>
 
-					<OfficersClub>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descOfficersClub)
-						</OnPaneInit>
-
+					<OfficersClub descID="descOfficersClub">
 						<Actions>
 							<Action id="actionBar" default="1">
 								(if (ls (plyGetCredits gPlayer) 5)

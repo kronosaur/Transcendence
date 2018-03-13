@@ -193,11 +193,7 @@
 		</Display>
 		
 		<Panes>
-			<Default>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'neurohack.welcome gData)
-				</OnPaneInit>
-			
+			<Default descID="neurohack.welcome">
 				<Actions>
 					<Action id="actionIncrease" prevKey="1">
 						(scrIncData gScreen 'viralLoad)
@@ -225,11 +221,7 @@
 				</Actions>
 			</Default>
 			
-			<Success>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'neurohack.success)
-				</OnPaneInit>
-				
+			<Success descID="neurohack.success">
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
 						(block Nil
@@ -352,11 +344,7 @@
 		</Display>
 		
 		<Panes>
-			<Default>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descNeurohackWelcome gData)
-				</OnPaneInit>
-				
+			<Default descID="descNeurohackWelcome">
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
 						(scrExitScreen gScreen)

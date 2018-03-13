@@ -200,11 +200,7 @@
 						</Actions>
 					</Default>
 						
-					<CustomWorkIntro>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descCustomWorkIntro)
-						</OnPaneInit>
-				
+					<CustomWorkIntro descID="descCustomWorkIntro">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil

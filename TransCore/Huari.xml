@@ -143,11 +143,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionGrandHall" default="1">
 								(rpgMissionAssignment {
@@ -301,11 +297,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionGrandHall" default="1">
 								(rpgMissionAssignment {

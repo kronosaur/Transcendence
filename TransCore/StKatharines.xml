@@ -921,11 +921,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionInformation" default="1">
 								<ShowPane pane="Information"/>
@@ -941,11 +937,7 @@
 						</Actions>
 					</Default>
 					
-					<Information>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descInformation)
-						</OnPaneInit>
-						
+					<Information descID="descInformation">
 						<Actions>
 							<Action id="actionInfoLike">
 								<ShowPane pane="Info1"/>
@@ -965,11 +957,7 @@
 						</Actions>
 					</Information>
 					
-					<Info1>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descInfo1)
-						</OnPaneInit>
-						
+					<Info1 descID="descInfo1">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								<ShowPane pane="Info1B"/>
@@ -977,11 +965,7 @@
 						</Actions>
 					</Info1>
 					
-					<Info1B>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descInfo1b)
-						</OnPaneInit>
-						
+					<Info1B descID="descInfo1b">
 						<Actions>
 							<Action id="actionDone" default="1" cancel="1">
 								<ShowPane pane="Information"/>
@@ -989,11 +973,7 @@
 						</Actions>
 					</Info1B>
 					
-					<Info2>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descInfo2)
-						</OnPaneInit>
-						
+					<Info2 descID="descInfo2">
 						<Actions>
 							<Action id="actionDone" default="1" cancel="1">
 								<ShowPane pane="Information"/>
@@ -1001,11 +981,7 @@
 						</Actions>
 					</Info2>
 					
-					<Info3>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descInfo3)
-						</OnPaneInit>
-						
+					<Info3 descID="descInfo3">
 						<Actions>
 							<Action id="actionDone" default="1" cancel="1">
 								<ShowPane pane="Information"/>
@@ -1013,11 +989,7 @@
 						</Actions>
 					</Info3>
 					
-					<Pub>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descPub)
-						</OnPaneInit>
-						
+					<Pub descID="descPub">
 						<Actions>
 							<Action id="actionBar" default="1">
 								(if (geq (plyGetCredits gPlayer) 10)
@@ -1051,17 +1023,12 @@
 						</Actions>
 					</Story>
 					
-					<NoMoney>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descNoMoney)
-						</OnPaneInit>
-
+					<NoMoney descID="descNoMoney">
 						<Actions>
 							<Action id="actionLeave" default="1" cancel="1">
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
-
 					</NoMoney>
 				</Panes>
 			</Main>
@@ -1180,11 +1147,7 @@
 			>
 		
 		<Panes>
-			<Default>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descWelcome)
-				</OnPaneInit>
-
+			<Default descID="descWelcome">
 				<Actions>
 					<Action id="actionParliament">
 						(scrShowScreen gScreen &dsStKatsArcologyParliament;)
@@ -1247,11 +1210,7 @@
 		</Display>
 
 		<Panes>
-			<Default>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descParliamentQuarter)
-				</OnPaneInit>
-				
+			<Default descID="descParliamentQuarter">
 				<Actions>
 					<Action id="actionParliament" default="1">
 						<ShowPane pane="Parliament"/>
@@ -1353,11 +1312,7 @@
 		</Display>
 
 		<Panes>
-			<Default>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descCommerceQuarter)
-				</OnPaneInit>
-				
+			<Default descID="descCommerceQuarter">
 				<Actions>
 					<Action id="actionCommoditiesExchange" default="1">
 						(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
@@ -1381,11 +1336,7 @@
 				</Actions>
 			</Default>
 			
-			<IncandescentExports>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descIncandescentExports)
-				</OnPaneInit>
-
+			<IncandescentExports descID="descIncandescentExports">
 				<Actions>
 					<Action name="Buy Items" default="1" key="B">
 						(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
@@ -1452,11 +1403,7 @@
 		</Display>
 
 		<Panes>
-			<Default>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descUniversityQuarter)
-				</OnPaneInit>
-
+			<Default descID="descUniversityQuarter">
 				<Actions>
 					<Action id="actionEngineering" default="1">
 						<ShowPane pane="Engineering"/>
@@ -1654,11 +1601,7 @@
 		</Display>
 
 		<Panes>
-			<Default>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descArtsQuarter)
-				</OnPaneInit>
-				
+			<Default descID="descArtsQuarter">
 				<Actions>
 					<Action id="actionVictorianClub" default="1">
 						(scrShowScreen gScreen "&dsCommonwealthNightclub;")

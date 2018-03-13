@@ -323,11 +323,7 @@
 			nestedScreen="true"
 			>
 		<Panes>
-			<Default>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descIntro)
-				</OnPaneInit>
-
+			<Default descID="descIntro">
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
 						(scrShowPane gScreen 'Install)
@@ -372,11 +368,7 @@
 				</Actions>
 			</Install>
 
-			<InstallSuccess>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descInstallComplete)
-				</OnPaneInit>
-
+			<InstallSuccess descID="descInstallComplete">
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
 						(scrExitScreen gScreen 'forceUndock)
@@ -384,11 +376,7 @@
 				</Actions>
 			</InstallSuccess>
 
-			<InstallDeclined>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descComeBackLater)
-				</OnPaneInit>
-
+			<InstallDeclined descID="descComeBackLater">
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
 						(block ()

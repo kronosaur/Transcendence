@@ -197,11 +197,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionUndock" cancel="1">
 								<Exit/>
@@ -213,11 +209,16 @@
 		</DockScreens>
 
         <Language>
-			<Text id="actionUndock">"[U]ndock"</Text>
+			<Text id="actionUndock">[U]ndock</Text>
 
-			<Text id="descWelcome">"You are in the main hall of a Korolov Shipping Company station. The station is under construction."</Text>
+			<Text id="descWelcome">
+
+				You are in the main hall of a Korolov Shipping Company station. 
+				The station is under construction.
+
+			</Text>
 			<Text id="core.mapDesc">
-                "Under construction"
+                Under construction
             </Text>
         </Language>
 	</StationType>

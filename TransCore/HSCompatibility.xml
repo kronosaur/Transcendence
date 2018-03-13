@@ -2958,11 +2958,7 @@
 			>
 		
 		<Panes>
-			<Default>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descWelcome)
-				</OnPaneInit>
-
+			<Default descID="descWelcome">
 				<Actions>
 					<Action id="actionDockServices" default="1">
 						(rpgDockServices gPlayerShip {

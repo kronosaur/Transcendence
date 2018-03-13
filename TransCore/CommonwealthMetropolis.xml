@@ -306,11 +306,7 @@
 			>
 
 		<Panes>
-			<Default>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descWelcome)
-				</OnPaneInit>
-
+			<Default descID="descWelcome">
 				<Actions>
 					<Action id="actionBar" default="1">
 						(if (geq (plyGetCredits gPlayer) 5)
@@ -332,19 +328,13 @@
 				</Actions>
 			</Default>
 
-			<NoMoney>
-				<OnPaneInit>
-					(scrSetDescTranslate gScreen 'descNoMoney)
-				</OnPaneInit>
-
+			<NoMoney descID="descNoMoney">
 				<Actions>
 					<Action id="actionLeave" default="1" cancel="1">
 						<Exit/>
 					</Action>
 				</Actions>
-
 			</NoMoney>
-
 		</Panes>
 
 		<Language>

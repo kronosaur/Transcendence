@@ -741,11 +741,7 @@
 
 					</Default>
 
-					<NoMoreMelees>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descNoMoreMelees)
-						</OnPaneInit>
-
+					<NoMoreMelees descID="descNoMoreMelees">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
@@ -753,11 +749,7 @@
 						</Actions>
 					</NoMoreMelees>
 
-					<MeleeBusy>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descMeleeBusy)
-						</OnPaneInit>
-
+					<MeleeBusy descID="descMeleeBusy">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
@@ -765,11 +757,7 @@
 						</Actions>
 					</MeleeBusy>
 
-					<KatamiIntro>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descKatamiIntro1)
-						</OnPaneInit>
-
+					<KatamiIntro descID="descKatamiIntro1">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen 'KatamiIntro2)
@@ -777,11 +765,7 @@
 						</Actions>
 					</KatamiIntro>
 
-					<KatamiIntro2>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descKatamiIntro2)
-						</OnPaneInit>
-
+					<KatamiIntro2 descID="descKatamiIntro2">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
@@ -1059,11 +1043,7 @@
 						</Actions>
 					</GladiatorWinner>
 					
-					<GladiatorDraw>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descGladiatorDraw)
-						</OnPaneInit>
-					
+					<GladiatorDraw descID="descGladiatorDraw">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(scrExitScreen gScreen)
@@ -1321,11 +1301,7 @@
 						</Actions>
 					</Loser>
 
-					<FirstFight>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descFirstFight)
-						</OnPaneInit>
-
+					<FirstFight descID="descFirstFight">
 						<Actions>
 							<Action id="actionSign">
 								(block Nil

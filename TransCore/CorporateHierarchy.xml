@@ -2941,11 +2941,7 @@
 
 			<QuotaExceeded>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descQuotaExceeded)
-						</OnPaneInit>
-
+					<Default descID="descQuotaExceeded">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowScreen gScreen "Main")

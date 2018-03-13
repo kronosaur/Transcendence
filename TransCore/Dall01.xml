@@ -473,11 +473,7 @@
 						</Actions>
 					</Default>
 
-					<OpenContainment>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descOpen)
-						</OnPaneInit>
-
+					<OpenContainment descID="descOpen">
 						<Actions>
 							<Action id="actionUndock" default="1" cancel="1">
 								(scrExitScreen gScreen)

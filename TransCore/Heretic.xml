@@ -394,11 +394,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionMainHall" default="1">
 								(rpgMissionAssignment {
@@ -524,11 +520,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionResearchLevel" default="1">
 								(rpgMissionAssignment {
@@ -645,11 +637,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionResearchLab" default="1">
 								(rpgMissionAssignment {
@@ -675,11 +663,7 @@
 						</Actions>
 					</Default>
 
-					<ExchangeIntro>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descExchangeIntro)
-						</OnPaneInit>
-
+					<ExchangeIntro descID="descExchangeIntro">
 						<Actions>
 							<Action id="actionContinue" cancel="1" default="1">
 								(block Nil
@@ -927,11 +911,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionResearchLab" default="1">
 								(rpgMissionAssignment {
@@ -1042,11 +1022,7 @@
 				</InitialPane>
 
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionCommandCenter" default="1">
 								(rpgMissionAssignment {
@@ -1061,11 +1037,7 @@
 						</Actions>
 					</Default>
 
-					<GetOut>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descGetOut)
-						</OnPaneInit>
-
+					<GetOut descID="descGetOut">
 						<Actions>
 							<Action id="actionUndock" cancel="1">
 								<Exit/>

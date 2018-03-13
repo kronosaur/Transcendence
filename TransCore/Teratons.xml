@@ -346,11 +346,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-						
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionUndock" default="1" cancel="1">
 								<Exit/>
@@ -539,11 +535,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionFabricatorChamber" default="1">
 								<Navigate screen="Factory"/>
@@ -670,11 +662,7 @@
 						</Actions>
 					</Result>
 
-					<AngryTentacles>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descAngryTentacles)
-						</OnPaneInit>
-
+					<AngryTentacles descID="descAngryTentacles">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
@@ -874,11 +862,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionResearchChamber" default="1">
 								(rpgMissionAssignment {
@@ -997,11 +981,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionCommoditiesExchange">
 								(if (not (intTeratonMugging))

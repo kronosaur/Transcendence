@@ -105,11 +105,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionCommoditiesExchange" default="1">
 								(switch
@@ -128,11 +124,7 @@
 						</Actions>
 					</Default>
 
-					<ExchangeIntro>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descExchangeIntro)
-						</OnPaneInit>
-
+					<ExchangeIntro descID="descExchangeIntro">
 						<Actions>
 							<Action id="actionContinue" cancel="1" default="1">
 								(block Nil
@@ -268,11 +260,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionCommoditiesExchange" default="1">
 								(switch
@@ -302,11 +290,7 @@
 						</Actions>
 					</Default>
 
-					<ExchangeIntro>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descExchangeIntro)
-						</OnPaneInit>
-
+					<ExchangeIntro descID="descExchangeIntro">
 						<Actions>
 							<Action id="actionContinue" cancel="1" default="1">
 								(block Nil
@@ -319,11 +303,7 @@
 						</Actions>
 					</ExchangeIntro>
 
-					<DockServicesGreeter>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descDockServicesGreeter)
-						</OnPaneInit>
-
+					<DockServicesGreeter descID="descDockServicesGreeter">
 						<Actions>
 							<Action id="actionContinue" cancel="1" default="1">
 								(block Nil

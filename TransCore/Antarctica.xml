@@ -205,11 +205,7 @@
 				</OnScreenInit>
 
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionBridge" default="1">
 								(rpgMissionAssignment {

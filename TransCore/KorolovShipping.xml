@@ -260,11 +260,7 @@
 		<DockScreens>
 			<Dispatch>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descWelcome)
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionOperations" default="1">
 								(block (
@@ -382,11 +378,7 @@
 				</Display>
 
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descSelectOption)
-						</OnPaneInit>
-
+					<Default descID="descSelectOption">
 						<Actions>
 							<Action id="actionRecord">
 								(scrShowScreen gScreen "ServiceRecord")
