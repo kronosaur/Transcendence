@@ -117,7 +117,7 @@
 						(transData {
 							currency:currency
 							cost:cost
-							deconCost:(fmt currency cost)
+							deconCost:(fmtCurrency currency cost)
 							})
 						)
 						
@@ -173,8 +173,7 @@
 			<Text id="core.cannotAffordDecon">
 
 				The dock master stops your ship due to high radiation levels. 
-				Unfortunately, you cannot afford the %deconCost% cost for 
-				decontamination.
+				Unfortunately, you cannot afford %deconCost% for decontamination.
 
 			</Text>
 		</Language>
