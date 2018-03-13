@@ -626,14 +626,7 @@
 	
 	<DockScreen UNID="&dsPilgrimBeringStation;">
 		<Panes>
-			<Default>
-				<OnPaneInit>
-					(scrSetDesc gScreen (cat
-						"You are docked with a Commonwealth residential station.\n\n"
-						"You feel nervous and uneasy as you walk through the familiar halls of the station."
-						))
-				</OnPaneInit>
-
+			<Default descID="descWelcome">
 				<Actions>
 					<Action name="Go to Level 5" key="G" default="1">
 						(scrShowPane gScreen "Level5")
@@ -645,14 +638,7 @@
 				</Actions>
 			</Default>
 
-			<Level5>
-				<OnPaneInit>
-					(scrSetDesc gScreen (cat
-						"Full of great trepidation, you take the lift to level 5. You are in a non-descript residential corridor with "
-						"dozens of doors, each leading to a different housing unit."
-						))
-				</OnPaneInit>
-
+			<Level5 descID="descLevel5">
 				<Actions>
 					<Action name="Go to Unit 224D" key="G" default="1">
 						(scrShowPane gScreen "Unit224D")
@@ -666,13 +652,15 @@
 
 			<Unit224D>
 				<OnPaneInit>
-					(scrSetDesc gScreen (cat
-						"You stop in front of the closed door of unit 224D. Your heart is beating hard and your hands tremble. "
-						"From inside the unit you hear a small girl crying. Her " (if (eq (plyGetGenome gPlayer) 'humanMale) "mother" "father") " tries "
-						"to reassure her, but with no result.\n\n"
-						"For a second your hand reaches for the door controls, but then you remember your promise to Domina. Soon your anxiety fades and "
-						"you leave knowing that you are doing the right thing."
-						))
+					(scrSetDescTranslate gScreen 'descUnit224D {
+						parent: 
+							(switch
+								(= (plyGetGenome gPlayer) 'humanMale)
+									(scrTranslate gScreen 'textMother)
+
+								(scrTranslate gScreen 'textFather)
+								)
+						})
 				</OnPaneInit>
 
 				<Actions>
@@ -682,6 +670,38 @@
 				</Actions>
 			</Unit224D>
 		</Panes>
+
+		<Language>
+			<Text id="descWelcome">
+
+				You are docked with a Commonwealth residential station.
+
+				You feel nervous and uneasy as you walk through the familiar 
+				halls of the station.
+
+			</Text>
+			<Text id="descLevel5">
+
+				Full of great trepidation, you take the lift to level 5. You 
+				are in a non-descript residential corridor with dozens of doors,
+				each leading to a different housing unit.
+
+			</Text>
+			<Text id="descUnit224D">
+
+				You stop in front of the closed door of unit 224D. Your heart 
+				is beating hard and your hands tremble.	From inside the unit 
+				you hear a small girl crying. Her %parent% tries to reassure 
+				her, but with no result.
+
+				For a second your hand reaches for the door controls, but then 
+				you remember your promise to Domina. Soon your anxiety fades and 
+				you leave knowing that you are doing the right thing.
+
+			</Text>
+			<Text id="textFather">father</Text>
+			<Text id="textMother">mother</Text>
+		</Language>
 	</DockScreen>
 
 <!-- GLOBALS -->

@@ -340,11 +340,7 @@
 				</OnScreenInit>
 
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDesc gScreen "Welcome to Rasiermesser! We are the leading manufacturer of innovative weapon systems in Human Space.")
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action name="Research Lab" default="1" key="L">
 								(if (objGetData gSource "Dvalin" )
@@ -664,6 +660,12 @@
 		</DockingPorts>
 
 		<Language>
+			<Text id="descWelcome">
+
+				Welcome to Rasiermesser! We are the leading manufacturer of 
+				innovative weapon systems in Human Space.
+
+			</Text>
 			<Text id="descNoInstall">
 				(cat
 					"We only install Rasiermesser items. "

@@ -1140,11 +1140,7 @@
 						</Actions>
 					</Default>
 
-					<DownloadComplete>
-						<OnPaneInit>
-							(scrSetDesc gScreen "Download complete.")
-						</OnPaneInit>
-
+					<DownloadComplete descID="descDownloadComplete">
 						<Actions>
 							<Action name="Undock" key="U" default="1" cancel="1">
 								<Exit/>
@@ -1161,6 +1157,10 @@
 			<Port x="24"	y="0" />
 			<Port x="-24"	y="0" />
 		</DockingPorts>
+
+		<Language>
+			<Text id="descDownloadComplete">Download complete.</Text>
+		</Language>
 	</StationType>
 
 	<!-- Svalbard Wreck -->

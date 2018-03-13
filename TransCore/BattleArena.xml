@@ -1051,16 +1051,7 @@
 						</Actions>
 					</GladiatorDraw>
 
-					<GladiatorLoser>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"Mr. Katami is surprised, though pleased, to see you again:\n\n"
-								"\"I knew that opponent would be too much for you! I should have said something! "
-								"I am glad to see you alive, though. Don't let this setback stop you. You still "
-								"have a chance to improve and challenge The Slicer.\""
-								))
-						</OnPaneInit>
-
+					<GladiatorLoser descID="descGladiatorLoser">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
@@ -1073,15 +1064,7 @@
 						</Actions>
 					</GladiatorLoser>
 
-					<NoMoreGladiators>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"Katami looks disappointed:\n\n"
-								"\"I'm sorry, but I was not able to teach you properly. "
-								"The crowd no longer wants to see you fight.\""
-								))
-						</OnPaneInit>
-
+					<NoMoreGladiators descID="descNoMoreGladiators">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
@@ -1092,15 +1075,7 @@
 						</Actions>
 					</NoMoreGladiators>
 
-					<ChallengerLoser>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"Mr. Katami is surprised, though pleased, to see you again:\n\n"
-								"\"Too bad. The Slicer will retain his title. "
-								"Well, at least you're still alive! That's something.\""
-								))
-						</OnPaneInit>
-
+					<ChallengerLoser descID="descChallengerLoser">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
@@ -1114,16 +1089,7 @@
 						</Actions>
 					</ChallengerLoser>
 
-					<ChallengerIntro>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"\"Remember everything that I have taught you&#x97;you will need all your skills now.\n\n"
-								"\"After the last battle you are the #2 ranked gladiator in the Arena! Only one step remains: "
-								"You must challenge The Slicer! If you win, you will become the Legendary Hero of the Arena.\n\n"
-								"\"Go and prepare yourself and your ship! Come back ready to fight!\""
-								))
-						</OnPaneInit>
-
+					<ChallengerIntro descID="descChallengerIntro">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
@@ -1648,6 +1614,43 @@
 				"I knew that opponent would be hard to defeat!
 				But you survived and now we can learn from our mistake. Perhaps you need to
 				upgrade your weapons."
+
+			</Text>
+			<Text id="descGladiatorLoser">
+
+				Mr. Katami is surprised, though pleased, to see you again:
+
+				"I knew that opponent would be too much for you! I should have said something! 
+				I am glad to see you alive, though. Don't let this setback stop you. You still 
+				have a chance to improve and challenge The Slicer.
+
+			</Text>
+			<Text id="descNoMoreGladiators">
+
+				Katami looks disappointed:
+
+				"I'm sorry, but I was not able to teach you properly. The crowd 
+				no longer wants to see you fight."
+
+			</Text>
+			<Text id="descChallengerLoser">
+
+				Mr. Katami is surprised, though pleased, to see you again:
+
+				"Too bad. The Slicer will retain his title. Well, at least 
+				you're still alive! That's something."
+
+			</Text>
+			<Text id="descChallengerIntro">
+
+				"Remember everything I have taught you&mdash;you will need 
+				all your skills now.
+
+				"After the last battle you are the #2 ranked gladiator in the 
+				Arena! Only one step remains: You must challenge The Slicer! If 
+				you win, you will become the Legendary Hero of the Arena.
+
+				"Go and prepare yourself and your ship! Come back ready to fight!"
 
 			</Text>
 			<Text id="descFirstFight">

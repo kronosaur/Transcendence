@@ -253,11 +253,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDesc gScreen "Welcome to Adventurer Outfitters! We've been serving mercenaries, explorers, and pilgrims since 2311.")
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionDockServices" default="1">
 								(rpgDockServices gPlayerShip {
@@ -279,7 +275,6 @@
 					</Default>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
 		<DockingPorts>
@@ -292,6 +287,15 @@
 			<Port x="30"	y="-111" />
 			<Port x="-30"	y="-111" />
 		</DockingPorts>
+
+		<Language>
+			<Text id="descWelcome">
+
+				Welcome to Adventurer Outfitters! We've been serving mercenaries,
+				explorers, and pilgrims since 2311.
+
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Armor Dealer -->
@@ -544,11 +548,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDesc gScreen "You are docked at an arms dealer station.")
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action name="[W]eapons" default="1">
 								(scrShowScreen gScreen &dsRPGManageWeapons; {
@@ -566,13 +566,10 @@
 							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
 		<DockingPorts>
@@ -587,6 +584,10 @@
 		</DockingPorts>
 
         <Language>
+			<Text id="descWelcome">
+				You are docked at an arms dealer station.
+			</Text>
+
             <Text id="core.mapDesc">"Buys and sells weapons and ammo &mdash; Installs purchased items &mdash; Buys damaged weapons"</Text>
         </Language>
 	</StationType>
@@ -1515,11 +1516,7 @@
 		<DockScreens>
 			<Main>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDesc gScreen "Welcome to Makayev-Energia!")
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action id="actionDockServices" default="1">
 								(rpgDockServices gPlayerShip {
@@ -1563,6 +1560,9 @@
 		</DockingPorts>
 
 		<Language>
+			<Text id="descWelcome">
+				Welcome to Makayev-Energia!
+			</Text>
 			<Text id="descNoInstall">
 				(cat
 					"We only install Makayev items. "

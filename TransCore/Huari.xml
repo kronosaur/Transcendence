@@ -162,14 +162,7 @@
 
 			<TempleDestroyed>
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"You find Apotamo's broken body among the ruins of the temple. He struggles to whisper in your ear:\n\n"
-								"\"I was wrong. Only darkness awaits.\""
-								))
-						</OnPaneInit>
-
+					<Default descID="descTempleDestroyed">
 						<Actions>
 							<Action id="actionUndock" default="1" cancel="1">
 								<Exit/>
@@ -185,11 +178,23 @@
 			<Text id="actionUndock">[U]ndock</Text>
 
 			<Text id="descWelcome">
+
 				The Huari temple is dark and cavernous. Huari men and women dressed in
 				long, colorful clothing swarm around you as you enter. They are curious but shy.
+
 			</Text>
-			<Text id="descNoMissions">
-				"\"Welcome, pilgrim! All who are peaceful shall be offered peace in return.\""
+			<String id="descNoMissions">
+
+				"Welcome, pilgrim! All who are peaceful shall be offered peace in return."
+
+			</String>
+			<Text id="descTempleDestroyed">
+
+				You find Apotamo's broken body among the ruins of the temple. He struggles 
+				to whisper in your ear:
+
+				"I was wrong. Only darkness awaits."
+
 			</Text>
 		</Language>
 
@@ -434,14 +439,7 @@
 			<Main>
 
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat 
-								"The Huari habitat is filled with Huari men and women dressed in "
-								"long, colorful clothing."
-								))
-						</OnPaneInit>
-
+					<Default descID="descWelcome">
 						<Actions>
 							<Action name="Community Hall" key="C" default="1">
 								(scrShowPane gScreen "CommunityHall")
@@ -493,6 +491,14 @@
 			<Port x="-86"	y="0" />
 		</DockingPorts>
 
+		<Language>
+			<Text id="descWelcome">
+
+				The Huari habitat is filled with Huari men and women dressed in 
+				long, colorful clothing.
+
+			</Text>
+		</Language>
 	</StationType>
 
 <!-- SHIP CLASSES -->

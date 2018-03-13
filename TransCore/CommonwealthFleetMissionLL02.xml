@@ -236,24 +236,26 @@
 
 		<DockScreens>
 			<Main>
-
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDesc gScreen "Smoke, debris, and blast marks remain after a ferocious battle. No one is left alive.")
-						</OnPaneInit>
-
+					<Default descID="descDefault">
 						<Actions>
 							<Action name="Undock" cancel="1" default="1" key="U">
 								<Exit/>
 							</Action>
 						</Actions>
-
 					</Default>
 				</Panes>
 			</Main>
 		</DockScreens>
 
+		<Language>
+			<Text id="descDefault">
+
+				Smoke, debris, and blast marks remain after a ferocious battle.
+				No one is left alive.
+
+			</Text>
+		</Language>
 	</StationType>
 
 </TranscendenceModule>
