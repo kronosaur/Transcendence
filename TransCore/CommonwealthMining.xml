@@ -409,45 +409,49 @@
 			<Text id="actionUndock">"[U]ndock"</Text>
 
 			<Text id="descNoDepositsInSystem">
-				(cat
-					"You are docked at a mining colony. A handful of miners tend to their "
-					"ships, but most are sitting around waiting for work that never comes.\n\n"
+
+				You are docked at a mining colony. A handful of miners tend to 
+				their ships, but most are sitting around waiting for work that 
+				never comes.
 					
-					"Empty loading bays are a silent reminder of past days."
-					)
+				Empty loading bays are a silent reminder of past days.
+
 			</Text>
 			<Text id="descAllDepositsFound">
-				(cat
-					"You are docked at a mining colony. Dozens of miners prepare their "
-					"ships while others unload ore in cavernous bays.\n\n"
+
+				You are docked at a mining colony. Dozens of miners prepare their
+				ships while others unload ore in cavernous bays.
 					
-					"But the prospectors looking for undiscovered fields have all left "
-					"for more promising systems."
-					)
+				But the prospectors looking for undiscovered fields have all left
+				for more promising systems.
+
 			</Text>
 			<Text id="descOneUndiscoveredDeposit">
-				(cat
-					"You are docked at a mining colony. Dozens of prospectors are working "
-					"to outfit their ships.\n\n"
+
+				You are docked at a mining colony. Dozens of prospectors are 
+				working to outfit their ships.
 					
-					"Everyone is talking about a vast ore deposit that has yet to be "
-					"found."
-					)
+				Everyone is talking about a vast ore deposit that has yet to be 
+				found.
+
 			</Text>
 			<Text id="descMultipleUndiscoveredDeposits">
-				(cat
-					"You are docked at a mining colony. There is a frenzy of activity as "
-					"miners and prospectors outfit their ships for deep space exploration.\n\n"
+
+				You are docked at a mining colony. There is a frenzy of activity 
+				as miners and prospectors outfit their ships for deep space 
+				exploration.
 					
-					"Rumors fly about vast ore deposits out among the asteroid fields, "
-					"but no one has yet found any of them."
-					)
+				Rumors fly about vast ore deposits out among the asteroid fields, 
+				but no one has yet found any of them.
+
 			</Text>
 			<Text id="descNoMissions">
+
 				The colony supervisor is working at his station. The comms channels
 				are quiet and he stops to chat:
 
 				"It's calm now, but I've been hearing a lot of military chatter lately."
+
 			</Text>
 			<Text id="descNoInstall">
 				(cat
@@ -796,20 +800,20 @@
 					)
 			</Text>
 			<Text id="AcceptReply">
-				(cat
-					"\"We're agreed then. We'll program the miner's location into your ship's computer. "
-					"Just follow your directional indicator and you'll get there. Good luck!\""
-					)
+
+				"We're agreed then. We'll program the miner's location into 
+				your ship's computer. Just follow your directional indicator and 
+				you'll get there. Good luck!"
+
 			</Text>
-			<Text id="DeclineReply">
-				(cat
-					"\"Ah, Hell! What are you doing here then? Stop wasting my time!\""
-					)
-			</Text>
+			<String id="DeclineReply">
+				"Ah, Hell! What are you doing here then? Stop wasting my time!"
+			</String>
 			<Text id="InProgress">
-				(cat
-					"\"What's wrong? Are those warlords too tough for you? Get back out there and finish the job!\""
-					)
+
+				"What's wrong? Are those warlords too tough for you? Get back 
+				out there and finish the job!"
+
 			</Text>
 			<Text id="SuccessDebrief">
 				(cat
@@ -818,12 +822,13 @@
 					)
 			</Text>
 			<Text id="FailureDebrief">
-				(cat
-					"\"You've let us all down! We thought you could handle a few warlords; I guess we were wrong.\""
-					)
+
+				"You've let us all down! We thought you could handle a few 
+				warlords; I guess we were wrong."
+
 			</Text>
 			<Text id="SuccessMsg">
-				"Mission complete!"
+				Mission complete!
 			</Text>
 
 			<Text id="msgHelp">
@@ -1007,20 +1012,20 @@
 					)
 			</Text>
 			<Text id="AcceptReply">
-				(cat
-					"\"We're agreed then. We'll program the asteroid's location into your ship's computer. "
-					"Just follow your directional indicator and you'll get there. Good luck!\""
-					)
+
+				"We're agreed then. We'll program the asteroid's location into 
+				your ship's computer. Just follow your directional indicator and 
+				you'll get there. Good luck!"
+
 			</Text>
-			<Text id="DeclineReply">
-				(cat
-					"\"Ah, Hell! What are you doing here then? Stop wasting my time!\""
-					)
-			</Text>
+			<String id="DeclineReply">
+				"Ah, Hell! What are you doing here then? Stop wasting my time!"
+			</String>
 			<Text id="InProgress">
-				(cat
-					"\"What's wrong? Are those illegals too tough for you? Get back out there and finish the job!\""
-					)
+
+				"What's wrong? Are those illegals too tough for you? Get back 
+				out there and finish the job!"
+
 			</Text>
 			<Text id="SuccessDebrief">
 				(cat
@@ -1029,12 +1034,13 @@
 					)
 			</Text>
 			<Text id="FailureDebrief">
-				(cat
-					"\"You've let us all down! We thought you could handle a few illegals; I guess we were wrong.\""
-					)
+
+				"You've let us all down! We thought you could handle a few 
+				illegals; I guess we were wrong."
+
 			</Text>
 			<Text id="SuccessMsg">
-				"Mission complete!"
+				Mission complete!
 			</Text>
 		</Language>
 	</MissionType>

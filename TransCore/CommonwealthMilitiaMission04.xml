@@ -133,19 +133,23 @@ priority="10"
 			</Text>
 
 			<Text id="Intro">
-				(cat
-					"You are in the command center surrounded by wall maps and scanner displays. "
-					"The commanding officer of the fortress looks up from his charts and asks, "
-					"\"Are you looking for a mission, captain?\""
-					)
+
+				You are in the command center surrounded by wall maps and scanner 
+				displays. The commanding officer of the fortress looks up from 
+				his charts:
+
+				"Are you looking for a mission, captain?"
+
 			</Text>
 
 			<Text id="Briefing">
-				(cat
-					"\"We're receiving a distress signal from a super-freighter at the edge of the system. "
-					"Check it out, and if necessary, escort the freighter back. We'll feed the coordinates "
-					"into your computer. What are you standing around for? Get moving!\""
-					)
+
+				"We're receiving a distress signal from a super-freighter at the 
+				edge of the system. Check it out, and if necessary, escort the 
+				freighter back. We'll feed the coordinates into your computer.
+				
+				"What are you standing around for? Get moving!"
+
 			</Text>
 
 			<Text id="AcceptReply">

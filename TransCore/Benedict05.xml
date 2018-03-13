@@ -201,20 +201,17 @@
 						}
 					)
 			</Text>
-			<Text id="AcceptReply">
-				(cat
-					"\"Good luck, %name%!\""
-					)
-			</Text>
-			<Text id="DeclineReply">
-				(cat
-					"\"Alright, but don't take long. Something tells me we don't have much time.\""
-					)
-			</Text>
+			<String id="AcceptReply">
+				"Good luck, %name%!"
+			</String>
+			<String id="DeclineReply">
+				"Alright, but don't take long. Something tells me we don't have much time."
+			</String>
 			<Text id="InProgress">
-				(cat
-					"\"Something tells me we don't have much time. The sooner you reach Sandoval, the better!\""
-					)
+
+				"Something tells me we don't have much time. The sooner you reach 
+				Sandoval, the better!"
+
 			</Text>
 			<Text id="SuccessMsg">
 				""

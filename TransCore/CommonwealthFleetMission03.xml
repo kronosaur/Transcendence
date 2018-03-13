@@ -132,18 +132,20 @@
 					)
 			</Text>
 			<Text id="Intro">
-				(cat
-					"The XO walks up to you.\n\n"
 
-					"\"Good to see you pilot. We've got a mission for you.\""
-					)
+				The XO walks up to you.
+
+				"Good to see you pilot. We've got a mission for you."
+
 			</Text>
 			<Text id="Briefing">
-				(cat
-					"\"There's an Ares patrol inbound that wants to take a peek at us. "
-					"Your mission is to intercept and destroy the entire flight before "
-					"it can gate out of the system and report our location. Understood?\""
-					)
+
+				"There's an Ares patrol inbound that wants to take a peek at us. 
+				Your mission is to intercept and destroy the entire flight before 
+				it can gate out of the system and report our location.
+				
+				"Understood?"
+
 			</Text>
 			<Text id="AcceptReply">
 				"\"Good luck, %name%!\""

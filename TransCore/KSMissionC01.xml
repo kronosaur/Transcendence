@@ -296,20 +296,22 @@
 					)
 			</Text>
 			<Text id="Intro">
-				(cat
-					"As you enter the command center, you see several people gathered around a "
-					"central display table.\n\n"
+
+				As you enter the command center, you see several people gathered 
+				around a central display table. A woman approaches you:
 					
-					"A woman approaches you, \"We're planning a big attack on the Charon fortress "
-					"in this system and we could use all the help we can get. Are you...\""
-					)
+				"We're planning a big attack on the Charon fortress in this 
+				system and we could use all the help we can get. Are you..."
+
 			</Text>
 			<Text id="Briefing">
-				(cat
-					"Before she can finish, the alarms bleat and she turns back to the display table.\n\n"
 
-					"Her face goes white as she sees the mass of signals approaching the stations..."
-					)
+				Before she can finish, the alarms bleat and she turns back to 
+				the display table.
+
+				Her face goes white as she sees the mass of signals approaching 
+				the stations...
+
 			</Text>
 			<Text id="InProgress">
 				(msnTranslate gSource (cat "InProgress:" (msnGetData gSource 'state)) {

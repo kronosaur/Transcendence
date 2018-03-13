@@ -203,50 +203,54 @@
 					)
 			</Text>
 			<Text id="Intro">
-				(cat
-					"Benedict wears a quasi-military uniform without patches or insignia. "
-					"Skin-armor plates peek through his collar. He crosses his arms "
-					"and turns to look at you:\n\n"
+
+				Benedict wears a quasi-military uniform without patches or 
+				insignia. Skin-armor plates peek through his collar. He crosses 
+				his arms and turns to look at you:
 						
-					"\"I offer you training. Nothing more. Do what I say and "
-					"you'll be ready for your journey.\""
-					)
+				"I offer you training. Nothing more. Do what I say and you'll 
+				be ready for your journey."
+
 			</Text>
 			<Text id="Briefing">
-				(cat
-					"\"You've got a good ship. She'll take you where you need to go. "
-					"But you must learn to control her. You must fly better, faster, "
-					"and more accurately than your targets.\n\n"
+
+				"You've got a good ship. She'll take you where you need to go. 
+				But you must learn to control her. You must fly better, faster, 
+				and more accurately than your targets.
 					
-					"\"Do you want to practice combat maneuvers?\""
-					)
+				"Do you want to practice combat maneuvers?"
+
 			</Text>
-			<Text id="AcceptLabel">"\"[Y]es, I need practice.\""</Text>
+			<String id="AcceptLabel">"[Y]es, I need practice."</String>
 			<Text id="AcceptReply">
-				(cat
-					"\"I'll launch three autons&#x97;autonomous ships&#x97;for target practice.\n\n"
+
+				"I'll launch three autons&#x97;autonomous ships&#x97;for target 
+				practice.
 					
-					"\"Use the mouse to aim and [Ctrl] key to fire your primary weapon. You can also use the left-mouse button to fire and the right-mouse button to thrust. See if you can destroy them all.\n\n"
+				"Use the mouse to aim and [Ctrl] key to fire your primary weapon. 
+				You can also use the left-mouse button to fire and the right-mouse 
+				button to thrust. See if you can destroy them all.
 					
-					"\"Ready?\""
-					)
+				"Ready?"
+
 			</Text>
-			<Text id="DeclineLabel">"\"[N]o, thanks.\""</Text>
+			<String id="DeclineLabel">"[N]o, thanks."</String>
 			<Text id="DeclineReply">
-				(cat
-					"Benedict stares. A smile flashes for an instant.\n\n"
+
+				Benedict stares. A smile flashes for an instant.
 					
-					"\"Fine. You'll be working your weapons soon enough. "
-					"Meet me in the Matriarch's Chamber when you're ready to tackle something more dangerous.\""
-					)
+				"Fine. You'll be working your weapons soon enough. Meet me in 
+				the Matriarch's Chamber when you're ready to tackle something 
+				more dangerous."
+
 			</Text>
 			<Text id="InProgress">
-				(cat
-					"\"I guess I forgot to tell you they fire back. Don't worry: "
-					"they're nothing compared to what you'll face out there.\n\n"
+
+				"I guess I forgot to tell you they fire back. Don't worry: 
+				they're nothing compared to what you'll face out there.
 					
-					"\"Remember, use the [Ctrl] key to fire your primary weapon.\""
-					)
+				"Remember, use the [Ctrl] key to fire your primary weapon."
+
 			</Text>
 			<Text id="SuccessDebrief">
 				(cat
@@ -255,7 +259,7 @@
 					)
 			</Text>
 			<Text id="SuccessMsg">
-				"Mission complete!"
+				Mission complete!
 			</Text>
 			<Text id="AchievementDesc">
 				(cat "Destroyed Benedict's autons in " (unvGetElapsedGameTime (msnGetData gSource 'startTime) (msnGetData gSource 'endTime) 'display))

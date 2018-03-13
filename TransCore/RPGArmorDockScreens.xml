@@ -1508,13 +1508,13 @@
 				(cat "You must have a military ID to install " (itmGetName (@ gData 'armor) 0x80) ".")
 			</Text>
 			<Text id="descArmorIllegal">
-				(cat "We do not install illegal armor.")
+				We do not install illegal armor.
 			</Text>
 			<Text id="descNotEnoughRoom">
-				(cat
-					"There isn't enough room in your cargo hold to store your old armor segment. "
-					"Sell or jettison cargo to make room."
-					)
+
+				There isn't enough room in your cargo hold to store your old 
+				armor segment. Sell or jettison cargo to make room.
+
 			</Text>
 			<Text id="descCannotAfford">
 				(cat "We can install " (itmGetName (@ gData 'armor) 0x04) " for " (@ gData 'cost) ". Unfortunately, you cannot afford the cost.")))
@@ -1679,10 +1679,10 @@
 			</Text>
 			
 			<Text id="actionInstall.noDeviceInstall">
-				(cat "We do not install devices.")
+				We do not install devices.
 			</Text>
 			<Text id="actionInstall.noDeviceRemove">
-				(cat "We do not remove devices.")
+				We do not remove devices.
 			</Text>
 			<Text id="actionInstall:noItemInCargo">
 				(switch
@@ -1744,13 +1744,13 @@
 					)
 			</Text>
 			<Text id="actionRefuel:noRefuel">
-				"We do not sell fuel."
+				We do not sell fuel.
 			</Text>
 			<Text id="actionRefuel:noCompatibleFuel">
-				"We do not have fuel compatible with your ship's reactor."
+				We do not have fuel compatible with your ship's reactor.
 			</Text>
 			<Text id="actionRefuel:noFuelNeeded">
-				"Your ship is fully fueled."
+				Your ship is fully fueled.
 			</Text>
 			<Text id="actionRefuel:freeRefuel">
 				(switch
@@ -1767,13 +1767,13 @@
 				(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x00) ".")
 			</Text>
 			<Text id="actionRefuel:noFuelInCargo">
-				"You do not have any fuel on board your ship."
+				You do not have any fuel on board your ship.
 			</Text>
 			<Text id="actionRefuel:noCompatibleFuelInCargo">
-				"You do not have any compatible fuel on board your ship."
+				You do not have any compatible fuel on board your ship.
 			</Text>
 			<Text id="actionRefuel:refuelFromCargo">
-				"You have fuel compatible with this reactor."
+				You have fuel compatible with this reactor.
 			</Text>
 				
 			<Text id="actionRemove:cannotAfford">
@@ -1934,14 +1934,10 @@
 			</Text>
 			
 			<Text id="rpg.cannotInstallArmorBecauseNotCompatible">
-				(cat
-					"This armor segment is not compatible with your ship."
-					)
+				This armor segment is not compatible with your ship.
 			</Text>
 			<Text id="rpg.cannotInstallDeviceBecauseNotCompatible">
-				(cat
-					"This device is not compatible with your ship."
-					)
+				This device is not compatible with your ship.
 			</Text>
 			<Text id="rpg.noCompatibleDeviceInCargo">
 				(switch

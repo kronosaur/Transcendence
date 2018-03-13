@@ -272,15 +272,16 @@
 		
 		<Language>
 			<Text id="Name">
-				"Defend Fiona's Freighter"
+				Defend Fiona's Freighter
 			</Text>
 			<Text id="Summary">
-				(cat
-					"Meet Fiona's freighter at the stargate and defend it back to the station.\n\n"
+
+				Meet Fiona's freighter at the stargate and defend it back to the 
+				station.
 					
-					"System: Eridani\n"
-					"Payment: None"
-					)
+				System: Eridani\n
+				Payment: None
+
 			</Text>
 			<Text id="Intro">
 			</Text>
@@ -291,14 +292,14 @@
 			<Text id="DeclineReply">
 			</Text>
 			<Text id="InProgress">
-				(cat
-					"Benedict rushes out to meet you.\n\n"
+
+				Benedict rushes out to meet you.
 					
-					"\"What are you doing here? They need you out there!\""
-					)
+				"What are you doing here? They need you out there!"
+
 			</Text>
 			<Text id="Freighter:AllClear">
-				"We're all clear! Thanks for your help!"
+				We're all clear! Thanks for your help!
 			</Text>
 			<Text id="Freighter:PenitentDestroyed">
 				(block (
@@ -405,32 +406,31 @@
 					)
 			</Text>
 			<Text id="FailureDebriefBetrayal">
-				(cat
-					"Benedict's eyes burn with fury:\n\n"
+
+				Benedict's eyes burn with fury:
 					
-					"\"What have you done?! You deliberately destroyed the freighter! "
-					"But your turn will come. You will suffer and burn for this!\""
-					)
+				"What have you done?! You deliberately destroyed the freighter!
+				But your turn will come. You will suffer and burn for this!"
+
 			</Text>
 			<Text id="FailureDebriefFailure">
-				(cat
-					"Benedict slumps in a chair, rubbing his forehead with his hand:\n\n"
+
+				Benedict slumps in a chair, rubbing his forehead with his hand:
 					
-					"\"I should never have trusted you on such a mission! "
-					"I failed her...\"\n\n"
+				"I should never have trusted you on such a mission! I failed her..."
 					
-					"Benedict says no more."
-					)
+				Benedict says no more.
+
 			</Text>
 			
 			<Text id="AchievementSuccess">
-				"Defended Fiona's freighter from Penitents"
+				Defended Fiona's freighter from Penitents
 			</Text>
 			<Text id="AchievementFailure">
-				"Failed to defend Fiona's freighter from Penitents"
+				Failed to defend Fiona's freighter from Penitents
 			</Text>
 			<Text id="AchievementBetrayal">
-				"Destroyed Fiona's freighter"
+				Destroyed Fiona's freighter
 			</Text>
 		</Language>
 	</MissionType>

@@ -127,20 +127,24 @@
 			</Text>
 
 			<Text id="Intro">
-				(cat
-					"You are in the command center surrounded by wall maps and scanner displays. "
-					"The commanding officer of the fortress looks up from his charts and asks, "
-					"\"Are you looking for a mission, captain?\""
-					)
+
+				You are in the command center surrounded by wall maps and 
+				scanner displays. The commanding officer of the fortress looks 
+				up from his charts:
+
+				"Are you looking for a mission, captain?"
+
 			</Text>
 
 			<Text id="Briefing">
-				(cat
-					"\"Your mission is to patrol the orbital lanes that access the major stargates. "
-					"Your patrol will take you in a circuit through the system that passes each "
-					"stargate and returns back here. Your orders are to destroy any enemy ships in "
-					"the lanes. Understood?\""
-					)
+
+				"Your mission is to patrol the orbital lanes that access the 
+				major stargates. Your patrol will take you in a circuit through 
+				the system that passes each stargate and returns back here.
+				
+				"Your orders are to destroy any enemy ships in the lanes. 
+				Understood?"
+
 			</Text>
 
 			<Text id="AcceptReply">

@@ -577,24 +577,26 @@
 					)
 			</Text>
 			<Text id="AcceptReply">
-				(cat
-					"Sandoval nods at you. \"You've got the best ship, pet. We'll follow "
-					"your lead!\""
-					)
+
+				Sandoval nods at you.
+				
+				"You've got the best ship, pet. We'll follow your lead!"
+
 			</Text>
 			<Text id="DeclineReply">
-				(cat
-					"\"OK, but don't take too long. That convoy will be here any time now.\""
-					)
+
+				"OK, but don't take too long. That convoy will be here any time 
+				now."
+
 			</Text>
 			<Text id="InProgress">
-				(cat
-					"Fiona is desperate, \"We gotta get out there! We'll never catch up to the "
-					"convoy if we don't leave now!\""
-					)
+
+				Fiona is desperate, "We gotta get out there! We'll never catch 
+				up to the convoy if we don't leave now!"
+
 			</Text>
 			<Text id="SuccessMsg">
-				"Mission complete!"
+				Mission complete!
 			</Text>
 			
 			<Text id="dlgRescueBenedict">

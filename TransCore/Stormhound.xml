@@ -124,17 +124,17 @@
 			</Text>
 
 			<Text id="MeetingIntro">
-				(cat
-					"The airlock opens into a wide hall with clean, curved walls and comfortable couches. "
-					"Two large men in fine suits and tactical eyewear frisk you firmly. Without apology, "
-					"they lead you forward."
-					)
+
+				The airlock opens into a wide hall with clean, curved walls and 
+				comfortable couches. Two large men in fine suits and tactical 
+				eyewear frisk you firmly. 
+				
+				Without apology, they lead you forward.
+
 			</Text>
 
 			<Text id="NoMissions">
-				(cat
-					"The airlock refuses to open."
-					)
+				The airlock refuses to open.
 			</Text>
 		</Language>
 	</ShipClass>
@@ -249,18 +249,17 @@
 			</Text>
 
 			<Text id="MeetingIntro">
-				(cat
-					"The airlock opens and you see two Commonwealth troopers standing at attention. "
-					"Stormhound walks past them and dismisses them with a nod.\n\n"
+
+				The airlock opens and you see two Commonwealth troopers standing 
+				at attention. Stormhound walks past them and dismisses them with 
+				a nod.
 					
-					"\"Good day, %name%!\""
-					)
+				"Good day, %name%!"
+
 			</Text>
 
 			<Text id="NoMissions">
-				(cat
-					"The airlock refuses to open."
-					)
+				The airlock refuses to open.
 			</Text>
 		</Language>
 	</ShipClass>

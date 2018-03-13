@@ -359,26 +359,20 @@
 						}
 					)
 			</Text>
-			<Text id="AcceptReply">
-				(cat
-					"\"Try to keep up!\""
-					)
-			</Text>
-			<Text id="DeclineReply">
-				(cat
-					"\"Don't take long, right?\""
-					)
-			</Text>
-			<Text id="InProgress">
-				(cat
-					"\"As much as I would enjoy your visit, we've got work to do.\""
-					)
-			</Text>
+			<String id="AcceptReply">
+				"Try to keep up!"
+			</String>
+			<String id="DeclineReply">
+				"Don't take long, right?"
+			</String>
+			<String id="InProgress">
+				"As much as I would enjoy your visit, we've got work to do."
+			</String>
 			<Text id="SuccessMsg">
-				"Mission complete!"
+				Mission complete!
 			</Text>
 			
-			<Text id="msgFoundWreck">"Found it! Follow my lead!"</Text>
+			<Text id="msgFoundWreck">Found it! Follow my lead!</Text>
 		</Language>
 	</MissionType>
 	
@@ -704,10 +698,10 @@
 				(cat "Scanning..." (@ gData 'percent) "%")
 			</Text>
 			<Text id="msgInterference">
-				(cat "Interference!")
+				Interference!
 			</Text>
 			<Text id="msgScanRuined">
-				(cat "Kack! We lost the alignment. We have to recalibrate!")
+				Kack! We lost the alignment. We have to recalibrate!
 			</Text>
 			<Text id="msgIncomingWave">
 				(random (list

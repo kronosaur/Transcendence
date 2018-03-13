@@ -205,19 +205,30 @@
 
 			</Text>
 			<Text id="descHelena">
-				(cat "You are docked with the wreck of an EI500 freighter.\n\n"
-					"You see the body of a woman still strapped to the command chair on the bridge.")
+				
+				You are docked with the wreck of an EI500 freighter.
+
+				You see the body of a woman still strapped to the command chair 
+				on the bridge.
+
 			</Text>
 			<Text id="descVolkovGrieving">
-				(cat "You are docked with the wreck of an EI500 freighter. "
-					"You see Volkov on the deck cradling the body of his wife.\n\n"
-					"\"Helena was so beautiful and so loving! But Domina called her, "
-					"and now she is dead! Why? What reason?\"\n\n"
-					"You leave Volkov to his grief.")
+
+				You are docked with the wreck of an EI500 freighter. 
+				You see Volkov on the deck cradling the body of his wife.
+
+				"Helena was so beautiful and so loving! But Domina called her, 
+				and now she is dead! Why? What reason?"
+
+				You leave Volkov to his grief.
+
 			</Text>
 			<Text id="descVolkovGrieving2">
-				(cat "You are docked with the wreck of an EI500 freighter.\n\n"
-					"You see Volkov tenderly carrying his wife's body to his ship.")
+
+				You are docked with the wreck of an EI500 freighter.
+
+				You see Volkov tenderly carrying his wife's body to his ship.
+
 			</Text>
 		</Language>
 	</StationType>
@@ -266,17 +277,20 @@
 					)
 			</Text>
 			<Text id="AcceptReply">
-				(cat
-					"Volkov nods his head, more in relief than in joy.\n\n"
-					"\"Good. I will see you out there!\""
-					)
+
+				Volkov nods his head, more in relief than in joy.
+
+				"Good. I will see you out there!"
+
 			</Text>
 			<Text id="DeclineReply">
-				(cat
-					"Volkov grimaces in disappointment and a profound grief fills his eyes. "
-					"He begins to plead, but then turns away in resignation. As he walks away he "
-					"whispers to himself: \"Helena...\" And then he is gone."
-					)
+
+				Volkov grimaces in disappointment and a profound grief fills 
+				his eyes. He begins to plead, but then turns away in resignation.
+				As he walks away he whispers to himself: "Helena..."
+				
+				And then he is gone.
+
 			</Text>
 		</Language>
 		

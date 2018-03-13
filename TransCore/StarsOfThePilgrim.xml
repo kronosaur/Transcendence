@@ -315,19 +315,21 @@
 		
 		<Language>
 			<Text id="Name">
-				"Reach the Galactic Core"
+				Reach the Galactic Core
 			</Text>
 			<Text id="Summary">
-				(cat
-					"When the dream came, you knew Domina had chosen you. "
-					"You would sacrifice everything for the chance She offered: "
-					"to join Her at the Galactic Core, the eternal temple of the gods.\n\n"
-					"Leaving your former life behind, you begin the long journey. "
-					"No matter what obstacles lie in your path "
-					"you will not fail Domina. You will reach the Galactic Core.\n\n"
-					"System: Unknown\n"
-					"Payment: Unknown"
-					)
+
+				When the dream came, you knew Domina had chosen you. 
+				You would sacrifice everything for the chance She offered: 
+				to join Her at the Galactic Core, the eternal temple of the gods.
+
+				Leaving your former life behind, you begin the long journey. 
+				No matter what obstacles lie in your path you will not fail Domina.
+				You will reach the Galactic Core.
+
+				System: Unknown\n
+				Payment: Unknown
+
 			</Text>
 		</Language>
 	</MissionType>

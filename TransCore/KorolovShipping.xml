@@ -1039,7 +1039,10 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(scrSetDescTranslate gScreen (cat "Promotion:" (korGetPlayerLevel)))
+					(scrSetDescTranslate gScreen (cat "Promotion:" (korGetPlayerLevel)) {
+						assistantDirector: (objGetData gSource 'assistantDirector)
+						escortCount: (strNumber (count (msnFind "r +korolov; +escort; +property:isSuccess;")))
+						})
 				</OnPaneInit>
 
 				<Actions>
@@ -1090,33 +1093,44 @@
 
 		<Language>
 			<Text id="Promotion:1">
-				(cat "\"Korolov Shipping needs more pilots with your skills and determination. "
-					"Please come back to us, or any other Korolov station, if you want to earn a bit of money.\""
-					)
+
+				"Korolov Shipping needs more pilots with your skills and 
+				determination. Please come back to us, or any other Korolov 
+				station, if you want to earn a bit of money."
+
 			</Text>
 			<Text id="Promotion:2">
-				(cat "\"After reviewing your record, I have recommended to "
-					"Assistant Director " (objGetData gSource "assistantDirector")
-					" that you be granted the rights and responsibilities of a Journeyman"
-					" of the Korolov Shipping Corporation. Congratulations!"
-					"\n\nTo aid you in your missions, please accept this ROM biosoft.\""
-					)
+
+				"After reviewing your record, I have recommended to Assistant 
+				Director %assistantDirector% that you be granted the rights and 
+				responsibilities of a Journeyman of the Korolov Shipping 
+				Corporation. Congratulations!
+
+				"To aid you in your missions, please accept this ROM biosoft."
+
 			</Text>
 			<Text id="Promotion:3">
-				(cat "Assistant Director " (objGetData gSource "assistantDirector")
-					" talks to you after the mission:"
-					" \"You are one of our best pilots, and I'm happy to tell you that"
-					" the executive board has promoted you to the rank of Master. Congratulations!"
-					"\n\n\"To commemorate this occasion, I want to give you this vintage deflector shield generator."
-					" May it help you in times of need.\""
-					)
+
+				Assistant Director %assistantDirector% talks to you after the 
+				mission:
+
+				"You are one of our best pilots, and I'm happy to tell you that
+				the executive board has promoted you to the rank of Master. 
+				Congratulations!
+
+				"To commemorate this occasion, I want to give you this vintage 
+				deflector shield generator. May it help you in times of need."
+
 			</Text>
 			<Text id="Promotion:4">
-				(cat "A crowd gathers around you as you leave the debriefing; everyone reaches towards you in congratulations.\n\n"
-					"\"Congratulations! You've broken the record! "
-					"You've escorted " (strNumber (count (msnFind "r +korolov; +escort; +property:isSuccess;")))
-					" freighters without losing a single one! No one has accomplished that feat before!\""
-					)
+
+				A crowd gathers around you as you leave the debriefing; 
+				everyone reaches towards you in congratulations.
+
+				"Congratulations! You've broken the record! You've escorted 
+				%escortCount% freighters without losing a single one! 
+				No one has accomplished that feat before!"
+
 			</Text>
 		</Language>
 	</DockScreen>

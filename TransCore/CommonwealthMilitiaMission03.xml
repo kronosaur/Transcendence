@@ -83,11 +83,13 @@
 			</Text>
 
 			<Text id="Intro">
-				(cat
-					"You are in the command center surrounded by wall maps and scanner displays. "
-					"The commanding officer of the fortress looks up from his charts and asks, "
-					"\"Are you looking for a mission, captain?\""
-					)
+
+				You are in the command center surrounded by wall maps and scanner 
+				displays. The commanding officer of the fortress looks up from 
+				his charts:
+
+				"Are you looking for a mission, captain?"
+
 			</Text>
 
 			<Text id="Briefing">

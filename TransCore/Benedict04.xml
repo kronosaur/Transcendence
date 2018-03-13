@@ -255,21 +255,15 @@
 						}
 					)
 			</Text>
-			<Text id="AcceptReply">
-				(cat
-					"\"Good luck!\""
-					)
-			</Text>
-			<Text id="DeclineReply">
-				(cat
-					"\"Alright, but don't take too long, my contact won't wait forever.\""
-					)
-			</Text>
-			<Text id="InProgress">
-				(cat
-					"\"Don't take too long, my contact won't wait forever.\""
-					)
-			</Text>
+			<String id="AcceptReply">
+				"Good luck!"
+			</String>
+			<String id="DeclineReply">
+				"Alright, but don't take too long, my contact won't wait forever."
+			</String>
+			<String id="InProgress">
+				"Don't take too long, my contact won't wait forever."
+			</String>
 			<Text id="SuccessDebrief">
 				(list
 					{
@@ -398,14 +392,13 @@
 				"Mission complete!"
 			</Text>
 			<Text id="FailureDebrief">
-				(cat
-					"Benedict slumps in a chair, rubbing his forehead with his hand:\n\n"
+
+				Benedict slumps in a chair, rubbing his forehead with his hand:
 					
-					"\"I should never have trusted you on such a mission! "
-					"I failed her...\"\n\n"
+				"I should never have trusted you on such a mission! I failed her..."
 					
-					"Benedict says no more."
-					)
+				Benedict says no more.
+
 			</Text>
 			
 			<Text id="StormhoundMeeting">

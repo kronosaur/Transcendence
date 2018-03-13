@@ -190,18 +190,16 @@
 			<Text id="actionUndock">"[U]ndock"</Text>
 			
 			<Text id="Welcome">
-				(cat
-					"You are docked at an abbey of the Sisters of Domina."
-					)
+				You are docked at an abbey of the Sisters of Domina.
 			</Text>
 			<Text id="WelcomeFreeSanctum">
-				(cat
-					"You are docked at an abbey of the Sisters of Domina. "
-					"A woman wearing a flowing cardinal robe is before you.\n\n"
+
+				You are docked at an abbey of the Sisters of Domina. 
+				A woman wearing a flowing cardinal robe is before you.
 					
-					"\"Take your ease here before you go, or seek guidance at our Sanctum. "
-					"May the blessings of Domina protect you.\""
-					)
+				"Take your ease here before you go, or seek guidance 
+				at our Sanctum. May the blessings of Domina protect you."
+
 			</Text>
 			<Text id="descNothingToTalkAbout">
 				(cat
@@ -416,29 +414,30 @@
 			<Text id="actionContemplate">"[C]ontemplate"</Text>
 			
 			<Text id="DominaRelationshipDesc">
-				(cat
-					"Your disembodied mind hurtles through space. "
-					"Stars dance like fireflies, and nebulous veils part "
-					"to reveal a fragment of the Eternal Pattern.\n\n"
+
+				Your disembodied mind hurtles through space. Stars dance like 
+				fireflies, and nebulous veils part to reveal a fragment of the 
+				Eternal Pattern.
 					
-					"You feel the blessing of Domina upon you. She urges you to continue "
-					"your journey to the Galactic Core."
-					)
+				You feel the blessing of Domina upon you. She urges you to 
+				continue your journey to the Galactic Core.
+
 			</Text>
 			<Text id="MappedSystemDesc">
-				(cat
-					"Images and patterns dance in your head like spinning galaxies. "
-					"You see with the eyes of Domina but the visions blast your brain like a nova.\n\n"
+
+				Images and patterns dance in your head like spinning galaxies.
+				You see with the eyes of Domina but the visions blast your brain 
+				like a nova.
 					
-					"When you recover from your reverie you remember only some mundane "
-					"information about the position of stations in this star system."
-					)
+				When you recover from your reverie you remember only some mundane 
+				information about the position of stations in this star system.
+
 			</Text>
 			<Text id="NothingDesc">
-				(cat
-					"Your contemplation ends as your rational mind considers "
-					"the impossibility of communicating across the light-years."
-					)
+
+				Your contemplation ends as your rational mind considers 
+				the impossibility of communicating across the light-years.
+
 			</Text>
 			<Text id="StargateRevealedDesc">
 				(block (
@@ -455,24 +454,25 @@
 			</Text>
 			
 			<Text id="SanctumClosed">
-				(cat
-					"You are in the sanctum of the Sisters of Domina. "
-					"Tools and scaffolding fill the room and various cardinal-robed techs "
-					"work to repair the micro-engraved plasteel walls.\n\n"
+
+				You are in the sanctum of the Sisters of Domina. Tools and 
+				scaffolding fill the room and various cardinal-robed techs work 
+				to repair the micro-engraved plasteel walls.
 					
-					"One of the sisters oversees the work: \"Sorry, but the sanctum "
-					"is closed for maintenance. We would appreciate any donation you can "
-					"make to help us defray the cost.\""
-					)
+				One of the sisters oversees the work: "Sorry, but the sanctum 
+				is closed for maintenance. We would appreciate any donation you 
+				can make to help us defray the cost."
+
 			</Text>
 			
 			<Text id="SanctumIntro:0">
-				(cat
-					"You are in the sanctum of the Sisters of Domina. "
-					"The plasteel walls that surround you are micro-engraved with the revelation of Domina.\n\n"
+
+				You are in the sanctum of the Sisters of Domina. The plasteel 
+				walls that surround you are micro-engraved with the revelation 
+				of Domina.
 					
-					"You close your eyes and open your thoughts, but no one answers."
-					)
+				You close your eyes and open your thoughts, but no one answers.
+
 			</Text>
 			<Text id="SanctumIntro:1">
 				(cat
@@ -691,46 +691,46 @@
 		
 		<Language>
 			<Text id="Welcome">
-				(cat
-					"\"Welcome, Pilgrim! Your journey to the Galactic Core "
-					"will be long and arduous but we are here to help those "
-					"of pure spirit and in true need.\""
-					)
+
+				"Welcome, Pilgrim! Your journey to the Galactic Core will be 
+				long and arduous but we are here to help those of pure spirit 
+				and in true need."
+
 			</Text>
 			<Text id="WelcomeNonPilgrim">
-				(cat
-					"\"Welcome! Domina asks that we help those in need. Our powers in "
-					"the material world are at your service.\""
-					)
+
+				"Welcome! Domina asks that we help those in need. Our powers in 
+				the material world are at your service."
+
 			</Text>
 
-			<Text id="NoDamageDesc">
-				(cat
-					"\"Your vessel is undamaged. There is no need for repairs.\""
-					)
-			</Text>
+			<String id="NoDamageDesc">
+				"Your vessel is undamaged. There is no need for repairs."
+			</String>
 			<Text id="RefuelShipDesc">
-				(cat
-					"\"Your vessel has been refueled. Go in peace and spread the teachings of Domina.\""
-					)
+
+				"Your vessel has been refueled. Go in peace and spread the 
+				teachings of Domina."
+
 			</Text>
 			<Text id="RepairArmorDesc">
-				(cat
-					"\"Your vessel has been repaired as best as we could manage. "
-					"Devote your life to Domina and your spirit shall be similarly healed.\""
-					)
+
+				"Your vessel has been repaired as best as we could manage. 
+				Devote your life to Domina and your spirit shall be similarly 
+				healed."
+
 			</Text>
 			<Text id="TooRichDesc">
-				(cat
-					"\"Please forgive us, but it is the wish of Domina that we "
-					"help only those truly in need.\""
-					)
+
+				"Please forgive us, but it is the wish of Domina that we 
+				help only those truly in need."
+
 			</Text>
 			<Text id="UnableToRepairDesc">
-				(cat
-					"\"The damage to your vessel is beyond our capability to repair. "
-					"Open yourself to Domina and leave your worthless ship behind.\""
-					)
+
+				"The damage to your vessel is beyond our capability to repair. 
+				Open yourself to Domina and leave your worthless ship behind."
+
 			</Text>
 		</Language>
 	</DockScreen>
@@ -787,20 +787,21 @@
 			<Text id="actionDonateItem">"Donate [I]tem"</Text>
 			
 			<Text id="Welcome">
-				(cat
-					"\"Domina cannot help us without our participation. Certain items "
-					"are useful to her in maintaining her connection with us. "
-					"And, of course, we use your donations in our own efforts.\n\n"
+
+				"Domina cannot help us without our participation. Certain items 
+				are useful to her in maintaining her connection with us. 
+				And, of course, we use your donations in our own efforts.
 					
-					"\"Please donate generously; your sacrifices will be rewarded.\""
-					)
+				"Please donate generously; your sacrifices will be rewarded."
+
 			</Text>
 			
 			<Text id="NotNeededDesc">
-				(cat
-					"\"Thank you for your consideration, but we have sufficient "
-					"money for our needs. We would appreciate more useful items, however.\""
-					)
+
+				"Thank you for your consideration, but we have sufficient 
+				money for our needs. We would appreciate more useful items, 
+				however."
+
 			</Text>
 		</Language>
 	</DockScreen>
@@ -1043,15 +1044,14 @@
 					"useful to us in serving Domina.\""
 					)
 			</Text>
-			<Text id="DonateGenericDesc">
-				(cat
-					"\"We are grateful for your contribution to Domina's cause.\""
-					)
-			</Text>
+			<String id="DonateGenericDesc">
+				"We are grateful for your contribution to Domina's cause."
+			</String>
 			<Text id="NoItemsDesc">
-				(cat
-					"\"We are grateful for your good intentions, but you have no items to donate.\""
-					)
+
+				"We are grateful for your good intentions, but you have no items 
+				to donate."
+
 			</Text>
 		</Language>
 	</DockScreen>

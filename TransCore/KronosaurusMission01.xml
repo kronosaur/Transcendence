@@ -181,13 +181,15 @@
 					)
 			</Text>
 			<Text id="InProgress">
-				(cat
-					"\"Sorry, captain, but the Kronosaurus is hunting you! No freighter crew "
-					"will dare to travel with you while that frigate is in system. Good Luck!\""
-					)
+
+				"Sorry, captain, but the Kronosaurus is hunting you! No freighter 
+				crew will dare travel with you while that frigate is in the system.
+
+				"Good Luck!"
+
 			</Text>
 			<Text id="SuccessMsg">
-				"Mission complete!"
+				Mission complete!
 			</Text>
 			<Text id="SuccessDebrief">
 				(if (msnGetData gSource 'destroyedByPlayer)

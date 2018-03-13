@@ -98,14 +98,15 @@
 						}
 					)
 			</Text>
-			<Text id="AcceptReply">
-				"\"Awesome! You won't regret it, I promise!\""
-			</Text>
+			<String id="AcceptReply">
+				"Awesome! You won't regret it, I promise!"
+			</String>
 			<Text id="DeclineReply">
-				(cat
-					"\"Yeah, well, I didn't think it would work out either.\""
-					" She leaves you and starts to talk to another pilot at the bar."
-					)
+
+				"Yeah, well, I didn't think it would work out either."
+
+				She leaves you and starts to talk to another pilot at the bar.
+
 			</Text>
 		</Language>
 

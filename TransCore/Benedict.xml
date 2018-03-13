@@ -123,17 +123,15 @@
 			</Text>
 
 			<Text id="MeetingIntro">
-				(cat
-					"The airlock opens and you see Benedict dressed in combat armor.\n\n"
+
+				The airlock opens and you see Benedict dressed in combat armor.
 							
-					"\"Good to see you, %name%!\""
-					)
+				"Good to see you, %name%!"
+
 			</Text>
 
 			<Text id="NoMissions">
-				(cat
-					"The airlock refuses to open."
-					)
+				The airlock refuses to open.
 			</Text>
 		</Language>
 	</ShipClass>

@@ -268,23 +268,17 @@
 						}
 					)
 			</Text>
-			<Text id="AcceptReply">
-				(cat
-					"\"Let's go then, and good luck to us all!\""
-					)
-			</Text>
-			<Text id="DeclineReply">
-				(cat
-					"\"OK, but don't take too long!\""
-					)
-			</Text>
-			<Text id="InProgress">
-				(cat
-					"\"No time to waste! Get back out there!\""
-					)
-			</Text>
+			<String id="AcceptReply">
+				"Let's go then, and good luck to us all!"
+			</String>
+			<String id="DeclineReply">
+				"OK, but don't take too long!"
+			</String>
+			<String id="InProgress">
+				"No time to waste! Get back out there!"
+			</String>
 			<Text id="SuccessMsg">
-				"Mission complete!"
+				Mission complete!
 			</Text>
 			
 			<Text id="dlgRescueChildren">

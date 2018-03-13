@@ -1020,12 +1020,15 @@
 					)
 			</Text>
 			<Text id="Intro">
-				(cat
-					"The station master stands at his console. Managers and supervisors swarm around him dealing with various crises. "
-					"He turns his attention towards you:\n\n"
-					"\"We could use your help, %brother%. "
-					"You've got a ship with a good punch and we got something that needs punching. We'll pay you, of course.\""
-					)
+
+				The station master stands at his console. Managers and 
+				supervisors swarm around him dealing with various crises. He 
+				turns his attention towards you:
+
+				"We could use your help, %brother%. You've got a ship with a 
+				good punch and we got something that needs punching. We'll pay 
+				you, of course."
+
 			</Text>
 			<Text id="Briefing">
 				(block (
@@ -1047,13 +1050,20 @@
 					)
 			</Text>
 			<Text id="AcceptReply">
-				"\"Thank you! I knew we could count on you. We'll program the target into your ship's computer. Just follow the arrow on your screen and you'll get there. Good luck!\""
+
+				"Thank you! I knew we could count on you. We'll program the 
+				target into your ship's computer. Just follow the arrow on your 
+				screen and you'll get there. Good luck!"
+
 			</Text>
-			<Text id="DeclineReply">
-				"\"Ah, Hell! What are you doing here then? Stop wasting my time!\""
-			</Text>
+			<String id="DeclineReply">
+				"Ah, Hell! What are you doing here then? Stop wasting my time!"
+			</String>
 			<Text id="InProgress">
-				"\"What's wrong? You said you could handle this mission! Get back out there and finish the job!\""
+
+				"What's wrong? You said you could handle this mission! Get back 
+				out there and finish the job!"
+
 			</Text>
 			<Text id="SuccessDebrief">
 				(cat
@@ -1067,14 +1077,14 @@
 					)
 			</Text>
 			<Text id="SuccessMsg">
-				"Mission complete!"
+				Mission complete!
 			</Text>
-			<Text id="AlreadyDebriefed">
-				"\"Welcome back! Thanks for the great work last time.\""
-			</Text>
-			<Text id="Unavailable">
-				"\"Sorry, there are no missions available.\""
-			</Text>
+			<String id="AlreadyDebriefed">
+				"Welcome back! Thanks for the great work last time."
+			</String>
+			<String id="Unavailable">
+				"Sorry, there are no missions available."
+			</String>
 		</Language>
 	</MissionType>
 

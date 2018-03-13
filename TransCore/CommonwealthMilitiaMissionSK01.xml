@@ -87,12 +87,12 @@
 			</Text>
 
 			<Text id="Intro">
-				(cat
-					"You are at Commonwealth Militia Headquarters. "
-					"The officer of the watch looks up from his displays and asks,\n\n"
 
-					"\"Are you looking for a mission, captain?\""
-					)
+				You are at Commonwealth Militia Headquarters. The officer of the 
+				watch looks up from his displays:
+
+				"Are you looking for a mission, captain?"
+
 			</Text>
 
 			<Text id="Briefing">

@@ -116,28 +116,30 @@
 		<!-- Events and Behavior -->
 
 		<Language>
-			<Text id="actionCentralChamber">"[C]entral Chamber"</Text>
-			<Text id="actionDonate">"[D]onate"</Text>
-			<Text id="actionPilgrimsAid">"[P]ilgrim's Aid"</Text>
-			<Text id="actionSanctum">"[S]anctum"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
+			<Text id="actionCentralChamber">[C]entral Chamber</Text>
+			<Text id="actionDonate">[D]onate</Text>
+			<Text id="actionPilgrimsAid">[P]ilgrim's Aid</Text>
+			<Text id="actionSanctum">[S]anctum</Text>
+			<Text id="actionUndock">[U]ndock</Text>
 			
 			<Text id="descWelcome">
-				(cat
-					"The Cathedral of Domina is the center of the Sisterhood, and one of their most holy sites. "
-					"Built originally in the 2150s, the cathedral has expanded to become a small metropolis."
-					)
+
+				The Cathedral of Domina is the center of the Sisterhood, and 
+				one of their most holy sites. Built originally in the 2150s, 
+				the cathedral has expanded to become a small metropolis.
+
 			</Text>
 			<Text id="descNothingToTalkAbout">
-				(cat
-					"The beautiful central chamber, built hundreds of years ago by Saint Eugenia, "
-					"is lit by the holograms of various Sisters. Lay and ordained women walk "
-					"through the halls in quiet conversation."
-					)
+
+				The beautiful central chamber, built hundreds of years ago by 
+				Saint Eugenia, is lit by the holograms of various Sisters. 
+				Lay and ordained women walk through the halls in quiet 
+				conversation.
+
 			</Text>
             
             <Text id="core.mapDesc">
-                "Contemplation and communion"
+                Contemplation and communion
             </Text>
 		</Language>
 	</StationType>

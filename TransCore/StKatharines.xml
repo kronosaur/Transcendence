@@ -1946,16 +1946,17 @@
 		</SystemGroup>
 		
 		<Language>
-			<Text id="navSignWelcomeTitle">"Welcome!"</Text>
-			<Text id="navSignWelcomeDesc">"Welcome to St. Katharine's Star, capital of the Commonwealth and metropolitan jewel of Human Space."</Text>
+			<Text id="navSignWelcomeTitle">Welcome!</Text>
+			<Text id="navSignWelcomeDesc">Welcome to St. Katharine's Star, capital of the Commonwealth and metropolitan jewel of Human Space.</Text>
 			
-			<Text id="navSignWarningTitle">"Travel\nWarning!"</Text>
+			<Text id="navSignWarningTitle">Travel\nWarning!</Text>
 			<Text id="navSignWarningDesc">
-				(cat
-					"WARNING! Systems beyond St. Katharine's Star are not controlled by the Commonwealth. "
-					"By entering this stargate you agree to hold the Commonwealth Transport System immune "
-					"to liability in the event of injury, involuntary servitude, or death."
-					)
+
+				WARNING! Systems beyond St. Katharine's Star are not controlled 
+				by the Commonwealth. By entering this stargate you agree to hold 
+				the Commonwealth Transport System immune to liability in the 
+				event of injury, involuntary servitude, or death.
+
 			</Text>
 		</Language>
 	</SystemType>

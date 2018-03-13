@@ -108,18 +108,16 @@
 			</Text>
 
 			<Text id="MeetingIntro">
-				(cat
-					"The airlock opens and you see Hugo Sandoval waiting for you in his "
-					"well-fitted carbon-fiber jacket.\n\n"
+
+				The airlock opens and you see Hugo Sandoval waiting for you in his 
+				well-fitted carbon-fiber jacket.
 					
-					"\"Welcome back, %name%!\""
-					)
+				"Welcome back, %name%!"
+
 			</Text>
 
 			<Text id="NoMissions">
-				(cat
-					"The airlock refuses to open."
-					)
+				The airlock refuses to open.
 			</Text>
 			
 			<Text id="ArmorRepaired">			"\"My ship's as good as new\""</Text>

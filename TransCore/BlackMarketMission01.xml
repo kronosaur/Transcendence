@@ -104,7 +104,7 @@
 		
 		<Language>
 			<Text id="Name">
-				"Black Market Delivery"
+				Black Market Delivery
 			</Text>
 			<Text id="Summary">
 				(cat
@@ -116,29 +116,29 @@
 					)
 			</Text>
 			<Text id="Briefing">
-				(cat
-					"The dark-haired woman looks down at some papers and says, "
-					"\"As a matter of fact, I was thinking of you. We need you to deliver "
-					"some cargo to St. Katharine's. Do you think you could do that?\""
-					)
+
+				The dark-haired woman looks down at some papers and says, 
+				"As a matter of fact, I was thinking of you. We need you to deliver 
+				some cargo to St. Katharine's. Do you think you could do that?"
+
 			</Text>
-			<Text id="AcceptLabel">"\"[Y]es, absolutely!\""</Text>
-			<Text id="DeclineLabel">"\"[N]o, sorry.\""</Text>
+			<String id="AcceptLabel">"[Y]es, absolutely!"</String>
+			<String id="DeclineLabel">"[N]o, sorry."</String>
 			<Text id="AcceptReply">
-				(cat
-					"\"Take this container to the Victorian at the Commonwealth station in "
-					"St. Katharine's Star. Do not take it through customs, obviously. "
-					"Be careful and good luck!\""
-					)
+
+				"Take this container to the Victorian at the Commonwealth station in 
+				St. Katharine's Star. Do not take it through customs, obviously. 
+				Be careful and good luck!"
+
 			</Text>
 			<Text id="DeclineReply">
-				(cat
-					"The dark-haired woman frowns for a second, \"I'm sorry you feel that way. "
-					"I will inform Lord Mikho.\""
-					)
+
+				The dark-haired woman frowns for a second, "I'm sorry you feel that way.
+				I will inform Lord Mikho."
+
 			</Text>
 			<Text id="SuccessMsg">
-				"Mission complete!"
+				Mission complete!
 			</Text>
 		</Language>
 	</MissionType>
@@ -186,22 +186,26 @@
 		</Panes>
 
 		<Language>
-			<Text id="actionYes">"\"[Y]es, I do.\""</Text>
-			<Text id="actionNo">"\"I have [n]o idea what you're talking about.\""</Text>
-			<Text id="actionLeave">"[L]eave"</Text>
+			<String id="actionYes">"[Y]es, I do."</String>
+			<String id="actionNo">"I have [n]o idea what you're talking about."</String>
+			<Text id="actionLeave">[L]eave</Text>
 
 			<Text id="descDelivery">
-				(cat
-					"You are in a large dance club where women and men dressed in leather "
-					"and lace dance to classical music. A nondescript man dances next to "
-					"you and whispers, \"I hope you have what I need.\""
-					)
+
+				You are in a large dance club where women and men dressed in leather 
+				and lace dance to classical music. A nondescript man dances next to 
+				you and whispers:
+				
+				"I hope you have what I need."
+
 			</Text>
 			<Text id="descDone">
-				(cat
-					"The nondescript man follows you to your cargo hold and takes the sealed "
-					"container. He smiles as he leaves, \"Say hello to Aubrey for me!\""
-					)
+
+				The nondescript man follows you to your cargo hold and takes the sealed 
+				container. He smiles as he leaves:
+				
+				"Say hello to Aubrey for me!"
+
 			</Text>
 		</Language>
 	</DockScreen>
