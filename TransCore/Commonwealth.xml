@@ -2008,16 +2008,16 @@
 		
 		<Language>
 			<Text id="customs.chargedForDecon">
-				(cat
-					"Commonwealth Customs stops your ship for decontamination. "
-					"You are automatically charged " (@ gData 'cost) " for decontaminating your ship."
-					)
+
+				Commonwealth Customs stops your ship for decontamination. You 
+				are automatically charged %cost% for decontaminating your ship.
+
 			</Text>
 			<Text id="customs.cantAffordDecon">
-				(cat
-					"Commonwealth Customs stops your ship for decontamination. "
-					"Unfortunately, you do not have " (@ gData 'cost) " to pay for decontamination."
-					)
+
+				Commonwealth Customs stops your ship for decontamination.
+				Unfortunately, you do not have %cost% to pay for decontamination.
+
 			</Text>
 		</Language>
 	</DockScreen>

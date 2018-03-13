@@ -111,15 +111,29 @@
 			<Default>
 				<OnPaneInit>
 					(block (
-						(currency (if (@ gData 'currency) (@ gData 'currency) 'credit))
-						(cost (if (@ gData 'cost) (@ gData 'cost) 250))
-						(deconID (if (@ gData 'descDeconID) (@ gData 'descDeconID) 'descDecon))
-						(deconCantAffordID (if (@ gData 'descDeconCantAffordID) (@ gData 'descDeconCantAffordID) 'descDeconCantAfford))
+						(currency (or (@ gData 'currency) 'credit))
+						(cost (or (@ gData 'cost) 250))
+
+						(transData {
+							currency:currency
+							cost:cost
+							deconCost:(fmt currency cost)
+							})
 						)
 						
 						(if (geq (plyGetCredits gPlayer currency) cost)
-							(scrSetDescTranslate gScreen deconID { currency:currency cost:cost })
-							(scrSetDescTranslate gScreen deconCantAffordID { currency:currency cost:cost })
+							(scrSetDesc gScreen
+								(or (scrTranslate gScreen (@ gData 'descDeconID) transData)
+									(scrTranslate gScreen 'core.deconDesc transData)
+									(scrTranslate gScreen 'descDecon transData)
+									)
+								)
+							(scrSetDesc gScreen
+								(or (scrTranslate gScreen (@ gData 'descDeconCantAffordID) transData)
+									(scrTranslate gScreen 'core.cannotAffordDecon transData)
+									(scrTranslate gScreen 'descDeconCantAfford transData)
+									)
+								)
 							)
 						)
 				</OnPaneInit>
@@ -147,6 +161,23 @@
 				</Actions>
 			</Default>
 		</Panes>
+
+		<Language>
+			<Text id="core.deconDesc">
+
+				The dock master stops your ship due to high radiation levels. 
+				You are automatically charged %deconCost% for decontaminating 
+				your ship.
+
+			</Text>
+			<Text id="core.cannotAffordDecon">
+
+				The dock master stops your ship due to high radiation levels. 
+				Unfortunately, you cannot afford the %deconCost% cost for 
+				decontamination.
+
+			</Text>
+		</Language>
 	</DockScreen>
 
 <!-- DOCK SERVICES =============================================================
