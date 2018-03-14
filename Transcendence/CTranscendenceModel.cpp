@@ -1755,10 +1755,6 @@ void CTranscendenceModel::OnPlayerEnteredGate (CTopologyNode *pDestNode, const C
 
 	m_pPlayer->OnSystemLeft(m_pOldSystem);
 
-	//	Fire global event
-
-	m_Universe.FireOnGlobalPlayerLeftSystem();
-
 	//	Preserve any timer events
 
 	m_pOldSystem->TransferObjEventsOut(pShip, m_TimerEvents);
@@ -1783,15 +1779,6 @@ void CTranscendenceModel::OnPlayerEnteredGate (CTopologyNode *pDestNode, const C
 	//	ships that have that order.
 
 	MarkGateFollowers(m_pOldSystem);
-
-	//	Clear out these globals so that events don't try to send us
-	//	orders (Otherwise, an event could set a target for the player. If the
-	//	target is destroyed while we are out of the system, we will
-	//	never get an OnObjDestroyed message).
-	//	Note: We need gPlayer for OnGameEnd event
-
-	CCodeChain &CC = m_Universe.GetCC();
-	CC.DefineGlobal(STR_G_PLAYER_SHIP, CC.CreateNil());
 
 	//	Tell the display
 
