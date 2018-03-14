@@ -1365,36 +1365,61 @@
 					; Create those that are needed.
 					
 					(enum allStargates theGate
-						(if (and
-								(not (sysGetObjectByName theGate))
-								(not (sysHasAttribute (sysGetStargateDestinationNode theGate) 'noAutoGateCreate))
-								)
-							(block (gateObj beacon1Pos beacon2Pos locationCriteria)
-							
-								; The coreward gate is usually in the inner system.
-								; The others are in the outer system.
-								(setq locationCriteria (if (eq theGate corewardGate)
+						(switch
+							;	If this stargate already exists here, then no need to do anything
+
+							(sysGetObjectByName theGate)
+								Nil
+
+							;	If the target system does not want us to create gates, then
+							;	skip.
+
+							(sysHasAttribute (sysGetStargateDestinationNode theGate) 'noAutoGateCreate)
+								Nil
+
+							;	If this is an uncharted stargate, then create a Majellen gate somewhere
+							;	out in the distance.
+
+							(sysGetStargateProperty theGate 'uncharted)
+								(block ()
+									(sysCreateStargate &stUnchartedMajellenStargate;
+										(sysVectorRandom Nil (random 1200 1500) 300 "t")
+										theGate
+										)
+									)
+
+							;	Otherwise, create a standard gate
+
+							(block (
+								;	The coreward gate is usually in the inner system.
+								;	The others are in the outer system.
+
+								(locationCriteria (if (= theGate corewardGate)
 									(list 'location corewardLocationCriteria)
 									(list 'location edgewardLocationCriteria)
 									))
 
-								; Create the stargate
+								gateObj beacon1Pos beacon2Pos
+								)
+
+								;	Create the stargate
+
 								(setq gateObj (sysCreateStargate
 									stargateType
 									locationCriteria
 									theGate
 									))
 									
-								; If we could not create the gate, it is probably because we did not
-								; have enough locations. This should never happen, but just in case we
-								; handle it here.
+								;	If we could not create the gate, it is probably because we did not
+								;	have enough locations. This should never happen, but just in case we
+								;	handle it here.
 								
 								(if (not gateObj)
 									(setq gateObj (sysCreateStargate stargateType (sysVectorRandom Nil 120 10) theGate))
 									)
 									
-								; The position of the beacons depends on whether the gate leads
-								; to the core or not.
+								;	The position of the beacons depends on whether the gate leads
+								;	to the core or not.
 								
 								(setq beacon1Pos (sysVectorPolarOffset gateObj 270 12))
 								(if (eq theGate corewardGate)
@@ -1402,7 +1427,8 @@
 									(setq beacon2Pos (sysVectorPolarOffset gateObj 0 12))
 									)
 									
-								; Create beacons
+								;	Create beacons
+
 								(sysCreateStation beaconType beacon1Pos)
 								(sysCreateStation beaconType beacon2Pos)
 								)
