@@ -2626,7 +2626,12 @@ ALERROR CTranscendenceModel::StartNewGame (const CString &sUsername, const SNewG
 	//	Initialize the adventure and hand it the player controller.
 
 	if (m_Universe.InitAdventure(pPlayerController, retsError) != NOERROR)
+		{
+		delete pPlayerController;
+		delete m_pPlayer;
+		m_pPlayer = NULL;
 		return ERR_FAIL;
+		}
 
 	//	The remainder of new game start happens in the background thread
 	//	in StartNewGamebackground
@@ -2645,6 +2650,8 @@ void CTranscendenceModel::StartNewGameAbort (void)
 	{
 	if (m_pPlayer)
 		{
+		m_Universe.Reinit();
+
 		delete m_pPlayer;
 		m_pPlayer = NULL;
 		}
