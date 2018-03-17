@@ -577,13 +577,13 @@
 					attributes: "commonwealthPub"
 					priority: 60
 					sourceObj: gSource
-					textID: 'rumor.pub
+					textID: 'rumor.commonwealthPub
 					}
 			</GetRumors>
 		</Events>
 
 		<Language>
-			<Text id="rumor.pub">
+			<Text id="rumor.commonwealthPub">
 				You spend 5 credits buying drinks for a mercenary. He talk about
 				his encounters with the Xenophobes:
 

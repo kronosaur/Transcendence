@@ -668,7 +668,7 @@
 					attributes: "commonwealthPub"
 					priority: 10
 					sourceObj: gSource
-					textID: 'rumor.pub
+					textID: 'rumor.commonwealthPub
 					data: {station: (objGetName gSource)}
 					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
 					}
@@ -800,7 +800,7 @@
 
 			</Text>
 
-			<Text id="rumor.pub">
+			<Text id="rumor.commonwealthPub">
 				You listen to a refugee from %station%:
 
 				"Centauri warlords took over our station last month.

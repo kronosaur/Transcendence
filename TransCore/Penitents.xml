@@ -92,13 +92,13 @@
 					attributes: "commonwealthPub"
 					priority: 50
 					sourceObj: gSource
-					textID: 'rumor.pub
+					textID: 'rumor.commonwealthPub
 					}
 			</GetRumors>
 		</Events>
 
 		<Language>
-			<Text id="rumor.pub">
+			<Text id="rumor.commonwealthPub">
 				You drink through 5 credits while talking to an attractive Sister:
 
 				"The Sisters of Domina believe in the power of transcendence, but

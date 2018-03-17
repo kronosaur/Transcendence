@@ -1097,13 +1097,13 @@
 					attributes: "commonwealthPub"
 					priority: 41
 					sourceObj: gSource
-					textID: 'rumor.pub
+					textID: 'rumor.commonwealthPub
 					}
 			</GetRumors>
 		</Events>
 
 		<Language>
-			<Text id="rumor.pub">
+			<Text id="rumor.commonwealthPub">
 				You spend 5 credits while listening to a drunk woman:
 
 				"My sister-in-law was abducted by those filthy Sung. We finally

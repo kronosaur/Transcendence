@@ -1895,7 +1895,7 @@
 					attributes: "commonwealthPub"
 					priority: 24
 					sourceObj: gSource
-					textID: 'rumor.pub
+					textID: 'rumor.commonwealthPub
 					data: {station: (objGetName gSource)}
 					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
 					}
@@ -1987,7 +1987,7 @@
 				You feel out of place here.
 			</Text>
 
-			<Text id="rumor.pub">
+			<Text id="rumor.commonwealthPub">
 				You talk to a corporate woman staying at the %station%. She drones on
 				about the excellent service. You spend 5 credits on drinks.
 			</Text>
