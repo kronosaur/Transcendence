@@ -948,7 +948,7 @@ void CTranscendenceModel::ExitScreenSession (bool bForceUndock)
 	DEBUG_CATCH
 	}
 
-bool CTranscendenceModel::FindScreenRoot (const CString &sScreen, CDesignType **retpRoot, CString *retsScreen, ICCItem **retpData)
+bool CTranscendenceModel::FindScreenRoot (const CString &sScreen, CDesignType **retpRoot, CString *retsScreen, ICCItemPtr *retpData)
 
 //	FindScreenRoot
 //
@@ -986,7 +986,7 @@ bool CTranscendenceModel::FindScreenRoot (const CString &sScreen, CDesignType **
 	else if (strEquals(sScreen, DEFAULT_SCREEN_NAME))
 		{
 		CString sScreenActual;
-		ICCItem *pData;
+		ICCItemPtr pData;
 
 		ASSERT(!m_DockFrames.IsEmpty());
 		const SDockFrame &Frame = m_DockFrames.GetCurrent();
@@ -994,11 +994,7 @@ bool CTranscendenceModel::FindScreenRoot (const CString &sScreen, CDesignType **
 
 		CDesignType *pRoot = Frame.pLocation->GetFirstDockScreen(&sScreenActual, &pData);
 		if (pRoot == NULL)
-			{
-			if (pData)
-				pData->Discard(&CC);
 			return false;
-			}
 
 		if (retpRoot)
 			*retpRoot = pRoot;
@@ -1008,8 +1004,6 @@ bool CTranscendenceModel::FindScreenRoot (const CString &sScreen, CDesignType **
 
 		if (retpData)
 			*retpData = pData;
-		else
-			pData->Discard(&CC);
 
 		return true;
 		}
@@ -2283,7 +2277,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 	//	If pRoot is NULL, then we have to look it up based on sScreen (and the local
 	//	screens root)
 
-	ICCItem *pDefaultData = NULL;
+	ICCItemPtr pDefaultData;
 	CString sScreenActual;
 	if (pRoot)
 		sScreenActual = sScreen;
@@ -2318,8 +2312,6 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 		pLocalScreens = pRoot->GetLocalScreens();
 		if (pLocalScreens == NULL)
 			{
-			if (pDefaultData)
-				pDefaultData->Discard(&CC);
 			*retsError = strPatternSubst(CONSTLIT("No local screens in type %x."), pRoot->GetUNID());
 			return ERR_FAIL;
 			}
@@ -2327,8 +2319,6 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 		pScreen = pLocalScreens->GetContentElementByTag(sScreenActual);
 		if (pScreen == NULL)
 			{
-			if (pDefaultData)
-				pDefaultData->Discard(&CC);
 			*retsError = strPatternSubst(CONSTLIT("Unable to find local screen %s in type %x."), sScreenActual, pRoot->GetUNID());
 			return ERR_FAIL;
 			}
@@ -2399,15 +2389,6 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 			&g_pTrans->m_pCurrentScreen,
 			&sError);
 	m_Universe.SetLogImageLoad(true);
-
-	//	We no longer need pDefaultData. Anyone who needed it took out a 
-	//	reference.
-
-	if (pDefaultData)
-		{
-		pDefaultData->Discard(&CC);
-		pDefaultData = NULL;
-		}
 
 	//	Handle errors
 
