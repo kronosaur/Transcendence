@@ -1896,6 +1896,7 @@
 	<!ENTITY rsEI100HD					"0x00100397">
 	<!ENTITY rsEI100Hero				"0x00100398">
 	<!ENTITY rsSapphire					"0x00100399">
+	<!ENTITY msRaisuStation				"0x0010039A">
 
 	<!-- 03B0-03CF SAPIENS -->
 
@@ -1910,6 +1911,7 @@
 
 	<!ENTITY rsCentauriHeavyRaiderHD	"0x001003F0">
 	<!ENTITY rsCentauriRaiderHD			"0x001003F1">
+	<!ENTITY evCentauriOccupation		"0x001003F2">
 
 	<!-- 0410-042F KOBOL WARLORDS -->
 

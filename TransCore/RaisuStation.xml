@@ -2,32 +2,13 @@
 
 <TranscendenceModule>
 
-	<!-- Raisu Station
-	
-	GLOBAL DATA
-	
-	status:				Status of Raisu station
-							Nil						= Controlled by Centauri Warlords
-							'destroyed				= Destroyed
-							'destroyedByPlayer		= Destroyed by player
-							'liberated				= Liberared
-
-	EXTRA DATA
-	
-	missionStatus:		Status of mission to kill Arco Vaughn
-							Nil						= no mission assigned
-							'inprogress				= Player has agreed to kill Arco Vaughn
-							'declined				= Player has declined mission
-							'success				= Player has killed Arco Vaughn
-							'complete				= Arco Vaughn is dead and player has been rewarded
-
-	raidersSummoned:	Total count of raiders summoned
-
-	-->
+	<!-- Raisu Station -->
 
 	<StationType UNID="&stRaisuStation;"
 			name=				": Raisu Station"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -49,211 +30,23 @@
 			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="192" imageY="0" imageWidth="64" imageHeight="128"/>
 		</ImageVariants>
 
-		<Ships>
-			<Ship count="1d4+1"	class="&scCentauriRaider;"	orders="patrol"	patrolDist="10"	sovereign="&svCentauriWarlords;"/>
+		<!-- Ships and Defenses -->
+
+		<Ships challenge="standard">
+			<Lookup table="&tbCommPrivateCrafts;"/>
 		</Ships>
-
-		<Events>
-			<GetGlobalAchievements>
-				(block (theList theStatus)
-					(setq theStatus (typGetGlobalData &stRaisuStation; "status"))
-					
-					(if theStatus
-						(setq theList (list
-							(list 
-								(or (typTranslate &stRaisuStation; (cat "achievement." theStatus))
-									(cat "ERROR: Raisu station status: " theStatus)
-									)
-								Nil 
-								"achievements &amp; regrets"
-								)
-							))
-						)
-						
-					theList
-					)
-			</GetGlobalAchievements>
-
-			<OnCreate>
-				(sysAddObjRecurringTimerEvent 451 gSource "OnTimer")
-			</OnCreate>
-
-			<OnDestroy>
-				(block Nil
-					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
-						(objSetGlobalData gSource "status" 'destroyedByPlayer)
-						(objSetGlobalData gSource "status" 'destroyed)
-						)
-						
-					(intCommonwealthOnDestroy)
-					)
-			</OnDestroy>
-
-			<OnObjDestroyed>
-				(if (and (eq (objGetData gSource "missionStatus") 'inprogress)
-						(eq aObjDestroyed (objGetObjRefData gSource "target")))
-					(block Nil
-						(objSetData gSource "missionStatus" 'success)
-						(shpCancelOrders gPlayerShip)
-						(shpOrder gPlayerShip 'dock gSource)
-						(plyMessage gPlayer "Mission complete!")
-						)
-					)
-			</OnObjDestroyed>
-
-			<GetCommonwealthCustomsStatus>
-				(switch
-
-					;	No customs if the station is not liberated
-
-					(!= (objGetGlobalData gSource 'status) 'liberated)
-						'disabled
-
-					;	Otherwise, Nil means normal customs
-
-					Nil
-					)
-			</GetCommonwealthCustomsStatus>
-
-			<OnTimer>
-				(block (arcoVaughnStatus)
-					(setq arcoVaughnStatus (typGetGlobalData &scArcoVaughnHeavyRaider; "status"))
-					(switch
-						; If Arco vaughn is destroyed, then some commonwealth ships show up
-						(and (eq arcoVaughnStatus 'destroyed)
-								(ls (count (staGetSubordinates gSource)) 3))
-							(block (theShip)
-								(setq theShip 
-									(sysCreateShip (random '(&scEI100; &scEI100; &scSapphireYacht; &scBorer;))
-										(sysFindObject gSource "GN -uncharted;")
-										&svCommonwealth;
-										)
-									)
-								(shpOrder theShip 'dock gSource)
-								(shpOrder theShip 'gateOnThreat)
-								(objAddSubordinate gSource theShip)
-								)
-
-						; If there are no raiders around, then summon some more
-						(and (not (eq arcoVaughnStatus 'destroyed))
-								(not (objGetData gSource "missionStatus"))
-								(leq (random 1 100) 20)
-								(not (sysFindObject gSource "s +centauriWarlords; N:150")))
-
-							(if (gr (objGetData gSource "raidersSummoned") 20)
-
-								; If we've already summoned lots of raiders, then send Arco Vaughn
-								(block (arcoVaughn)
-									(setq arcoVaughn (sysFindObject gSource "sN +arcoVaughn;"))
-									(if arcoVaughn
-										(objFireEvent arcoVaughn "OrderKillPlayer")
-										)
-									)
-
-								; Otherwise, summon more raiders
-								(block (newShips)
-									(setq newShips (random 3 4))
-									(objIncData gSource "raidersSummoned" newShips)
-									(for i 1 newShips
-										(block (theShip)
-											(setq theShip 
-												(sysCreateShip &scCentauriRaider;
-													(sysFindObject gSource "GN -uncharted;")
-													&svCentauriWarlords;
-													)
-												)
-											(shpOrder theShip 'patrol gSource 10)
-											)
-										)
-									)
-								)
-						)
-					)
-			</OnTimer>
-		</Events>
 
 		<DockScreens>
 			<Main>
-				<InitialPane>
-					(block (missionStatus)
-						(setq missionStatus (objGetData gSource "missionStatus"))
-
-						(switch
-							; Mission in progress
-							(eq missionStatus 'inprogress)
-								"MissionInProgress"
-
-							; See if player has destroyed target
-							(eq missionStatus 'success)
-								"MissionSuccess"
-
-							"Default"
-							)
-						)
-				</InitialPane>
-
 				<Panes>
-					<Default>
-						<OnPaneInit>
-							(block (
-								(missionStatus (objGetData gSource 'missionStatus))
-								)
-								(switch
-									;	If we're in the middle of a mission, everyone is hiding
-
-									(or (= missionStatus 'inProgress) (= missionStatus 'declined))
-										(scrSetDescTranslate gScreen 'descHiding)
-
-									;	If there are Centauri raiders in range, then everyone is hiding
-
-									(sysFindObject gSource "s +centauriWarlords; N:100;")
-										(scrSetDescTranslate gScreen 'descHiding)
-
-									;	Otherwise, normal
-
-									(scrSetDescTranslate gScreen 'descNormal)
-									)
-								)
-						</OnPaneInit>
-
+					<Default descID="descNormal">
 						<Actions>
-							<Action id="actionMeetingHall" default="1">
-								(block (missionStatus)
-									; Get some status
-									(setq missionStatus (objGetData gSource "missionStatus"))
-
-									(switch
-										; If Arco Vaughn is dead, everyone is happy
-										(eq (typGetGlobalData &scArcoVaughnHeavyRaider; "status") 'destroyed)
-											(scrShowPane gScreen "MeetingHallHappy")
-
-										; If the player declined, then everyone is still in fear
-										(eq missionStatus 'declined)
-											(scrShowPane gScreen "MeetingHallHiding")
-
-										; If there are Centauri raiders in range, then everyone is hinding
-										(sysFindObject gSource "s +centauriWarlords; N:100;")
-											(scrShowPane gScreen "MeetingHallHiding")
-
-										; Otherwise, see if we get a mission
-										(block (centauriStations centauriStationsDestroyed theStation)
-
-											; Count the number of Centauri stations in the system
-											(setq centauriStations (sysFindObject gSource "T +centauriWarlords; +populated; -occupation; -uncharted;"))
-											(setq centauriStationsDestroyed (filter centauriStations theStation (objIsAbandoned theStation)))
-
-											; If more than 2 stations have been destroyed or if all stations
-											; have been destroyed, then the player gets the Arco Vaughn mission
-											(if (or (geq (count centauriStationsDestroyed) 3) 
-													(eq (count centauriStations) (count centauriStationsDestroyed))
-													(gr (objGetData gSource "raidersSummoned") 12)
-													)
-												(scrShowPane gScreen "MissionIntro")
-												(scrShowPane gScreen "MeetingHallFearful")
-												)
-											)
-										)
-									)
+							<Action id="actionMainHall" default="1">
+								(rpgMissionAssignment {
+									missionCriteria: "n +commonwealthHabitat;"
+									noMissionTextID: 'descNoMissions
+									maxPerStation: 1
+									})
 							</Action>
 
 							<Action id="actionUndock" cancel="1">
@@ -261,183 +54,6 @@
 							</Action>
 						</Actions>
 					</Default>
-
-					<MissionIntro descID="descMissionIntro">
-						<Actions>
-							<Action id="actionContinue" default="1" cancel="1">
-								(scrShowPane gScreen "Mission")
-							</Action>
-						</Actions>
-					</MissionIntro>
-
-					<Mission descID="descMissionBriefing">
-						<Actions>
-							<Action id="actionAccept" default="1">
-								(block (arcoVaughn target launcherItem missileTypes bestType)
-									; Track Arco Vaughn
-									(setq arcoVaughn (sysFindObject gSource "sN +arcoVaughn;"))
-									(objSetObjRefData gSource "target" arcoVaughn)
-									(objRegisterForEvents gSource arcoVaughn)
-
-									; Set the player to Arco Vaughn's habitat
-									(setq target (sysFindObject gSource "TN +arcoVaughn;"))
-									(if (or (not target)
-											(eq (objGetEquipmentStatus gPlayerShip 'TargetingComputer) 'ready))
-										(setq target arcoVaughn)
-										)
-									(shpCancelOrders gPlayerShip)
-									(shpOrder gPlayerShip 'attack target)
-
-									; Give the player some appropriate missiles
-									(switch
-										;	If we don't have a launcher, give a missile rack
-										(not (setq launcherItem (@ (objGetItems gPlayerShip "lI -Disposable;") 0)))
-											(setq gItem (itmCreate &itDM1500MissileRack; 1))
-											
-										;	Find all compatible missiles for this launcher
-										(not (setq missileTypes (itmGetTypes (cat "M +launchedBy:" (itmGetType launcherItem) ";"))))
-											(setq gItem (itmCreate &itDM1500MissileRack; 1))
-										
-										;	Find a tracking missile of level 3 or less.
-										(setq bestType
-												(map missileTypes (list 'reduceMax 'original 'excludeNil) theType 
-													(if (and (itmGetProperty theType 'tracking)
-															(leq (itmGetLevel theType) 3)
-															)
-														(itmGetLevel theType)
-														)
-													)
-												)
-											(setq gItem (itmCreate bestType (random 32 48)))
-											
-										;	Otherwise, any missile of level 5 or less.
-										(setq bestType
-												(map missileTypes (list 'reduceMax 'original 'excludeNil) theType 
-													(if (leq (itmGetLevel theType) 5)
-														(itmGetLevel theType)
-														)
-													)
-												)
-											(setq gItem (itmCreate bestType (random 32 48)))
-											
-										;	Otherwise, default to a missile rack
-										(setq gItem (itmCreate &itDM1500MissileRack; 1))
-										)
-									(objAddItem gPlayerShip gItem)
-
-									; Set mission
-									(objSetData gSource "missionStatus" 'inprogress)
-									(scrShowPane gScreen "MissionAccept")
-									)
-							</Action>
-
-							<Action id="actionDecline" cancel="1">
-								(block Nil
-									(objSetData gSource "missionStatus" 'declined)
-									(scrShowPane gScreen "MissionDecline")
-									)
-							</Action>
-						</Actions>
-					</Mission>
-
-					<MissionAccept>
-						<OnPaneInit>
-							(if (gr (itmGetCount gItem) 1)
-								(scrSetDescTranslate gScreen 'descMissionAcceptPlural { itemName:(itmGetName gItem 0x02) })
-								(scrSetDescTranslate gScreen 'descMissionAcceptSingular { itemName:(itmGetName gItem 0x00) })
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action id="actionContinue" default="1" cancel="1">
-								<Exit/>
-							</Action>
-						</Actions>
-					</MissionAccept>
-
-					<MissionDecline descID="descMissionDecline">
-						<Actions>
-							<Action id="actionContinue" default="1" cancel="1">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MissionDecline>
-
-					<MissionSuccess>
-						<OnPaneInit>
-							(if (= (plyGetGenome gPlayer) 'humanMale)
-								(scrSetDescTranslate gScreen 'descMissionSuccessWhisper)
-								(scrSetDescTranslate gScreen 'descMissionSuccessHug)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action id="actionContinue" default="1" cancel="1">
-								(block Nil
-									(shpCancelOrders gPlayerShip)
-									(objSetData gSource "missionStatus" 'complete)
-									(objSetGlobalData gSource "status" 'liberated)
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</MissionSuccess>
-
-					<MissionInProgress descID="descMissionHiding">
-						<Actions>
-							<Action id="actionContinue" default="1" cancel="1">
-								(block Nil
-									(shpCancelOrders gPlayerShip)
-									(shpOrder gPlayerShip 'attack (sysFindObject gSource "TN +arcoVaughn;"))
-									(scrExitDock gScreen)
-									)
-							</Action>
-						</Actions>
-					</MissionInProgress>
-
-					<MeetingHallHiding descID="descMissionHiding">
-						<Actions>
-							<Action id="actionContinue" default="1" cancel="1">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MeetingHallHiding>
-
-					<MeetingHallFearful>
-						<OnPaneInit>
-							(block (centauriStations centauriStationsDestroyed)
-
-								;	Count the number of destroyed Centauri stations
-
-								(setq centauriStations (sysFindObject gSource "T +centauriWarlords; +populated; -occupation; -uncharted;"))
-								(setq centauriStationsDestroyed (filter centauriStations theStation (objIsAbandoned theStation)))
-
-								(switch
-									(eq (count centauriStationsDestroyed) 0)
-										(scrSetDescTranslate gScreen 'descStationFearful0)
-
-									(eq (count centauriStationsDestroyed) 1)
-										(scrSetDescTranslate gScreen 'descStationFearful1)
-
-									(scrSetDescTranslate gScreen 'descStationFearful2)
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action id="actionLeave" default="1" cancel="1">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MeetingHallFearful>
-
-					<MeetingHallHappy descID="descMeetingHallHappy">
-						<Actions>
-							<Action id="actionLeave" default="1" cancel="1">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MeetingHallHappy>
 				</Panes>
 			</Main>
 		</DockScreens>
@@ -453,20 +69,332 @@
 		</DockingPorts>
 
 		<Language>
-			<Text id="actionAccept">[A]ccept</Text>
-			<Text id="actionContinue">[C]ontinue</Text>
-			<Text id="actionDecline">[D]ecline</Text>
-			<Text id="actionLeave">[L]eave</Text>
-			<Text id="actionMeetingHall">[M]eeting Hall</Text>
-			<Text id="actionUndock">[U]ndock</Text>
-
 			<Text id="descNormal">
 
 				The loud voices of a packed multitude bounce off every bulkhead and corridor in the station.
-				Old air scrubbers pump a thin, odorous breeze out of rusty vents. Discarded packets of 
+				Old air scrubbers pump a thin, odorous breeze out of rusty vents. Discarded packets of
 				Salmonite and Red Nebula beer huddle in the corner.
 
 				Welcome to Raisu Station!
+
+			</Text>
+		</Language>
+	</StationType>
+
+	<!-- Mission: Liberate Raisu station =======================================
+
+	EXTRA DATA
+
+	status:		Status of Raisu station
+					Nil						= Controlled by Centauri Warlords
+					'destroyed				= Destroyed
+					'destroyedByPlayer		= Destroyed by player
+					'liberated				= Liberated
+
+	targetID:				ID of ship to destroy (Arco Vaughn)
+	raidersSummoned:		Number of raiders summoned to station
+
+	======================================================================== -->
+
+	<MissionType UNID="&msRaisuStation;"
+			name=				"Liberate Raisu station"
+			attributes=			"commonwealth, special, deliveryMission"
+
+			level=				"1"
+
+			priority=			"10"
+			maxAppearing=		"1"
+			recordNonPlayer=	"true"
+			>
+
+		<Events>
+			<OnCreate>
+				(block (
+					(arcoVaughn (sysFindObject gSource "sN +arcoVaughn;"))
+					)
+					(switch
+						(not arcoVaughn)
+							(msnDestroy gSource)
+
+						(block Nil
+							(msnSetData gSource 'destID (objGetID aOwnerObj))
+
+							;	Remove Commonwealth ships
+							(objSetProperty aOwnerObj 'shipReinforcementEnabled Nil)
+							(enum (sysFindObject aOwnerObj "sO:docked;") theShip (objDestroy theShip))
+
+							;	Disable Commonwealth customs
+							(objSetEventHandler aOwnerObj &evCentauriOccupation;)
+
+							;	Add Centauri Raiders
+							(for i 1 (random 4 5)
+								(block (theShip)
+									(setq theShip (sysCreateShip &scCentauriRaider; aOwnerObj &svCentauriWarlords;))
+									(shpOrder theShip 'patrol aOwnerObj 10)
+									)
+								)
+
+							(msnSetData gSource 'targetID (objGetID arcoVaughn))
+							(msnRegisterForEvents gSource arcoVaughn)
+
+							;	Updates
+							(msnAddRecurringTimerEvent gSource 451 'OnTimer)
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (theItem launcherItem missileTypes bestType)
+					;	Give the player some appropriate missiles
+					(switch
+						;	If we don't have a launcher, give a missile rack
+						(not (setq launcherItem (@ (objGetItems gPlayerShip "lI -Disposable;") 0)))
+							(setq theItem (itmCreate &itDM1500MissileRack; 1))
+
+						;	Find all compatible missiles for this launcher
+						(not (setq missileTypes (itmGetTypes (cat "M +launchedBy:" (itmGetType launcherItem) ";"))))
+							(setq theItem (itmCreate &itDM1500MissileRack; 1))
+
+						;	Find a tracking missile of level 3 or less.
+						(setq bestType
+								(map missileTypes (list 'reduceMax 'original 'excludeNil) theType
+									(if (and (itmGetProperty theType 'tracking)
+											(leq (itmGetLevel theType) 3)
+											)
+										(itmGetLevel theType)
+										)
+									)
+								)
+							(setq theItem (itmCreate bestType (random 32 48)))
+
+						;	Otherwise, any missile of level 5 or less.
+						(setq bestType
+								(map missileTypes (list 'reduceMax 'original 'excludeNil) theType
+									(if (leq (itmGetLevel theType) 5)
+										(itmGetLevel theType)
+										)
+									)
+								)
+							(setq theItem (itmCreate bestType (random 32 48)))
+
+						;	Otherwise, default to a missile rack
+						(setq theItem (itmCreate &itDM1500MissileRack; 1))
+						)
+					(objAddItem gPlayerShip theItem)
+					(msnSetData gSource 'theItem theItem)
+					)
+			</OnAccepted>
+
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)))
+			</OnSetPlayerTarget>
+
+			<OnTimer>
+				(block (
+					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					)
+					(switch
+						;	If not in Starton Eridani, then nothing to do
+						(!= (sysGetNode) (msnGetProperty gSource 'nodeID))
+							Nil
+
+						;	If we currently have raiders, then nothing to do
+						(sysFindObject stationObj "s +centauriWarlords; N:150")
+							Nil
+
+						;	If we've already summoned lots of raiders, then send Arco Vaughn
+						(gr (msnGetData gSource 'raidersSummoned) 20)
+							(block (arcoVaughn)
+								(setq arcoVaughn (sysFindObject stationObj "sN +arcoVaughn;"))
+								(if arcoVaughn
+									(objFireEvent arcoVaughn "OrderKillPlayer")
+									)
+								)
+
+						;	Otherwise summon some more raiders
+						(leq (random 1 100) 20)
+							(for i 1 (random 3 4)
+								(block (theShip)
+									(setq theShip
+										(sysCreateShip &scCentauriRaider;
+											(sysFindObject stationObj "GN -uncharted;")
+											&svCentauriWarlords;
+											)
+										)
+									(shpOrder theShip 'patrol stationObj 10)
+									(msnIncData gSource 'raidersSummoned)
+									)
+								)
+							)
+						)
+					)
+			</OnTimer>
+
+			<OnObjDestroyed>
+				(switch
+					(= (objGetID aObjDestroyed) (msnGetProperty gSource 'ownerID))
+						(block Nil
+							;	If the mission is still open we need to make it a non-player mission
+							(msnSetUnavailable gSource)
+							(msnFailure gSource {
+								destroyedByPlayer: (and gPlayerShip (= aOrderGiver gPlayerShip))
+								})
+							)
+
+					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(block Nil
+							;	If the mission is still open we need to make it a non-player mission
+							(msnSetUnavailable gSource)
+							(msnSuccess gSource)
+							)
+					)
+			</OnObjDestroyed>
+
+			<OnCompleted>
+				(switch
+					(= aReason 'success)
+						(block (
+							(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+							)
+							(msnSetData gSource 'status 'liberated)
+							(objSetProperty stationObj 'shipReinforcementEnabled True)
+							(objSetEventHandler stationObj Nil)
+							)
+
+					(and (= aReason 'failure) (@ gData 'destroyedByPlayer))
+						(msnSetData gSource 'status 'destroyedByPlayer)
+
+					(= aReason 'failure)
+						(msnSetData gSource 'status 'destroyed)
+					)
+			</OnCompleted>
+
+			<OnCanBrief>
+				(block (
+					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(centauriDestroyed (count (sysFindObject gPlayerShip "TK +centauriWarlords; +populated; -occupation; -uncharted;")))
+					)
+
+					(switch
+						;	If the player declined, then everyone is still in fear
+						(msnGetProperty gSource 'isDeclined)
+							(msnTranslate gSource 'descMissionHiding)
+
+						;	If there are Centauri raiders in range, then everyone is hinding
+						(sysFindObject stationObj "s +centauriWarlords; N:100;")
+							(msnTranslate gSource 'descMissionHiding)
+
+						;	If all stations have been destroyed, then the player gets the mission
+						(not (sysFindObject gPlayerShip "TA +centauriWarlords; +populated; -occupation; -uncharted;"))
+							Nil
+
+						;	Check the number of destroyed Centauri stations
+						(= centauriDestroyed 0)
+							(msnTranslate gSource 'descStationFearful0)
+
+						(= centauriDestroyed 1)
+							(msnTranslate gSource 'descStationFearful1)
+
+						(= centauriDestroyed 2)
+							(msnTranslate gSource 'descStationFearful2)
+
+						;	Otherwise player gets the mission
+						Nil
+						)
+					)
+			</OnCanBrief>
+
+			<OnDeliveryMissionCompleted>
+				{
+					desc: (msnTranslate gSource 'descHiding)
+					forceUndock: True
+					}
+			</OnDeliveryMissionCompleted>
+
+			<OnGlobalSystemStarted>
+				(block (raisuObj)
+					(switch
+						;	Only create in Starton Eridani
+						(!= (sysGetNode) 'SE)
+							Nil
+
+						;	Only create one
+						(msnFind "* +unid:&msRaisuStation;;")
+							Nil
+
+						(not (setq raisuObj (sysFindObject Nil "TAN +unid:&stRaisuStation;;")))
+							Nil
+
+						(msnCreate &msRaisuStation; raisuObj)
+						)
+					)
+			</OnGlobalSystemStarted>
+
+			<GetGlobalAchievements>
+				(block (theMission theStatus)
+					(if (and
+							(setq theMission (msnFind "P* +unid:&msRaisuStation;;"))
+							(setq theStatus (msnGetData theMission 'status))
+							)
+						(list
+							(list
+								(or (msnTranslate theMission (cat "achievement." theStatus))
+									(cat "ERROR: Raisu station status: " theStatus)
+									)
+								Nil
+								(typTranslate &unidCommonText; 'achievementsAndRegrets)
+								)
+							)
+						)
+					)
+			</GetGlobalAchievements>
+		</Events>
+
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'descSummary)
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+
+			<Text id="AcceptReply">
+				(block (
+					(theItem (msnGetData gSource 'theItem))
+					)
+					(if (gr (itmGetCount theItem) 1)
+						(msnTranslate gSource 'descMissionAcceptPlural { itemName:(itmGetName theItem 'plural) })
+						(msnTranslate gSource 'descMissionAcceptSingular { itemName:(itmGetName theItem) })
+						)
+					)
+			</Text>
+
+			<Text id="InProgress">
+				(msnTranslate gSource 'descMissionHiding)
+			</Text>
+
+			<Text id="SuccessDebrief">
+				(if (= (plyGetGenome gPlayer) 'humanMale)
+					(msnTranslate gSource 'descMissionSuccessWhisper)
+					(msnTranslate gSource 'descMissionSuccessHug)
+					)
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">Kill Arco Vaughn</Text>
+			<Text id="descSummary">
+
+				Centauri warlords have taken over Raisu station. Help free the station by
+				killing the warlord Arco Vaughn.
 
 			</Text>
 			<Text id="descHiding">
@@ -509,7 +437,7 @@
 
 			</Text>
 
-			<Text id="descMissionIntro">
+			<Text id="Intro">
 
 				The station master stands at her console. She runs towards you tearfully:
 
@@ -520,7 +448,7 @@
 				"Arco Vaughn is the key. Kill him and the rest will leave us alone."
 
 			</Text>
-			<Text id="descMissionBriefing">
+			<Text id="Briefing">
 
 				"I can help you; I'm not afraid anymore. Arco Vaughn lives deep in the outer
 				belt&#x97;I can give you the coordinates. Kill him and we will all be free.
@@ -546,7 +474,7 @@
 				She hugs you quickly and runs off.
 
 			</Text>
-			<Text id="descMissionDecline">
+			<Text id="DeclineReply">
 
 				The station master stares at you in shock and then begins to weep.
 
@@ -586,6 +514,16 @@
 			<Text id="achievement.destroyed">Allowed Raisu station to be destroyed</Text>
 			<Text id="achievement.destroyedByPlayer">Destroyed Raisu station</Text>
 		</Language>
-	</StationType>
+	</MissionType>
+
+<!-- BEHAVIORS -->
+
+	<Type UNID="&evCentauriOccupation;">
+		<Events>
+			<GetCommonwealthCustomsStatus>
+				'disabled
+			</GetCommonwealthCustomsStatus>
+		</Events>
+	</Type>
 
 </TranscendenceModule>
