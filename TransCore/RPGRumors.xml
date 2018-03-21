@@ -43,6 +43,7 @@
 						(sourceObj (@ gData 'sourceObj))
 						(sourceTyp (@ gData 'sourceType))
 						(rumorIntro (objTranslate gSource 'rumor.intro))
+						(descID (or (@ gData 'descID) (@ gData 'textID)))
 
 						(theRumor (switch
 							;	If we have a dialogID then translate from sourceObj
@@ -55,10 +56,19 @@
 								{
 									desc: (cat rumorIntro
 										(or
-											(objTranslate sourceObj (@ gData 'textID) (@ gData 'data))
-											(typTranslate sourceTyp (@ gData 'textID) (@ gData 'data))
+											(objTranslate sourceObj descID (@ gData 'data))
+											(typTranslate sourceTyp descID (@ gData 'data))
 											(@ gData 'desc)
 											)
+										)
+									}
+
+							;	If we have a global rumor then we need to translate descID
+							sourceTyp
+								{
+									desc: (or
+										(typTranslate sourceTyp descID (@ gData 'data))
+										(@ gData 'desc)
 										)
 									}
 
