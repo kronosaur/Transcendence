@@ -357,7 +357,14 @@
 						Nil
 
 					(= (msnGetProperty gSource 'ownerID) (objGetID (@ gData 'stationObj)))
-						Nil
+						(if (msnGetProperty gSource 'isSuccess)
+							{
+								attributes: 'commonwealthHabitat
+								priority: 10000
+								sourceObj: gSource
+								dialogID: 'descMeetingHallHappy
+								}
+							)
 
 					(msnGetProperty gSource 'isSuccess)
 						(rpgRumorAdd 'commonwealthHabitat (make 'sequence 5 8) 20)
