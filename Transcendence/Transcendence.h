@@ -954,6 +954,7 @@ class CTranscendencePlayer : public IPlayerController
         virtual CPlayerGameStats *GetGameStats (void) const override { return &m_pPlayer->GetGameStats(); }
 		virtual GenomeTypes GetGenome (void) const override;
 		virtual CString GetName (void) const override;
+		virtual EUIMode GetUIMode (void) const override;
 		virtual void OnMessageFromObj (CSpaceObject *pSender, const CString &sMessage) override;
 
 	private:

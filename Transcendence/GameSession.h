@@ -74,6 +74,7 @@ class CGameSession : public IHISession
 		CDockScreen &GetDockScreen (void) { return m_CurrentDock; }
         CGalacticMapSession::SOptions &GetGalacticMapSettings (void) { return m_GalacticMapSettings; }
 		CGameSettings &GetGameSettings (void) { return m_Settings; }
+		IPlayerController::EUIMode GetUIMode (void) const;
 		inline bool InMenu (void) { return (m_CurrentMenu != menuNone); }
         inline bool InSystemMap (void) const { return m_bShowingSystemMap; }
 		void PaintInfoText (CG32bitImage &Dest, const CString &sTitle, const TArray<CString> &Body, bool bAboveTargeting = true);

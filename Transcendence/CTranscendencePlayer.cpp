@@ -33,6 +33,20 @@ CString CTranscendencePlayer::GetName (void) const
 	return m_pPlayer->GetPlayerName();
 	}
 
+IPlayerController::EUIMode CTranscendencePlayer::GetUIMode (void) const
+
+//	GetUIMode
+//
+//	Returns the current UI mode.
+
+	{
+	CGameSession *pSession = m_pPlayer->GetGameSession();
+	if (pSession == NULL)
+		return uimodeUnknown;
+
+	return pSession->GetUIMode();
+	}
+
 void CTranscendencePlayer::OnMessageFromObj (CSpaceObject *pSender, const CString &sMessage)
 
 //	OnMessageFromObj

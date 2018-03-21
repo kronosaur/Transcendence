@@ -54,6 +54,31 @@ void CGameSession::DismissMenu (void)
 		}
 	}
 
+IPlayerController::EUIMode CGameSession::GetUIMode (void) const
+
+//	GetUIMode
+//
+//	Returns the current UI mode
+
+	{
+	switch (g_pTrans->m_State)
+		{
+		case CTranscendenceWnd::gsInGame:
+			return IPlayerController::uimodeSpace;
+
+		case CTranscendenceWnd::gsDocked:
+			return IPlayerController::uimodeDockScreen;
+
+		case CTranscendenceWnd::gsEnteringStargate:
+		case CTranscendenceWnd::gsWaitingForSystem:
+		case CTranscendenceWnd::gsLeavingStargate:
+			return IPlayerController::uimodeInStargate;
+
+		default:
+			return IPlayerController::uimodeUnknown;
+		}
+	}
+
 void CGameSession::HideMenu (void)
 
 //	HideMenu
