@@ -879,33 +879,6 @@
 			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
 		</Ships>
 
-		<StaticData>
-			<RumorsBA>
-				(
-					(cat "\"What's your favorite weapon? Personally I favor "
-						(seededRandom (objGetDestiny gSource)
-							'(
-								"the AK505 Ballista. It's a monster and it will kill a lot of ships with a single punch. When I hit something, I want it to go down, you know what I mean?\""
-								"a particle beam weapon. The latest tech is always going to win in the end. You have to keep up with technology or you're just another wreck in the Arena.\""
-								"an omni turbolaser. I say a computer can hit a target way better than I can, so why not take advantage of that? By the time your opponent has lined up his BFG, you've already hit him five times!\""
-								"a slam cannon, enhanced if possible. There's nothing better than the thump-thump sounds of a slam cannon hitting your enemy's plasteel!\""
-								"the RK15 Partisan turret. Sure, the wimpy omniturbo is a little faster, but I wanna hit my targets with a punch, not shine a damn light in their eyes.\""
-								)
-							)
-						)
-					(cat "\"So what kind of shields you got? I think a lot of gladiators underestimate how important shields are. "
-						(seededRandom (objGetDestiny gSource)
-							'(
-								"Even a good monopole deflector is better than nothing. I'd enhance the crap out of it, though.\""
-								"The Cyclotron series are my choice at the moment. The S55 has more protection than a class III; better yet, get the S1200.\""
-								"If you can afford the Ceratops series then go for it. They're the best against missiles anyway, which is what you're gonna get hit with in the Arena.\""
-								)
-							)
-						)
-					)
-			</RumorsBA>
-		</StaticData>
-
 		<Events>
 			<GetGlobalAchievements>
 				(block (
