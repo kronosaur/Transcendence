@@ -930,30 +930,28 @@
 
 			<OnContractQuery>True</OnContractQuery>
 
-			<GetRumors>
-				(if (= gSource (@ gData 'stationObj))
-					(append
-						(rpgRumorAdd 'commonwealthHabitat (make 'sequence 4))
+			<GetGlobalRumors>
+				(append
+					(rpgRumorAdd 'commonwealthHabitat (make 'sequence 4))
 
-						(if (= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
-							(rpgRumorAdd 'commonwealthHabitat 'pilgrim)
-							(rpgRumorAdd 'commonwealthHabitat 'freelancer)
-							)
+					(if (= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+						(rpgRumorAdd 'commonwealthHabitat 'pilgrim)
+						(rpgRumorAdd 'commonwealthHabitat 'freelancer)
+						)
 
-						(rpgRumorAdd 'commonwealthHabitat
-							(switch
-								(= (objGetType gPlayerShip) &scSapphirePlayer;)	'sapphire
-								(= (objGetType gPlayerShip) &scEI100XPlayer;)	'ei100x
-								(= (objGetType gPlayerShip) &scWolfenPlayer;)	'wolfen
-																				'other
-								)
-							Nil
-							Nil
-							{	shipName: (objGetName gPlayerShip)	}
+					(rpgRumorAdd 'commonwealthHabitat
+						(switch
+							(= (objGetType gPlayerShip) &scSapphirePlayer;)	'sapphire
+							(= (objGetType gPlayerShip) &scEI100XPlayer;)	'ei100x
+							(= (objGetType gPlayerShip) &scWolfenPlayer;)	'wolfen
+																			'other
 							)
+						Nil
+						Nil
+						{	shipName: (objGetName gPlayerShip)	}
 						)
 					)
-			</GetRumors>
+			</GetGlobalRumors>
 		</Events>
 
 		<DockScreens>

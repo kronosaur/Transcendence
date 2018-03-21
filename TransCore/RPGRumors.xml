@@ -41,6 +41,7 @@
 				<OnPaneInit>
 					(block (
 						(sourceObj (@ gData 'sourceObj))
+						(sourceTyp (@ gData 'sourceType))
 						(rumorIntro (objTranslate gSource 'rumor.intro))
 
 						(theRumor (switch
@@ -55,6 +56,7 @@
 									desc: (cat rumorIntro
 										(or
 											(objTranslate sourceObj (@ gData 'textID) (@ gData 'data))
+											(typTranslate sourceTyp (@ gData 'textID) (@ gData 'data))
 											(@ gData 'desc)
 											)
 										)
@@ -103,7 +105,7 @@
 				;		rumor.attrib[.suffix]
 				;
 				;	attrib:	Rumor attribute e.g. commonwealthMining
-				;	suffix:	Added to the end of textID. Make be a sequence [optional]
+				;	suffix:	Added to the end of textID. May be a sequence [optional]
 				;	priority:	Rumor priority [default 10]
 				;	special:	May be one of the following:
 				;		'scan		Scan (i.e. objSetKnow) the source station after displaying rumor
@@ -163,10 +165,25 @@
 						stationObj:gSource
 						})
 
+					;	Lambda to add sourceType to global rumors
+					(wrapGlobalRumor (lambda (rumors theType)
+						(switch
+							(= (typeOf rumors) 'struct)
+								(set@ rumors { sourceObj:Nil sourceType:theType })
+							(= (typeOf rumors) 'list)
+								(map rumors theRumor
+									(set@ theRumor { sourceObj:Nil sourceType:theType })
+									)
+							)
+						))
+
 					;	Build rumor list from: global types, local stations, and missions
 					(allRumors (apply append (append
 						(map (typFind "*") 'excludeNil theType
-							(typFireEvent theType 'GetGlobalRumors eventData)
+							(wrapGlobalRumor
+								(typFireEvent theType 'GetGlobalRumors eventData)
+								theType
+								)
 							)
 						(map (sysFindObject Nil "AT") 'excludeNil theObj
 							(objFireEvent theObj 'GetRumors eventData)
