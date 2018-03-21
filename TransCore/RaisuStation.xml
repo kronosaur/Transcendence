@@ -44,8 +44,9 @@
 							<Action id="actionMainHall" default="1">
 								(rpgMissionAssignment {
 									missionCriteria: "n +commonwealthHabitat;"
+									maxActive: 1
+									intervalPerType: (+ 5400 (* (objGetDestiny gSource) 10))
 									noMissionTextID: 'descNoMissions
-									maxPerStation: 1
 									})
 							</Action>
 
@@ -349,6 +350,24 @@
 						)
 					)
 			</GetGlobalAchievements>
+
+			<GetRumors>
+				(switch
+					(!= (msnGetProperty gSource 'nodeID) (sysGetNode))
+						Nil
+
+					(= (msnGetProperty gSource 'ownerID) (objGetID (@ gData 'stationObj)))
+						Nil
+
+					(msnGetProperty gSource 'isSuccess)
+						(rpgRumorAdd 'commonwealthHabitat (make 'sequence 5 8) 20)
+
+					(msnGetProperty gSource 'isFailure)
+						Nil
+
+					(rpgRumorAdd 'commonwealthHabitat (make 'sequence 1 4) 20)
+					)
+			</GetRumors>
 		</Events>
 
 
@@ -508,6 +527,43 @@
 
 				She beams a smile and hugs you again.
 
+			</Text>
+
+			<Text id="rumor.commonwealthHabitat.1">
+				"The warlords are annoying, but they don't mean much. The only one that bothers
+				me is Arco Vaughn. He's trouble. Someone ought to air him out before things get
+				out of hand, you know?"
+			</Text>
+			<Text id="rumor.commonwealthHabitat.2">
+				"It's sad about Raisu station, isn't it? If a corporate fuel station got taken
+				over by Centauri warlords they'd have Admiral Decker himself leading the
+				rescue. But no one cares about a poor, backwater station, I guess."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.3">
+				"If you're looking for Arco Vaughn, go to Raisu station: the station master
+				there will help you out. But first you gotta convince her that you're serious."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.4">
+				"If you need help against Arco Vaughn the station master at Raisu station will
+				help you. But you'll have to prove that you're serious. Take out a few Centauri
+				stations and you might convince her."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.5">
+				"Thank heavens that someone finally killed Arco Vaughn. Maybe now the warlords
+				will leave us alone."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.6">
+				"It's shame what Raisu station had to go through, isn't it? If a corporate
+				station had been occupied by warlords, they'd have sent Admiral Decker himself
+				to lead the rescue. But no one cares about a poor, backwater station, I guess."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.7">
+				"I hear that Arco Vaughn is finally dead. No one will mourn him. I really feel
+				for Erica and her team at Raisu&mdash;they went through hell."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.8">
+				"We're all glad that Arco Vaughn is dead. I heard someone from Raisu station
+				finally had enough and decided to chase him down."
 			</Text>
 
 			<Text id="achievement.liberated">Liberated Raisu station</Text>

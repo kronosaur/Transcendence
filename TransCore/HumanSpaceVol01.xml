@@ -2114,6 +2114,7 @@
 	<Module filename="CommonwealthMilitiaMission04.xml"/>
 	<Module filename="CommonwealthMilitiaMissionSK01.xml"/>
 	<Module filename="CommonwealthMining.xml"/>
+	<Module filename="CommonwealthMission01.xml"/>
 	<Module filename="CommonwealthShips.xml"/>
 	<Module filename="CommonwealthStarCarrier.xml"/>
 	<Module filename="CorporateHierarchy.xml"/>

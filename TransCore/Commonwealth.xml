@@ -830,272 +830,12 @@
 		</Language>
 	</StationType>
 	
-	<!-- Mission: Destroy Threat to Commonwealth Habitat
-	
-	EXTRA DATA
-	
-	reward:				Reward (in credits) for completing mission
-	targetID:			Id of station to destroy
-	targetType:			One of:
-							'centauriWarlords
-							'miscEnemy
-
-	-->
-	
-	<MissionType UNID="&msDestroyThreatToSlums;"
-			name=				"Destroy Threat to Commonwealth Habitat"
-			attributes=			"commonwealth, commonwealthHabitat"
-
-			level=				"1-4"
-			scope=				"system"
-
-			>
-		<Events>
-			<OnCreate>
-				; Called when mission object is created. This adds the mission
-				; to the list of available missions, but it does not necessarily
-				; start the mission.
-				;
-				; The script may call msnDestroy to abort creation of the mission.
-				;
-				; gSource is mission object
-				; gData is arbitrary data passed in to msnCreate
-				; aOwnerObj is the object that created the mission (or nil)
-				
-				(block (enemyStations)
-				
-					(switch
-					
-						; Get a list of enemy stations in the region. If we cannot find any
-						; suitable targets then we don't have a mission.
-						
-						(not (setq enemyStations (sysFindObject aOwnerObj "TAE +populated; -uncharted; N:450;")))
-							(msnDestroy gSource)
-							
-						; Otherwise we can create a mission
-						
-						(block (targetObj)
-						
-							; Pick a random enemy station to destroy
-							(setq targetObj (seededRandom (objGetDestiny aOwnerObj) enemyStations))
-							
-							; Remember it
-							(msnSetData gSource 'targetID (objGetID targetObj))
-							
-							; Register for events so we know when the target is destroyed
-							(msnRegisterForEvents gSource targetObj)
-
-							; Remember the type of enemy
-							(switch
-								(objHasAttribute targetObj "centauriWarlords")
-									(msnSetData gSource 'targetType 'centauriWarlords)
-									
-								(msnSetData gSource 'targetType 'miscEnemy)
-								)
-								
-							; Compute reward
-							(msnSetData gSource 'reward (add 200 (multiply (objGetLevel targetObj) 100)))
-							)
-						)
-					)
-			</OnCreate>
-
-			<OnAccepted>
-				; Called if the player accepts the mission. The mission is 
-				; already running (OnStarted has been called).
-				;
-				; gSource is mission object
-
-			</OnAccepted>
-			
-			<OnDeclined>
-				; Called if the player rejects the mission. The mission is already
-				; running (OnStarted has been called).
-				;
-				; gSource is mission object.
-
-			</OnDeclined>
-
-			<OnStarted>
-				; Called when the mission starts. This is called if the mission
-				; starts running (either because the player accepted or some other
-				; reason).
-				;
-				; gSource is mission object.
-
-			</OnStarted>
-			
-			<OnSetPlayerTarget>
-				; Called to refresh the player's target. Always called right after
-				; the player accepts the mission. May be called at other times
-				; (e.g., after the player returns to the system).
-				;
-				; gSource is mission object
-				; aReason is:
-				;		'accepted: Mission has been accepted
-				;		'debriefed: Player has been debriefed
-				;		'failure: Mission failed
-				;		'inProgress: Player visited station while mission in progress
-				;		'newSystem: Player is in a new system
-				;		'success: Mission completed successfully
-				
-				(block (targetObj)
-					(switch
-						; If we just got debriefed then we clear our targets.
-
-						(eq aReason 'debriefed)
-							(shpCancelOrders gPlayerShip)
-
-						; If the mission is complete, then we point towards the 
-						; owner station.
-
-						(msnGetProperty gSource 'isCompleted)
-							(if (setq targetObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-								(block Nil
-									(shpCancelOrders gPlayerShip)
-									(shpOrder gPlayerShip 'dock targetObj)
-									)
-								)
-
-						; Otherwise, we point towards the target
-
-						(if (setq targetObj (objGetObjByID (msnGetData gSource 'targetID)))
-							(block Nil
-								(shpCancelOrders gPlayerShip)
-								(shpOrder gPlayerShip 'attack targetObj)
-								)
-							)
-						)
-					)
-			</OnSetPlayerTarget>
-			
-			<OnObjDestroyed>
-				(switch
-					(eq (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
-						(msnSuccess gSource)
-					)
-			</OnObjDestroyed>
-			
-			<OnCompleted>
-				; Called when the mission ends (generally because msnSuccess or
-				; msnFailure were called).
-				;
-				; gSource is mission object
-				; gData is arbitrary data passed in to msnSuccess or msnFailure
-				; aReason is:
-				;		'failure: Mission failed
-				;		'success: Mission completed successfully
-				
-			</OnCompleted>
-			
-			<OnReward>
-				; Called by msnReward, generally during debrief.
-				;
-				; gSource is mission object
-				; gData is data passed to msnReward
-
-				(intMissionRewardPayment (msnGetData gSource 'reward))
-			</OnReward>
-			
-			<OnDestroy>
-				; Called when mission object is destroyed (after mission ends)
-				;
-				; gSource is mission object
-				;
-				; NOTE: No need to unregister for events because we automatically
-				; unregister when the mission is complete.
-
-			</OnDestroy>
-		</Events>
-		
-		<Language>
-			<Text id="Name">
-				"Destroy Threat to Commonwealth Habitat"
-			</Text>
-			<Text id="Summary">
-				(cat
-					"Your mission is to destroy " (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x04) " in the " (sysGetName) " system.\n\n"
-					"System: " (sysGetName) "\n"
-					"Payment: " (msnGetData gSource 'reward) " credits"
-					)
-			</Text>
-			<Text id="Intro">
-
-				The station master stands at his console. Managers and 
-				supervisors swarm around him dealing with various crises. He 
-				turns his attention towards you:
-
-				"We could use your help, %brother%. You've got a ship with a 
-				good punch and we got something that needs punching. We'll pay 
-				you, of course."
-
-			</Text>
-			<Text id="Briefing">
-				(block (
-					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
-					)
-
-					(switch
-						(eq (msnGetData gSource 'targetType) 'centauriWarlords)
-							(cat
-								"\"A band of Centauri warlords has been harassing this station recently. We've discovered the location of their base and we want you to go there and destroy them. "
-								"If you succeed we'll pay you " (msnGetData gSource 'reward) " credits. Will you help us?\""
-								)
-							
-						(cat
-							"\"" (objGetName targetObj 0x05) " nearby has been attacking us recently. We want you to destroy them! "
-							"If you succeed we'll pay you " (msnGetData gSource 'reward) " credits. Will you help us?\""
-							)
-						)
-					)
-			</Text>
-			<Text id="AcceptReply">
-
-				"Thank you! I knew we could count on you. We'll program the 
-				target into your ship's computer. Just follow the arrow on your 
-				screen and you'll get there. Good luck!"
-
-			</Text>
-			<String id="DeclineReply">
-				"Ah, Hell! What are you doing here then? Stop wasting my time!"
-			</String>
-			<Text id="InProgress">
-
-				"What's wrong? You said you could handle this mission! Get back 
-				out there and finish the job!"
-
-			</Text>
-			<Text id="SuccessDebrief">
-				(cat
-					(switch
-						(eq (msnGetData gSource 'targetType) 'centauriWarlords)
-							"\"Great work! Maybe the warlords will think twice before attacking us again."
-
-						"\"Great work! Now we can live in peace. "
-						)
-					" We've deposited " (msnGetData gSource 'reward) " credits to your account.\""
-					)
-			</Text>
-			<Text id="SuccessMsg">
-				Mission complete!
-			</Text>
-			<String id="AlreadyDebriefed">
-				"Welcome back! Thanks for the great work last time."
-			</String>
-			<String id="Unavailable">
-				"Sorry, there are no missions available."
-			</String>
-		</Language>
-	</MissionType>
-
 	<!-- Commonwealth Slums
 
 	GLOBAL DATA
 
 	lastMissionTime:	Tick on which mission was given to player (Nil if never)
 	totalMissionCount:	Total number of missions that the player has requested
-	missionsCompleted:	Total number of successful missions
-	missionsFailed:		Total number of failures
 
 	-->
 
@@ -1140,55 +880,6 @@
 		</Ships>
 
 		<StaticData>
-			<Rumors>
-				(
-					"\"You got a pretty nice ship there. Did your mom and dad buy it for you?\""
-					"\"Truth is, you gotta approach life philosophically, you know what I mean? You gotta believe that it's all going to work out in the end, or else what's the point?\""
-					"\"Nobody cares. Station needs a carbon scrubber? Get on the waiting list! After the corporate suits get their grilled Icelandic salmon, then they might pay attention to you. Nobody cares.\""
-					(if (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
-						"\"I don't know what you're doing in this backwater system. You wanna get to the Core? Go! What's stopping you? Kids today: they dream big, but they'd rather watch the 3DVs.\""
-						"\"I don't know what you're doing in this backwater system. You wanna see the galaxy? Go! What's stopping you? Kids today: they dream big, but they'd rather watch the 3DVs.\""
-						)
-					"\"A station is not like a starship. If you get into trouble you can always run away. All we can do is sit tight and repair the damage. Takes a special kind of man to live like that.\""
-					(cat "\"How do you like your " (objGetName gPlayerShip 0x00) "? "
-						(switch 
-							(eq (objGetType gPlayerShip) &scSapphirePlayer;)
-								"My daughter's friend had one once. It was beautiful, but not very practical for long voyages.\""
-							(eq (objGetType gPlayerShip) &scEI100XPlayer;)
-								"My son pilots an older 200-series in the Cairn system. He's got it up-armored with polyceramic to protect against pirate attacks.\""
-							(eq (objGetType gPlayerShip) &scWolfenPlayer;)
-								"I knew this guy John Tremaine who flew one in the Militia. They're fast as hell on a whip, but a little flimsy. Hope you've got some good shields on her.\""
-							"I haven't seen a lot of ships like that. Is it hard to get parts for it?\""
-							)
-						)
-					)
-			</Rumors>
-
-			<RumorsSE>
-				(
-					"\"You got a pretty nice ship there. Did your mom and dad buy it for you?\""
-					"\"Truth is, you gotta approach life philosophically, you know what I mean? You gotta believe that it's all going to work out in the end, or else what's the point?\""
-					"\"Nobody cares. Station needs a carbon scrubber? Get on the waiting list! After the corporate suits get their grilled Icelandic salmon, then they might pay attention to you. Nobody cares.\""
-					(if (not (eq (typGetGlobalData &scArcoVaughnHeavyRaider; "status") 'destroyed))
-						"\"The warlords are annoying, but they don't mean much. The only one that bothers me is Arco Vaughn. He's trouble. Someone ought to air him out before things get out of hand, you know?\""
-						"\"Thank heavens that someone finally killed Arco Vaughn. Maybe now the warlords will leave us alone.\""
-						)
-					"\"I don't know what you're doing in this backwater system. You wanna get to the Core? Go! What's stopping you? Kids today: they dream big, but they'd rather watch the 3DVs.\""
-					(if (not (eq (typGetGlobalData &scArcoVaughnHeavyRaider; "status") 'destroyed))
-						"\"It's sad about Raisu station, isn't it? If a corporate fuel station got taken over by Centauri warlords they'd have Admiral Decker himself leading the rescue. But no one cares about a poor, backwater station, I guess.\""
-						"\"It's shame what Raisu station had to go through, isn't it? If a corporate station had been occupied by warlords, they'd have sent Admiral Decker himself to lead the rescue. But no one cares about a poor, backwater station, I guess.\""
-						)
-					(if (not (eq (typGetGlobalData &scArcoVaughnHeavyRaider; "status") 'destroyed))
-						"\"If you're looking for Arco Vaughn, go to Raisu station: the station master there will help you out. But first you gotta convince her that you're serious.\""
-						"\"I hear that Arco Vaughn is finally dead. No one will mourn him. I really feel for Erica and her team at Raisu\x97they went through hell.\""
-						)
-					(if (not (eq (typGetGlobalData &scArcoVaughnHeavyRaider; "status") 'destroyed))
-						"\"If you need help against Arco Vaughn the station master at Raisu station will help you. But you'll have to prove that you're serious. Take out a few Centauri stations and you might convince her.\""
-						"\"We're all glad that Arco Vaughn is dead. I heard someone from Raisu station finally had enough and decided to chase him down."\""
-						)
-					)
-			</RumorsSE>
-
 			<RumorsBA>
 				(
 					(cat "\"What's your favorite weapon? Personally I favor "
@@ -1217,18 +908,19 @@
 
 		<Events>
 			<GetGlobalAchievements>
-				(block (theList)
-					(if (gr (typGetGlobalData &stCommonwealthSlums; 'totalMissionCount) 0)
-						(setq theList (list
+				(block (
+					(successList (plyGetKeyEventStat gPlayer 'missionSuccess Nil "* +commonwealthHabitat;"))
+					(failureList (plyGetKeyEventStat gPlayer 'missionFailure Nil "* +commonwealthHabitat;"))
+					)
+					(if (or successList failureList)
+						(list
 							(list
-								"Commonwealth habitat missions"
-								(intMissionAchievementString (typGetGlobalData &stCommonwealthSlums; 'missionsCompleted) (typGetGlobalData &stCommonwealthSlums; 'missionsFailed))
-								"missions &amp; activities"
+								(typTranslate &stCommonwealthSlums; 'missions)
+								(rpgMissionAchievementString (count successList) (count failureList))
+								(typTranslate &unidCommonText; 'missionsAndActivities)
 								)
-							))
+							)
 						)
-						
-					theList
 					)
 			</GetGlobalAchievements>
 
@@ -1238,18 +930,30 @@
 
 			<OnContractQuery>True</OnContractQuery>
 
-			<OnMissionAccepted>
-				(typIncGlobalData &stCommonwealthSlums; 'totalMissionCount)
-			</OnMissionAccepted>
+			<GetRumors>
+				(if (= gSource (@ gData 'stationObj))
+					(append
+						(rpgRumorAdd 'commonwealthHabitat (make 'sequence 4))
 
-			<OnMissionCompleted>
-				(if (msnGetProperty aMissionObj 'isActive)
-					(if (eq aReason 'success)
-						(typIncGlobalData &stCommonwealthSlums; 'missionsCompleted)
-						(typIncGlobalData &stCommonwealthSlums; 'missionsFailed)
+						(if (= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+							(rpgRumorAdd 'commonwealthHabitat 'pilgrim)
+							(rpgRumorAdd 'commonwealthHabitat 'freelancer)
+							)
+
+						(rpgRumorAdd 'commonwealthHabitat
+							(switch
+								(= (objGetType gPlayerShip) &scSapphirePlayer;)	'sapphire
+								(= (objGetType gPlayerShip) &scEI100XPlayer;)	'ei100x
+								(= (objGetType gPlayerShip) &scWolfenPlayer;)	'wolfen
+																				'other
+								)
+							Nil
+							Nil
+							{	shipName: (objGetName gPlayerShip)	}
+							)
 						)
 					)
-			</OnMissionCompleted>
+			</GetRumors>
 		</Events>
 
 		<DockScreens>
@@ -1262,52 +966,12 @@
 
 						<Actions>
 							<Action id="actionMainHall" default="1">
-								(block (lastMissionTime missionInterval theMission)
-									; Figure out the last time that a habitat gave out a mission
-									(setq lastMissionTime (objGetGlobalData gSource "lastMissionTime"))
-
-									; Time between missions (5400-8990 or 3-5 real minutes)
-									(setq missionInterval (add 5400 (multiply (objGetDestiny gSource) 10)))
-
-									(switch
-										; If we have an active mission, then show it
-										(setq theMission (@ (msnFind gSource "aS") 0))
-											(scrShowScreen gScreen &dsRPGMission;
-												{
-												missionObj: theMission
-												})
-
-										; If the player has an active mission from some other station, then
-										; no new mission
-
-										(msnFind Nil "a +commonwealthHabitat;")
-											(scrShowPane gScreen "Rumors")
-
-										; If its not time for a new mission, then rumors
-										(and lastMissionTime
-												(gr (add lastMissionTime missionInterval) (unvGetTick)))
-											(scrShowPane gScreen "Rumors")
-
-										; If we've already gotten six missions, then no more missions
-										(geq (objGetGlobalData gSource "totalMissionCount") 6)
-											(scrShowPane gScreen "Rumors")
-
-										; If we have an open mission or if we can create a mission then
-										; show it.
-										(or (setq theMission (@ (msnFind gSource "oS") 0))
-												(setq theMission (msnCreate (typFind "n +commonwealthHabitat;") gSource)))
-											(block Nil
-												(objSetGlobalData gSource "lastMissionTime" (unvGetTick))
-												(scrShowScreen gScreen &dsRPGMission;
-													{
-													missionObj: theMission
-													})
-												)
-
-										; Otherwise, just rumors
-										(scrShowPane gScreen "Rumors")
-										)
-									)
+								(rpgMissionAssignment {
+									missionCriteria: "n +commonwealthHabitat;"
+									maxActive: 1
+									intervalPerType: (+ 5400 (* (objGetDestiny gSource) 10))
+									noMissionTextID: 'descNoMissions
+									})
 							</Action>
 
 							<Action id="actionUndock" cancel="1">
@@ -1315,37 +979,8 @@
 							</Action>
 						</Actions>
 					</Default>
-
-					<Rumors>
-						<OnPaneInit>
-							(block (rumorTable)
-								(switch
-									(eq (sysGetNode) 'SE)
-										(setq rumorTable "RumorsSE")
-
-									(eq (sysGetNode) 'BA)
-										(setq rumorTable "RumorsBA")
-
-									(setq rumorTable "Rumors")
-									)
-
-								(scrSetDesc gScreen
-									(cat "The station master is working at his console. He stops to chat:\n\n"
-										(eval (intRandomMessage gSource rumorTable))
-										)
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action id="actionContinue" default="1" cancel="1">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</Rumors>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
 		<DockingPorts>
@@ -1361,12 +996,73 @@
 
         <Language>
 			<Text id="descWelcome">
+
 				The loud voices of a packed multitude bounce off every bulkhead and
 				corridor in the station. Old air scrubbers pump a thin, odorous
 				breeze out of rusty vents. Discarded packets of Salmonite and Red
 				Nebula beer huddle in the corner.
 
 				Welcome to %objName%!
+
+			</Text>
+			<Text id="descNoMissions">
+
+				The colony supervisor is working at his station. The comms channels
+				are quiet and he stops to chat:
+
+				"It's calm now, but I've been hearing a lot of military chatter lately."
+
+			</Text>
+			<Text id="missions">Commonwealth habitat missions</Text>
+
+			<Text id="rumor.intro">
+				The station master is working at his console. He stops to chat:\n\n
+			</Text>
+			<String id="rumor.commonwealthHabitat.1">
+				"You got a pretty nice ship there. Did your mom and dad buy it for you?"
+			</String>
+			<Text id="rumor.commonwealthHabitat.2">
+				"Truth is, you gotta approach life philosophically, you know what I mean?
+				You gotta believe that it's all going to work out in the end, or else
+				what's the point?"
+			</Text>
+			<Text id="rumor.commonwealthHabitat.3">
+				"Nobody cares. Station needs a carbon scrubber? Get on the waiting list!
+				After the corporate suits get their grilled Icelandic salmon, then they
+				might pay attention to you. Nobody cares."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.4">
+				"A station is not like a starship. If you get into trouble you can always
+				run away. All we can do is sit tight and repair the damage. Takes a
+				special kind of man to live like that."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.pilgrim">
+				"I don't know what you're doing in this backwater system. You wanna get
+				to the Core? Go! What's stopping you? Kids today: they dream big, but
+				they'd rather watch the 3DVs."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.freelancer">
+				"I don't know what you're doing in this backwater system. You wanna see
+				the galaxy? Go! What's stopping you? Kids today: they dream big, but
+				they'd rather watch the 3DVs."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.sapphire">
+				"How do you like your %shipName%? My daughter's friend had one once.
+				It was beautiful, but not very practical for long voyages."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.ei100x">
+				"How do you like your %shipName%? My son pilots an older 200-series	in the
+				Cairn system. He's got it up-armored with polyceramic to protect against
+				pirate attacks."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.wolfen">
+				"How do you like your %shipName%? I knew this guy John Tremaine who flew
+				one in the Militia. They're fast as hell on a whip, but a little flimsy.
+				Hope you've got some good shields on her."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.other">
+				"How do you like your %shipName%? I haven't seen a lot of ships like that.
+				Is it hard to get parts for it?"
 			</Text>
         </Language>
 	</StationType>
