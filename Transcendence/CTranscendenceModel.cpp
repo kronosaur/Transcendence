@@ -2339,8 +2339,9 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 	bool bNestedScreen = pScreen->GetAttributeBool(NESTED_SCREEN_ATTRIB);
 	if (bNestedScreen 
 			&& bFirstFrame
-			&& CurFrame.sScreen == sScreenActual
-			&& CurFrame.sPane == sPane)
+			&& ((CurFrame.sScreen == sScreenActual && CurFrame.sPane == sPane)
+				|| CurFrame.pLocation == NULL 
+				|| !CurFrame.pLocation->HasDefaultDockScreen()))
 		{
 		bNestedScreen = false;
 		}
