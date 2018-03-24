@@ -2797,6 +2797,7 @@
 									(setq allDests (filter (sysFindObject gSource "TAF +populated; -korolovShipping; -occupation;") theObj 
 										(and (gr (objGetOpenDockingPortCount theObj) 1)
 											(or (not dockedAt) (not (eq dockedAt theObj)))
+											(not (objFireEvent theObj 'GetTrafficStatus { aObj:gSource }))
 											)
 										))
 									)
