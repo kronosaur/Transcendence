@@ -748,15 +748,7 @@
 
 						;	Arco attacks the player
 						
-						(block Nil
-							(shpCancelOrders arcoVaughnObj)
-							(shpOrder arcoVaughnObj 'attack gPlayerShip)
-							(objSetData arcoVaughnObj "behavior" 'killPlayer)
-
-							(objSendMessage gPlayerShip arcoVaughnObj
-								(random (objGetStaticData arcoVaughnObj "msgTableWTF"))
-								)
-							)
+						(objFireEvent arcoVaughnObj 'OrderKillPlayer)
 						)
 					)
 			</OnAttacked>

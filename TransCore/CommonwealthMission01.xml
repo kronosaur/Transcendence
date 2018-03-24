@@ -114,34 +114,7 @@
 				;		'newSystem: Player is in a new system
 				;		'success: Mission completed successfully
 
-				(block (targetObj)
-					(switch
-						; If we just got debriefed then we clear our targets.
-
-						(eq aReason 'debriefed)
-							(shpCancelOrders gPlayerShip)
-
-						; If the mission is complete, then we point towards the
-						; owner station.
-
-						(msnGetProperty gSource 'isCompleted)
-							(if (setq targetObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-								(block Nil
-									(shpCancelOrders gPlayerShip)
-									(shpOrder gPlayerShip 'dock targetObj)
-									)
-								)
-
-						; Otherwise, we point towards the target
-
-						(if (setq targetObj (objGetObjByID (msnGetData gSource 'targetID)))
-							(block Nil
-								(shpCancelOrders gPlayerShip)
-								(shpOrder gPlayerShip 'attack targetObj)
-								)
-							)
-						)
-					)
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)))
 			</OnSetPlayerTarget>
 
 			<OnObjDestroyed>
@@ -169,11 +142,13 @@
 				; gSource is mission object
 				; gData is data passed to msnReward
 
-				(intMissionRewardPayment (msnGetData gSource 'reward))
+				(rpgMissionRewardPayment (msnGetData gSource 'reward))
 			</OnReward>
 
 			<OnDestroy>
-				; Called when mission object is destroyed (after mission ends)
+				; Called when mission object is destroyed (generally only non-player
+				; missions are removed when the player changes system. Player
+				; missions are not normally destroyed)
 				;
 				; gSource is mission object
 				;
@@ -184,15 +159,42 @@
 		</Events>
 
 		<Language>
-			<Text id="Name">
-				"Destroy Threat to Commonwealth Habitat"
-			</Text>
+			<!-- Code Points -->
+
 			<Text id="Summary">
 				(cat
-					"Your mission is to destroy " (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x04) " in the " (sysGetName) " system.\n\n"
-					"System: " (sysGetName) "\n"
-					"Payment: " (msnGetData gSource 'reward) " credits"
+					(msnTranslate gSource 'descSummary {
+						targetName: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 'article)
+						systemName: (sysGetName)
+						})
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
 					)
+			</Text>
+
+			<Text id="Briefing">
+				(msnTranslate gSource (cat "Briefing:" (msnGetData gSource 'targetType)) {
+					targetName: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) '(capitalize article))
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+
+			<Text id="SuccessDebrief">
+				(msnTranslate gSource (cat "SuccessDebrief:" (msnGetData gSource 'targetType)) {
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">
+				Destroy Threat to Commonwealth Habitat
+			</Text>
+			<Text id="descSummary">
+				Your mission is to destroy %targetName% in the %systemName% system.
 			</Text>
 			<Text id="Intro">
 
@@ -205,24 +207,19 @@
 				you, of course."
 
 			</Text>
-			<Text id="Briefing">
-				(block (
-					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
-					)
+			<Text id="Briefing:centauriWarlords">
 
-					(switch
-						(eq (msnGetData gSource 'targetType) 'centauriWarlords)
-							(cat
-								"\"A band of Centauri warlords has been harassing this station recently. We've discovered the location of their base and we want you to go there and destroy them. "
-								"If you succeed we'll pay you " (msnGetData gSource 'reward) " credits. Will you help us?\""
-								)
+				"A band of Centauri warlords has been harassing this station recently.
+				We've discovered the location of their base and we want you to go there
+				and destroy them. If you succeed we'll pay you %payment%. Will you help us?"
 
-						(cat
-							"\"" (objGetName targetObj 0x05) " nearby has been attacking us recently. We want you to destroy them! "
-							"If you succeed we'll pay you " (msnGetData gSource 'reward) " credits. Will you help us?\""
-							)
-						)
-					)
+			</Text>
+
+			<Text id="Briefing:miscEnemy">
+
+				"%targetName% nearby has been attacking us recently. We want you to destroy them!
+				If you succeed we'll pay you %payment% credits. Will you help us?"
+
 			</Text>
 			<Text id="AcceptReply">
 
@@ -240,16 +237,17 @@
 				out there and finish the job!"
 
 			</Text>
-			<Text id="SuccessDebrief">
-				(cat
-					(switch
-						(eq (msnGetData gSource 'targetType) 'centauriWarlords)
-							"\"Great work! Maybe the warlords will think twice before attacking us again."
+			<Text id="SuccessDebrief:centauriWarlords">
 
-						"\"Great work! Now we can live in peace. "
-						)
-					" We've deposited " (msnGetData gSource 'reward) " credits to your account.\""
-					)
+				"Great work! Maybe the warlords will think twice before attacking us again.
+				We've deposited %payment% to your account."
+
+			</Text>
+			<Text id="SuccessDebrief:miscEnemy">
+
+				"Great work! Now we can live in peace.
+				We've deposited %payment% to your account."
+
 			</Text>
 			<Text id="SuccessMsg">
 				Mission complete!

@@ -266,7 +266,6 @@
 							(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
 							)
 							(msnSetData gSource 'status 'liberated)
-							(objSetProperty stationObj 'shipReinforcementEnabled True)
 							(objSetEventHandler stationObj Nil)
 							)
 
@@ -657,14 +656,7 @@
 
 						;	If we're attacked with something more powerful, then we
 						;	attack in force.
-
-						(block Nil
-							(shpCancelOrders gSource)
-							(shpOrder gSource 'attack gPlayerShip)
-							(objSetData gSource "behavior" 'killPlayer)
-
-							(objSendMessageTranslate gPlayerShip gSource 'msgWTF)
-							)
+						(objFireEvent gSource 'OrderKillPlayer)
 						)
 					)
 			</OnAttacked>
@@ -704,12 +696,7 @@
 									)
 
 								(if (gr (objGetDistance gPlayerShip homeObj) 300)
-									(block Nil
-										(shpCancelOrders gSource)
-										(shpOrder gSource 'patrol homeObj 5)
-										(objSetData gSource "behavior" Nil)
-										(objSetData gSource "warning" Nil)
-										)
+									(objFireEvent gSource 'OrderPatrolBase)
 									)
 								)
 
@@ -734,12 +721,7 @@
 									)
 
 								(if (gr (objGetDistance gPlayerShip homeObj) 300)
-									(block Nil
-										(shpCancelOrders gSource)
-										(shpOrder gSource 'patrol homeObj 5)
-										(objSetData gSource "behavior" Nil)
-										(objSetData gSource "warning" Nil)
-										)
+									(objFireEvent gSource 'OrderPatrolBase)
 									)
 								)
 						)
@@ -748,17 +730,10 @@
 
 			<OnDamage>
 				(block Nil
-
 					;	If the player damaged us, then attack
-					(if (and (eq aAttacker gPlayerShip)
-							(not (eq (objGetData gSource "behavior") 'killPlayer)))
-						(block Nil
-							(shpCancelOrders gSource)
-							(shpOrder gSource 'attack gPlayerShip)
-							(objSetData gSource "behavior" 'killPlayer)
-
-							(objSendMessageTranslate gPlayerShip gSource 'msgWTF)
-							)
+					(if (and (= aAttacker gPlayerShip)
+							(!= (objGetData gSource 'behavior) 'killPlayer))
+						(objFireEvent gSource 'OrderKillPlayer)
 						)
 
 					;	We always return full hit points
@@ -768,19 +743,27 @@
 
 			<OnObjDestroyed>
 				(if (eq aObjDestroyed gPlayerShip)
-					(block Nil
-						(shpCancelOrders gSource)
-						(shpOrder gSource 'patrol (objGetObjRefData gSource "home") 5)
-						(objSetData gSource "behavior" Nil)
-						)
+					(objFireEvent gSource 'OrderPatrolBase)
 					)
 			</OnObjDestroyed>
+
+			<OrderPatrolBase>
+				(block Nil
+					(shpCancelOrders gSource)
+					(shpOrder gSource 'patrol (objGetObjRefData gSource 'home) 5)
+					(objSetData gSource 'behavior Nil)
+					(objSetData gSource 'warning Nil)
+					)
+			</OrderPatrolBase>
 
 			<OrderKillPlayer>
 				(block Nil
 					(shpCancelOrders gSource)
 					(shpOrder gSource 'attack gPlayerShip)
 					(objSetData gSource "behavior" 'killPlayer)
+					(if (ls (objGetDistance gSource gPlayerShip) 120)
+						(objSendMessageTranslate gPlayerShip gSource 'msgWTF)
+						)
 					)
 			</OrderKillPlayer>
 		</Events>
@@ -830,6 +813,13 @@
 					(enum (sysFindObject gSource "sO:docked;") theShip (objDestroy theShip))
 					)
 			</OnEventHandlerInit>
+
+			<OnEventHandlerTerm>
+				(block Nil
+					(objSetProperty gSource 'shipReinforcementEnabled True)
+					(objSetProperty gSource 'shipConstructionEnabled Nil)
+					)
+			</OnEventHandlerTerm>
 
 			<GetCommonwealthCustomsStatus>
 				'disabled
