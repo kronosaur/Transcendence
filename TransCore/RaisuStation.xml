@@ -112,19 +112,17 @@
 			<OnCreate>
 				(block (
 					(arcoVaughn (sysFindObject gSource "sN +arcoVaughn;"))
+					(baseObj (sysFindObject gSource "TN +arcoVaughn;"))
 					)
 					(switch
 						(not arcoVaughn)
 							(msnDestroy gSource)
 
 						(block Nil
+							;	Raisu does not allow docking once mission is in progress
 							(msnSetData gSource 'destID (objGetID aOwnerObj))
 
-							;	Remove Commonwealth ships
-							(objSetProperty aOwnerObj 'shipReinforcementEnabled Nil)
-							(enum (sysFindObject aOwnerObj "sO:docked;") theShip (objDestroy theShip))
-
-							;	Disable Commonwealth customs
+							;	Start occupation
 							(objSetEventHandler aOwnerObj &evCentauriOccupation;)
 
 							;	Add Centauri Raiders
@@ -135,6 +133,15 @@
 									)
 								)
 
+							;	Warlord base
+							(objAddItem baseObj (itmSetData
+								(itmCreate &itDataROM; 1)
+								'Text
+								(msnTranslate gSource 'descArcoMessage)
+								))
+
+							;	Setup Arco Vaughn
+							(objSetEventHandler arcoVaughn &evArcoVaughn;)
 							(msnSetData gSource 'targetID (objGetID arcoVaughn))
 							(msnRegisterForEvents gSource arcoVaughn)
 
@@ -194,6 +201,7 @@
 			<OnTimer>
 				(block (
 					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(arcoVaughn (objGetObjByID (msnGetData gSource 'targetID)))
 					)
 					(switch
 						;	If not in Starton Eridani, then nothing to do
@@ -206,12 +214,7 @@
 
 						;	If we've already summoned lots of raiders, then send Arco Vaughn
 						(gr (msnGetData gSource 'raidersSummoned) 20)
-							(block (arcoVaughn)
-								(setq arcoVaughn (sysFindObject stationObj "sN +arcoVaughn;"))
-								(if arcoVaughn
-									(objFireEvent arcoVaughn "OrderKillPlayer")
-									)
-								)
+							(objFireEvent arcoVaughn "OrderKillPlayer")
 
 						;	Otherwise summon some more raiders
 						(leq (random 1 100) 20)
@@ -233,10 +236,12 @@
 			</OnTimer>
 
 			<OnObjDestroyed>
+				;	If the mission is still open we need to make it a non-player mission
+				;	so the OnCompleted event is called. Note - msnSetUnavailable does not
+				;	affect player missions, so it is safe to call without any checking.
 				(switch
 					(= (objGetID aObjDestroyed) (msnGetProperty gSource 'ownerID))
 						(block Nil
-							;	If the mission is still open we need to make it a non-player mission
 							(msnSetUnavailable gSource)
 							(msnFailure gSource {
 								destroyedByPlayer: (and gPlayerShip (= aOrderGiver gPlayerShip))
@@ -245,7 +250,9 @@
 
 					(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
 						(block Nil
-							;	If the mission is still open we need to make it a non-player mission
+							;	Backward compatibility for old Container Habitat rumors
+							(typSetData &scArcoVaughnHeavyRaider; 'status 'destroyed)
+
 							(msnSetUnavailable gSource)
 							(msnSuccess gSource)
 							)
@@ -536,6 +543,25 @@
 
 			</Text>
 
+			<Text id="descArcoMessage">
+				RECEIVED from relay07.cynus.anderson.187janus_station.comm\n
+				by helios_receiver.f5astarton_eridani.comm (EID 089830_7188919)\n
+				for &lt;arcovaughn.17591&gt; (EID 089830_8179210) 2403-11-25 17:34:11
+
+				MESSAGE BEGINS\n
+				I know that you must hate me right now; truth is I don't like myself very
+				much either. But I promise you that everything happens for a reason and that
+				one day you and I will both understand. I can't explain to you or anyone why
+				I'm going. No one can understand. But I know that I am doing the right thing
+				and I know that I am doing what I must. I can't do anything else. Something
+				is about to happen. Something feels wrong. Whatever fate awaits me at the
+				Core, I know that it is entwined with the fate of all Humanity. When I get
+				there, I will understand. When I get there, we will all understand. I must
+				get there before it is too late. Take care of your mother.
+
+				MESSAGE ENDS
+			</Text>
+
 			<Text id="rumor.commonwealthHabitat.1">
 				"The warlords are annoying, but they don't mean much. The only one that bothers
 				me is Arco Vaughn. He's trouble. Someone ought to air him out before things get
@@ -581,8 +607,230 @@
 
 <!-- BEHAVIORS -->
 
+	<!-- Arco Vaughn
+
+	GLOBAL DATA
+
+	status:				Status of Arco Vaughn
+							Nil						= never encountered
+							"destroyed"				= destroyed
+
+	EXTRA DATA
+
+	home:				Our container
+
+	behavior:			Current behavior
+							Nil						= waiting for player
+							'scarePlayer			= scare the player, shoot if shields are full
+							'scarePlayerWithForce	= shoot at player but stop when shields drop
+							'killPlayer				= kill the player
+
+	warning:			True if we warned the player
+
+	-->
+
+	<Type UNID="&evArcoVaughn;">
+		<Events>
+			<OnEventHandlerInit>
+				(block Nil
+					;	Set a timer so that we can do some custom behavior
+					(sysAddObjRecurringTimerEvent 10 gSource "OnBehavior")
+
+					;	Remember our home
+					(objSetObjRefData gSource "home" (sysFindObject gSource "TN +arcoVaughn;"))
+					)
+			</OnEventHandlerInit>
+
+			<OnAttacked>
+				(if (and (eq aOrderGiver gPlayerShip)
+						(not (eq (objGetData gSource "behavior") 'killPlayer)))
+					(if (and (or (eq aDamageType 'kinetic) (eq aDamageType 'laser))
+							(leq aDamageHP 6)
+							)
+
+						;	If we're attacked with laser or kinetic, laugh it off
+
+						(if (and (eq (random 1 3) 1)
+								(eq (objGetData gSource "behavior") 'scarePlayer))
+							(objSendMessageTranslate gPlayerShip gSource 'msgTickled)
+							)
+
+						;	If we're attacked with something more powerful, then we
+						;	attack in force.
+
+						(block Nil
+							(shpCancelOrders gSource)
+							(shpOrder gSource 'attack gPlayerShip)
+							(objSetData gSource "behavior" 'killPlayer)
+
+							(objSendMessageTranslate gPlayerShip gSource 'msgWTF)
+							)
+						)
+					)
+			</OnAttacked>
+
+			<OnBehavior>
+				(block (
+					(behavior (objGetData gSource 'behavior))
+					(homeObj (objGetObjRefData gSource 'home))
+					)
+
+					(switch
+						;	Wait for player to show up
+						(not behavior)
+							(if (and gPlayerShip
+									(ls (objGetDistance gPlayerShip gSource) 60)
+									(ls (objGetDistance gPlayerShip homeObj) 200))
+								(block Nil
+
+									; Once the player shows up, aim for the player, but don't attack yet
+									(shpCancelOrders gSource)
+									(shpOrder gSource 'aim gPlayerShip)
+
+									(objRegisterForEvents gSource gPlayerShip)
+									(objSetData gSource "behavior" 'scarePlayer)
+									)
+								)
+
+						;	Scare the player away
+						(eq behavior 'scarePlayer)
+							(block Nil
+								(if (eq (objGetShieldLevel gPlayerShip) 100)
+									(block Nil
+										(shpCancelOrders gSource)
+										(shpOrder gSource 'attack gPlayerShip)
+										(objSetData gSource "behavior" 'scarePlayerWithForce)
+										)
+									)
+
+								(if (gr (objGetDistance gPlayerShip homeObj) 300)
+									(block Nil
+										(shpCancelOrders gSource)
+										(shpOrder gSource 'patrol homeObj 5)
+										(objSetData gSource "behavior" Nil)
+										(objSetData gSource "warning" Nil)
+										)
+									)
+								)
+
+						(eq behavior 'scarePlayerWithForce)
+							(block Nil
+								(if (ls (objGetShieldLevel gPlayerShip) 100)
+									(block Nil
+										(shpCancelOrders gSource)
+										(shpOrder gSource 'aim gPlayerShip)
+										(objSetData gSource "behavior" 'scarePlayer)
+										)
+									)
+
+								(if (and
+										(not (objGetData gSource "warning"))
+										(ls (objGetDistance gSource gPlayerShip) 25)
+										)
+									(block Nil
+										(objSendMessageTranslate gPlayerShip gSource 'msgGoHome)
+										(objSetData gSource "warning" True)
+										)
+									)
+
+								(if (gr (objGetDistance gPlayerShip homeObj) 300)
+									(block Nil
+										(shpCancelOrders gSource)
+										(shpOrder gSource 'patrol homeObj 5)
+										(objSetData gSource "behavior" Nil)
+										(objSetData gSource "warning" Nil)
+										)
+									)
+								)
+						)
+					)
+			</OnBehavior>
+
+			<OnDamage>
+				(block Nil
+
+					;	If the player damaged us, then attack
+					(if (and (eq aAttacker gPlayerShip)
+							(not (eq (objGetData gSource "behavior") 'killPlayer)))
+						(block Nil
+							(shpCancelOrders gSource)
+							(shpOrder gSource 'attack gPlayerShip)
+							(objSetData gSource "behavior" 'killPlayer)
+
+							(objSendMessageTranslate gPlayerShip gSource 'msgWTF)
+							)
+						)
+
+					;	We always return full hit points
+					aDamageHP
+					)
+			</OnDamage>
+
+			<OnObjDestroyed>
+				(if (eq aObjDestroyed gPlayerShip)
+					(block Nil
+						(shpCancelOrders gSource)
+						(shpOrder gSource 'patrol (objGetObjRefData gSource "home") 5)
+						(objSetData gSource "behavior" Nil)
+						)
+					)
+			</OnObjDestroyed>
+
+			<OrderKillPlayer>
+				(block Nil
+					(shpCancelOrders gSource)
+					(shpOrder gSource 'attack gPlayerShip)
+					(objSetData gSource "behavior" 'killPlayer)
+					)
+			</OrderKillPlayer>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="msgGoHome">(objTranslate gSource (cat 'msgGoHome (random 1 6)))</Text>
+			<Text id="msgTickled">(objTranslate gSource (cat 'msgTickled (random 1 6)))</Text>
+			<Text id="msgWTF">(objTranslate gSource (cat 'msgWTF (random 1 6)))</Text>
+
+			<!-- Text -->
+
+			<Text id="msgGoHome1">Go home before you hurt yourself, kid</Text>
+			<Text id="msgGoHome2">This isn't your fight; get out while you can</Text>
+			<Text id="msgGoHome3">That was a warning</Text>
+			<Text id="msgGoHome4">This is a restricted area; I will shoot</Text>
+			<Text id="msgGoHome5">Go home; this system is mine!</Text>
+			<Text id="msgGoHome6">Don't make me destroy you</Text>
+
+			<Text id="msgTickled1">Quit it!</Text>
+			<Text id="msgTickled2">Go home kid, or I'm really going to get mad</Text>
+			<Text id="msgTickled3">What, did I kill your microsaur or something?</Text>
+			<Text id="msgTickled4">Forget it, you don't have a chance!</Text>
+			<Text id="msgTickled5">Clear out or I will blast you!</Text>
+			<Text id="msgTickled6">Don't make me bust you up</Text>
+
+			<Text id="msgWTF1">What the...!?</Text>
+			<Text id="msgWTF2">You are going to die!</Text>
+			<Text id="msgWTF3">You are dead!</Text>
+			<Text id="msgWTF4">Enough!</Text>
+			<Text id="msgWTF5">Kack!</Text>
+			<Text id="msgWTF6">Huh!?</Text>
+		</Language>
+	</Type>
+
+	<!-- Centauri Occupation -->
+
 	<Type UNID="&evCentauriOccupation;">
 		<Events>
+			<OnEventHandlerInit>
+				(block Nil
+					(objSetProperty gSource 'shipReinforcementEnabled Nil)
+					(objSetProperty gSource 'shipConstructionEnabled Nil)
+
+					;	Remove Commonwealth ships
+					(enum (sysFindObject gSource "sO:docked;") theShip (objDestroy theShip))
+					)
+			</OnEventHandlerInit>
+
 			<GetCommonwealthCustomsStatus>
 				'disabled
 			</GetCommonwealthCustomsStatus>

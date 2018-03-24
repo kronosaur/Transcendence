@@ -1912,6 +1912,7 @@
 	<!ENTITY rsCentauriHeavyRaiderHD	"0x001003F0">
 	<!ENTITY rsCentauriRaiderHD			"0x001003F1">
 	<!ENTITY evCentauriOccupation		"0x001003F2">
+	<!ENTITY evArcoVaughn				"0x001003F3">
 
 	<!-- 0410-042F KOBOL WARLORDS -->
 
