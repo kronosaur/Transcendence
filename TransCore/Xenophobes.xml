@@ -576,7 +576,6 @@
 				{
 					attributes: "commonwealthPub"
 					priority: 60
-					sourceObj: gSource
 					textID: 'rumor.commonwealthPub
 					}
 			</GetRumors>

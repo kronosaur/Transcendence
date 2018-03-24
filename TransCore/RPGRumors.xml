@@ -126,7 +126,6 @@
 					{
 						attributes: attrib
 						priority: (or priority 10)
-						sourceObj: gSource
 						textID: (cat "rumor." attrib (if suf ".") suf)
 						data: data
 						onExitRumor: (switch
@@ -175,14 +174,14 @@
 						stationObj:gSource
 						})
 
-					;	Lambda to add sourceType to global rumors
-					(wrapGlobalRumor (lambda (rumors theType)
+					;	Lambda to set rumor defaults
+					(setRumorDefaults (lambda (default rumors)
 						(switch
 							(= (typeOf rumors) 'struct)
-								(set@ rumors { sourceObj:Nil sourceType:theType })
+								(struct default rumors)
 							(= (typeOf rumors) 'list)
 								(map rumors theRumor
-									(set@ theRumor { sourceObj:Nil sourceType:theType })
+									(struct default theRumor)
 									)
 							)
 						))
@@ -190,16 +189,22 @@
 					;	Build rumor list from: global types, local stations, and missions
 					(allRumors (apply append (append
 						(map (typFind "*") 'excludeNil theType
-							(wrapGlobalRumor
+							(setRumorDefaults
+								{	sourceType: theType	}
 								(typFireEvent theType 'GetGlobalRumors eventData)
-								theType
 								)
 							)
 						(map (sysFindObject Nil "AT") 'excludeNil theObj
-							(objFireEvent theObj 'GetRumors eventData)
+							(setRumorDefaults
+								{	sourceObj: theObj	}
+								(objFireEvent theObj 'GetRumors eventData)
+								)
 							)
 						(map (msnFind "*") 'excludeNil msnObj
-							(msnFireEvent msnObj 'GetRumors eventData)
+							(setRumorDefaults
+								{	sourceObj: msnObj	}
+								(msnFireEvent msnObj 'GetRumors eventData)
+								)
 							)
 						)))
 

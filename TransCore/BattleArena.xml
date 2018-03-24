@@ -237,7 +237,6 @@
 					{
 						attributes: 'commonwealthHabitat
 						priority: 100
-						sourceObj: gSource
 						textID: (cat "rumor.commonwealthHabitat.weapon"
 							(seededRandom (objGetDestiny (@ gData 'stationObj)) 1 5)
 							)
@@ -245,7 +244,6 @@
 					{
 						attributes: 'commonwealthHabitat
 						priority: 100
-						sourceObj: gSource
 						textID: (cat "rumor.commonwealthHabitat.shield"
 							(seededRandom (objGetDestiny (@ gData 'stationObj)) 1 3)
 							)

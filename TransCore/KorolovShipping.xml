@@ -739,7 +739,6 @@
 					{
 						attributes: "commonwealthPub"
 						priority: 21
-						sourceObj: gSource
 						textID: (switch
 							(or (not rank) (= rank 0))	'rumor.commonwealthPub.norank
 							(ls rank 0)					'rumor.commonwealthPub.blacklisted

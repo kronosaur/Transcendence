@@ -85,7 +85,6 @@
 				{
 					attributes: "commonwealthPub"
 					priority: 22
-					sourceObj: gSource
 					textID: 'rumor.commonwealthPub
 					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
 					}
