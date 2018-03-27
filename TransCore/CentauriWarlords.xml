@@ -762,11 +762,14 @@
 		</DockScreens>
 
 		<DockingPorts>
-			<Port x="0"		y="64" />
-			<Port x="64"	y="0" />
-			<Port x="0"		y="0" />
-			<Port x="50"	y="90" />
-			<Port x="90"	y="20" />
+			<Port x="0"		y="80" />
+			<Port x="43"	y="56" />
+			<Port x="52"	y="8" />
+			<Port x="35"	y="-44" />
+			<Port x="-35"	y="-44" />
+			
+			<Port x="-52"	y="8" />
+			<Port x="-43"	y="56" />
 		</DockingPorts>
 
 		<Language>
