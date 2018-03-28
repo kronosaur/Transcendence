@@ -676,9 +676,11 @@
 	<!ENTITY rsZubrinReactor			"0x0000F00C">
 	<!ENTITY rsWolfenShields			"0x0000F00D">
 	<!ENTITY rsWolfenArmor				"0x0000F00E">
-	<!ENTITY rsZubrinLarge				"0x0000F00F">
+	<!ENTITY rsSapphireLarge			"0x0000F00F">
+	<!ENTITY rsZubrinLarge				"0x0000F00F"> <!-- rsSapphireLarge synonym -->
 	<!ENTITY rsWolfenLarge				"0x0000F010">
-	<!ENTITY rsEI100XLarge				"0x0000F011">
+	<!ENTITY rsEI500Large				"0x0000F011">
+	<!ENTITY rsEI100XLarge				"0x0000F011"> <!-- rsEI500Large synonym -->
 	<!ENTITY rsZubrinDockScreenBkgnd	"0x0000F013">
 	<!ENTITY rsZubrinDockScreenMask		"0x0000F014">
 	<!ENTITY rsArmorHUDShip_EI500		"0x0000F015">
@@ -1893,6 +1895,7 @@
 	<!ENTITY scEI100Stock				"0x00100396">
 	<!ENTITY rsEI100HD					"0x00100397">
 	<!ENTITY rsEI100Hero				"0x00100398">
+	<!ENTITY rsSapphire					"0x00100399">
 
 	<!-- 03B0-03CF SAPIENS -->
 

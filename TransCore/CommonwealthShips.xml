@@ -247,7 +247,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsSapphireYachtHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"	rotationCount="120"/>
+		<Image imageID="&rsSapphire;" imageWidth="62" imageHeight="62"	rotationCount="120" rotationColumns="12" viewportRatio="0.00475"/>
 		<HeroImage imageID="&rsZubrinLarge;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
@@ -508,7 +508,7 @@
 		<!-- Hull -->
 
 		<Hull
-			size=				"27"
+			size=				"29"
 			mass=				"150"
 			cargoSpace=			"50"
 
@@ -556,7 +556,7 @@
 		<!-- Image and Effects -->
 		
 		<Image imageID="&rsEI500FreighterHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120"/>
-		<HeroImage imageID="&rsEI100XLarge;" imageWidth="320" imageHeight="320"/>
+		<HeroImage imageID="&rsEI500Large;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"/>
@@ -1524,5 +1524,10 @@
 	<Image UNID="&rsManticoreHero;"				bitmap="Resources\ManticoreLarge.jpg" bitmask="Resources\ManticoreLargeMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsManticoreArmorHUD;"			bitmap="Resources\ManticoreArmorHUD.jpg"	bitmask="Resources\ManticoreArmorHUDMask.bmp" loadOnUse="true" />
 	<Image UNID="&rsManticoreArmorHUDSegments;"	bitmap="Resources\ManticoreArmorHUDSegments.bmp"	loadOnUse="true" />
+
+	<Image UNID="&rsEI500Large;"		bitmap="Resources\EI100XLarge.jpg"	bitmask="Resources\EI100XLargeMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsSapphire;"			bitmap="Resources\Sapphire.jpg"	bitmask="Resources\SapphireMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsSapphireLarge;"		bitmap="Resources\ZubrinLarge.jpg"	bitmask="Resources\ZubrinLargeMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsWolfenLarge;"		bitmap="Resources\WolfenLarge.jpg"	bitmask="Resources\WolfenLargeMask.bmp" 	loadOnUse="true" />
 
 </TranscendenceModule>
