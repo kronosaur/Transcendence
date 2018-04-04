@@ -61,7 +61,7 @@
 				<Missile ammoID="&itQuantumsphereShell;"
 						type=			"missile"
 
-						damage=			"antimatter:6d8; disintegration1; WMD7"
+						damage=			"antimatter:20d20; disintegration:7; WMD:7"
 						missileSpeed=	"15"
 						hitPoints=		"10"
 						accelerationFactor="125"
@@ -71,19 +71,11 @@
 						
 						noFriendlyFire=	"true"
 
+						effect=			"&efQuantumsphereShot;"
 						hitEffect=		"&efQuantumsphereHit;"
 						sound=			"&snRecoillessCannon;"
 						>
 
-					<Effect>
-						<PlasmaSphere
-								spikeCount=		"1d6+2"
-								spikeLength=	"4d20"
-								primaryColor=	"#80ffff"
-								secondaryColor=	"#00ffff"
-								/>
-					</Effect>
-					
 					<FireEffect>
 						<Null/>
 					</FireEffect>
@@ -598,6 +590,36 @@
 	</StationType>
 	
 <!-- EFFECTS -->
+	
+	<EffectType unid="&efQuantumsphereShot;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb
+					instance=			"owner"
+						
+					style=				"lightning"
+					spikeCount=			"20"
+						
+					blendMode=			"screen"
+					primaryColor=		"#80ffff"
+					secondaryColor=		"#00ffff"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (mathScale damageHP 50 680 20 60 50)
+								intensity: (mathScale damageHP 50 680 20 50 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
 	
 	<EffectType UNID="&efQuantumsphereHit;"
 			sound="&snArmorHit1;"

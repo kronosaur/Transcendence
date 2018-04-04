@@ -1777,6 +1777,7 @@
 	<!-- 01E0-01EF IOCRYM -->
 	
 	<!ENTITY efQuantumsphereHit			"0x001001E0">
+	<!ENTITY efQuantumsphereShot		"0x001001E1">
     
     <!-- 01F0-01FF TINKERS -->
 	
