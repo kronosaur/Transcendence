@@ -1908,6 +1908,38 @@
 		</Weapon>
 	</ItemType>
     
+<!-- SPECIAL EXPLOSIONS -->
+
+	<!-- Disintegration Explosion -->
+
+	<ItemType UNID="&vtDisintegrationExplosion;"
+			name=				"disintegration explosion"
+			attributes=			"explosion"
+			virtual=			"true"
+			  
+			level=				"14"
+			>
+
+		<Weapon
+				type=				"radius"
+				>
+
+			<Fragment
+					count=			"1"
+					type=			"radius"
+					
+					damage=			"antimatter:0;"
+					minRadius=		"2"
+					maxRadius=		"4"
+					/>
+			
+			<Effect>
+				<Disintegrate
+					/>
+			</Effect>
+		</Weapon>
+	</ItemType>
+    
 <!-- EFFECTS -->
     
 	<EffectType UNID="&efKineticExplosion;"

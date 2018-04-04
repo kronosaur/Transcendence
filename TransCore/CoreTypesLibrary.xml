@@ -159,7 +159,7 @@
 	<!ENTITY efAntimatterParticleDefault	"0x00030023">
 	<!ENTITY efNanoParticleDefault		"0x00030024">
 	
-	<!-- 0030-004F EXPLOSIONS -->
+	<!-- 0030-007F EXPLOSIONS -->
 
 	<!ENTITY vtAntimatterExplosion1		"0x00030030">
 	<!ENTITY vtAntimatterExplosion2		"0x00030031">
@@ -182,6 +182,8 @@
     <!ENTITY efPlasmaExplosion          "0x00030041">
     <!ENTITY efAntimatterExplosion      "0x00030042">
     <!ENTITY efGravitonExplosion		"0x00030043">
+
+	<!ENTITY vtDisintegrationExplosion	"0x00030044">
 	]>
 	
 <CoreLibrary
