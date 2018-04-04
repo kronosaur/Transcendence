@@ -35,7 +35,7 @@ void DoEffectPerformanceTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
     IEffectPainter *pPainter;
     if (pWeaponClass)
-        pPainter = pWeaponClass->GetWeaponFireDesc(CItemCtx(CItem(pItemType, 1)))->CreateEffectPainter();
+        pPainter = pWeaponClass->GetWeaponFireDesc(CItemCtx(CItem(pItemType, 1)))->CreateEffectPainter(SShotCreateCtx());
     else
         pPainter = NULL;
 
