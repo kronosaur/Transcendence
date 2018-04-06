@@ -513,7 +513,9 @@
 							(objResume selObj)
 							(switch
 								(= oldShip gPlayerShip)
-									(plyChangeShip gPlayer selObj)
+									(plyChangeShip gPlayer selObj {
+										transferEquipment: True
+										})
 
 								(rpgChangeWingmanShip oldShip selObj)
 								)

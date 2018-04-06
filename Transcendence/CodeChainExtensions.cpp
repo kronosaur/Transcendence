@@ -360,6 +360,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 			"   'noOrderTransfer\n"
 			"   'oldShipWaits\n"
+			"   'transferEquipment\n"
 				,
 			"ii*",	PPFLAG_SIDEEFFECTS,	},
 
@@ -1142,6 +1143,7 @@ ICCItem *fnPlySet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				{
 				Options.bNoOrderTransfer = pOptions->GetBooleanAt(CONSTLIT("noOrderTransfer"));
 				Options.bOldShipWaits = pOptions->GetBooleanAt(CONSTLIT("oldShipWaits"));
+				Options.bTransferEquipment = pOptions->GetBooleanAt(CONSTLIT("transferEquipment"));
 				}
 
 			//	Change ships

@@ -2703,6 +2703,17 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip, SPlayerChangedShips
 	pOldShip->TrackFuel(false);
     pOldShip->TrackMass(false);
 
+	//	Transfer equipment from the old ship to the new one (if necessary).
+	//
+	//	NOTE: This transfers equipment such as targeting computers that are 
+	//	installed on the ship. It does not include (not should it include) 
+	//	abilities/equipment confered by devices or enhancements.
+
+	if (Options.bTransferEquipment)
+		{
+		pNewShip->GetNativeAbilities().Set(pOldShip->GetNativeAbilities());
+		}
+
 	//	Now set this controller to drive the new ship. gPlayer and gPlayerShip
 	//	will be set inside of SetPlayerShip.
 
