@@ -248,6 +248,7 @@
 							(seededRandom (objGetDestiny (@ gData 'stationObj)) 1 3)
 							)
 						}
+					(rpgRumorAdd 'commonwealthContainer (make 'sequence 1 4) 100)
 					)
 			</GetRumors>
 
@@ -1765,6 +1766,22 @@
 				how important shields are. If you can afford the Ceratops series then go for
 				it. They're the best against missiles anyway, which is what you're gonna get
 				hit with in the Arena."
+			</Text>
+			<String id="rumor.commonwealthContainer.1">
+				"The Slicer is the champion of the Arena! No one has been able to defeat him."
+			</String>
+			<Text id="rumor.commonwealthContainer.2">
+				"I don't watch the Arena games anymore; the Black Market has totally
+				infiltrated the show and all the fights are rigged now."
+			</Text>
+			<Text id="rumor.commonwealthContainer.3">
+				"I remember watching Kate Morgental fight in the Arena. She put on a great
+				show! I don't know what happened to her; probably working for her father now."
+			</Text>
+			<Text id="rumor.commonwealthContainer.4">
+				"Let me tell you a secret about fighting in the Arena: load up with missiles.
+				Who cares about beams and whatnot; a good missile will cut through armor like
+				a knife through Salmonite!"
 			</Text>
 
             <Text id="core.mapDescMain">

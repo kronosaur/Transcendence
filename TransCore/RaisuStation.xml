@@ -377,7 +377,10 @@
 					(msnGetProperty gSource 'isFailure)
 						Nil
 
-					(rpgRumorAdd 'commonwealthHabitat (make 'sequence 1 4) 20)
+					(append
+						(rpgRumorAdd 'commonwealthHabitat (make 'sequence 1 4) 20)
+						(rpgRumorAdd 'commonwealthContainer (make 'sequence 1 5) 20)
+						)
 					)
 			</GetRumors>
 		</Events>
@@ -595,6 +598,27 @@
 			<Text id="rumor.commonwealthHabitat.8">
 				"We're all glad that Arco Vaughn is dead. I heard someone from Raisu station
 				finally had enough and decided to chase him down."
+			</Text>
+			<Text id="rumor.commonwealthContainer.1">
+				"Watch out for Arco Vaughn. He is the most dangerous Centauri warlord;
+				his heavy raider is protected against lasers and recoilless cannons.
+				Avoid him if you want to live."
+			</Text>
+			<Text id="rumor.commonwealthContainer.2">
+				"Arco Vaughn flies an enhanced heavy raider. His armor is protected against
+				normal weapons; you'll need missiles to kill him."
+			</Text>
+			<Text id="rumor.commonwealthContainer.3">
+				"Raisu Station is in trouble. The Centauri warlords have taken it over;
+				don't go there unless you are armed and ready."
+			</Text>
+			<Text id="rumor.commonwealthContainer.4">
+				"If you want to find Arco Vaughn, go to Raisu Station. Talk to the station
+				master there. She will help you."
+			</Text>
+			<Text id="rumor.commonwealthContainer.5">
+				"The Centauri warlords have many bases among the outer asteroids of Eridani;
+				but if you go there, watch out: Arco Vaughn is there too."
 			</Text>
 
 			<Text id="achievement.liberated">Liberated Raisu station</Text>

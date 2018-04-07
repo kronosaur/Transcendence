@@ -1101,36 +1101,6 @@
 					(Nil					0		'thanksForNothing)
 					)
 			</DonationTable>
-
-			<Rumors>
-				(
-					"\"The Charon pirates are a menace. They have bases in almost every system and they prey on defenseless freighters.\""
-					"\"If you need a contact in the Black Market find the Aleksany brothers; they're always doing business in some fancy hotel.\""
-					"\"The anarchists don't bother us, but they really annoy the Corporations: they're always stealing their fancy ROMs.\""
-					"\"Stay away from the Abbasid fortresses. Those fanatics will shoot you rather than let you get close.\""
-					"\"The Urak warlords are another nutty group, but their armor and weapons are pretty good.\""
-					"\"Hiro is the best hacker in the 'verse. He's created some fancy ROMs that even the cyber corporations can't figure out.\""
-					)
-			</Rumors>
-
-			<RumorsSE>
-				(
-					"\"Watch out for Arco Vaughn. He is the most dangerous Centauri warlord; his heavy raider is protected against lasers and recoilless cannons. Avoid him if you want to live.\""
-					"\"Arco Vaughn flies an enhanced heavy raider. His armor is protected against normal weapons; you'll need missiles to kill him.\""
-					"\"Raisu Station is in trouble. The Centauri warlords have taken it over; don't go there unless you are armed and ready.\""
-					"\"If you want to find Arco Vaughn, go to Raisu Station. Talk to the station master there. She will help you.\""
-					"\"The Centauri warlords have many bases among the outer asteroids of Eridani; but if you go there, watch out: Arco Vaughn is there too.\""
-					)
-			</RumorsSE>
-
-			<RumorsBA>
-				(
-					"\"The Slicer is the champion of the Arena! No one has been able to defeat him.\""
-					"\"I don't watch the Arena games anymore; the Black Market has totally infiltrated the show and all the fights are rigged now.\""
-					"\"I remember watching Kate Morgental fight in the Arena. She put on a great show! I don't know what happened to her; probably working for her father now.\""
-					"\"Let me tell you a secret about fighting in the Arena: load up with missiles. Who cares about beams and whatnot; a good missile will cut through armor like a knife through Salmonite!\""
-					)
-			</RumorsBA>
 		</StaticData>
 
 		<Events>
@@ -1193,6 +1163,10 @@
 					(shpOrder gPlayerShip 'dock aTargetObj)
 					)
 			</OrderDockWithTarget>
+
+			<GetGlobalRumors>
+				(rpgRumorAdd 'commonwealthContainer (make 'sequence 6))
+			</GetGlobalRumors>
 		</Events>
 
 		<DockScreens>
@@ -1220,7 +1194,6 @@
 					</Default>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
 		<DockingPorts>
@@ -1252,9 +1225,36 @@
 				us some of your worldly possessions; they won't do you much good at
 				the Core, or wherever you're trying to get."
 			</Text>
+			<String id="descNoRumors">
+				"Everything's quiet around here at the moment."
+			</String>
 
 			<Text id="rumor.intro">
 				The station master grabs you and speaks softly in your ear:\n\n
+			</Text>
+			<Text id="rumor.commonwealthContainer.1">
+				"The Charon pirates are a menace. They have bases in almost every
+				system and they prey on defenseless freighters."
+			</Text>
+			<Text id="rumor.commonwealthContainer.2">
+				"If you need a contact in the Black Market find the Aleksany
+				brothers; they're always doing business in some fancy hotel."
+			</Text>
+			<Text id="rumor.commonwealthContainer.3">
+				"The anarchists don't bother us, but they really annoy the
+				Corporations: they're always stealing their fancy ROMs."
+			</Text>
+			<Text id="rumor.commonwealthContainer.4">
+				"Stay away from the Abbasid fortresses. Those fanatics will
+				shoot you rather than let you get close."
+			</Text>
+			<Text id="rumor.commonwealthContainer.5">
+				"The Urak warlords are another nutty group, but their armor
+				and weapons are pretty good."
+			</Text>
+			<Text id="rumor.commonwealthContainer.6">
+				"Hiro is the best hacker in the 'verse. He's created some
+				fancy ROMs that even the cyber corporations can't figure out."
 			</Text>
 		</Language>
 	</StationType>
@@ -2180,7 +2180,13 @@
 							(= (scrGetData gScreen 'result) 'info)
 								(if (geq (objGetTypeData gSource 'donationPoints) 5)
 									(scrShowPane gScreen "RewardInfo")
-									(scrShowPane gScreen "RewardInfoRumors")
+									(block Nil
+										(scrExitScreen gScreen)
+										(rpgRumorShow {
+											rumorCriteria: "+commonwealthContainer"
+											noRumorTextID: 'descNoRumors
+											})
+										)
 									)
 
 							(scrExitScreen gScreen)
@@ -2244,30 +2250,6 @@
 					</Action>
 				</Actions>
 			</RewardInfo>
-
-			<RewardInfoRumors>
-				<OnPaneInit>
-					(scrSetDesc gScreen (cat
-						"The station master grabs you and speaks softly in your ear:\n\n"
-						(switch
-							(and (eq (sysGetNode) 'SE)
-									(not (eq (typGetGlobalData &scArcoVaughnHeavyRaider; "status") 'destroyed)))
-								(random (objGetStaticData gSource "RumorsSE"))
-
-							(eq (sysGetNode) 'BA)
-								(random (objGetStaticData gSource "RumorsBA"))
-
-							(random (objGetStaticData gSource "Rumors"))
-							)
-						))
-				</OnPaneInit>
-
-				<Actions>
-					<Action id="actionContinue" default="1" cancel="1">
-						(scrExitScreen gScreen)
-					</Action>
-				</Actions>
-			</RewardInfoRumors>
 
 			<RewardInfoEquipment>
 				<OnPaneInit>
