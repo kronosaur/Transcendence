@@ -1209,12 +1209,8 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Donate Item" key="D" default="1">
-								(block Nil
-									(setq gPrevScreen "Main")
-									(setq gPrevPane "Default")
-									(scrShowScreen gScreen "&dsContainerHabitatDonateItem;")
-									)
+							<Action id="actionDonate" default="1">
+								(scrShowScreen gScreen "&dsContainerHabitatDonateItem;")
 							</Action>
 
 							<Action id="actionUndock" cancel="1">
@@ -1238,6 +1234,8 @@
 		</DockingPorts>
 		
 		<Language>
+			<Text id="actionDonate">[D]onate Item</Text>
+
 			<Text id="descWelcome">
 				You are docked at a habitat made out of shipping containers. Children
 				bounce off the bulkheads in zero-G while maintenance workers repair
@@ -1253,6 +1251,10 @@
 				"We don't get many pilgrims visiting around here. Why don't you give
 				us some of your worldly possessions; they won't do you much good at
 				the Core, or wherever you're trying to get."
+			</Text>
+
+			<Text id="rumor.intro">
+				The station master grabs you and speaks softly in your ear:\n\n
 			</Text>
 		</Language>
 	</StationType>
@@ -1987,16 +1989,12 @@
 		</Panes>
 	</DockScreen>
 
-	<!-- Donate Item to Container Habitat
-
-		gPrevScreen: Must be set to the name/UNID of the screen to
-				navigate to when done.
-		gPrevPane: Must be set to the name of the pane to navigate
-				to when done.
-		-->
+	<!-- Donate Item to Container Habitat -->
 
 	<DockScreen UNID="&dsContainerHabitatDonateItem;"
 			type=				"itemPicker"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
 			>
 
 		<ListOptions
@@ -2005,31 +2003,34 @@
 			/>
 
 		<Panes>
-			<Default>
+			<Default descID="descDonateWhat">
 				<OnPaneInit>
-					(block Nil
-						(setq gItem (scrGetItem gScreen))
-						(setq gMaxCount (itmGetCount gItem))
-						(scrSetDesc gScreen "\"What do you want to give us?\"")
-						)
+					(scrEnableAction gScreen 'actionDonateThisItem (scrGetItem gScreen))
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Donate this Item" default="1" key="D">
-						(switch
-							(gr gMaxCount 1)
-								(scrShowPane gScreen "Quantity")
+					<Action id="actionDonateThisItem" default="1">
+						(block (
+							(theItem (scrGetItem gScreen))
+							(maxCount (itmGetCount theItem))
+							)
+							(switch
+								(gr maxCount 1)
+									(scrShowPane gScreen 'Quantity)
 
-							(eq gMaxCount 1)
 								(block Nil
-									(setq gItem (scrRemoveItem gScreen 1))
-									(scrShowScreen gScreen "&dsContainerHabitatReward;" "Donate")
+									(setq theItem (scrRemoveItem gScreen 1))
+									(scrExitScreen gScreen)
+									(scrShowScreen gScreen &dsContainerHabitatReward; {
+										donatedItem: theItem
+										})
 									)
+								)
 							)
 					</Action>
 
-					<Action name="Cancel" cancel="1" key="C">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionCancel" cancel="1">
+						<Exit/>
 					</Action>
 				</Actions>					
 			</Default>
@@ -2038,183 +2039,173 @@
 					showCounter=	"true">
 
 				<OnPaneInit>
-					(block Nil
-						(scrSetDesc gScreen (cat "\"How many " (itmGetName gItem 0x02) " do you want to give us?\""))
-						(scrSetCounter gScreen gMaxCount)
+					(block (
+						(theItem (scrGetItem gScreen))
+						)
+						(scrSetDescTranslate gScreen 'descDonateQuantity { items: (itmGetName theItem 'plural) })
+						(scrSetCounter gScreen (itmGetCount theItem))
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Donate" default="1" key="D">
-						(block (count)
-							(setq count (scrGetCounter gScreen))
-							(if (gr count gMaxCount)
-								(scrSetCounter gScreen gMaxCount)
+					<Action id="actionDonate" default="1">
+						(block (
+							(theItem (scrGetItem gScreen))
+							(maxCount (itmGetCount theItem))
+							(count (scrGetCounter gScreen))
+							)
+							(switch
+								(gr count maxCount)
+									(scrSetCounter gScreen maxCount)
+
 								(block Nil
-									(setq gItem (scrRemoveItem gScreen count))
-									(scrShowScreen gScreen "&dsContainerHabitatReward;" "Donate")
+									(setq theItem (scrRemoveItem gScreen count))
+									(scrExitScreen gScreen)
+									(scrShowScreen gScreen &dsContainerHabitatReward; {
+										donatedItem: theItem
+										})
 									)
 								)
 							)
 					</Action>
 
-					<Action name="Cancel" cancel="1" key="C">
-						<ShowPane pane="Default"/>
+					<Action id="actionCancel" cancel="1">
+						(scrShowPane gScreen 'Default)
 					</Action>
-
 				</Actions>
 			</Quantity>
-
 		</Panes>
 
+		<Language>
+			<String id="descDonateWhat">"What do you want to give us?"</String>
+			<String id="descDonateQuantity">"How many %items% do you want to give us?"</String>
+		</Language>
 	</DockScreen>
 
-	<DockScreen UNID="&dsContainerHabitatReward;">
+	<DockScreen UNID="&dsContainerHabitatReward;"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			>
+
+		<OnScreenInit>
+			(scrSetData gScreen 'donatedItem (or (@ gData 'donatedItem) gItem))
+		</OnScreenInit>
+
 		<Panes>
-			<Donate>
+			<Default>
 				<OnPaneInit>
-					(block (table entry criteria totalValue)
-						; Look for the entry in the donation table
+					(block (
+						(theItem (scrGetData gScreen 'donatedItem))
 
-						(setq table (objGetStaticData gSource "DonationTable"))
-						(setq entry Nil)
-						(enumwhile table (not entry) thisEntry
-							(switch
-								; If the criteria in the table is Nil, then we always match. This
-								; is for the last (default) entry.
-								(not (setq criteria (item thisEntry 0)))
-									(setq entry thisEntry)
+						;	Look for the entry in the donation table
+						(table (objGetStaticData gSource 'DonationTable))
+						(entry (match table thisEntry
+							(or
+								;	If the criteria in the table is Nil, then we always match. This
+								;	is for the last (default) entry.
+								(not (@ thisEntry 0))
 
-								; If the criteria is an integer, then we see if this is the UNID
-								; of the item.
-								(isint criteria)
-									(if (eq (itmGetType gItem) criteria)
-										(setq entry thisEntry)
-										)
+								;	If the criteria is an integer, then we see if this is the UNID
+								;	of the item.
+								(= (itmGetType theItem) (@ thisEntry 0))
 
-								; If the criteria matches, then we have an entry
-								(itmMatches gItem criteria)
-									(setq entry thisEntry)
+								;	If the criteria matches, then we have an entry
+								(itmMatches theItem (@ thisEntry 0))
 								)
-							)
+							))
 
-						; Deal with the entry that we found
+						(totalValue (* (objGetBuyPrice gSource theItem) (itmGetCount theItem)))
 
-						(setq gResult (item entry 2))
+						(result (@ entry 2))
+						incPoints
+						)
 
-						; Calculate how valuable the donation was
-						
+						;	Calculate how valuable the donation was
 						(switch
-							; If the player donated rotted food, then we're insulted
-							(and (itmMatches gItem "* +FreshFood;") (eq (objGetBuyPrice gSource gItem) 0))
+							;	If the player donated rotted food, then we're insulted
+							(and (itmMatches theItem "* +FreshFood;") (= totalValue 0))
 								(block Nil
-									(setq gResult 'rottedFood)
-									(setq gResultValue Nil)
+									(objSetTypeData gSource 'donationPoints 0)
+									(setq result 'rottedFood)
+									(setq incPoints Nil)
 									)
-							
-							; If 0, then we get result regardless of quantity
-							(eq (item entry 1) 0)
-								(setq gResultValue Nil)
 
-							; If -1, then each item counts for +1 donation points
-							(eq (item entry 1) -1)
-								(setq gResultValue (itmGetCount gItem))
+							;	If 0, then we get result regardless of quantity
+							(eq (@ entry 1) 0)
+								(setq incPoints Nil)
 
-							; Otherwise, depends on the value of the item
-							(block Nil
-								(setq totalValue (multiply (objGetBuyPrice gSource gItem) (itmGetCount gItem)))
-								(setq gResultValue (divide totalValue (item entry 1)))
-								)
-							)
-							
-						; Accumulate donation points
-						
-						(block (donationPoints)
-							(setq donationPoints (objGetGlobalData gSource "donationPoints"))
-							(if (not donationPoints) (setq donationPoints 0))
+							;	If -1, then each item counts for +1 donation points
+							(eq (@ entry 1) -1)
+								(setq incPoints (itmGetCount theItem))
 
-							(if gResultValue
-								(setq donationPoints (add donationPoints gResultValue))
-								)
-
-							(objSetGlobalData gSource "donationPoints" donationPoints)
+							;	Otherwise, depends on the value of the item
+							(setq incPoints (divide totalValue (@ entry 1)))
 							)
 
-						; Deal with the result appropriately
+						(if (= incPoints 0)
+							(setq result 'notEnough)
+							)
+						(scrSetData gScreen 'result result)
 
+						;	Accumulate donation points
+						(typIncData (objGetType gSource) 'donationPoints incPoints)
+
+						;	Deal with the result appropriately
 						(switch
-							(and gResultValue (eq gResultValue 0))
-								(block Nil
-									(setq desc "\"Thanks, that's something we need more of around here.\"")
-									(setq gResult 'thanksForNothing)
-									)
+							(= result 'rottedFood)
+								(scrSetDescTranslate gScreen 'descDonateInsulted)
 
-							(eq gResult 'info)
-								(setq desc (cat
-									"\"Thank you, %sir%! We'll put " (itmGetName gItem 0x40) " to good use. Maybe I can help you in return.\""
-									))
-									
-							(eq gResult 'rottedFood)
-								(block Nil
-									(setq desc (cat
-										"\"Kack! What do you think we're going to do with that? Thanks for nothing!\""
-										))
-									(objSetGlobalData gSource "donationPoints" 0)
-									)
+							(= result 'notEnough)
+								(scrSetDescTranslate gScreen 'descDonateNotEnough)
 
-							; Thanks for nothing
-							(block Nil
-								(setq desc (cat
-									"\"Yeah, I guess you won't be needing" 
-									(if (gr (itmGetCount gItem) 1) " them " " that ")
-									"where you're going. Not sure we need"
-									(if (gr (itmGetCount gItem) 1) " them " " it ")
-									"ourselves, but thanks anyway.\""
-									))
-								(setq gResult 'thanksForNothing)
+							(= result 'info)
+								(scrSetDescTranslate gScreen 'descDonateThanks {
+									item: (itmGetName theItem 'demonstrative)
+									})
+
+							;	Thanks for nothing
+							(scrSetDescTranslate gScreen
+								(if (gr (itmGetCount theItem) 1)
+									'descDonateUselessPlural
+									'descDonateUseless
+									)
 								)
 							)
-
-						(scrSetDesc gScreen desc)
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" cancel="1" default="1" key="C">
+					<Action id="actionContinue" cancel="1" default="1">
 						(switch
-							(eq gResult 'info)
-								(if (geq (objGetGlobalData gSource "donationPoints") 5)
+							(= (scrGetData gScreen 'result) 'info)
+								(if (geq (objGetTypeData gSource 'donationPoints) 5)
 									(scrShowPane gScreen "RewardInfo")
 									(scrShowPane gScreen "RewardInfoRumors")
 									)
 
-							(scrShowScreen gScreen gPrevScreen gPrevPane)
+							(scrExitScreen gScreen)
 							)
 					</Action>
 				</Actions>
+			</Default>
 
-			</Donate>
-
-			<RewardInfo>
+			<RewardInfo descID="descRewardInfo">
 				<OnPaneInit>
-					(block (donationPoints)
-						(scrSetDesc gScreen (cat
-							"\"I know a thing or two about getting around in this system. What do you need to know?\""
-							))
-
-						(setq donationPoints (objGetGlobalData gSource "donationPoints"))
+					(block (
+						(donationPoints (objGetTypeData gSource 'donationPoints))
+						)
 
 						; Equipment location available after 5 donation points
-						(scrShowAction gScreen 0 (geq donationPoints 5))
+						(scrShowAction gScreen 'actionInfoEquipment (geq donationPoints 5))
 
 						; Centauri warlords info available in Eridani after 10 points
-						(scrShowAction gScreen 1 
+						(scrShowAction gScreen 'actionInfoCentauriBase
 							(and (geq donationPoints 10) (eq (sysGetNode) 'SE))
 							)
 
 						; Arco Vaughn info available after 20 points and only in SE or if he
 						; is still alive
-						(scrShowAction gScreen 2 
+						(scrShowAction gScreen 'actionInfoArcoVaughn
 							(and (geq donationPoints 20)
 								(eq (sysGetNode) 'SE)
 								(not (eq (typGetGlobalData &scArcoVaughnHeavyRaider; "status") 'destroyed))
@@ -2222,7 +2213,7 @@
 							)
 
 						; Korolov station info available after 5 points if past SE
-						(scrShowAction gScreen 3
+						(scrShowAction gScreen 'actionInfoKorolov
 							(and (geq donationPoints 5)
 								(not (eq (sysGetNode) 'SE))
 								(leq (sysGetLevel) 3)
@@ -2232,24 +2223,24 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="&quot;I need better equipment.&quot;" key="e">
+					<Action id="actionInfoEquipment">
 						(scrShowPane gScreen "RewardInfoEquipment")
 					</Action>
 
-					<Action name="&quot;Where are the Centauri warlords?&quot;" key="C">
+					<Action id="actionInfoCentauriBase">
 						(scrShowPane gScreen "RewardInfoCentauriBase")
 					</Action>
 
-					<Action name="&quot;Where is Arco Vaughn?&quot;" key="A">
+					<Action id="actionInfoArcoVaughn">
 						(scrShowPane gScreen "RewardInfoArcoVaughn")
 					</Action>
 
-					<Action name="&quot;Is there a Korolov station nearby?&quot;" key="K">
+					<Action id="actionInfoKorolov">
 						(scrShowPane gScreen "RewardInfoKorolov")
 					</Action>
 
-					<Action name="&quot;Nevermind, I'm all set.&quot;" key="N" cancel="1">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionNevermind" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</RewardInfo>
@@ -2272,8 +2263,8 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" cancel="1" default="1" key="C">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</RewardInfoRumors>
@@ -2367,26 +2358,26 @@
 						(scrSetDesc gScreen desc)
 
 						; Enable disable buttons
-						(scrShowAction gScreen 0 aEvent)
-						(scrShowAction gScreen 1 aEvent)
-						(scrShowAction gScreen 2 (not aEvent))
+						(scrShowAction gScreen 'actionCoordinates aEvent)
+						(scrShowAction gScreen 'actionNevermind aEvent)
+						(scrShowAction gScreen 'actionContinue (not aEvent))
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="&quot;Give me the coordinates, please!&quot;" key="C" default="1">
+					<Action id="actionCoordinates" default="1">
 						(block Nil
 							(objFireEvent gSource aEvent)
 							(scrShowPane gScreen "RewardInfoDone")
 							)
 					</Action>
 
-					<Action name="&quot;Nevermind, I'm all set.&quot;" key="N" cancel="1">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionNevermind" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 
-					<Action name="Continue" cancel="1" default="1" key="C">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</RewardInfoEquipment>
@@ -2415,27 +2406,26 @@
 						(scrSetDesc gScreen desc)
 
 						; Enable disable buttons
-						(scrShowAction gScreen 0 aEvent)
-						(scrShowAction gScreen 1 aEvent)
-						(scrShowAction gScreen 2 (not aEvent))
+						(scrShowAction gScreen 'actionCoordinates aEvent)
+						(scrShowAction gScreen 'actionNevermind aEvent)
+						(scrShowAction gScreen 'actionContinue (not aEvent))
 						)
-
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="&quot;Give me the coordinates, please!&quot;" key="C" default="1">
+					<Action id="actionCoordinates" default="1">
 						(block Nil
 							(objFireEvent gSource aEvent)
 							(scrShowPane gScreen "RewardInfoDone")
 							)
 					</Action>
 
-					<Action name="&quot;Nevermind, I'm all set.&quot;" key="N" cancel="1">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionNevermind" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 
-					<Action name="Continue" cancel="1" default="1" key="C">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</RewardInfoCentauriBase>
@@ -2474,8 +2464,8 @@
 
 						; Enable disable buttons
 						(scrShowAction gScreen 0 aEvent)
-						(scrShowAction gScreen 1 aEvent)
-						(scrShowAction gScreen 2 (not aEvent))
+						(scrShowAction gScreen 'actionNevermind aEvent)
+						(scrShowAction gScreen 'actionContinue (not aEvent))
 						)
 				</OnPaneInit>
 
@@ -2487,12 +2477,12 @@
 							)
 					</Action>
 
-					<Action name="&quot;Nevermind, I'm all set.&quot;" key="N" cancel="1">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionNevermind" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 
-					<Action name="Continue" cancel="1" default="1" key="C">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</RewardInfoArcoVaughn>
@@ -2525,8 +2515,8 @@
 
 						; Enable disable buttons
 						(scrShowAction gScreen 0 aEvent)
-						(scrShowAction gScreen 1 aEvent)
-						(scrShowAction gScreen 2 (not aEvent))
+						(scrShowAction gScreen 'actionNevermind aEvent)
+						(scrShowAction gScreen 'actionContinue (not aEvent))
 						)
 				</OnPaneInit>
 
@@ -2538,12 +2528,12 @@
 							)
 					</Action>
 
-					<Action name="&quot;Nevermind, I'm all set.&quot;" key="N" cancel="1">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionNevermind" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 
-					<Action name="Continue" cancel="1" default="1" key="C">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</RewardInfoKorolov>
@@ -2560,12 +2550,37 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" key="C" default="1" cancel="1">
+					<Action id="actionContinue" default="1" cancel="1">
 						<Exit/>
 					</Action>
 				</Actions>
 			</RewardInfoDone>
 		</Panes>
+
+		<Language>
+			<String id="actionInfoEquipment">"I need better [e]quipment."</String>
+			<String id="actionInfoCentauriBase">"Where are the [C]entauri warlords?"</String>
+			<String id="actionInfoArcoVaughn">"Where is [A]rco Vaughn?"</String>
+			<String id="actionInfoKorolov">"Is there a [K]orolov station nearby?"</String>
+			<String id="actionCoordinates">"Give me the [c]oordinates, please!"</String>
+			<String id="actionNevermind">"[N]evermind, I'm all set."</String>
+
+			<String id="descDonateNotEnough">"Thanks, that's something we need more of around here."</String>
+			<String id="descDonateThanks">"Thank you, %sir%! We'll put %item% to good use. Maybe I can help you in return."</String>
+			<String id="descDonateInsulted">"Kack! What do you think we're going to do with that? Thanks for nothing!"</String>
+			<Text id="descDonateUseless">
+				"Yeah, I guess you won't be needing that where you're going.
+				Not sure we need it ourselves, but thanks anyway."
+			</Text>
+			<Text id="descDonateUselessPlural">
+				"Yeah, I guess you won't be needing them where you're going.
+				Not sure we need them ourselves, but thanks anyway."
+			</Text>
+			<Text id="descRewardInfo">
+				"I know a thing or two about getting around in this system.
+				What do you need to know?"
+			</Text>
+		</Language>
 	</DockScreen>
 
 <!-- BASIC COMMONWEALTH RULES
