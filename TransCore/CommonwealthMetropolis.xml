@@ -315,6 +315,7 @@
 								(rpgMissionAssignment {
 									missionCriteria: (cat "n +commonwealthPub; =" (sysGetLevel) ";")
 									noMissionTextID: 'descNoRumors
+									actionDoneID: 'actionLeave
 									maxPerStation: 1
 									})
 								)

@@ -79,7 +79,7 @@
 
 						(rpgPagePaneInit gScreen theRumor
 							{
-								actionDoneID: 'actionLeave
+								actionDoneID: (or (@ gData 'actionDoneID) 'actionContinue)
 								;	sourceObj may be either mission or space object, but
 								;	objTranslate and msnTranslate are identical so this works
 								missionObj: sourceObj
@@ -157,6 +157,9 @@
 				;
 				;		rumorCriteria: Criteria used to find suitable rumors. If not
 				;				supplied then fallback to mission/display criteria
+				;
+				;		actionDoneID: Action ID to use for the done button (defaults to
+				;				'actionContinue).
 
 				(block (
 					;	
@@ -226,7 +229,39 @@
 						(ls (setq theRoll (- theRoll (@ theRumor 'priority))) 1)
 						))
 					)
+
+					(if (@ options 'actionDoneID)
+						(set@ theRumor 'actionDoneID (@ options 'actionDoneID))
+						)
 					theRumor
+					)
+				))
+
+			(setq rpgRumorShow (lambda (options)
+
+				;	Options may contain the following fields
+				;
+				;		rumorCriteria: Criteria used to find suitable rumors. If not
+				;				supplied then fallback to mission/display criteria
+				;
+				;		noRumorTextID: Language ID to display if there are no rumors
+				;				available at this station. [Required]
+				;
+				;		actionDoneID: Action ID to use for the done button (defaults to
+				;				'actionContinue).
+
+				(block (
+					(noRumorTextID (@ options 'noRumorTextID))
+					theRumor
+					)
+					(switch
+						;	Check if we have any rumors
+						(setq theRumor (rpgGetRumor options))
+							(scrShowScreen gScreen &dsRPGRumor; theRumor)
+
+						; Otherwise, nothing
+						(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noRumorTextID) })
+						)
 					)
 				))
 			)
