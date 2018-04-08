@@ -2087,6 +2087,7 @@
 							(setq actions (list
 								{
 									label: (or (@ pageDesc 'acceptLabel)
+										(msnTranslate (@ options 'missionObj) (@ pageDesc 'acceptLabelID))
 										(msnTranslate (@ options 'missionObj) 'AcceptLabel)
 										(typTranslate &unidCommonText; 'actionAccept)
 										)
@@ -2095,6 +2096,7 @@
 									}
 								{
 									label: (or (@ pageDesc 'declineLabel)
+										(msnTranslate (@ options 'missionObj) (@ pageDesc 'declineLabelID))
 										(msnTranslate (@ options 'missionObj) 'DeclineLabel)
 										(typTranslate &unidCommonText; 'actionDecline)
 										)
