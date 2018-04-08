@@ -379,7 +379,7 @@ void CDockPane::ExecuteCancelAction (void)
 
 	{
 	int iAction;
-	if (m_Actions.FindSpecial(CDockScreenActions::specialCancel, &iAction))
+	if (m_Actions.FindSpecial(CLanguage::specialCancel, &iAction))
 		ExecuteAction(iAction);
 	else
 		{
@@ -660,7 +660,7 @@ bool CDockPane::HandleKeyDown (int iVirtKey)
 		case VK_LEFT:
 			{
 			int iAction;
-			if (m_Actions.FindSpecial(CDockScreenActions::specialPrevKey, &iAction))
+			if (m_Actions.FindSpecial(CLanguage::specialPrevKey, &iAction))
 				{
 				ExecuteAction(iAction);
 				return true;
@@ -672,7 +672,7 @@ bool CDockPane::HandleKeyDown (int iVirtKey)
 		case VK_RIGHT:
 			{
 			int iAction;
-			if (m_Actions.FindSpecial(CDockScreenActions::specialNextKey, &iAction))
+			if (m_Actions.FindSpecial(CLanguage::specialNextKey, &iAction))
 				{
 				ExecuteAction(iAction);
 				return true;
@@ -683,7 +683,7 @@ bool CDockPane::HandleKeyDown (int iVirtKey)
 		case VK_NEXT:
 			{
 			int iAction;
-			if (m_Actions.FindSpecial(CDockScreenActions::specialPgDnKey, &iAction))
+			if (m_Actions.FindSpecial(CLanguage::specialPgDnKey, &iAction))
 				{
 				ExecuteAction(iAction);
 				return true;
@@ -694,7 +694,7 @@ bool CDockPane::HandleKeyDown (int iVirtKey)
 		case VK_PRIOR:
 			{
 			int iAction;
-			if (m_Actions.FindSpecial(CDockScreenActions::specialPgUpKey, &iAction))
+			if (m_Actions.FindSpecial(CLanguage::specialPgUpKey, &iAction))
 				{
 				ExecuteAction(iAction);
 				return true;
@@ -750,7 +750,7 @@ bool CDockPane::HandleKeyDown (int iVirtKey)
 		case VK_RETURN:
 			{
 			int iAction;
-			if (m_Actions.FindSpecial(CDockScreenActions::specialDefault, &iAction))
+			if (m_Actions.FindSpecial(CLanguage::specialDefault, &iAction))
 				{
 				ExecuteAction(iAction);
 				return true;

@@ -7,8 +7,6 @@
 
 //	Key mapping class ---------------------------------------------------------
 
-const DWORD INVALID_VIRT_KEY = 0xFFFFFFFF;
-
 class CGameKeys
 	{
 	public:
@@ -152,11 +150,6 @@ class CGameKeys
         void SetGameKey (const CString &sKeyID, Keys iCommand);
         void SetLayout (ELayouts iLayout);
 		ALERROR WriteAsXML (IWriteStream *pOutput);
-
-		static DWORD GetKey (const CString &sKey);
-		static CString GetKeyID (DWORD dwVirtKey);
-		static CString GetKeyLabel (DWORD dwVirtKey);
-		static DWORD TranslateVirtKey (DWORD dwVirtKey, DWORD dwKeyData);
 
 	private:
         struct SKeyMapEntry

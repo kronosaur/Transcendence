@@ -224,7 +224,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
     {
 	bool bKeyRepeat = uiIsKeyRepeat(dwKeyData);
-	DWORD dwTVirtKey = CGameKeys::TranslateVirtKey(iVirtKey, dwKeyData);
+	DWORD dwTVirtKey = CVirtualKeyData::TranslateVirtKey(iVirtKey, dwKeyData);
 
 	switch (g_pTrans->m_State)
 		{
@@ -488,7 +488,7 @@ void CGameSession::OnKeyUp (int iVirtKey, DWORD dwKeyData)
 //  Key up
 
     {
-	DWORD dwTVirtKey = CGameKeys::TranslateVirtKey(iVirtKey, dwKeyData);
+	DWORD dwTVirtKey = CVirtualKeyData::TranslateVirtKey(iVirtKey, dwKeyData);
 
 	switch (g_pTrans->m_State)
 		{

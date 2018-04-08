@@ -166,19 +166,6 @@ class CDockScreenActions
 			arrangeHorizontal,				//	Arrange horizontally
 			};
 
-		enum SpecialAttribs
-			{
-			specialNone			= 0x00000000,
-			specialAll			= 0xFFFFFFFF,
-
-			specialCancel		= 0x00000001,
-			specialDefault		= 0x00000002,
-			specialNextKey		= 0x00000004,
-			specialPrevKey		= 0x00000008,
-			specialPgDnKey		= 0x00000010,
-			specialPgUpKey		= 0x00000020,
-			};
-
 		CDockScreenActions (void) : m_pData(NULL), m_cxJustify(-1) { }
 		~CDockScreenActions (void);
 
@@ -192,20 +179,20 @@ class CDockScreenActions
 		bool FindByID (const CString &sID, int *retiAction = NULL);
 		bool FindByID (ICCItem *pItem, int *retiAction = NULL);
 		bool FindByKey (const CString &sKey, int *retiAction);
-		bool FindSpecial (SpecialAttribs iSpecial, int *retiAction);
+		bool FindSpecial (CLanguage::ELabelAttribs iSpecial, int *retiAction);
 		inline int GetCount (void) const { return m_Actions.GetCount(); }
 		inline const CString &GetKey (int iAction) const { return m_Actions[iAction].sKey; }
 		inline const CString &GetLabel (int iAction) const { return m_Actions[iAction].sLabel; }
 		int GetVisibleCount (void) const;
 		ALERROR InitFromXML (CExtension *pExtension, CXMLElement *pActions, ICCItem *pData, CString *retsError);
 		inline bool IsEnabled (int iAction) const { return m_Actions[iAction].bEnabled; }
-		bool IsSpecial (int iAction, SpecialAttribs iSpecial);
+		bool IsSpecial (int iAction, CLanguage::ELabelAttribs iSpecial);
 		inline bool IsVisible (int iAction) const { return m_Actions[iAction].bVisible; }
 		ALERROR RemoveAction (int iAction);
 		void SetDesc (int iAction, const CString &sDesc);
 		void SetEnabled (int iAction, bool bEnabled = true);
 		void SetLabel (int iAction, const CString &sLabelDesc, const CString &sKey);
-		void SetSpecial (int iAction, SpecialAttribs iSpecial, bool bEnabled = true);
+		void SetSpecial (int iAction, CLanguage::ELabelAttribs iSpecial, bool bEnabled = true);
 		bool SetSpecial (CCodeChain &CC, int iAction, ICCItem *pSpecial, ICCItem **retpError);
 		void SetVisible (int iAction, bool bVisible = true);
 
@@ -253,12 +240,11 @@ class CDockScreenActions
 
 		void Arrange (EArrangements iArrangement, CDesignType *pRoot, const RECT &rcFrame);
 		void ExecuteCode (CDockScreen *pScreen, const CString &sID, CExtension *pExtension, ICCItem *pCode);
-		SpecialAttribs GetSpecialFromName (const CString &sSpecialName);
+		CLanguage::ELabelAttribs GetSpecialFromName (const CString &sSpecialName);
 		int Justify (CDesignType *pRoot, int cxJustify);
-		void ParseLabelDesc (const CString &sLabelDesc, CString *retsLabel, CString *retsKey = NULL, int *retiKey = NULL, TArray<SpecialAttribs> *retSpecial = NULL);
 		void SetLabelDesc (SActionDesc *pAction, const CString &sLabelDesc, bool bOverrideSpecial = true);
-		void SetSpecial (SActionDesc *pAction, const TArray<SpecialAttribs> &Special);
-		void SetSpecial (SActionDesc *pAction, SpecialAttribs iSpecial, bool bEnabled);
+		void SetSpecial (SActionDesc *pAction, const TArray<CLanguage::ELabelAttribs> &Special);
+		void SetSpecial (SActionDesc *pAction, CLanguage::ELabelAttribs iSpecial, bool bEnabled);
 
 		TArray<SActionDesc> m_Actions;
 		ICCItem *m_pData;			//	Data passed in to scrShowScreen (may be NULL)

@@ -532,10 +532,10 @@ void CKeyboardMapSession::InitDevice (const SDeviceData &Device)
         if (Device.pKeys[i].pszKeyID)
 			{
             m_Keys[i].sKeyID = CString(Device.pKeys[i].pszKeyID);
-			m_Keys[i].dwVirtKey = CGameKeys::GetKey(m_Keys[i].sKeyID);
+			m_Keys[i].dwVirtKey = CVirtualKeyData::GetKey(m_Keys[i].sKeyID);
 			}
 		else
-			m_Keys[i].dwVirtKey = INVALID_VIRT_KEY;
+			m_Keys[i].dwVirtKey = CVirtualKeyData::INVALID_VIRT_KEY;
 
         if (Device.pKeys[i].pszLabel)
             m_Keys[i].sLabel = CString(Device.pKeys[i].pszLabel);
