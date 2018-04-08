@@ -1265,18 +1265,10 @@
 		</Events>
 		
 		<Language>
-			<String id="msgNoDamage">
-				"No damage"
-			</String>
-			<String id="msgArmorDamage">
-				"Armor integrity at %armorIntegrity%%"
-			</String>
-			<String id="msgShieldDamage">
-				"Shields at %shieldLevel%%"
-			</String>
-			<String id="msgHullDamage">
-				"Hull integrity at %hullIntegrity%%"
-			</String>
+			<String id="msgNoDamage">No damage</String>
+			<String id="msgArmorDamage">Armor integrity at %armorIntegrity%%</String>
+			<String id="msgShieldDamage">Shields at %shieldLevel%%</String>
+			<String id="msgHullDamage">Hull integrity at %hullIntegrity%%</String>
 		</Language>
 	</Type>
 
