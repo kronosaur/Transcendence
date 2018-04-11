@@ -907,7 +907,7 @@ void CDockScreenActions::SetSpecial (SActionDesc *pAction, const TArray<CLanguag
 	{
 	int i;
 
-	pAction->dwSpecial = specialNone;
+	pAction->dwSpecial = CLanguage::specialNone;
 
 	for (i = 0; i < Special.GetCount(); i++)
 		pAction->dwSpecial |= Special[i];
@@ -955,7 +955,7 @@ bool CDockScreenActions::SetSpecial (CCodeChain &CC, int iAction, ICCItem *pSpec
 		{
 		CString sSpecial = pSpecial->GetElement(i)->GetStringValue();
 		CLanguage::ELabelAttribs iSpecial = GetSpecialFromName(sSpecial);
-		if (iSpecial == specialNone)
+		if (iSpecial == CLanguage::specialNone)
 			{
 			if (retpError)
 				*retpError = CC.CreateError(CONSTLIT("Unknown action special key"), pSpecial->GetElement(i));
