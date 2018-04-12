@@ -702,5 +702,32 @@
     <Xml Include="CSCTerra.xml">
       <Filter>Human Space Library\Commonwealth Fleet</Filter>
     </Xml>
+    <Xml Include="Heretic00.xml">
+      <Filter>Part I</Filter>
+    </Xml>
+    <Xml Include="Heretic01.xml">
+      <Filter>Part I</Filter>
+    </Xml>
+    <Xml Include="Heretic02.xml">
+      <Filter>Part I</Filter>
+    </Xml>
+    <Xml Include="Heretic03.xml">
+      <Filter>Part I</Filter>
+    </Xml>
+    <Xml Include="Heretic04.xml">
+      <Filter>Part I</Filter>
+    </Xml>
+    <Xml Include="Heretic05.xml">
+      <Filter>Part I</Filter>
+    </Xml>
+    <Xml Include="Heretic06.xml">
+      <Filter>Part I</Filter>
+    </Xml>
+    <Xml Include="Heretic07.xml">
+      <Filter>Part I</Filter>
+    </Xml>
+    <Xml Include="Heretic08.xml">
+      <Filter>Part I</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

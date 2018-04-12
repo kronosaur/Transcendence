@@ -519,6 +519,15 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="Heliotropes.xml" />
+    <Xml Include="Heretic00.xml" />
+    <Xml Include="Heretic01.xml" />
+    <Xml Include="Heretic02.xml" />
+    <Xml Include="Heretic03.xml" />
+    <Xml Include="Heretic04.xml" />
+    <Xml Include="Heretic05.xml" />
+    <Xml Include="Heretic06.xml" />
+    <Xml Include="Heretic07.xml" />
+    <Xml Include="Heretic08.xml" />
     <Xml Include="Himal.xml" />
     <Xml Include="Huaramarca.xml">
       <SubType>Designer</SubType>
