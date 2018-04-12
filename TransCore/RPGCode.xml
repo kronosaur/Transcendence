@@ -2172,11 +2172,17 @@
 							
 							(actionAccel
 								(switch
-									(eq (count actions) 1)
+									(= (count actions) 1)
 										(list "default" "cancel")
-									(eq nextActionID 0)
+									(and (@ actionDesc 'default) (@ actionDesc 'cancel))
+										(list "default" "cancel")
+									(or (= nextActionID 0)
+											(@ actionDesc 'default)
+											)
 										"default"
-									(eq nextActionID (subtract (count actions) 1))
+									(or (= nextActionID (subtract (count actions) 1))
+											(@ actionDesc 'cancel)
+											)
 										"cancel"
 									Nil
 									)
