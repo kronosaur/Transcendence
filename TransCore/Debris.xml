@@ -232,7 +232,7 @@
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
-									(sysAddEncounterEventAtDist 0 gPlayerShip &etPirateAmbush1; 50)
+									(sysAddEncounterEventAtDist 0 gPlayerShip &etPirateAmbush1; 90)
 									(scrExitDock gScreen)
 									)
 							</Action>
