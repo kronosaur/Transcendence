@@ -443,7 +443,7 @@
 			description=		"The Tinkers Guild has developed a technique for combining two mark III howitzers."
 			>
 
-		<Image imageID="&rsItemsMakayev3;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItemsMakayev3;" imageX="192" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"missile"
@@ -477,7 +477,7 @@
 			description=		"The Tinkers Guild designed this nuclear-powered laser mounted on an omnidirectional turret."
 			>
 
-		<Image imageID="&rsItemsBushido1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItemsBushido1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"beam"

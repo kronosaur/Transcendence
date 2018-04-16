@@ -1940,7 +1940,7 @@
 			description=		"After the Ares onslaught of 2372, the Fleet upgraded its Centurion gunships to this thermonuclear cannon."
 			>
 
-		<Image imageID="&rsItemsNAMI3;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItemsNAMI3;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"missile"

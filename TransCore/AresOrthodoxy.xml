@@ -334,7 +334,7 @@
 			description=		"This omnidirectional turret fires rapid bursts of ion energy, but requires periods of rest."
 			>
 
-		<Image imageID="&rsItems8;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems8;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"beam"

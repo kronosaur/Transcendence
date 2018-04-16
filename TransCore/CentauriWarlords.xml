@@ -109,7 +109,7 @@
 			sortName=			"recoilless cannon, Centauri"
 			>
 
-		<Image imageID="&rsItems1;" imageX="0" imageY="768" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems1;" imageX="192" imageY="768" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"missile"
