@@ -1845,25 +1845,45 @@
 
 					; If it does not exist, create one
 					(if (not primaryObj)
-						(block (bestDist bestPlanet primaryPos primaryType)
-							; Find the most distant planet in the system
-							(setq bestDist 0)
-							(enum (sysFindObject sourceObj "t +isPlanet:true;") theObj
-								(block (theDist)
-									(setq theDist (sysVectorDistance (objGetPos theObj)))
-									(if (gr theDist bestDist)
-										(setq bestDist theDist)
-										)
+						(block (bestDist primaryPos primaryType stars planets badAngles triesLeft firstStar)
+							; Find the closest star
+							(setq stars (sysFindObject sourceObj "t +star; S:d;"))
+							(setq firstStar (@ stars 0))
+							
+							; Find the most distant planet in that star's system
+							(setq planets (sysFindObject firstStar "t +isPlanet:true; S:D;"))
+							(enumWhile planets (not bestDist) thePlanet
+								(if (eq firstStar (sysFindObject thePlanet "tN +star;"))
+									(setq bestDist (sysVectorDistance thePlanet firstStar))
 									)
 								)
+								
 							(if (ls bestDist 480)
 								(setq bestDist (random 480 600))
 								(setq bestDist (add bestDist (random 120 240)))
 								)
 
 							; Compute the position of the primary stronghold. It must be
-							; in the outer system far from anything else
-							(setq primaryPos (sysVectorRandom Nil bestDist 180 "T"))
+							; in the outer system far from anything else.
+							; Also try to avoid being too close to the path to another star.
+							
+							(setq badAngles (map (subset stars 1) otherStar (sysVectorAngle otherStar firstStar)))
+							(setq triesLeft 10)
+							(loop (gr triesLeft 0)
+								(block ((angleOK true))
+									(setq primaryPos (sysVectorRandom firstStar bestDist 180 "T"))
+									(enumWhile badAngles angleOK theAngle
+										(if (leq (abs (mod (- theAngle (sysVectorAngle primaryPos firstStar)) 360)) 45)
+											(setq angleOK Nil)
+											)
+										)
+									(if angleOK
+										(setq triesLeft 0)
+										(setq triesLeft (- triesLeft 1))
+										)
+									)
+								)
+									
 
 							; Create a different stronghold depending on the system level
 							(switch
