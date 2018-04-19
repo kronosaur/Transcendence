@@ -277,9 +277,11 @@ static char *SOFTWARE[] =
 	{
 	"Adobe® Photoshop®",
 	"Caligari trueSpace®",
+	"Hexarc",
 	"Intel® JPEG Library",
-	"Microsoft® Visual Studio®",
+	"LodePNG",
 	"Luminous",
+	"Microsoft® Visual Studio®",
 	"zlib"
 	};
 

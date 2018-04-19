@@ -223,6 +223,7 @@ bool CCmdUpload::CopyPreviewFiles (const CExtensionDirectory::SExtensionInfo &In
         return false;
 
 	//	Load the resource
+	//	LATER: Convert to LoadImageFile (so we can handle PNGs).
 
 	HBITMAP hImage;
 	if (Resources.LoadImage(NULL_STR, Info.sCoverImage, &hImage) != NOERROR)
