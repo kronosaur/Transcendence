@@ -44,7 +44,7 @@
 
 <!-- RESOURCES -->
 
-	<Image UNID="&rsLightNebula;"		bitmap="Resources\LightNebula.png"	loadOnUse="true"/>
+	<Image UNID="&rsLightNebula;"		bitmap="Resources\LightNebula.jpg"	bitmask="Resources\LightNebulaMask.bmp"	loadOnUse="true"/>
 
 	<Image UNID="&rsNebulaEnv;"		bitmap="Resources\Nebula.jpg"			bitmask="Resources\NebulaMask.bmp"/>
 	<Image UNID="&rsNebula;"		bitmap="Resources\NebulaHighlights.jpg"	bitmask="Resources\NebulaHighlightsMask.bmp"/>
