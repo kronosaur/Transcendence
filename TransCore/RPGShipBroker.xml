@@ -249,7 +249,7 @@
 									(scrShowScreen gScreen &dsRPGShipBrokerConfirm; {
 										newShipID: (objGetID selObj)
 										newShipPrice: (scrGetData gScreen 'buyPrice)
-										oldShipID: (objGetID (objGetID wingmanObj))
+										oldShipID: (objGetID wingmanObj)
 										oldShipPrice: wingmanPrice
 										price: (- (scrGetData gScreen 'buyPrice) wingmanPrice)
 										})
