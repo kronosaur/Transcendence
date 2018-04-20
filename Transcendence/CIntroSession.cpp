@@ -238,16 +238,11 @@ void CIntroSession::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereign, C
 			if (pShip)
 				{
 				IShipController *pController = pShip->GetController();
-
-				CSpaceObject *pTarget;
-				IShipController::OrderTypes iOrder = pController->GetCurrentOrderEx(&pTarget);
-				if ((pShipDestroyed && pTarget == pShipDestroyed) || iOrder == IShipController::orderNone)
+				IShipController::OrderTypes iOrder = pController->GetCurrentOrderEx();
+				if (iOrder == IShipController::orderNone)
 					{
 					pController->CancelAllOrders();
-					if (pShip->GetSovereign() == pSovereign1)
-						pController->AddOrder(IShipController::orderDestroyTarget, pShip2, IShipController::SData());
-					else
-						pController->AddOrder(IShipController::orderDestroyTarget, pShip1, IShipController::SData());
+					pController->AddOrder(IShipController::orderAttackNearestEnemy, NULL, IShipController::SData());
 					}
 				}
 			}
@@ -617,29 +612,51 @@ bool CIntroSession::HandleCommandBoxChar (char chChar, DWORD dwKeyData)
 
 		case '\015':
 			{
-			if(strStartsWith(g_pTrans->m_sCommand, CONSTLIT("~")))
+			if (strStartsWith(g_pTrans->m_sCommand, CONSTLIT("update")))
+				{
+				CString sArg = strSubString(g_pTrans->m_sCommand, 7);
+				int iTicks = strParseInt(sArg.GetASCIIZPointer(), 0);
+				for (int i = 0; i < iTicks; i++)
+					{
+					g_pUniverse->Update(SSystemUpdateCtx());
+					}
+				break;
+				}
+			else if (strStartsWith(g_pTrans->m_sCommand, CONSTLIT("time")))
+				{
+				CString sArg = strSubString(g_pTrans->m_sCommand, 5);
+				int iNewUpdateRate = strParseInt(sArg.GetASCIIZPointer(), 1);
+				if (iNewUpdateRate > -1)
+					{
+					iUpdateRate = iNewUpdateRate;
+					}
+				}
+			else if (strStartsWith(g_pTrans->m_sCommand, CONSTLIT("ship")))
+				{
+				CShip *pShip = g_pUniverse->GetPOV()->AsShip();
+				DWORD dwSovereign = (pShip ? pShip->GetSovereign()->GetUNID() : 0);
+
+				//	Parse the string into a ship class
+
+				CShipClass *pClass = g_pUniverse->FindShipClassByName(strSubString(g_pTrans->m_sCommand, 5));
+				if (pClass == NULL)
+					{
+					SetState(isShipStats);
+					break;
+					}
+
+				//	Destroy and create
+
+				g_pTrans->DestroyPOVIntroShips();
+				CreateIntroShips(pClass->GetUNID(), dwSovereign);
+				CancelCurrentState();
+				}
+			else
 				{
 				g_pUniverse->FireOnGlobalIntroCommand(strSubString(g_pTrans->m_sCommand, 1));
 				CancelCurrentState();
 				break;
 				}
-			CShip *pShip = g_pUniverse->GetPOV()->AsShip();
-			DWORD dwSovereign = (pShip ? pShip->GetSovereign()->GetUNID() : 0);
-
-			//	Parse the string into a ship class
-
-			CShipClass *pClass = g_pUniverse->FindShipClassByName(g_pTrans->m_sCommand);
-			if (pClass == NULL)
-				{
-				SetState(isShipStats);
-				break;
-				}
-
-			//	Destroy and create
-
-			g_pTrans->DestroyPOVIntroShips();
-			CreateIntroShips(pClass->GetUNID(), dwSovereign);
-			CancelCurrentState();
 			break;
 			}
 
@@ -671,8 +688,172 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			CancelCurrentState();
 			break;
 
+		case '1':
 		case '!':
 			SetState(isEnterCommand);
+			break;
+
+		case '*':
+		case '8':
+			g_pUniverse->SetSound(!g_pUniverse->GetSound());
+			break;
+
+		case '_':
+		case '-':
+			if (iUpdateRate > 0)
+				iUpdateRate--;
+			break;
+
+		case '+':
+		case '=':
+			if (iUpdateRate < 10)
+				iUpdateRate++;
+			break;
+
+		case '{':
+		case '[':
+			{
+			int i;
+
+			CSpaceObject *pPOV = g_pUniverse->GetPOV();
+			if (pPOV->GetCategory() != CSpaceObject::catShip)
+				break;
+
+			CSystem *pSystem = pPOV->GetSystem();
+			CSovereign *pCurSovereign = pPOV->GetSovereign();
+
+			//	Find the previous POV in the list
+
+			int iTotalCount = pSystem->GetObjectCount();
+			for (i = 0; i < iTotalCount; i++)
+				{
+				CSpaceObject *pObj = pSystem->GetObject((pPOV->GetIndex() + i + 1) % iTotalCount);
+				if (pObj
+					&& pObj->GetCategory() == CSpaceObject::catShip
+					&& pObj->CanAttack())
+					{
+					g_pUniverse->SetPOV(pObj);
+					SetState(isShipStats);
+					break;
+					}
+				}
+
+			break;
+			}
+
+		case '}':
+		case ']':
+			{
+			int i;
+
+			CSpaceObject *pPOV = g_pUniverse->GetPOV();
+			if (pPOV->GetCategory() != CSpaceObject::catShip)
+				break;
+
+			CSystem *pSystem = pPOV->GetSystem();
+			CSovereign *pCurSovereign = pPOV->GetSovereign();
+
+			//	Find the next POV in the list
+
+			int iTotalCount = pSystem->GetObjectCount();
+			for (i = 0; i < iTotalCount; i++)
+				{
+				CSpaceObject *pObj = pSystem->GetObject((pPOV->GetIndex() + iTotalCount - (i + 1)) % iTotalCount);
+				if (pObj 
+						&& pObj->GetCategory() == CSpaceObject::catShip
+						&& pObj->CanAttack())
+					{
+					g_pUniverse->SetPOV(pObj);
+					SetState(isShipStats);
+					break;
+					}
+				}
+
+			break;
+			}
+
+		case '<':
+		case ',':
+		case '>':
+		case '.':
+			{
+			int i;
+
+			CShip *pShip = g_pUniverse->GetPOV()->AsShip();
+			if (pShip == NULL)
+				break;
+
+			DWORD dwNewShipClass = 0;
+
+			//	Find the index of the current ship class
+
+			DWORD dwClass = pShip->GetClassUNID();
+			int iIndex = -1;
+			for (i = 0; i < g_pUniverse->GetShipClassCount(); i++)
+				if (g_pUniverse->GetShipClass(i)->GetUNID() == dwClass)
+				{
+					iIndex = i;
+					break;
+				}
+
+			CShipClass *pNewShipClass;
+
+			if (chChar == '>' || chChar == '.')
+				{
+				//	Get the UNID of the next ship class in order
+
+				do
+					{
+					if (iIndex == -1 || (iIndex + 1) == g_pUniverse->GetShipClassCount())
+						iIndex = 0;
+					else
+						iIndex++;
+
+					pNewShipClass = g_pUniverse->GetShipClass(iIndex);
+					}
+				while (pNewShipClass->IsVirtual());
+
+				//	Set the variable so that the next ship created will
+				//	have the given class
+
+				dwNewShipClass = pNewShipClass->GetUNID();
+				}
+			else if(chChar == '<' || chChar == ',')
+				{
+				//	Get the UNID of the previous ship class in order
+
+				do
+				{
+					if ((iIndex - 1) < 0)
+						iIndex = g_pUniverse->GetShipClassCount()-1;
+					else
+						iIndex--;
+
+					pNewShipClass = g_pUniverse->GetShipClass(iIndex);
+				} while (pNewShipClass->IsVirtual());
+
+				//	Set the variable so that the next ship created will
+				//	have the given class
+
+				dwNewShipClass = pNewShipClass->GetUNID();
+				}
+			//	Destroy all ships of the current class
+
+			g_pTrans->DestroyPOVIntroShips();
+
+			//	Create a new ship
+
+			CreateIntroShips(dwNewShipClass, pShip->GetSovereign()->GetUNID());
+			break;
+			}
+		case '?':
+		case '/':
+			SetState(isIntroHelp);
+			break;
+		case 'A':
+		case 'a':
+			g_pTrans->DestroyAllIntroShips();
+			CreateIntroShips();
 			break;
 
 		case 'C':
@@ -717,100 +898,21 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 
 		case 'h':
 		case 'H':
+			{
 			CmdShowHighScoreList();
 			break;
-
-		case 'I':
-		case 'i':
-			SetState(isIntroHelp);
-			break;
-
+			}
 		case 'K':
-			g_pTrans->DestroyAllIntroShips();
-			CreateIntroShips();
-			break;
 		case 'k':
+			{
 			g_pTrans->DestroyPOVIntroShips();
 			CreateIntroShips();
 			break;
-
+			}
 		case 'L':
 		case 'l':
 			g_pTrans->DoCommand(CMD_CONTINUE_OLD_GAME);
 			break;
-
-		case 'N':
-		case 'n':
-			{
-			int i;
-
-			CShip *pShip = g_pUniverse->GetPOV()->AsShip();
-			if (pShip == NULL)
-				break;
-
-			DWORD dwNewShipClass = 0;
-
-			//	Find the index of the current ship class
-
-			DWORD dwClass = pShip->GetClassUNID();
-			int iIndex = -1;
-			for (i = 0; i < g_pUniverse->GetShipClassCount(); i++)
-				if (g_pUniverse->GetShipClass(i)->GetUNID() == dwClass)
-				{
-					iIndex = i;
-					break;
-				}
-
-			CShipClass *pNewShipClass;
-
-			if (chChar == 'n')
-				{
-				//	Get the UNID of the next ship class in order
-
-				do
-					{
-					if (iIndex == -1 || (iIndex + 1) == g_pUniverse->GetShipClassCount())
-						iIndex = 0;
-					else
-						iIndex++;
-
-					pNewShipClass = g_pUniverse->GetShipClass(iIndex);
-					}
-				while (pNewShipClass->IsVirtual());
-
-				//	Set the variable so that the next ship created will
-				//	have the given class
-
-				dwNewShipClass = pNewShipClass->GetUNID();
-				}
-			else if(chChar == 'N')
-				{
-				//	Get the UNID of the previous ship class in order
-
-				do
-				{
-					if ((iIndex - 1) < 0)
-						iIndex = g_pUniverse->GetShipClassCount()-1;
-					else
-						iIndex--;
-
-					pNewShipClass = g_pUniverse->GetShipClass(iIndex);
-				} while (pNewShipClass->IsVirtual());
-
-				//	Set the variable so that the next ship created will
-				//	have the given class
-
-				dwNewShipClass = pNewShipClass->GetUNID();
-				}
-			//	Destroy all ships of the current class
-
-			g_pTrans->DestroyPOVIntroShips();
-
-			//	Create a new ship
-
-			CreateIntroShips(dwNewShipClass, pShip->GetSovereign()->GetUNID());
-			break;
-			}
 
 		case 'O':
 		case 'o':
@@ -824,60 +926,45 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			CSystem *pSystem = pPOV->GetSystem();
 			CSovereign *pCurSovereign = pPOV->GetSovereign();
 
-			//	Make a list of all opponents
-
-			TArray<CSpaceObject *> Opponents;
-			for (i = 0; i < pSystem->GetObjectCount(); i++)
+			int iTotalCount = pSystem->GetObjectCount();
+			if (chChar == 'o')
 				{
-				CSpaceObject *pObj = pSystem->GetObject(i);
-				if (pObj 
+				//	Find the next enemy POV in the list
+				for (i = 0; i < iTotalCount; i++)
+					{
+					CSpaceObject *pObj = pSystem->GetObject((pPOV->GetIndex() + iTotalCount - (i + 1)) % iTotalCount);
+					if (pObj
 						&& pObj->GetCategory() == CSpaceObject::catShip
 						&& pObj->GetSovereign() != pCurSovereign
 						&& pObj->CanAttack())
-					Opponents.Insert(pObj);
+						{
+						g_pUniverse->SetPOV(pObj);
+						SetState(isShipStats);
+						break;
+						}
+					}
 				}
-
-			//	Pick a random opponent and set the POV
-
-			if (Opponents.GetCount() > 0)
-				{
-				g_pUniverse->SetPOV(Opponents[mathRandom(0, Opponents.GetCount() - 1)]);
-				SetState(isShipStats);
-				}
-
+			else if (chChar == 'O')
+					{
+					//	Find the previous enemy POV in the list
+					for (i = 0; i < iTotalCount; i++)
+						{
+						CSpaceObject *pObj = pSystem->GetObject((pPOV->GetIndex() + (i + 1)) % iTotalCount);
+						if (pObj
+							&& pObj->GetCategory() == CSpaceObject::catShip
+							&& pObj->GetSovereign() != pCurSovereign
+							&& pObj->CanAttack())
+							{
+							g_pUniverse->SetPOV(pObj);
+							SetState(isShipStats);
+							break;
+							}
+					}
+					}
 			break;
 			}
 
 		case 'P':
-			{
-			int i;
-
-			CSpaceObject *pPOV = g_pUniverse->GetPOV();
-			if (pPOV->GetCategory() != CSpaceObject::catShip)
-				break;
-
-			CSystem *pSystem = pPOV->GetSystem();
-			CSovereign *pCurSovereign = pPOV->GetSovereign();
-
-			//	Find the next POV in the list
-
-			int iTotalCount = pSystem->GetObjectCount();
-			for (i = 0; i < iTotalCount; i++)
-				{
-				CSpaceObject *pObj = pSystem->GetObject((pPOV->GetIndex() + iTotalCount - (i + 1)) % iTotalCount);
-				if (pObj 
-						&& pObj->GetCategory() == CSpaceObject::catShip
-						&& pObj->CanAttack())
-					{
-					g_pUniverse->SetPOV(pObj);
-					SetState(isShipStats);
-					break;
-					}
-				}
-
-			break;
-			}
-
 		case 'p':
 			{
 			int i;
@@ -889,40 +976,58 @@ bool CIntroSession::HandleChar (char chChar, DWORD dwKeyData)
 			CSystem *pSystem = pPOV->GetSystem();
 			CSovereign *pCurSovereign = pPOV->GetSovereign();
 
-			//	Find the next POV in the list
-
 			int iTotalCount = pSystem->GetObjectCount();
-			for (i = 0; i < iTotalCount; i++)
+
+			if (chChar == 'p')
 				{
-				CSpaceObject *pObj = pSystem->GetObject((pPOV->GetIndex() + i + 1) % iTotalCount);
-				if (pObj 
-						&& pObj->GetCategory() == CSpaceObject::catShip
-						&& pObj->CanAttack())
+				//	Find the next same-sovereign POV in the list
+				for (i = 0; i < iTotalCount; i++)
 					{
-					g_pUniverse->SetPOV(pObj);
-					SetState(isShipStats);
-					break;
+					CSpaceObject *pObj = pSystem->GetObject((pPOV->GetIndex() + iTotalCount - (i + 1)) % iTotalCount);
+					if (pObj
+						&& pObj->GetCategory() == CSpaceObject::catShip
+						&& pObj->GetSovereign() == pCurSovereign
+						&& pObj->CanAttack())
+						{
+						g_pUniverse->SetPOV(pObj);
+						SetState(isShipStats);
+						break;
+						}
 					}
 				}
-
+			else if (chChar == 'P')
+				{
+				//	Find the previous same-sovereign POV in the list
+				for (i = 0; i < iTotalCount; i++)
+					{
+					CSpaceObject *pObj = pSystem->GetObject((pPOV->GetIndex() + (i + 1)) % iTotalCount);
+					if (pObj
+						&& pObj->GetCategory() == CSpaceObject::catShip
+						&& pObj->GetSovereign() == pCurSovereign
+						&& pObj->CanAttack())
+						{
+						g_pUniverse->SetPOV(pObj);
+						SetState(isShipStats);
+						break;
+						}
+					}
+				}
 			break;
 			}
-
 		case 'Q':
 		case 'q':
 			g_pTrans->DoCommand(CMD_QUIT_GAME);
 			break;
 
 		case 'S':
-			g_pUniverse->SetSound(!g_pUniverse->GetSound());
-			break;
 		case 's':
+			{
 			if (GetState() == isShipStats)
 				SetState(isBlank);
 			else
 				SetState(isShipStats);
 			break;
-
+			}
 		case 'V':
 		case 'v':
 			SetState(isOpeningTitles);
@@ -984,6 +1089,19 @@ void CIntroSession::OnChar (char chChar, DWORD dwKeyData)
 //	Handle keystrokes
 	
 	{
+
+	//	Handle debug console
+
+	if (g_pTrans->m_bDebugConsole)
+	{
+		if (chChar >= ' ')
+		{
+			CString sKey = CString(&chChar, 1);
+			g_pTrans->m_DebugConsole.Input(sKey);
+		}
+		return;
+	}
+
 	CReanimator &Reanimator = GetReanimator();
 
     m_iIdleTicks = 0;
@@ -1157,7 +1275,26 @@ void CIntroSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
     m_iIdleTicks = 0;
 
-	if (g_pTrans->m_ButtonBarDisplay.OnKeyDown(iVirtKey))
+	//	Deal with console
+
+	if (g_pTrans->m_bDebugConsole)
+	{
+		DWORD dwTVirtKey = CGameKeys::TranslateVirtKey(iVirtKey, dwKeyData);
+		CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(dwTVirtKey);
+		if (iVirtKey == VK_ESCAPE || iCommand == CGameKeys::keyShowConsole)
+		{
+			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+			g_pTrans->m_bDebugConsole = false;
+
+			//	Remember that we processed this key so that we don't handle it again in
+			//	OnChar.
+
+			g_pTrans->m_chKeyDown = iVirtKey;
+		}
+		else
+			g_pTrans->m_DebugConsole.OnKeyDown(iVirtKey, dwKeyData);
+	}
+	else if (g_pTrans->m_ButtonBarDisplay.OnKeyDown(iVirtKey))
 		NULL;
 
 	else if (GetState() == isEnterCommand)
@@ -1207,6 +1344,10 @@ void CIntroSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
 			case VK_F2:
 				m_HI.HICommand(CONSTLIT("uiShowGameStats"));
+				break;
+
+			case VK_F9:
+				g_pTrans->m_bDebugConsole = true;
 				break;
 
             case VK_F11:
@@ -1314,7 +1455,10 @@ void CIntroSession::Paint (CG32bitImage &Screen, bool bTopMost)
 			break;
 			}
 		}
+	//	Debug console
 
+	if (g_pTrans->m_bDebugConsole)
+		g_pTrans->m_DebugConsole.Paint(Screen);
 	//	Figure out how long it took to paint
 
 	if (g_pTrans->m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
@@ -1612,7 +1756,8 @@ void CIntroSession::Update (void)
 	Ctx.bForceEventFiring = true;
 	if (!g_pTrans->m_bPaused)
 		{
-		g_pUniverse->Update(Ctx);
+		for(int i = 0; i < iUpdateRate; i++)
+			g_pUniverse->Update(Ctx);
 		g_pTrans->m_iTick++;
 		}
 

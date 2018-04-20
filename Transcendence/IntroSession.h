@@ -64,6 +64,7 @@ class CIntroSession : public IHISession
 				m_Model(Model),
 				m_Settings(Settings),
 				m_iInitialState(iInitialState),
+				iUpdateRate(1),
 				m_bShowAllShips(false)
 			{ }
 
@@ -110,6 +111,8 @@ class CIntroSession : public IHISession
 		CGameSettings &m_Settings;
 		EStates m_iInitialState;
 		EStates m_iState;					//	Current state
+
+		int iUpdateRate;					//	Universe updates per tick
 
 		RECT m_rcMain;						//	Main animation RECT (where system is painted)
         RECT m_rcCenter;                    //  Center RECT
