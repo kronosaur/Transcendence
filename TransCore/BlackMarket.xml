@@ -21,44 +21,68 @@ PLAYER DATA
 
 	<ShipClass UNID="&scMolotok;"
 			manufacturer=		"Makayev-Energia"
-			class=				"Molotok bounty hunter"
-			type=				""
+			class=				"Molotok"
+			type=				"heavy gunship"
 			defaultSovereign=	"&svBlackMarket;"
 
+			attributes=			"blackMarket, genericClass, outlaws"
+			inherit=			"&baHumanTechShip;"
+			>
+
+		<!-- Hull -->
+
+		<Hull
 			size=				"27"
 			mass=				"144"
 			cargoSpace=			"50"
-			thrustRatio=		"12.5"
+
+			maxReactorPower=	"10000"
+			maxCargoSpace=		"100"
+			maxDevices=			"8"
+
+			stdArmor=			"4000"
+			maxArmor=			"16000"
+			maxArmorSpeed=		"20"
+			minArmorSpeed=		"22"
+			/>
+
+		<Drive
 			maxSpeed=			"22"
-
-			attributes=			"blackMarket, genericClass, outlaws"
-			>
-
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itCeralloyArmor;" />
-			<ArmorSection start="225" span="90" armorID="&itCeralloyArmor;" />
-			<ArmorSection start="135" span="90" armorID="&itCeralloyArmor;" />
-			<ArmorSection start="45"  span="90" armorID="&itCeralloyArmor;" />
-		</Armor>
-
-		<Devices>
-			<Device deviceID="&itDragonflyMissileSystem;"/>
-			<Device deviceID="&itMAGLauncher;" secondaryWeapon="true" minFireArc="330" maxFireArc="30" posAngle="0" posRadius="16"/>
-			<Device deviceID="&itClass3Deflector;"/>
-			</Devices>
+			thrust=				"2000"
+			/>
 
 		<Maneuver
 			maxRotationRate=	"9.0"
 			rotationAccel=		"1.0"
 			/>
 
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itCeralloyArmor;"
+			count=				"4"
+			/>
+
+		<Devices>
+			<Device deviceID="&itDragonflyMissileSystem;">
+				<Items>
+					<Item count="20d6" item="&itDragonflyCartridge;"/>
+				</Items>
+			</Device>
+			<Device deviceID="&itMAGLauncher;" secondaryWeapon="true" minFireArc="330" maxFireArc="30" posAngle="0" posRadius="16" posZ="0">
+				<Items>
+					<Item count="20d6" item="&it800HexageneMAG;"/>
+				</Items>
+			</Device>
+			<Device deviceID="&itClass3Deflector;"/>
+		</Devices>
+
 		<Items>
-			<Item count="20d6" item="&itDragonflyCartridge;"/>
-			<Item count="20d6" item="&it800HexageneMAG;"/>
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsMolotokHD;" imageX="0" imageY="0" imageWidth="68" imageHeight="68" rotationCount="120" rotationColumns="12"/>
+		<Image imageID="&rsMolotokHD;" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" viewportRatio="0.004875"/>
+		<Image imageID="&rsMolotokHero;" imageHeight="320" imageWidth="320"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="155"	posRadius="22"	posZ="0"	rotation="180"/>
@@ -1365,7 +1389,7 @@ PLAYER DATA
 
 <!-- RESOURCES -->
 
-	<Image UNID="&rsMolotok;"	bitmap="Resources\Molotok.jpg" bitmask="Resources\MolotokMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsMolotokHD;"	bitmap="Resources\MolotokHD.jpg" bitmask="Resources\MolotokHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsMolotokHD;"		bitmap="Resources\MolotokHD.jpg" bitmask="Resources\MolotokHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsMolotokHero;"	bitmap="Resources\MolotokLarge.jpg" bitmask="Resources\MolotokLargeMask.bmp" loadOnUse="true"/>
 
 </TranscendenceModule>
