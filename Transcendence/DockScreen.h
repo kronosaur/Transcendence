@@ -478,6 +478,7 @@ class CDockScreen : public IScreenController
 		CString EvalInitialPane (CSpaceObject *pSource, ICCItem *pData);
 		SDisplayControl *FindDisplayControl (const CString &sID);
 		ALERROR FireOnScreenInit (CSpaceObject *pSource, ICCItem *pData, CString *retsError);
+		CString GetScreenName (CXMLElement *pDesc);
 		ALERROR InitCodeChain (CTranscendenceWnd *pTrans, CSpaceObject *pStation);
 		ALERROR InitDisplay (CXMLElement *pDisplayDesc, AGScreen *pScreen, const RECT &rcScreen);
 		ALERROR InitFonts (void);

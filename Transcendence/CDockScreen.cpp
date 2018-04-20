@@ -76,6 +76,7 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 #define ID_ATTRIB					CONSTLIT("id")
 #define LEFT_ATTRIB					CONSTLIT("left")
 #define NAME_ATTRIB					CONSTLIT("name")
+#define NAME_ID_ATTRIB				CONSTLIT("nameID")
 #define NO_LIST_NAVIGATION_ATTRIB	CONSTLIT("noListNavigation")
 #define PANE_ATTRIB					CONSTLIT("pane")
 #define RIGHT_ATTRIB				CONSTLIT("right")
@@ -651,15 +652,7 @@ ALERROR CDockScreen::CreateTitleArea (CXMLElement *pDesc, AGScreen *pScreen, con
 
 	//	Get the name of this location
 
-	CString sName;
-	if (!EvalString(pDesc->GetAttribute(NAME_ATTRIB), m_pData, false, eventNone, &sName))
-		{
-		ReportError(strPatternSubst(CONSTLIT("Error evaluating location name: %s"), sName));
-		sName = NULL_STR;
-		}
-		
-	if (sName.IsBlank())
-		sName = m_pLocation->GetNounPhrase(nounTitleCapitalize);
+	CString sName = GetScreenName(pDesc);
 
 	//	Add the name as a title to the screen
 
@@ -949,6 +942,48 @@ ALERROR CDockScreen::FireOnScreenInit (CSpaceObject *pSource, ICCItem *pData, CS
 	return NOERROR;
 
 	DEBUG_CATCH
+	}
+
+CString CDockScreen::GetScreenName (CXMLElement *pDesc)
+
+//	GetScreenName
+//
+//	Computes the screen name.
+
+	{
+	CString sValue;
+	ICCItemPtr pTitle;
+	CString sName;
+
+	//	If we have a "core.name" language element, then use that.
+
+	if (Translate(CONSTLIT("core.name"), m_pData, pTitle))
+		return pTitle->GetStringValue();
+
+	//	If we have nameID= then use that as a translation ID.
+
+	else if (pDesc->FindAttribute(NAME_ID_ATTRIB, &sValue))
+		{
+		if (!Translate(sValue, m_pData, pTitle))
+			return strPatternSubst(CONSTLIT("Unknown language ID: %s"), sValue);
+
+		return pTitle->GetStringValue();
+		}
+
+	//	Otherwise, see if we have a name= attribute.
+
+	else if (pDesc->FindAttribute(NAME_ATTRIB, &sValue))
+		{
+		if (!EvalString(sValue, m_pData, false, eventNone, &sName))
+			return strPatternSubst(CONSTLIT("Error evaluating screen title: %s"), sName);
+
+		return sName;
+		}
+
+	//	Otherwise, ask the location
+
+	else
+		return m_pLocation->GetNounPhrase(nounTitleCapitalize);
 	}
 
 void CDockScreen::HandleChar (char chChar)

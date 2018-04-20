@@ -4,9 +4,7 @@
 
 	<!-- Player ship's interior -->
 
-	<DockScreen UNID="&dsShipInterior;"
-			name=				"Ship's Interior"
-			>
+	<DockScreen UNID="&dsShipInterior;">
 
 		<Display type="detailsPane"
 				>
@@ -64,6 +62,8 @@
 		</Panes>
 
 		<Language>
+			<Text id="core.name">Ship's Interior</Text>
+
 			<Text id="descWelcome">
 				
 				You are inside the main compartment of your ship. A hatch in 
@@ -77,7 +77,6 @@
 	<!-- Player ship configuration -->
 
 	<DockScreen UNID="&dsShipConfig;"
-			name=				"Ship's Configuration"
 			desc=				"Ship Configuration"
 			type=				"itemPicker"
 			>
@@ -118,6 +117,8 @@
 		</Panes>
 
 		<Language>
+			<Text id="core.name">Ship's Configuration</Text>
+
 			<Text id="descDefault">
 				You are viewing the ship's configuration.
 			</Text>
@@ -127,7 +128,6 @@
 	<!-- Player ship's cargo hold -->
 
 	<DockScreen UNID="&dsCargoHold;"
-			name=				"Ship's Cargo Hold"
 			desc=				"Interior of Ship"
 			type=				"itemPicker"
 			inherit=			"&dsDockScreenBase;"
@@ -305,6 +305,8 @@
 		</Panes>
 
 		<Language>
+			<Text id="core.name">Ship's Cargo Hold</Text>
+
 			<Text id="actionJettisonItem">[J]ettison this Item</Text>
 			<Text id="actionJettison">[J]ettison</Text>
 			<Text id="actionUse">[U]se this Item</Text>
@@ -338,7 +340,6 @@
 	<!-- Refuel ship screen -->
 
 	<DockScreen UNID="&dsManualRefuel;"
-			name=				"Ship's Cargo Hold"
 			type=				"itemPicker"
 			nestedScreen=		"true"
 			>
@@ -525,6 +526,8 @@
 		</Panes>
 
 		<Language>
+			<Text id="core.name">Ship's Cargo Hold</Text>
+
 			<Text id="descDefault">
 				Pick an item to use as fuel.
 			</Text>
