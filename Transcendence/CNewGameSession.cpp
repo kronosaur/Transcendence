@@ -52,6 +52,8 @@
 
 #define STYLE_IMAGE								CONSTLIT("image")
 
+#define STR_GENOME								CONSTLIT("gender")
+
 const int ICON_HEIGHT =							48;
 const int ICON_WIDTH =							48;
 const int ITEM_INFO_PADDING_VERT =				16;
@@ -322,7 +324,7 @@ void CNewGameSession::CreatePlayerGenome (GenomeTypes iGenome, int x, int y, int
 	pLabel->SetPropertyVector(PROP_SCALE, CVector(cxWidth - SMALL_BUTTON_WIDTH - MAJOR_PADDING_HORZ, 100.0));
 	pLabel->SetPropertyColor(PROP_COLOR, VI.GetColor(colorTextDialogInput));
 	pLabel->SetPropertyFont(PROP_FONT, &MediumBoldFont);
-	pLabel->SetPropertyString(PROP_TEXT, CONSTLIT("genome"));
+	pLabel->SetPropertyString(PROP_TEXT, STR_GENOME);
 	pLabel->SetPropertyString(PROP_TEXT_ALIGN_HORZ, ALIGN_RIGHT);
 
 	m_pRoot->AddLine(pLabel);
