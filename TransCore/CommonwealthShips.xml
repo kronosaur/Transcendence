@@ -87,6 +87,7 @@
 			type=				"gunship"
 			defaultSovereign=	"&svCommonwealth;"
 
+			size=				"22"
 			mass=				"60"
 			cargoSpace=			"50"
 			thrustRatio=		"5.5"
@@ -134,6 +135,7 @@
 			type=				"gunship"
 			defaultSovereign=	"&svCommonwealth;"
 
+			size=				"22"
 			mass=				"60"
 			cargoSpace=			"50"
 			thrustRatio=		"5.5"

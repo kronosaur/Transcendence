@@ -34,7 +34,7 @@
 			character=			"&unidFiona;"
 			   
 			size=				"40"
-			mass=				"70"
+			mass=				"120"
 			thrustRatio=		"8"
 			maxSpeed=			"25"
 			cargoSpace=			"40"

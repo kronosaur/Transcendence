@@ -1697,6 +1697,10 @@
 	<!ENTITY rsCorsairHD				"0x00100105">
 	<!ENTITY rsVikingHD					"0x00100106">
 
+	<!ENTITY rsCorsairHero				"0x00100107">
+	<!ENTITY rsVikingHero				"0x00100108">
+	<!ENTITY rsBarbaryHero				"0x00100109">
+
 	<!-- 0120-013F SUNG SLAVERS -->
 	
 	<!ENTITY rsSungTransport			"0x00100120">
