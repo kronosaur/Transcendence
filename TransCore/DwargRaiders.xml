@@ -149,7 +149,7 @@
 			defaultSovereign=	"&svDwargRaiders;"
 			inherit=			"&baZoanthropeBase;"
 
-			size=				"90"
+			size=				"107"
 			mass=				"10000"
 			cargoSpace=			"100"
 			thrustRatio=		"0.2"
@@ -160,21 +160,11 @@
 			attributes=			"dwarg, genericClass, zoanthrope"
 			>
 
-		<Armor>
-			<ArmorSection start="345" span="30" armorID="&itDwargHolochroalArmor;" />
-			<ArmorSection start="315" span="30" armorID="&itDwargHolochroalArmor;" />
-			<ArmorSection start="285" span="30" armorID="&itDwargHolochroalArmor;" />
-			<ArmorSection start="255" span="30" armorID="&itDwargHolochroalArmor;" nonCritical="general" />
-			<ArmorSection start="225" span="30" armorID="&itDwargHolochroalArmor;" />
-			<ArmorSection start="195" span="30" armorID="&itDwargHolochroalArmor;" nonCritical="drive" />
-			<ArmorSection start="165" span="30" armorID="&itDwargHolochroalArmor;" nonCritical="drive" />
-			<ArmorSection start="135" span="30" armorID="&itDwargHolochroalArmor;" nonCritical="drive" />
-			<ArmorSection start="105" span="30" armorID="&itDwargHolochroalArmor;" />
-			<ArmorSection start="75"  span="30" armorID="&itDwargHolochroalArmor;" nonCritical="general" />
-			<ArmorSection start="45"  span="30" armorID="&itDwargHolochroalArmor;" />
-			<ArmorSection start="15"  span="30" armorID="&itDwargHolochroalArmor;" nonCritical="dev0" />
-		</Armor>
-
+		<Armor
+			armorID=			"&itDwargHolochroalArmor;"
+			count=				"12"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itDwargBehemothCannon;"/>
 			<Device deviceID="&itDwargXiphonCannon;" secondaryWeapon="true" minFireArc="350" maxFireArc="190" posAngle="90" posRadius="30"/>
@@ -212,6 +202,7 @@
 		</Items>
 
 		<Image imageID="&rsMediumShips4;" imageX="896" imageY="0" imageWidth="128" imageHeight="128"/>
+		<HeroImage imageID="&rsDwargBehemothHero;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="176"	posRadius="57"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -818,6 +809,7 @@
 	
 <!-- RESOURCES -->
 	
+	<Image UNID="&rsDwargBehemothHero;"		bitmap="Resources\DwargBehemothLarge.jpg"	bitmask="Resources\DwargBehemothLargeMask.bmp" 	loadOnUse="true" />
 	<Image UNID="&rsZoanthropeRaiderHD;"	bitmap="Resources\ZoanthropeRaiderHD.jpg"	bitmask="Resources\ZoanthropeRaiderHDMask.bmp" 	loadOnUse="true" />
 
 </TranscendenceModule>
