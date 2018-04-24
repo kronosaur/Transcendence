@@ -115,6 +115,43 @@
 
 		<!-- ASTEROID ARC BELTS -->
 
+		<AsteroidArcBeltMedium>
+			<Group>
+				<Siblings count="3-4" radiusInc="-50--30" angle="equidistant">
+					<Table>
+						<Lookup chance="20"	table="AsteroidArc12"/>
+						<Lookup chance="60" table="AsteroidArc25"/>
+						<Lookup chance="20" table="AsteroidArc50"/>
+					</Table>
+				</Siblings>
+
+				<Siblings count="2-3" radiusInc="-20-30" angle="equidistant">
+					<Group>
+						<Table>
+							<Lookup chance="10" table="AsteroidArc50"/>
+							<Lookup chance="60" table="AsteroidArc100"/>
+							<Lookup chance="30" table="AsteroidArc200"/>
+						</Table>
+						<Siblings chance="50" arcInc="300">
+							<Lookup table="LocationDefinition">
+								<_Morphology>
+									<Lookup table="VariantAsteroidBeltLabel"/>
+								</_Morphology>
+							</Lookup>
+						</Siblings>
+					</Group>
+				</Siblings>
+
+				<Siblings count="4-5" radiusInc="50-80" angle="equidistant">
+					<Table>
+						<Lookup chance="20" table="AsteroidArc25"/>
+						<Lookup chance="60" table="AsteroidArc50"/>
+						<Lookup chance="20" table="AsteroidArc100"/>
+					</Table>
+				</Siblings>
+			</Group>
+		</AsteroidArcBeltMedium>
+
 		<AsteroidArcBeltLarge>
 			<Group>
 				<Siblings count="4-6" radiusInc="-70--40" angle="equidistant">
