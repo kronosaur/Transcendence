@@ -11,9 +11,9 @@
 
 	The object must also define the following language elements:
 
-		FirstMeetingIntro
-		MeetingIntro
-		NoMissions
+		core.firstIntro
+		core.intro
+		core.noMissions
 
 	The character type must define the following static data elements:
 
@@ -64,8 +64,12 @@
 						)
 
 						(rpgPagePaneInit gScreen 
-							(scrTranslate gScreen (if firstMeeting 'FirstMeetingIntro 'MeetingIntro)) {
-							
+
+							(or (scrTranslate gScreen (if firstMeeting 'core.firstIntro 'core.intro)) 
+								(scrTranslate gScreen (if firstMeeting 'FirstMeetingIntro 'MeetingIntro))
+								)
+
+							{
 							onExitPane: (lambda (theScreen pageDesc options)
 								(block (charType screenData)
 									(setq charType (objGetProperty gSource 'character))
@@ -677,7 +681,7 @@
 
 						(not (setq newMissions (typFind (cat "n" missionAttrib))))
 							(scrShowScreen gScreen &dsRPGMessage; {
-								desc: (objTranslate missionSource 'NoMissions)
+								desc: (or (objTranslate missionSource 'core.noMissions) (objTranslate missionSource 'NoMissions))
 								nextScreen: 'forceUndock
 								})
 
@@ -694,7 +698,7 @@
 						; Otherwise, nothing
 
 						(scrShowScreen gScreen &dsRPGMessage; {
-							desc: (objTranslate missionSource 'NoMissions)
+							desc: (or (objTranslate missionSource 'core.noMissions) (objTranslate missionSource 'NoMissions))
 							nextScreen: 'forceUndock
 							})
 						)
