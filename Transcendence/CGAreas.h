@@ -272,7 +272,7 @@ class CGItemListArea : public AGArea
 		bool MoveCursorBack (void);
 		bool MoveCursorForward (void);
 		void MoveTabToFront (DWORD dwID);
-		inline void ResetCursor (void) { if (m_pListData) m_pListData->ResetCursor(); Invalidate(); }
+		inline void ResetCursor (void) { if (m_pListData) m_pListData->ResetCursor(); InitRowDesc(); Invalidate(); }
 		void SelectTab (DWORD dwID);
         inline void SetBackColor (CG32bitPixel rgbColor) { m_rgbBackColor = rgbColor; }
         inline void SetColor (CG32bitPixel rgbColor) { m_rgbTextColor = rgbColor; }
