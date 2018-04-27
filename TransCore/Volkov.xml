@@ -120,7 +120,7 @@
 			
 			<OnSearchForVolkov>
 				(block (volkov)
-					(if (and (setq volkov (@ (sysFindObject gSource "sAN:100; +character:chVolkov;") 0))
+					(if (and (setq volkov (@ (sysFindObject gSource "sAN:100; +character:&chVolkov;;") 0))
 							(not (eq (objGetData volkov "behavior") 'goingHome))
 							)
 						(block Nil
