@@ -249,7 +249,10 @@ CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 			break;
 
 		case killedByRadiationPoisoning:
-			sText = strPatternSubst(CONSTLIT("was killed by radiation poisoning%s"), sEffects);
+			if (Ctx.Attacker.HasDamageCause())
+				sText = strPatternSubst(CONSTLIT("was irradiated by %s and died of radiation poisoning%s"), Ctx.Attacker.GetDamageCauseNounPhrase(nounArticle), sEffects);
+			else
+				sText = strPatternSubst(CONSTLIT("died of radiation poisoning%s"), sEffects);
 			break;
 
 		case killedBySelf:
