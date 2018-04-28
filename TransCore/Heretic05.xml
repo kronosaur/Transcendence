@@ -120,7 +120,7 @@
 								;	At the 5th buoy, create a centurion wreck
 								(= i 5)
 									(block (theWreck theMessage)
-										(setq theWreck (sysCreateShipwreck &scCenturion; (sysVectorPolarOffset thePos (random 0 359) (random 4 12)) &svNeutral;))
+										(setq theWreck (sysCreateShipwreck &scCenturionM; (sysVectorPolarOffset thePos (random 0 359) (random 4 12)) &svNeutral;))
 										(setq theMessage (itmCreate &itDataROM; 1))
 										(setq theMessage (itmSetData theMessage 'Text (msnTranslate gSource 'textWarning)))
 										(objAddItem theWreck theMessage)

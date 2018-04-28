@@ -229,9 +229,9 @@
 		</Devices>
 
 		<Ships>
-			<Ship		count="1"		class="&scCenturionX;" orders="patrol" patrolDist="20"/>
-			<Ship		count="1d2+1"	class="&scCenturion;" orders="patrol" patrolDist="20"/>
-			<Ship		count="1d2"		class="&scCenturion;" orders="guard"/>
+			<Ship		count="1"		class="&scCenturionXRogue;" orders="patrol" patrolDist="20"/>
+			<Ship		count="1d2+1"	class="&scCenturionRogue;" orders="patrol" patrolDist="20"/>
+			<Ship		count="1d2"		class="&scCenturionRogue;" orders="guard"/>
 		</Ships>
 
 		<DockScreens>
