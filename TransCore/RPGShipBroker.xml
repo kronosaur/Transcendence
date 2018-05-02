@@ -1198,8 +1198,8 @@
 							(cat
 								"{/rtf "
 									"{/f:MediumBold;/c:#79828c; max. speed:} " (fmtNumber 'speed (objGetProperty shipObj 'maxSpeed)) "\n"
-									"{/f:MediumBold;/c:#79828c; thrust//mass:} " (/ (objGetProperty shipObj 'thrustToWeight) 1000) "\n"
-									"{/f:MediumBold;/c:#79828c; maneuverability:} " (/ (objGetProperty shipObj 'maneuver) 1000) "\n"
+									"{/f:MediumBold;/c:#79828c; thrust//mass:} " (fmtNumber 'real (/ (objGetProperty shipObj 'thrustToWeight) 1000)) "\n"
+									"{/f:MediumBold;/c:#79828c; maneuverability:} " (fmtNumber 'real (/ (objGetProperty shipObj 'maneuver) 1000)) "\n"
 								"}"
 								)
 						}
@@ -1224,7 +1224,7 @@
 								(cat
 									"{/rtf "
 										"{/f:MediumBold;/c:#79828c; level:} " (itmGetLevel armorItem) "\n"
-										"{/f:MediumBold;/c:#79828c; max. armor:} " (/ (objGetProperty shipObj 'maxArmorMass) 1000) " tons\n"
+										"{/f:MediumBold;/c:#79828c; max. armor:} " (fmtNumber (/ (objGetProperty shipObj 'maxArmorMass) 1000)) " tons\n"
 									"}"
 									)
 							}
@@ -1233,7 +1233,7 @@
 							desc:
 								(cat
 									"{/rtf "
-										"{/f:MediumBold;/c:#79828c; max. armor:} " (/ (objGetProperty shipObj 'maxArmorMass) 1000) " tons\n"
+										"{/f:MediumBold;/c:#79828c; max. armor:} " (fmtNumber (/ (objGetProperty shipObj 'maxArmorMass) 1000)) " tons\n"
 									"}"
 									)
 							}
