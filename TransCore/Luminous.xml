@@ -7,14 +7,14 @@
 			adjective="Luminous"
 			demonym=":a Luminous drone(s)"
 
-			alignment="destructive order"
+			alignment="cryptologue"
 			/>
 
 	<Sovereign UNID="&svFriendlyLuminous;"
 			name="Luminous drones"
 			demonym=":a Luminous drone(s)"
 
-			alignment="constructive chaos"
+			alignment="archivist"
 			>
 		<Language>
 			<Text id="WatchYourTargets">"\"Drone damaged\""</Text>
