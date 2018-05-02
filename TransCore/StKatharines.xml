@@ -190,9 +190,9 @@
 			>
 
 		<Items>
-			<RandomItem count="4d10" 
+			<RandomItem count="8d10" 
 					criteria=		"ad~r L:1-7; -alien; -illegal; -military; -notForSale; -notStandard; -specialty;"
-					levelFrequency=	"systemLevel:u|c|crv"
+					levelFrequency=	"systemLevel:r|c|cur"
 					/>
 			<RandomItem count="1d6" 
 					criteria=		"r L:3-7; -alien; -illegal; -military; -notForSale; -notStandard;"	

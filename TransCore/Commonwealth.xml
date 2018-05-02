@@ -77,7 +77,7 @@
 		<Items>
 			<RandomItem count="10" 
 					criteria=		"ad L:1-5; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|crv"
+					levelFrequency=	"systemLevel:r|c|cur"
 					/>
 			<RandomItem count="10" 
 					criteria=		"*~ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
@@ -318,7 +318,7 @@
 		<Items>
 			<RandomItem	count="10" 
 					criteria=		"ad L:1-7; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|crv"
+					levelFrequency=	"systemLevel:r|c|cur"
 					/>
 			<RandomItem count="10" 
 					criteria=		"*~ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
@@ -1651,7 +1651,7 @@
 		<Items>
 			<RandomItem count="10" 
 					criteria=		"ad L:1-8; -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
-					levelFrequency=	"systemLevel:u|c|crv"
+					levelFrequency=	"systemLevel:r|c|cur"
 					/>
 			<RandomItem count="10" 
 					criteria=		"*~ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
