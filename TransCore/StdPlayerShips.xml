@@ -146,6 +146,49 @@
 
 <!-- EI500-CLASS FREIGHTER -->
 
+	<!-- Level 3: EI500-class Freighter -->
+
+	<ShipClass UNID="&scEI500PlayerL3;"
+			manufacturer=		"Earth Industries"
+			class=				"EI500"
+			type=				"freighter"
+
+			level=				"3"
+			attributes=			"commonwealth, corporate, EI, shipBroker"
+			inherit=			"&scEI500Stock;"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itHeavyReactiveArmor;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itOmniLaserCannon;"/>
+			<Device deviceID="&itNAMIMissileLauncher;">
+				<Items>
+					<Item  count="50-100" item="&itFragmentationMissile;"/>
+					<Item  count="50-100" item="&itKM500Missile;"/>
+				</Items>
+			</Device>
+			<Device deviceID="&itCyclotronDeflectorIII;"/>
+
+			<Device deviceID="&itSolarPanelArray;"/>
+			<Device deviceID="&itTritiumPropulsionUpgrade;"/>
+			<Device deviceID="&itCargoHoldExpansion;"/>
+			<Device deviceID="&it25MWReactor;"/>
+		</Devices>
+
+		<!-- Player Settings -->
+		
+		<PlayerSettings
+			desc=				"The EI500 is slow and ungraceful, but its large cargo hold and capacity for upgrades makes it a favorite among independent pilots."
+			/>
+		
+	</ShipClass>
+
 	<!-- Level 4: EI500-class Freighter (Variant A) -->
 
 	<ShipClass UNID="&scEI500PlayerL4A;"
@@ -343,6 +386,42 @@
 
 <!-- SAPPHIRE-CLASS YACHT -->
 
+	<!-- Level 3: Sapphire Yacht -->
+
+	<ShipClass UNID="&scSapphirePlayerL3;"
+			manufacturer=		"Zubrin Systems"
+			class=				"Sapphire"
+			type=				"yacht"
+
+			attributes=			"commonwealth, corporate, shipBroker, zubrin"
+			inherit=			"&scSapphireYacht;"
+			>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itLightPlasteelPlate;"
+			count=				"4"
+			/>
+
+		<Devices>
+			<Device deviceID="&itPartisanCannon;"/>
+			<Device deviceID="&itTurbolaserCannon;"/>
+			<Device deviceID="&itMonopoleDeflector;"/>
+		
+			<Device deviceID="&itMinersCargoHold;"/>
+			<Device deviceID="&itKineticEnhancer;"/>
+			<Device deviceID="&it25MWReactor;"/>
+		</Devices>
+		
+		<!-- Player Settings -->
+		
+		<PlayerSettings
+			desc=				"The versatile Sapphire yacht strikes a good balance between a gunship and a freighter."
+			/>
+
+	</ShipClass>
+
 	<!-- Level 5: Sapphire Yacht (Variant A) -->
 
 	<ShipClass UNID="&scSapphirePlayerL5A;"
@@ -457,6 +536,45 @@
 	</ShipClass>
 
 <!-- WOLFEN-CLASS GUNSHIP -->
+
+	<!-- Level 3: Wolfen-class Gunship -->
+
+	<ShipClass UNID="&scWolfenPlayerL3;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Wolfen"
+			type=				"gunship"
+
+			attributes=			"commonwealth, corporate, pacificDefense, shipBroker"
+			inherit=			"&scWolfen;"
+			>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itHeavyCeramicPlate;"
+			count=				"4"
+			/>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;"/>
+			<Device deviceID="&itNAMIMissileLauncher;">
+				<Items>
+					<Item  count="50-100" item="&itFragmentationMissile;"/>
+					<Item  count="50-100" item="&itKM500Missile;"/>
+				</Items>
+			</Device>
+			<Device deviceID="&itMonopoleDeflector;"/>
+
+			<Device deviceID="&it25MWReactor;"/>
+		</Devices>
+
+		<!-- Player Settings -->
+		
+		<PlayerSettings
+			desc=				"Fast and deadly, the Wolfen is designed for combat. Though limited in cargo capacity, it has lots of room for more weapons."
+			/>
+		
+	</ShipClass>
 
 	<!-- Level 6: Wolfen-class Gunship (Variant A) -->
 

@@ -221,7 +221,7 @@
 			level=				"3"
 			frequency=			"rare"
 
-			value=				"650"
+			value=				"1200"
 			mass=				"1000"
 			  
 			description=		"A solar panel array can power a ship's devices, saving on fuel consumption. This array can generate a maximum of 15 MWs of power."
@@ -244,7 +244,7 @@
 			level=				"3"
 			frequency=			"uncommon"
 
-			value=				"900"
+			value=				"1600"
 			mass=				"2000"
 			  
 			description=		"Most small and medium sized ships use a fusion drive for propulsion. This device upgrade mixes-in a powerful tritium plasma to increase the thrust of the engines."

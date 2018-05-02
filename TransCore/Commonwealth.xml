@@ -507,13 +507,25 @@
 		</Trade>
 		
 		<Items>
+			<RandomItem count="1d10" 
+				criteria=		"a L:1-8; -alien; -illegal; -military; -notForSale; -notStandard; -specialty;"
+				levelFrequency=	"systemLevel:r|c|cur"
+				/>
+			<RandomItem count="1d10" 
+				criteria=		"scv L:1-7; -alien; -illegal; -military; -notForSale; -notStandard; -specialty;"
+				levelFrequency=	"systemLevel:r|c|cur"
+				/>
 			<RandomItem count="1d6" 
-				criteria="r -illegal; -military; -notForSale; -notStandard; L:3-7;"
-				levelFrequency="systemLevel:ru|c|curv"
+				criteria=		"r -illegal; -military; -notForSale; -notStandard; L:3-7;"
+				levelFrequency=	"systemLevel:ru|c|curv"
+				/>
+			<RandomItem count="1d10" 
+				criteria=		"d~scvr L:1-7; -alien; -illegal; -military; -notForSale; -notStandard; -specialty;"
+				levelFrequency=	"systemLevel:r|c|cur"
 				/>
 			<RandomItem count="1d8"
-				criteria="u +armorRepair; -illegal; -military; -notForSale; -notStandard;"
-				levelFrequency="systemLevel:ru|c|curv"
+				criteria=		"u +armorRepair; -illegal; -military; -notForSale; -notStandard;"
+				levelFrequency=	"systemLevel:ru|c|curv"
 				/>
 		</Items>
 

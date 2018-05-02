@@ -2009,6 +2009,9 @@
 	<!ENTITY rsManticoreArmorHUD		"0x0010053E">
 	<!ENTITY rsManticoreArmorHUDSegments	"0x0010053F">
 	<!ENTITY scCenturionXPlayerL7		"0x00100540">
+	<!ENTITY scEI500PlayerL3			"0x00100541">
+	<!ENTITY scSapphirePlayerL3			"0x00100542">
+	<!ENTITY scWolfenPlayerL3			"0x00100543">
 
 	<!-- 0580-059F ROGUE FLEET -->
 
