@@ -183,7 +183,7 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 			{
 			int iAngle;
 			int iRadius;
-			int iScale = pClass->GetImage().GetImageViewportSize();
+			int iScale = pClass->GetImageViewportSize();
 
 			int iMaxRadius = cxWidth / 2;
 			int iRadiusInc = 20;

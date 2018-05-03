@@ -231,13 +231,6 @@
 	<SystemType UNID="&ssStartonEridani;"
 				attributes=		"envWater"
 				>
-
-		<!--
-		<ImageFilters>
-			<Bloom bloomPoint="128"/>
-		</ImageFilters>
-		-->
-
 		<Tables>
 			<!-- Planets and Asteroids -->
 
