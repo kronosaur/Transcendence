@@ -411,6 +411,11 @@ ALERROR CTranscendenceModel::CreateAllSystems (const CString &sStartNode, CSyste
 			continue;
 			}
 
+		//	If we're deferring creation, skip
+
+		if (pNode->IsCreationDeferred())
+			continue;
+
 		//	Otherwise, create this system
 
 		CSystem *pNewSystem;
