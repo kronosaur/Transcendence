@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Destroy Threat to Commonwealth Habitat ================================
+	
+	EXTRA DATA
+	
+		reward:				Reward (in credits) for completing mission
+		targetID:			Id of station to destroy
+		targetType:			One of:
+								'centauriWarlords
+								'miscEnemy
+
+	NOTES
+	
+		
+	======================================================================== -->
+	
+	<MissionType UNID="&msDestroyThreatToSlums;"
+			name=				"Destroy Threat to Commonwealth Habitat"
+			attributes=			"commonwealth, commonwealthHabitat"
+
+			level=				"1-4"
+			scope=				"system"
+			>
+
+		<Events>
+			<OnCreate>
+				; Called when mission object is created. This adds the mission
+				; to the list of available missions, but it does not necessarily
+				; start the mission.
+				;
+				; The script may call msnDestroy to abort creation of the mission.
+				;
+				; gSource is mission object
+				; gData is arbitrary data passed in to msnCreate
+				; aOwnerObj is the object that created the mission (or nil)
+
+				(block (enemyStations)
+
+					(switch
+
+						; Get a list of enemy stations in the region. If we cannot find any
+						; suitable targets then we don't have a mission.
+
+						(not (setq enemyStations (sysFindObject aOwnerObj "TAE +populated; -uncharted; N:450;")))
+							(msnDestroy gSource)
+
+						; Otherwise we can create a mission
+
+						(block (targetObj)
+
+							; Pick a random enemy station to destroy
+							(setq targetObj (seededRandom (objGetDestiny aOwnerObj) enemyStations))
+
+							; Remember it
+							(msnSetData gSource 'targetID (objGetID targetObj))
+
+							; Register for events so we know when the target is destroyed
+							(msnRegisterForEvents gSource targetObj)
+
+							; Remember the type of enemy
+							(switch
+								(objHasAttribute targetObj "centauriWarlords")
+									(msnSetData gSource 'targetType 'centauriWarlords)
+
+								(msnSetData gSource 'targetType 'miscEnemy)
+								)
+
+							; Compute reward
+							(msnSetData gSource 'reward (add 200 (multiply (objGetLevel targetObj) 100)))
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				; Called if the player accepts the mission. The mission is 
+				; already running (OnStarted has been called).
+				;
+				; gSource is mission object
+
+			</OnAccepted>
+
+			<OnDeclined>
+				; Called if the player rejects the mission. The mission is already
+				; running (OnStarted has been called).
+				;
+				; gSource is mission object.
+
+			</OnDeclined>
+
+			<OnStarted>
+				; Called when the mission starts. This is called if the mission
+				; starts running (either because the player accepted or some other
+				; reason).
+				;
+				; gSource is mission object.
+
+			</OnStarted>
+
+			<OnSetPlayerTarget>
+				; Called to refresh the player's target. Always called right after
+				; the player accepts the mission. May be called at other times
+				; (e.g., after the player returns to the system).
+				;
+				; gSource is mission object
+				; aReason is:
+				;		'accepted: Mission has been accepted
+				;		'debriefed: Player has been debriefed
+				;		'failure: Mission failed
+				;		'inProgress: Player visited station while mission in progress
+				;		'newSystem: Player is in a new system
+				;		'success: Mission completed successfully
+
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)))
+			</OnSetPlayerTarget>
+
+			<OnObjDestroyed>
+				(switch
+					(eq (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(msnSuccess gSource)
+					)
+			</OnObjDestroyed>
+
+			<OnCompleted>
+				; Called when the mission ends (generally because msnSuccess or
+				; msnFailure were called).
+				;
+				; gSource is mission object
+				; gData is arbitrary data passed in to msnSuccess or msnFailure
+				; aReason is:
+				;		'failure: Mission failed
+				;		'success: Mission completed successfully
+
+			</OnCompleted>
+
+			<OnReward>
+				; Called by msnReward, generally during debrief.
+				;
+				; gSource is mission object
+				; gData is data passed to msnReward
+
+				(rpgMissionRewardPayment (msnGetData gSource 'reward))
+			</OnReward>
+
+			<OnDestroy>
+				; Called when mission object is destroyed (generally only non-player
+				; missions are removed when the player changes system. Player
+				; missions are not normally destroyed)
+				;
+				; gSource is mission object
+				;
+				; NOTE: No need to unregister for events because we automatically
+				; unregister when the mission is complete.
+
+			</OnDestroy>
+		</Events>
+
+		<Language>
+			<!-- Code Points -->
+
+			<Text id="Summary">
+				(cat
+					(msnTranslate gSource 'descSummary {
+						targetName: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 'article)
+						systemName: (sysGetName)
+						})
+					"\n\n"
+					(typTranslate &dsRPGMission; 'mission.rewardSummary {
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+
+			<Text id="Briefing">
+				(msnTranslate gSource (cat "Briefing:" (msnGetData gSource 'targetType)) {
+					targetName: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) '(capitalize article))
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+
+			<Text id="SuccessDebrief">
+				(msnTranslate gSource (cat "SuccessDebrief:" (msnGetData gSource 'targetType)) {
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+
+			<!-- Text -->
+
+			<Text id="Name">
+				Destroy Threat to Commonwealth Habitat
+			</Text>
+			<Text id="descSummary">
+				Your mission is to destroy %targetName% in the %systemName% system.
+			</Text>
+			<Text id="Intro">
+
+				The station master stands at his console. Managers and 
+				supervisors swarm around him dealing with various crises. He 
+				turns his attention towards you:
+
+				"We could use your help, %brother%. You've got a ship with a 
+				good punch and we got something that needs punching. We'll pay 
+				you, of course."
+
+			</Text>
+			<Text id="Briefing:centauriWarlords">
+
+				"A band of Centauri warlords has been harassing this station recently.
+				We've discovered the location of their base and we want you to go there
+				and destroy them. If you succeed we'll pay you %payment%. Will you help us?"
+
+			</Text>
+
+			<Text id="Briefing:miscEnemy">
+
+				"%targetName% nearby has been attacking us recently. We want you to destroy them!
+				If you succeed we'll pay you %payment% credits. Will you help us?"
+
+			</Text>
+			<Text id="AcceptReply">
+
+				"Thank you! I knew we could count on you. We'll program the 
+				target into your ship's computer. Just follow the arrow on your 
+				screen and you'll get there. Good luck!"
+
+			</Text>
+			<String id="DeclineReply">
+				"Ah, Hell! What are you doing here then? Stop wasting my time!"
+			</String>
+			<Text id="InProgress">
+
+				"What's wrong? You said you could handle this mission! Get back 
+				out there and finish the job!"
+
+			</Text>
+			<Text id="SuccessDebrief:centauriWarlords">
+
+				"Great work! Maybe the warlords will think twice before attacking us again.
+				We've deposited %payment% to your account."
+
+			</Text>
+			<Text id="SuccessDebrief:miscEnemy">
+
+				"Great work! Now we can live in peace.
+				We've deposited %payment% to your account."
+
+			</Text>
+			<Text id="SuccessMsg">
+				Mission complete!
+			</Text>
+			<String id="AlreadyDebriefed">
+				"Welcome back! Thanks for the great work last time."
+			</String>
+			<String id="Unavailable">
+				"Sorry, there are no missions available."
+			</String>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

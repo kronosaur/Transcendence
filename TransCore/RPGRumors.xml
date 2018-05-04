@@ -41,7 +41,9 @@
 				<OnPaneInit>
 					(block (
 						(sourceObj (@ gData 'sourceObj))
+						(sourceTyp (@ gData 'sourceType))
 						(rumorIntro (objTranslate gSource 'rumor.intro))
+						(descID (or (@ gData 'descID) (@ gData 'textID)))
 
 						(theRumor (switch
 							;	If we have a dialogID then translate from sourceObj
@@ -54,9 +56,19 @@
 								{
 									desc: (cat rumorIntro
 										(or
-											(objTranslate sourceObj (@ gData 'textID) (@ gData 'data))
+											(objTranslate sourceObj descID (@ gData 'data))
+											(typTranslate sourceTyp descID (@ gData 'data))
 											(@ gData 'desc)
 											)
+										)
+									}
+
+							;	If we have a global rumor then we need to translate descID
+							sourceTyp
+								{
+									desc: (or
+										(typTranslate sourceTyp descID (@ gData 'data))
+										(@ gData 'desc)
 										)
 									}
 
@@ -67,7 +79,7 @@
 
 						(rpgPagePaneInit gScreen theRumor
 							{
-								actionDoneID: 'actionLeave
+								actionDoneID: (or (@ gData 'actionDoneID) 'actionContinue)
 								;	sourceObj may be either mission or space object, but
 								;	objTranslate and msnTranslate are identical so this works
 								missionObj: sourceObj
@@ -103,7 +115,7 @@
 				;		rumor.attrib[.suffix]
 				;
 				;	attrib:	Rumor attribute e.g. commonwealthMining
-				;	suffix:	Added to the end of textID. Make be a sequence [optional]
+				;	suffix:	Added to the end of textID. May be a sequence [optional]
 				;	priority:	Rumor priority [default 10]
 				;	special:	May be one of the following:
 				;		'scan		Scan (i.e. objSetKnow) the source station after displaying rumor
@@ -114,7 +126,6 @@
 					{
 						attributes: attrib
 						priority: (or priority 10)
-						sourceObj: gSource
 						textID: (cat "rumor." attrib (if suf ".") suf)
 						data: data
 						onExitRumor: (switch
@@ -146,6 +157,9 @@
 				;
 				;		rumorCriteria: Criteria used to find suitable rumors. If not
 				;				supplied then fallback to mission/display criteria
+				;
+				;		actionDoneID: Action ID to use for the done button (defaults to
+				;				'actionContinue).
 
 				(block (
 					;	
@@ -163,16 +177,37 @@
 						stationObj:gSource
 						})
 
+					;	Lambda to set rumor defaults
+					(setRumorDefaults (lambda (default rumors)
+						(switch
+							(= (typeOf rumors) 'struct)
+								(struct default rumors)
+							(= (typeOf rumors) 'list)
+								(map rumors theRumor
+									(struct default theRumor)
+									)
+							)
+						))
+
 					;	Build rumor list from: global types, local stations, and missions
 					(allRumors (apply append (append
 						(map (typFind "*") 'excludeNil theType
-							(typFireEvent theType 'GetGlobalRumors eventData)
+							(setRumorDefaults
+								{	sourceType: theType	}
+								(typFireEvent theType 'GetGlobalRumors eventData)
+								)
 							)
 						(map (sysFindObject Nil "AT") 'excludeNil theObj
-							(objFireEvent theObj 'GetRumors eventData)
+							(setRumorDefaults
+								{	sourceObj: theObj	}
+								(objFireEvent theObj 'GetRumors eventData)
+								)
 							)
 						(map (msnFind "*") 'excludeNil msnObj
-							(msnFireEvent msnObj 'GetRumors eventData)
+							(setRumorDefaults
+								{	sourceObj: msnObj	}
+								(msnFireEvent msnObj 'GetRumors eventData)
+								)
 							)
 						)))
 
@@ -194,7 +229,39 @@
 						(ls (setq theRoll (- theRoll (@ theRumor 'priority))) 1)
 						))
 					)
+
+					(if (@ options 'actionDoneID)
+						(set@ theRumor 'actionDoneID (@ options 'actionDoneID))
+						)
 					theRumor
+					)
+				))
+
+			(setq rpgRumorShow (lambda (options)
+
+				;	Options may contain the following fields
+				;
+				;		rumorCriteria: Criteria used to find suitable rumors. If not
+				;				supplied then fallback to mission/display criteria
+				;
+				;		noRumorTextID: Language ID to display if there are no rumors
+				;				available at this station. [Required]
+				;
+				;		actionDoneID: Action ID to use for the done button (defaults to
+				;				'actionContinue).
+
+				(block (
+					(noRumorTextID (@ options 'noRumorTextID))
+					theRumor
+					)
+					(switch
+						;	Check if we have any rumors
+						(setq theRumor (rpgGetRumor options))
+							(scrShowScreen gScreen &dsRPGRumor; theRumor)
+
+						; Otherwise, nothing
+						(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noRumorTextID) })
+						)
 					)
 				))
 			)

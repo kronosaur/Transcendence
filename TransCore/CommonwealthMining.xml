@@ -362,7 +362,7 @@
 							(list
 								"Mining colony missions"
 								(rpgMissionAchievementString (count successList) (count failureList))
-								"missions &amp; activities"
+								(typTranslate &unidCommonText; 'missionsAndActivities)
 								)
 							)
 						)
@@ -372,7 +372,11 @@
 			<GetRumors>
 				(append
 					(rpgRumorAdd 'commonwealthPub 1 20 'scan {station: (objGetName gSource)})
+					)
+			</GetRumors>
 
+			<GetGlobalRumors>
+				(append
 					(rpgRumorAdd 'commonwealthMining (make 'sequence 15))
 
 					(if (= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
@@ -380,7 +384,7 @@
 						(rpgRumorAdd 'commonwealthMining 'freelancer)
 						)
 					)
-			</GetRumors>
+			</GetGlobalRumors>
 
 			<OnContractGenerate>
 				(intGenerateMiningRequestContract1)

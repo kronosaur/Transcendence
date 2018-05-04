@@ -85,15 +85,14 @@
 				{
 					attributes: "commonwealthPub"
 					priority: 22
-					sourceObj: gSource
-					textID: 'rumor.pub
+					textID: 'rumor.commonwealthPub
 					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
 					}
 			</GetRumors>
 		</Events>
 
 		<Language>
-			<Text id="rumor.pub">
+			<Text id="rumor.commonwealthPub">
 				A woman weeps softly as she tells her story:
 
 				"Our freighter strayed near an Abbasid outpost by mistake.

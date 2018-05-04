@@ -482,14 +482,13 @@
 				{
 					attributes: "commonwealthPub"
 					priority: 11
-					sourceObj: gSource
-					textID: 'rumor.pub
+					textID: 'rumor.commonwealthPub
 					}
 			</GetRumors>
 		</Events>
 
 		<Language>
-			<Text id="rumor.pub">
+			<Text id="rumor.commonwealthPub">
 				You spend 5 credits on drinks. A young stationer next to you
 				comments that its a lot easier to get laudanum now that the
 				Outlaw base is in the system.

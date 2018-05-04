@@ -175,29 +175,7 @@
 	
 <!-- SHIP CLASSES -->
 
-	<!-- Arco Vaughn's Heavy Raider
-
-	GLOBAL DATA
-
-	destroyedByPlayer:	True if destroyed by player
-
-	status:				Status of Arco Vaughn
-							Nil						= never encountered
-							"destroyed"				= destroyed
-
-	EXTRA DATA
-
-	home:				Our container
-
-	behavior:			Current behavior
-							Nil						= waiting for player
-							'scarePlayer			= scare the player, shoot if shields are full
-							'scarePlayerWithForce	= shoot at player but stop when shields drop
-							'killPlayer				= kill the player
-
-	warning:			True if we warned the player
-
-	-->
+	<!-- Arco Vaughn's Heavy Raider -->
 
 	<ShipClass UNID="&scArcoVaughnHeavyRaider;"
 			manufacturer=		"Centauri"
@@ -281,217 +259,16 @@
 			perception=			"4"
 			/>
 
-		<StaticData>
-			<msgTableGoHome>
-				(
-					"Go home before you hurt yourself, kid"
-					"This isn't your fight; get out while you can"
-					"That was a warning"
-					"This is a restricted area; I will shoot"
-					"Go home; this system is mine!"
-					"Don't make me destroy you"
-					)
-			</msgTableGoHome>
-
-			<msgTableTickled>
-				(
-					"Quit it!"
-					"Go home kid, or I'm really going to get mad"
-					"What, did I kill your microsaur or something?"
-					"Forget it, you don't have a chance!"
-					"Clear out or I will blast you!"
-					"Don't make me bust you up"
-					)
-			</msgTableTickled>
-
-			<msgTableWTF>
-				(
-					"What the...!?"
-					"You are going to die!"
-					"You are dead!"
-					"Enough!"
-					"Kack!"
-					"Huh!?"
-					)
-			</msgTableWTF>
-		</StaticData>
-
 		<Events>
-			<OnAttacked>
-				(if (and (eq aOrderGiver gPlayerShip) 
-						(not (eq (objGetData gSource "behavior") 'killPlayer)))
-					(if (and (or (eq aDamageType 'kinetic) (eq aDamageType 'laser))
-							(leq aDamageHP 6)
-							)
-
-						; If we're attacked with laser or kinetic, laugh it off
-
-						(if (and (eq (random 1 3) 1)
-								(eq (objGetData gSource "behavior") 'scarePlayer))
-							(objSendMessage gPlayerShip gSource
-								(random (objGetStaticData gSource "msgTableTickled"))
-								)
-							)
-
-						; If we're attacked with something more powerful, then we
-						; attack in force.
-
-						(block Nil
-							(shpCancelOrders gSource)
-							(shpOrder gSource 'attack gPlayerShip)
-							(objSetData gSource "behavior" 'killPlayer)
-
-							(objSendMessage gPlayerShip gSource
-								(random (objGetStaticData gSource "msgTableWTF"))
-								)
-							)
-						)
-					)
-			</OnAttacked>
-
-			<OnBehavior>
-				(block (behavior playerDist)
-					(setq behavior (objGetData gSource "behavior"))
-
-					(switch
-						; Wait for player to show up
-						(not behavior)
-							(if (and gPlayerShip 
-									(ls (objGetDistance gPlayerShip gSource) 60)
-									(ls (objGetDistance gPlayerShip (objGetObjRefData gSource "home")) 200))
-								(block Nil
-
-									; Once the player shows up, aim for the player, but don't attack yet
-									(shpCancelOrders gSource)
-									(shpOrder gSource 'aim gPlayerShip)
-
-									(objRegisterForEvents gSource gPlayerShip)
-									(objSetData gSource "behavior" 'scarePlayer)
-									)
-								)
-
-						; Scare the player away
-						(eq behavior 'scarePlayer)
-							(block Nil
-								(if (eq (objGetShieldLevel gPlayerShip) 100)
-									(block Nil
-										(shpCancelOrders gSource)
-										(shpOrder gSource 'attack gPlayerShip)
-										(objSetData gSource "behavior" 'scarePlayerWithForce)
-										)
-									)
-
-								(if (gr (objGetDistance gPlayerShip (objGetObjRefData gSource "home")) 300)
-									(block Nil
-										(shpCancelOrders gSource)
-										(shpOrder gSource 'patrol (objGetObjRefData gSource "home") 5)
-										(objSetData gSource "behavior" Nil)
-										(objSetData gSource "warning" Nil)
-										)
-									)
-								)
-
-						(eq behavior 'scarePlayerWithForce)
-							(block Nil
-								(if (ls (objGetShieldLevel gPlayerShip) 100)
-									(block Nil
-										(shpCancelOrders gSource)
-										(shpOrder gSource 'aim gPlayerShip)
-										(objSetData gSource "behavior" 'scarePlayer)
-										)
-									)
-
-								(if (and 
-										(not (objGetData gSource "warning"))
-										(ls (objGetDistance gSource gPlayerShip) 25)
-										)
-									(block Nil
-										(objSendMessage gPlayerShip gSource
-											(random (objGetStaticData gSource "msgTableGoHome"))
-											)
-										(objSetData gSource "warning" True)
-										)
-									)
-
-								(if (gr (objGetDistance gPlayerShip (objGetObjRefData gSource "home")) 300)
-									(block Nil
-										(shpCancelOrders gSource)
-										(shpOrder gSource 'patrol (objGetObjRefData gSource "home") 5)
-										(objSetData gSource "behavior" Nil)
-										(objSetData gSource "warning" Nil)
-										)
-									)
-								)
-						)
-					)
-			</OnBehavior>
-
 			<OnCreate>
 				(block Nil
 					; Vaughn's armor is resistant to laser and kinetic (only 20% damage gets through)
 					(objEnumItems gSource "aI" theItem
 						(shpEnhanceItem gSource theItem 0x0808)
 						)
-
-					; Set a timer so that we can do some custom behavior
-					(sysAddObjRecurringTimerEvent 10 gSource "OnBehavior")
-
-					; Remember our home
-					(objSetObjRefData gSource "home" (sysFindObject gSource "TN +arcoVaughn;"))
 					)
 			</OnCreate>
-
-			<OnDamage>
-				(block Nil
-
-					; If the player damaged us, then attack
-					(if (and (eq aAttacker gPlayerShip) 
-							(not (eq (objGetData gSource "behavior") 'killPlayer)))
-						(block Nil
-							(shpCancelOrders gSource)
-							(shpOrder gSource 'attack gPlayerShip)
-							(objSetData gSource "behavior" 'killPlayer)
-
-							(objSendMessage gPlayerShip gSource
-								(random (objGetStaticData gSource "msgTableWTF"))
-								)
-							)
-						)
-
-					; We always return full hit points
-					aDamageHP
-					)
-			</OnDamage>
-
-			<OnDestroy>
-				(block Nil
-					(objSetGlobalData gSource "status" 'destroyed)
-
-					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
-						(objSetGlobalData gSource "destroyedByPlayer" True)
-						)
-					)
-			</OnDestroy>
-
-			<OnObjDestroyed>
-				(if (eq aObjDestroyed gPlayerShip)
-					(block Nil
-						(shpCancelOrders gSource)
-						(shpOrder gSource 'patrol (objGetObjRefData gSource "home") 5)
-						(objSetData gSource "behavior" Nil)
-						)
-					)
-			</OnObjDestroyed>
-
-			<OrderKillPlayer>
-				(block Nil
-					(shpCancelOrders gSource)
-					(shpOrder gSource 'attack gPlayerShip)
-					(objSetData gSource "behavior" 'killPlayer)
-					)
-			</OrderKillPlayer>
 		</Events>
-
 	</ShipClass>
 
 	<!-- Centauri Heavy Raider -->
@@ -667,8 +444,7 @@
 				{
 					attributes: "commonwealthPub"
 					priority: 10
-					sourceObj: gSource
-					textID: 'rumor.pub
+					textID: 'rumor.commonwealthPub
 					data: {station: (objGetName gSource)}
 					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
 					}
@@ -803,7 +579,7 @@
 
 			</Text>
 
-			<Text id="rumor.pub">
+			<Text id="rumor.commonwealthPub">
 				You listen to a refugee from %station%:
 
 				"Centauri warlords took over our station last month.
@@ -949,30 +725,6 @@
 		</Items>
 
 		<Events>
-			<OnCreate>
-				(block (email)
-					(setq email (itmCreate &itDataROM; 1))
-					(setq email (itmSetData email "Text"
-						(cat
-							"RECEIVED from relay07.cynus.anderson.187janus_station.comm\n"
-							"by helios_receiver.f5astarton_eridani.comm (EID 089830_7188919)\n"
-							"for &lt;arcovaughn.17591&gt; (EID 089830_8179210) 2403-11-25 17:34:11\n\n"
-							"MESSAGE BEGINS\n"
-							"I know that you must hate me right now; truth is I don't like myself very much either. "
-							"But I promise you that everything happens for a reason and that one day you and I will both understand. "
-							"I can't explain to you or anyone why I'm going. No one can understand. "
-							"But I know that I am doing the right thing and I know that I am doing what I must. "
-							"I can't do anything else. Something is about to happen. Something feels wrong. "
-							"Whatever fate awaits me at the Core, I know that it is entwined with the fate of all Humanity. "
-							"When I get there, I will understand. When I get there, we will all understand. "
-							"I must get there before it is too late. Take care of your mother.\n\n"
-							"MESSAGE ENDS"
-							)
-						))
-					(objAddItem gSource email)
-					)
-			</OnCreate>
-			
 			<OnAttacked>
 				(block (
 					(arcoVaughnObj (sysFindObject Nil "sAN +arcoVaughn"))
@@ -998,15 +750,7 @@
 
 						;	Arco attacks the player
 						
-						(block Nil
-							(shpCancelOrders arcoVaughnObj)
-							(shpOrder arcoVaughnObj 'attack gPlayerShip)
-							(objSetData arcoVaughnObj "behavior" 'killPlayer)
-
-							(objSendMessage gPlayerShip arcoVaughnObj
-								(random (objGetStaticData arcoVaughnObj "msgTableWTF"))
-								)
-							)
+						(objFireEvent arcoVaughnObj 'OrderKillPlayer)
 						)
 					)
 			</OnAttacked>
