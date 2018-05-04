@@ -774,6 +774,7 @@
 								
 								(block Nil
 									(rpgSellItems 1 itemCost sourceObj)
+									(scrSetReturnData gScreen 'sold True)
 									(scrShowPane gScreen "Default")
 									)
 								)
@@ -816,6 +817,7 @@
 									
 								(block Nil
 									(rpgSellItems countToSell itemCost sourceObj)
+									(scrSetReturnData gScreen 'sold True)
 									(scrShowPane gScreen "Default")
 									)
 								)
@@ -960,7 +962,7 @@
 				(block (itemsToSell)
 					(setq itemsToSell (scrRemoveItem gScreen itemCount))
 					
-					; Add to player ship
+					; Add to station
 					(objAddItem (or inventoryObj gSource) itemsToSell)
 					
 					; Record transaction

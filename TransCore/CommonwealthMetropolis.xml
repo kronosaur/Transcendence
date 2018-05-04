@@ -379,7 +379,6 @@
 							; Navigate to DealComplete so that we return here when sell
 							; screen exits.
 							
-							(setq gResult 0)
 							(scrShowPane gScreen "DealComplete")
 
 							; Show sell screen
@@ -396,7 +395,7 @@
 								
 								Nil						; obsolete
 								
-								'(
+								(list
 									(scrTranslate gScreen 'strTitle)
 									10000
 									)
@@ -416,10 +415,10 @@
 			<DealComplete>
 				<OnPaneInit>
 					(switch
-						(eq gResult 0)
-							(scrSetDescTranslate gScreen 'descRefused)
-								
-						(scrSetDescTranslate gScreen 'descSold)
+						(scrGetReturnData gScreen 'sold)
+							(scrSetDescTranslate gScreen 'descSold)
+
+						(scrSetDescTranslate gScreen 'descRefused)
 						)
 				</OnPaneInit>
 
