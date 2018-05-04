@@ -732,5 +732,8 @@
     <Xml Include="CommonwealthMission01.xml">
       <Filter>Human Space Library\Commonwealth</Filter>
     </Xml>
+    <Xml Include="RPGRumors.xml">
+      <Filter>RPG Library</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
