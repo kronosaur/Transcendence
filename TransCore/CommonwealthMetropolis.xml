@@ -358,13 +358,13 @@
 	<!-- Commonwealth Nightclub	-->
 
 	<DockScreen UNID="&dsCommonwealthNightclub;"
-			name=				"The Victorian Nightclub"
+			nameID=				"strTitle"
 			nestedScreen=		"true"
 			>
 
 		<InitialPane>
 			(switch
-				(objGetItems gPlayerShip "*NU +Illegal; -ID; &lt;=#25")
+				(objGetItems gPlayerShip "*NU +illegal; +consumerGood; -ID; +property:known; &lt;=#25;")
 					"Default"
 
 				"Nothing"
@@ -372,17 +372,9 @@
 		</InitialPane>
 
 		<Panes>
-			<Default>
-				<OnPaneInit>
-					(scrSetDesc gScreen
-						"You are in a large dance club where women and men dressed in leather and latex dance to classical music. "
-						"A short, wide man in a long suit and an iron collar approaches you:\n\n"
-						"\"I'm told that you are a %man% who can sell me what I need.\""
-						)
-				</OnPaneInit>
-
+			<Default descID="descWelcome">
 				<Actions>
-					<Action name="&quot;I can sell you whatever you want.&quot;" default="1" key="S">
+					<Action id="actionIGotIt" default="1">
 						(block Nil
 							; Navigate to DealComplete so that we return here when sell
 							; screen exits.
@@ -395,7 +387,7 @@
 							(scrShowSellScreen
 								(lambda (theItem)
 									(switch
-										(itmMatches theItem "*NU +illegal; +consumerGood; -ID; +property:known;")
+										(itmMatches theItem "*NU +illegal; +consumerGood; -ID; +property:known; &lt;=#25;")
 											(divide (multiply 150 (itmGetPrice theItem 'credit)) 100)
 											
 										Nil
@@ -405,14 +397,14 @@
 								Nil						; obsolete
 								
 								'(
-									"The Victorian Nightclub"
+									(scrTranslate gScreen 'strTitle)
 									10000
 									)
 								)
 							)
 					</Action>
 
-					<Action name="&quot;I have no idea what you're talking about.&quot;" cancel="1" key="N">
+					<Action id="actionHuh" cancel="1">
 						(block Nil
 							(setq gResult 0)
 							(scrShowPane gScreen "DealComplete")
@@ -425,14 +417,9 @@
 				<OnPaneInit>
 					(switch
 						(eq gResult 0)
-							(scrSetDesc gScreen
-								"\"Come back if you change your mind.\""
-								)
+							(scrSetDescTranslate gScreen 'descRefused)
 								
-						(scrSetDesc gScreen
-							"The man takes the merchandise to a hidden hold in the back of the club.\n\n"
-							"\"Come back if you get some more.\""
-							)
+						(scrSetDescTranslate gScreen 'descSold)
 						)
 				</OnPaneInit>
 
@@ -453,6 +440,29 @@
 		</Panes>
 
 		<Language>
+			<Text id="strTitle">The Victorian Nightclub</Text>
+
+			<Text id="descWelcome">
+
+				You are in a large dance club where women and men dressed in leather and 
+				latex dance to classical music. A short, wide man in a long suit and an 
+				iron collar approaches you:
+
+				"I'm told you're a %man% who has what I need."
+
+			</Text>
+			<String id="actionIGotIt">"I can [s]ell you whatever you want."</String>
+			<String id="actionHuh">"I have [n]o idea what you're talking about."</String>
+
+			<String id="descRefused">"Come back if you change your mind."</String>
+			<String id="descSold">
+			
+				The man takes the merchandise to a hidden hold in the back of the club.
+
+				"Come back if you get some more."
+			
+			</String>
+
 			<Text id="descNothing">
 
 				You are in a large dance club where women and men dressed in leather and 
