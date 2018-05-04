@@ -230,7 +230,7 @@
 						))
 					)
 
-					(if (@ options 'actionDoneID)
+					(if (and theRumor (@ options 'actionDoneID))
 						(set@ theRumor 'actionDoneID (@ options 'actionDoneID))
 						)
 					theRumor
