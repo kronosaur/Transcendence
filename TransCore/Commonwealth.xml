@@ -842,272 +842,12 @@
 		</Language>
 	</StationType>
 	
-	<!-- Mission: Destroy Threat to Commonwealth Habitat
-	
-	EXTRA DATA
-	
-	reward:				Reward (in credits) for completing mission
-	targetID:			Id of station to destroy
-	targetType:			One of:
-							'centauriWarlords
-							'miscEnemy
-
-	-->
-	
-	<MissionType UNID="&msDestroyThreatToSlums;"
-			name=				"Destroy Threat to Commonwealth Habitat"
-			attributes=			"commonwealth, commonwealthHabitat"
-
-			level=				"1-4"
-			scope=				"system"
-
-			>
-		<Events>
-			<OnCreate>
-				; Called when mission object is created. This adds the mission
-				; to the list of available missions, but it does not necessarily
-				; start the mission.
-				;
-				; The script may call msnDestroy to abort creation of the mission.
-				;
-				; gSource is mission object
-				; gData is arbitrary data passed in to msnCreate
-				; aOwnerObj is the object that created the mission (or nil)
-				
-				(block (enemyStations)
-				
-					(switch
-					
-						; Get a list of enemy stations in the region. If we cannot find any
-						; suitable targets then we don't have a mission.
-						
-						(not (setq enemyStations (sysFindObject aOwnerObj "TAE +populated; -uncharted; N:450;")))
-							(msnDestroy gSource)
-							
-						; Otherwise we can create a mission
-						
-						(block (targetObj)
-						
-							; Pick a random enemy station to destroy
-							(setq targetObj (seededRandom (objGetDestiny aOwnerObj) enemyStations))
-							
-							; Remember it
-							(msnSetData gSource 'targetID (objGetID targetObj))
-							
-							; Register for events so we know when the target is destroyed
-							(msnRegisterForEvents gSource targetObj)
-
-							; Remember the type of enemy
-							(switch
-								(objHasAttribute targetObj "centauriWarlords")
-									(msnSetData gSource 'targetType 'centauriWarlords)
-									
-								(msnSetData gSource 'targetType 'miscEnemy)
-								)
-								
-							; Compute reward
-							(msnSetData gSource 'reward (add 200 (multiply (objGetLevel targetObj) 100)))
-							)
-						)
-					)
-			</OnCreate>
-
-			<OnAccepted>
-				; Called if the player accepts the mission. The mission is 
-				; already running (OnStarted has been called).
-				;
-				; gSource is mission object
-
-			</OnAccepted>
-			
-			<OnDeclined>
-				; Called if the player rejects the mission. The mission is already
-				; running (OnStarted has been called).
-				;
-				; gSource is mission object.
-
-			</OnDeclined>
-
-			<OnStarted>
-				; Called when the mission starts. This is called if the mission
-				; starts running (either because the player accepted or some other
-				; reason).
-				;
-				; gSource is mission object.
-
-			</OnStarted>
-			
-			<OnSetPlayerTarget>
-				; Called to refresh the player's target. Always called right after
-				; the player accepts the mission. May be called at other times
-				; (e.g., after the player returns to the system).
-				;
-				; gSource is mission object
-				; aReason is:
-				;		'accepted: Mission has been accepted
-				;		'debriefed: Player has been debriefed
-				;		'failure: Mission failed
-				;		'inProgress: Player visited station while mission in progress
-				;		'newSystem: Player is in a new system
-				;		'success: Mission completed successfully
-				
-				(block (targetObj)
-					(switch
-						; If we just got debriefed then we clear our targets.
-
-						(eq aReason 'debriefed)
-							(shpCancelOrders gPlayerShip)
-
-						; If the mission is complete, then we point towards the 
-						; owner station.
-
-						(msnGetProperty gSource 'isCompleted)
-							(if (setq targetObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-								(block Nil
-									(shpCancelOrders gPlayerShip)
-									(shpOrder gPlayerShip 'dock targetObj)
-									)
-								)
-
-						; Otherwise, we point towards the target
-
-						(if (setq targetObj (objGetObjByID (msnGetData gSource 'targetID)))
-							(block Nil
-								(shpCancelOrders gPlayerShip)
-								(shpOrder gPlayerShip 'attack targetObj)
-								)
-							)
-						)
-					)
-			</OnSetPlayerTarget>
-			
-			<OnObjDestroyed>
-				(switch
-					(eq (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
-						(msnSuccess gSource)
-					)
-			</OnObjDestroyed>
-			
-			<OnCompleted>
-				; Called when the mission ends (generally because msnSuccess or
-				; msnFailure were called).
-				;
-				; gSource is mission object
-				; gData is arbitrary data passed in to msnSuccess or msnFailure
-				; aReason is:
-				;		'failure: Mission failed
-				;		'success: Mission completed successfully
-				
-			</OnCompleted>
-			
-			<OnReward>
-				; Called by msnReward, generally during debrief.
-				;
-				; gSource is mission object
-				; gData is data passed to msnReward
-
-				(intMissionRewardPayment (msnGetData gSource 'reward))
-			</OnReward>
-			
-			<OnDestroy>
-				; Called when mission object is destroyed (after mission ends)
-				;
-				; gSource is mission object
-				;
-				; NOTE: No need to unregister for events because we automatically
-				; unregister when the mission is complete.
-
-			</OnDestroy>
-		</Events>
-		
-		<Language>
-			<Text id="Name">
-				"Destroy Threat to Commonwealth Habitat"
-			</Text>
-			<Text id="Summary">
-				(cat
-					"Your mission is to destroy " (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x04) " in the " (sysGetName) " system.\n\n"
-					"System: " (sysGetName) "\n"
-					"Payment: " (msnGetData gSource 'reward) " credits"
-					)
-			</Text>
-			<Text id="Intro">
-
-				The station master stands at his console. Managers and 
-				supervisors swarm around him dealing with various crises. He 
-				turns his attention towards you:
-
-				"We could use your help, %brother%. You've got a ship with a 
-				good punch and we got something that needs punching. We'll pay 
-				you, of course."
-
-			</Text>
-			<Text id="Briefing">
-				(block (
-					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
-					)
-
-					(switch
-						(eq (msnGetData gSource 'targetType) 'centauriWarlords)
-							(cat
-								"\"A band of Centauri warlords has been harassing this station recently. We've discovered the location of their base and we want you to go there and destroy them. "
-								"If you succeed we'll pay you " (msnGetData gSource 'reward) " credits. Will you help us?\""
-								)
-							
-						(cat
-							"\"" (objGetName targetObj 0x05) " nearby has been attacking us recently. We want you to destroy them! "
-							"If you succeed we'll pay you " (msnGetData gSource 'reward) " credits. Will you help us?\""
-							)
-						)
-					)
-			</Text>
-			<Text id="AcceptReply">
-
-				"Thank you! I knew we could count on you. We'll program the 
-				target into your ship's computer. Just follow the arrow on your 
-				screen and you'll get there. Good luck!"
-
-			</Text>
-			<String id="DeclineReply">
-				"Ah, Hell! What are you doing here then? Stop wasting my time!"
-			</String>
-			<Text id="InProgress">
-
-				"What's wrong? You said you could handle this mission! Get back 
-				out there and finish the job!"
-
-			</Text>
-			<Text id="SuccessDebrief">
-				(cat
-					(switch
-						(eq (msnGetData gSource 'targetType) 'centauriWarlords)
-							"\"Great work! Maybe the warlords will think twice before attacking us again."
-
-						"\"Great work! Now we can live in peace. "
-						)
-					" We've deposited " (msnGetData gSource 'reward) " credits to your account.\""
-					)
-			</Text>
-			<Text id="SuccessMsg">
-				Mission complete!
-			</Text>
-			<String id="AlreadyDebriefed">
-				"Welcome back! Thanks for the great work last time."
-			</String>
-			<String id="Unavailable">
-				"Sorry, there are no missions available."
-			</String>
-		</Language>
-	</MissionType>
-
 	<!-- Commonwealth Slums
 
 	GLOBAL DATA
 
 	lastMissionTime:	Tick on which mission was given to player (Nil if never)
 	totalMissionCount:	Total number of missions that the player has requested
-	missionsCompleted:	Total number of successful missions
-	missionsFailed:		Total number of failures
 
 	-->
 
@@ -1151,96 +891,21 @@
 			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
 		</Ships>
 
-		<StaticData>
-			<Rumors>
-				(
-					"\"You got a pretty nice ship there. Did your mom and dad buy it for you?\""
-					"\"Truth is, you gotta approach life philosophically, you know what I mean? You gotta believe that it's all going to work out in the end, or else what's the point?\""
-					"\"Nobody cares. Station needs a carbon scrubber? Get on the waiting list! After the corporate suits get their grilled Icelandic salmon, then they might pay attention to you. Nobody cares.\""
-					(if (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
-						"\"I don't know what you're doing in this backwater system. You wanna get to the Core? Go! What's stopping you? Kids today: they dream big, but they'd rather watch the 3DVs.\""
-						"\"I don't know what you're doing in this backwater system. You wanna see the galaxy? Go! What's stopping you? Kids today: they dream big, but they'd rather watch the 3DVs.\""
-						)
-					"\"A station is not like a starship. If you get into trouble you can always run away. All we can do is sit tight and repair the damage. Takes a special kind of man to live like that.\""
-					(cat "\"How do you like your " (objGetName gPlayerShip 0x00) "? "
-						(switch 
-							(eq (objGetType gPlayerShip) &scSapphirePlayer;)
-								"My daughter's friend had one once. It was beautiful, but not very practical for long voyages.\""
-							(eq (objGetType gPlayerShip) &scEI100XPlayer;)
-								"My son pilots an older 200-series in the Cairn system. He's got it up-armored with polyceramic to protect against pirate attacks.\""
-							(eq (objGetType gPlayerShip) &scWolfenPlayer;)
-								"I knew this guy John Tremaine who flew one in the Militia. They're fast as hell on a whip, but a little flimsy. Hope you've got some good shields on her.\""
-							"I haven't seen a lot of ships like that. Is it hard to get parts for it?\""
-							)
-						)
-					)
-			</Rumors>
-
-			<RumorsSE>
-				(
-					"\"You got a pretty nice ship there. Did your mom and dad buy it for you?\""
-					"\"Truth is, you gotta approach life philosophically, you know what I mean? You gotta believe that it's all going to work out in the end, or else what's the point?\""
-					"\"Nobody cares. Station needs a carbon scrubber? Get on the waiting list! After the corporate suits get their grilled Icelandic salmon, then they might pay attention to you. Nobody cares.\""
-					(if (not (eq (typGetGlobalData &scArcoVaughnHeavyRaider; "status") 'destroyed))
-						"\"The warlords are annoying, but they don't mean much. The only one that bothers me is Arco Vaughn. He's trouble. Someone ought to air him out before things get out of hand, you know?\""
-						"\"Thank heavens that someone finally killed Arco Vaughn. Maybe now the warlords will leave us alone.\""
-						)
-					"\"I don't know what you're doing in this backwater system. You wanna get to the Core? Go! What's stopping you? Kids today: they dream big, but they'd rather watch the 3DVs.\""
-					(if (not (eq (typGetGlobalData &scArcoVaughnHeavyRaider; "status") 'destroyed))
-						"\"It's sad about Raisu station, isn't it? If a corporate fuel station got taken over by Centauri warlords they'd have Admiral Decker himself leading the rescue. But no one cares about a poor, backwater station, I guess.\""
-						"\"It's shame what Raisu station had to go through, isn't it? If a corporate station had been occupied by warlords, they'd have sent Admiral Decker himself to lead the rescue. But no one cares about a poor, backwater station, I guess.\""
-						)
-					(if (not (eq (typGetGlobalData &scArcoVaughnHeavyRaider; "status") 'destroyed))
-						"\"If you're looking for Arco Vaughn, go to Raisu station: the station master there will help you out. But first you gotta convince her that you're serious.\""
-						"\"I hear that Arco Vaughn is finally dead. No one will mourn him. I really feel for Erica and her team at Raisu\x97they went through hell.\""
-						)
-					(if (not (eq (typGetGlobalData &scArcoVaughnHeavyRaider; "status") 'destroyed))
-						"\"If you need help against Arco Vaughn the station master at Raisu station will help you. But you'll have to prove that you're serious. Take out a few Centauri stations and you might convince her.\""
-						"\"We're all glad that Arco Vaughn is dead. I heard someone from Raisu station finally had enough and decided to chase him down."\""
-						)
-					)
-			</RumorsSE>
-
-			<RumorsBA>
-				(
-					(cat "\"What's your favorite weapon? Personally I favor "
-						(seededRandom (objGetDestiny gSource)
-							'(
-								"the AK505 Ballista. It's a monster and it will kill a lot of ships with a single punch. When I hit something, I want it to go down, you know what I mean?\""
-								"a particle beam weapon. The latest tech is always going to win in the end. You have to keep up with technology or you're just another wreck in the Arena.\""
-								"an omni turbolaser. I say a computer can hit a target way better than I can, so why not take advantage of that? By the time your opponent has lined up his BFG, you've already hit him five times!\""
-								"a slam cannon, enhanced if possible. There's nothing better than the thump-thump sounds of a slam cannon hitting your enemy's plasteel!\""
-								"the RK15 Partisan turret. Sure, the wimpy omniturbo is a little faster, but I wanna hit my targets with a punch, not shine a damn light in their eyes.\""
-								)
-							)
-						)
-					(cat "\"So what kind of shields you got? I think a lot of gladiators underestimate how important shields are. "
-						(seededRandom (objGetDestiny gSource)
-							'(
-								"Even a good monopole deflector is better than nothing. I'd enhance the crap out of it, though.\""
-								"The Cyclotron series are my choice at the moment. The S55 has more protection than a class III; better yet, get the S1200.\""
-								"If you can afford the Ceratops series then go for it. They're the best against missiles anyway, which is what you're gonna get hit with in the Arena.\""
-								)
-							)
-						)
-					)
-			</RumorsBA>
-		</StaticData>
-
 		<Events>
 			<GetGlobalAchievements>
-				(block (theList)
-					(if (gr (typGetGlobalData &stCommonwealthSlums; 'totalMissionCount) 0)
-						(setq theList (list
+				(block (
+					(successList (plyGetKeyEventStat gPlayer 'missionSuccess Nil "* +commonwealthHabitat;"))
+					(failureList (plyGetKeyEventStat gPlayer 'missionFailure Nil "* +commonwealthHabitat;"))
+					)
+					(if (or successList failureList)
+						(list
 							(list
-								"Commonwealth habitat missions"
-								(intMissionAchievementString (typGetGlobalData &stCommonwealthSlums; 'missionsCompleted) (typGetGlobalData &stCommonwealthSlums; 'missionsFailed))
-								"missions &amp; activities"
+								(typTranslate &stCommonwealthSlums; 'missions)
+								(rpgMissionAchievementString (count successList) (count failureList))
+								(typTranslate &unidCommonText; 'missionsAndActivities)
 								)
-							))
+							)
 						)
-						
-					theList
 					)
 			</GetGlobalAchievements>
 
@@ -1250,18 +915,28 @@
 
 			<OnContractQuery>True</OnContractQuery>
 
-			<OnMissionAccepted>
-				(typIncGlobalData &stCommonwealthSlums; 'totalMissionCount)
-			</OnMissionAccepted>
+			<GetGlobalRumors>
+				(append
+					(rpgRumorAdd 'commonwealthHabitat (make 'sequence 4))
 
-			<OnMissionCompleted>
-				(if (msnGetProperty aMissionObj 'isActive)
-					(if (eq aReason 'success)
-						(typIncGlobalData &stCommonwealthSlums; 'missionsCompleted)
-						(typIncGlobalData &stCommonwealthSlums; 'missionsFailed)
+					(if (= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+						(rpgRumorAdd 'commonwealthHabitat 'pilgrim)
+						(rpgRumorAdd 'commonwealthHabitat 'freelancer)
+						)
+
+					(rpgRumorAdd 'commonwealthHabitat
+						(switch
+							(= (objGetType gPlayerShip) &scSapphirePlayer;)	'sapphire
+							(= (objGetType gPlayerShip) &scEI100XPlayer;)	'ei100x
+							(= (objGetType gPlayerShip) &scWolfenPlayer;)	'wolfen
+																			'other
+							)
+						Nil
+						Nil
+						{	shipName: (objGetName gPlayerShip)	}
 						)
 					)
-			</OnMissionCompleted>
+			</GetGlobalRumors>
 		</Events>
 
 		<DockScreens>
@@ -1274,52 +949,12 @@
 
 						<Actions>
 							<Action id="actionMainHall" default="1">
-								(block (lastMissionTime missionInterval theMission)
-									; Figure out the last time that a habitat gave out a mission
-									(setq lastMissionTime (objGetGlobalData gSource "lastMissionTime"))
-
-									; Time between missions (5400-8990 or 3-5 real minutes)
-									(setq missionInterval (add 5400 (multiply (objGetDestiny gSource) 10)))
-
-									(switch
-										; If we have an active mission, then show it
-										(setq theMission (@ (msnFind gSource "aS") 0))
-											(scrShowScreen gScreen &dsRPGMission;
-												{
-												missionObj: theMission
-												})
-
-										; If the player has an active mission from some other station, then
-										; no new mission
-
-										(msnFind Nil "a +commonwealthHabitat;")
-											(scrShowPane gScreen "Rumors")
-
-										; If its not time for a new mission, then rumors
-										(and lastMissionTime
-												(gr (add lastMissionTime missionInterval) (unvGetTick)))
-											(scrShowPane gScreen "Rumors")
-
-										; If we've already gotten six missions, then no more missions
-										(geq (objGetGlobalData gSource "totalMissionCount") 6)
-											(scrShowPane gScreen "Rumors")
-
-										; If we have an open mission or if we can create a mission then
-										; show it.
-										(or (setq theMission (@ (msnFind gSource "oS") 0))
-												(setq theMission (msnCreate (typFind "n +commonwealthHabitat;") gSource)))
-											(block Nil
-												(objSetGlobalData gSource "lastMissionTime" (unvGetTick))
-												(scrShowScreen gScreen &dsRPGMission;
-													{
-													missionObj: theMission
-													})
-												)
-
-										; Otherwise, just rumors
-										(scrShowPane gScreen "Rumors")
-										)
-									)
+								(rpgMissionAssignment {
+									missionCriteria: "n +commonwealthHabitat;"
+									maxActive: 1
+									intervalPerType: (+ 5400 (* (objGetDestiny gSource) 10))
+									noMissionTextID: 'descNoMissions
+									})
 							</Action>
 
 							<Action id="actionUndock" cancel="1">
@@ -1327,37 +962,8 @@
 							</Action>
 						</Actions>
 					</Default>
-
-					<Rumors>
-						<OnPaneInit>
-							(block (rumorTable)
-								(switch
-									(eq (sysGetNode) 'SE)
-										(setq rumorTable "RumorsSE")
-
-									(eq (sysGetNode) 'BA)
-										(setq rumorTable "RumorsBA")
-
-									(setq rumorTable "Rumors")
-									)
-
-								(scrSetDesc gScreen
-									(cat "The station master is working at his console. He stops to chat:\n\n"
-										(eval (intRandomMessage gSource rumorTable))
-										)
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action id="actionContinue" default="1" cancel="1">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</Rumors>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
 		<DockingPorts>
@@ -1373,12 +979,73 @@
 
         <Language>
 			<Text id="descWelcome">
+
 				The loud voices of a packed multitude bounce off every bulkhead and
 				corridor in the station. Old air scrubbers pump a thin, odorous
 				breeze out of rusty vents. Discarded packets of Salmonite and Red
 				Nebula beer huddle in the corner.
 
 				Welcome to %objName%!
+
+			</Text>
+			<Text id="descNoMissions">
+
+				The colony supervisor is working at his station. The comms channels
+				are quiet and he stops to chat:
+
+				"It's calm now, but I've been hearing a lot of military chatter lately."
+
+			</Text>
+			<Text id="missions">Commonwealth habitat missions</Text>
+
+			<Text id="rumor.intro">
+				The station master is working at his console. He stops to chat:\n\n
+			</Text>
+			<String id="rumor.commonwealthHabitat.1">
+				"You got a pretty nice ship there. Did your mom and dad buy it for you?"
+			</String>
+			<Text id="rumor.commonwealthHabitat.2">
+				"Truth is, you gotta approach life philosophically, you know what I mean?
+				You gotta believe that it's all going to work out in the end, or else
+				what's the point?"
+			</Text>
+			<Text id="rumor.commonwealthHabitat.3">
+				"Nobody cares. Station needs a carbon scrubber? Get on the waiting list!
+				After the corporate suits get their grilled Icelandic salmon, then they
+				might pay attention to you. Nobody cares."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.4">
+				"A station is not like a starship. If you get into trouble you can always
+				run away. All we can do is sit tight and repair the damage. Takes a
+				special kind of man to live like that."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.pilgrim">
+				"I don't know what you're doing in this backwater system. You wanna get
+				to the Core? Go! What's stopping you? Kids today: they dream big, but
+				they'd rather watch the 3DVs."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.freelancer">
+				"I don't know what you're doing in this backwater system. You wanna see
+				the galaxy? Go! What's stopping you? Kids today: they dream big, but
+				they'd rather watch the 3DVs."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.sapphire">
+				"How do you like your %shipName%? My daughter's friend had one once.
+				It was beautiful, but not very practical for long voyages."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.ei100x">
+				"How do you like your %shipName%? My son pilots an older 200-series	in the
+				Cairn system. He's got it up-armored with polyceramic to protect against
+				pirate attacks."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.wolfen">
+				"How do you like your %shipName%? I knew this guy John Tremaine who flew
+				one in the Militia. They're fast as hell on a whip, but a little flimsy.
+				Hope you've got some good shields on her."
+			</Text>
+			<Text id="rumor.commonwealthHabitat.other">
+				"How do you like your %shipName%? I haven't seen a lot of ships like that.
+				Is it hard to get parts for it?"
 			</Text>
         </Language>
 	</StationType>
@@ -1446,36 +1113,6 @@
 					(Nil					0		'thanksForNothing)
 					)
 			</DonationTable>
-
-			<Rumors>
-				(
-					"\"The Charon pirates are a menace. They have bases in almost every system and they prey on defenseless freighters.\""
-					"\"If you need a contact in the Black Market find the Aleksany brothers; they're always doing business in some fancy hotel.\""
-					"\"The anarchists don't bother us, but they really annoy the Corporations: they're always stealing their fancy ROMs.\""
-					"\"Stay away from the Abbasid fortresses. Those fanatics will shoot you rather than let you get close.\""
-					"\"The Urak warlords are another nutty group, but their armor and weapons are pretty good.\""
-					"\"Hiro is the best hacker in the 'verse. He's created some fancy ROMs that even the cyber corporations can't figure out.\""
-					)
-			</Rumors>
-
-			<RumorsSE>
-				(
-					"\"Watch out for Arco Vaughn. He is the most dangerous Centauri warlord; his heavy raider is protected against lasers and recoilless cannons. Avoid him if you want to live.\""
-					"\"Arco Vaughn flies an enhanced heavy raider. His armor is protected against normal weapons; you'll need missiles to kill him.\""
-					"\"Raisu Station is in trouble. The Centauri warlords have taken it over; don't go there unless you are armed and ready.\""
-					"\"If you want to find Arco Vaughn, go to Raisu Station. Talk to the station master there. She will help you.\""
-					"\"The Centauri warlords have many bases among the outer asteroids of Eridani; but if you go there, watch out: Arco Vaughn is there too.\""
-					)
-			</RumorsSE>
-
-			<RumorsBA>
-				(
-					"\"The Slicer is the champion of the Arena! No one has been able to defeat him.\""
-					"\"I don't watch the Arena games anymore; the Black Market has totally infiltrated the show and all the fights are rigged now.\""
-					"\"I remember watching Kate Morgental fight in the Arena. She put on a great show! I don't know what happened to her; probably working for her father now.\""
-					"\"Let me tell you a secret about fighting in the Arena: load up with missiles. Who cares about beams and whatnot; a good missile will cut through armor like a knife through Salmonite!\""
-					)
-			</RumorsBA>
 		</StaticData>
 
 		<Events>
@@ -1538,6 +1175,10 @@
 					(shpOrder gPlayerShip 'dock aTargetObj)
 					)
 			</OrderDockWithTarget>
+
+			<GetGlobalRumors>
+				(rpgRumorAdd 'commonwealthContainer (make 'sequence 6))
+			</GetGlobalRumors>
 		</Events>
 
 		<DockScreens>
@@ -1554,12 +1195,8 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Donate Item" key="D" default="1">
-								(block Nil
-									(setq gPrevScreen "Main")
-									(setq gPrevPane "Default")
-									(scrShowScreen gScreen "&dsContainerHabitatDonateItem;")
-									)
+							<Action id="actionDonate" default="1">
+								(scrShowScreen gScreen "&dsContainerHabitatDonateItem;")
 							</Action>
 
 							<Action id="actionUndock" cancel="1">
@@ -1569,7 +1206,6 @@
 					</Default>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
 		<DockingPorts>
@@ -1583,6 +1219,8 @@
 		</DockingPorts>
 		
 		<Language>
+			<Text id="actionDonate">[D]onate Item</Text>
+
 			<Text id="descWelcome">
 				You are docked at a habitat made out of shipping containers. Children
 				bounce off the bulkheads in zero-G while maintenance workers repair
@@ -1598,6 +1236,37 @@
 				"We don't get many pilgrims visiting around here. Why don't you give
 				us some of your worldly possessions; they won't do you much good at
 				the Core, or wherever you're trying to get."
+			</Text>
+			<String id="descNoRumors">
+				"Everything's quiet around here at the moment."
+			</String>
+
+			<Text id="rumor.intro">
+				The station master grabs you and speaks softly in your ear:\n\n
+			</Text>
+			<Text id="rumor.commonwealthContainer.1">
+				"The Charon pirates are a menace. They have bases in almost every
+				system and they prey on defenseless freighters."
+			</Text>
+			<Text id="rumor.commonwealthContainer.2">
+				"If you need a contact in the Black Market find the Aleksany
+				brothers; they're always doing business in some fancy hotel."
+			</Text>
+			<Text id="rumor.commonwealthContainer.3">
+				"The anarchists don't bother us, but they really annoy the
+				Corporations: they're always stealing their fancy ROMs."
+			</Text>
+			<Text id="rumor.commonwealthContainer.4">
+				"Stay away from the Abbasid fortresses. Those fanatics will
+				shoot you rather than let you get close."
+			</Text>
+			<Text id="rumor.commonwealthContainer.5">
+				"The Urak warlords are another nutty group, but their armor
+				and weapons are pretty good."
+			</Text>
+			<Text id="rumor.commonwealthContainer.6">
+				"Hiro is the best hacker in the 'verse. He's created some
+				fancy ROMs that even the cyber corporations can't figure out."
 			</Text>
 		</Language>
 	</StationType>
@@ -2332,16 +2001,12 @@
 		</Panes>
 	</DockScreen>
 
-	<!-- Donate Item to Container Habitat
-
-		gPrevScreen: Must be set to the name/UNID of the screen to
-				navigate to when done.
-		gPrevPane: Must be set to the name of the pane to navigate
-				to when done.
-		-->
+	<!-- Donate Item to Container Habitat -->
 
 	<DockScreen UNID="&dsContainerHabitatDonateItem;"
 			type=				"itemPicker"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
 			>
 
 		<ListOptions
@@ -2350,31 +2015,34 @@
 			/>
 
 		<Panes>
-			<Default>
+			<Default descID="descDonateWhat">
 				<OnPaneInit>
-					(block Nil
-						(setq gItem (scrGetItem gScreen))
-						(setq gMaxCount (itmGetCount gItem))
-						(scrSetDesc gScreen "\"What do you want to give us?\"")
-						)
+					(scrEnableAction gScreen 'actionDonateThisItem (scrGetItem gScreen))
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Donate this Item" default="1" key="D">
-						(switch
-							(gr gMaxCount 1)
-								(scrShowPane gScreen "Quantity")
+					<Action id="actionDonateThisItem" default="1">
+						(block (
+							(theItem (scrGetItem gScreen))
+							(maxCount (itmGetCount theItem))
+							)
+							(switch
+								(gr maxCount 1)
+									(scrShowPane gScreen 'Quantity)
 
-							(eq gMaxCount 1)
 								(block Nil
-									(setq gItem (scrRemoveItem gScreen 1))
-									(scrShowScreen gScreen "&dsContainerHabitatReward;" "Donate")
+									(setq theItem (scrRemoveItem gScreen 1))
+									(scrExitScreen gScreen)
+									(scrShowScreen gScreen &dsContainerHabitatReward; {
+										donatedItem: theItem
+										})
 									)
+								)
 							)
 					</Action>
 
-					<Action name="Cancel" cancel="1" key="C">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionCancel" cancel="1">
+						<Exit/>
 					</Action>
 				</Actions>					
 			</Default>
@@ -2383,183 +2051,179 @@
 					showCounter=	"true">
 
 				<OnPaneInit>
-					(block Nil
-						(scrSetDesc gScreen (cat "\"How many " (itmGetName gItem 0x02) " do you want to give us?\""))
-						(scrSetCounter gScreen gMaxCount)
+					(block (
+						(theItem (scrGetItem gScreen))
+						)
+						(scrSetDescTranslate gScreen 'descDonateQuantity { items: (itmGetName theItem 'plural) })
+						(scrSetCounter gScreen (itmGetCount theItem))
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Donate" default="1" key="D">
-						(block (count)
-							(setq count (scrGetCounter gScreen))
-							(if (gr count gMaxCount)
-								(scrSetCounter gScreen gMaxCount)
+					<Action id="actionDonate" default="1">
+						(block (
+							(theItem (scrGetItem gScreen))
+							(maxCount (itmGetCount theItem))
+							(count (scrGetCounter gScreen))
+							)
+							(switch
+								(gr count maxCount)
+									(scrSetCounter gScreen maxCount)
+
 								(block Nil
-									(setq gItem (scrRemoveItem gScreen count))
-									(scrShowScreen gScreen "&dsContainerHabitatReward;" "Donate")
+									(setq theItem (scrRemoveItem gScreen count))
+									(scrExitScreen gScreen)
+									(scrShowScreen gScreen &dsContainerHabitatReward; {
+										donatedItem: theItem
+										})
 									)
 								)
 							)
 					</Action>
 
-					<Action name="Cancel" cancel="1" key="C">
-						<ShowPane pane="Default"/>
+					<Action id="actionCancel" cancel="1">
+						(scrShowPane gScreen 'Default)
 					</Action>
-
 				</Actions>
 			</Quantity>
-
 		</Panes>
 
+		<Language>
+			<String id="descDonateWhat">"What do you want to give us?"</String>
+			<String id="descDonateQuantity">"How many %items% do you want to give us?"</String>
+		</Language>
 	</DockScreen>
 
-	<DockScreen UNID="&dsContainerHabitatReward;">
+	<DockScreen UNID="&dsContainerHabitatReward;"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			>
+
+		<OnScreenInit>
+			(scrSetData gScreen 'donatedItem (or (@ gData 'donatedItem) gItem))
+		</OnScreenInit>
+
 		<Panes>
-			<Donate>
+			<Default>
 				<OnPaneInit>
-					(block (table entry criteria totalValue)
-						; Look for the entry in the donation table
+					(block (
+						(theItem (scrGetData gScreen 'donatedItem))
 
-						(setq table (objGetStaticData gSource "DonationTable"))
-						(setq entry Nil)
-						(enumwhile table (not entry) thisEntry
-							(switch
-								; If the criteria in the table is Nil, then we always match. This
-								; is for the last (default) entry.
-								(not (setq criteria (item thisEntry 0)))
-									(setq entry thisEntry)
+						;	Look for the entry in the donation table
+						(table (objGetStaticData gSource 'DonationTable))
+						(entry (match table thisEntry
+							(or
+								;	If the criteria in the table is Nil, then we always match. This
+								;	is for the last (default) entry.
+								(not (@ thisEntry 0))
 
-								; If the criteria is an integer, then we see if this is the UNID
-								; of the item.
-								(isint criteria)
-									(if (eq (itmGetType gItem) criteria)
-										(setq entry thisEntry)
-										)
+								;	If the criteria is an integer, then we see if this is the UNID
+								;	of the item.
+								(= (itmGetType theItem) (@ thisEntry 0))
 
-								; If the criteria matches, then we have an entry
-								(itmMatches gItem criteria)
-									(setq entry thisEntry)
+								;	If the criteria matches, then we have an entry
+								(itmMatches theItem (@ thisEntry 0))
 								)
-							)
+							))
 
-						; Deal with the entry that we found
+						(totalValue (* (objGetBuyPrice gSource theItem) (itmGetCount theItem)))
 
-						(setq gResult (item entry 2))
+						(result (@ entry 2))
+						incPoints
+						)
 
-						; Calculate how valuable the donation was
-						
+						;	Calculate how valuable the donation was
 						(switch
-							; If the player donated rotted food, then we're insulted
-							(and (itmMatches gItem "* +FreshFood;") (eq (objGetBuyPrice gSource gItem) 0))
+							;	If the player donated rotted food, then we're insulted
+							(and (itmMatches theItem "* +FreshFood;") (= totalValue 0))
 								(block Nil
-									(setq gResult 'rottedFood)
-									(setq gResultValue Nil)
+									(objSetTypeData gSource 'donationPoints 0)
+									(setq result 'rottedFood)
+									(setq incPoints Nil)
 									)
-							
-							; If 0, then we get result regardless of quantity
-							(eq (item entry 1) 0)
-								(setq gResultValue Nil)
 
-							; If -1, then each item counts for +1 donation points
-							(eq (item entry 1) -1)
-								(setq gResultValue (itmGetCount gItem))
+							;	If 0, then we get result regardless of quantity
+							(eq (@ entry 1) 0)
+								(setq incPoints Nil)
 
-							; Otherwise, depends on the value of the item
-							(block Nil
-								(setq totalValue (multiply (objGetBuyPrice gSource gItem) (itmGetCount gItem)))
-								(setq gResultValue (divide totalValue (item entry 1)))
-								)
-							)
-							
-						; Accumulate donation points
-						
-						(block (donationPoints)
-							(setq donationPoints (objGetGlobalData gSource "donationPoints"))
-							(if (not donationPoints) (setq donationPoints 0))
+							;	If -1, then each item counts for +1 donation points
+							(eq (@ entry 1) -1)
+								(setq incPoints (itmGetCount theItem))
 
-							(if gResultValue
-								(setq donationPoints (add donationPoints gResultValue))
-								)
-
-							(objSetGlobalData gSource "donationPoints" donationPoints)
+							;	Otherwise, depends on the value of the item
+							(setq incPoints (divide totalValue (@ entry 1)))
 							)
 
-						; Deal with the result appropriately
+						(if (= incPoints 0)
+							(setq result 'notEnough)
+							)
+						(scrSetData gScreen 'result result)
 
+						;	Accumulate donation points
+						(typIncData (objGetType gSource) 'donationPoints incPoints)
+
+						;	Deal with the result appropriately
 						(switch
-							(and gResultValue (eq gResultValue 0))
-								(block Nil
-									(setq desc "\"Thanks, that's something we need more of around here.\"")
-									(setq gResult 'thanksForNothing)
-									)
+							(= result 'rottedFood)
+								(scrSetDescTranslate gScreen 'descDonateInsulted)
 
-							(eq gResult 'info)
-								(setq desc (cat
-									"\"Thank you, %sir%! We'll put " (itmGetName gItem 0x40) " to good use. Maybe I can help you in return.\""
-									))
-									
-							(eq gResult 'rottedFood)
-								(block Nil
-									(setq desc (cat
-										"\"Kack! What do you think we're going to do with that? Thanks for nothing!\""
-										))
-									(objSetGlobalData gSource "donationPoints" 0)
-									)
+							(= result 'notEnough)
+								(scrSetDescTranslate gScreen 'descDonateNotEnough)
 
-							; Thanks for nothing
-							(block Nil
-								(setq desc (cat
-									"\"Yeah, I guess you won't be needing" 
-									(if (gr (itmGetCount gItem) 1) " them " " that ")
-									"where you're going. Not sure we need"
-									(if (gr (itmGetCount gItem) 1) " them " " it ")
-									"ourselves, but thanks anyway.\""
-									))
-								(setq gResult 'thanksForNothing)
+							(= result 'info)
+								(scrSetDescTranslate gScreen 'descDonateThanks {
+									item: (itmGetName theItem 'demonstrative)
+									})
+
+							;	Thanks for nothing
+							(scrSetDescTranslate gScreen
+								(if (gr (itmGetCount theItem) 1)
+									'descDonateUselessPlural
+									'descDonateUseless
+									)
 								)
 							)
-
-						(scrSetDesc gScreen desc)
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" cancel="1" default="1" key="C">
+					<Action id="actionContinue" cancel="1" default="1">
 						(switch
-							(eq gResult 'info)
-								(if (geq (objGetGlobalData gSource "donationPoints") 5)
+							(= (scrGetData gScreen 'result) 'info)
+								(if (geq (objGetTypeData gSource 'donationPoints) 5)
 									(scrShowPane gScreen "RewardInfo")
-									(scrShowPane gScreen "RewardInfoRumors")
+									(block Nil
+										(scrExitScreen gScreen)
+										(rpgRumorShow {
+											rumorCriteria: "+commonwealthContainer"
+											noRumorTextID: 'descNoRumors
+											})
+										)
 									)
 
-							(scrShowScreen gScreen gPrevScreen gPrevPane)
+							(scrExitScreen gScreen)
 							)
 					</Action>
 				</Actions>
+			</Default>
 
-			</Donate>
-
-			<RewardInfo>
+			<RewardInfo descID="descRewardInfo">
 				<OnPaneInit>
-					(block (donationPoints)
-						(scrSetDesc gScreen (cat
-							"\"I know a thing or two about getting around in this system. What do you need to know?\""
-							))
-
-						(setq donationPoints (objGetGlobalData gSource "donationPoints"))
+					(block (
+						(donationPoints (objGetTypeData gSource 'donationPoints))
+						)
 
 						; Equipment location available after 5 donation points
-						(scrShowAction gScreen 0 (geq donationPoints 5))
+						(scrShowAction gScreen 'actionInfoEquipment (geq donationPoints 5))
 
 						; Centauri warlords info available in Eridani after 10 points
-						(scrShowAction gScreen 1 
+						(scrShowAction gScreen 'actionInfoCentauriBase
 							(and (geq donationPoints 10) (eq (sysGetNode) 'SE))
 							)
 
 						; Arco Vaughn info available after 20 points and only in SE or if he
 						; is still alive
-						(scrShowAction gScreen 2 
+						(scrShowAction gScreen 'actionInfoArcoVaughn
 							(and (geq donationPoints 20)
 								(eq (sysGetNode) 'SE)
 								(not (eq (typGetGlobalData &scArcoVaughnHeavyRaider; "status") 'destroyed))
@@ -2567,7 +2231,7 @@
 							)
 
 						; Korolov station info available after 5 points if past SE
-						(scrShowAction gScreen 3
+						(scrShowAction gScreen 'actionInfoKorolov
 							(and (geq donationPoints 5)
 								(not (eq (sysGetNode) 'SE))
 								(leq (sysGetLevel) 3)
@@ -2577,51 +2241,27 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="&quot;I need better equipment.&quot;" key="e">
+					<Action id="actionInfoEquipment">
 						(scrShowPane gScreen "RewardInfoEquipment")
 					</Action>
 
-					<Action name="&quot;Where are the Centauri warlords?&quot;" key="C">
+					<Action id="actionInfoCentauriBase">
 						(scrShowPane gScreen "RewardInfoCentauriBase")
 					</Action>
 
-					<Action name="&quot;Where is Arco Vaughn?&quot;" key="A">
+					<Action id="actionInfoArcoVaughn">
 						(scrShowPane gScreen "RewardInfoArcoVaughn")
 					</Action>
 
-					<Action name="&quot;Is there a Korolov station nearby?&quot;" key="K">
+					<Action id="actionInfoKorolov">
 						(scrShowPane gScreen "RewardInfoKorolov")
 					</Action>
 
-					<Action name="&quot;Nevermind, I'm all set.&quot;" key="N" cancel="1">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionNevermind" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</RewardInfo>
-
-			<RewardInfoRumors>
-				<OnPaneInit>
-					(scrSetDesc gScreen (cat
-						"The station master grabs you and speaks softly in your ear:\n\n"
-						(switch
-							(and (eq (sysGetNode) 'SE)
-									(not (eq (typGetGlobalData &scArcoVaughnHeavyRaider; "status") 'destroyed)))
-								(random (objGetStaticData gSource "RumorsSE"))
-
-							(eq (sysGetNode) 'BA)
-								(random (objGetStaticData gSource "RumorsBA"))
-
-							(random (objGetStaticData gSource "Rumors"))
-							)
-						))
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Continue" cancel="1" default="1" key="C">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
-					</Action>
-				</Actions>
-			</RewardInfoRumors>
 
 			<RewardInfoEquipment>
 				<OnPaneInit>
@@ -2712,26 +2352,26 @@
 						(scrSetDesc gScreen desc)
 
 						; Enable disable buttons
-						(scrShowAction gScreen 0 aEvent)
-						(scrShowAction gScreen 1 aEvent)
-						(scrShowAction gScreen 2 (not aEvent))
+						(scrShowAction gScreen 'actionCoordinates aEvent)
+						(scrShowAction gScreen 'actionNevermind aEvent)
+						(scrShowAction gScreen 'actionContinue (not aEvent))
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="&quot;Give me the coordinates, please!&quot;" key="C" default="1">
+					<Action id="actionCoordinates" default="1">
 						(block Nil
 							(objFireEvent gSource aEvent)
 							(scrShowPane gScreen "RewardInfoDone")
 							)
 					</Action>
 
-					<Action name="&quot;Nevermind, I'm all set.&quot;" key="N" cancel="1">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionNevermind" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 
-					<Action name="Continue" cancel="1" default="1" key="C">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</RewardInfoEquipment>
@@ -2760,27 +2400,26 @@
 						(scrSetDesc gScreen desc)
 
 						; Enable disable buttons
-						(scrShowAction gScreen 0 aEvent)
-						(scrShowAction gScreen 1 aEvent)
-						(scrShowAction gScreen 2 (not aEvent))
+						(scrShowAction gScreen 'actionCoordinates aEvent)
+						(scrShowAction gScreen 'actionNevermind aEvent)
+						(scrShowAction gScreen 'actionContinue (not aEvent))
 						)
-
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="&quot;Give me the coordinates, please!&quot;" key="C" default="1">
+					<Action id="actionCoordinates" default="1">
 						(block Nil
 							(objFireEvent gSource aEvent)
 							(scrShowPane gScreen "RewardInfoDone")
 							)
 					</Action>
 
-					<Action name="&quot;Nevermind, I'm all set.&quot;" key="N" cancel="1">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionNevermind" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 
-					<Action name="Continue" cancel="1" default="1" key="C">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</RewardInfoCentauriBase>
@@ -2819,8 +2458,8 @@
 
 						; Enable disable buttons
 						(scrShowAction gScreen 0 aEvent)
-						(scrShowAction gScreen 1 aEvent)
-						(scrShowAction gScreen 2 (not aEvent))
+						(scrShowAction gScreen 'actionNevermind aEvent)
+						(scrShowAction gScreen 'actionContinue (not aEvent))
 						)
 				</OnPaneInit>
 
@@ -2832,12 +2471,12 @@
 							)
 					</Action>
 
-					<Action name="&quot;Nevermind, I'm all set.&quot;" key="N" cancel="1">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionNevermind" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 
-					<Action name="Continue" cancel="1" default="1" key="C">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</RewardInfoArcoVaughn>
@@ -2870,8 +2509,8 @@
 
 						; Enable disable buttons
 						(scrShowAction gScreen 0 aEvent)
-						(scrShowAction gScreen 1 aEvent)
-						(scrShowAction gScreen 2 (not aEvent))
+						(scrShowAction gScreen 'actionNevermind aEvent)
+						(scrShowAction gScreen 'actionContinue (not aEvent))
 						)
 				</OnPaneInit>
 
@@ -2883,12 +2522,12 @@
 							)
 					</Action>
 
-					<Action name="&quot;Nevermind, I'm all set.&quot;" key="N" cancel="1">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionNevermind" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 
-					<Action name="Continue" cancel="1" default="1" key="C">
-						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</RewardInfoKorolov>
@@ -2905,12 +2544,37 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" key="C" default="1" cancel="1">
+					<Action id="actionContinue" default="1" cancel="1">
 						<Exit/>
 					</Action>
 				</Actions>
 			</RewardInfoDone>
 		</Panes>
+
+		<Language>
+			<String id="actionInfoEquipment">"I need better [e]quipment."</String>
+			<String id="actionInfoCentauriBase">"Where are the [C]entauri warlords?"</String>
+			<String id="actionInfoArcoVaughn">"Where is [A]rco Vaughn?"</String>
+			<String id="actionInfoKorolov">"Is there a [K]orolov station nearby?"</String>
+			<String id="actionCoordinates">"Give me the [c]oordinates, please!"</String>
+			<String id="actionNevermind">"[N]evermind, I'm all set."</String>
+
+			<String id="descDonateNotEnough">"Thanks, that's something we need more of around here."</String>
+			<String id="descDonateThanks">"Thank you, %sir%! We'll put %item% to good use. Maybe I can help you in return."</String>
+			<String id="descDonateInsulted">"Kack! What do you think we're going to do with that? Thanks for nothing!"</String>
+			<Text id="descDonateUseless">
+				"Yeah, I guess you won't be needing that where you're going.
+				Not sure we need it ourselves, but thanks anyway."
+			</Text>
+			<Text id="descDonateUselessPlural">
+				"Yeah, I guess you won't be needing them where you're going.
+				Not sure we need them ourselves, but thanks anyway."
+			</Text>
+			<Text id="descRewardInfo">
+				"I know a thing or two about getting around in this system.
+				What do you need to know?"
+			</Text>
+		</Language>
 	</DockScreen>
 
 <!-- BASIC COMMONWEALTH RULES
@@ -3142,6 +2806,7 @@
 									(setq allDests (filter (sysFindObject gSource "TAF +populated; -korolovShipping; -occupation;") theObj 
 										(and (gr (objGetOpenDockingPortCount theObj) 1)
 											(or (not dockedAt) (not (eq dockedAt theObj)))
+											(not (objFireEvent theObj 'GetTrafficStatus { aObj:gSource }))
 											)
 										))
 									)

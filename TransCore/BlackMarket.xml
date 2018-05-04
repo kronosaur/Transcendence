@@ -461,8 +461,7 @@ PLAYER DATA
 				{
 					attributes: "commonwealthPub"
 					priority: 31
-					sourceObj: gSource
-					textID: 'rumor.pub
+					textID: 'rumor.commonwealthPub
 					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
 					}
 			</GetRumors>
@@ -489,7 +488,7 @@ PLAYER DATA
 				(cat "We install smuggler's equipment up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
 			</Text>
 
-			<Text id="rumor.pub">
+			<Text id="rumor.commonwealthPub">
 				A woman dressed in a fancy neolinen suit talks to you:
 
 				"Do you know how to get a contact at the black market station?
@@ -798,8 +797,7 @@ PLAYER DATA
 				{
 					attributes: "commonwealthPub"
 					priority: 23
-					sourceObj: gSource
-					textID: 'rumor.pub
+					textID: 'rumor.commonwealthPub
 					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
 					}
 			</GetRumors>
@@ -818,7 +816,7 @@ PLAYER DATA
 				They check you out and then step aside to let you in.
 
 			</Text>
-			<Text id="rumor.pub">
+			<Text id="rumor.commonwealthPub">
 				A man dressed in an expensive suit talks to you:
 
 				"You look like you need some Tempus."

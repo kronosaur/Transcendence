@@ -251,15 +251,14 @@
 				{
 					attributes: "commonwealthPub"
 					priority: 30
-					sourceObj: gSource
-					textID: 'rumor.pub
+					textID: 'rumor.commonwealthPub
 					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
 					}
 			</GetRumors>
 		</Events>
 
 		<Language>
-			<Text id="rumor.pub">
+			<Text id="rumor.commonwealthPub">
 				You spend 5 credits and listen to a nuclear technician:
 
 				"I just got paid ten kilocreds to install a radiation room at

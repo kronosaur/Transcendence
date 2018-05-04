@@ -231,7 +231,7 @@
 
 								(switch
 									countInCargo
-										(scrTranslate gScreen 'descInCargo { itemName:(itmGetName (itmSetCount thisItem countInCargo) '(count short)) })
+										(scrTranslate gScreen 'descInCargo { itemName:(itmGetName (itmSetCount thisItem countInCargo) 'countAlways) })
 									)
 
 								;	If there is some restriction (not enough money, etc.) then explain it

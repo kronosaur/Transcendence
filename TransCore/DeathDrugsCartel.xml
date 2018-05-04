@@ -145,14 +145,13 @@
 				{
 					attributes: "commonwealthPub"
 					priority: 40
-					sourceObj: gSource
-					textID: 'rumor.pub
+					textID: 'rumor.commonwealthPub
 					}
 			</GetRumors>
 		</Events>
 
 		<Language>
-			<Text id="rumor.pub">
+			<Text id="rumor.commonwealthPub">
 				An old man talks to you:
 
 				"I don't trust the corporate medlabs&mdash;they talk about drug

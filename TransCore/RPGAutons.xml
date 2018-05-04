@@ -32,6 +32,18 @@
 						)
 					)
 			</GetName>
+			
+			<OnUpdate>
+				(block (config shieldMaxHP shieldHP shieldItem)
+					(if (and (setq config (itmGetData gItem 'autonConfig))
+							(or (isError (scrGetScreen gScreen)) (not (scrGetScreen gScreen)))
+							(@ config 'shieldStatus)
+							(eq (@ (rpgGetAutonItemShieldStatus config) 'percent) 100)
+							)
+						(objSetItemData gSource gItem 'autonConfig (set@ config 'shieldStatus Nil) (itmGetCount gItem))
+						)
+					)
+			</OnUpdate>
 		</Events>
 		
 		<Language>
@@ -318,11 +330,12 @@
 			</CalcMass>
 			
 			<ConvertToItem>
-				(block (autonType autonItem)
-					(setq autonType (objGetData gSource 'autonItemType))
-					(setq autonItem 
-						(itmCreate (if autonType autonType &itAutoSentinel;) 1)
-						)
+				(block (
+					(autonType (or (objGetData gSource 'autonItemType) &itAutoSentinel;))
+					(autonItem (itmCreate autonType 1))
+					(shieldMaxHP (shpGetShieldMaxHitPoints gSource))
+					(shieldDamage (shpGetShieldDamage gSource))
+					)
 						
 					;	Store the current armor and devices on the auton
 					
@@ -334,6 +347,13 @@
 							
 						devices: (map (objGetItems gSource "dI") theDev {
 							item: (itmSetProperty theDev 'installed Nil)
+							})
+							
+						shieldStatus: (if (gr shieldDamage 0) {
+							maxHP: shieldMaxHP
+							hp: (- shieldMaxHP shieldDamage)
+							regen: (/ (typGetProperty (shpGetShieldItemUNID gSource) 'regen) 180)
+							regenStartTick: (unvGetTick) ; TODO: Add a way to get depletion time left.
 							})
 							
 						cargo: (objGetItems gSource "*U")
@@ -427,8 +447,14 @@
 							;	Set name
 							
 							(if (@ autonConfig 'name)
-								(objSetName auton (@ autonConfig 'name))
+								(objSetName auton (@ autonConfig 'name) 0xC0) ; Personal and no article
 								)
+								
+							;	Set shield level
+							
+							(shpRechargeShield auton (or (@ (rpgGetAutonItemShieldStatus autonConfig) 'hp)
+														(shpGetShieldMaxHitPoints auton)
+								))
 								
 							)
 						)
@@ -776,6 +802,30 @@
 					(if (or (not newName) (eq "" (apply cat (split newName " ")))) Nil (strCapitalize newName))
 					)
 				))
+			
+			(setq rpgGetAutonItemShieldStatus (lambda (theConfig)
+				(block (theStatus)
+					(if (setq theStatus (@ theConfig 'shieldStatus))
+						(block (
+							(regenTime (- (unvGetTick) (@ theStatus 'regenStartTick) ))
+							(hp (+ (@ theStatus 'hp) (* regenTime (@ theStatus 'regen))))
+							(maxHP (@ theStatus 'maxHP))
+							)
+							(if (geq hp maxHP)
+								(setq hp maxHP)
+								(setq hp (int hp))
+								)
+							{
+								hp: hp
+								percent: (divide (* hp 100) maxHP)
+								}
+							)
+							
+						{ percent: 100 }
+						)
+					)
+				))
+			
 			)
 	</Globals>
 
