@@ -597,22 +597,55 @@
 			;	"a ton of titanium ore, 2 segments of reactive armor, and
 			;	a slave coffin"
 			
-				(block (i result lastItem)
+				(block (i result lastItem nameList newList pos)
 				
 					(if (not nameFlags)	(setq nameFlags 0x08))
-					(setq i 0)
-					(setq lastItem (subtract (count itemList) 1))
 					
 					(enum itemList theItem
+						(block (
+							(singularName (itmGetName (itmSetCount theItem 1) nameFlags))
+							(pos (find nameList singularName))
+							)
+							(if pos
+								(block ((matchingItem (@ newList pos)))
+									(set@ newList pos (itmSetCount matchingItem (+ (itmGetCount matchingItem) (itmGetCount theItem))))
+									)
+								(block Nil
+									(lnkAppend newList theItem)
+									(lnkAppend nameList singularName)
+									)
+								)
+							)
+						)
+						
+					(setq i 0)
+					(setq lastItem (subtract (count newList) 1))
+					
+					(enum newList theItem
 						(block nil
 							(switch
 								(eq i 0)
 									(setq result (itmGetName theItem nameFlags))
 										
+								(eq i 1 lastItem)
+									(setq result (cat result
+													(typTranslate 0x00010071 'listAnd) ; unidCommonText entity isn't loaded yet
+													(itmGetName theItem nameFlags)
+													)
+										)
+									
 								(eq i lastItem)
-									(setq result (cat result " and " (itmGetName theItem nameFlags)))
+									(setq result (cat result
+													(typTranslate 0x00010071 'listCommaAnd)
+													(itmGetName theItem nameFlags)
+													)
+										)
 										
-								(setq result (cat result ", " (itmGetName theItem nameFlags)))
+								(setq result (cat result
+												(typTranslate 0x00010071 'listComma)
+												(itmGetName theItem nameFlags)
+												)
+									)
 								)
 
 							(setq i (add i 1))

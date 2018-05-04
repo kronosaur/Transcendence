@@ -214,6 +214,9 @@
 						waveInterval: 900
 
 						waves: (
+							; Note: Timer is currently ignored. If the OnNextWave event is changed to create
+							; the ships with a delay, move the second group of each wave closer.
+						
 							; Wave 1
 							(
 								{ table: &etPirateAmbush1;	timer: 0   distance:120 }

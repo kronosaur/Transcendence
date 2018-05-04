@@ -3339,7 +3339,9 @@
 	
 	-->
 	
-	<Type unid="&baCorporateStation;">
+	<Type unid="&baCorporateStation;"
+		inherit=			"&dsDockScreenBase;"
+		>
 		<Events>
 			<OnDestroy>
 				(intCorporateOnDestroy)
@@ -3347,17 +3349,6 @@
 		</Events>
 		
 		<Language>
-			<Text id="actionBuyItems">[B]uy Items</Text>
-			<Text id="actionCancel">[C]ancel</Text>
-			<Text id="actionCommoditiesExchange">[C]ommodities Exchange</Text>
-			<Text id="actionContinue">[C]ontinue</Text>
-			<Text id="actionDockServices">[D]ock Services</Text>
-			<Text id="actionLeave">[L]eave</Text>
-			<Text id="actionRefuel">[R]efuel</Text>
-			<Text id="actionRepairItems">[R]epair Items</Text>
-			<Text id="actionSellItems">[S]ell Items</Text>
-			<Text id="actionUndock">[U]ndock</Text>
-
 			<Text id="customs.chargedForDecon">
 				Corporate security stops your ship for decontamination.
 				You are automatically charged %cost% for decontaminating your ship.

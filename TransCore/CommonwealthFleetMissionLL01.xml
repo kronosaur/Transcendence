@@ -30,9 +30,7 @@
 
 		<Events>
 			<OnCreate>
-				(block
-					(msnSetData gSource 'missionXP 100)
-					)
+				(msnSetData gSource 'missionXP 100)
 			</OnCreate>
 
 			<OnAccepted>

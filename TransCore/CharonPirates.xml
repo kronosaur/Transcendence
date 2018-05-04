@@ -1845,25 +1845,45 @@
 
 					; If it does not exist, create one
 					(if (not primaryObj)
-						(block (bestDist bestPlanet primaryPos primaryType)
-							; Find the most distant planet in the system
-							(setq bestDist 0)
-							(enum (sysFindObject sourceObj "t +isPlanet:true;") theObj
-								(block (theDist)
-									(setq theDist (sysVectorDistance (objGetPos theObj)))
-									(if (gr theDist bestDist)
-										(setq bestDist theDist)
-										)
+						(block (bestDist primaryPos primaryType stars planets badAngles triesLeft firstStar)
+							; Find the closest star
+							(setq stars (sysFindObject sourceObj "t +star; S:d;"))
+							(setq firstStar (@ stars 0))
+							
+							; Find the most distant planet in that star's system
+							(setq planets (sysFindObject firstStar "t +isPlanet:true; S:D;"))
+							(enumWhile planets (not bestDist) thePlanet
+								(if (eq firstStar (sysFindObject thePlanet "tN +star;"))
+									(setq bestDist (sysVectorDistance thePlanet firstStar))
 									)
 								)
+								
 							(if (ls bestDist 480)
 								(setq bestDist (random 480 600))
 								(setq bestDist (add bestDist (random 120 240)))
 								)
 
 							; Compute the position of the primary stronghold. It must be
-							; in the outer system far from anything else
-							(setq primaryPos (sysVectorRandom Nil bestDist 180 "T"))
+							; in the outer system far from anything else.
+							; Also try to avoid being too close to the path to another star.
+							
+							(setq badAngles (map (subset stars 1) otherStar (sysVectorAngle otherStar firstStar)))
+							(setq triesLeft 10)
+							(loop (gr triesLeft 0)
+								(block ((angleOK true))
+									(setq primaryPos (sysVectorRandom firstStar bestDist 180 "T"))
+									(enumWhile badAngles angleOK theAngle
+										(if (leq (abs (mod (- theAngle (sysVectorAngle primaryPos firstStar)) 360)) 45)
+											(setq angleOK Nil)
+											)
+										)
+									(if angleOK
+										(setq triesLeft 0)
+										(setq triesLeft (- triesLeft 1))
+										)
+									)
+								)
+									
 
 							; Create a different stronghold depending on the system level
 							(switch
@@ -1922,19 +1942,19 @@
 								; Raiding parties half way
 								(sysAddEncounterEventAtDist 
 									(divide (multiply (random 30 45) travelTime) 100)
-									transportObj &etPirateAmbush1; (random 60 100)
+									transportObj &etPirateAmbush1; 110
 									)
 
 								(sysAddEncounterEventAtDist 
 									(divide (multiply (random 50 65) travelTime) 100)
-									transportObj &etPirateAmbush1; (random 60 100)
+									transportObj &etPirateAmbush1; 110
 									)
 
 								; 50% chance of a raiding party on the way back
 								(if (and roundTrip (leq (random 1 100) 50))
 									(sysAddEncounterEventAtDist 
 										(divide (multiply (random 145 175) travelTime) 100)
-										transportObj &etPirateAmbush1; (random 60 100)
+										transportObj &etPirateAmbush1; 110
 										)
 									)
 								)
@@ -1951,13 +1971,13 @@
 											(divide (multiply (random 25 40) travelTime) 100)
 											transportObj
 											(random '(&etPirateAmbush1; &etPirateAmbush2;))
-											(random 60 100)
+											110
 											)
 										(sysAddEncounterEventAtDist 
 											(divide (multiply (random 60 75) travelTime) 100)
 											transportObj
 											(random '(&etPirateAmbush1; &etPirateAmbush2;))
-											(random 60 100)
+											110
 											)
 										)
 									)
@@ -1966,7 +1986,7 @@
 								(if (and roundTrip (leq (random 1 100) 60))
 									(sysAddEncounterEventAtDist 
 										(divide (multiply (random 145 175) travelTime) 100)
-										transportObj &etPirateAmbush1; (random 60 100)
+										transportObj &etPirateAmbush1; 110
 										)
 									)
 								)
@@ -1976,7 +1996,7 @@
 								; Send out a raiding party to weaken the transport
 								(sysAddEncounterEventAtDist 
 									(divide (multiply (random 25 35) travelTime) 100)
-									transportObj &etPirateAmbush2; (random 60 100)
+									transportObj &etPirateAmbush2; 110
 									)
 
 								; Send out a Drake missileship or frigate depending on cargo value
@@ -1989,7 +2009,7 @@
 								(if (and roundTrip (leq (random 1 100) 70))
 									(sysAddEncounterEventAtDist 
 										(divide (multiply (random 145 175) travelTime) 100)
-										transportObj &etPirateAmbush1; (random 60 100)
+										transportObj &etPirateAmbush1; 110
 										)
 									)
 								)
@@ -2001,14 +2021,14 @@
 									(divide (multiply (random 25 35) travelTime) 100)
 									transportObj
 									(random '(&etPirateAmbush2; &etPirateAmbush3;))
-									(random 60 100)
+									110
 									)
 
 								(sysAddEncounterEventAtDist 
 									(divide (multiply (random 45 65) travelTime) 100)
 									transportObj
 									(random '(&etPirateAmbush2; &etPirateAmbush3;))
-									(random 60 100)
+									110
 									)
 
 								; Send out a frigate
@@ -2018,7 +2038,7 @@
 								(if (and roundTrip (leq (random 1 100) 80))
 									(sysAddEncounterEventAtDist 
 										(divide (multiply (random 145 175) travelTime) 100)
-										transportObj &etPirateAmbush2; (random 60 100)
+										transportObj &etPirateAmbush2; 110
 										)
 									)
 								)
@@ -2028,12 +2048,12 @@
 								; Send out a couple of raiding parties to weaken the transport
 								(sysAddEncounterEventAtDist 
 									(divide (multiply (random 25 35) travelTime) 100)
-									transportObj &etPirateAmbush3; (random 60 100)
+									transportObj &etPirateAmbush3; 110
 									)
 
 								(sysAddEncounterEventAtDist 
 									(divide (multiply (random 45 65) travelTime) 100)
-									transportObj &etPirateAmbush3; (random 60 100)
+									transportObj &etPirateAmbush3; 110
 									)
 
 								; Send out a frigate
@@ -2043,7 +2063,7 @@
 								(if (and roundTrip (leq (random 1 100) 90))
 									(sysAddEncounterEventAtDist 
 										(divide (multiply (random 145 175) travelTime) 100)
-										transportObj &etPirateAmbush2; (random 60 100)
+										transportObj &etPirateAmbush2; 110
 										)
 									)
 								)
@@ -2052,17 +2072,17 @@
 							; Send out a three of raiding parties to weaken the transport
 							(sysAddEncounterEventAtDist 
 								(divide (multiply (random 25 35) travelTime) 100)
-								transportObj &etPirateAmbush2; (random 60 100)
+								transportObj &etPirateAmbush2; 110
 								)
 
 							(sysAddEncounterEventAtDist 
 								(divide (multiply (random 45 65) travelTime) 100)
-								transportObj &etPirateAmbush3; (random 60 100)
+								transportObj &etPirateAmbush3; 110
 								)
 
 							(sysAddEncounterEventAtDist 
 								(divide (multiply (random 45 65) travelTime) 100)
-								transportObj &etPirateAmbush3; (random 60 100)
+								transportObj &etPirateAmbush3; 110
 								)
 
 							; Send out a frigate
@@ -2071,7 +2091,7 @@
 							; 100% chance of a raiding party on the way back
 							(sysAddEncounterEventAtDist 
 								(divide (multiply (random 145 175) travelTime) 100)
-								transportObj &etPirateAmbush2; (random 60 100)
+								transportObj &etPirateAmbush2; 110
 								)
 							)
 						)

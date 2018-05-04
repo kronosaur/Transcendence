@@ -39,6 +39,9 @@
 			<!-- Basic -->
 
 			<Text id="elipsis">...</Text>
+			<Text id="listAnd">" and "</Text>
+			<Text id="listComma">", "</Text>
+			<Text id="listCommaAnd">", and "</Text>
 		</Language>
 	</Type>
 
