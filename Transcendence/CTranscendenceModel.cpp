@@ -846,7 +846,8 @@ ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesig
 	NewFrame.pRoot = pRoot;
 	NewFrame.sScreen = sScreen;
 	NewFrame.sPane = sPane;
-	NewFrame.pInitialData = pData;
+	if (pData)
+		NewFrame.pInitialData = ICCItemPtr(pData->Reference());
 	NewFrame.pResolvedRoot = pRoot;
 	NewFrame.sResolvedScreen = (pRoot ? sScreen : NULL_STR);
 	m_DockFrames.Push(NewFrame);
@@ -2361,7 +2362,8 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 	NewFrame.pRoot = pRoot;
 	NewFrame.sScreen = sScreenActual;
 	NewFrame.sPane = sPane;
-	NewFrame.pInitialData = pData;
+	if (pData)
+		NewFrame.pInitialData = ICCItemPtr(pData->Reference());
 	NewFrame.pResolvedRoot = pRoot;
 	NewFrame.sResolvedScreen = sScreenActual;
 
@@ -2408,20 +2410,12 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 		if (bNewFrame)
 			m_DockFrames.Pop();
 		else if (!bReturn)
-			{
 			m_DockFrames.SetCurrent(OldFrame);
-			m_DockFrames.DiscardOldFrame(OldFrame);
-			}
 
 		::kernelDebugLogPattern("InitScreen: %s", sError);
 		if (retsError) *retsError = sError;
 		return error;
 		}
-
-	//	Clean up the old frames (which may contain a CodeChain item)
-
-	if (!bNewFrame && !bReturn)
-		m_DockFrames.DiscardOldFrame(OldFrame);
 
 	//	If no frames then we exited inside of InitScreen
 

@@ -16,28 +16,6 @@ void CDockScreenStack::DeleteAll (void)
 		Pop();
 	}
 
-void CDockScreenStack::DiscardOldFrame (SDockFrame &OldFrame)
-
-//	DiscardOldFrame
-//
-//	Discards an old frame returns by SetCurrent.
-
-	{
-	CCodeChain &CC = g_pUniverse->GetCC();
-
-	if (OldFrame.pInitialData)
-		{
-		OldFrame.pInitialData->Discard(&CC);
-		OldFrame.pInitialData = NULL;
-		}
-
-	if (OldFrame.pStoredData)
-		{
-		OldFrame.pStoredData->Discard(&CC);
-		OldFrame.pStoredData = NULL;
-		}
-	}
-
 const SDockFrame &CDockScreenStack::GetCurrent (void) const
 
 //	GetCurrent
@@ -111,6 +89,29 @@ const CString &CDockScreenStack::GetDisplayData (const CString &sID)
 	return *pValue;
 	}
 
+ICCItem *CDockScreenStack::GetReturnData (const CString &sAttrib)
+
+//	GetReturnData
+//
+//	Returns data for the given attribute. The caller is responsible for 
+//	discarding this data.
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+	if (IsEmpty())
+		return CC.CreateNil();
+
+	SDockFrame &Frame = m_Stack[m_Stack.GetCount() - 1];
+	if (Frame.pReturnData)
+		{
+		ICCItem *pResult = Frame.pReturnData->GetElement(sAttrib);
+		if (pResult)
+			return pResult->Reference();
+		}
+
+	return CC.CreateNil();
+	}
+
 void CDockScreenStack::Push (const SDockFrame &Frame)
 
 //	Push
@@ -118,21 +119,15 @@ void CDockScreenStack::Push (const SDockFrame &Frame)
 //	Push a frame
 
 	{
-	SDockFrame *pNewFrame = m_Stack.Insert();
-	pNewFrame->pLocation = Frame.pLocation;
-	pNewFrame->pRoot = Frame.pRoot;
-	pNewFrame->sScreen = Frame.sScreen;
-	pNewFrame->sPane = Frame.sPane;
-	pNewFrame->pResolvedRoot = Frame.pResolvedRoot;
-	pNewFrame->sResolvedScreen = Frame.sResolvedScreen;
+	//	Whenever we add a frame, we clear the return data block of the top frame
+	//	so that we can get return data.
 
-	//	If we have data, inc ref count
+	if (!IsEmpty())
+		m_Stack[m_Stack.GetCount() - 1].pReturnData.Delete();
 
-	if (Frame.pInitialData)
-		pNewFrame->pInitialData = Frame.pInitialData->Reference();
+	//	Add
 
-	if (Frame.pStoredData)
-		pNewFrame->pStoredData = Frame.pStoredData->Reference();
+	m_Stack.Insert(Frame);
 	}
 
 void CDockScreenStack::Pop (void)
@@ -145,8 +140,6 @@ void CDockScreenStack::Pop (void)
 	if (!IsEmpty())
 		{
 		int iTop = m_Stack.GetCount() - 1;
-
-		DiscardOldFrame(m_Stack[iTop]);
 		m_Stack.Delete(iTop);
 		}
 	}
@@ -186,15 +179,8 @@ void CDockScreenStack::SetCurrent (const SDockFrame &NewFrame, SDockFrame *retPr
 
 		if (retPrevFrame)
 			*retPrevFrame = m_Stack[iTop];
-		else
-			DiscardOldFrame(m_Stack[iTop]);
 
 		m_Stack[iTop] = NewFrame;
-		if (m_Stack[iTop].pInitialData)
-			m_Stack[iTop].pInitialData = NewFrame.pInitialData->Reference();
-
-		if (m_Stack[iTop].pStoredData)
-			m_Stack[iTop].pStoredData = NewFrame.pStoredData->Reference();
 		}
 	}
 
@@ -281,8 +267,8 @@ void CDockScreenStack::SetData (const CString &sAttrib, ICCItem *pData)
 	//	If necessary, create the stored data block
 
 	SDockFrame &Frame = m_Stack[m_Stack.GetCount() - 1];
-	if (Frame.pStoredData == NULL)
-		Frame.pStoredData = CC.CreateSymbolTable();
+	if (!Frame.pStoredData)
+		Frame.pStoredData = ICCItemPtr(CC.CreateSymbolTable());
 
 	//	Add the entry
 
@@ -317,4 +303,26 @@ void CDockScreenStack::SetLocation (CSpaceObject *pLocation)
 
 	for (i = 0; i < m_Stack.GetCount(); i++)
 		m_Stack[i].pLocation = pLocation;
+	}
+
+void CDockScreenStack::SetReturnData (const CString &sAttrib, ICCItem *pData)
+
+//	SetReturnData
+//
+//	Sets data associated with previous frame.
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+	if (m_Stack.GetCount() < 2)
+		return;
+
+	//	If necessary, create the stored data block
+
+	SDockFrame &Frame = m_Stack[m_Stack.GetCount() - 2];
+	if (!Frame.pReturnData)
+		Frame.pReturnData = ICCItemPtr(CC.CreateSymbolTable());
+
+	//	Add the entry
+
+	Frame.pReturnData->SetAt(CC, sAttrib, pData);
 	}

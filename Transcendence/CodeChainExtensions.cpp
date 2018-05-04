@@ -86,6 +86,7 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_INC_DATA				29
 #define FN_SCR_ADD_LIST_FILTER		30
 #define FN_SCR_SHOW_ITEM_SCREEN		31
+#define FN_SCR_RETURN_DATA			32
 
 ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -254,6 +255,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
             "i",	0,	},
 
+		{	"scrGetReturnData",				fnScrGet,		FN_SCR_RETURN_DATA,
+			"(scrGetReturnData screen attrib) -> data",
+			"is",	0,	},
+
 		{	"scrIncData",					fnScrSet,		FN_SCR_INC_DATA,
 			"(scrIncData screen attrib [increment]) -> value",
 			"is*",	PPFLAG_SIDEEFFECTS,	},
@@ -329,6 +334,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"scrSetListFilter",				fnScrSetOld,		FN_SCR_LIST_FILTER,
 			"(scrSetListFilter screen filter) -> True/Nil",
 			NULL,	PPFLAG_SIDEEFFECTS,	},
+
+		{	"scrSetReturnData",					fnScrSet,		FN_SCR_RETURN_DATA,
+			"(scrSetReturnData screen attrib data) -> True/Nil",
+			"isv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrShowAction",				fnScrSet,			FN_SCR_SHOW_ACTION,
 			"(scrShowAction screen actionID shown) -> True/Nil",
@@ -1442,6 +1451,14 @@ ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateBool(Actions.IsVisible(iAction) && Actions.IsEnabled(iAction));
 			}
 
+		case FN_SCR_RETURN_DATA:
+			{
+			if (!g_pTrans->GetModel().InScreenSession())
+				return pCC->CreateNil();
+
+			return g_pTrans->GetModel().GetScreenStack().GetReturnData(pArgs->GetElement(1)->GetStringValue());
+			}
+
 		case FN_SCR_TRANSLATE:
 			{
 			CString sText = pArgs->GetElement(1)->GetStringValue();
@@ -1831,6 +1848,15 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				return pCC->CreateNil();
 
 			Actions.RemoveAction(iAction);
+			return pCC->CreateTrue();
+			}
+
+		case FN_SCR_RETURN_DATA:
+			{
+			if (!g_pTrans->GetModel().InScreenSession())
+				return pCC->CreateNil();
+
+			g_pTrans->GetModel().GetScreenStack().SetReturnData(pArgs->GetElement(1)->GetStringValue(), pArgs->GetElement(2));
 			return pCC->CreateTrue();
 			}
 

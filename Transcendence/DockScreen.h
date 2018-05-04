@@ -538,22 +538,15 @@ class CDockScreen : public IScreenController
 
 struct SDockFrame
 	{
-	SDockFrame (void) :
-			pLocation(NULL),
-			pRoot(NULL),
-			pInitialData(NULL),
-			pStoredData(NULL),
-			pResolvedRoot(NULL)
-		{ }
-
-	CSpaceObject *pLocation;				//	Current location
-	CDesignType *pRoot;						//	Either a screen or a type with screens
+	CSpaceObject *pLocation = NULL;			//	Current location
+	CDesignType *pRoot = NULL;				//	Either a screen or a type with screens
 	CString sScreen;						//	Screen name (UNID or name)
 	CString sPane;							//	Current pane
-	ICCItem *pInitialData;					//	Data for the screen
-	ICCItem *pStoredData;					//	Read-write data
+	ICCItemPtr pInitialData;				//	Data for the screen
+	ICCItemPtr pStoredData;					//	Read-write data
+	ICCItemPtr pReturnData;					//	Data returns from a previous screen
 
-	CDesignType *pResolvedRoot;
+	CDesignType *pResolvedRoot = NULL;
 	CString sResolvedScreen;
 
 	TSortMap<CString, CString> DisplayData;	//	Opaque data used by displays
@@ -563,11 +556,11 @@ class CDockScreenStack
 	{
 	public:
 		void DeleteAll (void);
-		void DiscardOldFrame (SDockFrame &OldFrame);
 		ICCItem *GetData (const CString &sAttrib);
 		const CString &GetDisplayData (const CString &sID);
 		inline int GetCount (void) const { return m_Stack.GetCount(); }
 		const SDockFrame &GetCurrent (void) const;
+		ICCItem *GetReturnData (const CString &sAttrib);
 		void IncData (const CString &sAttrib, ICCItem *pData, ICCItem **retpResult = NULL);
 		inline bool IsEmpty (void) const { return (m_Stack.GetCount() == 0); }
 		void Push (const SDockFrame &Frame);
@@ -578,6 +571,7 @@ class CDockScreenStack
 		void SetData (const CString &sAttrib, ICCItem *pData);
 		void SetDisplayData (const CString &sID, const CString &sData);
 		void SetLocation (CSpaceObject *pLocation);
+		void SetReturnData (const CString &sAttrib, ICCItem *pData);
 
 	private:
 		TArray<SDockFrame> m_Stack;
