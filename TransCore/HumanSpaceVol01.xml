@@ -1903,6 +1903,7 @@
 	<!ENTITY rsEI100HD					"0x00100397">
 	<!ENTITY rsEI100Hero				"0x00100398">
 	<!ENTITY rsSapphire					"0x00100399">
+	<!ENTITY rsEI500					"0x0010039A">
 
 	<!-- 03B0-03CF SAPIENS -->
 
