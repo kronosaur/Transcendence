@@ -1904,6 +1904,7 @@
 	<!ENTITY rsEI100Hero				"0x00100398">
 	<!ENTITY rsSapphire					"0x00100399">
 	<!ENTITY rsEI500					"0x0010039A">
+	<!ENTITY msRaisuStation				"0x0010039B">
 
 	<!-- 03B0-03CF SAPIENS -->
 
@@ -1918,6 +1919,8 @@
 
 	<!ENTITY rsCentauriHeavyRaiderHD	"0x001003F0">
 	<!ENTITY rsCentauriRaiderHD			"0x001003F1">
+	<!ENTITY evCentauriOccupation		"0x001003F2">
+	<!ENTITY evArcoVaughn				"0x001003F3">
 
 	<!-- 0410-042F KOBOL WARLORDS -->
 
@@ -2123,6 +2126,7 @@
 	<Module filename="CommonwealthMilitiaMission04.xml"/>
 	<Module filename="CommonwealthMilitiaMissionSK01.xml"/>
 	<Module filename="CommonwealthMining.xml"/>
+	<Module filename="CommonwealthMission01.xml"/>
 	<Module filename="CommonwealthShips.xml"/>
 	<Module filename="CommonwealthStarCarrier.xml"/>
 	<Module filename="CorporateHierarchy.xml"/>
