@@ -729,5 +729,8 @@
     <Xml Include="Heretic08.xml">
       <Filter>Part I</Filter>
     </Xml>
+    <Xml Include="CommonwealthMission01.xml">
+      <Filter>Human Space Library\Commonwealth</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
