@@ -594,11 +594,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnCreate>
-				; Pick a random upgrade
-				(objSetData gSource "WeaponUpgrade" (random 0 5))
-			</OnCreate>
 		</Events>
 
         <Language>
