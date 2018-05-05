@@ -602,7 +602,7 @@
 		</Events>
 
         <Language>
-			<Text id="actionWeapons">[W]weapons</Text>
+			<Text id="actionWeapons">[W]eapons</Text>
 
 			<Text id="descWelcome">
 				You are docked at an arms dealer station.
@@ -1572,6 +1572,8 @@
 		</DockingPorts>
 
 		<Language>
+			<Text id="actionRepairItems">[R]epair Items</Text>
+
 			<Text id="descWelcome">
 				Welcome to Makayev-Energia!
 			</Text>
