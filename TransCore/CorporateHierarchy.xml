@@ -453,25 +453,33 @@
 	<StationType UNID="&stArmsDealer;"
 			name=				"corporate arms dealer"
 			sovereign=			"&svCorporate;"
+
+			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
 			inherit=			"&baCorporateStation;"
 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
+
 			dockingPorts=		"8"
-			canAttack=			"true"
 
 			level=				"4"
-			multiHull=			"true"
+			size=				"149"
 			armorID=			"&itCeralloyArmor;"
 			hitPoints=			"160"
+			multiHull=			"true"
 			regen=				"2"
+
+			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
-			levelFrequency=		"uccr- ----- ----- ----- -----"
-			locationCriteria=	"+planetary"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				levelFrequency=		"uccr- ----- ----- ----- -----"
+				locationCriteria=	"+planetary"
+				/>
 
 		<Names noArticle="true">Azure Protection Systems; Bixbie Arms; Chiba Arms Dealers; 
 				Dreadnought Arms; Excimer Systems; Farside Defense Systems;
@@ -482,19 +490,17 @@
 				Tenhove Defense Dealer; Ultimate Weapons; Victory Systems;
 				Weapons World; %s Weapon Systems</Names>
 
-		<Image			imageID="&rsStations1;" imageX="256" imageY="384" imageWidth="128" imageHeight="128"/>
+		<!-- Trade and Items -->
 
-		<Ships>
-			<Lookup count="2" table="&tbCorpDefenders;"/>
-			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
-		</Ships>
-
-		<Reinforcements minShips="4">
-			<Table>
-				<Lookup chance="75" table="&tbCorpDefenders;"/>
-				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
-			</Table>
-		</Reinforcements>
+		<Trade currency="credit" max="50000" replenish="2500">
+			<Sell	criteria="m +commonwealth; +basicAmmo; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="mwU -Illegal; -NotForSale;"	priceAdj="50"/>
+			<Buy	criteria="mwU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<InstallDevice	criteria="w L:1-5;" priceAdj="100"	upgradeInstallOnly="true"/>
+			<RemoveDevice	criteria="w L:1-5;" priceAdj="100"	upgradeInstallOnly="true"/>
+		</Trade>
 
 		<Items>
 			<RandomItem count="10" 
@@ -522,35 +528,43 @@
 					/>
 		</Items>
 
-		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="m +commonwealth; +basicAmmo; -illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="200" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
-			<Buy	criteria="mwU -Illegal; -NotForSale;"	priceAdj="50"/>
-			<Buy	criteria="mwU -Illegal; -ID;"				priceAdj="10"/>
-			
-			<InstallDevice	criteria="w L:1-5;" priceAdj="100"	upgradeInstallOnly="true"/>
-			<RemoveDevice	criteria="w L:1-5;" priceAdj="100"	upgradeInstallOnly="true"/>
-		</Trade>
+		<!-- Configuration -->
 
-		<Events>
-			<OnContractGenerate>
-				(intGenerateIndustrialRequestContract1)
-			</OnContractGenerate>
+		<!-- Satellites -->
 
-			<OnContractQuery>True</OnContractQuery>
+		<!-- Ships and Defenses -->
 
-			<OnCreate>
-				; Pick a random upgrade
-				(objSetData gSource "WeaponUpgrade" (random 0 5))
-			</OnCreate>
-		</Events>
+		<Ships>
+			<Lookup count="2" table="&tbCorpDefenders;"/>
+			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
+		</Ships>
+
+		<Reinforcements minShips="4">
+			<Table>
+				<Lookup chance="75" table="&tbCorpDefenders;"/>
+				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
+			</Table>
+		</Reinforcements>
+
+		<!-- Image and Effects -->
+
+		<Image			imageID="&rsCorporateArmsDealer;" imageWidth="148" imageHeight="226" viewportRatio="0.03125"/>
+
+		<DockingPorts
+				portCount=		"8"
+				portAngle=		"-15"
+				portRadius=		"92"
+				>
+		</DockingPorts>
+		
+		<!-- Dock Screens -->
 
 		<DockScreens>
 			<Main>
 				<Panes>
 					<Default descID="descWelcome">
 						<Actions>
-							<Action name="[W]eapons" default="1">
+							<Action id="actionWeapons" default="1">
 								(scrShowScreen gScreen &dsRPGManageWeapons; {
 									checkMilitaryID: True
 									upgradeInstallOnly: True
@@ -572,23 +586,31 @@
 			</Main>
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="70" />
-			<Port x="0"		y="-70" />
-			<Port x="50"	y="50" />
-			<Port x="50"	y="-50" />
-			<Port x="70"	y="0" />
-			<Port x="-70"	y="0" />
-			<Port x="-50"	y="50" />
-			<Port x="-50"	y="-50" />
-		</DockingPorts>
+		<!-- Events and Behavior -->
+
+		<Events>
+			<OnContractGenerate>
+				(intGenerateIndustrialRequestContract1)
+			</OnContractGenerate>
+
+			<OnContractQuery>True</OnContractQuery>
+
+			<OnCreate>
+				; Pick a random upgrade
+				(objSetData gSource "WeaponUpgrade" (random 0 5))
+			</OnCreate>
+		</Events>
 
         <Language>
+			<Text id="actionWeapons">[W]weapons</Text>
+
 			<Text id="descWelcome">
 				You are docked at an arms dealer station.
 			</Text>
 
-            <Text id="core.mapDesc">"Buys and sells weapons and ammo &mdash; Installs purchased items &mdash; Buys damaged weapons"</Text>
+            <Text id="core.mapDesc">
+				Buys and sells weapons and ammo &mdash; Installs purchased items &mdash; Buys damaged weapons
+			</Text>
         </Language>
 	</StationType>
 
@@ -601,7 +623,6 @@
 
 			dockScreen=			"&dsArmsDealerSpecial;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
 			canAttack=			"true"
 
 			level=				"5"
@@ -618,8 +639,15 @@
 			locationCriteria=	"+planetary"
 			>
 
-		<Image			imageID="&rsStations1;" imageX="256" imageY="384" imageWidth="128" imageHeight="128"/>
+		<Image			imageID="&rsCorporateArmsDealer;" imageWidth="148" imageHeight="226" viewportRatio="0.03125"/>
 
+		<DockingPorts
+				portCount=		"8"
+				portAngle=		"-15"
+				portRadius=		"92"
+				>
+		</DockingPorts>
+		
 		<Ships>
 			<Lookup count="2" table="&tbCorpDefenders;"/>
 			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
@@ -687,17 +715,6 @@
 			<OnContractQuery>True</OnContractQuery>
 		</Events>
 
-		<DockingPorts>
-			<Port x="0"		y="70" />
-			<Port x="0"		y="-70" />
-			<Port x="50"	y="50" />
-			<Port x="50"	y="-50" />
-			<Port x="70"	y="0" />
-			<Port x="-70"	y="0" />
-			<Port x="-50"	y="50" />
-			<Port x="-50"	y="-50" />
-		</DockingPorts>
-		
 		<Language>
 			<Text id="descNoInstall">
 				(cat
@@ -724,7 +741,6 @@
 
 			dockScreen=			"&dsArmsDealerSpecial;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
 			canAttack=			"true"
 
 			multiHull=			"true"
@@ -741,8 +757,15 @@
 			enemyExclusionRadius="50"
 			>
 
-		<Image			imageID="&rsStations1;" imageX="256" imageY="384" imageWidth="128" imageHeight="128"/>
+		<Image			imageID="&rsCorporateArmsDealer;" imageWidth="148" imageHeight="226" viewportRatio="0.03125"/>
 
+		<DockingPorts
+				portCount=		"8"
+				portAngle=		"-15"
+				portRadius=		"92"
+				>
+		</DockingPorts>
+		
 		<Ships>
 			<Lookup count="2" table="&tbCorpDefenders;"/>
 			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
@@ -805,17 +828,6 @@
 		<StaticData>
 			<LongName>"a Bushido arms dealer"</LongName>
 		</StaticData>
-
-		<DockingPorts>
-			<Port x="0"		y="70" />
-			<Port x="0"		y="-70" />
-			<Port x="50"	y="50" />
-			<Port x="50"	y="-50" />
-			<Port x="70"	y="0" />
-			<Port x="-70"	y="0" />
-			<Port x="-50"	y="50" />
-			<Port x="-50"	y="-50" />
-		</DockingPorts>
 
 		<Language>
 			<Text id="descNoInstall">
@@ -3375,10 +3387,11 @@
 	
 <!-- RESOURCES -->
 
-	<Image UNID="&rsCorporateCruiser;"		bitmap="Resources\CorporateCruiser.jpg" bitmask="Resources\CorporateCruiserMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsCorporateArmsDealer;"	bitmap="Resources\CorporateArmsDealer.jpg" bitmask="Resources\CorporateArmsDealerMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsMakayevFactory;"		bitmap="Resources\MakayevFactory.jpg" bitmask="Resources\MakayevFactoryMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsManufacturingPlant;"	bitmap="Resources\ManufacturingPlant.jpg" bitmask="Resources\ManufacturingPlantMask.bmp" loadOnUse="true"/>
-	
 	<Image UNID="&rsTradingPostAnimation;"	bitmap="Resources\TradingPostGenericAd.jpg" bitmask="Resources\TradingPostGenericAdMask.bmp" loadOnUse="true"/>
 
+	<Image UNID="&rsCorporateCruiser;"		bitmap="Resources\CorporateCruiser.jpg" bitmask="Resources\CorporateCruiserMask.bmp" loadOnUse="true"/>
+	
 </TranscendenceModule>

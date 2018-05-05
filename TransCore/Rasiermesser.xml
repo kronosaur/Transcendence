@@ -80,7 +80,6 @@
 
 			dockScreen=			"&dsArmsDealerSpecial;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
 			canAttack=			"true"
 
 			level=				"4"
@@ -97,8 +96,15 @@
 			locationCriteria=	"+planetary"
 			>
 
-		<Image			imageID="&rsStations1;" imageX="256" imageY="384" imageWidth="128" imageHeight="128"/>
+		<Image			imageID="&rsCorporateArmsDealer;" imageWidth="148" imageHeight="226" viewportRatio="0.03125"/>
 
+		<DockingPorts
+				portCount=		"8"
+				portAngle=		"-15"
+				portRadius=		"92"
+				>
+		</DockingPorts>
+		
 		<Ships>
 			<Lookup count="2" table="&tbCorpDefenders;"/>
 			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
@@ -159,17 +165,6 @@
 		<StaticData>
 			<LongName>"a Rasiermesser arms dealer"</LongName>
 		</StaticData>
-
-		<DockingPorts>
-			<Port x="0"		y="70" />
-			<Port x="0"		y="-70" />
-			<Port x="50"	y="50" />
-			<Port x="50"	y="-50" />
-			<Port x="70"	y="0" />
-			<Port x="-70"	y="0" />
-			<Port x="-50"	y="50" />
-			<Port x="-50"	y="-50" />
-		</DockingPorts>
 
 		<Language>
 			<Text id="descNoInstall">
