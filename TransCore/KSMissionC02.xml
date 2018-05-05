@@ -85,12 +85,12 @@
 
 			<GetGlobalAchievements>
 				(block (theList)
-					(if (msnFind "r +unid:&msKorolovAtCharon;; +property:isSuccess;")
+					(if (msnFind "r +unid:&msKorolovAtCharonRevenge;; +property:isSuccess;")
 						(setq theList (list
 							(list 
-								"Cleared the Charon system for Korolov Shipping"
+								(typTranslate &msKorolovAtCharonRevenge; 'achievement.success)
 								Nil
-								"achievements &amp; regrets"
+								(typTranslate &unidCommonText; 'achievementsAndRegrets)
 								)
 							))
 						)
@@ -102,38 +102,51 @@
 
 		<Language>
 			<Text id="Name">
-				"Korolov at Charon"
+				Korolov at Charon
 			</Text>
 			<Text id="Summary">
-				(cat
-					"Korolov Shipping in the Charon system has been destroyed by a massive pirate attack. "
-					"Now you need to hunt down and destroy all Charon stations in the system.\n\n"
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+				Korolov Shipping in the Charon system has been destroyed by a massive pirate attack.
+				Now you need to hunt down and destroy all Charon stations in the system.
 
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
-					)
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 			<Text id="SuccessDebrief">
 				(list
 					{
-						desc: (cat
-							"You are docked at a station under construction. The manager"
-							"of the station walks up to you to shake your hand.\n\n"
-							
-							"\"What do you think? We'll have this old station rebuilt in a "
-							"few months. And we owe it all to you for destroying the pirates.\""
-							)
+						descID: 'textSuccessDebrief1
 						}
 					{
-						desc: (cat
-							"\"We don't have much in the way of rewards here. But I've got "
-							"something that might help in your travels.\"\n\n"
-							
-							"He hands you " (itmGetName (msnGetData gSource 'rewardItem) 0x08) "."
-							)
+						descID: 'textSuccessDebrief2
+						data: { reward: (itmGetName (msnGetData gSource 'rewardItem) 'count) }
 						}
 					)
 			</Text>
+			<Text id="textSuccessDebrief1">
+
+				You are docked at a station under construction. The manager
+				of the station walks up to you to shake your hand.
+
+				"What do you think? We'll have this old station rebuilt in a
+				few months. And we owe it all to you for destroying the pirates."
+
+			</Text>
+			<Text id="textSuccessDebrief2">
+
+				"We don't have much in the way of rewards here. But I've got
+				something that might help in your travels."
+
+				He hands you %reward%.
+
+			</Text>
+
+			<Text id="achievement.success">Cleared the Charon system for Korolov Shipping</Text>
 		</Language>
 	</MissionType>
 
@@ -208,9 +221,7 @@
 			</Main>
 		</DockScreens>
 
-        <Language>
-			<Text id="actionUndock">[U]ndock</Text>
-
+		<Language>
 			<Text id="descWelcome">
 
 				You are in the main hall of a Korolov Shipping Company station. 
@@ -218,9 +229,9 @@
 
 			</Text>
 			<Text id="core.mapDesc">
-                Under construction
-            </Text>
-        </Language>
+				Under construction
+			</Text>
+		</Language>
 	</StationType>
 
 </TranscendenceModule>

@@ -296,7 +296,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action id="actionMeetingHall" default="1">
+							<Action id="actionMainHall" default="1">
 								(rpgMissionAssignment {
 									missionCriteria: (cat "n +commonwealthMining; =" (sysGetLevel) ";")
 									noMissionTextID: 'descNoMissions
@@ -304,7 +304,6 @@
 									intervalPerStation: (+ 5400 (* (objGetDestiny gSource) 10))
 									})
 							</Action>
-
 
 							<Action id="actionCommoditiesExchange">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
@@ -407,11 +406,6 @@
 		</Events>
 
 		<Language>
-			<Text id="actionMeetingHall">"[M]eeting Hall"</Text>
-			<Text id="actionCommoditiesExchange">"[C]ommodities Exchange"</Text>
-			<Text id="actionDockServices">"[D]ock Services"</Text>
-			<Text id="actionUndock">"[U]ndock"</Text>
-
 			<Text id="descNoDepositsInSystem">
 
 				You are docked at a mining colony. A handful of miners tend to 
@@ -467,18 +461,16 @@
 				(cat "We install mining equipment up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
 			</Text>
 			<Text id="dockServices:weaponsAbility">
-				(cat "We sell mining equipment up to tech level " (@ gData 'maxLevel) ".")
+				We sell mining equipment up to tech level %maxLevel%.
 			</Text>
 
 			<Text id="Intro:New">
-				(cat
-					"The meeting hall is carved deep below the asteroid's surface. The colony supervisor stands "
-					"on a platform in the center, surrounded by comms equipment and visual displays. "
-					"He turns his attention towards you as you approach:\n\n"
+				The meeting hall is carved deep below the asteroid's surface. The colony supervisor stands
+				on a platform in the center, surrounded by comms equipment and visual displays.
+				He turns his attention towards you as you approach:
 
-					"\"Welcome to " (objGetName gSource 0) "! I saw your ship on my displays; she looks like she's armed for combat. "
-					"How about taking on a mission for us? We could use the help, and there would be payment.\""
-					)
+				"Welcome to %stationName%! I saw your ship on my displays; she looks like she's armed for combat.
+				How about taking on a mission for us? We could use the help, and there would be payment."
 			</Text>
 			<Text id="Intro:Return">
 				(cat
@@ -493,7 +485,7 @@
 					(random
 						(list
 							"\"Welcome, %name%! We have another mission for you, if you are interested.\""
-							(cat "\"Welcome to " (objGetName gSource 0) "! If you're looking for work, I might be able to set you up with something.\"")
+							"\"Welcome to %stationName%! If you're looking for work, I might be able to set you up with something.\""
 							"\"Welcome, %name%! Are you interested in flying a mission for us? There would be payment, of course.\""
 							)
 						)
@@ -591,9 +583,9 @@
 				You spend 5 credits on drinks.
 			</Text>
 
-            <Text id="core.mapDesc">
-                "Refuels up to level 5 &mdash; Repairs/installs armor up to level 5 &mdash; Installs mining equipment up to level 6 &mdash; Sells ore &mdash; Buys food"
-            </Text>
+			<Text id="core.mapDesc">
+				Refuels up to level 5 &mdash; Repairs/installs armor up to level 5 &mdash; Installs mining equipment up to level 6 &mdash; Sells ore &mdash; Buys food
+			</Text>
 		</Language>
 	</StationType>
 	
@@ -741,7 +733,7 @@
 					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
 					)
 					(msnSetData gSource 'playerArrived True)
-					(objSendMessage gPlayerShip targetObj (msnTranslate gSource 'msgHelp))
+					(objSendMessage gPlayerShip targetObj (msnTranslate gSource (cat "msgHelp:" (random 1 4))))
 					)
 			</OnPlayerArrived>
 
@@ -763,7 +755,7 @@
 					(shpOrder targetObj 'gate)
 
 					(if (msnGetData gSource 'playerHelped)
-						(objSendMessage gPlayerShip targetObj (msnTranslate gSource 'msgFree))
+						(objSendMessage gPlayerShip targetObj (msnTranslate gSource (cat "msgFree:" (random 1 4))))
 						)
 
 					(msnSetData gSource 'state 'returning)
@@ -781,27 +773,39 @@
 
 		<Language>
 			<Text id="Name">
-				"Rescue Mining Ship"
+				Rescue Mining Ship
 			</Text>
 			<Text id="Summary">
-				(cat
-					"Centauri warlords have captured a mining ship from " (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)))
-					". Your mission is to destroy the warlords and rescue the mining ship.\n\n"
+				(msnTranslate gSource 'textSummary {
+					stationName: (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+				Centauri warlords have captured a mining ship from %stationName%.
+				Your mission is to destroy the warlords and rescue the mining ship.
 
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
-					)
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 			<Text id="Intro">
 				(mne_calcIntro (objGetObjByID (msnGetProperty gSource 'ownerID)))
 			</Text>
+
 			<Text id="Briefing">
-				(cat
-					"\"Centauri warlords have captured one of our mining ships in this system."
-					" We want you to go out there and destroy the raiders that have captured the ship."
-					" We'll pay you " (fmtCurrency 'credit (msnGetData gSource 'reward)) " if you succeed.\n\n"
-					"\"Do we have a deal?\""
-					)
+				(msnTranslate gSource 'textBriefing {
+					reward: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textBriefing">
+
+					"Centauri warlords have captured one of our mining ships in this system.
+					We want you to go out there and destroy the raiders that have captured the ship.
+					We'll pay you %reward% if you succeed.
+
+					"Do we have a deal?"
+
 			</Text>
 			<Text id="AcceptReply">
 
@@ -819,11 +823,17 @@
 				out there and finish the job!"
 
 			</Text>
+
 			<Text id="SuccessDebrief">
-				(cat
-					"\"Great work! Maybe the warlords will think twice before attacking us again. We've deposited "
-					(fmtCurrency 'credit (msnGetData gSource 'reward)) " to your account.\""
-					)
+				(msnTranslate gSource 'textSuccessDebrief {
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSuccessDebrief">
+
+				"Great work! Maybe the warlords will think twice before attacking us again.
+				We've deposited %payment% to your account."
+
 			</Text>
 			<Text id="FailureDebrief">
 
@@ -835,22 +845,15 @@
 				Mission complete!
 			</Text>
 
-			<Text id="msgHelp">
-				(random (list
-					"Mayday mayday mayday! We're under attack!"
-					"Over here! Help us, please!"
-					"Hostiles in the area! Approach with caution!"
-					"Mayday mayday mayday! Hostiles in the area!"
-					))
-			</Text>
-			<Text id="msgFree">
-				(random (list
-					"You're my savior! I owe you one, buddy."
-					"Kacking Centaurians! Can you believe this? Thanks for taking care of them for us!"
-					"We're OK! Thanks for blasting the Centaurians!"
-					"Nice shooting! Those bastards got what was coming to them!"
-					))
-			</Text>
+			<Text id="msgHelp:1">Mayday mayday mayday! We're under attack!</Text>
+			<Text id="msgHelp:2">Over here! Help us, please!</Text>
+			<Text id="msgHelp:3">Hostiles in the area! Approach with caution!</Text>
+			<Text id="msgHelp:4">Mayday mayday mayday! Hostiles in the area!</Text>
+
+			<Text id="msgFree:1">You're my savior! I owe you one, buddy.</Text>
+			<Text id="msgFree:2">Kacking Centaurians! Can you believe this? Thanks for taking care of them for us!</Text>
+			<Text id="msgFree:3">We're OK! Thanks for blasting the Centaurians!</Text>
+			<Text id="msgFree:4">Nice shooting! Those bastards got what was coming to them!</Text>
 		</Language>
 	</MissionType>
 
@@ -995,25 +998,35 @@
 				"Destroy Illegal Miners"
 			</Text>
 			<Text id="Summary">
-				(cat
-					"Outlaw miners have staked an illegal claim to an asteroid in the system. "
-					"Your mission is to terminate their claim.\n\n"
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+				Outlaw miners have staked an illegal claim to an asteroid in the system.
+				Your mission is to terminate their claim.
 
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
-					)
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 			<Text id="Intro">
 				(mne_calcIntro (objGetObjByID (msnGetProperty gSource 'ownerID)))
 			</Text>
 			<Text id="Briefing">
-				(cat
-					"\"Outlaw miners have staked an illegal claim to "
-					(objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0)
-					" in this system. We want you to go out there and terminate their claim."
-					" We'll pay you " (fmtCurrency 'credit (msnGetData gSource 'reward)) " if you succeed.\n\n"
-					"\"Do we have a deal?\""
-					)
+				(msnTranslate gSource 'textBriefing {
+					targetName: (objGetName (objGetObjByID (msnGetData gSource 'targetID)))
+					reward: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textBriefing">
+
+				"Outlaw miners have staked an illegal claim to %targetName%
+				in this system. We want you to go out there and terminate their claim.
+				We'll pay you %reward if you succeed.
+
+				"Do we have a deal?"
+
 			</Text>
 			<Text id="AcceptReply">
 
@@ -1032,10 +1045,15 @@
 
 			</Text>
 			<Text id="SuccessDebrief">
-				(cat
-					"\"Great work! Illegal miners are just taking good jobs away from Commonwealth citizens. We've deposited "
-					(fmtCurrency 'credit (msnGetData gSource 'reward)) " to your account.\""
-					)
+				(msnTranslate gSource 'textSuccessDebrief {
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSuccessDebrief">
+
+				"Great work! Illegal miners are just taking good jobs away from
+				Commonwealth citizens. We've deposited %reward% to your account."
+
 			</Text>
 			<Text id="FailureDebrief">
 
@@ -1058,9 +1076,9 @@
 			;	This function is used to determine which mission intro screen to
 			;	use at Commonwealth mining colonies
 			(setq mne_calcIntro (lambda (sourceObj)
-				(if (msnFind sourceObj "Saru")
-					(objTranslate sourceObj "Intro:Return")
-					(objTranslate sourceObj "Intro:New")
+				(objTranslate sourceObj
+					(if (msnFind sourceObj "Saru") "Intro:Return" "Intro:New")
+					{ stationName: (objGetName gSource) }
 					)
 				))
 

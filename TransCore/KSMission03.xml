@@ -254,76 +254,112 @@
 
 		<Language>
 			<Text id="Name">
-				"Destroy Pirate stronghold"
+				Destroy Pirate stronghold
 			</Text>
 
 			<Text id="Summary">
-				(block Nil
-					(cat
-						"Destroy Pirate stronghold.\n\n"
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+				Destroy Pirate stronghold.
 
-						"System: " (sysGetName) "\n"
-						"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward)) "\n"
-						)
-					)
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 
 			<Text id="Intro">
-				(cat
-					"As you enter the operations level, you see several people gathered around a central display table.\n\n"
+				(msnTranslate gSource 'textIntro {
+					director: (msnGetData gSource 'director)
+					})
+			</Text>
+			<Text id="textIntro">
+				As you enter the operations level, you see several people gathered around a central display table.
 
-					"Assistant Director " (msnGetData gSource 'director) " approaches you, "
-					"\"We're planning an operation to destroy the primary Charon stronghold in the system; we could use your help.\""
-					)
+				Assistant Director %director% approaches you, "We're planning an operation to
+				destroy the primary Charon stronghold in the system; we could use your help."
 			</Text>
 
 			<Text id="Briefing">
 				(if (msnGetProperty gSource 'isDeclined)
-					(list
-						{
-							desc:	"\"Sorry, all freighters are grounded for now; we've deployed a squadron to attack the Charon stronghold in the system.\""
-							acceptLabel: "\"[M]aybe I can help.\""
-							declineLabel: "\"[S]ounds dangerous.\""
-							}
-						)
-					(cat
-						"\"The stronghold is located in the outer system " (msnGetData gSource 'dist) " light-seconds from here. "
-						"We're sending a squadron out to destroy it. We want you to join the squadron and follow them to the stronghold.\""
-						)
+					{
+						descID:	textBriefing
+						acceptLabelID: 'actionHelp
+						declineLabelID: 'actionDangerous
+						}
+					{
+						descID: textFirstBriefing
+						}
 					)
 			</Text>
+			<Text id="textFirstBriefing">
+				"The stronghold is located in the outer system %distance%
+				light-seconds from here. We're sending a squadron out to destroy it.
+				We want you to join the squadron and follow them to the stronghold."
+			</Text>
+			<Text id="textBriefing">
+				"Sorry, all freighters are grounded for now; we've deployed a
+				squadron to attack the Charon stronghold in the system."
+			</Text>
+			<String id="actionHelp">"[M]aybe I can help."</String>
+			<String id="actionDangerous">"[S]ounds dangerous."</String>
 
 			<Text id="AcceptReply">
 				(if (msnGetProperty gSource 'isDeclined)
-					"\"Alright, we've uploaded the coordinates into your computer. The squadron will appreciate any help you can give them. Good hunting!\""
-					"\"Alright, hit the pirates as hard as you can and get back here in one piece. Good hunting!\""
+					(msnTranslate gSource 'textAcceptReply)
+					(msnTranslate gSource 'textFirstAcceptReply)
 					)
 			</Text>
+			<Text id="textAcceptReply">
+				"Alright, we've uploaded the coordinates into your computer.
+				The squadron will appreciate any help you can give them. Good hunting!"
+			</Text>
+			<String id="textFirstAcceptReply">
+				"Alright, hit the pirates as hard as you can and get back here in one piece. Good hunting!"
+			</String>
 
 			<Text id="DeclineReply">
 				(if (msnGetData gSource 'alreadyDeclined)
-					"\"Why don't you help with the freighter maintenance until the combat pilots get back?\""
-					"\"That's not too surprising. This is a dangerous mission and only the best pilots attempt it. Take care of yourself.\""
+					(msnTranslate gSource 'textDeclineReply)
+					(msnTranslate gSource 'textFirstDeclineReply)
 					)
 			</Text>
+			<String id="textDeclineReply">
+				"Why don't you help with the freighter maintenance until the combat pilots get back?"
+			</String>
+			<String id="textFirstDeclineReply">
+				"That's not too surprising. This is a dangerous mission and only the best pilots attempt it. Take care of yourself."
+			</String>
 
 			<Text id="InProgress">
 				(if (msnGetProperty gSource 'isDeclined)
-					"\"What are you doing here? Have you changed your mind again? Pull yourself together and go out there and fight!\""
-					"\"What are you doing here? How can you abandon your squadron? Pull yourself together and go out there and fight!\""
+					(msnTranslate gSource 'textInProgress2)
+					(msnTranslate gSource 'textInProgress1)
 					)
 			</Text>
+			<String id="textInProgress2">
+				"What are you doing here? Have you changed your mind again? Pull yourself together and go out there and fight!"
+			</String>
+			<String id="textInProgress1">
+				"What are you doing here? How can you abandon your squadron? Pull yourself together and go out there and fight!"
+			</String>
+
 			<Text id="FailureDebrief">
 				(if (msnGetData gSource 'betrayal)
-					(cat "\"Either your poor marksmanship or deliberate malice destroyed the"
-						" squadron fighting the pirates! You will never work for us again, captain.\""
-						)
-					(cat
-						"\"What a disaster! If we can't shut down that Charon stronghold we're"
-						" going to have to cut down on freighter traffic&mdash;at least until we"
-						" can find some better pilots! You're dismissed.\""
-						)
+					(msnTranslate gSource 'failureDebrief.betrayal)
+					(msnTranslate gSource 'failureDebrief.default)
 					)
+			</Text>
+			<Text id="failureDebrief.betrayal">
+				"Either your poor marksmanship or deliberate malice destroyed the
+				squadron fighting the pirates! You will never work for us again, captain."
+			</Text>
+			<Text id="failureDebrief.default">
+				"What a disaster! If we can't shut down that Charon stronghold we're
+				going to have to cut down on freighter traffic&mdash;at least until we
+				can find some better pilots! You're dismissed."
 			</Text>
 			<Text id="SuccessDebrief">
 				(block (
@@ -600,7 +636,7 @@
 								(objSetData gSource "status" 'waitForWingmen)
 
 								(if wingmanPlayer
-									(objSendMessage gPlayerShip gSource "Form up on my wing!")
+									(objSendMessageTranslate gPlayerShip gSource 'msgFormUp)
 									)
 								)
 
@@ -621,7 +657,7 @@
 								(objSetData gSource "status" 'gotoAttackPoint)
 
 								(if wingmanPlayer
-									(objSendMessage gPlayerShip gSource "Go-code received! Follow my lead")
+									(objSendMessageTranslate gPlayerShip gSource 'msgGo)
 									)
 								)
 
@@ -647,7 +683,7 @@
 								(objSetData gSource "status" 'attackingTarget)
 
 								(if wingmanPlayer
-									(objSendMessage gPlayerShip gSource "We're in position! Attack at will!")
+									(objSendMessageTranslate gPlayerShip gSource 'msgAttack)
 									)
 								)
 
@@ -669,7 +705,7 @@
 								(objSetData gSource "status" 'done)
 
 								(if wingmanPlayer
-									(objSendMessage gPlayerShip gSource "Nice work! Return to base, everyone")
+									(objSendMessageTranslate gPlayerShip gSource 'msgReturn)
 									)
 								)
 						)
@@ -698,6 +734,12 @@
 			</OnObjDestroyed>
 		</Events>
 
+		<Language>
+			<Text id="msgFormUp">Form up on my wing!</Text>
+			<Text id="msgGo">Go-code received! Follow my lead.</Text>
+			<Text id="msgAttack">We're in position! Attack at will!</Text>
+			<Text id="msgReturn">Nice work! Return to base, everyone.</Text>
+		</Language>
 	</Type>
 
 </TranscendenceModule>

@@ -414,10 +414,7 @@
 		<Language>
 			<Text id="actionCommandCenter">[C]ommand Center</Text>
 			<Text id="actionOfficersClub">[O]fficers' Club</Text>
-			<Text id="actionDockServices">[D]ock Services</Text>
-			<Text id="actionUndock">[U]ndock</Text>
 			<Text id="actionBar">[S]it at the Bar</Text>
-			<Text id="actionLeave">[L]eave</Text>
 
 			<Text id="Rumors">
 				(random (list
@@ -639,26 +636,21 @@
 
 		<Language>
 			<Text id="Promotion:1">
-				(cat
-					"\"Your success on this mission has brought you great respect. "
-					"It is my privilege to bestow upon you the rank of lieutenant "
-					"in service to the Commonwealth Militia.\"\n\n"
-					"General Powell hands you a military ID chip."
-					)
+				"Your success on this mission has brought you great respect.
+				It is my privilege to bestow upon you the rank of lieutenant
+				in service to the Commonwealth Militia."
+
+				General Powell hands you a military ID chip.
 			</Text>
 			<Text id="Promotion:2">
-				(cat
-					"\"Your skills on this mission have brought you great admiration. "
-					"It is my honor to present you with the Commonwealth Medal of Distinction "
-					"and to promote you to the rank of major. Congratulations!\""
-					)
+				"Your skills on this mission have brought you great admiration.
+				It is my honor to present you with the Commonwealth Medal of Distinction
+				and to promote you to the rank of major. Congratulations!"
 			</Text>
 			<Text id="Promotion:3">
-				(cat
-					"\"Your bravery has brought great honor to you and to the Militia. "
-					"It is my honor to present you with the Commonwealth Medal of Honor "
-					"and to promote you to the rank of colonel. Congratulations!\""
-					)
+				"Your bravery has brought great honor to you and to the Militia.
+				It is my honor to present you with the Commonwealth Medal of Honor
+				and to promote you to the rank of colonel. Congratulations!"
 			</Text>
 		</Language>
 	</DockScreen>

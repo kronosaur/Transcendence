@@ -108,7 +108,7 @@
 				<Panes>
 					<Default descID="descWelcome">
 						<Actions>
-							<Action id="actionMeetingHall" default="1">
+							<Action id="actionMainHall" default="1">
 								(rpgMissionAssignment {
 									missionCriteria: (cat "n +commonwealthAgricultural; =" (sysGetLevel) ";")
 									noMissionTextID: 'descHallEmpty
@@ -167,10 +167,6 @@
 		</Events>
 
         <Language>
-			<Text id="actionMeetingHall">[M]eeting Hall</Text>
-			<Text id="actionCommoditiesExchange">[C]ommodities Exchange</Text>
-			<Text id="actionDockServices">[D]ock Services</Text>
-			<Text id="actionUndock">[U]ndock</Text>
 			<Text id="missions">Agricultural colony missions</Text>
 
 			<Text id="descWelcome">
@@ -178,9 +174,9 @@
 			</Text>
 
 			<Text id="core.mapDesc">
-                Refuels up to level 5 &mdash; Repairs/installs armor up to level 5 &mdash; Sells food &mdash; Buys luxuries and supplies
-            </Text>
-        </Language>
+				Refuels up to level 5 &mdash; Repairs/installs armor up to level 5 &mdash; Sells food &mdash; Buys luxuries and supplies
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Mission: Defend Agricultural Station ==================================
@@ -447,13 +443,13 @@
 
 			<Text id="Name">
 				(msnTranslate gSource 'textName {
-					name: (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 0x04)
+					stationName: (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 0x04)
 					})
 			</Text>
 			<Text id="Summary">
 				(cat
 					(msnTranslate gSource (cat (@ (msnGetData gSource 'attackDesc) 'id) ":Summary") {
-						name: (objGetName (objGetObjByID (msnGetData gSource 'destID)) 0x04)
+						stationName: (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 0x04)
 						}) 
 					"\n\n"
 					(typTranslate &dsRPGMission; 'mission.rewardSummary {
@@ -464,7 +460,7 @@
 			</Text>
 			<Text id="FirstIntro">
 				(msnTranslate gSource 'textFirstIntro {
-					name: (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					stationName: (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)))
 					})
 			</Text>
 			<Text id="Briefing">
@@ -480,12 +476,12 @@
 
 			<!-- Text -->
 
-			<Text id="textName">Defend %name%</Text>
+			<Text id="textName">Defend %stationName%</Text>
 			<Text id="textFirstIntro">
 				As you enter the meeting hall, you see about a dozen people talking excitedly.
 				One of them approaches you:
 
-				"Welcome to %name%, captain. I hope you don't mind if we skip the tour of the
+				"Welcome to %stationName%, captain. I hope you don't mind if we skip the tour of the
 				station and get right to the point: the truth is that we've received good 
 				information that a small raiding party is heading for this station.
 
@@ -524,7 +520,7 @@
 			</Text>
 
 			<Text id="pirate:Summary">
-				Your mission is to defend %name% from a Charon pirate raid.
+				Your mission is to defend %stationName% from a Charon pirate raid.
 			</Text>
 			<Text id="pirate:Wave:0">
 				"The first wave will be mostly composed of light gunships, although there is a
