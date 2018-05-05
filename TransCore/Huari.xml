@@ -35,33 +35,28 @@
 			<GetGlobalAchievements>
 				(block (
 					(status (typGetData &svHuariEmpire; 'status))
-					(successList (plyGetKeyEventStat gPlayer 'missionSuccess Nil "* +huariEmpire;"))
-					(failureList (plyGetKeyEventStat gPlayer 'missionFailure Nil "* +huariEmpire;"))
-					theList
 					)
-					
-					(if status
-						(setq theList (list
-							(list 
-								(switch
-									(= status 'templeDestroyed) "Failed to defend the Huari"
-									(= status 'loser) "Disappointed the Huari"
-									(= status 'friend) "Befriended the Huari"
-									(cat "ERROR: Huari status: " status)
-									) 
-								Nil 
-								"achievements &amp; regrets"
-								)
-							(list
-								"Huari Empire missions"
-								(rpgMissionAchievementString (count successList) (count failureList))
-								"missions &amp; activities"
-								)
 
-							))
+					(append
+						;	Special
+						(if status
+							(list
+								(list
+									(switch
+										(= status 'templeDestroyed) "Failed to defend the Huari"
+										(= status 'loser) "Disappointed the Huari"
+										(= status 'friend) "Befriended the Huari"
+										(cat "ERROR: Huari status: " status)
+										)
+									Nil
+									(typTranslate &unidCommonText; 'achievementsAndRegrets)
+									)
+								)
+							)
+
+						;	Missions
+						(rpgMissionAchievements &svHuariEmpire; "* +huariEmpire;")
 						)
-						
-					theList
 					)
 			</GetGlobalAchievements>
 
@@ -81,6 +76,10 @@
 					)
 			</OnGlobalObjDestroyed>
 		</Events>
+
+		<Language>
+			<Text id="rpg.missionTypeDesc">Huari Empire missions</Text>
+		</Language>
 	</Sovereign>
 
 <!-- ENCOUNTERS -->

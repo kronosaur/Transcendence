@@ -352,20 +352,7 @@
 			</OnCreate>
 			
 			<GetGlobalAchievements>
-				(block (
-					(successList (plyGetKeyEventStat gPlayer 'missionSuccess Nil "* +commonwealthMining;"))
-					(failureList (plyGetKeyEventStat gPlayer 'missionFailure Nil "* +commonwealthMining;"))
-					)
-					(if (or successList failureList)
-						(list
-							(list
-								"Mining colony missions"
-								(rpgMissionAchievementString (count successList) (count failureList))
-								(typTranslate &unidCommonText; 'missionsAndActivities)
-								)
-							)
-						)
-					)
+				(rpgMissionAchievements &stMiningColony; "* +commonwealthMining;")
 			</GetGlobalAchievements>
 
 			<GetRumors>
@@ -583,6 +570,7 @@
 				You spend 5 credits on drinks.
 			</Text>
 
+			<Text id="rpg.missionTypeDesc">Mining colony missions</Text>
 			<Text id="core.mapDesc">
 				Refuels up to level 5 &mdash; Repairs/installs armor up to level 5 &mdash; Installs mining equipment up to level 6 &mdash; Sells ore &mdash; Buys food
 			</Text>

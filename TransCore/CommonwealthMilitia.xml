@@ -40,29 +40,19 @@
 	<Type UNID="&unidCommonwealthMilitia;">
 		<Events>
 			<GetGlobalAchievements>
-				(block (theList rank)
-					(if (setq rank (typGetData &unidCommonwealthMilitia; 'rank))
-						(block (
-							(successList (plyGetKeyEventStat gPlayer 'missionSuccess Nil "* +commonwealthMilitia;"))
-							(failureList (plyGetKeyEventStat gPlayer 'missionFailure Nil "* +commonwealthMilitia;"))
-							)
-
-							(setq theList (list
-								(list
-									"Commonwealth militia rank"
-									(typTranslate &unidCommonwealthMilitia; 'PlayerRank)
-									)
-
-								(list
-									"Commonwealth militia missions"
-									(rpgMissionAchievementString (count successList) (count failureList))
-									"missions &amp; activities"
-									)
-								))
+"				(append
+					;	Rank
+					(if  (typGetData &unidCommonwealthMilitia; 'rank)
+						(list
+							(list
+								"Commonwealth militia rank"
+								(typTranslate &unidCommonwealthMilitia; 'PlayerRank)
+								)
 							)
 						)
 
-					theList
+					;	Missions
+					(rpgMissionAchievements &unidCommonwealthMilitia; "* +commonwealthMilitia;")
 					)
 			</GetGlobalAchievements>
 
@@ -121,6 +111,8 @@
 						)
 					)
 			</Text>
+
+			<Text id="rpg.missionTypeDesc">Commonwealth militia missions</Text>
 		</Language>
 	</Type>
 

@@ -149,25 +149,12 @@
 
 		<Events>
 			<GetGlobalAchievements>
-				(block (
-					(successList (plyGetKeyEventStat gPlayer 'missionSuccess Nil "* +commonwealthAgricultural;"))
-					(failureList (plyGetKeyEventStat gPlayer 'missionFailure Nil "* +commonwealthAgricultural;"))
-					)
-					(if (or successList failureList)
-						(list
-							(list
-								(typTranslate &stAgriculturalStation; 'missions)
-								(rpgMissionAchievementString (count successList) (count failureList))
-								(typTranslate &unidCommonText; 'missionsAndActivities)
-								)
-							)
-						)
-					)
+				(rpgMissionAchievements &stAgriculturalStation; "* +commonwealthAgricultural;")
 			</GetGlobalAchievements>
 		</Events>
 
-        <Language>
-			<Text id="missions">Agricultural colony missions</Text>
+		<Language>
+			<Text id="rpg.missionTypeDesc">Agricultural colony missions</Text>
 
 			<Text id="descWelcome">
 				You are inside a C9-class prefabricated agricultural station.

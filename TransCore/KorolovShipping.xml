@@ -49,29 +49,19 @@
 
 		<Events>
 			<GetGlobalAchievements>
-				(block (theList)
+				(append
+					;	Rank
 					(if (typGetData &unidKorolovShipping; 'level)
-						(block (
-							(successList (plyGetKeyEventStat gPlayer 'missionSuccess Nil "* +korolov; +escort;"))
-							(failureList (plyGetKeyEventStat gPlayer 'missionFailure Nil "* +korolov; +escort;"))
-							)
-
-							(setq theList (list
-								(list
-									"Korolov rank"
-									(typTranslate &unidKorolovShipping; 'PlayerRank)
-									)
-
-								(list
-									"Korolov shipping missions"
-									(rpgMissionAchievementString (count successList) (count failureList))
-									"missions &amp; activities"
-									)
-								))
+						(list
+							(list
+								"Korolov rank"
+								(typTranslate &unidKorolovShipping; 'PlayerRank)
+								)
 							)
 						)
 
-					theList
+					;	Missions
+					(rpgMissionAchievements &unidKorolovShipping; "* +korolov; +escort;")
 					)
 			</GetGlobalAchievements>
 		</Events>
@@ -138,6 +128,8 @@
 
 				"We've deposited %reward% in your account."
 			</Text>
+
+			<Text id="rpg.missionTypeDesc">Korolov shipping missions</Text>
 		</Language>
 	</Type>
 
