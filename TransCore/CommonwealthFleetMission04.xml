@@ -149,7 +149,7 @@
 
 		<Language>
 			<Text id="Name">
-				"Intercept Ares freighter"
+				Intercept Ares freighter
 			</Text>
 			<Text id="Summary">
 				(cat
@@ -175,19 +175,19 @@
 					destName: (objGetName (objGetObjByID (msnGetData gSource 'aresID)) 'article)
 					})
 			</Text>
-			<Text id="AcceptReply">
+			<String id="AcceptReply">
 				"Good luck, %name%!"
-			</Text>
-			<Text id="DeclineReply">
+			</String>
+			<String id="DeclineReply">
 				"Get the hell out of here then!"
-			</Text>
+			</String>
 
-			<Text id="InProgress">
+			<String id="InProgress">
 				"What is your major malfunction!? Get back out there and complete your mission!"
-			</Text>
-			<Text id="FailureDebrief">
+			</String>
+			<String id="FailureDebrief">
 				"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!"
-			</Text>
+			</String>
 			<Text id="SuccessDebrief">
 
 				"Outstanding mission! That's one less supply ship for the 

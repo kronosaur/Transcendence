@@ -83,17 +83,20 @@
 
 		<Language>
 			<Text id="Name">
-				"Intercept Ares Squadron"
+				Destroy Ares Station
 			</Text>
 			<Text id="Summary">
-				(cat
-					"Intercept and destroy an Ares squadron before it can attack "
-					(objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4)
-					".\n\n"
+				(msnTranslate gSource 'textSummary {
+					targetName: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 'article)
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+				Destroy %targetName%.
 
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
-					)
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 			<Text id="Intro">
 
@@ -103,43 +106,56 @@
 
 			</Text>
 			<Text id="Briefing">
-				(cat
-					"\"This mission is straight from Admiral Decker himself. "
-					"We want you to lead a flight of Britannias to destroy "
-					(objGetName (objGetObjByID (msnGetData gSource 'targetID)) 4)
-					" in this system. Any questions?\""
-					)
+				(msnTranslate gSource 'textBriefing {
+					targetName: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 'article)
+					})
 			</Text>
-			<Text id="AcceptReply">
-				"\"Good luck, %name%!\""
-			</Text>
-			<Text id="DeclineReply">
-				"\"Get the hell out of here then!\""
-			</Text>
+			<Text id="textBriefing">
 
-			<Text id="InProgress">
-				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+				"This mission is straight from Admiral Decker himself.
+				We want you to lead a flight of Britannias to destroy
+				%targetName% in this system. Any questions?"
+
 			</Text>
-			<Text id="FailureDebrief">
-				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
-			</Text>
+			<String id="AcceptReply">
+				"Good luck, %name%!"
+			</String>
+			<String id="DeclineReply">
+				"Get the hell out of here then!"
+			</String>
+
+			<String id="InProgress">
+				"What is your major malfunction!? Get back out there and complete your mission!"
+			</String>
+			<String id="FailureDebrief">
+				"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!"
+			</String>
 			<Text id="SuccessDebrief">
 				(block (
 					(wingmenLeft (msnGetData gSource 'wingmenLeft))
 					)
 					(switch
 						(= wingmenLeft 0)
-							"\"A tough mission. We can't afford to lose so many good pilots.\""
+							(msnTranslate gSource "textSuccessDebrief:1")
 
 						(= wingmenLeft 1)
-							"\"Good mission! It's unfortunate that only one of your wingmen survived.\""
+							(msnTranslate gSource "textSuccessDebrief:2")
 						
-						(cat 
-							"\"Outstanding mission! Looks like you came back with " wingmenLeft " wingmen.\""
-							)
+						(msnTranslate gSource "textSuccessDebrief:3" {
+							wingmenLeft: wingmenLeft
+							})
 						)
 					)
 			</Text>
+			<String id="textSuccessDebrief:1">
+				"A tough mission. We can't afford to lose so many good pilots."
+			</String>
+			<String id="textSuccessDebrief:2">
+				"Good mission! It's unfortunate that only one of your wingmen survived."
+			</String>
+			<String id="textSuccessDebrief:3">
+				"Outstanding mission! Looks like you came back with %wingmenLeft% wingmen."
+			</String>
 		</Language>
 	</MissionType>
 

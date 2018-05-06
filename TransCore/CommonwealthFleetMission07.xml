@@ -211,15 +211,19 @@
 
 		<Language>
 			<Text id="Name">
-				"Escort Refugee Convoy"
+				Escort Refugee Convoy
 			</Text>
 			<Text id="Summary">
-				(cat
-					"Escort a refugee convoy passing through the system.\n\n"
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+				Escort a refugee convoy passing through the system.
 
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
-					)
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 			<Text id="Intro">
 
@@ -229,28 +233,28 @@
 
 			</Text>
 			<Text id="Briefing">
-				(cat
-					"\"A refugee convoy is passing through the system. Your mission is to "
-					"lead a small squadron and escort the convoy safely through the system. "
-					"Any questions?\""
-					)
-			</Text>
-			<Text id="AcceptReply">
-				"\"Good luck, %name%!\""
-			</Text>
-			<Text id="DeclineReply">
-				"\"Get the hell out of here then!\""
-			</Text>
 
-			<Text id="InProgress">
-				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+				"A refugee convoy is passing through the system. Your mission is to
+				lead a small squadron and escort the convoy safely through the system.
+				Any questions?"
+
 			</Text>
-			<Text id="FailureDebrief">
-				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
-			</Text>
-			<Text id="SuccessDebrief">
-				"\"Outstanding mission! Those refugees have a chance to start a new life away from the war zone.\""
-			</Text>
+			<String id="AcceptReply">
+				"Good luck, %name%!"
+			</String>
+			<String id="DeclineReply">
+				"Get the hell out of here then!"
+			</String>
+
+			<String id="InProgress">
+				"What is your major malfunction!? Get back out there and complete your mission!"
+			</String>
+			<String id="FailureDebrief">
+				"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!"
+			</String>
+			<String id="SuccessDebrief">
+				"Outstanding mission! Those refugees have a chance to start a new life away from the war zone."
+			</String>
 		</Language>
 	</MissionType>
 

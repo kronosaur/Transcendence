@@ -107,13 +107,18 @@
 				Black Market Delivery
 			</Text>
 			<Text id="Summary">
-				(cat
-					"Deliver cargo to the Victorian at the Commonwealth station in the "
-					(sysGetName (msnGetData gSource 'destNodeID)) " system.\n\n"
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					destination: (sysGetName (msnGetData gSource 'destNodeID))
+					})
+			</Text>
+			<Text id="textSummary">
+				Deliver cargo to the Victorian at the Commonwealth station in the
+				%destination% system.
 
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
-					)
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 			<Text id="Briefing">
 

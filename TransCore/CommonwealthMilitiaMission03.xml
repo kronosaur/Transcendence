@@ -69,17 +69,21 @@
 
 		<Language>
 			<Text id="Name">
-				"Destroy Enemy Station"
+				Destroy Enemy Station
 			</Text>
 
 			<Text id="Summary">
-				(cat
-					"Your mission is to destroy " (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x04) " "
-					"in " (sysGetName) ".\n\n"
+				(msnTranslate gSource 'textSummary {
+					targetName: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 'article)
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+				Your mission is to destroy %targetName% in %systemName%.
 
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
-					)
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 
 			<Text id="Intro">
@@ -93,30 +97,34 @@
 			</Text>
 
 			<Text id="Briefing">
-				(cat
-					"\"" (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x05)
-					" in the system has been harassing traffic in the area. "
-					"We want you to take it out. Clear?\""
-					)
+				(msnTranslate gSource 'textBriefing {
+					targetName: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 'article)
+					})
+			</Text>
+			<Text id="textBriefing">
+
+				"%TargetName% in the system has been harassing traffic in the area.
+				We want you to take it out. Clear?"
+
 			</Text>
 
-			<Text id="AcceptReply">
-				"\"Good luck, captain!\""
-			</Text>
+			<String id="AcceptReply">
+				"Good luck, captain!"
+			</String>
 
-			<Text id="DeclineReply">
-				"\"Why don't you make yourself useful and get us some tea or something.\""
-			</Text>
+			<String id="DeclineReply">
+				"Why don't you make yourself useful and get us some tea or something."
+			</String>
 
-			<Text id="InProgress">
-				"\"What is your major malfunction!? Get back out there and complete your mission!\""
-			</Text>
-			<Text id="FailureDebrief">
-				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
-			</Text>
-			<Text id="SuccessDebrief">
-				"\"Good work, captain! That was an outstanding mission.\""
-			</Text>
+			<String id="InProgress">
+				"What is your major malfunction!? Get back out there and complete your mission!"
+			</String>
+			<String id="FailureDebrief">
+				"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!"
+			</String>
+			<String id="SuccessDebrief">
+				"Good work, captain! That was an outstanding mission."
+			</String>
 		</Language>
 	</MissionType>
 

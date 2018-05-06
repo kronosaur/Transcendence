@@ -136,17 +136,21 @@
 
 		<Language>
 			<Text id="Name">
-				"Escort freighter"
+				Escort freighter
 			</Text>
 			<Text id="Summary">
-				(cat
-					"Escort a supply ship from "
-					(objGetName (objGetObjByID (msnGetData gSource 'gateID)) 0)
-					"back to " (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4) ".\n\n"
+				(msnTranslate gSource 'textSummary {
+					cscName: (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 'article)
+					gateName: (objGetName (objGetObjByID (msnGetData gSource 'gateID)))
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+				Escort a supply ship from %gateName% back to %cscName%.
 
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
-					)
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 			<Text id="Intro">
 
@@ -156,30 +160,34 @@
 
 			</Text>
 			<Text id="Briefing">
-				(cat
-					"\"A supply ship is arriving at the "
-					(objGetName (objGetObjByID (msnGetData gSource 'gateID)))
-					". Your orders are to escort it back to "
-					(objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4)
-					" and defend it against all enemies. Carry On!\""
-					)
+				(msnTranslate gSource 'textBriefing {
+					cscName: (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 'article)
+					gateName: (objGetName (objGetObjByID (msnGetData gSource 'gateID)))
+					})
 			</Text>
-			<Text id="AcceptReply">
-				"\"Good luck, %name%!\""
-			</Text>
-			<Text id="DeclineReply">
-				"\"Get the hell out of here then!\""
-			</Text>
+			<Text id="textBriefing">
 
-			<Text id="InProgress">
-				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+				"A supply ship is arriving at the %gateName%.
+				Your orders are to escort it back to %cscName%
+				and defend it against all enemies. Carry On!\""
+
 			</Text>
-			<Text id="FailureDebrief">
-				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
-			</Text>
-			<Text id="SuccessDebrief">
-				"\"Outstanding mission! Those supplies are desperately needed here.\""
-			</Text>
+			<String id="AcceptReply">
+				"Good luck, %name%!"
+			</String>
+			<String id="DeclineReply">
+				"Get the hell out of here then!"
+			</String>
+
+			<String id="InProgress">
+				"What is your major malfunction!? Get back out there and complete your mission!"
+			</String>
+			<String id="FailureDebrief">
+				"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!"
+			</String>
+			<String id="SuccessDebrief">
+				"Outstanding mission! Those supplies are desperately needed here."
+			</String>
 		</Language>
 	</MissionType>
 

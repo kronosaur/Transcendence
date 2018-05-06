@@ -88,12 +88,16 @@
 		<Language>
 			<Text id="Name">Professor Dall's sphere</Text>
 			<Text id="Summary">
-				(cat
-					"Professor Dall has asked you to search for an alien sphere on a Sung freighter lost in the outer system.\n\n"
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+				Professor Dall has asked you to search for an alien sphere on a Sung freighter lost in the outer system.
 
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
-					)
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 			<Text id="Intro">
 				(if (= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
@@ -108,7 +112,7 @@
 
 					(not (objGetItems gPlayerShip "sIN &gt;=5"))
 						(list
-							{	desc: (msnTranslate gSource 'dallShieldCheck)
+							{	descID: 'dallShieldCheck
 								actions: (list
 									{	label: (msnTranslate gSource 'actionDontWorry)	}
 									{	label: (msnTranslate gSource 'actionBeBack)
@@ -117,7 +121,7 @@
 										}
 									)
 								}
-							{	desc: (msnTranslate gSource 'dallBriefingFirst)
+							{	descID: 'dallBriefingFirst
 								;	Need to reset declineReason as above BeBack code is executed for both actions
 								declineCode: (lambda Nil (msnSetData (scrGetData gScreen 'missionObj) 'declineReason Nil))
 								}
@@ -183,9 +187,9 @@
 				"I've waited for twenty years, I can wait a bit longer.
 				Come back when your ship is ready for the mission."
 			</Text>
-			<Text id="dallBetterShip">
-				"\"You're back! Hopefully you're ready for the mission now.\""
-			</Text>
+			<String id="dallBetterShip">
+				"You're back! Hopefully you're ready for the mission now."
+			</String>
 			<Text id="dallBriefing">
 				Professor Dall greets you:
 
@@ -234,8 +238,8 @@
 				should see them..."
 			</Text>
 
-			<Text id="actionDontWorry">*"[D]on't worry about my ship!"</Text>
-			<Text id="actionBeBack">*"[I]'ll be back."</Text>
+			<String id="actionDontWorry">"[D]on't worry about my ship!"</String>
+			<String id="actionBeBack">"[I]'ll be back."</String>
 		</Language>
 	</MissionType>
 
@@ -273,32 +277,36 @@
 		
 		<Events>
 			<GetGlobalAchievements>
-				(block (theList theStatus)
-					(setq theStatus (typGetData &itDallSphere; "status"))
-					
-					(switch
-						(eq theStatus 'found)
-							(if (objGetItems gPlayerShip "* +unid:&itDallSphere;")
-								(setq theList (list (list "Found Professor Dall's alien sphere" Nil "achievements &amp; regrets")))
-								(setq theList (list (list "Found and lost Professor Dall's alien sphere" Nil "achievements &amp; regrets")))
+				(block (
+					(theStatus (typGetData &itDallSphere; "status"))
+					(achievementText (switch
+						(objGetItems gPlayerShip "* +unid:&itDallSphere;")
+							'achievement.found
+						(= theStatus 'found)
+							'achievement.lost
+						(= theStatus 'withDall)
+							'achievement.withDall
+						))
+					)
+					(if (and theStatus achievementText)
+						(list
+							(list
+								(typTranslate &itDallSphere; achievementText)
+								Nil
+								(typTranslate &unidCommonText; 'achievementsAndRegrets)
 								)
-							
-						(eq theStatus 'withDall)
-							(setq theList (list (list "Found and delivered Professor Dall's alien sphere" Nil "achievements &amp; regrets")))
+							)
 						)
-					
-					theList
 					)
 			</GetGlobalAchievements>
 
 			<OnObjDestroyed>
-                (switch
-                    
-                    ;   If not our object, then nothing to do
-                    
-                    (!= gSource aObjDestroyed)
-                        Nil
-						
+				(switch
+					;	If not our object, then nothing to do
+
+					(!= gSource aObjDestroyed)
+						Nil
+
 					;	If the ship we're on got destroyed, but it left a wreck with the
 					;	sphere on it, then we're OK.
 					
@@ -319,7 +327,7 @@
 						(objAddItem theObj (itmCreate &itDallSphere; 1))
 						(objIncVel theObj (sysVectorPolarVelocity (random 0 359) 5))
 						)
-                    )
+					)
 			</OnObjDestroyed>
 			
 			<OnUpdate>
@@ -330,16 +338,25 @@
 							(leq roll 4)
 								(block Nil
 									(objMakeParalyzed gSource 150)
-									(objSendMessage gSource Nil "A power surge from the sphere disables your ship")
+									(objSendMessage gSource Nil (typTranslate &itDallSphere; 'msgPowerSurge))
 									)
 									
 							(leq roll 10)
-								(objSendMessage gSource Nil "The sphere in your cargo hold pulses with power")
+								(objSendMessage gSource Nil (typTranslate &itDallSphere; 'msgPowerPulse))
 							)
 						)
 					)
 			</OnUpdate>
 		</Events>
+
+		<Language>
+			<Text id="msgPowerSurge">A power surge from the sphere disables your ship</Text>
+			<Text id="msgPowerPulse">The sphere in your cargo hold pulses with power</Text>
+
+			<Text id="achievement.found">Found Professor Dall's alien sphere</Text>
+			<Text id="achievement.lost">Found and lost Professor Dall's alien sphere</Text>
+			<Text id="achievement.withDall">Found and delivered Professor Dall's alien sphere</Text>
+		</Language>
 	</ItemType>
 
 	<StationType UNID="&stDallSphere;"

@@ -35,8 +35,8 @@
 						;	Set up the mission
 						(block Nil
 							(msnSetData gSource 'item theItem)
-							(msnSetData gSource 'itemName (itmGetName theItem 2))
-							(msnSetData gSource 'itemCountName (itmGetName theItem 8))
+							(msnSetData gSource 'itemName (itmGetName theItem 'plural ))
+							(msnSetData gSource 'itemCountName (itmGetName theItem 'count))
 							(msnSetData gSource 'itemCost (* (itmGetPrice theItem 'credit) (itmGetCount theItem)))
 							)
 						)
@@ -90,7 +90,7 @@
 		
 		<Language>
 			<Text id="Name">
-				"Black Market Encounter"
+				Black Market Encounter
 			</Text>
 			<Text id="Summary">
 			</Text>
@@ -101,15 +101,25 @@
 			</Text>
 			<Text id="Briefing">
 				(list
-					{	desc: (msnTranslate gSource 'Illegals1)
+					{
+						descID: 'Illegals1
 						actions: (list
-							{	label: (msnTranslate gSource 'actionOffer)	}
-							{	label: (msnTranslate gSource 'actionSorry)
+							{	labelID: 'actionOffer	}
+							{	labelID: 'actionSorry
 								nextPage: 'missionDecline
 								}
 							)
+						data: {
+							itemName: (msnGetData gSource 'itemName)
+							}
 						}
-					{	desc: (msnTranslate gSource 'Illegals2)	}
+					{
+						descID: 'Illegals2
+						data: {
+							itemCost: (fmtCurrency 'credit (msnGetData gSource 'itemCost))
+							itemCountName: (msnGetData gSource 'itemCountName)
+							}
+						}
 					)
 			</Text>
 			<Text id="AcceptReply">
@@ -128,17 +138,16 @@
 			</Text>
 			<Text id="SuccessMsg"></Text>
 			<Text id="Illegals1">
-				(cat
-					"As you finish dinner one of the brothers says, "
-					"\"I wish I could get a hold of some " (msnGetData gSource 'itemName)
-					".\" You respond:"
-					)
+
+				As you finish dinner one of the brothers says,
+				"I wish I could get a hold of some %itemName%."
+				You respond:
+
 			</Text>
 			<Text id="Illegals2">
-				(cat
-					"The brothers offer you " (msnGetData gSource 'itemCost)
-					" credits for " (msnGetData gSource 'itemCountName) "."
-					)
+
+				The brothers offer you %itemCost% for %itemCountName%.
+
 			</Text>
 			<Text id="IllegalsSale">
 				You exchange the merchandise for the money at the dock. As they
@@ -159,8 +168,8 @@
 				"You are under arrest for the attempted sale of illegal merchandise."
 			</Text>
 
-			<Text id="actionOffer">"\"[I] have some on my ship!\""</Text>
-			<Text id="actionSorry">"\"[S]orry, I can't help you.\""</Text>
+			<String id="actionOffer">"[I] have some on my ship!"</String>
+			<String id="actionSorry">"[S]orry, I can't help you."</String>
 		</Language>
 	</MissionType>
 

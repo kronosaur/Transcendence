@@ -251,17 +251,22 @@
 
 		<Language>
 			<Text id="Name">
-				"Escort freighter"
+				Escort freighter
 			</Text>
 			<Text id="Summary">
-				(cat
-					"Escort a superfreighter carrying pteracnium ore from "
-					(objGetName (objGetObjByID (msnGetData gSource 'gateID)) 0)
-					"back to " (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4) ".\n\n"
+				(msnTranslate gSource 'textSummary {
+					cscName: (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 'article)
+					gateName: (objGetName (objGetObjByID (msnGetData gSource 'gateID)))
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+				Escort a superfreighter carrying pteracnium ore from
+				%gateName% back to %cscName%.
 
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
-					)
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 			<Text id="Intro">
 
@@ -271,38 +276,43 @@
 
 			</Text>
 			<Text id="Briefing">
-				(cat
-					"\"A superfreighter carrying pteracnium ore will enter the system at "
-					(objGetName (objGetObjByID (msnGetData gSource 'gateID)) 0)
-					" and rendezvous with us here. Your mission is to escort it "
-					"safely from the gate to our location. Clear?\""
-					)
+				(msnTranslate gSource 'textBriefing {
+					cscName: (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 'article)
+					gateName: (objGetName (objGetObjByID (msnGetData gSource 'gateID)))
+					})
 			</Text>
-			<Text id="AcceptReply">
-				"\"Good luck, %name%!\""
-			</Text>
-			<Text id="DeclineReply">
-				"\"Get the hell out of here then!\""
-			</Text>
+			<Text id="textBriefing">
 
-			<Text id="InProgress">
-				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+				"A superfreighter carrying pteracnium ore will enter the system at
+				%gateName% and rendezvous with us here. Your mission is to escort it
+				safely from the gate to our location. Clear?"
+
 			</Text>
-			<Text id="FailureDebrief">
-				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
-			</Text>
+			<String id="AcceptReply">
+				"Good luck, %name%!"
+			</String>
+			<String id="DeclineReply">
+				"Get the hell out of here then!"
+			</String>
+
+			<String id="InProgress">
+				"What is your major malfunction!? Get back out there and complete your mission!"
+			</String>
+			<String id="FailureDebrief">
+				"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!"
+			</String>
 			<Text id="SuccessDebrief">
 				(msnTranslate gSource (cat "SuccessDebrief:" (msnGetData gSource 'variant)))
 			</Text>
-			<Text id="SuccessDebrief:ares">
-				"\"Excellent mission! That pteracnium fuel is desperately needed!\""
-			</Text>
-			<Text id="SuccessDebrief:rogue">
-				"\"Excellent mission! That pteracnium fuel is desperately needed!\""
-			</Text>
-			<Text id="SuccessDebrief:attack">
-				"\"Excellent mission! Your quick reaction probably saved hundreds of lives on this ship!\""
-			</Text>
+			<String id="SuccessDebrief:ares">
+				"Excellent mission! That pteracnium fuel is desperately needed!"
+			</String>
+			<String id="SuccessDebrief:rogue">
+				"Excellent mission! That pteracnium fuel is desperately needed!"
+			</String>
+			<String id="SuccessDebrief:attack">
+				"Excellent mission! Your quick reaction probably saved hundreds of lives on this ship!"
+			</String>
 			<Text id="msgHurry">
 				(random (list
 					"Destroy the freighter!"
