@@ -1574,6 +1574,9 @@
 	<!ENTITY baCorporateStation			"0x00100043">
 	<!ENTITY itTradingComputerROM		"0x00100044">
 	<!ENTITY rsCorporateArmsDealer		"0x00100045">
+	<!ENTITY rsIceFarmIce				"0x00100046">
+	<!ENTITY rsIceFarmPrimordial		"0x00100047">
+	<!ENTITY rsIceFarmRocky				"0x00100048">
 	
 	<!-- 0060-007F COMMONWEALTH FLEET -->
 	

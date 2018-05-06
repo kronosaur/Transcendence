@@ -448,7 +448,7 @@
         </Language>
 	</StationType>
 
-	<!-- Arms Dealer -->
+	<!-- Level 4: Arms Dealer -->
 
 	<StationType UNID="&stArmsDealer;"
 			name=				"corporate arms dealer"
@@ -2002,41 +2002,37 @@
         </Language>
 	</StationType>
 
-	<!-- Ice Farm -->
+	<!-- Level 3: Ice Farm -->
 
 	<StationType UNID="&stIceFarm;"
 			name=				"corporate ice farm"
 			sovereign=			"&svCorporate;"
+
+			attributes=			"asteroidBase, corporate, corporateCustoms, envAir, envAvoidsFire, friendly, independent, generic, human, populated"
 			inherit=			"&baCorporateStation;"
 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
 
-			multiHull=			"true"
+			size=				"150"
 			armorID=			"&itPlasteelPlate;"
 			hitPoints=			"120"
+			multiHull=			"true"
 			regen=              "1"
+
+			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtIceAsteroidEjecta;"
-
-			attributes=			"asteroidBase, corporate, corporateCustoms, envAir, envAvoidsFire, friendly, independent, generic, human, populated"
-			levelFrequency=		"rccuu rv--- ----- ----- -----"
-			locationCriteria=	"++outerSystem"
 			>
 
-		<Image			imageID="&rsStations1;" imageX="512" imageY="384" imageWidth="128" imageHeight="128"/>
+		<!-- Encounter Info -->
 
-		<Ships>
-			<Ship			count="1d3+1"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
-		</Ships>
+		<Encounter
+				levelFrequency=		"rccuu rv--- ----- ----- -----"
+				locationCriteria=	"++outerSystem"
+				/>
 
-		<Items>
-			<Item				count="4d12"	item="&itEuropanIceMoss;" />
-			<Item				count="1d12"	item="&itEuropanIceVodka;" />
-			<Item chance="50"	count="2d12"	item="&itHogeiSalmon;" />
-		</Items>
+		<!-- Trade and Items -->
 
 		<Trade currency="credit" max="10000" replenish="500">
 			<Sell	criteria="*NU +Lux; -NotForSale;"	priceAdj="100"/>
@@ -2055,19 +2051,54 @@
 			<ProduceTrade	criteria="{human.basicFood}"	impact="10"/>
 		</Trade>
 
-		<Events>
-			<OnContractGenerate>
-				(intGenerateIndustrialRequestContract1)
-			</OnContractGenerate>
+		<Items>
+			<Item				count="4d12"	item="&itEuropanIceMoss;" />
+			<Item				count="1d12"	item="&itEuropanIceVodka;" />
+			<Item chance="50"	count="2d12"	item="&itHogeiSalmon;" />
+		</Items>
 
-			<OnContractQuery>True</OnContractQuery>
-		</Events>
+		<!-- Ships and Defenses -->
+
+		<Ships>
+			<Ship			count="1d3+1"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
+		</Ships>
+
+		<!-- Image and Effects -->
+
+		<ImageVariants>
+			<LocationCriteriaTable>
+				<Variants criteria="*ice">
+					<Image imageID="&rsIceFarmIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsIceFarmIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsIceFarmIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsIceFarmIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*primordial">
+					<Image imageID="&rsIceFarmPrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsIceFarmPrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsIceFarmPrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsIceFarmPrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				
+				<Variants criteria="*~">
+					<Image imageID="&rsIceFarmRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsIceFarmRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsIceFarmRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsIceFarmRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+			</LocationCriteriaTable>
+		</ImageVariants>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"120"
+				>
+		</DockingPorts>
+
+		<!-- Dock Screen -->
 
 		<DockScreens>
-			<Main
-				name=			"Ice Farm"
-				>
-
+			<Main>
 				<Panes>
 					<Default descID="descWelcome">
 						<Actions>
@@ -2085,27 +2116,25 @@
 							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="40" />
-			<Port x="0"		y="-60" />
-			<Port x="60"	y="0" />
-			<Port x="-60"	y="0" />
-			<Port x="-60"	y="60" />
-			<Port x="60"	y="-60" />
-			<Port x="40"	y="-40" />
-			<Port x="-40"	y="-40" />
-		</DockingPorts>
+		<!-- Events and Data -->
+
+		<Events>
+			<OnContractGenerate>
+				(intGenerateIndustrialRequestContract1)
+			</OnContractGenerate>
+
+			<OnContractQuery>True</OnContractQuery>
+		</Events>
 
         <Language>
+			<Text id="core.name">Ice Farm</Text>
+
 			<Text id="descWelcome">
 
 				You are docked at an independent ice farm on a small asteroid. 
@@ -2113,8 +2142,9 @@
 				hear the drone of struggling generators and pumps.
 
 			</Text>
-            <Text id="core.mapDesc">"Sells luxuries &mdash; Buys food and supplies"</Text>
+            <Text id="core.mapDesc">Sells luxuries &mdash; Buys food and supplies</Text>
         </Language>
+
 	</StationType>
 
 	<!-- Insurance Company
@@ -3383,6 +3413,9 @@
 <!-- RESOURCES -->
 
 	<Image UNID="&rsCorporateArmsDealer;"	bitmap="Resources\CorporateArmsDealer.jpg" bitmask="Resources\CorporateArmsDealerMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsIceFarmIce;"			bitmap="Resources\IceFarmIce.jpg" bitmask="Resources\IceFarmIceMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsIceFarmPrimordial;"		bitmap="Resources\IceFarmPrimordial.jpg" bitmask="Resources\IceFarmPrimordialMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsIceFarmRocky;"			bitmap="Resources\IceFarmRocky.jpg" bitmask="Resources\IceFarmRockyMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsMakayevFactory;"		bitmap="Resources\MakayevFactory.jpg" bitmask="Resources\MakayevFactoryMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsManufacturingPlant;"	bitmap="Resources\ManufacturingPlant.jpg" bitmask="Resources\ManufacturingPlantMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsTradingPostAnimation;"	bitmap="Resources\TradingPostGenericAd.jpg" bitmask="Resources\TradingPostGenericAdMask.bmp" loadOnUse="true"/>
