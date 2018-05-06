@@ -360,6 +360,7 @@
 	<DockScreen UNID="&dsCommonwealthNightclub;"
 			nameID=				"strTitle"
 			nestedScreen=		"true"
+			inherit=		"&dsDockScreenBase;"
 			>
 
 		<InitialPane>
@@ -423,7 +424,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Leave" cancel="1" key="L">
+					<Action id="actionLeave" default="1" cancel="1">
 						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
@@ -431,7 +432,7 @@
 
 			<Nothing descID="descNothing">
 				<Actions>
-					<Action name="Leave" cancel="1" key="L">
+					<Action id="actionLeave" default="1" cancel="1">
 						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
@@ -479,77 +480,33 @@
 	<DockScreen UNID="&dsCommonwealthStation;"
 			inherit="&dsDockScreenBase;">
 
-		<InitialPane>
-			(if (objGetStaticData gSource "Info")
-				"DefaultWithInfo"
-				"Default"
-				)
-		</InitialPane>
-
 		<Panes>
 			<Default descID="descWelcome">
 				<OnPaneInit>
 					(block ()
+						(scrShowAction gScreen 'actionInformation (objGetStaticData gSource 'Info))
 						(scrShowAction gScreen 'actionBuyShip (objHasTradeService gSource 'priceOfShipForSale))
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Commodities Exchange" default="1" key="C">
-						(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
-							checkMilitaryID: True
-							})
-					</Action>
-
-					<Action name="Dock Services" key="D">
-						(rpgDockServices gPlayerShip {
-							checkMilitaryID: True
-							})
-					</Action>
-
-					<Action name="Central Plaza" key="P">
-						<ShowPane pane="CentralPlaza"/>
-					</Action>
-
-					<Action id="actionBuyShip">
-						(scrShowScreen gScreen &dsRPGShipBroker; {
-							checkMilitaryID: True
-							})
-					</Action>
-
-					<Action name="Undock" cancel="1" key="U">
-						<Exit/>
-					</Action>
-
-				</Actions>
-
-			</Default>
-
-			<DefaultWithInfo descID="descWelcome">
-				<OnPaneInit>
-					(block ()
-						(scrShowAction gScreen 'actionBuyShip (objHasTradeService gSource 'priceOfShipForSale))
-						)
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Information" key="I">
+					<Action id="actionInformation">
 						<ShowPane pane="Information"/>
 					</Action>
 
-					<Action name="Commodities Exchange" default="1" key="C">
+					<Action id="actionCommoditiesExchange" default="1">
 						(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
 							checkMilitaryID: True
 							})
 					</Action>
 
-					<Action name="Dock Services" key="D">
+					<Action id="actionDockServices">
 						(rpgDockServices gPlayerShip {
 							checkMilitaryID: True
 							})
 					</Action>
 
-					<Action name="Central Plaza" key="P">
+					<Action id="actionCentralPlaza">
 						<ShowPane pane="CentralPlaza"/>
 					</Action>
 
@@ -559,57 +516,54 @@
 							})
 					</Action>
 
-					<Action name="Undock" cancel="1" key="U">
+					<Action id="actionUndock" cancel="1">
 						<Exit/>
 					</Action>
-
 				</Actions>
-
-			</DefaultWithInfo>
+			</Default>
 
 			<CentralPlaza descID="descCentralPlaza">
 				<Actions>
-					<Action name="Trafalgar Pub" key="P">
+					<Action id="actionTrafalgarPub">
 						(scrShowScreen gScreen &dsCommonwealthPub;)
 					</Action>
 
-					<Action name="The Victorian Nightclub" imageIndex="0" key="V" id="actionVictorianClub">
+					<Action id="actionVictorianClub" imageIndex="0">
 						(scrShowScreen gScreen &dsCommonwealthNightclub;)
 					</Action>
 
-					<Action name="Done" cancel="1" key="D">
+					<Action id="actionDone" cancel="1">
 						<Navigate screen="&dsCommonwealthStation;"/>
 					</Action>
 				</Actions>
-
 			</CentralPlaza>
 
 			<Information
 					desc=	"=(objGetStaticData gSource &quot;Info&quot;)">
 
 				<Actions>
-					<Action name="Tourist Information" key="T">
+					<Action id="actionInfoTourist">
 						<ShowPane pane="TouristInfo"/>
 					</Action>
 
-					<Action name="Corporate Information" key="C">
+					<Action id="actionInfoCorporate">
 						<ShowPane pane="CorporateInfo"/>
 					</Action>
 
-					<Action name="Travel Information" key="v">
+					<Action id="actionInfoTravel">
 						<ShowPane pane="TravelInfo"/>
 					</Action>
 
-					<Action name="Safety Information" key="S">
+					<Action id="actionInfoSafety">
 						<ShowPane pane="SafetyInfo"/>
 					</Action>
 
-					<Action name="Fun Facts" key="F">
+					<Action id="actionInfoFun">
 						<ShowPane pane="FunInfo"/>
 					</Action>
 
-					<Action name="Done" key="D" cancel="1">
-						<ShowPane pane="DefaultWithInfo"/>
+					<Action id="actionDone" cancel="1">
+						<ShowPane pane="Default"/>
 					</Action>
 				</Actions>
 
@@ -619,7 +573,7 @@
 					desc=	"=(objGetStaticData gSource &quot;TouristInfo&quot;)">
 
 				<Actions>
-					<Action name="Done" key="D" cancel="1">
+					<Action id="actionDone" default="1" cancel="1">
 						<ShowPane pane="Information"/>
 					</Action>
 				</Actions>
@@ -629,7 +583,7 @@
 					desc=	"=(objGetStaticData gSource &quot;CorporateInfo&quot;)">
 
 				<Actions>
-					<Action name="Done" key="D" cancel="1">
+					<Action id="actionDone" default="1" cancel="1">
 						<ShowPane pane="Information"/>
 					</Action>
 				</Actions>
@@ -639,7 +593,7 @@
 					desc=	"=(objGetStaticData gSource &quot;TravelInfo&quot;)">
 
 				<Actions>
-					<Action name="Done" key="D" cancel="1">
+					<Action id="actionDone" default="1" cancel="1">
 						<ShowPane pane="Information"/>
 					</Action>
 				</Actions>
@@ -649,7 +603,7 @@
 					desc=	"=(objGetStaticData gSource &quot;SafetyInfo&quot;)">
 
 				<Actions>
-					<Action name="Done" key="D" cancel="1">
+					<Action id="actionDone" default="1" cancel="1">
 						<ShowPane pane="Information"/>
 					</Action>
 				</Actions>
@@ -661,11 +615,11 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="More Fun Facts" key="F" default="1">
+					<Action id="actionInfoMoreFun" default="1">
 						<ShowPane pane="FunInfo"/>
 					</Action>
 
-					<Action name="Done" key="D" cancel="1">
+					<Action id="actionDone" cancel="1">
 						<ShowPane pane="Information"/>
 					</Action>
 				</Actions>
@@ -674,6 +628,17 @@
 		</Panes>
 
 		<Language>
+			<Text id="actionInformation">[I]nformation</Text>
+			<Text id="actionCentralPlaza">Central [P]laza</Text>
+			<Text id="actionTrafalgarPub">Trafalgar [P]ub</Text>
+			<Text id="actionVictorianClub">The [V]ictorian Nightclub</Text>
+			<Text id="actionInfoTourist">[T]ourist Information</Text>
+			<Text id="actionInfoCorporate">[C]orporate Information</Text>
+			<Text id="actionInfoTravel">Tra[v]el Information</Text>
+			<Text id="actionInfoSafety">[S]afety Information</Text>
+			<Text id="actionInfoFun">[F]un Facts</Text>
+			<Text id="actionInfoMoreFun">More [F]un Facts</Text>
+
 			<Text id="descWelcome">
 
 				You are in the outer docking level of a large station of the 
