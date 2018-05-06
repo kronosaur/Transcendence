@@ -722,7 +722,7 @@
 
 			<GetRumors>
 				(block (
-					(level (korGetPlayerLevel))
+					(rank (korGetPlayerLevel))
 					)
 					{
 						attributes: "commonwealthPub"
