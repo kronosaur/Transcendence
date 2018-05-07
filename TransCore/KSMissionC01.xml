@@ -338,7 +338,7 @@
 
 						(not fortress)
 							(msnTranslate gSource "InProgress:strikeBack:noFortress" {
-								pirateStationsLeft: (strNumberstationsLeft)
+								pirateStationsLeft: (strNumber stationsLeft)
 								})
 
 						(= stationsLeft 0)
@@ -348,7 +348,7 @@
 							(msnTranslate gSource "InProgress:strikeBack:onePlusFortress")
 
 						(msnTranslate gSource "InProgress:strikeBack:Fortress" {
-							pirateStationsLeft: (strNumberstationsLeft)
+							pirateStationsLeft: (strNumber stationsLeft)
 							})
 						)
 					)
