@@ -285,12 +285,12 @@
 			<Text id="Briefing">
 				(if (msnGetProperty gSource 'isDeclined)
 					{
-						descID:	textBriefing
+						descID:	'textBriefing
 						acceptLabelID: 'actionHelp
 						declineLabelID: 'actionDangerous
 						}
 					{
-						descID: textFirstBriefing
+						descID: 'textFirstBriefing
 						}
 					)
 			</Text>

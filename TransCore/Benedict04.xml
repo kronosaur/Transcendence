@@ -182,11 +182,11 @@
 			</Text>
 			<Text id="FirstIntro">
 				(list
-					{	descID: 'FirstIntro1	labelID: actionFirstIntro1	}
-					{	descID: 'FirstIntro2	labelID: actionFirstIntro2	}
-					{	descID: 'FirstIntro3	labelID: actionFirstIntro3	}
-					{	descID: 'FirstIntro4	labelID: actionFirstIntro4	}
-					{	descID: 'FirstIntro5	labelID: actionFirstIntro5	}
+					{	descID: 'FirstIntro1	labelID: 'actionFirstIntro1	}
+					{	descID: 'FirstIntro2	labelID: 'actionFirstIntro2	}
+					{	descID: 'FirstIntro3	labelID: 'actionFirstIntro3	}
+					{	descID: 'FirstIntro4	labelID: 'actionFirstIntro4	}
+					{	descID: 'FirstIntro5	labelID: 'actionFirstIntro5	}
 					)
 			</Text>
 			<Text id="FirstIntro1">
@@ -398,13 +398,28 @@
 			
 			<Text id="StormhoundMeeting">
 				(list
-					{	descID: 'StormhoundMeeting1		labelID: 'actionStormhoundMeeting1	}
-					{	descID: 'StormhoundMeeting2		labelID: 'actionStormhoundMeeting2	}
-					{	descID: 'StormhoundMeeting3		labelID: 'actionStormhoundMeeting3	}
-					{	descID: 'StormhoundMeeting4		labelID: 'actionStormhoundMeeting4	}
-					{	descID: 'StormhoundMeeting5		labelID: 'actionStormhoundMeeting5	}
 					{
-						descID: 'StormhoundMeeting6
+						desc: (typTranslate &msBenedictInNewBeyond; 'StormhoundMeeting1)
+						label: (typTranslate &msBenedictInNewBeyond; 'actionStormhoundMeeting1)
+						}
+					{
+						desc: (typTranslate &msBenedictInNewBeyond; 'StormhoundMeeting2)
+						label: (typTranslate &msBenedictInNewBeyond; 'actionStormhoundMeeting2)
+						}
+					{
+						desc: (typTranslate &msBenedictInNewBeyond; 'StormhoundMeeting3)
+						label: (typTranslate &msBenedictInNewBeyond; 'actionStormhoundMeeting3)
+						}
+					{
+						desc: (typTranslate &msBenedictInNewBeyond; 'StormhoundMeeting4)
+						label: (typTranslate &msBenedictInNewBeyond; 'actionStormhoundMeeting4)
+						}
+					{
+						desc: (typTranslate &msBenedictInNewBeyond; 'StormhoundMeeting5)
+						label: (typTranslate &msBenedictInNewBeyond; 'actionStormhoundMeeting5)
+						}
+					{
+						desc: (typTranslate &msBenedictInNewBeyond; 'StormhoundMeeting6)
 						nextPage: 'forceUndock
 						code: 
 							(lambda ()
