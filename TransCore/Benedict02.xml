@@ -133,7 +133,7 @@
 						(list
 							(list (msnTranslate gSource achievementText)
 								Nil
-								"achievements &amp; regrets"
+								(typTranslate &unidCommonText; 'achievementsAndRegrets)
 								)
 							)
 						)
@@ -242,7 +242,11 @@
 								(eq attackersLeft 0)
 									(objSendMessage gPlayerShip freighterObj (msnTranslate gSource "Freighter:AllClear"))
 									
-								(objSendMessage gPlayerShip freighterObj (msnTranslate gSource "Freighter:PenitentDestroyed"))
+								(objSendMessage gPlayerShip freighterObj
+									(msnTranslate gSource (cat "Freighter:PenitentDestroyed:" (random 1 5)) {
+										attackersLeft: (strNumber attackersLeft)
+										})
+									)
 								)
 							)
 					)
@@ -301,98 +305,98 @@
 			<Text id="Freighter:AllClear">
 				We're all clear! Thanks for your help!
 			</Text>
-			<Text id="Freighter:PenitentDestroyed">
+			<Text id="Freighter:PenitentDestroyed:1">Nice shooting!</Text>
+			<Text id="Freighter:PenitentDestroyed:2">%AttackersLeft% more to go!</Text>
+			<Text id="Freighter:PenitentDestroyed:3">Go with Oracus, Penitent!</Text>
+			<Text id="Freighter:PenitentDestroyed:4">Splash one Penitent!</Text>
+			<Text id="Freighter:PenitentDestroyed:5">That got him!</Text>
+			<Text id="SuccessDebrief">
 				(block (
-					(attackersLeft (@ (list "zero" "one" "two" "three" "four" "five") (msnGetData gSource 'attackersLeft)))
+					(korolovMsn (msnFind "Pa +unid:&msBenedictToKorolov;;"))
 					)
-					
-					(random (list
-						"Nice shooting!"
-						(cat (strCapitalize attackersLeft) " more to go!")
-						"Go with Oracus, Penitent!"
-						"Splash one Penitent!"
-						"That got him!"
-						))
+					(list
+						{	descID: 'SuccessDebrief1	}
+						{	descID: 'SuccessDebrief2	labelID: 'actionSuccess2	}
+						{	descID: 'SuccessDebrief3	labelID: 'actionSuccess3	}
+						{	descID: 'SuccessDebrief4	}
+						(if korolovMsn
+							{	descID: 'SuccessDebrief5a
+								data: {
+									targetSystem: (sysGetName (msnGetData korolovMsn 'korolovNodeID))
+									}}
+							{	descID: 'SuccessDebrief5b	}
+							)
+						)
 					)
 			</Text>
-			<Text id="SuccessDebrief">
-				(list
-					{	desc: (cat
-							"The docking bay swarms with activity. Techs hook up "
-							"cables and equipment to the docked freighter while "
-							"Benedict and the abbess talk with the freighter's captain.\n\n"
-							
-							"\"...the Penitents hit them hard,\" says the captain. "
-							"\"There was no trace of the explorer ship; we just found "
-							"her drifting in space. She must have ejected...\"\n\n"
-							
-							"Behind them you see cardinal-robed medics maneuver a "
-							"rejuv tank through the bay. Inside you see an unconscious "
-							"woman, her long black hair waving in the tank's fluid."
-							)
-						}
-					{	desc: (cat
-							"Benedict makes his way towards you.\n\n"
-							
-							"\"Thank you for helping us,\" he says, shaking your hand. "
-							"\"They wouldn't have survived without you.\""
-							)
-							
-						nextLabel: "\"[W]ho is the woman in the tank?\""
-						}
-					{	desc: (cat
-							"Benedict looks across the docking bay at the rejuv tank "
-							"and for the first time you see tears in his eyes.\n\n"
-							
-							"\"That's Fiona. I should have never let her go,\" he says, mostly to himself.\n\n"
-							
-							"\"Penitents attacked her patrol ship, just as she "
-							"was about to make a critical discovery. Now her data "
-							"is lost along with the ship and crew. She's all we have left.\""
-							)
-						nextLabel: "\"[W]ho are the Penitents?\""
-						}
-					{	desc: (cat
-							"Anger flashes across Benedict's face.\n\n"
-							
-							"\"Domina is not the only god, you know? The Penitents worship "
-							"Oracus, their god of death. But they've gotten stronger "
-							"in the last few years. I've never seen them come all the "
-							"way to Eridani before.\n\n"
-							
-							"\"They've got my attention now.\""
-							)
-						}
-						
-					(block (
-						(korolovMsn (@ (msnFind "a +unid:&msBenedictToKorolov;;") 0))
-						)
-						
-						(if korolovMsn
-							{
-							desc: (cat
-								"\"But your task here is done. Your fate is to reach the Galactic "
-								"Core&#x97;or die trying. I hope I've taught you enough.\n\n"
-								
-								"\"You've shown aptitude for defending ships; if you're interested "
-								"you can visit Korolov Shipping in the " (sysGetName (msnGetData korolovMsn 'korolovNodeID)) " system. "
-								"They're always looking for skilled pilots to defend their freighters.\n\n"
-								
-								"\"Goodbye, %name%! Perhaps I'll see you again someday.\""
-								)
-							}
-							
-							{
-							desc: (cat
-								"\"But your task here is done. Your fate is to reach the Galactic "
-								"Core&#x97;or die trying. I hope I've taught you enough.\n\n"
-								
-								"\"Goodbye, %name%! Perhaps I'll see you again someday.\""
-								)
-							}
-							)
-						)
-					)
+			<Text id="SuccessDebrief1">
+
+				The docking bay swarms with activity. Techs hook up
+				cables and equipment to the docked freighter while
+				Benedict and the abbess talk with the freighter's captain.
+
+				"...the Penitents hit them hard," says the captain.
+				"There was no trace of the explorer ship; we just found
+				her drifting in space. She must have ejected..."
+
+				Behind them you see cardinal-robed medics maneuver a
+				rejuv tank through the bay. Inside you see an unconscious
+				woman, her long black hair waving in the tank's fluid.
+
+			</Text>
+			<Text id="SuccessDebrief2">
+
+				Benedict makes his way towards you.
+
+				"Thank you for helping us," he says, shaking your hand.
+				"They wouldn't have survived without you."
+
+			</Text>
+			<String id="actionSuccess2">"[W]ho is the woman in the tank?"</String>
+			<Text id="SuccessDebrief3">
+
+				Benedict looks across the docking bay at the rejuv tank
+				and for the first time you see tears in his eyes.
+
+				"That's Fiona. I should have never let her go," he says, mostly to himself.
+
+				"Penitents attacked her patrol ship, just as she
+				was about to make a critical discovery. Now her data
+				is lost along with the ship and crew. She's all we have left."
+
+			</Text>
+			<String id="actionSuccess3">"[W]ho are the Penitents?"</String>
+			<Text id="SuccessDebrief4">
+
+				Anger flashes across Benedict's face.
+
+				"Domina is not the only god, you know? The Penitents worship
+				Oracus, their god of death. But they've gotten stronger
+				in the last few years. I've never seen them come all the
+				way to Eridani before.
+
+				"They've got my attention now."
+
+			</Text>
+			<Text id="SuccessDebrief5a">
+
+				"But your task here is done. Your fate is to reach the Galactic
+				Core&#x97;or die trying. I hope I've taught you enough.
+
+				"You've shown aptitude for defending ships; if you're interested
+				you can visit Korolov Shipping in the %targetSystem% system.
+				They're always looking for skilled pilots to defend their freighters.
+
+				"Goodbye, %name%! Perhaps I'll see you again someday."
+
+			</Text>
+			<Text id="SuccessDebrief5b">
+
+				"But your task here is done. Your fate is to reach the Galactic
+				Core&#x97;or die trying. I hope I've taught you enough.
+
+				"Goodbye, %name%! Perhaps I'll see you again someday."
+
 			</Text>
 			<Text id="SuccessMsg">
 				"Mission complete!"

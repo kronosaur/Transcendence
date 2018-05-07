@@ -167,7 +167,12 @@
 							)
 						)
 
-					(objSendMessage gPlayerShip freighterObj (msnTranslate gSource 'msgBeginEscort))
+					(objSendMessage gPlayerShip freighterObj
+						(msnTranslate gSource (cat "msgBeginEscort:" (random 1 6)) {
+							shipName: (objGetName freighterObj)
+							destName: (objGetName destObj)
+							})
+						)
 					(objSetIdentified freighterObj)
 
 					; Order the pirates
@@ -258,14 +263,19 @@
 					(ship (objGetObjByID (msnGetData gSource 'freighterID)))
 					(dest (objGetObjByID (msnGetData gSource 'destID)))
 					)
-					(cat
-						"Your mission is to escort the " (objGetName ship 4)
-						" to " (objGetName dest 4) " and defend it from any attackers.\n\n"
-
-						"System: " (sysGetName) "\n"
-						"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward)) "\n"
-						)
+					(msnTranslate gSource 'textSummary {
+						shipName: (objGetName ship 'article)
+						destName: (objGetName dest 'article)
+						systemName: (sysGetName)
+						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
 					)
+			</Text>
+			<Text id="textSummary">
+				Your mission is to escort %shipName% to %destName% and defend it from any attackers.
+
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 			<Text id="listSummary">
 				(block (
@@ -304,59 +314,69 @@
 					(dest (objGetObjByID (msnGetData gSource 'destID)))
 					(cargoValue (intRoundUp (msnGetData gSource 'cargoValue) 1000))
 					)
-					(strCapitalize
-						(cat
-							(objGetName ship 4) " (" (shpGetClassName ship 4) ")"
-							" is transporting " (fmtCurrency 'credit cargoValue) " worth of cargo."
-							" She will pay " (fmtCurrency 'credit (msnGetData gSource 'reward))
-							" if you escort her safely to " (objGetName dest 4)
-							(if (not (objMatches dest Nil "G")) " and back again.")
-
-							"\n\nDo you wish to accept this assignment?"
+					(msnTranslate gSource
+						(if (objMatches dest Nil "G")
+							"textBriefing:toGate"
+							"textBriefing:roundTrip"
 							)
+						{
+							shipName: (objGetName ship 'article)
+							shipClass: (shpGetClassName ship 4)
+							cargoValue: (fmtCurrency 'credit cargoValue)
+							destName: (objGetName dest 'article)
+							payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+							}
 						)
 					)
 			</Text>
+			<Text id="textBriefing:roundTrip">
+					%ShipName% (%shipClass%) is transporting %cargoValue% worth of cargo.
+					She will pay %payment% if you escort her safely to %destName% and back again.
 
-			<Text id="AcceptReply">
-				"\"Great! Keep that freighter safe. Good luck!\""
+					Do you wish to accept this assignment?
+			</Text>
+			<Text id="textBriefing:toGate">
+					%ShipName% (%shipClass%) is transporting %cargoValue% worth of cargo.
+					She will pay %payment% if you escort her safely to %destName%.
+
+					Do you wish to accept this assignment?
 			</Text>
 
-			<Text id="DeclineReply">
-				"\"Oh well\""
-			</Text>
+			<String id="AcceptReply">
+				"Great! Keep that freighter safe. Good luck!"
+			</String>
 
-			<Text id="InProgress">
-				"\"The freighter you're supposed to be escorting is already on its way!\""
-			</Text>
+			<String id="DeclineReply">
+				"Oh well"
+			</String>
+
+			<String id="InProgress">
+				"The freighter you're supposed to be escorting is already on its way!"
+			</String>
 			<Text id="FailureDebrief">
 				(if (msnGetData gSource 'playerDestroyedFreighter)
-					(cat "\"Either your poor marksmanship or deliberate malice destroyed the"
-						" freighter entrusted to your care! You will never work for us again, captain.\""
-						)
-					(cat "\"Your timidity under fire and your lack of skill doomed the poor crew"
-						" of your freighter and its cargo!\""
-						)
+					(msnTranslate gSource "textFailureDebrief:blacklist")
+					(msnTranslate gSource "textFailureDebrief:default")
 					)
+			</Text>
+			<Text id="textFailureDebrief:blacklist">
+				"Either your poor marksmanship or deliberate malice destroyed the
+				freighter entrusted to your care! You will never work for us again, captain."
+			</Text>
+			<Text id="textFailureDebrief:default">
+				"Your timidity under fire and your lack of skill doomed the poor crew
+				of your freighter and its cargo!"
 			</Text>
 			<Text id="SuccessDebrief">
 				(korSuccessDebrief gSource)
 			</Text>
-			<Text id="msgBeginEscort">
-				(block (
-					(ship (objGetName (objGetObjByID (msnGetData gSource 'freighterID)) 0))
-					(dest (objGetName (objGetObjByID (msnGetData gSource 'destID)) 0) )
-					)
-					(random (list
-						"Glad to have you with us, %name%"
-						(cat "On course for " dest)
-						(cat ship " reporting in")
-						"Nice to have you on our wing"
-						(cat ship " on course")
-						(cat ship " on course for " dest)
-						))
-					)
-			</Text>
+
+			<Text id="msgBeginEscort:1">Glad to have you with us, %name%.</Text>
+			<Text id="msgBeginEscort:2">On course for %destName%.</Text>
+			<Text id="msgBeginEscort:3">%ShipName% reporting in.</Text>
+			<Text id="msgBeginEscort:4">Nice to have you on our wing.</Text>
+			<Text id="msgBeginEscort:5">%ShipName% on course.</Text>
+			<Text id="msgBeginEscort:6">%ShipName% on course for %destName%.</Text>
 		</Language>
 	</MissionType>
 

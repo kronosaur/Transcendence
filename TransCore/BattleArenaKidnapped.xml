@@ -300,13 +300,17 @@
 		<Language>
 			<Text id="Name">Katami Kidnapped</Text>
 			<Text id="Summary">
-				(cat
-					"Mr. Katami has been captured by the Black Market. "
-					"Help Kate Morgental rescue him.\n\n"
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+				Mr. Katami has been captured by the Black Market.
+				Help Kate Morgental rescue him.
 
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
-					)
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 			<Text id="Intro">
 				(if (rpgCharacterGetQuickRel &unidKateMorgental;)
@@ -334,8 +338,8 @@
 
 				"Help me to rescue him and you'll be able to defeat The Slicer without risking Katami's life."
 			</Text>
-			<Text id="AcceptLabel">"\"I'll [h]elp you.\""</Text>
-			<Text id="DeclineLabel">"\"Katami can [t]ake care of himself.\""</Text>
+			<String id="AcceptLabel">"I'll [h]elp you."</String>
+			<String id="DeclineLabel">"Katami can [t]ake care of himself."</String>
 			<Text id="AcceptReply">
 				"I knew you would agree! I will not forget this."
 

@@ -74,7 +74,7 @@
 						(and (= state 'underAttack) (= (msnGetData gSource 'targetsLeft) 0))
 							(block Nil
 								(msnSetData gSource 'state 'survivedAttack)
-								(msnSetProperty gSource 'summary (msnTranslate gSource "Summary:survivedAttack"))
+								(msnSetProperty gSource 'summary (msnTranslate gSource 'Summary))
 
 								;	We've managed to save the station so save the game
 								(msnSetData gSource 'missionCheckpoint True)
@@ -261,10 +261,10 @@
 				(block (theList)
 					(if (msnFind "r +unid:&msKorolovAtCharon;; +property:isSuccess;")
 						(setq theList (list
-							(list 
-								"Defended Korolov Shipping in the Charon system"
+							(list
+								(typTranslate &msKorolovAtCharon; 'achievement.success)
 								Nil
-								"achievements &amp; regrets"
+								(typTranslate &unidCommonText; 'achievementsAndRegrets)
 								)
 							))
 						)
@@ -276,24 +276,31 @@
 
 		<Language>
 			<Text id="Name">
-				"Korolov at Charon"
+				Korolov at Charon
 			</Text>
 			<Text id="Summary">
-				(cat
-					"Korolov Shipping is under attack from Charon pirates. Defend the station.\n\n"
-
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
+				(block (
+					(state (msnGetData gSource 'state))
+					)
+					(cat
+						(if (or (= state 'survivedAttack) (= state 'strikeBack))
+							(msnTranslate gSource "Summary:survivedAttack")
+							(msnTranslate gSource "Summary:underAttack")
+							)
+						"\n\n"
+						(typTranslate &dsRPGMission; 'mission.rewardSummary {
+							systemName: (sysGetName)
+							payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+							})
+						)
 					)
 			</Text>
+			<Text id="Summary:underAttack">
+					Korolov Shipping is under attack from Charon pirates. Defend the station.
+			</Text>
 			<Text id="Summary:survivedAttack">
-				(cat
-					"You have sucessfully defending Korolov Shipping from a Charon pirate attack. "
-					"Now you need to hunt down and destroy all Charon stations in the system.\n\n"
-
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
-					)
+					You have sucessfully defending Korolov Shipping from a Charon pirate attack.
+					Now you need to hunt down and destroy all Charon stations in the system.
 			</Text>
 			<Text id="Intro">
 
@@ -314,77 +321,127 @@
 
 			</Text>
 			<Text id="InProgress">
-				(msnTranslate gSource (cat "InProgress:" (msnGetData gSource 'state)) {
-					pirateStationsLeft: (strNumber (msnGetData gSource 'pirateStationsLeft))
-					oneOther: (= (msnGetData gSource 'pirateStationsLeft) 1)
-					fortress: (msnGetData gSource 'pirateFortressLeft)
-					})
-			</Text>
-			<Text id="InProgress:underAttack">
-				(cat
-					"The command center is filled with men and women shouting orders and counter-orders. "
-					"The constant drone of sirens is punctuated frequently by concussive blow of explosions.\n\n"
-					
-					"A woman shouts at you, \"Get out of here and make yourself useful!\""
+				(block (
+					(state (msnGetData gSource 'state))
+					(stationsLeft (msnGetData gSource 'pirateStationsLeft))
+					(fortress (msnGetData gSource 'pirateFortressLeft))
 					)
-			</Text>
-			<Text id="InProgress:survivedAttack">
-				(cat
-					"The command center is smashed. Some people are caring for the injured while "
-					"others look at the tactical screens. A woman approaches you:\n\n"
-
-					"\"Thanks for your help! We were lucky that you were in the area. "
-					"Now we need you to strike while we have the initiative. Destroy "
-					"all the Charon stations in the system!\""
-					)
-			</Text>
-			<Text id="InProgress:strikeBack">
-				(cat
-					"The command center is nearly ruined, but several people are tracking the tactical situation:\n\n"
-
 					(switch
-						(and (not (@ gData 'fortress)) (@ gData 'oneOther))
-							"\"There is still one Charon station left in the system. Destroy it and you'll be done!\""
+						(= state 'underAttack)
+							(msnTranslate gSource "InProgress:underAttack")
 
-						(not (@ gData 'fortress))
-							(cat "\"Although the Charon Fortress has been destroyed there are still " (@ gData 'pirateStationsLeft) " Charon stations in the system.\"")
+						(= state 'survivedAttack)
+							(msnTranslate gSource "InProgress:survivedAttack")
 
-						(@ gData 'oneOther)
-							"\"There are two Charon stations still active in the system: the Fortress of the Charon Pirates and another lesser Charon station.\""
+						(and (not fortress) (= stationsLeft 1))
+							(msnTranslate gSource "InProgress:strikeBack:oneMore")
 
-						(cat "\"There are " (@ gData 'pirateStationsLeft) " Charon pirate stations left, in addition to the Fortress of the Charon Pirates.\"")
+						(not fortress)
+							(msnTranslate gSource "InProgress:strikeBack:noFortress" {
+								pirateStationsLeft: (strNumber stationsLeft)
+								})
+
+						(= stationsLeft 0)
+							(msnTranslate gSource "InProgress:strikeBack:onlyFortress")
+
+						(= stationsLeft 1)
+							(msnTranslate gSource "InProgress:strikeBack:onePlusFortress")
+
+						(msnTranslate gSource "InProgress:strikeBack:Fortress" {
+							pirateStationsLeft: (strNumber stationsLeft)
+							})
 						)
 					)
+			</Text>
+			<Text id="InProgress:underAttack">
+
+				The command center is filled with men and women shouting orders and counter-orders.
+				The constant drone of sirens is punctuated frequently by concussive blow of explosions.
+
+				A woman shouts at you, "Get out of here and make yourself useful!"
+
+			</Text>
+			<Text id="InProgress:survivedAttack">
+
+				The command center is smashed. Some people are caring for the injured while
+				others look at the tactical screens. A woman approaches you:
+
+				"Thanks for your help! We were lucky that you were in the area.
+				Now we need you to strike while we have the initiative. Destroy
+				all the Charon stations in the system!"
+
+			</Text>
+			<Text id="InProgress:strikeBack:oneMore">
+				The command center is nearly ruined, but several people are tracking the tactical situation:
+
+				"There is still one Charon station left in the system. Destroy it and you'll be done!"
+			</Text>
+			<Text id="InProgress:strikeBack:noFortress">
+				The command center is nearly ruined, but several people are tracking the tactical situation:
+
+				"Although the Charon Fortress has been destroyed there are still
+				%pirateStationsLeft% Charon stations in the system."
+			</Text>
+			<Text id="InProgress:strikeBack:onlyFortress">
+				The command center is nearly ruined, but several people are tracking the tactical situation:
+
+				"All the lesser Charon stations are destroyed, but the Charon Fortress remains.
+				Destroy it and you'll be done!"
+			</Text>
+			<Text id="InProgress:strikeBack:onePlusFortress">
+				The command center is nearly ruined, but several people are tracking the tactical situation:
+
+				"There are two Charon stations still active in the system:
+				the Fortress of the Charon Pirates and another lesser Charon station."
+			</Text>
+			<Text id="InProgress:strikeBack:Fortress">
+				The command center is nearly ruined, but several people are tracking the tactical situation:
+
+				"There are %pirateStationsLeft% Charon pirate stations left,
+				in addition to the Fortress of the Charon Pirates."
 			</Text>
 			<Text id="FailureDebrief">
 				(list
 					{
-						desc: (cat
-							"You are docked at the lifeless ruins of a destroyed station. Amid wrecked "
-							"machinery and smouldering bodies you find a woman who is still alive.\n\n"
-							
-							"She grabs your hand, \"Avenge us...the Fortress is in the system...kill them all...\"\n\n"
-							)
+						descID: 'textFailureDebrief1
 						}
 					{
-						desc: (cat
-							"As her lifeless hand releases yours, she drops "
-							(itmGetName (msnGetData gSource 'rewardItem) 0x08) ".\n\n"
-							
-							"You take the ROM with you, hoping that it will contain some useful information."
-							)
+						descID: 'textFailureDebrief2
+						data: { item: (itmGetName (msnGetData gSource 'rewardItem) 'count) }
 						}
 					)
 			</Text>
-			<Text id="SuccessDebrief">
-				(cat
-					"Everyone cheers as you enter.\n\n"
+			<Text id="textFailureDebrief1">
 
-					"\"We don't have much in the way of rewards, but it would be our honor if you would accept "
-					(itmGetName (msnGetData gSource 'rewardItem) 0x040)
-					". The Charon pirates will no longer threaten the Commonwealth, and we owe it all to you!\""
-					)
+				You are docked at the lifeless ruins of a destroyed station. Amid wrecked
+				machinery and smouldering bodies you find a woman who is still alive.
+
+				She grabs your hand, "Avenge us...the Fortress is in the system...kill them all..."
+
 			</Text>
+			<Text id="textFailureDebrief2">
+
+				As her lifeless hand releases yours, she drops %item%.
+
+				You take the ROM with you, hoping that it will contain some useful information.
+
+			</Text>
+			<Text id="SuccessDebrief">
+				(msnTranslate gSource 'textSuccessDebrief {
+					reward: (itmGetName (msnGetData gSource 'rewardItem) 0x040)
+					})
+			</Text>
+			<Text id="textSuccessDebrief">
+
+				Everyone cheers as you enter.
+
+				"We don't have much in the way of rewards, but it would be our
+				honor if you would accept %reward%. The Charon pirates will no
+				longer threaten the Commonwealth, and we owe it all to you!"
+
+			</Text>
+
+			<Text id="achievement.success">Defended Korolov Shipping in the Charon system</Text>
 		</Language>
 	</MissionType>
 
@@ -397,6 +454,5 @@
 			</OnDestroy>
 		</Events>
 	</Type>
-
 
 </TranscendenceModule>

@@ -158,9 +158,12 @@
 					
 						(typSetData &msBenedictsDrones; 'achievements
 							(list
-								(list (msnTranslate gSource 'AchievementDesc)
+								(list
+									(msnTranslate gSource 'AchievementDesc {
+										time: (unvGetElapsedGameTime (msnGetData gSource 'startTime) (msnGetData gSource 'endTime) 'display)
+										})
 									Nil
-									"achievements &amp; regrets"
+									(typTranslate &unidCommonText; 'achievementsAndRegrets)
 									)
 								)
 							)
@@ -196,11 +199,17 @@
 				"Benedict's Autons"
 			</Text>
 			<Text id="Summary">
-				(cat
-					"Destroy Benedict's autons.\n\n"
-					"System: " (sysGetName) "\n"
-					"Payment: None"
-					)
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName)
+					})
+			</Text>
+			<Text id="textSummary">
+
+					Destroy Benedict's autons.
+
+					System: %systemName%\n
+					Payment: None
+
 			</Text>
 			<Text id="Intro">
 
@@ -253,16 +262,18 @@
 
 			</Text>
 			<Text id="SuccessDebrief">
-				(cat
-					"\"Excellent work! You destroyed all autons in " 
-						(unvGetElapsedGameTime (msnGetData gSource 'startTime) (msnGetData gSource 'endTime) 'display) ".\""
-					)
+				(msnTranslate gSource 'textSuccessDebrief {
+					time: (unvGetElapsedGameTime (msnGetData gSource 'startTime) (msnGetData gSource 'endTime) 'display)
+					})
 			</Text>
+			<String id="textSuccessDebrief">
+				"Excellent work! You destroyed all autons in %time%."
+			</String>
 			<Text id="SuccessMsg">
 				Mission complete!
 			</Text>
 			<Text id="AchievementDesc">
-				(cat "Destroyed Benedict's autons in " (unvGetElapsedGameTime (msnGetData gSource 'startTime) (msnGetData gSource 'endTime) 'display))
+				"Destroyed Benedict's autons in %time%"
 			</Text>
 		</Language>
 	</MissionType>

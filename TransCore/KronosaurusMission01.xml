@@ -78,7 +78,7 @@
 						(block Nil
 							(rpgCharacterSetStatus &unidKronosaurus; 'dead)
 							(msnSetData gSource 'destroyedByPlayer (= aOrderGiver gPlayerShip))
-							(msnSetData gSource 'destroyedBy (objGetName aOrderGiver 0x04))
+							(msnSetData gSource 'destroyedBy (objGetName aOrderGiver 'article))
 							(msnSuccess gSource)
 							)
 					)
@@ -133,34 +133,21 @@
 
 			<GetGlobalAchievements>
 				(block (
-					(theMission (@ (msnFind "r +unid:&msKronosaurus;; +property:isCompleted;") 0))
+					(theMission (msnFind "Pr +unid:&msKronosaurus;; +property:isCompleted;"))
+					(achievementText (switch
+						(msnGetProperty theMission 'isFailure)		'achievement.failure
+						(msnGetData theMission 'destroyedByPlayer)	'achievement.player
+						(msnGetProperty theMission 'isSuccess)		'achievement.other
+						))
 					)
-					(switch
-						(not theMission)
-							Nil
-
-						(msnGetProperty theMission 'isFailure)
-							(list (list
-								"Defeated by the Kronosaurus"
+					(if (and theMission achievementText)
+						(list
+							(list
+								(msnTranslate theMission achievementText)
 								Nil
-								"achievements &amp; regrets"
-								))
-
-						(and (msnGetProperty theMission 'isSuccess) (msnGetData theMission 'destroyedByPlayer))
-							(list (list
-								"Defeated the Kronosaurus"
-								Nil
-								"achievements &amp; regrets"
-								))
-
-						(msnGetProperty theMission 'isSuccess)
-							(list (list
-								"Evaded the Kronosaurus"
-								Nil
-								"achievements &amp; regrets"
-								))
-
-						Nil
+								(typTranslate &unidCommonText; 'achievementsAndRegrets)
+								)
+							)
 						)
 					)
 			</GetGlobalAchievements>
@@ -168,17 +155,20 @@
 
 		<Language>
 			<Text id="Name">
-				"Defeat the Kronosaurus"
+				Defeat the Kronosaurus
 			</Text>
 			<Text id="Summary">
-				(cat
-					"By destroying several Charon frigates you have alarmed the pirates. "
-					"They're sending the Kronosaurus after you! It is the deadliest frigate "
-					"in the Charon fleet and it will not stop until you are destroyed.\n\n"
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName)
+					})
+			</Text>
+			<Text id="textSummary">
+				By destroying several Charon frigates you have alarmed the pirates.
+				They're sending the Kronosaurus after you! It is the deadliest frigate
+				in the Charon fleet and it will not stop until you are destroyed.
 
-					"System: " (sysGetName) "\n"
-					"Payment: None"
-					)
+				System: %systemName%\n
+				Payment: None
 			</Text>
 			<Text id="InProgress">
 
@@ -193,28 +183,36 @@
 			</Text>
 			<Text id="SuccessDebrief">
 				(if (msnGetData gSource 'destroyedByPlayer)
-					(msnTranslate gSource "SuccessDebrief:player")
-					(msnTranslate gSource "SuccessDebrief:other")
+					(msnTranslate gSource "SuccessDebrief:player" {
+						director: (objGetData (objGetObjByID (msnGetProperty gSource 'debrieferID)) 'assistantDirector)
+						})
+					(msnTranslate gSource "SuccessDebrief:other" {
+						destroyedBy: (msnGetData gSource 'destroyedBy)
+						})
 					)
 			</Text>
 			<Text id="SuccessDebrief:player">
-				(cat
-					"A crowd gathers around you as you enter the docking bay. "
-					"Assistant Director "
-					(objGetData (objGetObjByID (msnGetProperty gSource 'debrieferID)) 'assistantDirector)
-					" shakes your hand:\n\n"
-					"\"I never thought I'd see the day! You've destroyed the Kronosaurus! The deadliest ship in the Charon fleet! "
-					"This day and your accomplishments will be remembered always.\""
-					)
+
+				A crowd gathers around you as you enter the docking bay.
+				Assistant Director %director% shakes your hand:
+
+				"I never thought I'd see the day! You've destroyed the Kronosaurus!
+				The deadliest ship in the Charon fleet! This day and your
+				accomplishments will be remembered always."
+
 			</Text>
 			<Text id="SuccessDebrief:other">
-				(cat
-					"There is a crowd celebrating in the main hall. "
-					"One of the freighter captains approaches you:\n\n"
-					"\"Did you hear, the Kronosaurus has been destroyed by "
-					(msnGetData gSource 'destroyedBy) "!\""
-					)
+
+				There is a crowd celebrating in the main hall.
+				One of the freighter captains approaches you:
+
+				"Did you hear, the Kronosaurus has been destroyed by %destroyedBy%!"
+
 			</Text>
+
+			<Text id="achievement.failure">Defeated by the Kronosaurus</Text>
+			<Text id="achievement.player">Defeated the Kronosaurus</Text>
+			<Text id="achievement.other">Evaded the Kronosaurus</Text>
 		</Language>
 	</MissionType>
 

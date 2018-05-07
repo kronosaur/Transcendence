@@ -1016,6 +1016,23 @@
 					)
 				))
 
+			(setq rpgMissionAchievements (lambda (theType missionCriteria)
+				(block (
+					(successList (plyGetKeyEventStat gPlayer 'missionSuccess Nil missionCriteria))
+					(failureList (plyGetKeyEventStat gPlayer 'missionFailure Nil missionCriteria))
+					)
+					(if (or successList failureList)
+						(list
+							(list
+								(typTranslate theType 'rpg.missionTypeDesc)
+								(rpgMissionAchievementString (count successList) (count failureList))
+								(typTranslate &unidCommonText; 'missionsAndActivities)
+								)
+							)
+						)
+					)
+				))
+
 			(setq rpgMissionRewardPayment (lambda (theReward currency)
 				(if currency
 					(block Nil

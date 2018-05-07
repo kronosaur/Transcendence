@@ -49,29 +49,19 @@
 
 		<Events>
 			<GetGlobalAchievements>
-				(block (theList)
+				(append
+					;	Rank
 					(if (typGetData &unidKorolovShipping; 'level)
-						(block (
-							(successList (plyGetKeyEventStat gPlayer 'missionSuccess Nil "* +korolov; +escort;"))
-							(failureList (plyGetKeyEventStat gPlayer 'missionFailure Nil "* +korolov; +escort;"))
-							)
-
-							(setq theList (list
-								(list
-									"Korolov rank"
-									(typTranslate &unidKorolovShipping; 'PlayerRank)
-									)
-
-								(list
-									"Korolov shipping missions"
-									(rpgMissionAchievementString (count successList) (count failureList))
-									"missions &amp; activities"
-									)
-								))
+						(list
+							(list
+								"Korolov rank"
+								(typTranslate &unidKorolovShipping; 'PlayerRank)
+								)
 							)
 						)
 
-					theList
+					;	Missions
+					(rpgMissionAchievements &unidKorolovShipping; "* +korolov; +escort;")
 					)
 			</GetGlobalAchievements>
 		</Events>
@@ -112,36 +102,34 @@
 							"After a few more successful missions you will be ready for a promotion to Journeyman&mdash;and ready for a greater challenge!"
 							)
 						)
-					"\n\n\"We've deposited " (@ gData 'reward) " in your account.\""
+					"\n\n\"We've deposited %reward% in your account.\""
 					)
 			</Text>
 			<Text id="SuccessDebrief:Apprentice:2">
-				(cat
-					"\"Excellent work, captain! Your apprenticeship is almost complete. "
-					"If you can successfully complete the next escort mission, "
-					"we will be confident in your skills and promote you."
-					"\n\n\"We've deposited " (@ gData 'reward) " in your account.\""
-					)
+				"Excellent work, captain! Your apprenticeship is almost complete.
+				If you can successfully complete the next escort mission,
+				we will be confident in your skills and promote you.
+
+				"We've deposited %reward% in your account."
 			</Text>
 			<Text id="SuccessDebrief:Apprentice:3">
-				(cat
-					"\"Excellent work, captain! I knew from the beginning that you had the skills to succeed."
-					"\n\n\"We've deposited " (@ gData 'reward) " in your account.\""
-					)
+				"Excellent work, captain! I knew from the beginning that you had the skills to succeed.
+
+				"We've deposited %reward% in your account."
 			</Text>
 			<Text id="SuccessDebrief:Kronosaurus">
-				(cat
-					"\"Your skills are truly impressive! But the news that you've destroyed several Charon frigates has alarmed the pirates. "
-					"They're sending the Kronosaurus after you! It is the deadliest frigate in the Charon fleet and it will not stop until you are destroyed."
-					"\n\n\"We've deposited " (@ gData 'reward) " in your account. You better spend them wisely!\""
-					)
+				"Your skills are truly impressive! But the news that you've destroyed several Charon frigates has alarmed the pirates.
+				They're sending the Kronosaurus after you! It is the deadliest frigate in the Charon fleet and it will not stop until you are destroyed.
+
+				"We've deposited %reward% in your account. You better spend them wisely!"
 			</Text>
 			<Text id="SuccessDebrief:Default">
-				(cat
-					"\"Well done, captain! You've shown skill and bravery in facing those pirates.\n\n"
-					"\"We've deposited " (@ gData 'reward) " in your account.\""
-					)
+				"Well done, captain! You've shown skill and bravery in facing those pirates.
+
+				"We've deposited %reward% in your account."
 			</Text>
+
+			<Text id="rpg.missionTypeDesc">Korolov shipping missions</Text>
 		</Language>
 	</Type>
 
@@ -734,7 +722,7 @@
 
 			<GetRumors>
 				(block (
-					(level (korGetPlayerLevel))
+					(rank (korGetPlayerLevel))
 					)
 					{
 						attributes: "commonwealthPub"
@@ -757,10 +745,6 @@
 			<Text id="actionRecord">[S]ervice Record</Text>
 			<Text id="actionFreighterData">[F]reighter Data</Text>
 			<Text id="actionEnemyData">[E]nemy Intelligence</Text>
-			<Text id="actionContinue">[C]ontinue</Text>
-			<Text id="actionDockServices">[D]ock Services</Text>
-			<Text id="actionDone">[D]one</Text>
-			<Text id="actionUndock">[U]ndock</Text>
 			<Text id="actionNext">[N]ext Ship</Text>
 			<Text id="actionPrev">[P]revious Ship</Text>
 
@@ -1447,30 +1431,33 @@
 				(block (
 					(level (korGetPlayerLevel))
 					(xp (typGetData &unidKorolovShipping; 'xp))
+					(data {
+						reward: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
 					)
 					(switch
 						; Describe a bit the process after the player's first mission
 						(= (count (msnFind "r +korolov;")) 1)
-							(typTranslate &unidKorolovShipping; "SuccessDebrief:FirstMission" {reward:(msnGetData gSource 'reward)})
+							(typTranslate &unidKorolovShipping; "SuccessDebrief:FirstMission" data)
 
 						; At the next level
 						(and (= level 1) (geq xp 300))
-							(typTranslate &unidKorolovShipping; "SuccessDebrief:Apprentice:3" {reward:(msnGetData gSource 'reward)})
+							(typTranslate &unidKorolovShipping; "SuccessDebrief:Apprentice:3" data)
 
 						; If we're about to become a journeyman, tell the player
 						(and (= level 1) (geq xp 225))
-							(typTranslate &unidKorolovShipping; "SuccessDebrief:Apprentice:2" {reward:(msnGetData gSource 'reward)})
+							(typTranslate &unidKorolovShipping; "SuccessDebrief:Apprentice:2" data)
 
 						; At level 1, describe the things to look forward to
 						(= level 1)
-							(typTranslate &unidKorolovShipping; "SuccessDebrief:Apprentice:1" {reward:(msnGetData gSource 'reward)})
+							(typTranslate &unidKorolovShipping; "SuccessDebrief:Apprentice:1" data)
 
 						; If the Kronosaurus has been deployed, warn player
 						(msnGetData missionObj 'kronosaurusWarning)
-							(typTranslate &unidKorolovShipping; "SuccessDebrief:Kronosaurus" {reward:(msnGetData gSource 'reward)})
+							(typTranslate &unidKorolovShipping; "SuccessDebrief:Kronosaurus" data)
 
 						; Standard text
-						(typTranslate &unidKorolovShipping; "SuccessDebrief:Default" {reward:(msnGetData gSource 'reward)})
+						(typTranslate &unidKorolovShipping; "SuccessDebrief:Default" data)
 						)
 					)
 				))

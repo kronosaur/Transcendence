@@ -1997,12 +1997,6 @@
 		</DockingPorts>
 
 		<Language>
-			<Text id="actionTalk">[T]alk to Station Boss</Text>
-			<Text id="actionBuyItems">[B]uy Items</Text>
-			<Text id="actionSellItems">[S]ell Items</Text>
-			<Text id="actionDockServices">[D]ock Services</Text>
-			<Text id="actionUndock">[U]ndock</Text>
-
 			<Text id="descNoInstall">
 				(cat
 					"We only install smuggler's equipment. "

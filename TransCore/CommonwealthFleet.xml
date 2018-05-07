@@ -21,41 +21,33 @@
 
 		<Events>
 			<GetGlobalAchievements>
-				(block (theList antarcticaStatus medsDonated)
+				(block (medsDonated)
 
-					; Rank
-					
-					(if (gr (objGetData gPlayerShip "fleetXP") 0)
-						(block (
-							(rank (objGetData gPlayerShip "fleetLevel"))
-							(successList (plyGetKeyEventStat gPlayer 'missionSuccess Nil "* +commonwealthFleet;"))
-							(failureList (plyGetKeyEventStat gPlayer 'missionFailure Nil "* +commonwealthFleet;"))
-							)
-
-							(setq theList (list
+					(append
+						;	Rank
+						(if (gr (objGetData gPlayerShip "fleetXP") 0)
+							(list
 								(list
 									"Commonwealth Fleet rank"
 									(typTranslate &svCommonwealthFleet; 'PlayerRank)
 									)
-									
+								)
+							)
+
+						;	Missions
+						(rpgMissionAchievements &svCommonwealthFleet; "* +commonwealthFleet;")
+
+						;	Meds donated
+						(if (setq medsDonated (typGetGlobalData &svCommonwealthFleet; "medsDonated"))
+							(list
 								(list
-									"CSC missions"
-									(rpgMissionAchievementString (count successList) (count failureList))
-									"missions &amp; activities"
+									"Value of supplies donated to Commonwealth Fleet"
+									medsDonated
+									(typTranslate &unidCommonText; 'missionsAndActivities)
 									)
-								))
+								)
 							)
 						)
-						
-					; Meds donated
-					
-					(if (setq medsDonated (typGetGlobalData &svCommonwealthFleet; "medsDonated"))
-						(setq theList (append theList (list
-							(list "Value of supplies donated to Commonwealth Fleet" medsDonated "missions &amp; activities")
-							)))
-						)
-
-					theList
 					)
 			</GetGlobalAchievements>
 			
@@ -124,6 +116,8 @@
 						)
 					)
 			</Text>
+
+			<Text id="rpg.missionTypeDesc">CSC missions</Text>
 		</Language>
 	</Sovereign>
 	

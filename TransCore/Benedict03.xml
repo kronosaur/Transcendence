@@ -86,11 +86,17 @@
 				"Visit Korolov Shipping"
 			</Text>
 			<Text id="Summary">
-				(cat
-					"Travel to the " (sysGetName (msnGetData gSource 'korolovNodeID)) " System and visit Korolov Shipping.\n\n"
-					"System: " (sysGetName (msnGetData gSource 'korolovNodeID)) "\n"
-					"Payment: None"
-					)
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName (msnGetData gSource 'korolovNodeID))
+					})
+			</Text>
+			<Text id="textSummary">
+
+					Travel to the %systemName% system and visit Korolov Shipping.
+
+					System: %systemName%\n
+					Payment: None
+
 			</Text>
 			<Text id="SuccessMsg">
 				"Mission complete!"

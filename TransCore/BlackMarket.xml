@@ -252,31 +252,31 @@ PLAYER DATA
 				<Panes>
 					<Default descID="descWelcome">
 						<Actions>
-							<Action name="Talk to Station Boss" key="T">
+							<Action id="actionTalk">
 								(block Nil
 									(setq gPrevScreen "Main")
 									(scrShowScreen gScreen "Boss")
 									)
 							</Action>
 
-							<Action name="Buy Items" default="1" key="B">
+							<Action id="actionBuyItems" default="1">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: Nil
 									})
 							</Action>
 
-							<Action name="Sell Items" key="S">
+							<Action id="actionSellItems">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
 									})
 							</Action>
 
-							<Action name="Dock Services" key="D">
+							<Action id="actionDockServices">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: Nil
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -301,7 +301,7 @@ PLAYER DATA
 				<Panes>
 					<MemberBoss descID="descMemberBoss">
 						<Actions>
-							<Action name="&quot;I want a mission.&quot;" default="1" key="M">
+							<Action id="actionWantMission" default="1">
 								(rpgMissionAssignment {
 									missionCriteria: (cat "n +blackMarket; =" (sysGetLevel) ";")
 									noMissionTextID: 'descNoMissions
@@ -309,7 +309,7 @@ PLAYER DATA
 									})
 							</Action>
 
-							<Action name="&quot;I need a better weapon.&quot;" default="1" key="W">
+							<Action id="actionWantWeapon">
 								(if (ls (objGetData gPlayerShip "blackMarketWeapon") (objGetData gPlayerShip "blackMarketLevel"))
 									(block (level)
 										(setq level (objGetData gPlayerShip "blackMarketLevel"))
@@ -348,7 +348,7 @@ PLAYER DATA
 									)
 							</Action>
 
-							<Action name="&quot;I need better shields.&quot;" default="1" key="S">
+							<Action id="actionWantShields">
 								(if (ls (objGetData gPlayerShip "blackMarketShields") (objGetData gPlayerShip "blackMarketLevel"))
 									(block (level)
 										(setq level (objGetData gPlayerShip "blackMarketLevel"))
@@ -377,7 +377,7 @@ PLAYER DATA
 									)
 							</Action>
 
-							<Action name="Leave" cancel="1" key="L">
+							<Action id="actionLeave" cancel="1">
 								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
@@ -385,7 +385,7 @@ PLAYER DATA
 
 					<LordBoss descID="descLordBoss">
 						<Actions>
-							<Action name="Leave" cancel="1" key="L">
+							<Action id="actionLeave" cancel="1">
 								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
@@ -393,7 +393,7 @@ PLAYER DATA
 
 					<NoAccess descID="descNoBoss">
 						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
@@ -401,7 +401,7 @@ PLAYER DATA
 
 					<NoUpgrade descID="descNoUpgrade">
 						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
@@ -416,7 +416,7 @@ PLAYER DATA
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								(block Nil
 									(if gResult
 										(block Nil
@@ -439,7 +439,7 @@ PLAYER DATA
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Continue" cancel="1" default="1" key="C">
+							<Action id="actionContinue" cancel="1" default="1">
 								(block Nil
 									(if gResult
 										(objSetData gPlayerShip "blackMarketShields" (objGetData gPlayerShip "blackMarketLevel"))
@@ -475,8 +475,13 @@ PLAYER DATA
 		</StaticData>
 		
 		<Language>
+			<String id="actionWantMission">"I want a [m]ission."</String>
+			<String id="actionWantWeapon">"I need a better [w]eapon."</String>
+			<String id="actionWantShields">"I need better [s]hields."</String>
+
 			<Text id="descNoMissions">
-				"The dark-haired woman frowns for a second, \"I'm sorry, but we don't have any use for you right now.\""
+				The dark-haired woman frowns for a second,
+				"I'm sorry, but we don't have any use for you right now."
 			</Text>
 			<Text id="descNoInstall">
 				(cat
@@ -652,27 +657,26 @@ PLAYER DATA
 				<Panes>
 					<Default descID="descWelcome">
 						<Actions>
-							<Action name="Buy Items" default="1" key="B">
+							<Action id="actionBuyItems" default="1">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: Nil
 									})
 							</Action>
 
-							<Action name="Sell Items" key="S">
+							<Action id="actionSellItems">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
 									})
 							</Action>
 
-							<Action name="Dock Services" key="D">
+							<Action id="actionDockServices">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: Nil
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
 					</Default>
 				</Panes>
@@ -775,13 +779,13 @@ PLAYER DATA
 				<Panes>
 					<Default descID="descWelcome">
 						<Actions>
-							<Action name="Buy Items" default="1" key="B">
+							<Action id="actionBuyItems" default="1">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: Nil
 									})
 							</Action>
 
-							<Action name="Undock" cancel="1" key="U">
+							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -1257,7 +1261,9 @@ PLAYER DATA
     
 <!-- BASE CLASSES -->
 
-	<Type unid="&baBlackMarketStation;">
+	<Type unid="&baBlackMarketStation;"
+			inherit="&unidCommonText;"
+			>
 		<Events>
 			<OnCreate>
 				(if (objGetStaticData gSource 'blackMarket.deployBountyHunters)
@@ -1329,6 +1335,8 @@ PLAYER DATA
 		</Events>
 
 		<Language>
+			<Text id="actionTalk">[T]alk to Station Boss</Text>
+
 			<Text id="descWelcome">
 
 				The docking bay is guarded by two men with heavy weapons.
@@ -1343,7 +1351,7 @@ PLAYER DATA
 
 			</Text>
 		</Language>
-    </Type>
+	</Type>
 
 <!-- TABLES -->
 

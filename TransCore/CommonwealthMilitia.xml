@@ -40,29 +40,19 @@
 	<Type UNID="&unidCommonwealthMilitia;">
 		<Events>
 			<GetGlobalAchievements>
-				(block (theList rank)
-					(if (setq rank (typGetData &unidCommonwealthMilitia; 'rank))
-						(block (
-							(successList (plyGetKeyEventStat gPlayer 'missionSuccess Nil "* +commonwealthMilitia;"))
-							(failureList (plyGetKeyEventStat gPlayer 'missionFailure Nil "* +commonwealthMilitia;"))
-							)
-
-							(setq theList (list
-								(list
-									"Commonwealth militia rank"
-									(typTranslate &unidCommonwealthMilitia; 'PlayerRank)
-									)
-
-								(list
-									"Commonwealth militia missions"
-									(rpgMissionAchievementString (count successList) (count failureList))
-									"missions &amp; activities"
-									)
-								))
+"				(append
+					;	Rank
+					(if  (typGetData &unidCommonwealthMilitia; 'rank)
+						(list
+							(list
+								"Commonwealth militia rank"
+								(typTranslate &unidCommonwealthMilitia; 'PlayerRank)
+								)
 							)
 						)
 
-					theList
+					;	Missions
+					(rpgMissionAchievements &unidCommonwealthMilitia; "* +commonwealthMilitia;")
 					)
 			</GetGlobalAchievements>
 
@@ -121,6 +111,8 @@
 						)
 					)
 			</Text>
+
+			<Text id="rpg.missionTypeDesc">Commonwealth militia missions</Text>
 		</Language>
 	</Type>
 
@@ -253,6 +245,7 @@
 										;	If we have a military ID, we gain access to Militia missions.
 										(rpgMissionAssignment {
 											missionCriteria: commonCriteria
+											displayCriteria: "n +commonwealthMilitia;"
 											noMissionTextID: 'descNoMissions
 											maxPerStation: (+ 6 (modulo (objGetDestiny gSource) 3))
 											intervalPerStation: (random 3600 5400)
@@ -262,6 +255,7 @@
 
 										(rpgMissionAssignment {
 											missionCriteria: (cat commonCriteria " -requiresID;")
+											displayCriteria: "n +commonwealthMilitia;"
 											noMissionTextID: 'descNoCommandCenterAccess
 											maxPerStation: (+ 3 (modulo (objGetDestiny gSource) 3))
 											intervalPerStation: (random 3600 5400)
@@ -339,7 +333,11 @@
 											;	Otherwise, we get rumors
 											(block Nil
 												(objSetData gSource 'NextBarEncounter (+ (unvGetTick) (random 1500 2000)))
-												(scrShowScreen gScreen &dsRPGMessage; { textID:'Rumors })
+												(rpgMissionAssignment {
+													missionCriteria: (cat "n +commonwealthMilitiaOC; =" (sysGetLevel) ";")
+													displayCriteria: "n +commonwealthMilitiaOC;"
+													noMissionTextID: 'descBarEmpty
+													})
 												)
 											)
 										)
@@ -409,106 +407,96 @@
 					)
 			</OnCreate>
 
+			<GetGlobalRumors>
+				(append
+					(rpgRumorAdd 'commonwealthMilitiaOC (make 'sequence 8))
+
+					(if (= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+						(rpgRumorAdd 'commonwealthMilitiaOC (make 'sequence 21 23))
+						(rpgRumorAdd 'commonwealthMilitiaOC (make 'sequence 41 43))
+						)
+					)
+			</GetGlobalRumors>
 		</Events>
 
 		<Language>
 			<Text id="actionCommandCenter">[C]ommand Center</Text>
 			<Text id="actionOfficersClub">[O]fficers' Club</Text>
-			<Text id="actionDockServices">[D]ock Services</Text>
-			<Text id="actionUndock">[U]ndock</Text>
 			<Text id="actionBar">[S]it at the Bar</Text>
-			<Text id="actionLeave">[L]eave</Text>
 
-			<Text id="Rumors">
-				(random (list
-					(cat
-						"A man with a prosthetic arm sits next to you: "
-						"\"I've been flying for the militia for years, but I'd much "
-						"rather be helping the Fleet. No one's seen them in a long time. "
-						"They must be at the Ares Homeworld by now.\""
-						)
-
-					(cat
-						"A man and a woman sit next to you. The woman starts a conversation with you: "
-						"\"We're students from St. Katharine's Star! It's so exciting to be "
-						"here where all the action is! We're writing a doctoral thesis on "
-						"the role of minority neo-humans on reductive militia policy. Wish us luck!\""
-						)
-
-					(cat
-						"An older pilot sits next to you: \"Don't underestimate the slavers! "
-						"We've been fighting them for years and they just keep advancing their "
-						"technology. There are rumors that they've developed a new archcannon "
-						"powered by their longzhu spheres.\""
-						)
-
-					(cat
-						"A woman sits next to you: \"My husband is in the Commonwealth Fleet "
-						"and I haven't seen him for years. Sometimes I get messages from him, "
-						"but it's never good news.\""
-						)
-
-					(cat
-						"A young man wearing trendy clothes talks with you: \"I think that "
-						"girl in the flight suit likes me. What do you think?\""
-						)
-
-					(if (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
-						(cat
-							"A well-dressed woman sits next to you: \"You're heading to the galactic "
-							"what? I don't know&#x97;sounds like brainwashing to me.\""
-							)
-						(cat
-							"A well-dressed woman sits next to you: \"You're doing what? "
-							"I don't know&#x97;sounds like a wasted life to me.\""
-							)
-						)
-
-					(cat
-						"A short-haired woman talks to you: \"My cousin's best friend says that "
-						"the CSC Europa got blown up by the Ares. They should pull back the "
-						"Fleet and have them fight the slavers! You know what I mean? What's the point?\""
-						)
-
-					(if (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
-						(cat
-							"A short, round man sits next to you: \"You're going to the Core? "
-							"Elegant! Maybe you'll get to meet the aliens.\""
-							)
-						(cat
-							"A short, round man sits next to you: \"You're a merc? Elegant! "
-							"Have you been in many battles?\""
-							)
-						)
-
-					(cat
-						"A dark-skinned woman talks with you: \"My best friend went to the "
-						"Core; it was two years ago, I think. A year later they found her "
-						"wreckage in the Sanctuary system; she left me a message, but "
-						"I've never been able to read it.\""
-						)
-
-					(cat
-						"A tall woman talks to you: \"I'm doing research on the Iocrym. "
-						"It is curious, don't you think, that they haven't returned? A lot of "
-						"ignorant people think they are preparing to invade, which is ridiculous. "
-						"They wouldn't travel thousands of light-years just to kill us. Why bother?\""
-						)
-
-					(if (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
-						(cat
-							"A young woman sits next to you: \"Why does Domina compel you to go to "
-							"the Core? I suppose you won't find out until you get there. Still, "
-							"it's nice to have a purpose in life.\""
-							)
-						(cat
-							"A young woman sits next to you: \"Must be nice to travel so much. "
-							"I visited Rigel Aurelius with my parents when I was little, but "
-							"I don't remember anything.\""
-							)
-						)
-					))
+			<Text id="rumor.commonwealthMilitiaOC.1">
+				A man with a prosthetic arm sits next to you:
+				"I've been flying for the militia for years, but I'd much
+				rather be helping the Fleet. No one's seen them in a long time.
+				They must be at the Ares Homeworld by now."
 			</Text>
+			<Text id="rumor.commonwealthMilitiaOC.2">
+				A man and a woman sit next to you. The woman starts a conversation with you:
+				"We're students from St. Katharine's Star! It's so exciting to be
+				here where all the action is! We're writing a doctoral thesis on
+				the role of minority neo-humans on reductive militia policy. Wish us luck!"
+			</Text>
+			<Text id="rumor.commonwealthMilitiaOC.3">
+				An older pilot sits next to you: "Don't underestimate the slavers!
+				We've been fighting them for years and they just keep advancing their
+				technology. There are rumors that they've developed a new archcannon
+				powered by their longzhu spheres."
+			</Text>
+			<Text id="rumor.commonwealthMilitiaOC.4">
+				A woman sits next to you: "My husband is in the Commonwealth Fleet
+				and I haven't seen him for years. Sometimes I get messages from him,
+				but it's never good news."
+			</Text>
+			<Text id="rumor.commonwealthMilitiaOC.5">
+				A young man wearing trendy clothes talks with you: "I think that
+				girl in the flight suit likes me. What do you think?"
+			</Text>
+			<Text id="rumor.commonwealthMilitiaOC.6">
+				A short-haired woman talks to you: "My cousin's best friend says that
+				the CSC Europa got blown up by the Ares. They should pull back the
+				Fleet and have them fight the slavers! You know what I mean? What's the point?"
+			</Text>
+			<Text id="rumor.commonwealthMilitiaOC.7">
+				A dark-skinned woman talks with you: "My best friend went to the
+				Core; it was two years ago, I think. A year later they found her
+				wreckage in the Sanctuary system; she left me a message, but
+				I've never been able to read it."
+			</Text>
+			<Text id="rumor.commonwealthMilitiaOC.8">
+				A tall woman talks to you: "I'm doing research on the Iocrym.
+				It is curious, don't you think, that they haven't returned? A lot of
+				ignorant people think they are preparing to invade, which is ridiculous.
+				They wouldn't travel thousands of light-years just to kill us. Why bother?"
+			</Text>
+
+			<Text id="rumor.commonwealthMilitiaOC.21">
+				A well-dressed woman sits next to you: "You're heading to the galactic
+				what? I don't know&#x97;sounds like brainwashing to me."
+			</Text>
+			<Text id="rumor.commonwealthMilitiaOC.22">
+				A short, round man sits next to you: "You're going to the Core?
+				Elegant! Maybe you'll get to meet the aliens."
+			</Text>
+			<Text id="rumor.commonwealthMilitiaOC.23">
+				A young woman sits next to you: "Why does Domina compel you to go to
+				the Core? I suppose you won't find out until you get there. Still,
+				it's nice to have a purpose in life."
+			</Text>
+
+			<Text id="rumor.commonwealthMilitiaOC.41">
+				A well-dressed woman sits next to you: "You're doing what?
+				I don't know&#x97;sounds like a wasted life to me."
+			</Text>
+			<Text id="rumor.commonwealthMilitiaOC.42">
+				A short, round man sits next to you: "You're a merc? Elegant!
+				Have you been in many battles?"
+			</Text>
+			<Text id="rumor.commonwealthMilitiaOC.43">
+				A young woman sits next to you: "Must be nice to travel so much.
+				I visited Rigel Aurelius with my parents when I was little, but
+				I don't remember anything."
+			</Text>
+
 			<Text id="descWelcome:New">
 
 				You are in the main hall of a Commonwealth Militia Fortress. 
@@ -639,26 +627,21 @@
 
 		<Language>
 			<Text id="Promotion:1">
-				(cat
-					"\"Your success on this mission has brought you great respect. "
-					"It is my privilege to bestow upon you the rank of lieutenant "
-					"in service to the Commonwealth Militia.\"\n\n"
-					"General Powell hands you a military ID chip."
-					)
+				"Your success on this mission has brought you great respect.
+				It is my privilege to bestow upon you the rank of lieutenant
+				in service to the Commonwealth Militia."
+
+				General Powell hands you a military ID chip.
 			</Text>
 			<Text id="Promotion:2">
-				(cat
-					"\"Your skills on this mission have brought you great admiration. "
-					"It is my honor to present you with the Commonwealth Medal of Distinction "
-					"and to promote you to the rank of major. Congratulations!\""
-					)
+				"Your skills on this mission have brought you great admiration.
+				It is my honor to present you with the Commonwealth Medal of Distinction
+				and to promote you to the rank of major. Congratulations!"
 			</Text>
 			<Text id="Promotion:3">
-				(cat
-					"\"Your bravery has brought great honor to you and to the Militia. "
-					"It is my honor to present you with the Commonwealth Medal of Honor "
-					"and to promote you to the rank of colonel. Congratulations!\""
-					)
+				"Your bravery has brought great honor to you and to the Militia.
+				It is my honor to present you with the Commonwealth Medal of Honor
+				and to promote you to the rank of colonel. Congratulations!"
 			</Text>
 		</Language>
 	</DockScreen>

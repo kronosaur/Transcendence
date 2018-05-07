@@ -18,7 +18,7 @@
 			attributes=		"commonwealthMilitia, rank2"
 
 			level=			"1-7"
-priority="10"
+
 			expireTime=			"5400"
 			failureAfterOutOfSystem="5400"
 			>
@@ -120,16 +120,20 @@ priority="10"
 
 		<Language>
 			<Text id="Name">
-				"Escort Super Freighter"
+				Escort Super Freighter
 			</Text>
 
 			<Text id="Summary">
-				(cat
-					"Escort super-freighter back to Commonwealth Fortress.\n\n"
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+				Escort super-freighter back to Commonwealth Fortress.
 
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
-					)
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 
 			<Text id="Intro">
@@ -152,23 +156,23 @@ priority="10"
 
 			</Text>
 
-			<Text id="AcceptReply">
-				"\"Good luck, captain!\""
-			</Text>
+			<String id="AcceptReply">
+				"Good luck, captain!"
+			</String>
 
-			<Text id="DeclineReply">
-				"\"Why don't you make yourself useful and get us some tea or something.\""
-			</Text>
+			<String id="DeclineReply">
+				"Why don't you make yourself useful and get us some tea or something."
+			</String>
 
-			<Text id="InProgress">
-				"\"What is your major malfunction!? Get back out there and complete your mission!\""
-			</Text>
-			<Text id="FailureDebrief">
-				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
-			</Text>
-			<Text id="SuccessDebrief">
-				"\"Good work, captain! That was an outstanding mission.\""
-			</Text>
+			<String id="InProgress">
+				"What is your major malfunction!? Get back out there and complete your mission!"
+			</String>
+			<String id="FailureDebrief">
+				"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!"
+			</String>
+			<String id="SuccessDebrief">
+				"Good work, captain! That was an outstanding mission."
+			</String>
 		</Language>
 	</MissionType>
 

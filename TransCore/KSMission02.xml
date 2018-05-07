@@ -215,23 +215,41 @@
 						(= (msnGetData gSource 'attackRoll) 1)
 							(block Nil
 								(chrRaidTransport freighterObj homeBaseObj gateObj cargoValue)
-								(objSendMessage gPlayerShip freighterObj (msnTranslate gSource 'msgBeginEscort))
+								(objSendMessage gPlayerShip freighterObj
+									(msnTranslate gSource (cat "msgBeginEscort:" (random 1 4)) {
+										shipName: (objGetName freighterObj)
+										})
+									)
 								)
 
 						; 20% of the time pirates follow the transport through the gate
 						(= (msnGetData gSource 'attackRoll) 2)
 							(block Nil
 								(sysAddObjTimerEvent 60 gSource 'OnPirateFollow)
-								(objSendMessage gPlayerShip freighterObj (msnTranslate gSource 'msgFollowed))
+								(objSendMessage gPlayerShip freighterObj
+									(msnTranslate gSource (cat "msgFollowed:" (random 1 2)) {
+										shipName: (objGetName freighterObj)
+										})
+									)
 								(chrRaidTransport freighterObj homeBaseObj gateObj (/ cargoValue 2))
 								)
 
 						; 20% of time there are pirates waiting at the gate
 						(block Nil
 							(if (= (msnGetData gSource 'attackersLeft) 0)
-								(objSendMessage gPlayerShip freighterObj (msnTranslate gSource 'msgBeginEscort)))
+								(objSendMessage gPlayerShip freighterObj
+									(msnTranslate gSource (cat "msgBeginEscort:" (random 1 4)) {
+										shipName: (objGetName freighterObj)
+										})
+									)
+								)
 							(if (geq (msnGetData gSource 'attackersLeft) 5)
-								(objSendMessage gPlayerShip freighterObj (msnTranslate gSource 'msgAmbush)))
+								(objSendMessage gPlayerShip freighterObj
+									(msnTranslate gSource (cat "msgAmbush:" (random 1 3)) {
+										shipName: (objGetName freighterObj)
+										})
+									)
+								)
 							(msnFireEvent gSource 'OrderAttackFreighter)
 							(chrRaidTransport freighterObj homeBaseObj gateObj (/ cargoValue 2))
 							)
@@ -294,21 +312,22 @@
 
 		<Language>
 			<Text id="Name">
-				"Escort Korolov Freighter"
+				Escort Korolov Freighter
 			</Text>
 
 			<Text id="Summary">
-				(block (
-					(gateObj (objGetObjByID (msnGetData gSource 'gateID)))
-					)
-					(cat
-						"Your mission is to escort a freighter arriving at the " (objGetName gateObj 4)
-						 " back to the Korolov station and defend it from any attackers.\n\n"
+				(msnTranslate gSource 'textSummary {
+					gateName: (objGetName (objGetObjByID (msnGetData gSource 'gateID)) 'article)
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+				Your mission is to escort a freighter arriving at the %gateName%
+				back to the Korolov station and defend it from any attackers.
 
-						"System: " (sysGetName) "\n"
-						"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward)) "\n"
-						)
-					)
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 			<Text id="listSummary">
 				(block (
@@ -331,75 +350,61 @@
 			</Text>
 
 			<Text id="Briefing">
-				(block (
-					(gate (objGetObjByID (msnGetData gSource 'gateID)))
-					)
-					(strCapitalize
-						(cat
-							"A " (typGetDataField (msnGetData gSource 'escortType) 'name)
-							" will be entering the system at the " (objGetName gate 4)
-							". We will pay " (fmtCurrency 'credit (msnGetData gSource 'reward))
-							" if you escort her safely back to our location."
+				(msnTranslate gSource 'textBriefing {
+					shipClass: (typGetDataField (msnGetData gSource 'escortType) 'name)
+					gateName: (objGetName (objGetObjByID (msnGetData gSource 'gateID)) 'article)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textBriefing">
+				A %shipClass% will be entering the system at %gateName%.
+				We will pay %payment% if you escort her safely back to our location.
 
-							"\n\nDo you wish to accept this assignment?"
-							)
-						)
-					)
+				Do you wish to accept this assignment?
 			</Text>
 
-			<Text id="AcceptReply">
-				"\"Great! The freighter will be arriving in system shortly so don't delay. Good luck!\""
-			</Text>
+			<String id="AcceptReply">
+				"Great! The freighter will be arriving in system shortly so don't delay. Good luck!"
+			</String>
 
-			<Text id="DeclineReply">
-				"\"Oh well\""
-			</Text>
+			<String id="DeclineReply">
+				"Oh well"
+			</String>
 
-			<Text id="InProgress">
-				"\"The freighter you're supposed to be escorting is already on its way!\""
-			</Text>
+			<String id="InProgress">
+				"The freighter you're supposed to be escorting is already on its way!"
+			</String>
+
 			<Text id="FailureDebrief">
 				(if (msnGetData gSource 'playerDestroyedFreighter)
-					(cat "\"Either your poor marksmanship or deliberate malice destroyed the"
-						" freighter entrusted to your care! You will never work for us again, captain.\""
-						)
-					(cat "\"Your timidity under fire and your lack of skill doomed the poor crew"
-						" of your freighter and its cargo!\""
-						)
+					(msnTranslate gSource "textFailureDebrief:blacklist")
+					(msnTranslate gSource "textFailureDebrief:default")
 					)
 			</Text>
+			<Text id="textFailureDebrief:blacklist">
+				"Either your poor marksmanship or deliberate malice destroyed the
+				freighter entrusted to your care! You will never work for us again, captain."
+			</Text>
+			<Text id="textFailureDebrief:default">
+				"Your timidity under fire and your lack of skill doomed the poor crew
+				of your freighter and its cargo!"
+			</Text>
+
 			<Text id="SuccessDebrief">
 				(korSuccessDebrief gSource)
 			</Text>
-			<Text id="msgBeginEscort">
-				(block (
-					(ship (objGetName (objGetObjByID (msnGetData gSource 'freighterID)) 0))
-					)
-					(random (list
-						"Glad to have you with us, captain"
-						(cat ship " reporting in")
-						"Good to have you on our wing, %name%"
-						(cat ship " on course")
-						))
-					)
-			</Text>
-			<Text id="msgFollowed">
-				(block (
-					(ship (objGetName (objGetObjByID (msnGetData gSource 'freighterID)) 0))
-					)
-					(random (list
-						"Help! The pirates are right behind us"
-						(cat "Mayday mayday mayday. " ship " under attack by pirates")
-						))
-					)
-			</Text>
-			<Text id="msgAmbush">
-				(random (list
-					"Kack! The pirates were waiting for us"
-					"It's an ambush!"
-					"It's a kacking warzone out here!"
-					))
-			</Text>
+
+			<Text id="msgBeginEscort:1">Glad to have you with us, captain</Text>
+			<Text id="msgBeginEscort:2">%ShipName% reporting in.</Text>
+			<Text id="msgBeginEscort:3">Good to have you on our wing, %name%</Text>
+			<Text id="msgBeginEscort:4">%ShipName% on course.</Text>
+
+			<Text id="msgFollowed:1">Help! The pirates are right behind us</Text>
+			<Text id="msgFollowed:2">Mayday mayday mayday. %ShipName% under attack by pirates.</Text>
+
+			<Text id="msgAmbush:1">Kack! The pirates were waiting for us.</Text>
+			<Text id="msgAmbush:2">It's an ambush!</Text>
+			<Text id="msgAmbush:3">It's a kacking warzone out here!</Text>
 		</Language>
 
 	</MissionType>

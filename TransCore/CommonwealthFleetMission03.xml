@@ -119,17 +119,21 @@
 
 		<Language>
 			<Text id="Name">
-				"Intercept Ares patrol"
+				Intercept Ares patrol
 			</Text>
 			<Text id="Summary">
-				(cat
-					"Intercept and destroy an Ares patrol before it can report "
-					(objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 4)
-					"'s location.\n\n"
+				(msnTranslate gSource 'textSummary {
+					cscName: (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)) 'article)
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+				Intercept and destroy an Ares patrol before it can report
+				%cscName%'s location.
 
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
-					)
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 			<Text id="Intro">
 
@@ -147,22 +151,22 @@
 				"Understood?"
 
 			</Text>
-			<Text id="AcceptReply">
-				"\"Good luck, %name%!\""
-			</Text>
-			<Text id="DeclineReply">
-				"\"Get the hell out of here then!\""
-			</Text>
+			<String id="AcceptReply">
+				"Good luck, %name%!"
+			</String>
+			<String id="DeclineReply">
+				"Get the hell out of here then!"
+			</String>
 
-			<Text id="InProgress">
-				"\"What is your major malfunction!? Get back out there and complete your mission!\""
-			</Text>
-			<Text id="FailureDebrief">
-				"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
-			</Text>
-			<Text id="SuccessDebrief">
-				"\"Outstanding, pilot! That's the way to do it!\""
-			</Text>
+			<String id="InProgress">
+				"What is your major malfunction!? Get back out there and complete your mission!"
+			</String>
+			<String id="FailureDebrief">
+				"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!"
+			</String>
+			<String id="SuccessDebrief">
+				"Outstanding, pilot! That's the way to do it!"
+			</String>
 		</Language>
 	</MissionType>
 

@@ -248,15 +248,19 @@
 
 		<Language>
 			<Text id="Name">
-				"Intercept Ares Convoy"
+				Intercept Ares Convoy
 			</Text>
 			<Text id="Summary">
-				(cat
-					"Intercept and destroy an Ares supply convoy before it can leave the system.\n\n"
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+				Intercept and destroy an Ares supply convoy before it can leave the system.
 
-					"System: " (sysGetName) "\n"
-					"Payment: " (fmtCurrency 'credit (msnGetData gSource 'reward))
-					)
+				System: %systemName%\n
+				Payment: %payment%
 			</Text>
 			<Text id="Intro">
 
@@ -266,23 +270,27 @@
 
 			</Text>
 			<Text id="Briefing">
-				(cat
-					"\"A large Ares convoy will enter the system at "
-					(objGetName (objGetObjByID (msnGetData gSource 'gate1ID)) 0)
-					". Take a flight of Centurions and destroy as many freighters "
-					"as you can before they leave the system. Any questions?\""
-					)
+				(msnTranslate gSource 'textBriefing {
+					gateName: (objGetName (objGetObjByID (msnGetData gSource 'gateID)))
+					})
 			</Text>
-			<Text id="AcceptReply">
-				"\"Good luck, %name%!\""
-			</Text>
-			<Text id="DeclineReply">
-				"\"Get the hell out of here then!\""
-			</Text>
+			<Text id="textBriefing">
 
-			<Text id="InProgress">
-				"\"What is your major malfunction!? Get back out there and complete your mission!\""
+				"A large Ares convoy will enter the system at %gateName%.
+				Take a flight of Centurions and destroy as many freighters
+				as you can before they leave the system. Any questions?"
+
 			</Text>
+			<String id="AcceptReply">
+				"Good luck, %name%!"
+			</String>
+			<String id="DeclineReply">
+				"Get the hell out of here then!"
+			</String>
+
+			<String id="InProgress">
+				"What is your major malfunction!? Get back out there and complete your mission!"
+			</String>
 			<Text id="FailureDebrief">
 				(block (
 					(wingmenLeft (msnGetData gSource 'wingmenLeft))
@@ -290,20 +298,33 @@
 					)
 					(switch
 						(= wingmenLeft 0)
-							"\"What kind of a leader loses all %his% wingmen and dares to return alive! Next time do us all a favor and kill yourself!\""
+							(msnTranslate gSource "textFailureDebrief:1")
 
 						; Lost more wingmen than targets
 						(gr (- 6 wingmenLeft) targetsDestroyed)
-							"\"You lost more wingmen against those freighters than most people do against an Ares dreadnought! Your leadership skills are pathetic. Get out of my sight!\""
+							(msnTranslate gSource "textFailureDebrief:2")
 
 						;	No targets destroyed
 						(= targetsDestroyed 0)
-							"\"You didn't even destroy a single freighter! That wing of Centurions is wasted on you!\""
+							(msnTranslate gSource "textFailureDebrief:3")
 
-						"\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\""
+						(msnTranslate gSource "textFailureDebrief:4")
 						)
 					)
 			</Text>
+			<String id="textFailureDebrief:1">
+				"What kind of a leader loses all %his% wingmen and dares to return alive! Next time do us all a favor and kill yourself!"
+			</String>
+			<String id="textFailureDebrief:2">
+				"You lost more wingmen against those freighters than most people do against an Ares dreadnought! Your leadership skills are pathetic. Get out of my sight!"
+			</String>
+			<String id="textFailureDebrief:3">
+				"You didn't even destroy a single freighter! That wing of Centurions is wasted on you!"
+			</String>
+			<String id="textFailureDebrief:4">
+				"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!"
+			</String>
+
 			<Text id="SuccessDebrief">
 				(block (
 					(wingmenLeft (msnGetData gSource 'wingmenLeft))
@@ -311,19 +332,28 @@
 					)
 					(switch
 						(leq wingmenLeft 2)
-							"\"A tough mission. We can't afford to lose so many good pilots.\""
+							(msnTranslate gSource "textSuccessDebrief:1")
 
 						(leq wingmenLeft 4)
-							(cat
-								"\"Good mission! It's unfortunate that only " shipsLeftText " of your wingmen survived.\""
-								)
+							(msnTranslate gSource "textSuccessDebrief:2" {
+								shipsLeft: shipsLeftText
+								})
 
-						(cat 
-							"\"Outstanding mission! Looks like you came back with " shipsLeftText " wingmen.\""
-							)
+						(msnTranslate gSource "textSuccessDebrief:3" {
+							shipsLeft: shipsLeftText
+							})
 						)
 					)
 			</Text>
+			<String id="textSuccessDebrief:1">
+				"A tough mission. We can't afford to lose so many good pilots."
+			</String>
+			<String id="textSuccessDebrief:2">
+				"Good mission! It's unfortunate that only %shipsLeft% of your wingmen survived."
+			</String>
+			<String id="textSuccessDebrief:3">
+				"Outstanding mission! Looks like you came back with %shipsLeft% wingmen."
+			</String>
 		</Language>
 	</MissionType>
 

@@ -243,16 +243,20 @@
 		
 		<Language>
 			<Text id="Name">
-				"Battle Arena Melee"
+				Battle Arena Melee
 			</Text>
 			<Text id="Summary">
-				(cat
-					"You have entered the Battle Arena Maximus as a contestant. "
-					"Prove your worth by surviving the Melee.\n\n"
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName)
+					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+				You have entered the Battle Arena Maximus as a contestant.
+				Prove your worth by surviving the Melee.
 
-					"System: " (sysGetName) "\n"
-					"Payment: 25 credits per kill"
-					)
+				System: %systemName%\n
+				Payment: 25 credits per kill
 			</Text>
 			<Text id="Briefing">
 				(block (
@@ -278,37 +282,41 @@
 					)
 			</Text>
 			<Text id="Briefing.lastChance">
-				(cat
-					"\"I don't know if you have the killer instincts to be a gladiator. "
-					"I'll make you a deal: if you can destroy " (@ gdata 'shipsLeft)
-					" in this next melee then I'll make you a gladiator. OK?\""
-					)
+
+				"I don't know if you have the killer instincts to be a gladiator.
+				I'll make you a deal: if you can destroy %shipsLeft%
+				in this next melee then I'll make you a gladiator. OK?"
+
 			</Text>
 			<Text id="Briefing.firstTime">
+
 				"A rookie from the provinces, eh? No sense in wasting a gladiator's time
 				on you. Prove yourself by surviving a melee and then we'll see. Deal?"
+
 			</Text>
 			<Text id="Briefing.standard">
+
 				"A little more practice won't hurt you. Survive a melee and we'll pay
-				you	25 credits for every opponent you kill."
+				you 25 credits for every opponent you kill."
+
 			</Text>
 			<Text id="Briefing.nearlyThere">
-				 (cat
-					"\"Your skills have improved greatly. Kill " (@ gdata 'shipsLeft)
-					" in a melee and you will become a gladiator!\""
-					)
+
+				"Your skills have improved greatly. Kill %shipsLeft%
+				in a melee and you will become a gladiator!"
+
 			</Text>
 			<Text id="AcceptLabel">[F]ight!</Text>
 			<Text id="DeclineLabel">[B]ack Out</Text>
-			<Text id="AcceptReply">
-				"\"Good Luck!\""
-			</Text>
-			<Text id="DeclineReply">
-				"\"This kind of challenge is not for the weak and fearful. You are wise to decline.\""
-			</Text>
-			<Text id="InProgress">
-				"\"We're still in the middle of a match! Come back later.\""
-			</Text>
+			<String id="AcceptReply">
+				"Good Luck!"
+			</String>
+			<String id="DeclineReply">
+				"This kind of challenge is not for the weak and fearful. You are wise to decline."
+			</String>
+			<String id="InProgress">
+				"We're still in the middle of a match! Come back later."
+			</String>
 			<Text id="FailureDebrief">
 				"Are you sure you want to be a gladiator? You don't seem very good in the Arena.
 				Oh well, at least your death will be a good appetizer for the crowd."
@@ -346,47 +354,47 @@
 						)
 					)
 			</Text>
-			<Text id="Winner.gladiator">
-				"\"Congratulations, you've proven yourself in the Arena. You may now call yourself a gladiator.\""
-			</Text>
-			<Text id="Winner.washout">
-				"\"Sorry, but you don't have the killer instinct to be a gladiator.\""
-			</Text>
-			<Text id="Winner.0">
-				"\"You didn't even kill a single opponent! You'll never be a gladiator at that rate!\""
-			</Text>
+			<String id="Winner.gladiator">
+				"Congratulations, you've proven yourself in the Arena. You may now call yourself a gladiator."
+			</String>
+			<String id="Winner.washout">
+				"Sorry, but you don't have the killer instinct to be a gladiator."
+			</String>
+			<String id="Winner.0">
+				"You didn't even kill a single opponent! You'll never be a gladiator at that rate!"
+			</String>
 			<Text id="Winner.1">
-				(cat
-					"\"Looks like you're better at running away than killing! "
-					"For killing a single opponent, we award you " (@ gData 'reward) ".\""
-					)
+
+				"Looks like you're better at running away than killing!
+				For killing a single opponent, we award you %reward%."
+
 			</Text>
 			<Text id="Winner.2">
-				(cat
-					"\"Hiding in a corner is not what the Arena is all about! "
-					"We've deposited " (@ gData 'reward) " in your account, but "
-					"you'll have to do better if you want to be a gladiator."
-					)
+
+				"Hiding in a corner is not what the Arena is all about!
+				We've deposited %reward% in your account, but
+				you'll have to do better if you want to be a gladiator."
+
 			</Text>
 			<Text id="Winner.3">
-				(cat
-					"\"You fight well for a rookie! You survived the melee and destroyed "
-					(@ gData 'score) " opponents. We've deposited " (@ gData 'reward)
-					" in your account.\""
-					)
+
+				"You fight well for a rookie! You survived the melee and destroyed
+				%score% opponents. We've deposited %reward%
+				in your account."
+
 			</Text>
 			<Text id="Winner.4">
-				(cat 
-					"\"Your skills are impressive! You will make a fine gladiator soon. "
-					"For killing " (@ gData 'score) " opponents we have deposited "
-					(@ gData 'reward) " in your account.\""
-					)
+
+				"Your skills are impressive! You will make a fine gladiator soon.
+				For killing %score% opponents we have deposited
+				%reward%" in your account."
+
 			</Text>
 			<Text id="Winner.5">
-				(cat
-					"\"You are a killing machine! For slaughtering " (@ gData 'score)
-					" opponents, we award you " (@ gData 'reward) ".\""
-					)
+
+				"You are a killing machine! For slaughtering %score%
+				opponents, we award you %reward%."
+
 			</Text>
 
 			<Text id="SuccessMsg">Victory!</Text>
