@@ -555,12 +555,12 @@
 
 				And with that, Captain Helios places a small glowing gem in your hand.
 			</Text>
-			<Text id="textSuccessDebrief3">
+			<String id="textSuccessDebrief3">
 				"Goodbye! May we meet again some day."
-			</Text>
+			</String>
 
 			<Text id="SuccessMsg">
-				"Mission complete!"
+				Mission complete!
 			</Text>
 
 			<Text id="textShipMoving">
