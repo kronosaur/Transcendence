@@ -1664,6 +1664,7 @@
 									(and (objCanDetectTarget theObj gSource)
 										(objCanDetectTarget theObj gPlayerShip)
 										(not (typHasAttribute (objGetSovereign theObj) 'nonInterference))
+										(not (objGetProperty theObj 'playerWingman))
 										(or (not (eq (shpGetOrder theObj) 'escort))
 											(not (eq (shpGetOrderTarget theObj) gPlayerShip))
 											)
