@@ -79,17 +79,32 @@
 			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"capitalShip, corporate, genericClass, majorShip"
-			   
+			inherit=			"&baHumanTechShip;"
+			>
+
+		<!-- Hull -->
+
+		<Hull
 			size=				"275"
 			mass=				"25000"
-			thrustRatio=		"2"
-			maxSpeed=			"20"
 			cargoSpace=			"1000"
 
 			cyberDefenseLevel=	"8"
+			/>
 
+		<Drive
+			maxSpeed=			"20"
+			thrust=				"50000"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"3.0"
+			rotationAccel=		"0.5"
+			/>
+
+		<Wreck
 			explosionType=		"&vtThermoExplosion3;"
-			>
+			/>
 
 		<!-- Configuration -->
 		
@@ -103,11 +118,6 @@
 			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="160" maxFireArc="20"		posAngle="250" posRadius="60" posZ="0"/>
 			<Device deviceID="&itPlasmaShieldGenerator;"/>
 		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"3.0"
-			rotationAccel=		"0.5"
-			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -144,8 +154,31 @@
 			fireRateAdj=		"40"
 			fireAccuracy=		"95"
 			perception=			"4"
+
+			ignoreShieldsDown=	"true"
 			/>
 
+		<Events>
+			<OnDestroy>
+				(switch
+					;	We don't care if an object ascends or enters a stargate
+					
+					(or (= aDestroyReason 'ascended) (= aDestroyReason 'enteredStargate))
+						Nil
+
+					;	Handle it
+
+					(block ()
+
+						;	Destroy items on the wreck, because we don't want too much loot
+
+						(if aWreckObj
+							(rpgDestroyItems aWreckObj)
+							)
+						)
+					)
+			</OnDestroy>
+		</Events>
 	</ShipClass>
 
 	<!-- Adventurer Outfitters -->

@@ -296,7 +296,7 @@
 				;		about).
 				
 				(block (
-					(curRel (if (typGetData charType 'playerRel) (typGetData charType 'playerRel) 'notSet))
+					(curRel (or (typGetData charType 'playerRel) 'notSet))
 					)
 					
 					(switch
@@ -629,9 +629,23 @@
 				;
 				;	Nil: Character is alive and well. No special status.
 				;
-				;	'dead: Character is dead.
-				
-				(typSetData charType 'status status)
+				;	'dead: Character is permanently dead.
+
+				(block (
+					(status (typGetData charType 'status))
+					)
+					(switch				
+						;	If the character is permanently dead, then we can't 
+						;	change the status.
+
+						(= status 'dead)
+							Nil
+
+						;	Set the status
+
+						(typSetData charType 'status status)
+						)
+					)
 				))
 
 			(setq rpgCharacterShowMissionScreen (lambda (missionSource options)

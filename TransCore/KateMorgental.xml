@@ -42,6 +42,49 @@
 		</StaticData>
 
 		<Events>
+			<OnDestroy>
+				(switch
+					;	We don't care if an object ascends or enters a stargate
+					
+					(or (= aDestroyReason 'ascended) (= aDestroyReason 'enteredStargate))
+						Nil
+
+					;	Otherwise, handle it
+				
+					(block ()
+
+						;	If player kills Kate, then it counts as betrayal
+						;	(Plus it counts as a Corporate Hierarchy crime.)
+
+						(if (and gPlayerShip (= aOrderGiver gPlayerShip))
+							(block ()
+								(rpgCharacterChangeRel &unidKateMorgental; 'betrayal)
+								(intCorporateCrime 3 (objTranslate gSource 'msgKillingKateCrime))
+								)
+							)
+
+						;	NOTE: We don't automatically mark Kate as dead; we let 
+						;	each specific mission determine whether or not she can
+						;	resurrect.
+
+						;	Call the ship class to let it handle whatever it needs
+
+						(typFireObjEvent (objGetType gSource) gSource 'OnDestroy)
+						)
+					)
+			</OnDestroy>
+
+			<OnAttackedByPlayer>
+				(if (not (objGetProperty gSource 'playerBlacklisted))
+					(block ()
+						(objSetProperty gSource 'playerBlacklisted True)
+						(objSendMessageTranslate gPlayerShip gSource 'msgBetrayal)
+						(shpCancelOrders gSource)
+						(shpOrder gSource 'attack gPlayerShip)
+						)
+					)
+			</OnAttackedByPlayer>
+
 			<OnGlobalSystemStopped>
 				;	If Kate is in this system, then ascend her (so that
 				;	she can appear in other systems).
@@ -50,93 +93,37 @@
 		</Events>
 
 		<Language>
+			<Text id="msgBetrayal">What!? Target %name%!</Text>
+			<Text id="msgKillingKateCrime">killing Kate Morgental</Text>
 		</Language>
 	</Type>
 
-	<!-- Kate Morgental's Corporate Cruiser
-
-	-->
+	<!-- Kate Morgental's Corporate Cruiser -->
 
 	<ShipClass UNID="&scKateMorgentalCruiser;"
 			manufacturer=		"Rasiermesser"
 			class=				"corporate cruiser"
 			type=				""
+			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"capitalShip, corporate, kateMorgental, majorShip"
-			character=			"&unidKateMorgental;"
-			   
-			size=				"275"
-			mass=				"25000"
-			thrustRatio=		"2"
-			maxSpeed=			"20"
-			cargoSpace=			"1000"
-			cyberDefenseLevel=	"8"
+			inherit=			"&scCorporateCruiser;"
 
-			leavesWreck=		"100"
-			explosionType=		"&vtThermoExplosion3;"
+			character=			"&unidKateMorgental;"
+			eventHandler=		"&unidKateMorgental;"
 			>
 
 		<Names noArticle="true" personalName="true">Kate Morgental</Names>
 
-		<!-- Configuration -->
-		
-		<Armor
-			armorID=			"&itHexaCarbideArmor;"
-			count=				"16"
-			/>
-		
-		<Devices>
-			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="340" maxFireArc="200"	posAngle="110" posRadius="60" posZ="0"/>
-			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="160" maxFireArc="20"		posAngle="250" posRadius="60" posZ="0"/>
-			<Device deviceID="&itPlasmaShieldGenerator;"/>
-		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"3.0"
-			rotationAccel=		"0.5"
-			/>
-
-		<Interior>
-			<Compartment name="interior"
-					hitPoints=	"300"
-					/>
-			
-			<Compartment name="main drive"
-					type=		"mainDrive"
-					hitPoints=	"100"
-
-					posX=		"-25"
-					posY=		"0"
-					sizeX=		"50"
-					sizeY=		"40"
-					/>
-		</Interior>
-
-		<Items>
-			<Item count="40d20" item="&itGotha10Missile;"/>
-			<Item count="2d12" item="&itPteracniumFuelRod;"/>
-		</Items>
-
-		<!-- Image and Effects -->
-
-		<Image imageID="&rsCorporateCruiser;" imageWidth="230" imageHeight="230"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="0"	posZ="-10"	rotation="180"	sendToBack="*"/>
-		</Effects>
-		
 		<!-- AI and Behavior -->
 		
 		<AISettings
-			fireRateAdj=		"40"
+			fireRateAdj=		"20"
 			fireAccuracy=		"95"
 			perception=			"4"
+
+			ignoreShieldsDown=	"true"
 			/>
-
-		<!-- Events -->
-
-		<Events>
-		</Events>
 
 		<!-- Language -->
 

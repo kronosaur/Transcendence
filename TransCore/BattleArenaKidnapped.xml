@@ -191,10 +191,7 @@
 
 							;	If player destroyed Kate's ship, then she remembers
 							(if (and gPlayerShip (= aOrderGiver gPlayerShip))
-								(block Nil
-									(rpgCharacterChangeRel &unidKateMorgental; 'betrayal)
-									(typSetData &svCorporate; 'statusKateM 'destroyedByPlayer)
-									)
+								(typSetData &svCorporate; 'statusKateM 'destroyedByPlayer)
 								(typSetData &svCorporate; 'statusKateM 'destroyed)
 								)
 							)
