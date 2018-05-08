@@ -854,6 +854,10 @@ PLAYER DATA
 				(objSetItemCharges gSource gItem 36)
 			</Reload>
 		</Events>
+
+		<Language>
+			<Text id="core.charges">missile(s)</Text>
+		</Language>
 	</ItemType>
 
 	<!-- Lamplighter Archcannon -->

@@ -182,6 +182,9 @@
 
 		<Image imageID="&rsItems1;" imageX="192" imageY="480" imageWidth="96" imageHeight="96"/>
 
+		<Language>
+			<Text id="core.charges">dose(s)</Text>
+		</Language>
 	</ItemType>
 
 	<!-- Use Tuali Coma Drug -->

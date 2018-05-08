@@ -46,6 +46,10 @@
 		<Invoke>
 			(intAutoInstall gSource gItem)
 		</Invoke>
+
+		<Language>
+			<Text id="core.charges">missile(s)</Text>
+		</Language>
 	</ItemType>
 
 	<!-- Laser Cannon -->
@@ -222,6 +226,10 @@
 		<Invoke>
 			(intAutoInstall gSource gItem)
 		</Invoke>
+
+		<Language>
+			<Text id="core.charges">missile(s)</Text>
+		</Language>
 	</ItemType>
 
 	<!-- Dual Laser Cannon -->

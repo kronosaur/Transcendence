@@ -79,6 +79,10 @@
 					)
 			</Recharge>
 		</Events>
+
+		<Language>
+			<Text id="core.charges">charge(s)</Text>
+		</Language>
 	</ItemType>
 
 <!-- LEVEL VII ITEMS -->
