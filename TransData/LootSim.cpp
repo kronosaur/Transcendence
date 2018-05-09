@@ -24,36 +24,24 @@ enum ELootTypes
 	lootInventory =			0x00000004,		//	Inventory on friendly stations (for trade)
 	};
 
-class SystemInfo : public CObject
+struct SSystemInfo
 	{
-	public:
-		SystemInfo (void) : 
-				CObject(NULL),
-				Stations(TRUE, TRUE),
-				iTotalLootValue(0),
-				iTotalDeviceValue(0),
-				iTotalArmorValue(0),
-				iTotalOtherValue(0)
-			{ }
+	CString sName;
+	int iLevel;
+	DWORD dwSystemType;
+	int iCount;								//	Number of times this system instance 
+											//	has appeared.
 
-		CString sName;
-		int iLevel;
-		DWORD dwSystemType;
-		int iCount;									//	Number of times this system instance 
-													//	has appeared.
-
-		CSymbolTable Stations;						//	All station types that have ever appeared
-													//	in this system instance.
-
-		TSortMap<DWORD, ItemInfo> Items;			//	All items types that have ever appeared in
-													//	this system instance.
-		int iTotalLootValue;
-		int iTotalDeviceValue;
-		int iTotalArmorValue;
-		int iTotalOtherValue;
+	TSortMap<DWORD, ItemInfo> Items;		//	All items types that have ever appeared in
+											//	this system instance.
+	int iTotalStations = 0;
+	int iTotalLootValue = 0;
+	int iTotalDeviceValue = 0;
+	int iTotalArmorValue = 0;
+	int iTotalOtherValue = 0;
 	};
 
-void AddItems (CSpaceObject *pObj, const CItemCriteria &Criteria, SystemInfo *pSystemEntry);
+void AddItems (CSpaceObject *pObj, const CItemCriteria &Criteria, SSystemInfo *pSystemEntry);
 
 void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
@@ -98,9 +86,11 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 	if (dwLootType == 0)
 		dwLootType = lootEnemies;
 
+	DWORD dwTotalTime = 0;
+
 	//	Generate systems for multiple games
 
-	CSymbolTable AllSystems(TRUE, TRUE);
+	TSortMap<CString, SSystemInfo> AllSystems;
 	for (i = 0; i < iSystemSample; i++)
 		{
 		if (bLogo)
@@ -115,6 +105,8 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			//	Create the system
 
+			DWORD dwStartTime = ::GetTickCount();
+
 			CSystem *pSystem;
 			if (error = Universe.CreateStarSystem(pNode, &pSystem))
 				{
@@ -122,18 +114,18 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 				return;
 				}
 
+			dwTotalTime += ::sysGetTicksElapsed(dwStartTime);
+
 			//	Find this system in the table.
 
-			SystemInfo *pSystemEntry;
-			if (error = AllSystems.Lookup(pNode->GetSystemName(), (CObject **)&pSystemEntry))
+			bool bNew;
+			SSystemInfo *pSystemEntry = AllSystems.SetAt(pNode->GetID(), &bNew);
+			if (bNew)
 				{
-				pSystemEntry = new SystemInfo;
 				pSystemEntry->sName = pNode->GetSystemName();
 				pSystemEntry->iLevel = pNode->GetLevel();
 				pSystemEntry->dwSystemType = pNode->GetSystemTypeUNID();
 				pSystemEntry->iCount = 1;
-
-				AllSystems.AddEntry(pSystemEntry->sName, pSystemEntry);
 				}
 			else
 				pSystemEntry->iCount++;
@@ -154,13 +146,13 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 						&& pObj->GetScale() == scaleWorld
 						&& pObj->GetItemList().GetCount() != 0)
 					{
+					pSystemEntry->iTotalStations++;
 					AddItems(pObj, ItemCriteria, pSystemEntry);
-					continue;
 					}
 
 				//	Find any objects that are lootable by the player
 
-				if ((dwLootType & lootEnemies)
+				else if ((dwLootType & lootEnemies)
 						&& pObj->GetSovereign()
 						&& pObj->GetSovereign()->IsEnemy(pPlayer))
 					{
@@ -176,20 +168,20 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 
 					if (pWreck)
 						{
+						pSystemEntry->iTotalStations++;
 						AddItems(pWreck, ItemCriteria, pSystemEntry);
-						continue;
 						}
 					}
 
 				//	Inventory
 
-				if ((dwLootType & lootInventory)
+				else if ((dwLootType & lootInventory)
 						&& pObj->GetSovereign()
 						&& !pObj->GetSovereign()->IsEnemy(pPlayer)
 						&& pObj->HasTradeService(serviceSell))
 					{
+					pSystemEntry->iTotalStations++;
 					AddItems(pObj, ItemCriteria, pSystemEntry);
-					continue;
 					}
 				}
 
@@ -213,21 +205,30 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	MarkItemsKnown(Universe);
 
-	//	Output total value stats
+	//	Sort by level then system name
 
-	printf("Level\tSystem\tLoot\tDevices\tArmor\tTreasure\n");
-
+	TSortMap<CString, int> Sorted;
 	for (i = 0; i < AllSystems.GetCount(); i++)
 		{
-		SystemInfo *pSystemEntry = (SystemInfo *)AllSystems.GetValue(i);
+		Sorted.Insert(strPatternSubst(CONSTLIT("%04d-%s"), AllSystems[i].iLevel, AllSystems[i].sName), i);
+		}
 
-		printf("%d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\n",
-				pSystemEntry->iLevel,
-				pSystemEntry->sName.GetASCIIZPointer(),
-				(double)pSystemEntry->iTotalLootValue / (double)iSystemSample,
-				(double)pSystemEntry->iTotalDeviceValue / (double)iSystemSample,
-				(double)pSystemEntry->iTotalArmorValue / (double)iSystemSample,
-				(double)pSystemEntry->iTotalOtherValue / (double)iSystemSample
+	//	Output total value stats
+
+	printf("Level\tSystem\tObjects\tLoot\tDevices\tArmor\tTreasure\n");
+
+	for (i = 0; i < Sorted.GetCount(); i++)
+		{
+		const SSystemInfo &SystemEntry = AllSystems[Sorted[i]];
+
+		printf("%d\t%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
+				SystemEntry.iLevel,
+				SystemEntry.sName.GetASCIIZPointer(),
+				(double)SystemEntry.iTotalStations / (double)iSystemSample,
+				(double)SystemEntry.iTotalLootValue / (double)iSystemSample,
+				(double)SystemEntry.iTotalDeviceValue / (double)iSystemSample,
+				(double)SystemEntry.iTotalArmorValue / (double)iSystemSample,
+				(double)SystemEntry.iTotalOtherValue / (double)iSystemSample
 				);
 		}
 
@@ -240,25 +241,27 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 	CItem NULL_ITEM;
 	CItemCtx ItemCtx(NULL_ITEM);
 
-	for (i = 0; i < AllSystems.GetCount(); i++)
+	for (i = 0; i < Sorted.GetCount(); i++)
 		{
-		SystemInfo *pSystemEntry = (SystemInfo *)AllSystems.GetValue(i);
+		const SSystemInfo &SystemEntry = AllSystems[Sorted[i]];
 
-		for (j = 0; j < pSystemEntry->Items.GetCount(); j++)
+		for (j = 0; j < SystemEntry.Items.GetCount(); j++)
 			{
-			ItemInfo *pEntry = &pSystemEntry->Items[j];
+			const ItemInfo *pEntry = &SystemEntry.Items[j];
 
 			printf("%d\t%s\t%s\t%.2f\t%.2f\n",
-					pSystemEntry->iLevel,
-					pSystemEntry->sName.GetASCIIZPointer(),
+					SystemEntry.iLevel,
+					SystemEntry.sName.GetASCIIZPointer(),
 					pEntry->pType->GetDataField(FIELD_NAME).GetASCIIZPointer(),
 					(double)pEntry->iTotalCount / (double)iSystemSample,
 					(double)pEntry->pType->GetValue(ItemCtx, true) * pEntry->iTotalCount / (double)iSystemSample);
 			}
 		}
+
+	printf("Average time to create systems: %.2f seconds.\n", (double)dwTotalTime / (1000.0 * iSystemSample));
 	}
 
-void AddItems (CSpaceObject *pObj, const CItemCriteria &Criteria, SystemInfo *pSystemEntry)
+void AddItems (CSpaceObject *pObj, const CItemCriteria &Criteria, SSystemInfo *pSystemEntry)
 	{
 	CItemListManipulator ItemList(pObj->GetItemList());
 	ItemList.ResetCursor();
