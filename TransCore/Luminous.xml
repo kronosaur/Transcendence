@@ -26,10 +26,10 @@
 
 	<ItemType UNID="&itLuminousIonBlaster;"
 			name=				"Luminous blaster"
-			attributes=			"energyWeapon, luminous, military, majorItem, notStandard"
+			attributes=			"energyWeapon, luminous, military, majorItem, notForSale, notStandard"
 			  
 			level=				"8"
-			frequency=			"common"
+			frequency=			"rare"
 			  
 			value=				"83000"
 			mass=				"4000"
@@ -193,7 +193,7 @@
 			value=				"900"
 			mass=				"3500"
 			attributes=			"Luminous; MinorItem; NotForSale; NotStandard"
-			frequency=			"rare"
+			frequency=			"uncommon"
 			numberAppearing=	"1d4"
 
 			description=		"The Luminous's drones are protected with this armor. It is a conductive exotic alloy that resists ion and thermo damage."
@@ -265,7 +265,7 @@
 			level=				"8"
 			value=				"2500"
 			mass=				"50"
-			frequency=			"veryrare"
+			frequency=			"rare"
 			unknownType=		"&itUnknownMnemonicCube;"
 			attributes=			"consumable, info, luminous, quantumProgram"
 
@@ -441,17 +441,16 @@
 		</Devices>
 
 		<Items>
-			<RandomItem count="1d6"
-					criteria=			"* +Info; -NotStandard; "
-					level=				"7"
-					levelCurve=			"1"
-					/>
-			<Table count="1d6">
-				<Item chance="25"	count="1d6"	item="&itOpticalKnowledgeArray;" />
-				<Item chance="20"	count="1d4"	item="&itLuminousArmature;" />
-				<Item chance="35"	count="1d6"	item="&itLuminousScareProgram;" />
-				<Item chance="20"	count="1"	item="&itLuminousTameProgram;" />
-			</Table>
+			<Group value="standard:level=8">
+				<Table>
+					<RandomItem chance="40"	count="1d6"
+							criteria=			"* +Info; -NotStandard; "
+							levelFrequency=		"----u ccur-"
+							/>
+					<Lookup		chance="40" count="1d6" table="&trLuminousTreasure;"/>
+					<Lookup		chance="20" count="1"	table="&trStdTreasure;"/>
+				</Table>
+			</Group>
 		</Items>
 
 		<Ships>
@@ -489,6 +488,25 @@
 			</Text>
 		</Language>
 	</StationType>
+
+<!-- TABLES -->
+	
+	<ItemTable UNID="&trLuminousTreasure;">
+		<Table>
+			<RandomItem chance="15"
+					criteria=			"* +luminous; +majorItem"
+					levelFrequency=		"systemLevel:uuc|u|uv"
+					/>
+			<RandomItem chance="30"
+					criteria=			"* +luminous; +minorItem"
+					levelFrequency=		"systemLevel:uuc|u|uv"
+					/>
+			<RandomItem chance="55"
+					criteria=			"* +luminous; +consumable"
+					levelFrequency=		"systemLevel:uuc|u|uv"
+					/>
+		</Table>
+	</ItemTable>
 	
 <!-- RESOURCES -->
 	
