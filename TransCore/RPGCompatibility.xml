@@ -30,7 +30,7 @@
 		</ListOptions>
 
 		<Panes>
-			<Default descID="descDefault">
+			<Default descID="descRepairItemDefault">
 				<OnPaneInit>
 					(block (thisItem currencyUsed)
 						(setq thisItem (scrGetItem gScreen))
@@ -95,7 +95,7 @@
 		</Panes>
 
 		<Language>
-			<Text id="descDefault">
+			<Text id="descRepairItemDefault">
 				You do not have any items that we can repair.
 			</Text>
 		</Language>

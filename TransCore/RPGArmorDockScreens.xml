@@ -1171,7 +1171,7 @@
 		</ListOptions>
 
 		<Panes>
-			<Default descID="descDefault">
+			<Default descID="descReplaceArmorDefault">
 				<OnPaneInit>
 					(block (
 						(armorSeg (@ gData 'armorSeg))
@@ -1343,7 +1343,7 @@
 		</Panes>
 
 		<Language>
-			<Text id="descDefault">
+			<Text id="descReplaceArmorDefault">
 				Pick an armor segment to install.
 			</Text>
 		</Language>

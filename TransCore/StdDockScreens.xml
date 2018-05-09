@@ -204,7 +204,7 @@
 			/>
 
 		<Panes>
-			<Default descID="descDefault">
+			<Default descID="descRemoveDeviceDefault">
 				<OnPaneInit>
 					(block (thisItem currencyUsed)
 						(setq thisItem (scrGetItem gScreen))
@@ -288,7 +288,7 @@
 		</Panes>
 
 		<Language>
-			<Text id="descDefault">
+			<Text id="descRemoveDeviceDefault">
 				Pick a device to remove.
 			</Text>
 		</Language>

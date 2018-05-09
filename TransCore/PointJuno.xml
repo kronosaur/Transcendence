@@ -299,7 +299,6 @@
 
 		<DockScreens>
 			<Main>
-
 				<Panes>
 					<Default descID="descDefault">
 						<Actions>

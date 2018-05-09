@@ -1668,7 +1668,7 @@
 			/>
 
 		<Panes>
-			<Default descID="descDefault">
+			<Default descID="descUseLongzhuDefault">
 				<Actions>
 					<Action name="Use on this Item" default="1" key="U">
 						(block (itemType)
@@ -1809,7 +1809,7 @@
 		</Panes>
 
 		<Language>
-			<Text id="descDefault">
+			<Text id="descUseLongzhuDefault">
 				What item do you wish to use the longzhu sphere on?
 			</Text>
 		</Language>

@@ -288,7 +288,7 @@
 		</InitialPane>
 
 		<Panes>
-			<Default descID="descDefault">
+			<Default descID="descMinedOreDefault">
 				<Actions>
 					<Action name="Bring Aboard" key="B" default="1" >
 						(block Nil
@@ -349,7 +349,7 @@
 		</Panes>
 
 		<Language>
-			<Text id="descDefault">
+			<Text id="descMinedOreDefault">
 				You are floating next to boulders of mined ore.
 			</Text>
 			<Text id="descEmpty">

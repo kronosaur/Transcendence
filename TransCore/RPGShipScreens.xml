@@ -87,7 +87,7 @@
 			/>
 
 		<Panes>
-			<Default descID="descDefault">
+			<Default descID="descShipConfigDefault">
 				<OnPaneInit>
 					(block (thisItem desc)
 						(setq thisItem (scrGetItem gScreen))
@@ -119,7 +119,7 @@
 		<Language>
 			<Text id="core.name">Ship's Configuration</Text>
 
-			<Text id="descDefault">
+			<Text id="descShipConfigDefault">
 				You are viewing the ship's configuration.
 			</Text>
 		</Language>
@@ -350,7 +350,7 @@
 			/>
 
 		<Panes>
-			<Default descID="descDefault">
+			<Default descID="descManualRefuelDefault">
 				<OnPaneInit>
 					(block (thisItem curEngine)
 						(setq thisItem (scrGetItem gScreen))
@@ -528,7 +528,7 @@
 		<Language>
 			<Text id="core.name">Ship's Cargo Hold</Text>
 
-			<Text id="descDefault">
+			<Text id="descManualRefuelDefault">
 				Pick an item to use as fuel.
 			</Text>
 		</Language>

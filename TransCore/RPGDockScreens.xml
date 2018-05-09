@@ -845,7 +845,7 @@
 									)
 
 								(itemText
-									(scrTranslate gScreen 'descDefault {
+									(scrTranslate gScreen 'descLootDefault {
 										unitMass:(strMassString (itmGetMass thisItem))
 										unitPrice:(fmtCurrency itemCurrency itemPrice)
 										totalMassString:totalMassString
@@ -944,7 +944,7 @@
 		</Panes>
 		
 		<Language>
-			<Text id="descDefault">
+			<Text id="descLootDefault">
 				Unit mass: %unitMass% %totalMassString%\n
 				Unit price: %unitPrice% %totalPriceString%
 			</Text>
