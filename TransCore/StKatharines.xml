@@ -220,7 +220,7 @@
 			<InstallDevice	criteria="d L:1-7;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-7;" priceAdj="100"/>
 
-			<SellShip		criteria="s +commonwealth; +systemLevel:0-2; -notStandard; -notForSale;" priceAdj="100"/>
+			<SellShip		criteria="s -notForSale;" priceAdj="100"/>
 			<BuyShip		criteria="s L:1-8; -notForSale;" priceAdj="80"/>
 
 			<BalanceTrade	criteria="{core.fusionFuel}"		impact="20"/>
@@ -1326,6 +1326,7 @@
 					
 					<Action id="actionBuyShip">
 						(scrShowScreen gScreen &dsRPGShipBroker; {
+							createCriteria: "s +systemLevel:0-2; +commonwealth; -notStandard; +shipBroker;"
 							checkMilitaryID: True
 							})
 					</Action>

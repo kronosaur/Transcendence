@@ -169,7 +169,7 @@
 			<InstallDevice	criteria="d L:1-8;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
 
-			<SellShip		criteria="s +commonwealth; +military; +systemLevel:0-2; -notStandard; -notForSale;" priceAdj="100"/>
+			<SellShip		criteria="s -notForSale;" priceAdj="100"/>
 			<BuyShip		criteria="s L:1-7; -notForSale;" priceAdj="80"/>
 
 			<ConsumeTrade	criteria="{core.antimatterFuel}"		impact="3"/>
@@ -283,6 +283,7 @@
 							<Action id="actionBuyShip">
 								(if (gr (typGetData &unidCommonwealthMilitia; 'rank) 0)
 									(scrShowScreen gScreen &dsRPGShipBroker; {
+										createCriteria: "s +systemLevel:0-2; +commonwealth; +military; -notStandard; +shipBroker;"
 										checkMilitaryID: True
 										})
 									(scrShowScreen gScreen &dsRPGMessage; { textID:'descNoShipBrokerAccess })

@@ -11,7 +11,7 @@
 			class=				"Sapphire"
 			type=				"yacht"
 
-			attributes=			"00200000_PlayerShip"
+			attributes=			"commonwealth, zubrin, 00200000_PlayerShip"
 			inherit=			"&scSapphireYacht;"
 			characterClass=		"&unidPilgrimClass;"
 			>
@@ -51,7 +51,7 @@
 			class=				"EI500"
 			type=				"freighter"
 
-			attributes=			"00200000_PlayerShip"
+			attributes=			"commonwealth, EI, freighter, 00200000_PlayerShip"
 			inherit=			"&scEI500Stock;"
 			characterClass=		"&unidPilgrimClass;"
 			>
@@ -103,7 +103,7 @@
 			class=				"Wolfen"
 			type=				"gunship"
 
-			attributes=			"00200000_PlayerShip"
+			attributes=			"commonwealth, pacificDefense, 00200000_PlayerShip"
 			inherit=			"&scWolfen;"
 			characterClass=		"&unidPilgrimClass;"
 			>

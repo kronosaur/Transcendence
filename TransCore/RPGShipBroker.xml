@@ -9,6 +9,7 @@
 	gData uses the following fields:
 	
 		checkMilitaryID: If True, we don't sell military ships without an ID.
+		createCriteria: Criteria of ship types to create (optional)
 		maxCount: Maximum number of ships to create.
 
 -->
@@ -27,7 +28,7 @@
 				;	If there are no ships in our list, then we need to create some
 				
 				(if (not shipIDList)
-					(setq shipIDList (rpgCreateShipsToSell gSource maxCount))
+					(setq shipIDList (rpgCreateShipsToSell gSource maxCount (@ gData 'createCriteria)))
 					)
 				)
 		</OnScreenInit>
@@ -1000,7 +1001,7 @@
 					)
 				))
 
-			(setq rpgCreateShipsToSell (lambda (sellerObj maxCount)
+			(setq rpgCreateShipsToSell (lambda (sellerObj maxCount createCriteria)
 				(block (
 					(shipObj Nil)
 					(shipList Nil)
@@ -1009,7 +1010,7 @@
 
 					;	Make a list of all possible ship classes that we sell.
 
-					(allClasses (typFind "s +shipBroker;"))
+					(allClasses (typFind (or createCriteria "s +shipBroker;")))
 
 					;	Filter out any ship classes that we do not sell
 
@@ -1029,6 +1030,9 @@
 							)
 						)
 					)
+
+					(dbgOutput createCriteria)
+					(dbgOutput allClasses)
 
 					;	Create a list of ships to sell
 					

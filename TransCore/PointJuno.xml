@@ -40,7 +40,7 @@
 			<InstallDevice	criteria="d L:1-9;" priceAdj="100"/>
 			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
 
-			<SellShip		criteria="s L:7-9; +commonwealth; +military; -notStandard; -notForSale;" priceAdj="100"/>
+			<SellShip		criteria="s -notForSale;" priceAdj="100"/>
 			<BuyShip		criteria="s L:1-9; -notForSale;" priceAdj="80"/>
 		</Trade>
 
@@ -139,6 +139,7 @@
 
 							<Action id="actionBuyShip">
 								(scrShowScreen gScreen &dsRPGShipBroker; {
+									createCriteria: "s L:7-9; +commonwealth; +military; -notStandard; +shipBroker;"
 									checkMilitaryID: True
 									})
 							</Action>
