@@ -77,7 +77,7 @@
 							;	If no more charges then we cannot analyze anything
 							
 							(eq chargesLeft 0)
-								(scrSetDescTranslate gScreen 'descNoCharges { itemName:(itmGetName analyzerItem 0) })
+								(scrSetDescTranslate gScreen 'descNoCharges { itemName:(itmGetName analyzerItem 'escapeQuotes) })
 								
 							;	Nothing to analyze
 							
@@ -93,8 +93,10 @@
 								
 							;	OK
 							
-							(block (theName)
-								(setq theName (itmGetName itemToAnalyze (if (eq (itmGetCount itemToAnalyze) 1) 0x840 0x804)))
+							(block (
+								(flags (if (= (itmGetCount itemToAnalyze) 1) '(installedState 'demonstrative 'escapeQuotes) '(installedState 'article 'escapeQuotes)))
+								(theName (itmGetName itemToAnalyze flags))
+								)
 								(switch
 									(ls skillLevel 2)
 										(scrSetDescTranslate gScreen 'descAnalyze1 { itemName:theName })
@@ -294,7 +296,10 @@
 						;	the user.
 						
 						(leq (random 1 100) failureChance)
-							(block Nil
+							(block (
+								(flags (if (= (itmGetCount itemToAnalyze) 1) '(installedState 'demonstrative 'escapeQuotes) '(installedState 'article 'escapeQuotes)))
+								(theName (itmGetName itemToAnalyze flags))
+								)
 							
 								(switch
 								
@@ -309,7 +314,7 @@
 									(itmMatches itemToAnalyze "dN")
 										(block Nil
 											(setq desc (typTranslate &dsRPGAnalyzeItem; 'descDamaged {
-															 itemName:(itmGetName itemToAnalyze (if (eq (itmGetCount itemToAnalyze) 1) 0x840 0x804))
+															 itemName:theName
 															})
 												)
 											(setq modifiedItem (objSetItemProperty sourceObj itemToAnalyze 'damaged True))
@@ -320,7 +325,7 @@
 									(itmMatches itemToAnalyze "ut~ad -Res;")
 										(block Nil
 											(setq desc (typTranslate &dsRPGAnalyzeItem; 'descDestroyed {
-															itemName:(itmGetName itemToAnalyze (if (eq (itmGetCount itemToAnalyze) 1) 0x840 0x804))
+															itemName:theName
 															})
 												)
 											(if (eq (itmGetCount itemToAnalyze) 1) (setq modifiedItem Nil))
@@ -349,7 +354,7 @@
 							(block Nil
 								(itmSetKnown itemToAnalyze)
 								(setq desc (typTranslate &dsRPGAnalyzeItem; 'descIdentified {
-												itemName:(itmGetName itemToAnalyze 0x04)
+												itemName:(itmGetName itemToAnalyze '(article escapeQuotes))
 												})
 									)
 								)
@@ -357,7 +362,7 @@
 						;	Otherwise, nothing
 						
 						(setq desc (typTranslate &dsRPGAnalyzeItem; 'descNoEffect {
-										itemName:(itmGetName itemToAnalyze (if (eq (itmGetCount itemToAnalyze) 1) 0x40 0x04))
+										itemName:(itmGetName itemToAnalyze (if (eq (itmGetCount itemToAnalyze) 1) '(demonstrative escapeQuotes) '(article escapeQuotes)))
 										})
 							)
 						)
