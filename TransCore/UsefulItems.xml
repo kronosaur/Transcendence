@@ -269,6 +269,7 @@
 			description=		"Analyzers are automated scanners able to identify and diagnose starship devices and other items. This portable analyzer works on items of level 1, 2 and 3."
 
 			useScreen=			"&dsRPGAnalyzeItem;"
+			showChargesInUseMenu="true"
 			>
 
 		<Image imageID="&rsItems1;" imageX="96"  imageY="672" imageWidth="96" imageHeight="96"/>
@@ -311,6 +312,7 @@
 			description=		"An engineering analyzer is a more complex and capable version of the portable analyzer. This analyzer works on items up to level 6."
 
 			useScreen=			"&dsRPGAnalyzeItem;"
+			showChargesInUseMenu="true"
 			>
 
 		<Image imageID="&rsItems1;" imageX="96"  imageY="672" imageWidth="96" imageHeight="96"/>
@@ -353,6 +355,7 @@
 			description=		"The advanced analyzer is often used for researching unknown and alien technology. This analyzer works on items up to level 10."
 
 			useScreen=			"&dsRPGAnalyzeItem;"
+			showChargesInUseMenu="true"
 			>
 
 		<Image imageID="&rsItems1;" imageX="96"  imageY="672" imageWidth="96" imageHeight="96"/>

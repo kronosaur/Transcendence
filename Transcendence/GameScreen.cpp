@@ -1003,7 +1003,7 @@ void CTranscendenceWnd::ShowUsePicker (void)
 //	Show the picker to select an item to use
 
 	{
-	int i;
+	int i, j;
 
 	if (GetPlayer())
 		{
@@ -1042,12 +1042,26 @@ void CTranscendenceWnd::ShowUsePicker (void)
 			//	Then we sort by level (higher-level first)
 			//
 			//	Then we sort by natural order
+			//
+			//	For items that use charges, we expand if there are multiple
 
-			SortedList.Insert(strPatternSubst(CONSTLIT("%d%s%04d"),
-						(bHasUseKey ? 1 : 0),
-						(bHasUseKey ? strPatternSubst(CONSTLIT("%s0"), sUseKey) : strPatternSubst(CONSTLIT("%02d"), MAX_ITEM_LEVEL - Item.GetLevel())),
-						i),
-					i);
+			if (pType->ShowChargesInUseMenu() && pType->IsKnown())
+				{
+				for (j = 0; j < Item.GetCount(); j++)
+					{
+					SortedList.Insert(strPatternSubst(CONSTLIT("%d%s%04d%04d"),
+								(bHasUseKey ? 1 : 0),
+								(bHasUseKey ? strPatternSubst(CONSTLIT("%s0"), sUseKey) : strPatternSubst(CONSTLIT("%02d"), MAX_ITEM_LEVEL - Item.GetLevel())),
+								i, j),
+							i);
+					}
+				}
+			else
+				SortedList.Insert(strPatternSubst(CONSTLIT("%d%s%04d%04d"),
+							(bHasUseKey ? 1 : 0),
+							(bHasUseKey ? strPatternSubst(CONSTLIT("%s0"), sUseKey) : strPatternSubst(CONSTLIT("%02d"), MAX_ITEM_LEVEL - Item.GetLevel())),
+							i, 0),
+						i);
 			}
 
 		//	Now add all the items to the menu
@@ -1063,7 +1077,9 @@ void CTranscendenceWnd::ShowUsePicker (void)
 				continue;
 
 			CString sCount;
-			if (Item.GetCount() > 1)
+			if (pType->ShowChargesInUseMenu() && pType->IsKnown())
+				sCount = strFromInt(Item.GetCharges());
+			else if (Item.GetCount() > 1)
 				sCount = strFromInt(Item.GetCount());
 
 			//	Show the key only if the item is identified
