@@ -2298,22 +2298,6 @@ void CPlayerShipController::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
 		sDummy.ReadFromStream(Ctx.pStream);
 		}
 
-	//	OLD: For backwards compatibility we move rin from object data to
-	//	the dedicated currency block structure
-
-	if (Ctx.dwVersion < 62)
-		{
-		int iRin = strToInt(pShip->GetData(CONSTLIT("rins")), 0);
-		if (iRin > 0)
-			{
-			CEconomyType *pRinEcon = g_pUniverse->FindEconomyType(CONSTLIT("rin"));
-			if (pRinEcon)
-				m_Credits.SetCredits(pRinEcon->GetUNID(), iRin);
-
-			pShip->SetData(CONSTLIT("rins"), NULL_STR);
-			}
-		}
-
 	m_pTrans = g_pTrans;
 	}
 

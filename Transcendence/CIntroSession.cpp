@@ -190,7 +190,7 @@ void CIntroSession::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereign, C
 				&& !pObj->IsDestroyed()
 				&& pObj != pShipDestroyed
 				&& pObj->CanAttack()
-				&& !pObj->GetData(OBJ_DATA_INTRO_CONTROLLER).IsBlank())
+				&& !pObj->GetData(OBJ_DATA_INTRO_CONTROLLER)->IsNil())
 			{
 			if (pObj->GetSovereign() == pSovereign1)
 				{
@@ -334,7 +334,7 @@ void CIntroSession::CreateIntroSystem (void)
 			if (pObj
 					&& pObj->GetCategory() == CSpaceObject::catShip
 					&& pObj->CanAttack()
-					&& !pObj->GetData(OBJ_DATA_INTRO_CONTROLLER).IsBlank())
+					&& !pObj->GetData(OBJ_DATA_INTRO_CONTROLLER)->IsNil())
 				{
 				CShip *pShip = pObj->AsShip();
 				if (pShip)
@@ -500,7 +500,7 @@ ALERROR CIntroSession::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSover
 		CIntroShipController *pNewController = new CIntroShipController(pShip->GetController());
 		pShip->SetController(pNewController, false);
 		pNewController->SetShip(pShip);
-		pShip->SetData(OBJ_DATA_INTRO_CONTROLLER, CONSTLIT("True"));
+		pShip->SetData(OBJ_DATA_INTRO_CONTROLLER, ICCItemPtr(g_pUniverse->GetCC().CreateTrue()));
 
 		*retpShip = pShip;
 		}
