@@ -2333,24 +2333,45 @@
 			; Repairs and restores the player's ship and places it at a random, safe
 			; position in the system.
 
-				(block (portObj newPos)
+				(block (
+					(bestStationObj (sysFindObject gPlayerShip "TAFN +populated; -occupation;"))
+					(bestShipObj (sysFindObject gPlayerShip "sAFN; +property:dockingEnabled;"))
 
-					; Find the nearest friendly station in the system
-					(setq portObj (sysFindObject gPlayerShip "TAFN +populated; -occupation;"))
-					(if (not portObj)
-						(enumwhile (sysFindObject gPlayerShip "tF") (not portObj) theObj
-							(if (not (sysFindObject theObj "sTEN:75"))
-								(setq portObj theObj)
+					;	Figure out the best place to put the ship
+
+					(portObj
+						(or
+							;	If we've got a populated ship or major capital ship, then
+							;	that's the preferred place.
+
+							(map (list bestStationObj bestShipObj) '(reduceMin excludeNil original) theObj
+								(if theObj
+									(objGetDistance gPlayerShip theObj)
+									)
 								)
+
+							;	Otherwise, find a friendly with no enemies nearby
+
+							(block (foundObj)
+								(enumwhile (sysFindObject gPlayerShip "TF") (not foundObj) theObj
+									(if (not (sysFindObject theObj "sTEN:75"))
+										(setq foundObj theObj)
+										)
+									)
+
+								foundObj
+								)
+
+							;	Otherwise, pick the nearest friendly place
+
+							(sysFindObject gPlayerShip "tFN")
 							)
 						)
-					(if (not portObj)
-						(setq portObj (sysFindObject gPlayerShip "tFN"))
-						)
 
-					; Pick a random position
-					(setq newPos (sysVectorRandom portObj (random 30 40) 10 "t"))
+					;	Pick a random position
 
+					(newPos (sysVectorRandom portObj (random 30 40) 10 "t"))
+					)
 					; Place the ship there
 					(objMoveTo gPlayerShip newPos)
 
