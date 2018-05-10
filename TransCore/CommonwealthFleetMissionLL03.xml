@@ -48,17 +48,6 @@
 					)
 			</OnCreate>
 
-			<OnGlobalSystemStarted>
-				(switch
-					;	If not in PJ, then nothing to do
-					(!= (sysGetNode) 'PJ)
-						Nil
-
-					;	Create the mission
-					;(msnCreate &msCSCLamplighterPrototype; (sysFindObject Nil "TAN +pointJuno;"))
-					)
-			</OnGlobalSystemStarted>
-
 			<OnAccepted>
 				(block Nil
 					;	Add CSC Europa to map
