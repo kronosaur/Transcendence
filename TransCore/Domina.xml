@@ -129,7 +129,7 @@
 					; If shields are down, then restore shields
 					(ls shieldLevel 100)
 						(block Nil
-							(shpRechargeShield gSource 1000)
+							(shpRechargeShield gSource)
 							(objSendMessage gSource Nil "Invoked the restoring powers of Domina!")
 							)
 

@@ -1006,7 +1006,7 @@
 						(block Nil
 							; Repair and reload the ship
 							(intArmorRepairAll aObj 10)
-							(shpRechargeShield aObj 1000)
+							(shpRechargeShield aObj)
 							(objFireEvent aObj "Reload")
 							
 							; Suspend object
