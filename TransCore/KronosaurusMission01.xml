@@ -122,7 +122,7 @@
 							)
 						)
 
-					;	We can debrief at any Korolov so reset debrieferID everytime we change system
+					;	We can debrief at any Korolov so reset debrieferID every time we change system
 					;	Note - this means we can't have more than one Korolov station per system, but
 					;	we could use GetGlobalDockScreen instead
 					(if (setq korolovObj (sysFindObject Nil "TN +korolovShipping;"))
