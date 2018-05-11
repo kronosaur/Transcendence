@@ -1712,6 +1712,9 @@
 							
 							<Siblings radiusInc="18">
 								<Code>
+									;	Don't create the navSign unless the stargate is there.
+									;	In some adventures, for example, we don't have this gate.
+
 									(if (sysGetObjectByName 'Outbound)
 										(block (navSignObj)
 											(setq navSignObj (sysCreateStation &stCommonwealthNavSign; (sysOrbitPos aOrbit)))
@@ -1889,6 +1892,9 @@
 							
 							<Siblings radiusInc="18">
 								<Code>
+									;	Don't create the navSign unless the stargate is there.
+									;	In some adventures, for example, we don't have this gate.
+
 									(if (sysGetObjectByName 'Inbound)
 										(block (navSignObj)
 											(setq navSignObj (sysCreateStation &stCommonwealthNavSign; (sysOrbitPos aOrbit)))

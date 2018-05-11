@@ -1468,6 +1468,8 @@
 			hitPoints=			"20"
 			>
 
+		<Names>: NavSign %s-%0%0%0</Names>
+
 		<Image imageID="&rsStations1;" imageX="0" imageY="668" imageWidth="128" imageHeight="64"/>
 
 		<DockingPorts>
@@ -1476,13 +1478,24 @@
 
 		<Events>
 			<OnCreate>
-				(block (theID xOffset yOffset)
-
+				(block (
 					; These offsets control the position of the text relative to
 					; the center of the sign (Cartessian coordinates)
 
-					(setq xOffset 6)
-					(setq yOffset 19)
+					(xOffset 6)
+					(yOffset 19)
+
+					;	Sign text
+
+					(languageTable (objGetData gSource 'languageTable))
+					(signText (or
+						(typTranslate languageTable (objGetData gSource 'signID))
+						(objGetData gSource 'sign)
+						(scrTranslate gScreen 'core.navSignText)
+						))
+
+					theID 
+					)
 
 					; Create an effect for the sign.
 
@@ -1492,7 +1505,7 @@
 
 					; Set the text of the sign
 
-					(objSetOverlayEffectProperty gSource theID 'text (objGetData gSource "Sign"))
+					(objSetOverlayEffectProperty gSource theID 'text signText)
 					)
 			</OnCreate>
 
@@ -1503,6 +1516,10 @@
 					)
 			</OnDestroy>
 		</Events>
+
+		<Language>
+			<Text id="core.navSignText">Welcome!</Text>
+		</Language>
 	</StationType>
 
 	<OverlayType UNID="&ovNavSignText;"

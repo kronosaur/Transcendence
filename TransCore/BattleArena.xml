@@ -2364,10 +2364,9 @@
 
 								<Station type="&stCommonwealthNavSign;">
 									<InitialData>
-										<Sign>"Death or\nGlory Awaits"</Sign>
-										<Info>
-											"Welcome, Traveler! You have just arrived at Rigel Aurelius, the universe's most famous tourist destination. Millions of us, from all star systems, have come to shed the constraints of our regimented life and trust to the luck of the Games. Join us at Battle Arena Maximus!"
-										</Info>
+										<Data id="languageTable">&ssBattleArena;</Data>
+										<Data id="signID">navSign.deathOrGlory.sign</Data>
+										<Data id="infoID">navSign.deathOrGlory.info</Data>
 									</InitialData>
 								</Station>
 							</Orbitals>
@@ -2473,12 +2472,11 @@
 							<Station type="&stNavBeacon;" imageVariant="1"  xOffset="-1670"    yOffset="-350"/>
 							<Station type="&stNavBeacon;" imageVariant="1"  xOffset="0"		   yOffset="400"/>
 							
-							<Station type="&stCommonwealthNavSign;"			xOffset="328"	   yOffset="-1515" name="Welcome, Gladiator!">
+							<Station type="&stCommonwealthNavSign;"			xOffset="328"	   yOffset="-1515">
 								<InitialData>
-									<Sign>"Welcome,\nGladiator!"</Sign>
-									<Info>
-										"Welcome to Battle Arena Maximus! Please enter through the gates and dock at the main station for registration information."
-									</Info>
+									<Data id="languageTable">&ssBattleArena;</Data>
+									<Data id="signID">navSign.welcome.sign</Data>
+									<Data id="infoID">navSign.welcome.info</Data>
 								</InitialData>
 							</Station>
 
@@ -2622,6 +2620,27 @@
 
 		</SystemGroup>
 
+		<Language>
+			<Text id="navSign.deathOrGlory.sign">Death or\nGlory Awaits</Text>
+			<Text id="navSign.deathOrGlory.info">
+			
+				Welcome, Traveler! You have just arrived at Rigel Aurelius, the 
+				universe's most famous tourist destination. Millions of us, from 
+				all star systems, have come to shed the constraints of our 
+				regimented life and trust to the luck of the Games. 
+				
+				Join us at Battle Arena Maximus!
+
+			</Text>
+
+			<Text id="navSign.welcome.sign">Welcome,\nGladiator!</Text>
+			<Text id="navSign.welcome.info">
+			
+				Welcome to Battle Arena Maximus! Please enter through the gates 
+				and dock at the main station for registration information.
+
+			</Text>
+		</Language>
 	</SystemType>
 
 <!-- Globals =============================================================== -->

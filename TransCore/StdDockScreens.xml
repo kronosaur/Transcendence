@@ -741,18 +741,18 @@
 	<DockScreen UNID="&dsNavSign;"
 			name=				"Information"
 			>
-
 		<Panes>
 			<Default>
-
 				<OnPaneInit>
-					(block (info)
-						(setq info (objGetData gSource "info"))
-						(if (not info)
-							(setq info "You are docked at an information sign. These automated stations are used as advertising and information signs throughout the Commonwealth.")
-							)
-
-						(scrSetDesc gScreen info)
+					(block (
+						(languageTable (objGetData gSource 'languageTable))
+						(infoText (or
+							(typTranslate languageTable (objGetData gSource 'infoID))
+							(objGetData gSource 'info)
+							(scrTranslate gScreen 'core.stationDesc)
+							))
+						)
+						(scrSetDesc gScreen infoText)
 						)
 				</OnPaneInit>
 
@@ -760,13 +760,20 @@
 					<Action name="Undock" cancel="1" key="U">
 						<Exit/>
 					</Action>
-
 				</Actions>
-
 			</Default>
-
 		</Panes>
 
+		<Language>
+			<Text id="core.name">Information</Text>
+
+			<Text id="core.stationDesc">
+			
+				You are docked at an information sign. These automated stations are 
+				used as advertising and information signs throughout the Commonwealth.
+
+			</Text>
+		</Language>
 	</DockScreen>
 
 	<!-- Abandoned NavSign -->

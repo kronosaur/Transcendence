@@ -366,10 +366,9 @@
 							<Orbitals distance="18" angle="0">
 								<Station type="&stCommonwealthNavSign;">
 									<InitialData>
-										<Sign>"Travel\nAdvisory"</Sign>
-										<Info>
-											"Pirate activity reported in systems between Eridani and St. Katharine's Star. Please use caution. Make sure you have current star maps and avoid travel to non-Commonwealth stations."
-										</Info>
+										<Data id="languageTable">&ssStartonEridani;</Data>
+										<Data id="signID">navSign.outbound.sign</Data>
+										<Data id="infoID">navSign.outbound.info</Data>
 									</InitialData>
 								</Station>
 							</Orbitals>
@@ -867,6 +866,16 @@
 			</OnCreate>
 		</Events>
 
+		<Language>
+			<Text id="navSign.outbound.sign">Travel\nAdvisory</Text>
+			<Text id="navSign.outbound.info">
+			
+				Pirate activity reported in systems between Eridani and St. Katharine's Star. 
+				Please use caution. Make sure you have current star maps and avoid travel 
+				to non-Commonwealth stations.
+
+			</Text>
+		</Language>
 	</SystemType>
 
 </TranscendenceModule>
