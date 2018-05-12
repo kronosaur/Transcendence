@@ -1685,6 +1685,7 @@
 	<!ENTITY msBattleArenaMelee			"0x001000E3">
 	<!ENTITY msKatamiKidnapped			"0x001000E4">
 	<!ENTITY baBattleArenaSegment		"0x001000E5">
+	<!ENTITY dsBattleArenaOpponentList	"0x001000E6">
 
 	<!-- 00F0-00FF HELIOTROPES -->
 	

@@ -98,10 +98,11 @@
 
 	EXTRA DATA ON GLADIATOR SHIPS
 
-	arenaName:			Name of gladiator
 	arenaSkill:			Skill of gladiator
 	arenaPrizeBonus:	Bonus to prize
 	arenaRepBonus:		Bonus to reputation
+	arenaHome:			Gladiator's home system
+	arenaDescription:	Short description
 
 	-->
 
@@ -709,7 +710,7 @@
 														(ls (objGetTypeData gSource "arenaRep") 500))
 													(scrShowPane gScreen "NoMoreGladiators")
 
-												(scrShowScreen gScreen "ChooseOpponent")	
+												(scrShowScreen gScreen &dsBattleArenaOpponentList;)
 												)
 
 										(eq arenaRank 'challenger)
@@ -770,145 +771,12 @@
 							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
 									(objSetTypeData gSource 'katamiStatus 'instructor)
-									(scrShowScreen gScreen 'ChooseOpponent)
+									(scrShowPane gScreen "Default")
+									(scrShowScreen gScreen &dsBattleArenaOpponentList;)
 									)
 							</Action>
 						</Actions>
 					</KatamiIntro2>
-
-					<GladiatorFight>
-						<OnPaneInit>
-							(block (
-								(arenaSkill (objGetTypeData gSource "arenaSkill"))
-								(arenaRep (objGetTypeData gSource "arenaRep"))
-								(theOpponent (objGetObjRefData gSource "Opponent1"))
-
-								;	Compute the player's best weapon and shields
-								(playerArmor (bamComputeArmorLevel gPlayerShip))
-								(playerShield (bamComputeShieldLevel gPlayerShip))
-								(playerWeapon (bamComputeWeaponLevel gPlayerShip))
-
-								;	Compute the opponent's best weapon and shields
-								(opponentArmor (bamComputeArmorLevel theOpponent))
-								(opponentShield (bamComputeShieldLevel theOpponent))
-								(opponentWeapon (bamComputeWeaponLevel theOpponent))
-
-								;	Get some facts about the opponent
-								(skill (objGetData theOpponent "arenaSkill"))
-								(baseSkill (objGetStaticData theOpponent "arenaSkillBase"))
-								(repBonus (objGetData theOpponent "arenaRepBonus"))
-
-								;	Generate the list of all gladiators (to see if the player chose correctly)
-								(theFullList (bamComputeOpponentList gSource arenaSkill arenaRep))
-
-								desc theBetterList proposeList altOpponent katamiSays
-								)
-
-								;	Compensate if the player has strong armor and weak shields (or vice versa)
-								(setq playerShield (max playerShield (subtract playerArmor 1)))
-								(setq playerArmor (max playerArmor (subtract playerShield 1)))
-
-								;	Pick a better alternative
-								(setq theBetterList (filter theFullList theObj 
-									(and (not (eq theObj theOpponent))
-										(leq (bamComputeShieldLevel theObj) playerWeapon)
-										(leq (bamComputeWeaponLevel theObj) playerArmor)
-										(leq (bamComputeWeaponLevel theObj) playerShield)
-										(geq (subtract (objGetData theObj "arenaSkill") (objGetStaticData theObj "arenaSkillBase")) -150)
-										)
-									))
-
-								;	If there are any other opponents with a greater repBonus...
-								(setq proposeList (filter theBetterList theObj (gr (objGetData theObj "arenaRepBonus") repBonus)))
-								(setq altOpponent (random proposeList))
-
-								;	Select message
-								(setq katamiSays (switch
-									;	Warn the player if her shields are too weak
-									(gr opponentWeapon playerShield)	'shields
-
-									;	Warn the player if her armor is too weak
-									(gr opponentWeapon playerArmor)		'armor
-
-									;	Warn the player if her weapons are too weak
-									(gr opponentShield playerWeapon)	'weapon
-
-									;	If there are any other opponents with a greater repBonus...
-									altOpponent							'alternate
-
-									;	If the opponent is underrated
-									(ls (- skill baseSkill) -150)		'underrated
-
-									'fight
-									))
-
-								(scrSetDescTranslate  gScreen (cat "descGladiatorFight:" katamiSays) {
-									opponent: (objGetName theOpponent)
-									alternate: (objGetName altOpponent)
-									})
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action id="actionFight" default="1">
-								(block (theShip)
-									(setq theShip (objGetObjRefData gSource "Opponent1"))
-
-									; Position the opponent at the right spot
-									(objMoveTo theShip (sysVectorPolarOffset gSource (random 204 336) 45))
-									(objResume theShip)
-
-									; Orders
-									(shpOrder theShip 'attack gPlayerShip)
-									(shpOrder theShip 'dock gSource)
-
-									; Register
-									(objRegisterForEvents gSource theShip)
-
-									; Set the reward
-									(objSetData gSource "finalChallenge" Nil)
-									(objSetData gSource "opponentSkill" (objGetData theShip "arenaSkill"))
-									(objSetData gSource "repGain" (objGetData theShip "arenaRepBonus"))
-									(objSetData gSource "missileRep" 0)
-									(objSetData gSource "explosionRep" 0)
-									(objSetData gSource "opponentShots" 0)
-									(objSetData gSource "opponentArmor" 100)
-									(objSetData gSource "lowestShields" (if (objGetItems gPlayerShip "sI") 100 0))
-									(objSetData gSource "lowestArmor" (subtract 100 (objGetVisibleDamage gPlayerShip)))
-									(objSetData gSource "fightTime" 0)
-									(objSetData gSource "drawAllowed" Nil)
-									(objSetData gSource "timeTo50" 1000)
-									(objSetData gSource "timeTo25" 1000)
-									(objSetData gSource "timeTo10" 1000)
-									(objSetData gSource "timeToShieldsDown" (if (objGetItems theShip "sI") 1000 -1))
-									(objSetData gSource "prizeGain" (bamComputePrize
-										(objGetTypeData gSource "arenaSkill")
-										(objGetTypeData gSource "arenaRep")
-										(objGetData theShip "arenaSkill")
-										(objGetData theShip "arenaPrizeBonus")
-										))
-
-									; Register for system events (so we can tell when ships fire)
-									(objRegisterForSystemEvents gSource 150)
-									(sysAddObjRecurringTimerEvent 10 gSource "OnFightCheck")
-
-									; Done
-									(bamDoorsClose gSource)
-									(objRegisterForEvents gSource gPlayerShip)
-									(objSetData gSource "Status" 'inProgress)
-
-									; Play Slicer track
-									(uiSetSoundtrackMode 'missionStart &muArenaSlicer;)
-
-									(scrExitDock gScreen)
-									)
-							</Action>
-
-							<Action id="actionBackOut" cancel="1">
-								(scrShowScreen gScreen "ChooseOpponent")
-							</Action>
-						</Actions>
-					</GladiatorFight>
 
 					<GladiatorWinner>
 						<OnPaneInit>
@@ -1019,7 +887,8 @@
 									(objSetData gSource "Status" Nil)
 									(objSetData gSource "OpponentCount" Nil)
 
-									(scrShowScreen gScreen "ChooseOpponent")
+									(scrShowPane gScreen "Default")
+									(scrShowScreen gScreen &dsBattleArenaOpponentList;)
 									)
 							</Action>
 						</Actions>
@@ -1319,198 +1188,6 @@
 
 				</Panes>
 			</Main>
-
-			<ChooseOpponent
-				backgroundID=	"none"
-				>
-
-				<OnScreenInit>
-					(block (
-						(arenaSkill (objGetTypeData gSource "arenaSkill"))
-						(arenaRep (objGetTypeData gSource "arenaRep"))
-						)
-
-						; Generate a list of all gladiators that the player can challenge
-						(setq gList (bamComputeOpponentList gSource arenaSkill arenaRep))
-
-						; If the list is empty, then we need to add some new opponents
-						(if (not gList)
-							(block (newGladiators)
-
-								; Create some new gladiators
-								(for i 1 (random 3 5)
-									(setq newGladiators
-										(append newGladiators
-											(objGetID (bamCreateGladiatorBySkill gSource arenaSkill))
-											)
-										)
-									)
-
-								; Add them to the list
-								(objSetData gSource "gladiatorList"
-									(append (objGetData gSource "gladiatorList") (shuffle newGladiators))
-									)
-
-								; Recompute the opponent list
-								(setq gList (bamComputeOpponentList gSource arenaSkill arenaRep))
-								
-								; If the list is stil empty then just pick a random gladiator
-								; from the new crop
-								(if (not gList)
-									(setq gList (list (objGetObjByID (random newGladiators))))
-									)
-								)
-							)
-
-						; Start at the beginning of the list
-						(setq gCursor 0)
-						(setq gSelect (item gList gCursor))
-						)
-				</OnScreenInit>
-
-				<Display>
-					<Image left="12" right="-44" top="62" height="100" align="center" valign="center" transparent="true">
-						(shpGetImageDesc gSelect 0)
-					</Image>
-
-					<Text left="12" right="-44" top="150" height="40" align="center" font="SubTitle" color="255,210,152">
-						(objGetName gSelect 0x00)
-					</Text>
-
-					<Text left="12" width="250" top="190" bottom="-140" align="right" font="MediumBold" color="200,206,199">
-						(cat
-							"hull:\n"
-							"max speed:\n"
-							"armor:\n"
-							"shields:\n"
-							"weapons:\n"
-							)
-					</Text>
-
-					<Text right="-44" width="250" top="190" bottom="-140" align="left" font="Medium" color="200,206,199">
-						(block (armorItem shieldItem allWeapons)
-							(setq armorItem (item (objGetItems gSelect "aI") 0))
-							(setq shieldItem (item (objGetItems gSelect "sI") 0))
-							
-							; Get the list of weapons
-							(setq allWeapons "")
-							(enum (objGetItems gSelect "wI") theWeapon
-								(setq allWeapons (cat allWeapons
-									(itmGetName theWeapon 0x181)
-									"\n"
-									))
-								)
-							(if (eq allWeapons "")
-								(setq allWeapons "None\n")
-								)
-
-							(cat
-								(shpGetClassName gSelect 1) "\n"
-								(fmtNumber 'speed (objGetDataField gSelect "maxSpeed")) "\n"
-								(if armorItem (itmGetName armorItem 0x181) "None") "\n"
-								(if shieldItem (itmGetName shieldItem 0x181) "None") "\n"
-								allWeapons
-								)
-							)
-					</Text>
-
-					<Text left="52" right="-84" bottom="-32" height="120" align="center" font="Large" color="200,206,199">
-						(block (desc skill repBonus thaName prize rnd1 rnd2 fromPlace)
-							(setq theName (objGetName gSelect 0x00))
-							(setq skill (objGetData gSelect "arenaSkill"))
-							(setq repBonus (objGetData gSelect "arenaRepBonus"))
-							(setq prize (bamComputePrize 
-								(objGetTypeData gSource "arenaSkill")
-								(objGetTypeData gSource "arenaRep")
-								skill
-								(objGetData gSelect "arenaPrizeBonus")
-								))
-
-							(setq rnd1 (modulo (objGetDestiny gSelect) 24))
-							(setq rnd2 (divide (objGetDestiny gSelect) 24))
-
-							(setq fromPlace (item '("Starton Eridani" "St. Katharine's Star" "Rigel Aurelius" "Centauri" "Kibo") (modulo rnd2 5)))
-
-							(switch
-								(leq skill 300)
-									(setq desc (eval (item 
-										'(
-											(cat theName " is a young gladiator from " fromPlace ".")
-											(cat theName " flies a " (shpGetClassName gSelect 1) ".")
-											(cat theName " is a novice pilot flying a beautiful " (shpGetClassName gSelect 1) ".")
-											)
-										(modulo rnd1 3)
-										)))
-
-								(setq desc (eval (item
-									'(
-										(cat theName " is a former Champion from " fromPlace ".")
-										(cat "The battle-hardened pilot known as " theName " will give you the fight of your life!")
-										(cat "Death comes quickly when you fight " theName ".")
-										)
-									(modulo rnd1 3)
-									)))
-								)
-
-							(switch
-								(geq repBonus 100)
-									(setq desc (cat desc " This is the match the audience has been waiting for."))
-
-								(geq repBonus 50)
-									(setq desc (cat desc " Defeating " theName " will excite the crowd and bring you great fame!"))
-
-								(geq repBonus 25)
-									(setq desc (cat desc " This is a well-matched opponent that will draw the crowd."))
-								)
-
-							(setq desc (cat desc " For defeating " theName " you will receive " (fmtCurrency 'credit prize) "."))
-							)
-					</Text>
-				</Display>
-
-				<Panes>
-					<Default>
-
-						<OnPaneInit>
-							(block Nil
-								(scrSetDescTranslate gScreen 'descChooseOpponent)
-								(scrEnableAction gScreen 'actionNextOpponent (ls (add gCursor 1) (count gList)))
-								(scrEnableAction gScreen 'actionPreviousOpponent (gr gCursor 0))
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action id="actionChallenge" default="1">
-								(block Nil
-									(objSetData gSource "OpponentCount" 1)
-									(objSetObjRefData gSource "Opponent1" gSelect)
-									(scrShowScreen gScreen "Main" "GladiatorFight")
-									)
-							</Action>
-
-							<Action id="actionNextOpponent" nextKey="1">
-								(block Nil
-									(setq gCursor (add gCursor 1))
-									(setq gSelect (item gList gCursor))
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-
-							<Action id="actionPreviousOpponent" prevKey="1">
-								(block Nil
-									(setq gCursor (subtract gCursor 1))
-									(setq gSelect (item gList gCursor))
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-
-							<Action id="actionCancelSpecial" cancel="1">
-								(scrShowScreen gScreen "Main")
-							</Action>
-						</Actions>
-					</Default>
-				</Panes>
-			</ChooseOpponent>
 		</DockScreens>
 		
 		<Language>
@@ -1520,10 +1197,6 @@
 			<Text id="actionSign">[S]ign</Text>
 			<Text id="actionBackOut">[B]ack Out</Text>
 			<Text id="actionFight">[F]ight!</Text>
-			<Text id="actionChallenge">[C]hallenge!</Text>
-			<Text id="actionNextOpponent">[N]ext Opponent</Text>
-			<Text id="actionPreviousOpponent">[P]revious Opponent</Text>
-			<Text id="actionCancelSpecial">Cance[l]</Text>
 			
 			<Text id="descWelcome">
 
@@ -1534,7 +1207,6 @@
 
 			</Text>
 			<String id="descMeleeBusy">"We're still in the middle of a match! Come back later."</String>
-			<Text id="descChooseOpponent">Choose an opponent:</Text>
 			<Text id="descDrawOrNot">
 
 				An Arena official looks at the battle metrics:
@@ -1640,53 +1312,6 @@
 				"You're banned from the games for leaving the arena in the middle of battle!"
 			
 			</String>
-			<Text id="descGladiatorFight:shields">
-
-				Katami shakes his head:
-
-				"Are you sure you want to challenge such an opponent? Your shields are not
-				strong enough to resist %opponent%'s attacks."
-
-			</Text>
-			<Text id="descGladiatorFight:armor">
-
-				Katami shakes his head:
-
-				"Are you sure you can survive such an opponent? Your armor is weak against
-				%opponent%'s weapon."
-
-			</Text>
-			<Text id="descGladiatorFight:weapon">
-
-				Katami sighs:
-
-				"Are you sure you are up to the challenge? Your primary weapon is not strong
-				enough to penetrate %opponent%'s shields."
-
-			</Text>
-			<Text id="descGladiatorFight:alternate">
-
-				Katami considers carefully:
-
-				"An interesting choice. Have you considered %alternate% instead?
-				I think the crowd would prefer to see that match."
-
-			</Text>
-			<Text id="descGladiatorFight:underrated">
-
-				Katami looks up to the ceiling:
-
-				"There is something disturbing about %opponent%.
-				I feel that he is more powerful than everyone believes. Be careful!"
-
-			</Text>
-			<Text id="descGladiatorFight:fight">
-
-				Katami bows his head:
-
-				"Fight with honor! Defeat your opponent and win the love of the crowd!"
-
-			</Text>
 			<Text id="descGladiatorWinner:good">
 
 				Katami beams a smile:
@@ -1829,6 +1454,13 @@
 
 			</Text>
 
+			<Text id="gladiator:novice:1">%gladiator% is a young gladiator from %home%.</Text>
+			<Text id="gladiator:novice:2">%gladiator% flies a %ship%.</Text>
+			<Text id="gladiator:novice:3">%gladiator% is a novice pilot flying a beautiful %ship%.</Text>
+			<Text id="gladiator:champion:1">%gladiator% is a former Champion from %home%.</Text>
+			<Text id="gladiator:champion:2">The battle-hardened pilot known as %gladiator% will give you the fight of your life!</Text>
+			<Text id="gladiator:champion:3">Death comes quickly when you fight %gladiator%.</Text>
+
 			<Text id="rumor.commonwealthHabitat.weapon1">
 				"What's your favorite weapon? Personally I favor the AK505 Ballista. It's
 				a monster and it will kill a lot of ships with a single punch. When I hit
@@ -1951,6 +1583,365 @@
 		</ImageVariants>
 
 	</StationType>
+
+<!-- DOCK SCREENS -->
+
+	<DockScreen unid="&dsBattleArenaOpponentList;"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			>
+
+		<OnScreenInit>
+			(block (
+				(arenaSkill (objGetTypeData gSource "arenaSkill"))
+				(arenaRep (objGetTypeData gSource "arenaRep"))
+
+				;	 Generate a list of all gladiators that the player can challenge
+				(opponentList (bamComputeOpponentList gSource arenaSkill arenaRep))
+				)
+
+				; If the list is empty, then we need to add some new opponents
+				(if (not opponentList)
+					(block (newGladiators)
+
+						; Create some new gladiators
+						(for i 1 (random 3 5)
+							(setq newGladiators
+								(append newGladiators
+									(objGetID (bamCreateGladiatorBySkill gSource arenaSkill))
+									)
+								)
+							)
+
+						; Add them to the list
+						(objSetData gSource "gladiatorList"
+							(append (objGetData gSource "gladiatorList") (shuffle newGladiators))
+							)
+
+						; Recompute the opponent list
+						(setq opponentList (bamComputeOpponentList gSource arenaSkill arenaRep))
+
+						; If the list is stil empty then just pick a random gladiator
+						; from the new crop
+						(if (not opponentList)
+							(setq opponentList (list (objGetObjByID (random newGladiators))))
+							)
+						)
+					)
+				(scrSetData gScreen 'opponentList opponentList)
+				)
+		</OnScreenInit>
+
+		<Display type="carouselSelector"
+				style="shipList"
+				>
+			<OnDisplayInit>
+				(map (scrGetData gScreen 'opponentList) shipObj
+					(block (
+						(armorItem (@ (objGetItems shipObj "aI") 0))
+						(shieldItem (@ (objGetItems shipObj "sI") 0))
+						(driveItem (or (@ (objGetItems shipObj "vI") 0) &itTritiumPropulsionUpgrade;))
+						)
+						{
+						title: (objGetName shipObj)
+						icon: (shpGetImageDesc shipObj)
+						largeIcon: (shpGetImageDesc shipObj { type:'schematic })
+
+						details: (append
+							{
+							icon: (shpGetImageDesc shipObj 0)
+							title: (objGetName shipObj 'generic)
+							}
+							{
+							icon: (itmGetImageDesc driveItem)
+							title: (scrTranslate gScreen 'listSpeed {speed: (fmtNumber 'speed (objGetProperty shipObj 'maxSpeed))})
+							}
+							{
+							icon: (itmGetImageDesc armorItem)
+							title: (scrTranslate gScreen 'listArmor)
+							desc: (or (itmGetName armorItem '(short actual)) "None")
+							}
+							{
+							icon: (itmGetImageDesc shieldItem)
+							title: (scrTranslate gScreen 'listShields)
+							desc: (or (itmGetName shieldItem '(short actual)) "None")
+							}
+							(map (objGetItems shipObj "wI") theItem {
+								icon: (itmGetImageDesc theItem)
+								title: (itmGetName theItem '(short actual capitalize))
+								})
+							)
+
+						shipObj: shipObj
+						})
+					)
+			</OnDisplayInit>
+		</Display>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(theEntry (@ (scrGetListEntry gScreen) 'shipObj))
+						(repBonus (objGetData theEntry "arenaRepBonus"))
+						(prize (bamComputePrize
+							(objGetTypeData gSource "arenaSkill")
+							(objGetTypeData gSource "arenaRep")
+							(objGetData theEntry "arenaSkill")
+							(objGetData theEntry "arenaPrizeBonus")
+							))
+						(descID (switch
+							(geq repBonus 100)	"descGladiator:4"
+							(geq repBonus 50)	"descGladiator:3"
+							(geq repBonus 25)	"descGladiator:2"
+												"descGladiator:1"
+							))
+						)
+						(scrSetDesc gScreen
+							(objGetData theEntry "arenaDescription")
+							" "
+							(scrTranslate gScreen descID {
+								gladiator: (objGetName theEntry)
+								reward: (fmtCurrency 'credit prize)
+								})
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionChallenge" default="1">
+						(scrShowPane gScreen "GladiatorFight")
+					</Action>
+
+					<Action id="actionCancelSpecial" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+
+			<GladiatorFight noListNavigation="true">
+				<OnPaneInit>
+					(block (
+						(theEntry (scrGetListEntry gScreen))
+						(arenaSkill (objGetTypeData gSource "arenaSkill"))
+						(arenaRep (objGetTypeData gSource "arenaRep"))
+						(theOpponent (@ theEntry 'shipObj))
+
+						;	Compute the player's best weapon and shields
+						(playerArmor (bamComputeArmorLevel gPlayerShip))
+						(playerShield (bamComputeShieldLevel gPlayerShip))
+						(playerWeapon (bamComputeWeaponLevel gPlayerShip))
+
+						;	Compute the opponent's best weapon and shields
+						(opponentArmor (bamComputeArmorLevel theOpponent))
+						(opponentShield (bamComputeShieldLevel theOpponent))
+						(opponentWeapon (bamComputeWeaponLevel theOpponent))
+
+						;	Get some facts about the opponent
+						(skill (objGetData theOpponent "arenaSkill"))
+						(baseSkill (objGetStaticData theOpponent "arenaSkillBase"))
+						(repBonus (objGetData theOpponent "arenaRepBonus"))
+
+						;	Generate the list of all gladiators (to see if the player chose correctly)
+						(theFullList (bamComputeOpponentList gSource arenaSkill arenaRep))
+
+						desc theBetterList proposeList altOpponent katamiSays
+						)
+
+						;	Compensate if the player has strong armor and weak shields (or vice versa)
+						(setq playerShield (max playerShield (subtract playerArmor 1)))
+						(setq playerArmor (max playerArmor (subtract playerShield 1)))
+
+						;	Pick a better alternative
+						(setq theBetterList (filter theFullList theObj
+							(and (not (eq theObj theOpponent))
+								(leq (bamComputeShieldLevel theObj) playerWeapon)
+								(leq (bamComputeWeaponLevel theObj) playerArmor)
+								(leq (bamComputeWeaponLevel theObj) playerShield)
+								(geq (subtract (objGetData theObj "arenaSkill") (objGetStaticData theObj "arenaSkillBase")) -150)
+								)
+							))
+
+						;	If there are any other opponents with a greater repBonus...
+						(setq proposeList (filter theBetterList theObj (gr (objGetData theObj "arenaRepBonus") repBonus)))
+						(setq altOpponent (random proposeList))
+
+						;	Select message
+						(setq katamiSays (switch
+							;	Warn the player if her shields are too weak
+							(gr opponentWeapon playerShield)	'shields
+
+							;	Warn the player if her armor is too weak
+							(gr opponentWeapon playerArmor)		'armor
+
+							;	Warn the player if her weapons are too weak
+							(gr opponentShield playerWeapon)	'weapon
+
+							;	If there are any other opponents with a greater repBonus...
+							altOpponent							'alternate
+
+							;	If the opponent is underrated
+							(ls (- skill baseSkill) -150)		'underrated
+
+							'fight
+							))
+
+						(scrSetDescTranslate  gScreen (cat "descGladiatorFight:" katamiSays) {
+							opponent: (objGetName theOpponent)
+							alternate: (objGetName altOpponent)
+							})
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionFight" default="1">
+						(block (
+							(theEntry (scrGetListEntry gScreen))
+							(theShip (@ theEntry 'shipObj))
+							)
+							(objSetData gSource "OpponentCount" 1)
+							(objSetObjRefData gSource "Opponent1" (@ theEntry 'shipObj))
+
+							; Position the opponent at the right spot
+							(objMoveTo theShip (sysVectorPolarOffset gSource (random 204 336) 45))
+							(objResume theShip)
+
+							; Orders
+							(shpOrder theShip 'attack gPlayerShip)
+							(shpOrder theShip 'dock gSource)
+
+							; Register
+							(objRegisterForEvents gSource theShip)
+
+							; Set the reward
+							(objSetData gSource "finalChallenge" Nil)
+							(objSetData gSource "opponentSkill" (objGetData theShip "arenaSkill"))
+							(objSetData gSource "repGain" (objGetData theShip "arenaRepBonus"))
+							(objSetData gSource "missileRep" 0)
+							(objSetData gSource "explosionRep" 0)
+							(objSetData gSource "opponentShots" 0)
+							(objSetData gSource "opponentArmor" 100)
+							(objSetData gSource "lowestShields" (if (objGetItems gPlayerShip "sI") 100 0))
+							(objSetData gSource "lowestArmor" (subtract 100 (objGetVisibleDamage gPlayerShip)))
+							(objSetData gSource "fightTime" 0)
+							(objSetData gSource "drawAllowed" Nil)
+							(objSetData gSource "timeTo50" 1000)
+							(objSetData gSource "timeTo25" 1000)
+							(objSetData gSource "timeTo10" 1000)
+							(objSetData gSource "timeToShieldsDown" (if (objGetItems theShip "sI") 1000 -1))
+							(objSetData gSource "prizeGain" (bamComputePrize
+								(objGetTypeData gSource "arenaSkill")
+								(objGetTypeData gSource "arenaRep")
+								(objGetData theShip "arenaSkill")
+								(objGetData theShip "arenaPrizeBonus")
+								))
+
+							; Register for system events (so we can tell when ships fire)
+							(objRegisterForSystemEvents gSource 150)
+							(sysAddObjRecurringTimerEvent 10 gSource "OnFightCheck")
+
+							; Done
+							(bamDoorsClose gSource)
+							(objRegisterForEvents gSource gPlayerShip)
+							(objSetData gSource "Status" 'inProgress)
+
+							; Play Slicer track
+							(uiSetSoundtrackMode 'missionStart &muArenaSlicer;)
+
+							(scrExitDock gScreen)
+							)
+					</Action>
+
+					<Action id="actionBackOut" cancel="1">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</GladiatorFight>
+		</Panes>
+
+		<Language>
+			<Text id="actionChallenge">[C]hallenge!</Text>
+			<Text id="actionCancelSpecial">Cance[l]</Text>
+			<Text id="actionBackOut">[B]ack Out</Text>
+			<Text id="actionFight">[F]ight!</Text>
+
+			<Text id="listSpeed">Max. speed: %speed%</Text>
+			<Text id="listArmor">Armor</Text>
+			<Text id="listShields">Shields</Text>
+
+			<Text id="descGladiator:4">
+
+				This is the match the audience has been waiting for.
+				For defeating %gladiator% you will receive %reward%.
+
+			</Text>
+			<Text id="descGladiator:3">
+
+				Defeating %gladiator% will excite the crowd and bring you great fame!
+				For defeating %gladiator% you will receive %reward%.
+
+			</Text>
+			<Text id="descGladiator:2">
+
+				This is a well-matched opponent that will draw the crowd.
+				For defeating %gladiator% you will receive %reward%.
+
+			</Text>
+			<Text id="descGladiator:1">
+
+				For defeating %gladiator% you will receive %reward%.
+
+			</Text>
+
+			<Text id="descGladiatorFight:shields">
+
+				Katami shakes his head:
+
+				"Are you sure you want to challenge such an opponent? Your shields are not
+				strong enough to resist %opponent%'s attacks."
+
+			</Text>
+			<Text id="descGladiatorFight:armor">
+
+				Katami shakes his head:
+
+				"Are you sure you can survive such an opponent? Your armor is weak against
+				%opponent%'s weapon."
+
+			</Text>
+			<Text id="descGladiatorFight:weapon">
+
+				Katami sighs:
+
+				"Are you sure you are up to the challenge? Your primary weapon is not strong
+				enough to penetrate %opponent%'s shields."
+
+			</Text>
+			<Text id="descGladiatorFight:alternate">
+
+				Katami considers carefully:
+
+				"An interesting choice. Have you considered %alternate% instead?
+				I think the crowd would prefer to see that match."
+
+			</Text>
+			<Text id="descGladiatorFight:underrated">
+
+				Katami looks up to the ceiling:
+
+				"There is something disturbing about %opponent%.
+				I feel that he is more powerful than everyone believes. Be careful!"
+
+			</Text>
+			<Text id="descGladiatorFight:fight">
+
+				Katami bows his head:
+
+				"Fight with honor! Defeat your opponent and win the love of the crowd!"
+
+			</Text>
+		</Language>
+	</DockScreen>
 
 	<!-- G-Type Star -->
 
@@ -2383,26 +2374,20 @@
 				))
 
 			(setq bamComputeOpponentList (lambda (baseObj arenaSkill arenaRep)
-				(block (resultList)
-					(setq resultList Nil)
-					(enum (objGetData baseObj "gladiatorList") theObjID
-						(block (theObj objSkill)
-							(setq theObj (objGetObjByID theObjID))
-							(setq objSkill (objGetData theObj "arenaSkill"))
-
-							; Figure out if this ship is willing to fight with the player
-							(if (and (leq objSkill (add arenaSkill 100))
-									(geq objSkill (subtract arenaSkill 100))
-									(or (geq arenaRep 600) (leq objSkill 800))
-									)
-								(block Nil
-									(setq resultList (append resultList theObj))
-									)
-								)
-							)
+				(map (objGetData baseObj 'gladiatorList) 'excludeNil theObjID
+					(block (
+						(theObj (objGetObjByID theObjID))
+						(objSkill (objGetData theObj 'arenaSkill))
 						)
 
-					resultList
+						;	Figure out if this ship is willing to fight with the player
+						(if (and (leq objSkill (+ arenaSkill 100))
+								(geq objSkill (- arenaSkill 100))
+								(or (geq arenaRep 600) (leq objSkill 800))
+								)
+							theObj
+							)
+						)
 					)
 				))
 
@@ -2587,7 +2572,7 @@
 				))
 
 			(setq bamCreateGladiator (lambda (baseObj shipClass)
-				(block (theShip)
+				(block (theShip descID)
 					; Note: We use a position instead of an object for the creation pos
 					; because an object would set the gate timer.
 					(setq theShip
@@ -2601,9 +2586,6 @@
 					; Ignore shields down (so we don't run into the Arena walls)
 					(shpSetAISetting theShip 'ignoreShieldsDown True)
 					
-					; Set the name
-					(objSetData theShip "arenaName" "Joe Gladiator")
-
 					; Set the skill level
 					(objSetData theShip "arenaSkill"
 						(max 200
@@ -2625,6 +2607,20 @@
 							(objSetData theShip "arenaRepBonus" (random '(25 25 25 50 50 100)))
 							)
 						)
+
+					; Set our description
+					(objSetData theShip "arenaHome" (random '("Starton Eridani" "St. Katharine's Star" "Rigel Aurelius" "Centauri" "Kibo")))
+					(switch
+						(leq (objGetData theShip "arenaSkill") 300)
+							(setq descID (cat "gladiator:novice:" (random 1 3)))
+
+						(setq descID (cat "gladiator:champion:" (random 1 3)))
+						)
+					(objSetData theShip "arenaDescription" (objTranslate gSource descID {
+						gladiator: (objGetName theShip)
+						home: (objGetData theShip "arenaHome")
+						ship: (shpGetClassName theShip 1)
+						}))
 
 					; Suspend the ship so that it is not visible until later
 					(objSuspend theShip)
