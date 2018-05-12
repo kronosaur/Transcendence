@@ -2682,10 +2682,13 @@
 					;	If the player sold slaves, chance they get caught
 					
 					(itmHasAttribute gItem 'slaves)
-						(block ()
+						(block (
+							;	2% chance of arrest per slave sold.
+							(chanceOfArrest 2)
+							)
 							(objIncData gPlayerShip 'slaveSales (ecoExchange aPrice aCurrency 'credit))
 
-							(if (ls (random 1 50) (itmGetCount gItem))
+							(if (rollChance chanceOfArrest (itmGetCount gItem))
 								(intCommonwealthCrime 2 "slave-trading")
 								)
 							)
