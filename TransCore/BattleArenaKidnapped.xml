@@ -9,10 +9,10 @@
 	stationID:			The objID of the station where Katami is held
 	destID:				Copy of stationID when deliveryMission is active
 	paneID:				Copy of stationID when paneInitMission is active
-	kateID:
+	kateID:				The objID of Kate's cruiser
 	
 	status: One of the following:
-		Nil:			Player travelling out to station
+		outbound:		Player travelling out to station
 		molotok:		Player has been told to attack the Molotok
 		station:		Kate is attacking station
 
@@ -23,7 +23,7 @@
 			attributes=			"battleArena, paneInitMission, deliveryMission"
 
 			level=				"3"
-				 
+
 			maxAppearing=		"1"
 			>
 
@@ -44,7 +44,7 @@
 							(msnDestroy gSource)
 
 						;	The black market station must still be alive
-						(not (setq destObj (sysFindObject gSource "TAN +katamiRescue")))
+						(not (setq destObj (sysFindObject gSource "TAN +unid:&stBlackMarketStation;;")))
 							(msnDestroy gSource)
 
 						;	Set up the mission
@@ -70,8 +70,6 @@
 				(block Nil
 					;	Player has met Kate
 					(rpgCharacterSetMeeting &unidKateMorgental;)
-					;	Legacy Kate status (still used in Heretic)
-					(typSetData &svCorporate; 'statusKateM 'ally)
 					)
 			</OnAccepted>
 
@@ -79,8 +77,23 @@
 				(block (
 					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
 					(destObj (objGetObjByID (msnGetData gSource 'stationID)))
+					(targetObj (sysFindObject destObj "sAN O:guard; +unid:&scMolotok;;"))
 					kateMorgentalObj anchorObj
 					)
+
+					;	Disable reinforcements and make sure there is just one defender
+					(objSetProperty destObj 'shipReinforcementEnabled Nil)
+					(enum (sysFindObject destObj "sAJ O:guard;") theObj
+						(if (!= theObj targetObj)
+							(objDestroy theObj)
+							)
+						)
+					(if (not targetObj)
+						(block Nil
+							(setq targetObj (sysCreateShip &scMolotok; destObj &svBlackMarket;))
+							(shpOrder targetObj 'guard destObj)
+							)
+						)
 
 					;	Create a marker for the cruiser
 					(setq anchorObj (sysCreateMarker "Morgental cruiser anchor" (sysVectorPolarOffset arenaObj 270 20) &svCorporate;))
@@ -117,8 +130,6 @@
 					(rpgCharacterSetMeeting &unidKateMorgental;)
 					;	Player did not help Kate
 					(rpgCharacterChangeRel &unidKateMorgental; 'opposition)
-					;	Legacy Kate status (still used in Heretic)
-					(typSetData &svCorporate; 'statusKateM 'betrayedKatami)
 
 					;	Update Katami
 					(typSetData &stBattleArena; 'katamiStatus 'betrayed)
@@ -133,7 +144,7 @@
 
 			<OnSetPlayerTarget>
 				(switch
-					(not (msnGetData gSource 'status))
+					(= (msnGetData gSource 'status) 'outbound)
 						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'kateID)) 'escort)
 
 					(= (msnGetData gSource 'status) 'molotok)
@@ -185,15 +196,8 @@
 								(typSetData &stBattleArena; 'katamiStatus 'dead)
 								)
 
-							(dbgOutput "Kate killed")
-							(rpgCharacterSetStatus &unidKateMorgental; 'dead)
+							;	We assue Kate will resurrect so don't change her status
 							(msnFailure gSource)
-
-							;	If player destroyed Kate's ship, then she remembers
-							(if (and gPlayerShip (= aOrderGiver gPlayerShip))
-								(typSetData &svCorporate; 'statusKateM 'destroyedByPlayer)
-								(typSetData &svCorporate; 'statusKateM 'destroyed)
-								)
 							)
 					
 					(and	(= (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
@@ -245,7 +249,13 @@
 
 					;	Rescue fail
 					(= aReason 'failure)
-						Nil
+						(block (
+							(destObj (objGetObjByID (msnGetData gSource 'stationID)))
+							)
+							(if destObj
+								(objSetProperty destObj 'shipReinforcementEnabled True)
+								)
+							)
 					)
 			</OnCompleted>
 
@@ -258,14 +268,14 @@
 
 			<OnPaneInit>
 				(if (and
-						(= aScreenUNID &stBlackMarketRigelAurelius;)
+						(= aScreenUNID &stBlackMarketStation;)
 						(= aPane 'Default)
 						)
 					(block (
 						(theMessage (msnTranslate gSource 'bmMsgWarning))
 						)
 						(scrShowAction gScreen 'actionTalk Nil)
-						(scrAddAction gScreen 'newTalk 0 "Talk to Station Boss" "T"
+						(scrAddAction gScreen 'newTalk 0 (scrTranslate gScreen 'actionTalk)
 							(lambda () (scrShowScreen gScreen &dsRPGMessage; {desc:theMessage}))
 							)
 						)

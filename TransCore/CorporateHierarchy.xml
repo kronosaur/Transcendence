@@ -2,19 +2,7 @@
 
 <TranscendenceModule>
 
-<!-- CORPORATE HIERARCHY
-	
-	GLOBAL DATA
-
-	statusKateM:		Status of player with respect to Kate Morgental
-							Nil						= Never met
-							'acquaintance			= Met once or twice
-							'ally					= Player has helped
-							'betrayedKatami			= Player did not help Mr. Katami
-							'destroyedByPlayer		= Player killed her
-							'destroyed				= She is dead
-
--->
+<!-- CORPORATE HIERARCHY -->
 
 	<Sovereign UNID="&svCorporate;"
 			name=":the Corporate Hierarchy"
