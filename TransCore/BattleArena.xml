@@ -57,41 +57,15 @@
 
 	EXTRA DATA
 
-	Status:			Status of contest:
-						Nil						= No battle in progress
-						'inProgress				= Battle in progress
-						'destroyed				= Opponent destroyed
-						'playerLeft				= Player left arena
-						'playerKilled			= Player killed in arena
-						'waitingForMatchEnd		= Player was killed and melee is not done yet
-						'draw					= Battle is a draw
-
-	OpponentCount:	Number of opponents left
-	Opponent{n}:	Opponent 0-max
-	Opponents:		Ordered list of all challenges
+	Opponent{n}:	objID for Opponent 0-max
 
 	gladiatorList:	List of objID for all active (not yet killed) gladiators
-
-	meleeCount:		Number of melee rounds that the player has been in
-	rookiePoints:	Points accumulated for destroying ships in this melee
+	markerID:		Marker at the center of the arena
 	rookieScore:	Total points accumulated as a rookie
 
-	matchCount:		Number of gladiator matches that the player was in
-	opponentSkill:	Skill of current opponent
-	repGain:		Rep gained for current fight
-	prizeGain:		Prize money for current fight
 	opponentShots:	Number of shots fired by opponent in this fight
-	lowestShields:	Lowest level that player shields reached
-	lowestArmor:	Lowest level that player armor reached
 	missileRep:		Current rep gained by firing missiles
 	explosionRep:	Current rep gained by explosions
-	fightTime:		Increment by 1 every 10 ticks
-	drawAllowed:	If True, player is allowed to call a draw
-	opponentArmor:	Lowest level that opponent's armor reached so far
-	timeTo50:		The fightTime at which the opponent's armor was 50 or below
-	timeTo25:		The fightTime at which the opponent's armor was 25 or below
-	timeTo10:		The fightTime at which the opponent's armor was 10 or below
-	timeToShieldsDown: The fightTime at which the opponent's shields are first dropped
 
 	results:		A list of the skill level of the last 4 opponents fought by the player
 					(or 0 for opponents that won)
@@ -184,7 +158,12 @@
 			<Port x="0"		y="-140" />
 		</DockingPorts>
 		
-		<!-- Events -->
+		<!-- Events and Data -->
+
+		<InitialData>
+			<Data id="results">(0 0 0 0)</Data>
+			<Data id="rookieScore">0</Data>
+		</InitialData>
 
 		<Events>
 			<GetGlobalAchievements>
@@ -208,6 +187,9 @@
 								(typTranslate &unidCommonText; 'achievementsAndRegrets)
 								))
 							)
+
+						;	Missions
+						(rpgMissionAchievements &stBattleArena; "* +gladiatorFight;")
 						)
 					)
 			</GetGlobalAchievements>
@@ -265,28 +247,28 @@
 
 			<OnSystemWeaponFire>
 				(switch
-					; If this is a repeat, then ignore
+					;	If this is a repeat, then ignore
 					(!= aFireRepeat 0)
 						Nil
 						
-					; If the player fires a missile (or other expensive disposable) she gets a bonus
-					(eq aWeaponObj gPlayerShip)
-						(block (theWeapon theLevel)
-							(setq theWeapon (itmCreate aWeaponUNID 1))
-							(setq theLevel (itmGetLevel theWeapon))
-							(if (itmMatches theWeapon "m &gt;=$5")
+					;	If the player fires a missile (or other expensive disposable) she gets a bonus
+					(= aWeaponObj gPlayerShip)
+						(block (
+							(theLevel (itmGetLevel aWeaponUNID))
+							)
+							(if (itmMatches aWeaponUNID "m &gt;=$5")
 								(objIncData gSource "missileRep" (multiply theLevel (subtract theLevel 1)))
 								)
 							)
 
-					; Count up the number of times that the opponent fires
-					(eq aWeaponObj (objGetObjRefData gSource "Opponent1"))
-						(objIncData gSource "opponentShots" 1)
+					;	Count up the number of times that the opponent fires
+					(= (objGetID aWeaponObj) (objGetData gSource "Opponent1"))
+						(objIncData gSource "opponentShots")
 					)
 			</OnSystemWeaponFire>
 
 			<OnSystemExplosion>
-				; Each explosion is +50
+				;	Each explosion is +50
 				(objIncData gSource "explosionRep" 50)
 			</OnSystemExplosion>
 		</Events>
@@ -294,29 +276,15 @@
 		<DockScreens>
 			<Main>
 				<InitialPane>
-					(block (
-						(status (objGetData gSource "Status"))
-						(arenaRank (objGetTypeData gSource "arenaRank"))
-						)
-
+					(block (theMission)
 						(switch
-							(not status)
-								"Default"
-
-							(and (eq status 'inProgress)
-									(objGetData gSource 'drawAllowed)
-									(not (objGetData gSource 'finalChallenge))
+							(setq theMission (msnFind gSource "aSP +arenaCombat;"))
+								(if (msnFireEvent theMission 'OnDrawAllowed)
+									'CheckDraw
+									'StillFighting
 									)
-								"CheckDraw"
 
-							(eq status 'inProgress)
-								"StillFighting"
-
-							(eq status 'waitingForMatchEnd)
-								"Default"
-
-							(eq status 'playerLeft)
-								"PlayerLeft"
+							'Default
 							)
 						)
 				</InitialPane>
@@ -330,8 +298,11 @@
 						-->
 
 							<Action id="actionGladiatorsQuarters" default="1">
-								(block (theMission arenaRank)
-									(setq arenaRank (objGetTypeData gSource "arenaRank"))
+								(block (
+									(arenaRank (objGetTypeData gSource "arenaRank"))
+									(matchCount (count (msnFind gSource "cS +gladiatorFight;")))
+									theMission
+									)
 									(switch
 										(setq theMission (rpgMissionGetAssignment {
 												missionCriteria: "n +battleArena;"
@@ -343,37 +314,25 @@
 										(not arenaRank)
 											(scrShowPane gScreen "FirstFight")
 
-										(eq arenaRank 'rookie)
-											(switch
-												(objGetData gSource "OpponentCount")
-													(scrShowPane gScreen "MeleeBusy")
+										(= arenaRank 'rookie)
+											(scrShowPane gScreen "NoMoreMelees")
 
-												(scrShowPane gScreen "NoMoreMelees")
-												)
-
-										(eq arenaRank 'gladiator)
+										(= arenaRank 'gladiator)
 											(switch
 												(not (objGetTypeData gSource "katamiStatus"))
 													(scrShowPane gScreen "KatamiIntro")
 
-												(and (geq (objGetData gSource "matchCount") 16)
+												(and (geq matchCount 16)
 														(ls (objGetTypeData gSource "arenaRep") 500))
 													(scrShowPane gScreen "NoMoreGladiators")
 
 												(scrShowScreen gScreen &dsBattleArenaOpponentList;)
 												)
 
-										(eq arenaRank 'challenger)
-											(scrShowPane gScreen "Challenger")
-
-										(eq arenaRank 'champion)
+										(= arenaRank 'champion)
 											(scrShowPane gScreen "Champion")
 
-										(eq arenaRank 'loser)
-											(scrShowPane gScreen "Loser")
-
-										(eq arenaRank 'washout)
-											(scrShowPane gScreen "Loser")
+										(scrShowPane gScreen "Loser")
 										)
 									)
 							</Action>
@@ -387,9 +346,7 @@
 							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 
 					<NoMoreMelees descID="descNoMoreMelees">
@@ -399,14 +356,6 @@
 							</Action>
 						</Actions>
 					</NoMoreMelees>
-
-					<MeleeBusy descID="descMeleeBusy">
-						<Actions>
-							<Action id="actionContinue" default="1" cancel="1">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MeleeBusy>
 
 					<KatamiIntro descID="descKatamiIntro1">
 						<Actions>
@@ -431,7 +380,7 @@
 					<GladiatorDraw descID="descGladiatorDraw">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
-								(scrExitScreen gScreen)
+								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
 					</GladiatorDraw>
@@ -486,8 +435,6 @@
 							<Action id="actionSign" default="1">
 								(block Nil
 									(objSetTypeData gSource "arenaRank" 'rookie)
-									(objSetData gSource "rookieScore" 0)
-									(objSetData gSource "meleeCount" 0)
 									(scrShowPane gScreen 'Default)
 									(scrShowScreen gScreen &dsRPGMission; {
 										missionObj: (msnCreate &msBattleArenaMelee; gSource)
@@ -516,16 +463,13 @@
 					<CheckDraw>
 						<OnPaneInit>
 							(block (
-								(opponentObj (objGetObjRefData gSource "Opponent1"))
+								(theMission (msnFind gSource "Pa +arenaCombat;"))
+								(opponentObj (objGetObjByID (msnGetData theMission 'opponentID)))
 								)
-								
 								;	Enemy stops attacking
-								
-								(shpCancelOrders opponentObj)
-								(shpOrder opponentObj 'wait)
-								
+								(shpOrderImmediate opponentObj 'wait)
+
 								;	Description
-								
 								(scrSetDescTranslate gScreen 'descDrawOrNot)
 								)
 						</OnPaneInit>
@@ -533,54 +477,28 @@
 						<Actions>
 							<Action id="actionDrawYes" default="1">
 								(block (
-									(opponentObj (objGetObjRefData gSource "Opponent1"))
+									(theMission (msnFind gSource "aSP +arenaCombat;"))
+									(opponentObj (objGetObjByID (msnGetData theMission 'opponentID)))
 									)
-									
-									;	Remove the ship from the gladiator list
-									
-									(objSetData gSource "gladiatorList"
-										(filter (objGetData gSource "gladiatorList") theID (not (eq theID (objGetID opponentObj))))
-										)
-										
 									;	The match is over
-									
-									(if (not (objGetData gSource 'finalChallenge))
-										(objIncData gSource "matchCount" 1)
-										)
-										
-									(bamDoorsOpen gSource)
-									(objUnregisterForSystemEvents gSource)
-									(sysCancelTimerEvent gSource "OnFightCheck")
-									
-									;	Opponent done
-									
-									(shpCancelOrders opponentObj)
-									(objSuspend opponentObj)
-									
-									;	Set status
-									
-									(objSetData gSource "Status" Nil)
-									(objSetData gSource "OpponentCount" Nil)
-									
+									(shpCancelOrder opponentObj)
+									(msnFailure theMission 'draw)
+									(msnSetProperty theMission 'isDebriefed True)
+
 									;	Katami debrief
-									
 									(scrShowPane gScreen 'GladiatorDraw)
 									)
 							</Action>
 							
 							<Action id="actionDrawNo" cancel="1">
 								(block (
-									(opponentObj (objGetObjRefData gSource "Opponent1"))
+									(theMission (msnFind gSource "aSP +arenaCombat;"))
+									(opponentObj (objGetObjByID (msnGetData theMission 'opponentID)))
 									)
-									
 									;	Attack continues
-									
-									(shpCancelOrders opponentObj)
-									(shpOrder opponentObj 'attack gPlayerShip)
-									(shpOrder opponentObj 'dock gSource)
-									
+									(shpCancelOrder opponentObj)
+
 									;	Done
-									
 									(scrExitScreen gScreen)
 									)
 							</Action>
@@ -592,10 +510,8 @@
 							<Action id="actionUndock" default="1" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
 					</PlayerLeft>
-
 				</Panes>
 			</Main>
 		</DockScreens>
@@ -616,7 +532,6 @@
 				Enquire within to join the elite combatants.
 
 			</Text>
-			<String id="descMeleeBusy">"We're still in the middle of a match! Come back later."</String>
 			<Text id="descDrawOrNot">
 
 				An Arena official looks at the battle metrics:
@@ -794,6 +709,8 @@
 			<Text id="achievement.katami.betrayed">Betrayed Mr. Katami</Text>
 			<Text id="achievement.katami.rescued">Rescued Mr. Katami from the Black Market</Text>
 			<Text id="achievement.katami.dead">Failed to save Mr. Katami</Text>
+
+			<Text id="rpg.missionTypeDesc">Gladiator fights</Text>
 
             <Text id="core.mapDescMain">
                 Gladiatorial combat
@@ -1516,120 +1433,6 @@
 						)
 					)
 				))
-
-			(setq bamComputeReputation (lambda (baseObj)
-				(block (repGain rep fightTime)
-
-					; Start with the bonus to rep that we get for killing this opponent
-					(setq repGain (objGetData baseObj "repGain"))
-					(if (not repGain)
-						(setq repGain 0)
-						)
-					;(dbgOutput "rep bonus: +" repGain)
-
-					; Add the rep that we gained from missiles and explosions
-					(setq rep (min 100 (add (objGetData baseObj "missileRep") (objGetData baseObj "explosionRep"))))
-					(setq repGain (add repGain rep))
-					;(dbgOutput "missiles fired: +" rep)
-
-					; Add 1 point of rep for every 5 shots fired by the opponent
-					(setq rep (divide (objGetData baseObj "opponentShots") 5))
-					(setq repGain (add repGain rep))
-					;(dbgOutput "shots fired: +" rep)
-
-					; Add bonus points if the shields were brought down
-					(switch
-						(leq (objGetData baseObj "lowestShields") 0)
-							(setq rep 100)
-
-						(leq (objGetData baseObj "lowestShields") 50)
-							(setq rep 25)
-
-						(leq (objGetData baseObj "lowestShields") 75)
-							(setq rep 10)
-
-						(setq rep 0)
-						)
-
-					; If the player doesn't use shields, divide bonus in 4
-					(if (not (objGetItems gPlayerShip "sI"))
-						(setq rep (divide rep 4))
-						)
-
-					;(dbgOutput "shields down: +" rep)
-					(setq repGain (add repGain rep))
-
-					; Add bonus points if armor was damaged
-					(switch
-						(leq (objGetData baseObj "lowestArmor") 10)
-							(setq rep 250)
-
-						(leq (objGetData baseObj "lowestArmor") 25)
-							(setq rep 150)
-
-						(leq (objGetData baseObj "lowestArmor") 50)
-							(setq rep 100)
-
-						(setq rep 0)
-						)
-
-					;(dbgOutput "armor damage: +" rep)
-					(setq repGain (add repGain rep))
-
-					; Add bonus points if opponent shields brought down quickly
-					(switch
-						(eq (objGetData baseObj "timeToShieldsDown") -1)
-							(setq rep 0)
-
-						(leq (objGetData baseObj "timeToShieldsDown") 15)
-							(setq rep 50)
-
-						(leq (objGetData baseObj "timeToShieldsDown") 30)
-							(setq rep 25)
-
-						(setq rep 0)
-						)
-
-					;(dbgOutput "fast shields down: +" rep)
-					(setq repGain (add repGain rep))
-
-					; Add bonus points if we killed the opponent quickly
-					(switch
-						(leq (objGetData baseObj "timeTo50") 15)
-							(setq rep 100)
-
-						(leq (objGetData baseObj "timeTo25") 30)
-							(setq rep 50)
-
-						(leq (objGetData baseObj "timeTo10") 45)
-							(setq rep 25)
-
-						(setq rep 0)
-						)
-
-					;(dbgOutput "fast kill: +" rep)
-					(setq repGain (add repGain rep))
-
-					; Time bonus based on battle length
-					(setq fightTime (objGetData baseObj "fightTime"))
-					(switch
-						(leq fightTime 50)
-							(setq rep 10)
-
-						(leq fightTime 75)
-							(setq rep 0)
-
-						(setq rep (subtract 0 (divide (objGetData baseObj "fightTime") 6)))
-						)
-
-					;(dbgOutput "time bonus: " (if (geq rep 0) "+" "") rep)
-					(setq repGain (add repGain rep))
-					(setq repGain (min repGain 200))
-
-					;(dbgOutput (if (gr repGain 0) "total rep: +" "total rep: ") repGain)
-					repGain
-					)
-				))
 				
 			(setq bamComputeShieldLevel (lambda (theObj)
 				(block (theShield)
@@ -1641,24 +1444,15 @@
 				))
 				
 			(setq bamComputeSkill (lambda (battleResults)
-				(block (bestResult skillDiff)
-					; Find the largest value in the battle results
-					(setq bestResult 0)
-					(enum battleResults i
-						(if (gr i bestResult)
-							(setq bestResult i)
-							)
-						)
-
-					; Compute the skill level diff
-					(setq skillDiff 0)
-					(enum battleResults i
-						(setq skillDiff (add skillDiff (subtract i bestResult)))
-						)
-					(setq skillDiff (divide skillDiff 4))
-
-					; Compute result
-					(add bestResult 200 skillDiff)
+				(block (
+					;	Find the largest value in the battle results
+					(bestResult (max battleResults))
+					;	Compute the skill level diff
+					(skillDiff (map battleResults 'reduceAverage i (- i bestResult)))
+					)
+					;	Compute result
+					;(add bestResult 200 skillDiff)
+					(add (map battleResults 'reduceAverage i i ) 200)
 					)
 				))
 				
@@ -1764,72 +1558,6 @@
 
 					; Pick a random class and create the ship
 					(bamCreateGladiator baseObj (random classList))
-					)
-				))
-
-			(setq bamCreateMeleeOpponents (lambda (sourceObj shipCount targetPlayerChance classFunc)
-				(block (offset)
-					(setq offset 0)
-					
-					; Create a bunch of ships and order them to attack
-					(for i 1 shipCount
-						(block (thisShip shipClass)
-							(setq shipClass (classFunc))
-							(setq thisShip
-								(sysCreateShip 
-									shipClass
-									(sysVectorPolarOffset sourceObj (random 204 336) (add 15 (multiply (modulo offset 12) 2)))
-									&svGladiator;
-									)
-								)
-								
-							; Some ships attack the player, others attack the nearest target
-							(if (leq (random 1 100) targetPlayerChance)
-								(block Nil
-									(shpOrder thisShip "attack" gPlayerShip)
-									(shpOrder thisShip "dock" sourceObj)
-									)
-
-								; We add some command code to the ship so that it chooses a
-								; random gladiator target
-								(shpSetCommandCode thisShip
-									(block (targetList theArena thePlayer)
-										(setq theArena (sysFindObject gSource "TN +battleArena;"))
-										(if (eq (objGetData theArena "status") 'inProgress)
-											(setq thePlayer gPlayerShip)
-											)
-
-										(setq targetList
-											(filter (sysFindObject gSource "sA N:150;") theObj 
-												(or (eq (objGetSovereign theObj) &svGladiator;) (eq theObj thePlayer))
-												)
-											)
-
-										(switch
-											targetList
-												(shpOrder gSource "attack" (random targetList))
-
-											thePlayer
-												(block Nil
-													(shpOrder gSource "attack" thePlayer)
-													(shpOrder gSource "dock" theArena)
-													)
-
-											(shpOrder gSource "dock" theArena)
-											)
-										)
-									)
-								)
-
-							(objRegisterForEvents sourceObj thisShip)
-
-							(objSetObjRefData sourceObj (cat "Opponent" i) thisShip)
-
-							(setq offset (add offset 1))
-							)
-						)
-
-					(objSetData sourceObj "OpponentCount" shipCount)
 					)
 				))
 

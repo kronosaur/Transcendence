@@ -23,11 +23,23 @@
 		playerKilled:	Player has been killed
 		playerLeft:		Player escaped from Arena
 
+	opponentSkill:	Skill of current opponent
+	repGain:		Rep gained for current fight
+	lowestShields:	Lowest level that player shields reached
+	lowestArmor:	Lowest level that player armor reached
+	fightTime:		Increment by 1 every 10 ticks
+	opponentArmor:	Lowest level that opponent's armor reached so far
+	reward:			Prize money for current fight
+	timeTo50:		The fightTime at which the opponent's armor was 50 or below
+	timeTo25:		The fightTime at which the opponent's armor was 25 or below
+	timeTo10:		The fightTime at which the opponent's armor was 10 or below
+	timeToShieldsDown: The fightTime at which the opponent's shields are first dropped
+
 	======================================================================== -->
 	
 	<MissionType UNID="&msBattleArenaFight;"
 			name=				"Battle Arena Fight"
-			attributes=			"gladiatorFight"
+			attributes=			"arenaCombat, gladiatorFight"
 
 			level=				"3"
 			>
@@ -119,6 +131,7 @@
 					(objResume theShip)
 
 					;	Orders
+					(shpCancelOrders theShip)
 					(shpOrder theShip 'attack gPlayerShip)
 					(shpOrder theShip 'approach arenaObj 5)
 					(shpOrder theShip 'fireEvent gSource 'OnGladiatorDone)
@@ -134,12 +147,10 @@
 
 					;	Prepare arena
 					(bamDoorsClose arenaObj)
-					(objSetData arenaObj 'finalChallenge Nil)
-					(objSetData arenaObj 'drawAllowed Nil)
-					(objSetData arenaObj 'Status 'inProgress)
 					(objSetData arenaObj 'missileRep 0)
 					(objSetData arenaObj 'explosionRep 0)
 					(objSetData arenaObj 'opponentShots 0)
+					(objSetData arenaObj 'Opponent1 (msnGetData gSource 'opponentID))
 
 					;	Events
 					(msnRegisterForEvents gSource theShip)
@@ -193,13 +204,13 @@
 								(geq opponentArmor 90))
 							(block Nil
 								(plyMessage gPlayer (msnTranslate gSource 'msgSlow3))
-								(objSetData gSource 'drawAllowed True)
+								(msnSetData gSource 'drawAllowed True)
 								)
 								
 						(and (geq fightTime 360) (= (modulo fightTime 30) 0))
 							(block Nil
 								(plyMessage gPlayer (msnTranslate gSource 'msgSlow3))
-								(objSetData gSource 'drawAllowed True)
+								(msnSetData gSource 'drawAllowed True)
 								)
 						)
 
@@ -308,6 +319,10 @@
 						)
 					)
 			</OnFightCheck>
+
+			<OnDrawAllowed>
+				(msnGetData gSource 'drawAllowed)
+			</OnDrawAllowed>
 
 			<OnUpdate>
 				(block (
@@ -442,14 +457,20 @@
 								(msnSetData gSource 'status 'playerLeft)
 								)
 
-						(= aReason 'failure)
-							(block Nil
-								(msnSetData gSource 'status 'playerKilled)
+						(and (= aReason 'failure) (= gData 'draw))
+							(block (
+								(theShip (objGetObjByID (msnGetData gSource 'opponentID)))
 								)
+								;	Opponent stops attacking player
+								(shpCancelOrder theShip)
+								(msnSetData gSource 'status 'draw)
+								)
+
+						(= aReason 'failure)
+							(msnSetData gSource 'status 'playerKilled)
 						)
 					;	Open arena doors
 					(bamDoorsOpen arenaObj)
-					(objSetData arenaObj 'Status Nil)
 
 					;	Unregister (if necessary)
 					(objUnregisterForSystemEvents arenaObj)
@@ -479,7 +500,7 @@
 					(typSetData &stBattleArena; 'arenaSkill (bamComputeSkill resultList))
 
 					;	Pay the player
-					(plyCredit gPlayer (msnGetData gSource 'reward))
+					(rpgMissionRewardPayment (msnGetData gSource 'reward))
 
 					;	See if the player can challenge The Slicer
 					(if (and (geq (typGetData &stBattleArena; 'arenaRep) 1000)

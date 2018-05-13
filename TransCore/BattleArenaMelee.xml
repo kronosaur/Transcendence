@@ -24,7 +24,7 @@
 	
 	<MissionType UNID="&msBattleArenaMelee;"
 			name=				"Battle Arena Melee"
-			attributes=			"battleArena"
+			attributes=			"battleArena, arenaCombat"
 
 			level=				"3"
 				 
@@ -133,8 +133,6 @@
 
 					;	Prepare arena
 					(bamDoorsClose arenaObj)
-					(objSetData arenaObj 'drawAllowed Nil)
-					(objSetData arenaObj 'Status 'inProgress)
 
 					;	Play Slicer track
 					(uiSetSoundtrackMode 'missionStart &muArenaSlicer;)
@@ -199,7 +197,6 @@
 					(switch
 						(= aReason 'success)
 							(block Nil
-								(objIncData arenaObj 'meleeCount)
 								(objIncData arenaObj 'rookieScore (msnGetData gSource 'score))
 								(msnSetData gSource 'reward (* (msnGetData gSource 'score) 25))
 
@@ -211,7 +208,6 @@
 						)
 					;	Open arena doors
 					(bamDoorsOpen arenaObj)
-					(objSetData arenaObj 'Status Nil)
 					)
 			</OnCompleted>
 
@@ -220,8 +216,8 @@
 					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
 					(totalScore (objGetData arenaObj 'rookieScore))
 					)
-					; Pay the player
-					(plyCredit gPlayer (msnGetData gSource 'reward))
+					;	Pay the player
+					(rpgMissionRewardPayment (msnGetData gSource 'reward))
 
 					; If the player has defeated enough enemies, then he is a gladiator
 					(if (geq totalScore 20)
@@ -258,6 +254,7 @@
 			<Text id="Briefing">
 				(block (
 					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(meleeCount (count (msnFind arenaObj "*S unid:&msBattleArenaMelee;;")))
 					(totalScore (objGetData arenaObj 'rookieScore))
 					(shipsLeft (if (= totalScore 19)
 							"one more ship"
@@ -265,10 +262,10 @@
 							))
 					)
 					(switch
-						(= (objGetData arenaObj "meleeCount") 5)
+						(= meleeCount 5)
 							(msnTranslate gSource 'Briefing.lastChance { shipsLeft:shipsLeft })
 
-						(= totalScore 0)
+						(= meleeCount 1)
 							(msnTranslate gSource 'Briefing.firstTime { shipsLeft:shipsLeft })
 
 						(leq totalScore 15)
@@ -329,9 +326,6 @@
 						(geq totalScore 20)
 							(msnTranslate gSource 'Winner.gladiator subs)
 
-						(geq (objGetData arenaObj 'meleeCount) 6)
-							(msnTranslate gSource 'Winner.washout subs)
-
 						(eq meleeScore 0)
 							(msnTranslate gSource 'Winner.0 subs)
 
@@ -353,9 +347,6 @@
 			</Text>
 			<String id="Winner.gladiator">
 				"Congratulations, you've proven yourself in the Arena. You may now call yourself a gladiator."
-			</String>
-			<String id="Winner.washout">
-				"Sorry, but you don't have the killer instinct to be a gladiator."
 			</String>
 			<String id="Winner.0">
 				"You didn't even kill a single opponent! You'll never be a gladiator at that rate!"
