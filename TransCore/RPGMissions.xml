@@ -225,7 +225,20 @@
 											(block Nil
 												(msnAccept (@ options 'missionObj))
 												(scrSetData gScreen 'curPage Nil)
-												(scrShowPane gScreen "ReplyAccept")
+
+												;	If no ReplyAccept, then we're done
+												(if (msnTranslate missionObj 'AcceptReply)
+													(scrShowPane gScreen "ReplyAccept")
+													(block Nil
+														;	Undock
+														(scrExitScreen gScreen 'forceUndock)
+														(setq aDockTarget gSource)
+														(msnFireEvent missionObj "OnAcceptedUndock")
+
+														;	Save the game
+														(gamSave 'missionCheckpoint)
+														)
+													)
 												)
 										
 										;	Otherwise, we declined
