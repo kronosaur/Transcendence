@@ -95,6 +95,7 @@
 							(shpOrder targetObj 'guard destObj)
 							)
 						)
+					(msnSetData gSource 'targetID (objGetID targetObj))
 
 					;	Create a marker for the cruiser
 					(setq anchorObj (sysCreateMarker "Morgental cruiser anchor" (sysVectorPolarOffset arenaObj 270 20) &svCorporate;))
@@ -160,13 +161,12 @@
 				(block (
 					(destObj (objGetObjByID (msnGetData gSource 'stationID)))
 					(kateObj (objGetObjByID (msnGetData gSource 'kateID)))
-					(targetObj (sysFindObject destObj "sAN O:guard; +unid:&scMolotok;;"))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
 					)
 					(if targetObj
 						(block Nil
 							(objSendMessage gPlayerShip kateObj (msnTranslate gSource 'msgKateInPosition))
 							(msnSetData gSource 'status 'molotok)
-							(msnSetData gSource 'targetID (objGetID targetObj))
 							(msnRegisterForEvents gSource targetObj)
 							(msnSetPlayerTarget gSource)
 							)
@@ -218,16 +218,20 @@
 							)
 
 					(= (objGetID aObjDestroyed) (msnGetData gSource 'stationID))
-						(block (
-							(kateObj (objGetObjByID (msnGetData gSource 'kateID)))
-							)
+						(block Nil
 							;	Disable action replacement, turn on dockscreen override
 							(msnSetData gSource 'paneID Nil)
 							(msnSetData gSource 'destID (objGetID aObjDestroyed))
 
-							(msnSetData gSource 'status 'station)
-							(shpCancelOrders kateObj)
-							(shpOrder kateObj 'dock aObjDestroyed)
+							;	Check that the guard is gone before docking
+							(if (= (msnGetData gSource 'status) 'station)
+								(block (
+									(kateObj (objGetObjByID (msnGetData gSource 'kateID)))
+									)
+									(shpCancelOrders kateObj)
+									(shpOrder kateObj 'dock aObjDestroyed)
+									)
+								)
 							)
 					)
 			</OnObjDestroyed>
