@@ -1835,6 +1835,8 @@
 
 			attributes=			"battleArena, theSlicer"
 			inherit=			"&scManticore;"
+
+			leavesWreck=		"100"
 			>
 
 		<Names noArticle="true" personalName="true">The Slicer</Names>
@@ -1868,7 +1870,7 @@
 				</Group>
 
 				<Group chance="25">
-					<Device item="&itMakayevLauncher;">
+					<Device item="&itMakayevLauncher;" secondaryWeapon="true">
 						<Items>
 							<Table>
 								<Item chance="60" count="250" item="&itStrelkaWhite;"/>
