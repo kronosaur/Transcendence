@@ -24,6 +24,7 @@
 
 			level=				"3"
 
+			priority=			"10"
 			maxAppearing=		"1"
 			>
 

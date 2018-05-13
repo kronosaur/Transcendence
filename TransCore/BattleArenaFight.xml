@@ -309,6 +309,18 @@
 					)
 			</OnFightCheck>
 
+			<OnUpdate>
+				(block (
+					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(markerObj (objGetObjByID (objGetData arenaObj 'markerID)))
+					)
+					;	Catch the case where player escapes without use of jump drive
+					(if (gr (objGetDistance gPlayerShip markerObj) 60)
+						(msnFailure gSource 'playerLeft)
+						)
+					)
+			</OnUpdate>
+
 			<OnObjJumped>
 				(if (= aObj gPlayerShip)
 					(msnFailure gSource 'playerLeft)
@@ -420,20 +432,20 @@
 									)
 								)
 
-							(and (= aReason 'failure) (= gData 'playerLeft))
-								(block (
-									(theShip (objGetObjByID (msnGetData gSource 'opponentID)))
-									)
-									;	Opponent stops attacking player
-									(shpCancelOrder theShip)
-									(typSetData &stBattleArena; 'arenaRank 'coward)
-									(msnSetData gSource 'status 'playerLeft)
-									)
+						(and (= aReason 'failure) (= gData 'playerLeft))
+							(block (
+								(theShip (objGetObjByID (msnGetData gSource 'opponentID)))
+								)
+								;	Opponent stops attacking player
+								(shpCancelOrder theShip)
+								(typSetData &stBattleArena; 'arenaRank 'coward)
+								(msnSetData gSource 'status 'playerLeft)
+								)
 
-							(= aReason 'failure)
-								(block Nil
-									(msnSetData gSource 'status 'playerKilled)
-									)
+						(= aReason 'failure)
+							(block Nil
+								(msnSetData gSource 'status 'playerKilled)
+								)
 						)
 					;	Open arena doors
 					(bamDoorsOpen arenaObj)
@@ -445,7 +457,7 @@
 
 					;	Back to travel music (we're still technically in combat, because we
 					;	haven't detected that we're out yet, so we force travel mode).
-					(uiQueueSoundtrack &muArenaVictor;)
+					(uiQueueSoundtrack (or (msnGetData gSource 'nextSoundTrack) &muArenaVictor;))
 					(uiSetSoundtrackMode 'missionEndTravel)
 					)
 			</OnCompleted>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE TranscendenceModule
+	[
+	<!-- 0160-016F BATTLE ARENA TRACKS -->
+	
+	<!ENTITY muArenaSlicer					"0x00820160">
+	<!ENTITY muArenaSurvivor				"0x00820161">
+	<!ENTITY muArenaContender				"0x00820162">
+	<!ENTITY muArenaVictor					"0x00820163">
+	<!ENTITY muArenaChampion				"0x00820164">
+	]>
+
+<TranscendenceModule>
+
+	<!-- Battle Arena Challenger ===============================================
+
+	Final fight against The Slicer.
+
+	Note - most code and language is inherited from msBattleArenaFight
+
+	EXTRA DATA
+
+	status: One of the following:
+		Nil:			Player is still alive
+		playerKilled:	Player has been killed
+		playerLeft:		Player escaped from Arena
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msBattleArenaChallenger;"
+			name=				"Battle Arena Fight"
+			attributes=			"battleArena, gladiatorFight"
+			inherit=			"&msBattleArenaFight;"
+
+			level=				"3"
+
+			maxAppearing=		"1"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	This mission only works in Rigel Aurelius
+					(not (objHasAttribute aOwnerObj "battleArenaMaximus"))
+						(msnDestroy gSource)
+
+					;	Player must be ready to challenge The Slicer
+					(!= (typGetData &stBattleArena; 'arenaRank) 'challenger)
+						(msnDestroy gSource)
+
+					;	Set up the mission
+					(block (theShip)
+						(setq theShip (bamCreateGladiator aOwnerObj &scTheSlicerManticore;))
+
+						(msnSetData gSource 'opponentID (objGetID theShip))
+						(msnSetData gSource 'opponentSkill (objGetData theShip 'arenaSkill))
+						(msnSetData gSource 'repGain 500)
+						(msnSetData gSource 'reward 5000)
+
+						;	No intro available
+						(msnSetProperty gSource 'isIntroShown True)
+						)
+					)
+			</OnCreate>
+
+			<OnCompleted>
+				(block Nil
+					(msnSetData gSource 'nextSoundTrack &muArenaChampion;)
+					(typFireObjEvent &msBattleArenaFight; gSource 'OnCompleted)
+					(switch
+						(and (= aReason 'failure) (!= gData 'playerLeft))
+							(typSetData &stBattleArena; 'arenaRank 'loser)
+						)
+					)
+			</OnCompleted>
+
+			<OnReward>
+				(block Nil
+					;	Add to reputation
+					(typIncData &stBattleArena; 'arenaRep (msnGetData gSource 'repGain))
+
+					;	Pay the player
+					(plyCredit gPlayer (msnGetData gSource 'reward))
+
+					;	Player is champion
+					(typSetData &stBattleArena; 'arenaRank 'champion)
+					)
+			</OnReward>
+		</Events>
+		
+		<Language>
+			<Text id="Briefing">
+				(if (or
+						(= (typGetData &stBattleArena; 'katamiStatus) 'instructor)
+						(= (typGetData &stBattleArena; 'katamiStatus) 'rescued)
+						)
+					(msnTranslate gSource "Briefing:katami")
+					(msnTranslate gSource "Briefing:empty")
+					)
+			</Text>
+			<Text id="Briefing:katami">
+
+				Mr. Katami bows his head:
+
+				"I have nothing more to teach you. Remember everything I've said and fight with honor!"
+
+			</Text>
+			<Text id="Briefing:empty">
+
+				The gladiators' quarters feels cold and empty without Mr. Katami.
+				You prepare yourself as best you can to fight The Slicer.
+
+			</Text>
+			<Text id="AcceptLabel">[F]ight!</Text>
+			<Text id="DeclineLabel">[B]ack Out</Text>
+			<Text id="SuccessDebrief">
+				(switch
+					(= (typGetData &stBattleArena; 'katamiStatus) 'instructor)
+						(msnTranslate gSource "SuccessDebrief:instructor")
+
+					(= (typGetData &stBattleArena; 'katamiStatus) 'rescued)
+						(msnTranslate gSource "SuccessDebrief:rescued")
+
+					(msnTranslate gSource "SuccessDebrief:empty")
+					)
+			</Text>
+			<Text id="SuccessDebrief:instructor">
+
+				Pandemonium greets you as you enter the gladiators' quarters.
+				Friends and partiers are celebrating your victory. Mr. Katami
+				hugs you like a long lost %son% and puts a drink in your hand.
+
+			</Text>
+			<Text id="SuccessDebrief:rescued">
+
+				Pandemonium greets you as you enter the gladiators' quarters.
+				Friends and partiers are celebrating your victory. Mr. Katami
+				hugs you like a long lost %son% and puts a drink in your hand.
+				At the edge of the room Kate Morgental shines her smile at you.
+
+			</Text>
+			<Text id="SuccessDebrief:empty">
+
+				Pandemonium greets you as you enter the gladiators' quarters.
+				Partiers and hanger-ons celebrate your victory. In the corner
+				of the room you see a small memorial for Mr. Katami in danger
+				of being trampled by the wild partying.
+
+			</Text>
+			<Text id="descGladiatorLoser">
+
+				Mr. Katami is surprised, though pleased, to see you again:
+
+				"Too bad. The Slicer will retain his title. Well, at least 
+				you're still alive! That's something."
+
+			</Text>
+
+			<Text id="SuccessMsg">The crowd erupts in cheers: %name%! %name%!</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>
