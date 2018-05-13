@@ -1686,6 +1686,7 @@
 	<!ENTITY msKatamiKidnapped			"0x001000E4">
 	<!ENTITY baBattleArenaSegment		"0x001000E5">
 	<!ENTITY dsBattleArenaOpponentList	"0x001000E6">
+	<!ENTITY msBattleArenaFight			"0x001000E7">
 
 	<!-- 00F0-00FF HELIOTROPES -->
 	
@@ -2065,6 +2066,7 @@
 		generic and move the adventure-specific behavior to Part I -->
 		
 	<Module filename="BattleArena.xml"/>
+	<Module filename="BattleArenaFight.xml"/>
 	<Module filename="BattleArenaGladiators.xml"/>
 	<Module filename="BattleArenaMelee.xml"/>
 	<Module filename="BattleArenaKidnapped.xml"/>

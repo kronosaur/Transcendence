@@ -33,22 +33,19 @@
 
 		<Events>
 			<OnCreate>
-				(block (destObj)
+				(switch
+					;	This mission only works in Rigel Aurelius
+					(not (objHasAttribute aOwnerObj "battleArenaMaximus"))
+						(msnDestroy gSource)
 
-					(switch
-						;	This mission only works in Rigel Aurelius
-						(not (objHasAttribute aOwnerObj "battleArenaMaximus"))
-							(msnDestroy gSource)
-							
-						;	Only for rookies
-						(!= (typGetData &stBattleArena; 'arenaRank) 'rookie)
-							(msnDestroy gSource)
+					;	Only for rookies
+					(!= (typGetData &stBattleArena; 'arenaRank) 'rookie)
+						(msnDestroy gSource)
 
-						;	Set up the mission
-						(block Nil
-							;	No intro available
-							(msnSetProperty gSource 'isIntroShown True)
-							)
+					;	Set up the mission
+					(block Nil
+						;	No intro available
+						(msnSetProperty gSource 'isIntroShown True)
 						)
 					)
 			</OnCreate>
