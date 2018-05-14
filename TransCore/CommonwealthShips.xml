@@ -1289,7 +1289,14 @@
 			<DeviceSlot criteria="w  +property:multiShot;" posAngle="0" posRadius="20" posZ="0"/>
 			<DeviceSlot criteria="p" posAngle="40" posRadius="37" posZ="0"/>
 			<DeviceSlot criteria="l" posAngle="-40" posRadius="37" posZ="0"/>
-			<DeviceSlot criteria="s -nonEnergyShields;" hpBonus="-20"/>
+			<DeviceSlot criteria="s">
+				<EnhancementAbilities>
+					<Enhance type=			"manticoreShieldPenalty"
+							 criteria=		"s -nonEnergyShields;"
+							 enhancement=	"-hpBonus:-20"
+							 />
+				</EnhancementAbilities>
+			</DeviceSlot>
 		</DeviceSlots>
 
 		<!-- Configuration -->
