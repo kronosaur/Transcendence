@@ -57,51 +57,26 @@
 
 	EXTRA DATA
 
-	Status:			Status of contest:
-						Nil						= No battle in progress
-						'inProgress				= Battle in progress
-						'destroyed				= Opponent destroyed
-						'playerLeft				= Player left arena
-						'playerKilled			= Player killed in arena
-						'waitingForMatchEnd		= Player was killed and melee is not done yet
-						'draw					= Battle is a draw
-
-	OpponentCount:	Number of opponents left
-	Opponent{n}:	Opponent 0-max
-	Opponents:		Ordered list of all challenges
+	Opponent{n}:	objID for Opponent 0-max
 
 	gladiatorList:	List of objID for all active (not yet killed) gladiators
-
-	meleeCount:		Number of melee rounds that the player has been in
-	rookiePoints:	Points accumulated for destroying ships in this melee
+	markerID:		Marker at the center of the arena
 	rookieScore:	Total points accumulated as a rookie
 
-	matchCount:		Number of gladiator matches that the player was in
-	opponentSkill:	Skill of current opponent
-	repGain:		Rep gained for current fight
-	prizeGain:		Prize money for current fight
 	opponentShots:	Number of shots fired by opponent in this fight
-	lowestShields:	Lowest level that player shields reached
-	lowestArmor:	Lowest level that player armor reached
 	missileRep:		Current rep gained by firing missiles
 	explosionRep:	Current rep gained by explosions
-	fightTime:		Increment by 1 every 10 ticks
-	drawAllowed:	If True, player is allowed to call a draw
-	opponentArmor:	Lowest level that opponent's armor reached so far
-	timeTo50:		The fightTime at which the opponent's armor was 50 or below
-	timeTo25:		The fightTime at which the opponent's armor was 25 or below
-	timeTo10:		The fightTime at which the opponent's armor was 10 or below
-	timeToShieldsDown: The fightTime at which the opponent's shields are first dropped
 
 	results:		A list of the skill level of the last 4 opponents fought by the player
 					(or 0 for opponents that won)
 
 	EXTRA DATA ON GLADIATOR SHIPS
 
-	arenaName:			Name of gladiator
 	arenaSkill:			Skill of gladiator
 	arenaPrizeBonus:	Bonus to prize
 	arenaRepBonus:		Bonus to reputation
+	arenaHome:			Gladiator's home system
+	arenaDescription:	Short description
 
 	-->
 
@@ -183,52 +158,39 @@
 			<Port x="0"		y="-140" />
 		</DockingPorts>
 		
-		<!-- Events -->
+		<!-- Events and Data -->
+
+		<InitialData>
+			<Data id="results">(0 0 0 0)</Data>
+			<Data id="rookieScore">0</Data>
+		</InitialData>
 
 		<Events>
 			<GetGlobalAchievements>
 				(block (
 					(arenaRank (typGetData &stBattleArena; 'arenaRank))
 					(katamiStatus (typGetData &stBattleArena; 'katamiStatus))
-					theList
 					)
-					
-					(if (and arenaRank (not (eq arenaRank 'rookie)))
-						(setq theList (list
-							(list 
-								(switch
-									(eq arenaRank 'gladiator) "Became a gladiator in the Arena"
-									(eq arenaRank 'challenger) "Earned the right to challenge The Slicer in the Arena"
-									(eq arenaRank 'champion) "Became Legendary Hero of the Arena"
-									(eq arenaRank 'loser) "Defeated by The Slicer in the Arena"
-									(eq arenaRank 'washout) "Disappointed Mr. Katami"
-									(cat "ERROR: Battle Arena rank: " arenaRank)
-									) 
+					(append
+						(if (and arenaRank (!= arenaRank 'rookie))
+							(list (list
+								(typTranslate &stBattleArena; (cat "achievement.arena." arenaRank))
 								Nil 
-								"achievements &amp; regrets"
-								)
-							))
-						)
-					
-					(if (and katamiStatus 
-							(not (eq katamiStatus 'instructor))
-							(not (eq katamiStatus 'kidnapped))
+								(typTranslate &unidCommonText; 'achievementsAndRegrets)
+								))
 							)
-						(setq theList (append theList (list
-							(list
-								(switch
-									(eq katamiStatus 'betrayed) "Betrayed Mr. Katami"
-									(eq katamiStatus 'rescued) "Rescued Mr. Katami from the Black Market"
-									(eq katamiStatus 'dead) "Failed to save Mr. Katami"
-									(cat "ERROR: Mr. Katami status: " katamiStatus)
-									)
+
+						(if (and katamiStatus (!= katamiStatus 'instructor) (!= katamiStatus 'kidnapped))
+							(list (list
+								(typTranslate &stBattleArena; (cat "achievement.katami." katamiStatus))
 								Nil
-								"achievements &amp; regrets"
-								)
-							)))
+								(typTranslate &unidCommonText; 'achievementsAndRegrets)
+								))
+							)
+
+						;	Missions
+						(rpgMissionAchievements &stBattleArena; "* +gladiatorFight;")
 						)
-						
-					theList
 					)
 			</GetGlobalAchievements>
 
@@ -253,7 +215,7 @@
 			</GetRumors>
 
 			<OnCreate>
-				(block (classList gladiatorList)
+				(block (classList gladiatorList markerObj)
 					; Load the list of standard gladiator classes
 					(setq classList (typFind "s +battleArena; +gladiator"))
 
@@ -276,416 +238,53 @@
 					; Make sure doors are open (we need to do this to set the barrier flag
 					; property).
 					(bamDoorsOpen)
+
+					;	Create a marker at the centre of the arena
+					(setq markerObj (sysCreateMarker "battleArenaCenter" (sysVectorPolarOffset gSource 270 28) &svCorporate;))
+					(objSetData gSource 'markerID (objGetID markerObj))
 					)
 			</OnCreate>
 
-			<OnFightCheck>
-				(if (eq (objGetData gSource "Status") 'inProgress)
-					(block (fightTime arenaRep shieldLevel armorLevel opponentArmor opponentShield)
-						; Increment time
-						(setq fightTime (objIncData gSource "fightTime"))
-
-						; Keep track of the player's shield and armor level
-						(setq shieldLevel (objGetShieldLevel gPlayerShip))
-						(setq armorLevel (subtract 100 (objGetVisibleDamage gPlayerShip)))
-
-						; And also the opponent's shield and armor
-						(setq opponentShield (objGetShieldLevel (objGetObjRefData gSource "Opponent1")))
-						(setq opponentArmor (subtract 100 (objGetVisibleDamage (objGetObjRefData gSource "Opponent1"))))
-
-						; Some announcements are timed
-						(switch
-							(eq fightTime 1)
-								(plyMessage gPlayer "The crowd cheers as the match starts!")
-
-							(and (eq fightTime 30)
-									(geq (objGetData gSource "lowestShields") 80)
-									(geq opponentArmor 90))
-								(plyMessage gPlayer "The match is off to a slow start")
-
-							(and (eq fightTime 90)
-									(geq (objGetData gSource "lowestShields") 80)
-									(geq opponentArmor 90))
-								(plyMessage gPlayer "The crowd is frustrated at the slow pace")
-
-							(and (geq fightTime 120) (eq (modulo fightTime 30) 0)
-									(geq (objGetData gSource "lowestShields") 80)
-									(geq opponentArmor 90))
-								(block Nil
-									(plyMessage gPlayer "The crowd is bored")
-									(objSetData gSource 'drawAllowed True)
-									)
-									
-							(and (geq fightTime 360) (eq (modulo fightTime 30) 0))
-								(block Nil
-									(plyMessage gPlayer "The crowd is bored")
-									(objSetData gSource 'drawAllowed True)
-									)
-							)
-
-						; Keep track of the lowest shield level reached (for the player's shields)
-						(if (ls shieldLevel (objGetData gSource "lowestShields"))
-							(block Nil
-								(objSetData gSource "lowestShields" shieldLevel)
-
-								; If shields are down to 0, the crowd loves it
-								(if (eq shieldLevel 0)
-									(block Nil
-										(if (not arenaRep) (setq arenaRep (objGetGlobalData gSource "arenaRep")))
-										(if (geq arenaRep 600)
-											(plyMessage gPlayer "%name% is in trouble!")
-											(plyMessage gPlayer "Finish %him%! Finish %him%!")
-											)
-										)
-									)
-								)
-							)
-
-						; Keep track of the lowest armor level reached (for the player's armor)
-						(if (ls armorLevel (objGetData gSource "lowestArmor"))
-							(block Nil
-								; The crowd reacts if armor gets too low, but in different
-								; ways depending on reputation
-								(if (leq armorLevel 50)
-									(block (oldArmorLevel)
-										(setq oldArmorLevel (objGetData gSource "lowestArmor"))
-										(if (not arenaRep) (setq arenaRep (objGetGlobalData gSource "arenaRep")))
-										(if (geq arenaRep 600)
-
-											; The player is popular
-											(switch
-												(and (leq armorLevel 10) (gr oldArmorLevel 10))
-													(plyMessage gPlayer 
-														"The crowd is silent&#x97;could this be the end?")
-
-												(and (leq armorLevel 25) (gr oldArmorLevel 25))
-													(plyMessage gPlayer "The crowd is tense")
-
-												(and (leq armorLevel 50) (gr oldArmorLevel 50))
-													(plyMessage gPlayer 
-														"The crowd supports %name%&#x97;%he%'s been through worse")
-												)
-
-											; The player is not
-											(switch
-												(and (leq armorLevel 10) (gr oldArmorLevel 10))
-													(plyMessage gPlayer 
-														"The crowd is wild&#x97;what an exciting match!")
-
-												(and (leq armorLevel 25) (gr oldArmorLevel 25))
-													(plyMessage gPlayer "The crowd roars!")
-
-												(and (leq armorLevel 50) (gr oldArmorLevel 50))
-													(plyMessage gPlayer 
-														"The crowd cheers&#x97;%name% looks doomed")
-												)
-											)
-										)
-									)
-
-								(objSetData gSource "lowestArmor" armorLevel)
-								)
-							)
-
-						; Track how fast shields go down
-						(if (and (eq opponentShield 0) (ls fightTime (objGetData gSource "timeToShieldsDown")))
-							(block Nil
-								(objSetData gSource "timeToShieldsDown" fightTime)
-
-								(switch
-									(leq fightTime 15)
-										(plyMessage gPlayer 
-											"%name% is unstoppable! The crowd cheers!")
-
-									(leq fightTime 30)
-										(plyMessage gPlayer 
-											"%name% is fighting hard! The crowd cheers!")
-									)
-								)
-							)
-
-						; Keep track of how fast the opponent's armor drops
-						(if (ls opponentArmor (objGetData gSource "opponentArmor"))
-							(block (oldArmorLevel)
-								(setq oldArmorLevel (objGetData gSource "opponentArmor"))
-
-								(switch
-									(and (leq opponentArmor 10) (gr oldArmorLevel 10))
-										(block Nil
-											(objSetData gSource "timeTo10" fightTime)
-											(if (leq fightTime 45)
-												(plyMessage gPlayer "Go, %name%!")
-												)
-											)
-
-									(and (leq opponentArmor 25) (gr oldArmorLevel 25))
-										(block Nil
-											(objSetData gSource "timeTo25" fightTime)
-											(if (leq fightTime 30)
-												(plyMessage gPlayer "The crowd roars!")
-												)
-											)
-
-									(and (leq opponentArmor 50) (gr oldArmorLevel 50))
-										(block Nil
-											(objSetData gSource "timeTo50" fightTime)
-											(if (leq fightTime 15)
-												(plyMessage gPlayer 
-													"%name% is deadly fast! The crowd cheers!")
-												)
-											)
-									)
-
-								(objSetData gSource "opponentArmor" opponentArmor)
-								)
-							)
-						)
-					)
-			</OnFightCheck>
-
-			<OnObjDestroyed>
-				(block (status arenaRank matchFinished)
-					(setq status (objGetData gSource "Status"))
-					(setq arenaRank (objGetGlobalData gSource "arenaRank"))
-
-					(switch
-						(not status)
-							Nil
-
-						(eq arenaRank 'gladiator)
-							(block Nil
-								(switch
-									; If the player was destroyed, set status
-									(eq aObjDestroyed gPlayerShip)
-										(block Nil
-											(setq status 'playerKilled)
-											)
-
-									; Otherwise, the player won
-									(block (fightTime repGain)
-										(setq status 'destroyed)
-
-										; Adjust timers in case we miss the window
-										(setq fightTime (objGetData gSource "fightTime"))
-										(if (gr (objGetData gSource "timeTo50") fightTime) (objSetData gSource "timeTo50" fightTime))
-										(if (gr (objGetData gSource "timeTo25") fightTime) (objSetData gSource "timeTo25" fightTime))
-										(if (gr (objGetData gSource "timeTo10") fightTime) (objSetData gSource "timeTo10" fightTime))
-
-										; Set the reputation. Note that this overwrites "repGain"
-										(setq repGain (bamComputeReputation gSource))
-										(objSetData gSource "repGain" repGain)
-
-										(switch
-											(geq repGain 200)
-												(plyMessage gPlayer 
-													"The crowd erupts in cheers: %name%! %name%!")
-
-											(geq repGain 100)
-												(plyMessage gPlayer 
-													"The crowd cheers! What an exciting match!")
-
-											(geq repGain 50)
-												(plyMessage gPlayer "The crowd cheers!")
-
-											(geq repGain 1)
-												(plyMessage gPlayer "The crowd is pleased")
-
-											(plyMessage gPlayer "The crowd is bored by the match")
-											)
-
-										; Remove the ship from the gladiator list
-										(objSetData gSource "gladiatorList"
-											(filter (objGetData gSource "gladiatorList") theID (not (eq theID (objGetID aObjDestroyed))))
-											)
-										)
-									)
-
-								; Either way, the match is over
-								(objIncData gSource "matchCount" 1)
-								(bamDoorsOpen gSource)
-
-								; Unregister (if necessary)
-								(objUnregisterForSystemEvents gSource)
-								(sysCancelTimerEvent gSource "OnFightCheck")
-								
-								; Back to travel music (we're still technically in combat, because we
-								; haven't detected that we're out yet, so we force travel mode).
-								
-								(uiQueueSoundtrack &muArenaVictor;)
-								(uiSetSoundtrackMode 'missionEndTravel)
-								)
-
-						(eq arenaRank 'challenger)
-							(block Nil
-								(switch
-									; If the player was destroyed
-									(eq aObjDestroyed gPlayerShip)
-										(block Nil
-											(setq status 'playerKilled)
-											(plyMessage gPlayer "The crowd boos in disappointment!")
-											)
-
-									; Otherwise, player kills The Slicer
-									(block Nil
-										(setq status 'destroyed)
-
-										(plyMessage gPlayer 
-											"The crowd erupts in cheers: %name%! %name%!")
-										)
-									)
-
-								; Either way, the match is over
-								(bamDoorsOpen gSource)
-
-								; Unregister (if necessary)
-								(objUnregisterForSystemEvents gSource)
-								(sysCancelTimerEvent gSource "OnFightCheck")
-								
-								; Back to travel music (we're still technically in combat, because we
-								; haven't detected that we're out yet, so we force travel mode).
-								
-								(uiQueueSoundtrack &muArenaChampion;)
-								(uiSetSoundtrackMode 'missionEndTravel)
-								)
-						)
-
-					(objSetData gSource "Status" status)
-					)
-			</OnObjDestroyed>
-
-			<OnObjDocked>
-				(if (and (eq aDockTarget gSource) (not (eq aObjDocked gPlayerShip)))
-					(block (arenaRank)
-						(setq arenaRank (objGetGlobalData gSource "arenaRank"))
-
-						(switch
-							(eq arenaRank 'gladiator)
-								(block Nil
-									(objMoveTo aObjDocked gSource)
-									(shpCancelOrders aObjDocked)
-									(objSuspend aObjDocked)
-									)
-
-							(block Nil
-								(objMoveTo aObjDocked (sysVectorPolarOffset gSource 270 80))
-								(objUnregisterForEvents gSource aObjDocked)
-								(shpCancelOrders aObjDocked)
-								(shpOrderGate aObjDocked)
-								)
-							)
-						)
-					)
-			</OnObjDocked>
-
-			<OnObjJumped>
-				(if (eq aObj gPlayerShip)
-					(block Nil
-						; Open arena doors
-						(bamDoorsOpen gSource)
-
-						; Unregister
-						(objUnregisterForEvents gSource gPlayerShip)
-						(objUnregisterForSystemEvents gSource)
-						(sysCancelTimerEvent gSource "OnFightCheck")
-
-						; Send all the opponents away
-						(for i 0 25
-							(block (ship)
-								(setq ship (objGetObjRefData gSource (cat "Opponent" i)))
-								(if ship
-									(block Nil
-										(objMoveTo ship (sysVectorPolarOffset gSource 270 80))
-										(objUnregisterForEvents gSource ship)
-										(shpCancelOrders ship)
-										(shpOrderGate ship)
-										)
-									)
-								)
-							)
-
-						; Set status
-						(objSetData gSource "Status" 'playerLeft)
-						(objSetData gSource "OpponentCount" Nil)
-						)
-					)
-			</OnObjJumped>
-
 			<OnSystemWeaponFire>
 				(switch
-					; If this is a repeat, then ignore
+					;	If this is a repeat, then ignore
 					(!= aFireRepeat 0)
 						Nil
 						
-					; If the player fires a missile (or other expensive disposable) she gets a bonus
-					(eq aWeaponObj gPlayerShip)
-						(block (theWeapon theLevel)
-							(setq theWeapon (itmCreate aWeaponUNID 1))
-							(setq theLevel (itmGetLevel theWeapon))
-							(if (itmMatches theWeapon "m &gt;=$5")
+					;	If the player fires a missile (or other expensive disposable) she gets a bonus
+					(= aWeaponObj gPlayerShip)
+						(block (
+							(theLevel (itmGetLevel aWeaponUNID))
+							)
+							(if (itmMatches aWeaponUNID "m &gt;=$5")
 								(objIncData gSource "missileRep" (multiply theLevel (subtract theLevel 1)))
 								)
 							)
 
-					; Count up the number of times that the opponent fires
-					(eq aWeaponObj (objGetObjRefData gSource "Opponent1"))
-						(objIncData gSource "opponentShots" 1)
+					;	Count up the number of times that the opponent fires
+					(= (objGetID aWeaponObj) (objGetData gSource "Opponent1"))
+						(objIncData gSource "opponentShots")
 					)
 			</OnSystemWeaponFire>
 
 			<OnSystemExplosion>
-				; Each explosion is +50
+				;	Each explosion is +50
 				(objIncData gSource "explosionRep" 50)
 			</OnSystemExplosion>
 		</Events>
 
 		<DockScreens>
 			<Main>
-
 				<InitialPane>
-					(block (status)
-						(setq status (objGetData gSource "Status"))
-						(setq arenaRank (objGetGlobalData gSource "arenaRank"))
-
+					(block (theMission)
 						(switch
-							(not status)
-								"Default"
-
-							(and (eq status 'inProgress)
-									(objGetData gSource 'drawAllowed)
-									(not (objGetData gSource 'finalChallenge))
-									)
-								"CheckDraw"
-
-							(eq status 'inProgress)
-								"StillFighting"
-
-							(eq status 'destroyed)
-								(switch
-									(eq arenaRank 'gladiator)
-										"GladiatorWinner"
-
-									(eq arenaRank 'challenger)
-										"ChallengerWinner"
-
-									"Default"
+							(setq theMission (msnFind gSource "aSP +arenaCombat;"))
+								(if (msnFireEvent theMission 'OnDrawAllowed)
+									'CheckDraw
+									'StillFighting
 									)
 
-							(eq status 'playerKilled)
-								(switch
-									(eq arenaRank 'gladiator)
-										"GladiatorLoser"
-
-									(eq arenaRank 'challenger)
-										"ChallengerLoser"
-
-									"Default"
-									)
-
-							(eq status 'waitingForMatchEnd)
-								"Default"
-
-							(eq status 'playerLeft)
-								"PlayerLeft"
+							'Default
 							)
 						)
 				</InitialPane>
@@ -699,8 +298,11 @@
 						-->
 
 							<Action id="actionGladiatorsQuarters" default="1">
-								(block (theMission arenaRank)
-									(setq arenaRank (objGetGlobalData gSource "arenaRank"))
+								(block (
+									(arenaRank (objGetTypeData gSource "arenaRank"))
+									(matchCount (count (msnFind gSource "cS +gladiatorFight;")))
+									theMission
+									)
 									(switch
 										(setq theMission (rpgMissionGetAssignment {
 												missionCriteria: "n +battleArena;"
@@ -712,37 +314,25 @@
 										(not arenaRank)
 											(scrShowPane gScreen "FirstFight")
 
-										(eq arenaRank 'rookie)
-											(switch
-												(objGetData gSource "OpponentCount")
-													(scrShowPane gScreen "MeleeBusy")
+										(= arenaRank 'rookie)
+											(scrShowPane gScreen "NoMoreMelees")
 
-												(scrShowPane gScreen "NoMoreMelees")
-												)
-
-										(eq arenaRank 'gladiator)
+										(= arenaRank 'gladiator)
 											(switch
-												(not (objGetGlobalData gSource "katamiStatus"))
+												(not (objGetTypeData gSource "katamiStatus"))
 													(scrShowPane gScreen "KatamiIntro")
 
-												(and (geq (objGetData gSource "matchCount") 16)
-														(ls (objGetGlobalData gSource "arenaRep") 500))
+												(and (geq matchCount 16)
+														(ls (objGetTypeData gSource "arenaRep") 500))
 													(scrShowPane gScreen "NoMoreGladiators")
 
-												(scrShowScreen gScreen "ChooseOpponent")	
+												(scrShowScreen gScreen &dsBattleArenaOpponentList;)
 												)
 
-										(eq arenaRank 'challenger)
-											(scrShowPane gScreen "Challenger")
-
-										(eq arenaRank 'champion)
+										(= arenaRank 'champion)
 											(scrShowPane gScreen "Champion")
 
-										(eq arenaRank 'loser)
-											(scrShowPane gScreen "Loser")
-
-										(eq arenaRank 'washout)
-											(scrShowPane gScreen "Loser")
+										(scrShowPane gScreen "Loser")
 										)
 									)
 							</Action>
@@ -756,9 +346,7 @@
 							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 
 					<NoMoreMelees descID="descNoMoreMelees">
@@ -768,14 +356,6 @@
 							</Action>
 						</Actions>
 					</NoMoreMelees>
-
-					<MeleeBusy descID="descMeleeBusy">
-						<Actions>
-							<Action id="actionContinue" default="1" cancel="1">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MeleeBusy>
 
 					<KatamiIntro descID="descKatamiIntro1">
 						<Actions>
@@ -790,471 +370,39 @@
 							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
 									(objSetTypeData gSource 'katamiStatus 'instructor)
-									(scrShowScreen gScreen 'ChooseOpponent)
+									(scrShowPane gScreen "Default")
+									(scrShowScreen gScreen &dsBattleArenaOpponentList;)
 									)
 							</Action>
 						</Actions>
 					</KatamiIntro2>
 
-					<GladiatorFight>
-						<OnPaneInit>
-							(block (arenaSkill arenaRep playerArmor playerWeapon playerShield desc theOpponent opponentArmor opponentWeapon opponentShield skill baseSkill theFullList theBetterList proposeList)
-								(setq arenaSkill (objGetGlobalData gSource "arenaSkill"))
-								(setq arenaRep (objGetGlobalData gSource "arenaRep"))
-								(setq theOpponent (objGetObjRefData gSource "Opponent1"))
-
-								; Compute the player's best weapon and shields
-								(setq playerArmor (bamComputeArmorLevel gPlayerShip))
-								(setq playerShield (bamComputeShieldLevel gPlayerShip))
-								(setq playerWeapon (bamComputeWeaponLevel gPlayerShip))
-								
-								; Compensate if the player has strong armor and weak shields (or vice versa)
-								(setq playerShield (max playerShield (subtract playerArmor 1)))
-								(setq playerArmor (max playerArmor (subtract playerShield 1)))
-
-								; Compute the opponent's best weapon and shields
-								(setq opponentArmor (bamComputeArmorLevel theOpponent))
-								(setq opponentShield (bamComputeShieldLevel theOpponent))
-								(setq opponentWeapon (bamComputeWeaponLevel theOpponent))
-
-								; Get some facts about the opponent
-								(setq skill (objGetData theOpponent "arenaSkill"))
-								(setq baseSkill (objGetStaticData theOpponent "arenaSkillBase"))
-								(setq repBonus (objGetData theOpponent "arenaRepBonus"))
-
-								; Generate the list of all gladiators (to see if the player chose correctly)
-								(setq theFullList (bamComputeOpponentList gSource arenaSkill arenaRep))
-
-								; Pick a better alternative
-								(setq theBetterList (filter theFullList theObj 
-									(and (not (eq theObj theOpponent))
-										(leq (bamComputeShieldLevel theObj) playerWeapon)
-										(leq (bamComputeWeaponLevel theObj) playerArmor)
-										(leq (bamComputeWeaponLevel theObj) playerShield)
-										(geq (subtract (objGetData theObj "arenaSkill") (objGetStaticData theObj "arenaSkillBase")) -150)
-										)
-									))
-									
-								; Compose message
-								(switch
-
-									; Warn the player if her shields are too weak
-									(gr opponentWeapon playerShield)
-										(setq desc (cat
-											"Katami shakes his head:\n\n"
-											"\"Are you sure you want to challenge such an opponent? Your shields are not strong enough "
-											"to resist " (objGetName theOpponent) "'s attacks.\""
-											))
-											
-									; Warn the player if her armor is too weak
-									(gr opponentWeapon playerArmor)
-										(setq desc (cat
-											"Katami shakes his head:\n\n"
-											"\"Are you sure you can survive such an opponent? Your armor is weak against "
-											(objGetName theOpponent) "'s weapon.\""
-											))
-
-									; Warn the player if her weapons are too weak
-									(gr opponentShield playerWeapon)
-										(setq desc (cat
-											"Katami sighs:\n\n"
-											"\"Are you sure you are up to the challenge? Your primary weapon is not strong enough "
-											"to penetrate " (objGetName theOpponent) "'s shields.\""
-											))
-
-									; If there are any other opponents with a greater repBonus...
-									(setq proposeList (filter theBetterList theObj (gr (objGetData theObj "arenaRepBonus") repBonus)))
-										(setq desc (cat
-											"Katami considers carefully:\n\n"
-											"\"An interesting choice. Have you considered " (objGetName (random proposeList)) " instead? "
-											"I think the crowd would prefer to see that match.\""
-											))
-
-									; If the opponent is underrated
-									(ls (subtract skill baseSkill) -150)
-										(setq desc (cat
-											"Katami looks up to the ceiling:\n\n"
-											"\"There is something disturbing about " (objGetName theOpponent) ". "
-											"I feel that he is more powerful than everyone believes. Be careful!\""
-											))
-
-									(setq desc (cat 
-										"Katami bows his head:\n\n"
-										"\"Fight with honor! Defeat your opponent and win the love of the crowd!\""
-										))
-									)
-
-								(scrSetDesc gScreen desc)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action id="actionFight" default="1">
-								(block (theShip)
-									(setq theShip (objGetObjRefData gSource "Opponent1"))
-
-									; Position the opponent at the right spot
-									(objMoveTo theShip (sysVectorPolarOffset gSource (random 204 336) 45))
-									(objResume theShip)
-
-									; Orders
-									(shpOrder theShip 'attack gPlayerShip)
-									(shpOrder theShip 'dock gSource)
-
-									; Register
-									(objRegisterForEvents gSource theShip)
-
-									; Set the reward
-									(objSetData gSource "finalChallenge" Nil)
-									(objSetData gSource "opponentSkill" (objGetData theShip "arenaSkill"))
-									(objSetData gSource "repGain" (objGetData theShip "arenaRepBonus"))
-									(objSetData gSource "missileRep" 0)
-									(objSetData gSource "explosionRep" 0)
-									(objSetData gSource "opponentShots" 0)
-									(objSetData gSource "opponentArmor" 100)
-									(objSetData gSource "lowestShields" (if (objGetItems gPlayerShip "sI") 100 0))
-									(objSetData gSource "lowestArmor" (subtract 100 (objGetVisibleDamage gPlayerShip)))
-									(objSetData gSource "fightTime" 0)
-									(objSetData gSource "drawAllowed" Nil)
-									(objSetData gSource "timeTo50" 1000)
-									(objSetData gSource "timeTo25" 1000)
-									(objSetData gSource "timeTo10" 1000)
-									(objSetData gSource "timeToShieldsDown" (if (objGetItems theShip "sI") 1000 -1))
-									(objSetData gSource "prizeGain" (bamComputePrize
-										(objGetGlobalData gSource "arenaSkill")
-										(objGetGlobalData gSource "arenaRep")
-										(objGetData theShip "arenaSkill")
-										(objGetData theShip "arenaPrizeBonus")
-										))
-
-									; Register for system events (so we can tell when ships fire)
-									(objRegisterForSystemEvents gSource 150)
-									(sysAddObjRecurringTimerEvent 10 gSource "OnFightCheck")
-
-									; Done
-									(bamDoorsClose gSource)
-									(objRegisterForEvents gSource gPlayerShip)
-									(objSetData gSource "Status" 'inProgress)
-
-									; Play Slicer track
-									(uiSetSoundtrackMode 'missionStart &muArenaSlicer;)
-
-									(scrExitDock gScreen)
-									)
-							</Action>
-
-							<Action id="actionBackOut" cancel="1">
-								(scrShowScreen gScreen "ChooseOpponent")
-							</Action>
-						</Actions>
-					</GladiatorFight>
-
-					<GladiatorWinner>
-						<OnPaneInit>
-							(block (desc arenaRep repGain)
-								(setq arenaRep (objGetGlobalData gSource "arenaRep"))
-								(setq repGain (objGetData gSource "repGain"))
-
-								(switch
-									(geq repGain 200)
-										(setq desc (cat
-											"Katami beams a smile:\n\n"
-											"\"That's the way to do it! "
-											(switch
-												(geq arenaRep 500) "You've won the crowd's heart. Now they'll be waiting for you to challenge The Slicer!"
-												(geq arenaRep 400) "You're a favorite of the crowd now. Make sure you live up to it!"
-												(geq arenaRep 300) "You're on your way to win the love of the crowd! Keep giving them an exciting match every time!"
-												(geq arenaRep 200) "The crowd loves a good comeback!"
-												(geq arenaRep 100) "You're the young rising star that the crowd loves to root for."
-																   "You're learning fast. The crowd will soon clamor to see you fight!"
-												)
-											"\""
-											))
-
-									(ls repGain 50)
-										(setq desc (cat
-											"Katami stands with his arms crossed:\n\n"
-											"\""
-											(switch
-												(geq (objGetData gSource "lowestShields") 75)
-													"You barely took a hit during the match; next time pick a challenging opponent that will give the crowd something exciting to watch."
-												(geq (objGetData gSource "lowestArmor") 90)
-													"The crowd loves blood! Give them some excitement! It's better to win after taking heavy damage than to win without taking a scratch. Remember that."
-												(geq (objGetData gSource "fightTime") 300)
-													"The crowd has a short attention span. Don't take forever to kill your opponent. Give the crowd a good show!"
-													"Winning isn't enough! You have to give the crowd a good show! Make the match exciting and the crowd will love you for it."
-												)
-											"\""
-											))
-
-									(setq desc (cat
-										"Katami seems pleased:\n\n"
-										"\""
-										(random (list
-											"You remind me of my own time in the Arena: The roar of explosions blending with the noise of the crowd until both were one. There's nothing like it, is there?"
-											"The crowd loves a good match and they will pay to see it. The more popular you are, the more you will earn."
-											"You've done well, but don't get sloppy. To become Legendary Hero of the Arena you will need to defeat The Slicer, and he is fast, precise, and very deadly."
-											"Remember that it's not enough to kill quickly; you have to give the crowd a good show!"
-											"It's been a long time since I trained someone with your potential! Don't disappoint me!"
-											"The Arena is the one place where corporate executives and small-time shareholders mix. Be sure to give them a good show!"
-											"You remind me of my own victories! Once I was so popular I was invited to dine with Robert Morgental himself! It was exquisite."
-											"You're doing well! Always keep improving. When you fight The Slicer you will need every bit of training that I can give you."
-											"Years ago I trained Kate Morgental! You remind me of her a lot. You fight hard at every match, but you're always thinking about something bigger than the Arena."
-											))
-										"\""
-										))
-									)
-
-								(scrSetDesc gScreen (cat
-									desc
-									"\n\nWinning this match has earned you " (fmtCurrency 'credit (objGetData gSource "prizeGain")) "."
-									))
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action id="actionContinue" default="1" cancel="1">
-								(block (resultList repGain)
-									; Open arena doors
-									(bamDoorsOpen gSource)
-
-									; Unregister
-									(objUnregisterForEvents gSource gPlayerShip)
-									(sysCancelTimerEvent gSource "OnFightCheck")
-
-									; Add to reputation
-									(objSetGlobalData gSource "arenaRep" 
-										(min 1000 (add (objGetGlobalData gSource "arenaRep") (objGetData gSource "repGain")))
-										)
-
-									; Add record of win
-									(setq resultList (append (subset (objGetData gSource "results") 1) (objGetData gSource "opponentSkill")))
-									(objSetData gSource "results" resultList)
-
-									; Add to skill
-									(objSetGlobalData gSource "arenaSkill" (bamComputeSkill resultList))
-
-									; Pay player
-									(plyCredit gPlayer (objGetData gSource "prizeGain"))
-
-									; Unregister
-									(objUnregisterForSystemEvents gSource)
-
-									; Set status
-									(objSetData gSource "Status" Nil)
-									(objSetData gSource "OpponentCount" Nil)
-
-									; See if the player can challenge The Slicer
-									(if (and (geq (objGetGlobalData gSource "arenaRep") 1000)
-											(geq (objGetGlobalData gSource "arenaSkill") 1000)
-											)
-
-										; Player can now challenge The Slicer
-										(block Nil
-											(objSetGlobalData gSource "arenaRank" 'challenger)
-											(scrShowPane gScreen "ChallengerIntro")
-											)
-
-										; Otherwise, back to main screen
-										(scrShowPane gScreen "Default")
-										)
-									)
-							</Action>
-						</Actions>
-					</GladiatorWinner>
-					
 					<GladiatorDraw descID="descGladiatorDraw">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
-								(scrExitScreen gScreen)
+								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
 					</GladiatorDraw>
-
-					<GladiatorLoser descID="descGladiatorLoser">
-						<Actions>
-							<Action id="actionContinue" default="1" cancel="1">
-								(block Nil
-									(objSetData gSource "Status" Nil)
-									(objSetData gSource "OpponentCount" Nil)
-
-									(scrShowScreen gScreen "ChooseOpponent")
-									)
-							</Action>
-						</Actions>
-					</GladiatorLoser>
 
 					<NoMoreGladiators descID="descNoMoreGladiators">
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
 									(scrShowPane gScreen "Default")
-									(objSetGlobalData gSource "arenaRank" 'washout)
+									(objSetTypeData gSource "arenaRank" 'washout)
 									)
 							</Action>
 						</Actions>
 					</NoMoreGladiators>
-
-					<ChallengerLoser descID="descChallengerLoser">
-						<Actions>
-							<Action id="actionContinue" default="1" cancel="1">
-								(block Nil
-									(objSetData gSource "Status" Nil)
-									(objSetData gSource "OpponentCount" Nil)
-
-									(objSetGlobalData gSource "arenaRank" 'loser)
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</ChallengerLoser>
-
-					<ChallengerIntro descID="descChallengerIntro">
-						<Actions>
-							<Action id="actionContinue" default="1" cancel="1">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</ChallengerIntro>
-
-					<Challenger>
-						<OnPaneInit>
-							(if (or
-									(= (objGetTypeData gSource 'katamiStatus) 'instructor)
-									(= (objGetTypeData gSource 'katamiStatus) 'rescued)
-									)
-								(scrSetDesc gScreen (cat
-									"Mr. Katami bows his head:\n\n"
-									"\"I have nothing more to teach you. Remember everything I've said and fight with honor!\""
-									))
-								(scrSetDesc gScreen (cat
-									"The gladiators' quarters feels cold and empty without Mr. Katami. You prepare yourself as best you can "
-									"to fight The Slicer."
-									))
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action id="actionFight" default="1">
-								(block (theShip)
-									(setq theShip (sysCreateShip &scTheSlicerManticore; (objGetPos gSource) &svGladiator;))
-									(objSetObjRefData gSource "Opponent1" theShip)
-									(shpSetAISetting theShip 'ignoreShieldsDown True)
-
-									; Position the opponent at the right spot
-									(objMoveTo theShip (sysVectorPolarOffset gSource (random 204 336) 45))
-
-									; Orders
-									(shpOrder theShip 'attack gPlayerShip)
-									(shpOrder theShip 'dock gSource)
-
-									; Register
-									(objRegisterForEvents gSource theShip)
-
-									; Set the reward
-									(objSetData gSource "finalChallenge" True)
-									(objSetData gSource "prizeGain" 5000)
-									(objSetData gSource "repGain" 500)
-									(objSetData gSource "missileRep" 0)
-									(objSetData gSource "explosionRep" 0)
-									(objSetData gSource "opponentShots" 0)
-									(objSetData gSource "opponentArmor" 100)
-									(objSetData gSource "lowestShields" (if (objGetItems gPlayerShip "sI") 100 0))
-									(objSetData gSource "lowestArmor" (subtract 100 (objGetVisibleDamage gPlayerShip)))
-									(objSetData gSource "fightTime" 0)
-									(objSetData gSource "drawAllowed" Nil)
-									(objSetData gSource "timeTo50" 1000)
-									(objSetData gSource "timeTo25" 1000)
-									(objSetData gSource "timeTo10" 1000)
-									(objSetData gSource "timeToShieldsDown" (if (objGetItems theShip "sI") 1000 -1))
-
-									; Register for system events (so we can tell when ships fire)
-									(objRegisterForSystemEvents gSource 150)
-									(sysAddObjRecurringTimerEvent 10 gSource "OnFightCheck")
-									
-									; Make sure Kate is gone
-									(setq kateObj (sysFindObject gPlayerShip "sN +kateMorgental;"))
-									(objFireEvent kateObj "OrderClearArena")
-
-									; Done
-									(bamDoorsClose gSource)
-									(objRegisterForEvents gSource gPlayerShip)
-									(objSetData gSource "Status" 'inProgress)
-									
-									; Play Slicer track
-									(uiSetSoundtrackMode 'missionStart &muArenaSlicer;)
-
-									(scrExitDock gScreen)
-									)
-							</Action>
-
-							<Action id="actionBackOut" cancel="1">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</Challenger>
-
-					<ChallengerWinner>
-						<OnPaneInit>
-							(switch
-								(= (objGetTypeData gSource 'katamiStatus) 'instructor)
-									(scrSetDesc gScreen (cat
-										"Pandemonium greets you as you enter the gladiators' quarters. Friends and partiers are celebrating your victory. "
-										"Mr. Katami hugs you like a long lost %son% and puts a drink in your hand. "
-										))
-								(= (objGetTypeData gSource 'katamiStatus) 'rescued)
-									(scrSetDesc gScreen (cat
-										"Pandemonium greets you as you enter the gladiators' quarters. Friends and partiers are celebrating your victory. "
-										"Mr. Katami hugs you like a long lost %son% and puts a drink in your hand. "
-										"At the edge of the room Kate Morgental shines her smile at you."
-										))
-								(scrSetDesc gScreen (cat
-									"Pandemonium greets you as you enter the gladiators' quarters. Partiers and hanger-ons celebrate your victory. "
-									"In the corner of the room you see a small memorial for Mr. Katami in danger of being trampled by the wild partying."
-									))
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action id="actionContinue" default="1" cancel="1">
-								(block Nil
-									; Open arena doors
-									(bamDoorsOpen gSource)
-
-									; Unregister
-									(objUnregisterForEvents gSource gPlayerShip)
-									(sysCancelTimerEvent gSource "OnFightCheck")
-
-									; Pay player
-									(plyCredit gPlayer (objGetData gSource "prizeGain"))
-
-									; Unregister
-									(objUnregisterForSystemEvents gSource)
-
-									; Set status
-									(objSetData gSource "Status" Nil)
-									(objSetData gSource "OpponentCount" Nil)
-
-									; Player is champion
-									(objSetGlobalData gSource "arenaRank" 'champion)
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-						</Actions>
-					</ChallengerWinner>
 
 					<Champion>
 						<OnPaneInit>
 							(if (or (= (objGetTypeData gSource 'katamiStatus) 'instructor)
 									(= (objGetTypeData gSource 'katamiStatus) 'rescued)
 									)
-								(scrSetDesc gScreen (cat
-									"Mr. Katami greets you:\n\n"
-									"\"It's wonderful to see you again! Let's talk about the old times at the Arena.\""
-									))
-								(scrSetDesc gScreen (cat
-									"The gladiators' quarters feels cold and empty without Mr. Katami."
-									))
+								(scrSetDescTranslate gScreen "descChampion:katami")
+								(scrSetDescTranslate gScreen "descChampion:empty")
 								)
 						</OnPaneInit>
 
@@ -1267,16 +415,11 @@
 
 					<Loser>
 						<OnPaneInit>
-							(if (or (eq (objGetGlobalData gSource "katamiStatus") 'instructor)
-									(eq (objGetGlobalData gSource "katamiStatus") 'rescued)
+							(if (or (= (objGetTypeData gSource "katamiStatus") 'instructor)
+									(= (objGetTypeData gSource "katamiStatus") 'rescued)
 									)
-								(scrSetDesc gScreen (cat
-									"Mr. Katami greets you:\n\n"
-									"\"It's good to see you again. I'm training someone new now. Hopefully they won't disappoint me.\""
-									))
-								(scrSetDesc gScreen (cat
-									"The gladiators' quarters feels cold and empty without Mr. Katami."
-									))
+								(scrSetDescTranslate gScreen "descLoser:katami")
+								(scrSetDescTranslate gScreen "descLoser:empty")
 								)
 						</OnPaneInit>
 
@@ -1289,11 +432,9 @@
 
 					<FirstFight descID="descFirstFight">
 						<Actions>
-							<Action id="actionSign">
+							<Action id="actionSign" default="1">
 								(block Nil
-									(objSetGlobalData gSource "arenaRank" 'rookie)
-									(objSetData gSource "rookieScore" 0)
-									(objSetData gSource "meleeCount" 0)
+									(objSetTypeData gSource "arenaRank" 'rookie)
 									(scrShowPane gScreen 'Default)
 									(scrShowScreen gScreen &dsRPGMission; {
 										missionObj: (msnCreate &msBattleArenaMelee; gSource)
@@ -1322,16 +463,13 @@
 					<CheckDraw>
 						<OnPaneInit>
 							(block (
-								(opponentObj (objGetObjRefData gSource "Opponent1"))
+								(theMission (msnFind gSource "Pa +arenaCombat;"))
+								(opponentObj (objGetObjByID (msnGetData theMission 'opponentID)))
 								)
-								
 								;	Enemy stops attacking
-								
-								(shpCancelOrders opponentObj)
-								(shpOrder opponentObj 'wait)
-								
+								(shpOrderImmediate opponentObj 'wait)
+
 								;	Description
-								
 								(scrSetDescTranslate gScreen 'descDrawOrNot)
 								)
 						</OnPaneInit>
@@ -1339,54 +477,28 @@
 						<Actions>
 							<Action id="actionDrawYes" default="1">
 								(block (
-									(opponentObj (objGetObjRefData gSource "Opponent1"))
+									(theMission (msnFind gSource "aSP +arenaCombat;"))
+									(opponentObj (objGetObjByID (msnGetData theMission 'opponentID)))
 									)
-									
-									;	Remove the ship from the gladiator list
-									
-									(objSetData gSource "gladiatorList"
-										(filter (objGetData gSource "gladiatorList") theID (not (eq theID (objGetID opponentObj))))
-										)
-										
 									;	The match is over
-									
-									(if (not (objGetData gSource 'finalChallenge))
-										(objIncData gSource "matchCount" 1)
-										)
-										
-									(bamDoorsOpen gSource)
-									(objUnregisterForSystemEvents gSource)
-									(sysCancelTimerEvent gSource "OnFightCheck")
-									
-									;	Opponent done
-									
-									(shpCancelOrders opponentObj)
-									(objSuspend opponentObj)
-									
-									;	Set status
-									
-									(objSetData gSource "Status" Nil)
-									(objSetData gSource "OpponentCount" Nil)
-									
+									(shpCancelOrder opponentObj)
+									(msnFailure theMission 'draw)
+									(msnSetProperty theMission 'isDebriefed True)
+
 									;	Katami debrief
-									
 									(scrShowPane gScreen 'GladiatorDraw)
 									)
 							</Action>
 							
 							<Action id="actionDrawNo" cancel="1">
 								(block (
-									(opponentObj (objGetObjRefData gSource "Opponent1"))
+									(theMission (msnFind gSource "aSP +arenaCombat;"))
+									(opponentObj (objGetObjByID (msnGetData theMission 'opponentID)))
 									)
-									
 									;	Attack continues
-									
-									(shpCancelOrders opponentObj)
-									(shpOrder opponentObj 'attack gPlayerShip)
-									(shpOrder opponentObj 'dock gSource)
-									
+									(shpCancelOrder opponentObj)
+
 									;	Done
-									
 									(scrExitScreen gScreen)
 									)
 							</Action>
@@ -1398,203 +510,10 @@
 							<Action id="actionUndock" default="1" cancel="1">
 								<Exit/>
 							</Action>
-
 						</Actions>
 					</PlayerLeft>
-
 				</Panes>
 			</Main>
-
-			<ChooseOpponent
-				backgroundID=	"none"
-				>
-
-				<OnScreenInit>
-					(block (arenaSkill arenaRep)
-						(setq arenaSkill (objGetGlobalData gSource "arenaSkill"))
-						(setq arenaRep (objGetGlobalData gSource "arenaRep"))
-
-						; Generate a list of all gladiators that the player can challenge
-						(setq gList (bamComputeOpponentList gSource arenaSkill arenaRep))
-
-						; If the list is empty, then we need to add some new opponents
-						(if (not gList)
-							(block (newGladiators)
-
-								; Create some new gladiators
-								(for i 1 (random 3 5)
-									(setq newGladiators
-										(append newGladiators
-											(objGetID (bamCreateGladiatorBySkill gSource arenaSkill))
-											)
-										)
-									)
-
-								; Add them to the list
-								(objSetData gSource "gladiatorList"
-									(append (objGetData gSource "gladiatorList") (shuffle newGladiators))
-									)
-
-								; Recompute the opponent list
-								(setq gList (bamComputeOpponentList gSource arenaSkill arenaRep))
-								
-								; If the list is stil empty then just pick a random gladiator
-								; from the new crop
-								(if (not gList)
-									(setq gList (list (objGetObjByID (random newGladiators))))
-									)
-								)
-							)
-
-						; Start at the beginning of the list
-						(setq gCursor 0)
-						(setq gSelect (item gList gCursor))
-						)
-				</OnScreenInit>
-
-				<Display>
-					<Image left="12" right="-44" top="62" height="100" align="center" valign="center" transparent="true">
-						(shpGetImageDesc gSelect 0)
-					</Image>
-
-					<Text left="12" right="-44" top="150" height="40" align="center" font="SubTitle" color="255,210,152">
-						(objGetName gSelect 0x00)
-					</Text>
-
-					<Text left="12" width="250" top="190" bottom="-140" align="right" font="MediumBold" color="200,206,199">
-						(cat
-							"hull:\n"
-							"max speed:\n"
-							"armor:\n"
-							"shields:\n"
-							"weapons:\n"
-							)
-					</Text>
-
-					<Text right="-44" width="250" top="190" bottom="-140" align="left" font="Medium" color="200,206,199">
-						(block (armorItem shieldItem allWeapons)
-							(setq armorItem (item (objGetItems gSelect "aI") 0))
-							(setq shieldItem (item (objGetItems gSelect "sI") 0))
-							
-							; Get the list of weapons
-							(setq allWeapons "")
-							(enum (objGetItems gSelect "wI") theWeapon
-								(setq allWeapons (cat allWeapons
-									(itmGetName theWeapon 0x181)
-									"\n"
-									))
-								)
-							(if (eq allWeapons "")
-								(setq allWeapons "None\n")
-								)
-
-							(cat
-								(shpGetClassName gSelect 1) "\n"
-								(fmtNumber 'speed (objGetDataField gSelect "maxSpeed")) "\n"
-								(if armorItem (itmGetName armorItem 0x181) "None") "\n"
-								(if shieldItem (itmGetName shieldItem 0x181) "None") "\n"
-								allWeapons
-								)
-							)
-					</Text>
-
-					<Text left="52" right="-84" bottom="-32" height="120" align="center" font="Large" color="200,206,199">
-						(block (desc skill repBonus thaName prize rnd1 rnd2 fromPlace)
-							(setq theName (objGetName gSelect 0x00))
-							(setq skill (objGetData gSelect "arenaSkill"))
-							(setq repBonus (objGetData gSelect "arenaRepBonus"))
-							(setq prize (bamComputePrize 
-								(objGetGlobalData gSource "arenaSkill")
-								(objGetGlobalData gSource "arenaRep")
-								skill
-								(objGetData gSelect "arenaPrizeBonus")
-								))
-
-							(setq rnd1 (modulo (objGetDestiny gSelect) 24))
-							(setq rnd2 (divide (objGetDestiny gSelect) 24))
-
-							(setq fromPlace (item '("Starton Eridani" "St. Katharine's Star" "Rigel Aurelius" "Centauri" "Kibo") (modulo rnd2 5)))
-
-							(switch
-								(leq skill 300)
-									(setq desc (eval (item 
-										'(
-											(cat theName " is a young gladiator from " fromPlace ".")
-											(cat theName " flies a " (shpGetClassName gSelect 1) ".")
-											(cat theName " is a novice pilot flying a beautiful " (shpGetClassName gSelect 1) ".")
-											)
-										(modulo rnd1 3)
-										)))
-
-								(setq desc (eval (item
-									'(
-										(cat theName " is a former Champion from " fromPlace ".")
-										(cat "The battle-hardened pilot known as " theName " will give you the fight of your life!")
-										(cat "Death comes quickly when you fight " theName ".")
-										)
-									(modulo rnd1 3)
-									)))
-								)
-
-							(switch
-								(geq repBonus 100)
-									(setq desc (cat desc " This is the match the audience has been waiting for."))
-
-								(geq repBonus 50)
-									(setq desc (cat desc " Defeating " theName " will excite the crowd and bring you great fame!"))
-
-								(geq repBonus 25)
-									(setq desc (cat desc " This is a well-matched opponent that will draw the crowd."))
-								)
-
-							(setq desc (cat desc " For defeating " theName " you will receive " (fmtCurrency 'credit prize) "."))
-							)
-					</Text>
-				</Display>
-
-				<Panes>
-					<Default>
-
-						<OnPaneInit>
-							(block Nil
-								(scrSetDescTranslate gScreen 'descChooseOpponent)
-								(scrEnableAction gScreen 'actionNextOpponent (ls (add gCursor 1) (count gList)))
-								(scrEnableAction gScreen 'actionPreviousOpponent (gr gCursor 0))
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action id="actionChallenge" default="1">
-								(block Nil
-									(objSetData gSource "OpponentCount" 1)
-									(objSetObjRefData gSource "Opponent1" gSelect)
-									(scrShowScreen gScreen "Main" "GladiatorFight")
-									)
-							</Action>
-
-							<Action id="actionNextOpponent" nextKey="1">
-								(block Nil
-									(setq gCursor (add gCursor 1))
-									(setq gSelect (item gList gCursor))
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-
-							<Action id="actionPreviousOpponent" prevKey="1">
-								(block Nil
-									(setq gCursor (subtract gCursor 1))
-									(setq gSelect (item gList gCursor))
-									(scrShowPane gScreen "Default")
-									)
-							</Action>
-
-							<Action id="actionCancelSpecial" cancel="1">
-								(scrShowScreen gScreen "Main")
-							</Action>
-						</Actions>
-					</Default>
-				</Panes>
-			</ChooseOpponent>
 		</DockScreens>
 		
 		<Language>
@@ -1604,10 +523,6 @@
 			<Text id="actionSign">[S]ign</Text>
 			<Text id="actionBackOut">[B]ack Out</Text>
 			<Text id="actionFight">[F]ight!</Text>
-			<Text id="actionChallenge">[C]hallenge!</Text>
-			<Text id="actionNextOpponent">[N]ext Opponent</Text>
-			<Text id="actionPreviousOpponent">[P]revious Opponent</Text>
-			<Text id="actionCancelSpecial">Cance[l]</Text>
 			
 			<Text id="descWelcome">
 
@@ -1617,8 +532,6 @@
 				Enquire within to join the elite combatants.
 
 			</Text>
-			<String id="descMeleeBusy">"We're still in the middle of a match! Come back later."</String>
-			<Text id="descChooseOpponent">Choose an opponent:</Text>
 			<Text id="descDrawOrNot">
 
 				An Arena official looks at the battle metrics:
@@ -1636,41 +549,12 @@
 				upgrade your weapons."
 
 			</Text>
-			<Text id="descGladiatorLoser">
-
-				Mr. Katami is surprised, though pleased, to see you again:
-
-				"I knew that opponent would be too much for you! I should have said something! 
-				I am glad to see you alive, though. Don't let this setback stop you. You still 
-				have a chance to improve and challenge The Slicer.
-
-			</Text>
 			<Text id="descNoMoreGladiators">
 
 				Katami looks disappointed:
 
 				"I'm sorry, but I was not able to teach you properly. The crowd 
 				no longer wants to see you fight."
-
-			</Text>
-			<Text id="descChallengerLoser">
-
-				Mr. Katami is surprised, though pleased, to see you again:
-
-				"Too bad. The Slicer will retain his title. Well, at least 
-				you're still alive! That's something."
-
-			</Text>
-			<Text id="descChallengerIntro">
-
-				"Remember everything I have taught you&mdash;you will need 
-				all your skills now.
-
-				"After the last battle you are the #2 ranked gladiator in the 
-				Arena! Only one step remains: You must challenge The Slicer! If 
-				you win, you will become the Legendary Hero of the Arena.
-
-				"Go and prepare yourself and your ship! Come back ready to fight!"
 
 			</Text>
 			<Text id="descFirstFight">
@@ -1724,7 +608,39 @@
 				"You're banned from the games for leaving the arena in the middle of battle!"
 			
 			</String>
-            
+			<Text id="descChampion:katami">
+
+				Mr. Katami greets you:
+
+				"It's wonderful to see you again! Let's talk about the old times at the Arena."
+
+			</Text>
+			<Text id="descChampion:empty">
+
+				The gladiators' quarters feels cold and empty without Mr. Katami.
+
+			</Text>
+			<Text id="descLoser:katami">
+
+				Mr. Katami greets you:
+
+				"It's good to see you again. I'm training someone new now.
+				Hopefully they won't disappoint me."
+
+			</Text>
+			<Text id="descLoser:empty">
+
+				The gladiators' quarters feels cold and empty without Mr. Katami.
+
+			</Text>
+
+			<Text id="gladiator:novice:1">%gladiator% is a young gladiator from %home%.</Text>
+			<Text id="gladiator:novice:2">%gladiator% flies a %ship%.</Text>
+			<Text id="gladiator:novice:3">%gladiator% is a novice pilot flying a beautiful %ship%.</Text>
+			<Text id="gladiator:champion:1">%gladiator% is a former Champion from %home%.</Text>
+			<Text id="gladiator:champion:2">The battle-hardened pilot known as %gladiator% will give you the fight of your life!</Text>
+			<Text id="gladiator:champion:3">Death comes quickly when you fight %gladiator%.</Text>
+
 			<Text id="rumor.commonwealthHabitat.weapon1">
 				"What's your favorite weapon? Personally I favor the AK505 Ballista. It's
 				a monster and it will kill a lot of ships with a single punch. When I hit
@@ -1784,6 +700,18 @@
 				a knife through Salmonite!"
 			</Text>
 
+			<Text id="achievement.arena.gladiator">Became a gladiator in the Arena</Text>
+			<Text id="achievement.arena.challenger">Earned the right to challenge The Slicer in the Arena</Text>
+			<Text id="achievement.arena.champion">Became Legendary Hero of the Arena</Text>
+			<Text id="achievement.arena.loser">Defeated by The Slicer in the Arena</Text>
+			<Text id="achievement.arena.washout">Disappointed Mr. Katami</Text>
+
+			<Text id="achievement.katami.betrayed">Betrayed Mr. Katami</Text>
+			<Text id="achievement.katami.rescued">Rescued Mr. Katami from the Black Market</Text>
+			<Text id="achievement.katami.dead">Failed to save Mr. Katami</Text>
+
+			<Text id="rpg.missionTypeDesc">Gladiator fights</Text>
+
             <Text id="core.mapDescMain">
                 Gladiatorial combat
             </Text>
@@ -1838,382 +766,209 @@
 
 	</StationType>
 
-	<!-- Black Market Station -->
+<!-- DOCK SCREENS -->
 
-	<StationType UNID="&stBlackMarketRigelAurelius;"
-			name=				"Black Market station"
-			sovereign=			"&svBlackMarket;"
-			inherit=			"&baBlackMarketStation;"
-				 
-			dockScreen=			"Main"
-			abandonedScreen=	"&dsRPGAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itBlastPlate;"
-			hitPoints=			"320"
-			regen=			    "1.6"
-			fireRateAdj=		"20"
-			explosionType=		"&vtBlastExplosion2;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"blackMarket, friendly, human, katamiRescue, majorStation, outlaws, populated"
+	<DockScreen unid="&dsBattleArenaOpponentList;"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
 			>
 
-		<Image			imageID="&rsStations3;" imageX="128" imageY="0" imageWidth="128" imageHeight="128"/>
+		<OnScreenInit>
+			(block (
+				(arenaSkill (objGetTypeData gSource "arenaSkill"))
+				(arenaRep (objGetTypeData gSource "arenaRep"))
 
-		<Ships>
-			<Ship	count="1"	class="&scMolotok;" orders="guard"/>
+				;	 Generate a list of all gladiators that the player can challenge
+				(opponentList (bamComputeOpponentList gSource arenaSkill arenaRep))
+				)
 
-			<Table count="1d4">
-				<Ship chance="25"  count="1" class="&scZulu-II;" orders="gateOnThreat"/>
-				<Ship chance="15"  count="1" class="&scOromo;" orders="gateOnThreat"/>
-				<Ship chance="15"  count="1" class="&scWolfen;" orders="gateOnThreat"/>
-				<Ship chance="30" count="1" class="&scEI500;" orders="gateOnThreat"/>
-				<Ship chance="15"  count="1" class="&scT31ArmedTransport;" orders="gateOnThreat">
-					<Items>
-						<Item					count="8d20" item="&itSmartCannonShell;"/>
-						<Lookup	chance="50"		count="1d3-1" table="&trIllegalItems2;"/>
-						<Table chance="50">
-							<Lookup chance="40" count="1" table="&trConsumables2;"/>
-							<Lookup chance="40" count="1" table="&trMinorItem2;"/>
-							<Lookup chance="20" count="1" table="&trMajorItem2;"/>
-						</Table>
-					</Items>
-				</Ship>
-			</Table>
-		</Ships>
+				; If the list is empty, then we need to add some new opponents
+				(if (not opponentList)
+					(block (newGladiators)
 
-		<Devices>
-			<Device deviceID="&itSlamCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
-			<Device deviceID="&itSlamCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
-		</Devices>
-
-		<Trade currency="credit" max="100000" replenish="5000">
-			<Sell	criteria="m +illegal; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="100" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="m +military; -notForSale; -notStandard;" priceAdj="100" inventoryAdj="100" levelFrequency="systemLevel:ruc|c|cur"/>
-			<Sell	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="110"/>
-			<Sell	criteria="*NU -ID; -NotForSale;"	priceAdj="100"/>
-			<Buy	criteria="*NU +Illegal; -ID; -NotForSale;"	priceAdj="85"/>
-			<Buy	criteria="*NU +military; -ID -NotForSale;"		priceAdj="90"/>
-			<Buy	criteria="*NU +Illegal; -ID;"				priceAdj="10"/>
-			<Buy	criteria="*NU +military; -ID;"				priceAdj="10"/>
-			
-			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="100"/>
-			<RepairArmor	criteria="a L:1-6;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-6;" priceAdj="100"/>
-			<InstallDevice	criteria="c +Illegal; L:1-8" priceAdj="100"	upgradeInstallOnly="true"/>
-			<RemoveDevice	criteria="c L:1-8;" priceAdj="100" upgradeInstallOnly="true"/>
-			
-			<InstallDevice	criteria="d L:1-8;" priceAdj="unavailable"	messageID="descNoInstall"/>
-		</Trade>
-		
-		<Items>
-			<RandomItem count="1d4"
-					criteria=		"c L:1-8; +illegal; -notForSale; -notStandard;"
-					levelFrequency=	"systemLevel:rrrru|c|cur"
-					/>
-			<RandomItem count="6d12" 
-					criteria=		"t +consumerGood; +illegal;"
-					levelFrequency=	"systemLevel:ruc|c|cur"
-					/>
-			<RandomItem count="4d4" 
-					criteria=		"* +illegal; -consumerGood; -id;"
-					levelFrequency=	"systemLevel:ruc|c|cur"
-					/>
-		</Items>
-
-		<!-- Events and Data -->
-		
-		<StaticData>
-			<Data id="blackMarket.deployBountyHunters">True</Data>
-			
-			<Data id="blackMarket.destroyPenalty">250000</Data>
-			<Data id="blackMarket.destroyBountyHunters">(random 1 3)</Data>
-		</StaticData>
-		
-		<DockScreens>
-			<Main>
-				<Panes>
-					<Default descID="descWelcome">
-						<Actions>
-							<Action id="actionTalk">
-								(block Nil
-									(setq gPrevScreen "Main")
-									(scrShowScreen gScreen "Boss")
-									)
-							</Action>
-
-							<Action id="actionBuyItems" default="1">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
-									checkMilitaryID: Nil
-									})
-							</Action>
-
-							<Action id="actionSellItems">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeSell; {
-									})
-							</Action>
-
-							<Action id="actionDockServices">
-								(rpgDockServices gPlayerShip {
-									checkMilitaryID: Nil
-									})
-							</Action>
-
-							<Action id="actionUndock" cancel="1">
-								<Exit/>
-							</Action>
-						</Actions>
-					</Default>
-				</Panes>
-			</Main>
-
-			<Boss>
-				<Panes>
-					<Default descID="descNoBoss">
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								(scrShowScreen gScreen "Main")
-							</Action>
-						</Actions>
-					</Default>
-				</Panes>
-			</Boss>
-
-		</DockScreens>
-
-		<DockingPorts>
-			<Port x="0"		y="90" />
-			<Port x="0"		y="-90" />
-			<Port x="60"	y="60" />
-			<Port x="60"	y="-60" />
-			<Port x="90"	y="0" />
-			
-			<Port x="-90"	y="0" />
-			<Port x="-60"	y="60" />
-			<Port x="-60"	y="-60" />
-		</DockingPorts>
-
-		<Language>
-			<Text id="descNoInstall">
-				(cat
-					"We only install smuggler's equipment. "
-					"We cannot install " (itmGetName (@ gData 'item) 0x04) " on your ship."
-					)
-			</Text>
-			<Text id="dockServices:installAbility">
-				(cat "We install smuggler's equipment up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
-			</Text>
-		</Language>
-	</StationType>
-
-	<!-- Kate Morgental's Corporate Cruiser
-
-	EXTRA DATA
-
-	behavior:			Current behavior
-							Nil						= Done
-							'katamiRescueWait		= Waiting for the player to destroy defenders
-							'katamiRescueDestroy	= Destroy the black market station
-							'katamiRescueDock		= Dock with black market station
-
-	target:				Target object
-	-->
-
-	<ShipClass UNID="&scKateMorgentalCruiserArena;"
-			manufacturer=		"Rasiermesser"
-			class=				"corporate cruiser"
-			type=				""
-
-			attributes=			"capitalShip, corporate, kateMorgental, majorShip"
-			   
-			size=				"275"
-			mass=				"25000"
-			thrustRatio=		"2"
-			maxSpeed=			"20"
-			cargoSpace=			"1000"
-
-			cyberDefenseLevel=	"8"
-
-			explosionType=		"&vtThermoExplosion3;"
-			>
-
-		<Names noArticle="true" personalName="true">Kate Morgental</Names>
-
-		<!-- Configuration -->
-		
-		<Armor
-			armorID=			"&itHexaCarbideArmor;"
-			count=				"16"
-			/>
-		
-		<Devices>
-			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="340" maxFireArc="200"	posAngle="110" posRadius="60" posZ="0"/>
-			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="160" maxFireArc="20"		posAngle="250" posRadius="60" posZ="0"/>
-			<Device deviceID="&itPlasmaShieldGenerator;"/>
-		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"3.0"
-			rotationAccel=		"0.5"
-			/>
-
-		<Interior>
-			<Compartment name="interior"
-					hitPoints=	"300"
-					/>
-			
-			<Compartment name="main drive"
-					type=		"mainDrive"
-					hitPoints=	"100"
-
-					posX=		"-25"
-					posY=		"0"
-					sizeX=		"50"
-					sizeY=		"40"
-					/>
-		</Interior>
-
-		<Items>
-			<Item count="40d20" item="&itGotha10Missile;"/>
-			<Item count="2d12" item="&itPteracniumFuelRod;"/>
-		</Items>
-
-		<!-- Image and Effects -->
-
-		<Image imageID="&rsCorporateCruiser;" imageWidth="230" imageHeight="230"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="0"	posZ="-10"	rotation="180"	sendToBack="*"/>
-		</Effects>
-		
-		<!-- AI and Behavior -->
-		
-		<AISettings
-			fireRateAdj=		"40"
-			fireAccuracy=		"95"
-			perception=			"4"
-			/>
-
-		<Events>
-			<OnBehavior>
-				(block (state)
-					(setq state (objGetData gSource "behavior"))
-					(switch
-						(eq state 'katamiRescueWait)
-							(if (not (filter (staGetSubordinates (objGetObjRefData gSource "target")) theGuard (eq (objGetType theGuard) &scMolotok;)))
-								(block (theTarget)
-									(setq theTarget (objGetObjRefData gSource "target"))
-									(objSendMessage gPlayerShip gSource "Nice work! Clear the area; we're inbound hot!")
-
-									(if (objIsAbandoned theTarget)
-										; If the station is already destroyed, just dock
-										(block Nil
-											(shpCancelOrders gSource)
-											(shpOrder gSource 'dock theTarget)
-
-											(objSetData gSource "behavior" 'katamiRescueDock)
-											)
-
-										; Otherwise, destroy the station
-										(block Nil
-											(shpCancelOrders gSource)
-											(shpOrder gSource 'approach theTarget 100)
-											(shpOrder gSource 'attack theTarget)
-
-											(objSetData gSource "behavior" 'katamiRescueDestroy)
-											)
-										)
+						; Create some new gladiators
+						(for i 1 (random 3 5)
+							(setq newGladiators
+								(append newGladiators
+									(objGetID (bamCreateGladiatorBySkill gSource arenaSkill))
 									)
 								)
+							)
 
-						(eq state 'katamiRescueDestroy)
-							(if (objIsAbandoned (objGetObjRefData gSource "target"))
-								(block Nil
-									(objSendMessage gPlayerShip gSource "Target destroyed!")
+						; Add them to the list
+						(objSetData gSource "gladiatorList"
+							(append (objGetData gSource "gladiatorList") (shuffle newGladiators))
+							)
 
-									(shpCancelOrders gSource)
-									(shpOrder gSource 'dock (objGetObjRefData gSource "target"))
+						; Recompute the opponent list
+						(setq opponentList (bamComputeOpponentList gSource arenaSkill arenaRep))
 
-									(objSetData gSource "behavior" 'katamiRescueDock)
-									)
-								)
-
-						(eq state 'katamiRescueDock)
-							(if (eq (typGetGlobalData &stBattleArena; "katamiStatus") 'rescued)
-								(block Nil
-									(shpCancelOrders gSource)
-									(shpOrder gSource 'goto (objGetObjRefData gSource "anchorObj"))
-									(shpOrder gSource 'wait 5)
-									(shpOrder gSource 'gate)
-
-									(sysCancelTimerEvent gSource "OnBehavior")
-
-									(objSetData gSource "behavior" Nil)
-									)
-								)
-						)
-					)
-			</OnBehavior>
-
-			<OnDestroy>
-				(switch
-					; OK if Kate leaves
-					(eq aDestroyReason 'enteredStargate)
-						Nil
-						
-					; If player destroyed Kate's ship, then she remembers
-					(and gPlayerShip (eq aOrderGiver gPlayerShip))
-						(typSetGlobalData &svCorporate; "statusKateM" 'destroyedByPlayer)
-					
-					; Otherwise, we remembed that she was destroyed
-					(typSetGlobalData &svCorporate; "statusKateM" 'destroyed)
-					)
-			</OnDestroy>
-
-			<OrderKatamiRescue>
-				(block (
-					(theArena (sysFindObject gSource "TN +battleArena;"))
-					targetObj
-					)
-					
-					; Find the black market station
-					(setq targetObj (sysFindObject gSource "TN +katamiRescue"))
-					(objSetObjRefData gSource "target" targetObj)
-
-					; Orbit the black market station waiting for the player
-					(shpCancelOrders gSource)
-					(shpOrder gSource 'approach targetObj 180)
-					(shpOrder gSource 'orbit targetObj 180)
-
-					; State
-					(objSetData gSource "behavior" 'katamiRescueWait)
-
-					; Set a timer so that we can do some custom behavior
-					(sysAddObjRecurringTimerEvent 10 gSource "OnBehavior")
-					)
-			</OrderKatamiRescue>
-			
-			<OrderClearArena>
-				(block (
-					(arenaObj (sysFindObject gSource "TN +battleArenaMaximus;"))
-					)
-					
-					(if (ls (objGetDistance gSource arenaObj) 80)
-						(block Nil
-							(objSetPos gSource (sysVectorPolarOffset arenaObj 270 80))
-							
-							(shpCancelOrders gSource)
-							(shpOrder gSource 'gate)
+						; If the list is stil empty then just pick a random gladiator
+						; from the new crop
+						(if (not opponentList)
+							(setq opponentList (list (objGetObjByID (random newGladiators))))
 							)
 						)
 					)
-			</OrderClearArena>
-		</Events>
+				(scrSetData gScreen 'opponentList opponentList)
+				)
+		</OnScreenInit>
 
-	</ShipClass>
+		<Display type="carouselSelector"
+				style="shipList"
+				>
+			<OnDisplayInit>
+				(map (scrGetData gScreen 'opponentList) shipObj
+					(block (
+						(armorItem (@ (objGetItems shipObj "aI") 0))
+						(shieldItem (@ (objGetItems shipObj "sI") 0))
+						(driveItem (or (@ (objGetItems shipObj "vI") 0) &itTritiumPropulsionUpgrade;))
+						)
+						{
+						title: (objGetName shipObj)
+						icon: (shpGetImageDesc shipObj)
+						largeIcon: (shpGetImageDesc shipObj { type:'schematic })
+
+						details: (append
+							{
+							icon: (shpGetImageDesc shipObj 0)
+							title: (objGetName shipObj 'generic)
+							}
+							{
+							icon: (itmGetImageDesc driveItem)
+							title: (scrTranslate gScreen 'listSpeed {speed: (fmtNumber 'speed (objGetProperty shipObj 'maxSpeed))})
+							}
+							{
+							icon: (itmGetImageDesc armorItem)
+							title: (scrTranslate gScreen 'listArmor)
+							desc: (or (itmGetName armorItem '(short actual)) "None")
+							}
+							{
+							icon: (itmGetImageDesc shieldItem)
+							title: (scrTranslate gScreen 'listShields)
+							desc: (or (itmGetName shieldItem '(short actual)) "None")
+							}
+							(map (objGetItems shipObj "wI") theItem {
+								icon: (itmGetImageDesc theItem)
+								title: (itmGetName theItem '(short actual capitalize))
+								})
+							)
+
+						shipObj: shipObj
+						})
+					)
+			</OnDisplayInit>
+		</Display>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(theEntry (@ (scrGetListEntry gScreen) 'shipObj))
+						(repBonus (objGetData theEntry "arenaRepBonus"))
+						(prize (bamComputePrize
+							(objGetTypeData gSource "arenaSkill")
+							(objGetTypeData gSource "arenaRep")
+							(objGetData theEntry "arenaSkill")
+							(objGetData theEntry "arenaPrizeBonus")
+							))
+						(descID (switch
+							(geq repBonus 100)	"descGladiator:4"
+							(geq repBonus 50)	"descGladiator:3"
+							(geq repBonus 25)	"descGladiator:2"
+												"descGladiator:1"
+							))
+						)
+						(scrSetDesc gScreen
+							(objGetData theEntry "arenaDescription")
+							" "
+							(scrTranslate gScreen descID {
+								gladiator: (objGetName theEntry)
+								reward: (fmtCurrency 'credit prize)
+								})
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionChallenge" default="1">
+						(scrShowPane gScreen "GladiatorFight")
+					</Action>
+
+					<Action id="actionCancelSpecial" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+
+			<GladiatorFight noListNavigation="true">
+				<OnPaneInit>
+					(block (
+						(theEntry (scrGetListEntry gScreen))
+						(theMission (msnCreate &msBattleArenaFight; gSource (@ theEntry 'shipObj)))
+						)
+						(scrSetData gScreen 'missionObj theMission)
+						(scrSetDesc gScreen (msnTranslate theMission 'Briefing))
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionFight" default="1">
+						(block (
+							(theMission (scrGetData gScreen 'missionObj))
+							)
+							(msnAccept theMission)
+							(scrExitDock gScreen)
+							)
+					</Action>
+
+					<Action id="actionBackOut" cancel="1">
+						(block (
+							(theMission (scrGetData gScreen 'missionObj))
+							)
+							(msnDestroy theMission)
+							(scrShowPane gScreen "Default")
+							)
+					</Action>
+				</Actions>
+			</GladiatorFight>
+		</Panes>
+
+		<Language>
+			<Text id="actionChallenge">[C]hallenge!</Text>
+			<Text id="actionCancelSpecial">Cance[l]</Text>
+			<Text id="actionBackOut">[B]ack Out</Text>
+			<Text id="actionFight">[F]ight!</Text>
+
+			<Text id="listSpeed">Max. speed: %speed%</Text>
+			<Text id="listArmor">Armor</Text>
+			<Text id="listShields">Shields</Text>
+
+			<Text id="descGladiator:4">
+
+				This is the match the audience has been waiting for.
+				For defeating %gladiator% you will receive %reward%.
+
+			</Text>
+			<Text id="descGladiator:3">
+
+				Defeating %gladiator% will excite the crowd and bring you great fame!
+				For defeating %gladiator% you will receive %reward%.
+
+			</Text>
+			<Text id="descGladiator:2">
+
+				This is a well-matched opponent that will draw the crowd.
+				For defeating %gladiator% you will receive %reward%.
+
+			</Text>
+			<Text id="descGladiator:1">
+
+				For defeating %gladiator% you will receive %reward%.
+
+			</Text>
+		</Language>
+	</DockScreen>
 
 	<!-- G-Type Star -->
 
@@ -2608,7 +1363,7 @@
 						<Lookup table="SeverusTrojans"/>
 
 						<Orbitals distance="1d8+6" angle="random">
-							<Station type="&stBlackMarketRigelAurelius;"/>
+							<Station type="&stBlackMarketStation;"/>
 						</Orbitals>
 					</AntiTrojan>
 				</Group>
@@ -2665,26 +1420,20 @@
 				))
 
 			(setq bamComputeOpponentList (lambda (baseObj arenaSkill arenaRep)
-				(block (resultList)
-					(setq resultList Nil)
-					(enum (objGetData baseObj "gladiatorList") theObjID
-						(block (theObj objSkill)
-							(setq theObj (objGetObjByID theObjID))
-							(setq objSkill (objGetData theObj "arenaSkill"))
-
-							; Figure out if this ship is willing to fight with the player
-							(if (and (leq objSkill (add arenaSkill 100))
-									(geq objSkill (subtract arenaSkill 100))
-									(or (geq arenaRep 600) (leq objSkill 800))
-									)
-								(block Nil
-									(setq resultList (append resultList theObj))
-									)
-								)
-							)
+				(map (objGetData baseObj 'gladiatorList) 'excludeNil theObjID
+					(block (
+						(theObj (objGetObjByID theObjID))
+						(objSkill (objGetData theObj 'arenaSkill))
 						)
 
-					resultList
+						;	Figure out if this ship is willing to fight with the player
+						(if (and (leq objSkill (+ arenaSkill 100))
+								(geq objSkill (- arenaSkill 100))
+								(or (geq arenaRep 600) (leq objSkill 800))
+								)
+							theObj
+							)
+						)
 					)
 				))
 
@@ -2703,120 +1452,6 @@
 						)
 					)
 				))
-
-			(setq bamComputeReputation (lambda (baseObj)
-				(block (repGain rep fightTime)
-
-					; Start with the bonus to rep that we get for killing this opponent
-					(setq repGain (objGetData baseObj "repGain"))
-					(if (not repGain)
-						(setq repGain 0)
-						)
-					;(dbgOutput "rep bonus: +" repGain)
-
-					; Add the rep that we gained from missiles and explosions
-					(setq rep (min 100 (add (objGetData baseObj "missileRep") (objGetData baseObj "explosionRep"))))
-					(setq repGain (add repGain rep))
-					;(dbgOutput "missiles fired: +" rep)
-
-					; Add 1 point of rep for every 5 shots fired by the opponent
-					(setq rep (divide (objGetData baseObj "opponentShots") 5))
-					(setq repGain (add repGain rep))
-					;(dbgOutput "shots fired: +" rep)
-
-					; Add bonus points if the shields were brought down
-					(switch
-						(leq (objGetData baseObj "lowestShields") 0)
-							(setq rep 100)
-
-						(leq (objGetData baseObj "lowestShields") 50)
-							(setq rep 25)
-
-						(leq (objGetData baseObj "lowestShields") 75)
-							(setq rep 10)
-
-						(setq rep 0)
-						)
-
-					; If the player doesn't use shields, divide bonus in 4
-					(if (not (objGetItems gPlayerShip "sI"))
-						(setq rep (divide rep 4))
-						)
-
-					;(dbgOutput "shields down: +" rep)
-					(setq repGain (add repGain rep))
-
-					; Add bonus points if armor was damaged
-					(switch
-						(leq (objGetData baseObj "lowestArmor") 10)
-							(setq rep 250)
-
-						(leq (objGetData baseObj "lowestArmor") 25)
-							(setq rep 150)
-
-						(leq (objGetData baseObj "lowestArmor") 50)
-							(setq rep 100)
-
-						(setq rep 0)
-						)
-
-					;(dbgOutput "armor damage: +" rep)
-					(setq repGain (add repGain rep))
-
-					; Add bonus points if opponent shields brought down quickly
-					(switch
-						(eq (objGetData baseObj "timeToShieldsDown") -1)
-							(setq rep 0)
-
-						(leq (objGetData baseObj "timeToShieldsDown") 15)
-							(setq rep 50)
-
-						(leq (objGetData baseObj "timeToShieldsDown") 30)
-							(setq rep 25)
-
-						(setq rep 0)
-						)
-
-					;(dbgOutput "fast shields down: +" rep)
-					(setq repGain (add repGain rep))
-
-					; Add bonus points if we killed the opponent quickly
-					(switch
-						(leq (objGetData baseObj "timeTo50") 15)
-							(setq rep 100)
-
-						(leq (objGetData baseObj "timeTo25") 30)
-							(setq rep 50)
-
-						(leq (objGetData baseObj "timeTo10") 45)
-							(setq rep 25)
-
-						(setq rep 0)
-						)
-
-					;(dbgOutput "fast kill: +" rep)
-					(setq repGain (add repGain rep))
-
-					; Time bonus based on battle length
-					(setq fightTime (objGetData baseObj "fightTime"))
-					(switch
-						(leq fightTime 50)
-							(setq rep 10)
-
-						(leq fightTime 75)
-							(setq rep 0)
-
-						(setq rep (subtract 0 (divide (objGetData baseObj "fightTime") 6)))
-						)
-
-					;(dbgOutput "time bonus: " (if (geq rep 0) "+" "") rep)
-					(setq repGain (add repGain rep))
-					(setq repGain (min repGain 200))
-
-					;(dbgOutput (if (gr repGain 0) "total rep: +" "total rep: ") repGain)
-					repGain
-					)
-				))
 				
 			(setq bamComputeShieldLevel (lambda (theObj)
 				(block (theShield)
@@ -2828,24 +1463,15 @@
 				))
 				
 			(setq bamComputeSkill (lambda (battleResults)
-				(block (bestResult skillDiff)
-					; Find the largest value in the battle results
-					(setq bestResult 0)
-					(enum battleResults i
-						(if (gr i bestResult)
-							(setq bestResult i)
-							)
-						)
-
-					; Compute the skill level diff
-					(setq skillDiff 0)
-					(enum battleResults i
-						(setq skillDiff (add skillDiff (subtract i bestResult)))
-						)
-					(setq skillDiff (divide skillDiff 4))
-
-					; Compute result
-					(add bestResult 200 skillDiff)
+				(block (
+					;	Find the largest value in the battle results
+					(bestResult (max battleResults))
+					;	Compute the skill level diff
+					(skillDiff (map battleResults 'reduceAverage i (- i bestResult)))
+					)
+					;	Compute result
+					;(add bestResult 200 skillDiff)
+					(add (map battleResults 'reduceAverage i i ) 200)
 					)
 				))
 				
@@ -2869,7 +1495,7 @@
 				))
 
 			(setq bamCreateGladiator (lambda (baseObj shipClass)
-				(block (theShip)
+				(block (theShip descID)
 					; Note: We use a position instead of an object for the creation pos
 					; because an object would set the gate timer.
 					(setq theShip
@@ -2883,9 +1509,6 @@
 					; Ignore shields down (so we don't run into the Arena walls)
 					(shpSetAISetting theShip 'ignoreShieldsDown True)
 					
-					; Set the name
-					(objSetData theShip "arenaName" "Joe Gladiator")
-
 					; Set the skill level
 					(objSetData theShip "arenaSkill"
 						(max 200
@@ -2907,6 +1530,20 @@
 							(objSetData theShip "arenaRepBonus" (random '(25 25 25 50 50 100)))
 							)
 						)
+
+					; Set our description
+					(objSetData theShip "arenaHome" (random '("Starton Eridani" "St. Katharine's Star" "Rigel Aurelius" "Centauri" "Kibo")))
+					(switch
+						(leq (objGetData theShip "arenaSkill") 300)
+							(setq descID (cat "gladiator:novice:" (random 1 3)))
+
+						(setq descID (cat "gladiator:champion:" (random 1 3)))
+						)
+					(objSetData theShip "arenaDescription" (objTranslate gSource descID {
+						gladiator: (objGetName theShip)
+						home: (objGetData theShip "arenaHome")
+						ship: (shpGetClassName theShip 1)
+						}))
 
 					; Suspend the ship so that it is not visible until later
 					(objSuspend theShip)
@@ -2940,72 +1577,6 @@
 
 					; Pick a random class and create the ship
 					(bamCreateGladiator baseObj (random classList))
-					)
-				))
-
-			(setq bamCreateMeleeOpponents (lambda (sourceObj shipCount targetPlayerChance classFunc)
-				(block (offset)
-					(setq offset 0)
-					
-					; Create a bunch of ships and order them to attack
-					(for i 1 shipCount
-						(block (thisShip shipClass)
-							(setq shipClass (classFunc))
-							(setq thisShip
-								(sysCreateShip 
-									shipClass
-									(sysVectorPolarOffset sourceObj (random 204 336) (add 15 (multiply (modulo offset 12) 2)))
-									&svGladiator;
-									)
-								)
-								
-							; Some ships attack the player, others attack the nearest target
-							(if (leq (random 1 100) targetPlayerChance)
-								(block Nil
-									(shpOrder thisShip "attack" gPlayerShip)
-									(shpOrder thisShip "dock" sourceObj)
-									)
-
-								; We add some command code to the ship so that it chooses a
-								; random gladiator target
-								(shpSetCommandCode thisShip
-									(block (targetList theArena thePlayer)
-										(setq theArena (sysFindObject gSource "TN +battleArena;"))
-										(if (eq (objGetData theArena "status") 'inProgress)
-											(setq thePlayer gPlayerShip)
-											)
-
-										(setq targetList
-											(filter (sysFindObject gSource "sA N:150;") theObj 
-												(or (eq (objGetSovereign theObj) &svGladiator;) (eq theObj thePlayer))
-												)
-											)
-
-										(switch
-											targetList
-												(shpOrder gSource "attack" (random targetList))
-
-											thePlayer
-												(block Nil
-													(shpOrder gSource "attack" thePlayer)
-													(shpOrder gSource "dock" theArena)
-													)
-
-											(shpOrder gSource "dock" theArena)
-											)
-										)
-									)
-								)
-
-							(objRegisterForEvents sourceObj thisShip)
-
-							(objSetObjRefData sourceObj (cat "Opponent" i) thisShip)
-
-							(setq offset (add offset 1))
-							)
-						)
-
-					(objSetData sourceObj "OpponentCount" shipCount)
 					)
 				))
 

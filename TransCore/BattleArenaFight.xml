@@ -1,0 +1,780 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE TranscendenceModule
+	[
+	<!-- 0160-016F BATTLE ARENA TRACKS -->
+	
+	<!ENTITY muArenaSlicer					"0x00820160">
+	<!ENTITY muArenaSurvivor				"0x00820161">
+	<!ENTITY muArenaContender				"0x00820162">
+	<!ENTITY muArenaVictor					"0x00820163">
+	<!ENTITY muArenaChampion				"0x00820164">
+	]>
+
+
+<TranscendenceModule>
+
+	<!-- Battle Arena Fight ====================================================
+
+	EXTRA DATA
+
+	status: One of the following:
+		Nil:			Player is still alive
+		playerKilled:	Player has been killed
+		playerLeft:		Player escaped from Arena
+
+	opponentSkill:	Skill of current opponent
+	repGain:		Rep gained for current fight
+	lowestShields:	Lowest level that player shields reached
+	lowestArmor:	Lowest level that player armor reached
+	fightTime:		Increment by 1 every 10 ticks
+	opponentArmor:	Lowest level that opponent's armor reached so far
+	reward:			Prize money for current fight
+	timeTo50:		The fightTime at which the opponent's armor was 50 or below
+	timeTo25:		The fightTime at which the opponent's armor was 25 or below
+	timeTo10:		The fightTime at which the opponent's armor was 10 or below
+	timeToShieldsDown: The fightTime at which the opponent's shields are first dropped
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msBattleArenaFight;"
+			name=				"Battle Arena Fight"
+			attributes=			"arenaCombat, gladiatorFight"
+
+			level=				"3"
+			>
+
+		<Events>
+			<OnCreate>
+				(switch
+					;	This mission only works in Rigel Aurelius
+					(not (objHasAttribute aOwnerObj "battleArenaMaximus"))
+						(msnDestroy gSource)
+						
+					;	gData should be our opponent
+					(not (objIsShip gData))
+						(msnDestroy gSource)
+
+					;	Set up the mission
+					(block (
+						(arenaSkill (objGetTypeData aOwnerObj 'arenaSkill))
+						(arenaRep (objGetTypeData aOwnerObj 'arenaRep))
+
+						;	Compute the player's best weapon and shields
+						(playerArmor (bamComputeArmorLevel gPlayerShip))
+						(playerShield (bamComputeShieldLevel gPlayerShip))
+						(playerWeapon (bamComputeWeaponLevel gPlayerShip))
+						
+						;	Compute the opponent's best weapon and shields
+						(opponentArmor (bamComputeArmorLevel gData))
+						(opponentShield (bamComputeShieldLevel gData))
+						(opponentWeapon (bamComputeWeaponLevel gData))
+
+						;	Get some facts about the opponent
+						(skill (objGetData gData 'arenaSkill))
+						(baseSkill (objGetStaticData gData 'arenaSkillBase))
+						(repBonus (objGetData gData 'arenaRepBonus))
+						(prizeBonus (objGetData gData 'arenaPrizeBonus))
+
+						;	Generate the list of all gladiators (to see if the player chose correctly)
+						(theFullList (bamComputeOpponentList aOwnerObj arenaSkill arenaRep))
+						
+						theBetterList proposeList
+						)
+
+						;	Compensate if the player has strong armor and weak shields (or vice versa)
+						(setq playerShield (max playerShield (- playerArmor 1)))
+						(setq playerArmor (max playerArmor (- playerShield 1)))
+
+						;	Pick a better alternative
+						(setq theBetterList (filter theFullList theObj 
+							(and (!= theObj gData)
+								(leq (bamComputeShieldLevel theObj) playerWeapon)
+								(leq (bamComputeWeaponLevel theObj) playerArmor)
+								(leq (bamComputeWeaponLevel theObj) playerShield)
+								(geq (- (objGetData theObj 'arenaSkill) (objGetStaticData theObj 'arenaSkillBase)) -150)
+								)
+							))
+
+						;	If there are any other opponents with a greater repBonus...
+						(setq proposeList (filter theBetterList theObj (gr (objGetData theObj "arenaRepBonus") repBonus)))
+						(msnSetData gSource 'altOpponent (objGetName (random proposeList)))
+
+						;	Figure out what Katami has to say
+						(msnSetData gSource 'katamiSays (switch
+							(gr opponentWeapon playerShield)		'shields
+							(gr opponentWeapon playerArmor)			'armor
+							(gr opponentShield playerWeapon)		'weapon
+							proposeList								'alternate
+							(ls (- skill baseSkill) -150)			'underrated
+																	'fight
+							))
+
+						(msnSetData gSource 'opponentID (objGetID gData))
+						(msnSetData gSource 'opponentSkill skill)
+						(msnSetData gSource 'repGain repBonus)
+						(msnSetData gSource 'reward (bamComputePrize arenaSkill arenaRep skill prizeBonus))
+
+						;	No intro available
+						(msnSetProperty gSource 'isIntroShown True)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(theShip (objGetObjByID (msnGetData gSource 'opponentID)))
+					)
+					;	Position the opponent at the right spot
+					(objMoveTo theShip (sysVectorPolarOffset arenaObj (random 204 336) 45))
+					(objResume theShip)
+
+					;	Orders
+					(shpCancelOrders theShip)
+					(shpOrder theShip 'attack gPlayerShip)
+					(shpOrder theShip 'approach arenaObj 5)
+					(shpOrder theShip 'fireEvent gSource 'OnGladiatorDone)
+
+					;	Initialize data
+					(msnSetData gSource 'opponentArmor 100)
+					(msnSetData gSource 'lowestShields (if (objGetItems gPlayerShip "sI") 100 0))
+					(msnSetData gSource 'lowestArmor (- 100 (objGetVisibleDamage gPlayerShip)))
+					(msnSetData gSource 'timeTo50 1000)
+					(msnSetData gSource 'timeTo25 1000)
+					(msnSetData gSource 'timeTo10 1000)
+					(msnSetData gSource 'timeToShieldsDown (if (objGetItems theShip "sI") 1000 -1))
+
+					;	Prepare arena
+					(bamDoorsClose arenaObj)
+					(objSetData arenaObj 'missileRep 0)
+					(objSetData arenaObj 'explosionRep 0)
+					(objSetData arenaObj 'opponentShots 0)
+					(objSetData arenaObj 'Opponent1 (msnGetData gSource 'opponentID))
+
+					;	Events
+					(msnRegisterForEvents gSource theShip)
+					(msnRegisterForEvents gSource gPlayerShip)
+					(objRegisterForSystemEvents arenaObj 150)
+					(msnAddRecurringTimerEvent gSource 10 'OnFightCheck)
+
+					;	Play Slicer track
+					(uiSetSoundtrackMode 'missionStart &muArenaSlicer;)
+					)
+			</OnAccepted>
+
+			<OnDeclined>
+				(msnDestroy gSource)
+			</OnDeclined>
+
+			<OnFightCheck>
+				(block (
+					(theShip (objGetObjByID (msnGetData gSource 'opponentID)))
+					(arenaRep (typGetData &stBattleArena; 'arenaRep))
+
+					;	Increment time
+					(fightTime (msnIncData gSource 'fightTime))
+
+					;	Keep track of the player's shield and armor level
+					(shieldLevel (objGetShieldLevel gPlayerShip))
+					(armorLevel (- 100 (objGetVisibleDamage gPlayerShip)))
+
+					;	And also the opponent's shield and armor
+					(opponentShield (objGetShieldLevel theShip))
+					(opponentArmor (- 100 (objGetVisibleDamage theShip)))
+					)
+
+					;	Some announcements are timed
+					(switch
+						(= fightTime 1)
+							(plyMessage gPlayer (msnTranslate gSource 'msgStart))
+
+						(and (= fightTime 30)
+								(geq (msnGetData gSource 'lowestShields) 80)
+								(geq opponentArmor 90))
+							(plyMessage gPlayer (msnTranslate gSource 'msgSlow1))
+
+						(and (= fightTime 90)
+								(geq (msnGetData gSource 'lowestShields) 80)
+								(geq opponentArmor 90))
+							(plyMessage gPlayer (msnTranslate gSource 'msgSlow2))
+
+						(and (geq fightTime 120) (= (modulo fightTime 30) 0)
+								(geq (msnGetData gSource 'lowestShields) 80)
+								(geq opponentArmor 90))
+							(block Nil
+								(plyMessage gPlayer (msnTranslate gSource 'msgSlow3))
+								(msnSetData gSource 'drawAllowed True)
+								)
+								
+						(and (geq fightTime 360) (= (modulo fightTime 30) 0))
+							(block Nil
+								(plyMessage gPlayer (msnTranslate gSource 'msgSlow3))
+								(msnSetData gSource 'drawAllowed True)
+								)
+						)
+
+					;	Keep track of the lowest shield level reached (for the player's shields)
+					(if (ls shieldLevel (msnGetData gSource 'lowestShields))
+						(block Nil
+							(msnSetData gSource 'lowestShields shieldLevel)
+
+							;	If shields are down to 0, the crowd loves it
+							(if (= shieldLevel 0)
+								(if (geq arenaRep 600)
+									(plyMessage gPlayer (msnTranslate gSource 'msgInTrouble))
+									(plyMessage gPlayer (msnTranslate gSource 'msgFinishHim))
+									)
+								)
+							)
+						)
+
+					;	Keep track of the lowest armor level reached (for the player's armor)
+					(if (ls armorLevel (msnGetData gSource 'lowestArmor))
+						(block (
+							(oldArmorLevel (msnGetData gSource 'lowestArmor))
+							)
+							(msnSetData gSource 'lowestArmor armorLevel)
+
+							;	The crowd reacts if armor gets too low, but in different
+							;	ways depending on reputation
+							(if (leq armorLevel 50)
+								(if (geq arenaRep 600)
+
+									;	The player is popular
+									(switch
+										(and (leq armorLevel 10) (gr oldArmorLevel 10))
+											(plyMessage gPlayer (msnTranslate gSource 'msgPopularArmor10))
+
+										(and (leq armorLevel 25) (gr oldArmorLevel 25))
+											(plyMessage gPlayer (msnTranslate gSource 'msgPopularArmor25))
+
+										(and (leq armorLevel 50) (gr oldArmorLevel 50))
+											(plyMessage gPlayer (msnTranslate gSource 'msgPopularArmor50))
+										)
+
+									;	The player is not
+									(switch
+										(and (leq armorLevel 10) (gr oldArmorLevel 10))
+											(plyMessage gPlayer (msnTranslate gSource 'msgUnknownArmor10))
+
+										(and (leq armorLevel 25) (gr oldArmorLevel 25))
+											(plyMessage gPlayer (msnTranslate gSource 'msgUnknownArmor25))
+
+										(and (leq armorLevel 50) (gr oldArmorLevel 50))
+											(plyMessage gPlayer (msnTranslate gSource 'msgUnknownArmor50))
+										)
+									)
+								)
+							)
+						)
+
+					;	Track how fast shields go down
+					(if (and (= opponentShield 0) (ls fightTime (msnGetData gSource 'timeToShieldsDown)))
+						(block Nil
+							(msnSetData gSource 'timeToShieldsDown fightTime)
+							(switch
+								(leq fightTime 15)
+									(plyMessage gPlayer (msnTranslate gSource 'msgFastShield15))
+
+								(leq fightTime 30)
+									(plyMessage gPlayer (msnTranslate gSource 'msgFastShield30))
+								)
+							)
+						)
+
+					;	Keep track of how fast the opponent's armor drops
+					(if (ls opponentArmor (msnGetData gSource 'opponentArmor))
+						(block (
+							(oldArmorLevel (msnGetData gSource 'opponentArmor))
+							)
+							(msnSetData gSource 'opponentArmor opponentArmor)
+
+							(switch
+								(and (leq opponentArmor 10) (gr oldArmorLevel 10))
+									(block Nil
+										(msnSetData gSource 'timeTo10 fightTime)
+										(if (leq fightTime 45)
+											(plyMessage gPlayer (msnTranslate gSource 'msgFastArmor10))
+											)
+										)
+
+								(and (leq opponentArmor 25) (gr oldArmorLevel 25))
+									(block Nil
+										(msnSetData gSource 'timeTo25 fightTime)
+										(if (leq fightTime 30)
+											(plyMessage gPlayer (msnTranslate gSource 'msgFastArmor25))
+											)
+										)
+
+								(and (leq opponentArmor 50) (gr oldArmorLevel 50))
+									(block Nil
+										(msnSetData gSource 'timeTo50 fightTime)
+										(if (leq fightTime 15)
+											(plyMessage gPlayer (msnTranslate gSource 'msgFastArmor50))
+											)
+										)
+								)
+							)
+						)
+					)
+			</OnFightCheck>
+
+			<OnDrawAllowed>
+				(msnGetData gSource 'drawAllowed)
+			</OnDrawAllowed>
+
+			<OnUpdate>
+				(block (
+					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(markerObj (objGetObjByID (objGetData arenaObj 'markerID)))
+					)
+					;	Catch the case where player escapes without use of jump drive
+					(if (gr (objGetDistance gPlayerShip markerObj) 60)
+						(msnFailure gSource 'playerLeft)
+						)
+					)
+			</OnUpdate>
+
+			<OnObjJumped>
+				(if (= aObj gPlayerShip)
+					(msnFailure gSource 'playerLeft)
+					)
+			</OnObjJumped>
+
+			<OnObjDestroyed>
+				(switch
+					;	Player lost
+					(= aObjDestroyed gPlayerShip)
+						(msnFailure gSource 'playerKilled)
+
+					;	Player won
+					(block (
+						(fightTime (msnGetData gSource 'fightTime))
+						)
+						;	Adjust timers in case we miss the window
+						(if (gr (msnGetData gSource 'timeTo50) fightTime) (msnSetData gSource 'timeTo50 fightTime))
+						(if (gr (msnGetData gSource 'timeTo25) fightTime) (msnSetData gSource 'timeTo25 fightTime))
+						(if (gr (msnGetData gSource 'timeTo10) fightTime) (msnSetData gSource 'timeTo10 fightTime))
+						(msnSuccess gSource)
+						)
+					)
+			</OnObjDestroyed>
+
+			<OnGladiatorDone>
+				(block (
+					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(theShip (objGetObjByID (msnGetData gSource 'opponentID)))
+					)
+					;	Repair the ship
+					(objEnumItems theShip "aI" theItem (objRepairArmor theShip theItem))
+					(shpRechargeShield theShip)
+
+					(objMoveTo theShip arenaObj)
+					(shpCancelOrders theShip)
+					(objSuspend theShip)
+					)
+			</OnGladiatorDone>
+
+			<OnCompleted>
+				(block (
+					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					)
+					(switch
+						(= aReason 'success)
+							(block (
+								(fightTime (msnGetData gSource 'fightTime))
+								(repGain (msnGetData gSource 'repGain))
+								;	Add the rep that we gained from missiles and explosions
+								(repMissiles (min 100 (+ (objGetData arenaObj 'missileRep) (objGetData arenaObj 'explosionRep))))
+								;	Add 1 point of rep for every 5 shots fired by the opponent
+								(repShots (divide (objGetData arenaObj 'opponentShots) 5))
+								;	Add bonus points if the shields were brought down
+								(repPlayerShields (switch
+									(not (objGetItems gPlayerShip "sI"))			25
+									(leq (msnGetData gSource 'lowestShields) 0)		100
+									(leq (msnGetData gSource 'lowestShields) 50)	25
+									(leq (msnGetData gSource 'lowestShields) 75)	10
+									))
+								;	Add bonus points if armor was damaged
+								(repPlayerArmor (switch
+									(leq (msnGetData gSource 'lowestArmor) 10)	250
+									(leq (msnGetData gSource 'lowestArmor) 25)	150
+									(leq (msnGetData gSource 'lowestArmor) 50)	100
+									))
+								;	Add bonus points if opponent shields brought down quickly
+								(repShields (switch
+									(= (msnGetData gSource 'timeToShieldsDown) -1)		0
+									(leq (msnGetData gSource 'timeToShieldsDown) 15)	50
+									(leq (msnGetData gSource 'timeToShieldsDown) 30)	25
+									))
+								;	Time bonus based on battle length
+								(repTime (switch
+									(leq fightTime 50)	10
+									(leq fightTime 75)	0
+									(- 0 (divide fightTime) 6)
+									))
+								;	Add bonus points if we killed the opponent quickly
+								(repFastKill (switch
+									(leq (msnGetData gSource 'timeTo50) 15)	100
+									(leq (msnGetData gSource 'timeTo25) 30)	50
+									(leq (msnGetData gSource 'timeTo10) 45)	25
+									))
+								)
+								; (dbgOutput "missiles fired: +" repMissiles)
+								; (dbgOutput "shots fired: +" repShots)
+								; (dbgOutput "shields down: +" repPlayerShields)
+								; (dbgOutput "armor damage: +" repPlayerArmor)
+								; (dbgOutput "fast shields down: +" repShields)
+								; (dbgOutput "fast kill: +" repFastKill)
+								; (dbgOutput "time bonus: " (if (geq repTime 0) "+" "") repTime)
+								(setq repGain (+ repGain repMissiles repShots repPlayerShields repPlayerArmor repShields repFastKill repTime))
+								(setq repGain (min repGain 200))
+								; (dbgOutput (if (gr repGain 0) "total rep: +" "total rep: ") repGain)
+								(msnSetData gSource 'repGain repGain)
+
+								(msnSetData gSource 'msgSuccess (switch
+									(geq repGain 200)	'msgSuccess5
+									(geq repGain 100)	'msgSuccess4
+									(geq repGain 50)	'msgSuccess3
+									(geq repGain 1)		'msgSuccess2
+														'msgSuccess1
+									))
+
+								;	Remove the ship from the gladiator list
+								(objSetData arenaObj 'gladiatorList
+									(filter (objGetData arenaObj 'gladiatorList) theID (!= theID (msnGetData gSource 'opponentID)))
+									)
+								)
+
+						(and (= aReason 'failure) (= gData 'playerLeft))
+							(block (
+								(theShip (objGetObjByID (msnGetData gSource 'opponentID)))
+								)
+								;	Opponent stops attacking player
+								(shpCancelOrder theShip)
+								(typSetData &stBattleArena; 'arenaRank 'coward)
+								(msnSetData gSource 'status 'playerLeft)
+								)
+
+						(and (= aReason 'failure) (= gData 'draw))
+							(block (
+								(theShip (objGetObjByID (msnGetData gSource 'opponentID)))
+								)
+								;	Opponent stops attacking player
+								(shpCancelOrder theShip)
+								(msnSetData gSource 'status 'draw)
+								)
+
+						(= aReason 'failure)
+							(msnSetData gSource 'status 'playerKilled)
+						)
+					;	Open arena doors
+					(bamDoorsOpen arenaObj)
+
+					;	Unregister (if necessary)
+					(objUnregisterForSystemEvents arenaObj)
+					(msnCancelTimerEvent gSource 'OnFightCheck)
+
+					;	Back to travel music (we're still technically in combat, because we
+					;	haven't detected that we're out yet, so we force travel mode).
+					(uiQueueSoundtrack (or (msnGetData gSource 'nextSoundTrack) &muArenaVictor;))
+					(uiSetSoundtrackMode 'missionEndTravel)
+					)
+			</OnCompleted>
+
+			<OnReward>
+				(block (
+					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(totalScore (objGetData arenaObj 'rookieScore))
+					resultList
+					)
+					;	Add to reputation
+					(typIncData &stBattleArena; 'arenaRep (msnGetData gSource 'repGain))
+
+					;	Add record of win
+					(setq resultList (append (subset (objGetData arenaObj 'results) 1) (msnGetData gSource 'opponentSkill)))
+					(objSetData arenaObj 'results resultList)
+
+					;	Add to skill
+					(typSetData &stBattleArena; 'arenaSkill (bamComputeSkill resultList))
+
+					;	Pay the player
+					(rpgMissionRewardPayment (msnGetData gSource 'reward))
+
+					;	See if the player can challenge The Slicer
+					(if (and (geq (typGetData &stBattleArena; 'arenaRep) 1000)
+							(geq (typGetData &stBattleArena; 'arenaSkill) 1000)
+							)
+
+						;	Player can now challenge The Slicer
+						(block Nil
+							(typSetData &stBattleArena; 'arenaRank 'challenger)
+							{
+								nextScreen: &dsRPGMessage;
+								nextScreenData: {desc: (msnTranslate gSource 'ChallengerIntro)}
+								}
+							)
+						)
+					)
+			</OnReward>
+		</Events>
+		
+		<Language>
+			<Text id="Name">
+				Battle Arena Fight
+			</Text>
+			<Text id="Summary">
+				(msnTranslate gSource 'textSummary {
+					gladiator: (objGetName (objGetObjByID (msnGetData gSource 'opponentID)))
+					sysName: (sysGetName)
+					reward: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					})
+			</Text>
+			<Text id="textSummary">
+
+				You have challenged %gladiator% in the Battle Arena Maximus.
+				Only one of you will leave alive.
+
+				System: %sysName%\n
+				Payment: %reward%
+
+			</Text>
+			<Text id="Briefing">
+				(msnTranslate gSource (cat "Briefing:" (msnGetData gSource 'katamiSays)) {
+						opponent: (objGetName (objGetObjByID (msnGetData gSource 'opponentID)))
+						alternate: (msnGetData gSource 'altOpponent)
+						})
+			</Text>
+			<Text id="Briefing:shields">
+
+				Katami shakes his head:
+
+				"Are you sure you want to challenge such an opponent? Your shields are not
+				strong enough to resist %opponent%'s attacks."
+
+			</Text>
+			<Text id="Briefing:armor">
+
+				Katami shakes his head:
+
+				"Are you sure you can survive such an opponent? Your armor is weak against
+				%opponent%'s weapon."
+
+			</Text>
+			<Text id="Briefing:weapon">
+
+				Katami sighs:
+
+				"Are you sure you are up to the challenge? Your primary weapon is not strong
+				enough to penetrate %opponent%'s shields."
+
+			</Text>
+			<Text id="Briefing:alternate">
+
+				Katami considers carefully:
+
+				"An interesting choice. Have you considered %alternate% instead?
+				I think the crowd would prefer to see that match."
+
+			</Text>
+			<Text id="Briefing:underrated">
+
+				Katami looks up to the ceiling:
+
+				"There is something disturbing about %opponent%.
+				I feel that he is more powerful than everyone believes. Be careful!"
+
+			</Text>
+			<Text id="Briefing:fight">
+
+				Katami bows his head:
+
+				"Fight with honor! Defeat your opponent and win the love of the crowd!"
+
+			</Text>
+			<String id="InProgress">
+				"We're still in the middle of a match! Come back later."
+			</String>
+			<Text id="SuccessDebrief">
+				(block (
+					(arenaRep (typGetData &stBattleArena; 'arenaRep))
+					(repGain (msnGetData gSource 'repGain))
+					(outcome (switch
+						(geq repGain 200)	'good
+						(geq repGain 50)	'average
+											'poor
+						))
+					katamiMsg
+					)
+					(setq katamiMsg (switch
+						(= outcome 'good)
+							(switch
+								(geq arenaRep 500)	5
+								(geq arenaRep 400)	4
+								(geq arenaRep 300)	3
+								(geq arenaRep 200)	2
+								(geq arenaRep 100)	1
+								0
+								)
+
+						(= outcome 'average)
+							(random 1 9)
+
+						(= outcome 'poor)
+							(switch
+								(geq (msnGetData gSource 'lowestShields) 75)	'shields
+								(geq (msnGetData gSource 'lowestArmor) 90)		'armor
+								(geq (msnGetData gSource 'fightTime) 300)		'time
+																				'default
+								)
+						))
+
+					(msnTranslate gSource (cat "SuccessDebrief:" outcome) {
+						katamiSays: (msnTranslate gSource (cat "SuccessDebrief:" outcome ":" katamiMsg))
+						reward: (fmtCurrency 'credit (msnGetData gSource 'reward))
+						})
+					)
+			</Text>
+			<Text id="SuccessDebrief:good">
+
+				Katami beams a smile:
+
+				%katamiSays%
+
+				Winning this match has earned you %reward%.
+			</Text>
+			<String id="SuccessDebrief:good:1">
+				"That's the way to do it! You're the young rising star that the crowd loves to root for."
+			</String>
+			<String id="SuccessDebrief:good:2">
+				"That's the way to do it! The crowd loves a good comeback!"
+			</String>
+			<String id="SuccessDebrief:good:3">
+				"That's the way to do it! You're on your way to win the love of the crowd! Keep giving them an exciting match every time!"
+			</String>
+			<String id="SuccessDebrief:good:4">
+				"That's the way to do it! You're a favorite of the crowd now. Make sure you live up to it!"
+			</String>
+			<String id="SuccessDebrief:good:5">
+				"That's the way to do it! You've won the crowd's heart. Now they'll be waiting for you to challenge The Slicer!"
+			</String>
+			<Text id="SuccessDebrief:average">
+
+				Katami seems pleased:
+
+				%katamiSays%
+
+				Winning this match has earned you %reward%.
+
+			</Text>
+			<String id="SuccessDebrief:average:1">
+				"You remind me of my own time in the Arena: The roar of explosions blending with the noise of the crowd until both were one. There's nothing like it, is there?"
+			</String>
+			<String id="SuccessDebrief:average:2">
+				"The crowd loves a good match and they will pay to see it. The more popular you are, the more you will earn."
+			</String>
+			<String id="SuccessDebrief:average:3">
+				"You've done well, but don't get sloppy. To become Legendary Hero of the Arena you will need to defeat The Slicer, and he is fast, precise, and very deadly."
+			</String>
+			<String id="SuccessDebrief:average:4">
+				"Remember that it's not enough to kill quickly; you have to give the crowd a good show!"
+			</String>
+			<String id="SuccessDebrief:average:5">
+				"It's been a long time since I trained someone with your potential! Don't disappoint me!"
+			</String>
+			<String id="SuccessDebrief:average:6">
+				"The Arena is the one place where corporate executives and small-time shareholders mix. Be sure to give them a good show!"
+			</String>
+			<String id="SuccessDebrief:average:7">
+				"You remind me of my own victories! Once I was so popular I was invited to dine with Robert Morgental himself! It was exquisite."
+			</String>
+			<String id="SuccessDebrief:average:8">
+				"You're doing well! Always keep improving. When you fight The Slicer you will need every bit of training that I can give you."
+			</String>
+			<String id="SuccessDebrief:average:9">
+				"Years ago I trained Kate Morgental! You remind me of her a lot. You fight hard at every match, but you're always thinking about something bigger than the Arena."
+			</String>
+			<Text id="SuccessDebrief:poor">
+
+				Katami stands with his arms crossed:
+
+				%katamiSays%
+
+				Winning this match has earned you %reward%.
+
+			</Text>
+			<String id="SuccessDebrief:poor:shields">
+				"You barely took a hit during the match; next time pick a challenging opponent that will give the crowd something exciting to watch."
+			</String>
+			<String id="SuccessDebrief:poor:armor">
+				"The crowd loves blood! Give them some excitement! It's better to win after taking heavy damage than to win without taking a scratch. Remember that."
+			</String>
+			<String id="SuccessDebrief:poor:time">
+				"The crowd has a short attention span. Don't take forever to kill your opponent. Give the crowd a good show!"
+			</String>
+			<String id="SuccessDebrief:poor:default">
+				"Winning isn't enough! You have to give the crowd a good show! Make the match exciting and the crowd will love you for it."
+			</String>
+
+			<Text id="FailureDebrief">
+				(if (= (msnGetData gSource 'status) 'playerLeft)
+					(msnTranslate gSource 'descPlayerLeft)
+					(msnTranslate gSource 'descGladiatorLoser)
+					)
+			</Text>
+			<Text id="descGladiatorLoser">
+
+				Mr. Katami is surprised, though pleased, to see you again:
+
+				"I knew that opponent would be too much for you! I should have said something!
+				I am glad to see you alive, though. Don't let this setback stop you. You still
+				have a chance to improve and challenge The Slicer."
+
+			</Text>
+			<String id="descPlayerLeft">
+
+				"You're banned from the games for leaving the arena in the middle of battle!"
+			
+			</String>
+
+			<Text id="SuccessMsg">(msnTranslate gSource (msnGetData gSource 'msgSuccess))</Text>
+			<Text id="msgStart">The crowd cheers as the match starts!</Text>
+			<Text id="msgSlow1">The match is off to a slow start</Text>
+			<Text id="msgSlow2">The crowd is frustrated at the slow pace</Text>
+			<Text id="msgSlow3">The crowd is bored</Text>
+			<Text id="msgInTrouble">%name% is in trouble!</Text>
+			<Text id="msgFinishHim">Finish %him%! Finish %him%!</Text>
+			<Text id="msgPopularArmor10">The crowd is silent&mdash;could this be the end?</Text>
+			<Text id="msgPopularArmor25">The crowd is tense</Text>
+			<Text id="msgPopularArmor50">The crowd supports %name%&mdash;%he%'s been through worse</Text>
+			<Text id="msgUnknownArmor10">The crowd is wild&mdash;what an exciting match!</Text>
+			<Text id="msgUnknownArmor25">The crowd roars!</Text>
+			<Text id="msgUnknownArmor50">The crowd cheers&mdash;%name% looks doomed</Text>
+			<Text id="msgFastShield15">%name% is unstoppable! The crowd cheers!</Text>
+			<Text id="msgFastShield30">%name% is fighting hard! The crowd cheers!</Text>
+			<Text id="msgFastArmor10">Go, %name%!</Text>
+			<Text id="msgFastArmor25">The crowd roars!</Text>
+			<Text id="msgFastArmor50">%name% is deadly fast! The crowd cheers!</Text>
+			<Text id="msgSuccess5">The crowd erupts in cheers: %name%! %name%!</Text>
+			<Text id="msgSuccess4">The crowd cheers! What an exciting match!</Text>
+			<Text id="msgSuccess3">The crowd cheers!</Text>
+			<Text id="msgSuccess2">The crowd is pleased</Text>
+			<Text id="msgSuccess1">The crowd is bored by the match</Text>
+
+			<Text id="FailureMsg">The crowd boos in disappointment!</Text>
+
+			<Text id="ChallengerIntro">
+
+				"Remember everything that I have taught you&mdash;you will need all your skills now."
+
+				"After the last battle you are the #2 ranked gladiator in the Arena! Only one step remains:
+				You must challenge The Slicer! If you win, you will become the Legendary Hero of the Arena."
+
+				"Go and prepare yourself and your ship! Come back ready to fight!"
+
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>
