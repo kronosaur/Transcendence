@@ -488,7 +488,7 @@
 		</Reinforcements>
 
 		<Items>
-			<Group value="standard:level=4:x=2">
+			<Group value="standard:level=4">
 				<Lookup table="&trStdTreasure;"/>
 			</Group>
 		</Items>
@@ -549,7 +549,7 @@
 		</Reinforcements>
 
 		<Items>
-			<Group value="standard:level=5:x=2">
+			<Group value="standard:level=5">
 				<Lookup table="&trStdTreasure;"/>
 			</Group>
 		</Items>
@@ -707,7 +707,7 @@
 		</Reinforcements>
 
 		<Items>
-			<Group value="standard:level=6:x=5">
+			<Group value="standard:level=6:x=4">
 				<Lookup table="&trStdTreasure;"/>
 			</Group>
 		</Items>
