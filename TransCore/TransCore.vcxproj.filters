@@ -735,5 +735,11 @@
     <Xml Include="RPGRumors.xml">
       <Filter>RPG Library</Filter>
     </Xml>
+    <Xml Include="BattleArenaChallenger.xml">
+      <Filter>Human Space Library\Battle Arena</Filter>
+    </Xml>
+    <Xml Include="BattleArenaFight.xml">
+      <Filter>Human Space Library\Battle Arena</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
