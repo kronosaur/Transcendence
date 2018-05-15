@@ -339,7 +339,7 @@
 			</LevelTable>
 		</Ships>
 
-		<Items>
+		<Items value="standard:level=3:x=3">
 			<RandomItem count="1d2"
 					criteria=			"* +Info; -Alien; -NotStandard;"
 					levelFrequency=		"ucur-"

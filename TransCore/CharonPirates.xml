@@ -688,11 +688,9 @@
 			</Table>
 		</Ships>
 
-		<Items>
-			<Group	value="standard:level=2">
-				<Item	count="2d8"	item="&itKM100Missile;" />
-				<Lookup				table="&trStdTreasure;"/>
-			</Group>
+		<Items value="standard:level=2">
+			<Item	count="2d8"	item="&itKM100Missile;" />
+			<Lookup				table="&trStdTreasure;"/>
 		</Items>
 
 		<Encounters frequency="common">
@@ -753,10 +751,8 @@
 			</Table>
 		</Ships>
 
-		<Items>
-			<Group value="standard:level=1">
-				<Lookup	table="&trStdTreasure;"/>
-			</Group>
+		<Items value="standard:level=1">
+			<Lookup	table="&trStdTreasure;"/>
 		</Items>
 
 		<Encounters frequency="common">
@@ -856,11 +852,9 @@
 			</Table>
 		</Reinforcements>
 
-		<Items>
-			<Group	value="standard:level=3:x=2.5">
-				<Item	count="2d8"	item="&itKM100Missile;" />
-				<Lookup				table="&trStdTreasure;"/>
-			</Group>
+		<Items value="standard:level=3:x=2.5">
+			<Item	count="2d8"	item="&itKM100Missile;" />
+			<Lookup				table="&trStdTreasure;"/>
 		</Items>
 
 		<Encounters frequency="common">
@@ -957,11 +951,9 @@
 			</Table>
 		</Ships>
 
-		<Items>
-			<Group	value="standard">
-				<Item	count="2d8"	item="&itKM100Missile;" />
-				<Lookup				table="&trStdLevelTreasure;"/>
-			</Group>
+		<Items value="standard">
+			<Item	count="2d8"	item="&itKM100Missile;" />
+			<Lookup				table="&trStdLevelTreasure;"/>
 		</Items>
 
 		<DockingPorts>
@@ -1052,11 +1044,9 @@
 			</Table>
 		</Reinforcements>
 
-		<Items>
-			<Group	value="standard">
-				<Item	count="2d8"	item="&itKM100Missile;" />
-				<Lookup				table="&trStdLevelTreasure;"/>
-			</Group>
+		<Items value="standard">
+			<Item	count="2d8"	item="&itKM100Missile;" />
+			<Lookup				table="&trStdLevelTreasure;"/>
 		</Items>
 
 		<DockingPorts>
@@ -1147,11 +1137,9 @@
 			</Table>
 		</Reinforcements>
 
-		<Items>
-			<Group	value="standard">
-				<Item	count="2d8"	item="&itKM100Missile;" />
-				<Lookup				table="&trStdLevelTreasure;"/>
-			</Group>
+		<Items value="standard">
+			<Item	count="2d8"	item="&itKM100Missile;" />
+			<Lookup				table="&trStdLevelTreasure;"/>
 		</Items>
 
 		<DockingPorts>

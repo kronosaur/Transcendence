@@ -487,10 +487,8 @@
 			<Ship				count="1d4"		class="&scDwargRaider;"		orders="patrol"	patrolDist="10" controller="zoanthrope"/>
 		</Reinforcements>
 
-		<Items>
-			<Group value="standard:level=4">
-				<Lookup table="&trStdTreasure;"/>
-			</Group>
+		<Items value="standard:level=4:x=1.6">
+			<Lookup table="&trStdTreasure;"/>
 		</Items>
 
 		<DockingPorts>
@@ -548,10 +546,8 @@
 			</Ship>
 		</Reinforcements>
 
-		<Items>
-			<Group value="standard:level=5">
-				<Lookup table="&trStdTreasure;"/>
-			</Group>
+		<Items value="standard:level=5">
+			<Lookup table="&trStdTreasure;"/>
 		</Items>
 
 		<Satellites overlapCheck="planetoids">
@@ -632,10 +628,8 @@
 			<Ship				count="1d4"		class="&scDwargRaider;"		orders="patrol"	patrolDist="10" controller="zoanthrope"/>
 		</Reinforcements>
 
-		<Items>
-			<Group value="standard:level=5">
-				<Lookup table="&trStdTreasure;"/>
-			</Group>
+		<Items value="standard:level=5">
+			<Lookup table="&trStdTreasure;"/>
 		</Items>
 
 		<DockingPorts>
@@ -706,10 +700,8 @@
 			</Table>
 		</Reinforcements>
 
-		<Items>
-			<Group value="standard:level=6:x=4">
-				<Lookup table="&trStdTreasure;"/>
-			</Group>
+		<Items value="standard:level=6:x=4">
+			<Lookup table="&trStdTreasure;"/>
 		</Items>
 
 		<DockingPorts>

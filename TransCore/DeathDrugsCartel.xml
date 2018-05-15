@@ -101,12 +101,10 @@
 			</Table>
 		</Ships>
 
-		<Items>
-			<Group value="standard:level=4:x=0.75">
-				<Lookup chance="30" count="1d2" table="&trStationSupplies;"/>
-				<Lookup chance="30" count="1d4" table="&trMedicalItem;"/>
-				<Item chance="50"	count="1d4"	item="&itDeathDrugs;" />
-			</Group>
+		<Items value="standard:level=4:x=0.75">
+			<Lookup chance="30" count="1d2" table="&trStationSupplies;"/>
+			<Lookup chance="30" count="1d4" table="&trMedicalItem;"/>
+			<Item chance="50"	count="1d4"	item="&itDeathDrugs;" />
 		</Items>
 
 		<Encounters frequency="uncommon">

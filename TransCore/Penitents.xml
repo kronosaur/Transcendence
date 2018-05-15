@@ -212,7 +212,7 @@
 		
 		<!-- Trade and Items -->
 		
-		<Items>
+		<Items value="standard:level=7:x=1.6">
 			<Lookup					count="1d4"	table="&trStationSupplies;" />
 			<Lookup chance="95"		count="1"	table="&trHaloGems;"/>
 			<Table chance="50">

@@ -96,7 +96,7 @@
 
 		<!-- Trade and Items -->
 
-		<Items>
+		<Items value="standard:level=8:x=1.4">
 			<Table>
 				<Item	chance="20"	count="2d6" item="&itPteracniumFuelRod;"/>
 				<Item	chance="20"	count="4d8" item="&itS3Missile;"/>

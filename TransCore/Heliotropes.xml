@@ -306,12 +306,10 @@
 
 		<!-- Trade and Items -->
 		
-		<Items>
-			<Group value="standard:level=4:x=2.5">
-				<Item count="3d12" item="&itHelium3FuelRod;"/>
-				<Item count="3d12" item="&itHeliotropeFuel;"/>
-				<Lookup chance="50" table="&trStdTreasure;"/>
-			</Group>
+		<Items value="standard:level=4:x=2.5">
+			<Item count="3d12" item="&itHelium3FuelRod;"/>
+			<Item count="3d12" item="&itHeliotropeFuel;"/>
+			<Lookup chance="50" table="&trStdTreasure;"/>
 		</Items>
 
 		<!-- Configuration -->
@@ -379,7 +377,7 @@
 
 		<!-- Trade and Items -->
 		
-		<Items>
+		<Items value="standard:level=3">
 			<Item count="1d12" item="&itHelium3FuelRod;"/>
 			<Item count="1d6" item="&itHeliotropeFuel;"/>
 			<Table chance="20">

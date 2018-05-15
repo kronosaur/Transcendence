@@ -310,7 +310,7 @@
 		<Devices>
 		</Devices>
 
-		<Items>
+		<Items value="standard:level=7:x=1.2">
 			<Item count="8d100"	item="&itAkan30CannonShell;" />
 			<Table chance="50">
 				<Lookup chance="40" count="1" table="&trConsumables8;"/>
@@ -361,7 +361,7 @@
 		<Devices>
 		</Devices>
 
-		<Items>
+		<Items value="standard:level=8:x=2">
 			<Item count="10d100"	item="&itAkan30CannonShell;" />
 			<Item count="4d20"		item="&itKilotonCannonShell;" />
 			<Table count="1-2">

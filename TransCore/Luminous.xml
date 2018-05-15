@@ -441,7 +441,7 @@
 		</Devices>
 
 		<Items>
-			<Group value="standard:level=8">
+			<Group value="standard:level=8:x=1.4">
 				<Table>
 					<RandomItem chance="40"	count="1d6"
 							criteria=			"* +Info; -NotStandard; "
