@@ -1890,6 +1890,11 @@
 
 	<!-- 0330-036F OUTLAWS II -->
 
+	<!ENTITY rsT31Transport				"0x00100330">
+	<!ENTITY rsT31TransportHero			"0x00100331">
+	<!ENTITY rsT55Transport				"0x00100332">
+	<!ENTITY rsT55TransportHero			"0x00100333">
+
 	<!-- 0370-038F AUTONS -->
 
 	<!ENTITY rsAutosentinelHD			"0x00100370">
@@ -1913,12 +1918,12 @@
 	<!ENTITY rsSapphire					"0x00100399">
 	<!ENTITY rsEI500					"0x0010039A">
 	<!ENTITY msRaisuStation				"0x0010039B">
-
 	<!ENTITY rsRoninAHero				"0x0010039C">
 	<!ENTITY rsRoninB					"0x0010039D">
 	<!ENTITY rsRoninBHero				"0x0010039E">
 	<!ENTITY rsRoninC					"0x0010039F">
 	<!ENTITY rsRoninCHero				"0x001003A0">
+	<!ENTITY rsIAVHeavyHero				"0x001003A1">
 
 	<!-- 03B0-03CF SAPIENS -->
 

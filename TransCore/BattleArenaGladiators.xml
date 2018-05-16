@@ -486,21 +486,17 @@
 			type=				""
 			level=				"2"
 
-			mass=				"100"
-			cargoSpace=			"10"
-			thrustRatio=		"5"
-			maxSpeed=			"16"
-
 			attributes=			"battleArena, melee2"
+			inherit=			"&scIAVHeavy;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itLightPlasteelPlate;"/>
-			<ArmorSection start="225" span="90" armorID="&itLightPlasteelPlate;"/>
-			<ArmorSection start="135" span="90" armorID="&itLightPlasteelPlate;"/>
-			<ArmorSection start="45"  span="90" armorID="&itLightPlasteelPlate;"/>
-		</Armor>
+		<!-- Configuration -->
 
+		<Armor
+			armorID=			"&itLightPlasteelPlate;"
+			count=				"4"
+			/>
+		
 		<Devices>
 			<Table>
 				<Device chance="30" item="&itDualRecoillessCannon;"/>
@@ -509,17 +505,7 @@
 			</Table>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"5.0"
-			rotationAccel=		"0.5"
-			/>
-
-		<Image imageID="&rsIAVHeavyHD;" imageX="0" imageY="0" imageWidth="72" imageHeight="72" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="151"	posRadius="31"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-151"	posRadius="31"	posZ="0"	rotation="180"/>
-		</Effects>
+		<!-- AI and Behavior -->
 		
 		<AISettings
 			aggressor=			"true"
@@ -685,22 +671,23 @@
 			manufacturer=		""
 			class=				"heavy IAV"
 			type=				""
+
 			level=				"3"
-
-			mass=				"100"
-			cargoSpace=			"10"
-			thrustRatio=		"5"
-			maxSpeed=			"16"
-
 			attributes=			"battleArena, gladiator"
+			inherit=			"&scIAVHeavy;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itLightBlastPlate;"/>
-			<ArmorSection start="225" span="90" armorID="&itLightBlastPlate;"/>
-			<ArmorSection start="135" span="90" armorID="&itLightBlastPlate;"/>
-			<ArmorSection start="45"  span="90" armorID="&itLightBlastPlate;"/>
-		</Armor>
+		<Names noArticle="true" personalName="true">
+			Iron Axe; Death Dealer; Gene Reaper; Jabberwock; Mortal Wound;
+			The Ox; The Undertaker; The Vampyre; The Wyvern; ZeroZero
+		</Names>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itLightBlastPlate;"
+			count=				"4"
+			/>
 
 		<Devices>
 			<Table>
@@ -713,22 +700,7 @@
 			<Device item="&itHullPlateIonizer;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"5.0"
-			rotationAccel=		"0.5"
-			/>
-
-		<Image imageID="&rsIAVHeavyHD;" imageX="0" imageY="0" imageWidth="72" imageHeight="72" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="151"	posRadius="31"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-151"	posRadius="31"	posZ="0"	rotation="180"/>
-		</Effects>
-		
-		<Names noArticle="true" personalName="true">
-			Iron Axe; Death Dealer; Gene Reaper; Jabberwock; Mortal Wound;
-			The Ox; The Undertaker; The Vampyre; The Wyvern; ZeroZero
-		</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			aggressor=			"true"
@@ -740,7 +712,6 @@
 		<StaticData>
 			<arenaSkillBase>250</arenaSkillBase>
 		</StaticData>
-
 	</ShipClass>
 
 	<!-- Ronin B-class Gunship -->
@@ -893,22 +864,22 @@
 			class=				"T31"
 			type=				"armed transport"
 
-			size=				"60"
-			mass=				"600"
-			cargoSpace=			"1000"
-			thrustRatio=		"1.5"
-			maxSpeed=			"16"
-
 			attributes=			"battleArena, gladiator"
+			inherit=			"&scT31ArmedTransport;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itLightPlasteelPlate;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itLightPlasteelPlate;" areaSet="3,4" />
-			<ArmorSection start="135" span="90" armorID="&itLightPlasteelPlate;" areaSet="1,6" />
-			<ArmorSection start="45"  span="90" armorID="&itLightPlasteelPlate;" areaSet="7,13" />
-		</Armor>
+		<Names noArticle="true" personalName="true">
+			Borin Thal; Farah Dawson; Jorgen Nash; Nimmoh Kenyatta; Soren Marx;
+			Crom Cassey; Hathor Said
+		</Names>
 
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itLightPlasteelPlate;"
+			count=				"4"
+			/>
+		
 		<Devices>
 			<Table>
 				<Group chance="50">
@@ -931,30 +902,7 @@
 			<Device item="&itCyclotronDeflectorIII;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<Items>
-			<Item count="2d6" item="&itHelium3FuelRod;"/>
-		</Items>
-
-		<Image imageID="&rsT31ArmedTransport;" imageX="0" imageY="0" imageWidth="90" imageHeight="90"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="164"	posRadius="41"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-164"	posRadius="41"	posZ="0"	rotation="180"/>
-			<Effect type="rotateRight"		posAngle="27"	posRadius="33"	posZ="0"	rotation="90"/>
-			<Effect type="rotateRight"		posAngle="-140"	posRadius="26"	posZ="0"	rotation="270"/>
-			<Effect type="rotateLeft"		posAngle="-27"	posRadius="33"	posZ="0"	rotation="270"/>
-			<Effect type="rotateLeft"		posAngle="140"	posRadius="26"	posZ="0"	rotation="90"/>
-		</Effects>
-		
-		<Names noArticle="true" personalName="true">
-			Borin Thal; Farah Dawson; Jorgen Nash; Nimmoh Kenyatta; Soren Marx;
-			Crom Cassey; Hathor Said
-		</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			aggressor=			"true"
@@ -966,7 +914,6 @@
 		<StaticData>
 			<arenaSkillBase>400</arenaSkillBase>
 		</StaticData>
-
 	</ShipClass>
 
 <!-- Gladiator (Level 4) ================================================== -->

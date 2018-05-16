@@ -493,7 +493,8 @@
 			gunship Yellow Emperor; gunship Zanzibar
 		</Names>
 
-		<Image imageID="&rsRoninHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
+		<Image imageID="&rsRoninC;" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" viewportRatio="0.00275"/>
+		<HeroImage imageID="&rsRoninCHero;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>

@@ -128,13 +128,35 @@
 			defaultSovereign=	"&svOutlaw;"
 
 			attributes=			"freighter, genericClass, outlaws"
-			   
+			inherit=			"&baHumanTechShip;"
+			>
+
+		<!-- Hull -->
+
+		<Hull
 			size=				"60"
 			mass=				"600"
-			thrustRatio=		"1.5"
-			maxSpeed=			"16"
 			cargoSpace=			"1000"
-			>
+
+			maxReactorPower=	"10000"
+			maxCargoSpace=		"1000"
+			maxDevices=			"6"
+
+			stdArmor=			"4000"
+			maxArmor=			"8000"
+			maxArmorSpeed=		"15"
+			minArmorSpeed=		"17"
+			/>
+
+		<Drive
+			maxSpeed=			"16"
+			thrust=				"1000"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
 
 		<!-- Configuration -->
 
@@ -144,31 +166,28 @@
 			/>
 
 		<Devices>
-			<Device deviceID="&itSmartCannon;"/>
+			<Device deviceID="&itSmartCannon;">
+				<Items>
+					<Item count="3d20" item="&itSmartCannonShell;"/>
+				</Items>
+			</Device>
 			<Device deviceID="&itRecoillessCannon;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"1.0"
-			/>
+		<!-- Treasure -->
 
 		<Items>
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
-			<Item count="3d20" item="&itSmartCannonShell;"/>
 		</Items>
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsT31ArmedTransport;" imageX="0" imageY="0" imageWidth="90" imageHeight="90"/>
+		<Image imageID="&rsT31Transport;" imageWidth="90" imageHeight="90" rotationCount="120" rotationColumns="12" viewportRatio="0.008125"/>
+		<HeroImage imageID="&rsT31TransportHero;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="164"	posRadius="41"	posZ="0"	rotation="180"/>
 			<Effect type="thrustMain"		posAngle="-164"	posRadius="41"	posZ="0"	rotation="180"/>
-			<Effect type="rotateRight"		posAngle="27"	posRadius="33"	posZ="0"	rotation="90"/>
-			<Effect type="rotateRight"		posAngle="-140"	posRadius="26"	posZ="0"	rotation="270"/>
-			<Effect type="rotateLeft"		posAngle="-27"	posRadius="33"	posZ="0"	rotation="270"/>
-			<Effect type="rotateLeft"		posAngle="140"	posRadius="26"	posZ="0"	rotation="90"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
@@ -190,6 +209,7 @@
 			defaultSovereign=	"&svOutlaw;"
 
 			attributes=			"freighter, genericClass, outlaws"
+			inherit=			"&baHumanTechShip;"
 			   
 			size=				"95"
 			mass=				"900"
@@ -198,36 +218,61 @@
 			cargoSpace=			"1500"
 			>
 
-		<Armor>
-			<ArmorSection start="338" span="45" armorID="&itPlasteelPlate;" />
-			<ArmorSection start="293" span="45" armorID="&itPlasteelPlate;" />
-			<ArmorSection start="248" span="45" armorID="&itPlasteelPlate;" />
-			<ArmorSection start="203" span="45" armorID="&itPlasteelPlate;" />
-			<ArmorSection start="158" span="45" armorID="&itPlasteelPlate;" />
-			<ArmorSection start="113" span="45" armorID="&itPlasteelPlate;" />
-			<ArmorSection start="68"  span="45" armorID="&itPlasteelPlate;" />
-			<ArmorSection start="23"  span="45" armorID="&itPlasteelPlate;" />
-		</Armor>
+		<!-- Hull -->
 
-		<Devices>
-			<Device deviceID="&itBallistaCannon;" omnidirectional="true"/>
-		</Devices>
+		<Hull
+			size=				"93"
+			mass=				"900"
+			cargoSpace=			"2000"
+
+			maxReactorPower=	"10000"
+			maxCargoSpace=		"1000"
+			maxDevices=			"6"
+
+			stdArmor=			"4000"
+			maxArmor=			"8000"
+			maxArmorSpeed=		"15"
+			minArmorSpeed=		"17"
+			/>
+
+		<Drive
+			maxSpeed=			"16"
+			thrust=				"1000"
+			/>
 
 		<Maneuver
 			maxRotationRate=	"9.0"
 			rotationAccel=		"1.0"
 			/>
 
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itPlasteelPlate;"
+			count=				"8"
+			/>
+
+		<Devices>
+			<Device deviceID="&itBallistaCannon;" omnidirectional="true"/>
+		</Devices>
+
+		<!-- Treasure -->
+
 		<Items>
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsT55Transport;" imageWidth="114" imageHeight="114" rotationCount="120" rotationColumns="12" viewportRatio="0.01225"/>
+		<HeroImage imageID="&rsT55TransportHero;" imageWidth="320" imageHeight="320"/>
+
 		<Effects>
-			<Effect type="thrustMain"		posAngle="168"	posRadius="55"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-168"	posRadius="55"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="170"	posRadius="54"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-170"	posRadius="54"	posZ="0"	rotation="180"/>
 		</Effects>
 
-		<Image imageID="&rsT55ArmedTransport;" imageX="0" imageY="0" imageWidth="120" imageHeight="120"/>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"30"
@@ -736,8 +781,10 @@
 	<Image UNID="&rsSotho;"				bitmap="Resources\Sotho.jpg"		bitmask="Resources\SothoMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsSotho120;"			bitmap="Resources\Sotho120.jpg"		bitmask="Resources\Sotho120Mask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsSothoHero;"			bitmap="Resources\SothoLarge.jpg"		bitmask="Resources\SothoLargeMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsT31ArmedTransport;"	bitmap="Resources\T31Transport.jpg"		bitmask="Resources\T31TransportMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsT55ArmedTransport;"	bitmap="Resources\T55Transport.jpg"		bitmask="Resources\T55TransportMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsT31Transport;"		bitmap="Resources\T31TransportHD.jpg"		bitmask="Resources\T31TransportHDMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsT31TransportHero;"	bitmap="Resources\T31TransportLarge.jpg"		bitmask="Resources\T31TransportLargeMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsT55Transport;"		bitmap="Resources\T55TransportHD.jpg"		bitmask="Resources\T55TransportHDMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsT55TransportHero;"	bitmap="Resources\T55TransportLarge.jpg"		bitmask="Resources\T55TransportLargeMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsZulu;"				bitmap="Resources\Zulu.jpg"				bitmask="Resources\ZuluMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsOromoHD;"			bitmap="Resources\OromoHD.jpg"			bitmask="Resources\OromoHDMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsZuluHD;"			bitmap="Resources\ZuluHD.jpg"			bitmask="Resources\ZuluHDMask.bmp"  loadOnUse="true"/>
