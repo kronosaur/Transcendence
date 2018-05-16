@@ -741,5 +741,8 @@
     <Xml Include="BattleArenaFight.xml">
       <Filter>Human Space Library\Battle Arena</Filter>
     </Xml>
+    <Xml Include="CommonwealthRonins.xml">
+      <Filter>Human Space Library\Commonwealth</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

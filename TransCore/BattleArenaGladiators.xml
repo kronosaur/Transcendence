@@ -217,23 +217,19 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Ronin/A"
 			type=				"gunship"
+
 			level=				"1"
-
-			mass=				"60"
-			cargoSpace=			"50"
-			thrustRatio=		"5.5"
-			maxSpeed=			"20"
-
 			attributes=			"battleArena, melee1"
+			inherit=			"&scRoninA;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itLightCeramicPlate;"/>
-			<ArmorSection start="225" span="90" armorID="&itLightCeramicPlate;"/>
-			<ArmorSection start="135" span="90" armorID="&itLightCeramicPlate;"/>
-			<ArmorSection start="45"  span="90" armorID="&itLightCeramicPlate;"/>
-		</Armor>
+		<!-- Configuration -->
 
+		<Armor
+			armorID=			"&itLightCeramicPlate;"
+			count=				"4"
+			/>
+		
 		<Devices>
 			<Table>
 				<Device chance="15" item="&itDualLaserCannon;" enhanced="10"/>
@@ -244,18 +240,8 @@
 			</Table>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"1.0"
-			/>
+		<!-- AI and Behavior -->
 
-		<Image imageID="&rsRoninHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-148"	posRadius="20"	posZ="0"	rotation="180"/>
-		</Effects>
-		
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"30"
@@ -269,7 +255,6 @@
 				0
 			</arenaSkillBase>
 		</StaticData>
-
 	</ShipClass>
 
 <!-- Gladiator (Level 2) ================================================== -->
@@ -547,7 +532,6 @@
 		<StaticData>
 			<arenaSkillBase>0</arenaSkillBase>
 		</StaticData>
-
 	</ShipClass>
 
 	<!-- Ronin A-class Gunship -->
@@ -556,23 +540,19 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Ronin/A"
 			type=				"gunship"
+
 			level=				"2"
-
-			mass=				"60"
-			cargoSpace=			"50"
-			thrustRatio=		"5.5"
-			maxSpeed=			"20"
-
 			attributes=			"battleArena, melee2"
+			inherit=			"&scRoninA;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itCeramicPlate;"/>
-			<ArmorSection start="225" span="90" armorID="&itCeramicPlate;"/>
-			<ArmorSection start="135" span="90" armorID="&itCeramicPlate;"/>
-			<ArmorSection start="45"  span="90" armorID="&itCeramicPlate;"/>
-		</Armor>
+		<!-- Configuration -->
 
+		<Armor
+			armorID=			"&itCeramicPlate;"
+			count=				"4"
+			/>
+		
 		<Devices>
 			<Table>
 				<Device chance="15" item="&itArbalestCannon;" enhanced="15"/>
@@ -584,17 +564,7 @@
 			</Table>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<Image imageID="&rsRoninHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-148"	posRadius="20"	posZ="0"	rotation="180"/>
-		</Effects>
+		<!-- AI and Behavior -->
 		
 		<AISettings
 			aggressor=			"true"
@@ -607,7 +577,6 @@
 		<StaticData>
 			<arenaSkillBase>0</arenaSkillBase>
 		</StaticData>
-
 	</ShipClass>
 
 	<!-- Sapphire Yacht G2 -->
@@ -781,21 +750,22 @@
 			class=				"Ronin/B"
 			type=				"gunship"
 
-			mass=				"60"
-			cargoSpace=			"50"
-			thrustRatio=		"5.5"
-			maxSpeed=			"20"
-
 			attributes=			"battleArena, gladiator"
+			inherit=			"&scRoninB;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itHeavyCeramicPlate;"/>
-			<ArmorSection start="225" span="90" armorID="&itHeavyCeramicPlate;"/>
-			<ArmorSection start="135" span="90" armorID="&itHeavyCeramicPlate;"/>
-			<ArmorSection start="45"  span="90" armorID="&itHeavyCeramicPlate;"/>
-		</Armor>
+		<Names noArticle="true" personalName="true">
+			Brother Brandan; Flavius Maul; Hannibal; Marc Renser; Lawrence Dorr; 
+			Anon Thraces; Perigrine; Vespatian; Gladius Quintus
+		</Names>
 
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itHeavyCeramicPlate;"
+			count=				"4"
+			/>
+		
 		<Devices>
 			<Table>
 				<Device chance="15" item="&itArbalestCannon;"/>
@@ -815,22 +785,7 @@
 			<Device item="&itMonopoleDeflector;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<Image imageID="&rsRoninHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-148"	posRadius="20"	posZ="0"	rotation="180"/>
-		</Effects>
-		
-		<Names noArticle="true" personalName="true">
-			Brother Brandan; Flavius Maul; Hannibal; Marc Renser; Lawrence Dorr; 
-			Anon Thraces; Perigrine; Vespatian; Gladius Quintus
-		</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			aggressor=			"true"
@@ -842,7 +797,6 @@
 		<StaticData>
 			<arenaSkillBase>200</arenaSkillBase>
 		</StaticData>
-
 	</ShipClass>
 
 	<!-- Sapphire Yacht G3 -->
@@ -1156,21 +1110,22 @@
 			class=				"Ronin/C"
 			type=				"gunship"
 
-			mass=				"60"
-			cargoSpace=			"50"
-			thrustRatio=		"5.5"
-			maxSpeed=			"20"
-
 			attributes=			"battleArena, gladiator"
+			inherit=			"&scRoninC;"
 			>
+	
+		<Names noArticle="true" personalName="true">
+			Tycus Armiger; Roland Chu; Eli Stetson; Bill Gibson; Irene Senderos; 
+			Ramon Armiger; Moss Eigen; Septimus Thrace; Titus Antonius
+		</Names>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itHeavyCeramicPlate;"/>
-			<ArmorSection start="225" span="90" armorID="&itHeavyCeramicPlate;"/>
-			<ArmorSection start="135" span="90" armorID="&itHeavyCeramicPlate;"/>
-			<ArmorSection start="45"  span="90" armorID="&itHeavyCeramicPlate;"/>
-		</Armor>
+		<!-- Configuration -->
 
+		<Armor
+			armorID=			"&itHeavyCeramicPlate;"
+			count=				"4"
+			/>
+		
 		<Devices>
 			<Table>
 				<Device chance="35" item="&itSlamCannon;"/>
@@ -1193,22 +1148,7 @@
 			<Device item="&itMonopoleDeflector;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<Image imageID="&rsRoninHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-148"	posRadius="20"	posZ="0"	rotation="180"/>
-		</Effects>
-		
-		<Names noArticle="true" personalName="true">
-			Tycus Armiger; Roland Chu; Eli Stetson; Bill Gibson; Irene Senderos; 
-			Ramon Armiger; Moss Eigen; Septimus Thrace; Titus Antonius
-		</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			aggressor=			"true"
@@ -1220,7 +1160,6 @@
 		<StaticData>
 			<arenaSkillBase>450</arenaSkillBase>
 		</StaticData>
-
 	</ShipClass>
 
 	<!-- Sapphire Yacht G4 -->
@@ -1349,21 +1288,22 @@
 			type=				"heavy gunship"
 			level=				"5"
 
-			mass=				"90"
-			cargoSpace=			"50"
-			thrustRatio=		"9.0"
-			maxSpeed=			"20"
-
 			attributes=			"battleArena, gladiator"
+			inherit=			"&scCenturionBlock1;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itPolyceramicPlate;"/>
-			<ArmorSection start="225" span="90" armorID="&itPolyceramicPlate;"/>
-			<ArmorSection start="135" span="90" armorID="&itPolyceramicPlate;"/>
-			<ArmorSection start="45"  span="90" armorID="&itPolyceramicPlate;"/>
-		</Armor>
+		<Names noArticle="true" personalName="true">
+			Canis; Goth Antimus; Kolith Maximus; Ord Chamberlain; Tanhauser;
+			Kirin Tal; The Legionnaire; Agiel; Somerset Cole
+		</Names>
 
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itPolyceramicPlate;"
+			count=				"4"
+			/>
+		
 		<Devices>
 			<Table>
 				<Device chance="25" item="&itParticleBeamWeapon;"/>
@@ -1384,30 +1324,7 @@
 			<Device item="&itCyclotronDeflectorIII;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"3.0"
-			/>
-
-		<Items>
-			<Item count="2d6" item="&itHeliumAssembly;"/>
-		</Items>
-
-		<Image imageID="&rsCenturionHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-141"	posRadius="27"	posZ="0"	rotation="180"/>
-			<Effect type="rotateRight"		posAngle="82"	posRadius="23"	posZ="0"	rotation="0"/>
-			<Effect type="rotateRight"		posAngle="-98"	posRadius="23"	posZ="0"	rotation="180"/>
-			<Effect type="rotateLeft"		posAngle="-82"	posRadius="23"	posZ="0"	rotation="0"/>
-			<Effect type="rotateLeft"		posAngle="98"	posRadius="23"	posZ="0"	rotation="180"/>
-		</Effects>
-
-		<Names noArticle="true" personalName="true">
-			Canis; Goth Antimus; Kolith Maximus; Ord Chamberlain; Tanhauser;
-			Kirin Tal; The Legionnaire; Agiel; Somerset Cole
-		</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			aggressor=			"true"
@@ -1608,23 +1525,24 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Centurion"
 			type=				"heavy gunship"
+
 			level=				"6"
-
-			mass=				"90"
-			cargoSpace=			"50"
-			thrustRatio=		"9.0"
-			maxSpeed=			"22"
-
 			attributes=			"battleArena, gladiator"
+			inherit=			"&scCenturionBlock2;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itPolyceramicPlate;"/>
-			<ArmorSection start="225" span="90" armorID="&itPolyceramicPlate;"/>
-			<ArmorSection start="135" span="90" armorID="&itPolyceramicPlate;"/>
-			<ArmorSection start="45"  span="90" armorID="&itPolyceramicPlate;"/>
-		</Armor>
+		<Names noArticle="true" personalName="true">
+			The Dauphin; Hale Thonsen; Lantham; Polaris; Ursus;
+			The Elemental; Polar Dragon; Frost; Karl Svalbard
+		</Names>
 
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itPolyceramicPlate;"
+			count=				"4"
+			/>
+		
 		<Devices>
 			<Table>
 				<Device chance="20" deviceID="&itOmniTurbolaserCannon;" enhanced="100"/>
@@ -1647,30 +1565,7 @@
 			<Device deviceID="&itCeratopsQuasiArmor1;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<Items>
-			<Item count="2d6" item="&itHeliumAssembly;"/>
-		</Items>
-
-		<Image imageID="&rsCenturionHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-141"	posRadius="27"	posZ="0"	rotation="180"/>
-			<Effect type="rotateRight"		posAngle="82"	posRadius="23"	posZ="0"	rotation="0"/>
-			<Effect type="rotateRight"		posAngle="-98"	posRadius="23"	posZ="0"	rotation="180"/>
-			<Effect type="rotateLeft"		posAngle="-82"	posRadius="23"	posZ="0"	rotation="0"/>
-			<Effect type="rotateLeft"		posAngle="98"	posRadius="23"	posZ="0"	rotation="180"/>
-		</Effects>
-
-		<Names noArticle="true" personalName="true">
-			The Dauphin; Hale Thonsen; Lantham; Polaris; Ursus;
-			The Elemental; Polar Dragon; Frost; Karl Svalbard
-		</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			aggressor=			"true"

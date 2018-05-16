@@ -1900,7 +1900,8 @@
 
 	<!-- 0390-03AF COMMONWEALTH II -->
 
-	<!ENTITY rsRoninHD					"0x00100390">
+	<!ENTITY rsRoninA					"0x00100390">
+	<!ENTITY rsRoninHD					"0x00100390">	<!-- Backwards Compatible -->
 	<!ENTITY rsTenhoveHD				"0x00100391">
 	<!ENTITY rsCommonwealthDryDock		"0x00100392">
 	<!ENTITY scEI200Stock				"0x00100593">
@@ -1912,6 +1913,12 @@
 	<!ENTITY rsSapphire					"0x00100399">
 	<!ENTITY rsEI500					"0x0010039A">
 	<!ENTITY msRaisuStation				"0x0010039B">
+
+	<!ENTITY rsRoninAHero				"0x0010039C">
+	<!ENTITY rsRoninB					"0x0010039D">
+	<!ENTITY rsRoninBHero				"0x0010039E">
+	<!ENTITY rsRoninC					"0x0010039F">
+	<!ENTITY rsRoninCHero				"0x001003A0">
 
 	<!-- 03B0-03CF SAPIENS -->
 
@@ -2137,6 +2144,7 @@
 	<Module filename="CommonwealthMilitiaMissionSK01.xml"/>
 	<Module filename="CommonwealthMining.xml"/>
 	<Module filename="CommonwealthMission01.xml"/>
+	<Module filename="CommonwealthRonins.xml"/>
 	<Module filename="CommonwealthShips.xml"/>
 	<Module filename="CommonwealthStarCarrier.xml"/>
 	<Module filename="CorporateHierarchy.xml"/>
