@@ -669,7 +669,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void Autopilot (bool bTurnOn);
 		void CleanUpPlayerShip (void);
 		void ClearMessage (void);
-		inline CString ComposePlayerNameString (const CString &sString, ICCItem *pArgs = NULL);
 		void DebugConsoleOutput (const CString &sOutput);
 		void DisplayMessage (CString sMessage);
 		void DoCommand (DWORD dwCmd);
@@ -1229,11 +1228,6 @@ void SelectGameStat (IAnimatron *pAni, int iStatPos, int cxWidth, int iDuration 
 inline void CTranscendenceWnd::ClearMessage (void)
 	{
 	m_MessageDisplay.ClearAll();
-	}
-
-inline CString CTranscendenceWnd::ComposePlayerNameString (const CString &sString, ICCItem *pArgs) 
-	{
-	return ::ComposePlayerNameString(sString, g_pUniverse->GetPlayerName(), g_pUniverse->GetPlayerGenome(), pArgs);
 	}
 
 inline bool CTranscendenceWnd::GetDebugGame (void) 

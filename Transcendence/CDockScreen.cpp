@@ -1836,7 +1836,7 @@ ALERROR CDockScreen::SetDisplayText (const CString &sID, const CString &sText)
 
 	CUIHelper UIHelper(*g_pHI);
 	CString sRTF;
-	UIHelper.GenerateDockScreenRTF(g_pTrans->ComposePlayerNameString(sText), &sRTF);
+	UIHelper.GenerateDockScreenRTF(CLanguage::Compose(sText, m_pData), &sRTF);
 	pTextControl->SetRichText(sRTF);
 
 	//	If we're explicitly setting the text, then we cannot animate

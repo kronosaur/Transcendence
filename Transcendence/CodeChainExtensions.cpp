@@ -707,7 +707,7 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			int x = pArgs->GetElement(iArg++)->GetIntegerValue();
 			int y = pArgs->GetElement(iArg++)->GetIntegerValue();
 			int cxWidth = (pArgs->GetElement(iArg)->IsInteger() ? pArgs->GetElement(iArg++)->GetIntegerValue() : -1);
-			CString sText = g_pTrans->ComposePlayerNameString(pArgs->GetElement(iArg++)->GetStringValue());
+			CString sText = CLanguage::Compose(pArgs->GetElement(iArg++)->GetStringValue(), NULL);
 			const CG16bitFont *pControlFont = &GetFontByName(g_pTrans->GetFonts(), pArgs->GetElement(iArg++)->GetStringValue());
 			CG32bitPixel rgbColor = GetColorArg(pArgs->GetElement(iArg++));
 			CString sAlign = pArgs->GetElement(iArg++)->GetStringValue();
@@ -1101,7 +1101,7 @@ ICCItem *fnPlyComposeString (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwDat
 
 	//	Compose
 
-	return pCC->CreateString(pPlayer->GetTrans()->ComposePlayerNameString(pArgs->GetElement(1)->GetStringValue(), pArgs));
+	return pCC->CreateString(CLanguage::Compose(pArgs->GetElement(1)->GetStringValue(), pArgs));
 	}
 
 ICCItem *fnPlySet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
@@ -1313,7 +1313,7 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 		{
 		case FN_PLY_COMPOSE_STRING:
 			{
-			pResult = pCC->CreateString(pPlayer->GetTrans()->ComposePlayerNameString(pArgs->GetElement(1)->GetStringValue()));
+			pResult = pCC->CreateString(CLanguage::Compose(pArgs->GetElement(1)->GetStringValue(), NULL));
 			pArgs->Discard(pCC);
 			break;
 			}
@@ -1339,13 +1339,13 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 					if (!pArgs->GetElement(i)->IsNil())
 						sText.Append(pArgs->GetElement(i)->GetStringValue());
 
-				sText = pPlayer->GetTrans()->ComposePlayerNameString(sText);
+				sText = CLanguage::Compose(sText, NULL);
 				}
 
 			//	Otherwise, we just set the text
 
 			else
-				sText = pPlayer->GetTrans()->ComposePlayerNameString(pArgs->GetElement(1)->GetStringValue());
+				sText = CLanguage::Compose(pArgs->GetElement(1)->GetStringValue(), NULL);
 
 			pPlayer->GetTrans()->DisplayMessage(sText);
 
@@ -1750,13 +1750,13 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 					if (!pArgs->GetElement(i)->IsNil())
 						sText.Append(pArgs->GetElement(i)->GetStringValue());
 
-				pScreen->SetDescription(g_pTrans->ComposePlayerNameString(sText));
+				pScreen->SetDescription(CLanguage::Compose(sText, NULL));
 				}
 
 			//	Otherwise, we just set the text
 
 			else
-				pScreen->SetDescription(g_pTrans->ComposePlayerNameString(pArgs->GetElement(1)->GetStringValue()));
+				pScreen->SetDescription(CLanguage::Compose(pArgs->GetElement(1)->GetStringValue(), NULL));
 
 			//	Done
 
@@ -1782,7 +1782,7 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			//	Set the screen descriptor
 
-			pScreen->SetDescription(g_pTrans->ComposePlayerNameString(pResult->GetStringValue()));
+			pScreen->SetDescription(CLanguage::Compose(pResult->GetStringValue(), NULL));
 
 			return pCC->CreateTrue();
 			}

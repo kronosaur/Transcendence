@@ -199,7 +199,7 @@ CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 		else
 			{
 			if (pAttacker == pShip)
-				sCause = g_pTrans->ComposePlayerNameString(CONSTLIT("accidentally by %his% own weapon"));
+				sCause = CLanguage::Compose(CONSTLIT("accidentally by %his% own weapon"), NULL);
 			else
 				sCause = strPatternSubst(CONSTLIT("accidentally by %s"), Ctx.Attacker.GetDamageCauseNounPhrase(nounArticle));
 			}
