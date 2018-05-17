@@ -44,7 +44,7 @@
 						; Get a list of enemy stations in the region. If we cannot find any
 						; suitable targets then we don't have a mission.
 
-						(not (setq enemyStations (sysFindObject aOwnerObj "TAE +populated; -uncharted; N:450;")))
+						(not (setq enemyStations (sysFindObject aOwnerObj "TAE +populated; -questTarget; -uncharted; N:450;")))
 							(msnDestroy gSource)
 
 						; Otherwise we can create a mission

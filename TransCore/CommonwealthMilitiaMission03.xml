@@ -29,7 +29,7 @@
 					(switch
 						;	Get a list of enemy stations in the region. If we cannot find any
 						;	suitable targets then we don't have a mission.
-						(not (setq enemyStations (sysFindObject aOwnerObj "TAE +populated; -uncharted; -outlawMiners; -penitents;"))) ;L:4-5
+						(not (setq enemyStations (sysFindObject aOwnerObj "TAE +populated; -outlawMiners; -penitents; -questTarget; -uncharted;"))) ;L:4-5
 							(msnDestroy gSource)
 
 						;	Create the mission

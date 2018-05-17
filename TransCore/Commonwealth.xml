@@ -2388,7 +2388,7 @@
 						(setq aEvent Nil)
 						(setq desc "The station master grabs you and speaks softly in your ear:\n\n")
 
-						(setq targetList (sysFindObject gSource "TA +centauriWarlords; +populated; -occupation; -uncharted;"))
+						(setq targetList (sysFindObject gSource "TA +centauriWarlords; +populated; -occupation; -questTarget; -uncharted;"))
 						(if targetList
 							(block Nil
 								(setq aTargetObj (random targetList))

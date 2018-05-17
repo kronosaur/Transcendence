@@ -275,7 +275,7 @@
 								;	stations, then send the player out to destroy one.
 
 								(and (eq (sysGetNode) 'SE)
-										(setq targetObj (sysFindObject gPlayerShip "TAEN +centauriWarlords; +populated; -occupation; -uncharted;"))
+										(setq targetObj (sysFindObject gPlayerShip "TAEN +centauriWarlords; +populated; -occupation; -questTarget; -uncharted;"))
 										(ls (count (sysFindObject gPlayerShip "TKE +centauriWarlords; +populated; -occupation; -uncharted;")) 3)
 										)
 									(block Nil
