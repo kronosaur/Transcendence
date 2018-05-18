@@ -492,7 +492,7 @@
 					
 					(if (@ options 'repairAll)
 						(block Nil
-							(intArmorRepairAll shipObj 25 'alwaysRepair)
+							(intArmorRepairAll shipObj)
 							(objSetProperty shipObj 'interiorHP (objGetProperty shipObj 'maxInteriorHP))
 							)
 						)

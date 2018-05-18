@@ -395,7 +395,7 @@
 					
 					(if (eq behavior 'repairingArmor)
 						(block Nil
-							(intArmorRepairAll gSource 25 'alwaysRepair)
+							(intArmorRepairAll gSource)
 							(objSendMessage gPlayerShip gSource (objTranslate gSource 'ArmorRepaired))
 							)
 						)

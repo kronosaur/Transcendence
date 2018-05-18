@@ -19,19 +19,16 @@
 		(block Nil
 			; Internal functions -----------------------------------------------
 
-			(setq intArmorRepairAll (lambda (theShip repairTech alwaysRepair)
-				(block (repaired noDamage tooMuchDamage noTech)
-					(setq repaired Nil)
-					(setq noDamage True)
-					(setq tooMuchDamage Nil)
-					(setq noTech Nil)
+			(setq intArmorRepairAll (lambda (theShip repairTech minHPPercent)
+				(block (repaired wasDamage tooMuchDamage noTech)
 					(objEnumItems theShip "aI" theItem
-						(block (armorSeg type damage maxHP)
-							(setq armorSeg (itmGetArmorInstalledLocation theItem))
-							(setq type (objGetArmorType theShip armorSeg))
-							(setq damage (objGetArmorDamage theShip armorSeg))
-							(if (gr damage 0) (setq noDamage Nil))
-							(setq maxHP (shpGetArmorMaxHitPoints theShip armorSeg))
+						(block (
+							(armorSeg (itmGetArmorInstalledLocation theItem))
+							(type (objGetArmorType theShip armorSeg))
+							(damage (objGetArmorDamage theShip armorSeg))
+							(maxHP (shpGetArmorMaxHitPoints theShip armorSeg))
+							)
+							(if (gr damage 0) (setq wasDamage True))
 
 							(switch
 								; No need to repair if no damage
@@ -39,12 +36,13 @@
 									Nil
 
 								; If armor needs higher tech to repair, we can't do anything
-								(gr (armGetRepairTech type) repairTech)
+								(and repairTech (gr (armGetRepairTech type) repairTech))
 									(setq noTech True)
 
-								; Can't repair if damage is too much
-								(and (not alwaysRepair) 
-										(ls (subtract maxHP damage) (divide maxHP 4)))
+								; Can't repair if damage is too much. Check that minHPPercent is a number, not a string as used by old version.
+								(and (or (eq (typeOf minHPPercent) 'int32) (eq (typeOf minHPPercent) 'real))
+										(ls (- maxHP damage) (* maxHP minHPPercent 0.01))
+									)
 									(setq tooMuchDamage True)
 
 								; Repair
@@ -60,7 +58,7 @@
 						repaired
 							"repaired"
 
-						noDamage
+						(not wasDamage)
 							"noDamage"
 
 						noTech
@@ -397,6 +395,53 @@
 
 			; Math functions ---------------------------------------------------
 			
+			(setq mathAngleDiffDegrees (lambda (first second)
+				(block (diff)
+					(setq diff (mod (- first second) 360))
+					(switch
+						(gr diff 180)
+							(- diff 360)
+						(ls diff -180)
+							(+ diff 360)
+						diff
+						)
+					)
+				))
+			
+			(setq mathDecToHex (lambda (decimal)
+				(block (tokens result negative)
+					(setq tokens '(0 1 2 3 4 5 6 7 8 9 A B C D E F))
+					(setq decimal (convertTo 'int32 decimal))
+					(if (ls decimal 0)
+						(block Nil
+							(setq decimal (- decimal 0x80000000))
+							(setq negative True)
+							)
+						)
+					(if (eq decimal 0)
+						(setq result 0)
+						(loop (gr decimal 0)
+							(block Nil
+								(setq result (cat (@ tokens (modulo decimal 16)) result))
+								(setq decimal (divide decimal 16))
+								)
+							)
+						)
+					(if negative
+						(block Nil
+							(for i 1 (- 8 (count result))
+								(setq result (cat 0 result))
+								)
+							(setq result (cat (@ tokens (+ (subset result 0 1) 8))
+											(subset result 1)
+											)
+								)
+							)
+						)
+					(cat "0x" result)
+					)
+				))
+			
 			(setq mathPermutePairs (lambda (theList)
 
 			;	Given a list (a b c) we return a list of all possible pairs:
@@ -496,40 +541,6 @@
 						(subtract toMin result)
 						(add result toMin)
 						)
-					)
-				))
-				
-			(setq mathDecToHex (lambda (decimal)
-				(block (tokens result negative)
-					(setq tokens '(0 1 2 3 4 5 6 7 8 9 A B C D E F))
-					(setq decimal (convertTo 'int32 decimal))
-					(if (ls decimal 0)
-						(block Nil
-							(setq decimal (- decimal 0x80000000))
-							(setq negative True)
-							)
-						)
-					(if (eq decimal 0)
-						(setq result 0)
-						(loop (gr decimal 0)
-							(block Nil
-								(setq result (cat (@ tokens (modulo decimal 16)) result))
-								(setq decimal (divide decimal 16))
-								)
-							)
-						)
-					(if negative
-						(block Nil
-							(for i 1 (- 8 (count result))
-								(setq result (cat 0 result))
-								)
-							(setq result (cat (@ tokens (+ (subset result 0 1) 8))
-											(subset result 1)
-											)
-								)
-							)
-						)
-					(cat "0x" result)
 					)
 				))
 				

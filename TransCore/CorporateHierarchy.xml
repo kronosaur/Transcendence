@@ -2951,28 +2951,18 @@
 								(if (geq (objGetCargoSpaceLeft gPlayerShip) spaceNeeded)
 									(block Nil
 										(scrSetDescTranslate gScreen 'descOrderReady { itemName:(itmGetName theItem 0x108) })
-										(scrSetData gScreen 'canTakeItem True)
+										(itmSetKnown theItem)
+										(objAddItem gPlayerShip theItem)
+										(objSetData gSource "MissionStatus" Nil)
 										)
-									(block Nil
-										(scrSetDescTranslate gScreen 'descNoSpace { itemName:(itmGetName theItem 0x108) })
-										(scrSetData gScreen 'canTakeItem Nil)
-										)
+									(scrSetDescTranslate gScreen 'descNoSpace { itemName:(itmGetName theItem 0x108) })
 									)
 								)
 						</OnPaneInit>
 
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
-								(block Nil
-									(if (scrGetData gScreen 'canTakeItem)
-										(block Nil
-											(itmSetKnown (objGetData gSource "Order"))
-											(objAddItem gPlayerShip (objGetData gSource "Order"))
-											(objSetData gSource "MissionStatus" Nil)
-											)
-										)
-									(scrShowScreen gScreen "Main")
-									)
+								(scrShowScreen gScreen "Main")
 							</Action>
 						</Actions>
 					</Default>

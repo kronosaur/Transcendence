@@ -1827,13 +1827,13 @@
 				))
 
 			(setq chrGetPrimaryStronghold (lambda (sourceObj)
-				(block (primaryObj)
+				(block (strongholdObj)
 					; See if the stronghold exists already
-					(setq primaryObj (sysFindObject sourceObj "TN +charonPirates; +primaryStronghold;"))
+					(setq strongholdObj (sysFindObject sourceObj "TN +charonPirates; +primaryStronghold;"))
 
 					; If it does not exist, create one
-					(if (not primaryObj)
-						(block (bestDist primaryPos primaryType stars planets badAngles triesLeft firstStar)
+					(if (not strongholdObj)
+						(block (bestDist strongholdPos strongholdType stars planets badAngles triesLeft firstStar)
 							; Find the closest star
 							(setq stars (sysFindObject sourceObj "t +star; S:d;"))
 							(setq firstStar (@ stars 0))
@@ -1858,10 +1858,11 @@
 							(setq badAngles (map (subset stars 1) otherStar (sysVectorAngle otherStar firstStar)))
 							(setq triesLeft 10)
 							(loop (gr triesLeft 0)
-								(block ((angleOK true))
-									(setq primaryPos (sysVectorRandom firstStar bestDist 180 "T"))
-									(enumWhile badAngles angleOK theAngle
-										(if (leq (abs (mod (- theAngle (sysVectorAngle primaryPos firstStar)) 360)) 45)
+								(block ((angleOK true) strongholdAngle)
+									(setq strongholdPos (sysVectorRandom firstStar bestDist 180 "T"))
+									(setq strongholdAngle (sysVectorAngle strongholdPos firstStar))
+									(enumWhile badAngles angleOK theBadAngle
+										(if (leq -45 (mathAngleDiffDegrees theBadAngle strongholdAngle) 45)
 											(setq angleOK Nil)
 											)
 										)
@@ -1876,20 +1877,20 @@
 							; Create a different stronghold depending on the system level
 							(switch
 								(eq (sysGetLevel) 1)
-									(setq primaryType &stCharonPrimaryStronghold1;)
+									(setq strongholdType &stCharonPrimaryStronghold1;)
 
 								(eq (sysGetLevel) 2)
-									(setq primaryType &stCharonPrimaryStronghold2;)
+									(setq strongholdType &stCharonPrimaryStronghold2;)
 
-								(setq primaryType &stCharonPrimaryStronghold3;)
+								(setq strongholdType &stCharonPrimaryStronghold3;)
 								)
 
 							; Create the stronghold
-							(setq primaryObj (sysCreateStation primaryType primaryPos))
+							(setq strongholdObj (sysCreateStation strongholdType strongholdPos))
 							)
 						)
 
-					primaryObj
+					strongholdObj
 					)
 				))
 
@@ -1911,10 +1912,10 @@
 					; Figure out how many ticks it will take for the transport to
 					; travel the distance
 					(setq lastNavPoint homeBaseObj)
-					(for i 1 20
+					(for i 1 50
 						(block nil
-							(setq nextNavPoint (sysGetNavPathPoint &svCorporate; homeBaseObj travelObj (* i 5)))
-							(setq distance (+ distance (sysVectorDistance lastNavPoint nextNavPoint)))
+							(setq nextNavPoint (sysGetNavPathPoint &svCorporate; homeBaseObj travelObj (* i 2)))
+							(setq distance (+ distance (sysVectorDistanceExact lastNavPoint nextNavPoint)))
 							(setq lastNavPoint nextNavPoint)
 							)
 						)

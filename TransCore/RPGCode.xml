@@ -2376,7 +2376,7 @@
 					(objMoveTo gPlayerShip newPos)
 
 					; Repair the ship
-					(intArmorRepairAll gPlayerShip 25 'alwaysRepair)
+					(intArmorRepairAll gPlayerShip)
 					(intDeviceRepairAll gPlayerShip)
 					(shpRechargeShield gPlayerShip)
 					(shpRefuelFromItem gPlayerShip (itmCreate &itHelium3FuelRod; (shpGetFuelNeeded gPlayerShip (itmCreate &itHelium3FuelRod; 1))))
