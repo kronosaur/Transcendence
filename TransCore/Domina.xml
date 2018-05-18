@@ -115,29 +115,51 @@
 		</OnInvokedByPlayer>
 
 		<Invoke>
-			(block (shieldLevel)
-				(setq shieldLevel (objGetShieldLevel gSource))
-
-				(switch
-					; If no shields, then repair armor
-					(eq shieldLevel -1)
-						(block Nil
-							(intArmorRepairAll gSource)
-							(objSendMessage gSource Nil "Invoked the repairing powers of Domina!")
+			(block (shieldDamage restored pointsLeft)
+			
+				;	Fully recharge any enabled undamaged installed shield.
+				(printTo 'console 'restorestart)
+				(if (filter (objGetItems gSource "sIN") theShield (objGetItemProperty gSource theShield 'enabled))
+					(block ()
+						(if (setq shieldDamage (shpGetShieldDamage gSource)) (setq restored True))
+						(setq pointsLeft (/ (- 1000 shieldDamage) 2))
+						(shpRechargeShield gSource)
+						)
+					(setq pointsLeft 500)
+					)
+				
+				;	For each shield point less than 1000 recharged, repair half a point of armor, distributed in proportion to how damaged each segment is.
+				
+				(if (gr pointsLeft 0)
+					(block (lastSegment totalDamage)
+						(setq lastSegment (- (shpGetArmorCount gSource) 1))
+						(for i 0 lastSegment
+							(setq totalDamage (+ totalDamage (objGetArmorDamage gSource i)))
 							)
-
-					; If shields are down, then restore shields
-					(ls shieldLevel 100)
-						(block Nil
-							(shpRechargeShield gSource)
-							(objSendMessage gSource Nil "Invoked the restoring powers of Domina!")
+						(if (gr totalDamage 0)
+							(block ((repairFraction (min 1 (/ pointsLeft totalDamage))))
+								(for i 0 lastSegment
+									(objRepairArmor gSource i (round 'stochastic (* (objGetArmorDamage gSource i) repairFraction)))
+									)
+								(setq restored True)
+								)
 							)
-
-					; Otherwise, nothing
-					(objSendMessage gSource Nil "\"I cannot help you, child\"")
+						
+						;	Later: use leftover points to repair compartments?
+						)
+					)
+				
+				(if restored
+					(objSendMessage gSource Nil (typTranslate &pwHeal; 'dominaRestored))
+					(objSendMessage gSource Nil (typTranslate &pwHeal; 'dominaCantRestore))
 					)
 				)
 		</Invoke>
+		
+		<Language>
+			<Text id="dominaRestored">Invoked the restoring powers of Domina!</Text>
+			<String id="dominaCantRestore">"I cannot help you, child"</String>
+		</Language>
 	</Power>
 
 	<Power UNID="&pwStrengthen;"
