@@ -1912,10 +1912,10 @@
 					; Figure out how many ticks it will take for the transport to
 					; travel the distance
 					(setq lastNavPoint homeBaseObj)
-					(for i 1 20
+					(for i 1 50
 						(block nil
-							(setq nextNavPoint (sysGetNavPathPoint &svCorporate; homeBaseObj travelObj (* i 5)))
-							(setq distance (+ distance (sysVectorDistance lastNavPoint nextNavPoint)))
+							(setq nextNavPoint (sysGetNavPathPoint &svCorporate; homeBaseObj travelObj (* i 2)))
+							(setq distance (+ distance (sysVectorDistanceExact lastNavPoint nextNavPoint)))
 							(setq lastNavPoint nextNavPoint)
 							)
 						)
