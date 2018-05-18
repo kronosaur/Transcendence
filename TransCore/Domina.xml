@@ -118,7 +118,7 @@
 			(block (shieldDamage restored pointsLeft)
 			
 				;	Fully recharge any enabled undamaged installed shield.
-				(printTo 'console 'restorestart)
+				
 				(if (filter (objGetItems gSource "sIN") theShield (objGetItemProperty gSource theShield 'enabled))
 					(block ()
 						(if (setq shieldDamage (shpGetShieldDamage gSource)) (setq restored True))
