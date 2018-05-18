@@ -744,5 +744,8 @@
     <Xml Include="CommonwealthRonins.xml">
       <Filter>Human Space Library\Commonwealth</Filter>
     </Xml>
+    <Xml Include="CorporateInsurance.xml">
+      <Filter>Human Space Library\Corporate Hierarchy</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

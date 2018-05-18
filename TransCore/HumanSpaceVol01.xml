@@ -1577,6 +1577,7 @@
 	<!ENTITY rsIceFarmIce				"0x00100046">
 	<!ENTITY rsIceFarmPrimordial		"0x00100047">
 	<!ENTITY rsIceFarmRocky				"0x00100048">
+	<!ENTITY dsInsuranceCriminalLiability	"0x00100049">
 	
 	<!-- 0060-007F COMMONWEALTH FLEET -->
 	
@@ -2153,6 +2154,7 @@
 	<Module filename="CommonwealthShips.xml"/>
 	<Module filename="CommonwealthStarCarrier.xml"/>
 	<Module filename="CorporateHierarchy.xml"/>
+	<Module filename="CorporateInsurance.xml"/>
 	<Module filename="CSCTerra.xml"/>
 	<Module filename="Dall01.xml"/>
 	<Module filename="DeathDrugsCartel.xml"/>

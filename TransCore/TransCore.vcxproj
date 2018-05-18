@@ -505,6 +505,7 @@
     <Xml Include="CoreProjectileEffects.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="CorporateInsurance.xml" />
     <Xml Include="CSCTerra.xml" />
     <Xml Include="Dall01.xml" />
     <Xml Include="Dantalion.xml" />
