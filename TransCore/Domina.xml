@@ -122,7 +122,7 @@
 					; If no shields, then repair armor
 					(eq shieldLevel -1)
 						(block Nil
-							(intArmorRepairAll gSource 25)
+							(intArmorRepairAll gSource)
 							(objSendMessage gSource Nil "Invoked the repairing powers of Domina!")
 							)
 

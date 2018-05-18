@@ -19,19 +19,16 @@
 		(block Nil
 			; Internal functions -----------------------------------------------
 
-			(setq intArmorRepairAll (lambda (theShip repairTech alwaysRepair)
-				(block (repaired noDamage tooMuchDamage noTech)
-					(setq repaired Nil)
-					(setq noDamage True)
-					(setq tooMuchDamage Nil)
-					(setq noTech Nil)
+			(setq intArmorRepairAll (lambda (theShip repairTech minHPPercent)
+				(block (repaired wasDamage tooMuchDamage noTech)
 					(objEnumItems theShip "aI" theItem
-						(block (armorSeg type damage maxHP)
-							(setq armorSeg (itmGetArmorInstalledLocation theItem))
-							(setq type (objGetArmorType theShip armorSeg))
-							(setq damage (objGetArmorDamage theShip armorSeg))
-							(if (gr damage 0) (setq noDamage Nil))
-							(setq maxHP (shpGetArmorMaxHitPoints theShip armorSeg))
+						(block (
+							(armorSeg (itmGetArmorInstalledLocation theItem))
+							(type (objGetArmorType theShip armorSeg))
+							(damage (objGetArmorDamage theShip armorSeg))
+							(maxHP (shpGetArmorMaxHitPoints theShip armorSeg))
+							)
+							(if (gr damage 0) (setq wasDamage True))
 
 							(switch
 								; No need to repair if no damage
@@ -39,12 +36,13 @@
 									Nil
 
 								; If armor needs higher tech to repair, we can't do anything
-								(gr (armGetRepairTech type) repairTech)
+								(and repairTech (gr (armGetRepairTech type) repairTech))
 									(setq noTech True)
 
-								; Can't repair if damage is too much
-								(and (not alwaysRepair) 
-										(ls (subtract maxHP damage) (divide maxHP 4)))
+								; Can't repair if damage is too much. Check that minHPPercent is a number, not a string as used by old version.
+								(and (or (eq (typeOf minHPPercent) 'int32) (eq (typeOf minHPPercent) 'real))
+										(ls (- maxHP damage) (* maxHP minHPPercent 0.01))
+									)
 									(setq tooMuchDamage True)
 
 								; Repair
@@ -60,7 +58,7 @@
 						repaired
 							"repaired"
 
-						noDamage
+						(not wasDamage)
 							"noDamage"
 
 						noTech
