@@ -33,9 +33,9 @@
 //
 //	CPlayerShipController::OnDocked
 //		CTranscendenceModel::OnPlayerDocked
-//			Call FireOnDockObjAdj (to change m_pDock)
-//			m_pDock->GetDockScreen
-//			Set default screens root to m_pDock type
+//			Call FireOnDockObjAdj (to change pDockObj)
+//			pDockObj->GetDockScreen
+//			Set default screens root to pDockObj type
 //			CTranscendenceModel::EnterScreenSession
 //				SetPlayerDocked
 //				ResetFirstOnInit
@@ -136,7 +136,6 @@ CTranscendenceModel::CTranscendenceModel (CHumanInterface &HI) :
 		m_pCrawlImage(NULL),
 		m_pCrawlSoundtrack(NULL),
 		m_iLastHighScore(-1),
-		m_pDock(NULL),
 		m_pDestNode(NULL)
 
 //	CTranscendenceModel constructor
@@ -932,14 +931,11 @@ void CTranscendenceModel::ExitScreenSession (bool bForceUndock)
 
 		Frame.pLocation->ClearPlayerDocked();
 
-		//	If we're docked with something (came from OnPlayerDocked)
-		//	then we need to undock
+		//	Give the player ship to undock from whatever station we're docked
+		//	with. OK if we're not docked with a station (Undock() should handle
+		//	that case).
 
-		if (m_pDock)
-			{
-			m_pPlayer->Undock();
-			m_pDock = NULL;
-			}
+		m_pPlayer->Undock();
 
 		//	Tell controller that we're undocked
 
@@ -1707,8 +1703,9 @@ void CTranscendenceModel::OnPlayerDocked (CSpaceObject *pObj)
 	//	will remain the original object, but gSource and m_pLocation in the
 	//	dock screen will be set to the new object
 
-	if (!pObj->FireOnDockObjAdj(&m_pDock))
-		m_pDock = pObj;
+	CSpaceObject *pDock;
+	if (!pObj->FireOnDockObjAdj(&pDock))
+		pDock = pObj;
 
 	//	Remember the default screens root.
 	//	Note that this can be different from the root obtained above (from
@@ -1716,15 +1713,14 @@ void CTranscendenceModel::OnPlayerDocked (CSpaceObject *pObj)
 	//	dock screen (in those cases, the default screens root is still
 	//	the original object type).
 
-	m_pDefaultScreensRoot = m_pDock->GetType();
+	m_pDefaultScreensRoot = pDock->GetType();
 
 	//	Show screen
 
 	CString sError;
-	if (EnterScreenSession(m_pDock, NULL, DEFAULT_SCREEN_NAME, CString(), NULL, &sError) != NOERROR)
+	if (EnterScreenSession(pDock, NULL, DEFAULT_SCREEN_NAME, CString(), NULL, &sError) != NOERROR)
 		{
 		m_pPlayer->Undock();
-		m_pDock = NULL;
 
 		g_pTrans->DisplayMessage(sError);
 		::kernelDebugLogString(sError);

@@ -1087,7 +1087,6 @@ class CTranscendenceModel
 		int m_iLastHighScore;						//	Index to last high-score
 
 		//	Docking state
-		CSpaceObject *m_pDock;						//	Object we are docked with (NULL if we're not docked with anything)
 		CDesignType *m_pDefaultScreensRoot;			//	Default root to look for local screens
 		CDockScreenStack m_DockFrames;				//	Stack of dock screens
 		TArray<CXMLElement *> m_ScreensInited;		//	List of screens that have called OnInit this session
