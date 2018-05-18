@@ -2186,6 +2186,48 @@ ALERROR CTranscendenceModel::SaveHighScoreList (CString *retsError)
 	return NOERROR;
 	}
 
+bool CTranscendenceModel::ScreenTranslate (const CString &sID, ICCItem *pData, ICCItemPtr &pResult, CString *retsError) const
+
+//	ScreenTranslate
+//
+//	Translates a text ID. We return Nil if we could not find the text ID.
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	//	If not in a screen session, then nothing
+
+	if (!InScreenSession())
+		{
+		if (retsError) *retsError = CONSTLIT("Not in a dock screen.");
+		return false;
+		}
+
+	const SDockFrame &Frame = m_DockFrames.GetCurrent();
+
+	//	First ask the current docking location to translate
+
+	ICCItem *pRawResult;
+	if (Frame.pLocation && Frame.pLocation->Translate(sID, pData, &pRawResult))
+		{
+		pResult = ICCItemPtr(pRawResult);
+		return true;
+		}
+
+	//	Otherwise, let the screen translate
+
+	if (Frame.pResolvedRoot && Frame.pResolvedRoot->Translate(Frame.pLocation, sID, pData, &pRawResult))
+		{
+		pResult = ICCItemPtr(pRawResult);
+		return true;
+		}
+
+	//	Otherwise, we have no translation
+
+	if (retsError) *retsError = strPatternSubst(CONSTLIT("Unknown Language ID: %s"), sID);
+	return false;
+	}
+
 void CTranscendenceModel::SetDebugMode (bool bDebugMode)
 
 //	SetDebugMode

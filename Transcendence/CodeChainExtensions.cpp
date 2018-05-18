@@ -1462,13 +1462,12 @@ ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_SCR_TRANSLATE:
 			{
 			CString sText = pArgs->GetElement(1)->GetStringValue();
-
 			ICCItem *pData = NULL;
 			if (pArgs->GetCount() > 2)
 				pData = pArgs->GetElement(2);
 
 			ICCItemPtr pResult;
-			if (!pScreen->Translate(sText, pData, pResult))
+			if (!g_pTrans->GetModel().ScreenTranslate(sText, pData, pResult))
 				return pCC->CreateNil();
 
 			return pResult->Reference();
@@ -1706,8 +1705,6 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
         case FN_SCR_CONTROL_VALUE_TRANSLATE:
             {
-			//	Translate
-
 			CString sID = pArgs->GetElement(1)->GetStringValue();
 			CString sText = pArgs->GetElement(2)->GetStringValue();
 
@@ -1715,18 +1712,19 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			if (pArgs->GetCount() > 3)
 				pData = pArgs->GetElement(3);
 
+			//	Translate
+
 			ICCItemPtr pResult;
-			if (!pScreen->Translate(sText, pData, pResult))
+			CString sError;
+			if (!g_pTrans->GetModel().ScreenTranslate(sText, pData, pResult))
 				{
-				pScreen->SetDescription(strPatternSubst(CONSTLIT("Unknown Language ID: %s"), sText));
+				pScreen->SetDescription(sError);
 				return pCC->CreateNil();
 				}
 
 			//	Set the screen descriptor
 
-            bool bSuccess = pScreen->SetControlValue(sID, pResult);
-
-			return pCC->CreateBool(bSuccess);
+			return pCC->CreateBool(pScreen->SetControlValue(sID, pResult));
             }
 
 		case FN_SCR_DATA:
@@ -1765,7 +1763,7 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_SCR_DESC_TRANSLATE:
 			{
-			//	Translate
+			//	Args
 
 			CString sText = pArgs->GetElement(1)->GetStringValue();
 
@@ -1773,17 +1771,19 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			if (pArgs->GetCount() > 2)
 				pData = pArgs->GetElement(2);
 
+			//	Translate
+
 			ICCItemPtr pResult;
-			if (!pScreen->Translate(sText, pData, pResult))
+			CString sError;
+			if (!g_pTrans->GetModel().ScreenTranslate(sText, pData, pResult, &sError))
 				{
-				pScreen->SetDescription(strPatternSubst(CONSTLIT("Unknown Language ID: %s"), sText));
+				pScreen->SetDescription(sError);
 				return pCC->CreateNil();
 				}
 
 			//	Set the screen descriptor
 
-			pScreen->SetDescription(CLanguage::Compose(pResult->GetStringValue(), NULL));
-
+			pScreen->SetDescription(pResult->GetStringValue());
 			return pCC->CreateTrue();
 			}
 

@@ -999,10 +999,11 @@ class CTranscendenceModel
 		void GetScreenSession (SDockFrame *retFrame);
         inline CSystemMapThumbnails &GetSystemMapThumbnails (void) { return m_SystemMapThumbnails; }
 		inline void IncScreenData (const CString &sAttrib, ICCItem *pData, ICCItem **retpResult = NULL) { m_DockFrames.IncData(sAttrib, pData, retpResult); }
-		inline bool InScreenSession (void) { return !m_DockFrames.IsEmpty(); }
+		inline bool InScreenSession (void) const { return !m_DockFrames.IsEmpty(); }
 		bool IsGalacticMapAvailable (CString *retsError = NULL);
 		void RecordFinalScore (const CString &sEpitaph, const CString &sEndGameReason, bool bEscaped);
 		void RefreshScreenSession (void);
+		bool ScreenTranslate (const CString &sID, ICCItem *pData, ICCItemPtr &pResult, CString *retsError = NULL) const;
 		inline void SetScreenData (const CString &sAttrib, ICCItem *pData) { m_DockFrames.SetData(sAttrib, pData); }
 		ALERROR ShowPane (const CString &sPane);
 		ALERROR ShowScreen (CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError, bool bReturn = false, bool bFirstFrame = false);

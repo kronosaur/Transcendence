@@ -1081,7 +1081,7 @@
 
 								;	If we still have a mission giver, point back to it for a debrief.
 									
-								(setq newTargetObj (objGetObjByID (msnGetProperty missionObj 'ownerID)))
+								(setq newTargetObj (objGetObjByID (msnGetProperty missionObj 'debrieferID)))
 									(block Nil
 										(shpCancelOrders gPlayerShip)
 										(shpOrder gPlayerShip 'dock newTargetObj)
