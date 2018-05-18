@@ -291,6 +291,15 @@
 						}
 					{
 						descID: 'textFirstBriefing
+						data: {
+							distance: (fmtNumber (int
+								(* 50 
+									(round 
+										(/ (msnGetData gSource 'dist) 50)
+										)
+									) 
+								))
+							}
 						}
 					)
 			</Text>
