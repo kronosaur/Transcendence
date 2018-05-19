@@ -150,7 +150,7 @@
 					(if (= status 'installed)
 						(list
 							(list
-								(msnTranslate &msCSCLamplighterTesting; 'AchievementSuccess)
+								(typTranslate &msCSCLamplighterTesting; 'AchievementSuccess)
 								Nil
 								(typTranslate &unidCommonText; 'achievementsAndRegrets)
 								)
