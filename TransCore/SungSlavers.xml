@@ -180,7 +180,7 @@
 			mass=				"1"
 			frequency=			"rare"
 			numberAppearing=	"1"
-			attributes=			"AntiMatter; ConfirmRefuel; Consumable; Fuel; 100MW; LongzhuSphere; sungSlavers"
+			attributes=			"antiMatter, confirmRefuel, consumable, fuel, 100MW, longzhuSphere, notStandardFuel, sungSlavers"
 
 			useScreen=			"&dsUseLongzhuSphere;"
 			data=				"500000"
