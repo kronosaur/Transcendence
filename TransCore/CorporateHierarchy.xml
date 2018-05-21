@@ -30,8 +30,9 @@
 					(geq (int (objGetData gPlayerShip "corpCrimeSeverity")) 2)
 						(switch
 							;	If the player has insurance, then insurance pays to
-							;	compensate victims of the crime. 
-							(typGetGlobalData &stInsuranceCompany; "insured")
+							;	compensate victims of the crime (usually)
+
+							(typGetGlobalData &stInsuranceCompany; 'insured)
 								(list &dsInsuranceCriminalLiability; 8)
 							
 							;	Otherwise, prison
@@ -64,6 +65,10 @@
 			<ItemAttribute label="Taikon"			criteria="* +taikon;"/>
 			<ItemAttribute label="Tenhove"			criteria="* +tenhove;"/>
 		</AttributeDesc>
+
+		<Language>
+			<Text id="crimeMassDestruction">the mass murder of Corporate citizens</Text>
+		</Language>
 	</Sovereign>
 
 	<!-- CorporateCruiser -->
@@ -582,7 +587,7 @@
 		<DockingPorts
 				portCount=		"8"
 				portAngle=		"-15"
-				portRadius=		"92"
+				portRadius=		"100"
 				>
 		</DockingPorts>
 		
@@ -668,7 +673,7 @@
 		<DockingPorts
 				portCount=		"8"
 				portAngle=		"-15"
-				portRadius=		"92"
+				portRadius=		"100"
 				>
 		</DockingPorts>
 		
@@ -786,7 +791,7 @@
 		<DockingPorts
 				portCount=		"8"
 				portAngle=		"-15"
-				portRadius=		"92"
+				portRadius=		"100"
 				>
 		</DockingPorts>
 		
@@ -1070,36 +1075,39 @@
         </Language>
 	</StationType>
 
-	<!-- Corporate Enclave -->
+	<!-- Level 4: Corporate Enclave -->
 
 	<StationType UNID="&stCorporateEnclave;"
 			name=				"corporate enclave"
 			sovereign=			"&svCorporate;"
 			inherit=			"&baCorporateStation;"
 
+			attributes=			"corporate, corporateCustoms, friendly, independent, generic, human, majorStation, populated"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
 
 			level=				"4"
-			multiHull=			"true"
+			size=				"430"
 			armorID=			"&itCeralloyArmor;"
 			hitPoints=			"320"
+			multiHull=			"true"
 			regen=              "6"
+
+			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"corporate, corporateCustoms, friendly, independent, generic, human, majorStation, populated"
-			levelFrequency=		"ruuur ----- ----- ----- -----"
-			locationCriteria=	"-asteroids"
 			>
 
-		<Image			imageID="&rsStations1;" imageX="128" imageY="256" imageWidth="128" imageHeight="256"/>
+		<!-- Encounter Info -->
 
-		<Ships>
-			<Lookup count="1d4+2" table="&tbCommPrivateCrafts;"/>
-		</Ships>
+		<Encounter
+				levelFrequency=		"ruuur ----- ----- ----- -----"
+				locationCriteria=	"-asteroids"
+				enemyExclusionRadius="50"
+				/>
+
+		<!-- Trade and Items -->
 
 		<Trade currency="credit" max="50000" replenish="2500">
 			<Buy	criteria="*NU +Lux; -Illegal;"	priceAdj="105"/>
@@ -1114,13 +1122,23 @@
 			<ProduceTrade	criteria="{human.lux}"		impact="5"/>
 		</Trade>
 
-		<Events>
-			<OnContractGenerate>
-				(intGenerateIndustrialRequestContract1)
-			</OnContractGenerate>
+		<!-- Ships and Defenses -->
 
-			<OnContractQuery>True</OnContractQuery>
-		</Events>
+		<Ships>
+			<Lookup count="1d4+2" table="&tbCommPrivateCrafts;"/>
+		</Ships>
+
+		<!-- Image and Effects -->
+
+		<Image			imageID="&rsCorporateEnclave;" imageWidth="320" imageHeight="540" viewportRatio="0.0277"/>
+
+		<DockingPorts
+				portCount=		"10"
+				portRadius=		"175"
+				>
+		</DockingPorts>
+		
+		<!-- Dock Screen -->
 
 		<DockScreens>
 			<Main>
@@ -1234,16 +1252,15 @@
 
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="95" />
-			<Port x="0"		y="-85" />
-			<Port x="50"	y="70" />
-			<Port x="50"	y="-50" />
-			<Port x="75"	y="0" />
-			<Port x="-75"	y="0" />
-			<Port x="-50"	y="70" />
-			<Port x="-50"	y="-50" />
-		</DockingPorts>
+		<!-- Events and Data -->
+
+		<Events>
+			<OnContractGenerate>
+				(intGenerateIndustrialRequestContract1)
+			</OnContractGenerate>
+
+			<OnContractQuery>True</OnContractQuery>
+		</Events>
 
         <Language>
 			<Text id="descWelcome">
@@ -2955,10 +2972,27 @@
 				))
 
 			(setq intCorporateCrime (lambda (severity description)
-				(if (gr severity (int (objGetData gPlayerShip "corpCrimeSeverity")))
-					(block Nil
-						(objSetData gPlayerShip "corpCrimeSeverity" severity)
-						(objSetData gPlayerShip "corpCrime" description)
+				(block (
+					(curSeverity (int (objGetData gPlayerShip 'corpCrimeSeverity)))
+					)
+					(switch
+						;	If this crime is more severe than the current crime on record,
+						;	then we replace it.
+
+						(gr severity curSeverity)
+							(block Nil
+								(objSetData gPlayerShip 'corpCrimeSeverity severity)
+								(objSetData gPlayerShip 'corpCrime description)
+								)
+
+						;	If we just committed a level 3 crime and we've already committed
+						;	one previously, then this becomes a level 4 crime.
+
+						(= severity curSeverity 3)
+							(block Nil
+								(objSetData gPlayerShip 'corpCrimeSeverity 4)
+								(objSetData gPlayerShip 'corpCrime (typTranslate &svCorporate; 'crimeMassDestruction))
+								)
 						)
 					)
 				))
@@ -3157,6 +3191,7 @@
 <!-- RESOURCES -->
 
 	<Image UNID="&rsCorporateArmsDealer;"	bitmap="Resources\CorporateArmsDealer.jpg" bitmask="Resources\CorporateArmsDealerMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsCorporateEnclave;"		bitmap="Resources\CorporateEnclave.jpg" bitmask="Resources\CorporateEnclaveMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsIceFarmIce;"			bitmap="Resources\IceFarmIce.jpg" bitmask="Resources\IceFarmIceMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsIceFarmPrimordial;"		bitmap="Resources\IceFarmPrimordial.jpg" bitmask="Resources\IceFarmPrimordialMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsIceFarmRocky;"			bitmap="Resources\IceFarmRocky.jpg" bitmask="Resources\IceFarmRockyMask.bmp" loadOnUse="true"/>

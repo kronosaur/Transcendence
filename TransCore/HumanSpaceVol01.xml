@@ -1578,6 +1578,7 @@
 	<!ENTITY rsIceFarmPrimordial		"0x00100047">
 	<!ENTITY rsIceFarmRocky				"0x00100048">
 	<!ENTITY dsInsuranceCriminalLiability	"0x00100049">
+	<!ENTITY rsCorporateEnclave			"0x0010004A">
 	
 	<!-- 0060-007F COMMONWEALTH FLEET -->
 	

@@ -313,6 +313,17 @@
 			inherit="&dsDockScreenBase;"
 			nestedScreen="true"
 			>
+		<InitialPane>
+			(switch
+				;	Insurance does not cover level 4 crimes
+
+				(geq (objGetData gPlayerShip 'corpCrimeSeverity) 4)
+					"NoInsurance"
+
+				"Default"
+				)
+		</InitialPane>
+
 		<Panes>
 			<Default>
 				<OnPaneInit>
@@ -351,6 +362,30 @@
 					</Action>
 				</Actions>
 			</Default>
+
+			<NoInsurance>
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descNoInsurance {
+						crime: (objGetData gPlayerShip 'corpCrime)
+						})
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(block Nil
+							;	Cancel insurance
+
+							(typIncGlobalData &stInsuranceCompany; 'claims 3)
+							(typSetGlobalData &stInsuranceCompany; 'insured Nil)
+
+							;	Player imprisoned
+
+							(plyDestroyed gPlayer (cat "was imprisoned for " (objGetData gPlayerShip 'corpCrime)))
+							(scrExitScreen gScreen 'forceUndock)
+							)
+					</Action>
+				</Actions>
+			</NoInsurance>
 		</Panes>
 
 		<Language>
@@ -363,6 +398,16 @@
 				will handle the claim and pay appropriate restitution to the victims.
 
 				"You're free to go."
+
+			</Text>
+			<Text id="descNoInsurance">
+			
+				As you enter the station you are surrounded by heavily armed soldiers. 
+				A corporate officer approaches you:
+				
+				"You are under arrest for %crime%. And before you ask, no, your 
+				insurance company does not cover you under these conditions. Read
+				the fine print."
 
 			</Text>
 		</Language>
