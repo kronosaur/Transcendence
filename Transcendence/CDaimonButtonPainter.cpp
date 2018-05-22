@@ -105,6 +105,11 @@ void CDaimonButtonPainter::PaintMainStyle (CG32bitImage &Dest, EStates iState) c
 		CGDraw::Arc(Dest, m_xPos, m_yPos, m_iRadius, iAngle, iAngle + iArc, STYLE_MAIN_RING2_WIDTH, rgbFore);
 		iAngle += iAngleInc;
 		}
+
+	//	Paint glyph
+
+	int cxSize = (2 * m_iRadius) - (2 * STYLE_MAIN_RING2_WIDTH);
+	CArtifactAwakenVisuals::PaintGlyph(Dest, CArtifactAwakenVisuals::glyphRight, m_xPos, m_yPos, cxSize, cxSize, rgbFore);
 	}
 
 void CDaimonButtonPainter::Update (void)

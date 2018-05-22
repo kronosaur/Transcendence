@@ -24,7 +24,15 @@ class CArtifactAwakenVisuals
 			colorCount =						7,
 			};
 
+		enum EGlyphs
+			{
+			glyphNone =							0,
+
+			glyphRight =						1,
+			};
+
 		static CG32bitPixel GetColor (EColors iColor);
+		static void PaintGlyph (CG32bitImage &Dest, EGlyphs iGlyph, int x, int y, int cxWidth, int cyHeight, CG32bitPixel rgbColor);
 	};
 
 #define AA_STYLECOLOR(x)						(CArtifactAwakenVisuals::GetColor(CArtifactAwakenVisuals::##x))

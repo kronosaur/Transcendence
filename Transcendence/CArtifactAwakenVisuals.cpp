@@ -29,3 +29,50 @@ CG32bitPixel CArtifactAwakenVisuals::GetColor (EColors iColor)
 	{
 	return COLOR_TABLE[iColor];
 	}
+
+void CArtifactAwakenVisuals::PaintGlyph (CG32bitImage &Dest, EGlyphs iGlyph, int x, int y, int cxWidth, int cyHeight, CG32bitPixel rgbColor)
+
+//	PaintGlyph
+//
+//	Paints a glyph centered on the given coordinates.
+
+	{
+	switch (iGlyph)
+		{
+		case glyphRight:
+			{
+			static const Metric INNER_WIDTH_RATIO = 0.6;
+			static const Metric WIDTH_RATIO = 0.3;
+			static const Metric SMALL_ARROW_SCALE = 0.7;
+			static const Metric SMALL_ARROW_OFFSET = 0.4;
+
+			Metric rHalfHeight = 0.5 * cyHeight;
+			Metric rInnerX = -rHalfHeight * INNER_WIDTH_RATIO;
+			Metric rWidth = rHalfHeight * WIDTH_RATIO;
+
+			//	Large arrow
+
+			CGPath Path;
+			Path.MoveTo(CVector(0.0, 0.0));
+			Path.LineTo(CVector(rInnerX, rHalfHeight));
+			Path.LineTo(CVector(rWidth, 0.0));
+			Path.LineTo(CVector(rInnerX, -rHalfHeight));
+			Path.Close();
+
+			CGRegion Region;
+			Path.Rasterize(&Region);
+
+			CGDraw::Region(Dest, x, y, Region, rgbColor);
+
+			//	Small arrow
+
+			Path.Scale(SMALL_ARROW_SCALE);
+			Path.Translate(CVector(rHalfHeight * SMALL_ARROW_OFFSET, 0.0));
+
+			Path.Rasterize(&Region);
+
+			CGDraw::Region(Dest, x, y, Region, rgbColor);
+			break;
+			}
+		}
+	}
