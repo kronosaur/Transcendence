@@ -88,6 +88,11 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 #define VCENTER_ATTRIB				CONSTLIT("vcenter")
 #define WIDTH_ATTRIB				CONSTLIT("width")
 
+#define PROPERTY_COUNTER			CONSTLIT("counter")
+#define PROPERTY_DESCRIPTION		CONSTLIT("description")
+#define PROPERTY_IN_FIRST_ON_INIT	CONSTLIT("inFirstOnInit")
+#define PROPERTY_INPUT				CONSTLIT("input")
+
 #define SCREEN_TYPE_ARMOR_SELECTOR		CONSTLIT("armorSelector")
 #define SCREEN_TYPE_CANVAS				CONSTLIT("canvas")
 #define SCREEN_TYPE_CAROUSEL_SELECTOR	CONSTLIT("carouselSelector")
@@ -743,6 +748,40 @@ CG32bitImage *CDockScreen::GetDisplayCanvas (const CString &sID)
 
 	CGDrawArea *pCanvasControl = (CGDrawArea *)pControl->pArea;
 	return &pCanvasControl->GetCanvas();
+	}
+
+ICCItemPtr CDockScreen::GetProperty (const CString &sProperty) const
+
+//	GetProperty
+//
+//	Returns the given screen property.
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	//	See if this is a generic property.
+
+	if (strEquals(sProperty, PROPERTY_COUNTER))
+		return ICCItemPtr(CC.CreateInteger(GetCounter()));
+
+	else if (strEquals(sProperty, PROPERTY_DESCRIPTION))
+		return ICCItemPtr(CC.CreateString(GetDescription()));
+
+	else if (strEquals(sProperty, PROPERTY_IN_FIRST_ON_INIT))
+		return ICCItemPtr(CC.CreateBool(IsFirstOnInit()));
+
+	else if (strEquals(sProperty, PROPERTY_INPUT))
+		return ICCItemPtr(CC.CreateString(GetTextInput()));
+
+	//	Otherwise, ask the display
+
+	else if (m_pDisplay)
+		return m_pDisplay->GetProperty(sProperty);
+
+	//	Otherwise, Nil
+
+	else
+		return ICCItemPtr(CC.CreateNil());
 	}
 
 CDesignType *CDockScreen::GetResolvedRoot (CString *retsResolveScreen) const

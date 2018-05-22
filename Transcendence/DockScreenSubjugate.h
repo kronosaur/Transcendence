@@ -402,7 +402,7 @@ class CGSubjugateArea : public AGArea
 		void HideInfoPane (void);
 		bool HitTest (int x, int y, SSelection &Sel) const;
 		bool HitTestCountermeasureLoci (int x, int y, int *retiIndex = NULL) const;
-		inline bool IsActive (void) const { return (m_Artifact.GetStatus() == CArtifactAwakening::resultBattleContinues); }
+		inline bool IsActive (void) const { return (m_Artifact.GetStatus() == CArtifactAwakening::resultBattleContinues) || (m_Artifact.GetStatus() == CArtifactAwakening::resultNone); }
 		void PaintCoreStats (CG32bitImage &Dest) const;
 		void PaintCountermeasureLocus (CG32bitImage &Dest, const SCountermeasureLocus &Locus) const;
 		void PaintDaimonLocus (CG32bitImage &Dest, const SDaimonLocus &Locus) const;
@@ -470,6 +470,7 @@ class CDockScreenSubjugate : public IDockScreenDisplay
 		virtual bool OnGetDefaultBackground (SBackgroundDesc *retDesc) override { retDesc->iType = backgroundNone; return true; }
 		virtual EResults OnHandleKeyDown (int iVirtKey) override;
 		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) override;
+		virtual ICCItemPtr OnGetProperty (const CString &sProperty) const override;
 
 	private:
 		void FireOnCompleted (const CString &sReason);

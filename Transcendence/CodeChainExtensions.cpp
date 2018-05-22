@@ -87,6 +87,7 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_ADD_LIST_FILTER		30
 #define FN_SCR_SHOW_ITEM_SCREEN		31
 #define FN_SCR_RETURN_DATA			32
+#define FN_SCR_GET_PROPERTY			33
 
 ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -243,6 +244,18 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"scrGetListEntry",				fnScrGetOld,		FN_SCR_LIST_ENTRY,
 			"(scrGetListEntry screen) -> entry",
 			NULL,	PPFLAG_SIDEEFFECTS,	},
+
+		{	"scrGetProperty",				fnScrGet,		FN_SCR_GET_PROPERTY,
+			"(scrGetProperty screen property) -> value\n\n"
+			
+			"property\n\n"
+			
+			"   'counter"
+			"   'description"
+			"   'inFirstOnInit"
+			"   'input",
+
+			"is",	0,	},
 
 		{	"scrGetScreen",				    fnScrGet,		FN_SCR_GET_SCREEN,
             "(scrGetScreen gScreen) -> screenDesc\n\n"
@@ -1407,6 +1420,15 @@ ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				return pCC->CreateNil();
 
 			return pCC->CreateString(sDesc);
+			}
+
+		case FN_SCR_GET_PROPERTY:
+			{
+			ICCItemPtr pResult = pScreen->GetProperty(pArgs->GetElement(1)->GetStringValue());
+			if (!pResult)
+				return pCC->CreateNil();
+
+			return pResult->Reference();
 			}
 
         case FN_SCR_GET_SCREEN:

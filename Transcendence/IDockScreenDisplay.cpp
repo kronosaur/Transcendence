@@ -324,6 +324,16 @@ ALERROR IDockScreenDisplay::Init (SInitCtx &Ctx, const SDisplayOptions &Options,
 	return OnInit(Ctx, Options, retsError); 
 	}
 
+ICCItemPtr IDockScreenDisplay::OnGetProperty (const CString &sProperty) const
+
+//	OnGetProperty
+//
+//	Default has no properties
+
+	{
+	return ICCItemPtr(g_pUniverse->GetCC().CreateNil());
+	}
+
 void IDockScreenDisplay::OnShowPane (bool bNoListNavigation) 
 
 //	OnShowPane

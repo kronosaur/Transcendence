@@ -41,6 +41,8 @@
 
 #define PARAM_REASON				CONSTLIT("aReason")
 
+#define PROPERTY_AWAKENING_STATUS	CONSTLIT("awakeningStatus")
+
 #define REASON_FAILURE				CONSTLIT("failure")
 #define REASON_SUCCESS				CONSTLIT("success")
 
@@ -91,6 +93,39 @@ void CDockScreenSubjugate::OnCompleted (bool bSuccess)
 	//	access any member variables.
 	}
 
+ICCItemPtr CDockScreenSubjugate::OnGetProperty (const CString &sProperty) const
+
+//	OnGetProperty
+//
+//	Returns the given property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sProperty, PROPERTY_AWAKENING_STATUS))
+		{
+		switch (m_Artifact.GetStatus())
+			{
+			case CArtifactAwakening::resultNone:
+				return ICCItemPtr(CC.CreateString(CONSTLIT("notStarted")));
+
+			case CArtifactAwakening::resultArtifactSubdued:
+				return ICCItemPtr(CC.CreateString(CONSTLIT("subdued")));
+
+			case CArtifactAwakening::resultPlayerFailed:
+				return ICCItemPtr(CC.CreateString(CONSTLIT("failed")));
+
+			case CArtifactAwakening::resultBattleContinues:
+				return ICCItemPtr(CC.CreateString(CONSTLIT("inProgress")));
+
+			default:
+				return ICCItemPtr(CC.CreateString(CONSTLIT("unknown")));
+			}
+		}
+	else
+		return ICCItemPtr(CC.CreateNil());
+	}
+
 IDockScreenDisplay::EResults CDockScreenSubjugate::OnHandleKeyDown (int iVirtKey)
 
 //	OnHandleKeyDown
@@ -105,6 +140,7 @@ IDockScreenDisplay::EResults CDockScreenSubjugate::OnHandleKeyDown (int iVirtKey
 			return resultHandled;
 
 		case VK_RETURN:
+			m_pControl->Command(CGSubjugateArea::cmdDeployDaimon);
 			return resultHandled;
 
 		case VK_UP:

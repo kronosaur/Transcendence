@@ -103,6 +103,7 @@ class IDockScreenDisplay
 		inline CItemListManipulator &GetItemListManipulator (void) { return OnGetItemListManipulator(); }
 		inline int GetListCursor (void) { return OnGetListCursor(); }
 		inline IListData *GetListData (void) { return OnGetListData(); }
+		inline ICCItemPtr GetProperty (const CString &sProperty) const { return OnGetProperty(sProperty); }
 		inline CSpaceObject *GetSource (void) { return OnGetSource(); }
 		inline EResults HandleAction (DWORD dwTag, DWORD dwData) { return OnHandleAction(dwTag, dwData); }
 		inline EResults HandleKeyDown (int iVirtKey) { return OnHandleKeyDown(iVirtKey); }
@@ -129,6 +130,7 @@ class IDockScreenDisplay
 		virtual CItemListManipulator &OnGetItemListManipulator (void) { return g_DummyItemListManipulator; }
 		virtual int OnGetListCursor (void) { return -1; }
 		virtual IListData *OnGetListData (void) { return NULL; }
+		virtual ICCItemPtr OnGetProperty (const CString &sProperty) const;
 		virtual CSpaceObject *OnGetSource (void) { return NULL; }
 		virtual EResults OnHandleAction (DWORD dwTag, DWORD dwData) { return resultNone; }
 		virtual EResults OnHandleKeyDown (int iVirtKey) { return resultNone; }
@@ -398,9 +400,9 @@ class CDockScreen : public IScreenController
 							CString *retsPane,
 							AGScreen **retpScreen,
 							CString *retsError = NULL);
-		inline bool InOnInit (void) { return m_bInOnInit; }
-		inline bool IsFirstOnInit (void) { return m_bFirstOnInit; }
-		inline bool IsValid (void) { return (m_pScreen != NULL); }
+		inline bool InOnInit (void) const { return m_bInOnInit; }
+		inline bool IsFirstOnInit (void) const { return m_bFirstOnInit; }
+		inline bool IsValid (void) const { return (m_pScreen != NULL); }
 		ALERROR ReportError (const CString &sError);
 		inline void ResetFirstOnInit (void) { m_bFirstOnInit = true; }
 		void ResetList (CSpaceObject *pLocation);
@@ -411,18 +413,19 @@ class CDockScreen : public IScreenController
 
 		//	Methods used by script code
 		inline void DeleteCurrentItem (int iCount) { m_pDisplay->DeleteCurrentItem(iCount); }
-		inline int GetCounter (void) { return m_CurrentPane.GetCounterValue(); }
-		inline const CItem &GetCurrentItem (void) { return m_pDisplay->GetCurrentItem(); }
+		inline int GetCounter (void) const { return m_CurrentPane.GetCounterValue(); }
+		inline const CItem &GetCurrentItem (void) const { return m_pDisplay->GetCurrentItem(); }
 		ICCItem *GetCurrentListEntry (void);
-		inline const CString &GetDescription (void) { return m_CurrentPane.GetDescriptionString(); }
+		inline const CString &GetDescription (void) const { return m_CurrentPane.GetDescriptionString(); }
 		CG32bitImage *GetDisplayCanvas (const CString &sID);
 		inline CItemListManipulator &GetItemListManipulator (void) { return m_pDisplay->GetItemListManipulator(); }
-		inline int GetListCursor (void) { return m_pDisplay->GetListCursor(); }
-		inline IListData *GetListData (void) { return m_pDisplay->GetListData(); }
+		inline int GetListCursor (void) const { return m_pDisplay->GetListCursor(); }
+		inline IListData *GetListData (void) const { return m_pDisplay->GetListData(); }
         inline CGameSession &GetGameSession (void) { return m_Session; }
+		ICCItemPtr GetProperty (const CString &sProperty) const;
+		inline CString GetTextInput (void) const { return m_CurrentPane.GetTextInputValue(); }
         const CDockScreenVisuals &GetVisuals (void) const;
-		inline CString GetTextInput (void) { return m_CurrentPane.GetTextInputValue(); }
-		inline bool IsCurrentItemValid (void) { return m_pDisplay->IsCurrentItemValid(); }
+		inline bool IsCurrentItemValid (void) const { return m_pDisplay->IsCurrentItemValid(); }
 		void SelectNextItem (bool *retbMore = NULL);
 		void SelectPrevItem (bool *retbMore = NULL);
 		void SetBackground (const IDockScreenDisplay::SBackgroundDesc &Desc);
