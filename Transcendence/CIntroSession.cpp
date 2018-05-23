@@ -243,11 +243,10 @@ void CIntroSession::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereign, C
 				IShipController::OrderTypes iOrder = pController->GetCurrentOrderEx(&pTarget);
 				if ((pShipDestroyed && pTarget == pShipDestroyed) || iOrder == IShipController::orderNone)
 					{
-					pController->CancelAllOrders();
 					if (pShip->GetSovereign() == pSovereign1)
-						pController->AddOrder(IShipController::orderDestroyTarget, pShip2, IShipController::SData());
+						OrderAttack(pShip, pShip2);
 					else
-						pController->AddOrder(IShipController::orderDestroyTarget, pShip1, IShipController::SData());
+						OrderAttack(pShip, pShip1);
 					}
 				}
 			}
@@ -339,11 +338,10 @@ void CIntroSession::CreateIntroSystem (void)
 				CShip *pShip = pObj->AsShip();
 				if (pShip)
 					{
-					IShipController *pController = pShip->GetController();
 					if (pShip->GetSovereign() == pSovereign1)
-						pController->AddOrder(IShipController::orderDestroyTarget, pShip2, IShipController::SData());
+						OrderAttack(pShip, pShip2);
 					else
-						pController->AddOrder(IShipController::orderDestroyTarget, pShip1, IShipController::SData());
+						OrderAttack(pShip, pShip1);
 					}
 				}
 			}
@@ -1250,6 +1248,27 @@ void CIntroSession::OnPOVSet (CSpaceObject *pObj)
 			SetState(isShipStats);
 			break;
 		}
+	}
+
+void CIntroSession::OrderAttack (CShip *pShip, CSpaceObject *pTarget)
+
+//	OrderAttack
+//
+//	Orders the given ship to attack the target
+
+	{
+	IShipController *pController = pShip->GetController();
+	pController->CancelAllOrders();
+
+	//	If this is a turret, then we use the sentinel order
+
+	if (pShip->IsAnchored())
+		pController->AddOrder(IShipController::orderSentry, NULL, IShipController::SData());
+
+	//	Otherwise, we attack
+
+	else
+		pController->AddOrder(IShipController::orderDestroyTarget, pTarget, IShipController::SData());
 	}
 
 void CIntroSession::Paint (CG32bitImage &Screen, bool bTopMost)
