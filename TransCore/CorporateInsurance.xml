@@ -76,7 +76,12 @@
 							Nil
 						
 						; Put the player in a safe place and repair the ship
-						(rpgRestorePlayer)
+						(rpgRestorePlayer {
+							portObj: (or
+								(sysFindObject gPlayerShip "TAFN +corporateInsurance;")
+								(sysFindObject gPlayerShip "TAFN +populated; +corporate; +majorStation;")
+								)
+							})
 						)
 
 					; Create a rescue ship nearby
