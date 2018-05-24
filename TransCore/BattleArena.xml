@@ -155,7 +155,9 @@
 		<Image			imageID="&rsBattleArenaSegments;" imageX="1240" imageY="0"    imageWidth="320" imageHeight="280"/>
 		
 		<DockingPorts>
+			<Port x="-105"	y="-140" />
 			<Port x="0"		y="-140" />
+			<Port x="105"	y="-140" />
 		</DockingPorts>
 		
 		<!-- Events and Data -->
