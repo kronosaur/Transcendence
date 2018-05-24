@@ -41,7 +41,7 @@
 			<RemoveDevice	criteria="d L:1-9;" priceAdj="100"/>
 
 			<SellShip		criteria="s -notForSale;" priceAdj="100"/>
-			<BuyShip		criteria="s L:1-9; -notForSale;" priceAdj="80"/>
+			<BuyShip		criteria="s L:1-10; -notForSale;" priceAdj="80"/>
 		</Trade>
 
 		<Items>

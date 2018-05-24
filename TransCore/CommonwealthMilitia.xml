@@ -170,7 +170,7 @@
 			<RemoveDevice	criteria="d L:1-8;" priceAdj="100"/>
 
 			<SellShip		criteria="s -notForSale;" priceAdj="100"/>
-			<BuyShip		criteria="s L:1-7; -notForSale;" priceAdj="80"/>
+			<BuyShip		criteria="s L:1-10; -notForSale;" priceAdj="80"/>
 
 			<ConsumeTrade	criteria="{core.antimatterFuel}"		impact="3"/>
 		</Trade>
