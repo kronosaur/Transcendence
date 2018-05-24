@@ -1272,11 +1272,11 @@
 							</Offset>
 
 							<Offset scale="pixel"				xOffset="1790"		 yOffset="-839">
-								<Station type="&stInsuranceCompany;" noMapLabel="true"/>
+								<Station type="&stHotel;" noMapLabel="true"/>
 							</Offset>
 
 							<Offset scale="pixel"				xOffset="2177"		 yOffset="-1070">
-								<Station type="&stHotel;" noMapLabel="true"/>
+								<Station type="&stInsuranceCompany;" noMapLabel="true"/>
 							</Offset>
 
 							<!-- Left Quarter -->
