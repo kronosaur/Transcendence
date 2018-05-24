@@ -1917,7 +1917,8 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 	CSpaceObject *pStart = pNewSystem->GetNamedObject(m_sDestEntryPoint);
 	if (pStart == NULL)
 		{
-		kernelDebugLogPattern("Unable to find destination stargate %s in destination system.", m_sDestEntryPoint);
+		::kernelDebugLogPattern("Unable to find destination stargate %s in destination system.", m_sDestEntryPoint);
+
 		for (int i = 0; i < pNewSystem->GetObjectCount(); i++)
 			{
 			CSpaceObject *pObj = pNewSystem->GetObject(i);
@@ -1928,8 +1929,21 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 			break;
 			}
 
+		//	If we can't find a suitable POV, then we create a marker
+
 		if (pStart == NULL)
-			throw CException(ERR_FAIL);
+			{
+			CMarker *pMarker;
+			if (CMarker::Create(pNewSystem,
+					NULL,
+					NullVector,
+					NullVector,
+					NULL_STR,
+					&pMarker) != NOERROR)
+				throw CException(ERR_FAIL);
+
+			pStart = pMarker;
+			}
 		}
 
 	//	Let all types know that the current system is going away
