@@ -4,7 +4,9 @@
 
 	<!-- Player ship's interior -->
 
-	<DockScreen UNID="&dsShipInterior;">
+	<DockScreen UNID="&dsShipInterior;"
+			inherit=			"&dsDockScreenBase;"
+			>
 
 		<Display type="detailsPane"
 				>
@@ -29,7 +31,7 @@
 		<Panes>
 			<Default descID="descWelcome">
 				<Actions>
-					<Action name="[S]hip Configuration">
+					<Action id="actionShipConfig">
 						;	Show the appropriate dock services screen based on the ship
 						;	class.
 					
@@ -39,22 +41,22 @@
 							)
 					</Action>
 
-					<Action name="[M]issions">
+					<Action id="actionMissions">
 						(scrShowScreen gScreen &dsRPGMissionJournal;)
 					</Action>
 
-					<Action name="[V]iew Cargo Hold">
+					<Action id="actionViewCargo">
 						(block Nil
 							(setq gDest Nil)
 							(scrShowScreen gScreen &dsCargoHold;)
 							)
 					</Action>
 
-					<Action name="[R]efuel Reactor">
+					<Action id="actionRefuelReactor">
 						(scrShowScreen gScreen &dsManualRefuel;)
 					</Action>
 
-					<Action name="[B]ack to Cockpit" cancel="1">
+					<Action id="actionDone" cancel="1">
 						<Exit/>
 					</Action>
 				</Actions>
@@ -63,6 +65,12 @@
 
 		<Language>
 			<Text id="core.name">Ship's Interior</Text>
+
+			<Text id="actionShipConfig">[S]hip Configuration</Text>
+			<Text id="actionMissions">[M]issions</Text>
+			<Text id="actionViewCargo">[V]iew Cargo Hold</Text>
+			<Text id="actionRefuelReactor">[R]efuel Reactor</Text>
+			<Text id="actionDone">[B]ack to Cockpit</Text>
 
 			<Text id="descWelcome">
 				
@@ -128,7 +136,6 @@
 	<!-- Player ship's cargo hold -->
 
 	<DockScreen UNID="&dsCargoHold;"
-			desc=				"Interior of Ship"
 			type=				"itemPicker"
 			inherit=			"&dsDockScreenBase;"
 			nestedScreen=		"true"
@@ -308,7 +315,6 @@
 			<Text id="core.name">Ship's Cargo Hold</Text>
 
 			<Text id="actionJettisonItem">[J]ettison this Item</Text>
-			<Text id="actionJettison">[J]ettison</Text>
 			<Text id="actionUse">[U]se this Item</Text>
 
 			<Text id="descCargoEmpty">You are in your ship's cargo hold.</Text>
@@ -341,6 +347,7 @@
 
 	<DockScreen UNID="&dsManualRefuel;"
 			type=				"itemPicker"
+			inherit=			"&dsDockScreenBase;"
 			nestedScreen=		"true"
 			>
 
@@ -357,10 +364,10 @@
 						(setq gMaxCount 0)
 						(switch
 							(not thisItem)
-								(scrSetDesc gScreen "You do not have any items that can be used as fuel.")
+								(scrSetDescTranslate gScreen 'descManualRefuelUnavailable)
 
 							(not (shpIsFuelCompatible gPlayerShip thisItem))
-								(scrSetDesc gScreen "You cannot use this kind of fuel in your ship's reactor.")
+								(scrSetDescTranslate gScreen 'descManualRefuelIncompatible)
 
 							(setq gMaxCount (itmGetCount thisItem))
 							)
@@ -371,7 +378,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Refuel" default="1" key="R">
+					<Action id="actionRefuel" default="1">
 						(block Nil
 							; No need to show help about refueling
 							(plyEnableMessage gPlayer 'refuelHint Nil)
@@ -406,26 +413,21 @@
 							)
 					</Action>
 
-					<Action name="Cancel" cancel="1" key="C">
+					<Action id="actionCancel" cancel="1">
 						<Exit/>
 					</Action>
-
 				</Actions>
-
 			</Default>
 
 			<ConfirmRefuel>
 				<OnPaneInit>
-					(scrSetDesc gScreen 
-						(cat "Are you sure you want to use " 
-							(itmGetName (scrGetItem gScreen) 0x04)
-							" for fuel?"
-							)
-						)
+					(scrSetDescTranslate gScreen 'descConfirmRefuel {
+						itemName: (itmGetName (scrGetItem gScreen) 'article)
+						})
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Yes" key="Y">
+					<Action id="actionYes" default="1">
 						(switch
 							(gr gMaxCount 1)
 								(scrShowPane gScreen "RefuelQuantity")
@@ -448,7 +450,7 @@
 							)
 					</Action>
 
-					<Action name="No" key="N" cancel="1">
+					<Action id="actionNo" cancel="1">
 						(scrShowPane gScreen "Default")
 					</Action>
 				</Actions>
@@ -460,7 +462,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
+					<Action id="actionContinue" default="1" cancel="1">
 						<Exit/>
 					</Action>
 				</Actions>
@@ -476,13 +478,15 @@
 						(if (ls maxNeeded gMaxCount)
 							(setq gMaxCount maxNeeded)
 							)
-						(scrSetDesc gScreen (cat "How many " (itmGetName thisItem 2) " do you wish to use?"))
+						(scrSetDescTranslate gScreen 'descRefuelQuantity {
+							itemName: (itmGetName thisItem 'plural)
+							})
 						(scrSetCounter gScreen gMaxCount)
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Refuel" default="1" key="R">
+					<Action id="actionRefuel" default="1">
 						(block (count)
 							(setq count (scrGetCounter gScreen))
 							(if (gr count gMaxCount)
@@ -503,12 +507,10 @@
 							)
 					</Action>
 
-					<Action name="Cancel" cancel="1" key="C">
+					<Action id="actionCancel" cancel="1">
 						<Exit/>
 					</Action>
-
 				</Actions>
-
 			</RefuelQuantity>
 
 			<RefuelMessage>
@@ -517,19 +519,33 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
+					<Action id="actionContinue" default="1" cancel="1">
 						<Exit/>
 					</Action>
 				</Actions>
 			</RefuelMessage>
-
 		</Panes>
 
 		<Language>
 			<Text id="core.name">Ship's Cargo Hold</Text>
 
+			<Text id="actionNo">[N]o</Text>
+			<Text id="actionYes">[Y]es</Text>
+
 			<Text id="descManualRefuelDefault">
 				Pick an item to use as fuel.
+			</Text>
+			<Text id="descManualRefuelUnavailable">
+				You do not have any items that can be used as fuel.
+			</Text>
+			<Text id="descManualRefuelIncompatible">
+				You cannot use this kind of fuel in your ship's reactor.
+			</Text>
+			<Text id="descConfirmRefuel">
+				Are you sure you want to use %itemName% for fuel?
+			</Text>
+			<Text id="descRefuelQuantity">
+				How many %itemName% do you wish to use?
 			</Text>
 		</Language>
 	</DockScreen>
@@ -543,6 +559,7 @@
 
 	<DockScreen UNID="&dsRPGMissionJournal;"
 			type=				"customPicker"
+			inherit=			"&dsDockScreenBase;"
 			nestedScreen=		"true"
 			>
 
@@ -579,7 +596,7 @@
 
 						(switch
 							(not theEntry)
-								(scrSetDesc gScreen "You have no missions to complete.")
+								(scrSetDescTranslate gScreen 'descNoMissions)
 
 							(scrSetDesc gScreen (msnGetProperty theMission 'summary))
 							)
@@ -589,7 +606,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Remove Mission" key="R">
+					<Action id="actionRemoveMission">
 						(block (theEntry theMission)
 							(setq theEntry (scrGetListEntry gScreen))
 							(setq theMission (@ theEntry 3))
@@ -599,12 +616,18 @@
 							)
 					</Action>
 					
-					<Action name="Done" key="D" default="1" cancel="1">
+					<Action id="actionDone" default="1" cancel="1">
 						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
 		</Panes>
+
+		<Language>
+			<Text id="actionRemoveMission">[R]emove Mission</Text>
+
+			<Text id="descNoMissions">You have no missions to complete.</Text>
+		</Language>
 	</DockScreen>
 
 <!-- RESOURCES -->
