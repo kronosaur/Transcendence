@@ -470,7 +470,7 @@
 							(msnSetData gSource 'status 'playerKilled)
 						)
 					;	Open arena doors
-					(bamDoorsOpen arenaObj)
+					(if (!= aReason 'success) (bamDoorsOpen arenaObj))
 
 					;	Unregister (if necessary)
 					(objUnregisterForSystemEvents arenaObj)
@@ -482,6 +482,10 @@
 					(uiSetSoundtrackMode 'missionEndTravel)
 					)
 			</OnCompleted>
+
+			<OnDebriefed>
+				(bamDoorsOpen arenaObj)
+			</OnDebriefed>
 
 			<OnReward>
 				(block (

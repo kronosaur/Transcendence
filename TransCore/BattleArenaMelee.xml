@@ -204,9 +204,13 @@
 						)
 					(objSetData gPlayerShip 'battleArenaCombatant Nil)
 					;	Open arena doors
-					(bamDoorsOpen arenaObj)
+					(if (!= aReason 'success) (bamDoorsOpen arenaObj))
 					)
 			</OnCompleted>
+
+			<OnDebriefed>
+				(bamDoorsOpen arenaObj)
+			</OnDebriefed>
 
 			<OnReward>
 				(block (
