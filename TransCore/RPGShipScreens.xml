@@ -373,7 +373,7 @@
 							)
 
 						; Enable/disable actions
-						(scrEnableAction gScreen 0 (gr gMaxCount 0))
+						(scrEnableAction gScreen 'actionRefuel (gr gMaxCount 0))
 						)
 				</OnPaneInit>
 
