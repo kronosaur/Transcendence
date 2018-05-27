@@ -1158,7 +1158,7 @@
 								)
 							)
 
-						(scrEnableAction gScreen 0 canInstall)
+						(scrEnableAction gScreen 'actionInstallArmor canInstall)
 						)
 				</OnPaneInit>
 
@@ -1499,18 +1499,10 @@
 			<Text id="actionArmor:nothing">We don't upgrade or install armor.</Text>
 			<Text id="actionArmor:shipConfig">View and manage armor and shields.</Text>
 			
-			<Text id="actionBuyAmmo:ammoForSale">
-				(cat "We have ammo in stock for " (itmGetName (@ gData 'item) 0x04) ".")
-			</Text>
-			<Text id="actionBuyAmmo:noAmmoToBuy">
-				(cat "We do not have ammo for " (itmGetName (@ gData 'item) 0x04) ".")
-			</Text>
-			<Text id="actionBuyMissiles:missilesForSale">
-				(cat "We have missiles in stock for " (itmGetName (@ gData 'item) 0x04) ".")
-			</Text>
-			<Text id="actionBuyMissiles:noMissilesToBuy">
-				(cat "We do not have missiles for " (itmGetName (@ gData 'item) 0x04) ".")
-			</Text>
+			<Text id="actionBuyAmmo:ammoForSale">We have ammo in stock for %itemName%.</Text>
+			<Text id="actionBuyAmmo:noAmmoToBuy">We do not have ammo for %itemName%.</Text>
+			<Text id="actionBuyMissiles:missilesForSale">We have missiles in stock for %itemName%.</Text>
+			<Text id="actionBuyMissiles:noMissilesToBuy">We do not have missiles for %itemName%.</Text>
 			
 			<Text id="actionInstall.noDeviceInstall">We do not install devices.</Text>
 			<Text id="actionInstall.noDeviceRemove">We do not remove devices.</Text>
@@ -1542,9 +1534,7 @@
 			<Text id="actionInstall:noCompatibleItemInCargo:weapon">You do not have any compatible weapons in your cargo hold.</Text>
 			<Text id="actionInstall:noCompatibleItemInCargo:device">You do not have any compatible devices in your cargo hold.</Text>
 
-			<Text id="actionInstall:defaultAbility">
-				(cat "We install devices up to tech level " (objGetProperty (@ gData 'dockObj) 'installDeviceMaxLevel) ".")
-			</Text>
+			<Text id="actionInstall:defaultAbility">We install devices up to tech level %maxLevel%.</Text>
 			<Text id="actionInstall:upgradeInstallOnly">Sorry, we only install or remove items as part of an upgrade purchase.</Text>
 			
 			<Text id="actionRefuel:cantAfford">
@@ -1623,12 +1613,8 @@
 					(cat "We install devices up to tech level " (objGetProperty (@ gData 'dockObj) 'installDeviceMaxLevel) ".")
 					)
 			</Text>
-			<Text id="actionReplace:noItemInCargo">
-				(if (= (@ gData 'category) 'armor)
-					"There is nothing in your cargo hold to replace this armor segment with."
-					"There is nothing in your cargo hold to replace this device with."
-					)
-			</Text>
+			<Text id="actionReplace:noArmorItemInCargo">There is nothing in your cargo hold to replace this armor segment with.</Text>
+			<Text id="actionReplace:noDeviceItemInCargo">There is nothing in your cargo hold to replace this device with.</Text>
 			<Text id="actionReplace:noTech">(cat "We do not have the technology to replace a level " (itmGetLevel (@ gData 'item)) " device.")</Text>
 			<Text id="actionReplace:upgradeInstallOnly">Sorry, we only install or remove items as part of an upgrade purchase.</Text>
 			
@@ -1664,32 +1650,17 @@
 			<Text id="actionUpgrade:noItemForSale:device">We do not have any devices for sale.</Text>
 
 			<Text id="actionUpgrade:noItemUpgrade">
-				(switch
-					(= (@ gData 'category) 'armor)
-						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " armor.")
-					
-					(= (@ gData 'category) 'cargoHold)
-						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " cargo expansion.")
-						
-					(= (@ gData 'category) 'drive)
-						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " drive upgrade.")
-						
-					(= (@ gData 'category) 'launcher)
-						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " launcher.")
-						
-					(= (@ gData 'category) 'reactor)
-						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " reactor.")
-						
-					(= (@ gData 'category) 'shields)
-						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " shields.")
-						
-					(= (@ gData 'category) 'weapon)
-						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " weapon.")
-						
-					(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " device.")
-					)
+				(scrTranslate gScreen (cat "actionUpgrade:noItemUpgrade:" (@ gData 'category)) gData)
 			</Text>
-			<Text id="actionUpgrade:noTech">(cat "We do not have the technology to upgrade a level " (itmGetLevel (@ gData 'item)) " device.")</Text>
+			<Text id="actionUpgrade:noItemUpgrade:armor">We do not have anything better than your level %itemLevel% armor.</Text>
+			<Text id="actionUpgrade:noItemUpgrade:cargoHold">We do not have anything better than your level %itemLevel% cargo expansion.</Text>
+			<Text id="actionUpgrade:noItemUpgrade:drive">We do not have anything better than your level %itemLevel% drive upgrade.</Text>
+			<Text id="actionUpgrade:noItemUpgrade:launcher">We do not have anything better than your level %itemLevel% launcher.</Text>
+			<Text id="actionUpgrade:noItemUpgrade:reactor">We do not have anything better than your level %itemLevel% reactor.</Text>
+			<Text id="actionUpgrade:noItemUpgrade:shields">We do not have anything better than your level %itemLevel% shields.</Text>
+			<Text id="actionUpgrade:noItemUpgrade:weapon">We do not have anything better than your level %itemLevel% weapon.</Text>
+			<Text id="actionUpgrade:noItemUpgrade:device">We do not have anything better than your level %itemLevel% device.</Text>
+			<Text id="actionUpgrade:noTech">We do not have the technology to upgrade a level %itemLevel% device.</Text>
 		
 			<Text id="descRefuelConfirm">
 				(switch

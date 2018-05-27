@@ -490,7 +490,7 @@ PLAYER DATA
 					)
 			</Text>
 			<Text id="dockServices:installAbility">
-				(cat "We install smuggler's equipment up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
+				We install smuggler's equipment up to tech level %maxLevel%.
 			</Text>
 
 			<Text id="rumor.commonwealthPub">

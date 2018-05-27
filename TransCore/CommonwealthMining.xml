@@ -445,7 +445,7 @@
 					)
 			</Text>
 			<Text id="dockServices:installAbility">
-				(cat "We install mining equipment up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
+				We install mining equipment up to tech level %maxLevel%.
 			</Text>
 			<Text id="dockServices:weaponsAbility">
 				We sell mining equipment up to tech level %maxLevel%.

@@ -489,7 +489,9 @@
 					;	If we only sell one item, say so
 					
 					(= (count (@ gData 'items)) 1)
-						(cat "We sell and install " (itmGetName (@ (@ gData 'items) 0) 0x02) ".")
+						(scrTranslate gScreen "actionMiscDevices:defaultUpgrade:OnlyOne" {
+							itemName: (itmGetName (@ (@ gData 'items) 0) 'plural)
+							})
 
 					;	Otherwise, describe the upgrade based on a category
 					
@@ -497,19 +499,13 @@
 						maxLevel: (@ gData 'maxLevel)
 						category:
 							(switch
-								(= (count (@ gData 'items))
-										(count (filter (@ gData 'items) theItem (itmMatches theItem "r")))
-										)
+								(apply and (map (@ gData 'items) theItem (itmMatches theItem "r")))
 									'reactor
 									
-								(= (count (@ gData 'items))
-										(count (filter (@ gData 'items) theItem (itmMatches theItem "v")))
-										)
+								(apply and (map (@ gData 'items) theItem (itmMatches theItem "v")))
 									'drive
 									
-								(= (count (@ gData 'items))
-										(count (filter (@ gData 'items) theItem (itmMatches theItem "c")))
-										)
+								(apply and (map (@ gData 'items) theItem (itmMatches theItem "c")))
 									'cargoHold
 									
 								Nil
@@ -517,6 +513,7 @@
 						})
 					)
 			</Text>
+			<Text id="actionMiscDevices:defaultUpgrade:OnlyOne">We sell and install %itemName%.</Text>
 
 			<Text id="actionRemoveDevice">Remo[v]e Device</Text>
 			<Text id="actionRemoveOverlays">[R]emove All</Text>
