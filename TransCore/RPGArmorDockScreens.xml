@@ -1212,7 +1212,7 @@
 	'checkMilitaryID: If True, we should check for a military ID before 
 			installing Military armor. We also refuse to install Illegal armor.
 
-	sourceObj: If not Nil, use this as the object for inventory purposes.
+	'sourceObj: If not Nil, use this as the object for inventory purposes.
 -->
 
 	<DockScreen UNID="&dsRPGUpgradeArmor;"
@@ -1222,7 +1222,7 @@
 			>
 
 		<ListOptions
-				dataFrom=	"=(if (@ gData 'sourceObj) (@ gData 'sourceObj) 'source)"
+				dataFrom=	"=(or (@ gData 'sourceObj) 'source)"
 				list=		"*"
 				>
 			(scrSetListFilter gScreen (lambda (theItem)
@@ -1245,18 +1245,14 @@
 						(oldItem (shpGetArmor gPlayerShip armorSeg))
 						(currencyUsed (objGetDefaultCurrency gSource))
 						
-						(result
-							(if thisItem
-								(objCanInstallItem gPlayerShip thisItem armorSeg)
-								(list Nil 'cannotInstall "The station doesn't have any armor segments to install.")
-								)
-							)
+						(result (if thisItem (objCanInstallItem gPlayerShip thisItem armorSeg)))
 						(resultCode (@ result 1))
-						
+
 						(totalCost (add (objGetSellPrice gSource thisItem) (objGetArmorReplacePrice gSource thisItem)))
 						(cargoNeeded (itmGetMass oldItem))
 
 						(desc Nil)
+						(descID Nil)
 						(canInstall Nil)
 						)
 						
@@ -1269,50 +1265,60 @@
 						
 						;	Tell the player whether we can install the selected item and how 
 						;	much it will cost.
-						
+
+						(scrSetData gScreen 'cost totalCost)
 						(switch
-							(eq resultCode 'armorTooHeavy)
-								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descArmorTooHeavy { armor:thisItem }))
+							(not thisItem)
+								(setq descID 'descNoArmorHere)
+
+							(= resultCode 'armorTooHeavy)
+								(setq descID 'descArmorTooHeavy)
 								
-							(eq resultCode 'cannotInstall)
+							(= resultCode 'cannotInstall)
 								(setq desc (@ result 2))
 								
 							(and (@ gData 'checkMilitaryID) 
 									(itmHasAttribute thisItem "Military")
 									(not (objGetItems gPlayerShip "*+MilitaryID"))
 									)
-								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descNeedMilitaryID { armor:thisItem }))
+								(setq descID descNeedMilitaryID)
 								
 							(and (@ gData 'checkMilitaryID) 
 									(itmHasAttribute thisItem "Illegal")
 									)
-								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descArmorIllegal { armor:thisItem }))
+								(setq descID 'descArmorIllegal)
 								
 							(gr cargoNeeded (objGetCargoSpaceLeft gPlayerShip))
-								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descNotEnoughRoom))
+								(setq descID 'descNotEnoughRoom)
 							
 							(gr totalCost (objGetBalance gPlayerShip currencyUsed))
-								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descCannotAfford { armor:thisItem cost:(fmtCurrency currencyUsed totalCost) }))
+								(setq descID 'descCannotAfford)
 								
-							(eq totalCost 0)
+							(= totalCost 0)
 								(block Nil
-									(setq desc (typTranslate &dsRPGUpgradeArmor; 'descFreeInstall { armor:thisItem }))
-									(scrSetData gScreen 'cost 0)
+									(setq descID 'descFreeInstall)
 									(setq canInstall True)
 									)
 								
 							;	Otherwise, we're OK to install
 								
 							(block Nil
-								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descInstall { armor:thisItem cost:(fmtCurrency currencyUsed totalCost) }))
-								(scrSetData gScreen 'cost totalCost)
+								(setq descID 'descInstall)
 								(setq canInstall True)
 								)
 							)
-							
+
 						;	Set the description
-						
-						(scrSetDesc gScreen desc)
+						(if descID
+							(scrSetDescTranslate gScreen descID {
+								armor:thisItem
+								armorPlural:(itmGetName thisItem 'plural)
+								armorArticle:(itmGetName thisItem 'article)
+								armorShort:(itmGetName thisItem 'short)
+								cost:(fmtCurrency currencyUsed totalCost)
+								})
+							(scrSetDesc gScreen desc)
+							)
 						
 						;	Enable/disable actions
 						
@@ -1330,7 +1336,7 @@
 						(block (
 							(thisItem (scrGetItem gScreen))
 							(currencyUsed (objGetDefaultCurrency gSource))
-							(sourceObj (if (@ gData 'sourceObj) (@ gData 'sourceObj) gSource))
+							(sourceObj (or (@ gData 'sourceObj) gSource))
 							)
 							
 							(objRemoveItem sourceObj thisItem 1)
@@ -1353,30 +1359,19 @@
 		<Language>
 			<Text id="actionBuyAndInstall">[B]uy and Install</Text>
 
-			<Text id="descArmorTooHeavy">
-				(cat (itmGetName (@ gData 'armor) 0x03) " are too heavy for your ship's hull.")
-			</Text>
-			<Text id="descNeedMilitaryID">
-				(cat "You must have a military ID to install " (itmGetName (@ gData 'armor) 0x80) ".")
-			</Text>
-			<Text id="descArmorIllegal">
-				We do not install illegal armor.
-			</Text>
+			<Text id="descNoArmorHere">The station doesn't have any armor segments to install.</Text>
+			<Text id="descArmorTooHeavy">%ArmorPlural are too heavy for your ship's hull.</Text>
+			<Text id="descNeedMilitaryID">You must have a military ID to install %armorShort%.</Text>
+			<Text id="descArmorIllegal">We do not install illegal armor.</Text>
 			<Text id="descNotEnoughRoom">
 
 				There isn't enough room in your cargo hold to store your old 
 				armor segment. Sell or jettison cargo to make room.
 
 			</Text>
-			<Text id="descCannotAfford">
-				(cat "We can install " (itmGetName (@ gData 'armor) 0x04) " for " (@ gData 'cost) ". Unfortunately, you cannot afford the cost.")))
-			</Text>
-			<Text id="descFreeInstall">
-				(cat "We can install " (itmGetName (@ gData 'armor) 0x04) " free of charge.")
-			</Text>
-			<Text id="descInstall">
-				(cat "We can install " (itmGetName (@ gData 'armor) 0x04) " for " (@ gData 'cost) ".")))
-			</Text>
+			<Text id="descCannotAfford">We can install %armorArticle% for %cost%. Unfortunately, you cannot afford the cost.</Text>
+			<Text id="descFreeInstall">We can install %armorArticle% free of charge.</Text>
+			<Text id="descInstall">We can install %armorArticle% for %cost%.</Text>
 		</Language>
 	</DockScreen>
 
