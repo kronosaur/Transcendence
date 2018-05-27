@@ -994,9 +994,13 @@
 
 	<DockScreen UNID="&dsRPGReplaceArmor;"
 			type=				"itemPicker"
-			inherit=		"&dsDockScreenBase;"
+			inherit=		"&dsRPGUpgradeArmor;"
 			nestedScreen=		"true"
 			>
+
+		<OnScreenInit>
+			(scrSetData gScreen 'installCostOnly True)
+		</OnScreenInit>
 
 		<ListOptions
 			dataFrom=	"player"
@@ -1021,179 +1025,10 @@
 		</ListOptions>
 
 		<Panes>
-			<Default descID="descReplaceArmorDefault">
-				<OnPaneInit>
-					(block (
-						(armorSeg (@ gData 'armorSeg))
-						(thisItem (scrGetItem gScreen))
-						(oldItem (shpGetArmor gPlayerShip armorSeg))
-						(currencyUsed (objGetDefaultCurrency gSource))
-						
-						(canInstall True)
-						)
-						
-						;	Show the current armor
-						
-						(scrSetControlValue gScreen 'currentItem {
-							source: gPlayerShip
-							item: oldItem
-							})
-							
-						;	Status
-						
-						(if thisItem
-							(block (
-								(returnValue (objCanInstallItem gPlayerShip thisItem armorSeg))
-								(resultCode (@ returnValue 1))
-								(resultMessage (@ returnValue 2))
-								(itemToReplace (@ returnValue 3))
-								
-								desc
-								cargoNeeded
-								)
-								(setq gInstallStatus (objGetItemProperty gSource thisItem 'installItemStatus))
-								(setq gCost (@ gInstallStatus 'price))
-								(setq cargoNeeded (subtract (itmGetMass (shpGetArmor gPlayerShip armorSeg)) (itmGetMass thisItem)))
-
-								(switch
-									(= resultCode 'notCompatible)
-										(block Nil
-											(setq desc (or 
-												(objTranslate gPlayerShip 'rpg.cannotInstallArmorBecauseNotCompatible { item:thisItem targetObj:gPlayerShip })
-												(scrTranslate gScreen 'rpg.cannotInstallArmorBecauseNotCompatible { item:thisItem targetObj:gPlayerShip })
-												"This armor segment is not compatible with your ship."
-												))
-											(setq canInstall Nil)
-											)
-
-									(= resultCode 'armorTooHeavy)
-										(block Nil
-											(setq desc (cat (itmGetName thisItem 3) " are too heavy for your ship's hull."))
-											(setq canInstall Nil)
-											)
-											
-									(and (@ gData 'checkMilitaryID) 
-											(itmHasAttribute thisItem "Military")
-											(not (objGetItems gPlayerShip "*+MilitaryID"))
-											)
-										(block Nil
-											(setq desc (cat "You must have a military ID to install " (itmGetName thisItem 0x80) "."))
-											(setq canInstall Nil)
-											)
-											
-									(and (@ gData 'checkMilitaryID) 
-											(itmHasAttribute thisItem "Illegal")
-											)
-										(block Nil
-											(setq desc "We do not install illegal armor segments.")
-											(setq canInstall Nil)
-											)
-											
-									(= resultCode 'cannotInstall)
-										(block Nil
-											(setq desc resultMessage)
-											(setq canInstall Nil)
-											)
-									
-									(not (eq resultCode 'ok))
-										(block Nil
-											(setq desc "This armor segment cannot be installed.")
-											(setq canInstall Nil)
-											)
-
-									(not (@ gInstallStatus 'canInstall))
-										(block Nil
-											(if (@ gInstallStatus 'descID)
-												(setq desc (objTranslate gSource (@ gInstallStatus 'descID) { item:thisItem targetObj:gPlayerShip }))
-												(setq desc (cat "We do not have the technology to install " (itmGetName thisItem 0x80) "."))
-												)
-											(setq canInstall Nil)
-											)
-
-									(gr cargoNeeded (objGetCargoSpaceLeft gPlayerShip))
-										(block Nil
-											(setq desc "There is no room in your cargo hold to store the old armor segment.")
-											(setq canInstall Nil)
-											)
-
-									(gr gCost (objGetBalance gPlayerShip currencyUsed))
-										(block Nil
-											(setq desc 
-												(cat "We can install " (itmGetName thisItem 0x04) " for " (fmtCurrency currencyUsed gCost) ". Unfortunately, you cannot afford this cost.")
-												)
-											(setq canInstall Nil)
-											)
-
-									(eq gCost 0)
-										(setq desc
-											(cat "We can install " (itmGetName thisItem 0x04) " free of charge.")
-											)
-
-									(setq desc
-										(cat "We can install " (itmGetName thisItem 0x04) " for " (fmtCurrency currencyUsed gCost) ".")
-										)
-									)
-									
-								;	If the new segment is of a lower level than the current
-								;	segment, then warn the player
-								
-								(if canInstall
-									(switch
-										(gr (itmGetLevel (shpGetArmor gPlayerShip armorSeg)) (itmGetLevel thisItem))
-											(scrSetControlValue gScreen 'descWarning
-												(cat
-													"Note: Your currently installed " (itmGetName (shpGetArmor gPlayerShip armorSeg) 0x80)
-													" is higher level."
-													)
-												)
-										)
-									)
-
-								(scrSetDesc gScreen desc)
-								)
-
-							(block Nil
-								(scrSetDesc gScreen "You do not have any armor segments in your cargo hold.")
-								(setq canInstall Nil)
-								)
-							)
-
-						(scrEnableAction gScreen 'actionInstallArmor canInstall)
-						)
-				</OnPaneInit>
-
-				<Controls>
-					<ItemDisplay id="currentItem"/>
-					<Text id="desc"/>
-					<Text id="descWarning" style="warning"/>
-				</Controls>
-
-				<Actions>
-					<Action id="actionInstallArmor" default="1">
-						(block (thisItem currencyUsed)
-							(setq thisItem (scrGetItem gScreen))
-							(setq currencyUsed (objGetDefaultCurrency gSource))
-
-							(if (and thisItem (geq (objGetBalance gPlayerShip currencyUsed) gCost))
-								(block Nil
-									(shpInstallArmor gPlayerShip thisItem (@ gData 'armorSeg))
-									(objCharge gPlayerShip currencyUsed gCost)
-									
-									(scrExitScreen gScreen)
-									)
-								)
-							)
-					</Action>
-
-					<Action id="actionCancel" cancel="1">
-						(scrExitScreen gScreen)
-					</Action>
-				</Actions>
-			</Default>
 		</Panes>
 
 		<Language>
-			<Text id="actionInstallArmor">[I]nstall this Armor</Text>
+			<Text id="actionBuyAndInstall">[I]nstall this Armor</Text>
 
 			<Text id="descReplaceArmorDefault">
 				Pick an armor segment to install.
@@ -1248,14 +1083,19 @@
 						(result (if thisItem (objCanInstallItem gPlayerShip thisItem armorSeg)))
 						(resultCode (@ result 1))
 
-						(totalCost (add (objGetSellPrice gSource thisItem) (objGetArmorReplacePrice gSource thisItem)))
+						(installStatus (objGetItemProperty gSource thisItem 'installItemStatus))
+
+						(totalCost (if (scrGetData gScreen 'installCostOnly)
+							(objGetArmorReplacePrice gSource thisItem)
+							(+ (objGetSellPrice gSource thisItem) (objGetArmorReplacePrice gSource thisItem))
+							))
 						(cargoNeeded (itmGetMass oldItem))
 
 						(desc Nil)
 						(descID Nil)
 						(canInstall Nil)
 						)
-						
+
 						;	Show the current armor
 						
 						(scrSetControlValue gScreen 'currentItem {
@@ -1273,21 +1113,30 @@
 
 							(= resultCode 'armorTooHeavy)
 								(setq descID 'descArmorTooHeavy)
-								
+
 							(= resultCode 'cannotInstall)
 								(setq desc (@ result 2))
-								
+
 							(and (@ gData 'checkMilitaryID) 
 									(itmHasAttribute thisItem "Military")
 									(not (objGetItems gPlayerShip "*+MilitaryID"))
 									)
 								(setq descID descNeedMilitaryID)
-								
+
 							(and (@ gData 'checkMilitaryID) 
 									(itmHasAttribute thisItem "Illegal")
 									)
 								(setq descID 'descArmorIllegal)
-								
+
+							(!= resultCode 'ok)
+								(setq descID 'descCannotInstall)
+
+							(not (@ installStatus 'canInstall))
+								(setq desc (or
+									(objTranslate gSource (@ installStatus 'descID) { item:thisItem targetObj:gPlayerShip })
+									(scrTranslate gScreen 'descNoTech { armorShort:(itmGetName thisItem 'short) })
+									))
+
 							(gr cargoNeeded (objGetCargoSpaceLeft gPlayerShip))
 								(setq descID 'descNotEnoughRoom)
 							
@@ -1308,6 +1157,17 @@
 								)
 							)
 
+						;	If the new segment is of a lower level than the current
+						;	segment, then warn the player
+						(if canInstall
+							(switch
+								(gr (itmGetLevel oldItem) (itmGetLevel thisItem))
+									(scrSetControlValueTranslate gScreen 'descWarning 'descWarningLevel {
+										armorShort:(itmGetName oldItem 'short)
+										})
+								)
+							)
+
 						;	Set the description
 						(if descID
 							(scrSetDescTranslate gScreen descID {
@@ -1321,7 +1181,6 @@
 							)
 						
 						;	Enable/disable actions
-						
 						(scrEnableAction gScreen 'actionBuyAndInstall canInstall)
 						)
 				</OnPaneInit>
@@ -1329,19 +1188,17 @@
 				<Controls>
 					<ItemDisplay id="currentItem"/>
 					<Text id="desc"/>
+					<Text id="descWarning" style="warning"/>
 				</Controls>
 				
 				<Actions>
 					<Action id="actionBuyAndInstall" default="1">
 						(block (
-							(thisItem (scrGetItem gScreen))
+							(thisItem (scrRemoveItem gScreen 1))
 							(currencyUsed (objGetDefaultCurrency gSource))
-							(sourceObj (or (@ gData 'sourceObj) gSource))
 							)
-							
-							(objRemoveItem sourceObj thisItem 1)
-							(objAddItem gPlayerShip thisItem 1)
 
+							(objAddItem gPlayerShip thisItem 1)
 							(shpInstallArmor gPlayerShip thisItem (@ gData 'armorSeg))
 							(objCharge gPlayerShip currencyUsed (scrGetData gScreen 'cost))
 
@@ -1363,6 +1220,8 @@
 			<Text id="descArmorTooHeavy">%ArmorPlural are too heavy for your ship's hull.</Text>
 			<Text id="descNeedMilitaryID">You must have a military ID to install %armorShort%.</Text>
 			<Text id="descArmorIllegal">We do not install illegal armor.</Text>
+			<Text id="descCannotInstall">This armor segment cannot be installed.</Text>
+			<Text id="descNoTech">We do not have the technology to install %armorShort%.</Text>
 			<Text id="descNotEnoughRoom">
 
 				There isn't enough room in your cargo hold to store your old 
@@ -1372,6 +1231,8 @@
 			<Text id="descCannotAfford">We can install %armorArticle% for %cost%. Unfortunately, you cannot afford the cost.</Text>
 			<Text id="descFreeInstall">We can install %armorArticle% free of charge.</Text>
 			<Text id="descInstall">We can install %armorArticle% for %cost%.</Text>
+
+			<Text id="descWarningLevel">Note: Your currently installed %armorShort% is higher level.</Text>
 		</Language>
 	</DockScreen>
 
