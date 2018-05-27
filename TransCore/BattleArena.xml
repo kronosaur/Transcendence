@@ -302,7 +302,7 @@
 							<Action id="actionGladiatorsQuarters" default="1">
 								(block (
 									(arenaRank (objGetTypeData gSource "arenaRank"))
-									(matchCount (count (msnFind gSource "cS +gladiatorFight;")))
+									(matchCount (count (msnFind gSource "rS +gladiatorFight;")))
 									theMission
 									)
 									(switch
