@@ -451,7 +451,6 @@
 									})
 							</Action>
 						</Actions>
-
 					</FirstFight>
 
 					<StillFighting descID="descStillFighting">
@@ -821,43 +820,7 @@
 				>
 			<OnDisplayInit>
 				(map (scrGetData gScreen 'opponentList) shipObj
-					(block (
-						(armorItem (@ (objGetItems shipObj "aI") 0))
-						(shieldItem (@ (objGetItems shipObj "sI") 0))
-						(driveItem (or (@ (objGetItems shipObj "vI") 0) &itTritiumPropulsionUpgrade;))
-						)
-						{
-						title: (objGetName shipObj)
-						icon: (shpGetImageDesc shipObj)
-						largeIcon: (shpGetImageDesc shipObj { type:'schematic })
-
-						details: (append
-							{
-							icon: (shpGetImageDesc shipObj 0)
-							title: (objGetName shipObj 'generic)
-							}
-							{
-							icon: (itmGetImageDesc driveItem)
-							title: (scrTranslate gScreen 'listSpeed {speed: (fmtNumber 'speed (objGetProperty shipObj 'maxSpeed))})
-							}
-							{
-							icon: (itmGetImageDesc armorItem)
-							title: (scrTranslate gScreen 'listArmor)
-							desc: (or (itmGetName armorItem '(short actual)) "None")
-							}
-							{
-							icon: (itmGetImageDesc shieldItem)
-							title: (scrTranslate gScreen 'listShields)
-							desc: (or (itmGetName shieldItem '(short actual)) "None")
-							}
-							(map (objGetItems shipObj "wI") theItem {
-								icon: (itmGetImageDesc theItem)
-								title: (itmGetName theItem '(short actual capitalize))
-								})
-							)
-
-						shipObj: shipObj
-						})
+					(bamGetGladiatorDetails shipObj)
 					)
 			</OnDisplayInit>
 		</Display>
@@ -1602,6 +1565,49 @@
 					(objSetProperty doorObj 'barrier Nil)
 					(objSetProperty doorObj 'paintLayer Nil)
 					)
+				))
+
+			(setq bamGetGladiatorDetails (lambda (shipObj)
+				(block (
+					(armorItem (@ (objGetItems shipObj "aI") 0))
+					(shieldItem (@ (objGetItems shipObj "sI") 0))
+					(driveItem (or (@ (objGetItems shipObj "vI") 0) &itTritiumPropulsionUpgrade;))
+					)
+					{
+					title: (if (= shipObj gPlayerShip)
+						(plyComposeString gPlayer "%name%")
+						(objGetName shipObj)
+						)
+					icon: (shpGetImageDesc shipObj)
+					largeIcon: (shpGetImageDesc shipObj { type:'schematic })
+
+					details: (append
+						{
+						icon: (shpGetImageDesc shipObj 0)
+						title: (objGetName shipObj 'generic)
+						}
+						{
+						icon: (itmGetImageDesc driveItem)
+						title: (scrTranslate gScreen 'listSpeed {speed: (fmtNumber 'speed (objGetProperty shipObj 'maxSpeed))})
+						}
+						{
+						icon: (itmGetImageDesc armorItem)
+						title: (scrTranslate gScreen 'listArmor)
+						desc: (or (itmGetName armorItem '(short actual)) "None")
+						}
+						{
+						icon: (itmGetImageDesc shieldItem)
+						title: (scrTranslate gScreen 'listShields)
+						desc: (or (itmGetName shieldItem '(short actual)) "None")
+						}
+						(map (objGetItems shipObj "wI") theItem {
+							icon: (itmGetImageDesc theItem)
+							title: (itmGetName theItem '(short actual capitalize))
+							})
+						)
+
+					shipObj: shipObj
+					})
 				))
 			)
 	</Globals>
