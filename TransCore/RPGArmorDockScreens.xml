@@ -215,12 +215,7 @@
 								)
 							)
 							
-						;	Page Down goes to the next page (either weapons or misc devices)
-						
-						(scrShowAction gScreen 'actionDonePgUp (and (@ gData 'doubleExit) (!= gSource gPlayerShip)))
-						(scrShowAction gScreen 'actionDonePgUpPlayer (and (@ gData 'doubleExit) (= gSource gPlayerShip)))
-						(scrShowAction gScreen 'actionManageWeapons (@ gData 'manageWeapons))
-						(scrShowAction gScreen 'actionManageMiscDevices (and (@ gData 'manageMiscDevices) (not (@ gData 'manageWeapons))))
+						(rpgInitScreenSet (@ gData 'screenSet))
 						)
 				</OnPaneInit>
 				
@@ -304,66 +299,14 @@
 					<Action id="actionRemove">
 						(scrShowPane gScreen "RemoveDevice")
 					</Action>
-					
-					
-					<Action id="actionDonePgUp" minor="true">
-						(scrExitScreen gScreen)
-					</Action>
-					<Action id="actionDonePgUpPlayer" minor="true">
-						(scrExitScreen gScreen)
-					</Action>
-					<Action id="actionManageWeapons" minor="true">
-						(block Nil
-							(scrExitScreen gScreen)
-							(scrShowScreen gScreen &dsRPGManageWeapons; {
-								checkMilitaryID: (@ gData 'checkMilitaryID)
-								noUpgrade: (@ gData 'noUpgrade)
-								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-								
-								manageArmor: True
-								manageMiscDevices: (@ gData 'manageMiscDevices)
-								doubleExit: (@ gData 'doubleExit)
-								})
-							)
-					</Action>
-					<Action id="actionManageMiscDevices" minor="true">
-						(block Nil
-							(scrExitScreen gScreen)
-							(scrShowScreen gScreen &dsRPGManageMiscDevices; {
-								checkMilitaryID: (@ gData 'checkMilitaryID)
-								noUpgrade: (@ gData 'noUpgrade)
-								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-								
-								manageArmor: True
-								manageWeapons: (@ gData 'manageWeapons)
-								doubleExit: (@ gData 'doubleExit)
-								})
-							)
-					</Action>
-					<Action id="actionDone" minor="true">
-						(block (
-							(doubleExit (@ gData 'doubleExit))
-							)
-							
-							(scrExitScreen gScreen)
-							(if doubleExit
-								(scrExitScreen gScreen)
-								)
-							)
-					</Action>
 				</Actions>
 			</Default>
 		</Panes>
 		
 		<Language>
-			<Text id="actionDone">[Escape] Done</Text>
-			<Text id="actionDonePgUp">[PageUp] Dock Services</Text>
-			<Text id="actionDonePgUpPlayer">[PageUp] Ship Configuration</Text>
 			<Text id="actionDisable">Disa[b]le</Text>
 			<Text id="actionEnable">Ena[b]le</Text>
 			<Text id="actionInstall">[I]nstall</Text>
-			<Text id="actionManageMiscDevices">[PageDown] Miscellaneous Devices</Text>
-			<Text id="actionManageWeapons">[PageDown] Weapons</Text>
 			<Text id="actionRemove">Remo[v]e</Text>
 			<Text id="actionRepair">[R]epair</Text>
 			<Text id="actionReplace">Re[p]lace</Text>
@@ -552,14 +495,12 @@
 							)
 							
 						;	Enable/disable various actions
-								
+
 						(scrShowAction gScreen 'actionDisable canDisable)
 						(scrShowAction gScreen 'actionEnable canEnable)
 
 						;	Show the previous action (either weapons or armor)
-						
-						(scrShowAction gScreen 'actionManageWeapons (@ gData 'manageWeapons))
-						(scrShowAction gScreen 'actionManageArmor (and (@ gData 'manageArmor) (not (@ gData 'manageWeapons))))
+						(rpgInitScreenSet (@ gData 'screenSet))
 						)
 				</OnPaneInit>
 				
@@ -655,59 +596,14 @@
 					<Action id="actionRemove">
 						(scrShowPane gScreen "RemoveDevice")
 					</Action>
-					
-					<Action id="actionManageArmor" minor="true">
-						(block Nil
-							(scrExitScreen gScreen)
-							(scrShowScreen gScreen &dsRPGManageArmor; {
-								checkMilitaryID: (@ gData 'checkMilitaryID)
-								noUpgrade: (@ gData 'noUpgrade)
-								sourceObj: (@ gData 'sourceObj)
-								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-							
-								manageMiscDevices: True
-								manageWeapons: (@ gData 'manageWeapons)
-								doubleExit: (@ gData 'doubleExit)
-								})
-							)
-					</Action>
-					<Action id="actionManageWeapons" minor="true">
-						(block Nil
-							(scrExitScreen gScreen)
-							(scrShowScreen gScreen &dsRPGManageWeapons; {
-								checkMilitaryID: (@ gData 'checkMilitaryID)
-								noUpgrade: (@ gData 'noUpgrade)
-								sourceObj: (@ gData 'sourceObj)
-								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-								
-								manageArmor: (@ gData 'manageArmor)
-								manageMiscDevices: True
-								doubleExit: (@ gData 'doubleExit)
-								})
-							)
-					</Action>
-					<Action id="actionDone" minor="true">
-						(block (
-							(doubleExit (@ gData 'doubleExit))
-							)
-							
-							(scrExitScreen gScreen)
-							(if doubleExit
-								(scrExitScreen gScreen)
-								)
-							)
-					</Action>
 				</Actions>
 			</Default>
 		</Panes>
 		
 		<Language>
 			<Text id="actionDisable">Disa[b]le</Text>
-			<Text id="actionDone">[Escape] Done</Text>
 			<Text id="actionEnable">Ena[b]le</Text>
 			<Text id="actionInstall">[I]nstall</Text>
-			<Text id="actionManageArmor">[PageUp] Armor and Shields</Text>
-			<Text id="actionManageWeapons">[PageUp] Weapons</Text>
 			<Text id="actionRemove">Remo[v]e</Text>
 			<Text id="actionRefuel">[R]efuel</Text>
 			<Text id="actionReplace">Re[p]lace</Text>
@@ -952,9 +848,7 @@
 						(scrShowAction gScreen 'actionEnable canEnable)
 
 						;	Page up/page down
-						
-						(scrShowAction gScreen 'actionManageArmor (@ gData 'manageArmor))
-						(scrShowAction gScreen 'actionManageMiscDevices (@ gData 'manageMiscDevices))
+						(rpgInitScreenSet (@ gData 'screenSet))
 						)
 				</OnPaneInit>
 				
@@ -1036,48 +930,6 @@
 					<Action id="actionRemove">
 						(scrShowPane gScreen "RemoveDevice")
 					</Action>
-					
-					<Action id="actionManageArmor" minor="true">
-						(block Nil
-							(scrExitScreen gScreen)
-							(scrShowScreen gScreen &dsRPGManageArmor; {
-								checkMilitaryID: (@ gData 'checkMilitaryID)
-								noUpgrade: (@ gData 'noUpgrade)
-								sourceObj: (@ gData 'sourceObj)
-								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-							
-								manageMiscDevices: (@ gData 'manageMiscDevices)
-								manageWeapons: True
-								doubleExit: (@ gData 'doubleExit)
-								})
-							)
-					</Action>
-					<Action id="actionManageMiscDevices" minor="true">
-						(block Nil
-							(scrExitScreen gScreen)
-							(scrShowScreen gScreen &dsRPGManageMiscDevices; {
-								checkMilitaryID: (@ gData 'checkMilitaryID)
-								noUpgrade: (@ gData 'noUpgrade)
-								sourceObj: (@ gData 'sourceObj)
-								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-								
-								manageArmor: (@ gData 'manageArmor)
-								manageWeapons: True
-								doubleExit: (@ gData 'doubleExit)
-								})
-							)
-					</Action>
-					<Action id="actionDone" minor="true">
-						(block (
-							(doubleExit (@ gData 'doubleExit))
-							)
-							
-							(scrExitScreen gScreen)
-							(if doubleExit
-								(scrExitScreen gScreen)
-								)
-							)
-					</Action>
 				</Actions>
 			</Default>
 		</Panes>
@@ -1086,11 +938,8 @@
 			<Text id="actionBuyAmmo">Buy [A]mmo</Text>
 			<Text id="actionBuyMissiles">Buy [M]issiles</Text>
 			<Text id="actionDisable">Disa[b]le</Text>
-			<Text id="actionDone">[Escape] Done</Text>
 			<Text id="actionEnable">Ena[b]le</Text>
 			<Text id="actionInstall">[I]nstall</Text>
-			<Text id="actionManageArmor">[PageUp] Armor and Shields</Text>
-			<Text id="actionManageMiscDevices">[PageDown] Miscellaneous Devices</Text>
 			<Text id="actionRemove">Remo[v]e</Text>
 			<Text id="actionReplace">Re[p]lace</Text>
 			<Text id="actionUpgrade">Buy [U]pgrade</Text>
@@ -1635,6 +1484,12 @@
 		</Panes>
 		
 		<Language>
+			<Text id="screenSetShipConfig">Ship Configuration</Text>
+			<Text id="screenSetDockServices">Dock Services</Text>
+			<Text id="screenSetArmorAndShields">Armor and Shields</Text>
+			<Text id="screenSetWeapons">Weapons</Text>
+			<Text id="screenMiscDevices">Miscellaneous Devices</Text>
+
 			<Text id="actionArmor:defaultArmorInstall">We install armor segments up to level %maxLevel%.</Text>
 			<Text id="actionArmor:defaultArmorRepair">We repair armor up to level %maxLevel%.</Text>
 			<Text id="actionArmor:defaultArmorUpgrade">We sell armor upgrades up to level %maxLevel%.</Text>

@@ -279,6 +279,13 @@
 							)
 						
 						(actionStatus Nil)
+						(screenSet (list
+							{
+								screen: &dsRPGDockServices;
+								label: (scrTranslate gScreen (if isShipConfig 'screenSetShipConfig 'screenSetDockServices))
+								mainScreen: True
+								}
+							))
 						)
 						
 						;	Refuel services
@@ -299,6 +306,13 @@
 						(scrShowAction gScreen 'actionRepairArmor (@ actionStatus 'visible))
 						(scrEnableAction gScreen 'actionRepairArmor (@ actionStatus 'enabled))
 						(scrSetActionDesc gScreen 'actionRepairArmor (@ actionStatus 'desc))
+						(if (@ actionStatus 'enabled)
+							(lnkAppend screenSet {
+								screen: &dsRPGManageArmor;
+								label: (scrTranslate gScreen 'screenSetArmorAndShields)
+								data: gData
+								})
+							)
 						
 						;	Weapon services
 						
@@ -306,6 +320,13 @@
 						(scrShowAction gScreen 'actionWeapons (@ actionStatus 'visible))
 						(scrEnableAction gScreen 'actionWeapons (@ actionStatus 'enabled))
 						(scrSetActionDesc gScreen 'actionWeapons (@ actionStatus 'desc))
+						(if (@ actionStatus 'enabled)
+							(lnkAppend screenSet {
+								screen: &dsRPGManageWeapons;
+								label: (scrTranslate gScreen 'screenSetWeapons)
+								data: gData
+								})
+							)
 
 						;	Misc devices
 						
@@ -313,26 +334,14 @@
 						(scrShowAction gScreen 'actionMiscDevices (@ actionStatus 'visible))
 						(scrEnableAction gScreen 'actionMiscDevices (@ actionStatus 'enabled))
 						(scrSetActionDesc gScreen 'actionMiscDevices (@ actionStatus 'desc))
-						
-						;	Page Down
-						
-						(scrShowAction gScreen 'actionRepairArmorPgDn
-							(scrIsActionEnabled gScreen 'actionRepairArmor)
+						(if (@ actionStatus 'enabled)
+							(lnkAppend screenSet {
+								screen: &dsRPGManageMiscDevices;
+								label: (scrTranslate gScreen 'screenMiscDevices)
+								data: gData
+								})
 							)
-						(scrShowAction gScreen 'actionWeaponsPgDn 
-							(and 
-								(scrIsActionEnabled gScreen 'actionWeapons)
-								(not (scrIsActionEnabled gScreen 'actionRepairArmor))
-								)
-							)
-						(scrShowAction gScreen 'actionMiscDevicesPgDn 
-							(and 
-								(scrIsActionEnabled gScreen 'actionMiscDevices)
-								(not (scrIsActionEnabled gScreen 'actionWeapons))
-								(not (scrIsActionEnabled gScreen 'actionRepairArmor))
-								)
-							)
-						
+
 						;	Description
 						
 						(scrSetDesc gScreen
@@ -344,6 +353,11 @@
 										})
 									)
 							)
+
+                        ;   Define the screen set
+
+						(scrSetData gScreen 'screenSet screenSet)
+						(rpgInitScreenSet screenSet)
 						)
 				</OnPaneInit>
 				
@@ -362,81 +376,20 @@
 
 					<Action id="actionRepairArmor">
 						(scrShowScreen gScreen &dsRPGManageArmor; {
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							noUpgrade: (@ gData 'noUpgrade)
-							sourceObj: (@ gData 'sourceObj)
-							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-							
-							manageMiscDevices: (scrIsActionEnabled gScreen 'actionMiscDevices)
-							manageWeapons: (scrIsActionEnabled gScreen 'actionWeapons)
-							doubleExit: True
+							screenSet: (scrGetData gScreen 'screenSet)
 							})
 					</Action>
 					
 					<Action id="actionWeapons">
 						(scrShowScreen gScreen &dsRPGManageWeapons; {
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							noUpgrade: (@ gData 'noUpgrade)
-							sourceObj: (@ gData 'sourceObj)
-							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-							
-							manageArmor: (scrIsActionEnabled gScreen 'actionRepairArmor)
-							manageMiscDevices: (scrIsActionEnabled gScreen 'actionMiscDevices)
-							doubleExit: True
+							screenSet: (scrGetData gScreen 'screenSet)
 							})
 					</Action>
 
 					<Action id="actionMiscDevices">
 						(scrShowScreen gScreen &dsRPGManageMiscDevices; {
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							noUpgrade: (@ gData 'noUpgrade)
-							sourceObj: (@ gData 'sourceObj)
-							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-							
-							manageArmor: (scrIsActionEnabled gScreen 'actionRepairArmor)
-							manageWeapons: (scrIsActionEnabled gScreen 'actionWeapons)
-							doubleExit: True
+							screenSet: (scrGetData gScreen 'screenSet)
 							})
-					</Action>
-
-					<Action id="actionRepairArmorPgDn" minor="true">
-						(scrShowScreen gScreen &dsRPGManageArmor; {
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							noUpgrade: (@ gData 'noUpgrade)
-							sourceObj: (@ gData 'sourceObj)
-							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-							
-							manageMiscDevices: (scrIsActionEnabled gScreen 'actionMiscDevices)
-							manageWeapons: (scrIsActionEnabled gScreen 'actionWeapons)
-							doubleExit: True
-							})
-					</Action>
-					<Action id="actionWeaponsPgDn" minor="true">
-						(scrShowScreen gScreen &dsRPGManageWeapons; {
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							noUpgrade: (@ gData 'noUpgrade)
-							sourceObj: (@ gData 'sourceObj)
-							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-							
-							manageArmor: (scrIsActionEnabled gScreen 'actionRepairArmor)
-							manageMiscDevices: (scrIsActionEnabled gScreen 'actionMiscDevices)
-							doubleExit: True
-							})
-					</Action>
-					<Action id="actionMiscDevicesPgDn" minor="true">
-						(scrShowScreen gScreen &dsRPGManageMiscDevices; {
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							noUpgrade: (@ gData 'noUpgrade)
-							sourceObj: (@ gData 'sourceObj)
-							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-							
-							manageArmor: (scrIsActionEnabled gScreen 'actionRepairArmor)
-							manageWeapons: (scrIsActionEnabled gScreen 'actionWeapons)
-							doubleExit: True
-							})
-					</Action>
-					<Action id="actionDone" minor="true">
-						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
@@ -564,15 +517,11 @@
 						})
 					)
 			</Text>
-			
-			<Text id="actionMiscDevicesPgDn">[PageDown] Miscellaneous Devices</Text>
-			
-			<Text id="actionRefuel">[R]efuel</Text>
+
 			<Text id="actionRemoveDevice">Remo[v]e Device</Text>
 			<Text id="actionRemoveOverlays">[R]emove All</Text>
 			
 			<Text id="actionRepairArmor">[A]rmor and Shields</Text>
-			<Text id="actionRepairArmorPgDn">[PageDown] Armor and Shields</Text>
 			<Text id="actionUpgradeReactor">U[p]grade Reactor</Text>
 			
 			<Text id="actionWeapons">[W]eapons</Text>
@@ -603,9 +552,7 @@
 			</Text>
 			<Text id="actionWeapons:nothing">We don't upgrade or install weapons.</Text>
 			<Text id="actionWeapons:shipConfig">View and manage your weapons.</Text>
-			
-			<Text id="actionWeaponsPgDn">[PageDown] Weapons</Text>
-			
+
 			<Text id="shipConfigScreenDesc">You're on board %objName%.</Text>
 			<Text id="dockServicesScreenDesc">You are at a dock services terminal.</Text>
 			
