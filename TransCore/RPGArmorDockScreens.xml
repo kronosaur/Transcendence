@@ -306,13 +306,7 @@
 		</Panes>
 		
 		<Language>
-			<Text id="actionDisable">Disa[b]le</Text>
-			<Text id="actionEnable">Ena[b]le</Text>
-			<Text id="actionInstall">[I]nstall</Text>
-			<Text id="actionRemove">Remo[v]e</Text>
 			<Text id="actionRepair">[R]epair</Text>
-			<Text id="actionReplace">Re[p]lace</Text>
-			<Text id="actionUpgrade">Buy [U]pgrade</Text>
 
 			<Text id="slotTitle:shields">Shield Generator Slot</Text>
 			<Text id="slotDesc:shields">Your ship does not have a shield generator installed.</Text>
@@ -606,13 +600,7 @@
 		</Panes>
 		
 		<Language>
-			<Text id="actionDisable">Disa[b]le</Text>
-			<Text id="actionEnable">Ena[b]le</Text>
-			<Text id="actionInstall">[I]nstall</Text>
-			<Text id="actionRemove">Remo[v]e</Text>
 			<Text id="actionRefuel">[R]efuel</Text>
-			<Text id="actionReplace">Re[p]lace</Text>
-			<Text id="actionUpgrade">Buy [U]pgrade</Text>
 			
 			<Text id="descItemInstalled">
 				(cat
@@ -943,12 +931,6 @@
 		<Language>
 			<Text id="actionBuyAmmo">Buy [A]mmo</Text>
 			<Text id="actionBuyMissiles">Buy [M]issiles</Text>
-			<Text id="actionDisable">Disa[b]le</Text>
-			<Text id="actionEnable">Ena[b]le</Text>
-			<Text id="actionInstall">[I]nstall</Text>
-			<Text id="actionRemove">Remo[v]e</Text>
-			<Text id="actionReplace">Re[p]lace</Text>
-			<Text id="actionUpgrade">Buy [U]pgrade</Text>
 			
 			<Text id="slotTitle:launcher">Launcher Slot</Text>
 			<Text id="slotDesc:launcher">
@@ -1356,6 +1338,13 @@
 			<Text id="screenSetArmorAndShields">Armor and Shields</Text>
 			<Text id="screenSetWeapons">Weapons</Text>
 			<Text id="screenMiscDevices">Miscellaneous Devices</Text>
+
+			<Text id="actionDisable">Disa[b]le</Text>
+			<Text id="actionEnable">Ena[b]le</Text>
+			<Text id="actionInstall">[I]nstall</Text>
+			<Text id="actionRemove">Remo[v]e</Text>
+			<Text id="actionReplace">Re[p]lace</Text>
+			<Text id="actionUpgrade">Buy [U]pgrade</Text>
 
 			<Text id="actionArmor:defaultArmorInstall">We install armor segments up to level %maxLevel%.</Text>
 			<Text id="actionArmor:defaultArmorRepair">We repair armor up to level %maxLevel%.</Text>
