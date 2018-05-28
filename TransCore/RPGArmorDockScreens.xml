@@ -64,11 +64,8 @@
 							;	shield generator slot.
 							
 							(not theItem)
-								(block (
-									(desc Nil)
-									(canInstall Nil)
-									)
-									
+								(block Nil
+
 									(scrSetControlValue gScreen 'currentItem {
 										title: (scrTranslate gScreen "slotTitle:shields")
 										desc: (scrTranslate gScreen "slotDesc:shields" {
@@ -111,13 +108,10 @@
 									
 									(isEnabled (objGetItemProperty theShip theItem 'enabled))
 									
-									(desc Nil)
 									(canEnable Nil)
 									(canDisable Nil)
 									)
-									
-									(setq desc (cat (itmGetName theItem 0x0021) " installed."))
-									
+
 									;	Set the description
 								
 									(scrSetControlValue gScreen 'currentItem {
@@ -358,7 +352,6 @@
 						
 						(canDisable Nil)
 						(canEnable Nil)
-						(canInstall Nil)
 						
 						(deviceTable {
 							cargoHold: {
@@ -601,13 +594,7 @@
 		
 		<Language>
 			<Text id="actionRefuel">[R]efuel</Text>
-			
-			<Text id="descItemInstalled">
-				(cat
-					(itmGetName (@ gData 'item) 0x0021) " installed."
-					)
-			</Text>
-			
+
 			<Text id="slotTitle:cargoHold">Cargo Expansion Slot</Text>
 			<Text id="slotDesc:cargoHold">
 				(scrTranslate gScreen (switch
@@ -710,7 +697,6 @@
 						(canBuyAmmo Nil)
 						(canDisable Nil)
 						(canEnable Nil)
-						(canInstall Nil)
 						
 						(deviceTable {
 							weapon: {
