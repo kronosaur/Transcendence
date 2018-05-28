@@ -224,6 +224,7 @@
 						(block Nil
 							(objRepairArmor gPlayerShip (scrGetItem gScreen))
 							(objCharge gPlayerShip (objGetDefaultCurrency gSource) (scrGetData gScreen 'costToRepair))
+							(objCredit gSource (objGetDefaultCurrency gSource) (scrGetData gScreen 'costToRepair))
 							(typSetData &svPlayer; 'tutorialRepaired True)
 							(scrShowPane gScreen "Default")
 							)
@@ -978,7 +979,7 @@
 			>
 
 		<OnScreenInit>
-			(scrSetData gScreen 'installCostOnly True)
+			(scrSetData gScreen 'installOnly True)
 		</OnScreenInit>
 
 		<ListOptions
@@ -1007,11 +1008,6 @@
 		</Panes>
 
 		<Language>
-			<Text id="actionBuyAndInstall">[I]nstall this Armor</Text>
-
-			<Text id="descReplaceArmorDefault">
-				Pick an armor segment to install.
-			</Text>
 		</Language>
 	</DockScreen>
 
@@ -1064,7 +1060,8 @@
 
 						(installStatus (objGetItemProperty gSource thisItem 'installItemStatus))
 
-						(totalCost (if (scrGetData gScreen 'installCostOnly)
+						(installOnly (scrGetData gScreen 'installOnly))
+						(totalCost (if installOnly
 							(objGetArmorReplacePrice gSource thisItem)
 							(+ (objGetSellPrice gSource thisItem) (objGetArmorReplacePrice gSource thisItem))
 							))
@@ -1161,6 +1158,10 @@
 						
 						;	Enable/disable actions
 						(scrEnableAction gScreen 'actionBuyAndInstall canInstall)
+						(scrEnableAction gScreen 'actionInstallArmor canInstall)
+
+						(scrShowAction gScreen 'actionBuyAndInstall (not installOnly))
+						(scrShowAction gScreen 'actionInstallArmor installOnly)
 						)
 				</OnPaneInit>
 
@@ -1174,13 +1175,23 @@
 					<Action id="actionBuyAndInstall" default="1">
 						(block (
 							(thisItem (scrRemoveItem gScreen 1))
-							(currencyUsed (objGetDefaultCurrency gSource))
 							)
+							(rpgBuyItem gSource thisItem (scrGetData gScreen 'cost) (objGetDefaultCurrency gSource))
+							(shpInstallArmor gPlayerShip thisItem (@ gData 'armorSeg))
+							(scrExitScreen gScreen)
+							)
+					</Action>
 
+					<Action id="actionInstallArmor" default="1">
+						(block (
+							(thisItem (scrRemoveItem gScreen 1))
+							(currencyUsed (objGetDefaultCurrency gSource))
+							(installCost (scrGetData gScreen 'cost))
+							)
 							(objAddItem gPlayerShip thisItem 1)
 							(shpInstallArmor gPlayerShip thisItem (@ gData 'armorSeg))
-							(objCharge gPlayerShip currencyUsed (scrGetData gScreen 'cost))
-
+							(objCharge gPlayerShip currencyUsed installCost)
+							(objCredit gSource currencyUsed installCost)
 							(scrExitScreen gScreen)
 							)
 					</Action>
@@ -1194,6 +1205,7 @@
 	
 		<Language>
 			<Text id="actionBuyAndInstall">[B]uy and Install</Text>
+			<Text id="actionInstallArmor">[I]nstall this Armor</Text>
 
 			<Text id="descNoArmorHere">The station doesn't have any armor segments to install.</Text>
 			<Text id="descArmorTooHeavy">%ArmorPlural are too heavy for your ship's hull.</Text>
@@ -1225,6 +1237,17 @@
 				<OnPaneInit>
 					(block (
 						(currencyUsed (objGetDefaultCurrency gSource))
+						(needed (scrGetData gScreen 'fuelNeeded))
+						(afford (scrGetData gScreen 'fuelAfford))
+						(descID (switch
+							(and  (gr needed afford) (= (afford) 1))
+								"descRefuelConfirm:onlyAffordOne"
+							(gr needed afford)
+								"descRefuelConfirm:onlyAffordSome"
+							(= needed 1)
+								"descRefuelConfirm:onlyNeedOne"
+							"descRefuelConfirm"
+							))
 						)
 						
 						(scrSetControlValue gScreen 'currentItem {
@@ -1232,12 +1255,14 @@
 							item: (scrGetData gScreen 'fuelItem)
 							})
 							
-						(scrSetDescTranslate gScreen 'descRefuelConfirm {
+						(scrSetDescTranslate gScreen descID {
 							item: (scrGetData gScreen 'fuelItem) 
 							cost: (fmtCurrency currencyUsed (scrGetData gScreen 'fuelCost))
 							totalCost: (fmtCurrency currencyUsed (multiply (scrGetData gScreen 'fuelCost) (scrGetData gScreen 'fuelMax)))
 							needed: (scrGetData gScreen 'fuelNeeded)
 							afford: (scrGetData gScreen 'fuelAfford)
+							itemSingle:(itmGetName (scrGetData gScreen 'fuelItem))
+							itemPlural:(itmGetName (scrGetData gScreen 'fuelItem) 'plural)
 							})
 							
 						(scrSetCounter gScreen (scrGetData gScreen 'fuelMax))
@@ -1252,20 +1277,21 @@
 
 				<Actions>
 					<Action id="actionRefuel" default="1">
-						(block (count)
-							(setq count (scrGetCounter gScreen))
-							(if (gr count (scrGetData gScreen 'fuelMax))
+						(block (
+							(itemCount (scrGetCounter gScreen))
+							(itemCost (scrGetData gScreen 'fuelCost))
+							(currencyUsed (objGetDefaultCurrency gSource))
+							)
+							(if (gr itemCount (scrGetData gScreen 'fuelMax))
 								(scrSetCounter gScreen (scrGetData gScreen 'fuelMax))
-								
-								(block (itemsToUse currencyUsed)
-									(setq itemsToUse (itmCreate (itmGetType (scrGetData gScreen 'fuelItem)) count))
-									(setq currencyUsed (objGetDefaultCurrency gSource))
-									
+
+								(block (
+									(itemsToUse (itmCreate (itmGetType (scrGetData gScreen 'fuelItem)) itemCount))
+									)
 									(shpRefuelFromItem gPlayerShip itemsToUse)
-									
-									(objCharge gPlayerShip currencyUsed (multiply count (scrGetData gScreen 'fuelCost)))
-									(plyRecordBuyItem gPlayer itemsToUse currencyUsed (multiply count (scrGetData gScreen 'fuelCost)))
-									
+									(if itemCost
+										(rpgBuyItem gSource itemsToUse (* itemCount itemCost) currencyUsed { 'noAddItem:True })
+										)
 									(scrShowPane gScreen "Default")
 									)
 								)
@@ -1280,18 +1306,22 @@
 			
 			<RemoveDevice>
 				<OnPaneInit>
-					(block Nil
+					(block (
+						(theItem (scrGetItem gScreen))
+						(descID (if (gr (scrGetData gScreen 'costToRemove) 0)
+							"descRemoveDeviceConfirm"
+							"descRemoveDeviceConfirm:Free"
+							))
+						)
 						(scrSetControlValue gScreen 'currentItem {
 							source: gPlayerShip
-							item: (scrGetItem gScreen)
+							item: theItem
 							})
 							
-						(scrSetDescTranslate gScreen 'descRemoveDeviceConfirm {
-							item: (scrGetItem gScreen) 
-							cost: 
-								(if (gr (scrGetData gScreen 'costToRemove) 0)
-									(fmtCurrency (objGetDefaultCurrency gSource) (scrGetData gScreen 'costToRemove))
-									)
+						(scrSetDescTranslate gScreen descID {
+							item: theItem
+							cost: (fmtCurrency (objGetDefaultCurrency gSource) (scrGetData gScreen 'costToRemove))
+							itemName: (itmGetName theItem 'article)
 							})
 						)
 				</OnPaneInit>
@@ -1306,6 +1336,7 @@
 						(block Nil
 							(shpRemoveDevice gPlayerShip (scrGetItem gScreen))
 							(objCharge gPlayerShip (objGetDefaultCurrency gSource) (scrGetData gScreen 'costToRemove))
+							(objCredit gSource (objGetDefaultCurrency gSource) (scrGetData gScreen 'costToRemove))
 
 							(scrRefreshScreen gScreen)
 							)
@@ -1379,13 +1410,11 @@
 			<Text id="actionInstall:defaultAbility">We install devices up to tech level %maxLevel%.</Text>
 			<Text id="actionInstall:upgradeInstallOnly">Sorry, we only install or remove items as part of an upgrade purchase.</Text>
 			
+			<Text id="actionRefuel:cantAffordAny">
+				We can refuel your ship for %cost% per %itemSingle%. Unfortunately, you cannot afford even one.
+			</Text>
 			<Text id="actionRefuel:cantAfford">
-				(switch
-					(= (@ gData 'afford) 0)
-						(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x00) ". Unfortunately, you cannot afford even one.")
-					
-					(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x00) ".")
-					)
+				We can refuel your ship for %cost% per %itemSingle%.
 			</Text>
 			<Text id="actionRefuel:noRefuel">
 				We do not sell fuel.
@@ -1396,19 +1425,17 @@
 			<Text id="actionRefuel:noFuelNeeded">
 				Your ship is fully fueled.
 			</Text>
+			<Text id="actionRefuel:noFreeFuelNeeded">
+				We can refuel you free of charge, but your ship does not need any fuel.
+			</Text>
+			<Text id="actionRefuel:freeRefuelSingle">
+				We can refuel you free of charge. Your ship needs one %itemSingle%.
+			</Text>
 			<Text id="actionRefuel:freeRefuel">
-				(switch
-					(= (@ gData 'needed) 0)
-						"We can refuel you free of charge, but your ship does not need any fuel."
-						
-					(= (@ gData 'needed) 1)
-						(cat "We can refuel you free of charge. Your ship needs one " (itmGetName (@ gData 'item) 0x00) ".")
-						
-					(cat "We can refuel you free of charge. Your ship needs " (@ gData 'needed) " " (itmGetName (@ gData 'item) 0x02) ".")
-					)
+				We can refuel you free of charge. Your ship needs %needed% %itemPlural%.
 			</Text>
 			<Text id="actionRefuel:refuel">
-				(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x00) ".")
+				We can refuel your ship for %cost% per %itemSingle%.
 			</Text>
 			<Text id="actionRefuel:noFuelInCargo">
 				You do not have any fuel on board your ship.
@@ -1432,32 +1459,40 @@
 			</Text>
 			<Text id="actionRemove:remove">The device can be removed for %cost%.</Text>
 			<Text id="actionRemove:upgradeInstallOnly">Sorry, we only install or remove items as part of an upgrade purchase.</Text>
-			<Text id="actionRemove:noTech">(cat "We do not have the technology to remove a level " (itmGetLevel (@ gData 'item)) " device.")</Text>
+			<Text id="actionRemove:noTech">We do not have the technology to remove a level %itemLevel% device.</Text>
 			
 			<Text id="actionReplace:cannotReplace">The device cannot be replaced.</Text>
 			<Text id="actionReplace:defaultAbility">
 				(switch
 					(and (= (@ gData 'category) 'armor) (@ gData 'maxLevel))
-						(cat 
-							"We install armor up to tech level " (objGetProperty (@ gData 'dockObj) 'installArmorMaxLevel) 
-							" (but you don't have anything better than level " (@ gData 'maxLevel) " in your cargo hold)."
-							)
-							
+						(scrTranslate gScreen "actionReplace:defaultAbility:armorLimited" gData)
+
 					(@ gData 'maxLevel)
-						(cat 
-							"We install devices up to tech level " (objGetProperty (@ gData 'dockObj) 'installDeviceMaxLevel)
-							" (but you don't have anything better than level " (@ gData 'maxLevel) " in your cargo hold)."
-							)
+						(scrTranslate gScreen "actionReplace:defaultAbility:deviceLimited" gData)
 						
 					(= (@ gData 'category) 'armor)
-						(cat "We install armor up to tech level " (objGetProperty (@ gData 'dockObj) 'installArmorMaxLevel) ".")
+						(scrTranslate gScreen "actionReplace:defaultAbility:armor" gData)
 						
-					(cat "We install devices up to tech level " (objGetProperty (@ gData 'dockObj) 'installDeviceMaxLevel) ".")
+					(scrTranslate gScreen "actionReplace:defaultAbility:device" gData)
 					)
+			</Text>
+			<Text id="actionReplace:defaultAbility:armorLimited">
+				We install armor up to tech level %maxTech%
+				(but you don't have anything better than level %maxLevel% in your cargo hold).
+			</Text>
+			<Text id="actionReplace:defaultAbility:armor">
+				We install armor up to tech level %maxTech%
+			</Text>
+			<Text id="actionReplace:defaultAbility:deviceLimited">
+				We install devices up to tech level %maxTech%
+				(but you don't have anything better than level %maxLevel% in your cargo hold).
+			</Text>
+			<Text id="actionReplace:defaultAbility:device">
+				We install devices up to tech level %maxTech%
 			</Text>
 			<Text id="actionReplace:noArmorItemInCargo">There is nothing in your cargo hold to replace this armor segment with.</Text>
 			<Text id="actionReplace:noDeviceItemInCargo">There is nothing in your cargo hold to replace this device with.</Text>
-			<Text id="actionReplace:noTech">(cat "We do not have the technology to replace a level " (itmGetLevel (@ gData 'item)) " device.")</Text>
+			<Text id="actionReplace:noTech">We do not have the technology to replace a level %itemLevel% device.</Text>
 			<Text id="actionReplace:upgradeInstallOnly">Sorry, we only install or remove items as part of an upgrade purchase.</Text>
 			
 			<Text id="actionUpgrade:cannotUpgrade">The device cannot be upgraded.</Text>
@@ -1503,35 +1538,27 @@
 			<Text id="actionUpgrade:noItemUpgrade:weapon">We do not have anything better than your level %itemLevel% weapon.</Text>
 			<Text id="actionUpgrade:noItemUpgrade:device">We do not have anything better than your level %itemLevel% device.</Text>
 			<Text id="actionUpgrade:noTech">We do not have the technology to upgrade a level %itemLevel% device.</Text>
-		
-			<Text id="descRefuelConfirm">
-				(switch
-					(and (gr (@ gData 'needed) (@ gData 'afford)) (= (@ gData 'afford) 1))
-						(cat "Each " (itmGetName (@ gData 'item) 0x00) " costs " (@ gData 'cost) ". You can only afford a single one.")
-						
-					(gr (@ gData 'needed) (@ gData 'afford))
-						(cat "Each " (itmGetName (@ gData 'item) 0x00) " costs " (@ gData 'cost) ". "
-						"You can only afford " (@ gData 'afford) " " (itmGetName (@ gData 'item) 0x02) ". How many do you wish to buy?"
-						)
 
-					(= (@ gData 'needed) 1)
-						(cat "Your ship needs one " (itmGetName (@ gData 'item) 0x00) " for a total cost of " (@ gData 'cost) ".")
-						
-					(cat "Your ship needs " (@ gData 'needed) " " (itmGetName (@ gData 'item) 0x02) ". "
-						"Each " (itmGetName (@ gData 'item) 0x00) " costs " (@ gData 'cost) " (" (@ gData 'totalCost) " total). How many do you wish to buy?"
-						)
-					)
+			<Text id="descRefuelConfirm:onlyAffordOne">
+				Each %itemSingle% costs %cost%. You can only afford a single one.
 			</Text>
-			
+			<Text id="descRefuelConfirm:onlyAffordSome">
+				Each %itemSingle% costs %cost%. You can only afford %afford% %itemPlural%. How many do you wish to buy?
+			</Text>
+			<Text id="descRefuelConfirm:onlyNeedOne">
+				Your ship needs one %itemSingle% for a total cost of %cost%.
+			</Text>
+			<Text id="descRefuelConfirm">
+				Your ship needs %needed% %itemPlural%. Each %itemSingle% costs %cost% (%totalCost% total). How many do you wish to buy?
+			</Text>
+
+			<Text id="descRemoveDeviceConfirm:Free">
+				We can remove %itemName% free of charge. Are you sure you wish to continue?"
+			</Text>
 			<Text id="descRemoveDeviceConfirm">
-				(switch
-					(not (@ gData 'cost))
-						(cat "We can remove " (itmGetName (@ gData 'item) 0x04) " free of charge. Are you sure you wish to continue?")
-						
-					(cat "We can remove " (itmGetName (@ gData 'item) 0x04) " for " (@ gData 'cost) ". Are you sure you wish to continue?")
-					)
+				We can remove %itemName% for %cost%. Are you sure you wish to continue?
 			</Text>
-			
+
 			<Text id="rpg.cannotInstallArmorBecauseNotCompatible">
 				This armor segment is not compatible with your ship.
 			</Text>

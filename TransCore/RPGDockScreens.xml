@@ -147,7 +147,8 @@
 							
 							(if (geq (plyGetCredits gPlayer currency) cost)
 								(block Nil
-									(plyCharge gPlayer currency cost)
+									(objCharge gPlayerShip currency cost)
+									(objCredit gSource currency cost)
 									(shpDecontaminate gPlayerShip)
 									)
 								)
@@ -445,6 +446,7 @@
 								)
 								
 							(objCharge gPlayerShip currencyUsed totalCost)
+							(objCredit gSource currencyUsed totalCost)
 							(scrShowPane gScreen "OverlaysRemoved")
 							)
 					</Action>
@@ -1070,8 +1072,7 @@
 									
 									(shpRefuelFromItem gPlayerShip itemsToUse)
 									
-									(objCharge gPlayerShip currencyUsed (multiply count gCost))
-									(plyRecordBuyItem gPlayer itemsToUse currencyUsed (multiply count gCost))
+									(rpgBuyItem gSource itemsToUse (* count gCost) currencyUsed { 'noAddItem:True })
 									
 									(scrExitScreen gScreen)
 									)
@@ -1155,7 +1156,8 @@
 							
 							(shpEnhanceItem gPlayerShip gItem)
 							(objCharge gPlayerShip (objGetDefaultCurrency gSource) gCost)
-							
+							(objCredit gSource (objGetDefaultCurrency gSource) gCost)
+
 							(scrShowPane gScreen "Success")
 							)
 					</Action>
