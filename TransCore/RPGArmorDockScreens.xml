@@ -70,8 +70,10 @@
 									)
 									
 									(scrSetControlValue gScreen 'currentItem {
-										title: "Shield Generator Slot"
-										desc: "Your ship does not have a shield generator installed."
+										title: (scrTranslate gScreen "slotTitle:shields")
+										desc: (scrTranslate gScreen "slotDesc:shields" {
+											slotsAvail: (objGetProperty theShip 'availableNonWeaponSlots)
+											})
 										})
 									
 									;	Remember that we have the shield generator selected
@@ -311,7 +313,10 @@
 			<Text id="actionRepair">[R]epair</Text>
 			<Text id="actionReplace">Re[p]lace</Text>
 			<Text id="actionUpgrade">Buy [U]pgrade</Text>
-			
+
+			<Text id="slotTitle:shields">Shield Generator Slot</Text>
+			<Text id="slotDesc:shields">Your ship does not have a shield generator installed.</Text>
+
 			<Text id="descArmorNotDamaged">The ship's %armorNoun% is not damaged.</Text>
 			<Text id="descArmorNoTech">The ship's %armorNoun% cannot be repaired. The technology required is not available at this station.</Text>
 			<Text id="descArmorCantRepair">The ship's %armorNoun% cannot be repaired at this station.</Text>
@@ -617,62 +622,63 @@
 			
 			<Text id="slotTitle:cargoHold">Cargo Expansion Slot</Text>
 			<Text id="slotDesc:cargoHold">
-				(switch
-					(eq (@ gData 'slotsAvail) 0)
-						(cat
-							"There are no free slots available for a cargo expansion. "
-							"(However, some devices do not require a free slot to be installed.)"
-							)
-							
-					(cat
-						"Your ship does not have a cargo expansion installed.\n\n"
-					
-						"Cargo expansions can be installed to increase the carrying "
-						"capacity of your ship."
-						)
+				(scrTranslate gScreen (switch
+					(= (@ gData 'slotsAvail) 0)	"slotDesc:cargoHold:0"
+												"slotDesc:cargoHold:1"
 					)
+					gData
+					)
+			</Text>
+			<Text id="slotDesc:cargoHold:0">
+				There are no free slots available for a cargo expansion.
+				(However, some devices do not require a free slot to be installed.)
+			</Text>
+			<Text id="slotDesc:cargoHold:1">
+				Your ship does not have a cargo expansion installed.
+
+				Cargo expansions can be installed to increase the carrying capacity of your ship.
 			</Text>
 			
 			<Text id="slotTitle:device">Device Slot</Text>
 			<Text id="slotDesc:device">
-				(switch
-					(eq (@ gData 'slotsAvail) 0)
-						(cat
-							"There are no free slots available for miscellaneous devices. "
-							"(However, some devices do not require a free slot to be installed.)"
-							)
-							
-					(eq (@ gData 'slotsAvail) 1)
-						(cat
-							"Your ship has a free slot available for installing miscellaneous "
-							"devices."
-							)
-							
-					(cat
-						"Your ship has " (@ gData 'slotsAvail) " free slots available for installing miscellaneous "
-						"devices."
-						)
+				(scrTranslate gScreen (switch
+					(= (@ gData 'slotsAvail) 0)	"slotDesc:device:0"
+					(= (@ gData 'slotsAvail) 1)	"slotDesc:device:1"
+												"slotDesc:device:2"
+					)
+					gData
 					)
 			</Text>
-			
+			<Text id="slotDesc:device:0">
+				There are no free slots available for miscellaneous devices.
+				(However, some devices do not require a free slot to be installed.)
+			</Text>
+			<Text id="slotDesc:device:1">
+				Your ship has a free slot available for installing miscellaneous devices.
+			</Text>
+			<Text id="slotDesc:device:2">
+				Your ship has %slotsAvail% free slots available for installing miscellaneous devices.
+			</Text>
+
 			<Text id="slotTitle:drive">Drive Upgrade Slot</Text>
 			<Text id="slotDesc:drive">
-				(switch
-					(eq (@ gData 'slotsAvail) 0)
-						(cat
-							"There are no free slots available for a drive upgrade. "
-							"(However, some devices do not require a free slot to be installed.)"
-							)
-							
-					(cat
-						"Your ship does not have a drive upgrade installed.\n\n"
-					
-						"Drive upgrades can be installed to increase the thrust and velocity "
-						"of your ship."
-						)
+				(scrTranslate gScreen (switch
+					(= (@ gData 'slotsAvail) 0)	"slotDesc:drive:0"
+												"slotDesc:drive:1"
+					)
+					gData
 					)
 			</Text>
-			
+			<Text id="slotDesc:drive:0">
+				There are no free slots available for a drive upgrade.
+				(However, some devices do not require a free slot to be installed.)
+			</Text>
+			<Text id="slotDesc:drive:1">
+				Your ship does not have a drive upgrade installed.
+
+				Drive upgrades can be installed to increase the thrust and velocity of your ship.
+			</Text>
+
 			<Text id="slotTitle:reactor">Reactor Slot</Text>
 			<Text id="slotDesc:reactor">Your ship does not have a reactor installed.</Text>
 		</Language>
@@ -946,35 +952,40 @@
 			
 			<Text id="slotTitle:launcher">Launcher Slot</Text>
 			<Text id="slotDesc:launcher">
-				(switch
-					(eq (@ gData 'slotsAvail) 0)
-						(cat
-							"There are no free slots available for a launcher. "
-							"(However, some launchers do not require a free slot to be installed.)"
-							)
-							
-					"Your ship does not have a missile launcher installed."
+				(scrTranslate gScreen (switch
+					(= (@ gData 'slotsAvail) 0)	"slotDesc:launcher:0"
+												"slotDesc:launcher:1"
 					)
+					gData
+					)
+			</Text>
+			<Text id="slotDesc:launcher:0">
+				There are no free slots available for a launcher.
+				(However, some launchers do not require a free slot to be installed.)
+			</Text>
+			<Text id="slotDesc:launcher:1">
+				Your ship does not have a missile launcher installed.
 			</Text>
 			
 			<Text id="slotTitle:weapon">Weapon Slot</Text>
 			<Text id="slotDesc:weapon">
-				(switch
-					(eq (@ gData 'slotsAvail) 0)
-						(cat
-							"There are no free slots available for weapons. "
-							"(However, some weapons do not require a free slot to be installed.)"
-							)
-							
-					(eq (@ gData 'slotsAvail) 1)
-						(cat
-							"Your ship has a free slot available for installing weapons."
-							)
-							
-					(cat
-						"Your ship has " (@ gData 'slotsAvail) " free slots available for installing weapons."
-						)
+				(scrTranslate gScreen (switch
+					(= (@ gData 'slotsAvail) 0)	"slotDesc:weapon:0"
+					(= (@ gData 'slotsAvail) 1)	"slotDesc:weapon:1"
+												"slotDesc:weapon:2"
 					)
+					gData
+					)
+			</Text>
+			<Text id="slotDesc:weapon:0">
+				There are no free slots available for weapons.
+				(However, some weapons do not require a free slot to be installed.
+			</Text>
+			<Text id="slotDesc:weapon:1">
+				Your ship has a free slot available for installing weapons.
+			</Text>
+			<Text id="slotDesc:weapon:2">
+				Your ship has %slotsAvail% free slots available for installing weapons.
 			</Text>
 		</Language>
 	</DockScreen>
