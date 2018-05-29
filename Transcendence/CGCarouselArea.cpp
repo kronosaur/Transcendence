@@ -650,7 +650,7 @@ void CGCarouselArea::PaintSelector (CG32bitImage &Dest, const RECT &rcRect, bool
 			m_rgbTextColor,
 			m_pListData->GetTitleAtCursor(),
 			0,
-			CG16bitFont::AlignCenter);
+			CG16bitFont::AlignCenter | CG16bitFont::TruncateBlock);
 	}
 
 void CGCarouselArea::SetList (CCodeChain &CC, ICCItem *pList)
