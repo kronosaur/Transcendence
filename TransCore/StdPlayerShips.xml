@@ -663,7 +663,7 @@
 			class=				"Wolfen"
 			type=				"gunship"
 
-			attributes=			"commonwealth, corporate, pacificDefense, shipBroker"
+			attributes=			"commonwealth, corporate, military, pacificDefense, shipBroker"
 			inherit=			"&scWolfen;"
 			>
 
