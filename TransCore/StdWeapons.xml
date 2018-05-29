@@ -2821,7 +2821,7 @@
 
 	<ItemType UNID="&itKM550Missile;"
 			name=				"KM550 Broadsword missile"
-			attributes=			"commonwealth, consumable, military, missile, NAMI, NAMILauncher"
+			attributes=			"commonwealth, consumable, missile, NAMI, NAMILauncher"
 			  
 			level=				"4"
 			frequency=			"uncommon"
