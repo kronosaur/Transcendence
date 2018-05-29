@@ -146,6 +146,14 @@
 										(scrSetActionDesc gScreen 'actionBuyShip (scrTranslate gScreen 'descCantAffordToBuy))
 										)
 
+								;	If we have too much cargo, then say so
+
+								(gr (objGetProperty gPlayerShip 'cargoSpaceUsedKg) (objGetProperty selObj 'cargoSpaceFreeKg))
+									(block ()
+										(scrEnableAction gScreen 'actionBuyShip Nil)
+										(scrSetActionDesc gScreen 'actionBuyShip (scrTranslate gScreen 'descTooMuchCargo))
+										)
+
 								;	If we get a rebate
 
 								(ls tradeInPrice 0)
@@ -295,6 +303,9 @@
 			<Text id="descCantAffordToBuy">
 				You cannot afford to buy this ship.
 			</Text>
+			<Text id="descTooMuchCargo">
+				You have too much cargo to fit into this ship's cargo hold.
+			</Text>
 			<Text id="descNoShipsForSale">
 				We do not have any ships for sale.
 			</Text>
@@ -414,6 +425,14 @@
 								(block ()
 									(setq confirmDesc result)
 									)
+
+							;	Wingman has too much cargo
+
+							(gr (objGetProperty oldShipObj 'cargoSpaceUsedKg) (objGetProperty newShipObj 'cargoSpaceFreeKg))
+								(setq confirmDesc (scrTranslate gScreen 'descTooMuchCargo {
+									wingmanName:(objGetName oldShipObj 0)
+									newShipName:(objGetName newShipObj 'article)
+									}))
 
 							;	Otherwise, we're trading one of our wingmen...
 
@@ -602,6 +621,9 @@
 			<Text id="descCantAfford">
 				Unfortunately, you cannot afford the cost.
 			</Text>
+			<Text id="descTooMuchCargo">
+				Unfortunately, %wingmanName% has too much cargo to fit into %newShipName%.
+			</Text>
 			<Text id="descTooCheapWarning">
 				The ship you are about to buy is cheaper than your current ship and may be less capable.
 			</Text>
@@ -706,6 +728,20 @@
 										)
 									)
 
+							;	Wingman has too much cargo
+
+							(gr (objGetProperty oldShipObj 'cargoSpaceUsedKg) (objGetProperty newShipObj 'cargoSpaceFreeKg))
+								(block ()
+									(scrEnableAction gScreen 'actionBuyFor Nil)
+									(scrSetDesc gScreen introDesc
+										"\n\n"
+										(scrTranslate gScreen 'descTooMuchCargo {
+											wingmanName:(objGetName oldShipObj 0)
+											newShipName:(objGetName newShipObj 'article)
+											})
+										)
+									)
+
 							;	OK
 
 							(block ()
@@ -768,6 +804,9 @@
 			</Text>
 			<Text id="descCantAfford">
 				Unfortunately, you cannot afford the cost.
+			</Text>
+			<Text id="descTooMuchCargo">
+				Unfortunately, %wingmanName% has too much cargo to fit into %newShipName%.
 			</Text>
 
 			<Text id="descWingmanPrice">
