@@ -993,7 +993,9 @@
                                                 )
 										}
 								
-								(ls maxLevelUpgrade (itmGetLevel theItem))
+								(and (ls maxLevelUpgrade (itmGetLevel theItem))
+										(!= (@ options 'category) 'cargoHold)
+										)
 									{
 										visible: True
 										enabled: Nil

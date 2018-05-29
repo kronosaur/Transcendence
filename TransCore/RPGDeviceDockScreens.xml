@@ -292,7 +292,10 @@
 							(not (@ gData 'replaceItem))
 							(not (itmIsEqual theItem (@ gData 'replaceItem) 'ignoreInstalled))
 							)
-						(geq (itmGetLevel theItem) minLevel)
+						(or
+							(geq (itmGetLevel theItem) minLevel)
+							(= (itmGetProperty theItem 'category) 'cargoHold)
+							)
 						(!= (@ (objCanInstallItem gPlayerShip theItem) 1) 'notCompatible)
 						)
 					))
