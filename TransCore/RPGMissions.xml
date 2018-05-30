@@ -937,10 +937,12 @@
 
 						;	If it's not time for a new mission, then nothing
 						(and (setq nextMissionTime (objGetData gSource 'nextMissionTime))
+								(@ options 'intervalPerStation)
 								(gr nextMissionTime (unvGetTick)))
 							Nil
 
 						(and (setq nextMissionTime (objGetTypeData gSource 'nextMissionTime))
+								(@ options 'intervalPerType)
 								(gr nextMissionTime (unvGetTick)))
 							Nil
 
