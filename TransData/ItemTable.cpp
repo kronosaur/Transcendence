@@ -15,6 +15,7 @@
 #define BY_SHIP_CLASS_USAGE_ATTRIB			CONSTLIT("byShipClassUsage")
 #define CRITERIA_ATTRIB						CONSTLIT("criteria")
 #define GENERATE_ACTUAL_COUNT_ATTRIB		CONSTLIT("generateSimTables")
+#define TABLE_ATTRIB						CONSTLIT("table")
 
 #define FIELD_AVERAGE_DAMAGE				CONSTLIT("averageDamage")
 #define FIELD_TYPE							CONSTLIT("category")
@@ -23,6 +24,7 @@
 #define FIELD_NAME							CONSTLIT("shortName")
 #define FIELD_POWER							CONSTLIT("power")
 #define FIELD_POWER_PER_SHOT				CONSTLIT("powerPerShot")
+#define FIELD_PROBABILITY					CONSTLIT("probability")
 #define FIELD_TOTAL_COUNT					CONSTLIT("totalCount")
 
 #define FIELD_BENCHMARK						CONSTLIT("benchmark")
@@ -50,28 +52,20 @@ static char *g_szFreqCode[] =
 
 struct SItemTableCtx
 	{
-	SItemTableCtx (void) :
-			pUniverse(NULL),
-			pCmdLine(NULL),
-			bHasArmor(false),
-			bHasShields(false),
-			bArmorBalanceStats(false),
-			bShieldBalanceStats(false),
-			bWeaponBalanceStats(false)
-		{ }
-
-	CUniverse *pUniverse;
-	CXMLElement *pCmdLine;
+	CUniverse *pUniverse = NULL;
+	CXMLElement *pCmdLine = NULL;
 
 	TArray<CString> Cols;
 	CDesignTypeStats TotalCount;
 
     CWeaponBenchmarkCtx WeaponBenchmarks;
-	bool bHasArmor;
-	bool bHasShields;
-	bool bArmorBalanceStats;
-	bool bShieldBalanceStats;
-	bool bWeaponBalanceStats;
+	bool bHasArmor = false;
+	bool bHasShields = false;
+	bool bArmorBalanceStats = false;
+	bool bShieldBalanceStats = false;
+	bool bWeaponBalanceStats = false;
+
+	CItemTypeProbabilityTable ProbTable;
 	};
 
 typedef TSortMap<CString, CItemType *> SItemTypeList;
@@ -101,6 +95,7 @@ void OutputByShipClass (SItemTableCtx &Ctx, const SItemTypeList &ItemList, bool 
 void OutputHeader (SItemTableCtx &Ctx);
 void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList);
 void SelectByCriteria (SItemTableCtx &Ctx, const CString &sCriteria, TArray<CItemType *> *retList);
+bool SelectByItemTable (SItemTableCtx &Ctx, const CString &sTable, int iLevel, TArray<CItemType *> *retList);
 void SortTable (SItemTableCtx &Ctx, const TArray<CItemType *> &List, SItemTypeList *retSorted);
 
 void GenerateItemTable (CUniverse &Universe, CXMLElement *pCmdLine)
@@ -111,14 +106,31 @@ void GenerateItemTable (CUniverse &Universe, CXMLElement *pCmdLine)
 	Ctx.pUniverse = &Universe;
 	Ctx.pCmdLine = pCmdLine;
 
-	//	Compute the criteria
+	//	Compute the list of items in the table
 
 	TArray<CItemType *> Selection;
-	SelectByCriteria(Ctx, pCmdLine->GetAttribute(CRITERIA_ATTRIB), &Selection);
-	if (Selection.GetCount() == 0)
+
+	CString sValue;
+	if (pCmdLine->FindAttribute(TABLE_ATTRIB, &sValue))
 		{
-		printf("No entries match criteria.\n");
-		return;
+		int iLevel = pCmdLine->GetAttributeIntegerBounded(FIELD_LEVEL, 1, MAX_SYSTEM_LEVEL, 1);
+		if (!SelectByItemTable(Ctx, sValue, iLevel, &Selection))
+			return;
+
+		if (Selection.GetCount() == 0)
+			{
+			printf("No entries in table.\n");
+			return;
+			}
+		}
+	else
+		{
+		SelectByCriteria(Ctx, pCmdLine->GetAttribute(CRITERIA_ATTRIB), &Selection);
+		if (Selection.GetCount() == 0)
+			{
+			printf("No entries match criteria.\n");
+			return;
+			}
 		}
 
 	//	Figure out if we're showing balance stats
@@ -181,6 +193,11 @@ bool CalcColumns (SItemTableCtx &Ctx, CXMLElement *pCmdLine)
 	Ctx.Cols.Insert(FIELD_FREQUENCY);
 	Ctx.Cols.Insert(FIELD_NAME);
 
+	//	If we have a probability table, the add probability
+
+	if (Ctx.ProbTable.GetCount() > 0)
+		Ctx.Cols.Insert(FIELD_PROBABILITY);
+
 	//	Add fields as columns
 
 	for (i = 0; i < pCmdLine->GetAttributeCount(); i++)
@@ -188,6 +205,8 @@ bool CalcColumns (SItemTableCtx &Ctx, CXMLElement *pCmdLine)
 		CString sAttrib = pCmdLine->GetAttributeName(i);
 
 		if (!IsMainCommandParam(sAttrib)
+				&& !strEquals(sAttrib, TABLE_ATTRIB)
+				&& !strEquals(sAttrib, FIELD_LEVEL)
 				&& !strEquals(sAttrib, BY_ATTRIBUTE_ATTRIB)
 				&& !strEquals(sAttrib, BY_SHIP_CLASS_ATTRIB)
 				&& !strEquals(sAttrib, BY_SHIP_CLASS_USAGE_ATTRIB)
@@ -709,6 +728,12 @@ void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
 					}
                 }
 
+			else if (strEquals(sField, FIELD_PROBABILITY))
+				{
+				Metric rProb = 100.0 * Ctx.ProbTable.GetProbability(pType);
+				printf("%.2f%%", rProb);
+				}
+
 			//	Get the field value
 
             else
@@ -776,6 +801,49 @@ void SelectByCriteria (SItemTableCtx &Ctx, const CString &sCriteria, TArray<CIte
 
 		retList->Insert(pType);
 		}
+	}
+
+bool SelectByItemTable (SItemTableCtx &Ctx, const CString &sTable, int iLevel, TArray<CItemType *> *retList)
+	{
+	int i;
+
+	CItemTable *pTable;
+	DWORD dwUNID = strToInt(sTable, 0);
+	if (dwUNID == 0)
+		{
+		dwUNID = Ctx.pUniverse->GetExtensionCollection().GetEntityValue(sTable);
+		if (dwUNID == 0)
+			{
+			printf("Enter UNID or entity: %s\n", (LPSTR)sTable);
+			return false;
+			}
+
+		pTable = Ctx.pUniverse->FindItemTable(dwUNID);
+		if (pTable == NULL)
+			{
+			printf("Unknown item table: %s\n", (LPSTR)sTable);
+			return false;
+			}
+		}
+
+	//	Get the probability table
+
+	CItemList Dummy1;
+	CItemListManipulator Dummy2(Dummy1);
+	SItemAddCtx ItemCtx(Dummy2);
+	ItemCtx.iLevel = iLevel;
+
+	Ctx.ProbTable = pTable->GetProbabilityTable(ItemCtx);
+
+	//	Add items
+
+	retList->DeleteAll();
+	retList->InsertEmpty(Ctx.ProbTable.GetCount());
+
+	for (i = 0; i < retList->GetCount(); i++)
+		retList->GetAt(i) = Ctx.ProbTable.GetType(i);
+
+	return true;
 	}
 
 void SortTable (SItemTableCtx &Ctx, const TArray<CItemType *> &List, SItemTypeList *retSorted)
