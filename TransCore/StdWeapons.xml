@@ -2344,7 +2344,7 @@
 							count=				"3"
 							type=				"missile"
 
-							damage=				"thermo:6d12+6; momentum:3; WMD:6"
+							damage=				"thermo:5d12; momentum:3; WMD:6"
 							missileSpeed=		"50"
 							lifetime=			"60"
 							maneuverRate=		"9"
@@ -3592,7 +3592,7 @@
 					count=				"12"
 					type=				"missile"
 
-					damage=				"thermo:5d12; momentum:2; WMD:1"
+					damage=				"thermo:4d12; momentum:2; WMD:1"
 					missileSpeed=		"50"
 					lifetime=			"120"
 
@@ -3798,8 +3798,8 @@
 			frequency=			"uncommon"
 			numberAppearing=	"8d12"
 
-			value=				"180"
-			mass=				"30"
+			value=				"300"
+			mass=				"40"
 			  
 			description=		"These warheads are launched by Taikon's TM7 multitarget cannon."
 			>
