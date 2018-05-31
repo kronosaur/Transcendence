@@ -569,6 +569,7 @@ PLAYER DATA
 
 		<DeviceSlots>
 			<DeviceSlot id="topturret" criteria="w +property:omnidirectional;" 	linkedFire="whenInFireArc"	posAngle="180" posRadius="18" posZ="10"/>
+			<DeviceSlot criteria="w +property:multiShot;" posAngle="0" posRadius="20" posZ="0"/>
 			<DeviceSlot criteria="w~l" posAngle="32"  posRadius="20" posZ="0"/>
 			<DeviceSlot criteria="l"   posAngle="-32" posRadius="20" posZ="0"/>
 		</DeviceSlots>
