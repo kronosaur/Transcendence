@@ -43,6 +43,16 @@
 							(msnDestroy gSource)
 							
 						;	OK
+
+						(block ()
+							;	If the Stormhound mission is open (not yet accepted) then
+							;	we close it here. Otherwise the player would be able to go
+							;	back and finish it.
+
+							(enum (msnFind "o +unid:&msBenedictInNewBeyond;;") theMission
+								(msnSetUnavailable theMission)
+								)
+							)
 						)
 					)
 			</OnCreate>
