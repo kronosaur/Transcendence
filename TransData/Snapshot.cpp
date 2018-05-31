@@ -117,12 +117,11 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			//	Compose the criteria
 
-			CSpaceObject::Criteria Criteria;
-			CSpaceObject::ParseCriteria(pPOV, sCriteria, &Criteria);
+			CSpaceObjectCriteria Criteria(pPOV, sCriteria);
 
 			//	Get the list of all objects in the system that match the criteria
 
-			CSpaceObject::SCriteriaMatchCtx Ctx(Criteria);
+			CSpaceObjectCriteria::SCtx Ctx(Criteria);
 			TArray<CSpaceObject *> Results;
 			for (i = 0; i < pSystem->GetObjectCount(); i++)
 				{
@@ -135,7 +134,7 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			if (Results.GetCount() == 0)
 				pTarget = NULL;
-			else if (Criteria.bNearestOnly || Criteria.bFarthestOnly)
+			else if (Criteria.MatchesNearestOnly() || Criteria.MatchesFarthestOnly())
 				pTarget = Ctx.pBestObj;
 			else
 				pTarget = Results[mathRandom(0, Results.GetCount() - 1)];
@@ -185,12 +184,11 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 				Ctx.fNoStarfield = true;
 
 				CSpaceObject *pPOV = pSystem->GetObject(0);
-				CSpaceObject::Criteria Criteria;
-				CSpaceObject::ParseCriteria(pPOV, sCriteria, &Criteria);
+				CSpaceObjectCriteria Criteria(pPOV, sCriteria);
 
 				//	Paint all objects that match the criteria
 
-				CSpaceObject::SCriteriaMatchCtx CriteriaCtx(Criteria);
+				CSpaceObjectCriteria::SCtx CriteriaCtx(Criteria);
 				for (i = 0; i < pSystem->GetObjectCount(); i++)
 					{
 					CSpaceObject *pObj = pSystem->GetObject(i);

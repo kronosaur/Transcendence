@@ -55,12 +55,11 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Criteria
 
-	CSpaceObject::Criteria Criteria;
 	CString sCriteria = pCmdLine->GetAttribute(CONSTLIT("criteria"));
 	if (sCriteria.IsBlank())
 		sCriteria = CONSTLIT("*");
 
-	CSpaceObject::ParseCriteria(NULL, sCriteria, &Criteria);
+	CSpaceObjectCriteria Criteria(sCriteria);
 
 	CItemCriteria ItemCriteria;
 	CString sItemCriteria = pCmdLine->GetAttribute(CONSTLIT("itemCriteria"));
@@ -132,7 +131,7 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			//	Create a table of all items
 
-			CSpaceObject::SCriteriaMatchCtx Ctx(Criteria);
+			CSpaceObjectCriteria::SCtx Ctx(Criteria);
 			for (j = 0; j < pSystem->GetObjectCount(); j++)
 				{
 				CSpaceObject *pObj = pSystem->GetObject(j);
