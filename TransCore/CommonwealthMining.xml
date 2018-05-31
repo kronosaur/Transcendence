@@ -452,12 +452,14 @@
 			</Text>
 
 			<Text id="Intro:New">
+
 				The meeting hall is carved deep below the asteroid's surface. The colony supervisor stands
 				on a platform in the center, surrounded by comms equipment and visual displays.
 				He turns his attention towards you as you approach:
 
 				"Welcome to %stationName%! I saw your ship on my displays; she looks like she's armed for combat.
 				How about taking on a mission for us? We could use the help, and there would be payment."
+
 			</Text>
 			<Text id="Intro:Return">
 				(cat
@@ -1066,7 +1068,9 @@
 			(setq mne_calcIntro (lambda (sourceObj)
 				(objTranslate sourceObj
 					(if (msnFind sourceObj "Saru") "Intro:Return" "Intro:New")
-					{ stationName: (objGetName gSource) }
+					{ 
+						stationName: (objGetName sourceObj) 
+						}
 					)
 				))
 
