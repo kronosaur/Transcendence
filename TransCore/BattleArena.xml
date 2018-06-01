@@ -155,7 +155,9 @@
 		<Image			imageID="&rsBattleArenaSegments;" imageX="1240" imageY="0"    imageWidth="320" imageHeight="280"/>
 		
 		<DockingPorts>
+			<Port x="-105"	y="-140" />
 			<Port x="0"		y="-140" />
+			<Port x="105"	y="-140" />
 		</DockingPorts>
 		
 		<!-- Events and Data -->
@@ -300,7 +302,7 @@
 							<Action id="actionGladiatorsQuarters" default="1">
 								(block (
 									(arenaRank (objGetTypeData gSource "arenaRank"))
-									(matchCount (count (msnFind gSource "cS +gladiatorFight;")))
+									(matchCount (count (msnFind gSource "rS +gladiatorFight;")))
 									theMission
 									)
 									(switch
@@ -449,7 +451,6 @@
 									})
 							</Action>
 						</Actions>
-
 					</FirstFight>
 
 					<StillFighting descID="descStillFighting">
@@ -819,43 +820,7 @@
 				>
 			<OnDisplayInit>
 				(map (scrGetData gScreen 'opponentList) shipObj
-					(block (
-						(armorItem (@ (objGetItems shipObj "aI") 0))
-						(shieldItem (@ (objGetItems shipObj "sI") 0))
-						(driveItem (or (@ (objGetItems shipObj "vI") 0) &itTritiumPropulsionUpgrade;))
-						)
-						{
-						title: (objGetName shipObj)
-						icon: (shpGetImageDesc shipObj)
-						largeIcon: (shpGetImageDesc shipObj { type:'schematic })
-
-						details: (append
-							{
-							icon: (shpGetImageDesc shipObj 0)
-							title: (objGetName shipObj 'generic)
-							}
-							{
-							icon: (itmGetImageDesc driveItem)
-							title: (scrTranslate gScreen 'listSpeed {speed: (fmtNumber 'speed (objGetProperty shipObj 'maxSpeed))})
-							}
-							{
-							icon: (itmGetImageDesc armorItem)
-							title: (scrTranslate gScreen 'listArmor)
-							desc: (or (itmGetName armorItem '(short actual)) "None")
-							}
-							{
-							icon: (itmGetImageDesc shieldItem)
-							title: (scrTranslate gScreen 'listShields)
-							desc: (or (itmGetName shieldItem '(short actual)) "None")
-							}
-							(map (objGetItems shipObj "wI") theItem {
-								icon: (itmGetImageDesc theItem)
-								title: (itmGetName theItem '(short actual capitalize))
-								})
-							)
-
-						shipObj: shipObj
-						})
+					(bamGetGladiatorDetails shipObj)
 					)
 			</OnDisplayInit>
 		</Display>
@@ -1272,11 +1237,11 @@
 							</Offset>
 
 							<Offset scale="pixel"				xOffset="1790"		 yOffset="-839">
-								<Station type="&stInsuranceCompany;" noMapLabel="true"/>
+								<Station type="&stHotel;" noMapLabel="true"/>
 							</Offset>
 
 							<Offset scale="pixel"				xOffset="2177"		 yOffset="-1070">
-								<Station type="&stHotel;" noMapLabel="true"/>
+								<Station type="&stInsuranceCompany;" noMapLabel="true"/>
 							</Offset>
 
 							<!-- Left Quarter -->
@@ -1600,6 +1565,49 @@
 					(objSetProperty doorObj 'barrier Nil)
 					(objSetProperty doorObj 'paintLayer Nil)
 					)
+				))
+
+			(setq bamGetGladiatorDetails (lambda (shipObj)
+				(block (
+					(armorItem (@ (objGetItems shipObj "aI") 0))
+					(shieldItem (@ (objGetItems shipObj "sI") 0))
+					(driveItem (or (@ (objGetItems shipObj "vI") 0) &itTritiumPropulsionUpgrade;))
+					)
+					{
+					title: (if (= shipObj gPlayerShip)
+						(plyComposeString gPlayer "%name%")
+						(objGetName shipObj)
+						)
+					icon: (shpGetImageDesc shipObj)
+					largeIcon: (shpGetImageDesc shipObj { type:'schematic })
+
+					details: (append
+						{
+						icon: (shpGetImageDesc shipObj 0)
+						title: (objGetName shipObj 'generic)
+						}
+						{
+						icon: (itmGetImageDesc driveItem)
+						title: (scrTranslate gScreen 'listSpeed {speed: (fmtNumber 'speed (objGetProperty shipObj 'maxSpeed))})
+						}
+						{
+						icon: (itmGetImageDesc armorItem)
+						title: (scrTranslate gScreen 'listArmor)
+						desc: (or (itmGetName armorItem '(short actual)) "None")
+						}
+						{
+						icon: (itmGetImageDesc shieldItem)
+						title: (scrTranslate gScreen 'listShields)
+						desc: (or (itmGetName shieldItem '(short actual)) "None")
+						}
+						(map (objGetItems shipObj "wI") theItem {
+							icon: (itmGetImageDesc theItem)
+							title: (itmGetName theItem '(short actual capitalize))
+							})
+						)
+
+					shipObj: shipObj
+					})
 				))
 			)
 	</Globals>

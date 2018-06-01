@@ -1929,10 +1929,15 @@
 					)
 				))
 
-			(setq rpgRestorePlayer (lambda ()
+			(setq rpgRestorePlayer (lambda (options)
 
-			; Repairs and restores the player's ship and places it at a random, safe
-			; position in the system.
+			;	Repairs and restores the player's ship and places it at a random, safe
+			;	position in the system.
+			;
+			;	We accept the following options:
+			;
+			;		portObj: restore the player at this position rather than selecting
+			;				a random location.
 
 				(block (
 					(bestStationObj (sysFindObject gPlayerShip "TAFN +populated; -occupation;"))
@@ -1942,6 +1947,10 @@
 
 					(portObj
 						(or
+							;	If we have a restoreObj then use that.
+
+							(@ options 'portObj)
+
 							;	If we've got a populated ship or major capital ship, then
 							;	that's the preferred place.
 

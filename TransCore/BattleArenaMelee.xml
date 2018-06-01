@@ -94,22 +94,20 @@
 
 							;	Some ships attack the player, others attack the nearest target
 							(if (leq (random 1 100) targetPlayerChance)
-								(block Nil
-									(shpOrder thisShip 'attack gPlayerShip)
-									(shpOrder thisShip 'dock arenaObj)
+								(shpOrder thisShip 'attack gPlayerShip)
+								)
+
+							;	We add some command code to the ship so that it chooses a
+							;	random gladiator target
+							(shpSetCommandCode thisShip
+								(block (
+									(theArena (sysFindObject gSource "TN +battleArena;"))
+									(targetList (sysFindObject gSource "sA N:150; D:battleArenaCombatant;"))
 									)
 
-								;	We add some command code to the ship so that it chooses a
-								;	random gladiator target
-								(shpSetCommandCode thisShip
-									(block (targetList theArena)
-										(setq theArena (sysFindObject gSource "TN +battleArena;"))
-										(setq targetList (sysFindObject gSource "sA N:150; D:battleArenaCombatant;"))
-
-										(if targetList
-											(shpOrder gSource 'attack (random targetList))
-											(shpOrder gSource 'dock theArena)
-											)
+									(if targetList
+										(shpOrder gSource 'attack (random targetList))
+										(shpOrder gSource 'dock theArena)
 										)
 									)
 								)
@@ -144,51 +142,49 @@
 					;	Update the ship count
 					(msnIncData gSource 'shipsLeft -1)
 					
-					;	If the ship left a wreck, then trash the items because we
-					;	don't want the player to get too much loot from these wrecks
-					(if aWreckObj
-						(objEnumItems aWreckObj "dNU" theItem (block Nil
-							(objRemoveItem aWreckObj theItem)
-							(objAddItem aWreckObj (itmSetDamaged theItem True))
-							))
-						)
+					(switch
+						;	If the player is destroyed then they cannot win.
+						;	But we let the mission continue for now incase the
+						;	player had insurance
+						(= aObjDestroyed gPlayerShip)
+							(block Nil
+								(msnSetData gSource 'status 'playerKilled)
+								(objSetData gPlayerShip 'battleArenaCombatant Nil)
+								)
 
-					(if (= aObjDestroyed gPlayerShip)
-						(block Nil
-							(msnSetData gSource 'status 'playerKilled)
-							(objSetData gPlayerShip 'battleArenaCombatant Nil)
-							)
+						;	If the ship left a wreck, then trash the items because we
+						;	don't want the player to get too much loot from these wrecks
+						aWreckObj
+							(objEnumItems aWreckObj "dNU" theItem (block Nil
+								(objRemoveItem aWreckObj theItem)
+								(objAddItem aWreckObj (itmSetDamaged theItem True))
+								))
 						)
 
 					(if (and (msnGetProperty gSource 'isActive) gPlayerShip (= aOrderGiver gPlayerShip))
 						(msnIncData gSource 'score)
 						)
 
-					;	If only one ship is left, then the match is over
-					(if (leq (msnGetData gSource 'shipsLeft) 1)
-						(if (= (msnGetData gSource 'status) 'playerKilled)
-							(msnFailure gSource)
+					(switch
+						;	If only one ship is left and the player is alive, then they win
+						(and (= (msnGetData gSource 'shipsLeft) 1) (not (msnGetData gSource 'status)))
 							(msnSuccess gSource)
-							)
+
+						;	If there are no ships left, then fail
+						(= (msnGetData gSource 'shipsLeft) 0)
+							(msnFailure gSource)
 						)
 					)
 			</OnObjDestroyed>
 
 			<OnObjDocked>
-				(block (
-					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-					)
-					(if (and (= aDockTarget arenaObj) (not (= aObjDocked gPlayerShip)))
-						(block Nil
-							(objMoveTo aObjDocked (sysVectorPolarOffset arenaObj 270 80))
-							(msnUnregisterForEvents gSource aObjDocked)
-							(shpCancelOrders aObjDocked)
-							(shpOrderGate aObjDocked)
-							)
-						)
+				(if (and (= (objGetID aDockTarget) (msnGetProperty gSource 'ownerID)) (!= aObjDocked gPlayerShip))
+					;	If a non-player combatant docks then destory it to trigger the
+					;	failure condition (we end the mission when there are no	ships
+					;	left becuase there is not always a survivor).
+					(objDestroy aObjDocked)
 					)
 			</OnObjDocked>
-
 
 			<OnCompleted>
 				(block (
@@ -206,10 +202,15 @@
 								(uiSetSoundtrackMode 'missionEndTravel)
 								)
 						)
+					(objSetData gPlayerShip 'battleArenaCombatant Nil)
 					;	Open arena doors
-					(bamDoorsOpen arenaObj)
+					(if (!= aReason 'success) (bamDoorsOpen arenaObj))
 					)
 			</OnCompleted>
+
+			<OnDebriefed>
+				(bamDoorsOpen arenaObj)
+			</OnDebriefed>
 
 			<OnReward>
 				(block (
@@ -231,7 +232,6 @@
 						)
 					)
 			</OnReward>
-
 		</Events>
 		
 		<Language>
