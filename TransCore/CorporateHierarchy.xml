@@ -752,12 +752,12 @@
 					)
 			</Text>
 			<Text id="dockServices:installAbility">
-				(cat "We install Makayev items up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
+				We install Makayev items up to tech level %maxLevel%.
 			</Text>
 
-            <Text id="core.mapDesc">
-                "Repairs armor up to level 8 &mdash; Installs Makayev armor up to level 7 &mdash; Installs Makayev devices up to level 7 &mdash; Sells Makayev products"
-            </Text>
+			<Text id="core.mapDesc">
+				Repairs armor up to level 8 &mdash; Installs Makayev armor up to level 7 &mdash; Installs Makayev devices up to level 7 &mdash; Sells Makayev products
+			</Text>
 		</Language>
 	</StationType>
 
@@ -866,12 +866,12 @@
 					)
 			</Text>
 			<Text id="dockServices:installAbility">
-				(cat "We install Bushido items up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
+				We install Bushido items up to tech level %maxLevel%.
 			</Text>
 
-            <Text id="core.mapDesc">
-                "Repairs armor up to level 9 &mdash; Installs Bushido armor up to level 10 &mdash; Installs Bushido devices up to level 10 &mdash; Sells Bushido products"
-            </Text>
+			<Text id="core.mapDesc">
+				Repairs armor up to level 9 &mdash; Installs Bushido armor up to level 10 &mdash; Installs Bushido devices up to level 10 &mdash; Sells Bushido products
+			</Text>
 		</Language>
 
 	</StationType>
@@ -1625,12 +1625,12 @@
 					)
 			</Text>
 			<Text id="dockServices:installAbility">
-				(cat "We install Makayev items up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
+				We install Makayev items up to tech level %maxLevel%.
 			</Text>
             
-            <Text id="core.mapDesc">
-                "Refuels up to level 10 &mdash; Repairs/installs Makayev armor up to level 9 &mdash; Installs Makayev devices up to level 9 &mdash; Sells Makayev weapons and ammo"
-            </Text>
+			<Text id="core.mapDesc">
+				Refuels up to level 10 &mdash; Repairs/installs Makayev armor up to level 9 &mdash; Installs Makayev devices up to level 9 &mdash; Sells Makayev weapons and ammo
+			</Text>
 		</Language>
 
 	</StationType>

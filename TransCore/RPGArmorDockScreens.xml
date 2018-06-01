@@ -64,14 +64,13 @@
 							;	shield generator slot.
 							
 							(not theItem)
-								(block (
-									(desc Nil)
-									(canInstall Nil)
-									)
-									
+								(block Nil
+
 									(scrSetControlValue gScreen 'currentItem {
-										title: "Shield Generator Slot"
-										desc: "Your ship does not have a shield generator installed."
+										title: (scrTranslate gScreen "slotTitle:shields")
+										desc: (scrTranslate gScreen "slotDesc:shields" {
+											slotsAvail: (objGetProperty theShip 'availableNonWeaponSlots)
+											})
 										})
 									
 									;	Remember that we have the shield generator selected
@@ -109,13 +108,10 @@
 									
 									(isEnabled (objGetItemProperty theShip theItem 'enabled))
 									
-									(desc Nil)
 									(canEnable Nil)
 									(canDisable Nil)
 									)
-									
-									(setq desc (cat (itmGetName theItem 0x0021) " installed."))
-									
+
 									;	Set the description
 								
 									(scrSetControlValue gScreen 'currentItem {
@@ -215,12 +211,7 @@
 								)
 							)
 							
-						;	Page Down goes to the next page (either weapons or misc devices)
-						
-						(scrShowAction gScreen 'actionDonePgUp (and (@ gData 'doubleExit) (!= gSource gPlayerShip)))
-						(scrShowAction gScreen 'actionDonePgUpPlayer (and (@ gData 'doubleExit) (= gSource gPlayerShip)))
-						(scrShowAction gScreen 'actionManageWeapons (@ gData 'manageWeapons))
-						(scrShowAction gScreen 'actionManageMiscDevices (and (@ gData 'manageMiscDevices) (not (@ gData 'manageWeapons))))
+						(rpgInitScreenSet (@ gData 'screenSet))
 						)
 				</OnPaneInit>
 				
@@ -233,6 +224,7 @@
 						(block Nil
 							(objRepairArmor gPlayerShip (scrGetItem gScreen))
 							(objCharge gPlayerShip (objGetDefaultCurrency gSource) (scrGetData gScreen 'costToRepair))
+							(objCredit gSource (objGetDefaultCurrency gSource) (scrGetData gScreen 'costToRepair))
 							(typSetData &svPlayer; 'tutorialRepaired True)
 							(scrShowPane gScreen "Default")
 							)
@@ -304,78 +296,23 @@
 					<Action id="actionRemove">
 						(scrShowPane gScreen "RemoveDevice")
 					</Action>
-					
-					
-					<Action id="actionDonePgUp" minor="true">
-						(scrExitScreen gScreen)
-					</Action>
-					<Action id="actionDonePgUpPlayer" minor="true">
-						(scrExitScreen gScreen)
-					</Action>
-					<Action id="actionManageWeapons" minor="true">
-						(block Nil
-							(scrExitScreen gScreen)
-							(scrShowScreen gScreen &dsRPGManageWeapons; {
-								checkMilitaryID: (@ gData 'checkMilitaryID)
-								noUpgrade: (@ gData 'noUpgrade)
-								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-								
-								manageArmor: True
-								manageMiscDevices: (@ gData 'manageMiscDevices)
-								doubleExit: (@ gData 'doubleExit)
-								})
-							)
-					</Action>
-					<Action id="actionManageMiscDevices" minor="true">
-						(block Nil
-							(scrExitScreen gScreen)
-							(scrShowScreen gScreen &dsRPGManageMiscDevices; {
-								checkMilitaryID: (@ gData 'checkMilitaryID)
-								noUpgrade: (@ gData 'noUpgrade)
-								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-								
-								manageArmor: True
-								manageWeapons: (@ gData 'manageWeapons)
-								doubleExit: (@ gData 'doubleExit)
-								})
-							)
-					</Action>
-					<Action id="actionDone" minor="true">
-						(block (
-							(doubleExit (@ gData 'doubleExit))
-							)
-							
-							(scrExitScreen gScreen)
-							(if doubleExit
-								(scrExitScreen gScreen)
-								)
-							)
-					</Action>
 				</Actions>
 			</Default>
 		</Panes>
 		
 		<Language>
-			<Text id="actionDone">"[Escape] Done"</Text>
-			<Text id="actionDonePgUp">"[PageUp] Dock Services"</Text>
-			<Text id="actionDonePgUpPlayer">"[PageUp] Ship Configuration"</Text>
-			<Text id="actionDisable">"Disa[b]le"</Text>
-			<Text id="actionEnable">"Ena[b]le"</Text>
-			<Text id="actionInstall">"[I]nstall"</Text>
-			<Text id="actionManageMiscDevices">"[PageDown] Miscellaneous Devices"</Text>
-			<Text id="actionManageWeapons">"[PageDown] Weapons"</Text>
-			<Text id="actionRemove">"Remo[v]e"</Text>
-			<Text id="actionRepair">"[R]epair"</Text>
-			<Text id="actionReplace">"Re[p]lace"</Text>
-			<Text id="actionUpgrade">"Buy [U]pgrade"</Text>
-			
-			<Text id="descArmorNotDamaged">(cat "The ship's " (@ gData 'armorNoun) " is not damaged.")</Text>
-			<Text id="descArmorNoTech">(cat "The ship's " (@ gData 'armorNoun) " cannot be repaired. The technology required is not available at this station.")</Text>
-			<Text id="descArmorCantRepair">(cat "The ship's " (@ gData 'armorNoun) " cannot be repaired at this station.")</Text>
-			<Text id="descArmorTooMuchDamage">(cat "The ship's " (@ gData 'armorNoun) " is heavily damaged and cannot be repaired.")</Text>
-			<Text id="descArmorCantAfford">(cat "The ship's " (@ gData 'armorNoun) " can be repaired for " (@ gData 'cost) ", which, unfortunately, is more than you can afford.")</Text>
-			<Text id="descArmorFreeRepair">(cat "The ship's " (@ gData 'armorNoun) " is damaged and can be repaired free of charge.")</Text>
-			<Text id="descArmorRepair">(cat "The ship's " (@ gData 'armorNoun) " is damaged and will cost " (@ gData 'cost) " to repair.")</Text>
+			<Text id="actionRepair">[R]epair</Text>
+
+			<Text id="slotTitle:shields">Shield Generator Slot</Text>
+			<Text id="slotDesc:shields">Your ship does not have a shield generator installed.</Text>
+
+			<Text id="descArmorNotDamaged">The ship's %armorNoun% is not damaged.</Text>
+			<Text id="descArmorNoTech">The ship's %armorNoun% cannot be repaired. The technology required is not available at this station.</Text>
+			<Text id="descArmorCantRepair">The ship's %armorNoun% cannot be repaired at this station.</Text>
+			<Text id="descArmorTooMuchDamage">The ship's %armorNoun% is heavily damaged and cannot be repaired.</Text>
+			<Text id="descArmorCantAfford">The ship's %armorNoun% can be repaired for %cost%, which, unfortunately, is more than you can afford.</Text>
+			<Text id="descArmorFreeRepair">The ship's %armorNoun% is damaged and can be repaired free of charge.</Text>
+			<Text id="descArmorRepair">The ship's %armorNoun% is damaged and will cost %cost% to repair.</Text>
 		</Language>
 	</DockScreen>
 	
@@ -416,7 +353,6 @@
 						
 						(canDisable Nil)
 						(canEnable Nil)
-						(canInstall Nil)
 						
 						(deviceTable {
 							cargoHold: {
@@ -552,14 +488,12 @@
 							)
 							
 						;	Enable/disable various actions
-								
+
 						(scrShowAction gScreen 'actionDisable canDisable)
 						(scrShowAction gScreen 'actionEnable canEnable)
 
 						;	Show the previous action (either weapons or armor)
-						
-						(scrShowAction gScreen 'actionManageWeapons (@ gData 'manageWeapons))
-						(scrShowAction gScreen 'actionManageArmor (and (@ gData 'manageArmor) (not (@ gData 'manageWeapons))))
+						(rpgInitScreenSet (@ gData 'screenSet))
 						)
 				</OnPaneInit>
 				
@@ -655,130 +589,74 @@
 					<Action id="actionRemove">
 						(scrShowPane gScreen "RemoveDevice")
 					</Action>
-					
-					<Action id="actionManageArmor" minor="true">
-						(block Nil
-							(scrExitScreen gScreen)
-							(scrShowScreen gScreen &dsRPGManageArmor; {
-								checkMilitaryID: (@ gData 'checkMilitaryID)
-								noUpgrade: (@ gData 'noUpgrade)
-								sourceObj: (@ gData 'sourceObj)
-								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-							
-								manageMiscDevices: True
-								manageWeapons: (@ gData 'manageWeapons)
-								doubleExit: (@ gData 'doubleExit)
-								})
-							)
-					</Action>
-					<Action id="actionManageWeapons" minor="true">
-						(block Nil
-							(scrExitScreen gScreen)
-							(scrShowScreen gScreen &dsRPGManageWeapons; {
-								checkMilitaryID: (@ gData 'checkMilitaryID)
-								noUpgrade: (@ gData 'noUpgrade)
-								sourceObj: (@ gData 'sourceObj)
-								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-								
-								manageArmor: (@ gData 'manageArmor)
-								manageMiscDevices: True
-								doubleExit: (@ gData 'doubleExit)
-								})
-							)
-					</Action>
-					<Action id="actionDone" minor="true">
-						(block (
-							(doubleExit (@ gData 'doubleExit))
-							)
-							
-							(scrExitScreen gScreen)
-							(if doubleExit
-								(scrExitScreen gScreen)
-								)
-							)
-					</Action>
 				</Actions>
 			</Default>
 		</Panes>
 		
 		<Language>
-			<Text id="actionDisable">"Disa[b]le"</Text>
-			<Text id="actionDone">"[Escape] Done"</Text>
-			<Text id="actionEnable">"Ena[b]le"</Text>
-			<Text id="actionInstall">"[I]nstall"</Text>
-			<Text id="actionManageArmor">"[PageUp] Armor and Shields"</Text>
-			<Text id="actionManageWeapons">"[PageUp] Weapons"</Text>
-			<Text id="actionRemove">"Remo[v]e"</Text>
-			<Text id="actionRefuel">"[R]efuel"</Text>
-			<Text id="actionReplace">"Re[p]lace"</Text>
-			<Text id="actionUpgrade">"Buy [U]pgrade"</Text>
-			
-			<Text id="descItemInstalled">
-				(cat
-					(itmGetName (@ gData 'item) 0x0021) " installed."
-					)
-			</Text>
-			
-			<Text id="slotTitle:cargoHold">"Cargo Expansion Slot"</Text>
+			<Text id="actionRefuel">[R]efuel</Text>
+
+			<Text id="slotTitle:cargoHold">Cargo Expansion Slot</Text>
 			<Text id="slotDesc:cargoHold">
-				(switch
-					(eq (@ gData 'slotsAvail) 0)
-						(cat
-							"There are no free slots available for a cargo expansion. "
-							"(However, some devices do not require a free slot to be installed.)"
-							)
-							
-					(cat
-						"Your ship does not have a cargo expansion installed.\n\n"
-					
-						"Cargo expansions can be installed to increase the carrying "
-						"capacity of your ship."
-						)
+				(scrTranslate gScreen (switch
+					(= (@ gData 'slotsAvail) 0)	"slotDesc:cargoHold:0"
+												"slotDesc:cargoHold:1"
+					)
+					gData
 					)
 			</Text>
+			<Text id="slotDesc:cargoHold:0">
+				There are no free slots available for a cargo expansion.
+				(However, some devices do not require a free slot to be installed.)
+			</Text>
+			<Text id="slotDesc:cargoHold:1">
+				Your ship does not have a cargo expansion installed.
+
+				Cargo expansions can be installed to increase the carrying capacity of your ship.
+			</Text>
 			
-			<Text id="slotTitle:device">"Device Slot"</Text>
+			<Text id="slotTitle:device">Device Slot</Text>
 			<Text id="slotDesc:device">
-				(switch
-					(eq (@ gData 'slotsAvail) 0)
-						(cat
-							"There are no free slots available for miscellaneous devices. "
-							"(However, some devices do not require a free slot to be installed.)"
-							)
-							
-					(eq (@ gData 'slotsAvail) 1)
-						(cat
-							"Your ship has a free slot available for installing miscellaneous "
-							"devices."
-							)
-							
-					(cat
-						"Your ship has " (@ gData 'slotsAvail) " free slots available for installing miscellaneous "
-						"devices."
-						)
+				(scrTranslate gScreen (switch
+					(= (@ gData 'slotsAvail) 0)	"slotDesc:device:0"
+					(= (@ gData 'slotsAvail) 1)	"slotDesc:device:1"
+												"slotDesc:device:2"
+					)
+					gData
 					)
 			</Text>
-			
-			<Text id="slotTitle:drive">"Drive Upgrade Slot"</Text>
+			<Text id="slotDesc:device:0">
+				There are no free slots available for miscellaneous devices.
+				(However, some devices do not require a free slot to be installed.)
+			</Text>
+			<Text id="slotDesc:device:1">
+				Your ship has a free slot available for installing miscellaneous devices.
+			</Text>
+			<Text id="slotDesc:device:2">
+				Your ship has %slotsAvail% free slots available for installing miscellaneous devices.
+			</Text>
+
+			<Text id="slotTitle:drive">Drive Upgrade Slot</Text>
 			<Text id="slotDesc:drive">
-				(switch
-					(eq (@ gData 'slotsAvail) 0)
-						(cat
-							"There are no free slots available for a drive upgrade. "
-							"(However, some devices do not require a free slot to be installed.)"
-							)
-							
-					(cat
-						"Your ship does not have a drive upgrade installed.\n\n"
-					
-						"Drive upgrades can be installed to increase the thrust and velocity "
-						"of your ship."
-						)
+				(scrTranslate gScreen (switch
+					(= (@ gData 'slotsAvail) 0)	"slotDesc:drive:0"
+												"slotDesc:drive:1"
+					)
+					gData
 					)
 			</Text>
-			
-			<Text id="slotTitle:reactor">"Reactor Slot"</Text>
-			<Text id="slotDesc:reactor">"Your ship does not have a reactor installed."</Text>
+			<Text id="slotDesc:drive:0">
+				There are no free slots available for a drive upgrade.
+				(However, some devices do not require a free slot to be installed.)
+			</Text>
+			<Text id="slotDesc:drive:1">
+				Your ship does not have a drive upgrade installed.
+
+				Drive upgrades can be installed to increase the thrust and velocity of your ship.
+			</Text>
+
+			<Text id="slotTitle:reactor">Reactor Slot</Text>
+			<Text id="slotDesc:reactor">Your ship does not have a reactor installed.</Text>
 		</Language>
 	</DockScreen>
 	
@@ -820,7 +698,6 @@
 						(canBuyAmmo Nil)
 						(canDisable Nil)
 						(canEnable Nil)
-						(canInstall Nil)
 						
 						(deviceTable {
 							weapon: {
@@ -952,9 +829,7 @@
 						(scrShowAction gScreen 'actionEnable canEnable)
 
 						;	Page up/page down
-						
-						(scrShowAction gScreen 'actionManageArmor (@ gData 'manageArmor))
-						(scrShowAction gScreen 'actionManageMiscDevices (@ gData 'manageMiscDevices))
+						(rpgInitScreenSet (@ gData 'screenSet))
 						)
 				</OnPaneInit>
 				
@@ -1036,96 +911,50 @@
 					<Action id="actionRemove">
 						(scrShowPane gScreen "RemoveDevice")
 					</Action>
-					
-					<Action id="actionManageArmor" minor="true">
-						(block Nil
-							(scrExitScreen gScreen)
-							(scrShowScreen gScreen &dsRPGManageArmor; {
-								checkMilitaryID: (@ gData 'checkMilitaryID)
-								noUpgrade: (@ gData 'noUpgrade)
-								sourceObj: (@ gData 'sourceObj)
-								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-							
-								manageMiscDevices: (@ gData 'manageMiscDevices)
-								manageWeapons: True
-								doubleExit: (@ gData 'doubleExit)
-								})
-							)
-					</Action>
-					<Action id="actionManageMiscDevices" minor="true">
-						(block Nil
-							(scrExitScreen gScreen)
-							(scrShowScreen gScreen &dsRPGManageMiscDevices; {
-								checkMilitaryID: (@ gData 'checkMilitaryID)
-								noUpgrade: (@ gData 'noUpgrade)
-								sourceObj: (@ gData 'sourceObj)
-								upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-								
-								manageArmor: (@ gData 'manageArmor)
-								manageWeapons: True
-								doubleExit: (@ gData 'doubleExit)
-								})
-							)
-					</Action>
-					<Action id="actionDone" minor="true">
-						(block (
-							(doubleExit (@ gData 'doubleExit))
-							)
-							
-							(scrExitScreen gScreen)
-							(if doubleExit
-								(scrExitScreen gScreen)
-								)
-							)
-					</Action>
 				</Actions>
 			</Default>
 		</Panes>
 		
 		<Language>
-			<Text id="actionBuyAmmo">"Buy [A]mmo"</Text>
-			<Text id="actionBuyMissiles">"Buy [M]issiles"</Text>
-			<Text id="actionDisable">"Disa[b]le"</Text>
-			<Text id="actionDone">"[Escape] Done"</Text>
-			<Text id="actionEnable">"Ena[b]le"</Text>
-			<Text id="actionInstall">"[I]nstall"</Text>
-			<Text id="actionManageArmor">"[PageUp] Armor and Shields"</Text>
-			<Text id="actionManageMiscDevices">"[PageDown] Miscellaneous Devices"</Text>
-			<Text id="actionRemove">"Remo[v]e"</Text>
-			<Text id="actionReplace">"Re[p]lace"</Text>
-			<Text id="actionUpgrade">"Buy [U]pgrade"</Text>
+			<Text id="actionBuyAmmo">Buy [A]mmo</Text>
+			<Text id="actionBuyMissiles">Buy [M]issiles</Text>
 			
-			<Text id="slotTitle:launcher">"Launcher Slot"</Text>
+			<Text id="slotTitle:launcher">Launcher Slot</Text>
 			<Text id="slotDesc:launcher">
-				(switch
-					(eq (@ gData 'slotsAvail) 0)
-						(cat
-							"There are no free slots available for a launcher. "
-							"(However, some launchers do not require a free slot to be installed.)"
-							)
-							
-					"Your ship does not have a missile launcher installed."
+				(scrTranslate gScreen (switch
+					(= (@ gData 'slotsAvail) 0)	"slotDesc:launcher:0"
+												"slotDesc:launcher:1"
+					)
+					gData
 					)
 			</Text>
+			<Text id="slotDesc:launcher:0">
+				There are no free slots available for a launcher.
+				(However, some launchers do not require a free slot to be installed.)
+			</Text>
+			<Text id="slotDesc:launcher:1">
+				Your ship does not have a missile launcher installed.
+			</Text>
 			
-			<Text id="slotTitle:weapon">"Weapon Slot"</Text>
+			<Text id="slotTitle:weapon">Weapon Slot</Text>
 			<Text id="slotDesc:weapon">
-				(switch
-					(eq (@ gData 'slotsAvail) 0)
-						(cat
-							"There are no free slots available for weapons. "
-							"(However, some weapons do not require a free slot to be installed.)"
-							)
-							
-					(eq (@ gData 'slotsAvail) 1)
-						(cat
-							"Your ship has a free slot available for installing weapons."
-							)
-							
-					(cat
-						"Your ship has " (@ gData 'slotsAvail) " free slots available for installing weapons."
-						)
+				(scrTranslate gScreen (switch
+					(= (@ gData 'slotsAvail) 0)	"slotDesc:weapon:0"
+					(= (@ gData 'slotsAvail) 1)	"slotDesc:weapon:1"
+												"slotDesc:weapon:2"
 					)
+					gData
+					)
+			</Text>
+			<Text id="slotDesc:weapon:0">
+				There are no free slots available for weapons.
+				(However, some weapons do not require a free slot to be installed.
+			</Text>
+			<Text id="slotDesc:weapon:1">
+				Your ship has a free slot available for installing weapons.
+			</Text>
+			<Text id="slotDesc:weapon:2">
+				Your ship has %slotsAvail% free slots available for installing weapons.
 			</Text>
 		</Language>
 	</DockScreen>
@@ -1145,15 +974,20 @@
 
 	<DockScreen UNID="&dsRPGReplaceArmor;"
 			type=				"itemPicker"
+			inherit=		"&dsRPGUpgradeArmor;"
 			nestedScreen=		"true"
 			>
+
+		<OnScreenInit>
+			(scrSetData gScreen 'installOnly True)
+		</OnScreenInit>
 
 		<ListOptions
 			dataFrom=	"player"
 			list=		"aU"
 			>
 			(block (
-				(criteria (if (@ gData 'criteria) (@ gData 'criteria) "aU"))
+				(criteria (or (@ gData 'criteria) "aU"))
 				(armorSeg (@ gData 'armorSeg))
 				(armorToReplace (shpGetArmor gPlayerShip armorSeg))
 				)
@@ -1171,181 +1005,9 @@
 		</ListOptions>
 
 		<Panes>
-			<Default descID="descReplaceArmorDefault">
-				<OnPaneInit>
-					(block (
-						(armorSeg (@ gData 'armorSeg))
-						(thisItem (scrGetItem gScreen))
-						(oldItem (shpGetArmor gPlayerShip armorSeg))
-						(currencyUsed (objGetDefaultCurrency gSource))
-						
-						(canInstall True)
-						)
-						
-						;	Show the current armor
-						
-						(scrSetControlValue gScreen 'currentItem {
-							source: gPlayerShip
-							item: oldItem
-							})
-							
-						;	Status
-						
-						(if thisItem
-							(block (
-								(returnValue (objCanInstallItem gPlayerShip thisItem armorSeg))
-								(resultCode (@ returnValue 1))
-								(resultMessage (@ returnValue 2))
-								(itemToReplace (@ returnValue 3))
-								
-								desc
-								cargoNeeded
-								)
-								(setq gInstallStatus (objGetItemProperty gSource thisItem 'installItemStatus))
-								(setq gCost (@ gInstallStatus 'price))
-								(setq cargoNeeded (subtract (itmGetMass (shpGetArmor gPlayerShip armorSeg)) (itmGetMass thisItem)))
-
-								(switch
-									(= resultCode 'notCompatible)
-										(block Nil
-											(setq desc (or 
-												(objTranslate gPlayerShip 'rpg.cannotInstallArmorBecauseNotCompatible { item:thisItem targetObj:gPlayerShip })
-												(scrTranslate gScreen 'rpg.cannotInstallArmorBecauseNotCompatible { item:thisItem targetObj:gPlayerShip })
-												"This armor segment is not compatible with your ship."
-												))
-											(setq canInstall Nil)
-											)
-
-									(= resultCode 'armorTooHeavy)
-										(block Nil
-											(setq desc (cat (itmGetName thisItem 3) " are too heavy for your ship's hull."))
-											(setq canInstall Nil)
-											)
-											
-									(and (@ gData 'checkMilitaryID) 
-											(itmHasAttribute thisItem "Military")
-											(not (objGetItems gPlayerShip "*+MilitaryID"))
-											)
-										(block Nil
-											(setq desc (cat "You must have a military ID to install " (itmGetName thisItem 0x80) "."))
-											(setq canInstall Nil)
-											)
-											
-									(and (@ gData 'checkMilitaryID) 
-											(itmHasAttribute thisItem "Illegal")
-											)
-										(block Nil
-											(setq desc "We do not install illegal armor segments.")
-											(setq canInstall Nil)
-											)
-											
-									(= resultCode 'cannotInstall)
-										(block Nil
-											(setq desc resultMessage)
-											(setq canInstall Nil)
-											)
-									
-									(not (eq resultCode 'ok))
-										(block Nil
-											(setq desc "This armor segment cannot be installed.")
-											(setq canInstall Nil)
-											)
-
-									(not (@ gInstallStatus 'canInstall))
-										(block Nil
-											(if (@ gInstallStatus 'descID)
-												(setq desc (objTranslate gSource (@ gInstallStatus 'descID) { item:thisItem targetObj:gPlayerShip }))
-												(setq desc (cat "We do not have the technology to install " (itmGetName thisItem 0x80) "."))
-												)
-											(setq canInstall Nil)
-											)
-
-									(gr cargoNeeded (objGetCargoSpaceLeft gPlayerShip))
-										(block Nil
-											(setq desc "There is no room in your cargo hold to store the old armor segment.")
-											(setq canInstall Nil)
-											)
-
-									(gr gCost (objGetBalance gPlayerShip currencyUsed))
-										(block Nil
-											(setq desc 
-												(cat "We can install " (itmGetName thisItem 0x04) " for " (fmtCurrency currencyUsed gCost) ". Unfortunately, you cannot afford this cost.")
-												)
-											(setq canInstall Nil)
-											)
-
-									(eq gCost 0)
-										(setq desc
-											(cat "We can install " (itmGetName thisItem 0x04) " free of charge.")
-											)
-
-									(setq desc
-										(cat "We can install " (itmGetName thisItem 0x04) " for " (fmtCurrency currencyUsed gCost) ".")
-										)
-									)
-									
-								;	If the new segment is of a lower level than the current
-								;	segment, then warn the player
-								
-								(if canInstall
-									(switch
-										(gr (itmGetLevel (shpGetArmor gPlayerShip armorSeg)) (itmGetLevel thisItem))
-											(scrSetControlValue gScreen 'descWarning
-												(cat
-													"Note: Your currently installed " (itmGetName (shpGetArmor gPlayerShip armorSeg) 0x80)
-													" is higher level."
-													)
-												)
-										)
-									)
-
-								(scrSetDesc gScreen desc)
-								)
-
-							(block Nil
-								(scrSetDesc gScreen "You do not have any armor segments in your cargo hold.")
-								(setq canInstall Nil)
-								)
-							)
-
-						(scrEnableAction gScreen 0 canInstall)
-						)
-				</OnPaneInit>
-
-				<Controls>
-					<ItemDisplay id="currentItem"/>
-					<Text id="desc"/>
-					<Text id="descWarning" style="warning"/>
-				</Controls>
-
-				<Actions>
-					<Action name="Install this Armor" default="1" key="I" >
-						(block (thisItem currencyUsed)
-							(setq thisItem (scrGetItem gScreen))
-							(setq currencyUsed (objGetDefaultCurrency gSource))
-
-							(if (and thisItem (geq (objGetBalance gPlayerShip currencyUsed) gCost))
-								(block Nil
-									(shpInstallArmor gPlayerShip thisItem (@ gData 'armorSeg))
-									(objCharge gPlayerShip currencyUsed gCost)
-									
-									(scrExitScreen gScreen)
-									)
-								)
-							)
-					</Action>
-
-					<Action name="Cancel" cancel="1" key="C">
-						(scrExitScreen gScreen)
-					</Action>
-				</Actions>
-			</Default>
 		</Panes>
 
 		<Language>
-			<Text id="descReplaceArmorDefault">
-				Pick an armor segment to install.
-			</Text>
 		</Language>
 	</DockScreen>
 
@@ -1360,7 +1022,7 @@
 	'checkMilitaryID: If True, we should check for a military ID before 
 			installing Military armor. We also refuse to install Illegal armor.
 
-	sourceObj: If not Nil, use this as the object for inventory purposes.
+	'sourceObj: If not Nil, use this as the object for inventory purposes.
 -->
 
 	<DockScreen UNID="&dsRPGUpgradeArmor;"
@@ -1370,7 +1032,7 @@
 			>
 
 		<ListOptions
-				dataFrom=	"=(if (@ gData 'sourceObj) (@ gData 'sourceObj) 'source)"
+				dataFrom=	"=(or (@ gData 'sourceObj) 'source)"
 				list=		"*"
 				>
 			(scrSetListFilter gScreen (lambda (theItem)
@@ -1393,21 +1055,23 @@
 						(oldItem (shpGetArmor gPlayerShip armorSeg))
 						(currencyUsed (objGetDefaultCurrency gSource))
 						
-						(result
-							(if thisItem
-								(objCanInstallItem gPlayerShip thisItem armorSeg)
-								(list Nil 'cannotInstall "The station doesn't have any armor segments to install.")
-								)
-							)
+						(result (if thisItem (objCanInstallItem gPlayerShip thisItem armorSeg)))
 						(resultCode (@ result 1))
-						
-						(totalCost (add (objGetSellPrice gSource thisItem) (objGetArmorReplacePrice gSource thisItem)))
+
+						(installStatus (objGetItemProperty gSource thisItem 'installItemStatus))
+
+						(installOnly (scrGetData gScreen 'installOnly))
+						(totalCost (if installOnly
+							(objGetArmorReplacePrice gSource thisItem)
+							(+ (objGetSellPrice gSource thisItem) (objGetArmorReplacePrice gSource thisItem))
+							))
 						(cargoNeeded (itmGetMass oldItem))
 
 						(desc Nil)
+						(descID Nil)
 						(canInstall Nil)
 						)
-						
+
 						;	Show the current armor
 						
 						(scrSetControlValue gScreen 'currentItem {
@@ -1417,76 +1081,117 @@
 						
 						;	Tell the player whether we can install the selected item and how 
 						;	much it will cost.
-						
+
+						(scrSetData gScreen 'cost totalCost)
 						(switch
-							(eq resultCode 'armorTooHeavy)
-								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descArmorTooHeavy { armor:thisItem }))
-								
-							(eq resultCode 'cannotInstall)
+							(not thisItem)
+								(setq descID 'descNoArmorHere)
+
+							(= resultCode 'armorTooHeavy)
+								(setq descID 'descArmorTooHeavy)
+
+							(= resultCode 'cannotInstall)
 								(setq desc (@ result 2))
-								
+
 							(and (@ gData 'checkMilitaryID) 
 									(itmHasAttribute thisItem "Military")
 									(not (objGetItems gPlayerShip "*+MilitaryID"))
 									)
-								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descNeedMilitaryID { armor:thisItem }))
-								
+								(setq descID descNeedMilitaryID)
+
 							(and (@ gData 'checkMilitaryID) 
 									(itmHasAttribute thisItem "Illegal")
 									)
-								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descArmorIllegal { armor:thisItem }))
-								
+								(setq descID 'descArmorIllegal)
+
+							(!= resultCode 'ok)
+								(setq descID 'descCannotInstall)
+
+							(not (@ installStatus 'canInstall))
+								(setq desc (or
+									(objTranslate gSource (@ installStatus 'descID) { item:thisItem targetObj:gPlayerShip })
+									(scrTranslate gScreen 'descNoTech { armorShort:(itmGetName thisItem 'short) })
+									))
+
 							(gr cargoNeeded (objGetCargoSpaceLeft gPlayerShip))
-								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descNotEnoughRoom))
+								(setq descID 'descNotEnoughRoom)
 							
 							(gr totalCost (objGetBalance gPlayerShip currencyUsed))
-								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descCannotAfford { armor:thisItem cost:(fmtCurrency currencyUsed totalCost) }))
+								(setq descID 'descCannotAfford)
 								
-							(eq totalCost 0)
+							(= totalCost 0)
 								(block Nil
-									(setq desc (typTranslate &dsRPGUpgradeArmor; 'descFreeInstall { armor:thisItem }))
-									(scrSetData gScreen 'cost 0)
+									(setq descID 'descFreeInstall)
 									(setq canInstall True)
 									)
 								
 							;	Otherwise, we're OK to install
 								
 							(block Nil
-								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descInstall { armor:thisItem cost:(fmtCurrency currencyUsed totalCost) }))
-								(scrSetData gScreen 'cost totalCost)
+								(setq descID 'descInstall)
 								(setq canInstall True)
 								)
 							)
-							
+
+						;	If the new segment is of a lower level than the current
+						;	segment, then warn the player
+						(if canInstall
+							(switch
+								(gr (itmGetLevel oldItem) (itmGetLevel thisItem))
+									(scrSetControlValueTranslate gScreen 'descWarning 'descWarningLevel {
+										armorShort:(itmGetName oldItem 'short)
+										})
+								)
+							)
+
 						;	Set the description
-						
-						(scrSetDesc gScreen desc)
+						(if descID
+							(scrSetDescTranslate gScreen descID {
+								armor:thisItem
+								armorPlural:(itmGetName thisItem 'plural)
+								armorArticle:(itmGetName thisItem 'article)
+								armorShort:(itmGetName thisItem 'short)
+								cost:(fmtCurrency currencyUsed totalCost)
+								})
+							(scrSetDesc gScreen desc)
+							)
 						
 						;	Enable/disable actions
-						
 						(scrEnableAction gScreen 'actionBuyAndInstall canInstall)
+						(scrEnableAction gScreen 'actionInstallArmor canInstall)
+
+						(scrShowAction gScreen 'actionBuyAndInstall (not installOnly))
+						(scrShowAction gScreen 'actionInstallArmor installOnly)
 						)
 				</OnPaneInit>
 
 				<Controls>
 					<ItemDisplay id="currentItem"/>
 					<Text id="desc"/>
+					<Text id="descWarning" style="warning"/>
 				</Controls>
 				
 				<Actions>
 					<Action id="actionBuyAndInstall" default="1">
 						(block (
-							(thisItem (scrGetItem gScreen))
-							(currencyUsed (objGetDefaultCurrency gSource))
-							(sourceObj (if (@ gData 'sourceObj) (@ gData 'sourceObj) gSource))
+							(thisItem (scrRemoveItem gScreen 1))
 							)
-							
-							(objRemoveItem sourceObj thisItem 1)
-							(objAddItem gPlayerShip thisItem 1)
-
+							(rpgBuyItem gSource thisItem (scrGetData gScreen 'cost) (objGetDefaultCurrency gSource))
 							(shpInstallArmor gPlayerShip thisItem (@ gData 'armorSeg))
-							(objCharge gPlayerShip currencyUsed (scrGetData gScreen 'cost))
+							(scrExitScreen gScreen)
+							)
+					</Action>
 
+					<Action id="actionInstallArmor" default="1">
+						(block (
+							(thisItem (scrRemoveItem gScreen 1))
+							(currencyUsed (objGetDefaultCurrency gSource))
+							(installCost (scrGetData gScreen 'cost))
+							)
+							(objAddItem gPlayerShip thisItem 1)
+							(shpInstallArmor gPlayerShip thisItem (@ gData 'armorSeg))
+							(objCharge gPlayerShip currencyUsed installCost)
+							(objCredit gSource currencyUsed installCost)
 							(scrExitScreen gScreen)
 							)
 					</Action>
@@ -1499,32 +1204,26 @@
 		</Panes>
 	
 		<Language>
-			<Text id="actionBuyAndInstall">"[B]uy and Install"</Text>
+			<Text id="actionBuyAndInstall">[B]uy and Install</Text>
+			<Text id="actionInstallArmor">[I]nstall this Armor</Text>
 
-			<Text id="descArmorTooHeavy">
-				(cat (itmGetName (@ gData 'armor) 0x03) " are too heavy for your ship's hull.")
-			</Text>
-			<Text id="descNeedMilitaryID">
-				(cat "You must have a military ID to install " (itmGetName (@ gData 'armor) 0x80) ".")
-			</Text>
-			<Text id="descArmorIllegal">
-				We do not install illegal armor.
-			</Text>
+			<Text id="descNoArmorHere">The station doesn't have any armor segments to install.</Text>
+			<Text id="descArmorTooHeavy">%ArmorPlural are too heavy for your ship's hull.</Text>
+			<Text id="descNeedMilitaryID">You must have a military ID to install %armorShort%.</Text>
+			<Text id="descArmorIllegal">We do not install illegal armor.</Text>
+			<Text id="descCannotInstall">This armor segment cannot be installed.</Text>
+			<Text id="descNoTech">We do not have the technology to install %armorShort%.</Text>
 			<Text id="descNotEnoughRoom">
 
 				There isn't enough room in your cargo hold to store your old 
 				armor segment. Sell or jettison cargo to make room.
 
 			</Text>
-			<Text id="descCannotAfford">
-				(cat "We can install " (itmGetName (@ gData 'armor) 0x04) " for " (@ gData 'cost) ". Unfortunately, you cannot afford the cost.")))
-			</Text>
-			<Text id="descFreeInstall">
-				(cat "We can install " (itmGetName (@ gData 'armor) 0x04) " free of charge.")
-			</Text>
-			<Text id="descInstall">
-				(cat "We can install " (itmGetName (@ gData 'armor) 0x04) " for " (@ gData 'cost) ".")))
-			</Text>
+			<Text id="descCannotAfford">We can install %armorArticle% for %cost%. Unfortunately, you cannot afford the cost.</Text>
+			<Text id="descFreeInstall">We can install %armorArticle% free of charge.</Text>
+			<Text id="descInstall">We can install %armorArticle% for %cost%.</Text>
+
+			<Text id="descWarningLevel">Note: Your currently installed %armorShort% is higher level.</Text>
 		</Language>
 	</DockScreen>
 
@@ -1538,6 +1237,17 @@
 				<OnPaneInit>
 					(block (
 						(currencyUsed (objGetDefaultCurrency gSource))
+						(needed (scrGetData gScreen 'fuelNeeded))
+						(afford (scrGetData gScreen 'fuelAfford))
+						(descID (switch
+							(and  (gr needed afford) (= (afford) 1))
+								"descRefuelConfirm:onlyAffordOne"
+							(gr needed afford)
+								"descRefuelConfirm:onlyAffordSome"
+							(= needed 1)
+								"descRefuelConfirm:onlyNeedOne"
+							"descRefuelConfirm"
+							))
 						)
 						
 						(scrSetControlValue gScreen 'currentItem {
@@ -1545,12 +1255,14 @@
 							item: (scrGetData gScreen 'fuelItem)
 							})
 							
-						(scrSetDescTranslate gScreen 'descRefuelConfirm {
+						(scrSetDescTranslate gScreen descID {
 							item: (scrGetData gScreen 'fuelItem) 
 							cost: (fmtCurrency currencyUsed (scrGetData gScreen 'fuelCost))
 							totalCost: (fmtCurrency currencyUsed (multiply (scrGetData gScreen 'fuelCost) (scrGetData gScreen 'fuelMax)))
 							needed: (scrGetData gScreen 'fuelNeeded)
 							afford: (scrGetData gScreen 'fuelAfford)
+							itemSingle:(itmGetName (scrGetData gScreen 'fuelItem))
+							itemPlural:(itmGetName (scrGetData gScreen 'fuelItem) 'plural)
 							})
 							
 						(scrSetCounter gScreen (scrGetData gScreen 'fuelMax))
@@ -1565,20 +1277,21 @@
 
 				<Actions>
 					<Action id="actionRefuel" default="1">
-						(block (count)
-							(setq count (scrGetCounter gScreen))
-							(if (gr count (scrGetData gScreen 'fuelMax))
+						(block (
+							(itemCount (scrGetCounter gScreen))
+							(itemCost (scrGetData gScreen 'fuelCost))
+							(currencyUsed (objGetDefaultCurrency gSource))
+							)
+							(if (gr itemCount (scrGetData gScreen 'fuelMax))
 								(scrSetCounter gScreen (scrGetData gScreen 'fuelMax))
-								
-								(block (itemsToUse currencyUsed)
-									(setq itemsToUse (itmCreate (itmGetType (scrGetData gScreen 'fuelItem)) count))
-									(setq currencyUsed (objGetDefaultCurrency gSource))
-									
+
+								(block (
+									(itemsToUse (itmCreate (itmGetType (scrGetData gScreen 'fuelItem)) itemCount))
+									)
 									(shpRefuelFromItem gPlayerShip itemsToUse)
-									
-									(objCharge gPlayerShip currencyUsed (multiply count (scrGetData gScreen 'fuelCost)))
-									(plyRecordBuyItem gPlayer itemsToUse currencyUsed (multiply count (scrGetData gScreen 'fuelCost)))
-									
+									(if itemCost
+										(rpgBuyItem gSource itemsToUse (* itemCount itemCost) currencyUsed { 'noAddItem:True })
+										)
 									(scrShowPane gScreen "Default")
 									)
 								)
@@ -1593,18 +1306,22 @@
 			
 			<RemoveDevice>
 				<OnPaneInit>
-					(block Nil
+					(block (
+						(theItem (scrGetItem gScreen))
+						(descID (if (gr (scrGetData gScreen 'costToRemove) 0)
+							"descRemoveDeviceConfirm"
+							"descRemoveDeviceConfirm:Free"
+							))
+						)
 						(scrSetControlValue gScreen 'currentItem {
 							source: gPlayerShip
-							item: (scrGetItem gScreen)
+							item: theItem
 							})
 							
-						(scrSetDescTranslate gScreen 'descRemoveDeviceConfirm {
-							item: (scrGetItem gScreen) 
-							cost: 
-								(if (gr (scrGetData gScreen 'costToRemove) 0)
-									(fmtCurrency (objGetDefaultCurrency gSource) (scrGetData gScreen 'costToRemove))
-									)
+						(scrSetDescTranslate gScreen descID {
+							item: theItem
+							cost: (fmtCurrency (objGetDefaultCurrency gSource) (scrGetData gScreen 'costToRemove))
+							itemName: (itmGetName theItem 'article)
 							})
 						)
 				</OnPaneInit>
@@ -1619,6 +1336,7 @@
 						(block Nil
 							(shpRemoveDevice gPlayerShip (scrGetItem gScreen))
 							(objCharge gPlayerShip (objGetDefaultCurrency gSource) (scrGetData gScreen 'costToRemove))
+							(objCredit gSource (objGetDefaultCurrency gSource) (scrGetData gScreen 'costToRemove))
 
 							(scrRefreshScreen gScreen)
 							)
@@ -1632,116 +1350,71 @@
 		</Panes>
 		
 		<Language>
-			<Text id="actionArmor:defaultArmorInstall">
-				(cat
-					"We install armor segments up to level " (@ gData 'maxLevel) "."
-					)
-			</Text>
-			<Text id="actionArmor:defaultArmorRepair">
-				(cat
-					"We repair armor up to level " (@ gData 'maxLevel) "."
-					)
-			</Text>
-			<Text id="actionArmor:defaultArmorUpgrade">
-				(cat
-					"We sell armor upgrades up to level " (@ gData 'maxLevel) "."
-					)
-			</Text>
-			<Text id="actionArmor:defaultShieldsInstall">
-				(cat
-					"We install shields up to level " (@ gData 'maxLevel) "."
-					)
-			</Text>
-			<Text id="actionArmor:defaultShieldsUpgrade">
-				(cat
-					"We sell shield upgrades up to level " (@ gData 'maxLevel) "."
-					)
-			</Text>
-			<Text id="actionArmor:noTechToRepair">
-				(cat
-					"We do not have the technology to repair your armor."
-					)
-			</Text>
-			<Text id="actionArmor:nothing">"We don't upgrade or install armor."</Text>
-			<Text id="actionArmor:shipConfig">"View and manage armor and shields."</Text>
+			<Text id="screenSetShipConfig">Ship Configuration</Text>
+			<Text id="screenSetDockServices">Dock Services</Text>
+			<Text id="screenSetArmorAndShields">Armor and Shields</Text>
+			<Text id="screenSetWeapons">Weapons</Text>
+			<Text id="screenMiscDevices">Miscellaneous Devices</Text>
+
+			<Text id="actionDisable">Disa[b]le</Text>
+			<Text id="actionEnable">Ena[b]le</Text>
+			<Text id="actionInstall">[I]nstall</Text>
+			<Text id="actionRemove">Remo[v]e</Text>
+			<Text id="actionReplace">Re[p]lace</Text>
+			<Text id="actionUpgrade">Buy [U]pgrade</Text>
+
+			<Text id="actionArmor:defaultArmorInstall">We install armor segments up to level %maxLevel%.</Text>
+			<Text id="actionArmor:defaultArmorRepair">We repair armor up to level %maxLevel%.</Text>
+			<Text id="actionArmor:defaultArmorUpgrade">We sell armor upgrades up to level %maxLevel%.</Text>
+			<Text id="actionArmor:defaultShieldsInstall">We install shields up to level %maxLevel%.</Text>
+			<Text id="actionArmor:defaultShieldsUpgrade">We sell shield upgrades up to level %maxLevel%.</Text>
+			<Text id="actionArmor:noTechToRepair">We do not have the technology to repair your armor.</Text>
+			<Text id="actionArmor:nothing">We don't upgrade or install armor.</Text>
+			<Text id="actionArmor:shipConfig">View and manage armor and shields.</Text>
 			
-			<Text id="actionBuyAmmo:ammoForSale">
-				(cat "We have ammo in stock for " (itmGetName (@ gData 'item) 0x04) ".")
-			</Text>
-			<Text id="actionBuyAmmo:noAmmoToBuy">
-				(cat "We do not have ammo for " (itmGetName (@ gData 'item) 0x04) ".")
-			</Text>
-			<Text id="actionBuyMissiles:missilesForSale">
-				(cat "We have missiles in stock for " (itmGetName (@ gData 'item) 0x04) ".")
-			</Text>
-			<Text id="actionBuyMissiles:noMissilesToBuy">
-				(cat "We do not have missiles for " (itmGetName (@ gData 'item) 0x04) ".")
-			</Text>
+			<Text id="actionBuyAmmo:ammoForSale">We have ammo in stock for %itemName%.</Text>
+			<Text id="actionBuyAmmo:noAmmoToBuy">We do not have ammo for %itemName%.</Text>
+			<Text id="actionBuyMissiles:missilesForSale">We have missiles in stock for %itemName%.</Text>
+			<Text id="actionBuyMissiles:noMissilesToBuy">We do not have missiles for %itemName%.</Text>
 			
-			<Text id="actionInstall.noDeviceInstall">
-				We do not install devices.
-			</Text>
-			<Text id="actionInstall.noDeviceRemove">
-				We do not remove devices.
-			</Text>
+			<Text id="actionInstall.noDeviceInstall">We do not install devices.</Text>
+			<Text id="actionInstall.noDeviceRemove">We do not remove devices.</Text>
 			<Text id="actionInstall:noItemInCargo">
-				(switch
-					(= (@ gData 'category) 'cargoHold)
-						"You do not have any cargo expansions in your cargo hold."
-						
-					(= (@ gData 'category) 'drive)
-						"You do not have any drive upgrades in your cargo hold."
-						
-					(= (@ gData 'category) 'launcher)
-						"You do not have any launchers in your cargo hold."
-						
-					(= (@ gData 'category) 'reactor)
-						"You do not have any reactors in your cargo hold."
-						
-					(= (@ gData 'category) 'shields)
-						"You do not have any shield generators in your cargo hold."
-						
-					(= (@ gData 'category) 'weapon)
-						"You do not have any weapons in your cargo hold."
-						
-					"You do not have any devices in your cargo hold."
+				(or
+					(scrTranslate gScreen (cat "actionInstall:noItemInCargo:" (@ gData 'category)))
+					(scrTranslate gScreen "actionInstall:noItemInCargo:device")
 					)
 			</Text>
+			<Text id="actionInstall:noItemInCargo:cargoHold">You do not have any cargo expansions in your cargo hold.</Text>
+			<Text id="actionInstall:noItemInCargo:drive">You do not have any drive upgrades in your cargo hold.</Text>
+			<Text id="actionInstall:noItemInCargo:launcher">You do not have any launchers in your cargo hold.</Text>
+			<Text id="actionInstall:noItemInCargo:reactor">You do not have any reactors in your cargo hold.</Text>
+			<Text id="actionInstall:noItemInCargo:shields">You do not have any shield generators in your cargo hold.</Text>
+			<Text id="actionInstall:noItemInCargo:weapon">You do not have any weapons in your cargo hold.</Text>
+			<Text id="actionInstall:noItemInCargo:device">You do not have any devices in your cargo hold.</Text>
+
 			<Text id="actionInstall:noCompatibleItemInCargo">
-				(switch
-					(= (@ gData 'category) 'cargoHold)
-						"You do not have any compatible cargo expansions in your cargo hold."
-						
-					(= (@ gData 'category) 'drive)
-						"You do not have any compatible drive upgrades in your cargo hold."
-						
-					(= (@ gData 'category) 'launcher)
-						"You do not have any compatible launchers in your cargo hold."
-						
-					(= (@ gData 'category) 'reactor)
-						"You do not have any compatible reactors in your cargo hold."
-						
-					(= (@ gData 'category) 'shields)
-						"You do not have any compatible shield generators in your cargo hold."
-						
-					(= (@ gData 'category) 'weapon)
-						"You do not have any compatible weapons in your cargo hold."
-						
-					"You do not have any compatible devices in your cargo hold."
+				(or
+					(scrTranslate gScreen (cat "actionInstall:noCompatibleItemInCargo:" (@ gData 'category)))
+					(scrTranslate gScreen "actionInstall:noCompatibleItemInCargo:device")
 					)
 			</Text>
-			<Text id="actionInstall:defaultAbility">
-				(cat "We install devices up to tech level " (objGetProperty (@ gData 'dockObj) 'installDeviceMaxLevel) ".")
-			</Text>
-			<Text id="actionInstall:upgradeInstallOnly">"Sorry, we only install or remove items as part of an upgrade purchase."</Text>
+			<Text id="actionInstall:noCompatibleItemInCargo:cargoHold">You do not have any compatible cargo expansions in your cargo hold.</Text>
+			<Text id="actionInstall:noCompatibleItemInCargo:drive">You do not have any compatible drive upgrades in your cargo hold.</Text>
+			<Text id="actionInstall:noCompatibleItemInCargo:launcher">You do not have any compatible launchers in your cargo hold.</Text>
+			<Text id="actionInstall:noCompatibleItemInCargo:reactor">You do not have any compatible reactors in your cargo hold.</Text>
+			<Text id="actionInstall:noCompatibleItemInCargo:shields">You do not have any compatible shield generators in your cargo hold.</Text>
+			<Text id="actionInstall:noCompatibleItemInCargo:weapon">You do not have any compatible weapons in your cargo hold.</Text>
+			<Text id="actionInstall:noCompatibleItemInCargo:device">You do not have any compatible devices in your cargo hold.</Text>
+
+			<Text id="actionInstall:defaultAbility">We install devices up to tech level %maxLevel%.</Text>
+			<Text id="actionInstall:upgradeInstallOnly">Sorry, we only install or remove items as part of an upgrade purchase.</Text>
 			
+			<Text id="actionRefuel:cantAffordAny">
+				We can refuel your ship for %cost% per %itemSingle%. Unfortunately, you cannot afford even one.
+			</Text>
 			<Text id="actionRefuel:cantAfford">
-				(switch
-					(= (@ gData 'afford) 0)
-						(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x00) ". Unfortunately, you cannot afford even one.")
-					
-					(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x00) ".")
-					)
+				We can refuel your ship for %cost% per %itemSingle%.
 			</Text>
 			<Text id="actionRefuel:noRefuel">
 				We do not sell fuel.
@@ -1752,19 +1425,17 @@
 			<Text id="actionRefuel:noFuelNeeded">
 				Your ship is fully fueled.
 			</Text>
+			<Text id="actionRefuel:noFreeFuelNeeded">
+				We can refuel you free of charge, but your ship does not need any fuel.
+			</Text>
+			<Text id="actionRefuel:freeRefuelSingle">
+				We can refuel you free of charge. Your ship needs one %itemSingle%.
+			</Text>
 			<Text id="actionRefuel:freeRefuel">
-				(switch
-					(= (@ gData 'needed) 0)
-						"We can refuel you free of charge, but your ship does not need any fuel."
-						
-					(= (@ gData 'needed) 1)
-						(cat "We can refuel you free of charge. Your ship needs one " (itmGetName (@ gData 'item) 0x00) ".")
-						
-					(cat "We can refuel you free of charge. Your ship needs " (@ gData 'needed) " " (itmGetName (@ gData 'item) 0x02) ".")
-					)
+				We can refuel you free of charge. Your ship needs %needed% %itemPlural%.
 			</Text>
 			<Text id="actionRefuel:refuel">
-				(cat "We can refuel your ship for " (@ gData 'cost) " per " (itmGetName (@ gData 'item) 0x00) ".")
+				We can refuel your ship for %cost% per %itemSingle%.
 			</Text>
 			<Text id="actionRefuel:noFuelInCargo">
 				You do not have any fuel on board your ship.
@@ -1777,162 +1448,117 @@
 			</Text>
 				
 			<Text id="actionRemove:cannotAfford">
-				(cat "The device can be removed for " (@ gData 'cost) ". Unfortunately, you cannot afford the cost.")
+				The device can be removed for %cost%. Unfortunately, you cannot afford the cost.
 			</Text>
-			<Text id="actionRemove:cannotRemove">"The device cannot be removed."</Text>
-			<Text id="actionRemove:freeRemove">"The device can be removed free of charge."</Text>
-			<Text id="actionRemove:noRoomInCargo">"The device cannot be removed because there is no room in your cargo hold to store it."</Text>
-			<Text id="actionRemove.noRoomForCargoHold">
-				(cat
-					"Cannot remove cargo expansion because you have too much cargo."
-					)
-			</Text>
+			<Text id="actionRemove:cannotRemove">The device cannot be removed.</Text>
+			<Text id="actionRemove:freeRemove">The device can be removed free of charge.</Text>
+			<Text id="actionRemove:noRoomInCargo">The device cannot be removed because there is no room in your cargo hold to store it.</Text>
+			<Text id="actionRemove.noRoomForCargoHold">Cannot remove cargo expansion because you have too much cargo.</Text>
 			<Text id="actionRemove.canOnlyBeReplaced">
 				The %itemName% can be replaced, but not removed.
 			</Text>
-			<Text id="actionRemove:remove">(cat "The device can be removed for " (@ gData 'cost) ".")</Text>
-			<Text id="actionRemove:upgradeInstallOnly">"Sorry, we only install or remove items as part of an upgrade purchase."</Text>
-			<Text id="actionRemove:noTech">(cat "We do not have the technology to remove a level " (itmGetLevel (@ gData 'item)) " device.")</Text>
+			<Text id="actionRemove:remove">The device can be removed for %cost%.</Text>
+			<Text id="actionRemove:upgradeInstallOnly">Sorry, we only install or remove items as part of an upgrade purchase.</Text>
+			<Text id="actionRemove:noTech">We do not have the technology to remove a level %itemLevel% device.</Text>
 			
-			<Text id="actionReplace:cannotReplace">"The device cannot be replaced."</Text>
+			<Text id="actionReplace:cannotReplace">The device cannot be replaced.</Text>
 			<Text id="actionReplace:defaultAbility">
 				(switch
 					(and (= (@ gData 'category) 'armor) (@ gData 'maxLevel))
-						(cat 
-							"We install armor up to tech level " (objGetProperty (@ gData 'dockObj) 'installArmorMaxLevel) 
-							" (but you don't have anything better than level " (@ gData 'maxLevel) " in your cargo hold)."
-							)
-							
-					(@ gData 'maxLevel)
-						(cat 
-							"We install devices up to tech level " (objGetProperty (@ gData 'dockObj) 'installDeviceMaxLevel)
-							" (but you don't have anything better than level " (@ gData 'maxLevel) " in your cargo hold)."
-							)
-						
-					(= (@ gData 'category) 'armor)
-						(cat "We install armor up to tech level " (objGetProperty (@ gData 'dockObj) 'installArmorMaxLevel) ".")
-						
-					(cat "We install devices up to tech level " (objGetProperty (@ gData 'dockObj) 'installDeviceMaxLevel) ".")
-					)
-			</Text>
-			<Text id="actionReplace:noItemInCargo">
-				(if (= (@ gData 'category) 'armor)
-					"There is nothing in your cargo hold to replace this armor segment with."
-					"There is nothing in your cargo hold to replace this device with."
-					)
-			</Text>
-			<Text id="actionReplace:noTech">(cat "We do not have the technology to replace a level " (itmGetLevel (@ gData 'item)) " device.")</Text>
-			<Text id="actionReplace:upgradeInstallOnly">"Sorry, we only install or remove items as part of an upgrade purchase."</Text>
-			
-			<Text id="actionUpgrade:cannotUpgrade">"The device cannot be upgraded."</Text>
-			<Text id="actionUpgrade:defaultAbility">
-				(switch
-					(= (@ gData 'category) 'armor)
-						(cat "We have armor segments in stock up to tech level " (@ gData 'maxLevel))
-					
-					(= (@ gData 'category) 'cargoHold)
-						(cat "We have cargo expansions in stock up to tech level " (@ gData 'maxLevel))
-						
-					(= (@ gData 'category) 'drive)
-						(cat "We have drive upgrades in stock up to tech level " (@ gData 'maxLevel))
-						
-					(= (@ gData 'category) 'launcher)
-						(cat "We have launchers in stock up to tech level " (@ gData 'maxLevel))
-						
-					(= (@ gData 'category) 'reactor)
-						(cat "We have reactors in stock up to tech level " (@ gData 'maxLevel))
-						
-					(= (@ gData 'category) 'shields)
-						(cat "We have shield generators in stock up to tech level " (@ gData 'maxLevel))
-						
-					(= (@ gData 'category) 'weapon)
-						(cat "We have weapons in stock up to tech level " (@ gData 'maxLevel))
-						
-					(cat "We have devices in stock up to tech level " (@ gData 'maxLevel))
-					)
-			</Text>
-			<Text id="actionUpgrade:noItemForSale">
-				(switch
-					(= (@ gData 'category) 'armor)
-						"We do not have any armor segments for sale."
-					
-					(= (@ gData 'category) 'cargoHold)
-						"We do not have any cargo expansions for sale."
-						
-					(= (@ gData 'category) 'drive)
-						"We do not have any drive upgrades for sale."
-						
-					(= (@ gData 'category) 'launcher)
-						"We do not have any launchers for sale."
-						
-					(= (@ gData 'category) 'reactor)
-						"We do not have any reactors for sale."
-						
-					(= (@ gData 'category) 'shields)
-						"We do not have any shield generators for sale."
-						
-					(= (@ gData 'category) 'weapon)
-						"We do not have any weapons for sale."
-						
-					"We do not have any devices for sale."
-					)
-			</Text>
-			<Text id="actionUpgrade:noItemUpgrade">
-				(switch
-					(= (@ gData 'category) 'armor)
-						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " armor.")
-					
-					(= (@ gData 'category) 'cargoHold)
-						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " cargo expansion.")
-						
-					(= (@ gData 'category) 'drive)
-						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " drive upgrade.")
-						
-					(= (@ gData 'category) 'launcher)
-						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " launcher.")
-						
-					(= (@ gData 'category) 'reactor)
-						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " reactor.")
-						
-					(= (@ gData 'category) 'shields)
-						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " shields.")
-						
-					(= (@ gData 'category) 'weapon)
-						(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " weapon.")
-						
-					(cat "We do not have anything better than your level " (itmGetLevel (@ gData 'item)) " device.")
-					)
-			</Text>
-			<Text id="actionUpgrade:noTech">(cat "We do not have the technology to upgrade a level " (itmGetLevel (@ gData 'item)) " device.")</Text>
-		
-			<Text id="descRefuelConfirm">
-				(switch
-					(and (gr (@ gData 'needed) (@ gData 'afford)) (= (@ gData 'afford) 1))
-						(cat "Each " (itmGetName (@ gData 'item) 0x00) " costs " (@ gData 'cost) ". You can only afford a single one.")
-						
-					(gr (@ gData 'needed) (@ gData 'afford))
-						(cat "Each " (itmGetName (@ gData 'item) 0x00) " costs " (@ gData 'cost) ". "
-						"You can only afford " (@ gData 'afford) " " (itmGetName (@ gData 'item) 0x02) ". How many do you wish to buy?"
-						)
+						(scrTranslate gScreen "actionReplace:defaultAbility:armorLimited" gData)
 
-					(= (@ gData 'needed) 1)
-						(cat "Your ship needs one " (itmGetName (@ gData 'item) 0x00) " for a total cost of " (@ gData 'cost) ".")
+					(@ gData 'maxLevel)
+						(scrTranslate gScreen "actionReplace:defaultAbility:deviceLimited" gData)
 						
-					(cat "Your ship needs " (@ gData 'needed) " " (itmGetName (@ gData 'item) 0x02) ". "
-						"Each " (itmGetName (@ gData 'item) 0x00) " costs " (@ gData 'cost) " (" (@ gData 'totalCost) " total). How many do you wish to buy?"
-						)
+					(= (@ gData 'category) 'armor)
+						(scrTranslate gScreen "actionReplace:defaultAbility:armor" gData)
+						
+					(scrTranslate gScreen "actionReplace:defaultAbility:device" gData)
 					)
 			</Text>
+			<Text id="actionReplace:defaultAbility:armorLimited">
+				We install armor up to tech level %maxTech%
+				(but you don't have anything better than level %maxLevel% in your cargo hold).
+			</Text>
+			<Text id="actionReplace:defaultAbility:armor">
+				We install armor up to tech level %maxTech%
+			</Text>
+			<Text id="actionReplace:defaultAbility:deviceLimited">
+				We install devices up to tech level %maxTech%
+				(but you don't have anything better than level %maxLevel% in your cargo hold).
+			</Text>
+			<Text id="actionReplace:defaultAbility:device">
+				We install devices up to tech level %maxTech%
+			</Text>
+			<Text id="actionReplace:noArmorItemInCargo">There is nothing in your cargo hold to replace this armor segment with.</Text>
+			<Text id="actionReplace:noDeviceItemInCargo">There is nothing in your cargo hold to replace this device with.</Text>
+			<Text id="actionReplace:noTech">We do not have the technology to replace a level %itemLevel% device.</Text>
+			<Text id="actionReplace:upgradeInstallOnly">Sorry, we only install or remove items as part of an upgrade purchase.</Text>
 			
+			<Text id="actionUpgrade:cannotUpgrade">The device cannot be upgraded.</Text>
+			<Text id="actionUpgrade:defaultAbility">
+				(or
+					(scrTranslate gScreen (cat "actionUpgrade:defaultAbility:" (@ gData 'category)))
+					(scrTranslate gScreen "actionUpgrade:defaultAbility:device")
+					)
+			</Text>
+			<Text id="actionUpgrade:defaultAbility:armor">We have armor segments in stock up to tech level %maxLevel%</Text>
+			<Text id="actionUpgrade:defaultAbility:cargoHold">We have cargo expansions in stock up to tech level %maxLevel%</Text>
+			<Text id="actionUpgrade:defaultAbility:drive">We have drive upgrades in stock up to tech level %maxLevel%</Text>
+			<Text id="actionUpgrade:defaultAbility:launcher">We have launchers in stock up to tech level %maxLevel%</Text>
+			<Text id="actionUpgrade:defaultAbility:reactor">We have reactors in stock up to tech level %maxLevel%</Text>
+			<Text id="actionUpgrade:defaultAbility:shields">We have shield generators in stock up to tech level %maxLevel%</Text>
+			<Text id="actionUpgrade:defaultAbility:weapon">We have weapons in stock up to tech level %maxLevel%</Text>
+			<Text id="actionUpgrade:defaultAbility:device">We have devices in stock up to tech level %maxLevel%</Text>
+
+			<Text id="actionUpgrade:noItemForSale">
+				(or
+					(scrTranslate gScreen (cat "actionUpgrade:noItemForSale:" (@ gData 'category)))
+					(scrTranslate gScreen "actionUpgrade:noItemForSale:device")
+					)
+			</Text>
+			<Text id="actionUpgrade:noItemForSale:armor">We do not have any armor segments for sale.</Text>
+			<Text id="actionUpgrade:noItemForSale:cargoHold">We do not have any cargo expansions for sale.</Text>
+			<Text id="actionUpgrade:noItemForSale:drive">We do not have any drive upgrades for sale.</Text>
+			<Text id="actionUpgrade:noItemForSale:launcher">We do not have any launchers for sale.</Text>
+			<Text id="actionUpgrade:noItemForSale:reactor">We do not have any reactors for sale.</Text>
+			<Text id="actionUpgrade:noItemForSale:shields">We do not have any shield generators for sale.</Text>
+			<Text id="actionUpgrade:noItemForSale:weapon">We do not have any weapons for sale.</Text>
+			<Text id="actionUpgrade:noItemForSale:device">We do not have any devices for sale.</Text>
+
+			<Text id="actionUpgrade:noItemUpgrade">
+				(scrTranslate gScreen (cat "actionUpgrade:noItemUpgrade:" (@ gData 'category)) gData)
+			</Text>
+			<Text id="actionUpgrade:noItemUpgrade:armor">We do not have anything better than your level %itemLevel% armor.</Text>
+			<Text id="actionUpgrade:noItemUpgrade:cargoHold">We do not have anything better than your level %itemLevel% cargo expansion.</Text>
+			<Text id="actionUpgrade:noItemUpgrade:drive">We do not have anything better than your level %itemLevel% drive upgrade.</Text>
+			<Text id="actionUpgrade:noItemUpgrade:launcher">We do not have anything better than your level %itemLevel% launcher.</Text>
+			<Text id="actionUpgrade:noItemUpgrade:reactor">We do not have anything better than your level %itemLevel% reactor.</Text>
+			<Text id="actionUpgrade:noItemUpgrade:shields">We do not have anything better than your level %itemLevel% shields.</Text>
+			<Text id="actionUpgrade:noItemUpgrade:weapon">We do not have anything better than your level %itemLevel% weapon.</Text>
+			<Text id="actionUpgrade:noItemUpgrade:device">We do not have anything better than your level %itemLevel% device.</Text>
+			<Text id="actionUpgrade:noTech">We do not have the technology to upgrade a level %itemLevel% device.</Text>
+
+			<Text id="descRefuelConfirm:onlyAffordOne">
+				Each %itemSingle% costs %cost%. You can only afford a single one.
+			</Text>
+			<Text id="descRefuelConfirm:onlyAffordSome">
+				Each %itemSingle% costs %cost%. You can only afford %afford% %itemPlural%. How many do you wish to buy?
+			</Text>
+			<Text id="descRefuelConfirm:onlyNeedOne">
+				Your ship needs one %itemSingle% for a total cost of %cost%.
+			</Text>
+			<Text id="descRefuelConfirm">
+				Your ship needs %needed% %itemPlural%. Each %itemSingle% costs %cost% (%totalCost% total). How many do you wish to buy?
+			</Text>
+
+			<Text id="descRemoveDeviceConfirm:Free">
+				We can remove %itemName% free of charge. Are you sure you wish to continue?"
+			</Text>
 			<Text id="descRemoveDeviceConfirm">
-				(switch
-					(not (@ gData 'cost))
-						(cat "We can remove " (itmGetName (@ gData 'item) 0x04) " free of charge. Are you sure you wish to continue?")
-						
-					(cat "We can remove " (itmGetName (@ gData 'item) 0x04) " for " (@ gData 'cost) ". Are you sure you wish to continue?")
-					)
+				We can remove %itemName% for %cost%. Are you sure you wish to continue?
 			</Text>
-			
+
 			<Text id="rpg.cannotInstallArmorBecauseNotCompatible">
 				This armor segment is not compatible with your ship.
 			</Text>
@@ -1940,28 +1566,18 @@
 				This device is not compatible with your ship.
 			</Text>
 			<Text id="rpg.noCompatibleDeviceInCargo">
-				(switch
-					(= (@ gData 'category) 'cargoHold)
-						"You do not have any compatible cargo expansions in your cargo hold."
-						
-					(= (@ gData 'category) 'drive)
-						"You do not have any compatible drive upgrades in your cargo hold."
-						
-					(= (@ gData 'category) 'launcher)
-						"You do not have any compatible launchers in your cargo hold."
-						
-					(= (@ gData 'category) 'reactor)
-						"You do not have any compatible reactors in your cargo hold."
-						
-					(= (@ gData 'category) 'shields)
-						"You do not have any compatible shield generators in your cargo hold."
-						
-					(= (@ gData 'category) 'weapon)
-						"You do not have any compatible weapons in your cargo hold."
-						
-					"You do not have any compatible devices in your cargo hold."
+				(or
+					(scrTranslate gScreen (cat "rpg.noCompatibleDeviceInCargo:" (@ gData 'category)))
+					(scrTranslate gScreen "rpg.noCompatibleDeviceInCargo:device")
 					)
 			</Text>
+			<Text id="rpg.noCompatibleDeviceInCargo:cargoHold">You do not have any compatible cargo expansions in your cargo hold.</Text>
+			<Text id="rpg.noCompatibleDeviceInCargo:drive">You do not have any compatible drive upgrades in your cargo hold.</Text>
+			<Text id="rpg.noCompatibleDeviceInCargo:launcher">You do not have any compatible launchers in your cargo hold.</Text>
+			<Text id="rpg.noCompatibleDeviceInCargo:reactor">You do not have any compatible reactors in your cargo hold.</Text>
+			<Text id="rpg.noCompatibleDeviceInCargo:shields">You do not have any compatible shield generators in your cargo hold.</Text>
+			<Text id="rpg.noCompatibleDeviceInCargo:weapon">You do not have any compatible weapons in your cargo hold.</Text>
+			<Text id="rpg.noCompatibleDeviceInCargo:device">You do not have any compatible devices in your cargo hold.</Text>
 		</Language>
 	</DockScreen>
 	

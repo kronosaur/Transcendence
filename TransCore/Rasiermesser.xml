@@ -174,14 +174,13 @@
 					)
 			</Text>
 			<Text id="dockServices:installAbility">
-				(cat "We install Rasiermesser items up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
+				We install Rasiermesser items up to tech level %maxLevel%.
 			</Text>
             
-            <Text id="core.mapDesc">
-                "Repairs armor up to level 7 &mdash; Installs Rasiermesser armor up to level 7 &mdash; Installs Rasiermesser devices up to level 7 &mdash; Sells Rasiermesser products"
-            </Text>
+			<Text id="core.mapDesc">
+				Repairs armor up to level 7 &mdash; Installs Rasiermesser armor up to level 7 &mdash; Installs Rasiermesser devices up to level 7 &mdash; Sells Rasiermesser products
+			</Text>
 		</Language>
-
 	</StationType>
 
 	<!-- Arms Dealer, Rasiermesser Factory 
@@ -674,7 +673,7 @@
 
 			</Text>
 			<Text id="dockServices:installAbility">
-				(cat "We install Rasiermesser items up to tech level " (objGetProperty gSource 'installDeviceMaxLevel) ".")
+				We install Rasiermesser items up to tech level %maxLevel%.
 			</Text>
             
             <Text id="core.mapDescCustom">

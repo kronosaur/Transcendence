@@ -42,7 +42,7 @@
 							;	If a ship, use ship description.
 							
 							(= (objGetProperty gSource 'scale) 'ship)
-								(scrSetDescTranslate gScreen 'descAbandonedShipDefault { name:(objGetName gSource 0x04) })
+								(scrSetDescTranslate gScreen 'descAbandonedShipDefault { objName:(objGetName gSource 'article) })
 								
 							;	Otherwise, generic default
 							
@@ -71,21 +71,21 @@
 		
 		<Language>
 			<Text id="descAbandonedStationDefault">
-				(cat
-					"You are docked at a destroyed structure. "
-					"Leaking fluids and venting gases obscure the ruined machinery inside."
-					)
+
+				You are docked at a destroyed structure.
+				Leaking fluids and venting gases obscure the ruined machinery inside.
+
 			</Text>
 			<Text id="descAbandonedStationPopulated">
-				(cat 
-					"You are docked at the lifeless ruins of a destroyed station. "
-					"Wrecked machinery and smoldering bodies litter the silent, cavernous bay."
-					)
+
+				You are docked at the lifeless ruins of a destroyed station.
+				Wrecked machinery and smoldering bodies litter the silent, cavernous bay.
+
 			</Text>
 			<Text id="descAbandonedShipDefault">
-				(cat
-					"You are docked with " (@ gData 'name) "."
-					)
+
+				You are docked with %objName%.
+
 			</Text>
 		</Language>
 	</DockScreen>
@@ -147,7 +147,8 @@
 							
 							(if (geq (plyGetCredits gPlayer currency) cost)
 								(block Nil
-									(plyCharge gPlayer currency cost)
+									(objCharge gPlayerShip currency cost)
+									(objCredit gSource currency cost)
 									(shpDecontaminate gPlayerShip)
 									)
 								)
@@ -279,6 +280,13 @@
 							)
 						
 						(actionStatus Nil)
+						(screenSet (list
+							{
+								screen: &dsRPGDockServices;
+								label: (scrTranslate gScreen (if isShipConfig 'screenSetShipConfig 'screenSetDockServices))
+								mainScreen: True
+								}
+							))
 						)
 						
 						;	Refuel services
@@ -299,6 +307,13 @@
 						(scrShowAction gScreen 'actionRepairArmor (@ actionStatus 'visible))
 						(scrEnableAction gScreen 'actionRepairArmor (@ actionStatus 'enabled))
 						(scrSetActionDesc gScreen 'actionRepairArmor (@ actionStatus 'desc))
+						(if (@ actionStatus 'enabled)
+							(lnkAppend screenSet {
+								screen: &dsRPGManageArmor;
+								label: (scrTranslate gScreen 'screenSetArmorAndShields)
+								data: gData
+								})
+							)
 						
 						;	Weapon services
 						
@@ -306,6 +321,13 @@
 						(scrShowAction gScreen 'actionWeapons (@ actionStatus 'visible))
 						(scrEnableAction gScreen 'actionWeapons (@ actionStatus 'enabled))
 						(scrSetActionDesc gScreen 'actionWeapons (@ actionStatus 'desc))
+						(if (@ actionStatus 'enabled)
+							(lnkAppend screenSet {
+								screen: &dsRPGManageWeapons;
+								label: (scrTranslate gScreen 'screenSetWeapons)
+								data: gData
+								})
+							)
 
 						;	Misc devices
 						
@@ -313,35 +335,30 @@
 						(scrShowAction gScreen 'actionMiscDevices (@ actionStatus 'visible))
 						(scrEnableAction gScreen 'actionMiscDevices (@ actionStatus 'enabled))
 						(scrSetActionDesc gScreen 'actionMiscDevices (@ actionStatus 'desc))
-						
-						;	Page Down
-						
-						(scrShowAction gScreen 'actionRepairArmorPgDn
-							(scrIsActionEnabled gScreen 'actionRepairArmor)
+						(if (@ actionStatus 'enabled)
+							(lnkAppend screenSet {
+								screen: &dsRPGManageMiscDevices;
+								label: (scrTranslate gScreen 'screenMiscDevices)
+								data: gData
+								})
 							)
-						(scrShowAction gScreen 'actionWeaponsPgDn 
-							(and 
-								(scrIsActionEnabled gScreen 'actionWeapons)
-								(not (scrIsActionEnabled gScreen 'actionRepairArmor))
-								)
-							)
-						(scrShowAction gScreen 'actionMiscDevicesPgDn 
-							(and 
-								(scrIsActionEnabled gScreen 'actionMiscDevices)
-								(not (scrIsActionEnabled gScreen 'actionWeapons))
-								(not (scrIsActionEnabled gScreen 'actionRepairArmor))
-								)
-							)
-						
+
 						;	Description
 						
 						(scrSetDesc gScreen
 							(or (objTranslate gSource 'core.dockServicesDesc)
 									(objTranslate gPlayerShip "dockServices:shipDesc")
 									(objGetProperty gPlayerShip 'playerDesc)
-									(scrTranslate gScreen 'shipConfigScreenDesc)
+									(scrTranslate gScreen 'shipConfigScreenDesc {
+										objName:(objGetName gPlayerShip 'article)
+										})
 									)
 							)
+
+                        ;   Define the screen set
+
+						(scrSetData gScreen 'screenSet screenSet)
+						(rpgInitScreenSet screenSet)
 						)
 				</OnPaneInit>
 				
@@ -360,81 +377,20 @@
 
 					<Action id="actionRepairArmor">
 						(scrShowScreen gScreen &dsRPGManageArmor; {
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							noUpgrade: (@ gData 'noUpgrade)
-							sourceObj: (@ gData 'sourceObj)
-							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-							
-							manageMiscDevices: (scrIsActionEnabled gScreen 'actionMiscDevices)
-							manageWeapons: (scrIsActionEnabled gScreen 'actionWeapons)
-							doubleExit: True
+							screenSet: (scrGetData gScreen 'screenSet)
 							})
 					</Action>
 					
 					<Action id="actionWeapons">
 						(scrShowScreen gScreen &dsRPGManageWeapons; {
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							noUpgrade: (@ gData 'noUpgrade)
-							sourceObj: (@ gData 'sourceObj)
-							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-							
-							manageArmor: (scrIsActionEnabled gScreen 'actionRepairArmor)
-							manageMiscDevices: (scrIsActionEnabled gScreen 'actionMiscDevices)
-							doubleExit: True
+							screenSet: (scrGetData gScreen 'screenSet)
 							})
 					</Action>
 
 					<Action id="actionMiscDevices">
 						(scrShowScreen gScreen &dsRPGManageMiscDevices; {
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							noUpgrade: (@ gData 'noUpgrade)
-							sourceObj: (@ gData 'sourceObj)
-							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-							
-							manageArmor: (scrIsActionEnabled gScreen 'actionRepairArmor)
-							manageWeapons: (scrIsActionEnabled gScreen 'actionWeapons)
-							doubleExit: True
+							screenSet: (scrGetData gScreen 'screenSet)
 							})
-					</Action>
-
-					<Action id="actionRepairArmorPgDn" minor="true">
-						(scrShowScreen gScreen &dsRPGManageArmor; {
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							noUpgrade: (@ gData 'noUpgrade)
-							sourceObj: (@ gData 'sourceObj)
-							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-							
-							manageMiscDevices: (scrIsActionEnabled gScreen 'actionMiscDevices)
-							manageWeapons: (scrIsActionEnabled gScreen 'actionWeapons)
-							doubleExit: True
-							})
-					</Action>
-					<Action id="actionWeaponsPgDn" minor="true">
-						(scrShowScreen gScreen &dsRPGManageWeapons; {
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							noUpgrade: (@ gData 'noUpgrade)
-							sourceObj: (@ gData 'sourceObj)
-							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-							
-							manageArmor: (scrIsActionEnabled gScreen 'actionRepairArmor)
-							manageMiscDevices: (scrIsActionEnabled gScreen 'actionMiscDevices)
-							doubleExit: True
-							})
-					</Action>
-					<Action id="actionMiscDevicesPgDn" minor="true">
-						(scrShowScreen gScreen &dsRPGManageMiscDevices; {
-							checkMilitaryID: (@ gData 'checkMilitaryID)
-							noUpgrade: (@ gData 'noUpgrade)
-							sourceObj: (@ gData 'sourceObj)
-							upgradeInstallOnly: (@ gData 'upgradeInstallOnly)
-							
-							manageArmor: (scrIsActionEnabled gScreen 'actionRepairArmor)
-							manageWeapons: (scrIsActionEnabled gScreen 'actionWeapons)
-							doubleExit: True
-							})
-					</Action>
-					<Action id="actionDone" minor="true">
-						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
@@ -490,6 +446,7 @@
 								)
 								
 							(objCharge gPlayerShip currencyUsed totalCost)
+							(objCredit gSource currencyUsed totalCost)
 							(scrShowPane gScreen "OverlaysRemoved")
 							)
 					</Action>
@@ -520,21 +477,23 @@
 			<Text id="actionMiscDevices:nothing">"We don't upgrade or install miscellaneous devices."</Text>
 			<Text id="actionMiscDevices:shipConfig">"View and manage your reactor, drive upgrade, cargo expansion, and other devices."</Text>
 			<Text id="actionMiscDevices:defaultInstall">
-				(cat
-					"We install miscellaneous devices up to level " (@ gData 'maxLevel) "."
-					)
+
+				We install miscellaneous devices up to level %maxLevel%.
+
 			</Text>
 			<Text id="actionMiscDevices:defaultRemove">
-				(cat
-					"We install miscellaneous devices up to level " (@ gData 'maxLevel) "."
-					)
+
+				We install miscellaneous devices up to level %maxLevel%.
+
 			</Text>
 			<Text id="actionMiscDevices:defaultUpgrade">
 				(switch
 					;	If we only sell one item, say so
 					
 					(= (count (@ gData 'items)) 1)
-						(cat "We sell and install " (itmGetName (@ (@ gData 'items) 0) 0x02) ".")
+						(scrTranslate gScreen "actionMiscDevices:defaultUpgrade:OnlyOne" {
+							itemName: (itmGetName (@ (@ gData 'items) 0) 'plural)
+							})
 
 					;	Otherwise, describe the upgrade based on a category
 					
@@ -542,19 +501,13 @@
 						maxLevel: (@ gData 'maxLevel)
 						category:
 							(switch
-								(= (count (@ gData 'items))
-										(count (filter (@ gData 'items) theItem (itmMatches theItem "r")))
-										)
+								(apply and (map (@ gData 'items) theItem (itmMatches theItem "r")))
 									'reactor
 									
-								(= (count (@ gData 'items))
-										(count (filter (@ gData 'items) theItem (itmMatches theItem "v")))
-										)
+								(apply and (map (@ gData 'items) theItem (itmMatches theItem "v")))
 									'drive
 									
-								(= (count (@ gData 'items))
-										(count (filter (@ gData 'items) theItem (itmMatches theItem "c")))
-										)
+								(apply and (map (@ gData 'items) theItem (itmMatches theItem "c")))
 									'cargoHold
 									
 								Nil
@@ -562,84 +515,97 @@
 						})
 					)
 			</Text>
+			<Text id="actionMiscDevices:defaultUpgrade:OnlyOne">We sell and install %itemName%.</Text>
+
+			<Text id="actionRemoveDevice">Remo[v]e Device</Text>
+			<Text id="actionRemoveOverlays">[R]emove All</Text>
 			
-			<Text id="actionMiscDevicesPgDn">"[PageDown] Miscellaneous Devices"</Text>
+			<Text id="actionRepairArmor">[A]rmor and Shields</Text>
+			<Text id="actionUpgradeReactor">U[p]grade Reactor</Text>
 			
-			<Text id="actionRefuel">"[R]efuel"</Text>
-			<Text id="actionRemoveDevice">"Remo[v]e Device"</Text>
-			<Text id="actionRemoveOverlays">"[R]emove All"</Text>
-			
-			<Text id="actionRepairArmor">"[A]rmor and Shields"</Text>
-			<Text id="actionRepairArmorPgDn">"[PageDown] Armor and Shields"</Text>
-			<Text id="actionUpgradeReactor">"U[p]grade Reactor"</Text>
-			
-			<Text id="actionWeapons">"[W]eapons"</Text>
+			<Text id="actionWeapons">[W]eapons</Text>
 			<Text id="actionWeapons:defaultAmmo">
-				(cat
-					"We sell ammo up to level " (@ gData 'maxLevel) "."
-					)
+
+				We sell ammo up to level %maxLevel%.
+
 			</Text>
 			<Text id="actionWeapons:defaultInstall">
-				(cat
-					"We install weapons up to level " (@ gData 'maxLevel) "."
-					)
+
+				We install weapons up to level %maxLevel%.
+
 			</Text>
 			<Text id="actionWeapons:defaultRemove">
-				(cat
-					"We install weapons up to level " (@ gData 'maxLevel) "."
-					)
+
+				We install weapons up to level %maxLevel%.
+
 			</Text>
 			<Text id="actionWeapons:defaultUpgrade">
-				(cat
-					"We sell weapon upgrades up to level " (@ gData 'maxLevel) "."
-					)
+
+				We sell weapon upgrades up to level %maxLevel%.
+
 			</Text>
 			<Text id="actionWeapons:noBetterUpgrades">
-				(cat
-					"We sell weapons up to level " (@ gData 'maxLevel) ", but none are as good as what your ship has."
-					)
+
+				We sell weapons up to level %maxLevel%, but none are as good as what your ship has.
+
 			</Text>
-			<Text id="actionWeapons:nothing">"We don't upgrade or install weapons."</Text>
-			<Text id="actionWeapons:shipConfig">"View and manage your weapons."</Text>
+			<Text id="actionWeapons:nothing">We don't upgrade or install weapons.</Text>
+			<Text id="actionWeapons:shipConfig">View and manage your weapons.</Text>
+
+			<Text id="shipConfigScreenDesc">You're on board %objName%.</Text>
+			<Text id="dockServicesScreenDesc">You are at a dock services terminal.</Text>
 			
-			<Text id="actionWeaponsPgDn">"[PageDown] Weapons"</Text>
-			
-			<Text id="shipConfigScreenDesc">(cat "You're on board " (objGetName gPlayerShip 0x04) ".")</Text>
-			<Text id="dockServicesScreenDesc">"You are at a dock services terminal."</Text>
-			
-			<Text id="errorNoReactorTech">"The technology required to upgrade your reactor is not available at this station."</Text>
+			<Text id="errorNoReactorTech">The technology required to upgrade your reactor is not available at this station.</Text>
 			
 			<Text id="descOverlayRemove">
-				(if (eq (count (@ gData 'removableOverlays)) 1)
-					(cat
-						"You have a foreign object attached to your armor. "
-						"We can remove it completely for " (@ gData 'cost) "."
-						)
-					(cat
-						"You have some foreign objects attached to your armor. "
-						"We can remove them completely for " (@ gData 'cost) "."
-						)
+				(if (= (count (@ gData 'removableOverlays)) 1)
+					(scrTranslate gScreen 'descOverlayRemoveSingle)
+					(scrTranslate gScreen 'descOverlayRemoveMultiple)
 					)
+			</Text>
+			<Text id="descOverlayRemoveSingle">
+
+				You have a foreign object attached to your armor.
+				We can remove it completely for %cost%.
+
+			</Text>
+			<Text id="descOverlayRemoveMultiple">
+
+				You have some foreign objects attached to your armor.
+				We can remove them completely for %cost%.
+
 			</Text>
 			<Text id="descCannotAffordOverlayRemove">
-				(if (eq (count (@ gData 'removableOverlays)) 1)
-					(cat
-						"You have a foreign object attached to your armor. "
-						"We could remove it completely for " (@ gData 'cost) ", "
-						"but unfortunately you cannot afford the cost."
-						)
-					(cat
-						"You have some foreign objects attached to your armor. "
-						"We could remove them completely for " (@ gData 'cost) ", "
-						"but unfortunately you cannot afford the cost."
-						)
+				(if (= (count (@ gData 'removableOverlays)) 1)
+					(scrTranslate gScreen 'descCannotAffordOverlayRemoveSingle)
+					(scrTranslate gScreen 'descCannotAffordOverlayRemoveMultiple)
 					)
 			</Text>
+			<Text id="descCannotAffordOverlayRemoveSingle">
+
+				You have a foreign object attached to your armor.
+				We could remove it completely for %cost%,
+				but unfortunately you cannot afford the cost."
+
+			</Text>
+			<Text id="descCannotAffordOverlayRemoveMultiple">
+
+				You have some foreign objects attached to your armor.
+				We could remove them completely for %cost%,
+				but unfortunately you cannot afford the cost.
+
+			</Text>
 			<Text id="descOverlaysRemoved">
-				(if (eq (count (@ gData 'removableOverlays)) 1)
-					"We've removed the object and discarded it safely. Your hull is clean."
-					"We've removed the objects and discarded them safely. Your hull is clean."
+				(if (= (count (@ gData 'removableOverlays)) 1)
+					(scrTranslate gScreen 'descOverlaysRemovedSingle)
+					(scrTranslate gScreen 'descOverlaysRemovedMultiple)
 					)
+			</Text>
+			<Text id="descOverlaysRemovedSingle">
+				We've removed the object and discarded it safely. Your hull is clean.
+			</Text>
+			<Text id="descOverlaysRemovedMultiple">
+				We've removed the objects and discarded them safely. Your hull is clean.
 			</Text>
 		</Language>
 	</DockScreen>
@@ -980,6 +946,7 @@
 
 	<DockScreen UNID="&dsRPGMessage;"
 			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
 			>
 		<Panes>
 			<Default>
@@ -996,7 +963,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" key="C" default="1" cancel="1">
+					<Action id="actionContinue" default="1" cancel="1">
 						(switch
 							(not (@ gData 'nextScreen))
 								(scrExitScreen gScreen)
@@ -1024,6 +991,7 @@
 
 	<DockScreen UNID="&dsRPGRefuel;"
 			nestedScreen="true"
+			inherit=			"&dsDockScreenBase;"
 			>
 
 		<Panes>
@@ -1087,12 +1055,12 @@
 						(scrSetCounter gScreen gMaxCount)
 
 						; Enable/disable actions
-						(scrEnableAction gScreen 0 (gr gMaxCount 0))
+						(scrEnableAction gScreen 'actionRefuel (gr gMaxCount 0))
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Refuel" default="1" key="R">
+					<Action id="actionRefuel" default="1">
 						(block (count)
 							(setq count (scrGetCounter gScreen))
 							(if (gr count gMaxCount)
@@ -1104,8 +1072,7 @@
 									
 									(shpRefuelFromItem gPlayerShip itemsToUse)
 									
-									(objCharge gPlayerShip currencyUsed (multiply count gCost))
-									(plyRecordBuyItem gPlayer itemsToUse currencyUsed (multiply count gCost))
+									(rpgBuyItem gSource itemsToUse (* count gCost) currencyUsed { 'noAddItem:True })
 									
 									(scrExitScreen gScreen)
 									)
@@ -1113,7 +1080,7 @@
 							)
 					</Action>
 
-					<Action name="Cancel" cancel="1" key="C">
+					<Action id="actionCancel" cancel="1">
 						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
@@ -1138,6 +1105,7 @@
 	<DockScreen UNID="&dsRPGRepairItem;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
 			>
 
 		<ListOptions
@@ -1182,19 +1150,20 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Repair Item" default="1" key="R">
+					<Action id="actionRepairItem" default="1">
 						(block Nil
 							(setq gItem (scrGetItem gScreen))
 							
 							(shpEnhanceItem gPlayerShip gItem)
 							(objCharge gPlayerShip (objGetDefaultCurrency gSource) gCost)
-							
+							(objCredit gSource (objGetDefaultCurrency gSource) gCost)
+
 							(scrShowPane gScreen "Success")
 							)
 					</Action>
 
-					<Action name="Cancel" cancel="1" key="C">
-                        (scrExitScreen gScreen)
+					<Action id="actionCancel" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 
@@ -1208,8 +1177,8 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
-                        (scrExitScreen gScreen)
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Success>

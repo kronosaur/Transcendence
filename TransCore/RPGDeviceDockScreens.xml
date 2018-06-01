@@ -111,6 +111,7 @@
 								
 								(shpInstallDevice gPlayerShip (scrGetItem gScreen) recommendedSlot)
 								(objCharge gPlayerShip (objGetDefaultCurrency gSource) gCost)
+								(objCredit gSource (objGetDefaultCurrency gSource) gCost)
 								(typSetData &svPlayer; 'tutorialInstalled True)
 								
 								;	If the original item is still installed, then uninstall it

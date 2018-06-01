@@ -192,46 +192,53 @@
 				))
 			
 			(setq rpgCalcDockServiceBuyAmmo (lambda (dockObj shipObj theItem options)
-				(switch
-					(= dockObj shipObj)
-						{
-							visible: Nil
-							}
-							
-					;	If this item does not require ammo, then we hide the action
-					
-					(not (itmGetProperty theItem 'ammoType))
-						{
-							visible: Nil
-							}
-							
-					;	If the station doesn't have any ammo to sell, then we disabled and
-					;	explain.
-					
-					(not (filter (objGetItems dockObj (cat "m +launchedBy:" (itmGetType theItem) ";")) theItemToBuy
-							(objGetSellPrice dockObj theItemToBuy)
-							))
+				(block (
+					(transData {
+						item: theItem
+						itemName: (itmGetName theItem 'article)
+						})
+					)
+					(switch
+						(= dockObj shipObj)
+							{
+								visible: Nil
+								}
+
+						;	If this item does not require ammo, then we hide the action
+
+						(not (itmGetProperty theItem 'ammoType))
+							{
+								visible: Nil
+								}
+
+						;	If the station doesn't have any ammo to sell, then we disabled and
+						;	explain.
+
+						(not (filter (objGetItems dockObj (cat "m +launchedBy:" (itmGetType theItem) ";")) theItemToBuy
+								(objGetSellPrice dockObj theItemToBuy)
+								))
+							{
+								visible: True
+								enabled: Nil
+								desc:
+									(if (= (@ options 'category) 'launcher)
+										(or (scrTranslate gScreen "actionBuyAmmo.noMissilesToBuy" transData) (scrTranslate gScreen "actionBuyMissiles:noMissilesToBuy" transData))
+										(or (scrTranslate gScreen "actionBuyAmmo.noAmmoToBuy" transData) (scrTranslate gScreen "actionBuyAmmo:noAmmoToBuy" transData))
+										)
+								}
+
+						;	Otherwise, we do have some
+
 						{
 							visible: True
-							enabled: Nil
-							desc: 
+							enabled: True
+							desc:
 								(if (= (@ options 'category) 'launcher)
-									(or (scrTranslate gScreen "actionBuyAmmo.noMissilesToBuy" { item:theItem }) (scrTranslate gScreen "actionBuyMissiles:noMissilesToBuy" { item:theItem }))
-									(or (scrTranslate gScreen "actionBuyAmmo.noAmmoToBuy" { item:theItem }) (scrTranslate gScreen "actionBuyAmmo:noAmmoToBuy" { item:theItem }))
+									(or (scrTranslate gScreen "actionBuyAmmo.missilesForSale" transData) (scrTranslate gScreen "actionBuyMissiles:missilesForSale" transData))
+									(or (scrTranslate gScreen "actionBuyAmmo.ammoForSale" transData) (scrTranslate gScreen "actionBuyAmmo:ammoForSale" transData))
 									)
 							}
-							
-					;	Otherwise, we do have some
-					
-					{
-						visible: True
-						enabled: True
-						desc:
-							(if (= (@ options 'category) 'launcher)
-								(or (scrTranslate gScreen "actionBuyAmmo.missilesForSale" { item:theItem }) (scrTranslate gScreen "actionBuyMissiles:missilesForSale" { item:theItem }))
-								(or (scrTranslate gScreen "actionBuyAmmo.ammoForSale" { item:theItem }) (scrTranslate gScreen "actionBuyAmmo:ammoForSale" { item:theItem }))
-								)
-						}
+						)
 					)
 				))
 				
@@ -291,8 +298,8 @@
 						{
 							visible: True
 							enabled: True
-							desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) })
-									(scrTranslate gScreen "actionInstall:defaultAbility" { category:(@ options 'category) dockObj:dockObj })
+							desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+									(scrTranslate gScreen "actionInstall:defaultAbility" { category:(@ options 'category) maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
 									)
 							}
 						)
@@ -391,8 +398,16 @@
 					(cost (@ fuelToUse 1))
 					(maxCount (if fuelToUse (shpGetFuelNeeded shipObj fuelItem) 0))
 					(maxAfford (if (gr cost 0) (divide (objGetBalance shipObj currencyUsed) cost) 0))
+					(transData {
+						item: fuelItem
+						cost:(fmtCurrency currencyUsed cost)
+						needed:maxCount
+						afford:maxAfford
+						itemSingle:(itmGetName fuelItem)
+						itemPlural:(itmGetName fuelItem 'plural)
+						})
 					)
-					
+
 					(switch
 						(= dockObj shipObj)
 							{
@@ -421,17 +436,32 @@
 							{
 								visible: True
 								enabled: Nil
-								desc: (or (scrTranslate gScreen "actionRefuel:freeRefuel" { item:fuelItem needed:maxCount })
-										(typTranslate &dsRPGDockServicesBase; "actionRefuel:freeRefuel" { item:fuelItem needed:maxCount })
+								desc: (or (scrTranslate gScreen "actionRefuel:noFreeFuelNeeded")
+										(typTranslate &dsRPGDockServicesBase; "actionRefuel:noFreeFuelNeeded")
 										)
 								}
 								
+						(and (= cost 0) (= maxCount 1))
+							{
+								visible: True
+								enabled: True
+								desc: (or (scrTranslate gScreen "actionRefuel:freeRefuelSingle" transData)
+										(typTranslate &dsRPGDockServicesBase; "actionRefuel:freeRefuelSingle" transData)
+										)
+
+								fuelItem: fuelItem
+								cost: cost
+								maxCount: maxCount
+								maxAfford: maxAfford
+								maxNeeded: maxCount
+								}
+
 						(= cost 0)
 							{
 								visible: True
 								enabled: True
-								desc: (or (scrTranslate gScreen "actionRefuel:freeRefuel" { item:fuelItem needed:maxCount })
-										(typTranslate &dsRPGDockServicesBase; "actionRefuel:freeRefuel" { item:fuelItem needed:maxCount })
+								desc: (or (scrTranslate gScreen "actionRefuel:freeRefuel" transData)
+										(typTranslate &dsRPGDockServicesBase; "actionRefuel:freeRefuel" transData)
 										)
 								
 								fuelItem: fuelItem
@@ -445,8 +475,8 @@
 							{
 								visible: True
 								enabled: Nil
-								desc: (or (scrTranslate gScreen "actionRefuel:noFuelNeeded" { item:fuelItem })
-										(typTranslate &dsRPGDockServicesBase; "actionRefuel:noFuelNeeded" { item:fuelItem })
+								desc: (or (scrTranslate gScreen "actionRefuel:noFuelNeeded")
+										(typTranslate &dsRPGDockServicesBase; "actionRefuel:noFuelNeeded")
 										)
 								}
 								
@@ -454,8 +484,8 @@
 							{
 								visible: True
 								enabled: Nil
-								desc: (or (scrTranslate gScreen "actionRefuel:cantAfford" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount afford:maxAfford })
-										(typTranslate &dsRPGDockServicesBase; "actionRefuel:cantAfford" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount afford:maxAfford })
+								desc: (or (scrTranslate gScreen "actionRefuel:cantAffordAny" transData)
+										(typTranslate &dsRPGDockServicesBase; "actionRefuel:cantAffordAny" transData)
 										)
 								}
 								
@@ -463,8 +493,8 @@
 							{
 								visible: True
 								enabled: True
-								desc: (or (scrTranslate gScreen "actionRefuel:cantAfford" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount afford:maxAfford })
-										(typTranslate &dsRPGDockServicesBase; "actionRefuel:cantAfford" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount afford:maxAfford })
+								desc: (or (scrTranslate gScreen "actionRefuel:cantAfford" transData)
+										(typTranslate &dsRPGDockServicesBase; "actionRefuel:cantAfford" transData)
 										)
 								
 								fuelItem: fuelItem
@@ -477,8 +507,8 @@
 						{
 							visible: True
 							enabled: True
-							desc: (or (scrTranslate gScreen "actionRefuel:refuel" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount })
-									(typTranslate &dsRPGDockServicesBase; "actionRefuel:refuel" { item:fuelItem cost:(fmtCurrency currencyUsed cost) needed:maxCount })
+							desc: (or (scrTranslate gScreen "actionRefuel:refuel" transData)
+									(typTranslate &dsRPGDockServicesBase; "actionRefuel:refuel" transData)
 									)
 								
 							fuelItem: fuelItem
@@ -529,7 +559,7 @@
 									{
 										visible: True
 										enabled: Nil
-										desc: (scrTranslate gScreen "actionRemove:noTech" { item:theItem })
+										desc: (scrTranslate gScreen "actionRemove:noTech" { item:theItem itemLevel:(itmGetLevel theItem) })
 										}
 										
 								(not (isint itemStatus))
@@ -691,6 +721,7 @@
 									)
 								)
 							(maxLevel (map itemsAvail 'reduceMax theItemInCargo (itmGetLevel theItemInCargo)))
+							(maxTech (objGetProperty dockObj 'installArmorMaxLevel))
 							)
 							
 							(switch
@@ -698,23 +729,23 @@
 									{
 										visible: True
 										enabled: Nil
-										desc: (scrTranslate gScreen "actionReplace:noItemInCargo" { category:(@ options 'category) item:theItem })
+										desc: (scrTranslate gScreen "actionReplace:noArmorItemInCargo" { category:(@ options 'category) item:theItem })
 										}
 										
 								(ls maxLevel (itmGetLevel theItem))
 									{
 										visible: True
 										enabled: True
-										desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) maxLevel:maxLevel })
-												(scrTranslate gScreen "actionReplace:defaultAbility" { category:(@ options 'category) dockObj:dockObj maxLevel:maxLevel })
+										desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) maxLevel:maxLevel maxTech:maxTech })
+												(scrTranslate gScreen "actionReplace:defaultAbility" { category:(@ options 'category) dockObj:dockObj maxLevel:maxLevel maxTech:maxTech })
 												)
 										}
 										
 								{
 									visible: True
 									enabled: True
-									desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) })
-											(scrTranslate gScreen "actionReplace:defaultAbility" { category:(@ options 'category) dockObj:dockObj })
+									desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) maxTech:maxTech })
+											(scrTranslate gScreen "actionReplace:defaultAbility" { category:(@ options 'category) dockObj:dockObj maxTech:maxTech })
 											)
 									}
 								)
@@ -730,7 +761,8 @@
 									)
 								)
 							(maxLevel (map itemsAvail 'reduceMax theItemInCargo (itmGetLevel theItemInCargo)))
-						
+							(maxTech (objGetProperty dockObj 'installDeviceMaxLevel))
+
 							(currencyUsed (objGetDefaultCurrency dockObj))
 							(itemStatus (shpCanRemoveDevice shipObj theItem))
 							(dockStatus (objGetItemProperty dockObj theItem 'removeItemStatus))
@@ -782,30 +814,30 @@
 									{
 										visible: True
 										enabled: Nil
-										desc: (scrTranslate gScreen "actionReplace:noItemInCargo" { category:(@ options 'category) })
+										desc: (scrTranslate gScreen "actionReplace:noDeviceItemInCargo" { category:(@ options 'category) })
 										}
 								
 								(not (@ dockStatus 'canRemove))
 									{
 										visible: True
 										enabled: Nil
-										desc: (scrTranslate gScreen "actionReplace:noTech" { item:theItem })
+										desc: (scrTranslate gScreen "actionReplace:noTech" { item:theItem itemLevel:(itmGetLevel theItem) })
 										}
 										
 								(ls maxLevel (itmGetLevel theItem))
 									{
 										visible: True
 										enabled: True
-										desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) maxLevel:maxLevel })
-												(scrTranslate gScreen "actionReplace:defaultAbility" { category:(@ options 'category) dockObj:dockObj maxLevel:maxLevel })
+										desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) maxLevel:maxLevel maxTech:maxTech })
+												(scrTranslate gScreen "actionReplace:defaultAbility" { category:(@ options 'category) dockObj:dockObj maxLevel:maxLevel maxTech:maxTech })
 												)
 										}
 										
 								{
 									visible: True
 									enabled: True
-									desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) })
-											(scrTranslate gScreen "actionReplace:defaultAbility" { category:(@ options 'category) dockObj:dockObj })
+									desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) maxTech:maxTech })
+											(scrTranslate gScreen "actionReplace:defaultAbility" { category:(@ options 'category) dockObj:dockObj maxTech:maxTech })
 											)
 									}
 								)
@@ -909,8 +941,8 @@
 									{
 										visible: True
 										enabled: Nil
-										desc: (or (scrTranslate gScreen "actionUpgrade.noItemUpgrade" { category:(@ options 'category) item:theItem })
-                                                (scrTranslate gScreen "actionUpgrade:noItemUpgrade" { category:(@ options 'category) item:theItem })
+										desc: (or (scrTranslate gScreen "actionUpgrade.noItemUpgrade" { category:(@ options 'category) item:theItem itemLevel:(itmGetLevel theItem) })
+                                                (scrTranslate gScreen "actionUpgrade:noItemUpgrade" { category:(@ options 'category) item:theItem itemLevel:(itmGetLevel theItem) })
                                                 )
 										}
 					
@@ -999,8 +1031,8 @@
 									{
 										visible: True
 										enabled: Nil
-										desc: (or (scrTranslate gScreen "actionUpgrade.noItemUpgrade" { category:(@ options 'category) item:theItem })
-                                                (scrTranslate gScreen "actionUpgrade:noItemUpgrade" { category:(@ options 'category) item:theItem })
+										desc: (or (scrTranslate gScreen "actionUpgrade.noItemUpgrade" { category:(@ options 'category) item:theItem itemLevel:(itmGetLevel theItem) })
+                                                (scrTranslate gScreen "actionUpgrade:noItemUpgrade" { category:(@ options 'category) item:theItem itemLevel:(itmGetLevel theItem) })
                                                 )
 										}
 										
@@ -1008,8 +1040,8 @@
 									{
 										visible: True
 										enabled: Nil
-										desc: (or (scrTranslate gScreen "actionUpgrade.noTech" { item:theItem })
-                                                (scrTranslate gScreen "actionUpgrade:noTech" { item:theItem })
+										desc: (or (scrTranslate gScreen "actionUpgrade.noTech" { item:theItem itemLevel:(itmGetLevel theItem) })
+                                                (scrTranslate gScreen "actionUpgrade:noTech" { item:theItem itemLevel:(itmGetLevel theItem) })
                                                 )
 										}
 										
