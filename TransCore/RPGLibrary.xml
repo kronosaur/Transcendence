@@ -141,7 +141,6 @@
 	
 	<Module filename="HUD.xml"/>
 	<Module filename="RPGAnalyzers.xml"/>
-	<Module filename="RPGArmorDockScreens.xml"/>
 	<Module filename="RPGAutons.xml"/>
 	<Module filename="RPGAuxDevices.xml"/>
 	<Module filename="RPGBehaviors.xml"/>
@@ -156,6 +155,7 @@
 	<Module filename="RPGDialog.xml"/>
 	<Module filename="RPGDockManagement.xml"/>
 	<Module filename="RPGDockScreens.xml"/>
+	<Module filename="RPGDockServices.xml"/>
 	<Module filename="RPGMembership.xml"/>
 	<Module filename="RPGMissions.xml"/>
 	<Module filename="RPGPlayer.xml"/>
