@@ -198,21 +198,21 @@
 					</Action>
 
 					<Action id="actionRepairArmor">
-						(scrShowScreen gScreen &dsRPGManageArmor; {
+						(scrShowScreen gScreen &dsRPGManageArmor; (struct gData {
 							screenSet: (scrGetData gScreen 'screenSet)
-							})
+							}))
 					</Action>
 					
 					<Action id="actionWeapons">
-						(scrShowScreen gScreen &dsRPGManageWeapons; {
+						(scrShowScreen gScreen &dsRPGManageWeapons; (struct gData {
 							screenSet: (scrGetData gScreen 'screenSet)
-							})
+							}))
 					</Action>
 
 					<Action id="actionMiscDevices">
-						(scrShowScreen gScreen &dsRPGManageMiscDevices; {
+						(scrShowScreen gScreen &dsRPGManageMiscDevices; (struct gData {
 							screenSet: (scrGetData gScreen 'screenSet)
-							})
+							}))
 					</Action>
 				</Actions>
 			</Default>

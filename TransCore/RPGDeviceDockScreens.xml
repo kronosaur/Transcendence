@@ -140,7 +140,7 @@
 									(itmHasAttribute thisItem "Military")
 									(not (objGetItems gPlayerShip "*+MilitaryID"))
 									)
-								(setq descID descNeedMilitaryID)
+								(setq descID 'descNeedMilitaryID)
 
 							(and (@ gData 'checkMilitaryID) 
 									(itmHasAttribute thisItem "Illegal")
