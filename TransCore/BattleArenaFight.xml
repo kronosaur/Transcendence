@@ -338,7 +338,10 @@
 
 			<OnObjJumped>
 				(if (= aObj gPlayerShip)
-					(msnFailure gSource 'playerLeft)
+					(if (msnGetProperty gSource 'isCompleted)
+						(bamDoorsOpen)
+						(msnFailure gSource 'playerLeft)
+						)
 					)
 			</OnObjJumped>
 
@@ -346,7 +349,12 @@
 				(switch
 					;	Player lost
 					(= aObjDestroyed gPlayerShip)
-						(msnFailure gSource 'playerKilled)
+						(if (msnGetProperty gSource 'isCompleted)
+							;	Player has won, but failed to dock with Arena.
+							;	Just open doors for now, but could set a draw condition later
+							(bamDoorsOpen)
+							(msnFailure gSource 'playerKilled)
+							)
 
 					;	Player won
 					(block (

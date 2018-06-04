@@ -140,8 +140,10 @@
 			<OnObjDestroyed>
 				(block Nil
 					;	Update the ship count
-					(msnIncData gSource 'shipsLeft -1)
-					
+					(if (objGetData aObjDestroyed 'battleArenaCombatant)
+						(msnIncData gSource 'shipsLeft -1)
+						)
+
 					(switch
 						;	If the player is destroyed then they cannot win.
 						;	But we let the mission continue for now incase the
@@ -166,6 +168,11 @@
 						)
 
 					(switch
+						;	Player has won, but failed to dock with Arena.
+						;	Just open doors for now, but could set a draw condition later
+						(msnGetProperty gSource 'isCompleted)
+							(bamDoorsOpen)
+
 						;	If only one ship is left and the player is alive, then they win
 						(and (= (msnGetData gSource 'shipsLeft) 1) (not (msnGetData gSource 'status)))
 							(msnSuccess gSource)
