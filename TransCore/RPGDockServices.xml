@@ -1378,7 +1378,7 @@
 			</Text>
 			<Text id="slotDesc:weapon:0">
 				There are no free slots available for weapons.
-				(However, some weapons do not require a free slot to be installed.
+				(However, some weapons do not require a free slot to be installed.)
 			</Text>
 			<Text id="slotDesc:weapon:1">
 				Your ship has a free slot available for installing weapons.
@@ -1615,7 +1615,7 @@
 			<Text id="actionRemove:cannotRemove">The device cannot be removed.</Text>
 			<Text id="actionRemove:freeRemove">The device can be removed free of charge.</Text>
 			<Text id="actionRemove:noRoomInCargo">The device cannot be removed because there is no room in your cargo hold to store it.</Text>
-			<Text id="actionRemove.noRoomForCargoHold">Cannot remove cargo expansion because you have too much cargo.</Text>
+			<Text id="actionRemove.noRoomForCargoHold">The cargo expansion cannot removed because you have too much cargo.</Text>
 			<Text id="actionRemove.canOnlyBeReplaced">
 				The %itemName% can be replaced, but not removed.
 			</Text>
