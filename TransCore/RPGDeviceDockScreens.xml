@@ -1,6 +1,274 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <TranscendenceModule>
+
+<!-- REPLACE ARMOR SCREEN ======================================================
+
+	This screen allows the player to replace armor from a station. It requires 
+	the station to use the <ReplaceArmor> directive in its <Trade> section.
+
+	gData uses the following fields:
+
+	'armorSeg: The armor segment to replace on the player
+	'checkMilitaryID: If True, we should check for a military ID before 
+			installing Military armor. We also refuse to install Illegal armor.
+
+-->
+
+	<DockScreen UNID="&dsRPGReplaceArmor;"
+			type=				"itemPicker"
+			inherit=		"&dsRPGUpgradeArmor;"
+			nestedScreen=		"true"
+			>
+
+		<OnScreenInit>
+			(scrSetData gScreen 'installOnly True)
+		</OnScreenInit>
+
+		<ListOptions
+			dataFrom=	"player"
+			list=		"aU"
+			>
+			(block (
+				(criteria (or (@ gData 'criteria) "aU"))
+				(armorSeg (@ gData 'armorSeg))
+				(armorToReplace (shpGetArmor gPlayerShip armorSeg))
+				)
+				
+				(scrSetListFilter gScreen (lambda (theItem)
+					(and
+						(itmMatches theItem criteria)
+						(or
+							(not armorToReplace)
+							(not (itmIsEqual theItem armorToReplace 'ignoreInstalled))
+							)
+						)
+					))
+				)
+		</ListOptions>
+
+		<Panes>
+		</Panes>
+
+		<Language>
+		</Language>
+	</DockScreen>
+
+<!-- UPGRADE ARMOR SCREEN ======================================================
+
+	This screen allows the player to buy and replace and armor segment from the
+	current station.
+
+	gData uses the following fields:
+
+	'armorSeg: The armor segment to replace on the player
+	'checkMilitaryID: If True, we should check for a military ID before 
+			installing Military armor. We also refuse to install Illegal armor.
+
+	'sourceObj: If not Nil, use this as the object for inventory purposes.
+-->
+
+	<DockScreen UNID="&dsRPGUpgradeArmor;"
+			type=				"itemPicker"
+			inherit=			"&dsDockScreenBase;"
+			nestedScreen=		"true"
+			>
+
+		<ListOptions
+				dataFrom=	"=(or (@ gData 'sourceObj) 'source)"
+				list=		"*"
+				>
+			(scrSetListFilter gScreen (lambda (theItem)
+				(and
+					(itmMatches theItem "aU")
+					(objGetSellPrice gSource theItem)
+					(objGetArmorReplacePrice gSource theItem)
+					(geq (itmGetLevel theItem) (itmGetLevel (shpGetArmor gPlayerShip (@ gData 'armorSeg))))
+					(!= (@ (objCanInstallItem gPlayerShip theItem) 1) 'notCompatible)
+					)
+				))
+		</ListOptions>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(armorSeg (@ gData 'armorSeg))
+						(thisItem (scrGetItem gScreen))
+						(oldItem (shpGetArmor gPlayerShip armorSeg))
+						(currencyUsed (objGetDefaultCurrency gSource))
+						
+						(result (if thisItem (objCanInstallItem gPlayerShip thisItem armorSeg)))
+						(resultCode (@ result 1))
+
+						(installStatus (objGetItemProperty gSource thisItem 'installItemStatus))
+
+						(installOnly (scrGetData gScreen 'installOnly))
+						(totalCost (if installOnly
+							(objGetArmorReplacePrice gSource thisItem)
+							(+ (objGetSellPrice gSource thisItem) (objGetArmorReplacePrice gSource thisItem))
+							))
+						(cargoNeeded (itmGetMass oldItem))
+
+						(desc Nil)
+						(descID Nil)
+						(canInstall Nil)
+						)
+
+						;	Show the current armor
+						
+						(scrSetControlValue gScreen 'currentItem {
+							source: gPlayerShip
+							item: oldItem
+							})
+						
+						;	Tell the player whether we can install the selected item and how 
+						;	much it will cost.
+
+						(scrSetData gScreen 'cost totalCost)
+						(switch
+							(not thisItem)
+								(setq descID 'descNoArmorHere)
+
+							(= resultCode 'armorTooHeavy)
+								(setq descID 'descArmorTooHeavy)
+
+							(= resultCode 'cannotInstall)
+								(setq desc (@ result 2))
+
+							(and (@ gData 'checkMilitaryID) 
+									(itmHasAttribute thisItem "Military")
+									(not (objGetItems gPlayerShip "*+MilitaryID"))
+									)
+								(setq descID 'descNeedMilitaryID)
+
+							(and (@ gData 'checkMilitaryID) 
+									(itmHasAttribute thisItem "Illegal")
+									)
+								(setq descID 'descArmorIllegal)
+
+							(!= resultCode 'ok)
+								(setq descID 'descCannotInstall)
+
+							(not (@ installStatus 'canInstall))
+								(setq desc (or
+									(objTranslate gSource (@ installStatus 'descID) { item:thisItem targetObj:gPlayerShip })
+									(scrTranslate gScreen 'descNoTech { armorShort:(itmGetName thisItem 'short) })
+									))
+
+							(gr cargoNeeded (objGetCargoSpaceLeft gPlayerShip))
+								(setq descID 'descNotEnoughRoom)
+							
+							(gr totalCost (objGetBalance gPlayerShip currencyUsed))
+								(setq descID 'descCannotAfford)
+								
+							(= totalCost 0)
+								(block Nil
+									(setq descID 'descFreeInstall)
+									(setq canInstall True)
+									)
+								
+							;	Otherwise, we're OK to install
+								
+							(block Nil
+								(setq descID 'descInstall)
+								(setq canInstall True)
+								)
+							)
+
+						;	If the new segment is of a lower level than the current
+						;	segment, then warn the player
+						(if canInstall
+							(switch
+								(gr (itmGetLevel oldItem) (itmGetLevel thisItem))
+									(scrSetControlValueTranslate gScreen 'descWarning 'descWarningLevel {
+										armorShort:(itmGetName oldItem 'short)
+										})
+								)
+							)
+
+						;	Set the description
+						(if descID
+							(scrSetDescTranslate gScreen descID {
+								armor:thisItem
+								armorPlural:(itmGetName thisItem 'plural)
+								armorArticle:(itmGetName thisItem 'article)
+								armorShort:(itmGetName thisItem 'short)
+								cost:(fmtCurrency currencyUsed totalCost)
+								})
+							(scrSetDesc gScreen desc)
+							)
+						
+						;	Enable/disable actions
+						(scrEnableAction gScreen 'actionBuyAndInstall canInstall)
+						(scrEnableAction gScreen 'actionInstallArmor canInstall)
+
+						(scrShowAction gScreen 'actionBuyAndInstall (not installOnly))
+						(scrShowAction gScreen 'actionInstallArmor installOnly)
+						)
+				</OnPaneInit>
+
+				<Controls>
+					<ItemDisplay id="currentItem"/>
+					<Text id="desc"/>
+					<Text id="descWarning" style="warning"/>
+				</Controls>
+				
+				<Actions>
+					<Action id="actionBuyAndInstall" default="1">
+						(block (
+							(thisItem (scrRemoveItem gScreen 1))
+							)
+							(rpgBuyItem gSource thisItem (scrGetData gScreen 'cost) (objGetDefaultCurrency gSource))
+							(shpInstallArmor gPlayerShip thisItem (@ gData 'armorSeg))
+							(scrExitScreen gScreen)
+							)
+					</Action>
+
+					<Action id="actionInstallArmor" default="1">
+						(block (
+							(thisItem (scrRemoveItem gScreen 1))
+							(currencyUsed (objGetDefaultCurrency gSource))
+							(installCost (scrGetData gScreen 'cost))
+							)
+							(objAddItem gPlayerShip thisItem 1)
+							(shpInstallArmor gPlayerShip thisItem (@ gData 'armorSeg))
+							(objCharge gPlayerShip currencyUsed installCost)
+							(objCredit gSource currencyUsed installCost)
+							(scrExitScreen gScreen)
+							)
+					</Action>
+
+					<Action id="actionCancel" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	
+		<Language>
+			<Text id="actionBuyAndInstall">[B]uy and Install</Text>
+			<Text id="actionInstallArmor">[I]nstall this Armor</Text>
+
+			<Text id="descNoArmorHere">The station doesn't have any armor segments to install.</Text>
+			<Text id="descArmorTooHeavy">%ArmorPlural% are too heavy for your ship's hull.</Text>
+			<Text id="descNeedMilitaryID">You must have a military ID to install %armorShort%.</Text>
+			<Text id="descArmorIllegal">We do not install illegal armor.</Text>
+			<Text id="descCannotInstall">This armor segment cannot be installed.</Text>
+			<Text id="descNoTech">We do not have the technology to install %armorShort%.</Text>
+			<Text id="descNotEnoughRoom">
+
+				There isn't enough room in your cargo hold to store your old 
+				armor segment. Sell or jettison cargo to make room.
+
+			</Text>
+			<Text id="descCannotAfford">We can install %armorArticle% for %cost%. Unfortunately, you cannot afford the cost.</Text>
+			<Text id="descFreeInstall">We can install %armorArticle% free of charge.</Text>
+			<Text id="descInstall">We can install %armorArticle% for %cost%.</Text>
+
+			<Text id="descWarningLevel">Note: Your currently installed %armorShort% is higher level.</Text>
+		</Language>
+	</DockScreen>
 	
 <!-- INSTALL DEVICE SCREEN =====================================================
 
@@ -388,6 +656,109 @@
 	
 		<Language>
 			<Text id="actionBuyAndInstall">"[B]uy and Install"</Text>
+		</Language>
+	</DockScreen>
+
+<!-- REPAIR ITEM SCREEN ========================================================
+
+	This screen allows the player to repair an item.
+
+	gData uses the following fields:
+
+	criteria:			This is the criteria for items that we can repair.
+
+	priceAdj:			Cost to repair the item as a percent of the standard
+						repair price. The standard repair price is equal to the
+						difference between the full price and the price of a
+						damaged item.
+
+-->
+	<DockScreen UNID="&dsRPGRepairItem;"
+			type=				"itemPicker"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			>
+
+		<ListOptions
+			dataFrom=	"player"
+			list=		"*"
+			>
+			(scrSetListFilter gScreen (@ gData 'criteria))
+		</ListOptions>
+
+		<Panes>
+			<Default descID="descNoItems">
+				<OnPaneInit>
+					(block (thisItem currencyUsed)
+						(setq thisItem (scrGetItem gScreen))
+						(setq currencyUsed (objGetDefaultCurrency gSource))
+						(setq gResult Nil)
+
+						(if thisItem
+							(block (desc stdRepairCost)
+								; Compute the standard repair cost
+								(setq stdRepairCost (subtract (itmGetPrice (itmSetProperty thisItem 'damaged Nil) currencyUsed) (itmGetPrice thisItem currencyUsed)))
+
+								; Compute the cost to repair the item
+								(setq gCost (divide (multiply stdRepairCost (@ gData 'priceAdj)) 100))
+
+								(switch
+									(gr gCost (objGetBalance gPlayerShip currencyUsed))
+										(setq desc (cat "It will cost " (fmtCurrency currencyUsed gCost) " to repair " (itmGetName thisItem 0x04) ". Unfortunately, you cannot afford the cost."))
+
+									(block Nil
+										(setq desc (cat "We can repair " (itmGetName thisItem 0x04) " for " (fmtCurrency currencyUsed gCost) "."))
+										(setq gResult True)
+										)
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+							)
+
+						(scrEnableAction gScreen 0 gResult)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionRepairItem" default="1">
+						(block Nil
+							(setq gItem (scrGetItem gScreen))
+							
+							(shpEnhanceItem gPlayerShip gItem)
+							(objCharge gPlayerShip (objGetDefaultCurrency gSource) gCost)
+							(objCredit gSource (objGetDefaultCurrency gSource) gCost)
+
+							(scrShowPane gScreen "Success")
+							)
+					</Action>
+
+					<Action id="actionCancel" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+
+			</Default>
+
+			<Success
+					noListNavigation="true"
+					>
+				<OnPaneInit>
+					(scrSetDesc gScreen (cat "Your " (itmGetName gItem 0) " has been repaired successfully."))
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Success>
+		</Panes>
+
+		<Language>
+			<Text id="descNoItems">
+				You do not have any items that we can repair.
+			</Text>
 		</Language>
 	</DockScreen>
 

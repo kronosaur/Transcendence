@@ -1,7 +1,437 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <TranscendenceModule>
+
+<!-- DOCK SERVICES =============================================================
+
+	This screen allows the player to repair and upgrade their ship at a station.
+	We rely on the <Trade> entries to determine the services that the station 
+	will offer.
 	
+	gData uses the following fields:
+	
+		checkMilitaryID: If True, we check for military ID before installing
+				any military items. We also refuse to install Illegal items.
+		
+		reactorUpgrade: If non-Nil, this must be a list generate with
+				rpgGetReactorUpgradeList. Otherwise, we do not offer a reactor
+				upgrade at this station.
+				
+		'sourceObj: If not Nil, use this as the object for inventory purposes.
+	
+		'upgradeInstallOnly: If True, we only offer device installation services if
+				the player buys an upgrade.
+	
+-->
+	
+	<DockScreen unid="&dsRPGDockServices;"
+			inherit=			"&dsRPGDockServicesBase;"
+			nestedScreen=		"true"
+			>
+		<InitialPane>
+			(block (
+				(removableOverlays Nil)
+				)
+				
+				(switch
+					;	If we've got crap attached to the hull, then we might have
+					;	the option of fixing it.
+					;
+					;	We look for any overlay type with the "OnRemoveAtDockServices"
+					;	event.
+				
+					(and (objGetProperty gSource 'repairArmorMaxLevel)
+							(setq removableOverlays
+								(filter (objGetOverlays gPlayerShip) theID
+									(typHasEvent (objGetOverlayType gPlayerShip theID) 'OnRemoveAtDockServices)
+									)
+								)
+							)
+						(block Nil
+							(scrSetData gScreen 'removableOverlays removableOverlays)
+							"RemoveOverlays"
+							)
+				
+					"Default"
+					)
+				)
+		</InitialPane>
+		
+		<Display type="detailsPane"
+				>
+			<OnDisplayInit>
+				(block (
+					(shipObj gPlayerShip)
+					(shipClass (objGetType shipObj))
+					)
+					{
+					largeIcon: (shpGetImageDesc shipClass { type:'schematic })
+					details:
+						(or (objFireEvent shipObj 'GetShipDetails { })
+							(rpgGetShipDetails shipObj { noDevices:True })
+							)
+
+					shipObj: shipObj
+					}
+					)
+			</OnDisplayInit>
+		</Display>
+
+		<!--
+		<Display>
+			<Text id="leftCol"	left="0" right="0" top="280" bottom="0" align="left" font="Medium" color="#daebff"/>
+			<Text id="rightCol"	left="0" right="0" top="280" bottom="0" align="right" font="Medium" color="#daebff"/>
+		</Display>
+		-->
+		
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(isShipConfig (= gSource gPlayerShip))
+						(canInstallMiscDevices
+							(or isShipConfig
+								(and
+									(objGetProperty gSource 'installDeviceMaxLevel)
+									(or
+										(filter (objGetItems gPlayerShip "d~ws") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+										(filter (objGetItems gSource "d~ws") theItem (objGetItemProperty gSource theItem 'installDevicePrice))
+										)
+									)
+								)
+							)
+						
+						(actionStatus Nil)
+						(screenSet (list
+							{
+								screen: &dsRPGDockServices;
+								label: (scrTranslate gScreen (if isShipConfig 'screenSetShipConfig 'screenSetDockServices))
+								mainScreen: True
+								}
+							))
+						)
+						
+						;	Refuel services
+						
+						(setq actionStatus (rpgCalcDockServiceRefuelAction gSource gPlayerShip { }))
+						(scrShowAction gScreen 'actionRefuel (@ actionStatus 'visible))
+						(scrEnableAction gScreen 'actionRefuel (@ actionStatus 'enabled))
+						(scrSetActionDesc gScreen 'actionRefuel (@ actionStatus 'desc))
+						(scrSetData gScreen 'fuelCost (@ actionStatus 'cost))
+						(scrSetData gScreen 'fuelItem (@ actionStatus 'fuelItem))
+						(scrSetData gScreen 'fuelMax (@ actionStatus 'maxCount))
+						(scrSetData gScreen 'fuelNeeded (@ actionStatus 'maxNeeded))
+						(scrSetData gScreen 'fuelAfford (@ actionStatus 'maxAfford))
+						
+						;	Armor services
+						
+						(setq actionStatus (rpgCalcDockServiceArmorAction gSource gPlayerShip { }))
+						(scrShowAction gScreen 'actionRepairArmor (@ actionStatus 'visible))
+						(scrEnableAction gScreen 'actionRepairArmor (@ actionStatus 'enabled))
+						(scrSetActionDesc gScreen 'actionRepairArmor (@ actionStatus 'desc))
+						(if (@ actionStatus 'enabled)
+							(lnkAppend screenSet {
+								screen: &dsRPGManageArmor;
+								label: (scrTranslate gScreen 'screenSetArmorAndShields)
+								data: gData
+								})
+							)
+						
+						;	Weapon services
+						
+						(setq actionStatus (rpgCalcDockServiceWeaponsAction gSource gPlayerShip { }))
+						(scrShowAction gScreen 'actionWeapons (@ actionStatus 'visible))
+						(scrEnableAction gScreen 'actionWeapons (@ actionStatus 'enabled))
+						(scrSetActionDesc gScreen 'actionWeapons (@ actionStatus 'desc))
+						(if (@ actionStatus 'enabled)
+							(lnkAppend screenSet {
+								screen: &dsRPGManageWeapons;
+								label: (scrTranslate gScreen 'screenSetWeapons)
+								data: gData
+								})
+							)
+
+						;	Misc devices
+						
+						(setq actionStatus (rpgCalcDockServiceMiscDevicesAction gSource gPlayerShip { }))
+						(scrShowAction gScreen 'actionMiscDevices (@ actionStatus 'visible))
+						(scrEnableAction gScreen 'actionMiscDevices (@ actionStatus 'enabled))
+						(scrSetActionDesc gScreen 'actionMiscDevices (@ actionStatus 'desc))
+						(if (@ actionStatus 'enabled)
+							(lnkAppend screenSet {
+								screen: &dsRPGManageMiscDevices;
+								label: (scrTranslate gScreen 'screenMiscDevices)
+								data: gData
+								})
+							)
+
+						;	Description
+						
+						(scrSetDesc gScreen
+							(or (objTranslate gSource 'core.dockServicesDesc)
+									(objTranslate gPlayerShip "dockServices:shipDesc")
+									(objGetProperty gPlayerShip 'playerDesc)
+									(scrTranslate gScreen 'shipConfigScreenDesc {
+										objName:(objGetName gPlayerShip 'article)
+										})
+									)
+							)
+
+                        ;   Define the screen set
+
+						(scrSetData gScreen 'screenSet screenSet)
+						(rpgInitScreenSet screenSet)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionRefuel">
+						(if (= (scrGetData gScreen 'fuelCost) 0)
+							(block Nil
+								(setq itemsToUse (itmCreate (itmGetType (scrGetData gScreen 'fuelItem)) (scrGetData gScreen 'fuelNeeded)))
+								(shpRefuelFromItem gPlayerShip itemsToUse)
+								(scrRefreshScreen gScreen)
+								)
+								
+							(scrShowPane gScreen "RefuelShip")
+							)
+					</Action>
+
+					<Action id="actionRepairArmor">
+						(scrShowScreen gScreen &dsRPGManageArmor; (struct gData {
+							screenSet: (scrGetData gScreen 'screenSet)
+							}))
+					</Action>
+					
+					<Action id="actionWeapons">
+						(scrShowScreen gScreen &dsRPGManageWeapons; (struct gData {
+							screenSet: (scrGetData gScreen 'screenSet)
+							}))
+					</Action>
+
+					<Action id="actionMiscDevices">
+						(scrShowScreen gScreen &dsRPGManageMiscDevices; (struct gData {
+							screenSet: (scrGetData gScreen 'screenSet)
+							}))
+					</Action>
+				</Actions>
+			</Default>
+		
+			<RemoveOverlays>
+				<OnPaneInit>
+					(block (
+						(removableOverlays (scrGetData gScreen 'removableOverlays))
+						(currencyUsed (objGetDefaultCurrency gSource))
+						
+						;	The price of removing each overlay is equal to 25 credits
+						;	per armor level.
+						
+						(costPerOverlay
+							(ecoExchange
+								(map (objGetItems gPlayerShip "aI") 'reduceSum theArmor
+									(multiply 25 (itmGetLevel theArmor))
+									)
+								'credit
+								currencyUsed
+								)
+							)
+
+						(totalCost (multiply (count removableOverlays) costPerOverlay))
+						(canRemove Nil)
+						)
+						
+						(switch
+							(ls (objGetBalance gPlayerShip currencyUsed) totalCost)
+								(scrSetDescTranslate gScreen 'descCannotAffordOverlayRemove { removableOverlays:removableOverlays cost:(fmtCurrency currencyUsed totalCost) })
+							
+							(block Nil
+								(scrSetDescTranslate gScreen 'descOverlayRemove { removableOverlays:removableOverlays cost:(fmtCurrency currencyUsed totalCost) })
+								(setq canRemove True)
+								)
+							)
+	
+						(scrSetData gScreen 'totalCost totalCost)
+						(scrEnableAction gScreen 'actionRemoveOverlays canRemove)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionRemoveOverlays" default="1">
+						(block (
+							(removableOverlays (scrGetData gScreen 'removableOverlays))
+							(totalCost (scrGetData gScreen 'totalCost))
+							(currencyUsed (objGetDefaultCurrency gSource))
+							)
+							
+							(enum removableOverlays theID
+								(objFireOverlayEvent gPlayerShip theID 'OnRemoveAtDockServices)
+								)
+								
+							(objCharge gPlayerShip currencyUsed totalCost)
+							(objCredit gSource currencyUsed totalCost)
+							(scrShowPane gScreen "OverlaysRemoved")
+							)
+					</Action>
+					
+					<Action id="actionCancel" cancel="1">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</RemoveOverlays>
+			
+			<OverlaysRemoved>
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descOverlaysRemoved { removableOverlays:(scrGetData gScreen 'removableOverlays) })
+				</OnPaneInit>
+			
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</OverlaysRemoved>
+		</Panes>
+		
+		<Language>
+			<Text id="actionDone">"[Escape] Done"</Text>
+			
+			<Text id="actionMiscDevices">"[M]iscellaneous Devices"</Text>
+			<Text id="actionMiscDevices:nothing">"We don't upgrade or install miscellaneous devices."</Text>
+			<Text id="actionMiscDevices:shipConfig">"View and manage your reactor, drive upgrade, cargo expansion, and other devices."</Text>
+			<Text id="actionMiscDevices:defaultInstall">
+
+				We install miscellaneous devices up to level %maxLevel%.
+
+			</Text>
+			<Text id="actionMiscDevices:defaultRemove">
+
+				We install miscellaneous devices up to level %maxLevel%.
+
+			</Text>
+			<Text id="actionMiscDevices:defaultUpgrade">
+				(switch
+					;	If we only sell one item, say so
+					
+					(= (count (@ gData 'items)) 1)
+						(scrTranslate gScreen "actionMiscDevices:defaultUpgrade:OnlyOne" {
+							itemName: (itmGetName (@ (@ gData 'items) 0) 'plural)
+							})
+
+					;	Otherwise, describe the upgrade based on a category
+					
+					(scrTranslate gScreen "actionUpgrade:defaultAbility" {
+						maxLevel: (@ gData 'maxLevel)
+						category:
+							(switch
+								(apply and (map (@ gData 'items) theItem (itmMatches theItem "r")))
+									'reactor
+									
+								(apply and (map (@ gData 'items) theItem (itmMatches theItem "v")))
+									'drive
+									
+								(apply and (map (@ gData 'items) theItem (itmMatches theItem "c")))
+									'cargoHold
+									
+								Nil
+								)
+						})
+					)
+			</Text>
+			<Text id="actionMiscDevices:defaultUpgrade:OnlyOne">We sell and install %itemName%.</Text>
+
+			<Text id="actionRemoveDevice">Remo[v]e Device</Text>
+			<Text id="actionRemoveOverlays">[R]emove All</Text>
+			
+			<Text id="actionRepairArmor">[A]rmor and Shields</Text>
+			<Text id="actionUpgradeReactor">U[p]grade Reactor</Text>
+			
+			<Text id="actionWeapons">[W]eapons</Text>
+			<Text id="actionWeapons:defaultAmmo">
+
+				We sell ammo up to level %maxLevel%.
+
+			</Text>
+			<Text id="actionWeapons:defaultInstall">
+
+				We install weapons up to level %maxLevel%.
+
+			</Text>
+			<Text id="actionWeapons:defaultRemove">
+
+				We install weapons up to level %maxLevel%.
+
+			</Text>
+			<Text id="actionWeapons:defaultUpgrade">
+
+				We sell weapon upgrades up to level %maxLevel%.
+
+			</Text>
+			<Text id="actionWeapons:noBetterUpgrades">
+
+				We sell weapons up to level %maxLevel%, but none are as good as what your ship has.
+
+			</Text>
+			<Text id="actionWeapons:nothing">We don't upgrade or install weapons.</Text>
+			<Text id="actionWeapons:shipConfig">View and manage your weapons.</Text>
+
+			<Text id="shipConfigScreenDesc">You're on board %objName%.</Text>
+			<Text id="dockServicesScreenDesc">You are at a dock services terminal.</Text>
+			
+			<Text id="errorNoReactorTech">The technology required to upgrade your reactor is not available at this station.</Text>
+			
+			<Text id="descOverlayRemove">
+				(if (= (count (@ gData 'removableOverlays)) 1)
+					(scrTranslate gScreen 'descOverlayRemoveSingle)
+					(scrTranslate gScreen 'descOverlayRemoveMultiple)
+					)
+			</Text>
+			<Text id="descOverlayRemoveSingle">
+
+				You have a foreign object attached to your armor.
+				We can remove it completely for %cost%.
+
+			</Text>
+			<Text id="descOverlayRemoveMultiple">
+
+				You have some foreign objects attached to your armor.
+				We can remove them completely for %cost%.
+
+			</Text>
+			<Text id="descCannotAffordOverlayRemove">
+				(if (= (count (@ gData 'removableOverlays)) 1)
+					(scrTranslate gScreen 'descCannotAffordOverlayRemoveSingle)
+					(scrTranslate gScreen 'descCannotAffordOverlayRemoveMultiple)
+					)
+			</Text>
+			<Text id="descCannotAffordOverlayRemoveSingle">
+
+				You have a foreign object attached to your armor.
+				We could remove it completely for %cost%,
+				but unfortunately you cannot afford the cost."
+
+			</Text>
+			<Text id="descCannotAffordOverlayRemoveMultiple">
+
+				You have some foreign objects attached to your armor.
+				We could remove them completely for %cost%,
+				but unfortunately you cannot afford the cost.
+
+			</Text>
+			<Text id="descOverlaysRemoved">
+				(if (= (count (@ gData 'removableOverlays)) 1)
+					(scrTranslate gScreen 'descOverlaysRemovedSingle)
+					(scrTranslate gScreen 'descOverlaysRemovedMultiple)
+					)
+			</Text>
+			<Text id="descOverlaysRemovedSingle">
+				We've removed the object and discarded it safely. Your hull is clean.
+			</Text>
+			<Text id="descOverlaysRemovedMultiple">
+				We've removed the objects and discarded them safely. Your hull is clean.
+			</Text>
+		</Language>
+	</DockScreen>
+
 <!-- ARMOR MANAGEMENT SCREEN ===================================================
 
 	This screen allows the player to repair and upgrade armor at a station. It 
@@ -948,7 +1378,7 @@
 			</Text>
 			<Text id="slotDesc:weapon:0">
 				There are no free slots available for weapons.
-				(However, some weapons do not require a free slot to be installed.
+				(However, some weapons do not require a free slot to be installed.)
 			</Text>
 			<Text id="slotDesc:weapon:1">
 				Your ship has a free slot available for installing weapons.
@@ -956,274 +1386,6 @@
 			<Text id="slotDesc:weapon:2">
 				Your ship has %slotsAvail% free slots available for installing weapons.
 			</Text>
-		</Language>
-	</DockScreen>
-	
-<!-- REPLACE ARMOR SCREEN ======================================================
-
-	This screen allows the player to replace armor from a station. It requires 
-	the station to use the <ReplaceArmor> directive in its <Trade> section.
-
-	gData uses the following fields:
-
-	'armorSeg: The armor segment to replace on the player
-	'checkMilitaryID: If True, we should check for a military ID before 
-			installing Military armor. We also refuse to install Illegal armor.
-
--->
-
-	<DockScreen UNID="&dsRPGReplaceArmor;"
-			type=				"itemPicker"
-			inherit=		"&dsRPGUpgradeArmor;"
-			nestedScreen=		"true"
-			>
-
-		<OnScreenInit>
-			(scrSetData gScreen 'installOnly True)
-		</OnScreenInit>
-
-		<ListOptions
-			dataFrom=	"player"
-			list=		"aU"
-			>
-			(block (
-				(criteria (or (@ gData 'criteria) "aU"))
-				(armorSeg (@ gData 'armorSeg))
-				(armorToReplace (shpGetArmor gPlayerShip armorSeg))
-				)
-				
-				(scrSetListFilter gScreen (lambda (theItem)
-					(and
-						(itmMatches theItem criteria)
-						(or
-							(not armorToReplace)
-							(not (itmIsEqual theItem armorToReplace 'ignoreInstalled))
-							)
-						)
-					))
-				)
-		</ListOptions>
-
-		<Panes>
-		</Panes>
-
-		<Language>
-		</Language>
-	</DockScreen>
-
-<!-- UPGRADE ARMOR SCREEN ======================================================
-
-	This screen allows the player to buy and replace and armor segment from the
-	current station.
-
-	gData uses the following fields:
-
-	'armorSeg: The armor segment to replace on the player
-	'checkMilitaryID: If True, we should check for a military ID before 
-			installing Military armor. We also refuse to install Illegal armor.
-
-	'sourceObj: If not Nil, use this as the object for inventory purposes.
--->
-
-	<DockScreen UNID="&dsRPGUpgradeArmor;"
-			type=				"itemPicker"
-			inherit=			"&dsDockScreenBase;"
-			nestedScreen=		"true"
-			>
-
-		<ListOptions
-				dataFrom=	"=(or (@ gData 'sourceObj) 'source)"
-				list=		"*"
-				>
-			(scrSetListFilter gScreen (lambda (theItem)
-				(and
-					(itmMatches theItem "aU")
-					(objGetSellPrice gSource theItem)
-					(objGetArmorReplacePrice gSource theItem)
-					(geq (itmGetLevel theItem) (itmGetLevel (shpGetArmor gPlayerShip (@ gData 'armorSeg))))
-					(!= (@ (objCanInstallItem gPlayerShip theItem) 1) 'notCompatible)
-					)
-				))
-		</ListOptions>
-
-		<Panes>
-			<Default>
-				<OnPaneInit>
-					(block (
-						(armorSeg (@ gData 'armorSeg))
-						(thisItem (scrGetItem gScreen))
-						(oldItem (shpGetArmor gPlayerShip armorSeg))
-						(currencyUsed (objGetDefaultCurrency gSource))
-						
-						(result (if thisItem (objCanInstallItem gPlayerShip thisItem armorSeg)))
-						(resultCode (@ result 1))
-
-						(installStatus (objGetItemProperty gSource thisItem 'installItemStatus))
-
-						(installOnly (scrGetData gScreen 'installOnly))
-						(totalCost (if installOnly
-							(objGetArmorReplacePrice gSource thisItem)
-							(+ (objGetSellPrice gSource thisItem) (objGetArmorReplacePrice gSource thisItem))
-							))
-						(cargoNeeded (itmGetMass oldItem))
-
-						(desc Nil)
-						(descID Nil)
-						(canInstall Nil)
-						)
-
-						;	Show the current armor
-						
-						(scrSetControlValue gScreen 'currentItem {
-							source: gPlayerShip
-							item: oldItem
-							})
-						
-						;	Tell the player whether we can install the selected item and how 
-						;	much it will cost.
-
-						(scrSetData gScreen 'cost totalCost)
-						(switch
-							(not thisItem)
-								(setq descID 'descNoArmorHere)
-
-							(= resultCode 'armorTooHeavy)
-								(setq descID 'descArmorTooHeavy)
-
-							(= resultCode 'cannotInstall)
-								(setq desc (@ result 2))
-
-							(and (@ gData 'checkMilitaryID) 
-									(itmHasAttribute thisItem "Military")
-									(not (objGetItems gPlayerShip "*+MilitaryID"))
-									)
-								(setq descID descNeedMilitaryID)
-
-							(and (@ gData 'checkMilitaryID) 
-									(itmHasAttribute thisItem "Illegal")
-									)
-								(setq descID 'descArmorIllegal)
-
-							(!= resultCode 'ok)
-								(setq descID 'descCannotInstall)
-
-							(not (@ installStatus 'canInstall))
-								(setq desc (or
-									(objTranslate gSource (@ installStatus 'descID) { item:thisItem targetObj:gPlayerShip })
-									(scrTranslate gScreen 'descNoTech { armorShort:(itmGetName thisItem 'short) })
-									))
-
-							(gr cargoNeeded (objGetCargoSpaceLeft gPlayerShip))
-								(setq descID 'descNotEnoughRoom)
-							
-							(gr totalCost (objGetBalance gPlayerShip currencyUsed))
-								(setq descID 'descCannotAfford)
-								
-							(= totalCost 0)
-								(block Nil
-									(setq descID 'descFreeInstall)
-									(setq canInstall True)
-									)
-								
-							;	Otherwise, we're OK to install
-								
-							(block Nil
-								(setq descID 'descInstall)
-								(setq canInstall True)
-								)
-							)
-
-						;	If the new segment is of a lower level than the current
-						;	segment, then warn the player
-						(if canInstall
-							(switch
-								(gr (itmGetLevel oldItem) (itmGetLevel thisItem))
-									(scrSetControlValueTranslate gScreen 'descWarning 'descWarningLevel {
-										armorShort:(itmGetName oldItem 'short)
-										})
-								)
-							)
-
-						;	Set the description
-						(if descID
-							(scrSetDescTranslate gScreen descID {
-								armor:thisItem
-								armorPlural:(itmGetName thisItem 'plural)
-								armorArticle:(itmGetName thisItem 'article)
-								armorShort:(itmGetName thisItem 'short)
-								cost:(fmtCurrency currencyUsed totalCost)
-								})
-							(scrSetDesc gScreen desc)
-							)
-						
-						;	Enable/disable actions
-						(scrEnableAction gScreen 'actionBuyAndInstall canInstall)
-						(scrEnableAction gScreen 'actionInstallArmor canInstall)
-
-						(scrShowAction gScreen 'actionBuyAndInstall (not installOnly))
-						(scrShowAction gScreen 'actionInstallArmor installOnly)
-						)
-				</OnPaneInit>
-
-				<Controls>
-					<ItemDisplay id="currentItem"/>
-					<Text id="desc"/>
-					<Text id="descWarning" style="warning"/>
-				</Controls>
-				
-				<Actions>
-					<Action id="actionBuyAndInstall" default="1">
-						(block (
-							(thisItem (scrRemoveItem gScreen 1))
-							)
-							(rpgBuyItem gSource thisItem (scrGetData gScreen 'cost) (objGetDefaultCurrency gSource))
-							(shpInstallArmor gPlayerShip thisItem (@ gData 'armorSeg))
-							(scrExitScreen gScreen)
-							)
-					</Action>
-
-					<Action id="actionInstallArmor" default="1">
-						(block (
-							(thisItem (scrRemoveItem gScreen 1))
-							(currencyUsed (objGetDefaultCurrency gSource))
-							(installCost (scrGetData gScreen 'cost))
-							)
-							(objAddItem gPlayerShip thisItem 1)
-							(shpInstallArmor gPlayerShip thisItem (@ gData 'armorSeg))
-							(objCharge gPlayerShip currencyUsed installCost)
-							(objCredit gSource currencyUsed installCost)
-							(scrExitScreen gScreen)
-							)
-					</Action>
-
-					<Action id="actionCancel" cancel="1">
-						(scrExitScreen gScreen)
-					</Action>
-				</Actions>
-			</Default>
-		</Panes>
-	
-		<Language>
-			<Text id="actionBuyAndInstall">[B]uy and Install</Text>
-			<Text id="actionInstallArmor">[I]nstall this Armor</Text>
-
-			<Text id="descNoArmorHere">The station doesn't have any armor segments to install.</Text>
-			<Text id="descArmorTooHeavy">%ArmorPlural are too heavy for your ship's hull.</Text>
-			<Text id="descNeedMilitaryID">You must have a military ID to install %armorShort%.</Text>
-			<Text id="descArmorIllegal">We do not install illegal armor.</Text>
-			<Text id="descCannotInstall">This armor segment cannot be installed.</Text>
-			<Text id="descNoTech">We do not have the technology to install %armorShort%.</Text>
-			<Text id="descNotEnoughRoom">
-
-				There isn't enough room in your cargo hold to store your old 
-				armor segment. Sell or jettison cargo to make room.
-
-			</Text>
-			<Text id="descCannotAfford">We can install %armorArticle% for %cost%. Unfortunately, you cannot afford the cost.</Text>
-			<Text id="descFreeInstall">We can install %armorArticle% free of charge.</Text>
-			<Text id="descInstall">We can install %armorArticle% for %cost%.</Text>
-
-			<Text id="descWarningLevel">Note: Your currently installed %armorShort% is higher level.</Text>
 		</Language>
 	</DockScreen>
 
@@ -1453,7 +1615,7 @@
 			<Text id="actionRemove:cannotRemove">The device cannot be removed.</Text>
 			<Text id="actionRemove:freeRemove">The device can be removed free of charge.</Text>
 			<Text id="actionRemove:noRoomInCargo">The device cannot be removed because there is no room in your cargo hold to store it.</Text>
-			<Text id="actionRemove.noRoomForCargoHold">Cannot remove cargo expansion because you have too much cargo.</Text>
+			<Text id="actionRemove.noRoomForCargoHold">The cargo expansion cannot removed because you have too much cargo.</Text>
 			<Text id="actionRemove.canOnlyBeReplaced">
 				The %itemName% can be replaced, but not removed.
 			</Text>

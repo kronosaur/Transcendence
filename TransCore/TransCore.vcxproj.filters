@@ -82,9 +82,6 @@
     <None Include="CoreEffects.xml">
       <Filter>Core Types</Filter>
     </None>
-    <None Include="RPGArmorDockScreens.xml">
-      <Filter>RPG Library</Filter>
-    </None>
     <None Include="RPGAutons.xml">
       <Filter>RPG Library</Filter>
     </None>
@@ -113,6 +110,9 @@
       <Filter>RPG Library</Filter>
     </None>
     <None Include="RPGDockScreens.xml">
+      <Filter>RPG Library</Filter>
+    </None>
+    <None Include="RPGDockServices.xml">
       <Filter>RPG Library</Filter>
     </None>
     <None Include="RPGMissions.xml">
