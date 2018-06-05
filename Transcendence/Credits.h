@@ -55,6 +55,7 @@ static char *FEEDBACK[] =
 	"Charon Mass of Goo",
 	"Chris rh",
 	"Kevin Chen",
+	"Cinnabar",
 	"CrazedGamer",
 	"Crom",
 	"Curudan",
@@ -69,6 +70,7 @@ static char *FEEDBACK[] =
 	"Datal",
 	"Charles Davis",
 	"Demanther",
+	"Derakon",
 	"dkedr",	//	d.kedrinski
 	"Drako Slyith",
 	"Drayk",
@@ -146,6 +148,7 @@ static char *FEEDBACK[] =
 	"Mutos",
 
 	"(name here)",
+	"N1ddhog",
 	"Namer4",
 	"Narok",
 	"Narthan",
