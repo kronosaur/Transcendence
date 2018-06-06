@@ -536,8 +536,77 @@
 				<Image imageID="&rsMissiles4;" imageX="0" imageY="48" imageWidth="16" imageHeight="16" imageFrameCount="8" imageTicksPerFrame="1"/>
 			</Effect>
 		</Weapon>
-	</ItemType>
+		<Events>
+			<GetGlobalAchievements>
+				(block	(
+							(killsPenitent (objGetData gPlayerShip 'absolutionKillsPenitent))
+							(killsEnemy (objGetData gPlayerShip 'absolutionKillsEnemy))
+							(killsFriend (objGetData gPlayerShip 'absolutionKillsFriend))
+							(killsTotal (add killsPenitent killsEnemy killsFriend))
+							)
+					(append
+						(if killsTotal
+							(list (list
+								"Ships destroyed by Penitent Cannon"
+								killsTotal
+								(typTranslate &unidCommonText; 'notes)
+								1
+								))
+							)
+						(if killsPenitent
+							(list (list
+								"Penitents destroyed by Penitent Cannon"
+								killsPenitent
+								(typTranslate &unidCommonText; 'notes)
+								2
+								))
+							)
+						(if killsEnemy
+							(list (list
+								(if killsPenitent
+									"Other enemies destroyed by Penitent Cannon"
+									"Enemies destroyed by Penitent Cannon"
+									)
+								killsEnemy
+								(typTranslate &unidCommonText; 'notes)
+								3
+								))
+							)
+						(if killsFriend
+							(list (list
+								"Friends destroyed by Penitent Cannon"
+								killsFriend
+								(typTranslate &unidCommonText; 'notes)
+								4
+								))
+							)
+						)
+					)
+			</GetGlobalAchievements>
+			<OnDestroyObj>
+				;	Track the player's kills for this item
+				(switch
+					(neq aDestroyer gPlayerShip)
+						Nil
+					
+					(not (objIsShip aObjDestroyed))
+						Nil
+					
+					;	Track irony
+					(objHasAttribute aObjDestroyed 'penitents)
+						(objIncData gPlayerShip 'absolutionKillsPenitent)
 
+					;	Enemies
+					(objIsEnemy gPlayerShip aObjDestroyed)
+						(objIncData gPlayerShip 'absolutionKillsEnemy)
+					
+					;	Friends
+					(objIncData gPlayerShip 'absolutionKillsFriend)
+					)
+			</OnDestroyObj>
+		</Events>
+	</ItemType>
+	
 	<!-- Level 4: PX3 Hexagene MAG -->
 
 	<ItemType UNID="&itPX3HexageneMAG;"
