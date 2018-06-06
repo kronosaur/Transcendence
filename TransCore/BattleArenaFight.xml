@@ -126,6 +126,15 @@
 					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
 					(theShip (objGetObjByID (msnGetData gSource 'opponentID)))
 					)
+					
+					;	Note whether player is using military or illegal items
+					(if (objGetItems gPlayerShip "*I +military;")
+						(typSetData &stBattleArena; 'usedMilitary True)
+						)
+					(if (objGetItems gPlayerShip "*I +illegal;")
+						(typSetData &stBattleArena; 'usedIllegal True)
+						)
+					
 					;	Position the opponent at the right spot
 					(objMoveTo theShip (sysVectorPolarOffset arenaObj (random 204 336) 45))
 					(objResume theShip)
@@ -360,6 +369,9 @@
 					(block (
 						(fightTime (msnGetData gSource 'fightTime))
 						)
+						
+						(msnSetData gSource 'destroyReason aDestroyReason)
+						
 						;	Adjust timers in case we miss the window
 						(if (gr (msnGetData gSource 'timeTo50) fightTime) (msnSetData gSource 'timeTo50 fightTime))
 						(if (gr (msnGetData gSource 'timeTo25) fightTime) (msnSetData gSource 'timeTo25 fightTime))

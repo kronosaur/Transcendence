@@ -172,6 +172,8 @@
 				(block (
 					(arenaRank (typGetData &stBattleArena; 'arenaRank))
 					(katamiStatus (typGetData &stBattleArena; 'katamiStatus))
+					(usedIllegal (typGetData &stBattleArena; 'usedIllegal))
+					(usedMilitary (typGetData &stBattleArena; 'usedMilitary))
 					)
 					(append
 						(if (and arenaRank (!= arenaRank 'rookie))
@@ -189,7 +191,22 @@
 								(typTranslate &unidCommonText; 'achievementsAndRegrets)
 								))
 							)
-
+						
+						(if usedIllegal
+							(list (list
+								"Used illegal items in the Arena"
+								Nil
+								(typTranslate &unidCommonText; 'notes)
+								))
+							)
+						(if usedMilitary
+							(list (list
+								"Used military items in the Arena"
+								Nil
+								(typTranslate &unidCommonText; 'notes)
+								))
+							)
+							
 						;	Missions
 						(rpgMissionAchievements &stBattleArena; "* +gladiatorFight;")
 						)
