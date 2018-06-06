@@ -134,6 +134,9 @@
 					(if (objGetItems gPlayerShip "*I +illegal;")
 						(typSetData &stBattleArena; 'usedIllegal True)
 						)
+					(if (objGetItems gPlayerShip "*I +alien;")
+						(typSetData &stBattleArena; 'usedAlien True)
+						)
 					
 					;	Position the opponent at the right spot
 					(objMoveTo theShip (sysVectorPolarOffset arenaObj (random 204 336) 45))
