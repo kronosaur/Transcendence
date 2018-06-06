@@ -140,6 +140,7 @@
 				(block (theList 
 						resurrectCount
 						totalGMProfit totalArmsProfit totalEquipProfit totalMedsProfit totalLuxProfit totalIllegalProfit
+						totalItemsConfiscated
 						friendlyShipsDestroyed friendlyStationsDestroyed
 						systemData neverBacktracked
 						slavesFreed slaveSales
@@ -167,6 +168,8 @@
 					(setq totalIllegalProfit (subtract (plyGetItemStat gPlayer "itemsSoldValue" "*~wsam +Illegal")
 						(plyGetItemStat gPlayer "itemsBoughtValue" "*~wsam +Illegal"))
 						)
+						
+					(setq totalItemsConfiscated (objGetData gPlayerShip 'totalConfiscatedList))
 						
 					; Conducts
 					(setq systemData (plyGetStat gPlayer "systemData"))
@@ -254,6 +257,10 @@
 							(list (list "Profit on ship's equipment" totalEquipProfit "commerce"))
 							)
 							
+						(if totalItemsConfiscated
+							(map (@ totalItemsConfiscated) theItemName (list theItemName (@ totalItemsConfiscated theItemName) "items confiscated"))
+							)
+							
 						; Slave sales
 						(if slaveSales
 							(list (list "Profit on slave sales" slaveSales "commerce"))
@@ -264,7 +271,8 @@
 							(list (list "Slaves freed" slavesFreed "missions &amp; activities"))
 							)
 						))
-						
+					
+					
 					theList
 					)
 				))
