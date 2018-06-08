@@ -60,6 +60,7 @@
 			<Text id="ArmorRepaired">			"\"Good as new!\""</Text>
 			<Text id="AttackTargetAck">			"\"I got it!\""</Text>
 			<Text id="CancelAttackAck">			"\"Roger, I'm inbound\""</Text>
+			<Text id="DestroyedTarget">			"\"Done!\""</Text>
 			<Text id="FormUpAck">				"\"Roger, I'm inbound\""</Text>
 			<Text id="IcantAttackFriends">		"\"Aren't they the good guys?\""</Text>
 			<Text id="IcantAttackMyself">		"\"Yeah, right!\""</Text>
@@ -79,7 +80,6 @@
 			<Text id="WatchYourTargets">		"\"Hey, watch it!\""</Text>
 			<Text id="WingmanJoined">			"\"Ready for action, boss\""</Text>
 			<Text id="WingmanKilled">			"You have a sad feeling for a moment, then it passes"</Text>
-
 			<Text id="Intro">
 				(list
 					{
@@ -112,8 +112,9 @@
 
 		<Events>
 			<GetGlobalAchievements>
-				(block (theList status)
+				(block (theList status kills)
 					(setq status (typGetData &chJenna; "status"))
+					(setq kills (typGetData &chJenna; 'kills))
 
 					(if status
 						(setq theList (list
@@ -131,10 +132,17 @@
 								)
 							))
 						)
+					(if kills
+						(setq theList (append theList
+							(list (list "Kills by Jenna" kills (typTranslate &unidCommonText; 'autonsAndWingmen) 3))
+							))
+						)
 						
 					theList
 					)
 			</GetGlobalAchievements>
+			
+			
 
 			<OrderCreateShip>
 				(sysCreateShip &scRoninJenna; (@ gData 'pos) &svCommonwealth;)

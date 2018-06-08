@@ -242,6 +242,7 @@
 			<Text id="ArmorRepaired">			"\"Good! Armor is repaired\""</Text>
 			<Text id="AttackTargetAck">			"\"Da! Target acquired\""</Text>
 			<Text id="CancelAttackAck">			"\"Da! Returning now\""</Text>
+			<Text id="DestroyedTarget">			"\"Target destroyed\""</Text>
 			<Text id="FormUpAck">				"\"Da! Returning now\""</Text>
 			<Text id="IcantAttackFriends">		"\"Helena would not want me to\""</Text>
 			<Text id="IcantAttackMyself">		"\"Is joke?\""</Text>
@@ -296,8 +297,9 @@
 		
 		<Events>
 			<GetGlobalAchievements>
-				(block (theList status)
-				(setq status (typGetGlobalData &chVolkov; "status"))
+				(block (theList status kills)
+					(setq status (typGetGlobalData &chVolkov; "status"))
+					(setq kills (typGetData &chVolkov; 'kills))
 
 					(if status
 						(setq theList (list
@@ -313,6 +315,11 @@
 								Nil
 								"achievements &amp; regrets"
 								)
+							))
+						)
+					(if kills
+						(setq theList (append theList
+							(list (list "Kills by Volkov" kills (typTranslate &unidCommonText; 'autonsAndWingmen) 2))
 							))
 						)
 						
