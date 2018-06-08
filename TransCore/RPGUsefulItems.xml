@@ -207,6 +207,10 @@
 								itemToUseOn: dstItem
 								shipObj: theShip
 								}))
+								
+							(if (not (itmIsKnown dstItem))
+								(typSetData &dsRPGUseItemBase; 'hasUsedUnidentifiedItem True)
+								)
 
 							;	Restore the cursor position
 							(scrSetListCursor gScreen theCursor)

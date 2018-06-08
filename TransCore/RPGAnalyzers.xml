@@ -344,6 +344,8 @@
 						
 						(setq result (objFireItemEvent sourceObj itemToAnalyze 'OnAnalyzeItem))
 							(block Nil
+								(typIncData &dsRPGAnalyzeItem; 'hasAnalyzedItem True)
+								
 								(setq desc (@ result 'desc))
 								(setq modifiedItem (@ result 'modifiedItem))
 								)
@@ -352,6 +354,8 @@
 						
 						(not (itmIsKnown itemToAnalyze))
 							(block Nil
+								(typIncData &dsRPGAnalyzeItem; 'hasAnalyzedItem True)
+								
 								(itmSetKnown itemToAnalyze)
 								(setq desc (typTranslate &dsRPGAnalyzeItem; 'descIdentified {
 												itemName:(itmGetName itemToAnalyze '(article escapeQuotes))
