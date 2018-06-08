@@ -545,7 +545,7 @@
 							(killsTotal (add killsPenitent killsEnemy killsFriend))
 							)
 					(append
-						(if killsTotal
+						(if (gr killsTotal 0)
 							(list (list
 								"Ships destroyed by Penitent Cannon"
 								killsTotal
