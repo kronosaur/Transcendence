@@ -1013,7 +1013,7 @@
 
 				"Outlaw miners have staked an illegal claim to %targetName%
 				in this system. We want you to go out there and terminate their claim.
-				We'll pay you %reward if you succeed.
+				We'll pay you %reward% if you succeed.
 
 				"Do we have a deal?"
 
@@ -1036,7 +1036,7 @@
 			</Text>
 			<Text id="SuccessDebrief">
 				(msnTranslate gSource 'textSuccessDebrief {
-					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					reward: (fmtCurrency 'credit (msnGetData gSource 'reward))
 					})
 			</Text>
 			<Text id="textSuccessDebrief">
