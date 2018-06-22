@@ -2085,7 +2085,7 @@
 		<Trade currency="credit" max="10000" replenish="500">
 			<Sell	criteria="*NU +Lux; -NotForSale;"	priceAdj="100"/>
 
-			<Buy	criteria="*NU +Food; -Illegal; &lt;=$100 -NotForSale;"	priceAdj="105"/>
+			<Buy	criteria="*NU +Food; -Lux; -Illegal; &lt;=$100; -NotForSale;"	priceAdj="105"/>
 			<Buy	criteria="*NU" item="&itHydrocarbons;"		priceAdj="105"/>
 			<Buy	criteria="*NU" item="&itHelium3FuelRod;"	priceAdj="105"/>
 			<Buy	criteria="*NU" item="&itOrganicAcid;"		priceAdj="105"/>
