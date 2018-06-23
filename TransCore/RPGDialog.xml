@@ -155,7 +155,8 @@
 				;
 				;		'nextPage (or Nil): We advance to the next page (by
 				;				reloading the pane) or invoke the exitPane
-				;				action (see below) if we're at the last page.
+				;				action (see below) if we're at the last page
+				;				or the next page has an ID.
 				;
 				;		'exitPane: We either invoke the (@ options 'onExitPane)
 				;				code (if any) or just exit the screen.
@@ -193,7 +194,11 @@
 					(descID (or (@ pageDesc 'descID) (@ pageDesc 'textID)))
 					
 					(actions (@ pageDesc 'actions))
-					(atLastPage (= pageNo (- pageCount 1)))
+					(atLastPage (or
+									(= pageNo (- pageCount 1))
+									(@ (rpgPageDesc textDesc (+ pageNo 1)) 'id)
+									)
+						)
 
 					(missionObj (@ options 'missionObj))
 

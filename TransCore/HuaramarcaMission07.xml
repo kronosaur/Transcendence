@@ -11,6 +11,7 @@
 	<MissionType UNID="&msHuaramarcaRevelation;"
 			name=				"Huaramarca Revelation"
 			attributes=			"huariEmpire, huariTemple"
+			inherit=			"&unidCommonText;"
 
 			level=				"6"
 			maxAppearing=		"1"
@@ -51,11 +52,9 @@
 
 					(list
 						{
-							id: 'goodbye
 							textID: 'GoodBye
 							actions: (list
 								{
-									nextPage: 'revelation1
 									labelID: 'actionPath
 									}
 								{
@@ -65,12 +64,10 @@
 								)
 							}
 						{
-							id: 'revelation1
 							textID: 'Revelation1
 							labelID: 'actionFail
 							}
 						{
-							id: 'revelation2
 							textID: 'Revelation2
 							actions: (list
 								{
@@ -115,11 +112,9 @@
 				your arduous journey."
 			</Text>
 
-			<String id="actionContinue">[C]ontinue</String>
 			<String id="actionPath">"[W]hat is my path?"</String>
 			<String id="actionGoodbye">"[G]oodbye"</String>
 			<String id="actionFail">"[W]ill that happen if I fail?"</String>
-			<String id="actionLeave">[L]eave</String>
 		</Language>
 	</MissionType>
 
