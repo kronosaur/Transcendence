@@ -250,6 +250,13 @@
 				You run the analyzer but are unable to reveal any additional information about %itemName%.
 			</Text>
 		</Language>
+		<Events>
+			<GetGlobalAchievements>
+				(if (not (typGetData &dsRPGAnalyzeItem; 'hasAnalyzedItems))
+					(list (list "Never analyzed any items" Nil (typTranslate &unidCommonText; 'notes)))
+					)
+			</GetGlobalAchievements>
+		</Events>
 	</DockScreen>
 
 <!-- GLOBAL FUNCTIONS ==========================================================
