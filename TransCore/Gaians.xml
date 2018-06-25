@@ -48,7 +48,64 @@
 				sound=				"&snRecoillessCannon;"
 				>
 		</Weapon>
+		<Events>
+			<GetGlobalAchievements>
+				(block	(
+							(wrecks (objGetData gPlayerShip 'demolitionWrecksDestroyed))
+							(enemies (objGetData gPlayerShip 'demolitionEnemiesDestroyed))
+							(friends (objGetData gPlayerShip 'demolitionFriendsDestroyed))
+							)
+					(print gType)
+					(append
+						(if wrecks
+							(list (list
+								"Wrecks destroyed by Gaian Demolition Cannon"
+								wrecks
+								(typTranslate &unidCommonText; 'notes)
+								1
+								))
+							)
+						(if enemies
+							(list (list
+								"Enemies destroyed by Gaian Demolition Cannon"
+								enemies
+								(typTranslate &unidCommonText; 'notes)
+								2
+								))
+							)
+						(if friends
+							(list (list
+								"Friends destroyed by Gaian Demolition Cannon"
+								friends
+								(typTranslate &unidCommonText; 'notes)
+								3
+								))
+							)
+						)
+					)
+			</GetGlobalAchievements>
+			<OnDestroyObj>
+				;	Track the player's kills for this item
+				(switch
+					(neq aDestroyer gPlayerShip)
+						Nil
+					
+					;	Wrecks
+					(objHasAttribute aObjDestroyed 'shipwreck)
+						(objIncData gPlayerShip 'demolitionWrecksDestroyed)
+					
+					(not (objIsShip aObjDestroyed))
+						Nil
 
+					;	Enemies
+					(objIsEnemy gPlayerShip aObjDestroyed)
+						(objIncData gPlayerShip 'demolitionEnemiesDestroyed)
+					
+					;	Friends
+					(objIncData gPlayerShip 'demolitionFriendsDestroyed)
+					)
+			</OnDestroyObj>
+		</Events>
 	</ItemType>
 
 	<!-- Gaian Processor -->
