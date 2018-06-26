@@ -71,21 +71,23 @@
 				</OnShow>
 				
 				<Invoke>
-					(switch
-						(eq (objGetTarget gSender) gSource)
-							(objSendMessage gSender gSource (objTranslate gSource 'IcantAttackMyself))
-						
-						(and (not (objIsEnemy gPlayerShip (objGetTarget gSender)))
-								(not (objIsAngryAt (objGetTarget gSender) gPlayerShip))
-								)
-							(objSendMessage gSender gSource (objTranslate gSource 'IcantAttackFriends))
-
-						(block Nil
-							(shpCancelOrders gSource)
-							(shpOrder gSource 'attack (objGetTarget gSender))
+					(block ((target (objGetTarget gSender)))
+						(switch
+							(eq target gSource)
+								(objSendMessage gSender gSource (objTranslate gSource 'IcantAttackMyself))
 							
-							(objSetData gSource "behavior" 'attackingTarget)
-							(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+							(not target)
+								(objSendMessage gSender gSource (objTranslate gSource 'NoTarget))
+							
+							(not (objIsAngryAt target gPlayerShip))
+								(objSendMessage gSender gSource (objTranslate gSource 'IcantAttackFriends))
+
+							(block Nil
+								(objSetData gSource "behavior" 'attackingTarget)
+								(shpCancelOrders gSource)
+								(shpOrder gSource 'attack target)
+								(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+								)
 							)
 						)
 				</Invoke>
@@ -255,6 +257,7 @@
 			<String id="ImTooFarFromHome">"I'm too far from home"</String>
 			<String id="MyArmorNeedsRepair">"Armor repair needed"</String>
 			<String id="NiceShooting">"Nice shooting!"</String>
+			<String id="NoTarget">"No target selected"</String>
 			<String id="NoTargetInRange">"No target in range"</String>
 			<String id="Status100Percent">"No damage"</String>
 			<String id="StatusArmorDamaged">"Armor is %armorDamage%% damaged"</String>
