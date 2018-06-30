@@ -153,10 +153,12 @@
 				;
 				;		'missionDecline: Decline the mission.
 				;
-				;		'nextPage (or Nil): We advance to the next page (by
+				;		'nextPage: We advance to the next page (by
 				;				reloading the pane) or invoke the exitPane
-				;				action (see below) if we're at the last page
-				;				or the next page has an ID.
+				;				action (see below) if we're at the last page.
+				;
+				;		Nil: Like 'nextPage, except that we also exit if the
+				;				next page has an ID.
 				;
 				;		'exitPane: We either invoke the (@ options 'onExitPane)
 				;				code (if any) or just exit the screen.
@@ -194,11 +196,7 @@
 					(descID (or (@ pageDesc 'descID) (@ pageDesc 'textID)))
 					
 					(actions (@ pageDesc 'actions))
-					(atLastPage (or
-									(= pageNo (- pageCount 1))
-									(@ (rpgPageDesc textDesc (+ pageNo 1)) 'id)
-									)
-						)
+					(atLastPage (= pageNo (- pageCount 1)))
 
 					(missionObj (@ options 'missionObj))
 
@@ -379,10 +377,13 @@
 								;	then we exit.
 								
 								(or (= nextPage 'exitPane)
-										(and atLastPage
-											(or (not nextPage) (= nextPage 'nextPage))
-											)
+									(and atLastPage
+										(or (not nextPage) (= nextPage 'nextPage))
 										)
+									(and (not nextPage)
+										(@ (rpgPageDesc textDesc (+ pageNo 1)) 'id)
+										)
+									)
 									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
 										(lambda ()
 											(block Nil
