@@ -276,7 +276,7 @@
 									(and translateID (typTranslate translateID (@ pageDesc 'labelID)))
 									(scrTranslate theScreen (@ pageDesc 'labelID))
 									)
-								nextPage: (or (@ pageDesc 'nextPage) (@ pageDesc 'nextPane))
+								nextPage: (or (@ pageDesc 'nextPage) (@ pageDesc 'nextPane) 'nextPage)
 								code: (or (@ pageDesc 'code) (@ pageDesc 'nextCode))
 								}))
 						)
