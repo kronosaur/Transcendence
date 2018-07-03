@@ -1315,6 +1315,7 @@
 			hitPoints=			"35"
 			structuralHitPoints="10"
 			ejectaType=			"&vtWreckEjecta;"
+			mass=				"3000"
 
 			attributes=			"sungSlaveQuarters"
 			>
@@ -1359,6 +1360,7 @@
 			hitPoints=			"20"
 			structuralHitPoints="10"
 			ejectaType=			"&vtWreckEjecta;"
+			mass=				"3000"
 
 			attributes=			"sungSlaveQuarters"
 			>
