@@ -1402,7 +1402,7 @@
 						(needed (scrGetData gScreen 'fuelNeeded))
 						(afford (scrGetData gScreen 'fuelAfford))
 						(descID (switch
-							(and  (gr needed afford) (= (afford) 1))
+							(and  (gr needed afford) (= afford 1))
 								"descRefuelConfirm:onlyAffordOne"
 							(gr needed afford)
 								"descRefuelConfirm:onlyAffordSome"

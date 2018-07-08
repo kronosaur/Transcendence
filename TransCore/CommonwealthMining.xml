@@ -1101,7 +1101,7 @@
 			</Text>
 			<Text id="SuccessDebrief">
 				(msnTranslate gSource 'textSuccessDebrief {
-					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					reward: (fmtCurrency 'credit (msnGetData gSource 'reward))
 					})
 			</Text>
 			<Text id="textSuccessDebrief">

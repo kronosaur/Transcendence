@@ -4,7 +4,8 @@
 
 static char *ADDITIONAL_PROGRAMMING[] =
 	{
-	"Brian Merchant • Benn Bollay"
+	"Owen Embury (giantcabbage) • Nathaniel Stalberg (NMS) • Bryon Leung (Heliogenesis)",
+	"Alex Chen (Archcannon) • Brian Merchant • Benn Bollay"
 	};
 
 const int ADDITIONAL_PROGRAMMING_COUNT = (sizeof(ADDITIONAL_PROGRAMMING) / sizeof(ADDITIONAL_PROGRAMMING[0]));
