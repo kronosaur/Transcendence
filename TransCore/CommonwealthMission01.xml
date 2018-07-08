@@ -218,7 +218,7 @@
 			<Text id="Briefing:miscEnemy">
 
 				"%targetName% nearby has been attacking us recently. We want you to destroy them!
-				If you succeed we'll pay you %payment% credits. Will you help us?"
+				If you succeed we'll pay you %payment%. Will you help us?"
 
 			</Text>
 			<Text id="AcceptReply">
