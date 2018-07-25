@@ -451,4 +451,32 @@
 		</Effect>
 	</EffectType>
 
+	<EffectType UNID="&efDarkAcidFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Orb	style=			"smooth"
+					animate=		"fade"
+					lifetime=		"9"
+					spikeCount=		"6"
+					
+					primaryColor=	"#00ffea"
+					secondaryColor=	"#00b24a"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								radius: (mathScale damageHP 240 3250 30 80 50)
+								intensity: 20
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+
 </TranscendenceModule>

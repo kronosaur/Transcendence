@@ -876,6 +876,36 @@
 		</Events>
 	</EffectType>
 	
+	<EffectType UNID="&efDarkAcidHitDefault;"
+			sound="&snArmorHit1;"
+			>
+		<Effect>
+			<Orb	style=			"flare"
+					animate=		"fade"
+					intensity=		"50"
+					
+					blendMode=		"screen"
+					primaryColor=	"#00ffea"
+					secondaryColor=	"#00b24a"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							
+							{
+								radius: (if (= damageHP 0) 10 (mathScale damageHP 240 3250 30 70 50))
+								lifetime: (if (= damageHP 0) 4 (mathScale damageHP 240 3250 6 24 50))
+								noSound: (= damageHP 0)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Orb>
+		</Effect>
+	</EffectType>
+	
 <!-- GLOBALS -->
 
 	<Globals>
