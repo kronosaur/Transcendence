@@ -42,9 +42,9 @@
     <TargetPlatformVersion>10.0.17134.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <PackageCertificateKeyFile>Kronosaur Productions Code Signing.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>WindowsStore_StoreKey.pfx</PackageCertificateKeyFile>
     <EntryPointProjectUniqueName>..\Transcendence\Transcendence.vcxproj</EntryPointProjectUniqueName>
-    <PackageCertificateThumbprint>9B28087B1876DDB16C64742987EEB414E2B9F872</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>88BC7EDB9F3368D82C1DF161CE673479C45A59BA</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
@@ -82,6 +82,8 @@
     <Content Include="Images\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Images\StoreLogo.png" />
     <Content Include="Images\Wide310x150Logo.scale-200.png" />
+    <None Include="WindowsStore_StoreKey.pfx" />
+    <None Include="Package.StoreAssociation.xml" />
     <None Include="Kronosaur Productions Code Signing.pfx" />
   </ItemGroup>
   <ItemGroup>
