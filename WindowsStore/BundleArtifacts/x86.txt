@@ -1,0 +1,2 @@
+MainPackage=C:\Users\GPM\Documents\Elysium\Transcendence\WindowsStore\bin\x86\Debug\WindowsStore_1.8.0.0_x86_Debug.appx
+SymbolPackage=C:\Users\GPM\Documents\Elysium\Transcendence\WindowsStore\AppPackages\WindowsStore_1.8.0.0_Debug_Test\WindowsStore_1.8.0.0_x86_Debug.appxsym

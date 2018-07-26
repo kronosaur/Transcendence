@@ -744,11 +744,28 @@
     </None>
     <None Include="..\Game\ReadmeSource.htm">
       <DeploymentContent>true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='SteamRelease|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='SteamDebug|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug in Program Files|Win32'">false</DeploymentContent>
     </None>
     <None Include="..\Game\ReadmeStub.htm">
       <DeploymentContent>true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='SteamRelease|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='SteamDebug|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug in Program Files|Win32'">false</DeploymentContent>
     </None>
     <None Include="..\.gitignore" />
+    <None Include="..\Game\Transcendence.tdb">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='SteamRelease|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='SteamDebug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug in Program Files|Win32'">true</DeploymentContent>
+    </None>
     <None Include="..\LICENSE" />
     <None Include="..\README" />
     <None Include="Resources\Header.dxfn" />
@@ -813,6 +830,15 @@
     <Image Include="Resources\Transcendence.ico" />
     <Image Include="Resources\UIIcons.jpg" />
     <Image Include="Resources\UIIconsMask.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\Game\TranscendenceIntro.mp3">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='SteamRelease|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='SteamDebug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug in Program Files|Win32'">true</DeploymentContent>
+    </Media>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

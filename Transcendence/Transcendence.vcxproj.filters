@@ -396,6 +396,9 @@
     <None Include="..\..\..\SteamBuild\ContentBuilder\scripts\depot_build_1001.vdf">
       <Filter>SteamBuild</Filter>
     </None>
+    <None Include="..\Game\Transcendence.tdb">
+      <Filter>Notes and Documents</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Transcendence.rc">
@@ -462,5 +465,10 @@
     <Image Include="Resources\UIIconsMask.bmp">
       <Filter>Resources</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\Game\TranscendenceIntro.mp3">
+      <Filter>Notes and Documents</Filter>
+    </Media>
   </ItemGroup>
 </Project>
