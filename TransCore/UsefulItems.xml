@@ -1722,7 +1722,7 @@
 		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Invoke>
-			(block (obj mappedAll mapEnemy)
+			(block (mappedAll mapEnemy)
 				(setq mappedAll True)
 
 				; Compute the probability of mapping an enemy station
@@ -1736,22 +1736,34 @@
 					(setq mapEnemy 360)
 					)
 
-				; Iterate over all stations in the system
-				(enum (sysFindObject gSource "Ts") obj
+				; Iterate over all ships and stations in the system we might want to reveal
+				(enum (sysFindObject gSource "Ts +property:hasDockingPorts; -property:known;") obj
 					(switch
-						(and (objIsEnemy gSource obj) (gr (add (objGetDestiny obj) 1) mapEnemy))
+						(and (objMatches obj Nil "T -property:showMapLabel;")
+							(not (objMatches obj gSource "*F +majorStation;"))
+							)
+							Nil
+							
+						(and (objIsEnemy gSource obj)
+							(geq (objGetDestiny obj) mapEnemy)
+							)
 							(setq mappedAll Nil)
 
 						(objHasAttribute obj "uncharted")
 							(setq mappedAll Nil)
 
-						(objSetKnown obj)
+						(block Nil
+							(objSetKnown obj)
+							(enum (objGetProperty obj 'subordinates) sub
+								(if (objMatches sub Nil 'T) (objSetKnown sub))
+								)
+							)
 						)
 					)
 
 				(if mappedAll
-					(objSendMessage gSource Nil "Mapped all stations in system")
-					(objSendMessage gSource Nil "Mapped charted stations in system")
+					(objSendMessage gSource Nil (typTranslate &itSystemMapROM; 'mappedAll))
+					(objSendMessage gSource Nil (typTranslate &itSystemMapROM; 'mappedCharted))
 					)
 
 				; Identify the item
@@ -1761,6 +1773,11 @@
 				(objRemoveItem gSource gItem 1)
 				)
 		</Invoke>
+		
+		<Language>
+			<Text id="mappedAll">Mapped all stations in system</Text>
+			<Text id="mappedCharted">Mapped charted stations in system</Text>
+		</Language>
 	</ItemType>
 
 	<!-- Military System Map ROM -->
@@ -1781,20 +1798,18 @@
 
 		<Invoke>
 			(block Nil
-				(if	(not (sysFindObject gSource "Ts AB:commonwealth;"))
+				(if	(not (sysFindObject gSource "TsA +commonwealth; +property:hasDockingPorts;"))
 
 					; If there are no commonwealth stations in the system, then we cannot function
-					(block Nil
-						(objSendMessage gSource Nil "Unable to connect to military cartography in this system")
-						)
+					(objSendMessage gSource Nil (typTranslate &itMilitaryMapROM; 'unableToConnect))
 
 					; Otherwise, we map all enemy stations
-					(block (obj)
+					(block Nil
 						(enum (sysFindObject gSource "ETs") obj
 							(objSetKnown obj)
 							)
 
-						(objSendMessage gSource Nil "Mapped all enemy stations in system")
+						(objSendMessage gSource Nil (typTranslate &itMilitaryMapROM; 'mappedEnemies))
 
 						; Remove ROM
 						(objRemoveItem gSource gItem 1)
@@ -1805,6 +1820,11 @@
 				(itmSetKnown gItem)
 				)
 		</Invoke>
+		
+		<Language>
+			<Text id="unableToConnect">Unable to connect to military cartography in this system</Text>
+			<Text id="mappedEnemies">Mapped all enemy stations in system</Text>
+		</Language>
 	</ItemType>
 
 	<!-- Targeting Computer ROM -->

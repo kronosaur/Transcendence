@@ -71,21 +71,23 @@
 				</OnShow>
 				
 				<Invoke>
-					(switch
-						(eq (objGetTarget gSender) gSource)
-							(objSendMessage gSender gSource (objTranslate gSource 'IcantAttackMyself))
-						
-						(and (not (objIsEnemy gPlayerShip (objGetTarget gSender)))
-								(not (objIsAngryAt (objGetTarget gSender) gPlayerShip))
-								)
-							(objSendMessage gSender gSource (objTranslate gSource 'IcantAttackFriends))
-
-						(block Nil
-							(shpCancelOrders gSource)
-							(shpOrder gSource 'attack (objGetTarget gSender))
+					(block ((target (objGetTarget gSender)))
+						(switch
+							(eq target gSource)
+								(objSendMessageTranslate gSender gSource 'IcantAttackMyself)
 							
-							(objSetData gSource "behavior" 'attackingTarget)
-							(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+							(not target)
+								(objSendMessageTranslate gSender gSource 'NoTarget)
+							
+							(not (objIsAngryAt target gPlayerShip))
+								(objSendMessageTranslate gSender gSource 'IcantAttackFriends)
+
+							(block Nil
+								(objSetData gSource "behavior" 'attackingTarget)
+								(shpCancelOrders gSource)
+								(shpOrder gSource 'attack target)
+								(objSendMessageTranslate gSender gSource 'AttackTargetAck)
+								)
 							)
 						)
 				</Invoke>
@@ -97,52 +99,7 @@
 				</OnShow>
 				
 				<Invoke>
-					(block (theTarget)
-					
-						;	Get the closest angry target to the sender that the sender can detect.
-						;	Store the result so we only have to check once each tick.
-						(if (eq (unvGetTick) (objGetData gSender 'closestTargetCheckTick))
-						
-							(setq theTarget (objGetData gSender 'closestBreakAndAttackTarget))
-							
-							(block nil
-								(setq theTarget (sysFindObject gSender "sTYAPN N:100;"))
-								(objSetData gSender 'closestBreakAndAttackTarget theTarget)
-								(objSetData gSender 'closestTargetCheckTick (unvGetTick))
-								)
-							)
-							
-						(switch
-						
-							;	Attack the closest target to the sender if we have one.
-							theTarget
-								(block nil
-									(objSetData gSource 'behavior 'attackingAtWill)
-									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
-									(shpCancelOrders gSource)
-									(shpOrder gSource 'attack theTarget)
-									)
-							
-							;	If we're already attacking something, don't change target, but switch behavior.
-							(eq (objGetData gSource 'behavior) 'attackingTarget)
-								(block nil
-									(objSetData gSource 'behavior 'attackingAtWill)
-									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
-									)
-									
-							;	Attack the closest target to ourself that we can detect, if any.
-							(setq theTarget (sysFindObject gSource "sTYAPN N:100;"))
-								(block nil
-									(objSetData gSource 'behavior 'attackingAtWill)
-									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
-									(shpCancelOrders gSource)
-									(shpOrder gSource 'attack theTarget)
-									)
-									
-							;	Nothing to attack.	
-							(objSendMessage gSender gSource (objTranslate gSource 'NoTargetInRange))
-							)
-						)
+					(intOrderBreakAndAttack gSource gSender True)
 				</Invoke>
 			</Message>
 
@@ -158,14 +115,14 @@
 							(eq behavior 'escorting)
 								(block Nil
 									(objCommunicate gSource gSender 'FormUp)
-									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
+									(objSendMessageTranslate gSender gSource 'FormUpAck)
 									)
 
 							(block Nil
 								(objSetData gSource "behavior" 'escorting)
 								(if (or (eq behavior 'attackingTarget) (eq behavior 'attackingAtWill))
-									(objSendMessage gSender gSource (objTranslate gSource 'CancelAttackAck))
-									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
+									(objSendMessageTranslate gSender gSource 'CancelAttackAck)
+									(objSendMessageTranslate gSender gSource 'FormUpAck)
 									)
 									
 								(shpCancelOrders gSource)
@@ -224,7 +181,7 @@
 				<Invoke>
 					(block Nil
 						(objSetData gSource "behavior" 'waiting)
-						(objSendMessage gSender gSource (objTranslate gSource 'WaitAck))
+						(objSendMessageTranslate gSender gSource 'WaitAck)
 						
 						(shpCancelOrders gSource)
 						(shpOrder gSource 'hold)
@@ -255,6 +212,7 @@
 			<String id="ImTooFarFromHome">"I'm too far from home"</String>
 			<String id="MyArmorNeedsRepair">"Armor repair needed"</String>
 			<String id="NiceShooting">"Nice shooting!"</String>
+			<String id="NoTarget">"No target selected"</String>
 			<String id="NoTargetInRange">"No target in range"</String>
 			<String id="Status100Percent">"No damage"</String>
 			<String id="StatusArmorDamaged">"Armor is %armorDamage%% damaged"</String>
@@ -295,7 +253,7 @@
 										)
 									(block Nil
 										(objSetData gSource "behavior" 'goingHome)
-										(objSendMessage gPlayerShip gSource (objTranslate gSource 'ImGoingHome))
+										(objSendMessageTranslate gPlayerShip gSource 'ImGoingHome)
 										
 										(shpCancelOrders gSource)
 										(shpOrder gSource 'hold 30)
@@ -306,7 +264,7 @@
 								(setq theTarget (srvFindRepairArmor gSource 60 (itmGetLevel (shpGetArmor gSource 0))))
 									(block Nil
 										(objSetData gSource "behavior" 'repairingArmor)
-										(objSendMessage gPlayerShip gSource (objTranslate gSource 'ImRepairingArmor))
+										(objSendMessageTranslate gPlayerShip gSource 'ImRepairingArmor)
 										
 										(shpCancelOrders gSource)
 										(shpOrder gSource 'dock theTarget)
@@ -320,7 +278,7 @@
 											)
 										)
 									(block Nil
-										(objSendMessage gPlayerShip gSource (objTranslate gSource 'MyArmorNeedsRepair))
+										(objSendMessageTranslate gPlayerShip gSource 'MyArmorNeedsRepair)
 										(objSetData gSource "nextArmorRepairMsg" (add (unvGetTick) 3600))
 										)
 								)
@@ -338,6 +296,19 @@
 								(shpCancelOrders gSource)
 								(shpOrder gSource 'follow gPlayerShip)
 								)
+						
+						(and (neq behavior 'goingHome)
+							(eq (shpGetOrder gSource) 'gate)
+							gPlayerShip
+							)
+							(block ((message (cat "Warning: " (objGetName gSource) " was gating but not going home")))
+								(objSetData gSource 'behavior 'escorting)
+								(shpCancelOrders gSource)
+								(shpOrder gSource 'follow gPlayerShip)
+								(printTo 'log message)
+								(plyMessage gPlayer message)
+								)
+						
 						)
 					)
 			</OnBehavior>
@@ -381,22 +352,22 @@
 							Nil
 
 						(geq (sysGetLevel) maxSystemLevel)
-							(objSendMessage gPlayerShip gSource (objTranslate gSource 'ImTooFarFromHome))
+							(objSendMessageTranslate gPlayerShip gSource 'ImTooFarFromHome)
 
 						(eq (sysGetLevel) (subtract maxSystemLevel 1))
-							(objSendMessage gPlayerShip gSource (objTranslate gSource 'ImFarFromHome))
+							(objSendMessageTranslate gPlayerShip gSource 'ImFarFromHome)
 						)
 					)
 			</OnEnteredSystem>
 
 			<OnOrdersCompleted>
-				(block (behavior theTarget)
+				(block (behavior)
 					(setq behavior (objGetData gSource "behavior"))
 					
 					(if (eq behavior 'repairingArmor)
 						(block Nil
 							(intArmorRepairAll gSource)
-							(objSendMessage gPlayerShip gSource (objTranslate gSource 'ArmorRepaired))
+							(objSendMessageTranslate gPlayerShip gSource 'ArmorRepaired)
 							)
 						)
 					
@@ -409,38 +380,10 @@
 								(shpOrder gSource 'hold)
 								)
 							
-						(eq behavior 'attackingAtWill)
-							(block nil
-								;	Get the closest angry target to the player that they can detect.
-								;	Store the result so we only have to check once each tick.
-								(if (eq (unvGetTick) (objGetData gPlayerShip 'closestTargetCheckTick))
-						
-									(setq theTarget (objGetData gPlayerShip 'closestBreakAndAttackTarget))
-									
-									(block nil
-										(setq theTarget (sysFindObject gPlayerShip "sTYAPN N:100;"))
-										(objSetData gPlayerShip 'closestBreakAndAttackTarget theTarget)
-										(objSetData gPlayerShip 'closestTargetCheckTick (unvGetTick))
-										)
-									)
-								
-								(switch
-						
-									;	Attack the closest target to the player if we have one.
-									theTarget
-										(shpOrder gSource 'attack theTarget)
-											
-									;	Attack the closest target to ourself that we can detect, if any.
-									(setq theTarget (sysFindObject gSource "sTYAPN N:100;"))
-										(shpOrder gSource 'attack theTarget)
-										
-									;	Nothing to attack, return to formation.
-									(block Nil
-										(objSetData gSource 'behavior 'escorting)
-										(shpOrder gSource 'follow gPlayerShip)
-										)
-									)
-								)
+						(and (eq behavior 'attackingAtWill)
+							(intOrderBreakAndAttack gSource gPlayerShip Nil)
+							)
+							Nil
 								
 						;	Default: return to formation.
 						(block Nil
@@ -741,5 +684,61 @@
 
 		</Panes>
 	</DockScreen>
+	
+	<Globals>
+		(block Nil
+			(setq intOrderBreakAndAttack (lambda (receiver sender acknowledge)
+				(block (theTarget)
+					(setq theTarget (or
+						
+						;	Get the closest angry target to the sender that the sender can detect.
+						;	Store the result so we only have to check once each tick.
+						(if (eq (unvGetTick) (objGetData sender 'closestTargetCheckTick))
+						
+							(objGetData sender 'closestBreakAndAttackTarget)
+							
+							(block Nil
+								(objSetData sender 'closestTargetCheckTick (unvGetTick))
+								(setq theTarget (sysFindObject sender "sTYAPN N:100;"))
+								(objSetData sender 'closestBreakAndAttackTarget theTarget)
+								theTarget
+								)
+							)
+						
+						;	If we're already attacking something, don't change target.
+						(if (eq (shpGetOrder receiver) 'attack)
+							(shpGetOrderTarget receiver)
+							)
+						
+						;	Attack the closest target to ourself that we can detect, if any.
+						(sysFindObject receiver "sTYAPN N:100;")
+						))
+					
+					(switch
+						(not theTarget)
+							;	Nothing to attack.	
+							(if acknowledge (objSendMessageTranslate sender receiver 'NoTargetInRange))
+						
+						(not (objMatches theTarget Nil 'stA))
+							(block ((message (cat "Warning: " (objGetName receiver) " tried to break and attack an inactive object: " (objGetName theTarget))))
+								(printTo 'log message)
+								(plyMessage gPlayer message)
+								(setq theTarget Nil)
+								)
+						
+						(block Nil
+							(objSetData receiver 'behavior 'attackingAtWill)
+							(if acknowledge (objSendMessageTranslate sender receiver 'AttackTargetAck))
+							(shpCancelOrders receiver)
+							(shpOrder receiver 'attack theTarget)
+							)
+						)
+					
+					;	Return the target
+					theTarget
+					)
+				))
+			)
+	</Globals>
 
 </TranscendenceModule>

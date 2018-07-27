@@ -133,13 +133,13 @@
 						;	If no target, unable to compy
 						
 						(not (objGetTarget gSender))
-							(objSendMessage gSender gSource (objTranslate gSource 'UnableToComply))
+							(objSendMessageTranslate gSender gSource 'UnableToComply)
 
 						;	Attack the target
 						
 						(block Nil
 							(objSetData gSource 'behavior 'attackingTarget)
-							(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
+							(objSendMessageTranslate gSender gSource 'AttackTargetAck)
 							
 							(shpCancelOrders gSource)
 							(shpOrder gSource 'attack (objGetTarget gSender))
@@ -158,52 +158,7 @@
 				</OnShow>
 				
 				<Invoke>
-					(block (theTarget)
-					
-						;	Get the closest angry target to the sender that the sender can detect.
-						;	Store the result so we only have to check once each tick.
-						(if (eq (unvGetTick) (objGetData gSender 'closestTargetCheckTick))
-						
-							(setq theTarget (objGetData gSender 'closestBreakAndAttackTarget))
-							
-							(block nil
-								(setq theTarget (sysFindObject gSender "sTYAPN N:100;"))
-								(objSetData gSender 'closestBreakAndAttackTarget theTarget)
-								(objSetData gSender 'closestTargetCheckTick (unvGetTick))
-								)
-							)
-							
-						(switch
-						
-							;	Attack the closest target to the sender if we have one.
-							theTarget
-								(block nil
-									(objSetData gSource 'behavior 'attackingAtWill)
-									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
-									(shpCancelOrders gSource)
-									(shpOrder gSource 'attack theTarget)
-									)
-							
-							;	If we're already attacking something, don't change target, but switch behavior.
-							(eq (objGetData gSource 'behavior) 'attackingTarget)
-								(block nil
-									(objSetData gSource 'behavior 'attackingAtWill)
-									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
-									)
-									
-							;	Attack the closest target to ourself that we can detect, if any.
-							(setq theTarget (sysFindObject gSource "sTYAPN N:100;"))
-								(block nil
-									(objSetData gSource 'behavior 'attackingAtWill)
-									(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck))
-									(shpCancelOrders gSource)
-									(shpOrder gSource 'attack theTarget)
-									)
-									
-							;	Nothing to attack.	
-							(objSendMessage gSender gSource (objTranslate gSource 'NoTargetInRange))
-							)
-						)
+					(intOrderBreakAndAttack gSource gSender True)
 				</Invoke>
 			</Message>
 
@@ -221,12 +176,12 @@
 							(or (not behavior) (eq behavior 'escorting))
 								(block Nil
 									(objCommunicate gSource gSender 'FormUp)
-									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
+									(objSendMessageTranslate gSender gSource 'FormUpAck)
 									)
 
 							(block Nil
 								(objSetData gSource 'behavior 'escorting)
-								(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck))
+								(objSendMessageTranslate gSender gSource 'FormUpAck)
 								
 								(shpCancelOrders gSource)
 								(shpOrder gSource 'escort gPlayerShip)
@@ -273,12 +228,12 @@
 						(if (gr mass spaceLeft)
 						
 							;	Not enough space
-							(objSendMessage gSender gSource (objTranslate gSource 'ErrNoSpaceToReturn))
+							(objSendMessageTranslate gSender gSource 'ErrNoSpaceToReturn)
 								
 							;	Return
 							(block Nil
 								(objSetData gSource 'behavior 'returning)
-								(objSendMessage gSender gSource (objTranslate gSource 'ReturnAck))
+								(objSendMessageTranslate gSender gSource 'ReturnAck)
 								
 								(setq spaceLeft (- spaceLeft mass))
 								
@@ -303,7 +258,7 @@
 				<Invoke>
 					(block Nil
 						(objSetData gSource 'behavior 'waiting)
-						(objSendMessage gSender gSource (objTranslate gSource 'WaitAck))
+						(objSendMessageTranslate gSender gSource 'WaitAck)
 						
 						(shpCancelOrders gSource)
 						(shpOrder gSource 'hold)
@@ -473,8 +428,8 @@
 					;	Welcome or error message
 					
 					(if (@ gData 'notEnoughSpace)
-						(objSendMessage sourceObj auton (objTranslate auton 'ErrNoSpaceToReturn))
-						(objSendMessage sourceObj auton (objTranslate auton 'DeployAck))
+						(objSendMessageTranslate sourceObj auton 'ErrNoSpaceToReturn)
+						(objSendMessageTranslate sourceObj auton 'DeployAck)
 						)
 					
 					;	Return the auton created, in case subclasses want to
@@ -520,7 +475,7 @@
 			</OnEnteredGate>
 			
 			<OnOrdersCompleted>
-				(block (theTarget)
+				(block Nil
 					(switch
 						(not (objGetProperty gSource 'playerWingman))
 							Nil
@@ -531,38 +486,10 @@
 								(shpOrder gSource 'hold)
 								)
 							
-						(eq (objGetData gSource 'behavior) 'attackingAtWill)
-							(block nil
-								;	Get the closest angry target to the player that they can detect.
-								;	Store the result so we only have to check once each tick.
-								(if (eq (unvGetTick) (objGetData gPlayerShip 'closestTargetCheckTick))
-						
-									(setq theTarget (objGetData gPlayerShip 'closestBreakAndAttackTarget))
-									
-									(block nil
-										(setq theTarget (sysFindObject gPlayerShip "sTYAPN N:100;"))
-										(objSetData gPlayerShip 'closestBreakAndAttackTarget theTarget)
-										(objSetData gPlayerShip 'closestTargetCheckTick (unvGetTick))
-										)
-									)
-								
-								(switch
-						
-									;	Attack the closest target to the player if we have one.
-									theTarget
-										(shpOrder gSource 'attack theTarget)
-											
-									;	Attack the closest target to ourself that we can detect, if any.
-									(setq theTarget (sysFindObject gSource "sTYAPN N:100;"))
-										(shpOrder gSource 'attack theTarget)
-										
-									;	Nothing to attack, return to formation.
-									(block Nil
-										(objSetData gSource 'behavior 'escorting)
-										(shpOrder gSource 'escort gPlayerShip)
-										)
-									)
-								)
+						(and (eq (objGetData gSource 'behavior) 'attackingAtWill)
+							(intOrderBreakAndAttack gSource gPlayerShip Nil)
+							)
+							Nil
 								
 						;	Default: return to formation.
 						(block Nil
@@ -594,7 +521,7 @@
 			</OnPlayerLeftSystem>
 			
 			<OrderAttackSelf>
-				(objSendMessage gSender gSource (objTranslate gSource 'UnableToComply))
+				(objSendMessageTranslate gSender gSource 'UnableToComply)
 			</OrderAttackSelf>
 		</Events>
 		

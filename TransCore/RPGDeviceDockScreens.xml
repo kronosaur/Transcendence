@@ -716,7 +716,7 @@
 								)
 							)
 
-						(scrEnableAction gScreen 0 gResult)
+						(scrEnableAction gScreen 'actionRepairItem gResult)
 						)
 				</OnPaneInit>
 

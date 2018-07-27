@@ -758,7 +758,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<AcceptDonation	criteria="*"					priceAdj="100" actualPrice="true"/>
+			<AcceptDonation	criteria="* -ID; -questItem;" priceAdj="100" actualPrice="true"/>
 		</Trade>
 
 		<DockScreens>

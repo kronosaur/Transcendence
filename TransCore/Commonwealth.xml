@@ -1079,7 +1079,7 @@
 		</Ships>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<AcceptDonation	criteria="*"					priceAdj="100"/>
+			<AcceptDonation	criteria="* -ID; -questItem;" priceAdj="100"/>
 
 			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="1"/>
 			<ConsumeTrade	criteria="{human.basicFood}"	impact="1"/>
