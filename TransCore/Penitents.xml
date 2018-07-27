@@ -519,8 +519,8 @@
 				lifetime=			"40"
 				powerUse=			"200"
 
-				sound=				"&snRecoillessCannon;"
 				effect=				"&efDarkAcidBoltDefault;"
+				sound=				"&snRecoillessCannon;"
 				/>
 	</ItemType>
 
