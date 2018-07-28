@@ -818,8 +818,17 @@
 
 		<ListOptions
 			dataFrom=	"player"
-			list=		"*U -ID; -questItem;"
-			/>
+			list=		"*"
+			>
+			(scrSetListFilter gScreen (lambda (theItem)
+				(and (itmMatches theItem "*U")
+					(or (itmMatches theItem "* -ID; -questItem;")
+						(itmGetStaticData theItem 'sisters.donation)
+						(itmGetStaticData theItem '00182001_Donation)
+						)
+					)
+				))
+		</ListOptions>
 
 		<Panes>
 			<Default>
