@@ -271,7 +271,11 @@
 		<StaticData>
 			<Data id="sisters.donation">
 				;		attd	rel		text
-				'(Nil	-1		200		"This is a remarkable item! Domina will be very pleased!")
+				'(Nil	-1		200		(block Nil 
+											(typSetData &itDallSphere; 'status 'donated)
+											(typTranslate &itDallSphere; 'donationText)
+											)
+					)
 			</Data>
 		</StaticData>
 		
@@ -286,6 +290,10 @@
 							'achievement.lost
 						(= theStatus 'withDall)
 							'achievement.withDall
+						(= theStatus 'donated)
+							'achievement.donated
+						(= theStatus 'destroyed)
+							'achievement.destroyed
 						))
 					)
 					(if (and theStatus achievementText)
@@ -318,7 +326,7 @@
 					;	destroying the sphere.)
 					
 					(= aDestroyReason 'gravity)
-						Nil
+						(typSetData &itDallSphere; 'status 'destroyed)
 						
 					;	Otherwise, the object drops on its own
                         
@@ -352,7 +360,11 @@
 		<Language>
 			<Text id="msgPowerSurge">A power surge from the sphere disables your ship</Text>
 			<Text id="msgPowerPulse">The sphere in your cargo hold pulses with power</Text>
+			
+			<Text id="donationText">This is a remarkable item! Domina will be very pleased!</Text>
 
+			<Text id="achievement.destroyed">Destroyed Professor Dall's alien sphere</Text>
+			<Text id="achievement.donated">Donated Professor Dall's alien sphere to Domina</Text>
 			<Text id="achievement.found">Found Professor Dall's alien sphere</Text>
 			<Text id="achievement.lost">Found and lost Professor Dall's alien sphere</Text>
 			<Text id="achievement.withDall">Found and delivered Professor Dall's alien sphere</Text>

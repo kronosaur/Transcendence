@@ -918,11 +918,12 @@
 
 			<Donate noListNavigation="true">
 				<OnPaneInit>
-					(block (table entry criteria)
-					
-						;	Get the donation entry
-						
-						(setq entry (domGetDonationEntry gItem))
+					(block (
+						(entry (domGetDonationEntry gItem))
+						(att (eval (@ entry 1)))
+						(rel (eval (@ entry 2)))
+						(desc (eval (@ entry 3)))
+						)
 						
 						; Deal with the entry that we found
 
@@ -934,8 +935,8 @@
 
 							; If the entry has no increase in att or rel, then we output the message
 							; from the entry
-							(and (eq (item entry 1) 0) (eq (item entry 2) 0))
-								(scrSetDesc gScreen (cat "\"" (item entry 3) "\""))
+							(and (eq att 0) (eq rel 0))
+								(scrSetDesc gScreen (cat "\"" desc "\""))
 
 							; Otherwise, do more calculations
 
@@ -951,24 +952,24 @@
 								
 								(switch
 									; If 0, then we get no increase in attitude
-									(eq (item entry 1) 0)
+									(eq att 0)
 										(setq incAtt 0)
 
 									; If -1, then each item counts for +1 attitude
-									(eq (item entry 1) -1)
+									(eq att -1)
 										(setq incAtt (itmGetCount gItem))
 
 									; Otherwise, depends on the value of the item
-									(setq incAtt (divide totalValue (item entry 1)))
+									(setq incAtt (divide totalValue att))
 									)
 
 								; Calculate the increase in relationship
 								
-								(if (or (eq (item entry 2) 0)
+								(if (or (eq rel 0)
 										(not (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;))
 										)
 									(setq incRel 0)
-									(setq incRel (multiply (itmGetCount gItem) (item entry 2)))
+									(setq incRel (multiply (itmGetCount gItem) rel))
 									)
 									
 								;	Calculate bonus text
@@ -1002,7 +1003,7 @@
 										(scrSetDesc gScreen "\"We thank you for your donation and your good intentions. Go in peace.\"")
 
 									; Otherwise, message specified in table
-									(scrSetDesc gScreen (cat "\"" (item entry 3) "\"" bonusText))
+									(scrSetDesc gScreen (cat "\"" desc "\"" bonusText))
 									)
 
 								; Increase attitude and relationship
