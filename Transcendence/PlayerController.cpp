@@ -171,9 +171,9 @@ bool CPlayerShipController::CanShowShipStatus (void)
 
 	//	See if we have an overlay preventing us from bring it up
 
-	COverlayList::SImpactDesc Impact;
-	m_pShip->GetOverlayImpact(&Impact);
-	if (Impact.bShipScreenDisabled)
+	COverlay::SImpactDesc Impact;
+	if (m_pShip->GetOverlayImpact(Impact) 
+			&& Impact.Conditions.IsSet(CConditionSet::cndShipScreenDisabled))
 		return false;
 
 	//	We're OK
@@ -1294,6 +1294,39 @@ void CPlayerShipController::OnEnterGate (CTopologyNode *pDestNode, const CString
 	//	Let the model handle everything
 
 	g_pTrans->GetModel().OnPlayerEnteredGate(pDestNode, sDestEntryPoint, pStargate);
+	}
+
+void CPlayerShipController::OnOverlayConditionChanged (CConditionSet::ETypes iCondition, CConditionSet::EModifications iChange)
+
+//	OnOverlayConditionChanged
+//
+//	A condition imposed by an overlay has been added or removed.
+
+	{
+	switch (iCondition)
+		{
+		//	Time stopped
+
+		case CConditionSet::cndTimeStopped:
+			{
+			//	Time stopped
+
+			if (iChange == CConditionSet::cndAdded)
+				m_pTrans->DisplayMessage(CONSTLIT("Time has stopped for you!"));
+
+			//	If we're no longer time-stopped
+
+			else if (!m_pShip->IsTimeStopped())
+				m_pTrans->DisplayMessage(CONSTLIT("Time continues"));
+
+			//	Otherwise, time is still stopped
+
+			else
+				m_pTrans->DisplayMessage(CONSTLIT("Time is still stopped"));
+
+			break;
+			}
+		}
 	}
 
 void CPlayerShipController::OnPaintSRSEnhancements (CG32bitImage &Dest, SViewportPaintCtx &Ctx)

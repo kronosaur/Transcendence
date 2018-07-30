@@ -232,6 +232,7 @@ class CPlayerShipController : public IShipController
 		virtual void OnNewSystem (CSystem *pSystem) override;
 		virtual void OnObjDamaged (const SDamageCtx &Ctx) override;
 		virtual void OnObjDestroyed (const SDestroyCtx &Ctx) override;
+		virtual void OnOverlayConditionChanged (CConditionSet::ETypes iCondition, CConditionSet::EModifications iChange) override;
 		virtual void OnPaintSRSEnhancements (CG32bitImage &Dest, SViewportPaintCtx &Ctx) override;
 		virtual void OnProgramDamage (CSpaceObject *pHacker, const ProgramDesc &Program) override;
 		virtual void OnShipStatus (EShipStatusNotifications iEvent, DWORD dwData = 0) override;
