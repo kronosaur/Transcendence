@@ -337,25 +337,31 @@
 	<StationType UNID="&stArmorDealer;"
 			name=				"corporate armor dealer"
 			sovereign=			"&svCorporate;"
+
+			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
 			inherit=			"&baCorporateStation;"
 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
 
 			level=				"4"
-			multiHull=			"true"
+			size=				"155"
 			armorID=			"&itCeralloyArmor;"
 			hitPoints=			"160"
+			multiHull=			"true"
 			regen=				"2"
+
+			canAttack=			"true"
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
-			levelFrequency=		"ccuv- ----- ----- ----- -----"
-			locationCriteria=	"+planetary"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				levelFrequency=		"ccuv- ----- ----- ----- -----"
+				locationCriteria=	"+planetary"
+				/>
 
 		<Names noArticle="true">Armor United; Brentano Armor; Carbellium Armor Systems;
 				Dreadnought Armor; Enterprise Armor Dealer; Full Protection Systems;
@@ -366,14 +372,18 @@
 				Tenhove Defense Dealer; Umagahli Armor Systems; Viceroy Armor;
 				Wei Chang Armor Dealer; %s Armor Systems</Names>
 
-		<Image			imageID="&rsStations1;" imageX="256" imageY="256" imageWidth="128" imageHeight="128"/>
+		<!-- Trade and Items -->
 
-		<Ships standingCount="3">
-			<Table>
-				<Lookup chance="75" table="&tbCorpDefenders;"/>
-				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
-			</Table>
-		</Ships>
+		<Trade currency="credit" max="50000" replenish="2500">
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+			<Buy	criteria="asU -Illegal; -NotForSale;"	priceAdj="50"/>
+			<Buy	criteria="asU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<InstallDevice	criteria="s L:1-7;" priceAdj="100"	upgradeInstallOnly="true"/>
+			<RemoveDevice	criteria="s L:1-7;" priceAdj="100"	upgradeInstallOnly="true"/>
+		</Trade>
 
 		<Items>
 			<RandomItem count="8-12" 
@@ -408,32 +418,31 @@
 			<Item chance="30" count="1d4"	item="&itEMPImmuneCoating;" />
 		</Items>
 
-		<Trade currency="credit" max="50000" replenish="2500">
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
-			<Buy	criteria="asU -Illegal; -NotForSale;"	priceAdj="50"/>
-			<Buy	criteria="asU -Illegal; -ID;"				priceAdj="10"/>
-			
-			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-7;" priceAdj="100"/>
-			<InstallDevice	criteria="s L:1-7;" priceAdj="100"	upgradeInstallOnly="true"/>
-			<RemoveDevice	criteria="s L:1-7;" priceAdj="100"	upgradeInstallOnly="true"/>
-		</Trade>
+		<!-- Configuration -->
 
-		<StaticData>
-			<NPCService>
-				(	;	service					level	margin
-					(	'repairArmor			7		100		)
-					)
-			</NPCService>
-		</StaticData>
+		<!-- Satellites -->
 
-		<Events>
-			<OnContractGenerate>
-				(intGenerateIndustrialRequestContract1)
-			</OnContractGenerate>
+		<!-- Ships and Defenses -->
 
-			<OnContractQuery>True</OnContractQuery>
-		</Events>
+		<Ships standingCount="3">
+			<Table>
+				<Lookup chance="75" table="&tbCorpDefenders;"/>
+				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
+			</Table>
+		</Ships>
+
+		<!-- Image and Effects -->
+
+		<Image			imageID="&rsCorporateArmorDealer;" imageWidth="160" imageHeight="240" viewportRatio="0.03"/>
+
+		<DockingPorts
+				portCount=		"8"
+				portAngle=		"15"
+				portRadius=		"110"
+				>
+		</DockingPorts>
+		
+		<!-- Dock Screens -->
 
 		<DockScreens>
 			<Main>
@@ -462,16 +471,25 @@
 					</Default>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="64" />
-			<Port x="64"	y="0" />
-			<Port x="0"		y="0" />
-			<Port x="50"	y="90" />
-			<Port x="90"	y="20" />
-		</DockingPorts>
+		<!-- Events and Behavior -->
+
+		<StaticData>
+			<NPCService>
+				(	;	service					level	margin
+					(	'repairArmor			7		100		)
+					)
+			</NPCService>
+		</StaticData>
+
+		<Events>
+			<OnContractGenerate>
+				(intGenerateIndustrialRequestContract1)
+			</OnContractGenerate>
+
+			<OnContractQuery>True</OnContractQuery>
+		</Events>
 
         <Language>
 			<Text id="descWelcome">
@@ -493,8 +511,6 @@
 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-
-			dockingPorts=		"8"
 
 			level=				"4"
 			size=				"149"
@@ -1321,25 +1337,31 @@
 	<StationType UNID="&stFuelDepot;"
 			name=				"corporate fuel depot"
 			sovereign=			"&svCorporate;"
+
+			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
 			inherit=			"&baCorporateStation;"
 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
 
 			level=				"4"
-			multiHull=			"true"
+			size=				"184"
 			armorID=			"&itCeralloyArmor;"
 			hitPoints=			"160"
+			multiHull=			"true"
 			regen=              "2"
+
+			canAttack=			"true"
 			explosionType=		"&vtThermoExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
-			levelFrequency=		"cccuu rv--- ----- ----- -----"
-			locationCriteria=	"-outerSystem, +planetary"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				levelFrequency=		"cccuu rv--- ----- ----- -----"
+				locationCriteria=	"-outerSystem, +planetary"
+				/>
 
 		<Names noArticle="true">Antares Fuel; Bapco Fuel; Cerulean Energy;
 				Dilithium Fuels, rce; Energy Supplies, rce; Fentano Fuels;
@@ -1350,19 +1372,17 @@
 				Tander Fuel &amp; Energy; Urion Fuels; Vanderberg Fuels;
 				Wehesaken Fuel Depot; %s Fuel</Names>
 
-		<Image imageID="&rsStations1;" imageX="156" imageY="512" imageWidth="100" imageHeight="192"/>
+		<!-- Trade and Items -->
 
-		<Ships>
-			<Lookup count="1d2" table="&tbCorpDefenders;"/>
-			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
-		</Ships>
+		<Trade currency="credit" max="5000" replenish="250">
+			<Sell	criteria="fNU +basicFuel; L:1-4; -illegal; -ID; -notForSale;"	priceAdj="90"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 
-		<Reinforcements minShips="3">
-			<Table>
-				<Lookup chance="75" table="&tbCorpDefenders;"/>
-				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
-			</Table>
-		</Reinforcements>
+			<Refuel			criteria="f +BasicFuel; L:1-4;" priceAdj="90"/>
+			<Refuel			criteria="f +BasicFuel; L:5-10;" priceAdj="100"/>
+
+			<ProduceTrade	criteria="{core.fusionFuel}"		impact="20"/>
+		</Trade>
 
 		<Items>
 			<LevelTable count="1d3">
@@ -1379,23 +1399,44 @@
 			<Item chance="50"	count="1"		item="&itSystemMapROM;" />
 		</Items>
 
-		<Trade currency="credit" max="5000" replenish="250">
-			<Sell	criteria="fNU +basicFuel; L:1-4; -illegal; -ID; -notForSale;"	priceAdj="90"/>
-			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+		<!-- Configuration -->
 
-			<Refuel			criteria="f +BasicFuel; L:1-4;" priceAdj="90"/>
-			<Refuel			criteria="f +BasicFuel; L:5-10;" priceAdj="100"/>
+		<!-- Satellites -->
 
-			<ProduceTrade	criteria="{core.fusionFuel}"		impact="20"/>
-		</Trade>
+		<!-- Ships and Defenses -->
 
+		<Ships>
+			<Lookup count="1d2" table="&tbCorpDefenders;"/>
+			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
+		</Ships>
+
+		<Reinforcements minShips="3">
+			<Table>
+				<Lookup chance="75" table="&tbCorpDefenders;"/>
+				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
+			</Table>
+		</Reinforcements>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsCorporateFuelDepot;" imageWidth="186" imageHeight="240" viewportRatio="0.03"/>
+
+		<DockingPorts
+				portCount=		"12"
+				portAngle=		"15"
+				portRadius=		"116"
+				>
+		</DockingPorts>
+
+		<!-- Dock Screens -->
+		
 		<DockScreens>
 			<Main>
 				<Panes>
 					<Default>
 						<OnPaneInit>
 							(block (actionStatus)
-								(scrSetDescTranslate gScreen 'desc)
+								(scrSetDescTranslate gScreen 'desc { name:(objGetName gSource) })
 								
 								(setq actionStatus (rpgCalcDockServiceRefuelAction gSource gPlayerShip { }))
 								(scrShowAction gScreen 'actionRefuel (@ actionStatus 'visible))
@@ -1424,27 +1465,21 @@
 			</Main>
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="95" />
-			<Port x="0"		y="-55" />
-			<Port x="50"	y="70" />
-			<Port x="50"	y="-30" />
-			<Port x="75"	y="10" />
-			<Port x="-75"	y="10" />
-			<Port x="-50"	y="70" />
-			<Port x="-50"	y="-30" />
-		</DockingPorts>
-		
+		<!-- Events and Behavior -->
+
 		<Language>
 			<Text id="desc">
-				(cat 
-					"Welcome to " (objGetName gSource) ", your most reliable source of starship fuel and a member of the Earth Industries Conglomerate.\n\n"
-					"All our fuel has been produced to the exacting standards required by today's reactors. Please use the terminal to proceed with your transaction."
-					)
+
+				Welcome to %name%, your most reliable source of starship fuel 
+				and a member of the Earth Industries Conglomerate.
+
+				All our fuel has been produced to the exacting standards 
+				required by today's reactors. Please use the terminal to proceed 
+				with your transaction.
+
 			</Text>
-        
             <Text id="core.mapDesc">
-                "Refuels up to level 10 &mdash; Sells fuel and supplies"
+                Refuels up to level 10 &mdash; Sells fuel and supplies
             </Text>
 		</Language>
 
@@ -3190,8 +3225,10 @@
 	
 <!-- RESOURCES -->
 
+	<Image UNID="&rsCorporateArmorDealer;"	bitmap="Resources\CorporateArmorDealer.jpg" bitmask="Resources\CorporateArmorDealerMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsCorporateArmsDealer;"	bitmap="Resources\CorporateArmsDealer.jpg" bitmask="Resources\CorporateArmsDealerMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsCorporateEnclave;"		bitmap="Resources\CorporateEnclave.jpg" bitmask="Resources\CorporateEnclaveMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsCorporateFuelDepot;"	bitmap="Resources\CorporateFuelDepot.jpg" bitmask="Resources\CorporateFuelDepotMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsIceFarmIce;"			bitmap="Resources\IceFarmIce.jpg" bitmask="Resources\IceFarmIceMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsIceFarmPrimordial;"		bitmap="Resources\IceFarmPrimordial.jpg" bitmask="Resources\IceFarmPrimordialMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsIceFarmRocky;"			bitmap="Resources\IceFarmRocky.jpg" bitmask="Resources\IceFarmRockyMask.bmp" loadOnUse="true"/>

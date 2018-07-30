@@ -1579,6 +1579,8 @@
 	<!ENTITY rsIceFarmRocky				"0x00100048">
 	<!ENTITY dsInsuranceCriminalLiability	"0x00100049">
 	<!ENTITY rsCorporateEnclave			"0x0010004A">
+	<!ENTITY rsCorporateArmorDealer		"0x0010004B">
+	<!ENTITY rsCorporateFuelDepot		"0x0010004C">
 	
 	<!-- 0060-007F COMMONWEALTH FLEET -->
 	
