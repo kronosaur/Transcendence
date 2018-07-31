@@ -1055,6 +1055,7 @@ class CTranscendenceModel
 			stateGameOver,							//	GameFile closed
 			};
 
+		TArray<CString> CalcConditionsWhenDestroyed (SDestroyCtx &Ctx, CSpaceObject *pPlayerShip) const;
 		CString CalcEpitaph (SDestroyCtx &Ctx);
 		void CalcStartingPos (CShipClass *pStartingShip, DWORD *retdwMap, CString *retsNodeID, CString *retsPos);
 		ALERROR CreateAllSystems (const CString &sStartNode, CSystem **retpStartingSystem, CString *retsError);

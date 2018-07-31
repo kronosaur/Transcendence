@@ -173,6 +173,31 @@ void CTranscendenceModel::AddSaveFileFolder (const CString &sFilespec)
 		}
 	}
 
+TArray<CString> CTranscendenceModel::CalcConditionsWhenDestroyed (SDestroyCtx &Ctx, CSpaceObject *pPlayerShip) const
+
+//	CalcConditionsWhenDestroyed
+//
+//	Returns a set of conditions for the epitaph
+
+	{
+	TArray<CString> Effects;
+
+	if (pPlayerShip->IsRadioactive() && Ctx.iCause != killedByRadiationPoisoning)
+		Effects.Insert(CONSTLIT("radioactive"));
+
+	if (pPlayerShip->IsBlind())
+		Effects.Insert(CONSTLIT("blind"));
+
+	if (pPlayerShip->IsTimeStopped())
+		Effects.Insert(CONSTLIT("time-stopped"));
+	else if (pPlayerShip->IsParalyzed())
+		Effects.Insert(CONSTLIT("paralyzed by EMP"));
+	else if (pPlayerShip->IsDisarmed())
+		Effects.Insert(CONSTLIT("disarmed"));
+
+	return Effects;
+	}
+
 CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 
 //	CalcEpitaph
@@ -212,17 +237,7 @@ CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 
 	//	Mention any extra conditions that the player had before dying
 
-	TArray<CString> Effects;
-	if (pShip->IsRadioactive() && Ctx.iCause != killedByRadiationPoisoning)
-		Effects.Insert(CONSTLIT("radioactive"));
-	if (pShip->IsBlind())
-		Effects.Insert(CONSTLIT("blind"));
-	if (pShip->IsParalyzed())
-		Effects.Insert(CONSTLIT("paralyzed by EMP"));
-	if (pShip->IsDisarmed())
-		Effects.Insert(CONSTLIT("disarmed"));
-
-	CString sEffects = strJoin(Effects, CONSTLIT("oxfordComma"));
+	CString sEffects = strJoin(CalcConditionsWhenDestroyed(Ctx, pShip), CONSTLIT("oxfordComma"));
 	if (!sEffects.IsBlank())
 		sEffects = strPatternSubst(CONSTLIT(" while %s"), sEffects);
 
