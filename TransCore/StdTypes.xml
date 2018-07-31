@@ -116,7 +116,7 @@
 
 	<Image UNID="&rsStargate;"		bitmap="Resources\Stargates1.jpg"		bitmask="Resources\Stargates1Mask.bmp"  />
 	<Image UNID="&rsNavBeacon;"		bitmap="Resources\NavBeacon.jpg"		bitmask="Resources\NavBeaconMask.bmp" NoPM="true"/>
-	<Image UNID="&rsBarricades;"	bitmap="Resources\Barricades.jpg"		bitmask="Resources\BarricadesMask.bmp" />
+	<Image UNID="&rsBarricades;"	bitmap="Resources\Barricades.png"/>
 	<Image UNID="&rsLogBuoy;"		bitmap="Resources\LogBuoy.jpg"		bitmask="Resources\LogBuoyMask.bmp"  loadOnUse="true"/>
 
 	<Image UNID="&rsShockwave1;"	bitmap="Resources\Shockwave1.jpg"		bitmask="Resources\Shockwave1Mask.bmp" loadOnUse="true"/>
@@ -1423,12 +1423,7 @@
 			noMapIcon=			"true"
 			>
 
-		<ImageVariants>
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="0"   imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="80"  imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="160" imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="240" imageWidth="80" imageHeight="80" />
-		</ImageVariants>
+		<Image imageID="&rsBarricades;" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="1"/>
 
 		<DockingPorts
 				portCount=		"2"
@@ -1451,12 +1446,7 @@
 			noMapIcon=			"true"
 			>
 
-		<ImageVariants>
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="0"   imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="80"  imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="160" imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="240" imageWidth="80" imageHeight="80" />
-		</ImageVariants>
+		<Image imageID="&rsBarricades;" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="1"/>
 
 		<DockingPorts
 				portCount=		"2"
@@ -1479,12 +1469,7 @@
 			noMapIcon=			"true"
 			>
 
-		<ImageVariants>
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="0"   imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="80"  imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="160" imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="240" imageWidth="80" imageHeight="80" />
-		</ImageVariants>
+		<Image imageID="&rsBarricades;" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="1"/>
 
 		<DockingPorts
 				portCount=		"2"

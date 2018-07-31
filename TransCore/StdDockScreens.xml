@@ -30,86 +30,56 @@
 
 				<OnPaneInit>
 					(block (desc)
-						(switch
-							(eq (staGetImageVariant gSource) 0)
-								(block Nil
-									(setq desc "facing 0 degrees")
-									(scrEnableAction gScreen 0 Nil)
-									)
-
-							(eq (staGetImageVariant gSource) 1)
-								(block Nil
-									(setq desc "facing 90 degrees")
-									(scrEnableAction gScreen 1 Nil)
-									)
-
-							(eq (staGetImageVariant gSource) 2)
-								(block Nil
-									(setq desc "facing 180 degrees")
-									(scrEnableAction gScreen 2 Nil)
-									)
-
-							(eq (staGetImageVariant gSource) 3)
-								(block Nil
-									(setq desc "facing 270 degrees")
-									(scrEnableAction gScreen 3 Nil)
-									)
-							)
-
+						(setq desc (cat "facing " (objGetProperty gSource 'rotation) " degrees"))
 						(scrSetDesc gScreen (cat "You are docked with a titanium barricade " desc ". These structures are often used as cheap, static defenses."))
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Face 0 degrees" key="0">
+					<Action name="Set Facing" key="F">
+						<ShowPane pane="SetFacing"/>
+					</Action>
+					<Action name="Turn Clockwise 45 Degrees" key="T">
 						(block Nil
-							(staSetImageVariant gSource 0)
-							(scrShowPane gScreen "OrientDone")
+							(objSetProperty gSource 'rotation (+ (objGetProperty gSource 'rotation) 45))
+							(scrRefreshScreen gScreen)
 							)
 					</Action>
-
-					<Action name="Face 90 degrees" key="9">
+					<Action name="Turn Counterclockwise 45 Degrees" key="C">
 						(block Nil
-							(staSetImageVariant gSource 1)
-							(scrShowPane gScreen "OrientDone")
+							(objSetProperty gSource 'rotation (- (objGetProperty gSource 'rotation) 45))
+							(scrRefreshScreen gScreen)
 							)
 					</Action>
-
-					<Action name="Face 180 degrees" key="8">
-						(block Nil
-							(staSetImageVariant gSource 2)
-							(scrShowPane gScreen "OrientDone")
-							)
-					</Action>
-
-					<Action name="Face 270 degrees" key="7">
-						(block Nil
-							(staSetImageVariant gSource 3)
-							(scrShowPane gScreen "OrientDone")
-							)
-					</Action>
-
 					<Action name="Undock" cancel="1" key="U">
 						<Exit/>
 					</Action>
 				</Actions>
-
 			</Default>
-
-			<OrientDone descID="descOrientDone">
+			<SetFacing
+					showCounter="true"
+				>
+				<OnPaneInit>
+					(block (rotation)
+						(setq rotation (objGetProperty gSource 'rotation))
+						(scrSetCounter gScreen rotation)
+						(scrSetDesc gScreen (cat "This titanium barricade is facing " rotation " degrees."))
+						)
+				</OnPaneInit>
 				<Actions>
-					<Action name="Undock" cancel="1" key="U">
-						<Exit/>
+					<Action name="Set" default="1" key="S">
+						(block Nil
+							(objSetProperty gSource 'rotation (scrGetCounter gScreen))
+							(scrShowPane gScreen 'Default)
+							(scrRefreshScreen gScreen)
+							)
+					</Action>
+					<Action name="Cancel" cancel="1" key="C">
+						<ShowPane pane="Default"/>
 					</Action>
 				</Actions>
-			</OrientDone>
+			</SetFacing>
 		</Panes>
-
-		<Language>
-			<Text id="descOrientDone">
-				You have successfully oriented the titanium barricade.
-			</Text>
-		</Language>
 	</DockScreen>
 
 	<!-- Install a specific device
