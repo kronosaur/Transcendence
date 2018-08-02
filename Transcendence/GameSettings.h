@@ -136,7 +136,6 @@ class CGameKeys
 		CGameKeys (void);
 
         void GetCommands (TArray<SCommandKeyDesc> &Result) const;
-		CGameKeys::Keys GetGameCommand (const CString &sCmd) const;
 		inline Keys GetGameCommand (DWORD dwVirtKey) const { return m_iMap[(dwVirtKey < 256 ? dwVirtKey : 0)]; }
         Keys GetGameCommandFromChar (char chChar) const;
 		char GetKeyIfChar (Keys iCommand) const;
@@ -150,6 +149,8 @@ class CGameKeys
         void SetGameKey (const CString &sKeyID, Keys iCommand);
         void SetLayout (ELayouts iLayout);
 		ALERROR WriteAsXML (IWriteStream *pOutput);
+
+		static CGameKeys::Keys GetGameCommand (const CString &sCmd);
 
 	private:
         struct SKeyMapEntry

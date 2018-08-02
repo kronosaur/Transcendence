@@ -99,6 +99,7 @@ ICCItem *fnPlyComposeString (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwDat
 
 #define FN_UI_SET_SOUNDTRACK_MODE	1
 #define FN_UI_QUEUE_SOUNDTRACK		2
+#define FN_UI_KEY_LABEL				3
 
 ICCItem *fnUISet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
@@ -531,6 +532,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		//	UI functions
 		//	------------
+
+		{	"uiKeyLabel",							fnUISet,		FN_UI_KEY_LABEL,
+			"(uiKeyLabel command) -> text",
+			"s",	0,	},
 
 		{	"uiQueueSoundtrack",					fnUISet,	FN_UI_QUEUE_SOUNDTRACK,
 			"(uiQueueSoundtrack soundtrackUNID [options]) -> True/Nil",
@@ -2156,6 +2161,24 @@ ICCItem *fnUISet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	switch (dwData)
 		{
+		case FN_UI_KEY_LABEL:
+			{
+			CString sCommand = pArgs->GetElement(0)->GetStringValue();
+			CGameKeys::Keys iCmd = CGameKeys::GetGameCommand(sCommand);
+			if (iCmd == CGameKeys::keyError)
+				return pCC->CreateError(CONSTLIT("Unknown command"), pArgs->GetElement(0));
+
+			DWORD dwVirtKey = g_pTrans->GetSettings().GetKeyMap().GetKey(iCmd);
+			if (dwVirtKey == CVirtualKeyData::INVALID_VIRT_KEY)
+				return pCC->CreateNil();
+
+			CString sKey = CVirtualKeyData::GetKeyLabel(dwVirtKey);
+			if (sKey.IsBlank())
+				return pCC->CreateNil();
+
+			return pCC->CreateString(sKey);
+			}
+
 		case FN_UI_QUEUE_SOUNDTRACK:
 			{
 			//	Get the track. If we can't find it, we assume that it has not 
