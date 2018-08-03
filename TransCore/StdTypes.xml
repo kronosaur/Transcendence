@@ -1429,7 +1429,7 @@
 
 		<DockingPorts
 				portCount=		"2"
-				portRadius=		"32"
+				portRadius=		"48"
 				maxDist=		"3"
 				/>
 
@@ -1459,7 +1459,7 @@
 
 		<DockingPorts
 				portCount=		"2"
-				portRadius=		"32"
+				portRadius=		"48"
 				maxDist=		"3"
 				/>
 
@@ -1489,7 +1489,7 @@
 
 		<DockingPorts
 				portCount=		"2"
-				portRadius=		"32"
+				portRadius=		"48"
 				maxDist=		"3"
 				/>
 
