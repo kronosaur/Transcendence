@@ -29,13 +29,74 @@
 			<Default>
 
 				<OnPaneInit>
-					(block (desc)
-						(setq desc (cat "facing " (objGetProperty gSource 'rotation) " degrees"))
-						(scrSetDesc gScreen (cat "You are docked with a titanium barricade " desc ". These structures are often used as cheap, static defenses."))
+					(block (sourceItem mass recoverable intactPercent condition)
+						(setq sourceItem (objGetData gSource 'SourceItem))
+						(setq mass (itmGetMass sourceItem))
+						(setq recoverable (gr (objGetCargoSpaceLeft gPlayerShip) mass))
+						
+						; We look at the source item's maxHP rather than the station's maxStructuralHP
+						
+						(setq intactPercent (/ (objGetProperty gSource 'structuralHP) (itmGetProperty sourceItem 'maxHP)))
+						
+						(setq condition (switch
+							(gr intactPercent 1)
+								"in impossibly good condition"
+								
+							(gr intactPercent 0.99)
+								"in perfect condition"
+								
+							(gr intactPercent 0.9)
+								"in excellent condition"
+								
+							(gr intactPercent 0.8)
+								"in great condition"
+								
+							(gr intactPercent 0.6)
+								"somewhat damaged"
+								
+							(gr intactPercent 0.4)
+								"fairly intact"
+								
+							(gr intactPercent 0.3)
+								"falling apart"
+								
+							(gr intactPercent 0.2)
+								"badly damaged and could probably block only a few more attacks"
+								
+							(gr intactPercent 0.1)
+								"so severely damaged that it is likely to collapse withinin the next five minutes"
+								
+							(gr intactPercent 0)
+								"so terribly damaged that it would probably disintegrate if you tried to salvage it"
+							
+							"in such impossibly terrible condition that it should not exist at this point"
+							))
+						
+						(scrEnableAction gScreen 0 recoverable)
+						
+						(scrSetDesc gScreen (cat
+							"You are docked with a titanium barricade facing " (objGetProperty gSource 'rotation) " degrees. "
+							"These structures are often used as cheap, static defenses.\n\n"
+							
+							"This deployed " (itmGetName sourceItem) " has a mass of " (strMassString mass) ". "
+							"It appears to be " condition ". "
+							(if recoverable
+								"You have enough space in your cargo hold to recover it. "
+								"Unfortunately, you cannot fit it in your cargo hold. "
+								)
+							))
 						)
 				</OnPaneInit>
 
 				<Actions>
+					<Action name="Recover Barricade" key="R">
+						(block (recovered)
+							(setq recovered (objGetData gSource 'SourceItem))
+							(setq recovered (itmSetProperty recovered 'damaged (ls (objGetProperty gSource 'structuralHP) (itmGetProperty recovered 'maxHP))))
+							(objAddItem gPlayerShip recovered)
+							(objDestroy gSource)
+							)
+					</Action>
 					<Action name="Set Facing" key="F">
 						<ShowPane pane="SetFacing"/>
 					</Action>
