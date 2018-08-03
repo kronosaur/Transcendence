@@ -34,9 +34,7 @@
 						(setq mass (itmGetMass sourceItem))
 						(setq recoverable (gr (objGetCargoSpaceLeft gPlayerShip) mass))
 						
-						; We look at the source item's maxHP rather than the station's maxStructuralHP
-						
-						(setq intactPercent (/ (objGetProperty gSource 'structuralHP) (itmGetProperty sourceItem 'maxHP)))
+						(setq intactPercent (/ (objGetProperty gSource 'structuralHP) (objGetProperty gSource 'maxStructuralHP)))
 						
 						(setq condition (switch
 							(gr intactPercent 1)
@@ -92,7 +90,11 @@
 					<Action name="Recover Barricade" key="R">
 						(block (recovered)
 							(setq recovered (objGetData gSource 'SourceItem))
-							(setq recovered (itmSetProperty recovered 'damaged (ls (objGetProperty gSource 'structuralHP) (itmGetProperty recovered 'maxHP))))
+							; We allow the barricade station to be somewhat damaged before damage transfers to the item (which limits the station to half hp)
+							(setq recovered (itmSetProperty recovered 'damaged (ls
+								(/ (objGetProperty gSource 'structuralHP) (objGetProperty gSource 'maxStructuralHP))
+								0.70
+								)))
 							(objAddItem gPlayerShip recovered)
 							(objDestroy gSource)
 							)

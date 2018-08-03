@@ -72,11 +72,9 @@
 					
 					(objSetProperty barricade 'rotation orientation)
 					
-					; Set the HP on the barricade based on the item's hp to account for enhancements
 					; If the item is damaged, then the barricade is damaged
 					(if (itmIsDamaged gItem)
-						(objSetProperty barricade 'structuralHP (divide (itmGetProperty gItem 'maxHP) 2))
-						(objSetProperty barricade 'structuralHP (itmGetProperty gItem 'maxHP))
+						(objSetProperty barricade 'structuralHP (divide (objGetProperty barricade 'maxStructuralHP) 2))
 						)
 					
 					; Remember the item we used so we can recover it
