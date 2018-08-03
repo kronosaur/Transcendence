@@ -1432,7 +1432,12 @@
 				portRadius=		"32"
 				maxDist=		"3"
 				/>
-
+		
+		<StaticData>
+			<Data id="SourceItem">
+				&itReinforcedTitanium1;
+			</Data>
+		</StaticData>
 	</StationType>
 
 	<StationType UNID="&stBarricade2;"
@@ -1457,7 +1462,12 @@
 				portRadius=		"32"
 				maxDist=		"3"
 				/>
-
+		
+		<StaticData>
+			<Data id="SourceItem">
+				&itReinforcedTitanium2;
+			</Data>
+		</StaticData>
 	</StationType>
 
 	<StationType UNID="&stBarricade3;"
@@ -1483,6 +1493,11 @@
 				maxDist=		"3"
 				/>
 
+		<StaticData>
+			<Data id="SourceItem">
+				&itReinforcedTitanium3;
+			</Data>
+		</StaticData>
 	</StationType>
 
 	<!-- Flotsam -->
