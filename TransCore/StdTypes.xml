@@ -1415,7 +1415,9 @@
 			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsBarricade;"
 
-			structuralHitPoints="25"
+			armorID=			"&itReinforcedTitanium1;"
+			structuralHitPoints="100"
+				 
 			ejectaType=			"&vtWreckEjecta;"
 
 			scale=				"ship"
@@ -1437,8 +1439,10 @@
 			name=				"titanium barricade"
 			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsBarricade;"
-
-			structuralHitPoints="50"
+				 
+			armorID=			"&itReinforcedTitanium2;"
+			structuralHitPoints="200"
+				 
 			ejectaType=			"&vtWreckEjecta;"
 
 			scale=				"ship"
@@ -1461,7 +1465,9 @@
 			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsBarricade;"
 
-			structuralHitPoints="100"
+			armorID=			"&itReinforcedTitanium3;"
+			structuralHitPoints="400"
+				 
 			ejectaType=			"&vtWreckEjecta;"
 
 			scale=				"ship"
