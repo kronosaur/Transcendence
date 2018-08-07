@@ -347,7 +347,7 @@
 						(list
 							(list
 								(or (msnTranslate theMission (cat "achievement." theStatus))
-									(cat "ERROR: Raisu station status: " theStatus)
+									(cat "ERROR: Raisu station status: " (or theStatus "Nil"))
 									)
 								Nil
 								(typTranslate &unidCommonText; 'achievementsAndRegrets)

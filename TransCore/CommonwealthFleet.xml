@@ -112,7 +112,7 @@
 						(= rank 4) "Fleet lieutenant"
 						(= rank 5) "Fleet commander"
 						(= rank 6) "Fleet captain"
-						(cat "ERROR: Fleet rank: " rank)
+						(cat "ERROR: Fleet rank: " (or rank "Nil"))
 						)
 					)
 			</Text>
