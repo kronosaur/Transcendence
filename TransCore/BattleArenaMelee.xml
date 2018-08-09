@@ -184,6 +184,26 @@
 					)
 			</OnObjDestroyed>
 
+			<OnPlayerResurrect>
+				(switch
+					;	Should not happen
+					(!= (sysGetNode) (msnGetProperty gSource 'nodeID))
+						Nil
+
+					(block Nil
+						;	We don't know where the player will resurrect
+						;	so just fail the mission and clean up
+						(msnSetData gSource 'status 'playerKilled)
+						(objSetData gPlayerShip 'battleArenaCombatant Nil)
+						(msnFailure gSource)
+
+						(enum (msnGetData gSource 'meleeShips) shipID
+							(objDestroy (objGetObjByID shipID))
+							)
+						)
+					)
+			</OnPlayerResurrect>
+
 			<OnObjDocked>
 				(if (and (= (objGetID aDockTarget) (msnGetProperty gSource 'ownerID)) (!= aObjDocked gPlayerShip))
 					;	If a non-player combatant docks then destory it to trigger the

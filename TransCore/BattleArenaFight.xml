@@ -345,6 +345,24 @@
 					)
 			</OnObjJumped>
 
+			<OnPlayerResurrect>
+				(switch
+					;	Should not happen
+					(!= (sysGetNode) (msnGetProperty gSource 'nodeID))
+						Nil
+
+					(block (
+						(theShip (objGetObjByID (msnGetData gSource 'opponentID)))
+						)
+						;	Opponent stops attacking player
+						(shpCancelOrder theShip)
+
+						;	Set failure
+						(msnFailure gSource 'playerKilled)
+						)
+					)
+			</OnPlayerResurrect>
+
 			<OnObjDestroyed>
 				(switch
 					;	Player lost
