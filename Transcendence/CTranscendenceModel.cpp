@@ -1343,7 +1343,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 
 		//	Old game
 
-		if (error = m_GameFile.Open(sFilespec))
+		if (error = m_GameFile.Open(sFilespec, 0))
 			{
 			*retsError = strPatternSubst(CONSTLIT("Unable to open save file: %s"), sFilespec);
 			return error;
@@ -1494,7 +1494,7 @@ ALERROR CTranscendenceModel::LoadGameStats (const CString &sFilespec, CGameStats
 	//	Open the game file
 
 	CGameFile GameFile;
-	if (error = GameFile.Open(sFilespec))
+	if (error = GameFile.Open(sFilespec, CGameFile::FLAG_NO_UPGRADE))
 		return error;
 
 	//	Load the stats

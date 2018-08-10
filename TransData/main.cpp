@@ -260,7 +260,7 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		const CString sSaveFile = pCmdLine->GetAttribute(GAME_FILE_SWITCH);
 		
 		CGameFile Game;
-		if (error = Game.Open(sSaveFile))
+		if (error = Game.Open(sSaveFile, CGameFile::FLAG_NO_UPGRADE))
 			{
 			printf("ERROR: Can't open %s.\n", (char *)sSaveFile);
 			::kernelSetDebugLog(NULL);
