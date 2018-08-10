@@ -756,6 +756,11 @@
 					(oreCriteria (if podOreCriteria podOreCriteria "t +ore;"))
 					oreFound
 					)
+					;	If we're showing an annotation, then this counts as exploring it.
+					
+					(if (objGetProperty asteroidObj 'showsUnexploredAnnotation)
+						(objSetProperty asteroidObj 'explored True)
+						)
 					
 					(switch
 						;	If not an asteroid, then nothing to do

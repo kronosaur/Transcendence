@@ -437,6 +437,9 @@ void CGameSession::PaintSRS (CG32bitImage &Screen)
 
 		if (pShip->IsSRSEnhanced())
 			dwViewportFlags |= CSystem::VWP_ENHANCED_DISPLAY;
+
+		if (pShip->GetAbility(ablMiningComputer) == ablInstalled)
+			dwViewportFlags |= CSystem::VWP_MINING_DISPLAY;
 		}
 
 	//	If we're showing damage flash, fill the screen

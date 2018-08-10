@@ -141,12 +141,6 @@
 					
 					(switch
 					
-						;	Pick a random ore item that exists here. If no ore, 
-						;	then nothing to do.
-						
-						(not (setq allOre (objGetItems gSource "* +Ore;")))
-							Nil
-							
 						;	Compute the chance of success. If there is no chance, 
 						;	nothing happens.
 						
@@ -158,6 +152,13 @@
 						(gr (random 1 100) successChance)
 							Nil
 								
+						;	Pick a random ore item that exists here. If no ore, 
+						;	then nothing to do. If we get this far then we've explored
+						;	the asteroid.
+						
+						(not (setq allOre (objGetItems gSource "* +Ore;")))
+							(objSetProperty gSource 'explored True)
+							
 						;	Figure out how many tons we mine this time.
 						
 						(not (setq extractedOre 
@@ -176,7 +177,7 @@
 										)
 									)
 								))
-							Nil
+							(objSetProperty gSource 'explored True)
 						
 						;	Otherwise, success
 						
@@ -205,6 +206,8 @@
 							oreObj
 							)
 
+							(objSetProperty gSource 'explored True)
+							
 							(enum extractedOre theOre
 								(objRemoveItem gSource theOre)
 								)

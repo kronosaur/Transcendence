@@ -182,7 +182,11 @@
 
 		<CargoHoldDevice
 				cargoSpace=		"150"
-				/>
+				>
+			<Equipment>
+				<Install equipment="miningComputer"/>
+			</Equipment>
+		</CargoHoldDevice>
 
 	</ItemType>
 
