@@ -115,6 +115,9 @@
 						(msnSetData gSource 'repGain repBonus)
 						(msnSetData gSource 'reward (bamComputePrize arenaSkill arenaRep skill prizeBonus))
 
+						;	Copy markerID
+						(msnSetData gSource 'markerID (objGetData aOwnerObj 'markerID))
+
 						;	No intro available
 						(msnSetProperty gSource 'isIntroShown True)
 						)
@@ -324,15 +327,17 @@
 				(msnGetData gSource 'drawAllowed)
 			</OnDrawAllowed>
 
-			<OnUpdate>
-				(block (
-					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-					(markerObj (objGetObjByID (objGetData arenaObj 'markerID)))
+			<OnObjEnteredGate>
+				;	OnPlayerLeftSystem does not work for missions
+				(if (= aObj gPlayerShip)
+					(msnFailure gSource 'playerLeft)
 					)
-					;	Catch the case where player escapes without use of jump drive
-					(if (gr (objGetDistance gPlayerShip markerObj) 60)
-						(msnFailure gSource 'playerLeft)
-						)
+			</OnObjEnteredGate>
+
+			<OnUpdate>
+				;	Catch the case where player escapes without use of jump drive
+				(if (gr (objGetDistance gPlayerShip (objGetObjByID (msnGetData gSource 'markerID))) 60)
+					(msnFailure gSource 'playerLeft)
 					)
 			</OnUpdate>
 

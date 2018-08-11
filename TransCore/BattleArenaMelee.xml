@@ -19,6 +19,7 @@
 	status: One of the following:
 		Nil:			Player is still alive
 		playerKilled	Player has been killed (mission will fail when melee is over)
+		playerLeft:		Player escaped from Arena
 
 	======================================================================== -->
 	
@@ -27,7 +28,7 @@
 			attributes=			"battleArena, arenaCombat"
 
 			level=				"3"
-				 
+
 			maxAppearing=		"5"
 			>
 
@@ -44,6 +45,9 @@
 
 					;	Set up the mission
 					(block Nil
+						;	Copy markerID
+						(msnSetData gSource 'markerID (objGetData aOwnerObj 'markerID))
+
 						;	No intro available
 						(msnSetProperty gSource 'isIntroShown True)
 						)
@@ -144,6 +148,12 @@
 						(msnIncData gSource 'shipsLeft -1)
 						)
 
+					(msnSetData gSource 'meleeShips (filter
+						 (msnGetData gSource 'meleeShips)
+						 shipID
+						 (!= shipID (objGetID aObjDestroyed))
+						 ))
+
 					(switch
 						;	If the player is destroyed then they cannot win.
 						;	But we let the mission continue for now incase the
@@ -184,24 +194,24 @@
 					)
 			</OnObjDestroyed>
 
-			<OnPlayerResurrect>
-				(switch
-					;	Should not happen
-					(!= (sysGetNode) (msnGetProperty gSource 'nodeID))
-						Nil
-
-					(block Nil
-						;	We don't know where the player will resurrect
-						;	so just fail the mission and clean up
-						(msnSetData gSource 'status 'playerKilled)
-						(objSetData gPlayerShip 'battleArenaCombatant Nil)
-						(msnFailure gSource)
-
-						(enum (msnGetData gSource 'meleeShips) shipID
-							(objDestroy (objGetObjByID shipID))
-							)
-						)
+			<OnObjEnteredGate>
+				;	OnPlayerLeftSystem does not work for missions
+				(if (= aObj gPlayerShip)
+					(msnFailure gSource 'playerLeft)
 					)
+			</OnObjEnteredGate>
+
+			<OnUpdate>
+				;	Catch the case where player escapes without use of jump drive
+				(if (gr (objGetDistance gPlayerShip (objGetObjByID (msnGetData gSource 'markerID))) 60)
+					(msnFailure gSource 'playerLeft)
+					)
+			</OnUpdate>
+
+			<OnPlayerResurrect>
+				;	We don't know where the player will resurrect
+				;	so just fail the mission and clean up
+				(msnFailure gSource 'playerKilled)
 			</OnPlayerResurrect>
 
 			<OnObjDocked>
@@ -228,8 +238,26 @@
 								(uiQueueSoundtrack (if (geq (objGetData arenaObj 'rookieScore) 20) &muArenaContender; &muArenaSurvivor;))
 								(uiSetSoundtrackMode 'missionEndTravel)
 								)
+
+						(and (= aReason 'failure) (= gData 'playerLeft))
+							(block Nil
+								(typSetData &stBattleArena; 'arenaRank 'coward)
+								(msnSetData gSource 'status 'playerLeft)
+								)
+
+						(= aReason 'failure)
+							(msnSetData gSource 'status 'playerKilled)
 						)
+
 					(objSetData gPlayerShip 'battleArenaCombatant Nil)
+
+					;	Clean up any ships that are left
+					(enum (msnGetData gSource 'meleeShips) shipID
+						(block Nil
+							(objUnregisterForEvents gSource (objGetObjByID shipID))
+							(objDestroy (objGetObjByID shipID))
+							)
+						)
 					;	Open arena doors
 					(if (!= aReason 'success) (bamDoorsOpen arenaObj))
 					)
@@ -339,9 +367,22 @@
 				"We're still in the middle of a match! Come back later."
 			</String>
 			<Text id="FailureDebrief">
+				(if (= (msnGetData gSource 'status) 'playerLeft)
+					(msnTranslate gSource 'descPlayerLeft)
+					(msnTranslate gSource 'descMeleeLoser)
+					)
+			</Text>
+			<Text id="descMeleeLoser">
+
 				"Are you sure you want to be a gladiator? You don't seem very good in the Arena.
 				Oh well, at least your death will be a good appetizer for the crowd."
+
 			</Text>
+			<String id="descPlayerLeft">
+
+				"You're banned from the games for leaving the arena in the middle of battle!"
+
+			</String>
 			<Text id="SuccessDebrief">
 				(block (
 					(arenaObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
