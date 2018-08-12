@@ -20,6 +20,42 @@
 
 	<Globals>
 		(block Nil
+			(setq rpgTradeComputerNodes (lambda ()
+				(or
+					(scrGetData gScreen 'rpg.tradeComputerNodes)
+					(block (
+						;	Make a list of all nodes that the trade computer checks. We 
+						;	check all known nodes that are within 3 gates of the current
+						;	node.
+
+						(nodes
+							(map (sysGetNodes) 'excludeNil theNode
+								(block (dist)
+									(if (and (sysIsKnown theNode)
+											(!= theNode (sysGetNode))
+											(setq dist (sysGetTopologyDistance (sysGetNode) theNode))
+											(leq dist 3)
+											)
+										{
+										nodeID: theNode
+										distance: dist
+										})
+									)
+								)
+							)
+						)
+
+						;	Cache in screen data
+
+						(scrSetData gScreen 'rpg.tradeComputerNodes nodes)
+
+						;	Done
+
+						nodes
+						)
+					)
+				))
+
 			(setq rpgItemTradeComputer (lambda (theItem)
 				(switch
 					;	If we don't have a trade computer, then nothing to do
@@ -42,26 +78,18 @@
 					(block (
 						(itemCurrency (itmGetProperty theItem 'currency))
 
-						(knownNodes 
-							(filter (sysGetNodes) theNode 
-								(and (sysIsKnown theNode)
-									(!= theNode (sysGetNode))
-									)
-								)
-							)
+						(nodesToCheck (rpgTradeComputerNodes))
+
 						(priceData
-							(map knownNodes theNode {
-								nodeID: theNode
-								price: (sysGetItemBuyPrice theNode theItem)
-								distance: (sysGetTopologyDistance (sysGetNode) theNode)
+							(map nodesToCheck theData {
+								nodeID: (@ theData 'nodeID)
+								distance: (@ theData 'distance)
+								price: (sysGetItemBuyPrice (@ theData 'nodeID) theItem)
 								})
 							)
-
 						(bestPriceToSellAt 
 							(map priceData '(reduceMax excludeNil) theData 
-								(if (leq (@ theData 'distance) 3)
-									(@ theData 'price)
-									)
+								(@ theData 'price)
 								)
 							)
 						(bestNodesToSellAt 
