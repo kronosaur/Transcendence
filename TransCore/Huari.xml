@@ -46,7 +46,7 @@
 										(= status 'templeDestroyed) "Failed to defend the Huari"
 										(= status 'loser) "Disappointed the Huari"
 										(= status 'friend) "Befriended the Huari"
-										(cat "ERROR: Huari status: " status)
+										(cat "ERROR: Huari status: " (or status "Nil"))
 										)
 									Nil
 									(typTranslate &unidCommonText; 'achievementsAndRegrets)

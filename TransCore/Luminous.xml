@@ -17,8 +17,8 @@
 			alignment="archivist"
 			>
 		<Language>
-			<Text id="WatchYourTargets">"\"Drone damaged\""</Text>
-			<Text id="NiceShooting">""</Text>
+			<String id="WatchYourTargets">"Drone damaged"</String>
+			<Text id="NiceShooting"></Text>
 		</Language>
 	</Sovereign>
 

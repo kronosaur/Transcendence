@@ -1195,7 +1195,7 @@
 
 					;	Misc devices
 
-					(allMisc (objGetItems shipObj "d~wsrvc"))
+					(allMisc (objGetItems shipObj "d~wsrvcI"))
 					(miscItem1 (@ allMisc 0))
 					
 					;	Slots

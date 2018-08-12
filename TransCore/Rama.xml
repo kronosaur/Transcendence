@@ -144,7 +144,7 @@
 									(eq status 'destroyed) "Allowed Rama to meet his destiny"
 									(eq status 'destroyedByPlayer) "Killed Rama"
 									(eq status 'returnedHome) "Joined by Rama"
-									(cat "ERROR: Rama status: " status)
+									(cat "ERROR: Rama status: " (or status "Nil"))
 									)
 								Nil
 								"achievements &amp; regrets"

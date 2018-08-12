@@ -233,7 +233,7 @@
 									)}
 								)
 
-						(cat "ERROR: Antarctica status: " status)
+						(cat "ERROR: Antarctica status: " (or status "Nil"))
 						)
 					)
 			</Text>

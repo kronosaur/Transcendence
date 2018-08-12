@@ -79,7 +79,7 @@
 						(= level 2) "Journeyman"
 						(= level 3) "Master"
 						(= level 4) "Legend"
-						(cat "ERROR: Korolov level: " level)
+						(cat "ERROR: Korolov level: " (or level "Nil"))
 						)
 					)
 			</Text>

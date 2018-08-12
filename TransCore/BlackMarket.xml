@@ -1151,7 +1151,7 @@ PLAYER DATA
 										(eq rank 4) "Sindikat member"
 										(eq rank 5) "Sindikat lieutenant"
 										(eq rank 6) "Sindikat lord"
-										(cat "ERROR: Black Market rank: " rank)
+										(cat "ERROR: Black Market rank: " (or rank "Nil"))
 										) 
 									)
 								))
