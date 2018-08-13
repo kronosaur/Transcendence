@@ -38,6 +38,7 @@
 #define HEXARC_TEST_SWITCH					CONSTLIT("hexarcTest")
 #define ITEM_FREQUENCY_SWITCH				CONSTLIT("itemsim")
 #define ITEM_TABLE_SWITCH					CONSTLIT("itemtable")
+#define LANGUAGE_SWITCH						CONSTLIT("language")
 #define LOOT_SIM_SWITCH						CONSTLIT("lootsim")
 #define PERF_TEST_SWITCH					CONSTLIT("perftest")
 #define RANDOM_ITEMS_SWITCH					CONSTLIT("randomitems")
@@ -330,6 +331,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		GenerateItemFrequencyTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ITEM_TABLE_SWITCH))
 		GenerateItemTable(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(LANGUAGE_SWITCH))
+		GenerateLanguageTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(LOOT_SIM_SWITCH))
 		GenerateLootSim(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(RANDOM_ITEMS_SWITCH))

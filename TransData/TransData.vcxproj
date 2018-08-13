@@ -328,6 +328,7 @@
     <ClCompile Include="Hexarc.cpp" />
     <ClCompile Include="ImageChart.cpp" />
     <ClCompile Include="ItemTable.cpp" />
+    <ClCompile Include="LanguageTable.cpp" />
     <ClCompile Include="LootSim.cpp" />
     <ClCompile Include="main.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
