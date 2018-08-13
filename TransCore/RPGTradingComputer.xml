@@ -4,6 +4,15 @@
 
 	<Type unid="&unidTradingComputer;">
 		<Language>
+			<Text id="descTradeRecommendationLocal">
+				Trade computer: Sell to %objName% in this system for %localPrice%.
+			</Text>
+			<Text id="descTradeRecommendationOtherSystem">
+				Trade computer: Sell in the %systemName% System for %otherSystemPrice%.
+			</Text>
+			<Text id="descTradeRecommendationBoth">
+				Trade computer: Sell in the %systemName% System for %otherSystemPrice% or to %objName% in this system for %localPrice%.
+			</Text>
 			<Text id="descTradeData">
 				Trade computer: %sellRecommendation% for %price%.
 			</Text>
