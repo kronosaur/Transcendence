@@ -2230,50 +2230,52 @@
 
 	</StationType>
 
-	<!-- Taikon Ventures -->
+	<!-- Level 8: Taikon Ventures -->
 
 	<StationType UNID="&stTaikonVentures;"
 			name=				": Taikon Ventures|Taikon Ventures"
 			sovereign=			"&svCorporate;"
+
+			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
 			inherit=			"&baCorporateStation;"
 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
 
-			multiHull=			"true"
 			armorID=			"&itQuadroCarbideArmor;"
 			hitPoints=			"470"
+			multiHull=			"true"
 			regen=              "5"
 			fireRateAdj=		"10"
+
+			canAttack=			"true"
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
-			levelFrequency=		"----- -uur- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="75"
 			>
 
-		<Image			imageID="&rsStations8;" imageX="0" imageY="448" imageWidth="128" imageHeight="192"/>
+		<!-- Encounter Info -->
 
-		<Ships>
-			<Ship chance="75" class="&scBritannia;" orders="guard"/>
-			<Lookup count="2" table="&tbCorpDefenders;"/>
-			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
-		</Ships>
+		<Encounter
+				levelFrequency=		"----- -uur- ----- ----- -----"
+				locationCriteria=	"+planetary"
+				enemyExclusionRadius="75"
+				/>
 
-		<Reinforcements minShips="4">
-			<Table>
-				<Lookup chance="75" table="&tbCorpDefenders;"/>
-				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
-			</Table>
-		</Reinforcements>
+		<!-- Trade and Items -->
 
-		<Devices>
-			<Device deviceID="&itHeavyIonBlaster;"	omnidirectional="true"/>
-		</Devices>
+		<Trade currency="rin" max="100000" replenish="5000">
+			<Sell	criteria="*NU +Taikon;"				priceAdj="100"/>
+			<Sell	criteria="*NU +RingerValuable;"		priceAdj="250"/>
+			<Sell	criteria="*NU +Alien;"				priceAdj="120"/>
+			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
+
+			<Refuel			criteria="f +unid:&itPteracniumFuelRod;;" priceAdj="100"/>
+			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-11;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-11;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-11;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-11;" priceAdj="100"/>
+		</Trade>
 
 		<Items>
 			<RandomItem count="1d6" 
@@ -2303,41 +2305,57 @@
 			<Item	count="6d12" item="&itPteracniumFuelRod;"/>
 		</Items>
 
-		<Trade currency="rin" max="100000" replenish="5000">
-			<Sell	criteria="*NU +Taikon;"				priceAdj="100"/>
-			<Sell	criteria="*NU +RingerValuable;"		priceAdj="250"/>
-			<Sell	criteria="*NU +Alien;"				priceAdj="120"/>
-			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
+		<!-- Configuration -->
 
-			<Refuel			criteria="f +unid:&itPteracniumFuelRod;;" priceAdj="100"/>
-			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
-			<RepairArmor	criteria="a L:1-11;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-11;" priceAdj="100"/>
-			<InstallDevice	criteria="d L:1-11;" priceAdj="100"/>
-			<RemoveDevice	criteria="d L:1-11;" priceAdj="100"/>
-		</Trade>
+		<Devices>
+			<Device deviceID="&itHeavyIonBlaster;"	omnidirectional="true"/>
+		</Devices>
 
-		<Events>
-			<OnContractGenerate>
-				(intGenerateIndustrialRequestContract1)
-			</OnContractGenerate>
+		<!-- Ships and Defenses -->
 
-			<OnContractQuery>True</OnContractQuery>
-		</Events>
+		<Ships>
+			<Ship chance="75" class="&scBritannia;" orders="guard"/>
+			<Lookup count="2" table="&tbCorpDefenders;"/>
+			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
+		</Ships>
+
+		<Reinforcements minShips="4">
+			<Table>
+				<Lookup chance="75" table="&tbCorpDefenders;"/>
+				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
+			</Table>
+		</Reinforcements>
+
+		<!-- Image and Effects -->
+
+		<Image			imageID="&rsStations8;" imageX="0" imageY="448" imageWidth="128" imageHeight="192"/>
+
+		<DockingPorts>
+			<Port x="68"	y="35" />
+			<Port x="42"	y="-71" />
+			<Port x="-74"	y="-39" />
+			<Port x="-38"	y="63" />
+			<Port x="90"	y="-31" />
+			<Port x="-28"	y="-90" />
+			<Port x="-101"	y="21" />
+			<Port x="36"	y="88" />
+		</DockingPorts>
+
+		<!-- Dock Screens -->
 
 		<DockScreens>
 			<Main>
 				<Panes>
 					<Default descID="descWelcome">
 						<Actions>
-							<Action id="actionDockServices" default="1">
-								(rpgDockServices gPlayerShip {
+							<Action id="actionBuyItems">
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
 									checkMilitaryID: True
 									})
 							</Action>
 
-							<Action id="actionBuyItems">
-								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+							<Action id="actionDockServices" default="1">
+								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
 									})
 							</Action>
@@ -2350,19 +2368,17 @@
 					</Default>
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="68"	y="35" />
-			<Port x="42"	y="-71" />
-			<Port x="-74"	y="-39" />
-			<Port x="-38"	y="63" />
-			<Port x="90"	y="-31" />
-			<Port x="-28"	y="-90" />
-			<Port x="-101"	y="21" />
-			<Port x="36"	y="88" />
-		</DockingPorts>
+		<!-- Events and Behavior -->
+
+		<Events>
+			<OnContractGenerate>
+				(intGenerateIndustrialRequestContract1)
+			</OnContractGenerate>
+
+			<OnContractQuery>True</OnContractQuery>
+		</Events>
 
 		<Language>
 			<Text id="descWelcome">
