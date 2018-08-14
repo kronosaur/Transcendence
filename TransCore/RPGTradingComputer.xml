@@ -65,7 +65,7 @@
 					)
 				))
 
-			(setq rpgItemTradeComputer (lambda (theItem)
+			(setq rpgItemTradeComputer (lambda (theItem priceToBeat priceToBeatCurrency)
 				(switch
 					;	If we don't have a trade computer, then nothing to do
 
@@ -86,15 +86,19 @@
 
 					(block (
 						(itemCurrency (itmGetProperty theItem 'currency))
+						(minPrice (ecoExchange (or priceToBeat 0) (or priceToBeatCurrency itemCurrency) itemCurrency))
+						tempPrice
 
 						(nodesToCheck (rpgTradeComputerNodes))
 
 						(priceData
-							(map nodesToCheck theData {
-								nodeID: (@ theData 'nodeID)
-								distance: (@ theData 'distance)
-								price: (sysGetItemBuyPrice (@ theData 'nodeID) theItem)
-								})
+							(map nodesToCheck 'excludeNil theData 
+								(if (gr (setq tempPrice (sysGetItemBuyPrice (@ theData 'nodeID) theItem)) minPrice) {
+									nodeID: (@ theData 'nodeID)
+									distance: (@ theData 'distance)
+									price: tempPrice
+									})
+								)
 							)
 						(bestPriceToSellAt 
 							(map priceData '(reduceMax excludeNil) theData 
@@ -115,22 +119,28 @@
 							'nodeID
 							))
 
-						(knownObjs (sysFindObject gPlayerShip "TAFV +property:known;"))
+						(knownObjs (sysFindObject gPlayerShip "sTAFV +property:known;"))
 						(localPriceData
-							(map knownObjs theObj {
-								theObj: theObj
-								price: (objGetBuyPrice theObj theItem 'noDonations)
-								})
+							(map knownObjs 'excludeNil theObj 
+								(if (gr (setq tempPrice (objGetBuyPrice theObj theItem 'noDonations)) minPrice) {
+									theObj: theObj
+									price: tempPrice
+									distance: (objGetDistance theObj gPlayerShip)
+									})
+								)
 							)
 						(localBestPriceToSellAt (map localPriceData 'reduceMax theData (@ theData 'price)))
 						(localBestObjsToSellAt
-							(map localPriceData 'excludeNil theData
-								(if (= (@ theData 'price) localBestPriceToSellAt)
-									(@ theData 'theObj)
-									)
+							(filter localPriceData theData
+								(= (@ theData 'price) localBestPriceToSellAt)
 								)
 							)
-						(bestObjToSellAt (@ localBestObjsToSellAt 0))
+						(bestObjToSellAt (@
+							(map localBestObjsToSellAt '(reduceMin original) theData
+								(@ theData 'distance)
+								)
+							'theObj
+							))
 						(sellLocalCurrency (objGetProperty bestObjToSellAt 'currency))
 
 						;	Sell recommendation
