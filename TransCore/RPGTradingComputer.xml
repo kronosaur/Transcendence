@@ -4,14 +4,17 @@
 
 	<Type unid="&unidTradingComputer;">
 		<Language>
-			<Text id="descTradeData">
-				Trade computer: %sellRecommendation% for %price%.
+			<Text id="descTradeRecommendationLocal">
+				Trade computer: Sell to %objName% in this system for %localPrice%.
 			</Text>
-			<Text id="sellInSystem">
-				Sell in the %systemName% System
+			<Text id="descTradeRecommendationOtherSystem">
+				Trade computer: Sell in the %systemName% System for %otherSystemPrice%.
 			</Text>
-			<Text id="sellToObj">
-				Sell to %objName% in this system
+			<Text id="descTradeRecommendationBoth">
+				Trade computer: Sell in the %systemName% System for %otherSystemPrice% or to %objName% in this system for %localPrice%.
+			</Text>
+			<Text id="currencyConversion">
+				%currency1% (%currency2%)
 			</Text>
 		</Language>
 	</Type>
@@ -56,16 +59,11 @@
 					)
 				))
 
-			(setq rpgItemTradeComputer (lambda (theItem)
+			(setq rpgItemTradeComputer (lambda (theItem priceToBeat priceToBeatCurrency)
 				(switch
 					;	If we don't have a trade computer, then nothing to do
 
 					(!= (objGetEquipmentStatus gPlayerShip 'TradingComputer) 'ready)
-						Nil
-
-					;	If this is a damaged item, no recommendations
-
-					(itmGetProperty theItem 'damaged)
 						Nil
 
 					;	If this item is unknown, then no recommendation
@@ -77,24 +75,28 @@
 
 					(block (
 						(itemCurrency (itmGetProperty theItem 'currency))
+						(minPrice (ecoExchange (or priceToBeat 0) (or priceToBeatCurrency itemCurrency) itemCurrency))
+						tempPrice
 
 						(nodesToCheck (rpgTradeComputerNodes))
 
 						(priceData
-							(map nodesToCheck theData {
-								nodeID: (@ theData 'nodeID)
-								distance: (@ theData 'distance)
-								price: (sysGetItemBuyPrice (@ theData 'nodeID) theItem)
-								})
+							(map nodesToCheck 'excludeNil theData 
+								(if (gr (setq tempPrice (sysGetItemBuyPrice (@ theData 'nodeID) theItem)) minPrice) {
+									nodeID: (@ theData 'nodeID)
+									distance: (@ theData 'distance)
+									price: tempPrice
+									})
+								)
 							)
-						(bestPriceToSellAt 
+						(bestOtherSystemPrice 
 							(map priceData '(reduceMax excludeNil) theData 
 								(@ theData 'price)
 								)
 							)
 						(bestNodesToSellAt 
 							(map priceData 'excludeNil theData 
-								(if (= (@ theData 'price) bestPriceToSellAt) 
+								(if (= (@ theData 'price) bestOtherSystemPrice) 
 									theData
 									)
 								)
@@ -106,106 +108,87 @@
 							'nodeID
 							))
 
-						(knownObjs (sysFindObject gPlayerShip "TAFV +property:known;"))
+						(knownObjs (sysFindObject gPlayerShip "sTAFV +property:known;"))
 						(localPriceData
-							(map knownObjs theObj {
-								theObj: theObj
-								price: (objGetBuyPrice theObj theItem 'noDonations)
-								})
+							(map knownObjs 'excludeNil theObj 
+								(if (gr (setq tempPrice 
+											(ecoExchange (objGetBuyPrice theObj theItem 'noDonations)
+												(objGetProperty theObj 'currency)
+												itemCurrency
+												)
+											)
+										minPrice
+										)
+									{
+										theObj: theObj
+										priceItemCurrency: tempPrice
+										distance: (objGetDistance theObj gPlayerShip)
+									})
+								)
 							)
-						(localBestPriceToSellAt (map localPriceData 'reduceMax theData (@ theData 'price)))
+						(bestLocalPriceItemCurrency (map localPriceData 'reduceMax theData (@ theData 'priceItemCurrency)))
 						(localBestObjsToSellAt
-							(map localPriceData 'excludeNil theData
-								(if (= (@ theData 'price) localBestPriceToSellAt)
-									(@ theData 'theObj)
-									)
+							(filter localPriceData theData
+								(= (@ theData 'priceItemCurrency) bestLocalPriceItemCurrency)
 								)
 							)
-						(bestObjToSellAt (@ localBestObjsToSellAt 0))
+						(bestObjToSellAt (@
+							(map localBestObjsToSellAt '(reduceMin original) theData
+								(@ theData 'distance)
+								)
+							'theObj
+							))
+						(sellLocalPrice (objGetBuyPrice bestObjToSellAt theItem 'noDonations))
 						(sellLocalCurrency (objGetProperty bestObjToSellAt 'currency))
-
-						;	Sell recommendation
-
-						(sellRecommendation
-							(switch
-								(and (gr localBestPriceToSellAt 0) (geq localBestPriceToSellAt bestPriceToSellAt))
-									'sellToLocalStation
-
-								(gr bestPriceToSellAt 0)
-									'sellInOtherSystem
-								)
-							)
-
-						(sellRecommendationText
-							(switch
-								(= sellRecommendation 'sellToLocalStation)
-									(typTranslate &unidTradingComputer; 'sellToObj {
-										objName:(objGetName bestObjToSellAt 0)
+						
+						(translateData {
+							objName: (objGetName bestObjToSellAt 'article)
+							localPrice:
+								(if (= itemCurrency sellLocalCurrency)
+									(fmtCurrency sellLocalCurrency sellLocalPrice)
+									(typTranslate &unidTradingComputer; 'currencyConversion {
+										currency1: (fmtCurrency sellLocalCurrency sellLocalPrice)
+										currency2: (fmtCurrency itemCurrency bestLocalPriceItemCurrency)
 										})
-
-								(= sellRecommendation 'sellInOtherSystem)
-									(typTranslate &unidTradingComputer; 'sellInSystem {
-										systemName:(sysGetName nearestNodeToSellAt)
-										})
-								)
-							)
-
-						(sellPrice
-							(switch
-								(= sellRecommendation 'sellToLocalStation)
-									localBestPriceToSellAt
-
-								(= sellRecommendation 'sellInOtherSystem)
-									bestPriceToSellAt
-								)
-							)
-
-						(sellCurrency
-							(switch
-								(= sellRecommendation 'sellToLocalStation)
-									sellLocalCurrency
-
-								(= sellRecommendation 'sellInOtherSystem)
-									itemCurrency
-								)
-							)
-
-						(sellPriceItemCurrency (ecoExchange sellPrice sellCurrency itemCurrency))
-						(sellLocalPriceItemCurrency (ecoExchange bestPriceToSellAt sellLocalCurrency itemCurrency))
+									)
+							systemName: (sysGetName nearestNodeToSellAt)
+							otherSystemPrice: (fmtCurrency itemCurrency bestOtherSystemPrice)
+							})
+							
+						(sellCurrency itemCurrency)
+						(sellPrice bestOtherSystemPrice)
+						sellRecommendationID
+						
 						)
 						(switch
-							(not sellRecommendation)
-								Nil
-
+							(and (gr bestLocalPriceItemCurrency 0) (geq bestLocalPriceItemCurrency bestOtherSystemPrice))
+								(block Nil
+									(setq sellRecommendationID 'descTradeRecommendationLocal)
+									(setq sellCurrency sellLocalCurrency)
+									(setq sellPrice sellLocalPrice)
+									)
+							
+							(gr bestLocalPriceItemCurrency 0)
+								(setq sellRecommendationID 'descTradeRecommendationBoth)
+								
+							(gr bestOtherSystemPrice 0)
+								(setq sellRecommendationID 'descTradeRecommendationOtherSystem)
+							)
+						
+						(if sellRecommendationID
 							{
 								sellBestSystem: nearestNodeToSellAt
-								sellBestSystemPrice: bestPriceToSellAt
+								sellBestSystemPrice: bestOtherSystemPrice
 
 								sellLocalRecommendation:
-									(typTranslate &unidTradingComputer; 'descTradeData {
-										sellRecommendation: (typTranslate &unidTradingComputer; 'sellToObj {
-											objName:(objGetName bestObjToSellAt 0)
-											})
-										price: 
-											(if (= itemCurrency sellLocalCurrency)
-												(fmtCurrency sellLocalCurrency localBestPriceToSellAt)
-												(cat (fmtCurrency sellLocalCurrency localBestPriceToSellAt) " (" (fmtCurrency itemCurrency sellLocalPriceItemCurrency) ")")
-												)
-										})
+									(typTranslate &unidTradingComputer; 'descTradeRecommendationLocal translateData)
 
 								sellLocalObj: bestObjToSellAt
-								sellLocalPrice: localBestPriceToSellAt
+								sellLocalPrice: sellLocalPrice
 								sellLocalCurrency: sellLocalCurrency
 
 								sellRecommendation:
-									(typTranslate &unidTradingComputer; 'descTradeData {
-										sellRecommendation: sellRecommendationText
-										price: 
-											(if (= itemCurrency sellCurrency)
-												(fmtCurrency sellCurrency sellPrice)
-												(cat (fmtCurrency sellCurrency sellPrice) " (" (fmtCurrency itemCurrency sellPriceItemCurrency) ")")
-												)
-										})
+									(typTranslate &unidTradingComputer; sellRecommendationID translateData)
 
 								sellPrice: sellPrice
 								sellCurrency: sellCurrency
@@ -214,7 +197,7 @@
 						)
 					)
 				))
-			)		
+			)
 	</Globals>
 	
 </TranscendenceModule>
