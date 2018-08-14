@@ -96,7 +96,7 @@
 			>
 		
 		<Display type="itemPicker"
-				dataFrom=	"=(if (@ gData 'sourceObj) (@ gData 'sourceObj) 'station)"
+				dataFrom=	"=(or (@ gData 'sourceObj) 'station)"
 				list=		"*"
 				>
 			<OnDisplayInit>
@@ -110,7 +110,7 @@
 						;	that will filter.
 					
 						(and itemCriteria
-								(not (eq itemCriteria "*"))
+								(neq itemCriteria "*")
 								)
 							(scrSetListFilter gScreen (lambda (theItem)
 								(switch
@@ -207,6 +207,8 @@
 							installerObj: gSource
 							itemInCargo: True
 							}))
+						
+						(tradeData (rpgItemTradeComputer thisItem rawCost currencyUsed))
 						)
 						
 						;	Set the description
@@ -256,6 +258,13 @@
 									(and (gr availCount fitCount))
 										(scrTranslate gScreen 'descNotEnoughRoomForAll { value: fitCount })
 									)
+								
+								;	Trade computer
+								
+								(if tradeData
+									(cat "\n\n" (@ tradeData 'sellRecommendation))
+									)
+								
 								)
 							)
 							
@@ -455,24 +464,22 @@
 						"Unit price: " (@ gData 'value) " (" (@ gData 'max) " for " (@ gData 'maxValue) ")\n"
 						"Unit mass: " (@ gData 'mass) " (" (@ gData 'max) " for " (@ gData 'maxMass) ")\n"
 						(if (@ gData 'markup) 
-							(cat "Unit markup: " (@ gData 'markup) " (" (@ gData 'markupPercent) "%)\n")
-							(cat "Unit discount: " (@ gData 'discount) " (" (@ gData 'markupPercent) "%)\n")
+							(cat "Unit markup: " (@ gData 'markup) " (" (@ gData 'markupPercent) "%)")
+							(cat "Unit discount: " (@ gData 'discount) " (" (@ gData 'markupPercent) "%)")
 							)
-						"\n"
 						)
 					(cat
 						"Unit price: " (@ gData 'value) "\n"
 						"Unit mass: " (@ gData 'mass) "\n"
 						(if (@ gData 'markup) 
-							(cat "Unit markup: " (@ gData 'markup) " (" (@ gData 'markupPercent) "%)\n")
-							(cat "Unit discount: " (@ gData 'discount) " (" (@ gData 'markupPercent) "%)\n")
+							(cat "Unit markup: " (@ gData 'markup) " (" (@ gData 'markupPercent) "%)")
+							(cat "Unit discount: " (@ gData 'discount) " (" (@ gData 'markupPercent) "%)")
 							)
-						"\n"
 						)
 					)
 			</Text>
 			<Text id="descInCargo">
-				"You have %itemName% in your cargo hold. "
+				\n\nYou have %itemName% in your cargo hold.
 			</Text>
 			<Text id="descBuyOrInstall">
 				(cat
@@ -483,14 +490,14 @@
 					)
 			</Text>
 			<Text id="descNotForSale">
-				"This item is not for sale."
+				\n\nThis item is not for sale.
 			</Text>
 			<Text id="descNoMilitaryID">
-				"You need a military ID to buy this item."
+				\n\nYou need a military ID to buy this item.
 			</Text>
 			<Text id="descNotEnoughMoney">
 				(cat
-					"You do not have enough " (@ gData 'currency) " to purchase any."
+					"\n\nYou do not have enough " (@ gData 'currency) " to purchase any."
 					)
 			</Text>
 			<Text id="descNotEnoughMoneyToInstall">
@@ -502,16 +509,16 @@
 					)
 			</Text>
 			<Text id="descNotEnoughRoom">
-				"Unfortunately, you cannot fit any in your cargo hold."
+				\n\nUnfortunately, you cannot fit any in your cargo hold.
 			</Text>
 			<Text id="descNotEnoughMoneyForAll">
 				(cat
-					"You have enough " (@ gData 'currency) " to buy " (@ gData 'value) "."
+					"\n\nYou have enough " (@ gData 'currency) " to buy " (@ gData 'value) "."
 					)
 			</Text>
 			<Text id="descNotEnoughRoomForAll">
 				(cat
-					"You have enough room in your cargo hold to carry " (@ gData 'value) "."
+					"\n\nYou have enough room in your cargo hold to carry " (@ gData 'value) "."
 					)
 			</Text>
 			<Text id="descBuyQuantity">
@@ -525,7 +532,7 @@
 					)
 			</Text>
 			
-			<Text id="errorNoItemsToBuy">"There are no items available for sale."</Text>
+			<Text id="errorNoItemsToBuy">There are no items available for sale.</Text>
 		</Language>
 	</DockScreen>
 	
