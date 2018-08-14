@@ -66,11 +66,6 @@
 					(!= (objGetEquipmentStatus gPlayerShip 'TradingComputer) 'ready)
 						Nil
 
-					;	If this is a damaged item, no recommendations
-
-					(itmGetProperty theItem 'damaged)
-						Nil
-
 					;	If this item is unknown, then no recommendation
 
 					(not (itmIsKnown theItem))
