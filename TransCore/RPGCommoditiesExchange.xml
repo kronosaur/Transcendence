@@ -556,7 +556,7 @@
 -->
 	
 	<DockScreen UNID="&dsRPGCommoditiesExchangeSell;"
-			name=				"=(if (@ gData 'title) (@ gData 'title) (objGetName gSource 0x400))"
+			name=				"=(or (@ gData 'title) (objGetName gSource 'titleCapitalize))"
 			type=				"itemPicker"
 			inherit=			"&dsDockScreenBase;"
 			nestedScreen=		"true"
@@ -603,7 +603,7 @@
 			<Default>
 				<OnPaneInit>
 					(block (
-						(title (if (@ gData 'title) (@ gData 'title) (objGetName gSource 0x400)))
+						(title (or (@ gData 'title) (objGetName gSource '(demonstrative capitalize))))
 						(thisItem (scrGetItem gScreen))
 						
 						;	Compute the cost of this item
@@ -685,7 +685,7 @@
 
 						(offerCount (min affordCount maxBuyCount))
 
-						(tradeData (rpgItemTradeComputer thisItem))
+						(tradeData (rpgItemTradeComputer thisItem offerPrice currencyUsed))
 						)
 						
 						;	Set the description
@@ -733,13 +733,7 @@
 									)
 
 								(if tradeData
-									(switch
-										(gr (ecoExchange (@ tradeData 'sellLocalPrice) (@ tradeData 'sellLocalCurrency) currencyUsed) offerPrice)
-											(cat "\n\n" (@ tradeData 'sellLocalRecommendation))
-
-										(gr (ecoExchange (@ tradeData 'sellPrice) (@ tradeData 'sellCurrency) currencyUsed) offerPrice)
-											(cat "\n\n" (@ tradeData 'sellRecommendation))
-										)
+									(cat "\n\n" (@ tradeData 'sellRecommendation))
 									)
 								)
 							)
