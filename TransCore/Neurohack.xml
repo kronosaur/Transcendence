@@ -30,7 +30,7 @@
 				(block (
 					(theRom (or (scrGetData gScreen 'neurohackRom) (@ gData 'neurohackRom)))
 					(baseVirus 2000)
-					(bonusVirus (if (objGetItems gPlayerShip "*IN +QuantumCPU;") (divide baseVirus 2)))
+					(bonusVirus (if (progHasQuantumCPU gPlayerShip) (divide baseVirus 2)))
 					)
 
 					;	Consume a charge

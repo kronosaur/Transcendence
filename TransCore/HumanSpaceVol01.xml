@@ -2210,6 +2210,7 @@
 
 	<Module filename="MiscItems.xml"/>
 	<Module filename="MRAD.xml"/>
+	<Module filename="QuantumCPU.xml"/>
 	<Module filename="StdArmor.xml"/>
 	<Module filename="StdAutons.xml"/>
 	<Module filename="StdDevices.xml"/>

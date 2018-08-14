@@ -747,5 +747,8 @@
     <Xml Include="CorporateInsurance.xml">
       <Filter>Human Space Library\Corporate Hierarchy</Filter>
     </Xml>
+    <Xml Include="QuantumCPU.xml">
+      <Filter>Human Space Library\Items</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

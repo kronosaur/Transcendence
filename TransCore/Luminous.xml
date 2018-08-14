@@ -234,7 +234,7 @@
 		<Invoke key="R">
 			(switch
 				; If we don't have a quantum CPU
-				(not (objGetItems gSource "*I+QuantumCPU"))
+				(not (progHasQuantumCPU gSource))
 					(objSendMessage gSource Nil "Quantum CPU required")
 
 				; Otherwise, we scare any Luminous drones
@@ -277,7 +277,7 @@
 		<Invoke>
 			(switch
 				; If we don't have a quantum CPU
-				(not (objGetItems gSource "*I+QuantumCPU"))
+				(not (progHasQuantumCPU gSource))
 					(objSendMessage gSource Nil "Quantum CPU required")
 
 				; Otherwise, we choose a random Luminous drone

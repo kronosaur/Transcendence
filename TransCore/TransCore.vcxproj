@@ -571,6 +571,7 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="Pteravores.xml" />
+    <Xml Include="QuantumCPU.xml" />
     <Xml Include="RaisuStation.xml" />
     <Xml Include="Rama.xml" />
     <Xml Include="RanxEmpire.xml" />

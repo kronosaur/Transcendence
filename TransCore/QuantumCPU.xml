@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- QUANTUM CPU -->
+
+	<!-- Level 5: Quantum CPU -->
+
+	<ItemType UNID="&itMnemonicProcessor;"
+			name=				"Heisenmachines quantum CPU"
+			attributes=			"commonwealth, heisenmachines, majorItem, quantumCPU"
+			  
+			level=				"5"
+			frequency=			"uncommon"
+
+			value=				"7500"
+			mass=				"1000"
+			  
+			description=		"The Heisenmachines Corporation was the first commercial producer of quantum CPUs. Quantum CPUs are necessary for processing the instructions in a mnemonic memory cube."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<MiscellaneousDevice
+				powerUse=		"20"
+				/>
+	</ItemType>
+
+<!-- PROGRAMS -->
+
+	<!-- Level 5: Defective Shield Optimizer Cube -->
+
+	<ItemType UNID="&itDefectiveShieldOptimizer;"
+			name=				"ShieldPower v1.0 algorithm cube"
+			level=				"5"
+			value=				"5"
+			mass=				"50"
+			frequency=			"rare"
+			unknownType=		"&itUnknownMnemonicCube;"
+			attributes=			"info, minorItem, quantumProgram, shieldDamage"
+
+			description=		"The first version of the ShieldPower algorithm is promising but contains significant bugs."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(switch
+				; If we don't have a quantum CPU
+				(not (progHasQuantumCPU gSource))
+					(objSendMessage gSource Nil "Quantum CPU required")
+
+				; Enhance shield generator
+				(block (notFound)
+					; Install
+					(setq notFound True)
+					(objEnumItems gPlayerShip "sI" theItem
+						(block (shieldItem)
+							(setq shieldItem theItem)
+							(if notFound
+								(block Nil
+									(switch
+										; If the shield generator is not advanced enough, then nothing happens
+										(ls (itmGetLevel shieldItem) 4)
+											(objSendMessage gSource Nil "Shield generator is too primitive for ShieldPower algorithm")
+
+										; If the shield generator is too advanced, then nothing happens
+										(gr (itmGetLevel shieldItem) 9)
+											(objSendMessage gSource Nil "Shield generator is too advanced for ShieldPower algorithm")
+
+										; If the item is damaged, we cannot do anything
+										(itmIsDamaged shieldItem)
+											(objSendMessage gSource Nil "Shield generator is too damaged for optimization")
+
+										; 10% chance of enhancing the shield generator (otherwise, a bug)
+										(if (leq (random 1 100) 10)
+											(block (result)
+												(setq result (shpEnhanceItem gSource theItem 0x0102))
+												(objSendMessage gSource Nil (intItemEnhanceStatus result "Your shields are more powerful" "shield generator"))
+												)
+											(block (result)
+												(setq result (shpEnhanceItem gSource theItem 0x8102))
+												(objSendMessage gSource Nil (intItemEnhanceStatus result "ShieldPower: qbit indeterminacy exception [#!800A410!]" "shield generator"))
+												)
+											)
+										)
+									(setq notFound Nil)
+									)
+								)
+							)
+						)
+
+					(if notFound
+						(objSendMessage gSource Nil "Shield generator required")
+						)
+
+					; Identify the item
+					(itmSetKnown gItem)
+
+					; Remove ROM
+					(objRemoveItem gSource gItem 1)
+					)
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Level 5: Shield Optimizer Cube -->
+
+	<ItemType UNID="&itShieldOptimizer;"
+			name=				"ShieldPower v3.1.8 algorithm cube"
+			level=				"5"
+			value=				"1000"
+			mass=				"50"
+			frequency=			"uncommon"
+			unknownType=		"&itUnknownMnemonicCube;"
+			attributes=			"info, minorItem, quantumProgram, shieldEnhance"
+
+			description=		"This algorithm enhances shield generators of technology levels 4 through 9."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(switch
+				; If we don't have a quantum CPU
+				(not (progHasQuantumCPU gSource))
+					(objSendMessage gSource Nil "Quantum CPU required")
+
+				; Enhance shield generator
+				(block (notFound)
+					; Install
+					(setq notFound True)
+					(objEnumItems gSource "sI" theItem
+						(block (shieldItem)
+							(setq shieldItem theItem)
+							(if notFound
+								(block Nil
+									(switch
+										; If the shield generator is not advanced enough, then nothing happens
+										(ls (itmGetLevel shieldItem) 4)
+											(objSendMessage gSource Nil "Shield generator is too primitive for ShieldPower algorithm")
+
+										; If the shield generator is too advanced, then nothing happens
+										(gr (itmGetLevel shieldItem) 9)
+											(objSendMessage gSource Nil "Shield generator is too advanced for ShieldPower algorithm")
+
+										; If the item is damaged, we repair it
+										(itmIsDamaged shieldItem)
+											(block Nil
+												(shpRepairItem gSource theItem)
+												(objSendMessage gSource Nil "Shield generator has been repaired")
+												)
+
+										; Enhance the shield generator
+										(block (result)
+											(setq result (shpEnhanceItem gSource theItem 0x0102))
+											(objSendMessage gSource Nil (intItemEnhanceStatus result "Your shields are more powerful" "shield generator"))
+											)
+										)
+									(setq notFound Nil)
+									)
+								)
+							)
+						)
+
+					(if notFound
+						(objSendMessage gSource Nil "Shield generator required")
+						)
+
+					; Identify the item
+					(itmSetKnown gItem)
+
+					; Remove ROM
+					(objRemoveItem gSource gItem 1)
+					)
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Level 6: Scramble Algorithm -->
+
+	<ItemType UNID="&itScrambleAlgorithm;"
+			name=				"Scramble1.5 algorithm cube"
+			level=				"6"
+			value=				"1000"
+			mass=				"50"
+			frequency=			"uncommon"
+			unknownType=		"&itUnknownMnemonicCube;"
+			attributes=			"consumable, info, quantumProgram"
+
+			description=		"This algorithm hacks into near-by enemy ship computers and temporarily disable their control systems. Scramble1.5 requires a quantum CPU to execute."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<Invoke key="S">
+			(switch
+				; If we don't have a quantum CPU
+				(not (progHasQuantumCPU gSource))
+					(objSendMessage gSource Nil "Quantum CPU required")
+
+				; Otherwise, we paralyze enemy ships in the area
+				(block (targets)
+					(setq targets (sysFindObject gSource "sEN:16;"))
+					(enum targets target
+						(objProgramDamage target gSource "Scramble1.5" 6
+							(objMakeParalyzed target (random 600 1200))
+							)
+						)
+					(if targets
+						(objSendMessage gSource Nil "Scramble1.5: Targets disabled")
+						(objSendMessage gSource Nil "Scramble1.5: No targets in range")
+						)
+
+					(itmSetKnown gItem)
+					(objRemoveItem gSource gItem 1)
+					)
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Level 6: Shield Power Saver Cube -->
+
+	<ItemType UNID="&itShieldPowerSaver;"
+			name=				"ShieldEfficiency v1.2.5 algorithm cube"
+			level=				"6"
+			value=				"1500"
+			mass=				"50"
+			frequency=			"uncommon"
+			unknownType=		"&itUnknownMnemonicCube;"
+			attributes=			"info, minorItem, quantumProgram, shieldEnhance"
+
+			description=		"This algorithm increases the efficiency of shield generators of technology levels 4 through 9."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(switch
+				; If we don't have a quantum CPU
+				(not (progHasQuantumCPU gSource))
+					(objSendMessage gSource Nil "Quantum CPU required")
+
+				; Enhance shield generator
+				(block (notFound)
+					; Install
+					(setq notFound True)
+					(objEnumItems gSource "sI" theItem
+						(block (shieldItem)
+							(setq shieldItem theItem)
+							(if notFound
+								(block Nil
+									(switch
+										; If the shield generator is not advanced enough, then nothing happens
+										(ls (itmGetLevel shieldItem) 4)
+											(objSendMessage gSource Nil "Shield generator is too primitive for ShieldEfficiency algorithm")
+
+										; If the shield generator is too advanced, then nothing happens
+										(gr (itmGetLevel shieldItem) 9)
+											(objSendMessage gSource Nil "Shield generator is too advanced for ShieldEfficiency algorithm")
+
+										; If the item is damaged, we repair it
+										(itmIsDamaged shieldItem)
+											(block Nil
+												(shpRepairItem gSource theItem)
+												(objSendMessage gSource Nil "Shield generator has been repaired")
+												)
+
+										; Enhance the shield generator
+										(block (result)
+											(setq result (shpEnhanceItem gSource theItem 0x0f02))
+											(objSendMessage gSource Nil (intItemEnhanceStatus result "Your shields are more efficient" "shield generator"))
+											)
+										)
+									(setq notFound Nil)
+									)
+								)
+							)
+						)
+
+					(if notFound
+						(objSendMessage gSource Nil "Shield generator required")
+						)
+
+					; Identify the item
+					(itmSetKnown gItem)
+
+					; Remove ROM
+					(objRemoveItem gSource gItem 1)
+					)
+				)
+		</Invoke>
+	</ItemType>
+
+<!-- GLOBALS -->
+
+	<Globals>
+		(block ()
+			(setq progHasQuantumCPU (lambda (sourceObj)
+				(switch
+					;	An installed, enabled, undamaged device with the quantumCPU attribute
+					;	or with a data variable named quantumCPU
+
+					(filter (objGetItems sourceObj "*IN") theItem
+							(and (objGetItemProperty sourceObj theItem 'enabled)
+								(or (itmHasAttribute theItem 'quantumCPU)
+									(itmGetData theItem 'quantumCPU)
+									)
+								)
+							)
+						True
+
+					;	Otherwise, we don't have one.
+
+					Nil
+					)
+				))
+			)
+	</Globals>
+
+</TranscendenceModule>
