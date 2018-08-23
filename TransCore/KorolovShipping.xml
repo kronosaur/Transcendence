@@ -329,13 +329,24 @@
 							</Action>
 
 							<Action id="actionDockServices">
-								(if (typGetData &unidKorolovShipping; 'level)
-									(rpgDockServices gPlayerShip {
-										checkMilitaryID: True
-										})
-									(scrShowScreen gScreen &dsRPGMessage; {
-										desc: (scrTranslate gScreen 'descNoDockServicesAccess)
-										})
+								(block (
+									(playerLevel (typGetData &unidKorolovShipping; 'level))
+									)
+									(switch
+										(not playerLevel)
+											(scrShowScreen gScreen &dsRPGMessage; {
+												desc: (scrTranslate gScreen 'descNoDockServicesAccess)
+												})
+
+										(= playerLevel -1)
+											(scrShowScreen gScreen &dsRPGMessage; {
+												desc: (scrTranslate gScreen 'descNoDockServicesAccess)
+												})
+
+										(rpgDockServices gPlayerShip {
+											checkMilitaryID: True
+											})
+										)
 									)
 							</Action>
 
