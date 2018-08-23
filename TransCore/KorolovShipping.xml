@@ -1467,15 +1467,24 @@
 					(rpgMissionRewardPayment (msnGetData missionObj 'reward))
 					(typIncData &unidKorolovShipping; 'xp (msnGetData missionObj 'missionXP))
 
-					; If the player has destroyed 3 frigates, try deploying the Kronosaurus
+					;	If the player has destroyed 3 frigates, try deploying the Kronosaurus
+					;	NOTE: chrDeployKronosaurus will return Nil if the Kronosaurus is already
+					;	dead.
+
 					(if (geq (typGetGlobalData &scCharonFrigateRaider; 'totalDestroyed) 3)
 						(msnSetData missionObj 'kronosaurusWarning (chrDeployKronosaurus))
 						)
 
-					; Check to see if we've been promoted
+					;	Check to see if we've been promoted
+					;
+					;	NOTE: In some cases korComputePlayerLevel will return a lower level than
+					;	the player's current level. This can happen because killing the Kronosaurus
+					;	automatically brings the player up to level 4, even if they've previously
+					;	failed a mission (which forces a cap at level 3).
+
 					(setq oldRank (korGetPlayerLevel))
 					(setq newRank (korComputePlayerLevel))
-					(if (not (= oldRank newRank))
+					(if (gr newRank oldRank)
 						(block Nil
 
 							;	dsRPGMission checks for a well-known data member in the mission
