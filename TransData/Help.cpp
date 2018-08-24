@@ -35,6 +35,7 @@
 #define STATION_FREQUENCY_SWITCH			CONSTLIT("stationfrequency")
 #define STATION_PLACE_SIM_SWITCH			CONSTLIT("stationSeparationSim")
 #define STATS_SWITCH						CONSTLIT("stats")
+#define SYSTEM_IMAGES_SWITCH				CONSTLIT("systemimages")
 #define SYSTEM_LABELS_SWITCH				CONSTLIT("systemlabels")
 #define SYSTEM_TEST_SWITCH					CONSTLIT("systemtest")
 #define TOPOLOGY_MAP_SWITCH					CONSTLIT("topologyMap")
@@ -318,6 +319,16 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /stationSeparationSim Generate enemy station separation statistics.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
 		printf("      [/count:n]            n iterations.\n");
+		}
+	else if (pCmdLine->GetAttributeBool(SYSTEM_IMAGES_SWITCH))
+		{
+		printf("  /systemimages         Generate snapshots of system maps.\n");
+		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/font:s]             Use given font for labels.\n");
+		printf("      [/output:file]        Saves image to given filespec.\n");
+		printf("      [/xMargin:n]          Margin around images.\n");
+		printf("      [/xSpacing:n]         Spacing between images.\n");
+		printf("      [/zoom:n]             Scale (thousands of pixels per AU).\n");
 		}
 	else if (pCmdLine->GetAttributeBool(SYSTEM_LABELS_SWITCH))
 		{

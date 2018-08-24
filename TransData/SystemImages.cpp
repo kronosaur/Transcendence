@@ -16,7 +16,7 @@ struct SNodeEntry
 	CString sLabel;							//	Label
 	};
 
-const int DEFAULT_ZOOM =					25;
+const int DEFAULT_ZOOM =					20;
 const int OFFSET_Y =						-16;
 
 void GenerateSystemImages (CUniverse &Universe, CXMLElement *pCmdLine)
@@ -68,7 +68,7 @@ void GenerateSystemImages (CUniverse &Universe, CXMLElement *pCmdLine)
 	//	Zoom
 
 	Metric rZoom = (pCmdLine->GetAttributeIntegerBounded(CONSTLIT("zoom"), 1, 100, DEFAULT_ZOOM) / 100.0);
-	Metric rScale = g_AU / (800.0 * rZoom);
+	Metric rScale = g_AU / (1000.0 * rZoom);
 
 	int cxImage = 1000;
 	int cyImage = 800;
