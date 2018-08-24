@@ -714,7 +714,6 @@ ALERROR CTranscendenceModel::EndGameDestroyed (bool *retbResurrected)
 	else if (m_iState == statePlayerDestroyed)
 		{
 		//	Generate stats and save to file
-
 		GenerateGameStats(&m_GameStats, true);
 		if (error = SaveGameStats(m_GameStats, true))
 			return error;
@@ -1180,6 +1179,7 @@ ALERROR CTranscendenceModel::Init (const CGameSettings &Settings)
 	m_bNoMissionCheckpoint = Settings.GetBoolean(CGameSettings::noMissionCheckpoint);
 	m_bNoSound = Settings.GetBoolean(CGameSettings::noSound);
     m_bNoCollectionLoad = Settings.GetBoolean(CGameSettings::noCollectionLoad);
+	m_bForcePermadeath = Settings.GetBoolean(CGameSettings::forcePermadeath);
 
 	return NOERROR;
 	}
@@ -1359,9 +1359,9 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 			return ERR_FAIL;
 			}
 
-		//	If this game is in end game state then we just load the stats.
+		//	If this game is in end game state OR if we are forcing permadeath and this game is over then we just load the stats.
 
-		if (m_GameFile.IsEndGame())
+		if (m_GameFile.IsEndGame() || (m_bForcePermadeath && m_GameFile.IsGameResurrect() && m_GameFile.GetResurrectCount() == 0))
 			{
 			error = m_GameFile.LoadGameStats(&m_GameStats);
 			m_GameFile.Close();
