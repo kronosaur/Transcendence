@@ -183,6 +183,7 @@
 			cyberDefenseLevel=	"8"
 
 			leavesWreck=		"100"
+			wreckType=			"&stSvalbardWreck;"
 			explosionType=		"&vtThermoExplosion2;"
 
 			dockingPorts=		"4"
