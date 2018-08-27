@@ -306,7 +306,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 					rcImage.bottom = pImage->GetHeight();
 
 					NewEntry.pCompositeImageArray = new CObjectImageArray;
-					NewEntry.pCompositeImageArray->Init(pImage, rcImage, 0, 0, true);
+					NewEntry.pCompositeImageArray->InitFromBitmap(pImage, rcImage, 0, 0, true);
 
 					//	Done
 
@@ -740,7 +740,7 @@ void InitStationTypeImage (SEntryDesc &Entry, CStationType *pStationType)
     int yOffset = (RectHeight(rcBounds) / 2) - yCenter;
 
 	Entry.pCompositeImageArray = new CObjectImageArray;
-	Entry.pCompositeImageArray->Init(pCompositeImage, rcResult, 0, 0, true, xOffset, yOffset);
+	Entry.pCompositeImageArray->InitFromBitmap(pCompositeImage, rcResult, 0, 0, true, xOffset, yOffset);
 
 	//	Done
 
