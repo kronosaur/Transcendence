@@ -1305,6 +1305,9 @@
 						(setq left (objIncOverlayData gSource aOverlayID "wasteCount" -1))
 						(objAddItem gSource (itmCreate &itRadioactiveWaste; 1))
 						(objSetOverlayData gSource aOverlayID "counter" 0)
+
+						;	Identify it, since this is the only thing that it could be.
+						(itmSetKnown &itRadioactiveWaste;)
 						
 						(plyMessage gPlayer "Uranium rod consumed")
 						
