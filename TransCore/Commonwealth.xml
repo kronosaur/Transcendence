@@ -1092,13 +1092,13 @@
 				;			If 0, gain no donation points
 				;			If greater than 0, this is the credit value to gain 1 donation point
 
-				(	; pattern				donate	result
-					("* +Meds;"				50		'info)
-					("* +Illegal;"			250		'info)
-					("* +Lux;"				100		'info)
-					("* +Food;"				50		'info)
-					("f"					50		'info)
-					(Nil					0		'thanksForNothing)
+				(	; pattern						donate	result
+					("* +meds;"						50		'info)
+					("* +illegal; +consumerGood"	250		'info)
+					("* +lux;"						100		'info)
+					("* +food;"						50		'info)
+					("f"							50		'info)
+					(Nil							0		'thanksForNothing)
 					)
 			</DonationTable>
 		</StaticData>
