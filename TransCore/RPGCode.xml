@@ -1335,6 +1335,21 @@
 					)
 				))
 
+			;	rpgFindWrecksToSalvage
+			;
+			;	Returns a list of wrecks within 100 ls of centerObj that can be 
+			;	salvaged.
+
+			(setq rpgFindWrecksToSalvage (lambda (centerObj lootedVar)
+				(filter (sysFindObject centerObj "TK N:100; +shipwreck; -noSalvage; -uncharted; -locked;") theObj
+					(and
+						(not (objIsRadioactive theObj))
+						(not (objGetData theObj (or lootedVar 'core.salvaged)))
+						(not (objGetData theObj 'core.noSalvage))
+						)
+					)
+				))
+
 			;	rpgGetInstallerList
 			;
 			;	Returns a list of objects that are able to install the given item

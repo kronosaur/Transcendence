@@ -2790,12 +2790,7 @@
 								
 								; Compose a list of all wrecks in the area
 								
-								(setq allWrecks (filter (sysFindObject gSource "TK N:100; +shipwreck; -uncharted; -locked;") theObj
-									(and 
-										(not (objIsRadioactive theObj))
-										(not (objGetData theObj "0010300c_marked"))
-										)
-									))
+								(setq allWrecks (rpgFindWrecksToSalvage gSource '0010300c_marked))
 								)
 							(block (destObj)
 								(setq destObj (random allWrecks))
