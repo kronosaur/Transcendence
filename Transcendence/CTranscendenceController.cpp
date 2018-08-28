@@ -922,7 +922,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_GAME_SELECT_SAVE_FILE))
 		{
 		DisplayMultiverseStatus(NULL_STR);
-		if (error = m_HI.OpenPopupSession(new CLoadGameSession(m_HI, m_Service, m_Model.GetSaveFileFolders())))
+		if (error = m_HI.OpenPopupSession(new CLoadGameSession(m_HI, m_Service, m_Model.GetSaveFileFolders(), m_Settings.GetBoolean(CGameSettings::forcePermadeath))))
 			{
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_LOAD_GAME, NULL_STR, CMD_NULL));
 			return NOERROR;
