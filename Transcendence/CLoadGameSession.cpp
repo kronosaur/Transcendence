@@ -37,9 +37,10 @@
 
 const int SAVE_ENTRY_WIDTH =					720;
 
-CLoadGameSession::CLoadGameSession (CHumanInterface &HI, CCloudService &Service, const TArray<CString> &Folders) : IHISession(HI),
+CLoadGameSession::CLoadGameSession (CHumanInterface &HI, CCloudService &Service, const TArray<CString> &Folders, bool bFilterPermadeath) : IHISession(HI),
 		m_Service(Service),
-		m_Folders(Folders)
+		m_Folders(Folders),
+		m_bFilterPermadeath(bFilterPermadeath)
 
 //	CLoadGameSession constructor
 
@@ -208,7 +209,7 @@ ALERROR CLoadGameSession::OnInit (CString *retsError)
 
 	//	Create a task to read the list of save files from disk
 
-	m_HI.AddBackgroundTask(new CListSaveFilesTask(m_HI, m_Folders, m_Service.GetUsername(), SAVE_ENTRY_WIDTH), 0, this, CMD_READ_COMPLETE);
+	m_HI.AddBackgroundTask(new CListSaveFilesTask(m_HI, m_Folders, m_Service.GetUsername(), m_bFilterPermadeath, SAVE_ENTRY_WIDTH), 0, this, CMD_READ_COMPLETE);
 
 	//	Create the title and menu
 

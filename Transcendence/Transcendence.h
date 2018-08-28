@@ -1078,6 +1078,7 @@ class CTranscendenceModel
 		bool m_bNoSound;							//	No sound
 		bool m_bNoMissionCheckpoint;				//	Do not save game on mission accept
         bool m_bNoCollectionLoad;                   //  Do not load collection
+		bool m_bForcePermadeath;					//	Replace resurrection with final stats
 
 		CGameFile m_GameFile;
 		CUniverse m_Universe;
