@@ -444,7 +444,7 @@
 			attributes=			"shipwreck"
 			>
 			
-		<ImageShipwreck class="&scSungTransport;"/>
+		<Image shipwreckID="&scSungTransport;"/>
 		
 		<Items>
 			<Item item="&itDallSphere;" count="1"/>

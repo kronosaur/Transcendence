@@ -150,11 +150,7 @@
 			levelFrequency=		"----- --vuu r----- ----- -----"
 			locationCriteria=	"+asteroids"
 			>
-		<ImageVariants>
-			<Shipwreck class="&scTundra;"/>
-			<Shipwreck class="&scCenturionM;"/>
-			<Shipwreck class="&scSandstorm;"/>
-		</ImageVariants>
+		<Image shipwreckID="&scTundra;, &scCenturionM;, &scSandstorm;"/>
 
 		<Ships>
 			<Ship	count="1"	class="&scGaianProcessor;" controller="gaianprocessor" sovereign="&svGaianTerraformers;" />

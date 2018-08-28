@@ -287,7 +287,7 @@
 			levelFrequency=		"----- rucur ----- ----- -----"
 			locationCriteria=	"-planetary"
 			>
-		<ImageShipwreck class="&scCenturionBlock2;"/>
+		<Image shipwreckID="&scCenturionBlock2;"/>
 
 		<Items>
 			<Table>
@@ -335,7 +335,7 @@
 			levelFrequency=		"----- rucur ----- ----- -----"
 			locationCriteria=	"-planetary"
 			>
-		<ImageShipwreck class="&scSandstorm;"/>
+		<Image shipwreckID="&scSandstorm;"/>
 
 		<Items>
 			<Table>
