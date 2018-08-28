@@ -81,7 +81,7 @@
 			locationCriteria=	"-planetary"
 			>
 
-		<Image shipwreckID="&scEI500;"/>
+		<ImageShipwreck class="&scEI500;"/>
 
 		<Events>
 			<GetExplosionType>

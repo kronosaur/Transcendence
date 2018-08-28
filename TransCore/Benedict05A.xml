@@ -397,7 +397,7 @@
 		
 		<!-- Image and Effects -->
 		
-		<Image shipwreckID="&scHandOfDomina;"/>
+		<ImageShipwreck class="&scHandOfDomina;"/>
 
 		<DockingPorts
 				portCount=		"6"
