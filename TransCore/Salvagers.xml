@@ -134,7 +134,11 @@
 			levelFrequency=		"ruurv ----- ----- ----- -----"
 			locationCriteria=	"--planetary"
 			>
-		<Image shipwreckID="&scBorer;, &scEarthzone;, &scRoninA;"/>
+		<ImageVariants>
+			<Shipwreck class="&scBorer;"/>
+			<Shipwreck class="&scEarthzone;"/>
+			<Shipwreck class="&scRoninA;"/>
+		</ImageVariants>
 
 		<Ships>
 			<Ship	count="1"	class="&scSalvagerNomad;" orders="scavenge"		sovereign="&svSalvagers;"/>
