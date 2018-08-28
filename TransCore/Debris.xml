@@ -384,7 +384,7 @@
 			noMapIcon=			"true"
 			destroyWhenEmpty=	"true"
 
-			attributes=			"enemy, envEarth, envAvoidsAir"
+			attributes=			"enemy, envEarth, envAvoidsAir, noSalvage"
 			levelFrequency=		"-ruuv ----- ----- ----- -----"
 			locationCriteria=	"--planetary"
 			enemyExclusionRadius="80"
@@ -449,6 +449,8 @@
 			name=				"(weapons cache)"
 			sovereign=			"&svOutlaw;"
 			dockScreen=			"&dsAbandonedCrate;"
+
+			attributes=			"noSalvage"
 
 			structuralHitPoints="15"
 			ejectaType=			"&vtWreckEjecta;"
