@@ -57,7 +57,7 @@ const int NEWS_PANE_INNER_SPACING_Y =			8;
 #define CMD_ACCOUNT_EDIT						CONSTLIT("cmdAccountEdit")
 #define CMD_CHANGE_PASSWORD						CONSTLIT("cmdChangePassword")
 #define CMD_OPEN_NEWS							CONSTLIT("cmdOpenNews")
-#define CMD_SHOW_MOD_EXCHANGE					CONSTLIT("cmdShowModExchange")
+#define CMD_SHOW_COLLECTION						CONSTLIT("cmdShowModExchange")
 #define CMD_SHOW_PROFILE						CONSTLIT("cmdShowProfile")
 #define CMD_SHOW_SETTINGS						CONSTLIT("cmdShowSettings")
 #define CMD_SIGN_OUT							CONSTLIT("cmdSignOut")
@@ -661,8 +661,8 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 
 	if (Service.HasCapability(ICIService::modExchange))
 		{
-		VI.CreateImageButton(pRoot, CMD_SHOW_MOD_EXCHANGE, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageModExchangeIcon), CONSTLIT("Mod Collection"), 0, &pButton);
-		pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_SHOW_MOD_EXCHANGE);
+		VI.CreateImageButton(pRoot, CMD_SHOW_COLLECTION, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageModExchangeIcon), CONSTLIT("Collection"), 0, &pButton);
+		pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_SHOW_COLLECTION);
 		}
 
 	//	Done
