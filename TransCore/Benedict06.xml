@@ -601,7 +601,15 @@
 						)
 					)
 			</OnInsuranceClaim>
+
+			<CanUpgradeTo>
+				(objTranslate gSource 'msgCantUpgradeShip)
+			</CanUpgradeTo>
 		</Events>
+
+		<Language>
+			<Text id="msgCantUpgradeShip">Benedict does not want you to change ships.</Text>
+		</Language>
 	</Type>
 
 	<Type UNID="&evBenedict06PenitentBase;">

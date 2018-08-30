@@ -99,6 +99,7 @@
 							;	Vars
 						
 							(canBuy Nil)
+							(canUpgradeResult Nil)
 							)
 						
 							;	Set the description
@@ -126,6 +127,21 @@
 							;	See if the player can upgrade to this ship.
 
 							(switch
+
+								;	See if the ship can be traded
+
+								(!= (setq canUpgradeResult (objFireEvent gPlayerShip 'CanUpgradeTo { newShipObj:selObj })) True)
+									(block ()
+										(scrEnableAction gScreen 'actionBuyShip Nil)
+										(scrSetActionDesc gScreen 'actionBuyShip canUpgradeResult)
+										(dbgOutput "Fail: " canUpgradeResult)
+										)
+
+								(!= (setq canUpgradeResult (objFireEvent selObj 'CanUpgradeFrom { oldShipObj:gPlayerShip })) True)
+									(block ()
+										(scrEnableAction gScreen 'actionBuyShip Nil)
+										(scrSetActionDesc gScreen 'actionBuyShip canUpgradeResult)
+										)
 
 								;	If a military ID is required, check
 
