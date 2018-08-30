@@ -279,11 +279,16 @@
 				Defend Fiona's Freighter
 			</Text>
 			<Text id="Summary">
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName)
+					})
+			</Text>
+			<Text id="textSummary">
 
 				Meet Fiona's freighter at the stargate and defend it back to the 
 				station.
 					
-				System: Eridani\n
+				System: %systemName%\n
 				Payment: None
 
 			</Text>
@@ -318,7 +323,11 @@
 						{	descID: 'SuccessDebrief1	}
 						{	descID: 'SuccessDebrief2	labelID: 'actionSuccess2	}
 						{	descID: 'SuccessDebrief3	labelID: 'actionSuccess3	}
-						{	descID: 'SuccessDebrief4	}
+						{	descID: 'SuccessDebrief4
+							data: {
+								systemName: (sysGetName)
+								}
+							}
 						(if korolovMsn
 							{	descID: 'SuccessDebrief5a
 								data: {
@@ -373,7 +382,7 @@
 				"Domina is not the only god, you know? The Penitents worship
 				Oracus, their god of death. But they've gotten stronger
 				in the last few years. I've never seen them come all the
-				way to Eridani before.
+				way to %systemName% before.
 
 				"They've got my attention now."
 
