@@ -41,6 +41,8 @@
 					(fullPrice (int (round (* componentPrice markUp))))
 					(workPrice (- fullPrice componentPrice))
 					
+					(compareFlags '(ignoreCharges ignoreData ignoreDisrupted))
+
 					;	For each required component, add up the number of items the player
 					;	actually has. Note that we accept damaged items.
 						
@@ -52,13 +54,13 @@
 								;	Add the number of non-damaged items we have
 								
 								(setq countAvailable (add countAvailable
-									(objHasItem theSource theComponent 1)
+									(objHasItem theSource theComponent 1 compareFlags)
 									))
 										
 								;	Now add damaged items
 									
 								(setq countAvailable (add countAvailable
-									(objHasItem theSource (itmSetProperty theComponent 'damaged True) 1)
+									(objHasItem theSource (itmSetProperty theComponent 'damaged True) 1 compareFlags)
 									))
 										
 								;	Compose entry
@@ -157,6 +159,12 @@
 					(itemToCreate (itmSetCount (@ createCtx 'item) (* (itmGetCount (@ createCtx 'item)) theCount)))
 					(totalCost (* (@ createCtx 'workCost) theCount))
 					(currencyUsed (@ createCtx 'currencyUsed))
+
+					;	When looking for components, we ignore attributes of the item that 
+					;	we don't care about.
+
+					(compareFlags '(ignoreCharges ignoreData ignoreDisrupted))
+
 					itemsConsumed
 					)
 				
@@ -174,10 +182,10 @@
 							
 							;	Consume damaged items first
 							
-							(setq available (min leftToConsume (objHasItem theSource damagedItem 1)))
+							(setq available (min leftToConsume (objHasItem theSource damagedItem 1 compareFlags)))
 							(if (gr available 0)
 								(block Nil
-									(objRemoveItem theSource damagedItem available)
+									(objRemoveItem theSource damagedItem available compareFlags)
 									(setq leftToConsume (- leftToConsume available))
 									(setq itemsConsumed (append itemsConsumed (list (itmSetCount damagedItem available))))
 									)
@@ -185,10 +193,10 @@
 								
 							;	Consume good items
 							
-							(setq available (min leftToConsume (objHasItem theSource goodItem 1)))
+							(setq available (min leftToConsume (objHasItem theSource goodItem 1 compareFlags)))
 							(if (gr available 0)
 								(block Nil
-									(objRemoveItem theSource goodItem available)
+									(objRemoveItem theSource goodItem available compareFlags)
 									(setq leftToConsume (- leftToConsume available))
 									(setq itemsConsumed (append itemsConsumed (list (itmSetCount goodItem available))))
 									)
