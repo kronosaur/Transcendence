@@ -635,7 +635,7 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 
     //  Keyboard settings
 
-	VI.CreateImageButton(pRoot, CMD_SHOW_SETTINGS, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageSettingsIcon), CONSTLIT("Keyboard Settings"), 0, &pButton);
+	VI.CreateImageButton(pRoot, CMD_SHOW_SETTINGS, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageSettingsIcon), CONSTLIT("Controls"), 0, &pButton);
 	pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_SHOW_SETTINGS);
 
 	x -= (BUTTON_WIDTH + PADDING_LEFT);
