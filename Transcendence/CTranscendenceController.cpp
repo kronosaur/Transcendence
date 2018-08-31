@@ -128,7 +128,7 @@
 #define CMD_UI_SHOW_GALACTIC_MAP				CONSTLIT("uiShowGalacticMap")
 #define CMD_UI_SHOW_HELP						CONSTLIT("uiShowHelp")
 #define CMD_UI_SHOW_LOGIN						CONSTLIT("uiShowLogin")
-#define CMD_UI_SHOW_MOD_EXCHANGE				CONSTLIT("uiShowModExchange")
+#define CMD_UI_SHOW_COLLECTION					CONSTLIT("uiShowModExchange")
 #define CMD_UI_SHOW_PROFILE						CONSTLIT("uiShowProfile")
 #define CMD_UI_SHOW_SETTINGS    				CONSTLIT("uiShowSettings")
 #define CMD_UI_SIGN_OUT							CONSTLIT("uiSignOut")
@@ -159,7 +159,7 @@
 #define ERR_CANT_LOAD_GAME						CONSTLIT("Unable to load game")
 #define ERR_CANT_START_GAME						CONSTLIT("Unable to start game")
 #define ERR_CANT_SHOW_ADVENTURES				CONSTLIT("Unable to show list of adventures")
-#define ERR_CANT_SHOW_MOD_EXCHANGE				CONSTLIT("Unable to show Mod Collection screen")
+#define ERR_CANT_SHOW_COLLECTION				CONSTLIT("Unable to show Collection screen")
 #define ERR_CONTACT_KP							CONSTLIT("Contact Kronosaur Productions")
 #define ERR_LOAD_ERROR							CONSTLIT("Error loading extensions")
 #define ERR_RESET_PASSWORD_DESC					CONSTLIT("Automated password reset is not yet implemented. Please contact Kronosaur Productions at:\n\ntranscendence@kronosaur.com\n\nPlease provide your username.")
@@ -1427,7 +1427,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	//	Mod exchange
 
-	else if (strEquals(sCmd, CMD_UI_SHOW_MOD_EXCHANGE))
+	else if (strEquals(sCmd, CMD_UI_SHOW_COLLECTION))
 		{
 		//	If we're not logged in, log in first.
 
@@ -1436,7 +1436,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			//	We pass the uiShowModExchange command to the login session. On
 			//	success, it will fire the command.
 
-			CLoginSession *pSession = new CLoginSession(m_HI, m_Service, CMD_UI_SHOW_MOD_EXCHANGE);
+			CLoginSession *pSession = new CLoginSession(m_HI, m_Service, CMD_UI_SHOW_COLLECTION);
 			if (error = m_HI.OpenPopupSession(pSession))
 				return error;
 			}
@@ -1448,7 +1448,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			DisplayMultiverseStatus(NULL_STR);
 			if (error = m_HI.OpenPopupSession(new CModExchangeSession(m_HI, m_Service, m_Multiverse, g_pUniverse->GetExtensionCollection(), m_Settings.GetBoolean(CGameSettings::debugMode))))
 				{
-				m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_SHOW_MOD_EXCHANGE, NULL_STR, CMD_NULL));
+				m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_SHOW_COLLECTION, NULL_STR, CMD_NULL));
 				return NOERROR;
 				}
 			}
