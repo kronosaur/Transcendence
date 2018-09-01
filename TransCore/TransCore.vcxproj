@@ -599,6 +599,7 @@
     <Xml Include="Stormhound.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="SungSlaveCamp.xml" />
     <Xml Include="TeratonResearch.xml" />
     <Xml Include="Ventari.xml" />
     <Xml Include="Volkov.xml">

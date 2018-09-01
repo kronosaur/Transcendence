@@ -73,6 +73,9 @@
     <Filter Include="Human Space Library\Misc Encounters">
       <UniqueIdentifier>{b33ac3ac-3346-4d8b-b1b3-ef7b253a1f89}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Human Space Library\Sung Slavers">
+      <UniqueIdentifier>{fb38e338-1ce7-4323-8cae-1c58f0d6e634}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Transcendence.xml" />
@@ -301,9 +304,6 @@
     <None Include="StdUnknownItems.xml">
       <Filter>Human Space Library\Items</Filter>
     </None>
-    <None Include="SungSlavers.xml">
-      <Filter>Human Space Library\Misc Encounters</Filter>
-    </None>
     <None Include="Tinkers.xml">
       <Filter>Human Space Library\Misc Encounters</Filter>
     </None>
@@ -375,6 +375,9 @@
     </None>
     <None Include="Teratons.xml">
       <Filter>Human Space Library\Teratons</Filter>
+    </None>
+    <None Include="SungSlavers.xml">
+      <Filter>Human Space Library\Sung Slavers</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -749,6 +752,9 @@
     </Xml>
     <Xml Include="QuantumCPU.xml">
       <Filter>Human Space Library\Items</Filter>
+    </Xml>
+    <Xml Include="SungSlaveCamp.xml">
+      <Filter>Human Space Library\Sung Slavers</Filter>
     </Xml>
   </ItemGroup>
 </Project>
