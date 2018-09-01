@@ -57,6 +57,7 @@ const int NEWS_PANE_INNER_SPACING_Y =			8;
 #define CMD_ACCOUNT_EDIT						CONSTLIT("cmdAccountEdit")
 #define CMD_CHANGE_PASSWORD						CONSTLIT("cmdChangePassword")
 #define CMD_OPEN_NEWS							CONSTLIT("cmdOpenNews")
+#define CMD_RELOAD								CONSTLIT("cmdReload")
 #define CMD_SHOW_COLLECTION						CONSTLIT("cmdShowModExchange")
 #define CMD_SHOW_PROFILE						CONSTLIT("cmdShowProfile")
 #define CMD_SHOW_SETTINGS						CONSTLIT("cmdShowSettings")
@@ -663,7 +664,16 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 		{
 		VI.CreateImageButton(pRoot, CMD_SHOW_COLLECTION, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageModExchangeIcon), CONSTLIT("Collection"), 0, &pButton);
 		pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_SHOW_COLLECTION);
+
+		x -= (BUTTON_WIDTH + PADDING_LEFT);
 		}
+
+	//	Reload
+
+	VI.CreateImageButton(pRoot, CMD_RELOAD, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageCloseIcon), CONSTLIT("Reload"), 0, &pButton);
+	pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_RELOAD);
+
+	x -= (BUTTON_WIDTH + PADDING_LEFT);
 
 	//	Done
 

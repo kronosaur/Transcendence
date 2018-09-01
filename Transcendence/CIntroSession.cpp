@@ -12,6 +12,7 @@
 #define CMD_ACCOUNT_EDIT						CONSTLIT("cmdAccountEdit")
 #define CMD_CHANGE_PASSWORD						CONSTLIT("cmdChangePassword")
 #define CMD_OPEN_NEWS							CONSTLIT("cmdOpenNews")
+#define CMD_RELOAD								CONSTLIT("cmdReload")
 #define CMD_SHOW_COLLECTION						CONSTLIT("cmdShowModExchange")
 #define CMD_SHOW_PROFILE						CONSTLIT("cmdShowProfile")
 #define CMD_SHOW_SETTINGS						CONSTLIT("cmdShowSettings")
@@ -28,6 +29,7 @@
 #define CMD_SERVICE_NEWS_LOADED					CONSTLIT("serviceNewsLoaded")
 
 #define CMD_UI_CHANGE_PASSWORD					CONSTLIT("uiChangePassword")
+#define CMD_UI_RELOAD							CONSTLIT("uiReload")
 #define CMD_UI_SHOW_LOGIN						CONSTLIT("uiShowLogin")
 #define CMD_UI_SHOW_COLLECTION				CONSTLIT("uiShowModExchange")
 #define CMD_UI_SHOW_PROFILE						CONSTLIT("uiShowProfile")
@@ -1043,6 +1045,9 @@ ALERROR CIntroSession::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SHOW_COLLECTION))
 		m_HI.HICommand(CMD_UI_SHOW_COLLECTION);
+
+	else if (strEquals(sCmd, CMD_RELOAD))
+		m_HI.HICommand(CMD_UI_RELOAD);
 
 	else if (strEquals(sCmd, CMD_SHOW_SETTINGS))
 		m_HI.HICommand(CMD_UI_SHOW_SETTINGS);

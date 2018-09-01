@@ -123,6 +123,7 @@
 #define CMD_UI_EXIT								CONSTLIT("uiExit")
 #define CMD_UI_MUSIC_VOLUME_DOWN				CONSTLIT("uiMusicVolumeDown")
 #define CMD_UI_MUSIC_VOLUME_UP					CONSTLIT("uiMusicVolumeUp")
+#define CMD_UI_RELOAD							CONSTLIT("uiReload")
 #define CMD_UI_RESET_PASSWORD					CONSTLIT("uiResetPassword")
 #define CMD_UI_SHOW_GAME_STATS					CONSTLIT("uiShowGameStats")
 #define CMD_UI_SHOW_GALACTIC_MAP				CONSTLIT("uiShowGalacticMap")
@@ -1452,6 +1453,19 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 				return NOERROR;
 				}
 			}
+		}
+
+	else if(strEquals(sCmd, CMD_UI_RELOAD))
+		{
+		//	Kill the intro
+		g_pTrans->StopIntro();
+
+		CString sCollectionFolder = pathAddComponent(m_Settings.GetAppDataFolder(), FOLDER_COLLECTION);
+		TArray<CString> ExtensionFolders;
+		ExtensionFolders.Insert(pathAddComponent(m_Settings.GetAppDataFolder(), FOLDER_EXTENSIONS));
+
+		m_HI.AddBackgroundTask(new CInitModelTask(m_HI, m_Model, m_Settings, sCollectionFolder, ExtensionFolders), 0, this, CMD_MODEL_INIT_DONE);
+		m_HI.ShowSession(new CWaitSession(m_HI, m_Service, CONSTLIT("Reloading")));
 		}
 
 	//	Service housekeeping
