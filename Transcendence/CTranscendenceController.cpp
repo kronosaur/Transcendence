@@ -125,6 +125,7 @@
 #define CMD_UI_MUSIC_VOLUME_UP					CONSTLIT("uiMusicVolumeUp")
 #define CMD_UI_RELOAD							CONSTLIT("uiReload")
 #define CMD_UI_RESET_PASSWORD					CONSTLIT("uiResetPassword")
+#define CMD_UI_SHOW_EXTENSIONS					CONSTLIT("uiShowExtensions")
 #define CMD_UI_SHOW_GAME_STATS					CONSTLIT("uiShowGameStats")
 #define CMD_UI_SHOW_GALACTIC_MAP				CONSTLIT("uiShowGalacticMap")
 #define CMD_UI_SHOW_HELP						CONSTLIT("uiShowHelp")
@@ -161,6 +162,7 @@
 #define ERR_CANT_START_GAME						CONSTLIT("Unable to start game")
 #define ERR_CANT_SHOW_ADVENTURES				CONSTLIT("Unable to show list of adventures")
 #define ERR_CANT_SHOW_COLLECTION				CONSTLIT("Unable to show Collection screen")
+#define ERR_CANT_SHOW_EXTENSIONS				CONSTLIT("Unable to show Extensions screen")
 #define ERR_CONTACT_KP							CONSTLIT("Contact Kronosaur Productions")
 #define ERR_LOAD_ERROR							CONSTLIT("Error loading extensions")
 #define ERR_RESET_PASSWORD_DESC					CONSTLIT("Automated password reset is not yet implemented. Please contact Kronosaur Productions at:\n\ntranscendence@kronosaur.com\n\nPlease provide your username.")
@@ -1453,6 +1455,15 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 				return NOERROR;
 				}
 			}
+		}
+
+	else if(strEquals(sCmd, CMD_UI_SHOW_EXTENSIONS))
+		{
+		if (error = m_HI.OpenPopupSession(new CExtensionsSession(m_HI, m_Service, g_pUniverse->GetExtensionCollection(), m_Settings.GetBoolean(CGameSettings::debugMode))))
+				{
+				m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_SHOW_EXTENSIONS, NULL_STR, CMD_NULL));
+				return NOERROR;
+				}
 		}
 
 	else if(strEquals(sCmd, CMD_UI_RELOAD))

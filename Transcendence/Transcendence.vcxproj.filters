@@ -71,6 +71,9 @@
     <ClCompile Include="CChangePasswordSession.cpp">
       <Filter>Source Files\Sessions</Filter>
     </ClCompile>
+    <ClCompile Include="CExtensionsSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
     <ClCompile Include="CGalacticMapSession.cpp">
       <Filter>Source Files\Sessions</Filter>
     </ClCompile>

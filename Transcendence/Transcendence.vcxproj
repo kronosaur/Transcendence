@@ -489,6 +489,7 @@
     </ClCompile>
     <ClCompile Include="CAdventureIntroSession.cpp" />
     <ClCompile Include="CChangePasswordSession.cpp" />
+	<ClCompile Include="CExtensionsSession.cpp" />
     <ClCompile Include="CGalacticMapSession.cpp" />
     <ClCompile Include="CHelpSession.cpp" />
     <ClCompile Include="CLoadGameSession.cpp" />

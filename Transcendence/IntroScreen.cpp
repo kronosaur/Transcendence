@@ -59,6 +59,7 @@ const int NEWS_PANE_INNER_SPACING_Y =			8;
 #define CMD_OPEN_NEWS							CONSTLIT("cmdOpenNews")
 #define CMD_RELOAD								CONSTLIT("cmdReload")
 #define CMD_SHOW_COLLECTION						CONSTLIT("cmdShowModExchange")
+#define CMD_SHOW_EXTENSIONS						CONSTLIT("cmdShowExtensions")
 #define CMD_SHOW_PROFILE						CONSTLIT("cmdShowProfile")
 #define CMD_SHOW_SETTINGS						CONSTLIT("cmdShowSettings")
 #define CMD_SIGN_OUT							CONSTLIT("cmdSignOut")
@@ -667,6 +668,13 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 
 		x -= (BUTTON_WIDTH + PADDING_LEFT);
 		}
+
+	//	Extensions
+
+	VI.CreateImageButton(pRoot, CMD_SHOW_EXTENSIONS, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageExtensionsIcon), CONSTLIT("Extensions"), 0, &pButton);
+	pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_SHOW_EXTENSIONS);
+
+	x -= (BUTTON_WIDTH + PADDING_LEFT);
 
 	//	Reload
 

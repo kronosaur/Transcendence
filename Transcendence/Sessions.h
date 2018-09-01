@@ -441,6 +441,29 @@ class CModExchangeSession : public IHISession
 		bool m_bWaitingForRefresh;
 		bool m_bRefreshAgain;
 	};
+class CExtensionsSession : public IHISession
+	{
+	public:
+		CExtensionsSession (CHumanInterface &HI, CCloudService &Service, CExtensionCollection &Extensions, bool bDebugMode = false);
+
+		//	IHISession virtuals
+		virtual ALERROR OnCommand(const CString &sCmd, void *pData = NULL) override;
+		virtual ALERROR OnInit(CString *retsError) override;
+		virtual void OnKeyDown(int iVirtKey, DWORD dwKeyData) override;
+		virtual void OnPaint(CG32bitImage &Screen, const RECT &rcInvalid) override;
+		virtual void OnReportHardCrash(CString *retsMessage) override;
+
+	private:
+		void CmdDone(void);
+		void CmdRefresh();
+		void CmdRefreshComplete(CListExtensionsTask *pTask);
+
+		CCloudService &m_Service;
+		CExtensionCollection &m_Extensions;
+		bool m_bDebugMode;
+		bool m_bWaitingForRefresh;
+
+	};
 
 class CNewGameSession : public IHISession
 	{
