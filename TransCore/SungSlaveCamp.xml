@@ -135,7 +135,8 @@
 			mass=				"3000"
 			armorID=			"&itUltraLightTitaniumArmor;"
 			hitPoints=			"35"
-			structuralHitPoints="10"
+			multiHull=			"true"
+			structuralHitPoints="30"
 
 			noMapLabel=			"true"
 			ejectaType=			"&vtWreckEjecta;"
@@ -185,7 +186,7 @@
 
 			mass=				"3000"
 			armorID=			"&itUltraLightTitaniumArmor;"
-			hitPoints=			"20"
+			hitPoints=			"30"
 			structuralHitPoints="10"
 
 			noMapLabel=			"true"
