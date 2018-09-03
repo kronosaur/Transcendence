@@ -471,7 +471,7 @@ void CGameSession::PaintSRS (CG32bitImage &Screen)
 
 	else
 		{
-		SetProgramState(psPaintingSRS);
+		SetProgramState(psPaintingSRS, g_pUniverse->GetPOV());
 		g_pUniverse->PaintPOV(Screen, m_rcScreen, dwViewportFlags);
 		SetProgramState(psAnimating);
 		}
