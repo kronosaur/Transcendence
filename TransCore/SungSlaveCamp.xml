@@ -250,50 +250,67 @@
 	<DockScreen UNID="&dsSungSlaveQuarters;">
 
 		<InitialPane>
-			(block Nil
-				; Look for the sung slaver
-				(setq gSlaver (sysFindObject gSource "T:sungSlaveCamp; N"))
-				(if gSlaver
-					(switch
-						; If the slaver has not been destroyed, then we're not free
-						(not (objIsAbandoned gSlaver))
-							"NotFree"
+			(block (
+				(slaverObj (sysFindObject gSource "T:sungSlaveCamp; N"))
+				(sungState (objGetData slaverObj 'sungState))
+				)
+				;	Remember the Slave camp object
 
-						; If we have a reward, then the slaver quarters are empty
-						(eq (objGetData gSlaver "sungState") "done")
-							"Empty"
+				(scrSetData gScreen 'slaverObj slaverObj)
 
-						; If we have just taken some coffins, then we're done
-						(eq (objGetData gSlaver "sungState") "coffins")
-							"Done"
+				;	Different screen depending on status
 
-						; Otherwise, the player may or may not get a reward
-						(block (slaves alive dead)
-							; Get all the slave quarters
-							(setq slaves (sysFindObject gSlaver "T:sungSlaveQuarters; N:8;"))
+				(switch
+					;	No slaver found
 
-							; Count how many are still alive
-							(setq alive 1)
-							(enum slaves obj
-								(if (not (objIsAbandoned obj))
-									(setq alive (add alive 1))
-									)
-								)
+					(not slaverObj)
+						'Empty
 
-							; The dead are the total minus the living
-							(setq dead (subtract (objGetData gSlaver "totalSlaveCount") alive))
+					;	Slave Camp has not yet been destroyed.
 
-							; If there are more dead than alive then the player gets
-							; nothing.
-							(if (gr dead alive)
-								"NoReward"
-								"Default"
+					(not (objIsAbandoned slaverObj))
+						'NotFree
+
+					;	If we already got rewards, camp is empty
+
+					(= sungState 'done)
+						'Empty
+
+					;	If we have just taken some coffins, then we're done.
+
+					(= sungState 'coffins)
+						'Done
+
+					;	Otherwise, the player may or may not get a reward
+
+					(block (
+						(totalSlaveCount (objGetData slaverObj 'totalSlaveCount))
+
+						;	Get all the slave quarters
+
+						(slaves (sysFindObject slaverObj "T:sungSlaveQuarters; N:8;"))
+
+						;	Count how many are still alive
+
+						(alive 
+							(map slaves 'reduceSum slaveObj
+								(if (objIsAbandoned slaveObj) 0 1)
 								)
 							)
+
+						;	The dead are the total minus the living
+
+						(dead (- totalSlaveCount alive))
 						)
 
-					; No slaver found
-					"Empty"
+						;	If there are more dead than alive then the player gets
+						;	nothing.
+
+						(if (gr dead alive)
+							'NoReward
+							'Default
+							)
+						)
 					)
 				)
 		</InitialPane>
@@ -302,8 +319,10 @@
 			<Default descID="descWelcome">
 				<Actions>
 					<Action name="Continue" cancel="1" default="1" key="C">
-						(block Nil
-							(objSetData gSlaver "sungState" "coffins")
+						(block (
+							(slaverObj (scrGetData gScreen 'slaverObj))
+							)
+							(objSetData slaverObj 'sungState 'coffins)
 							(objAddItem gSource (itmCreate &itSlaveCoffin; (random 1 12)))
 							(scrShowScreen gScreen &dsRPGLoot; {
 								nextScreen: &dsSungSlaveQuarters;
@@ -311,14 +330,15 @@
 							)
 					</Action>
 				</Actions>
-
 			</Default>
 
 			<Done descID="descDone">
 				<Actions>
 					<Action name="Undock" cancel="1" key="U">
-						(block Nil
-							(objSetData gSlaver "sungState" "done")
+						(block (
+							(slaverObj (scrGetData gScreen 'slaverObj))
+							)
+							(objSetData slaverObj 'sungState 'done)
 							(scrExitDock gScreen)
 							)
 					</Action>
@@ -336,8 +356,10 @@
 			<NoReward descID="descNoReward">
 				<Actions>
 					<Action name="Undock" cancel="1" key="U">
-						(block Nil
-							(objSetData gSlaver "sungState" "done")
+						(block (
+							(slaverObj (scrGetData gScreen 'slaverObj))
+							)
+							(objSetData slaverObj 'sungState 'done)
 							(scrExitDock gScreen)
 							)
 					</Action>
