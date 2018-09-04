@@ -725,6 +725,9 @@ ICCItem *CDockScreen::GetCurrentListEntry (void)
 //	Returns the current list entry
 
 	{
+	if (m_pDisplay == NULL)
+		return g_pUniverse->GetCC().CreateNil();
+
 	ICCItem *pResult = m_pDisplay->GetCurrentListEntry();
 	if (pResult == NULL)
 		return g_pUniverse->GetCC().CreateNil();
@@ -1557,7 +1560,8 @@ void CDockScreen::ResetList (CSpaceObject *pLocation)
 //	Resets the display list
 
 	{
-	if (m_pDisplay->ResetList(pLocation) == IDockScreenDisplay::resultShowPane)
+	if (m_pDisplay
+			&& m_pDisplay->ResetList(pLocation) == IDockScreenDisplay::resultShowPane)
 		{
 		//	NOTE: We defer the actual recalc of the pane until after any action
 		//	is done. We need to do this because we don't want to execute
