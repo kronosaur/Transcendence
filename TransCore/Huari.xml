@@ -65,13 +65,15 @@
 					;	Only care if player was responsible
 					(or (not gPlayerShip) (!= aOrderGiver gPlayerShip))
 						Nil
-
+						
 					;	Sung station destroyed
 					(objMatches aObjDestroyed Nil "t +sungSlavers; +majorStation;")
 						(huaSungDestroyed aObjDestroyed aOrderGiver)
 
 					;	Huari ship or station destroyed
-					(= (objGetSovereign aObjDestroyed) &svHuariEmpire;)
+					(or (objMatches aObjDestroyed Nil "s +huari;")
+							(objMatches aObjDestroyed Nil "T +huari; +populated;")
+							)
 						(huaHuariDestroyed aObjDestroyed aOrderGiver)
 					)
 			</OnGlobalObjDestroyed>
