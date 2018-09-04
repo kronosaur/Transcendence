@@ -93,7 +93,8 @@
 
 		<Events>
 			<OnCreate>
-				; Count the number of slave quarters in the area
+				;	Count the number of slave quarters in the area
+
 				(objSetData gSource "totalSlaveCount" 
 					(count (sysFindObject gSource "T:sungSlaveQuarters; N:8;"))
 					)
@@ -247,9 +248,11 @@
 
 	<!-- Sung Slave Quarters -->
 
-	<DockScreen UNID="&dsSungSlaveQuarters;">
+	<DockScreen UNID="&dsSungSlaveQuarters;"
+			inherit="&dsDockScreenBase;"
+			>
 
-		<InitialPane>
+		<OnScreenInit>
 			(block (
 				(slaverObj (sysFindObject gSource "T:sungSlaveCamp; N"))
 				(sungState (objGetData slaverObj 'sungState))
@@ -258,31 +261,10 @@
 
 				(scrSetData gScreen 'slaverObj slaverObj)
 
-				;	Different screen depending on status
+				;	When we first dock, we compute the number of slaves rescued 
+				;	by the player.
 
-				(switch
-					;	No slaver found
-
-					(not slaverObj)
-						'Empty
-
-					;	Slave Camp has not yet been destroyed.
-
-					(not (objIsAbandoned slaverObj))
-						'NotFree
-
-					;	If we already got rewards, camp is empty
-
-					(= sungState 'done)
-						'Empty
-
-					;	If we have just taken some coffins, then we're done.
-
-					(= sungState 'coffins)
-						'Done
-
-					;	Otherwise, the player may or may not get a reward
-
+				(if (and slaverObj (objIsAbandoned slaverObj) (not sungState))
 					(block (
 						(totalSlaveCount (objGetData slaverObj 'totalSlaveCount))
 
@@ -301,81 +283,126 @@
 						;	The dead are the total minus the living
 
 						(dead (- totalSlaveCount alive))
+
+						;	For each surviving slave quarter, there is a 50% 
+						;	chance of a surviving slave coffin
+
+						(slaveCoffins 
+							(map (make 'sequence alive) 'reduceSum i
+								(round 'stochastic 0.5)
+								)
+							)
 						)
+						(switch
+							;	If there are more dead than alive, the player 
+							;	gets nothing.
 
-						;	If there are more dead than alive then the player gets
-						;	nothing.
+							(gr dead alive)
+								(objSetData slaverObj 'sungState 'angry)
 
-						(if (gr dead alive)
-							'NoReward
-							'Default
+							;	If no coffins, then too many died
+
+							(= slaveCoffins 0)
+								(objSetData slaverObj 'sungState 'allDead)
+
+							;	Otherwise, we add slave coffins to the station
+
+							(block ()
+								(dbgOutput "slaveCoffins = " slaveCoffins)
+								(objAddItem gSource (itmCreate &itSlaveCoffin; slaveCoffins))
+								(objSetData slaverObj 'sungState 'coffins)
+								)
 							)
 						)
 					)
 				)
-		</InitialPane>
+		</OnScreenInit>
 
 		<Panes>
-			<Default descID="descWelcome">
+			<Default>
+				<OnPaneInit>
+					(block (
+						(slaverObj (scrGetData gScreen 'slaverObj))
+						(sungState (objGetData slaverObj 'sungState))
+						(showLoot Nil)
+						)
+						(switch
+							(not slaverObj)
+								(scrSetDescTranslate gScreen 'descEmpty)
+								
+							(not (objIsAbandoned slaverObj))
+								(scrSetDescTranslate gScreen 'descNotFree)
+
+							(or (not sungState) (= sungState 'done))
+								(scrSetDescTranslate gScreen 'descEmpty)
+
+							(= sungState 'angry)
+								(scrSetDescTranslate gScreen 'descNoReward)
+
+							(= sungState 'allDead)
+								(scrSetDescTranslate gScreen 'descNoReward)
+
+							;	Otherwise, there are slaves that need to be taken by
+							;	the player.
+
+							(objGetItems gSource "* +unid:&itSlaveCoffin;")
+								(block ()
+									;	If we've already looted at least once, then
+									;	we have a slightly different message
+
+									(if (= sungState 'coffinsTaken)
+										(scrSetDescTranslate gScreen 'descWelcomeBack)
+										(scrSetDescTranslate gScreen 'descWelcome)
+										)
+									(setq showLoot True)
+									)
+
+							;	Otherwise, thanks!
+
+							(scrSetDescTranslate gScreen 'descDone)
+							)
+
+						(scrShowAction gScreen 'actionLiberate showLoot)
+						)
+				</OnPaneInit>
+
 				<Actions>
-					<Action name="Continue" cancel="1" default="1" key="C">
+					<Action id="actionLiberate" default="1">
 						(block (
 							(slaverObj (scrGetData gScreen 'slaverObj))
 							)
-							(objSetData slaverObj 'sungState 'coffins)
-							(objAddItem gSource (itmCreate &itSlaveCoffin; (random 1 12)))
 							(scrShowScreen gScreen &dsRPGLoot; {
 								nextScreen: &dsSungSlaveQuarters;
+								lootLabel: (scrTranslate gScreen 'actionLiberate)
 								})
+
+							;	Remember that the player got an opportunity to loot
+							;	(But they haven't necessarily taken all coffins.)
+
+							(objSetData slaverObj 'sungState 'coffinsTaken)
+							)
+					</Action>
+
+					<Action id="actionUndock" default="1" cancel="1">
+						(block (
+							(slaverObj (scrGetData gScreen 'slaverObj))
+							(sungState (objGetData slaverObj 'sungState))
+							)
+							(switch
+								(not (objGetItems gSource "* +unid:&itSlaveCoffin;"))
+									(objSetData slaverObj 'sungState 'done)
+								)
+
+							(scrExitScreen gScreen)
 							)
 					</Action>
 				</Actions>
 			</Default>
-
-			<Done descID="descDone">
-				<Actions>
-					<Action name="Undock" cancel="1" key="U">
-						(block (
-							(slaverObj (scrGetData gScreen 'slaverObj))
-							)
-							(objSetData slaverObj 'sungState 'done)
-							(scrExitDock gScreen)
-							)
-					</Action>
-				</Actions>
-			</Done>
-
-			<Empty descID="descEmpty">
-				<Actions>
-					<Action name="Undock" cancel="1" key="U">
-						<Exit/>
-					</Action>
-				</Actions>
-			</Empty>
-
-			<NoReward descID="descNoReward">
-				<Actions>
-					<Action name="Undock" cancel="1" key="U">
-						(block (
-							(slaverObj (scrGetData gScreen 'slaverObj))
-							)
-							(objSetData slaverObj 'sungState 'done)
-							(scrExitDock gScreen)
-							)
-					</Action>
-				</Actions>
-			</NoReward>
-
-			<NotFree descID="descNotFree">
-				<Actions>
-					<Action name="Undock" cancel="1" key="U">
-						<Exit/>
-					</Action>
-				</Actions>
-			</NotFree>
 		</Panes>
 
 		<Language>
+			<Text id="actionLiberate">[T]ake</Text>
+
 			<Text id="descWelcome">
 
 				As you enter the station you are surrounded by cheering families:
@@ -383,6 +410,14 @@
 				"Thank you for freeing us! The Slavers are finally dead! But 
 				some of our people are still not liberated. Please take them to 
 				a place where they can be free."
+
+			</Text>
+			<Text id="descWelcomeBack">
+
+				Worried families surround you:
+
+				"Our people are still not liberated. Please take them to a place
+				where they can be free."
 
 			</Text>
 			<Text id="descDone">
