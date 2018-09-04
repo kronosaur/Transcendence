@@ -547,7 +547,7 @@
 		<StaticData>
 			<Data id="sisters.donation">
 				;			attd	rel		text
-				'(Nil		-1		135		"This empty vessel may nevertheless possess a connection to the soul it once housed. Domina will use it to gather her flock.")
+				'(Nil		-1		240		"This empty vessel may nevertheless possess a connection to the soul it once housed. Domina will use it to gather her flock.")
 			</Data>
 		</StaticData>
 	</ItemType>
@@ -886,6 +886,23 @@
 			>
 
 		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+	<!-- Neural Processor -->
+
+	<ItemType UNID="&itNeuralProcessor;"
+			name=				"neural processor"
+			level=				"4"
+			value=				"100"
+			mass=				"500"
+			frequency=			"uncommon"
+			numberAppearing=	"1d2"
+			attributes=			"consumable, info"
+
+			description=		"Neural processors are key components in AI systems."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
 	<!-- Neuranase -->

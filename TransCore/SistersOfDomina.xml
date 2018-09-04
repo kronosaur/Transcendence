@@ -105,19 +105,38 @@
 				; rel =		Points of relationship gained per item
 
 				(	; pattern				attd	rel		text
+
+					; Level 1-2
+
 					(&itCarvedPrayerStone;	0		30		"We thank you for your offering. These beautiful stones are a fitting tribute to Domina's grace and power.")
-					(&itJewelOfContemplation; 0		60		"We thank you for your offering. These beautiful jewels are a fitting tribute to Domina's grace and power.")
-					(&itHierolithCrystal;	-1		120		"We thank you for your offering. These beautiful crystals are a fitting tribute to Domina's grace and power.")
-					(&itDeathCube;			-1		90		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
-					(&itAbbasidThanogram;	0		90		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
-					(&itCDMArchive;			-1		120		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
-					(&itOpticalKnowledgeArray; 0	20		"We thank you for your offering. These intricate devices will help us with our communion.")
-					(&itSlaveCoffin;		-1		60		"We will take care of these lost children and teach them the way of Domina. Trust your fate to Domina.")
+
+					; Level 3-4
+
+					(&itNeuralProcessor;	0		48		"We thank you for your offering. These sophisticated devices will help us commune with Domina.")
+					(&itJewelOfContemplation; 0		48		"We thank you for your offering. These beautiful jewels are a fitting tribute to Domina's grace and power.")
+					(&itAbbasidThanogram;	0		64		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
+
+					; Level 5-6
+
+					(&itSlaveCoffin;		-1		40		"We will take care of these lost children and teach them the way of Domina. Trust your fate to Domina.")
+					(&itOpticalKnowledgeArray; 0	80		"We thank you for your offering. These intricate devices will help us with our communion.")
+					(&itDeathCube;			-1		180		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
+
+					; Level 7-8
+
+					(&itCDMArchive;			-1		270		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
+
+					; Level 9-10
+
+					(&itHierolithCrystal;	-1		360		"We thank you for your offering. These beautiful crystals are a fitting tribute to Domina's grace and power.")
+
+					; Other
+
 					(&itCashCardGold;		500		0		"We thank you for your sacrifice. Seek us when you are in need of sustenance.")
 					(&itCashCardPlatinum;	500		0		"We thank you for your sacrifice. Seek us when you are in need of sustenance.")
 					("ad +Illegal;"			0		0		"We shall dispose of this equipment for your own good. Do not give in to its corrupting influence.")
 					("*+ID;"				0		0		"We thank you for your good intentions, but this kind of item is useless to us.")
-					("*+HaloGem;"			-1		180		"We thank you for your offering. These beautiful gems are a fitting tribute to Domina's grace and power.")
+					("*+HaloGem;"			-1		270		"We thank you for your offering. These beautiful gems are a fitting tribute to Domina's grace and power.")
 					("*+Meds;"				500		0		"We thank you for your sacrifice. Seek us when you are in need of healing.")
 					("*+Illegal;"			0		0		"We shall dispose of this poison so that it may do no harm. Cleanse yourself of its influence.")
 					("*+Lux;"				2000	0		"We thank you for your sacrifice. Seek us when you are in need of peace.")
