@@ -43,6 +43,10 @@
 			<Text id="listAnd">" and "</Text>
 			<Text id="listComma">", "</Text>
 			<Text id="listCommaAnd">", and "</Text>
+			
+			<!-- Common Noun Phrases -->
+			
+			<Text id="nounHitPoints">hit point(s)</Text>
 		</Language>
 	</Type>
 

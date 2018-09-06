@@ -106,6 +106,7 @@
 							(block nil
 								(scrSetDesc gScreen (cat
 									(scrTranslate gScreen 'descOpenedStart)
+									" "
 									(switch
 										(eq (objGetData gSource "Contents") 4)
 											(scrTranslate gScreen 'descOpenedRefugees)
@@ -117,7 +118,9 @@
 												(eq itemCount 0)
 													(scrTranslate gScreen 'core.noItemsHereDesc)
 												(eq itemCount 1)
-													(scrTranslate gScreen 'descOpenedOneItem)
+													(scrTranslate gScreen 'descOpenedOneItem {
+														itemName: (itmGetName (@ allItems 0) 8)
+														})
 												(scrTranslate gScreen 'descOpenedSeveralItems)
 												)
 											)
@@ -163,7 +166,9 @@
 									(eq itemCount 0)
 										(scrSetDescTranslate gScreen 'descContentsEmpty)
 									(eq itemCount 1)
-										(scrSetDescTranslate gScreen 'descContents2OneItem)
+										(scrSetDescTranslate gScreen 'descContents2OneItem {
+											itemName: (itmGetName (@ allItems 0) 8)
+											})
 									(scrSetDescTranslate gScreen 'descContents2VariousItems)
 									)
 								(rpgSetLootAction gSource)
@@ -187,25 +192,31 @@
 
 					<Contents3>
 						<OnPaneInit>
-							(block (allItems desc)
-								(setq desc (scrTranslate gScreen 'descContents3Start))
-
-								; pick a random item in the ship's cargo hold to damage
-								(setq allItems (objGetItems gPlayerShip "*U -ID; -questItem;"))
-
-								; Destroy an item
-								(if (eq (count allItems) 0)
-									(setq desc (cat desc (scrTranslate gScreen 'descContents3NothingDamaged)))
-									(block (itemDamaged)
-										(setq itemDamaged (random allItems))
-										(scrSetData gScreen 'itemName (itmGetName itemDamaged 8))
-										(setq desc (cat desc (scrTranslate gScreen 'descContents3ItemDestroyed)))
-										(objRemoveItem gPlayerShip itemDamaged)
-										)
+							(block (
+								;	pick a random armor segment
+								(armorSeg (random 0 (- (shpGetArmorCount gPlayerShip) 1)))
+							
+								;	Pick random damage based on system level
+								;	(d20 per level)
+								(damage (rollDice (sysGetLevel) 20))
+								
+								damageDone
+								)
+								
+								; Do damage
+								
+								(setq damageDone (shpDamageArmor gPlayerShip armorSeg 'blast damage))
+								
+								;	Report what happened
+								
+								(switch
+									(= damageDone 0)
+										(scrSetDescTranslate gScreen 'descAcidNoDamage)
+										
+									(scrSetDescTranslate gScreen 'descAcidDamage {
+										hitPoints: (fmtNoun (scrTranslate gScreen 'nounHitPoints) damage 'countAlways)
+										})
 									)
-
-								; set the desc
-								(scrSetDesc gScreen desc)
 								)
 						</OnPaneInit>
 
@@ -228,7 +239,19 @@
 
 					; Cargo container is a trap for some pirates
 
-					<Contents5 descID="descContents5">
+					<Contents5>
+						<OnPaneInit>
+							(switch
+								;	If we're near a Korolov station, then these are 
+								;	for the pirates
+								
+								(sysFindObject gSource "TA +korolovShipping; N:24;")
+									(scrSetDescTranslate gScreen 'descPiratesSpies)
+									
+								(scrSetDescTranslate gScreen 'descPiratesAmbush)
+								)
+						</OnPaneInit>
+						
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
@@ -251,21 +274,55 @@
 				/>
 				
 		<Language>
-			<Text id="descDefault">"The hatch to the container is sealed. Do you wish to open it?"</Text>
-			<Text id="actionOpenSeal">"[O]pen Seal"</Text>
-			<Text id="descOpenedStart">"You are docked at an abandoned cargo container. "</Text>
-			<Text id="descOpenedRefugees">"There is a family of refugees living here."</Text>
-			<Text id="descOpenedOneItem">(cat "You see " (scrGetData gScreen 'itemName) " here.")</Text>
-			<Text id="descOpenedSeveralItems">"You see several items here."</Text>
-			<Text id="descContentsEmpty">"The cargo container is empty."</Text>
-			<Text id="descContents2OneItem">(cat "The cargo container has " (scrGetData gScreen 'itemName) ".")</Text>
-			<Text id="descContents2VariousItems">"The cargo container is filled with various items."</Text>
-			<Text id="descContents3Start">"The cargo container was filled with a powerful industrial solvent which has flooded your ship's cargo hold. "</Text>
-			<Text id="descContents3NothingDamaged">"Fortunately, nothing was damaged."</Text>
-			<Text id="descContents3ItemDestroyed">(cat "The solvent has destroyed " (scrGetData gScreen 'itemName) ".")</Text>
-			<Text id="descContents4">"You open the cargo doors and see that a family of refugees is living inside. They are somewhat annoyed at being disturbed."</Text>
-			<Text id="descContents5">"This appears to be a makeshift base for a group of pirates. You see several enemy ships appear on your screen..."</Text>
+			<Text id="actionOpenSeal">[O]pen Seal</Text>
 			
+			<Text id="descOpenedStart">You are docked at an abandoned cargo container.</Text>
+			<Text id="descOpenedRefugees">There is a family of refugees living here.</Text>
+			<Text id="descContentsEmpty">"The cargo container is empty."</Text>
+			<Text id="descOpenedOneItem">You see %itemName% here.</Text>
+			<Text id="descOpenedSeveralItems">You see several items here.</Text>
+			
+			<Text id="descAcidNoDamage">
+				
+				The cargo container is filled with a powerful industrial solvent,
+				which splashes on your ship's armor.
+				
+				Fortunately, it causes no damage.
+				
+			</Text>
+			<Text id="descAcidDamage">
+				
+				The cargo container was filled with a powerful industrial solvent,
+				which splashes on your ship's armor, causing %hitPoints% of damage.
+				
+			</Text>
+			
+			<Text id="descPiratesAmbush">
+				
+				This appears to be a makeshift base for a group of pirates. You 
+				see several enemy ships appear on your screen...
+				
+			</Text>
+			<Text id="descPiratesSpies">
+				
+				The cargo container is a makeshift pirate base filled with scanning
+				and communications gear.
+				
+				You see several enemy ships appear on your screen...
+				
+			</Text>
+			
+			<Text id="descDefault">The hatch to the container is sealed. Do you wish to open it?</Text>
+			
+			<Text id="descContents2OneItem">The cargo container has %itemName%.)</Text>
+			<Text id="descContents2VariousItems">The cargo container is filled with various items.</Text>
+			
+			<Text id="descContents4">
+				
+				You open the cargo doors and see that a family of refugees is 
+				living inside. They are somewhat annoyed at being disturbed.
+				
+			</Text>
 		</Language>
 	</StationType>
 
