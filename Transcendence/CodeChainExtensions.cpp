@@ -1488,7 +1488,11 @@ ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_SCR_TRANSLATE:
 			{
-			CString sText = pArgs->GetElement(1)->GetStringValue();
+			ICCItem *pText = pArgs->GetElement(1);
+			if (pText->IsNil())
+				return pCC->CreateNil();
+
+			CString sText = pText->GetStringValue();
 			ICCItem *pData = NULL;
 			if (pArgs->GetCount() > 2)
 				pData = pArgs->GetElement(2);
@@ -1733,7 +1737,9 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
         case FN_SCR_CONTROL_VALUE_TRANSLATE:
             {
 			CString sID = pArgs->GetElement(1)->GetStringValue();
-			CString sText = pArgs->GetElement(2)->GetStringValue();
+
+			ICCItem *pText = pArgs->GetElement(2);
+			CString sText = (pText->IsNil() ? NULL_STR : pText->GetStringValue());
 
 			ICCItem *pData = NULL;
 			if (pArgs->GetCount() > 3)
@@ -1792,7 +1798,8 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			{
 			//	Args
 
-			CString sText = pArgs->GetElement(1)->GetStringValue();
+			ICCItem *pText = pArgs->GetElement(1);
+			CString sText = (pText->IsNil() ? NULL_STR : pText->GetStringValue());
 
 			ICCItem *pData = NULL;
 			if (pArgs->GetCount() > 2)
