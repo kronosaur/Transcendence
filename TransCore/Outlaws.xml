@@ -428,7 +428,7 @@
 		</ImageVariants>
 
 		<Ships>
-			<Ship	count="1"	class="&scT31ArmedTransport;" orders="trade route"	sovereign="&svBlackMarket;">
+			<Ship	count="1"	class="&scT31ArmedTransport;" orders="tradeRoute"	sovereign="&svBlackMarket;">
 				<Items>
 					<Item chance="50"		count="8d20" item="&itSmartCannonShell;"/>
 					<Lookup					count="1d2+1" table="&trIllegalItems2;"/>

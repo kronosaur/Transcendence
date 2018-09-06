@@ -1196,6 +1196,39 @@
 							)
 					)
 			</OnBehavior>
+
+			<OnDockObjDestroyed>
+				;	If a station that we're docked with got destroyed, then we 
+				;	need to react.
+
+				(switch
+					;	If we're being escorted by the player, don't do anything
+					;	(Let the mission handle it).
+
+					(objGetData gSource 'korolovPlayerEscort)
+						Nil
+
+					;	If the station destroyed was our home base, then we just 
+					;	gate out.
+
+					(= (objGetID aObjDestroyed) (objGetData gSource 'home))
+						(block ()
+							(shpCancelOrders gSource)
+							(shpOrder gSource 'gate)
+							(objSetObjRefData gSource 'korolovDest Nil)
+							)
+
+					;	Otherwise, return home
+
+					(block (
+						(homeObj (objGetObjByID (objGetData gSource 'home)))
+						)
+						(shpCancelOrders gSource)
+						(shpOrder gSource 'dock homeObj)
+						(objSetObjRefData gSource 'korolovDest Nil)
+						)
+					)
+			</OnDockObjDestroyed>
 			
 			<OrderTraffic>
 				(block (
@@ -1230,7 +1263,7 @@
 						(block Nil
 							(shpCancelOrders gSource)
 							(shpOrder gSource 'dock dest)
-							(shpOrder gSource 'wait Nil (random 5 12))
+							(shpOrder gSource 'waitForThreat Nil (random 5 12))
 							(shpOrder gSource 'dock homeObj)
 							(objSetObjRefData gSource 'korolovDest Nil)
 							)
