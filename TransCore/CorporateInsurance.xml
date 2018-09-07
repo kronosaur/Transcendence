@@ -41,6 +41,27 @@
 		</Ships>
 
 		<Events>
+			<GetGlobalAchievements>
+				(append
+					;	Rank
+					(if (typGetData &stInsuranceCompany; 'insured)
+						(list
+							(list
+								"Insurance provider"
+								"Clavius Insurance Conglomerate"
+								)
+							)
+						)
+					(if (gr (typGetData &stInsuranceCompany; 'claims) 0)
+						(list
+							(list
+								"Insurance claims"
+								(typGetData &stInsuranceCompany; 'claims)
+								)
+							)
+						)
+
+			</GetGlobalAchievements>
 			<GetGlobalResurrectPotential>
 				(switch
 					; If not insured, we never resurrect
