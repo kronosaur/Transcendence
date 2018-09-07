@@ -13,6 +13,18 @@
 			>
 			
 		<Events>
+			<GetGlobalAchievements>
+				(append
+					(if (geq (int (objGetData gPlayerShip "corpCrimeSeverity")) 2)
+						(list
+							(list
+								"Corporate Hierarchy"
+								(cat "Wanted for " (objGetData gPlayerShip 'corpCrime))
+								"crime record"
+								)
+							)
+						)
+			</GetGlobalAchievements>
 			<GetGlobalDockScreen>
 				(switch
 					; This only applies to corporate hierarchy stations
